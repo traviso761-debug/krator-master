@@ -27,13 +27,12 @@ ISLE.TUNE.sim = {
      start: the clock's first minute (midnight of day 0) */
   clock: { secPerMinute: 18, stepMax: 900, lag: 8, reach: 6000, start: 0 },
   track: 40,
-  /* towns[town].food: the town's food producers' rates times this (the parcels', the docks', the pens' and the byre's; not
-     the bakers', who turn food into food), so a town makes a little more food than it eats (2026-10-19, the owner: at
-     most 100 servings a day more); calibrated on two weeks' books (README.md) */
+  /* towns[town].food (optional): a factor on the town's raw food producers' rates; since the production governor (49)
+     holds the stocks, none is set (the hand-calibrated 0.786 and 0.804 retired, 2026-10-19) */
   towns: {
-    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } }, food: 0.786 },
+    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } } },
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
-    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } }, food: 0.804 }
+    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
   },
   activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
@@ -140,16 +139,28 @@ ISLE.TUNE.sim = {
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
     minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5 },
-    /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold; the cotton to
-       what the weavers use) */
-    cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.087, cotton: 0.75 },
+    /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
+       below holds the rest to what is wanted */
+    cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1 },
+    /* the production governor (49), an order-up-to rule: a producer's rate is its full one times what is wanted of its
+       good (demand, plus `alpha` of the gap to `cover` days of it, closed over `ti` days) over what it makes at full,
+       clamped to [min, max], looked at every `every` minutes, its estimates smoothed over `smooth` days, its demand over the
+       last `window` whole days (the households' three-day restocking round). A producer kind
+       with `alternate` makes one of its lists place by place in turn (the weavers: cloth, then garments), so each good is
+       governed on its own */
+    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3 },
+    /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
+       meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
+       metal never) */
+    spoil: { fish: 0.04, meat: 0.04, bread: 0.06, banana: 0.04, coconut: 0.01, 'sweet-potato': 0.015, taro: 0.015, rice: 0.003,
+      'sugar-cane': 0.03, cotton: 0.002, clove: 0.002, cacao: 0.003, coffee: 0.002, sugar: 0.001 },
     /* the crops of the parcels (30-isle-programme.js farm) as the economy's goods */
     crops: { 'sweet potato': 'sweet-potato', banana: 'banana', coconut: 'coconut', 'sugar cane': 'sugar-cane', cotton: 'cotton', coffee: 'coffee',
       rice: 'rice', taro: 'taro', cloves: 'clove', cacao: 'cacao' },
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
-      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth', 'garments'], rate: 1.2, cap: 600 },
+      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments']], rate: 2, cap: 600 },
       potter: { out: ['pots'], rate: 0.5, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
       /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's
@@ -159,7 +170,7 @@ ISLE.TUNE.sim = {
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 2, startLots: { cloth: 40, pots: 40, garments: 200, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
+    startDays: 3, startLots: { cloth: 40, pots: 40, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
   },
   /* P7c, the canoe line between the two trade landings (owner, 2026-10-19), on core/simulation's SIM.trade (47):
      uses     what each town uses a day, a person, of what the other makes (8c: Kautoa's salt, rice, cloves and cacao in

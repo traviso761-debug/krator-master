@@ -80,12 +80,18 @@
       town's whole list. The oruwa landed its cloves and cacao a few dozen at a time, under the 40 a cart waits for, so
       they sat at Valapo's canoe stop: they now take a load of 5 (`ISLE.TUNE.sim.economy.minLoad`). The land animals'
       food is now one good, meat (owner), and a town opens with each food in its share of what the town makes.
-- [ ] **Still piling up** (after the calibration, 2026-10-19): pots (Kautoa +475 a day, Valapo +129), Kautoa's salt (+436)
-      and stone (+59), a little leather and sandals (+14, +18). Nothing uses pots or stone yet, and only Valapo uses salt.
-      The ships could buy salt; the potters and the quarry want their own users (households' pots, building).
-- [ ] **Bread pulls on its flour crop:** the bakers draw taro (Kautoa) and sweet potato (Valapo) at a fixed rate, so those
-      two drift down (-170 and -50 a day over two weeks) while the households' share of them shrinks; they settle, but a
-      long run should be watched.
+- [ ] **Still piling up** (with the governor, 2026-10-19): pots (Kautoa +147 a day, Valapo +39), Kautoa's salt (+100)
+      and stone (+18), Valapo's cotton (+133). The governor's floor (0.3 of the full rate) keeps a producer working with
+      no use for what it makes: nothing uses pots or stone yet, and only Valapo uses salt. The ships could buy salt; the
+      potters and the quarry want their own users (households' pots, building: PLAN.md section 9b).
+- [ ] **The governor and spoilage are the page's hooks** (`49`, on `SIM.stepHooks`): an order-up-to rule that sets
+      `E.recipes[id].rate` hourly and the perishables' midnight loss. Both belong in `core/simulation`'s economy as
+      opt-in features (`SIM.economy({govern, spoil})`) once proved here; until then a second settlement would copy them.
+- [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
+      so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
+      town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
+- [ ] **The households restock on a three-day round,** in step, so the warehouses swing about 15% around their target
+      and the governor reads its demand over three whole days. Staggered restocking would smooth both.
 - [ ] **The ships are timers, not vessels:** they buy on their days at the landing; the moored foreign vessels are drawn
       as before, and no ship comes or goes. Their goods leave the map (exported) for nothing in return yet: no money.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone

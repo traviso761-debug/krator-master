@@ -122,9 +122,12 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  if(neg==='booked'){const a=cp(w1),s=a.abstract,g=Object.keys(a.b.towns[s].goods).find(g=>a.b.towns[s].goods[g].imported>a.a.towns[s].goods[g].imported);a.b.towns[s].goods[g].imported-=5;return pick(ISLE.weekChecks(a,w2),/booked there/);}
  if(neg==='rate'){const a=cp(w1);a.b.towns.kautoa.food=a.a.towns.kautoa.food;return pick(ISLE.weekChecks(a,w2),/a worker a day/);}
  if(neg==='decided'){const a=cp(w1);a.decided=3;return pick(ISLE.weekChecks(a,w2),/decided/);}
+ if(neg==='late'){const a=cp(w1);a.days[4].towns.valapo.goods.fish.short+=5;return pick(ISLE.weekChecks(a,w2),/short after the second day/);}
+ if(neg==='swing'){const a=cp(w1);a.days.forEach((x,j)=>{if(j%2)x.towns.kautoa.goods.rice.total*=1.6;});return pick(ISLE.weekChecks(a,w2),/stock steady/);}
+ if(neg==='drift'){const b=cp(w2);b.days.forEach((x,j)=>{x.towns.valapo.gov.target=0;x.towns.valapo.gov.pos+=j*3000;});return pick(ISLE.weekChecks(w1,b),/food supply line/);}
  if(neg==='ships'){const a=cp(w1),b=cp(w2);a.b.towns.kautoa.sold=Object.assign({},a.a.towns.kautoa.sold);b.b.towns.kautoa.sold=Object.assign({},b.a.towns.kautoa.sold);return pick(ISLE.weekChecks(a,b),/ships from beyond/);}
  return [];}"""
-WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships')
+WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];

@@ -682,7 +682,23 @@ breakdown).
 on its food producers); cloves, cacao and cane at a tenth; ships of Voth, the Izani, the Hykkousoi, the salvagers and the
 outer isles buy the towns' cloves, cacao, sugar and coffee on their own days; a clothes and armour chain (cotton, cloth,
 garments; leather, sandals, armour) worn by everyone and carried between the towns by the lakatoi. A week-test check
-holds the ships to buying at least four fifths of the cloves and cacao made (README.md, the two weeks' books).
+holds the ships to buying at least three quarters of the cloves and cacao made (README.md, the two weeks' books).
+
+**The economy governed (owner, 2026-10-19).** The hand-set food factors gave way to a production governor and
+spoilage, after a forked session's research (an economy needs sinks for its sources and a negative feedback on
+production; spoilage bounds what gets through; an order-up-to rule must count its supply line, Sterman's Beer Game, and
+its demand-averaging, stock-adjustment and delivery times should be of comparable size, Towill's IOBPCS). `49` runs both
+as the page's step hooks: hourly, each producer's rate is its full rate times (demand + alpha (target - supply line) /
+Ti) over what the town makes at full, clamped to 0.3-1.5, with the target three days of demand (averaged over three
+whole days: the households restock on a three-day round, and a one-day window swung every producer between its floor and
+its ceiling), Ti a day and a half and alpha 0.3 (compared at 0.3, 0.5 and 1.0); at midnight the perishables lose their share of each warehouse's and
+site's stock. Three checks hold it in the week test, each with a negative: no good short after the second day, each
+good's stock steady (its mean day-to-day change at most 30% of its mean, where it holds 500 or more; not the goods the
+ships buy in lumps), each town's food supply line holding (its fitted trend at most 3% of what it eats a day) or moving
+toward its target. The week test starts cold and changes level at day 7, so its towns fill from their opening stock and
+then draw down what the abstract level made (it makes about 30% more a worker): a plain drift band failed on that; a
+pile above the target or a drain below it still fails. The steady state is the 21-day run (README.md, the three weeks). Both hooks are candidates for `core/simulation`'s economy as opt-in
+features (KNOWN_ISSUES.md).
 
 **Order of work.**
 

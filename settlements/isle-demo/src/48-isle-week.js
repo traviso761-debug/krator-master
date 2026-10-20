@@ -22,12 +22,17 @@ ISLE.weekSnap = function () {
   var S = ISLE.SIM, I = SIM.ITEMS, out = { minute: SIM.minute(), towns: {}, routes: {} };
   S.order.forEach(function (s) {
     var E = SIM.econ(s), St = SIM.stocks(s), B = (I.statsBy || {})[s] || {}, X = S.towns[s], T = { goods: {}, food: 0, workers: X.pop.workers };
+    var U = S.uses || {};
     Object.keys(E.goods).forEach(function (g) {
       var r = St.by[g]; T.goods[g] = { total: r ? r.total : 0, made: E.made[g] || 0, used: E.used[g] || 0, imported: E.imported[g] || 0, exported: E.exported[g] || 0,
-        bought: (B.bought || {})[g] || 0, eaten: (B.eaten || {})[g] || 0 };
+        bought: (B.bought || {})[g] || 0, eaten: (B.eaten || {})[g] || 0,
+        short: (E.short[g] || 0) + ((B.outOf || {})[g] || 0) + ((U.short || {})[s + ':' + g] || 0) };
     });
     X.econ.foods.forEach(function (f) { T.food += E.made[f] || 0; });
     T.sold = Object.assign({}, (S.buyersSold || {})[s] || {});
+    /* the governor's view of the town's food: its supply line and its target (cover days of demand) */
+    var GV = S.govern && S.govern.view, GC = ISLE.TUNE.sim.economy.govern; T.gov = { pos: 0, target: 0 };
+    if (GV) X.econ.foods.forEach(function (f) { var v = GV[s + ':' + f]; if (v) { T.gov.pos += v.pos; T.gov.target += GC.cover * v.use; } });
     out.towns[s] = T;
   });
   var rep = SIM.tradeReport ? SIM.tradeReport() : {};
@@ -43,9 +48,11 @@ ISLE.simWeek = function (town, minutes) {
   var who0 = who(other).length, per = {}, dec = SIM.decide;
   SIM.decide = function (x) { var k = SIM.settlementOf(x); per[k] = (per[k] || 0) + 1; return dec.apply(this, arguments); };
   var a, b, ms, t0;
-  try { a = ISLE.weekSnap(); t0 = Date.now(); ISLE.simRun(minutes); ms = Date.now() - t0; b = ISLE.weekSnap(); } finally { SIM.decide = dec; }
+  /* a snapshot at each midnight too (the shortfall and the stock checks), its time kept out of the week's */
+  var days = [], snapMs = 0, snap = function (m) { if (m % 1440) return; var t = Date.now(); days.push(ISLE.weekSnap()); snapMs += Date.now() - t; };
+  try { a = ISLE.weekSnap(); t0 = Date.now(); ISLE.simRun(minutes, snap); ms = Date.now() - t0 - snapMs; b = ISLE.weekSnap(); } finally { SIM.decide = dec; }
   var decided = per[other] || 0, moved = per[me] || 0;
-  return { town: town, watched: me, abstract: other, minutes: minutes, ms: ms, a: a, b: b, decided: decided, moved: moved, people: who0 };
+  return { town: town, watched: me, abstract: other, minutes: minutes, ms: ms, a: a, b: b, days: days, decided: decided, moved: moved, people: who0 };
 };
 ISLE.weekChecks = function (w1, w2, o) {
   o = o || {}; var out = [], band = o.band || [0.6, 1.6];
@@ -82,14 +89,49 @@ ISLE.weekChecks = function (w1, w2, o) {
   ok('a town\'s food made a worker a day, abstract, within ' + band.join('-') + ' of the same town watched', rows.length === 2 && rows.every(function (r) { return r.q >= band[0] && r.q <= band[1]; }),
     rows.map(function (r) { return r.s + ' ' + r.ab.toFixed(1) + ' abstract, ' + r.pr.toFixed(1) + ' watched (' + r.q.toFixed(2) + ')'; }).join('; '));
   /* the ships from beyond the isles bought what the towns make for them (the cloves and the cacao): over the two weeks,
-     at least four fifths of what was made, at either level */
+     at least three quarters of what was made, at either level (the governor keeps three days of each in hand, so
+     the stock grows while the towns fill) */
   var buy = [];
   ['clove', 'cacao'].forEach(function (g) { var made = 0, sold = 0;
     weeks.forEach(function (W) { Object.keys(W.b.towns).forEach(function (s) { var A = W.a.towns[s], Bt = W.b.towns[s];
       made += (Bt.goods[g] ? Bt.goods[g].made : 0) - (A.goods[g] ? A.goods[g].made : 0); sold += (Bt.sold[g] || 0) - (A.sold[g] || 0); }); });
     buy.push({ g: g, made: made, sold: sold }); });
-  ok('the ships from beyond the isles bought the cloves and the cacao the towns made', buy.every(function (x) { return x.made > 0 && x.sold >= 0.8 * x.made; }),
+  ok('the ships from beyond the isles bought the cloves and the cacao the towns made', buy.every(function (x) { return x.made > 0 && x.sold >= 0.75 * x.made; }),
     buy.map(function (x) { return x.g + ' ' + x.sold + ' bought of ' + x.made + ' made'; }).join('; '));
+  /* the governor's regression checks (49), on the midnight snapshots: no good short after the second day; each good's
+     stock steady (its mean day-to-day change at most `swing` of its mean, where it holds `swingMin` or more; not the
+     goods the ships buy, drawn a thousand at a call); each town's food supply line (the governor's position) holding,
+     its trend at most `drift` of what it eats a day, or moving toward its target (a town filling from its opening stock,
+     or drawing down what it made at the abstract level, is the governor at work; a pile above the target or a drain
+     below it is not). From the second day of each week */
+  var sw = o.swing == null ? 0.3 : o.swing, swMin = o.swingMin == null ? 500 : o.swingMin, dr = o.drift == null ? 0.03 : o.drift;
+  var late = [], wide = [], drift = [], nSw = 0;
+  var BU = ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.buyers, lumpy = {};
+  if (BU) BU.ships.forEach(function (sh) { Object.keys(sh.buys).forEach(function (g) { lumpy[g] = 1; }); });
+  weeks.forEach(function (W) { var D = [W.a].concat(W.days || []);
+    for (var i = 1; i < D.length; i++) { var day = Math.round(D[i].minute / 1440); if (day <= 2) continue;
+      Object.keys(D[i].towns).forEach(function (s) { var A = D[i - 1].towns[s].goods, B = D[i].towns[s].goods;
+        Object.keys(B).forEach(function (g) { var x = (B[g].short || 0) - (A[g] ? A[g].short || 0 : 0); if (x > 0) late.push(W.watched + ' watched, day ' + day + ', ' + s + ' ' + g + ' ' + x); }); }); }
+    var F = D.filter(function (x) { return Math.round(x.minute / 1440) >= 2; }); if (F.length < 3) return;
+    Object.keys(F[0].towns).forEach(function (s) {
+      Object.keys(F[0].towns[s].goods).forEach(function (g) { var m = 0, d = 0; if (lumpy[g]) return;
+        F.forEach(function (x, j) { m += x.towns[s].goods[g].total; if (j) d += Math.abs(x.towns[s].goods[g].total - F[j - 1].towns[s].goods[g].total); });
+        m /= F.length; d /= F.length - 1; if (m < swMin) return; nSw++;
+        if (d > sw * m) wide.push(W.watched + ' watched, ' + s + ' ' + g + ' ' + Math.round(100 * d / m) + '% of ' + Math.round(m)); });
+      /* the supply line's trend a day: a least-squares slope over the days (the stores refill in waves, so not end to end) */
+      var foods = ISLE.SIM.towns[s].econ.foods, A = F[0].towns[s].goods, B = F[F.length - 1].towns[s].goods, days = (F[F.length - 1].minute - F[0].minute) / 1440, ate = 0;
+      foods.forEach(function (g) { if (!B[g]) return; ate += (B[g].used - A[g].used) - (B[g].bought - A[g].bought) + (B[g].eaten - A[g].eaten); });
+      var xs = F.map(function (x) { return x.minute / 1440; }), ys = F.map(function (x) { return x.towns[s].gov.pos; });
+      var gap = F.reduce(function (p, x) { return p + x.towns[s].gov.target - x.towns[s].gov.pos; }, 0) / F.length;
+      var mx = xs.reduce(function (p, c) { return p + c; }, 0) / xs.length, my = ys.reduce(function (p, c) { return p + c; }, 0) / ys.length, nu = 0, de = 0;
+      xs.forEach(function (x, j) { nu += (x - mx) * (ys[j] - my); de += (x - mx) * (x - mx); });
+      drift.push({ w: W.watched, s: s, ch: de > 0 ? nu / de : 0, ate: ate / days, gap: gap }); }); });
+  ok('no good short after the second day (households, economy draws, uses)', !late.length, late.length ? late.length + ' shortfalls: ' + late.slice(0, 4).join('; ') : 'both weeks, both towns, every good');
+  ok('each good\'s stock steady: its day-to-day change at most ' + Math.round(100 * sw) + '% of its mean', nSw > 0 && !wide.length,
+    nSw + ' town-goods over two weeks' + (wide.length ? '; WIDE: ' + wide.slice(0, 4).join('; ') : ''));
+  var holds = function (x) { return x.ate > 0 && (Math.abs(x.ch) <= dr * x.ate || (x.gap > 0 && x.ch > 0) || (x.gap < 0 && x.ch < 0)); };
+  ok('each town\'s food supply line holds (its trend at most ' + Math.round(100 * dr) + '% of what it eats a day) or moves toward its target', drift.length === 4 && drift.every(holds),
+    drift.map(function (x) { return x.w + ' watched, ' + x.s + ' ' + (x.ch > 0 ? '+' : '') + Math.round(x.ch) + ' a day of ' + Math.round(x.ate) + ' eaten, ' + Math.round(x.gap) + ' below its target' + (holds(x) ? '' : ' (AWAY)'); }).join('; '));
   /* nobody in the abstract town decided; the watched town's people did */
   ok('nobody in the abstract town decided (the watched town\'s people did)', weeks.every(function (W) { return W.decided === 0 && W.moved > 0; }),
     weeks.map(function (W) { return W.abstract + ' abstract (' + W.people + ' people): ' + W.decided + ' decisions; ' + W.watched + ' watched: ' + W.moved + ' decisions'; }).join('; '));

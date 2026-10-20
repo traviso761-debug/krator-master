@@ -126,6 +126,7 @@ ISLE.simDeclare = function (plans, clock) {
     X.ms.people = Date.now() - t1;
   });
   S.trade = ISLE.simTrade();
+  ISLE.simGovernInit();   /* the production governor and spoilage (49) */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

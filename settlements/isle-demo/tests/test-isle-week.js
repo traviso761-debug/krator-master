@@ -2,7 +2,9 @@
 // browser. Plans both towns, declares them (src/40-48), runs a week with Valapo watched (Kautoa abstract), then a week with
 // Kautoa watched (Valapo abstract), and checks src/48-isle-week.js ISLE.weekChecks: each town's books balance over each week
 // at either level, every load shipped landed or at sea, the loads to the abstract town landed and booked there, each
-// town's food a worker a day abstract within a band of the same town watched, nobody in the abstract town decided. Each
+// town's food a worker a day abstract within a band of the same town watched, the ships' buys, the governor's checks (no
+// good short after the second day, each stock steady, each town's food supply line holding or moving toward its target),
+// nobody in the abstract town decided. Each
 // check with a negative. Prints the wall time of each week. Build first (python3 build.py).
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const HERE = path.join(__dirname, '..'), PLAN = path.join(HERE, 'dist', 'isle-city.plan.js');
@@ -28,6 +30,9 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const a = cp(w1), s = a.abstract, g = Object.keys(a.b.towns[s].goods).find(g => a.b.towns[s].goods[g].imported > a.a.towns[s].goods[g].imported); a.b.towns[s].goods[g].imported -= 5; caught('an import landed but not booked in the abstract town', ISLE.weekChecks(a, w2), /booked there/); }
 { const a = cp(w1); a.b.towns.kautoa.food = a.a.towns.kautoa.food; caught('an abstract town that made no food', ISLE.weekChecks(a, w2), /a worker a day/); }
 { const a = cp(w1), b = cp(w2); a.b.towns.kautoa.sold = Object.assign({}, a.a.towns.kautoa.sold); b.b.towns.kautoa.sold = Object.assign({}, b.a.towns.kautoa.sold); caught('ships that bought nothing', ISLE.weekChecks(a, b), /ships from beyond/); }
+{ const a = cp(w1); a.days[4].towns.valapo.goods.fish.short += 5; caught('5 fish short on the fifth day', ISLE.weekChecks(a, w2), /short after the second day/); }
+{ const a = cp(w1); a.days.forEach((x, j) => { if (j % 2) x.towns.kautoa.goods.rice.total *= 1.6; }); caught('a rice stock swinging by three fifths', ISLE.weekChecks(a, w2), /stock steady/); }
+{ const b = cp(w2); b.days.forEach((x, j) => { x.towns.valapo.gov.target = 0; x.towns.valapo.gov.pos += j * 3000; }); caught('a supply line piling 3000 a day above its target', ISLE.weekChecks(w1, b), /food supply line/); }
 { const a = cp(w1); a.decided = 3; caught('three of the abstract town deciding', ISLE.weekChecks(a, w2), /decided/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

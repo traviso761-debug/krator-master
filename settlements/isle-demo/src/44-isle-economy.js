@@ -20,8 +20,10 @@ ISLE.simEconomy = function (TS, places) {
   var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
   T.goods.forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; });
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
+  var turn = {}, alt = {};   /* a producer kind with `alternate`: its places take its lists in turn, in place order */
+  places.forEach(function (P) { var Pr = T.producers[P.kind]; if (Pr && Pr.alternate && P.activities.WORK) { var k = turn[P.kind] || 0; alt[P.id] = Pr.alternate[k % Pr.alternate.length]; turn[P.kind] = k + 1; } });
   var inputs = Object.assign({}, T.inputs, TS.inputs || {}), outOf = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
-    return Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
+    return alt[P.id] ? alt[P.id] : Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
   var made = {}; places.forEach(function (P) { (outOf(P) || []).forEach(function (g) { made[g] = 1; }); });
   var can = function (g) { var q = inputs[g]; return made[g] && (!q || Object.keys(q).every(function (x) { return made[x]; })); };
   var foods = I.foods.filter(can);
@@ -38,12 +40,15 @@ ISLE.simEconomy = function (TS, places) {
   /* the opening stock */
   var W = E.warehouses, pop = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length;
   /* each food's share of the town's making (its producers' posts times rate), so the opening stock is in the proportions
-     the town keeps up; the other goods their lots, only of what the town makes */
+     the town keeps up; the other goods their lots, of what the town makes or the canoes bring it (so the first days are
+     not short before the first landing) */
   var share = {}, tot = 0;
   places.forEach(function (P) { var g = outOf(P); if (!g || !E.recipes[P.id]) return; g.forEach(function (x) { if (foods.indexOf(x) < 0) return; var w = P.activities.WORK * E.recipes[P.id].rate / g.length; share[x] = (share[x] || 0) + w; tot += w; }); });
   var need = pop * I.meals * I.perMeal * T.startDays;
+  var brought = {}, TR = ISLE.TUNE.sim.trade;
+  if (TR) TR.lines.forEach(function (L) { Object.keys(L.goods).forEach(function (o) { if (o !== s) L.goods[o].forEach(function (x) { brought[x] = 1; }); }); });
   if (W.length) T.goods.forEach(function (g) {
-    var n = Math.round(foods.indexOf(g) >= 0 ? (tot > 0 ? need * (share[g] || 0) / tot : need / foods.length) : made[g] ? (T.startLots[g] || 0) : 0);
+    var n = Math.round(foods.indexOf(g) >= 0 ? (tot > 0 ? need * (share[g] || 0) / tot : need / foods.length) : made[g] || brought[g] ? (T.startLots[g] || 0) : 0);
     W.forEach(function (P, j) { P.stock[g] = Math.floor(n / W.length) + (j < n % W.length ? 1 : 0); });
   });
   /* the carts */
