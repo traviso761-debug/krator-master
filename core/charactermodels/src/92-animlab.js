@@ -100,6 +100,8 @@
   (D.props || []).forEach(function(p){ PROP[p.id] = p; });
   KCharFigure.props = PROP;
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};
+  KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
+  KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   var lead = D.bodies[CAST[0].body].skeleton.clips;
   lead.forEach(function(c){ META[c.name] = c; });
@@ -152,7 +154,7 @@
     requestAnimationFrame(frame);
     var ready = Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)).then(function(){
       x.tag.querySelector('small').textContent = x.f.pose.stature ? Math.round(x.f.pose.stature * 100) + ' cm' : '';
-    }); })).then(function(){ $('loading').hidden = true; return play(current); }, function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
+    }); })).then(function(){ $('loading').hidden = true; poseApply(); return play(current); }, function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
     window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam };
   }
 
@@ -291,37 +293,72 @@
     });
   }
 
-  /* ---- posture: the Posture panel edits data/posture.json's bodies live (each figure's own copy, fig.posture) and
-     gives them back as JSON to paste into that file. Kept in this browser until Reset ---- */
-  var POSE_KEY = 'kchar.animlab.posture', POSE_ROWS = [['Spine', 'Spine · lumbar', -40, 40], ['Spine1', 'Spine1 · low T', -40, 40],
-    ['Spine2', 'Spine2 · high T', -40, 40], ['Neck', 'Neck', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -20, 30],
+  /* ---- posture: the Posture panel edits data/posture.json live (each figure's own copies, fig.posture and
+     fig.postureClips) and gives it back as JSON to paste into that file: 'bodies', the angles every clip takes, and
+     'clips', per clip and body the degrees added on top. In "This clip" the sliders show the sum for the clip playing
+     and keep the difference. Kept in this browser until Reset, or until posture.json itself changes ---- */
+  var POSE_KEY = 'kchar.animlab.posture', POSE_BODIES = ['mpfb_male', 'mpfb_female'];
+  var POSE_ROWS = [['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
+    ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -20, 30],
     ['back', 'Shoulder back', -30, 30]];
-  function poseFile(){ return JSON.parse(JSON.stringify((D.posture && D.posture.bodies) || {})); }
+  var POSE = { bodies:{}, clips:{} };
+  function poseFile(){ return JSON.parse(JSON.stringify({ bodies:(D.posture && D.posture.bodies) || {}, clips:(D.posture && D.posture.clips) || {} })); }
+  function half(v){ v = +v; return isFinite(v) ? Math.round(v * 2) / 2 : 0; }
+  // the clips with a change of their own (the ledger marks them)
+  function posedClip(n){ return !!POSE.clips[n]; }
   function wirePose(){
-    var pose = poseFile(), body = $('pose-body'), rows = $('pose-rows'), txt = $('pose-json'), inputs = {};
-    try { var kept = JSON.parse(localStorage.getItem(POSE_KEY) || 'null'); if(kept && typeof kept === 'object') pose = kept; } catch(e){}
+    var body = $('pose-body'), rows = $('pose-rows'), txt = $('pose-json'), inputs = {}, scope = 'all';
     function status(t){ $('pose-status').textContent = t; }
     function clean(p){
-      var out = {};
-      ['mpfb_male', 'mpfb_female'].forEach(function(b){
-        var src = (p && p[b]) || {}, o = out[b] = {};
-        POSE_ROWS.forEach(function(r){ var v = +src[r[0]]; o[r[0]] = isFinite(v) ? Math.round(v * 2) / 2 : 0; });
+      // the frame is posture.json's (the figures take it when they are made): carried through so a copy is whole
+      var out = { frame:(D.posture && D.posture.frame) || 'figure', bodies:{}, clips:{} };
+      // a pasted 'bodies' object alone (the panel's old copy) keeps the clips as they are
+      var bodies = p && p.bodies ? p.bodies : p, clips = p && p.bodies ? (p.clips || {}) : POSE.clips;
+      POSE_BODIES.forEach(function(b){
+        var src = (bodies && bodies[b]) || {}, o = out.bodies[b] = {};
+        POSE_ROWS.forEach(function(r){ o[r[0]] = half(src[r[0]]); });
+      });
+      Object.keys(clips || {}).sort().forEach(function(c){
+        POSE_BODIES.forEach(function(b){
+          var src = (clips[c] || {})[b] || {}, o = {};
+          POSE_ROWS.forEach(function(r){ var v = half(src[r[0]]); if(v) o[r[0]] = v; });
+          if(Object.keys(o).length) (out.clips[c] = out.clips[c] || {})[b] = o;
+        });
       });
       return out;
     }
-    pose = clean(pose);
-    function save(){ try { localStorage.setItem(POSE_KEY, JSON.stringify(pose)); } catch(e){} }
-    function show(){ txt.value = JSON.stringify(pose, null, 1); }
+    var file = clean(poseFile()), stamp = JSON.stringify(file);
+    POSE = file;
+    try {
+      // edits kept in this browser, unless posture.json has changed under them since (new numbers pasted in)
+      var kept = JSON.parse(localStorage.getItem(POSE_KEY) || 'null');
+      if(kept && kept.file === stamp && kept.pose) POSE = clean(kept.pose);
+      else if(kept) localStorage.removeItem(POSE_KEY);
+    } catch(e){}
+    function save(){ try { localStorage.setItem(POSE_KEY, JSON.stringify({ file:stamp, pose:POSE })); } catch(e){} }
+    function show(){ txt.value = JSON.stringify(POSE, null, 1); ledger(); }
     function apply(){
       figs.forEach(function(s){
-        var key = pose[s.f.kit.body] ? s.f.kit.body : 'mpfb_male';
-        Object.assign(s.f.posture, pose[key]);
+        var b = s.f.kit.body, key = POSE.bodies[b] ? b : 'mpfb_male', pc = s.f.postureClips;
+        Object.assign(s.f.posture, POSE.bodies[key]);
+        Object.keys(pc).forEach(function(c){ delete pc[c]; });
+        Object.keys(POSE.clips).forEach(function(c){ var o = POSE.clips[c][key]; if(o) pc[c] = Object.assign({}, o); });
         s.f.update(0);
       });
     }
+    function offs(){ return (POSE.clips[current] || {})[body.value] || {}; }
     function fill(){
-      var p = pose[body.value];
-      POSE_ROWS.forEach(function(r){ inputs[r[0]].range.value = p[r[0]]; inputs[r[0]].num.value = p[r[0]]; });
+      var p = POSE.bodies[body.value], o = scope === 'clip' ? offs() : {};
+      POSE_ROWS.forEach(function(r){
+        var v = half((p[r[0]] || 0) + (o[r[0]] || 0));
+        inputs[r[0]].range.value = v; inputs[r[0]].num.value = v;
+        inputs[r[0]].row.classList.toggle('tuned', !!o[r[0]]);
+        inputs[r[0]].row.title = o[r[0]] ? 'This clip: ' + (o[r[0]] > 0 ? '+' : '') + o[r[0]] + '° on the body\'s ' + p[r[0]] + '°' : '';
+      });
+      $('pose-all').setAttribute('aria-pressed', scope === 'all');
+      $('pose-clip').setAttribute('aria-pressed', scope === 'clip');
+      $('pose-clear').hidden = scope !== 'clip' || !Object.keys(offs()).length;
+      $('pose-which').textContent = scope === 'clip' ? label(current) : '';
     }
     POSE_ROWS.forEach(function(r){
       var row = document.createElement('div'), lab = document.createElement('label'), range = document.createElement('input'), num = document.createElement('input');
@@ -330,36 +367,52 @@
       num.type = 'number'; num.min = r[2]; num.max = r[3]; num.step = 0.5; num.setAttribute('aria-label', r[1] + ' degrees');
       lab.textContent = r[1]; lab.htmlFor = range.id;
       function set(v){
-        v = Math.max(r[2], Math.min(r[3], +v || 0));
-        pose[body.value][r[0]] = v; range.value = v; num.value = v;
-        apply(); show(); save(); status('');
+        v = half(Math.max(r[2], Math.min(r[3], +v || 0)));
+        var b = body.value;
+        if(scope === 'clip'){
+          // the clip keeps only what differs from the body's own value
+          var d = half(v - (POSE.bodies[b][r[0]] || 0)), c = POSE.clips[current] = POSE.clips[current] || {}, o = c[b] = c[b] || {};
+          if(d) o[r[0]] = d; else delete o[r[0]];
+          if(!Object.keys(o).length) delete c[b];
+          if(!Object.keys(c).length) delete POSE.clips[current];
+        } else POSE.bodies[b][r[0]] = v;
+        apply(); fill(); show(); save(); status('');
       }
       range.addEventListener('input', function(){ set(range.value); });
       num.addEventListener('change', function(){ set(num.value); });
-      inputs[r[0]] = { range:range, num:num };
+      inputs[r[0]] = { range:range, num:num, row:row };
       row.appendChild(lab); row.appendChild(range); row.appendChild(num); rows.appendChild(row);
     });
     body.addEventListener('change', fill);
+    $('pose-all').addEventListener('click', function(){ scope = 'all'; fill(); });
+    $('pose-clip').addEventListener('click', function(){ scope = 'clip'; fill(); });
+    $('pose-clear').addEventListener('click', function(){
+      var c = POSE.clips[current];
+      if(c){ delete c[body.value]; if(!Object.keys(c).length) delete POSE.clips[current]; }
+      apply(); fill(); show(); save(); status(label(current) + ' takes the body\'s posture again.');
+    });
     $('pose-copy').addEventListener('click', function(){
       show();
-      var done = function(){ status('Copied: paste it to Claude, or into data/posture.json as "bodies".'); };
+      var done = function(){ status('Copied: paste it to Claude, or over data/posture.json\'s "bodies" and "clips".'); };
       if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(done, function(){ txt.select(); status('Selected: copy it with Ctrl+C.'); });
       else { txt.select(); status('Selected: copy it with Ctrl+C.'); }
     });
     $('pose-apply').addEventListener('click', function(){
       try {
-        var p = JSON.parse(txt.value);
-        pose = clean(p && p.bodies ? p.bodies : p);
+        POSE = clean(JSON.parse(txt.value));
         fill(); apply(); show(); save(); status('Applied.');
       } catch(e){ status('Not valid JSON: ' + e.message); }
     });
     $('pose-reset').addEventListener('click', function(){
-      pose = clean(poseFile());
+      POSE = clean(poseFile());
       try { localStorage.removeItem(POSE_KEY); } catch(e){}
       fill(); apply(); show(); status('Back to data/posture.json.');
     });
+    // a new clip: the sliders follow it in "This clip"
+    poseClip = fill; poseApply = apply;
     fill(); show(); apply();
   }
+  var poseClip = function(){}, poseApply = function(){};
 
   /* ---- reviews ---- */
   var reviews = {}, db = null, local = true, KEY = 'kchar.animlab.reviews';
@@ -417,6 +470,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('#rv-who button'), function(b){ b.setAttribute('aria-pressed', (r.bodies || []).indexOf(b.dataset.id) >= 0); });
     figs.forEach(function(s){ s.tag.classList.toggle('flag', (r.bodies || []).indexOf(s.c.id) >= 0); });
     if(!keepNote || document.activeElement !== $('rv-note')) $('rv-note').value = r.note || '';
+    poseClip();
     Array.prototype.forEach.call(document.querySelectorAll('.clip'), function(b){ b.setAttribute('aria-current', b.dataset.clip === current); });
     var on = document.querySelector('.clip[aria-current="true"]');
     if(on && !keepNote) on.scrollIntoView({ block:'nearest' });
@@ -442,7 +496,7 @@
       list.forEach(function(n){
         var r = reviews[n] || {}, m = META[n] || {}, b = document.createElement('button');
         b.className = 'clip'; b.dataset.clip = n; b.setAttribute('aria-current', n === current);
-        b.innerHTML = '<i class="' + (r.verdict || '') + '"></i><span>' + label(n) + (m.loop === false ? ' <em>· once</em>' : '') + (r.note ? ' ✎' : '') +
+        b.innerHTML = '<i class="' + (r.verdict || '') + '"></i><span>' + label(n) + (m.loop === false ? ' <em>· once</em>' : '') + (r.note ? ' ✎' : '') + (posedClip(n) ? ' <em title="has a posture of its own">· posture</em>' : '') +
           '</span><small>' + (m.seconds || 0).toFixed(1) + ' s</small>';
         b.title = r.note || '';
         b.addEventListener('click', function(){ play(n); });

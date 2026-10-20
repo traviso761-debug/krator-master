@@ -483,16 +483,29 @@ not push the toes, and a sandal's sole with them, down into it.
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
 **Posture** (both runtimes, first after the clip): the clips, retargeted onto MakeHuman's curved spine, stand with
-the chest pushed forward and the upper body leaning back, so the spine is bent forward: the woman about 22 degrees (6,
-8 and 8 on Spine, Spine1 and Spine2), the man and the giant about 30 (6, 12 and 12: his chest jutted further); the neck
-takes back half of it so the head does not drop and the shoulders are dropped 9 and
-drawn back 10 degrees. The upper arms keep the way the clip points them, so a thrust or a held spear still aims where
-the clip aims it. A clip that already stoops (the standing idle) stoops a little more. The numbers are in
-`data/posture.json` (`bodies`: degrees per joint for `mpfb_male` and `mpfb_female`; the giant takes the man's), which
-both runtimes read; each figure's live copy is `fig.posture`. **The Animation Lab's Posture panel** (under the review
-marks) sets them by hand: a slider per joint for the body chosen, every figure of that body changing at once, in every
-clip. Copy JSON gives the numbers back to paste into `posture.json`'s `bodies`; Apply JSON takes pasted numbers. The
-panel keeps its numbers in the browser until Reset, which goes back to the file.
+the chest pushed forward and the upper body leaning back, so the spine is bent forward, the neck takes much of it back
+so the head does not drop, and the shoulders are dropped and drawn back. The owner set the angles by eye in the
+Animation Lab (2026-10-20): the woman needs little (Spine, Spine1, Spine2 -6, -8, -8, neck 11, shoulders 9 down and 10
+back); the man much more (lumbar 21.5 back, Spine1 40 and Spine2 21.5 forward, neck 40 back, shoulders 30 down). The
+upper arms keep the way the clip points them, so a thrust or a held spear still aims where the clip aims it. The
+numbers are in `data/posture.json`, which both runtimes read:
+- `bodies`: degrees per joint for `mpfb_male` and `mpfb_female` (the giant takes the man's); each figure's live copy is
+  `fig.posture`.
+- `clips`: per clip key and body, degrees **added** to the body's values while that clip plays (walk and run lift the
+  man's chin, sprint and crouch hunch him, so they take less neck or less chest); blended by the playing clips' weights
+  through a cross-fade on the page, eased over the same 0.25 s in Godot. Kept under the body whose values a body takes
+  (the giant's under `mpfb_male`). Live copy: `fig.postureClips`.
+- `frame`: `joint` pitches each spine joint about its parent's side axis as the clip has turned that parent from rest,
+  so a twisted or side-leaning torso (idles 5, 13, 14) bends forward along its own facing; about the figure's axis
+  (`figure`, before 2026-10-20) the man's large angles kinked his ribs sideways. On an upright torso the two agree. The
+  shoulders' drop and draw-back stay in the figure's frame.
+
+**The Animation Lab's Posture panel** (under the review marks) sets them by hand: a slider per joint for the body
+chosen, every figure of that body changing at once. **Every clip** edits `bodies`; **This clip** edits the clip playing:
+its sliders show the sum, the file keeps the difference, its tuned rows are marked, Clear this clip drops it, and the
+ledger marks clips with a posture of their own. Copy JSON gives the whole object (`frame`, `bodies`, `clips`) back to
+paste into `posture.json`; Apply JSON takes it, or a `bodies` object alone. The panel keeps its numbers in the browser
+until Reset, or until `posture.json` itself changes under them.
 **Every frame starts from the clip** (`50-figure.js update`): three's mixer writes a bone only when its value changes,
 so on a still frame (paused, scrubbed, a held pose) the passes after the clip turned last frame's already-turned bone
 again; each bone is put back to the mixer's own output before the mixer runs. The hips' position track is taken out

@@ -245,6 +245,16 @@ area you are about to change.
 - Apply the angles in the figure's frame (world X axis through the figure's orientation), not each bone's local axis.
 - Five rounds of guessing angles from screenshots ended when the user got a Posture panel with Copy/Apply JSON. Build
   that kind of control first next time; keep the values in `data/posture.json`.
+- **One posture for every clip is not enough**: the angles that make the idles right lift the chin in a walk (the
+  clip already leans forward) and over-hunch a crouch. Give each clip a change of its own on top of the body's angles,
+  kept as a difference so a later change to the body's angles still reaches it, blended through cross-fades.
+- **Large pitches about the figure's axis kink a twisted torso sideways** (the man's ribs in idles 5, 13, 14, at
+  Spine1 -40): pitch each joint about its parent's side axis as the clip turned it from rest. On an upright torso that
+  is the same axis, so tuned numbers survive the change.
+- **Not every chest fault is posture**: switch the pass off before blaming it. The man's nipple through the T-shirt
+  showed with posture off too (a shirt-fit fault), only worse with a big shoulder drop.
+- **A build.py reading text without `encoding='utf-8'`** decodes UTF-8 as cp1252 on Windows: the page's non-ASCII
+  labels garble and every hash moves. Read bytes for hashes with `\r\n` made `\n` (a core.autocrlf checkout).
 
 - **A clip that stands on the ball of a foot pitches the toes into the ground**, and a sandal's flat sole with them
   (it looked like a garment bug). After the clip, turn each toe joint up until a point ~6 cm ahead stays on the ground.
