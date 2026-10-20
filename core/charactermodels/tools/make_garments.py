@@ -1557,7 +1557,7 @@ def _():
             cape(gid + '_cape', KNEE - 0.12, cloak, flare=0.2, span=1.25, ease=0.034, top=TOP - 0.03)] + \
         sleeves(gid, 'wrist', 0.016, sl, ease_end=0.085, rows=10) + \
         izani_sash(gid, P('copper', 0.04, [B('top', 0.0, 0.008, 'solid', 'gold'), B('bottom', 0.0, 0.008, 'solid', 'gold')]),
-                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.03, tail=0.5)
+                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.03, tail=0.32)   # above the knee: at 0.5 a stride's knee folded its end out
 
 
 @garment('iziz_m_noble_trousers', 'legs', 'male', 'Court trousers')
@@ -1578,7 +1578,7 @@ def _():
             cape(gid + '_train', 0.04, train, flare=0.3, span=1.15, ease=0.034, top=TOP - 0.03)] + \
         sleeves(gid, 'wrist', 0.014, sl, ease_end=0.09, rows=10) + \
         izani_sash(gid, P('copper', 0.04, [B('top', 0.0, 0.008, 'solid', 'gold'), B('bottom', 0.0, 0.008, 'solid', 'gold')]),
-                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.022, tail=0.45)
+                   P('copper', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.022, tail=0.3)
 
 
 @garment('iziz_f_noble_skirt', 'legs', 'female', 'Court skirt')

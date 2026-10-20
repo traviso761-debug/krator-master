@@ -575,8 +575,22 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         # shoulders under it came out through it as the arms came down from the A-pose
         lay = np.array([spec['parts'][where[int(v)][0]].get('layer', 0) if int(v) in where else -1 for v in V])
         outer = lay == 2
-        if outer.any() and (~outer).any():
-            gap[outer] = np.minimum(gap[outer], cKDTree(P[~outer]).query(P[outer])[0])
+        # what it can lie on: the garment's cloth that does not hang (a tunic above its chains, a plate, a collar).
+        # Hanging cloth is not (a cape counted as lying on a robe's swinging back took the hips' and thighs' weights
+        # and the robe swung through it)
+        top = {pi: min(ch['rows'][0] for ch in chains if ch['part'] == pi) for pi in by_part}
+        hang = np.array([int(v) in where and where[int(v)][0] in top and where[int(v)][1] >= top[where[int(v)][0]]
+                         for v in V])
+        under = ~outer & ~hang
+        if outer.any() and under.any():
+            gu, src = cKDTree(P[under]).query(P[outer])
+            gap[outer] = np.minimum(gap[outer], gu)
+            src = np.nonzero(under)[0][src]
+            # within 1 cm of it, the outer takes its weights outright, fading out by 5 cm: the two move as one
+            for gi, d, sv in zip(np.nonzero(outer)[0], gu, src):
+                f = float(np.clip((0.05 - d) / 0.04, 0, 1))
+                if f > 0:
+                    take_weights(JJ, WW, gi, sv, f)
         lying = np.clip((gap - CONTACT[0]) / (CONTACT[1] - CONTACT[0]), 0, 1)
         lying[body[1][near] > 0.5] = 1.0
         # and where it hangs clear of both, it takes none of the arm's weight (the collarbone's instead): a cape's
