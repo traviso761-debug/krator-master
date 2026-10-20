@@ -1,5 +1,12 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [x] **The Beast Riders' own buildings read flat next to their kit** (2026-10-20, checked after the Governor's House fix,
+      which had already put the Iziz Vernacular right): the raptor stable, the great byre and the rookery tower carried
+      no maps here. The kit's page draws them with the catalog's detail maps (kits/catalog/krator-furniture-detail.js
+      over the kit's KF_TEX: each material's texture family projected triplanar, its mean divided out); CAT now takes the
+      same (bundles.py: KF_TEX in the page's .tex.kftex.js sidecar, the detail code, catProto details every non-port
+      building) and tags each such material userData.courtTri, the triplanar hook core/export carries to Godot. The two
+      ported buildings (Mav's shrine and roost) were right already (their towns' own maps).
 - [x] **The pieces read washed out next to their kits** (the owner, 2026-10-20, the Governor's House): `isleFlatten`
       (58) dropped each instance's colour (the fix from origin/main c31288c2f, taken here alone: the rest of that commit
       fixed the towns' KMAT swap another way, which this branch fixed in towns.py) and lost the Iziz Vernacular's

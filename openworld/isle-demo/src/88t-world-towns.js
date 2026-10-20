@@ -83,7 +83,7 @@ function texMean(t){if(!t||!t.image)return null;if(mean.has(t.uuid))return mean.
 /* merge parts [{geo, mat, M (Matrix4 or null)}] into one geometry with colours, clustered on a grid of s m */
 function bake(parts,s){let nv=0,ni=0;for(const p of parts){nv+=p.geo.attributes.position.count;ni+=p.geo.index?p.geo.index.count:p.geo.attributes.position.count;}
  const pos=new Float32Array(nv*3),col=new Float32Array(nv*3),idx=new Uint32Array(ni),v=new THREE.Vector3();let o=0,k=0;
- for(const p of parts){const g=p.geo,P=g.attributes.position,C=g.attributes.color,mt=Array.isArray(p.mat)?p.mat[0]:p.mat,mc=mt&&mt.color?mt.color:{r:1,g:1,b:1},tm=texMean(mt&&mt.map)||[1,1,1];
+ for(const p of parts){const g=p.geo,P=g.attributes.position,C=g.attributes.color,mt=Array.isArray(p.mat)?p.mat[0]:p.mat,mc=mt&&mt.color?mt.color:{r:1,g:1,b:1},tm=mt&&mt.userData&&mt.userData.courtTri&&mt.userData.courtTri.detail?[1,1,1]:texMean(mt&&mt.map)||[1,1,1];   /* a detail map's mean is divided out */
   const base=[mc.r*tm[0],mc.g*tm[1],mc.b*tm[2]];
   for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);if(p.M)v.applyMatrix4(p.M);const j=(o+i)*3;pos[j]=v.x;pos[j+1]=v.y;pos[j+2]=v.z;
    const cr=C&&mt.vertexColors?C.getX(i):1,cg=C&&mt.vertexColors?C.getY(i):1,cb=C&&mt.vertexColors?C.getZ(i):1;col[j]=base[0]*cr;col[j+1]=base[1]*cg;col[j+2]=base[2]*cb;}

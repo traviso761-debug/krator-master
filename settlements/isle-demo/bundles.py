@@ -202,6 +202,35 @@ def izv_bundle():
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
 CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
+# the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
+# its buildings with the catalog's detail maps (krator-furniture-detail.js: each material's texture family, projected
+# triplanar from the mesh's own position, its mean brightness divided out), over KF_TEX (kits/beast-riders/build.py
+# kf_tex: the catalog's packed maps with the kit's own over them). CAT takes the same: KF_TEX (in side['kftex'] beside the
+# page when side is given), the detail code with a stand-in for the furniture batch it extends (CAT draws no furniture),
+# and catProto details every non-port building as the kit's sheet does; each detailed material is tagged
+# userData.courtTri {tile, detail, gain}, the triplanar hook core/export already carries to Godot (Iziz's court finishes).
+CAT_DETAIL = os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-detail.js')
+CAT_TAIL = r'''
+function catDetail(g) {
+  if (!KF_TEX) return g;
+  g.traverse(function (m) { if (m.isMesh) m.userData.furniture = true; }); KF_API.detailize(g);
+  g.traverse(function (m) {
+    var mt = m.isMesh ? m.material : null; if (!mt || !mt.map || mt.userData.courtTri || mt.customProgramCacheKey() !== 'kf-detail') return;
+    var u = mt.userData, L = KF_TEX[u.texFamily] || KF_TEX[u.family]; if (!L) return;   /* the detail code's own lookup and numbers */
+    u.courtTri = { tile: 1 / (L.scale || 0.5), detail: true, gain: 1 / Math.max(0.05, Math.pow(L.mean == null ? 0.5 : L.mean, 2.2)), family: u.texFamily || u.family };
+  });
+  return g;
+}
+'''
+
+
+def _kf_tex():
+    """the Beast Riders kit's KF_TEX body (kits/beast-riders/build.py kf_tex), as JSON"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('_br_build', os.path.join(BR, 'build.py'))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    js = m.kf_tex()
+    return js[js.index('=') + 1:].strip().rstrip(';')
 
 
 def cat_bundle(side=None):
@@ -213,13 +242,24 @@ def cat_bundle(side=None):
         sys.path.insert(0, BR)
     import towns
     tjs, tfiles = towns.bundle(side)
+    kf = _kf_tex()
+    if side is None:
+        kfjs = 'var KF_TEX = ' + kf + ';' + NL
+    else:
+        side['kftex'] = kf
+        kfjs = ("var KF_TEX = (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE.kftex) || (console.warn('CAT: the detail maps are missing "
+                "(the page\\'s .tex.kftex.js did not load)'), null);" + NL)
     return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
                 'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
                 'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + body(CAT_FILES) +
                 '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
+                '/* ---- the detail maps (KF_TEX: kits/beast-riders/build.py kf_tex) and the catalog\'s detail code over a stand-in batch ---- */' + NL +
+                kfjs + 'var KF_API = { batch: function () { return { flush: function (p) { return p; } }; } };' + NL + body([CAT_DETAIL]) + CAT_TAIL +
                 'function catProto(key, v) { if (!ASSET_BY_KEY[key]) return null; var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;' + NL +
-                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null }; return g; }' + NL +
-                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS)]
+                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null };' + NL +
+                '  if (!A.port) catDetail(g);   /* the kit\'s own buildings take its detail maps, as its sheet draws them (a port keeps its town\'s maps) */' + NL +
+                '  return g; }' + NL +
+                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
 
 
 # ---------------------------------------------------------------- the Ring Sea vessels

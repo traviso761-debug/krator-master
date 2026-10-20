@@ -4,7 +4,8 @@
 // every colour, normal and roughness map the pieces use is copied once into a WebGL2 texture ARRAY of its kind (512 px
 // a layer, the maps' own size, so nothing is lost up close), and a piece's opaque parts are merged into one geometry per
 // side (front, double) whose vertices say which layer of each array they sample (`lay`) and the part's roughness,
-// metalness, normal strength and the library's specular factor (`rmn`); their colour (the material's colour times its vertex colours) goes into the
+// metalness, normal strength and the library's specular factor (`rmn`), and a triplanar map's layer, tile and gain
+// (`det`: a material tagged userData.courtTri, the Beast Riders' detail maps and Iziz's court finishes); their colour (the material's colour times its vertex colours) goes into the
 // vertex colours, and a map's offset and repeat into the uvs. One MeshStandardMaterial per side samples the arrays
 // (its map, roughness, metalness and normal chunks replaced). Parts that cannot share it stay as they were: transparent
 // or alpha-tested ones, MeshBasicMaterial (lamps, fires), emissive ones, and those whose shader moves them (the cloth
@@ -35,10 +36,12 @@ function flush(){if(!ok)return;for(const k in K){const A=K[k];if(A.dirty){A.tex.
 const DUMMY=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1,THREE.RGBAFormat);DUMMY.needsUpdate=true;
 function material(side){const m=new THREE.MeshStandardMaterial({vertexColors:true,side,map:DUMMY,normalMap:DUMMY,roughness:1,metalness:0});
  m.onBeforeCompile=sh=>{sh.uniforms.aAlb=K.alb.uni;sh.uniforms.aNor=K.nor.uni;sh.uniforms.aRgh=K.rgh.uni;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 lay;attribute vec4 rmn;varying vec3 vLay;varying vec4 vRmn;')
-   .replace('#include <begin_vertex>','#include <begin_vertex>\nvLay=lay;vRmn=rmn;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nprecision highp sampler2DArray;uniform sampler2DArray aAlb;uniform sampler2DArray aNor;uniform sampler2DArray aRgh;varying vec3 vLay;varying vec4 vRmn;')
-   .replace('#include <map_fragment>','if(vLay.x>-.5)diffuseColor*=sRGBToLinear(texture(aAlb,vec3(vUv,vLay.x)));')
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 lay;attribute vec4 rmn;attribute vec3 det;varying vec3 vLay;varying vec4 vRmn;varying vec3 vDet;varying vec3 vKfP;varying vec3 vKfN;')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvLay=lay;vRmn=rmn;vDet=det;vKfP=position;vKfN=normal;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nprecision highp sampler2DArray;uniform sampler2DArray aAlb;uniform sampler2DArray aNor;uniform sampler2DArray aRgh;varying vec3 vLay;varying vec4 vRmn;varying vec3 vDet;varying vec3 vKfP;varying vec3 vKfN;')
+   .replace('#include <map_fragment>','if(vDet.x>-.5){vec3 kW=pow(abs(normalize(vKfN))+1e-4,vec3(4.0));kW/=(kW.x+kW.y+kW.z);vec3 kP=vKfP*vDet.y;'+
+    'vec4 kT=texture(aAlb,vec3(kP.zy,vDet.x))*kW.x+texture(aAlb,vec3(kP.xz,vDet.x))*kW.y+texture(aAlb,vec3(kP.xy,vDet.x))*kW.z;diffuseColor.rgb*=sRGBToLinear(kT).rgb*vDet.z;}'+
+    'else if(vLay.x>-.5)diffuseColor*=sRGBToLinear(texture(aAlb,vec3(vUv,vLay.x)));')   /* a triplanar map (userData.courtTri: the catalog's detail maps, the court finishes) in the mesh's own frame, as krator-furniture-detail.js */
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=vRmn.x;if(vLay.z>-.5)roughnessFactor*=texture(aRgh,vec3(vUv,vLay.z)).g;')
    .replace('#include <metalnessmap_fragment>','float metalnessFactor=vRmn.y;')
    .replace('#include <normal_fragment_maps>','if(vLay.y>-.5){vec3 mapN=texture(aNor,vec3(vUv,vLay.y)).xyz*2.0-1.0;mapN.xy*=vRmn.z;normal=perturbNormal2Arb(-vViewPosition,normal,mapN,faceDirection);}')
@@ -62,19 +65,20 @@ function merge(parts){const out={meshes:[],rest:[],retry:false};if(!ok){out.rest
   by[m.side===THREE.DoubleSide?2:0].push(p);}
  for(const side of [0,2]){const L=by[side];if(!L.length)continue;let nv=0,ni=0;
   for(const p of L){nv+=p.geo.attributes.position.count;ni+=p.geo.index?p.geo.index.count:p.geo.attributes.position.count;}
-  const pos=new Float32Array(nv*3),nor=new Float32Array(nv*3),uv=new Float32Array(nv*2),col=new Float32Array(nv*3),lay=new Float32Array(nv*3),rmn=new Float32Array(nv*4),idx=new Uint32Array(ni);let o=0,k=0;
+  const pos=new Float32Array(nv*3),nor=new Float32Array(nv*3),uv=new Float32Array(nv*2),col=new Float32Array(nv*3),lay=new Float32Array(nv*3),det=new Float32Array(nv*3),rmn=new Float32Array(nv*4),idx=new Uint32Array(ni);let o=0,k=0;
   for(const p of L){let g=p.geo;if(!g.attributes.normal){g=g.clone();g.computeVertexNormals();}const m=p.mat,P=g.attributes.position,N=g.attributes.normal,U=g.attributes.uv,C=m.vertexColors?g.attributes.color:null;
-   const la=[m.map?layer('alb',m.map):-1,m.normalMap?layer('nor',m.normalMap):-1,m.roughnessMap?layer('rgh',m.roughnessMap):-1];
+   const tri=m.userData&&m.userData.courtTri,dt=tri&&m.map?[layer('alb',m.map),tri.tile,tri.detail?tri.gain:1]:[-1,0,0];
+   const la=[m.map&&!tri?layer('alb',m.map):-1,m.normalMap&&!tri?layer('nor',m.normalMap):-1,m.roughnessMap&&!tri?layer('rgh',m.roughnessMap):-1];
    const LB=libOf(m),spec=LB&&LB.specular!=null?LB.specular/.5:1,rough=m.isMeshLambertMaterial?1:m.roughness,metal=m.isMeshLambertMaterial?0:m.metalness,ns=m.normalMap&&m.normalScale?m.normalScale.x:1,c=m.color;
    const K=m.userData&&m.userData.uvK?m.userData.uvK:null;let M3=null;if(!K&&m.map){m.map.updateMatrix();M3=m.map.matrix;}   /* a world-unit material's hook ignores the map's transform and scales by K (58 baked the rest) */
    for(let i=0;i<P.count;i++){const j=o+i;pos[j*3]=P.getX(i);pos[j*3+1]=P.getY(i);pos[j*3+2]=P.getZ(i);nor[j*3]=N.getX(i);nor[j*3+1]=N.getY(i);nor[j*3+2]=N.getZ(i);
     if(U){_uv.set(U.getX(i),U.getY(i),1);if(K)_uv.multiplyScalar(K);else if(M3)_uv.applyMatrix3(M3);uv[j*2]=_uv.x;uv[j*2+1]=_uv.y;}
     col[j*3]=c.r*(C?C.getX(i):1);col[j*3+1]=c.g*(C?C.getY(i):1);col[j*3+2]=c.b*(C?C.getZ(i):1);
-    lay[j*3]=la[0];lay[j*3+1]=la[1];lay[j*3+2]=la[2];rmn[j*4]=rough;rmn[j*4+1]=metal;rmn[j*4+2]=ns;rmn[j*4+3]=spec;}
+    lay[j*3]=la[0];lay[j*3+1]=la[1];lay[j*3+2]=la[2];rmn[j*4]=rough;rmn[j*4+1]=metal;rmn[j*4+2]=ns;rmn[j*4+3]=spec;det[j*3]=dt[0];det[j*3+1]=dt[1];det[j*3+2]=dt[2];}
    if(g.index)for(let i=0;i<g.index.count;i++)idx[k++]=o+g.index.getX(i);else for(let i=0;i<P.count;i++)idx[k++]=o+i;o+=P.count;}
   const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(pos,3));G.setAttribute('normal',new THREE.BufferAttribute(nor,3));
   G.setAttribute('uv',new THREE.BufferAttribute(uv,2));G.setAttribute('color',new THREE.BufferAttribute(col,3));G.setAttribute('lay',new THREE.BufferAttribute(lay,3));
-  G.setAttribute('rmn',new THREE.BufferAttribute(rmn,4));G.setIndex(new THREE.BufferAttribute(idx,1));G.computeBoundingSphere();
+  G.setAttribute('rmn',new THREE.BufferAttribute(rmn,4));G.setAttribute('det',new THREE.BufferAttribute(det,3));G.setIndex(new THREE.BufferAttribute(idx,1));G.computeBoundingSphere();
   out.meshes.push({geo:G,mat:MATS[side],parts:L.length});st.merged+=L.length;}
  st.rest+=out.rest.length;return out;}
 return{ok,merge,flush,stats:st,S,K};})();

@@ -4,7 +4,9 @@
       losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them
       too: the kits' per-instance colours were dropped (the fix from origin/main c31288c2f, taken here: every part
       carries them as vertex colours), and the Vernacular's world-unit tiling was lost (the hook tiles by the instance's
-      scale, which the flatten baked away; now baked into the uvs). Both Godot cases cut again.
+      scale, which the flatten baked away; now baked into the uvs). Both Godot cases cut again. Checked after: the Iziz
+      Vernacular's buildings all matched their kit; the Beast Riders' own (stable, byre, rookery tower) needed their kit's
+      triplanar detail maps too (settlements/isle-demo KNOWN_ISSUES), which the merged material now samples as well.
 - [ ] **Over Kautoa the world's flora now outweighs the town** in some views (2026-10-20): from 260 m over the
       ceremonial centre, 4.9M of 7.6M triangles were the world without the town, once enough flora tiles had streamed.
 
