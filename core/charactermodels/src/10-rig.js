@@ -266,7 +266,8 @@ var KCHAR = (function(){
 
   /* ---- peoples (data/peoples.json): the range a culture's strangers are drawn from ----
      people { id, name, ancestry:{ african:[lo,hi], asian:[lo,hi], caucasian:[lo,hi] }, skin:[stops], hair:[colours], eyes:[colours],
-              grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] } }
+              grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] },
+              style_share: the share of strangers whose hair is one of `styles` (0.75; 1: only those) }
      skin is drawn along its stops (sRGB hex, light to dark), hair from its list; every slider not named in morph is
      drawn from -spread..spread (age from its own default range) */
   function hex(c){ return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
@@ -307,7 +308,7 @@ var KCHAR = (function(){
       if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
       // a culture's own clothes (kit item culture) go only to its people's strangers
       var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id) && fits(it, rec, kit); });
-      if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
+      if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < (P.style_share == null ? 0.75 : P.style_share)) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
       var id = have.length && r() < odds ? pick(have).id : null;
       if(slot === 'hair' || slot === 'beard') rec[slot] = id; else rec.armour[slot] = id;

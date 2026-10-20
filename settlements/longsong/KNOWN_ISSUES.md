@@ -8,8 +8,7 @@
       rest are placeholder figures (a robe, a head, two arms, a sash; instanced). core/charactermodels has no level of
       detail or instanced crowd yet, so a whole court cannot be drawn dressed; the figures pass through one another, and
       their clips are the nearest the library has (the wheel's keepers push, the debaters talk or sit on the floor, the
-      drill punches). Under the page's ACES tone mapping the saffron robes and the kesar kurtas read paler and yellower
-      than in the Cosmetic Lab. The people run on `core/simulation` since 2026-10-19. Their walk graph is the ward's
+      drill punches). The people run on `core/simulation` since 2026-10-19. Their walk graph is the ward's
       cells round the buildings, the stair and the court: inside, they walk unseen along door edges, not through the
       rooms' own floors (`40c`); a stair room's storeys are not joined for them. The world day is 72 real minutes, so a
       walk across the ward takes most of a world hour.

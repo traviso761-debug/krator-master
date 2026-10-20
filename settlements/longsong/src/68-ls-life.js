@@ -12,8 +12,10 @@
 //   KORA      walking the circuit clockwise; TURN_WHEEL the keepers walking the Procrastinator round, pushing its handles
 //   walking   between places: the arms swing
 const PEOPLE_DRAWN=(function(){
- const N=LS.PEOPLE.length,DRESS={monk:[0x7a2a22,0xe0a030],novice:[0x9a4030,0xd8b060],operative:[0x2e3a4e,0xe0a030],master:[0xd8962a,0x7a2a22],
-  keeper:[0x2a2a30,0x2e5a9c],warden:[0x24406e,0x8e2f24],servant:[0x6e5a40,0xb0a080],pilgrim:[0x4a6a8a,0xc04a3a]};
+ // the placeholders in the colours their records wear (40e: the monk's saffron robe and maroon sash, the novice's maroon
+ // skirt, the elder's maroon robe and saffron shawl, the field agent's blue coat; the town in kesar and yak brown)
+ const N=LS.PEOPLE.length,DRESS={monk:[0xc8601a,0x5a1418],novice:[0x5a1418,0xc8601a],operative:[0x2e4a8a,0x5a1418],master:[0x5a1418,0xc8601a],
+  keeper:[0x5a1418,0xc8601a],warden:[0xc8601a,0x5a1418],servant:[0xb8652a,0x5a4030],pilgrim:[0x4a6a8a,0xc04a3a]};
  const robeG=new THREE.CylinderGeometry(.17,.34,1.42,10,1);robeG.translate(0,.71,0);
  const headG=new THREE.SphereGeometry(.12,10,8);headG.translate(0,1.58,0);
  const armG=new THREE.CylinderGeometry(.055,.045,.62,6,1);armG.translate(0,-.31,0);   // hangs from the shoulder: rotate it to strike

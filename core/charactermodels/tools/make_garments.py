@@ -104,10 +104,13 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      'tileblue': (0.16, 0.50, 0.72), 'tilegreen': (0.34, 0.62, 0.36), 'coral': (0.92, 0.46, 0.36), 'violet': (0.42, 0.26, 0.56),
      # the Order of Historians (Longsong) and Xanadu: the Order's saffron and maroon are the Beast Riders' above; Xanadu's
      # Persian, Indian and Tibetan dyes: pomegranate, kesar, peacock teal, lac rose, silver for the rich
-     'silver': (0.78, 0.78, 0.80), 'pomegranate': (0.62, 0.12, 0.16), 'kesar': (0.96, 0.58, 0.12), 'peacock': (0.06, 0.42, 0.44),
+     'silver': (0.78, 0.78, 0.80), 'pomegranate': (0.62, 0.12, 0.16), 'kesar': (0.70, 0.19, 0.01), 'peacock': (0.06, 0.42, 0.44),
      'lacrose': (0.78, 0.30, 0.42), 'yakbrown': (0.34, 0.24, 0.16),
      # the Order's own: deeper than the Beast Riders' saffron and maroon (a robe dyed in turmeric and madder, worn dark)
-     'osaffron': (0.90, 0.46, 0.05), 'omaroon': (0.30, 0.05, 0.07),
+     # (2026-10-20, the owner: deeper; under a world's ACES tone mapping the brighter saffron and kesar read lemon-yellow.
+     # These are LINEAR values, as the whole palette is: the texture is sRGB, so (0.80, 0.32, 0.03) showed as a pale
+     # orange (0.91, 0.60, 0.19). A deep saffron is about (0.80, 0.38, 0.05) on screen; a maroon (0.45, 0.16, 0.18))
+     'osaffron': (0.60, 0.12, 0.005), 'omaroon': (0.18, 0.025, 0.03),
      # the Free Giants: Gaulish wool in woad, weld and madder, heather and loden; bronze and iron
      'woad': (0.20, 0.30, 0.48), 'weld': (0.80, 0.70, 0.30), 'heather': (0.46, 0.34, 0.44), 'loden': (0.28, 0.33, 0.20),
      'iron': (0.30, 0.31, 0.33),

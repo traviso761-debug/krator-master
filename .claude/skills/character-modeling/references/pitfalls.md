@@ -76,8 +76,12 @@ area you are about to change.
   turban's first row sits at about 0.62.
 - **A paint band painting a whole narrow part** → `B(where, a, b, ...)` takes metres, not fractions: a 0.15 band on a
   ribbon a few centimetres wide covers all of it.
-- **Colours reading pale in the renders** → the fabric's grain multiplies in about its mean, and coarse cotton and wool
-  are light: take a deeper base colour for a dyed robe (the Order's `osaffron`, `omaroon`).
+- **Colours reading pale in the renders, and lemon in a world** → `make_garments.py`'s palette is LINEAR, written into
+  an sRGB texture: (0.80, 0.32, 0.03) shows as a pale orange (0.91, 0.60, 0.19), and a world's ACES tone mapping lifts
+  a bright orange further to yellow. Pick the colour on screen and convert it (sRGB^2.2): the Order's saffron is
+  (0.60, 0.12, 0.005), its maroon (0.18, 0.025, 0.03). Deepening by eye in the palette's numbers barely moves it.
+- **A people's strangers in another people's hair** → `styles` are only preferred (three in four); `style_share: 1` in
+  peoples.json keeps them to their styles (the Order: cropped men, women to a bob).
 
 ## 4. Materials, alpha and textures
 
