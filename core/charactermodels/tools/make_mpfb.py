@@ -273,11 +273,13 @@ def body_primitive(path):
 
 
 def body_contact(path):
-    """for cloth_bones: the base skin's points (a KD tree) and, per point, how much of its weight is on the legs"""
+    """for cloth_bones: the base skin's points (a KD tree) and, per point, how much of its weight is on the legs and
+    how much on the arms"""
     j, b = glbio.read_glb(open(path, 'rb').read())
     node = next(n for n in j['nodes'] if 'mesh' in n and 'skin' in n)
     names = [j['nodes'][k].get('name', '').split(':')[-1] for k in j['skins'][node['skin']]['joints']]
     leg = np.array([any(x in n for x in ('UpLeg', 'Leg', 'Foot', 'Toe')) for n in names])
+    arm = np.array([('Arm' in n or 'Hand' in n) for n in names])
     for m in j['meshes']:
         for p in m['primitives']:
             if 'material' in p and j['materials'][p['material']]['name'].endswith('.body'):
@@ -285,7 +287,8 @@ def body_contact(path):
                 P = glbio.accessor(j, b, at['POSITION']).astype(float)
                 JJ = glbio.accessor(j, b, at['JOINTS_0']).astype(int)
                 WW = glbio.accessor(j, b, at['WEIGHTS_0']).astype(float)
-                return cKDTree(P), (WW * leg[JJ]).sum(1) / np.maximum(WW.sum(1), 1e-9)
+                tot = np.maximum(WW.sum(1), 1e-9)
+                return cKDTree(P), (WW * leg[JJ]).sum(1) / tot, (WW * arm[JJ]).sum(1) / tot
     raise SystemExit('make_mpfb.py: no body primitive in ' + path)
 
 
@@ -582,6 +585,9 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         hang = np.array([int(v) in where and where[int(v)][0] in top and where[int(v)][1] >= top[where[int(v)][0]]
                          for v in V])
         under = ~outer & ~hang
+        # nor does a mantle lie on an arm: a cape's flared side near the A-posed forearm took its weights, and at the
+        # idle, the hand at the hip, it was drawn out into a spike
+        gap[outer & (body[2][near] > 0.5)] = 1.0
         if outer.any() and under.any():
             gu, src = cKDTree(P[under]).query(P[outer])
             gap[outer] = np.minimum(gap[outer], gu)
