@@ -277,11 +277,11 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
 
 ## 10. Questions
 
-1. **The western lake at exactly 0 m** (px 325,120, 2,528 km²): a closed hollow of its own in the west bed (its floor
-   at -419 m), not joined to the west remnant at any level up to 200 m. It was one with the west lake until the
-   recession split the trapped water into pools; the model's `SETTLE` (`hydro.py`) levelled only the three named
-   lakes, so this one kept the drawn 0 m. The fix is to settle it the same way, which gives its own level (perhaps a
-   playa). Until then the overlay treats it as the west bed's second remnant lake.
+None open. Settled 2026-10-20 (the owner): the trough stood at 430 m before the flood; Boatmurder is only a bandit camp in
+a pile of boats; Jimjam may move if its brick needs it (it does not: section 2); the bathtub ring is 30 m deep.
 
-Settled 2026-10-20 (the owner): the trough stood at 430 m before the flood; Boatmurder is only a bandit camp in a pile of
-boats; Jimjam may move if its brick needs it (it does not: section 2); the bathtub ring is 30 m deep.
+**The west bed's second lake** (px 325,120), drawn at exactly 0 m: a closed hollow of its own (its floor at -435 m), not
+joined to the west remnant at any level up to 200 m; it split off as the trapped water fell. `SETTLE` had levelled only
+the three named lakes and left it as drawn, so it was settled the same way on the 4.21 page (the owner asked, 2026-10-20):
+it balances at **+1 m over 2,615 km²** (drawn: 0 m, 2,534 km²), fed by ~26 m³/s. The drawn level was right by chance and
+the model is left as it is. The overlay treats it as the west bed's second remnant lake.

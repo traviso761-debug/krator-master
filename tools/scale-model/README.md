@@ -158,6 +158,9 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   just over the ocean's level, never under it (`cut_channel(..., floor)`; the ocean cell at the mouth, drawn as water
   over 109 m of ground, is lowered under it, or it dams the gorge). The lake settles at 46 m (26,985 km2, drawn 26,408)
   and *Farside river* runs out of it, ~1,430 m3/s.
+- **The west bed's second lake** (px 325,120; checked 2026-10-20, not in `SETTLE`): a closed hollow in the west lobe's
+  old bed, drawn at 0 m over 2,534 km2. Settled on its own water as `SETTLE` does (its drawn water taken away, the land
+  routed again on the 4.21 page) it stands at +1 m over 2,615 km2, fed by ~26 m3/s: the drawn level holds, so no edit.
 - **The Hyperjungle's lake** (`OUTLETS`, `SETTLE`, `SHALLOWS`; the owner: smaller, off the Empire of Iziz's core). The
   model draws it at -1,160 m over 8,053 km2 with no shore on its west, straight over the salt lake's depression on the
   Iziz plain (down to -2,435 m, under the Ring Sea's level). Its water settles with the depression's as one lake; at their
