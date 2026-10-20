@@ -728,10 +728,11 @@ function KCharFigure(body, sliders, load){
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
      The capsules (legCaps: thighs, shins, feet, and hard ones for the arms, so a raised arm lifts a mantle's hem) are
      the body's, in the figure's inner space, padded by the cloth's
-     thickness, and a torso garment by 1.2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and 2 cm more again over
-     trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a soft
-     shell, not a projection: a vertex d from the bone within r + 4 cm lands at r + d * 4 cm / (r + 4 cm), so two
-     tiers of one skirt keep their order instead of meeting on one surface */
+     thickness, and a torso garment by 2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and 3.5 cm more again over
+     trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a thin band,
+     not a projection: a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d * 3 cm / (r + 1.5 cm), so
+     two tiers of one skirt keep their order instead of meeting on one surface, and cloth that already lies right
+     barely moves */
   // NCAP capsules: the ten of LEGS, four more for a giant's lower arms (left at radius 0, so skipped, on other bodies)
   // and the two of the seat (14, 15: skeleton.json colliders with rest ends, soft like the legs')
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
@@ -746,7 +747,8 @@ function KCharFigure(body, sliders, load){
      capsules (kcS: the first six, thighs, shins and feet), so wide ones stay under the robe. The radius is the tapered
      one (ra to rb): at one radius per capsule (a median of the leg's surface) the trousers sank into the calves and,
      the skin under them hidden, the court's legs read thin; a looser squeeze (2.5 cm) put them out through the robes'
-     knees instead */
+     knees instead. Each vertex is drawn to its nearest capsule only: drawn to all six, a shin's was pulled into a ball
+     round the knee (the thigh's end) and the inside of each leg toward the other, and the court's legs came out thin */
   function pushOut(mat, pad, loose, legs, feet){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
@@ -755,22 +757,30 @@ function KCharFigure(body, sliders, load){
       sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : feet ? pushU.kcSF : noTuck;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
-      // radius runs from kcA.w at a to kcR at b (a limb tapers: make_mpfb.py colliders ra, rb)
+      // radius runs from kcA.w at a to kcR at b (a limb tapers: make_mpfb.py colliders ra, rb). A thigh pushes nothing
+      // in its top third: its capsule runs down the femur, toward the outside of the thigh, and at the radius that
+      // covers the flesh within (12 cm) it took in the buttock and the crotch and pushed a loincloth's back flap and a
+      // kilt's seat out into wings; cloth comes through at the knees, and the seat covers the buttocks. The soft push
+      // is a thin band (1.5 cm either side of the capsule's surface: d in [0, r + 1.5 cm] lands in [r - 1.5, r + 1.5]),
+      // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
+      // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
       sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
         '#include <skinning_vertex>\n\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
-        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.04;\n' +
-        '\t\tfloat ct = clamp(dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), 0.0, 1.0);\n' +
+        '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
+        '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8);\n\t\tif(ci < 2 && ct < 0.3) continue;\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
         '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
         '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
-        '\t\t\ttransformed = cq + normalize(cd) * (cr + cl * csh / cR);\n\t\t}\n\t}\n' +
-        '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
+        '\t\t\ttransformed = cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR);\n\t\t}\n\t}\n' +
+        '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0;\n' +
+        '\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
         '\t\t\tvec3 sa = kcA[ci].xyz, sab = kcB[ci].xyz - sa; float st = clamp(dot(transformed - sa, sab) / max(dot(sab, sab), 1e-8), 0.0, 1.0);\n' +
         '\t\t\tfloat sr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, st) + kcS;\n' +
-        '\t\t\tvec3 sq = sa + sab * st, sd = transformed - sq;\n' +
-        '\t\t\tfloat sl = length(sd);\n\t\t\tif(sl > sr && sl < sr + 0.15) transformed = sq + sd * (sr / sl);\n\t\t}\n\t}\n' +
+        '\t\t\tvec3 sq = sa + sab * st; float sl = length(transformed - sq);\n' +
+        '\t\t\tif(sl - sr < sb){ sb = sl - sr; sbq = sq; sbr = sr; }\n\t\t}\n' +
+        '\t\tvec3 sd = transformed - sbq; float sl = length(sd);\n\t\tif(sb > 0.0 && sb < 0.15) transformed = sbq + sd * (sbr / sl);\n\t}\n' +
         '\tif(kcT > 0.0){\n\t\tfloat tf = smoothstep(kcH.y - 0.02, kcH.y + 0.06, transformed.y);\n' +
         '\t\tvec2 td = transformed.xz - kcH.xz; float tl = length(td);\n' +
         '\t\tif(tf > 0.0 && tl > 1e-4) transformed.xz = kcH.xz + td * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');

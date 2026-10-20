@@ -363,8 +363,11 @@ at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): a
 of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
 sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard
 capsules in the same pass (only what is inside them moves), so a raised arm lifts a mantle's or a cape's hem. The push is a soft
-shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
-keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
+band, not a projection (a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d x 3 cm / (r + 1.5 cm)), so
+two tiers keep their order and cloth that already lies right barely moves (a 4 cm shell outside r moved everything
+within 4 cm of a capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at
+rest); a thigh pushes nothing in its top third (its capsule runs down the femur, toward the outside of the thigh, and
+at the radius that covers the flesh within it took in the buttock and the crotch: the seat covers those); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
 torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
 lies over the skirt under it, and 3.5 cm wider again over
 trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,
@@ -373,7 +376,9 @@ and still do with cloth off (no swing then: each frame starts from the rigid res
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
 to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
 `long`: a robe, the kimono) trousers below the hips are drawn in to within 8 mm of the legs' capsules (their
-tapered radii), so wide ones (harem pants) stay under it (`kcS`): at one radius per capsule they sank into the calves
+tapered radii; each vertex to its nearest capsule only: drawn to all six, a shin's was pulled into a ball round the
+knee and the inside of each leg toward the other, and the court's legs came out thin), so wide ones (harem pants)
+stay under it (`kcS`): at one radius per capsule they sank into the calves
 and the court's legs read thin, and drawn in less (2.5 cm) they came out through the robes' knees. Boots under such a
 top are drawn in to within 1.4 cm (`kcSF`; Godot sets `kcS` on the feet part), whatever the legs wear: the hero boots'
 cuffs came through the kimono's hem at the shins. Breeches and braccae have legs, so like trousers they are not
@@ -381,7 +386,9 @@ cuffs came through the kimono's hem at the shins. Breeches and braccae have legs
 breeches and the giants' braccae were pushed off the thighs and swung as one sheet.
 **Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
 Head joint's weight alone (MakeHuman weights a garment from the skin nearest it, so a broad brim, a wing or an ear
-flap took the shoulders' and arms' weights and bent as they moved); a hood's cowl, below, keeps following the neck.
+flap took the shoulders' and arms' weights and bent as they moved), and so does every piece of it that reaches no
+lower than the neck joint (the chieftess's wing tips and the bead strands under them hung below the cut and trailed
+out to the shoulders as long streamers); a hood's cowl and a headband's tails, lower, keep following the neck.
 **The feet roll on their balls**: `toesFlat` (`_toes_flat`) turns each toe joint up after the clip until a point 6
 cm ahead of it (scaled with the figure) is no lower than the ground, so a clip that stands on the ball of a foot does
 not push the toes, and a sandal's sole with them, down into it.

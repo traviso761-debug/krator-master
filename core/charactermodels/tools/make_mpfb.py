@@ -366,8 +366,11 @@ def head_weights(j, b, y0):
     """headgear moves with the head: every vertex above height y0 (glTF y, a little above the neck joint) takes its
     weight from the Head joint alone. MakeHuman weights a garment from the skin nearest it, so a wide brim, a wing or
     a flap that reaches down beside the neck took the shoulders' and arms' weights and bent as they moved (the Yuni
-    hat's brim, the Beast Rider chieftess's wings: a third of their weight on the arms). A hood's cowl, below y0, keeps
-    following the neck and shoulders"""
+    hat's brim, the Beast Rider chieftess's wings: a third of their weight on the arms). A piece of it that reaches no
+    lower than the neck joint (y0 - 6 cm) goes to the Head whole, though part of it is under y0: the chieftess's
+    wing tips and the bead strands hanging from them came down to 5 cm under it and trailed out to the shoulders as
+    long streamers. A hood's cowl (8 cm under) and a headband's tails (18 cm, on chains) keep following the neck and
+    shoulders"""
     for node in j['nodes']:
         if 'mesh' not in node or 'skin' not in node:
             continue
@@ -385,6 +388,22 @@ def head_weights(j, b, y0):
             if aw.get('normalized'):                    # the accessor gave them as fractions: back to the stored integers
                 WW = np.round(WW * np.iinfo(dw).max).astype(dw)
             up = P[:, 1] > y0
+            if 'indices' in prim:                       # pieces: the vertices welded by position, joined by faces
+                I = glbio.accessor(j, bytes(b), prim['indices']).reshape(-1, 3)
+                _, wid = np.unique(np.round(P, 4), axis=0, return_inverse=True)
+                wid = wid.ravel(); n = int(wid.max()) + 1
+                lab = np.arange(n)
+                def root(x):
+                    while lab[x] != x:
+                        lab[x] = lab[lab[x]]; x = lab[x]
+                    return x
+                for a_, b_ in np.r_[wid[I[:, [0, 1]]], wid[I[:, [1, 2]]]]:
+                    ra, rb = root(a_), root(b_)
+                    if ra != rb:
+                        lab[ra] = rb
+                comp = np.array([root(x) for x in range(n)])[wid]
+                low = np.full(n, np.inf); np.minimum.at(low, comp, P[:, 1])
+                up |= low[comp] > y0 - 0.06
             if not up.any():
                 continue
             one = np.iinfo(WW.dtype).max if np.issubdtype(WW.dtype, np.integer) else 1.0

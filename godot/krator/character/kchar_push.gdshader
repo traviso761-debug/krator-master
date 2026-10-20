@@ -2,9 +2,10 @@
 // garment's own look (albedo texture and colour, alpha cutoff, normal map, roughness, metallic, from the imported
 // material: kchar_figure.gd _garment) plus two moves after skinning.
 // - kcL 1 (kit item 'loose'): every vertex pushed out of the thighs, shins and feet, so no knee comes through between
-//   two cloth chains. A soft shell: d from the bone within r + 0.04 lands at r + d * 0.04 / (r + 0.04), so two tiers
-//   of one skirt keep their order; inside a leg a vertex leaves on the side away from the body's axis (kcH), never
-//   behind the knee. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
+//   two cloth chains. A thin band: d from the bone within r + 0.015 lands at r - 0.015 + d * 0.03 / (r + 0.015), so
+//   two tiers of one skirt keep their order and cloth that lies right barely moves (a 4 cm shell outside r crumpled
+//   flaps and a robe's back at rest); a thigh's top third pushes nothing; inside a leg a vertex leaves on the side
+//   away from the body's axis (kcH), never behind the knee. kcS draws each vertex to its nearest capsule only. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
 //   mantle's hem (and a giant's lower arms, 10-13; the seat, 14-15). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
 //   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
@@ -39,8 +40,12 @@ void vertex() {
 			}
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
-			float sh = kcB[i].w > 0.5 ? 0.0 : 0.04;
-			float t = clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+			float sh = kcB[i].w > 0.5 ? 0.0 : 0.015;
+			float t = dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8);
+			if (i < 2 && t < 0.3) {
+				continue;                // a thigh's top third: its capsule took in the buttock and the crotch
+			}
+			t = clamp(t, 0.0, 1.0);
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + (sh > 0.0 ? kcP : 0.0);
 			float R = r + sh;
 			vec3 q = a + ab * t;
@@ -56,11 +61,15 @@ void vertex() {
 						d -= 2.0 * s * o;
 					}
 				}
-				VERTEX = q + normalize(d) * (r + l * sh / R);
+				VERTEX = q + normalize(d) * (r - sh + l * 2.0 * sh / R);   // a thin band: [0, r + sh] into [r - sh, r + sh]
 			}
 		}
 	}
 	if (kcS > 0.0 && VERTEX.y < kcH.y) {
+		// to the nearest capsule only (to all six, a shin was pulled into a ball round the knee)
+		float best = 1e9;
+		vec3 bq = vec3(0.0);
+		float br = 0.0;
 		for (int i = 0; i < 6; i++) {
 			if (kcA[i].w <= 0.0) {
 				continue;
@@ -70,11 +79,16 @@ void vertex() {
 			float st = clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) + kcS;
 			vec3 q = a + ab * st;
-			vec3 d = VERTEX - q;
-			float l = length(d);
-			if (l > r && l < r + 0.15) {
-				VERTEX = q + d * (r / l);
+			float l = length(VERTEX - q);
+			if (l - r < best) {
+				best = l - r;
+				bq = q;
+				br = r;
 			}
+		}
+		if (best > 0.0 && best < 0.15) {
+			vec3 d = VERTEX - bq;
+			VERTEX = bq + d * (br / length(d));
 		}
 	}
 	if (kcT > 0.0) {

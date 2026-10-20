@@ -72,6 +72,20 @@ area you are about to change.
 - **Garment holes leave loose vertices** → delete loose vertices after cutting and record what was removed.
 - **More than 64 items overflowed a 64-bit hide mask** → name skin regions by the list of items that cover them.
 - **A random NPC wearing another culture's clothes** → tag every item with its culture and filter the wardrobe.
+- **Fitted cloth crumpling at rest under the GPU push** (a loincloth's flaps winged out, a kilt's seat torn down the
+  middle, a robe's back jagged) → before tuning, switch the push off and shoot: if rest is clean, the push is wrong,
+  not the mesh. Two causes: a soft shell *outside* the capsule (everything within 4 cm moved out up to 3 cm) → a thin
+  band either side of the surface (monotonic, so tiers keep order); and a thigh capsule on the femur, which sits toward
+  the outside of the thigh, so a radius covering the flesh within swallows the buttock and crotch → no push in the
+  thigh's top third (knees are what come through).
+- **Legs thin under a long robe** → a "draw in toward the capsules" pass that loops over every capsule pulls each
+  vertex toward all of them (a shin's into a ball at the knee, the inside of one leg toward the other) → draw to the
+  nearest capsule only.
+- **Breeches swinging as a sheet** → a name test for legged garments ("trousers") missed breeches and braccae; they
+  were marked loose and their weights pooled below the crotch like a skirt's.
+- **Boot cuffs through a long robe's hem** → squeeze the feet too under a loose long top, whatever the legs wear.
+- **Long thin streamers from a hat** → part of a head item hung below the "above the neck → Head joint" cut and took
+  the shoulders' weights; give whole pieces (welded by position) that end above the neck joint to the Head.
 
 ## 4. Materials, alpha and textures
 
