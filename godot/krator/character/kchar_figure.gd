@@ -844,6 +844,13 @@ func _bow_string() -> void:
 # stiffness, under Krator's gravity and the dense air's drag (and the wind of a loop's root_speed), kept to its
 # length, near its neighbours, out of the body's capsules and above the floor; each bone turns to the next particle
 var cloth := true
+# the spike (REPORT.md): Godot's SpringBoneSimulator3D drives the chains instead of the Verlet below. Set before
+# apply(): each chain gets a tip bone, and one simulator (a setting per chain, the capsules as collision children)
+# is rebuilt on every apply. Off by default: the Verlet path is the twin of the page's
+var spring_sim := false
+var spring_opts := {}                    # the spike's switches: collide (bool), stiff_k, gravity, drag, radius
+var _sim: SpringBoneSimulator3D = null
+var _sim_caps := []                      # per collider: {cp, cap, sa, sb} (the capsule and its end spheres)
 const C_GRAV := 7.4
 const C_DRAG := 1.6
 const C_DAMP := 0.04
@@ -888,8 +895,15 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 			skeleton.set_bone_parent(b, skeleton.find_bone(ch["parent"]) if k == 0 else list[k - 1])
 			c["by_name"][nm] = b
 			list.append(b)
-		c["chains"].append({"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bones": list, "p": [], "len": [],
-			"x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1})
+		var rec := {"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bones": list, "p": [], "len": [],
+			"x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1}
+		if spring_sim:
+			# the simulator's joints are bone origins, so the chain's last point needs a bone of its own (bound to nothing)
+			var tb := skeleton.get_bone_count()
+			skeleton.add_bone("cloth_%s_%d_tip" % [it["id"], g])
+			skeleton.set_bone_parent(tb, list[list.size() - 1])
+			rec["tip"] = tb
+		c["chains"].append(rec)
 	# a layer within its slot's: a legs item's chains under a torso item's, under a head item's (as clothOf in 50-figure.js)
 	var rank: int = 3 * int(SLOT_RANK.get(it.get("slot", ""), 0))
 	for pt in c["parts"]:
@@ -940,7 +954,9 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 			ch["len"] = []
 			for k in range(1, P.size()):
 				ch["len"].append((P[k] - P[k - 1]).length())
-			var bones: Array = ch["bones"]
+			var bones: Array = ch["bones"].duplicate()
+			if ch.has("tip"):
+				bones.append(ch["tip"])
 			for k in bones.size():
 				var t: Transform3D
 				if k == 0:
@@ -966,6 +982,128 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 				for k in range(1, mini(A["p"].size(), Bc["p"].size())):
 					c["ring"].append([A, Bc, k, (A["p"][k] - Bc["p"][k]).length()])
 		c["reset"] = true
+	if spring_sim:
+		_sim_build()
+
+
+# ---- the spike: Godot's SpringBoneSimulator3D on the chains (REPORT.md) ----
+# One simulator under the skeleton, a setting per chain (root: the chain's first bone, end: its tip bone), the
+# Verlet's numbers mapped onto Godot's model, which pulls each joint a fixed distance a second along its rest
+# direction, damps its velocity by a fraction a frame (drag) and adds gravity as a displacement a second (not an
+# acceleration). The Verlet's lerp to the rigid rest is spring and damper at once, so the two are matched on their
+# linearised dynamics, a point displaced u from rest, over one SIM_FPS frame (two Verlet steps of C_STEP):
+#   Verlet, a step:  u' = (1 - s)(2 - D) u - (1 - s)(1 - D) u_prev      s = stiff, D = C_DAMP + C_DRAG h
+#   Godot, a frame:  u' = (2 - drag - k) u - (1 - drag) u_prev           k = stiffness dt / L
+# so drag = 1 - b1^2 and k = 2 - drag - 2 b1 cos(2 t1), with b1 = (1 - s)(1 - D) and cos t1 = (1 - s)(2 - D) / (2 sqrt b1):
+# the same decay and period a frame. Gravity gives the same sag at rest (g h^2 / s = gravity dt / k), and the root
+# speed's wind is external_force. The drag is a fraction a frame, so this holds at SIM_FPS only: Godot's model is
+# frame-rate dependent.
+# The colliders are its children: a capsule per collider (radius r, as the Verlet's), placed on the capsule's
+# joint a and moved each frame to the live ends (_cap_ends: the seat's ride the hips, the trunk's span a bent
+# spine); a plane at the ground. spring_opts.ends adds a sphere at each end with the push shader's end radii (ra,
+# rb): the chest's and hips' are so much wider than r that they throw a mantle off the back (REPORT.md)
+const SIM_FPS := 30.0
+func _sim_build() -> void:
+	if _sim != null:
+		_sim.queue_free()
+		_sim = null
+	_sim_caps = []
+	var chains := []
+	for key in _cloth:
+		if _cloth[key]["on"]:
+			for ch in _cloth[key]["chains"]:
+				if ch.has("tip"):
+					chains.append(ch)
+	if chains.is_empty():
+		return
+	skeleton.modifier_callback_mode_process = Skeleton3D.MODIFIER_CALLBACK_MODE_PROCESS_MANUAL
+	_sim = SpringBoneSimulator3D.new()
+	_sim.name = "KClothSim"
+	skeleton.add_child(_sim)
+	# no joint radius: with the Verlet's pad (C_PAD) too many rest points lie inside the trunk and thigh capsules, and
+	# this solver (push out, then clamp to length) walks a mantle off the back and bells a skirt from them (REPORT.md)
+	var jr: float = float(spring_opts.get("radius", 0.0)) / size
+	var stiff_k: float = float(spring_opts.get("stiff_k", 1.0))
+	for cp in (_caps if spring_opts.get("collide", true) else []):
+		if spring_opts.get("noarms", false) and skeleton.get_bone_name(cp["a"]).contains("Arm"):
+			continue
+		var cap := SpringBoneCollisionCapsule3D.new()
+		cap.bone_name = skeleton.get_bone_name(cp["a"])
+		cap.radius = float(cp["r"])
+		_sim.add_child(cap)
+		var ends := []
+		for e in [["sa", "ra"], ["sb", "rb"]]:
+			var s: SpringBoneCollisionSphere3D = null
+			if spring_opts.get("ends", false) and absf(float(cp[e[1]]) - float(cp["r"])) > 1e-4:
+				s = SpringBoneCollisionSphere3D.new()
+				s.bone_name = cap.bone_name
+				s.radius = float(cp[e[1]])
+				_sim.add_child(s)
+			ends.append(s)
+		_sim_caps.append({"cp": cp, "cap": cap, "sa": ends[0], "sb": ends[1]})
+	if spring_opts.get("collide", true):
+		var floor := SpringBoneCollisionPlane3D.new()
+		floor.position = Vector3(0, 0.008 - skeleton.position.y - jr, 0)   # the joints' radius above it: the Verlet's height
+		_sim.add_child(floor)
+	_sim.set_setting_count(chains.size())
+	for i in chains.size():
+		var ch: Dictionary = chains[i]
+		_sim.set_root_bone(i, ch["bones"][0])
+		_sim.set_end_bone(i, ch["tip"])
+		_sim.set_extend_end_bone(i, false)
+		# one value a chain (its joints are listed on a deferred update, so per-joint values cannot be set here)
+		_sim.set_individual_config(i, false)
+		var s := float(ch["stiff"])
+		var D := C_DAMP + C_DRAG * C_STEP
+		var b1 := (1.0 - s) * (1.0 - D)
+		var t1 := acos(clampf((1.0 - s) * (2.0 - D) / (2.0 * sqrt(b1)), -1.0, 1.0))
+		var drag := 1.0 - b1 * b1
+		var k := 2.0 - drag - 2.0 * b1 * cos(2.0 * t1)
+		var mean := 0.0
+		for L in ch["len"]:
+			mean += float(L) / ch["len"].size()
+		_sim.set_radius(i, jr)
+		_sim.set_drag(i, float(spring_opts.get("drag", drag)))
+		_sim.set_gravity(i, float(spring_opts.get("gravity", C_GRAV * C_STEP * C_STEP * SIM_FPS * k / s)) / size)
+		_sim.set_gravity_direction(i, Vector3.DOWN)
+		_sim.set_stiffness(i, k * mean * SIM_FPS * stiff_k)
+		if _sim.get_root_bone(i) < 0 or _sim.get_end_bone(i) < 0:
+			push_warning("KCharFigure: the simulator cannot see the chain's bones (is the figure in the tree? skeleton %s, root %d/%s end %d/%s)" % [_sim.get_skeleton(), _sim.get_root_bone(i), _sim.get_root_bone_name(i), _sim.get_end_bone(i), _sim.get_end_bone_name(i)])
+	_sim.reset()
+
+
+func _sim_step(dt: float, wind: Vector3) -> void:
+	if _sim == null:
+		return
+	if dt < 0.0 or not cloth:                # a still pose, or cloth off: the chains hang rigid
+		for key in _cloth:
+			for ch in _cloth[key]["chains"]:
+				for k in ch["bones"].size():
+					skeleton.set_bone_pose_rotation(ch["bones"][k], ch["q0"] if k == 0 else Quaternion())
+		if _sim.active:                      # (setting it resets the simulation: only on a change)
+			_sim.active = false
+		if dt < 0.0:
+			_sim.reset()
+		return
+	if not _sim.active:
+		_sim.active = true
+	for e in _sim_caps:
+		var cp: Dictionary = e["cp"]
+		var ends := _cap_ends(cp)
+		var inv: Transform3D = _gp(cp["a"]).affine_inverse()
+		var la: Vector3 = inv * (ends[0] as Vector3)
+		var lb: Vector3 = inv * (ends[1] as Vector3)
+		var cap: SpringBoneCollisionCapsule3D = e["cap"]
+		var d := lb - la
+		cap.position_offset = (la + lb) * 0.5
+		cap.rotation_offset = Quaternion(Vector3.UP, d.normalized()) if d.length() > 1e-6 else Quaternion()
+		cap.height = d.length() + 2.0 * cap.radius
+		if e["sa"] != null:
+			e["sa"].position_offset = la
+		if e["sb"] != null:
+			e["sb"].position_offset = lb
+	_sim.external_force = wind * C_DRAG * C_STEP
+	skeleton.advance(dt)
 
 
 func _rigid(ch: Dictionary) -> Transform3D:
@@ -983,6 +1121,13 @@ func _cloth_step(dt: float) -> void:
 		if _cloth[key]["on"] and _cloth[key]["chains"].size():
 			items.append(_cloth[key])
 	if items.is_empty():
+		return
+	if spring_sim:
+		var w0 := Vector3.ZERO
+		for cm in skel.get("clips", []):
+			if cm["name"] == _clip and cm.get("loop", true) and cm.has("root_speed"):
+				w0 = -KChar._v(cm["root_speed"])
+		_sim_step(dt, w0)
 		return
 	if dt < 0.0:                         # a still pose: the chains hang rigid
 		for c in items:

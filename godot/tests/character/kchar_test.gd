@@ -238,7 +238,9 @@ func _init() -> void:
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
-	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
+	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json") and not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_giant"):
+		print("kchar_test: no giant pieces: the giant checks skipped")
+	elif FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
 		var g := KCharFigure.new()
 		g.load_body(DIR, "mpfb_giant")
 		root.add_child(g)
