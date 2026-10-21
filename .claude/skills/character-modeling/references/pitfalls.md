@@ -319,6 +319,18 @@ area you are about to change.
   skull (with the hair), a taper down to the neck joint and the trunk's capsules, each widened by half the blade's width.
 - **Two-handed parry's wrists crossed** because the left hand was put below the right on a sword whose clip holds the
   left above (toward the blade) → per clip `lead_left`: the prop slides up through the right hand, the left holds above.
+- **One arrow for every body leaves its head behind the bow on long arms**: a full draw is about 1.5 times the arm
+  (shoulder to wrist) on every body, so size the arrow to the arm (1.65 arms) and cap the draw a few centimetres short.
+- **A two-hand grip that re-chooses its thumb side every frame flips** half a turn round the handle when the clip's hand
+  passes square to it (Two-handed parry, 0.47 to 0.83 s on the man only): choose it at the hold's first frame, keep it
+  for the clip. Test a hand's turn per frame, not only whether it reaches.
+- **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
+  down or back; put the wrist in front of the belly with the two-bone solve first. A cup held by the left grip frame
+  can come out upside down: keep its mouth up with the wrist, except while it is at the lips.
+- **Capsule keep-outs miss loose clothes**: the bow's limb cleared the leg capsules but went 5 cm into cargo trousers.
+  Measure against the drawn mesh once (skin it with `boneTransform`), then widen the capsules by what it shows.
+- **Bound a clip test to the clip**: a one-shot that ends goes back to the last loop, which may lack the clip's data
+  (spans), so a check that runs past the end fails on the other clip.
 - **Check the twin by numbers**: the Godot figure can run with no clothes from a scratch folder (skeleton/kit json, the
   data json, `anims.glb` and the props decoded from the published `.txt` pieces) and print the same measures as a page
   probe (grips and head relative to the hips, the pass weights) at the same clip times; they agreed to the millimetre.

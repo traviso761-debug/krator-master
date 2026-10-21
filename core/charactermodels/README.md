@@ -166,7 +166,12 @@ of the clip; the Animation Lab's Holding picker swaps the right hand's prop amon
 held by its centre grip with the board out past the back of the hand (made the other way, every clip faced its boss
 into the body); in a lower hand a prop with `low_turn` turns about its handle so the shield stands up, board out.
 A prop with `hang` (its axis that points down) turns about the grip so that axis points down whatever the hand's turn:
-the bucket and the lantern hang plumb from their bails (they followed the forearm), the bowl stands level on the palm.
+the bucket and the lantern hang plumb from their bails (they followed the forearm). A prop with `upright` (its axis
+that should point up) turns the wrist to keep it up, as far as the hand is not at the face (`standUp`, `_stand_up`): the
+cup stands upright in the hand and tips only to drink (the left hand held it upside down); the bowl, held in an open
+hand (`grip: 'flat'`: the clip's own fingers), turns the palm up under it. A prop with `carry` (the bowl) is first held
+in front of the belly: the wrist goes to that point (metres from the lower spine joint: out to the hand's side, up,
+forward) by the arm's two-bone solve (Eat swung the arm back and down, through the bowl).
 A weapon's `blade` (its striking part along the handle) keeps out of the head, the neck and the trunk (`bladeClear`,
 `_blade_clear`): the wrist turns until the blade passes the skull's sphere (with the hair), a taper down to the neck
 joint and the trunk's capsules, each widened by half a blade's width; the turn carries over from frame to frame and
@@ -194,22 +199,29 @@ hand (within the arm's reach, a hand's width from the right hand), turned round 
 from the shoulder, and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
 arm there. When the left arm cannot reach, the right brings the prop toward the left shoulder by the shortfall (up to
 45 cm) and both reach; if the hands are still too far apart the arms ease back to the clip's own pose
-(`fig.reach` says how far short the hand fell). The pistol's support is one point, so in Pistol stance and Pistol
+(`fig.reach` says how far short the hand fell). The hand's thumb side along the handle is the clip's at the hold's
+first frame and kept while the clip plays (chosen every frame, the left hand flipped half a turn round the hilt in
+Two-handed parry as the clip's hand passed square to it). The pistol's support is one point, so in Pistol stance and Pistol
 aim the left hand cups the right hand's fingers. A clip with `lead_left` (Two-handed parry: its left hand is above the
 right, toward the blade) takes a prop with a one-point support the other way round: the prop slides half the support's
 offset up through the right hand and the left holds above it, so the forearms do not cross (they went through each
 other).
 *The bow* has no modelled string: the figure draws it between the limb tips (`string`), through the right hand while
 that hand is behind the bow, turns the bow about its handle to face the drawing hand, and lays the arrow from the
-string hand to the bow hand (`fig.drawn`). When the arrow is on the string comes from the clip: `nock` in
+string hand to the bow hand (`fig.drawn`). The arrow is `arrow_arm` (1.65) times the bow arm's length, shoulder to
+wrist, on each body: a full draw is about 1.5 arms, so a 78 cm arrow ended behind the bow on the tall bodies and stood
+far out on the short ones; and while it is nocked the string hand draws at most 5 cm short of it (the right arm reaches
+in). When the arrow is on the string comes from the clip: `nock` in
 `data/clips.json`, spans of clip seconds from nocking to the loose, so every body looses together (the hand leaving a
 zone round the bow loosed the long-armed bodies early) and a hand passing behind the bow later draws nothing (the arrow
 came back at 7.69 s in Draw from quiver). A bow clip without spans guesses from the hand's place (behind the bow and
 near its middle; the arrow once the string is pulled 20 cm). The bow is canted about the arrow's line (so the string
 stays in the hand): at full draw (`faceW`) toward upright but for 15 degrees of the clip's lean (Draw from quiver held it
-40 degrees over, a limb at the hip), and then by the least of 10-degree steps that keeps its limbs out of the legs'
-capsules (Bow aim and scan put the lower limb through the left leg); `fig.bowState()` (`bow_state()`) gives the turn,
-the cant, how deep the limbs still are in the legs, and whether the arrow shows.
+40 degrees over, a limb at the hip), and then by the least of 10-degree steps that keeps its limbs (sampled every 12 cm) out of
+the legs' capsules widened by 4.5 cm for the trousers and the limb (Bow aim and scan put the lower limb through the left
+leg; the bare capsules let it through the cargo trousers by up to 5 cm); `fig.bowState()` (`bow_state()`) gives the
+turn, the cant, how deep the limbs still are in the legs, whether the arrow shows and how far its head is in front of
+the bow (`ahead`).
 
 **Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,
 made here as MakeHuman clothes (so MPFB fits, weights and morphs them like the library's): peasants in undyed maguey

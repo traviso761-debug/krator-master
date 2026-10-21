@@ -23,7 +23,9 @@ neutral one and its tall one taller; a clip plays on all six in step; a review m
 props (the owner's review, 2026-10-20): the bucket hangs plumb in Carry bucket; Draw from quiver has the arrow on the
 string and the string hand at the jaw at 5 s, and no arrow after the loose (6.2 s, 7.69 s); the bow's limbs stay out of
 the legs in Bow aim and scan; Block 2's blade stays out of the head and neck; Two-handed parry's forearms stay apart;
-Drink brings the cup to the lips in the left hand.
+Drink brings the cup to the lips in the left hand; and the second round (2026-10-21): the arrow's head stays in front
+of the bow in every bow clip on every body; Two-handed parry's left hand does not flip round the hilt; Drink's cup stands
+upright before it is drunk from; Eat's bowl stands level in front of the belly.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
@@ -244,6 +246,19 @@ LAB_CHECKS = r'''async () => {
   if (fore < 0.06) out.push('props: the forearms come ' + (fore * 100).toFixed(1) + ' cm apart in Two-handed parry');
   await L.play('drink'); at('drink', 4);
   six.forEach((x, i) => { if (x.held.L !== 'cup' || x.faceW < 0.99) out.push('props: Drink, figure ' + i + ': the cup not at the lips in the left hand'); });
+  // the second round: the arrow's head in front of the bow; no flip in the parry's left grip; the cup and bowl upright
+  for (const c of ['bow_draw', 'bow_walk', 'bow_scan', 'bow_shot']) {
+    let ahead = 9; await run(c, x => { const b = x.bowState(); if (b.arrow && b.ahead != null) ahead = Math.min(ahead, b.ahead); });
+    if (ahead < 0.03) out.push('props: in ' + c + ' the head of the arrow comes ' + (ahead * 100).toFixed(1) + ' cm from the bow');
+  }
+  let spin = 0, prevQ = null; await run('parry_2h', x => { const q = bone(x, 'LeftHand').getWorldQuaternion(Q()); if (prevQ && x.action.time > 0.05) spin = Math.max(spin, prevQ.angleTo(q)); prevQ = q; });
+  if (spin > 0.8) out.push('props: in Two-handed parry the left hand turns ' + (spin * 57.3).toFixed(0) + ' degrees in a frame');
+  const upOf = (x, side, ax) => V().fromArray(ax).applyQuaternion(bone(x, side === 'R' ? 'RightHand' : 'LeftHand').children.find(c => !c.isBone).getWorldQuaternion(Q())).y;
+  await L.play('drink'); at('drink', 1);
+  six.forEach((x, i) => { if (upOf(x, 'L', [0, 1, 0]) < 0.95) out.push('props: Drink at 1 s, figure ' + i + ': the cup is not upright'); });
+  await L.play('ual_consume'); at('ual_consume', 0.7);
+  six.forEach((x, i) => { const w = bone(x, 'RightHand').getWorldPosition(V()), sp = bone(x, 'Spine').getWorldPosition(V());
+    if (upOf(x, 'R', [1, 0, 0]) < 0.95 || w.z - sp.z < 0.12) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl not level on the palm in front of the belly'); });
   return out;
 }'''
 

@@ -238,6 +238,41 @@ func _init() -> void:
 				for j in 11:
 					fore = minf(fore, la.lerp(lb, i / 10.0).distance_to(ra.lerp(rb, j / 10.0)))
 		ok(fore > 0.06, "parry_2h: the forearms stay apart (%.3f m)" % fore)
+		# the second round (2026-10-21): the parry's left hand never flips round the hilt; the arrow's head stays in
+		# front of the bow; the cup stands upright; the bowl stands level on the palm in front of the belly
+		fig.play("parry_2h")
+		var spin := 0.0
+		var prev_q := Quaternion()
+		for k in int(fig.player.current_animation_length * 30.0) - 1:
+			fig._process(1.0 / 30.0)
+			var q: Quaternion = fig._gp(fig.skeleton.find_bone("LeftHand")).basis.get_rotation_quaternion()
+			if k > 1:
+				spin = maxf(spin, prev_q.angle_to(q))
+			prev_q = q
+		ok(spin < 0.8, "parry_2h: the left hand does not flip round the hilt (%.2f rad in a frame)" % spin)
+		fig.hold({"R": null, "L": "bow"})
+		for clip in ["bow_draw", "bow_shot", "bow_walk", "bow_scan"]:
+			fig.play(clip)
+			var ahead := 9.0
+			for k in int(fig.player.current_animation_length * 30.0) - 1:     # the clip alone, not the loop after a one-shot
+				fig._process(1.0 / 30.0)
+				var bs: Dictionary = fig.bow_state()
+				if bs["arrow"] and bs["ahead"] != null:
+					ahead = minf(ahead, bs["ahead"])
+			ok(ahead > 0.03, "%s: the arrow's head stays in front of the bow (%.3f m)" % [clip, ahead])
+		fig.hold({"R": null, "L": "cup"})
+		fig.play("drink")
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		var cq: Quaternion = (fig._gp(int(fig.skel["hands"]["L"]["bone"])) * fig._grip_t("L")).basis.get_rotation_quaternion()
+		ok((cq * Vector3.UP).y > 0.95, "drink at 1 s: the cup stands upright")
+		fig.hold({"R": "bowl", "L": "bread"})
+		fig.play("ual_consume")
+		for k in 21:
+			fig._process(1.0 / 30.0)
+		var bq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+		var wz: float = fig._gp(fig.skeleton.find_bone("RightHand")).origin.z - fig._gp(fig.skeleton.find_bone("Spine")).origin.z
+		ok((bq * Vector3.RIGHT).y > 0.95 and wz > 0.12, "ual_consume: the bowl level on the palm in front of the belly")
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
 		var rec2 := rec.duplicate(true)

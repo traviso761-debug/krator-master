@@ -9,6 +9,7 @@
 #           sheet, labelled; left out, the whole row in one shot
 #   yaw, pitch in radians (yaw 0 the front); dist (metres, a giant's scaled) and ty (the look-at height as a share of
 #           the figure's height) frame each body; the lab's framing when left out
+#   at      a joint's name to look at (the hands in a close-up) instead of the figure's middle
 #   wide    the share of the stage's width kept per body (0.5 by default)
 #   pre     JavaScript run before stepping, with L the lab (window._lab)
 # The page's clock is paused and each figure stepped here: its clip set 1 s before t and run to it at 30 Hz (by its own
@@ -20,7 +21,7 @@ import verify
 
 STEP = '''async (s)=>{ var L = window._lab, c = L.cam;
   var w = document.querySelector('[data-who="' + (s.who || 'all') + '"]'); if(w.getAttribute('aria-pressed') !== 'true') w.click();
-  L.figs.forEach(function(f, i){ f.group.visible = (s.who || 'all') === 'g' ? i >= 6 : i < 6; });
+  L.figs.forEach(function(f, i){ f.group.visible = (s.who || 'all') === 'g' ? i >= 6 : i < 6; f.group.position.z = 0; });
   await L.play(s.clip);
   if(s.prop !== undefined){ var p = document.getElementById('hold-pick'); p.value = s.prop; p.dispatchEvent(new Event('change')); await new Promise(function(r){ setTimeout(r, 300); }); }
   if(document.getElementById('play').getAttribute('aria-pressed') === 'true') document.getElementById('play').click();
@@ -43,6 +44,9 @@ FOCUS = '''(a)=>{ var s = a[0], id = a[1], L = window._lab, c = L.cam, tag = doc
   var h = (k.pose.stature || 1.75);
   L.figs.forEach(function(x){ x.group.visible = x === k; });
   c.want.dist = (s.dist || 3.4) * k.scale; c.want.ty = (s.ty == null ? 0.55 : s.ty) * h;
+  // the camera looks at z 0: a close-up moves the figure back so the joint is there
+  if(s.at){ k.group.updateMatrixWorld(true); var bp = k.bones.filter(function(b){ return b.name === s.at; })[0].getWorldPosition(new THREE.Vector3());
+    k.group.position.z -= bp.z; c.want.x = bp.x; c.want.ty = bp.y; }
   ['yaw', 'pitch', 'dist', 'x', 'ty'].forEach(function(n){ c[n] = c.want[n]; }); }'''
 
 
