@@ -42,6 +42,7 @@ var _clip := ""
 var looping := "idle"                    # the clip a play-once clip returns to
 var size := 1.0                          # kit.scale: a giant's whole figure
 var cadence := 1.0                       # how fast clips play: 1 / sqrt(size)
+var body_fix_off := false                # tools: the clip without _body_fix
 var four_arms := false                   # a mod gives it a second pair of arms (KChar.arms)
 
 
@@ -1931,6 +1932,13 @@ func _leg_caps() -> void:
 const BF := 0.008
 const LEGSWING := 0.35
 const UPLOW := 0.7
+const BFRELAX := 0.25                    # the kept turns ease back to the clip's over this much clip time
+const BFSPEED := 2.5                     # a push turns a bone at most this many radians a clip second
+const BFARM := 1.2                       # an arm's kept turn at most (a thigh's LEGSWING)
+var _bf_kept := {}                       # bone name -> Quaternion: the turns kept from the frame before
+var _bf_clip := {}                       # bone name -> the clip's turn this frame, before bodyFix
+var _bf_last := -1.0
+var _bf_step := 1e9
 var _near := {"s": 0.0, "t": 0.0, "d": 0.0, "c1": Vector3.ZERO, "c2": Vector3.ZERO}
 
 
@@ -1973,7 +1981,14 @@ func _push_turn(b: int, p: Vector3, way: Vector3, d: float) -> void:
 	var from := p - _gp(b).origin
 	if from.length() < 1e-4:
 		return
-	_turn(b, Quaternion(from.normalized(), (from + way * d).normalized()))
+	var nm := skeleton.get_bone_name(b)
+	if not _bf_clip.has(nm):
+		_bf_clip[nm] = skeleton.get_bone_pose_rotation(b)
+	var q := Quaternion(from.normalized(), (from + way * d).normalized())
+	var a := 2.0 * acos(minf(1.0, absf(q.w)))
+	if a > _bf_step:                      # at most BFSPEED a clip second; the kept turn carries it on
+		q = q.slerp(Quaternion(), 1.0 - _bf_step / a)
+	_turn(b, q)
 
 
 # a capsule's radius at t along it; a trunk section's (an ellipse, o.ell) the way the limb lies from its axis (the gap
@@ -2006,21 +2021,38 @@ func _cap_of(bone: String) -> Dictionary:
 
 
 # a leg's point (c1 = c2 + gap) swings out to its side along the hips' side axis (always out: the push never jumps
-# from one side to the other between frames) by the least k that makes the gap R long, and by no more than LEGSWING
+# from one side to the other between frames) by the depth over how far out the gap already points (at least 0.35),
+# which falls to nothing as the leg clears; the kept turn is held to LEGSWING
 func _leg_out(o: Dictionary, R: float, side: Vector3) -> void:
 	var way := side * (1.0 if String(o["n"]).begins_with("Left") else -1.0)
 	var gap: Vector3 = _near["c1"] - _near["c2"]
-	var b := gap.dot(way)
-	var c1: Vector3 = _near["c1"]
+	var g := gap.length()
+	var k := (R - g) / maxf(0.35, gap.dot(way) / g if g > 1e-6 else 0.0)
 	var thigh := skeleton.find_bone(String(o["n"]).trim_suffix("UpLeg").trim_suffix("Leg") + "UpLeg")
-	var k := minf(sqrt(maxf(0.0, b * b - gap.length_squared() + R * R)) - b, tan(LEGSWING) * c1.distance_to(_gp(thigh).origin))
 	if k > 0.0:
-		_push_turn(thigh, c1, way, k)
+		_push_turn(thigh, _near["c1"], way, k)
 
 
 func _body_fix() -> void:
-	if _caps.is_empty() or _clip == "":
+	if _caps.is_empty() or _clip == "" or body_fix_off:
+		_bf_kept = {}
+		_bf_last = -1.0
 		return
+	# the turns kept from the frame before, easing back to the clip's as the clip moves on (by its own time)
+	var tc := player.current_animation_position
+	var dur := player.current_animation_length
+	var mv := 1e9 if _bf_last < 0.0 else absf(tc - _bf_last)
+	if mv > dur / 2.0 and _bf_last >= 0.0:
+		mv = maxf(0.0, dur - mv)
+	_bf_last = tc
+	var relax := 1.0 - exp(-mv / BFRELAX)
+	_bf_step = mv * BFSPEED
+	_bf_clip = {}
+	for nm in _bf_kept:
+		var bi := skeleton.find_bone(nm)
+		_bf_clip[nm] = skeleton.get_bone_pose_rotation(bi)
+		_bf_kept[nm] = (_bf_kept[nm] as Quaternion).slerp(Quaternion(), relax)
+		skeleton.set_bone_pose_rotation(bi, (_bf_clip[nm] as Quaternion) * (_bf_kept[nm] as Quaternion))
 	var trunk := []
 	var legs := []
 	var chest = null
@@ -2107,6 +2139,10 @@ func _body_fix() -> void:
 			var v: Dictionary = pts[i]
 			trunk.append({"A": u["p"], "B": v["p"], "n": "", "top": i == pts.size() - 1,
 				"ell": {"w0": u["w"], "w1": v["w"], "d0": u["d"], "d1": v["d"], "F0": u["F"], "F1": v["F"], "S0": u["S"], "S1": v["S"]}})
+	var skull := {}
+	var fp := _face_point("head")
+	if fp.size() > 1 and float(fp[1]) > 0.0:
+		skull = {"A": fp[0], "B": fp[0], "ra": float(fp[1]), "rb": float(fp[1]), "n": "", "head": true}
 	for arm in arms:
 		var b0 := skeleton.find_bone(arm[0])
 		var b1 := skeleton.find_bone(arm[1])
@@ -2117,6 +2153,9 @@ func _body_fix() -> void:
 		if b0 < 0 or cu.is_empty() or cf.is_empty():
 			continue
 		var obs := trunk + legs
+		# the skull: the upper arm from 0.4 of its length keeps out of it (the forearm and hand may come to it)
+		if not skull.is_empty():
+			obs.append(skull)
 		if arm[4] != "":                      # a giant's lower arm: its side's upper arm too
 			for cp in _caps:
 				if cp.get("pa") == null and (int(cp["a"]) == skeleton.find_bone(arm[4] + "Arm") or int(cp["a"]) == skeleton.find_bone(arm[4] + "ForeArm")):
@@ -2130,10 +2169,10 @@ func _body_fix() -> void:
 			var way := Vector3.ZERO
 			for o in obs:
 				# against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest
-				var on_trunk: bool = trunk.has(o)
+				var on_trunk: bool = trunk.has(o) and not o.has("head")
 				if on_trunk and o.get("top", false):
 					continue
-				var hit := _closest(low if on_trunk else sA, sB, o["A"], o["B"])
+				var hit := _closest(low if on_trunk else (sA.lerp(sB, 0.4) if o.has("head") else sA), sB, o["A"], o["B"])
 				var r_up := float(cu["ra"]) + (float(cu["rb"]) - float(cu["ra"])) * (UPLOW + (1.0 - UPLOW) * float(hit["s"])) if on_trunk else float(cu["r"])
 				var dep := r_up + _rad(o, hit["t"]) + BF - float(hit["d"])
 				if dep > worst and float(hit["d"]) > 1e-6:
@@ -2146,6 +2185,8 @@ func _body_fix() -> void:
 			var eB := _gp(b2).origin
 			worst = 0.0
 			for o in obs:
+				if o.has("head"):
+					continue
 				for k in 2:
 					if k == 1 and b3 < 0:
 						continue
@@ -2158,6 +2199,16 @@ func _body_fix() -> void:
 			# a point at the elbow is the upper arm's to clear
 			if worst > 0.0 and p.distance_to(eA) > 0.05:
 				_push_turn(b1, p, way, worst)
+	# what this frame turned, kept for the next (a thigh's at most LEGSWING, an arm's BFARM)
+	for nm in _bf_clip:
+		var bi := skeleton.find_bone(nm)
+		var k: Quaternion = (_bf_clip[nm] as Quaternion).inverse() * skeleton.get_bone_pose_rotation(bi)
+		var lim := LEGSWING if String(nm).ends_with("UpLeg") else BFARM
+		var ang := 2.0 * acos(minf(1.0, absf(k.w)))
+		if ang > lim:
+			k = k.slerp(Quaternion(), 1.0 - lim / ang)
+			skeleton.set_bone_pose_rotation(bi, (_bf_clip[nm] as Quaternion) * k)
+		_bf_kept[nm] = k
 
 
 func _keep_len(ch: Dictionary) -> void:

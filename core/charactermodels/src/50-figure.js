@@ -1180,8 +1180,8 @@ function KCharFigure(body, sliders, load){
              shins (a giant's lower arm out of its side's upper arm too), the deepest point each time, twice over */
   var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftHandMiddle1'], ['RightArm', 'RightForeArm', 'RightHand', 'RightHandMiddle1'],
               ['Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Left2HandMiddle1', 'Left'], ['Right2Arm', 'Right2ForeArm', 'Right2Hand', 'Right2HandMiddle1', 'Right']].filter(function(a){ return byName[a[0]] !== undefined; }),
-      BF = 0.008, LEGSWING = 0.35, UPLOW = 0.7, fV = new THREE.Vector3(), fW = new THREE.Vector3(), fD1 = new THREE.Vector3(), fD2 = new THREE.Vector3(),
-      fR = new THREE.Vector3(), fC1 = new THREE.Vector3(), fC2 = new THREE.Vector3(), fQ = new THREE.Quaternion();
+      BF = 0.008, LEGSWING = 0.35, UPLOW = 0.7, BFRELAX = 0.25, BFSPEED = 2.5, BFARM = 1.2, bfStep = 1e9, bfKept = {}, bfClip = {}, bfLast = null, bfI = new THREE.Quaternion(), fV = new THREE.Vector3(), fW = new THREE.Vector3(), fD1 = new THREE.Vector3(), fD2 = new THREE.Vector3(),
+      fR = new THREE.Vector3(), fC1 = new THREE.Vector3(), fC2 = new THREE.Vector3(), fQb = new THREE.Quaternion();
   // the closest points of segments p1-q1 and p2-q2: fC1 at s along the first, fC2 at t along the second
   var near = { s:0, t:0, d:0 };
   function closest(p1, q1, p2, q2){
@@ -1200,11 +1200,16 @@ function KCharFigure(body, sliders, load){
     return near;
   }
   // turn bone b about its origin so that its point p moves by d along way
+  // (the clip's own turn of each bone it turns, the first time in a frame, for bodyFix's kept turns)
   function pushTurn(b, p, way, d){
     var pivot = b.getWorldPosition(fV), from = fW.subVectors(p, pivot), L = from.length();
     if(L < 1e-4) return;
+    if(!bfClip[b.name]) bfClip[b.name] = b.quaternion.clone();
     var to = fR.copy(from).addScaledVector(way, d);
-    turnWorld(b, fQ.setFromUnitVectors(from.divideScalar(L), to.normalize()));
+    fQb.setFromUnitVectors(from.divideScalar(L), to.normalize());
+    var a = 2 * Math.acos(Math.min(1, Math.abs(fQb.w)));
+    if(a > bfStep) fQb.slerp(bfI, 1 - bfStep / a);           // a push turns at most BFSPEED a clip second; the kept turn carries it on
+    turnWorld(b, fQb);
   }
   /* toesFlat: a clip that stands on the ball of a foot (the heel up) pitches the whole foot, toes and all, so the toes
      and a sandal's sole went down into the ground. After the clip each toe joint turns up until a point TOE ahead of it,
@@ -1236,9 +1241,25 @@ function KCharFigure(body, sliders, load){
     });
   }
   function bodyFix(){
-    if(!caps.length || !self.action) return;
+    if(!caps.length || !self.action || self.bodyFixOff){ bfKept = {}; bfLast = null; return; }   // bodyFixOff: tools compare the clip without it
+    // the turns kept from the frame before (each bone's, on top of the clip's), easing back to the clip's as the clip
+    // moves on (by its own time: the lab's frame steps set the time and update by nothing): pushing on from them keeps
+    // a limb on the side it went round and slides it clear, where starting afresh each frame threw it across in a frame
+    var tc = self.action.time, dur = self.action.getClip().duration, mv = bfLast == null ? 1e9 : Math.abs(tc - bfLast);
+    if(mv > dur / 2) mv = Math.max(0, dur - mv);
+    if(bfLast == null) mv = 1e9;
+    bfLast = tc;
+    var relax = 1 - Math.exp(-mv / BFRELAX);
+    bfStep = mv * BFSPEED;
+    bfClip = {};
+    Object.keys(bfKept).forEach(function(n){
+      var b = bones[byName[n]];
+      bfClip[n] = b.quaternion.clone();
+      b.quaternion.multiply(bfKept[n].slerp(bfI, relax));
+    });
     self.group.updateMatrixWorld(true);
-    var sc = self.group.getWorldScale(cS).x, trunk = [], legs = [], chest = null, way = new THREE.Vector3(), p = new THREE.Vector3();
+    // the skeleton's scale in the world (a giant's inner group is scaled): the capsules are in its units
+    var sc = self.inner.getWorldScale(cS).x, trunk = [], legs = [], chest = null, way = new THREE.Vector3(), p = new THREE.Vector3();
     // a body without the mod carries the lower arms' joints unused (hidden, where no leg should meet them)
     var arms = ARMS.filter(function(a){ return !a[4] || self.fourArms; });
     function at(i){ return bones[i].getWorldPosition(new THREE.Vector3()); }
@@ -1266,10 +1287,10 @@ function KCharFigure(body, sliders, load){
     function legOut(o, R){
       if(!side) return;
       way.copy(side).multiplyScalar(/^Left/.test(o.n) ? 1 : -1);
-      var gap = fR.subVectors(fC1, fC2), b = gap.dot(way), k = Math.sqrt(Math.max(0, b * b - gap.lengthSq() + R * R)) - b;
-      var thigh = thighOf(o);
-      k = Math.min(k, Math.tan(LEGSWING) * fC1.distanceTo(thigh.getWorldPosition(fV)));
-      if(k > 0){ p.copy(fC1); pushTurn(thigh, p, way, k); }
+      // the depth over how far out the gap already points (at least 0.35): it falls to nothing as the leg clears, so the
+      // push comes and goes smoothly, also where the knee lies inside the shoulder
+      var gap = fR.subVectors(fC1, fC2), g = gap.length(), k = (R - g) / Math.max(0.35, g > 1e-6 ? gap.dot(way) / g : 0);
+      if(k > 0){ p.copy(fC1); pushTurn(thighOf(o), p, way, k); }
     }
     // the legs, out of the top of each upper arm
     arms.forEach(function(arm){
@@ -1295,6 +1316,8 @@ function KCharFigure(body, sliders, load){
         q.setFromUnitVectors(kr.clone().sub(hr).normalize(), kr.clone().sub(sep).sub(hr).normalize()); turnWorld(bones[tr.c.a], q);
       }
     }
+    var hC = new THREE.Vector3(), hr = byName.Head !== undefined ? facePoint('head', hC) : 0;
+    var skull = hr ? { A:hC, B:hC, ra:hr, rb:hr, n:'', head:true } : null;
     // the arms, out of the trunk and the legs as these now stand. Above the pelvis the trunk is the chain through
     // skeleton.json trunk (each spine joint's cross-section, an ellipse whose middle lies forward of the joint, which
     // is near the back), scaled as the chest capsule's radius by the morph; the hand (wrist to knuckles) keeps the
@@ -1317,17 +1340,22 @@ function KCharFigure(body, sliders, load){
       var cu = caps.filter(function(c){ return c.a === byName[arm[0]]; })[0], cf = caps.filter(function(c){ return c.a === byName[arm[1]]; })[0];
       if(!cu || !cf) return;
       var obs = trunk.concat(legs);
+      // the skull (data/clips.json faces head, with the hair): the upper arm from 0.4 of its length keeps out of it
+      // (idle 14 swung it across the head; its top lies by the head whenever the head tips that way); the forearm and
+      // hand may come to it (a scratch, a palm on the brow, a fighter's guard at the chin)
+      if(skull) obs.push(skull);
       if(arm[4]) caps.forEach(function(c){                   // a giant's lower arm: its side's upper arm too
         if(c.a === byName[arm[4] + 'Arm'] || c.a === byName[arm[4] + 'ForeArm']) obs.push(ends({ c:c, ra:c.r * sc, rb:c.r * sc, n:'' }));
       });
       for(var it = 0; it < 2; it++){
-        var sA = at(byName[arm[0]]), sB = at(byName[arm[1]]), low = sA.clone().lerp(sB, UPLOW), worst = 0;
+        var sA = at(byName[arm[0]]), sB = at(byName[arm[1]]), low = sA.clone().lerp(sB, UPLOW), mid = sA.clone().lerp(sB, 0.4), worst = 0;
         obs.forEach(function(o){
           // against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest: the
           // shoulder and the deltoid sit against the chest, and an arm raised before it is held there
           var tr = trunk.indexOf(o) >= 0;
           if(tr && o.top) return;
-          var hit = closest(tr ? low : sA, sB, o.A, o.B);
+          if(o.head) tr = false;
+          var hit = closest(tr ? low : o.head ? mid : sA, sB, o.A, o.B);
           var dep = (tr ? cu.ra + (cu.rb - cu.ra) * (UPLOW + (1 - UPLOW) * hit.s) : cu.r) * sc + rad(o, hit.t) + BF - hit.d;
           if(dep > worst && hit.d > 1e-6){ worst = dep; p.copy(fC1); way.subVectors(fC1, fC2).divideScalar(hit.d); }
         });
@@ -1335,6 +1363,7 @@ function KCharFigure(body, sliders, load){
         var eA = at(byName[arm[1]]), eB = at(byName[arm[2]]), kn = byName[arm[3]] !== undefined ? at(byName[arm[3]]) : null;
         worst = 0;
         obs.forEach(function(o){
+          if(o.head) return;
           [eB, kn].forEach(function(q2, k){
             if(!q2) return;
             var hit = closest(k ? eB : eA, q2, o.A, o.B), dep = (k ? cf.rb : cf.r) * sc + rad(o, hit.t) + BF - hit.d;
@@ -1345,6 +1374,14 @@ function KCharFigure(body, sliders, load){
         if(worst > 0 && p.distanceTo(eA) > 0.05 * sc) pushTurn(bones[byName[arm[1]]], p, way, worst);
       }
     });
+    // what this frame turned, kept for the next (a thigh's at most LEGSWING, an arm's BFARM)
+    Object.keys(bfClip).forEach(function(n){
+      var b = bones[byName[n]], k = bfKept[n] || (bfKept[n] = new THREE.Quaternion());
+      k.copy(bfClip[n]).invert().multiply(b.quaternion);
+      var lim = /UpLeg$/.test(n) ? LEGSWING : BFARM, ang = 2 * Math.acos(Math.min(1, Math.abs(k.w)));
+      if(ang > lim){ k.slerp(bfI, 1 - lim / ang); b.quaternion.copy(bfClip[n]).multiply(k); }
+    });
+    self.bones[0].updateMatrixWorld(true);
   }
 
   /* bowString: the string between the bow's limb tips (data/props.json string, in the bow's frame), drawn through
