@@ -428,3 +428,10 @@ downloaded from I–S and uploaded, its two packs copied server side, its card m
 ends at Screamers, S–Z begins at Scyvoi, and the parts keep their range titles. Biomes and Objects: `worlds/necanyons.html`
 replaced (the night, core/water, the full viewer), its card's size and blurb edited; the Korona pages there are the Korona
 session's own republish of the same hour (their source differs from `main` only by necanyons' numeric-default fix).
+
+Krator Worlds A–H version 92 (2026-10-20, from `main` at 83e80089f): the Beast Riders kit added (`worlds/beast-riders.html`,
+12.7 MB, its textures inline: the mounts' buildings, the sedentary trades and larger houses, the tent set, the rock-cut
+pieces and the ports of Girder's and Mav's Refuge's buildings; verify.py --assert OK, the page matching the hash baseline),
+its card in the live index (version 91's index with one entry added, as in `build_gallery.py`'s new `ENTRIES` line). Every
+other file is as in version 91; the part holds about 244 MiB.
+
