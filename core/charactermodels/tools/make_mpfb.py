@@ -809,12 +809,20 @@ def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
 # library trousers with no delete group (the cargo trousers) stand off the knee up to 3.3 cm and bridge the crotch, so at
 # the default reach the skin of the knees, the crotch and the cleft of the buttocks was left drawn under them and came
 # through in a crouch, a lunge or a roll (the owner's Animation Lab review, 2026-10-20): out 5 cm, in 3 cm, and closed
-# round front and back within 35 cm (a ray from the cleft crosses the pelvis to the fly)
+# round front and back within 35 cm (a ray from the cleft crosses the pelvis to the fly). The made cultures' trousers,
+# breeches and braccae (make_garments.py) are settled close, but in a crouch the same knee skin came through the
+# Iziz, Yuni, Dalab and Republic trousers and the giant's braccae, and the crotch and the calves' backs through most of
+# the rest (shot red, 2026-10-20): they take the same cover (legged_trousers)
 TROUSERS_COVER = {'out': 0.05, 'inward': 0.03, 'enclose': 0.35}
+LEGGED = ('trousers', 'breeches', 'braccae')     # made legwear with two legs (hangs() leaves them out too)
 
 
-def library_trousers(it):
-    return it['slot'] == 'legs' and culture_of(it['id']) is None and it['id'] not in LOOSE and it['id'] not in FLAPS
+def legged_trousers(it):
+    """trousers that take TROUSERS_COVER: the library's with no delete group (the cargo trousers), and the made
+    cultures' trousers, breeches and braccae, which settle close but left the same knees and crotch drawn in a crouch"""
+    if it['slot'] != 'legs' or it['id'] in LOOSE or it['id'] in FLAPS:
+        return False
+    return culture_of(it['id']) is None or any(w in it['id'] for w in LEGGED)
 
 
 def parts_under(path, BP, BT):
@@ -848,7 +856,7 @@ def hide_parts(entry, under, ntris):
 def refresh_hides(body, pieces):
     """python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>: with no Blender and no export, rederive from
     the pieces' GLBs (a dir of <id>.glb and base.glb) what the pack derives from them alone: the rays' hide of the
-    library trousers (TROUSERS_COVER) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
+    trousers (TROUSERS_COVER: legged_trousers) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
     the Godot twin's skin regions (base.gshapes.bin) follow at the next whole build"""
     path = os.path.join(HERE, 'data', 'mpfb_' + body, 'kit.json')
     kit = json.load(open(path, encoding='utf-8'))
@@ -857,7 +865,7 @@ def refresh_hides(body, pieces):
     under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
     for e in kit['items']:
         g = os.path.join(pieces, e['id'] + '.glb')
-        if e.get('hide_by') == 'rays' and library_trousers(e) and os.path.exists(g):
+        if e.get('hide_by') == 'rays' and legged_trousers(e) and os.path.exists(g):
             tris = covered(BP, BT, g, **TROUSERS_COVER)
             print('%-8s %-34s hides %5d (was %d)' % (body, e['id'], len(tris), e.get('hides', 0)))
             e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
@@ -1174,7 +1182,7 @@ def hangs(it):
     """a made garment that hangs from the waist or shoulders (a tunic, coat, robe or skirt, not trousers): its legs'
     weights pool below the crotch, it is pushed out of the legs, and it hides no skin below half the body's height"""
     return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') \
-        and not any(w in it['id'] for w in ('trousers', 'breeches', 'braccae'))   # all three are legged
+        and not any(w in it['id'] for w in LEGGED)
 LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
 # a band and flaps only (a loincloth): no push out of the legs, the chains alone keep its flaps out of them. Pushed, a
 # flap between the thighs in a stride went out of each sideways, its corners stood out like wings
@@ -1330,7 +1338,7 @@ def main():
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
-            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'), **(TROUSERS_COVER if library_trousers(it) else {}))
+            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'), **(TROUSERS_COVER if legged_trousers(it) else {}))
             if hangs(it):
                 # made clothing (make_garments.py) that hangs loose below the hips: a flap or a skirt that lies over a
                 # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
