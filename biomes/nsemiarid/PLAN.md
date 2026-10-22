@@ -278,8 +278,13 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
    (step 4), a GDScript twin.
 3. **`biomes/nsemiarid`**, the kit and its showcase. *Built 2026-10-22* (`NOTES.md`, `BIOME-API.md`): 17 tree species
    and 24 small plants, trees as variants, the travellers' headings checked by the probe (crawlers downslope, drifts
-   windward, step cones by the years dry, saxaul on their crescents, dead poplars on the salt). Still to do there:
-   `KNOWN_ISSUES.md` (the spin and the furling, the catalog's fruit, the highland spurs, library textures).
+   windward, step cones by the years dry, saxaul on their crescents, dead poplars on the salt). *2026-10-22, second
+   pass:* the library adopted (`materials.json`, the owner's delivered fins, plumes, feather grass and saxaul bark); the
+   water on `core/water` (the lake and pool still water, the stream a flow in a channel that holds it); the wind on
+   `core/atmos` with a wind setting (calm, a breeze, high): the trumpets spin on it and the seeds tear loose in it (the
+   probe steps the module's clock to check a gale frees them and a calm holds them). Still to do there:
+   `KNOWN_ISSUES.md` (the furling and the frills' shedding as motion, the catalog's fruit, the highland spurs, the
+   tumbler's tangle card).
 4. **`biomes/dambasins`** and **`biomes/scablands`**, their stations reading the base kits in place.
 5. **`biomes/nwlowlands`**: the rock zone, the bed response, the pass table and variants.
 6. **A north-basin open world** (`openworld/<name>`) with `WORLD_OVERLAYS`: where one overlay over two biomes is

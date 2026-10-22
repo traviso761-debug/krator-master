@@ -45,7 +45,7 @@ const PAL=NSEMIARID.PAL={
  clock:[0xf4f2ea,0xf8f6f0,0xeeeae0],clockStalk:[0x7a9a5a,0x6e8e50],
  wormwood:[0x9aa890,0x8a9a84,0xa8b4a0],stipa:[0xc0b080,0xb4a674,0xc8ba8a,0xa8a472,0xbcb890],grass:[0x8aa04a,0x96aa54,0x7a943e],
  tumbler:[0xb8a070,0xc8b080,0xa89060,0x9a9a62],tumblerGreen:[0x7a9a50,0x6e8e48],
- crawler:[0x6a9a4a,0x76a650,0x5e8e40],crawlerDead:[0x9a8a78,0x8a7a6a,0xa89888],
+ crawler:[0x6a9a4a,0x76a650,0x5e8e40],crawlerDead:[0xc8c0b4,0xbab2a6,0xd4ccc0],
  tulip:[0xe8302a,0xf0c030,0xe86aa0,0xf8f0e0,0xd84a20],resurrect:[0x8a6a4a,0x9a7a56,0x7a5a3e],resurrectGreen:[0x5a8a3e,0x66963e],
  balloon:[0xa8c8a0,0xb8d4b0,0x98b890],silk:[0xf8f8f4,0xf0f0ea],gourd:[0x6a8a3a,0x7a9a44],gourdWing:[0xe8dcc0,0xf0e8d0,0xdcd0b0],
  reed:[0x7a9a44,0x8aaa4e,0x6a8a3a],sedge:[0x7a8a4a,0x8a9a54],
@@ -424,11 +424,13 @@ G.bell=()=>bellGeo(1,false);
 G.bellIn=()=>bellGeo(.975,true);
 // the vanes: each a strip along the bell from u0 up past the rim, its inner edge ON the bell (the fin card's midrib, v=.5)
 // and its outer edge (the card's edge, v=0) standing out from it and swept round (the pitch the wind turns it by)
-G.vanes=function(n){const pos=[],nor=[],uv=[],col=[];const N=7,u0=.34,u1=1.16,pitch=.62;
+G.vanes=function(n){const pos=[],nor=[],uv=[],col=[];const N=7,u0=.3,u1=1.04,pitch=.45;
  for(let v=0;v<n;v++){const a0=v/n*TAU;const E=[];
   for(let i=0;i<=N;i++){const t=i/N,u=u0+(u1-u0)*t,r=u<=1?bellR(u):1+(u-1)*2.4,y=Math.min(u,1)+(u>1?(u-1)*.7:0);
-   const w=.5*Math.sin(Math.PI*Math.min(1,t*1.08))+.04,ca=Math.cos(a0),sa=Math.sin(a0),tx=-sa,tz=ca;
-   const inr=[ca*r*.97,y,sa*r*.97],out=[ca*(r+w*.8)+tx*w*pitch,y+w*.28,sa*(r+w*.8)+tz*w*pitch];E.push([inr,out,t]);}
+   // out from the bell along its own normal (the profile's slope turned outward), swept round by the pitch
+   const dr=u<=1?(bellR(Math.min(1,u+.02))-bellR(Math.max(0,u-.02)))/.04:2.4,nl=Math.hypot(1,dr),nx=1/nl,ny=-dr/nl;
+   const w=.62*Math.sin(Math.PI*Math.min(1,t*1.08))+.04,ca=Math.cos(a0),sa=Math.sin(a0),tx=-sa,tz=ca;
+   const inr=[ca*r*.97,y,sa*r*.97],out=[ca*(r+w*nx)+tx*w*pitch,y+w*ny*.6+w*.2,sa*(r+w*nx)+tz*w*pitch];E.push([inr,out,t*.92]);}
   for(let i=0;i<N;i++){const [a,b,ta]=E[i],[c,d,tb]=E[i+1];
    const e1=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],e2=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],nx=e1[1]*e2[2]-e1[2]*e2[1],ny=e1[2]*e2[0]-e1[0]*e2[2],nz=e1[0]*e2[1]-e1[1]*e2[0],nl=Math.hypot(nx,ny,nz)||1,nn=[nx/nl,ny/nl,nz/nl];
    const put=(p,uu,vv,cc)=>{push3(pos,p);push3(nor,nn);uv.push(uu,vv);col.push(cc,cc,cc);};
@@ -519,7 +521,8 @@ BIO.def('broom',BIO.geo.clump(),M.broom,{attrs:['aN'],label:'Saxaul twigs'});
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN'],label:'Blossom (almond, apricot, Judas tree)'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower heads'});
 BIO.def('pappus',BIO.geo.clump(),M.pappus,{label:'Plumed seeds'});
-BIO.def('fin',BIO.geo.frond(3),M.fin,{label:'Dandelion-frill fins'});
+// the fin stands on its edge (its width up, not across): a feather's vane on the shaft, broad from the side
+BIO.def('fin',BIO.geo.frond(3).rotateX(Math.PI/2),M.fin,{label:'Dandelion-frill fins'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass'});
 BIO.def('stipa',G.tuft(),M.stipa,{label:'Drill grass'});
@@ -555,7 +558,9 @@ BIO.def('bead',G.bead(),M.vcol,{label:'Bead chains'});
 // the crawler's skin: the library's ribbed cactus skin (skin.cactus) where the page carries it, else the vertex colours
 {const L=LIBP('skin.cactus'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawl=BIO.leafMat(t,'crawl',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
 BIO.def('crawler',G.cactusStem(8,false),M.crawl,{label:'Crawlers (the living stems)'});
-BIO.def('crawlerDead',G.cactusStem(8,true),M.crawl,{label:'Crawler trails (the dead stems)'});
+// the dead trail is the stem's woody skeleton: the saxaul's twisted grey wood (bark.gnarled), else the vertex colours
+{const L=LIBP('bark.gnarled'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawlDead=BIO.leafMat(t,'crawldead',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
+BIO.def('crawlerDead',G.cactusStem(8,true),M.crawlDead,{label:'Crawler trails (the dead stems)'});
 BIO.def('crawlerSpines',G.cactusSpines(8),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});

@@ -207,10 +207,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
   // a custom sampler is not decoded from sRGB for us: pow 2.2 by hand; a keep-0 layer is its relief, normalised by the
   // pack's mean brightness so the painted colour keeps its level
-  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
+  // with distance a layer's grain fades toward the painted ground (from 60 m to 450 m): far off its crack nets and tufts
+  // read as a lattice, not as ground
+  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;float _fd=1.0-0.75*smoothstep(60.0,450.0,length(cameraPosition-vGWP));'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
    return 'if('+w+'>0.003){vec3 t=pow(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
-   'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s,0.0,1.0));vGLs=_s;}';}
+   'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s*_fd,0.0,1.0));vGLs=_s*_fd;}';}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;'+(GL?'attribute vec4 aGL0,aGL1;varying vec4 vGL0,vGL1;':''))
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;'+(GL?'vGL0=aGL0;vGL1=aGL1;':''));
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;'+

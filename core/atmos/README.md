@@ -7,7 +7,7 @@ its own PRNG and never touches a host's stream. It needs only three.js r128 and 
 
 **Users:** the Iziz city takes all of it (`settlements/iziz/targets/city/90c-city-atmos.js`); Voth takes the wave field
 for its bay; Girder takes the sky's light for its library-textured families; the southern highlands (`biomes/shighlands`) take the
-cloud deck, with only the core, the presets and the export (its `build.py`, `CORE_ATMOS`). Voth's and Girder's
+cloud deck, with only the core, the presets and the export (its `build.py`, `CORE_ATMOS`). The northern semiarid kit (`biomes/nsemiarid`, 2026-10-22) takes the core, presets, export, waves and sky light for its water and **its wind**: a wind setting scales `ATMOS.windScale` (calm 0.4, a breeze 1, high 2.6), and the helicopter trumpets' spin and the seeds the wind tears off its trees ride `ATMOS.windAt` (`src/89b-host-atmos.js`, `src/89c-host-seeds.js`). Voth's and Girder's
 `src/90-atmos-host.js` are the worked examples of a 21-sky.js-lineage binding (below). **A new build with open water or
 standard materials takes these instead of writing its own:** one water shader and one sky-light path for every world.
 
