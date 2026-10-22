@@ -575,13 +575,49 @@ func hold(want: Dictionary) -> void:
 # the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
-const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "fSpine", "fSpine1", "fSpine2", "fNeck"]
+const POSTURE_SHIFT := ["Spine", "Spine1", "Spine2", "Neck"]
 const POSTURE_FADE := 0.25
 var posture := {}
 var posture_joint := false              # 'frame': 'joint' (the side axis as the clip turned the parent from rest)
 var posture_clips := {}                 # clip -> degrees added while it plays
 var _pose_from := {}                    # the clip change when the last play() began
 var _pose_fade := POSTURE_FADE          # clip seconds since then
+var _shifted := []                      # [bone, position before, position set] of the joints shifted last frame
+
+
+# a joint moved forward or back (fSpine...fNeck: centimetres, positive forward, in the skeleton's frame) with the
+# joints above it held where they were, so only its own stretch of the body moves (50-figure.js shiftJoint)
+func _shift_joint(n: String, cm: float) -> void:
+	var b := skeleton.find_bone(n)
+	if b < 0 or cm == 0.0:
+		return
+	var kids := skeleton.get_bone_children(b)
+	var held := {}
+	for c in kids:
+		held[c] = _gp(c).origin
+	_shifted.append([b, skeleton.get_bone_pose_position(b), Vector3()])
+	for c in kids:
+		_shifted.append([c, skeleton.get_bone_pose_position(c), Vector3()])
+	var par := skeleton.get_bone_parent(b)
+	var to := _gp(b).origin + Vector3(0, 0, cm / 100.0)
+	skeleton.set_bone_pose_position(b, _gp(par).affine_inverse() * to)
+	var bt := _gp(b).affine_inverse()
+	for c in kids:
+		skeleton.set_bone_pose_position(c, bt * held[c])
+	var at := _shifted.size() - kids.size() - 1
+	for i in range(at, _shifted.size()):
+		_shifted[i][2] = skeleton.get_bone_pose_position(_shifted[i][0])
+
+
+# the clips turn bones and never place them: the shifted joints go back first each frame, unless something else (a
+# morph) has placed them since
+func _unshift() -> void:
+	for i in range(_shifted.size() - 1, -1, -1):
+		var e: Array = _shifted[i]
+		if skeleton.get_bone_pose_position(e[0]).is_equal_approx(e[2]):
+			skeleton.set_bone_pose_position(e[0], e[1])
+	_shifted.clear()
 
 
 func _pose_change() -> Dictionary:
@@ -594,6 +630,7 @@ func _pose_change() -> Dictionary:
 
 
 func _posture(force := false) -> void:
+	_unshift()
 	if posture.is_empty() or (not force and (player == null or not player.is_playing())):
 		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
 	var ch := {} if force else _pose_change()     # forced (the chains' rest): the body's angles alone
@@ -635,6 +672,8 @@ func _posture(force := false) -> void:
 	for ai in arms:
 		var par := skeleton.get_bone_parent(ai)
 		skeleton.set_bone_pose_rotation(ai, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[ai]).normalized())
+	for n in POSTURE_SHIFT:
+		_shift_joint(n, float(p["f" + n]))
 
 
 func _after_clip(dt: float) -> void:
