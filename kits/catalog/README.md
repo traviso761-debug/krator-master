@@ -33,6 +33,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette and fourteen shell-grown bespoke pieces (lathes and tubes, ported from Ys). See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (40, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
 | `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
+| `krator-master-furniture-arms.js` | **the garrison's arms** (2026-10-22): not a culture file; a weapon rack and an armour stand for each of the 30 cultures (59 pieces: the Eternians' rack is the fort's), from one row per culture. Not placed yet. See "The garrison's arms" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -459,6 +460,23 @@ FURN({ key: 'newfolk_court_relic', ... });                   /* bespoke pieces a
 The kit's header lists every style-sheet field and value. `FK.set()` declares `materials` from the
 sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<culture>_<tier>_<role>`
 (or `prefix`), and names them from `names`. Build, then `verify.py --assert`.
+
+### The garrison's arms: a weapon rack and an armour stand for every culture (2026-10-22)
+
+`krator-master-furniture-arms.js` is a category file like `-jobs.js`: every entry keeps its real `culture`, and a
+bundle carries it only when a build names `'arms'` (`furniture_bundle.bundle([..., 'arms'])`), so adding it moved only
+the pages that load every catalog file (this one, `kits/interiors`, `kits/ancients-interiors`). For each of the 30
+cultures a row of `ARMS` sets the culture's palette keys, the rack's frame (post, pipe, lashed, bamboo, reed, a stone
+back slab), its polearm or rifles, the blades it hangs, its shield, and the armour and helm on the stand; `ARMS_rack`
+and `ARMS_stand` draw them through `F` only. Keys `<prefix>_<tier>_weapon_rack` (wall: variant 0 the polearms or rifles
+standing in a butt sill, variant 1 the blades on pegs under two shields, or a helmet shelf) and
+`<prefix>_<tier>_armour_stand` (floor: variant 0 the battle armour, variant 1 the lighter kit), roles `weapon_rack` and
+`armour_stand`, rooms `armoury`, `barracks`, `guardroom`, `watch` (Iziz adds `pal_armoury`, `pal_guard`; the Yuni court
+`hall`, `antechamber`). The Eternians have only the armour stand here: their weapon rack is the fort's glaive rack
+(`kits/eternian`). The trade sets' `<culture>_trade_weapon_rack` and `_armour_stand` are a smith's wares and stay.
+**Not placed in any build yet** (`KNOWN_ISSUES.md`, "Arms: not placed yet"; `TODO.md`, "Ride along").
+
+Verified: `tests/test-segments.js`; `verify.py dist/catalog.html --assert`.
 
 ### The Iziz palace's pieces (2026-10-19)
 

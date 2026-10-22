@@ -15,7 +15,8 @@ IX.CULTURE_FAMILY) usually ends in `generic` and `scrap`: list them too.
 A name in `cultures` is a FILE SUFFIX: 'eastabyss' picks krator-master-furniture-eastabyss.js. The category
 files are picked the same way and only when named: 'generic-goods', 'generic-fruit' (not by 'generic') and
 'jobs' (krator-master-furniture-jobs.js, the work items by trade: each keeps its own culture and adds its colours
-to that culture's palette itself, so it needs no culture file beside it). Files load in filename order.
+to that culture's palette itself, so it needs no culture file beside it); 'arms' (krator-master-furniture-arms.js,
+every culture's weapon rack and armour stand, the same way). Files load in filename order.
 """
 import base64, json, os
 

@@ -149,8 +149,8 @@
    "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
   },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
-   "bytes": 305740,
-   "sha256": "ca3624c2b87b3ad1610469f045cf155250da9d02393c5283c6245497cad9a0c6"
+   "bytes": 305810,
+   "sha256": "80e5503b7e93f8d163c6fcc875842cbc7b9bcd036ee79572fe6e5b6ccfea9da2"
   },
   "kits/ancients/dist/alt-civic.html": {
    "bytes": 2513718,
@@ -333,8 +333,8 @@
    "sha256": "fcbf3400d82f5118ba0b3ea204ef862fcf2bdab46414bfeb05543b68a044fb7a"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1914081,
-   "sha256": "1ffd14cd79e70eb453f804751662bd6e4620ef04e8fbbf795e294812a2f8d648"
+   "bytes": 1969501,
+   "sha256": "f251988425a41ef84d94460db47a04349ee9f000e2ee4cbda3f21d1d677a3d2b"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554507,
@@ -357,8 +357,8 @@
    "sha256": "8db212b3feba89b8ce4783421ea28fda84b4ea837d8d9e6fa856be0dd636bdad"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10005044,
-   "sha256": "130c8972aa84d601cf8bb61e4a06c654e85172c49caa34ab1e7ae1dd5c547a07"
+   "bytes": 10060474,
+   "sha256": "de736ae31675cf569983934cff725afcdc3cc68d74a07c9d2cba88ff344acbf9"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 258992,

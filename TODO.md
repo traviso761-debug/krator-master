@@ -43,6 +43,18 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
   Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
+- **Place the garrison's arms** (the owner, 2026-10-22: not before a round that rebuilds the builds anyway, such as
+  placing towns in the open world or adding a new core module). `kits/catalog/krator-master-furniture-arms.js` gives all
+  30 catalog cultures a weapon rack (`<prefix>_<tier>_weapon_rack`, wall) and an armour stand (`_armour_stand`, floor)
+  for `armoury`, `barracks`, `guardroom` and `watch` rooms (`kits/catalog/README.md`, "The garrison's arms"); no build
+  bundles them yet. Per build: add `'arms'` to its `FURN_CULTURES` (the list it passes to `furniture_bundle.bundle`), then
+  place the pair in its military rooms: the interiors sets' `armoury` rooms (`kits/interiors/sets/highlands.js`,
+  `iziz.js`), Zeijani's `guardroom` program (`sets/zeijani.js` asks for types `rack`/`weapon`, so it finds them once
+  bundled), the Iziz palace (`pal_armoury`, `pal_guard`), the Eternian fort's armoury and barracks
+  (`kits/eternian/src/61-et-defence.js` draws its glaive racks as geometry; the Eternians' armour stand is in the file),
+  and each settlement's barracks, gatehouses, forts and war camps in its furnish lists. Rebuild each page, run its
+  `verify.py --assert`, then `tools/port_baseline.py`.
+
 - **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
   Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
   a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the

@@ -10,6 +10,11 @@
 
 ## Open
 
+- [ ] **Arms: not placed yet** (the owner, 2026-10-22). `krator-master-furniture-arms.js` gives every culture a weapon
+  rack and an armour stand for barracks, guardrooms, armouries and watch houses, but no build bundles `'arms'` yet:
+  placing them would rebuild most pages, so it rides along with the next round that rebuilds the builds anyway
+  (`TODO.md`, "Ride along"; what to do is there).
+
 - [ ] **The fruit's colours live in the goods file.** `krator-master-furniture-generic-fruit.js` reads `fruit*` colours
   that only `krator-master-furniture-generic-goods.js` defines (FPAL generic). A build that bundles `generic-fruit`
   without `generic-goods` places the pieces but draws nothing (found in Girder, 2026-10-03; it now bundles both). Move
