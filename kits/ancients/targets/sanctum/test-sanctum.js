@@ -31,11 +31,21 @@ ok(P.wells.every(W=>C.hex(W.c[0],W.c[1],W.R,W.th+Math.PI/6).every(q=>C.inSolid(q
 ok(P.wells.every(W=>Math.hypot(W.c[0],W.c[1])-W.R>D.RK),'no well over the stalk');
 ok(P.corners.length===6&&P.corners.every(c=>C.inSolid(c.c[0],c.c[1],c.R0+2)),'six corner towers on the roof, inside its edge');
 ok(P.corners.every(c=>P.wells.every(W=>Math.hypot(c.c[0]-W.c[0],c.c[1]-W.c[1])>W.R+c.R0)),'no corner tower over a well');
+/* the Six Ministries on the podium's corners, inside its faces; the garden courts open to the sky, clear of the atria and the ministries */
+ok(P.ministries.length===6&&new Set(P.ministries.map(M=>M.name)).size===6,'six ministries, each its own');
+ok(P.ministries.every(M=>C.hex(M.c[0],M.c[1],M.tiers[0].R0,Math.atan2(M.c[1],M.c[0])).every(q=>C.inHex(q[0],q[1],0,0,D.RP-2,Math.PI/6))),'every ministry stands on the podium, inside its faces');
+ok(P.ministries.every(M=>Math.abs(Math.atan2(M.c[1],M.c[0])-Math.round(Math.atan2(M.c[1],M.c[0])/(Math.PI/3))*Math.PI/3)<1e-9),'every ministry on a corner of the podium');
+ok(P.courts.length===12&&P.courts.every(A=>C.hex(A.c[0],A.c[1],A.R,A.th+Math.PI/6).every(q=>!C.inSolid(q[0],q[1],0)&&C.inHex(q[0],q[1],0,0,D.RP-6,Math.PI/6))),'twelve garden courts, open to the sky, inside the podium');
+const sep=(a,b,ra,rb)=>Math.hypot(a[0]-b[0],a[1]-b[1])>ra+rb;
+ok(P.courts.every(A=>P.atria.every(B=>sep(A.c,B.c,A.R,B.R))&&P.ministries.every(M=>sep(A.c,M.c,A.R,M.tiers[0].R0))),'no court touches an atrium or a ministry');
+const line=P.add.filter(a=>a.line);
+ok(line.length>=120,'the podium is lined with heads ('+line.length+')');
+ok(line.every(h=>P.gates.every(g=>Math.hypot(h.at[0]-g.r*Math.cos(g.th),h.at[2]-g.r*Math.sin(g.th))>D.HEAD.clear-2)),'no head stands over a gate');
 const trees=P.add.filter(a=>a.kind==='tree');
 ok(trees.length>100,'the garden is planted ('+trees.length+' trees)');
 ok(trees.every(t=>!P.wells.some(W=>C.inHex(t.at[0],t.at[2],W.c[0],W.c[1],W.R,W.th))),'no tree in a well');
-ok(trees.filter(t=>t.at[1]===D.YP).every(t=>!P.atria.some(A=>C.inHex(t.at[0],t.at[2],A.c[0],A.c[1],A.R,A.th))),'no tree in an atrium');
+ok(trees.filter(t=>t.at[1]===D.YP).every(t=>!P.atria.concat(P.courts).some(A=>C.inHex(t.at[0],t.at[2],A.c[0],A.c[1],A.R,A.th))),'no tree in an atrium or a court');
 const ids=new Set();let dup=0,bad=0;
-for(const a of P.add.concat(P.gates,P.atria,P.wells,P.bands,P.windows,P.corners)){if(ids.has(a.id))dup++;ids.add(a.id);if(a.at&&a.at.some(v=>!isFinite(v)))bad++;}
+for(const a of P.add.concat(P.gates,P.atria,P.courts,P.ministries,P.wells,P.bands,P.windows,P.corners)){if(ids.has(a.id))dup++;ids.add(a.id);if(a.at&&a.at.some(v=>!isFinite(v)))bad++;}
 ok(dup===0&&bad===0,'ids unique ('+ids.size+'), positions finite');
 console.log(fails?fails+' failed':'all passed');process.exit(fails?1:0);

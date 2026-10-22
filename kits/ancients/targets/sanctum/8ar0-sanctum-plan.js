@@ -22,7 +22,15 @@ SANCTUM.DIM=(function(){const SH=5,RP=400,YP=6*SH,RS=RP*2/3,RF=36;
   ATC:300,ATR:34,                    // an atrium: its centre's distance, corner radius
   WC:150,WR:34,                      // a light well: its centre's distance (on a face's normal), corner radius
   BAND:30,WIN:9,                     // the solid's balcony bands every 30 m; nine great windows a face a band
-  TOWER:{R0:48,R1:30,h:80,roof:30,ov:4},CORNER:{r:222,R0:13,R1:8,h:42,roof:12,ov:2}};})();
+  TOWER:{R0:48,R1:30,h:80,roof:30,ov:4},CORNER:{r:222,R0:13,R1:8,h:42,roof:12,ov:2},
+  /* the Six Ministries on the podium's corners (2026-10-22): two tapering tiers, a corner outward, a bronze roof */
+  MIN:{r:340,tiers:[[52,45,70],[40,26,90]],roof:34,ov:4},
+  /* the garden courts: one between each atrium and each ministry beside it, open to the sky */
+  COURT:{r:300,R:26,da:Math.PI/12},
+  /* the heads that line the podium: one every `step` m along its parapet on a pedestal, clear of the gates' faces */
+  HEAD:{step:15,h:6.5,ped:2,clear:26},
+  FLOOR:.5};})();   /* the courts', passages' and apron's floors, clear of the ground's plane */
+SANCTUM.MINISTRIES=['Works','Revenue','Rites','Justice','War','Offices'];   /* by corner, east first, round through south */
 SANCTUM.METAL={gold:0xd8b24a,bronze:0x8c6a34,silver:0xc8ccd0};
 /* the podium's corners sit at multiples of 60 degrees, so its faces (and gates, and atria) face 30 + 60k; the solid is
    turned 30 degrees: its corners at 30 + 60k, its faces (and wells) at 60k */
@@ -49,11 +57,11 @@ SANCTUM.inHex=(x,z,cx,cz,R,a0)=>{const ap=R*Math.cos(Math.PI/6);
 SANCTUM.volume=()=>{const D=SANCTUM.DIM,H=r=>3*Math.sqrt(3)/2*r*r,fil=6*D.RF*D.RF*(1/Math.tan(Math.PI/3)-Math.PI/6);
  const pod=(H(D.RP)-6*H(D.ATR))*D.YP-6*(1.5*Math.sqrt(3)*D.GATE*D.GATE)*D.GATED;
  const stalk=H(D.RK)*(D.YS0-D.YP),solid=(H(D.RS)-fil-6*H(D.WR))*(D.YS1-D.YS0);
- const fr=(R0,R1,h)=>3*Math.sqrt(3)/2*h*(R0*R0+R0*R1+R1*R1)/3;
- return pod+stalk+solid+fr(D.TOWER.R0,D.TOWER.R1,D.TOWER.h)+6*fr(D.CORNER.R0,D.CORNER.R1,D.CORNER.h);};
+ const fr=(R0,R1,h)=>3*Math.sqrt(3)/2*h*(R0*R0+R0*R1+R1*R1)/3,min=D.MIN.tiers.reduce((a,t)=>a+fr(t[0],t[1],t[2]),0);
+ return pod-12*H(D.COURT.R)*D.YP+stalk+solid+fr(D.TOWER.R0,D.TOWER.R1,D.TOWER.h)+6*fr(D.CORNER.R0,D.CORNER.R1,D.CORNER.h)+6*min;};
 
 SANCTUM.plan=function(o){o=o||{};const seed=o.seed==null?12200:o.seed,D=SANCTUM.DIM,TAU=Math.PI*2,C=Math.cos,S=Math.sin;
- const P={id:'sanctum',seed:seed,gates:[],atria:[],wells:[],bands:[],windows:[],corners:[],add:[]};
+ const P={id:'sanctum',seed:seed,gates:[],atria:[],courts:[],ministries:[],wells:[],bands:[],windows:[],corners:[],add:[]};
  const apP=D.RP*C(Math.PI/6);
  P.podium={id:'sanctum.podium',R:D.RP,h:D.YP};
  for(let k=0;k<6;k++){const th=SANCTUM.FACE_P(k),front=k===1;
@@ -65,8 +73,28 @@ SANCTUM.plan=function(o){o=o||{};const seed=o.seed==null?12200:o.seed,D=SANCTUM.
   /* the atrium behind it: a hexagonal court open to the sky, a face of it toward the gate; a pool, an ancestor */
   const ax=D.ATC*C(th),az=D.ATC*S(th);
   P.atria.push({id:'sanctum.atrium.'+k,th:th,c:[ax,az],R:D.ATR,pool:9});
-  P.add.push({id:'sanctum.atrium.'+k+'.ancestor',kind:'figure',at:[ax,2.4,az],face:[C(th),0,S(th)],h:13,
+  P.add.push({id:'sanctum.atrium.'+k+'.ancestor',kind:'figure',at:[ax,D.FLOOR+2.4,az],face:[C(th),0,S(th)],h:13,
    metal:front?'gold':'bronze',color:front?SANCTUM.METAL.gold:SANCTUM.METAL.bronze});}
+ /* the Six Ministries, on the podium's corners: a gold face on each of the two faces turned outward, under the roof */
+ for(let k=0;k<6;k++){const th=k*Math.PI/3,M=D.MIN,cx=M.r*C(th),cz=M.r*S(th);let y=D.YP;const tiers=[];
+  for(const t of M.tiers){tiers.push({R0:t[0],R1:t[1],y0:y,y1:y+t[2]});y+=t[2];}
+  P.ministries.push({id:'sanctum.ministry.'+k,th:th,c:[cx,cz],tiers:tiers,roof:M.roof,ov:M.ov,name:'The Ministry of '+SANCTUM.MINISTRIES[k]});
+  const T=tiers[tiers.length-1],yh=T.y1-22,rh=T.R1+(T.R0-T.R1)*22/(T.y1-T.y0);
+  for(const s of [-1,1]){const a=th+s*Math.PI/6,ap=rh*Math.cos(Math.PI/6);
+   P.add.push({id:'sanctum.ministry.'+k+'.face.'+(s>0?'r':'l'),kind:'head',at:[cx+(ap+.6)*C(a),yh,cz+(ap+.6)*S(a)],face:[C(a),0,S(a)],h:13,metal:'gold',color:SANCTUM.METAL.gold});}}
+ /* the garden courts: between each atrium and the ministries either side of it */
+ for(let k=0;k<6;k++)for(const s of [-1,1]){const th=SANCTUM.FACE_P(k)+s*D.COURT.da;
+  P.courts.push({id:'sanctum.court.'+k+'.'+(s>0?'r':'l'),th:th,c:[D.COURT.r*C(th),D.COURT.r*S(th)],R:D.COURT.R});
+  for(let j=0;j<6;j++){const a=th+Math.PI/6+j*Math.PI/3,r=D.COURT.R*.6,id='sanctum.court.'+k+'.'+(s>0?'r':'l')+'.tree.'+j;   /* a ring of six trees */
+   P.add.push({id:id,kind:'tree',at:[D.COURT.r*C(th)+r*C(a),D.FLOOR,D.COURT.r*S(th)+r*S(a)],h:6+KRAND.unit(KRAND.hash(seed,77,k*2+(s>0?1:0),j))*3,formal:true});}
+  P.add.push({id:'sanctum.court.'+k+'.'+(s>0?'r':'l')+'.head',kind:'head',at:[D.COURT.r*C(th),D.FLOOR,D.COURT.r*S(th)],face:[C(th),0,S(th)],h:4.5,metal:'bronze',color:SANCTUM.METAL.bronze,plinth:1.6});}
+ /* the heads that line the podium: along each face's parapet every HEAD.step m, on pedestals, facing out; clear of the
+    gate's face and of the corners; a metal of rank from a hash of where it stands (bronze most, silver and gunmetal) */
+ {const Hd=D.HEAD,mets=[['bronze',SANCTUM.METAL.bronze],['bronze',SANCTUM.METAL.bronze],['silver',SANCTUM.METAL.silver],['gunmetal',0x4a5058]];
+  for(let k=0;k<6;k++){const th=SANCTUM.FACE_P(k),u=apP-1.7,n=Math.floor((D.RP/2-8)/Hd.step);
+   for(let i=-n;i<=n;i++){const v=i*Hd.step;if(Math.abs(v)<Hd.clear)continue;
+    const x=u*C(th)-v*S(th),z=u*S(th)+v*C(th),m=mets[KRAND.hash(seed,91,k,i+50)%mets.length];
+    P.add.push({id:'sanctum.podium.head.'+k+'.'+i,kind:'head',at:[x,D.YP,z],face:[C(th),0,S(th)],h:Hd.h,metal:m[0],color:m[1],plinth:Hd.ped,line:true});}}}
  P.stalk={id:'sanctum.stalk',R:D.RK,y0:D.YP,y1:D.YS0};
  P.solid={id:'sanctum.solid',R:D.RS,rf:D.RF,y0:D.YS0,y1:D.YS1};
  for(let k=0;k<6;k++){const th=SANCTUM.FACE_S(k);P.wells.push({id:'sanctum.well.'+k,th:th,c:[D.WC*C(th),D.WC*S(th)],R:D.WR});
@@ -93,7 +121,8 @@ SANCTUM.plan=function(o){o=o||{};const seed=o.seed==null?12200:o.seed,D=SANCTUM.
  /* the podium roof's trees: the ring outside the solid's shadow line, clear of the atria and the stalk */
  for(let i=-30;i<=30;i++)for(let j=-30;j<=30;j++){const x=i*16,z=j*16;
   if(!SANCTUM.inHex(x,z,0,0,D.RP-14,Math.PI/6)||SANCTUM.inSolid(x,z,-14))continue;
-  if(P.atria.some(a=>SANCTUM.inHex(x,z,a.c[0],a.c[1],a.R+10,a.th)))continue;
+  if(P.atria.concat(P.courts).some(a=>SANCTUM.inHex(x,z,a.c[0],a.c[1],a.R+10,a.th)))continue;
+  if(P.ministries.some(M=>Math.hypot(x-M.c[0],z-M.c[1])<M.tiers[0].R0+10))continue;
   if(!keep(x,z,i,j,75,.5))continue;
   P.add.push({id:'sanctum.podium.tree.'+i+'.'+j,kind:'tree',at:[x,D.YP,z],h:8+KRAND.unit(KRAND.hash(seed,76,i,j))*5,formal:true});nt++;}
  /* the banners: one either side of each gate, the State's sign */

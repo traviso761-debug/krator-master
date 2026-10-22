@@ -19,6 +19,10 @@ const VIEWS={
  'The roof garden':             SCP(380,SCS.front-.6,SCS.YS1+110).concat([SCS.x,SCS.YS1+20,SCS.z]),
  'A light well from above':     [SCS.x+scWell.c[0]+30,SCS.YS1+140,SCS.z+scWell.c[1]+60,SCS.x+scWell.c[0],SCS.YS1-40,SCS.z+scWell.c[1]],
  'The face of the solid':       SCP(560,SCS.front-.12,SCS.YS0+150).concat(SCP(200,SCS.front-.12,SCS.YS0+120)),
+ // THE SIX MINISTRIES: the Ministry of Revenue (the south-east corner) with the Gate of the Heirs and the Ministry of Rites
+ 'The Six Ministries':          SCP(1000,Math.PI/3+.35,180).concat(SCP(300,Math.PI/3,120)),
+ 'A garden court':              (function(){const a=(SCS.courts||[])[2]||{c:[0,300]};return [SCS.x+a.c[0]+12,26,SCS.z+a.c[1]-16,SCS.x+a.c[0],4,SCS.z+a.c[1]];})(),
+ 'The line of heads':           SCP(scAp+30,SCS.front-.28,40).concat(SCP(scAp,SCS.front-.12,34)),
  'The podium from above':       [SCS.x,1350,SCS.z+520,SCS.x,0,SCS.z],
  'The Sanctum by night':        SCHERO.concat([1]),
 };

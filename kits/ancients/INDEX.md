@@ -195,7 +195,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
 | `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 76 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
-| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 30 |
+| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 37 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |

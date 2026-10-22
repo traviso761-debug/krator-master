@@ -22,6 +22,9 @@ function scnTag(P,gx,gz){const T=KTAGS.sanctum||(KTAGS.sanctum=KTAGS.create({bui
  part(P.podium,'podium',[0,0,0],{r:D.RP,h:D.YP});
  for(const g of P.gates)part(g,'gate',[g.r*Math.cos(g.th),0,g.r*Math.sin(g.th)],{size:[2*g.R,g.depth,g.R*Math.sqrt(3)]});
  for(const a of P.atria)part(a,'court',[a.c[0],0,a.c[1]],{r:a.R,h:D.YP});
+ for(const a of P.courts)part(a,'garden-court',[a.c[0],0,a.c[1]],{r:a.R,h:D.YP});
+ for(const M of P.ministries){const T=M.tiers,top=T[T.length-1].y1;
+  part(M,'ministry',[M.c[0],D.YP,M.c[1]],{r:T[0].R0,h:top-D.YP+M.roof,tags:{style:st,types:['civic'],culture:ET}});}
  part(P.stalk,'stalk',[0,P.stalk.y0,0],{r:P.stalk.R,h:P.stalk.y1-P.stalk.y0});
  part(P.solid,'solid',[0,P.solid.y0,0],{r:P.solid.R,h:P.solid.y1-P.solid.y0});
  for(const w of P.wells)part(w,'lightwell',[w.c[0],D.YS0,w.c[1]],{r:w.R,h:D.YS1-D.YS0});
@@ -80,11 +83,11 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
  const BX=new THREE.Vector3(),BY=new THREE.Vector3(),BZ=new THREE.Vector3(),BM=new THREE.Matrix4();
  const gateFrame=(F,u,R,s)=>{const n=[F.u[0]*s,0,F.u[1]*s];BZ.set(n[0],0,n[2]);
   for(const [Rr,th,col,dep] of [[R+.7,1.4,GLD,1.0],[R+2.3,1.8,WHT,.7]]){const h=gateHex(Rr);
-   for(let i=0;i<6;i++){const p=h[i],q=h[(i+1)%6],L=Math.hypot(q[0]-p[0],q[1]-p[1]),dv=(q[0]-p[0])/L,dy=(q[1]-p[1])/L;
+   for(let i=0;i<6;i++){const p=h[i],q=h[(i+1)%6],L=Math.hypot(q[0]-p[0],q[1]-p[1]),dv=(q[0]-p[0])/L,dy=(q[1]-p[1])/L,dp=dep+(i%2)*.08;
     BX.set(F.v[0]*dv,dy,F.v[1]*dv);BY.crossVectors(BZ,BX);BM.makeBasis(BX,BY,BZ);
-    const m=at(F,u,(p[0]+q[0])/2),c=[m[0]+n[0]*dep/2,(p[1]+q[1])/2-(Rr-R)*.0,m[1]+n[2]*dep/2];
+    const m=at(F,u,(p[0]+q[0])/2),c=[m[0]+n[0]*dp/2,(p[1]+q[1])/2,m[1]+n[2]*dp/2];
     if(i===1)continue;   /* no bar across the threshold */
-    kput('snBox',c,new THREE.Quaternion().setFromRotationMatrix(BM),[L+th,th,dep],col);}}};
+    kput('snBox',c,new THREE.Quaternion().setFromRotationMatrix(BM),[L+th,th,dp],col);}}};
  /* a wall from v0 to v1 at u in frame F, y0 to y1, facing +u (s = 1) or -u, with a gate hexagon of corner radius R
     cut in its middle (R 0: none) */
  const wallWithGate=(key,F,u,v0,v1,y0,y1,R,s,tu,tv)=>{const n=[F.u[0]*s,0,F.u[1]*s],o=at(F,u,0),t=F.v;
@@ -114,18 +117,28 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
     for(const q of pts)VP(key,q,o2,F.v,n,0,WT);continue;}
    Q(key,[W(-R/2,y0),W(R/2,y0),W(R/2,y1),W(-R/2,y1)],[[0,y0/WV],[R/WT,y0/WV],[R/WT,y1/WV],[0,y1/WV]],[-F.u[0],0,-F.u[1]]);}};
  /* a hexagonal frustum (a tower) on the solid's orientation, from R0 at y0 to R1 at y1, then its roof */
- const tower=(c,R0,R1,y0,y1,roof,ov)=>{for(let j=0;j<6;j++){const a=Math.PI/6+j*Math.PI/3,b=a+Math.PI/3,m=(a+b)/2;
+ const tower=(c,R0,R1,y0,y1,roof,ov,a0)=>{a0=a0==null?Math.PI/6:a0;for(let j=0;j<6;j++){const a=a0+j*Math.PI/3,b=a+Math.PI/3,m=(a+b)/2;
    const p=(R,t,y)=>[c[0]+R*C(t),y,c[1]+R*S(t)];const L0=R0,L1=R1;
    Q('WALL',[p(R0,a,y0),p(R0,b,y0),p(R1,b,y1),p(R1,a,y1)],[[0,y0/WV],[L0/WT,y0/WV],[(L0+L1)/2/WT,y1/WV],[(L0-L1)/2/WT,y1/WV]],[C(m),0,S(m)]);
-   const Re=R1+ov,yr=y1+roof;
+   if(!roof)continue;const Re=R1+ov,yr=y1+roof;
    Q('BRONZE',[p(Re,a,y1),p(Re,b,y1),[c[0],yr,c[1]],[c[0],yr,c[1]]],[[0,0],[Re/6,0],[Re/12,roof/6],[Re/12,roof/6]],[C(m),1,S(m)]);}
-  HP('SOFF',SANCTUM.hex(c[0],c[1],R1+ov,Math.PI/6),y1,false,8);
+  if(!roof)return;HP('SOFF',SANCTUM.hex(c[0],c[1],R1+ov,a0),y1,false,8);
   kput('snCyl',[c[0],y1+roof-1,c[1]],null,[.9,roof*.35+4,.9],BRZ);};
+ /* a horizontal polygon with holes ([[x, z]] each), triangulated exactly (the earcut in three.js): the podium roof */
+ const HPH=(key,outer,holes,y,tile)=>{const V2=a=>a.map(q=>new THREE.Vector2(q[0],q[1]));
+  const tris=THREE.ShapeUtils.triangulateShape(V2(outer),holes.map(V2)),all=outer.concat(...holes);
+  for(const t of tris){const pts=[all[t[0]],all[t[1]],all[t[2]],all[t[2]]].map(q=>[q[0],y,q[1]]);Q(key,pts,pts.map(q=>[q[0]/tile,q[2]/tile]),[0,1,0]);}};
+ /* a parapet of boxes round a hexagon, every other face a little taller, so no two share a top where they cross */
+ const hexParapet=(c,R,th,y,inside)=>{for(let j=0;j<6;j++){const F=frame(th+j*Math.PI/3),ap=R*K30,o=inside?-.3:.3,h=j%2?1.2:1.32;
+  kput('snBox',[c[0]+F.u[0]*(ap+o),y+h/2,c[1]+F.u[1]*(ap+o)],qFacing([F.u[0],0,F.u[1]]),[R+.6,h,.6],WHT);}};
+ const FL=D.FLOOR;
 
  // ---- the apron and the avenue to the front gate ----------------------------------------------------------------------
  {const hp=SANCTUM.hex(0,0,D.RP,0),ha=SANCTUM.hex(0,0,D.RP+40,0);
-  for(let j=0;j<6;j++){const k=(j+1)%6,t=[hp[j],hp[k],ha[k],ha[j]].map(q=>[q[0],.05,q[1]]);Q('PAVE',t,t.map(q=>[q[0]/8,q[2]/8]),[0,1,0]);}
-  const F=frame(Math.PI/2),apA=(D.RP+40)*K30;HP('PAVE',[[apA-1,-22],[apA+260,-22],[apA+260,22],[apA-1,22]].map(q=>at(F,q[0],q[1])),.06,true,8);}
+  for(let j=0;j<6;j++){const k=(j+1)%6,t=[hp[j],hp[k],ha[k],ha[j]].map(q=>[q[0],FL,q[1]]);Q('PAVE',t,t.map(q=>[q[0]/8,q[2]/8]),[0,1,0]);
+   const m=Math.PI/3*j+Math.PI/6;WQ('STONE',ha[j],ha[k],0,FL,[C(m),0,S(m)],8,8);}
+  const F=frame(Math.PI/2),apA=(D.RP+40)*K30,AV=[[apA,-22],[apA+260,-22],[apA+260,22],[apA,22]].map(q=>at(F,q[0],q[1]));
+  HP('PAVE',AV,FL,true,8);WQ('STONE',AV[0],AV[1],0,FL,[1,0,0],8,8);WQ('STONE',AV[2],AV[3],0,FL,[-1,0,0],8,8);WQ('STONE',AV[1],AV[2],0,FL,[0,0,1],8,8);}
 
  // ---- the podium: six faces with their gates, the passages, the atria, the roof -------------------------------------
  const apP=D.RP*K30;
@@ -137,17 +150,31 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
   for(let i=0;i<6;i++){const p=h[i],q=h[(i+1)%6],mid=[(p[0]+q[0])/2,(p[1]+q[1])/2],n0=[-mid[0],g.R*K30-mid[1]];
    const P3=(u,w)=>{const xz=at(F,u,w[0]);return [xz[0],w[1],xz[1]];},nn=[F.v[0]*n0[0],n0[1],F.v[1]*n0[0]];
    const L=Math.hypot(q[0]-p[0],q[1]-p[1]);
-   Q(i===1?'PAVE':'ONYX',[P3(a,p),P3(a,q),P3(apP,q),P3(apP,p)],[[0,0],[L/4,0],[L/4,(apP-a)/4],[0,(apP-a)/4]],nn);}
-  kput('snBox',[F.u[0]*(apP-.3),D.YP+.75,F.u[1]*(apP-.3)],qFacing([F.u[0],0,F.u[1]]),[D.RP,1.5,.6],WHT);}
+   if(i===1){const w=g.R/2+FL*(g.R/2)/(g.R*K30);   /* the floor at FL meets the sloping sides */
+    Q('PAVE',[P3(a,[-w,FL]),P3(a,[w,FL]),P3(apP,[w,FL]),P3(apP,[-w,FL])],[[0,0],[2*w/4,0],[2*w/4,(apP-a)/4],[0,(apP-a)/4]],[0,1,0]);
+    VP('STONE',[[-g.R/2,0],[g.R/2,0],[w,FL],[-w,FL]],at(F,apP,0),F.v,[F.u[0],0,F.u[1]],0,4);continue;}
+   Q('ONYX',[P3(a,p),P3(a,q),P3(apP,q),P3(apP,p)],[[0,0],[L/4,0],[L/4,(apP-a)/4],[0,(apP-a)/4]],nn);}
+  kput('snBox',[F.u[0]*(apP-.3),D.YP+.75,F.u[1]*(apP-.3)],qFacing([F.u[0],0,F.u[1]]),[D.RP-1.6,1.5,.6],WHT);}
+ for(const q of SANCTUM.hex(0,0,D.RP-1.1,0))kput('snBox',[q[0],D.YP+1.2,q[1]],qEuler(0,Math.atan2(q[0],q[1]),0),[2.4,2.4,2.4],WHT);
  for(const A of P.atria){holeWalls('WALL',A.c,A.R,A.th,0,D.YP,D.GATE);
-  HP('PAVE',SANCTUM.hex(A.c[0],A.c[1],A.R,A.th+Math.PI/6),.05,true,6);
-  HP('WATER',SANCTUM.hex(A.c[0],A.c[1],A.pool,A.th+Math.PI/6),.35,true,10);
-  for(let j=0;j<6;j++){const F=frame(A.th+j*Math.PI/3),ap=A.pool*K30;
-   kput('snBox',[A.c[0]+F.u[0]*(ap+.3),.35,A.c[1]+F.u[1]*(ap+.3)],qFacing([F.u[0],0,F.u[1]]),[A.pool+.6,.7,.6],WHT);
-   const apA=A.R*K30;kput('snBox',[A.c[0]+F.u[0]*(apA-.3),D.YP+.75,A.c[1]+F.u[1]*(apA-.3)],qFacing([F.u[0],0,F.u[1]]),[A.R,1.5,.6],WHT);}
-  kput('snBox',[A.c[0],1.2,A.c[1]],qFacing([C(A.th),0,S(A.th)]),[5,2.4,5],WHT);}
- for(let k=0;k<6;k++){const th=SANCTUM.FACE_P(k);
-  wedge('PAVE',th,D.YP,D.ATC,D.ATR,[[apP,-D.RP/2],[apP,D.RP/2]],true,8);}
+  HP('PAVE',SANCTUM.hex(A.c[0],A.c[1],A.R,A.th+Math.PI/6),FL,true,6);
+  HP('WATER',SANCTUM.hex(A.c[0],A.c[1],A.pool,A.th+Math.PI/6),FL+.5,true,10);
+  for(let j=0;j<6;j++){const F=frame(A.th+j*Math.PI/3),ap=A.pool*K30,h=j%2?.8:.86;
+   kput('snBox',[A.c[0]+F.u[0]*(ap+.3),FL+h/2,A.c[1]+F.u[1]*(ap+.3)],qFacing([F.u[0],0,F.u[1]]),[A.pool+.6,h,.6],WHT);}
+  hexParapet(A.c,A.R,A.th,D.YP,true);
+  kput('snBox',[A.c[0],FL+1.2,A.c[1]],qFacing([C(A.th),0,S(A.th)]),[5,2.4,5],WHT);}
+ /* the garden courts: walled hexagons open to the sky, lawn at the floor */
+ for(const A of P.courts){holeWalls('WALL',A.c,A.R,A.th,0,D.YP,0);HP('LAWN',SANCTUM.hex(A.c[0],A.c[1],A.R,A.th+Math.PI/6),FL,true,6);hexParapet(A.c,A.R,A.th,D.YP,true);}
+ /* the podium roof: the hexagon less the atria and the courts, exactly */
+ HPH('PAVE',SANCTUM.hex(0,0,D.RP,0),P.atria.concat(P.courts).map(A=>SANCTUM.hex(A.c[0],A.c[1],A.R,A.th+Math.PI/6).reverse()),D.YP,8);
+ /* the Six Ministries: two tapering tiers, a ledge and its parapet between, balcony bands, a bronze roof */
+ for(const M of P.ministries){const a0=M.th;
+  M.tiers.forEach((T,i)=>{const last=i===M.tiers.length-1;tower(M.c,T.R0,T.R1,T.y0,T.y1,last?M.roof:0,last?M.ov:0,a0);
+   for(let y=T.y0+24;y<T.y1-6;y+=24){const r=T.R0+(T.R1-T.R0)*(y-T.y0)/(T.y1-T.y0),ap=r*K30;
+    for(let j=0;j<6;j++){const t=a0+Math.PI/6+j*Math.PI/3;kput('snBox',[M.c[0]+(ap+.9)*C(t),y-.35,M.c[1]+(ap+.9)*S(t)],qFacing([C(t),0,S(t)]),[r*(1-.04*(j%2)),.7,2.4],WHT);}}
+   if(!last){const N=M.tiers[i+1],ho=SANCTUM.hex(M.c[0],M.c[1],T.R1,a0),hi=SANCTUM.hex(M.c[0],M.c[1],N.R0,a0);
+    for(let j=0;j<6;j++){const k=(j+1)%6,t=[ho[j],ho[k],hi[k],hi[j]].map(q=>[q[0],T.y1,q[1]]);Q('PAVE',t,t.map(q=>[q[0]/6,q[2]/6]),[0,1,0]);}
+    hexParapet(M.c,T.R1,a0+Math.PI/6,T.y1,true);}});}
 
  // ---- the stalk ---------------------------------------------------------------------------------------------------
  {const h=SANCTUM.hex(0,0,D.RK,Math.PI/6);for(let j=0;j<6;j++){const a=h[j],b=h[(j+1)%6],m=Math.PI/3*(j+1);
@@ -176,11 +203,10 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
    VP('ONYX',pts,at(R.F,apS,0),R.F.v,n,.15,4);
    const p=at(R.F,apS+.3,v);
    kput('snBar',[p[0],Wr.y+Wr.h/2,p[1]],qFacing(n),[.45,Wr.h,.35],BRZ);
-   kput('snBar',[p[0],ys,p[1]],qFacing(n),[w,.45,.35],BRZ);
+   kput('snBar',[p[0],ys,p[1]],qFacing(n),[w,.45,.42],BRZ);
    for(const s of [-1,1]){const q=at(R.F,apS+.3,v+s*(w/2+.3));kput('snBar',[q[0],Wr.y+(ys-Wr.y)/2,q[1]],qFacing(n),[.6,ys-Wr.y,.4],BRZ);}}}
  for(const Wl of P.wells){holeWalls('WALL',Wl.c,Wl.R,Wl.th,D.YS0,D.YS1,0);
-  for(let j=0;j<6;j++){const F=frame(Wl.th+j*Math.PI/3),ap=Wl.R*K30;
-   kput('snBox',[Wl.c[0]+F.u[0]*(ap+.3),D.YS1+.6,Wl.c[1]+F.u[1]*(ap+.3)],qFacing([F.u[0],0,F.u[1]]),[Wl.R+.6,1.2,.5],WHT);}}
+  hexParapet(Wl.c,Wl.R,Wl.th,D.YS1,false);}
  for(let k=0;k<6;k++){const th=SANCTUM.FACE_S(k),F=frame(th),pts=[];
   /* the wedge's outer boundary: the second half of the fillet before the face, the first half of the one after */
   for(let i=NA>>1;i<NA;i++)pts.push(OL[((k+5)%6)*NA+i]);for(let i=0;i<=NA>>1;i++)pts.push(OL[k*NA+i]);
@@ -197,7 +223,9 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
  const leafC=(u,f)=>new THREE.Color().setHSL(f?.30:.22+u*.1,f?.32:.38,f?.20:.26+u*.06);
  const H=a=>KRAND.unit(KRAND.child(P.seed,a.id));
  for(const a of P.add){const k=a.kind;
-  if(k==='head'){const h=a.h;kput('snHead'+(KRAND.child(P.seed,a.id)%SN_HEADS),a.at,qFacing(a.face),[h*.84,h,h*.92],new THREE.Color(a.color));}
+  if(k==='head'){const h=a.h;let y=a.at[1];
+   if(a.plinth){kput('snBox',[a.at[0],y+a.plinth/2,a.at[2]],qFacing(a.face),[h*.62,a.plinth,h*.62],WHT);y+=a.plinth;}
+   kput('snHead'+(KRAND.child(P.seed,a.id)%SN_HEADS),[a.at[0],y,a.at[2]],qFacing(a.face),[h*.84,h,h*.92],new THREE.Color(a.color));}
   else if(k==='figure'){const h=a.h;kput('scnFigure',a.at,qFacing(a.face),[h,h,h],new THREE.Color(a.color));}
   else if(k==='tree'){const u=H(a),h=a.h;kput('trunk',a.at,qEuler(0,u*TAU,0),[h*.12,h*.7,h*.12],new THREE.Color().setHSL(.07,.3,.18));
    if(a.formal)kput('leafCard',[a.at[0],a.at[1]+h*.62,a.at[2]],qEuler(0,u*TAU,0),[h*.2,h*.42,h*.2],leafC(u,1));
@@ -206,7 +234,7 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
 
  // ---- what the presets are derived from, then the merge -----------------------------------------------------------------
  SCN_SITE.kept={x:gx,z:gz,RP:D.RP,RS:D.RS,YP:D.YP,YS0:D.YS0,YS1:D.YS1,YT:D.YS1+D.TOWER.h+D.TOWER.roof,front:Math.PI/2,
-  atria:P.atria.map(A=>({c:A.c,th:A.th})),wells:P.wells.map(W=>({c:W.c,th:W.th})),vol:P.vol,trees:P.trees};
+  atria:P.atria.map(A=>({c:A.c,th:A.th})),courts:P.courts.map(A=>({c:A.c,th:A.th})),wells:P.wells.map(W=>({c:W.c,th:W.th})),vol:P.vol,trees:P.trees};
  for(const key in ACC){const A=ACC[key];if(!A.n)continue;
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(A.P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(A.N,3));
