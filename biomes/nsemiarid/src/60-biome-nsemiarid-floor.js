@@ -63,9 +63,9 @@ function seedDrift(ox,oz,orad,st){const w=W(),x=ox+w[0]*(orad+1.2),z=oz+w[1]*(or
 // a CRAWLER (after the creeping devil): a prostrate, ribbed, spiny stem that grows at its head toward water (downslope)
 // and dies behind, rooting as it goes. Its head is raised and green, often in flower; behind it the living stem snakes
 // along the ground, then the trail: grey, collapsed, rotted through in places; now and then a branch forks off. The
-// segments are laid head first, each following the ground between its ends (2026-10-22: before, a straight row of
-// smooth capsules)
-function crawler(x,y,z,lv,st){const d=downhill(x,z),seg=rr(1.1,1.5),n=lv===2?ri(9,18):ri(4,6),live=Math.max(2,Math.round(n*rr(.35,.6)));
+// segments are laid head first, each following the ground between its ends; the spines are drawn on the head and the two
+// segments behind it, where a camera close enough to see them looks (2026-10-22: before, a straight row of smooth capsules)
+function crawler(x,y,z,lv,st){const d=downhill(x,z),seg=rr(1.1,1.5),n=lv===2?ri(8,14):ri(4,6),live=Math.max(2,Math.round(n*rr(.35,.6)));
  const yaw0=Math.atan2(d[0],d[1]),ph=rr(0,TAU),wig=rr(.2,.45),stemCol=leafCol(PAL.crawler,1.2,.03,.08,.05),deadCol=()=>bright(vary(pick(PAL.crawlerDead),.02,.05,.06),1.0);
  // the path from the head back up the slope: the heading wanders in a slow sine about the downslope
  const lay=(hx,hz,yawB,m,first,branch)=>{let px=hx,pz=hz;
@@ -75,7 +75,7 @@ function crawler(x,y,z,lv,st){const d=downhill(x,z),seg=rr(1.1,1.5),n=lv===2?ri(
    const head=first&&i===0,r=head?rr(.2,.26):isLive?rr(.17,.22):rr(.13,.18),y0=Y(bx,bz)+r*(dead?.25:.55),y1=Y(px,pz)+r*(dead?.25:.55)+(head?r*1.6:0);
    const pitch=Math.atan2(y1-y0,seg),q=qEuler(Math.PI/2-pitch,yw,rr(-.3,.3)),L=Math.hypot(seg,y1-y0)*1.06,sc=[r*2,L,r*2*(dead?.65:1)];
    BIO.put(dead?'crawlerDead':'crawler',[bx,y0,bz],q,sc,dead?deadCol():head?bright(stemCol,1.12):stemCol);
-   if(isLive&&lv===2)BIO.put('crawlerSpines',[bx,y0,bz],q,sc,leafCol([0xe8dcb0,0xf0e4c0,0xdcd0a0],1.1,.01,.04,.04));
+   if(isLive&&lv===2&&(i<3||branch&&i<1))BIO.put('crawlerSpines',[bx,y0,bz],q,sc,leafCol([0xe8dcb0,0xf0e4c0,0xdcd0a0],1.1,.01,.04,.04));
    // a branch forks off the living stem and runs a few segments of its own
    if(first&&isLive&&i>0&&lv===2&&rng()<.18){const s=rng()<.5?-1:1;lay(bx,bz,yw+s*rr(.5,.9),ri(2,4),false,true);}
    px=bx;pz=bz;}};

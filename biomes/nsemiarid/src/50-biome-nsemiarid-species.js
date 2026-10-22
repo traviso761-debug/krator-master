@@ -383,15 +383,15 @@ G.cactusStem=function(ribs,dead){const pos=[],nor=[],uv=[],col=[];const seg=ribs
  for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const q=[P(i,s),P(i,s+1),P(i+1,s),P(i+1,s+1)];if(s===seg-1){q[1].u=2;q[3].u=2;}
   [[0,3,2],[0,1,3]].forEach(t=>t.forEach(k=>{const e=q[k];push3(pos,e.p);push3(nor,e.n);uv.push(e.u,e.v);col.push(e.c,e.c,e.c);}));}
  return BIO.geo._make(pos,nor,uv,col);};
-// its SPINES: at three areoles up every rib crest, a star of pale needles standing out (the radials) and one long
+// its SPINES: at two areoles up every rib crest, a star of pale needles standing out (the radials) and one long
 // central spine raked forward; the same unit segment
 G.cactusSpines=function(ribs){const pos=[],nor=[],uv=[],col=[];
  const needle=(o,d,L,w,c)=>{const sx=-d[2],sz=d[0],sl=Math.hypot(sx,sz)||1,ex=[sx/sl*w,0,sz/sl*w],ey=[0,w,0];
   [ex,ey].forEach(e=>{const A=[o[0]-e[0],o[1]-e[1],o[2]-e[2]],B=[o[0]+e[0],o[1]+e[1],o[2]+e[2]],T=[o[0]+d[0]*L,o[1]+d[1]*L,o[2]+d[2]*L];
    [A,B,T].forEach(p=>{push3(pos,p);nor.push(d[0],d[1],d[2]);uv.push(0,0);col.push(c,c,c);});});};
  for(let r=0;r<ribs;r++){const a=r/ribs*TAU,ca=Math.cos(a),sa=Math.sin(a);
-  for(const v of [.22,.55,.86]){const o=[ca*.57,v,sa*.57];
-   for(let k=0;k<4;k++){const t=(k/4-.375)*1.6,dx=ca*Math.cos(t),dz=sa*Math.cos(t),dy=Math.sin(t);needle(o,[dx,dy,dz],.28,.025,1);}
+  for(const v of [.3,.78]){const o=[ca*.57,v,sa*.57];
+   for(let k=0;k<3;k++){const t=(k/3-.33)*1.6,dx=ca*Math.cos(t),dz=sa*Math.cos(t),dy=Math.sin(t);needle(o,[dx,dy,dz],.28,.025,1);}
    needle(o,[ca*.6,.8,sa*.6],.55,.03,.85);}}
  return BIO.geo._make(pos,nor,uv,col);};
 // a TUMBLER: a ball of crossed cards (the tangle texture), unit radius, origin at the centre
@@ -557,11 +557,11 @@ BIO.def('finger',G.finger(),M.vcol,{label:'Salt fingers'});
 BIO.def('bead',G.bead(),M.vcol,{label:'Bead chains'});
 // the crawler's skin: the library's ribbed cactus skin (skin.cactus) where the page carries it, else the vertex colours
 {const L=LIBP('skin.cactus'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawl=BIO.leafMat(t,'crawl',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
-BIO.def('crawler',G.cactusStem(8,false),M.crawl,{label:'Crawlers (the living stems)'});
+BIO.def('crawler',G.cactusStem(6,false),M.crawl,{label:'Crawlers (the living stems)'});
 // the dead trail is the stem's woody skeleton: the saxaul's twisted grey wood (bark.gnarled), else the vertex colours
 {const L=LIBP('bark.gnarled'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawlDead=BIO.leafMat(t,'crawldead',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
-BIO.def('crawlerDead',G.cactusStem(8,true),M.crawlDead,{label:'Crawler trails (the dead stems)'});
-BIO.def('crawlerSpines',G.cactusSpines(8),M.vcol,{label:'Crawler spines'});
+BIO.def('crawlerDead',G.cactusStem(6,true),M.crawlDead,{label:'Crawler trails (the dead stems)'});
+BIO.def('crawlerSpines',G.cactusSpines(6),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});
