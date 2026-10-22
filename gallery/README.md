@@ -119,6 +119,11 @@ Port went to version 5 (three calls, every page and both packs from `main` at 75
 Plymouth and Arcoindian I as the Eternal State keeps them (`arc-kept`) added under Arcologies, Plymouth's and Arcoindian
 I's quality pass, the shared pack with the Sanctum's sets (7.9 MB).
 
+Republished 2026-10-22 (`main` at 900be3137): the Eternian kit's artifact version 2 (the page alone: the frontier fort and
+the catalog's glaive rack and bunk; its packs unchanged), and The Ancients and the Port version 6 (the index, the
+redrawn Sanctum `arc-sanctum`, and the Podium `arc-podium`, the first Sanctum set aside as its own arcology; 64 pages).
+The four parts' live indexes still say 63 pages for the Ancients; `index.template.html` says 64 for their next rebuild.
+
 ## The Throne: its own artifact (2026-10-07)
 
 The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne
