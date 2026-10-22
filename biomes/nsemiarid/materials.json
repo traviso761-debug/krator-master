@@ -207,12 +207,12 @@
   "ground.silt": {
    "lib": "ground.salt",
    "scale": [
-    3.0,
-    3.0
+    8.0,
+    8.0
    ],
    "tint": {
-    "keep": 0.45,
-    "mean": null
+    "keep": 0.0,
+    "mean": 0.78
    },
    "roughLift": 0.35,
    "mapOnly": true
@@ -220,12 +220,12 @@
   "ground.crust": {
    "lib": "ground.efflorescence",
    "scale": [
-    2.6,
-    2.6
+    5.0,
+    5.0
    ],
    "tint": {
-    "keep": 0.55,
-    "mean": null
+    "keep": 0.35,
+    "mean": 0.7
    },
    "roughLift": 0.35,
    "mapOnly": true

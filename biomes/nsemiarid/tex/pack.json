@@ -180,8 +180,8 @@
    "normalScale": 1.0,
    "roughLift": 0.35,
    "scale": [
-    2.6,
-    2.6
+    5.0,
+    5.0
    ],
    "size": 512,
    "source": {
@@ -192,8 +192,8 @@
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.55,
-    "mean": 0.479507266477697,
+    "keep": 0.35,
+    "mean": 0.7,
     "sourceMean": 0.4795
    }
   },
@@ -264,8 +264,8 @@
    "normalScale": 1.0,
    "roughLift": 0.35,
    "scale": [
-    3.0,
-    3.0
+    8.0,
+    8.0
    ],
    "size": 512,
    "source": {
@@ -276,8 +276,8 @@
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.45,
-    "mean": 0.6379710545827828,
+    "keep": 0.0,
+    "mean": 0.78,
     "sourceMean": 0.638
    }
   },
