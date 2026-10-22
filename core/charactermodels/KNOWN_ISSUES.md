@@ -166,8 +166,13 @@
   works above the hips only: a short tee over jeans in a deep crouch can still show denim at its hem. The cargo
   trousers' cover was widened on 2026-10-20 (the knees, the crotch seam and the buttocks' cleft came through them in
   the Animation Lab review: `make_mpfb.py TROUSERS_COVER`) and the nipples now hide under a top that covers them
-  (`hide_parts`); the generated trousers keep the default reach (nobody flagged them; they are settled to the body by
-  `make_garments.py`), and so may still show a knee in a deep crouch: shoot them before widening theirs.
+  (`hide_parts`). The cultures' made trousers, breeches and braccae took the same cover the same day: shot red in a
+  crouch and a jog on the man, the woman and the giant, the knees came through the Iziz, Yuni, Dalab and Republic
+  trousers and the giant's braccae, and slivers at the crotch and the calves' backs through most of the rest; none
+  shows now. Inside a short leg's hem (Iziz and Yuni peasants, the Republic's festive trousers) a crouch seen from behind
+  now shows the cloth's inside where the shin used to be: the shin's skin there is hidden with the rest. On the giant
+  body the braccae fold through themselves at the crotch in the jog (`ual_jog` 0.25, from the front: dark shards of
+  the cloth's inside); that is the cloth, not skin, and was there before the cover changed.
 - **The plain tee's hem and the trousers' band cross** in a deep hip bend (the Animation Lab's ladder climb at 1.2 s,
   worse on the man): the tee's hem and the cargo trousers' tucked band pass through each other in a jagged line. The
   owner saw a see-through gap there; shot on a magenta background (Cosmetic Lab and Animation Lab, every body, front,

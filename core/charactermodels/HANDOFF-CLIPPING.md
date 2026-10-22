@@ -60,7 +60,9 @@ trousers (the pack's ray cover, now `TROUSERS_COVER`); the man's nipple was the 
 hide reached (now `hide_parts`); the trousers' band came through the tee's back in the push and the swim (the tuck,
 now in the trunk's frame). `python3 tools/make_mpfb.py hides <body> <dir of GLBs>` refreshes kit.json's hides without
 Blender (decode the published pieces' first line: base64 of a gzipped GLB). The ladder's "gap" is open (KNOWN_ISSUES).
-Godot's skin regions for the trousers wait for the next whole build.
+Godot's skin regions for the trousers wait for the next whole build. The cultures' made trousers, breeches and braccae
+take the same cover (`legged_trousers`; shot red in `ual_crouch` 1.0 and `ual_jog` 0.25, before and after, on the man,
+the woman and the giant: knee skin had come through the Iziz, Yuni, Dalab and Republic trousers and the braccae).
 
 ## Open, by priority
 

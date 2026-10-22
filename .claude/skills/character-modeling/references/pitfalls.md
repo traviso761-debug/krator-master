@@ -55,6 +55,9 @@ area you are about to change.
   skin red and shoot: red is skin left drawn, not torn cloth. The legs stood off the knee up to 3.3 cm and the rays reach
   2.5, and rays along the normal from the crotch and the buttocks' cleft go between the legs. Longer rays (5 cm) plus a
   closure test (rays along +z and -z both meet the garment) hide them; `make_mpfb.py hides` redoes it from the GLBs.
+  Garments settled to the body are not exempt: the made cultures' trousers showed the same knees in a crouch, so every
+  legged item takes the cover (`legged_trousers`). Diff the red shots before and after on a magenta background: red
+  gone is the fix, new magenta would be a hole the wider cover opened.
 - **A nipple through a T-shirt** (the man's, in the idles) → the base's nipples are a primitive of their own
   (`Human.nipple`), drawn over the skin: no hide reaches them. Hide such a part when an item hides all the skin under it
   (`hide_parts`). Draw the garments hidden and the hide on (A-pose, front and back) to see every such leftover at once.
