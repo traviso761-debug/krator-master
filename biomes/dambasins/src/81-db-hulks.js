@@ -1,6 +1,6 @@
 // ================================================================ DAM BASINS — the hulks, aground (PLAN.md, D1)
-// Every vessel on a dam-basins page is a hulk: the Ancient Port kit's vessel, placed by its own portPlaceVessel (its own
-// budget, the PRNG saved round it, its own d=3 dressing), then GROUNDED: pitched and rolled to the ground under its
+// Every vessel on a dam-basins page is a hulk: the Ancient Port kit's vessel, built by its own builder (a free vessel by
+// the scene, a berth's by portPlaceVessel), then GROUNDED: pitched and rolled to the ground under its
 // bow, stern and beams, listed further toward the downslope side, and sunk so its keel lies buried in the silt.
 //   How, without touching the kit: a vessel builder keeps its group G unrotated at its midship (gx, 0, gz) and sets
 //   KOFF to that point (settlements/port/CONTRACT.md, "Vessel frame"). Its meshes and its batches are children of G, so
@@ -26,10 +26,12 @@ function dbHulkPose(key,x,z,h,L,B,D,g){const fx=Math.sin(h),fz=Math.cos(h),sx=Ma
  const q=new THREE.Quaternion().setFromAxisAngle(side,pitch).multiply(new THREE.Quaternion().setFromAxisAngle(f,-(roll+list)));
  const lo=Math.min(ym,(ya+yb)/2);
  return {q,R:new THREE.Matrix4().makeRotationFromQuaternion(q),dy:lo+D-bury,pitch,roll:roll+list,bury,ground:ym};}
-const dbPlace0=portPlaceVessel;
-portPlaceVessel=function(G,key,x,z,heading,d,o){const V=PORT_REG.vessel[key];if(!V)return dbPlace0(G,key,x,z,heading,d,o);
- const wx=KOFF[0]+x,wz=KOFF[2]+z,P=dbHulkPose(key,wx,wz,heading||0,V.length,V.beam,V.draft,terrainH);
- DB_GXF=P;let VG=null;try{VG=dbPlace0(G,key,x,z,heading,d,o);}finally{DB_GXF=null;}
- if(VG&&VG.isObject3D){VG.position.y+=P.dy;VG.quaternion.premultiply(P.q);VG.updateMatrixWorld(true);}
- DB_HULKS.push({key,d,x:wx,z:wz,heading:heading||0,dy:P.dy,draft:V.draft,bury:P.bury,pitch:P.pitch,roll:P.roll,ground:P.ground});
- return VG;};
+// every registered vessel's builder, wrapped (89c-db-ground.js calls this once every vessel has registered, before the
+// scene builds): a free vessel the layout places and one a berth places (portPlaceVessel calls the same build) are both
+// grounded. The builder's group G sits at (gx, 0, gz), unrotated: the pose goes on it after, about that point.
+function dbGroundVessels(){for(const key in PORT_REG.vessel){const V=PORT_REG.vessel[key],b0=V.build;
+ V.build=function(scene,gx,gz,d,opt){const h=(opt&&opt.heading)||0,P=dbHulkPose(key,gx,gz,h,V.length,V.beam,V.draft,terrainH);
+  DB_GXF=P;let VG=null;try{VG=b0(scene,gx,gz,d,opt);}finally{DB_GXF=null;}
+  if(VG&&VG.isObject3D){VG.position.y+=P.dy;VG.quaternion.premultiply(P.q);VG.updateMatrixWorld(true);}
+  DB_HULKS.push({key,d,x:gx,z:gz,heading:h,dy:P.dy,draft:V.draft,bury:P.bury,pitch:P.pitch,roll:P.roll,ground:P.ground});
+  return VG;};}}

@@ -17,5 +17,5 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  // the moored hulks (D1), from the slope below them, and along the quay's foot
  const M=(L.db&&L.db.moored)||[];
  if(M.length){const m=M[0];V['The moored hulks']=[m.gx+260,g(m.gx+260,m.gz+260)+14,m.gz+260,m.gx,g(m.gx,m.gz)+12,m.gz];
-  V['Along the quay foot']=[m.gx-320,g(m.gx-320,m.gz+30)+6,m.gz+30,m.gx+200,-6,m.gz-10];}
+  V['Along the quay foot']=[m.gx-260,g(m.gx-260,m.gz+110)+5,m.gz+110,m.gx+120,g(m.gx,m.gz)+10,m.gz];}   // out on the slope, below the berths
  return V;})();
