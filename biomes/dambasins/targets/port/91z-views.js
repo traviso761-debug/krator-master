@@ -4,7 +4,7 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
   x0=Math.min(x0,f.x0);x1=Math.max(x1,f.x1);z0=Math.min(z0,f.z0);z1=Math.max(z1,f.z1);}
  const cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0),P=L.db&&L.db.pier,g=(x,z)=>DB_NAT(x,z);   // the bed's own ground (the views are made before the terrain is built)
  // from the bed below, looking up the fast-drain slope at the port on its old line, the ring white under it
- V['The old port from the bed']=[cx+160,g(cx+160,z1+900)+3,z1+900,cx,D+20,cz];
+ V['The old port from the bed']=[cx+160,g(cx+160,z1+420)+4,z1+420,cx,D+12,cz];
  // the whole station, high over the bed
  V['Overview']=portCam(cx,0,cz,-.6,.55,span*.8+500);
  // on the pier's head, looking out over where the lake was
