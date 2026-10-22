@@ -12,7 +12,7 @@ const SCORES={
  tugai:(Z,x,z,ld)=>Z.tugai*(1-Z.pan)-ld/3000,
  strand:(Z,x,z,ld)=>FIELD.strand(x,z)*FIELD.bed(x,z)*(1-Z.pan)-ld/4000,
  ring:(Z,x,z,ld)=>FIELD.ring(x,z)-ld/4000};
-const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+const PLACE=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
  for(let z=-3200;z<=3200;z+=50)for(let x=-3200;x<=3200;x+=50){const Z=NSEMIARID.zones(x,z),ld=BIO.lodD(x,z);
   for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
@@ -23,22 +23,22 @@ const W0=NSEMIARID.WIND,UPW=Math.atan2(-W0[1],-W0[0]);   // the camera upwind of
 const VIEWS={
  'From afar':look(-3300,3300,600,-300,-900,150),
  'The old lake bed and its strandlines':look(BED.x+1500,BED.z+1500,90,BED.x,BED.z,0),
- 'The bathtub ring':look(P.ring[0]-120*W0[0],P.ring[1]-120*W0[1],10,P.ring[0]+60,P.ring[1]+40,0),
- 'The salt pan':look(P.pan[0]-80,P.pan[1]+70,4,P.pan[0]+60,P.pan[1]-60,0),
- 'Crescent saxaul groves':atTree(nearTree('saxaul',P.desert[0],P.desert[1]),45,UPW+.5,8),
- 'Crawlers on the desert':look(P.desert[0]-30,P.desert[1]+30,3,P.desert[0]+20,P.desert[1]-20,0),
- 'Golden poplar at the lake margin':atTree(nearTree('poplar',P.tugai[0],P.tugai[1],0,T=>!T.dead),40,1.2,4),
+ 'The bathtub ring':look(PLACE.ring[0]-120*W0[0],PLACE.ring[1]-120*W0[1],10,PLACE.ring[0]+60,PLACE.ring[1]+40,0),
+ 'The salt pan':look(PLACE.pan[0]-80,PLACE.pan[1]+70,4,PLACE.pan[0]+60,PLACE.pan[1]-60,0),
+ 'Crescent saxaul groves':atTree(nearTree('saxaul',PLACE.desert[0],PLACE.desert[1]),45,UPW+.5,8),
+ 'Crawlers on the desert':look(PLACE.desert[0]-30,PLACE.desert[1]+30,3,PLACE.desert[0]+20,PLACE.desert[1]-20,0),
+ 'Golden poplar at the lake margin':atTree(nearTree('poplar',PLACE.tugai[0],PLACE.tugai[1],0,T=>!T.dead),40,1.2,4),
  'Dead poplars on the salt':atTree(nearTree('poplar',BED.x,BED.z,0,T=>!!T.dead),28,2.2,3),
- 'The walking steppe':look(P.steppe[0]-60,P.steppe[1]+40,5,P.steppe[0]+40,P.steppe[1]-30,1),
- 'Dandelion frills':atTree(nearTree('frill',P.steppe[0],P.steppe[1]),38,UPW,6),
- 'Helicopter trumpets':atTree(nearTree('trumpet',P.steppe[0],P.steppe[1]),26,UPW+.4,4),
- 'Pistachio parkland':atTree(nearTree('pistachio',P.steppe[0],P.steppe[1]),30,2.6,3),
- 'Giant dandelions and foxtails':atTree(nearTree('dandelion',P.steppe[0],P.steppe[1]),10,UPW+.3,1.6),
- 'Judas trees and almonds':atTree(nearTree('judas',P.med[0],P.med[1]),20,1.8,2.5),
+ 'The walking steppe':look(PLACE.steppe[0]-60,PLACE.steppe[1]+40,5,PLACE.steppe[0]+40,PLACE.steppe[1]-30,1),
+ 'Dandelion frills':atTree(nearTree('frill',PLACE.steppe[0],PLACE.steppe[1]),38,UPW,6),
+ 'Helicopter trumpets':atTree(nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]),26,UPW+.4,4),
+ 'Pistachio parkland':atTree(nearTree('pistachio',PLACE.steppe[0],PLACE.steppe[1]),30,2.6,3),
+ 'Giant dandelions and foxtails':atTree(nearTree('dandelion',PLACE.steppe[0],PLACE.steppe[1]),10,UPW+.3,1.6),
+ 'Judas trees and almonds':atTree(nearTree('judas',PLACE.med[0],PLACE.med[1]),20,1.8,2.5),
  'The spring pool and its plane':[POOL.x-70,Math.max(POOL.lv+14,gh(POOL.x-70,POOL.z+60,6)),POOL.z+60,POOL.x,POOL.lv+8,POOL.z],
- 'Drift lanterns':atTree(nearTree('lantern',P.med[0],P.med[1]),14,.6,2),
- 'The feral fruit forest':atTree(nearTree('apple',P.forest[0],P.forest[1]),24,1.4,3),
- 'Kite ash':atTree(nearTree('samara',P.forest[0],P.forest[1]),36,2.8,5),
+ 'Drift lanterns':atTree(nearTree('lantern',PLACE.med[0],PLACE.med[1]),14,.6,2),
+ 'The feral fruit forest':atTree(nearTree('apple',PLACE.forest[0],PLACE.forest[1]),24,1.4,3),
+ 'Kite ash':atTree(nearTree('samara',PLACE.forest[0],PLACE.forest[1]),36,2.8,5),
 };
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -128,7 +128,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('drifts against the wind turned round',HCHK.drifts(inst(/tumbler/),T,[-NSEMIARID.WIND[0],-NSEMIARID.WIND[1]]));
  {const S=inst(/stepcone/),ys=S.map(s=>s[4]).reverse();add('step cones heights shuffled',HCHK.cones(S.map((s,i)=>[s[0],s[1],s[2],s[3],ys[i]])));}
  {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
- add('a dead poplar on the steppe',HCHK.deadPoplars([{x:P.steppe[0],z:P.steppe[1],dead:true}]));
+ add('a dead poplar on the steppe',HCHK.deadPoplars([{x:PLACE.steppe[0],z:PLACE.steppe[1],dead:true}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
