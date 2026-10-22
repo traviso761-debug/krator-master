@@ -575,7 +575,7 @@ func hold(want: Dictionary) -> void:
 # the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
-const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "fSpine", "fSpine1", "fSpine2", "fNeck"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "lean", "fSpine", "fSpine1", "fSpine2", "fNeck"]
 const POSTURE_SHIFT := ["Spine", "Spine1", "Spine2", "Neck"]
 const POSTURE_FADE := 0.25
 var posture := {}
@@ -644,6 +644,20 @@ func _posture(force := false) -> void:
 			arms[ai] = _gp(ai).basis.get_rotation_quaternion()
 	# the pelvis tilts about the skeleton's side axis (pelvis: negative forward); the thighs keep the way the clip points
 	# them and the lumbar the way it faced (50-figure.js posture)
+	# the lean: everything above the legs tipped about the hip joints (lean: negative forward), the thighs keeping the
+	# way the clip points them and the hip joints where they were (50-figure.js posture)
+	var ll := skeleton.find_bone("LeftUpLeg")
+	var rl := skeleton.find_bone("RightUpLeg")
+	if p["lean"] != 0.0 and ll >= 0 and rl >= 0:
+		var lq := _gp(ll).basis.get_rotation_quaternion()
+		var rq := _gp(rl).basis.get_rotation_quaternion()
+		var pivot := (_gp(ll).origin + _gp(rl).origin) * 0.5
+		var q := Quaternion(Vector3(1, 0, 0), -deg_to_rad(float(p["lean"])))
+		var hp := pivot + q * (skeleton.get_bone_pose_position(_hips) - pivot)
+		_turn(_hips, q)
+		skeleton.set_bone_pose_position(_hips, hp)
+		skeleton.set_bone_pose_rotation(ll, (_gp(skeleton.get_bone_parent(ll)).basis.get_rotation_quaternion().inverse() * lq).normalized())
+		skeleton.set_bone_pose_rotation(rl, (_gp(skeleton.get_bone_parent(rl)).basis.get_rotation_quaternion().inverse() * rq).normalized())
 	var sp := skeleton.find_bone("Spine")
 	if p["pelvis"] != 0.0 and sp >= 0:
 		var keep := {}

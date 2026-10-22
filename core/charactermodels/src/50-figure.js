@@ -1576,9 +1576,9 @@ function KCharFigure(body, sliders, load){
      MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
   // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
   // copied, so a panel can change one figure's live
-  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis', 'lean'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
   var PB = PD[kit.body] ? kit.body : 'mpfb_male';
-  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, lean:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
   // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
   // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
   // cross-fade carries it over too
@@ -1639,6 +1639,18 @@ function KCharFigure(body, sliders, load){
     // the pelvis tilts about the figure's side axis (pelvis: negative forward, the top of the pelvis to the front); the
     // thighs keep the way the clip points them and the lumbar the way it faced, so only the pelvis turns and the spine
     // angles below take it from there
+    // the lean: everything above the legs tipped about the hip joints (lean: negative forward), the thighs keeping the
+    // way the clip points them and the hip joints where they were, so the legs and feet do not move
+    if(P.lean && pLegs[0] >= 0 && pLegs[1] >= 0){
+      pLegs.forEach(function(k, i){ bones[k].getWorldQuaternion(pL[i]); });
+      bones[pLegs[0]].getWorldPosition(cS2); bones[pLegs[1]].getWorldPosition(pFw); cS2.add(pFw).multiplyScalar(0.5);
+      pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -P.lean * Math.PI / 180);
+      self.hips.getWorldPosition(pFw).sub(cS2).applyQuaternion(pQ).add(cS2);
+      turnWorld(self.hips, pQ);
+      self.hips.position.copy(self.hips.parent.worldToLocal(pFw));
+      self.hips.updateMatrixWorld(true);
+      pLegs.forEach(function(k, i){ keepWorld(bones[k], pL[i]); });
+    }
     var sp = byName.Spine !== undefined ? bones[byName.Spine] : null;
     if(P.pelvis && sp){
       pLegs.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pL[i]); });

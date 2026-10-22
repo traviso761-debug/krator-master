@@ -574,6 +574,9 @@ upper arms keep the way the clip points them, so a thrust or a held spear still 
 numbers are in `data/posture.json`, which both runtimes read:
 - `bodies`: degrees per joint for `mpfb_male` and `mpfb_female` (the giant takes the man's); each figure's live copy is
   `fig.posture`.
+- `lean` (in `bodies` or a clip's change): everything above the legs tipped about the hip joints, first (negative
+  forward). The hips turn about the midpoint of the two hip joints and move with it, the thighs keep the way the clip
+  points them, so the legs and feet stay where the clip has them.
 - `pelvis` (in `bodies` or a clip's change): the pelvis tilted alone, before the spine angles (negative forward: the
   top of the pelvis to the front, the seat back; positive tucks it under). The thighs keep the way the clip points them
   and the lumbar the way it faced, so the legs and the torso's direction stay; the waist and seat turn between them.
