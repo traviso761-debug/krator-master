@@ -11,7 +11,7 @@
  "data/posture.json": "27642bdb083feaea57c2fc7f1c252fd3feb728b5",
  "data/props.json": "a3728a6a25fde96beae96ca5e9f58a9e54d763cb",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "bc91afb5e82ebfa169c3fdcc7944bf2d81671a99",
+ "dist/animation-lab.html": "aba89a4f45d35a5faa629fedbb1b909f7d35055d",
  "dist/cosmetic-lab.html": "f22a0274c10f1604d67efe49f9d293bcc5faf83e",
  "pieces/mpfb_female/AfroPonytail.glb": "4651cd4f23689b842b5486aa125918d800be59aa",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
@@ -788,5 +788,5 @@
  "src/50-figure.js": "f3a164ec4d5a2e8cb6b63622d8241ac045a32fd7",
  "src/60-crowd.js": "6adbd21cff4c89b94fd196e2e76c5d2f31592d7d",
  "src/90-editor.js": "e21984e0a3733a4a653d3ae510d45c284074aa23",
- "src/92-animlab.js": "090675eaa6661ad93ae4b7065c45ec8434bbf310"
+ "src/92-animlab.js": "950a4d18bdaa2d0aebbb4ccb040fe0bbb7498ba6"
 }
