@@ -78,6 +78,17 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/water (core/water/README.md): the remnant salt lake and the spring pool are still water, the stream a flow, made as
+# records in 45-host-stage.js (waterH reads them) and drawn by core/water in 89b-host-atmos.js. A src/ copy wins.
+CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+# core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
+# weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
+# the water needs, and the export. Bound in 89b-host-atmos.js.
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+for f in CORE_ATMOS:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))

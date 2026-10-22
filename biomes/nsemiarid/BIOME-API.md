@@ -86,7 +86,9 @@ No fauna (one fauna kit for every biome, `biomes/README.md`).
 82-host-sky.js         (host)       the eastern badlands' sky with the wall turned north
 86-host-variants.js    (host)       trees as variants (the eastern badlands', renamed; a dead form)
 88-host-build.js       (host)       build order: the wind, records, floor, bake, variants
-89-host-seeds.js       (host)       the seed weather: drifting plumes round the camera
+89b-host-atmos.js      (host)       core/atmos and core/water bound: the wind setting (calm, a breeze, high; ?wind=), NSWIND, the water drawn
+89c-host-seeds.js      (host)       the seed weather (drifting plumes) and seed flight: the seeds the wind tears off the trees
 99-host-take.js        (host)       the page handed to core/host: presets, the inspector's words, budgets and checks
 ```
-The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`; `core/terrain/40-core-basin.js` through `CORE_TERRAIN`.
+The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`; `core/terrain/40-core-basin.js` through `CORE_TERRAIN`;
+`core/water` and `core/atmos` through `CORE_WATER` and `CORE_ATMOS` (the water's records are made in 45, drawn in 89b).

@@ -104,8 +104,9 @@ function hangVine(x,y,z,len,w,st,o){o=o||{};const n=ri(2,4),a0=rr(0,TAU),lc=leaf
   if(o.pods!==false&&rng()<.6){const t=rr(.25,.8),gs=rr(.35,.6),gx=x+Math.cos(a)*d*1.2,gz=z+Math.sin(a)*d*1.2;if(y-L*t-gs<Math.max(BIO.waterH(gx,gz),BIO.terrainH(gx,gz))+.3)continue;BIO.put('gourd',[gx,y-L*t,gz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[gs,gs*rr(1.1,1.4),gs],leafCol(PAL.gourd,1.1,.02,.06,.05));if(st)st.pods++;}}
  if(st)st.vines++;}
 NSEMIARID.hangVine=hangVine;
-// seeds in flight (a frill's plumes, a trumpet's helicopters, the kite ash's samaras, a clock's parachutes): n of them
-// strung out downwind of a point, rising and falling, spinning; the seed weather's still frame
+// seeds in flight, strung out downwind of a point, rising and falling, spinning: a still frame, for what the floor places
+// (the glider gourd's wings, the sail candelabra's blades). The trees' seeds are not drawn this way any more: a variant is
+// drawn turned, which turned its trail off the wind; they fly in 89c-host-seeds.js, torn loose by core/atmos's wind
 function seedsAloft(item,x,y,z,n,reach,sz,set,st){const W=NSEMIARID.WIND;
  for(let i=0;i<n;i++){const d=reach*Math.pow(rng(),.7),side=rr(-.25,.25)*d,px=x+W[0]*d-W[1]*side,pz=z+W[1]*d+W[0]*side,py=y+rr(-.4,.5)*Math.min(30,d*.35)+rr(0,4);
   if(py<Y(px,pz)+.4||py<BIO.waterH(px,pz)+.6)continue;const s=rr(sz[0],sz[1]);
@@ -193,13 +194,13 @@ B[8]=function(T,st,lv){decTree(T,st,lv,{fam:'bark0',item:'round',stems:[1,1],for
 // 9 the kite ash: a tall open ash whose seeds come down as half-metre helicopters; bunches hang from every tip, and the
 // ripest are in the air downwind
 B[9]=function(T,st,lv){decTree(T,st,lv,{fam:'bark0',item:'lobed',stems:[1,1],forkU:rr(.35,.45),limbs:[4,6],el:.75,limbK:.8,sec:2,curve:-.02,wig:.08,tuftK:.38,flat:.75,
- samara:{p:.45}});if(lv===2)seedsAloft('samara',T.x,T.y0+T.H*.7,T.z,ri(4,10),T.H*3,[.4,.6],PAL.samaraSeed,st);};
+ samara:{p:.45}});};
 // 10 the golden poplar (after the Euphrates poplar): gold in its season, willow-narrow leaves low and round leaves high;
 // on the salt behind the living forest it stands DEAD (salt in its zone, or the pass marks it), grey and leafless
 B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark0',item:'round',stems:[1,2],forkU:rr(.3,.45),limbs:[3,6],el:.7,limbK:.85,sec:2,curve:-.02,wig:.16,tuftK:.4,flat:.75,
  mixCol:[.35,PAL.poplarGreen],dead});
- // cotton: fluff caught in the crown and drifting off downwind (the seed weather's snow)
- if(!dead&&lv===2&&rng()<.5)seedsAloft('pappus',T.x,T.y0+T.H*.7,T.z,ri(6,16),T.H*2.5,[.18,.3],PAL.silk,st);};
+ // its cotton: torn off the crown by the wind and drifting downwind (89c-host-seeds.js)
+};
 // 11 THE DANDELION FRILL (the frill-tree line: the Rift's and the drylands' bottle column): a ribbed column swollen low,
 // rows of fins up every rib, a splay of fins round the crown. Here every fin is a seed on a plume. Its stage is its
 // seed's: GREEN (iridescent teal to violet fins), RIPE (silk-white fins and the crown pod open into a seed clock 4-6 m
@@ -210,36 +211,42 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,W=NSEMIARID.WIND,wa=Math.
  const rAt=u=>rb*(.7+.5*Math.sin(clamp(u*1.4,0,1)*Math.PI*.85))*(1-u*.45);
  const rings=[];for(let u=0;u<=1.001;u+=.125)rings.push({x:T.x,y:T.y0-.3+bH*u,z:T.z,r:rAt(u),yy:u*bH,col:barkCol(S,ri(0,2))});
  st.trunk+=BIO.lathe('bark5',rings,lv===2?12:8,1,4,(Rg,a)=>Rg.r*(1+.1*Math.cos(a*6)),null);
- const ribs=6,regrow=stage==='bare'?rr(.15,.45):1;
- const finCol=()=>ripe?leafCol(PAL.frillRipe,1.15,.01,.03,.03):leafCol(S.leaf,1.25,.08,.12,.06);
- const rows=lv===2?Math.round(bH/1.1):Math.round(bH/2.6);
+ const ribs=lv===2?8:6,regrow=stage==='bare'?rr(.15,.45):1;
+ // the fins' colour: WHITE (the default since 2026-10-22: the fin card's own membrane, faintly iridescent while green,
+ // silk-white ripe) or TINT (the first look: teal to violet while green); the host picks (NSEMIARID.frillLook, ?frill=tint)
+ const white=NSEMIARID.frillLook!=='tint';
+ const finCol=()=>ripe?leafCol(PAL.frillRipe,1.15,.01,.03,.03):white?leafCol(PAL.frillPale,1.1,.03,.05,.04):leafCol(S.leaf,1.25,.08,.12,.06);
+ // a ruff: rows about every 0.8 m up every rib, each fin splayed out and up from the column like a feather from a shaft,
+ // longest at the swelling (2026-10-22: shorter fins lying almost flat read as specks on a bottle)
+ const rows=lv===2?Math.round(bH/.8):Math.round(bH/2.2);
  for(let i=0;i<rows;i++){const u=(i+.5)/rows;if(u>regrow)break;const y=T.y0+bH*u,r=rAt(u);
-  for(let k=0;k<ribs;k++){const a=k/ribs*TAU+i*.26,down=Math.cos(a-wa);
+  for(let k=0;k<ribs;k++){const a=k/ribs*TAU+i*.39,down=Math.cos(a-wa);
    if(stage==='half'&&down>-.1&&u>.3)continue;   // the downwind side shed first
-   const L=(.9+1.4*Math.sin(u*Math.PI*.9))*rr(.85,1.1);
-   BIO.put('fin',[T.x+Math.cos(a)*r*.9,y,T.z+Math.sin(a)*r*.9],qEuler(rr(-.08,.08),-a,rr(.15,.45)),[L,L,L*rr(1,1.3)],finCol());st.clumps++;}}
+   const L=(1.3+2.1*Math.sin(u*Math.PI*.9))*rr(.85,1.12);
+   BIO.put('fin',[T.x+Math.cos(a)*r*.92,y,T.z+Math.sin(a)*r*.92],qEuler(rr(-.25,.25),-a,rr(.32,.7)),[L,L*.55,L*rr(1,1.3)],finCol());st.clumps++;}}
  // the crown: a splay of long fins round the pod; ripe, the pod is a seed clock of plumes
  const top=T.y0+bH;
  if(stage!=='bare'){for(let k=0,n=lv===2?14:7;k<n;k++){const a=k/n*TAU,L=rr(2.2,3.4);if(stage==='half'&&Math.cos(a-wa)>0)continue;
    BIO.put('fin',[T.x+Math.cos(a)*rb*.3,top,T.z+Math.sin(a)*rb*.3],qEuler(rr(-.1,.1),-a,rr(.5,.95)),[L,L,L*1.2],finCol());st.clumps++;}}
- if(ripe){const R=T.crownR*(stage==='half'?.85:1);BIO.put('clock',[T.x,top+R*.8,T.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R,R],leafCol(PAL.clock,1.15,.01,.03,.03));
-  if(lv===2)seedsAloft('pappus',T.x,top+R,T.z,ri(10,26),H*3,[.35,.6],PAL.frillRipe,st);}
+ if(ripe){const R=T.crownR*(stage==='half'?.85:1);BIO.put('clock',[T.x,top+R*.8,T.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R,R],leafCol(PAL.clock,1.15,.01,.03,.03));}
  else if(stage==='green')BIO.put('lobe',[T.x,top-.2,T.z],qEuler(0,rr(0,TAU),0),[rb*.7,rb*1.2,rb*.7],leafCol(S.leaf,.9,.03,.06,.05));
  regTree(T,S,rb*1.6+2.5,H+(ripe?T.crownR*1.8:1));};
-// 12 THE HELICOPTER TRUMPET (the trumpet-tree line: a slim ribbed stalk flaring into a funnel): the funnel is fluted with
-// angled vanes on a living ring joint at the stalk's top, so it turns in the wind like an anemometer, and flings its
-// spiral-winged seeds over the rim (they autorotate down and away). The page draws it still; the spin is a known issue
-B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,lean=[rr(-.06,.06)*H,rr(-.06,.06)*H];
- const rings=[];for(let u=0;u<=1.001;u+=.2)rings.push({x:T.x+lean[0]*u*u,y:T.y0-.3+(H*.86+.3)*u,z:T.z+lean[1]*u*u,r:rb*(1-.45*u)*(u<.05?1.3:1),yy:u*H,col:barkCol(S,ri(0,2))});
+// 12 THE HELICOPTER TRUMPET (the trumpet-tree line: a slim ribbed stalk flaring into a bell): the bell carries eight
+// pitched blades grown up its outside, on a living ring joint at the stalk's top, so it turns in the wind like an
+// anemometer (86-host-variants.js spins it by core/atmos's wind) and flings its winged seeds over the rim; in a high wind
+// they come off in numbers and autorotate away downwind (89c-host-seeds.js)
+B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,lean=[rr(-.05,.05)*H,rr(-.05,.05)*H];
+ const rings=[];for(let u=0;u<=1.001;u+=.2)rings.push({x:T.x+lean[0]*u*u,y:T.y0-.3+(H*.84+.3)*u,z:T.z+lean[1]*u*u,r:rb*(1-.45*u)*(u<.05?1.3:1),yy:u*H,col:barkCol(S,ri(0,2))});
  st.trunk+=BIO.lathe('bark5',rings,lv===2?8:6,1,4,(Rg,a)=>Rg.r*(1+.08*Math.cos(a*5)),null);
  const top=rings[rings.length-1];
- // the joint: a swollen ring, and the funnel turned to some angle of its spin
- BIO.put('lobe',[top.x,top.y-.1,top.z],qEuler(0,rr(0,TAU),0),[rb*1.1,rb*.6,rb*1.1],leafCol(S.leaf,.85,.03,.06,.05));
- BIO.put('funnel',[top.x,top.y,top.z],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[R,H*.16,R],leafCol(S.leaf,1.15,.05,.1,.05));
- // the funnel's throat: a pale yellow lining, low inside the bell (it must not show through the walls from below)
- BIO.put('lobe',[top.x,top.y+H*.085,top.z],qEuler(0,rr(0,TAU),0),[R*.3,H*.015,R*.3],leafCol(PAL.trumpetIn,1.1,.02,.05,.04));
- if(lv===2)seedsAloft('trumpetSeed',top.x,top.y+H*.12,top.z,ri(6,14),H*3.5,[.3,.45],PAL.trumpetSeed,st);
- regTree(T,S,R*1.5,H*1.1);};
+ // the joint: a swollen ring the bell turns on
+ BIO.put('lobe',[top.x,top.y-.1,top.z],qEuler(0,rr(0,TAU),0),[rb*1.15,rb*.7,rb*1.15],leafCol(S.leaf,.85,.03,.06,.05));
+ // the crown: bell, throat and blades on one origin, one turn, one scale (the spin's pivot is that origin)
+ const Hb=R*rr(.78,.95),q=qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),o=[top.x,top.y-.08,top.z],sc=[R,Hb,R];
+ BIO.put('bell',o,q,sc,leafCol(S.leaf,1.15,.05,.1,.05));
+ BIO.put('bellIn',o,q,sc,leafCol(PAL.trumpetIn,1.1,.02,.05,.04));
+ BIO.put('vanes',o,q,sc,leafCol(PAL.trumpetVane,1.2,.02,.05,.04));
+ regTree(T,S,R*1.6,H*.84+Hb*1.2);};
 // 13 THE DRIFT LANTERN (the bell-bulb line: nhighlands' bulbs that glow at night): a few arching stalks, each hung with
 // pale bulbs; as they ripen they fill with gas and lift away at dusk, a seed under each. Some of this tree's are already
 // aloft over it and downwind (buoyancy goes with the air's density: 1.42 atm lifts 40% more than Earth's)
@@ -273,7 +280,7 @@ B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,W=NSEMIARID.WIND,n=ri(1,3);
   if(bald<.8){const sc=bald<.5?1:.75;   // a balding clock is shrunk and pushed upwind
    BIO.put('clock',[tx-W[0]*R*(1-sc)*.6,ty+R*.1,tz-W[1]*R*(1-sc)*.6],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[R*sc,R*sc,R*sc],leafCol(PAL.clock,1.2,.01,.03,.03));}
   else BIO.put('lobe',[tx,ty,tz],qEuler(0,0,0),[R*.15,R*.12,R*.15],leafCol([0xb8a878],1,.02,.04,.04));   // bare: the receptacle
-  if(lv===2)seedsAloft('pappus',tx,ty,tz,ri(4,12),H*4,[.25,.4],PAL.clock,st);}
+  }
  regTree(T,S,T.crownR+1,H+1.5);};
 
 // ---------------------------------------------------------------- impostors (the far canopy)

@@ -38,8 +38,8 @@ const PAL=NSEMIARID.PAL={
  pear:[0x5a8a3e,0x66963e,0x4e7e34],pearFruit:[0xb8c050,0xc8b848,0xa8b440],
  samara:[0x6a9a3e,0x76a646,0x5e8e38],samaraSeed:[0xc8b070,0xd8c080,0xb8a060],
  poplar:[0xd8b030,0xe0c040,0xc8a028,0xe8c848,0x9aa848],poplarGreen:[0x8aa84a,0x7a9a40],
- frillGreen:[0x2e8a7a,0x3a9a8a,0x4a7aa0,0x5a6ab0],frillRipe:[0xf4f4ee,0xeeeee4,0xf8f6f0],
- trumpet:[0x8ab05a,0x9ac064,0x7aa050,0xa8c870],trumpetIn:[0xe8d070,0xf0dc80,0xd8c060],trumpetSeed:[0xc8a060,0xd8b070],
+ frillGreen:[0x2e8a7a,0x3a9a8a,0x4a7aa0,0x5a6ab0],frillRipe:[0xf4f4ee,0xeeeee4,0xf8f6f0],frillPale:[0xd8ece4,0xdce4f0,0xe2ece2,0xe4e0f0],
+ trumpet:[0x8ab05a,0x9ac064,0x7aa050,0xa8c870],trumpetIn:[0xe8d070,0xf0dc80,0xd8c060],trumpetVane:[0xe4ecd0,0xdce8c4,0xecf0dc],trumpetSeed:[0xc8a060,0xd8b070],
  lantern:[0xf0d070,0xf8e090,0xe8c060,0xffe8a8],lanternLeaf:[0x5a8a5a,0x4e7e52,0x669a64],
  foxtail:[0xf0c040,0xf8a830,0xe8e0c8,0xf0d878],foxLeaf:[0x7a9a5a,0x6e8e50],
  clock:[0xf4f2ea,0xf8f6f0,0xeeeae0],clockStalk:[0x7a9a5a,0x6e8e50],
@@ -373,6 +373,27 @@ G.window=function(){const pos=[],nor=[],uv=[],col=[];for(let k=0;k<7;k++){const 
 G.finger=function(){return lathe([[0,.12],[.3,.14],[.33,.1],[.36,.13],[.64,.14],[.67,.1],[.7,.13],[.95,.11],[1,.02]],6,0,(p,i)=>i%3===2?.6:1);};
 // a CAPSULE: a crawler's segment, a prostrate stem, unit length along y, radius .5 (cheap: there are thousands)
 G.capsule=function(){return lathe([[0,.2],[.15,.5],[.85,.5],[1,.2]],5,.06);};
+// A CRAWLER'S STEM (2026-10-22, after the creeping devil, Stenocereus eruca: before, smooth five-sided capsules read as
+// tubes): one segment, unit length along y from the origin, radius .5, deeply ribbed (ribs crests and furrows, darker in
+// the furrows), the ends rounded so segments run on into each other; u round it (two turns of the skin card), v along
+// it. dead: the woody skeleton the trail is, its ribs split apart and sunken
+G.cactusStem=function(ribs,dead){const pos=[],nor=[],uv=[],col=[];const seg=ribs*2,prof=[[0,.36],[.08,.47],[.5,.5],[.92,.47],[1,.36]];
+ const P=(i,s)=>{const p=prof[i],a=s/seg*TAU,cr=Math.cos(a*ribs),k=1+(dead?.22:.16)*cr-(dead&&s%2?.06:0),r=p[1]*k;
+  return{p:[Math.cos(a)*r,p[0],Math.sin(a)*r],n:[Math.cos(a),0,Math.sin(a)],c:(dead?.78:.72)+(dead?.2:.3)*(cr*.5+.5),u:s/seg*2,v:p[0]};};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const q=[P(i,s),P(i,s+1),P(i+1,s),P(i+1,s+1)];if(s===seg-1){q[1].u=2;q[3].u=2;}
+  [[0,3,2],[0,1,3]].forEach(t=>t.forEach(k=>{const e=q[k];push3(pos,e.p);push3(nor,e.n);uv.push(e.u,e.v);col.push(e.c,e.c,e.c);}));}
+ return BIO.geo._make(pos,nor,uv,col);};
+// its SPINES: at three areoles up every rib crest, a star of pale needles standing out (the radials) and one long
+// central spine raked forward; the same unit segment
+G.cactusSpines=function(ribs){const pos=[],nor=[],uv=[],col=[];
+ const needle=(o,d,L,w,c)=>{const sx=-d[2],sz=d[0],sl=Math.hypot(sx,sz)||1,ex=[sx/sl*w,0,sz/sl*w],ey=[0,w,0];
+  [ex,ey].forEach(e=>{const A=[o[0]-e[0],o[1]-e[1],o[2]-e[2]],B=[o[0]+e[0],o[1]+e[1],o[2]+e[2]],T=[o[0]+d[0]*L,o[1]+d[1]*L,o[2]+d[2]*L];
+   [A,B,T].forEach(p=>{push3(pos,p);nor.push(d[0],d[1],d[2]);uv.push(0,0);col.push(c,c,c);});});};
+ for(let r=0;r<ribs;r++){const a=r/ribs*TAU,ca=Math.cos(a),sa=Math.sin(a);
+  for(const v of [.22,.55,.86]){const o=[ca*.57,v,sa*.57];
+   for(let k=0;k<4;k++){const t=(k/4-.375)*1.6,dx=ca*Math.cos(t),dz=sa*Math.cos(t),dy=Math.sin(t);needle(o,[dx,dy,dz],.28,.025,1);}
+   needle(o,[ca*.6,.8,sa*.6],.55,.03,.85);}}
+ return BIO.geo._make(pos,nor,uv,col);};
 // a TUMBLER: a ball of crossed cards (the tangle texture), unit radius, origin at the centre
 G.ball=function(){const pos=[],uv=[],nor=[];const D=[[1,0,0],[0,1,0],[0,0,1],[.7,.7,0],[0,.7,.7],[.7,0,-.7]];
  D.forEach(d=>{let s=Math.abs(d[1])>.9?[1,0,0]:[0,1,0];const u=[d[1]*s[2]-d[2]*s[1],d[2]*s[0]-d[0]*s[2],d[0]*s[1]-d[1]*s[0]],ul=Math.hypot(...u);u.forEach((_,i)=>u[i]/=ul);
@@ -384,18 +405,36 @@ G.ball=function(){const pos=[],uv=[],nor=[];const D=[[1,0,0],[0,1,0],[0,0,1],[.7
 G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,5,1,true);};
 // a CONE on its base
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
-// a FUNNEL with vanes (the helicopter trumpet): a ribbed bell opening upward and angled vanes round its rim, unit
-// height and radius, origin at the stalk's top
-G.funnel=function(){const pos=[],nor=[],uv=[],col=[];const seg=16,prof=[[0,.06],[.3,.12],[.65,.42],[1,1]];
- const R=prof.map((p,i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,fl=1+.1*Math.sin(a*8)*(i/3);r.push([Math.cos(a)*p[1]*fl,p[0],Math.sin(a)*p[1]*fl,s%2?1:.72]);}return r;});
- const put=(p,n,c)=>{push3(pos,p);push3(nor,n);uv.push(0,0);col.push(c,c,c);};
- for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],
-   nn=p=>{const l=Math.hypot(p[0],p[2])||1;return[p[0]/l*.6,.8,p[2]/l*.6];},k=lerp(.55,1,i/3);
-  put(a,nn(a),a[3]*k);put(d,nn(d),d[3]*k);put(c,nn(c),c[3]*k);put(a,nn(a),a[3]*k);put(b,nn(b),b[3]*k);put(d,nn(d),d[3]*k);}
- // the vanes: eight blades standing out from the rim, pitched like a turbine's
- for(let v=0;v<8;v++){const a=v/8*TAU,ca=Math.cos(a),sa=Math.sin(a),px=-sa,pz=ca;
-  const A=[ca*.95,.92,sa*.95],B=[ca*1.45+px*.18,1.02,sa*1.45+pz*.18],Cc=[ca*1.4-px*.12,.8,sa*1.4-pz*.12],D=[ca*.92,.75,sa*.92],n=[px,.3,pz];
-  put(A,n,1.1);put(B,n,1.2);put(Cc,n,1);put(A,n,1.1);put(Cc,n,1);put(D,n,.9);}
+// THE HELICOPTER TRUMPET'S CROWN (2026-10-22: a deep bell with its blades grown onto it; before, a shallow dish with
+// spikes standing off its rim). Three items placed at the stalk's top with one rotation and scale [R, Hb, R], so the
+// variants' spin turns them together about that point (86-host-variants.js, the spin materials): the BELL (fluted, pale
+// at the rim), its LINING (the yellow throat, a hair inside the bell, seen only from above) and the VANES (eight blades
+// whose roots run up the bell's outside and past its rim, pitched like a turbine's, on the frill's fin card).
+// The bell's profile [height, radius], unit height and rim radius
+const BELL=[[0,.07],[.18,.1],[.38,.16],[.56,.27],[.72,.44],[.86,.68],[1,1]];
+const bellR=u=>{for(let i=0;i+1<BELL.length;i++){const a=BELL[i],b=BELL[i+1];if(u<=b[0]||i+2===BELL.length){const t=(u-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*t;}}return 1;};
+function bellGeo(k,inner){const pos=[],nor=[],uv=[],col=[];const seg=24,rows=12;
+ const P=(u,s)=>{const a=s/seg*TAU,fl=1+.07*Math.sin(a*8)*Math.min(1,u*1.6),r=bellR(u)*fl*k;return[Math.cos(a)*r,u*(inner?.985:1)+(inner?.012:0),Math.sin(a)*r];};
+ const put=(p,c)=>{push3(pos,p);const l=Math.hypot(p[0],p[2])||1;nor.push(p[0]/l*(inner?-.6:.6),.8,p[2]/l*(inner?-.6:.6));uv.push(0,0);col.push(c,c,c);};
+ for(let i=0;i<rows;i++)for(let s=0;s<seg;s++){const u0=i/rows,u1=(i+1)/rows,c0=inner?.85+.25*u0:.62+.4*u0,c1=inner?.85+.25*u1:.62+.4*u1,
+   a=P(u0,s),b=P(u0,s+1),c=P(u1,s),d=P(u1,s+1),f0=s%2?1:.9;
+  put(a,c0*f0);put(d,c1*f0);put(c,c1*f0);put(a,c0*f0);put(b,c0*f0);put(d,c1*f0);}
+ return BIO.geo._make(pos,nor,uv,col);}
+G.bell=()=>bellGeo(1,false);
+G.bellIn=()=>bellGeo(.975,true);
+// the vanes: each a strip along the bell from u0 up past the rim, its inner edge ON the bell (the fin card's midrib, v=.5)
+// and its outer edge (the card's edge, v=0) standing out from it and swept round (the pitch the wind turns it by)
+G.vanes=function(n){const pos=[],nor=[],uv=[],col=[];const N=7,u0=.34,u1=1.16,pitch=.62;
+ for(let v=0;v<n;v++){const a0=v/n*TAU;const E=[];
+  for(let i=0;i<=N;i++){const t=i/N,u=u0+(u1-u0)*t,r=u<=1?bellR(u):1+(u-1)*2.4,y=Math.min(u,1)+(u>1?(u-1)*.7:0);
+   const w=.5*Math.sin(Math.PI*Math.min(1,t*1.08))+.04,ca=Math.cos(a0),sa=Math.sin(a0),tx=-sa,tz=ca;
+   const inr=[ca*r*.97,y,sa*r*.97],out=[ca*(r+w*.8)+tx*w*pitch,y+w*.28,sa*(r+w*.8)+tz*w*pitch];E.push([inr,out,t]);}
+  for(let i=0;i<N;i++){const [a,b,ta]=E[i],[c,d,tb]=E[i+1];
+   const e1=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],e2=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],nx=e1[1]*e2[2]-e1[2]*e2[1],ny=e1[2]*e2[0]-e1[0]*e2[2],nz=e1[0]*e2[1]-e1[1]*e2[0],nl=Math.hypot(nx,ny,nz)||1,nn=[nx/nl,ny/nl,nz/nl];
+   const put=(p,uu,vv,cc)=>{push3(pos,p);push3(nor,nn);uv.push(uu,vv);col.push(cc,cc,cc);};
+   // as the frond takes the card: root (v 0) to tip (v 1) along the blade, across it u; its midrib (u .5) on the bell,
+   // its edge (u .06) out
+   put(a,.5,ta,.85);put(c,.5,tb,.85);put(d,.06,tb,1.05);put(a,.5,ta,.85);put(d,.06,tb,1.05);put(b,.06,ta,1.05);}}
  return BIO.geo._make(pos,nor,uv,col);};
 // a BULB (the drift lantern's): a pale lantern, translucent-looking, ribbed, unit height, origin at its top (it hangs)
 G.bulb=function(){return lathe([[-1,.02],[-.92,.3],[-.6,.5],[-.25,.42],[-.08,.2],[0,.04]],10,.05,(p,i)=>.85+.4*(i/5));};
@@ -448,8 +487,20 @@ const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.p
 NSEMIARID.LIB={has:n=>!!LIBP(n)};
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
  t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
-{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter'};
- for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=.4;}}}
+// one cell [x0,y0,x1,y1] (fractions of the sheet) of a card, as its own texture; flip: upside down, for the frond, whose
+// card runs from its root at v 0 (the image's top row: flipY is off) to its tip at v 1
+function libCell(n,box,W,H,flip){const L=LIBP(n);if(!L)return null;const c=document.createElement('canvas');c.width=W;c.height=H;
+ const t=new T3.CanvasTexture(c);t.flipY=false;t.encoding=T3.sRGBEncoding;t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;t.anisotropy=4;
+ t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;
+ const img=new Image();window._texPending=(window._texPending||0)+1;
+ img.onload=()=>{const w=img.width,h=img.height,g=c.getContext('2d');if(flip){g.translate(0,H);g.scale(1,-1);}
+  g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
+ img.onerror=()=>{window._texPending--;BIO.err('nsemiarid: a library card failed to decode: '+n);};
+ img.src=L.map;return t;}
+{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter',pappus:'leaf.pappus',stipa:'leaf.stipa'};
+ for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=k==='pappus'||k==='stipa'?.3:.4;}}
+ // the frill's fin: the middle fin of the sheet, cut close and turned upside down so its foot is the frond's root
+ const fin=libCell('leaf.fin',[.395,.338,.605,.662],256,512,true);if(fin){M.fin.map=fin;M.fin.alphaTest=.35;}}
 // the barks: the bucket's uvScale becomes the set's tile size, and means() divides out the pack's brightness
 const LIBBARK=['bark.furrowed','bark.plane','bark.smooth','bark.gnarled','wood.silver','bark.alien'];
 NSEMIARID.LIBMEAN={};
@@ -490,7 +541,7 @@ BIO.def('barrel',G.barrel(),M.vcol,{label:'Striders'});
 BIO.def('stilt',G.rod(),M.solid,{label:'Strider stilts'});
 BIO.def('stub',G.cone(),M.solid,{label:'Dead stilt stubs (a strider\'s trail)'});
 BIO.def('column',G.column(),M.vcol,{label:'Sail candelabra'});
-BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(TX.fin,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
+BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(M.fin.map,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
 BIO.def('horn',G.horn(),M.vcol,{label:'Horn pipes'});
@@ -501,14 +552,22 @@ BIO.def('stepcone',G.stepcone(),M.vcol,{label:'Step cones'});
 BIO.def('window',G.window(),M.vcol,{label:'Window plants'});
 BIO.def('finger',G.finger(),M.vcol,{label:'Salt fingers'});
 BIO.def('bead',G.bead(),M.vcol,{label:'Bead chains'});
-BIO.def('crawler',G.capsule(),M.vcol,{label:'Crawlers (the living heads)'});
-BIO.def('crawlerDead',G.capsule(),M.vcol,{label:'Crawler trails (the dead stems)'});
+// the crawler's skin: the library's ribbed cactus skin (skin.cactus) where the page carries it, else the vertex colours
+{const L=LIBP('skin.cactus'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawl=BIO.leafMat(t,'crawl',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
+BIO.def('crawler',G.cactusStem(8,false),M.crawl,{label:'Crawlers (the living stems)'});
+BIO.def('crawlerDead',G.cactusStem(8,true),M.crawl,{label:'Crawler trails (the dead stems)'});
+BIO.def('crawlerSpines',G.cactusSpines(8),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});
 BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds'});
 BIO.def('samara',G.samara(),M.vcol,{label:'Kite-ash seeds'});
-BIO.def('funnel',G.funnel(),M.vsway,{label:'Helicopter-trumpet funnels'});
+// the trumpet's crown turns in the wind: spin materials (86-host-variants.js turns them about the crown's own origin)
+M.spin=BIO.leafMat(null,'spin',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true,spin:true});
+M.spinVane=BIO.leafMat(M.fin.map,'spinvane',{swayW:'0.0',swayA:0,alphaTest:.35,spin:true});
+BIO.def('bell',G.bell(),M.spin,{label:'Helicopter-trumpet bells'});
+BIO.def('bellIn',G.bellIn(),M.spin,{label:'Helicopter-trumpet throats'});
+BIO.def('vanes',G.vanes(8),M.spinVane,{label:'Helicopter-trumpet blades'});
 BIO.def('trumpetSeed',G.samara(),M.vcol,{label:'Helicopter-trumpet seeds'});
 BIO.def('lantern',G.bulb(),M.vhang,{label:'Drift-lantern bulbs'});
 BIO.def('vine',BIO.geo.ribbon(4,.8,.16),BIO.leafMat(TX.round,'hangvine',{swayW:'(-position.y)',swayA:.08,axis:1,alphaTest:.4}),{label:'Vines (glider gourd, rust vine)'});

@@ -98,6 +98,21 @@ const HCHK={
   return{ok:r>.5,detail:pts.length+' step cones on the bed, height against years dry r = '+r.toFixed(2)};},
  // the saxaul stands only on its groves' crescents
  crescents(T){const bad=T.filter(t=>NSEMIARID.crescentAt(t.x,t.z)[0]<=0);return{ok:T.length>0&&!bad.length,detail:bad.length?bad.length+' saxaul off a crescent':T.length+' saxaul, every one on a grove\'s arc'};},
+ // THE WATER (core/water): the stream sits in its channel, both banks over its surface a pace either side of its line
+ banks(F,lift){const P=F.pts;let bad=0,n=0,worst=0;for(let i=0;i<P.length;i+=2){const p=P[i],y=p.y+(lift||0),s=Math.max(y-terrainH(p.x-SW*1.05,p.z),y-terrainH(p.x+SW*1.05,p.z));n++;if(s>.15)bad++;worst=Math.max(worst,s);}
+  return{ok:n>50&&bad/n<=.02,detail:bad+' of '+n+' stream sections spill over a bank (worst '+worst.toFixed(1)+' m)'};},
+ // THE WIND (core/atmos): stepped on the module's own clock, a gale tears the winged seeds loose and a calm holds them
+ gale(hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
+  const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=ATMOS.windScale,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
+  if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=hold;}
+  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released;for(let i=0;i<240;i++)for(const f of TICKS.slice())f(.05,0);return[heli()-h0,window._seeds.released-a0];};
+  const tr=nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]);FLIGHT.pin={x:tr.x,z:tr.z};   // a trumpet grove, wherever the camera is
+  let calm,high;try{calm=run('calm');high=run('high');}finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
+  return{ok:calm[0]===0&&high[0]>=20,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all)'};},
+ // the trumpets' crowns are drawn with their pivot, so the spin turns them about the stalk
+ spin(){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1): drawn still'};let n=0,m=0;
+  for(const p of VARIANTS.pools.values())for(const ms of p.meshes){if(ms.geometry.attributes.aPivot){n++;if(ms.count>0)m++;}}
+  return{ok:n>0&&m>0,detail:n+' prototype parts turn on a pivot, '+m+' drawn here'};},
  // dead golden poplars stand on the salt behind the living forest
  deadPoplars(T){const bad=T.filter(t=>t.dead&&FIELD.salt(t.x,t.z)<.2&&NSEMIARID.zones(t.x,t.z).pan<.2);const dead=T.filter(t=>t.dead).length;
   return{ok:dead>0&&!bad.length,detail:bad.length?bad.length+' dead poplars off the salt':dead+' dead poplars, all on the salt'};}};
@@ -114,6 +129,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('step cones read the years dry',HCHK.cones(inst(/stepcone/)));
  add('saxaul on its crescents',HCHK.crescents(T.filter(t=>t.sp===SPI('saxaul'))));
  add('dead poplars on the salt',HCHK.deadPoplars(T.filter(t=>t.sp===SPI('poplar'))));
+ add('the stream sits in its banks (core/water)',HCHK.banks(STREAM));
+ add('the trumpets turn on a pivot',HCHK.spin());
+ add('a gale tears the winged seeds loose, a calm holds them (core/atmos)',HCHK.gale());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst(),T=NSEMIARID.TREES;
  const C=(NSEMIARID.COUNTS||[]).slice();C[SPI('lantern')]=0;add('a species never placed',HCHK.placed(C));
@@ -129,6 +147,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const S=inst(/stepcone/),ys=S.map(s=>s[4]).reverse();add('step cones heights shuffled',HCHK.cones(S.map((s,i)=>[s[0],s[1],s[2],s[3],ys[i]])));}
  {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
  add('a dead poplar on the steppe',HCHK.deadPoplars([{x:PLACE.steppe[0],z:PLACE.steppe[1],dead:true}]));
+ add('the stream lifted 3 m over its banks',HCHK.banks(STREAM,3));
+ add('a gale that tears nothing loose',HCHK.gale(1e9));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
@@ -136,8 +156,8 @@ KHOST.take({build:'nsemiarid',title:'Krator biome — the northern semiarid coun
  hint:'The walking steppe: an old lake bed with its strandlines and a remnant salt lake in the north, the hot steppe, the Mediterranean foothills and the feral fruit forest on the rainy upland in the south; everything here travels (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
- inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>SEEDS?[SEEDS.points]:[]},'rings':{objects:()=>[giantRing]}},
+ inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL],
+ layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>(SEEDS?[SEEDS.points]:[]).concat(FLIGHT?FLIGHT.meshes:[])},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

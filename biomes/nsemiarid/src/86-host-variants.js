@@ -20,8 +20,18 @@ const lim=(a,H)=>Math.min(a[2],Math.max(a[1],a[0]*H));
 // A kit's leaf material reads its per-leaf colour and normal as INSTANCE attributes; a grown tree is an instance itself,
 // so its leaves are plain vertices: the colour is the vertex colour, aN a vertex attribute turned by the tree's rotation.
 const WMAT=new Map();
+// THE SPIN (2026-10-22): a material whose kit options say spin (the helicopter trumpet's bell, throat and blades) turns
+// its vertices about their item's own origin (aPivot, written by harvest(): the stalk's top) round the vertical, by
+// SPIN.value (the wind integrated, 89b-host-atmos.js NSWIND.spin), each tree at its own speed and phase
+const SPIN={value:0};
+const SPIN_GLSL=['float _sp=0.0;','#ifdef USE_INSTANCING','_sp=dot(instanceMatrix[3].xyz,vec3(0.173,0.091,0.137));','#endif',
+ 'float _sa=uSpin*(0.8+0.4*fract(_sp*3.7))+_sp*6.2831;float _sc=cos(_sa),_ss=sin(_sa);'].join('\n');
 function leafHook(o){return function(sh){
  sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+ if(o.spin){sh.uniforms.uSpin=SPIN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uSpin;attribute vec3 aPivot;')
+   .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\n'+SPIN_GLSL+'\nobjectNormal.xz=vec2(objectNormal.x*_sc-objectNormal.z*_ss,objectNormal.x*_ss+objectNormal.z*_sc);')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec2 _r=transformed.xz-aPivot.xz;transformed.xz=aPivot.xz+vec2(_r.x*_sc-_r.y*_ss,_r.x*_ss+_r.y*_sc);}');}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vFlWP;varying float vFlD;\n'+(o.aN?'attribute vec3 aN;varying vec3 vFlN;\n':''))
   .replace('#include <project_vertex>',['vec4 mvPosition=vec4(transformed,1.0);float _ph=0.0;vec3 _nr='+(o.aN?'aN':'vec3(0.0,1.0,0.0)')+';',
    '#ifdef USE_INSTANCING','mvPosition=instanceMatrix*mvPosition;_ph=dot(instanceMatrix[3].xyz,vec3(0.131,0.073,0.117));_nr=mat3(instanceMatrix)*_nr;','#endif',
@@ -37,18 +47,18 @@ function leafHook(o){return function(sh){
   .replace('reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;','reflectedLight.directDiffuse = vLightFront + 0.30*vLightBack;');};}
 function worldMat(m){if(WMAT.has(m))return WMAT.get(m);let w=null;const b=m.userData&&m.userData.bio;
  if(b&&b.kind==='leaf'){const o=b.opts||{};w=new THREE.MeshLambertMaterial({map:m.map,alphaTest:m.alphaTest||.42,side:THREE.DoubleSide,vertexColors:true});
-  w.onBeforeCompile=leafHook(o);const ck='vleaf|'+(o.aN?1:0)+'|'+(o.swayA==null?.06:o.swayA);w.customProgramCacheKey=()=>ck;w.userData.kind='leaf';w.userData.opts=o;}
+  w.onBeforeCompile=leafHook(o);const ck='vleaf|'+(o.aN?1:0)+'|'+(o.swayA==null?.06:o.swayA)+(o.spin?'|spin':'');w.customProgramCacheKey=()=>ck;w.userData.kind='leaf';w.userData.opts=o;}
  else{w=m.clone();w.vertexColors=true;w.userData.kind=b?b.kind:'plain';}
  WMAT.set(m,w);return w;}
 // ---------------------------------------------------------------- harvest: what the kit wrote, one geometry per material
 const _m=new THREE.Matrix4(),_nm=new THREE.Matrix3(),_v=new THREE.Vector3(),_n=new THREE.Vector3();
 function harvest(){const R=BIO.kits.nsemiarid,G=new Map();
- const grp=m=>{const w=worldMat(m);let g=G.get(w);if(!g){g={mat:w,P:[],N:[],U:[],C:[],AN:[]};G.set(w,g);}return g;};
+ const grp=m=>{const w=worldMat(m);let g=G.get(w);if(!g){g={mat:w,P:[],N:[],U:[],C:[],AN:[],PV:[]};G.set(w,g);}return g;};
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name],g=grp(def.mat),geo=def.geo;
   const P=geo.attributes.position.array,N=geo.attributes.normal?geo.attributes.normal.array:null,U=geo.attributes.uv?geo.attributes.uv.array:null,VC=geo.attributes.color?geo.attributes.color.array:null,nv=geo.attributes.position.count;
-  const hasN=def.attrs&&def.attrs.indexOf('aN')>=0,IM=it.m.a,IC=it.c.a,INN=it.n.a;
+  const hasN=def.attrs&&def.attrs.indexOf('aN')>=0,IM=it.m.a,IC=it.c.a,INN=it.n.a,spin=!!(g.mat.userData.opts&&g.mat.userData.opts.spin);
   for(let i=0;i<it.count;i++){_m.fromArray(IM,i*16);_nm.getNormalMatrix(_m);
-   for(let k=0;k<nv;k++){_v.set(P[k*3],P[k*3+1],P[k*3+2]).applyMatrix4(_m);g.P.push(_v.x,_v.y,_v.z);
+   for(let k=0;k<nv;k++){if(spin)g.PV.push(IM[i*16+12],IM[i*16+13],IM[i*16+14]);_v.set(P[k*3],P[k*3+1],P[k*3+2]).applyMatrix4(_m);g.P.push(_v.x,_v.y,_v.z);
     if(N){_n.set(N[k*3],N[k*3+1],N[k*3+2]).applyMatrix3(_nm).normalize();g.N.push(_n.x,_n.y,_n.z);}else g.N.push(0,1,0);
     g.U.push(U?U[k*2]:0,U?U[k*2+1]:0);const r=IC[i*3],gg=IC[i*3+1],b=IC[i*3+2];
     if(VC)g.C.push(r*VC[k*3],gg*VC[k*3+1],b*VC[k*3+2]);else g.C.push(r,gg,b);g.AN.push(hasN?INN[i*3]:0,hasN?INN[i*3+1]:1,hasN?INN[i*3+2]:0);}}
@@ -61,6 +71,7 @@ function harvest(){const R=BIO.kits.nsemiarid,G=new Map();
   geo.setAttribute('position',new THREE.Float32BufferAttribute(g.P,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(g.N,3));
   geo.setAttribute('uv',new THREE.Float32BufferAttribute(g.U,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(g.C,3));
   if(g.mat.userData.kind==='leaf'&&g.mat.userData.opts.aN)geo.setAttribute('aN',new THREE.Float32BufferAttribute(g.AN,3));
+  if(g.PV.length)geo.setAttribute('aPivot',new THREE.Float32BufferAttribute(g.PV,3));
   geo.computeBoundingSphere();tris+=g.P.length/9;parts.push({geo,mat:g.mat,tris:g.P.length/9});}
  return{parts,tris};}
 // ---------------------------------------------------------------- growing the variants
@@ -103,6 +114,7 @@ function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-l
  ST.drawn=n;ST.levels=lv3;ST.pools=pools;ST.tris=Math.round(tris);ST.calls=calls;}
 // the record nearest a point (the inspector names a tree from it)
 function nearest(x,z,r){let b=null,bd=r||1e9;for(const T of NSEMIARID.TREES){const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;}
-const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,
+TICKS.push(()=>{if(typeof NSWIND!=='undefined')SPIN.value=NSWIND.spin;});
+const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,SPIN,
  init(){growAll();api.ready=true;update(camera.position,true);},update};
 return api;})();

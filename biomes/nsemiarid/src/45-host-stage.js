@@ -65,22 +65,45 @@ function duneK(x,z){const dx=x-(BED.x+1200),dz=z-(BED.z+300);return smooth(1300,
 const bedMember=(x,z)=>smooth(BED.r*1.15,BED.r*.95,bedR(x,z));
 const BASIN=KBASIN.create({seed:41,wind:[1,.3],strand:{a:.5},lakes:[{name:'the old lake',kind:'dam',level:LAKE.full,sill:LAKE.sill,ring:LAKE.ring,remnant:LAKE.level,member:bedMember}]});
 function landH(x,z){const h=baseH(x,z);return bedMember(x,z)>0?BASIN.land(x,z,h):h;}
-// the stream: a bed that never climbs downstream (north), sampled along z once
-const SB=(function(){const z0=-TERR.R*1.15,z1=TERR.R*1.15,dz=10,n=Math.round((z1-z0)/dz),a=new Float32Array(n+1);
+// the stream: a bed that never climbs downstream (north, toward the lake), sampled along z once. Walked from the upland
+// north, the bed is the lowest the land has been since: where the land dips the bed follows it down, where it rises again
+// (a strandline's bench, a dune's foot) the stream cuts a trench through it, never a bridge over it (2026-10-22: it took
+// the highest ground north of it instead, and the water floated over every hollow). cut is how deep the trench is.
+const SB=(function(){const z0=-TERR.R*1.15,z1=TERR.R*1.15,dz=10,n=Math.round((z1-z0)/dz),a=new Float32Array(n+1),cut=new Float32Array(n+1);
  for(let i=0;i<=n;i++){const z=z0+i*dz;a[i]=landH(xS(z),z)-1.6;}
- for(let i=1;i<=n;i++)a[i]=Math.max(a[i],a[i-1]);   // going south (up) the bed only rises: north it only falls
- return{z0,dz,n,a,at:z=>{const f=clamp((z-z0)/dz,0,n-.001),i=Math.floor(f);return lerp(a[i],a[i+1],f-i);}};})();
+ for(let i=n-1;i>=0;i--){const g=a[i];a[i]=Math.min(g,a[i+1]);cut[i]=g-a[i];}
+ const at=(A,z)=>{const f=clamp((z-z0)/dz,0,n-.001),i=Math.floor(f);return lerp(A[i],A[i+1],f-i);};
+ return{z0,dz,n,a,cut,at:z=>at(a,z),cutAt:z=>at(cut,z)};})();
 const streamD=(x,z)=>Math.abs(x-xS(z));
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function terrainH0(x,z){let h=landH(x,z);
- const d=streamD(x,z);if(d<60){const b=SB.at(z)-.4;h=mix(h,Math.min(h,b),smooth(SW*4,SW*.6,d));}
+ // the channel: a bowl under the water (0.9 m deep at the middle, its banks over the water by the ribbon's edge), cut down
+ // where the land stands higher and built up where it falls away across the stream, so the water always sits in it;
+ // its sides widen with the trench's depth
+ const d=streamD(x,z);if(d<60+SW*2){const ct=SB.cutAt(z),bw=SW*4+ct*2.2;if(d<bw){const t=SB.at(z)-.4+1.3*(d/SW)*(d/SW);
+  h=mix(t,Math.min(h,t),smooth(SW*1.3,bw,d));}}
  const pd=Math.hypot(x-POOL.x,z-POOL.z);if(pd<POOL.r*2){h=mix(h,POOL.lv-1.6,smooth(POOL.r*1.6,POOL.r*.4,pd));}
  return h;}
 POOL.lv=(function(){let lo=1e9;for(let k=0;k<16;k++){const a=k/16*TAU;lo=Math.min(lo,landH(POOL.x+Math.cos(a)*POOL.r*1.2,POOL.z+Math.sin(a)*POOL.r*1.2));}return lo-.6;})();
-function waterH(x,z){const r=bedR(x,z);if(r<BED.r*.6&&landH(x,z)<LAKE.level+.5)return LAKE.level;
- if(streamD(x,z)<SW*1.4&&r>BED.r*.2)return SB.at(z)+.5;
- if(Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.3)return POOL.lv;return -1e9;}
+// THE WATER is core/water's (core/water/README.md): the remnant salt lake and the spring pool are STILL water, the stream
+// a FLOW down its bed into the lake. These records are the water's one truth: waterH below answers from them, so every
+// plant kept out of the water and every seed kept above it agrees with what 89b-host-atmos.js draws from them.
+// the lake's shore: rays from the bed's middle out to where the land rises over the level (a few metres more, so the
+// flat water runs under the bank instead of stopping short of it); never past .62 of the bed
+const LAKE_POLY=(function(){const P=[],N=96;for(let k=0;k<N;k++){const a=k/N*TAU,cx=Math.cos(a),cz=Math.sin(a);let r=20,last=20;
+  for(;r<BED.r*1.2;r+=8){const x=BED.x+cx*r,z=BED.z+cz*r;if(bedR(x,z)>BED.r*.62)break;if(landH(x,z)>LAKE.level+.5)break;last=r;}
+  P.push([BED.x+cx*(last+6),BED.z+cz*(last+6)]);}return P;})();
+const LAKE_W=WATER.still({name:'The remnant salt lake',level:LAKE.level,poly:LAKE_POLY});
+const POOL_W=WATER.still({name:'The spring pool',level:POOL.lv,poly:Array.from({length:32},(_,k)=>[POOL.x+Math.cos(k/32*TAU)*POOL.r*1.3,POOL.z+Math.sin(k/32*TAU)*POOL.r*1.3])});
+// the stream: from the upland's edge north, 10 m a step, on the bed (never below the lake it runs into), until it is in it
+const STREAM_PTS=(function(){const P=[];for(let z=TERR.R*1.1;z>-TERR.R*1.15;z-=10){const x=xS(z),y=Math.max(SB.at(z)+.5,LAKE.level);P.push([x,z,y]);if(LAKE_W.contains(x,z))break;}return P;})();
+const STREAM=WATER.flow({name:'The stream',pts:STREAM_PTS,width:SW*2,speed:STREAM_PTS.map((p,i)=>{const q=STREAM_PTS[Math.min(i+1,STREAM_PTS.length-1)];return clamp(.5+(p[2]-q[2])*.6,.4,2.2);})});
+// the cheap tests only skip what cannot be wet; what can is asked of the record (core/water's order: still before flow)
+function waterH(x,z){if(bedR(x,z)<BED.r*.66&&LAKE_W.contains(x,z))return LAKE.level;
+ if(Math.abs(x-POOL.x)<POOL.r*1.4&&Math.abs(z-POOL.z)<POOL.r*1.4&&POOL_W.contains(x,z))return POOL.lv;
+ if(streamD(x,z)<SW*1.6&&STREAM.contains(x,z))return STREAM.heightAt(x,z);
+ return -1e9;}
 
 // ---------------------------------------------------------------- the climate fields (cached below; these are the definitions)
 const BS={};
@@ -170,6 +193,14 @@ const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null
   ['crust',F=>.5*clamp(F.ring*.8+smooth(.2,.45,F.salt)*smooth(.85,.6,F.salt),0,1)*(1-dn(F))],['sand',F=>dn(F)],['basalt',F=>rk(F)*.85]];
  if(L.some(l=>!P(l[0])))return null;
  return L.map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
+// the layers' anti-tiling (2026-10-22): a library set repeats every few metres, and over a plain the repeat reads as a
+// grid. Each layer is sampled twice, the second turned 37 degrees, scaled by 1.37 and shifted, and the two are blended by
+// a value noise about eight tiles across, so neighbouring tiles never match (a game engine does the same in its ground
+// shader: two taps and a noise)
+const GTEX=['float gHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+ 'float gNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(gHash(i),gHash(i+vec2(1.0,0.0)),f.x),mix(gHash(i+vec2(0.0,1.0)),gHash(i+vec2(1.0,1.0)),f.x),f.y);}',
+ 'vec3 gTex(sampler2D s,vec2 p){float n=gNoise(p*0.13)*0.65+gNoise(p*0.41+7.3)*0.35;vec2 q=vec2(p.x*0.7986-p.y*0.6018,p.x*0.6018+p.y*0.7986)*1.37+vec2(0.37,0.71);',
+ ' return mix(texture2D(s,p).rgb,texture2D(s,q).rgb,smoothstep(0.3,0.7,n));}'].join('\n');
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
  let lay='';
@@ -178,12 +209,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   // pack's mean brightness so the painted colour keeps its level
   lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
-   return 'if('+w+'>0.003){vec3 t=pow(texture2D(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+').rgb,vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
+   return 'if('+w+'>0.003){vec3 t=pow(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s,0.0,1.0));vGLs=_s;}';}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;'+(GL?'attribute vec4 aGL0,aGL1;varying vec4 vGL0,vGL1;':''))
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;'+(GL?'vGL0=aGL0;vGL1=aGL1;':''));
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;'+
-   (GL?'varying vec4 vGL0,vGL1;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join(''):''))
+   (GL?'varying vec4 vGL0,vGL1;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join('')+GTEX:''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{float vGLs=0.0;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.11).rgb;'+lay+
    // the procedural grain gives way where a library layer carries its own; the mud cracks stay (the bed's polygons are larger)
    'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85*(1.0-0.7*clamp(vGLs,0.0,1.0)))*mix(vec3(1.0),ck,vCrack);}');};
@@ -202,42 +233,7 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The northern semiarid country';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water
-// One vertex-coloured ripple material for every sheet: the remnant salt lake (milky jade over white salt shallows), the
-// stream (green-teal), the spring pool (clear blue-green).
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xe2e6e8)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',
-  ' vec3 n=normalize(vec3(rk*(0.03*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.03*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.97,0.9);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterSheet(pos,col,idx,label){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
-(function(){const c=new THREE.Color();
- // the salt lake: a grid over the bed's floor, each vertex coloured by depth (white salt shallows to milky jade)
- {const pos=[],col=[],idx=[],N=90,S=BED.r*1.3,deep=new THREE.Color(0x3a8a86),shal=new THREE.Color(0xc8e0d4);
-  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=BED.x+(i/N-.5)*S,z=BED.z+(j/N-.5)*S,dep=LAKE.level-landH(x,z);
-   c.copy(shal).lerp(deep,smooth(.5,9,dep));c.convertSRGBToLinear();pos.push(x,LAKE.level,z);col.push(c.r,c.g,c.b);}
-  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+N+1;const xm=BED.x+((i+.5)/N-.5)*S,zm=BED.z+((j+.5)/N-.5)*S;
-   if(landH(xm,zm)>LAKE.level+1.5||bedR(xm,zm)>BED.r*.62)continue;idx.push(a,b,a+1,b,b+1,a+1);}
-  waterSheet(pos,col,idx,'The remnant salt lake');}
- // the stream: 10 m steps along z, its surface on the never-climbing bed
- {const pos=[],col=[],idx=[],rows=[],NW=4,base=new THREE.Color(0x4a8a7a),edge=new THREE.Color(0x8ab0a0);
-  for(let z=BED.z;z<=TERR.R*1.1;z+=10){if(bedR(xS(z),z)<BED.r*.55)continue;   // from where the stream leaves the lake
-   const row=[],y=SB.at(z)+.5,xc=xS(z);
-   for(let k=0;k<=NW;k++){const x=xc+(k/NW-.5)*2*SW,e=Math.abs(k/NW-.5)*2;c.copy(base).lerp(edge,e*.7);c.convertSRGBToLinear();row.push(pos.length/3);pos.push(x,y,z);col.push(c.r,c.g,c.b);}rows.push(row);}
-  for(let r=0;r<rows.length-1;r++)for(let k=0;k<NW;k++){const a=rows[r][k],b=rows[r][k+1],cc=rows[r+1][k],dd=rows[r+1][k+1];idx.push(a,cc,dd,a,dd,b);}
-  waterSheet(pos,col,idx,'The stream');}
- // the spring pool
- {const pos=[POOL.x,POOL.lv,POOL.z],col=[],idx=[],PN=32,c0=new THREE.Color(0x2a7a80).convertSRGBToLinear(),c1=new THREE.Color(0x7ab8a8).convertSRGBToLinear();col.push(c0.r,c0.g,c0.b);
-  for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(POOL.x+Math.cos(a)*POOL.r*1.3,POOL.lv,POOL.z+Math.sin(a)*POOL.r*1.3);col.push(c1.r,c1.g,c1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
-  waterSheet(pos,col,idx,'The spring pool');}
- REGISTER({name:'The old lake bed (the west lobe in small)',x:BED.x,z:BED.z,y:LAKE.level-60,r:BED.r,h:LAKE.full-LAKE.level+120});
- REGISTER({name:'The spring pool',x:POOL.x,z:POOL.z,y:POOL.lv-10,r:POOL.r*5,h:60});})();
+// drawn by core/water in 89b-host-atmos.js (it needs core/atmos's clock, wave chunk and sky light, bound there); here the
+// volumes the inspector names
+REGISTER({name:'The old lake bed (the west lobe in small)',x:BED.x,z:BED.z,y:LAKE.level-60,r:BED.r,h:LAKE.full-LAKE.level+120});
+REGISTER({name:'The spring pool',x:POOL.x,z:POOL.z,y:POOL.lv-10,r:POOL.r*5,h:60});

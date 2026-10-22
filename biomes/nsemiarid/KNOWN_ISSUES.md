@@ -4,27 +4,29 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **Nothing moves yet.** The helicopter trumpet's funnel does not spin, the furlers do not shut as a gust passes, the
-      frills do not shed and the drift lanterns do not lift: each is drawn as a still frame (a funnel at some angle,
-      furlers shut in bands where `gustAt` says a gust front is, fins and bulbs already aloft downwind). The seed weather
-      (`89-host-seeds.js`) is the one moving thing. Spin and furl on core/atmos's wind (`ATMOS.windAt`; in Godot
-      `atm_wind`) are next: the funnel is one instanced item, so its spin is a per-instance rotation in its shader.
+- [ ] **Most of what travels is still a frame.** Since 2026-10-22 the helicopter trumpets turn on core/atmos's wind
+      (`86-host-variants.js`: a spin material turns the bell, its throat and its blades about the stalk's top) and the
+      seeds fly: the trees round the camera let them go when the wind passes each one's hold (`89c-host-seeds.js`). Still
+      drawn as a still frame: the furlers shut in bands where `gustAt` says a gust front is, the frills' fins (the shed
+      plumes fly, the fins on the column stay as the frame's stage), the drift lanterns already aloft. The spin is the
+      variants' only: `?unique=1` draws the trumpets still (the core's foliage shader has no spin).
 - [ ] **The catalog owes the fruit.** Apples, walnuts, apricots, pears, pomegranates, pistachios and almonds are drawn
       (on the trees and as windfall) but `kits/catalog/krator-master-furniture-generic-fruit.js` has no piece for any
       of them, so `fruit` is null and the probe names them (`FRUIT_NOT_DRAWN`). Adding them is a catalog change: every
       build that takes the catalog rebuilds (CLAUDE.md). Pistachio and almond are not in `kits/crops` either.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
-- [ ] **The alien cards are procedural.** `materials.json` (2026-10-22) wires the library for the round, lobed, small,
-      broom and blossom leaves, the litter, six barks and seven ground layers (`45-host-stage.js` `GL`). The frill's fins
-      and the sail candelabra's blades (`fin`), the seed plumes (`pappus`), the feather grass (`stipa`) and the
-      tumblers' tangle (`tangle`) have no library set and stay painted in code: their prompts are in
-      `core/materials/PROMPTS-NEEDED.md`, section 7, with two optional surfaces (saxaul bark, the lake floor's shells).
+- [ ] **The tumbler's tangle is procedural.** `materials.json` wires the library for the leaves, the litter, the barks,
+      seven ground layers, the crawlers' skin (`skin.cactus`) and, from the owner's delivery of 2026-10-22, the frill's
+      and trumpet's fins (`card.fin.membrane`), the plumes (`card.pappus.giant`), the feather grass (`card.stipa`), the
+      saxaul's bark and the winged seeds (`card.samara.maple`). The tumblers' tangle has no set: its prompt is in
+      `core/materials/PROMPTS-NEEDED.md`, section 7.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
 - [ ] **The overlays' plants are not here**: hulk gardens (the rust vine has its tag and item, nothing places it) and the
       pothole pools belong to `biomes/dambasins` and `biomes/scablands` (`PLAN.md` sections 5, 6).
 - [ ] **Not in the open world yet.** The kit is ready for `WORLD_KITS` (a pass table, make/grow, record mode); the north
       basin's open world (`openworld/north-basin`, data only) is `PLAN.md` step 6.
-- [ ] **The wind is the kit's, not the world's.** `NSEMIARID.WIND` is set once by the host; a world with a veering wind
-      should hand the kit its prevailing wind per region (the travellers' headings are a long average, not today's wind).
+- [ ] **The kit's own wind is a long average.** The page's moving wind is core/atmos's (`89b-host-atmos.js`), but what
+      the kit places (the travellers' headings, the drifts, the crescents, the frills' shed side) reads `NSEMIARID.WIND`,
+      set once by the host: a world with a veering wind should hand the kit its prevailing wind per region.

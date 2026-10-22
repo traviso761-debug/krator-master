@@ -20,7 +20,11 @@ a given speed; and the land has been drying for centuries behind retreating shor
 the strandlines of the slow recession, salt rising toward the water, a dune field on the lee shore), THE STEPPE
 (680-760 m), THE FOOTHILLS (780-1,150 m, basalt ridges, a spring pool), THE UPLAND (1,200-1,450 m). A stream runs down
 the transect into the lake. The sky: the outer rim iced in the north, the Inner Wall's highlands blue in the south, the
-giant in the north-east. The seed weather: a drift of plumes and cotton on the wind round the camera (`89-host-seeds.js`).
+giant in the north-east. The water is core/water's: the lake and the pool still water, the stream a flow (records in
+`45-host-stage.js`, which `waterH` answers from; drawn in `89b-host-atmos.js`). The wind is core/atmos's: the prevailing
+wind veering slowly, its gust fronts running downwind, scaled by the wind setting (the panel's select or `?wind=calm|breeze|high`).
+It turns the helicopter trumpets (`86-host-variants.js`, the spin materials), drives the seed weather and tears the seeds
+off the trees round the camera when it passes each one's hold (`89c-host-seeds.js`; `window._seeds` counts them).
 
 ## The flora
 
