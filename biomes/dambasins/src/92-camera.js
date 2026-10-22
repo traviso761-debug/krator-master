@@ -64,7 +64,9 @@ function setBounds(on){on=!!on;if(on===BOUNDS_ON&&(!on||BOUNDS))return;BOUNDS_ON
  const bt=document.getElementById('boundsBtn');if(bt)bt.style.background=on?'#6a4a38':'';}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
  // port: never under the ground or the sea (the ancients clamp was y>=2)
- const _gy=Math.max(typeof DB_DRY!=='undefined'&&DB_DRY?-1e9:.8,terrainH(camera.position.x,camera.position.z)+1.2);   // [dambasins] no sea to stay over: the ground onlyif(camera.position.y<_gy)camera.position.y=_gy;camera.lookAt(ctl.target);}
+
+ // [dambasins] no sea to stay over on a dry page: the ground only
+ const _gy=Math.max(typeof DB_DRY!=='undefined'&&DB_DRY?-1e9:.8,terrainH(camera.position.x,camera.position.z)+1.2);if(camera.position.y<_gy)camera.position.y=_gy;camera.lookAt(ctl.target);}
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);const hb=document.createElement('div');hb.style.display='none';ui.appendChild(hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);hb.appendChild(b);}
 const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
 // ---------------------------------------------------------------- INSPECTOR

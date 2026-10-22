@@ -106,7 +106,7 @@ const HCHK={
   const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=ATMOS.windScale,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
   if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=hold;}
   const lan=()=>window._seeds.bySpecies.lantern||0;
-  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);   // 12 s of the module's clockreturn[heli()-h0,window._seeds.released-a0,lan()-l0];};
+  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return[heli()-h0,window._seeds.released-a0,lan()-l0];};   // 12 s of the module's clock a run
   const tr=nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]),ln=nearTree('lantern',PLACE.steppe[0],PLACE.steppe[1]);
   let calm,high,lc,lh;try{FLIGHT.pin={x:tr.x,z:tr.z};calm=run('calm');high=run('high');   // a trumpet grove, wherever the camera is
    FLIGHT.pin={x:ln.x,z:ln.z};lc=run('calm');lh=run('high');}   // and a stand of drift lanterns: they go the other way
