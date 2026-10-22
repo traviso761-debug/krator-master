@@ -133,6 +133,7 @@ Styles in the `style` tag: `host`, `court`, `ministry`, `common`, `poor`.
 | `et_gate` | a city gate held up by an ancestor with arms spread (`arch-18`) |
 | `et_wall`, `et_wall_tower` | pale brick on a stone base, the tower a pier bundle; the northern frontier's version taller and blind |
 | `et_barracks` | the frontier army's: a pattern-block quadrangle, distrusted and kept outside the wall |
+| `et_fort` | the frontier fort (the owner, 2026-10-22): a hexagon of curtain walls on a platform in its moat, a hexagonal tower at each point (gold faces watching outward, a celadon pavilion), the city gate as its gatehouse (a child record) and a bridge, ranges inside (two barracks, stores, armoury, mess), stairs to the walk, the hexagonal keep under a celadon ogee with a gold face on every side |
 
 **Religion and the Heirs**
 

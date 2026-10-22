@@ -333,8 +333,8 @@
    "sha256": "fcbf3400d82f5118ba0b3ea204ef862fcf2bdab46414bfeb05543b68a044fb7a"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1914081,
-   "sha256": "1ffd14cd79e70eb453f804751662bd6e4620ef04e8fbbf795e294812a2f8d648"
+   "bytes": 1916608,
+   "sha256": "2a4f53b2bee2c56d49753c1ab455bcdea7a846f38319991191b9a8da7eed9521"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554507,
@@ -345,8 +345,8 @@
    "sha256": "4e1983c2d0cac19e77829bf6022df019df76565d2ec7d42de26cef0091e07e03"
   },
   "kits/eternian/dist/eternian.html": {
-   "bytes": 1025218,
-   "sha256": "fb13f7359941d6b3d91c825735e76252ea119496b54ffd2711e0728c96465ebe"
+   "bytes": 1035390,
+   "sha256": "ec795bf4244793627a8cff40657b36255d026cbb4836ae7be8d76adc8218992f"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,
@@ -357,8 +357,8 @@
    "sha256": "8db212b3feba89b8ce4783421ea28fda84b4ea837d8d9e6fa856be0dd636bdad"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10005044,
-   "sha256": "130c8972aa84d601cf8bb61e4a06c654e85172c49caa34ab1e7ae1dd5c547a07"
+   "bytes": 10007571,
+   "sha256": "f4f8ed6b046029e072dd0caf21006aab4ef45ba5771ec7ed8aed9c604ea8428c"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 258992,
@@ -513,8 +513,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 4758816,
-   "sha256": "3a683ed47b926517ae9f7e54c61e9cf326c068d9fef92ec1cdbc71d5375d040d"
+   "bytes": 4793211,
+   "sha256": "838cab154694f389f6e70e82be081045b5e9247d2da928cbcad7172cfd7d594a"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,

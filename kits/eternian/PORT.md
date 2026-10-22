@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 31 (11%) | 6 (2%) | 10 (3%) | 24 (9%) | 206 (74%) |
+| KB | 31 (11%) | 6 (2%) | 10 (3%) | 24 (8%) | 213 (75%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -34,7 +34,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/53-et-court.js` | 5.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-et-dwell-hex.js` | 3.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-et-state.js` | 11.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/61-et-defence.js` | 5.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/61-et-defence.js` | 13.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-et-machine.js` | 10.4 | [draw] | 10 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-et-faith.js` | 8.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-et-trade-kit.js` | 5.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |

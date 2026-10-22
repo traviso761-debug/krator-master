@@ -25,7 +25,7 @@ const ET_TRADES=[
  {trade:'industrial workers',voth:'industrial lot',keys:['et_kiln','et_tile_works','et_porcelain','et_paper_mill'],note:'the kilns, the tile works, the paper mill, the porcelain works'},
  {trade:'power-house stokers and engineers',voth:'voth_generator',keys:['et_tube_station'],note:'no generators: the engineers keep the revived Ancient pneumatic tubes'},
  {trade:'household service',voth:'rich house, manor, clan compound',keys:['et_official_villa']},
- {trade:'soldiers',voth:'voth_barracks',keys:['et_barracks']},
+ {trade:'soldiers',voth:'voth_barracks',keys:['et_barracks','et_fort']},
  {trade:'teachers and scholars',voth:'voth_school',keys:['et_examination_hall']},
  {trade:'guild officers and clerks',voth:'voth_bldg_guild_hall',keys:['et_registry'],note:'the paper state: the registry and the ministries'},
  {trade:'customs officers and clerks',voth:'customs house',keys:['et_customs_house']},

@@ -41,7 +41,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `53-et-court.js` | 5 |  |
 | `54-et-dwell-hex.js` | 3 |  |
 | `60-et-state.js` | 11 |  |
-| `61-et-defence.js` | 6 |  |
+| `61-et-defence.js` | 13 |  |
 | `62-et-machine.js` | 10 |  |
 | `63-et-faith.js` | 9 |  |
 | `64-et-trade-kit.js` | 6 |  |

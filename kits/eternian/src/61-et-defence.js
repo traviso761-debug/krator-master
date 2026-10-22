@@ -65,3 +65,71 @@ defBuilding({key:'et_barracks',name:'Barracks',seed:7113,cut:true,w:25,d:21,h:12
   for(const x of [-8,-4,4,8])FURNISH('eternian_poor_reed_mat',x,G,-D/2+dep-1.3,0);
   FURNISH('eternian_poor_block_bench',-6,G,-D/2+.52,0);FURNISH('eternian_poor_block_bench',6,G,-D/2+.52,0);
   FURNISH('eternian_common_table',W/2-dep/2,G,0,PI/2);FURNISH('eternian_poor_hearth',-W/2+.62,G,2,PI/2);FURNISH('generic_barrel',-W/2+dep-.8,G,-2,0);}});
+
+/* the frontier fort (the owner, 2026-10-22): the frontier army's hexagon, the Sanctum's six-fold plan in pale brick. Curtain
+   walls on a platform of made ground in its moat; a hexagonal tower at each corner with its point outward like a bastion,
+   closed-eyed gold faces on its outer faces watching the frontier and a celadon pavilion on top; the city gate (et_gate, a
+   child record) in the front face and a bridge over the moat to it; inside, ranges against the other five walls (two
+   barracks, the stores, the armoury with its glaive racks, the mess) and two stairs to the wall walk; in the middle the keep,
+   three storeys of brick under a celadon ogee with a gold face on every face of its top storey (the State keeps its eye on
+   its army), two bronze ancestors at its steps, the banner on its pole and a cistern */
+const ET_FORT={R:34,platform:8,moat:14,PH:1.25};
+defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:32,budget:1400000,front:{x:0,z:44,yaw:0},
+ tags:{types:['military'],wealth:'middle',style:'ministry'},
+ note:'a hexagon of pale-brick curtain walls on a platform in its moat, a hexagonal corner tower at each point under celadon with gold faces watching outward, the city gate and a bridge, ranges inside (barracks, stores, armoury, mess), stairs to the walk, and the hexagonal keep under a celadon ogee with a gold face on every side',
+ build(o){const R=ET_FORT.R,ap=R*ET_HEX_AP,PH=ET_FORT.PH,Rp=R+ET_FORT.platform,Rm=R+ET_FORT.moat,sd=P('stoneD'),br=P('brick'),
+  brD=new THREE.Color(br).multiplyScalar(.86),dark=new THREE.Color(0x0e0d0c),hp=etHex(Rp),hm=etHex(Rm);
+  /* the moat (its water between the platform's revetment and an outer kerb) and the platform in its stone revetment */
+  for(let i=0;i<6;i++){const j=(i+1)%6;etPoly('water',[[hp[i][0],.3,hp[i][1]],[hp[j][0],.3,hp[j][1]],[hm[j][0],.3,hm[j][1]],[hm[i][0],.3,hm[i][1]]],new THREE.Color(ET_WATER));}
+  etHexFaces(Rm*ET_HEX_AP+.25,()=>box('stone',0,0,0,Rm+.6,.55,.5,sd));
+  prism('stone',hp,0,PH-.05,sd);prism('earth',etHex(Rp-.25),PH-.05,PH,P('earth'));
+  pushM(TF(0,PH,0));
+  prism('paving',etHex(R-2.5),0,.02,P('paving'));
+  /* the bridge: level with the platform over the moat, stepping down at its outer end (each step a little narrower, so no
+     two share a side) */
+  {const z0=Rp*ET_HEX_AP,z1=Rm*ET_HEX_AP+.6,zc=(z0+z1)/2,L=z1-z0;box('stone',0,-.35,zc,6,.35,L,sd);
+   for(const s of [-1,1]){box('stone',s*2.85,0,zc,.3,.9,L,sd);box('stone',s*2.3,-PH,zc,.9,PH-.35,1.4,sd);}
+   for(let k=0;k<4;k++)box('stone',0,-PH,z1+k*.35+.175,6-k*.1,PH*(3-k)/4+.001,.35,sd);}
+  /* the curtain: a stone base, the brick, a string course, the walk behind stepped merlons; the gate face open in its middle */
+  const STAIR={0:7,2:-7},seg=(L,x)=>{box('stone',x,0,0,L,1.6,4.4,sd);box('brick',x,1.6,0,L,6.4,3.6,br);box('brick',x,5.6,1.85,L,.3,.2,brD);
+   box('paving',x,8,0,L,.1,3.6,P('paving'));for(let xx=x-L/2+1;xx<x+L/2-.4;xx+=2){box('brick',xx,8,1.55,1.2,1.0,.5,br);box('brick',xx,9,1.55,.7,.4,.5,brD);}};
+  etHexFaces(ap,(k)=>{const g=12.9;
+   if(k===1)for(const s of [-1,1])seg(R/2-g,s*(g+R/2)/2);else seg(R,0);
+   const gx=STAIR[k],cuts=k===1?[[-R/2,-g],[g,R/2]]:gx==null?[[-R/2,R/2]]:[[-R/2,gx-.8],[gx+.8,R/2]];
+   for(const [a,b] of cuts)box('brick',(a+b)/2,8,-1.6,b-a,1.0,.4,br);   /* the inner parapet, open at a stair's head */
+   if(gx!=null){for(let i=0;i<20;i++)box('brick',gx,i*.4,-7.8+i*.3+.15,1.4,.4,.3,i%2?br:brD);
+    for(const s of [-1,1]){const x=gx+s*.68,t=[[x,0,-7.8],[x,0,-1.85],[x,7.93,-1.85]];etPoly('brick',t,brD);etPoly('brick',t.slice().reverse(),brD);}}});
+  /* the corner towers: points outward, gold faces on the outer faces, slits, a door from the court, a celadon pavilion */
+  for(let i=0;i<6;i++){const a=i*PI/3;pushM(TF(R*Math.cos(a),0,R*Math.sin(a)));
+   prism('stone',etHex(5.8),0,.6,sd);prism('brick',etHex(5.2),.6,13,br);prism('brick',etHex(5.6),13,13.5,brD);
+   etHexFaces(5.2*ET_HEX_AP,(k,ph)=>{const c=Math.cos(ph-a);
+    box('stone',0,3.6,.02,.28,1.8,.06,dark);box('stone',0,9.6,.02,.28,1.4,.06,dark);
+    if(c>.4)etHead(0,6.1,.35,1.5,{metal:'gold'});
+    else if(c<-.8&&Math.sin(ph-a)>0){box('timber',0,.6,.03,1.2,2.4,.06,P('timber'));box('stone',0,3.0,.06,1.6,.25,.12,sd);door(0,.6,.1,0,1.2);}});
+   etHexFaces(5.6*ET_HEX_AP-.25,()=>{for(const xx of [-1.4,1.4]){box('brick',xx,13.5,0,1.1,1.1,.5,br);box('brick',xx,14.6,0,.6,.4,.5,brD);}});
+   prism('brick',etHex(3.4),13.5,16.6,br);etHexHip(3.4,16.6,2.8,{mk:'celadon',ov:.7});
+   cone('verdigris',0,19.4,0,.22,1.2,P('verdigris'),6);popM();}
+  place('et_gate',0,ap,0,{y:0});
+  /* the ranges against the walls, each a lean-to of cast block with its front on the court */
+  const RANGES={0:{x:-3,w:14,furn:[['eternian_poor_reed_mat',-4.5,-1.7,0],['eternian_poor_reed_mat',-1.5,-1.7,0],['eternian_poor_reed_mat',1.5,-1.7,0],['eternian_poor_reed_mat',4.5,-1.7,0],['eternian_poor_block_bench',-3,1.9,PI],['eternian_common_chest',5.6,1.2,-PI/2]]},
+   2:{x:3,w:14,furn:[['eternian_common_bunk',-4.5,-1.85,0],['eternian_common_bunk',-1.5,-1.85,0],['eternian_common_bunk',1.5,-1.85,0],['eternian_common_bunk',4.5,-1.85,0],['eternian_poor_block_bench',3,1.9,PI],['eternian_common_chest',-5.6,1.2,PI/2]]},
+   3:{w:18,furn:[['generic_barrel',-7,-1.8,0],['generic_barrel',-6,-1.8,0],['generic_barrel',-7,-.8,0],['generic_sack',-3,-1.9,0],['generic_sack',-2,-1.9,0],['generic_crate',2,-1.8,0],['generic_crate',3.2,-1.8,0],['job_pole_rack',6.5,-2.2,0]]},
+   4:{w:18,furn:[['eternian_common_arms_rack',-4.5,-2.74,0],['eternian_common_arms_rack',-1.5,-2.74,0],['eternian_common_arms_rack',1.5,-2.74,0],['eternian_common_arms_rack',4.5,-2.74,0],['eternian_court_visor_case',-7.2,0,PI/2],['eternian_common_chest',7.2,0,-PI/2],['eternian_common_bench',0,1.6,PI]]},
+   5:{w:18,chimney:[7.2,-2.6],furn:[['eternian_common_table',-3,0,0],['eternian_common_table',3,0,0],['eternian_common_bench',-3,-1.1,0],['eternian_common_bench',3,-1.1,0],['eternian_common_bench',-3,1.1,PI],['eternian_common_bench',3,1.1,PI],['eternian_common_stove',7.0,-2.3,0]]}};
+  etHexFaces(ap,(k)=>{const r=RANGES[k];if(!r)return;pushM(TF(r.x||0,0,-1.8-3.25,PI));
+   etTrade({w:r.w,d:6.2,storeys:1,sh:3.2,mk:'block',upMk:'block',roof:'pent',roofMk:'tile',roofH:1.0,mask:'lead',chimney:r.chimney,furn:r.furn,
+    });
+   popM();});
+  /* the keep: a stepped plinth, three storeys of brick, the ogee, a gold face on every face of the top storey */
+  const KR=8,KG=1.0,kap=(KR+.3)*ET_HEX_AP;
+  etTrade({plan:'hex',R:KR,storeys:3,sh:3.6,G:KG,mk:'brick',upMk:'brick',roof:'ogee',roofMk:'celadon',steel:true,mask:'terracotta',
+   furn:[['eternian_common_register_desk',4,1.0,0],['eternian_common_archive_shelf',3,.5,0],['eternian_common_bench',5,.6,0],['eternian_common_table',0,1.4,0],
+    ['eternian_common_bed',2,.8,1],['eternian_common_bed',3,.8,1],['eternian_common_bed',0,.8,1],['eternian_common_chest',4,.5,1],
+    ['eternian_common_tube_rack',4,.4,2],['eternian_court_petition_stand',2,1.2,2],['eternian_court_alabaster_lamp',0,.6,2],['eternian_common_mask_shelf',3,.4,2]],
+   extra:F=>etHexFaces(F.ap+ET_T/2,()=>etHead(0,F.G+2*3.6+2.45,.3,.95,{metal:'gold'}))});
+  for(let s=0;s<3;s++)box('stone',0,0,kap+.15+s*.3,3.2-s*.1,KG*(3-s)/3,.3,sd);   /* the keep's steps, each a little narrower */
+  for(const s of [-1,1]){box('stone',s*2.9,0,kap+1.6,1.2,1.0,1.2,sd);etFigure(s*2.9,1.0,kap+1.6,3.4,{pose:'folded',metal:'bronze'});}
+  {const z0=kap+1.05,z1=ap-5;box('paving',0,.02,(z0+z1)/2,3.6,.03,z1-z0,new THREE.Color(P('paving')).multiplyScalar(.9));}
+  cyl('iron',-13,0,9,.1,14,P('iron'),6);etBanner(-12.4,13.6,9,1.2,3.6);
+  etBasin(13,0,9,3.2,3.2,.7);
+  popM();}});

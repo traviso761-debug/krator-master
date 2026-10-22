@@ -34,10 +34,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 25 | 171 | 33 | 6 | 10 | 24 | 97 | 2 | atmos | yes | yes |
 | [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 444 | 15 | 0 | 0 | 11 | 418 | 3 |  |  | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 47 | 2174 | 42 | 0 | 10 | 59 | 2062 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 47 | 2176 | 42 | 0 | 10 | 59 | 2065 | 3 |  |  | yes |
 | [`kits/crops`](kits/crops/PORT.md) | 7 | 47 | 41 | 0 | 0 | 7 | 0 | 0 |  | yes | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 26 | 165 | 36 | 6 | 10 | 24 | 89 | 2 | atmos | yes | yes |
-| [`kits/eternian`](kits/eternian/PORT.md) | 44 | 277 | 31 | 6 | 10 | 24 | 206 | 4 | atmos | yes | yes |
+| [`kits/eternian`](kits/eternian/PORT.md) | 44 | 284 | 31 | 6 | 10 | 24 | 213 | 4 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 24 | 246 | 122 | 0 | 10 | 77 | 37 | 1 |  |  | yes |
 | [`kits/islanders`](kits/islanders/PORT.md) | 39 | 416 | 28 | 6 | 10 | 24 | 348 | 3 | atmos | yes | yes |
@@ -75,7 +75,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 243 | 22 | 0 | 0 | 101 | 120 | 0 |  |  | yes |
-| **all** | 2410 | 31570 | 6693 (21%) | 646 (2%) | 1110 (4%) | 3983 (13%) | 19139 (61%) | 282 | | | |
+| **all** | 2410 | 31614 | 6694 (21%) | 646 (2%) | 1110 (4%) | 3988 (13%) | 19177 (61%) | 282 | | | |
 
 ## Host-shell copies
 
