@@ -339,7 +339,7 @@ G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],
 // a ribbed COLUMN (the sail candelabra's stems), unit height, radius .5
 G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08);};
 // a BEAD: a squashed sphere, unit height, origin at its base
-G.bead=function(){return lathe([[0,.05],[.12,.34],[.5,.5],[.88,.34],[1,.05]],8,0,(p,i)=>.75+.25*Math.sin(i/4*Math.PI));};
+G.bead=function(){return lathe([[0,.05],[.25,.42],[.75,.42],[1,.05]],6,0,(p,i)=>.75+.25*Math.sin(i/3*Math.PI));};
 // a STEP CONE: tiers stacked like a termite tower (a tier a wet year), unit height, radius .5
 G.stepcone=function(){const P=[[0,.5]];for(let k=0;k<5;k++){const y0=k/5,y1=(k+1)/5,r=.5*(1-k/5.5);P.push([y0+.02,r*.96],[y0+.16,r],[y1-.01,r*.82]);}P.push([1,.03]);
  return lathe(P,10,.04,(p,i)=>i%3===1?1:.78);};
@@ -366,11 +366,13 @@ G.furler=function(){const pos=[],nor=[],uv=[],col=[],n=14;
  return BIO.geo._make(pos,nor,uv,col);};
 // a WINDOW: a cluster of translucent finger tips just out of the ground, unit radius
 G.window=function(){const pos=[],nor=[],uv=[],col=[];for(let k=0;k<7;k++){const a=k*2.399963,d=k?.55:0,cx=Math.cos(a)*d,cz=Math.sin(a)*d,r=k?.3:.36;
-  const g=new T3.SphereGeometry(r,7,4,0,TAU,0,Math.PI*.5).toNonIndexed(),p=g.attributes.position.array,nn=g.attributes.normal.array;
+  const g=new T3.SphereGeometry(r,6,3,0,TAU,0,Math.PI*.5).toNonIndexed(),p=g.attributes.position.array,nn=g.attributes.normal.array;
   for(let i=0;i<p.length;i+=3){pos.push(cx+p[i],p[i+1]*1.4,cz+p[i+2]);nor.push(nn[i],nn[i+1],nn[i+2]);uv.push(0,0);const c=.7+.5*(p[i+1]/r);col.push(c,c,c);}}
  return BIO.geo._make(pos,nor,uv,col);};
 // a FINGER: a jointed succulent finger (salt fingers), unit height, three segments
 G.finger=function(){return lathe([[0,.12],[.3,.14],[.33,.1],[.36,.13],[.64,.14],[.67,.1],[.7,.13],[.95,.11],[1,.02]],6,0,(p,i)=>i%3===2?.6:1);};
+// a CAPSULE: a crawler's segment, a prostrate stem, unit length along y, radius .5 (cheap: there are thousands)
+G.capsule=function(){return lathe([[0,.2],[.15,.5],[.85,.5],[1,.2]],5,.06);};
 // a TUMBLER: a ball of crossed cards (the tangle texture), unit radius, origin at the centre
 G.ball=function(){const pos=[],uv=[],nor=[];const D=[[1,0,0],[0,1,0],[0,0,1],[.7,.7,0],[0,.7,.7],[.7,0,-.7]];
  D.forEach(d=>{let s=Math.abs(d[1])>.9?[1,0,0]:[0,1,0];const u=[d[1]*s[2]-d[2]*s[1],d[2]*s[0]-d[0]*s[2],d[0]*s[1]-d[1]*s[0]],ul=Math.hypot(...u);u.forEach((_,i)=>u[i]/=ul);
@@ -470,7 +472,7 @@ BIO.def('barrel',G.barrel(),M.vcol,{label:'Striders'});
 BIO.def('stilt',G.rod(),M.solid,{label:'Strider stilts'});
 BIO.def('stub',G.cone(),M.solid,{label:'Dead stilt stubs (a strider\'s trail)'});
 BIO.def('column',G.column(),M.vcol,{label:'Sail candelabra'});
-BIO.def('blade',BIO.geo.frond(2),M.vcol,{label:'Sail blades'});
+BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(TX.fin,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
 BIO.def('horn',G.horn(),M.vcol,{label:'Horn pipes'});
@@ -481,8 +483,8 @@ BIO.def('stepcone',G.stepcone(),M.vcol,{label:'Step cones'});
 BIO.def('window',G.window(),M.vcol,{label:'Window plants'});
 BIO.def('finger',G.finger(),M.vcol,{label:'Salt fingers'});
 BIO.def('bead',G.bead(),M.vcol,{label:'Bead chains'});
-BIO.def('crawler',G.finger(),M.vcol,{label:'Crawlers (the living heads)'});
-BIO.def('crawlerDead',G.finger(),M.vcol,{label:'Crawler trails (the dead stems)'});
+BIO.def('crawler',G.capsule(),M.vcol,{label:'Crawlers (the living heads)'});
+BIO.def('crawlerDead',G.capsule(),M.vcol,{label:'Crawler trails (the dead stems)'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});

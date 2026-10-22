@@ -92,13 +92,14 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
 // a scatter of blooms in a disc of radius r (one colour per head); o.flat lays them on the ground
 function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(.3,.55);
-  BIO.put(o.item||'bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.3):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
+  const bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;if(o.flat&&BIO.depth(bx,bz)>.3)continue;   // a flat scatter never spills into the water
+  BIO.put(o.item||'bloom',[bx,y+(o.flat?rr(0,.3):rr(-.3,.4)*r),bz],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 NSEMIARID.blooms=blooms;
 // a vine curtain from a point (the glider gourd on a tree's limbs, the rust vine on a hulk): ribbons, and pods among them
 function hangVine(x,y,z,len,w,st,o){o=o||{};const n=ri(2,4),a0=rr(0,TAU),lc=leafCol(o.leaf||PAL.gourd,1.2,.03,.08,.05);
  for(let i=0;i<n;i++){const a=a0+i*GOLD,d=w*rr(.1,.5),L=len*rr(.6,1.05);
   BIO.put('vine',[x+Math.cos(a)*d,y+rr(-.1,.1),z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w*rr(.7,1.1),L,1],bright(lc,rr(.9,1.08)));
-  if(o.pods!==false&&rng()<.6){const t=rr(.25,.8),gs=rr(.35,.6);BIO.put('gourd',[x+Math.cos(a)*d*1.2,y-L*t,z+Math.sin(a)*d*1.2],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[gs,gs*rr(1.1,1.4),gs],leafCol(PAL.gourd,1.1,.02,.06,.05));if(st)st.pods++;}}
+  if(o.pods!==false&&rng()<.6){const t=rr(.25,.8),gs=rr(.35,.6);if(y-L*t-gs<BIO.waterH(x,z)+.3)continue;BIO.put('gourd',[x+Math.cos(a)*d*1.2,y-L*t,z+Math.sin(a)*d*1.2],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[gs,gs*rr(1.1,1.4),gs],leafCol(PAL.gourd,1.1,.02,.06,.05));if(st)st.pods++;}}
  if(st)st.vines++;}
 NSEMIARID.hangVine=hangVine;
 // seeds in flight (a frill's plumes, a trumpet's helicopters, the kite ash's samaras, a clock's parachutes): n of them

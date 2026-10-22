@@ -32,7 +32,8 @@ function paintWall(g,w,h,HZ,DEG){const base=HZ+6;
   const x=u*w,top=base-rimH(u,1),t=rng(),y=mix(top,base,t);
   g.strokeStyle='rgba('+(rng()<.55?'56,50,58':'168,160,156')+','+(.10+rng()*.22).toFixed(2)+')';g.lineWidth=1+rng()*1.6;
   g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-90,90),y+rr(-8,8));g.stroke();
-  if(rng()<.12){g.strokeStyle='rgba(40,36,44,'+(.2+rng()*.22).toFixed(2)+')';g.lineWidth=rr(1.5,3.5);g.beginPath();g.moveTo(x,top+3);g.lineTo(x+rr(-6,6),mix(top,base,rr(.4,.9)));g.stroke();}}
+  // gullies from the crests: few, short and faint (the wall stands tall in the north here; long ones read as wires)
+  if(rng()<.04){g.strokeStyle='rgba(40,36,44,'+(.08+rng()*.1).toFixed(2)+')';g.lineWidth=rr(1,2);g.beginPath();g.moveTo(x,top+3);g.lineTo(x+rr(-8,8),mix(top,base,rr(.12,.3)));g.stroke();}}
  // sunlit crests (the sun is WNW: the west faces glow), a shadow under each
  for(let x=0;x<=w;x+=2){const u=x/w,e=westOf(u),top=base-rimH(u,1);
   g.fillStyle='rgba(246,248,252,'+(.75*e).toFixed(2)+')';g.fillRect(x,top,2,3+e*16*(.6+.4*fbm(u*90,4,99,2)));   // ice on the crests

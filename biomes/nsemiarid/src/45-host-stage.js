@@ -144,7 +144,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the dunes: sand
   t.copy(SAND).lerp(SAND2,clamp(.5+n*2,0,1));c.lerp(t,smooth(.1,.5,dune)*.9);
   // basalt where the rock shows
-  t.copy(BASALT).lerp(BASALT2,clamp(.5+n*1.8,0,1));c.lerp(t,smooth(.3,.75,rock)*.85);
+  t.copy(BASALT).lerp(BASALT2,clamp(.5+n*1.8,0,1));c.lerp(t,smooth(.45,.85,rock)*.6);
   // the stream's banks: grass, damp at the water
   c.lerp(GRASS,smooth(.3,.8,flow)*.55);c.lerp(DAMP,smooth(.75,1,flow)*.5);
   const k=1+n*.10+n2*.05;
