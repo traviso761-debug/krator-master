@@ -41,8 +41,14 @@ off the trees round the camera when it passes each one's hold (`89c-host-seeds.j
 | rip (stream, spring) | spring planes, walnut | reeds, grass, flowers |
 
 Krator's own: the dandelion frill (the frill-tree line), the helicopter trumpet (the trumpet-tree line), the drift
-lantern (nhighlands' bell-bulbs). The seeds aloft (plumes, samaras, helicopters, gliders, lanterns) are placed downwind
-of their trees as the seed weather's still frame.
+lantern (nhighlands' bell-bulbs). The frill wears a ruff of fins standing on edge up its column (the owner's fin card),
+tinted teal to violet while green and silk-white when ripe (`?frill=white` shows every stage white: tried 2026-10-22, it
+loses its silhouette against the sky). The trumpet's crown is a deep fluted bell with eight pitched blades grown up its
+outside (the same fin card) and a yellow throat, turning on core/atmos's wind. The trees' seeds fly (`89c-host-seeds.js`):
+torn loose when the wind where a tree stands passes its hold, the trumpet's winged seeds (the owner's maple keys) flung off
+the rim and autorotating away, the plumes riding the gusts. Only what the floor places (the glider gourd's wings, the sail
+candelabra's blades) and the drift lanterns stay a still frame aloft. The crawlers are creeping devils: ribbed, spined
+stems (`skin.cactus`) with a raised head, snaking downslope, a grey wooden trail behind (the saxaul's bark).
 
 ## The fields
 

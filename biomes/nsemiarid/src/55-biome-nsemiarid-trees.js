@@ -212,9 +212,10 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,W=NSEMIARID.WIND,wa=Math.
  const rings=[];for(let u=0;u<=1.001;u+=.125)rings.push({x:T.x,y:T.y0-.3+bH*u,z:T.z,r:rAt(u),yy:u*bH,col:barkCol(S,ri(0,2))});
  st.trunk+=BIO.lathe('bark5',rings,lv===2?12:8,1,4,(Rg,a)=>Rg.r*(1+.1*Math.cos(a*6)),null);
  const ribs=lv===2?8:6,regrow=stage==='bare'?rr(.15,.45):1;
- // the fins' colour: WHITE (the default since 2026-10-22: the fin card's own membrane, faintly iridescent while green,
- // silk-white ripe) or TINT (the first look: teal to violet while green); the host picks (NSEMIARID.frillLook, ?frill=tint)
- const white=NSEMIARID.frillLook!=='tint';
+ // the fins' colour: TINT (the default: teal to violet while green, silk-white ripe, so the stage reads from afar and
+ // the white ones are those about to fly) or WHITE (every stage the card's own membrane, faintly iridescent while green;
+ // tried 2026-10-22: against a pale sky the white fins lose their silhouette); the host picks (NSEMIARID.frillLook)
+ const white=NSEMIARID.frillLook==='white';
  const finCol=()=>ripe?leafCol(PAL.frillRipe,1.15,.01,.03,.03):white?leafCol(PAL.frillPale,1.1,.03,.05,.04):leafCol(S.leaf,1.25,.08,.12,.06);
  // a ruff: rows about every 0.8 m up every rib, each fin splayed out and up from the column like a feather from a shaft,
  // longest at the swelling (2026-10-22: shorter fins lying almost flat read as specks on a bottle)

@@ -9,7 +9,7 @@ window._biome=null;
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1,unique=Q.has('unique')||typeof VARIANTS==='undefined';
  window._variants=!unique;
  NSEMIARID.setWind(WIND);
- NSEMIARID.frillLook=Q.get('frill')==='tint'?'tint':'white';   // the frill's fins: white (default) or the first tinted look
+ NSEMIARID.frillLook=Q.get('frill')==='white'?'white':'tint';   // the frill's fins: tinted while green, white ripe (default), or ?frill=white
  try{
   if(unique)window._biome=NSEMIARID.build({R:TERR.R-150,quality:q});
   else{const out={R:TERR.R-150,quality:q};BIO.cur='nsemiarid/trees';Object.assign(out,NSEMIARID.buildTrees(out.R,q,{records:true}));
