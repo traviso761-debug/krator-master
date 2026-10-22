@@ -76,17 +76,23 @@
     so at the anchor it passes a few centimetres beside the jaw rather than touching the chin. Bow shot's whole draw is
     above the head in the clip: the string hand is brought down 15 cm to the jaw and the bow arm lowered until the arrow
     points up at most 6 degrees, so the shot aims a little upward. At full draw the bow is turned upright but for 15
-    degrees of the clip's lean.
+    degrees of the clip's lean. The arrow's length follows the arm (1.65 arms), so it is a little longer on a tall
+    body than on a short one; where a clip still draws past it, the string hand stops 5 cm short of it (in Bow shot
+    and Bow aim and scan it does on four of the six, so the hand sits up to about 3 cm off the anchor, toward the bow). The leg keep-out is the legs' capsules widened by 4.5 cm for
+    loose trousers; a much fuller skirt or robe is not measured.
   - *Block 2's sword* is kept out of the head, neck and trunk by turning the wrist (the shoulders and arms are not in
     the keep-out), so on the men it ends hanging back past the right shoulder and on the women held level over the
     head: clear, but not the block a fencer would make. A clip that needs it would be better re-made.
   - *Eat* (the library's `Consume`) only reaches forward at face height: the bread is pulled to the mouth by a two-bone
-    solve between 0.3 and 1.1 s, so the elbow goes where the solve puts it, and the bowl stands on the palm's grip point.
+    solve between 0.3 and 1.1 s, so the elbow goes where the solve puts it. The bowl's hand is put in front of the belly
+    by a solve too and turned palm up; its fingers stay as the clip has them (half closed under the bowl: there is no
+    open-palm curl).
     *Drink* lifts the hand above the head at 4 to 5 s; the cup's rim is held at the lips through it and the cup tips as
-    the hand does.
+    the hand does; before and after, the wrist keeps the cup upright.
   - *The Godot twin of these passes* matches the page to the millimetre on the neutral man (both hands' grips, the head,
-    the bow's turn and cant, the face weight, the blade's residue, at fourteen clip times), checked with a scratch data
-    folder without clothes; the checks added to `kchar_test.gd` were not run on this machine (no Godot pieces here).
+    the bow's turn and cant, the face weight, the blade's residue, at nineteen clip times), checked with a scratch data
+    folder without clothes, where the prop checks added to `kchar_test.gd` pass too; the whole test was not run on this
+    machine (no Godot pieces here).
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
   script (`tools/make_garments.py`): no folds beyond the hang and flare, strips of texture with the library's fabric
   grain multiplied in (colour only: no normal or roughness map, so a weave does not catch the light), and the

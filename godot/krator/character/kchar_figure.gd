@@ -508,6 +508,7 @@ var _blade_kept := {}                    # side -> the wrist's turn kept from th
 var _face_off := {}                      # face point -> its offset in the head joint's frame
 var _saved: Array[Quaternion] = []
 var _hold2 := 1.0
+var _two_y := 0                          # the two-hand hold's thumb side, chosen once per clip (_two_hands)
 const GAP := 0.1
 const MOVE := 0.45
 
@@ -632,6 +633,7 @@ func _after_clip(dt: float) -> void:
 	_blade_clear(dt)
 	_two_hands(dt)
 	_to_face()
+	_stand_up()
 	_cloth_step(dt)
 	_leg_caps()
 	_bow_string(dt)
@@ -653,6 +655,8 @@ func _grip() -> void:
 			continue
 		var h: Dictionary = skel["hands"][side]
 		var style: String = props.get(id, {}).get("grip", "fist") if held[side] != null else "fist"
+		if style == "flat":
+			continue                        # an open hand under a bowl: the clip's own fingers
 		var curl: Array = h["curls"].get(style, h["curls"]["fist"]) if h.has("curls") else h["curl"]
 		for c in curl:
 			var i: int = int(c[0])
@@ -725,6 +729,7 @@ func _two_hands(dt: float) -> void:
 	var sp := _support()
 	if sp.is_empty():
 		_hold2 = 1.0
+		_two_y = 0
 		return
 	var h: Dictionary = skel["hands"]["L"]
 	var arm: Array = h["arm"]
@@ -767,7 +772,11 @@ func _two_hands(dt: float) -> void:
 			t = o + GAP if (o + GAP <= L if t >= o else o - GAP < 0.0) else o - GAP
 		t = clampf(t, 0.0, L)
 	var P := A + Y * t
-	if M.basis.y.dot(Y) < 0.0:
+	# the thumb side is the clip's at the hold's first frame, kept while the clip plays (chosen afresh each frame it
+	# flipped the hand half a turn round the hilt in Two-handed parry)
+	if _two_y == 0:
+		_two_y = -1 if M.basis.y.dot(Y) < 0.0 else 1
+	if _two_y < 0:
 		Y = -Y
 	var Z := (P - S) + M.basis.z.normalized() * 0.3
 	Z -= Y * Z.dot(Y)
@@ -1001,6 +1010,43 @@ func _level(deg: float) -> void:
 		_turn(up, Quaternion(X.normalized(), minf(0.6, drop / lever)))
 
 
+# twin of carry: a prop with props.json carry (a bowl) is held in front of the belly: the wrist goes to carry (metres
+# from the lower spine joint in the skeleton's frame, mirrored for the left hand) by the arm's two-bone solve
+func _carry() -> void:
+	var spine := skeleton.find_bone("Spine")
+	if spine < 0:
+		return
+	for side in ["R", "L"]:
+		var id = held[side]
+		var c = props.get(id, {}).get("carry") if id != null else null
+		if c == null or not skel["hands"].has(side) or not skel["hands"][side].has("arm"):
+			continue
+		var arm: Array = skel["hands"][side]["arm"]
+		var hand := int(arm[2])
+		var target := _gp(spine).origin + Vector3((1.0 if side == "R" else -1.0) * float(c[0]), float(c[1]), float(c[2]))
+		_reach_arm(int(arm[0]), int(arm[1]), hand, target, _gp(hand).basis.get_rotation_quaternion())
+
+
+# twin of standUp: a prop with props.json upright (a cup's mouth, a bowl's opening) turns the wrist so that axis points
+# up, as far as the hand is not at the face (_to_face's weight); first a carried prop's arm (_carry)
+func _stand_up() -> void:
+	_carry()
+	var fc = _clip_info().get("face")
+	for side in ["R", "L"]:
+		var id = held[side]
+		var up = props.get(id, {}).get("upright") if id != null else null
+		if up == null or not _holders.has(side):
+			continue
+		var w := 1.0 - (face_w if fc != null and fc["hand"] == side else 0.0)
+		if w <= 0.0:
+			continue
+		var gq := (_gp(int(skel["hands"][side]["bone"])) * _grip_t(side)).basis.get_rotation_quaternion()
+		var q := Quaternion(gq * Vector3(up[0], up[1], up[2]).normalized(), Vector3.UP)
+		if w < 1.0:
+			q = Quaternion().slerp(q, w)
+		_turn(int(skel["hands"][side]["bone"]), q)
+
+
 # twin of hang: a prop with props.json hang turns about the grip so that axis points down
 func _hang() -> void:
 	for side in _hangs:
@@ -1013,7 +1059,9 @@ func _hang() -> void:
 # bow turned about its handle to face that hand, and an arrow; when the arrow is on the string comes from the clip
 # (clips.json nock spans; without them, a guess from the hand's place). The bow is canted about the arrow's line:
 # at full draw toward upright (but for LEAN), and until its limbs are out of the legs
-const LIMB := [0.3, 0.5, 0.72]
+const LIMB := [0.12, 0.24, 0.36, 0.48, 0.6, 0.72]
+const CLEAR := 0.045                     # the trousers and the limb's thickness round the legs' capsules
+const HEAD := 0.05                       # the arrow's head stays this far in front of the bow at full draw
 const LEAN := 15.0 * PI / 180.0
 
 
@@ -1049,7 +1097,7 @@ func _make_bow(holder: Node3D, p: Dictionary) -> void:
 
 func bow_state() -> Dictionary:
 	return {} if _bow.is_empty() else {"turn": _bow["turn"], "cant": _bow["cant_a"], "in_legs": _bow["in_legs"],
-		"arrow": _bow["arrow"] != null and _bow["arrow"].visible}
+		"arrow": _bow["arrow"] != null and _bow["arrow"].visible, "ahead": _bow.get("ahead")}
 
 
 func _span(m: MeshInstance3D, a: Vector3, b: Vector3) -> void:
@@ -1070,11 +1118,11 @@ func _nocked() -> int:
 	return 0
 
 
-func _cap_depth(p: Vector3, cp: Dictionary) -> float:
+func _cap_depth(p: Vector3, cp: Dictionary, pad := 0.0) -> float:
 	var e := _cap_ends(cp)
 	var ab: Vector3 = e[1] - e[0]
 	var t := clampf((p - e[0]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
-	return float(cp["r"]) + 0.012 - p.distance_to(e[0] + ab * t)
+	return float(cp["r"]) + pad + 0.012 - p.distance_to(e[0] + ab * t)
 
 
 func _upright(ax: Vector3, PV: Transform3D) -> float:
@@ -1113,7 +1161,7 @@ func _cant_for(ax: Vector3, full: bool, PV: Transform3D) -> float:
 			for sg in [1.0, -1.0]:
 				var w := M * Vector3(0, sg * y, -0.09 * (y / 0.72) * (y / 0.72))
 				for cp in legs:
-					sum += maxf(0.0, _cap_depth(w, cp))
+					sum += maxf(0.0, _cap_depth(w, cp, CLEAR))
 		if sum <= 0.0:
 			return a
 		if sum < least - 1e-6:
@@ -1121,6 +1169,19 @@ func _cant_for(ax: Vector3, full: bool, PV: Transform3D) -> float:
 			best = a
 	_bow["in_legs"] = least
 	return best
+
+
+# the bow's arrow is props.json arrow_arm times the bow arm's length (shoulder to wrist): a long-armed draw (about 1.5
+# arms) leaves its head in front of the bow
+func _arrow_length() -> float:
+	var p: Dictionary = props.get(held["L"], {})
+	var arm = skel["hands"]["L"].get("arm")
+	if not p.has("arrow_arm") or arm == null:
+		return float(props.get(p.get("arrow", ""), {}).get("length", 0.78))
+	var a := _gp(int(arm[0])).origin
+	var e := _gp(int(arm[1])).origin
+	var h := _gp(int(arm[2])).origin
+	return float(p["arrow_arm"]) * (a.distance_to(e) + e.distance_to(h))
 
 
 func _bow_string(dt: float) -> void:
@@ -1135,6 +1196,16 @@ func _bow_string(dt: float) -> void:
 	var lh := _gp(int(skel["hands"]["L"]["bone"])) * _grip_t("L")
 	var rp := _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R").origin
 	var p := lh.affine_inverse() * rp                          # the drawing hand in the bow hand's grip frame
+	# the arrow's length follows the bow arm; nocked, the string hand draws at most HEAD short of it
+	var ln := _arrow_length()
+	var over := p.length() - (ln - HEAD)
+	var r_arm = skel["hands"]["R"].get("arm")
+	if nk == 1 and over > 0.0 and r_arm != null:
+		var rh := int(r_arm[2])
+		var rt := _gp(rh)
+		_reach_arm(int(r_arm[0]), int(r_arm[1]), rh, rt.origin + (lh.origin - rp).normalized() * over, rt.basis.get_rotation_quaternion())
+		rp = _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R").origin
+		p = lh.affine_inverse() * rp
 	var n := Vector2(p.x, p.z).length()
 	var turn := 0.0
 	var near_mid := absf(p.y) < 0.35 and n > 0.12 and n < 0.95
@@ -1144,6 +1215,7 @@ func _bow_string(dt: float) -> void:
 	pivot.transform = Transform3D(Basis(Vector3.UP, turn), Vector3.ZERO)
 	p = p.rotated(Vector3.UP, -turn)
 	drawn = turn != 0.0 and p.z < rest - 0.02
+	_bow["ahead"] = ln - p.length() if drawn else null      # how far the arrow's head is in front of the bow
 	# the cant, about the arrow's line (through the string hand, so the string stays in it), eased while playing
 	var ax := p.normalized() if drawn else Vector3(0, 0, -1)
 	var want := _cant_for(ax, drawn, lh * pivot.transform) if _clip != "" else 0.0
@@ -1166,7 +1238,8 @@ func _bow_string(dt: float) -> void:
 		ar.visible = drawn and (p.z < -0.2 if nk < 0 else true)
 		if ar.visible:
 			var to := (Vector3(0, 0.04 * (signf(p.y) if p.y != 0.0 else 1.0), 0) - p).normalized()
-			ar.transform = Transform3D(Basis(Quaternion(Vector3.BACK, to)), p)
+			var alen := float(props.get(props.get(held["L"], {}).get("arrow", ""), {}).get("length", 0.78))
+			ar.transform = Transform3D(Basis(Quaternion(Vector3.BACK, to)) * Basis.from_scale(Vector3(1, 1, ln / alen)), p)
 
 
 # ---- cloth (the twin of the cloth section of 50-figure.js) ----
@@ -2261,6 +2334,7 @@ func _arms2(dt: float) -> void:
 
 
 func play(clip: String) -> void:
+	_two_y = 0
 	_pose_from = _pose_change() if _clip != "" else posture_clips.get(clip, {})
 	_pose_fade = 0.0
 	_clip = clip

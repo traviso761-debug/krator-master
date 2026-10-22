@@ -246,7 +246,8 @@ def cup(m):
 
 
 def bowl(m):
-    # a wooden bowl standing on the palm: its foot at the grip, opening out of the palm (+X); the figure keeps it level
+    # a wooden bowl standing on the palm: its foot at the grip, opening out of the palm (+X); the figure turns the hand
+    # palm up under it
     rings = [ring((x, 0, 0), 'x', r, 12) for x, r in ((0.0, 0.035), (0.012, 0.06), (0.035, 0.08), (0.06, 0.088))]
     m.loft('wood', rings, cap0=True, cap1=False)
     m.loft('stew', [ring((0.045, 0, 0), 'x', 0.082, 12), ring((0.046, 0, 0), 'x', 0.001, 12)], cap0=False, cap1=False)
@@ -291,14 +292,24 @@ SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pic
            'rifle': [0, 0.06, 0.16, 0, 0.06, 0.42], 'crossbow': [0, 0.075, 0.1, 0, 0.075, 0.3],
            'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02]}
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
-GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'wide', 'bread': 'wide'}
+GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 # degrees a prop turns about its handle in a lower hand (the forearm held forward in its guard): the shield stands up
 # with its board out, not flat like a tray (mirrored on the right)
 LOW_TURN = {'shield': 90}
 # the prop's axis that points down whatever the hand's turn (the figure turns it about the grip): a bucket and a lantern
-# hang from their bails, a bowl stands level on the palm
-HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'bowl': [-1, 0, 0]}
+# hang from their bails
+HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1]}
+# the grip-frame axis the figure turns the wrist to keep up (but while the hand is at the face): a cup's mouth, and a
+# bowl's opening, so the open hand under it turns palm up (grip 'flat': the fingers stay as the clip has them)
+UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0]}
+# the bow's arrow is this many times the bow arm's length (shoulder to wrist) on each body, so a long-armed draw
+# (about 1.5 arms) leaves the head in front of the bow; the arrow model's own length
+ARROW_ARM = {'bow': 1.65}
+# held in front of the belly: where the wrist goes, metres from the lower spine joint (out to the hand's side, up,
+# forward); the figure's arm reaches there (a bowl: the clip held the arm back, through it)
+CARRY = {'bowl': [-0.12, 0.02, 0.26]}
+LENGTH = {'arrow': 0.78}
 # a weapon's striking part along the handle (+Y, from..to): the figure turns the wrist so it does not pass through the head
 BLADE = {'sword': [0.1, 0.91], 'dagger': [0.07, 0.32], 'axe': [0.4, 0.68], 'mace': [0.42, 0.65], 'warhammer': [0.5, 0.65]}
 
@@ -354,6 +365,14 @@ def main():
             out[-1]['low_turn'] = LOW_TURN[pid]
         if pid in HANG:
             out[-1]['hang'] = HANG[pid]
+        if pid in UPRIGHT:
+            out[-1]['upright'] = UPRIGHT[pid]
+        if pid in CARRY:
+            out[-1]['carry'] = CARRY[pid]
+        if pid in ARROW_ARM:
+            out[-1]['arrow_arm'] = ARROW_ARM[pid]
+        if pid in LENGTH:
+            out[-1]['length'] = LENGTH[pid]
         if pid in BLADE:
             out[-1]['blade'] = BLADE[pid]
         if pid in STRING:
@@ -364,8 +383,9 @@ def main():
                'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '
                'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop '
                'turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. '
-               'hang: the axis that points down whatever the hand\'s turn (a bail\'s load hangs, a bowl stands level). blade: '
-               'the striking part along +Y (from, to), kept out of the head. '
+               'hang: the axis that points down whatever the hand\'s turn (a bail\'s load hangs). blade: '
+               'the striking part along +Y (from, to), kept out of the head. upright: the axis the wrist turns to keep up '
+               '(grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow\'s length per bow-arm length; length: a prop\'s own. '
                'data/clips.json hold says which clip holds what.',
                'props': out}, open(os.path.join(HERE, 'data', 'props.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
 
