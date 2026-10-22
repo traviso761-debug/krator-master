@@ -65,6 +65,10 @@
   open an elbow a few degrees past straight. An arm that the clip held past straight is given a relaxed bend of its
   own (at least 12 degrees where the clip went backwards): the clip's elbow motion stays, but every such arm hangs a
   little bent.
+- **A garment put on in mid-motion pokes into a thigh for one frame.** Its cloth chains start from the garment's rigid
+  pose, and the first step does not always clear the leg capsules (a court skirt put on while a clip blends out of the
+  bow scan: one point 2.3 cm into the thigh on that frame, clear from the next). `verify.py` counts from the second
+  frame. Settling the chains against the body when they reset would fix it, in both runtimes.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one
