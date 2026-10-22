@@ -283,8 +283,7 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
    water on `core/water` (the lake and pool still water, the stream a flow in a channel that holds it); the wind on
    `core/atmos` with a wind setting (calm, a breeze, high): the trumpets spin on it and the seeds tear loose in it (the
    probe steps the module's clock to check a gale frees them and a calm holds them). Still to do there:
-   `KNOWN_ISSUES.md` (the furling and the frills' shedding as motion, the catalog's fruit, the highland spurs, the
-   tumbler's tangle card).
+   `KNOWN_ISSUES.md` (the furling and the frills' shedding as motion, the catalog's fruit, the highland spurs).
 4. **`biomes/dambasins`** and **`biomes/scablands`**, their stations reading the base kits in place.
 5. **`biomes/nwlowlands`**: the rock zone, the bed response, the pass table and variants.
 6. **A north-basin open world** (`openworld/<name>`) with `WORLD_OVERLAYS`: where one overlay over two biomes is

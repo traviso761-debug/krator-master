@@ -483,8 +483,8 @@ const M=NSEMIARID.MAT;
 // When the page carries this kit's pack (KMAT.pack('nsemiarid'): the showcase), the procedural leaf and bark textures
 // give way to the library's sets. The painters still ran, so the random stream, and every plant's place and shape, are
 // unchanged; a page without the pack keeps the procedural ones. The cards and barks are keep-0 grey detail: the species'
-// colour colours them. The alien cards (the frill's fins and pappus, the feather grass, the tangle) stay procedural until
-// their sets exist (core/materials/PROMPTS-NEEDED.md, n semiarid).
+// colour colours them. The alien cards came from the owner on 2026-10-22: the frill's fins, the plumes, the feather
+// grass, the tumblers' tangle (materials.json).
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nsemiarid',n):null;
 NSEMIARID.LIB={has:n=>!!LIBP(n)};
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
@@ -499,8 +499,8 @@ function libCell(n,box,W,H,flip){const L=LIBP(n);if(!L)return null;const c=docum
   g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
  img.onerror=()=>{window._texPending--;BIO.err('nsemiarid: a library card failed to decode: '+n);};
  img.src=L.map;return t;}
-{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter',pappus:'leaf.pappus',stipa:'leaf.stipa'};
- for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=k==='pappus'||k==='stipa'?.3:.4;}}
+{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter',pappus:'leaf.pappus',stipa:'leaf.stipa',tangle:'leaf.tangle'};
+ for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=k==='pappus'||k==='stipa'||k==='tangle'?.3:.4;}}
  // the frill's fin: the middle fin of the sheet, cut close and turned upside down so its foot is the frond's root
  const fin=libCell('leaf.fin',[.395,.338,.605,.662],256,512,true);if(fin){M.fin.map=fin;M.fin.alphaTest=.35;}}
 // the barks: the bucket's uvScale becomes the set's tile size, and means() divides out the pack's brightness

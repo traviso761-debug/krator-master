@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 8 prompts: 1 redo (`patterns/tribal/formline`), 2 required (the Northern Highlands' `bark.alder.lichen`; n semiarid's `card.tumble`), and 5 optional: the Beast Riders' `foliage.thorn.cut`, necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`, n semiarid's `ground.lakebed.shells` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
+**Count: 6 prompts: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -102,28 +102,6 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
-## 7. n semiarid (`biomes/nsemiarid`, 2026-10-22)
-
-The northern semiarid kit (the walking steppe, the windblown seeds, the old lake bed; `biomes/nsemiarid/PLAN.md`). Its
-`materials.json` wires the library for its leaves, barks and ground. Four of the six images asked for here were delivered
-on 2026-10-22 (`card.pappus.giant`, `card.fin.membrane`, `card.stipa`, `bark.saxaul`: `PLAN.md`, the delivered log). Left:
-the tumbler's tangle (painted in code today; it lands as the family `tangle`, keep 0, and
-`50-biome-nsemiarid-species.js`'s `swap` gains its line) and one optional surface.
-
-#### `card.tumble` (family `tangle`)
-- Kind: cut-out card sheet, 3 x 3 on magenta, tintable; one tangle per cell.
-- Used by: the tumbling travellers (the walking steppe's rolling plants) and the drifts of dead stems piled against the shrubs.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one dry tumbleweed (Salsola) seen side-on: a roughly round open ball of thin, stiff, much-branched dead stems curving round on themselves, a few tiny spines and papery winged seed husks along them, light showing through the whole ball. Pale bleached straw and grey (#c4b89c, #a09884). Vary from a tight sphere to a flattened, half-broken ball. Muted, tintable: near-colourless greys and off-whites, the build's palette colours it. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `ground.lakebed.shells` (optional; fallback `ground.salt`)
-
-```
-Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: the dry floor of a lake that drained a thousand years ago, from above: pale grey-buff silt #c8bca4 crusted and curling in thin plates, scattered fine white freshwater snail and mussel shells and shell hash #ece6da half sunk in it, faint thin ripple lines of darker coarse grit #9a8e78 where old shorelines lay, a few dry grass stalks. Matte. Muted, tintable. One tile covers 3 metres.
-```
-
 ## Gaps with no prompt yet
 
 Owed, but a prompt needs work first; listed so they are not lost.

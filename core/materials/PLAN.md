@@ -559,7 +559,9 @@ magenta, keyed with the new `spill: 'line'` of `tools/textures/cards.py`: every 
 some alpha), `card.fin.membrane`, `bark.saxaul` (tintable), and unasked `card.samara.maple` (nine maple keys, full colour).
 Bound in `biomes/nsemiarid/materials.json` (`leaf.pappus`, `leaf.stipa`, `leaf.fin`, `bark.gnarled`, `seed.samara`): the
 frill's fins and the helicopter trumpet's blades, the plumes, the feather grass, the saxaul and pistachio, the winged
-seeds in flight. Still owed there: `card.tumble` (and the optional `ground.lakebed.shells`).
+seeds in flight. Later the same day the last two (`nsemiarid-tumble-2026-10-22.json`, `nsemiarid-lakebed-2026-10-22.json`):
+`card.tumble` (Salsola tangles on magenta, the line key) and `ground.lakebed.shells` (a drained lake's cracked silt with its
+shells and strand ripples, tintable), bound as `leaf.tangle` and the bed's `ground.silt` layer. The kit owes no prompts.
 
 **Delivered 2026-10-19 and processed, second batch** (`tools/textures/batches/court-furniture-2026-10.json`, pasted by the
 owner): `patterns/court/painting-9` to `-24` (sixteen Izani paintings, cut from the two sheets `paintings-iziz-a` and `-b`),

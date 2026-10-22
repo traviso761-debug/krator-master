@@ -16,11 +16,6 @@ Read before changing anything here. `build.py` prints the open count.
       build that takes the catalog rebuilds (CLAUDE.md). Pistachio and almond are not in `kits/crops` either.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
-- [ ] **The tumbler's tangle is procedural.** `materials.json` wires the library for the leaves, the litter, the barks,
-      seven ground layers, the crawlers' skin (`skin.cactus`) and, from the owner's delivery of 2026-10-22, the frill's
-      and trumpet's fins (`card.fin.membrane`), the plumes (`card.pappus.giant`), the feather grass (`card.stipa`), the
-      saxaul's bark and the winged seeds (`card.samara.maple`). The tumblers' tangle has no set: its prompt is in
-      `core/materials/PROMPTS-NEEDED.md`, section 7.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
 - [ ] **The overlays' plants are not here**: hulk gardens (the rust vine has its tag and item, nothing places it) and the
