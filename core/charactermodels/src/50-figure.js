@@ -1576,9 +1576,9 @@ function KCharFigure(body, sliders, load){
      MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
   // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
   // copied, so a panel can change one figure's live
-  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PK = PJ.concat(['drop', 'back']), PD = KCharFigure.posture || {};
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PK = PJ.concat(['drop', 'back', 'pelvis']), PD = KCharFigure.posture || {};
   var PB = PD[kit.body] ? kit.body : 'mpfb_male';
-  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0 }, PD[PB] || {});
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0 }, PD[PB] || {});
   // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
   // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
   // cross-fade carries it over too
@@ -1590,6 +1590,8 @@ function KCharFigure(body, sliders, load){
   J.forEach(function(j, i){ pRest[i].fromArray(j.r); if(j.parent >= 0) pRest[i].premultiply(pRest[j.parent]); });
   var pR = J.map(function(j){ return j.parent >= 0 ? pRest[j.parent].clone().invert() : Q(); });
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
+  var pLegs = ['LeftUpLeg', 'RightUpLeg'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; }), pL = [Q(), Q()], pSp = Q();
+  function keepWorld(b, q){ b.parent.getWorldQuaternion(qB); b.quaternion.copy(qB.invert().multiply(q)); b.updateMatrixWorld(true); }
   function postureNow(bodyOnly){
     var sum = 0;
     PK.forEach(function(k){ pS[k] = 0; });
@@ -1608,6 +1610,17 @@ function KCharFigure(body, sliders, load){
     // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
     // spear aims where the clip aims it
     pArms.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pW[i]); });
+    // the pelvis tilts about the figure's side axis (pelvis: negative forward, the top of the pelvis to the front); the
+    // thighs keep the way the clip points them and the lumbar the way it faced, so only the pelvis turns and the spine
+    // angles below take it from there
+    var sp = byName.Spine !== undefined ? bones[byName.Spine] : null;
+    if(P.pelvis && sp){
+      pLegs.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pL[i]); });
+      sp.getWorldQuaternion(pSp);
+      turnWorld(self.hips, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -P.pelvis * Math.PI / 180));
+      keepWorld(sp, pSp);
+      pLegs.forEach(function(k, i){ if(k >= 0) keepWorld(bones[k], pL[i]); });
+    }
     PJ.forEach(function(n){
       var b = byName[n] !== undefined && bones[byName[n]], a = P[n]; if(!b || !a) return;
       if(PF === 'joint'){

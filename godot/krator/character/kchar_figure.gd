@@ -575,7 +575,7 @@ func hold(want: Dictionary) -> void:
 # the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
-const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis"]
 const POSTURE_FADE := 0.25
 var posture := {}
 var posture_joint := false              # 'frame': 'joint' (the side axis as the clip turned the parent from rest)
@@ -605,6 +605,18 @@ func _posture(force := false) -> void:
 		var ai := skeleton.find_bone(n)
 		if ai >= 0:
 			arms[ai] = _gp(ai).basis.get_rotation_quaternion()
+	# the pelvis tilts about the skeleton's side axis (pelvis: negative forward); the thighs keep the way the clip points
+	# them and the lumbar the way it faced (50-figure.js posture)
+	var sp := skeleton.find_bone("Spine")
+	if p["pelvis"] != 0.0 and sp >= 0:
+		var keep := {}
+		for n in ["Spine", "LeftUpLeg", "RightUpLeg"]:
+			var li := skeleton.find_bone(n)
+			if li >= 0:
+				keep[li] = _gp(li).basis.get_rotation_quaternion()
+		_turn(_hips, Quaternion(Vector3(1, 0, 0), -deg_to_rad(float(p["pelvis"]))))
+		for li in keep:
+			skeleton.set_bone_pose_rotation(li, (_gp(skeleton.get_bone_parent(li)).basis.get_rotation_quaternion().inverse() * keep[li]).normalized())
 	for n in POSTURE_JOINTS:
 		var b := skeleton.find_bone(n)
 		var a := deg_to_rad(float(p[n]))

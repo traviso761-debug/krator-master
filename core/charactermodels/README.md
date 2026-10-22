@@ -574,6 +574,9 @@ upper arms keep the way the clip points them, so a thrust or a held spear still 
 numbers are in `data/posture.json`, which both runtimes read:
 - `bodies`: degrees per joint for `mpfb_male` and `mpfb_female` (the giant takes the man's); each figure's live copy is
   `fig.posture`.
+- `pelvis` (in `bodies` or a clip's change): the pelvis tilted alone, before the spine angles (negative forward: the
+  top of the pelvis to the front, the seat back; positive tucks it under). The thighs keep the way the clip points them
+  and the lumbar the way it faced, so the legs and the torso's direction stay; the waist and seat turn between them.
 - `clips`: per clip key and body, degrees **added** to the body's values while that clip plays (walk and run lift the
   man's chin, sprint and crouch hunch him, so they take less neck or less chest); blended by the playing clips' weights
   through a cross-fade on the page, eased over the same 0.25 s in Godot. Kept under the body whose values a body takes
