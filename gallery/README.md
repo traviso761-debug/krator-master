@@ -124,6 +124,9 @@ the catalog's glaive rack and bunk; its packs unchanged), and The Ancients and t
 redrawn Sanctum `arc-sanctum`, and the Podium `arc-podium`, the first Sanctum set aside as its own arcology; 64 pages).
 The four parts' live indexes still say 63 pages for the Ancients; `index.template.html` says 64 for their next rebuild.
 
+The Ancients and the Port version 7 (2026-10-22, `main` at bfb103b0d): the Sanctum with the Six Ministries on its podium's
+corners, twelve garden courts and the podium lined with heads; the index and `worlds/arc-sanctum.html` alone.
+
 ## The Throne: its own artifact (2026-10-07)
 
 The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne
