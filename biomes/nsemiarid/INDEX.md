@@ -24,9 +24,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 20 | the land (42); the climate fields (cached below; these are the  (85); the host binding (110); the ground (123); the water (179) |
-| `50-biome-nsemiarid-species.js` | 47 **big** | palettes (27); the tree species (71); harvest (biomes/FRUIT.md; kits/crops) (115); the small plants (the floor), tagged (142); leaf textures (175); bark, rock textures (265); geometries local to this biome (295); materials (409); instanced items (442) |
-| `55-biome-nsemiarid-trees.js` | 35 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (57); polyline helpers (Girder's) (69); keep-clear between trees (79); foliage helpers (86); the builders (119); impostors (the far canopy) (275); the pass (300); the passes (data: species, cell, acceptance from (329) |
+| `45-host-stage.js` | 22 | the land (42); the climate fields (cached below; these are the  (85); the host binding (110); the ground (123); the water (204) |
+| `50-biome-nsemiarid-species.js` | 49 **big** | palettes (27); the tree species (71); harvest (biomes/FRUIT.md; kits/crops) (115); the small plants (the floor), tagged (142); leaf textures (175); bark, rock textures (265); geometries local to this biome (295); materials (411); the library cards and barks (materials.json) (441); instanced items (462) |
+| `55-biome-nsemiarid-trees.js` | 35 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (56); polyline helpers (Girder's) (71); keep-clear between trees (81); foliage helpers (88); the builders (122); impostors (the far canopy) (279); the pass (304); the passes (data: species, cell, acceptance from (333) |
 | `60-biome-nsemiarid-floor.js` | 27 | small plants (39); the travellers (52); dew gardens (169); the zone planters (179); the pass (251) |
 | `70-biome-nsemiarid.js` | <1 |  |
 | `82-host-sky.js` | 14 | the rim painter (sedesert's Inner Wall painter,  (8) |

@@ -15,8 +15,11 @@ Read before changing anything here. `build.py` prints the open count.
       build that takes the catalog rebuilds (CLAUDE.md). Pistachio and almond are not in `kits/crops` either.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
-- [ ] **No library textures.** No `materials.json`/`tex/`: every surface is the kit's procedural canvas. The leaf cards
-      the walking steppe needs most (the fins, the pappus, drill grass) are candidates for `core/materials/PROMPTS-NEEDED.md`.
+- [ ] **The alien cards are procedural.** `materials.json` (2026-10-22) wires the library for the round, lobed, small,
+      broom and blossom leaves, the litter, six barks and seven ground layers (`45-host-stage.js` `GL`). The frill's fins
+      and the sail candelabra's blades (`fin`), the seed plumes (`pappus`), the feather grass (`stipa`) and the
+      tumblers' tangle (`tangle`) have no library set and stay painted in code: their prompts are in
+      `core/materials/PROMPTS-NEEDED.md`, section 7, with two optional surfaces (saxaul bark, the lake floor's shells).
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
 - [ ] **The overlays' plants are not here**: hulk gardens (the rust vine has its tag and item, nothing places it) and the

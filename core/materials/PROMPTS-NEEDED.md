@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 6 prompts: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
+**Count: 12 prompts: 1 redo (`patterns/tribal/formline`), 5 required (the Northern Highlands' `bark.alder.lichen`; n semiarid's `card.pappus.giant`, `card.fin.membrane`, `card.stipa`, `card.tumble`), and 6 optional: the Beast Riders' `foliage.thorn.cut`, necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`, n semiarid's `bark.saxaul`, `ground.lakebed.shells` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -102,6 +102,59 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
+## 7. n semiarid (`biomes/nsemiarid`, 2026-10-22)
+
+The northern semiarid kit (the walking steppe, the windblown seeds, the old lake bed; `biomes/nsemiarid/PLAN.md`). Its
+`materials.json` wires the library for the fruit-forest and poplar leaves (`card.aspen`, `card.lobed`), the wormwood
+(`card.sage`), the broom, the almond and Judas blossom (`card.blossom`), six barks and seven ground layers. Four of its own
+cards have no library set and are painted in code today (`biomes/nsemiarid/KNOWN_ISSUES.md`, "The alien cards are
+procedural"); two optional surfaces would replace stand-ins. Each lands as the family named, keep 0, in
+`biomes/nsemiarid/materials.json`, and `50-biome-nsemiarid-species.js`'s `swap` gains its line.
+
+#### `card.pappus.giant` (family `pappus`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable; one seed per cell.
+- Used by: the giant dandelions' clocks, the dandelion frill's seed crowns, the seeds drifting on the wind. Reuse: any windblown seed (thistle, milkweed, cottonwood fluff).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one giant dandelion seed seen from the side, hanging from the top of its cell: a dense parachute of very fine silky white filaments (#ece8e0) radiating from a short stalk in a shallow dome, the finest filament tips catching the light and fading to nothing, the long slender beak below with a small ribbed dark seed at its foot (#5a5248). Vary the dome from a flat umbrella to a near-sphere, and the filament count from sparse to dense. Muted, tintable: near-colourless greys and off-whites, the build's palette colours it. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.fin.membrane` (family `fin`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable; one fin per cell.
+- Used by: the dandelion frill's fins and the sail candelabra's kiting blades. Fallback today: the procedural fin; `card.frond.frill` (full colour, red) is the nearest library set.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one thin, translucent, sail-like plant fin standing up from the bottom of its cell: a long, slightly twisted blade, broad at its middle and tapering to a point, a stiff midrib and fine branching veins running out to a ruffled, finely scalloped edge, the membrane between the veins thin and slightly see-through, paler toward the edge, a few small tears and a dry curled tip on some. Pale grey and off-white (#d0ccc4, #b8b4ac), the veins a little darker (#8a8680). Vary the twist and the ruffle between the nine. Muted, tintable: near-colourless greys and off-whites, the build's palette colours it. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.stipa` (family `stipa`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable; one clump per cell, framed upright.
+- Used by: the feather grass of the walking steppe. Fallback today: the procedural blades; `card.grass.dry` is framed as squat clumps.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one clump of feather grass (Stipa pennata) standing on the bottom of its cell: a tight base of thin, rolled, wiry leaves, and rising out of it and arching over in the wind to one side, long silky feathery awns, each a fine central thread with soft white hairs along its whole length (#e8e4d8), the leaves pale straw grey (#b0aa98). All nine lean the same way (to the right), more or less. Vary the height and the number of plumes. Muted, tintable: near-colourless greys and off-whites, the build's palette colours it. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.tumble` (family `tangle`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable; one tangle per cell.
+- Used by: the tumbling travellers (the walking steppe's rolling plants) and the drifts of dead stems piled against the shrubs.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one dry tumbleweed (Salsola) seen side-on: a roughly round open ball of thin, stiff, much-branched dead stems curving round on themselves, a few tiny spines and papery winged seed husks along them, light showing through the whole ball. Pale bleached straw and grey (#c4b89c, #a09884). Vary from a tight sphere to a flattened, half-broken ball. Muted, tintable: near-colourless greys and off-whites, the build's palette colours it. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `bark.saxaul` (optional; fallback `wood.gnarled`)
+
+```
+Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: the bark of a black saxaul (Haloxylon), a desert tree: thin, hard, ash-grey bark #8a8680 twisting in long spiral ribs and furrows round a gnarled stem, splitting to show paler grey-brown wood #a89c88 beneath, a few deep dark cracks #3a3632, grey sand dust in the grooves. Matte. Muted, tintable. One tile covers 1 metre.
+```
+
+#### `ground.lakebed.shells` (optional; fallback `ground.salt`)
+
+```
+Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: the dry floor of a lake that drained a thousand years ago, from above: pale grey-buff silt #c8bca4 crusted and curling in thin plates, scattered fine white freshwater snail and mussel shells and shell hash #ece6da half sunk in it, faint thin ripple lines of darker coarse grit #9a8e78 where old shorelines lay, a few dry grass stalks. Matte. Muted, tintable. One tile covers 3 metres.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt needs work first; listed so they are not lost.

@@ -38,15 +38,15 @@ const field=(n,x,z)=>BIO.field(n,x,z);
 
 // ---------------------------------------------------------------- small plants
 function tuft(item,x,y,z,h,w,col){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col);}
-function card(item,x,y,z,s,sy,col,tilt){BIO.put(item,[x,y,z],qEuler(rr(-(tilt||.2),tilt||.2),rr(0,TAU),rr(-(tilt||.2),tilt||.2)),[s,sy==null?s:sy,s],col,{n:[rr(-.2,.2),1,rr(-.2,.2)]});}
-function wormwood(x,y,z,lv,k){const hc=vary(pick(PAL.wormwood),.03,.08,.05),Rs=rr(.4,.9)*(k||1);
+function card(item,x,y,z,s,sy,col,tilt){tilt=tilt==null?.2:tilt;BIO.put(item,[x,y,z],qEuler(rr(-tilt,tilt),rr(0,TAU),rr(-tilt,tilt)),[s,sy==null?s:sy,s],col,{n:[rr(-.2,.2),1,rr(-.2,.2)]});}
+function wormwood(x,y,z,lv,k){const hc=vary(pick(PAL.wormwood),.03,.08,.05),Rs=rr(.4,.9)*(k==null?1:k);
  card('small',x,y+Rs*.45,z,Rs*1.4,Rs*.75,bright(hc,1.35),.25);if(lv===2&&rng()<.5)card('small',x+rr(-.4,.4),y+Rs*.35,z+rr(-.4,.4),Rs,Rs*.6,bright(hc,1.25),.25);}
-function stipa(x,y,z,lv){const h=rr(.5,1.1)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):1,.3,1.2,(px,pz)=>tuft('stipa',px,y,pz,h*rr(.8,1.15),h*1.1,leafCol(PAL.stipa,1.25,.02,.06,.05)));}
-function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
+function stipa(x,y,z,lv){const h=rr(.5,1.1)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):1,.3,1.2,(px,pz)=>tuft('stipa',px,y,pz,h*rr(.8,1.15),h*1.1,leafCol(PAL.stipa,1.05,.02,.06,.05)));}
+function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k==null?1:k)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
 function reed(x,y,z,lv){const h=rr(1.4,2.8)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):lv===1?2:1,.6,2,(hx,hz,k)=>{if(k&&BIO.depth(hx,hz)>.8)return;tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.0),leafCol(PAL.reed,1.3,.025));});}
 function sedge(x,y,z,lv){const h=rr(.4,.9)*(lv===0?1.5:1);tuft('reed',x,y,z,h,h*1.2,leafCol(PAL.sedge,1.3,.03));}
 function tulips(x,y,z,lv){blooms(x,y+.25,z,rr(.6,1.6),lv===2?ri(5,12):3,[pick(PAL.tulip)],[.12,.2],'tulip');if(lv===2)around(x,z,ri(2,4),.2,1,(px,pz)=>tuft('grass',px,y,pz,.3,.25,leafCol(PAL.grass,1.2,.03)));}
-function stone(x,y,z,lv,set,st,k){if(BIO.mask(x,z)<=0)return;const s=rr(.18,.5)*(k||1)*(lv===0?1.6:1);BIO.put('stone',[x,y-s*.3,z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[s*rr(.9,1.5),s*rr(.5,.8),s*rr(.9,1.3)],rockTint(set));if(st)st.stones++;}
+function stone(x,y,z,lv,set,st,k){if(BIO.mask(x,z)<=0)return;const s=rr(.18,.5)*(k==null?1:k)*(lv===0?1.6:1);BIO.put('stone',[x,y-s*.3,z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[s*rr(.9,1.5),s*rr(.5,.8),s*rr(.9,1.3)],rockTint(set));if(st)st.stones++;}
 function boulder(x,y,z,lv,set,st){if(!okGround(x,z,1.5))return null;const s=rr(.9,2.4)*(lv===0?1.3:1);BIO.put('boulder',[x,y-s*.35,z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[s*rr(1,1.5),s*rr(.6,.9),s*rr(1,1.3)],rockTint(set));if(st)st.boulders++;return s;}
 
 // ---------------------------------------------------------------- the travellers
@@ -253,7 +253,7 @@ NSEMIARID.FLOOR_ZONES=['desert','pan','steppe','med','forest','tugai','rip'];
 const PLANTERS=[plantDesert,plantPan,plantSteppe,plantMed,plantForest,plantTugai,plantRip];
 NSEMIARID.floorWeights=Z=>[Z.desert*.8,Z.pan*.6,Z.steppe*1.0,Z.med*1.1,Z.forest*1.0,Z.tugai*1.2,Z.rip*1.2];
 NSEMIARID.buildFloor=function(R,q){
- reseed(800031);q=q==null?1:q;R=R||3000;means();
+ reseed(800031);q=q==null?1:q;R=R==null?3000:R;means();
  const st={tufts:0,shrubs:0,flowers:0,ferns:0,litter:0,reeds:0,stones:0,boulders:0,tumblers:0,drifts:0,seedDrifts:0,crawlers:0,balls:0,striders:0,maces:0,beads:0,sails:0,stars:0,censers:0,horns:0,eggs:0,
   furlers:0,furlersShut:0,hitchers:0,stepcones:0,windows:0,fingers:0,balloons:0,gourds:0,gardens:0,vines:0,pods:0,aloft:0,windfall:0,deadSaxaul:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
@@ -264,8 +264,8 @@ NSEMIARID.buildFloor=function(R,q){
  bands.forEach((b,bi)=>{const lv=2-bi;
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .66*q*(lv===0?.5:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.6,patchScale:.014,pad:.6,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // the drill-grass sea: a close grid of its tufts on the steppe near the spine (the steppe's ground cover), one card each
- BIO.grid(4,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;const Z=zones(x,z);return (Z.steppe*.55+Z.med*.2)*q*smooth(.3,.6,fbm(x*.008+11,z*.008-5,4141,2)+.25);},
-  (x,y,z,d)=>{if(blocked(x,z,.4))return;const h=rr(.5,1.0);tuft('stipa',x,y,z,h,h*1.1,leafCol(PAL.stipa,1.25,.02,.06,.05));st.tufts++;},
+ BIO.grid(4,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;const Z=zones(x,z);return (Z.steppe*.8+Z.med*.25+Z.desert*.15)*q*smooth(.3,.6,fbm(x*.008+11,z*.008-5,4141,2)+.25);},
+  (x,y,z,d)=>{if(blocked(x,z,.4))return;const h=rr(.5,1.0);tuft('stipa',x,y,z,h,h*1.1,leafCol(PAL.stipa,1.05,.02,.06,.05));st.tufts++;},
   {patch:.5,patchScale:.02,pad:.3,box:BIO.originBox(L.floor[0])});
  // the crawler fields: on the old beds' silt and the desert flats, many crawlers all heading the same way downslope
  BIO.grid(14,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const Z=zones(x,z);return (Z.desert*.35+Z.pan*.15*smooth(.7,.4,Z.salt))*q*smooth(.4,.6,fbm(x*.004-3,z*.004+7,4242,2)+.15);},

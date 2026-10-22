@@ -128,7 +128,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('drifts against the wind turned round',HCHK.drifts(inst(/tumbler/),T,[-NSEMIARID.WIND[0],-NSEMIARID.WIND[1]]));
  {const S=inst(/stepcone/),ys=S.map(s=>s[4]).reverse();add('step cones heights shuffled',HCHK.cones(S.map((s,i)=>[s[0],s[1],s[2],s[3],ys[i]])));}
  {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
- add('a dead poplar on the steppe',HCHK.deadPoplars([{x:P.steppe?0:0,z:0,dead:true}]));
+ add('a dead poplar on the steppe',HCHK.deadPoplars([{x:P.steppe[0],z:P.steppe[1],dead:true}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');

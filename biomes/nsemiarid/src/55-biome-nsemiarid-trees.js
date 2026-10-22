@@ -42,7 +42,6 @@ NSEMIARID.standOf=(x,z,n,seed)=>BIO.standAt(x,z,n||2,.0024,seed||87);
 // CRESCENT GROVES (the saxaul): one per 180 m cell, its centre and radius drawn from the cell; the grove is an arc whose
 // horns point downwind (a barchan's plan: the grove roots its downwind limbs and dies behind). crescent(x,z) is 0..1 on
 // the living arc; crescentDead(x,z) inside it on the upwind side, where the old trunks stand dead.
-const KR=root=>KRAND;
 const CC=180;
 function crescentAt(x,z){const W=NSEMIARID.WIND,ci=Math.floor(x/CC),cj=Math.floor(z/CC);let live=0,dead=0;
  for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){const i=ci+di,j=cj+dj,h=KRAND.hash(911,i,j);if(KRAND.unit(h)>.55)continue;
@@ -57,7 +56,10 @@ NSEMIARID.crescentAt=crescentAt;
 // ---------------------------------------------------------------- colour (the maths is the core's, BIO.col)
 const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
-function means(){if(MEAN)return MEAN;MEAN={bark:NSEMIARID.BARKTEX.map(t=>texMean(t)),wood:texMean(NSEMIARID.WOODTEX),rock:texMean(NSEMIARID.ROCKTEX)};return MEAN;}
+function means(){if(MEAN)return MEAN;MEAN={bark:NSEMIARID.BARKTEX.map(t=>texMean(t)),wood:texMean(NSEMIARID.WOODTEX),rock:texMean(NSEMIARID.ROCKTEX)};
+ // a library bark's pack brightness replaces its canvas's (50-species, materials.json)
+ const lm=NSEMIARID.LIBMEAN||{},lin=v=>{const c=Math.pow(v,2.2);return[c,c,c];};MEAN.bark=MEAN.bark.map((m,k)=>lm['bark'+k]!=null?lin(lm['bark'+k]):m);if(lm.wood!=null)MEAN.wood=lin(lm.wood);
+ return MEAN;}
 Object.assign(NSEMIARID,{means,tint,bright,shade,vary});
 const BARKC={};
 const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK]));};
@@ -127,8 +129,9 @@ const B=[];
 function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,dead=!!cfg.dead,fam=dead?'wood':cfg.fam;
  const nS=ri(cfg.stems[0],cfg.stems[1]),a0=rr(0,TAU),hc=cfg.col?cfg.col(T):C(pick(S.leaf)),spots=[];let reach=R*.6,topY=T.y0+H*.8;
  const bk=k=>dead?deadCol():barkCol(S,k);
- for(let s=0;s<nS;s++){const a=a0+s*TAU/nS+rr(-.3,.3),off=nS>1?rb*rr(.5,1.2):0,lean=nS>1?rr(.06,.2):rr(0,cfg.lean||.04),fh=H*cfg.forkU*(s?rr(.75,1):1);
-  const pts=bole(T,S,fam,T.x+Math.cos(a)*off,T.z+Math.sin(a)*off,fh,rb*(nS>1?.7:1),rb*(nS>1?.45:.6),lean,a,cfg.wig,lv===2?4:2,st,lv===2?(rb>.3?7:5):4,dead);
+ for(let s=0;s<nS;s++){const a=a0+s*TAU/nS+rr(-.3,.3),off=nS>1?rb*rr(.5,1.2):0,lean=cfg.leanA!=null?rr(.5,1)*cfg.lean:nS>1?rr(.06,.2):rr(0,cfg.lean||.04),fh=H*cfg.forkU*(s?rr(.75,1):1);
+  const la=cfg.leanA!=null?cfg.leanA+rr(-.5,.5):a;   // a leaning tree's stems lean one way (cfg.leanA); otherwise each away from the middle
+  const pts=bole(T,S,fam,T.x+Math.cos(a)*off,T.z+Math.sin(a)*off,fh,rb*(nS>1?.7:1),rb*(nS>1?.45:.6),lean,la,cfg.wig,lv===2?4:2,st,lv===2?(rb>.3?7:5):4,dead);
   const top=pts[pts.length-1],nL=lv===2?ri(cfg.limbs[0],cfg.limbs[1]):Math.max(2,cfg.limbs[0]-1),la0=rr(0,TAU);
   if(cfg.cauli&&lv===2&&!dead)for(let i=0,m=ri(cfg.cauli.n[0],cfg.cauli.n[1]);i<m;i++){const p=along(pts,rr(.15,.95)),ba=rr(0,TAU);
    blooms(p.x+Math.cos(ba)*p.r,p.y,p.z+Math.sin(ba)*p.r,p.r*.6+.15,ri(3,6),cfg.cauli.set,[.07,.12],{tilt:.9});st.blooms++;}
@@ -233,8 +236,8 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,lean=[rr(-.06,
  // the joint: a swollen ring, and the funnel turned to some angle of its spin
  BIO.put('lobe',[top.x,top.y-.1,top.z],qEuler(0,rr(0,TAU),0),[rb*1.1,rb*.6,rb*1.1],leafCol(S.leaf,.85,.03,.06,.05));
  BIO.put('funnel',[top.x,top.y,top.z],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[R,H*.16,R],leafCol(S.leaf,1.15,.05,.1,.05));
- // the funnel's throat: a pale yellow lining
- BIO.put('lobe',[top.x,top.y+H*.1,top.z],qEuler(Math.PI,0,0),[R*.55,H*.06,R*.55],leafCol(PAL.trumpetIn,1.1,.02,.05,.04));
+ // the funnel's throat: a pale yellow lining, low inside the bell (it must not show through the walls from below)
+ BIO.put('lobe',[top.x,top.y+H*.085,top.z],qEuler(0,rr(0,TAU),0),[R*.3,H*.015,R*.3],leafCol(PAL.trumpetIn,1.1,.02,.05,.04));
  if(lv===2)seedsAloft('trumpetSeed',top.x,top.y+H*.12,top.z,ri(6,14),H*3.5,[.3,.45],PAL.trumpetSeed,st);
  regTree(T,S,R*1.5,H*1.1);};
 // 13 THE DRIFT LANTERN (the bell-bulb line: nhighlands' bulbs that glow at night): a few arching stalks, each hung with
@@ -304,7 +307,7 @@ const newStats=()=>({trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spike
 // opt.records (biomes/WORLD.md, level-free records): place every tree and build none; T.lv is left unset. A host that
 // draws the trees as variants (grown with make/grow) picks each record's level itself, by the camera.
 NSEMIARID.buildTrees=function(R,q,opt){const recOnly=!!(opt&&opt.records);
- reseed(750031);q=q==null?1:q;R=R||3000;means();
+ reseed(750031);q=q==null?1:q;R=R==null?3000:R;means();
  const st=newStats();
  const TREES=NSEMIARID.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
  const LOD=BIO.LOD();

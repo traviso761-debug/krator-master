@@ -43,7 +43,7 @@ const PAL=NSEMIARID.PAL={
  lantern:[0xf0d070,0xf8e090,0xe8c060,0xffe8a8],lanternLeaf:[0x5a8a5a,0x4e7e52,0x669a64],
  foxtail:[0xf0c040,0xf8a830,0xe8e0c8,0xf0d878],foxLeaf:[0x7a9a5a,0x6e8e50],
  clock:[0xf4f2ea,0xf8f6f0,0xeeeae0],clockStalk:[0x7a9a5a,0x6e8e50],
- wormwood:[0x9aa890,0x8a9a84,0xa8b4a0],stipa:[0xd8d0a8,0xe0d8b4,0xccc49a,0xe8e0c0],grass:[0x8aa04a,0x96aa54,0x7a943e],
+ wormwood:[0x9aa890,0x8a9a84,0xa8b4a0],stipa:[0xc0b080,0xb4a674,0xc8ba8a,0xa8a472,0xbcb890],grass:[0x8aa04a,0x96aa54,0x7a943e],
  tumbler:[0xb8a070,0xc8b080,0xa89060,0x9a9a62],tumblerGreen:[0x7a9a50,0x6e8e48],
  crawler:[0x6a9a4a,0x76a650,0x5e8e40],crawlerDead:[0x9a8a78,0x8a7a6a,0xa89888],
  tulip:[0xe8302a,0xf0c030,0xe86aa0,0xf8f0e0,0xd84a20],resurrect:[0x8a6a4a,0x9a7a56,0x7a5a3e],resurrectGreen:[0x5a8a3e,0x66963e],
@@ -437,8 +437,26 @@ NSEMIARID.MAT={
  rock:BIO.solidMat(NSEMIARID.ROCKTEX),
 };
 const M=NSEMIARID.MAT;
-['Furrowed bark','Plane bark','Smooth bark','Gnarled bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===1?3:4,i===3?3:6]}));
-BIO.bucket('wood',BIO.barkMat(NSEMIARID.WOODTEX),{label:'Dead wood',uvScale:[3,4]});
+
+// ---------------------------------------------------------------- the library cards and barks (materials.json)
+// When the page carries this kit's pack (KMAT.pack('nsemiarid'): the showcase), the procedural leaf and bark textures
+// give way to the library's sets. The painters still ran, so the random stream, and every plant's place and shape, are
+// unchanged; a page without the pack keeps the procedural ones. The cards and barks are keep-0 grey detail: the species'
+// colour colours them. The alien cards (the frill's fins and pappus, the feather grass, the tangle) stay procedural until
+// their sets exist (core/materials/PROMPTS-NEEDED.md, n semiarid).
+const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nsemiarid',n):null;
+NSEMIARID.LIB={has:n=>!!LIBP(n)};
+function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
+ t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
+{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter'};
+ for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=.4;}}}
+// the barks: the bucket's uvScale becomes the set's tile size, and means() divides out the pack's brightness
+const LIBBARK=['bark.furrowed','bark.plane','bark.smooth','bark.gnarled','wood.silver','bark.alien'];
+NSEMIARID.LIBMEAN={};
+const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;NSEMIARID.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
+['Furrowed bark','Plane bark','Smooth bark','Gnarled bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>{const L=libMap(LIBBARK[i],'bark'+i);
+ if(L)M.bark[i].map=L.t;BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===1?3:4,i===3?3:6]});});
+{const W=BIO.barkMat(NSEMIARID.WOODTEX),L=libMap('wood.silver','wood');if(L)W.map=L.t;BIO.bucket('wood',W,{label:'Dead wood',uvScale:L?L.scale:[3,4]});}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
