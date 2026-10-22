@@ -43,10 +43,10 @@ NSEMIARID.standOf=(x,z,n,seed)=>BIO.standAt(x,z,n||2,.0024,seed||87);
 // horns point downwind (a barchan's plan: the grove roots its downwind limbs and dies behind). crescent(x,z) is 0..1 on
 // the living arc; crescentDead(x,z) inside it on the upwind side, where the old trunks stand dead.
 const CC=180;
-function crescentAt(x,z){const W=NSEMIARID.WIND,ci=Math.floor(x/CC),cj=Math.floor(z/CC);let live=0,dead=0;
+function crescentAt(x,z){const ci=Math.floor(x/CC),cj=Math.floor(z/CC);let live=0,dead=0;
  for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){const i=ci+di,j=cj+dj,h=KRAND.hash(911,i,j);if(KRAND.unit(h)>.55)continue;
   const cx=(i+.2+.6*KRAND.unit(KRAND.hash(h,1)))*CC,cz=(j+.2+.6*KRAND.unit(KRAND.hash(h,2)))*CC,Rc=28+40*KRAND.unit(KRAND.hash(h,3));
-  const dx=x-cx,dz=z-cz,d=Math.sqrt(dx*dx+dz*dz),u=(dx*W[0]+dz*W[1])/(d||1);
+  const W=NSEMIARID.windAt(cx,cz),dx=x-cx,dz=z-cz,d=Math.sqrt(dx*dx+dz*dz),u=(dx*W[0]+dz*W[1])/(d||1);   // each grove faces the wind where it stands
   const arc=(1-smooth(5,11,Math.abs(d-Rc)))*smooth(.55,.2,u);   // the downwind sector left open: the horns trail downwind
   if(arc>live)live=arc;
   const inner=smooth(Rc*.9,Rc*.55,d)*smooth(.1,-.4,u);if(inner>dead)dead=inner;}
@@ -107,7 +107,7 @@ NSEMIARID.hangVine=hangVine;
 // seeds in flight, strung out downwind of a point, rising and falling, spinning: a still frame, for what the floor places
 // (the glider gourd's wings, the sail candelabra's blades). The trees' seeds are not drawn this way any more: a variant is
 // drawn turned, which turned its trail off the wind; they fly in 89c-host-seeds.js, torn loose by core/atmos's wind
-function seedsAloft(item,x,y,z,n,reach,sz,set,st){const W=NSEMIARID.WIND;
+function seedsAloft(item,x,y,z,n,reach,sz,set,st){const W=NSEMIARID.windAt(x,z);
  for(let i=0;i<n;i++){const d=reach*Math.pow(rng(),.7),side=rr(-.25,.25)*d,px=x+W[0]*d-W[1]*side,pz=z+W[1]*d+W[0]*side,py=y+rr(-.4,.5)*Math.min(30,d*.35)+rr(0,4);
   if(py<Y(px,pz)+.4||py<BIO.waterH(px,pz)+.6)continue;const s=rr(sz[0],sz[1]);
   BIO.put(item,[px,py,pz],qEuler(rr(-1.2,1.2),rr(0,TAU),rr(-1.2,1.2)),[s,s,s],leafCol(set,1.2,.02,.05,.04));if(st)st.aloft++;}}
@@ -169,7 +169,7 @@ B[0]=function(T,st,lv){decTree(T,st,lv,{fam:'bark3',item:'round',stems:[1,3],for
  fruit:{p:.3,s:[.05,.07],long:1.2,col:PAL.pistNut}});};
 // 1 the crescent saxaul: gnarled grey stems twisting out of the sand, leafless, a broom of jointed green twigs. In a
 // crescent grove (the pass's acceptance) the trees lean downwind, where the grove roots its limbs
-B[1]=function(T,st,lv){const W=NSEMIARID.WIND,la=Math.atan2(W[1],W[0]);decTree(T,st,lv,{fam:'bark3',item:'broom',stems:[2,4],forkU:.28,limbs:[3,5],el:.5,limbK:.9,sec:2,curve:-.12,wig:.3,tuftK:.46,flat:.75,lean:.25,leanA:la});};
+B[1]=function(T,st,lv){const W=NSEMIARID.windAt(T.x,T.z),la=Math.atan2(W[1],W[0]);decTree(T,st,lv,{fam:'bark3',item:'broom',stems:[2,4],forkU:.28,limbs:[3,5],el:.5,limbK:.9,sec:2,curve:-.12,wig:.3,tuftK:.46,flat:.75,lean:.25,leanA:la});};
 // 2 the spring plane (chinar): a vast pale bole flaking in camouflage patches, broad limbs, a dome of palmate leaves
 B[2]=function(T,st,lv){decTree(T,st,lv,{fam:'bark1',item:'palm',stems:[1,1],forkU:rr(.28,.38),limbs:[5,7],el:.6,limbK:1.0,sec:3,curve:-.05,wig:.08,tuftK:.38,flat:.72,nC:3,
  mixCol:[.08,[0xb8a050,0xa89a48]]});};
@@ -206,7 +206,7 @@ B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark0',item:'r
 // seed's: GREEN (iridescent teal to violet fins), RIPE (silk-white fins and the crown pod open into a seed clock 4-6 m
 // across), HALF SHED (the downwind side stripped first) or BARE (ribs pricked with sockets; the new fins grow back from the
 // foot, so how high they reach says how long since it shed)
-B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,W=NSEMIARID.WIND,wa=Math.atan2(W[1],W[0]);
+B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,W=NSEMIARID.windAt(T.x,T.z),wa=Math.atan2(W[1],W[0]);
  const stage=['green','ripe','half','bare'][T.seed%4],ripe=stage==='ripe'||stage==='half',bH=H*.82;
  const rAt=u=>rb*(.7+.5*Math.sin(clamp(u*1.4,0,1)*Math.PI*.85))*(1-u*.45);
  const rings=[];for(let u=0;u<=1.001;u+=.125)rings.push({x:T.x,y:T.y0-.3+bH*u,z:T.z,r:rAt(u),yy:u*bH,col:barkCol(S,ri(0,2))});
@@ -249,16 +249,15 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,lean=[rr(-.05,
  BIO.put('vanes',o,q,sc,leafCol(PAL.trumpetVane,1.2,.02,.05,.04));
  regTree(T,S,R*1.6,H*.84+Hb*1.2);};
 // 13 THE DRIFT LANTERN (the bell-bulb line: nhighlands' bulbs that glow at night): a few arching stalks, each hung with
-// pale bulbs; as they ripen they fill with gas and lift away at dusk, a seed under each. Some of this tree's are already
-// aloft over it and downwind (buoyancy goes with the air's density: 1.42 atm lifts 40% more than Earth's)
-B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,W=NSEMIARID.WIND;const n=ri(3,6),a0=rr(0,TAU);
+// pale bulbs; as they ripen they fill with gas and lift away, a seed under each (buoyancy goes with the air's density: 1.42
+// atm lifts 40% more than Earth's). They rise from the tree in still air and drift off (89c-host-seeds.js); a wind holds
+// them down (2026-10-22: before, a still frame of bulbs already aloft, which the variants turned off the wind)
+B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H;const n=ri(3,6),a0=rr(0,TAU);
  for(let s=0;s<n;s++){const a=a0+s*TAU/n+rr(-.3,.3),h=H*rr(.7,1),out=T.crownR*rr(.5,1);
   const pts=[{x:T.x,y:T.y0-.2,z:T.z,r:T.rb},{x:T.x+Math.cos(a)*out*.3,y:T.y0+h*.65,z:T.z+Math.sin(a)*out*.3,r:T.rb*.6},{x:T.x+Math.cos(a)*out,y:T.y0+h,z:T.z+Math.sin(a)*out,r:T.rb*.3},{x:T.x+Math.cos(a)*out*1.3,y:T.y0+h*.88,z:T.z+Math.sin(a)*out*1.3,r:T.rb*.2}];
   pts.forEach(p=>p.col=barkCol(S,s));st.limb+=BIO.tube('bark5',pts,pts[0].col,{seg:lv===2?5:3});
   const tip=pts[3];for(let k=0,m=lv===2?ri(2,4):1;k<m;k++){const b=rr(.6,1.1);BIO.put('lantern',[tip.x+rr(-.3,.3),tip.y-k*.4,tip.z+rr(-.3,.3)],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[b,b*1.2,b],leafCol(S.leaf,1.5,.02,.06,.04));st.pods++;}
   BIO.put('lobe',[pts[1].x,pts[1].y,pts[1].z],qEuler(0,rr(0,TAU),0),[.9,.4,.9],leafCol(PAL.lanternLeaf,1.1,.03,.08,.05));}
- if(lv===2)for(let k=0,m=ri(2,6);k<m;k++){const d=rr(2,H*4),px=T.x+W[0]*d+rr(-4,4),pz=T.z+W[1]*d+rr(-4,4),b=rr(.6,1.0);
-  BIO.put('lantern',[px,T.y0+H+rr(2,6)+d*.25,pz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[b,b*1.2,b],leafCol(S.leaf,1.6,.02,.06,.04));st.aloft++;}
  regTree(T,S,T.crownR*1.4,H+1);};
 // 14 the wild pomegranate: a thicket shrub-tree, glossy narrow leaves, scarlet flowers and sour red fruit
 B[14]=function(T,st,lv){decTree(T,st,lv,{fam:'bark2',item:'small',stems:[3,6],forkU:.25,limbs:[2,4],el:.85,limbK:.8,sec:1,curve:-.04,wig:.2,tuftK:.5,flat:.75,
@@ -273,7 +272,7 @@ B[15]=function(T,st,lv){const S=SP[T.sp],H=T.H,lean=[rr(-.04,.04)*H,rr(-.04,.04)
  regTree(T,S,T.crownR,H);};
 // 16 the giant dandelion: a basal rosette and a hollow stalk 3.5-6 m under a seed clock 1-3 m across; the clock balds from
 // its downwind side, and its seeds are strung out downwind
-B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,W=NSEMIARID.WIND,n=ri(1,3);
+B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,W=NSEMIARID.windAt(T.x,T.z),n=ri(1,3);
  BIO.put('rosette',[T.x,T.y0-.05,T.z],qEuler(0,rr(0,TAU),0),[T.crownR,T.crownR*.4,T.crownR],leafCol(PAL.grass,1.15,.03,.08,.05));
  for(let k=0;k<n;k++){const h=H*rr(.7,1),lx=rr(-.15,.15)*h+W[0]*h*.05,lz=rr(-.15,.15)*h+W[1]*h*.05,tx=T.x+lx,tz=T.z+lz,ty=T.y0+h;
   BIO.beam('rod',[T.x,T.y0,T.z],[tx,ty,tz],T.rb*2,T.rb*1.2,rodCol(pick(PAL.clockStalk),-.05));

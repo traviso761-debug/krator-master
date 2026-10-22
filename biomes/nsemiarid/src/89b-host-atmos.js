@@ -25,6 +25,22 @@ const NSWIND=(function(){const WIND_MS=6,SCALE={calm:.4,breeze:1,high:2.6};
  // wind integrated (an anemometer: about a turn every 2.5 s in a breeze, two a second in a gale)
  ATMOS.hook((t,hr,dt)=>{ATMOS.windScale+=(SCALE[mode]-ATMOS.windScale)*Math.min(1,dt*.4);W.spin+=W.mean()*.42*dt;});
  return W;})();
+// THE FOLIAGE rides it too: the biome core's sway grows with its strength and the foliage leans downwind (BIO.init's
+// wind, 1 = the calm breeze: one unit of ATMOS's wind here); the variants' trees read the same uniforms (86)
+BIO.host.wind=()=>{const w=ATMOS.U.wind.value;return[w.x,w.y];};
+// THE FURLERS (2026-10-22) shut as a gust passes and open behind it: each flower reads core/atmos's own gust where it
+// stands (atmWind, the shaders' twin of ATMOS.windAt) and closes as the wind there passes its hold (7.2 m/s; a breeze
+// gusts to ~9, so a gust front crosses a field as a wave of closing flowers; a gale keeps them shut, a calm open). The
+// kit places them open when the host animates them (NSEMIARID.liveGusts, 88-host-build.js). FURLER_HOLD is in m/s
+const FURLER_HOLD=7.2;
+{const CH=ATMOS.GLSL_WIND+'\nuniform float uAtmT;uniform vec2 uAtmW;uniform float uAtmGA;';
+ const SHUT='{vec2 _ip=vec2(0.0);\n#ifdef USE_INSTANCING\n_ip=instanceMatrix[3].xz;\n#endif\n'+
+  'float _ws=length(atmWind(uAtmT,_ip,uAtmW,uAtmGA))*'+ATMOS.glf(NSWIND.WIND_MS)+';float _k=smoothstep('+ATMOS.glf(FURLER_HOLD-1.5)+','+ATMOS.glf(FURLER_HOLD+1.5)+',_ws);'+
+  'transformed.xz*=mix(1.0,0.28,_k);transformed.y*=mix(1.0,1.78,_k);}';
+ scene.traverse(m=>{if(!m.isInstancedMesh||m.name!=='biome:furler')return;const base=m.material,mat=base.clone(),pre=base.onBeforeCompile;
+  mat.onBeforeCompile=(sh,r)=>{pre.call(base,sh,r);sh.uniforms.uAtmT=ATMOS.U.time;sh.uniforms.uAtmW=ATMOS.U.wind;sh.uniforms.uAtmGA=ATMOS.U.gustAmp;
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <begin_vertex>','#include <begin_vertex>\n'+SHUT);};
+  mat.customProgramCacheKey=()=>'nsemiarid-furler-gust';m.material=mat;m.userData.liveGusts=true;});}
 // the setting, on the panel (99-host-take.js hands it to the host as a control)
 const WIND_CONTROL={select:[['breeze','wind: a breeze'],['calm','wind: calm'],['high','wind: high']],id:'windsel',on:v=>NSWIND.set(v)};
 if(NSWIND.mode!=='breeze')WIND_CONTROL.select.sort((a,b)=>(b[0]===NSWIND.mode)-(a[0]===NSWIND.mode));

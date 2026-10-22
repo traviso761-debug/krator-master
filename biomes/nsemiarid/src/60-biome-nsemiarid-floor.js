@@ -24,16 +24,16 @@
 const PAL=NSEMIARID.PAL,zones=NSEMIARID.zones,blocked=NSEMIARID.blocked,C=NSEMIARID.C;
 const {bright,shade,vary,tint,means,leafCol}=NSEMIARID;
 const Y=(x,z)=>BIO.terrainH(x,z);
-const W=()=>NSEMIARID.WIND;
+const W=(x,z)=>NSEMIARID.windAt(x,z);   // the prevailing wind where a thing stands
 const rockTint=(set,k)=>tint(vary(pick(set||PAL.rockTan),.02,.06,.06),means().rock,k==null?rr(.4,.65):k);
 const rodCol=(hex,f)=>shade(vary(hex,.02,.08,.06),f==null?rr(-.45,-.2):f);
 const blooms=(x,y,z,r,n,set,sz,item)=>NSEMIARID.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,item:item});
 function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
 const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad)&&BIO.mask(x,z)>0;
 // downslope at a point (toward water): the ground's gradient over 6 m
-function downhill(x,z){const e=6,gx=Y(x+e,z)-Y(x-e,z),gz=Y(x,z+e)-Y(x,z-e),l=Math.hypot(gx,gz);if(l<1e-4){const w=W();return[w[0],w[1]];}return[-gx/l,-gz/l];}
+function downhill(x,z){const e=6,gx=Y(x+e,z)-Y(x-e,z),gz=Y(x,z+e)-Y(x,z-e),l=Math.hypot(gx,gz);if(l<1e-4){const w=W(x,z);return[w[0],w[1]];}return[-gx/l,-gz/l];}
 // a gust front's band at a point: stripes across the wind, ~60 m apart, warped (the furlers shut where one is passing)
-const gustAt=(x,z)=>{const w=W(),u=x*w[0]+z*w[1],v=-x*w[1]+z*w[0];const p=(u+40*fbm(v*.004,u*.004,4401,2))/60;return smooth(.55,.8,p-Math.floor(p))*smooth(1,.9,p-Math.floor(p));};
+const gustAt=(x,z)=>{const w=W(x,z),u=x*w[0]+z*w[1],v=-x*w[1]+z*w[0];const p=(u+40*fbm(v*.004,u*.004,4401,2))/60;return smooth(.55,.8,p-Math.floor(p))*smooth(1,.9,p-Math.floor(p));};
 const field=(n,x,z)=>BIO.field(n,x,z);
 
 // ---------------------------------------------------------------- small plants
@@ -53,12 +53,12 @@ function boulder(x,y,z,lv,set,st){if(!okGround(x,z,1.5))return null;const s=rr(.
 // a TUMBLER: a ball of dry twigs, loose (rolled) or still rooted and green; drifts: a pile against an obstacle's
 // windward face, n balls stacked up
 function tumbler(x,y,z,lv,st,rooted){const r=rr(.5,1.5)*(rooted?.8:1);BIO.put('tumbler',[x,y+r*(rooted?.85:.7),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r*rr(.8,1),r],leafCol(rooted?PAL.tumblerGreen:PAL.tumbler,1.2,.03,.08,.06));if(st)st.tumblers++;}
-function drift(ox,oz,orad,lv,st){const w=W(),cx=ox-w[0]*(orad+.8),cz=oz-w[1]*(orad+.8),n=lv===2?ri(4,10):ri(2,4);
+function drift(ox,oz,orad,lv,st){const w=W(ox,oz),cx=ox-w[0]*(orad+.8),cz=oz-w[1]*(orad+.8),n=lv===2?ri(4,10):ri(2,4);
  for(let i=0;i<n;i++){const side=rr(-1,1)*(orad+1),back=rr(0,1.6),x=cx-w[1]*side-w[0]*back,z=cz+w[0]*side-w[1]*back;if(BIO.mask(x,z)<=0)continue;
   const y=Y(x,z),r=rr(.5,1.3);BIO.put('tumbler',[x,y+r*.7+(i>n*.6?r*.9:0),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r,r],leafCol(PAL.tumbler,1.15,.03,.08,.06));if(st)st.tumblers++;}
  if(st)st.drifts++;}
 // seed and cotton drifts: a pale mat in the lee (downwind) of an obstacle
-function seedDrift(ox,oz,orad,st){const w=W(),x=ox+w[0]*(orad+1.2),z=oz+w[1]*(orad+1.2);if(BIO.mask(x,z)<=0)return;
+function seedDrift(ox,oz,orad,st){const w=W(ox,oz),x=ox+w[0]*(orad+1.2),z=oz+w[1]*(orad+1.2);if(BIO.mask(x,z)<=0)return;
  BIO.put('litter',[x,Y(x,z)+.04,z],qEuler(0,Math.atan2(w[0],w[1]),0),[orad*1.4+.8,1,orad*.8+.6],leafCol(PAL.silk,1.25,.01,.03,.03));if(st)st.seedDrifts++;}
 // a CRAWLER (after the creeping devil): a prostrate, ribbed, spiny stem that grows at its head toward water (downslope)
 // and dies behind, rooting as it goes. Its head is raised and green, often in flower; behind it the living stem snakes
@@ -99,7 +99,7 @@ function strider(x,y,z,lv,st){const d=downhill(x,z),H=rr(.6,1.8),Rb=H*rr(.35,.5)
 function mace(x,y,z,lv,st){const h=rr(1.2,2.8),r=h*rr(.2,.3),col=leafCol(PAL.mace,1.2,.03,.08,.05);
  BIO.beam('rod',[x,y,z],[x+rr(-.1,.1),y+h,z+rr(-.1,.1)],r*.35,r*.22,rodCol(0x4a6a5a,-.1));
  BIO.put('mace',[x,y+h+r*.6,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[r,r*1.15,r],col);
- if(lv>=1){const w=W();for(let k=0,m=ri(0,3);k<m;k++){const t=rr(3,14),px=x+w[0]*t+rr(-2,2),pz=z+w[1]*t+rr(-2,2);if(BIO.mask(px,pz)<=0)continue;const rr2=r*rr(.7,.95);
+ if(lv>=1){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(3,14),px=x+w[0]*t+rr(-2,2),pz=z+w[1]*t+rr(-2,2);if(BIO.mask(px,pz)<=0)continue;const rr2=r*rr(.7,.95);
   BIO.put('mace',[px,Y(px,pz)+rr2*.8,pz],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[rr2,rr2,rr2],shade(col,-.08));}}
  if(st)st.maces++;}
 // a BEAD CHAIN: stems of beads with knob tips; the wind snaps them at their joints and the beads lie strung out downwind
@@ -107,7 +107,7 @@ function beads(x,y,z,lv,st){const n=ri(2,4),col=leafCol(PAL.bead,1.2,.03,.08,.05
  for(let s=0;s<n;s++){const a=rr(0,TAU),m=lv===2?ri(5,9):3,b=rr(.12,.2);let el=rr(.7,1.3),px=x+Math.cos(a)*.15,py=y,pz=z+Math.sin(a)*.15;
   for(let k=0;k<m;k++){const ca=Math.cos(a+k*.2),sa=Math.sin(a+k*.2);BIO.put('bead',[px,py,pz],qEuler(rr(-.3,.3),rr(0,TAU),Math.PI/2-el),[b*2,b*2.2,b*2],k===m-1?leafCol(PAL.beadTip,1.3,.03,.06,.05):col);
    px+=ca*Math.cos(el)*b*2;py+=Math.sin(el)*b*2;pz+=sa*Math.cos(el)*b*2;el-=.08;}}
- if(lv>=1){const w=W(),m=ri(4,10);for(let k=0;k<m;k++){const t=1+k*rr(.4,.9),px=x+w[0]*t+rr(-.3,.3),pz=z+w[1]*t+rr(-.3,.3);if(BIO.mask(px,pz)<=0)break;const b=rr(.1,.18);
+ if(lv>=1){const w=W(x,z),m=ri(4,10);for(let k=0;k<m;k++){const t=1+k*rr(.4,.9),px=x+w[0]*t+rr(-.3,.3),pz=z+w[1]*t+rr(-.3,.3);if(BIO.mask(px,pz)<=0)break;const b=rr(.1,.18);
   BIO.put('bead',[px,Y(px,pz),pz],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[b*2,b*2,b*2],shade(col,-.05));}}
  if(st)st.beads++;}
 // a SAIL CANDELABRA: a knobbed ribbed column with arms, its yellow blade leaves; some blades aloft downwind, kiting
@@ -117,14 +117,14 @@ function sail(x,y,z,lv,st){const h=rr(1.6,3.4),r=h*rr(.08,.12),col=leafCol(PAL.s
   BIO.put('column',[x+Math.cos(a)*r,ay,z+Math.sin(a)*r],qEuler(Math.cos(a)*.0,0,0),[r*1.4,r*3,r*1.4],col);
   BIO.put('column',[ax,ay,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah,r*1.4],col);
   for(let b=0;b<2;b++)BIO.put('blade',[ax,ay+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
- if(lv===2){const w=W();for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);BIO.put('blade',[px,py,pz],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),[.7,.6,.8],bc);}}
+ if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);BIO.put('blade',[px,py,pz],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),[.7,.6,.8],bc);}}
  if(st)st.sails++;}
 // a STAR DRIFTER: a pale star of fronds on a thin stalk; the whole crown is the parachute: some stalks stand bare, their
 // crowns lying downwind
 function star(x,y,z,lv,st){const h=rr(1.2,2.6),bare=rng()<.4,col=leafCol(PAL.star,1.3,.02,.05,.04);
  BIO.beam('rod',[x,y,z],[x+rr(-.08,.08),y+h,z+rr(-.08,.08)],.06,.03,rodCol(0x6a8a6a,-.1));
  if(!bare)BIO.put('star',[x,y+h,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[rr(.7,1.1),.35,rr(.7,1.1)],col,{n:[0,1,0]});
- else if(lv>=1){const w=W(),t=rr(3,18),px=x+w[0]*t,pz=z+w[1]*t;if(BIO.mask(px,pz)>0)BIO.put('star',[px,Y(px,pz)+.2,pz],qEuler(rr(-.8,.8),rr(0,TAU),rr(-.8,.8)),[.8,.3,.8],shade(col,-.05),{n:[0,1,0]});}
+ else if(lv>=1){const w=W(x,z),t=rr(3,18),px=x+w[0]*t,pz=z+w[1]*t;if(BIO.mask(px,pz)>0)BIO.put('star',[px,Y(px,pz)+.2,pz],qEuler(rr(-.8,.8),rr(0,TAU),rr(-.8,.8)),[.8,.3,.8],shade(col,-.05),{n:[0,1,0]});}
  if(st)st.stars++;}
 // CENSER CAPS: orange stalks under yellow-orange sponge caps; the wind shakes the seed out of the pores
 function censers(x,y,z,lv,st){const n=lv===2?ri(2,5):1,sc=leafCol(PAL.censer,1.2,.02,.06,.05),cc=leafCol(PAL.censerCap,1.25,.02,.06,.05);
@@ -140,11 +140,13 @@ function horns(x,y,z,lv,st){const n=ri(2,4),c=leafCol(PAL.horn,1.25,.02,.06,.05)
 function rollEgg(x,y,z,lv,st){const s=rr(.7,1.3);BIO.put('sword',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*1.4,s*.8,s*1.4],leafCol(PAL.eggLeaf,1.25,.02,.06,.05));
  const ec=leafCol(PAL.egg,1.2,.03,.08,.05);
  if(rng()<.6)BIO.put('egg',[x,y,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s*1.1,s*1.4,s*1.1],ec);
- else if(lv>=1){const w=W(),t=rr(6,20),ex=x+w[0]*t,ez=z+w[1]*t;if(BIO.mask(ex,ez)>0){BIO.put('egg',[ex,Y(ex,ez)+s*.45,ez],qEuler(Math.PI/2,Math.atan2(w[0],w[1])+rr(-.4,.4),0),[s,s*1.3,s],ec);
+ else if(lv>=1){const w=W(x,z),t=rr(6,20),ex=x+w[0]*t,ez=z+w[1]*t;if(BIO.mask(ex,ez)>0){BIO.put('egg',[ex,Y(ex,ez)+s*.45,ez],qEuler(Math.PI/2,Math.atan2(w[0],w[1])+rr(-.4,.4),0),[s,s*1.3,s],ec);
    for(let k=1;k<6;k++){const u=k/6*t,px=x+w[0]*u,pz=z+w[1]*u;if(BIO.mask(px,pz)>0)BIO.put('sword',[px,Y(px,pz)-.03,pz],qEuler(0,rr(0,TAU),0),[.25,.18,.25],leafCol(PAL.eggLeaf,1.2,.02,.06,.05));}}}
  if(st)st.eggs++;}
 // FURLERS: a red-orange sunburst on a green bulb; open in calm, shut (drawn tall and narrow) where a gust front passes
-function furlers(x,y,z,lv,st){const n=lv===2?ri(2,6):1,shut=gustAt(x,z)>.5;
+// a host that animates the gusts (NSEMIARID.liveGusts: the showcase, on core/atmos) gets them all open and shuts them as
+// the fronts pass; without it, the still frame: shut in the bands gustAt draws
+function furlers(x,y,z,lv,st){const n=lv===2?ri(2,6):1,shut=!NSEMIARID.liveGusts&&gustAt(x,z)>.5;
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,1.2):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,s=rr(.4,.8);if(BIO.mask(px,pz)<=0)continue;
   const py=Y(px,pz);BIO.put('bulb',[px,py-.05,pz],qEuler(0,rr(0,TAU),0),[s*.4,s*.45,s*.4],leafCol(PAL.furlerBulb,1.1,.03,.08,.05));
   BIO.put('furler',[px,py+s*.15,pz],qEuler(0,rr(0,TAU),0),shut?[s*.28,s*1.6,s*.28]:[s,s*.9,s],leafCol(PAL.furler,1.25,.02,.06,.05));}

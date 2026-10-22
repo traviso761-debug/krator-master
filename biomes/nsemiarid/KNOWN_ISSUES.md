@@ -4,16 +4,17 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **Most of what travels is still a frame.** Since 2026-10-22 the helicopter trumpets turn on core/atmos's wind
-      (`86-host-variants.js`: a spin material turns the bell, its throat and its blades about the stalk's top) and the
-      seeds fly: the trees round the camera let them go when the wind passes each one's hold (`89c-host-seeds.js`). Still
-      drawn as a still frame: the furlers shut in bands where `gustAt` says a gust front is, the frills' fins (the shed
-      plumes fly, the fins on the column stay as the frame's stage), the drift lanterns already aloft. The spin is the
-      variants' only: `?unique=1` draws the trumpets still (the core's foliage shader has no spin).
+- [ ] **The frills' fins stay on the column.** On core/atmos's wind (`89b-host-atmos.js`) the trumpets turn, the
+      seeds fly off the trees when the wind passes each one's hold, the drift lanterns lift in still air, the furlers shut
+      as each gust passes (their material reads `atmWind` where each flower stands), and every crown sways harder and
+      leans downwind as the wind rises. What is left a still frame: a frill's fins on its column (its shed side is
+      drawn, and its plumes fly, but no fin leaves the column), and the trumpets in `?unique=1` (the core's foliage
+      shader has no spin; the variants', which the page uses, has).
 - [ ] **The catalog owes the fruit.** Apples, walnuts, apricots, pears, pomegranates, pistachios and almonds are drawn
       (on the trees and as windfall) but `kits/catalog/krator-master-furniture-generic-fruit.js` has no piece for any
       of them, so `fruit` is null and the probe names them (`FRUIT_NOT_DRAWN`). Adding them is a catalog change: every
-      build that takes the catalog rebuilds (CLAUDE.md). Pistachio and almond are not in `kits/crops` either.
+      build that takes the catalog rebuilds (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and almond are
+      not in `kits/crops` either.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
@@ -22,6 +23,12 @@ Read before changing anything here. `build.py` prints the open count.
       pothole pools belong to `biomes/dambasins` and `biomes/scablands` (`PLAN.md` sections 5, 6).
 - [ ] **Not in the open world yet.** The kit is ready for `WORLD_KITS` (a pass table, make/grow, record mode); the north
       basin's open world (`openworld/north-basin`, data only) is `PLAN.md` step 6.
-- [ ] **The kit's own wind is a long average.** The page's moving wind is core/atmos's (`89b-host-atmos.js`), but what
-      the kit places (the travellers' headings, the drifts, the crescents, the frills' shed side) reads `NSEMIARID.WIND`,
-      set once by the host: a world with a veering wind should hand the kit its prevailing wind per region.
+
+## Closed
+
+- [x] **The kit's own wind was one vector** (closed 2026-10-22). `NSEMIARID.setWind` takes a vector or a function
+      (x,z) => [dx,dz] for a prevailing wind that turns from place to place, and everything the kit lays down by the wind
+      reads it where it stands (`NSEMIARID.windAt`): the travellers' headings, the drifts, the crescents (each grove's
+      middle), the frills' shed side, the saxaul's lean, the dandelions' balding. On the way: the variants drew those
+      wind-shaped trees at a random turn, across or against the wind; they are now turned onto the wind where they stand
+      (`86-host-variants.js`, `turnOf`; the probe checks every one drawn, with a negative).

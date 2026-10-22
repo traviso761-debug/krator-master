@@ -88,8 +88,8 @@ const HCHK={
  // a crawler's trail runs upslope of its head (it grows toward water): the nearest dead segment stands higher
  crawlers(H,D){let ok=0,n=0;for(const h of H){const d=near2(D,h[0],h[2],3);if(!d.length)continue;let b=d[0],bd=1e9;for(const q of d){const e=Math.hypot(q[0]-h[0],q[2]-h[2]);if(e<bd){bd=e;b=q;}}n++;if(terrainH(b[0],b[2])>=terrainH(h[0],h[2])-.02)ok++;}
   return{ok:n>=30&&ok/n>=.8,detail:n?ok+' of '+n+' crawler heads lie downslope of their trails':'no crawlers'};},
- // tumbler drifts pile on the windward (upwind) face of the trees
- drifts(Tb,T,w){let up=0,n=0;for(const t of T){const near=near2(Tb,t.x,t.z,4);for(const b of near){const dx=b[0]-t.x,dz=b[2]-t.z;if(Math.hypot(dx,dz)>4)continue;n++;if(dx*w[0]+dz*w[1]<0)up++;}}
+ // tumbler drifts pile on the windward (upwind) face of the trees, the wind read where each tree stands
+ drifts(Tb,T,wf){let up=0,n=0;for(const t of T){const near=near2(Tb,t.x,t.z,4),w=wf(t.x,t.z);for(const b of near){const dx=b[0]-t.x,dz=b[2]-t.z;if(Math.hypot(dx,dz)>4)continue;n++;if(dx*w[0]+dz*w[1]<0)up++;}}
   return{ok:n>=20&&up/n>=.75,detail:n?up+' of '+n+' tumblers by a tree lie on its windward side':'no drifts'};},
  // step cones on the old bed: taller where the ground has been dry longer (a tier a wet year)
  cones(S){const pts=S.filter(s=>FIELD.bed(s[0],s[2])>.5);if(pts.length<30)return{ok:false,detail:pts.length+' step cones on the bed'};
@@ -105,18 +105,33 @@ const HCHK={
  gale(hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
   const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=ATMOS.windScale,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
   if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=hold;}
-  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released;for(let i=0;i<240;i++)for(const f of TICKS.slice())f(.05,0);return[heli()-h0,window._seeds.released-a0];};
-  const tr=nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]);FLIGHT.pin={x:tr.x,z:tr.z};   // a trumpet grove, wherever the camera is
-  let calm,high;try{calm=run('calm');high=run('high');}finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
-  return{ok:calm[0]===0&&high[0]>=20,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all)'};},
+  const lan=()=>window._seeds.bySpecies.lantern||0;
+  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<240;i++)for(const f of TICKS.slice())f(.05,0);return[heli()-h0,window._seeds.released-a0,lan()-l0];};
+  const tr=nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]),ln=nearTree('lantern',PLACE.steppe[0],PLACE.steppe[1]);
+  let calm,high,lc,lh;try{FLIGHT.pin={x:tr.x,z:tr.z};calm=run('calm');high=run('high');   // a trumpet grove, wherever the camera is
+   FLIGHT.pin={x:ln.x,z:ln.z};lc=run('calm');lh=run('high');}   // and a stand of drift lanterns: they go the other way
+  finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
+  return{ok:calm[0]===0&&high[0]>=20&&lc[2]>=3&&lh[2]===0,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all); lanterns lifting: '+lc[2]+' in the calm, '+lh[2]+' in the gale'};},
  // the trumpets' crowns are drawn with their pivot, so the spin turns them about the stalk
  // (every grown trumpet prototype with a crown, near or mid, carries the pivot; the far impostor has no crown)
  spin(protos){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1): drawn still'};const sp=SPI('trumpet');let n=0,ok=0;
   for(const [k,P] of protos){const [s,,,lv]=k.split('|');if(+s!==sp||lv==='0')continue;n++;if(P.parts.some(q=>q.geo.attributes.aPivot))ok++;}
   return{ok:n>0&&ok===n,detail:ok+' of '+n+' trumpet prototypes turn their crown on its pivot'};},
+ // the wind-shaped trees (the saxaul's lean, the frill's shed side, the dandelion's balding) are drawn turned so the wind
+ // they were grown in lies along the wind where they stand: R = [x, z, the turn drawn]
+ facing(R){const w0=NSEMIARID.windAt(0,0),p0=Math.atan2(w0[1],w0[0]);let bad=0;
+  for(const r of R){const w=NSEMIARID.windAt(r[0],r[1]);let d=(p0-r[2])-Math.atan2(w[1],w[0]);d=Math.atan2(Math.sin(d),Math.cos(d));if(Math.abs(d)>.4)bad++;}
+  return{ok:R.length>=20&&!bad,detail:bad?bad+' of '+R.length+' wind-shaped trees turned off the wind':R.length+' wind-shaped trees drawn here, each within 0.4 rad of the wind where it stands'};},
+ // the furlers: placed open and shut by the gusts on the GPU (the material carries core/atmos's gust)
+ furlers(meshes,shut){const live=meshes.filter(m=>m.userData.liveGusts).length;
+  return{ok:meshes.length>0&&live===meshes.length&&shut===0,detail:meshes.length+' furler meshes, '+live+' shutting with core/atmos\'s gusts; '+shut+' placed shut as a still frame'};},
  // dead golden poplars stand on the salt behind the living forest
  deadPoplars(T){const bad=T.filter(t=>t.dead&&FIELD.salt(t.x,t.z)<.2&&NSEMIARID.zones(t.x,t.z).pan<.2);const dead=T.filter(t=>t.dead).length;
   return{ok:dead>0&&!bad.length,detail:bad.length?bad.length+' dead poplars off the salt':dead+' dead poplars, all on the salt'};}};
+// the wind-shaped trees drawn now, [x, z, the turn], from the variants' pools; and the furlers' meshes
+function windShapedDrawn(){const o=[];for(const p of VARIANTS.pools.values()){if(!NSEMIARID.SPECIES[p.sp].windShaped)continue;
+ for(let i=0;i<p.n;i++){const m=p.arr,k=i*16;o.push([m[k+12],m[k+14],Math.atan2(m[k+8],m[k])]);}}return o;}
+function furlerMeshes(){const o=[];scene.traverse(m=>{if(m.isInstancedMesh&&m.name==='biome:furler')o.push(m);});return o;}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
  add('every species placed',HCHK.placed(NSEMIARID.COUNTS||[]));
  add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
@@ -126,13 +141,15 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('fruit tagged and drawn',HCHK.fruit(NSEMIARID.SPECIES,NSEMIARID.PLANTS,P));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('crawlers grow downslope (their trails upslope)',HCHK.crawlers(inst(/^biome:crawler$/),inst(/crawlerDead/)));
- add('tumbler drifts on the windward faces',HCHK.drifts(inst(/tumbler/),T,NSEMIARID.WIND));
+ add('tumbler drifts on the windward faces',HCHK.drifts(inst(/tumbler/),T,NSEMIARID.windAt));
  add('step cones read the years dry',HCHK.cones(inst(/stepcone/)));
  add('saxaul on its crescents',HCHK.crescents(T.filter(t=>t.sp===SPI('saxaul'))));
  add('dead poplars on the salt',HCHK.deadPoplars(T.filter(t=>t.sp===SPI('poplar'))));
  add('the stream sits in its banks (core/water)',HCHK.banks(STREAM));
  add('the trumpets turn on a pivot',HCHK.spin(VARIANTS.protos));
- add('a gale tears the winged seeds loose, a calm holds them (core/atmos)',HCHK.gale());
+ add('a gale tears the winged seeds loose, a calm holds them; the lanterns the other way (core/atmos)',HCHK.gale());
+ if(window._variants)add('wind-shaped trees face the wind where they stand',HCHK.facing(windShapedDrawn()));
+ add('the furlers shut with the gusts (core/atmos)',HCHK.furlers(furlerMeshes(),(window._biome&&window._biome.under&&window._biome.under.furlersShut)||0));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst(),T=NSEMIARID.TREES;
  const C=(NSEMIARID.COUNTS||[]).slice();C[SPI('lantern')]=0;add('a species never placed',HCHK.placed(C));
@@ -144,12 +161,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  // the crawlers turned round: heads swapped with their trails
  {const H=inst(/^biome:crawler$/),D=inst(/crawlerDead/);add('crawlers growing uphill',HCHK.crawlers(D.slice(0,H.length*3),H));}
- add('drifts against the wind turned round',HCHK.drifts(inst(/tumbler/),T,[-NSEMIARID.WIND[0],-NSEMIARID.WIND[1]]));
+ add('drifts against the wind turned round',HCHK.drifts(inst(/tumbler/),T,(x,z)=>{const w=NSEMIARID.windAt(x,z);return[-w[0],-w[1]];}));
  {const S=inst(/stepcone/),ys=S.map(s=>s[4]).reverse();add('step cones heights shuffled',HCHK.cones(S.map((s,i)=>[s[0],s[1],s[2],s[3],ys[i]])));}
  {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
  add('a dead poplar on the steppe',HCHK.deadPoplars([{x:PLACE.steppe[0],z:PLACE.steppe[1],dead:true}]));
  add('the stream lifted 3 m over its banks',HCHK.banks(STREAM,3));
  add('a gale that tears nothing loose',HCHK.gale(1e9));
+ if(window._variants){const R=windShapedDrawn();add('wind-shaped trees turned at random',HCHK.facing(R.map((r,i)=>[r[0],r[1],r[2]+1+(i%5)])));}
+ add('furlers placed shut, a still frame',HCHK.furlers(furlerMeshes(),12));
  if(window._variants){const M=new Map();for(const [k,P] of VARIANTS.protos)M.set(k,{parts:P.parts.map(q=>({geo:{attributes:{}}}))});add('trumpet crowns with no pivot',HCHK.spin(M));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

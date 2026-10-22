@@ -9,6 +9,7 @@ window._biome=null;
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1,unique=Q.has('unique')||typeof VARIANTS==='undefined';
  window._variants=!unique;
  NSEMIARID.setWind(WIND);
+ NSEMIARID.liveGusts=true;   // the furlers are placed open and shut by core/atmos's gusts (89b-host-atmos.js)
  NSEMIARID.frillLook=Q.get('frill')==='white'?'white':'tint';   // the frill's fins: tinted while green, white ripe (default), or ?frill=white
  try{
   if(unique)window._biome=NSEMIARID.build({R:TERR.R-150,quality:q});

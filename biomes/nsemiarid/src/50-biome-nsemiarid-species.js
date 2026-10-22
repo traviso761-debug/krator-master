@@ -18,10 +18,14 @@ NSEMIARID.TAGS={climate:'tropic..temperate',aridity:'arid..humid',abyssal:false,
 // the classes of the region (scale model 4.21, share of land: PLAN.md section 1)
 NSEMIARID.KOPPEN={BSh:.466,Csa:.159,Cfa:.119,BWh:.078,Dsb:.05,Aw:.041,Af:.022,Csb:.02,BSk:.013,Dfb:.012,Cfb:.009,Am:.008};
 NSEMIARID.BARREN=[];
-// the prevailing wind (x east, z south; any length): from the west-north-west. A world binds its own (setWind); the
-// travellers' headings, the crescent groves, the drifts and the frills' shedding all read it
+// the prevailing wind (x east, z south; any length): from the west-north-west. A world binds its own (setWind): a vector,
+// or a function (x,z) => [dx,dz] where the prevailing wind turns from place to place (down a valley, round a range; it
+// must not change with time: it is what the land has been shaped by). The travellers' headings, the crescent groves,
+// the drifts, the frills' shedding, the saxaul's lean and the dandelions' balding all read it where they stand
+// (windAt); WIND is its mean, for anything with no place
 NSEMIARID.WIND=[1,.3];
-NSEMIARID.setWind=function(w){const l=Math.hypot(w[0],w[1])||1;NSEMIARID.WIND=[w[0]/l,w[1]/l];};
+NSEMIARID.setWind=function(w){NSEMIARID.windFn=typeof w==='function'?w:null;const v=NSEMIARID.windFn?w(0,0):w,l=Math.hypot(v[0],v[1])||1;NSEMIARID.WIND=[v[0]/l,v[1]/l];};
+NSEMIARID.windAt=function(x,z){if(!NSEMIARID.windFn)return NSEMIARID.WIND;const v=NSEMIARID.windFn(x,z),l=Math.hypot(v[0],v[1])||1;return[v[0]/l,v[1]/l];};
 NSEMIARID.setWind(NSEMIARID.WIND);
 
 // ---------------------------------------------------------------- palettes
@@ -77,7 +81,7 @@ const K=(c,a,r,kp)=>({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp});
 NSEMIARID.SPECIES=[
  /*0*/{key:'pistachio',name:'Wild pistachio',H:[4,9],rb:[.25,.55],crownR:[3.5,6.5],barkK:3,bark:[0x7a6a5a,0x6e5e50,0x86766a],leaf:PAL.pistachio,
   far:{poleU:.22,blobs:[[.55,1,.32,'L0','L2']]},travel:'seed',tags:K('temperate','semiarid','no',['BSh','Csa','BSk'])},
- /*1*/{key:'saxaul',name:'Crescent saxaul',H:[3,7],rb:[.15,.4],crownR:[2.2,4],barkK:3,bark:[0x8a8070,0x7a7062,0x9a9080],leaf:PAL.saxaul,
+ /*1*/{key:'saxaul',windShaped:true,name:'Crescent saxaul',H:[3,7],rb:[.15,.4],crownR:[2.2,4],barkK:3,bark:[0x8a8070,0x7a7062,0x9a9080],leaf:PAL.saxaul,
   far:{poleU:.2,blobs:[[.5,.95,.34,'L0','L2']]},travel:'grove',tags:K('tropic','arid','no',['BWh','BSh'])},
  /*2*/{key:'plane',name:'Spring plane',H:[18,34],rb:[.6,1.5],crownR:[8,15],barkK:1,bark:[0xb8b098,0xa8a088,0xc8c0a8],leaf:PAL.plane,
   far:{poleU:.4,blobs:[[.62,.95,.3,'L0','L2'],[.8,.62,.2,'L1','L3',{rich:true,off:.3}]]},travel:'seed',tags:K('temperate','subhumid','yes',['Csa','Cfa','BSh'])},
@@ -97,7 +101,7 @@ NSEMIARID.SPECIES=[
   far:{poleU:.4,blobs:[[.66,.9,.3,'L0','L2']]},travel:'wind',tags:K('temperate','subhumid','both',['Cfa','Csb','Dfb'])},
  /*10*/{key:'poplar',name:'Golden poplar',H:[10,22],rb:[.4,1.0],crownR:[4,8],barkK:0,bark:[0x8a8070,0x7a7062,0x9a9080],leaf:PAL.poplar,
   far:{poleU:.4,blobs:[[.66,.9,.3,'L0','L1']]},travel:'wind',tags:K('tropic','subhumid','yes',['Aw','Af','Am','BSh','BWh'])},
- /*11*/{key:'frill',name:'Dandelion frill',alien:true,H:[12,20],rb:[1.0,1.8],crownR:[2.5,3.2],barkK:5,bark:[0x5a7a6a,0x4e6e5e,0x668676],leaf:PAL.frillGreen,
+ /*11*/{key:'frill',windShaped:true,name:'Dandelion frill',alien:true,H:[12,20],rb:[1.0,1.8],crownR:[2.5,3.2],barkK:5,bark:[0x5a7a6a,0x4e6e5e,0x668676],leaf:PAL.frillGreen,
   far:{poleU:.75,taper:.35,blobs:[[.88,1.2,.12,'L0','L1']]},travel:'wind',tags:K('temperate','semiarid','no',['BSh','Csa','BSk'])},
  /*12*/{key:'trumpet',name:'Helicopter trumpet',alien:true,H:[8,16],rb:[.25,.5],crownR:[2.5,4.5],barkK:5,bark:[0x7a9a5a,0x6e8e50,0x86a666],leaf:PAL.trumpet,
   far:{poleU:.85,taper:.4,blobs:[[.92,.9,.08,'L0','L1']]},travel:'wind',tags:K('tropic','arid','no',['BSh','BWh','Csa'])},
@@ -107,7 +111,7 @@ NSEMIARID.SPECIES=[
   far:{poleU:.15,blobs:[[.5,1,.4,'L0','L2']]},travel:'seed',tags:K('temperate','semiarid','both',['Csa','BSh','Aw'])},
  /*15*/{key:'foxtail',name:'Foxtail spire',H:[4,8],rb:[.06,.12],crownR:[.9,1.5],barkK:2,bark:[0x6a8a4a],leaf:PAL.foxtail,
   far:{poleU:1,taper:.3,blobs:[[.8,.45,.2,'L0','L1',{abs:false}]]},travel:'wind',tags:K('temperate','semiarid','no',['BSh','Csa','Dsb'])},
- /*16*/{key:'dandelion',name:'Giant dandelion',H:[3.5,6],rb:[.05,.1],crownR:[.6,1.5],barkK:2,bark:[0x7a9a5a],leaf:PAL.clock,
+ /*16*/{key:'dandelion',windShaped:true,name:'Giant dandelion',H:[3.5,6],rb:[.05,.1],crownR:[.6,1.5],barkK:2,bark:[0x7a9a5a],leaf:PAL.clock,
   far:{poleU:1,taper:.3,blobs:[[.92,.5,.1,'L0','L1',{abs:false}]]},travel:'wind',tags:K('temperate','arid','no',['BSh','BWh','Csa'])},
 ];
 NSEMIARID.byKey={};NSEMIARID.SPECIES.forEach((S,i)=>{S.i=i;NSEMIARID.byKey[S.key]=S;});

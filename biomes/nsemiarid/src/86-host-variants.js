@@ -27,16 +27,18 @@ const SPIN={value:0};
 const SPIN_GLSL=['float _sp=0.0;','#ifdef USE_INSTANCING','_sp=dot(instanceMatrix[3].xyz,vec3(0.173,0.091,0.137));','#endif',
  'float _sa=uSpin*(0.8+0.4*fract(_sp*3.7))+_sp*6.2831;float _sc=cos(_sa),_ss=sin(_sa);'].join('\n');
 function leafHook(o){return function(sh){
- sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+ sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
  if(o.spin){sh.uniforms.uSpin=SPIN;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uSpin;attribute vec3 aPivot;')
    .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\n'+SPIN_GLSL+'\nobjectNormal.xz=vec2(objectNormal.x*_sc-objectNormal.z*_ss,objectNormal.x*_ss+objectNormal.z*_sc);')
    .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec2 _r=transformed.xz-aPivot.xz;transformed.xz=aPivot.xz+vec2(_r.x*_sc-_r.y*_ss,_r.x*_ss+_r.y*_sc);}');}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vFlWP;varying float vFlD;\n'+(o.aN?'attribute vec3 aN;varying vec3 vFlN;\n':''))
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform vec2 uWindV;uniform float uWindOn;varying vec3 vFlWP;varying float vFlD;\n'+(o.aN?'attribute vec3 aN;varying vec3 vFlN;\n':''))
   .replace('#include <project_vertex>',['vec4 mvPosition=vec4(transformed,1.0);float _ph=0.0;vec3 _nr='+(o.aN?'aN':'vec3(0.0,1.0,0.0)')+';',
    '#ifdef USE_INSTANCING','mvPosition=instanceMatrix*mvPosition;_ph=dot(instanceMatrix[3].xyz,vec3(0.131,0.073,0.117));_nr=mat3(instanceMatrix)*_nr;','#endif',
    'float _wg=clamp(position.y/9.0,0.0,1.6);',
-   'mvPosition.xyz+=_wg*vec3(sin(uWindT*0.9+_ph)+0.45*sin(uWindT*2.3+_ph*1.7+position.x*0.6),0.25*sin(uWindT*1.6+_ph*0.6),cos(uWindT*0.7+_ph*1.3)+0.45*sin(uWindT*2.9+_ph+position.z*0.6))*'+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
+   // the world's wind, as the core's foliage takes it: the sway grows with its strength and the crown leans downwind
+   'float _wk=mix(1.0,max(0.3,length(uWindV)),uWindOn);vec3 _lean=uWindOn*vec3(uWindV.x,0.0,uWindV.y)*(0.9+0.6*sin(uWindT*0.45+_ph*2.1));',
+   'mvPosition.xyz+=_wg*(vec3(sin(uWindT*0.9+_ph)+0.45*sin(uWindT*2.3+_ph*1.7+position.x*0.6),0.25*sin(uWindT*1.6+_ph*0.6),cos(uWindT*0.7+_ph*1.3)+0.45*sin(uWindT*2.9+_ph+position.z*0.6))*_wk+_lean)*'+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
    'vFlWP=(modelMatrix*mvPosition).xyz;'+(o.aN?'vFlN=normalize(_nr);':''),
    'mvPosition=modelViewMatrix*mvPosition;vFlD=-mvPosition.z;gl_Position=projectionMatrix*mvPosition;'].join('\n'));
  if(o.aN)sh.vertexShader=sh.vertexShader.replace('#include <defaultnormal_vertex>',['vec3 _an=aN;','#ifdef USE_INSTANCING','_an=mat3(instanceMatrix)*_an;','#endif','vec3 transformedNormal=normalize(normalMatrix*_an);'].join('\n'));
@@ -101,6 +103,12 @@ function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)c
  const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3),S=SP()[p.sp];
  for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;
   m.userData.biome=true;m.userData.species=S.key;m.userData.inspectLabel=S.name;m.name='variant:'+p.proto.key;m.userData.partTris=part.tris;scene.add(m);p.meshes.push(m);}}
+// a record's turn: any, for most trees; for one shaped by the wind (the saxaul's lean, the frill's shed side, the
+// dandelion's balding: SPECIES windShaped) the turn that carries the wind it was grown in (the nursery's, at 0,0) onto
+// the wind where it stands, give or take a little (2026-10-22: before, any turn, which set them across or against it).
+// A turn by a about y takes a direction at angle p (atan2(z,x)) to p - a
+const turnOf=r=>{if(!SP()[r.sp].windShaped)return(r.seed%628)/100;const w0=NSEMIARID.windAt(0,0),w1=NSEMIARID.windAt(r.x,r.z);
+ return Math.atan2(w0[1],w0[0])-Math.atan2(w1[1],w1[0])+((r.seed%61)/100-.3);};
 function levelOf(r,d){if(d<lim(LOD.hero,r.H))return 2;if(d<lim(LOD.mid,r.H))return 1;if(d<lim(LOD.far,r.H))return 0;return -1;}
 let last=null;
 function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-last.z)<6)return;last=P.clone?P.clone():{x:P.x,y:P.y,z:P.z};
@@ -108,7 +116,7 @@ function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-l
  for(const r of NSEMIARID.TREES){const dx=r.x-P.x,dz=r.z-P.z,dy=r.y0-P.y,d=Math.sqrt(dx*dx+dz*dz+dy*dy*.25),lv=levelOf(r,d);if(lv<0)continue;
   const proto=PROTO.get(r.sp+'|'+formOf(r)+'|'+varOf(r)+'|'+lv);if(!proto||!proto.parts.length)continue;
   const p=pool(proto,r.sp);ensure(p,p.n+1);const sc=r.H/(proto.H||r.H);
-  _q.setFromAxisAngle(_Y,(r.seed%628)/100);_p.set(r.x,r.y0+.4,r.z);_s.set(sc,sc,sc);M4.compose(_p,_q,_s);M4.toArray(p.arr,p.n*16);p.n++;n++;lv3[lv]++;}
+  _q.setFromAxisAngle(_Y,turnOf(r));_p.set(r.x,r.y0+.4,r.z);_s.set(sc,sc,sc);M4.compose(_p,_q,_s);M4.toArray(p.arr,p.n*16);p.n++;n++;lv3[lv]++;}
  let pools=0,tris=0,calls=0;
  for(const p of POOLS.values()){for(const m of p.meshes){m.count=p.n;m.visible=p.n>0;if(p.n){tris+=p.n*m.userData.partTris;calls++;}}if(p.attr)p.attr.needsUpdate=true;if(p.n)pools++;}
  ST.drawn=n;ST.levels=lv3;ST.pools=pools;ST.tris=Math.round(tris);ST.calls=calls;}
