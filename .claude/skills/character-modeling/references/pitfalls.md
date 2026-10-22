@@ -253,6 +253,19 @@ area you are about to change.
   outside. Use per-joint elliptical sections offset forward (measured from the base mesh). Exempt the shoulder's
   end of the upper arm from the trunk test, or every arm raised in front of the chest gets shoved (a hand at the
   forehead lifted off it, a two-handed pistol grip spread apart).
+- **An arm push that solves afresh each frame teleports** (the owner, frame by frame: the arm snapped round a thigh
+  or knee): which obstacle is deepest, and which side of it the limb lies, change between frames. Keep each bone's
+  push turn from the frame before, ease it back to the clip's by the clip's own time (the lab's frame steps set the
+  time and update by 0, so a dt-based easing never relaxes there), push on from it, and limit how fast a push turns.
+  A leg push of "the least move that clears" jumps when the knee lies inside the shoulder; use depth over how far
+  the gap already points the push's way (with a floor), which fades to nothing as it clears.
+- **A floor on the elbow angle makes arms rigid**: most frames of a gently moving idle sat under it, so the elbow
+  stopped moving. Offset the whole arm's bend by what brings its least bend to a relaxed angle, fading with bend.
+- **A clip's hand put on the head needs its orientation set, not only its fingertips**: rotating the clip's hand to
+  aim the fingers left a claw with the wrist bent back. Set the palm toward the scalp, fingers back along it, and
+  the wrist forward of the palm so the forearm arrives naturally.
+- **Measure a stateful pass by playing, not by jumping to times**: with kept turns, sampling a clip at scattered
+  times reports large differences that are only path dependence; compare poses played from the clip's start.
 - **Do not turn knees out of the belly**: a sprint's raised knee and a crouch's thighs overlap a trunk capsule while
   the body is fine; only the owner's actual cases (knee in shoulder) warranted the leg push.
 - **Joints a body carries unused** (the lower arms on a two-armed body) must be skipped by every pass that moves

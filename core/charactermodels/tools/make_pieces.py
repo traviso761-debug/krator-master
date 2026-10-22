@@ -726,17 +726,22 @@ def _axis_rot(h, a):
                      [z * x * C - y * s, z * y * C + x * s, c + z * z * C]])
 
 
-ELBOW_MIN, ELBOW_WRAP = math.radians(3), math.radians(-45)
+ELBOW_MIN, ELBOW_REST, ELBOW_ADD, ELBOW_SPAN, ELBOW_WRAP = (math.radians(3), math.radians(12), math.radians(25), math.radians(80),
+                                                         math.radians(-45))
 
 
 def elbow_limit(c, clip):
     """no elbow bent backwards: retargeting from a rig whose arms rest at another angle can open an elbow past
     straight (the owner saw it in idles 7 and 12 and the backward walk, by 13 to 17 degrees). The elbow is a hinge
     fixed in the upper arm: its axis is across the upper arm and the figure's forward at rest (the A pose's elbow pit
-    faces forward). Where a frame bends the forearm less than ELBOW_MIN about it, the forearm turns forward about the
-    hinge to ELBOW_MIN; the bend out of the hinge's plane (and the hand, which rides the forearm) is kept. A bend
-    measured past ELBOW_WRAP backwards is left alone: it is a deep bend with the upper arm turned on its axis (an
-    overhead wind-up folds the forearm behind the head), which a hinge fixed at rest misreads"""
+    faces forward). An arm whose least bend about it in the clip is under ELBOW_MIN has its forearm turned forward
+    about the hinge, by enough to bring that least bend to ELBOW_REST (a relaxed arm) but by no more than ELBOW_ADD,
+    the turn fading out over ELBOW_SPAN of further bend: the clip's own motion of the elbow stays (a floor at the
+    least bend held idle 12's arms rigid and straight), and a deep bend is barely touched. A frame still under
+    ELBOW_MIN after it (a slash opened 26 degrees past straight) is turned up to ELBOW_MIN. The bend out of the hinge's plane (and the hand,
+    which rides the forearm) is kept. A bend measured past ELBOW_WRAP backwards is left alone: it is a deep bend with
+    the upper arm turned on its axis (an overhead wind-up folds the forearm behind the head), which a hinge fixed at
+    rest misreads"""
     times, rots, hips = clip
     J = c.J
     for S in ('Left', 'Right'):
@@ -749,13 +754,23 @@ def elbow_limit(c, clip):
         u = c.jrot[up].T @ u0                                   # the upper arm, in its own frame
         off = c.jrot[fore].T @ (c.jpos[hand] - c.jpos[fore])    # the forearm, in its own frame
         q = rots[S + 'ForeArm'].copy()
+        th = []
         for f in range(len(q)):
-            L = _qm(q[f])
-            w = L @ off
+            w = _qm(q[f]) @ off
             w = w - h * h.dot(w)
-            th = math.atan2(np.cross(u, w).dot(h), u.dot(w))
-            if ELBOW_WRAP < th < ELBOW_MIN:
-                m = glbio.mat_quat(_axis_rot(h, ELBOW_MIN - th) @ L)
+            th.append(math.atan2(np.cross(u, w).dot(h), u.dot(w)))
+        ok = [t for t in th if t > ELBOW_WRAP]
+        if not ok or min(ok) >= ELBOW_MIN:
+            continue
+        low = min(ok)
+        add = min(ELBOW_REST - low, ELBOW_ADD)
+        for f in range(len(q)):
+            if th[f] <= ELBOW_WRAP:
+                continue
+            a = add * max(0.0, 1.0 - (th[f] - low) / ELBOW_SPAN)
+            a = max(a, ELBOW_MIN - th[f])                       # past ELBOW_ADD backwards (a slash), still no less than ELBOW_MIN
+            if a > 1e-6:
+                m = glbio.mat_quat(_axis_rot(h, a) @ _qm(q[f]))
                 q[f] = m if np.dot(m, q[f]) >= 0 else -np.array(m)
         rots = dict(rots)
         rots[S + 'ForeArm'] = q
@@ -781,13 +796,13 @@ def _front(c, j):
 
 def hands_clip(c, clip, spec):
     """a clip with a hand put where the clip only gestures at (data/clips.json derive 'hands': {'R'|'L': place}):
-      head    the fingertips onto the scalp, at the upper back of the head on the hand's side, wherever the clip
-              brings that hand within reach of it (and in proportion as it nears it): Meshy's 'Confused Scratch'
-              scratched the air 10 cm over the crown
+      head    the palm on the crown, a little behind its top on the hand's side, fingers back along the scalp and the
+              forearm up over the head from before it, wherever the clip brings that hand within reach of it (and in
+              proportion as it nears it): Meshy's 'Confused Scratch' scratched the air 10 cm over the crown, and
+              then held the hand up like a claw at the side of the head, its wrist bent back
       belly   the palm flat on the belly, fingers across the body, the whole clip
       chest   the palm on the lower chest, the same
-    Each arm is a two-bone solve, the elbow kept on the clip's side; the hand turned so (head) its fingers point 40
-    degrees into the scalp along the clip's own direction, or (belly, chest) its palm lies on the body. 'Sleep' lay
+    Each arm is a two-bone solve (belly, chest: the elbow on the clip's side) with the palm on the body. 'Sleep' lay
     with both hands held up in the air"""
     times, rots, hips = clip
     J = c.J
@@ -815,16 +830,20 @@ def hands_clip(c, clip, spec):
                 w = w * w * (3 - 2 * w)
                 if w <= 0:
                     continue
-                n = M @ np.array([0.45 * sx, 0.75, -0.35])
+                # the palm on the crown, a little behind its top, on the hand's side; the fingers back along the scalp
+                # (tipped 15 degrees into it, so their ends reach it as it curves away), the wrist forward of the
+                # palm, so the forearm comes up over the head from before it, the elbow forward and out
+                n = M @ np.array([0.25 * sx, 0.85, -0.45])
                 n /= np.linalg.norm(n)
                 K = C + n * rad
-                Ft = F0 / L - n * n.dot(F0 / L)
-                Ft /= max(np.linalg.norm(Ft), 1e-9)
-                F = Ft * math.cos(math.radians(40)) - n * math.sin(math.radians(40))
-                Rh = rot_between(F0, F) @ Rw[hand]
-                rig.reach(loc, up, fore, hand, K - F * L, pole)
-                Rw2, _ = rig.fk(loc)
-                loc[hand] = Rw2[fore].T @ Rh
+                Zt = M @ np.array([0.0, -0.2, -1.0])
+                Zt -= n * n.dot(Zt)
+                Zt /= np.linalg.norm(Zt)
+                Z = Zt * math.cos(math.radians(15)) - n * math.sin(math.radians(15))
+                X = -n                                            # out of the palm: into the head
+                lp = np.linalg.norm(P[J[S + 'HandMiddle1']] - P[hand])
+                rig.reach(loc, up, fore, hand, K + n * 0.03 - Zt * (lp / 2), M @ np.array([0.7 * sx, -0.1, 0.7]))
+                rig.hold(loc, hand, grips[S], np.cross(Z, X), Z)
             else:
                 w = 1.0
                 j = 'Spine' if place == 'belly' else 'Spine1'

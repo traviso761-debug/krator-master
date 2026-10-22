@@ -146,14 +146,17 @@ stabbed overhand, the point up). **Spear thrust**: the same underhand, the right
 left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
 source only) with the arms at the spear thrust's guard (it held the spear with the right hand behind the back).
 A clip whose hands only gesture at a place has them put there (`derive: {hands: {R|L: head | belly | chest}, from}`,
-`make_pieces.hands_clip`; the made clip takes its source's place in the list): **Confused Scratch** brings the right
-fingertips onto the upper back of the head wherever the clip lifts that hand near it (it scratched the air 10 cm over
-the crown), and **Sleep** lays the right palm on the belly and the left on the lower chest (both hands were held up
+`make_pieces.hands_clip`; the made clip takes its source's place in the list): **Confused Scratch** lays the right palm
+on the crown, fingers back along the scalp and the forearm up over the head from in front, wherever the clip lifts that
+hand near it (it scratched the air 10 cm over the crown, then held the hand up like a claw, the wrist bent back), and **Sleep** lays the right palm on the belly and the left on the lower chest (both hands were held up
 in the air). The skull ball and the body's front come from the base mesh. Every retargeted clip also has its elbows
 kept from bending backwards (`elbow_limit`): the hinge is fixed in the upper arm, across it and the figure's forward
-at rest, and a forearm bent less than 3 degrees about it turns forward to 3 (idles 7 and 12 and the backward walk
-opened 13 to 17 degrees past straight; a reading past 45 degrees backwards is a deep bend with the upper arm turned
-on its axis, which the fixed hinge misreads, and is left alone).
+at rest. An arm whose least bend in the clip is under 3 degrees has its forearm turned forward about the hinge by
+enough to bring that least bend to 12 (a relaxed arm), at most 25, the turn fading out over 80 degrees of further
+bend, so the clip's own elbow motion stays; a frame still under 3 after that (a slash) is turned up to 3 (idles 7 and
+12 and the backward walk opened 13 to 17 degrees past straight; a floor at 3 alone held idle 12's arms straight and
+rigid; a reading past 45 degrees backwards is a deep bend with the upper arm turned on its axis, which the fixed hinge
+misreads, and is left alone).
 **Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 20 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
 bucket, cup, lantern, torch, bowl, bread) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
@@ -552,7 +555,15 @@ radius under the morph): the round capsule on the spine left the man's chest 5 c
 front of it went in (the injured walk). Against the trunk only the elbow's end of the upper arm counts, and not the
 top of the chest: the shoulder and deltoid sit against it, and an arm raised before the chest is held there. A knee
 in front of the belly is left be (a sprint's raised knee and a crouch's thighs meet the trunk's capsule without
-going through the body). The unused lower-arm joints of a two-armed body take no part.
+going through the body). The upper arm from 0.4 of its length also keeps out of the skull (`data/clips.json` faces
+head; idle 14 swung it through the head); the forearm and hand may come to it (a scratch, a palm on the brow, a
+guard at the chin). The unused lower-arm joints of a two-armed body take no part. The pushes are continuous in time:
+each bone's turn is kept from the frame before and eases back to the clip's as the clip moves on (over 0.25 s of
+clip time, by the clip's own time, so the lab's frame steps behave as playing does), and a push turns a bone at most
+2.5 radians a clip second; pushing on from the kept turn keeps a limb on the side it went round, where solving
+afresh each frame threw an arm across a thigh in one frame (sit down, the stool, the throw, the ledge climb; up to
+85 cm in a frame, now about 10 at most). A kept turn is held to 20 degrees on a thigh and 1.2 radians on an arm. The
+capsules are in the skeleton's units, scaled by its world scale (a giant's).
 
 **Posture** (both runtimes, first after the clip): the clips, retargeted onto MakeHuman's curved spine, stand with
 the chest pushed forward and the upper body leaning back, so the spine is bent forward, the neck takes much of it back

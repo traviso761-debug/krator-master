@@ -32,8 +32,8 @@
   the idle or the combat stance: the legs and hips hold still (no lunge, no step into the blow), the arms move by a
   two-bone solve (the elbows go where the solve puts them), and the beat is even. Dig swings a hoe overhead like a
   pick, not chopped short, with both hands before the face at the top of the lift. Confused Scratch and Sleep are
-  Meshy's clips with a hand put where it gestures (`derive: hands`): the scratch's fingertips are placed on the skull
-  ball, the fingers keep the clip's curl (they do not move to scratch), and Sleep's palms lie still on the belly and
+  Meshy's clips with a hand put where it gestures (`derive: hands`): the scratch's palm is laid on the skull ball,
+  the fingers keep the clip's curl (they do not move to scratch), and Sleep's palms lie still on the belly and
   chest (the clip's breathing no longer moves them). Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
   spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
   most of these, but its clips can only be fetched by hand with an Adobe account.
@@ -54,11 +54,17 @@
   arm only by swinging out at the hip, by at most 20 degrees: where a clip drives the knee deep into the shoulder (the
   climb up a ledge at 0.25 s on the tall man, the crouching throw near 5 s) the arm still meets the thigh, and the
   swung leg reads wide from the front. The pushes move hands that rested where the clip put them: the hammer hand
-  at the anvil sits a little further out on the short, broad woman.
+  at the anvil sits a little further out on the short, broad woman. Because a push eases in (at most 2.5 radians a
+  clip second) and out (over 0.25 s), a limb that a clip drives quickly into a thigh shows inside it for a frame or
+  two, and the result depends on the frames before: scrubbing backwards, or jumping to a time, can give a slightly
+  different pose from playing to it. The skull is a ball: an arm lying under a lowered head (a sleeper's pillow arm,
+  a tucked roll) is nudged off it.
 - **The elbow limit is a fixed hinge.** `make_pieces.elbow_limit` reads the elbow's bend about an axis fixed in the
   upper arm at rest; an upper arm turned far on its own axis (an overhead wind-up) reads as a bend backwards, so
   readings past 45 degrees backwards are left alone, and the runtime passes (two-hand solve, `bodyFix`) can still
-  open an elbow a few degrees past straight.
+  open an elbow a few degrees past straight. An arm that the clip held past straight is given a relaxed bend of its
+  own (at least 12 degrees where the clip went backwards): the clip's elbow motion stays, but every such arm hangs a
+  little bent.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one
