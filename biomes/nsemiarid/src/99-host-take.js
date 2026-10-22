@@ -1,0 +1,148 @@
+// ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
+// The camera, the frame loop, the panel and window._api are core/host's (core/host/README.md): this fragment only says
+// what this page has. The presets are FOUND on the map rather than typed: one sweep scores every preset by the kit's own
+// zones, nearer the LOD spine preferred, and a tree preset frames the nearest record of its species.
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+const SCORES={
+ desert:(Z,x,z,ld)=>Z.desert*(1-Z.pan)-ld/3000,
+ pan:(Z,x,z,ld)=>Z.pan*smooth(.4,.7,FIELD.salt(x,z))-ld/3000,
+ steppe:(Z,x,z,ld)=>Z.steppe-ld/3000,
+ med:(Z,x,z,ld)=>Z.med-ld/3000,
+ forest:(Z,x,z,ld)=>Z.forest-ld/3000,
+ tugai:(Z,x,z,ld)=>Z.tugai*(1-Z.pan)-ld/3000,
+ strand:(Z,x,z,ld)=>FIELD.strand(x,z)*FIELD.bed(x,z)*(1-Z.pan)-ld/4000,
+ ring:(Z,x,z,ld)=>FIELD.ring(x,z)-ld/4000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-3200;z<=3200;z+=50)for(let x=-3200;x<=3200;x+=50){const Z=NSEMIARID.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const SPI=k=>NSEMIARID.SPECIES.indexOf(NSEMIARID.byKey[k]);
+function nearTree(key,x,z,minH,pred){return NSEMIARID.nearestTree(SPI(key),x,z,minH,pred)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+function atTree(T,d,az,dy){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*.6,T.z];}
+const W0=NSEMIARID.WIND,UPW=Math.atan2(-W0[1],-W0[0]);   // the camera upwind of a subject sees its downwind trail
+const VIEWS={
+ 'From afar':look(-3300,3300,600,-300,-900,150),
+ 'The old lake bed and its strandlines':look(BED.x+1500,BED.z+1500,90,BED.x,BED.z,0),
+ 'The bathtub ring':look(P.ring[0]-120*W0[0],P.ring[1]-120*W0[1],10,P.ring[0]+60,P.ring[1]+40,0),
+ 'The salt pan':look(P.pan[0]-80,P.pan[1]+70,4,P.pan[0]+60,P.pan[1]-60,0),
+ 'Crescent saxaul groves':atTree(nearTree('saxaul',P.desert[0],P.desert[1]),45,UPW+.5,8),
+ 'Crawlers on the desert':look(P.desert[0]-30,P.desert[1]+30,3,P.desert[0]+20,P.desert[1]-20,0),
+ 'Golden poplar at the lake margin':atTree(nearTree('poplar',P.tugai[0],P.tugai[1],0,T=>!T.dead),40,1.2,4),
+ 'Dead poplars on the salt':atTree(nearTree('poplar',BED.x,BED.z,0,T=>!!T.dead),28,2.2,3),
+ 'The walking steppe':look(P.steppe[0]-60,P.steppe[1]+40,5,P.steppe[0]+40,P.steppe[1]-30,1),
+ 'Dandelion frills':atTree(nearTree('frill',P.steppe[0],P.steppe[1]),38,UPW,6),
+ 'Helicopter trumpets':atTree(nearTree('trumpet',P.steppe[0],P.steppe[1]),26,UPW+.4,4),
+ 'Pistachio parkland':atTree(nearTree('pistachio',P.steppe[0],P.steppe[1]),30,2.6,3),
+ 'Giant dandelions and foxtails':atTree(nearTree('dandelion',P.steppe[0],P.steppe[1]),10,UPW+.3,1.6),
+ 'Judas trees and almonds':atTree(nearTree('judas',P.med[0],P.med[1]),20,1.8,2.5),
+ 'The spring pool and its plane':[POOL.x-70,Math.max(POOL.lv+14,gh(POOL.x-70,POOL.z+60,6)),POOL.z+60,POOL.x,POOL.lv+8,POOL.z],
+ 'Drift lanterns':atTree(nearTree('lantern',P.med[0],P.med[1]),14,.6,2),
+ 'The feral fruit forest':atTree(nearTree('apple',P.forest[0],P.forest[1]),24,1.4,3),
+ 'Kite ash':atTree(nearTree('samara',P.forest[0],P.forest[1]),36,2.8,5),
+};
+// ---------------------------------------------------------------- the inspector's words
+function describe(hit){const p=hit.point,o=hit.object;
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&NSEMIARID.plantOfItem(item);
+ const S=o.userData.species?NSEMIARID.byKey[o.userData.species]:(best&&best.key&&NSEMIARID.byKey[best.key]),tg=S?S.tags:(PLT?PLT.tags:null);
+ if(o.userData.species)name=S.name+'  ·  a variant ('+o.name.replace('variant:','')+')';
+ if(PLT&&!S)name=PLT.name+'  ·  '+lab+(PLT.travel&&PLT.travel!=='none'?'  ·  travels: '+PLT.travel:'');
+ if(S&&S.travel)name+='  ·  travels: '+S.travel;
+ const cls=S||isItem?'flora · n semiarid'+(S&&S.alien?' · alien (Krator\'s own)':''):'terrain / water';
+ return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · Koppen '+tg.koppen.join(' '):'')+
+  (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
+  '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+// ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
+const BUDGET={
+ showcase:{tris:19500000,calls:700},
+ cls:{pass:16000000,host:900000},
+ type:{'nsemiarid/trees':'pass','nsemiarid/floor':'pass','nsemiarid/nursery':'pass','host':'host'},
+};
+// species that yield something edible the kit does not draw as a catalog fruit: named, not hidden (the catalog owes the
+// fruit trees' pieces: KNOWN_ISSUES.md)
+const FRUIT_NOT_DRAWN=['pistachio','judas','almond','apple','walnut','apricot','pear','poplar','frill','trumpet','pomegranate','foxtail','dandelion'];
+const inst=(pat)=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;if(pat&&!pat.test(M.name))return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name,sc.y]);}});return o;};
+const near2=(A,x,z,r)=>A.filter(a=>Math.abs(a[0]-x)<r&&Math.abs(a[2]-z)<r);
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const HCHK={
+ placed(C){const zero=NSEMIARID.SPECIES.filter((S,i)=>!(C[i]>0)).map(S=>S.key);
+  return{ok:C.length===NSEMIARID.SPECIES.length&&!zero.length,detail:zero.length?'never placed: '+zero.join(', '):C.length+' species, the scarcest '+Math.min(...C)};},
+ tagged(SP){const reg=Object.keys(NSEMIARID.KOPPEN),bad=[];
+  for(const S of SP){const t=S.tags||{},k=t.koppen||[];if(!t.climate||!t.aridity||t.abyssal==null||!t.riparian||!k.length||k.some(c=>reg.indexOf(c)<0))bad.push(S.key);}
+  return{ok:!bad.length,detail:bad.length?'untagged or tagged outside the region: '+bad.join(', '):SP.length+' species tagged (climate, aridity, abyssal, riparian, Koppen)'};},
+ dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0;});
+  return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none drowned'};},
+ cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
+  return{ok:!bad.length,detail:bad.length?bad.length+' trees on cliff faces':T.length+' trees, none on a bare rock face'};},
+ fruit(SP,PL,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const n=P.filter(p=>/fruit|gourd/.test(p[3])).length,untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  return{ok:!miss.length&&!untagged.length&&n>=150,detail:(miss.length?'edible but not named: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' fruit and gourd instances drawn'};},
+ variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
+  for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv)&&!P.has(sp+'|d|'+v+'|'+lv))miss.push(NSEMIARID.SPECIES[sp].key+' v'+v+' lv'+lv);
+  return{ok:!miss.length&&V.stats.drawn>0,detail:(miss.length?'missing: '+miss.slice(0,6).join(', ')+'; ':'')+P.size+' prototypes for '+T.length+' trees; '+V.stats.drawn+' drawn here, '+V.stats.tris+' triangles, grown in '+V.stats.growMs+' ms'};},
+ camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
+ // THE WALKING STEPPE: the travellers keep their headings
+ // a crawler's trail runs upslope of its head (it grows toward water): the nearest dead segment stands higher
+ crawlers(H,D){let ok=0,n=0;for(const h of H){const d=near2(D,h[0],h[2],3);if(!d.length)continue;let b=d[0],bd=1e9;for(const q of d){const e=Math.hypot(q[0]-h[0],q[2]-h[2]);if(e<bd){bd=e;b=q;}}n++;if(terrainH(b[0],b[2])>=terrainH(h[0],h[2])-.02)ok++;}
+  return{ok:n>=30&&ok/n>=.8,detail:n?ok+' of '+n+' crawler heads lie downslope of their trails':'no crawlers'};},
+ // tumbler drifts pile on the windward (upwind) face of the trees
+ drifts(Tb,T,w){let up=0,n=0;for(const t of T){const near=near2(Tb,t.x,t.z,4);for(const b of near){const dx=b[0]-t.x,dz=b[2]-t.z;if(Math.hypot(dx,dz)>4)continue;n++;if(dx*w[0]+dz*w[1]<0)up++;}}
+  return{ok:n>=20&&up/n>=.75,detail:n?up+' of '+n+' tumblers by a tree lie on its windward side':'no drifts'};},
+ // step cones on the old bed: taller where the ground has been dry longer (a tier a wet year)
+ cones(S){const pts=S.filter(s=>FIELD.bed(s[0],s[2])>.5);if(pts.length<30)return{ok:false,detail:pts.length+' step cones on the bed'};
+  const xs=pts.map(s=>FIELD.dry(s[0],s[2])),ys=pts.map(s=>s[4]),mx=xs.reduce((a,b)=>a+b)/xs.length,my=ys.reduce((a,b)=>a+b)/ys.length;
+  let sxy=0,sxx=0,syy=0;for(let i=0;i<xs.length;i++){sxy+=(xs[i]-mx)*(ys[i]-my);sxx+=(xs[i]-mx)**2;syy+=(ys[i]-my)**2;}const r=sxy/Math.sqrt(sxx*syy||1);
+  return{ok:r>.5,detail:pts.length+' step cones on the bed, height against years dry r = '+r.toFixed(2)};},
+ // the saxaul stands only on its groves' crescents
+ crescents(T){const bad=T.filter(t=>NSEMIARID.crescentAt(t.x,t.z)[0]<=0);return{ok:T.length>0&&!bad.length,detail:bad.length?bad.length+' saxaul off a crescent':T.length+' saxaul, every one on a grove\'s arc'};},
+ // dead golden poplars stand on the salt behind the living forest
+ deadPoplars(T){const bad=T.filter(t=>t.dead&&FIELD.salt(t.x,t.z)<.2&&NSEMIARID.zones(t.x,t.z).pan<.2);const dead=T.filter(t=>t.dead).length;
+  return{ok:dead>0&&!bad.length,detail:bad.length?bad.length+' dead poplars off the salt':dead+' dead poplars, all on the salt'};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
+ add('every species placed',HCHK.placed(NSEMIARID.COUNTS||[]));
+ add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
+ add('nothing rooted under the water',HCHK.dry(P));
+ add('no tree on a bare rock face',HCHK.cliffs(T));
+ if(typeof VARIANTS!=='undefined')add('trees drawn as shared variants',HCHK.variants(VARIANTS,T));
+ add('fruit tagged and drawn',HCHK.fruit(NSEMIARID.SPECIES,NSEMIARID.PLANTS,P));
+ add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ add('crawlers grow downslope (their trails upslope)',HCHK.crawlers(inst(/^biome:crawler$/),inst(/crawlerDead/)));
+ add('tumbler drifts on the windward faces',HCHK.drifts(inst(/tumbler/),T,NSEMIARID.WIND));
+ add('step cones read the years dry',HCHK.cones(inst(/stepcone/)));
+ add('saxaul on its crescents',HCHK.crescents(T.filter(t=>t.sp===SPI('saxaul'))));
+ add('dead poplars on the salt',HCHK.deadPoplars(T.filter(t=>t.sp===SPI('poplar'))));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst(),T=NSEMIARID.TREES;
+ const C=(NSEMIARID.COUNTS||[]).slice();C[SPI('lantern')]=0;add('a species never placed',HCHK.placed(C));
+ add('a species with no Koppen classes',HCHK.tagged(NSEMIARID.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
+ add('a species tagged outside the region',HCHK.tagged([Object.assign({},NSEMIARID.SPECIES[0],{tags:Object.assign({},NSEMIARID.SPECIES[0].tags,{koppen:['EF']})})]));
+ add('a plant on the lake bed under the water',HCHK.dry([[BED.x,LAKE.level-6,BED.z,'test']]));
+ if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},T));
+ add('a fruiting species not named',HCHK.fruit(NSEMIARID.SPECIES.map(S=>S.key==='apple'?Object.assign({},S,{key:'apple?'}):S),NSEMIARID.PLANTS,P));
+ add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
+ // the crawlers turned round: heads swapped with their trails
+ {const H=inst(/^biome:crawler$/),D=inst(/crawlerDead/);add('crawlers growing uphill',HCHK.crawlers(D.slice(0,H.length*3),H));}
+ add('drifts against the wind turned round',HCHK.drifts(inst(/tumbler/),T,[-NSEMIARID.WIND[0],-NSEMIARID.WIND[1]]));
+ {const S=inst(/stepcone/),ys=S.map(s=>s[4]).reverse();add('step cones heights shuffled',HCHK.cones(S.map((s,i)=>[s[0],s[1],s[2],s[3],ys[i]])));}
+ {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
+ add('a dead poplar on the steppe',HCHK.deadPoplars([{x:P.steppe?0:0,z:0,dead:true}]));
+ return R;}
+// ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.take({build:'nsemiarid',title:'Krator biome — the northern semiarid country',
+ hint:'The walking steppe: an old lake bed with its strandlines and a remnant salt lake in the north, the hot steppe, the Mediterranean foothills and the feral fruit forest on the rainy upland in the south; everything here travels (ideal type)',
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>SEEDS?[SEEDS.points]:[]},'rings':{objects:()=>[giantRing]}},
+ exporters:{biome:()=>BIO.export()},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
+ get totals(){const t=BIO.totals(),nu=BIO.stats['nsemiarid/nursery'],v=window._variants&&typeof VARIANTS!=='undefined'?VARIANTS.stats:null;
+  return {tris:t.tris-(nu?nu.tris:0)+(v?v.tris:0),inst:t.inst-(nu?nu.inst:0)+(v?v.drawn:0),meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ variants:()=>typeof VARIANTS!=='undefined'?VARIANTS.stats:null,
+ biome:()=>window._biome,
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=NSEMIARID.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}}});

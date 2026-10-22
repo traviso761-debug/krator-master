@@ -276,7 +276,10 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
    Boatmurder) and km 205 of the west (110 m, where it meets the trough); ~6,300 km² scoured; 400,000 `land` calls in
    ~0.25 s. Not yet: the wave-cut notch as an overhang (`core/terrain` carve patches), the hulks' and docks' placement
    (step 4), a GDScript twin.
-3. **`biomes/nsemiarid`**, the kit and its showcase.
+3. **`biomes/nsemiarid`**, the kit and its showcase. *Built 2026-10-22* (`NOTES.md`, `BIOME-API.md`): 17 tree species
+   and 24 small plants, trees as variants, the travellers' headings checked by the probe (crawlers downslope, drifts
+   windward, step cones by the years dry, saxaul on their crescents, dead poplars on the salt). Still to do there:
+   `KNOWN_ISSUES.md` (the spin and the furling, the catalog's fruit, the highland spurs, library textures).
 4. **`biomes/dambasins`** and **`biomes/scablands`**, their stations reading the base kits in place.
 5. **`biomes/nwlowlands`**: the rock zone, the bed response, the pass table and variants.
 6. **A north-basin open world** (`openworld/<name>`) with `WORLD_OVERLAYS`: where one overlay over two biomes is

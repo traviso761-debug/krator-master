@@ -58,6 +58,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/korona`](biomes/korona/INDEX.md) | 12 | 120 | 29 | Biome kit: see `biomes/README.md`. |
 | [`biomes/necanyons`](biomes/necanyons/INDEX.md) | 14 | 108 | 27 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 14 | 245 | 60 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nsemiarid`](biomes/nsemiarid/INDEX.md) | 12 | 175 | 47 | The northern semiarid country, the walking steppe (biomes/nsemiarid/PLAN.md): the north basin round the drained dam lakes, Central Asian in basis (pistachio parkland, crescent saxaul, spring planes, Judas trees and almonds, the feral fruit forest of apple, apricot, pear and walnut, golden poplar on the lake margins, dead on the salt behind) and Krator's own (the dandelion frill, the helicopter trumpet, the drift lantern); everything travels: tumblers and their drifts, crawlers, striders, bead chains, roll-eggs, seeds aloft downwind, and the owner's small and weird in dew gardens. The showcase: an old lake bed with KBASIN's strandlines and bathtub ring down to a salt lake, the steppe, the foothills, the rainy upland. Trees as variants. Verified: build.py, verify.py --assert. |
 | [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 16 | 276 | 73 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 179 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/oidong`](biomes/oidong/INDEX.md) | 11 | 181 | 66 | Biome kit: see `biomes/README.md`. |
