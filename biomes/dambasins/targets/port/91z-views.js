@@ -2,7 +2,7 @@
 const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R)return {Empty:[0,300,600,0,0,0]};
  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const it of L.items){const f=portFoot(it);if(!f)continue;
   x0=Math.min(x0,f.x0);x1=Math.max(x1,f.x1);z0=Math.min(z0,f.z0);z1=Math.max(z1,f.z1);}
- const cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0),P=L.db&&L.db.pier,g=(x,z)=>terrainH(x,z);
+ const cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0),P=L.db&&L.db.pier,g=(x,z)=>DB_NAT(x,z);   // the bed's own ground (the views are made before the terrain is built)
  // from the bed below, looking up the fast-drain slope at the port on its old line, the ring white under it
  V['The old port from the bed']=[cx+160,g(cx+160,z1+900)+3,z1+900,cx,D+20,cz];
  // the whole station, high over the bed
@@ -14,4 +14,8 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  // along the ring: the bleached band under the old line, from the side
  V['The bathtub ring']=[x0-200,g(x0-200,z1+150)+8,z1+150,cx,-12,z1+40];
  V['From above']=[cx,span*1.05+700,cz+400,cx,0,cz+400];
+ // the moored hulks (D1), from the slope below them, and along the quay's foot
+ const M=(L.db&&L.db.moored)||[];
+ if(M.length){const m=M[0];V['The moored hulks']=[m.gx+260,g(m.gx+260,m.gz+260)+14,m.gz+260,m.gx,g(m.gx,m.gz)+12,m.gz];
+  V['Along the quay foot']=[m.gx-320,g(m.gx-320,m.gz+30)+6,m.gz+30,m.gx+200,-6,m.gz-10];}
  return V;})();

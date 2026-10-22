@@ -34,7 +34,7 @@ function DB_NAT(x,z){const h=dbBase(x,z);return DB_BASIN.land(x,z,h);}
 // the ring bleached calcite streaked downslope; the drain band's grey-buff silt, darker in the gullies; the recession's
 // pale silt with its strandlines and the salt whitening down toward today's water; rock where it is steep
 const DB_GC={steppe:[.70,.62,.47],sage:[.60,.63,.51],pebble:[.62,.59,.53],ring:[.91,.89,.83],silt:[.74,.69,.58],silt2:[.64,.59,.50],
- strand:[.56,.51,.42],salt:[.94,.92,.88],rock:[.36,.33,.31]};
+ strand:[.56,.51,.42],gully:[.50,.46,.39],slump:[.72,.62,.48],salt:[.94,.92,.88],rock:[.36,.33,.31]};
 const DB_S={};
 function dbGroundTint(x,z,h,slope,c,paint){if(paint)return c;   // a stamp's own paint stays (the decks, the aprons)
  const s=DB_BASIN.sample(x,z,h,DB_S),n=fbm(x/140,z/140,2.7,3),n2=fbm(x/19,z/19,8.1,2)-.5,mix3=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
@@ -42,11 +42,17 @@ function dbGroundTint(x,z,h,slope,c,paint){if(paint)return c;   // a stamp's own
  col=mix3(col,DB_GC.pebble,s.shore*.8);
  if(s.bed>0){let b=mix3(DB_GC.silt,DB_GC.silt2,clamp(.5+n2*1.4,0,1));
   // the drain band's gullies hold darker, damper silt (the ground's fall from DB_NAT's gullies: slope reads them)
-  b=mix3(b,DB_GC.silt2,clamp(slope*1.6,0,.6)*(s.band===KBASIN.BAND.drain?1:.3));
+  // the drain band: grey-buff silt, the gully floors darker and damper (slope finds their sides), long tongues of the
+  // slumped silt a shade warmer
+  const drain=s.band===KBASIN.BAND.drain?1:0;
+  b=mix3(b,DB_GC.silt2,clamp(slope*2.2,0,.7)*(drain?1:.3));
+  b=mix3(b,DB_GC.gully,drain*Math.pow(1-Math.abs(2*fbm(x/48,(z-dbShore(x))/700,3.3,3)-1),3)*.7);   // dbBase's gullies: deepest where that noise is a half
+  b=mix3(b,DB_GC.slump,drain*clamp((fbm(x/320,(z-dbShore(x))/260,9.1,2)-.6)*5,0,1)*.45);
   b=mix3(b,DB_GC.strand,s.strand*.5);
   b=mix3(b,DB_GC.salt,dbSm(.25,.8,s.salt)*.85);
-  // the ring: calcite bleached on the rock and silt, streaked downslope (long along z, thin along x)
-  const streak=.75+.25*fbm(x/7,z/90,4.4,2);b=mix3(b,DB_GC.ring,s.ring*streak);
+  // the ring: calcite stain on the rock and silt, streaked downslope (long along z, thin along x), patchy, its foot ragged
+  const streak=clamp((fbm(x/6,z/80,4.4,2)-.3)*2.2,0,1),patch=clamp((fbm(x/60,z/60,6.2,2)-.25)*2,0,1),foot=dbSm(DB.ring*.55,DB.ring*.2+6*(fbm(x/40,z/40,1.7,2)-.5),-h);
+  b=mix3(b,DB_GC.ring,s.ring*(.35+.5*streak)*(.6+.4*patch)*(1-foot*.7));
   col=mix3(col,b,s.bed);}
  if(slope>.6){const t=clamp((slope-.6)*2.2,0,1)*(1-s.ring*.6);col=mix3(col,DB_GC.rock,t);}
  const k=.93+n2*.16;return col.map(v=>Math.pow(clamp(v*k,0,1),1.9));}

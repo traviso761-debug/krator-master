@@ -12,6 +12,7 @@ imported) plus the overlay's own (PLAN.md, section 5), each run on a broken inpu
   db-decks-on-line   every coastal segment's land apron stands at the kit's freeboard over the old full level (y = 0)
   db-ring-under-line the bathtub ring's band lies under the old line, as deep as the ring and no deeper, never above it
   db-bed-falls       the bed falls from the old line to the sill (-200 m) across the fast-drain band
+  db-hulks-aground   every hulk's keel lies buried in the ground under it (by a fifth to a half of its draft), none afloat
 
 SwiftShader flakes about one run in seven with a null shader-info-log TypeError: re-run before believing it.
 """
@@ -61,6 +62,11 @@ const falls=(zEnd)=>{const bad=[];for(const x of [PORT_LAYOUT.runs[0].x0-400,POR
   const top=terrainH(x,zs(x)+60),end=terrainH(x,zs(x)+zEnd);if(!(top>-12&&top<2&&end<DB.sill+25&&end>DB.sill-40))bad.push('x '+x.toFixed(0)+': '+top.toFixed(0)+' m at the line, '+end.toFixed(0)+' m at '+zEnd+' m out');}
  return{ok:!bad.length,detail:bad.length?bad.join('; '):'from the old line to the sill ('+DB.sill+' m) across '+DB.drainZ+' m, either side of the run'};};
 add('db-bed-falls',falls(DB.drainZ),falls(300));
+// the hulks aground: each keel (midship) under the ground by its burial and no more, none afloat in the air
+const aground=(lift)=>{const bad=[];for(const H of DB_HULKS){const keel=H.dy+lift-H.draft,g=terrainH(H.x,H.z),dep=g-keel;
+  if(dep<-.5||dep>H.draft*.75)bad.push(H.key+'/'+H.d+' keel '+(dep>=0?dep.toFixed(1)+' m deep':(-dep).toFixed(1)+' m over the ground'));}
+ return{ok:DB_HULKS.length>0&&!bad.length,detail:bad.length?bad.join(', '):DB_HULKS.length+' hulks, every keel buried by '+DB_HULKS.map(H=>(H.bury).toFixed(1)).join(', ')+' m'};};
+if(DB_HULKS.length)add('db-hulks-aground',aground(0),aground(6));
 return R;}"""
 
 

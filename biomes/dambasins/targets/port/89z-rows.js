@@ -2,8 +2,9 @@
 // 900 m line. One coastal run of the Ancient Port kit's segments along the old full line, ruined (decay 1) where the
 // port was abandoned as the water fell away, salvage (3) where the salvagers live now; land blocks behind. The kit's y = 0
 // is the old full level (80-db-bed.js), so every deck stands at its freeboard over water that is gone, and the bed falls
-// away in front: the ring, then the fast-drain slope. No vessels here (vessels: []): the hulks come grounded in D1.
-const TITLE='Krator — the dam basins: the old port on the 900 m line (D0)';
+// away in front: the ring, then the fast-drain slope. No ship in any berth (vessels: []); the moored hulks are placed
+// as free vessels and grounded (81-db-hulks.js).
+const TITLE='Krator — the dam basins: the old port on the 900 m line (D1)';
 const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  // the old shore, west to east: [key, decay, set-back]
  const plan=[
@@ -25,5 +26,12 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  const pier=at('pier'),q3=at('quay110',1);
  if(pier)push(portBehind(pier,'lbStores',{d:1}));
  if(q3)push(portBehind(q3,'chStack',{d:3}));
- const run=Object.assign({d:1,back,sea:[],moored:[]},R);
- return {items:items.concat(back),runs:[run],stamps:[],vessels:[],harbour:{pier,back,sea:[]},db:{at,pier}};})();
+ // THE MOORED HULKS (D1): ships tied up at the quays when the dam broke; the water fell under them in days and they
+ // grounded where they lay, in their dredged berths at the quay's foot, heeled toward the falling slope (81-db-hulks.js
+ // grounds every vessel). [vessel, decay, the quay it lay at, which of that key, bow east (1) or west (-1)]
+ const moored=[],VR=PORT_REG.vessel;
+ for(const [vk,vd,qk,qn,dir] of [['vsFeeder',1,'quay',0,1],['vsPanamax',1,'cgStore',0,-1],['vsFeeder',3,'quay110',0,1]]){
+  const q=at(qk,qn),V=VR[vk];if(!q||!V)continue;const f=portFoot(q);
+  moored.push({vessel:true,key:vk,d:vd,gx:q.gx+(qk==='cgStore'?60:0),gz:f.z1+V.beam/2+6,heading:dir*Math.PI/2,run:0});}
+ const run=Object.assign({d:1,back,sea:[],moored},R);
+ return {items:items.concat(back,moored),runs:[run],stamps:[],vessels:[],harbour:{pier,back,sea:[]},db:{at,pier,moored}};})();
