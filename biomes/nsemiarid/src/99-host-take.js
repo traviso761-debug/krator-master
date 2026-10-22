@@ -110,9 +110,10 @@ const HCHK={
   let calm,high;try{calm=run('calm');high=run('high');}finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
   return{ok:calm[0]===0&&high[0]>=20,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all)'};},
  // the trumpets' crowns are drawn with their pivot, so the spin turns them about the stalk
- spin(){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1): drawn still'};let n=0,m=0;
-  for(const p of VARIANTS.pools.values())for(const ms of p.meshes){if(ms.geometry.attributes.aPivot){n++;if(ms.count>0)m++;}}
-  return{ok:n>0&&m>0,detail:n+' prototype parts turn on a pivot, '+m+' drawn here'};},
+ // (every grown trumpet prototype with a crown, near or mid, carries the pivot; the far impostor has no crown)
+ spin(protos){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1): drawn still'};const sp=SPI('trumpet');let n=0,ok=0;
+  for(const [k,P] of protos){const [s,,,lv]=k.split('|');if(+s!==sp||lv==='0')continue;n++;if(P.parts.some(q=>q.geo.attributes.aPivot))ok++;}
+  return{ok:n>0&&ok===n,detail:ok+' of '+n+' trumpet prototypes turn their crown on its pivot'};},
  // dead golden poplars stand on the salt behind the living forest
  deadPoplars(T){const bad=T.filter(t=>t.dead&&FIELD.salt(t.x,t.z)<.2&&NSEMIARID.zones(t.x,t.z).pan<.2);const dead=T.filter(t=>t.dead).length;
   return{ok:dead>0&&!bad.length,detail:bad.length?bad.length+' dead poplars off the salt':dead+' dead poplars, all on the salt'};}};
@@ -130,7 +131,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('saxaul on its crescents',HCHK.crescents(T.filter(t=>t.sp===SPI('saxaul'))));
  add('dead poplars on the salt',HCHK.deadPoplars(T.filter(t=>t.sp===SPI('poplar'))));
  add('the stream sits in its banks (core/water)',HCHK.banks(STREAM));
- add('the trumpets turn on a pivot',HCHK.spin());
+ add('the trumpets turn on a pivot',HCHK.spin(VARIANTS.protos));
  add('a gale tears the winged seeds loose, a calm holds them (core/atmos)',HCHK.gale());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst(),T=NSEMIARID.TREES;
@@ -149,6 +150,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a dead poplar on the steppe',HCHK.deadPoplars([{x:PLACE.steppe[0],z:PLACE.steppe[1],dead:true}]));
  add('the stream lifted 3 m over its banks',HCHK.banks(STREAM,3));
  add('a gale that tears nothing loose',HCHK.gale(1e9));
+ if(window._variants){const M=new Map();for(const [k,P] of VARIANTS.protos)M.set(k,{parts:P.parts.map(q=>({geo:{attributes:{}}}))});add('trumpet crowns with no pivot',HCHK.spin(M));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');

@@ -32,9 +32,9 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
  // what each tree lets go: the seed kind, the wind it holds against (m/s), seeds a second per m/s past it, where they
  // leave from (a height and a radius in the tree's own terms) and their size (m)
  const BEAR={
-  trumpet:{kind:'heli',hold:8.5,rate:.9,from:T=>[T.y0+T.H*.84+T.crownR*.85,T.crownR],size:[.32,.46],fling:true},
-  samara:{kind:'heli',hold:9,rate:.5,from:T=>[T.y0+T.H*.72,T.crownR*.8],size:[.42,.58]},
-  frill:{kind:'plume',hold:9.5,rate:.8,from:T=>[T.y0+T.H*.82+T.crownR*.6,T.crownR],size:[.5,.8],when:T=>T.seed%4===1||T.seed%4===2},
+  trumpet:{kind:'heli',hold:8.5,rate:.9,from:T=>[T.y0+T.H*.84+T.crownR*.85,T.crownR],size:[.6,.95],fling:true},
+  samara:{kind:'heli',hold:9,rate:.5,from:T=>[T.y0+T.H*.72,T.crownR*.8],size:[.5,.7]},
+  frill:{kind:'plume',hold:9.5,rate:.8,from:T=>[T.y0+T.H*.82+T.crownR*.6,T.crownR],size:[.6,1.0],when:T=>T.seed%4===1||T.seed%4===2},
   dandelion:{kind:'plume',hold:5.5,rate:.25,from:T=>[T.y0+T.H,T.crownR*.5],size:[.26,.4]},
   poplar:{kind:'plume',hold:4.5,rate:.12,from:T=>[T.y0+T.H*.72,T.crownR],size:[.14,.22],when:T=>!T.dead}};
  const SP=NSEMIARID.SPECIES,bearOf=SP.map(S=>BEAR[S.key]||null);
@@ -61,7 +61,10 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
  const relist=c=>{last={x:c.x,z:c.z};SRC=[];for(const T of NSEMIARID.TREES){const B=bearOf[T.sp];if(!B||(B.when&&!B.when(T)))continue;
    const d=Math.hypot(T.x-c.x,T.z-c.z);if(d<RADIUS)SRC.push({T,B,d,acc:R()});}
   SRC.sort((a,b)=>a.d-b.d);if(SRC.length>500)SRC.length=500;stats.sources=SRC.length;};
- const release=(src)=>{const B=src.B,T=src.T,pool=B.kind==='heli'?0:1;if(!free[pool].length)return;const s=S[free[pool].pop()];
+ // a full pool gives up the seed farthest from the camera: the trees in view always throw
+ const steal=(pool,c)=>{let b=-1,bd=-1;const i0=pool?NH:0,i1=pool?CAP:NH;for(let i=i0;i<i1;i++){const q=S[i];const d=(q.x-c.x)**2+(q.z-c.z)**2;if(d>bd){bd=d;b=i;}}return b;};
+ const release=(src)=>{const B=src.B,T=src.T,pool=B.kind==='heli'?0:1,c=api.pin||camera.position;
+  const idx=free[pool].length?free[pool].pop():steal(pool,c);if(idx<0)return;const s=S[idx];
   const f=B.from(T),a=R()*6.283,r=f[1]*Math.sqrt(R()),w=NSWIND.at(T.x,T.z);
   s.on=true;s.x=T.x+Math.cos(a)*r;s.z=T.z+Math.sin(a)*r;s.y=f[0]+rr(-.4,.4);s.age=0;s.landed=-1;s.s=rr(B.size[0],B.size[1]);
   s.vx=w[0]*.5;s.vz=w[1]*.5;s.vy=rr(-.2,.6);
