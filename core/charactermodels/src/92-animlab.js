@@ -301,8 +301,8 @@
      and keep the difference. Kept in this browser until Reset, or until posture.json itself changes ---- */
   var POSE_KEY = 'kchar.animlab.posture', POSE_BODIES = ['mpfb_male', 'mpfb_female'];
   var POSE_ROWS = [['lean', 'Lean at hips', -45, 30], ['pelvis', 'Pelvis tilt', -60, 40], ['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
-    ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -20, 30],
-    ['back', 'Shoulder back', -30, 30], ['fSpine', 'Lumbar fwd cm', -8, 8],
+    ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['nTurn', 'Neck turn', -60, 60], ['nSide', 'Neck side tilt', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -30, 60],
+    ['back', 'Shoulder back', -45, 45], ['fSpine', 'Lumbar fwd cm', -8, 8],
     ['fSpine1', 'Low T fwd cm', -8, 8], ['fSpine2', 'High T fwd cm', -8, 8], ['fNeck', 'Neck fwd cm', -8, 8]];
   var POSE = { bodies:{}, clips:{} };
   function poseFile(){ return JSON.parse(JSON.stringify({ bodies:(D.posture && D.posture.bodies) || {}, clips:(D.posture && D.posture.clips) || {} })); }

@@ -1576,9 +1576,9 @@ function KCharFigure(body, sliders, load){
      MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
   // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
   // copied, so a panel can change one figure's live
-  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis', 'lean'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis', 'lean', 'nTurn', 'nSide'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
   var PB = PD[kit.body] ? kit.body : 'mpfb_male';
-  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, lean:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, lean:0, nTurn:0, nSide:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
   // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
   // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
   // cross-fade carries it over too
@@ -1668,6 +1668,17 @@ function KCharFigure(body, sliders, load){
         pAx.set(1, 0, 0).applyQuaternion(pR[byName[n]]).applyQuaternion(qB);
       } else pAx.set(1, 0, 0).applyQuaternion(pG);
       turnWorld(b, pQ.setFromAxisAngle(pAx, -a * Math.PI / 180));
+    });
+    // the neck turned (nTurn: positive to the figure's left) and tilted to the side (nSide: positive, the left ear to
+    // the left shoulder), about the up and forward axes as the frame takes them (with 'joint', as the clip has turned
+    // the chest)
+    var nk = byName.Neck !== undefined ? bones[byName.Neck] : null;
+    [['nTurn', 0, 1, 0, 1], ['nSide', 0, 0, 1, -1]].forEach(function(r){
+      var a = P[r[0]]; if(!nk || !a) return;
+      pAx.set(r[1], r[2], r[3]);
+      if(PF === 'joint'){ nk.parent.getWorldQuaternion(qB); pAx.applyQuaternion(pR[byName.Neck]).applyQuaternion(qB); }
+      else pAx.applyQuaternion(pG);
+      turnWorld(nk, pQ.setFromAxisAngle(pAx, r[4] * a * Math.PI / 180));
     });
     [['LeftShoulder', 1], ['RightShoulder', -1]].forEach(function(sh){
       var b = byName[sh[0]] !== undefined && bones[byName[sh[0]]]; if(!b) return;

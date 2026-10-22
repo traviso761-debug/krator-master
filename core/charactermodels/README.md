@@ -580,6 +580,9 @@ numbers are in `data/posture.json`, which both runtimes read:
 - `pelvis` (in `bodies` or a clip's change): the pelvis tilted alone, before the spine angles (negative forward: the
   top of the pelvis to the front, the seat back; positive tucks it under). The thighs keep the way the clip points them
   and the lumbar the way it faced, so the legs and the torso's direction stay; the waist and seat turn between them.
+- `nTurn`, `nSide` (in `bodies` or a clip's change): the neck turned (positive to the figure's left) and tilted to the
+  side (positive, the left ear toward the left shoulder), after the pitches, about the up and forward axes in the
+  posture's frame (`joint`: as the clip has turned the chest).
 - `fSpine`, `fSpine1`, `fSpine2`, `fNeck` (in `bodies` or a clip's change): that joint moved forward (positive) or back
   in centimetres of the body's own size, after the angles, the joints above it held where they were: the lumbar
   pushed forward bends the small of the back without carrying the chest along. The clips never place bones, so the

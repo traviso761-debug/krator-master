@@ -575,7 +575,7 @@ func hold(want: Dictionary) -> void:
 # the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
-const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "lean", "fSpine", "fSpine1", "fSpine2", "fNeck"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "lean", "nTurn", "nSide", "fSpine", "fSpine1", "fSpine2", "fNeck"]
 const POSTURE_SHIFT := ["Spine", "Spine1", "Spine2", "Neck"]
 const POSTURE_FADE := 0.25
 var posture := {}
@@ -677,6 +677,18 @@ func _posture(force := false) -> void:
 			if posture_joint and par >= 0:
 				ax = (_gp(par).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(par).basis.get_rotation_quaternion().inverse()) * ax
 			_turn(b, Quaternion(ax.normalized(), -a))
+	# the neck turned (nTurn: positive to the figure's left) and tilted to the side (nSide: positive, the left ear to the
+	# left shoulder), about the up and forward axes as the frame takes them (50-figure.js posture)
+	var nk := skeleton.find_bone("Neck")
+	for r in [["nTurn", Vector3(0, 1, 0), 1.0], ["nSide", Vector3(0, 0, 1), -1.0]]:
+		var na := deg_to_rad(float(p[r[0]]))
+		if nk < 0 or na == 0.0:
+			continue
+		var nax: Vector3 = r[1]
+		if posture_joint:
+			var npar := skeleton.get_bone_parent(nk)
+			nax = (_gp(npar).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(npar).basis.get_rotation_quaternion().inverse()) * nax
+		_turn(nk, Quaternion(nax.normalized(), float(r[2]) * na))
 	for sh in [["LeftShoulder", 1.0], ["RightShoulder", -1.0]]:
 		var b := skeleton.find_bone(sh[0])
 		if b < 0:
