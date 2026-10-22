@@ -1,5 +1,9 @@
 # The Sanctum of the True Heirs: a blueprint
 
+**Written for the first form** (2026-10-20), the spiral drum that is the Podium now (`kits/ancients/targets/podium`). The
+owner redrew the Sanctum on 2026-10-22 (`kits/ancients/targets/sanctum`: a hexagonal podium, stalk and solid). The study
+and the principles hold; the ladder by height, the gates' rites and the halls' program want redoing on the new form.
+
 The fifth palace blueprint, on the method of the others (`settlements/voth/palace/BLUEPRINT.md` holds the study of
 Versailles, Topkapı, Heian, Bangkok, the Kuge-machi and Westminster; `settlements/iziz/palace/BLUEPRINT.md` adds the
 Palatine). This one adds **the Forbidden City under the Qing**, and turns it on end.

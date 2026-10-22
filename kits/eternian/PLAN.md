@@ -217,11 +217,14 @@ generator can make in a hundred variants where a smooth portrait is not.
   tracery module** holding alabaster. The state is implemented in this kit as a pass over an Ancients body's record (its
   opening list), not an edit to the Ancients kit.
 - **The capital's host is a new arcology, the Sanctum** (the owner's name, 2026-10-20, first called the Coil; in place of the proposed
-  Plymouth): an Ancient live/work arcology of Plymouth's volume (45 Mm³) but 2.5 times its height, a tapering drum on a
-  six-pointed podium, three great arches in a triangle at the heads of three of its six stairs and from each a
-  staircase spiralling counterclockwise up to the next arch and balcony (thirty arches in all), small entrances at the
-  heads of the other three. Built in `kits/ancients/targets/sanctum` (`dist/sanctum.html`: as built, and as the Heirs
-  keep it). Its retrofit as the True Heirs' forbidden city is `palace/BLUEPRINT.md`: the Forbidden City
+  Plymouth; **its form redrawn by the owner 2026-10-22**): a six-storey hexagonal podium (800 m across) with a hexagonal
+  gate under a face sculpture in each face and a hexagonal atrium behind each; a hexagonal stalk a sixth of its width;
+  on it the hexagonal solid with rounded corners, two thirds of the podium's width and most of the mass (52.7 Mm³ in
+  all, between Plymouth and Hexahedron), corners over the gates, balcony bands and great onyx lancets on its faces, six
+  light wells through it; on its roof a garden, a tapering central tower and six corner towers. Built in
+  `kits/ancients/targets/sanctum` (`dist/sanctum.html`, as the Heirs keep it). The first form (a tapering drum on a
+  six-pointed podium, thirty arches up a spiral stair) is the Podium now, a separate arcology
+  (`kits/ancients/targets/podium`, `dist/podium.html`). Its retrofit as the True Heirs' forbidden city is `palace/BLUEPRINT.md`: the Forbidden City
   turned on end, height as rank. That retrofit is the first worked case of `kept`: `8aq1-sanctum-kept.js` is the Heirs'
   deltas on the Ancients' records, and moves into this kit at P0. The ministries stand at its feet, the canal town
   spreads from it.

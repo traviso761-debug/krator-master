@@ -1,18 +1,14 @@
-// TARGET: sanctum — the Sanctum, the spiral arcology, as the Ancients built it and as the True Heirs keep it.
-//
-// A tapering drum 660 m tall on a six-pointed podium 690 m across: three great arches at the heads of three of its six
-// stairs, and from each a staircase spiralling counterclockwise up the drum, arch to arch, thirty arches in all (8aq0). West: the Ancients' live/work arcology, intact, lit and planted. East: the same plan with
-// the Eternal State's deltas (8aq1): the Sanctum, the True Heirs' forbidden city, with onyx in bronze tracery, faces
-// everywhere, a moat and a wall, and a titanium colossus on the crown. The two share one seed: one building.
-// Its own target because it is a megastructure on its own, it takes core/rand and core/tags (build.py TAGS_TARGETS),
-// and its fragments live here, not in src/, so the kit's other 41 pages do not change.
-const TITLE='The Sanctum — the spiral arcology and the Sanctum';
+// TARGET: sanctum — the Sanctum, the Eternal State's capital arcology, as the True Heirs keep it (the owner's form,
+// 2026-10-22): a six-storey hexagonal podium with six gates under face sculptures and six atria behind them, a stalk a
+// sixth of its width, and on it the hexagonal solid that is most of the mass, its corners over the gates, balconies
+// and great lancets on its faces, light wells through it, a garden and towers on its roof (8ar0). The spiral drum that
+// was the Sanctum until then is the Podium (targets/podium). Its fragments live here and it reads the Podium's skins
+// in place (build.py TARGET_READS), so the kit's other pages do not change.
+const TITLE='The Sanctum — the capital arcology of the Eternal State';
 const GROUND_C=0;
 const DECAYS=[0];
-// s 1 700: two 690 m podiums and their 140 m aprons, with a kilometre of plain between them
 const ROWS={
- built:{z:0,s:1700,r:520},
- kept:{z:0,s:-1700,r:520},
+ sanctum:{z:0,s:0,r:470},
 };
-const RUINS=[[-1700,0,520*.7],[1700,0,520*.7]];
-const EXTRA_BUILDERS={built:buildSanctum,kept:buildSanctumKept};
+const RUINS=[];
+const EXTRA_BUILDERS={sanctum:buildSanctum};

@@ -979,7 +979,19 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
 
-## The Sanctum (`--target sanctum`, `targets/sanctum`, 2026-10-20)
+## The Sanctum (`--target sanctum`, `targets/sanctum`, the owner's form, 2026-10-22)
+
+- **Shown as the Heirs keep it only**: no as-built Ancient row, no ruin, no interiors, no Godot export check yet. The
+  solid's faces are the Podium's wall skin under bands and great lancets; the atria, the passages and the roof garden have
+  no people, terminals or furniture. The palace blueprint (`kits/eternian/palace/BLUEPRINT.md`) is the first form's.
+- **The solid reads as one block from the front** (a 533 m face of one skin): a second pass could vary the bands by
+  height (the Heirs' ranks) and hang more on the rounded corners.
+
+## The Podium (`--target podium`, `targets/podium`; the Sanctum until 2026-10-22)
+
+- **Renamed, not redrawn**: the owner set the spiral drum aside as its own arcology when the Sanctum was redrawn. Its
+  `kept` row is the first palace design. Its internal prefix `sn` and the `MAT.sn*` families keep their names (the
+  Sanctum reads its skins).
 
 - **`culture:eternian` is not in the core/tags vocabulary.** The Sanctum's records (heads, terminals, banners, the
   wall, the pavilions) carry it, so `KTAGS.sanctum.audit()` counts about 450 unknowns. It is the Eternian kit's P0

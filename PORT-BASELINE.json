@@ -268,13 +268,17 @@
    "bytes": 2516366,
    "sha256": "0439351de028ea6a1edcc0d02dcd4e98aa2c89e145fa4d6dfd10e8e070e31326"
   },
+  "kits/ancients/dist/podium.html": {
+   "bytes": 2635648,
+   "sha256": "283d234fbd7411c4784af0bba0dc94d350f1895ee6adceaa23d40fa8593ad8fe"
+  },
   "kits/ancients/dist/ring.html": {
    "bytes": 2519648,
    "sha256": "88a3064cac31691950e4dee62caf9c0e925b4a19328f2de25f75dcfb69566d61"
   },
   "kits/ancients/dist/sanctum.html": {
-   "bytes": 2635975,
-   "sha256": "9dd1610550ce8a2f6569159cea8aa5368cf529f78e182839ef69f3623a305254"
+   "bytes": 2604399,
+   "sha256": "8ea0cbed6a0cd09d70cd84b4145ffc577c278bb6b2532f381c14ea30ab6904fa"
   },
   "kits/ancients/dist/skyi.html": {
    "bytes": 2513589,

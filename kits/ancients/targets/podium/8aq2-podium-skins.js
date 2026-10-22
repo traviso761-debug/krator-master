@@ -1,4 +1,4 @@
-// ================================================================= THE SANCTUM — skins, materials, the faceted head
+// ================================================================= THE PODIUM — skins, materials, the faceted head
 // Procedural until the library sets arrive (core/materials/PROMPTS-NEEDED.md §8: stone.onyx, stone.alabaster,
 // metal.titanium, patterns/eternian/*). Every painter draws from KRAND (h3/fbm on the lattice), not the sin hash.
 //
@@ -125,7 +125,7 @@ MAT.snMetal=snStd({color:0xffffff,metalness:.35,roughness:.42,flatShading:true})
 MAT.snBanner=snStd({map:TEX.snBanner,roughness:.9});
 
 // ---- the delivered library sets (core/materials/PROMPTS-NEEDED.md section 8, delivered 2026-10-20) --------------------
-// Each key is a family in kits/ancients/materials.json (`own`: the Sanctum's alone); KMAT.bindMat swaps in the set's maps
+// Each key is a family in kits/ancients/materials.json (`own`: the Podium's alone); KMAT.bindMat swaps in the set's maps
 // when the pack has it, and ?mat=proc keeps the procedural stand-ins above. `tile` is how many metres one UV unit is
 // where the drawing writes metre-based UVs (8aq3); the bands, the frieze and the banner write UVs in tiles already.
 MAT.snAlab=snGlow(TEX.snOnyx,TEX.snOnyxE,.5,{roughness:.35,color:0xf6f1e8});

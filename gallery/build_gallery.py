@@ -202,7 +202,9 @@ ENTRIES = [
     ('arcology', 'arc-wheel', 'kits/ancients/dist/wheel.html', 'The Wheel',
      'A raised ring of parkland on eight towers.', 'new'),
     ('arcology', 'arc-sanctum', 'kits/ancients/dist/sanctum.html', 'The Sanctum',
-     "The Eternal State's capital arcology, a tapering drum 660 m high on a six-pointed star: three great arches and three small entrances, a staircase spiralling counterclockwise from arch to arch, thirty arches in all, veiled colossi and the True Heirs' faces.", 'new'),
+     "The Eternal State's capital arcology: a six-storey hexagonal podium with a gate under a gold face in each side and a court behind each, a stalk, and on it a hexagonal solid two thirds as wide, its faces in balconies and great onyx lancets, light wells through it, a garden and towers on its roof.", 'new'),
+    ('arcology', 'arc-podium', 'kits/ancients/dist/podium.html', 'The Podium',
+     "A tapering drum 660 m high on a six-pointed star: three great arches and three small entrances, a staircase spiralling counterclockwise from arch to arch, thirty arches in all; as the Ancients built it and as the True Heirs keep it.", 'new'),
     ('arcology', 'arc-kept', 'kits/ancients/dist/kept.html', 'Plymouth and Arcoindian I, kept',
      'The two Ancient bodies as the Eternal State keeps them: glazing turned to lit alabaster in bronze tracery, the shells cleaned white with cyan strips alive.', 'new'),
 

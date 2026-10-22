@@ -502,11 +502,16 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   may swap its name with **Fulcrum** (px 339,266, on Jimjam's lake). From Centrum: Farport 407 km north-west, Roketstad 241
   km east, Jimjam 537 km east-north-east, Dilihan 500 km east, Leng (ruined arcology, px 218,224) 182 km north, Henge
   (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. The arcology is its own [the owner,
-  2026-10-20, in place of the proposed Plymouth]: an Ancient live/work arcology of Plymouth's volume, a tapering drum 660 m
-  tall on a six-pointed podium, a grand stair up each point: three to great arches in a triangle, from each of which a
-  staircase spirals up the drum arch to arch (thirty arches), three to small entrances, each entrance kept for one rite (`kits/ancients/targets/sanctum`: **the Sanctum**, the owner's name). The Heirs
-  have made it a forbidden city, their inner sanctum, height for rank (`kits/eternian/palace/BLUEPRINT.md`). Not yet
-  placed on the model; its name, in the Eternians' own mouth, is to come.
+  2026-10-20, in place of the proposed Plymouth; its form redrawn 2026-10-22]: **the Sanctum**, the owner's name
+  (`kits/ancients/targets/sanctum`), between Plymouth's mass and Hexahedron's. A six-storey hexagonal podium 800 m across
+  with a hexagonal gate in each face under a face sculpture, each gate opening on a hexagonal atrium, a ceremonial court;
+  a hexagonal stalk a sixth of the podium's width; on it a hexagonal solid with rounded corners, two thirds of the
+  podium's width and most of the mass, its corners over the gates, its faces in balconies and great windows, six
+  hexagonal light wells through it; a garden on its roof round a tapering central tower under a hexagonal roof, smaller
+  towers at its corners. The Heirs have made it a forbidden city, their inner sanctum, height for rank
+  (`kits/eternian/palace/BLUEPRINT.md`, written for the first form). Not yet placed on the model; its name, in the
+  Eternians' own mouth, is to come. The first form, a tapering drum on a six-pointed podium with thirty arches up a
+  spiral stair, is a separate arcology now, **the Podium** (`kits/ancients/targets/podium`).
 - **Farport** (px 27,260) is the kingdom's ocean port on the north-western sea [the owner, Oct 2026; §6.17 said "NE": the
   only ocean is north-west]. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
   [the owner, Oct 2026]. *Proposed*: the State confines the visitors to one factory quarter of one port, as Canton and

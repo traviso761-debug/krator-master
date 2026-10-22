@@ -111,11 +111,14 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'sanctum'}
+TAGS_TARGETS = {'podium', 'sanctum'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
-TARGET_READS = {'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')]}
+TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
+                # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
+                'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
+                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -190,7 +193,8 @@ TARGET_OUT = {
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
     'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
-    'sanctum': 'sanctum.html',
+    'podium': 'podium.html',                   # the spiral arcology (the Sanctum until 2026-10-22: targets/podium)
+    'sanctum': 'sanctum.html',                 # the Eternal State's capital arcology: podium, stalk and hexagonal solid
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
 }
 
@@ -210,7 +214,8 @@ DETERMINISTIC = {
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
-    '8aq0-sanctum-plan.js', '8aq1-sanctum-kept.js', '8aq2-sanctum-skins.js',   # targets/sanctum: KRAND-hashed records, no rng()
+    '8aq0-podium-plan.js', '8aq1-podium-kept.js', '8aq2-podium-skins.js',      # targets/podium: KRAND-hashed records, no rng()
+    '8ar0-sanctum-plan.js',                                                     # targets/sanctum: KRAND-hashed records, no rng()
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
 }

@@ -1,36 +1,25 @@
-// Presets, DERIVED: 89z-rows.js loads before 90-scene.js and this after it, so both builders have run and left their
-// gates, bays, ridges and crown in SN_SITE (8aq3). Local frame: x east, z south; the south ridge (the Imperial Way of
-// the Sanctum) is on th = TIP0 = 90 degrees, so a camera south of a site looks up the axis.
-// the per-type guide (91-probe.js BUDGET): the Sanctum is an arcology of Plymouth's volume, the 'mega' class Plymouth is
-BUDGET.type.built='mega';BUDGET.type.kept='mega';
-const SNA=SN_SITE.intact||{x:-1700,z:0,YT:660,TIP0:Math.PI/2,gates:[],bays:[],ridges:[]};
-const SNK=SN_SITE.kept||{x:1700,z:0,YT:660,TIP0:Math.PI/2,gates:[],bays:[],ridges:[]};
-const SNP=(S,r,th,y)=>[S.x+r*Math.cos(th),y,S.z+r*Math.sin(th)];
-// THE HERO: 1 600 m south and a little east, 260 m up: the 50 degree lens frames 1 490 m, the whole 720 m figure, the
-// podium's star and the spiral climbing across the drum's face
-const SNHERO=S=>SNP(S,1600,S.TIP0-.18,260).concat([S.x,330,S.z]);
-const snBay=(S,i)=>S.bays[Math.min(i,S.bays.length-1)]||{thc:S.TIP0,yb:300,ys:330,Ra:15};
+// Presets, DERIVED: 89z-rows.js loads before 90-scene.js and this after it, so the builder has run and left its site in
+// SCN_SITE (8ar3). Local frame: x east, z south; the Gate of the Heirs faces south (th = 90 degrees).
+// the per-type guide (91-probe.js BUDGET): the Sanctum is an arcology between Plymouth's mass and Hexahedron's: 'mega'
+BUDGET.type.sanctum='mega';
+const SCS=SCN_SITE.kept||{x:0,z:0,RP:400,RS:266.7,YP:30,YS0:75,YS1:315,YT:425,front:Math.PI/2,atria:[],wells:[]};
+const SCP=(r,th,y)=>[SCS.x+r*Math.cos(th),y,SCS.z+r*Math.sin(th)];
+const scAp=SCS.RP*Math.cos(Math.PI/6);
+// THE HERO: 1 400 m south and a little east, 250 m up: the whole 800 m podium and the 425 m figure in the 50 degree lens
+const SCHERO=SCP(1400,SCS.front-.32,250).concat([SCS.x,190,SCS.z]);
+const scAt=SCS.atria[1]||{c:[0,300],th:Math.PI/2},scWell=SCS.wells[0]||{c:[150,0],th:0};
 const VIEWS={
- 'The Sanctum':                SNHERO(SNK),
- 'The Sanctum, as built':         SNHERO(SNA),
- 'Both, from the south':       [0,520,4300,0,330,0],
- // THE IMPERIAL WAY: from the foot of the south ridge, between the pylons, up the Face Stone to the Hall of Supreme
- // Accord, with the spirit way's heads either side
- 'The Imperial Way':           SNP(SNK,SNK.ridges[0]?SNK.ridges[0].rTip+60:470,SNK.TIP0,6).concat(SNP(SNK,180,SNK.TIP0,150)),
- 'The Hall of Supreme Accord': (function(S){const G=S.gates[0]||{thc:S.TIP0,yb:152,ys:196,Ra:26};
-                                return SNP(S,430,G.thc-.35,190).concat(SNP(S,150,G.thc-.1,185));})(SNK),
- // A BAY CLOSE: the Hall of the Screen (the regent's: onyx in bronze tracery, a talking head on the jamb)
- 'The Hall of the Screen':     (function(S){const B=snBay(S,2);return SNP(S,320,B.thc+.08,B.yb+18).concat(SNP(S,120,B.thc,B.yb+16));})(SNK),
- 'The Hall of Ancestors':      (function(S){const B=snBay(S,6);return SNP(S,250,B.thc+.04,B.yb+10).concat(SNP(S,100,B.thc,B.yb+10));})(SNK),
- 'A bay, as built':            (function(S){const B=snBay(S,2);return SNP(S,320,B.thc+.08,B.yb+18).concat(SNP(S,120,B.thc,B.yb+16));})(SNA),
- // THE STAIRCASES from the west: three, counterclockwise, arch to arch
- 'The staircases':                 SNP(SNK,1100,Math.PI,420).concat([SNK.x,420,SNK.z]),
- // THE COLOSSUS: on the crown's south rim, eyes closed, looking over the capital
- 'The colossus':               SNP(SNK,260,SNK.TIP0,SNK.YT+70).concat(SNP(SNK,40,SNK.TIP0,SNK.YT+40)),
- 'The podium from above':      [SNK.x,1500,SNK.z+700,SNK.x,0,SNK.z],
- 'The Sanctum by night':       SNHERO(SNK).concat([1]),
- 'The Sanctum by night':          SNHERO(SNA).concat([1]),
+ 'The Sanctum':                 SCHERO,
+ 'The Gate of the Heirs':       SCP(scAp+90,SCS.front+.08,16).concat(SCP(scAp,SCS.front,18)),
+ 'From the avenue':             SCP(scAp+420,SCS.front,6).concat([SCS.x,170,SCS.z]),
+ // AN ATRIUM: the south court, its gold ancestor in the pool, the gate's passage behind
+ 'The south atrium':            [SCS.x+scAt.c[0]+18,24,SCS.z+scAt.c[1]-22,SCS.x+scAt.c[0],9,SCS.z+scAt.c[1]],
+ // UNDER THE SOLID: from the podium's roof, the stalk and the soffit with its wells
+ 'Under the solid':             SCP(232,SCS.front+.5,SCS.YP+4).concat([SCS.x,SCS.YS0+30,SCS.z]),
+ 'The roof garden':             SCP(380,SCS.front-.6,SCS.YS1+110).concat([SCS.x,SCS.YS1+20,SCS.z]),
+ 'A light well from above':     [SCS.x+scWell.c[0]+30,SCS.YS1+140,SCS.z+scWell.c[1]+60,SCS.x+scWell.c[0],SCS.YS1-40,SCS.z+scWell.c[1]],
+ 'The face of the solid':       SCP(560,SCS.front-.12,SCS.YS0+150).concat(SCP(200,SCS.front-.12,SCS.YS0+120)),
+ 'The podium from above':       [SCS.x,1350,SCS.z+520,SCS.x,0,SCS.z],
+ 'The Sanctum by night':        SCHERO.concat([1]),
 };
-window._sanctumSite={intact:SN_SITE.intact?{vol:SN_SITE.intact.vol,bays:SN_SITE.intact.bays.length}:null,
- kept:SN_SITE.kept?{vol:SN_SITE.kept.vol,bays:SN_SITE.kept.bays.length}:null,
- tags:KTAGS.sanctum?KTAGS.sanctum.audit():null};
+window._sanctumSite={vol:SCS.vol,trees:SCS.trees,tags:KTAGS.sanctum?KTAGS.sanctum.audit():null};
