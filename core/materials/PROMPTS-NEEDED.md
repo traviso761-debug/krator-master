@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 44 prompts.** Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 37 for the kits planned that day (sections 8-13: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
+**Count: 48 prompts.** Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -448,6 +448,43 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The shallow bed of a cold mountain lake seen from directly above through clear water: soft algal mats in teal (#2a8a8a) and violet (#5a3a8a) spreading over pale grey silt, small rounded stromatolite-like domes a hand across rising from the mats, a few pebbles, the mats' edges frilled. Full colour. One tile covers 2 metres.
+```
+
+## 14. Farside (`biomes/farside`, planned 2026-10-23)
+
+The ocean coast where the sea's plants are invading the land (`biomes/farside/PLAN.md` section 9, which lists the many
+marine sets the library already has: the kelp cards, seaweed, seagrass, reef and coral sets).
+
+#### `bark.kelp.stipe`
+- Kind: surface, tintable.
+- Used by: the land kelp's stipes. Reuse: any giant kelp or algal stalk.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The surface of a giant kelp stalk seen flat-on, as a trunk: smooth, rubbery, slightly glossy olive-brown skin (#6a5a2a, #7a6a32) with long faint lengthwise streaks, a fine pale crust of lime (#c8c0a8) in patches as if stiffened with chalk, small round scars where blades and bladders have broken off, a few tiny white tube-worm coils. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.5 metres.
+```
+
+#### `ground.wrack`
+- Kind: surface, full colour.
+- Used by: the strand's wrack heaps and the kelp coast's floor. Reuse: any beach wrack line or seaweed-covered ground.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Ground thickly covered with heaped, wet, cast-up seaweed seen from directly above: tangled olive-brown bladderwrack straps with paired bladders (#5a4a22, #7a6a30), golden kelp blades (#a88a3a), a few crimson red-weed fronds (#8a2a2a) and emerald sea lettuce (#3a8a3a), all glistening wet, small pale shells and sand showing in the gaps. Full colour. One tile covers 1.5 metres.
+```
+
+#### `organic.sponge`
+- Kind: surface, full colour.
+- Used by: the fog sponges on the fog belt's bark and rock. Reuse: any sponge or porous encrusting organism.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A living sponge crust seen flat-on: a soft, lumpy, porous surface of irregular rounded knobs and low chimneys, each with a dark open pore (osculum) at its top, the whole surface pitted with fine pores, ochre and orange (#c8902a, #d8702a) shading to grey (#8a8478) at the edges, damp and slightly velvety. Full colour. One tile covers 0.5 metres.
+```
+
+#### `card.wineweed`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one frond or sheet per cell.
+- Used by: the wine weed hung from the trees at the front and in the fog belt. Reuse: any red seaweed.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one red seaweed hanging from the top of its cell: on five of the nine, thin translucent ruffled sheets (Porphyra) in deep wine-red and crimson (#7a1a2a, #9a2a30) with darker veins; on four, finely branching fronds (Gracilaria) in dark crimson to brown-red (#6a1a1a, #8a3a2a), glistening wet, a few drops at the tips. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. The subject's reds are deep wine and crimson, never the background's pure magenta; key with `spill: edge`.
 ```
 
 ## Gaps with no prompt yet

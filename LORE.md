@@ -543,6 +543,12 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   (`kits/eternian/palace/BLUEPRINT.md`, written for the first form). Not yet placed on the model; its name, in the
   Eternians' own mouth, is to come. The first form, a tapering drum on a six-pointed podium with thirty arches up a
   spiral stair, is a separate arcology now, **the Podium** (`kits/ancients/targets/podium`).
+- **Farside, where the sea comes ashore** [the owner's idea, 2026-10-23; `biomes/farside/PLAN.md`]: the wettest coast on the
+  map, warm and fogbound, where **the sea's plants are invading the land**: land kelp standing in forests on the coast's
+  slopes, wrack draped over everything in the spray, spray coral building lime terraces above the waterline, red weed
+  hanging in the native trees at the front where the sea's flora meets the land's. *Proposed*: from Krator's own shallows,
+  or from over the sea, carried on the traders' hulls (as the clicks came, §6.19 Tongues), or both. Farside lives off it:
+  kelp and red weed as food, kelp ash for soda and potash, wrack on the fields, coral lime.
 - **Farport** (px 27,260) is the kingdom's ocean port on the north-western sea [the owner, Oct 2026; §6.17 said "NE": the
   only ocean is north-west]. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
   [the owner, Oct 2026]. *Proposed*: the State confines the visitors to one factory quarter of one port, as Canton and
@@ -958,6 +964,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.
 - Who lives in the NW bay and the badlands? (The southern highlands are the Talovolci's, §6.21.) Which tribes, human and therian, live in Korona, and what are their home tongues?
 - The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- **Farside** (`biomes/farside/PLAN.md` section 8): where the sea's invading plants came from (Krator's shallows, the traders' ships, or both); how far the front has come; the species; the people's relation to it.
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the sealed tunnel ever opens fully.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
