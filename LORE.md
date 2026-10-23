@@ -67,8 +67,14 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
   ten times too generous (a 4.22 item). The owner (2026-10-23): **the Catch is the biggest barrier to trade between
   Xanadu and everywhere else**. It has **oases, but only just enough for the crossing to be doable, not comfortable or
   safe**. The Ancients' tunnel to **Stair** has been **closed by seismic activity since about the Cataclysm**, and Stair,
-  the nearest thing to a settlement, is **a glorified campground**: home to a handful of merchants, the caravans passing
-  through, and occasional bands of daring or desperate arcology divers. Nobody else lives there.
+  the nearest thing to a settlement, is **a glorified campground** of **a couple of hundred people**: a handful of
+  merchants, the caravans passing through, and occasional bands of daring or desperate arcology divers. There are **five
+  oases** on the crossing, unnamed, and **none is lived in but Stair's**. The residents, the traders and the oases' names
+  are **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off. *Proposed*
+  (`biomes/catch/PLAN.md` section 6a): the Catch is Krator's one great **evaporite field** (an alkaline soda lake; potash,
+  borax and **lithium** brine under its salt), its alkali dust caustic in the storms; and in its dry air **Ancient alloys
+  and energy cells keep** as nowhere else, which is what the divers bring out, for the Yusar, the Geomancers and the
+  engine-keepers.
 - **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]
 
 ### 3.2 Regions [biomes/WORLD.md]
@@ -948,7 +954,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.
 - Who lives in the NW bay and the badlands? (The southern highlands are the Talovolci's, §6.21.) Which tribes, human and therian, live in Korona, and what are their home tongues?
 - The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Paper speech's levels, the Yusar's words, Matok's words; settled 2026-10-23: the Heirs' English and the forbidden letters, the five dialects, Hayrant on the Outer Wall like Ainu, Farside's clicks from over the sea, the Yusar's avoidance speech, the dam basins' traders' argot); the kingdom's population; who the visitors at Farport are, what they want and what tongue gave Farside its clicks; the Yusar's (the cybernetics tribe's, at Carcosa and Henge) own customs beyond their speech; the Yeti Kingdom (*Khaay Qantïr*) beyond `biomes/nwouterwall/PLAN.md`: its clans, its High Chief's line, its war with the State; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
-- **The Catch** (`biomes/catch/PLAN.md` section 8): the rain correction; how many oases on the crossing and their names; who Stair's merchants are and what the divers bring out; whether the sealed tunnel ever opens.
+- **The Catch** (`biomes/catch/PLAN.md` section 8): the rain correction; the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the evaporites and the preserved salvage (proposed); whether the sealed tunnel ever opens.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

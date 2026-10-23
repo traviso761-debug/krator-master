@@ -98,8 +98,10 @@ fans and sink into them; the last of the water pools in a salt lake at the lowes
   ~10% runs off, ~1 km³ a year, ~30 m³/s for the whole basin, a few times what one small Tarim river carries.
 - **The rivers die on the fans.** Only a handful of them, the biggest off the highest inner walls, surface again at the
   fans' toes, and those few springs and seeps are the **oases**: a pool, a reed bed, a stand of poplar and tamarisk, a
-  well. *Proposed*: they are **a caravan's stage apart and no closer**, 40-80 km (one or two days with loaded beasts),
-  so a caravan that misses one, or finds it dry, or finds it taken, is in trouble. No oasis waters fields.
+  well. **Five of them** on the crossing [the owner, 2026-10-23], none named yet. The crossing from the notch to the
+  southern passes is ~700 km, so they lie *~100-150 km apart*: three to five days with loaded beasts, which carry water
+  between them. A caravan that misses one, or finds it dry, is in trouble. No oasis waters fields, and **none is lived in
+  but Stair's** [the owner].
 - **The terminal lake** at the lowest point (px 762,1067, 225 m) is **salt, not drinking water**: a few hundred km² of
   brine and salt crust that moves as its feeders shift, the way Lop Nur did ("the wandering lake").
 - **Groundwater** runs under the fans toward the floor. Wells dug at the fans' toes reach it; whether anyone ever dug
@@ -110,7 +112,7 @@ fans and sink into them; the last of the water pools in a salt lake at the lowes
 
 1. **The sand sea**: the floor's core, a Taklamakan erg with star and linear dunes up to a few hundred metres, wind-cut
    yardangs on old lake beds, gravel *reg* between. Nothing grows on the dunes but a few deep-rooted shrubs.
-2. **The oases**: a few springs and seeps at the fans' toes, a caravan's stage apart (section 4). Each is small: a pool
+2. **The oases**: five springs and seeps at the fans' toes, days apart (section 4). Each is small: a pool
    or a well, a reed bed, a stand of riparian trees (*tugai*: Euphrates poplar, tamarisk analogues), trampled ground and
    old fire rings round it. **Stair**, the ruined arcology at 1,130 m, stands at the biggest.
 3. **The terminal lake and the lake beds**: the salt lake and its crust, the dead channels where it used to lie, and the
@@ -138,11 +140,42 @@ species fit has not been checked yet.
   seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. Its portal at Stair is a known,
   blocked mouth.
 - **Stair** [the owner, 2026-10-23]: the closest thing to a settlement in the Catch, and more of a **glorified
-  campground**: a ruined arcology at the biggest oasis, **truly home to a handful of merchants** (who sell water, fodder,
-  repairs and news at the prices the Catch allows), **the caravans passing through**, and **occasional bands of daring or
-  desperate arcology divers** working the ruin. *Proposed*: the divers go down into Stair's lower levels and toward the
-  sealed tunnel, which is where the Catch's only real salvage is.
+  campground**: a ruined arcology at the biggest of the five oases, and the only one lived in, by **a couple of hundred
+  people**. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
+  caravans passing through, and now and then **bands of daring or desperate arcology divers** working the ruin.
+- **Who** [the owner, 2026-10-23]: the residents, the traders and the oases' future names are **Yuni, Izani, Dasrī or
+  Xanadui**, the four peoples whose roads meet here, with very occasional bold ventures from further off. *Proposed*:
+  each oasis carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule).
 - **Nobody else lives here.** No oasis people, no ruler of the passes.
+
+## 6a. What the Catch has that nowhere else does
+
+The owner asked (2026-10-23) what the divers bring out, and whether the Catch has anything, geologically or chemically,
+that the rest of the planet does not. Two things follow from what it is: **the most sealed basin on Krator**, evaporating
+since long before the Ancients, with no outlet at all, its walls the Godthrone's volcanic rock.
+
+1. **The salts.** A closed basin keeps every salt its rivers ever carried in; only the water leaves. Where the catchment is
+   volcanic rock, the brine goes **alkaline**: a **soda lake**, carbonate-rich, pH 9-11, like Lake Natron and Mono Lake,
+   with sulfate and chloride crusts where it dries (Lop Nur's potash). Volcanic catchments in closed basins are also where
+   Earth's **lithium** brines are (the Atacama, Uyuni, Qaidam), with **borates** beside them (Death Valley's borax, Qaidam,
+   Turkey's). *Proposed*: the Catch is **Krator's one great evaporite field**: trona and natron (soda), potash, borax,
+   and **lithium brine** under the salt crust of the terminal lake and the old lake beds. Elsewhere these are traces.
+   - **The dust is caustic.** Alkali dust off the dry lake beds, lifted by the black storms, burns the eyes and the
+     lungs (Owens Lake's dust is the worst in the United States). One more reason the crossing is not safe.
+   - **What it is good for**: soda for glass and soap, borax for flux and for glazes, potash for fields, and lithium,
+     which no one on Krator can use for much **but those who rebuild the Ancients' energy cells**.
+2. **The preservation.** Rust needs water. In air this dry, sealed off for a thousand years, **Ancient metal and Ancient
+   machines keep** as they do nowhere else on Krator: the Tarim's mummies and Turpan's silk lasted for the same reason.
+   *Proposed*: that is the divers' trade. Out of Stair's lower levels and toward the sealed tunnel they bring **alloys**
+   (structural stock and fittings that come out bright, not as rust) and **energy cells**, intact and some still holding
+   a charge, which in a wet ruin anywhere else would long since have corroded through. The caustic dust is the one
+   enemy of the haul: what lay open to it is etched, what lay sealed is pristine.
+
+Together: the Catch's salts are what a cell-maker needs, and its ruin is where the cells are. *Proposed*: Stair's merchants
+buy both, and the buyers are the people who can use them: the Yusar (the Eternal State's cybernetics tribe, §6.19),
+Yuni's and Locus's Geomancers, Xanadu's engine-keepers, the Empire's armourers. `kits/resources` has no lithium, borax or
+soda node yet (its nodes: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, oil); these would be its
+first evaporites.
 
 ## 7. The lake beds (in place of tuff)
 
@@ -156,12 +189,13 @@ mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 1. **The correction**: apply the floor's ~10-30 mm in 4.22, with the scarce rivers and a small salt lake at 225 m
    (section 4)?
-2. **The oases**: how many on the main crossing (*proposed*: five to eight, a stage apart), and does any have a name on
-   the record?
-3. **Stair's merchants**: who are they (Xanadu's agents, the crater's, their own), and what do the divers bring out?
+2. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
+3. **The salts and the salvage** (section 6a): the Catch as Krator's one evaporite field (soda, potash, borax, lithium), the
+   divers' alloys and energy cells kept by the dry; and should `kits/resources` gain evaporite nodes?
 4. **The sealed tunnel**: does it ever open (a quake, a dig), and what is behind it?
 5. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core.
 
-Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; oases only just enough; the Stair tunnel closed
-by seismic activity since about the Cataclysm; Stair a glorified campground (a handful of merchants, the caravans, arcology
-divers); wind-carved lake beds, not tuff.
+Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; five oases, only just enough, none lived in but
+Stair's; the Stair tunnel closed by seismic activity since about the Cataclysm; Stair a glorified campground of a couple of
+hundred people (a handful of merchants, the caravans, arcology divers); the residents, traders and names Yuni, Izani, Dasrī
+or Xanadui, with rare ventures from further off; wind-carved lake beds, not tuff.
