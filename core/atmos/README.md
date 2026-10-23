@@ -31,6 +31,8 @@ ATMOS.finish();                       // bakes the instanced sets and builds the
 ATMOS.cull(scene, {keep: m => m.userData.biome});   // optional, last
 ```
 
+**A biome kit or Throne station** binds with one call, `ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground,hour,seed})` (`core/atmos/host/89-atmos-c-hostbind.js`, in a subfolder so the kits that take `core/atmos` whole are unchanged; the build lists it by path beside the five `CORE_ATMOS` fragments: core, presets, export, waves, skylight). It is the one-time `init` on the page's frame ticks and draws nothing; `WATER.draw` and `ATMOS.skylight` follow when the page takes core/water (migration phase 0, 2026-10-20: every biome and Throne station is bound; each host fragment is `89a-host-atmos.js`).
+
 **A 21-sky.js-lineage build** (Voth, Girder, Mav's Refuge, Locus, Yuni) takes it in four steps, as Voth and Girder do:
 1. `build.py`: `ATMOS_DIR = <root>/core/atmos` in the loop that adds core directories (beside `LOD_DIR`), and
    `DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}` (the files open with no `reseed`).

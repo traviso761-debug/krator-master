@@ -30,15 +30,18 @@
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 21 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07) ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 23 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07, Jimjam and Dalab 2026-10-20) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
    'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
-   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads'
+   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads',
+   'jimjam': 'Jimjam', 'dalab': 'Dalab'
  };
+ // cultures of a settlement with no catalog furniture set (yet): not in FURN_CULTURES, so test-tags.js does not look for them there
+ var NO_CATALOG = ['jimjam', 'dalab'];
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
  var CULTURE_ALIAS = {
@@ -65,7 +68,7 @@
 
  K.VOCAB = {
    classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
-   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   cultures: CULTURES, noCatalog: NO_CATALOG, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
    types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
    // older spellings of a type, on input (Iziz's REG): one becomes one or more
    typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],

@@ -328,6 +328,7 @@ function check(w, opt){
   for(const S of w.water.surfaces || []){
    if(S.kind === 'open' && (!Array.isArray(S.waves) || S.waves.some(q => !Array.isArray(q.turns) || q.turns.length !== 3))) bad('water ' + S.id + ': an open surface without its waves in turns');
    if(S.bed){ const b = unpack(S.bed.bytes); if(!b || b.length !== S.bed.nx * S.bed.nz * 4) bad('water ' + S.id + ': its bed holds ' + (b ? b.length : 0) + ' bytes for ' + S.bed.nx + ' x ' + S.bed.nz + ' texels'); }
+   if(S.tint){ const b = unpack(S.tint.bytes); if(!b || b.length !== S.tint.nx * S.tint.nz * 4) bad('water ' + S.id + ': its tint holds ' + (b ? b.length : 0) + ' bytes for ' + S.tint.nx + ' x ' + S.tint.nz + ' texels'); }
    if(S.kind === 'shore' && !sids.has(S.of)) bad('water ' + S.id + ': the shore of ' + S.of + ', which the section does not hold');
   }
   for(const p of w.water.probes || []) if(!sids.has(p[4])) bad('a water probe names surface ' + p[4] + ', which the section does not hold');
