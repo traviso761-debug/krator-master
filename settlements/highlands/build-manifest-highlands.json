@@ -20,7 +20,7 @@
  "50-core-tags.js": "351884caf5b4",
  "50-registry.js": "2dbe98a3a5b6",
  "52-core-furnish-draw.js": "949213456277",
- "52-core-tags-vocab.js": "d5f78e2e5a34",
+ "52-core-tags-vocab.js": "b9d3a1238c0c",
  "53-core-furnish-host.js": "9ed629d45803",
  "53-core-tags-host.js": "e2cd8a672016",
  "54-mat-concrete.js": "574d8f7325db",
@@ -81,6 +81,6 @@
  "97-lod-auto.js": "88ec9e581127",
  "98-host-edit.js": "66535c6a9cdd",
  "99-host-cutaway.js": "5fc10889d24e",
- "99-start.js": "0558b53b1e05",
+ "99-start.js": "a1827275b8c9",
  "99-tail.html": "d3aaf402992e"
 }

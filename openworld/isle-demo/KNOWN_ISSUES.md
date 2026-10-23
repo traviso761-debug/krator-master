@@ -1,8 +1,8 @@
 # openworld/isle-demo: known issues
 
 - [ ] **The world's light ignores the clock** (2026-10-19). `core/clock` runs here now (the hamlets' felling reads it), but
-      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `83-world-water.js`)
-      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is little-demo's change, for both worlds.
+      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `src/world/83-world-water.js`)
+      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is a change to `src/world/` (little-demo is deprecated).
 - [ ] **The hamlets were seen in the browser only at the lumber village** (2026-10-19). The salt village, the mine and the
       ranch are checked by their data (`verify.py`'s hamlet check), not yet by eye.
 - [ ] **The lumber village's stand is nearly all saplings** at the default felling rate (`core/hamlet/PLAN.md`, H4): a
@@ -34,10 +34,16 @@
       the water window round the camera the sea still reads as sea. A lighter band shows where the window ends,
       seen from 260 km up.
 - [ ] **Headless verify fails on this machine** (2026-10-15). SwiftShader throws "Cannot read properties of null
-      (reading 'trim')" compiling the sky's capture (`ATMOS.skylight`'s PMREMGenerator, called from little-demo's
-      `83w-world-seas.js`), so the page stops at start.
-      - **The same happens to little-demo's own page here, committed sources included.** It comes from this machine,
+      (reading 'trim')" compiling the sky's capture (`ATMOS.skylight`'s PMREMGenerator, called from
+      `src/world/83w-world-seas.js`), so the page stops at start.
+      - **The same happened to little-demo's own page here, before it was deprecated, committed sources included.** It comes from this machine,
         not from this build.
       - **In the browser pane (a real GPU) both pages load clean.** The isle's checks and negatives were run there,
         and little-demo's checks read as they did (its one failing check, the highways, is in its own
         KNOWN_ISSUES.md).
+- [x] **2026-10-20: the geyser vents draw through core/water.** `biomes/geyser`'s kit fragment (`65-biome-geyser-show.js`) now
+      draws its springs and geysers with `WATER.spring` / `WATER.geyser`, so `build.py` lists `core/water/geyser/52-core-water-geyser.js`
+      and `52b-core-water-geyser-draw.js` by explicit path after `core/water` 51 (with 20 and 50 and `core/rand` already present).
+      Checked on a real GPU in the browser pane: 14 vents, 43 geysers and 62 springs build, the world clock ticks (`GEYSER.SHOW.t`),
+      a geyser in its column phase erupts with spray, the console has no errors. Headless `verify.py` fails with the same
+      SwiftShader `trim` error as before the change (identical output), so no new failures.

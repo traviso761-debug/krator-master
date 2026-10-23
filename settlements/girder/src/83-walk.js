@@ -147,9 +147,33 @@ window._walk = {
       C.ctl.target.set(w[0]+mx, w[2]+C.ctl.eye, w[1]+mz); C.stand(); }
     return gwPose(); },
   support:function(x, z, feet){ wkBuild(); var f=KWALK.floorBelow(x,z,feet,0.55); return f ? Math.max(f[0],terrainH(x,z)) : terrainH(x,z); },
+  navAudit:function(){ return gwNavAudit(); },
   solids:function(){ return GWALK.solids.length; },
   layout:function(){ return { TOWERS:TOWERS, LIFTS:LIFTS, PALISADE:PALISADE, GATES:GATES, BRIDGES:BRIDGES }; }   /* for tests */
 };
+/* the NAV graph (30-layout.js) against the walk registry: nodes a walker (r .28, h 1.75, step .55, drop 1.4) cannot stand on and edges it
+   cannot walk straight along; each with the tag of what stops it. Lift edges and head nodes are left out (the cage is not always there).
+   Used by `window._walk.navAudit()` and the audit in verify.py (the hero page's own audit predates core/walk). */
+function gwNavAudit(){
+  wkBuild();
+  var W=KWALK, R=0.28, H=1.75, badN=[], badE=[], r1=function(v){ return Math.round(v*10)/10; };
+  function sup(x,z,f){ var q=W.floorBelow(x,z,f,0.55); return q ? Math.max(q[0],terrainH(x,z)) : terrainH(x,z); }
+  function stop(x,z,f){ var b=W.blocked(x,f,z,R,H); return b ? (b.tag||'?') : ''; }
+  NAV.nodes.forEach(function(n){
+    if(n.tag==='lifthead') return;
+    var f=sup(n.x,n.z,n.y+0.3), w = f<n.y-1.0 ? 'drop to '+r1(f) : stop(n.x,n.z,f);
+    if(w) badN.push({ id:n.id, tag:n.tag, at:[r1(n.x),r1(n.y),r1(n.z)], why:w });
+  });
+  NAV.edges.forEach(function(e){
+    if(e.kind==='lift') return;
+    var a=NAV.nodes[e.a], b=NAV.nodes[e.b], L=Math.hypot(b.x-a.x,b.z-a.z), N=Math.max(1,Math.ceil(L/0.4)), f=a.y, w='', at=null;
+    for(var i=0;i<=N && !w;i++){ var t=i/N, x=a.x+(b.x-a.x)*t, z=a.z+(b.z-a.z)*t, s=sup(x,z,f);
+      if(s<f-1.4){ w='drop to '+r1(s); at=[r1(x),r1(f),r1(z)]; break; }
+      f=s; w=stop(x,z,f); if(w) at=[r1(x),r1(f),r1(z)]; }
+    if(w) badE.push({ id:e.id, kind:e.kind, tags:a.tag+'-'+b.tag, a:[r1(a.x),r1(a.y),r1(a.z)], b:[r1(b.x),r1(b.y),r1(b.z)], stop:at, why:w });
+  });
+  return { nodes:NAV.nodes.length, edges:NAV.edges.length, badNodes:badN, badEdges:badE };
+}
 /* every tick: build the registry once, move the lift cages' floors with the cages, tell a lift it has a rider, show the walk hint */
 var gwWasWalking = false;
 TICKS.push(function gwWalkTick(){

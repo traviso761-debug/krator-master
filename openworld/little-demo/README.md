@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-10-20).** Nothing builds from this folder any more; see `DEPRECATED.md`. The world's fragments (head, 41, 42, 45, 80-99) now live in `openworld/isle-demo/src/world/`, so `build.py` here no longer runs.
+
 # Little Demo: the eastern desert at 1:1
 
 The first piece of the open world (`biomes/WORLD.md`, `GODOT-PLAN.md` milestone M7): the region the owner marked

@@ -15,8 +15,8 @@ Open items are `- [ ]` lines; build.py prints them.
       323,312 one of the old values; Erewhon, two old runs 1 name a view, the new page 1 to 2 (xbark0, xbark2, within 3,410
       triangles). Hostcheck: the inspector names "Earth farmhouse (poor)" and "Jet allée" from their records, minimap and marks
       work, the error panel is clean.
-- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
-      to core/host, as it was never run by the old camera either.
+- [x] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed to core/host, as it was never run by the old camera either. - 2026-10-20: handed over (`ticks:TICKS` in 99-start.js; `var NIGHT` defined there), so `FIRE_T` runs and the flame cards flicker. NIGHT stays false here, so the fire lights stay off; reading the page's night into it is the open part:
+- [x] (2026-10-20) The salvage fire lights (`FIRELIGHTS`, 69-mat-salvage.js) never lit in the city page: `NIGHT` was a constant false. - 2026-10-20: 99-start.js sets it from KratorSky's night (the sun below -0.105, dayF<0.05), so the lights come on at dusk on the city page; the kit pages have no night.
 - [x] Vendored fragments are copied from `../highlands/src`, which itself carries the Iziz/Ancients drift noted in the Highlands KNOWN_ISSUES; re-vendor all three kits together. — 2026-10-01: re-vendored together. Highlands took `69b 69c 91-probe 93-labels` from Iziz (its showcase budget moved to `targets/highlands/91z-views.js`); Xanadu took `30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b 69c 91-probe 93-labels` from Highlands. `build.py --vendor-check` now compares `81-sky.js` with `../iziz/src` (Highlands has no src copy of it) and reports all 19 identical.
 - [x] `vnStairs` (vendored) centres its run at `run/2` while treads span `steps*.32`; the kit uses its own solid `xnFlight` everywhere instead. — 2026-10-01: not a fault. As Highlands found (its round 10), `vnStairs` is self-consistent: `run` IS `steps*.32` and the treads sit at `run/2-run*t`, so the flight is centred on its z and spans exactly `run`. The Highlands bug was `hnKryltso` sizing its run from `rise`; Xanadu's one caller (`74-xa-dwell.js`) is unaffected.
 - [x] (2026-10-13) `--vendor-check` reported `91-probe.js` drifted from `../highlands/src`. — The Ancients re-vendor
@@ -27,7 +27,7 @@ Open items are `- [ ]` lines; build.py prints them.
       own count is 88 both times; Xanadu's opening shot is pixel-identical). `--vendor-check`: all 19 identical.
 - [ ] Windows placed on a battered face sit on the base plane of the block, so on tall single blocks (the fortress tower, the strong room) the surround boards can be a few centimetres inside the lean; builders offset them by hand (`hw-.05`).
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-xanadu-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
-- [ ] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed
+- [x] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed
       earth (earth.adobe) has no lift lines, which the procedural map drew; a rammed-earth set would bring them back. ?mat=proc shows the old look.
 
 - [ ] **Erewhon's water is not on core/water** (2026-10-13): the kit page's pools, basins and bowls are `WATER.still`

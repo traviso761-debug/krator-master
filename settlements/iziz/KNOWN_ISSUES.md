@@ -39,8 +39,8 @@ saying what fixed it.
       deterministic: two old runs match each other exactly too). The city's last-frame triangle count moves run to run on the old
       page as on the new (4.65 M to 4.74 M over three old runs). Not core/space (the biome's scatter takes its grid when the module
       is on the page, 2026-10-13 below) and no editor or cutaway yet (no catalog furniture, no interiors).
-- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not
-      handed to core/host, as it was never run by the old camera either.
+- [x] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed to core/host, as it was never run by the old camera either. - 2026-10-20: handed over (`ticks:TICKS` in 99-start.js; `var NIGHT` defined there), so `FIRE_T` runs and the flame cards flicker. NIGHT stays false here, so the fire lights stay off; reading the page's night into it is the open part:
+- [x] (2026-10-20) The salvage fire lights (`FIRELIGHTS`, 69-mat-salvage.js) never lit in the city page: `NIGHT` was a constant false. - 2026-10-20: 99-start.js sets it from KratorSky's night (the sun below -0.105, dayF<0.05), so the lights come on at dusk on the city page; the kit pages have no night.
 - [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
       (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are in too (2026-10-06), and the darts are not textured by design
@@ -312,12 +312,12 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       `build.py --vendor-bio`; only the city page changes. `verify.py dist/iziz.html --assert` before and after: identical
       (858 calls, 4,957,502 tris, every counter the same but the biome's build time); the opening view looks the same
       (73 px differ, the LOD streaming count 393 vs 392 at the shot). `--vendor-check`: 35 identical, 11 biome match.
-- [ ] (2026-10-06) The vernacular takes the material library (materials.json; src/88y-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient MAT is bound too (but rust; see below); the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.
+- [x] (2026-10-06) The vernacular takes the material library (materials.json; src/88y-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient MAT is bound too (but rust; see below); the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
       2026-10-13: `rust` (and 77z's scrap and rustified panels) takes `metal.rust.fine` (family cityRust, through IZIZ_MATALIAS), the
       isotropic rust PROMPTS-ready.md asked for: it has no plate or streak direction, so a stretched UV leaves no stripes.
-- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+- [x] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
       vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
 
 ## The second material pilot and M5 (2026-10-13; ROADMAP.md stages 2d and 2e)
@@ -327,7 +327,7 @@ scene triangles, 858 calls, 760 registered volumes, 122,908 baked instances); on
 gate shot moved (4.83 M to 4.81 M managed triangles). The city page grew from 21.0 to 24.6 MB (the four new families'
 maps, base64); it was already over the gallery's 16 MB a file.
 
-- [ ] **The city's own materials take the library** (src/88y-iziz-matlib.js, materials.json families `city*`): the painting's
+- [x] **The city's own materials take the library** (src/88y-iziz-matlib.js, materials.json families `city*`): the painting's
       walls, towers, gates and palace (izWall, izWallDark, izCap, izSand) `stone.cut.b` at their 4 m world-UV tile (contrast 2:
       at 1.0 the courses vanished at the South gate's distance); izRock `rock.rock_face`; the hills' escarpments (90a's izEsc)
       `rock.sandstone`; MAT.rust, 77z's scrap and the rustified panels `metal.rust.fine` (tinted to the procedural rust's mean,

@@ -98,6 +98,8 @@ ASSERT_JS = r"""()=>{
 const A=window._api; if(!A) return [{name:'probe',ok:false,detail:'window._api missing'}];
 const R=[];
 R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.NAV.reachable+' of '+A.NAV.nodes.length+' walk nodes reachable'});
+{ const au=window._walk&&window._walk.navAudit?window._walk.navAudit():null; const be=au?au.badEdges.filter(e=>!/lifthead/.test(e.tags)):[];   /* the NAV graph against the walk registry (83-walk.js): lift heads are by design */
+  R.push({name:'nav-walkable', ok:!!au && !au.badNodes.length && !be.length, detail:au?(au.badNodes.length+' nodes and '+be.length+' of '+au.edges+' edges a walker (r .28) cannot walk'+(be.length?' e.g. '+be[0].tags+' '+be[0].why:'')):'window._walk.navAudit missing'}); }
 { const T=A.TOWERS, ok=T.length===4 && T.every(t=>Math.abs(Math.abs(t.x)-Math.abs(T[0].x))<1e-6 && Math.abs(Math.abs(t.z)-Math.abs(T[0].x))<1e-6) && T.every(t=>t.floors.length===31);
   R.push({name:'four-towers-perfect-square', ok, detail:T.map(t=>[t.x,t.z]).join(' | ')+'  storeys '+(T[0].floors.length-1)}); }
 { const by={}; A.SLOTS.forEach(s=>{by[s.k]=(by[s.k]||0)+1;}); const ks=Object.keys(by).map(Number);
@@ -189,6 +191,11 @@ async def run(a):
                     print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
                     if not r["ok"]:
                         fails.append("assert " + r["name"])
+                from check_trades import trades_check
+                tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
+                print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
+                if not tok:
+                    fails.append("assert voth-trades")
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")

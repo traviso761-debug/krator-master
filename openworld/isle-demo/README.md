@@ -31,14 +31,15 @@ north (`core/hamlet/PLAN.md` section 4).
 
 ## How it is made
 
-The world is **openworld/little-demo's, read in place** (its `src/`, not copied): the fields, terrain, water, sky,
-nursery, flora, floor, places, towns, camera and probe, and its head with this region's title swapped in. This build adds
-only what is the region's own:
+The world's fragments are **in `src/world/`**: the fields, terrain, water, sky, nursery, flora, floor, places, towns,
+camera and probe, and the head (`00-head.html`, whose title and caption `build.py` swaps for this region's). They were
+moved here from `openworld/little-demo/src` in October 2026, when little-demo was deprecated (its `DEPRECATED.md`):
+this build no longer reads anything from it. The region's own fragments, beside them in `src/`:
 
 | Fragment | What |
 |---|---|
 | `43-world-isles.js` | **[G data]** the fields the Ring Sea isles kit reads that the world does not make, the ground's colour and the coast as terrain. **The climate classes as weights:** `koppen:XA` to `koppen:XS`, five map pixels round a warped point. **The coast:** `beach`, `dune`, `mangal`, `lagoon`, `reef`, `bench` and `pan`, from the height over the water, the depth and the slope. **The rest:** `garden`, 0 until the towns are laid out, and `floor`, the thermal ground round each vent. It wraps `WORLD.at` and `WORLD.fieldsFrom`, so every sample carries them. **The ground's colour** (`WORLD.ground`, wrapped): on land by climate class (forest loam, savanna, steppe, salt, beach sand, mangrove mud); under the sea by depth (turquoise to blue), so the sea reads as sea at any height. **The coast** (`WORLD.landHook`): a lagoon, a reef crest with passes and a fore reef reshaped from the shelf's depth, and mangrove flats on the wet classes' low shores. `WORLD.kitW` is 1 for every kit entry. |
-| `46-world-config.js` | **[G data]** the region's settings the world reads: the towns built here, the "Go to" order, the archipelago's views and one per geyser vent. little-demo has its own (`46-world-config.js`). |
+| `46-world-config.js` | **[G data]** the region's settings the world reads: the towns built here, the "Go to" order, the archipelago's views and one per geyser vent. The deprecated little-demo kept its own copy of this file. |
 | `47-world-kits.js` | **[G data]** the kit registry. One kit grows here, the Ring Sea isles (`biomes/ringisles`), but it grows its borrowed trees in their lenders' registries, so it has one entry per registry (`RINGISLES.world()`): ringisles, throne, swbay, eastabyss, sedesert. Only the isles kit lays a floor (`RINGISLES.WORLD_FLOOR`). The nursery's field profile defaults the isle fields to 0. |
 
 Its data comes from `tools/scale-model/extract_region.py`. The scale model's two collections were read on 2026-10-15

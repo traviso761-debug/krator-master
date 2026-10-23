@@ -3,7 +3,7 @@
 
   python3 verify.py dist/isle-demo.html [--list] [--assert] [--views 0,1,14] [--out ./shots] [--size 1280x800]
 
-The world is little-demo's (its fragments read in place), so its probe's checks (_api.hostChecks) run here too; a check
+The world's fragments are in src/world/ (moved from the deprecated little-demo), so its probe's checks (_api.hostChecks) run here too; a check
 is NOT APPLICABLE while this region has none of what it checks (no biome kit yet: the flora checks; no named river, no
 highway, no town tile). The isle's own checks:
   - the isle fields: every field 43-world-isles.js adds is a number at both towns, and the class weights sum to 1 on land
@@ -16,8 +16,8 @@ highway, no town tile). The isle's own checks:
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
 coast hook switched off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
-the sky's capture (ATMOS.skylight: "null ... reading 'trim'"), the page stops at start: little-demo's own page does the
-same there (KNOWN_ISSUES.md); run it in the browser pane, or where little-demo's verify passes.
+the sky's capture (ATMOS.skylight: "null ... reading 'trim'"), the page stops at start: little-demo's old page did the
+same there (KNOWN_ISSUES.md); run it in the browser pane, or where this verify passes.
 """
 import argparse, asyncio, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +29,7 @@ try:
 except Exception:
     pass
 
-# little-demo's checks and what this region must have for each to apply
+# the world probe's checks (src/world/91-world-probe.js) and what this region must have for each to apply
 APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing roots in the water or outside the region': 'kits',
            'trees keep their spacing, across tile edges': 'kits', 'the named rivers carry water to their mouths': 'rivers',
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
@@ -88,7 +88,7 @@ async def run(a):
             print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
             if a.assert_:
                 has = await pg.evaluate(HAS)
-                print('--- the world\'s checks (little-demo\'s probe) ---')
+                print('--- the world\'s checks (src/world/91-world-probe.js) ---')
                 for r in await pg.evaluate('_api.hostChecks()'):
                     need = APPLIES.get(r['name'])
                     if need and not has[need]:

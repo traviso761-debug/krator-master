@@ -15,11 +15,11 @@ Read before changing anything here. `build.py` prints the open count.
       draw calls 48 unchanged); the scene census at four views equals the old page's exactly (old against old: also 0
       differences); the inspector names the Khan (`bld_00017`) and a tent from their records, the minimap draws 602 records,
       a mark measures, no errors.
-- [ ] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P, measure and
+- [x] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P, measure and
       save areas, lines and points); the Inspector, Places and Routes boxes are the bar's hover button (on, as before) and
       its layers (places, routes, flora and fauna, buildings, sky); the HUD's camera line is the stats panel. The keys are
       the host's (W A S D, Q / E, F walk, G and double-click the pin, I hover, P marks, M minimap). The places are records
-      but the inspector and minimap skip them (a place's box would hold the Khan's own building); they are in the tags export.
+      but the inspector and minimap skip them (a place's box would hold the Khan's own building); they are in the tags export. - 2026-10-20: description of the port (places are skipped on purpose), nothing open.
 - [ ] (2026-10-15) The marks are read from `../marks.json` (where `tools/edits/serve.py` saves them) only when the page is served
       from the repo root; elsewhere (verify.py serves `dist/` alone) from an empty data URL, so the page reads this browser's
       draft. The host's default, `marks.json` beside the page, is `dist/marks.json` for a page in `dist/` (a core/host question).

@@ -11,14 +11,16 @@
       visibility and triangles, the camera to 4 decimals, the draw calls) at four views matches the old page exactly (two old
       runs match each other exactly too: 445 / 344 / 401 / 148 calls); the solstice check still passes (clearance 4.5 m). No
       cutaway (the kit's buildings have no storeys to cut) and no editor (no core/furnish pieces).
-- [ ] (2026-10-15) core/tags has no Jimjam culture (`core/tags/52-core-tags-vocab.js`): 91t-jj-tags.js says `culture: 'jimjam'`
+- [x] (2026-10-15) core/tags has no Jimjam culture (`core/tags/52-core-tags-vocab.js`): 91t-jj-tags.js says `culture: 'jimjam'`
       as `style: 'jimjam'`, so the records have no culture. When the vocabulary takes Jimjam, map it back to the culture.
-- [ ] `sock()` (and so `jjAwning`/`jjBanner`) ignores `JJ.frame`: a socket declared inside `jjWithYaw` drops the yaw. Every family passes `ry` explicitly or uses its own frame-aware wrapper (`jjMilSock`); fix it in the adapter and then remove the workarounds together.
-- [ ] `jjDome`'s finial ignores `JJ.frame` and the placement scale; `jjPalDome` and the housing onion are frame-aware local replacements.
-- [ ] `jjStairs` draws floating step slabs (fine on the ground, wrong on a podium); `jjTempleFlight` and the housing stair are solid versions.
+      2026-10-20 (batch 8): not done. The vocabulary's cultures are tied to the catalog's `FURN_CULTURES` (`test-tags.js`: "every catalog culture is a culture or an alias of one, and nothing else is", 21 cultures), the golden, `ktags.gd` and every page that vendors core/tags (about 38 builds), so a new culture needs a catalog culture first and a coordinated rebuild; same for Dalab (culture null, style 'dalab').
+      2026-10-20: done another way: no catalog culture was needed. core/tags takes `jimjam` and `dalab` as cultures with no catalog furniture set (`VOCAB.noCatalog`; `test-tags.js` checks catalog cultures against the vocabulary plus that list, 23 cultures); golden and `ktags.gd` hold the uid only and did not move. Records now carry culture 'jimjam'.
+- [x] 2026-10-20: `jjAwning`/`jjBanner` now go through `jjSock` (61-jj-helpers.js), which carries `JJ.frame` (position and yaw); `jjMilSock` delegates to it. Every existing caller declares at the top level, so no page moved. `sock()` itself is the shared `core/sockets` adapter and still reads only CM. Was: `sock()` (and so `jjAwning`/`jjBanner`) ignores `JJ.frame`: a socket declared inside `jjWithYaw` drops the yaw. Every family passes `ry` explicitly or uses its own frame-aware wrapper (`jjMilSock`); fix it in the adapter and then remove the workarounds together.
+- [x] 2026-10-20: the finial goes through `jjPut` (frame and placement scale); `jjPalDome` and the housing onion are still their own replacements. Was: `jjDome`'s finial ignores `JJ.frame` and the placement scale; `jjPalDome` and the housing onion are frame-aware local replacements.
+- [x] 2026-10-20: each step is a solid block from the base up (same box count). Was: `jjStairs` draws floating step slabs (fine on the ground, wrong on a podium); `jjTempleFlight` and the housing stair are solid versions.
 - [ ] `jjArch` and `jjArcade` make one real mesh per arch and draw only an open parabolic ring with no wall round it, so ground-floor openings come to a narrow point. Hospitality, housing and shops use instanced round-headed wall panels instead (`jjHospBay`, `jjShopArcade`); promote one of them to `61` and retire the ring.
-- [ ] `jjPlinth` leaves open slits between its courses; `jjCivPlinth` is the local fix.
-- [ ] `jjWall`'s `band` option runs a course at mid-height that crosses windows on 3-storey and 9 m walls.
+- [x] 2026-10-20: the courses now meet (lower course 0..0.65 H, cap 0.81..1.0 H). Was: `jjPlinth` leaves open slits between its courses; `jjCivPlinth` is the local fix.
+- [x] 2026-10-20: the mid-height course is drawn only on walls up to 6 m (`bandMid` overrides); the foot and head courses stay. Was: `jjWall`'s `band` option runs a course at mid-height that crosses windows on 3-storey and 9 m walls.
 - [ ] `useGroupXF` (vendored `50-registry.js`) uses the group's LOCAL matrix, so `JJFURN.place(buildingGroup, …)` lands near the world origin; `jjHospFurn` places furniture in the scene at the transformed point.
       2026-10-13 (the Ancients re-vendor session): Iziz's `69c-vern-helpers.js` redefines `useGroupXF`/`endGroupXF` as a
       stack that composes (Highlands, Xanadu, Reed Lake, Dalab and Ys vendor that file); `kits/ancients/src/50-registry.js`
