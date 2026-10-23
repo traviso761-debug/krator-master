@@ -4,6 +4,8 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
+**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+
 ## Four artifacts, the worlds by the alphabet (2026-10-16)
 
 The owner (2026-10-16): the world parts are split alphabetically and titled by their range. Today:
