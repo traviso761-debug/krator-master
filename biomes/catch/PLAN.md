@@ -6,6 +6,12 @@ The owner's polygon `the catch` (2026-10-23; `regions` doc `rmvka7icdn1dq`; the 
 what the model should carry instead (a 4.22 item), and what kit the corrected basin wants. Everything is *proposed*
 unless marked.
 
+**The owner's brief** (2026-10-23): the Catch is **the biggest barrier to trade between Xanadu and everywhere else**. It
+has oases, but **only just enough to make the crossing doable, not comfortable or safe**. The Ancients' tunnel to Stair
+has been **closed by seismic activity since about the Cataclysm**. **Stair** is the nearest thing to a settlement: a
+glorified campground, home to a handful of merchants, to the caravans passing through, and now and then to bands of
+daring or desperate arcology divers. Its soft rock is **wind-carved lake beds**, not tuff.
+
 ## 1. What the model says (4.21, surveyed 2026-10-23)
 
 One pixel is ~2 km (4 km²). The polygon is 31,700 px, ~127,000 km²: about the Tarim Basin's size.
@@ -84,62 +90,78 @@ This goes on the model's to-do list as its own item (`tools/scale-model/README.m
 
 ## 4. Water
 
-A dry basin can still have water. Ice and snow on the inner walls melt into rivers, the rivers run out onto alluvial
-fans and die in the sand, and the last of them pool in a salt lake at the lowest point. This is how the Tarim's oases live.
+A dry basin can still have water, a little. Snow on the inner walls melts into short rivers, which run out onto the gravel
+fans and sink into them; the last of the water pools in a salt lake at the lowest point. The owner wants **just enough**
+(2026-10-23), so the plan keeps it scarce:
 
-**A rough budget.** ~74,000 km² of inner wall at ~150 mm is ~11 km³ a year. Most of it sublimates in the dry, thin air;
-if a quarter runs off, that is **~2.8 km³ a year, ~90 m³/s** in all, split among a dozen or more short rivers, each 2-20
-m³/s. On the floor open water evaporates ~2-2.5 m a year, so the terminal lake settles at **~1,100-1,400 km²**: a
-shallow salt lake and playa at the lowest point (px 762,1067, 225 m). It moves as its rivers change course, the way Lop
-Nur did ("the wandering lake").
-
-**Groundwater.** The fans soak up their rivers, and the water runs under the gravels toward the floor. Tunnels dug into
-the fans to bring it out by gravity, Turpan's *karez* (Persia's *qanat*), are what made the Silk Road oases. *Proposed*:
-the Catch's oases live on karez, and some of the oldest were the Ancients' own, for Stair. Whether they still run, and
-who keeps them, is a question for the owner.
+- **Most of the walls' snow never reaches the floor.** In air this dry and thin it sublimates where it falls. *Proposed*:
+  ~10% runs off, ~1 km³ a year, ~30 m³/s for the whole basin, a few times what one small Tarim river carries.
+- **The rivers die on the fans.** Only a handful of them, the biggest off the highest inner walls, surface again at the
+  fans' toes, and those few springs and seeps are the **oases**: a pool, a reed bed, a stand of poplar and tamarisk, a
+  well. *Proposed*: they are **a caravan's stage apart and no closer**, 40-80 km (one or two days with loaded beasts),
+  so a caravan that misses one, or finds it dry, or finds it taken, is in trouble. No oasis waters fields.
+- **The terminal lake** at the lowest point (px 762,1067, 225 m) is **salt, not drinking water**: a few hundred km² of
+  brine and salt crust that moves as its feeders shift, the way Lop Nur did ("the wandering lake").
+- **Groundwater** runs under the fans toward the floor. Wells dug at the fans' toes reach it; whether anyone ever dug
+  tunnels to bring it out by gravity (Turpan's *karez*) is open, and the owner's "only just enough" says no one has done
+  it at scale.
 
 ## 5. The landscape: stations
 
 1. **The sand sea**: the floor's core, a Taklamakan erg with star and linear dunes up to a few hundred metres, wind-cut
    yardangs on old lake beds, gravel *reg* between. Nothing grows on the dunes but a few deep-rooted shrubs.
-2. **The oasis ring**: the toes of the fans where the rivers surface, all round the basin's foot. Riparian forest along
-   the rivers (*tugai*: Euphrates poplar, tamarisk, reeds, licorice analogues), fields and orchards on karez water, poplar
-   windbreaks. **Stair**, the ruined arcology at 1,130 m, stands on this ring.
-3. **The terminal lake**: the salt lake, its salt crust and reed beds, the dead river channels where it used to lie,
-   the dry lake beds the yardangs are cut from.
+2. **The oases**: a few springs and seeps at the fans' toes, a caravan's stage apart (section 4). Each is small: a pool
+   or a well, a reed bed, a stand of riparian trees (*tugai*: Euphrates poplar, tamarisk analogues), trampled ground and
+   old fire rings round it. **Stair**, the ruined arcology at 1,130 m, stands at the biggest.
+3. **The terminal lake and the lake beds**: the salt lake and its crust, the dead channels where it used to lie, and the
+   **wind-carved lake beds** [the owner, 2026-10-23]: old lake sediments cut by the wind into yardangs, ridges and
+   castellated mesas, Lop Nur's "White Dragon Mounds".
 4. **The fans and the walls**: gravel fans tens of kilometres long, the dry gorges the rivers come out of, the walls'
    snowfields and small glaciers above, and nothing at all above ~9 km. The view is the point: 10-17 km walls on every
    horizon, the Godthrone's mass to the north-west.
 
 The flora should **reuse the eastern desert kit's species where they fit** (`biomes/sedesert`) and add only what a
-riparian, salty, enclosed basin needs: a tugai tree, a salt cedar, a dune shrub, the reed beds. Which of the kit's
+riparian, salty, enclosed basin needs: a tugai tree, a salt cedar, a dune shrub, a reed. Which of the kit's
 species fit has not been checked yet.
 
 ## 6. People and roads
 
-- **The caravans.** The lore already sends merchants "from the crater to Xanadu through the Bowl and the Catch"
-  (`LORE.md` §4, Hub 01). The corrected basin makes that a **Silk Road**: a ring of oases round a sand sea, with caravans
-  on the northern and southern rim roads and passes of 6.2-7.8 km at either end. The NNW notch (6.2 km) is the way in from
-  the Bowl's side; Hub 01 (4,417 m, px 1072,1079, beyond the eastern walls) and Strongbow (px 754,1264, beyond the south)
-  are the ways out. At 0.64-0.76 atm those passes are breathable, but bitterly cold.
-- **The Ancients' road.** The draft network (`openworld/ANCIENT-ROADS.md`) runs **Arcbeam to Stair** over the Outer Wall.
-  A road into a basin walled at 10+ km almost certainly ran in tunnel, which would make Stair the Catch's door for the
-  Ancients as Ledge is the Rift's.
-- **Who lives here** is open: the oases' people, their tongue, whether they rule the caravans or serve them.
+- **The barrier** [the owner, 2026-10-23]. The Catch is the biggest barrier to trade between Xanadu and everywhere else.
+  Most of what goes between them goes by caravan across it. That is why Xanadu's goods are dear and why the lore's merchants "from the crater to
+  Xanadu through the Bowl and the Catch" (`LORE.md` §4, Hub 01) are rare and well paid.
+- **The crossing.** In by the 6.2 km notch on the Bowl's side (NNW, near px 726,896), across the floor from oasis to
+  oasis, out by passes of 7.3-7.8 km toward Strongbow (px 754,1264) or Hub 01 (4,417 m, px 1072,1079). At 0.64-0.76 atm the
+  passes are breathable but bitterly cold, and the floor between them is a furnace. *Proposed* hazards: the black storms,
+  an oasis found dry or held by someone else, the beasts' water running out between stages, the Hub 01 stalkers of the
+  lore on the eastern pass.
+- **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel, **closed by
+  seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. Its portal at Stair is a known,
+  blocked mouth.
+- **Stair** [the owner, 2026-10-23]: the closest thing to a settlement in the Catch, and more of a **glorified
+  campground**: a ruined arcology at the biggest oasis, **truly home to a handful of merchants** (who sell water, fodder,
+  repairs and news at the prices the Catch allows), **the caravans passing through**, and **occasional bands of daring or
+  desperate arcology divers** working the ruin. *Proposed*: the divers go down into Stair's lower levels and toward the
+  sealed tunnel, which is where the Catch's only real salvage is.
+- **Nobody else lives here.** No oasis people, no ruler of the passes.
 
-## 7. Tuff country
+## 7. The lake beds (in place of tuff)
 
-The tuff candidate (`biomes/WORLD.md`; `LORE.md` §3.1 and §12) assumed the Godthrone's ash. The survey does not help it:
-the two vents near the Catch's south-west notch (px 716,1128 and 770,1168) stand at 10.7 and 8.4 km on the airless walls,
-and the floor is 300-600 km from the Godthrone's summit. A tuff station would need a lore decision (an explosive phase,
-or vents on the floor); without one the floor's soft rock is **old lake beds**, cut into yardangs, which gives the same
-carved, castellated look (Lop Nur's "White Dragon Mounds"). If the owner wants carved dwellings, they go in the lake-bed
-cliffs.
+The tuff candidate (`biomes/WORLD.md`) assumed the Godthrone's ash, and the survey did not help it: the two vents near the
+Catch's south-west notch (px 716,1128 and 770,1168) stand at 10.7 and 8.4 km on the airless walls, and the floor is
+300-600 km from the Godthrone's summit. **The owner chose the wind-carved lake beds** (2026-10-23): the basin's soft rock is
+old lake sediment, from wetter ages when the terminal lake was far bigger, cut by the wind into yardangs and castellated
+mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 ## 8. Questions for the owner
 
-1. **The correction**: apply the floor's ~10-30 mm in 4.22, with a terminal lake at 225 m and the oasis rivers?
-2. **The karez**: the Ancients' own for Stair, the oases' own, or both? Do they still run?
-3. **Who lives in the Catch**, and does it rule its passes?
-4. **Tuff**: keep it as a candidate (it needs a lore decision), or let the lake-bed yardangs take its place?
+1. **The correction**: apply the floor's ~10-30 mm in 4.22, with the scarce rivers and a small salt lake at 225 m
+   (section 4)?
+2. **The oases**: how many on the main crossing (*proposed*: five to eight, a stage apart), and does any have a name on
+   the record?
+3. **Stair's merchants**: who are they (Xanadu's agents, the crater's, their own), and what do the divers bring out?
+4. **The sealed tunnel**: does it ever open (a quake, a dig), and what is behind it?
 5. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core.
+
+Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; oases only just enough; the Stair tunnel closed
+by seismic activity since about the Cataclysm; Stair a glorified campground (a handful of merchants, the caravans, arcology
+divers); wind-carved lake beds, not tuff.

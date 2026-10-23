@@ -403,8 +403,9 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   2. **Temperature**: the floor's warmest month +4-6 °C, its coldest -3-4 °C (clear, dry air: target +33-35 and +5-6),
      the walls as they are.
   3. Reclimate the class (BWh and BWk on the floor and the fans; BSk, dry Dsc and ET on the walls), then **re-run the
-     rivers** for the basin: snowmelt rivers off the inner walls (~90 m³/s in all), dying on the fans, and a **terminal
-     salt lake** at the lowest point (px 762,1067, 225 m), ~1,100-1,400 km² by its evaporation (~2-2.5 m a year).
+     rivers** for the basin: snowmelt rivers off the inner walls, **scarce** (the owner: oases only just enough; ~30 m³/s in
+     all, most of it sinking into the fans, a handful surfacing at the fans' toes as oases), and a small **terminal salt
+     lake** at the lowest point (px 762,1067, 225 m), a few hundred km².
   Relight, repaint, publish; re-cut any region that holds the Catch.
 - **Record edits waiting on the owner** (offered 2026-10-23, not done):
   - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
