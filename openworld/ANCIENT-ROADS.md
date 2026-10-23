@@ -21,7 +21,8 @@ Wall (`biomes/riftrim/PLAN.md`, `LORE.md` §4).
 **Nodes** (settled 2026-10-23): **every arcology, lived in or ruined, and every ruin** on the model (the `settlements`
 collection: 12 arcologies such as Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge, Cascade; 14 ruined arcologies such as
 Arccube, Babel, Blade, Henge, Hub 01, Leng; 8 ruins; 2 caverns), and the cities **founded on Ancient settlements: Hook,
-Iziz, Yuni, Ys and Dalab** (round the Ancient genetic laboratory, `LORE.md` §6.1); others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
+Iziz, Yuni, Ys and Dalab** (round the Ancient genetic laboratory, `LORE.md` §6.1), **Roketstad** (its Ancient spaceport)
+and **Verge** (its Ancient funicular); others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
 **Carcosa**; in the Rift, except **Arccube**.
 
 **Edges**: a planned network, not a mesh: **trunks** between the clusters (the crater floor, the Valley of the Ancients,
@@ -41,7 +42,7 @@ Not the modern highway's profile: an engineered way that does not climb when it 
 | Valleys | down and up | **viaducts** |
 | Ridges | over | **cuttings and tunnels** |
 | Lakes, floodplains | fords, causeways at 40x cost | **causeways and embankments** |
-| Width | 8 m | **~30 m**: a broad paved way (proposed: with a guideway down its middle, so road and line are one; the owner's call) |
+| Width | 8 m | **~30 m: one broad paved way with a guideway down its middle** (settled 2026-10-23): road and line are one |
 
 The router's cost (proposed): length x (1 + grade penalty over 4 %); a viaduct where the ground falls more than ~30 m under
 the grade line; a cutting where it rises up to ~60 m over it; **a tunnel** where it would rise more, at a fixed cost per
@@ -100,6 +101,28 @@ Then **the land it crosses** sets how an unkept stretch failed. A condition per 
 Modern highways prefer the Ancient alignment where it serves (a cost discount inside its corridor), so the network shows
 through today's roads.
 
+## 4b. The first draft (2026-10-23)
+
+`tools/scale-model/ancient_roads.py` routes a tentative network on 4.21's heights and the settlements as they stand
+(`openworld/ancient-roads-draft.jpg`, `.json`): **42 nodes, 48 routes, ~14,400 km**, coloured by upkeep (kept up 30% of
+its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). What it shows:
+
+- **Trunks**: the Eternal State and the Republic down the western lowlands (Fulcrum, Corpus, Henge, Carcosa, Cascade);
+  the crater floor's ring (Trigon, Tethis, Agropolis, Drum, Wing, Torus, Hook, Pylon, Iziz, Lunapolis, Hexahedron, Ys);
+  the Valley of the Ancients (Babel, Necropolis, Dorado, Blade) to Dalab; Iziz east by Arcbeam to Yuni and Verge.
+- **Roketstad** joins by Corpus and Trigon; **Verge** by Yuni; **Strongbow** ends Xanadu's short line at Theodiga.
+- **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, 33 km in tunnel); Arcbeam to Stair in the Catch;
+  Hub 01 to Yuni (44 km in tunnel); Cube to Pluton on the crest (Pluton a dead end in the draft: a second crossing north
+  from it is the owner's call).
+- **The Inner Wall to the Valley**: the draft finds **surface passes** (Drum to Cascade, and Wing by Nazar and Span),
+  not the tunnel the owner wants: at the draft's tunnel cost a pass is cheaper. The Ancient tunnel goes **under the
+  Drum-Cascade pass**, with **Cascade** (the Republic's arcology) as its surface access, as the owner described; the
+  next run forces it.
+- Tunnels are short overall (~160 km) because the router climbs the 4 km cells' passes; a finer run and a higher
+  climbing cost will put more of the mountain crossings underground.
+
+It is a draft for looking at: the settlements are to be reworked first, then the network is routed for real.
+
 ## 5. Data and drawing
 
 1. **The model** (`tools/scale-model/ancient_roads.py`, its to-do list): `DATA.ancient_roads`, each route `{id, from, to,
@@ -129,11 +152,11 @@ through today's roads.
 
 ## 7. Questions for the owner
 
-1. **Road, line, or both**: a highway, a guideway, or one way with both (proposed)?
-2. **The Republic's arcology** over the Inner Wall tunnel: Cascade, or a new site nearer the route (and its name)?
-3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni, Ys and Dalab.
-4. **The tentative ruins**: which of them stand, move or go (the model's settlements want a rework), so the network is
-   routed once they are settled.
+1. **The Republic's arcology** over the Inner Wall tunnel: Cascade (the draft's pass runs through it), or a new site?
+2. **Pluton**: a dead end on the crest, or the portal of a second crossing north to the crater?
+3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni, Ys, Dalab, Roketstad and Verge.
+4. **The tentative ruins**: which stand, move or go, so the network is routed once they are settled.
 
-Settled (2026-10-23): every arcology and every ruin is a node; the Inner Wall route runs west to the Valley of the
-Ancients; Xanadu's short line ends at Strongbow.
+Settled (2026-10-23): every arcology and every ruin is a node, with the cities on Ancient ground; one broad way with a
+guideway down its middle; the Inner Wall route runs west to the Valley of the Ancients; Xanadu's short line ends at
+Strongbow.

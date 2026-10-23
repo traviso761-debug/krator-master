@@ -208,9 +208,22 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
 - **They and Dalab.** Dalab's road runs through tunnels and caves they keep, and Ledge's lifts answer to them, so Dalab's
   hold rests on an uneasy bargain: guides, trade, medicine, a truce at the lifts, and raids when it breaks. **Dalab's cold
   and altitude mods were learned from their genes** (settled), and they remember being taken.
-- **The name** (open; candidates): their own, from the crews' English: **the Gangs** (the track gangs who kept the line),
-  **the Undercrew**, **the Line**; others' names: Dalab's low tongue *da-*: **Dadeep**; the lowlanders' **greys** or
-  **lamp-eyes**.
+- **The union** (the owner, 2026-10-23): the crews were **unionised**, and the streak runs deep in them still. The union
+  is their state: each hold a **branch** (a lodge), its head a **steward** the branch elects and can recall, the holds
+  bound by the **rulebook** (the old agreement with the Ancients, recited and argued over like law), decisions taken in
+  open **meeting** by show of hands and minuted, and **solidarity** the first virtue: an injury to one is an injury to
+  all. Their banners hang in the holds' halls. A grievance with Dalab is met as a dispute: talks, a work-to-rule at the
+  lifts, a **strike** (the lifts stop, the guides stay home), a picket on the tunnel mouth, and raids only when the talks
+  break down. They never cross a line once drawn.
+- **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
+  worn down over a thousand years in the dark until a modern speaker cannot follow it: *the* cut to *t'* and fused on,
+  *thou* kept as *tha*, *owt*, *nowt*, *summat*, *nobbut*, *gan* for *go*, *while* for *until*, *were* for *was*, dropped
+  *h* and glottal stops, the union's words fossilised in it (*brother* > *broo*, *steward* > *stoord*, *meeting* >
+  *meetin*, *strike* > *strak*). *We're not going to work until the steward says so* > *us'll nobbut gan t'wark while
+  t'stoord sez* > worn: **"Usl nobga twak wilstood sez."** For `lore/tongues-of-krator.html` when they are named.
+- **The name** (open; candidates): from the union: **the Tunion** (*the Union* > *t'Union* > *Tunion*, which outsiders
+  hear as "the tunnel ones"); **the Broos** (*brothers*); from the line: **the Gangs**, **the Undercrew**; others'
+  names: Dalab's low tongue: **Dadeep**; the lowlanders' **greys** or **lamp-eyes**.
 
 ## 7. Crops (`kits/crops`)
 
