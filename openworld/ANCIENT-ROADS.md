@@ -21,7 +21,7 @@ Wall (`biomes/riftrim/PLAN.md`, `LORE.md` §4).
 **Nodes** (settled 2026-10-23): **every arcology, lived in or ruined, and every ruin** on the model (the `settlements`
 collection: 12 arcologies such as Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge, Cascade; 14 ruined arcologies such as
 Arccube, Babel, Blade, Henge, Hub 01, Leng; 8 ruins; 2 caverns), and the cities **founded on Ancient settlements: Hook,
-Iziz, Yuni and Ys**; others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
+Iziz, Yuni, Ys and Dalab** (round the Ancient genetic laboratory, `LORE.md` §6.1); others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
 **Carcosa**; in the Rift, except **Arccube**.
 
 **Edges**: a planned network, not a mesh: **trunks** between the clusters (the crater floor, the Valley of the Ancients,
@@ -131,7 +131,7 @@ through today's roads.
 
 1. **Road, line, or both**: a highway, a guideway, or one way with both (proposed)?
 2. **The Republic's arcology** over the Inner Wall tunnel: Cascade, or a new site nearer the route (and its name)?
-3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni and Ys.
+3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni, Ys and Dalab.
 4. **The tentative ruins**: which of them stand, move or go (the model's settlements want a rework), so the network is
    routed once they are settled.
 
