@@ -211,16 +211,22 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
   and altitude mods were learned from their genes** (settled), and they remember being taken.
 - **The union** (the owner, 2026-10-23): the crews were **unionised**, and the streak runs deep in them still, but
   after a thousand years in the dark, the bosses gone and their civilization destroyed, **the forms are kept without
-  clear memory of what they meant**. Every hold is a **branch**, and every branch runs itself: **syndicalist communes** in
-  the tunnels, bound by **the Book** (the old agreement with the Ancients). A **steward** is elected by show of hands at an
-  open **meeting** and can be recalled at the next; the minutes are recited by heart. **In practice** many holds slide
+  clear memory of what they meant**. Every hold is a **loj** (lodge), and every loj runs its own affairs: **syndicalist
+  communes** in the tunnels, bound by **the Book** (the old agreement with the Ancients). A **steward** is elected by show of
+  hands at an open **meeting** and can be recalled at the next; a **sekketri** minutes it where one can write. **In practice** many holds slide
   into rule by whoever carries the meeting: a charismatic steward, or a **big man** (*bigun*) nobody votes against.
 - **The Book's readings.** Until Dalab came there was **no one to negotiate with**, so for a thousand years the Tungangs
   read the Book instead: every clause has its **readings**, schools of interpretation built over centuries (a Midrash),
-  argued at meetings by the **Bookmen** who know them by heart and quoted as proverbs; quarrels between holds are won by
+  argued at meetings by the **Bookmen**, who read the Book's own letters, and quoted as proverbs; quarrels between holds are won by
   the better reading. Dalab is the first counterparty in a thousand years: the Book woke up, the readers argue whether
   the Labbers are the Gaffers come back, and the **strike**, long a rite, is a weapon again (talks, a work-to-rule at the
   lifts, the lifts stopped and the guides home, a line no one crosses, raids when the talks break down).
+- **The President** (the owner, 2026-10-23): over all the lojes stands the union President, **Tpresden**, the nominal
+  ruler: mostly an honour, since the lojes run their own affairs, but **granted exceptional powers when the lojes agree
+  there is a crisis** (a flood in the line, a war with Dalab), for as long as it lasts.
+- **Reading** (the owner, 2026-10-23): to argue the contract this much they **still read English**, however it has slid:
+  the Bookmen and secretaries read the Book's old letters and spelling aloud in their own sounds. Many lojes go by an
+  **oral tradition of the laws** instead.
 - **Skab** is the general curse (traitor, bastard, arsehole), its first meaning long forgotten.
 - **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
   worn down over a thousand years in the dark until a modern speaker cannot follow it: *the* cut to *t'* and fused on,
