@@ -598,7 +598,9 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   [the owner's choice of name], and write the forbidden Latin letters, which their computers read. The **dam basins** mostly speak the **northern traders'
   argot**, a mix of capital speech, Jimjam's tongue and Izani, written in **Izani letters with easy, recognisable Eternian
   signs mixed in** [the owner, 2026-10-23] (*proposed*: *Matok*, "market-talk"; Jimjam's numbers, measure words and dates,
-  the Empire's road, gold and *da-*, the State's market, paper and toll-gates; the tongues page has its own tab). The State's
+  the Empire's road, gold and *da-*, the State's market, paper and toll-gates; the tongues page has its own tab). A sound at least two of
+  the three share survives; one only one has is worn away [the owner, 2026-10-23]: no nasal vowels, curled consonants,
+  ejectives or trill; clusters broken, every stop followed by a vowel. The State's
   name in the market: *Tẽ-tè*; in Paper speech, *Itènale Setète*.
 - **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
   reach the capital's relics, and pay for each one. Dalab guards the Valley from the south with Blade and Span (§6.1), the
