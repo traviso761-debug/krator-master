@@ -392,6 +392,20 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   mass). **Keep the south-west shore's green pockets** (px 831-846 by 812-844, Am and Aw at ~1,000-1,550 mm, where Mantis
   stands at 841,834): take the greater of the new rain and 4.21's there, so the oasis is not washed out to steppe.
   Reclimate the class from the new rain, repaint the rain and climate maps.
+- **4.22: the Catch, a closed basin** (the owner asked, 2026-10-23, whether its rain is generous: it is;
+  `biomes/catch/PLAN.md`). 4.21 gives the floor (under 1 km, ~28,700 km²) 369 mm and the foothills (1-3 km) 482, with Cfa
+  and Csa and a hot spot over 800 mm round Stair (px 805-870 by 1075-1133), most likely from `reclimate`'s twins (low warm
+  cells open to the Ring Sea). The basin is sealed: crests 10-17 km all round, the lowest way out 6,158 m (NNW, near px
+  726,896), every other over 7.3 km, nothing in it below 6.2 km open to the outside. Inside the basin under its spill
+  level, weighted to fade over ~10 px inside the walls' crest:
+  1. **Rain**: the floor **10-30 mm**, the foothills **40-120 mm** rising with height, the inner walls (3-5.5 km)
+     **100-250 mm** (keep 4.21 where it is lower), nothing above ~9 km; drop the hot spot.
+  2. **Temperature**: the floor's warmest month +4-6 °C, its coldest -3-4 °C (clear, dry air: target +33-35 and +5-6),
+     the walls as they are.
+  3. Reclimate the class (BWh and BWk on the floor and the fans; BSk, dry Dsc and ET on the walls), then **re-run the
+     rivers** for the basin: snowmelt rivers off the inner walls (~90 m³/s in all), dying on the fans, and a **terminal
+     salt lake** at the lowest point (px 762,1067, 225 m), ~1,100-1,400 km² by its evaporation (~2-2.5 m a year).
+  Relight, repaint, publish; re-cut any region that holds the Catch.
 - **Record edits waiting on the owner** (offered 2026-10-23, not done):
   - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
   - rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**, so the

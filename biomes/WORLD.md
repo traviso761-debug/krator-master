@@ -36,7 +36,8 @@ scale Krator map for rough placement, not in this repo.
 | *planned* the NW outer wall (the Yeti Kingdom, Leng, the frozen lake) | `nwouterwall` | nwlowlands, Farside. Plan: `nwouterwall/PLAN.md` |
 | *planned* the rift rim, N and S, with the w rift highland | `riftrim` | rift, swlowlands, Dalab's country. Plan: `riftrim/PLAN.md` (the highland lakes, the basin and gorge of 4.22, Ledge, the Tungangs) |
 | the Bowl (an abyssal overlay on the eastern desert) | `sedesert` | eastabyss, the Catch. Plan: `sedesert/PLAN-BOWL.md` (the salt lake, Mantis's oasis) |
-| *no kit yet* (the owner's polygons, 2026-10-23) | | w outer wall, sw highlands, the Catch (the tuff candidate below), godstep valley, Farside; the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
+| *planned* the Catch (the closed basin SE of the Godthrone) | `catch` | sealed by walls of 10-17 km: no ecotone below 6.2 km. Plan: `catch/PLAN.md` (a sand sea, an oasis ring, a terminal salt lake, the fans; the model's rain is ~10x too generous, a 4.22 item) |
+| *no kit yet* (the owner's polygons, 2026-10-23) | | w outer wall, sw highlands, godstep valley, Farside; the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
 | *possible* | `sbadlands`, micro-biomes | |
 | n semiarid, the walking steppe (`biomes/nsemiarid/PLAN.md`; built 2026-10-22) | `nsemiarid` | nwlowlands (gradual), nhighlands, korona, NW boreal |
 | overlays, owning no ground (`biomes/nsemiarid/PLAN.md`, section 3): the dam basins' beds (`biomes/dambasins`, begun 2026-10-22: the old port station on the Ancient Port kit), the scablands and the flood lake (planned) | `dambasins`, `scablands` | lie over nsemiarid, nwlowlands and korona |
