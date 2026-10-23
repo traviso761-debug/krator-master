@@ -150,7 +150,7 @@ const PK=(name,c,a,r,kp,items,travel,hv)=>({name,travel,tags:Object.assign(K(c,a
 NSEMIARID.PLANTS={
  wormwood:PK('Steppe wormwood','temperate','arid','no',['BSh','BSk','BWh'],['small'],'none',HV('fuel',[],true,'Bitter: a tea against worms and fevers.')),
  drillgrass:PK('Drill grass','temperate','semiarid','no',['BSh','BSk','Csa'],['stipa'],'self-burying',HV('thatch',[],false,'Its awns twist with the dew and drive the seed into the ground.')),
- grass:PK('Meadow grass','temperate','subhumid','both',['Cfa','Csa','Csb'],['grass'],'seed',HV('hay',[],false,'')),
+ grass:PK('Meadow grass','temperate','subhumid','both',['Cfa','Csa','Csb'],['grass'],'seed',HV('none',[],false,'Cut for hay (fodder, not wood).')),
  tumbler:PK('Tumbler','temperate','arid','no',['BSh','BWh'],['tumbler'],'rolling',HV('fuel',['young shoots'],false,'A ripe plant breaks at the root and rolls, seeding as it goes; drifts pile on the windward side of anything standing.')),
  crawler:PK('Crawler','tropic','arid','no',['BWh','BSh'],['crawler','crawlerDead'],'creeping',HV('none',['fruit'],false,'Grows at its head and dies behind: a green head and a grey trail, all heading the same way.')),
  resurrect:PK('Resurrection ball','tropic','arid','no',['BWh','BSh'],['ball'],'rolling',HV('none',[],true,'Curled brown and blowing about; it unfurls green after rain.')),

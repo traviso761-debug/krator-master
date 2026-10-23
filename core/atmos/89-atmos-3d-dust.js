@@ -8,14 +8,14 @@
 // core and calls ATMOS.dust(o) once. Its numbers: PRESETS.dust (set here when a build's presets have none).
 //   ATMOS.dust({ground, mask, color, n, box, lift, ride, alpha})   ->  the sprites (A.stats.dust); A.dustLift(x,z) on the CPU
 (function(){const A=ATMOS;
- A.PRESETS.dust=A.PRESETS.dust||{n:2600,box:240,grid:64,
+ A.PRESETS.dust=A.PRESETS.dust||{n:4200,box:340,grid:64,
   // lift: the wind (ATMOS's units: 1 is the presets' breeze) where dust starts to rise and where it is at its thickest
   lift:[1,2.2],ride:6,          // ride: metres a sprite moves for a unit of wind a second (6 m/s a unit, the hosts' scale)
   height:[.3,3.2],plume:[.08,11],  // most skim the ground; plume[0] of them rise to plume[1] m
-  size:[1.6,6.5],rate:.13,alpha:.26,color:[.78,.7,.56]};
+  size:[2.4,9],rate:.13,alpha:.55,color:[.74,.67,.55]};
  // the CPU twin of the shader's lift (for checks and hosts): 0..1 at (x, z) now, from the wind there and the mask
  A.dustLift=(x,z,mask)=>{const P=A.PRESETS.dust,w=A.windAt(A.clock?A.clock.t:A.U.time.value,x,z),s=Math.hypot(w[0],w[1]),
-  t=Math.min(1,Math.max(0,(s-P.lift[0])/(P.lift[1]-P.lift[0])));return t*t*(3-2*t)*(mask==null?1:mask);};
+  t=Math.min(1,Math.max(0,(s-P.lift[0])/(P.lift[1]-P.lift[0])));return Math.pow(t*t*(3-2*t),.6)*(mask==null?1:mask);};
  A.dust=o=>{o=o||{};const T=A.T,P=Object.assign({},A.PRESETS.dust,o),F=A.glf,B=P.box/2,G=P.grid,E=P.box*1.2;
   const ground=o.ground||A.ground,mask=o.mask||(()=>1);
   // THE HEIGHT MAP: height in two bytes (1/64 m, +-512 m about the map's base), the mask in the third; any WebGL reads it
@@ -37,7 +37,7 @@
     void main(){vec3 p=ipos;vec2 d=windOff*${F(P.ride)}*(0.75+0.5*pp.x);
      p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+d,${F(P.box)})-${F(B)}+cameraPosition.xz;
      float age=fract(time*${F(P.rate)}*(0.7+0.6*pp.w)+pp.x);
-     vec2 g=hm(p.xz);float s=length(atmWind(time,p.xz,wind,gustAmp));float lift=smoothstep(${F(P.lift[0])},${F(P.lift[1])},s)*g.y;
+     vec2 g=hm(p.xz);float s=length(atmWind(time,p.xz,wind,gustAmp));float lift=pow(smoothstep(${F(P.lift[0])},${F(P.lift[1])},s),0.6)*g.y;   // eased up: a moderate wind already shows
      float plume=step(${F(1-P.plume[0])},pp.y);
      float h=mix(mix(${F(P.height[0])},${F(P.height[1])},pp.y*pp.y),${F(P.plume[1])}*(0.4+0.6*pp.y),plume)*(0.35+0.65*lift)*(0.25+0.75*sin(3.1416*age));
      p.y=g.x+h*0.5+pp.z*0.25;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,0.5);
