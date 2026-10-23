@@ -117,6 +117,7 @@ def matlib_pack():
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
+        if e.get('cell'): f['cell']=e['cell']   # one cell of a card sheet: the page shows that cell only (libCard; 2026-10-23: it was dropped, and every card showed its whole sheet)
         for k,name in sorted(e['files'].items()):
             f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
         out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))

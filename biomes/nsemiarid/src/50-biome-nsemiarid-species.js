@@ -491,8 +491,12 @@ const M=NSEMIARID.MAT;
 // grass, the tumblers' tangle (materials.json).
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nsemiarid',n):null;
 NSEMIARID.LIB={has:n=>!!LIBP(n)};
+// a family with a cell ([x0,y0,x1,y1] of the sheet from its top left) shows only that cell: the map is windowed onto it
+// (flipY is off, so v 0 is the sheet's top row and the window's offset is the cell's top left)
+const libWindow=(t,L)=>{if(L.cell){const c=L.cell;t.repeat.set(c[2]-c[0],c[3]-c[1]);t.offset.set(c[0],c[1]);t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;}return t;};
+NSEMIARID.libWindow=libWindow;
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
- t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
+ t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return libWindow(t,L);}
 // one cell [x0,y0,x1,y1] (fractions of the sheet) of a card, as its own texture; flip: upside down, for the frond, whose
 // card runs from its root at v 0 (the image's top row: flipY is off) to its tip at v 1
 function libCell(n,box,W,H,flip){const L=LIBP(n);if(!L)return null;const c=document.createElement('canvas');c.width=W;c.height=H;
@@ -525,6 +529,13 @@ BIO.def('broom',BIO.geo.clump(),M.broom,{attrs:['aN'],label:'Saxaul twigs'});
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN'],label:'Blossom (almond, apricot, Judas tree)'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower heads'});
 BIO.def('pappus',BIO.geo.clump(),M.pappus,{label:'Plumed seeds'});
+// one seed of a seed clock: two crossed cards running out from the clock's middle along +y, the seed at the root and the
+// plume at the tip (a library card has flipY off, so its top row is v 0; the kit's painted card the other way about)
+G.puffSeed=function(lib){const pos=[],uv=[],nor=[];const v0=lib?1:0,v1=lib?0:1;
+ for(const r of [0,Math.PI/2]){const c=Math.cos(r),sn=Math.sin(r),P=[[-.5*c,0,-.5*sn,0,v0],[.5*c,0,.5*sn,1,v0],[.5*c,1,.5*sn,1,v1],[-.5*c,1,-.5*sn,0,v1]];
+  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(-sn,0,c);});}
+ return BIO.geo._make(pos,nor,uv);};
+BIO.def('puffSeed',G.puffSeed(NSEMIARID.LIB.has('leaf.pappus')),M.pappus,{label:'Seed-clock plumes (the dandelion frill)'});
 // the fin stands on its edge (its width up, not across): a feather's vane on the shaft, broad from the side
 BIO.def('fin',BIO.geo.frond(3).rotateX(Math.PI/2),M.fin,{label:'Dandelion-frill fins'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});

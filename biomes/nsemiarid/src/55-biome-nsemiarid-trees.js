@@ -225,12 +225,19 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,W=NSEMIARID.windAt(T.x,T.
    if(stage==='half'&&down>-.1&&u>.3)continue;   // the downwind side shed first
    const L=(1.3+2.1*Math.sin(u*Math.PI*.9))*rr(.85,1.12);
    BIO.put('fin',[T.x+Math.cos(a)*r*.92,y,T.z+Math.sin(a)*r*.92],qEuler(rr(-.25,.25),-a,rr(.32,.7)),[L,L*rr(.9,1.2),L*.6],finCol());st.clumps++;}}
- // the crown: a splay of long fins round the pod; ripe, the pod is a seed clock of plumes
+ // the crown: a splay of long fins round the clock's stalk
  const top=T.y0+bH;
  if(stage!=='bare'){for(let k=0,n=lv===2?14:7;k<n;k++){const a=k/n*TAU,L=rr(2.2,3.4);if(stage==='half'&&Math.cos(a-wa)>0)continue;
    BIO.put('fin',[T.x+Math.cos(a)*rb*.3,top,T.z+Math.sin(a)*rb*.3],qEuler(rr(-.1,.1),-a,rr(.5,.95)),[L,L*1.1,L*.6],finCol());st.clumps++;}}
- if(ripe){const R=T.crownR*(stage==='half'?.85:1);BIO.put('clock',[T.x,top+R*.8,T.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R,R],leafCol(PAL.clock,1.15,.01,.03,.03));}
- else if(stage==='green')BIO.put('lobe',[T.x,top-.2,T.z],qEuler(0,rr(0,TAU),0),[rb*.7,rb*1.2,rb*.7],white?leafCol(PAL.frillPale,.92,.02,.04,.04):leafCol(S.leaf,.9,.03,.06,.05));
+ // THE PUFF (2026-10-23: a frill should read as a dandelion from afar): a seed clock of plumes on every crown but a bare
+ // one, each plume one card running out from the clock's middle. Ripe, a big white clock; half shed, its downwind half
+ // gone; green, a tight bud-puff not yet open, tinted with the fins
+ if(stage!=='bare'){const R=T.crownR*(ripe?1.35:.7),cy=top+R*.85,n=lv===2?(ripe?78:44):(ripe?28:18),col=()=>ripe?leafCol(PAL.frillRipe,1.2,.01,.03,.03):white?leafCol(PAL.frillPale,1.05,.02,.04,.04):leafCol(S.leaf,1.35,.05,.08,.05);
+  for(let k=0;k<n;k++){const y=1-2*(k+.5)/n;if(y<-.6)continue;const r=Math.sqrt(1-y*y),a=k*2.39996+rr(-.1,.1),dx=Math.cos(a)*r,dz=Math.sin(a)*r;
+   if(stage==='half'&&dx*W[0]+dz*W[1]>.05)continue;   // the downwind side has flown
+   const L=R*rr(.85,1.05);BIO.put('puffSeed',[T.x,cy,T.z],qEuler(Math.acos(clamp(y,-1,1)),Math.atan2(dx,dz),0),[L*.42,L,L*.42],col());st.clumps++;}
+  BIO.put('lobe',[T.x,cy-R*.1,T.z],qEuler(0,rr(0,TAU),0),[R*.18,R*.18,R*.18],leafCol(PAL.clock,.8,.02,.04,.04));   // the receptacle
+  BIO.beam('rod',[T.x,top-.3,T.z],[T.x,cy,T.z],rb*.18,rb*.12,leafCol(S.leaf,.8,.02,.04,.04));}
  regTree(T,S,rb*1.6+2.5,H+(ripe?T.crownR*1.8:1));};
 // 12 THE HELICOPTER TRUMPET (the trumpet-tree line: a slim ribbed stalk flaring into a bell): the bell carries eight
 // pitched blades grown up its outside, on a living ring joint at the stalk's top, so it turns in the wind like an

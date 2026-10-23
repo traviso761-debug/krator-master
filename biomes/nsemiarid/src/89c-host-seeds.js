@@ -35,7 +35,8 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
  const BEAR={
   trumpet:{kind:'heli',hold:8.5,rate:.9,from:T=>[T.y0+T.H*.84+T.crownR*.85,T.crownR],size:[.6,.95],fling:true},
   samara:{kind:'heli',hold:9,rate:.5,from:T=>[T.y0+T.H*.72,T.crownR*.8],size:[.5,.7]},
-  frill:{kind:'plume',hold:9.5,rate:.8,from:T=>[T.y0+T.H*.82+T.crownR*.6,T.crownR],size:[.6,1.0],when:T=>T.seed%4===1||T.seed%4===2},
+  // the frill's plumes are the alien's own size, a metre and more, and its ripe clocks let go in a breeze's gusts
+  frill:{kind:'plume',hold:7,rate:1.2,from:T=>[T.y0+T.H*.82+T.crownR*1.15,T.crownR*1.3],size:[1.2,2.1],when:T=>T.seed%4===1||T.seed%4===2},
   dandelion:{kind:'plume',hold:5.5,rate:.25,from:T=>[T.y0+T.H,T.crownR*.5],size:[.26,.4]},
   poplar:{kind:'plume',hold:4.5,rate:.12,from:T=>[T.y0+T.H*.72,T.crownR],size:[.14,.22],when:T=>!T.dead},
   // the drift lantern the other way about: its gas-filled bulbs lift off in still air, and a wind holds them down (calm)
@@ -46,7 +47,7 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
  // left, on the axis it turns about), plumes (two crossed quads) and lanterns (the kit's own bulb, glowing a little)
  const NH=900,NP=1600,NL=160,CAP=NH+NP+NL,R0=[0,NH,NH+NP,CAP],poolOf=i=>i<NH?0:i<NH+NP?1:2;
  const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nsemiarid',n):null;
- const card=(n,draw)=>{const L=LIBP(n);if(L){const t=KMAT.textures(L,{aniso:4,flipY:false}).map;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;return t;}return BIO.canvasTex(128,128,draw);};
+ const card=(n,draw)=>{const L=LIBP(n);if(L){const t=KMAT.textures(L,{aniso:4,flipY:false}).map;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;return NSEMIARID.libWindow(t,L);}return BIO.canvasTex(128,128,draw);};   // one key of the sheet (its cell)
  const heliTex=card('seed.samara',(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='rgba(200,160,110,.95)';g.beginPath();g.ellipse(w*.62,h*.5,w*.34,h*.17,0,0,6.283);g.fill();
   g.fillStyle='rgba(120,100,60,1)';g.beginPath();g.ellipse(w*.2,h*.5,w*.1,h*.09,0,0,6.283);g.fill();});
  const plumeTex=NSEMIARID.MAT.pappus.map;
@@ -60,7 +61,7 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
   ML=new THREE.InstancedMesh(BIO.kits.nsemiarid.defs.lantern.geo,new THREE.MeshLambertMaterial({color:LC,emissive:LC.clone().multiplyScalar(.25),vertexColors:true}),NL);
  ML.count=0;ML.frustumCulled=false;ML.instanceMatrix.setUsage(THREE.DynamicDrawUsage);ML.userData.probeSkip=true;ML.userData.host=true;ML.userData.inspectLabel='Drift lanterns aloft';scene.add(ML);
  // a seed: position, velocity, age, size, spin and its rate, and when it landed
- const S=[];for(let i=0;i<CAP;i++)S.push({on:false,heli:i<NH,lantern:i>=NH+NP,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,s:1,a:0,ar:0,tilt:0,landed:-1});
+ const S=[];for(let i=0;i<CAP;i++)S.push({on:false,fall:1,tau:.5,ph:0,wob:1,fq:1,heli:i<NH,lantern:i>=NH+NP,x:0,y:0,z:0,vx:0,vy:0,vz:0,age:0,s:1,a:0,ar:0,tilt:0,landed:-1});
  const free=[[],[],[]];for(let i=CAP-1;i>=0;i--)free[poolOf(i)].push(i);
  const stats={released:0,landed:0,active:0,bySpecies:{},sources:0};window._seeds=stats;
  // the candidate sources: the bearing trees within RADIUS of the camera, re-listed as the camera moves
@@ -74,7 +75,10 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
   const idx=free[pool].length?free[pool].pop():steal(pool,c);if(idx<0)return;const s=S[idx];
   const f=B.from(T),a=R()*6.283,r=f[1]*Math.sqrt(R()),w=NSWIND.at(T.x,T.z);
   s.on=true;s.x=T.x+Math.cos(a)*r;s.z=T.z+Math.sin(a)*r;s.y=f[0]+rr(-.4,.4);s.age=0;s.landed=-1;s.s=rr(B.size[0],B.size[1]);
-  s.vx=w[0]*.5;s.vz=w[1]*.5;s.vy=rr(-.2,.6);
+  s.vx=w[0]*rr(.2,.7)+rr(-1.5,1.5);s.vz=w[1]*rr(.2,.7)+rr(-1.5,1.5);s.vy=rr(-.4,1.2);s.y+=rr(-1.2,1.2);
+  // each seed its own: how fast it falls, how quickly the wind takes it, how it flutters (or every seed a gust lets go
+  // flies the same path, a sheet: 2026-10-23)
+  s.fall=pool===0?rr(.65,1.5):rr(.18,.55);s.tau=pool===0?rr(.35,1.2):rr(.2,.6);s.ph=R()*6.283;s.wob=rr(.6,2.2);s.fq=rr(.5,1.6);
   // a trumpet's seed leaves the rim of a turning bell: flung along the rim's way round, outward
   if(B.fling){const sp=NSWIND.mean()*.42*f[1];s.vx+=-Math.sin(a)*sp+Math.cos(a)*1.5;s.vz+=Math.cos(a)*sp+Math.sin(a)*1.5;}
   if(s.lantern){s.vx=w[0]*.2;s.vz=w[1]*.2;s.vy=.2;}
@@ -93,10 +97,12 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
     s.vx+=(w[0]-s.vx)*k;s.vz+=(w[1]-s.vz)*k;s.vy+=(.55+.25*Math.sin(t*.8+i)-s.vy)*Math.min(1,dt);s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.a+=s.ar*dt;
     if(s.age>150||s.y-terrainH(s.x,s.z)>260||Math.hypot(s.x-c.x,s.z-c.z)>RADIUS*1.6){s.on=false;free[2].push(i);continue;}
     act++;e.set(.08*Math.sin(t+i),s.a,.08*Math.cos(t*.9+i));q.setFromEuler(e);vp.set(s.x,s.y,s.z);vs.set(s.s,s.s*1.2,s.s);M4.compose(vp,q,vs);M4.toArray(ML.instanceMatrix.array,(nl++)*16);continue;}
-   if(s.landed<0){const w=NSWIND.at(s.x,s.z),g=ATMOS.gust(t,s.x,s.z),k=Math.min(1,dt/(s.heli?.7:.3));
-    s.vx+=(w[0]-s.vx)*k;s.vz+=(w[1]-s.vz)*k;
-    // a winged seed autorotates down at about a metre a second; a plume sinks slower and the gusts lift it
-    const fall=s.heli?-1.05:-.35+.9*Math.max(0,g)+.25*Math.sin(t*1.7+i);s.vy+=(fall-s.vy)*Math.min(1,dt*1.5);
+   if(s.landed<0){const w=NSWIND.at(s.x,s.z),g=ATMOS.gust(t,s.x,s.z),k=Math.min(1,dt/s.tau);
+    // the wind it is in, and its own flutter across it (a winged seed's autorotation wanders; a plume eddies)
+    const wl=Math.hypot(w[0],w[1])||1,fl=Math.sin(t*s.fq+s.ph)*s.wob;
+    s.vx+=(w[0]-w[1]/wl*fl-s.vx)*k;s.vz+=(w[1]+w[0]/wl*fl-s.vz)*k;
+    // a winged seed autorotates down at its own rate, about a metre a second; a plume sinks slower and the gusts lift it
+    const fall=s.heli?-s.fall+.3*Math.sin(t*s.fq*1.7+s.ph):-s.fall+.9*Math.max(0,g)+.25*Math.sin(t*1.7+s.ph);s.vy+=(fall-s.vy)*Math.min(1,dt*1.5);
     s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.a+=s.ar*dt;
     const gy=Math.max(terrainH(s.x,s.z),waterH(s.x,s.z));if(s.y<gy+.05){s.y=gy+.05;s.landed=s.age;stats.landed++;}}
    // landed: it lies a while and is gone; far off or old, gone
