@@ -165,7 +165,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **The God** is the lab's AI. Its counsel keeps biomedical knowledge alive, and it "grows more erratic every century". Its seat is a sunken chamber of cabinet banks: "a plant room to a stranger and a shrine to a priest". Its image is a rayed head with **one great eye**.
 - Nearly everyone carries the photosynthesis mod and is **green-skinned**.
 - **Genepriests** sell modifications to outsiders in the **Halls of Reformation**: night vision, pressure adaptation, extra limbs. Dalab healers are prized across Krator.
-- **The Giant tribes of the south-west came from here.** The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
+- **The Giant tribes of the south-west came from here**, made from bloodlines Dalab's skinchangers stole from the Gedorix (§6.21). The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
 - Priests commune with The God from earth mounds built to imitate the Ancient domes. Each town's mound faces the lab. The High Priest's mound faces *away* from it, behind a ring earthwork guarded by giants.
 - Castes:
   - Peasants: rammed earth, thatch and scrap, round plans.
@@ -419,6 +419,12 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
 - **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
+- **The crews who came east** [the owner, 2026-10-23]. When the Cataclysm came, some of the Tungangs' ancestors (the
+  Ancients' tunnel crews of the Rift line, §6.1) fled east, and were **absorbed into Xanadu**. Their lasting legacy is **a
+  few loanwords** and **a greater proclivity for large eyes among the Xanadui**. *Proposed* loans, Northern English by
+  way of the crews: *gāphar* (an overseer, from *gaffer*), *mārā* (a comrade, from *marra*), *bāiṭ* (a traveller's packed
+  food, from *bait*), *lāin* (a caravan route, from *line*).
+
 ### 6.14 Jimjam
 
 - **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Eternal State (§6.19; the "Shining Kingdom"), a separate people, shares the NW lowlands. [the owner, Oct 2026]
@@ -465,7 +471,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - [the owner, Oct 2026] The denizens of the shores and islands of the Ring Sea. At one time the island kingdom of **Kautoa** was a real competitor to the Hykkousoi for naval hegemony, before the Izani Empire. The Islanders have in many cases regained some independence, but their days as a relatively unified cultural force are over; they remain widespread throughout the Ring Sea, a Polynesian and Austronesian people still known as skilled voyagers and, lately, pirates.
   - Two subcultures, one people (`kits/islanders`): the **West** (the western Ring Sea) builds after the Indonesian rumah: long houses on piles under horned saddle roofs, a village assembly hall of stacked horned roofs, large elaborate dockyards. The **East**, Kautoa, builds tall peaked houses after Sumba, its own village hall, and a palace complex of several courtyards. Both carve their posts and paint their gables with the same motifs, and both patch their poorer buildings with scrap.
 - **Lizardmen**: now **§6.20** (the deep Rift). The first notes here, kept for the record: "reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Recently united under a warlord according to traveler tales." Where they differ from the kit's design, §12.
-- **The Giant tribes of the SW**: engineered at Dalab (§6.1). Some rebelled and now live independently in Giant Country.
+- **The Giant tribes of the SW**: engineered at Dalab (§6.1), from bloodlines stolen from the Gedorix (§6.21). Some rebelled and now live independently in Giant Country: **the Free Giants**, who imitate the Gedorix's customs and look (§6.21).
 - **Salvagers**: crews who refloat Ancient hulls.
 - **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
   - **Language.** The Scyvoi call themselves the **Borunsa** (burn + plural *-sa*: the burn-folk; *Scyvoi* is the Hykkousoi's name) and speak **Boruntun**, "burn-tongue": English gone Turkish with a Jurchen edge (vowel harmony, endings stacked and verb last, no consonant clusters at the start: *sıtar* star; p- > f-, k- > h- before a back vowel, -ng > -n, th > s/d, w > v; *ç ş c ı* spelt Turkish-fashion). The tribes under Voth have Vothic loans for tribute and rank (*Sinsun*, *şif*, *vot-* "pay Voth"). They write nothing: each clan has a brand (a tamga) on its lizards and its granite. Their enemies are the *Haykossa*. `lore/tongues-of-krator.html` [the owner asked for a Turkish and Jurchen dialect, Oct 2026]
@@ -676,17 +682,23 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**,
   sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
+- **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
+  and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
+  **hate being confined in linear time**: to them it is, in a word, **disgusting**.
 - **The exchange: the author's secret** [the owner, 2026-10-23]. **Never spelled out to the player; told only by
   implication.** The Tungang sagas remember wailing and screaming in Arccube, then the Lizardmen, and no Ancient bodies
-  (§6.1). A Historian who learned that might wonder whether the Ancients were somehow **transmogrified into the
-  Lizardmen**. Closer to the truth, but not quite it: **at the moment the Lizardmen were shifted into our space-time, the
-  Ancient inhabitants were shifted onto the Coil.** An exchange, not a transformation.
+  (§6.1). A Historian who learned that might wonder whether the Ancients were somehow transmogrified into the Lizardmen.
+  **They were not, in any way: the Lizardmen are alien.** What happened, as near as the lore goes: **at the moment the
+  Lizardmen were shifted into our space-time, the Ancient inhabitants were shifted onto the Coil.** An exchange. And in
+  it the Lizardmen **took something from humanity**: something like a **base or essential quality**, and a
+  **semi-intuitive knowledge of the world**. That is why they reach for the Ancients' relics at all, and why they handle
+  them like someone half-remembering a dream. *Proposed*: what they took may be the very thing they call **the Lie**, the
+  contamination that came with the fracture.
   - *Proposed* ways to let it show, never to say it: Arccube's sealed rooms empty of bodies but not of belongings, meals
-    left half-eaten; the reliquaries' "strange constructions" made of Ancient things; Lizardmen who know the Ancients'
-    building as if they remembered it; the Interpreters who know humanity's future as their past (and so, perhaps, its
-    past as their future); the turned stelae whose meaning "changed retroactively"; and the Lizardmen's unwillingness to
-    press Loj Nahn in Arccube's upper levels, where the exchange happened. A Historian's speculation, voiced in game, is
-    as far as any text goes: and it is wrong.
+    left half-eaten; the relics in the reliquaries set to uses that almost make sense; the Interpreters who know humanity's
+    future as their past; the turned stelae whose meaning "changed retroactively"; their open disgust at things that only
+    happen once; and their unwillingness to press Loj Nahn in Arccube's upper levels, where the exchange happened. A
+    Historian's speculation, voiced in game, is as far as any text goes, and it is wrong.
 - **What they are, behind the tales** (the design's own lore; out of universe, the Ophidians of *Secret Histories*, smaller
   and less powerful):
   - **The Coil.** They live time as a spiral in which events recur, cause can follow memory, and some of them know
@@ -723,13 +735,42 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   repeated glyph is a recurring event; five base glyphs (serpent, memory, node, Coil, fracture). No human can read it.
   Some stelae are turned to face the ground or wrapped in matting: texts whose meaning "changed retroactively".
 
+### 6.21 The Gedorix (the Cloud Giants; once called the Crag Men)
+
+[the owner, 2026-10-23, unless marked *proposed*]
+
+- **Who they are.** A race of **two-armed giants**, a third to a half again as tall as an ordinary person (about 2.3 to
+  2.6 m), sometimes called **the Cloud Giants**, though their land runs well outside the cloud forest. The lowlands' old
+  name for them, **the Crag Men**, is going out of use; the scale model's political region still carries it (px ~402-751
+  by 592-833, ~147,000 km²: the southern highlands' cloud forest and paramo, godstep valley, the walls above the Bowl and
+  the south-western bay). They are **not** green-skinned and have only two arms: those are Dalab's enhancements, not theirs.
+  *Proposed*, by Krator's rule (§7): an Ancient lineage, made for a place or a task, like every people that differs from
+  the human baseline.
+- **How they live.** A **sedentary gathering and farming** people: mostly **small villages and hamlets**, and at least one
+  **medium-sized ceremonial settlement** (*proposed*: Daridel, px 608,798, 3,174 m in godstep valley, if the owner keeps
+  it theirs).
+- **Gaulish.** Their language and their civilization lean toward **Gaulish and the ancient Celts**. *Proposed*: roundhouses
+  under deep thatch and timber-laced stone walls (the *murus gallicus*) round the villages; sacred groves and enclosures
+  for the ceremonial settlement; torcs, brooches, checked and striped wool in weld-yellow, woad-blue and madder-red; a
+  learned order who keep the laws, the genealogies and the calendar by heart; feasting halls, champion's portions and
+  boasting; the names in *-rix* (king) and the places in *-dunon* (a fort, from English *town*), *-magos* (a field) and
+  *-nemeton* (a sacred grove). *Gedorix* itself (*proposed*): English *giant* worn down to *ged-*, with *-rix* "kings",
+  "the giant-kings". The tongue is to be drawn for `lore/tongues-of-krator.html`.
+- **Dalab's raids.** They remember **the raids of Dalab's skinchangers**, who came among them disguised, **kidnapped
+  their people for their genes**, and from those stolen bloodlines made **Dalab's own four-armed, green-skinned Giants**
+  (§6.1). It is the oldest grievance in their songs.
+- **The Free Giants.** They have **mixed feelings about the Free Giants of Giant Country** (§6.17), the Giants who
+  escaped Dalab: kin by blood, but a **Dalabi perversion** of their people. The Free Giants, lacking any identity of their
+  own, **imitate the Gedorix's customs and look** (their Gaulish dress in `core/charactermodels`: weld-yellow and woad, the
+  torc), which the Gedorix find flattering, galling or pitiable by turns.
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.
   - **Dalabites:** green skinned, chloroplast mod, famine resistant, often with other mods including night vision, pressure adaptation, extra limbs.
   - **Chichani:** tendency to ashen grey skin and night vision.
   - **Hykkousoi:** famed for rib-gills; water breathers
-- **Giants**: engineered at Dalab, some four-armed.
+- **Giants**: Dalab's Giants, engineered from the Gedorix's stolen bloodlines, green-skinned and some four-armed, to 3.8 m (§6.1); the Free Giants who escaped them (§6.17); and **the Gedorix** themselves, two-armed, a third to a half again a person's height, the Cloud Giants (§6.21).
 - **Lizardmen** (§6.20): not human as far as anyone knows; on Krator since the Cataclysm; reborn with their memories, sometimes into another of their six castes.
 - **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18). Some of the Valley's ghouls were True Heirs (§6.19).
 - **The True Heirs** (§6.19): metallic skin and hair (gold, silver, bronze, gunmetal), long-lived, descended from the Ancients' highest caste and compatible with their systems. **Yetis** (planned, §6.19): cold-adapted, on the Outer Wall above Farside.
@@ -820,6 +861,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
 - **The Eternal State** (§6.19): shares the NW lowlands with Jimjam and dates its contracts by Jimjam's count; the Republic on its eastern highlands; Dilihan through the Cut; the Yeti Kingdom above Farport; the bandits of the dam basins; the Valley between it and Dalab, so the two Valley-wardens never meet; the only culture in contact with anyone from beyond the crater (Farport's visitors). The Order of Historians and Dalab's genepriests both want what the Heirs have.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
+- **The Gedorix and Dalab** (§6.21): Dalab's skinchangers raided them for their genes, and made Dalab's Giants of them; **the Gedorix and the Free Giants**: kin by blood, uneasy, imitated.
 - **The Lizardmen** (§6.20): no contact at all; they never trade or treat. War with Xanadu (Rishtowar VII; the raids on the Vale), the tunnel wars with the Tungangs (§6.1), and the Monks of History's contradictory accounts.
 
 ## 12. Contradictions and open questions
