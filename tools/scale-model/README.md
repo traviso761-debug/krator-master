@@ -415,6 +415,8 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   - **Ledge's point** to the north cliff (px 165,1000), now or with the great-lake item above;
   - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
   - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
+  - split **`rift rim`** into **`rift rim N`** and **`rift rim S`** along the Rift's axis, one biome each (`biomes/riftrim/PLAN.md`
+    section 3);
   - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats;
   - a region **"Stalker Peaks"** east of the Catch: the ranges between its eastern wall and Hub 01, and the 13-15 km peaks
     round Hub 01's high valley (px ~960-1140 by 950-1180; `biomes/catch/PLAN.md` section 6c).

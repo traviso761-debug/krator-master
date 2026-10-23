@@ -2,8 +2,9 @@
 
 **The rift rim**: the high country round the Rift, south of the crater across the Outer Wall. Wild and untamed: the
 walls of the Rift's trough and the highland at its western head, a staircase of lakes from a great lake in a sheltered basin at
-~300 m to tarns at 5.8 km, forest, tundra and ice. **Its flora is as strange as the Rift's, but temperate**: the Rift's own forms
-(frills, bells, lobes, the teal-and-violet palette) carried up into the cold.
+~300 m to tarns at 5.8 km, forest, tundra and ice. **Three biomes, one family** (the owner, 2026-10-23): the N rim, the S
+rim and the W rift highland, thematically alike and visually distinct, their flora mostly their own and alien, with some
+of the Rift's, the SW lowlands' and the S highlands' (section 3).
 
 Owner's brief (2026-10-23): the region is wild and untamed; too high for the Lizardmen to venture comfortably, and too
 far, with too many Lizardmen in the way, for Xanadu to exert an influence. In practice **the only real power is Dalab**,
@@ -24,9 +25,10 @@ highlands) on the same fields" (`biomes/rift/NOTES.md`).
 |---|---|
 | Folder | `biomes/riftrim/` (the usual kit layout, with `stations/`) |
 | Polygons | `rift rim` (the N and S rims, split by the Rift's axis) and `w rift highland` (the western head, which supersedes the rim there): 267,000 km² together |
-| Pages | five stations (section 9) |
+| Pages | six stations (section 9) |
+| Biomes | three on one kit: `RRIM.biome('n' \| 's' \| 'w')`, each a weighting of the zones and a species list (section 3), sharing the fields and the core |
 | Core | the biome core, `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (relief, carve, the strata module's `canyon` recipe on the trough's walls), `core/water`, the shared sky |
-| Read in place | `biomes/rift`: its cloud forest, Mediterranean crest and highland species (the groundsel, the peak pine, the barrel frill, the fan tree, the Rift stone pine, the beard tree); nothing copied. The Rift kit's own highland can then read this kit back |
+| Read in place | `biomes/rift` (the beard tree, the cloud tree-fern, the monkey-puzzle, the giant groundsel, the peak pine, the silver scrub, the Rift stone pine, the fan tree), `biomes/swlowlands` (the tier cedar, the ribbon gum, the bay laurel, the veil willow) and `biomes/shighlands` (the crozier tree fern, the coilbark, the spiral lobelia), by rim (section 3); nothing copied. The Rift kit's own highland can then read this kit back |
 | Object | `RRIM` on the `BIOME-API.md` contract |
 
 It is a new biome, so it goes in the gallery when it first reaches `main`.
@@ -97,33 +99,115 @@ at all, and why it is fragile.
 - **Natives**: the Tungangs, the Rift line's Ancient worker caste gone feral, Morlock-like, with holds in the caverns,
   and their wilder highland branches, the Fellgangs (the owner, 2026-10-23; section 6; the names proposed).
 
-## 3. The flora: the Rift's forms, gone temperate
+## 3. The flora: three rims
 
-Where an Earth plant is the model, it is named. The palette stays the Rift's (teal, violet, iridescent purple, hot pink
-in the flowers), cooled toward silver and blue-green with height.
+**The owner's brief** (2026-10-23): three biomes in this much area should be **thematically similar but visually
+distinct**. They may take some of the **Rift's** plants (they border it), some of the **SW lowlands'** and, less, the
+**S highlands'** that have been introduced, but **a plurality of their plants should be their own, and mostly alien**.
+The **W rift highland** has the most of the SW lowlands' and S highlands' plants.
 
-### Zones (by height, rain and the lakes)
+**What they share** (*proposed*): the rim is high, cold, thin-aired country over the Rift's abyss, and its own plants
+answer the same three problems in their own ways: **cold** (they store heat), **light** (the sun is fierce at 4-6 km, the
+growing season short), and **water** (it falls as snow and fog, and lies in lakes). Every rim plant is built round one of
+those, so the three read as one family. Where an Earth plant is the model, it is named. All three keep a thread of the
+Rift's palette (teal, violet, a hot pink in the flowers), and each has a palette and a **shape** of its own:
 
-| Zone | Where | What grows |
-|---|---|---|
-| `shore` | the great lake's basin plain and shores, and the trough's lower edge (Csa, Cfa, Csb, under ~2 km) | the Rift's Mediterranean crest read in place: barrel frills, fan trees, Rift stone pines, silver scrub, garrigue; vines and figs on the warm cliffs |
-| `montane` | 2-4.5 km (Dsb, Dsc), the largest zone | **the new forest** (below): frost frills, bell firs, lobe larches, the Rift's beard trees read in place, meadows of prism heath |
-| `alpine` | 4.5-6 km (ET) | the Rift's giant groundsels and the new lantern lobelias, cushion anemones, iridescent lichen fields, felsenmeer |
-| `ice` | over 6 km (EF) | glaciers, snowfields red and violet with snow algae, nunataks |
-| `lake` | every lake and tarn | each lake its own colour (below) |
+| | N rim | S rim | W rift highland |
+|---|---|---|---|
+| **Its name** (*proposed*) | the **glass rim** | the **black rim** | the **veiled rim** |
+| **The climate** (section 1) | the middle: forest and lakes, ~740 mm in the montane | the highest and driest: tundra, rock and ice, a quarter of it over 6 km | the wettest, in cloud: the great lake, Dalab's road, the lowlands below |
+| **The shape** | **vertical**: tall columns over still lakes, the forest and its reflection | **low**: carpets, cushions and rosettes on bare rock and snow, and nothing taller than a man | **hung and patched**: mist, veils hanging from every branch and boulder, a mosaic of native and introduced stands |
+| **The trick** | **glass**: water-filled, translucent tissues that pipe light down into the plant; the low sun lights them from inside | **black**: dark pigments that drink the sun's heat, and leaves that turn with it | **fog**: fine filaments and cups that comb the cloud for water |
+| **The palette** | teal, ice-blue, violet, glass | black-violet, rust, bone-white; red and violet snow | copper, gold, moss green; the lowlands' greens where the introduced grow |
+| **Borrowed** | some of the Rift's cloud forest | the Rift's alpine giants, little else | the most: the SW lowlands' and the S highlands' |
 
-### New species
+### Zones (by height, rain and the lakes; each rim weights them)
 
-| Key | Name | Model | What it is | Harvest |
+| Zone | Where | N rim | S rim | W rift highland |
 |---|---|---|---|---|
-| `frostfrill` | Frost frill | the Rift's frill tree, as a subalpine conifer | a ribbed teal column 25-40 m with short stiff fins in whorls instead of branches, the fins shedding snow; a violet bud at the tip in summer | the resin (a varnish); the fins as tinder |
-| `bellfir` | Bell fir | the Rift's bell palm crossed with a fir | a pale trunk forking twice or three times, each tip an inverted bell of pleated blue-green needles that closes in winter | the closed bells' winter seed: **the staple** (section 7) |
-| `lobelarch` | Lobe larch | the Rift's lobe tree, deciduous | a stringy plum bole with pads of lobed leaves that turn violet and gold in autumn and fall | the bark fibre (cordage) |
-| `lanternlobelia` | Lantern lobelia | the Afroalpine giant lobelias (*Lobelia telekii*) | a 3-5 m spike of hairy bracts, glowing faintly blue from inside on cold nights (the Rift's lantern tree's light) | none (the alpine's beacons) |
-| `cushionanemone` | Cushion anemone | the Rift's anemone stalk as a cushion plant | dense domes of short dark stalks each tipped with a red anemone spray, closing at night | none |
-| `prismheath` | Prism heath | heather (*Calluna*) with the Rift's prism bush's colour | low mats that go green to orange to magenta across a slope through the season | honey (the bees' heath) |
-| `starberry` | Starberry | a lingonberry-like shrub (*Vaccinium*) | star-shaped teal berries that ripen violet | **the fruit** |
-| `rimroot` | Rimroot | a rhubarb-like alpine (*Rheum*), the Rift's croton's veined leaves | huge veined leaves lit magenta along the veins over a thick root | **the medicine**: the root, dried, a purgative and a fever remedy (as rhubarb root) |
+| `shore` | the warm lower edges and the great lake's basin plain (Csa, Csb, Cfa, under ~2.5 km) | narrow | narrow | **wide**: the basin plain, the gorge's head |
+| `montane` | 2.5-4.5 km (Dsb, Dsc) | **the main zone**: the glass forest | thin: krummholz and carpets | **the main zone**: the cloud belt |
+| `alpine` | 4.5-6 km (ET) | high meadow | **the main zone**: the black barrens | fellfield over the cloud |
+| `ice` | over 6 km (EF) | little | **a quarter of the rim** | the peaks |
+| `lake` | every lake and tarn | the algal and peat lakes | the glacial and frozen lakes | the great deep lake and the tarns |
+
+### The N rim: the glass rim
+
+The lake country's forest: tall columns standing in still water, and the water standing in them.
+
+| Key | Name | | Model | What it is | Harvest |
+|---|---|---|---|---|---|
+| `frostfrill` | Frost frill | own | the Rift's frill tree as a subalpine conifer | a ribbed teal column 25-40 m with short stiff fins in whorls instead of branches; the fins are **translucent**, and the low sun lights the whole column from inside; a violet bud at the tip in summer | the resin (a varnish); the fins as tinder |
+| `bellfir` | Bell fir | own | the Rift's bell palm crossed with a fir | a pale trunk forking two or three times, each tip an inverted bell of pleated blue-green needles that closes in winter | the closed bells' winter seed: **the staple** (section 7) |
+| `glasscane` | Glass cane | own, new | horsetail (*Equisetum*), made glass | groves of jointed, water-filled canes 3-6 m in the lake shallows, clear as glass, green at the joints; they ring against each other in the wind | none (the canes are cut for pipes and floats) |
+| `lenswort` | Lenswort | own, new | the window plants (*Lithops*, *Fenestraria*) | a ground cover of fat, clear-tipped leaves, each a lens that focuses light down into the plant: a carpet that sparkles in a low sun | none |
+| `prismheath` | Prism heath | own | heather (*Calluna*) with the Rift's prism bush's colour | low mats that go green to orange to magenta across a slope through the season | honey |
+| `starberry` | Starberry | own | a lingonberry (*Vaccinium*) | star-shaped teal berries that ripen violet | **the fruit** |
+| `beardtree` | Beard tree | Rift | | read in place, in the wettest groves by the lakes | |
+| `cloudfern` | Cloud tree-fern | Rift | | read in place, on the warm lower edge | |
+| `araucaria` | Monkey-puzzle | Rift | | read in place, scattered over the forest | |
+| `crozier` | Crozier tree fern | S highlands, introduced | | a few stands by the lower lakes (*proposed*: carried up the rim by Dalab's road) | |
+
+Six of its own of ten. The lakes: the algal and peat lakes (below), the algal domes in their shallows.
+
+### The S rim: the black rim
+
+The high, dry south: wide barrens of rock, snow and ice, with everything that lives there pressed to the ground, dark,
+and turned to the sun.
+
+| Key | Name | | Model | What it is | Harvest |
+|---|---|---|---|---|---|
+| `sunrosette` | Sun rosette | own, new | the dark alpine rosettes, the giant groundsels' rosette | black-violet rosettes 1-2 m across, fleshy and furred, that **turn through the day to face the sun** and drink its heat; in a field they all face one way | none |
+| `sailwort` | Sailwort | own, new | none on Earth | thin rust-red membranes 1-2 m tall, each on a stalk that turns it edge-on to the wind; a slope of them swings together in a gust and rattles; wind-pollinated | the membranes, dried, as a parchment |
+| `cushionanemone` | Cushion anemone | own | the Rift's anemone stalk as a cushion plant | dense domes of short dark stalks each tipped with a red anemone spray, closing at night | none |
+| `lanternlobelia` | Lantern lobelia | own | the Afroalpine giant lobelias (*Lobelia telekii*) | a 3-5 m spike of hairy bracts, glowing faintly blue from inside on cold nights: the barrens' only tall thing | none (the alpine's beacons) |
+| `rimroot` | Rimroot | own | a rhubarb (*Rheum nobile*, the glasshouse plant of the Himalaya) | huge veined leaves lit magenta along the veins over a thick root, sheltering under a pale bract tower | **the medicine**: the root, dried, a purgative and a fever remedy |
+| `irislichen` | Iris lichen | own, new | map lichens (*Rhizocarpon*) | rock crusts in black, rust and an iridescent violet that shifts with the angle of the light: whole boulder fields wear them | dyes (violet) |
+| `snowblood` | Snowblood | own, new | snow algae (*Chlamydomonas nivalis*) | red and violet blooms on the summer snowfields and glacier edges (a ground layer, not a model) | none |
+| `groundsel` | Giant groundsel | Rift | | read in place, in the sheltered hollows | |
+| `pine` | Peak pine | Rift | | read in place as krummholz at the treeline, flagged by the wind | |
+| `silverscrub` | Silver scrub | Rift | | read in place, on the lower edge | |
+
+Seven of its own of ten. The lakes: the glacial and the frozen.
+
+### The W rift highland: the veiled rim
+
+The wet, clouded western head: the great lake under its cliff, Dalab's road, the gorge, and the lowlands close below.
+Fog sits in it most days, and its own plants live on the fog; and the lowlands' and the S highlands' plants have come up
+into it along the road and the valleys, so it is a patchwork, the native veils and copper cups among stands of
+lowland green.
+
+| Key | Name | | Model | What it is | Harvest |
+|---|---|---|---|---|---|
+| `veilthread` | Veil thread | own, new | old man's beard (*Usnea*) and Spanish moss, as a plant of its own | copper-gold filaments metres long hung from trees, rock and ruins, combing water out of the fog; in a wind the whole slope streams | the threads, as tinder and as stuffing |
+| `mistcup` | Mist cup | own, new | the bromeliads' tanks, on the ground | rosettes of stiff cupped leaves that fill with fog-drip into a clear pool at the heart; animals drink from them; the cups glint after a fog | water, in need |
+| `mistfrill` | Mist frill | own, new | the frost frill's cousin in the cloud | a shorter, leaning frill 8-15 m whose fins are furred with fine hairs that catch the fog and drip it to the roots; copper-teal, hung with veil thread | the fins' fur, felted |
+| `lobelarch` | Lobe larch | own | the Rift's lobe tree, deciduous | a stringy plum bole with pads of lobed leaves that turn violet and gold in autumn and fall | the bark fibre (cordage) |
+| `moorsponge` | Moor sponge | own, new | sphagnum, cushion bogs | deep bogs of a copper-green moss that holds the fog's water; it covers the cloud belt's flats and fills the cirques | peat (fuel) |
+| `tiercedar` | Tier cedar | SW lowlands | | the lowlands' cedar, up to the cloud belt's foot (`swlowlands` `cedar`) | |
+| `ribbongum` | Ribbon gum | SW lowlands | | in the warm valleys and the basin plain (`gum`) | |
+| `baylaurel` | Bay laurel | SW lowlands | | the basin plain (`baylaurel`) | |
+| `willow` | Veil willow | SW lowlands | | the great lake's shore (`willow`) | |
+| `coilbark` | Coilbark | S highlands, introduced | | stands along Dalab's road (*proposed*: the genepriests planted them, as shelter and for their bark) | |
+| `spirallobelia` | Spiral lobelia | S highlands, introduced | | escaped from the road into the high meadows | |
+| `stonepine` | Rift stone pine | Rift | | read in place, on the drier slopes over the gorge | |
+| `fantree` | Fan tree | Rift | | read in place, on the basin plain | |
+
+Five of its own of thirteen, the most borrowed of the three, as the owner asked; its own are still the most of any one
+source (the SW lowlands give four, the S highlands two, the Rift two). *Proposed*: Dalab's genepriests brought the
+S highlands' spiral plants up the road (the owner: they "have been introduced"), so they grow along it and spread from it;
+the SW lowlands' climbed of themselves, up the warm valleys from the lowlands below.
+
+### Across the three
+
+- **Kept apart by their shapes first and their colours second**, so the stations read differently even in grey: the N
+  rim's columns over mirrors, the S rim's low dark field with one lobelia standing in it, the W's hanging veils in fog.
+- **One shared native**: prism heath grows in all three (its colours run to the rim's palette in each: teal-orange in the
+  N, rust-magenta in the S, gold-magenta in the W), which ties them together at the ground.
+- **The borrowed** fall off with distance: the W takes the lowlands', the N the Rift's cloud forest, the S almost nothing.
+- **Counts**: 18 of the rim's own (the earlier draft's 8 kept, 10 new), 15 read in place or introduced.
+- **Where the rims meet**: the N rim and the W highland meet at the great lake's head (the glass forest giving way to veils
+  as the cloud thickens); the S rim and the W meet over the Outer Wall's crest (carpets running up into fellfield).
 
 ### The lakes' colours
 
@@ -273,7 +357,9 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
 
 A `riftrim` entry (`atm: 1`): zones `shore` (warmth [2, 3], arid [2, 3]), `montane` (warmth [1, 1], arid [1, 3]),
 `alpine` (warmth [0, 0], arid [1, 2], atm 0), `lake` (wet). **The three**: **starberry** (fruit), **bell fir seed**
-(the staple, a nut-grain gathered from the closed bells in winter), **rimroot** (the medicine). Dalab's own crops grow in
+(the staple, a nut-grain gathered from the closed bells in winter), **rimroot** (the medicine). By rim: the N gives the
+fruit and the staple, the S the medicine; the W's basin plain grows Dalab's crops and the lowlands' (`kits/crops`,
+`CROPS.forBiome`). Dalab's own crops grow in
 the arcology's gardens (`kits/crops` records with `home: ['dalab']` that fit the `shore` zone).
 
 ## 8. Fauna
@@ -283,26 +369,31 @@ name). The page's first stations carry birds, insects over the lakes and grazing
 
 ## 9. Stations
 
-1. **Ledge and the great lake** (`dist/riftrim.html`): the arcology on both levels, the cliff top where the road comes out
+1. **Ledge and the great lake** (W; `dist/riftrim.html`): the arcology on both levels, the cliff top where the road comes out
    of the tunnels and the lifts and inclines down the cliff, the lake under the cliff, the basin plain beyond it with Dalab's fields, the gorge's head at the
    far side, the montane forest climbing the walls round it.
-2. **The lakes of the north rim** (`-lakes`): the 1,120 km² lake at 3,271 m (px 261,1060) in frost-frill and bell-fir
-   forest, algal shallows, a chain of smaller lakes stepping down to it, a hanging valley's fall into the trough.
-3. **The cold lake** (`-ice`): the S rim's lake at 4,477 m (px 433,1314), frozen most of the year, the alpine with
+2. **The lakes of the north rim** (N; `-lakes`): the 1,120 km² lake at 3,271 m (px 261,1060) in frost-frill and bell-fir
+   forest, glass-cane groves and algal shallows, a chain of smaller lakes stepping down to it, a hanging valley's fall into the trough.
+3. **The cold lake** (S; `-ice`): the S rim's lake at 4,477 m (px 433,1314), frozen most of the year, the alpine with
    lantern lobelias and cushion anemones, glaciers above, the Rift's floor far below.
-4. **The gorge** (`-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot, the
+4. **The gorge** (W; `-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot, the
    Shift's bells in the dusk.
-5. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, the Ancient tunnel's portal and the waystation
+5. **The crossing** (W into S; `-pass`): the Outer Wall's crest on Dalab's road, the Ancient tunnel's portal and the waystation
    before it, the Tungangs' signal lamps in the tunnel's mouth, the road winding over the high tundra under a near-airless
    sky.
+6. **The black barrens** (S; `-barrens`): a high plateau of the S rim at ~5 km, sun rosettes all facing one way, a slope of
+   sailwort swinging in the wind, iris lichen on the boulders, snowblood on the summer snow, one lantern lobelia standing
+   over it all at dusk, the Rift's trough falling away at the edge.
 
 ## 10. Textures
 
 In the library: `ground.tundra`, `ground.turf.polygon`, `ground.snow011`, `ground.snow015`, `ice.glacier`, `ice.clear`,
-`ground.lichen.crust`, `ground.sphagnum`, the Rift kit's own sets. To source or generate (prompts first): bark and fin
-cards for the frost frill, needle bells for the bell fir, lobe larch leaves (summer and autumn), the lantern lobelia, the
-cushion anemone, prism heath (three seasons), starberries, rimroot; red and violet snow algae on snow; the algal lake
-shallows.
+`ground.lichen.crust`, `ground.sphagnum`, the Rift kit's own sets. To source or generate (prompts first), by rim:
+the N rim's frost-frill bark and translucent fins, bell-fir needle bells, glass cane, lenswort, prism heath (three
+seasons), starberries; the S rim's sun rosette (black-violet fur), sailwort membrane, cushion anemone, lantern lobelia,
+rimroot, iris lichen on rock (black, rust, iridescent violet), snowblood on snow (red, violet); the W highland's veil
+thread, mist cups, mist frill fins, lobe larch leaves (summer and autumn), moor sponge (`ground.sphagnum` may serve); the
+algal lake shallows. The borrowed species bring their kits' sets.
 
 ## 11. Order of work
 
@@ -328,3 +419,8 @@ shallows.
    already a Dalab outpost on the model (a wrecked arcology, px 282,680, `LORE.md` §6.1): keep both, rename one, or move
    Dalab's Span to the gorge. An arcology that spans the great lake's gorge would suit the name.
 6. **The model's Rift settlements** want a rework of their own (names, places, types), with Arccube fixed.
+7. **The three rims' flora** (section 3, proposed 2026-10-23): their names (the glass, black and veiled rims), their
+   tricks (glass, black, fog), the ten new species, and who brought the S highlands' plants up (*proposed*: Dalab's
+   genepriests, along the road).
+8. **The model's polygon**: `rift rim` is one polygon round both sides of the trough. Split it into `rift rim N` and
+   `rift rim S`, so each biome has its own (a record edit, `tools/scale-model/README.md`)?
