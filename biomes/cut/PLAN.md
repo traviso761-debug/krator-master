@@ -53,8 +53,8 @@ The model already holds the bowl: the ground falls to the floor from every side 
   floor's summer is deadly to people (section 6).
 - **The mouths.** The lip stands under +700 m from bearing 120° to 180° (south-east to south): **the crater mouth**,
   open, the floor running out to the crater. Elsewhere the lip stands 3.2-6.4 km, highest to the east-north-east (6.4 km)
-  and the south-west (6.1 km). **The north mouth to the lowlands is not on the model**: north of the centre the lip
-  stands 3.2-4.2 km (section 9).
+  and the south-west (6.1 km). **The north mouth to the lowlands is cut in 4.22** (the owner, 2026-10-23;
+  `tools/scale-model/README.md`): on 4.21 the north lip stands 3.2-4.2 km, a ridge about 50 km across above Jimjam's lake.
 - **Dilihan** (px 472,333) is 66 km from the centre on bearing ~160°, at -1,142 m (1.85 atm, Af, ~1,500 mm, +31 °C): in
   the crater mouth, where the bowl opens. That matches its plan's "the southern end, where the bowl opens toward the
   crater"; the walls rise on either side of it.
@@ -151,19 +151,25 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 3. **The cut face** (`-face`, about px 427,302: the west lip, ~5,100 m, about -2 °C): the bare curved face, circle
    lichen, the warp fading out into nhighlands' normal forest on the mountain above, the whole bowl below.
 
-## 9. Questions for the owner
+## 9. The mouth, the shape, the heat
 
-1. **The north mouth.** The lore opens the Cut to the lowlands on the north as well as to the crater on the south; on
-   the model only the south is open (the north lip 3.2-4.2 km). Cut a north mouth on the model in 4.22 (as the
-   western outlets were cut), or keep the Cut as a bowl open only to the crater, with the pass road climbing out north?
-2. **The shape.** The model's bowl is a shallow cap (the bottom of a very large sphere), where the lore says "the
-   sphere's lower half". Either the lore says "the bottom of the sphere", or the bowl is deepened (a hemisphere 150 km
-   across would be 75 km deep, which the model cannot hold).
-3. **The heat.** Keep the floor a deadly hothouse (+39 °C mean), or temper it on the model?
+1. **The north mouth** (settled 2026-10-23): cut on the model in 4.22, on bearings ~345-15°, the bowl's curve continued
+   north to a sill at the lowlands' own level (~500-800 m) so Jimjam's lake does not drain in. The pass road runs from
+   the lowlands through it, across the floor's edge, and out the crater mouth past Dilihan.
+2. **The shape: where the weapon was.** The model's bowl is a shallow spherical cap, ~130-160 km across and 5-8 km deep
+   (the floor at -2.2 km under a range ~3.5 km high). A sphere that cuts such a cap has radius R = (a² + h²) / 2h, with a
+   the cap's half-width and h its depth: **R about 260-640 km, most likely ~450 km, its centre 250-630 km above the old
+   ground**. So the weapon did not go off in the air: anything centred inside the atmosphere (under ~100 km) cuts a bowl
+   tens of kilometres deep (centred 20 km up, a 150 km bowl would be ~58 km deep). It was **an orbital detonation, or a
+   deletion projected from orbit**: a sphere some 500-1,300 km across, almost all of it empty space, that grazed the
+   planet and took the Wall's crest with it. The lore's "the sphere's lower half" would become "the bottom of the sphere"
+   (`LORE.md` §6.2), and the Cut gains a second story if the owner wants it: the same sphere took a column of air, and
+   the atmosphere falling into the void would have been heard and felt across the crater.
+3. **The heat**: open (keep the floor a deadly hothouse, or temper it on the model).
 
 ## 10. Order of work
 
-- **C0.** The owner answers section 9; the texture prompts (hyperbamboo culm and leaf in Krator's size, rankgrass,
+- **C0.** The owner settles the heat and the lore's wording (section 9); the north mouth is on the model's to-do list; the texture prompts (hyperbamboo culm and leaf in Krator's size, rankgrass,
   measure melon, circle lichen, a polished curved rock face; `bark.bamboo.jade`, `fibre.bamboo.lattice`, `ground.salt`,
   `ground.efflorescence` are in the library) into `core/materials/PROMPTS-NEEDED.md`; any model edit (the north mouth)
   goes on the model's to-do list.

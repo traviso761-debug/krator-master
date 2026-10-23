@@ -312,3 +312,20 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   savanna country round it, leaving the drier north (toward the painted highlands) as it is; recompute the class there
   (Am/Aw expected), repaint the rain and climate maps, re-run `edit_rivers.py`'s rain pass for the cells it changes,
   publish, and re-cut `settlements/pinnacle-rock/region/`.
+- **4.22: the Cut's north mouth** (the owner, 2026-10-23; `biomes/cut/PLAN.md`). The lore opens the Cut to the lowlands
+  on the north as well as to the crater; on 4.21 only the south-east (bearings 120-180 deg from the centre, px 460,302) is
+  open, and the north lip stands 3.2-4.2 km. The ridge north of the floor is narrow: on x 450-470 it stands 3.4-3.9 km
+  between y ~276 and ~248 (about 50 km) and falls to ~500 m by y 220 above Jimjam's lake (y ~212). Cut a mouth on
+  bearings ~345-15 deg (px x ~445-475): continue the bowl's curved floor north until it meets the lowland slope, the sill
+  at the lowland's own level (~500-800 m, about y 228-236) so Jimjam's lake (~165 m) does not drain into the bowl, ~30 km
+  wide at the sill and widening into the bowl, the walls eased (the western outlets' `cut_channel` with a curved floor).
+  Then re-route the rivers (the bowl stays endorheic), reclimate, relight, repaint, publish; the pass road runs through it.
+- **4.22: the Bowl's lake effect** (the owner, 2026-10-23). 4.21 grew and joined the Bowl's lakes into one salt lake
+  (9,600 km2, px 762-948 by 783-846) but gave it no lake effect: rain beside it is ~280 mm within 4 km against ~250 mm 40
+  km away, and the shore is BWh to the water. The eastern abyss's lakes, by the same model, carry ~1,100 mm at the shore
+  (~1,290 downwind) against ~520 at 20-40 km. Give the Bowl the abyss's method (`lake_rain`: the floor's background times
+  the ratio by share of water within ~12 km), **damped for a hypersaline lake** (salt lowers evaporation, and a real hot
+  salt lake gives little rain: the Dead Sea's shore gets ~50-100 mm), to about a third of the abyss's lift: proposed
+  ~400-550 mm within ~10 km on the downwind south-east shore, ~300-400 upwind, fading by ~30 km, so the shore turns BSh
+  and the deltas and the south-east shore green. Moderate the shore's temperature extremes a little (the lake's thermal
+  mass). Reclimate the class from the new rain, repaint the rain and climate maps.

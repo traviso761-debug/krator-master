@@ -36,9 +36,14 @@ basin, its yardangs (*kaluts*) and its dunes.
 - **The rivers**, all endorheic: **The Bowl river** (111 m³/s, in from the east), **The Bowl river 2** (78 m³/s, from the
   south), two streams of 30 and 27 m³/s from the south-east, and **Istrim Bidar** (10 m³/s, from the north-west into its
   own pan). Each makes a **delta** across the salt flat: the only green on the floor.
-- **Settlements**: **Mantis** (village, px 831,816) and **Arcbeam** (arcology, px 744,728, 2,133 m, on the north-western
-  rim, +12 °C, ~850 mm: above the heat). **Mantis is under water on 4.21**: its point is inside the lake (-1,231 m, a
-  water cell; the nearest dry shore is 2 km west, px 830,816, at -1,143 m). See section 8.
+- **Settlements**: **Mantis** (village, px 830,816, -1,143 m, on the west shore: moved there from inside the 4.21 lake on
+  2026-10-23) and **Arcbeam** (arcology, px 744,728, 2,133 m, on the north-western rim, +12 °C, ~850 mm: above the heat).
+  **Mantis** is an Iziz holding: a salt town that grew under Yuni's influence and was later taken over by Izani merchant
+  houses, named after the **Bowl mantis**, a large predator of the region (`LORE.md` §6.2). It may want a vassal kit of
+  its own, on the Iziz Vernacular contract (`settlements/iziz/VASSAL-KITS.md`), with Yuni's look under the merchants'.
+- **The climate is corrected on the model in 4.22** (`tools/scale-model/README.md`): 4.21 gave the lake no lake effect,
+  so its shore is hot desert to the water. A damped lake effect turns the shore and the deltas to hot steppe (~400-550 mm
+  on the downwind south-east shore). The zones below assume the corrected climate.
 - **Neighbours**: the sedesert proper to the west and north (4,700 km² of shared border), the eastern badlands on the
   east, godstep valley and the eastern Inner Wall on the north.
 
@@ -52,7 +57,7 @@ hazy. The extremes reach **47 °C**: the hottest ground in the east. Heat shimme
 
 | Zone | Where | Ground | What grows |
 |---|---|---|---|
-| `lake` | the open water | teal hypersaline water; brine-red shallows where the algae bloom | brine algae; nothing rooted |
+| `lake` | the open water | teal hypersaline water, the shallows **banded pink, teal and ochre** by the algae and brine shrimp of each salinity (as Lake Hillier and the Lut's and Uyuni's pans), the bands shifting with the season | brine algae; nothing rooted |
 | `rim` | 0-10 km inside the shore | the ochre salt rim: iron-stained crust, salt ridges | nothing |
 | `flat` | 0-28 km outside the shore | the pale salt flat: polygonal crust (`ground.salt`), efflorescence, salt pans, mud cracks at the edge | nothing on the crust; glasswort carpets in the damp hollows |
 | `delta` | where each river crosses the flat | silt fans, braided channels, reed beds | salt reed, tamarisk, wadi palms, the kit's mesquite: green fingers across the white |
@@ -94,29 +99,30 @@ place for `core/hamlet`'s salt village (`KHAMLET.village`, the salt kind).
 
 ## 6. Fauna
 
-The kit's six kinds where they fit (the floor is too hot for the deer). Added, for `kits/fauna` later: brine flies in
-clouds at the shore, a long-legged wading bird on the brine (feeding on the brine shrimp), salt beetles on the crust.
+The kit's six kinds where they fit (the floor is too hot for the deer). Added, for `kits/fauna` later: **the Bowl mantis**
+(the region's large predator, which Mantis is named for: an ambush hunter of the halo and the deltas, coloured like the
+salt scrub), brine flies in clouds at the shore, a long-legged wading bird on the brine (feeding on the brine shrimp),
+salt beetles on the crust.
 
 ## 7. Textures
 
 In the library: `ground.salt`, `ground.efflorescence`, `ground.playa.red`, `ground.clay.popcorn`,
 `rock.sandstone.bedded.red`, the kit's own sets. To source or generate (prompts into `core/materials/PROMPTS-NEEDED.md`):
-the ochre salt rim (a top-down tile), the brine-red shallows (a water tint, not a texture), cards for saxaul, saltbush,
+the ochre salt rim (a top-down tile), the banded pink, teal and ochre shallows (water tints by salinity band, not a texture), cards for saxaul, saltbush,
 glasswort (green and crimson), tamarisk in flower, brine lamp; a yardang-silt rock tile, or the strata module's recipe.
 
-## 8. Questions for the owner
+## 8. Settled (2026-10-23)
 
-1. **Mantis is under the lake.** Move its point 2 km west onto the shore (px 830,816, -1,143 m),
-   or keep it where it is as a **stilt village** standing in the shallows, salt-workers over the brine?
-2. **The brine colour**: the shallows red-pink with algae (as Lake Hillier and the Lut's pans), or kept to the 4.21
-   look's teal and ochre?
+- **Mantis moved** to the west shore (px 830,816) on the model, its notes on the record; an Iziz holding (section 1).
+- **The brine** is banded pink, teal and ochre (section 3).
+- **The lake effect** is corrected on the model in 4.22 (section 1).
 
 ## 9. Order of work
 
 - **B0.** The owner answers section 8; the site chosen (proposed: the south shore at the Bowl river 2's delta, about px
-  866,826 (-1,082 m, 4 km from the water), showing the delta, the salt flat, the lake and the far rim; Mantis on the shore beside it); texture prompts.
+  866,826 (-1,082 m, 4 km from the water), showing the delta, the salt flat, the lake and the far rim; Mantis on the west shore across the lake); texture prompts; the model's 4.22 lake effect.
 - **B1.** The station's ground: the lake, the rim, the salt flat, the delta from the river's record, the halo.
 - **B2.** The halophytes and the dense-air forms of the kit's trees.
 - **B3.** Yardangs and dunes; the heat shimmer and mirages; the light.
-- **B4.** Mantis (the salt village, by `core/hamlet` if the owner keeps it a village), the crops wiring.
+- **B4.** Mantis seen from the station (its own build, or a vassal kit, is a settlement's work); the crops wiring.
 - **B5.** `verify.py --assert` for the station, `PORT.md`, the gallery (a fix to one kit republishes only its files).
