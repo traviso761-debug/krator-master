@@ -585,8 +585,12 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which drifted like
   **Gothic** (*Heilandisk*: nouns in -s, *stains*, *haims*, *þ* and *ƕ*; *proposed*: written in Breitila's letters too),
   **Farside**, which took **clicks** and other strange sounds (*proposed*: from the sea-traders' speech on Farport's docks),
-  and the **cybernetics tribe's** speech (*proposed*: the least worn, because an Ancient system answers only to a word said
-  whole; they read the forbidden Latin letters to work their computers). The dam basins' bandits speak a mix. The State's
+  and the **cybernetics tribe's** speech, an **avoidance speech** [the owner, 2026-10-23] built to be misheard by the
+  Ancient systems that still listen for English, which came out sounding like **Ainu** (*proposed*: they are the *Yusar*,
+  the users; the machines are *Risnar*, the Listeners; no voiced stops, l > r, the verb last with person prefixes, everyone
+  "one" (*a-*) near a Listener; the command words never said, but kept whole as a liturgy, the calling words; they write
+  the forbidden Latin letters, which their computers read). The **dam basins** mostly speak the **northern traders'
+  argot**, a mix of capital speech, Jimjam's tongue and Izani [the owner, 2026-10-23]. The State's
   name in the market: *Tẽ-tè*; in Paper speech, *Itènale Setète*.
 - **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
   reach the capital's relics, and pay for each one. Dalab guards the Valley from the south with Blade and Span (§6.1), the
@@ -604,7 +608,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **The cybernetics tribe** [the owner's idea, 2026-10-19]: a ruined-arcology people who retain cybernetics and computers
   though they have lost most other advanced technology. *Proposed*: they are the Forgemasters to this State's mechs,
   despised, indispensable and heretical by definition, because what they know contradicts the court's story of itself; the
-  Order courts them and Dalab wants their genomes too; Leng (px 218,224) or Henge (px 185,405) is their seat; the character
+  Order courts them and Dalab wants their genomes too; their **core population lives in the ruin of Carcosa** (px 123,482), with **a large segment at Henge** (px 185,405) [the owner, 2026-10-23]; the character
   kit's cybernetic arm mods (`core/charactermodels`) are theirs.
 - **Trade** (why the caravans cross the Wall): goods from over the sea under State monopoly, the capital's relics by the
   Valley rule, and a kiln country's wares beside Jimjam's brick: porcelain-grade ceramics, glazed tile, paper, a tea or lacquer
@@ -923,7 +927,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
-- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march and Henge dialects, Farside's clicks from over the sea); the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march dialect, the Yusar's words, Farside's clicks from over the sea); the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?
