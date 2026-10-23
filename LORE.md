@@ -580,7 +580,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   forty generations of subjects. The subjects' English has diverged: in the lowlands it is **worn to single syllables
   without tones**, as the spoken Chinese tongues wore down under one script (nasal vowels, homophones said in pairs, measure
   words), and the officials' **Paper speech** is that grammar with court words and **levels for rank**, as Korean and
-  Japanese have (*proposed*: an Heir is never asked a question; the speaker calls himself *sevã*, servant, and ends on
+  Japanese have (*proposed*: an Heir is never asked a question; speakers call themselves *sevã*, servant, and ends on
   *milò*, my lord). There are **five or six main dialects**, no more: **capital speech** (the standard), the **Valley
   march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which drifted like
   **Gothic** (*Heilandisk*: nouns in -s, *stains*, *haims*, *þ* and *ƕ*; *proposed*: written in Breitila's letters too),
