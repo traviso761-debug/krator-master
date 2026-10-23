@@ -2044,7 +2044,9 @@
   "rivers_drawn": 84,
   "dry_px": 1916,
   "wet_px": 1236,
-  "erased_px": 11876
+  "erased_px": 11876,
+  "bowl_recoloured_px": 2426,
+  "catch_recoloured_px": 25242
  },
  "basins": {
   "kept_from_4_21": 141,

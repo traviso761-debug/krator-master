@@ -98,7 +98,8 @@ YETI = dict(px=(143, 177), box=(78, 225, 86, 253), band=(5800.0, 6600.0), ramp=(
 # shore on the first run, over the plan's 400-550), the water seen `shift` px upwind
 # (`down` of it from upwind, the rest the lake round the cell), over the region `region` faded `feather` px; the shore's
 # extremes moderated `moderate` C where water is `wet` of the ground round it
-BOWL = dict(region='The Bowl', damp=0.22, shift=4.0, down=0.6, feather=3.0, moderate=1.5, wet=0.25)
+BOWL = dict(region='The Bowl', damp=0.22, shift=4.0, down=0.6, feather=3.0, moderate=1.5, wet=0.25,
+            flats=(10.0, 6.0))   # the satellite's recolour stays off the salt flats: none within 10 px, full by 16 px
 # 6. the Catch, sealed: the basin under its spill (`spill` m, joined to its lowest point `px`), faded over `fade` cells
 # inside its edge; rain by height (m, mm), never over 4.21's under `cap_under` m; over it the walls take the band (4.21
 # gives the inner walls ~80 mm, which feeds no river; the plan asks for 100-250 mm there and ~30 m3/s of snowmelt rivers
@@ -107,7 +108,11 @@ BOWL = dict(region='The Bowl', damp=0.22, shift=4.0, down=0.6, feather=3.0, mode
 # (under `floor_m`, eased to `floor_top`) warmer in summer and colder in winter (C)
 CATCH = dict(px=(762, 1067), spill=6150.0, fade=5.0,
              rain=[(0, 10), (900, 25), (1100, 40), (3000, 100), (4500, 130), (5500, 100), (6200, 30), (9000, 0)],
-             cap_under=3000.0, floor_m=900.0, floor_top=1600.0, corr=dict(tw=4.0, th=4.0, tc=-3.5, tl=-3.5))
+             cap_under=3000.0, floor_m=900.0, floor_top=1600.0, corr=dict(tw=4.0, th=4.0, tc=-3.5, tl=-3.5),
+             # the satellite map painted as the map's own hyperarid desert (the owner, 2026-10-23: the Taklamakan is not
+             # this green; 4.21's paint kept the wet hot spot's vegetation round Stair and an olive cast on the floor):
+             # under `desert_full` m fully, fading out by `desert_top` m (the snowy walls keep theirs)
+             desert_full=4500.0, desert_top=5500.0)
 
 
 def gpx(su, sv):
@@ -233,6 +238,61 @@ def retint(arr, EoF, EnF, ok, src, step=150.0):
     w = sstep(step, 2 * step, d[mv])[:, None]
     a[mv] = a[mv] * (1 - w) + np.clip(a[mv] * f, 0, 255) * w
     return np.clip(a, 0, 255).round().astype(np.uint8)
+
+
+def desert(arr, EF, rain, tm, skip, region, w, mm=150.0, step=250.0):
+    """the satellite map in `region` repainted as the map's own hyperarid desert: the median colour, by height (bins of
+    `step` m), of the land elsewhere with under `mm` of rain (not snow), laid under each pixel's own
+    brightness detail (its brightness over the local mean), so the texture and the relief's shading stay and the
+    vegetation's colour goes; blended by `w` (0-1)"""
+    a = arr.astype(float)
+    lum0 = a.mean(-1)
+    don = (rain < mm) & (tm > -85) & ~skip & ~region & (EF < 6000) & (lum0 < 170)
+    w = w * sstep(205, 175, lum0)                        # snow and ice keep their white
+    hb = np.floor(np.clip(EF, -2000, 5000) / step).astype(int)
+    bins = np.unique(hb[w > 0]) if (w > 0).any() else []
+    target = np.zeros_like(a)
+    have = {b: np.median(a[don & (hb == b)], 0) for b in np.unique(hb[don]) if (don & (hb == b)).sum() >= 200}
+    if not have:
+        return arr
+    keys = np.array(sorted(have))
+    for b in bins:
+        m = (hb == b) & (w > 0)
+        target[m] = have[int(keys[np.argmin(np.abs(keys - b))])]
+    lum = a.mean(-1)
+    det = np.clip((lum + 4) / (nd.gaussian_filter(lum, 6.0) + 4), .6, 1.5)[..., None]
+    w3 = np.clip(w, 0, 1)[..., None]
+    return np.clip(a * (1 - w3) + target * det * w3, 0, 255).round().astype(np.uint8)
+
+
+def by_climate(arr, EF, rain, tm, skip, region, w, rstep=100.0, hstep=500.0, tstep=4.0, least=150):
+    """the satellite map in `region` repainted for its climate: each pixel takes the median colour of the land elsewhere
+    of its rain, height and mean temperature (bins of `rstep` mm, `hstep` m, `tstep` C; the nearest bin held by
+    `least` pixels or more), laid under its own brightness detail as desert() does; blended by `w` (0-1)"""
+    a = arr.astype(float)
+    lum0 = a.mean(-1)
+    w = w * sstep(205, 175, lum0)
+    if not (w > 0.01).any():
+        return arr
+    key = lambda m: np.stack([np.floor(rain[m] / rstep), np.floor(np.clip(EF[m], -2600, 9000) / hstep),
+                              np.floor(tm[m] / tstep)], 1).astype(int)
+    don = ~skip & ~region & (lum0 < 170) & (tm > -85)
+    kd = key(don)
+    uniq, inv, cnt = np.unique(kd, axis=0, return_inverse=True, return_counts=True)
+    cols = a[don]
+    ok = np.nonzero(cnt >= least)[0]
+    med = np.array([np.median(cols[inv.ravel() == u], 0) for u in ok])
+    have = uniq[ok]
+    tg = w > 0.01
+    kt = key(tg)
+    from scipy.spatial import cKDTree
+    _, nn = cKDTree(have * np.array([1.0, 1.0, 1.0])).query(kt, k=1)
+    target = np.zeros_like(a)
+    target[tg] = med[nn]
+    lum = a.mean(-1)
+    det = np.clip((lum + 4) / (nd.gaussian_filter(lum, 6.0) + 4), .6, 1.5)[..., None]
+    w3 = np.where(tg, np.clip(w, 0, 1), 0)[..., None]
+    return np.clip(a * (1 - w3) + target * det * w3, 0, 255).round().astype(np.uint8)
 
 
 def strokes(rec):
@@ -1091,6 +1151,7 @@ def main():
     report['paint'] = {'rivers_erased': len(erase_ids), 'rivers_drawn': len(redraw), 'dry_px': int(dryF.sum()), 'wet_px': int(addF.sum()),
                        'erased_px': int(eraseF.sum())}
     EFp = up(En, OH, OW, 1)
+    kC_paint = kC * sstep(C_['desert_top'], C_['desert_full'], EFp) * ~wetF2
     for key in ('st', 't'):
         src = Image.open(io.BytesIO(base64.b64decode(lit[key])))
         arr = np.array(src.convert('RGB'))
@@ -1101,6 +1162,16 @@ def main():
         arr = retint(arr, EF0, EFp, ~wetF2 & ~hole, land_src)
         if hole.any():
             arr = ER.inpaint(arr, hole, land_src)
+        if key == 'st':
+            arr = desert(arr, EFp, rain2, temps['tm'], wetF2 | allriv, CmF, kC_paint)
+            # the Bowl's shore, wetter on 4.22 (the owner, 2026-10-23): painted for its new climate where its rain rose
+            # (Mantis's pocket and the south wall's wet foot, which keep 4.21's rain, keep their paint), off the salt
+            # flats round the lake (4.21's LAKE_STYLE, ~14 px)
+            flats = np.clip((nd.distance_transform_edt(~(wet21 & bowlF)) - BOWL['flats'][0]) / BOWL['flats'][1], 0, 1)
+            kB_paint = kB * sstep(40.0, 120.0, rain2 - rain0) * flats * ~wetF2
+            arr = by_climate(arr, EFp, rain2, temps['tm'], wetF2 | allriv, bowlF, kB_paint)
+            report['paint']['bowl_recoloured_px'] = int((kB_paint > .5).sum())
+            report['paint']['catch_recoloured_px'] = int((kC_paint > .5).sum())
         water_src = wet21 & wetF2 & ~allriv
         if addF.any():
             arr = ER.inpaint(arr, addF, water_src)

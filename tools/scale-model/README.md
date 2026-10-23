@@ -317,6 +317,13 @@ water:
   again (78 erased, 84 drawn); the satellite and relief maps are re-tinted where the ground moved more than 150 m
   (`retint`: each pixel scaled by the colour of unmoved land of its new height round it over that of its old), not only
   re-lit, so the Cut's mouth and the Yeti's floor lose the snow of the ground they were.
+  **The satellite repainted for the new climate** (the owner, 2026-10-23: the Catch looked too green, "the Taklamakan is
+  not this green"; then the Bowl): the Catch under 4.5 km (fading out by 5.5 km, snow kept) takes the median colour of
+  the map's own land under 150 mm at its height (`desert`), so 4.21's vegetation round Stair and its olive floor go
+  (25,242 px); the Bowl, where its rain rose, takes that of the land elsewhere of its rain, height and warmth
+  (`by_climate`): its downwind shore turns steppe and savanna (2,426 px), Mantis's pocket, the south wall's wet foot and
+  the salt flats round the lake as they were. Each keeps its own brightness detail, so the texture and the shading stay.
+  Published as version 86.
 
 **The six edits** (the owner's list of 2026-10-23; the plans hold the reasons):
 1. **Pinnacle Rock's knoll** (px 755,351; `settlements/pinnacle-rock/PLAN.md`). Its rain within 12 km (a smoothstep over
