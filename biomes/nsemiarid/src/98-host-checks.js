@@ -13,12 +13,13 @@ function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&NSEMIARID.plantOfItem(item);
+ // a stage's own plants (an overlay's flora: biomes/scablands) answer through STAGE_PLANTS {plantOfItem, kit}
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,KIT=item&&NSEMIARID.plantOfItem(item),SP=!KIT&&item&&typeof STAGE_PLANTS!=='undefined'?STAGE_PLANTS.plantOfItem(item):null,PLT=KIT||SP;
  const S=o.userData.species?NSEMIARID.byKey[o.userData.species]:(best&&best.key&&NSEMIARID.byKey[best.key]),tg=S?S.tags:(PLT?PLT.tags:null);
  if(o.userData.species)name=S.name+'  ·  a variant ('+o.name.replace('variant:','')+')';
  if(PLT&&!S)name=PLT.name+'  ·  '+lab+(PLT.travel&&PLT.travel!=='none'?'  ·  travels: '+PLT.travel:'');
  if(S&&S.travel)name+='  ·  travels: '+S.travel;
- const cls=S||isItem?'flora · n semiarid'+(S&&S.alien?' · alien (Krator\'s own)':''):'terrain / water';
+ const cls=SP?'flora · '+STAGE_PLANTS.kit:S||isItem?'flora · n semiarid'+(S&&S.alien?' · alien (Krator\'s own)':''):'terrain / water';
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
@@ -92,6 +93,13 @@ const HCHK={
    FLIGHT.pin={x:ln.x,z:ln.z};lc=run('calm');lh=run('high');}   // and a stand of drift lanterns: they go the other way
   finally{for(const k in keep)B[k].hold=keep[k];NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
   return{ok:calm[0]===0&&high[0]>=20&&lc[2]>=3&&lh[2]===0,detail:'12 s of calm: '+calm[0]+' winged seeds loose ('+calm[1]+' in all); 12 s of high wind: '+high[0]+' ('+high[1]+' in all); lanterns lifting: '+lc[2]+' in the calm, '+lh[2]+' in the gale'};},
+ // the frill's fins: a breeze leaves them on the column, a gale tears them off (12 s of the module's clock a run, at a
+ // frill near `at`); hold: the fins' hold replaced (a negative: one no wind reaches)
+ fins(at,hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
+  const B=FLIGHT.BEAR.frillFin,keep=B.hold,mode=NSWIND.mode,sc=ATMOS.windScale,n=()=>window._seeds.fins||0;if(hold!=null)B.hold=hold;
+  const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const f0=n();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return n()-f0;};
+  const T=nearTree('frill',at[0],at[1]);let br,hi;try{FLIGHT.pin={x:T.x,z:T.z};br=run('breeze');hi=run('high');}finally{B.hold=keep;NSWIND.set(mode);ATMOS.windScale=sc;FLIGHT.pin=null;}
+  return{ok:br===0&&hi>=3,detail:'fins torn off the frills: '+br+' in 12 s of a breeze, '+hi+' in 12 s of high wind'};},
  // the trumpets' crowns are drawn with their pivot, so the spin turns them about the stalk
  // (every grown trumpet prototype with a crown, near or mid, carries the pivot; the far impostor has no crown)
  spin(protos){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1): drawn still'};const sp=SPI('trumpet');let n=0,ok=0;

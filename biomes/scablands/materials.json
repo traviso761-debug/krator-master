@@ -1,9 +1,79 @@
 {
  "build": "scablands",
  "size": 512,
- "note": "The scablands overlay's own library pack (its build passes it beside the n semiarid kit's: biomes/nsemiarid/build.py build(overlay={tex, pack})). concrete: the dam's broken concrete the flood carried kilometres (the erratics, keep 1: its own grey with the rebar's rust bleeding down it). basalt: the flood basalt's boulders the flood rolled with them (keep 1). Run python3 tools/textures/pack.py biomes/scablands after any change, then python3 build.py.",
+ "note": "The scablands overlay's own library pack (its build passes it beside the n semiarid kit's: biomes/nsemiarid/build.py build(overlay={tex, pack})). concrete: the dam's broken concrete the flood carried kilometres (the erratics, keep 1: its own grey with the rebar's rust bleeding down it). basalt: the flood basalt's boulders the flood rolled with them (keep 1). Run python3 tools/textures/pack.py biomes/scablands after any change, then python3 build.py. (2026-10-23) The pools' own flora (src/72-biome-scablands-pools.js), whole sheets cut by cell in code: card.lily (card.lotus: pads and blooms), card.quill (card.sword: the yellow-green rosettes), card.sedge (card.seagrass), card.fern (card.fern.green); keep 1, their own colours.",
  "families": {
-  "concrete": {"lib": "concrete.rust.streaked", "scale": [3, 3], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1},
-  "basalt": {"lib": "rock.basalt.vesicular", "scale": [3, 3], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2}
+  "concrete": {
+   "lib": "concrete.rust.streaked",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1
+  },
+  "basalt": {
+   "lib": "rock.basalt.vesicular",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2
+  },
+  "card.lily": {
+   "lib": "card.lotus",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "card.quill": {
+   "lib": "card.sword",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "card.sedge": {
+   "lib": "card.seagrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "card.fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  }
  }
 }

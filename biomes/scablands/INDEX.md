@@ -15,6 +15,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `45b-host-stage.js` | 15 | the water (core/water still records) (48); the climate fields (cached below; these are the  (79); the erratics (records; drawn by 87-host-erratics (104); the host binding (117); the inspector's volumes (143) |
+| `45b-host-stage.js` | 16 | the water (core/water still records) (48); the climate fields (cached below; these are the  (80); the erratics (records; drawn by 87-host-erratics (110); the host binding (123); the inspector's volumes (151) |
+| `72-biome-scablands-pools.js` | 9 |  |
 | `87-host-erratics.js` | 5 |  |
-| `99-host-take.js` | 11 | the budgets (the kit's) (22); the overlay's checks (24); the page, handed to the host (81) |
+| `87a-host-pools.js` | 1 |  |
+| `99-host-take.js` | 13 | the budgets (the kit's) (28); the overlay's checks (30); the page, handed to the host (99) |

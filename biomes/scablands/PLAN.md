@@ -16,7 +16,7 @@ nothing without it. Its weight comes from physics: the ground under the flood's 
 | the flora | the n semiarid kit, read in place; its zones read the fields (`rock`, `scour`, `slope`, `wet`): scoured basalt is near bare, the loess islands keep the steppe |**built** (2026-10-23) |
 | the water: the plunge-pool lake under the falls (Dry Falls Lake), potholes holding rain | `core/water` still records |**built** (2026-10-23) |
 | erratics: dam concrete with rebar, carried kilometres; basalt boulders | this build (`ERRATICS` in the stage, `87-host-erratics.js`; its own library pack) | **built** (2026-10-23) |
-| its own flora: the pothole pools' plants | this build | S1 |
+| its own flora: the pothole pools' plants (kolk lilies, pothole quills, seep sedge, spray ferns at the falls' foot) | this build (`72-biome-scablands-pools.js`, its own kit registry and pack) | **built** (2026-10-23) |
 | the flood lake's high line and its rafted wreckage (station 2, over NW lowlands) | | later |
 
 ## 2. The engine
@@ -63,5 +63,6 @@ seeds, the variants), and the station's:
 - **the scour bare of trees**: the kit's trees and shrubs thinner on scoured rock than on the plateau's steppe (its small
   plants and stones it heaps on rock by design: reported, not judged);
 - **the erratics sunk in the floor**: every one in the ground and out of it, none in the water, all on the coulee's floor;
+- **the pools' flora in its places**: lilies on their pool's water, quills on the waterline, ferns at the falls' foot;
 - **the water held**: the plunge lake's and every pothole pool's shore over its level all round;
 - each with a broken input that must fail.

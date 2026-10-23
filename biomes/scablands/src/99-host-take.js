@@ -18,10 +18,15 @@ const VIEWS={
  'Down the lower coulee':lookC(gc(LEN-800,-HALF-260,40),gc(FALL.s+900,0,0)),
  'An erratic: the dam\'s concrete':(()=>{const up=ERRATICS.filter(q=>q.kind==='block'&&SC.locate(q.x,q.z,{}).s<FALL.s-600).sort((a,b)=>b.sx*b.sy-a.sx*a.sy),e=up[0]||ERRATICS[0]||{x:0,z:0,sx:4,sy:3};
   const d=e.sx*3+14,c=[e.x+d*.8,0,e.z+d*.6];return[c[0],terrainH(c[0],c[2])+e.sy+5,c[2],e.x,terrainH(e.x,e.z)+e.sy*.4,e.z];})(),
+ 'A pothole with its kolk lilies':(()=>{const P=POTHOLES.slice().sort((a,b)=>b.r-a.r)[0]||{x:0,z:0,level:terrainH(0,0),r:10},D=Math.max(14,P.r*1.6);
+  return[P.x+D*.8,P.level+Math.max(12,P.r*1.1),P.z+D*.6,P.x,P.level,P.z];})(),
+ 'The spray ferns at the falls\' foot':(()=>{const F=SC_POOLS.fern;let f=F[0]||[0,terrainH(0,0),0],bn=-1;for(let i=0;i<F.length;i+=3){let n=0;for(const q of F)if(Math.abs(q[0]-F[i][0])<12&&Math.abs(q[2]-F[i][2])<12)n++;if(n>bn){bn=n;f=F[i];}}
+  let best=null;for(let a=0;a<16;a++){const c=[f[0]+Math.cos(a/16*TAU)*22,0,f[2]+Math.sin(a/16*TAU)*22];if(waterH(c[0],c[2])>-1e8)continue;const y=terrainH(c[0],c[2]);if(y>f[1]+6)continue;if(!best||Math.abs(y-f[1])<Math.abs(best[1]-f[1]))best=[c[0],y,c[2]];}
+  best=best||[f[0]+22,terrainH(f[0]+22,f[2]),f[2]];return[best[0],best[1]+4,best[2],f[0],f[1]+1.2,f[2]];})(),
  'The steppe on the plateau':lookC(gc(LEN*.3,-HALF-1300,6),gc(LEN*.36,-HALF-900,1)),
 };
 // ---------------------------------------------------------------- the budgets (the kit's)
-const BUDGET={showcase:{tris:19500000,calls:900},cls:{pass:16000000,host:900000},type:{'nsemiarid/trees':'pass','nsemiarid/floor':'pass','nsemiarid/nursery':'pass','host':'host'}};
+const BUDGET={showcase:{tris:19500000,calls:900},cls:{pass:16000000,host:900000},type:{'nsemiarid/trees':'pass','nsemiarid/floor':'pass','nsemiarid/nursery':'pass','scablands/pools':'pass','host':'host'}};
 // ---------------------------------------------------------------- the overlay's checks
 const SCHK={
  // THE FALLS: at the horseshoe's lip a cliff of at least 90 m across the coulee's middle; lip(d): where the check looks
@@ -51,6 +56,15 @@ SCHK.erratics=function(E,lift){const k={};let bad=[];for(const e of E){k[e.kind]
   if(!(y<g-.1&&y+e.sy>g+.3))bad.push(e.id+' '+(y<g?'buried':'afloat'));else if(waterH(e.x,e.z)>-1e8)bad.push(e.id+' in the water');else if(L.k<0||Math.abs(L.d)>FLOOR.half)bad.push(e.id+' off the floor');}
  const all=['block','slab','boulder'].every(q=>k[q]>0);
  return{ok:E.length>=40&&all&&!bad.length,detail:E.length+' erratics ('+Object.keys(k).map(q=>k[q]+' '+q+'s').join(', ')+')'+(bad.length?'; '+bad.length+' wrong: '+bad.slice(0,4).join(', '):', each sunk in the floor and out of it')};};
+// THE POOLS' FLORA (the overlay's own): lilies floating on their pool's water, quills on the waterline, ferns at the
+// falls' foot; most pools with lilies
+SCHK.pools=function(O,lift){const W=[];POTHOLES.forEach(P=>W.push(P));const bad=[];let withLily=new Set();
+ for(const l of O.lily){const P=W[l[3]],y=l[1]+(lift||0);if(!P||Math.abs(y-P.level-.03)>.06)bad.push('a lily off its water');else withLily.add(l[3]);}
+ for(const q of O.quill){const lv=q[3]>=0?W[q[3]].level:PLUNGE.level;if(q[1]<lv-.05||q[1]>lv+.85)bad.push('a quill off the waterline');}
+ const foot=SC_CLIFF_FOOT;for(const f of O.fern){if(!foot.some(c=>Math.hypot(c[0]-f[0],c[1]-f[2])<12))bad.push('a fern away from the falls\' foot');}
+ const frac=W.length?withLily.size/W.length:0;
+ return{ok:O.lily.length>=20&&O.quill.length>=100&&O.fern.length>=40&&O.sedge.length>=100&&frac>=.8&&!bad.length,
+  detail:O.lily.length+' lilies ('+withLily.size+' of '+W.length+' pools), '+O.quill.length+' quills, '+O.sedge.length+' sedge, '+O.fern.length+' ferns'+(bad.length?'; '+bad.length+' wrong (first: '+bad[0]+')':'')};};
 const WATERS=[{level:PLUNGE.level,poly:PLUNGE.poly}].concat(POTHOLES.map(p=>({level:p.level,poly:p.poly})));
 const DUST_PTS=Array.from({length:60},(_,k)=>{const p=courseAt(LEN*(k+.5)/60,((k*7)%11-5)/5*HALF*.8);return p;});
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
@@ -67,6 +81,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the coulee\'s walls stepped by the basalt flows',SCHK.benches(false));
  add('the scoured floor near bare of trees, the plateau\'s steppe not',SCHK.bare(T,P));
  add('the erratics sunk in the coulee\'s floor (the dam\'s concrete, the basalt)',SCHK.erratics(ERRATICS));
+ add('the pools\' own flora: lilies on the water, quills on the waterline, ferns at the falls\' foot',SCHK.pools(SC_POOLS));
+ add('the overlay\'s plants tagged with their Koppen classes',HCHK.tagged(Object.values(SCABLANDS.PLANTS).map((P,i)=>Object.assign({key:Object.keys(SCABLANDS.PLANTS)[i]},P))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst();
  add('a species with no Koppen classes',HCHK.tagged(NSEMIARID.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
@@ -78,6 +94,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the coulee\'s walls unstepped',SCHK.benches(true));
  add('the scour and the plateau swapped',SCHK.bare(NSEMIARID.TREES,P,true));
  add('the erratics lifted 10 m',SCHK.erratics(ERRATICS,10));
+ add('the lilies lifted 2 m off their water',SCHK.pools(SC_POOLS,2));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');

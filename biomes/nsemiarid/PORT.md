@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 30 (13%) | 11 (5%) | 14 (6%) | 41 (19%) | 127 (57%) |
+| KB | 30 (13%) | 11 (5%) | 14 (6%) | 42 (18%) | 130 (58%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,9 +24,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/86-host-variants.js` | 14.1 | [web] | 11 | 0 | 0 | 0 | 2 | 1 | 11 | 3 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.8 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89b-host-atmos.js` | 5.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | core/atmos and core/water bound: the wind setting (ATMOS.windScale), NSWIND, the water drawn from its records (in Godot: the Atmos autoload, water_import.gd) |
-| `src/89c-host-seeds.js` | 12.3 | [draw] | 12 | 2 | 0 | 0 | 0 | 4 | 0 | 2 | 0 | 0 | 0 | the seed weather and seed flight: host particles on core/atmos's wind (in Godot, GPU particles on atm_wind; the release rule is data) |
-| `src/98-host-checks.js` | 13.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 9.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks |
+| `src/89c-host-seeds.js` | 13.9 | [draw] | 14 | 2 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | the seed weather and seed flight: host particles on core/atmos's wind (in Godot, GPU particles on atm_wind; the release rule is data) |
+| `src/98-host-checks.js` | 15.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 9.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

@@ -65,6 +65,7 @@ const PLUNGE_W=WATER.still({name:'The plunge-pool lake under the dry falls',leve
 // rays to the rim
 const POTHOLES=(function(){const out=[],S={},R=TERR.R-200;
  for(const K of SC.potholes(-R,-R,R,R)){const x=K.x,z=K.z,s=SC.sample(x,z,baseH(x,z),S);if(s.pothole<.55)continue;
+  if(Math.hypot(x-PLUNGE.x,z-PLUNGE.z)<1200&&PLUNGE_W.contains(x,z))continue;   // under the plunge lake: its water, not a pool of its own
   if(KRAND.unit(KRAND.hash(4421,Math.round(x),Math.round(z)))>.5)continue;
   const y0=terrainH(x,z),dep=s.pothole*(4+11*s.pothole),level=y0+dep*.62,poly=[];let rmax=0;
   for(let k=0;k<28;k++){const q=k/28*TAU,cx=Math.cos(q),cz=Math.sin(q);let hit=45;for(let r=1;r<45;r+=.5){if(terrainH(x+cx*r,z+cz*r)>level+.15){hit=r;break;}}poly.push([x+cx*hit,z+cz*hit]);rmax=Math.max(rmax,hit);}
@@ -78,6 +79,11 @@ const STAGE_WATER=[{key:'plunge',rec:PLUNGE_W,look:{color:0x3e7a72,roughness:.08
 
 // ---------------------------------------------------------------- the climate fields (cached below; these are the definitions)
 const SS={};
+// the alkali rim: a band outside the plunge lake's own shore (its ray at that bearing), 15 m full and gone by 55, on ground
+// at most 3 m over the water (2026-10-23: painted by height alone it whitened the basin's whole floor)
+const PL_R=PLUNGE.poly.map(p=>Math.hypot(p[0]-PLUNGE.x,p[1]-PLUNGE.z));
+function plungeRim(x,z,h){const dx=x-PLUNGE.x,dz=z-PLUNGE.z,dl=Math.hypot(dx,dz);if(dl>1300||h>PLUNGE.level+3)return 0;
+ const k=((Math.round(Math.atan2(dz,dx)/TAU*PL_R.length)%PL_R.length)+PL_R.length)%PL_R.length,dr=dl-PL_R[k];return dr<-2?0:(1-smooth(15,55,dr))*.45;}
 function fieldsAt(x,z,h,slope){const s=SC.sample(x,z,h,SS),wd=waterH(x,z),near=wd>-1e8&&h-wd<3?1:0;
  const dl=Math.hypot(x-PLUNGE.x,z-PLUNGE.z),L=SC.locate(x,z,LOC),ad=L.k<0?1e9:Math.abs(L.d);
  // rain: the plateau steppe's ~420 mm; the coulee's floor a little damper (shade, runoff); the water's margins wet
@@ -86,7 +92,7 @@ function fieldsAt(x,z,h,slope){const s=SC.sample(x,z,h,SS),wd=waterH(x,z),near=w
  const rock=clamp(Math.max(smooth(.38,.7,slope)*.9,scour*(1-bar*.8)*.75),0,1);
  const canyon=smooth(FLOOR.half-50,FLOOR.half+120,ad)*smooth(FLOOR.half+500,FLOOR.half+220,ad);
  return{wet:clamp(wet,0,1),flow,upland:clamp((h-650)/800,0,1),canyon,rim:0,rock,dune:0,oasis:0,slope,abyss:0,
-  salt:(h>PLUNGE.level-.3?smooth(4,.2,h-PLUNGE.level):0)*smooth(1300,800,dl)*.45,cold:clamp((h-900)/2600,0,1),bed:0,silt:s.pool*.5,strand:0,ring:0,shore:0,band:0,
+  salt:plungeRim(x,z,h),cold:clamp((h-900)/2600,0,1),bed:0,silt:s.pool*.5,strand:0,ring:0,shore:0,band:0,
   scour,bar,island:s.island,ripple:s.ripple,dry:0};}
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','bed','silt','strand','ring','shore','band','scour','bar','island','ripple','dry'];
 const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
@@ -130,14 +136,16 @@ const WIND=[1,.3];   // the prevailing wind (n semiarid's: NSEMIARID.setWind in 
 // dark basalt (the columns darker than the entablature over them), their red interbeds, buff sandstone at the foot; the
 // bars' grey gravel; a white alkali rim round the plunge lake
 const SC_TINT=(function(){const K=h=>new THREE.Color(h),COL=K(0x3a3430),ENT=K(0x4e4740),ENT2=K(0x5c544a),RED=K(0x7a4a36),SAND=K(0xb09a74),
- GRAVEL=K(0x8a8478),GRAVEL2=K(0x9e978a),ALK=K(0xe6e0d2),t=new THREE.Color(),R={};
+ GRAVEL=K(0x8a8478),GRAVEL2=K(0x9e978a),CREST=K(0xbab2a2),TROUGH=K(0x6a645a),ALK=K(0xe6e0d2),t=new THREE.Color(),R={};
  return function(c,F,wx,wz,n){const h=FC.at(FC.a.h,wx,wz),r=SC.rock(h,R),rock=F('rock'),sc=F('scour'),bar=F('bar'),k=clamp(smooth(.3,.8,rock)*.9+sc*.35,0,.94);
   // the strata show in the faces; a flat floor is what the flood left on it: a flow's dark top (the red interbed
   // stripped) above the basalt's base, the flood's gravel below it (the sandstone shows only in the cliffs)
   const face=smooth(.3,.55,F('slope'));let kind=r.kind;if(face<.5){if(kind==='interbed')kind='basalt';else if(kind==='sandstone'||kind==='limestone')kind='floor';}
   if(k>0||kind==='floor'){t.copy(kind==='interbed'?RED:kind==='sandstone'||kind==='limestone'?SAND:kind==='floor'?GRAVEL:kind==='cover'?ENT2:r.colonnade>.5&&face>.5?COL:ENT);
    if(kind==='basalt')t.lerp(ENT2,clamp(.5+n*2,0,1)*.4);c.lerp(t,(kind==='floor'?.7:k)*(1-bar*.75));}
-  if(bar>.05){t.copy(GRAVEL).lerp(GRAVEL2,clamp(.5+n*2,0,1)+F('ripple')*.6);c.lerp(t,smooth(.05,.5,bar)*.85);}   // the ripples' crests lighter
+  if(bar>.05){t.copy(GRAVEL).lerp(GRAVEL2,clamp(.5+n*2,0,1));c.lerp(t,smooth(.05,.5,bar)*.85);
+   // the giant current ripples: their crests light, their troughs dark (2 to 6 m of relief over ~90 m reads faintly)
+   const rp=F('ripple'),b=smooth(.1,.5,bar);c.lerp(CREST,rp*b*.55);c.lerp(TROUGH,(1-rp)*b*.3);}
   const salt=F('salt');if(salt>.02)c.lerp(ALK,smooth(.02,.3,salt)*.8);};})();
 const STAGE_GROUND={N:640,label:'The scablands: the west coulee',region:'The scablands: a coulee and dry falls on the west breach (in small)',rows:null,tint:SC_TINT};
 // ---------------------------------------------------------------- the inspector's volumes

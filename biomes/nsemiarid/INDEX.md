@@ -35,7 +35,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `86-host-variants.js` | 14 | materials for instancing (the open world's) (19); harvest: what the kit wrote, one geometry per ma (55); growing the variants (79); drawing: one pool of instances per prototype (97) |
 | `88-host-build.js` | 2 |  |
 | `89b-host-atmos.js` | 6 |  |
-| `89c-host-seeds.js` | 12 |  |
-| `98-host-checks.js` | 14 | the inspector's words (11) |
-| `99-host-take.js` | 10 | the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (89) |
+| `89c-host-seeds.js` | 14 |  |
+| `98-host-checks.js` | 15 | the inspector's words (11) |
+| `99-host-take.js` | 10 | the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (91) |
 | `99-tail.html` | <1 |  |

@@ -90,7 +90,7 @@ No fauna (one fauna kit for every biome, `biomes/README.md`).
 88-host-build.js       (host)       build order: the wind, records, floor, bake, variants
 89b-host-atmos.js      (host)       core/atmos and core/water bound: the wind setting (calm, a breeze, high; ?wind=), NSWIND, the water drawn
 89c-host-seeds.js      (host)       the seed weather (drifting plumes) and seed flight: the seeds the wind tears off the trees
-98-host-checks.js      (host)       the kit's checks (HCHK) and the inspector's words, naming no place
+98-host-checks.js      (host)       the kit's checks (HCHK) and the inspector's words, naming no place (a stage's own plants: STAGE_PLANTS {plantOfItem, kit})
 99-host-take.js        (host)       the stage's page handed to core/host: presets, budgets, which checks run (an overlay's station replaces it)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`; `core/terrain/40-core-basin.js` through `CORE_TERRAIN`;

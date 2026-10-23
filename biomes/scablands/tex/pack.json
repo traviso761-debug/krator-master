@@ -31,6 +31,110 @@
     "sourceMean": 0.3813
    }
   },
+  "card.fern": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card.fern.albedo.webp"
+   },
+   "lib": "card.fern.green",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "045e6a4cea717604692f32ce256d203d9133961a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5532860662857364,
+    "sourceMean": 0.5533
+   }
+  },
+  "card.lily": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card.lily.albedo.webp"
+   },
+   "lib": "card.lotus",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "dc357d851b9af4915d9d2b844009e07c5a783113"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5304663396805046,
+    "sourceMean": 0.5305
+   }
+  },
+  "card.quill": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card.quill.albedo.webp"
+   },
+   "lib": "card.sword",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "58370cc5a28350c3328d20f1fc08dfc991454ea2"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.40996304899615155,
+    "sourceMean": 0.41
+   }
+  },
+  "card.sedge": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card.sedge.albedo.webp"
+   },
+   "lib": "card.seagrass",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8152c1edbb697afe3e666e05b0dcd246ca696598"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.40005280485803696,
+    "sourceMean": 0.4001
+   }
+  },
   "concrete": {
    "breakup": null,
    "card": false,

@@ -61,6 +61,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the wind lifts dust off the dry ground, a calm none (core/atmos)',HCHK.dust(DUST_PTS));
  add('the trumpets turn on a pivot',HCHK.spin(VARIANTS.protos));
  add('a gale tears the winged seeds loose, a calm holds them; the lanterns the other way (core/atmos)',HCHK.gale(PLACE.steppe));
+ add('a gale strips the frills\' fins, a breeze leaves them (core/atmos)',HCHK.fins(PLACE.steppe));
  if(window._variants)add('wind-shaped trees face the wind where they stand',HCHK.facing(windShapedDrawn()));
  add('the furlers shut with the gusts (core/atmos)',HCHK.furlers(furlerMeshes(),(window._biome&&window._biome.under&&window._biome.under.furlersShut)||0));
  return R;}
@@ -82,6 +83,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the stream drawn 1.2 m low, under its ground',HCHK.shows(STREAM,1.2,LAKE_SKIP));
  add('dust off ground masked bare of it',HCHK.dust(DUST_PTS,()=>0));
  add('a gale that tears nothing loose',HCHK.gale(PLACE.steppe,1e9));
+ add('fins that no gale tears off',HCHK.fins(PLACE.steppe,1e9));
  if(window._variants){const R=windShapedDrawn();add('wind-shaped trees turned at random',HCHK.facing(R.map((r,i)=>[r[0],r[1],r[2]+1+(i%5)])));}
  add('furlers placed shut, a still frame',HCHK.furlers(furlerMeshes(),12));
  if(window._variants){const M=new Map();for(const [k,P] of VARIANTS.protos)M.set(k,{parts:P.parts.map(q=>({geo:{attributes:{}}}))});add('trumpet crowns with no pivot',HCHK.spin(M));}

@@ -4,12 +4,8 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **The frills' fins stay on the column.** On core/atmos's wind (`89b-host-atmos.js`) the trumpets turn, the
-      seeds fly off the trees when the wind passes each one's hold, the drift lanterns lift in still air, the furlers shut
-      as each gust passes (their material reads `atmWind` where each flower stands), and every crown sways harder and
-      leans downwind as the wind rises. What is left a still frame: a frill's fins on its column (its shed side is
-      drawn, and its plumes fly, but no fin leaves the column), and the trumpets in `?unique=1` (the core's foliage
-      shader has no spin; the variants', which the page uses, has).
+- [ ] **The trumpets stand still in `?unique=1`**: the core's foliage shader has no spin; the variants' shader, which
+      the page draws with, has.
 - [ ] **The catalog owes the fruit.** Apples, walnuts, apricots, pears, pomegranates, pistachios and almonds are drawn
       (on the trees and as windfall) but `kits/catalog/krator-master-furniture-generic-fruit.js` has no piece for any
       of them, so `fruit` is null and the probe names them (`FRUIT_NOT_DRAWN`). Adding them is a catalog change: every
@@ -19,13 +15,19 @@ Read before changing anything here. `build.py` prints the open count.
       ebadlands in place there. Not wired yet.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
-- [ ] **The overlays' plants are not here**: hulk gardens (the rust vine has its tag and item, nothing places it) and the
-      pothole pools belong to `biomes/dambasins` and `biomes/scablands` (`PLAN.md` sections 5, 6).
+- [ ] **The hulk gardens are not here**: the rust vine has its tag and item and nothing places it; it belongs to the dam
+      bed's hulks (`biomes/dambasins`, D3, after its flora, D2). The pothole pools' plants are the scablands' own
+      (`biomes/scablands`, 2026-10-23: kolk lilies, pothole quills, seep sedge, spray ferns).
 - [ ] **Not in the open world yet.** The kit is ready for `WORLD_KITS` (a pass table, make/grow, record mode); the north
       basin's open world (`openworld/north-basin`, data only) is `PLAN.md` step 6.
 
 ## Closed
 
+- [x] **The frills' fins stayed on the column** (closed 2026-10-23). A gale now strips them: a bearer of the seed weather
+      may name its species (`89c-host-seeds.js`, `BEAR.frillFin`), so the frill lets go of its fins as well as its plumes,
+      held to 12 m/s (a breeze's gusts never reach it, a gale's do); a fin kites, falling fast, lifted by the gusts on
+      its broad side, tumbling end over end. The probe steps the module's clock at a frill: none in a breeze, hundreds in
+      high wind, and none under a hold no wind reaches (the negative).
 - [x] **The stream was not continuous** (closed 2026-10-23, the owner's screenshot: the water in pieces down the valley).
       The ground is one grid of 13.4 m cells and the stream 14 m wide, so wherever no vertex fell near the centreline a
       triangle bridged the channel bank to bank and hid the water. In every row the stream crosses, the vertex nearest it

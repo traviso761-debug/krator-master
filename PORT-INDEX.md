@@ -60,13 +60,13 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 14 | 108 | 35 | 0 | 0 | 10 | 63 | 3 | biome, atmos | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 245 | 0 | 0 | 34 | 36 | 175 | 6 | biome | yes | yes |
-| [`biomes/nsemiarid`](biomes/nsemiarid/PORT.md) | 16 | 224 | 30 | 11 | 14 | 41 | 127 | 2 | biome, atmos | yes | yes |
+| [`biomes/nsemiarid`](biomes/nsemiarid/PORT.md) | 16 | 226 | 30 | 11 | 14 | 42 | 130 | 2 | biome, atmos | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 276 | 3 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 179 | 2 | 0 | 13 | 33 | 131 | 5 | biome | yes | yes |
 | [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 181 | 1 | 0 | 12 | 13 | 155 | 2 | biome, atmos | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 211 | 2 | 0 | 16 | 29 | 164 | 5 | biome | yes | yes |
 | [`biomes/ringisles`](biomes/ringisles/PORT.md) | 19 | 189 | 64 | 14 | 14 | 39 | 57 | 2 | biome, atmos | yes | yes |
-| [`biomes/scablands`](biomes/scablands/PORT.md) | 3 | 31 | 11 | 0 | 0 | 15 | 5 | 0 |  |  | yes |
+| [`biomes/scablands`](biomes/scablands/PORT.md) | 5 | 44 | 23 | 0 | 0 | 16 | 5 | 0 |  |  | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 211 | 1 | 0 | 14 | 62 | 135 | 6 | biome, atmos | yes | yes |
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 12 | 154 | 14 | 0 | 13 | 31 | 97 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 192 | 2 | 0 | 10 | 34 | 145 | 6 | biome | yes | yes |
@@ -76,7 +76,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
-| **all** | 2370 | 31273 | 6607 (21%) | 652 (2%) | 1114 (4%) | 3997 (13%) | 18903 (60%) | 279 | | | |
+| **all** | 2372 | 31290 | 6619 (21%) | 652 (2%) | 1114 (4%) | 3998 (13%) | 18906 (60%) | 279 | | | |
 
 ## Host-shell copies
 
