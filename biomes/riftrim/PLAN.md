@@ -94,8 +94,8 @@ at all, and why it is fragile.
 - **Dalab, tenuously**: the arcology on the great lake (section 5), the road and its waystations, field stations at a
   few lakes; supply trains of modded porters and Dalab lizards (the cold-modded strain is a proposal) a few times a year.
 - **Nobody else**: the Lizardmen keep to the Rift's floor and lower walls; Xanadu is beyond them.
-- **Natives**: the deep people, the Rift line's Ancient worker caste gone feral, Morlock-like, with holds in the caverns
-  (the owner, 2026-10-23; section 6; the name open).
+- **Natives**: the Tungangs, the Rift line's Ancient worker caste gone feral, Morlock-like, with holds in the caverns,
+  and their wilder highland branches, the Fellgangs (the owner, 2026-10-23; section 6; the names proposed).
 
 ## 3. The flora: the Rift's forms, gone temperate
 
@@ -161,7 +161,7 @@ strata plan's `rift` recipe: `core/terrain/STRATA-PLAN.md`). So the caverns are 
 
 At 0.75 g a roof carries three-quarters of Earth's load, so chambers span about a third wider. **What it gives the
 region**: long, level galleries make a natural transit network, and **the Ancients' tunnels join them** where they can;
-the warm, wet hypogene chambers are refuges from the rim's winters and **the deep people's holds** (section 6); the
+the warm, wet hypogene chambers are refuges from the rim's winters and **the Tungangs' holds** (section 6); the
 springs at the great lake's foot are the caves' outflow. The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
 Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
 
@@ -172,7 +172,8 @@ Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
   Rift settlements, less extensive than those up north but substantial. **Their hub was Cube (Arccube)**, deep in the
   Lizardmen's country (px 448,1237): the owner's most settled point, and **the reward for a player who braves the
   Lizardmen**. The rest are **very tentative** in name and place (*proposed*: Chimes at the gorge's foot, Cthonos, The
-  Tubes; Pluton on the airless crest as a second crossing's portal).
+  Tubes; Pluton, on the Godthrone's airless flank, is the key to the Ancients' own tunnels up the Godthrone, settled
+  2026-10-23: `openworld/ANCIENT-ROADS.md` section 3).
 - **It is a bridge between two levels**: the highland where Dalab's road comes out of the tunnels (the cliff top, ~1.6-2.5
   km) and the basin and lake ~1.3 km below it (after 4.22). Holding it means working both: the road's terminus, stores
   and stables above; the fields, the harbour and the way to the gorge below; the arcology between them, built into the
@@ -185,7 +186,7 @@ Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
 - **Theme** (*proposed*): a transit hub first (terminus halls, the lift shafts, sidings cut into the rock), with the gene
   bank as a second story: Dalab came for the line's road and stayed for what the arcology's gardens and vaults hold.
 
-## 6. Natives: the deep people (settled 2026-10-23; the name open)
+## 6. Natives: the Tungangs (settled 2026-10-23; the name proposed)
 
 The owner (2026-10-23): an Ancient worker caste gone feral, **the Rift line's crews**, **Morlock-like, underground-adapted
 humans**: "the Zeijani merely adopted the night; these were born to it". **They have holds within the caverns and know them
@@ -221,9 +222,22 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
   *h* and glottal stops, the union's words fossilised in it (*brother* > *broo*, *steward* > *stoord*, *meeting* >
   *meetin*, *strike* > *strak*). *We're not going to work until the steward says so* > *us'll nobbut gan t'wark while
   t'stoord sez* > worn: **"Usl nobga twak wilstood sez."** For `lore/tongues-of-krator.html` when they are named.
-- **The name** (open; candidates): from the union: **the Tunion** (*the Union* > *t'Union* > *Tunion*, which outsiders
-  hear as "the tunnel ones"); **the Broos** (*brothers*); from the line: **the Gangs**, **the Undercrew**; others'
-  names: Dalab's low tongue: **Dadeep**; the lowlanders' **greys** or **lamp-eyes**.
+- **The name** (the owner, 2026-10-23: something evolved out of *tunnel gangs*). *Proposed*: **Tungangs** (one
+  **Tungang**): *the tunnel gangs* > *t'tunnel gangs* > *tunnlgangs* > **tungangs**, in their own worn Northern English.
+  Others' names: Dalab's low tongue **Dadeep**; the lowlanders' **greys** or **lamp-eyes**.
+- **Two branches, perhaps divergent** (the owner, 2026-10-23): the **underground** branch in the tunnels and caverns,
+  and **wilder, highland-dwelling** branches on the rim. *Proposed*:
+
+  | | The Tungangs (underground) | The Fellgangs (highland) |
+  |---|---|---|
+  | Name | *tunnel gangs* | *fell gangs*: *fell* is Northern English for the high moorland, *the fell gangs* > **Fellgangs** |
+  | Where | the holds in the warm caverns, the tunnel stations | the high valleys and fells of the rim, in the lee of the caves' mouths |
+  | Body | the Ancients' design kept: colourless, huge-eyed, dazzled by day | diverged over centuries in the light: darker skin, smaller pupils, still big-lunged and cold-hardy; can bear the day |
+  | Living | dark-grown crops, the line's upkeep, guiding, trade at the lifts | herding and hunting the rim's fauna, a little highland farming, raiding |
+  | The union | the branches, the stewards, the rulebook, the meeting | **lapsed or broken away**: *wildcat* bands that answer to no steward, or keep a rulebook of their own |
+  | Tongue | the worn Northern English above | further gone: a **fell speech** the Tungangs follow with effort |
+  | To Dalab | the bargain at the lifts and in the tunnels | the raids on the supply trains' surface stretches |
+  | To each other | the Fellgangs are lapsed members at best, *scabs* at worst | the Tungangs are the stewards who sold the fells to Dalab |
 
 ## 7. Crops (`kits/crops`)
 
@@ -249,7 +263,7 @@ name). The page's first stations carry birds, insects over the lakes and grazing
 4. **The gorge** (`-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot, the
    Shift's bells in the dusk.
 5. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, the Ancient tunnel's portal and the waystation
-   before it, the deep people's signal lamps in the tunnel's mouth, the road winding over the high tundra under a near-airless
+   before it, the Tungangs' signal lamps in the tunnel's mouth, the road winding over the high tundra under a near-airless
    sky.
 
 ## 10. Textures
@@ -273,11 +287,12 @@ shallows.
 
 ## 12. Questions for the owner
 
-1. **The deep people's name** (section 6 has candidates), their tongue on `lore/tongues-of-krator.html`, how many they are.
+1. **The Tungangs and the Fellgangs** (the names proposed, section 6): how far the branches have diverged, their tongues on
+   `lore/tongues-of-krator.html`, how many they are.
 2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
 3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
-   whether Chimes, Cthonos, The Tubes and Pluton stay, move or go, and whether Pluton is a second crossing.
-4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the deep people at the lifts) is a settlement plan of its
+   whether Chimes, Cthonos and The Tubes stay, move or go (Pluton is settled: the key to the Godthrone's tunnels).
+4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Tungangs at the lifts) is a settlement plan of its
    own (`settlements/ledge/`), after this kit's station 1.
 5. **Chimes may be "The Span"** (the owner, 2026-10-23: the model's Rift settlements need a rework). The name **Span** is
    already a Dalab outpost on the model (a wrecked arcology, px 282,680, `LORE.md` §6.1): keep both, rename one, or move

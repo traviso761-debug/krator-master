@@ -62,6 +62,25 @@ It is a new biome, so it goes in the gallery when it first reaches `main`.
 **Why the Yeti are warlike.** Their heartland, the Yeti Valley, cannot feed them: it is fellfield and ice. Their food
 is the forest-steppe below it, and the rich country they raid, Farside and the State's lowlands, lies below that.
 
+### The central valley, warmer (the model's 4.22; the owner, 2026-10-23)
+
+The trough round the frozen lake (~18,000 km² under 6.6 km, px ~78-225 by 86-253) has its floor at ~6.3 km on 4.21:
+warmest month +4 °C, coldest -22, mean -9, ~125 mm, 0.73 atm: too cold to farm. The owner asked for it a little warmer
+and more fertile, with enough freezing left for pycrete:
+
+- **The trough lowered ~800 m** (the floor to ~5.5 km), on a smoothstep to its walls so the ranges round it stand as
+  they are; the lake drops with it (to ~5,700 m).
+- **A sheltered-valley correction**: the enclosed floor is a sun trap in summer (+2 °C) and pools cold air on winter
+  nights (-2 °C).
+- **Result**: warmest month **~+11 °C**, coldest **~-19 °C**, mean **~-4 °C**, ~0.80 atm. Permafrost and **permanent
+  pycrete** (mean under -2 °C) everywhere, **summers warm enough for the Three Gifts** and open larch in the bottoms.
+- **The moat holds**: 0.80 atm is still, to a lowland Eternian, about what 5,000 m is to us.
+- **Water**: the valley stays dry (~125-200 mm); the fields are watered by snow and glacier melt off the peaks round it,
+  in channels (Ladakh farms barley on ~100 mm this way). A few thousand km² of irrigated, larch-edged bottoms round a
+  lake frozen seven or eight months a year (the ice quarry still), the pycrete halls above them.
+
+So the heartland feeds its capital, but not the kingdom: the forest-steppe and the raids still do the rest.
+
 ## 2. Air and scale
 
 - **0.93 atm in the forest-steppe**: on Krator, 4 km up is Earth's sea-level air. The Yeti Valley's 0.67 atm is, to an
@@ -162,8 +181,9 @@ frozen high lake. The fields and seeds are deterministic from the terrain (`KRAN
    horizon. The Three Gifts' country.
 2. **The taiga and alases** (`-taiga`, ~5.2 km): open fur larch on permafrost, a chain of alases with their lakes and
    cottongrass, a pingo, caribou moss under the trees. The site is chosen from the model in N0.
-3. **The Yeti Valley** (`-yeti`, ~6.5 km, 0.68 atm): fellfield with woolly snowballs and cushions, goldroot on the
-   cliffs, the frozen lake at 6,480 m, glaciers, the airless rim standing over it.
+3. **The Yeti Valley** (`-yeti`, after the model's 4.22: the floor ~5.5 km, ~0.80 atm): irrigated fields of the Three
+   Gifts and open larch round the frozen lake (~5,700 m), meltwater channels, the capital's pycrete halls; fellfield with
+   woolly snowballs and cushions on the slopes, goldroot on the cliffs, glaciers, the airless rim standing over it.
 
 ## 8. Textures
 
@@ -190,7 +210,8 @@ them): larch bark; a larch needle-tuft card in summer green and autumn gold; a f
 
 ## 10. The people's side (settled 2026-10-23 unless marked)
 
-- **The capital** stands by the frozen lake at 6,480 m, out of every lowlander's reach. Leng is theirs, a held ruin on
+- **The capital** stands by the frozen lake (6,480 m on 4.21, ~5,700 m after the 4.22 valley edit), out of every
+  lowlander's reach. Leng is theirs, a held ruin on
   the forest-steppe below.
 - **The stock**: riding **caribou**, which follow the caribou moss, and **musk oxen** for milk, meat, dung fuel and
   **qiviut**, the musk ox's underwool, the finest and warmest wool there is. It fits the fur theme: the kingdom's cloth

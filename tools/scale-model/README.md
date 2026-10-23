@@ -357,6 +357,13 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   Then re-route (the lake now spills through the gorge at its sill), reclimate the plain (expected Csa, Cfa: a mean of
   ~+16-22 °C, ~1,000-1,300 mm), relight, repaint, publish, and move Ledge's point out of the old lake (to the north
   cliff, px 165,1000, if the owner agrees).
+- **4.22: the Yeti's central valley, warmer** (the owner, 2026-10-23; `biomes/nwouterwall/PLAN.md` section 1). The trough
+  round the frozen lake (px 143,177; ~18,000 km2 under 6.6 km, px ~78-225 by 86-253) is too cold to farm on 4.21 (floor
+  ~6.3 km, warmest month +4 C, coldest -22, mean -9, ~125 mm, 0.73 atm). Lower it ~800 m on a smoothstep to its walls
+  (the ranges round it untouched; the lake drops with it to ~5,700 m), and give the enclosed floor a sheltered-valley
+  correction (summer +2 C, a sun trap; winter nights -2 C, cold air pooling). Target: warmest month ~+11 C, coldest ~-19,
+  mean ~-4 (permafrost, permanent pycrete), ~0.80 atm. Rain stays the valley's (fields on meltwater). Reclimate,
+  relight, repaint; re-run the rivers for the trough.
 - **The Ancients' highways** (the owner, 2026-10-23; `openworld/ANCIENT-ROADS.md`): a network layer on the model
   (`DATA.ancient_roads`), routed over the heights between the Ancient sites, with its tunnels (the Rift line under the
   Outer Wall, at least one route under the Inner Wall), shown as a layer for the owner to review, and carried by

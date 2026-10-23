@@ -50,9 +50,16 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
 
 ## 3. The tunnels
 
-- **The Rift line** under the Outer Wall: Dalab's road (~510 km from Dalab to Ledge, ~20 km over 9 km where nothing
-  breathes, under the crest at about px 209,902; `biomes/riftrim/PLAN.md`), joining the natural caverns where it can.
-  Tentative: a second crossing with a portal at Pluton (px 471,998, on the airless crest at 9.7 km).
+- **The Rift line** under the Outer Wall (the owner, 2026-10-23: **mostly underground**, enough to hold a people): of the
+  draft's 535 km from Dalab to Ledge, ~340 km lies over 4 km and ~420 km over 3 km. The line enters the Wall at portals
+  in its northern foothills (~3.5 km, ~110 km south of Dalab) and comes out on the cliff over Ledge: **~340-420 km of
+  tunnel**, with Ancient stations every ~30-50 km, sidings, ventilation and service galleries, and branches into the
+  natural caves (`biomes/riftrim/PLAN.md`). The surface road over the crest is Dalab's own, for when the tunnel's keepers
+  close it.
+- **Pluton's tunnels** (the owner, 2026-10-23): Pluton (px 471,998, 9.7 km, on the Godthrone's airless flank) is the key
+  to the tunnels the Ancients drove up inside **the Godthrone** to its summit (px 574,909, 17.1 km, ~270 km away), for
+  their own purposes. **Not part of the public network**, and **uninhabitable now**. The draft's Cube-Pluton route stands
+  for the way to Pluton from the Rift.
 - **At least one route under the Inner Wall.** Straight-line checks between Ancient sites on either side (2026-10-23;
   the router will find shorter):
   - **North-west**: the crater's north-west (Trigon px 450,410 or Tethis 461,445) to Footfall (288,437): ~330 km, a
@@ -65,7 +72,7 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
   Republic owns** (name to come). The model's one Republic arcology is **Cascade** (px 296,511, 2,815 m, on the Inner
   Wall), about 140 km north of the straight crater-to-Valley lines: either the tunnel bends under it, or the Republic's
   arcology is a new site nearer the route (the router measures both).
-- Tunnels are where the deep people's kind live (the Rift line's are theirs): an Inner Wall tunnel may hold kin of theirs,
+- Tunnels are where the Tungangs' kind live (the Rift line's are theirs): an Inner Wall tunnel may hold kin of theirs,
   or something worse.
 
 ## 4. What is left of it
@@ -95,7 +102,7 @@ Then **the land it crosses** sets how an unkept stretch failed. A condition per 
 | **The rivers** | 4.21's courses cross it where viaducts fell: broken spans, fords beside them |
 | **The Cut** | **deleted**: the line ends at the bowl's lip in a clean cut, the deck hanging over nothing |
 | **The airless rim** | **intact**: nothing weathers without air, so the high stretches look new |
-| **The tunnels** | some collapsed, some flooded, some kept (the deep people's) |
+| **The tunnels** | some collapsed, some flooded, some kept (the Tungangs') |
 | **Where people live** | **reused**: Izani, Eternian and caravan roads run on Ancient alignments; elsewhere towns quarry its paving |
 
 Modern highways prefer the Ancient alignment where it serves (a cost discount inside its corridor), so the network shows
@@ -111,9 +118,9 @@ its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). Wha
   the crater floor's ring (Trigon, Tethis, Agropolis, Drum, Wing, Torus, Hook, Pylon, Iziz, Lunapolis, Hexahedron, Ys);
   the Valley of the Ancients (Babel, Necropolis, Dorado, Blade) to Dalab; Iziz east by Arcbeam to Yuni and Verge.
 - **Roketstad** joins by Corpus and Trigon; **Verge** by Yuni; **Strongbow** ends Xanadu's short line at Theodiga.
-- **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, 33 km in tunnel); Arcbeam to Stair in the Catch;
-  Hub 01 to Yuni (44 km in tunnel); Cube to Pluton on the crest (Pluton a dead end in the draft: a second crossing north
-  from it is the owner's call).
+- **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, only 33 km in tunnel in the draft: it is to run
+  ~340-420 km underground, section 3); Arcbeam to Stair in the Catch;
+  Hub 01 to Yuni (44 km in tunnel); Cube to Pluton (the key to the Ancients' own tunnels up the Godthrone, section 3).
 - **The Inner Wall to the Valley**: the draft finds **surface passes** (Drum to Cascade, and Wing by Nazar and Span),
   not the tunnel the owner wants: at the draft's tunnel cost a pass is cheaper. The Ancient tunnel goes **under the
   Drum-Cascade pass**, with **Cascade** (the Republic's arcology) as its surface access, as the owner described; the
@@ -153,10 +160,9 @@ It is a draft for looking at: the settlements are to be reworked first, then the
 ## 7. Questions for the owner
 
 1. **The Republic's arcology** over the Inner Wall tunnel: Cascade (the draft's pass runs through it), or a new site?
-2. **Pluton**: a dead end on the crest, or the portal of a second crossing north to the crater?
-3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni, Ys, Dalab, Roketstad and Verge.
-4. **The tentative ruins**: which stand, move or go, so the network is routed once they are settled.
+2. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni, Ys, Dalab, Roketstad and Verge.
+3. **The tentative ruins**: which stand, move or go, so the network is routed once they are settled.
 
 Settled (2026-10-23): every arcology and every ruin is a node, with the cities on Ancient ground; one broad way with a
 guideway down its middle; the Inner Wall route runs west to the Valley of the Ancients; Xanadu's short line ends at
-Strongbow.
+Strongbow; the Rift line runs mostly underground; Pluton is the key to the Ancients' own tunnels up the Godthrone.
