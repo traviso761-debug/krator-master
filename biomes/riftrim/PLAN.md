@@ -94,7 +94,7 @@ at all, and why it is fragile.
 - **Dalab, tenuously**: the arcology on the great lake (section 5), the road and its waystations, field stations at a
   few lakes; supply trains of modded porters and Dalab lizards (the cold-modded strain is a proposal) a few times a year.
 - **Nobody else**: the Lizardmen keep to the Rift's floor and lower walls; Xanadu is beyond them.
-- **Natives**: an Ancient worker caste gone feral (the owner, 2026-10-23); who they are, section 6.
+- **Natives**: the Shift, the Rift line's Ancient worker caste gone feral (the owner, 2026-10-23; section 6).
 
 ## 3. The flora: the Rift's forms, gone temperate
 
@@ -140,6 +140,32 @@ The trough's walls in the strata module's `canyon` recipe (formations stacked up
 moraines damming the lakes; hanging valleys with falls into the trough; the great lake's north cliff; felsenmeer and
 patterned ground in the alpine; glaciers and nunataks; the Outer Wall standing over the west.
 
+### Caverns (proposed, 2026-10-23)
+
+The owner asked how feasible a whole system of natural caverns is here. **Very**: the rift rim has every ingredient, and
+more than any Earth range.
+
+- **Rock that dissolves.** Rifts open along old sedimentary basins, and the rim's walls (the strata module's `canyon`
+  formations) can carry thick **limestone and dolomite** formations between their sandstones. Rain falls on the rim
+  (~850 mm on the W highland, ~570-740 on the N and S rims) and soaks down through it: ordinary **karst**, as in the
+  Alps and the Caucasus, with sinkholes, shafts and the great lake's springs at its foot.
+- **Heat and acid from below.** The model puts **volcanic vents on the rim** round the great lake's basin (px 205,1037 and
+  158,1058, ~3.5-3.7 km; one more on the N rim at 253,1070) and nine on the Rift's floor. Rift hydrothermal water carries
+  hydrogen sulphide; where it meets the limestone it makes sulphuric acid and dissolves caves **from below**
+  (hypogene caves: Carlsbad and Lechuguilla): huge chambers, gypsum blocks and chandeliers, few entrances.
+- **Lava.** Round the vents, **lava tubes**: long, level, smooth-walled galleries, the readiest-made tunnels there are.
+- **Salt.** By the Rift's terminal seas, evaporite beds dissolve fast: salt and gypsum caves at the trough's foot.
+- **Ice** on the high rim: glacier caves and ice-filled shafts.
+- **Depth.** Earth's deepest caves (Veryovkina and Krubera, ~2.2 km) need relief; the rim stands 3-6 km over the
+  trough, with 1-2.5 km of rock between a plateau and its springs, so **the deepest cave systems on Krator** are here.
+- **Size.** At 0.75 g a cave roof carries three-quarters of Earth's load, so chambers can span about a third wider.
+
+**What it gives the region.** The Ancients' tunnels follow and join natural caves where they can (cheaper, and older than
+any record of them); **the Shift lives in the side caves**, as much as in the galleries; Dalab's road dives underground
+where the caves allow; hydrothermal caves are warm, wet and lit by nothing, a refuge from the rim's winters; the springs
+at the great lake's foot are the caves' outflow. The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
+Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
+
 ## 5. Ledge: the hub and the bridge (settled 2026-10-23 unless marked)
 
 - **Ledge is the Ancient arcology**, and the settlement takes its name. It is **where the Ancients' Rift line comes out
@@ -160,9 +186,9 @@ patterned ground in the alpine; glaciers and nunataks; the Outer Wall standing o
 - **Theme** (*proposed*): a transit hub first (terminus halls, the lift shafts, sidings cut into the rock), with the gene
   bank as a second story: Dalab came for the line's road and stayed for what the arcology's gardens and vaults hold.
 
-## 6. Natives: an Ancient worker caste gone feral
+## 6. Natives: the Shift (settled 2026-10-23)
 
-The owner (2026-10-23): an Ancient worker caste gone feral; who they are is open. *Proposed*: **the line's crews.**
+The owner (2026-10-23): an Ancient worker caste gone feral, **the line's crews**, as below, the twist included.
 
 - **Who they were.** The caste the Ancients engineered to run the Rift line: the tunnels under the airless crest, the
   lifts on Ledge's cliff, the stations in the Rift. Bred for **long shifts in thin air and the dark**: barrel-chested and
@@ -176,13 +202,10 @@ The owner (2026-10-23): an Ancient worker caste gone feral; who they are is open
   they call themselves **the Shift**. Their English is the crews' English, with the line's jargon fossilised in it.
 - **They and Dalab.** Dalab's road runs through tunnels the Shift keeps, and Ledge's lifts answer to them, so Dalab's
   hold rests on an uneasy bargain: trade, medicine, a truce at the lifts, and raids when it breaks. The genepriests want
-  the Shift's genes above all (*proposed*: **Dalab's cold and altitude mods were learned from them**, which is how a
-  lowland lab can send its people over the Wall at all), and the Shift remembers being taken.
+  the Shift's genes above all: **Dalab's cold and altitude mods were learned from them** (settled), which is how a
+  lowland lab can send its people over the Wall at all, and the Shift remembers being taken.
 - **Not standard humans, not Lizardmen**: engineered people, as the Giants are Dalab's (`LORE.md` §6.1), but older.
 
-Other candidates for "who", if the crews do not suit: **the arcology's own staff caste** (the gene bank's keepers,
-feral gardeners of the vaults' descendants) or **the Rift settlements' builders** (a hauling and quarrying caste, huge
-and slow).
 
 ## 7. Crops (`kits/crops`)
 
@@ -232,9 +255,13 @@ shallows.
 
 ## 12. Questions for the owner
 
-1. **Who the feral caste are**: the line's crews ("the Shift", section 6), or another of the candidates.
+1. **The Shift** (settled): their tongue on `lore/tongues-of-krator.html`, their foremen's title, and how many they are.
 2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
 3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
    whether Chimes, Cthonos, The Tubes and Pluton stay, move or go, and whether Pluton is a second crossing.
 4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Shift at the lifts) is a settlement plan of its
    own (`settlements/ledge/`), after this kit's station 1.
+5. **Chimes may be "The Span"** (the owner, 2026-10-23: the model's Rift settlements need a rework). The name **Span** is
+   already a Dalab outpost on the model (a wrecked arcology, px 282,680, `LORE.md` §6.1): keep both, rename one, or move
+   Dalab's Span to the gorge. An arcology that spans the great lake's gorge would suit the name.
+6. **The model's Rift settlements** want a rework of their own (names, places, types), with Arccube fixed.
