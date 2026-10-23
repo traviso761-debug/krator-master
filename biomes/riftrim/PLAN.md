@@ -209,13 +209,19 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
 - **They and Dalab.** Dalab's road runs through tunnels and caves they keep, and Ledge's lifts answer to them, so Dalab's
   hold rests on an uneasy bargain: guides, trade, medicine, a truce at the lifts, and raids when it breaks. **Dalab's cold
   and altitude mods were learned from their genes** (settled), and they remember being taken.
-- **The union** (the owner, 2026-10-23): the crews were **unionised**, and the streak runs deep in them still. The union
-  is their state: each hold a **branch** (a lodge), its head a **steward** the branch elects and can recall, the holds
-  bound by the **rulebook** (the old agreement with the Ancients, recited and argued over like law), decisions taken in
-  open **meeting** by show of hands and minuted, and **solidarity** the first virtue: an injury to one is an injury to
-  all. Their banners hang in the holds' halls. A grievance with Dalab is met as a dispute: talks, a work-to-rule at the
-  lifts, a **strike** (the lifts stop, the guides stay home), a picket on the tunnel mouth, and raids only when the talks
-  break down. They never cross a line once drawn.
+- **The union** (the owner, 2026-10-23): the crews were **unionised**, and the streak runs deep in them still, but
+  after a thousand years in the dark, the bosses gone and their civilization destroyed, **the forms are kept without
+  clear memory of what they meant**. Every hold is a **branch**, and every branch runs itself: **syndicalist communes** in
+  the tunnels, bound by **the Book** (the old agreement with the Ancients). A **steward** is elected by show of hands at an
+  open **meeting** and can be recalled at the next; the minutes are recited by heart. **In practice** many holds slide
+  into rule by whoever carries the meeting: a charismatic steward, or a **big man** (*bigun*) nobody votes against.
+- **The Book's readings.** Until Dalab came there was **no one to negotiate with**, so for a thousand years the Tungangs
+  read the Book instead: every clause has its **readings**, schools of interpretation built over centuries (a Midrash),
+  argued at meetings by the **Bookmen** who know them by heart and quoted as proverbs; quarrels between holds are won by
+  the better reading. Dalab is the first counterparty in a thousand years: the Book woke up, the readers argue whether
+  the Labbers are the Gaffers come back, and the **strike**, long a rite, is a weapon again (talks, a work-to-rule at the
+  lifts, the lifts stopped and the guides home, a line no one crosses, raids when the talks break down).
+- **Skab** is the general curse (traitor, bastard, arsehole), its first meaning long forgotten.
 - **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
   worn down over a thousand years in the dark until a modern speaker cannot follow it: *the* cut to *t'* and fused on,
   *thou* kept as *tha*, *owt*, *nowt*, *summat*, *nobbut*, *gan* for *go*, *while* for *until*, *were* for *was*, dropped
