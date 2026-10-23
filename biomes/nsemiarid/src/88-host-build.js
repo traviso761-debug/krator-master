@@ -22,5 +22,5 @@ window._biome=null;
  // after the bake (the kit's stores are empty again): grow the variants and draw the records as instances of them
  if(!unique){try{VARIANTS.init();window._instances+=VARIANTS.stats.drawn;}catch(e){reportErr('variants: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'The northern semiarid country (ideal type)',x:0,z:0,r:TERR.R,h:1400});
+ REGISTER({name:STAGE_GROUND.region,x:0,z:0,r:TERR.R,h:1400});
 })();

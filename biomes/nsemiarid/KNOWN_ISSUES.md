@@ -30,7 +30,7 @@ Read before changing anything here. `build.py` prints the open count.
       The ground is one grid of 13.4 m cells and the stream 14 m wide, so wherever no vertex fell near the centreline a
       triangle bridged the channel bank to bank and hid the water. In every row the stream crosses, the vertex nearest it
       now moves onto the centreline and the next onto the banks (6.5 m, 17 m), and those quads take the lower diagonal
-      (`45-host-stage.js`, the ground). The probe reads the drawn mesh's own height under the water every 10 m
+      (`45c-host-ground.js`, `STAGE_GROUND.rows`). The probe reads the drawn mesh's own height under the water every 10 m
       (`the stream shows`), with a negative (the water drawn 1.2 m low).
 - [x] **The small and weird were flat colour** (closed 2026-10-23): the striders' barrels wear the library's cactus skin,
       their stilt roots and dead stubs the saxaul's gnarled bark (they had drawn black: a three.js rod has no vertex

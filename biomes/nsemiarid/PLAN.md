@@ -6,7 +6,7 @@ Three builds and one change to how the open world lays biomes:
 |---|---|---|
 | `biomes/nsemiarid` | the biome kit of the scale model's "n semiarid" region: **the walking steppe** (section 7) | yes |
 | `biomes/dambasins` | an overlay: the drained dam lakes' beds, their old shorelines, rusted docks and grounded ships (section 5) | no |
-| `biomes/scablands` | an overlay: the breach channels and the flood lake the surge filled (section 6) | no |
+| `biomes/scablands` | an overlay: the breach channels and the flood lake the surge filled (section 6) | station 1 (2026-10-23: a coulee and dry falls on the west breach) |
 
 `biomes/nwlowlands` exists; it takes the overlays where they reach it (section 8). The owner's calls (2026-10-20): the
 walking steppe, with plants that travel and lots of large wind-blown seeds (giant dandelions and the like); the rock is
@@ -285,6 +285,8 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
    probe steps the module's clock to check a gale frees them and a calm holds them). Still to do there:
    `KNOWN_ISSUES.md` (the furling and the frills' shedding as motion, the catalog's fruit, the highland spurs).
 4. **`biomes/dambasins`** and **`biomes/scablands`**, their stations reading the base kits in place.
+   *2026-10-23:* the dam bed's old port (`biomes/dambasins`, on the Ancient Port kit) and the scablands' coulee and dry
+   falls (`biomes/scablands`, on this kit: its page split so a station replaces only its stage and its checks).
 5. **`biomes/nwlowlands`**: the rock zone, the bed response, the pass table and variants.
 6. **A north-basin open world** (`openworld/<name>`) with `WORLD_OVERLAYS`: where one overlay over two biomes is
    actually tested.

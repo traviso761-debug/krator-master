@@ -24,15 +24,18 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 22 | the land (42); the climate fields (cached below; these are the  (108); the host binding (133); the ground (146); the water (237) |
-| `50-biome-nsemiarid-species.js` | 56 **big** | palettes (31); the tree species (75); harvest (biomes/FRUIT.md; kits/crops) (119); the small plants (the floor), tagged (146); leaf textures (179); bark, rock textures (269); geometries local to this biome (299); materials (456); the library cards and barks (materials.json) (486); instanced items (519) |
-| `55-biome-nsemiarid-trees.js` | 36 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (56); polyline helpers (Girder's) (71); keep-clear between trees (81); foliage helpers (88); the builders (123); impostors (the far canopy) (286); the pass (311); the passes (data: species, cell, acceptance from (340) |
+| `45-host-scene.js` | 2 |  |
+| `45b-host-stage.js` | 13 | the land (23); the climate fields (cached below; these are the  (96); the host binding (121); the water (136) |
+| `45c-host-ground.js` | 11 | the ground (5) |
+| `50-biome-nsemiarid-species.js` | 59 **big** | palettes (31); the tree species (75); harvest (biomes/FRUIT.md; kits/crops) (119); the small plants (the floor), tagged (146); leaf textures (179); bark, rock textures (269); geometries local to this biome (299); materials (461); the library cards and barks (materials.json) (491); instanced items (528) |
+| `55-biome-nsemiarid-trees.js` | 36 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (56); polyline helpers (Girder's) (71); keep-clear between trees (81); foliage helpers (88); the builders (123); impostors (the far canopy) (293); the pass (318); the passes (data: species, cell, acceptance from (347) |
 | `60-biome-nsemiarid-floor.js` | 29 | small plants (39); the travellers (52); dew gardens (186); the zone planters (196); the pass (268) |
 | `70-biome-nsemiarid.js` | <1 |  |
 | `82-host-sky.js` | 14 | the rim painter (sedesert's Inner Wall painter,  (8) |
 | `86-host-variants.js` | 14 | materials for instancing (the open world's) (19); harvest: what the kit wrote, one geometry per ma (55); growing the variants (79); drawing: one pool of instances per prototype (97) |
 | `88-host-build.js` | 2 |  |
-| `89b-host-atmos.js` | 5 |  |
-| `89c-host-seeds.js` | 11 |  |
-| `99-host-take.js` | 20 | the inspector's words (43); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (174) |
+| `89b-host-atmos.js` | 6 |  |
+| `89c-host-seeds.js` | 12 |  |
+| `98-host-checks.js` | 14 | the inspector's words (11) |
+| `99-host-take.js` | 10 | the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |

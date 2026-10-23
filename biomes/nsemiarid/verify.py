@@ -184,11 +184,15 @@ async def run(a):
                              "   OVER" if v["over"] else ""))
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                # a page on this kit with another stage (an overlay's station: biomes/scablands) names its own box and
+                # profile on window._api (exportBox, exportProfile); else this showcase's
+                own = await pg.evaluate("()=>({box:(window._api&&window._api.exportBox)||null,prof:(window._api&&window._api.exportProfile)||null})")
+                box = own["box"] or EXPORT_BOX
+                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else (own["prof"] or EXPORT_PROFILE)
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

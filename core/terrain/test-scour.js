@@ -68,4 +68,17 @@ ok('fromRegion reads the extractor\'s courses (km to m)',SR.courses[0].floor===1
 let threw=false;try{K.create({courses:[{pts:[[0,0]],bed:[1,0]}]});}catch(e){threw=true;}
 ok('a course of one point is refused',threw,false);
 
+// ---- a station's scales (2026-10-23, biomes/scablands): a short course takes small islands and no fan
+{const sp=[[0,0],[8000,0]],sb=[560,555,550,545,440,436,432],mk=o=>K.create({seed:5,courses:[Object.assign({name:'coulee',pts:sp,bed:sb,floor:2400,walls:1200},o)],falls:{count:1,spacing:2000,taper:1500,min:35,max:35}});
+ const A=mk({islandL:1400,islandW:420,fan:0}),C=mk({islandL:1400,islandW:420}),bar=(S,x)=>S.sample(x,0,S.locate(x,0,{}).bed,{}).bar;
+ const isl=S=>{let n=0,t=0;for(let x=200;x<7800;x+=50)for(let z=-1000;z<=1000;z+=50){t++;if(S.sample(x,z,500,{}).island>.5)n++;}return n/t;};
+ ok('fan 0: no bar on the floor\'s middle at the course\'s end; the default fans it',bar(A,7900)===0&&bar(C,7900)>.5,bar(A,7900)>0);
+ // the world's scale over 8 km is near-uniform noise (all island or none): a station takes its own
+ ok('islands at a station\'s scale: blobs over part of the floor (3 to 50 per cent of it)',isl(A)>.03&&isl(A)<.5,isl(A)===0);
+ ok('a station\'s fall: one, where the bed steps, its basin as deep as asked',A.courses[0].falls.length===1&&Math.abs(A.courses[0].falls[0].s-4000)<1400&&A.courses[0].falls[0].h===35,A.courses[0].falls.length===0);}
+
+{const S2=K.create({seed:9,courses:[{name:'p',pts:[[0,0],[20000,0]],bed:[500,400],floor:4000,walls:1000}]}),P=S2.potholes(2000,-1500,18000,1500);
+ const deepest=P.every(p=>{const c=S2.sample(p.x,p.z,450,{}).pothole;return c>0&&[[3,0],[-3,0],[0,3],[0,-3]].every(([dx,dz])=>S2.sample(p.x+dx,p.z+dz,450,{}).pothole<=c+1e-9);});
+ ok('potholes(): each centre the deepest of its bowl, about one cell in four',P.length>700&&P.length<1000&&deepest,P.length===0);}
+
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

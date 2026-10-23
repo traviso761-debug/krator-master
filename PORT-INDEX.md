@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 118 | 1257 | 798 | 107 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 118 | 1258 | 799 | 107 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 63 | 735 | 159 | 40 | 10 | 30 | 496 | 9 |  | yes | yes |
 | [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 38 | 611 | 133 | 7 | 82 | 46 | 343 | 14 | atmos | yes | yes |
@@ -60,12 +60,13 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 14 | 108 | 35 | 0 | 0 | 10 | 63 | 3 | biome, atmos | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 245 | 0 | 0 | 34 | 36 | 175 | 6 | biome | yes | yes |
-| [`biomes/nsemiarid`](biomes/nsemiarid/PORT.md) | 13 | 221 | 30 | 0 | 14 | 64 | 114 | 2 | biome, atmos | yes | yes |
+| [`biomes/nsemiarid`](biomes/nsemiarid/PORT.md) | 16 | 224 | 30 | 11 | 14 | 41 | 127 | 2 | biome, atmos | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 276 | 3 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 179 | 2 | 0 | 13 | 33 | 131 | 5 | biome | yes | yes |
 | [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 181 | 1 | 0 | 12 | 13 | 155 | 2 | biome, atmos | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 211 | 2 | 0 | 16 | 29 | 164 | 5 | biome | yes | yes |
 | [`biomes/ringisles`](biomes/ringisles/PORT.md) | 19 | 189 | 64 | 14 | 14 | 39 | 57 | 2 | biome, atmos | yes | yes |
+| [`biomes/scablands`](biomes/scablands/PORT.md) | 3 | 31 | 11 | 0 | 0 | 15 | 5 | 0 |  |  | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 211 | 1 | 0 | 14 | 62 | 135 | 6 | biome, atmos | yes | yes |
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 12 | 154 | 14 | 0 | 13 | 31 | 97 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 192 | 2 | 0 | 10 | 34 | 145 | 6 | biome | yes | yes |
@@ -75,7 +76,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
-| **all** | 2364 | 31239 | 6595 (21%) | 641 (2%) | 1114 (4%) | 4004 (13%) | 18884 (60%) | 279 | | | |
+| **all** | 2370 | 31273 | 6607 (21%) | 652 (2%) | 1114 (4%) | 3997 (13%) | 18903 (60%) | 279 | | | |
 
 ## Host-shell copies
 
@@ -83,8 +84,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `host-stage` | 24 | 24 | 450 |
-| `host-build` | 24 | 24 | 35 |
+| `host-stage` | 25 | 25 | 455 |
+| `host-build` | 24 | 24 | 34 |
 | `sky` | 22 | 5 | 436 |
 | `camera` | 20 | 16 | 147 |
 | `host-sky` | 20 | 18 | 282 |

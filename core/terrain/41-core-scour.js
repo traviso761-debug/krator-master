@@ -6,10 +6,14 @@
 // has hold the channel at 4 km; this adds what lies under a cell: the scoured floor, butte-and-basin, streamlined
 // islands, dry falls with the basins below them, potholes, bars and giant current ripples, and the rock they cut.
 //
-//   const S = KSCOUR.create({courses:[{name, pts:[[x,z],...], bed:[m,...], floor, walls, depth}], seed, strata:{...}})
+//   const S = KSCOUR.create({courses:[{name, pts:[[x,z],...], bed:[m,...], floor, walls, depth, islandL, islandW, fan}],
+//                            seed, strata:{...}, falls:{count, spacing, slope, steepen, min, max, taper}})
 //     pts        the course downstream, metres; bed: its bed's heights, spread evenly along it first to last
 //     floor      the channel floor's full width (m); walls: how far the scour reaches past it each side (m)
 //     depth      the flood's depth over the bed (m, default 150): the water surface that drew the scour
+//     islandL, islandW  the streamlined islands' scale along and across the flow (m, default 9000 and 2600: the world's;
+//                a station a few km across takes smaller); fan: how far up from the course's end its fan of bars reaches
+//                (m, default 12000; 0 for none: a station's course that ends at its edge, not in a basin)
 //   S.courses[k].falls   the dry falls: [{s, x, z, h (m), r (the horseshoe's radius, m)}], found where the bed steepens
 //   S.locate(x,z,out)    the nearest course within its reach: {k, s (m along), d (m across, + to the right going
 //                        downstream), tx, tz (its direction), bed, surf (the flood's surface)}, or out.k = -1
@@ -20,6 +24,7 @@
 //                        k, s, d as locate
 //   S.land(x,z,h)        h with the scour: butte-and-basin cut in steps of the rock's flows, the falls and their basins,
 //                        potholes, bars with ripples on them; the islands kept at the ground's own height
+//   S.potholes(x0,z0,x1,z1)  the potholes whose centres lie in the box: [{x, z, r, v}] (v their strength, 0.4..1)
 //   S.rock(h,out)        the rock at a height (KSCOUR.strata(opt) makes the same table on its own): {kind:'cover'|
 //                        'basalt'|'interbed'|'sandstone'|'limestone', flow (index), colonnade 0..1 (the regular columns at
 //                        a flow's foot; the rest of the flow is the hackly entablature)}
@@ -58,7 +63,7 @@
       if(!c.pts||c.pts.length<2)throw new Error('KSCOUR: course '+k+' needs two points or more');
       if(!c.bed||c.bed.length<2)throw new Error('KSCOUR: course '+k+' needs its bed');
       var C={name:c.name,pts:c.pts,bed:c.bed,floor:c.floor==null?12000:c.floor,walls:c.walls==null?8000:c.walls,
-             depth:c.depth==null?150:c.depth,cum:[0]};
+             depth:c.depth==null?150:c.depth,islandL:c.islandL||9000,islandW:c.islandW||2600,fan:c.fan==null?12000:c.fan,cum:[0]};
       C.seed=R.child(seed,c.name||('course '+k));   // keyed on the course's name, not its place in the list
       for(var i=1;i<c.pts.length;i++){var dx=c.pts[i][0]-c.pts[i-1][0],dz=c.pts[i][1]-c.pts[i-1][1];
         C.cum.push(C.cum[i-1]+Math.sqrt(dx*dx+dz*dz));}
@@ -112,10 +117,10 @@
       out.scour=sub*(1-smooth(half,half+C.walls,ad));
       if(out.scour<=0)return out;
       // streamlined islands: blobs drawn out along the flow (anisotropic noise in course coordinates), in the floor
-      var n=R.fbm(p.s/9000,p.d/2600,0,3,R.hash(C.seed,21));
+      var n=R.fbm(p.s/C.islandL,p.d/C.islandW,0,3,R.hash(C.seed,21));
       out.island=smooth(.6,.68,n)*(1-smooth(half*.85,half,ad));
       // bars: the floor's margins, and the fan where the course ends and the flood spread out
-      out.bar=smooth(half*.45,half*.7,ad)*(1-smooth(half*.95,half*1.1,ad))+smooth(C.len-12000,C.len,p.s);
+      out.bar=smooth(half*.45,half*.7,ad)*(1-smooth(half*.95,half*1.1,ad))+(C.fan>0?smooth(C.len-C.fan,C.len,p.s):0);
       out.bar=clamp(out.bar,0,1)*(1-out.island);
       // giant current ripples on the bars: crests across the flow, spaced by the flood's depth (~.6 of it)
       var lam=clamp(C.depth*.6,50,150),w=R.vnoise(p.s/600,p.d/600,0,R.hash(C.seed,22))*lam*.6;
@@ -132,12 +137,19 @@
     // potholes (kolks): one chance in four per 120 m cell, its centre and size drawn from the cell (keyed on position);
     // a bowl 6..25 m across the radius, 4..15 m deep
     var PC=120;
+    // the pothole of cell (i, j), or null: its centre, radius and strength at the centre (0.4..1)
+    function kolk(i,j){var hs=R.hash(seed,i,j,31);if(R.unit(hs)>.25)return null;
+      return {x:(i+.15+.7*R.unit(R.hash(hs,1)))*PC,z:(j+.15+.7*R.unit(R.hash(hs,2)))*PC,r:6+19*R.unit(R.hash(hs,3)),v:.4+.6*R.unit(R.hash(hs,4))};}
     function potholeAt(x,z){var ci=Math.floor(x/PC),cj=Math.floor(z/PC),best=0;
-      for(var di=-1;di<=1;di++)for(var dj=-1;dj<=1;dj++){var i=ci+di,j=cj+dj,hs=R.hash(seed,i,j,31);
-        if(R.unit(hs)>.25)continue;
-        var cx=(i+.15+.7*R.unit(R.hash(hs,1)))*PC,cz=(j+.15+.7*R.unit(R.hash(hs,2)))*PC,r=6+19*R.unit(R.hash(hs,3));
-        var dx=x-cx,dz=z-cz,q=(dx*dx+dz*dz)/(r*r);if(q<1){var v=(1-q)*(.4+.6*R.unit(R.hash(hs,4)));if(v>best)best=v;}}
+      for(var di=-1;di<=1;di++)for(var dj=-1;dj<=1;dj++){var K=kolk(ci+di,cj+dj);if(!K)continue;
+        var dx=x-K.x,dz=z-K.z,q=(dx*dx+dz*dz)/(K.r*K.r);if(q<1){var v=(1-q)*K.v;if(v>best)best=v;}}
       return best;}
+    // every pothole whose centre lies in the box, as {x, z, r, v}: where the field could hold one (the scour decides
+    // whether it is cut: sample's pothole at the centre)
+    function potholes(x0,z0,x1,z1){var out=[];
+      for(var i=Math.floor(x0/PC);i<=Math.floor(x1/PC);i++)for(var j=Math.floor(z0/PC);j<=Math.floor(z1/PC);j++){var K=kolk(i,j);
+        if(K&&K.x>=x0&&K.x<=x1&&K.z>=z0&&K.z<=z1)out.push(K);}
+      return out;}
     var SM={},RK={};
     function land(x,z,h){
       var s=sample(x,z,h,SM);if(s.scour<=0)return h;
@@ -157,7 +169,7 @@
       // bars: gravel heaped up to 18 m on the margins and the fan, with the ripples 2..6 m on them
       y+=s.bar*18*(1-s.fall)+s.ripple*(2+4*s.bar);
       return y;}
-    return {courses:courses,locate:locate,sample:sample,land:land,rock:ST.rock,strata:ST,
+    return {courses:courses,locate:locate,sample:sample,land:land,rock:ST.rock,strata:ST,potholes:potholes,
             FIELDS:['scour','island','bar','ripple','pothole','fall','pool']};}
 
   function fromRegion(P,opt){

@@ -78,7 +78,9 @@ No fauna (one fauna kit for every biome, `biomes/README.md`).
 
 ```
 00-head.html                        page shell
-45-host-stage.js       (host)       the showcase transect: terrain (KBASIN's marks on the old bed), fields, water, painted ground, BIO.init
+45-host-scene.js       (host)       the page: renderer, scene, haze, camera, lights, ticks, registry
+45b-host-stage.js      (host)       the showcase transect: terrain (KBASIN's marks on the old bed), fields, water, BIO.init, STAGE_WATER, STAGE_GROUND (an overlay's station replaces this file: biomes/scablands)
+45c-host-ground.js     (host)       the painted ground for any stage (STAGE_GROUND: N, label, rows, tint)
 50-biome-nsemiarid-species.js       palettes, 17 species and 24 small plants (tagged), textures, geometries, items
 55-biome-nsemiarid-trees.js         zones; crescents; builders (broadleaf, and one per alien and tall herb); impostors; PASSES; make/grow
 60-biome-nsemiarid-floor.js         the floor by zone; the travellers with their headings; dew gardens; drifts; windfall; dead saxaul
@@ -88,7 +90,8 @@ No fauna (one fauna kit for every biome, `biomes/README.md`).
 88-host-build.js       (host)       build order: the wind, records, floor, bake, variants
 89b-host-atmos.js      (host)       core/atmos and core/water bound: the wind setting (calm, a breeze, high; ?wind=), NSWIND, the water drawn
 89c-host-seeds.js      (host)       the seed weather (drifting plumes) and seed flight: the seeds the wind tears off the trees
-99-host-take.js        (host)       the page handed to core/host: presets, the inspector's words, budgets and checks
+98-host-checks.js      (host)       the kit's checks (HCHK) and the inspector's words, naming no place
+99-host-take.js        (host)       the stage's page handed to core/host: presets, budgets, which checks run (an overlay's station replaces it)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`; `core/terrain/40-core-basin.js` through `CORE_TERRAIN`;
 `core/water` and `core/atmos` through `CORE_WATER` and `CORE_ATMOS` (the water's records are made in 45, drawn in 89b).

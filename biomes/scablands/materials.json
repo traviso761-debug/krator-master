@@ -1,0 +1,9 @@
+{
+ "build": "scablands",
+ "size": 512,
+ "note": "The scablands overlay's own library pack (its build passes it beside the n semiarid kit's: biomes/nsemiarid/build.py build(overlay={tex, pack})). concrete: the dam's broken concrete the flood carried kilometres (the erratics, keep 1: its own grey with the rebar's rust bleeding down it). basalt: the flood basalt's boulders the flood rolled with them (keep 1). Run python3 tools/textures/pack.py biomes/scablands after any change, then python3 build.py.",
+ "families": {
+  "concrete": {"lib": "concrete.rust.streaked", "scale": [3, 3], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1},
+  "basalt": {"lib": "rock.basalt.vesicular", "scale": [3, 3], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2}
+ }
+}

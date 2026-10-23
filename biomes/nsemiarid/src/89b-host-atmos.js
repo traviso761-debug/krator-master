@@ -6,7 +6,7 @@
 // ordinary afternoon, gusting to ~9 m/s), high 2.6 (a gale gusting past 20 m/s), eased in over a few seconds. What rides
 // it: the trumpets' spin (86-host-variants.js reads NSWIND.spin), the seed weather and the seeds the wind tears loose
 // (89c-host-seeds.js). In Godot the same numbers are atm_wind (core/atmos/GODOT.md).
-// THE WATER is core/water's: the records 45-host-stage.js made (LAKE_W and POOL_W still water, STREAM a flow), drawn here
+// THE WATER is core/water's: the records 45b-host-stage.js made and lists in STAGE_WATER, drawn here
 // with core/atmos's clock and wave chunk, the sky in them core/atmos's skylight (a capture of this page's dome and giant,
 // given to the water only).
 ATMOS.PRESETS.wind.base=[WIND[0]/Math.hypot(WIND[0],WIND[1]),WIND[1]/Math.hypot(WIND[0],WIND[1])];
@@ -30,7 +30,8 @@ const NSWIND=(function(){const WIND_MS=6,SCALE={calm:.4,breeze:1,high:2.6};
 BIO.host.wind=()=>{const w=ATMOS.U.wind.value;return[w.x,w.y];};
 // THE DUST (core/atmos 3d-dust, 2026-10-23): lifted where the wind there passes the threshold, off bare dry ground only:
 // the dry steppe, the old bed's silt and the dunes most, nothing off water, the green upland or the stream's banks
-ATMOS.dust({color:[.74,.66,.52],mask:(x,z)=>waterH(x,z)>-1e8?0:smooth(.42,.22,FC.at(FC.a.wet,x,z))*(.5+.5*Math.max(FC.at(FC.a.bed,x,z),FC.at(FC.a.dune,x,z)))});
+const NS_DUST_MASK=(x,z)=>waterH(x,z)>-1e8?0:smooth(.42,.22,FC.at(FC.a.wet,x,z))*(.5+.5*Math.max(FC.at(FC.a.bed,x,z),FC.at(FC.a.dune,x,z)));
+ATMOS.dust({color:[.74,.66,.52],mask:NS_DUST_MASK});
 // THE FURLERS (2026-10-22) shut as a gust passes and open behind it: each flower reads core/atmos's own gust where it
 // stands (atmWind, the shaders' twin of ATMOS.windAt) and closes as the wind there passes its hold (7.2 m/s; a breeze
 // gusts to ~9, so a gust front crosses a field as a wave of closing flowers; a gale keeps them shut, a calm open). The
@@ -52,10 +53,7 @@ if(NSWIND.mode!=='breeze')WIND_CONTROL.select.sort((a,b)=>(b[0]===NSWIND.mode)-(
  env.add(new THREE.Mesh(sky.geometry,sky.material));env.add(giant.clone());
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x8a7a62)});}
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
-// a steppe stream is narrow (14 m): core/water's bank foam, sized for rivers, whitened most of it; this page's share is less
-WATER.PRESETS.flow.foam=[.5,.2];
-const WATER_DRAW={
- lake:WATER.drawStill(LAKE_W,{color:lin(0x4a8e86),roughness:.1,metalness:.05,envMapIntensity:.45,opacity:.72,renderOrder:1}),
- pool:WATER.drawStill(POOL_W,{color:lin(0x2a6a6c),roughness:.08,metalness:.05,envMapIntensity:.4,renderOrder:1}),
- stream:WATER.drawFlow(STREAM,{shallow:lin(0x4e8478),deep:lin(0x24564e),color:0xffffff,roughness:.12,metalness:.05,envMapIntensity:.5,step:8,across:4,margin:1.5})};
-for(const k in WATER_DRAW){const m=WATER_DRAW[k].mesh;m.userData.probeSkip=true;m.userData.inspectLabel=k==='lake'?LAKE_W.name:k==='pool'?POOL_W.name:STREAM.name;}
+// the stage's water (45b-host-stage.js STAGE_WATER: a record and its look, colours sRGB), drawn in its order
+const WATER_DRAW={};
+for(const e of STAGE_WATER){const L=Object.assign({},e.look);for(const c of ['color','shallow','deep'])if(L[c]!=null)L[c]=lin(L[c]);
+ const d=WATER_DRAW[e.key]=e.flow?WATER.drawFlow(e.rec,L):WATER.drawStill(e.rec,L);d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=e.rec.name;}

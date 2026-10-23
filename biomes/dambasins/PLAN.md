@@ -65,7 +65,11 @@ Each station is its own page from the same build (the Throne's and Korona's `--s
 - **D3** hulk gardens (the rust vine and its kin, on the hulks and in their shade).
 - **D4** the dress: drowned villages, stumps, shell banks; the lighthouse knoll.
 - **D5** `WORLD_OVERLAYS` in the open world (`biomes/nsemiarid/PLAN.md`, step 6), where the overlay meets the scale
-  model's `palaeo.png` and lies over two biomes.
+  model's `palaeo.png` and lies over two biomes. **The density there is not the station's** (the owner, 2026-10-23: "the
+  real deployment would probably not have quite so many ships, or have them spread over a much wider area; as a demo
+  this is great"): the station packs a bed's worth of wrecks and debris into a few kilometres to show them; the open
+  world spreads them over the whole 41,000 km² bed, far thinner, thickest only where the water left them (the drain
+  band's head, the strandlines, the notch approach).
 
 ## 5. Checks (`verify.py --assert`)
 

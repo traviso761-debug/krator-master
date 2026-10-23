@@ -4,7 +4,9 @@
   00-head.html      page shell, opens <script>
   10..49            BIOME CORE  (biome-core: engine-independent kit)
   50..79            BIOME LEAVES (n semiarid species, trees, floor)
-  45-host-stage     HOST binding (renderer, terrain, BIO.init) -- must run before 50
+  45-host-scene     HOST page (renderer, scene, lights, ticks, registry)
+  45b-host-stage    HOST stage (terrain, water, fields, BIO.init) -- must run before 50; an overlay's own replaces it
+  45c-host-ground   HOST painted ground, for any stage
   80..98            HOST (sky, tower, build, camera, probe)
   99-tail.html      closes <script>
 
@@ -48,7 +50,6 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "nsemiarid.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
@@ -61,93 +62,112 @@ CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
-PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
-for f in CORE_TERRAIN:
-    if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
-for f in CORE_BIOME:
-    if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
-# core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
-# set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
-CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
-for f,d in CORE_TAGS.items():
-    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
-# core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,
-# materials, textures and terrain (42-core-export.js), 43 its stage, the adapters its registry. A src/ copy wins.
-CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
-for f in CORE_EXPORT:
-    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
-for f in CORE_SPACE:
-    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
-# core/water (core/water/README.md): the remnant salt lake and the spring pool are still water, the stream a flow, made as
-# records in 45-host-stage.js (waterH reads them) and drawn by core/water in 89b-host-atmos.js. A src/ copy wins.
-CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
-for f in CORE_WATER:
-    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
-# core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
-# weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
-# the water needs, and the export. Bound in 89b-host-atmos.js.
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
-for f in CORE_ATMOS:
-    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
-# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
-# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
-sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
-import host as khost
-CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
-khost.resolve(PATH,CORE_HOST)
-# the syntax check cannot see a core fragment that is simply absent
-miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
-if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
-# the material library (core/materials/record, PLAN.md): the record and its browser half, and the pack of the library
-# textures materials.json names, generated from the committed tex/ (tools/textures/pack.py). Without tex/pack.json the
-# pack is empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
-CORE_MAT=['23-mat-record.js','25-matlib-host.js']
-CORE_M=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record'))
-for f in CORE_MAT:
-    if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
-TEX_DIR=os.path.join(HERE,'tex')
-def matlib_pack():
-    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
-    tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same)."""
-    import base64, json
-    pj=os.path.join(TEX_DIR,'pack.json')
-    if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('nsemiarid', {});\n"
-    pack=json.load(open(pj,encoding='utf-8'));out=[]
-    for fam in sorted(pack['families']):
-        e=pack['families'][fam]
-        f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
-           'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
-        if e.get('cell'): f['cell']=e['cell']   # one cell of a card sheet: the page shows that cell only (libCard; 2026-10-23: it was dropped, and every card showed its whole sheet)
-        for k,name in sorted(e['files'].items()):
-            f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
-        out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))
-    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
-            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('nsemiarid', {\n" + ',\n'.join(out) + '\n});\n')
-# named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
-for f in VIRTUAL: PATH[f]=None
-frags=sorted(PATH)
-out=[]; bad=[]
-for f in frags:
-    s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
-    n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f:
-        for w in FORBID:
-            if w in s: bad.append(f'{f}: uses {w}')
-    out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
-if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
-os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
-# syntax check on the script body
-m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
-js=m.group(1) if m else ''
-chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
-node=find_node()
-r=subprocess.run([node,'--check',chk],capture_output=True,text=True) if node else None
-print(f'built dist/{OUT}  ({len(frags)} fragments, {len(html)//1024} KB)  '+('syntax NOT CHECKED (no node: set NODE=/path/to/node)' if r is None else 'syntax OK' if r.returncode==0 else 'SYNTAX ERROR\n'+r.stderr[:800]))
-ki=os.path.join(HERE,'KNOWN_ISSUES.md')
-if os.path.exists(ki):
-    op=[l for l in open(ki,encoding='utf8') if l.startswith('- [ ]')]
-    if op: print(f'KNOWN_ISSUES.md: {len(op)} open item(s) -- read it before changing this kit')
-sys.exit(r.returncode if r else 0)
+def build(OUT='nsemiarid.html',overlay=None):
+    """Assemble the page. overlay (an overlay build reading this kit in place: biomes/scablands): {'src': its src/
+    (shadows the kit's fragments by name, adds its own), 'core': {name: path} more core files, 'dist': where the page
+    goes, 'here': its folder (the syntax scratch file and its KNOWN_ISSUES.md), and optionally 'tex' and 'pack': its own
+    library pack, from its tex/ (tools/textures/pack.py on its materials.json), as KMAT.pack(pack, ...)}. Returns the syntax
+    check's code."""
+    PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+    # an OVERLAY (biomes/scablands): its src/ shadows the kit's by name and adds its own; its core files join the lists
+    if overlay:
+        for f in os.listdir(overlay['src']):
+            if not f.startswith('.'): PATH[f]=os.path.join(overlay['src'],f)
+        for f,p in overlay.get('core',{}).items():
+            if f not in PATH: PATH[f]=p
+    for f in CORE_TERRAIN:
+        if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+    for f in CORE_BIOME:
+        if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+    # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
+    # set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
+    CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
+    for f,d in CORE_TAGS.items():
+        if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+    # core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,
+    # materials, textures and terrain (42-core-export.js), 43 its stage, the adapters its registry. A src/ copy wins.
+    CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
+    for f in CORE_EXPORT:
+        if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
+    for f in CORE_SPACE:
+        if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+    # core/water (core/water/README.md): the remnant salt lake and the spring pool are still water, the stream a flow, made as
+    # records in 45b-host-stage.js (waterH reads them) and drawn by core/water in 89b-host-atmos.js. A src/ copy wins.
+    CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+    for f in CORE_WATER:
+        if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+    # core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
+    # weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
+    # the water needs, and the export. Bound in 89b-host-atmos.js.
+    CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+    for f in CORE_ATMOS:
+        if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+    # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+    # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+    sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+    import host as khost
+    CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+    khost.resolve(PATH,CORE_HOST)
+    # the syntax check cannot see a core fragment that is simply absent
+    miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
+    if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
+    # the material library (core/materials/record, PLAN.md): the record and its browser half, and the pack of the library
+    # textures materials.json names, generated from the committed tex/ (tools/textures/pack.py). Without tex/pack.json the
+    # pack is empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
+    CORE_MAT=['23-mat-record.js','25-matlib-host.js']
+    CORE_M=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record'))
+    for f in CORE_MAT:
+        if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
+    TEX_DIR=os.path.join(HERE,'tex')
+    def matlib_pack(TEX_DIR=TEX_DIR,KEY='nsemiarid'):
+        """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
+        tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same)."""
+        import base64, json
+        pj=os.path.join(TEX_DIR,'pack.json')
+        if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack(%s, {});\n"%json.dumps(KEY)
+        pack=json.load(open(pj,encoding='utf-8'));out=[]
+        for fam in sorted(pack['families']):
+            e=pack['families'][fam]
+            f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
+               'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
+            if e.get('cell'): f['cell']=e['cell']   # one cell of a card sheet: the page shows that cell only (libCard; 2026-10-23: it was dropped, and every card showed its whole sheet)
+            for k,name in sorted(e['files'].items()):
+                f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
+            out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))
+        return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+                '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+                "KMAT.pack(%s, {\n"%json.dumps(KEY) + ',\n'.join(out) + '\n});\n')
+    # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
+    VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
+    # an overlay's own library pack (its materials.json and tex/: KMAT.packed(overlay['pack'], family)), beside the kit's
+    if overlay and overlay.get('tex'): VIRTUAL['44b-host-matlib-pack.js']=matlib_pack(overlay['tex'],overlay['pack'])
+    for f in VIRTUAL: PATH[f]=None
+    frags=sorted(PATH)
+    out=[]; bad=[]
+    for f in frags:
+        s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
+        n=int(re.match(r'(\d+)',f).group(1))
+        if 10<=n<80 and '-host-' not in f:
+            for w in FORBID:
+                if w in s: bad.append(f'{f}: uses {w}')
+        out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
+    if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+    dist=overlay['dist'] if overlay else DIST
+    os.makedirs(dist,exist_ok=True)
+    html=''.join(out); open(os.path.join(dist,OUT),'w',encoding='utf8').write(html)
+    # syntax check on the script body
+    m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
+    js=m.group(1) if m else ''
+    chk=os.path.join(overlay['here'] if overlay else HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
+    node=find_node()
+    r=subprocess.run([node,'--check',chk],capture_output=True,text=True) if node else None
+    print(f'built {os.path.relpath(os.path.join(dist,OUT),overlay["here"] if overlay else HERE)}  ({len(frags)} fragments, {len(html)//1024} KB)  '+('syntax NOT CHECKED (no node: set NODE=/path/to/node)' if r is None else 'syntax OK' if r.returncode==0 else 'SYNTAX ERROR\n'+r.stderr[:800]))
+    ki=os.path.join(overlay['here'] if overlay else HERE,'KNOWN_ISSUES.md')
+    if os.path.exists(ki):
+        op=[l for l in open(ki,encoding='utf8') if l.startswith('- [ ]')]
+        if op: print(f'KNOWN_ISSUES.md: {len(op)} open item(s) -- read it before changing this kit')
+    return r.returncode if r else 0
+
+
+if __name__=='__main__':
+    sys.exit(build(sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "nsemiarid.html"))

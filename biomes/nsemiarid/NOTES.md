@@ -13,7 +13,7 @@ steppe** (the owner, 2026-10-20): everything here travels. Whole plants walk, cr
 and 0.75 g: a parachute carries about 1.9 times an Earth seed's mass at the same fall, and the wind pushes 40% harder at
 a given speed; and the land has been drying for centuries behind retreating shores (`PLAN.md` section 2).
 
-## The showcase (`src/45-host-stage.js`)
+## The showcase (`src/45b-host-stage.js`; the page `45-host-scene.js`, the ground `45c-host-ground.js`)
 
 6.8 km, north to south: the OLD LAKE BED (a basin falling to a remnant salt lake at 380 m; its marks are core/terrain's
 `KBASIN`: the full level at 640 m with its beach ridge and the 30 m bathtub ring, the fast drain to the sill at 560 m,
@@ -21,7 +21,7 @@ the strandlines of the slow recession, salt rising toward the water, a dune fiel
 (680-760 m), THE FOOTHILLS (780-1,150 m, basalt ridges, a spring pool), THE UPLAND (1,200-1,450 m). A stream runs down
 the transect into the lake. The sky: the outer rim iced in the north, the Inner Wall's highlands blue in the south, the
 giant in the north-east. The water is core/water's: the lake and the pool still water, the stream a flow (records in
-`45-host-stage.js`, which `waterH` answers from; drawn in `89b-host-atmos.js`). The wind is core/atmos's: the prevailing
+`45b-host-stage.js`, which `waterH` answers from; drawn in `89b-host-atmos.js`). The wind is core/atmos's: the prevailing
 wind veering slowly, its gust fronts running downwind, scaled by the wind setting (the panel's select or `?wind=calm|breeze|high`).
 It turns the helicopter trumpets (`86-host-variants.js`, the spin materials), drives the seed weather and tears the seeds
 off the trees round the camera when it passes each one's hold (`89c-host-seeds.js`; `window._seeds` counts them).
