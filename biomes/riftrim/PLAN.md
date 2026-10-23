@@ -235,6 +235,10 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
 - **The lost east** (the owner, 2026-10-23): Tungangs, or the crews they came from, once lived **throughout the Rift**.
   Those east of Chimes were wiped out in **tunnel wars after the Lizardmen arrived**; many Fellgangs descend from those
   who fled. A **lost loj** in the east is rumoured to have held out, with no official contact in over five hundred years.
+  **The truth** (the owner, 2026-10-23; known to no one outside it): it is **Loj Nahn**, the number no one says. It retreated
+  into **the upper levels of Arccube** and sealed them; about **a thousand** people farm its upper terraces, surrounded by
+  Lizardmen, and lower stealthy parties at night for wood and what else the arcology cannot give. The Lizardmen attack any
+  they meet but lack the means or the will to press further.
   Tungang and Fellgang agree: the only thing worse than a Labber is a Lizard.
 - **Skab** is the general curse (traitor, bastard, arsehole), its first meaning long forgotten.
 - **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
