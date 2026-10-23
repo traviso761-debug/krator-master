@@ -12,10 +12,10 @@ const DBW=(function(){
  const R=KRAND,u=(h,k)=>R.unit(R.hash(h,k)),lerpN=(a,b,t)=>a+(b-a)*t,cl=(v,a,b)=>v<a?a:v>b?b:v;
  // the kinds: length, beam, depth (m), the wheelhouse's place along the hull (from the stern), the bow's fine run and sheer
  const KINDS={
-  trawler:{L:[24,42],B:[6.5,9],H:[4,5.5],house:.62,houseL:.16,bow:.3,sheer:.16,mast:1,funnel:0,w:4},
-  coaster:{L:[48,82],B:[9,13],H:[6,8],house:.12,houseL:.14,bow:.2,sheer:.08,mast:2,funnel:1,w:3},
-  barge:{L:[30,60],B:[8,12],H:[3,4],house:-1,houseL:0,bow:.06,sheer:0,mast:0,funnel:0,w:2},
-  tug:{L:[18,28],B:[6,8],H:[3.5,4.5],house:.48,houseL:.24,bow:.34,sheer:.22,mast:1,funnel:1,w:1}};
+  trawler:{L:[24,42],B:[6.5,9],H:[4,5.5],house:.62,houseL:.16,bow:.3,sheer:.16,mast:1,funnel:0,w:4,dead:.5,rake:.5,fcs:.3},
+  coaster:{L:[48,82],B:[9,13],H:[6,8],house:.12,houseL:.14,bow:.2,sheer:.08,mast:2,funnel:1,w:3,dead:.15,rake:.35,fcs:.18},
+  barge:{L:[30,60],B:[8,12],H:[3,4],house:-1,houseL:0,bow:.06,sheer:0,mast:0,funnel:0,w:2,dead:0,rake:.8,fcs:0},
+  tug:{L:[18,28],B:[6,8],H:[3.5,4.5],house:.48,houseL:.24,bow:.34,sheer:.22,mast:1,funnel:1,w:1,dead:.6,rake:.4,fcs:.25}};
  const STATES=[['whole',.34],['snapped',.24],['pieces',.18],['buried',.24]];
  const pickW=(list,t)=>{let s=0;for(const e of list)s+=e[1];let a=t*s;for(const e of list){if(a<e[1])return e[0];a-=e[1];}return list[list.length-1][0];};
  // RECORDS. o: {x0,z0,x1,z1, cell (m), seed, ground(x,z), accept(x,z,h) -> 0..1, avoid(x,z) -> true to skip}
@@ -28,19 +28,20 @@ const DBW=(function(){
     out.push({id:'wreck:'+i+':'+j+':'+n,kind,state,x,z,h:g,heading:u(h,6)*Math.PI*2,
      L:lerpN(K.L[0],K.L[1],u(h,7)),B:lerpN(K.B[0],K.B[1],u(h,8)),H:lerpN(K.H[0],K.H[1],u(h,9)),
      // how deep in the silt (a fraction of its depth), its list, the snap's place and how far the halves lie apart
-     bury:state==='buried'?lerpN(.5,.78,u(h,10)):state==='pieces'?lerpN(.3,.55,u(h,10)):lerpN(.12,.36,u(h,10)),
+     bury:state==='buried'?lerpN(.5,.78,u(h,10)):state==='pieces'?lerpN(.3,.55,u(h,10)):lerpN(.04,.24,u(h,10)),
      list:(state==='buried'?lerpN(.15,.42,u(h,11)):lerpN(.04,.22,u(h,11)))*(u(h,12)<.5?-1:1),
      snap:lerpN(.38,.62,u(h,13)),gap:lerpN(3,18,u(h,14)),turn:(u(h,15)-.5)*.9,
-     rot:lerpN(.08,.3,u(h,16)),seed:h});}}
+     rot:lerpN(.05,.2,u(h,16)),seed:h});}}
   return out;}
  // ---- the hull: stations from the stern (t 0) to the bow (t 1); each a half-section, mirrored
  function hullOf(K,L,B,H){const half=B/2,sec=t=>{   // [[x,y]...] for one side, keel to deck edge, at station t
    const run=t>1-K.bow?Math.pow((t-(1-K.bow))/K.bow,1.5):0,tr=t<.06?.86+.14*t/.06:1,w=half*tr*(1-run*.97);
-   const keel=H*.42*Math.pow(cl((t-(1-K.bow*.7))/(K.bow*.7),0,1),1.6),deck=H*(1+K.sheer*(Math.pow(2*t-1,2)-.35)+(t>.85?K.sheer*.6*(t-.85)/.15:0));
+   const keel=H*.42*Math.pow(cl((t-(1-K.bow*.7))/(K.bow*.7),0,1),1.6),deck=H*(1+K.sheer*(Math.pow(2*t-1,2)-.35)+K.fcs*cl((t-.72)/.08,0,1));   // fcs: the forecastle's step up
    // the half-section: a flat bottom turning through the bilge's quarter round into the side, a little tumblehome at the
    // deck edge (eight points: enough to read as a hull close to)
-   const D=deck-keel,r=Math.min(w*.45,D*.35),P=[[0,keel],[w-r,keel+D*.01]];
-   for(let k=1;k<=4;k++){const a=k/5*Math.PI/2;P.push([w-r+Math.sin(a)*r,keel+D*.01+r-Math.cos(a)*r]);}
+   // the bottom rises from the keel to the bilge (deadrise: a V for the trawlers and tugs, near flat for a barge)
+   const D=deck-keel,r=Math.min(w*.45,D*.35),dr=D*.22*K.dead,P=[[0,keel],[w-r,keel+D*.01+dr]];
+   for(let k=1;k<=4;k++){const a=k/5*Math.PI/2;P.push([w-r+Math.sin(a)*r,keel+D*.01+dr+r-Math.cos(a)*r]);}
    P.push([w,keel+D*.6],[w*.985,deck]);return P;};
   return {sec,L,B,H};}
  // a buffer of one material's triangles, with uv in metres (the rust tiles at 4 m) and a colour per vertex
@@ -54,24 +55,27 @@ const DBW=(function(){
  // along (stern at -L/2); its plating holed by rust above the silt, frames showing through, its deck rotted through
  function piece(HB,K,rec,t0,t1,bufs,hh){const {sec,L,H}=HB,N=Math.max(8,Math.round((t1-t0)*L/1.4)),rust=rec.rot,shade=.75+.25*u(hh,40);
   const kc=(t,s)=>{const v=shade*(.82+.3*u(R.hash(hh,Math.round(t*97),s),41));return[v*1.0,v*.86,v*.78];};
+  // the ends: the stem rakes forward and the stern overhangs, both with height (zOf: a point's z at station t, height y)
+  const rk=K.rake*H,zOf=(t,y)=>(t-.5)*L+(t>1-K.bow?rk*(y/H)*Math.pow((t-(1-K.bow))/K.bow,2):0)-(t<.1?rk*.6*(y/H)*Math.pow(1-t/.1,2):0);
   const S=[];for(let i=0;i<=N;i++){const t=t0+(t1-t0)*i/N;S.push({t,z:(t-.5)*L,p:sec(t)});}
   const bury=rec.bury*H,M=S[0].p.length;
   for(let i=0;i<N;i++){const A=S[i],B2=S[i+1];
-   for(const side of [1,-1])for(let k=0;k<M-1;k++){const a=[A.p[k][0]*side,A.p[k][1],A.z],b=[B2.p[k][0]*side,B2.p[k][1],B2.z],
-     c=[B2.p[k+1][0]*side,B2.p[k+1][1],B2.z],d=[A.p[k+1][0]*side,A.p[k+1][1],A.z];
-    const hole=a[1]>bury*.6&&u(R.hash(hh,i,k,side),42)<rust*(k>=5?1.3:.5);
+   for(const side of [1,-1])for(let k=0;k<M-1;k++){const a=[A.p[k][0]*side,A.p[k][1],zOf(A.t,A.p[k][1])],b=[B2.p[k][0]*side,B2.p[k][1],zOf(B2.t,B2.p[k][1])],
+     c=[B2.p[k+1][0]*side,B2.p[k+1][1],zOf(B2.t,B2.p[k+1][1])],d=[A.p[k+1][0]*side,A.p[k+1][1],zOf(A.t,A.p[k+1][1])];
+    // rust holes only in the upper plating, and not many: a plate here and there
+    const hole=k>=5&&a[1]>bury&&u(R.hash(hh,i,k,side),42)<rust*.55;
     if(hole){if(i%2===0)box(bufs.house,a[0]*.97,a[1],a[2],.18,d[1]-a[1],.18,[.42,.33,.28]);continue;}   // a frame where the plate is gone
     const g=A.p[k][1]+(A.p[k+1][1]-A.p[k][1])*.5,v0=(k)/(M-1)*H/4,v1=(k+1)/(M-1)*H/4,u0=A.z/4,u1=B2.z/4;
     if(side>0)bufs.hull.quad(a,b,c,d,[u0,v0],[u1,v0],[u1,v1],[u0,v1],kc(A.t,k));else bufs.hull.quad(a,d,c,b,[u0,v0],[u0,v1],[u1,v1],[u1,v0],kc(A.t,k));
     void g;}
    // the deck between the deck edges, rotted through in places
    if(u(R.hash(hh,i,77),43)>rust*1.4){const ea=A.p[M-1],eb=B2.p[M-1];
-    bufs.deck.quad([-ea[0],ea[1],A.z],[-eb[0],eb[1],B2.z],[eb[0],eb[1],B2.z],[ea[0],ea[1],A.z],[A.z/4,0],[B2.z/4,0],[B2.z/4,ea[0]/2],[A.z/4,ea[0]/2],[.55,.48,.42]);}}
+    bufs.deck.quad([-ea[0],ea[1],zOf(A.t,ea[1])],[-eb[0],eb[1],zOf(B2.t,eb[1])],[eb[0],eb[1],zOf(B2.t,eb[1])],[ea[0],ea[1],zOf(A.t,ea[1])],[A.z/4,0],[B2.z/4,0],[B2.z/4,ea[0]/2],[A.z/4,ea[0]/2],[.55,.48,.42]);}}
   // the open ends of a break: a ragged ring of plate (the section's outline, torn)
   return S;}
  // the wheelhouse, a funnel and a mast on the whole hull or the piece that holds them
  function works(K,rec,HB,t0,t1,bufs,hh){const {sec,L,H}=HB;if(K.house<0)return;const tm=K.house+K.houseL/2;if(tm<t0||tm>t1)return;
-  const z=(tm-.5)*L,w=sec(tm)[4][0]*1.5,dy=sec(tm)[4][1],hl=K.houseL*L,hh2=H*.55+u(hh,50)*1.2;
+  const sx=sec(tm),z=(tm-.5)*L,w=sx[sx.length-1][0]*1.4,dy=sx[sx.length-1][1],hl=K.houseL*L,hh2=Math.max(2.4,H*.75)+u(hh,50)*1.2;
   const roofless=u(hh,51)<rec.rot*1.6;
   box(bufs.house,0,dy,z,w,hh2,hl,[.62,.5,.42],roofless);
   // its windows: a dark band, some panes gone
