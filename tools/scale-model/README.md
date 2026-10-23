@@ -158,6 +158,9 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   just over the ocean's level, never under it (`cut_channel(..., floor)`; the ocean cell at the mouth, drawn as water
   over 109 m of ground, is lowered under it, or it dams the gorge). The lake settles at 46 m (26,985 km2, drawn 26,408)
   and *Farside river* runs out of it, ~1,430 m3/s.
+- **The west bed's second lake** (px 325,120; checked 2026-10-20, not in `SETTLE`): a closed hollow in the west lobe's
+  old bed, drawn at 0 m over 2,534 km2. Settled on its own water as `SETTLE` does (its drawn water taken away, the land
+  routed again on the 4.21 page) it stands at +1 m over 2,615 km2, fed by ~26 m3/s: the drawn level holds, so no edit.
 - **The Hyperjungle's lake** (`OUTLETS`, `SETTLE`, `SHALLOWS`; the owner: smaller, off the Empire of Iziz's core). The
   model draws it at -1,160 m over 8,053 km2 with no shore on its west, straight over the salt lake's depression on the
   Iziz plain (down to -2,435 m, under the Ring Sea's level). Its water settles with the depression's as one lake; at their
@@ -291,6 +294,16 @@ sharpening is kept off a named river's corridor (off within 3 cells, back by 6):
 is the first user (its README.md says how to refresh it). `--add <polygons.json>` (2026-10-15) adds more polygons to
 the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask is the union (`region.json` region `added`,
 `union_km2`). The isle demo uses it for the two areas its owner added (`openworld/isle-demo/source/added-areas.json`).
+
+**Overlays and the old waters (2026-10-20, `biomes/nsemiarid/PLAN.md` section 3).** The regions in `OVERLAYS` (`floodzone`,
+`dam`, `dam 2`) are layers that own no ground: they stay out of `biome.png` and are written, as drawn, one bit each to
+`overlay.png` (`region.json` `overlays`: bit, name, the build that draws it). The owner's tool polygons (`Region 65`) are
+no biome either. Where the page carries `DATA.palaeolakes`, `palaeo.png` (one bit per body, on the height grid, dilated
+`PALAEO_PAD` cells: the world's own contour at the level draws the shore) and `region.json` `palaeo` give each dam lake
+(level, sill = its notch's floor, the bathtub ring's 30 m, the water over and under the sill, its remnant lakes today),
+the **flood lake** (every dam lake's water over its sill pooled where the last breach ends, from that body's level today:
+4.21 gives 834 m over 79,930 km2) and the dams and floods' courses in px and metres. Both only when they reach the box,
+so the other cuts are unchanged. `openworld/north-basin/` is the first user.
 
 ## To do on the model (owner's list)
 

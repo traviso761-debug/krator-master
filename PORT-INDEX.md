@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 115 | 1230 | 776 | 101 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 118 | 1260 | 801 | 107 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 63 | 735 | 159 | 40 | 10 | 30 | 496 | 9 |  | yes | yes |
 | [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 38 | 611 | 133 | 7 | 82 | 46 | 343 | 14 | atmos | yes | yes |
@@ -52,6 +52,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/talia`](kits/talia/PORT.md) | 12 | 206 | 196 | 0 | 0 | 0 | 10 | 0 |  |  | yes |
 | [`kits/zeijani`](kits/zeijani/PORT.md) | 32 | 264 | 10 | 33 | 10 | 62 | 149 | 3 | atmos | yes | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 13 | 187 | 27 | 20 | 13 | 43 | 84 | 3 | biome | yes | yes |
+| [`biomes/dambasins`](biomes/dambasins/PORT.md) | 12 | 78 | 11 | 0 | 0 | 16 | 51 | 2 | atmos | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 201 | 3 | 0 | 14 | 28 | 156 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 14 | 210 | 28 | 0 | 14 | 58 | 109 | 2 | biome | yes | yes |
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 143 | 13 | 18 | 16 | 32 | 63 | 2 | biome | yes | yes |
@@ -61,11 +62,13 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 14 | 108 | 35 | 0 | 0 | 10 | 63 | 3 | biome, atmos | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 245 | 0 | 0 | 34 | 36 | 175 | 6 | biome | yes | yes |
+| [`biomes/nsemiarid`](biomes/nsemiarid/PORT.md) | 16 | 226 | 30 | 11 | 14 | 42 | 130 | 2 | biome, atmos | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 276 | 3 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 179 | 2 | 0 | 13 | 33 | 131 | 5 | biome | yes | yes |
 | [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 181 | 1 | 0 | 12 | 13 | 155 | 2 | biome, atmos | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 211 | 2 | 0 | 16 | 29 | 164 | 5 | biome | yes | yes |
 | [`biomes/ringisles`](biomes/ringisles/PORT.md) | 19 | 189 | 64 | 14 | 14 | 39 | 57 | 2 | biome, atmos | yes | yes |
+| [`biomes/scablands`](biomes/scablands/PORT.md) | 5 | 44 | 23 | 0 | 0 | 16 | 5 | 0 |  |  | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 211 | 1 | 0 | 14 | 62 | 135 | 6 | biome, atmos | yes | yes |
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 12 | 154 | 14 | 0 | 13 | 31 | 97 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 192 | 2 | 0 | 10 | 34 | 145 | 6 | biome | yes | yes |
@@ -75,7 +78,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 243 | 22 | 0 | 0 | 101 | 120 | 0 |  |  | yes |
-| **all** | 2415 | 31656 | 6714 (21%) | 646 (2%) | 1110 (4%) | 3988 (13%) | 19198 (61%) | 282 | | | |
+| **all** | 2451 | 32034 | 6802 (21%) | 662 (2%) | 1124 (4%) | 4061 (13%) | 19385 (61%) | 286 | | | |
 
 ## Host-shell copies
 
@@ -83,11 +86,11 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `host-stage` | 24 | 24 | 437 |
-| `host-build` | 24 | 24 | 34 |
+| `host-stage` | 26 | 26 | 466 |
+| `host-build` | 25 | 25 | 35 |
 | `sky` | 23 | 5 | 445 |
-| `camera` | 19 | 15 | 133 |
-| `host-sky` | 19 | 17 | 268 |
+| `camera` | 20 | 16 | 147 |
+| `host-sky` | 20 | 18 | 282 |
 | `probe` | 18 | 16 | 80 |
 | `start` | 18 | 18 | 68 |
 | `stats` | 11 | 1 | 13 |

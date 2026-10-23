@@ -32,7 +32,8 @@ scale Krator map for rough placement, not in this repo.
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
 | *possible* | `sbadlands`, micro-biomes | |
-| *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
+| n semiarid, the walking steppe (`biomes/nsemiarid/PLAN.md`; built 2026-10-22) | `nsemiarid` | nwlowlands (gradual), nhighlands, korona, NW boreal |
+| overlays, owning no ground (`biomes/nsemiarid/PLAN.md`, section 3): the dam basins' beds (`biomes/dambasins`, begun 2026-10-22: the old port station on the Ancient Port kit), the scablands and the flood lake (planned) | `dambasins`, `scablands` | lie over nsemiarid, nwlowlands and korona |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
 | the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *to be placed on the scale model* (a wet subtropical lowland on limestone: Cfa/Cwa, ~1 atm) |

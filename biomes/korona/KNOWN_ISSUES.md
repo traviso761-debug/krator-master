@@ -2,6 +2,11 @@
 
 Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in and verified.
 
+- [ ] **The punji-pit lids show the whole litter atlas** (found 2026-10-23, `TODO.md`, "Card sheets shown whole"). The
+  `lid` slot takes `card.litter` (a three-by-three atlas of forest debris) with no `cell`, and its geometry (`G.pad()`,
+  `50-biome-korona-species.js`) is not cut with `cellUV` as every other Korona card is, so each lid is the whole sheet of
+  nine pieces. Fix: `cellUV(G.pad(), CELL(k))` on the leaf-pile piece, or a `cell` in `materials.json` (`BIO.libSwap`
+  windows it); then rebuild and screenshot a pit.
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
 - [ ] **No night.** `core/atmos` is bound (2026-10-19: `89w-host-water.js`, its clock and skylight for the water, its

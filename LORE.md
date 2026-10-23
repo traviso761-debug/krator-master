@@ -418,7 +418,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 ### 6.14 Jimjam
 
-- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Eternal State (§6.19; the "Shining Kingdom"), a separate people, shares the NW lowlands. [the owner, Oct 2026]
+- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above its lake (~480 m), so the air is dense (~1.5 atm). Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Eternal State (§6.19; the "Shining Kingdom"), a separate people, shares the NW lowlands. [the owner, Oct 2026]
 - **The flood made the land.** The Ancients' west dam burst into the long-lake trough and the NW lowlands (§3.1, `biomes/WORLD.md`). The flood scoured every Ancient ruin away and laid down the silt Jimjam is built from. Jimjam is the one people on Krator that does not live in the Ancients' ruins, and its city has no scrap architecture. The broken dam arcologies upstream are its salvage frontier. [the owner, Oct 2026]
 - **Brick.** An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys. The lake beds give both bricks: the iron-rich flood silt fires red and the lake's marl fires yellow. In the dense lowland air a kiln burns hot on little fuel, so over-fired near-black brick is common. White marble is a rich man's trim and is carried in; Korona, where volcanic heat would have cooked limestone, is the likely source.
 - Ruled by **the Raja**. A Raja must be crowned on a day of concordance; one crowned on a bad day is a story waiting to happen.
@@ -571,7 +571,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   floors of the drained lakes. *Proposed*: the Ancients ran shipping on the reservoirs; when the dams went every hull
   grounded on a drying floor, an Aral Sea ship graveyard at a hundred times the scale, camps inside listing freighters on
   salt flats, the Free Clans and the Republic to raid across to the south, Jimjam's salvage frontier (§6.14) upstream, and the
-  parts the cybernetics tribe needs. Boatmurder (outpost, px 494,74) stands in the east lobe.
+  parts the cybernetics tribe needs. Boatmurder (px 494,74), a bandit camp in a pile of boats, stands in the west basin at the east breach's mouth.
 - **The cybernetics tribe** [the owner's idea, 2026-10-19]: a ruined-arcology people who retain cybernetics and computers
   though they have lost most other advanced technology. *Proposed*: they are the Forgemasters to this State's mechs,
   despised, indispensable and heretical by definition, because what they know contradicts the court's story of itself; the
