@@ -85,7 +85,7 @@ const FLIGHT=(function(){const Q=new URLSearchParams(location.search);if(Q.get('
  ATMOS.hook((t,hr,dt)=>{if(!dt)return;const c=api.pin||camera.position;if(!last||Math.hypot(c.x-last.x,c.z-last.z)>40)relist(c);
   // the trees let go where the wind passes their hold
   for(const src of SRC){const w=NSWIND.at(src.T.x,src.T.z),ex=src.B.calm?src.B.hold-w[2]:w[2]-src.B.hold;if(ex<=0)continue;src.acc+=src.B.rate*ex*dt;
-   while(src.acc>=1){src.acc-=1;release(src);}}
+   let n=0;while(src.acc>=1&&n++<24){src.acc-=1;release(src);}if(src.acc>1)src.acc=1;}   // at most 24 a frame from one tree
   // the flight
   let nh=0,np=0,nl=0,act=0;
   for(let i=0;i<CAP;i++){const s=S[i];if(!s.on)continue;s.age+=dt;

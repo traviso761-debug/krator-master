@@ -104,7 +104,7 @@ const HCHK={
  // THE WIND (core/atmos): stepped on the module's own clock, a gale tears the winged seeds loose and a calm holds them
  gale(hold){if(typeof FLIGHT==='undefined'||!FLIGHT)return{ok:false,detail:'no seed flight (?seeds=0)'};
   const B=FLIGHT.BEAR,keep={},mode=NSWIND.mode,sc=ATMOS.windScale,heli=()=>(window._seeds.bySpecies.trumpet||0)+(window._seeds.bySpecies.samara||0);
-  if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=hold;}
+  if(hold!=null)for(const k in B){keep[k]=B[k].hold;B[k].hold=B[k].calm?-hold:hold;}   // a calm-lifting kind (the lanterns) the other way
   const lan=()=>window._seeds.bySpecies.lantern||0;
   const run=m=>{NSWIND.set(m);ATMOS.windScale=NSWIND.SCALE[m];const h0=heli(),a0=window._seeds.released,l0=lan();for(let i=0;i<80;i++)for(const f of TICKS.slice())f(.15,0);return[heli()-h0,window._seeds.released-a0,lan()-l0];};   // 12 s of the module's clock a run
   const tr=nearTree('trumpet',PLACE.steppe[0],PLACE.steppe[1]),ln=nearTree('lantern',PLACE.steppe[0],PLACE.steppe[1]);
