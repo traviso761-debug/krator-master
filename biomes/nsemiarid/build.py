@@ -154,7 +154,10 @@ def build(OUT='nsemiarid.html',overlay=None):
     if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
     dist=overlay['dist'] if overlay else DIST
     os.makedirs(dist,exist_ok=True)
-    html=''.join(out); open(os.path.join(dist,OUT),'w',encoding='utf8').write(html)
+    html=''.join(out)
+    if overlay and overlay.get('title'):   # an overlay's own page title (the gallery lists a page by it)
+        html=re.sub(r'<title>.*?</title>',lambda _:'<title>%s</title>'%overlay['title'],html,count=1)
+    open(os.path.join(dist,OUT),'w',encoding='utf-8',newline='\n').write(html)
     # syntax check on the script body
     m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
     js=m.group(1) if m else ''

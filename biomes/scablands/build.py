@@ -29,4 +29,5 @@ CORE = {'41-core-scour.js': os.path.join(ROOT, 'core', 'terrain', '41-core-scour
 if __name__ == '__main__':
     sys.exit(ns.build('coulee.html', overlay={'src': os.path.join(HERE, 'src'), 'core': CORE,
                                               'dist': os.path.join(HERE, 'dist'), 'here': HERE,
-                                              'tex': os.path.join(HERE, 'tex'), 'pack': 'scablands'}))   # its own pack: materials.json
+                                              'tex': os.path.join(HERE, 'tex'), 'pack': 'scablands',
+                                              'title': 'Krator biome — the scablands: a coulee and its dry falls'}))   # its own pack: materials.json
