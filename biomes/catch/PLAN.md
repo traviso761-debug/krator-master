@@ -207,7 +207,14 @@ round that valley peaks of **13-15 km** (px 1015,963, 15.1 km; 1049,1151, 14.0; 
 are not yet a region on the model (a record edit, `tools/scale-model/README.md`).
 
 **The Stalkers** are **quiet robotic killers that stalk the sands**. They hunt down **straggling caravaneers**, or **lie in
-wait for ambush under the sand**, and they work in **pairs or triads**. They are why a caravan keeps together, why no one
+wait for ambush under the sand**, and they work in **pairs or triads**. They are **about human size** [the owner, 2026-10-23]: small enough to
+lie under a hand's depth of sand, big enough to carry a person off. They come in **two variants** [the owner]:
+- **the harpooner**, with a **pneumatic harpoon gun**: it strikes from range, quietly (a hiss, no flash), and pins or drags
+  its quarry;
+- **the blade**, with **blade-arms** for close quarters.
+
+*Proposed*: a pair is a harpooner and a blade, a triad one harpooner and two blades or the reverse: the harpoon takes a
+straggler off its feet or a beast out of the line, and the blades finish it before the caravan can turn. They are why a caravan keeps together, why no one
 walks out of sight of the fires at an oasis, and why the Catch's crossing is not safe at any price.
 
 **Where they come from: the author's secret.** Their source is **Hub 01**, a ruined arcology **run by a mad AI**. In the
@@ -215,19 +222,24 @@ world **no one knows this**: no human has reached Hub 01 since the Cataclysm and
 caravaneers say is only that the Stalkers come out of the peaks to the east and go back into them, which is how the peaks
 got their name. *Proposed*: the game shows it, never says it. A Stalker that is followed goes east; the Ancient road from
 Hub 01 to Yuni (`openworld/ANCIENT-ROADS.md`, 44 km of it in tunnel) is the one way in, and no one who has taken it has come
-back; a diver's salvage now and then carries Hub 01's mark. And the mind there may be one of the systems the Ancients'
-contamination deranged (`LORE.md` §6.19, the Call), which would make an Heir who reached it either its master or its
-next subject.
+back; a diver's salvage now and then carries Hub 01's mark.
+
+**How it went mad** [the owner, 2026-10-23]: Hub 01 was **driven mad during the Cataclysm**, and **no one is sure how**:
+the Ancients' contamination (the one that turned their robots on their makers, `LORE.md` §6.19), some kind of virus, or
+deliberate reprogramming. The author leaves it open too; whatever the game shows should fit all three. *Proposed*: an
+Heir who reached it, and used the Call, would learn which, and would be either its master or its next subject.
 
 *Proposed* for the builds:
 - **Quiet** means no tracks that last (the wind fills them), no light, little sound: a Stalker is seen when it moves, and
   it moves at the end.
-- **In pairs or triads**: one shows itself while the others close; under the sand, a triad lies along a caravan's line,
-  a stage out from an oasis.
+- **In pairs or triads**: the harpooner stays back and shows nothing; the blades close. Under the sand, a triad lies along
+  a caravan's line, a stage out from an oasis, the harpooner furthest out.
 - **Stragglers**: they take the last beast, the sick, the one who went to relieve themself; they rarely take on a
   whole caravan.
-- **A kit**: a skinned, animated walker on `kits/mechs` (leg IK, planted feet, idle, walk and attack clips), sand-coloured,
-  low, built to dig in. Not a mech of any culture's: the Ancients' own make, gone feral, and Hub 01's.
+- **A kit**: skinned, animated walkers on `kits/mechs` (leg IK, planted feet, idle, walk and attack clips with fire and
+  impact events), sand-coloured, low, built to dig in; one body in two fits, the harpooner (the harpoon's fire event, a
+  line and its drag) and the blade (a lunge and a double cut). Not a mech of any culture's: the Ancients' own make, gone
+  feral, and Hub 01's.
 
 ## 7. The lake beds (in place of tuff)
 
@@ -239,7 +251,8 @@ mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 ## 8. Questions for the owner
 
-1. **The Stalkers' make** (section 6c): their size, their weapons, how a caravan fights or flees them.
+1. **The Stalkers' look** (section 6c), and how a caravan fights or flees them (their size and the two variants are
+   settled).
 2. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
 3. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
 4. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
@@ -250,6 +263,6 @@ Stair's, each named in more than one of the four tongues; the Stair tunnel close
 Cataclysm, sealed halfway, the northern half stripped by Yuni long ago, the southern half the divers'; Stair the Hill
 arcology, a glorified campground of a couple of hundred people (a handful of merchants, the caravans, arcology divers);
 Stair's point moved to px 834,1112 on the model; the Stalker Peaks east of the Catch and the Stalkers (quiet robotic
-killers, in pairs or triads, hunting stragglers, ambushing from under the sand; their source Hub 01's mad AI, unknown in
-the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
+killers, in pairs or triads, hunting stragglers, ambushing from under the sand; about human size; two variants, the harpooner and the blade; their source Hub 01's mad AI,
+driven mad in the Cataclysm by a cause no one is sure of, unknown in the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
 potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.
