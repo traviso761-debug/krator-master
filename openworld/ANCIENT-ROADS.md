@@ -70,7 +70,10 @@ stretch is first **who kept it up**:
 
 | Sphere | Upkeep | What it looks like |
 |---|---|---|
-| **The Empire of Iziz** (the south-west crater, its holdings and its roads east) | **maintained**, for centuries | relaid paving, rebuilt spans in Izani masonry on Ancient piers, waystations and milestones; the Empire's roads are the Ancient trunks |
+| **The Empire of Iziz today** (the south-west crater, its holdings and its roads east) | **maintained**, for centuries | relaid paving, rebuilt spans in Izani masonry on Ancient piers, waystations and milestones; the Empire's roads are the Ancient trunks |
+| **Voth, the Iron Republic, Dilihan** (former Empire) | **maintained**: they try to keep up what the Empire built | the Izani works kept in repair under new masters, patched where money ran short |
+| **The rest of the former Empire**: Jimjam, the Hykkousoi, the Scyvoi, the Beast Riders, Dalab, and the southern, south-western and eastern highlands | **lapsed since the Empire broke** | Izani roads in decline, not yet ruin: weeds and saplings in the joints, verges grown in, a span down here and there, waystations empty; far better than never-kept ground |
+| **The Cut road** | **well maintained** | **the one Izani-built highway kept up end to end**: from the Empire's network through the Cut toward the Eternal State, where it meets the State's roads; **its weak stretch is the no man's land between Jimjam and the State**, where upkeep lapses and the road shows it |
 | **The Eternal State** (the north-western lowlands) | **maintained**, by paper and corvée | registered, patched and policed: the State's canals and roads keep the Ancient alignments, the best-kept stretches on Krator |
 | **Yuni** (the far south-east) | **partly maintained** | the stretches it needs kept passable, the rest let go: Yuni has less logistical strength to bring to it than the other two |
 | **Everywhere else** | **none** | **badly decayed**: broken, buried, overgrown, washed out, quarried, or gone |
@@ -112,7 +115,8 @@ through today's roads.
 - **A0.** The owner approves; confirms the nodes (which towns stand on Ancient ground) and road or road-and-line.
 - **A1.** The router on the model's heights with the Ancient cost; a first network; the Inner Wall routes measured.
 - **A2.** The owner reviews the layer on the model: trunks, branches, the Inner Wall route chosen.
-- **A3.** Conditions per stretch: the upkeep from the political polygons (Iziz, the Eternal State, Yuni), then the land;
+- **A3.** Conditions per stretch: the upkeep from the political polygons (Iziz; Voth, the Republic, Dilihan; the lapsed
+  former Empire; the Eternal State; Yuni; the Cut road), then the land;
   the reused stretches named.
 - **A4.** `extract_region.py`; `openworld/little-demo` first (its region's Ancient sites and any line through it).
 - **A5.** `ROADS`' Ancient profile and the ground; the probe checks it lies on the land and keeps its grade.
