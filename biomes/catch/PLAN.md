@@ -150,22 +150,6 @@ species fit has not been checked yet.
   carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule) [the owner].
 - **Nobody else lives here.** No oasis people, no ruler of the passes.
 
-## 6b. Stair's site
-
-The Hill wants a hill: ~560 m of slope from its foot to its summit deck, ~1 km of plan, with the oasis at its foot. On the
-model (2 km a pixel) the Catch has one hilly country to give it: **a range of interior hills across the basin's middle**
-(px ~730-870 by 1038-1135), standing 1.5-2 km over the floor, to ~2.5 km. Stair's point today (px 827,1113, 1,130 m)
-already lies among them, in **a hollow through the range** (~800-1,100 m) with ridges to the west (to ~1.7 km) and to the
-east (rising from ~900 m to 1.7-2.1 km within 8-12 km).
-
-That is Turpan's arrangement: the groundwater moving under the fans toward the floor is **dammed by the interior hills
-and rises as springs** in the gaps through them, as it does at the Flaming Mountains, so the hollow is where the biggest
-oasis belongs, and it lies on the crossing (the NNW notch to the southern passes). **Proposed site: the hollow's east
-flank, px ~834,1112** (~1,000 m), the Hill climbing the slope eastward from the spring hollow and facing west over it.
-The point moves ~14 km east of where it stands (a record edit on the model, `tools/scale-model/README.md`). The kit's own
-landform (`89e-hill.js`, "the landform and the route") makes the slope at full scale; the model only has to put the hill
-there, and it does.
-
 ## 6a. What the Catch has that nowhere else does
 
 The owner asked (2026-10-23) what the divers bring out, and whether the Catch has anything, geologically or chemically,
@@ -194,6 +178,22 @@ since long before the Ancients, with no outlet at all, its walls the Godthrone's
 Together: the Catch's salts are what a cell-maker needs, and its ruin is where the cells are. *Proposed*: Stair's merchants
 buy both, and the buyers are the people who can use them: the Yusar (the Eternal State's cybernetics tribe, §6.19),
 Yuni's and Locus's Geomancers, Xanadu's engine-keepers, the Empire's armourers.
+
+## 6b. Stair's site
+
+The Hill wants a hill: ~560 m of slope from its foot to its summit deck, ~1 km of plan, with the oasis at its foot. On the
+model (2 km a pixel) the Catch has one hilly country to give it: **a range of interior hills across the basin's middle**
+(px ~730-870 by 1038-1135), standing 1.5-2 km over the floor, to ~2.5 km. Stair's point today (px 827,1113, 1,130 m)
+already lies among them, in **a hollow through the range** (~800-1,100 m) with ridges to the west (to ~1.7 km) and to the
+east (rising from ~900 m to 1.7-2.1 km within 8-12 km).
+
+That is Turpan's arrangement: the groundwater moving under the fans toward the floor is **dammed by the interior hills
+and rises as springs** in the gaps through them, as it does at the Flaming Mountains, so the hollow is where the biggest
+oasis belongs, and it lies on the crossing (the NNW notch to the southern passes). **Proposed site: the hollow's east
+flank, px ~834,1112** (~1,000 m), the Hill climbing the slope eastward from the spring hollow and facing west over it.
+The point moves ~14 km east of where it stands (a record edit on the model, `tools/scale-model/README.md`). The kit's own
+landform (`89e-hill.js`, "the landform and the route") makes the slope at full scale; the model only has to put the hill
+there, and it does.
 
 ## 7. The lake beds (in place of tuff)
 
