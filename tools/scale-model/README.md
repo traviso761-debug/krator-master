@@ -304,3 +304,11 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   re-run the river audit (`edit_rivers.py`) so the Shim river (r000) enters from the south and leaves north, record
   the lake with the others, relight, reclimate, repaint, publish, and refresh `openworld/little-demo/source/` from
   the live collections (which have lost the 2026-10-05 export's duplicate settlements and hold Voth at 470,688).
+- **4.22: the rain on Pinnacle Rock's knoll** (the owner, 2026-10-23). 4.21 reads a dry island on the knoll (px 755,351):
+  ~640 mm within 4 km (BSh 67%, Aw 33%) and ~810 mm within 10 km, against ~1,100-1,400 mm round it and 1,400-1,660 mm
+  10-20 km west; Pinnacle Rock's plan had read about 3,000 mm on 2026-10-18. The likely cause is `reclimate`'s twins: the
+  knoll stands ~500 m over the floor, so its nearest climate twins are drier upland cells, not a rain shadow. Blend the
+  knoll's rain into its ring (radius ~12 km, a smoothstep over ~6 km more) to **~1,100-1,400 mm**, the monsoon-forest and
+  savanna country round it, leaving the drier north (toward the painted highlands) as it is; recompute the class there
+  (Am/Aw expected), repaint the rain and climate maps, re-run `edit_rivers.py`'s rain pass for the cells it changes,
+  publish, and re-cut `settlements/pinnacle-rock/region/`.

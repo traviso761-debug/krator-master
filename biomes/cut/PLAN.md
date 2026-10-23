@@ -1,13 +1,14 @@
 # cut: the plan (draft, 2026-10-23)
 
 **The Cut**: the bowl an Ancient eigenweapon left in the northern Inner Wall when it deleted a perfect sphere of matter
-(`LORE.md` §6.2, Dilihan). What the weapon leaves behind still acts on what grows there: **the flora is warped, mostly
-harmlessly**, more strongly the nearer the bowl's centre. The kit is mostly a **warp layer over other kits' flora**, with
-a few species of its own, chief among them the **hyperbamboo**.
+(`LORE.md` §6.2, Dilihan). What the weapon left behind still acts on what grows there: **the flora is warped, mostly
+harmlessly**, the more the nearer the bowl's centre. The kit is mostly a **warp layer over other kits' flora**, with a
+few natives of its own, chief among them the **hyperbamboo**.
 
 Owner's brief (2026-10-23): something unique for the Cut, a remnant of the eigenweapon: the flora warped in some mostly
 harmless way. Settled the same day: the floor takes **nwlowlands flora adapted to the dense air** (not the eastern
-abyss's, which is too far away to share it), with a **hyperbamboo**; the warp ideas below were approved.
+abyss's, which is too far away to share it), led by a **hyperbamboo**; the warp's ideas (combed growth, fixed sizes,
+clean bites, straight ranks, echoes, the compass) were approved; a detailed plan was asked for.
 
 **Status: plan, awaiting the owner.** The kit does not decide what the eigenweapon was, who fired it or at what
 (`LORE.md` §12 keeps that open).
@@ -16,82 +17,160 @@ abyss's, which is too far away to share it), with a **hyperbamboo**; the warp id
 
 | | |
 |---|---|
-| Folder | `biomes/cut/` (the usual kit layout) |
-| Pages | stations: `dist/cut.html` (the floor), `-wall`, `-face` (section 5) |
-| Core | the biome core, `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain`, the shared sky |
-| Read in place | `biomes/nwlowlands` (the floor and walls), `biomes/nhighlands` (the lip) |
-| Its own | the warp layer (section 2), the hyperbamboo and a few natives (section 3), the bare cut faces (lifted from Dilihan's terrain fragment, as `settlements/dilihan/PLAN.md` says) |
-| Object | `CUT` (`build`, `dress`, `field`, `warp`, `SPECIES`, `PLANTS`, `HARVEST`) on the `BIOME-API.md` contract |
-| Users | Dilihan's page, which until now reads nhighlands and nwlowlands in place |
+| Folder | `biomes/cut/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `tests/test-cut.js`) |
+| Pages | three stations (section 8): `dist/cut.html` (the floor), `dist/cut-wall.html`, `dist/cut-face.html`; `python3 build.py --station <name>` as the Throne's |
+| Core | the biome core (`CORE_BIOME`), `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (relief, carve, and the strata module once `core/terrain/STRATA-PLAN.md` lands), the shared sky, `core/atmos` |
+| Read in place | `biomes/nwlowlands` (its species, builders and bamboo groves) for the floor and walls; `biomes/nhighlands` for the lip |
+| Its own | the warp field and its effects (section 3), four natives (section 4), the lakes' and flats' ground and the cut faces (section 5) |
+| Object | `CUT` (`build`, `dress`, `field`, `warp`, `SPECIES`, `PLANTS`, `HARVEST`), on the `BIOME-API.md` contract |
+| Data side | the field, the warp's transforms and the natives' records are plain functions and records (`[G data]`): Godot places the same plants the same way |
+| Users | **Dilihan** (`settlements/dilihan/PLAN.md`, not built yet), which reads nhighlands and nwlowlands in place until this kit exists, and takes it after; **Lipp** (village, px 419,289, 3,468 m, 18 km outside the rim) sees the faces |
 
-## 1. The bowl (4.21, surveyed 2026-10-23)
+It is a new biome, so it goes in the gallery when it first reaches `main`.
 
-19,000 km² (px 425-500 by 258-341), centre about px 460,302. The model already holds the sphere's lower half:
+## 1. The bowl on the model (4.21, surveyed 2026-10-23)
 
-| Distance from the centre | Median height | What |
+The biome polygon `the cut` (19,000 km², px 425-500 by 258-341) inside the geographic `The Cut`; centre about px 460,302.
+The model already holds the bowl: the ground falls to the floor from every side but one.
+
+| Ring (from the centre) | km² | Median height | Air | Rain | Mean (warm/cold month) | Climate |
+|---|---|---|---|---|---|---|
+| 0-16 km | 570 | **-2,185 m** | 2.10 atm | 1,615 mm | **+39 (44/33)** | XA 52%, XS 18%, XV 16%, Af 14% |
+| 16-32 km | 1,600 | -1,930 | 2.04 | 940 | +36 (41/30) | XS 38%, XA, XV, Cfa |
+| 32-48 km | 2,900 | -1,620 | 1.96 | 910 | +34 (40/28) | XS 34%, Cfa 24%, XA, XV |
+| 48-56 km | 2,450 | -195 | 1.64 | 830 | +27 (35/19) | Cfa 24%, XS, BWh 15%, XV |
+| 56-64 km | 2,960 | +630 | 1.48 | 720 | +23 (32/15) | Cfa, BWh, XA, Aw |
+| 64-72 km | 3,170 | +2,230 | 1.21 | 550 | +16 (26/6) | Csa, BSh, Dsc, BSk |
+| 72-90 km (the lip) | 3,060 | +3,430 (to 6,210) | 1.04 | 470 | +9 (21/-4) | Dsb 25%, Dsc, ET |
+
+- **Two lakes, at two levels**: the upper lake, 2,016 km² at about -1,980 m (px 454-487 by 298-325), rain ~2,050 mm
+  over it; and a lower lake, 304 km² at about -2,330 m (px 448-459 by 276-305), north-west of it in the deepest pit.
+  No river leaves the bowl: one dry valley runs to the lakes from the south-west. **The bowl drains to itself.**
+- **The floor is salt steppe away from the water.** Between 16 and 48 km out, a third or more is abyssal salt steppe
+  (XS): the lake effect wets the shore, and the rest of the floor dries to salt.
+- **The floor is a hothouse**: a mean of +39 °C within 16 km of the centre, +44 °C in the warmest month, under 2.1 atm of
+  wet air. The model's lapse rate (6.5 °C per km) carried 2.2 km below the crater floor. Mist stands over the lakes; the
+  floor's summer is deadly to people (section 6).
+- **The mouths.** The lip stands under +700 m from bearing 120° to 180° (south-east to south): **the crater mouth**,
+  open, the floor running out to the crater. Elsewhere the lip stands 3.2-6.4 km, highest to the east-north-east (6.4 km)
+  and the south-west (6.1 km). **The north mouth to the lowlands is not on the model**: north of the centre the lip
+  stands 3.2-4.2 km (section 9).
+- **Dilihan** (px 472,333) is 66 km from the centre on bearing ~160°, at -1,142 m (1.85 atm, Af, ~1,500 mm, +31 °C): in
+  the crater mouth, where the bowl opens. That matches its plan's "the southern end, where the bowl opens toward the
+  crater"; the walls rise on either side of it.
+- **The shape.** At the model's scale the bowl is a shallow spherical cap, about 150 km across and 6-8 km from the lip
+  to the floor: the bottom of a sphere far larger than the bowl, not a hemisphere (section 9).
+
+## 2. Air and scale
+
+The floor's 2.0-2.1 atm is the densest air outside the Rift, and dense air is why Krator's lowland plants run large: the
+nwlowlands species, carried in from Jimjam's country, grow **about half again** their nwlowlands height on the floor and
+walls below 0 m (`habit` scale by pressure, as the hyperjungle's hypertrees), normal on the lip. The hothouse heat and
+the salt steppe keep the floor's forest to the water's edge and the river lines.
+
+## 3. The warp
+
+### The field
+
+`CUT.field(x, z)` returns `{s, ar, at}`: a strength `s` and two unit vectors in plan, `ar` (toward the centre) and `at`
+(round it, clockwise from above). The strength is 1 at the centre and falls to 0 at the lip:
+`s = smoothstep(R, 0.35 R, r)`, with `r` the distance from the centre and `R` the lip's radius on that bearing (from the
+model's heights: the ring where the ground stops rising; about 64-80 km). It is plain arithmetic: no texture, no draw
+order, identical in the page, a node test and Godot.
+
+The field's **axis** alternates with the radius: every ring of about 6 km the dominant axis switches between `ar` and
+`at`, with a soft change over 1 km. Seen from the rim, the forests read as **spokes inside rings** round the lake, the
+pattern iron filings take round a magnet.
+
+### The effects (each a function of `s`, applied when a plant is placed)
+
+| Effect | Rule | How it is made |
 |---|---|---|
-| 0-16 km | -2,190 m | the floor and its lake (2,320 km² at about -2,040 m); ~2.1 atm, XA |
-| 16-48 km | -2,000 to -1,800 m | the floor; ~1,000-1,500 mm |
-| 48-64 km | +180 m | the walls; Cfa, Csa |
-| 64-90 km | +2,800 m | the lip and the cut faces, up to ~6 km |
+| **Combed growth** (the lead) | a plant leans along the axis by up to 25° x `s`, and stretches along it by up to 1 + 0.6 `s` | a transform on the instanced record at placement: no per-frame cost |
+| **Fixed sizes** | where `s` > 0.3, a plant's scale snaps to one of three steps (0.7, 1.0, 1.4); its internodes, leaf sizes and fruit snap to fixed lengths | the builders' size draws quantised (`KRAND` by cell, then rounded); a plant's habit records keep the step |
+| **Clean bites** | with probability 0.15 `s` a crown, trunk or boulder is missing a perfect spherical bite (radius 0.2-0.6 of the plant), the surface smooth, the rings or the bamboo's chambers showing; leaves with round holes | three pre-bitten variants per prototype (the bite at baked offsets), chosen by hash; boulders by a spherical carve patch (`core/terrain/36-core-carve.js`); a leaf card variant with holes |
+| **Straight ranks** | where `s` > 0.5, leaves and seeds that would spiral grow in straight ranks (90° or 180°), seed heads in spokes | a `ranked` habit flag on the read-in builders' phyllotaxis |
+| **Echoes** | rare (2% of plants where `s` > 0.6): a faint copy offset 2-6 m along the axis, seen only at dusk | a second instanced mesh, near band only, its opacity from the world clock |
+| **The compass** | a needle points at the centre where `s` > 0.1, weighted by `s` | `CUT.north(x, z)` for any compass item or UI |
+| **Stuck fruit** | a share of the fruit sets at its unripe size and stays there | a harvest flag (`stuck`), section 7 |
 
-- 64% of the polygon is over 8% slope at the model's scale; the climate stacks by radius: abyssal jungle and salt steppe
-  on the floor, humid subtropical and Mediterranean on the walls, cold at the lip.
-- **Dilihan** (px 472,333) reads -1,142 m on the model: 1.85 atm, Af, about 1,500 mm, on the lower southern wall, not
-  the rim. Its plan says "the southern rim's inner slope": the two want reconciling when Dilihan is built.
-- The floor's air is the densest outside the Rift, and dense air is why Krator's lowland plants run large: the
-  nwlowlands' flora, carried in from Jimjam's country beyond the north mouth, grows big down there.
+Nothing in the warp hurts anyone. It fades out at the lip: the lip's forest is nhighlands' as anywhere.
 
-## 2. The warp
+## 4. The flora
 
-One field, `CUT.field(x, z)`, gives a **strength** (1 at the centre, fading to 0 at the lip) and **two axes**, toward
-the centre and round it. Every effect reads it, every effect is deterministic, and every one fades with the strength.
+| Ring | Ground | Read in place (scaled for the air) | Warp | Natives |
+|---|---|---|---|---|
+| The lakes' shores (to ~4 km from the water) | wet, 1,600-2,050 mm, +35-39 °C | nwlowlands' glow-willows, paperbarks, stilt pandans, mist palms, tree ferns in the gullies | strong | **hyperbamboo** groves; ring reeds |
+| The floor (16-48 km) | salt steppe (XS) with forest strips along the dry valleys | nwlowlands' she-oaks and wattles along the valleys only | strong | **rankgrass** on the salt |
+| The walls (48-64 km) | Cfa and BWh, 720-830 mm, +23-27 °C | nwlowlands' columns: ghost gums, blue gums, tower ash, column kauri, banksias, grass trees, wattles; bamboo in the ravines | moderate | **measure melon** on the terraces |
+| The lip (64-90 km) | Csa to Dsc, 470-550 mm | nwlowlands' spire cedars, needle cypress, crag pines, then nhighlands' high band | faint, then none | **circle lichen** on the faces |
 
-- **Combed growth** (the lead effect). Plants stretch and lean along the field's axes, so from the rim the forests and
-  bamboo groves read as **rings and spokes round the lake**, like iron filings round a magnet.
-- **Fixed sizes.** Growth comes in steps: leaves in a few exact sizes, stems faceted, fruit of one kind identical. Said
-  to be why Dilihan's measures are trusted.
-- **Clean bites.** Crowns, boulders and old trunks missing perfect spherical bites, the surfaces smooth, the rings or
-  chambers showing; leaves with perfectly round holes; lichen in perfect circles on the cut faces.
-- **Straight ranks.** Leaves and seeds that would spiral grow in straight ranks and spokes (distinct from the southern
-  highlands' spirals).
-- **Echoes**, rare and on the floor only: a faint offset copy of a plant that shows at dusk.
-- **Mostly harmless**: compasses point at the centre inside the bowl, so no one navigates by them there; some fruit
-  fixed at its unripe size never ripens. Nothing hurts anyone.
+### The natives
 
-## 3. The flora
+| Key | Name | Model | What it is | Harvest |
+|---|---|---|---|---|
+| `hyperbamboo` | **Hyperbamboo** | nwlowlands' sky bamboo (26-36 m) in the dense air, after *Dendrocalamus giganteus* | culms 60-80 m and 0.6-1.0 m across in groves of 50-200; **every internode in a clump the same length**, so the nodes line up across a grove like a surveyor's level; whole groves combed along the field; old culms bitten open to their chambers | **shoots** (a vegetable); **culms** (Dilihan's scaffolds, water pipes, the pass road's bridges); leaves (fodder); and once in decades a grove flowers together and dies: **bamboo rice**, a grain harvest the valley remembers (gregarious flowering, as real bamboos do) |
+| `rankgrass` | Rankgrass | a salt grass (*Distichlis*, *Puccinellia*) | low blue-grey tussocks on the salt flats that **seed in straight lines** along the field, so the flats are ruled in radial rows from the rim | grazing; salt-tolerant thatch |
+| `measuremelon` | Measure melon | a melon vine (*Cucumis melo*) | sweet melons that ripen in **exactly three sizes**; a share stick unripe forever at the smallest (the stuck fruit) | the fruit; and, said in Dilihan, the origin of the colony's measures: a market measure is so many melons |
+| `circlelichen` | Circle lichen | crustose lichens (*Rhizocarpon*, *Xanthoria*) | yellow-green and orange **perfect circles** on the bare cut faces, nesting and overlapping, never touching | a medicine: scraped and steeped as an antiseptic wash (as *Usnea*) |
 
-| Ring | Read in place | Warp | Its own |
-|---|---|---|---|
-| Floor | nwlowlands, scaled up for ~2.1 atm | strong | **hyperbamboo**; the lake's shore |
-| Walls | nwlowlands (Csa, Cfa) | moderate | |
-| Lip | nhighlands' high band | faint, then none | the cut faces' lichen circles |
+## 5. The ground
 
-**Hyperbamboo** (from nwlowlands' sky bamboo, 26-36 m there): 60-80 m culms in the dense air, and the plant that shows
-the warp best. Every internode in a clump is the same length, so the nodes line up across a grove like a level line;
-whole groves lean along the field; old culms carry spherical bites that open their chambers. Harvest: the shoots (a
-vegetable), the culms (Dilihan's scaffolding, pipes and the pass road's bridges), the leaves (fodder). Wired into
-`kits/crops` with a `cut` biome entry (`atm: 2` on the floor, `1` on the walls).
+- **The curve**: the model's heights, smoothed at 1:1 into one clean concave sweep across the floor and walls; no
+  noise added where the sphere cut (the cut is the one smooth thing on Krator).
+- **The lakes**: the upper lake fringed with hyperbamboo and reed rings, mist over it at dawn; the lower lake in the
+  pit, salt-edged, warmer still.
+- **The salt flats**: `ground.salt`, `ground.efflorescence` (both in the library), rankgrass ruled across them.
+- **The cut faces**: at the lip, bare and **mirror-smooth curved rock** where nothing has had time to weather, the Wall's
+  rock in clean section (the strata module draws any bedded rock cut straight across: `core/terrain/STRATA-PLAN.md`),
+  circle lichen the only growth. A `core/terrain` relief stamp holds the smooth sweep where it meets the broken
+  mountain above it.
+- **The crater mouth**: the floor running out south-east between the walls, Dilihan in it.
 
-## 4. The ground
+## 6. People and heat
 
-The bowl's curve is in the model's heights already; the 1:1 ground keeps it smooth and concave on the floor. The **cut
-faces** at the lip are bare, mirror-smooth curved rock where nothing has had time to weather (Dilihan's terrain fragment
-draws them today; this kit takes them over). The two mouths, north to the lowlands and south to the crater, are where
-the sphere broke the range's flanks.
+The warp is harmless; the floor's climate is not. At +39 °C mean and +44 °C in summer in 2 atm of wet air, the lake
+shores are deadly to people in the hot season. So the floor is worked, not lived on: Dilihan's people live in the
+crater mouth (+31 °C) and on the walls, and go down to the floor for bamboo and melons in the cool months. The page shows
+it: a camp of cutters by the lake, deserted in high summer.
 
-## 5. Stations
+## 7. Crops (`kits/crops`)
 
-1. **The floor**: the lake, hyperbamboo combed into rings round it, echoes at dusk.
-2. **The wall**: Dilihan's slope, nwlowlands' trees warped moderately, terraces of fixed-size crops.
-3. **The cut face**: the bare curved wall at the lip, lichen circles, the warp fading out into normal highland forest.
+A `cut` biome entry: zones `lake` (warmth [5, 5], arid [4, 4], wet, atm 2), `floor` (warmth [5, 5], arid [1, 2], salt,
+atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid [1, 2], atm 1). Records: `hyperbamboo`
+(vegetable; also `weaving`, `thatch`), `bamboo-rice` (grain, a rare harvest), `measuremelon` (fruit, with `stuck`),
+`circlelichen` (herb, medicine), `rankgrass` (thatch). nwlowlands' crops grow here too, at fixed sizes.
 
-## 6. Order of work
+## 8. Stations
 
-- **C0.** The owner approves; texture prompts written (bamboo culm and leaf exist in the library: `bark.bamboo.jade`,
-  `fibre.bamboo.lattice`); Dilihan's height reconciled.
-- **C1.** The field and the warp layer, with a node test (the strength and the axes at known points; every effect
-  deterministic).
-- **C2.** The floor station: nwlowlands read in place and scaled for the air, the hyperbamboo.
-- **C3.** The wall and the face.
-- **C4.** The crops; Dilihan's page switched to read this kit; `verify.py --assert`; `PORT.md`; the gallery (a new biome).
+1. **The floor** (`dist/cut.html`, about px 468,322: -1,960 m, 2 km from the upper lake, ~1,950 mm, +35 °C): the lake,
+   hyperbamboo combed into rings round it, rankgrass ruled across the salt flats behind, the walls round the horizon,
+   echoes at dusk, the cutters' camp.
+2. **The wall** (`-wall`, on Dilihan's side of the crater mouth, r 50-60 km): nwlowlands' columns leaning along the
+   field, terraces of measure melons, the curve of the bowl seen across, the city below.
+3. **The cut face** (`-face`, about px 427,302: the west lip, ~5,100 m, about -2 °C): the bare curved face, circle
+   lichen, the warp fading out into nhighlands' normal forest on the mountain above, the whole bowl below.
+
+## 9. Questions for the owner
+
+1. **The north mouth.** The lore opens the Cut to the lowlands on the north as well as to the crater on the south; on
+   the model only the south is open (the north lip 3.2-4.2 km). Cut a north mouth on the model in 4.22 (as the
+   western outlets were cut), or keep the Cut as a bowl open only to the crater, with the pass road climbing out north?
+2. **The shape.** The model's bowl is a shallow cap (the bottom of a very large sphere), where the lore says "the
+   sphere's lower half". Either the lore says "the bottom of the sphere", or the bowl is deepened (a hemisphere 150 km
+   across would be 75 km deep, which the model cannot hold).
+3. **The heat.** Keep the floor a deadly hothouse (+39 °C mean), or temper it on the model?
+
+## 10. Order of work
+
+- **C0.** The owner answers section 9; the texture prompts (hyperbamboo culm and leaf in Krator's size, rankgrass,
+  measure melon, circle lichen, a polished curved rock face; `bark.bamboo.jade`, `fibre.bamboo.lattice`, `ground.salt`,
+  `ground.efflorescence` are in the library) into `core/materials/PROMPTS-NEEDED.md`; any model edit (the north mouth)
+  goes on the model's to-do list.
+- **C1.** The field and the warp's transforms as data, `tests/test-cut.js`: the strength at the centre is 1 and 0 at the
+  lip, the axes are unit and orthogonal, the quantised sizes and the bites are the same on every run and machine.
+- **C2.** Station 1's ground (the curve, the lakes, the salt flats) and the natives' records.
+- **C3.** nwlowlands read in place, scaled for the air and warped; the hyperbamboo groves; rankgrass.
+- **C4.** The echoes and the dusk; the compass; the cutters' camp.
+- **C5.** Stations 2 and 3, the cut faces (with the strata module if it has landed).
+- **C6.** The crops; `verify.py --assert`; `PORT.md`; the gallery (a new biome); Dilihan's plan switched to read this kit.

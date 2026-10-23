@@ -1,5 +1,12 @@
 # Pinnacle Rock — known issues
 
+- [ ] **The forest round the mesa is deep hyperjungle; it should be monsoon forest** (the owner, 2026-10-23; `PLAN.md`
+      section 1, "The rain, corrected"). The page reads the hyperjungle kit in place with its 150-270 m canopy; at the
+      knoll's corrected ~1,100-1,400 mm the ground is semi-deciduous monsoon forest (50-100 m, bare in the dry season)
+      with savanna glades, gallery forest along the K'etsaal Baatar, the closed jungle 20 km out. The hyperjungle kit's
+      savanna-edge station (`biomes/hyperjungle/PLAN-STATIONS.md`) is meant to supply it; the page switches when it
+      exists, and re-cuts `region/` after the model's 4.22 rain edit. The town, the mesa and the farms do not move.
+
 - [ ] **P3 is laid but not seen by the owner** (the town, the farms, the bands' grounds, the Deep Root, the Garden): the
       life (riders, keepers, beasts in the pastures), the banners' claw and the night are P4.
 - [ ] **The Garden's ways up are timber galleries**, as the roosts' climbs (bracketed into the beds), not stairs and a ramp

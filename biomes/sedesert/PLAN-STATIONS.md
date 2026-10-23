@@ -16,6 +16,8 @@ page as built stays station 1. The strata upgrade (`core/terrain/STRATA-PLAN.md`
 
 ## Station 2: the Bowl
 
+The detailed plan is `PLAN-BOWL.md`; in short:
+
 The abyssal desert: a salt basin under dense air, 4.21's lakes painted in the Bowl's own look (an ochre salt rim, a teal
 core, a pale salt flat round each: `tools/scale-model/README.md`, `LAKE_STYLE`), salt polygons and efflorescence, the
 kit's Socotran flora grown larger and squatter in the dense air (bottle trees, dragon's blood trees), halophyte scrub on

@@ -40,6 +40,14 @@ polygons; the Painted Men's polygon begins 44 km north, the Inner Wall behind it
 250 km south, Girder 375 km, the Hexahedron 400 km west. The knoll is a 10 km upland at the model's resolution: the
 mesa itself stands on its top, and the 1:1 ground round it falls away as the cells say.
 
+**The rain, corrected (2026-10-23).** 4.21 reads far less than the 3,000 mm above: ~640 mm on the knoll (BSh, Aw),
+~810 mm within 10 km, ~1,100-1,400 mm round that. The owner's call: the knoll's dry island is a model artefact (the
+climate pass gives the raised knoll drier upland twins), to be blended into its ring at ~1,100-1,400 mm in 4.22
+(`tools/scale-model/README.md`, the to-do list). That is **monsoon-forest and savanna country**, not deep hyperjungle:
+the forest round the mesa is semi-deciduous monsoon forest about 50-100 m tall (the trees leafless in the dry season)
+with savanna glades, gallery forest along the K'etsaal Baatar, and the closed hyperjungle 20 km and more away. The mesa
+still clears it, by more; the farms and fonio suit it better. The ground change is `KNOWN_ISSUES.md`'s.
+
 **Checked against the model (4.21, 2026-10-19), and the page takes its land.** The knoll is a ridge about 6 km wide and
 10 km long running north-south (its top -325 m at px 753-755, 349-351), standing 500 to 1,000 m over the jungle floor:
 the mesa's long axis follows it and the 4.4 km page lies on its top. The ground falls **steepest east and south** (860 m

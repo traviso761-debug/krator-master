@@ -16,8 +16,10 @@ Korona that may need several stations**. The page as built (Pinnacle Rock's cany
 | North (toward Korona) | ~-1,150 m, the lowest | ~880 mm, the driest | **XV 24%, BSh 23%**, Aw, XA, XS 9% |
 
 **A note against the kit's plan**: it assumes about 3,000 mm at Pinnacle Rock; 4.21 reads about 640 mm on the knoll and
-about 1,050 mm round it. The plan's explanation of the dry caps (the rock drains) still holds; the floor it reads in
-place is drier than the plan says, which favours the savanna and the carnivores of poor ground over closed jungle.
+about 1,050 mm round it. The owner's call (2026-10-23): the knoll's dry island is a model artefact, blended in 4.22 to
+~1,100-1,400 mm (`tools/scale-model/README.md`), which makes station 1's floor **monsoon forest with savanna glades**,
+not closed jungle: the kit reads the hyperjungle's savanna-edge station there when it exists. The plan's explanation of
+the dry caps (the rock drains, not the climate) holds unchanged, and so does the carnivore rule.
 
 ## Station 2: the high benches
 
