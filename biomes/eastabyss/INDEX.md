@@ -30,5 +30,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `82-host-sky.js` | 14 | the shelf painter (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
+| `89a-host-atmos.js` | <1 |  |
+| `89w-host-water.js` | 5 |  |
 | `99-host-take.js` | 9 | the inspector's words (55); the probe's budgets and the kit's own checks (ve (65); the page, handed to the host (92) |
 | `99-tail.html` | <1 |  |

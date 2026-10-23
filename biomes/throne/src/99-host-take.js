@@ -71,7 +71,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
- showcase:{tris:20000000,calls:140},   // a ceiling, not a target: measure and record it in KNOWN_ISSUES
+ showcase:{tris:22000000,calls:140},   /* 2026-10-20: tris 20M to 22M, the owner's approval for the water migration (KNOWN_ISSUES.md); the binding itself draws nothing */   // a ceiling, not a target: measure and record it in KNOWN_ISSUES
  cls:{pass:16000000,host:900000},
  type:{'throne/trees':'pass','throne/floor':'pass','host':'host'},
 };

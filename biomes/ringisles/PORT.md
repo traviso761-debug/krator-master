@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 64 (34%) | 14 (8%) | 14 (8%) | 39 (21%) | 57 (30%) |
+| KB | 64 (34%) | 14 (7%) | 14 (8%) | 39 (20%) | 59 (31%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -25,10 +25,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-biome-ringisles-world.js` | 5.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-ringisles.js` | 2.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 14.4 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/84-host-ground.js` | 14.1 | [G shader] | 14 | 2 | 0 | 0 | 0 | 2 | 5 | 0 | 0 | 0 | 0 |  |
+| `src/84-host-ground.js` | 13.9 | [G shader] | 11 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89f-host-fauna.js` | 4.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the host places kits/fauna presets (THREE groups) by the island's fields; a world places its own fauna |
-| `src/89w-host-sea.js` | 2.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89w-host-sea.js` | 4.5 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-host-take.js` | 16.4 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): views, inspector words, budgets, the kit's own checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

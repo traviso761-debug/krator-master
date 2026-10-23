@@ -46,7 +46,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # (add sim to see a stub fail).
 # Left out of the profile: atmos and water (see KNOWN_ISSUES.md).
 EXPORT_BOX = [900, 1200, 1200, 1500]
-EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.

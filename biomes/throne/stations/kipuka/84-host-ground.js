@@ -70,26 +70,13 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s windward flank';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the streams' water
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd0d8d4)},uLight:{value:1}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.05*sin(vWP.x*0.6+uT*3.1)+0.03*sin(vWP.z*0.9-uT*2.3),1.0,0.05*cos(vWP.z*0.5+uT*2.7)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.1+fr*0.55);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),90.0)*0.7*vec3(1.0,0.96,0.88);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-MAT_WATER.side=THREE.DoubleSide;   // the ribbon's winding follows the stream's direction: either face may be up
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-STREAMS.forEach((S,si)=>{const pos=[],col=[],idx=[],c0=new THREE.Color(0x2e4a3e).convertSRGBToLinear(),c1=new THREE.Color(0x5a7a62).convertSRGBToLinear();let prev=-1;
- for(let s=-3200;s<=3200;s+=5){const p=streamPt(S,s);if(Math.abs(p[0])>TERR.R*1.08||Math.abs(p[1])>TERR.R*1.08||oldAt(p[0],p[1])<.99){prev=-1;continue;}
-  const L=streamLevel(S,s),a=Math.atan2(DN[1],DN[0])+Math.PI/2,ox=PERP[0]*S.w*1.15,oz=PERP[1]*S.w*1.15,n=pos.length/3;
-  pos.push(p[0]-ox,L,p[1]-oz,p[0]+ox,L,p[1]+oz);col.push(c1.r,c1.g,c1.b,c0.r,c0.g,c0.b);
-  if(prev>=0)idx.push(prev,prev+1,n,prev+1,n+1,n);prev=n;}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='A stream';m.renderOrder=1;scene.add(m);
+// 2026-10-20 (core/water migration, phase 2): each stream's water, run by run (a flow buries its bed in places: the stream sinks, the run ends), is
+// a WATER.flow along the stream's centre line at streamLevel every 10 m (the old ribbon took 5 m), as wide as the old ribbon (2.3 w); STREAM_FLOWS
+// are drawn by 89w-host-water.js, which replaced the page's own vertex-coloured ShaderMaterial (a strip of two vertices every 5 m)
+const STREAM_FLOWS=[];
+STREAMS.forEach((S,si)=>{let run=[];const flush=()=>{if(run.length>2){if(run[0][2]<run[run.length-1][2])run.reverse();STREAM_FLOWS.push(WATER.flow({name:'A stream',pts:run,width:S.w*2.3,speed:1.6}));}run=[];};
+ for(let s=-3200;s<=3200;s+=10){const p=streamPt(S,s);if(Math.abs(p[0])>TERR.R*1.08||Math.abs(p[1])>TERR.R*1.08||oldAt(p[0],p[1])<.99){flush();continue;}run.push([p[0],p[1],streamLevel(S,s)]);}
+ flush();
  const mid=streamPt(S,0);REGISTER({name:'A stream through the kipuka',x:mid[0],z:mid[1],y:terrainH(mid[0],mid[1])-6,r:600,h:30});});
 
 // ---------------------------------------------------------------- the mist (the siphon trees breathing out the tube's air)
@@ -110,4 +97,4 @@ function makeMist(tops){reseed(8411);const P=[],A=[];
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(A,4));
  const pts=new THREE.Points(g,STEAM_MAT);pts.frustumCulled=false;pts.userData.probeSkip=true;pts.renderOrder=2;scene.add(pts);return P.length/3;}
 TICKS.push(dt=>{STEAMU.uT.value+=dt;STEAMU.uScale.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));});
-_onLight.push(m=>{MAT_WATER.uniforms.uLight.value=m==='night'?.18:1;GROUNDU.uNight.value=m==='night'?1:0;STEAMU.uCol.value.setHex(m==='night'?0x3a4048:0xf2f4f2);});
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;STEAMU.uCol.value.setHex(m==='night'?0x3a4048:0xf2f4f2);});

@@ -154,62 +154,31 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);})();
 
 // ---------------------------------------------------------------- the water
-// One plane at y=0 carries the bay and the lowland reach of the river; its
-// vertex colour is the water's own colour by depth (bay colour in the salt,
-// river colour in the fresh). The river's descent is a ribbon in the same
-// material. The bay colour is SWBAY_BAY (50-species): swap the hue there and
-// everything follows.
+// 2026-10-20 (migration phase 3): the bay, the river, the cataracts and the outer water are core/water's. The bay and the outer water are
+// WATER.open surfaces (89w-host-water.js: the CDLOD mesh with the bed baked from terrainH, a shore grid flooded from the bay, the shared wave
+// field, the sky in the water); the river is the WATER.flow below (a line down vR at bed+1.1 m, never climbing downstream), the cataracts its
+// WATER.fall records where the descent breaks. The page's own plane (MAT_WATER: one 300x300 plane, vertex colours by depth, ripples in its shader),
+// the 10 m ribbon and the foam cards (MAT_FOAM) are gone. BIO.waterH and terrainH are unchanged.
+// The bay colour is SWBAY_BAY (50-species): swap the hue there and the tints below follow.
 const WATER_SHALLOW=new THREE.Color().setHSL(SWBAY_BAY.hue,.70,.50),WATER_MID=new THREE.Color().setHSL(SWBAY_BAY.hue,.74,.34),WATER_DEEP=new THREE.Color().setHSL(SWBAY_BAY.hue+.03,.70,.14),WATER_PALE=new THREE.Color().setHSL(SWBAY_BAY.hue-.03,.55,.70);
 const RIVER_COL=new THREE.Color().setHSL((SWBAY_BAY.hue+.04)%1,.42,.44);
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,side:THREE.DoubleSide,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,900,-600).normalize()},uSky:{value:new THREE.Color(0xd8e4e0)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.75*vec3(1.0,0.96,0.86);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h),lk=bayIn(x,z),fresh=smooth(160,40,riverD(x,z))*(1-smooth(-60,-300,lk));
- const shoal=fbm(x*.0031+2,z*.0031-4,505,2);
- out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.47,.66,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.7)).lerp(WATER_MID,smooth(1.2,3.6,d)).lerp(WATER_DEEP,smooth(4,9,d));   // pale sand shoals, a pale rim at the beach
- out.lerp(RIVER_COL,fresh);return out;}
-(function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){waterColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The bay';m.renderOrder=1;scene.add(m);
- // the river down the slope: a ribbon at bed+0.5 from just above the delta to the NE edge
- const pos=[],cc=[],rc=RIVER_COL.clone().convertSRGBToLinear();
- for(let u=MOUTH_U+380;u<4300;u+=10){const v0=vR(u),v1=vR(u+10),w=12-5*smooth(1000,4000,u);
-  const x0=BAY.c[0]+(u+v0)*SQ,z0=BAY.c[1]+(v0-u)*SQ,x1=BAY.c[0]+(u+10+v1)*SQ,z1=BAY.c[1]+(v1-u-10)*SQ;
-  const ya=terrainH(x0,z0)+1.1,yb=terrainH(x1,z1)+1.1;   // across the channel: the v direction is (1,1)/sqrt2 in xz; a metre up so the bed's bumps stay under it
-  pos.push(x0-w*SQ,ya,z0-w*SQ, x1-w*SQ,yb,z1-w*SQ, x1+w*SQ,yb,z1+w*SQ,  x0-w*SQ,ya,z0-w*SQ, x1+w*SQ,yb,z1+w*SQ, x0+w*SQ,ya,z0+w*SQ);for(let k=0;k<6;k++)cc.push(rc.r,rc.g,rc.b);}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));geo.computeVertexNormals();
- const rm=new THREE.Mesh(geo,MAT_WATER);rm.userData.probeSkip=true;rm.userData.inspectLabel='The river';scene.add(rm);
- // the CATARACTS: where the descent is steep the water goes white -- foam cards
- // laid on the ribbon, a streaky alpha canvas scrolling downstream
- const TEX_FOAM=BIO.canvasTex(128,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.lineCap='round';
-  for(let i=0;i<180;i++){const x=rng()*w,y=rng()*h,L=rr(10,40);g.strokeStyle='rgba(255,255,255,'+(.25+rng()*.6).toFixed(2)+')';g.lineWidth=rr(1.5,4);
-   g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-3,3),y+L);g.stroke();}
-  for(let i=0;i<120;i++){g.fillStyle='rgba(255,255,255,'+(.3+rng()*.5).toFixed(2)+')';g.beginPath();g.arc(rng()*w,rng()*h,rr(1.5,4),0,TAU);g.fill();}});
- TEX_FOAM.wrapS=TEX_FOAM.wrapT=THREE.RepeatWrapping;
- const MAT_FOAM=new THREE.MeshBasicMaterial({map:TEX_FOAM,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide,fog:true});
- TICKS.push(dt=>{TEX_FOAM.offset.y-=dt*.55;});
- const fp=[],fu=[],fc=[];let vAcc=0;
- for(let u=MOUTH_U+380;u<4300;u+=10){const v0=vR(u),v1=vR(u+10),w=12-5*smooth(1000,4000,u);
-  const x0=BAY.c[0]+(u+v0)*SQ,z0=BAY.c[1]+(v0-u)*SQ,x1=BAY.c[0]+(u+10+v1)*SQ,z1=BAY.c[1]+(v1-u-10)*SQ;
-  const ya=terrainH(x0,z0)+1.1,yb=terrainH(x1,z1)+1.1,slope=(terrainH(x1+30*SQ,z1-30*SQ)-terrainH(x0-30*SQ,z0+30*SQ))/70,k=smooth(.06,.14,slope);/* the river comes DOWN toward the bay: upstream is the larger u */if(k<=0){vAcc+=.34;continue;}
-  const ww=w*.85*k,ya2=ya+.25,yb2=yb+.25;
-  fp.push(x0-ww*SQ,ya2,z0-ww*SQ, x1-ww*SQ,yb2,z1-ww*SQ, x1+ww*SQ,yb2,z1+ww*SQ,  x0-ww*SQ,ya2,z0-ww*SQ, x1+ww*SQ,yb2,z1+ww*SQ, x0+ww*SQ,ya2,z0+ww*SQ);
-  fu.push(0,vAcc, 0,vAcc+.34, 1,vAcc+.34, 0,vAcc, 1,vAcc+.34, 1,vAcc);vAcc+=.34;}
- if(fp.length){const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.Float32BufferAttribute(fp,3));fg.setAttribute('uv',new THREE.Float32BufferAttribute(fu,2));
-  const fm=new THREE.Mesh(fg,MAT_FOAM);fm.userData.probeSkip=true;fm.userData.inspectLabel='The cataracts';fm.renderOrder=2;scene.add(fm);}})();
+// the old foam card's canvas painted from rng(): the painter stays (the texture is not used) because every placement after it reads the same random stream
+BIO.canvasTex(128,256,(g,w,h)=>{g.clearRect(0,0,w,h);
+  for(let i=0;i<180;i++){const x=rng()*w,y=rng()*h,L=rr(10,40);rr(1.5,4);rr(-3,3);rng();}
+  for(let i=0;i<120;i++){rng();rng();rr(1.5,4);rng();}});
+// THE BAY's box: the 2.2 R square the old plane covered
+const BAY_BOX=(function(){const S=TERR.R*2.2;return[CENTER[0]-S/2,CENTER[1]-S/2,CENTER[0]+S/2,CENTER[1]+S/2];})();
+// THE RIVER: a flow line from the highlands (u 4300) down to the delta's head (u MOUTH_U+380) along vR, a metre and a bit over the bed but never
+// climbing downstream (a running maximum from the mouth up: the water fills a hollow in the bed instead of sinking under a rise, and the bed's bumps do not tilt the ribbon), 24 m wide at the mouth to 14 m up
+// in the highlands (the old ribbon's half-widths 12 to 7), quicker where it falls
+const RIVER_FALL_OPT={steep:.3,minDrop:3.5};
+const RIVER_U=[],RIVER_PTS=[];{let yc=-1e9;for(let u=MOUTH_U+380;u<=4300;u+=10){const v=vR(u),x=BAY.c[0]+(u+v)*SQ,z=BAY.c[1]+(v-u)*SQ;yc=Math.max(yc,terrainH(x,z)+1.1);RIVER_U.push(u);RIVER_PTS.push([x,z,yc]);}RIVER_U.reverse();RIVER_PTS.reverse();}
+const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_U.map(u=>2*(12-5*smooth(1000,4000,u))),
+ speed:RIVER_PTS.map((p,i)=>1.1+2.6*smooth(.02,.14,i+1<RIVER_PTS.length?(p[2]-RIVER_PTS[i+1][2])/10:0))});
+// the CATARACTS: the slope breaks of the line, each a curtain leaving the lip at the speed that lands it at the foot of the chute (the line's samples
+// are 10 m apart, so a five-metre fall is a chute of about 26 degrees: KNOWN_ISSUES.md). The river steps down in terraces of five metres: 58 curtains,
+// of which 89w-host-water.js draws the ones within 900 m of the camera)
+const RIVER_FALLS=WATER.fallsOf(RIVER,Object.assign({fit:true},RIVER_FALL_OPT)).map(f=>WATER.fall(f));   // fit: the foot fallsOf returns (2026-10-21), the curtain lands on it
 
 // ---------------------------------------------------------------- the far country
 // A coarse second terrain, 18 km across (70 m cells), carrying what the map's edge would
@@ -247,10 +216,7 @@ function farH(x,z){
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.012).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.0017+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.8);}');};
  const m=new THREE.Mesh(g,fm);m.userData.probeSkip=true;m.userData.inspectLabel='The far country (the volcano, the rim)';m.renderOrder=0;scene.add(m);
- // the far water: one flat plane under it all, the bay's deep colour
- const wg=new THREE.PlaneGeometry(S,S,1,1);wg.rotateX(-Math.PI/2);wg.translate(CENTER[0],-.15,CENTER[1]);
- const wc=WATER_DEEP.clone().convertSRGBToLinear(),wcol=new Float32Array(4*3);for(let i=0;i<4;i++){wcol[i*3]=wc.r;wcol[i*3+1]=wc.g;wcol[i*3+2]=wc.b;}
- wg.setAttribute('color',new THREE.BufferAttribute(wcol,3));const wm=new THREE.Mesh(wg,MAT_WATER);wm.userData.probeSkip=true;wm.userData.inspectLabel='The outer water';wm.renderOrder=0;scene.add(wm);
+ // the far water is core/water's too (89w-host-water.js: a flat open surface under it all, the bay's deep colour)
  // the plume: a chain of soft grey globes off the summit, rising and leaning east, fading as it goes
  const smoke=new THREE.MeshBasicMaterial({color:0xb4b0ac,transparent:true,opacity:.30,depthWrite:false,fog:true});
  const sx=VOLC.c[0],sz=VOLC.c[1],sy=farH(sx,sz)+80;

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 0 (0%) | 10 (4%) | 65 (24%) | 198 (72%) |
+| KB | 2 (1%) | 0 (0%) | 10 (4%) | 65 (23%) | 199 (72%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,11 +20,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-nwbay-floor.js` | 19.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-nwbay-dress.js` | 9.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-nwbay.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-biome-nwbay-fauna.js` | 12.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 6 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
+| `src/75-biome-nwbay-fauna.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 4 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
 | `src/82-host-sky.js` | 10.2 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
-| `src/85-host-tower.js` | 5.3 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
+| `src/85-host-tower.js` | 5.6 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-jetty.js` | 3.9 | [draw] | 3 | 1 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 2.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/89a-host-atmos.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-host-take.js` | 13.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

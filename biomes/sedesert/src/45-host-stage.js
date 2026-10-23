@@ -252,55 +252,20 @@ const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{su
  window._carve=BIO.carve.patches.map(Q=>Object.assign({id:Q.id},Q.stats));return M;})();
 
 // ---------------------------------------------------------------- the water
-// The pond is a disc at PL in the page's vertex-coloured ripple material (SEDESERT_WATER's hue: the teal of a
-// wadi pool, paler over gravel shallows). The river, the cataract and its plunge pool are core/water's (Phases 3
+// The pond (SEDESERT_WATER's hue: the teal of a wadi pool) is core/water's open surface since 2026-10-20 (migration phase 2: it was a
+// disc in the page's own vertex-coloured MAT_WATER, paler over gravel shallows). The river, the cataract and its plunge pool are core/water's (Phases 3
 // and 4, 2026-10-13): their records here (WATER.flow down the canyon floor, WATER.fall from the notch, WATER.still on
 // the Abyss floor), drawn in 89w-host-water.js once core/atmos is bound; the mist stays the page's sprites.
 const WHUE=SEDESERT_WATER.hue;
 const WATER_SHALLOW=new THREE.Color().setHSL(WHUE,.55,.46),WATER_MID=new THREE.Color().setHSL(WHUE,.62,.30),WATER_DEEP=new THREE.Color().setHSL(WHUE,.6,.15),WATER_PALE=new THREE.Color().setHSL(WHUE-.03,.35,.62);
-// The pond as core/water data (20-core-water.js; the page still draws it with MAT_WATER below): an open surface at PL with
-// three wind ripples of 20, 12 and 6 m (slopes about the ripple normal's below), calmed to nothing at the shore by its
-// bed. core/export's water section carries it, with WATER's own heights as probes, and a port draws it from the same maths
-// (godot/shaders/lib/water.gdshaderinc). The page draws the pond as a disc of 165 m (below), so outside that disc the bed
-// stands above the level and the port draws the same outline. `look` is how this page draws it, for that port: its
-// colours (linear; the mid-water and deep tints over core/water's shallow-to-deep ramp), its flat sky, mixed in by the
-// view's grazing as MAT_WATER does (base .10, grazing .62 times (1 - n.v)^3), and that MAT_WATER takes no light (unlit).
+// The pond as core/water: an open surface at PL with three wind ripples of 20, 12 and 6 m (slopes about the ripple normal's below), calmed to
+// nothing at the shore by its bed, drawn by WATER.draw in 89w-host-water.js (before 2026-10-20 the page drew it as a disc of 165 m in its own
+// shader and wrote its `look` on the record for the port). core/export's water section carries it, with WATER's own heights as probes. The disc was 165 m, so outside it
+// the bed stands above the level (the draw fades the water out over it).
 const POND_R=165;
 const POND_WATER=WATER.open({name:'The pond',level:PL,swell:[[.06,20,35,0,.03],[.035,12,-50,1.3,.03],[.015,6,80,2.2,.02]],field:0,
  bounds:[POND.x-POND_R-10,POND.z-POND_R-10,POND.x+POND_R+10,POND.z+POND_R+10],bedCell:4,
  bed:(x,z)=>Math.hypot(x-POND.x,z-POND.z)>POND_R?Math.max(terrainH(x,z),PL+.5):terrainH(x,z)});
-POND_WATER.look={colour:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),shallow:'#'+WATER_MID.clone().convertSRGBToLinear().getHexString(),
- deep:'#'+WATER_DEEP.clone().convertSRGBToLinear().getHexString(),roughness:.08,transparent:true,unlit:true,
- sky:{colour:'#'+new THREE.Color(0xdfe6ec).convertSRGBToLinear().getHexString(),base:.10,grazing:.62}};
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xdfe6ec)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.97,0.9);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-const FOAM=new THREE.Color(0xeaf2f0);
-function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,waterH(x,z)-h),shoal=fbm(x*.02+2,z*.02-4,505,2);
- out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.5,.7,shoal)*smooth(1.6,.3,d),smooth(.6,.1,d)*.7)).lerp(WATER_MID,smooth(.9,2.2,d)).lerp(WATER_DEEP,smooth(2.5,5,d));
- // rapids: whitewater in the mountain gorge where the bed steepens, and a riffle at the notch
- const rap=Math.max(smooth(-2200,-2700,x),smooth(TERR.RIM-80,TERR.RIM+20,x))*smooth(.48,.66,fbm(x*.06,z*.08,606,2));out.lerp(FOAM,rap*.85);return out;}
-(function(){
- const pos=[],col=[],c=new THREE.Color(),idx=[];
- const push=(x,z)=>{const y=WL(x);waterColorAt(x,z,c);c.convertSRGBToLinear();pos.push(x,y,z);col.push(c.r,c.g,c.b);};
- // the pond: a fan
- const pc=pos.length/3;push(POND.x,POND.z);const PN=40,PR=[];for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=POND_R;PR.push(pos.length/3);push(POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
- for(let k=0;k<PN;k++)idx.push(pc,PR[k+1],PR[k]);
- // the pond's vertices sit at PL, the river's at WL(x): fix the pond ring
- for(let k=pc;k<pos.length/3;k++)pos[k*3+1]=PL;
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The pond';m.renderOrder=1;scene.add(m);})();
 // THE RIVER (core/water Phase 3): a flow line down the canyon floor at WL(x) every 12 m, from the mountain gorge to the
 // notch, the surface never climbing downstream (where WL(x) rises over the bed's noise the water holds its level), 22 m
 // wide with 1.5 m tucked under each bank (the old ribbon's 24 m); its speed rises in the gorge and toward the notch,

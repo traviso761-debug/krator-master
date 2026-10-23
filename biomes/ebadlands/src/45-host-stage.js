@@ -241,37 +241,16 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The eastern badlands';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water
-// One vertex-coloured ripple material for every sheet: the river (green-teal, white in the range's rapids),
-// the sulphur pools (acid green, yellow, turquoise, each its own), the tarn (deep blue-green).
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xdfe6ec)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.97,0.9);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-const RIVER_C=[new THREE.Color().setHSL(.47,.45,.5),new THREE.Color().setHSL(.47,.55,.32),new THREE.Color().setHSL(.5,.5,.2)],FOAM=new THREE.Color(0xeaf2f0);
+// core/water records (2026-10-20, migration phase 2; drawn in 89w-host-water.js; before this the one vertex-coloured ShaderMaterial
+// MAT_WATER drew a river ribbon, six pool fans and the tarn fan): the river a WATER.flow along zR(x) at WL(x) from the east end to the west
+// (it descends that way), 24 m wide, every 20 m; the six acid pools and the tarn WATER.still discs at their own levels. BIO.waterH is unchanged.
+const RIVER_C=[new THREE.Color().setHSL(.47,.45,.5),new THREE.Color().setHSL(.47,.55,.32),new THREE.Color().setHSL(.5,.5,.2)];
 const POOL_C=[0x9ad030,0xd8c830,0x30c0b0,0x6ac860,0xe0b028,0x48b8c8].map(h=>new THREE.Color(h));
-function waterSheet(pos,col,idx,label){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
+const RIVER=WATER.flow({name:'The river',pts:(function(){const o=[];for(let x=TERR.R*1.1;x>=-TERR.R*1.1;x-=20)o.push([x,zR(x),WL(x)]);return o;})(),width:24,
+ speed:1.2});
+const discPoly=(X,Z,R)=>Array.from({length:36},(_,k)=>{const a=k/36*TAU;return[X+Math.cos(a)*R,Z+Math.sin(a)*R];});
+const POOL_STILLS=POOLS.map((P,i)=>WATER.still({name:'A sulphur pool',level:POOLL[i],poly:discPoly(P[0],P[1],P[2]*1.35)}));
+const TARN_STILL=WATER.still({name:'The tarn',level:TARNL,poly:discPoly(TARN.x,TARN.z,TARN.r*1.3)});
 (function(){
- // the river: 10 m steps along x, 9 vertices across (half-width 12 m), wound to face UP
- const pos=[],col=[],c=new THREE.Color(),NW=8,HW=12,rows=[];
- for(let x=-TERR.R*1.1;x<=TERR.R*1.1;x+=10){const zr=zR(x),row=[],y=WL(x),rap=smooth(1500,2300,x)*smooth(.45,.65,fbm(x*.05,zr*.05,606,2));
-  for(let k=0;k<=NW;k++){const z=zr+(k/NW-.5)*2*HW,e=Math.abs(k/NW-.5)*2;c.copy(RIVER_C[1]).lerp(RIVER_C[0],e*.8).lerp(FOAM,rap*.8);c.convertSRGBToLinear();row.push(pos.length/3);pos.push(x,y,z);col.push(c.r,c.g,c.b);}rows.push(row);}
- const idx=[];for(let r=0;r<rows.length-1;r++)for(let k=0;k<NW;k++){const a=rows[r][k],b=rows[r][k+1],cc=rows[r+1][k],dd=rows[r+1][k+1];idx.push(a,dd,cc,a,b,dd);}
- waterSheet(pos,col,idx,'The river');
- // the pools and the tarn: fans at their levels
- const fan=(X,Z,R,L,ca,cb,label)=>{const pos=[X,L,Z],col=[],c0=ca.clone().convertSRGBToLinear(),c1=cb.clone().convertSRGBToLinear(),PN=36,idx=[];col.push(c0.r,c0.g,c0.b);
-  for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(X+Math.cos(a)*R,L,Z+Math.sin(a)*R);col.push(c1.r,c1.g,c1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);waterSheet(pos,col,idx,label);};
- POOLS.forEach((P,i)=>{fan(P[0],P[1],P[2]*1.35,POOLL[i],POOL_C[i%POOL_C.length],POOL_C[i%POOL_C.length].clone().lerp(new THREE.Color(0xf0f0d0),.35),'A sulphur pool');});
- fan(TARN.x,TARN.z,TARN.r*1.3,TARNL,new THREE.Color(0x1e4a5a),new THREE.Color(0x4a8a8a),'The tarn');
  REGISTER({name:'The sulphur flats',x:VENTS.x,z:VENTS.z,y:basinH(VENTS.x,VENTS.z)-30,r:VENTS.r,h:120});
  REGISTER({name:'The tarn',x:TARN.x,z:TARN.z,y:TARNL-10,r:TARN.r*1.6,h:60});})();

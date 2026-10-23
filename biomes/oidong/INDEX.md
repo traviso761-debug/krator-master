@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/oidong.html`
 Build: `cd biomes/oidong && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -34,5 +34,6 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `82-host-sky.js` | 11 |  |
 | `84-host-ground.js` | 16 | the ground (13); the water (the pools) (100); the cataract and the mist (122) |
 | `88-host-build.js` | 1 |  |
+| `89a-host-atmos.js` | <1 |  |
 | `99-host-take.js` | 14 | the inspector's words (42); the probe's budgets and the kit's own checks (ve (56); the page, handed to the host (129) |
 | `99-tail.html` | <1 |  |

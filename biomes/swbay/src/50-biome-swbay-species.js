@@ -135,7 +135,7 @@ SWBAY.HARVEST={
  baobab:HV('none (bark fibre for rope)',['gatepod pulp','seeds'],true,'The orange pods hang metres long and are sawn into rounds; the pulp dries into gatepod chalk.','generic_fruit_gatepod'),
  captree:HV('none (the stipe flesh)',[],false,'Too woody to eat; the caps are cut for roofing shells.'),
  fancrown:HV('timber',[],false,'The fans are cut for screens.'),
- puzzle:HV('timber',['seeds in the cones'],false,'The cones shed big starchy seeds, boiled (not drawn, not catalogued).'),
+ puzzle:HV('timber',['seeds in the cones'],false,'The cones shed big starchy seeds, boiled (a catalog piece, not drawn on the stage).','generic_fruit_puzzle_seed'),
  dragon:HV('none',[],true,'The red resin is a dye and a wound dressing.'),
  parasol:HV('none',['caps (grilled)'],false,'Bay fungi: the caps are grilled whole in a pan.','generic_fruit_bay_fungi'),
  treefern:HV('fibre (the trunk mat)',['fiddleheads'],false,'The young croziers are boiled.'),
@@ -143,8 +143,8 @@ SWBAY.HARVEST={
  ironbark:HV('timber (the hardest)',[],true,'The bark is a tanning dye.'),
  brackettree:HV('fuel',[],true,'The dried brackets are tinder and a styptic.'),
  coral:HV('none',['the coral (cooked)'],false,'Bay fungi: the orange, pink and violet coral is picked as a clump.','generic_fruit_bay_fungi'),
- thorn:HV('fuel, fencing (the thorny boughs)',['pods (fodder, famine)'],true,'The pods feed the herds; the gum is a sweet (not drawn, not catalogued).'),
- cherry:HV('fine timber (small)',['cherries'],true,'Planted for its blossom by the bay\'s tombs and gardens; the sour fruit is dried, the bark steeped for coughs (the fruit not drawn, not catalogued).'),
+ thorn:HV('fuel, fencing (the thorny boughs)',['pods (fodder, famine)'],true,'The pods feed the herds; the gum is a sweet (the pods are a catalog piece, not drawn on the stage).','generic_fruit_acacia_pod'),
+ cherry:HV('fine timber (small)',['cherries'],true,'Planted for its blossom by the bay\'s tombs and gardens; the sour fruit is dried, the bark steeped for coughs (the fruit is a catalog piece, not drawn on the stage).','generic_fruit_cherry'),
 };
 SWBAY.SPECIES.forEach(S=>{S.tags.harvest=SWBAY.HARVEST[S.key]||HV('none');});
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names

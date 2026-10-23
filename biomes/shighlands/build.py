@@ -63,7 +63,7 @@ CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 # the shared atmosphere (core/atmos/README.md): its core, presets and the cloud deck (89-atmos-d-clouddeck.js), bound by
 # 89z-host-atmos.js. The deck is a field written from the presets, so a game engine draws the same cloud (GODOT.md).
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-d-clouddeck.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-d-clouddeck.js']   # a-waves, b-skylight: 2026-10-20, for core/water (phase 0)
 CORE_A=os.path.normpath(os.path.join(HERE,'..','..','core','atmos'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:

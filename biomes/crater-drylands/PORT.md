@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 27 (15%) | 17 (9%) | 13 (7%) | 43 (24%) | 84 (46%) |
+| KB | 28 (15%) | 17 (9%) | 13 (7%) | 43 (24%) | 84 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -23,6 +23,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/84-host-ground.js` | 17.0 | [G shader] | 13 | 3 | 0 | 0 | 0 | 2 | 12 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-fire.js` | 14.0 | [web] | 13 | 0 | 4 | 1 | 0 | 1 | 11 | 2 | 2 | 0 | 0 | split: the live fire's controls and sprite pool [web]; its shader text is [G shader]; the arrival map is 52's [G data] |
+| `src/89a-host-atmos.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-host-take.js` | 17.1 | [web] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

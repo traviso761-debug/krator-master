@@ -97,38 +97,8 @@ function buildGround(){
  GROUND=m;return m;}
 
 // ---------------------------------------------------------------- the water
-const WATER_SKY={value:new THREE.Color(0x7a8c8c)},WATER_LIGHT={value:1};   // a forest stream mirrors the banks and the canopy, not the open sky
-function waterMat(flow){const m=new THREE.ShaderMaterial({fog:true,vertexColors:true,transparent:false,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uLight:{value:1},uT:{value:0},uSun:{value:new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uFlow:{value:flow?1:0}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
-  'void main(){vCol=color;vUv=uv;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uFlow,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(80.0,420.0,dcam);',
-  ' float fl=uFlow*(vUv.y*0.09-uT*1.4);',
-  ' vec3 n=normalize(vec3(rk*(0.07*sin(vWP.x*0.41+uT*1.3+fl*6.0)+0.02*sin(vWP.z*0.63-uT*0.8+vWP.x*0.13)),1.0,rk*(0.035*cos(vWP.z*0.37+uT*1.1+fl*5.0)+0.02*sin(vWP.x*0.57+uT*1.5))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky*1.15,0.10+fr*0.5);',
-  ' float foam=uFlow*vUv.x*(0.6+0.4*sin(vUv.y*1.3-uT*7.0+sin(vWP.x*0.4)*2.0));',
-  ' col=mix(col,vec3(1.1,1.12,1.12),clamp(foam,0.0,0.95));',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),90.0)*0.9*vec3(1.0,0.96,0.88);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
- m.uniforms.fogColor.value=scene.fog.color;m.uniforms.fogDensity.value=scene.fog.density;m.uniforms.uSky=WATER_SKY;m.uniforms.uLight=WATER_LIGHT;TICKS.push(dt=>{m.uniforms.uT.value+=dt;m.uniforms.fogDensity.value=scene.fog.density;});return m;}
-// the stream: a ribbon across the channel at every point, its level the stream's; uv.y runs downstream (the ripples
-// follow it), uv.x carries the foam (the cascades, the falls)
-const STREAM_WATER=(function(){const P=STREAM.P,n=P.length,pos=[],col=[],uv=[],idx=[],c=new THREE.Color(),
- cShal=new THREE.Color(0x4a4630),cMid=new THREE.Color(0x242c24),cDeep=new THREE.Color(0x101614);const ACROSS=6;
- for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
-  const half=STREAM.halfW(i)+5.5,lvl=STREAM.level[i],dep=STREAM.dep[i],foam=clamp(smooth(.2,.5,STREAM.drop[i])*.6+smooth(.7,1.2,STREAM.drop[i])+.35*smooth(.6,.9,Math.sin(STREAM.S[i]*.09)*Math.sin(STREAM.S[i]*.023+1)),0,1);   // the mean fall is ~.17: foam only where it steepens
-  for(let k=0;k<=ACROSS;k++){const t=k/ACROSS*2-1,x=P[i][0]+nx*half*t,z=P[i][1]+nz*half*t;
-   pos.push(x,lvl,z);c.copy(cShal).lerp(cMid,smooth(.5,1.2,dep)*(1-.6*Math.abs(t))).lerp(cDeep,smooth(1.4,3,dep)*(1-Math.abs(t)));c.convertSRGBToLinear();col.push(c.r,c.g,c.b);uv.push(foam*(.55+.45*Math.abs(t)),STREAM.S[i]);}}
- for(let i=0;i<n-1;i++)for(let k=0;k<ACROSS;k++){const a=i*(ACROSS+1)+k,b=a+1,c2=a+ACROSS+1,d=c2+1;idx.push(a,c2,b,b,c2,d);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);
- const m=new THREE.Mesh(g,waterMat(true));m.userData.probeSkip=true;m.userData.inspectLabel='The stream';m.renderOrder=2;m.material.side=THREE.DoubleSide;scene.add(m);return m;})();
-const TARN_WATER=(function(){const g=new THREE.CircleGeometry(TARN.r+10,64);g.rotateX(-Math.PI/2);const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){const d=Math.hypot(p.getX(i),p.getZ(i))/TARN.r;c.set(0x5a6250).lerp(new THREE.Color(0x24343a),smooth(.95,.4,d));c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));g.translate(TARN.x,TARN.level,TARN.z);
- const m=new THREE.Mesh(g,waterMat(false));m.userData.probeSkip=true;m.userData.inspectLabel='The tarn';m.renderOrder=1;scene.add(m);return m;})();
+// 2026-10-20 (core/water migration, phase 2): the stream, its falls and the tarn are core/water's (records in 45-host-stage.js,
+// drawn in 89w-host-water.js); this fragment's own water shader, ribbon and disc are gone. The mist below stays sprites.
 
 // ---------------------------------------------------------------- the mist
 // Sheets lie in the hollows and along the water (they read from above), soft sprites stand in them (they read
@@ -152,6 +122,6 @@ const MIST=(function(){const c=document.createElement('canvas');c.width=c.height
  return{L,sheetM,spriteM};})();
 // the water and the mist follow the light (day / dawn / night)
 if(typeof LIGHT_HOOKS!=='undefined')LIGHT_HOOKS.push(mode=>{
- const S={day:[0x7a8c8c,0xd0dada,.30,.22,1],dawn:[0xb08a62,0xffd6a8,.48,.46,.75],night:[0x2a3442,0x4a5868,.24,.18,.14]}[mode]||[0x7a8c8c,0xd0dada,.3,.22,1];WATER_LIGHT.value=S[4];
- WATER_SKY.value.set(S[0]);MIST.sheetM.color.set(S[1]);MIST.spriteM.color.set(S[1]);MIST.sheetM.opacity=S[2];MIST.spriteM.opacity=S[3];
+ const S={day:[0x7a8c8c,0xd0dada,.30,.22,1],dawn:[0xb08a62,0xffd6a8,.48,.46,.75],night:[0x2a3442,0x4a5868,.24,.18,.14]}[mode]||[0x7a8c8c,0xd0dada,.3,.22,1];
+ MIST.sheetM.color.set(S[1]);MIST.spriteM.color.set(S[1]);MIST.sheetM.opacity=S[2];MIST.spriteM.opacity=S[3];
  if(typeof NHL!=='undefined')NHL.setNight(mode==='night'?1:0);});
