@@ -582,14 +582,15 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   words), and the officials' **Paper speech** is that grammar with court words and **levels for rank**, as Korean and
   Japanese have (*proposed*: an Heir is never asked a question; speakers call themselves *sevã*, servant, and ends on
   *milò*, my lord). There are **five or six main dialects**, no more: **capital speech** (the standard), the **Valley
-  march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which drifted like
-  **Gothic** (*Heilandisk*: nouns in -s, *stains*, *haims*, *þ* and *ƕ*; *proposed*: written in Breitila's letters too),
+  march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which came to sound like **Ainu**
+  [the owner, 2026-10-23] (*proposed*: *Hayrant*, from *highland*; no voiced stops, l > r, clusters broken, the verb last
+  with the person on it; written in sound-marks with small marks for closing consonants, as Ainu is in katakana),
   **Farside**, which took **clicks** and other strange sounds (*proposed*: from the sea-traders' speech on Farport's docks),
-  and the **cybernetics tribe's** speech, an **avoidance speech** [the owner, 2026-10-23] built to be misheard by the
-  Ancient systems that still listen for English, which came out sounding like **Ainu** (*proposed*: they are the *Yusar*,
-  the users; the machines are *Risnar*, the Listeners; no voiced stops, l > r, the verb last with person prefixes, everyone
-  "one" (*a-*) near a Listener; the command words never said, but kept whole as a liturgy, the calling words; they write
-  the forbidden Latin letters, which their computers read). The **dam basins** mostly speak the **northern traders'
+  and the **cybernetics tribe's** speech, an **avoidance speech** [the owner, 2026-10-23]: words said **back to front** so
+  the Ancient systems that still listen for English cannot follow them (*proposed*: like French verlan and London back
+  slang; they are the *Yusar*, the users [the owner's choice of name], the one word they say forwards; the machines are
+  *Nerlis*, the Listeners; *I* is never said, nor the command words even backwards, which are kept forwards and whole as a
+  liturgy, the calling words; they write the forbidden Latin letters, which their computers read). The **dam basins** mostly speak the **northern traders'
   argot**, a mix of capital speech, Jimjam's tongue and Izani [the owner, 2026-10-23]. The State's
   name in the market: *Tẽ-tè*; in Paper speech, *Itènale Setète*.
 - **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
