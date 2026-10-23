@@ -165,7 +165,8 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **The God** is the lab's AI. Its counsel keeps biomedical knowledge alive, and it "grows more erratic every century". Its seat is a sunken chamber of cabinet banks: "a plant room to a stranger and a shrine to a priest". Its image is a rayed head with **one great eye**.
 - Nearly everyone carries the photosynthesis mod and is **green-skinned**.
 - **Genepriests** sell modifications to outsiders in the **Halls of Reformation**: night vision, pressure adaptation, extra limbs. Dalab healers are prized across Krator.
-- **The Giant tribes of the south-west came from here**, made from bloodlines Dalab's skinchangers stole from the Gedorix (§6.21). The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
+- **The Giant tribes of the south-west came from here.** Dalab had **several sources for its "tall genes"**, but the Gedorix's were the most potent (§6.21).
+- **Dalab collects peoples** [the owner, 2026-10-23]. One of the first things Dalabites do on meeting a new people is try to **acquire some of them, by hook or by crook**, to see what their genetic code has to offer. It has not made them well liked: the Gedorix remember the skinchangers (§6.21), the Tungangs remember being taken (§6.1). The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
 - Priests commune with The God from earth mounds built to imitate the Ancient domes. Each town's mound faces the lab. The High Priest's mound faces *away* from it, behind a ring earthwork guarded by giants.
 - Castes:
   - Peasants: rammed earth, thatch and scrap, round plans.
@@ -421,7 +422,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 - **The crews who came east** [the owner, 2026-10-23]. When the Cataclysm came, some of the Tungangs' ancestors (the
   Ancients' tunnel crews of the Rift line, §6.1) fled east, and were **absorbed into Xanadu**. Their lasting legacy is **a
-  few loanwords** and **a greater proclivity for large eyes among the Xanadui**. *Proposed* loans, Northern English by
+  few loanwords** and **a greater proclivity for large eyes among the Xanadui**. The loans (settled 2026-10-23), Northern English by
   way of the crews: *gāphar* (an overseer, from *gaffer*), *mārā* (a comrade, from *marra*), *bāiṭ* (a traveller's packed
   food, from *bait*), *lāin* (a caravan route, from *line*).
 
@@ -684,7 +685,8 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
 - **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
   and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
-  **hate being confined in linear time**: to them it is, in a word, **disgusting**.
+  **hate being confined in linear time**: to them it is, in a word, **disgusting**. That disgust shows as nothing but
+  their **hostility** to everything that lives in it (the owner: there is no better way to express it).
 - **The exchange: the author's secret** [the owner, 2026-10-23]. **Never spelled out to the player; told only by
   implication.** The Tungang sagas remember wailing and screaming in Arccube, then the Lizardmen, and no Ancient bodies
   (§6.1). A Historian who learned that might wonder whether the Ancients were somehow transmogrified into the Lizardmen.
@@ -692,12 +694,11 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   Lizardmen were shifted into our space-time, the Ancient inhabitants were shifted onto the Coil.** An exchange. And in
   it the Lizardmen **took something from humanity**: something like a **base or essential quality**, and a
   **semi-intuitive knowledge of the world**. That is why they reach for the Ancients' relics at all, and why they handle
-  them like someone half-remembering a dream. *Proposed*: what they took may be the very thing they call **the Lie**, the
-  contamination that came with the fracture.
+  them like someone half-remembering a dream. **What they took is the very thing they call the Lie** (the owner, 2026-10-23), the contamination that came with the
+  fracture.
   - *Proposed* ways to let it show, never to say it: Arccube's sealed rooms empty of bodies but not of belongings, meals
     left half-eaten; the relics in the reliquaries set to uses that almost make sense; the Interpreters who know humanity's
-    future as their past; the turned stelae whose meaning "changed retroactively"; their open disgust at things that only
-    happen once; and their unwillingness to press Loj Nahn in Arccube's upper levels, where the exchange happened. A
+    future as their past; the turned stelae whose meaning "changed retroactively"; their hostility to all that lives in linear time; and their unwillingness to press Loj Nahn in Arccube's upper levels, where the exchange happened. A
     Historian's speculation, voiced in game, is as far as any text goes, and it is wrong.
 - **What they are, behind the tales** (the design's own lore; out of universe, the Ophidians of *Secret Histories*, smaller
   and less powerful):
@@ -747,18 +748,27 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   *Proposed*, by Krator's rule (§7): an Ancient lineage, made for a place or a task, like every people that differs from
   the human baseline.
 - **How they live.** A **sedentary gathering and farming** people: mostly **small villages and hamlets**, and at least one
-  **medium-sized ceremonial settlement** (*proposed*: Daridel, px 608,798, 3,174 m in godstep valley, if the owner keeps
-  it theirs).
+  **medium-sized ceremonial settlement**. **Daridel** is likely to be it, **moved into the cloud forest** (the owner,
+  2026-10-23): on the model it stands on dry steppe in godstep valley (px 608,798, 3,174 m, ~80 mm). *Proposed* sites in
+  the cloud belt of their region, ~1.4 km up and soaked (~4,000 mm): **px 528,687** (Af, mean +18 °C) or **px 526,640**
+  (Cfa, +20 °C).
+- **The spiral** [the owner, 2026-10-23]: they **revere the spiral** of their country (`biomes/shighlands`: every plant
+  grows in a spiral and every spiral turns the same way, but for the rare mirror-handed tree). *Proposed*: a spiral opens
+  and closes every inscription, turning the forest's way; a mirror-handed spiral is an omen and a mirror-handed tree is
+  never felled; the ceremonial place is a *Spirladunon*, a spiral-fort climbing a height.
 - **Gaulish.** Their language and their civilization lean toward **Gaulish and the ancient Celts**. *Proposed*: roundhouses
   under deep thatch and timber-laced stone walls (the *murus gallicus*) round the villages; sacred groves and enclosures
   for the ceremonial settlement; torcs, brooches, checked and striped wool in weld-yellow, woad-blue and madder-red; a
   learned order who keep the laws, the genealogies and the calendar by heart; feasting halls, champion's portions and
   boasting; the names in *-rix* (king) and the places in *-dunon* (a fort, from English *town*), *-magos* (a field) and
-  *-nemeton* (a sacred grove). *Gedorix* itself (*proposed*): English *giant* worn down to *ged-*, with *-rix* "kings",
-  "the giant-kings". The tongue is to be drawn for `lore/tongues-of-krator.html`.
+  *-nemeton* (a sacred grove). **The name is open** (the owner, 2026-10-23: not married to *Gedorix*). Candidates, by the tongue's own changes
+  (`lore/tongues-of-krator.html`, the Gedorix tab): *Gedorix* (giant-kings), *Talorix* (tall kings), *Talvolci* (tall folk,
+  *folk* > *volcos*), *Ixovolci* (high folk, *high* > *ixos*), *Clodovolci* (cloud folk). The tab has the tongue and its
+  stave letters.
 - **Dalab's raids.** They remember **the raids of Dalab's skinchangers**, who came among them disguised, **kidnapped
   their people for their genes**, and from those stolen bloodlines made **Dalab's own four-armed, green-skinned Giants**
-  (§6.1). It is the oldest grievance in their songs.
+  (§6.1): Dalab had other sources for its tall genes, but theirs were the most potent. It is the oldest grievance in
+  their songs; and Dalab does the same to every new people it meets (§6.1).
 - **The Free Giants.** They have **mixed feelings about the Free Giants of Giant Country** (§6.17), the Giants who
   escaped Dalab: kin by blood, but a **Dalabi perversion** of their people. The Free Giants, lacking any identity of their
   own, **imitate the Gedorix's customs and look** (their Gaulish dress in `core/charactermodels`: weld-yellow and woad, the
