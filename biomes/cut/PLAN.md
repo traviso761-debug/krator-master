@@ -43,14 +43,16 @@ The model already holds the bowl: the ground falls to the floor from every side 
 | 64-72 km | 3,170 | +2,230 | 1.21 | 550 | +16 (26/6) | Csa, BSh, Dsc, BSk |
 | 72-90 km (the lip) | 3,060 | +3,430 (to 6,210) | 1.04 | 470 | +9 (21/-4) | Dsb 25%, Dsc, ET |
 
+The table is 4.21's. The 4.22 edit raises the floor ~600 m and cools it (section 6); the walls and the lip keep theirs.
+
 - **Two lakes, at two levels**: the upper lake, 2,016 km² at about -1,980 m (px 454-487 by 298-325), rain ~2,050 mm
   over it; and a lower lake, 304 km² at about -2,330 m (px 448-459 by 276-305), north-west of it in the deepest pit.
   No river leaves the bowl: one dry valley runs to the lakes from the south-west. **The bowl drains to itself.**
 - **The floor is salt steppe away from the water.** Between 16 and 48 km out, a third or more is abyssal salt steppe
   (XS): the lake effect wets the shore, and the rest of the floor dries to salt.
-- **The floor is a hothouse**: a mean of +39 °C within 16 km of the centre, +44 °C in the warmest month, under 2.1 atm of
-  wet air. The model's lapse rate (6.5 °C per km) carried 2.2 km below the crater floor. Mist stands over the lakes; the
-  floor's summer is deadly to people (section 6).
+- **The floor is a hothouse on 4.21**: a mean of +39 °C within 16 km of the centre, +44 °C in the warmest month, under
+  2.1 atm of wet air: the model's lapse rate (6.5 °C per km) carried 0.9 km below the crater floor. **4.22 tempers it**
+  (section 6): the floor raised to about -1.6 km and a closed-basin correction, for a mean of about +31-32 °C.
 - **The mouths.** The lip stands under +700 m from bearing 120° to 180° (south-east to south): **the crater mouth**,
   open, the floor running out to the crater. Elsewhere the lip stands 3.2-6.4 km, highest to the east-north-east (6.4 km)
   and the south-west (6.1 km). **The north mouth to the lowlands is cut in 4.22** (the owner, 2026-10-23;
@@ -63,10 +65,10 @@ The model already holds the bowl: the ground falls to the floor from every side 
 
 ## 2. Air and scale
 
-The floor's 2.0-2.1 atm is the densest air outside the Rift, and dense air is why Krator's lowland plants run large: the
-nwlowlands species, carried in from Jimjam's country, grow **about half again** their nwlowlands height on the floor and
-walls below 0 m (`habit` scale by pressure, as the hyperjungle's hypertrees), normal on the lip. The hothouse heat and
-the salt steppe keep the floor's forest to the water's edge and the river lines.
+The floor's ~1.95 atm after 4.22 (2.0-2.1 on 4.21) is the densest air outside the Rift, and dense air is why Krator's
+lowland plants run large: the nwlowlands species, carried in from Jimjam's country, grow **about half again** their nwlowlands height on the floor and
+walls below 0 m (`habit` scale by pressure, as the hyperjungle's hypertrees), normal on the lip. The heat and the salt
+steppe keep the floor's forest to the water's edge and the river lines.
 
 ## 3. The warp
 
@@ -127,12 +129,32 @@ Nothing in the warp hurts anyone. It fades out at the lip: the lip's forest is n
   mountain above it.
 - **The crater mouth**: the floor running out south-east between the walls, Dilihan in it.
 
-## 6. People and heat
+## 6. People and heat (settled 2026-10-23)
 
-The warp is harmless; the floor's climate is not. At +39 °C mean and +44 °C in summer in 2 atm of wet air, the lake
-shores are deadly to people in the hot season. So the floor is worked, not lived on: Dilihan's people live in the
-crater mouth (+31 °C) and on the walls, and go down to the floor for bamboo and melons in the cool months. The page shows
-it: a camp of cutters by the lake, deserted in high summer.
+The owner: hot, but habitable year round, and still a little deeper than the crater. Why the floor is hot at all: air
+that sinks into a deep basin is compressed and warms, so ventilating the bowl through its mouths would make it hotter,
+not cooler; tempering has to heat the floor less or cool it from inside. And in 2 atm sweat evaporates less well than
+at 1 atm, so humid heat is harder on the body than the same temperature on Earth: the target sits a little under
+Earth's hottest towns. The 4.22 edit (`tools/scale-model/README.md`):
+
+| | 4.21 | 4.22 (target) |
+|---|---|---|
+| Floor | -2.2 km | **about -1.6 km**, ~250 m under the central crater floor |
+| Air | 2.1 atm | ~1.95 atm |
+| Mean | +39 °C | **~+31-32 °C** |
+| Warmest month | +44 | ~+35-36 |
+| Coldest month | +33 | ~+26 |
+| Nights | | ~+23-26 |
+
+- **The floor raised ~600 m**, fading to nothing at the lip: -3.9 °C by the lapse rate.
+- **Afternoon cloud and storms**: the lakes' moisture forced up the walls builds cumulus by noon and storms by afternoon,
+  capping the highs. **Night drainage of cold air** off the 3-6 km walls pools on the floor and cools the nights. The
+  lakes, fed by snowmelt off the lip, soften the extremes by the shore.
+- **The hyperbamboo's shade** cools its understorey a further 2-4 °C: a page effect, not the model's.
+
+**The day on the floor**: fog on the lakes at dawn, cool air lying in the hollows; heat and haze by mid-morning; towers
+of cloud on the walls by noon; a storm most afternoons in the wet season; a clear, still night. People live there:
+Dilihan's cutters keep villages in the hyperbamboo's shade by the lakes, the town itself in the crater mouth.
 
 ## 7. Crops (`kits/crops`)
 
@@ -143,7 +165,8 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 
 ## 8. Stations
 
-1. **The floor** (`dist/cut.html`, about px 468,322: -1,960 m, 2 km from the upper lake, ~1,950 mm, +35 °C): the lake,
+1. **The floor** (`dist/cut.html`, about px 468,322: -1,960 m on 4.21, ~-1,360 m after 4.22, 2 km from the upper
+   lake, ~1,950 mm): the lake,
    hyperbamboo combed into rings round it, rankgrass ruled across the salt flats behind, the walls round the horizon,
    echoes at dusk, the cutters' camp.
 2. **The wall** (`-wall`, on Dilihan's side of the crater mouth, r 50-60 km): nwlowlands' columns leaning along the
@@ -156,20 +179,22 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 1. **The north mouth** (settled 2026-10-23): cut on the model in 4.22, on bearings ~345-15°, the bowl's curve continued
    north to a sill at the lowlands' own level (~500-800 m) so Jimjam's lake does not drain in. The pass road runs from
    the lowlands through it, across the floor's edge, and out the crater mouth past Dilihan.
-2. **The shape: where the weapon was.** The model's bowl is a shallow spherical cap, ~130-160 km across and 5-8 km deep
-   (the floor at -2.2 km under a range ~3.5 km high). A sphere that cuts such a cap has radius R = (a² + h²) / 2h, with a
-   the cap's half-width and h its depth: **R about 260-640 km, most likely ~450 km, its centre 250-630 km above the old
-   ground**. So the weapon did not go off in the air: anything centred inside the atmosphere (under ~100 km) cuts a bowl
+2. **The shape: where the weapon was.** The model's bowl is a shallow spherical cap, ~130-160 km across and ~4.5-7.5 km
+   deep once 4.22 raises its floor (to about -1.6 km, under a range ~3.5 km high). A sphere that cuts such a cap has
+   radius R = (a² + h²) / 2h, with a the cap's half-width and h its depth: **R about 280-730 km, most likely ~510 km, its
+   centre 270-720 km above the old ground**. So the weapon did not go off in the air: anything centred inside the atmosphere (under ~100 km) cuts a bowl
    tens of kilometres deep (centred 20 km up, a 150 km bowl would be ~58 km deep). It was **an orbital detonation, or a
    deletion projected from orbit**: a sphere some 500-1,300 km across, almost all of it empty space, that grazed the
    planet and took the Wall's crest with it. The lore's "the sphere's lower half" would become "the bottom of the sphere"
    (`LORE.md` §6.2), and the Cut gains a second story if the owner wants it: the same sphere took a column of air, and
    the atmosphere falling into the void would have been heard and felt across the crater.
-3. **The heat**: open (keep the floor a deadly hothouse, or temper it on the model).
+3. **The heat** (settled 2026-10-23): tempered on the model in 4.22, the floor still a little deeper than the crater
+   (section 6).
 
 ## 10. Order of work
 
-- **C0.** The owner settles the heat and the lore's wording (section 9); the north mouth is on the model's to-do list; the texture prompts (hyperbamboo culm and leaf in Krator's size, rankgrass,
+- **C0.** The owner settles the lore's wording (section 9); the north mouth and the floor's climate are on the model's
+  4.22 list and land before the station sites are fixed; the texture prompts (hyperbamboo culm and leaf in Krator's size, rankgrass,
   measure melon, circle lichen, a polished curved rock face; `bark.bamboo.jade`, `fibre.bamboo.lattice`, `ground.salt`,
   `ground.efflorescence` are in the library) into `core/materials/PROMPTS-NEEDED.md`; any model edit (the north mouth)
   goes on the model's to-do list.

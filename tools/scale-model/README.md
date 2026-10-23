@@ -320,6 +320,23 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   at the lowland's own level (~500-800 m, about y 228-236) so Jimjam's lake (~165 m) does not drain into the bowl, ~30 km
   wide at the sill and widening into the bowl, the walls eased (the western outlets' `cut_channel` with a curved floor).
   Then re-route the rivers (the bowl stays endorheic), reclimate, relight, repaint, publish; the pass road runs through it.
+  **Done in the same pass as the Cut's floor and climate** (the next item), so the rivers and the climate are redone once.
+- **4.22: the Cut's floor and climate** (the owner, 2026-10-23: hot, but habitable year round, and still a little deeper
+  than the crater). On 4.21 the floor is -2.2 km and a hothouse (mean +39 °C, warmest month +44, coldest +33, 2.1 atm):
+  the lapse rate carried 0.9 km below the crater floor. Two changes:
+  1. **Raise the floor ~600 m, to about -1.6 km** (~250 m under the central crater floor, ~0.5 km under the ground outside
+     the crater mouth): add 600 m x smoothstep(lip, 0.35 lip) of the radius from the centre (px 460,302), so the walls
+     and the lip are untouched and the floor's own relief is kept; the two lakes rise with it (the upper to ~-1,380 m,
+     the lower to ~-1,730 m) and the bowl stays endorheic. Dilihan's ground in the crater mouth moves under ~100 m.
+     Lapse: about -3.9 °C everywhere on the floor.
+  2. **A closed-basin correction** for the climate inside the lip, which the lapse rate alone does not see: **afternoon
+     cloud and storms** (the lakes' moisture forced up the walls) cap the highs, -4 to -5 °C on the warmest months'
+     afternoons; **night drainage of cold air** off the 3-6 km walls pools on the floor, -3 to -5 °C on the lows; the
+     lakes, snowmelt-fed off the lip, soften the extremes by the shore. Weighted by `s` (the warp's own strength field:
+     1 at the centre, 0 at the lip), so the walls keep their own climate.
+  Target on the floor: **mean ~+31-32 °C, warmest month ~+35-36, coldest ~+26, nights ~+23-26**, air ~1.95 atm; a wider
+  day-night swing than 4.21's. Reclimate the class from the new temperatures (XA and Af expected by the lakes, XS and XV
+  on the drier floor), relight, repaint; then re-cut any region that holds the Cut.
 - **4.22: the Bowl's lake effect** (the owner, 2026-10-23). 4.21 grew and joined the Bowl's lakes into one salt lake
   (9,600 km2, px 762-948 by 783-846) but gave it no lake effect: rain beside it is ~280 mm within 4 km against ~250 mm 40
   km away, and the shore is BWh to the water. The eastern abyss's lakes, by the same model, carry ~1,100 mm at the shore
