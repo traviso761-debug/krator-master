@@ -227,6 +227,15 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
 - **Reading** (the owner, 2026-10-23): to argue the contract this much they **still read English**, however it has slid:
   the Bookmen and secretaries read the Book's old letters and spelling aloud in their own sounds. Many lojes go by an
   **oral tradition of the laws** instead.
+- **The Fixers and the numbered lojes** (the owner, 2026-10-23): out of crisis the Tpresden **judges disputes between
+  lojes** and **oversees the Fixers** (*fiksaz*), the cadre who keep up the stretches of the Line far from any hold and see
+  the whole network maintained. The lojes are **numbered** after the Line's original stations north to south (Ledge's
+  lifts are Loj Fower); some numbers are gone with lojes wiped out by disaster, and new lojes founded as the Tungangs
+  spread into new caverns took the next number free, so the numbers no longer run north to south.
+- **The lost east** (the owner, 2026-10-23): Tungangs, or the crews they came from, once lived **throughout the Rift**.
+  Those east of Chimes were wiped out in **tunnel wars after the Lizardmen arrived**; many Fellgangs descend from those
+  who fled. A **lost loj** in the east is rumoured to have held out, with no official contact in over five hundred years.
+  Tungang and Fellgang agree: the only thing worse than a Labber is a Lizard.
 - **Skab** is the general curse (traitor, bastard, arsehole), its first meaning long forgotten.
 - **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
   worn down over a thousand years in the dark until a modern speaker cannot follow it: *the* cut to *t'* and fused on,
