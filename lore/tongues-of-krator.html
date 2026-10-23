@@ -1073,7 +1073,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 #eternian td.lo{font-style:italic;color:var(--cobalt);font-weight:600}
 #eternian td.sg svg{height:40px}
 #eternian td.sm svg{height:30px}
-#eternian .signs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+#eternian .signs{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:10px}
 #eternian .sgn{border:1px solid var(--line);padding:10px 8px;display:grid;justify-items:center;gap:3px;text-align:center}
 #eternian .sgn .pr{display:flex;align-items:center;gap:6px}
 #eternian .sgn .pr svg{height:46px}
@@ -1108,6 +1108,8 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 .esg path{fill:none;stroke:var(--ink,currentColor);stroke-width:3.4;stroke-linecap:square;stroke-linejoin:miter}
 .esg.ico path{stroke:var(--muted,currentColor);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .esg.gold path{stroke:var(--gold,currentColor)}
+.esg.br path{fill:var(--ink,currentColor);stroke:none}
+#eternian .sgn .pr svg.cut,#eternian .sgn .pr svg.ico{height:34px}
 #eternian [data-marks] svg{height:40px;width:auto}
 #eternian .plate [data-marks] svg{height:60px}
 #eternian [data-sign] svg{height:40px;width:auto}
@@ -2916,7 +2918,8 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
 <section aria-labelledby="et-sg-h">
   <h2 id="et-sg-h">The signs</h2>
-  <p>The State's script is the only one on Krator that writes <b>meaning</b>, not sound. It grew from the Ancients' own <b>icons</b> (<i>proposed</i>): the figures on doors, the drop on a water point, the flame and the triangle on hazard labels, the switch, the arrow, the document, read off the ruins as words and drawn with a brush until they became signs. Every sign has two readings: the dialect's worn word (blue), and the <b>court reading</b> (gold), the word as the Heirs say it, fitted to Eternian mouths, which the Paper speech uses, as Japanese reads its characters both ways. A few compounds are read by custom, not by their signs.</p>
+  <p>The State's script is the only one on Krator that writes <b>meaning</b>, not sound. It grew from the Ancients' own <b>icons</b> (<i>proposed</i>): the figures on doors, the drop on a water point, the flame and the triangle on hazard labels, the switch, the arrow, the document, read off the ruins as words and drawn with a brush until they became signs. A thousand years of brushing carried them far from the icons (<i>proposed</i>): circles became boxes, curves single strokes, a figure's head a dot, and every stroke took the brush's shape, pressed at its ends, tapering where it sweeps. The early cut forms survive on old stones and in the Valley's licences; a clerk reads them as a scholar reads seal script. Here and there the brush arrived where China's did: the fire sign looks very like 火. Every sign has two readings: the dialect's worn word (blue), and the <b>court reading</b> (gold), the word as the Heirs say it, fitted to Eternian mouths, which the Paper speech uses, as Japanese reads its characters both ways. A few compounds are read by custom, not by their signs.</p>
+  <p class="note">Each sign: the Ancients' icon → the early cut form → the brush form in use today.</p>
   <div class="signs" id="et-signs"></div>
 </section>
 
@@ -4700,7 +4703,42 @@ const SIGNS={
  loop:{d:"M31 14A12 12 0 1 0 32 24M31 5L31 14L22 14",en:"eternal, again",c:"tẽ",k:"itènale",o:"repeat, refresh"},
  seal:{d:"M11 18L29 18L29 36L11 36ZM14 18L14 12Q14 5 20 5Q26 5 26 12L26 18M20 25L20 30",en:"sealed, secret",c:"si",k:"sile",o:"the padlock"}
 };
-const sign=(k,cls)=>`<svg class="esg${cls?" "+cls:""}" viewBox="-2 -2 44 44" role="img" aria-label="${SIGNS[k].en}"><path d="${SIGNS[k].d}"/></svg>`;
+/* the brush forms: centuries of brushing carried the signs from the icons. Circles became boxes, curves single
+   strokes, and each stroke has the brush's shape: L pressed at both ends, S a sweep that tapers, D a dot. */
+const BR={
+ man:[["D",[20,4,22,8]],["L",[8,16,32,15]],["S",[20,9,19,22,8,36]],["S",[20,22,33,35]]],
+ water:[["L",[23,4,14,17,12,28,17,35,25,33,28,25]],["D",[19,22,21,26]]],
+ fire:[["D",[10,12,13,17]],["D",[30,12,27,17]],["S",[21,4,19,22,8,36]],["S",[19,21,32,35]]],
+ sun:[["L",[9,7,9,33]],["L",[9,7,31,7,31,33]],["L",[9,33,31,33]],["D",[19,19,21,22]],["D",[14,1,15,4]],["D",[26,1,25,4]]],
+ gate:[["L",[8,4,8,36]],["L",[8,4,25,4,25,36]],["L",[13,20,35,20]],["S",[29,13,35,20,28,28]]],
+ high:[["L",[4,33,16,33]],["L",[14,24,26,24]],["L",[24,15,36,15]],["S",[36,5,36,15,33,19]]],
+ eye:[["L",[4,20,20,8,36,19]],["S",[5,21,20,32,34,22]],["D",[19,18,21,22]]],
+ danger:[["S",[20,4,6,32]],["S",[20,5,34,32]],["L",[8,34,32,34]],["L",[20,13,20,24]],["D",[19,28,21,30]]],
+ power:[["L",[13,10,6,22,12,33,20,35,28,33,34,22,27,10]],["L",[20,3,20,20]]],
+ go:[["L",[5,20,32,20]],["L",[24,10,34,20,24,30]]],
+ no:[["L",[20,5,8,11,6,26,19,35]],["L",[21,5,33,12,34,27,21,35]],["S",[8,8,33,33]]],
+ home:[["D",[20,2,21,6]],["D",[6,11,7,17]],["L",[6,10,34,10,32,16]],["L",[11,18,11,35]],["L",[11,18,29,18,29,35]],["L",[11,35,29,35]],["L",[20,26,20,35]]],
+ paper:[["L",[9,4,9,36]],["L",[9,4,26,4,31,9,31,36]],["L",[14,14,26,14]],["L",[14,21,26,21]],["L",[14,28,22,28]]],
+ market:[["L",[5,13,33,13]],["S",[27,7,34,13]],["L",[35,27,7,27]],["S",[13,33,6,27]]],
+ word:[["L",[6,6,6,26]],["L",[6,6,34,6,34,26]],["L",[6,26,34,26]],["S",[17,26,10,36]]],
+ loop:[["L",[31,13,24,6,12,8,6,20,12,32,24,34,32,26]],["L",[31,4,31,14,23,14]]],
+ seal:[["L",[13,17,13,9,20,4,27,9,27,17]],["L",[9,17,9,35]],["L",[9,17,31,17,31,35]],["L",[9,35,31,35]],["D",[19,25,21,28]]]
+};
+function stroke(kind,a,w){
+  const P=[];for(let i=0;i<a.length;i+=2)P.push([a[i],a[i+1]]);
+  const seg=[];let L=0;for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);seg.push(l);L+=l}
+  const n=Math.max(6,Math.ceil(L/1.2)),S=[];
+  for(let k=0;k<=n;k++){let d=k/n*L,i=0;while(i<seg.length-1&&d>seg[i]){d-=seg[i];i++}
+    const f=seg[i]?Math.min(1,d/seg[i]):0;S.push([P[i][0]+(P[i+1][0]-P[i][0])*f,P[i][1]+(P[i+1][1]-P[i][1])*f])}
+  const lf=[],rt=[];
+  S.forEach((p,k)=>{const a2=S[Math.max(0,k-1)],b2=S[Math.min(S.length-1,k+1)];let dx=b2[0]-a2[0],dy=b2[1]-a2[1];const m=Math.hypot(dx,dy)||1;dx/=m;dy/=m;
+    const t=k/n;const ww=kind==="S"?w*(1.2-1.05*Math.pow(t,1.3)):kind==="D"?w*1.5*Math.sin(Math.PI*(0.2+0.8*t)):w*(1.05-0.38*Math.sin(Math.PI*t));
+    lf.push([p[0]-dy*ww/2,p[1]+dx*ww/2]);rt.push([p[0]+dy*ww/2,p[1]-dx*ww/2])});
+  const f=q=>q[0].toFixed(1)+" "+q[1].toFixed(1);
+  return "M"+lf.map(f).join("L")+"L"+rt.reverse().map(f).join("L")+"Z";
+}
+const brushD=k=>BR[k].map(([kind,a])=>stroke(kind,a,3.2)).join("");
+const sign=(k,cls)=>`<svg class="esg${cls?" "+cls:" br"}" viewBox="-2 -2 44 44" role="img" aria-label="${SIGNS[k].en}"><path d="${cls?SIGNS[k].d:brushD(k)}"/></svg>`;
 /* the sound-marks: consonant parts drawn in 0..20 x 0..28 */
 const CP={"":"M10 2L10 26",p:"M2 4L18 4M6 4L6 27",t:"M2 9L18 9M10 2L10 27",k:"M3 4L17 4L8 27",m:"M3 5L3 25L17 25L17 5",
  n:"M4 3Q16 8 7 27",s:"M16 3L5 14L17 26",f:"M3 5L17 5M11 5Q3 16 11 27",l:"M9 2L9 21Q9 27 17 25",r:"M3 8Q11 1 16 9Q12 17 4 17L17 27",
@@ -4759,7 +4797,7 @@ const root=document.getElementById("eternian");if(!root)return;
 root.querySelectorAll("[data-sign]").forEach(el=>{el.innerHTML=el.dataset.sign.split(/\s+/).map(k=>sign(k,el.dataset.cls||"")).join("")});
 root.querySelectorAll("[data-marks]").forEach(el=>{el.innerHTML=render(el.dataset.marks,false)});
 const sg=document.getElementById("et-signs");
-if(sg)sg.innerHTML=Object.keys(SIGNS).map(k=>{const s=SIGNS[k];return `<div class="sgn"><div class="pr">${sign(k,"ico")}<i>→</i>${sign(k,"")}</div><b>${s.en}</b><div class="rd"><span class="c">${s.c}</span> · <span class="k">${s.k}</span></div><span class="o">${s.o}</span></div>`}).join("");
+if(sg)sg.innerHTML=Object.keys(SIGNS).map(k=>{const s=SIGNS[k];return `<div class="sgn"><div class="pr">${sign(k,"ico")}<i>→</i>${sign(k,"cut")}<i>→</i>${sign(k,"")}</div><b>${s.en}</b><div class="rd"><span class="c">${s.c}</span> · <span class="k">${s.k}</span></div><span class="o">${s.o}</span></div>`}).join("");
 const mk=document.getElementById("et-marks");
 if(mk){
   const cell=(t,lab,sub,alpha)=>`<div class="mk">${render(t,alpha)}<b>${lab}</b><span>${sub||""}</span></div>`;

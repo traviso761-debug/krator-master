@@ -572,7 +572,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   of the present, as the Order of Historians' is of the past, and the two institutions want each other's archives.
 - **Script and paper.** The only **logographic script** on Krator, which any subject dialect can read, and the only paper and
   block printing; Jimjam writes on palm leaf and the Historians in book hand. *Proposed*: the **signs** grew from the
-  Ancients' own icons (door figures, drops, flames, the power switch, the document), each read two ways, the dialect's worn
+  Ancients' own icons (door figures, drops, flames, the power switch, the document), stylized by a thousand years of brushing until circles became boxes and curves single strokes (the early cut forms read like seal script), each read two ways, the dialect's worn
   word and a **court reading** from the Heirs' English; beside them the **sound-marks**, a syllabary cut down from the signs
   as kana were, for endings, foreign names and everyone who never sat an examination. The Heirs keep the Latin letters,
   which no subject is taught. (`lore/tongues-of-krator.html`, the Eternian tab.)
