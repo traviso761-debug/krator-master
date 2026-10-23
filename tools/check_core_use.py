@@ -18,11 +18,12 @@ Two kinds of finding, both from the text of a build (no build is run):
            (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos). Each finding is counted per
            file and rule.
 
-Three kinds of exception, each a table in this file with its reason: NOT_APPLICABLE (a module a build cannot use),
-SITE_PENDING (settlements to be re-scoped on a site of the world map; their biome files are redone then, so the
-biome-sync rules skip them) and SINGLE_COMPLEX (a settlement of one pre-planned building or complex is exempt from
-"takes core/simulation, therefore takes core/city" until core/city has a single-complex mode). A settlement that takes
-core/simulation without core/city is a MISSING finding otherwise.
+Exceptions, each a table in this file with its reason: NOT_APPLICABLE (a module a build cannot use); PLACED (settlements
+already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the biome-sync rules,
+sky dome and water shader, apply to them and they are rebuilt when the biome files change, while every other settlement
+is left alone until it is placed); SINGLE_COMPLEX (one pre-planned complex, Longsong) and CAVERN (Dhelv) are exempt from
+"takes core/simulation, therefore takes core/city" until core/city has a single-complex mode and a cavern setting. Any
+other settlement that takes core/simulation without core/city (Mungo, Shade) is a MISSING finding: they could take it.
 
 The baseline (tools/core_use_baseline.json) is today's findings: the check fails only on a finding that is not in it or
 that has grown, so every existing build keeps passing and a NEW build, or new code in an old one, cannot add to the pile.
@@ -54,22 +55,29 @@ NOT_APPLICABLE = {
 ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
                'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
 
-# Settlements the owner will re-scope on a site of the world map (2026-10-23: Pinnacle Rock, the isle demo, Longsong). Their
-# biome files are redone when they are placed, so the biome-sync rules (a sky dome, a water shader, getImageData in the
-# world page, the atmos/water/host/biome modules) are not applied to them now. A build leaves this list when it is placed.
-SITE_PENDING = {
-    'settlements/pinnacle-rock': 'to be placed on the world map',
-    'settlements/isle-demo': 'to be placed on the world map (the isle demo)',
-    'openworld/isle-demo': 'the isle demo world page; redone with its placement',
-    'settlements/longsong': 'to be placed on the world map',
+# Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the
+# biome files, so they are rebuilt whenever those change: the biome-sync rules apply to them like a biome. Every other
+# settlement is left alone until it is built on the map, so those rules do not apply to it. A build joins this list when
+# its site is placed.
+PLACED = {
+    'settlements/pinnacle-rock': 'placed; rebuild with the biome files',
+    'settlements/isle-demo': 'placed (the Ring Sea isles); rebuild with the biome files',
+    'openworld/isle-demo': 'the isle demo world page; rebuild with the biome files',
+    'settlements/hook': 'placed (the coast, scale model KLAND); rebuild with the biome files',
+    'settlements/longsong': 'placed (the Oidong Valley); rebuild with the biome files',
 }
-SITE_PENDING_RULES = {'sky-dome', 'water-shader', 'getImageData', 'prng'}
-SITE_PENDING_MODULES = {'atmos', 'water', 'host', 'biome'}
+BIOME_SYNC_RULES = {'sky-dome', 'water-shader'}   # a settlement that is not placed keeps its own sky and water for now
 
 # A settlement that takes core/simulation (the people's world) must take the city builder (core/city) so its places are
 # records the sim can use, except a settlement of ONE pre-planned building or complex: there is no street or lot pass for
 # core/city to place. Longsong ties into the sim (40d-ls-sim.js, SIM.pose) and takes one core/city fragment (33); the
 # right fix is a single-complex mode in core/city (its pre-planned footprint as the one lot), then Longsong moves onto it.
+# Settlements carved into caves (a split layout, no street grid): exempt from the same rule until core/city has a cavern
+# setting. The Tungangs' holds will need it too, so it is a core/city feature, not a Dhelv special case.
+CAVERN = {
+    'settlements/dhelv': 'carved into caverns; core/city has no cavern setting yet (the Tungang holds will need one)',
+}
+
 SINGLE_COMPLEX = {
     'settlements/longsong': 'one monastery complex (settlements/longsong/BLUEPRINT.md); core/city has no single-complex mode yet',
 }
@@ -134,11 +142,11 @@ def scan(build):
     kind = build.split('/')[0]
     bp = os.path.join(ROOT, build, 'build.py')
     mods = modules_named(open(bp, encoding='utf-8').read())
-    pending = build in SITE_PENDING
+    skip_sync = kind in ('settlements', 'kits', 'openworld') and build not in PLACED
     for m in REQUIRED.get(kind, []):
-        if m not in mods and m not in NOT_APPLICABLE.get(build, {}) and not (pending and m in SITE_PENDING_MODULES):
+        if m not in mods and m not in NOT_APPLICABLE.get(build, {}):
             found['%s: MISSING core/%s' % (build, m)] = 1
-    if kind in ('settlements', 'openworld') and 'simulation' in mods and 'city' not in mods and build not in SINGLE_COMPLEX:
+    if kind in ('settlements', 'openworld') and 'simulation' in mods and 'city' not in mods and build not in SINGLE_COMPLEX and build not in CAVERN:
         found['%s: MISSING core/city (it takes core/simulation)' % build] = 1
     for sub in ('src', 'targets', 'stations'):
         for p in glob.glob(os.path.join(ROOT, build, sub, '**', '*.js'), recursive=True):
@@ -147,7 +155,7 @@ def scan(build):
                 continue
             text = open(p, encoding='utf-8', errors='replace').read()
             for rule, rx in OWN.items():
-                if pending and rule in SITE_PENDING_RULES:
+                if skip_sync and rule in BIOME_SYNC_RULES:
                     continue
                 n = len(rx.findall(text))
                 if n:
