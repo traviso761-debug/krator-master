@@ -328,4 +328,6 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   salt lake gives little rain: the Dead Sea's shore gets ~50-100 mm), to about a third of the abyss's lift: proposed
   ~400-550 mm within ~10 km on the downwind south-east shore, ~300-400 upwind, fading by ~30 km, so the shore turns BSh
   and the deltas and the south-east shore green. Moderate the shore's temperature extremes a little (the lake's thermal
-  mass). Reclimate the class from the new rain, repaint the rain and climate maps.
+  mass). **Keep the south-west shore's green pockets** (px 831-846 by 812-844, Am and Aw at ~1,000-1,550 mm, where Mantis
+  stands at 841,834): take the greater of the new rain and 4.21's there, so the oasis is not washed out to steppe.
+  Reclimate the class from the new rain, repaint the rain and climate maps.
