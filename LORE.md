@@ -575,17 +575,19 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   Ancients' own icons (door figures, drops, flames, the power switch, the document), stylized by a thousand years of brushing until circles became boxes and curves single strokes (the early cut forms read like seal script), each read two ways, the dialect's worn
   word and a **court reading** from the Heirs' English; beside them the **sound-marks**, a syllabary cut down from the signs
   as kana were, for endings, foreign names and everyone who never sat an examination. The Heirs keep the Latin letters,
-  which no subject is taught. (`lore/tongues-of-krator.html`, the Eternian tab.)
+  which no subject is taught: **the forbidden letters** [the owner, 2026-10-23]. (`lore/tongues-of-krator.html`, the Eternian
+  tab.)
 - **Tongues** [the owner, 2026-10-23, unless marked]. The **True Heirs speak English**, hardly changed, since they outlive
   forty generations of subjects. The subjects' English has diverged: in the lowlands it is **worn to single syllables
   without tones**, as the spoken Chinese tongues wore down under one script (nasal vowels, homophones said in pairs, measure
   words), and the officials' **Paper speech** is that grammar with court words and **levels for rank**, as Korean and
-  Japanese have (*proposed*: an Heir is never asked a question; speakers call themselves *sevã*, servant, and ends on
+  Japanese have (*proposed*: an Heir is never asked a question; speakers call themselves *sevã*, servant, and end on
   *milò*, my lord). There are **five or six main dialects**, no more: **capital speech** (the standard), the **Valley
-  march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which came to sound like **Ainu**
-  [the owner, 2026-10-23] (*proposed*: *Hayrant*, from *highland*; no voiced stops, l > r, clusters broken, the verb last
+  march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **Outer Wall** (only there), which came to sound like
+  **Ainu** [the owner, 2026-10-23] (*proposed*: *Hayrant*, from *highland*; no voiced stops, l > r, clusters broken, the verb last
   with the person on it; written in sound-marks with small marks for closing consonants, as Ainu is in katakana),
-  **Farside**, which took **clicks** and other strange sounds (*proposed*: from the sea-traders' speech on Farport's docks),
+  **Farside**, which took **clicks** and other strange sounds **from over the sea** [the owner, 2026-10-23], from the
+  sea-traders' speech on Farport's docks,
   and the **cybernetics tribe's** speech, an **avoidance speech** [the owner, 2026-10-23] so the Ancient systems that still listen for English
   cannot follow it. Many ways were tried; what stuck [the owner]: **compounds with their halves swapped**, the parts kept
   as they were (*comewel*, *byegood*, *placemarket*); the **small command words kept but said in another register**,
@@ -594,7 +596,9 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   fossils (*Isneslay*, the Listeners, the machines); the head-first habit of the swaps spread to describing words; *I* is
   never said, but *one*; the commands kept plain and whole as a liturgy, the calling words; they are the *Yusar*, the users
   [the owner's choice of name], and write the forbidden Latin letters, which their computers read. The **dam basins** mostly speak the **northern traders'
-  argot**, a mix of capital speech, Jimjam's tongue and Izani [the owner, 2026-10-23]. The State's
+  argot**, a mix of capital speech, Jimjam's tongue and Izani, written in **Izani letters with easy, recognisable Eternian
+  signs mixed in** [the owner, 2026-10-23] (*proposed*: *Matok*, "market-talk"; Jimjam's numbers, measure words and dates,
+  the Empire's road, gold and *da-*, the State's market, paper and toll-gates; the tongues page has its own tab). The State's
   name in the market: *Tẽ-tè*; in Paper speech, *Itènale Setète*.
 - **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
   reach the capital's relics, and pay for each one. Dalab guards the Valley from the south with Blade and Span (§6.1), the
