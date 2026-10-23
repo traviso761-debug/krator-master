@@ -20,10 +20,12 @@ of its polygon is the **very dry high country round the valley**. One station, t
 A Tibetan cold desert above the valley: bare gravel plains and scree under huge skies, cushion plants and the snow lotus
 in its true home among the stones, sky poppies in the few damp hollows, a frozen pass with **cairns and prayer-stone
 piles** the monks and pilgrims leave, wind-raked ground like the valley's gravel flats but wild, the valley's serenity
-turned stark. It gives **Longsong** (the History Monks' monastery, `settlements/longsong`, blueprint drafted; the "Potala
-effect" wants a height) its setting above the valley.
+turned stark. This is the high country **Longsong** looks up at: the monastery stays **on the valley floor** (the owner,
+2026-10-23), where it is built (px 954,1296, 2,063 m, on the apron south of the Longsong stream; its Potala effect comes
+from its own authored granite rock, `settlements/longsong/PLAN.md` section 1). The pilgrims' road climbs from it to the
+passes.
 
 ## Order
 
-O0 site (with Longsong's blueprint in hand); O1 the station; verified and baselined; `kits/crops` `oidong` already has a
+O0 site (a pass above Longsong, on the pilgrims' road); O1 the station; verified and baselined; `kits/crops` `oidong` already has a
 `terraces` zone; a `pass` zone (warmth [0, 0], arid [0, 0], atm 0) is added.
