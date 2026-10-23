@@ -94,7 +94,7 @@ at all, and why it is fragile.
 - **Dalab, tenuously**: the arcology on the great lake (section 5), the road and its waystations, field stations at a
   few lakes; supply trains of modded porters and Dalab lizards (the cold-modded strain is a proposal) a few times a year.
 - **Nobody else**: the Lizardmen keep to the Rift's floor and lower walls; Xanadu is beyond them.
-- **Natives**: open (section 6).
+- **Natives**: an Ancient worker caste gone feral (the owner, 2026-10-23); who they are, section 6.
 
 ## 3. The flora: the Rift's forms, gone temperate
 
@@ -140,29 +140,47 @@ The trough's walls in the strata module's `canyon` recipe (formations stacked up
 moraines damming the lakes; hanging valleys with falls into the trough; the great lake's north cliff; felsenmeer and
 patterned ground in the alpine; glaciers and nunataks; the Outer Wall standing over the west.
 
-## 5. The arcology (Ledge, placeholder)
+## 5. Ledge: the hub and the bridge (settled 2026-10-23 unless marked)
 
-- **The marker is in the lake**: Ledge's point (px 160,1007) is a water cell on 4.21 (the -917 m it reads is the lake
-  bed). Proposed new point: **px 165,1000**, on the north cliff where the road comes down: 1,638 m, ~1,300 m over the
-  lake after 4.22, ~1,200 mm, +14 °C (25/2), Csa. **A ledge high over the lake and its basin** is what the name says:
-  the arcology looks down on the water, the plain and the gorge, and the road reaches it before it reaches the basin.
-- **Theme** (proposed): an Ancient **gene bank and highland research arcology**: seed vaults cut into the cliff, cold
-  stores, greenhouses and field gardens on its terraces, which is why Dalab troubles to hold it at all. The genepriests
-  sample the rim's flora and fauna and grow cuttings in the old gardens.
-- **Name** (proposed): Dalab's low tongue fuses *the* on as *da-*, so the priests' "the vault" is **Davolt** to the
-  porters; or keep the Ancient name if the owner gives it one.
+- **Ledge is the Ancient arcology**, and the settlement takes its name. It was **the southern hub of the Ancients' Rift
+  line** (`LORE.md` §4): the tunnels under the Outer Wall came out above it, and lines ran on to the Ancients' Rift
+  settlements, less extensive than those up north but substantial (*proposed*: Chimes at the gorge's foot, Cthonos, Cube,
+  The Tubes; Pluton on the airless crest as a second crossing's portal).
+- **It is a bridge between two levels**: the highland where Dalab's road comes out of the tunnels (the cliff top, ~1.6-2.5
+  km) and the basin and lake ~1.3 km below it (after 4.22). Holding it means working both: the road's terminus, stores
+  and stables above; the fields, the harbour and the way to the gorge below; the arcology between them, built into the
+  cliff, its lifts, inclines and stairs the only way up and down.
+- *Proposed*: the Ancient lifts are why Dalab's hold depends on others. The genepriests can mod a porter for the cold
+  and the air, but they cannot run the cliff's machinery alone (section 6).
+- **The point**: Ledge's marker (px 160,1007) is a water cell on 4.21. Proposed: **px 165,1000**, the cliff where the road
+  comes down (1,638 m, ~1,300 m over the lake after 4.22, +14 °C, Csa): the upper level; the arcology runs down the cliff
+  from it to the shore.
+- **Theme** (*proposed*): a transit hub first (terminus halls, the lift shafts, sidings cut into the rock), with the gene
+  bank as a second story: Dalab came for the line's road and stayed for what the arcology's gardens and vaults hold.
 
-## 6. Natives (open: three options)
+## 6. Natives: an Ancient worker caste gone feral
 
-1. **The Strays** (recommended): descendants of an earlier Dalab colony at the arcology, modded for cold and altitude
-   further than Dalab's own people, which broke with the lab a century or more ago and went wild in the high valleys.
-   Green-skinned like Dalab (the photosynthesis mod), darker for the high sun, thickset and big-lunged. Not standard
-   humans, not Lizardmen, and they do not want Dalab back: one more reason the hold is tenuous, and the genepriests
-   want their genes too.
-2. **An Ancient work caste**: a people the Ancients engineered to keep the tunnels and the arcology, left behind when the
-   Ancients fell: long-limbed, sealed-lunged, quiet, still tending the tunnels after a thousand years. Dalab uses the road
-   they keep without understanding them.
-3. **No natives**: the rim empty but for its fauna, the wildness the point, Dalab alone with the ruins.
+The owner (2026-10-23): an Ancient worker caste gone feral; who they are is open. *Proposed*: **the line's crews.**
+
+- **Who they were.** The caste the Ancients engineered to run the Rift line: the tunnels under the airless crest, the
+  lifts on Ledge's cliff, the stations in the Rift. Bred for **long shifts in thin air and the dark**: barrel-chested and
+  big-lunged, with blood that holds oxygen at altitude; large eyes with eyeshine for the tunnels; compact, strong hands
+  for the machinery; grey, near-hairless skin that has never needed the sun; tolerant of cold.
+- **What they are now.** When the Ancients fell the crews stayed on the line. A thousand years later they still **walk
+  it**: they keep stretches of the tunnels clear, tend the lifts they can still run, and live in the side galleries, the
+  stations and the high valleys round them. The work became their religion: **the timetable is scripture**, the old
+  signal codes are their speech's second voice (lamps in the dark, and **bells: perhaps why Chimes is called Chimes**).
+- **How they are organised** (*proposed*): **clans by shift** (Day, Night, Third, and the Relief), each with a foreman;
+  they call themselves **the Shift**. Their English is the crews' English, with the line's jargon fossilised in it.
+- **They and Dalab.** Dalab's road runs through tunnels the Shift keeps, and Ledge's lifts answer to them, so Dalab's
+  hold rests on an uneasy bargain: trade, medicine, a truce at the lifts, and raids when it breaks. The genepriests want
+  the Shift's genes above all (*proposed*: **Dalab's cold and altitude mods were learned from them**, which is how a
+  lowland lab can send its people over the Wall at all), and the Shift remembers being taken.
+- **Not standard humans, not Lizardmen**: engineered people, as the Giants are Dalab's (`LORE.md` §6.1), but older.
+
+Other candidates for "who", if the crews do not suit: **the arcology's own staff caste** (the gene bank's keepers,
+feral gardeners of the vaults' descendants) or **the Rift settlements' builders** (a hauling and quarrying caste, huge
+and slow).
 
 ## 7. Crops (`kits/crops`)
 
@@ -178,16 +196,18 @@ name). The page's first stations carry birds, insects over the lakes and grazing
 
 ## 9. Stations
 
-1. **The great lake** (`dist/riftrim.html`): the north cliff and the arcology on its ledge, the road coming down the
-   cliff's switchbacks, the lake under the cliff, the basin plain beyond it with Dalab's fields, the gorge's head at the
+1. **Ledge and the great lake** (`dist/riftrim.html`): the arcology on both levels, the cliff top where the road comes out
+   of the tunnels and the lifts and inclines down the cliff, the lake under the cliff, the basin plain beyond it with Dalab's fields, the gorge's head at the
    far side, the montane forest climbing the walls round it.
 2. **The lakes of the north rim** (`-lakes`): the 1,120 km² lake at 3,271 m (px 261,1060) in frost-frill and bell-fir
    forest, algal shallows, a chain of smaller lakes stepping down to it, a hanging valley's fall into the trough.
 3. **The cold lake** (`-ice`): the S rim's lake at 4,477 m (px 433,1314), frozen most of the year, the alpine with
    lantern lobelias and cushion anemones, glaciers above, the Rift's floor far below.
-4. **The gorge** (`-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot.
-5. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, a tunnel mouth and the waystation before it, the
-   road winding over the high tundra under a near-airless sky.
+4. **The gorge** (`-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot, the
+   Shift's bells in the dusk.
+5. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, the Ancient tunnel's portal and the waystation
+   before it, the Shift's signal lamps in the tunnel's mouth, the road winding over the high tundra under a near-airless
+   sky.
 
 ## 10. Textures
 
@@ -210,8 +230,9 @@ shallows.
 
 ## 12. Questions for the owner
 
-1. **Natives**: the Strays, an Ancient work caste, or none (section 6)?
-2. **The arcology**: its name and theme (the gene bank is a proposal), and moving its point out of the lake to px
-   165,1000 on the north cliff.
-3. **The tunnels**: what the Ancients built them for (a service way for the arcology, a transit line under the Wall,
-   something else), which sets what the crossing station shows.
+1. **Who the feral caste are**: the line's crews ("the Shift", section 6), or another of the candidates.
+2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
+3. **The Rift's ruins** (Chimes, Cthonos, Cube, The Tubes, Pluton) as the line's settlements and stations: confirm, and
+   whether Pluton is a second crossing.
+4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Shift at the lifts) is a settlement plan of its
+   own (`settlements/ledge/`), after this kit's station 1.
