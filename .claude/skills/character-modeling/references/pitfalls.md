@@ -58,6 +58,11 @@ area you are about to change.
   Garments settled to the body are not exempt: the made cultures' trousers showed the same knees in a crouch, so every
   legged item takes the cover (`legged_trousers`). Diff the red shots before and after on a magenta background: red
   gone is the fix, new magenta would be a hole the wider cover opened.
+- **A hole beside the arm at a sleeve's edge with the arm overhead** (the stretch, a climb, a two-handed parry) → shot
+  on magenta, the hole shows the background, and with the hide off it fills with skin: the top's hide reached right up
+  to the sleeve's opening, which lifts off the arm. Hide no skin within 4 cm of the opening out on the arm (6 cm put the
+  deltoid through the tee's shoulder), and draw garments on both sides: library tops are one-sided in their glTFs, so
+  the sleeve's inside was missing too (Godot's push shader was already `cull_disabled`: check both twins draw alike).
 - **A nipple through a T-shirt** (the man's, in the idles) → the base's nipples are a primitive of their own
   (`Human.nipple`), drawn over the skin: no hide reaches them. Hide such a part when an item hides all the skin under it
   (`hide_parts`). Draw the garments hidden and the hide on (A-pose, front and back) to see every such leftover at once.

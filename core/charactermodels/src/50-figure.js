@@ -1165,6 +1165,9 @@ function KCharFigure(body, sliders, load){
         '\t\tgl_FragDepth = max(gl_FragCoord.z, clamp(kbc.z / kbc.w * 0.5 + 0.5, 0.0, 1.0)); }');
     };
     mat.customProgramCacheKey = function(){ return 'kchar-push'; };
+    // both sides, as the twin's push shader (cull_disabled): a library top is one-sided in its glTF, and with the arm
+    // overhead the sleeve's opening lifted off it and its inside, not drawn, left a hole beside the arm (the stretch)
+    mat.side = THREE.DoubleSide;
     mat.needsUpdate = true;
     return padU;
   }

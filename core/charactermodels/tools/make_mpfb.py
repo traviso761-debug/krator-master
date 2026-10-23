@@ -861,6 +861,53 @@ def legged_trousers(it):
     return culture_of(it['id']) is None or any(w in it['id'] for w in LEGGED)
 
 
+# a top's sleeve opening lifts off the arm when the arm goes overhead (the stretch, a climb, a high block), and the skin
+# its hide left out up to the opening showed as a hole between the sleeve's edge and the arm (the owner's review,
+# 2026-10-23, the woman's plain tee): no skin is hidden within SLEEVE_OPEN of a sleeve's opening, out on the arm (beyond
+# the shoulder joint), so a lifted sleeve shows the arm inside it
+SLEEVE_OPEN = 0.04
+
+
+def openings(path):
+    """the open edges of a garment as loops of positions (welded by position: a UV seam is not an edge)"""
+    P, T = all_triangles(path)
+    _, w = np.unique(np.round(P, 5), axis=0, return_inverse=True)
+    w = w.reshape(-1)
+    E = np.sort(np.concatenate([w[T][:, [0, 1]], w[T][:, [1, 2]], w[T][:, [2, 0]]]), 1)
+    u, n = np.unique(E, axis=0, return_counts=True)
+    adj = {}
+    for a, b in u[n == 1]:
+        adj.setdefault(a, []).append(b)
+        adj.setdefault(b, []).append(a)
+    first = {}
+    for i, k in enumerate(w):
+        first.setdefault(k, i)
+    seen, out = set(), []
+    for s in adj:
+        if s in seen:
+            continue
+        stack, loop = [s], []
+        while stack:
+            v = stack.pop()
+            if v not in seen:
+                seen.add(v)
+                loop.append(first[v])
+                stack += adj[v]
+        out.append(P[loop])
+    return out
+
+
+def open_sleeves(BP, BT, tris, path, shoulder_x, reach=SLEEVE_OPEN):
+    """tris less the skin out on the arm (beyond the shoulder joint, |x| > shoulder_x) within reach of a sleeve's opening:
+    an open loop round an arm (its centre beyond the shoulder joint, at most 25 cm across)"""
+    rims = [q for q in openings(path) if abs(q[:, 0].mean()) > shoulder_x and np.ptp(q, 0).max() < 0.25]
+    if not rims or not len(tris):
+        return tris
+    C = BP[BT[tris]].mean(1)
+    d, _ = cKDTree(np.concatenate(rims)).query(C)
+    return tris[~((d < reach) & (np.abs(C[:, 0]) > shoulder_x))]
+
+
 def parts_under(path, BP, BT):
     """per small skin primitive of the base (the nipples: 'Human.nipple'), the triangles of the skin under it (those
     holding the skin vertex nearest each of its vertices). A part is drawn on top of the skin, not cut from it, so an
@@ -892,19 +939,29 @@ def hide_parts(entry, under, ntris):
 def refresh_hides(body, pieces):
     """python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>: with no Blender and no export, rederive from
     the pieces' GLBs (a dir of <id>.glb and base.glb) what the pack derives from them alone: the rays' hide of the
-    trousers (TROUSERS_COVER: legged_trousers) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
+    trousers (TROUSERS_COVER: legged_trousers), the tops' sleeve openings (open_sleeves: it only takes skin out of a
+    hide, so a second run changes nothing) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
     the Godot twin's skin regions (base.gshapes.bin) follow at the next whole build"""
     path = os.path.join(HERE, 'data', 'mpfb_' + body, 'kit.json')
     kit = json.load(open(path, encoding='utf-8'))
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     assert len(BT) == kit['base_tris'], 'make_mpfb.py hides: %s is not this kit\'s base' % pieces
     under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
+    c = mp.load(os.path.join(pieces, 'base.glb'))
+    shoulder = abs(c.jpos[c.joints.index('LeftArm')][0])
     for e in kit['items']:
         g = os.path.join(pieces, e['id'] + '.glb')
         if e.get('hide_by') == 'rays' and legged_trousers(e) and os.path.exists(g):
             tris = covered(BP, BT, g, **TROUSERS_COVER)
             print('%-8s %-34s hides %5d (was %d)' % (body, e['id'], len(tris), e.get('hides', 0)))
             e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
+        if e['slot'] == 'torso' and 'hide' in e and os.path.exists(g):
+            h = np.unpackbits(np.frombuffer(base64.b64decode(e['hide']), np.uint8), bitorder='little')[:len(BT)]
+            was = np.nonzero(h)[0]
+            tris = open_sleeves(BP, BT, was, g, shoulder)
+            if len(tris) != len(was):
+                print('%-8s %-34s sleeves open: hides %5d (was %d)' % (body, e['id'], len(tris), len(was)))
+                e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
         hp = hide_parts(e, under, len(BT))
         if hp:
             e['hide_parts'] = hp
@@ -1371,6 +1428,7 @@ def main():
                     top = BP[:, 1].max() - BP[:, 1].min()
                     more = more[(BP[BT[more], 1] > BP[:, 1].min() + 0.5 * top).all(1)]
                 tris = np.union1d(tris, more)
+                tris = open_sleeves(BP, BT, tris, os.path.join(pieces, it['id'] + '.glb'), abs(c.jpos[c.J['LeftArm']][0]))
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
@@ -1380,6 +1438,8 @@ def main():
                 # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
                 top = BP[:, 1].max() - BP[:, 1].min()
                 tris = tris[(BP[BT[tris], 1] > BP[:, 1].min() + 0.5 * top).all(1)]
+            if it['slot'] == 'torso':
+                tris = open_sleeves(BP, BT, tris, os.path.join(pieces, it['id'] + '.glb'), abs(c.jpos[c.J['LeftArm']][0]))
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
             entry['hide_by'] = 'rays'          # no delete group in the asset: covered() found it
