@@ -1,8 +1,8 @@
 # riftrim: the plan (draft, 2026-10-23)
 
 **The rift rim**: the high country round the Rift, south of the crater across the Outer Wall. Wild and untamed: the
-walls of the Rift's trough and the highland at its western head, a staircase of lakes from a 2.5 km-deep lake at 1.3 km
-to tarns at 5.8 km, forest, tundra and ice. **Its flora is as strange as the Rift's, but temperate**: the Rift's own forms
+walls of the Rift's trough and the highland at its western head, a staircase of lakes from a great lake in a sheltered basin at
+~300 m to tarns at 5.8 km, forest, tundra and ice. **Its flora is as strange as the Rift's, but temperate**: the Rift's own forms
 (frills, bells, lobes, the teal-and-violet palette) carried up into the cold.
 
 Owner's brief (2026-10-23): the region is wild and untamed; too high for the Lizardmen to venture comfortably, and too
@@ -24,7 +24,7 @@ highlands) on the same fields" (`biomes/rift/NOTES.md`).
 |---|---|
 | Folder | `biomes/riftrim/` (the usual kit layout, with `stations/`) |
 | Polygons | `rift rim` (the N and S rims, split by the Rift's axis) and `w rift highland` (the western head, which supersedes the rim there): 267,000 km² together |
-| Pages | four stations (section 9) |
+| Pages | five stations (section 9) |
 | Core | the biome core, `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (relief, carve, the strata module's `canyon` recipe on the trough's walls), `core/water`, the shared sky |
 | Read in place | `biomes/rift`: its cloud forest, Mediterranean crest and highland species (the groundsel, the peak pine, the barrel frill, the fan tree, the Rift stone pine, the beard tree); nothing copied. The Rift kit's own highland can then read this kit back |
 | Object | `RRIM` on the `BIOME-API.md` contract |
@@ -48,7 +48,7 @@ Every lake stands under its own shore (checked: level against the lower quartile
 
 | Lake | Where (px) | km² | Surface | Depth | Shore | What it is |
 |---|---|---|---|---|---|---|
-| **The great lake** (Ledge's) | 146-201 by 1001-1058 (W) | **8,768** | 1,312 m | **~2.5 km** (bed to ~-1,150 m) | Csa, ~1,100 mm, **+15 °C**; a 25-36% cliff on the north shore | a Baikal: the rim's heart and its warmest, wettest ground |
+| **The great lake** (Ledge's), **after 4.22** | the basin px 146-201 by 1001-1058 (W); the lake in its north-west | **~2,000-2,500** (8,768 on 4.21) | **~+300 m** (1,312 on 4.21) | ~600 m (3.3 km on 4.21) | the basin plain round it: Csa, Cfa, ~+16-22 °C; the 25-36% north cliff over the water | the rim's heart: a lake under a cliff in a warm basin, its outlet a gorge to the Rift |
 | N rim | 261,1060 | 1,120 | 3,271 m | ~1.1 km | ~860 mm, +3 | the largest of the N rim's chain |
 | N rim | 295,1072 | 624 | 1,887 | ~550 m | ~1,110 mm, +11 | |
 | N rim | 247,1039 | 544 | 3,427 | | ~815 mm, +2 | |
@@ -60,7 +60,25 @@ Every lake stands under its own shore (checked: level against the lower quartile
 | S rim | 229,1223; 196,1199 | 624; 608 | 2,074; 3,569 | | ~610-630 mm | |
 | W tarns | 62,944; 51,909 | 336; 240 | **5,568; 5,810** | shallow | ~330-890 mm, -8 to -10 | ice-bound tarns under the Outer Wall, 0.8 atm |
 
-The rim is a **staircase of lakes** from 1.3 km to 5.8 km: each step a different water, by height, rain and rock (section 3).
+The rim is a **staircase of lakes** from ~300 m to 5.8 km: each step a different water, by height, rain and rock (section 3).
+
+### The great lake's basin (4.22)
+
+On 4.21 the great lake is a hollow 3.3 km deep (floor -2,028 m) that the river audit filled to its spill at 1,312 m:
+8,768 km², the deepest lake on the map, falling 1.3 km straight into the Rift through a notch at px 194,1059. The water
+books agree (its evaporation never exceeds ~150 m³/s at any level, against ~800 m³/s coming in), but the hollow does not
+hold up: a pit at the Rift's shallow head, behind a thin ridge a river that size would have cut through long ago. The
+owner (2026-10-23): no deeper than the Rift beside it, shallower, and a gorge that frees land between the Rift's floor and
+the rim. **4.22** (`tools/scale-model/README.md`):
+
+- **The basin plain**: the hollow refilled as a plain rising from a shore at ~+300 m to ~+1,000-1,300 m at the walls'
+  foot, **~6,000 km² of new land**: higher than the Rift's floor (-1,600 to -1,850 m nearby), far lower than the rim
+  (3-6 km). Sheltered on three sides by the highland, a mean of about +16-22 °C, ~1,000-1,300 mm: **the warmest, most
+  farmable ground on the rim**, where Dalab's hold could grow its food.
+- **The lake**: ~2,000-2,500 km², ~600 m at its deepest (to ~-300 m), in the basin's north-west under the north cliff.
+- **The gorge**: the outlet river crosses the plain south-east to the old notch, and the gorge cuts through the ridge,
+  1.2-2 km deep under its shoulders, past **Chimes** (ruined arcology, px 196,1062, at the gorge's foot) to the Rift's
+  trough: ~60 km of rapids and falls, ~800 m³/s.
 
 ### Dalab's road (the model's heights)
 
@@ -87,7 +105,7 @@ in the flowers), cooled toward silver and blue-green with height.
 
 | Zone | Where | What grows |
 |---|---|---|
-| `shore` | the great lake's shores and the trough's lower edge (Csa, Csb, under ~2 km) | the Rift's Mediterranean crest read in place: barrel frills, fan trees, Rift stone pines, silver scrub, garrigue; vines and figs on the warm cliffs |
+| `shore` | the great lake's basin plain and shores, and the trough's lower edge (Csa, Cfa, Csb, under ~2 km) | the Rift's Mediterranean crest read in place: barrel frills, fan trees, Rift stone pines, silver scrub, garrigue; vines and figs on the warm cliffs |
 | `montane` | 2-4.5 km (Dsb, Dsc), the largest zone | **the new forest** (below): frost frills, bell firs, lobe larches, the Rift's beard trees read in place, meadows of prism heath |
 | `alpine` | 4.5-6 km (ET) | the Rift's giant groundsels and the new lantern lobelias, cushion anemones, iridescent lichen fields, felsenmeer |
 | `ice` | over 6 km (EF) | glaciers, snowfields red and violet with snow algae, nunataks |
@@ -110,7 +128,7 @@ in the flowers), cooled toward silver and blue-green with height.
 
 | Kind | Where | Colour |
 |---|---|---|
-| Deep lake | the great lake | dark blue-black in the middle, glass-clear at the shore over pale cobbles, the cliff's reflection |
+| Deep lake | the great lake | dark blue under the cliff, green-blue over the plain's shallows, the cliff's reflection |
 | Glacial | the S rim's higher lakes, the W tarns | milky turquoise from rock flour |
 | Algal | N rim lakes in the montane forest | the Rift's algal mats gone cold: teal and violet mats on the shallows, stromatolite-like domes |
 | Peat | the montane's lower lakes | tea-dark water edged with bog |
@@ -125,9 +143,9 @@ patterned ground in the alpine; glaciers and nunataks; the Outer Wall standing o
 ## 5. The arcology (Ledge, placeholder)
 
 - **The marker is in the lake**: Ledge's point (px 160,1007) is a water cell on 4.21 (the -917 m it reads is the lake
-  bed, 2.2 km under the surface). Proposed new point: **px 165,1000**, on the north cliff where the road comes down:
-  1,638 m, ~330 m over the water, ~1,200 mm, +14 °C (25/2), Csa. **A ledge over a 2.5 km-deep lake** is what the name
-  says.
+  bed). Proposed new point: **px 165,1000**, on the north cliff where the road comes down: 1,638 m, ~1,300 m over the
+  lake after 4.22, ~1,200 mm, +14 °C (25/2), Csa. **A ledge high over the lake and its basin** is what the name says:
+  the arcology looks down on the water, the plain and the gorge, and the road reaches it before it reaches the basin.
 - **Theme** (proposed): an Ancient **gene bank and highland research arcology**: seed vaults cut into the cliff, cold
   stores, greenhouses and field gardens on its terraces, which is why Dalab troubles to hold it at all. The genepriests
   sample the rim's flora and fauna and grow cuttings in the old gardens.
@@ -161,13 +179,14 @@ name). The page's first stations carry birds, insects over the lakes and grazing
 ## 9. Stations
 
 1. **The great lake** (`dist/riftrim.html`): the north cliff and the arcology on its ledge, the road coming down the
-   cliff's switchbacks, the Mediterranean shore below, the lake 2.5 km deep and about 100 km across, the montane forest climbing
-   the far side.
+   cliff's switchbacks, the lake under the cliff, the basin plain beyond it with Dalab's fields, the gorge's head at the
+   far side, the montane forest climbing the walls round it.
 2. **The lakes of the north rim** (`-lakes`): the 1,120 km² lake at 3,271 m (px 261,1060) in frost-frill and bell-fir
    forest, algal shallows, a chain of smaller lakes stepping down to it, a hanging valley's fall into the trough.
 3. **The cold lake** (`-ice`): the S rim's lake at 4,477 m (px 433,1314), frozen most of the year, the alpine with
    lantern lobelias and cushion anemones, glaciers above, the Rift's floor far below.
-4. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, a tunnel mouth and the waystation before it, the
+4. **The gorge** (`-gorge`, optional): the outlet through the ridge, rapids and falls, Chimes' ruin at its foot.
+5. **The crossing** (`-pass`): the Outer Wall's crest on Dalab's road, a tunnel mouth and the waystation before it, the
    road winding over the high tundra under a near-airless sky.
 
 ## 10. Textures
@@ -182,10 +201,11 @@ shallows.
 
 - **R0.** The owner answers section 12; texture prompts; the station sites from the model.
 - **R1.** The kit on the biome core: the fields (height, rain, the lakes from the model's water, aspect), the zones.
-- **R2.** Station 1: the great lake, its cliff and the arcology's site (the arcology's own build is a settlement's work).
+- **R2.** Station 1 (after the model's 4.22 basin and gorge): the great lake, its cliff, the basin plain and the arcology's
+  site (the arcology's own build is a settlement's work).
 - **R3.** The new species; the Rift's read in place.
 - **R4.** The lakes' colours and kinds; stations 2 and 3.
-- **R5.** Station 4, the crossing (the tunnel mouth as a carve patch).
+- **R5.** Stations 4 and 5, the gorge and the crossing (the tunnel mouth as a carve patch).
 - **R6.** The crops; `verify.py --assert`; `PORT.md`; the gallery; the Rift kit's highland switched to read this kit.
 
 ## 12. Questions for the owner

@@ -337,6 +337,26 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   Target on the floor: **mean ~+31-32 °C, warmest month ~+35-36, coldest ~+26, nights ~+23-26**, air ~1.95 atm; a wider
   day-night swing than 4.21's. Reclimate the class from the new temperatures (XA and Af expected by the lakes, XS and XV
   on the drier floor), relight, repaint; then re-cut any region that holds the Cut.
+- **4.22: the great lake at the Rift's western head** (the owner, 2026-10-23; `biomes/riftrim/PLAN.md`). 4.21's river
+  audit met a closed hollow 3.3 km deep (floor -2,028 m, px 146-201 by 1001-1058) on a course of ~800 m³/s and, by its
+  rule for hollows over 150 m deep, filled it to its spill (1,312 m, a notch at px 194,1059) as a through lake: 8,768 km²,
+  the deepest lake on the map, spilling 1.3 km straight down into the Rift past Chimes. By the water books that is right
+  (the lake's evaporation never exceeds ~150 m³/s at any level), but the hollow is not: a pit at the Rift's shallow head,
+  a notch in a thin ridge, a river that would long since have cut through it. The owner: **not deeper than the Rift
+  beside it, shallower, and a gorge that frees land higher than the Rift's floor but lower than most of the rim**:
+  1. **Fill the hollow into a basin plain**: inside the 1,312 m contour (the walls above it untouched, eased over 1-2
+     cells), the ground rebuilt as a plain rising gently from a new shore at **~+300 m** to ~+1,000-1,300 m at the walls'
+     foot, and a lake bed falling from that shore to **~-300 m** at its deepest (the Rift's floor beside it is ~-1,600 to
+     -1,850 m within 40 km). Put the lake in the basin's north-west, over the old deepest ground (about px 150-182 by
+     1001-1035), **against the north cliff**, so Ledge's cliff still stands over water; ~2,000-2,500 km² of lake, ~6,000
+     km² of plain.
+  2. **Cut the outlet gorge** (`cut_channel`, as the western outlets): from the lake's outlet across the plain to the
+     notch, through it down to ~+300 m (1.2-2 km under the ridge's shoulders, 1.5-2.3 km), and on past **Chimes** (ruined
+     arcology, px 196,1062) to the Rift's trough and its lake at px 214,1079 (bed ~-1,930 m), ~60 km, the bed falling all
+     the way; the walls eased half down.
+  Then re-route (the lake now spills through the gorge at its sill), reclimate the plain (expected Csa, Cfa: a mean of
+  ~+16-22 °C, ~1,000-1,300 mm), relight, repaint, publish, and move Ledge's point out of the old lake (to the north
+  cliff, px 165,1000, if the owner agrees).
 - **4.22: the Bowl's lake effect** (the owner, 2026-10-23). 4.21 grew and joined the Bowl's lakes into one salt lake
   (9,600 km2, px 762-948 by 783-846) but gave it no lake effect: rain beside it is ~280 mm within 4 km against ~250 mm 40
   km away, and the shore is BWh to the water. The eastern abyss's lakes, by the same model, carry ~1,100 mm at the shore
