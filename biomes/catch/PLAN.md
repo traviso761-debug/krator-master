@@ -136,17 +136,35 @@ species fit has not been checked yet.
   passes are breathable but bitterly cold, and the floor between them is a furnace. *Proposed* hazards: the black storms,
   an oasis found dry or held by someone else, the beasts' water running out between stages, the Hub 01 stalkers of the
   lore on the eastern pass.
-- **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel, **closed by
-  seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. Its portal at Stair is a known,
-  blocked mouth.
+- **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
+  **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
+  through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a
+  long time ago**; the **southern half**, entered from Stair, is the divers' prospect.
 - **Stair** [the owner, 2026-10-23]: the closest thing to a settlement in the Catch, and more of a **glorified
-  campground**: a ruined arcology at the biggest of the five oases, and the only one lived in, by **a couple of hundred
+  campground**. Its ruin is **the Hill arcology** (`kits/ancients/targets/hill`, `src/89e-hill.js`: a city of 111
+  garden terraces climbing ~500 m of hillside, sinuous along the contour), at the biggest of the five oases, and the only one lived in, by **a couple of hundred
   people**. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
   caravans passing through, and now and then **bands of daring or desperate arcology divers** working the ruin.
 - **Who** [the owner, 2026-10-23]: the residents, the traders and the oases' future names are **Yuni, Izani, Dasrī or
-  Xanadui**, the four peoples whose roads meet here, with very occasional bold ventures from further off. *Proposed*:
-  each oasis carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule).
+  Xanadui**, the four peoples whose roads meet here, with very occasional bold ventures from further off. Each oasis
+  carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule) [the owner].
 - **Nobody else lives here.** No oasis people, no ruler of the passes.
+
+## 6b. Stair's site
+
+The Hill wants a hill: ~560 m of slope from its foot to its summit deck, ~1 km of plan, with the oasis at its foot. On the
+model (2 km a pixel) the Catch has one hilly country to give it: **a range of interior hills across the basin's middle**
+(px ~730-870 by 1038-1135), standing 1.5-2 km over the floor, to ~2.5 km. Stair's point today (px 827,1113, 1,130 m)
+already lies among them, in **a hollow through the range** (~800-1,100 m) with ridges to the west (to ~1.7 km) and to the
+east (rising from ~900 m to 1.7-2.1 km within 8-12 km).
+
+That is Turpan's arrangement: the groundwater moving under the fans toward the floor is **dammed by the interior hills
+and rises as springs** in the gaps through them, as it does at the Flaming Mountains, so the hollow is where the biggest
+oasis belongs, and it lies on the crossing (the NNW notch to the southern passes). **Proposed site: the hollow's east
+flank, px ~834,1112** (~1,000 m), the Hill climbing the slope eastward from the spring hollow and facing west over it.
+The point moves ~14 km east of where it stands (a record edit on the model, `tools/scale-model/README.md`). The kit's own
+landform (`89e-hill.js`, "the landform and the route") makes the slope at full scale; the model only has to put the hill
+there, and it does.
 
 ## 6a. What the Catch has that nowhere else does
 
@@ -155,27 +173,27 @@ that the rest of the planet does not. Two things follow from what it is: **the m
 since long before the Ancients, with no outlet at all, its walls the Godthrone's volcanic rock.
 
 1. **The salts.** A closed basin keeps every salt its rivers ever carried in; only the water leaves. Where the catchment is
-   volcanic rock, the brine goes **alkaline**: a **soda lake**, carbonate-rich, pH 9-11, like Lake Natron and Mono Lake,
-   with sulfate and chloride crusts where it dries (Lop Nur's potash). Volcanic catchments in closed basins are also where
-   Earth's **lithium** brines are (the Atacama, Uyuni, Qaidam), with **borates** beside them (Death Valley's borax, Qaidam,
-   Turkey's). *Proposed*: the Catch is **Krator's one great evaporite field**: trona and natron (soda), potash, borax,
-   and **lithium brine** under the salt crust of the terminal lake and the old lake beds. Elsewhere these are traces.
+   volcanic rock, the brine goes **alkaline**: a **soda lake**, carbonate-rich, like Lake Natron and Mono Lake, with
+   sulfate and chloride crusts where it dries (Lop Nur's potash). The Catch is **Krator's one great salt field**. For the
+   game it comes down to **two resources** [the owner, 2026-10-23: no finer than that]: **potash** and **alkali salts**
+   (soda and its kin; borates and lithium go in this one, not apart). Elsewhere on Krator they are traces.
    - **The dust is caustic.** Alkali dust off the dry lake beds, lifted by the black storms, burns the eyes and the
      lungs (Owens Lake's dust is the worst in the United States). One more reason the crossing is not safe.
-   - **What it is good for**: soda for glass and soap, borax for flux and for glazes, potash for fields, and lithium,
-     which no one on Krator can use for much **but those who rebuild the Ancients' energy cells**.
+   - **What they are good for**: potash for fields and for powder; alkali salts for glass, soap, glazes and flux, and
+     for whoever rebuilds the Ancients' energy cells.
+   - **The nodes are added when the kit is built** [the owner, 2026-10-23]: `kits/resources` gains a potash and an
+     alkali-salt node then (its nodes now: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, oil;
+     noted in its `KNOWN_ISSUES.md`).
 2. **The preservation.** Rust needs water. In air this dry, sealed off for a thousand years, **Ancient metal and Ancient
    machines keep** as they do nowhere else on Krator: the Tarim's mummies and Turpan's silk lasted for the same reason.
-   *Proposed*: that is the divers' trade. Out of Stair's lower levels and toward the sealed tunnel they bring **alloys**
+   *Proposed*: that is the divers' trade. Out of Stair's lower levels and the tunnel's southern half they bring **alloys**
    (structural stock and fittings that come out bright, not as rust) and **energy cells**, intact and some still holding
    a charge, which in a wet ruin anywhere else would long since have corroded through. The caustic dust is the one
    enemy of the haul: what lay open to it is etched, what lay sealed is pristine.
 
 Together: the Catch's salts are what a cell-maker needs, and its ruin is where the cells are. *Proposed*: Stair's merchants
 buy both, and the buyers are the people who can use them: the Yusar (the Eternal State's cybernetics tribe, §6.19),
-Yuni's and Locus's Geomancers, Xanadu's engine-keepers, the Empire's armourers. `kits/resources` has no lithium, borax or
-soda node yet (its nodes: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, oil); these would be its
-first evaporites.
+Yuni's and Locus's Geomancers, Xanadu's engine-keepers, the Empire's armourers.
 
 ## 7. The lake beds (in place of tuff)
 
@@ -187,15 +205,15 @@ mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 ## 8. Questions for the owner
 
-1. **The correction**: apply the floor's ~10-30 mm in 4.22, with the scarce rivers and a small salt lake at 225 m
-   (section 4)?
+1. **Stair's site** (section 6b): move the point to the hollow's east flank, px ~834,1112?
 2. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
-3. **The salts and the salvage** (section 6a): the Catch as Krator's one evaporite field (soda, potash, borax, lithium), the
-   divers' alloys and energy cells kept by the dry; and should `kits/resources` gain evaporite nodes?
-4. **The sealed tunnel**: does it ever open (a quake, a dig), and what is behind it?
-5. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core.
+3. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
+4. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
+   nodes in `kits/resources` with it.
 
 Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; five oases, only just enough, none lived in but
-Stair's; the Stair tunnel closed by seismic activity since about the Cataclysm; Stair a glorified campground of a couple of
-hundred people (a handful of merchants, the caravans, arcology divers); the residents, traders and names Yuni, Izani, Dasrī
-or Xanadui, with rare ventures from further off; wind-carved lake beds, not tuff.
+Stair's, each named in more than one of the four tongues; the Stair tunnel closed by seismic activity since about the
+Cataclysm, sealed halfway, the northern half stripped by Yuni long ago, the southern half the divers'; Stair the Hill
+arcology, a glorified campground of a couple of hundred people (a handful of merchants, the caravans, arcology divers);
+the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
+potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.

@@ -16,3 +16,6 @@
       - salt pans;
       - timber stands.
 - [ ] The engine is read in place from kits/scyvoi/src: a change there changes this page (port_baseline shows it).
+- [ ] **Two nodes for the Catch** (the owner, 2026-10-23): **potash** and **alkali salts** (soda and its kin, borates and
+      lithium folded in), the Catch's salt field (`biomes/catch/PLAN.md` section 6a). Add them when the Catch kit is built,
+      no finer than these two.

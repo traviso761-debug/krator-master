@@ -392,7 +392,8 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   mass). **Keep the south-west shore's green pockets** (px 831-846 by 812-844, Am and Aw at ~1,000-1,550 mm, where Mantis
   stands at 841,834): take the greater of the new rain and 4.21's there, so the oasis is not washed out to steppe.
   Reclimate the class from the new rain, repaint the rain and climate maps.
-- **4.22: the Catch, a closed basin** (the owner asked, 2026-10-23, whether its rain is generous: it is;
+- **4.22: the Catch, a closed basin** (the owner asked, 2026-10-23, whether its rain is generous: it is; **the owner
+  approved the correction for 4.22**, 2026-10-23;
   `biomes/catch/PLAN.md`). 4.21 gives the floor (under 1 km, ~28,700 km²) 369 mm and the foothills (1-3 km) 482, with Cfa
   and Csa and a hot spot over 800 mm round Stair (px 805-870 by 1075-1133), most likely from `reclimate`'s twins (low warm
   cells open to the Ring Sea). The basin is sealed: crests 10-17 km all round, the lowest way out 6,158 m (NNW, near px
@@ -414,6 +415,8 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   - **Ledge's point** to the north cliff (px 165,1000), now or with the great-lake item above;
   - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
   - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
-  - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats.
+  - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats;
+  - **Stair's point** to the east flank of the springs' hollow in the Catch's interior hills, px ~834,1112 (the Hill
+    arcology's site, `biomes/catch/PLAN.md` section 6b), and its notes (the Hill; a campground of ~200).
   Done on the model 2026-10-23: **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
   (px 528,687).
