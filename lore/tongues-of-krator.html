@@ -6,7 +6,7 @@
 <title>Tongues of Krator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya%20SC:wght@500;700&family=JetBrains%20Mono:wght@400;500&family=Marcellus%20SC&family=Crimson%20Pro:ital,wght@0,400;0,600;1,400&family=IBM%20Plex%20Mono:wght@400;500&family=GFS%20Didot&family=Gentium%20Book%20Plus:ital,wght@0,400;0,700;1,400&family=DM%20Mono:wght@400;500&family=Rozha%20One&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Fira%20Mono:wght@400;500&family=Saira%20Stencil%20One&family=Uncial%20Antiqua&family=Source%20Serif%204:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Red%20Hat%20Mono:wght@400;500&family=Spectral%20SC:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=VT323&family=Martian%20Mono:wght@400;500&family=Alumni%20Sans:wght@600;800&family=PT%20Serif:ital,wght@0,400;0,700;1,400&family=PT%20Mono&family=Grenze:wght@600;700&family=Faustina:ital,wght@0,400;0,600;1,400&family=Overpass%20Mono:wght@400;500&family=Cormorant%20Unicase:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Azeret%20Mono:wght@400;500&family=Reem%20Kufi:wght@500;700&family=Gelasio:ital,wght@0,400;0,600;1,400&family=Sometype%20Mono:wght@400;500&family=Philosopher:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Poiret%20One&display=swap">
 <style>
 /* Layout: a sticky tab bar over one section at a time. The overview is neutral parchment; each tongue keeps its own palette and type, scoped to its own section. */
 :root{--bg:#ece8e0;--panel:#e2ddd2;--ink:#26231f;--muted:#6b665d;--accent:#8a5a2b;--line:#cfc8ba;
@@ -1041,6 +1041,78 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 .ogs line.stem{stroke:var(--ink,currentColor);stroke-width:2}
 .ogs path.sp{stroke:var(--madder,currentColor);stroke-width:2.2}
 #overview .chip .ogs{height:28px}
+/* Eternian: porcelain white, cobalt glaze, Heirs' gold, the vermilion of a ministry seal; Deco capitals. */
+:root :is(#eternian,[data-tongue="eternian"]){
+  --bg:#eef0f1; --panel:#e2e6ea; --ink:#17202b; --muted:#5b6672; --cobalt:#1f4c9c; --gold:#9a7a22; --seal:#b0352a; --line:#c9d0d7;
+  --display:"Poiret One", "Marcellus SC", Georgia, serif;
+  --body:"Gelasio", Georgia, serif;
+  --mono:"Azeret Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#eternian,[data-tongue="eternian"]){
+  --bg:#10141a; --panel:#181e26; --ink:#e6eaef; --muted:#9aa4b0; --cobalt:#8fb2f0; --gold:#e0c066; --seal:#ec7a6c; --line:#29313b; color-scheme:dark}}
+:root[data-theme="dark"] :is(#eternian,[data-tongue="eternian"]){
+  --bg:#10141a; --panel:#181e26; --ink:#e6eaef; --muted:#9aa4b0; --cobalt:#8fb2f0; --gold:#e0c066; --seal:#ec7a6c; --line:#29313b; color-scheme:dark}
+:is(#eternian,[data-tongue="eternian"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+#eternian .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+#eternian h1,#eternian h2{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.04em}
+#eternian h1{font-size:clamp(2.8rem,8vw,4.6rem);line-height:1;color:var(--cobalt)}
+#eternian h2{font-size:1.8rem;margin-bottom:12px}
+#eternian h3{font:600 1.05rem var(--body);margin:18px 0 8px}
+#eternian p{margin:0 0 12px;max-width:66ch}
+#eternian .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#eternian header{display:grid;gap:14px}
+#eternian .note{font-size:.92rem;color:var(--muted)}
+#eternian .plate{border:1px solid var(--line);border-top:5px solid var(--gold);background:var(--panel);padding:16px 20px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;max-width:760px}
+#eternian .plate .sigs svg{height:76px}
+#eternian .plate .gl{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.04em;max-width:46ch}
+#eternian .tbl{overflow-x:auto}
+#eternian table{border-collapse:collapse;width:100%;min-width:600px;font-size:.95rem}
+#eternian th,#eternian td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#eternian th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#eternian td.m{font-family:var(--mono);font-size:.84rem}
+#eternian td.lo{font-style:italic;color:var(--cobalt);font-weight:600}
+#eternian td.sg svg{height:40px}
+#eternian td.sm svg{height:30px}
+#eternian .signs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+#eternian .sgn{border:1px solid var(--line);padding:10px 8px;display:grid;justify-items:center;gap:3px;text-align:center}
+#eternian .sgn .pr{display:flex;align-items:center;gap:6px}
+#eternian .sgn .pr svg{height:46px}
+#eternian .sgn .pr i{font-style:normal;color:var(--muted);font-family:var(--mono)}
+#eternian .sgn b{font:600 .95rem var(--body)}
+#eternian .sgn .rd{font-family:var(--mono);font-size:.78rem}
+#eternian .sgn .rd .c{color:var(--cobalt)} #eternian .sgn .rd .k{color:var(--gold)}
+#eternian .sgn span.o{font-size:.74rem;color:var(--muted);line-height:1.3}
+#eternian .marks{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+#eternian .mk{border:1px solid var(--line);padding:6px 4px;display:grid;justify-items:center;gap:2px}
+#eternian .mk svg{height:44px}
+#eternian .mk b{font-family:var(--mono);font-size:.8rem;color:var(--seal)}
+#eternian .mk span{font-size:.7rem;color:var(--muted)}
+#eternian .marks .hd{grid-column:1/-1;font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+#eternian .scribe{background:var(--panel);border:1px solid var(--line);padding:18px;display:grid;gap:12px;max-width:760px}
+#eternian .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#eternian .scribe input{font:1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:9px 12px;width:100%;box-sizing:border-box}
+#eternian .scribe input:focus{outline:2px solid var(--cobalt);outline-offset:2px}
+#eternian .scribe .out{min-height:56px;overflow-x:auto}
+#eternian .scribe .out svg{height:52px}
+#eternian .lv{display:grid;gap:10px}
+#eternian .lv>div{border-left:4px solid var(--line);padding:6px 0 6px 14px}
+#eternian .lv>div.up{border-color:var(--cobalt)} #eternian .lv>div.hi{border-color:var(--gold)}
+#eternian .lv .say{font:600 1.05rem var(--body);color:var(--cobalt);font-style:italic}
+#eternian .lv .gls{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.ets{display:inline-block;vertical-align:middle;overflow:visible}
+.ets path,.ets circle{fill:none;stroke:var(--ink,currentColor);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ets .dt{fill:var(--ink,currentColor);stroke:none}
+.ets .mk2{stroke:var(--seal,currentColor)}
+.ets .dt.mk2{fill:var(--seal,currentColor)}
+.esg{display:inline-block;vertical-align:middle;overflow:visible}
+.esg path{fill:none;stroke:var(--ink,currentColor);stroke-width:3.4;stroke-linecap:square;stroke-linejoin:miter}
+.esg.ico path{stroke:var(--muted,currentColor);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.esg.gold path{stroke:var(--gold,currentColor)}
+#eternian [data-marks] svg,#eternian [data-breit] svg{height:40px;width:auto}
+#eternian .plate [data-marks] svg{height:60px}
+#eternian [data-sign] svg{height:40px;width:auto}
+#eternian .plate [data-sign] svg{height:76px}
+#overview .chip .ets{height:28px}
 </style>
 
 <nav class="tabs" aria-label="Tongues"><div class="in" id="tabbar" role="tablist"></div></nav>
@@ -1060,13 +1132,14 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
   <div>
     <h2>Where the letters came from</h2>
-    <p>Nine separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, to Voth transformed, and to the Islanders of the Ring Sea, who use barely half of them.</p>
+    <p>Ten separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, to Voth transformed, and to the Islanders of the Ring Sea, who use barely half of them.</p>
     <div class="tree">
       <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
       <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters. The Islanders write with sixteen of the twenty-seven on the east shore and fourteen on the west, and gave the idle Q a new job.</span></div>
       <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
       <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
       <div><b>Melody, not letters</b><span>The peoples of Korona carve the Hum as grooves on the tepui walls: the tune of each syllable and its vowel's colour, never a consonant, so any people who whistle it can read it.</span></div>
+      <div><b>Signs from the Ancients' icons</b><span>The Eternal State writes meaning, not sound: the Ancients' door figures, drops, flames, switches and arrows, brushed into signs read in every dialect, with sound-marks cut down from them for the endings and the unlettered, as Japan made kana from its characters. The highlands split the sound-marks into Breitila's letters; Farside added three marks for its clicks; the Heirs, and the heretics of Henge, keep the Latin letters.</span></div>
       <div><b>Strokes along an edge</b><span>The Talovolci count the Latin letters into groups of one to five strokes cut along the edge of a stone or a stave, as Ireland's Ogham was made, and open and close every inscription with a spiral turning the forest's way.</span></div>
       <div><b>Latin cut with a knife</b><span>The Khaayken of the High Country cut the Latin capitals in straight strokes on bone, antler, wood and ice, and made their vowels one wedge turned four ways, holed for the front vowels, as the Inuit syllabics turn theirs.</span></div>
       <div><b>Latin, kept for the Book</b><span>The Tungangs of the Rift line read English for the sake of the Book, the old agreement with the Ancients: its letters and spelling as they were, read aloud in their own sounds. Along the tunnels they talk in the line's bell codes and red-lamp signals, and copy the Ancients' stencilled signs as holy marks; their Fellgang kin on the fells read nothing and keep only the bells.</span></div>
@@ -1076,10 +1149,10 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   </div>
 
   <div>
-    <h2>One word, twenty-two roads</h2>
+    <h2>One word, twenty-five roads</h2>
     <p>In order of how far each tongue drifted from English.</p>
     <div class="tbl"><table>
-      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Tungang</th><th>Dalab low</th><th>Fell speech</th><th>Hajlandsk</th><th>Talovolci</th><th>Tł'aai</th><th>Boruntun</th><th>Khaayken</th><th>Izani</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Sikau</th><th>Hām</th><th>Xanadui</th></tr></thead>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Tungang</th><th>Dalab low</th><th>Fell speech</th><th>Hajlandsk</th><th>Heilandisk</th><th>Talovolci</th><th>Tł'aai</th><th>Boruntun</th><th>Khaayken</th><th>Izani</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Sikau</th><th>Hām</th><th>Eternian</th><th>Farside</th><th>Xanadui</th></tr></thead>
       <tbody id="fam"></tbody>
     </table></div>
   <div>
@@ -2762,6 +2835,191 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 </section>
 </div>
 </section>
+<section id="eternian" class="tongue" data-label="Eternian" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">The Eternal State · the north-western lowlands, its highland marches and Farside</div>
+  <h1>Eternian</h1>
+  <div class="plate" aria-label="The State's name in signs and sound-marks">
+    <div class="sigs" data-sign="loop paper"></div>
+    <div>
+      <div data-marks="tẽ-tè"></div>
+      <div class="gl">TẼ-TÈ · eternal · state, written with the signs for “again” and “paper”: the Eternal State is, on paper, the endless paper</div>
+    </div>
+  </div>
+  <p>The Eternal State speaks three ways at once. The <b>True Heirs</b> speak English, the Ancients' own, hardly changed: they live for centuries, and a few remember the Cataclysm, so their speech has had no forty generations to wear it down. The people they rule have had them. Their English has been <b>worn to the bone</b>, as the spoken Chinese tongues wore down under one script: every word cut to a single syllable, so many of them sounding alike that they are said in pairs. Between the two stands the <b>Paper speech</b> of the State's examined officials, the dialects' grammar dressed in words borrowed back from the court, with levels for rank.</p>
+  <p>There are <b>five main dialects</b>, and they have drifted far enough apart that a Farport docker and a capital clerk do not follow each other's speech. What holds the State together is that they <b>write the same signs</b>, which carry meaning, not sound, and are read in every dialect. Two went their own way: the <b>highlands</b>, whose speech has gone the way of Gothic, and <b>Farside</b>, on the ocean shore, which took clicks and other strange sounds. One went the other way: the <b>cybernetics tribe</b>, who kept their English whole because their machines will not hear it worn.</p>
+  <p class="note">Every form on this page is a proposal on the owner's brief (2026-10-23): the Heirs speak English; the lowland dialects worn to single syllables without tones, as Chinese went; levels for rank in the Paper speech, as Korean and Japanese have them; more than one script, as Japanese has; Gothic in the highlands; clicks on Farside.</p>
+</header>
+
+<section aria-labelledby="et-three-h">
+  <h2 id="et-three-h">Three speeches, one paper</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Speech</th><th>Signs</th><th>Its name</th><th>Who</th></tr></thead>
+    <tbody>
+      <tr><td>The Heirs' English</td><td class="sg" data-sign="power word"></td><td class="lo">Po-wè</td><td>“power-speech”: the True Heirs, about 1,500 of them, among themselves and to their machines. It keeps the Ancients' technical words, and the Call is spoken in it. They write it in the Latin letters, which no subject is taught (<i>proposed</i>: the forbidden letters).</td></tr>
+      <tr><td>Paper speech</td><td class="sg" data-sign="paper word"></td><td class="lo">Pè-wè</td><td>the examined officials, the courts and the ministries; any subject who addresses an office. The dialects' grammar with the court's words, and levels for rank. Learned for the examinations, as Mandarin was.</td></tr>
+      <tr><td>The dialects</td><td class="sg" data-sign="man word"></td><td class="lo">Mã-wè</td><td>“people-speech”: everyone else, at home and in the market. Five main dialects, below.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="et-dia-h">
+  <h2 id="et-dia-h">Five dialects</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Dialect</th><th>Where</th><th>What marks it</th></tr></thead>
+    <tbody>
+      <tr><td class="lo">Capital speech</td><td>the capital round the Sanctum and the canal country of the central lowlands</td><td>the standard the rest of this page describes: worn to single syllables, said in pairs. The Paper speech is built on it.</td></tr>
+      <tr><td class="lo">Valley march</td><td>the southern lowlands on the Valley of the Ancients' frontier, the salvagers' towns</td><td>the most worn of all, and full of salvage cant: the licensed salvagers' words for what comes out of the Valley, many of them taken whole from the labels on it, and a habit of never naming a ghoul</td></tr>
+      <tr><td class="lo">Heilandisk</td><td>the highland marches</td><td>words never worn down but grown endings: it sounds like Gothic. Written in Breitila's letters as well as the signs.</td></tr>
+      <tr><td class="lo">Farside</td><td>the ocean shore and Farport</td><td>capital-like, with clicks for t, k and cl, b and d drawn inward, yes said breathing in</td></tr>
+      <tr><td class="lo">Henge speech</td><td>the cybernetics tribe in their ruined arcology (<i>proposed</i>: Henge, px 185,405, since Leng is the Yetis')</td><td>the least worn after the Heirs': it keeps its final consonants and clusters, because an Ancient system answers only to a word said whole. Full of the machines' own words, numbers and codes. They read and write the Latin letters, the Heirs' forbidden letters, to talk to their computers: one more reason the court calls them heretics.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">The dam basins' bandits speak no dialect of their own: a mix of Valley cant, Henge words and the Republic's Hajlandsk, which is what one would expect of people living in grounded ships. Paper speech is not a dialect but a register over all five.</p>
+</section>
+
+<section aria-labelledby="et-snd-h">
+  <h2 id="et-snd-h">Worn to the bone</h2>
+  <p>The changes that made the lowland dialects. They are the changes that made French from Latin, run further: the sound wore away because the signs kept the meaning, and nobody had to spell.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Mã-wè</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td class="m">unstressed syllables</td><td class="m">gone</td><td>market → <i>ma</i>, water → <i>wò</i>, paper → <i>pè</i>, elder → <i>èu</i>, welcome → <i>wèu-kõ</i></td></tr>
+      <tr><td class="m">final consonants</td><td class="m">gone; n, m, ng leave a nasal vowel</td><td>man → <i>mã</i>, sun → <i>sõ</i>, sing → <i>sĩ</i>, ten → <i>tẽ</i>, ship → <i>si</i>, good → <i>gu</i></td></tr>
+      <tr><td class="m">final l</td><td class="m">u</td><td>gold → <i>gou</i>, well → <i>wèu</i>, sail → <i>sèu</i>, elder → <i>èu</i></td></tr>
+      <tr><td class="m">r after a vowel</td><td class="m">gone</td><td>star → <i>ta</i>, war → <i>wò</i>, door → <i>dò</i></td></tr>
+      <tr><td class="m">clusters</td><td class="m">one consonant</td><td>s before a stop goes: star → <i>ta</i>, stone → <i>tõ</i>, State → <i>tè</i>, sky → <i>ka</i>; l and r after one go: place → <i>pè</i>, free → <i>fi</i>, true → <i>tu</i>, bread → <i>bè</i></td></tr>
+      <tr><td class="m">th; sh, ch; j</td><td class="m">t, d; s; z</td><td>thing → <i>tĩ</i>, the → <i>da</i>, ship → <i>si</i>, chief → <i>si</i>, giant → <i>za</i></td></tr>
+      <tr><td class="m">the vowels</td><td class="m">six, and five nasal</td><td>day, bed, word, where → <i>è</i>; sky, high, eye, I → <i>a</i>; sun, son, some → <i>o</i>; go, home, all, war → <i>ò</i>; see, sit → <i>i</i>; you, good → <i>u</i></td></tr>
+      <tr><td class="m">tones</td><td class="m">none</td><td>where Chinese made tones of its lost endings, the Eternians let the words fall together and pair them up (the Hum has the crater's tones)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="et-hom-h">
+  <h2 id="et-hom-h">Too many sõ</h2>
+  <p>So many words fell together that a lone syllable says little. Speech pairs them, a word with a word that shares its meaning and not its sound, as Chinese did; the signs keep them apart on paper.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Sound</th><th>Could be</th><th>Said in pairs</th></tr></thead>
+    <tbody>
+      <tr><td class="lo">sõ</td><td>sun, son, song, some</td><td><i>dè-sõ</i> “day-sun”, the sun; <i>bò-sõ</i> “boy-son”, a son; <i>sĩ-sõ</i> “sing-song”, a song</td></tr>
+      <tr><td class="lo">wè</td><td>word, where, way, away, weigh</td><td><i>tò-wè</i> “talk-word”, a word; <i>rò-wè</i> “road-way”, a road</td></tr>
+      <tr><td class="lo">pè</td><td>paper, place, pay, play</td><td><i>ra-pè</i> “write-paper”, a document; <i>ma-pè</i> “market-place”; <i>pè-mo</i> “pay-money”, wages</td></tr>
+      <tr><td class="lo">a</td><td>I, eye, ice</td><td><i>a-bò</i> “eye-ball”, an eye; alone, <i>a</i> is I</td></tr>
+      <tr><td class="lo">tẽ</td><td>eternal, strange, ten, tent</td><td><i>tẽ-mã</i> “strange-man”, a stranger. Written with the sign for eternal, the same sounds are “eternal man”, an Heir, and the market says it of the Heirs on purpose.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Things are counted with a <b>measure word</b> between the number and the noun, as in Chinese: <i>tu pi mã</i>, “two piece man”, two people; <i>tri hè ko</i>, “three head cow”, three cattle.</p>
+</section>
+
+<section aria-labelledby="et-sg-h">
+  <h2 id="et-sg-h">The signs</h2>
+  <p>The State's script is the only one on Krator that writes <b>meaning</b>, not sound. It grew from the Ancients' own <b>icons</b> (<i>proposed</i>): the figures on doors, the drop on a water point, the flame and the triangle on hazard labels, the switch, the arrow, the document, read off the ruins as words and drawn with a brush until they became signs. Every sign has two readings: the dialect's worn word (blue), and the <b>court reading</b> (gold), the word as the Heirs say it, fitted to Eternian mouths, which the Paper speech uses, as Japanese reads its characters both ways. A few compounds are read by custom, not by their signs.</p>
+  <div class="signs" id="et-signs"></div>
+</section>
+
+<section aria-labelledby="et-mk-h">
+  <h2 id="et-mk-h">The sound-marks</h2>
+  <p>The second script, the <b>sound-marks</b> (<i>sã-ma</i>), was cut down from the signs' strokes, as the Japanese kana were. Each mark is a syllable: a consonant part, the vowel as a mark round it (<i>a</i> is no mark at all), two ticks for a voiced consonant, a ring for a nasal vowel. They write the particles and the Paper speech's endings, names from outside the State, and the reading of a hard sign, written small beside it. Everyone who never sat an examination writes in them, and the ministries look down on them for it.</p>
+  <div class="marks" id="et-marks"></div>
+  <div class="scribe">
+    <label for="et-src">Write in sound-marks and in Breitila's letters</label>
+    <input id="et-src" value="Wè fa, sẽ tè" autocomplete="off" spellcheck="false">
+    <div class="out" id="et-out"></div>
+    <div class="out" id="et-out2"></div>
+    <div class="note">Letters: a è i o ò u e, nasal ã ẽ ĩ õ ũ; p b t d k g m n s z f v l r w y h; the clicks c q x; þ and ƕ for the highlands. A hyphen joins a pair.</div>
+  </div>
+</section>
+
+<section aria-labelledby="et-pp-h">
+  <h2 id="et-pp-h">Paper speech</h2>
+  <p>The officials' speech is the dialects' grammar with two things added. Its words are the <b>court readings</b>, the Heirs' English borrowed back: every consonant kept, and a whispered <i>e</i> after any that closes a syllable or stands in a cluster, so that the court's <i>water</i> is <i>wòta</i> beside the market's <i>wò</i>, and the State is <i>Itènale Setète</i>. And every sentence ends on its <b>level</b>, a particle worn down from the courtesies of the Heirs' English, which says who is speaking to whom.</p>
+  <div class="lv">
+    <div><div class="say">Wè makete?</div><div class="gls">where · market</div>The plain level: to an equal, to a clerk below you, and on paper itself.</div>
+    <div class="up"><div class="say">Wè makete, sè?</div><div class="gls">where · market · SIR</div>The upward level: to an official above you. <i>Sè</i> is <i>sir</i>; a request puts <i>pi</i>, please, before it: <i>Wòta, pi-sè.</i></div>
+    <div class="hi"><div class="say">Sevã nò-nò makete, milò.</div><div class="gls">servant · not-know · market · MY-LORD</div>The luminous level, to an Heir. No question is ever put to an Heir, and no one says I: you state what you do not know and wait. You call yourself <i>sevã</i>, servant, as the Qing's own officials called themselves their emperor's slaves, and end on <i>milò</i>, my lord. <i>Nò-nò</i>, “not know”, sounds exactly like “no, no”: there is a whole literature of jokes about it, none of them told within a palace's hearing.</div>
+  </div>
+</section>
+
+<section aria-labelledby="et-hl-h">
+  <h2 id="et-hl-h">The highland speech</h2>
+  <p>In the State's highland marches (<i>proposed</i>: the slopes of the Outer Wall and the uplands toward the Iron Republic) the words were never worn down; they grew endings instead, and came out sounding like <b>Gothic</b>, the East Germanic tongue of the Bible of Wulfila. The highlanders call it <b>Heilandisk</b>: the same word as the Republic's <i>Hajlandsk</i>, by another road.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Heilandisk</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td class="m">nouns</td><td class="m">-s one, -os many</td><td>day → <i>dags</i>, days → <i>dagos</i>, market → <i>markats</i></td></tr>
+      <tr><td class="m">the o of stone, home</td><td class="m">ai</td><td>stone → <i>stains</i>, home → <i>haims</i>, bone → <i>bains</i></td></tr>
+      <tr><td class="m">ee; the i of high</td><td class="m">ei</td><td>free → <i>freis</i>, three → <i>þreis</i>, please → <i>pleis</i>, high → <i>hei</i>, I → <i>ei</i></td></tr>
+      <tr><td class="m">th; wh</td><td class="m">þ; ƕ (hw)</td><td>thank → <i>þank</i>, the → <i>þa</i>, where → <i>ƕair</i>, what → <i>ƕat</i></td></tr>
+      <tr><td class="m">final d, b</td><td class="m">þ, f</td><td>bread → <i>braiþ</i>, God → <i>gauþ</i>, gold → <i>gaulþ</i>, the lab → <i>þa lafs</i></td></tr>
+      <tr><td class="m">sh</td><td class="m">sk</td><td>ship → <i>skips</i>, fish → <i>fisks</i></td></tr>
+      <tr><td class="m">-er</td><td class="m">-ō</td><td>water → <i>watō</i>, stranger → <i>straingō</i></td></tr>
+      <tr><td class="m">verbs</td><td class="m">-an to do; the bare stem to order</td><td>go → <i>gaian</i>, go! → <i>gai!</i>; come → <i>kuman</i>, make → <i>makan</i></td></tr>
+    </tbody>
+  </table></div>
+  <h3>Breitila's letters</h3>
+  <p>The sound-marks fit the highland speech badly: it is full of clusters and of consonants that end words. The highlanders say that <b>Breitila</b>, “little bright”, an examined official sent up to the marches, split the marks into their parts and wrote one letter for each sound, consonants bare and vowels on the carrier, with two new letters for <i>þ</i> and <i>ƕ</i>, so that he could write the State's code down for them in their own speech (<i>proposed</i>: as Wulfila made the Gothic alphabet to write the Bible).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Heilandisk</th><th>Breitila's letters</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="lo">Ƕair is þa markats?</td><td class="sm" data-breit="Ƕair is þa markats"></td><td>Where is the market?</td></tr>
+      <tr><td class="lo">Haims is hei, Stait is far.</td><td class="sm" data-breit="Haims is hei Stait is far"></td><td>Home is high, the State is far: the highlands' saying</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="et-fs-h">
+  <h2 id="et-fs-h">Farside</h2>
+  <p>The dialects of Farside, the one true ocean shore of the crater, are lowland speech with sounds no other tongue on Krator has. Where a word began with <i>t</i> or <i>th</i>, Farside clicks the tongue off the teeth (ǀ, written <i>c</i>); with <i>k</i>, it pops the tongue off the palate (ǃ, written <i>q</i>); with the old <i>cl</i> or <i>tl</i>, it clicks at the side of the mouth (ǁ, written <i>x</i>). Its <i>b</i> and <i>d</i> are drawn inward, not pushed out (<i>ɓ</i>, <i>ɗ</i>), and <i>yes</i> is said on an indrawn breath. The sound-marks took three new marks for the clicks; the inward <i>b</i> and <i>d</i> are written as the plain ones.</p>
+  <p><i>Proposed</i>: the sounds came over the sea. The mysterious traders who put in at Farport have been heard for centuries on its docks, and the clicks in their speech went into Farside's the way the Khoisan clicks went into Zulu and Xhosa. Or (<i>the alternative</i>): they are an avoidance speech, grown where Ancient machines still listen for English words, to talk past them.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Lowland</th><th>Farside</th><th>Sound-marks</th></tr></thead>
+    <tbody>
+      <tr><td>thank you</td><td class="m">tã-yu</td><td class="lo">cã-yu</td><td class="sm" data-marks="cã-yu"></td></tr>
+      <tr><td>welcome</td><td class="m">wèu-kõ</td><td class="lo">wèu-qõ</td><td class="sm" data-marks="wèu-qõ"></td></tr>
+      <tr><td>a clan</td><td class="m">kã</td><td class="lo">xã</td><td class="sm" data-marks="xã"></td></tr>
+      <tr><td>two people</td><td class="m">tu pi mã</td><td class="lo">cu pi mã</td><td class="sm" data-marks="cu pi mã"></td></tr>
+      <tr><td>goodbye</td><td class="m">gu-ba</td><td class="lo">gu-ɓa</td><td class="sm" data-marks="gu-ɓa"></td></tr>
+      <tr><td>Sail comes, sail goes, the tide stays.</td><td class="m">sèu kõ, sèu gò, ta tè</td><td class="lo">Sèu qõ, sèu gò, ca cè.</td><td class="sm" data-marks="sèu qõ sèu gò ca cè"></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="et-nm-h">
+  <h2 id="et-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Signs</th><th>Mã-wè</th><th>Paper speech</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="sg" data-sign="loop paper"></td><td class="lo">Tẽ-tè</td><td class="m">Itènale Setète</td><td>the Eternal State; read by custom, not by its signs, which say “the endless paper”</td></tr>
+      <tr><td class="sg" data-sign="power man"></td><td class="lo">po-mã</td><td class="m">Lumino</td><td>an Heir: “power-person”; at court, by custom, the Luminous</td></tr>
+      <tr><td class="sg" data-sign="paper home"></td><td class="lo">pè-hò</td><td class="m">peipa-houme</td><td>a ministry, an office: the paper-house</td></tr>
+      <tr><td class="sg" data-sign="market gate"></td><td class="lo">ma-gè</td><td class="m">makete-geite</td><td>Farport's factory quarter, where the traders from over the sea are kept</td></tr>
+      <tr><td class="sg" data-sign="danger gate"></td><td class="lo">dẽ-gè</td><td class="m">deinza-geite</td><td>the Valley's gate: the quarantine and the salvage licences</td></tr>
+      <tr><td class="sg" data-sign="seal home"></td><td class="lo">si-hò</td><td class="m">sile-houme</td><td>a sealed house: an Heir's wing nobody names</td></tr>
+      <tr><td class="sg" data-sign="eye no"></td><td class="lo">a-nò</td><td class="m">ai-nou</td><td>unseen, secret; read “I know” too, which is the joke</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="et-fam-h">
+  <h2 id="et-fam-h">In the family</h2>
+  <div class="tbl"><table style="min-width:560px">
+    <thead><tr><th>English</th><th>Mã-wè</th><th>Court reading</th><th>Heilandisk</th><th>Farside</th><th>Hajlandsk</th></tr></thead>
+    <tbody>
+      <tr><td>sun</td><td class="m">sõ</td><td class="m">sane</td><td class="m">suns</td><td class="m">sõ</td><td class="m">son</td></tr>
+      <tr><td>star</td><td class="m">ta</td><td class="m">seta</td><td class="m">stars</td><td class="m">ca</td><td class="m">stjar</td></tr>
+      <tr><td>ship</td><td class="m">si</td><td class="m">sipe</td><td class="m">skips</td><td class="m">si</td><td class="m">šip</td></tr>
+      <tr><td>gold</td><td class="m">gou</td><td class="m">goulde</td><td class="m">gaulþ</td><td class="m">gou</td><td class="m">golt</td></tr>
+      <tr><td>thing</td><td class="m">tĩ</td><td class="m">singe</td><td class="m">þings</td><td class="m">cĩ</td><td class="m">ting</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">The full comparison is on the Overview tab.</p>
+</section>
+</div>
+</section>
+
 
 
 
@@ -4389,6 +4647,107 @@ if(chart){
 }
 })();
 
+/* Eternian: the signs (grown from the Ancients' icons), the sound-marks (a consonant part with the vowel as a mark round
+   it, a for nothing, two ticks for a voiced sound, a ring for a nasal vowel), Breitila's highland letters (the same parts
+   written apart, one letter per sound) and Farside's three click marks. */
+(()=>{
+const C=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
+const SIGNS={
+ man:{d:C(20,8,4.5)+"M20 14L20 27M10 19L30 19M20 27L13 37M20 27L27 37",en:"person",c:"mã",k:"mane",o:"the figure on the Ancients' doors"},
+ water:{d:"M20 4Q9 20 12 28Q15 36 20 36Q25 36 28 28Q31 20 20 4Z",en:"water",c:"wò",k:"wòta",o:"a drop: taps and water points"},
+ fire:{d:"M20 4Q31 16 28 28Q25 36 20 36Q15 36 12 28Q10 20 16 14Q16 22 20 24Q24 16 20 4Z",en:"fire",c:"fa",k:"faia",o:"the flame on hazard labels"},
+ sun:{d:C(20,20,7)+"M20 4L20 8M20 32L20 36M4 20L8 20M32 20L36 20M8.7 8.7L11.5 11.5M28.5 28.5L31.3 31.3M8.7 31.3L11.5 28.5M28.5 11.5L31.3 8.7",en:"sun, day",c:"sõ",k:"sane",o:"the brightness control"},
+ gate:{d:"M8 4L26 4L26 36L8 36ZM14 20L34 20M29 15L34 20L29 25",en:"gate, way out",c:"gè",k:"geite",o:"the exit"},
+ high:{d:"M4 36L12 36L12 28L20 28L20 20L28 20L28 12L36 12L36 4",en:"high, rank",c:"ha",k:"hai",o:"stairs: height for rank"},
+ eye:{d:"M3 20Q20 4 37 20Q20 36 3 20Z"+C(20,20,5),en:"eye, see",c:"a",k:"ai",o:"the view icon"},
+ danger:{d:"M20 4L37 35L3 35ZM20 14L20 25M20 29L20 31",en:"danger",c:"dẽ",k:"deinza",o:"the warning triangle"},
+ power:{d:"M12 11A12 12 0 1 0 28 11M20 3L20 19",en:"power; an Heir",c:"po",k:"paua",o:"the power switch: what the Call wakes"},
+ go:{d:"M5 20L33 20M24 11L33 20L24 29",en:"go",c:"gò",k:"gou",o:"the arrow"},
+ no:{d:C(20,20,15)+"M9.4 9.4L30.6 30.6",en:"no, not; know",c:"nò",k:"nou",o:"no entry; read for know as well"},
+ home:{d:"M4 19L20 5L36 19M9 15L9 35L31 35L31 15M17 35L17 25L23 25L23 35",en:"house, home",c:"hò",k:"houme",o:"the home screen"},
+ paper:{d:"M9 3L25 3L32 10L32 37L9 37ZM25 3L25 10L32 10M14 17L27 17M14 23L27 23M14 29L23 29",en:"paper, record",c:"pè",k:"peipa",o:"the document icon"},
+ market:{d:"M5 14L33 14M27 8L33 14L27 20M35 27L7 27M13 21L7 27L13 33",en:"trade, market",c:"ma",k:"makete",o:"exchange"},
+ word:{d:"M5 7L35 7L35 26L19 26L11 34L12 26L5 26Z",en:"word, speech",c:"wè",k:"wède",o:"the speech bubble"},
+ loop:{d:"M31 14A12 12 0 1 0 32 24M31 5L31 14L22 14",en:"eternal, again",c:"tẽ",k:"itènale",o:"repeat, refresh"},
+ seal:{d:"M11 18L29 18L29 36L11 36ZM14 18L14 12Q14 5 20 5Q26 5 26 12L26 18M20 25L20 30",en:"sealed, secret",c:"si",k:"sile",o:"the padlock"}
+};
+const sign=(k,cls)=>`<svg class="esg${cls?" "+cls:""}" viewBox="-2 -2 44 44" role="img" aria-label="${SIGNS[k].en}"><path d="${SIGNS[k].d}"/></svg>`;
+/* the sound-marks: consonant parts drawn in 0..20 x 0..28 */
+const CP={"":"M10 2L10 26",p:"M2 4L18 4M6 4L6 27",t:"M2 9L18 9M10 2L10 27",k:"M3 4L17 4L8 27",m:"M3 5L3 25L17 25L17 5",
+ n:"M4 3Q16 8 7 27",s:"M16 3L5 14L17 26",f:"M3 5L17 5M11 5Q3 16 11 27",l:"M9 2L9 21Q9 27 17 25",r:"M3 8Q11 1 16 9Q12 17 4 17L17 27",
+ w:"M3 6Q10 34 17 6",y:"M3 4L10 14L17 4M10 14L10 27",h:"M4 2L4 27M4 13Q16 10 15 27",
+ c:"M7 2L7 27M13 2L13 10",q:"M10 2L10 18M8.3 25a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0 -3.4 0",x:"M6 2L6 27M14 2L14 27",
+ "þ":"M2 9L18 9M10 2L10 27M10 13Q19 15 10 21","ƕ":"M4 2L4 27M4 13Q16 10 15 27M15 27Q19 31 22 25"};
+const VOICED={b:"p",d:"t",g:"k",z:"s",v:"f"};
+const VM={a:"",è:'<path class="mk2" d="M24 22L27.5 17"/>',i:'<circle class="dt mk2" cx="12" cy="4" r="1.8"/>',o:'<path class="mk2" d="M5 41L19 41"/>',
+ ò:'<path class="mk2" d="M5 41L19 41L22 38"/>',u:'<path class="mk2" d="M23 30Q28 35 23 40"/>',e:'<circle class="dt mk2" cx="25.5" cy="12" r="1.6"/>'};
+const NAS={"ã":"a","ẽ":"è","ĩ":"i","õ":"o","ũ":"u"};
+const ALIAS={"ɓ":"b","ɗ":"d","j":"y","ō":"o","é":"e"};
+const isV=ch=>ch in VM||ch in NAS;
+function part(cons){
+  if(cons in VOICED)return `<path transform="translate(2 9)" d="${CP[VOICED[cons]]}"/><path class="mk2" d="M20 1L22 6M24 1L26 6"/>`;
+  return `<path transform="translate(2 9)" d="${CP[cons]}"/>`;
+}
+function block(cons,v,x,alpha){
+  let g=part(cons);
+  if(v!=null){let vv=v,n=false;if(v in NAS){vv=NAS[v];n=true}
+    g+=VM[vv]||"";if(n)g+='<circle class="mk2" cx="4" cy="4" r="2.6"/>';}
+  else if(!alpha)g+='<path class="mk2" d="M4 42L20 38"/>';
+  return `<g transform="translate(${x} 0)">${g}</g>`;
+}
+function units(w){
+  w=w.normalize("NFC").toLowerCase();const out=[];
+  for(const raw of w){const ch=ALIAS[raw]||raw;if(ch in CP||ch in VOICED||isV(ch))out.push(ch)}
+  return out;
+}
+/* syllables: C+V, a bare V on the carrier, a lone C with the killing stroke */
+function render(text,alpha){
+  const words=String(text).split(/\s+/).filter(Boolean);let x=0,g="";
+  words.forEach((wd,wi)=>{
+    const pcs=wd.split("-");
+    pcs.forEach((pc,pi)=>{
+      const u=units(pc);
+      for(let i=0;i<u.length;i++){
+        const ch=u[i];
+        if(alpha){
+          if(isV(ch)){g+=block("",ch,x,true);x+=24}
+          else{g+=block(ch,null,x,true);x+=26}
+          continue;
+        }
+        if(isV(ch)){g+=block("",ch,x);x+=28;continue}
+        if(i+1<u.length&&isV(u[i+1])){g+=block(ch,u[i+1],x);i++;x+=30}else{g+=block(ch,null,x);x+=28}
+      }
+      if(pi<pcs.length-1)x+=4;
+    });
+    if(wi<words.length-1)x+=14;
+  });
+  const W=Math.max(x,10);
+  return `<svg class="ets" viewBox="-2 -2 ${W+4} 48" role="img" aria-label="${String(text).replace(/"/g,"")}">${g}</svg>`;
+}
+window.KR=window.KR||{};
+KR.eternian=(t,el)=>{el.innerHTML=render(t,false)};
+KR.breitila=(t,el)=>{el.innerHTML=render(t,true)};
+const root=document.getElementById("eternian");if(!root)return;
+root.querySelectorAll("[data-sign]").forEach(el=>{el.innerHTML=el.dataset.sign.split(/\s+/).map(k=>sign(k,el.dataset.cls||"")).join("")});
+root.querySelectorAll("[data-marks]").forEach(el=>{el.innerHTML=render(el.dataset.marks,false)});
+root.querySelectorAll("[data-breit]").forEach(el=>{el.innerHTML=render(el.dataset.breit,true)});
+const sg=document.getElementById("et-signs");
+if(sg)sg.innerHTML=Object.keys(SIGNS).map(k=>{const s=SIGNS[k];return `<div class="sgn"><div class="pr">${sign(k,"ico")}<i>→</i>${sign(k,"")}</div><b>${s.en}</b><div class="rd"><span class="c">${s.c}</span> · <span class="k">${s.k}</span></div><span class="o">${s.o}</span></div>`}).join("");
+const mk=document.getElementById("et-marks");
+if(mk){
+  const cell=(t,lab,sub,alpha)=>`<div class="mk">${render(t,alpha)}<b>${lab}</b><span>${sub||""}</span></div>`;
+  const cons=["","p","b","t","d","k","g","m","n","s","z","f","v","l","r","w","y","h"];
+  mk.innerHTML=`<div class="hd">The consonant parts, with the bare a</div>`+cons.map(c=>cell(c+"a",c?c+"a":"a",c in VOICED?"two ticks: voiced":c===""?"the carrier":"")).join("")
+   +`<div class="hd">The vowel marks, on t</div>`+["ta","tè","ti","to","tò","tu"].map(s=>cell(s,s)).join("")
+   +`<div class="hd">The ring: a nasal vowel</div>`+["tã","tẽ","tĩ","tõ","tũ"].map(s=>cell(s,s)).join("")
+   +`<div class="hd">Paper speech: the whispered e of the court readings</div>`+cell("te","te","court readings only")
+   +`<div class="hd">Farside: the three clicks</div>`+[["ca","ca","ǀ dental"],["qa","qa","ǃ alveolar"],["xa","xa","ǁ lateral"]].map(([t,l,s])=>cell(t,l,s)).join("")
+   +`<div class="hd">Breitila's letters: the parts written apart, two new</div>`+[["þ","þ","th"],["ƕ","ƕ","hw"],["a","a","vowel"],["ai","a + i","ai"],["s","s","no vowel"]].map(([t,l,s])=>cell(t,l,s,true)).join("");
+}
+const inp=document.getElementById("et-src"),out=document.getElementById("et-out"),out2=document.getElementById("et-out2");
+if(inp){const go=()=>{out.innerHTML=render(inp.value,false);out2.innerHTML=render(inp.value,true)};inp.addEventListener("input",go);go()}
+})();
+
 /* overview and tabs */
 (()=>{
   const CARDS=[
@@ -4408,11 +4767,12 @@ if(chart){
    ["tungang","Tungang & Fell","the Tungangs of the Rift line, the Fellgangs of the rim","Northern English worn down in the dark for a thousand years, full of the old union's forms, their meanings half-lost. The Book read in its old letters; the line's bell codes, dim red lamps and the Ancients' stencils. The Fellgangs' fell speech has gone further still.","Tungangz"],
    ["khaay","Khaayken","the Yetis of the High Country, the north-western Outer Wall","English gone Siberian: kh for h, q in the throat, long vowels, vowel harmony and endings stacked on endings. Latin capitals cut in straight strokes, the vowels a single wedge turned four ways.","Khaay Qantïr"],
    ["talovolci","Talovolci","the Cloud Giants of the southern highlands","English gone Gaulish: -os and -oi, v for f, x for the old gh, the tau gallicum for th, and compounds in ver-, -rix and -dunon. Strokes cut along an edge, as Ogham was, between two spirals.","Talovolci"],
+   ["eternian","Eternian","the Eternal State: five dialects under one paper, the officials' Paper speech, the Heirs' English","English worn to single syllables without tones: nasal vowels, words said in pairs, measure words, and levels for rank in the officials' speech. Signs grown from the Ancients' icons, with sound-marks beside them; Gothic in the highlands, clicks on Farside.","Tẽ-tè"],
    ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
   ];
   const cards=document.getElementById("cards");
   cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
-  const FAM=[["sun","sun","sun","san","sun","sun","sun","sun","sunos","są","san","suŋ","son","san","san","tzun","sunu","ṣunum","ṣan","aṣan","sana","sān","sã"],["star","star","star","sta","star","tar","stur","stjar","starros","istar","sıtar","ïstaar","istar","saṭār","astar","tzhar","stāru","ṣṭārum","istār","tastart","tā","tā","sitār"],["ship","ship","ship","shippo","ship","ship","ship","šip","sipos","ship","şip","sip","xipa","shippu","sip","sip","šippu","šippum","šib","ašif","sipi","sí","śip"],["war","war","war","wo","waar","wa","wor","vor","uaros","baar","vor","boor","guar","vār","ouar","vorh","māru","wārum","wār","awar","vā","wo","wār"],["gold","gold","gold","gol'","gowd","gol","gow","golt","goldos","gol","golt","goold","golda","goḷḍu","gould","gol","guldu","guldum","jūld","aguld","kolo","kǒ","ghol"],["fire","fire","fire","foya","fah","faya","fa","fajr","viros","paar","fayır","paayar","fira","faiyar","phyr","vairh","pēru","pērum","fāyar","afayar","faia","pāi","phāyar"],["thing","thing","thing (dental th)","ting","thing","ting","theng","ting","đingos","łį","sin","tiŋ","tiñ","tiṅ","thing","thing","šingi","šingim","thinj","atin","tiñi","tīn","thĩ"],["the lab","the lab","the lab","da labbo","Tlab","Dalab","lab","labet","Labos","","lap","lhab","de laba","da labbu","","","ze-labbu","ze-labbum","al-Labbū","alabbu","te lapa","lǎ",""]];
+  const FAM=[["sun","sun","sun","san","sun","sun","sun","sun","suns","sunos","są","san","suŋ","son","san","san","tzun","sunu","ṣunum","ṣan","aṣan","sana","sān","sõ","sõ","sã"],["star","star","star","sta","star","tar","stur","stjar","stars","starros","istar","sıtar","ïstaar","istar","saṭār","astar","tzhar","stāru","ṣṭārum","istār","tastart","tā","tā","ta","ca","sitār"],["ship","ship","ship","shippo","ship","ship","ship","šip","skips","sipos","ship","şip","sip","xipa","shippu","sip","sip","šippu","šippum","šib","ašif","sipi","sí","si","si","śip"],["war","war","war","wo","waar","wa","wor","vor","wōrs","uaros","baar","vor","boor","guar","vār","ouar","vorh","māru","wārum","wār","awar","vā","wo","wò","wò","wār"],["gold","gold","gold","gol'","gowd","gol","gow","golt","gaulþ","goldos","gol","golt","goold","golda","goḷḍu","gould","gol","guldu","guldum","jūld","aguld","kolo","kǒ","gou","gou","ghol"],["fire","fire","fire","foya","fah","faya","fa","fajr","feirs","viros","paar","fayır","paayar","fira","faiyar","phyr","vairh","pēru","pērum","fāyar","afayar","faia","pāi","fa","fa","phāyar"],["thing","thing","thing (dental th)","ting","thing","ting","theng","ting","þings","đingos","łį","sin","tiŋ","tiñ","tiṅ","thing","thing","šingi","šingim","thinj","atin","tiñi","tīn","tĩ","cĩ","thĩ"],["the lab","the lab","the lab","da labbo","Tlab","Dalab","lab","labet","þa lafs","Labos","","lap","lhab","de laba","da labbu","","","ze-labbu","ze-labbum","al-Labbū","alabbu","te lapa","lǎ","La","La",""]];
   document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
 
   const secs=[...document.querySelectorAll("section.tongue")];
@@ -4429,21 +4789,21 @@ if(chart){
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
 
   /* phrasebook: [key, tongue, renderer, wrapper class] */
-  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["tungang","Tungang","latin",""],["fell","Fell speech","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["talovolci","Talovolci","ogham",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["khaay","Khaayken","khaay",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""],["hum","Hām","hum",""]];
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["tungang","Tungang","latin",""],["fell","Fell speech","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["talovolci","Talovolci","ogham",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["khaay","Khaayken","khaay",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""],["hum","Hām","hum",""],["eternian","Eternian","eternian",""],["henge","Henge speech","latin",""],["heiland","Heilandisk","breitila",""],["farside","Farside","eternian",""]];
   const PH=[
-   {en:"Greetings.",nt:"The formal greeting. Each people greets by what it values: the Sun, the day, the claw, light in the dark, a calm sea. Jamṭōkku puts the verb first.",r:{talovolci:["Tornet spirla!", "turns · spiral: may the spiral turn for you"],khaay:["Khaay ïskaay!", "high · sky: may the sky stand high"],tungang:["Lahnklia, broo.", "line · clear · brother: the words of the 3-1 bell"],fell:["Fair o fell.", "fair · on · fell: fair weather on the fell"],
+   {en:"Greetings.",nt:"The formal greeting. Each people greets by what it values: the Sun, the day, the claw, light in the dark, a calm sea. Jamṭōkku puts the verb first.",r:{eternian:["Lõ-li!", "long · live: may you live long"],henge:["Onlain.", "on · line: I am running"],heiland:["Hails!", "hale: be whole"],farside:["Gu ca!", "good · tide"],talovolci:["Tornet spirla!", "turns · spiral: may the spiral turn for you"],khaay:["Khaay ïskaay!", "high · sky: may the sky stand high"],tungang:["Lahnklia, broo.", "line · clear · brother: the words of the 3-1 bell"],fell:["Fair o fell.", "fair · on · fell: fair weather on the fell"],
     vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"],islander:["Sī kāma.","sea · calm: a calm sea to you"],islanderw:["Hī kāma.","sea · calm: a calm sea to you"],hum:["Kǔ ti.","good · deal: may the trade be good"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"]}},
-   {en:"Hello.",nt:"The everyday word, between equals. Hykkousik hy is hi, by the change that made isles into Ys. The Islanders greet with love, as the real Pacific does.",r:{talovolci:["Ailos!", "hail"],khaay:["Khaay!", "hi: the same word as high"],tungang:["Ayup!", "eh up"],fell:["Nathen.", "now then"],vothic:["Hel, vren.", "hail · friend"],izani:["Elo.", "hello, the h lost"],hykkousik:["Hy!", "hi"],xanadui:["Xelo.", "hello"],yuni:["Hoi!", "hi"],dalab:["Ail op!", "hail · up"],republic:["Hej.", "hey"],riders:["Khee!", "hey"],zeijani:["Ḫēl.", "hail"],dasri:["Ḥayl!", "hail"],tabist:["Hayl!", "hail"],islander:["Lava!", "love"],islanderw:["Rava!", "love"],hum:["Hāi!","hi"],jimjam:["Hai!","hi"],scyvoi:["Hay!","hey"]}},
-   {en:"How are you?",nt:"The Riders ask after your wing. Hajlandsk asks how it goes, Norse-fashion.",r:{talovolci:["Uo ari tu?", "how · are · you"],khaay:["Khoo ar suu?", "how · are · you"],tungang:["Owsta?", "how-is-thou"],fell:["Owsta gannin?", "how-is-thou · going"],vothic:["Hau go yu?", "how · go · you"],izani:["Au ar yu?", "how · are · you"],hykkousik:["Ar jou ouel?", "are · you · well"],xanadui:["Yū xau, sar?", "you · how, sir"],yuni:["Awyagoi?", "how-you-going"],dalab:["Ou yu de?", "how · you · there"],republic:["Hau gor det?", "how · goes · that"],riders:["Khau bį?", "how · wing: how flies it"],zeijani:["Yūm ḫau?", "you-SUBJ · how"],dasri:["Ḥaw yū?", "how · you"],tabist:["Haw yu?", "how · you"],islander:["Au iu?", "how · you"],islanderw:["Hau iu?", "how · you"],hum:["Hāu yu há?","how · you · huh"],jimjam:["Is hau yū?","is · how · you"],scyvoi:["Yu hav?","you · how"]}},
-   {en:"Welcome.",nt:"Islander mai is English my, worn down to mean towards me.",r:{talovolci:["Uelcomos!", "welcome"],khaay:["Qumun.", "come-in"],tungang:["Kumthiwayin.", "come · thy · way · in"],fell:["Kumin, warm thi.", "come-in · warm · thee"],vothic:["Velkïm.", "welcome"],izani:["Guelkom.", "welcome"],hykkousik:["Ouelkam.", "welcome"],xanadui:["Welqam, sar.", "welcome, sir"],yuni:["Kmin, mai.", "come-in, mate"],dalab:["Kom iin.", "come · in"],republic:["Vjelkom.", "welcome"],riders:["Belkam.", "welcome"],zeijani:["Wēlqum.", "welcome"],dasri:["Walqam.", "welcome"],tabist:["Walqam.", "welcome"],islander:["Kama mai.", "come · towards-me"],islanderw:["Kama mai.", "come · towards-me"],hum:["Kām!","come"],jimjam:["Velkam.","welcome"],scyvoi:["Velkım.","welcome"]}},
-   {en:"Thank you.",nt:"",r:{talovolci:["Đancu tu.", "thank · you"],khaay:["Taŋ suu.", "thank · you"],tungang:["Ta, broo.", "ta · brother"],fell:["Ta.", "ta"],vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"],islander:["Tañiu.","thank-you"],islanderw:["Taniu.","thank-you"],hum:["Tá yu.","thank · you"],jimjam:["Teṅkyū.","thank-you"],scyvoi:["Sankyu.","thank-you"]}},
-   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{talovolci:["Uer esti marcatos?", "where · is · market"],khaay:["Beer marqït?", "where · market"],tungang:["Wearz tmarkit?", "where-is · the-market"],fell:["Wearz swap?", "where-is · swap: there is no market on the fells"],vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"],islander:["Vea te māʻiti?","where · the · market"],islanderw:["Vea te mākiti?","where · the · market"],hum:["Ma we há?","market · where · huh"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],scyvoi:["Markıt verde?","market · where-AT"]}},
-   {en:"I am a stranger here.",nt:"Voth says outlander, auhlandarh, and the Islanders say auta, outer. In Hykkousik, I is y, from the same change that made isles into Ys.",r:{talovolci:["Mi ammi strangiros eri.", "I · am · stranger · here"],khaay:["Aay isterenjer khiir.", "I · stranger · here"],tungang:["Uznobba strenja eer.", "I-am · only · a stranger · here"],fell:["Uz frem eer.", "I-am · strange (fremd) · here"],vothic:["Ai auhlandarh hirh.","I · outlander · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"],islander:["E auta ai ia.","an · outer · I · here"],islanderw:["E auta ai hia.","an · outer · I · here"],hum:["Ai tê hī.","I · stranger · here"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"]}},
-   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{talovolci:["Uatera, plisu.", "water · please"],khaay:["Baa'ar, piliis.", "water · please"],tungang:["Warra, iftha zowt.", "water · if · thou · has-aught"],fell:["Beckwarra.", "beck-water"],vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"],islander:["Vata, pīsi.","water, please"],islanderw:["Vata, pīhi.","water, please"],hum:["Wǒ, pî.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],scyvoi:["Vatır, filis.","water, please"]}},
-   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{talovolci:["Uo mucos?", "how · much"],khaay:["Khoo much?", "how · much"],tungang:["Owmuch?", "how-much"],fell:["Owmonnyowz?", "how-many-ewes: everything is priced in ewes"],vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hao makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"],islander:["Au masa?","how much"],islanderw:["Hau maha?","how much"],hum:["Hāu mà?","how · much"],jimjam:["Hau macchu?","how much"],scyvoi:["Hav maç?","how much"]}},
-   {en:"Go away!",nt:"",r:{talovolci:["Goi aua!", "go · away"],khaay:["Goo daaŋ!", "go · down: back to the lowlands"],tungang:["Gerroff!", "get-off"],fell:["Gan wom!", "go · home"],vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"],islander:["Ko avei!","go away"],islanderw:["Ko avei!","go away"],hum:["Ko we!","go · away"],jimjam:["Gō avē!","go away"],scyvoi:["Getavt!","get out"]}},
-   {en:"Goodbye.",nt:"Voth commends you to the Sun and the Zeijani to the dark. Yuni huru is hooroo, an old Australian goodbye.",r:{talovolci:["Varuela!", "fare · well"],khaay:["Isteey khaay.", "stay · high"],tungang:["Tarra.", "ta-ra"],fell:["Gan canny.", "go · carefully"],vothic:["Tzun kip yu.", "sun · keep · you"],izani:["Farguel.", "farewell"],hykkousik:["Phērouel.", "farewell"],xanadui:["Phārwel, sar.", "farewell, sir"],yuni:["Huru.", "hooroo"],dalab:["Waak gud.", "walk · good"],republic:["Farvjel.", "farewell"],riders:["Plai khai.", "fly · high"],zeijani:["Ze-dāqum yūan qīp.", "the-dark-SUBJ · you-OBJ · keeps: the dark keep you"],dasri:["Jū bi-bīs.", "go · in-peace"],tabist:["Gu di afis.", "go · in · the-peace"],islander:["Sei kutu.", "sail · good"],islanderw:["Hei kutu.", "sail · good"],hum:["Kǔ pai.","good · bye"],jimjam:["Bī gūḍḍu ḍēsu.","be · good · days: may your days be good"],scyvoi:["Farvel.","farewell"]}},
-   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{talovolci:["Sub clodu spirla, ver clodu skios.", "under · cloud · spiral · over · cloud · sky"],khaay:["Aayslar khoold khool.", "ice-PL · hold · hall: the ice holds the hall, while the winter does"],tungang:["Njritawun znjritorl.", "an injury to one · is an injury to all: the banner's words"],fell:["Sunz nobbalamp thacanna putoot.", "the sun · is · only · a lamp · thou · can-not · put out"],vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Mek no mistekdem.","make · no · mistake-PL: the priests' prayer, said to anyone about to do something foolish"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"],islander:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],islanderw:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],hum:["Sōn ko, pí no ko.","song · goes, feet · not · go: the song crosses where feet cannot"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"]}},
+   {en:"Hello.",nt:"The everyday word, between equals. Hykkousik hy is hi, by the change that made isles into Ys. The Islanders greet with love, as the real Pacific does.",r:{eternian:["Lò.", "hello, worn to its end"],henge:["Helou.", "hello, kept whole"],heiland:["Hails jus!", "hail · you"],farside:["Lò.", "hello"],talovolci:["Ailos!", "hail"],khaay:["Khaay!", "hi: the same word as high"],tungang:["Ayup!", "eh up"],fell:["Nathen.", "now then"],vothic:["Hel, vren.", "hail · friend"],izani:["Elo.", "hello, the h lost"],hykkousik:["Hy!", "hi"],xanadui:["Xelo.", "hello"],yuni:["Hoi!", "hi"],dalab:["Ail op!", "hail · up"],republic:["Hej.", "hey"],riders:["Khee!", "hey"],zeijani:["Ḫēl.", "hail"],dasri:["Ḥayl!", "hail"],tabist:["Hayl!", "hail"],islander:["Lava!", "love"],islanderw:["Rava!", "love"],hum:["Hāi!","hi"],jimjam:["Hai!","hi"],scyvoi:["Hay!","hey"]}},
+   {en:"How are you?",nt:"The Riders ask after your wing. Hajlandsk asks how it goes, Norse-fashion.",r:{eternian:["Ho yu?", "how · you"],henge:["Status?", "status: how do you run?"],heiland:["Hau ar jus?", "how · are · you"],farside:["Ho yu?", "how · you"],talovolci:["Uo ari tu?", "how · are · you"],khaay:["Khoo ar suu?", "how · are · you"],tungang:["Owsta?", "how-is-thou"],fell:["Owsta gannin?", "how-is-thou · going"],vothic:["Hau go yu?", "how · go · you"],izani:["Au ar yu?", "how · are · you"],hykkousik:["Ar jou ouel?", "are · you · well"],xanadui:["Yū xau, sar?", "you · how, sir"],yuni:["Awyagoi?", "how-you-going"],dalab:["Ou yu de?", "how · you · there"],republic:["Hau gor det?", "how · goes · that"],riders:["Khau bį?", "how · wing: how flies it"],zeijani:["Yūm ḫau?", "you-SUBJ · how"],dasri:["Ḥaw yū?", "how · you"],tabist:["Haw yu?", "how · you"],islander:["Au iu?", "how · you"],islanderw:["Hau iu?", "how · you"],hum:["Hāu yu há?","how · you · huh"],jimjam:["Is hau yū?","is · how · you"],scyvoi:["Yu hav?","you · how"]}},
+   {en:"Welcome.",nt:"Islander mai is English my, worn down to mean towards me.",r:{eternian:["Wèu-kõ!", "well · come"],henge:["Akses granted.", "access · granted"],heiland:["Wailkums!", "welcome, with a noun's -s"],farside:["Wèu-qõ!", "well · come: the k a click"],talovolci:["Uelcomos!", "welcome"],khaay:["Qumun.", "come-in"],tungang:["Kumthiwayin.", "come · thy · way · in"],fell:["Kumin, warm thi.", "come-in · warm · thee"],vothic:["Velkïm.", "welcome"],izani:["Guelkom.", "welcome"],hykkousik:["Ouelkam.", "welcome"],xanadui:["Welqam, sar.", "welcome, sir"],yuni:["Kmin, mai.", "come-in, mate"],dalab:["Kom iin.", "come · in"],republic:["Vjelkom.", "welcome"],riders:["Belkam.", "welcome"],zeijani:["Wēlqum.", "welcome"],dasri:["Walqam.", "welcome"],tabist:["Walqam.", "welcome"],islander:["Kama mai.", "come · towards-me"],islanderw:["Kama mai.", "come · towards-me"],hum:["Kām!","come"],jimjam:["Velkam.","welcome"],scyvoi:["Velkım.","welcome"]}},
+   {en:"Thank you.",nt:"",r:{eternian:["Tã-yu.", "thank · you"],henge:["Tenks.", "thanks"],heiland:["Þank jus.", "thank · you"],farside:["Cã-yu.", "thank · you: the t a click"],talovolci:["Đancu tu.", "thank · you"],khaay:["Taŋ suu.", "thank · you"],tungang:["Ta, broo.", "ta · brother"],fell:["Ta.", "ta"],vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"],islander:["Tañiu.","thank-you"],islanderw:["Taniu.","thank-you"],hum:["Tá yu.","thank · you"],jimjam:["Teṅkyū.","thank-you"],scyvoi:["Sankyu.","thank-you"]}},
+   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{eternian:["Wè ma-pè?", "where · market-place"],henge:["Wer market?", "where · market"],heiland:["Ƕair is þa markats?", "where · is · the · market"],farside:["Wè ma-pè?", "where · market-place"],talovolci:["Uer esti marcatos?", "where · is · market"],khaay:["Beer marqït?", "where · market"],tungang:["Wearz tmarkit?", "where-is · the-market"],fell:["Wearz swap?", "where-is · swap: there is no market on the fells"],vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"],islander:["Vea te māʻiti?","where · the · market"],islanderw:["Vea te mākiti?","where · the · market"],hum:["Ma we há?","market · where · huh"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],scyvoi:["Markıt verde?","market · where-AT"]}},
+   {en:"I am a stranger here.",nt:"Voth says outlander, auhlandarh, and the Islanders say auta, outer. In Hykkousik, I is y, from the same change that made isles into Ys.",r:{eternian:["A tẽ-mã i.", "I · strange-man · here (heard too as: I am an Heir here)"],henge:["Ai am nat in sistem.", "I · am · not · in · system"],heiland:["Ei am straingō hair.", "I · am · stranger · here"],farside:["A cẽ-mã i.", "I · strange-man · here"],talovolci:["Mi ammi strangiros eri.", "I · am · stranger · here"],khaay:["Aay isterenjer khiir.", "I · stranger · here"],tungang:["Uznobba strenja eer.", "I-am · only · a stranger · here"],fell:["Uz frem eer.", "I-am · strange (fremd) · here"],vothic:["Ai auhlandarh hirh.","I · outlander · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"],islander:["E auta ai ia.","an · outer · I · here"],islanderw:["E auta ai hia.","an · outer · I · here"],hum:["Ai tê hī.","I · stranger · here"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"]}},
+   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{eternian:["Wò, pi.", "water · please"],henge:["Wota, plis.", "water · please"],heiland:["Watō, pleis.", "water · please"],farside:["Wò, pi.", "water · please"],talovolci:["Uatera, plisu.", "water · please"],khaay:["Baa'ar, piliis.", "water · please"],tungang:["Warra, iftha zowt.", "water · if · thou · has-aught"],fell:["Beckwarra.", "beck-water"],vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"],islander:["Vata, pīsi.","water, please"],islanderw:["Vata, pīhi.","water, please"],hum:["Wǒ, pî.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],scyvoi:["Vatır, filis.","water, please"]}},
+   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{eternian:["Ho mo?", "how · much"],henge:["Kost?", "cost"],heiland:["Hau muts?", "how · much"],farside:["Ho mo?", "how · much"],talovolci:["Uo mucos?", "how · much"],khaay:["Khoo much?", "how · much"],tungang:["Owmuch?", "how-much"],fell:["Owmonnyowz?", "how-many-ewes: everything is priced in ewes"],vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hao makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"],islander:["Au masa?","how much"],islanderw:["Hau maha?","how much"],hum:["Hāu mà?","how · much"],jimjam:["Hau macchu?","how much"],scyvoi:["Hav maç?","how much"]}},
+   {en:"Go away!",nt:"",r:{eternian:["Gò wè!", "go · away"],henge:["Log aut!", "log · out"],heiland:["Gai awai!", "go · away"],farside:["Gò wè!", "go · away"],talovolci:["Goi aua!", "go · away"],khaay:["Goo daaŋ!", "go · down: back to the lowlands"],tungang:["Gerroff!", "get-off"],fell:["Gan wom!", "go · home"],vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"],islander:["Ko avei!","go away"],islanderw:["Ko avei!","go away"],hum:["Ko we!","go · away"],jimjam:["Gō avē!","go away"],scyvoi:["Getavt!","get out"]}},
+   {en:"Goodbye.",nt:"Voth commends you to the Sun and the Zeijani to the dark. Yuni huru is hooroo, an old Australian goodbye.",r:{eternian:["Gu-ba.", "good · bye"],henge:["Shatdaun.", "shut · down: goodbye, good night"],heiland:["Farwail!", "farewell"],farside:["Gu-ɓa.", "good · bye: the b drawn in"],talovolci:["Varuela!", "fare · well"],khaay:["Isteey khaay.", "stay · high"],tungang:["Tarra.", "ta-ra"],fell:["Gan canny.", "go · carefully"],vothic:["Tzun kip yu.", "sun · keep · you"],izani:["Farguel.", "farewell"],hykkousik:["Phērouel.", "farewell"],xanadui:["Phārwel, sar.", "farewell, sir"],yuni:["Huru.", "hooroo"],dalab:["Waak gud.", "walk · good"],republic:["Farvjel.", "farewell"],riders:["Plai khai.", "fly · high"],zeijani:["Ze-dāqum yūan qīp.", "the-dark-SUBJ · you-OBJ · keeps: the dark keep you"],dasri:["Jū bi-bīs.", "go · in-peace"],tabist:["Gu di afis.", "go · in · the-peace"],islander:["Sei kutu.", "sail · good"],islanderw:["Hei kutu.", "sail · good"],hum:["Kǔ pai.","good · bye"],jimjam:["Bī gūḍḍu ḍēsu.","be · good · days: may your days be good"],scyvoi:["Farvel.","farewell"]}},
+   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{eternian:["Wè fa, sẽ tè.", "word · flies · sign · stays: the spoken word flies off, the written sign stays (heard too as: the sign is the State)"],henge:["Wot is ritn is ran.", "what · is · written · is · run: a written word does what it says"],heiland:["Haims is hei, Stait is far.", "home · is · high · State · is · far"],farside:["Sèu qõ, sèu gò, ca cè.", "sail · comes · sail · goes · tide · stays"],talovolci:["Sub clodu spirla, ver clodu skios.", "under · cloud · spiral · over · cloud · sky"],khaay:["Aayslar khoold khool.", "ice-PL · hold · hall: the ice holds the hall, while the winter does"],tungang:["Njritawun znjritorl.", "an injury to one · is an injury to all: the banner's words"],fell:["Sunz nobbalamp thacanna putoot.", "the sun · is · only · a lamp · thou · can-not · put out"],vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Mek no mistekdem.","make · no · mistake-PL: the priests' prayer, said to anyone about to do something foolish"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"],islander:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],islanderw:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],hum:["Sōn ko, pí no ko.","song · goes, feet · not · go: the song crosses where feet cannot"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"]}},
   ];
   const toAshTxt=t=>t.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
   const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -4458,7 +4818,7 @@ if(chart){
     body.innerHTML=PT.map(([k,name,rd,cls])=>{
       const src=k==="ash"?p.r.zeijani:p.r[k];
       const said=k==="ash"?toAshTxt(src[0]):src[0];
-      const tongue=k==="fell"?"tungang":k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k==="islanderw"?"islander":k;
+      const tongue=(k==="henge"||k==="heiland"||k==="farside")?"eternian":k==="fell"?"tungang":k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k==="islanderw"?"islander":k;
       const chip=rd==="none"?`<span class="chip none">${k==="fell"?"never written: bells only":k==="scyvoi"?"never written: brands only":k==="jimjam"?"palm-leaf blocks: not drawn yet":"seldom written"}</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
       const gloss=k==="ash"?src[1].replace(/-SUBJ/g,"-SUBJ, no -m"):src[1];
       return `<tr><td class="lg"><button type="button" data-go="${tongue}">${esc(name)}</button></td><td class="rm">${esc(said)}</td><td class="gl">${esc(gloss)}</td><td>${chip}</td></tr>`;

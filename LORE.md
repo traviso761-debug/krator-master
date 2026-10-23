@@ -571,8 +571,23 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   census, the land register, a legal code, standard weights and measures, and canals. It is the crater's only running record
   of the present, as the Order of Historians' is of the past, and the two institutions want each other's archives.
 - **Script and paper.** The only **logographic script** on Krator, which any subject dialect can read, and the only paper and
-  block printing; Jimjam writes on palm leaf and the Historians in book hand (`lore/tongues-of-krator.html` does not carry
-  the Eternians yet). The spoken tongue is open; it should not be tonal (the Hum has the crater's tones, §6.18).
+  block printing; Jimjam writes on palm leaf and the Historians in book hand. *Proposed*: the **signs** grew from the
+  Ancients' own icons (door figures, drops, flames, the power switch, the document), each read two ways, the dialect's worn
+  word and a **court reading** from the Heirs' English; beside them the **sound-marks**, a syllabary cut down from the signs
+  as kana were, for endings, foreign names and everyone who never sat an examination. The Heirs keep the Latin letters,
+  which no subject is taught. (`lore/tongues-of-krator.html`, the Eternian tab.)
+- **Tongues** [the owner, 2026-10-23, unless marked]. The **True Heirs speak English**, hardly changed, since they outlive
+  forty generations of subjects. The subjects' English has diverged: in the lowlands it is **worn to single syllables
+  without tones**, as the spoken Chinese tongues wore down under one script (nasal vowels, homophones said in pairs, measure
+  words), and the officials' **Paper speech** is that grammar with court words and **levels for rank**, as Korean and
+  Japanese have (*proposed*: an Heir is never asked a question; the speaker calls himself *sevã*, servant, and ends on
+  *milò*, my lord). There are **five or six main dialects**, no more: **capital speech** (the standard), the **Valley
+  march** (*proposed*: the salvagers' towns, the most worn, full of salvage cant), the **highlands**, which drifted like
+  **Gothic** (*Heilandisk*: nouns in -s, *stains*, *haims*, *þ* and *ƕ*; *proposed*: written in Breitila's letters too),
+  **Farside**, which took **clicks** and other strange sounds (*proposed*: from the sea-traders' speech on Farport's docks),
+  and the **cybernetics tribe's** speech (*proposed*: the least worn, because an Ancient system answers only to a word said
+  whole; they read the forbidden Latin letters to work their computers). The dam basins' bandits speak a mix. The State's
+  name in the market: *Tẽ-tè*; in Paper speech, *Itènale Setète*.
 - **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
   reach the capital's relics, and pay for each one. Dalab guards the Valley from the south with Blade and Span (§6.1), the
   State from the north, and the two never meet, because nothing crosses the Valley.
@@ -908,7 +923,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
-- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue and its logographic script; the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue's proposals (the signs from icons, the Valley march and Henge dialects, Farside's clicks from over the sea); the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?
