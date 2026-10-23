@@ -16,7 +16,7 @@ and `rsRide` moved in here) and `biomes/geyser` (the Ring Sea off the basin's be
 shore window, the Yuni river a flow; `src/83w-world-seas.js`, `src/83-world-water.js`); `biomes/sedesert` (the river a
 flow from the head of the wadi to the notch, the cataract a fall into the Abyss, the plunge pool still water;
 `src/89w-host-water.js`); `settlements/ys` (the terraced river a flow down its rimstone pools; `targets/city/88b-city-draw.js`);
-`settlements/reedlake` (the troughs, the wallow, the pen's pan and the dye vats still water; `src/90x-rl-still.js`);
+`settlements/reedlake` (the troughs, the wallow, the pen's pan and the dye vats still water; `src/90x-rl-still.js`); `biomes/nsemiarid` (2026-10-22: the remnant salt lake and the spring pool still water, the stream a flow; the records in `src/45-host-stage.js`, which its `waterH` answers from, drawn in `src/89b-host-atmos.js`);
 `settlements/xanadu`'s kit page (its pools, rill basins, channels and bowls still water; `targets/xanadu/90-xa-still.js`).
 Not taken, and why: Locus's and Mungo's river, delta, canals and pools are one level sheet shaped by the ground (no line
 to flow along, no rim to hold a pool) and their troughs are merged kit geometry; Erewhon (Xanadu's city) bakes its pools

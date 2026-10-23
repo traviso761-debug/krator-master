@@ -16,6 +16,14 @@ both new sections go to Krator Biomes and Objects with `--alone`. The top list k
 two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
 I–S 26, S–Z 15, Biomes and Objects 24.
 
+## The north basin's three biomes (2026-10-23)
+
+n semiarid (`biomes/nsemiarid`, "Northern semiarid steppe") and its two overlays, the dam basins (`biomes/dambasins`,
+its old port station, slug `dambasins`, with its pack `port.tex.port.js`) and the scablands (`biomes/scablands`, the
+coulee, slug `scablands`), have `ENTRIES` lines under Biomes, tagged new. Published to Krator Biomes and Objects as
+version 25 (`main` at 80d7f17a, the scablands' page with its own title): the live index edited in place (three cards)
+and the three pages bundled by `build_gallery.bundle()` alone, no full rebuild. The artifact holds about 196 MiB.
+
 ## Four artifacts, the worlds by the alphabet (2026-10-16)
 
 The owner (2026-10-16): the world parts are split alphabetically and titled by their range. Today:
