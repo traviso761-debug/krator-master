@@ -101,6 +101,7 @@ def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
+         ('builds take the core modules (README.md, "Core modules are not optional")', [PY, 'tools/check_core_use.py']),
          ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
          ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
