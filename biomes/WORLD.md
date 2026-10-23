@@ -30,7 +30,13 @@ scale Krator map for rough placement, not in this repo.
 | Korona (`korona/NOTES.md`; six stations built 2026-10-19: the tepui, the pitcher hollow, the fertile basin, the trenches, the lee gorge, the hoar table) | `korona` | nwlowlands, nhighlands (as first given; the model, 4.21, says nhighlands, sedesert, the east lobe's lake, e badlands, crater drylands, the hyperjungle: `korona/NOTES.md`, "Borders") |
 | north-eastern canyons (overlies the hyperjungle's polygon for now) | `necanyons` | hyperjungle (gentle: the forest thins onto the rock), korona (gentle: the benches rise into tepuis), nhighlands (steep: the Inner Wall). Plan: `biomes/necanyons/PLAN.md` |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| eastern highlands | `ehighlands` | on the model's `e inner wall` polygon (the owner, 2026-10-23): the dry east as station 1, the rainy west face as station 2 (`ehighlands/PLAN-STATIONS.md`) |
+| *planned* the painted highlands (the model's `e highlands` polygon, the altiplano by Korona) | `paintedhighlands` | korona, ehighlands, the savannah rims. Plan: `paintedhighlands/PLAN.md` (banded rock, wildflowers; strata from `core/terrain/STRATA-PLAN.md`) |
+| *planned* the Cut (the eigenweapon's bowl, Dilihan) | `cut` | the NW lowlands through its north mouth (4.22), the crater through the south-east. Plan: `cut/PLAN.md` (the warp field, hyperbamboo) |
+| *planned* the NW outer wall (the Yeti Kingdom, Leng, the frozen lake) | `nwouterwall` | nwlowlands, Farside. Plan: `nwouterwall/PLAN.md` |
+| *planned* the rift rim, N and S, with the w rift highland | `riftrim` | rift, swlowlands, Dalab's country. Plan: `riftrim/PLAN.md` (the highland lakes, the basin and gorge of 4.22, Ledge, the Tungangs) |
+| the Bowl (an abyssal overlay on the eastern desert) | `sedesert` | eastabyss, the Catch. Plan: `sedesert/PLAN-BOWL.md` (the salt lake, Mantis's oasis) |
+| *no kit yet* (the owner's polygons, 2026-10-23) | | w outer wall, sw highlands, the Catch (the tuff candidate below), godstep valley, Farside; the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
 | *possible* | `sbadlands`, micro-biomes | |
 | *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
@@ -72,6 +78,9 @@ because their conditions are rare, and Krator has the conditions.
   Olympus-Mons shield is also a lava volcano, not an ash one, and its summit is near airless. It works if the
   Godthrone has had an explosive phase (a lore decision). The two vents just outside the Catch's SW notch, px
   (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
+
+New stations for the old kits (2026-10-23): each kit's `PLAN-STATIONS.md` (nhighlands, shighlands, sedesert, oidong, hyperjungle,
+ebadlands, eastabyss, swlowlands, necanyons, ehighlands).
 
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.

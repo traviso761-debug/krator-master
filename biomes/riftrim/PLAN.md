@@ -317,8 +317,8 @@ shallows.
 
 ## 12. Questions for the owner
 
-1. **The Tungangs and the Fellgangs** (the names proposed, section 6): how far the branches have diverged, their tongues on
-   `lore/tongues-of-krator.html`, how many they are.
+1. **The Fellgangs** (the name proposed, section 6; *Tungangs* is settled, from the owner's "tunnel gangs"): how far the
+   branches have diverged and how many they are. Their speech is on `lore/tongues-of-krator.html`, the Tungang tab.
 2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
 3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
    whether Chimes, Cthonos and The Tubes stay, move or go (Pluton is settled: the key to the Godthrone's tunnels).

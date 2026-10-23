@@ -379,3 +379,13 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   mass). **Keep the south-west shore's green pockets** (px 831-846 by 812-844, Am and Aw at ~1,000-1,550 mm, where Mantis
   stands at 841,834): take the greater of the new rain and 4.21's there, so the oasis is not washed out to steppe.
   Reclimate the class from the new rain, repaint the rain and climate maps.
+- **Record edits waiting on the owner** (offered 2026-10-23, not done):
+  - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
+  - rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**, so the
+    names match the kits (`biomes/WORLD.md`);
+  - **Ledge's point** to the north cliff (px 165,1000), now or with the great-lake item above;
+  - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
+  - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
+  - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats.
+  Done on the model 2026-10-23: **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
+  (px 528,687).
