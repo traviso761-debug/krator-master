@@ -238,7 +238,12 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
   **The truth** (the owner, 2026-10-23; known to no one outside it): it is **Loj Nahn**, the number no one says. It retreated
   into **the upper levels of Arccube** and sealed them; about **a thousand** people farm its upper terraces, surrounded by
   Lizardmen, and lower stealthy parties at night for wood and what else the arcology cannot give. The Lizardmen attack any
-  they meet but lack the means or the will to press further.
+  they meet but lack the means or the will to press further. Five centuries on open terraces have changed them, and the
+  hold is the human heart of the Arccube reward (the owner, 2026-10-23).
+- **The tales of the Cataclysm** (the owner, 2026-10-23): a great war because the Gaffers got too greedy; **the Great
+  Strike**, when the crews went underground and rode out the catastrophes; and, of the Lizardmen's coming, wailing and
+  screaming in Arccube, then the Lizardmen, and no Ancient bodies. What that means is the author's secret (`LORE.md`
+  §6.20): never spelled out to the player.
   Tungang and Fellgang agree: the only thing worse than a Labber is a Lizard.
 - **Skab** is the general curse (traitor, bastard, arsehole), its first meaning long forgotten.
 - **The tongue** (the owner, 2026-10-23): **Northern English** (Yorkshire, Lancashire, the north-east's pit country),
