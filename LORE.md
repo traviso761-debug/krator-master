@@ -165,8 +165,8 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **The God** is the lab's AI. Its counsel keeps biomedical knowledge alive, and it "grows more erratic every century". Its seat is a sunken chamber of cabinet banks: "a plant room to a stranger and a shrine to a priest". Its image is a rayed head with **one great eye**.
 - Nearly everyone carries the photosynthesis mod and is **green-skinned**.
 - **Genepriests** sell modifications to outsiders in the **Halls of Reformation**: night vision, pressure adaptation, extra limbs. Dalab healers are prized across Krator.
-- **The Giant tribes of the south-west came from here.** Dalab had **several sources for its "tall genes"**, but the Gedorix's were the most potent (§6.21).
-- **Dalab collects peoples** [the owner, 2026-10-23]. One of the first things Dalabites do on meeting a new people is try to **acquire some of them, by hook or by crook**, to see what their genetic code has to offer. It has not made them well liked: the Gedorix remember the skinchangers (§6.21), the Tungangs remember being taken (§6.1). The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
+- **The Giant tribes of the south-west came from here.** Dalab had **several sources for its "tall genes"**, but the Talovolci's were the most potent (§6.21).
+- **Dalab collects peoples** [the owner, 2026-10-23]. One of the first things Dalabites do on meeting a new people is try to **acquire some of them, by hook or by crook**, to see what their genetic code has to offer. It has not made them well liked: the Talovolci remember the skinchangers (§6.21), the Tungangs remember being taken (§6.1). The priests keep Giant guards: four-armed ceremonial guards at the temples, and two-armed street patrols in threes.
 - Priests commune with The God from earth mounds built to imitate the Ancient domes. Each town's mound faces the lab. The High Priest's mound faces *away* from it, behind a ring earthwork guarded by giants.
 - Castes:
   - Peasants: rammed earth, thatch and scrap, round plans.
@@ -225,6 +225,10 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **The city of Dilihan (NW crater, “The Cut” region) was settled by Izani colonists and is a loyalist stronghold landlocked and cut off from the main empire. The northern lowlands also had many loyalists.**
   - **Dilihan, the premier settlement of the Cut** (the owner, 2026-10-18; each point marked *proposed* is this session's and waits on the owner). **The Cut** is effectively a pass through the northern highlands, joining the north-western lowlands to the inner crater, but it is no valley: **it was made in the Cataclysm by an Ancient eigenweapon, whose detonation deleted a perfectly spherical volume of matter** (the owner, 2026-10-18). **It went off in orbit** (the owner, 2026-10-23), or projected its deletion from there: a sphere some five hundred kilometres in radius, almost all of it empty space, whose bottom grazed the planet. What is left is **the bottom of the sphere**: a shallow round bowl bitten out of the Wall, about 150 km across and 5 km deep (`biomes/cut/PLAN.md`), its floor a smooth concave curve, its sides rising into the mountains on east and west with the cut faces still bare where nothing has had time to weather, open to the lowlands on the north and the crater on the south where the sphere broke the range's two flanks. **The sphere took a column of the sky with it**: the air falling back into the void was heard and felt across the crater (the owner, 2026-10-23). Its biome has no kit yet (a **Cut kit** is to come later; until then the builds read the highlands and lowlands kits in place). It is a geographic region on the scale model (px 427-502 by 264-340, about 150 by 150 km, a near-circle), with Jimjam's lake country north of it, the Iron Republic's border west, the Scyvoi's drylands south-west, the Hykkousoi League's coast south (Trigon 160 km, Ys 175 km), the Hexahedron and Screamer Country east (166 km) and the Free Clans north-east. Dilihan stands at its southern end (px 472,333), 226 km south of Jimjam, 780 km from Iziz as the quetzal flies. **In the waxing years of the Empire**, five or six centuries ago, when the legions had pacified the north, the Cut was one of the regions settled by **Izani ex-legionnaires**: a veterans' colony holding the pass road between the lowlands and the crater, every settler a discharged soldier with a plot and the duty to muster. The Cut has no Ancient ruin to build from (the weapon deleted whatever stood there), so the colonists built as their nearest neighbour built: the **old quarter** is a core of **Jimjam-style** buildings, red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys, laid by Jimjam masons with Jimjam brick, round a forum, a temple of the sun and the colony's first wall. As the colony grew into a city the Izani built as they do at home: districts in the **Iziz Vernacular** style take up four times the old quarter's area round it, timber and plaster and orange ashlar, copper where the city can afford it. A **governor's palace** on the vassal cities' programme (`settlements/iziz/VASSAL-KITS.md` §3, as Pylon's and Talia's) with Jimjamite flourish: brick arcades, a gold onion dome over the audience hall, chhatri pavilions for the seven, marble string courses, ornamental chimney stacks. **The region was loyalist** in the civil war and stayed loyal when the western territories declared independence, but its remoteness has made it a **de facto independent state**: between Dilihan and Iziz lie the League's coast, the Scyvoi, the Screamers and the whole width of the Ring Sea. **The governor is chosen by the veterans' council and confirmed by Iziz by letter**, a year or two late, and carries the Izani title (the owner, 2026-10-18). **Dilihan speaks Izani with a light dusting of loans from Jamṭōkku** (the owner, 2026-10-18): the colonists' Izani is old-fashioned (none of the court's clipped forms, §6.2 "Language"), with Jimjam words for brick and kiln, the count and its days, measures and market wares, and they date their contracts by Jimjam's reckoning (§6.14) because every caravan that reaches them does. **Iziz nevertheless maintains extensive diplomatic contact**, increasing lately as relations between the Hykkousoi and Iziz have improved (the alliance, §6.16), which lets Izani envoys **cross the League's territory**: down the Cut to the League's coast, by Hykkousoi ship across the Ring Sea to Hook, now the Empire's again, and so to Iziz. The League is wary of exactly this: the Empire would like Dilihan re-united, and an Izani road through Hykkousoi country is a step toward it (§6.16). Dilihan leans on Jimjam for trade (§11). **The name** is Jimjam's, heard through an Izani accent (the owner, 2026-10-18): Jamṭōkku *Ḍeḷḷu-Hanḍu*, "Dell-Hand", the hands of land in the dell: *ḍeḷḷu* is English *dell*, the bowl the Jimjam saw from their lake, and *hanḍu*, "hand", is Jamṭōkku's measure word for a plot of land (§6.14, the measure words), so the name is what Jimjam's masons and almanac-sellers called the veterans' allotments. The Izani ear flattened the retroflexes to *d* and *l*, heard the doubled *ḷḷ* as a higher vowel, dropped the *-u* endings and the second *d*, and wrote *Dilihan*, keeping an *h* its own speech no longer sounds because the Jimjam say it. `lore/tongues-of-krator.html` is to carry the pair. `settlements/dilihan/PLAN.md`
 - **Language and script.** Izani: English gone Romance with a Star Wars edge (h lost, w > gu, -ng > ñ, prothetic *is-*, final vowels, *-ar*, plurals in *-z*, x = sh) and a Georgian bite learned from the subject jungle tribes before the Mutiny: ejectives where English glottalises (after s, and stops left unvoiced before the final *-a*: *ist'ar*, *port'a*, *mek'a*; unwritten, so no spelling changed) and q = q'. Since the civil war the court drops an unstressed first vowel (*rrpublik'a*, *kmandar*) and marks a finished act with *da-* from *down* (*dafal*). *Izani* = Iziz + *-ian* > *-ani*; *Duxun* = duke's son. 27 straight-cut capitals, the parent of the Vothic letters and used unchanged by the Republic. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+
+- **The Talovolci** (§6.21) [the owner, 2026-10-23]: the Cloud Giants of the southern highlands, de jure the Empire's,
+  lightly held; their tribute was people, recruited into **the Legion**, and a fair number still come to join it, which
+  is why the Empire leaves them alone now that they are independent in all but name.
 
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 
@@ -472,7 +476,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - [the owner, Oct 2026] The denizens of the shores and islands of the Ring Sea. At one time the island kingdom of **Kautoa** was a real competitor to the Hykkousoi for naval hegemony, before the Izani Empire. The Islanders have in many cases regained some independence, but their days as a relatively unified cultural force are over; they remain widespread throughout the Ring Sea, a Polynesian and Austronesian people still known as skilled voyagers and, lately, pirates.
   - Two subcultures, one people (`kits/islanders`): the **West** (the western Ring Sea) builds after the Indonesian rumah: long houses on piles under horned saddle roofs, a village assembly hall of stacked horned roofs, large elaborate dockyards. The **East**, Kautoa, builds tall peaked houses after Sumba, its own village hall, and a palace complex of several courtyards. Both carve their posts and paint their gables with the same motifs, and both patch their poorer buildings with scrap.
 - **Lizardmen**: now **§6.20** (the deep Rift). The first notes here, kept for the record: "reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Recently united under a warlord according to traveler tales." Where they differ from the kit's design, §12.
-- **The Giant tribes of the SW**: engineered at Dalab (§6.1), from bloodlines stolen from the Gedorix (§6.21). Some rebelled and now live independently in Giant Country: **the Free Giants**, who imitate the Gedorix's customs and look (§6.21).
+- **The Giant tribes of the SW**: engineered at Dalab (§6.1), from bloodlines stolen from the Talovolci (§6.21). Some rebelled and now live independently in Giant Country: **the Free Giants, the Vrivolci**, who speak Dalab's low tongue full of Talovolci words and imitate the Talovolci's customs and look (§6.21).
 - **Salvagers**: crews who refloat Ancient hulls.
 - **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
   - **Language.** The Scyvoi call themselves the **Borunsa** (burn + plural *-sa*: the burn-folk; *Scyvoi* is the Hykkousoi's name) and speak **Boruntun**, "burn-tongue": English gone Turkish with a Jurchen edge (vowel harmony, endings stacked and verb last, no consonant clusters at the start: *sıtar* star; p- > f-, k- > h- before a back vowel, -ng > -n, th > s/d, w > v; *ç ş c ı* spelt Turkish-fashion). The tribes under Voth have Vothic loans for tribute and rank (*Sinsun*, *şif*, *vot-* "pay Voth"). They write nothing: each clan has a brand (a tamga) on its lizards and its granite. Their enemies are the *Haykossa*. `lore/tongues-of-krator.html` [the owner asked for a Turkish and Jurchen dialect, Oct 2026]
@@ -736,7 +740,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   repeated glyph is a recurring event; five base glyphs (serpent, memory, node, Coil, fracture). No human can read it.
   Some stelae are turned to face the ground or wrapped in matting: texts whose meaning "changed retroactively".
 
-### 6.21 The Gedorix (the Cloud Giants; once called the Crag Men)
+### 6.21 The Talovolci (the tall folk; the Cloud Giants; once called the Crag Men)
 
 [the owner, 2026-10-23, unless marked *proposed*]
 
@@ -744,14 +748,14 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   2.6 m), sometimes called **the Cloud Giants**, though their land runs well outside the cloud forest. The lowlands' old
   name for them, **the Crag Men**, is going out of use; the scale model's political region still carries it (px ~402-751
   by 592-833, ~147,000 km²: the southern highlands' cloud forest and paramo, godstep valley, the walls above the Bowl and
-  the south-western bay). They are **not** green-skinned and have only two arms: those are Dalab's enhancements, not theirs.
+  the south-western bay). They are **not** green-skinned and have only two arms: those are Dalab's enhancements, not theirs. They tend to have
+  **black hair and bluish-white skin** (the owner, 2026-10-23).
   *Proposed*, by Krator's rule (§7): an Ancient lineage, made for a place or a task, like every people that differs from
   the human baseline.
 - **How they live.** A **sedentary gathering and farming** people: mostly **small villages and hamlets**, and at least one
-  **medium-sized ceremonial settlement**. **Daridel** is likely to be it, **moved into the cloud forest** (the owner,
-  2026-10-23): on the model it stands on dry steppe in godstep valley (px 608,798, 3,174 m, ~80 mm). *Proposed* sites in
-  the cloud belt of their region, ~1.4 km up and soaked (~4,000 mm): **px 528,687** (Af, mean +18 °C) or **px 526,640**
-  (Cfa, +20 °C).
+  **medium-sized ceremonial settlement**. **Daridel** is it, **moved into the cloud forest** (the owner, 2026-10-23): on
+  the model now at **px 528,687**, ~1.5 km up in the southern highlands' cloud belt, ~4,000 mm, mean +18 °C (it stood on
+  dry steppe in godstep valley, px 608,798).
 - **The spiral** [the owner, 2026-10-23]: they **revere the spiral** of their country (`biomes/shighlands`: every plant
   grows in a spiral and every spiral turns the same way, but for the rare mirror-handed tree). *Proposed*: a spiral opens
   and closes every inscription, turning the forest's way; a mirror-handed spiral is an omen and a mirror-handed tree is
@@ -761,18 +765,22 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   for the ceremonial settlement; torcs, brooches, checked and striped wool in weld-yellow, woad-blue and madder-red; a
   learned order who keep the laws, the genealogies and the calendar by heart; feasting halls, champion's portions and
   boasting; the names in *-rix* (king) and the places in *-dunon* (a fort, from English *town*), *-magos* (a field) and
-  *-nemeton* (a sacred grove). **The name is open** (the owner, 2026-10-23: not married to *Gedorix*). Candidates, by the tongue's own changes
-  (`lore/tongues-of-krator.html`, the Gedorix tab): *Gedorix* (giant-kings), *Talorix* (tall kings), *Talvolci* (tall folk,
-  *folk* > *volcos*), *Ixovolci* (high folk, *high* > *ixos*), *Clodovolci* (cloud folk). The tab has the tongue and its
-  stave letters.
+  *-nemeton* (a sacred grove). **The name**: **Talovolci**, "the tall folk" (the owner, 2026-10-23): *tall* > *talos*, *folk* > *volcos*; one of them is a *talovolcos*. (*Gedorix*, "giant-kings", was the working name.) The tongue and its stave letters: `lore/tongues-of-krator.html`, the Talovolci tab.
+- **Under the Empire** [the owner, 2026-10-23]. They were **de jure part of the Empire of Iziz**, but the hand was light:
+  their most valuable resource was **people**, and many were recruited into **the Legion**. The legionaries brought home
+  **Izani loanwords and innovations** (*proposed*: *Emparos*, the Empire, from Izani *Empar*; *comandaros*, an officer, from
+  *kmandar*), and influenced their people to become **more martial and more sedentary**. Since the Empire fell they are
+  **de facto independent**, and the Empire leaves them alone, because a fair number still come to join the Legion.
 - **Dalab's raids.** They remember **the raids of Dalab's skinchangers**, who came among them disguised, **kidnapped
   their people for their genes**, and from those stolen bloodlines made **Dalab's own four-armed, green-skinned Giants**
   (§6.1): Dalab had other sources for its tall genes, but theirs were the most potent. It is the oldest grievance in
   their songs; and Dalab does the same to every new people it meets (§6.1).
-- **The Free Giants.** They have **mixed feelings about the Free Giants of Giant Country** (§6.17), the Giants who
-  escaped Dalab: kin by blood, but a **Dalabi perversion** of their people. The Free Giants, lacking any identity of their
-  own, **imitate the Gedorix's customs and look** (their Gaulish dress in `core/charactermodels`: weld-yellow and woad, the
-  torc), which the Gedorix find flattering, galling or pitiable by turns.
+- **The Free Giants, the Vrivolci** ("free folk", the owner's name, 2026-10-23). They have **mixed feelings about the Free
+  Giants of Giant Country** (§6.17), the Giants who escaped Dalab: kin by blood, but a **Dalabi perversion** of their people. The Free Giants, lacking any identity of their
+  own, **imitate the Talovolci's customs and look** (their Gaulish dress in `core/charactermodels`: weld-yellow and woad, the
+  torc), which the Talovolci find flattering, galling or pitiable by turns. The Vrivolci **speak Dalab's low tongue** (§6.1), the
+  peasants' creole they grew up with, with an **enthusiastic, even desperate adoption of Talovolci words** (*Wi Vrivolci, no
+  Labgedoi!*, "we are Free Folk, not Dalab's Giants!").
 
 ## 7. Peoples of Krator (species and kinds)
 
@@ -780,7 +788,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   - **Dalabites:** green skinned, chloroplast mod, famine resistant, often with other mods including night vision, pressure adaptation, extra limbs.
   - **Chichani:** tendency to ashen grey skin and night vision.
   - **Hykkousoi:** famed for rib-gills; water breathers
-- **Giants**: Dalab's Giants, engineered from the Gedorix's stolen bloodlines, green-skinned and some four-armed, to 3.8 m (§6.1); the Free Giants who escaped them (§6.17); and **the Gedorix** themselves, two-armed, a third to a half again a person's height, the Cloud Giants (§6.21).
+- **Giants**: Dalab's Giants, engineered from the Talovolci's stolen bloodlines, green-skinned and some four-armed, to 3.8 m (§6.1); the Free Giants, the Vrivolci, who escaped them (§6.17, §6.21); and **the Talovolci** themselves, two-armed, a third to a half again a person's height, the Cloud Giants (§6.21).
 - **Lizardmen** (§6.20): not human as far as anyone knows; on Krator since the Cataclysm; reborn with their memories, sometimes into another of their six castes.
 - **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18). Some of the Valley's ghouls were True Heirs (§6.19).
 - **The True Heirs** (§6.19): metallic skin and hair (gold, silver, bronze, gunmetal), long-lived, descended from the Ancients' highest caste and compatible with their systems. **Yetis** (planned, §6.19): cold-adapted, on the Outer Wall above Farside.
@@ -871,7 +879,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
 - **The Eternal State** (§6.19): shares the NW lowlands with Jimjam and dates its contracts by Jimjam's count; the Republic on its eastern highlands; Dilihan through the Cut; the Yeti Kingdom above Farport; the bandits of the dam basins; the Valley between it and Dalab, so the two Valley-wardens never meet; the only culture in contact with anyone from beyond the crater (Farport's visitors). The Order of Historians and Dalab's genepriests both want what the Heirs have.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
-- **The Gedorix and Dalab** (§6.21): Dalab's skinchangers raided them for their genes, and made Dalab's Giants of them; **the Gedorix and the Free Giants**: kin by blood, uneasy, imitated.
+- **The Talovolci and Dalab** (§6.21): Dalab's skinchangers raided them for their genes, and made Dalab's Giants of them; **the Talovolci and the Free Giants**: kin by blood, uneasy, imitated.
 - **The Lizardmen** (§6.20): no contact at all; they never trade or treat. War with Xanadu (Rishtowar VII; the raids on the Vale), the tunnel wars with the Tungangs (§6.1), and the Monks of History's contradictory accounts.
 
 ## 12. Contradictions and open questions
