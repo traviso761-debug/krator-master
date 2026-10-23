@@ -464,7 +464,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi; the Kautoan drua (great double canoe), the western isles' kora-kora (royal war galley) and the pirates' lanong.
   - [the owner, Oct 2026] The denizens of the shores and islands of the Ring Sea. At one time the island kingdom of **Kautoa** was a real competitor to the Hykkousoi for naval hegemony, before the Izani Empire. The Islanders have in many cases regained some independence, but their days as a relatively unified cultural force are over; they remain widespread throughout the Ring Sea, a Polynesian and Austronesian people still known as skilled voyagers and, lately, pirates.
   - Two subcultures, one people (`kits/islanders`): the **West** (the western Ring Sea) builds after the Indonesian rumah: long houses on piles under horned saddle roofs, a village assembly hall of stacked horned roofs, large elaborate dockyards. The **East**, Kautoa, builds tall peaked houses after Sumba, its own village hall, and a palace complex of several courtyards. Both carve their posts and paint their gables with the same motifs, and both patch their poorer buildings with scrap.
-- **Lizardmen**: reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Live in the deep Rift. Recently united under a warlord according to traveler tales.
+- **Lizardmen**: now **§6.20** (the deep Rift). The first notes here, kept for the record: "reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Recently united under a warlord according to traveler tales." Where they differ from the kit's design, §12.
 - **The Giant tribes of the SW**: engineered at Dalab (§6.1). Some rebelled and now live independently in Giant Country.
 - **Salvagers**: crews who refloat Ancient hulls.
 - **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
@@ -642,6 +642,73 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **The rule it gives §7** [the owner, 2026-10-19]: every people on Krator that differs from the human baseline is an Ancient
   lineage or was warped by the Cataclysm, and in the north-west the two can be hard to tell apart.
 
+### 6.20 The Lizardmen (the Rift floor)
+
+[the owner, 2026-10-15 and 2026-10-16, with `kits/lizardmen/DESIGN.md` (the design agreed with the owner); the tunnel wars
+2026-10-23; unless marked *proposed*]
+
+- **Who they are.** The reptilian people of the **deep Rift floor**, the most alien people on Krator. No one knows where
+  they came from. Some suppose the Ancients warped the human form into them, as Dalab's genepriests made the four-armed
+  Giants; the Monks of History hold contradictory accounts of their origin, but **place them on Krator just after, or even
+  during, the Cataclysm**.
+- **Universally hostile.** They **never trade or treat**. They are nearly silent, even among themselves, except for the
+  hiss they make when they charge. They **take no captives**: the dead of both sides are butchered like animals (the bone
+  hall's stock: hides for roofs, bone for building). Captives would be pointless anyway: their kin always know where they
+  are, and as slaves they are listless.
+- **Where.** The Rift floor east of the great lake's basin: the "Lizardmen" region on the scale model (px ~293-610 by
+  1087-1345), round the Rift's terminal seas. On the model: **Sauropolis** (city, px 493,1266, at the trough's deepest,
+  -2,600 m), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224). Too high for them to go
+  comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **Arccube**, the Ancients' hub in the
+  Rift and the reward for whoever braves the Lizardmen (§4), lies deep in their country.
+- **The reliquaries.** They build great **cyclopean reliquaries** (the Xanadui call them temples), store strange
+  constructions in them, and otherwise leave them alone. The Monks' sages sense **recursive distortions of spacetime**
+  coming from them, growing stronger over the centuries, to an unknown end.
+- **Rishtowar VII's expedition, about 400 years ago.** The Sultan of Xanadu's army, with hired Yuni riflemen and shielded
+  Izani auxiliaries, found a large village laid out as a spiral round a central hall, with egg nurseries beside bloated,
+  sickly-looking Lizardmen. As the Lizardmen were killed, the vanguard felt premonitions of fear, longing and stranger
+  things. The army breached an isolated reliquary: vast, dusty chambers like a tomb. **At that every Lizardman in the Rift
+  rose in fury.** Falling back, the army found the village held by a frenzied army that seemed to have appeared overnight.
+  The army was destroyed and Rishtowar killed. The eastern Rift floor was not won back for 200 years, when his
+  great-great-great-grandson took it with ex-Izani legionaries. **Today Xanadu's vigilance is waning**, and raids reach as
+  far as the Vale, for livestock, tools and valuables (§6.13).
+- **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
+  crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
+  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. A lost loj in the
+  east is rumoured to have held out. Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
+- **What they are, behind the tales** (the design's own lore; out of universe, the Ophidians of *Secret Histories*, smaller
+  and less powerful):
+  - **The Coil.** They live time as a spiral in which events recur, cause can follow memory, and some of them know
+    humanity's future as their past.
+  - **The Cataclysm was their phase inversion**: the calamity that frayed physics and brought them to Krator is the
+    fracture of their Coil. **The Lie** came with it: before, they could not assert what they knew to be false, and they
+    regard the ability as a contamination. **The reliquaries are an attempt to mend the Coil, or to force Krator onto
+    it.** What that would mean for life that lives linearly is unknown, and probably nothing humans could survive.
+  - **A diminished remnant** of an older, greater order: the villages are modest, the reliquaries of that older scale.
+  - **Pathogenic rebirth.** The offspring is genetically identical to its parent and keeps its memories, but may be reborn
+    into another caste. So the "sickly" Lizardmen by the eggs were hosts mid-transfer (the nest hall's hospice and nursery
+    are one room), their kin can track their dead, and the army that "appeared overnight" acted on what it already
+    remembered.
+  - **The same mind keeps a building for centuries** in successive bodies: their style never drifts, repairs are
+    invisible, a reed hall is as precise as a stone one.
+  - **Silence**: their speech is tonal hissing, partly not acoustic; the higher castes speak by projected thought.
+  - **No clothing**: jewellery, ritual ornaments, headdresses, equipment and armour.
+- **Six castes**, each 1.25 times the height of the one below (the roles are *proposed*, `kits/lizardmen/DESIGN.md` §3):
+  **Tenders** (1.22 m: the nest hall, scribes and carvers, lacquer), **Makers** (1.53 m: bronze, reed and bone),
+  **Drovers** (1.92 m: farms, herds, hauling), **Line warriors** (2.41 m), **Interpreters** (3.03 m: seers and
+  strategists, spiral pupils, the highest caste) and **Bulwarks** (3.80 m: shock troops and heavy labour). Caste is set at
+  rebirth and can change between incarnations; the highest caste is deliberately not the largest: rank is a phase you
+  pass through.
+- **How they build** (`kits/lizardmen`): the **squared spiral** (the Shang *leiwen*) at every scale, from the village
+  winding in to its nest hall to the chambers of one building, each 1.25 times the last and turned at 75° or 105°; ribs,
+  horns and tusks outside the skin, of bone, reed and cane; baked brick, polygonal masonry and near-blank monolithic stone
+  for the reliquaries; bronze, never iron; black and oxblood lacquer; walls that lean wrong; triangular doors sized by
+  caste, nested on the shared buildings; odd counts; one deliberate flaw in every band (the Lie); no banners, drums or
+  signal fires. Models: Shang and Zhou bronzes, oracle bones, Mohenjo-daro; **not** the reptilian Aztec (no stepped
+  pyramids, feathered serpents, gold or jade).
+- **Writing.** A spiral script, pictographic and phonetic at once, read inward and outward with different meanings; a
+  repeated glyph is a recurring event; five base glyphs (serpent, memory, node, Coil, fracture). No human can read it.
+  Some stelae are turned to face the ground or wrapped in matting: texts whose meaning "changed retroactively".
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.
@@ -649,7 +716,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   - **Chichani:** tendency to ashen grey skin and night vision.
   - **Hykkousoi:** famed for rib-gills; water breathers
 - **Giants**: engineered at Dalab, some four-armed.
-- **Lizardmen.**
+- **Lizardmen** (§6.20): not human as far as anyone knows; on Krator since the Cataclysm; reborn with their memories, sometimes into another of their six castes.
 - **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18). Some of the Valley's ghouls were True Heirs (§6.19).
 - **The True Heirs** (§6.19): metallic skin and hair (gold, silver, bronze, gunmetal), long-lived, descended from the Ancients' highest caste and compatible with their systems. **Yetis** (planned, §6.19): cold-adapted, on the Outer Wall above Farside.
 - **The rule** [the owner, 2026-10-19]: every people on Krator that differs from the human baseline is an Ancient lineage, made for a place or a task, or was warped by the Cataclysm; the two can be hard to tell apart.
@@ -739,6 +806,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
 - **The Eternal State** (§6.19): shares the NW lowlands with Jimjam and dates its contracts by Jimjam's count; the Republic on its eastern highlands; Dilihan through the Cut; the Yeti Kingdom above Farport; the bandits of the dam basins; the Valley between it and Dalab, so the two Valley-wardens never meet; the only culture in contact with anyone from beyond the crater (Farport's visitors). The Order of Historians and Dalab's genepriests both want what the Heirs have.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
+- **The Lizardmen** (§6.20): no contact at all; they never trade or treat. War with Xanadu (Rishtowar VII; the raids on the Vale), the tunnel wars with the Tungangs (§6.1), and the Monks of History's contradictory accounts.
 
 ## 12. Contradictions and open questions
 
@@ -759,6 +827,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - The Vothic cities (§6.12): Shim's lake is not on the scale model yet (no lake is audited near px 382,788; the Shim river passes). The model's live `settlements` collection (read 2026-10-18) has **no Shim point and no Voth point at all**: the 2026-10-05 export had Shim twice (px 382,788 and a stray at 371,700 inside Jimjam's polygon) and Voth twice (433,654), and the clean-up since removed both copies of each. Restored 2026-10-18: Shim at 382,788 (`sshimrest01`); Voth stands at px 470,688 inside the Bay of Voth polygon (the owner's point, `s3n66733vo`; the restored copy at 433,654 was removed), and the distances in §6.2 and §6.12 are measured from there. Almua's river is **Dip Rivrh**, the Deep river (the owner, 2026-10-18), for the navigable channel that makes the harbour; the river namer carries it as a note (`tools/scale-model/river_names.py`) for when the course is drawn on the model. Who were the chiefs of the Drum and the Forest Ring before Voth, and what became of them?
 - Hook (§6.2): the three Pirate Emperors between Edguarda and Gualtar Marxal are unnamed. Does Voth counter-attack, and where did its Hook fleet go? Does Hook's Hykkousoi minority make the city a lever in the Iziz–Hykkousoi alliance? Who are the **Crag Men**, whose polygon on the scale model starts at the cliff 4 km behind Hook (a political region with no lore on record)?
 - Dilihan (§6.2): the Cut, the name, the governor (chosen by the veterans' council, confirmed by letter, Izani title) and the speech (Izani with Jamṭōkku loans) are settled (2026-10-18); what the eigenweapon was, who fired it and at what, is open (it was fired from orbit: the bowl is the bottom of a sphere ~500 km in radius), as is the Cut kit that will draw the bowl. The tongues page does not carry the name or the Dilihan loans yet.
+- **The Lizardmen** (§6.20): the first notes (§6.17) say *Amerindian* and *jade scale inlay*; the kit agreed with the owner (2026-10-15, `kits/lizardmen/DESIGN.md`) avoids the reptilian Aztec and jade, building on Shang bronzes and Mohenjo-daro, and §10 gives them jade and turquoise. The first notes also tell of a **warlord** who recently united them, by travellers' tales: a rumour, perhaps of the Interpreters' concerted action, or the owner's to keep. Basking slabs (the first notes) and the kit's furniture are to be squared. The caste roles are proposed.
 - Ardent (§6.4): nine clans, an elected law-speaker, the Republic's pressure as law and levy under threat of arms, the ore nodes placed by the build (settled 2026-10-18); the clans' names and crests are to be decided later (the owner, 2026-10-18).
 - Zey'danin (§6.12): the exiled Islander kingdom is Hetānini, the city's name in western Sikau (settled 2026-10-18; the derived form is the owner's to correct); its king's name is open. The Throne's notes still carry the older guesses (`biomes/throne/NOTES.md`: "a native core, a Hykkousoi harbour, a Vothic fort"); the rest was settled 2026-10-18.
 - Pinnacle Rock (§6.6): the site and the tribes are settled (2026-10-18); its name in Tł'aai is not. The model's rivers hold a *K'etsaal Baatar* 11 km from it that `tools/scale-model/river_names.py` does not yet know (the 4.21 table has r352 as *Istrim Jual*): the namer is behind the page.

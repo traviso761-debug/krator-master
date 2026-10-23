@@ -1,7 +1,7 @@
 # kits/lizardmen: the Lizardmen kit
 
 The Lizardmen of the Rift floor (catalog and core/tags culture `lizardmen`): the universally hostile reptilian people of the
-deep Rift, who raid the Vale of Xanadu and build cyclopean reliquaries no one understands (LORE.md §6.17, §8). `DESIGN.md`
+deep Rift, who raid the Vale of Xanadu and build cyclopean reliquaries no one understands (LORE.md §6.20). `DESIGN.md`
 is the design agreed with the owner (2026-10-15) and what the owner's references decided (2026-10-16, its section 9): the
 lore (the Coil, the Cataclysm as their phase inversion, pathogenic rebirth, the six castes on a 1.25 ratio), the look (ribs,
 horns and tusks outside the skin, the squared spiral built and the round whorl carved, walls that lean wrong, triangular
