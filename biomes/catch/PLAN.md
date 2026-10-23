@@ -236,10 +236,20 @@ Heir who reached it, and used the Call, would learn which, and would be either i
   a caravan's line, a stage out from an oasis, the harpooner furthest out.
 - **Stragglers**: they take the last beast, the sick, the one who went to relieve themself; they rarely take on a
   whole caravan.
-- **A kit**: skinned, animated walkers on `kits/mechs` (leg IK, planted feet, idle, walk and attack clips with fire and
-  impact events), sand-coloured, low, built to dig in; one body in two fits, the harpooner (the harpoon's fire event, a
-  line and its drag) and the blade (a lunge and a double cut). Not a mech of any culture's: the Ancients' own make, gone
-  feral, and Hub 01's.
+- **Built** (2026-10-23): `kits/mechs`, culture `stalker`: `st_harpooner` and `st_blade` (`kits/mechs/README.md`),
+  sleeker than the Iziz walkers, as the owner asked. Not yet: a buried pose and the harpoon's line
+  (`kits/mechs/KNOWN_ISSUES.md`).
+
+**Their look** [the owner's references, 2026-10-23]:
+- **The harpooner** is the canvas-legged walker of the owner's reference (the one the Speculator was drawn from): a smooth
+  white hull leaning forward on two legs in flexible sleeves, a round sensor head at the front, two thin manipulator arms
+  hung under it, and **a harpoon gun on each side** of the hull.
+- **The blade** is the four-armed heavy of the owner's reference (the Baiulus's): great white shoulders swelling over an
+  open machine core, two small arms folded at the chest, squat bowed legs on splayed feet, and **hooked blades on the ends
+  of the big arms** in place of hands.
+
+**How a caravan fights them** [the owner, 2026-10-23]: a wise caravan **carries explosives, or more exotic Ancient
+weapons**, to fight them; one that does not **flees**.
 
 ## 7. The lake beds (in place of tuff)
 
@@ -251,11 +261,9 @@ mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 ## 8. Questions for the owner
 
-1. **The Stalkers' look** (section 6c), and how a caravan fights or flees them (their size and the two variants are
-   settled).
-2. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
-3. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
-4. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
+1. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
+2. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
+3. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
    nodes in `kits/resources` with it.
 
 Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; five oases, only just enough, none lived in but
@@ -263,6 +271,7 @@ Stair's, each named in more than one of the four tongues; the Stair tunnel close
 Cataclysm, sealed halfway, the northern half stripped by Yuni long ago, the southern half the divers'; Stair the Hill
 arcology, a glorified campground of a couple of hundred people (a handful of merchants, the caravans, arcology divers);
 Stair's point moved to px 834,1112 on the model; the Stalker Peaks east of the Catch and the Stalkers (quiet robotic
-killers, in pairs or triads, hunting stragglers, ambushing from under the sand; about human size; two variants, the harpooner and the blade; their source Hub 01's mad AI,
+killers, in pairs or triads, hunting stragglers, ambushing from under the sand; about human size; two variants, the harpooner and the blade, drawn from the owner's references and built in
+`kits/mechs`; a wise caravan carries explosives or exotic Ancient weapons against them, a foolish one flees; their source Hub 01's mad AI,
 driven mad in the Cataclysm by a cause no one is sure of, unknown in the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
 potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.

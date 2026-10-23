@@ -1,6 +1,6 @@
 # kits/mechs: known issues
 
-`verify.py --assert` passes with nothing deferred (17 mechs, 18 builds with the Castra's two variants, seeds 1..2), z-fighting included.
+`verify.py --assert` passes with nothing deferred (19 mechs, 20 builds with the Castra's two variants, seeds 1..2), z-fighting included.
 
 ## Open
 
@@ -31,6 +31,16 @@
   skeleton (Skeleton3D), the leg IK a two-bone solve (SkeletonIK3D or code), the banners a CPU flutter (a shader there).
 - [ ] **The tools list only `src/`.** `tools/make_index.py` skips this kit's top-level files (as for
   `kits/motor-vehicles`); `INDEX.md` is hand-written and `PORT.md` keeps them under "Notes".
+
+- [ ] **The Stalkers' footprints are lopsided** (2026-10-23): the harpooner's guns and the blade's arms reach well
+  forward of the feet, so a box centred on the origin that holds them is a third empty and `verify.py` warns
+  (under-size, not a failure). The declared sizes cover the parts.
+- [ ] **The Stalkers have no buried pose.** The lore has them lie in wait under the sand (`biomes/catch/PLAN.md` section
+  6c): a crouched, dug-in idle (the body sunk, only the head or a gun clear) and a rising clip are still to be made.
+- [ ] **The harpoon has no line.** The `barb` projectile flies alone; the lore's line that drags the quarry in is the
+  host's to draw (a cable from `muzzle_l` / `muzzle_r` to the barb).
+- [ ] **The Stalkers' shells use the shared maps, finer** (`detail: { tile: 3, mix: 0.35 }`). A set of their own, white
+  enamel scoured by sand, would suit them better; none is in the library yet.
 
 ## Closed
 

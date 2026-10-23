@@ -37,36 +37,40 @@ const KM_API = (function () {
 
   /* ------------------------------------------------------------ materials (shared by every mech) */
   const TEX = {};
-  let MATS = null;
+  /* one material set per detail profile: '' is the kit's (every Iziz mech), a culture with `detail` gets its own */
+  const MATSETS = {};
   /* [roughness, metalness, bump]: the bump is kept low on the fine metal maps, which alias into sparkle at a distance */
   const LOOK = { plate: [0.62, 0.25, 0.4], livery: [0.58, 0.2, 0.45], metal: [0.45, 0.6, 0.25], bronze: [0.34, 0.75, 0.35], cloth: [0.92, 0.0, 0.35], hair: [0.7, 0.0, 0.3] };
   function std(b) { const L = LOOK[b]; return new THREE.MeshStandardMaterial({ vertexColors: true, roughness: L[0], metalness: L[1], skinning: true }); }
-  function mats() {
-    if (MATS) return MATS;
-    MATS = { plate: std('plate'), livery: std('livery'), metal: std('metal'), bronze: std('bronze'), cloth: std('cloth'), hair: std('hair'),
+  function mats(prof) {
+    const id = prof ? prof.tile + ':' + prof.mix : '';
+    if (MATSETS[id]) return MATSETS[id];
+    const M = MATSETS[id] = { plate: std('plate'), livery: std('livery'), metal: std('metal'), bronze: std('bronze'), cloth: std('cloth'), hair: std('hair'),
       glass: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.06, metalness: 0.3, transparent: true, opacity: 0.38,
         depthWrite: false, skinning: true, side: THREE.DoubleSide }) };
-    for (const b of DETAIL) attachDetail(b);
-    return MATS;
+    M._prof = prof || null;
+    for (const b of DETAIL) attachDetail(b, M);
+    return M;
   }
   const DETAIL = ['plate', 'livery', 'metal', 'bronze', 'cloth', 'hair'];
   /* a library set as a DETAIL map sampled by triplanar projection of the bind-pose position (no UVs; the
      pattern rides on the part), its mean brightness divided back out, and its luminance as a bump */
-  function attachDetail(b) {
-    const T = TEX[b], m = MATS && MATS[b];
+  function attachDetail(b, M) {
+    const T = TEX[b], m = M && M[b];
     if (!T || !m) return;
     m.map = T.map;
-    const tile = 1 / (T.scale || 1), gain = 1 / Math.max(0.05, Math.pow(T.mean || 0.5, 2.2)), bump = T.bump == null ? LOOK[b][2] : T.bump;
+    const P = M._prof, dMix = P ? (P.mix == null ? 1 : P.mix) : 1;
+    const tile = (P && P.tile ? P.tile : 1) / (T.scale || 1), gain = 1 / Math.max(0.05, Math.pow(T.mean || 0.5, 2.2)), bump = (T.bump == null ? LOOK[b][2] : T.bump) * dMix;
     const chip = T.chip;   /* livery: where the paint has chipped (dark in the map) the vertex colour gives way to bare steel */
     m.onBeforeCompile = function (sh) {
-      sh.uniforms.uDetTile = { value: tile }; sh.uniforms.uDetGain = { value: gain }; sh.uniforms.uDetBump = { value: bump * 0.01 };   /* metres of relief per unit of detail brightness */
+      sh.uniforms.uDetTile = { value: tile }; sh.uniforms.uDetGain = { value: gain }; sh.uniforms.uDetMix = { value: dMix }; sh.uniforms.uDetBump = { value: bump * 0.01 };   /* metres of relief per unit of detail brightness */
       sh.uniforms.uChip = { value: new THREE.Vector3(chip ? chip[0] : -2, chip ? chip[1] : -1, 0) };
       sh.uniforms.uChipCol = { value: new THREE.Color(chip ? chip[2] : 0x000000).convertSRGBToLinear() };
       sh.vertexShader = sh.vertexShader
         .replace('#include <common>', '#include <common>\nvarying vec3 vDetP;\nvarying vec3 vDetN;\n')
         .replace('#include <uv_vertex>', '#include <uv_vertex>\n  vDetP = position;\n  vDetN = normal;\n');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying vec3 vDetP;\nvarying vec3 vDetN;\nuniform float uDetTile;\nuniform float uDetGain;\nuniform float uDetBump;\nuniform vec3 uChip;\nuniform vec3 uChipCol;\n' +
+        .replace('#include <common>', '#include <common>\nvarying vec3 vDetP;\nvarying vec3 vDetN;\nuniform float uDetTile;\nuniform float uDetGain;\nuniform float uDetMix;\nuniform float uDetBump;\nuniform vec3 uChip;\nuniform vec3 uChipCol;\n' +
           'vec3 kmBump(vec3 p, vec3 n, float h){ vec3 dpx = dFdx(p), dpy = dFdy(p); float dhx = dFdx(h), dhy = dFdy(h);\n' +
           '  vec3 r1 = cross(dpy, n), r2 = cross(n, dpx); float det = dot(dpx, r1); vec3 g = sign(det) * (dhx * r1 + dhy * r2);\n' +
           '  return normalize(abs(det) * n - g); }\n')
@@ -77,8 +81,8 @@ const KM_API = (function () {
           '  vec3 dP = vDetP * uDetTile;',
           '  vec4 texelColor = texture2D(map, dP.zy) * dW.x + texture2D(map, dP.xz) * dW.y + texture2D(map, dP.xy) * dW.z;',
           '  texelColor = mapTexelToLinear(texelColor);',
-          '  detL = dot(texelColor.rgb, vec3(0.299, 0.587, 0.114)) * uDetGain;',
-          '  diffuseColor.rgb *= texelColor.rgb * uDetGain;',
+          '  detL = mix(1.0, dot(texelColor.rgb, vec3(0.299, 0.587, 0.114)) * uDetGain, uDetMix);',
+          '  diffuseColor.rgb *= mix(vec3(1.0), texelColor.rgb * uDetGain, uDetMix);',
           '  kmPaint = smoothstep(uChip.x, uChip.y, detL);',
           '#endif'].join('\n'))
         .replace('#include <color_fragment>', '#ifdef USE_COLOR\n  diffuseColor.rgb *= mix(uChipCol, vColor, kmPaint);\n#endif')
@@ -105,7 +109,7 @@ const KM_API = (function () {
       if (!o[b]) continue;
       TEX[b] = { map: loadTex(o[b].src || o[b].map), scale: o[b].scale || 1, mean: o[b].mean || 0.5, bump: o[b].bump,
         chip: o[b].chip || (b === 'livery' ? [0.42, 0.62, 0x6a6862] : null) };
-      attachDetail(b);
+      for (const id in MATSETS) attachDetail(b, MATSETS[id]);
     }
     if (o.banner) TEX.banner = { src: o.banner.src || o.banner.map, cell: o.banner.cell || 0.9 };
     if (o.sunbanner) { const z = o.sunbanner.size || o.sunbanner.scale || 2; TEX.sunbanner = { src: o.sunbanner.src || o.sunbanner.map, size: Array.isArray(z) ? z : [z, z] }; }
@@ -289,7 +293,7 @@ const KM_API = (function () {
     R.bones.forEach(function (b, i) { if (b.parent) bones[R.by[b.parent].index].add(bones[i]); else g.add(bones[i]); });
     g.updateMatrixWorld(true);
     const skel = new THREE.Skeleton(bones);
-    const M = mats();
+    const M = mats((MECH_CULTURES[A.culture] || {}).detail);
     const glow = new THREE.MeshBasicMaterial({ vertexColors: true, skinning: true });
     let tris = 0;
     for (const k of MECH_BUCKETS) {
@@ -653,7 +657,8 @@ const KM_API = (function () {
     return !!on;
   };
   /* something the mech looses, to fly: 'bolt' (a ballista bolt, 1.5 m), 'harpoon' (2.6 m, barbed, with a line),
-     'rivet' (a glowing slug). A plain Group, +z forward, origin at its middle. */
+     'barb' (a man-sized pneumatic harpoon, 1 m, all steel: the Stalkers'), 'rivet' (a glowing slug).
+     A plain Group, +z forward, origin at its middle. */
   const _projMat = {};
   API.projectile = function (kind) {
     const F = mechFrame({ seed: 1 });
@@ -664,6 +669,11 @@ const KM_API = (function () {
       if (kind === 'rivet') {
         F.cy(0, 0, 0, 0.11, 0.11, 0.3, 0xff8a2a, 'glow', 'z', 10);
         F.sph(0, 0, 0.15, 0.11, 0.11, 0.08, 0xffc070, 'glow', 10, 6);
+      } else if (kind === 'barb') {
+        F.rod(0, 0, -0.5, 0, 0, 0.5, 0.012, 0x5a5c60, 'metal');
+        F.cy(0, 0, 0.56, 0.02, 0.002, 0.12, 0xc9ccd0, 'metal', 'z', 6);
+        for (const s of [-1, 1]) F.rod(0, 0, 0.5, s * 0.06, 0, 0.42, 0.008, 0xc9ccd0, 'metal');
+        F.cy(0, 0, -0.48, 0.022, 0.022, 0.05, 0x2e2e30, 'metal', 'z', 8);
       } else {
         const L = kind === 'harpoon' ? 2.6 : 1.5, r = kind === 'harpoon' ? 0.05 : 0.032;
         F.rod(0, 0, -L / 2, 0, 0, L / 2, r, 0x6a4e32, 'wood');

@@ -58,13 +58,16 @@ const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility'
 const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
 const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle', 'none'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
-  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'none'];
+  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'none'];
 
 /* a culture: its palette goes into the catalog core's FPAL (inside this closure only), so F.col('orange')
    resolves against the mech's own culture */
 const MECH_CULTURES = {};
 function MECH_CULTURE(key, info) {
-  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '' };
+  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '',
+    /* detail: { tile, mix } a culture's own take on the shared detail maps: tile multiplies how often they repeat (a small,
+       sleek machine wants them finer), mix how strongly they show (0 none, 1 as the Iziz). Its mechs get a material set of their own. */
+    detail: info.detail || null };
   FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
 }
 

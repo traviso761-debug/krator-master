@@ -1,7 +1,8 @@
 # kits/mechs: the Mechs kit
 
 Procedural, fully animated walking machines that any Krator world can take as ONE bundle (`KratorMechs`), the way the
-motor vehicles and the catalog's furniture reach other worlds. First culture: **Iziz**, seventeen walkers.
+motor vehicles and the catalog's furniture reach other worlds. Two cultures: **Iziz**, seventeen walkers, and the
+**Stalkers** of the Catch, two (below).
 
 The Izani Empire's mechs (LORE.md 6.2, "Ancient survivals") are Ancient *industrial* walkers dug out of the city's
 ruins and kept going by the Forgemasters' Guild: loaders, cranes, excavators, pile drivers, cargo striders, refitted
@@ -31,6 +32,18 @@ three storeys (13 m), and the Catulus a drone the size of a hound that runs at t
 | `iz_turris` | Turris | walking works | four long legs | bridge on the roof; a crew of legionaries on the galleries | three ballistae on the prow balcony, loosed in turn; banners down its sides, hoist cables from its belly | 15 (the walking fort) |
 | `iz_speculator` | Speculator | prospector | biped, hunched | closed chest pod | long sampling arms with pincers: snatch; canvas-wrapped legs, kit tied on | 16 (the canvas-legged scout) |
 | `iz_catulus` | Catulus | survey drone | four thin legs, trot | none | none: a siren, then a dart | 16 (its drone) |
+
+**The Stalkers** (culture `stalker`, 2026-10-23; `LORE.md` §4, Hub 01; `biomes/catch/PLAN.md` section 6c): the quiet
+robotic killers of the Catch, about the size of a man (~1.9 m), in pairs or triads, the Ancients' own make gone feral.
+Sleeker than the Iziz walkers (the owner): smooth white shells, tight joints, flexible sleeves on the legs, nothing tied
+or bolted on, a red unit stripe, cyan running lights, a red eye. The culture's `detail` profile takes the shared detail
+maps three times finer and at a third of their strength (`MECH_CULTURE(..., { detail: { tile, mix } })`), on a material
+set of its own, so the shells read as scoured paint, not scrap.
+
+| Key | Name | Drive | Weapon / attack | Ref |
+|---|---|---|---|---|
+| `st_harpooner` | Harpooner Stalker | biped, a hull leaning forward | two pneumatic harpoon guns on its sides: loose left, loose right (`fire` events, the `barb` projectile, a 1 m steel harpoon) | the owner's canvas-legged walker (the Speculator's reference), made sleek |
+| `st_blade` | Blade Stalker | biped, hunched | two long arms ending in hooked blades: over and down, then the other (two `impact` events) | the owner's four-armed heavy (the Baiulus's reference), the hands made blades |
 
 Every mech has an **idle** (hydraulic breathing, weight shift, torso scan, the cab or head looking round, the pilot's
 head turning, banners and feathers stirring), a **plodding walk** (two-bone leg IK; feet planted in the world, so
