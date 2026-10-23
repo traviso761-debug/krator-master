@@ -1,7 +1,7 @@
 # Scale model tools
 
 Scripts that edit the **Krator Scale Model** artifact
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.21. The artifact's rasters live inside the page
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.22. The artifact's rasters live inside the page
 (a `DATA` object on one long line); the generator that made them is not in this repo, so these
 scripts edit the decoded rasters directly and write a new page.
 
@@ -283,6 +283,98 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
 
+## 4.22: `edit_422.py` (2026-10-23): six of the owner's edits, the rivers rerouted
+
+`edit_422.py <4.21 page> <regions.json> <settlements.json> <out page> [--rain <page>]` edits the **4.21** page and writes
+`<out>.report.json` and `<out>.rivers.png` beside it. Deterministic; about six minutes. Run it twice, the second time
+with `--rain <the first run's page>` (4.22: the passes agree to 0.1 mm of rain on average; 6 water cells differ; a third pass is byte-identical to the second). The
+4.22 report is kept as `rivers-4.22.report.json` and `rivers-4.22.jpg` (the edited places ringed). Everything outside the `DATA` line and the version label is
+byte-identical to 4.21 (checked).
+
+**The rivers: a reroute, not a rerun of `edit_rivers.py`.** `edit_rivers.py` is the 4.21 edit itself (it takes a 4.20 page
+and hard-codes 4.21's grading, settling, carving, outlets and paint), so it is kept as 4.21's record and never run on a
+later page. `edit_422.py` lifts its routing, audit and designation (the water books, the Yuni river held to its course,
+rounds of routing and cutting until no course climbs, the check that every course falls, the records) and runs them on
+the 4.22 heights and rain with none of 4.21's edits. Two things had to change for a page that already holds 4.21's
+water:
+- **4.21's through lakes stay open** (`through_cells`). Drawn now, `edit_rivers.setup` calls a lake closed when its
+  basin spills far over it, which in a closed basin is every lake: the Rift spills at 7,121 m, so the Rift river (951
+  m³/s), Folriba and the rest below a through lake vanished on the first try. 202,777 km² of 4.21's through lakes are
+  kept as through lakes.
+- **The sealed basins keep 4.21's rain scale** (`books_422`). 4.21's books were closed on 4.20's water; closed again on
+  4.21's own new lakes every sealed basin's scale moves (the south-eastern plateau's from 0.06 to 0.23, and its hollows
+  fill). Only the Catch is closed anew (below). The crater's evaporation is calibrated again, as 4.21 does: x1.239
+  (4.21: x1.264).
+- A course matching a 4.21 course (half of either's cells shared, or the same mouth) keeps its **id, name, tongue and
+  gloss**; the great lake's outflow keeps *Chimes Riba* (`r005`) though its gorge runs round Chimes. 853 of 4.21's 864
+  courses carry over; 17 are new (ids from `r864`; in a region whose tongue is on record named in it from
+  `river_names.py`'s words: *Folbruk*, *Wifbruk* on the great lake's plain, *Diip Baatar* the Hyperjungle lake's outflow
+  into the Ring Sea, 3,130 m³/s, which flows now that 4.21's lakes stay open); 10 are gone (the 4.21 Cut wadi, the
+  Yeti's old wadis, a few small courses whose flow moved). DATA.basins: 4.21's records outside the edited places, and
+  this routing's lakes in them. 497 km² of new water lies outside the edited places (small endorheic lakes the slightly
+  lower evaporation lets stand).
+- **The paint**: only the rivers whose course or stroke changed are erased (painted from the land round them) and drawn
+  again (78 erased, 84 drawn); the satellite and relief maps are re-tinted where the ground moved more than 150 m
+  (`retint`: each pixel scaled by the colour of unmoved land of its new height round it over that of its old), not only
+  re-lit, so the Cut's mouth and the Yeti's floor lose the snow of the ground they were.
+
+**The six edits** (the owner's list of 2026-10-23; the plans hold the reasons):
+1. **Pinnacle Rock's knoll** (px 755,351; `settlements/pinnacle-rock/PLAN.md`). Its rain within 12 km (a smoothstep over
+   6 km more) blends to the median of its ring 18-32 km out, not the drier north, held in 1,100-1,400 mm: 643 -> **1,380
+   mm** within 4 km (847 -> 1,380 within 12 km), the class following (Af and Am).
+2. **The Cut** (`biomes/cut/PLAN.md`). The floor raised 600 m on smoothstep(lip, 0.35 lip) of the radius from px 460,302
+   (the lip per bearing the crest of the walls, ~37-46 px): the floor's median -2,038 -> **-1,438 m**, ~1.92 atm; Dilihan's
+   ground +136 m. **The north mouth**: the bowl's curved floor continued north to a **sill of 700 m on the lip's line**
+   (px 460,262), the pass floor running on there, falling 30 m to the lowland slope at px 460,225, ~30 km wide there and
+   widening into the bowl, the walls rising 220 m a px; the lip there stood 4,179 m (cut up to 3,674 m). The divide is at
+   the lip, not at the lowland end: a floor sloping into the bowl from a sill at the lowland end took the ridge's north
+   flank into the bowl (~6,000 km², ~100 m³/s) and its lake spread over most of the floor (4,000 km²). The mouth drains
+   north to Jimjam's river; Jimjam's lake (~165 m) cannot reach the bowl. **The closed basin's correction** (x the
+   raise's strength): the mean -2.5 °C, warmest month -3.5, coldest -3, the highs -4.5, the nights -1 on top of the lapse
+   (-3.9 °C), so the floor reads **+31 (warmest +35, coldest +26, highs +40, nights +23)**, against 4.21's +38 (43/33). The
+   bowl keeps 4.21's rain (~1,110 mm on the floor); the class follows the new temperatures (XA, XS, XV and Af by the
+   lakes). The lakes settle by the routing: **two salt lakes, 2,663 km² at -1,456 m and 497 km² at -1,608 m**, endorheic under a spill of -383 m
+   (asserted: the floor's water ends in the bowl; the mouth's floor stays under its sill). 4.21 drew 2,326 km² there: the
+   cooler floor evaporates less. The rain map keeps a faint pale line along the sill's crease (re-lighting).
+3. **The great lake at the Rift's western head** (`biomes/riftrim/PLAN.md`). The hollow inside 4.21's 1,312 m spill (8,791
+   km², floor -2,028 m) rebuilt: a lake ellipse in its north-west against the north cliff, its shore at +300 m and its bed
+   down to -275 m, and a basin plain rising from 310 m to 1,250 m at the walls' foot, its edge eased. The **outlet gorge**
+   (`cut_channel`) runs 92 km from the lake across the plain, through a new notch just west of 4.21's (4.21 ground up to
+   1,949 m cut to ~282 m, ~1.7 km under shoulders of 2.1-2.7 km), 7 km from Chimes, to the Rift trough's lake at -1,862
+   m. Routed: **the lake stands at 298 m over 2,342 km², 573 m deep, a through lake at its sill** (asserted: it holds at
+   its sill, no shore under its level off the gorge, and 943 m³/s leave it, 96% of the way down the gorge, to the Rift's
+   lake). **6,449 km² of plain**: a mean of +16 °C (25/6), ~1,040 mm, Csa and Cfa. DATA.outlets gains the gorge.
+   **Ledge** moved to the north cliff, px 165,1000 (1,638 m, over the water), in the settlements collection.
+4. **The Yeti's central valley** (`biomes/nwouterwall/PLAN.md` section 1). Lowered 800 m by height alone (full from 5.8 to
+   6.6 km, eased in from 4.4 km and out to the ranges at 7.4 km: the lowering keeps every height's order, so it makes no
+   hollow; a smoothstep in from the trough's edge, the first try, left the lake at the range's foot lowered a third and
+   closed the trough's ends into new lakes), faded at its box's edge: the trough's floor (19,622 km²) 6,303 -> **5,554 m**,
+   ~0.80 atm. The sheltered valley's correction (summer +2 °C, winter -2): **mean -4 °C, warmest month +11, coldest -19**
+   (4.21: -9, +4, -22). Rain stays the valley's (~125 mm). The frozen lake settles at **5,680 m** (449 km², a through
+   lake): the ground is no longer frozen all year (mean over -10 °C), so the valley carries courses again, all dry valleys
+   on its rain.
+5. **The Bowl's lake effect** (`biomes/sedesert/PLAN-BOWL.md`). The abyss's method (`edit_rivers.lake_rain`'s table: the
+   floor's background times the ratio by the share of water within ~12 km) with the lift damped to 0.22 for a
+   hypersaline lake (a third gave ~590 mm, over the plan's 400-550), the water seen 4 px upwind (the north-west wind):
+   within 20 km of the shore the downwind (south-east) side **251 -> 560 mm** (BSh, Aw), the upwind **220 -> 313 mm**; never
+   under 4.21's, so the south-west shore's green pocket where Mantis stands keeps its Am and Aw (659 -> 864 mm in its box).
+   The shore's highs -1.5 °C and lows +1.5 where water is a quarter of the ground round it. The Bowl's drawn lake (9,578
+   km²) is closed as 4.21 drew it: it now receives 306 m³/s and would lose 251 more than that (`bowl_lakes`): it holds.
+6. **The Catch, a closed basin** (`biomes/catch/PLAN.md` sections 3-4). Under its spill (6,150 m), faded over 20 km inside:
+   rain by height, never over 4.21's under 3 km: the floor **298 -> 18 mm**, the foothills 251 -> 71, the inner walls take
+   the table (~100-130 mm, 78 -> 115 median; 4.21's walls feed no river at all, and the plan asks ~30 m³/s), falling to
+   nothing up the high walls; Stair's hot spot gone. The floor's warmest month +4 °C and coldest -3.5 (+30 -> +34, +9 ->
+   +6). Its books: the rain it is given is its own (not scaled to what its land evaporates with no lake yet, 5.5%, which
+   feeds no lake ever), the rest of the sealed basin keeping 4.21's scale; Turc's runoff is ~26 m³/s. The routing grows
+   **a terminal salt lake at the lowest point, 738 km² at 318 m** (px 763,1062), and three more salt pans on the flat floor
+   (497, 257 and 176 km² at 368-400 m), the flats drowned at their balance level by `hydro.route` (the plan's "a few hundred
+   km²" would need the fans' losses the model does not carry); a few small tarns on the walls (3.6-6 km). They are painted
+   in the Bowl's salt-lake look. Its courses are dry valleys and one stream (~13 m³/s): the oases are the open world's.
+
+Left for later: the Lake of Shim's to-do (it waits on the Shim build), the Ancients' highways layer, re-cutting the
+regions that hold the edited places (`settlements/pinnacle-rock/region/`, the Cut, the Catch), and refreshing
+`openworld/little-demo/source/`.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
@@ -307,116 +399,30 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
 
 ## To do on the model (owner's list)
 
+- **Done in 4.22 (2026-10-23)**, above: Pinnacle Rock's knoll, the Cut's floor, climate and north mouth, the great lake at the Rift's head (and Ledge moved to its cliff), the Yeti's valley, the Bowl's lake effect, the Catch as a closed basin. Still to do from them: re-cut `settlements/pinnacle-rock/region/` and any region holding the Cut or the Catch.
 - **Done in 4.21 (the owner asked, 2026-10-19): the Lake of Shim**, above. Still to do from this item: refresh
   `openworld/little-demo/source/` from the live collections. Almua's river is drawn (Dip Rivrh, above).
-- **4.22: the Lake of Shim** (when the Shim build is done, settlements/shim/PLAN.md; the owner, 2026-10-18). The region
+- **The Lake of Shim** (still pending: it waits on the Shim build; not in 4.22. When the Shim build is done, settlements/shim/PLAN.md; the owner, 2026-10-18). The region
   polygon "Lake of Shim" (`rshimlake0001`, about 32 by 12 km, px 376-382 by 780-796) is already in the artifact's
   `regions` collection and Shim's point (`sshimrest01`, 382,788) sits on its eastern shore. Carve it as the Bay of Voth
   was carved (`features.py`), but at the land's level there, not the sea's: the bed a few metres under the lake at the
   shore and 20-30 m at the middle, banks eased over about 2 px, the level the lowest shore cell's so it holds. Then
-  re-run the river audit (`edit_rivers.py`) so the Shim river (r000) enters from the south and leaves north, record
+  re-run the river audit (the reroute, as `edit_422.py` does it; not `edit_rivers.py`, the 4.21 edit) so the Shim river
+  (r000) enters from the south and leaves north, record
   the lake with the others, relight, reclimate, repaint, publish, and refresh `openworld/little-demo/source/` from
   the live collections (which have lost the 2026-10-05 export's duplicate settlements and hold Voth at 470,688).
-- **4.22: the rain on Pinnacle Rock's knoll** (the owner, 2026-10-23). 4.21 reads a dry island on the knoll (px 755,351):
-  ~640 mm within 4 km (BSh 67%, Aw 33%) and ~810 mm within 10 km, against ~1,100-1,400 mm round it and 1,400-1,660 mm
-  10-20 km west; Pinnacle Rock's plan had read about 3,000 mm on 2026-10-18. The likely cause is `reclimate`'s twins: the
-  knoll stands ~500 m over the floor, so its nearest climate twins are drier upland cells, not a rain shadow. Blend the
-  knoll's rain into its ring (radius ~12 km, a smoothstep over ~6 km more) to **~1,100-1,400 mm**, the monsoon-forest and
-  savanna country round it, leaving the drier north (toward the painted highlands) as it is; recompute the class there
-  (Am/Aw expected), repaint the rain and climate maps, re-run `edit_rivers.py`'s rain pass for the cells it changes,
-  publish, and re-cut `settlements/pinnacle-rock/region/`.
-- **4.22: the Cut's north mouth** (the owner, 2026-10-23; `biomes/cut/PLAN.md`). The lore opens the Cut to the lowlands
-  on the north as well as to the crater; on 4.21 only the south-east (bearings 120-180 deg from the centre, px 460,302) is
-  open, and the north lip stands 3.2-4.2 km. The ridge north of the floor is narrow: on x 450-470 it stands 3.4-3.9 km
-  between y ~276 and ~248 (about 50 km) and falls to ~500 m by y 220 above Jimjam's lake (y ~212). Cut a mouth on
-  bearings ~345-15 deg (px x ~445-475): continue the bowl's curved floor north until it meets the lowland slope, the sill
-  at the lowland's own level (~500-800 m, about y 228-236) so Jimjam's lake (~165 m) does not drain into the bowl, ~30 km
-  wide at the sill and widening into the bowl, the walls eased (the western outlets' `cut_channel` with a curved floor).
-  Then re-route the rivers (the bowl stays endorheic), reclimate, relight, repaint, publish; the pass road runs through it.
-  **Done in the same pass as the Cut's floor and climate** (the next item), so the rivers and the climate are redone once.
-- **4.22: the Cut's floor and climate** (the owner, 2026-10-23: hot, but habitable year round, and still a little deeper
-  than the crater). On 4.21 the floor is -2.2 km and a hothouse (mean +39 °C, warmest month +44, coldest +33, 2.1 atm):
-  the lapse rate carried 0.9 km below the crater floor. Two changes:
-  1. **Raise the floor ~600 m, to about -1.6 km** (~250 m under the central crater floor, ~0.5 km under the ground outside
-     the crater mouth): add 600 m x smoothstep(lip, 0.35 lip) of the radius from the centre (px 460,302), so the walls
-     and the lip are untouched and the floor's own relief is kept; the two lakes rise with it (the upper to ~-1,380 m,
-     the lower to ~-1,730 m) and the bowl stays endorheic. Dilihan's ground in the crater mouth moves under ~100 m.
-     Lapse: about -3.9 °C everywhere on the floor.
-  2. **A closed-basin correction** for the climate inside the lip, which the lapse rate alone does not see: **afternoon
-     cloud and storms** (the lakes' moisture forced up the walls) cap the highs, -4 to -5 °C on the warmest months'
-     afternoons; **night drainage of cold air** off the 3-6 km walls pools on the floor, -3 to -5 °C on the lows; the
-     lakes, snowmelt-fed off the lip, soften the extremes by the shore. Weighted by `s` (the warp's own strength field:
-     1 at the centre, 0 at the lip), so the walls keep their own climate.
-  Target on the floor: **mean ~+31-32 °C, warmest month ~+35-36, coldest ~+26, nights ~+23-26**, air ~1.95 atm; a wider
-  day-night swing than 4.21's. Reclimate the class from the new temperatures (XA and Af expected by the lakes, XS and XV
-  on the drier floor), relight, repaint; then re-cut any region that holds the Cut.
-- **4.22: the great lake at the Rift's western head** (the owner, 2026-10-23; `biomes/riftrim/PLAN.md`). 4.21's river
-  audit met a closed hollow 3.3 km deep (floor -2,028 m, px 146-201 by 1001-1058) on a course of ~800 m³/s and, by its
-  rule for hollows over 150 m deep, filled it to its spill (1,312 m, a notch at px 194,1059) as a through lake: 8,768 km²,
-  the deepest lake on the map, spilling 1.3 km straight down into the Rift past Chimes. By the water books that is right
-  (the lake's evaporation never exceeds ~150 m³/s at any level), but the hollow is not: a pit at the Rift's shallow head,
-  a notch in a thin ridge, a river that would long since have cut through it. The owner: **not deeper than the Rift
-  beside it, shallower, and a gorge that frees land higher than the Rift's floor but lower than most of the rim**:
-  1. **Fill the hollow into a basin plain**: inside the 1,312 m contour (the walls above it untouched, eased over 1-2
-     cells), the ground rebuilt as a plain rising gently from a new shore at **~+300 m** to ~+1,000-1,300 m at the walls'
-     foot, and a lake bed falling from that shore to **~-300 m** at its deepest (the Rift's floor beside it is ~-1,600 to
-     -1,850 m within 40 km). Put the lake in the basin's north-west, over the old deepest ground (about px 150-182 by
-     1001-1035), **against the north cliff**, so Ledge's cliff still stands over water; ~2,000-2,500 km² of lake, ~6,000
-     km² of plain.
-  2. **Cut the outlet gorge** (`cut_channel`, as the western outlets): from the lake's outlet across the plain to the
-     notch, through it down to ~+300 m (1.2-2 km under the ridge's shoulders, 1.5-2.3 km), and on past **Chimes** (ruined
-     arcology, px 196,1062) to the Rift's trough and its lake at px 214,1079 (bed ~-1,930 m), ~60 km, the bed falling all
-     the way; the walls eased half down.
-  Then re-route (the lake now spills through the gorge at its sill), reclimate the plain (expected Csa, Cfa: a mean of
-  ~+16-22 °C, ~1,000-1,300 mm), relight, repaint, publish, and move Ledge's point out of the old lake (to the north
-  cliff, px 165,1000, if the owner agrees).
-- **4.22: the Yeti's central valley, warmer** (the owner, 2026-10-23; `biomes/nwouterwall/PLAN.md` section 1). The trough
-  round the frozen lake (px 143,177; ~18,000 km2 under 6.6 km, px ~78-225 by 86-253) is too cold to farm on 4.21 (floor
-  ~6.3 km, warmest month +4 C, coldest -22, mean -9, ~125 mm, 0.73 atm). Lower it ~800 m on a smoothstep to its walls
-  (the ranges round it untouched; the lake drops with it to ~5,700 m), and give the enclosed floor a sheltered-valley
-  correction (summer +2 C, a sun trap; winter nights -2 C, cold air pooling). Target: warmest month ~+11 C, coldest ~-19,
-  mean ~-4 (permafrost, permanent pycrete), ~0.80 atm. Rain stays the valley's (fields on meltwater). Reclimate,
-  relight, repaint; re-run the rivers for the trough.
 - **The Ancients' highways** (the owner, 2026-10-23; `openworld/ANCIENT-ROADS.md`): a network layer on the model
   (`DATA.ancient_roads`), routed over the heights between the Ancient sites, with its tunnels (the Rift line under the
   Outer Wall, at least one route under the Inner Wall), shown as a layer for the owner to review, and carried by
   `extract_region.py` as the rivers are.
-- **4.22: the Bowl's lake effect** (the owner, 2026-10-23). 4.21 grew and joined the Bowl's lakes into one salt lake
-  (9,600 km2, px 762-948 by 783-846) but gave it no lake effect: rain beside it is ~280 mm within 4 km against ~250 mm 40
-  km away, and the shore is BWh to the water. The eastern abyss's lakes, by the same model, carry ~1,100 mm at the shore
-  (~1,290 downwind) against ~520 at 20-40 km. Give the Bowl the abyss's method (`lake_rain`: the floor's background times
-  the ratio by share of water within ~12 km), **damped for a hypersaline lake** (salt lowers evaporation, and a real hot
-  salt lake gives little rain: the Dead Sea's shore gets ~50-100 mm), to about a third of the abyss's lift: proposed
-  ~400-550 mm within ~10 km on the downwind south-east shore, ~300-400 upwind, fading by ~30 km, so the shore turns BSh
-  and the deltas and the south-east shore green. Moderate the shore's temperature extremes a little (the lake's thermal
-  mass). **Keep the south-west shore's green pockets** (px 831-846 by 812-844, Am and Aw at ~1,000-1,550 mm, where Mantis
-  stands at 841,834): take the greater of the new rain and 4.21's there, so the oasis is not washed out to steppe.
-  Reclimate the class from the new rain, repaint the rain and climate maps.
-- **4.22: the Catch, a closed basin** (the owner asked, 2026-10-23, whether its rain is generous: it is; **the owner
-  approved the correction for 4.22**, 2026-10-23;
-  `biomes/catch/PLAN.md`). 4.21 gives the floor (under 1 km, ~28,700 km²) 369 mm and the foothills (1-3 km) 482, with Cfa
-  and Csa and a hot spot over 800 mm round Stair (px 805-870 by 1075-1133), most likely from `reclimate`'s twins (low warm
-  cells open to the Ring Sea). The basin is sealed: crests 10-17 km all round, the lowest way out 6,158 m (NNW, near px
-  726,896), every other over 7.3 km, nothing in it below 6.2 km open to the outside. Inside the basin under its spill
-  level, weighted to fade over ~10 px inside the walls' crest:
-  1. **Rain**: the floor **10-30 mm**, the foothills **40-120 mm** rising with height, the inner walls (3-5.5 km)
-     **100-250 mm** (keep 4.21 where it is lower), nothing above ~9 km; drop the hot spot.
-  2. **Temperature**: the floor's warmest month +4-6 °C, its coldest -3-4 °C (clear, dry air: target +33-35 and +5-6),
-     the walls as they are.
-  3. Reclimate the class (BWh and BWk on the floor and the fans; BSk, dry Dsc and ET on the walls), then **re-run the
-     rivers** for the basin: snowmelt rivers off the inner walls, **scarce** (the owner: oases only just enough; ~30 m³/s in
-     all, most of it sinking into the fans, a handful surfacing at the fans' toes as oases), and a small **terminal salt
-     lake** at the lowest point (px 762,1067, 225 m), a few hundred km².
-  Relight, repaint, publish; re-cut any region that holds the Catch.
 - **Record edits waiting on the owner** (offered 2026-10-23, not done):
   - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
   - rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**, so the
     names match the kits (`biomes/WORLD.md`);
-  - **Ledge's point** to the north cliff (px 165,1000), now or with the great-lake item above;
   - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
   - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
   - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats;
   - a region **"Stalker Peaks"** east of the Catch: the ranges between its eastern wall and Hub 01, and the 13-15 km peaks
     round Hub 01's high valley (px ~960-1140 by 950-1180; `biomes/catch/PLAN.md` section 6c).
-  Done on the model 2026-10-23: **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
+  Done on the model 2026-10-23: **Ledge** moved to the great lake's north cliff (px 165,1000; with 4.22); **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
   (px 528,687); **Stair** moved to the springs' hollow in the Catch's interior hills (px 834,1112), the Hill arcology's site. **`rift rim`** split into **`rift rim N`** (the old record, renamed and trimmed to the w rift highland's border) and **`rift rim S`** (`rmvriftrims01`, with the west bend south of the highland).

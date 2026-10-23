@@ -44,9 +44,11 @@ basin, its yardangs (*kaluts*) and its dunes.
   temperate place by the lake": the temperatures are alike all round the shore, mean +28 °C, so the water decided.)
   It is an Iziz holding that grew under Yuni's influence and was later taken over by Izani merchant houses, named after the **Bowl mantis**, a large predator of the region (`LORE.md` §6.2). It may want a vassal kit of
   its own, on the Iziz Vernacular contract (`settlements/iziz/VASSAL-KITS.md`), with Yuni's look under the merchants'.
-- **The climate is corrected on the model in 4.22** (`tools/scale-model/README.md`): 4.21 gave the lake no lake effect,
-  so its shore is hot desert to the water. A damped lake effect turns the shore and the deltas to hot steppe (~400-550 mm
-  on the downwind south-east shore), keeping Mantis's green pockets at least as wet as they are. The zones below
+- **The climate is corrected on the model in 4.22** (`tools/scale-model/README.md`, "4.22", item 5): 4.21 gave the lake
+  no lake effect, so its shore was hot desert to the water. The abyss's lake effect damped to 0.22 of its lift turns the
+  shore and the deltas to hot steppe and savanna: within 20 km of the water the downwind south-east shore 251 -> **560 mm**
+  (BSh, Aw), the upwind 220 -> **313 mm**; Mantis's green pocket keeps its Am and Aw (659 -> 864 mm in its box), and the
+  shore's highs are 1.5 °C lower, its lows 1.5 higher. The zones below
   assume the corrected climate.
 - **Neighbours**: the sedesert proper to the west and north (4,700 km² of shared border), the eastern badlands on the
   east, godstep valley and the eastern Inner Wall on the north.

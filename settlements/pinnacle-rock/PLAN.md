@@ -42,8 +42,8 @@ mesa itself stands on its top, and the 1:1 ground round it falls away as the cel
 
 **The rain, corrected (2026-10-23).** 4.21 reads far less than the 3,000 mm above: ~640 mm on the knoll (BSh, Aw),
 ~810 mm within 10 km, ~1,100-1,400 mm round that. The owner's call: the knoll's dry island is a model artefact (the
-climate pass gives the raised knoll drier upland twins), to be blended into its ring at ~1,100-1,400 mm in 4.22
-(`tools/scale-model/README.md`, the to-do list). That is **monsoon-forest and savanna country**, not deep hyperjungle:
+climate pass gives the raised knoll drier upland twins), blended into its ring in 4.22: ~1,380 mm within 12 km of the
+knoll, the class Af and Am on the model (`tools/scale-model/README.md`, "4.22"). That is **monsoon-forest and savanna country**, not deep hyperjungle:
 the forest round the mesa is semi-deciduous monsoon forest about 50-100 m tall (the trees leafless in the dry season)
 with savanna glades, gallery forest along the K'etsaal Baatar, and the closed hyperjungle 20 km and more away. The mesa
 still clears it, by more; the farms and fonio suit it better. The ground change is `KNOWN_ISSUES.md`'s.

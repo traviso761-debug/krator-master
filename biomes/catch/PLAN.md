@@ -86,7 +86,22 @@ than Turpan's.
 dust storms (the Tarim's *karaburan*, "black storm") in spring. Dense air moves more sand at the same wind speed, so the
 dunes are big and the yardangs deep.
 
-This goes on the model's to-do list as its own item (`tools/scale-model/README.md`, "4.22: the Catch, a closed basin").
+This went on the model's to-do list as its own item and is **on the model in 4.22** (`tools/scale-model/README.md`, "4.22",
+item 6). What 4.22 carries:
+
+| Band | 4.21 | 4.22 (median) | Class |
+|---|---|---|---|
+| floor, under 1 km | 298 mm | **18 mm** | BWk, BWh in places |
+| piedmont, 1-3 km | 251 mm | **71 mm** | BWk, BSk |
+| inner walls, 3-5.5 km | 78 mm | **115 mm** (the plan's band: 4.21's walls fed no river at all) | Dsc, Dsb, ET, BSk |
+
+The floor's warmest month +30 -> **+34 °C**, its coldest +9 -> **+6** (the highs +43, the nights -4). The basin's own rain is
+not scaled by the water books (scaled to what its land evaporates before it has a lake, ~5%, no lake would ever form):
+Turc's runoff is **~26 m³/s** in all. The routing gives a **terminal salt lake at the lowest point, 738 km² at 318 m**
+(px 763,1062), three more salt pans on the flat floor (497, 257 and 176 km², 368-400 m) and a few small tarns on the walls
+(3.6-6 km). The model carries no losses into the fans, so the floor's lakes come out larger than the few hundred km² this
+plan asks; the kit's page draws the lake at the lowest point and the pans as playas if the owner prefers. The courses are
+dry valleys and one stream (~13 m³/s): the oases at the fans' toes are the open world's.
 
 ## 4. Water
 

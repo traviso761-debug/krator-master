@@ -50,7 +50,7 @@ Every lake stands under its own shore (checked: level against the lower quartile
 
 | Lake | Where (px) | km² | Surface | Depth | Shore | What it is |
 |---|---|---|---|---|---|---|
-| **The great lake** (Ledge's), **after 4.22** | the basin px 146-201 by 1001-1058 (W); the lake in its north-west | **~2,000-2,500** (8,768 on 4.21) | **~+300 m** (1,312 on 4.21) | ~600 m (3.3 km on 4.21) | the basin plain round it: Csa, Cfa, ~+16-22 °C; the 25-36% north cliff over the water | the rim's heart: a lake under a cliff in a warm basin, its outlet a gorge to the Rift |
+| **The great lake** (Ledge's), **4.22** | the basin px 146-201 by 1001-1058 (W); the lake in its north-west (centre px 166,1014) | **2,342** (8,768 on 4.21) | **298 m** (1,312 on 4.21) | 573 m (3.3 km on 4.21) | the basin plain round it: Csa, Cfa, +16 °C (25/6), ~1,040 mm; the north cliff over the water | the rim's heart: a lake under a cliff in a warm basin, its outlet a gorge to the Rift |
 | N rim | 261,1060 | 1,120 | 3,271 m | ~1.1 km | ~860 mm, +3 | the largest of the N rim's chain |
 | N rim | 295,1072 | 624 | 1,887 | ~550 m | ~1,110 mm, +11 | |
 | N rim | 247,1039 | 544 | 3,427 | | ~815 mm, +2 | |
@@ -71,16 +71,16 @@ On 4.21 the great lake is a hollow 3.3 km deep (floor -2,028 m) that the river a
 books agree (its evaporation never exceeds ~150 m³/s at any level, against ~800 m³/s coming in), but the hollow does not
 hold up: a pit at the Rift's shallow head, behind a thin ridge a river that size would have cut through long ago. The
 owner (2026-10-23): no deeper than the Rift beside it, shallower, and a gorge that frees land between the Rift's floor and
-the rim. **4.22** (`tools/scale-model/README.md`):
+the rim. **4.22** (`tools/scale-model/README.md`, "4.22"; on the model since 2026-10-23):
 
-- **The basin plain**: the hollow refilled as a plain rising from a shore at ~+300 m to ~+1,000-1,300 m at the walls'
-  foot, **~6,000 km² of new land**: higher than the Rift's floor (-1,600 to -1,850 m nearby), far lower than the rim
-  (3-6 km). Sheltered on three sides by the highland, a mean of about +16-22 °C, ~1,000-1,300 mm: **the warmest, most
+- **The basin plain**: the hollow refilled as a plain rising from a shore at ~+300 m to ~1,250 m at the walls'
+  foot, **6,449 km² of new land**: higher than the Rift's floor (-1,600 to -1,850 m nearby), far lower than the rim
+  (3-6 km). Sheltered on three sides by the highland, a mean of +16 °C (warmest month +25, coldest +6), ~1,040 mm, Csa and Cfa: **the warmest, most
   farmable ground on the rim**, where Dalab's hold could grow its food.
-- **The lake**: ~2,000-2,500 km², ~600 m at its deepest (to ~-300 m), in the basin's north-west under the north cliff.
-- **The gorge**: the outlet river crosses the plain south-east to the old notch, and the gorge cuts through the ridge,
-  1.2-2 km deep under its shoulders, past **Chimes** (ruined arcology, px 196,1062, at the gorge's foot) to the Rift's
-  trough: ~60 km of rapids and falls, ~800 m³/s.
+- **The lake**: 2,342 km² at 298 m, 573 m at its deepest (to -275 m), in the basin's north-west under the north cliff.
+- **The gorge**: the outlet river (*Chimes Riba*) crosses the plain south-east to a new notch just west of the old one, and
+  the gorge cuts through the ridge, ~1.7 km deep under shoulders of 2.1-2.7 km, past **Chimes** (ruined arcology, px
+  196,1062, 7 km from the gorge) to the Rift's trough lake (-1,862 m): 92 km from the lake, ~940 m³/s.
 
 ### Dalab's road (the model's heights)
 
@@ -265,8 +265,8 @@ Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
   cliff, its lifts, inclines and stairs the only way up and down.
 - *Proposed*: the Ancient lifts are why Dalab's hold depends on others. The genepriests can mod a porter for the cold
   and the air, but they cannot run the cliff's machinery alone, nor find their way underground (section 6).
-- **The point**: Ledge's marker (px 160,1007) is a water cell on 4.21. Proposed: **px 165,1000**, the cliff where the road
-  comes down (1,638 m, ~1,300 m over the lake after 4.22, +14 °C, Csa): the upper level; the arcology runs down the cliff
+- **The point**: Ledge's marker stood on a water cell on 4.21 (px 160,1007). **Moved with 4.22 to px 165,1000**, the
+  cliff where the road comes down (1,638 m, ~1,340 m over the lake, +14 °C, Csa): the upper level; the arcology runs down the cliff
   from it to the shore.
 - **Theme** (*proposed*): a transit hub first (terminus halls, the lift shafts, sidings cut into the rock), with the gene
   bank as a second story: Dalab came for the line's road and stayed for what the arcology's gardens and vaults hold.
@@ -412,7 +412,7 @@ section 13 (2026-10-23), with the library sets each rim reuses.
 
 1. **The Fellgangs** (the name proposed, section 6; *Tungangs* is settled, from the owner's "tunnel gangs"): how far the
    branches have diverged and how many they are. Their speech is on `lore/tongues-of-krator.html`, the Tungang tab.
-2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
+2. **Ledge's point**: done, moved with the model's 4.22 basin to the cliff (px 165,1000).
 3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
    whether Chimes, Cthonos and The Tubes stay, move or go (Pluton is settled: the key to the Godthrone's tunnels).
 4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Tungangs at the lifts) is a settlement plan of its

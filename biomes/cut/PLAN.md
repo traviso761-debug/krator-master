@@ -43,7 +43,10 @@ The model already holds the bowl: the ground falls to the floor from every side 
 | 64-72 km | 3,170 | +2,230 | 1.21 | 550 | +16 (26/6) | Csa, BSh, Dsc, BSk |
 | 72-90 km (the lip) | 3,060 | +3,430 (to 6,210) | 1.04 | 470 | +9 (21/-4) | Dsb 25%, Dsc, ET |
 
-The table is 4.21's. The 4.22 edit raises the floor ~600 m and cools it (section 6); the walls and the lip keep theirs.
+The table is 4.21's. The 4.22 edit (on the model since 2026-10-23) raises the floor 600 m and cools it (section 6); the
+walls and the lip keep theirs. On 4.22 the lakes settle again by the routing as **two salt lakes at two levels**: 2,663 km²
+at -1,456 m over the bowl's middle and 497 km² at -1,608 m to its south-east, endorheic (the bowl spills only at -383 m);
+they cover more of the floor than 4.21's (2,326 km² drawn), the cooler floor evaporating less.
 
 - **Two lakes, at two levels**: the upper lake, 2,016 km² at about -1,980 m (px 454-487 by 298-325), rain ~2,050 mm
   over it; and a lower lake, 304 km² at about -2,330 m (px 448-459 by 276-305), north-west of it in the deepest pit.
@@ -137,14 +140,14 @@ not cooler; tempering has to heat the floor less or cool it from inside. And in 
 at 1 atm, so humid heat is harder on the body than the same temperature on Earth: the target sits a little under
 Earth's hottest towns. The 4.22 edit (`tools/scale-model/README.md`):
 
-| | 4.21 | 4.22 (target) |
-|---|---|---|
-| Floor | -2.2 km | **about -1.6 km**, ~250 m under the central crater floor |
-| Air | 2.1 atm | ~1.95 atm |
-| Mean | +39 °C | **~+31-32 °C** |
-| Warmest month | +44 | ~+35-36 |
-| Coldest month | +33 | ~+26 |
-| Nights | | ~+23-26 |
+| | 4.21 | 4.22 (target) | 4.22 (on the model, the floor's median) |
+|---|---|---|---|
+| Floor | -2.2 km | **about -1.6 km**, ~250 m under the central crater floor | -1,438 m (the deepest pits ~-1.6 km) |
+| Air | 2.1 atm | ~1.95 atm | 1.92 atm |
+| Mean | +39 °C | **~+31-32 °C** | +31 |
+| Warmest month | +44 | ~+35-36 | +35 |
+| Coldest month | +33 | ~+26 | +26 |
+| Nights | | ~+23-26 | +23 (the year's lowest) |
 
 - **The floor raised ~600 m**, fading to nothing at the lip: -3.9 °C by the lapse rate.
 - **Afternoon cloud and storms**: the lakes' moisture forced up the walls builds cumulus by noon and storms by afternoon,
@@ -165,8 +168,8 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 
 ## 8. Stations
 
-1. **The floor** (`dist/cut.html`, about px 468,322: -1,960 m on 4.21, ~-1,360 m after 4.22, 2 km from the upper
-   lake, ~1,950 mm): the lake,
+1. **The floor** (`dist/cut.html`, about px 468,322: -1,960 m on 4.21, -1,479 m on 4.22, by the upper lake,
+   ~1,950 mm, +30 °C): the lake,
    hyperbamboo combed into rings round it, rankgrass ruled across the salt flats behind, the walls round the horizon,
    echoes at dusk, the cutters' camp.
 2. **The wall** (`-wall`, on Dilihan's side of the crater mouth, r 50-60 km): nwlowlands' columns leaning along the
@@ -177,7 +180,10 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 ## 9. The mouth, the shape, the heat
 
 1. **The north mouth** (settled 2026-10-23): cut on the model in 4.22, on bearings ~345-15°, the bowl's curve continued
-   north to a sill at the lowlands' own level (~500-800 m) so Jimjam's lake does not drain in. The pass road runs from
+   north to a sill at the lowlands' own level, 700 m, on the lip's line (px 460,262), the pass floor running on at ~670-700
+   m to the lowland slope at px 460,225, ~30 km wide there; Jimjam's lake does not drain in, and the pass drains north to
+   Jimjam's river (with the divide at the lowland end the bowl took the ridge's north flank and its lake spread over the
+   floor). The pass road runs from
    the lowlands through it, across the floor's edge, and out the crater mouth past Dilihan.
 2. **The shape: where the weapon was.** The model's bowl is a shallow spherical cap, ~130-160 km across and ~4.5-7.5 km
    deep once 4.22 raises its floor (to about -1.6 km, under a range ~3.5 km high). A sphere that cuts such a cap has
