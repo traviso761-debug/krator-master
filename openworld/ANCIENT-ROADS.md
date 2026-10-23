@@ -18,11 +18,11 @@ Wall (`biomes/riftrim/PLAN.md`, `LORE.md` §4).
 
 ## 1. What the network is
 
-**Nodes**: the Ancient sites on the model (the `settlements` collection, 2026-10-23): **12 arcologies** (some lived in:
-Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge…), **14 ruined arcologies** (Arccube, Babel, Blade, Henge, Hub 01, Leng,
-Pluton…), **8 ruins** (Agropolis, Carcosa, Corpus, Dorado, Footfall, Lunapolis, Nazar, Necropolis), **2 caverns** (Dhelv,
-The Tubes), and the towns the lore stands on Ancient ground (Hook, the Ancient port city; Yuni's college; Dalab's
-laboratory; others the owner names). The Rift's names are very tentative except Arccube.
+**Nodes** (settled 2026-10-23): **every arcology, lived in or ruined, and every ruin** on the model (the `settlements`
+collection: 12 arcologies such as Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge, Cascade; 14 ruined arcologies such as
+Arccube, Babel, Blade, Henge, Hub 01, Leng; 8 ruins; 2 caverns), and the cities **founded on Ancient settlements: Hook,
+Iziz, Yuni and Ys**; others to come. Most ruins are **highly tentative** in name and place, except **Nazar** and
+**Carcosa**; in the Rift, except **Arccube**.
 
 **Edges**: a planned network, not a mesh: **trunks** between the clusters (the crater floor, the Valley of the Ancients,
 the north-western lowlands, the north basin, the east, the Rift by its line) and **branches** to each site off the
@@ -59,7 +59,11 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
   - **West, to the Valley of the Ancients**: the crater floor (Agropolis 445,587, Drum 401,602 or Wing 427,712) to the
     Valley's ruins (Babel 184,578, Dorado 211,634, Blade 179,692): crests of 3.9-6.6 km, 150-210 km of tunnel in a
     straight line. The longest, and the one that reaches the Ancients' densest ruins.
-  The owner chooses; both are possible.
+  **Chosen: the west, to the Valley of the Ancients** (the owner, 2026-10-23). It is **in very bad condition** now.
+  **It can be reached from surface settlements** by shafts and side galleries, among them **an arcology the Iron
+  Republic owns** (name to come). The model's one Republic arcology is **Cascade** (px 296,511, 2,815 m, on the Inner
+  Wall), about 140 km north of the straight crater-to-Valley lines: either the tunnel bends under it, or the Republic's
+  arcology is a new site nearer the route (the router measures both).
 - Tunnels are where the deep people's kind live (the Rift line's are theirs): an Inner Wall tunnel may hold kin of theirs,
   or something worse.
 
@@ -75,6 +79,7 @@ stretch is first **who kept it up**:
 | **The rest of the former Empire**: Jimjam, the Hykkousoi, the Scyvoi, the Beast Riders, Dalab, and the southern, south-western and eastern highlands | **lapsed since the Empire broke** | Izani roads in decline, not yet ruin: weeds and saplings in the joints, verges grown in, a span down here and there, waystations empty; far better than never-kept ground |
 | **The Cut road** | **well maintained** | **the one Izani-built highway kept up end to end**: from the Empire's network through the Cut toward the Eternal State, where it meets the State's roads; **its weak stretch is the no man's land between Jimjam and the State**, where upkeep lapses and the road shows it |
 | **The Eternal State** (the north-western lowlands) | **maintained**, by paper and corvée | registered, patched and policed: the State's canals and roads keep the Ancient alignments, the best-kept stretches on Krator |
+| **Xanadu** (the East Rift Highlands) | **partly maintained**; the network there **was never extensive**, and **Strongbow** (arcology, px 754,1264) **was the end of the line** | a short line kept up in pieces, ending at Strongbow |
 | **Yuni** (the far south-east) | **partly maintained** | the stretches it needs kept passable, the rest let go: Yuni has less logistical strength to bring to it than the other two |
 | **Everywhere else** | **none** | **badly decayed**: broken, buried, overgrown, washed out, quarried, or gone |
 
@@ -125,6 +130,10 @@ through today's roads.
 ## 7. Questions for the owner
 
 1. **Road, line, or both**: a highway, a guideway, or one way with both (proposed)?
-2. **The Inner Wall route**: the north-western crossing (shortest) or the western one to the Valley of the Ancients?
-3. **Nodes**: which modern towns stand on Ancient ground and join the network?
-4. **Density**: every ruin on a branch, or only the arcologies on the network and the lesser ruins off it?
+2. **The Republic's arcology** over the Inner Wall tunnel: Cascade, or a new site nearer the route (and its name)?
+3. **Other cities on Ancient ground** beyond Hook, Iziz, Yuni and Ys.
+4. **The tentative ruins**: which of them stand, move or go (the model's settlements want a rework), so the network is
+   routed once they are settled.
+
+Settled (2026-10-23): every arcology and every ruin is a node; the Inner Wall route runs west to the Valley of the
+Ancients; Xanadu's short line ends at Strongbow.
