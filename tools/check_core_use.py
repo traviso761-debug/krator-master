@@ -18,11 +18,17 @@ Two kinds of finding, both from the text of a build (no build is run):
            (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos). Each finding is counted per
            file and rule.
 
+Three kinds of exception, each a table in this file with its reason: NOT_APPLICABLE (a module a build cannot use),
+SITE_PENDING (settlements to be re-scoped on a site of the world map; their biome files are redone then, so the
+biome-sync rules skip them) and SINGLE_COMPLEX (a settlement of one pre-planned building or complex is exempt from
+"takes core/simulation, therefore takes core/city" until core/city has a single-complex mode). A settlement that takes
+core/simulation without core/city is a MISSING finding otherwise.
+
 The baseline (tools/core_use_baseline.json) is today's findings: the check fails only on a finding that is not in it or
 that has grown, so every existing build keeps passing and a NEW build, or new code in an old one, cannot add to the pile.
 Fixing a finding and rerunning --write-baseline shrinks the file; it is meant to reach {}.
 """
-import glob, json, os, re, sys
+import glob, io, json, os, re, sys, tokenize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASELINE = os.path.join(ROOT, 'tools', 'core_use_baseline.json')
@@ -43,6 +49,29 @@ NOT_APPLICABLE = {
     'biomes/scablands': {'biome': 'an overlay on the n semiarid kit, read in place'},
     'kits/crops': {'rand': 'plain data and pure functions; nothing is placed', 'tags': 'data only'},
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
+}
+
+ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
+               'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
+
+# Settlements the owner will re-scope on a site of the world map (2026-10-23: Pinnacle Rock, the isle demo, Longsong). Their
+# biome files are redone when they are placed, so the biome-sync rules (a sky dome, a water shader, getImageData in the
+# world page, the atmos/water/host/biome modules) are not applied to them now. A build leaves this list when it is placed.
+SITE_PENDING = {
+    'settlements/pinnacle-rock': 'to be placed on the world map',
+    'settlements/isle-demo': 'to be placed on the world map (the isle demo)',
+    'openworld/isle-demo': 'the isle demo world page; redone with its placement',
+    'settlements/longsong': 'to be placed on the world map',
+}
+SITE_PENDING_RULES = {'sky-dome', 'water-shader', 'getImageData', 'prng'}
+SITE_PENDING_MODULES = {'atmos', 'water', 'host', 'biome'}
+
+# A settlement that takes core/simulation (the people's world) must take the city builder (core/city) so its places are
+# records the sim can use, except a settlement of ONE pre-planned building or complex: there is no street or lot pass for
+# core/city to place. Longsong ties into the sim (40d-ls-sim.js, SIM.pose) and takes one core/city fragment (33); the
+# right fix is a single-complex mode in core/city (its pre-planned footprint as the one lot), then Longsong moves onto it.
+SINGLE_COMPLEX = {
+    'settlements/longsong': 'one monastery complex (settlements/longsong/BLUEPRINT.md); core/city has no single-complex mode yet',
 }
 
 # what a fragment of a build's own src/ must not write (rule -> regex over the fragment text)
@@ -70,12 +99,33 @@ def builds(only=None):
     return sorted(out)
 
 
-def modules_named(text):
-    """The core module names build.py mentions: ('core', 'x'), core/x, core\\x and CORE_X lists."""
-    mods = set(re.findall(r"""['"]core['"]\s*,\s*['"](\w+)['"]""", text))
-    mods |= set(re.findall(r'core[/\\](\w+)', text))
-    mods |= {m.lower() for m in re.findall(r'\bCORE_([A-Z]+)\b', text)}
-    mods |= {m.lower() for m in re.findall(r'\b([A-Z]+)_DIR\b\s*=', text)}
+def code_only(text):
+    """build.py without its comments and docstrings (a mention is not a taking)."""
+    out, prev = [], None
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type == tokenize.COMMENT:
+                continue
+            if tok.type == tokenize.STRING and tok.string[:3] in ('"""', "'''") and prev in (None, tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT, tokenize.NL):
+                continue
+            out.append(tok.string)
+            if tok.type not in (tokenize.NL, tokenize.COMMENT):
+                prev = tok.type
+    except (tokenize.TokenError, IndentationError):
+        return text
+    return ' '.join(out)
+
+
+def modules_named(text, wanted=None):
+    """The core modules build.py takes, read from its code: a quoted module name ('core', 'x'; 'x' in a tuple of modules;
+    'core/x'), a CORE_X list, an X_DIR variable or a core-x file name. Comments and docstrings do not count."""
+    code = code_only(text)
+    mods = set()
+    for m in (wanted or ALL_MODULES):
+        sep = "[" + chr(39) + chr(34) + "/" + chr(92) + chr(92) + "]"      # a quote, a slash or a backslash
+        wb = chr(92) + "b"
+        if re.search(sep + m + sep + "|CORE_" + m.upper() + wb + "|" + wb + m.upper() + "_DIR" + wb + "|core-" + m + wb, code):
+            mods.add(m)
     return mods
 
 
@@ -84,9 +134,12 @@ def scan(build):
     kind = build.split('/')[0]
     bp = os.path.join(ROOT, build, 'build.py')
     mods = modules_named(open(bp, encoding='utf-8').read())
+    pending = build in SITE_PENDING
     for m in REQUIRED.get(kind, []):
-        if m not in mods and m not in NOT_APPLICABLE.get(build, {}):
+        if m not in mods and m not in NOT_APPLICABLE.get(build, {}) and not (pending and m in SITE_PENDING_MODULES):
             found['%s: MISSING core/%s' % (build, m)] = 1
+    if kind in ('settlements', 'openworld') and 'simulation' in mods and 'city' not in mods and build not in SINGLE_COMPLEX:
+        found['%s: MISSING core/city (it takes core/simulation)' % build] = 1
     for sub in ('src', 'targets', 'stations'):
         for p in glob.glob(os.path.join(ROOT, build, sub, '**', '*.js'), recursive=True):
             rel = os.path.relpath(p, os.path.join(ROOT, build)).replace(os.sep, '/')
@@ -94,6 +147,8 @@ def scan(build):
                 continue
             text = open(p, encoding='utf-8', errors='replace').read()
             for rule, rx in OWN.items():
+                if pending and rule in SITE_PENDING_RULES:
+                    continue
                 n = len(rx.findall(text))
                 if n:
                     found['%s: OWN %s in %s' % (build, rule, rel)] = n
