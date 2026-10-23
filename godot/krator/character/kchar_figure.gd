@@ -575,7 +575,7 @@ func hold(want: Dictionary) -> void:
 # the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
-const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "lean", "nTurn", "nSide", "fSpine", "fSpine1", "fSpine2", "fNeck"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back", "pelvis", "lean", "nTurn", "nSide", "fHead", "uHead", "fSpine", "fSpine1", "fSpine2", "fNeck"]
 const POSTURE_SHIFT := ["Spine", "Spine1", "Spine2", "Neck"]
 const POSTURE_FADE := 0.25
 var posture := {}
@@ -588,11 +588,11 @@ var _shifted := []                      # [bone, position before, position set] 
 
 # a joint moved forward or back (fSpine...fNeck: centimetres, positive forward, in the skeleton's frame) with the
 # joints above it held where they were, so only its own stretch of the body moves (50-figure.js shiftJoint)
-func _shift_joint(n: String, cm: float) -> void:
+func _shift_joint(n: String, cm: float, up := false, carry := false) -> void:
 	var b := skeleton.find_bone(n)
 	if b < 0 or cm == 0.0:
 		return
-	var kids := skeleton.get_bone_children(b)
+	var kids := PackedInt32Array() if carry else skeleton.get_bone_children(b)
 	var held := {}
 	for c in kids:
 		held[c] = _gp(c).origin
@@ -600,7 +600,7 @@ func _shift_joint(n: String, cm: float) -> void:
 	for c in kids:
 		_shifted.append([c, skeleton.get_bone_pose_position(c), Vector3()])
 	var par := skeleton.get_bone_parent(b)
-	var to := _gp(b).origin + Vector3(0, 0, cm / 100.0)
+	var to := _gp(b).origin + (Vector3(0, cm / 100.0, 0) if up else Vector3(0, 0, cm / 100.0))
 	skeleton.set_bone_pose_position(b, _gp(par).affine_inverse() * to)
 	var bt := _gp(b).affine_inverse()
 	for c in kids:
@@ -700,6 +700,9 @@ func _posture(force := false) -> void:
 		skeleton.set_bone_pose_rotation(ai, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[ai]).normalized())
 	for n in POSTURE_SHIFT:
 		_shift_joint(n, float(p["f" + n]))
+	# the head moved whole, forward (fHead) or up (uHead), the neck stretching to it (50-figure.js posture)
+	_shift_joint("Head", float(p["fHead"]), false, true)
+	_shift_joint("Head", float(p["uHead"]), true, true)
 
 
 func _after_clip(dt: float) -> void:

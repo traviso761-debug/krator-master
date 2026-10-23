@@ -303,7 +303,8 @@
   var POSE_ROWS = [['lean', 'Lean at hips', -45, 30], ['pelvis', 'Pelvis tilt', -60, 40], ['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
     ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['nTurn', 'Neck turn', -60, 60], ['nSide', 'Neck side tilt', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -30, 60],
     ['back', 'Shoulder back', -45, 45], ['fSpine', 'Lumbar fwd cm', -8, 8],
-    ['fSpine1', 'Low T fwd cm', -8, 8], ['fSpine2', 'High T fwd cm', -8, 8], ['fNeck', 'Neck fwd cm', -8, 8]];
+    ['fSpine1', 'Low T fwd cm', -8, 8], ['fSpine2', 'High T fwd cm', -8, 8], ['fNeck', 'Neck fwd cm', -8, 8],
+    ['fHead', 'Head fwd cm', -8, 8], ['uHead', 'Head up cm', -6, 6]];
   var POSE = { bodies:{}, clips:{} };
   function poseFile(){ return JSON.parse(JSON.stringify({ bodies:(D.posture && D.posture.bodies) || {}, clips:(D.posture && D.posture.clips) || {} })); }
   function half(v){ v = +v; return isFinite(v) ? Math.round(v * 2) / 2 : 0; }

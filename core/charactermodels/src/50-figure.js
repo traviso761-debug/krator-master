@@ -1576,9 +1576,9 @@ function KCharFigure(body, sliders, load){
      MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
   // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
   // copied, so a panel can change one figure's live
-  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis', 'lean', 'nTurn', 'nSide'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PF_ = ['Spine', 'Spine1', 'Spine2', 'Neck'], PK = PJ.concat(['drop', 'back', 'pelvis', 'lean', 'nTurn', 'nSide', 'fHead', 'uHead'], PF_.map(function(n){ return 'f' + n; })), PD = KCharFigure.posture || {};
   var PB = PD[kit.body] ? kit.body : 'mpfb_male';
-  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, lean:0, nTurn:0, nSide:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0, pelvis:0, lean:0, nTurn:0, nSide:0, fHead:0, uHead:0, fSpine:0, fSpine1:0, fSpine2:0, fNeck:0 }, PD[PB] || {});
   // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
   // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
   // cross-fade carries it over too
@@ -1603,13 +1603,14 @@ function KCharFigure(body, sliders, load){
     for(var i = pSet.length - 1; i >= 0; i--) if(pSet[i].b.position.equals(pSet[i].set)) pSet[i].b.position.copy(pSet[i].base);
     pSet.length = 0;
   }
-  function shiftJoint(n, cm){
+  // up: along the figure's up axis instead of forward; carry: the joints above go along (the head and its face)
+  function shiftJoint(n, cm, up, carry){
     var b = byName[n] !== undefined && bones[byName[n]]; if(!b || !cm) return;
-    var kids = b.children.filter(function(c){ return c.isBone; }), moved = [b].concat(kids), at = pSet.length;
+    var kids = carry ? [] : b.children.filter(function(c){ return c.isBone; }), moved = [b].concat(kids), at = pSet.length;
     moved.forEach(function(m){ pSet.push({ b:m, base:m.position.clone(), set:null }); });
     kids.forEach(function(c, i){ c.getWorldPosition(pFs[i] = pFs[i] || V()); });
     self.inner.getWorldScale(pAx);
-    pFw.set(0, 0, cm / 100 * pAx.z).applyQuaternion(pG);
+    if(up) pFw.set(0, cm / 100 * pAx.y, 0).applyQuaternion(pG); else pFw.set(0, 0, cm / 100 * pAx.z).applyQuaternion(pG);
     b.getWorldPosition(cS2).add(pFw);
     b.position.copy(b.parent.worldToLocal(cS2));
     b.updateMatrixWorld(true);
@@ -1692,6 +1693,9 @@ function KCharFigure(body, sliders, load){
       bones[k].updateMatrixWorld(true);
     });
     PF_.forEach(function(n){ shiftJoint(n, P['f' + n]); });
+    // the head moved whole, forward (fHead) or up (uHead), the neck stretching to it: the neck's length after the
+    // neck and shoulders have been turned
+    shiftJoint('Head', P.fHead, false, true); shiftJoint('Head', P.uHead, true, true);
   }
   this.posture = POSTURE;
   this.postureClips = CLIPP;

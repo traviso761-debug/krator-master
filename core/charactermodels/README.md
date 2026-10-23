@@ -586,7 +586,9 @@ numbers are in `data/posture.json`, which both runtimes read:
 - `fSpine`, `fSpine1`, `fSpine2`, `fNeck` (in `bodies` or a clip's change): that joint moved forward (positive) or back
   in centimetres of the body's own size, after the angles, the joints above it held where they were: the lumbar
   pushed forward bends the small of the back without carrying the chest along. The clips never place bones, so the
-  shifted joints go back each frame before the pass (`unshift`; Godot `_unshift`).
+  shifted joints go back each frame before the pass (`unshift`; Godot `_unshift`). `fHead` and `uHead` move the
+  whole head (its face joints with it) forward or up, the neck stretching to it: the neck's length after the neck and
+  shoulders have been turned.
 - `clips`: per clip key and body, degrees **added** to the body's values while that clip plays (walk and run lift the
   man's chin, sprint and crouch hunch him, so they take less neck or less chest); blended by the playing clips' weights
   through a cross-fade on the page, eased over the same 0.25 s in Godot. Kept under the body whose values a body takes
