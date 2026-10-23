@@ -142,10 +142,12 @@ patterned ground in the alpine; glaciers and nunataks; the Outer Wall standing o
 
 ## 5. Ledge: the hub and the bridge (settled 2026-10-23 unless marked)
 
-- **Ledge is the Ancient arcology**, and the settlement takes its name. It was **the southern hub of the Ancients' Rift
-  line** (`LORE.md` §4): the tunnels under the Outer Wall came out above it, and lines ran on to the Ancients' Rift
-  settlements, less extensive than those up north but substantial (*proposed*: Chimes at the gorge's foot, Cthonos, Cube,
-  The Tubes; Pluton on the airless crest as a second crossing's portal).
+- **Ledge is the Ancient arcology**, and the settlement takes its name. It is **where the Ancients' Rift line comes out
+  of the Wall** (`LORE.md` §4): the tunnels under the Outer Wall came out above it, and the line ran on to the Ancients'
+  Rift settlements, less extensive than those up north but substantial. **Their hub was Cube (Arccube)**, deep in the
+  Lizardmen's country (px 448,1237): the owner's most settled point, and **the reward for a player who braves the
+  Lizardmen**. The rest are **very tentative** in name and place (*proposed*: Chimes at the gorge's foot, Cthonos, The
+  Tubes; Pluton on the airless crest as a second crossing's portal).
 - **It is a bridge between two levels**: the highland where Dalab's road comes out of the tunnels (the cliff top, ~1.6-2.5
   km) and the basin and lake ~1.3 km below it (after 4.22). Holding it means working both: the road's terminus, stores
   and stables above; the fields, the harbour and the way to the gorge below; the arcology between them, built into the
@@ -232,7 +234,7 @@ shallows.
 
 1. **Who the feral caste are**: the line's crews ("the Shift", section 6), or another of the candidates.
 2. **Ledge's point**: move it now out of the lake to the cliff (px 165,1000), or with the model's 4.22 basin.
-3. **The Rift's ruins** (Chimes, Cthonos, Cube, The Tubes, Pluton) as the line's settlements and stations: confirm, and
-   whether Pluton is a second crossing.
+3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
+   whether Chimes, Cthonos, The Tubes and Pluton stay, move or go, and whether Pluton is a second crossing.
 4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Shift at the lifts) is a settlement plan of its
    own (`settlements/ledge/`), after this kit's station 1.
