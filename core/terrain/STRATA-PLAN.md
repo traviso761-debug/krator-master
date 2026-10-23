@@ -51,6 +51,7 @@ A recipe gives the kinds of bed, how often each comes, their thickness, palette 
 | `canyon` | today's column: thick cross-bedded sandstones, thin shales and mudstones, bleached bands, the rare reduced green bed | cross-bedding, varnish, bleached cap | sedesert, Shade, Verge |
 | `badland` | thin clays and ash beds (0.3-3 m), many colours in high contrast (pink, cream, gold, grey, maroon, mauve, green-grey, the rare teal), soft | popcorn-clay surface, downslope wash; no varnish, little cross-bedding | ebadlands' mounds, the painted highlands |
 | `danxia` | thick red sandstones and conglomerates in alternating colours (red, orange, yellow, white), hard, the softer partings thin | steep walls, ledges, little varnish | the painted highlands' fins and canyon (Zhangye) |
+| `rift` | a rift basin's fill over its basement (the owner, 2026-10-23): crystalline basement at the foot; fan gravels and conglomerates; red sandstones; lake marls and **stromatolite limestones** (thin, patchy); **gypsum and salt** from the drying lakes; dark basalt flows and pale ash beds from the vents | ledges at the basalts and limestones, the gypsum soft and recessed (where the caves are), salt crusts weeping at the foot | the rift rim's walls, the Rift kit's trough |
 | **`tepui`** | very thick, hard quartzite and quartz sandstone in grey, black and rust (the Roraima beds), thin softer partings; the tops pale and weathered | black algal streaks hanging from every lip where the water runs (as varnish, but black-green), pale crowns, sharp horizontal joints | Korona's tepuis and hoar table, necanyons' caps |
 
 ## 3. Formations over beds
@@ -86,6 +87,7 @@ ports to Godot for free. At close range a shading line at the top of each hard b
 | sedesert | the `canyon` recipe kept; formations for the Abyss wall and the mountains (the painter's private bands go); ledges; the cave's strata once its paint stops reading the coarse field cache |
 | ebadlands | the `badland` recipe (the palette workaround goes); the painter samples `S.colorAt` / `S.at` instead of its own 7 m bands; downslope wash; no varnish on clay |
 | painted highlands | `badland` and `danxia` formations with folds; flowers placed by `S.at` (each bed favours its own flowers): `biomes/paintedhighlands/PLAN.md` P1 is this work |
+| riftrim, rift | the `rift` recipe on the trough's walls and the rim (`biomes/riftrim/PLAN.md` section 4: the caves are cut in its gypsum and limestone) |
 | Korona, necanyons | the `tepui` recipe on the tepuis, the hoar table and the caps (optional; each kit decides) |
 | Shade, Verge, ringisles, the open worlds | the core path; their look unchanged unless a later step is meant to move it |
 
@@ -93,7 +95,7 @@ ports to Godot for free. At close range a shading line at the top of each hard b
 
 - **S1.** Move to `core/terrain`, data and shader split, closed-form warp matched to today's, `S.at`, a node test
   (`core/terrain/test-strata.js`); every user on the core path; the baseline unchanged.
-- **S2.** Recipes (`canyon`, `badland`, `danxia`, `tepui`) and formations.
+- **S2.** Recipes (`canyon`, `badland`, `danxia`, `rift`, `tepui`) and formations.
 - **S3.** Folds, faults, lateral change; downslope wash; regolith from the bed.
 - **S4.** Ledges from hardness (the relief pass) and the close-range ledge shading.
 - **S5.** Godot: `strataColor` in a `godot/shaders/lib` include, the column from the same records; a twin test.

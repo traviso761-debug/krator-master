@@ -1,0 +1,126 @@
+# The Ancients' highways: the plan (draft, 2026-10-23)
+
+Owner (2026-10-23): the Ancients would have had a transport network. Aside from passages under mountains it was mostly
+**above ground**, so there should be **Ancient highways connecting the arcologies and ruins**, accounted for when the open
+world is built out; and **at least one underground route through the Inner Wall**, besides the Rift line under the Outer
+Wall (`biomes/riftrim/PLAN.md`, `LORE.md` §4).
+
+**Status: plan, awaiting the owner.** Nothing built.
+
+## 0. What exists
+
+- **Modern highways** in the open world: `openworld/little-demo/src/42-world-roads.js` (`ROADS`) routes the owner's list
+  of highways between settlements (`source/highways.json`) over the land, least cost on a 2 km grid then a 200 m grid in
+  a corridor, an 8 % ruling grade with switchbacks, an 8 m carriageway, the ground cut and filled to it (`README.md`,
+  "Settlements and highways"). Plain data (`[G data]`), baked to `data/roads.json`.
+- **Nothing for the Ancients' network**: no layer on the scale model, nothing in `extract_region.py`, no road furniture
+  in `kits/ancients`.
+
+## 1. What the network is
+
+**Nodes**: the Ancient sites on the model (the `settlements` collection, 2026-10-23): **12 arcologies** (some lived in:
+Pylon, Hexahedron, Arcbeam, Fulcrum, Ledge…), **14 ruined arcologies** (Arccube, Babel, Blade, Henge, Hub 01, Leng,
+Pluton…), **8 ruins** (Agropolis, Carcosa, Corpus, Dorado, Footfall, Lunapolis, Nazar, Necropolis), **2 caverns** (Dhelv,
+The Tubes), and the towns the lore stands on Ancient ground (Hook, the Ancient port city; Yuni's college; Dalab's
+laboratory; others the owner names). The Rift's names are very tentative except Arccube.
+
+**Edges**: a planned network, not a mesh: **trunks** between the clusters (the crater floor, the Valley of the Ancients,
+the north-western lowlands, the north basin, the east, the Rift by its line) and **branches** to each site off the
+nearest trunk. Proposed rule: route least-cost paths between every pair of nearby nodes, keep a relative-neighbourhood
+graph of them (an edge stays unless a third node is nearer to both ends), then merge routes that run within a few
+kilometres of each other into one trunk. The owner reviews it on the model and adds, cuts or moves lines.
+
+## 2. How the Ancients built
+
+Not the modern highway's profile: an engineered way that does not climb when it can cut through.
+
+| | Modern highway (`ROADS`) | Ancient highway |
+|---|---|---|
+| Ruling grade | 8 %, switchbacks on scarps | **~4 %**, no switchbacks: cuttings, viaducts, spiral tunnels |
+| Alignment | follows the land | **straight or in long curves** (radius over ~1 km) |
+| Valleys | down and up | **viaducts** |
+| Ridges | over | **cuttings and tunnels** |
+| Lakes, floodplains | fords, causeways at 40x cost | **causeways and embankments** |
+| Width | 8 m | **~30 m**: a broad paved way (proposed: with a guideway down its middle, so road and line are one; the owner's call) |
+
+The router's cost (proposed): length x (1 + grade penalty over 4 %); a viaduct where the ground falls more than ~30 m under
+the grade line; a cutting where it rises up to ~60 m over it; **a tunnel** where it would rise more, at a fixed cost per
+kilometre (several times the surface's); the airless rim crossable only in tunnel.
+
+## 3. The tunnels
+
+- **The Rift line** under the Outer Wall: Dalab's road (~510 km from Dalab to Ledge, ~20 km over 9 km where nothing
+  breathes, under the crest at about px 209,902; `biomes/riftrim/PLAN.md`), joining the natural caverns where it can.
+  Tentative: a second crossing with a portal at Pluton (px 471,998, on the airless crest at 9.7 km).
+- **At least one route under the Inner Wall.** Straight-line checks between Ancient sites on either side (2026-10-23;
+  the router will find shorter):
+  - **North-west**: the crater's north-west (Trigon px 450,410 or Tethis 461,445) to Footfall (288,437): ~330 km, a
+    ~6.1 km crest, **~70-80 km of tunnel**. The shortest.
+  - **West, to the Valley of the Ancients**: the crater floor (Agropolis 445,587, Drum 401,602 or Wing 427,712) to the
+    Valley's ruins (Babel 184,578, Dorado 211,634, Blade 179,692): crests of 3.9-6.6 km, 150-210 km of tunnel in a
+    straight line. The longest, and the one that reaches the Ancients' densest ruins.
+  The owner chooses; both are possible.
+- Tunnels are where the deep people's kind live (the Rift line's are theirs): an Inner Wall tunnel may hold kin of theirs,
+  or something worse.
+
+## 4. What is left of it
+
+**After more than a thousand years, most of it is in very bad condition** (the owner, 2026-10-23). What decides a
+stretch is first **who kept it up**:
+
+| Sphere | Upkeep | What it looks like |
+|---|---|---|
+| **The Empire of Iziz** (the south-west crater, its holdings and its roads east) | **maintained**, for centuries | relaid paving, rebuilt spans in Izani masonry on Ancient piers, waystations and milestones; the Empire's roads are the Ancient trunks |
+| **The Eternal State** (the north-western lowlands) | **maintained**, by paper and corvée | registered, patched and policed: the State's canals and roads keep the Ancient alignments, the best-kept stretches on Krator |
+| **Yuni** (the far south-east) | **partly maintained** | the stretches it needs kept passable, the rest let go: Yuni has less logistical strength to bring to it than the other two |
+| **Everywhere else** | **none** | **badly decayed**: broken, buried, overgrown, washed out, quarried, or gone |
+
+Then **the land it crosses** sets how an unkept stretch failed. A condition per stretch (`kept`, `worn`, `broken`,
+`buried`, `gone`; `intact` only where nothing weathers):
+
+| Where | What happened to it |
+|---|---|
+| **The north basin** | scoured by the dam floods (`DATA.floods`): stretches gone, viaduct piers standing alone in the channels |
+| **The hyperjungle** | buried under litter and roots, its embankments long green mounds through the forest, its viaducts strangled by figs |
+| **The deserts** | drifted over by sand, the cuttings half full, the surface showing on the reg |
+| **The rivers** | 4.21's courses cross it where viaducts fell: broken spans, fords beside them |
+| **The Cut** | **deleted**: the line ends at the bowl's lip in a clean cut, the deck hanging over nothing |
+| **The airless rim** | **intact**: nothing weathers without air, so the high stretches look new |
+| **The tunnels** | some collapsed, some flooded, some kept (the deep people's) |
+| **Where people live** | **reused**: Izani, Eternian and caravan roads run on Ancient alignments; elsewhere towns quarry its paving |
+
+Modern highways prefer the Ancient alignment where it serves (a cost discount inside its corridor), so the network shows
+through today's roads.
+
+## 5. Data and drawing
+
+1. **The model** (`tools/scale-model/ancient_roads.py`, its to-do list): `DATA.ancient_roads`, each route `{id, from, to,
+   kind: 'trunk' | 'branch', px: [[x, y], ...], h_m: the graded profile, seg: per vertex 'surface' | 'cutting' |
+   'embankment' | 'viaduct' | 'causeway' | 'tunnel', cond: per vertex}`, deterministic; a layer on the model page for the
+   owner's review.
+2. **The cut** (`extract_region.py`): the routes in `region.json` as the rivers are (every vertex, its graded height, the
+   segment kinds and the condition).
+3. **The open world**: `ROADS` gains an Ancient profile. It does not re-route: the model's alignment is refined at 1:1
+   inside a corridor, held to its grade, the ground cut and filled to it, viaducts and tunnels left as gaps for the
+   furniture; flora grows on it by its condition (nothing on `kept` or `intact`, moss on `worn`, forest on `buried`).
+4. **The furniture** (`kits/ancients`): viaduct piers and decks (standing, fallen), tunnel portals, the guideway, markers,
+   interchanges, waystations: catalog pieces the open world places from the records.
+5. **Godot**: everything up to the furniture is plain data (`[G data]`), as the rivers and the modern roads are.
+
+## 6. Order of work
+
+- **A0.** The owner approves; confirms the nodes (which towns stand on Ancient ground) and road or road-and-line.
+- **A1.** The router on the model's heights with the Ancient cost; a first network; the Inner Wall routes measured.
+- **A2.** The owner reviews the layer on the model: trunks, branches, the Inner Wall route chosen.
+- **A3.** Conditions per stretch: the upkeep from the political polygons (Iziz, the Eternal State, Yuni), then the land;
+  the reused stretches named.
+- **A4.** `extract_region.py`; `openworld/little-demo` first (its region's Ancient sites and any line through it).
+- **A5.** `ROADS`' Ancient profile and the ground; the probe checks it lies on the land and keeps its grade.
+- **A6.** The furniture in `kits/ancients`; the open world places it.
+
+## 7. Questions for the owner
+
+1. **Road, line, or both**: a highway, a guideway, or one way with both (proposed)?
+2. **The Inner Wall route**: the north-western crossing (shortest) or the western one to the Valley of the Ancients?
+3. **Nodes**: which modern towns stand on Ancient ground and join the network?
+4. **Density**: every ruin on a branch, or only the arcologies on the network and the lesser ruins off it?

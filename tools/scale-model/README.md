@@ -357,6 +357,10 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   Then re-route (the lake now spills through the gorge at its sill), reclimate the plain (expected Csa, Cfa: a mean of
   ~+16-22 °C, ~1,000-1,300 mm), relight, repaint, publish, and move Ledge's point out of the old lake (to the north
   cliff, px 165,1000, if the owner agrees).
+- **The Ancients' highways** (the owner, 2026-10-23; `openworld/ANCIENT-ROADS.md`): a network layer on the model
+  (`DATA.ancient_roads`), routed over the heights between the Ancient sites, with its tunnels (the Rift line under the
+  Outer Wall, at least one route under the Inner Wall), shown as a layer for the owner to review, and carried by
+  `extract_region.py` as the rivers are.
 - **4.22: the Bowl's lake effect** (the owner, 2026-10-23). 4.21 grew and joined the Bowl's lakes into one salt lake
   (9,600 km2, px 762-948 by 783-846) but gave it no lake effect: rain beside it is ~280 mm within 4 km against ~250 mm 40
   km away, and the shore is BWh to the water. The eastern abyss's lakes, by the same model, carry ~1,100 mm at the shore
