@@ -26,6 +26,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Closed
 
+- [x] **Every card showed its whole sheet** (closed 2026-10-23). `build.py`'s `matlib_pack()` (copied from ebadlands)
+      left `cell` out of the pack, so the steppe grass drew three by three plants per card ("a sheet of 9", the owner)
+      and each maple key flew as a sheet of them. It passes `cell` now and `libCard` windows the texture to it
+      (`NSEMIARID.libWindow`, which the seed weather's cards take too). The same bug elsewhere: `TODO.md`, "Card sheets
+      shown whole". This kit's aspen, blossom, broom, lobed and sage crowns still take their whole sheet (a cluster of
+      sprays on a crown card); unjudged, in that audit.
+
 - [x] **The kit's own wind was one vector** (closed 2026-10-22). `NSEMIARID.setWind` takes a vector or a function
       (x,z) => [dx,dz] for a prevailing wind that turns from place to place, and everything the kit lays down by the wind
       reads it where it stands (`NSEMIARID.windAt`): the travellers' headings, the drifts, the crescents (each grove's

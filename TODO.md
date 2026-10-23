@@ -161,6 +161,34 @@ loads each build's `tex/` pack, which is WebP. What is left:
   channels, pools) and stays out of where it should not (no water through floors, walls or banks). **[G shader]**
   for the surface, **[G data]** for where it fills.
 
+## Card sheets shown whole *(2026-10-23)*
+
+Most library cards are sheets (three by three plants, or an atlas of pieces). A page shows ONE of them when the slot in
+its `materials.json` names a `cell` (the pack carries it; `BIO.libSwap` and n semiarid's `libCard` window the texture
+to it) or when the page cuts it by hand (`libCell(..., CELL(i, j))`, or the geometry's UVs: Korona's `cellUV`). Miss
+both and every instance shows the whole sheet: n semiarid's steppe grass read as "a sheet of 9" and its maple keys flew
+as a sheet (the owner, 2026-10-23; fixed: its inline pack writer dropped `cell`). Korona's punji-pit lids show the whole
+`card.litter` atlas (`biomes/korona/KNOWN_ISSUES.md`). The library does not mark a card as a sheet, which is why nothing
+caught it.
+
+`python3 tools/textures/cell_audit.py [--list] [<build>]` lists, per build, the slots that take a sheet card with no
+`cell` (215 in 25 builds today) and how the build writes its pack. Each slot is a candidate, not a bug: open the page's
+code and see whether it cuts that slot by hand.
+
+- [ ] **Audit every candidate slot**, build by build, and give each a `cell` or a hand cut, or a note that the whole
+  sheet is meant (a crown card may want a cluster of nine sprays: n semiarid's aspen, blossom, broom, lobed and sage
+  crowns are such, unjudged). Biggest first: Throne 39, Crops 44 (it picks cells by code: check how), Korona 15,
+  Necanyons 15, Longsong 14, crater-drylands 12, ebadlands 10. Take one screenshot of each judged slot.
+- [ ] **The inline pack writers that drop `cell`**: crater-drylands, ebadlands, ehighlands, shighlands, oidong, Throne,
+  Zeijani and Girder each keep a `matlib_pack()` copied from ebadlands that leaves `cell` out of the pack, so a slot
+  given a `cell` in `materials.json` still shows the whole sheet. Nothing shows wrong today (their celled slots are cut
+  by hand, or not swapped in: ebadlands' `litter`), but it is a trap. Pass `cell` (n semiarid's `build.py`, one line),
+  or move them onto the shared `tools/textures/matlib_pack.py`, which keeps it. A page's hashes do not move unless a
+  celled slot reaches the page.
+- [ ] **Mark sheets in the library**: a `sheet: [3, 3]` (or the atlas's grid) in each sheet card's `meta.json` record,
+  written by `tools/textures/cards.py`, so `pack.py` can warn when a build packs a sheet with no `cell` and no
+  `"whole": true` saying it means it; `cell_audit.py` then reads the mark, not the source note's words.
+
 ## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
 
 The nine biome kits are next in the audit order (`GODOT-PLAN.md` 3.3, step 2) and are what milestone M4 (a
