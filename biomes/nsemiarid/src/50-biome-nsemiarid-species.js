@@ -301,11 +301,13 @@ NSEMIARID.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h
 // instance colour tints. Most are LATHES: a profile turned round y (lathe(prof, seg, rib)).
 const G={};
 const push3=(A,p)=>A.push(p[0],p[1],p[2]);
-function lathe(prof,seg,rib,colOf){const pos=[],nor=[],uv=[],col=[];
+// uvs: u round the turn (uv[0] tiles in one turn; the seam's far side takes the full uv[0]), v up (uv[1] tiles a unit)
+function lathe(prof,seg,rib,colOf,uvs){const pos=[],nor=[],uv=[],col=[],uR=uvs?uvs[0]:1,vR=uvs?uvs[1]:1;
  const R=prof.map((p,i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,k=rib?1+rib*(s%2?1:-1):1;r.push([Math.cos(a)*p[1]*k,p[0],Math.sin(a)*p[1]*k,colOf?colOf(p,i,s):(rib&&s%2?.82:1)]);}return r;});
- const put=(p,n)=>{push3(pos,p);push3(nor,n);uv.push(0,p[1]);col.push(p[3],p[3],p[3]);};
+ const put=(p,n,u)=>{push3(pos,p);push3(nor,n);uv.push(u*uR,p[1]*vR);col.push(p[3],p[3],p[3]);};
  const nn=p=>{const l=Math.hypot(p[0],p[2])||1;return[p[0]/l,.25,p[2]/l];};
- for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];put(a,nn(a));put(d,nn(d));put(c,nn(c));put(a,nn(a));put(b,nn(b));put(d,nn(d));}
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  put(a,nn(a),u0);put(d,nn(d),u1);put(c,nn(c),u0);put(a,nn(a),u0);put(b,nn(b),u1);put(d,nn(d),u1);}
  return BIO.geo._make(pos,nor,uv,col);}
 // a TUFT: three crossed vertical quads, origin at the base, up to y=1
 G.tuft=function(){const pos=[],uv=[],nor=[];
@@ -316,12 +318,12 @@ G.tuft=function(){const pos=[],uv=[],nor=[];
 // a SPIKED BALL on a Fibonacci sphere (mace heads, hitchers, the dandelion's clock): n spikes, dark at the root and
 // light at the tip, a knob at each tip when knob; radius 1, origin at the centre
 G.spikeball=function(n,len,w,knob){const pos=[],nor=[],uv=[],col=[];
- const put=(p,q,c)=>{push3(pos,p);push3(nor,q);uv.push(0,0);col.push(c,c,c);};
+ const put=(p,q,c,u,v)=>{push3(pos,p);push3(nor,q);uv.push(u||0,v||0);col.push(c,c,c);};   // uv: round a spike, base to tip
  for(let i=0;i<n;i++){const y=1-2*(i+.5)/n,r=Math.sqrt(1-y*y),a=i*2.399963,d=[Math.cos(a)*r,y,Math.sin(a)*r];
   let s=Math.abs(d[1])>.9?[1,0,0]:[0,1,0];const u=[d[1]*s[2]-d[2]*s[1],d[2]*s[0]-d[0]*s[2],d[0]*s[1]-d[1]*s[0]],ul=Math.hypot(u[0],u[1],u[2]);u[0]/=ul;u[1]/=ul;u[2]/=ul;
   const v=[d[1]*u[2]-d[2]*u[1],d[2]*u[0]-d[0]*u[2],d[0]*u[1]-d[1]*u[0]],r0=1-len;
   const B=[0,1,2].map(j=>{const q=j/3*TAU;return[d[0]*r0+(u[0]*Math.cos(q)+v[0]*Math.sin(q))*w,d[1]*r0+(u[1]*Math.cos(q)+v[1]*Math.sin(q))*w,d[2]*r0+(u[2]*Math.cos(q)+v[2]*Math.sin(q))*w];});
-  for(let j=0;j<3;j++){put(B[j],d,.45);put(B[(j+1)%3],d,.45);put(d,d,1);}
+  for(let j=0;j<3;j++){put(B[j],d,.45,j/3,0);put(B[(j+1)%3],d,.45,(j+1)/3,0);put(d,d,1,(j+.5)/3,1);}
   if(knob){const k=knob,c=[d[0]*1.02,d[1]*1.02,d[2]*1.02];for(let j=0;j<3;j++){const p0=[c[0]+(u[0]*Math.cos(j/3*TAU)+v[0]*Math.sin(j/3*TAU))*k,c[1]+(u[1]*Math.cos(j/3*TAU)+v[1]*Math.sin(j/3*TAU))*k,c[2]+(u[2]*Math.cos(j/3*TAU)+v[2]*Math.sin(j/3*TAU))*k];
     const p1=[c[0]+(u[0]*Math.cos((j+1)/3*TAU)+v[0]*Math.sin((j+1)/3*TAU))*k,c[1]+(u[1]*Math.cos((j+1)/3*TAU)+v[1]*Math.sin((j+1)/3*TAU))*k,c[2]+(u[2]*Math.cos((j+1)/3*TAU)+v[2]*Math.sin((j+1)/3*TAU))*k];
     put(p0,d,1.25);put(p1,d,1.25);put([d[0]*(1.02+k*1.6),d[1]*(1.02+k*1.6),d[2]*(1.02+k*1.6)],d,1.25);}}}
@@ -339,9 +341,11 @@ G.rosette=function(){const pos=[],nor=[],uv=[],col=[];
    put([base[0]-px*W,base[1],base[2]-pz*W],.62);put([base[0]+px*W,base[1],base[2]+pz*W],.62);put(tip,1.0);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a ribbed BARREL (the striders' bodies), unit height, radius .5, domed top
-G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],[1,.04]],12,.07);};
+// (skin.cactus: six of the skin's eight ribs round the six of the mesh, v at the same texel size up a barrel ~2.7 of its
+// heights round)
+G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],[1,.04]],12,.07,null,[.75,.28]);};
 // a ribbed COLUMN (the sail candelabra's stems), unit height, radius .5
-G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08);};
+G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08,null,[.5,1.5]);};
 // a BEAD: a squashed sphere, unit height, origin at its base
 G.bead=function(){return lathe([[0,.05],[.25,.42],[.75,.42],[1,.05]],6,0,(p,i)=>.75+.25*Math.sin(i/3*Math.PI));};
 // a STEP CONE: tiers stacked like a termite tower (a tier a wet year), unit height, radius .5
@@ -354,8 +358,9 @@ G.egg=function(){const P=[];for(let i=0;i<=10;i++){const t=i/10;P.push([t,.4*Mat
 G.horn=function(){const pos=[],nor=[],uv=[],col=[],seg=8,n=8,R=[];
  for(let i=0;i<=n;i++){const t=i/n,cx=.35*t*t,cy=t,r=.07+.18*Math.pow(t,3),tx=.7*t,ty=1,tl=Math.hypot(tx,ty);const ux=ty/tl,uy=-tx/tl,row=[];
   for(let s=0;s<seg;s++){const a=s/seg*TAU;row.push([cx+ux*Math.cos(a)*r,cy+uy*Math.cos(a)*r,Math.sin(a)*r,i===n?1.15:.65+.35*t]);}R.push(row);}
- const put=p=>{push3(pos,p);nor.push(p[0],0,p[2]);uv.push(0,0);col.push(p[3],p[3],p[3]);};
- for(let i=0;i<n;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];put(a);put(d);put(c);put(a);put(b);put(d);}
+ const put=(p,u,v)=>{push3(pos,p);nor.push(p[0],0,p[2]);uv.push(u*.5,v*.7);col.push(p[3],p[3],p[3]);};   // uv: round the pipe, along it
+ for(let i=0;i<n;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg,v0=i/n,v1=(i+1)/n;
+  put(a,u0,v0);put(d,u1,v1);put(c,u0,v1);put(a,u0,v0);put(b,u1,v0);put(d,u1,v1);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a CENSER CAP: a stalk's sponge cap, a squat dome pitted with pores (dark spots in the vertex colour), unit radius,
 // origin at the cap's underside
@@ -552,24 +557,35 @@ BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen and crust'});
 BIO.def('litter',BIO.geo.mat(),M.litter,{label:'Leaf litter and seed drifts'});
 BIO.def('rosette',G.rosette(),M.vcol,{label:'Rosettes'});
 BIO.def('sword',G.rosette(),M.vcol,{label:'Roll-egg sword leaves'});
+// the small and weird's skins (2026-10-23, the owner: "could use a texture"), each from the library, grey, so the
+// species' colour takes it; else the vertex colours: the striders' barrels the ribbed cactus skin (as the crawlers), their
+// stilt roots and dead stubs the saxaul's gnarled bark (as the crawlers' dead trails), the bead chains' beads a smooth
+// waxy skin, the sail candelabra's columns banded joints, the mace heads' spikes horny plates, the horn pipes ribbed rings
+// a keep-0 skin is grey relief about its pack's mean (sRGB): the material's colour divides that out, as the ground's layers
+// do, so a species keeps the colour it had and gains the relief. A three.js rod or cone has no vertex colours: solidMat
+const libMat=(n,key,solid)=>{const L=LIBP(n),t=L?KMAT.textures(L,{aniso:4}).map:null;
+ const m=solid?BIO.solidMat(t):BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});
+ if(L)m.color.setScalar(Math.min(4,1/Math.pow(L.mean||.5,2.2)));return m;};
+M.strider=libMat('skin.cactus','strider');M.stilt=libMat('bark.gnarled','stilt',true);M.bead=libMat('skin.smooth','bead');
+M.column=libMat('skin.banded','column');M.mace=libMat('organic.chitin','mace');M.horn=libMat('organic.coil.ribbed','horn');
 BIO.def('clock',G.spikeball(90,.85,.025,0),M.vsway,{label:'Seed clocks'});
-BIO.def('mace',G.spikeball(40,.35,.05,.06),M.vcol,{label:'Mace heads'});
+BIO.def('mace',G.spikeball(40,.35,.05,.06),M.mace,{label:'Mace heads'});
 BIO.def('hitcher',G.spikeball(28,.45,.07,0),M.vcol,{label:'Hitchers'});
-BIO.def('barrel',G.barrel(),M.vcol,{label:'Striders'});
-BIO.def('stilt',G.rod(),M.solid,{label:'Strider stilts'});
-BIO.def('stub',G.cone(),M.solid,{label:'Dead stilt stubs (a strider\'s trail)'});
-BIO.def('column',G.column(),M.vcol,{label:'Sail candelabra'});
+BIO.def('barrel',G.barrel(),M.strider,{label:'Striders'});
+BIO.def('stilt',G.rod(),M.stilt,{label:'Strider stilts'});
+BIO.def('stub',G.cone(),M.stilt,{label:'Dead stilt stubs (a strider\'s trail)'});
+BIO.def('column',G.column(),M.column,{label:'Sail candelabra'});
 BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(M.fin.map,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
-BIO.def('horn',G.horn(),M.vcol,{label:'Horn pipes'});
+BIO.def('horn',G.horn(),M.horn,{label:'Horn pipes'});
 BIO.def('egg',G.egg(),M.vcol,{label:'Roll-eggs'});
 BIO.def('furler',G.furler(),M.vsway,{label:'Furlers'});
 BIO.def('bulb',BIO.geo.lobe(),M.solid,{label:'Furler bulbs'});
 BIO.def('stepcone',G.stepcone(),M.vcol,{label:'Step cones'});
 BIO.def('window',G.window(),M.vcol,{label:'Window plants'});
 BIO.def('finger',G.finger(),M.vcol,{label:'Salt fingers'});
-BIO.def('bead',G.bead(),M.vcol,{label:'Bead chains'});
+BIO.def('bead',G.bead(),M.bead,{label:'Bead chains'});
 // the crawler's skin: the library's ribbed cactus skin (skin.cactus) where the page carries it, else the vertex colours
 {const L=LIBP('skin.cactus'),t=L?KMAT.textures(L,{aniso:4}).map:null;M.crawl=BIO.leafMat(t,'crawl',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});}
 BIO.def('crawler',G.cactusStem(6,false),M.crawl,{label:'Crawlers (the living stems)'});

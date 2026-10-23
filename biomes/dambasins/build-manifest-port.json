@@ -19,6 +19,7 @@
  "50-core-water-draw.js": "935eaeecabcb",
  "50-db-wrecks.js": "71d4a416bbc4",
  "50-registry.js": "d0f77add9a31",
+ "52-db-flotsam.js": "273365fdf64b",
  "54-mat-concrete.js": "574d8f7325db",
  "68-mat-v5.js": "67b714b0f87c",
  "69-mat-salvage.js": "c3955fecff77",
@@ -58,6 +59,7 @@
  "88y-port-matlib.js": "e51d3a9e6827",
  "89-atmos-0-core.js": "d316939c42f9",
  "89-atmos-0p-presets.js": "a669eaffc302",
+ "89-atmos-3d-dust.js": "a7c6420c3ed5",
  "89-atmos-a-waves.js": "0dd74e542dd0",
  "89-atmos-b-skylight.js": "ef9512dd517b",
  "89a-ch-stack.js": "f038a2a4b497",
@@ -70,8 +72,10 @@
  "90-scene.js": "30ea1e74f6d2",
  "91-probe.js": "f32340073835",
  "91a-db-wrecks.js": "975673d72afc",
+ "91b-db-flotsam.js": "b0e10b13ff69",
+ "91c-db-dust.js": "95e86d4620a5",
  "91z-views.js": "ac8bafd99be4",
- "92-camera.js": "c08270a35496",
+ "92-camera.js": "ed0561ac5b8e",
  "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "d3aaf402992e"
 }

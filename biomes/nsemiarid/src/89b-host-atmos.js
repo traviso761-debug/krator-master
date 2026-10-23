@@ -28,6 +28,9 @@ const NSWIND=(function(){const WIND_MS=6,SCALE={calm:.4,breeze:1,high:2.6};
 // THE FOLIAGE rides it too: the biome core's sway grows with its strength and the foliage leans downwind (BIO.init's
 // wind, 1 = the calm breeze: one unit of ATMOS's wind here); the variants' trees read the same uniforms (86)
 BIO.host.wind=()=>{const w=ATMOS.U.wind.value;return[w.x,w.y];};
+// THE DUST (core/atmos 3d-dust, 2026-10-23): lifted where the wind there passes the threshold, off bare dry ground only:
+// the dry steppe, the old bed's silt and the dunes most, nothing off water, the green upland or the stream's banks
+ATMOS.dust({color:[.8,.72,.57],mask:(x,z)=>waterH(x,z)>-1e8?0:smooth(.42,.22,FC.at(FC.a.wet,x,z))*(.5+.5*Math.max(FC.at(FC.a.bed,x,z),FC.at(FC.a.dune,x,z)))});
 // THE FURLERS (2026-10-22) shut as a gust passes and open behind it: each flower reads core/atmos's own gust where it
 // stands (atmWind, the shaders' twin of ATMOS.windAt) and closes as the wind there passes its hold (7.2 m/s; a breeze
 // gusts to ~9, so a gust front crosses a field as a wave of closing flowers; a gale keeps them shut, a calm open). The

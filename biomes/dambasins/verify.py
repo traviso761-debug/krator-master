@@ -14,6 +14,8 @@ imported) plus the overlay's own (PLAN.md, section 5), each run on a broken inpu
   db-bed-falls       the bed falls from the old line to the sill (-200 m) across the fast-drain band
   db-hulks-aground   every hulk's keel lies buried in the ground under it (by a fifth to a half of its draft), none afloat
   db-wrecks-on-the-bed  the stranded wrecks: whole, snapped, broken up and half buried, all on the bed under the old line
+  db-flotsam-half-buried  the flood's debris (plates, beams, containers): under the old line, off the port, each half buried
+  db-dust-in-the-wind  dust lifts off the bed in the stiff wind, none in a calm (core/atmos 3d-dust)
 
 SwiftShader flakes about one run in seven with a null shader-info-log TypeError: re-run before believing it.
 """
@@ -75,6 +77,21 @@ const wr=(W)=>{const st={},run=PORT_LAYOUT.runs[0];let above=0,onPort=0,onS=0,of
  const all=['whole','snapped','pieces','buried'].every(k=>st[k]>0);
  return{ok:W.length>=30&&all&&!above&&!onPort,detail:W.length+' wrecks ('+Object.keys(st).map(k=>k+' '+st[k]).join(', ')+'); '+above+' above the old line, '+onPort+' on the port; in the recession '+onS+' on a strandline, '+offS+' between'};};
 if(typeof DB_WRECKS!=='undefined')add('db-wrecks-on-the-bed',wr(DB_WRECKS),wr(DB_WRECKS.map(w=>Object.assign({},w,{h:w.h+260}))));
+// the flood's debris: plates, beams and containers all present, under the old line, off the port, and each half buried
+// (its lowest point in the ground under its middle, its highest out of it)
+const fl=(F,lift)=>{const n={},run=PORT_LAYOUT.runs[0];let above=0,onPort=0,floating=0,sunk=0;
+ for(const r of F){n[r.kind]=(n[r.kind]||0)+1;if(r.h>-.5)above++;if(r.x>run.x0&&r.x<run.x1&&r.z<dbShore(r.x)+40)onPort++;
+  const g=terrainH(r.x,r.z);if(r.lo+lift>=g)floating++;if(r.hi+lift<=g)sunk++;}
+ const all=['plate','beam','container'].every(k=>n[k]>=10);
+ return{ok:all&&!above&&!onPort&&!floating&&!sunk,detail:F.length+' pieces ('+Object.keys(n).map(k=>n[k]+' '+k+'s').join(', ')+'); '+above+' above the old line, '+onPort+' on the port, '+floating+' not in the ground, '+sunk+' wholly buried'};};
+if(typeof DB_FLOTSAM!=='undefined')add('db-flotsam-half-buried',fl(DB_FLOTSAM,0),fl(DB_FLOTSAM,40));
+// the dust (core/atmos 3d-dust): the bed's mean lift, sampled over the drain band and the recession, none in a calm and
+// some in the bed's stiff wind; a mask of nothing must lift nothing
+const dust=(mask)=>{const sc=ATMOS.windScale,md=DB_WIND.mode,pts=[],run=PORT_LAYOUT.runs[0];for(let k=0;k<50;k++)pts.push([run.x0-800+k*53,dbShore(0)+300+(k%7)*400]);
+ const at=m=>{DB_WIND.set(m);ATMOS.windScale=DB_WIND.SCALE[m];let a=0,c=0;for(let i=0;i<30;i++){for(const f of PORT_FRAME.slice())f(.15);if(i%3===2)for(const p of pts){a+=ATMOS.dustLift(p[0],p[1],mask(p[0],p[1]));c++;}}return a/c;};
+ let calm,stiff;try{calm=at('calm');stiff=at('stiff');}finally{DB_WIND.set(md);ATMOS.windScale=sc;}
+ return{ok:calm===0&&stiff>.1,detail:'mean lift over the bed: '+calm.toFixed(3)+' in a calm, '+stiff.toFixed(3)+' in the stiff wind'};};
+if(typeof DB_WIND!=='undefined')add('db-dust-in-the-wind',dust(DB_DUST_MASK),dust(()=>0));
 return R;}"""
 
 

@@ -26,6 +26,18 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Closed
 
+- [x] **The stream was not continuous** (closed 2026-10-23, the owner's screenshot: the water in pieces down the valley).
+      The ground is one grid of 13.4 m cells and the stream 14 m wide, so wherever no vertex fell near the centreline a
+      triangle bridged the channel bank to bank and hid the water. In every row the stream crosses, the vertex nearest it
+      now moves onto the centreline and the next onto the banks (6.5 m, 17 m), and those quads take the lower diagonal
+      (`45-host-stage.js`, the ground). The probe reads the drawn mesh's own height under the water every 10 m
+      (`the stream shows`), with a negative (the water drawn 1.2 m low).
+- [x] **The small and weird were flat colour** (closed 2026-10-23): the striders' barrels wear the library's cactus skin,
+      their stilt roots and dead stubs the saxaul's gnarled bark (they had drawn black: a three.js rod has no vertex
+      colours, so they take a solid material), the bead chains a smooth waxy skin, the sail candelabra banded joints, the
+      mace heads horny plates up each spike, the horn pipes ribbed rings. The lathe, the spike ball and the horn had no
+      UVs (every vertex at 0, or the radius): they have them now. Each skin is grey relief about its pack's mean, which
+      the material divides out, so a species keeps its colour.
 - [x] **Every card showed its whole sheet** (closed 2026-10-23). `build.py`'s `matlib_pack()` (copied from ebadlands)
       left `cell` out of the pack, so the steppe grass drew three by three plants per card ("a sheet of 9", the owner)
       and each maple key flew as a sheet of them. It passes `cell` now and `libCard` windows the texture to it

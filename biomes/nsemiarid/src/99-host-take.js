@@ -99,6 +99,24 @@ const HCHK={
  // the saxaul stands only on its groves' crescents
  crescents(T){const bad=T.filter(t=>NSEMIARID.crescentAt(t.x,t.z)[0]<=0);return{ok:T.length>0&&!bad.length,detail:bad.length?bad.length+' saxaul off a crescent':T.length+' saxaul, every one on a grove\'s arc'};},
  // THE WATER (core/water): the stream sits in its channel, both banks over its surface a pace either side of its line
+ // the stream SHOWS (2026-10-23: the ground mesh bridged it in long gaps): the drawn ground's own height (its triangles,
+ // not terrainH) under the water's centreline, every 10 m: under the water nearly everywhere
+ shows(F,drop){const P=F.pts,g=GROUND.geometry,pa=g.attributes.position.array,ix=g.index.array;
+  const zs=P.map(p=>p.z),z0=Math.min(...zs)-30,z1=Math.max(...zs)+30,K=[];
+  for(let t=0;t<ix.length;t+=3){const zz=pa[ix[t]*3+2];if(zz>=z0&&zz<=z1)K.push(ix[t],ix[t+1],ix[t+2]);}
+  const at=(x,z)=>{for(let t=0;t<K.length;t+=3){const a=K[t]*3,b=K[t+1]*3,c=K[t+2]*3;
+    if(Math.max(pa[a+2],pa[b+2],pa[c+2])<z||Math.min(pa[a+2],pa[b+2],pa[c+2])>z||Math.max(pa[a],pa[b],pa[c])<x||Math.min(pa[a],pa[b],pa[c])>x)continue;
+    const d=(pa[b+2]-pa[c+2])*(pa[a]-pa[c])+(pa[c]-pa[b])*(pa[a+2]-pa[c+2]),l1=((pa[b+2]-pa[c+2])*(x-pa[c])+(pa[c]-pa[b])*(z-pa[c+2]))/d,l2=((pa[c+2]-pa[a+2])*(x-pa[c])+(pa[a]-pa[c])*(z-pa[c+2]))/d,l3=1-l1-l2;
+    if(l1>=-1e-6&&l2>=-1e-6&&l3>=-1e-6)return l1*pa[a+1]+l2*pa[b+1]+l3*pa[c+1];}return null;};
+  let n=0,bad=0,worst=0;for(const p of P){if(LAKE_W.contains(p.x,p.z))continue;const h=at(p.x,p.z);if(h==null)continue;n++;const over=h-(p.y-(drop||0));if(over>-.05)bad++;worst=Math.max(worst,over);}
+  return{ok:n>100&&bad<=n*.02,detail:n+' points down the stream; the drawn ground over the water at '+bad+(bad?' (worst '+worst.toFixed(2)+' m)':'')};},
+ // the DUST (core/atmos 3d-dust): over the dry bed, none in a calm, some in high wind; mask: the page's own, or a test one
+ dust(mask){const m=mask||((x,z)=>waterH(x,z)>-1e8?0:smooth(.42,.22,FC.at(FC.a.wet,x,z))*(.5+.5*Math.max(FC.at(FC.a.bed,x,z),FC.at(FC.a.dune,x,z))));
+  const mode=NSWIND.mode,sc=ATMOS.windScale,pts=[];for(let k=0;k<60;k++){const a=k*2.39996,r=40+k*9;pts.push([BED.x+Math.cos(a)*(BED.r*.7+r),BED.z+Math.sin(a)*(BED.r*.7+r)]);}
+  const run=md=>{NSWIND.set(md);ATMOS.windScale=NSWIND.SCALE[md];let s=0,c=0;for(let i=0;i<40;i++){for(const f of TICKS.slice())f(.15,0);
+    if(i%4===3)for(const p of pts){s+=ATMOS.dustLift(p[0],p[1],m(p[0],p[1]));c++;}}return s/c;};
+  let calm,high;try{calm=run('calm');high=run('high');}finally{NSWIND.set(mode);ATMOS.windScale=sc;}
+  return{ok:calm===0&&high>.15,detail:'the dust over the dry bed (mean lift 0..1): '+calm.toFixed(3)+' in a calm, '+high.toFixed(3)+' in high wind'};},
  banks(F,lift){const P=F.pts;let bad=0,n=0,worst=0;for(let i=0;i<P.length;i+=2){const p=P[i],y=p.y+(lift||0),s=Math.max(y-terrainH(p.x-SW*1.05,p.z),y-terrainH(p.x+SW*1.05,p.z));n++;if(s>.15)bad++;worst=Math.max(worst,s);}
   return{ok:n>50&&bad/n<=.02,detail:bad+' of '+n+' stream sections spill over a bank (worst '+worst.toFixed(1)+' m)'};},
  // THE WIND (core/atmos): stepped on the module's own clock, a gale tears the winged seeds loose and a calm holds them
@@ -146,6 +164,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('saxaul on its crescents',HCHK.crescents(T.filter(t=>t.sp===SPI('saxaul'))));
  add('dead poplars on the salt',HCHK.deadPoplars(T.filter(t=>t.sp===SPI('poplar'))));
  add('the stream sits in its banks (core/water)',HCHK.banks(STREAM));
+ add('the stream shows: the drawn ground under its water',HCHK.shows(STREAM));
+ add('the wind lifts dust off the dry ground, a calm none (core/atmos)',HCHK.dust());
  add('the trumpets turn on a pivot',HCHK.spin(VARIANTS.protos));
  add('a gale tears the winged seeds loose, a calm holds them; the lanterns the other way (core/atmos)',HCHK.gale());
  if(window._variants)add('wind-shaped trees face the wind where they stand',HCHK.facing(windShapedDrawn()));
@@ -166,6 +186,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {let off=null;for(let z=-1000;z<1000&&!off;z+=7)for(let x=-1000;x<1000;x+=7)if(NSEMIARID.crescentAt(x,z)[0]<=0){off={x,z};break;}add('a saxaul off its crescent',HCHK.crescents([off]));}
  add('a dead poplar on the steppe',HCHK.deadPoplars([{x:PLACE.steppe[0],z:PLACE.steppe[1],dead:true}]));
  add('the stream lifted 3 m over its banks',HCHK.banks(STREAM,3));
+ add('the stream drawn 1.2 m low, under its ground',HCHK.shows(STREAM,1.2));
+ add('dust off ground masked bare of it',HCHK.dust(()=>0));
  add('a gale that tears nothing loose',HCHK.gale(1e9));
  if(window._variants){const R=windShapedDrawn();add('wind-shaped trees turned at random',HCHK.facing(R.map((r,i)=>[r[0],r[1],r[2]+1+(i%5)])));}
  add('furlers placed shut, a still frame',HCHK.furlers(furlerMeshes(),12));

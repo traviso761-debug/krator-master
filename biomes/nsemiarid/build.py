@@ -86,7 +86,7 @@ for f in CORE_WATER:
 # core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
 # weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
 # the water needs, and the export. Bound in 89b-host-atmos.js.
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and

@@ -14,6 +14,9 @@ bed (41,408 km², all in n semiarid) and the east bed (47,792 km²: 23,168 in n 
 | the docks on the old full line, the ferry ramps, the lighthouse on its knoll | the Ancient Port kit (`settlements/port`), read in place, its segments at decay 1 (ruined) and 3 (salvage), dry | D0 |
 | the hulks, in three populations by where the falling water left them | the port kit's vessels, grounded: heeled on the slope, buried by silt (a grounding transform round the kit's `kput` and the vessel's group, this build's own) | D1 |
 | the flora | the n semiarid kit, read in place (its fields from `KBASIN.sample`: `bed`, `silt`, `strand`, `ring`, `salt`, `dry`) | D2 |
+| the stranded wrecks: the lake's working boats, whole, snapped, broken up, half buried | this build (`50-db-wrecks.js`), placed by the bands and strandlines | **built** (2026-10-23) |
+| the flood's debris: torn plating, half-buried containers, rotting I-beams, off the ships, the buildings and the dam | this build (`52-db-flotsam.js`), thickest on the fast-drain slope | **built** (2026-10-23) |
+| the wind's dust off the bed | core/atmos `3d-dust` (opt-in), masked to the bed | **built** (2026-10-23) |
 | its own flora: hulk gardens | iron locked up in alkaline silt, and metal that condenses dew: vines rooted in rust make each hulk a green island (the rust vine is in the n semiarid kit already, tagged and unplaced) | D3 |
 | dress: pre-dam villages, the stumps of the drowned forest with silt lines on them, shell banks | this build | D4 |
 
@@ -72,4 +75,6 @@ The kit's own invariants (imported from `settlements/port/verify.py`, as Hook do
 - **the old line**: every placed segment's deck stands at the old full level plus the kit's freeboard;
 - **the ring**: the bleached band lies under the old line, as deep as the ring (30 m), and nowhere above it;
 - **the hulks aground** (D1): every hulk's keel within its burial of the ground under it, none afloat, none in the air;
+- **the wrecks on the bed**, **the debris half buried** (every piece in the silt and out of it), **the dust in the wind**
+  (none in a calm);
 - each with a broken input that must fail.

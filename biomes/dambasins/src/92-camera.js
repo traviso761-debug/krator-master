@@ -121,7 +121,7 @@ setView(...VIEWS[Object.keys(VIEWS)[0]]);   // first preset is the opening shot,
 // 00-head.html is shared, so the target names itself here rather than shipping
 // a second copy of the page shell.
 document.title=TITLE;
-document.getElementById('cap').textContent=TITLE+' — click any structure to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · n night · b segment bounds';
+document.getElementById('cap').textContent=TITLE+' — click any structure to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · n night · b segment bounds · g wind (calm, breeze, stiff, high)';
 // input
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
