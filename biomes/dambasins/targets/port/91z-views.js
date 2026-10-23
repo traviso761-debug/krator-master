@@ -18,4 +18,10 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  const M=(L.db&&L.db.moored)||[];
  if(M.length){const m=M[0];V['The moored hulks']=[m.gx+260,g(m.gx+260,m.gz+260)+14,m.gz+260,m.gx,g(m.gx,m.gz)+12,m.gz];
   V['Along the quay foot']=[m.gx-260,g(m.gx-260,m.gz+110)+5,m.gz+110,m.gx+120,g(m.gx,m.gz)+10,m.gz];}   // out on the slope, below the berths
+ // the wrecks (91a-db-wrecks.js): the nearest of each state to the port, from a little way off and low
+ if(typeof DB_WRECKS!=='undefined'){const near=st=>{let b=null,bd=1e9;for(const w of DB_WRECKS){if(w.state!==st)continue;const d=Math.hypot(w.x-cx,w.z-cz);if(d<bd){bd=d;b=w;}}return b;};
+  for(const [st,nm] of [['whole','A stranded trawler'],['snapped','Snapped in two'],['pieces','Broken up'],['buried','Half buried']]){const w=near(st);if(!w)continue;
+   const a=w.heading+1.1,d=w.L*1.1+25,x=w.x+Math.sin(a)*d,z=w.z+Math.cos(a)*d;V[nm]=[x,g(x,z)+4+w.H*.4,z,w.x,w.h+w.H*.3,w.z];}
+  // the ship cemetery: from high over the strandlines, the field of wrecks below
+  V['The ship cemetery']=[cx+400,g(cx+400,cz+1800)+90,cz+1800,cx-200,g(cx-200,cz+3200),cz+3200];}
  return V;})();

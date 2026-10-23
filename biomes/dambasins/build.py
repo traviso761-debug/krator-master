@@ -58,7 +58,7 @@ PB = port_build()
 # build's deterministic fragments (the bed is a function of x and z; the layout and views are tables)
 EXTRA_CORE = {'08-core-rand.js': os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'),
               '40-core-basin.js': os.path.join(ROOT, 'core', 'terrain', '40-core-basin.js')}
-PB.DETERMINISTIC |= set(EXTRA_CORE) | {'80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js'}   # 81: the hulks' pose from KRAND hashes, no stream
+PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js'}   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream
 
 
 def discover():

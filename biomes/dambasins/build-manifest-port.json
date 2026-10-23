@@ -17,6 +17,7 @@
  "38-helpers2.js": "97d25c565adf",
  "40-core-basin.js": "1c5cf0c4a9cf",
  "50-core-water-draw.js": "935eaeecabcb",
+ "50-db-wrecks.js": "b0b87de6036a",
  "50-registry.js": "d0f77add9a31",
  "54-mat-concrete.js": "574d8f7325db",
  "68-mat-v5.js": "67b714b0f87c",
@@ -68,7 +69,8 @@
  "89z-rows.js": "d9152961d568",
  "90-scene.js": "30ea1e74f6d2",
  "91-probe.js": "f32340073835",
- "91z-views.js": "7bd53eba58d2",
+ "91a-db-wrecks.js": "975673d72afc",
+ "91z-views.js": "ac8bafd99be4",
  "92-camera.js": "c08270a35496",
  "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "d3aaf402992e"

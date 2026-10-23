@@ -13,6 +13,7 @@ imported) plus the overlay's own (PLAN.md, section 5), each run on a broken inpu
   db-ring-under-line the bathtub ring's band lies under the old line, as deep as the ring and no deeper, never above it
   db-bed-falls       the bed falls from the old line to the sill (-200 m) across the fast-drain band
   db-hulks-aground   every hulk's keel lies buried in the ground under it (by a fifth to a half of its draft), none afloat
+  db-wrecks-on-the-bed  the stranded wrecks: whole, snapped, broken up and half buried, all on the bed under the old line
 
 SwiftShader flakes about one run in seven with a null shader-info-log TypeError: re-run before believing it.
 """
@@ -67,6 +68,13 @@ const aground=(lift)=>{const bad=[];for(const H of DB_HULKS){const keel=H.dy+lif
   if(dep<-.5||dep>H.draft*.75)bad.push(H.key+'/'+H.d+' keel '+(dep>=0?dep.toFixed(1)+' m deep':(-dep).toFixed(1)+' m over the ground'));}
  return{ok:DB_HULKS.length>0&&!bad.length,detail:bad.length?bad.join(', '):DB_HULKS.length+' hulks, every keel buried by '+DB_HULKS.map(H=>(H.bury).toFixed(1)).join(', ')+' m'};};
 if(DB_HULKS.length)add('db-hulks-aground',aground(0),aground(6));
+// the wrecks: all four states present; none above the old line, none on the port; thicker on the strandlines
+const wr=(W)=>{const st={},run=PORT_LAYOUT.runs[0];let above=0,onPort=0,onS=0,offS=0,S={};
+ for(const w of W){st[w.state]=(st[w.state]||0)+1;if(w.h>.5)above++;if(w.x>run.x0&&w.x<run.x1&&w.z<dbShore(w.x)+60)onPort++;
+  const s=DB_BASIN.sample(w.x,w.z,w.h,S);if(s.band===KBASIN.BAND.recession){if(s.strand>.4)onS++;else offS++;}}
+ const all=['whole','snapped','pieces','buried'].every(k=>st[k]>0);
+ return{ok:W.length>=30&&all&&!above&&!onPort,detail:W.length+' wrecks ('+Object.keys(st).map(k=>k+' '+st[k]).join(', ')+'); '+above+' above the old line, '+onPort+' on the port; in the recession '+onS+' on a strandline, '+offS+' between'};};
+if(typeof DB_WRECKS!=='undefined')add('db-wrecks-on-the-bed',wr(DB_WRECKS),wr(DB_WRECKS.map(w=>Object.assign({},w,{h:w.h+260}))));
 return R;}"""
 
 
