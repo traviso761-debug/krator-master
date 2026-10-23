@@ -259,6 +259,12 @@ Catch's south-west notch (px 716,1128 and 770,1168) stand at 10.7 and 8.4 km on 
 old lake sediment, from wetter ages when the terminal lake was far bigger, cut by the wind into yardangs and castellated
 mesas. Shelter for a caravan in a storm, and nowhere to live.
 
+## 7a. Textures
+
+Reuse `rock.yardang.silt` (shared with the Bowl), `card.tamarisk`, `card.reed`, `ground.gravel019`, `ground.gravel042`,
+`card.saltbush`. To generate: `ground.sand.dune`, `ground.soda.crust`, `bark.poplar.euphrates`, `card.poplar.euphrates`
+(`core/materials/PROMPTS-NEEDED.md` section 12, 2026-10-23).
+
 ## 8. Questions for the owner
 
 1. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.

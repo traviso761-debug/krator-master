@@ -75,6 +75,8 @@ In the library: `ground.clay.popcorn`, `rock.sandstone.bedded.red`, `ground.play
 `ground.steppe`, `card.grass.dry`. To source or generate (prompts first): banded badland rock tiles in the bed colours (or
 one greyscale bedded tile tinted by the strata field: cheaper and preferred), and flower cards for the bloom.
 
+**The prompts**: `core/materials/PROMPTS-NEEDED.md` section 9 (2026-10-23).
+
 ## 6. Order of work
 
 - **P0.** The owner approves; the polygon renamed; the station sites chosen from the model; texture prompts written.

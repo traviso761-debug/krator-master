@@ -116,6 +116,8 @@ In the library: `ground.salt`, `ground.efflorescence`, `ground.playa.red`, `grou
 the ochre salt rim (a top-down tile), the banded pink, teal and ochre shallows (water tints by salinity band, not a texture), cards for saxaul, saltbush,
 glasswort (green and crimson), tamarisk in flower, brine lamp; a yardang-silt rock tile, or the strata module's recipe.
 
+**The prompts**: `core/materials/PROMPTS-NEEDED.md` section 11 (2026-10-23).
+
 ## 8. Settled (2026-10-23)
 
 - **Mantis moved** on the model to the heart of the south-west shore's green pocket (px 841,834), its notes on the

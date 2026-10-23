@@ -205,3 +205,9 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 - **C4.** The echoes and the dusk; the compass; the cutters' camp.
 - **C5.** Stations 2 and 3, the cut faces (with the strata module if it has landed).
 - **C6.** The crops; `verify.py --assert`; `PORT.md`; the gallery (a new biome); Dilihan's plan switched to read this kit.
+
+## Textures
+
+Reuse `bark.bamboo.jade` (the hyperbamboo's culms, scaled up), `ground.salt`, `ground.efflorescence` and the NW lowlands'
+sets. To generate: `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `rock.lichen.circles`
+(`core/materials/PROMPTS-NEEDED.md` section 10, 2026-10-23).

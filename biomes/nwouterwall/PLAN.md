@@ -196,6 +196,8 @@ them): larch bark; a larch needle-tuft card in summer green and autumn gold; a f
 (*Cladonia*) ground; cards for the woolly snowball, furflower, Ivan-chai, cottongrass and silverthorn; an aufeis tile
 (layered, bubbly, blue-white); cards for sweetroot, snow potato and goldroot.
 
+**The prompts**: `core/materials/PROMPTS-NEEDED.md` section 8 (2026-10-23).
+
 ## 9. Order of work
 
 - **N0.** The owner approves the plan; the texture prompts are written; the station 2 site is chosen from the model;

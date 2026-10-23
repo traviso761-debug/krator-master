@@ -40,7 +40,7 @@
 - [ ] **The harpoon has no line.** The `barb` projectile flies alone; the lore's line that drags the quarry in is the
   host's to draw (a cable from `muzzle_l` / `muzzle_r` to the barb).
 - [ ] **The Stalkers' shells use the shared maps, finer** (`detail: { tile: 3, mix: 0.35 }`). A set of their own, white
-  enamel scoured by sand, would suit them better; none is in the library yet.
+  enamel scoured by sand, would suit them better; none is in the library yet: `metal.enamel.scoured`, `core/materials/PROMPTS-NEEDED.md` section 7.
 
 ## Closed
 

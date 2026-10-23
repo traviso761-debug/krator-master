@@ -28,7 +28,7 @@ highlands) on the same fields" (`biomes/rift/NOTES.md`).
 | Pages | six stations (section 9) |
 | Biomes | three on one kit: `RRIM.biome('n' \| 's' \| 'w')`, each a weighting of the zones and a species list (section 3), sharing the fields and the core |
 | Core | the biome core, `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (relief, carve, the strata module's `canyon` recipe on the trough's walls), `core/water`, the shared sky |
-| Read in place | `biomes/rift` (the beard tree, the cloud tree-fern, the monkey-puzzle, the giant groundsel, the peak pine, the silver scrub, the Rift stone pine, the fan tree), `biomes/swlowlands` (the tier cedar, the ribbon gum, the bay laurel, the veil willow) and `biomes/shighlands` (the crozier tree fern, the coilbark, the spiral lobelia), by rim (section 3); nothing copied. The Rift kit's own highland can then read this kit back |
+| Read in place | `biomes/rift` (the beard tree, the cloud tree-fern, the monkey-puzzle, the giant groundsel, the peak pine, the silver scrub, the Rift stone pine, the fan tree), `biomes/swlowlands` (the tier cedar, the cork oak, the bay laurel, the veil willow) and `biomes/shighlands` (the crozier tree fern, the coilbark, the spiral aloe), by rim (section 3); nothing copied. The Rift kit's own highland can then read this kit back |
 | Object | `RRIM` on the `BIOME-API.md` contract |
 
 It is a new biome, so it goes in the gallery when it first reaches `main`.
@@ -146,7 +146,7 @@ The lake country's forest: tall columns standing in still water, and the water s
 | `beardtree` | Beard tree | Rift | | read in place, in the wettest groves by the lakes | |
 | `cloudfern` | Cloud tree-fern | Rift | | read in place, on the warm lower edge | |
 | `araucaria` | Monkey-puzzle | Rift | | read in place, scattered over the forest | |
-| `crozier` | Crozier tree fern | S highlands, introduced | | a few stands by the lower lakes (*proposed*: carried up the rim by Dalab's road) | |
+| `crozier` | Crozier tree fern | S highlands, Dalab's | | a few stands by the lower lakes, strays from Dalab's plantings in the W | the fiddleheads, eaten |
 
 Six of its own of ten. The lakes: the algal and peat lakes (below), the algal domes in their shallows.
 
@@ -173,9 +173,10 @@ Seven of its own of ten. The lakes: the glacial and the frozen.
 ### The W rift highland: the veiled rim
 
 The wet, clouded western head: the great lake under its cliff, Dalab's road, the gorge, and the lowlands close below.
-Fog sits in it most days, and its own plants live on the fog; and the lowlands' and the S highlands' plants have come up
-into it along the road and the valleys, so it is a patchwork, the native veils and copper cups among stands of
-lowland green.
+Fog sits in it most days, and its own plants live on the fog. **Dalab brought up the most useful plants it could** [the
+owner, 2026-10-23]: timber, cork, spice, remedies and fibre from the SW lowlands and the S highlands, planted along its
+road and round its hold, and they have spread from there; so it is a patchwork, the native veils and copper cups among
+stands of planted lowland green.
 
 | Key | Name | | Model | What it is | Harvest |
 |---|---|---|---|---|---|
@@ -184,19 +185,19 @@ lowland green.
 | `mistfrill` | Mist frill | own, new | the frost frill's cousin in the cloud | a shorter, leaning frill 8-15 m whose fins are furred with fine hairs that catch the fog and drip it to the roots; copper-teal, hung with veil thread | the fins' fur, felted |
 | `lobelarch` | Lobe larch | own | the Rift's lobe tree, deciduous | a stringy plum bole with pads of lobed leaves that turn violet and gold in autumn and fall | the bark fibre (cordage) |
 | `moorsponge` | Moor sponge | own, new | sphagnum, cushion bogs | deep bogs of a copper-green moss that holds the fog's water; it covers the cloud belt's flats and fills the cirques | peat (fuel) |
-| `tiercedar` | Tier cedar | SW lowlands | | the lowlands' cedar, up to the cloud belt's foot (`swlowlands` `cedar`) | |
-| `ribbongum` | Ribbon gum | SW lowlands | | in the warm valleys and the basin plain (`gum`) | |
-| `baylaurel` | Bay laurel | SW lowlands | | the basin plain (`baylaurel`) | |
-| `willow` | Veil willow | SW lowlands | | the great lake's shore (`willow`) | |
-| `coilbark` | Coilbark | S highlands, introduced | | stands along Dalab's road (*proposed*: the genepriests planted them, as shelter and for their bark) | |
-| `spirallobelia` | Spiral lobelia | S highlands, introduced | | escaped from the road into the high meadows | |
-| `stonepine` | Rift stone pine | Rift | | read in place, on the drier slopes over the gorge | |
+| `tiercedar` | Tier cedar | SW lowlands, Dalab's | | planted for **timber** up to the cloud belt's foot (`swlowlands` `cedar`) | timber |
+| `corkoak` | Cork oak | SW lowlands, Dalab's | | the stripped groves of the basin plain (`corkoak`) | **cork** (floats, seals, insulation) |
+| `baylaurel` | Bay laurel | SW lowlands, Dalab's | | hedges round the hold and the plain (`baylaurel`) | spice and remedy |
+| `willow` | Veil willow | SW lowlands, Dalab's | | coppiced on the great lake's shore (`willow`) | withies; the bark a fever remedy |
+| `coilbark` | Coilbark | S highlands, Dalab's | | shelter belts along the road | bark fibre |
+| `spiralaloe` | Spiral aloe | S highlands, Dalab's | | in walled beds by the waystations, on the warm south faces | the gel, for burns and frostbite |
+| `stonepine` | Rift stone pine | Rift | | read in place, on the drier slopes over the gorge | pine nuts |
 | `fantree` | Fan tree | Rift | | read in place, on the basin plain | |
 
 Five of its own of thirteen, the most borrowed of the three, as the owner asked; its own are still the most of any one
-source (the SW lowlands give four, the S highlands two, the Rift two). *Proposed*: Dalab's genepriests brought the
-S highlands' spiral plants up the road (the owner: they "have been introduced"), so they grow along it and spread from it;
-the SW lowlands' climbed of themselves, up the warm valleys from the lowlands below.
+source (the SW lowlands give four, the S highlands two, the Rift two). The borrowed are Dalab's choice, the most useful
+plants that would take the cold (the owner); which ones is *proposed* here. They grow thickest along the road and round
+Ledge and thin out with distance from them.
 
 ### Across the three
 
@@ -393,7 +394,8 @@ the N rim's frost-frill bark and translucent fins, bell-fir needle bells, glass 
 seasons), starberries; the S rim's sun rosette (black-violet fur), sailwort membrane, cushion anemone, lantern lobelia,
 rimroot, iris lichen on rock (black, rust, iridescent violet), snowblood on snow (red, violet); the W highland's veil
 thread, mist cups, mist frill fins, lobe larch leaves (summer and autumn), moor sponge (`ground.sphagnum` may serve); the
-algal lake shallows. The borrowed species bring their kits' sets.
+algal lake shallows. The borrowed species bring their kits' sets. **The prompts**: `core/materials/PROMPTS-NEEDED.md`
+section 13 (2026-10-23), with the library sets each rim reuses.
 
 ## 11. Order of work
 
@@ -419,8 +421,6 @@ algal lake shallows. The borrowed species bring their kits' sets.
    already a Dalab outpost on the model (a wrecked arcology, px 282,680, `LORE.md` §6.1): keep both, rename one, or move
    Dalab's Span to the gorge. An arcology that spans the great lake's gorge would suit the name.
 6. **The model's Rift settlements** want a rework of their own (names, places, types), with Arccube fixed.
-7. **The three rims' flora** (section 3, proposed 2026-10-23): their names (the glass, black and veiled rims), their
-   tricks (glass, black, fog), the ten new species, and who brought the S highlands' plants up (*proposed*: Dalab's
-   genepriests, along the road).
-8. **The model's polygon**: `rift rim` is one polygon round both sides of the trough. Split it into `rift rim N` and
-   `rift rim S`, so each biome has its own (a record edit, `tools/scale-model/README.md`)?
+7. **The three rims' flora** (section 3, proposed 2026-10-23, the owner's "great proposal"): settled that Dalab brought up
+   the most useful plants it could; which ones (the W highland's list) is proposed.
+8. ~~The model's polygon~~: split into `rift rim N` and `rift rim S` on the model (the owner, 2026-10-23; done).
