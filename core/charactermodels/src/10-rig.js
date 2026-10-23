@@ -15,6 +15,8 @@
    turned into offsets from Head here, since each head was made with its own face.
    KCHAR.parts(record, kit) the meshes to draw: the base body's regions, the head, hair and beard, the armour.
    KCHAR.hidden(record, kit) per base region, which triangles the worn armour covers (the renderer leaves them out).
+   KCHAR.hiddenParts(record, kit) the base's small parts drawn over the skin (the nipples: 'Human.nipple') that a worn
+   item covers whole (kit item hide_parts), as { material name: true }: the renderer leaves them out too.
    KCHAR.random(seed, sliders, kit) a record drawn from KRAND (core/rand).
 */
 var KCHAR = (function(){
@@ -199,6 +201,19 @@ var KCHAR = (function(){
     return out;
   }
 
+  /* a part of the base drawn over the skin, not cut from it (the nipples), is never in a hide: an item that hides all the
+     skin under it says so (kit item hide_parts, make_mpfb.py parts_under), and the man's nipple no longer shows through
+     a T-shirt where the chest bends */
+  function hiddenParts(rec, kit){
+    var out = {};
+    if(kit.style !== 'mpfb') return out;
+    MPFB_SLOTS.forEach(function(slot){
+      var it = mpfbItem(rec, kit, slot);
+      ((it && it.hide_parts) || []).forEach(function(m){ out[m] = true; });
+    });
+    return out;
+  }
+
   function blank(kit){
     if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null, head:null }, sliders:{},
                                       morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{} };
@@ -266,7 +281,8 @@ var KCHAR = (function(){
 
   /* ---- peoples (data/peoples.json): the range a culture's strangers are drawn from ----
      people { id, name, ancestry:{ african:[lo,hi], asian:[lo,hi], caucasian:[lo,hi] }, skin:[stops], hair:[colours], eyes:[colours],
-              grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] } }
+              grey: age above which hair greys, beard: odds (male), morph: { <id>:[lo,hi] }, styles: { male:[ids], female:[ids] },
+              style_share: the share of strangers whose hair is one of `styles` (0.75; 1: only those) }
      skin is drawn along its stops (sRGB hex, light to dark), hair from its list; every slider not named in morph is
      drawn from -spread..spread (age from its own default range) */
   function hex(c){ return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
@@ -307,7 +323,7 @@ var KCHAR = (function(){
       if(slot === 'head'){ rec.armour.head = null; return; }     // headgear only comes with a people's outfit
       // a culture's own clothes (kit item culture) go only to its people's strangers
       var have = kit.items.filter(function(it){ return it.slot === slot && (!it.culture || it.culture === P.id) && fits(it, rec, kit); });
-      if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < 0.75) have = pref; }
+      if(slot === 'hair' && styles){ var pref = have.filter(function(it){ return styles.indexOf(it.id) >= 0; }); if(pref.length && r() < (P.style_share == null ? 0.75 : P.style_share)) have = pref; }
       var odds = slot === 'beard' ? (P.beard === undefined ? 0.4 : P.beard) : slot === 'hair' ? 0.92 : 0.9;
       var id = have.length && r() < odds ? pick(have).id : null;
       if(slot === 'hair' || slot === 'beard') rec[slot] = id; else rec.armour[slot] = id;
@@ -332,12 +348,15 @@ var KCHAR = (function(){
   }
 
   /* colliders(skel, w): the capsules a garment's cloth chains are kept out of (skeleton.json colliders: per joint
-     pair a base radius and its change per morph target), their radii under morph weights w */
+     pair a base radius and its change per morph target), their radii under morph weights w. A capsule with pa and pb
+     (the seat's) has its ends at those rest points (the body's model space), carried by joints a and b */
   function colliders(skel, w){
     return (skel.colliders || []).map(function(c){
       var r = c.r;
       Object.keys(c.dr || {}).forEach(function(t){ r += (w[+t] || 0) * c.dr[t]; });
-      return { a:c.a, b:c.b, r:Math.max(0.01, r) };
+      var k = Math.max(0.01, r) / c.r;         // the push's end radii (ra, rb) scale with the capsule's
+      return { a:c.a, b:c.b, r:Math.max(0.01, r), pa:c.pa || null, pb:c.pb || null,
+               ra:(c.ra == null ? c.r : c.ra) * k, rb:(c.rb == null ? c.r : c.rb) * k };
     });
   }
 
@@ -355,7 +374,7 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
            along:along, crowd:crowd, colliders:colliders };
 })();

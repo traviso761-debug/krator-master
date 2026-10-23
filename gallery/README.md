@@ -5,6 +5,25 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 It is shared as anyone-with-the-link.
 
 **Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+## Cards for builds in their own artifacts (2026-10-20)
+
+The owner (2026-10-20): a build published as its own artifact gets a card in the parts like any other, under its letter in
+its section, that opens its artifact (a new tab), not a link in the list at the top. `LINKED` in `build_gallery.py`
+names them (the Eternian kit under Building kits, in A–H; Longsong under Settlements, in I–S), and the Throne's eleven
+stations are a section of their own, **The Throne**, a card each in station order ("Throne 1 · the plume's edge"), every
+one opening the Throne Stations artifact. **Korona**'s six stations are a section of their own too (section key
+`korona` in their `ENTRIES` lines). A card for another artifact carries `href` and weighs nothing in `split_site.py`;
+both new sections go to Krator Biomes and Objects with `--alone`. The top list keeps the scale model, the tongues, the
+two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
+I–S 26, S–Z 15, Biomes and Objects 24.
+
+## The north basin's three biomes (2026-10-23)
+
+n semiarid (`biomes/nsemiarid`, "Northern semiarid steppe") and its two overlays, the dam basins (`biomes/dambasins`,
+its old port station, slug `dambasins`, with its pack `port.tex.port.js`) and the scablands (`biomes/scablands`, the
+coulee, slug `scablands`), have `ENTRIES` lines under Biomes, tagged new. Published to Krator Biomes and Objects as
+version 25 (`main` at 80d7f17a, the scablands' page with its own title): the live index edited in place (three cards)
+and the three pages bundled by `build_gallery.bundle()` alone, no full rebuild. The artifact holds about 196 MiB.
 
 ## Four artifacts, the worlds by the alphabet (2026-10-16)
 
@@ -19,7 +38,7 @@ One artifact version holds 256 MiB and no file over 16 MiB (build.py writes no f
 `tools/textures/matlib_pack.py` PART_LIMIT). After `build_gallery.py`:
 
 ```
-python3 gallery/split_site.py --alpha --alone "biome,objects=Krator Biomes and Objects"   --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM"   --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
+python3 gallery/split_site.py --alpha --alone "biome,throne,korona,objects=Krator Biomes and Objects"   --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM"   --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
 ```
 
 `--alpha` sorts the world and kit pages by name (a leading "The" or "A" ignored), fills as few parts as fit under 250 MB,
@@ -76,6 +95,46 @@ a page listed are never extended, so pages left out of a listed build (Iziz's `w
 
 Each section is in alphabetical order by name, a leading "The" or "A" ignored, whatever the order of `ENTRIES`.
 The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the section `ancients`, "Ancient city kits".
+
+## Longsong: its own artifact (2026-10-20)
+
+Longsong (`settlements/longsong`) is published as its own artifact, https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY,
+and Krator Worlds I–S lists it under Settlements as a card that opens it (`LINKED`, 2026-10-20; it was a link at the top). It is about 69 MB:
+the page, its four texture packs (Longsong's two, the Oidong kit's, and since 2026-10-20 the Xanadu kit's for the valley's
+villages) and the dressed people's pieces (`dist/kchar/`, 52 files, 47 MB), and Krator Worlds
+I-S, where it would sort, was at 245 MiB (the owner chose its own artifact over a re-split into four parts). `ELSEWHERE`
+keeps it out of the parts. To update it: `python3 build.py` in the build, then publish `dist/longsong.html` to that
+URL with `longsong.tex.*.js` and `kchar/*` beside it (two calls: the female body's pieces with the page, the male's
+after). It was published private: a gallery viewer opens it only once the owner shares it (the page's Share menu).
+Version 3 (2026-10-20, `main` at 8f640f72): the interiors' second pass, the crowd, the villages on the Xanadu kit with
+their squares; the page and its four packs in one call (`kchar/` unchanged, kept from the last version).
+Version 4 (2026-10-20, `main` at 0724d383): the rooms walked round their furniture and up their flights, the courts'
+galleries, the festival's four-week cycle, the farm year, the herds' gait, the villages' pens, corrals, dairies and
+turning windmills; the page alone (its packs and `kchar/` unchanged). The Xanadu kit's two pages went with it, each with
+the kit's new pack: Krator Worlds S–Z version 13 (`worlds/xanadu-kit.html`) and A–H version 89 (`worlds/erewhon.html`),
+bundled by `build_gallery.bundle()` alone (no full gallery rebuild), their indexes unchanged.
+
+## The Eternian kit: its own artifact (2026-10-20)
+
+The Eternian kit (`kits/eternian`) is published as its own artifact, https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu,
+and Krator Worlds A–H lists it under Building kits as a card that opens it (`LINKED`, 2026-10-20; it was briefly a link at the top). It is about 24 MB (the page
+and its two library packs), and Krator Worlds A–H, where it would sort, held about 232 MiB. `ELSEWHERE` keeps it out of
+the parts. To update: `python3 build.py` in the build, then publish `dist/eternian.html` to that URL with
+`eternian.tex.eternian.js` and `eternian.tex.eternian-2.js` beside it (one call). Published private: a gallery viewer
+opens it only once the owner shares it (the page's Share menu).
+Version 1 (2026-10-20, `main` at 75cc2b140). The same day the four parts' live indexes were edited in place for the link
+(A–H version 90, I–S 25, S–Z 14, Biomes and Objects 23) and their Ancients line now counts 63 pages. The Ancients and the
+Port went to version 5 (three calls, every page and both packs from `main` at 75cc2b140): the Sanctum (`arc-sanctum`) and
+Plymouth and Arcoindian I as the Eternal State keeps them (`arc-kept`) added under Arcologies, Plymouth's and Arcoindian
+I's quality pass, the shared pack with the Sanctum's sets (7.9 MB).
+
+Republished 2026-10-22 (`main` at 900be3137): the Eternian kit's artifact version 2 (the page alone: the frontier fort and
+the catalog's glaive rack and bunk; its packs unchanged), and The Ancients and the Port version 6 (the index, the
+redrawn Sanctum `arc-sanctum`, and the Podium `arc-podium`, the first Sanctum set aside as its own arcology; 64 pages).
+The four parts' live indexes still say 63 pages for the Ancients; `index.template.html` says 64 for their next rebuild.
+
+The Ancients and the Port version 7 (2026-10-22, `main` at bfb103b0d): the Sanctum with the Six Ministries on its podium's
+corners, twelve garden courts and the podium lined with heads; the index and `worlds/arc-sanctum.html` alone.
 
 ## The Throne: its own artifact (2026-10-07)
 
@@ -336,3 +395,60 @@ catalog culture, nine furnished buildings, doors and panes for the black voids) 
 `worlds/iziz.tex.pylon.js` (1.1 MB); the card's blurb and size in the live index (version 18's index, one entry edited, as
 in `build_gallery.py`). Versions 17 and 18 were published elsewhere and not logged here; 18 carried the P5 page with the
 materials bind and its sidecar. Every other file is as in version 18.
+
+Krator Worlds S–Z version 8 (2026-10-19): Talia through P7 (`worlds/talia.html`, 2.0 MB, from `claude/vassal-kits` at
+3c3d5395: the trade, the University, the arts, the temple, the Gate of the Passes, the governor's palace, the catalog
+culture and 64 furnished buildings, real doors and windows for the dark voids), and its card in the live index
+(version 7's index, the Talia entry's blurb and size edited, as in `build_gallery.py`). `worlds/iziz.tex.talia.js` and
+`worlds/iziz.tex.iziz.js` were already in the part at the local sizes and stay. Every other file is as in version 7.
+Talia sorts under S–Z, not I–S: its first page went there with the split.
+
+Krator Worlds I–S version 20 (2026-10-19): `worlds/iziz-mechs.html` replaced (1.6 MB, from `main` at af5ac54d: the Mechs
+kit with six more Iziz mechs, seventeen in all: the Clipeus, Lictor, Baiulus, Turris, Speculator and Catulus) and its card's
+blurb in the live index (version 19's index, one entry edited, as in `build_gallery.py`). Every other file is as in version 19.
+
+Krator Biomes and Objects version 16 and Krator Worlds I–S version 21 (2026-10-19), from `main` at fd3d156c: the two
+brand-new builds of the day. `worlds/necanyons.html` added to Biomes and Objects (the north-eastern canyons, `biomes/necanyons`,
+0.5 MB and its two sidecars, `necanyons.tex.necanyons.js` and `necanyons.tex.hyperjungle.js`, 10.3 MB in all) and
+`worlds/pinnacle-rock.html` to I–S (Pinnacle Rock, `settlements/pinnacle-rock`, 0.7 MB and its two sidecars,
+`pinnacle-rock.tex.necanyons.js` and `pinnacle-rock.tex.hyperjungle.js`, 10.5 MB in all; the part is now about 247 MiB of its
+256). Each live index was edited in place with the one card added (both now have `ENTRIES` lines in `build_gallery.py`); every
+other file is as it was. One call each. I–S version 20 was published elsewhere and is not logged here.
+
+Krator Biomes and Objects versions 17 and 18 (2026-10-19): `worlds/necanyons.html` (the north-eastern canyons) and its two packs
+replaced from `claude/bold-cori-iluy70` after main was merged into it (8fe053f3; merged to `main` the same day: KSTACKS'
+flutes, shoulders and undersides; necanyons' `footMax` and the land fragment's hooks). The live index (version 16) kept: the card's size is
+unchanged (10.3 MB). Pinnacle Rock is in `UNLISTED` until its town is built (the owner, 2026-10-19); `ENTRIES` now
+carries the necanyons card's line. Version 17 carried the page and both packs from 50a07a9f; version 18 the page alone,
+rebuilt after the merge (the packs unchanged).
+
+Krator Worlds S–Z versions 9 and 10 and Krator Worlds I–S version 22 (2026-10-19, from `main` at bd5ed646: the Iziz court
+furniture textures). S–Z: `worlds/talia.html` and `worlds/verge.html` replaced, the Iziz pack in two parts
+(`iziz.tex.iziz.js`, `iziz.tex.iziz-2.js`; the court sets made it outgrow one file), Verge's sidecars (`verge.tex.iziz.js`,
+`-2`, and `verge.tex.eastabyss.js`, `verge.tex.locus.js`, which the part lacked), and **Pylon moved in from I–S** with
+`iziz.tex.pylon.js`: with the larger Iziz pack I–S would have held about 257 MiB, over a version's 256. I–S version 22:
+`worlds/iziz.html`, `worlds/iziz-vernacular.html` and the Iziz pack in two parts replaced, Pylon's page and sidecar
+removed (about 254 MiB). The cards' sizes and blurbs were edited in each live index (Pylon's card moved). Roketstad,
+whose page changed only by catalog data it does not draw, was not republished; Voth stays the live 11.9 MB copy.
+
+Krator Biomes and Objects version 19 (2026-10-19): Korona's six stations added (`biomes/korona`, from `main` at cb583576) as six biome cards in station order, named "Korona 1 · the tepui" to "Korona 6 · the hoar table" so the alphabetical sort keeps the order: `worlds/korona.html` (the tepui), `worlds/korona-hollow.html` (the pitcher hollow), `worlds/korona-basin.html` (the fertile basin), `worlds/korona-trench.html` (the trenches), `worlds/korona-gorge.html` (the lee gorge) and `worlds/korona-hoar.html` (the hoar table), 0.6 to 0.7 MB each, with the five packs they share (`korona.tex.korona.js`, `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js`, `.ehigh.js`, 24.1 MB; each card's size counts the packs its page loads, 21.1 to 23.8 MB): 27.6 MB in one call, the part now about 176 MB. The six cards were inserted into the live index (version 18's; their lines are in `ENTRIES`, the pages copied byte for byte); every other file is as in version 18. Korona went into this part rather than its own artifact like the Throne because the part had the room. Not done: Pinnacle Rock, published to Krator Worlds I–S as version 21 from `claude/strange-antonelli-8eef33` (7bd89a44, not logged above: `worlds/pinnacle-rock.html`, its two packs and its card), is still in that live part although `UNLISTED` keeps it out of a rebuild (the owner, 2026-10-19); taking it down is the owner's call.
+
+Krator Biomes and Objects version 20 (2026-10-19): Korona's six station pages replaced by the look pass (`biomes/korona`, from `main` at 3e7e78c66): the hex-cell texture dither, the moving traps, the ecotone kits read in place (the north-western lowlands on the basin's shore, the northern highlands on the trenches' crest), the water on `core/water` and `core/atmos`, the gorge spring visible. `worlds/korona.html`, `korona-hollow`, `korona-basin`, `korona-trench`, `korona-gorge` and `korona-hoar` (0.7 to 1.0 MB each, copied byte for byte) with the seven packs their pages now load: the five of version 19 rewritten (`korona.tex.korona.js` grew to 11.3 MB; `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js`, `.ehigh.js` the same bytes) and two new, `korona.tex.nwlowlands.js` (4.2 MB, the basin) and `korona.tex.nhighlands.js` (4.2 MB, the trenches): 37.7 MB in one call, the part now about 186 MB. The six cards' sizes recomputed as page plus the packs its page loads (21.8 to 28.9 MB), the live index (version 19's) edited in place, no other change to it; every other file is as in version 19. Pinnacle Rock in Krator Worlds I–S stays as noted under version 19.
+
+Krator Worlds I–S version 23, S–Z version 11 and Krator Biomes and Objects version 21 (2026-10-19, from `main` at
+7bafd764: Pinnacle Rock merged with P2, P3 and the night). I–S: `worlds/pinnacle-rock.html` replaced (4.3 MB: the roosts,
+the Stair, the town, the farms, the camps, the Deep Root, the Garden, the night) and its four new sidecars added
+(`pinnacle-rock.tex.beast-riders.js`, `-brtowns.js`, `-girder.js`, `-kftex.js`; the hyperjungle and necanyons packs were
+already there at the local sizes), its card's blurb and size (24.9 MB) edited in the live index as in `build_gallery.py`
+(Pinnacle Rock is out of `UNLISTED`). The part would have held about 268 MiB, so **Scyvoi moved to S–Z** (its page,
+downloaded from I–S and uploaded, its two packs copied server side, its card moved between the live indexes): I–S now
+ends at Screamers, S–Z begins at Scyvoi, and the parts keep their range titles. Biomes and Objects: `worlds/necanyons.html`
+replaced (the night, core/water, the full viewer), its card's size and blurb edited; the Korona pages there are the Korona
+session's own republish of the same hour (their source differs from `main` only by necanyons' numeric-default fix).
+
+Krator Worlds A–H version 92 (2026-10-20, from `main` at 83e80089f): the Beast Riders kit added (`worlds/beast-riders.html`,
+12.7 MB, its textures inline: the mounts' buildings, the sedentary trades and larger houses, the tent set, the rock-cut
+pieces and the ports of Girder's and Mav's Refuge's buildings; verify.py --assert OK, the page matching the hash baseline),
+its card in the live index (version 91's index with one entry added, as in `build_gallery.py`'s new `ENTRIES` line). Every
+other file is as in version 91; the part holds about 244 MiB.
+

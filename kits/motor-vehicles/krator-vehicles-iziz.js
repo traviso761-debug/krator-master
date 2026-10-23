@@ -19,7 +19,7 @@ VEHICLE_CULTURE('iziz', {
   lore: 'hyperjungle empire; the Forgemasters keep Ancient machines running',
   /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
   detail: {
-    ochreOrange: 'paint', ochreOrangeDark: 'paint', creamPaint: 'paint', creamDark: 'paint', tealPaint: 'paint',
+    ochreOrange: 'paint', ochreOrangeDark: 'paint', creamPaint: 'whitePaint', creamDark: 'paint', tealPaint: 'bluePlate', gold: 'foil', gunmetal: 'plate', gunmetalDark: 'plate',
     rocket: 'paint', rocketTip: 'paint', underbody: 'metal', stripeCream: 'tarp', crate: 'wood', canvas: 'canvas',
     tealGlass: null
   },

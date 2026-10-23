@@ -12,6 +12,8 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};     // data/posture.json, before any figure
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.clipData = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ KCharFigure.clipData[c.key] = c; });   // data/clips.json
+  KCharFigure.faces = (D.clips && D.clips.faces) || {};
   var SLOT_LABEL = { head:'Headgear', torso:'Torso & arms', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
   var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman', mpfb_giant:'Giant' };
@@ -138,7 +140,7 @@
   var hv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta());
-    if(fig) fig.update(dt);
+    if(fig && !(window._kchar && window._kchar.still)) fig.update(dt);   // still: tools/shots.py steps the figure itself
     if(cam.spin) cam.yaw += dt * 0.5;
     if(cam.face && fig){ fig.headWorld(hv); cam.want.ty = hv.y + 0.06; }
     else if(fig) cam.want.ty = 0.9 * fig.pose.root * figScale();

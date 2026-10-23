@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/nwlowlands.html`
 Build: `cd biomes/nwlowlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -20,8 +20,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 19 | the axis, the sea, the river (38); terrain (68); the climate fields (92); the host binding (108); the ground (117); the water (163); the road (204) |
+| `45-host-stage.js` | 21 | the axis, the sea, the river (38); terrain (68); the climate fields (92); the host binding (108); the ground (117); the water (168); the road (209) |
 | `50-biome-nwlowlands-species.js` | 60 **big** | palettes (28); the species (82); harvest (biomes/FRUIT.md) (136); leaf textures (170); TWO-TONE BARK (308); geometries local to this biome (468); materials (520); instanced items (583) |
+| `52-biome-nwlowlands-library.js` | 2 |  |
 | `55-biome-nwlowlands-trees.js` | 42 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
 | `60-biome-nwlowlands-floor.js` | 16 | small plants (26); the zone planters (86); the understorey (under the crowns) (125); the pass (137) |
 | `65-biome-nwlowlands-dress.js` | 8 |  |

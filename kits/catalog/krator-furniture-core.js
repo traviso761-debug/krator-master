@@ -415,7 +415,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -473,7 +473,10 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
   'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
-  'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
+  'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking',
+  /* the 2026-10-19 trades audit (the Voth census yardstick): bakers, butchers, healers and apothecaries, scribes and teachers, shipwrights, quarrymen, customs
+     and weigh-house clerks, the cult's priests, dairies (nomad herds). FK.ROLES.works draws most of them */
+  'baking', 'butchery', 'healing', 'scribing', 'shipwrighting', 'quarrying', 'customs', 'worship', 'dairy'];
 /* the activity an NPC can do AT a piece (simulation layer, 2026-10): `task: [..]` from FURN_TASKS. A trade (`job`) is
    what a worker produces; a task is what any NPC does: sleep, eat, read. A building holding a piece with a task is a
    destination for that task. Derived when an entry leaves task out: FURN_ROLE_TASK[role] first (a kit piece, [] = none),
@@ -842,6 +845,23 @@ function furnCol(culture, key) {
    `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
    of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
 const FAMILY_SPLITS = [
+  /* the library's variants and extras (2026-10-19): candle and tallow wax, twisted rope, linen and patched canvas, red brick,
+     the second and olive scale skins, the second plumage, and the shell sets: abalone, soft abalone and the pearls on a nacre
+     part, conch on the shell family (a part on the shell family keeps the conch; its whites take the second nacre) */
+  [/^waxBone$/, ['food', 'cloth', 'plastic', 'plaster'], 'tallow'],
+  [/^wax(Honey|Red)$/, ['food', 'cloth', 'plastic', 'plaster'], 'wax'],
+  [/^rope(Hemp|Jute|Flax|Coir|Twine|Tan|Pale|Rush|Vine)$/, ['rope'], 'ropeTwist'],
+  [/^linen/, ['cloth'], 'linen'],
+  [/^canvas(Tan|Raw|Pale|Faded)$/, ['cloth'], 'canvasB'],
+  [/^brickRed$/, ['stone', 'plaster', 'ceramic', 'wood'], 'brick'],
+  [/^scaleBark/, ['skin'], 'scaleB'],
+  [/^scaleJade/, ['skin'], 'scaleOlive'],
+  [/^scaleTurquoise$/, ['skin'], 'scaleOliveB'],
+  [/^featherYellow$/, ['hide', 'plant', 'plastic'], 'featherB'],
+  [/^shellAbalone$/, ['nacre'], 'abalone'],
+  [/^nacreSea$/, ['nacre'], 'abaloneSoft'],
+  [/^(shellPearl|nacreRose)$/, ['nacre'], 'nacreB'],
+  [/^shell(White|Cream)$/, ['shell'], 'nacreC'],
   [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
   [/^tyre/, ['plastic', 'metal'], 'rubber'],
   [/^clay/, ['stone'], 'clay'],

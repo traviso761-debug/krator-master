@@ -1,7 +1,8 @@
 # kits/mechs: the Mechs kit
 
 Procedural, fully animated walking machines that any Krator world can take as ONE bundle (`KratorMechs`), the way the
-motor vehicles and the catalog's furniture reach other worlds. First culture: **Iziz**, ten war-walkers.
+motor vehicles and the catalog's furniture reach other worlds. Two cultures: **Iziz**, seventeen walkers, and the
+**Stalkers** of the Catch, two (below).
 
 The Izani Empire's mechs (LORE.md 6.2, "Ancient survivals") are Ancient *industrial* walkers dug out of the city's
 ruins and kept going by the Forgemasters' Guild: loaders, cranes, excavators, pile drivers, cargo striders, refitted
@@ -9,7 +10,8 @@ for a war fought mostly against people with swords. A weapon is what the machine
 auger, a saw), or a ballista bolted on. The legions dress them as they dress themselves: the sun of Iziz in gilt,
 bronze phalerae, horsehair crests, a vexillum or a sashimono-like flag on a springy pole, feathers from the jungle.
 Livery: weathered steel and gunmetal, Iziz orange on the armour plates, cream trim, a teal line, bronze fittings.
-They stand about three times a man (4.4 to 6.2 m to the top of the hull).
+Most stand about three times a man (4.4 to 6.9 m to the top of the hull); the Turris is a walking siege tower of
+three storeys (13 m), and the Catulus a drone the size of a hound that runs at the Speculator's heels.
 
 | Key | Name | Was | Drive | Pilot | Weapon / attack | Ref |
 |---|---|---|---|---|---|---|
@@ -24,6 +26,24 @@ They stand about three times a man (4.4 to 6.2 m to the top of the hull).
 | `iz_hoist` | Hoist | walking crane | four splayed legs | caged cab; a rigger on top | slewing crane, four-tined grapple: smash | 1 |
 | `iz_talpa` | Talpa | tunnel borer | four beetle legs | saddle on its back | polybolos: the bore head's seven tubes as a rotary bolt-thrower, a six-bolt volley | 11 (the crescent-finned crawler) |
 | `iz_rota` | Rota | vehicle-recovery frame | biped | open chest cradle; head is a car cab | salvage saw and wheel shield: sweep | 10 |
+| `iz_clipeus` | Clipeus | survey walker | biped | the disc | two shoulder boxes of three bolt tubes (three bolts in turn), a three-fingered grab, a clamp: bolts, then a clamp | 12 (the disc walker) |
+| `iz_lictor` | Lictor | pile breaker | biped, tall | egg head pod | a ram arm with an iron fist, a pincer arm; the fasces on its back: overhead smash | 13 (the egg-headed walker) |
+| `iz_baiulus` | Baiulus | heavy porter | biped, hunched | open framed seat in the chest | two great arms on shoulder drums, two small grippers: clap | 14 (the four-armed heavy) |
+| `iz_turris` | Turris | walking works | four long legs | bridge on the roof; a crew of legionaries on the galleries | three ballistae on the prow balcony, loosed in turn; banners down its sides, hoist cables from its belly | 15 (the walking fort) |
+| `iz_speculator` | Speculator | prospector | biped, hunched | closed chest pod | long sampling arms with pincers: snatch; canvas-wrapped legs, kit tied on | 16 (the canvas-legged scout) |
+| `iz_catulus` | Catulus | survey drone | four thin legs, trot | none | none: a siren, then a dart | 16 (its drone) |
+
+**The Stalkers** (culture `stalker`, 2026-10-23; `LORE.md` §4, Hub 01; `biomes/catch/PLAN.md` section 6c): the quiet
+robotic killers of the Catch, about the size of a man (~1.9 m), in pairs or triads, the Ancients' own make gone feral.
+Sleeker than the Iziz walkers (the owner): smooth white shells, tight joints, flexible sleeves on the legs, nothing tied
+or bolted on, a red unit stripe, cyan running lights, a red eye. The culture's `detail` profile takes the shared detail
+maps three times finer and at a third of their strength (`MECH_CULTURE(..., { detail: { tile, mix } })`), on a material
+set of its own, so the shells read as scoured paint, not scrap.
+
+| Key | Name | Drive | Weapon / attack | Ref |
+|---|---|---|---|---|
+| `st_harpooner` | Harpooner Stalker | biped, a hull leaning forward | two pneumatic harpoon guns on its sides: loose left, loose right (`fire` events, the `barb` projectile, a 1 m steel harpoon) | the owner's canvas-legged walker (the Speculator's reference), made sleek |
+| `st_blade` | Blade Stalker | biped, hunched | two long arms ending in hooked blades: over and down, then the other (two `impact` events) | the owner's four-armed heavy (the Baiulus's reference), the hands made blades |
 
 Every mech has an **idle** (hydraulic breathing, weight shift, torso scan, the cab or head looking round, the pilot's
 head turning, banners and feathers stirring), a **plodding walk** (two-bone leg IK; feet planted in the world, so

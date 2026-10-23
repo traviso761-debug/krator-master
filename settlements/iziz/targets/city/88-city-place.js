@@ -98,17 +98,23 @@ const SLOT_HALF=n=>n*AG.pitch/2-AG.street/2-2;
 function slotOBB(C,i,j,w,h){const c=agWorld((C.i0+i+w/2)*AG.pitch,(C.j0+j+h/2)*AG.pitch);return{x:c[0],z:c[1],hx:SLOT_HALF(w),hz:SLOT_HALF(h),ry:-AG.rot,pad:1};}
 function fitSlot(grid,nx,nz,w,h){for(let j=0;j+h<=nz;j++)for(let i=0;i+w<=nx;i++){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<h&&ok;b++)if(grid[j+b][i+a])ok=false;if(ok)return[i,j];}return null;}
 const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
-(function assignSlots(){reseed(SEED_CITY+4);let campus=0,factory=0,gov=0;
+(function assignSlots(){reseed(SEED_CITY+4);let campus=0,factory=0,gov=0,nHouse=0,nRow=0,nQuad=0,nFlat=0;
  // biggest clusters first so the 4x4 campus and 3x3s find room; the first pass's clusters, then (reseeded) the extras
  const firstPass=CLUSTERS.filter(C=>!C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz),extras=CLUSTERS.filter(C=>C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz);
  for(const C of firstPass.concat(extras)){if(C===extras[0])reseed(SEED_CITY+44);const grid=[];for(let j=0;j<C.nz;j++){grid.push([]);for(let i=0;i<C.nx;i++)grid[j].push(0);}
   const Q=QUOTA[C.hill],wish=[];const cells=C.nx*C.nz,big=cells>=12;
   // towers are 1x1 lots (four to a 2x2 block); the Tripod stands on a 2x2 (its legs splay 60 m) with its market under it.
   // Offices, apartments and houses come as ONE type per group (Travis): a row of parallel slabs, or a quad of 1-4 towers.
-  const SKY=()=>{const k=vPick(['skyA','skyB','skyC','skyD','skyE','skyF']);return k==='skyC'?{kit:k,w:2,h:2,kind:'sky'}:{kit:k,w:1,h:1,kind:'sky'};};
-  const HOUSE=()=>({kit:vPick(['houseA','houseB','houseC','houseD','houseE','houseF']),w:2,h:1,kind:'house',group:'quad'});
-  const ROW=()=>({kit:vPick(['honey','officeC']),w:3,h:2,kind:'mid',group:'row'});
-  const QUAD=()=>{const k=vPick(['officeB','officeB','officeA','aptsA','aptsC']);return{kit:k,w:2,h:vPick([1,2]),kind:'mid',group:'quad'};};
+  // the owner's roster (2026-10-19): sky A (a lot it never fitted: it went to transplants) gives way to the undulant flatiron;
+  // the kit's houses to the undulant and bridge houses; the terrace stack to Apartments C2; the broken offices (their kit
+  // sections select nothing) to the cultural centre and the star laboratory, whole 2x2 lots; Office C's row to the fin
+  // apartments. Each pick draws as it did
+  // (two flatirons at most: each is some 450 000 triangles, and five of them left the cultural centre under the kit's cap)
+  const SKY=()=>{let k=vPick(['flat','skyB','skyC','skyD','skyE','skyF']);if(k==='flat'&&nFlat++>=2)k='skyD';return k==='skyC'?{kit:k,w:2,h:2,kind:'sky'}:{kit:k,w:1,h:1,kind:'sky'};};
+  // the new types take turns (so each stands in the city: a few lots, and a pick by the dice left some out), the dice still drawn
+  const HOUSE=()=>{vPick(['wave','bridge']);return{kit:['wave','bridge'][nHouse++%2],w:2,h:1,kind:'house',group:'quad'};};
+  const ROW=()=>{vPick(['honey','fins']);const k=C.state==='rehab'?'fins':'honey';nRow++;return{kit:k,w:3,h:2,kind:'mid',group:k==='fins'?null:'row'};};
+  const QUAD=()=>{vPick(['cultural','adlab','aptsC2','aptsC2','aptsC']);const k=['aptsC2','aptsC','aptsC','adlab'][nQuad++%4],h=vPick([1,2]);return k==='cultural'||k==='adlab'?{kit:k,w:2,h:2,kind:'civic'}:{kit:k,w:2,h,kind:'mid',group:'quad'};};
   if(C.state==='rehab'){
    {const n=Math.min(Math.max(2,Q.sky),cells>=12?6:cells>=8?4:2);for(let k=0;k<n;k++)wish.push(SKY());}   // towers are 1x1 lots now: four to a 2x2 block
    if(cells>=9)wish.push(ROW());if(cells>=6)wish.push(QUAD());if(big)wish.push(QUAD());
@@ -142,6 +148,10 @@ const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
 // Travis (round 4): the Skyscraper C near (-23.4,288.4) is repaired (decay 3, in a ruined quarter) and carries a tripod market
 (function tripodHere(){const T=[-23.4,288.4];let best=null,bd=1e9;for(const C of CLUSTERS)for(const o of C.slots){if(o.kit!=='skyC')continue;const d=Math.hypot(o.x-T[0],o.z-T[1]);if(d<bd){bd=d;best=o;}}
  if(best&&bd<40){best.forceD=3;best.market=true;}})();
+// the owner (2026-10-19): sky C is exiled but for its tripod market (and any toppled C); its 2x2 lots go to the hotel, the
+// cultural centre and the star laboratory in turn (the cultural centre and the hotel need these 2x2 lots: a quad's can be
+// crossed by a toppled tower's fall)
+(function exileC(){let k=0;for(const C of CLUSTERS)for(const o of C.slots){if(o.kit!=='skyC'||o.market||o.toppled)continue;o.kit=['cultural','hotel','adlab'][k++%3];o.kind='civic';}})();
 // the ruined clusters, for the biome mask (undergrowth creeps back into the ruins)
 for(const C of CLUSTERS)if(C.state==='ruin')RUIN_RECTS.push({x:C.cx,z:C.cz,hx:C.nx*AG.pitch/2,hz:C.nz*AG.pitch/2,ry:-AG.rot});
 cityBakeMasks();

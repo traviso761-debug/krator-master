@@ -164,13 +164,28 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  const P=[];for(let i=0;i<16;i++)P.push([rng()*w,rng()*h]);
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
+// THE LIBRARY GROUND LAYERS (materials.json ground.salt, ground.wash; 2026-10-19; core/materials/PLAN.md "Rift"): the pale
+// smooth sand (ground093c) under the salt crust of the lake shore, and the fine tan sand (ground080) of the savannah's dry
+// wash, over the painted ground by weight per vertex (aLay). Without the pack (?mat=proc, or an open world) the ground is
+// exactly the painted one.
+const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('rift',n);
+ const a=P('ground.salt'),b=P('ground.wash');if(!a||!b)return null;const T=x=>KMAT.textures(x,{aniso:8}).map;
+ return{salt:T(a),saltK:1/a.scale[0],wash:T(b),washK:1/b.scale[0]};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};if(GLAY){sh.uniforms.uLSalt={value:GLAY.salt};sh.uniforms.uLWash={value:GLAY.wash};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;attribute vec2 aLay;varying vec2 vLay;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying vec2 vLay;'+(GLAY?'uniform sampler2D uLSalt,uLWash;':''))
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);'+
+  // the shore's pale sand and the wash's tan sand over the painted ground (a custom sampler is not decoded from sRGB:
+  // pow 2.2 by hand), each on two tiles, one turned, blended by a slow wave so the repeat shows no grid
+  (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));'+
+   'vec3 ts=mix(pow(texture2D(uLSalt,p*'+GLAY.saltK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLSalt,q*'+(GLAY.saltK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
+   'vec3 tw=mix(pow(texture2D(uLWash,p*'+GLAY.washK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLWash,q*'+(GLAY.washK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vLay.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tw*1.3,0.8),vLay.y);}':'')+'}');};
 (function(){const N=460,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,ck=new Float32Array(p.count);for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,p.getX(i),p.getZ(i)));}
+ const p=g.attributes.position,ck=new Float32Array(p.count),lay=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,x,z));
+  lay[i*2]=ck[i]*smooth(160,20,FC.at(FC.a.lk,x,z))*smooth(-30,0,FC.at(FC.a.lk,x,z));lay[i*2+1]=smooth(.4,.8,FC.at(FC.a.flow,x,z))*(1-FC.at(FC.a.south,x,z));}
+ g.setAttribute('aLay',new THREE.BufferAttribute(lay,2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Rift floor';scene.add(m);})();
 

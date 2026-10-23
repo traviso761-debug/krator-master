@@ -12,28 +12,31 @@
 // against the wall) and a window has no dark backing plate, so the room shows through; 'shut' boards and glazing stay.
 // Every opening on a hollow face is noted for the furnishing (95-iziz-interiors.js): the drawn windows replace the
 // planner's own on each room, so furniture keeps clear of the windows the building really has.
-//   vnBody(item, x, y, z, w, h, d, ry, c, o)   o = {t: wall thickness (.25), floor: item ('vWood'; false: none), floorC}
+//   vnBody(item, x, y, z, w, h, d, ry, c, o)   o = {t: wall thickness (.25), floor: item ('vWood'; false: none), floorC,
+//                                              k: batter (0; .07 = the face recedes 7 % of the half-width over the height,
+//                                              vpBanco7's; each wall piece is tilted to the face and set back by it)}
 //                                              -> the body record, or null when it drew a solid box
 //   VERN.interiors     the flag (set by the target: 89z-rows.js)
 //   VHOLLOW.jobs       one per hollow placement: {key, item, x, z, ry, y, ops: the drawn openings in the world frame}
-const VHOLLOW={jobs:[],bodies:0,walls:0,structure:0};
+const VHOLLOW={jobs:[],bodies:0,walls:0,structure:0,plans:{}};
 VERN.interiors=false;
 // the interiors kit's item for a def and variant ('<key>#<v>' for a variant whose rooms differ, else the def's own), or null
 function vnIxItem(key,v){if(typeof KratorInteriors==='undefined')return null;const S=KratorInteriors.sets;
  const it=(v?S.find(key+'#'+v):null)||S.find(key);return it&&!it.skip?it:null;}
 function vnBody(item,x,y,z,w,h,d,ry,c,o){o=o||{};const C=VERN.cur;
  if(!C||!C.hollow){vB(item,x,y,z,w,h,d,ry,c);return null;}
- const B={item,x,y,z,w,h,d,ry:ry||0,c:c||null,t:o.t==null?.25:o.t,floor:o.floor==null?'vWood':o.floor,floorC:o.floorC||null,ops:[]};
+ const B={item,x,y,z,w,h,d,ry:ry||0,c:c||null,t:o.t==null?.25:o.t,k:o.k||0,floor:o.floor==null?'vWood':o.floor,floorC:o.floorC||null,ops:[]};
  C.hollow.push(B);VHOLLOW.bodies++;return B;}
 // the face of a hollow body that a point on it (local x, z, outward ry) lies on: {B, face: 0 +z | 1 -z | 2 +x | 3 -x, u}
 function vnFaceOf(x,y,z,ry){const C=VERN.cur;if(!C||!C.hollow)return null;
  for(const B of C.hollow){if(y<B.y-.35||y>B.y+B.h)continue;const dx=x-B.x,dz=z-B.z,c=Math.cos(B.ry),s=Math.sin(B.ry);
   const lx=dx*c-dz*s,lz=dx*s+dz*c,a=((ry-B.ry)%TAU+TAU)%TAU;
   const near=(v,t)=>Math.abs(v-t)<.4,dir=t=>Math.min(Math.abs(a-t),TAU-Math.abs(a-t))<.35;
-  if(near(lz,B.d/2)&&Math.abs(lx)<B.w/2&&dir(0))return{B,face:0,u:lx};
-  if(near(lz,-B.d/2)&&Math.abs(lx)<B.w/2&&dir(Math.PI))return{B,face:1,u:-lx};
-  if(near(lx,B.w/2)&&Math.abs(lz)<B.d/2&&dir(Math.PI/2))return{B,face:2,u:-lz};
-  if(near(lx,-B.w/2)&&Math.abs(lz)<B.d/2&&dir(3*Math.PI/2))return{B,face:3,u:lz};}
+  const f=B.k?Math.max(0,Math.min(1,(y-B.y)/B.h)):0,hd=B.d/2*(1-B.k*f),hw=B.w/2*(1-B.k*f);   // a battered face recedes with height
+  if(near(lz,hd)&&Math.abs(lx)<B.w/2&&dir(0))return{B,face:0,u:lx};
+  if(near(lz,-hd)&&Math.abs(lx)<B.w/2&&dir(Math.PI))return{B,face:1,u:-lx};
+  if(near(lx,hw)&&Math.abs(lz)<B.d/2&&dir(Math.PI/2))return{B,face:2,u:-lz};
+  if(near(lx,-hw)&&Math.abs(lz)<B.d/2&&dir(3*Math.PI/2))return{B,face:3,u:lz};}
  return null;}
 (function(){
  const _door=vnDoor,_win=vnWin;
@@ -63,20 +66,23 @@ function vnFaceOf(x,y,z,ry){const C=VERN.cur;if(!C||!C.hollow)return null;
  VERN.def=function(D){const r=_def.apply(this,arguments),b=D.build;
   D.build=function(G,o){const C=VERN.cur,item=VERN.interiors&&C&&(o.scale||1)===1?vnIxItem(D.key,o.v|0):null;
    if(item){C.hollow=[];C.ixItem=item;}
-   const out=b.apply(this,arguments);
-   if(item&&C.hollow.length){vnHollowFlush(C);vnIxStructure(C,item);}   // a builder that drew no hollow body keeps its solids, and no rooms
+   const out=b.apply(this,arguments);if(C&&C.bands)vnBandsDraw(C);if(C&&C._stoops&&typeof vnStoopsDraw==='function')vnStoopsDraw(C);
+   if(item&&(C.hollow.length||(item.rooms&&item.rooms.length&&!(item.bodies&&item.bodies.length)))){vnHollowFlush(C);vnIxStructure(C,item);}   // an item of explicit rooms only (an open-fronted hall the builder draws as walls) is planned without a hollow body   // a builder that drew no hollow body keeps its solids, and no rooms
    if(item)C.hollow=null;
    return out;};
   return r;};
 })();
 // the four walls of every hollow body, cut round its openings; the long faces (+z, -z) run the full width, the ends butt in
 // (a body standing over another's storey, more than a metre above the lowest, gets no floor plate: the planned floor is its floor)
-function vnHollowFlush(C){const y0=Math.min(...C.hollow.map(B=>B.y));for(const B of C.hollow){const t=B.t;if(B.y>y0+1)B.floor=false;
+function vnHollowFlush(C){if(!C.hollow.length)return;const y0=Math.min(...C.hollow.map(B=>B.y));for(const B of C.hollow){const t=B.t;if(B.y>y0+1)B.floor=false;
   for(let f=0;f<4;f++){const along=f<2,L=along?B.w:B.d-2*t,n=f===0?[0,1]:f===1?[0,-1]:f===2?[1,0]:[-1,0];
    // the face's frame: centre at the face, inset t/2; u runs along it as vnFaceOf measures (left to right seen from outside)
    const fr=along?B.d/2-t/2:B.w/2-t/2,cx=n[0]*fr,cz=n[1]*fr,ux=f===0?1:f===1?-1:0,uz=f===2?-1:f===3?1:0;
-   const at=(u,y,len,h)=>{if(len<.02||h<.02)return;const lx=cx+ux*u,lz=cz+uz*u,p=loc(B.x,B.z,lx,lz,B.ry);
-    vB(B.item,p[0],y,p[1],along?len:t,h,along?t:len,B.ry,B.c);VHOLLOW.walls++;};
+   const half=along?B.d/2:B.w/2,tilt=B.k?Math.atan(B.k*half/B.h):0,sg=f===0||f===3?-1:1;
+   const at=(u,y,len,h)=>{if(len<.02||h<.02)return;let lx=cx+ux*u,lz=cz+uz*u;
+    if(tilt){const r=B.k*half*Math.max(0,Math.min(1,(y+h/2-B.y)/B.h));lx-=n[0]*r;lz-=n[1]*r;const p=loc(B.x,B.z,lx,lz,B.ry);   // battered: set back and leaning in
+     kput(B.item,[p[0],y+h/2,p[1]],along?vQ(B.ry,sg*tilt,0):vQ(B.ry,0,sg*tilt),[along?len:t,h/Math.cos(tilt),along?t:len],B.c);VHOLLOW.walls++;return;}
+    const p=loc(B.x,B.z,lx,lz,B.ry);vB(B.item,p[0],y,p[1],along?len:t,h,along?t:len,B.ry,B.c);VHOLLOW.walls++;};
    const ops=B.ops.filter(o=>o.face===f).map(o=>({a:Math.max(-L/2,o.u-o.w/2),b:Math.min(L/2,o.u+o.w/2),y0:Math.max(0,o.y0),y1:Math.min(B.h,o.y1)}))
     .filter(o=>o.b-o.a>.05).sort((p,q)=>p.a-q.a);
    let u=-L/2;
@@ -87,7 +93,7 @@ function vnHollowFlush(C){const y0=Math.min(...C.hollow.map(B=>B.y));for(const B
   if(B.floor)vB(B.floor,B.x,B.y-.02,B.z,B.w-2*t+.02,.04,B.d-2*t+.02,B.ry,B.floorC||vC(VPAL.woodMid[0]).multiplyScalar(.82));}}
 // the planned storeys inside the bodies: the item planned in the placement's own frame (origin, no yaw), so its floors,
 // partitions and stairs are drawn in local coordinates; the job for the furnishing is noted with the drawn openings
-function vnIxStructure(C,item){const IX=KratorInteriors,inst=IX.sets.instantiate(item,0,0,0,{baseY:0,register:false,seed:0,prefix:'local.'});
+function vnIxStructure(C,item){const IX=KratorInteriors,inst=VHOLLOW.plans[item.key]||(VHOLLOW.plans[item.key]=IX.sets.instantiate(item,0,0,0,{baseY:0,register:false,seed:0,prefix:'local.'}));   // planned once per item (the city places thousands)
  const rich=(item.wealth||0)>=.7,poor=(item.wealth||0)<.35;
  // (fixed picks, no rng(): the stream after a builder is the next builder's, which reseeds, but nothing here should draw from it)
  const partC=poor?vC(VPAL.woodPoor[0]):vC(rich?0xe8dcc4:VPAL.sand[0]).multiplyScalar(1.05),partI=poor?'vWood':'vPlaster';
@@ -132,5 +138,17 @@ function vnRectFill(poly,holes,box){const xs=new Set(),zs=new Set();for(const P 
   if(run!==null)box(run,X[X.length-1],Z[j],Z[j+1]);}}
 // a band or string course over a body: the solid slab it always was, or, over a hollow body, a ring whose opening is the
 // room below (inset by the wall, t) so the planned floor and stair show through
+// A band round a hollow body (its own outline) is drawn when the builder returns (vnBandsDraw), open wherever a door was cut
+// in the face it runs along, so a floor-line band is no sill across the doorway (the owner, 2026-10-19: the Order's
+// chapterhouse had a 0.9 m whitewash band standing in its door)
 function vnBand(item,x,y,z,w,h,d,ry,c,t){const C=VERN.cur;if(!C||!C.hollow){vB(item,x,y,z,w,h,d,ry,c);return;}t=t==null?.3:t;
+ const B=C.ixItem?C.hollow.find(B=>Math.hypot(B.x-x,B.z-z)<.5&&Math.abs(B.ry-ry)<.01&&y<B.y+B.h&&y+h>B.y-.4):null;
+ if(B){(C.bands=C.bands||[]).push({B,item,x,y,z,w,h,d,ry,c,t});return;}
  for(const s of[-1,1]){const p=loc(x,z,0,s*(d/2-t/2),ry),q=loc(x,z,s*(w/2-t/2),0,ry);vB(item,p[0],y,p[1],w,h,t,ry,c);vB(item,q[0],y,q[1],t,h,d-2*t,ry,c);}}
+function vnBandsDraw(C){for(const R of C.bands||[]){const {B,item,x,y,z,w,h,d,ry,c,t}=R;
+  const gaps=f=>B.ops.filter(o=>o.door&&o.face===f&&o.y0<y+h-B.y&&o.y1>y-B.y).map(o=>[o.u-o.w/2-.05,o.u+o.w/2+.05]);
+  // a run [a, b] along a side, less the gaps (in the side's own coordinate, sgn maps a face's u onto it)
+  const runs=(a,b,G,sgn)=>{let out=[[a,b]];for(const g of G){const g0=Math.min(sgn*g[0],sgn*g[1]),g1=Math.max(sgn*g[0],sgn*g[1]),nx=[];for(const r of out){if(g1<=r[0]||g0>=r[1]){nx.push(r);continue;}if(g0>r[0])nx.push([r[0],g0]);if(g1<r[1])nx.push([g1,r[1]]);}out=nx;}return out.filter(r=>r[1]-r[0]>.05);};
+  for(const [f,s] of[[0,1],[1,-1]])for(const r of runs(-w/2,w/2,gaps(f),f===0?1:-1)){const p=loc(x,z,(r[0]+r[1])/2,s*(d/2-t/2),ry);vB(item,p[0],y,p[1],r[1]-r[0],h,t,ry,c);}
+  for(const [f,s] of[[2,1],[3,-1]])for(const r of runs(-(d/2-t),d/2-t,gaps(f),f===2?-1:1)){const q=loc(x,z,s*(w/2-t/2),(r[0]+r[1])/2,ry);vB(item,q[0],y,q[1],t,h,r[1]-r[0],ry,c);}}
+ C.bands=null;}

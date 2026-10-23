@@ -151,3 +151,9 @@ Catalog verify pass (2026-10): kits/catalog recentred `br_market_stall` (and oth
 footprint and raised some sizes. Mav's Refuge now places these pieces (53-furnish.js) and undoes the recentring
 shift of the ones it places (`BRF_SHIFT`), so they stand where the old helpers drew; the raised sizes are the
 catalog's.
+
+## Voth census trades (2026-10-19)
+
+The table is `src/65-mr-trades.js` (`MR_TRADES`; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 16 trades carried, 4 partly, 20 gaps, 4 na (no electricity, no embassies, no elephant bugs).
+- [ ] Gaps (a later session builds them; `kits/beast-riders` already has most of these as `br_bldg_*`): butcher, brewhouse, tannery, canoe shed (shipwrights, coast guard), school, toll house, house of healing, river landing (bargemen, ferry, fishers), orchard terraces, mine head, quarry, granary and mill, beetle pen, dairy shed, sties and coops, fungus house, temple precinct (monks).
+- [ ] Partly carried: weavers and dyers (silk houses; no dye works), temple priests (shrines; no temple hall), priests and undertakers (no funerary court), dockers (lift landing stages; no cargo landing).

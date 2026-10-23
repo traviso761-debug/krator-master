@@ -69,3 +69,18 @@ Open items are `- [ ]` lines; build.py prints them.
       Never shuffle with a random comparator in any build.
 - [ ] `src/34-kitdefs.js` (vendored) paints `TEX.leafCard` with `Math.random`: the leaf card's pixels differ per load. It is
       a texture, not placement, so the layout and the fingerprint are unaffected; fix it upstream and re-vendor.
+
+## Voth census trades (2026-10-19)
+
+The table `HL_TRADES` in `src/89-hl-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (23 carried, 1 partly, 7 gaps, 13 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it. Gaps to fill later:
+
+- [ ] bakers: a bakery (ovens and a shop front)
+- [ ] butchers: a butcher's shop and slaughter yard
+- [ ] weavers and dyers: a weaver's and dyer's workshop
+- [ ] tanners: a tannery
+- [ ] shipwrights and boatbuilders: a boatyard (the shipbreakers take ships apart; nothing builds a hull)
+- [ ] priests and undertakers: a funerary temple or burying ground (partly carried: hl_rep_temple)
+- [ ] orchardmen: an orchard plot
+- [ ] dairymen: a dairy
+
+The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.

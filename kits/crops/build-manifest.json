@@ -1,10 +1,10 @@
 {
  "00-head.html": "1f008e4eff1e",
- "08-core-rand.js": "a7a5bbf7eb40",
- "10-crop-core.js": "a4ea0e02a84d",
- "20-crop-records.js": "de276a876c4b",
- "22-crop-material.js": "29813cc4fc72",
- "26-crop-cards.js": "58f0826a1aa3",
+ "08-core-rand.js": "4a3aa47f25da",
+ "10-crop-core.js": "6ebd44fe886d",
+ "20-crop-records.js": "3e4418cf66d6",
+ "22-crop-material.js": "d2cbf2e86800",
+ "26-crop-cards.js": "49b5148e97a7",
  "40-crop-query.js": "9cce348cf547",
  "89-sheet.js": "266579477a56",
  "99-tail.html": "3ac109a7898d"

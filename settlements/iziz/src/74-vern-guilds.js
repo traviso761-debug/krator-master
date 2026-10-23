@@ -51,7 +51,7 @@ function vgDrums(x,z,n){for(let k=0;k<n;k++)vPst(k%3===1?'vTankR':'vTank',x+(k%2
 function vgSkull(G,x,y,z,s,bone){const B=bone||vC(0xe8dfcc);
  vB('vPlaster',x,y,z,2.3*s,.5*s,2.5*s,0,B);kput('vDomeP',[x,y+.5*s,z-.15*s],null,[1.28*s,1.05*s,1.45*s],B);
  vB('vPlaster',x,y+.5*s,z+.85*s,2.2*s,1.05*s,.7*s,0,B);vB('vPlaster',x,y+1.35*s,z+.75*s,2.5*s,.3*s,1.0*s,0,B.clone().multiplyScalar(.95));   // face plate, brow
- for(const q of[-1,1])vB('vDarkB',x+q*.65*s,y+.75*s,z+1.15*s,.55*s,.5*s,.2*s,0);
+ for(const q of[-1,1])vB('vIron',x+q*.65*s,y+.75*s,z+1.15*s,.55*s,.5*s,.2*s,0,vC(0x2a2622));
  for(let k=0;k<5;k++)vB('vPlaster',x-.7*s+k*.35*s,y-.3*s,z+1.15*s,.12*s,.34*s,.12*s,0,B);                                              // teeth
  const beak=mesh(lathe({rFn:yy=>(.5*(1-yy/(1.9*s))+.04)*s,H:1.9*s,nu:12,nv:4}),MAT.plaster,G,x,y+.62*s,z+1.15*s);beak.rotation.x=Math.PI/2+.28;
  for(const q of[-1,1]){const horn=mesh(lathe({rFn:yy=>(.2*(1-yy/(2.3*s))+.03)*s,H:2.3*s,nu:10,nv:4}),MAT.plaster,G,x+q*.95*s,y+1.25*s,z-.5*s);horn.rotation.set(-.55,0,-q*1.0);}}
@@ -62,10 +62,10 @@ function vgMech(x,y,z){const white=null,iron=vC(0x2e2a26),dark=vC(0x3a3632);
   vBall('vBall',fx,y+.95,z+.1,.4,iron);vBeam([fx,y+.95,z+.1],[fx+s*.05,y+3.5,z-1.35],.62,white,'vPanelB');                            // ankle, shin (back to the knee)
   vBall('vBall',fx+s*.05,y+3.5,z-1.35,.5,iron);vB('vRustB',fx+s*.05,y+3.15,z-1.95,.7,.7,.35,0,null);                                 // knee, knee cap
   vBeam([fx+s*.05,y+3.5,z-1.35],[fx+s*.1,y+5.5,z+.35],.78,white,'vPanelB');vB('vRustB',fx+s*.5,y+4.0,z-.6,.3,.9,.5,0,null);        // thigh (forward to the hip), rust
-  vBq('vDarkB',fx+s*.42,y+2.3,z-.7,.12,.7,.35,null);}                                                                             // shin vents
+  vBq('vIron',fx+s*.42,y+2.3,z-.7,.12,.7,.35,null,vC(0x2a2622));}                                                                             // shin vents
  vBq('vPanelB',x,y+5.55,z+.1,3.9,1.15,1.9,null,white);vB('vRustB',x,y+5.2,z+.1,4.1,.25,2.0,0,null);                               // hip block
  vBq('vPanelB',x,y+7.15,z-.1,3.9,2.3,2.3,null,white);vBq('vRustB',x,y+6.55,z+1.05,2.6,1.0,.2,null);vBq('vRustB',x-1.6,y+7.6,z-.4,.5,1.2,1.4,null);   // torso, chest plate, rust
- for(let k=0;k<3;k++)vBq('vDarkB',x+.9,y+7.15+k*.28,z+1.06,.5,.1,.14,null);   // vents
+ for(let k=0;k<3;k++)vBq('vIron',x+.9,y+7.15+k*.28,z+1.06,.5,.1,.14,null,vC(0x2a2622));   // vents
  vBq('vPanelB',x,y+8.75,z+.2,1.35,.95,1.35,null,white);vBq('vWinGlass',x,y+8.75,z+.88,.72,.42,.12,null);vBq('vHoop',x,y+8.75,z+.9,.42,.42,1,null,iron);   // head, the cyclops eye
  vPst('vPipe',x+.35,y+9.2,z-.2,.03,.9,iron);vBq('vIron',x,y+9.3,z-.2,.9,.12,.9,null,dark);
  for(const s of[-1,1]){vBq('vPanelB',x+s*2.4,y+7.9,z-.1,1.1,.9,1.9,null,white);vB('vRustB',x+s*2.4,y+8.3,z-.1,1.15,.14,1.95,0,null);}     // shoulder blocks
@@ -74,12 +74,12 @@ function vgMech(x,y,z){const white=null,iron=vC(0x2e2a26),dark=vC(0x3a3632);
   vBeam([sx+.35,y+5.7,z+.4],[sx+.5,y+3.6,z+1.5],.46,white,'vPanelB');vB('vRustB',sx+.6,y+4.6,z+1.0,.3,.7,.3,0,null);
   for(const q of[-1,1])kput('vIron',[sx+.5+q*.25,y+3.0,z+1.7],qEuler(.3,0,q*.35),[.16,1.1,.3],dark);}
  // left arm: gone — the empty socket, cable stubs
- vBq('vDarkB',x-2.95,y+7.85,z,.4,.7,.7,null);for(let k=0;k<3;k++)kput('vRope',[x-3.1,y+7.5+k*.2,z-.3+k*.3],qEuler(.4,0,1.3),[.03,.7,.03],vC(0x2a2622));}
+ vBq('vIron',x-2.95,y+7.85,z,.4,.7,.7,null,vC(0x2a2622));for(let k=0;k<3;k++)kput('vRope',[x-3.1,y+7.5+k*.2,z-.3+k*.3],qEuler(.4,0,1.3),[.03,.7,.03],vC(0x2a2622));}
 // a dismantled mech leg lying on a low trolley
 function vgMechLeg(x,z,ry,wood){const iron=vC(0x2e2a26);const q=loc(x,z,0,0,ry);vB('vWood',q[0],.5,q[1],5.0,.3,1.9,ry,wood);
  for(const s of[-1,1])for(const e of[-1,1]){const p=loc(x,z,s*1.8,e*1.05,ry);kput('vPost',[p[0],.45,p[1]],vQ(ry,Math.PI/2,0),[.45,.12,.45],iron);}
  const a=loc(x,z,-2.2,0,ry),b=loc(x,z,.4,.3,ry),c2=loc(x,z,2.3,-.2,ry);vBeam([a[0],1.15,a[1]],[b[0],1.25,b[1]],.62,null,'vPanelB');vBall('vBall',b[0],1.25,b[1],.5,iron);
- vBeam([b[0],1.25,b[1]],[c2[0],1.2,c2[1]],.55,null,'vPanelB');vBq('vDarkB',(a[0]+b[0])/2,1.45,(a[1]+b[1])/2,.9,.25,.4,vQ(ry,0,0));
+ vBeam([b[0],1.25,b[1]],[c2[0],1.2,c2[1]],.55,null,'vPanelB');vBq('vIron',(a[0]+b[0])/2,1.45,(a[1]+b[1])/2,.9,.25,.4,vQ(ry,0,0),vC(0x2a2622));
  kput('vPanelB',[c2[0],1.15,c2[1]],vQ(ry,0,0),[.55,1.4,.6],null);vB('vRustB',(b[0]+c2[0])/2,1.5,(b[1]+c2[1])/2,.5,.12,.6,ry,null);
  const d=loc(x,z,-1.0,1.4,ry);kput('vPanelB',[d[0],.05,d[1]],vQ(ry+.3,0,0),[1.3,.08,.9],null);kput('vRustB',[d[0]+.6,.05,d[1]-.3],vQ(ry-.4,0,0),[.8,.06,.6],null);}
 
@@ -89,9 +89,9 @@ function buildVernFarmersGuild(G,o){reseed(7701+(o.v|0));const wood=vC(vPick(VPA
  const W=16,D=11,HZ=-3.5,H1=3.9,H2=3.0,Y0=.6,FZ=HZ+D/2,Y1=Y0+H1+.32;
  vB('vStone',0,-.1,HZ,W+.7,Y0+.1,D+.7,0,stD);
  // two half-timber storeys: frame, plaster infill, a jettied string course between
- vnFrame(0,Y0,HZ,W,H1,D,0,wood,.18);vB('vPlaster',0,Y0,HZ,W-.16,H1,D-.16,0,pl);
- vB('vWood',0,Y0+H1,HZ,W+.44,.32,D+.44,0,wood);
- vnFrame(0,Y1,HZ,W,H2,D,0,wood,.16);vB('vPlaster',0,Y1,HZ,W-.14,H2,D-.14,0,pl.clone().multiplyScalar(1.04));
+ vnFrame(0,Y0,HZ,W,H1,D,0,wood,.18);vnBody('vPlaster',0,Y0,HZ,W-.16,H1,D-.16,0,pl,{t:.3});
+ vnBand('vWood',0,Y0+H1,HZ,W+.44,.32,D+.44,0,wood,.52);
+ vnFrame(0,Y1,HZ,W,H2,D,0,wood,.16);vnBody('vPlaster',0,Y1,HZ,W-.14,H2,D-.14,0,pl.clone().multiplyScalar(1.04),{t:.3});
  for(const s of[-1,1])for(const z of[HZ-3.6,HZ+.2]){const a=[s*(W/2+.06),Y1+.2,z],b=[s*(W/2+.06),Y1+H2-.2,z+1.6];vBeam(a,b,.14,wood);}    // diagonal braces, upper side panels
  const top=vnCornice('vWood',0,Y1+H2,HZ,W,D,0,wood,2);
  vnGableRoof(0,top,HZ,W,D,5.2,0,'vGableS',sh,1.1,'vGablePl',pl,.2);
@@ -100,12 +100,13 @@ function buildVernFarmersGuild(G,o){reseed(7701+(o.v|0));const wood=vC(vPick(VPA
  // ground floor: lit windows with shutters; upper floor: deco shutter strips
  for(const x of[-6.86,-4.57,4.57,6.86]){vnWin(x,Y0+1.3,FZ,0,x>5||x<-5?1.2:1.3,1.5,'lit','vWood',wood,true);vnStrip(x,Y1+.5,FZ+.02,0,.6,2.0,'vWood',wood);}
  for(const s of[-1,1])for(const z of[HZ-3,HZ,HZ+3]){vnWin(s*W/2,Y0+1.3,z,s*Math.PI/2,1.2,1.5,'lit','vWood',wood,true);if(z!==HZ-3)vnStrip(s*W/2,Y1+.5,z,s*Math.PI/2,.6,2.0,'vWood',wood);}
- for(const x of[-5.7,-1.9,1.9,5.7])vnWin(x,Y0+1.4,HZ-D/2,Math.PI,1.1,1.2,'shut','vWood',wood);vnDoor(-3.8,Y0,HZ-D/2,Math.PI,1.2,2.3,'vWood',wood,trim,false);
+ for(const x of[-6.0,-1.9,1.9,5.7])vnWin(x,Y0+1.4,HZ-D/2,Math.PI,1.1,1.2,'shut','vWood',wood);vnDoor(-4.7,Y0,HZ-D/2,Math.PI,1.2,2.3,'vWood',wood,trim,false);
  for(const x of[-5.7,-1.9,1.9,5.7])vnStrip(x,Y1+.5,HZ-D/2-.02,Math.PI,.6,2.0,'vWood',wood);
  // entrance bay: full height, its own cross gable, door with steps, upper window, hanging sheaf banners
  {const PW=6.6,PD=2.8,pz=FZ+PD/2-.1;vB('vStone',0,-.1,pz,PW+.7,Y0+.1,PD+.9,0,stD);
-  vnFrame(0,Y0,pz,PW,H1,PD,0,wood,.18);vB('vPlaster',0,Y0,pz,PW-.16,H1,PD-.16,0,pl);vB('vWood',0,Y0+H1,pz,PW+.44,.32,PD+.44,0,wood);
-  vnFrame(0,Y1,pz,PW,H2,PD,0,wood,.16);vB('vPlaster',0,Y1,pz,PW-.14,H2,PD-.14,0,pl.clone().multiplyScalar(1.04));
+  vnFrame(0,Y0,pz,PW,H1,PD,0,wood,.18);vnBody('vPlaster',0,Y0,pz,PW-.16,H1,PD-.16,0,pl,{t:.3});vnBand('vWood',0,Y0+H1,pz,PW+.44,.32,PD+.44,0,wood,.52);
+  vnFrame(0,Y1,pz,PW,H2,PD,0,wood,.16);vnBody('vPlaster',0,Y1,pz,PW-.14,H2,PD-.14,0,pl.clone().multiplyScalar(1.04),{t:.3});
+  for(const y of[Y0,Y1]){const h=y===Y0?H1:H2;vnHole(0,y,FZ,0,PW-.8,h,true);vnHole(0,y,pz-PD/2+.07,Math.PI,PW-.8,h,true);}   // the bay opens into the hall (one L-plan body in the plan)
   vnCornice('vWood',0,Y1+H2,pz,PW,PD,0,wood,2);
   vnGableRoof(0,top,pz-2.0,PD+4.0,PW,3.4,Math.PI/2,'vGableS',sh,.9,'vGablePl',pl,.2);
   for(let k=-1;k<=1;k++){const hh=3.4*(1-Math.abs(k*2.2)/(PW/2))-.15;vB('vWood',k*2.2,top,pz+PD/2+.02,.16,hh,.16,0,wood);}
@@ -117,11 +118,11 @@ function buildVernFarmersGuild(G,o){reseed(7701+(o.v|0));const wood=vC(vPick(VPA
  {const lx=-11.8,lz=HZ+.5,LW=5.6,LD=7.2,FL=2.5,LH=3.2;vnStilts(lx,0,lz,LW,LD,FL,0,wood,.2);vB('vWood',lx,FL-.24,lz,LW+.4,.24,LD+.4,0,wood);
   vnFrame(lx,FL,lz,LW,LH,LD,0,wood,.14);vB('vWood',lx,FL,lz,LW-.12,LH,LD-.12,0,wood.clone().multiplyScalar(.9));
   vnGableRoof(lx,FL+LH,lz,LD,LW,2.6,Math.PI/2,'vGableT',th,1.0,'vGableW',wood,.42);
-  vB('vDarkB',lx,FL+.4,lz+LD/2-.05,1.1,1.7,.2,0);kput('vWood',[lx+.75,FL+1.25,lz+LD/2+.12],qEuler(0,.85,0),[1.0,1.6,.06],trim);
+  vB('vPlaster',lx,FL+.4,lz+LD/2-.05,1.1,1.7,.2,0,IZ_ROOMC);kput('vWood',[lx+.75,FL+1.25,lz+LD/2+.12],qEuler(0,.85,0),[1.0,1.6,.06],trim);
   for(const s of[-1,1])vnWin(lx+s*LW/2,FL+1.0,lz-1.5,s*Math.PI/2,.9,.7,'shut','vWood',wood);
   vnLadder(lx,0,lz+LD/2+.75,0,FL+.6,wood);vnSacks(lx-.6,0,lz-.4,7);vnSacks(lx+1.2,0,lz+1.4,4);vnCrate(lx+1.5,0,lz-2.2,.9,.2,wood);
   const sx=-12.4,sz=FZ+2.4;vB('vStone',sx,0,sz,3.2,.5,3.2,0,stD);vPst('vStave',sx,.5,sz,1.35,4.2,vC(0xa88a5e));for(const yy of[.6,2.2,3.8])vBq('vHoop',sx,.5+yy,sz,1.38,1.38,1,qEuler(Math.PI/2,0,0),iron);
-  vnThatchCone(sx,4.7,sz,1.35,1.8,th);vB('vDarkB',sx,1.2,sz+1.3,.8,.9,.2,0);vB('vWood',sx,1.2,sz+1.4,.75,.85,.06,0,wood);vnLadder(sx+.9,0,sz+1.9,0,1.9,wood);}
+  vnThatchCone(sx,4.7,sz,1.35,1.8,th);vB('vWood',sx,1.2,sz+1.4,.75,.85,.06,0,wood);vnLadder(sx+.9,0,sz+1.9,0,1.9,wood);}
  // cart shed: lean-to against the east wall, corrugate roof on three posts, the cart and a plough-less pile of tools
  {const cz=HZ-1,CD2=8;for(const z of[cz-3.6,cz,cz+3.6])vPst('vPostB',W/2+4.4,0,z,.15,3.0,wood);vB('vWood',W/2+4.4,3.0,cz,.18,.18,CD2+.4,0,wood);
   vB('vWood',W/2+.2,4.15,cz,.18,.18,CD2+.4,0,wood);vnShedRoof(W/2+2.3,3.1,cz,CD2,4.4,1.1,Math.PI/2,'vCorr',null,.6,.12);
@@ -142,7 +143,7 @@ function buildVernBeastHunters(G,o){reseed(7711+(o.v|0));const wood=vC(vPick(VPA
  vnReg("Beast Hunters' Guild",0,0,17,16,{type:['civic','military']});
  const W=14,D=10,HX=-4.5,HZ=-4,H=4.2,Y0=.7,FZ=HZ+D/2;
  vB('vStone',HX,-.1,HZ,W+.9,Y0-.2,D+.9,0,stD);vB('vStone',HX,Y0-.3,HZ,W+.6,.3,D+.6,0,st);
- vnFrame(HX,Y0,HZ,W,H,D,0,wood,.2);vB('vWood',HX,Y0,HZ,W-.2,H,D-.2,0,wd2);
+ vnFrame(HX,Y0,HZ,W,H,D,0,wood,.2);vnBody('vWood',HX,Y0,HZ,W-.2,H,D-.2,0,wd2,{t:.3});
  const top=vnCornice('vWood',HX,Y0+H,HZ,W,D,0,wood,2);
  vnGableRoof(HX,top,HZ,W,D,3.8,0,'vGableS',sh,1.1,'vGableW',wd2,.2);
  // the roost: crossed timbers off the ridge at either end, lashed where they cross, perch bars between

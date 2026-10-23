@@ -1,0 +1,386 @@
+[
+ {
+  "src": "card.pitcher.lace.png",
+  "out": "core/materials/library/card.pitcher.lace",
+  "record": {
+   "id": "card.pitcher.lace",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.pitcher.lace` (section 7, Korona)",
+    "reuse": "the lace pitcher of the tepui summit (Korona); any white-laced Sarracenia",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.sundew.great.png",
+  "out": "core/materials/library/card.sundew.great",
+  "record": {
+   "id": "card.sundew.great",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.sundew.great` (section 7, Korona)",
+    "reuse": "the great sundew's fronds (Korona); any giant dewy frond",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.coin.tree.png",
+  "out": "core/materials/library/card.coin.tree",
+  "record": {
+   "id": "card.coin.tree",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.coin.tree` (section 7, Korona)",
+    "reuse": "the coin tree of the tepui summit (Korona); any small round-leaved dwarf tree",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.fan.rainbow.png",
+  "out": "core/materials/library/card.fan.rainbow",
+  "record": {
+   "id": "card.fan.rainbow",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.fan.rainbow` (section 7, Korona)",
+    "reuse": "the rainbow fan, the reagent herb (Korona); any bright fan-leaved rosette (one colour family per cell)",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.lacefan.tree.png",
+  "out": "core/materials/library/card.lacefan.tree",
+  "record": {
+   "id": "card.lacefan.tree",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.lacefan.tree` (section 7, Korona)",
+    "reuse": "the lace fan tree's crowns (Korona); any backlit fan fungus",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.stormpod.png",
+  "out": "core/materials/library/card.stormpod",
+  "record": {
+   "id": "card.stormpod",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.stormpod` (section 7, Korona)",
+    "reuse": "the storm pods of the tepui rim (Korona); any tall sealed seed pod with a leaf rosette",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.pitcher.cobra.png",
+  "out": "core/materials/library/card.pitcher.cobra",
+  "record": {
+   "id": "card.pitcher.cobra",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.pitcher.cobra` (section 7, Korona)",
+    "reuse": "the cobra meadow at the pitcher hollow's edge (Korona); any Darlingtonia",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.pitcher.cobra.b.png",
+  "out": "core/materials/library/card.pitcher.cobra.b",
+  "record": {
+   "id": "card.pitcher.cobra.b",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.pitcher.cobra` (section 7, Korona)",
+    "reuse": "a second cobra-lily sheet, the same prompt's other take: nine more heads for the meadow's variety",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.pitcher.trumpet.png",
+  "out": "core/materials/library/card.pitcher.trumpet",
+  "record": {
+   "id": "card.pitcher.trumpet",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.pitcher.trumpet` (section 7, Korona)",
+    "reuse": "the blood trumpet of the pitcher hollow (Korona); any red Sarracenia",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.trap.star.png",
+  "out": "core/materials/library/card.trap.star",
+  "record": {
+   "id": "card.trap.star",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.trap.star` (section 7, Korona)",
+    "reuse": "the ground star, flat on the peat, seen from above (Korona); any tentacled ground trap",
+    "note": "a nine-cell sheet of top-down sprites, kept whole (anchor none)"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.lure.flower.png",
+  "out": "core/materials/library/card.lure.flower",
+  "record": {
+   "id": "card.lure.flower",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.lure.flower` (section 7, Korona)",
+    "reuse": "the lures, the false flowers over the traps (Korona); any carnivorous bloom",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.bulb.blood.png",
+  "out": "core/materials/library/card.bulb.blood",
+  "record": {
+   "id": "card.bulb.blood",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `cardulblood` (section 7, Korona)",
+    "reuse": "the blood bulb moor (Korona); any sticky-headed flypaper stalk",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ }
+]

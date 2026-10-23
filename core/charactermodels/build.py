@@ -14,8 +14,6 @@ The pages need a web server (they fetch their pieces):  python3 -m http.server -
                                # morph deltas as a second line, gzipped, as base64), published beside them, to stay under the host's 16 MB a page
   python3 build.py --no-checks # skip the port lint and the node test
   python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
-  python3 build.py --pages-only  # the pages alone, on a machine without pieces/ (gitignored, made in Blender): dist/pieces
-                               # and the thumbs are left as they are, and the manifest keeps the pieces' last hashes
 
 The pieces are made beforehand by tools/make_pieces.py (pieces/*.glb, data/*.json); this only packs them. The page is
 its head fragment (PAGES), then one inline script: core/rand (KRAND), the data (KCHAR_DATA), then the shared
@@ -30,7 +28,6 @@ SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
 CHECKS = '--no-checks' not in sys.argv
-PAGES_ONLY = '--pages-only' in sys.argv
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
@@ -81,16 +78,18 @@ def main():
         js.append('/* src/%s */\n%s' % (f, t))
     # the pieces go beside the page as base64 text (the artifact host serves no binary type a GLB fits), fetched
     # when a record needs them: dist/pieces/<body>/<name>.txt
-    if PAGES_ONLY:
-        last = json.loads(read(os.path.join(HERE, 'build-manifest.json')))
-        inputs.update({k: None for k in last if k.startswith('pieces/')})
-    elif os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
+    if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
         for b in os.listdir(os.path.join(DIST, 'pieces')):
             if b not in data['bodies'] and b != 'props':
                 q = os.path.join(DIST, 'pieces', b)
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
-    for b in [] if PAGES_ONLY else list(data['bodies']) + ['props']:     # each body's pieces, and the props they share
+    for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
         src_dir, out_dir = os.path.join(HERE, 'pieces', b), os.path.join(DIST, 'pieces', b)
+        if not os.path.isdir(src_dir):
+            # pieces/ is not in Git: a checkout without the Blender half has none of a body's, or only those a
+            # partial build made (make_mpfb.py --merge). The page is built all the same; publish only what is here
+            print('build.py: no pieces/%s here: the page is built, its pieces are not' % b)
+            continue
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):
             os.remove(os.path.join(out_dir, f))
@@ -131,13 +130,19 @@ def main():
             os.remove(script)
             if rc:
                 sys.exit('build.py: %s: the inline script does not parse' % page)
-    if PAGES_ONLY:
-        pass
-    elif '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
+    if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
         if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
             print('build.py: thumbs.mjs failed; the chips show names only')
     pack_thumbs()
-    man = {k: last[k] if v is None else hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
+    man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
+    # the pieces this checkout does not have keep the hashes the last whole build wrote (they did not change here)
+    old = os.path.join(HERE, 'build-manifest.json')
+    if os.path.exists(old):
+        kept = {k: v for k, v in json.loads(read(old)).items() if k.startswith('pieces/') and k not in man
+                and not os.path.exists(os.path.join(HERE, k)) and (k.split('/')[1] == 'props' or os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json')))}
+        man.update(kept)
+        if kept:
+            print('build.py: %d pieces not here keep their last hashes' % len(kept))
     for page, whole in wholes.items():
         man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
     with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n') as f:

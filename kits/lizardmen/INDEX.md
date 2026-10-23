@@ -21,7 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 6 |  |
 | `27-mat.js` | 6 |  |
-| `30-geo.js` | 22 |  |
+| `30-geo.js` | 23 |  |
 | `36-def.js` | 6 |  |
 | `37-wk-rec.js` | 2 |  |
 | `40-lz-kit.js` | 30 |  |
@@ -34,6 +34,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `56-sa-beasts.js` | 3 |  |
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
+| `59-lz-trades.js` | 6 | = (2) |
 | `60-lz-reliquary.js` | 11 |  |
 | `62-lk-capital.js` | 18 |  |
 | `81-sky.js` | 10 |  |

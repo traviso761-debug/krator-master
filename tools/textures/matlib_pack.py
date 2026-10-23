@@ -6,7 +6,8 @@
 
 It reads the committed tex/ files only (tools/textures/pack.py writes them from materials.json), never the library or an
 image encoder, so the build stays deterministic. With no tex/pack.json the fragment registers an empty pack and the build
-runs on its procedural maps. `exclude` leaves families out (Iziz's fauna sheets, which another fragment carries).
+runs on its procedural maps. `exclude` leaves families out (Iziz's fauna sheets, which another fragment carries). A family marked `"own": true` in
+materials.json (pack.py) is left out too, unless the call says `own=True`: the kit's own build.py does, a host does not.
 Girder, Yuni, Mav's Refuge, Locus, Voth, Jimjam and Iziz carry their own copies of this function (written before it).
 
 SIDECAR PACKS. A page that carries several packs (Verge, Mungo), is near the gallery's 16 MB per-file limit (Ys), or is
@@ -24,7 +25,7 @@ file is missing, the page says so on the console and runs on its procedural maps
 import base64, json, os
 
 
-def _families(build_dir, exclude):
+def _families(build_dir, exclude, own=False):
     tex = os.path.join(build_dir, 'tex')
     pj = os.path.join(tex, 'pack.json')
     if not os.path.isfile(pj):
@@ -35,6 +36,8 @@ def _families(build_dir, exclude):
         if fam in exclude:
             continue
         e = fams[fam]
+        if e.get('own') and not own:   # a family only the kit's own page uses (pack.py `own`)
+            continue
         f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
              'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
              'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
@@ -56,8 +59,8 @@ def loader(key):
             % (key, json.dumps(key), key, key))
 
 
-def fragment(build_dir, key, exclude=(), side=None):
-    body = _families(build_dir, exclude)
+def fragment(build_dir, key, exclude=(), side=None, own=False):
+    body = _families(build_dir, exclude, own)
     if body is None:
         return "/* no tex/pack.json: %s runs on its procedural textures */\nKMAT.pack('%s', {});\n" % (key, key)
     if side is not None:

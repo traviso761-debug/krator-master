@@ -68,14 +68,14 @@ TEX_FLECK.wrapS=TEX_FLECK.wrapT=THREE.RepeatWrapping;TEX_FLECK.encoding=THREE.Li
 // ones where the sedge mat grows; the sinter set covers the geyser field; the basalt set is the tors' grain. Without the
 // pack (?mat=proc, or an open world) the ground is exactly the painted one with the procedural turf.
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('ehigh',n);
- const t=P('ground.turf'),s=P('ground.sinter'),pu=P('ground.puna');if(!t||!s||!pu)return null;
+ const t=P('ground.turf'),s=P('ground.sinter'),pu=P('ground.puna'),ve=P('ground.verge');if(!t||!s||!pu)return null;
  const m=(L,k)=>{const x=KMAT.textures(L,{aniso:8}).map;x.wrapS=x.wrapT=THREE.RepeatWrapping;return x;};
- return{turf:m(t),turfK:1/t.scale[0],sinter:m(s),sinterK:1/s.scale[0],puna:m(pu),punaK:1/pu.scale[0]};})();
+ return{turf:m(t),turfK:1/t.scale[0],sinter:m(s),sinterK:1/s.scale[0],puna:m(pu),punaK:1/pu.scale[0],verge:ve?m(ve):null,vergeK:ve?1/ve.scale[0]:0};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb0aaa2});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uRock={value:EHIGH.BASALT?EHIGH.BASALT.map:EHIGH.ROCKTEX};sh.uniforms.uFleck={value:TEX_FLECK};if(GLAY){sh.uniforms.uGTurf={value:GLAY.turf};sh.uniforms.uGSinter={value:GLAY.sinter};sh.uniforms.uGPuna={value:GLAY.puna};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uRock={value:EHIGH.BASALT?EHIGH.BASALT.map:EHIGH.ROCKTEX};sh.uniforms.uFleck={value:TEX_FLECK};if(GLAY){sh.uniforms.uGTurf={value:GLAY.turf};sh.uniforms.uGSinter={value:GLAY.sinter};sh.uniforms.uGPuna={value:GLAY.puna};if(GLAY.verge)sh.uniforms.uGVerge={value:GLAY.verge};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aG;varying vec4 vG;attribute float aGeo;varying float vGeo;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vG=aG;vGeo=aGeo;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uRock,uFleck;varying vec3 vGWP;varying vec4 vG;varying float vGeo;\n'+(GLAY?'uniform sampler2D uGTurf,uGSinter,uGPuna;\n':'')+NOISE_HASH)
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uRock,uFleck;varying vec3 vGWP;varying vec4 vG;varying float vGeo;\n'+(GLAY?'uniform sampler2D uGTurf,uGSinter,uGPuna'+(GLAY.verge?',uGVerge':'')+';\n':'')+NOISE_HASH)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 _pd0=diffuseColor.rgb;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // vG: x rock (basalt grain), y grass (ichu gold), z turf (olive, and its polygons), w snow
   // the basalt's lichens at half their colour on the ground (whole, they blotch a rocky meadow orange from afar)
@@ -93,6 +93,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    // so the ground still drifts between browner and golder over hundreds of metres)
    'vec3 tp=mix(pow(texture2D(uGPuna,p*'+GLAY.punaK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGPuna,q*'+(GLAY.punaK*.53).toFixed(4)+'+vec2(0.47,0.23)).rgb,vec3(2.2)),mt);'+
    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd0,diffuse*tp*1.3,0.7),clamp(vG.y*1.6,0.0,0.9));'+
+   /* the verge (library ground013, trodden grey-green grass): patches of the open puna where a macro noise runs high, anti-tiled like the rest */
+   (GLAY.verge?'float mv=smoothstep(0.52,0.72,texture2D(uFleck,p*0.0071+vec2(0.52,0.19)).r);vec3 tv=mix(pow(texture2D(uGVerge,p*'+GLAY.vergeK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGVerge,q*'+(GLAY.vergeK*.57).toFixed(4)+'+vec2(0.21,0.77)).rgb,vec3(2.2)),mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tv*1.3,mv*clamp(vG.y*1.4,0.0,1.0)*0.75);':'')+
    'vec3 tt=mix(pow(texture2D(uGTurf,p*'+GLAY.turfK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGTurf,q*'+(GLAY.turfK*.53).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
    'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tt*1.25,clamp(vG.z*1.4,0.0,0.92));'+
    'vec3 ts=mix(pow(texture2D(uGSinter,p*'+GLAY.sinterK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGSinter,q*'+(GLAY.sinterK*.41).toFixed(4)+'+vec2(0.19,0.63)).rgb,vec3(2.2)),mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*ts*1.2,vGeo*0.9);}':

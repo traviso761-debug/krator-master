@@ -104,9 +104,12 @@ electrified, so the lamps are electric standards and pendants, not candles.
 
 ## Assumptions and open points
 
-- The depot's and core's depths, the mesa's height over the city and the Mech Gate's face are assumed; the build
-  has no interior for the palace yet, so nothing is wired. The hangar hall, the lift medallion, the terrace and the
-  grand entrance are the build's and are drawn where they are.
+- The depot's and core's depths, the mesa's height over the city and the Mech Gate's face are assumed. The hangar hall,
+  the lift medallion, the terrace and the grand entrance are the build's and are drawn where they are.
+- **Built (first pass, 2026-10-19):** the palace page, `settlements/iziz/targets/palace` (`dist/iziz-palace.html`),
+  lays these sheets (`export_plan.py` writes them as `78p-palace-plan.js`; `78q` lays them, `78r` draws them, `95p`
+  furnishes them; `node test-palace.js` checks the layout). The heights it takes and where it departs from the sheets:
+  `../API.md`, "The palace citadel", and `../KNOWN_ISSUES.md`.
 - The imperial house has no name in the lore (House Duxun is the exiled claimant's); the sheets say "the House".
 - Numbers: a Roman imperial household of a few dozen, four consorts, three kin households, the Praetorians in the two
   barracks (about 120 beds each); the manifest counts precinct zones at a quarter of their area, as the Voth one does.

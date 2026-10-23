@@ -26,7 +26,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `60-biome-ehigh-floor.js` | 13 | small plants (24); the zone planters (50); the pass (101) |
 | `70-biome-ehigh.js` | <1 |  |
 | `82-host-sky.js` | 11 |  |
-| `84-host-ground.js` | 17 | the ground (20); the water (119) |
+| `84-host-ground.js` | 18 | the ground (20); the water (121) |
 | `86-host-geysers.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
 | `89a-host-atmos.js` | <1 |  |

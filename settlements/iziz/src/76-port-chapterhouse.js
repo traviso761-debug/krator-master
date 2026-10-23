@@ -13,21 +13,22 @@
 
 // battered face: half-depth of a `vpBanco7` block (7 % taper) at height y above its base
 const vpBat7=(D,H,y)=>D/2*(1-.07*clamp(y/H,0,1));
-// Yuni window on a battered banco face: dark reveal + pane (lit if electric), a small banco sill; (x,z) ON the face
-function vpYWin(x,y,z,ry,w,h,c,lit){const f=loc(x,z,0,.03,ry);vB('vDarkB',f[0],y-.06,f[1],w+.24,h+.12,.14,ry);const p=loc(x,z,0,.06,ry);vB(lit?'vWinLit':'vDarkB',p[0],y,p[1],w,h,.12,ry);
+// Yuni window on a battered banco face: a banco reveal round glass (69e5) (lit if electric), a small banco sill; (x,z) ON the face
+function vpYWin(x,y,z,ry,w,h,c,lit){const rc=c.clone().multiplyScalar(.78);for(const s of[-1,1]){const f=loc(x,z,s*(w/2+.06),.07,ry);vB('vpBancoB',f[0],y-.06,f[1],.12,h+.12,.14,ry,rc);}
+ {const f=loc(x,z,0,.07,ry);vB('vpBancoB',f[0],y+h,f[1],w+.24,.06,.14,ry,rc);}vnOpening(x,y,z,ry,w,h,lit?'glow':'win');
  const s=loc(x,z,0,.16,ry);vB('vpBancoB',s[0],y-.2,s[1],w+.5,.2,.36,ry,c);}
-// round Order window: banco relief ring, dark socket, a pane that glows if electric. r = pane radius. Faces `ry`.
+// round Order window: banco relief ring, a plaster socket, the room's back seen through it (a glow pane if electric). r = pane radius. Faces `ry`.
 function vpRoundWin(x,y,z,ry,r,c,lit){const q=vQ(ry,0,0);const a=loc(x,z,0,.14,ry),b=loc(x,z,0,.02,ry),d=loc(x,z,0,-.04,ry);
- kput('vpRingB',[a[0],y,a[1]],q,[r*1.25,r*1.25,r*1.25],c);kput('vpDiscDark',[b[0],y,b[1]],q,[r*1.15,r*1.15,.16],null);kput(lit?'vpDiscLit':'vpDiscDark',[d[0],y,d[1]],q,[r,r,.3],null);}
+ kput('vpRingB',[a[0],y,a[1]],q,[r*1.25,r*1.25,r*1.25],c);kput('vpDiscP',[b[0],y,b[1]],q,[r*1.15,r*1.15,.16],c?c.clone().multiplyScalar(.8):null);kput(lit?'vpDiscLit':'vpDiscP',[d[0],y,d[1]],q,[r,r,.3],lit?null:IZ_ROOMC);}
 // a row of toron (projecting timber posts) along a face: from (x0,z0) to (x1,z1) at height y, n posts, outward (nx,nz)
 function vpTorons(x0,z0,x1,z1,y,n,nx,nz,len){const c=vC(0x4a3624);for(let i=0;i<n;i++){const t=(i+.5)/n;const x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;vBeam([x-nx*.3,y,z-nz*.3],[x+nx*(len||.95),y-.06,z+nz*(len||.95)],.17,c);}}
 // pilaster-buttress with a pinnacle cone and a gilt ball: a battered post proud of a wall, base at (x,z)
 function vpPinnacle(x,y,z,w,h,c,ry){kput('vpBanco7',[x,y,z],ry?qEuler(0,ry,0):null,[w,h,w],c);kput('vpBancoCone',[x,y+h-.05,z],null,[w*.42,w*1.1,w*.42],c);vBall('vpGilt',x,y+h+w*1.1+.12,z,.17);}
-// drum pavilion: laterite drum, dark relief band, tile cone, 8-post lantern with a dark core, small cone, gilt ball. Returns the top.
+// drum pavilion: laterite drum, dark relief band, tile cone, 8-post lantern round a lit room, small cone, gilt ball. Returns the top.
 function vpDrumHall(x,y,z,R,H,lat,dk,tile){vPst('vpDrumB',x,y,z,R,H,lat);vPst('vpDrumB',x,y+H-1.3,z,R+.08,.7,dk);vPst('vpDrumB',x,y+H-.3,z,R*1.04,.3,lat);
  const rb=R+.85,rt=R*.42,rh=R*.36;kput('vpTileCone',[x,y+H,z],null,[rb,rh+rt*.0+R*.02,rb],tile);   // the cone is a frustum in the source; a cone whose tip is buried under the lantern floor reads the same
  vPst('vpDrumB',x,y+H+rh*.7,z,rt+.3,.35,dk);const lr=rt*.82,lh=R*.3+.9;for(let i=0;i<8;i++){const a=i/8*TAU;vPst('vpBancoPost',x+Math.cos(a)*lr,y+H+rh*.7+.35,z+Math.sin(a)*lr,.16,lh,lat);}
- kput('vpDiscDark',[x,y+H+rh*.7+.35+lh/2,z],qEuler(Math.PI/2,0,0),[lr*.5,lr*.5,lh],null);kput('vpTileCone',[x,y+H+rh*.7+.35+lh,z],null,[rt+.9,R*.28+.6,rt+.9],tile.clone().multiplyScalar(.9));
+ kput('vpDiscP',[x,y+H+rh*.7+.35+lh/2,z],qEuler(Math.PI/2,0,0),[lr*.5,lr*.5,lh],IZ_ROOMC);kput('vpTileCone',[x,y+H+rh*.7+.35+lh,z],null,[rt+.9,R*.28+.6,rt+.9],tile.clone().multiplyScalar(.9));
  const top=y+H+rh*.7+.35+lh+R*.28+.6;vBall('vpGilt',x,top+.2,z,.24);return top;}
 
 function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
@@ -39,7 +40,7 @@ function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
  for(let k=0;k<12;k++){const x=-13.2+k*2.4;if(Math.abs(x)<3.6)continue;vB('vpMosaicB',x,.06,14.85,2.3,.32,.16,0,null);}
  // ================================================================ the reading hall (back), battered block with parapet, pilasters, toron, mosaic string course
  const HW=22,HD=11,HH=8.6,hz=-8.5;
- kput('vpBanco7',[0,Y0,hz],null,[HW,HH,HD],och);
+ if(!(VERN.cur&&VERN.cur.hollow&&vnBody('vpBancoB',0,Y0,hz,HW,HH,HD,0,och,{t:.45,k:.07,floor:'vpBancoB',floorC:pave})))kput('vpBanco7',[0,Y0,hz],null,[HW,HH,HD],och);   // hollow (69e): its walls lean in as vpBanco7's faces do
  {const tw=vpBat7(HW,HH,HH)*2,td=vpBat7(HD,HH,HH)*2;vB('vpBancoB',0,Y0+HH-.05,hz,tw+.3,.5,td+.3,0,dk);                     // dark eaves band
   vB('vpBancoB',0,Y0+HH+.45,hz,tw+.1,.9,.6,0,och);vB('vpBancoB',0,Y0+HH+.45,hz-td/2+.3,tw+.1,.9,.6,0,och);              // parapet: front + back
   for(const s of[-1,1])vB('vpBancoB',s*(tw/2-.25),Y0+HH+.45,hz,.6,.9,td-.4,0,och);vB('vpBancoB',0,Y0+HH+.45,hz+td/2-.3,tw+.1,.9,.6,0,och);
@@ -48,7 +49,7 @@ function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
   // mosaic string course below the eaves and a whitewash band at the floor line: the Order's blue-and-white
   const my=Y0+HH-1.6,mw=vpBat7(HW,HH,HH-1.6)*2,md=vpBat7(HD,HH,HH-1.6)*2;vB('vpMosaicB',0,my,hz+md/2-.1,mw+.2,.5,.3,0,null);vB('vpMosaicB',0,my,hz-md/2+.1,mw+.2,.5,.3,0,null);
   for(const s of[-1,1])vB('vpMosaicB',s*(mw/2-.1),my,hz,.3,.5,md+.2,0,null);
-  vB('vpBancoB',0,Y0+.02,hz,HW+.3,.9,HD+.3,0,white);}
+  vnBand('vpBancoB',0,Y0+.02,hz,HW+.3,.9,HD+.3,0,white,.6);}
  // pilaster-buttresses with pinnacles: 7 across the front (the middle three frame the porch), 7 behind, 3 each side, corners heavier
  {const zf=hz+HD/2,zb=hz-HD/2;for(let i=0;i<=6;i++){const x=-HW/2+HW*i/6,k=(i===0||i===6)?1.5:1.15;if(Math.abs(x)<4)continue;vpPinnacle(x,Y0,zf+.35,k,HH+1.4,och2);vpPinnacle(x,Y0,zb-.35,k,HH+1.4,och2);}
   for(let j=1;j<3;j++){const z=zb+HD*j/3;vpPinnacle(-HW/2-.35,Y0,z,1.15,HH+1.4,och2);vpPinnacle(HW/2+.35,Y0,z,1.15,HH+1.4,och2);}
@@ -61,8 +62,9 @@ function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
   kput('vpBayArchB',[0,Y0,pz+1.9],null,[1.7,1.6,2.0],och2);kput('vpBayArchM',[0,Y0,pz+1.15],null,[1.45,1.42,1.2],null);kput('vpBayArchB',[0,Y0,pz+.45],null,[1.25,1.27,.9],och);
   vB('vpBancoB',0,Y0+6.4,pz+1.1,6.0,.5,2.8,0,dk);vB('vpBancoB',0,Y0+6.9,pz+1.1,5.4,.6,2.2,0,och2);vpRoundWin(0,Y0+7.5,pz+2.52,0,.5,och2,lit);
   for(const s of[-1,1])vpPinnacle(s*3.1,Y0,pz+2.6,1.1,7.3,och2);
-  vB('vDarkB',0,Y0,pz-.3,2.9,3.9,.8,0);for(const s of[-1,1])kput('vWood',[s*.72,Y0+1.95,pz-.1],vQ(0,0,0).multiply(qEuler(0,s*.25,0)),[1.4,3.8,.08],plank);
-  for(let i=0;i<3;i++)for(let j=0;j<5;j++)for(const s of[-1,1])vB('vIron',s*(.3+i*.42),Y0+.5+j*.75,pz+.02,.09,.09,.08,0,vC(0xb08a3a));   // brass studs
+  if(vnHole(0,Y0,pz,0,2.9,3.9,true)){for(const s of[-1,1])IZDOOR.leaf(s*.72,Y0,pz-.22,0,1.42,3.8,.08,plank,{mirror:s>0});vnStoop(0,Y0,pz,0,2.9,'vpBancoB',dk);}   /* its stoop under the porch (69e5) */   // the double door opens into the hall (69e5)
+  else{vB('vPlaster',0,Y0,pz-.3,2.9,3.9,.8,0,IZ_ROOMC);for(const s of[-1,1])kput('vWood',[s*.72,Y0+1.95,pz-.1],vQ(0,0,0).multiply(qEuler(0,s*.25,0)),[1.4,3.8,.08],plank);
+  for(let i=0;i<3;i++)for(let j=0;j<5;j++)for(const s of[-1,1])vB('vIron',s*(.3+i*.42),Y0+.5+j*.75,pz+.02,.09,.09,.08,0,vC(0xb08a3a));}   // brass studs
   vB('vpBancoB',0,Y0,pz+2.9,5.6,.14,1.4,0,dk);   // threshold slab
   if(lit){vnLamp(-2.5,Y0+4.4,pz+2.9,0);vnLamp(2.5,Y0+4.4,pz+2.9,0);}
   // windows: tall paired reading-hall windows either side of the porch, round windows above; sides and back likewise
@@ -85,14 +87,14 @@ function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
   vB('vpMosaicB',wx+s*(vpBat7(WW,WH,WH-.3)),Y0+WH-.5,wz,.26,.4,td-.6,0,null);
   // arcade: 3 parabolic bays on the court side carrying a flat roof back to the wing; lit doors behind
   const ax=wx-s*(WW/2+1.6);for(let j=0;j<3;j++){const z=wz-WD/2+WD*(j+.5)/3;kput('vpBayArchB',[ax,Y0,z],qEuler(0,s*Math.PI/2,0),[WD/3/3.2*1.02,1.0,1.0],och2);
-   const bx=wx-s*vpBat7(WW,WH,1.2);if(j===1){vB('vDarkB',bx,Y0,z,.3,2.5,1.6,0);kput('vWood',[bx+s*.02,Y0+1.25,z],qEuler(0,Math.PI/2,0),[1.5,2.4,.08],plank);if(lit)vnLamp(bx,Y0+3.0,z,-s*Math.PI/2);}
+   const bx=wx-s*vpBat7(WW,WH,1.2);if(j===1){vB('vPlaster',bx,Y0,z,.3,2.5,1.6,0,IZ_ROOMC);kput('vWood',[bx+s*.02,Y0+1.25,z],qEuler(0,Math.PI/2,0),[1.5,2.4,.08],plank);if(lit)vnLamp(bx,Y0+3.0,z,-s*Math.PI/2);}
    else vpYWin(bx,Y0+1.5,z,-s*Math.PI/2,1.0,1.6,och2,lit);}
   vB('vpBancoB',(ax+wx)/2,Y0+4.0,wz,Math.abs(wx-ax)+.6,.45,WD+.2,0,och2);vB('vpBancoB',(ax+wx)/2,Y0+4.45,wz,Math.abs(wx-ax)+.2,.35,WD-.2,0,dk);
   for(let j=0;j<=3;j++)vpTorons(ax-s*.2,wz-WD/2+WD*j/3,ax-s*.2,wz-WD/2+WD*j/3,Y0+3.5,1,-s,0,.7);
   // drum pavilion at the wing's front end (the chapter house's paired drums flank the gate)
   const dz=wz+WD/2+3.0,dx=s*14.6;vpDrumHall(dx,Y0,dz,3.1,6.4,lat,dk,tile);
   for(const a of[0.55,1.2].map(v=>s<0?Math.PI-v:v))vpRoundWin(dx+Math.cos(a)*3.1,Y0+4.4,dz+Math.sin(a)*3.1,Math.PI/2-a,.55,lat2,lit);
-  {const a=s<0?-.4:Math.PI+.4;vB('vDarkB',dx+Math.cos(a)*3.05,Y0,dz+Math.sin(a)*3.05,1.3,2.3,.3,Math.PI/2-a);kput('vWood',[dx+Math.cos(a)*2.98,Y0+1.15,dz+Math.sin(a)*2.98],qEuler(0,Math.PI/2-a,0),[1.2,2.2,.08],plank);}
+  {const a=s<0?-.4:Math.PI+.4;vB('vPlaster',dx+Math.cos(a)*3.05,Y0,dz+Math.sin(a)*3.05,1.3,2.3,.3,Math.PI/2-a,IZ_ROOMC);kput('vWood',[dx+Math.cos(a)*2.98,Y0+1.15,dz+Math.sin(a)*2.98],qEuler(0,Math.PI/2-a,0),[1.2,2.2,.08],plank);}
   for(let k=0;k<10;k++){const a=k/10*TAU+.15;vBeam([dx+Math.cos(a)*2.95,Y0+2.6,dz+Math.sin(a)*2.95],[dx+Math.cos(a)*3.85,Y0+2.55,dz+Math.sin(a)*3.85],.15,vC(0x4a3624));}}
  // ================================================================ the forecourt wall and the gate
  {const gz=13.4,GW=7.0;for(const s of[-1,1]){const x0=s*(GW/2+.2),x1=s*11.4,L=Math.abs(x1-x0),cx=(x0+x1)/2;vB('vpBancoB',cx,Y0,gz,L,3.4,.7,0,och);vB('vpBancoB',cx,Y0+3.3,gz,L+.2,.35,.95,0,dk);
@@ -123,14 +125,14 @@ function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
    const c=vC(0x4a3624);vBeam([tx+o,Y0+y,tz+h-.3],[tx+o,Y0+y-.05,tz+h+.85],.16,c);vBeam([tx+o,Y0+y,tz-h+.3],[tx+o,Y0+y-.05,tz-h-.85],.16,c);vBeam([tx+h-.3,Y0+y,tz+o],[tx+h+.85,Y0+y-.05,tz+o],.16,c);vBeam([tx-h+.3,Y0+y,tz+o],[tx-h-.85,Y0+y-.05,tz+o],.16,c);}}
   for(let r=0;r<2;r++){const y=TH+1.2+r*1.5,h=hw2(y-TH);for(const nn of[[0,1],[0,-1],[1,0],[-1,0]])vBeam([tx+nn[0]*(h-.3),Y0+y,tz+nn[1]*(h-.3)],[tx+nn[0]*(h+.75),Y0+y-.05,tz+nn[1]*(h+.75)],.14,vC(0x4a3624));}
   // bell opening on the front face of the upper stage, with the bell
-  {const y=TH+1.6,h=hw2(y-TH);vB('vDarkB',tx,Y0+y,tz+h-.2,1.1,1.5,.5,0);kput('vpBrassBell',[tx,Y0+y+.95,tz+h-.1],null,[.4,.5,.4],null);vB('vIron',tx,Y0+y+1.36,tz+h-.1,1.2,.08,.08,0,vC(0x3a2f22));}
-  vB('vDarkB',tx,Y0+7.6,tz+hw(7.6)-.15,.5,1.1,.4,0);vB('vDarkB',tx+hw(4.5)-.15,Y0+4.5,tz,.4,1.1,.5,0);
-  vB('vDarkB',tx,Y0,tz+hw(0)-.3,1.2,2.2,.8,0);kput('vWood',[tx,Y0+1.1,tz+hw(0)+.1],null,[1.1,2.1,.08],plank);vB('vpBancoB',tx,Y0+2.2,tz+hw(0)+.1,1.9,.3,.5,0,dk);
+  {const y=TH+1.6,h=hw2(y-TH);vB('vPlaster',tx,Y0+y,tz+h-.2,1.1,1.5,.5,0,IZ_ROOMC);kput('vpBrassBell',[tx,Y0+y+.95,tz+h-.1],null,[.4,.5,.4],null);vB('vIron',tx,Y0+y+1.36,tz+h-.1,1.2,.08,.08,0,vC(0x3a2f22));}
+  vnPlate(tx,Y0+7.6,tz+hw(7.6)-.15,.5,1.1,.4,0);vnPlate(tx+hw(4.5)-.15,Y0+4.5,tz,.4,1.1,.5,0);
+  vB('vPlaster',tx,Y0,tz+hw(0)-.3,1.2,2.2,.8,0,IZ_ROOMC);kput('vWood',[tx,Y0+1.1,tz+hw(0)+.1],null,[1.1,2.1,.08],plank);vB('vpBancoB',tx,Y0+2.2,tz+hw(0)+.1,1.9,.3,.5,0,dk);
   if(lit)vnLamp(tx+1.1,Y0+2.7,tz+hw(0)+.02,0);}
  // a low archive annex behind the hall on the right (the stacks overflow), flat-roofed with pinnacles and a hatch
  {const ax=15.6,az=-9,AW=5.2,AD=7.4,AH=3.4;kput('vpBanco7',[ax,Y0,az],null,[AW,AH,AD],och2);vB('vpBancoB',ax,Y0+AH-.05,az,AW*.94,.4,AD*.94,0,dk);vB('vpBancoB',ax,Y0+AH+.3,az,AW*.9,.5,AD*.9,0,och2);
   for(const s of[-1,1])vpPinnacle(ax+AW/2+.2,Y0,az+s*(AD/2-.2),.9,AH+1.0,och2);vpTorons(ax+vpBat7(AW,AH,2.4),az-3.0,ax+vpBat7(AW,AH,2.4),az+3.0,Y0+2.4,5,1,0,.8);
-  for(const z of[-2.2,2.2])vpYWin(ax+vpBat7(AW,AH,1.6),Y0+1.6,az+z,Math.PI/2,.8,1.0,och2,false);vB('vDarkB',ax-vpBat7(AW,AH,1.1)+.1,Y0,az+2.6,.3,2.2,1.1,0);}
+  for(const z of[-2.2,2.2])vpYWin(ax+vpBat7(AW,AH,1.6),Y0+1.6,az+z,Math.PI/2,.8,1.0,och2,false);vB('vPlaster',ax-vpBat7(AW,AH,1.1)+.1,Y0,az+2.6,.3,2.2,1.1,0,IZ_ROOMC);}
  vnFolk(0,7,4,3);vnFolk(0,17.5,3,2);}
 
 VERN.def({key:'port_order_chapterhouse',name:'Order Chapterhouse',family:'ported',tags:{culture:'yuni-order',type:['civic','religious'],wealth:'civic',lit:true,role:'chapterhouse'},w:38,d:34,h:21,build:buildVpChapterhouse});

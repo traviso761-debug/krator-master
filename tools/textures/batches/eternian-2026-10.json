@@ -1,0 +1,128 @@
+[
+ {
+  "src": "stone.onyx.webp",
+  "out": "core/materials/library/stone.onyx",
+  "record": {
+   "id": "stone.onyx", "family": "stone", "colour": "#ffffff", "roughness": 0.3, "metal": 0, "scale": [1, 1], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `stone.onyx` (honey onyx cut across its layers)",
+    "reuse": "translucent stone lights in bronze tracery (the Eternians' court, the Sanctum's bays); any palace, temple or bath glazed in stone"
+   }
+  },
+  "options": {"band": 0.06, "delight": 0.35, "lift": 0.06, "normal_strength": 0.3, "rough": 0.3, "rough_var": 0.08, "size": 1024}
+ },
+ {
+  "src": "stone.alabaster.webp",
+  "out": "core/materials/library/stone.alabaster",
+  "record": {
+   "id": "stone.alabaster", "family": "stone", "colour": "#ffffff", "roughness": 0.35, "metal": 0, "scale": [1, 1], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `stone.alabaster` (white alabaster, cloudy, fine grey veins)",
+    "reuse": "the palest translucent lights (the Withdrawn's bays), lamp shades; any culture's translucent lamps"
+   }
+  },
+  "options": {"band": 0.06, "delight": 0.35, "lift": 0.06, "normal_strength": 0.3, "rough": 0.35, "rough_var": 0.08, "size": 1024}
+ },
+ {
+  "src": "metal.titanium.webp",
+  "out": "core/materials/library/metal.titanium",
+  "record": {
+   "id": "metal.titanium", "family": "metal", "colour": "#ffffff", "roughness": 0.35, "metal": 0.7, "scale": [4, 4], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `metal.titanium` (brushed titanium plate, faint heat tint, large panel seams)",
+    "reuse": "the Sanctum's colossus and the Heirs' metal figures; any polished modern metal monument"
+   }
+  },
+  "options": {"band": 0.04, "delight": 0.3, "lift": 0.05, "normal_strength": 0.4, "rough": 0.35, "rough_var": 0.1, "size": 1024}
+ },
+ {
+  "src": "eternian_face-frieze.webp",
+  "out": "core/materials/patterns/eternian/face-frieze",
+  "record": {
+   "id": "eternian/face-frieze", "family": "stone", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [10, 5], "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/face-frieze` (a carved Deco relief of closed-eyed faceted faces)",
+    "reuse": "friezes of the Sanctum's podium, the gate pylons and the ministries; tinted pale stone for the State, bronze for the court"
+   }
+  },
+  "options": {"pattern": true, "seam_axes": "x", "keep_aspect": true, "delight": 0.4, "lift": 0.08, "normal_strength": 1.2, "rough": 0.85, "rough_var": 0.12, "size": 1024}
+ },
+ {
+  "src": "eternian_circuit-maze.webp",
+  "out": "core/materials/patterns/eternian/circuit-maze",
+  "record": {
+   "id": "eternian/circuit-maze", "family": "cloth", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [3, 1], "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/circuit-maze` (a right-angle maze brocade band, light on near-black)",
+    "reuse": "the circuit-maze brocade, stone bands, banner edges; tinted gold on black for the court, white on black for the ministers. Take A of three (.b, .c are alternates)"
+   }
+  },
+  "options": {"pattern": true, "seam_axes": "x", "keep_aspect": true, "delight": 0.2, "lift": 0.04, "normal_strength": 0.5, "rough": 0.85, "rough_var": 0.1, "size": 1024}
+ },
+ {
+  "src": "eternian_circuit-maze.b.webp",
+  "out": "core/materials/patterns/eternian/circuit-maze.b",
+  "record": {
+   "id": "eternian/circuit-maze.b", "family": "cloth", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [3, 1], "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/circuit-maze`, take B",
+    "reuse": "an alternate of eternian/circuit-maze, picked per instance for variety"
+   }
+  },
+  "options": {"pattern": true, "seam_axes": "x", "keep_aspect": true, "delight": 0.2, "lift": 0.04, "normal_strength": 0.5, "rough": 0.85, "rough_var": 0.1, "size": 1024}
+ },
+ {
+  "src": "eternian_circuit-maze.c.webp",
+  "out": "core/materials/patterns/eternian/circuit-maze.c",
+  "record": {
+   "id": "eternian/circuit-maze.c", "family": "cloth", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [3, 1], "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/circuit-maze`, take C",
+    "reuse": "an alternate of eternian/circuit-maze, picked per instance for variety"
+   }
+  },
+  "options": {"pattern": true, "seam_axes": "x", "keep_aspect": true, "delight": 0.2, "lift": 0.04, "normal_strength": 0.5, "rough": 0.85, "rough_var": 0.1, "size": 1024}
+ },
+ {
+  "src": "eternian_sign.webp",
+  "out": "core/materials/patterns/eternian/sign",
+  "record": {
+   "id": "eternian/sign", "family": "cloth", "colour": "#ffffff", "roughness": 0.9, "metal": 0, "scale": [1, 2], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/sign` (the gold closed-eyed face on black, green highlights)",
+    "reuse": "the Eternal State's banners on every gate and wall; the core/sockets eternian pack when it is made. A single panel, not tiled"
+   }
+  },
+  "options": {"seam_axes": "none", "keep_aspect": true, "delight": 0.1, "lift": 0.02, "normal_strength": 0.4, "rough": 0.9, "rough_var": 0.05, "size": 1024}
+ },
+ {
+  "src": "eternian_talking-heads.webp",
+  "out": "core/materials/patterns/eternian/talking-heads",
+  "record": {
+   "id": "eternian/talking-heads", "family": "glass", "colour": "#ffffff", "roughness": 0.2, "metal": 0, "scale": [1, 1], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/talking-heads` (nine Ancient terminal faces, cyan on dark glass; the eighth, centre bottom, deranged)",
+    "reuse": "a 3 x 3 sheet the host cuts into nine faces: the Ancients' terminals, the petition walls; any Ancient display"
+   }
+  },
+  "options": {"seam_axes": "none", "delight": 0.0, "lift": 0.0, "normal_strength": 0.15, "rough": 0.2, "rough_var": 0.02, "size": 1024}
+ }
+]

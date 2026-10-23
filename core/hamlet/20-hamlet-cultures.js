@@ -46,4 +46,31 @@ KHAMLET.CULTURES.islander_east = {
     'br_bldg_rookery_tower': {w: 13.5, d: 13.5, h: 26.5, what: 'rookery tower (kits/beast-riders)'}
   }
 };
+/* Xanadu's valley folk (settlements/xanadu, the building kit; settlements/longsong's three villages round the monastery,
+   2026-10-20): whitewashed and rammed-earth houses under flat roofs with the maroon twig band, a temple, the Farmers'
+   Guild's hall for the headmen, a bazaar row, a teahouse, a granary, farmsteads and the windmill (asbad). The kit has no
+   pens, corral or dairy yet: their boxes are pending (the host draws its own) */
+KHAMLET.CULTURES.xanadu = {
+  kit: 'xanadu', household: 5.5, workShare: 0.45, slopeMax: 0.22,
+  religious: 'xa_temple', civic: 'xa_guild_farm', general: 'xa_shops', food: 'xa_teahouse', warehouse: 'xa_granary',
+  services: {religious: 2, civic: 3, general: 3, food: 4, warehouse: 3},
+  houses: {
+    poor: [['xa_poor_c', 1, 3], ['xa_poor_a', 2, 2], ['xa_poor_b', 3, 1]],
+    middling: [['xa_mid_b', 2, 2], ['xa_mid_a', 2, 1], ['xa_mid_c', 4, 1]],
+    head: [['xa_rich_a', 1, 1]],
+    middlingShare: 0.4
+  },
+  works: {
+    farming: [{key: 'xa_farmhouse', jobs: 10, share: 0.75}, {key: 'xa_granary', jobs: 5, share: 0.15}, {key: 'xa_windmill', jobs: 6, share: 0.1}],
+    ranch: [{key: 'xa_farmhouse', jobs: 8, share: 0.45}, {key: 'xa_pens', jobs: 3, share: 0.2}, {key: 'xa_corral', jobs: 4, share: 0.2},
+            {key: 'xa_dairy', jobs: 4, share: 0.15}]
+  },
+  focusJobs: {farming: 90, ranch: 50},
+  reach: {farming: 420, ranch: 520},
+  pending: {
+    'xa_pens': {w: 14, d: 14, h: 1.5, what: 'a stone pen'},
+    'xa_corral': {w: 20, d: 20, h: 1.4, what: 'a corral for the dzo'},
+    'xa_dairy': {w: 10, d: 7, h: 4.6, what: 'a dairy (butter, cheese)'}
+  }
+};
 KHAMLET.FOCI = ['salt', 'mine', 'lumber', 'ranch', 'fishing', 'farming'];

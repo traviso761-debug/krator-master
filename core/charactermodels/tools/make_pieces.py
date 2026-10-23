@@ -717,6 +717,152 @@ def _slerp(a, b, s):
     return q / np.linalg.norm(q)
 
 
+def _axis_rot(h, a):
+    """the rotation by a radians about unit axis h"""
+    x, y, z = h
+    c, s, C = math.cos(a), math.sin(a), 1 - math.cos(a)
+    return np.array([[c + x * x * C, x * y * C - z * s, x * z * C + y * s],
+                     [y * x * C + z * s, c + y * y * C, y * z * C - x * s],
+                     [z * x * C - y * s, z * y * C + x * s, c + z * z * C]])
+
+
+ELBOW_MIN, ELBOW_REST, ELBOW_ADD, ELBOW_SPAN, ELBOW_WRAP = (math.radians(3), math.radians(12), math.radians(25), math.radians(80),
+                                                         math.radians(-45))
+
+
+def elbow_limit(c, clip):
+    """no elbow bent backwards: retargeting from a rig whose arms rest at another angle can open an elbow past
+    straight (the owner saw it in idles 7 and 12 and the backward walk, by 13 to 17 degrees). The elbow is a hinge
+    fixed in the upper arm: its axis is across the upper arm and the figure's forward at rest (the A pose's elbow pit
+    faces forward). An arm whose least bend about it in the clip is under ELBOW_MIN has its forearm turned forward
+    about the hinge, by enough to bring that least bend to ELBOW_REST (a relaxed arm) but by no more than ELBOW_ADD,
+    the turn fading out over ELBOW_SPAN of further bend: the clip's own motion of the elbow stays (a floor at the
+    least bend held idle 12's arms rigid and straight), and a deep bend is barely touched. A frame still under
+    ELBOW_MIN after it (a slash opened 26 degrees past straight) is turned up to ELBOW_MIN. The bend out of the hinge's plane (and the hand,
+    which rides the forearm) is kept. A bend measured past ELBOW_WRAP backwards is left alone: it is a deep bend with
+    the upper arm turned on its axis (an overhead wind-up folds the forearm behind the head), which a hinge fixed at
+    rest misreads"""
+    times, rots, hips = clip
+    J = c.J
+    for S in ('Left', 'Right'):
+        up, fore, hand = J.get(S + 'Arm'), J.get(S + 'ForeArm'), J.get(S + 'Hand')
+        if up is None or fore is None or hand is None or (S + 'ForeArm') not in rots:
+            continue
+        u0 = c.jpos[fore] - c.jpos[up]
+        h = c.jrot[up].T @ np.cross(u0, [0.0, 0.0, 1.0])
+        h /= np.linalg.norm(h)
+        u = c.jrot[up].T @ u0                                   # the upper arm, in its own frame
+        off = c.jrot[fore].T @ (c.jpos[hand] - c.jpos[fore])    # the forearm, in its own frame
+        q = rots[S + 'ForeArm'].copy()
+        th = []
+        for f in range(len(q)):
+            w = _qm(q[f]) @ off
+            w = w - h * h.dot(w)
+            th.append(math.atan2(np.cross(u, w).dot(h), u.dot(w)))
+        ok = [t for t in th if t > ELBOW_WRAP]
+        if not ok or min(ok) >= ELBOW_MIN:
+            continue
+        low = min(ok)
+        add = min(ELBOW_REST - low, ELBOW_ADD)
+        for f in range(len(q)):
+            if th[f] <= ELBOW_WRAP:
+                continue
+            a = add * max(0.0, 1.0 - (th[f] - low) / ELBOW_SPAN)
+            a = max(a, ELBOW_MIN - th[f])                       # past ELBOW_ADD backwards (a slash), still no less than ELBOW_MIN
+            if a > 1e-6:
+                m = glbio.mat_quat(_axis_rot(h, a) @ _qm(q[f]))
+                q[f] = m if np.dot(m, q[f]) >= 0 else -np.array(m)
+        rots = dict(rots)
+        rots[S + 'ForeArm'] = q
+    return times, rots, hips
+
+
+def _head_ball(c):
+    """the skull as a ball, from the base mesh at rest: centre and radius (hair adds 1.5 cm)"""
+    h = c.jpos[c.J['Head']]
+    P = c.pos[(np.linalg.norm(c.pos - h, axis=1) < 0.3) & (c.pos[:, 1] > h[1] + 0.06)]
+    xr = (P[:, 0].max() - P[:, 0].min()) / 2
+    band = P[(P[:, 1] > h[1] + 0.1) & (P[:, 1] < h[1] + 0.16)]
+    ctr = np.array([(P[:, 0].max() + P[:, 0].min()) / 2, P[:, 1].max() - xr, (band[:, 2].max() + band[:, 2].min()) / 2])
+    return ctr, xr + 0.015
+
+
+def _front(c, j):
+    """how far the body's front is ahead of joint j at rest (the skin near the middle at its height)"""
+    p = c.jpos[c.J[j]]
+    P = c.pos[(np.abs(c.pos[:, 1] - p[1]) < 0.02) & (np.abs(c.pos[:, 0] - p[0]) < 0.05)]
+    return float(P[:, 2].max() - p[2])
+
+
+def hands_clip(c, clip, spec):
+    """a clip with a hand put where the clip only gestures at (data/clips.json derive 'hands': {'R'|'L': place}):
+      head    the palm on the crown, a little behind its top on the hand's side, fingers back along the scalp and the
+              forearm up over the head from before it, wherever the clip brings that hand within reach of it (and in
+              proportion as it nears it): Meshy's 'Confused Scratch' scratched the air 10 cm over the crown, and
+              then held the hand up like a claw at the side of the head, its wrist bent back
+      belly   the palm flat on the belly, fingers across the body, the whole clip
+      chest   the palm on the lower chest, the same
+    Each arm is a two-bone solve (belly, chest: the elbow on the clip's side) with the palm on the body. 'Sleep' lay
+    with both hands held up in the air"""
+    times, rots, hips = clip
+    J = c.J
+    ctr, rad = _head_ball(c)
+    hj = c.jpos[J['Head']]
+    out = {nm: [] for nm in rots}
+    grips = {S: c.jrot[J[S + 'Hand']].T @ grip_frame(c, S)[:3, :3] for S in ('Left', 'Right')}
+    for f in range(len(times)):
+        rig = _Rig(c, clip, f)
+        loc = list(rig.loc0)
+        for side, place in sorted(spec.items()):
+            S = 'Right' if side == 'R' else 'Left'
+            sx = -1.0 if S == 'Right' else 1.0                  # the hand's side along x (the left is +x)
+            up, fore, hand, tip = J[S + 'Arm'], J[S + 'ForeArm'], J[S + 'Hand'], J[S + 'HandMiddle3']
+            Rw, P = rig.fk(loc)
+            clipL = [loc[up], loc[fore], loc[hand]]
+            pole = P[fore] - P[up]
+            if place == 'head':
+                M = Rw[J['Head']] @ c.jrot[J['Head']].T          # the head as the clip turned it from rest
+                C = P[J['Head']] + M @ (ctr - hj)
+                F0 = P[tip] - P[hand]
+                L = np.linalg.norm(F0)
+                d = np.linalg.norm(P[tip] - C)
+                w = float(np.clip((0.52 - d) / 0.16, 0, 1))
+                w = w * w * (3 - 2 * w)
+                if w <= 0:
+                    continue
+                # the palm on the crown, a little behind its top, on the hand's side; the fingers back along the scalp
+                # (tipped 15 degrees into it, so their ends reach it as it curves away), the wrist forward of the
+                # palm, so the forearm comes up over the head from before it, the elbow forward and out
+                n = M @ np.array([0.25 * sx, 0.85, -0.45])
+                n /= np.linalg.norm(n)
+                K = C + n * rad
+                Zt = M @ np.array([0.0, -0.2, -1.0])
+                Zt -= n * n.dot(Zt)
+                Zt /= np.linalg.norm(Zt)
+                Z = Zt * math.cos(math.radians(15)) - n * math.sin(math.radians(15))
+                X = -n                                            # out of the palm: into the head
+                lp = np.linalg.norm(P[J[S + 'HandMiddle1']] - P[hand])
+                rig.reach(loc, up, fore, hand, K + n * 0.03 - Zt * (lp / 2), M @ np.array([0.7 * sx, -0.1, 0.7]))
+                rig.hold(loc, hand, grips[S], np.cross(Z, X), Z)
+            else:
+                w = 1.0
+                j = 'Spine' if place == 'belly' else 'Spine1'
+                M = Rw[J[j]] @ c.jrot[J[j]].T
+                X = M @ np.array([0.0, 0.0, -1.0])                # out of the palm: into the body
+                Z = M @ np.array([-sx, -0.35, 0.0])               # the fingers across the body, a little down
+                Z -= X * X.dot(Z)
+                Z /= np.linalg.norm(Z)
+                pt = P[J[j]] + M @ np.array([sx * 0.04, 0.0, _front(c, j) + 0.012])
+                rig.reach(loc, up, fore, hand, pt - X * 0.03 - Z * 0.05, pole + M @ np.array([sx * 0.15, 0, 0]))
+                rig.hold(loc, hand, grips[S], np.cross(Z, X), Z)
+            if w < 1:
+                for k, jj in enumerate((up, fore, hand)):
+                    a, b = glbio.mat_quat(clipL[k]), glbio.mat_quat(loc[jj])
+                    loc[jj] = _qm(_slerp(np.array(a), np.array(b), w))
+        rig.quats(loc, out)
+    return times, {nm: np.array(v) for nm, v in out.items()}, hips
+
+
 def loop_back(clip, back):
     """a one-shot made a loop: after its last frame it eases back to its first over `back` seconds"""
     times, rots, hips = clip
@@ -870,8 +1016,8 @@ def hammer_loop(c, idle, cycle=1.1):
 
 def dig_loop(c, idle, cycle=1.4):
     """digging with a pickaxe or a hoe, standing: the idle's first frame, both hands on the handle (the right at the
-    grip, the left below it toward the end, where the figure's two-hand grip slides it on), lifted over the right
-    shoulder with the head swung back behind it, and brought down in front with the spine bending into the blow, the
+    grip, the left below it toward the end, where the figure's two-hand grip slides it on), lifted before and above the
+    right shoulder with the head swung up and back, and brought down in front with the spine bending into the blow, the
     head (the hammer's face, the grip's +Z) leading; it was Meshy's one-handed heavy swing looped, its left arm
     folded across the chest"""
     rig = _Rig(c, idle)
@@ -882,9 +1028,11 @@ def dig_loop(c, idle, cycle=1.4):
     T = lambda f: f * cycle
     low = np.array([sh[0] * 0.5, hy + 0.10, sh[2] + 0.34])
     hit = np.array([sh[0] * 0.3, hy - 0.02, sh[2] + 0.40])
-    hand = [(0.0, low, ''), (T(0.45), np.array([sh[0] * 0.6, sh[1] + 0.22, sh[2] + 0.04]), 'io'), (T(0.62), hit, 'in'),
+    # the top of the lift: in front of the right shoulder and above it, the handle up and back; nearer the head (it was
+    # 4 cm before the shoulder) the left hand reached behind the head for the handle, its arm round the neck
+    hand = [(0.0, low, ''), (T(0.45), np.array([sh[0], sh[1] + 0.20, sh[2] + 0.28]), 'io'), (T(0.62), hit, 'in'),
             (T(0.74), hit + [0, 0.03, -0.03], 'out'), (cycle, low, 'io')]
-    pitch = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([-2.2]), 'io'), (T(0.62), np.array([0.75]), 'in'),
+    pitch = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([-1.9]), 'io'), (T(0.62), np.array([0.75]), 'in'),
              (T(0.74), np.array([0.7]), 'out'), (cycle, np.array([0.3]), 'io')]
     lean = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([0.05]), 'io'), (T(0.62), np.array([0.5]), 'in'),
             (T(0.74), np.array([0.5]), ''), (cycle, np.array([0.3]), 'io')]
@@ -1005,9 +1153,10 @@ def thrust_clip(c, stance, kind='one', cycle=1.3):
 
 
 def derived_clips(c, got):
-    """data/clips.json entries with 'derive': {'loop_of': key, 'back': s} (a one-shot looped), {'hammer': true}, {'dig': true} or
-    {'thrust': 'one' | 'spear', 'from': the stance clip} or {'carry': 'spear', 'from': a clip, '<key>@src' for an
-    entry's own Meshy action}"""
+    """data/clips.json entries with 'derive': {'loop_of': key, 'back': s} (a one-shot looped), {'hammer': true}, {'dig': true},
+    {'thrust': 'one' | 'spear', 'from': the stance clip}, {'carry': 'spear', 'from': a clip, '<key>@src' for an
+    entry's own Meshy action} or {'hands': {'R'|'L': 'head' | 'belly' | 'chest'}, 'from': the clip itself (an idle's
+    key) or '<key>@src'}: a 'hands' clip takes its source's place in the list rather than coming last"""
     cp = os.path.join(HERE, 'data', 'clips.json')
     if not os.path.exists(cp):
         return []
@@ -1026,6 +1175,8 @@ def derived_clips(c, got):
             clip = spear_carry(c, got[spec['from']])
         elif spec.get('thrust') and spec.get('from', 'combat_idle') in got:
             clip = thrust_clip(c, got[spec.get('from', 'combat_idle')], spec['thrust'], spec.get('cycle', 1.3))
+        elif spec.get('hands') and spec.get('from') in got:
+            clip = hands_clip(c, got[spec['from']], spec['hands'])
         else:
             continue
         out.append(clip + (d['key'], d['label'], d['group'], d['loop']))
@@ -1044,11 +1195,28 @@ def write_anims(out, c):
     by = {n.get('name', ''): i + 1 for i, n in enumerate(jnodes)}
     anims, meta, got = [], [], {}
     made = []
+    seq = []
     for src, clip, name, label, group, loop in [x + (True,) for x in CLIPS + idle_clips()] + action_clips():
-        got[name] = retarget(src, clip, c)
+        got[name] = elbow_limit(c, retarget(src, clip, c))
+        seq.append(name)
         if '@' not in name:
             made.append(got[name] + (name, label, group, loop))
-    for times, rots, hips, name, label, group, loop in made + derived_clips(c, got):
+    # a clip whose hands are put right (derive 'hands') stands where its source stood
+    spots = {d['key']: d['derive']['from'] for d in json.load(open(os.path.join(HERE, 'data', 'clips.json')))['clips']
+             if (d.get('derive') or {}).get('hands')}
+    for d in derived_clips(c, got):
+        if d[3] in spots:
+            src = spots[d[3]]
+            at = [i for i, m in enumerate(made) if m[3] == src]
+            if at:
+                made[at[0]] = d
+            else:
+                before = [m[3] for m in made]
+                k = len([n for n in seq[:seq.index(src)] if n in before])
+                made.insert(k, d)
+        else:
+            made.append(d)
+    for times, rots, hips, name, label, group, loop in made:
         speed = None
         if loop and len(times) > 1 and times[-1] > 0:
             # a loop plays in place: the hips' drift over a cycle (root motion: forward, sideways, up a ladder) comes

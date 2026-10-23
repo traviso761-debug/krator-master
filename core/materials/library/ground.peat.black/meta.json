@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.3,
+    1.121
+   ],
+   "seam_before": [
+    1.28,
+    1.089
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.peat.black",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.peat.black.png",
+  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "note": "came as a rusty moss-and-stick bog floor rather than black peat: usable as the bog floor; a darker wet peat may still be wanted for the pools' margins",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.peat.black` (section 7, Korona)",
+  "reuse": "the pitcher hollow's floor (Korona); any acid bog or mire floor",
+  "sha1": "df9067281c5b842280771af51818cf0fa5df6f06"
+ }
+}

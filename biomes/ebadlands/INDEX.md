@@ -21,7 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
-| `45-host-stage.js` | 24 | the land (43); the climate fields (cached below; these are the  (99); the host binding (132); the ground (144); the water (243) |
+| `45-host-stage.js` | 27 | the land (43); the climate fields (cached below; these are the  (99); the host binding (132); the ground (144); the water (248) |
 | `50-biome-ebadlands-species.js` | 52 **big** | palettes (22); the tree species (58); harvest (biomes/FRUIT.md) (103); the small plants (the floor and the dressing), t (128); leaf textures (154); bark, rock, wood textures (261); geometries local to this biome (303); the library cards (core/materials/PLAN.md, Easte (427); materials (446); instanced items (498) |
 | `55-biome-ebadlands-trees.js` | 43 **big** | zones from the fields (14); colour (the maths is the core's, BIO.col) (55); polyline helpers (Girder's) (70); keep-clear between trees (81); foliage helpers (88); the builders (116); impostors (the far canopy) (334); the pass (370); the passes (data: species, cell, acceptance from (404); one tree alone (biomes/WORLD.md: trees as varian (437) |
 | `60-biome-ebadlands-floor.js` | 21 | fields local to the floor (30); small plants (35); the zone planters (115); the pass (201) |
@@ -31,7 +31,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `85-host-arcade.js` | 5 |  |
 | `86-host-variants.js` | 12 | materials for instancing (the open world's) (20); harvest: what the kit wrote, one geometry per ma (44); growing the variants (67); drawing: one pool of instances per prototype (84) |
 | `88-host-build.js` | 2 |  |
-| `89a-host-atmos.js` | <1 |  |
-| `89w-host-water.js` | 2 |  |
 | `99-host-take.js` | 16 | the inspector's words (54); the probe's budgets and the kit's own checks (ve (70); the page, handed to the host (142) |
 | `99-tail.html` | <1 |  |

@@ -34,6 +34,9 @@ Processing, per family:
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
+  own      `"own": true` marks a family only the kit's own page uses (the variants of a card, a surface a kit-only fragment
+           swaps in): tools/textures/matlib_pack.py leaves it out of the pack a host that vendors the kit inlines, unless the
+           kit's own build.py asks for it (`fragment(HERE, key, own=True)`), so that host's page keeps its bytes.
 Requires numpy and Pillow.
 """
 import argparse, base64, hashlib, io, json, os, sys
@@ -152,6 +155,8 @@ def process(fam, cfg, size):
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
         'files': {},
     }
+    if cfg.get('own'):    # the kit's own page only: matlib_pack leaves it out of a host's copy of the pack (see `own` above)
+        entry['own'] = True
     if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
         entry['cell'] = cfg['cell']
     for k, data in out.items():

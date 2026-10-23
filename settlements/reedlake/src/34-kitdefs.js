@@ -11,10 +11,20 @@
 // core/materials copy is untouched, other builds keep their MAT.dark.
 MAT.darkSurf=MAT.dark.clone();
 MAT.dark.color.setHex(0x0a0b0d);
+// NO DARK VOIDS (the owner, 2026-10-19: "remove all dark voids and make all windows, doors and portals actual doors or
+// windows that have transparency"). What MAT.dark drew as an opening's inside (the core behind a glass band, a room's
+// silhouette behind a window, a ruin's insides) is a room now: warm plaster, lit by the scene. An arched doorway
+// (archOpen) is a shut door of the Ancients' grey alloy. The windows are glass you can see into (winIntact clear blue,
+// winDead a dusty pane), so what stands behind one shows: the room where a builder drew one, the wall where it did not
+// (a tower has no rooms yet). Kit-local, as above: core/materials is untouched.
+MAT.dark.color.setHex(0x7a6e60);MAT.dark.roughness=.92;
+MAT.ancDoor=new THREE.MeshStandardMaterial({color:0x6a665e,metalness:.55,roughness:.42,side:DS});
+MAT.winIntact.transparent=true;MAT.winIntact.opacity=.55;MAT.winIntact.depthWrite=false;MAT.winIntact.side=DS;
+MAT.winDead.color.setHex(0x3a4044);MAT.winDead.roughness=.35;MAT.winDead.metalness=.3;MAT.winDead.transparent=true;MAT.winDead.opacity=.68;MAT.winDead.depthWrite=false;MAT.winDead.side=DS;
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
 kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
-kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
+kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.ancDoor);
 kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
 kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.darkSurf);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);

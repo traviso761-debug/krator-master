@@ -71,6 +71,31 @@ if(C.smog){const S=C.smog,base=S.height||90;
     pl.rotation.x=-Math.PI/2;pl.position.set(B.cx,base*(0.55+k*0.7),B.cz);pl.renderOrder=-1;pl.userData.noShadow=true;scene.add(pl);}
   animHooks.push(()=>{smogM.opacity=(S.opacity||0.1)*(0.55+0.45*(1-nightF(hourCur)));});}
 let hourCur=HOUR0;
-animHooks.push(now=>{hourCur=hourNow(clockPaused?pausedAt:now-clockOffset);ctx.hour=hourCur;ENV.izTime.value=now/1000;lerpSky(hourCur);});
+// ---- weather that thickens the air: one owner of the fog ----
+// api.fogEffect() -> a handle an event sets every frame: {amount 0..1 (how far in), visibility (metres: where the fog
+// is nearly whole), colour (the fog's and the sky's at full), dim (0..1: the sun and the sky light taken away)} and
+// .done() when it is over. Each frame the engine starts again from the city's own fog (C.fog, or what the city's code
+// set before the first effect began) and eases toward the thickest effect's density, never past it: an effect cannot
+// compound, a storm that ends leaves the air as it found it, and a haar's whiteout is a visibility, not infinity. The
+// sky dome takes the colour too (it does not take the scene's fog), so a grey day has a grey sky. With no effect live the
+// engine does not touch the density at all, so a city that drives its own fog (Moria's deeps, the Fleshpit) is as before.
+// The effect's colour is held to the light of the hour (a haar at midnight is dark, not lit white), and an effect its event
+// stopped setting (an event that failed before it called done) lapses after 180 frames, so nothing is left behind.
+const FOG_FX=new Set();let fogBase=null,fogLive=false;const fxC=new THREE.Color();
+API.fogEffect=()=>{let a=0,idle=0;const e={visibility:1500,colour:null,dim:0,done:()=>FOG_FX.delete(e),_stale:()=>++idle>180};   // frames since `amount` was last set (the event's hook and this one run in the same loop, so a hidden tab stops both)
+  Object.defineProperty(e,'amount',{get:()=>a,set:v=>{a=v;idle=0;},enumerable:true});if(!FOG_FX.size&&!fogLive)fogBase=scene.fog.density;FOG_FX.add(e);return e;};
+const lum=c=>0.299*c.r+0.587*c.g+0.114*c.b;
+function applyFogFx(now){
+  for(const e of FOG_FX)if(e._stale())e.done();   // an effect its event stopped setting for 180 frames lapses
+  if(!FOG_FX.size){if(fogLive){scene.fog.density=fogBase;fogLive=false;}return;}
+  fogLive=true;let d=fogBase,dim=0;const L=lum(skyM.uniforms.hor.value);
+  for(const e of FOG_FX){const a=Math.max(0,Math.min(1,e.amount||0));if(!a)continue;
+    // FogExp2 is 1 - exp(-(density * distance)^2): about 95 % fog at 1.73 / density, so that is where `visibility` puts it
+    const target=Math.max(fogBase,1.73/Math.max(50,e.visibility||1500));d=Math.max(d,fogBase+(target-fogBase)*a*a*(3-2*a));
+    if(e.colour){fxC.set(e.colour);const lc=lum(fxC);if(lc>L*1.15)fxC.multiplyScalar(Math.max(0.04,L*1.15)/lc);const k=a*0.85;scene.fog.color.lerp(fxC,k);skyM.uniforms.hor.value.lerp(fxC,k);skyM.uniforms.top.value.lerp(fxC,k*0.8);}
+    dim=Math.max(dim,(e.dim||0)*a);}
+  scene.fog.density=d;renderer.setClearColor(scene.fog.color);
+  if(dim){sun.intensity*=1-dim;hemi.intensity*=1-dim*0.45;ambient.intensity*=1-dim*0.35;skyM.uniforms.sunA.value*=1-Math.min(1,dim*1.4);}}
+animHooks.push(now=>{hourCur=hourNow(clockPaused?pausedAt:now-clockOffset);ctx.hour=hourCur;ENV.izTime.value=now/1000;lerpSky(hourCur);applyFogFx(now);});
 lerpSky(HOUR0);
 Object.assign(API,{scene,camera,renderer,sun,ambient,hemi,sky,ENV,nightF,windowF,hour:()=>hourCur});

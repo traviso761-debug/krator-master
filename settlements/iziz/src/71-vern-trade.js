@@ -30,7 +30,7 @@ function buildVernShops(G,o){reseed(7401+(o.v|0));const U=4.6,N=3,W=U*N,D=7.4,H=
  for(let i=0;i<N;i++){const x=-W/2+U*(i+.5),c=vC(VPAL.awning[i*2%VPAL.awning.length]);
   // the shop front: a wide opening, its board shutter propped up as a hood, a counter, an awning, a sign
   const fx=HX?x-.45:x,fw=HX?2.6:U-1.0;   // the front's centre and the counter's width (hollow: the opening stops short of the door)
-  if(!vnHole(fx,Y0+.9,D/2,0,fw-.2,1.7))vB('vDarkB',x,Y0+.9,D/2-.05,U-1.2,1.7,.2,0);vB('vWood',fx,Y0,D/2+.2,fw,.95,.6,0,wood);
+  if(!vnHole(fx,Y0+.9,D/2,0,fw-.2,1.7))vnPlate(x,Y0+.9,D/2-.05,U-1.2,1.7,.2,0);vB('vWood',fx,Y0,D/2+.2,fw,.95,.6,0,wood);
   kput('vWood',[fx,Y0+2.75,D/2+.75],vQ(0,-.75,0),[fw,.06,1.7],wood.clone().multiplyScalar(.9));
   vnAwning(x,Y0+2.55,D/2,0,U-.9,1.5,c);vnSign(x-U/2+.35,Y0+2.35,D/2,0,c);
   for(let k=0;k<3;k++){const gw=HX?fw-.6:U-1.6,gx=fx-gw/2+gw*(k+.5)/3;const r=rng();
@@ -92,7 +92,7 @@ function buildVernWorkshopB(G,o){reseed(7431+(o.v|0));const W=8,D=7,H=3.2,Y0=.3;
  vnReg('Potter\'s workshop and kiln',0,0,8.5,Y0+H+3);
  vB('vStone',0,-.1,0,W+.4,.4,D+.4,0,vC(0x9a8a78));vnFrame(0,Y0,0,W,H,D,0,wood,.15);vnBody('vPlaster',0,Y0,0,W-.14,H,D-.14,0,pl,{t:.25});
  vnCornice('vWood',0,Y0+H,0,W,D,0,wood,1,false);vnHipRoof('vHipC',0,Y0+H+.32,0,W,D,2.1,0,null,1.1);
- if(!vnHole(-1.2,Y0+.6,D/2-.07,0,3.4,2.0))vB('vDarkB',-1.2,Y0+.6,D/2-.05,3.4,2.0,.2,0);vB('vWood',-1.2,Y0,D/2+.15,3.2,.9,.5,0,wood);      // open sales front with counter
+ if(!vnHole(-1.2,Y0+.6,D/2-.07,0,3.4,2.0))vnPlate(-1.2,Y0+.6,D/2-.05,3.4,2.0,.2,0);vB('vWood',-1.2,Y0,D/2+.15,3.2,.9,.5,0,wood);      // open sales front with counter
  for(let k=0;k<5;k++)vPst('vClayPot',-2.4+k*.6,Y0+.9,D/2+.15,rr(.14,.22),rr(.3,.55),vC(vPick([0x9a5a38,0xb87a4a,0x7a4a30,0xc89a6a])));
  vnDoor(2.4,Y0,D/2-.05,0,1.0,2.1,'vWood',wood,vC(0x6a4a30),false);vnAwning(-1.2,Y0+2.6,D/2,0,3.6,1.6,vC(0xe0a030));
  for(const s of[-1,1])vnWin(s*W/2,Y0+1.3,0,s*Math.PI/2,1.0,1.0,'open','vWood',wood,true);
@@ -167,8 +167,8 @@ function buildVernWarehouse(G,o){reseed(7461+(o.v|0));const W=22,D=12,H=5.2,Y0=.
  vnGableRoof(0,Y0+H,0,D,W,3.4,Math.PI/2,'vGableP',null,1.0,'vGableW',wood,.16);   // ridge along z (long axis)
  for(let k=0;k<4;k++)kput('vIron',[-W/2+3+k*(W-6)/3,Y0+H+3.9,0],null,[.9,.6,1.4],vC(0x4a4640));   // roof vents
  // gable-end doors on the front (+z... the ridge runs along z, so the gable ends face ±x): put the doors on +x and the dock along +z
- {const dx=W/2-.05;if(!vnHole(dx,Y0,-1.0,Math.PI/2,3.6,3.8,true))vB('vDarkB',dx,Y0,-1.0,.2,3.8,3.6,0);for(const s of[-1,1])kput('vWood',[dx+.12,Y0+1.9,-1.0+s*1.05],vQ(Math.PI/2,0,0).multiply(qEuler(0,s*.55,0)),[1.9,3.7,.08],wood.clone().multiplyScalar(.85));
-  vB('vWood',dx+.1,Y0+3.8,-1.0,.3,.3,4.4,0,wood);vB('vDarkB',dx,Y0+H+1.6,-1.0,.2,1.4,1.4,0);vB('vWood',dx+.9,Y0+H+2.9,-1.0,2.2,.25,.25,0,wood);vPst('vRope',dx+1.8,Y0+1.2,-1.0,.03,Y0+H+1.7-Y0-1.2,vC(0xa89878));vnCrate(dx+1.8,Y0+.5,-1.0,.9,.2,wood);}
+ {const dx=W/2-.05;if(!vnHole(dx,Y0,-1.0,Math.PI/2,3.6,3.8,true))vB('vPlaster',dx,Y0,-1.0,.2,3.8,3.6,0,IZ_ROOMC);for(const s of[-1,1])kput('vWood',[dx+.12,Y0+1.9,-1.0+s*1.05],vQ(Math.PI/2,0,0).multiply(qEuler(0,s*.55,0)),[1.9,3.7,.08],wood.clone().multiplyScalar(.85));
+  vB('vWood',dx+.1,Y0+3.8,-1.0,.3,.3,4.4,0,wood);vnPlate(dx,Y0+H+1.6,-1.0,.2,1.4,1.4,0);vB('vWood',dx+.9,Y0+H+2.9,-1.0,2.2,.25,.25,0,wood);vPst('vRope',dx+1.8,Y0+1.2,-1.0,.03,Y0+H+1.7-Y0-1.2,vC(0xa89878));vnCrate(dx+1.8,Y0+.5,-1.0,.9,.2,wood);}
  // loading dock along the front with stairs, ramp, crates and barrels; a lean-to office
  vB('vWood',0,Y0-.28,D/2+1.4,W-2,.28,2.8,0,wood);for(let i=0;i<=8;i++)vPst('vPostB',-W/2+1+(W-2)*i/8,-.1,D/2+2.7,.13,Y0-.2,wood);
  vnStairs(W/2-2.2,0,D/2+3.4,0,1.4,Y0,3,'vWood',wood);kput('vWood',[-W/2+2.6,Y0/2-.1,D/2+4.2],vQ(0,Math.atan2(Y0,3.2),0),[2.2,.12,3.4],wood);

@@ -19,7 +19,7 @@ VEHICLE_CULTURE('republic', {
   lore: 'highland forge state; capital Roketstad, once an Ancient spaceport; Salvagers strip the ruins',
   /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
   detail: {
-    hullCream: 'paintWorn', hullCreamDark: 'paintWorn', hullOchre: 'paintWorn', hullOchreDark: 'paintWorn', deck: 'paintWorn',
+    hullCream: 'whitePaint', brass: 'gilt', copper: 'verdigris', steel: 'plate', hullCreamDark: 'paintWorn', hullOchre: 'paintWorn', hullOchreDark: 'paintWorn', deck: 'paintWorn',
     red: 'paintWorn', redDark: 'paintWorn', drum: 'paintWorn', drumRed: 'paintWorn',
     canvas: 'canvas', crate: 'wood', panel: 'solar', panelGrid: null, glass: null, glowBlue: null, rope: null
   },

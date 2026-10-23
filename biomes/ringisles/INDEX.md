@@ -34,7 +34,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `66-biome-ringisles-world.js` | 6 |  |
 | `70-biome-ringisles.js` | 3 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
-| `84-host-ground.js` | 14 | the paint (per vertex) (19); the layers (the library, or procedural without i (47); the meshes (103); the small waters: the tide pools and the brine p (141) |
+| `84-host-ground.js` | 14 | the paint (per vertex) (19); the layers (the library, or procedural without i (47); the meshes (105); the small waters: the tide pools and the brine p (143) |
 | `88-host-build.js` | 2 |  |
 | `89f-host-fauna.js` | 4 |  |
 | `89w-host-sea.js` | 3 |  |

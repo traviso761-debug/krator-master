@@ -437,6 +437,35 @@
     "sourceMean": 0.4091
    }
   },
+  "fungus": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "fungus.albedo.webp"
+   },
+   "lib": "organic.fungus.bracket",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.3,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5a6daabd49384faf9d26c7c2c07aaf24c8b077b3",
+    "normal": "91d3ac63f70f6e098b86951817c1df7b3a9942bb",
+    "roughness": "c07a3a3cb4a20396e0c66000e0663852c3ef0de1"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.4663
+   }
+  },
   "glossy": {
    "breakup": null,
    "card": true,
@@ -553,6 +582,39 @@
     "keep": 0.0,
     "mean": 0.693,
     "sourceMean": 0.2997
+   }
+  },
+  "hang1": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "files": {
+    "map": "hang1.albedo.webp"
+   },
+   "lib": "card.vine.hanging.6",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d4c568beb7a2873872cce037a1d6df5956127c48"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.693,
+    "sourceMean": 0.2883
    }
   },
   "jettyStone": {
@@ -1066,6 +1128,60 @@
     "keep": 0.0,
     "mean": 0.693,
     "sourceMean": 0.3015
+   }
+  },
+  "under1": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "under1.albedo.webp"
+   },
+   "lib": "card.jungle.clump.14",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9c6ed07fe4558f303adeda48f881e520aa24b881"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.693,
+    "sourceMean": 0.3354
+   }
+  },
+  "under2": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "under2.albedo.webp"
+   },
+   "lib": "card.jungle.clump.15",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "17282d016b733d0055f4ec39cfb75e159ebff210"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.693,
+    "sourceMean": 0.3122
    }
   },
   "wood": {

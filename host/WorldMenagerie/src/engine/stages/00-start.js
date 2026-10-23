@@ -154,3 +154,43 @@ const API={THREE,C,ctx,P,toLatLon,B,WORLD,OSM,MAP_LAYERS:[],POIS,AREAS,ROADS,RAI
   roadsNear,districtAt,focusAt,FOCUS,report,section};
 const UI_HOOKS=[];   // an extra that wants a button of its own queues it here; the UI stage runs these once its panels exist
 API.onUI=fn=>UI_HOOKS.push(fn);
+// ---- real surfaces (C.surfaces, opt-in): texture sets laid on the city by world position ----
+// {dir, sets: {name: {map, mean: [r,g,b], metres, keep, strength}}, fade: [near, far], streets, sidewalks,
+//  ground: {green, tan, grey}, walls: {red, other}, towers, styles: {facadeStyle index: set}, roofs: {flat, pitched}}
+// A set is used for its pattern: its texel divided by the set's own mean colour, so a wall or a lawn keeps the colour the
+// city gives it and takes the brick courses or the grass blades; `keep` is how much of the set's own hue stays (0: the
+// pattern only), `strength` how deep it goes. It fades out between fade[0] and fade[1] metres from the eye, where it
+// would only shimmer. A city that sets no `surfaces` draws exactly as before: surface() hands its material back.
+// Modes: 'flat' one set on the ground (streets, sidewalks); 'ground' grass, earth or paving by the ground's own colour
+// (green, tan or grey); 'wall' on a facade between its windows (the map's light texels), brick on a red wall and the
+// other set on the rest, laid along the face; 'roof' gravel on a flat roof, shingles on a pitched one.
+const SURF=await (async()=>{const S=C.surfaces;if(!S||!S.sets)return null;const dir=S.dir||'data/textures/',sets={};
+  await Promise.all(Object.entries(S.sets).map(([k,s])=>new Promise(res=>{new THREE.TextureLoader().load(dir+s.map,t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;
+    sets[k]={tex:t,mean:s.mean||[0.5,0.5,0.5],metres:s.metres||2,keep:s.keep===undefined?0.3:s.keep,strength:s.strength===undefined?1:s.strength};res();},
+    undefined,()=>{report('surfaces',new Error(dir+s.map+' did not load'));res();});})));
+  return {sets,fade:S.fade||[120,700]};})();
+const SURF_GLSL='float sfLum(vec3 c){return dot(c,vec3(0.299,0.587,0.114));}\n'+
+  'vec3 sfPat(sampler2D t,vec2 p,vec4 M,vec4 Q){vec3 c=texture2D(t,p*Q.x).rgb/max(M.rgb,vec3(0.05));c=mix(vec3(sfLum(c)),c,M.a);return mix(vec3(1.0),c,Q.y);}\n';
+function surface(mat,mode,names){if(!SURF)return mat;const use=(names||[]).map(n=>n&&SURF.sets[n]).filter(Boolean);if(!use.length||use.length!==(names||[]).length)return mat;
+  const prev=mat.onBeforeCompile,k0=mat.customProgramCacheKey(),U={sfFade:{value:new THREE.Vector2(SURF.fade[0],SURF.fade[1])}};
+  use.forEach((s,i)=>{U['sfT'+i]={value:s.tex};U['sfM'+i]={value:new THREE.Vector4(s.mean[0],s.mean[1],s.mean[2],s.keep)};U['sfQ'+i]={value:new THREE.Vector4(1/s.metres,s.strength,0,0)};});
+  const P=i=>'sfPat(sfT'+i+',uv,sfM'+i+',sfQ'+i+')';
+  // the texture coordinates: the ground and the roofs by x and z; a wall along its face (its horizontal) and up it
+  const uvOf=mode==='wall'?'vec3 n=normalize(vSfN);vec2 tg=normalize(vec2(-n.z,n.x)+vec2(1e-4,0.0));vec2 uv=vec2(dot(vSfW.xz,tg),vSfW.y);'
+    :mode==='roof'?'vec3 n=normalize(vSfN);vec2 uv=vSfW.xz;':'vec2 uv=vSfW.xz;';
+  const body=mode==='flat'?'vec3 d='+P(0)+';'
+    :mode==='ground'?'float g=smoothstep(0.005,0.05,vColor.g-max(vColor.r,vColor.b)),t=(1.0-g)*smoothstep(0.05,0.14,vColor.r-vColor.b);vec3 d='+P(0)+'*g+'+P(1)+'*t+'+P(2)+'*(1.0-g-t);'
+    :mode==='wall'?'float red=smoothstep(0.06,0.16,vColor.r-vColor.b);vec3 d=mix('+(use.length>1?P(1):P(0))+','+P(0)+',red);'+
+      (mat.map?'d=mix(vec3(1.0),d,smoothstep(0.55,0.78,max(texelColor.r,max(texelColor.g,texelColor.b))));':'')   // between the windows only
+    :'float pit=1.0-smoothstep(0.93,0.985,abs(n.y));vec3 d=mix('+P(0)+','+P(1)+',pit);';
+  mat.onBeforeCompile=(sh,r)=>{if(prev)prev(sh,r);Object.assign(sh.uniforms,U);
+    // the distance to the eye from the view-space position: three sets cameraPosition only for Phong, standard and
+    // shader materials, so on a Lambert one it is the origin and a fade by it fades everything but the map's middle
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vSfW;varying vec3 vSfN;varying float vSfD;')
+      .replace('#include <begin_vertex>','#include <begin_vertex>\nvSfW=(modelMatrix*vec4(transformed,1.0)).xyz;vSfN=mat3(modelMatrix)*objectNormal;')
+      .replace('#include <project_vertex>','#include <project_vertex>\nvSfD=length(mvPosition.xyz);');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vSfW;varying vec3 vSfN;varying float vSfD;uniform vec2 sfFade;'+
+        use.map((_,i)=>'uniform sampler2D sfT'+i+';uniform vec4 sfM'+i+';uniform vec4 sfQ'+i+';').join('')+'\n'+SURF_GLSL)
+      .replace('#include <color_fragment>','#include <color_fragment>\n{'+uvOf+body+'float fd=1.0-smoothstep(sfFade.x,sfFade.y,vSfD);diffuseColor.rgb*=mix(vec3(1.0),d,fd);}');};
+  mat.customProgramCacheKey=()=>k0+'|sf:'+mode+':'+names.join(',');return mat;}   // the key read before the hook was replaced (the default key is the hook's own source)
+API.surface=surface;

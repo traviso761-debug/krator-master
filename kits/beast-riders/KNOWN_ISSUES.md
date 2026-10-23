@@ -29,3 +29,63 @@
       (used on the deck and the short perch rails only).
 - [ ] **The rider mounts themselves** (raptors, threehorns, quetzals...) are not placed in the stables: kits/fauna's
       mounts, a later pass.
+
+## The tent set (src/70-79, 2026-10-19)
+
+- [ ] **The thorn hedge has no texture of its own**: the cut brush is thin branches of geometry with `bark.ironbark` as its
+      detail map. `foliage.thorn.cut` is owed (core/materials/PROMPTS-NEEDED.md, section 1); wire it as the family `thorn`.
+- [ ] **The painted marks are geometry**: the sigils on the hides, the chevrons and diamonds on the pavilions' shoulder
+      bands, the awnings' stripes and the pennants are thin strokes and flat quads in palette colours, not a painted
+      sheet; up close they read as appliqué. A painted band sheet would need UVs the catalog's meshes do not carry.
+- [ ] **No mounts in the pens**: the corrals, kennels, perch frames, the pond and the grove are empty (kits/fauna's
+      mounts, a later pass, as for the stables). The pens were sized before the hardshell and the jungle mammoth reached
+      kits/fauna (2026-10-19), from their real kin (about 3.5 m and 6 m long): check them against `hardshell` (5.3 m) and
+      `jungle-mammoth` (7.7 m).
+- [ ] **The grove's trees are the catalog's generic tree** (`F.tree`, 'olive'): their places are hashed (KRAND), but the
+      tree helper draws its limbs from the frame's own stream, and they are not the hyperjungle's species.
+- [ ] **A tent stands on flat ground**: its floor, skirt and stakes start at y 0; a camp on a slope needs the settlement
+      to level a pad (hedge and fence runs follow the ground piece by piece, not within a piece).
+- [ ] **Interiors are placed by hand** (F.furn round the wall: `brtIn`), not planned rooms in `kits/interiors`.
+- [ ] **No camp is laid on the sheet**: `BR_CAMP` says what a band pitches, not where; Pinnacle Rock lays them.
+
+## The rock-cut pieces (src/55-56, 2026-10-19)
+
+- [ ] **The rock-cut pieces are proud of the wall, not cut into it** (src/55-56): a piece cannot cut the world's rock, so
+      its dressed face stands on the wall's face inside a raw rim of the rock and the carving stands proud of that; a
+      recess (a door's, a niche's) is at most about 0.6 m deep. A world that carves its rock (Pinnacle Rock's KCAVERN, a
+      carve patch) can set a piece back into the cut (opt.embed) and cut the rooms behind it from
+      `kits/interiors/sets/beast-rider-rock.js` (its `voids`).
+- [ ] **The rock-cut rims are boxes**: rough chunks of the raw stone in three steps; up close the top brow reads a
+      little like crenellation. The beasts and the claw are reliefs of ellipsoids and tubes, one material each.
+- [ ] **A wrapped piece's wide straight parts are segments** (≤ 1.2 m along the arc), its reliefs and lamps locally
+      flat; a stack under about 0.6 × the piece's width in radius is clamped to that.
+- [ ] **The Deep Root cavern's pieces are its dressing only**: the passage, the hall, the light well and the stack fig's
+      roots are Pinnacle Rock's (KCAVERN). The face carries all twelve tribes (the owner, 2026-10-19).
+- [ ] **The sheet's rock is a backdrop**: the wall behind each rock row and the stack in the wrapped row are plain
+      boxes on the sheet, not part of any piece.
+
+## The sedentary trades and the larger houses (src/51-54, 2026-10-19)
+
+- [ ] **Their furniture is placed by hand** (`F.furn`, 4+ catalog pieces a variant, as the mounts' buildings place theirs),
+      not planned as rooms in `kits/interiors/sets/beast-rider.js`; the households of the terrace, the longhouse block
+      and the great-house are parted by plain stave partitions, with no inner doors.
+- [ ] **The beasts are not there**: the whims (mill, bark mill, bellows, mine shaft, landing crane), the stalls under the
+      great-house, the byres, the beetle house and run, the carrier stage stand empty (kits/fauna's mounts, a later pass,
+      as for the mounts' buildings).
+- [ ] **The mine's adit and the quarry draw their own rock face** (red sandstone boxes, the colour of Pinnacle Rock's
+      beds); set against a real cliff (the mesa's wall, `core/terrain`) the face should be the ground's own: a variant
+      without the face is still to come. The rock-backed longhouse block draws NO rock: it is flat behind
+      (`against: 'back'`, checked) for a layout to set against a stack (`KSTACKS`).
+- [ ] **Water is a flat translucent box** at ground level (the river landing, the water mill's race, the paddy farm's
+      paddies and duck pond), not a water surface of the shared kind.
+- [ ] **The glow fungus is the catalog's unlit 'glow' material**: it shows, but casts no light (no `F.lamp`: the kit's
+      buildings place no lights).
+- [ ] **`BRT_CENTRE` and the declared boxes are measured numbers** (`src/51-br-trades.js`, each ASSET's `variantDims`):
+      after a change that moves a builder's extent, remeasure on the sheet (`window._kit.built`: `min`, `max`, `w d h`).
+- [ ] **Some census trades are stretched to fit a rider town**: the coast guard (the war-canoe shed and the Wings'
+      patrols from the rookery), the lighthouse keepers (the fire beacon and the signal mast), the dairymen (the farms'
+      beast sheds and the great byre: no dairy of its own), the monks (the Green Silence's keepers in the temple's
+      precinct), the guild clerks (the ports' assembly hall and council: no guild hall). `BR_TRADES` notes each.
+- [ ] **Fragments 51 and 52 are over 30 KB** (each building is an indexed section: `INDEX.md`).
+- [ ] **`INDEX.md`'s one-line summary** comes from `tools/make_index.py` (`ABOUT['kits/beast-riders']`), outside the kit:
+      it still names only the mounts and the ports.

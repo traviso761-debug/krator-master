@@ -117,8 +117,9 @@ def izv_files():
         return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
     names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
              '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js', '72-vern-civic.js', '73-vern-infra.js',
-             '74-vern-guilds.js']
+             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js', '70-vern-dwellings.js', '71-vern-trade.js',
+             '72-vern-civic.js', '73-vern-infra.js', '74-vern-guilds.js']
+    # 69e5: real doors and glass (vnPlate, vnHole, vnOpening, IZDOOR, IZ_ROOMC), which the vernacular fragments call since 2026-10-19
     out = [iz(f) for f in names]
     out += sorted(glob.glob(os.path.join(IZIZ, '74[a-z]-vern-*.js')))          # additions to the vernacular set
     out += sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))   # the Ancients funicular

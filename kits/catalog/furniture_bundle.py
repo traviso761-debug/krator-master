@@ -70,11 +70,21 @@ def textures():
     return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
 
 
-def bundle(cultures=None, harvested=False, tex=False):
+PLANTS_FILE = 'krator-master-plants.js'
+# the plants as pieces: each PLANT() entry joins FURN_BY_KEY under its own key (type 'plant'), so a batch places a palm or a
+# heliconia as it places a chair (FURNS, the catalog's list, is left alone)
+PLANTS_ADAPTER = ('/* ---- the plants as pieces (furniture_bundle.py plants=True) ---- */\n'
+                  'PLANTS.forEach(function (p) { if (!FURN_BY_KEY[p.key]) { if (!p.type) p.type = \'plant\'; FURN_BY_KEY[p.key] = p; } });\n')
+
+
+def bundle(cultures=None, harvested=False, tex=False, plants=False):
     """tex=True adds the library detail maps (KF_TEX and krator-furniture-detail.js): a batch's flush then gives each
-    family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte."""
+    family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte. plants=True adds
+    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing."""
     fs = files(cultures, harvested)
-    body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) for f in fs)
+    if plants:
+        fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
+    body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]
         body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures()

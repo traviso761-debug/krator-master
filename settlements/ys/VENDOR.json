@@ -22,7 +22,7 @@
  "34-kitdefs.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "426932435c82"
+  "sha1": "2ac917d84bc6"
  },
  "36-decor.js": {
   "adapted": false,
@@ -97,17 +97,17 @@
  "69-mat-salvage.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "346781f9e5cd"
+  "sha1": "f70f01396e1b"
  },
  "69b-vern-mat.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "4bc1d2ce639f"
+  "sha1": "7fbd29de7bf1"
  },
  "69c-vern-helpers.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "160cad10b9a2"
+  "sha1": "9ad5721b11dd"
  },
  "69e-vern-hollow.js": {
   "adapted": false,

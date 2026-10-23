@@ -88,6 +88,9 @@ func _init() -> void:
 			for x in hid:
 				n += x
 			ok(n == int(pl["hidden"]), "hidden %d vs %d" % [n, pl["hidden"]])
+			var hp := KChar.hidden_parts(pl["record"], kit).keys()
+			hp.sort()
+			ok(hp == pl.get("hidden_parts", []), "hidden parts %s vs %s" % [hp, pl.get("hidden_parts", [])])
 
 	# 4. a figure from the pieces
 	if not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_male"):
@@ -190,6 +193,86 @@ func _init() -> void:
 		for k in 3:
 			fig._process(0.1)
 		ok(fig.drawn and fig._bow["arrow"] != null and fig._bow["arrow"].visible, "bow_scan draws the string and nocks an arrow")
+		# the owner's review (2026-10-20), as verify.py checks the page: the arrow comes off at the loose, the string hand
+		# at the jaw at full draw, the bow's limbs out of the legs
+		fig.play("bow_draw")
+		fig.player.seek(4.0, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.bow_state()["arrow"] and fig.face_w > 0.99, "bow_draw at 5 s: the arrow nocked, the string hand at the jaw (%.2f)" % fig.face_w)
+		fig.player.seek(6.2, true)
+		fig._process(0.0)
+		ok(not fig.bow_state()["arrow"], "bow_draw after the loose: no arrow")
+		fig.play("bow_scan")
+		var legs := 0.0
+		for k in 150:
+			fig._process(1.0 / 30.0)
+			legs = maxf(legs, fig.bow_state()["in_legs"])
+		ok(legs < 0.01, "bow_scan: the bow's limbs out of the legs (%.3f m in)" % legs)
+		# a bucket hangs plumb from its bail; a blade keeps out of the head; a two-handed parry's forearms stay apart
+		fig.hold({"R": "bucket", "L": null})
+		fig.play("walk_bucket")
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		var hg: Dictionary = fig._hangs["R"]
+		var gq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+		ok(((gq * (hg["pivot"] as Node3D).quaternion) * (hg["axis"] as Vector3)).y < -0.999, "walk_bucket: the bucket hangs plumb")
+		fig.hold({"R": "sword", "L": null})
+		fig.play("block_2")
+		var need := 0.0
+		for k in 47:
+			fig._process(1.0 / 30.0)
+			if fig.blade_need.size() > 0:
+				need = maxf(need, fig.blade_need[-1])
+		ok(need < 0.01, "block_2: the blade keeps out of the head and neck (%.3f m in)" % need)
+		fig.hold({"R": "sword", "L": null, "both": true})
+		fig.play("parry_2h")
+		var fore := 9.0
+		for k in 39:
+			fig._process(1.0 / 30.0)
+			var la: Vector3 = fig._gp(fig.skeleton.find_bone("LeftForeArm")).origin
+			var lb: Vector3 = fig._gp(fig.skeleton.find_bone("LeftHand")).origin
+			var ra: Vector3 = fig._gp(fig.skeleton.find_bone("RightForeArm")).origin
+			var rb: Vector3 = fig._gp(fig.skeleton.find_bone("RightHand")).origin
+			for i in 11:
+				for j in 11:
+					fore = minf(fore, la.lerp(lb, i / 10.0).distance_to(ra.lerp(rb, j / 10.0)))
+		ok(fore > 0.06, "parry_2h: the forearms stay apart (%.3f m)" % fore)
+		# the second round (2026-10-21): the parry's left hand never flips round the hilt; the arrow's head stays in
+		# front of the bow; the cup stands upright; the bowl stands level on the palm in front of the belly
+		fig.play("parry_2h")
+		var spin := 0.0
+		var prev_q := Quaternion()
+		for k in int(fig.player.current_animation_length * 30.0) - 1:
+			fig._process(1.0 / 30.0)
+			var q: Quaternion = fig._gp(fig.skeleton.find_bone("LeftHand")).basis.get_rotation_quaternion()
+			if k > 1:
+				spin = maxf(spin, prev_q.angle_to(q))
+			prev_q = q
+		ok(spin < 0.8, "parry_2h: the left hand does not flip round the hilt (%.2f rad in a frame)" % spin)
+		fig.hold({"R": null, "L": "bow"})
+		for clip in ["bow_draw", "bow_shot", "bow_walk", "bow_scan"]:
+			fig.play(clip)
+			var ahead := 9.0
+			for k in int(fig.player.current_animation_length * 30.0) - 1:     # the clip alone, not the loop after a one-shot
+				fig._process(1.0 / 30.0)
+				var bs: Dictionary = fig.bow_state()
+				if bs["arrow"] and bs["ahead"] != null:
+					ahead = minf(ahead, bs["ahead"])
+			ok(ahead > 0.03, "%s: the arrow's head stays in front of the bow (%.3f m)" % [clip, ahead])
+		fig.hold({"R": null, "L": "cup"})
+		fig.play("drink")
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		var cq: Quaternion = (fig._gp(int(fig.skel["hands"]["L"]["bone"])) * fig._grip_t("L")).basis.get_rotation_quaternion()
+		ok((cq * Vector3.UP).y > 0.95, "drink at 1 s: the cup stands upright")
+		fig.hold({"R": "bowl", "L": "bread"})
+		fig.play("ual_consume")
+		for k in 21:
+			fig._process(1.0 / 30.0)
+		var bq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+		var wz: float = fig._gp(fig.skeleton.find_bone("RightHand")).origin.z - fig._gp(fig.skeleton.find_bone("Spine")).origin.z
+		ok((bq * Vector3.RIGHT).y > 0.95 and wz > 0.12, "ual_consume: the bowl level on the palm in front of the belly")
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
 		var rec2 := rec.duplicate(true)
@@ -222,6 +305,43 @@ func _init() -> void:
 				return tot / maxi(n, 1)
 			var moved: float = motion.call(40)
 			ok(finite and moved > 0.01, "cloth swings in a walk (%.3f rad a frame, finite %s)" % [moved, finite])
+			# the drape, which the swing misses (a mantle lifted whole turns a few root bones only): each chain's last
+			# point from its rest, and the bones that pass 1.5 rad from their rest pose (the fold, KNOWN_ISSUES); with
+			# the chains' rest following the body (kit bw) and, for comparison, held rigid by their parent joints
+			var drape := func(frames: int) -> Array:
+				var tot := 0.0
+				var mx := 0.0
+				var n := 0
+				var folded := {}
+				for k in frames:
+					fig._process(1.0 / 30.0)
+					for key in fig._cloth:
+						var c: Dictionary = fig._cloth[key]
+						if not c["on"]:
+							continue
+						for ch in c["chains"]:
+							if ch["x"].size() and ch["tw"].size():
+								var d: float = ((ch["x"][-1] as Vector3) - (ch["tw"][-1] as Vector3)).length()
+								tot += d
+								mx = maxf(mx, d)
+								n += 1
+					for i in fig.skeleton.get_bone_count():
+						if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
+							var r := fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()
+							if fig.skeleton.get_bone_pose_rotation(i).angle_to(r) > 1.5:
+								folded[i] = true
+				return [tot / maxi(n, 1), mx, folded.size()]
+			var dr: Array = drape.call(40)
+			var saved_bw := []
+			for key in fig._cloth:
+				for ch in fig._cloth[key]["chains"]:
+					saved_bw.append([ch, ch.get("bw")])
+					ch["bw"] = null
+			var dr0: Array = drape.call(40)
+			for pair in saved_bw:
+				pair[0]["bw"] = pair[1]
+			print("kchar_test: court robe in a walk, last point off rest mean %.3f max %.3f m, %d bones past 1.5 rad; rigid rests %.3f / %.3f m, %d bones" % [dr[0], dr[1], dr[2], dr0[0], dr0[1], dr0[2]])
+			ok(dr[0] < 0.25, "cloth drapes near its rest in a walk (last point %.3f m off on average)" % dr[0])
 			# cloth off: no swing, only the legs' push; with no clip the chains hang at rest
 			fig.cloth = false
 			var off: float = motion.call(30)
@@ -238,7 +358,9 @@ func _init() -> void:
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
-	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
+	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json") and not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_giant"):
+		print("kchar_test: no giant pieces: the giant checks skipped")
+	elif FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
 		var g := KCharFigure.new()
 		g.load_body(DIR, "mpfb_giant")
 		root.add_child(g)

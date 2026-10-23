@@ -80,3 +80,9 @@ calls and triangles as three.js counts them; sky passes not included):
 
 The gain is modest: most of Locus is dense instanced flora and stone close to every view.
 - [ ] (2026-10-06) Library adoption, first pass: 22 families (materials.json: Yuni's rows for the shared families; new rows for canvas, corrugate, tinmirror, rubble and the sail band, whose tint means are estimates). glass, leafy, dark and glowmat stay procedural. Mungo reads Locus's 45-kit and 47-texture but has no pack: it stays procedural until it gets one. Judged in three views: brightness and colour match the procedural page.
+
+## Voth census trades (2026-10-19)
+
+The table is `src/67-lo-trades.js` (`LO_TRADES`, on the world page; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 21 trades carried, 5 partly, 9 gaps, 9 na (no sea, no embassies, no beetles or elephant bugs, no mushroom cellars).
+- [ ] Gaps (a later session builds them): bakery, butcher, brewhouse or date-wine press, tannery, wayside shrine, house of healing, date-palm orchard, quarry, dairy.
+- [ ] Partly carried: shipwrights (sailmaker only; no boatyard), priests and undertakers (temple; no funerary court), miners (pumpjacks for oil; no ore mine head), granary keepers and millers (granaries; no mill), swineherds and duck keepers (animal pen; no duck coops).

@@ -11,7 +11,7 @@
 //              are one person's room. Without it each activity's slots stand alone)})
 //   SIM.offers(P, act) -> slots (0 if not offered)            SIM.isOpen(P, act, hour)
 //   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
-//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit}) -> candidates, nearest first, open, free
+//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit, settlement?}) -> candidates, nearest first, open, free
 //                                 and letting the actor in (SIM.welcome). With `limit` and `near` (and no ids) only the
 //                                 nearest `limit` are returned, found on a grid of the places (rings out from `near`):
 //                                 exactly the first `limit` of the full list, without looking at every place (a grid per
@@ -50,6 +50,7 @@
     if(!SIM.offers(P, act)) return false;
     if(opt.kinds && opt.kinds.indexOf(P.kind)<0) return false;
     if(opt.exclude && opt.exclude[P.id]) return false;
+    if(opt.settlement!=null && P.settlement!==opt.settlement) return false;      /* a town's own places (P7a: the search scoped) */
     if(hour!=null && !SIM.isOpen(P, act, hour)) return false;
     if(!opt.ignoreSlots && SIM.free(P, act) <= 0) return false;
     if(actor && SIM.welcome && !SIM.welcome(actor, P, act)) return false;
@@ -67,23 +68,28 @@
     var sig=SIM.order.place.length+':'+(SIM.placeVersion||0);
     if(GSIG!==sig){ GRIDS={}; GSIG=sig; }
     if(GRIDS[act]) return GRIDS[act];
-    var G={ cells:{}, n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
-    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
+    var G={ cells:{}, list:[], n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
+    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var ix=Math.floor(P.x/GCELL), iz=Math.floor(P.z/GCELL), k=ix+','+iz; if(!G.cells[k]){ G.cells[k]=[]; G.list.push({ i:ix, j:iz, C:G.cells[k] }); } G.cells[k].push(P); G.n++;
       if(P.bias) G.bias=true; G.x0=Math.min(G.x0,P.x); G.x1=Math.max(G.x1,P.x); G.z0=Math.min(G.z0,P.z); G.z1=Math.max(G.z1,P.z); });
     return (GRIDS[act]=G);
   }
   SIM.placesFor = function(act, actor, hour, opt){
     opt = opt || {}; var out=[], near=opt.near, ids=opt.ids;
     if(opt.limit && near && !ids){ var G=grid(act); if(!G.n) return out; if(!G.bias){
-      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR;
+      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR+(opt.settlement!=null ? '|'+opt.settlement : '');
         var mm=SIM.host ? SIM.minute() : 0; if(EMPTY.m!==mm){ EMPTY={ m:mm, k:{} }; } if(EMPTY.k[ek]) return out; }
       /* rings of cells out from `near`: once `limit` are found, a ring whose inner edge lies past the limit-th distance
          cannot change the first `limit`, so stop there */
       var ci=Math.floor(near[0]/GCELL), cj=Math.floor(near[1]/GCELL), D=function(P){ return Math.hypot(P.x-near[0], P.z-near[1]); };
       var rmax=Math.ceil(Math.max(Math.abs(near[0]-G.x0), Math.abs(near[0]-G.x1), Math.abs(near[1]-G.z0), Math.abs(near[1]-G.z1))/GCELL)+1;
+      var look=function(C){ if(!C) return; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }, cell=function(i, j){ look(G.cells[i+','+j]); };
       for(var r=0;r<=rmax;r++){
-        for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue;
-          var C=G.cells[i+','+j]; if(!C) continue; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }
+        /* past the point where a ring holds more cells than the grid has filled ones (two towns far apart: rings over
+           empty sea), the filled cells not yet looked at are taken directly; every candidate is still found, so the
+           nearest `limit` are the same */
+        if(r>2 && 8*r > G.list.length){ G.list.forEach(function(L){ if(Math.max(Math.abs(L.i-ci), Math.abs(L.j-cj)) >= r) look(L.C); }); break; }
+        if(!r) cell(ci, cj);
+        else { for(var i=ci-r;i<=ci+r;i++){ cell(i, cj-r); cell(i, cj+r); } for(var j=cj-r+1;j<cj+r;j++){ cell(ci-r, j); cell(ci+r, j); } }   /* the ring's edge only */
         if(out.length>=opt.limit){ out.sort(byNear(near)); if(D(out[opt.limit-1]) < r*GCELL) break; }
         if(opt.maxR!=null && r*GCELL > opt.maxR) break;
       }

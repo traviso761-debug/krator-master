@@ -33,23 +33,22 @@ export function events(api){
       if(t*SP>L+120){scene.remove(grp);return false;}return true;});}
 
   // ---- a winter storm and a king tide ----
-  function storm(){const F=scene.fog;if(!F||F.density===undefined)return;let t=0;const D=90;
+  function storm(){if(!api.fogEffect)return;let t=0;const D=90;const W=api.fogEffect();W.visibility=2800;W.colour=0x6a7074;   // the air: engine 01-scene, api.fogEffect
     notice('A winter storm','in off the Pacific with a king tide behind it: the swell doubles, the sky closes in, and Thor\'s Well, the Spouting Horn and Devil\'s Churn go off as they only do in winter. Watch from above: the sneaker waves are what kills people on these rocks.',
       ()=>{const [vx,vz]=P(K.stormView||[44.2784,-124.1133]);return [vx+90,30,vz-70,vx,2,vz];});
-    run((now,dt)=>{t+=dt;const f=t<12?t/12:t<D-12?1:Math.max(0,(D-t)/12);ctx.yaSurge=1+f*1.4;F.density*=1+f*1.8;F.color.lerp(new THREE.Color(0x6a7074),f*0.55);
-      if(scene.background&&scene.background.isColor)scene.background.lerp(new THREE.Color(0x5e6468),f*0.6);
-      if(t>D){ctx.yaSurge=1;return false;}return true;});}
+    run((now,dt)=>{t+=dt;const f=t<12?t/12:t<D-12?1:Math.max(0,(D-t)/12);ctx.yaSurge=1+f*1.4;W.amount=f;W.dim=0.45;
+      if(t>D){ctx.yaSurge=1;W.done();return false;}return true;});}
 
   // ---- the marine layer comes in ----
-  function fog(){const F=scene.fog;if(!F||F.density===undefined)return;let t=0;const D=110;
+  function fog(){if(!api.fogEffect)return;let t=0;const D=110;const W=api.fogEffect();W.visibility=1300;W.colour=0xc8ccd0;   // the air: engine 01-scene, api.fogEffect
     // a bank of low cloud on the sea, rolling in toward the shore and up over it
     const grp=new THREE.Group(),puff=new THREE.SphereGeometry(1,18,10),mat=new THREE.MeshLambertMaterial({color:0xe8ecee,transparent:true,opacity:0.0,depthWrite:false});
     const [cx,cz]=P([44.295,-124.135]);for(let i=0;i<70;i++){const m=new THREE.Mesh(puff,mat);m.position.set(cx+(R()-0.5)*900,10+R()*35,cz+(R()-0.5)*6000);m.scale.set(120+R()*160,18+R()*20,120+R()*160);grp.add(m);}
     tag(grp);scene.add(grp);
     notice('The marine layer','comes in off the sea on a summer afternoon: inland it is hot and clear, and here a grey wall walks in over the surf and swallows the cape from the bottom up, and the foghorn mood of the coast comes back.',
       ()=>{const [vx,vz]=P([44.2990,-124.1150]);return [vx,120,vz,vx+1200,40,vz-1800];});
-    run((now,dt)=>{t+=dt;const f=t<20?t/20:t<D-20?1:Math.max(0,(D-t)/20);mat.opacity=f*0.55;grp.position.x=Math.min(t,60)*14;F.density*=1+f*3.5;F.color.lerp(new THREE.Color(0xc8ccd0),f*0.7);
-      if(t>D){scene.remove(grp);return false;}return true;});}
+    run((now,dt)=>{t+=dt;const f=t<20?t/20:t<D-20?1:Math.max(0,(D-t)/20);mat.opacity=f*0.55;grp.position.x=Math.min(t,60)*14;W.amount=f;W.dim=0.2;
+      if(t>D){scene.remove(grp);W.done();return false;}return true;});}
 
   H=createHappenings(api,{events:{whales:['Gray whales',whales],storm:['A winter storm',storm],fog:['The marine layer',fog]},order:['whales','storm','fog'],first:K.first||40000,every:K.every||[70000,130000]});
 }

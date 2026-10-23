@@ -9,7 +9,7 @@
 function buildDalabRowhouse(G,o){reseed(8801+(o.v|0));const N=3,CW=5.6,D=6.4,H=2.6;const W=N*CW;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth);
  vnReg('Terrace row (peasant)',0,0,W/2+2,H+4.2);
  vB('dEarth',0,-.05,0,W+1.2,.4,D+1.2,0,dCol(DPAL.earthDark));                                         // the shared plinth
- vB('dEarth',0,.3,0,W,H,D,0,earth);
+ vB('dEarthE',0,.3,0,W,H,D,0,earth);
  for(let k=1;k<N;k++)vB('dEarth',-W/2+k*CW,.3,0,.5,H+.3,D+.5,0,dCol(DPAL.earthDark));                 // party walls stand proud
  for(let k=0;k<N;k++){const x=-W/2+CW/2+k*CW;const c=[DPAL.red,DPAL.turq,DPAL.gold][k%3];
   vnDoor(x-1.2,.3,D/2,0,.9,1.9,'vWood',wood,vC(0x5a4a3a),false);
@@ -27,7 +27,7 @@ function buildDalabRowhouse(G,o){reseed(8801+(o.v|0));const N=3,CW=5.6,D=6.4,H=2
 function buildDalabTenement(G,o){reseed(8811+(o.v|0));const W=11,D=8,H1=2.9,H2=2.6;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth);
  vnReg('Stacked house (peasant)',0,0,8,H1+H2+3.6);
  vB('dEarth',0,-.05,0,W+1.4,.4,D+1.4,0,dCol(DPAL.earthDark));
- kput('dEarthBat',[0,.3,0],null,[W,H1,D],earth);vB('dEarth',0,.3+H1-.1,0,W-.2,H2,D-.2,0,earth.clone().multiplyScalar(1.04));   // the ground floor battered, the upper straight
+ kput('dEarthBatE',[0,.3,0],null,[W,H1,D],earth);vB('dEarthE',0,.3+H1-.1,0,W-.2,H2,D-.2,0,earth.clone().multiplyScalar(1.04));   // the ground floor battered, the upper straight
  vB('dEarth',0,.3+H1-.1,D/2-.05,W,.3,.16,0,dCol(DPAL.red));                                                      // the red string course
  vnDoor(-3.2,.3,D/2,0,1.0,2.0,'vWood',wood,vC(0x5a4a3a),false);vnDoor(2.6,.3,D/2,0,1.0,2.0,'vWood',wood,vC(0x5a4a3a),false);
  vnWin(-.4,.3+1.3,D/2,0,.8,.7,'open','vWood',wood,true);dnHearth(-.4,.3+1.3,D/2,0,.8,.7);
@@ -57,7 +57,7 @@ function buildDalabBathhouse(G,o){reseed(8831+(o.v|0));const R=5.2,H=3.8,CW=22,C
  vnReg('Bath house',0,0,12,H+R*.7+1.5);vnReg('Bath house wall',0,0,12.5,2.4,{part:'wall',type:['civic']});
  dnEarthWall(0,0,0,CW,CD,0,2.2,3.0,{c:earth,relief:true,stoneGate:true});
  // the hot room, back of the court
- const hz=-CD/2+R+1.8;dnDrum('dStoneDrum',0,0,hz,R,H,st);dnDrum('dReliefDrum',0,.3,hz,R+.06,.9,st);dnMuralRing(0,H-1.3,hz,R+.05,1.0,st,2);
+ const hz=-CD/2+R+1.8;dnDrum('dRenderDrum',0,0,hz,R,H,st);dnDrum('dReliefDrum',0,.3,hz,R+.06,.9,st);dnMuralRing(0,H-1.3,hz,R+.05,1.0,st,2);
  kput('dStoneDome',[0,H,hz],null,[R+.3,R*.7,R+.3],st.clone().multiplyScalar(.9));vBall('dGiltBall',0,H+R*.7+.2,hz,.3);
  vnChimney(R*.5,H+R*.55,hz-R*.4,1.6,.16,false);
  for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;const p=dnOnRing(0,hz,R,a);dnGodWin(p[0],1.6,p[1],a,.9,1.1,'vStone',st);}
@@ -74,7 +74,7 @@ function buildDalabBathhouse(G,o){reseed(8831+(o.v|0));const R=5.2,H=3.8,CW=22,C
 // ---------------------------------------------------------------- SCRIBES' HALL: a long timber hall on a stone plinth, mural bands, God-lit windows, a stele court
 function buildDalabScribes(G,o){reseed(8841+(o.v|0));const W=18,D=9,H=4.0,Y0=.9;const st=dCol(DPAL.stone),wood=dCol(DPAL.wood),sh=dCol(DPAL.shingle);
  vnReg("Scribes' hall",0,0,12,Y0+H+4.5);
- vB('vStone',0,0,0,W+2,Y0,D+2,0,st);dnReliefBand(0,.15,D/2+1.0,0,W-1,.55,st);vnStairs(0,0,D/2+1.0+.6,0,3.4,Y0,3,'vStone',st);
+ vB('dBlockB',0,0,0,W+2,Y0,D+2,0,st);dnReliefBand(0,.15,D/2+1.0,0,W-1,.55,st);vnStairs(0,0,D/2+1.0+.6,0,3.4,Y0,3,'vStone',st);
  vnFrame(0,Y0,0,W,H,D,0,wood,.18);vB('vWood',0,Y0,0,W-.12,H,D-.12,0,wood.clone().multiplyScalar(.9));
  dnMuralBand(0,Y0+H-1.4,D/2-.02,0,W-3,1.2);dnMuralBand(0,Y0+H-1.4,-D/2+.02,Math.PI,W-3,1.2,1);
  vnGableRoof(0,Y0+H,0,W,D,3.2,0,'vGableS',sh,1.2,'vGableW',wood,.3);dnCrest(0,Y0+H+3.2,0,3,0,wood);
@@ -143,7 +143,7 @@ function buildDalabOrchard(G,o){reseed(8871+(o.v|0));const wood=dCol(DPAL.woodGr
 // ---------------------------------------------------------------- WATCH TOWER: a tall battered earth tower with a timber lookout under a thatch cap; a giant at its foot
 function buildDalabWatchtower(G,o){reseed(8881+(o.v|0));const R=2.6,H=11;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth),st=dCol(DPAL.stone);
  vnReg('Watch tower',0,0,5,H+5);
- dnDrum('dStoneDrum',0,-.05,0,R+1.0,.6,st);kput('dEarthDrum',[0,.5,0],null,[R,H,R],earth);kput('dEarthDrum',[0,.5,0],null,[R+.12,1.2,R+.12],dCol(DPAL.earthDark));
+ dnDrum('dRenderRDrum',0,-.05,0,R+1.0,.6,st);kput('dEarthDrum',[0,.5,0],null,[R,H,R],earth);kput('dEarthDrum',[0,.5,0],null,[R+.12,1.2,R+.12],dCol(DPAL.earthDark));
  dnPaintRing(0,.5+H-1.6,0,R+.04,.5,dCol(DPAL.red));dnMuralRing(0,.5+H*.55,0,R+.04,.8,st,3);
  // the lookout: a timber deck wider than the drum on brackets, a rail, the thatch cap on posts, a bell of Ancient plate
  const DY=.5+H;vB('vWood',0,DY,0,R*2+2.6,.25,R*2+2.6,0,wood);vB('vWood',0,DY,0,R*2+2.6,.25,R*2+2.6,Math.PI/4,wood);

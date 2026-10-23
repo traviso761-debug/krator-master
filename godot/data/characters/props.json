@@ -1,5 +1,5 @@
 {
- "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. data/clips.json hold says which clip holds what.",
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. hang: the axis that points down whatever the hand's turn (a bail's load hangs). blade: the striking part along +Y (from, to), kept out of the head. upright: the axis the wrist turns to keep up (grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow's length per bow-arm length; length: a prop's own. data/clips.json hold says which clip holds what.",
  "props": [
   {
    "id": "sword",
@@ -14,6 +14,10 @@
     0,
     -0.1,
     0
+   ],
+   "blade": [
+    0.1,
+    0.91
    ]
   },
   {
@@ -21,7 +25,11 @@
    "label": "Dagger",
    "hand": "R",
    "glb": "pieces/props/dagger.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "blade": [
+    0.07,
+    0.32
+   ]
   },
   {
    "id": "axe",
@@ -36,6 +44,10 @@
     0,
     0.45,
     0
+   ],
+   "blade": [
+    0.4,
+    0.68
    ]
   },
   {
@@ -51,6 +63,10 @@
     0,
     0.38,
     0
+   ],
+   "blade": [
+    0.42,
+    0.65
    ]
   },
   {
@@ -66,6 +82,10 @@
     0,
     0.5,
     0
+   ],
+   "blade": [
+    0.5,
+    0.65
    ]
   },
   {
@@ -97,6 +117,7 @@
    "hand": "L",
    "glb": "pieces/props/bow.glb",
    "grip": "fist",
+   "arrow_arm": 1.65,
    "string": [
     0,
     0.72,
@@ -142,7 +163,15 @@
    "label": "Pistol",
    "hand": "R",
    "glb": "pieces/props/pistol.glb",
-   "grip": "trigger"
+   "grip": "trigger",
+   "support": [
+    0.04,
+    -0.03,
+    0.02,
+    0.04,
+    -0.03,
+    0.02
+   ]
   },
   {
    "id": "pickaxe",
@@ -186,21 +215,36 @@
    "label": "Bucket",
    "hand": "R",
    "glb": "pieces/props/bucket.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
   },
   {
    "id": "cup",
    "label": "Cup",
    "hand": "R",
    "glb": "pieces/props/cup.glb",
-   "grip": "wide"
+   "grip": "wide",
+   "upright": [
+    0,
+    1,
+    0
+   ]
   },
   {
    "id": "lantern",
    "label": "Lantern",
    "hand": "L",
    "glb": "pieces/props/lantern.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
   },
   {
    "id": "torch",
@@ -214,7 +258,32 @@
    "label": "Arrow",
    "hand": "R",
    "glb": "pieces/props/arrow.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "length": 0.78
+  },
+  {
+   "id": "bowl",
+   "label": "Bowl",
+   "hand": "R",
+   "glb": "pieces/props/bowl.glb",
+   "grip": "flat",
+   "upright": [
+    1,
+    0,
+    0
+   ],
+   "carry": [
+    -0.12,
+    0.02,
+    0.26
+   ]
+  },
+  {
+   "id": "bread",
+   "label": "Bread",
+   "hand": "L",
+   "glb": "pieces/props/bread.glb",
+   "grip": "wide"
   }
  ]
 }

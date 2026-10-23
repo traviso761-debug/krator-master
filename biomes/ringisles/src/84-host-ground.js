@@ -53,7 +53,7 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 // key: the layer; [procedural colour (sRGB), how strongly the detail map shows, the pack ('ringisles' or 'geyser')]
 const GL_KEYS={litter:[0x3a3426,.6],sand:[0xd8ccae,.35],wetsand:[0xa89c7e,.35],grass:[0x5e6a34,.5],cured:[0xa89660,.5],burn:[0x24201c,.5],
- steppe:[0x8a5a3e,.45],salt:[0xece6da,.3],mud:[0x4a4032,.4],reef:[0x9a9482,.6],soil:[0x5a4630,.4],sinter:[0xdcd8cc,.35,'geyser']};
+ steppe:[0x8a5a3e,.45],salt:[0xece6da,.3],mud:[0x4a4032,.4],reef:[0x9a9482,.6],soil:[0x5a4630,.4],damp:[0xb8a98a,.35],shingle:[0x8c867a,.5],sinter:[0xdcd8cc,.35,'geyser']};
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k in GL_KEYS){const P=KMAT.packed(GL_KEYS[k][2]||'ringisles','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uLight:{value:1}};
@@ -84,6 +84,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'c=mix(c,'+L('mud')+',vT.w);'+
   'c=mix(c,'+L('reef')+',vW.y);'+
   'c=mix(c,'+L('sand')+',vT.x);'+
+  'c=mix(c,'+L('damp')+',vT.x*(1.0-smoothstep(0.25,1.3,vGWP.y))*0.9);'+
+  'c=mix(c,'+L('shingle')+',rock*(1.0-smoothstep(0.8,3.5,vGWP.y))*0.75);'+
   'c=mix(c,'+L('wetsand')+'*vec3(0.42,0.5,0.46),vT.y);'+
   // the seagrass meadows: blades combed by the current, dark green over the lagoon's sand; with the library's seagrass floor on the sand the painted meadow is only a third as strong (the floor has its own)
   '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')?'0.3':'0.9')+');}'+

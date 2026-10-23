@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "de966d06a105"
+  "634dbfe625a3"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -13,7 +13,7 @@
  ],
  "05-palette.js": [
   "locus",
-  "d8eb42e7be31"
+  "b8da4cef18ae"
  ],
  "05b-mungo-palette.js": [
   "mungo",
@@ -49,7 +49,7 @@
  ],
  "20-core-water.js": [
   "core/water",
-  "28f0ea1219a3"
+  "e0cca349eeb2"
  ],
  "20-stage.js": [
   "mungo (overrides locus)",
@@ -57,7 +57,7 @@
  ],
  "21-core-water-shore.js": [
   "core/water",
-  "ef82e7936f65"
+  "8448b3d3ac84"
  ],
  "21-sky.js": [
   "locus",
@@ -65,7 +65,7 @@
  ],
  "22-core-water-flow.js": [
   "core/water",
-  "8d87348437bd"
+  "1f53c733e2d2"
  ],
  "23-mat-record.js": [
   "virtual",
@@ -129,7 +129,7 @@
  ],
  "50-core-water-draw.js": [
   "core/water",
-  "5cbc3f47d315"
+  "935eaeecabcb"
  ],
  "50-structure.js": [
   "locus",
@@ -137,7 +137,7 @@
  ],
  "51-core-water-kinds.js": [
   "core/water",
-  "f30dd9927f01"
+  "8bdb6550ca70"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
@@ -145,7 +145,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "b9d3a1238c0c"
+  "c18d6512f692"
  ],
  "53-assets.js": [
   "locus",
@@ -233,7 +233,7 @@
  ],
  "64-locus-power.js": [
   "locus",
-  "9b3638af3b70"
+  "594b17f6fb38"
  ],
  "65-abyss-00-core.js": [
   "locus",
@@ -281,11 +281,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "a16bdb684f9f"
+  "fa979dc17387"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "04e8d475cd4b"
+  "00102fcc6041"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -373,11 +373,11 @@
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "2b690f8a7cbe"
+  "0acdf2b487c1"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "6cc0bd0d133e"
+  "e04abbe2996e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -393,11 +393,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "18f373ad1d3d"
+  "8ef9b0253f9e"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "5ed88ecc84be"
+  "eeb6c057732e"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -405,15 +405,23 @@
  ],
  "77-sim-6-population.js": [
   "core/simulation",
-  "1f6c887b3fae"
+  "d93273d8e954"
+ ],
+ "77-sim-6-trade.js": [
+  "core/simulation",
+  "00ea4cdabf57"
+ ],
+ "77-sim-7-lod.js": [
+  "core/simulation",
+  "f90a4ab966ae"
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",
-  "edfe13d806b7"
+  "befbf66bf9c8"
  ],
  "77-sim-8-export.js": [
   "core/simulation",
-  "e03f1b6f1213"
+  "b19086356073"
  ],
  "77-sim-9-debug.js": [
   "core/simulation",
@@ -470,6 +478,10 @@
  "88c-mungo-minimap.js": [
   "mungo",
   "c6eafeffa678"
+ ],
+ "88d-mungo-trades.js": [
+  "mungo",
+  "deab75868f13"
  ],
  "89-atmos-0-core.js": [
   "core/atmos",

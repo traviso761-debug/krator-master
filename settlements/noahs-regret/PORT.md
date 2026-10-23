@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 30 (11%) | 13 (5%) | 10 (3%) | 66 (24%) | 156 (57%) |
+| KB | 36 (13%) | 13 (5%) | 10 (3%) | 66 (23%) | 157 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,9 +16,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-core.js` | 3.3 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/12-nr-world.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the frames, the hull transform, the ground: pure data |
 | `src/14-nr-plan.js` | 24.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the plan: the ring, decks, zones, cabins, lots: pure data |
-| `src/27-mat.js` | 8.4 | [G shader] | 13 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
-| `src/30-geo.js` | 22.2 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/36-def.js` | 5.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/27-mat.js` | 8.6 | [G shader] | 13 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
+| `src/30-geo.js` | 22.6 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/36-def.js` | 5.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-nr-hull.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/41-nr-piers.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-nr-decks.js` | 8.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | builder: draws the decks from the plan (NR); its geometry crosses over as meshes |
@@ -33,6 +33,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/58-nr-anc-office.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-nr-anc-lab.js` | 8.9 | [draw] | 2 | 2 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/62-nr-pirates.js` | 7.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/63-nr-trades.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/64-nr-flora.js` | 2.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | placeholder flora builders; replace with a biome kit's |
 | `src/70-nr-interiors.js` | 37.0 | [web] | 4 | 0 | 0 | 0 | 3 | 2 | 0 | 4 | 0 | 0 | 0 | split: the room data (cabins, templates, records: data) and the instanced drawing and stream tick (web) |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |

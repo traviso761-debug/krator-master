@@ -76,6 +76,7 @@ python3 build.py                                          # writes both pages; t
 python3 -m http.server 8829 --directory .                 # http://127.0.0.1:8829/dist/isle-city.html (?town=Valapo)
 python3 verify.py dist/isle-city.html --assert [--shots DIR]
 node tests/test-isle-city.js                              # the plan without a browser (about a minute)
+node tests/test-isle-sim.js [minutes]                    # both towns on core/simulation without a browser: declared, a day run (~20 s)
 node tools/scale-site.js                                  # (superseded: the owner's drawings are at size; --write needs --force)
 ```
 
@@ -120,5 +121,225 @@ export profile, P6b, brings it), but what a port's town drew into it.
 the sea or on the wall, the vessels afloat, the programme's landmarks and districts, both harbours' vessels and the six
 origins, the wall's named gates, the landing, the size in citizens, the hug, the farmland; that the declared boxes are
 the bundles' own. Negatives: a building pushed onto another, one pushed into the sea, the palace taken away.
+
+## The towns on core/simulation (P7b, 2026-10-19)
+
+**Both towns are declared on core/simulation** (`src/15-isle-tune.js`, `40`-`46`, `57`; PLAN.md section 9), each from its
+plan's records alone, in Dhelv's order (`settlements/dhelv/src/74-dhelv-sim.js`), and keyed as a settlement
+(core/simulation/SCHEMA.md, "Settlements and their economies"): Valapo (2,155 people) and Kautoa (6,235). The page
+declares both once they are planned, in one order whichever town it draws, and holds the clock until "run the sim".
+- **Places** (`40`): every lot whose key `ISLE.TUNE.sim.kinds` names, as `[kind, {ACTIVITY: slots per 100 m2}, opts]`
+  (Dhelv's table shape; the footprint is the capacity, there being no interiors yet); a dwelling's beds its households at
+  five a household, so the sim holds the census's 2,155 people exactly; every farm parcel by its crop. Each carries the
+  census trade its key works (kits/islanders `IS_TRADES`, read in place by build.py as `ISLE_TRADES`). In world metres
+  (the town's frame added), so Kautoa's places and a sea line between the towns share one frame.
+- **The walking graph** (`41`): the plan's ways thinned to a node every 12 m, their ends joined to the street they meet,
+  the avenues split where they cross, stray pieces bridged; every door a split of its nearest street. One body, about
+  2,300 nodes.
+- **People** (`42`): a role for each kind of work (farmhands, fishers, dockers, traders, bakers, keepers, craftsmen,
+  soldiers, officials), its count the posts its places offer; by age (the owner, 2026-10-19), the children (36% of the
+  town), as many at school as the schools', temples' and shrines' STUDY places hold and the rest at housework, the
+  elders (8%) at housework, and the adults at home who fill the beds left; dealt by
+  `SIM.populate({settlement, prefix})`, then each person's age drawn in its band and the people of each 150 m square
+  dealt round its houses again so a house holds a family. `ISLE.simDemography(s)` is the breakdown (verify prints it):
+
+  | | Valapo | Kautoa |
+  |---|---|---|
+  | people | 2,155 | 6,235 |
+  | children (9-15, pupils 6-12) | 776: 245 at school, 531 at housework | 2,245: 530 at school, 1,715 at housework |
+  | adults (16-59) | 1,207: 811 employed, 396 at home | 3,491: 2,478 employed, 1,013 at home |
+  | elders (60-82) | 172 at housework | 499 at housework |
+  | employed | 38% of the people, 67% of the adults | 40%, 71% |
+  | households | 429, 19 without an earner | 1,227, 34 without an earner |
+- **Company in the free hours:** the plan's pocket parks and plazas (Kautoa 739, Valapo 103), its park and beach districts,
+  and more room at the markets, taverns, hall and square: at 10:30 every one of those who want company finds it (Kautoa
+  about 5,200 places, Valapo 1,700).
+- **Food** (`43`, `44`): the foods are items and goods (Valapo: sweet potato, banana, coconut, fish, meat, bread;
+  Kautoa: taro, rice, banana, coconut, fish, meat, bread; the land animals' food is one good, meat, the sea's fish);
+  the market, chandlers, traders, butchers, bakehouses and fish docks each sell every food the town makes, the kava
+  houses and the guest house serve meals; every house keeps a food store, the barracks eat at their mess. Valapo's own
+  economy: the parcels grow their crops, the docks land fish, the pens raise meat, the bakehouses bake bread from sweet
+  potato, the windmill crushes cane to sugar, the weavers and potters make cloth and pots; 39 warehouses and
+  granaries, 20 carts. A town opens with three days of food (the governor's cover), each in its share of what the town makes.
+- **The economy governed** (the owner, 2026-10-19, after two research passes on balancing an economy and on
+  inventory control). No hand-set factors: every hour each producer's rate is its full rate times a multiplier from an
+  **order-up-to rule with its supply line** (`src/49-isle-govern.js`, `economy.govern`): what is wanted of a good a day
+  is its demand plus three tenths of the gap between three days of demand and its supply line, closed over a day and a
+  half, over
+  what the town makes of it at the full rate (learnt as it runs), clamped to 0.3-1.5. The demand is the good's use and
+  unmet draws, its exports or the other town's want where the canoe line carries it, what the ships are set to buy, and
+  what the goods made from it want, averaged over the last three whole days (the households restock on a three-day
+  round); the supply line is the warehouses, the sites, the carts' loads and the loads at sea.
+  **Perishables spoil** at midnight (`economy.spoil`: bread 6% a day, fish, meat and bananas 4%, cane 3%, roots 1.5%,
+  coconuts 1%, rice and the dry goods less), booked as used. Cloves, cacao and cane grow at a tenth (`economy.cropRate`).
+  **Ships from beyond the isles** call on their own days (`trade.buyers`: Voth traders every 3 days, Izani merchants 4,
+  Hykkousoi traders 5, the Ancients' salvagers 6, Islanders of the outer isles 2) and buy what a town makes above a
+  floor. **Clothes and armour:** Valapo's weavers make cloth from cotton and garments from cloth (place by place in
+  turn), Kautoa's Vernacular workshops sandals and its smithies leather armour from its tannery's leather; everyone wears
+  a shirt, a wrap and sandals (two sets, worn out in 90 to 120 days and bought again), the soldiers a cuirass; the
+  lakatoi carries garments to Kautoa and sandals and armour to Valapo. The governor's gain was compared at 0.3, 0.5 and
+  1.0 over 21 days (after 0.2 to 1.0 on a one-day demand window, which swung with the restocking round): 0.3 holds each
+  town's food closest, with the same stock swing and no shortfall; 1.0 drifts most.
+- **Pots, tools and salt; the evening market** (the owner, 2026-10-19). Each home with a store keeps a cooking pot (its
+  houseworker, else its first resident: `items.household`), cracked in 60 days and bought again from the potters, the
+  market or the shops; the bakers and the innkeepers cook with a pot that wears by the worked hour (1,500 hours). The
+  farmhands, craftsmen and labourers own a stone tool (adze, harvest knife, maul, scraper; 1,000 worked hours), made in
+  Kautoa's workshops from four stones (an inefficient use of the quarry, as the owner asked), whichever of sandals and
+  tools the town has fewer days of, and carried to Valapo by the lakatoi; worn through at work it is bought at once in
+  work time, and without one a worker works at half pace (the page asks again each hour of work if the town was out:
+  `ISLE.simToolRetry`). **Salt** keeps three quarters of the fish and meat that would spoil in the warehouses (a salt for
+  four servings), and while a town holds salt its households season their food (Kautoa's own salt now used too), so every
+  meal at home counts as a better one (`fine`). The staples shops and the market stay open until 21:00: the farmhands,
+  in from the far fields at 17:00, reached a shop as it closed, and from day 13 about 370 of Kautoa's meals a day were
+  eaten from an empty store; now none.
+- **Tools by trade, injuries, arms, clothes by class** (the wear plan's steps 1, 2, 4 and 5; PLAN.md 9b; owner,
+  2026-10-19). Every worker of a tooled trade owns its tool: stone (the orchards' harvest knives, the smiths',
+  carpenters' and tanners' adzes and scrapers, the labourers' mauls; Kautoa's workshops, four stones each), wood (the
+  field hands' digging sticks, the herders' and grooms' goads, the weavers' shuttles, the potters' paddles, the officials'
+  styluses; Kautoa's dockyard, by lakatoi to Valapo), a net (the fishers; the weavers, two cotton each) or a cooking pot
+  (the bakers and innkeepers); the dockers and the soldiers draw theirs from the workplace's rack. A worked day carries
+  a 0.6% chance of a hurt, healed by a healer's poultice (the healers' herb gardens) or in three days. A quarter of the
+  rich adults keep a war club (the dockyard). Each person keeps its class's sets of clothes (poor 2, middle 3, rich 4),
+  half wear a sarong in place of the wrap, and the outdoor trades and two fifths of the rest a pandanus sun hat (the
+  weavers). Three weeks: 2,240 tooled, 446 on racks; 145 wooden tools, 103 stone, 40 cooking pots and 4 nets worn out
+  and replaced in work time; 404 hurt, 369 healed (265 by poultice), none past three days; 948 sarongs and 732 sun hats
+  bought; 105 clubs. The weavers' places take cloth three in eight, garments two, mats, hats and nets one each.
+- **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
+  isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
+  efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and
+  worship. With no wells, drink comes with meals, rest, company and a water gourd at work. Material rises 3.6 a day (not
+  in children); clothes and pots bought fill it (8 and 20), a set of clothes short raises it 4 a day, and at 55 a person
+  buys a **treat** on its time off (Voth's `items.treat`, by wealth, spread a little within each class): the poor a bowl
+  of kava (25) at the kava houses and taverns, the middle a pandanus mat (40, the weavers) or a coconut-oil lamp (45,
+  the potters, a coconut a lamp), the rich a lamp or shell-and-bead jewellery (70, Kautoa's workshops, a stone a piece,
+  by lakatoi to Valapo). Three weeks, the mean meter at the day's end (both towns alike within two points):
+
+  | | day 1 | day 7 | day 14 | day 21 | day 21 without treats |
+  |---|---|---|---|---|---|
+  | eat | 29 | 28 | 27 | 27 | 27 |
+  | drink | 5 | 1 | 1 | 1 | 1 |
+  | socialize | 27 | 32-33 | 33-35 | 34-35 | 33-34 |
+  | relax | 24 | 33-35 | 35-37 | 35-37 | 35-37 |
+  | contemplate | 12 | 49-50 | 59-61 | 60-62 | 60-61 |
+  | sleep | 22 | 23 | 24 | 24 | 23-24 |
+  | material | 19 | 32 | 31 | 33-34 | 100 |
+  | happiness | 89 | 81 | 79 | 79 (68-70% content, 25-27% uneasy, 5% unhappy) | 70 (57-59% content, 12-13% unhappy) |
+  | efficiency at work | 1.00 | 0.98 | 0.97 | 0.97 | 0.95 |
+
+  Food, sleep, drink and company hold; contemplation settles near 60 (few choose worship in their free hours). Without
+  treats material climbed and pinned at 100 by day 14, taking happiness to 70; with them it settles near 33. Treats
+  bought over three weeks: 5,076 bowls of kava, 1,159 lamps, 1,143 mats, 300 necklaces. The seasoning lowers the eat
+  meter about a point (happiness +0.5); the pots and the clothes' material under half a point (a pot or a garment every
+  few weeks a person). The economy holds at 97% efficiency (the governor makes up the difference).
+- **Three weeks' books** (the daily average over days 12-21, three whole restocking rounds; the gain at 0.3):
+
+  | | Valapo | Kautoa |
+  |---|---|---|
+  | food made over eaten (and spoiled) | +25 a day (of 10,300) | -347 a day (of 28,600) |
+  | food supply line | within 15% of its target (three days of demand), up and down with the restocking round | the same |
+  | spoiled a day | bananas 244, bread 176, sweet potato 147, fish 62 | bread 429, taro 341, bananas 197, fish 66 |
+  | salted instead a day (salt drawn) | fish and meat 157 (50 salt) | fish and meat 34 (14 salt) |
+  | meals at home | 4,071 a day, all seasoned; none from an empty store | 11,820, all seasoned; none from an empty store |
+  | cloves, cacao | (imported by the oruwa) | made 628 and 462 a day, 575 and 406 bought by the ships; stocks +53, +56 |
+  | sugar, cane | sugar 195 a day, 182 to Kautoa; cane +38 | sugar 125 imported and used |
+  | cotton, cloth, garments | +122, +34, -1 a day (134 garments to Kautoa) | garments -1 (136 imported, 137 worn out) |
+  | leather, sandals, armour | (imported) | -5, +9, 0 a day |
+  | pots, stone, tools, salt | pots 5 made, 7 bought; tools 3 bought (by lakatoi), its stock drawn toward six days; salt 92 used (imported) | pots 19 made, 20 bought; stone 53 quarried, 45 into tools (+7); tools 11 made and used; salt 210 made, 132 used and 85 to Valapo (-7) |
+  | treats (made, bought a day) | kava 42, 105 (drawing its opening stock down); mats 6, 17; lamps 17, 16; jewellery 7 by lakatoi, 6 | kava 310, 298; mats 23, 54; lamps 67, 47; jewellery 14, 10 |
+  | wear goods (made, used a day) | wood tools 2 (by lakatoi), nets 2, 0; poultices 5, 4; hats 2, 10 (drawing down) | wood tools 9, 6; stone tools 6, 4; poultices 10, 8; hats 8, 26 (drawing down) |
+  | still piling up | cotton +119 a day | (nothing over +60 but the ships' cloves and cacao) |
+
+  Nothing runs short after the second day (the towns open with lots of what the canoes bring them).
+- **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
+  drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
+  resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and
+  hauled, the food eaten, nothing short (draws, purchases, kitchens; a day's stock left) and the food made covering
+  what was eaten; the stocks map finding every place from its lot. Each has a negative, for each town. Five days run
+  clean too (`node tests/test-isle-sim.js 7200`).
+- **Kautoa** takes the same table with rows for its own buildings (the palace, the envoys' and chiefs' houses as
+  residences, Ridertown's stables, roosts and shrines, Izanitown's houses, shops, tavern and workshops, the works, the
+  dairy). It grows nothing inside its wall: the programme's **farm ring** beyond it (40 sites, a world record) is declared
+  as its holdings (rice, taro, banana and coconut to eat, cloves and cacao to sell), a stand-in until core/hamlet's
+  farming villages, each with a track from the highways out of the gates. Its bread is taro. 2,472 workers (40%),
+  40 carts. A town sells and stores only the foods it makes.
+- **The run loop** (`57`): a world minute a `SIM.step`, at the 72-minute day times x1, x20 or x120, held when the page
+  opens; the HUD shows the day and hour and the drawn town's food in days. **The stocks id map** (`46`): `ISLE.simIdOf`
+  (a lot, its core/tags id or a place id to the town's places) and `ISLE.simHolds(town)` (the `extra` for core/host's
+  `KHOST.simHolds`, its stocks the town's own), ready for when the page takes core/host.
+- Jobs are dealt nearest first (`work.near`), each town's meals booked by town, and nobody walks farther than 6 km
+  (`SIM.REACH`: a town and its farm ring).
+- **The citizens near the camera** (`59`): up to 120 of the drawn town's people within 260 m of the camera's target,
+  where `SIM.pose` puts them (nobody indoors, no carts), chosen every half second and posed each frame the clock moves;
+  stand-ins (an instanced body and head, coloured by their work), core/charactermodels' bodies later.
+- **The canoe line** (P7c; the owner's timetable, 2026-10-19; `47`, `61`). Each town's trade landing has a **canoe stop**
+  (on the plan: a berth for the lakatoi and one for the oruwa, the nearest water deep and clear enough; in the sim: a place
+  with a site store the carts empty). Two **SIM.trade** routes on the timer: the **lakatoi**, the towns' bulk carrier,
+  two a day, one each way (they start at opposite stops: a 20-hour passage and a 4-hour stay make a day), carrying
+  Kautoa's salt and rice and Valapo's sugar; the **oruwa**, one canoe round a day, carrying only what the receiver is low
+  on of the light, dear goods (Kautoa's cloves and cacao; Valapo's coffee when its upland farms are in the sim). The
+  want is each town's hourly use of the other's goods (`ISLE.TUNE.sim.trade.uses`). The docked vessel is drawn at its
+  berth (`61`). Checks: the berths afloat and clear; the lakatoi both ways with loads; a load traced from Valapo's
+  warehouses to Kautoa's and one back; each town's books showing the other's goods imported; what is at sea counted
+  inbound and outbound; the books balancing in both towns; the vessels drawn exactly while docked. Each has a negative.
+- **The levels and the week test** (P7d; `48`; core/simulation 77-sim-7-lod.js). The town the page draws runs
+  presented, the other abstract (`ISLE.simWatch`): its people neither decide nor move, its economy makes by the workers
+  its schedule has at work, its carts make timed trips, its households eat and restock by the hour, and the canoe line
+  ticks as ever. The week test (verify's Valapo page and `node tests/test-isle-week.js`): a week with Valapo watched,
+  then a week with Kautoa watched; each town's books balance over each week at either level, every load shipped landed
+  or is at sea, the loads to the abstract town landed and are booked there, each town's food a worker a day abstract is
+  within 0.6-1.6 of the same town watched (about 1.1), and nobody in the abstract town decided (0 decisions against
+  about 110,000 and 320,000 in the watched town). Each has a negative. A week with Valapo watched takes about 12-16 s
+  in node (12.2 s in Chromium), with Kautoa watched 28-33 s (23.5 s); both presented about 38 s (the same run, a loaded machine).
+- **P7e, the `sim` export section** (2026-10-20; `50`): the page registers core/export's `sim` section (`by: 'isle-sim'`,
+  queued when core/export loads later, as in node) until core/simulation registers it itself, as core/city does `city`.
+  `ISLE.simExport()` is a `krator-sim` object: core/simulation's records (`SIM.export`: the clock, activities, factions,
+  orgs, 2,839 places, roles, 8,450 actors each with its settlement, events, ports, transports; no nav, no log) and the
+  isles' own: per settlement its level, people, warehouses, sites and carts by id, each good's stock (warehouses, sites,
+  carts, all holdings) and books (made, used, imported, exported, short), its producers (place, outputs, the governor's
+  rate and the full rate), meals, spoilage and salting; the canoe routes (stops, carriers and cargo, shipped, landed and
+  at sea by leg and good); what the ships bought. About 3.1 MB as JSON. `sim` is now in the page's profile
+  (`EXPORT_PROFILE`): `EXPORT.check` fails on a stubbed or empty section and passes filled (verify's Kautoa page, and
+  on the Valapo page after the week; `node tests/test-isle-export.js`). `ISLE.simExportChecks`: every warehouse, site,
+  home and workplace a place of its own settlement; each good's warehouse stock what the place records hold; every load
+  shipped landed or at sea; every stock and book a count; each with a negative.
+- **P8, the books in Godot** (2026-10-20): `node tools/export-sim.js` runs a week (Valapo watched, Kautoa abstract) and
+  writes `godot/data/isle/sim.json` (the export at the week's end, about 3.2 MB) and `golden.json` (the books at the
+  start, the week, the page's own answers). `godot/tests/isle/isle_books_test.gd` reads them with
+  `godot/krator/isle_sim.gd` (`KratorIsleSim`) and derives every check again: every place of its own settlement,
+  warehouse stock equal to the place records, every load landed or at sea, each town's 31 goods balanced over the week
+  (change = made + imported - exported - (used - bought + eaten)), and every answer (the checks, each good's residual,
+  the counts) the page's; five negatives. It passes on Godot 4.7.2 and runs in `tools/test_all.py --nightly`. Rerun
+  the tool after a change to the economy (the files are the page's answers).
+- **P8, Kautoa's ceremonial centre in Godot** (2026-10-20): the drawn town exports through core/export's scene reader
+  (`62`; `10-core-export-scene.js`, lifted from Iziz's contributor), the sim with the motion of the people who live or
+  work in the box (`50`; `SIM.exportMotion`, lifted from Dhelv's export). `godot/data/world-isle-kautoa` is the box
+  320,780,820,1220 (the palace, the ceremonial square, the governor's house, the five envoys' houses, the council hall:
+  89 lots) at 06:02 (`?simAt=362`); `godot/tests/export/isle_test.gd` opens it: 1,535 instances where world.glb says,
+  every kit piece owned by its lot's record at the piece, 89 uids recomputed, the sim's places joined to the records,
+  4,644 pose rows of 774 people replayed by `KSim.pose` with none differing (425 walking), 115 stand-ins drawn, the
+  three canoes placed from the routes (at sea at 06:02; a docked one is drawn at Kautoa's canoe stop); each with a
+  negative. The page's export box is now this one (it was -700..700, which held 108 lots and none of the centre).
+  **And (2026-10-20, later):** the stage (core/biome's `KSTAGE`: lights, fog, the sky panorama, the ground's look), a
+  door for every building and landmark (`ISLE.exportDoors`: at its front face, local +z, where its lot meets its street,
+  with the walking graph's entry node the sim's people use), interiors and furniture answered empty (the city page draws
+  the kit's buildings as shells); and **Valapo's case** (`godot/data/world-isle-valapo`: the village hall, the market,
+  the caravanserai and the harbour, box 106,-2075,506,-1675, 132 lots, 1,941 instances, 708 people with 418 moving rows),
+  the Godot test town-agnostic (`-- --case=world-isle-valapo --town=valapo`). The profile now asks for fixtures and
+  stage too (interiors and furniture may read empty). **Windows and lamps** (2026-10-20, later): the Islanders kit now
+  records every door and window its walls cut and every lit point (kits/islanders 36-def.js `door()`/`windowAt()`,
+  40-is-kit.js `isWall`, `HALOS`), `ISK.proto` hands them over in the piece's frame, and `ISLE.exportFixtures` turns
+  them onto each lot: Kautoa's case 363 fixtures (135 doors, 217 windows, 11 lamps; 2 front-face doors for the
+  Vernacular's buildings, which record none), Valapo's 398 (134, 249, 15); every one within its building's footprint
+  and its uid recomputed in Godot, every building with a door, the door nearest the sim's entry carrying it. Left of P8:
+  the Vernacular's and the Beast Riders' openings, the Ring Sea kit's lakatoi and real bodies in Godot, a GDScript twin
+  of the economy.
+- **M7 started** (2026-10-20): both towns are planned and drawn on the open world's page (`openworld/isle-demo` 48t,
+  88t: this page's 15-50 and 60 read in place there), and the export profile moved there
+  (`openworld/isle-demo/verify.py --assert`; this page's verify reports it). On the way: `IZV.proto` carried every
+  Vernacular piece built before it (the kit's `kbake` never empties its items), so a piece depended on the order the
+  page built them in; `bundles.py` now empties them round each piece. Kautoa's case lost the duplicates (285 items,
+  1,461 instances, was 359 and 1,535); both Godot cases were cut again and pass. Then the towns were lived in there:
+  the sim on the world's clock, the citizens near the camera and the canoe line at its berths or under way on a sea
+  route between the canoe stops (`openworld/isle-demo` 88c).
 
 See `KNOWN_ISSUES.md`.

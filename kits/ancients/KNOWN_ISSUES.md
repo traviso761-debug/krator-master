@@ -3,6 +3,27 @@
 `- [ ]` items are printed by `build.py` on every build. Close one by fixing it
 and ticking it, not by deleting it.
 
+## No dark voids (2026-10-19, the Iziz openings round)
+
+The owner: "remove all dark voids and make all windows, doors, and portals actual doors or windows/portals that have
+transparency". In `src/34-kitdefs.js` (kit-local, as the old `MAT.dark` recolour was; core/materials is untouched):
+`MAT.dark` is a room's warm plaster (the core behind a glass band, a room silhouette behind a window, a ruin's insides),
+`archOpen` is a shut door in `MAT.ancDoor` (the Ancients' grey alloy), and `MAT.winIntact` / `MAT.winDead` are see-through
+panes (a clear blue, a dusty grey). `77z-iziz-style.js`'s `MAT.izsGlass` is see-through too. What shows behind a pane is
+whatever the builder drew there: a room where it drew one, the wall where it did not (no tower has rooms yet).
+`77z`'s temple and arena read `IZS_HOLLOW` (`{temple, arena}`): a world that builds their interiors (settlements/iziz 78t,
+78u) gets the temple without the core behind its upper glass band and with a doorway in its crown, and the arena with its
+four portals cut through the shell. Without it they build as before. `IZS_HOLLOW.sky` does the same for the skyscrapers A-F
+(`52-sky-abc.js` skyIx, skyDoor): their floor plates, soffits and skyRooms are left out (every rng draw kept) and a street
+door is cut at each one's foot (and a core door on every storey of F), for a world that builds their storeys itself. The builds that vendor these two fragments (Dalab,
+Highlands, Jimjam, Reed Lake, Xanadu, Ys) are behind until re-vendored; Iziz is re-vendored.
+`73-police.js` and `89-lab.js` read `IZS_HOLLOW.police` and `IZS_HOLLOW.lab` the same way (settlements/iziz 78v, the two
+guilds' interiors; Iziz sets them for the guild's call only): the station's hex block and the lab's six storeys are drawn on
+lines through their windows (`gridAt`, `policeShell`, `labSkin`), the windows and the front door cut through, the windows
+clear, the lab's arcade glazed, no core and no rings of rooms inside. Without it they build as before (the same stream:
+the lab's light rings are drawn and dropped, not skipped). Ys and Screamers vendor both fragments and are behind until
+re-vendored; Iziz is re-vendored.
+
 ## Found by the split (pre-existing in the single-file kit)
 
 - [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.
@@ -957,3 +978,35 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] Looked at only at the kit's `HOLES` (1 at decay 1); Ys builds hosts at .4, so its stumps keep far more wall.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+
+## The Sanctum (`--target sanctum`, `targets/sanctum`, the owner's form, 2026-10-22)
+
+- **Shown as the Heirs keep it only**: no as-built Ancient row, no ruin, no interiors, no Godot export check yet. The
+  solid's faces are the Podium's wall skin under bands and great lancets; the atria, the passages and the roof garden have
+  no people, terminals or furniture. The palace blueprint (`kits/eternian/palace/BLUEPRINT.md`) is the first form's.
+- **The solid reads as one block from the front** (a 533 m face of one skin): a second pass could vary the bands by
+  height (the Heirs' ranks) and hang more on the rounded corners.
+
+## The Podium (`--target podium`, `targets/podium`; the Sanctum until 2026-10-22)
+
+- **Renamed, not redrawn**: the owner set the spiral drum aside as its own arcology when the Sanctum was redrawn. Its
+  `kept` row is the first palace design. Its internal prefix `sn` and the `MAT.sn*` families keep their names (the
+  Sanctum reads its skins).
+
+- **`culture:eternian` is not in the core/tags vocabulary.** The Sanctum's records (heads, terminals, banners, the
+  wall, the pavilions) carry it, so `KTAGS.sanctum.audit()` counts about 450 unknowns. It is the Eternian kit's P0
+  (`kits/eternian/PLAN.md` §11): the culture goes into the catalog's `FURN_CULTURES` with a culture file and into
+  `52-core-tags-vocab.js`, and every build that takes either is rebuilt. Until then, the one unknown is expected.
+- **The owner's Eternian sets are wired** (2026-10-20): onyx, alabaster, titanium, the pierced screens, the talking
+  heads, the sign, the circuit mazes and the face frieze, as `own` families (`sn*` in `materials.json`: the Sanctum's
+  alone, so a host vendoring the kit's pack keeps its bytes). The extra takes are alternates picked per bay. Still
+  procedural: the drum's wall, the pods' and bays' glazing, the plate glass; the heads' gold, silver, bronze and
+  gunmetal are flat metals (the library's `metal.*` sets want binding per instance colour).
+- **The faces read soft at a distance**: the faceted head is ten rings of eight points, flat-shaded; past ~300 m the
+  planes merge and a head reads as an egg. The Eternian kit's head generator (its P2) replaces it.
+- **No ruined state, no interiors, no Godot export check yet.** The Sanctum is shown as built and as kept; the arches'
+  halls have terraces and a back wall, no rooms.
+- **Kit-wide, fixed on this page only:** the sky shader is black below the horizon (`pow(h,.55)` with h < 0 in
+  `90-scene.js`), the dome is drawn after the ground with no depth write, and the far plane is 12 km, so a wide shot shows
+  a black band past 9 km. `coDraw` patches it for its own page; the shared fix (`max(h,0.)`, `sky.renderOrder=-1`)
+  would move every page's hash.

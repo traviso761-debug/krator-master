@@ -109,3 +109,12 @@ Read before changing anything here. `build.py` prints the open count.
       The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
       `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.
 - [ ] (2026-10-06) The nomad kit takes the material library as colour maps (materials.json; src/78b-host-matlib.js swaps NOMAD.MAT's maps; the kit stays Lambert, so no normal maps). The sedesert flora is not wired yet. verify --assert passes.
+
+## Voth census trades (2026-10-19)
+
+The table is `SHADE_TRADES` in `src/89s-shade-trades.js` (checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`): 7 carried, 3 partly, 17 gaps, 17 na (no sea, no industry, no guilds; embassy tabled). Gaps, each a building Shade lacks:
+
+- [ ] food and craft: bakehouse (adobe ovens), butcher's yard, goat-hair weaving and dye yard, tannery, smithy and craft yard, granary and mill, goat and camel dairy.
+- [ ] civic: barracks or muster court for the canyon guard, school or letter-house, toll house (switchback gate or Khan), healer's house, clan elders' hall (palace and canton staffs), burial ground.
+- [ ] land and water: fishing platform at the pool shore, date or fruit grove, a mine, a stone-cutters' yard.
+- [ ] partly carried: a warehouse (the Khan only lodges and stores), field plots and ditches (the terraces and north fields are only reserved places), goat pens and camel lines (the plateau grazing is a reserved place).

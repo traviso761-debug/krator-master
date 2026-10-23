@@ -21,6 +21,59 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## Ride along with the next all-builds rebuild
+
+Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
+along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
+
+- **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
+  (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
+  (`settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
+  piece among a thousand merged into one mesh, so a registered volume round each reads empty
+  (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
+  never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics
+  (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
+  sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
+  KNOWN_ISSUES items close.
+- **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
+  `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
+  arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
+  `releasePointerCapture`) in `try { } catch (e) { }`, as `core/host/98-host-edit.js` already does. About 138 builds take
+  core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
+  its first lines): take that out in the same change.
+
+- **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
+  pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
+  Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
+  builds take core/hamlet (Longsong, `openworld/isle-demo`): a comment change was not worth an isle-demo rebuild alone.
+
+- **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
+  Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
+  is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
+  Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
+
+- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
+  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
+  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
+  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
+  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
+    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
+    rebuild and verify Talia when it merges main.
+  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
+    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
+    and takes none of it.
+  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
+    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
+  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
+    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
+
+- **Opening doors as a core module** (the owner, 2026-10-20). Door open/shut lives in Iziz's page: `IZDOOR` (69e5: the
+  leaf records, swing, `open` / `close` / `toggle` / `nearest`), `95j-iziz-doors.js` (each leaf's walk blocks in
+  `core/walk`, cleared doorways) and the key in `99-start.js`. Lift it into a core module every build takes (beside
+  `core/walk`): leaves as plain records keyed by stable ids (hinge, width, swing, state, locked), open and close as
+  plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
+  host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
+
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
 The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),
@@ -121,6 +174,34 @@ loads each build's `tex/` pack, which is WebP. What is left:
   best-looking one that appears to run downhill under gravity, leaves no gaps, fills where it should (basins,
   channels, pools) and stays out of where it should not (no water through floors, walls or banks). **[G shader]**
   for the surface, **[G data]** for where it fills.
+
+## Card sheets shown whole *(2026-10-23)*
+
+Most library cards are sheets (three by three plants, or an atlas of pieces). A page shows ONE of them when the slot in
+its `materials.json` names a `cell` (the pack carries it; `BIO.libSwap` and n semiarid's `libCard` window the texture
+to it) or when the page cuts it by hand (`libCell(..., CELL(i, j))`, or the geometry's UVs: Korona's `cellUV`). Miss
+both and every instance shows the whole sheet: n semiarid's steppe grass read as "a sheet of 9" and its maple keys flew
+as a sheet (the owner, 2026-10-23; fixed: its inline pack writer dropped `cell`). Korona's punji-pit lids show the whole
+`card.litter` atlas (`biomes/korona/KNOWN_ISSUES.md`). The library does not mark a card as a sheet, which is why nothing
+caught it.
+
+`python3 tools/textures/cell_audit.py [--list] [<build>]` lists, per build, the slots that take a sheet card with no
+`cell` (215 in 25 builds today) and how the build writes its pack. Each slot is a candidate, not a bug: open the page's
+code and see whether it cuts that slot by hand.
+
+- [ ] **Audit every candidate slot**, build by build, and give each a `cell` or a hand cut, or a note that the whole
+  sheet is meant (a crown card may want a cluster of nine sprays: n semiarid's aspen, blossom, broom, lobed and sage
+  crowns are such, unjudged). Biggest first: Throne 39, Crops 44 (it picks cells by code: check how), Korona 15,
+  Necanyons 15, Longsong 14, crater-drylands 12, ebadlands 10. Take one screenshot of each judged slot.
+- [ ] **The inline pack writers that drop `cell`**: crater-drylands, ebadlands, ehighlands, shighlands, oidong, Throne,
+  Zeijani and Girder each keep a `matlib_pack()` copied from ebadlands that leaves `cell` out of the pack, so a slot
+  given a `cell` in `materials.json` still shows the whole sheet. Nothing shows wrong today (their celled slots are cut
+  by hand, or not swapped in: ebadlands' `litter`), but it is a trap. Pass `cell` (n semiarid's `build.py`, one line),
+  or move them onto the shared `tools/textures/matlib_pack.py`, which keeps it. A page's hashes do not move unless a
+  celled slot reaches the page.
+- [ ] **Mark sheets in the library**: a `sheet: [3, 3]` (or the atlas's grid) in each sheet card's `meta.json` record,
+  written by `tools/textures/cards.py`, so `pack.py` can warn when a build packs a sheet with no `cell` and no
+  `"whole": true` saying it means it; `cell_audit.py` then reads the mark, not the source note's words.
 
 ## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
 

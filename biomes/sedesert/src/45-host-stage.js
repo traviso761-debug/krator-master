@@ -209,13 +209,34 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 // thickness that dip and warp, laminae, cross-bedding, varnish streaks), weighted
 // per vertex by the rock field (aRock): the coarse field cache would wobble them.
 const STRATA=BIO.strata({seed:4711});
+// THE LIBRARY GROUND LAYERS (materials.json ground.*, 2026-10-19; core/materials/PLAN.md "Sedesert"): fine sand on the dunes
+// (ground080) and the pale smooth sand of the pond's playa rim (ground093c), laid over the painted ground by weight per
+// vertex (aLay); on the strata rock the layered red sandstone (rock.sandstone.red) is the relief of the steep faces and the
+// cracked sandstone (rock.sandstone_cracks) of the flat ledges, multiplied into the strata's colours. Without the pack
+// (?mat=proc, or the open world) the ground is exactly the painted one.
+const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('sedesert',n);
+ const d=P('ground.dune'),r=P('ground.rim'),w=P('ground.redwall'),l=P('ground.ledge');if(!d||!r||!w||!l)return null;
+ const T=x=>KMAT.textures(x,{aniso:8}).map,m=x=>Math.pow(x.tint&&x.tint.mean!=null?x.tint.mean:.78,2.2);
+ return{dune:T(d),duneK:1/d.scale[0],rim:T(r),rimK:1/r.scale[0],wall:T(w),wallK:1/w.scale[0],wallM:m(w),ledge:T(l),ledgeK:1/l.scale[0],ledgeM:m(l)};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('getShadowMask();','getShadowMask()*vSun;')
+ if(GLAY){sh.uniforms.uLDune={value:GLAY.dune};sh.uniforms.uLRim={value:GLAY.rim};sh.uniforms.uLWall={value:GLAY.wall};sh.uniforms.uLLedge={value:GLAY.ledge};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;attribute vec2 aLay;varying vec2 vLay;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;varying vec2 vLay;'+(GLAY?'uniform sampler2D uLDune,uLRim,uLWall,uLLedge;':'')).replace('getShadowMask();','getShadowMask()*vSun;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
+  // the strata's relief from the library (a custom sampler is not decoded from sRGB: pow 2.2 by hand): the steep faces
+  // take the red sandstone's layers (the face's two horizontals and its height), the flat ledges the cracked sandstone
+  (GLAY?'{vec3 tw=pow(texture2D(uLWall,vec2(vGWP.x+vGWP.z*0.7,vGWP.y)*'+GLAY.wallK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.wallM.toFixed(4)+';'+
+   'vec3 tl=pow(texture2D(uLLedge,vGWP.xz*'+GLAY.ledgeK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.ledgeM.toFixed(4)+';'+
+   'bc*=mix(tw,tl,smoothstep(0.55,0.85,vSWN.y));}':'')+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
+  // the dunes' fine sand and the playa rim's pale sand over the painted ground, each on two tiles (one turned) so no grid shows
+  (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));'+
+   'vec3 sd=mix(pow(texture2D(uLDune,p*'+GLAY.duneK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLDune,q*'+(GLAY.duneK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
+   'vec3 rm=mix(pow(texture2D(uLRim,p*'+GLAY.rimK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLRim,q*'+(GLAY.rimK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*sd*1.35,0.75),vLay.x*(1.0-vRock));'+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*rm*1.35,0.8),vLay.y*(1.0-vRock));}':'')+
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the cave: occlusion, steepened (ambient is all the light there)
 // The layers above, described once for a port (core/export's EXPORT.groundLayers: a material record with hook 'world-uv',
 // its maps by library reference, the crack weight sampled on the tile's grid; Godot multiplies them in ground.gdshader
@@ -231,14 +252,15 @@ const SUNV=[sun.position.x,sun.position.y,sun.position.z];
 const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;
  const axis=(lo,hi)=>{const o=[];for(let i=0;i<=N;i++){const a=-S/2+i*cs;o.push(a);if(i<N&&a+cs>lo&&a<hi)for(let k=1;k<M;k++)o.push(a+cs*k/M);}return o;};
  const X=axis(GRID.win.x[0],GRID.win.x[1]),Z=axis(GRID.win.z[0],GRID.win.z[1]),nx=X.length,nz=Z.length;
- const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),ck=new Float32Array(nx*nz),rk=new Float32Array(nx*nz),oc=new Float32Array(nx*nz),sn=new Float32Array(nx*nz);
+ const lay=new Float32Array(nx*nz*2),pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),ck=new Float32Array(nx*nz),rk=new Float32Array(nx*nz),oc=new Float32Array(nx*nz),sn=new Float32Array(nx*nz);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=X[i],z=Z[j],y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);   // mud cracks and fine strata are fields (fieldsAt)
-  oc[k]=BIO.carve.floorOcc(x,z);sn[k]=BIO.carve.floorSun(x,y,z,SUNV);}
+  oc[k]=BIO.carve.floorOcc(x,z);sn[k]=BIO.carve.floorSun(x,y,z,SUNV);
+  {const dn=FC.at(FC.a.dune,x,z);lay[k*2]=dn;lay[k*2+1]=smooth(.55,.95,FC.at(FC.a.oasis,x,z))*smooth(.5,.2,FC.at(FC.a.flow,x,z))*(1-dn);}}
  const idx=new Uint32Array((nx-1)*(nz-1)*6);let t=0;
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aOcc',new THREE.BufferAttribute(oc,1));g.setAttribute('aSun',new THREE.BufferAttribute(sn,1));
+ g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aOcc',new THREE.BufferAttribute(oc,1));g.setAttribute('aSun',new THREE.BufferAttribute(sn,1));g.setAttribute('aLay',new THREE.BufferAttribute(lay,2));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);return m;})();
 // the undercut's rock, put back above the cave: the ground's own material, both sides, with the
 // ground's attributes (uv on the painted map, the ground's own rock weight: the Abyss wall is painted, not strata)

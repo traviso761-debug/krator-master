@@ -32,8 +32,9 @@ ANIMAL({
     { build: 'settlements/girder', file: 'src/78-life.js', lines: '221-234', note: 'the segment (body, tergite, collar, leg pair; head and saddle bits): the richer model, ported here. Lines 480-498 and 553-558: one beast of 13 segments (0.56 m) per beast lift, walking the capstan round with a Millipede handler (the Beast Riders of Girder); src/55-arch.js 507-515: the millipede pen (shelter, trough, leaf-litter heaps, wallow)' },
     { build: 'settlements/mavs-refuge', file: 'src/78-life.js', lines: '188-203', note: 'the same segment (a saddle blanket on segment 4); lines 462-508: the beast lifts\' millipedes of the Refuge, each with a handler' },
     { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' },
+    { build: 'LORE.md', file: '6.6', note: 'the Longcrawler tribe of the Beast Riders rides its millipedes (the owner, 2026-10-19): a saddle on the fourth ring, a bridle at the head (anchors)' },
     { build: 'kits/fauna', file: 'krator-fauna-crawlers.js', note: 'variant 2, the herd of the Ash Nomads (ash plains round the great volcano, 2026-10-07): first drawn here, the Girder segment in ash-grey, black and ochre; herded for chitin and grubs, never for carts' }],
-  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: false },
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
   yields: { meat: { amount: 900, note: 'the Screamers ranch them for it: the pale flesh inside the rings, smoked in strips' },
     hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' },
     chitin: { amount: 60, note: 'the cast rings of each moult, gathered from the pen (the Ash Nomads herd them for it, and for the grubs): their furniture, vessels and lanterns' } },
@@ -90,6 +91,9 @@ ANIMAL({
             for (const s of [-1, 1]) A.tube('chitin', u => faCrLerp(P(s * 0.38, 0.45, 0.24), P(s * 0.2, 0.43, 0.62), u), u => [(0.075 - 0.04 * u) * f * K, (0.08 - 0.045 * u) * f * K], 3, 8, C.mand, { caps: true });
           });
         }
+        /* the Longcrawlers ride them: the rider's seat on the fourth ring's tergite, the reins to the head (anchors; the tack is the culture's) */
+        if (k === 3) A.anchor('saddle', P(0, 1.04, 0));
+        if (k === 0) A.anchor('bridle', P(0, 0.8, 0.42));
         if (k === 3 && v === 0) {
           /* the harness: a blanket over the fourth ring and the block the capstan bar pegs into */
           A.tube('plain', u => P(0, 1.06, -0.31 + 0.62 * u), () => [0.42 * K, 0.1 * K], 2, 12, C.cloth, { caps: true, colf: (u, a) => Math.abs(Math.sin(a)) > 0.93 ? 0xc2a24e : C.cloth });

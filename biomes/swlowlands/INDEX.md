@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/swlowlands.html`
 Build: `cd biomes/swlowlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -20,8 +20,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 20 | the axis, the sea, the river (44); terrain (76); the climate fields (100); the host binding (116); the ground (125); the water (171); the road (212) |
+| `45-host-stage.js` | 22 | the axis, the sea, the river (44); terrain (76); the climate fields (100); the host binding (116); the ground (125); the water (176); the road (217) |
 | `50-biome-swlowlands-species.js` | 57 **big** | the climate this biome reads (24); palettes (34); the tree species (104); harvest (biomes/FRUIT.md) (168); leaf textures (210); TWO-TONE BARK (324); geometries local to this biome (463); materials (503); instanced items (567) |
+| `52-biome-swlowlands-library.js` | 2 |  |
 | `55-biome-swlowlands-trees.js` | 61 **big** | zones from the fields (26); colour (45); keep-clear between trees (66); the LIMB (77); foliage and epiphytes (94); the crown, ON its branches (115); the builders (153); impostors (the far canopy) (483); the pass (532) |
 | `60-biome-swlowlands-floor.js` | 24 | small plants (31); the understorey (under the crowns) (108); the zone planters (130); the pass (198) |
 | `65-biome-swlowlands-dress.js` | 8 |  |

@@ -5,6 +5,11 @@
 // ridges; EAST the head wall, highest, with the cataract's white thread and its spray; WEST the floor runs out through
 // the pass toward Xanadu, lower, in haze, and the Throne stands far off beyond it (azimuth 285).
 // u = ((270-az)/360) mod 1.
+// A host that stands elsewhere in the valley says where things are (OIDONG_SKY, optional, set before this fragment):
+// {head: the head wall's azimuth (90), pass: the pass's (270), throne: the Throne's (285), cataract: false for none, sun: false
+// to leave the sun unpainted (a host with a clock draws it where the hour puts it)}; the side walls stand at head +-90. Without it the showcase's valley is drawn as it always was.
+const OSKY=(function(){const o=(typeof OIDONG_SKY!=='undefined'&&OIDONG_SKY)||{};
+ return {head:o.head==null?90:o.head,pass:o.pass==null?270:o.pass,throne:o.throne==null?285:o.throne,cataract:o.cataract==null?true:o.cataract,sun:o.sun==null?true:o.sun};})();
 const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const HZ=h*.5,DEG=h/180,U=az=>(((270-az)/360)%1+1)%1;
  const facing=(u,az0,p)=>{const az=((270-u*360)%360+360)%360,d=Math.abs(((az-az0)%360+540)%360-180);return Math.pow(Math.max(0,Math.cos(d*Math.PI/180)),p);};
@@ -19,7 +24,7 @@ const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const wrapE=(x,y,rx,ry,f)=>{g.fillStyle=f;for(let k=-1;k<=1;k++){g.beginPath();g.ellipse(x+k*w,y,rx,ry,0,0,TAU);g.fill();}};
  // --- THE SUN, at the azimuth the directional light uses: (-1000,900,-700) is azimuth 305.0, altitude 36.4 ---
  const sx=w*U(305.0),sy=HZ-36.4*DEG;
- {const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
+ if(OSKY.sun){const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
   gl.addColorStop(0,'rgba(255,253,244,.95)');gl.addColorStop(.06,'rgba(255,250,232,.5)');
   gl.addColorStop(.24,'rgba(255,246,228,.14)');gl.addColorStop(1,'rgba(255,242,224,0)');
   g.fillStyle=gl;for(let k=-1;k<=1;k++)g.fillRect(sx-520+k*w,sy-520,1040,1040);
@@ -38,15 +43,15 @@ const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
    // snow above a snowline that wanders: the tops only
    pts.forEach(p=>{const sl=HZ+3-(p[2]*.62+.9)*DEG;if(p[1]<sl)g.fillRect(p[0],p[1]-1,2,sl-p[1]+1);});g.restore();}};
  // the far ranges (pale), then the near walls (deeper); east the head wall highest, west the pass lowest
- ridge('rgba(168,182,206,.6)','rgba(238,242,248,.75)',(u,n,k)=>{const E=facing(u,90,1.6),W=facing(u,270,2);return (2.2+2.6*n+1.4*k)*(1-.55*W)+2.0*E;},23.1);
- ridge('rgba(118,138,166,.72)','rgba(236,240,246,.8)',(u,n,k)=>{const E=facing(u,90,2.2),W=facing(u,270,2),NS=Math.max(facing(u,0,1.4),facing(u,180,1.4));return (1.4+2.2*n+1.2*k)*(1-.7*W)*(.5+.5*NS)+2.6*E*(1+.3*n);},41.7);
+ ridge('rgba(168,182,206,.6)','rgba(238,242,248,.75)',(u,n,k)=>{const E=facing(u,OSKY.head,1.6),W=facing(u,OSKY.pass,2);return (2.2+2.6*n+1.4*k)*(1-.55*W)+2.0*E;},23.1);
+ ridge('rgba(118,138,166,.72)','rgba(236,240,246,.8)',(u,n,k)=>{const E=facing(u,OSKY.head,2.2),W=facing(u,OSKY.pass,2),NS=Math.max(facing(u,OSKY.head-90,1.4),facing(u,OSKY.head+90,1.4));return (1.4+2.2*n+1.2*k)*(1-.7*W)*(.5+.5*NS)+2.6*E*(1+.3*n);},41.7);
  // --- the cataract at the head: a white thread down the east wall, and spray at its foot --------------------------
- (function(){const cx=w*U(90),top=HZ+3-3.1*DEG,bot=HZ+2;
+ if(OSKY.cataract)(function(){const cx=w*U(OSKY.head),top=HZ+3-3.1*DEG,bot=HZ+2;
   for(let k=-1;k<=1;k++){g.strokeStyle='rgba(248,250,252,.85)';g.lineWidth=5;g.beginPath();g.moveTo(cx+k*w,top);g.lineTo(cx+k*w+6,bot);g.stroke();
    g.strokeStyle='rgba(248,250,252,.4)';g.lineWidth=12;g.beginPath();g.moveTo(cx+k*w,top);g.lineTo(cx+k*w+6,bot);g.stroke();}
   for(let i=0;i<26;i++)wrapE(cx+rr(-70,70),bot-rr(0,30),rr(24,60),rr(8,20),'rgba(244,246,248,'+(.12+.16*rng()).toFixed(3)+')');})();
  // --- THE THRONE, far in the west-north-west over the pass: a pale cone with its plume ----------------------------
- (function(){const vx=w*U(285),base=HZ+2,vh=2.0*DEG,vw=220;const far=a=>'rgba(170,182,200,'+a+')';
+ (function(){const vx=w*U(OSKY.throne),base=HZ+2,vh=2.0*DEG,vw=220;const far=a=>'rgba(170,182,200,'+a+')';
   const P=[];for(let i=0;i<=40;i++){const t=i/40,s=t*2-1,pr=Math.pow(1-Math.pow(Math.abs(s),1.25),1.35);P.push([vx+s*vw,base-vh*pr-(fbm(t*5,1.3,31,2)-.5)*4*pr]);}
   g.fillStyle=far(.55);g.beginPath();g.moveTo(vx-vw,base+10);P.forEach(q=>g.lineTo(q[0],q[1]));g.lineTo(vx+vw,base+10);g.closePath();g.fill();
   for(let i=0;i<100;i++){const t=i/100;wrapE(vx+t*t*260+rr(-14,14)*(.3+t),base-vh-4-t*70-rr(0,12),8+t*40+rr(0,10),8+t*34+rr(0,8),'rgba(222,224,228,'+(.03*(1-t*.6)).toFixed(3)+')');}})();

@@ -58,7 +58,7 @@ function buildXaTempleOrtakoy(G,o){reseed(32001+(o.v|0));const V=xV(o),W=19,H=15
   for(const s of[-1,1]){const sp=F(s*3.7,.63);kput('xMosA',[sp[0],11.6,sp[1]],qEuler(0,a,0),[1.6,1.6,1],null);}   // mosaic in the spandrels of the great arch
   const sp2=F(0,.63);kput('xMosB',[sp2[0],12.4,sp2[1]],qEuler(0,a,0),[2.6,1.2,1],null);
   const tb=F(0,.16);vB('xTilesB',tb[0],7.2,tb[1],W-1.6,.6,.12,a,xC(xPick(XPAL.tile)));
-  const fr=F(0,.2);vB('xFriezeB',fr[0],H-1.2,fr[1],W-1.2,.6,.1,a);}
+  const fr=F(0,.2);xvFr(fr[0],H-1.2,fr[1],W-1.2,.6,.1,a);}
  // four corner turrets with gold bulbs, the drum with its windows, the great lead dome, the crescent-and-ball finial
  for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(W/2-1.2),tz=-2+sz*(W/2-1.2);vPst('xColS',tx,H-2,tz,1.3,5.6,stone);vB('vStone',tx,H+3.6,tz,3.0,.3,3.0,0,stone);
   kput('xBulbG',[tx,H+3.9,tz],null,[1.3,1.6,1.3],gold);vBall('xGold',tx,H+5.7,tz,.16,gold);}

@@ -1,0 +1,20 @@
+{
+ "name": "The trenches (station 4): a ring ridge's crest between two arms of the salt lake, wet on its windward face and desert on its lee",
+ "out": "korona-trench.html",
+ "kits": {
+  "49f1-sed-species.js": "../sedesert/src/50-biome-sedesert-species.js",
+  "49f2-sed-trees.js": "../sedesert/src/55-biome-sedesert-trees.js",
+  "49f3-sed-floor.js": "../sedesert/src/60-biome-sedesert-floor.js",
+  "49f4-sed-dress.js": "../sedesert/src/65-biome-sedesert-dress.js",
+  "49f5-sed-build.js": "../sedesert/src/70-biome-sedesert.js",
+  "49f6-sed-fauna.js": "../sedesert/src/75-biome-sedesert-fauna.js",
+  "49i1-nhl-species.js": "../nhighlands/src/50-biome-nhighlands-species.js",
+  "49i2-nhl-trees.js": "../nhighlands/src/55-biome-nhighlands-trees.js",
+  "49i3-nhl-floor.js": "../nhighlands/src/60-biome-nhighlands-floor.js",
+  "49i4-nhl-build.js": "../nhighlands/src/70-biome-nhighlands.js"
+ },
+ "packs": {
+  "sedesert": "../sedesert",
+  "nhighlands": "../nhighlands"
+ }
+}

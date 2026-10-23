@@ -53,6 +53,12 @@ ENTRIES = [
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge: the stalls ringed round "
+     "its fins and pinnacles with their flyers, the Stair and the lifts, the town on the top (the Crown, the house and trade "
+     "quarters on core/city), the Garden's great-houses, the Deep Root cavern opening from the Garden's wall, the farm ring and "
+     "the bands' camps; the hour slider and N for the night (the Crown's fires, the stall lamps, the beacons). Walk mode, the "
+     "minimap (M) and the inspector.", 'new'),
     ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
      'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
      'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
@@ -74,6 +80,8 @@ ENTRIES = [
 
     ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
      "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge, on the scale model's own land: the mesa 250 m over its south foot, ten fins round its rim, the Garden of stacks and the shrine's balanced rock, seven spurs, the dry gorge under the north rim, the canyons' plants on the walls and the hyperjungle on the floor, the far land to 60 km with the Inner Wall rising to the north. So far the rock and the site (P0 and P1); the roosts, the Stair, the town and the Deep Root cavern are to come.", 'new'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
@@ -124,17 +132,21 @@ ENTRIES = [
     ('kit', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
      "Five motor vehicles of five cultures: the Geomancers' dune buggy, the Iron Republic's eight-wheeled salvage crawler with its solar lid, the Izani armoured six-wheeler, the abyssal caravan truck under its tarps and the Post-Apoc tracked hab. Textured from the material library; wheels that roll and steer, tracks that run, lamps that switch (Drive R, Lights L, Night N).", 'new'),
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
-     "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
+     "Seventeen Iziz mechs, Ancient industrial walkers refitted for the legions, from a hound-sized drone to a walking siege tower (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple, an iron fist, a clap).", 'new'),
     ('kit', 'lizardmen', 'kits/lizardmen/dist/lizardmen.html', 'Lizardmen',
      "The Lizardmen of the Rift floor: ribs, horns and tusks outside the skin, walls that lean wrong, triangular doors sized by caste and nested seven deep, the squared spiral built and the round whorl carved, spiral eyes of rank; the caste dwellings, the nest hall's Fermat spiral of grown chambers, the bone hall, the camp's hide tents, the stone circle and the clapperless bells, the warlord's capital in cyclopean basalt with its gatehouse and twisted towers, and the reliquary with its dusty antechamber (C opens them).", 'new'),
     ('kit', 'pylon', 'kits/pylon/dist/pylon.html', 'Pylon',
      "Pylon, Iziz's vassal arcology city on a savannah plateau round the ruined Monolith: post-Cataclysm buildings imitating the Ancients in white render and Iziz orange (folk houses with orange cornice bands, concrete blocks with pill-shaped niches, vault houses, tank houses and hex cells for the poor), the scrap and salvage trade (yards under portal cranes, a breakers' floor, a smelter, the scrap exchange), the Salvagers' Guild and the watch, six Ancient families intact, ruined and repaired, the temple of the Ancients, the governor's palace, and the Monolith itself at full scale; with the Iziz Vernacular in mixed streets beside them. Nine of its buildings are furnished inside (X cuts them away): orange leather banquettes, hearth blocks and walnut beds among Iziz furniture.", 'new'),
+    ('kit', 'talia', 'kits/talia/dist/talia.html', 'Talia',
+     "Talia, Iziz's vassal university and caravan city at the foot of the eastern passes: Greek and Byzantine forms with baroque, neoclassical and Indian dress, white with Iziz orange and gilt. Whitewash cubes and loggias, the orange quarter's tenements, palazzi and jharokha fronts; the caravan trade (customs house, domed bourse, caravanserai, stoa, baths); the University (the great hall's clock tower, the cloister, the library rotunda, faculties, the observatory, colleges), the odeon, theatre and glasshouse; the temple of the Sun and the Giant, the Gate of the Passes, the governor's palace; real doors and glazed windows throughout, 64 buildings furnished inside (X cuts them away); with the Iziz Vernacular in mixed streets beside them.", 'new'),
     ('kit', 'resources', 'kits/resources/dist/resources.html', 'Resources',
      "Placeable resource nodes for any culture's mines: iron, copper, gold, tin, silver, rare earth, coal, sulphur, saltpetre and oil seeps, each in a low, medium and high grade. A mine works its nearest node, and the grade sets its yield (half, once, twice); oil needs a derrick."),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
      "The salamander riders of the crater drylands, in polychrome and appliqué: gers, a bell tent, goat-hair tents, Tibetan white appliqué tents and halls under prayer flags, the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished (C opens them); salamanders, goats, bison and cattle with their pens; chariots and carts; the Baelu, a fitted-stone fire redoubt."),
     ('kit', 'desert-nomads', 'kits/desert-nomads/dist/desert-nomads.html', 'Desert Nomads',
      "The camel nomads of the eastern desert and the abyss: black goat-hair tents with sadu valances, khaimas and square hair-cloth tents, white caidal tents, a Tuareg leather tent, the sheikh's tent and guest pavilion, the seer's and hookah tents, all austere outside and muted Moroccan within (C opens them); camels, horses and lizards under their saddles, a camel cart and litter, zaribas and folds.", 'new'),
+    ('kit', 'beast-riders', 'kits/beast-riders/dist/beast-riders.html', 'Beast Riders',
+     "The Beast Riders' buildings as a set of their own, in Girder's palette (tarred staves, shingle hips with verdigris ribs, red and gilt carved posts, beast-head finials): the mounts' raptor stable, great byre and rookery tower; the sedentary trades and larger houses with no electricity; the bands' camps of hide domes and barrel tents with their pens and trainers' yards; the Deep Root's rock-cut door, niches and storerooms; and Girder's and Mav's Refuge's own buildings ported in. Click to inspect, measure and cycle variants.", 'new'),
     ('kit', 'ash-nomads', 'kits/ash-nomads/dist/ash-nomads.html', 'Ash Nomads',
      "The beetle riders of the ash plains: black peaked tents of every kind under blue and saffron Nazca and Dunmer bands, the chieftain's five-spired tent, the assembly and mess hall under the gas giant emblem, the shaman's hut, smithy, chitin worker and supply tents, all furnished in chitin, banners and lanterns (C opens them); staghorn beetles, pack millipedes, millipede and runner pens.", 'new'),
     ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
@@ -189,6 +201,12 @@ ENTRIES = [
      'Terraced slab layers cantilevered off a sandstone cliff.', 'new'),
     ('arcology', 'arc-wheel', 'kits/ancients/dist/wheel.html', 'The Wheel',
      'A raised ring of parkland on eight towers.', 'new'),
+    ('arcology', 'arc-sanctum', 'kits/ancients/dist/sanctum.html', 'The Sanctum',
+     "The Eternal State's capital arcology: a six-storey hexagonal podium with a gate under a gold face in each side and a court behind each, a stalk, and on it a hexagonal solid two thirds as wide, its faces in balconies and great onyx lancets, light wells through it, a garden and towers on its roof.", 'new'),
+    ('arcology', 'arc-podium', 'kits/ancients/dist/podium.html', 'The Podium',
+     "A tapering drum 660 m high on a six-pointed star: three great arches and three small entrances, a staircase spiralling counterclockwise from arch to arch, thirty arches in all; as the Ancients built it and as the True Heirs keep it.", 'new'),
+    ('arcology', 'arc-kept', 'kits/ancients/dist/kept.html', 'Plymouth and Arcoindian I, kept',
+     'The two Ancient bodies as the Eternal State keeps them: glazing turned to lit alabaster in bronze tracery, the shells cleaned white with cyan strips alive.', 'new'),
 
     # The Krator Ancient Port (settlements/port): every target, showcase first.
     ('port', 'port-showcase', 'settlements/port/dist/showcase.html', 'Showcase',
@@ -267,6 +285,17 @@ ENTRIES = [
     ('biome', 'ringisles', 'biomes/ringisles/dist/ringisles.html', 'Ring Sea isles', "One island of the Ring Sea archipelago at the sea's level: zones by the scale model's climate classes (hypertropic jungle under the mountain, monsoon forest, tall-grass and abyssal savanna, hot steppe, salt steppe and a salt pan), the beach, a mangrove lagoon, the reef flat and tide pools, a geyser field, and a village's gardens of the islanders' crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane)."),
     ('biome', 'oidong', 'biomes/oidong/dist/oidong.html', 'The Oidong Valley', "The History Monks' country east of Xanadu, the safest ground on Krator and serene before anything else: a chilly high valley of mirror-still pools with giant lotuses, moss woods, cherry and haze blossom, a marble grove of swirled-pastel boles, chalice trees spilling water from their caps in the cataract's mist, bamboo, and pale flats the wind rakes round standing stones in threes, fives and sevens; the holy plants and the monks' physic grow wild (peyote in the gravel, sky poppies, snow lotus, bell-pod willows); Longsong's rock stands empty for the monastery.", 'new'),
     ('biome', 'geyser', 'biomes/geyser/dist/geyser.html', 'The geyser basin', "A basin in the Steampits cut into the hyperjungle: geysers erupting on their own clocks (Erupt buttons, a timetable), the Great Prism and its mat-banded run-off, mud pots and fumaroles, a dead forest drowned in silica, travertine pools stepping down to the sea; thermophile life.", 'new'),
+    ('biome', 'necanyons', 'biomes/necanyons/dist/necanyons.html', 'The north-eastern canyons', "The hyperjungle's transition to Korona's tepuis: red sandstone mesas, benches, buttes, towers and stacks rising out of the jungle (the Bench with its rim fins and its garden of spires and balanced rocks, the High Cap and its hoodoos), the forest filling the canyons between them and thinning northward, the tops bare and dry with pans and seeps; the first large carnivorous plants, their traps on their own cycles, none able to hold a person. Pinnacle Rock stands on the first of its mesas. The hour slider and N for the night; the creek and the rain pools on core/water.", 'new'),
+    ('biome', 'guilin', 'biomes/guilin/dist/guilin.html', 'Guilin, the South China karst', "Guilin's tower karst on the Li River and the Stone Forest of Shilin on one misty plain: lone limestone towers and a fengcong's crowd of peaks, each a sheer grey cliff streaked black and ochre under a dome of scrub forest and Masson pines; nine hundred grey blades and pinnacles in the stone forest round a lotus pond; paddies along the river in every stage from flooded to ripe, bamboo on the banks, banyans, camphor and osmanthus groves, pomelo orchards; towers going on into the mist. N for the night.", 'new'),
+    ('biome', 'nsemiarid', 'biomes/nsemiarid/dist/nsemiarid.html', 'Northern semiarid steppe', "The walking steppe of the north basin under the dams: plants that travel (crawlers, striders, bead chains) and a sky full of large wind-blown seeds, frill trees that shed their fins in a gale, helicopter trumpets, sail candelabras, mace heads and horn pipes, a stream on core/water, igneous and sedimentary rock; a high-wind setting that lifts the dust.", 'new'),
+    ('biome', 'dambasins', 'biomes/dambasins/dist/port.html', 'The dam basins: the old port', "An overlay on the steppe: the drained bed of one of the north basin's dam lakes, its old port high and dry on the 900 m line, grounded hulks heeled and buried by the three populations that sailed it, wrecks snapped and stranded across the bed, the flood's debris (twisted plating, half-buried containers, rotting I-beams), dust lifting off the bed in the wind.", 'new'),
+    ('biome', 'scablands', 'biomes/scablands/dist/coulee.html', 'The scablands: a coulee and its dry falls', "An overlay on the steppe: the ground the dam break's flood tore down, a coulee on the west breach with its stepped walls and a dry falls over a plunge-pool lake, potholes holding water with kolk lilies, quills and sedge, spray ferns in the seeps at the falls' foot, flood bars ribbed with giant current ripples, erratics of basalt and the dam's own concrete where the flood dropped them.", 'new'),
+    ('korona', 'korona', 'biomes/korona/dist/korona.html', 'Korona 1 · the tepui', "Korona, the north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne. Station 1, the tepui: a table of weathered quartzite beds over its gorge, the summit pavement with sphagnum bogs, lace pitchers, rainbow fans in its soil pockets, coin trees in its cracks and storm pods on the rim; hanging gardens and staghorns on every seep line, the Hum's contour carvings on the wall; great sundews at the walls' feet and the first man-eaters on the poor wet floor.", 'new'),
+    ('korona', 'korona-hollow', 'biomes/korona/dist/korona-hollow.html', 'Korona 2 · the pitcher hollow', "Station 2, the pitcher hollow: a closed hollow with a wet acid floor where every plant is a trap (the moor of blood bulbs, man-eater pitchers with their lures, coil tendrils, ground stars, snare flowers, sucking pools with trap pads, the cobra meadow at the slopes' foot), one safe path lined with cairns; punji pits, bear-trap plants and numb thorns among the rest, the traps going off on their cycles.", 'new'),
+    ('korona', 'korona-basin', 'biomes/korona/dist/korona-basin.html', 'Korona 3 · the fertile basin', "Station 3, the fertile basin: the Tiers' lake, a closed basin in the eastern rings, its shore meadows of reagents, the rainforest behind, one bog corner.", 'new'),
+    ('korona', 'korona-trench', 'biomes/korona/dist/korona-trench.html', 'Korona 4 · the trenches', "Station 4, the trenches: a ring ridge's crest between two arms of the salt lake, wet and alive on its windward face, bare desert on its lee: the rule that carnivory follows poor x wet x warm, read across one ridge.", 'new'),
+    ('korona', 'korona-gorge', 'biomes/korona/dist/korona-gorge.html', 'Korona 5 · the lee gorge', "Station 5, the lee gorge: a dry gorge between two ring walls in a ring's rain shadow, the eastern desert's flora (the sedesert kit read in place) under the walls, one spring and every trap in Korona round it.", 'new'),
+    ('korona', 'korona-hoar', 'biomes/korona/dist/korona-hoar.html', 'Korona 6 · the hoar table', "Station 6, the hoar table: a tepui summit above 3,500 m in the high cold country (the eastern highlands kit read in place): cushions and snow wool leaning toward the giant, the Mother Cushion over a knoll, permanent snow in the lee hollows, melt pools with butterwort lawns, a cold sundew and the frost tank, the seep lines frozen to icefalls, the ice tribes' road-marks and cairns under the rim.", 'new'),
 ]
 
 
@@ -276,17 +305,44 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # page above. One page joins its kind's section; several make a section of their own after it. Names come from the
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
-UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never to list, though they have pages; the isle
-# demo's site planner is a tool that saves through its own serve.py
+UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never to list,
+# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py. Pinnacle Rock
+# was listed once its town and its night were built (the owner, 2026-10-19)
 # Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
 # artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
 ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
-             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py'}
+             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py',
+             # Longsong: about 69 MB (its page, three packs and the dressed people's pieces, dist/kchar/), published as built
+             # from settlements/longsong/dist (gallery/README.md, "Longsong: its own artifact")
+             'settlements/longsong': 'settlements/longsong/build.py',
+             # the Eternian kit: about 24 MB (its page and two packs), published as built from kits/eternian/dist
+             # (gallery/README.md, "The Eternian kit: its own artifact")
+             'kits/eternian': 'kits/eternian/build.py'}
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
+# Builds published as their own artifact that still get a card in the parts (the owner, 2026-10-20): the card sorts
+# under its letter in its section like any other and opens the build's artifact (href) instead of a page in worlds/.
+# section, slug, name, blurb, the artifact, the build's files that make up its size (globs under the build folder)
+THRONE_URL = 'https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX'   # the Throne Stations (gallery/README.md)
+LINKED = {
+    'kits/eternian': ('kit', 'eternian', 'Eternian Kit',
+                      "The Eternal State of the north-western lowlands, where the True Heirs keep the Ancients' works: canal "
+                      "houses of every tier, the State's ministries and exam halls, the Clock, the hexagonal kilns, works and "
+                      "trades, the canals and the harbour, every building furnished, and closed-eyed faces in gold, bronze and "
+                      "lead. Its own artifact.",
+                      'https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu', ['dist/eternian.html', 'dist/eternian.tex.*.js']),
+    'settlements/longsong': ('world', 'longsong', 'Longsong',
+                             "The History Monks' monastery on its rock in the Oidong Valley: the White and Red Palaces "
+                             "furnished room by room, the ward, the farms, the forbidden depths and the Procrastinator turning "
+                             "under them; 1,494 people on their day (the nearest dressed and walking), day and night, and the "
+                             "festival with its great thangka. Its own artifact (its people's clothes and bodies need the room).",
+                             'https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY',
+                             ['dist/longsong.html', 'dist/longsong.tex.*.js', 'dist/kchar/*']),
+}
+
 MADE = {'settlements/girder/hero/dist/girder-hero.html':
         ['build_hero.py', '--slim', '--out', 'hero/dist/girder-hero.html']}
 
@@ -496,6 +552,26 @@ def main():
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(size / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
+    for d, (section, slug, name, blurb, url, files) in LINKED.items():   # a card for each, opening its own artifact
+        if d not in skip:
+            continue
+        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, d, g)))
+        items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb, 'mb': round(size / 1048576, 1),
+                      'source': d, 'tag': 'new', 'href': url})
+    if 'biomes/throne' in skip:   # the Throne's stations: a card each, in station order, opening the Throne's artifact
+        import build_throne
+        for n, pg, name, blurb in build_throne.stations():
+            src = os.path.join(ROOT, 'biomes/throne/dist', pg)
+            if not os.path.isfile(src):
+                continue
+            side = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', open(src, encoding='utf-8').read())
+            size = os.path.getsize(src) + sum(os.path.getsize(os.path.join(ROOT, 'biomes/throne/dist', f)) for f in side
+                                              if os.path.isfile(os.path.join(ROOT, 'biomes/throne/dist', f)))
+            items.append({'section': 'throne', 'slug': 'throne-' + os.path.splitext(pg)[0],
+                          'name': 'Throne %d · %s' % (n, name[:1].lower() + name[1:]), 'blurb': blurb,
+                          'mb': round(size / 1048576, 1), 'source': 'biomes/throne/dist/' + pg, 'tag': None,
+                          'href': THRONE_URL, 'order': n})
+    items.sort(key=lambda i: (i.get('order', 0), alpha(i['name'])))   # the stations keep their order in their section
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = (tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
                .replace('/*SECTIONS*/[]', json.dumps(sections, ensure_ascii=False).replace('</', '<\\/')))

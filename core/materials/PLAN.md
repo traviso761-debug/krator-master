@@ -553,6 +553,29 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-22 and processed, n semiarid** (`tools/textures/batches/nsemiarid-cards-2026-10-22.json` and
+`nsemiarid-bark-2026-10-22.json`, pasted by the owner as 1254 px WebP): `card.pappus.giant` and `card.stipa` (white silk on
+magenta, keyed with the new `spill: 'line'` of `tools/textures/cards.py`: every blended pixel taken as the white subject at
+some alpha), `card.fin.membrane`, `bark.saxaul` (tintable), and unasked `card.samara.maple` (nine maple keys, full colour).
+Bound in `biomes/nsemiarid/materials.json` (`leaf.pappus`, `leaf.stipa`, `leaf.fin`, `bark.gnarled`, `seed.samara`): the
+frill's fins and the helicopter trumpet's blades, the plumes, the feather grass, the saxaul and pistachio, the winged
+seeds in flight. Later the same day the last two (`nsemiarid-tumble-2026-10-22.json`, `nsemiarid-lakebed-2026-10-22.json`):
+`card.tumble` (Salsola tangles on magenta, the line key) and `ground.lakebed.shells` (a drained lake's cracked silt with its
+shells and strand ripples, tintable), bound as `leaf.tangle` and the bed's `ground.silt` layer. The kit owes no prompts.
+
+**Delivered 2026-10-19 and processed, second batch** (`tools/textures/batches/court-furniture-2026-10.json`, pasted by the
+owner): `patterns/court/painting-9` to `-24` (sixteen Izani paintings, cut from the two sheets `paintings-iziz-a` and `-b`),
+`frame-gilt` (a carved Deco frame moulding, seamless across), `vase-glaze-a` and `-b` (unrolled vase bands, seamless across),
+`marquetry`, `brocade`, `opus-sectile` (seamless both ways), `sun-carpet-a` and `-b` (two whole carpets, not tiled), full colour.
+Bound in Iziz's pack and laid on the Iziz court furniture by `settlements/iziz/src/95i-iziz-interiors.js` (COURT_DECALS overlays,
+COURT_TRI triplanar finishes on the court palette keys of `kits/catalog/krator-master-furniture-iziz.js`).
+
+**Delivered 2026-10-19 and processed** (`tools/textures/batches/court-art-2026-10.json`, pasted by the owner): the court's
+pictures, `patterns/court/books-a`, `books-b` (the book spines, a shelf row each, seamless across) and
+`patterns/court/painting-1` to `-8` (eight canvases cut from one sheet: the Talian subjects of the prompt), full colour.
+Bound in Iziz's pack (`courtBooksA/B`, `courtPaint1..8`) and laid on the Iziz court furniture by
+`settlements/iziz/src/95i-iziz-interiors.js` (COURT_DECALS).
+
 **Delivered 2026-10-05 and processed** (`tools/textures/batches/chatgpt-2026-10f-yuni.json`): `patterns/yuni/paintbw`,
 `paintcol` (cropped to 4 x 4 whole cells first), `relief`, and the three rows below. `patterns/yuni/mosaic` (full colour)
 is not needed: the game tints its mosaic per dome, so the neutral `mosaic.trencadis` serves. The rows, all reusable by

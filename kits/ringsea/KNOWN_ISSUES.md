@@ -1,5 +1,14 @@
 # Known issues
 
+## To do with the next big update of the kit
+
+- **Xanadu's sails to rose and the lotus** (the owner, 2026-10-20). Xanadu's culture pack in `core/sockets/80-cultures.js`
+  is now rose bordered in wine with gold bands, its symbol the white `lotus` (`core/sockets/38-symbols.js`), in place of
+  saffron with the wheel; the three Xanadu vessels (`62-rs-xanadu-swan.js`, `67-rs-xanadu-dragon.js`,
+  `79-rs-xanadu-carrack.js`: the `xanadu-wheel` sails) still paint the old saffron and wheel. Repaint them from the pack
+  (a copy of `SYMBOLS.lotus` beside `rsSymSun` in `41-rs-tex.js`, and `xanadu` in `RS_CULT`, so `build.py --vendor-check`
+  holds them to the pack, as it does Iziz's and Voth's), rebuild, and rebuild the builds that take the vessels.
+
 - Vendored drift from `settlements/reedlake/src`: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title. 2026-10-01: re-vendored after Reedlake's re-vendor from Highlands: `30-kit.js` verbatim (adds `KIT.meshes`), and `93-labels.js` is Reedlake's new one (with the label declutter) plus the same two vessel changes.
 - Walk mode stands on a 0.4 m heightfield of each vessel's flat surfaces and is stopped by anything in a 0.4 m-round
   body 0.5-1.7 m above its feet (masts, walls, rails, crew, cargo). It boards from the water over the side without a

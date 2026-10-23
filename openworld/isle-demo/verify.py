@@ -13,8 +13,20 @@ highway, no town tile). The isle's own checks:
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
   - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
+  - the towns (M7, 48t/88t-world-towns.js): Kautoa and Valapo planned here as the city page plans them (no error, their
+    census, every one of the city page's own plan checks, the sim declared); the world's land is each town's ground
+    inside its square (24 samples a town, to 5 cm); the flora and floor keep off every lot (WORLD.townW at each lot);
+  - the towns lived in (M7, 88c-world-life.js): the sim caught up to the world's clock and following it (the clock moved
+    15 minutes, the towns with it), the canoe line's sea route on water all the way (no longer than 1.8 times the
+    straight line), each carrier's vessel at its berth or on its route where its passage puts it, the citizens near the
+    camera where the sim poses them;
+  - the towns' HLOD (88t): every lot drawn exactly once round the camera, in full, baked or as massing (the negative
+    draws one twice);
+  - the export profile (moved here from the city page, M7): Kautoa's ceremonial centre (EXPORT_BOX, the town's frame) under
+    EXPORT_PROFILE, as godot/data/world-isle-kautoa is cut (the same records, ids and sim as the city page's case).
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
-coast hook switched off.
+coast hook switched off, a town's plan dropped, a town's ground read 50 m off, the keep-clear hook switched off, the
+straight line taken as the route, a vessel moved 500 m, a citizen moved 50 m, the clock read an hour off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
 the sky's capture (ATMOS.skylight: "null ... reading 'trim'"), the page stops at start: little-demo's old page did the
 same there (KNOWN_ISSUES.md); run it in the browser pane, or where this verify passes.
@@ -63,6 +75,25 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
  return R;}"""
 
 
+# M7: the towns planned and drawn here (48t-world-towns.js, 88t-world-towns.js)
+TOWNS_JS = r"""(neg)=>{const R=[],T=window._isleTowns,W=ISLE_TOWNS_W;
+ {const bad=[];if(!T)bad.push('no towns on the page');else{T.errors.forEach(e=>bad.push(String(e).slice(0,200)));if(W.stats.simError)bad.push('sim: '+W.stats.simError.slice(0,200));
+   const L=T.towns.filter(t=>!(neg==='plan'&&t.town==='Valapo'));for(const n of ['Kautoa','Valapo']){const t=L.find(q=>q.town===n);if(!t){bad.push('no '+n);continue;}
+    if(!(t.lots>0&&t.census&&t.census.buildings>0))bad.push(n+': '+t.lots+' lots');(t.checks||[]).forEach(c=>{if(!c.ok)bad.push(n+': '+c.name);});}}
+  R.push({name:'the towns planned here, as the city page plans them',ok:!bad.length,detail:bad.length?bad.join('; '):T.towns.map(t=>t.town+' '+t.lots+' lots, '+t.census.buildings+' buildings, '+(t.checks||[]).length+' plan checks').join('; ')+'; the sim declared'});}
+ {let worst=0,at=null,n=0;for(const P of W.plans){const G=P.G,F=G.frame,e=G.half-W.BAND-10,dx=neg==='ground'?50:0;
+   for(let i=0;i<24;i++){const a=i*2.399963,r=e*Math.sqrt((i+.5)/24),lx=Math.cos(a)*r,lz=Math.sin(a)*r,d=Math.abs(WORLD.H(F.x+lx,F.z+lz)-(G.h(lx+dx,lz)+F.sea));n++;if(d>worst){worst=d;at=P.town+' '+Math.round(lx)+','+Math.round(lz);}}}
+  R.push({name:"the world's land is each town's ground",ok:n>=48&&worst<0.05,detail:n+' samples, worst '+worst.toFixed(3)+' m at '+at});}
+ {const keep=WORLD.clearHook;if(neg==='clear')WORLD.clearHook=null;let n=0,off=0;
+  try{for(const P of W.plans){const F=P.G.frame;P.R.lots.forEach((L,i)=>{if(i%5)return;n++;if(!(WORLD.townW(F.x+L.x,F.z+L.z)>0))off++;});}}finally{WORLD.clearHook=keep;}
+  R.push({name:"the flora and floor keep off the towns' lots",ok:n>100&&!off,detail:off+' of '+n+' lots (every fifth) open to the flora'});}
+ return R;}"""
+# the export profile, moved here from the city page (M7; core/export/README.md, "Profiles"): Kautoa's ceremonial centre,
+# in the town's frame, as godot/data/world-isle-kautoa is cut (settlements/isle-demo/verify.py keeps it as a report)
+EXPORT_BOX = [320, 780, 820, 1220]
+EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'buckets', 'textures', 'fixtures', 'stage', 'interiors?', 'furniture?']
+
+
 async def run(a):
     from playwright.async_api import async_playwright
     folder, name = os.path.split(os.path.abspath(a.html))
@@ -105,6 +136,43 @@ async def run(a):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)
+                print('--- the towns (M7) ---')
+                for r in await pg.evaluate(TOWNS_JS, None):
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                    if not r['ok']: fails.append(r['name'])
+                for neg, nm in (('plan', 'the towns planned here, as the city page plans them'), ('ground', "the world's land is each town's ground"),
+                                ('clear', "the flora and floor keep off the towns' lots")):
+                    r = [x for x in await pg.evaluate(TOWNS_JS, neg) if x['name'] == nm][0]
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
+                    if r['ok']: fails.append('negative ' + neg)
+                # the export: the camera over the box first, so the stage reads the terrain there
+                await pg.evaluate("(()=>{const F=ISLE.cur.G.frame;CAM.setView(F.x+570-450,F.z+1000-550,260,0,-.3);CAM.lookAt(F.x+570,WORLD.H(F.x+570,F.z+1000),F.z+1000);})()")
+                await pg.evaluate('_api.settle(240000)')
+                pok, lines = await harness.check_profile(pg, EXPORT_BOX, EXPORT_PROFILE)
+                print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : %s, box %s, %s' % (await pg.evaluate('ISLE.cur.town'), EXPORT_BOX, ', '.join(EXPORT_PROFILE)))
+                for ln in lines: print('        ' + ln)
+                if not pok: fails.append('export-profile')
+                # the towns' HLOD (88t): the camera's rings rebuilt and every piece baked first
+                await pg.evaluate("(()=>{let last=-1,same=0,n=0;while(same<4&&n<4000){for(const f of HOST.TICKS)f(.016,performance.now()/1000);n++;const b=_isleTowns.hlod.bakes;if(b===last)same++;else same=0;last=b;}})()")
+                r = await pg.evaluate('_isleTowns.hlodCheck()')
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'the towns drawn once each, full, baked or massing : ' + r['detail'])
+                if not r['ok']: fails.append('hlod')
+                rn = await pg.evaluate('_isleTowns.hlodCheck({twice:true})')
+                print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (hlod) : ' + rn['detail'])
+                if rn['ok']: fails.append('negative hlod')
+                # the towns lived in (88c): the sim caught up first, the citizens chosen round the camera set above
+                print('--- the towns lived in (M7) ---')
+                await pg.evaluate('_isleLife.follow(Infinity)')
+                for key, nm, neg in (('route', "the canoe line's sea route is on water", '{straight:true}'),
+                                     ('canoes', 'each carrier drawn at its berth or on its route', '{shift:true}'),
+                                     ('citizens', 'the citizens drawn where the sim poses them', '{shift:true}'),
+                                     ('clock', "the towns follow the world's clock", '{off:true}')):
+                    r = await pg.evaluate('_isleLife.checks.%s()' % key)
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + nm + ' : ' + r['detail'])
+                    if not r['ok']: fails.append(nm)
+                    rn = await pg.evaluate('_isleLife.checks.%s(%s)' % (key, neg))
+                    print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (%s) : ' % key + rn['detail'])
+                    if rn['ok']: fails.append('negative ' + key)
             for v in [int(t) for t in a.views.split(',') if t.strip()]:
                 await pg.evaluate('_api.go(%d)' % v)
                 s = await pg.evaluate('_api.settle(240000)')

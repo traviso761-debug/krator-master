@@ -370,7 +370,7 @@ THRONE.buildNewFlora=function(R,q){reseed(660047);q=q==null?1:q;R=R==null?2500:R
   BIO.grid(15,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const Z=zones(x,z);return (Z.gully*.3+Z.sky*.4+Z.marsh*.1)*Z.riftlife*q;},
    (x,y,z)=>{if(blocked(x,z,.8)||BIO.depth(x,z)>0)return;const near=BIO.lodD(x,z)<L.floor[0];
     around(x,z,near?ri(1,3):1,.8,2.2,(px,pz)=>{if(BIO.depth(px,pz)>0)return;const py=Y(px,pz),s=rr(.4,1.25);
-     BIO.put('brain',[px,py-s*.18,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s,s*rr(1.1,1.6),s],vary(C(pick(PAL.mossdome)),.02,.06,.06));st.domes++;
+     BIO.put('mossdome',[px,py-s*.18,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s,s*rr(1.1,1.6),s],vary(C(pick(PAL.mossdome)),.02,.06,.06));st.domes++;
      if(near&&rng()<.35){const gx=BIO.terrainH(px+1,pz)-BIO.terrainH(px-1,pz),gz=BIO.terrainH(px,pz+1)-BIO.terrainH(px,pz-1),da=Math.atan2(-gz,-gx);
       for(let k=0,n=ri(4,6);k<n;k++){const a=da+rr(-.9,.9),rx=px+Math.cos(a)*s*.9,rz=pz+Math.sin(a)*s*.9,l=rr(.25,.7);
        BIO.beam('rod',[rx,py+s*.35,rz],[rx+Math.cos(a)*.08,py+s*.35-l,rz+Math.sin(a)*.08],.012,.006,vary(C(0xd8d0c0),.02,.04,.05));}}});

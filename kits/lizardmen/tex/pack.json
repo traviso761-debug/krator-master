@@ -1121,6 +1121,66 @@
     "sourceMean": 0.3264
    }
   },
+  "marine": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "marine.albedo.webp",
+    "normalMap": "marine.normal.webp",
+    "roughnessMap": "marine.rough.webp"
+   },
+   "lib": "skin.marine",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "858104ac6befe230828cabd6b2ca8f5ff9d242ff",
+    "normal": "b8c84fe6b460813570c7935e83c9588f7ecb58cb",
+    "roughness": "5efcc52c3d2834c343a9e16e947102160563cb67"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.74,
+    "sourceMean": 0.5609
+   }
+  },
+  "marineB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "marineB.albedo.webp",
+    "normalMap": "marineB.normal.webp",
+    "roughnessMap": "marineB.rough.webp"
+   },
+   "lib": "skin.marine.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7ebd52e806af602c11fbb3327166c486d5818f38",
+    "normal": "84541d5f1b46ef80ccde0a2a7bb0ab710afcfd77",
+    "roughness": "3d5039641b5b0a19b2acecbabbcdc43ed63e8610"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.74,
+    "sourceMean": 0.6245
+   }
+  },
   "mat": {
    "breakup": null,
    "card": false,
@@ -1241,6 +1301,36 @@
     "sourceMean": 0.471
    }
   },
+  "ropeT": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ropeT.albedo.webp",
+    "normalMap": "ropeT.normal.webp",
+    "roughnessMap": "ropeT.rough.webp"
+   },
+   "lib": "fibre.rope.twist",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f0b36aa20f8a0ab904f391e4162dbfee85c1365b",
+    "normal": "4cc981047629757f43256cc00ff9f3f3f63192e9",
+    "roughness": "c031f9fa618bec9f21d3ca8afc9ccdfcbc637caa"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.4,
+    "mean": 0.72,
+    "sourceMean": 0.4939
+   }
+  },
   "scale": {
    "breakup": null,
    "card": false,
@@ -1269,6 +1359,96 @@
     "keep": 0.4,
     "mean": 0.66,
     "sourceMean": 0.4103
+   }
+  },
+  "scaleB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "scaleB.albedo.webp",
+    "normalMap": "scaleB.normal.webp",
+    "roughnessMap": "scaleB.rough.webp"
+   },
+   "lib": "organic.scale.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "87437ce07cd2d339c8fbf224b66f343bf69c6614",
+    "normal": "8b1d96abdfc7b724e03a68c0c84dd209489cb084",
+    "roughness": "f622d8904668dc2499eed290c5fd389d32e663ef"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.4,
+    "mean": 0.66,
+    "sourceMean": 0.4282
+   }
+  },
+  "scaleOlive": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "scaleOlive.albedo.webp",
+    "normalMap": "scaleOlive.normal.webp",
+    "roughnessMap": "scaleOlive.rough.webp"
+   },
+   "lib": "organic.scale.olive",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2b178281bf73ee0b29d372381dadbc7bc9eaaa8b",
+    "normal": "3b5be1cab2c6e76ea353de7bc1b68749a75812b7",
+    "roughness": "16e4ff2d5c1c4509b6bbef740a66fb48979eb751"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.4,
+    "mean": 0.66,
+    "sourceMean": 0.4439
+   }
+  },
+  "scaleOliveB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "scaleOliveB.albedo.webp",
+    "normalMap": "scaleOliveB.normal.webp",
+    "roughnessMap": "scaleOliveB.rough.webp"
+   },
+   "lib": "organic.scale.olive.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "bdf0abcd3b7c30ce0739d3a2670a08a050db6326",
+    "normal": "494c711994adb46ae5fa2ec905e1df203c0beab4",
+    "roughness": "e15fbfd61649daa058a24801b756e9a8b254204e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.4,
+    "mean": 0.66,
+    "sourceMean": 0.4594
    }
   },
   "shingle": {

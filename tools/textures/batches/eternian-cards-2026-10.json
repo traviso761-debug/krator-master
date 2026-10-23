@@ -1,0 +1,30 @@
+[
+ {
+  "src": "eternian_screen-pierced.webp",
+  "out": "core/materials/patterns/eternian/screen-pierced",
+  "record": {
+   "id": "eternian/screen-pierced", "kind": "card", "family": "metal", "colour": "#ffffff", "roughness": 0.4, "metal": 0.5, "scale": [2, 2], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/screen-pierced` (a pierced cast-bronze Deco fretwork screen on magenta)",
+    "reuse": "pierced bronze screens where a wall must breathe; the Sanctum's sealed bays. A keyed surface that tiles. Take A of two (.b is an alternate)"
+   }
+  },
+  "options": {"key": "#ff00ff", "key_lo": 45, "key_hi": 120, "spill": "edge", "choke": 1, "anchor": "none", "size": 1024}
+ },
+ {
+  "src": "eternian_screen-pierced.b.webp",
+  "out": "core/materials/patterns/eternian/screen-pierced.b",
+  "record": {
+   "id": "eternian/screen-pierced.b", "kind": "card", "family": "metal", "colour": "#ffffff", "roughness": 0.4, "metal": 0.5, "scale": [2, 2], "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/screen-pierced`, take B",
+    "reuse": "an alternate of eternian/screen-pierced, picked per instance for variety"
+   }
+  },
+  "options": {"key": "#ff00ff", "key_lo": 45, "key_hi": 120, "spill": "edge", "choke": 1, "anchor": "none", "size": 1024}
+ }
+]

@@ -28,3 +28,18 @@ Open items start with `- [ ]` (build.py prints them after every build).
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
 - [x] **The Port kit takes the material library** (2026-10-06): containers (pkCont, metal.container) and paving (pkPave, concrete.slab), at
       their metre UVs (tiles 3 and 16 in the bind). The paving set's joints read fainter than the procedural 4 m grid; pkContR and pkPaveR stay procedural.
+
+## Voth census trades (2026-10-19)
+
+The table `PORT_TRADES` (`src/89x-port-trades.js`) says which building carries each of the Voth city's 44 trades (`tools/trades_census.json`); `verify.py --assert` checks it (`voth-trades`). 13 carried, 1 partly, 6 gaps, 24 na of 44.
+The kit's segments and vessels house only the harbour rows (the town trades are `na`: Hook's town buildings carry them).
+
+Missing buildings (gaps) and partly carried trades:
+
+- [ ] innkeepers and grooms: a travellers' hostel by the passenger terminal (tmPass)
+- [ ] town guard: a watch house on the quays (the Port Authority's gatehouses exist only in its reclaimed state)
+- [ ] shopkeepers and assistants: a chandlery or harbour shop
+- [ ] innkeepers and servers: a harbour tavern or seamen's mess
+- [ ] power-house stokers and engineers: a port power house or substation (the tank farm holds fuel only)
+- [ ] ferrymen: a ferry landing (hbHaven has a small landing pontoon, tmPass the liner berth; neither runs a ferry)
+- [ ] granary keepers and millers: no mill: the board-formed silos with their elevator tower store bulk goods only

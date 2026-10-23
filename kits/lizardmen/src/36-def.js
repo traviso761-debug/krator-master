@@ -13,9 +13,12 @@
 // types, its world position and size, its parent (a tent inside the Baelu names the Baelu), before it is drawn.
 const DEFS={};
 function defBuilding(d){if(DEFS[d.key])reportErr('duplicate def '+d.key);d.cls=d.cls||'building';d.tags=Object.assign({culture:KIT.culture},d.tags||{});DEFS[d.key]=d;return d;}
-const REG=[];let CURKEY=null,CURREC=null,DOORS_CUR=null;
-/* door(x,y,z,yaw,w): the builder declares a doorway (local frame; yaw: the way out, 0 = +z). It draws nothing. */
-function door(x,y,z,yaw,w){if(!DOORS_CUR)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);const e=CM.elements;DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,yaw:Math.atan2(e[8],e[10])+(yaw||0),w:w||1});}
+const REG=[];let CURKEY=null,CURREC=null,DOORS_CUR=null,WINDOWS_CUR=null;
+/* door(x,y,z,yaw,w,h): the builder declares a doorway (local frame; yaw: the way out, 0 = +z; h its height when known). It
+   draws nothing. windowAt(x,y,z,yaw,w,h,sill): a window (its bottom centre on the outer face; sill: its bottom above the
+   wall's foot), recorded the same way (2026-10-20: the city page exports both as fixtures, settlements/isle-demo 62) */
+function door(x,y,z,yaw,w,h){if(!DOORS_CUR)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);const e=CM.elements;const r={wx:p.x,wy:p.y,wz:p.z,yaw:Math.atan2(e[8],e[10])+(yaw||0),w:w||1};if(h)r.h=h;DOORS_CUR.push(r);}
+function windowAt(x,y,z,yaw,w,h,sill){if(!WINDOWS_CUR)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);const e=CM.elements;WINDOWS_CUR.push({wx:p.x,wy:p.y,wz:p.z,yaw:Math.atan2(e[8],e[10])+(yaw||0),w:w||.6,h:h||.6,sill:sill||0});}
 function svFront(d,doors,org,wry){
  if(d.front){const c=Math.cos(wry),s=Math.sin(wry),f=d.front;return {source:'declared',local:{x:f.x||0,z:f.z===undefined?d.d/2:f.z,yaw:f.yaw||0},world:{x:org.x+(f.x||0)*c+(f.z===undefined?d.d/2:f.z)*s,y:org.y,z:org.z-(f.x||0)*s+(f.z===undefined?d.d/2:f.z)*c,yaw:wry+(f.yaw||0)}};}
  const L=doors.map(q=>({q,rel:Math.cos(q.yaw-wry)})).filter(o=>o.q.w>=.6).sort((a,b)=>(b.rel>.6)-(a.rel>.6)||b.q.w-a.q.w);
@@ -27,7 +30,7 @@ let SVTAGS=null;
 function svTagsReset(){SVTAGS=KTAGS.page=KTAGS.create({build:KIT.id});}
 function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
  const y=o.y!==undefined?o.y:terrainH(x,z);
- const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,cut:CUTC};
+ const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,windows:WINDOWS_CUR,cut:CUTC};
  pushM(TF(x,y,z,ry||0));const org=new THREE.Vector3().applyMatrix4(CM);const e=CM.elements,wry=Math.atan2(e[8],e[10]);
  const rec={key,name:o.name||d.name,cls:d.cls,kind:d.kind||null,tags:Object.assign({},d.tags,o.tags||{}),x:org.x,y:org.y,z:org.z,ry:wry,
   decl:{w:d.w,d:d.d,h:d.h,budget:d.budget},v:o.v|0,parent:CURREC,children:[],furniture:[],tid:null};
@@ -36,17 +39,18 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  if(SVTAGS&&!PLACE_DRY&&d.cls!=='furniture'){const tr={'class':d.cls,kind:d.kind||d.key,key:d.key,name:rec.name,at:[org.x,org.y,org.z],ry:wry,size:[d.w,d.d,d.h],
    tags:rec.tags,note:d.note||'',frag:d.frag||KIT.frag};
   const t=CURREC&&CURREC.tid?SVTAGS.child(CURREC.tid,tr):SVTAGS.add(tr);rec.tid=t.id;}
- CURKEY=key;CURREC=rec;DOORS_CUR=[];if(keep.rec)keep.rec.children.push(rec);
+ CURKEY=key;CURREC=rec;DOORS_CUR=[];WINDOWS_CUR=[];if(keep.rec)keep.rec.children.push(rec);
  if(d.cut)CUTC=[org.x,org.z,org.y,1];
  const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
  /* the gable sheets' two takes (owner, 2026-10-14: "alternative versions for variety"): a building takes one or the other by
     a hash of its seed, variant and place, drawing nothing from the stream (30-geo.js emit swaps the key) */
  const keepAlt=GABLE_ALT;GABLE_ALT=((Math.imul(d.seed|0,2654435761)^Math.imul((o.v|0)+1,40503)^Math.imul(Math.round(org.x*4),73856093)^Math.imul(Math.round(org.z*4),19349663))>>>7)&1;
+ const keepMat=MAT_ALT;MAT_ALT=KMAT.mode==='lib'?(KRAND.hash(0x15a7,d.seed|0,o.v|0,Math.round(org.x*4),Math.round(org.z*4))>>>1)|1:0;
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
- sbEnd();popM();GABLE_ALT=keepAlt;const doors=DOORS_CUR;
- CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;
- rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=svFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
+ sbEnd();popM();GABLE_ALT=keepAlt;MAT_ALT=keepMat;const doors=DOORS_CUR,windows=WINDOWS_CUR;
+ CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;WINDOWS_CUR=keep.windows;CUTC=keep.cut;
+ rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=svFront(d,doors,org,wry);rec.doorCount=doors.length;rec.doors=doors;rec.windows=windows;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  if(!PLACE_DRY)REG.push(rec);return rec;}
 let PLACE_DRY=0;
 /* the life layer's data for what the kit places alive (README.md, "Life/simulation layer"): a salamander is a creature

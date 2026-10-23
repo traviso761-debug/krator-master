@@ -48,7 +48,12 @@ export function stockyards(api){
     const tex=new THREE.CanvasTexture(c);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
     const uv=[];for(let i=0;i<bpos.length/3;i++)uv.push((i%2)*1.2,Math.floor(i/2)*0.6);
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(bpos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(bidx);geo.computeVertexNormals();
-    const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({map:tex,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}));m.receiveShadow=true;m.userData.noFingerprint=true;m.name='brick streets';scene.add(m);}
+    // a city with real surfaces (C.surfaces.sets.pavers, the engine's surface()): the brick pavers' own photograph laid on
+    // the street at its own colour (its mean as the material's colour, keep 1), instead of the drawn courses
+    const PV=api.surface&&api.C.surfaces&&api.C.surfaces.sets&&api.C.surfaces.sets.pavers;
+    const bm=PV?api.surface(new THREE.MeshLambertMaterial({color:new THREE.Color(...PV.mean),polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}),'flat',['pavers'])
+      :new THREE.MeshLambertMaterial({map:tex,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12});
+    const m=new THREE.Mesh(geo,bm);m.receiveShadow=true;m.userData.noFingerprint=true;m.name='brick streets';scene.add(m);}
   // ---- the pens ----
   if(K.pens){const ring=K.pens.poly.map(p=>P(p)),[cw,cd]=K.pens.cell||[9,14],ang=(K.pens.turn||0)*Math.PI/180,ca=Math.cos(ang),sa=Math.sin(ang);
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of ring){const u=x*ca+z*sa,v=-x*sa+z*ca;x0=Math.min(x0,u);x1=Math.max(x1,u);z0=Math.min(z0,v);z1=Math.max(z1,v);}

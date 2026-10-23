@@ -71,6 +71,17 @@ PACK_EXCL = {'ringisles': [f for f in _fams('ringisles') if f.startswith('ground
 def pack_fragment(kit):
     return _mp.fragment(os.path.join(ROOT, 'biomes', kit), kit, exclude=PACK_EXCL[kit], side=SIDE)
 LDF = lambda *fs: [('ld', f) for f in fs]
+# the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
+ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',
+                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
+                '46-isle-stocks.js', '47-isle-trade.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+def _isle_build():
+    """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
+    import importlib.util
+    if '_isle_city_build' not in globals():
+        spec = importlib.util.spec_from_file_location('_isle_city_build', os.path.join(ROOT, 'settlements', 'isle-demo', 'build.py'))
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); globals()['_isle_city_build'] = m
+    return globals()['_isle_city_build']
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
@@ -97,9 +108,21 @@ ORDER = (
        ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
+    # M7 (settlements/isle-demo/PLAN.md section 7): the two towns planned live here, as the city page plans them: the city
+    # page's data (the kits' boxes, the census trades, the site file), the Iziz Vernacular and its pack, core/city (KCITY),
+    # the Ring Sea vessels, core/simulation, core/export (+ core/biome's stage), the city page's [G data] half (src/15-50),
+    # then this world's towns (48t: planned on the world's ground, a registry each in its frame, the ground hook);
+    # 88t draws them with the city page's 60 and exports one town with its 62 (both read in place as factories)
+    # 88c runs the sim on the world's clock and draws its citizens (the city page's 59 for their colours) and the canoe line
+    + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('bundle', 'ringsea')]
+    + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
+    + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
+       ('core/biome', '44-core-stage.js')]
+    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
-    + [('src', '88h-world-hamlets.js'), ('src', '89-world-geysers.js')]
+    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'),
+       ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
 # the page's own words in the world's head (src/world/00-head.html) (its title and caption), replaced: each must be found exactly once
@@ -146,11 +169,39 @@ def main():
             out.append('\n// ==================== the library pack: kits/%s\n' % f)
             out.append(_mp.fragment(os.path.join(ROOT, 'kits', f), f, side=SIDE))
             continue
-        if where == 'bundle':    # settlements/isle-demo/bundles.py: ISK (the Islanders), CAT (the Beast Riders' buildings)
+        if where == 'isle':      # the city page's data fragments (settlements/isle-demo/build.py)
+            B = _isle_build()
+            out.append('\n// ==================== the city page\'s data (settlements/isle-demo/build.py: dims, trades, site)\n')
+            out.append(B.dims_fragment() + B.trades_fragment() + B.site_fragment())
+            continue
+        if where == 'izpack':    # the Iziz pack as the city page takes it (its Vernacular's families, no fauna, no city)
+            izp = os.path.join(ROOT, 'settlements', 'iziz')
+            fams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+            out.append('\n// ==================== the library pack: settlements/iziz\n')
+            out.append(_mp.fragment(izp, 'iziz', exclude=[k for k in fams if k.startswith(('fauna', 'city'))], side=SIDE))
+            continue
+        if where == 'isledraw':  # the city page's drawing (60-isle-draw.js), once a town: a factory over the town's own group
+            src = open(os.path.join(ROOT, 'settlements', 'isle-demo', 'src', f), encoding='utf8').read()
+            out.append('\n// ==================== settlements/isle-demo/src/%s, as a factory (88t-world-towns.js calls it once a town)\n' % f)
+            out.append('var ISLE_DRAW_FACTORY = function (scene) {\n' + src + '\nreturn DRAW;\n};\n')
+            continue
+        if where == 'isleexport':   # the city page's export contributors (62-isle-export-scene.js), as a factory over a town's group and DRAW
+            src = open(os.path.join(ROOT, 'settlements', 'isle-demo', 'src', f), encoding='utf8').read()
+            out.append('\n// ==================== settlements/isle-demo/src/%s, as a factory (88t-world-towns.js calls it for the town it exports)\n' % f)
+            out.append('var ISLE_EXPORT_FACTORY = function (scene, DRAW) {\n' + src + '\n};\n')
+            continue
+        if where == 'bundle':    # settlements/isle-demo/bundles.py: ISK (the Islanders), CAT (the Beast Riders' buildings), IZV, KCITY, RINGSEA
             if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
                 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
             import bundles as _bd
-            js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE)
+            if f == 'kcity':
+                js = _bd.kcity_bundle()
+            elif f == 'ringsea':
+                js, _ = _bd.ringsea_fragment()
+            elif f == 'izv':
+                js, _ = _bd.izv_bundle()
+            else:
+                js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE)
             out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
             out.append(js)
             continue

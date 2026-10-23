@@ -3,6 +3,8 @@
 
   blender -b --python tools/mpfb_build.py -- <male|female> <export dir>    # the Blender half (needs MPFB2 + asset packs)
   python3 tools/make_mpfb.py <male|female> <export dir>                      # this half
+  python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>        # rederive what the GLBs alone decide
+                                                                             # (refresh_hides), with no Blender
 
 The Blender half builds an MPFB human on the Mixamo rig with a skin, loads library clothes, hair, brows and lashes
 (MPFB fits them to the body and interpolates their weights from it), and exports the base and each item as its own
@@ -23,6 +25,7 @@ from scipy.spatial import cKDTree
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decimate
 import giant
+import layers
 import glbio
 import mods
 import make_pieces as mp
@@ -101,7 +104,7 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
     skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). cloth: (item id, its
     make_garments.py chain spec): bone chains are added (cloth_bones), and what the kit needs of them is put in
@@ -153,9 +156,11 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=Non
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     if skirt is not None:
         skirt_weights(j, b, skirt)
+    if head_above is not None:
+        head_weights(j, b, head_above)
     cloth_blobs = {}
     if cloth is not None:
-        cloth['out'] = cloth_bones(j, b, cloth['id'], cloth['spec'], cloth_blobs)
+        cloth['out'] = cloth_bones(j, b, cloth['id'], cloth['spec'], cloth_blobs, body)
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
     blobs, holes, means, soft = dict(cloth_blobs), {}, {}, {}
     eye_imgs = set()
@@ -270,6 +275,26 @@ def body_primitive(path):
     raise SystemExit('make_mpfb.py: no body primitive in ' + path)
 
 
+def body_contact(path):
+    """for cloth_bones: the base skin's points (a KD tree) and, per point, how much of its weight is on the legs and
+    how much on the arms"""
+    j, b = glbio.read_glb(open(path, 'rb').read())
+    node = next(n for n in j['nodes'] if 'mesh' in n and 'skin' in n)
+    names = [j['nodes'][k].get('name', '').split(':')[-1] for k in j['skins'][node['skin']]['joints']]
+    leg = np.array([any(x in n for x in ('UpLeg', 'Leg', 'Foot', 'Toe')) for n in names])
+    arm = np.array([('Arm' in n or 'Hand' in n) for n in names])
+    for m in j['meshes']:
+        for p in m['primitives']:
+            if 'material' in p and j['materials'][p['material']]['name'].endswith('.body'):
+                at = p['attributes']
+                P = glbio.accessor(j, b, at['POSITION']).astype(float)
+                JJ = glbio.accessor(j, b, at['JOINTS_0']).astype(int)
+                WW = glbio.accessor(j, b, at['WEIGHTS_0']).astype(float)
+                tot = np.maximum(WW.sum(1), 1e-9)
+                return cKDTree(P), (WW * leg[JJ]).sum(1) / tot, (WW * arm[JJ]).sum(1) / tot
+    raise SystemExit('make_mpfb.py: no body primitive in ' + path)
+
+
 def all_triangles(path):
     """positions and triangles of every primitive of a GLB, as one mesh"""
     j, b = glbio.read_glb(open(path, 'rb').read())
@@ -343,6 +368,61 @@ def skirt_weights(j, b, y0, band=0.12):
             b[ow:ow + WW.nbytes] = WW.tobytes()
 
 
+def head_weights(j, b, y0):
+    """headgear moves with the head: every vertex above height y0 (glTF y, a little above the neck joint) takes its
+    weight from the Head joint alone. MakeHuman weights a garment from the skin nearest it, so a wide brim, a wing or
+    a flap that reaches down beside the neck took the shoulders' and arms' weights and bent as they moved (the Yuni
+    hat's brim, the Beast Rider chieftess's wings: a third of their weight on the arms). A piece of it that reaches no
+    lower than the neck joint (y0 - 6 cm) goes to the Head whole, though part of it is under y0: the chieftess's
+    wing tips and the bead strands hanging from them came down to 5 cm under it and trailed out to the shoulders as
+    long streamers. A hood's cowl (8 cm under) and a headband's tails (18 cm, on chains) keep following the neck and
+    shoulders"""
+    for node in j['nodes']:
+        if 'mesh' not in node or 'skin' not in node:
+            continue
+        names = [j['nodes'][k].get('name', '').split(':')[-1] for k in j['skins'][node['skin']]['joints']]
+        if 'Head' not in names:
+            continue
+        hj = names.index('Head')
+        for prim in j['meshes'][node['mesh']]['primitives']:
+            at = prim['attributes']
+            P = glbio.accessor(j, bytes(b), at['POSITION'])
+            aj, aw = j['accessors'][at['JOINTS_0']], j['accessors'][at['WEIGHTS_0']]
+            JJ = glbio.accessor(j, bytes(b), at['JOINTS_0']).copy()
+            WW = glbio.accessor(j, bytes(b), at['WEIGHTS_0']).copy()
+            dw = glbio.CT[aw['componentType']]
+            if aw.get('normalized'):                    # the accessor gave them as fractions: back to the stored integers
+                WW = np.round(WW * np.iinfo(dw).max).astype(dw)
+            up = P[:, 1] > y0
+            if 'indices' in prim:                       # pieces: the vertices welded by position, joined by faces
+                I = glbio.accessor(j, bytes(b), prim['indices']).reshape(-1, 3)
+                _, wid = np.unique(np.round(P, 4), axis=0, return_inverse=True)
+                wid = wid.ravel(); n = int(wid.max()) + 1
+                lab = np.arange(n)
+                def root(x):
+                    while lab[x] != x:
+                        lab[x] = lab[lab[x]]; x = lab[x]
+                    return x
+                for a_, b_ in np.r_[wid[I[:, [0, 1]]], wid[I[:, [1, 2]]]]:
+                    ra, rb = root(a_), root(b_)
+                    if ra != rb:
+                        lab[ra] = rb
+                comp = np.array([root(x) for x in range(n)])[wid]
+                low = np.full(n, np.inf); np.minimum.at(low, comp, P[:, 1])
+                up |= low[comp] > y0 - 0.06
+            if not up.any():
+                continue
+            one = np.iinfo(WW.dtype).max if np.issubdtype(WW.dtype, np.integer) else 1.0
+            JJ[up] = 0; WW[up] = 0
+            JJ[up, 0] = hj; WW[up, 0] = one
+            for acc, arr in ((aj, JJ), (aw, WW)):
+                bv = j['bufferViews'][acc['bufferView']]
+                if bv.get('byteStride') and bv['byteStride'] != arr.itemsize * 4:
+                    raise SystemExit('make_mpfb.py head_weights: interleaved attributes are not handled')
+                off = bv.get('byteOffset', 0) + acc.get('byteOffset', 0)
+                b[off:off + arr.nbytes] = arr.astype(glbio.CT[acc['componentType']]).tobytes()
+
+
 def take_weights(JJ, WW, gi, src, f):
     """vertex gi's weights moved toward vertex src's by f (the four heaviest kept, normalized)"""
     mix = {}
@@ -368,7 +448,13 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
     layer = [pt.get('layer', 0) for pt in spec['parts']]
     part = np.array([where.get(int(v), (-1,))[0] for v in V])
     arm = [any(s in n for s in ('Arm', 'Hand')) for n in names]
-    free = [gi for gi in np.nonzero(part == -1)[0]
+    # what does not hang: a part without chains, and a hanging part's rows above where its chains start (a tunic's
+    # body, which hangs below the waist only: counted as hanging whole, the trader's tunic kept the shoulders' weights
+    # under the mantle and came out through it at the shoulder blades as the posture drew them back)
+    top = {pi: min((ch['rows'][0] for ch in pt['chains']), default=1 << 30) for pi, pt in enumerate(spec['parts'])}
+    still = np.array([part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]])
+                      for gi in range(len(V))])
+    free = [gi for gi in np.nonzero(still)[0]
             if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm) and arm[int(jj)]) < 0.5]
     rad = np.hypot(P[:, 0], P[:, 2])
     for po in [q for q in range(len(layer)) if layer[q] == 2]:
@@ -397,13 +483,22 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
                     take_weights(JJ, WW, gi, O[k], f)
 
 
-def cloth_bones(j, b, item, spec, blobs):
+# metres off the skin: cloth nearer than the first keeps the body's weights, past the second the chains'. Wide: a cloak
+# hung plumb from the shoulder blades stands 4-6 cm off the small of the back, and on chains held by the chest it
+# swung into the back as the idle leaned forward; above the seat cloth now moves with the body, below it swings
+CONTACT = (0.04, 0.09)
+
+
+def cloth_bones(j, b, item, spec, blobs, body=None):
     """the garment's hanging parts as bone chains (spec: make_garments.py's, by the garment's own vertex order, which
     the export keeps as _VIDX). Per chain a joint per bone, named 'cloth:<item>:<chain>:<bone>', a child of the spine
     joint it hangs from, its inverse bind T(-p) at its anchor vertex; the vertices below each chain's top weighted to
     the two chains either side of them (by column) and the bone of their stretch (by row), faded in over two rows from
     the top. Returns the kit entry: per chain its parent joint and anchor vertices (glTF indices, so the page and Godot
-    can read the morphed rest from their own meshes), per part its chains and whether they close round"""
+    can read the morphed rest from their own meshes), per part its chains and whether they close round.
+    body (body_contact): cloth that lies on the skin (within CONTACT[0], fading out by CONTACT[1]) keeps the body's
+    weights, so a cloak or a mantle lying on the back and shoulders moves with them; only cloth hanging clear goes to
+    the chains. Not over the legs: a skirt lying on a thigh at rest leaves it as the leg swings (skirt_weights)"""
     node = next((n for n in j['nodes'] if 'mesh' in n and 'skin' in n), None)
     if node is None:
         return None
@@ -465,6 +560,7 @@ def cloth_bones(j, b, item, spec, blobs):
     aj, aw = j['accessors'][at['JOINTS_0']], j['accessors'][at['WEIGHTS_0']]
     JJ = glbio.accessor(j, bytes(b), at['JOINTS_0']).astype(int)
     WW = glbio.accessor(j, bytes(b), at['WEIGHTS_0']).astype(float)
+    JJ0, WW0 = JJ.copy(), WW.copy()              # the body's weights, before the chains take the cloth (rest_weights)
     by_part = {}
     for ci, ch in enumerate(chains):
         by_part.setdefault(ch['part'], []).append(ci)
@@ -485,6 +581,50 @@ def cloth_bones(j, b, item, spec, blobs):
             bl = (0.35 - sfrac) / 0.35 * 0.5
             out = {ch['joints'][k]: 1 - bl, ch['joints'][k - 1]: bl}
         return out, float(np.clip((r - rows[0]) / 2.0, 0, 1))
+    if body is not None:
+        gap, near = body[0].query(P)
+        # a mantle or a cape (layer 2) lies on the garment's own layers under it as on the skin: over a tunic's
+        # shoulders or a bone plate it stood more than 4 cm off the skin, went to chains held by the spine, and the
+        # shoulders under it came out through it as the arms came down from the A-pose
+        lay = np.array([spec['parts'][where[int(v)][0]].get('layer', 0) if int(v) in where else -1 for v in V])
+        outer = lay == 2
+        # what it can lie on: the garment's cloth that does not hang (a tunic above its chains, a plate, a collar).
+        # Hanging cloth is not (a cape counted as lying on a robe's swinging back took the hips' and thighs' weights
+        # and the robe swung through it)
+        top = {pi: min(ch['rows'][0] for ch in chains if ch['part'] == pi) for pi in by_part}
+        hang = np.array([int(v) in where and where[int(v)][0] in top and where[int(v)][1] >= top[where[int(v)][0]]
+                         for v in V])
+        under = ~outer & ~hang
+        # nor does a mantle lie on an arm: a cape's flared side near the A-posed forearm took its weights, and at the
+        # idle, the hand at the hip, it was drawn out into a spike
+        gap[outer & (body[2][near] > 0.5)] = 1.0
+        if outer.any() and under.any():
+            gu, src = cKDTree(P[under]).query(P[outer])
+            gap[outer] = np.minimum(gap[outer], gu)
+            src = np.nonzero(under)[0][src]
+            # within 1 cm of it, the outer takes its weights outright, fading out by 5 cm: the two move as one
+            for gi, d, sv in zip(np.nonzero(outer)[0], gu, src):
+                f = float(np.clip((0.05 - d) / 0.04, 0, 1))
+                if f > 0:
+                    take_weights(JJ, WW, gi, sv, f)
+        lying = np.clip((gap - CONTACT[0]) / (CONTACT[1] - CONTACT[0]), 0, 1)
+        lying[body[1][near] > 0.5] = 1.0
+        # and where it hangs clear of both, it takes none of the arm's weight (the collarbone's instead): a cape's
+        # side edge, beside the A-posed upper arm, took the arm's and swung out as the arm came down
+        for gi in np.nonzero(outer)[0]:
+            for q in range(4):
+                n = names[int(JJ[gi, q])] if int(JJ[gi, q]) < len(names) else ''
+                sd = 'Left' if n.startswith('Left') else 'Right' if n.startswith('Right') else None
+                if WW[gi, q] > 0 and sd and ('Arm' in n or 'Hand' in n) and sd + 'Shoulder' in names:
+                    mv = WW[gi, q] * lying[gi]
+                    if mv <= 0: continue
+                    WW[gi, q] -= mv
+                    sh = names.index(sd + 'Shoulder')
+                    hit = [k for k in range(4) if int(JJ[gi, k]) == sh] or [k for k in range(4) if WW[gi, k] <= 1e-6]
+                    if not hit:
+                        WW[gi, q] += mv                 # no free slot: it keeps the arm's
+                        continue
+                    JJ[gi, hit[0]] = sh; WW[gi, hit[0]] += mv
     for gi in range(len(P)):
         w = where.get(int(V[gi]))
         if w is None or w[0] not in by_part:
@@ -507,6 +647,8 @@ def cloth_bones(j, b, item, spec, blobs):
         wa, fa = chain_w(chains[cs[lo]], r)
         wb, fb = chain_w(chains[cs[hi]], r)
         share = (1 - t) * fa + t * fb
+        if body is not None:
+            share *= lying[gi]
         if share <= 0:
             continue
         mix = {}
@@ -534,7 +676,13 @@ def cloth_bones(j, b, item, spec, blobs):
     for k in ('byteStride',):
         j['bufferViews'][aj['bufferView']].pop(k, None)
         j['bufferViews'][aw['bufferView']].pop(k, None)
-    return {'chains': [{'parent': ch['parent'], 'pts': ch['pts']} for ch in chains], 'parts': parts_out}
+    def rest_weights(gi):
+        # a chain point's weights on the body: the figure skins it with them in the postured bind pose to read the
+        # chain's rest there (50-figure.js clothRest), so the hanging cloth starts where the cloth around it is
+        tot = float(WW0[gi].sum()) or 1.0
+        return [[names[int(q)], round(float(w) / tot, 4)] for q, w in zip(JJ0[gi], WW0[gi]) if w > 1e-3 and int(q) < len(names)]
+    return {'chains': [{'parent': ch['parent'], 'pts': ch['pts'], 'bw': [rest_weights(g) for g in ch['pts']]} for ch in chains],
+            'parts': parts_out}
 
 
 # the capsules a garment's chains are kept out of: per joint pair, the base radius and how far each morph target moves
@@ -578,18 +726,106 @@ def colliders(c, J, base_glb, npz):
                 r1 = float(np.quantile(seg(P[sel] + dv, A[k] + da, B[k] + db)[0], 0.65))
                 if abs(r1 - r0) > 2e-4:
                     dr[str(ti)] = round(r1 - r0, 4)
-        out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr})
+        # the push's radii at each end (the 90th percentile near it): a limb tapers, and at one radius the calf and the
+        # top of the thigh stood out through a robe (the GPU push in 50-figure.js; the chains keep r)
+        ends = []
+        for lo, hi in ((0.1, 0.35), (0.65, 0.9)):       # inside the limb: past its ends lie the foot, the hand, the trunk
+            e = np.nonzero((own == k) & (t >= lo) & (t <= hi))[0]
+            ends.append(round(float(min(np.quantile(d[e], 0.9), 1.6 * r0)), 4) if len(e) > 10 else round(r0, 4))
+        out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr, 'ra': ends[0], 'rb': ends[1]})
     # the lower pair's joints (mods.py, on every body) are copies of the upper: the same capsules on their own joints
     for k, (a, b2) in enumerate(CAPSULES):
         if 'Arm' in a and mods.lower(a) in J and mods.lower(b2) in J:
             out.append(dict(out[k], a=J[mods.lower(a)], b=J[mods.lower(b2)]))
+    out += seat(c, J, P, V, npz, tgts, bones)
     return out
 
 
-def covered(BP, BT, path, out=0.025, inward=0.02):
+TRUNK = ('Hips', 'Spine', 'Spine1', 'Spine2', 'Neck')
+
+
+def trunk(c, J, base_glb):
+    """the trunk as the arms meet it: per spine joint (TRUNK) the middle of the body's cross-section at its height,
+    forward of the joint (f, metres along the figure's forward at rest), and the section's half width (w, across) and
+    half depth (d, front to back): an ellipse. The trunk's capsules run along the spine joints, which lie near the
+    back, and are round: the man's chest stood 5 cm out of them, and an arm hanging before it (the injured walk) went
+    in. 50-figure.js bodyFix keeps the arms out of the chain through these sections (scaled with the trunk capsules'
+    radii under the morph)"""
+    jj, bb = glbio.read_glb(open(base_glb, 'rb').read())
+    prim = next(p for m in jj['meshes'] for p in m['primitives']
+                if 'material' in p and jj['materials'][p['material']]['name'].endswith('.body'))
+    P = glbio.accessor(jj, bb, prim['attributes']['POSITION']).astype(float)
+    A = np.array([c.jpos[c.J[a]] for a, _ in CAPSULES]); B = np.array([c.jpos[c.J[b]] for _, b in CAPSULES])
+
+    def seg(a, bq):
+        d = bq - a
+        t = np.clip(((P - a) @ d) / (d @ d), 0, 1)
+        return np.linalg.norm(P - (a + np.outer(t, d)), axis=1)
+    own = np.stack([seg(A[k], B[k]) for k in range(len(CAPSULES))], 1).argmin(1)
+    mine = np.isin(own, [k for k, (a, _) in enumerate(CAPSULES) if a in ('Hips', 'Spine1')])
+    out = []
+    for n in TRUNK:
+        if n not in c.J or n not in J:
+            continue
+        p = c.jpos[c.J[n]]
+        q = P[mine & (np.abs(P[:, 1] - p[1]) < 0.015)]
+        if len(q) < 20:
+            continue
+        zf, zb = float(q[:, 2].max()), float(q[:, 2].min())
+        out.append({'j': J[n], 'f': round((zf + zb) / 2 - float(p[2]), 4), 'w': round(float(np.abs(q[:, 0] - p[0]).max()), 4),
+                    'd': round((zf - zb) / 2, 4)})
+    return out
+
+
+def seat(c, J, P, V, npz, tgts, bones):
+    """the buttocks, which neither a thigh's capsule (down the femur) nor the trunk's (up the spine) covers: per side
+    an upright capsule behind the hip joint, from just above it to most of the way down to the fold under the buttock
+    (14 cm below the joint on the man), its back at the skin's (the 85th
+    percentile of how far back the seat's skin reaches). Its ends are rest points (pa, pb: the base's model space)
+    carried by the Hips joint (KCHAR.colliders); dr per target from the morphed skin, as the others'"""
+    hj = c.jpos[c.J['Hips']]
+    toe, foot = c.jpos[c.J['LeftToeBase']], c.jpos[c.J['LeftFoot']]
+    fwd = np.array([0.0, 0.0, 1.0 if toe[2] > foot[2] else -1.0])
+    out = []
+    for s in ('Left', 'Right'):
+        hip = c.jpos[c.J[s + 'UpLeg']]
+        side = np.sign(hip[0] - hj[0])
+        k = c.jpos[c.J[s + 'Leg']]
+        fold = hip[1] - 0.16 * (hip[1] - k[1]) / 0.45           # the fold under the buttock, scaled by the thigh's length
+        sel = np.nonzero((P[:, 1] > fold) & (P[:, 1] < hip[1] + 0.03) & ((P[:, 0] - hj[0]) * side > 0.01) &
+                         ((P[:, 2] - hip[2]) * fwd[2] < -0.03))[0]
+        if len(sel) < 20:
+            continue
+        back = np.quantile(-(P[sel, 2] - hip[2]) * fwd[2], 0.85)       # how far behind the hip joint the seat reaches
+        x = float(np.median(P[sel, 0]))
+        r0 = 0.075
+        zc = hip[2] - fwd[2] * (back - r0)
+        pa = np.array([x, hip[1] + 0.02, zc]); pb = np.array([x, fold + 0.05, zc])
+        dr = {}
+        if npz is not None:
+            Db = npz['d_base']
+            ha = npz['d_joints'][:, bones.index('Hips')] @ RY.T if 'Hips' in bones else np.zeros((len(tgts), 3))
+            for ti in range(len(tgts)):
+                q = P[sel] + Db[ti, V[sel]] @ RY.T
+                b1 = np.quantile(-(q[:, 2] - (hip[2] + ha[ti][2])) * fwd[2], 0.85)
+                if abs(b1 - back) > 2e-4:
+                    dr[str(ti)] = round(float(b1 - back), 4)
+        out.append({'a': J['Hips'], 'b': J['Hips'], 'r': r0, 'dr': dr,
+                    'pa': [round(float(v), 4) for v in pa], 'pb': [round(float(v), 4) for v in pb]})
+    if len(out) == 2:                     # the pair mirrored about the hips (a hip's flare pulled one side's median out)
+        w = (abs(out[0]['pa'][0] - hj[0]) + abs(out[1]['pa'][0] - hj[0])) / 2
+        for o in out:
+            sx = 1 if o['pa'][0] > hj[0] else -1
+            o['pa'][0] = o['pb'][0] = round(float(hj[0] + sx * w), 4)
+    return out
+
+
+def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
     """the base triangles an item covers when it has no delete group: each base vertex casts a ray out along its normal
     (the garment lies over it) and one in (the skin already pokes through it); a triangle whose three vertices both
-    find the garment close is hidden"""
+    find the garment close is hidden. enclose > 0 also takes a vertex the garment closes round front and back (rays
+    along +z and -z both meet it within enclose): the crotch and the cleft of the buttocks, whose normals point between
+    the legs, where a trouser seam bridges them"""
     from make_kit import ray_hits
     N = np.zeros_like(BP)
     fn = np.cross(BP[BT[:, 1]] - BP[BT[:, 0]], BP[BT[:, 2]] - BP[BT[:, 0]])
@@ -600,7 +836,98 @@ def covered(BP, BT, path, out=0.025, inward=0.02):
     t_out, _ = ray_hits(BP, N, AP, AT, out, step=0.01)
     t_in, _ = ray_hits(BP, -N, AP, AT, inward, step=0.01)
     hit = np.isfinite(t_out) | np.isfinite(t_in)
+    if enclose > 0:
+        Z = np.tile([0.0, 0.0, 1.0], (len(BP), 1))
+        hit |= np.isfinite(ray_hits(BP, Z, AP, AT, enclose, step=0.01)[0]) & np.isfinite(ray_hits(BP, -Z, AP, AT, enclose, step=0.01)[0])
     return np.nonzero(hit[BT].all(1))[0]
+
+
+# library trousers with no delete group (the cargo trousers) stand off the knee up to 3.3 cm and bridge the crotch, so at
+# the default reach the skin of the knees, the crotch and the cleft of the buttocks was left drawn under them and came
+# through in a crouch, a lunge or a roll (the owner's Animation Lab review, 2026-10-20): out 5 cm, in 3 cm, and closed
+# round front and back within 35 cm (a ray from the cleft crosses the pelvis to the fly). The made cultures' trousers,
+# breeches and braccae (make_garments.py) are settled close, but in a crouch the same knee skin came through the
+# Iziz, Yuni, Dalab and Republic trousers and the giant's braccae, and the crotch and the calves' backs through most of
+# the rest (shot red, 2026-10-20): they take the same cover (legged_trousers)
+TROUSERS_COVER = {'out': 0.05, 'inward': 0.03, 'enclose': 0.35}
+LEGGED = ('trousers', 'breeches', 'braccae')     # made legwear with two legs (hangs() leaves them out too)
+
+
+def legged_trousers(it):
+    """trousers that take TROUSERS_COVER: the library's with no delete group (the cargo trousers), and the made
+    cultures' trousers, breeches and braccae, which settle close but left the same knees and crotch drawn in a crouch"""
+    if it['slot'] != 'legs' or it['id'] in LOOSE or it['id'] in FLAPS:
+        return False
+    return culture_of(it['id']) is None or any(w in it['id'] for w in LEGGED)
+
+
+def parts_under(path, BP, BT):
+    """per small skin primitive of the base (the nipples: 'Human.nipple'), the triangles of the skin under it (those
+    holding the skin vertex nearest each of its vertices). A part is drawn on top of the skin, not cut from it, so an
+    item's hide never reached it, and the man's nipple showed through a T-shirt in the idles; an item that hides all
+    the skin under a part hides the part too (kit item hide_parts)"""
+    j, b = glbio.read_glb(open(path, 'rb').read())
+    tree, out = cKDTree(BP), {}
+    for m in j['meshes']:
+        for p in m['primitives']:
+            mat = j['materials'][p['material']]['name'] if 'material' in p else ''
+            if mat.split('.')[-1] not in HIDE_PARTS:
+                continue
+            _, k = tree.query(glbio.accessor(j, b, p['attributes']['POSITION']).astype(float))
+            out[mat] = np.nonzero(np.isin(BT, np.unique(k)).any(1))[0]
+    return out
+
+
+HIDE_PARTS = ('nipple',)     # the base's parts an item can hide (lips, ears and nails show at the edge of what covers them)
+
+
+def hide_parts(entry, under, ntris):
+    """the parts (parts_under) whose skin an item's hide covers whole"""
+    if 'hide' not in entry:
+        return []
+    h = np.unpackbits(np.frombuffer(base64.b64decode(entry['hide']), np.uint8), bitorder='little')[:ntris].astype(bool)
+    return sorted(m for m, tris in under.items() if len(tris) and h[tris].all())
+
+
+def refresh_hides(body, pieces):
+    """python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>: with no Blender and no export, rederive from
+    the pieces' GLBs (a dir of <id>.glb and base.glb) what the pack derives from them alone: the rays' hide of the
+    trousers (TROUSERS_COVER: legged_trousers) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
+    the Godot twin's skin regions (base.gshapes.bin) follow at the next whole build"""
+    path = os.path.join(HERE, 'data', 'mpfb_' + body, 'kit.json')
+    kit = json.load(open(path, encoding='utf-8'))
+    mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
+    assert len(BT) == kit['base_tris'], 'make_mpfb.py hides: %s is not this kit\'s base' % pieces
+    under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
+    for e in kit['items']:
+        g = os.path.join(pieces, e['id'] + '.glb')
+        if e.get('hide_by') == 'rays' and legged_trousers(e) and os.path.exists(g):
+            tris = covered(BP, BT, g, **TROUSERS_COVER)
+            print('%-8s %-34s hides %5d (was %d)' % (body, e['id'], len(tris), e.get('hides', 0)))
+            e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
+        hp = hide_parts(e, under, len(BT))
+        if hp:
+            e['hide_parts'] = hp
+        else:
+            e.pop('hide_parts', None)
+    print(body, 'items hiding parts:', ', '.join(e['id'] for e in kit['items'] if e.get('hide_parts')))
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(kit, f, indent=1)
+
+
+def hem_depth(c, path, n=16):
+    """How far down the legs a top's hem reaches: from the hip joint, as a fraction of the hip-to-ankle length (0 at
+    the hip joint, 1 at the ankle). The median over n sectors round the hips of the lowest point in each, so a slit or a
+    longer back panel does not decide it. Under a loose top the figure draws trousers in to the legs down to a little
+    above it (50-figure.js kcSH), where it hides them: the festive shirt's hem showed wide trousers through it"""
+    v = all_triangles(path)[0]
+    hip, ank = c.jpos[c.J['LeftUpLeg']], c.jpos[c.J['LeftFoot']]
+    v = v[(np.abs(v[:, 0]) < 0.22) & (v[:, 1] < hip[1])]
+    if not len(v):
+        return 0.0
+    a = np.floor((np.arctan2(v[:, 2] - hip[2], v[:, 0]) + np.pi) / (2 * np.pi) * n).astype(int) % n
+    lows = [v[a == k, 1].min() for k in range(n) if (a == k).any()]
+    return round(float(np.clip((hip[1] - np.median(lows)) / (hip[1] - ank[1]), 0.0, 1.2)), 3)
 
 
 def encloses(c, path, rise=(0.02, 0.08), n=24):
@@ -877,10 +1204,10 @@ COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 
                'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid',
                'rep_m_peasant_cap', 'rep_f_peasant_platok', 'rep_m_trade_ushanka', 'rep_f_trade_ushanka', 'rep_m_noble_papakha',
                'rep_f_noble_papakha', 'rep_m_fest_peasant_cap', 'rep_f_fest_peasant_platok', 'rep_m_fest_trade_ushanka',
-               'rep_m_fest_noble_papakha'}
+               'rep_m_fest_noble_papakha', 'order_m_elder_hat', 'order_f_elder_hat', 'xan_m_town_cap', 'xan_m_rich_turban', 'xan_f_rich_turban'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
 CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'rep_': 'iron_republic', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
-           'yuni_': 'yuni'}
+           'yuni_': 'yuni', 'order_': 'historians', 'xan_': 'xanadu'}
 
 
 def culture_of(iid):
@@ -890,8 +1217,12 @@ def culture_of(iid):
 def hangs(it):
     """a made garment that hangs from the waist or shoulders (a tunic, coat, robe or skirt, not trousers): its legs'
     weights pool below the crotch, it is pushed out of the legs, and it hides no skin below half the body's height"""
-    return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') and 'trousers' not in it['id']
+    return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') \
+        and not any(w in it['id'] for w in LEGGED)
 LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
+# a band and flaps only (a loincloth): no push out of the legs, the chains alone keep its flaps out of them. Pushed, a
+# flap between the thighs in a stride went out of each sideways, its corners stood out like wings
+FLAPS = {'voth_m_peasant_maxtlatl'}
 GRIP_STYLES = {'fist': _FIST,
                # a bow drawn with three fingers on the string, the thumb and little finger tucked
                'draw': (('Index', (30, 40, 25)), ('Middle', (32, 42, 25)), ('Ring', (40, 50, 30)), ('Pinky', (75, 85, 50)),
@@ -906,12 +1237,47 @@ def rot_axis(a, t):
     return np.eye(3) + math.sin(t) * K + (1 - math.cos(t)) * K @ K
 
 
+def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
+    """main()'s --merge: the partial export's items, their morph deltas packed, into data/<body>/kit.json, and their pieces
+    into pieces/<body>/ beside the rest. The Godot twin's base cover regions (base.gshapes.bin) are not remade: a merged
+    item does not hide the skin under it there until the next whole build (KNOWN_ISSUES.md)"""
+    name = 'mpfb_' + body
+    kit = json.load(open(os.path.join(data, 'kit.json')))
+    assert kit['base_tris'] == ntris and kit['base_material'] == mat, 'the partial export\'s base is not the kit\'s'
+    npz_path = os.path.join(src, 'morphs.npz')
+    if os.path.exists(npz_path):
+        npz = np.load(npz_path)
+        for it in items:
+            g = os.path.join(pieces, it['id'] + '.glb')
+            open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(mesh_entries(g, lambda n: it['id']), npz))
+            open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(g, lambda n: it['id'], npz))
+    have = {e['id']: i for i, e in enumerate(kit['items'])}
+    for e in items:
+        if e['id'] in have:
+            kit['items'][have[e['id']]] = e
+        else:
+            kit['items'].append(e)
+    kit['tint']['roles'].update({k: v for k, v in roles.items() if k not in kit['tint']['roles']})
+    out = os.path.join(HERE, 'pieces', name)
+    os.makedirs(out, exist_ok=True)
+    for f in os.listdir(pieces):
+        if f.split('.')[0] in {e['id'] for e in items}:
+            shutil.copy(os.path.join(pieces, f), os.path.join(out, f))
+    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    print(name, 'merged', len(items), 'items:', len(kit['items']), 'in the kit')
+
+
 def main():
     body, src = sys.argv[1], sys.argv[2]
+    # --merge: src is a partial export (mpfb_build.py --only): its items are packed and added to the kit as it stands
+    # (replaced by id, new ones after the rest); the base, the skeleton, the mods and the other pieces are left alone
+    merge = '--merge' in sys.argv
     name = 'mpfb_' + body
     big = body == 'giant'              # giant.py: the man's export, made big
     pieces = os.path.join(HERE, 'pieces', name)
     data = os.path.join(HERE, 'data', name)
+    if merge:
+        pieces = os.path.join(src, 'pieces')
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
         shutil.rmtree(pieces)
     os.makedirs(pieces, exist_ok=True)
@@ -927,22 +1293,30 @@ def main():
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     tree = cKDTree(BP)
+    under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
+    contact = body_contact(os.path.join(pieces, 'base.glb'))
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
     if big:
         man['items'] = [it for it in man['items'] if giant.wears(it['id'])]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     # the mods (mods.py: a second pair of arms, flesh or cybernetic; rib gills), worn like items in slot 'mods'
-    mod_items, mod_roles = mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
+    mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
         cl = None
+        # where the legs' weights start to pool (skirt_weights): below the crotch; a garment of flaps from the waist
+        # down, from the hip joint (with its thighs' weights from there to the crotch, a loincloth's front flap swung
+        # forward with the thigh in a stride and stood off it like a plank), and the library's loose garments too (the
+        # kimono's two front panels followed one thigh each and parted at the midline in the idle's sway)
+        pool_from = c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
         if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if hangs(it) else None, cloth=cl)
+                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
+                     head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:
             print('%-8s decimated %s: %d -> %d triangles' % ((name, it['id']) + decimate.decimate_glb(os.path.join(pieces, it['id'] + '.glb'), DECIMATE[it['id']])))
@@ -957,6 +1331,8 @@ def main():
             if mods.split_lower(os.path.join(pieces, it['id'] + '.glb'), os.path.join(pieces, it['id'] + '.sleeves2.glb'),
                                 cl['spec'].get('lower', [])):
                 entry['sleeves2'] = 'pieces/%s/%s.sleeves2.glb' % (name, it['id'])
+        if cl and cl['spec'].get('hips'):
+            print('%-8s %s: %d vertices pinned to the hips' % (name, it['id'], mods.pin_hips(os.path.join(pieces, it['id'] + '.glb'), cl['spec']['hips'])))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
         if culture_of(it['id']):
@@ -967,12 +1343,16 @@ def main():
             entry['culture'] = culture_of(it['id']) if it['id'].startswith(giant.PREFIX) else 'giants'
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
+        if it['id'] in layers.OVER:
+            entry['over'] = layers.OVER[it['id']]    # its cloth ranks with that slot's (SLOT_RANK in 50-figure.js)
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
             entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
-        if it['id'] in LOOSE or hangs(it):
+        if (it['id'] in LOOSE or hangs(it)) and it['id'] not in FLAPS:
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
             if it['slot'] == 'torso' and all_triangles(os.path.join(pieces, it['id'] + '.glb'))[0][:, 1].min() < c.jpos[c.J['LeftLeg']][1]:
                 entry['long'] = True       # below the knees: trousers under it are drawn in to the legs (KCHAR squeeze)
+            if it['slot'] == 'torso':
+                entry['hem'] = hem_depth(c, os.path.join(pieces, it['id'] + '.glb'))
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn
@@ -994,7 +1374,7 @@ def main():
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
-            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'))
+            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'), **(TROUSERS_COVER if legged_trousers(it) else {}))
             if hangs(it):
                 # made clothing (make_garments.py) that hangs loose below the hips: a flap or a skirt that lies over a
                 # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
@@ -1003,9 +1383,13 @@ def main():
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
             entry['hide_by'] = 'rays'          # no delete group in the asset: covered() found it
+        if hide_parts(entry, under, len(BT)):
+            entry['hide_parts'] = hide_parts(entry, under, len(BT))
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
     items += mod_items
+    if merge:
+        return merge_kit(body, src, pieces, data, items, roles, mat, len(BT))
     npz_path = os.path.join(src, 'morphs.npz')
     morph = {}
     if os.path.exists(npz_path):
@@ -1052,7 +1436,8 @@ def main():
                           for i, n in enumerate(jnodes)], 'clips': clips,
                'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)}),
                'colliders': colliders(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'),
-                                      npz if morph else None)},
+                                      npz if morph else None),
+               'trunk': trunk(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'))},
               open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
     kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
            'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
@@ -1064,4 +1449,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == 'hides':
+        refresh_hides(sys.argv[2], sys.argv[3])
+    else:
+        main()

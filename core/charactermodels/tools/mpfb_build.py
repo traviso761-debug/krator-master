@@ -79,6 +79,15 @@ ITEMS = {
                     ('feet', 'Yuni babouches', 'yuni_m_trade_slippers'), ('head', 'Yuni kufi', 'yuni_m_trade_kufi'),
                     ('torso', 'Yuni mosaic gown', 'yuni_m_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_m_noble_slippers'),
                     ('head', 'Yuni hyperboloid hat', 'yuni_m_noble_hyperboloid'),
+                    ('torso', 'Novice\'s shirt', 'order_m_novice_shirt'), ('legs', 'Novice\'s wrap skirt', 'order_m_novice_skirt'),
+                    ('feet', 'The Order\'s sandals', 'order_m_sandals'), ('torso', 'Monk\'s saffron robe', 'order_m_monk_robe'),
+                    ('torso', 'Elder\'s robe and shawl', 'order_m_elder_robe'), ('head', 'Elder\'s crested hat', 'order_m_elder_hat'),
+                    ('torso', 'Field agent\'s quilted coat', 'order_m_agent_coat'), ('legs', 'Field agent\'s trousers', 'order_m_agent_trousers'),
+                    ('feet', 'Field agent\'s boots', 'order_m_agent_boots'),
+                    ('torso', 'Xanadui kurta', 'xan_m_town_tunic'), ('legs', 'Xanadui loose trousers', 'xan_m_town_trousers'),
+                    ('feet', 'Xanadui felt boots', 'xan_m_town_boots'), ('head', 'Xanadui round cap', 'xan_m_town_cap'),
+                    ('torso', 'Xanadui silk jama', 'xan_m_rich_jama'), ('legs', 'Xanadui silk trousers', 'xan_m_rich_trousers'),
+                    ('feet', 'Xanadui gilded slippers', 'xan_m_rich_slippers'), ('head', 'Xanadui great turban', 'xan_m_rich_turban'),
                     # the Iron Republic, also from tools/make_garments.py
                     ('torso', 'Republic citizen\'s tunic', 'rep_m_peasant_tunic'), ('legs', 'Republic grey trousers', 'rep_m_peasant_trousers'),
                     ('feet', 'Republic tall boots', 'rep_m_peasant_boots'), ('head', 'Republic cloth cap', 'rep_m_peasant_cap'),
@@ -166,6 +175,15 @@ ITEMS = {
                     ('feet', 'Yuni babouches', 'yuni_f_trade_slippers'), ('head', 'Yuni gele', 'yuni_f_trade_gele'),
                     ('torso', 'Yuni mosaic gown', 'yuni_f_noble_gown'), ('feet', 'Yuni silk babouches', 'yuni_f_noble_slippers'),
                     ('head', 'Yuni hyperboloid hat', 'yuni_f_noble_hyperboloid'),
+                    ('torso', 'Novice\'s shirt', 'order_f_novice_shirt'), ('legs', 'Novice\'s wrap skirt', 'order_f_novice_skirt'),
+                    ('feet', 'The Order\'s sandals', 'order_f_sandals'), ('torso', 'Monk\'s saffron robe', 'order_f_monk_robe'),
+                    ('torso', 'Elder\'s robe and shawl', 'order_f_elder_robe'), ('head', 'Elder\'s crested hat', 'order_f_elder_hat'),
+                    ('torso', 'Field agent\'s quilted coat', 'order_f_agent_coat'), ('legs', 'Field agent\'s trousers', 'order_f_agent_trousers'),
+                    ('feet', 'Field agent\'s boots', 'order_f_agent_boots'),
+                    ('torso', 'Xanadui chuba and apron', 'xan_f_town_tunic'), ('legs', 'Xanadui loose trousers', 'xan_f_town_trousers'),
+                    ('feet', 'Xanadui felt boots', 'xan_f_town_boots'),
+                    ('torso', 'Xanadui silk jama', 'xan_f_rich_jama'), ('legs', 'Xanadui silk trousers', 'xan_f_rich_trousers'),
+                    ('feet', 'Xanadui gilded slippers', 'xan_f_rich_slippers'), ('head', 'Xanadui great turban', 'xan_f_rich_turban'),
                     # the Iron Republic, also from tools/make_garments.py
                     ('torso', 'Republic plain dress', 'rep_f_peasant_dress'), ('feet', 'Republic tall boots', 'rep_f_peasant_boots'),
                     ('head', 'Republic headscarf', 'rep_f_peasant_platok'),
@@ -181,6 +199,11 @@ ITEMS = {
                     ('torso', 'Republic velvet gown', 'rep_f_fest_noble_gown'), ('feet', 'Republic red boots', 'rep_f_fest_noble_boots'),
                     ('head', 'Republic kokoshnik', 'rep_f_fest_noble_kokoshnik')]},
 }[body]
+# --only id,id: the base and these items alone (a partial export: make_mpfb.py --merge adds them to the kit as it stands)
+_args = sys.argv[sys.argv.index('--') + 1:]
+if '--only' in _args:
+    _only = set(_args[_args.index('--only') + 1].split(','))
+    ITEMS['items'] = [x for x in ITEMS['items'] if x[2] in _only]
 KIND = {'torso': 'clothes', 'legs': 'clothes', 'feet': 'clothes', 'head': 'clothes', 'beard': 'clothes', 'hair': 'hair', 'eyebrows': 'eyebrows',
         'eyelashes': 'eyelashes', 'eyes': 'eyes'}
 ATYPE = {'clothes': 'Clothes', 'hair': 'Hair', 'eyebrows': 'Eyebrows', 'eyelashes': 'Eyelashes', 'eyes': 'Eyes'}
@@ -221,8 +244,8 @@ for o in bpy.data.objects:
     for ms in o.material_slots:
         if ms.material:
             ms.material.blend_method = 'CLIP' if cut else 'OPAQUE'
-            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni, the Giants, the Republic) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
-            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_', 'giant_', 'rep_'))
+            # the made garments (Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni, the Giants, the Republic, the Order, Xanadu) are single sheets (capes, flaps, skirts seen from inside): both faces drawn
+            ms.material.use_backface_culling = not cut and not o.name.split('.')[-1].startswith(('voth_', 'iziz_', 'beast_', 'hykk_', 'dalab_', 'yuni_', 'giant_', 'rep_', 'order_', 'xan_'))
 # each item's delete group: the base vertices (helpers excluded) it hides, by position
 # positions from the evaluated mesh (the body-shape targets are shape keys: the stored coordinates are the unmorphed
 # basemesh), with every mask off so the vertex order is the mesh's own

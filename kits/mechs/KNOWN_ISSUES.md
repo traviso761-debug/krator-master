@@ -1,18 +1,20 @@
 # kits/mechs: known issues
 
-`verify.py --assert` passes with nothing deferred (11 mechs, 12 builds with the Castra's two variants, seeds 1..2), z-fighting included.
+`verify.py --assert` passes with nothing deferred (19 mechs, 20 builds with the Castra's two variants, seeds 1..2), z-fighting included.
 
 ## Open
 
 - [ ] **Scale against the lore.** LORE.md calls the Empire's surviving walkers "~9 m bipeds" in "ghost-white panel"
-  (and `settlements/iziz/src/74-vern-guilds.js` draws one in the Forgemaster's Hall). These ten were asked for at
-  about three times a man (4.4 to 6.2 m) in steel with orange livery. Read them as the legions' line walkers, the
+  (and `settlements/iziz/src/74-vern-guilds.js` draws one in the Forgemaster's Hall). Most of these were asked for
+  at about three times a man (4.4 to 6.9 m) in steel with orange livery; the Turris (13 m) is a walking building. Read them as the legions' line walkers, the
   great Ancient walker as something else; or settle it in LORE.md.
 - [ ] **Residual z-fighting.** `KratorMechs.audit` still finds 0 to 32 triangles per mech (coplanar, overlapping,
   differently coloured), most inside other parts or a few millimetres square; the invariant fails above 40. Run
   `verify.py --eval "()=>KratorMechs.audit('iz_rota')"` to list them by bone. The usual causes, avoided in new parts:
   a joint drum as wide as its limb (MP.joint now stands 16 mm proud), two plates of one height side by side, a trim
-  stripe flush with the plate it lies on, a stack of boxes meeting edge to edge with an overlap.
+  stripe flush with the plate it lies on, a stack of boxes meeting edge to edge with an overlap. Since 2026-10-19 the
+  audit also wants each triangle within `tol` of the other's plane, not only the planes' offsets at the origin to
+  agree: a tapered pole 13 m up the Turris matched its own collar 2.5 cm off its surface. No mech's count rose.
 - [x] **The sun banner sheet is not periodic.** Fixed 2026-10-14: the owner's periodic redo of `patterns/iziz/sun-banner`
   repeats exactly (two periods each way, 2 x 1.8 m a sheet), and the runtime tiles it, so a banner of any size takes it.
 - [ ] **Feathers have no texture.** They are flat triangles with no UVs; the library's `card.feather.*` would need
@@ -27,6 +29,16 @@
   skeleton (Skeleton3D), the leg IK a two-bone solve (SkeletonIK3D or code), the banners a CPU flutter (a shader there).
 - [x] 2026-10-20: stale entry, nothing to fix: **The tools list only `src/`.** (2026-10-20, batch 8: left open; `make_index.py` has no notion of a kit's top-level fragments and regenerating the INDEX files touches every build's INDEX.md, which other sessions have open.) `tools/make_index.py` skips this kit's top-level files (as for
   `kits/motor-vehicles`); `INDEX.md` is hand-written and `PORT.md` keeps them under "Notes".
+
+- [ ] **The Stalkers' footprints are lopsided** (2026-10-23): the harpooner's guns and the blade's arms reach well
+  forward of the feet, so a box centred on the origin that holds them is a third empty and `verify.py` warns
+  (under-size, not a failure). The declared sizes cover the parts.
+- [ ] **The Stalkers have no buried pose.** The lore has them lie in wait under the sand (`biomes/catch/PLAN.md` section
+  6c): a crouched, dug-in idle (the body sunk, only the head or a gun clear) and a rising clip are still to be made.
+- [ ] **The harpoon has no line.** The `barb` projectile flies alone; the lore's line that drags the quarry in is the
+  host's to draw (a cable from `muzzle_l` / `muzzle_r` to the barb).
+- [ ] **The Stalkers' shells use the shared maps, finer** (`detail: { tile: 3, mix: 0.35 }`). A set of their own, white
+  enamel scoured by sand, would suit them better; none is in the library yet: `metal.enamel.scoured`, `core/materials/PROMPTS-NEEDED.md` section 7.
 
 ## Closed
 

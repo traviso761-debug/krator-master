@@ -131,6 +131,18 @@ static func hidden(rec: Dictionary, kit: Dictionary) -> PackedByteArray:
 	return o
 
 
+# the base's small parts drawn over the skin (the nipples: "Human.nipple") that a worn item covers whole (kit item
+# hide_parts), as { material name: true }: never in a hide, they are left out as a surface (KCHAR.hiddenParts)
+static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
+	var out := {}
+	for slot in SLOTS:
+		var it = item(rec, kit, slot)
+		if it != null:
+			for m in it.get("hide_parts", []):
+				out[m] = true
+	return out
+
+
 static func blank(kit: Dictionary) -> Dictionary:
 	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null, "head": null},
 		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}
@@ -278,7 +290,7 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 			for it in have:
 				if styles.has(it["id"]):
 					pref.append(it)
-			if pref.size() and r.next() < 0.75:
+			if pref.size() and r.next() < float(P.get("style_share", 0.75)):   # the people's share of its own styles (10-rig.js)
 				have = pref
 		var odds: float = float(P.get("beard", 0.4)) if slot == "beard" else (0.92 if slot == "hair" else 0.9)
 		var id = null
@@ -330,5 +342,10 @@ static func colliders(skel: Dictionary, w: PackedFloat64Array) -> Array:
 			var ti := int(t)
 			if ti < w.size():
 				r += w[ti] * float(c["dr"][t])
-		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r)})
+		# the seat's have rest ends (pa, pb: the body's model space) carried by joints a and b
+		# the push's end radii (ra, rb) scale with the capsule's
+		var k: float = maxf(0.01, r) / float(c["r"])
+		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r),
+			"pa": _v(c["pa"]) if c.has("pa") else null, "pb": _v(c["pb"]) if c.has("pb") else null,
+			"ra": float(c.get("ra", c["r"])) * k, "rb": float(c.get("rb", c["r"])) * k})
 	return out

@@ -50,11 +50,12 @@ export function events(api){
       return t<10;});}
 
   // ---- the haar ----
-  function haar(){const F=scene.fog;if(!F||F.density===undefined)return;let t=0;const D=60;
+  function haar(){if(!api.fogEffect)return;let t=0;const D=90;const W=api.fogEffect();W.visibility=750;W.colour=0xc4c8c6;
     notice('The haar','the sea fog off the Forth: in over Leith, up through the New Town, until the Castle is gone. It lifts as fast as it came.',
       ()=>{const [vx,vz]=P([55.95550,-3.18360]);return [vx,groundH(vx,vz)+14,vz,cx,ctop,cz];});
-    // the engine sets the fog each frame from the hour: this runs after it and thickens it, then hands it back
-    run((now,dt)=>{t+=dt;const f=t<15?t/15:t<D-15?1:Math.max(0,(D-t)/15);F.density*=1+f*14;F.color.lerp(new THREE.Color(0xc8ccc8),f*0.8);if(scene.background&&scene.background.isColor)scene.background.lerp(new THREE.Color(0xc8ccc8),f*0.8);return t<D;});}
+    // the air through api.fogEffect (engine 01-scene): eased in to 750 m' visibility (the Castle a ghost from Princes Street), the sky gone pearl, and
+    // handed back to the city's own fog when it lifts
+    run((now,dt)=>{t+=dt;const f=t<20?t/20:t<D-20?1:Math.max(0,(D-t)/20);W.amount=f;W.dim=0.3;if(t>=D){W.done();return false;}return true;});}
 
   // ---- a piper on the Royal Mile ----
   function piper(){const [px,pz]=P(K.piper||[55.94935,-3.19130]),g=groundH(px,pz),M=c=>new THREE.MeshLambertMaterial({color:c}),grp=new THREE.Group();

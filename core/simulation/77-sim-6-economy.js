@@ -75,12 +75,20 @@
   /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
   function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }
   function byMost(g){ return function(p, q){ return (q.stock[g]||0)-(p.stock[g]||0) || (p.id<q.id?-1:1); }; }
+  /* a draw unmet: the running count, and the day's (77-sim-6-trade.js reads a town's want of a good it has none of) */
+  function shortStat(g, n){ var E=SIM.ECON, d=today(), D=E.day[d]||(E.day[d]={ made:{}, used:{}, imported:{}, exported:{} }); stat(D.short||(D.short={}), g, n); stat(E.short, g, n); }
   SIM.supply = function(g, n, whole){ var E=SIM.ECON; if(!E || !E.goods[g]) return n;
-    if(whole && SIM.stockOf(g)<n){ stat(E.short, g, n); return 0; }
+    if(whole && SIM.stockOf(g)<n){ shortStat(g, n); return 0; }
     var want=n, got=0, W=E.warehouses.filter(function(P){ return (P.stock[g]||0)>0; }).sort(byMost(g));
     for(var i=0;i<W.length && want>0;i++){ var t=Math.min(want, W[i].stock[g]); W[i].stock[g]-=t; want-=t; got+=t; }
-    if(got){ dayStat('used', g, got); if(E.dlAt!=null) E.dl[g]=null; } if(got<n) stat(E.short, g, n-got);
+    if(got){ dayStat('used', g, got); if(E.dlAt!=null) E.dl[g]=null; } if(got<n) shortStat(g, n-got);
     return got; };
+  /* for 77-sim-6-trade.js, on SIM.ECON: a flow booked by the day; n taken from the warehouses (the fullest first), booked
+     by the caller; n landed into a place's store (when it keeps one) else the emptiest warehouse -> the store's id */
+  SIM.economyBook = function(kind, g, n){ dayStat(kind, g, n); var E=SIM.ECON; if(E.dlAt!=null) E.dl[g]=null; };
+  SIM.economyTake = function(g, n){ var E=SIM.ECON, left=n, W=E.warehouses.filter(function(P){ return (P.stock[g]||0)>0; }).sort(byMost(g));
+    for(var i=0;i<W.length && left>0;i++){ var k=Math.min(left, W[i].stock[g]); W[i].stock[g]-=k; left-=k; } return n-left; };
+  SIM.economyLand = function(g, n, id){ var E=SIM.ECON, W=id!=null && E.stores[id] ? E.stores[id] : emptiest(g); if(!W) return null; W.stock[g]=(W.stock[g]||0)+n; return W.id; };
   SIM.economyMeal = function(){ var E=SIM.ECON, M=E && E.meal; if(!M) return true; var per=M.per||2, left=per;
     var have=M.foods.filter(function(f){ return SIM.stockOf(f)>0; }).sort(function(x, y){ return SIM.stockOf(y)-SIM.stockOf(x) || (x<y?-1:1); });
     for(var i=0;i<have.length && left>0;i++) left-=SIM.supply(have[i], 1);
@@ -103,10 +111,21 @@
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
   }
+  /* THE ABSTRACT LEVEL (77-sim-7-lod.js, SIM.level): in a town nobody watches, a worker counts at its job in every hour
+     its schedule says WORK, an animal at home, each at the efficiency it had when the town was lowered (absEff); a cart's
+     trip takes the straight line times SIM.ABSTRACT_DETOUR at its speed, with no route, and it is where it went */
+  function absTown(E){ return !!(SIM.ABSTRACT && E.settlement!=null && SIM.ABSTRACT[E.settlement]); }
+  function absWork(E, a, minute, W, H){ var eff=a.absEff==null ? 1 : a.absEff;
+    if(a.herd!=null){ if((a.grownAt!=null && a.grownAt>minute) || !a.present) return; if(E.recipes[a.herd] && E.recipes[a.herd].herd) H[a.herd]=(H[a.herd]||0)+eff; return; }
+    if(!a.present || a.driven) return; var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
+    var w=a.work!=null ? a.work : (a.mem && a.mem.WORK); if(w==null || !E.recipes[w]) return; W[w]=(W[w]||0)+eff; }
+  function cartAt(a, t){ if(!absTown(SIM.ECON)) return SIM.pose(a, t, { cheap:true }); var P=SIM.R.place[a.place] || SIM.R.place[a.home]; return P ? { x:P.x, y:P.y||0, z:P.z } : { x:0, y:0, z:0 }; }
   function tick(minute, t){
     var E=SIM.ECON, hrs=(minute-E.last)/60; E.last=minute; if(hrs<=0) return;
     var W={}, H={};   /* each producer's workers at work and its animals at home (SIM.recipe's herd), their efficiency summed */
+    var abs=absTown(E);   /* a town at the abstract level (77-sim-7-lod.js): its people by their schedules, not their poses */
     SIM.all('actor').forEach(function(a){
+      if(abs){ absWork(E, a, minute, W, H); return; }
       if(a.herd!=null){ if(a.grownAt!=null && a.grownAt>minute) return;   /* the young yield nothing until grown */
         if(a.present && a.place===a.herd && E.recipes[a.herd] && E.recipes[a.herd].herd && (!a.task || t>=a.task.arrive)){ var mh=SIM.mood ? SIM.mood(a) : null; H[a.herd]=(H[a.herd]||0)+(mh ? mh.eff : 1); } return; }
       if(a.activity!=='WORK' || !a.place || !E.recipes[a.place] || !a.task || t<a.task.arrive) return;
@@ -131,7 +150,7 @@
     var E=SIM.ECON;
     Object.keys(E.goods).forEach(function(g){ var im=E.goods[g].import; if(!im) return;
       if(E.inflight.some(function(s){ return s.good===g; })) return;
-      var r=useRate(g), near=SIM.stockOf(g)+E.sites.reduce(function(n, P){ return n+(P.stock[g]||0); }, 0);   /* a lot landed or made, not yet hauled, counts */
+      var r=useRate(g), near=SIM.stockOf(g)+E.sites.reduce(function(n, P){ return n+(P.stock[g]||0); }, 0)+(SIM.tradeInbound ? SIM.tradeInbound(g) : 0);   /* a lot landed or made, not yet hauled, counts; and one at sea from another town (77-sim-6-trade.js) */
       if(!(r>0) || near/r >= E.imports.days) return;
       var R=E.routes[im.route]||{ minutes:240 }, s={ good:g, n:im.lot, route:im.route, port:R.port||null, sent:minute, eta:minute+R.minutes }; E.sent++;
       s.group=carry(s, minute, t); if(s.group) s.eta=null; E.inflight.push(s);
@@ -153,11 +172,13 @@
     var n=Math.min(S.cap||0, surplus, Math.floor(SIM.stockOf(best)-E.exports.minDays*useRate(best))); if(n<=0) return;
     var left=n, W=E.warehouses.filter(function(P){ return (P.stock[best]||0)>0; }).sort(byMost(best));
     for(var i=0;i<W.length && left>0;i++){ var k=Math.min(left, W[i].stock[best]); W[i].stock[best]-=k; left-=k; }
-    G.cargo={ good:best, n:n-left }; dayStat('exported', best, n-left); if(E.dlAt!=null) E.dl[best]=null; SIM.logEvent('export', { group:G.id, good:best, n:n-left });
+    G.cargo={ good:best, n:n-left }; if(E.settlement!=null) G.cargo.settlement=E.settlement; dayStat('exported', best, n-left); if(E.dlAt!=null) E.dl[best]=null; SIM.logEvent('export', { group:G.id, good:best, n:n-left });
   };
 
   /* ---------------------------------------------------------------- the carts */
   function go(a, P, minute, t){
+    if(absTown(SIM.ECON)){ var o=cartAt(a, t), d=Math.hypot(P.x-o.x, P.z-o.z)*SIM.ABSTRACT_DETOUR/(a.speed||SIM.SPEED.cart);
+      a.task={ act:'HAUL', place:P.id, t0:t, legs:[], dur:d, arrive:t+d, spot:P.door, indoor:false, abstract:{ x:o.x, y:o.y, z:o.z } }; a.activity='HAUL'; a.place=P.id; a.since=minute; return; }
     var from=SIM.pose(a, t, { cheap:true }), T=SIM.plan(a, P, 'HAUL', { x:from.x, y:from.y, z:from.z }, t);
     a.task=T; a.activity='HAUL'; a.place=P.id; a.since=minute;
   }
@@ -171,7 +192,7 @@
       K.until=null;
       if(K.phase==='toSite'){ var S=SIM.R.place[K.site], g=K.good, n=Math.min(C.cap, S.stock[g]||0); S.stock[g]-=n; K.load={ good:g, n:n }; K.phase='loading'; K.until=minute+C.load; return; }
       if(K.phase==='loading'){
-        var here=SIM.pose(a, t, { cheap:true }), lg=K.load.good;
+        var here=cartAt(a, t), lg=K.load.good;
         var dist=function(P){ return Math.hypot(P.x-here.x, P.z-here.z); }, Ws=E.warehouses.slice();
         if(C.near) Ws=Ws.sort(function(p, q){ return dist(p)-dist(q) || (p.id<q.id?-1:1); }).slice(0, C.near);   /* the nearest few */
         var Wh=Ws.sort(function(p, q){ return (p.stock[lg]||0)-(q.stock[lg]||0) || dist(p)-dist(q); })[0];
@@ -180,7 +201,7 @@
       if(K.phase==='toWarehouse'){ var Wp=SIM.R.place[K.wh]; Wp.stock[K.load.good]=(Wp.stock[K.load.good]||0)+K.load.n; stat(E.hauled, K.load.good, K.load.n); E.trips++;
         if(E.dlAt!=null) E.dl[K.load.good]=null; K.load=null; K.phase='unloading'; K.until=minute+C.unload; return; }
       /* idle (or unloaded): the site whose stored good is most in demand, then the most stored nobody is bound for, then the nearest */
-      var at=SIM.pose(a, t, { cheap:true }), best=null, bk=null;
+      var at=cartAt(a, t), best=null, bk=null;
       E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity;
         for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad; if(S.stock[g]<ml) continue; var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } }
         if(top==null) return; var key=[Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];
@@ -197,6 +218,7 @@
     if(minute-E.last >= E.every) tick(minute, t);
     if(E.lastScan==null || minute-E.lastScan >= E.imports.scan){ E.lastScan=minute; scanImports(minute, t); }
     cartStep(minute, t);
+    if(SIM.lodHour && absTown(E)) SIM.lodHour(E, minute);   /* the households' meals and shopping, by the hour (77-sim-7-lod.js) */
   };
   /* the clock jumped: production restarts from now (no output for the hours skipped); the carts go on */
   SIM.economyJump = function(minute){ var E=SIM.ECON; if(!E) return; E.last=minute; E.lastScan=null; };
@@ -214,4 +236,59 @@
       .sort(function(p, q){ return q.held-p.held || (p.id<q.id?-1:1); });
     return out;
   };
+
+  /* ---------------------------------------------------------------- settlements: one economy each (P7a) */
+  /* settlements/isle-demo/PLAN.md section 9, P7a items 1, 2 and 5. OPT-IN: a page that never names a settlement runs one
+     economy as before (SIM.ECONS stays null, every call below passes straight through). A page that does:
+       SIM.settlement({id, faction, name?})           the settlement as a record (kind 'settlement')
+       SIM.place({..., settlement: id})                a place belongs to one; an actor to its home's (SIM.settlementOf)
+       SIM.economy(config, {settlement: id})           that settlement's own economy: its warehouses, sites, carts,
+                                                       recipes, in-flight loads and books, apart from every other's
+     Then SIM.store / recipe / produce / cart route to the economy of the place or actor they are given; SIM.supply,
+     stockOf, economyMeal, economyDays and economyReport take a settlement as their last argument (or run inside
+     SIM.withEcon); SIM.economyStep and economyJump step every economy in turn, in the order they were made. Inside an
+     economy's turn SIM.ECON is that economy, so everything above runs unchanged on its own warehouses and books.
+       SIM.econ(key)        the settlement's economy (SIM.ECON on an unkeyed page)
+       SIM.withEcon(key, fn) fn() with SIM.ECON that settlement's (fn() as it is on an unkeyed page or an unknown key) */
+  SIM.ECONS = null;
+  SIM.ECON_ORDER = [];
+  SIM.settlement = function(o){ if(!SIM.R.settlement){ SIM.R.settlement={}; SIM.order.settlement=[]; }   /* made on first use: an unkeyed page's registry is as it was */
+    return SIM.add('settlement', o); };
+  SIM.settlementOf = function(x){
+    if(x==null) return null;
+    if(typeof x!=='object'){ var P=SIM.R.place && SIM.R.place[x]; return P && P.settlement!=null ? P.settlement : null; }
+    if(x.settlement!=null) return x.settlement;
+    if(x.home!=null){ var Hm=SIM.R.place && SIM.R.place[x.home]; return Hm && Hm.settlement!=null ? Hm.settlement : null; }
+    return null; };
+  SIM.econ = function(key){ return SIM.ECONS ? (key==null ? null : SIM.ECONS[key] || null) : SIM.ECON; };
+  SIM.withEcon = function(key, fn){
+    if(!SIM.ECONS || key==null || !SIM.ECONS[key]) return fn();
+    var prev=SIM.ECON; SIM.ECON=SIM.ECONS[key];
+    try { return fn(); } finally { SIM.ECON=prev; } };
+  var economy0=SIM.economy;
+  SIM.economy = function(o, opt){
+    var key=opt && opt.settlement!=null ? opt.settlement : null;
+    if(key==null){ if(SIM.ECONS) throw new Error('SIM.economy: this page keys its economies by settlement; name one'); return economy0(o); }
+    var prev=SIM.ECON, E=economy0(o); E.settlement=key;
+    if(!SIM.ECONS){ SIM.ECONS={}; SIM.ECON_ORDER=[]; prev=null; route(); }
+    if(SIM.ECONS[key]) throw new Error('SIM.economy: settlement '+key+' has an economy already');
+    SIM.ECONS[key]=E; SIM.ECON_ORDER.push(key); SIM.ECON=prev || E;   /* SIM.ECON outside a turn: the first made (an "on" flag for the other modules) */
+    return E; };
+  /* the routed calls, installed when the first keyed economy is made (an unkeyed page keeps the plain ones): by the
+     place or actor given, or by a settlement passed last */
+  function route(){
+    function byPlace(f){ return function(id){ var args=arguments; return SIM.withEcon(SIM.settlementOf(id), function(){ return f.apply(null, args); }); }; }
+    function byLast(f, n){ return function(){ var args=Array.prototype.slice.call(arguments, 0, n), key=arguments.length>n ? arguments[n] : null;
+      return SIM.withEcon(key, function(){ return f.apply(null, args); }); }; }
+    SIM.store=byPlace(SIM.store); SIM.recipe=byPlace(SIM.recipe); SIM.produce=byPlace(SIM.produce);
+    var cart0=SIM.cart; SIM.cart = function(a){ return SIM.withEcon(SIM.settlementOf(a), function(){ return cart0(a); }); };
+    SIM.supply=byLast(SIM.supply, 3); SIM.stockOf=byLast(SIM.stockOf, 1); SIM.economyMeal=byLast(SIM.economyMeal, 0);
+    SIM.economyDays=byLast(SIM.economyDays, 1); SIM.economyReport=byLast(SIM.economyReport, 0);
+    var stop0=SIM.economyStop; SIM.economyStop = function(G, L, phase, minute){ return SIM.withEcon(SIM.settlementOf(L.place), function(){ return stop0(G, L, phase, minute); }); };   /* a carrier's stop: the economy of the place it stops at */
+    var step0=SIM.economyStep, jump0=SIM.economyJump;
+    SIM.economyStep = function(minute, t){ if(!SIM.ECONS) return step0(minute, t);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute, t); }); }); };
+    SIM.economyJump = function(minute){ if(!SIM.ECONS) return jump0(minute);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ jump0(minute); }); }); };
+  }
 })(typeof window!=='undefined'?window:globalThis);

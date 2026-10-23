@@ -15,7 +15,7 @@
  // FURN_CULTURES (the 27 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -26,18 +26,20 @@
    'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
    // the Zeijani trades (kits/zeijani, 2026-10-07): the alecap and cave-fungus farms, the fungal alchemists, the dyers,
    // the stonecutters, the lampwrights, the obsidian knappers and the rope and caving outfitters
-   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
+   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking',
+   // the trades audit of 2026-10-19: FK.ROLES.works and the culture files' bespoke work pieces
+   'baking', 'butchery', 'healing', 'scribing', 'shipwrighting', 'quarrying', 'customs', 'worship', 'dairy'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 23 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07, Jimjam and Dalab 2026-10-20) ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 24 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07, Jimjam and Dalab 2026-10-20, the Eternians 2026-10-20) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
    'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
-   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads',
+   'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads', 'eternian': 'Eternians',
    'jimjam': 'Jimjam', 'dalab': 'Dalab'
  };
  // cultures of a settlement with no catalog furniture set (yet): not in FURN_CULTURES, so test-tags.js does not look for them there
@@ -108,7 +110,10 @@
      // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
      // ehighlands' growth form, geyser's and the Throne's origin (earth, krator, native, dead), geyser's heat and the
      // Throne's plume (where it lives: against the springs; shoulder, seam, plume, vent), shighlands' spiral habit
-     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free' },
+     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free',
+     // necanyons (2026-10-19): where on the rock a plant lives (floor, foot, ledge, bench, cap, stack), and a carnivorous
+     // plant's trap record (core/biome/37-core-traps.js: kind, mouth, preyMax, cycle, lure, danger)
+     zone: 'free', trap: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

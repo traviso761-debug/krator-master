@@ -347,7 +347,7 @@ const CELL=(i,j)=>[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005];   // a cell of 
 const libMap=n=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;t.wrapS=t.wrapT=T3.RepeatWrapping;return{t,scale:L.scale,mean:L.mean>0?L.mean:.6};};
 EHIGH.LIBMEAN={};
 {const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
- use('ichu',libCell('leaf.ichu',CELL(1,1),256,256),.3);
+ use('ichu',libCell('leaf.ichu',CELL(1,1),256,256),.3);use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
  use('rag',libCard('leaf.rag'),.4);
  use('broad',libCell('leaf.broad',CELL(1,1),256,256),.4);}
 LIB.rag=!!LIBP('leaf.rag');LIB.broad=!!LIBP('leaf.broad');LIB.ichu=!!LIBP('leaf.ichu');

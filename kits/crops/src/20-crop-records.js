@@ -46,6 +46,7 @@ R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umb
 R('breadfruit', 'Breadfruit', 'starch-fruit', [4, 4], [3, 4], {reach: 1, form: 'tree', card: 'card.breadfruit', src: 'ringisles', home: ['ringisles']});
 R('banana', 'Banana', 'starch-fruit', [4, 4], [3, 4], {card: 'card.paddle', src: 'ringisles', home: ['ringisles']});
 R('plantain', 'Violet plantain', 'starch-fruit', [4, 4], [3, 4], {card: 'card.paddle', src: 'xanadu', home: ['xanadu']});
+R('sandpan-fonio', 'Sandpan fonio', 'grain', [4, 5], [0, 2], {reach: 1, card: 'card.crop.plume', src: 'necanyons', home: ['necanyons'], stores: ['ground', 'dried'], note: 'poor sand; ripe eight weeks after the rains'});
 
 /* ---- protein-fat: nut, oil, alga */
 R('pinyon', 'Pinyon nuts', 'nut', [2, 3], [1, 2], {form: 'tree', card: 'card.pine', src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
@@ -64,6 +65,7 @@ R('lakecake', 'Lakecake', 'alga', [3, 4], [0, 1], {water: 'aquatic', needs: 'sal
 R('yucca-stalk', 'Roasted yucca stalk', 'vegetable', [3, 5], [0, 1], {card: 'card.sword', src: 'ebadlands', home: ['ebadlands', 'crater-drylands']});
 R('ballmelon', 'Ballmelon', 'vegetable', [4, 4], [1, 2], {src: 'rift', home: ['rift']});
 R('frillpod', 'Frillpod', 'vegetable', [4, 4], [2, 3], {card: 'card.pods', src: 'rift', home: ['rift']});
+R('fan-palm-heart', 'Fan-palm heart', 'vegetable', [4, 4], [2, 4], {also: ['thatch', 'weaving'], form: 'tree', card: 'card.palm', src: 'necanyons', home: ['necanyons'], note: 'cut from one stem of a clump, which the clump replaces'});
 R('fiddlehead', 'Fiddleheads', 'vegetable', [1, 4], [3, 4], {card: 'card.fern.green', home: ['shighlands', 'swlowlands', 'nwlowlands']});
 R('greens', 'Greens', 'greens', [2, 4], [2, 3], {card: 'card.broadleaf', src: 'ringisles', home: ['ringisles']});
 R('tidewort', 'Tidewort', 'greens', [3, 5], [0, 4], {needs: 'salt', card: 'card.samphire', home: ['eastabyss'], note: 'a samphire-like salt green'});
@@ -84,6 +86,8 @@ R('fig', 'Fig', 'fruit', [3, 4], [0, 2], {form: 'tree', card: 'card.broadleaf', 
 R('pitaya', 'Pitaya and tuna', 'fruit', [3, 5], [0, 2], {card: 'card.succulent.spotted', src: 'xanadu', home: ['xanadu', 'sedesert', 'ebadlands']});
 R('scalefruit', 'Scalefruit', 'fruit', [4, 4], [3, 4], {form: 'tree', src: 'eastabyss', home: ['eastabyss']});
 R('canyon-grape', 'Canyon grape', 'fruit', [2, 3], [1, 2], {form: 'vine', card: 'card.vine', src: 'ebadlands', home: ['ebadlands'], stores: ['fresh', 'dried']});
+R('stack-fig', 'Stack fig', 'fruit', [4, 4], [1, 4], {also: ['dried-fruit'], form: 'tree', card: 'card.broadleaf', src: 'necanyons', home: ['necanyons'], stores: ['fresh', 'dried'], note: 'a rock fig: its roots down the walls, the figs on them'});
+R('ember-plum', 'Ember plum', 'fruit', [4, 5], [0, 2], {also: ['medicine'], form: 'tree', card: 'card.orchard.broad', src: 'necanyons', home: ['necanyons'], stores: ['fresh', 'dried'], note: 'very sour; dried and pounded against scurvy'});
 R('lantern-fruit', 'Lantern fruit', 'fruit', [3, 4], [2, 3], {form: 'tree', src: 'rift', home: ['rift', 'xanadu']});
 R('serviceberry', 'Canyon serviceberry', 'berry', [1, 3], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.orchard.broad', home: ['ebadlands']});
 R('sunthorn', 'Gully sunthorn', 'berry', [0, 2], [1, 2], {atm: [0, 1], form: 'shrub', card: 'card.sunthorn', home: ['ehighlands']});

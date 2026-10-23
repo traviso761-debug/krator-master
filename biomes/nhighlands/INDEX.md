@@ -26,18 +26,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 15 | the map (47); the stream (87); terrain (130); the climate fields (148); the host binding (179) |
+| `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
 | `50-biome-nhighlands-species.js` | 60 **big** | palettes (24); the tree species (70); leaf and frond textures (202); bark textures (311); geometries local to this biome (347); an iridescent bark (411); materials (414); instanced items (488); the new flora (HANDOFF-FLORA.md) (533) |
 | `55-biome-nhighlands-trees.js` | 56 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (131); the new habits (HANDOFF-FLORA.md) (352); impostors (the far canopy) (448); the pass (479) |
 | `60-biome-nhighlands-floor.js` | 25 | small plants (27); the zone planters (91); the pass (171); the new flora (HANDOFF-FLORA.md) (202) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 34 **big** | the fog (16); the dome (26); the gas giant (187); the far country (273); light modes (371) |
-| `84-host-ground.js` | 14 | the water (99); the mist (103) |
+| `84-host-ground.js` | 19 | the water (104); the mist (138) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
 | `88-host-build.js` | 2 |  |
-| `89a-host-atmos.js` | <1 |  |
-| `89w-host-water.js` | 3 |  |
 | `99-host-take.js` | 17 | the inspector's words (61); the probe's budgets and the kit's own checks (ve (80); the page, handed to the host (138) |
 | `99-tail.html` | <1 |  |

@@ -104,6 +104,14 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 
 `src/81-verge-sky.js` and `src/82-verge-daynight.js` are verbatim copies of `settlements/locus/src/21-sky.js` and
 `82-daynight.js`. Fix them upstream, then copy them again.
+- [x] **The Vernacular bundle takes Iziz's openings (fixed 2026-10-20).** `izv_files()` lists the Vernacular by name, so it
+      missed `settlements/iziz/src/69e5-iziz-openings.js` (Iziz, 2026-10-19), which defines `vnPlate`, `vnHole`, `vnOpening`,
+      `IZDOOR` and `IZ_ROOMC`, all called by the vernacular fragments since then. The page built every IZV building that
+      calls them (the guard tower, the governor's palace, the barracks, the hospital, the warehouses, the toll houses)
+      as a ReferenceError: the error panel was dirty, verify drew nothing and failed. It now takes 69e5 after `69e-vern-hollow.js`, as
+      the isle demo does: the panel is clean and every check passes. A file Iziz adds to the Vernacular has to be added here
+      too. Verge takes 69e5 but not `95j-iziz-doors.js`: its doors are drawn shut and do not open (`TODO.md`, "Real doors
+      and glass across the kits").
 - [ ] **Takes the material library from the builds it assembles** (build.py, no materials.json): the Iziz vernacular's seven
       families and its Ancients rows (IZV binds them), Locus's pack (YKIT's 47-texture.js) and both biomes' packs. The maps are in
       dist/verge.tex.<key>.js beside the page (tools/textures/matlib_pack.py), so the page stays 2.6 MB and no file passes the

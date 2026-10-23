@@ -1,5 +1,10 @@
 # kits/catalog — known issues
 
+- **`krator-symbols.js` has drifted from `core/sockets/38-symbols.js`, on purpose** (2026-10-20): the core file gained
+  `scroll` (the Order of Historians' symbol, `SYMBOL_OF.order`) and Xanadu's `lotus` for the wheel; this copy is in the furniture bundle every furnished build
+  takes, so it is re-vendored with the next all-builds rebuild (`TODO.md`, "Ride along"). Until then the Order's furniture
+  draws no scroll and Xanadu's still the wheel; `build.py --vendor-check` reports the drift.
+
 `verify.py --assert` passes with nothing deferred: its `ALLOW` list is empty. The style rules (no host globals,
 `F.shade`/`F.TAU`, no literal colours) are assertions now, not warnings.
 
@@ -9,6 +14,13 @@
   `fruit*` colours and the `KGEN` shapes that only `krator-master-furniture-generic-goods.js` defines. `furniture_bundle.files()`
   now adds `generic-goods` whenever `generic-fruit` is asked for (the fruit file needs its code as well as its colours, so moving
   the colours alone would not have helped). Bundles that already named both are unchanged.
+- [ ] **The north basin's fruit is not in the catalog** (2026-10-23, from `biomes/nsemiarid`). The n semiarid kit draws
+  apples, walnuts, apricots, pears, pomegranates, pistachios and almonds on its trees and as windfall, but
+  `krator-master-furniture-generic-fruit.js` has no piece for any of them, so the kit's `harvest.fruit` is null for each
+  and its probe lists them as edible but not drawn (`FRUIT_NOT_DRAWN`, `biomes/nsemiarid/src/99-host-take.js`). Adding
+  them rebuilds every build that takes the catalog (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and
+  almond are not in `kits/crops` either. When they land: set each species' `fruit`, empty `FRUIT_NOT_DRAWN` of them, and
+  close `biomes/nsemiarid/KNOWN_ISSUES.md`'s "The catalog owes the fruit".
 - [ ] **Hykkousoi has fourteen pieces and no style sheets** (`krator-master-furniture-hykkousoi.js`): the pieces are the Ys
   settlement's (ported 2026-10; Ys keeps its own copy in `settlements/ys/src/66-hyk-furniture.js`), drawn with the core's
   `F.lathe`, `F.tube` and `F.ell`. Their lit pearls and coals are glowing balls with no point light, and `lens` is the

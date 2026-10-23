@@ -36,7 +36,7 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GROUNDU={uNight:{value:0}};
-const GL_KEYS=['snow','snow2','cliff','lava','veins','scoria','sulphur','ash','ice'];
+const GL_KEYS=['snow','snow2','cliff','lava','veins','scoria','sulphur','ash','ice','obsidian','cinder','rock037'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb0aaa4});
@@ -45,7 +45,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  sh.uniforms.uSunDir={value:new THREE.Vector3(...SUN_POS).normalize()};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP,vGN;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGN=normal;vL0=aL0;vL1=aL1;vL2=aL2;');
- const W={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x'};
+ const W={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x',obsidian:'vL2.y',cinder:'vL2.z',rock037:'vL2.w'};
  // TRIPLANAR (Godot: StandardMaterial3D's uv1_triplanar): the cliff from the three axes, blended by the normal (projected
  // from above it smeared down the 450 m wall)
  let decl='uniform sampler2D uDetail,uMacro;uniform float uNight;uniform vec3 uSunDir;varying vec3 vGWP,vGN;varying vec4 vL0,vL1,vL2;'+
@@ -53,7 +53,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  if(GLAY){decl+='uniform sampler2D '+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
   body='vec3 _E_veins=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.04,0.5);vec3 L;'+
-   GL_KEYS.map(k=>'L='+(k==='cliff'?'_tri(uG_cliff,vGWP,normalize(vGN),'+GLAY[k].k.toFixed(4)+');':(k==='snow'||k==='snow2'||k==='ice'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);')+'diffuseColor.rgb=mix(diffuseColor.rgb,'+(k==='cliff'?'diffuseColor.rgb*L*2.2':'diffuse*L*1.25')+','+W[k]+');'+(k==='veins'?'_E_veins=L;':'')).join('')+'}';}
+   GL_KEYS.map(k=>'L='+((k==='cliff'||k==='rock037')?'_tri(uG_'+k+',vGWP,normalize(vGN),'+GLAY[k].k.toFixed(4)+');':(k==='snow'||k==='snow2'||k==='ice'?'_layd':'_lay')+'(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);')+'diffuseColor.rgb=mix(diffuseColor.rgb,'+(k==='cliff'?'diffuseColor.rgb*L*2.2':k==='rock037'?'diffuse*L*1.7':'diffuse*L*1.25')+','+W[k]+');'+(k==='veins'?'_E_veins=L;':'')).join('')+'}';}
  else body='vec3 _E_veins=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.6);}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   // the veins round the lake glow (dull by day, bright at night): the summit glow
@@ -68,7 +68,9 @@ const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
   const dl=LAKE.de(x,z),hot=smooth(LAKE.r*1.45,LAKE.r*1.05,dl)*smooth(LAKE.r*.95,LAKE.r*1.04,dl)*smooth(.35,.6,n1+.2);
   L0[k*4]=sn*.9;L0[k*4+1]=0;L0[k*4+2]=smooth(.5,.85,sl)*(1-sn*.6)*.75;L0[k*4+3]=fl*(1-sn)*.85;
   L1[k*4]=hot*fl*.9;L1[k*4+1]=smooth(.3,.7,coneAt(x,z).k)*.85;L1[k*4+2]=smooth(.25,.7,at('warm'))*.8;L1[k*4+3]=wl*(1-smooth(.5,.8,sl))*(1-sn)*.6;
-  L2[k*4]=out*rimK*smooth(.35,.6,sl)*(1-smooth(.3,.6,at('warm')))*.75;}
+  L2[k*4]=out*rimK*smooth(.35,.6,sl)*(1-smooth(.3,.6,at('warm')))*.75;
+  /* the library's volcanic set: glassy obsidian on the floor round the lake's hot ring, cinder on the cones' tops, black veined rock on the steepest faces */
+  L2[k*4+1]=fl*(1-sn)*smooth(.45,.7,fbm(x*.02+5,z*.02-3,5023,2))*(1-hot)*.7;L2[k*4+2]=smooth(.6,.95,coneAt(x,z).k)*.8;L2[k*4+3]=smooth(.72,.95,sl)*(1-sn*.8)*.7;}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));

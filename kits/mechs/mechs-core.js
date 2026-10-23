@@ -57,15 +57,18 @@
 const MECH_CLASSES = ['mech'];
 const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility', 'standard-bearer', 'scout', 'line', 'heavy'];
 const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
-const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle'];
+const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle', 'none'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
-  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket'];
+  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'none'];
 
 /* a culture: its palette goes into the catalog core's FPAL (inside this closure only), so F.col('orange')
    resolves against the mech's own culture */
 const MECH_CULTURES = {};
 function MECH_CULTURE(key, info) {
-  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '' };
+  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '',
+    /* detail: { tile, mix } a culture's own take on the shared detail maps: tile multiplies how often they repeat (a small,
+       sleek machine wants them finer), mix how strongly they show (0 none, 1 as the Iziz). Its mechs get a material set of their own. */
+    detail: info.detail || null };
   FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
 }
 
@@ -388,6 +391,9 @@ function mechAudit(R, o) {
       if (!list) continue;
       for (const s of list) {
         if (s === t || s.mesh === t.mesh || s.col === t.col || Math.abs(s.d - t.d) > tol || s.n.dot(t.n) < 0.9998) continue;
+        /* the offsets agree at the origin; each triangle must also lie within tol of the other's plane (a long, slightly
+           tilted facet, a tapered pole high on a big mech, otherwise matches a part centimetres off its surface) */
+        if (s.q.some(function (p) { return Math.abs(t.n.dot(p) - t.d) > tol; }) || t.q.some(function (p) { return Math.abs(s.n.dot(p) - s.d) > tol; })) continue;
         const pk = t.mesh < s.mesh ? t.mesh + '|' + s.mesh : s.mesh + '|' + t.mesh;
         if (sep(A, proj(s, u, w))) continue;
         const gk = t.bone + ' ' + [t.col, s.col].sort().join(' vs ');

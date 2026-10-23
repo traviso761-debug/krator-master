@@ -22,7 +22,7 @@ next reworked; see "Porting a settlement" below.
 | `32-city-steps-c.js` | [G data] | steps 10-12 (the `alleys` strategy: side streets, side-street lots and alley entrances, alleys and the infill of the blocks), the infill's reach (`SL.interiorOk`), the step names and the count |
 | `33-city-strategies.js` | [G data] | the strategies behind one interface (`KCITY.strategies`: `alleys`, `frontage-courts`) and their shared primitives (`KCITY.prim`: `frontageRun`, `faceNearestStreet`, `huntNear`, `gridCands`, `packPolygon`, `clearSpot`). Stands alone: Ys takes this fragment |
 | `34-city-radial.js` | [G data] | the optional radial strategy (`KCITY.radial`): the retired toy's civic placement, rings and spokes, wealth and choosers, for a walled radial city |
-| `40-city-kcity.js` | [G data] | the instance: `KCITY.create`, `KCITY.bind`, steps as data, `run`, the export (`KCITY.exportPlan`, `SL.exportPlan`) |
+| `40-city-kcity.js` | [G data] | the instance: `KCITY.create`, `KCITY.bind`, steps as data, `run`, the export (`KCITY.exportPlan`, `SL.exportPlan`); every instance in `KCITY.instances` (named by `o.name`), and core/export's `city` section for all of them that ran (`KCITY.registerExport`: registered when core/export is already on the page, else the page calls it) |
 | `50-city-host-streets.js` | [web] | drawing: streets as ribbons draped on the ground by class, the ground overlay (parks, plazas, districts, lot tints), labels, the step slider's visibility (`HOST`). `HOST.setupStage` / `HOST.buildGround` draw a plain world of their own; a world with its own ground skips them. Reads the bound plan |
 | `52-city-host-buildings.js` | [web] | drawing: every lot's kit piece built once per piece, variant and seed slot with the catalog's builder, merged into three LOD levels (`settlements/voth/catalog/lod.js`) and drawn as InstancedMeshes picked by distance; furniture catalog pieces (`FURN`) through `buildFurn`; the plaza fountain placeholder (`sl_fountain`) |
 | `test-city.js`, `golden.json` | | `node core/city/test-city.js` (`--write` rewrites `golden.json` after a meant change): the module on a small synthetic site, each check with a negative (below) |
@@ -50,6 +50,7 @@ var C = KCITY.create({
 });
 C.run();      // a fresh plan, every step in order (its `after` hooks after it), the finish; returns the plan
 C.export();   // the plan as plain records (format 'krator-city'): ways, lots, greens, the wall's records, fields...
+KCITY.registerExport();   // core/export's city section: {format: 'krator-city', plans: [...]}, cropped to a tile's box
 C.bind();     // makes C the bound instance; run and export bind first
 C.plan; C.raster; C.index.lots; C.index.roads; C.index.fields; C.steps; C.tune; C.ground; C.site
 ```

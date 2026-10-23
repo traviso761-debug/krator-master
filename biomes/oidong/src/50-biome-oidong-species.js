@@ -15,9 +15,11 @@ var OIDONG={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);OIDONG.C=C;
 const GOLD=2.399963;OIDONG.GOLD=GOLD;
-OIDONG.TAGS={climate:'cool-temperate',aridity:'humid',abyssal:false,riparian:'both',koppen:['Cwb','Cfb','Dwb','ET']};
+OIDONG.TAGS={climate:'cool-temperate',aridity:'humid',abyssal:false,riparian:'both',koppen:['Cfb','Dfb','BSk','Csa','ET']};
 // the classes of the region: an ESTIMATE (the scale model's climate rasters were not read for this kit: KNOWN_ISSUES)
-OIDONG.KOPPEN={Cwb:.4,Cfb:.35,Dwb:.15,ET:.1};
+// the classes the scale model (4.21) gives the 'Oidong Valley' biome overlay (read 2026-10-19; KNOWN_ISSUES.md): the floor Cfb with
+// BSk and Csa toward the drier west, the slopes Dfb (and Dfc, Dsb, Dsc), the heights ET (and EF, bare). Shares by area, the bare ice left out
+OIDONG.KOPPEN={Cfb:.42,Dfb:.2,BSk:.12,Csa:.08,ET:.18};
 
 // ---------------------------------------------------------------- palettes
 // THE PALETTE IS PASTEL. Every leaf, flower and bark set below sits low in saturation and high in lightness (the probe
@@ -64,56 +66,56 @@ const K=(c,a,r,kp,o)=>Object.assign({climate:c,aridity:a,abyssal:false,riparian:
 OIDONG.SPECIES=[
  /*0*/{key:'giantlotus',name:'Giant lotus',H:[5,11],rb:[.25,.5],crownR:[2.6,5],barkK:2,bark:PAL.lotusStalk,leaf:[0xa8cc90,0xb4d49c,0x9cc488,0xc0dcaa],
   how:'a lotus grown to the size of a tree: pads three to ten metres across floating on the still water, their rims turned up like trays, and the flowers held up on stalks taller than a house',
-  far:{poleU:.9,taper:.1,blobs:[[.98,.32,.06,0xf4c6d2,0xfcf8f0]]},tags:K('cool-temperate','humid','yes',['Cwb','Cfb'],{holy:true,alien:true})},
+  far:{poleU:.9,taper:.1,blobs:[[.98,.32,.06,0xf4c6d2,0xfcf8f0]]},tags:K('cool-temperate','humid','yes',['Cfb'],{holy:true,alien:true})},
  /*1*/{key:'bodhi',name:'Sacred fig',H:[14,26],rb:[.9,1.6],crownR:[9,15],barkK:1,bark:PAL.bodhiBark,leaf:[0xa8c49c,0xb4cca4,0x9cbc90,0xc0d4b0],
   how:'a pale, smooth, buttressed bole, a wide low crown of heart-shaped leaves with long drip tips that tremble in no wind, the new leaves bronze-pink; aerial roots from the lower limbs',
-  far:{poleU:.5,taper:.45,blobs:[[.68,1.0,.26,'L0','L2'],[.84,.6,.14,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'],{holy:true})},
+  far:{poleU:.5,taper:.45,blobs:[[.68,1.0,.26,'L0','L2'],[.84,.6,.14,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb'],{holy:true})},
  /*2*/{key:'cherry',name:'Cherry blossom',H:[6,12],rb:[.3,.55],crownR:[4,7],barkK:0,bark:PAL.cherryBark,leaf:PAL.blush,
   how:'a dark banded trunk, a wide umbrella of blossom in blush and white, the petals lying round its foot and on the water',
-  far:{poleU:.5,taper:.4,blobs:[[.72,1.0,.22,'L0','L2'],[.86,.6,.12,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb','Dwb'],{holy:true})},
+  far:{poleU:.5,taper:.4,blobs:[[.72,1.0,.22,'L0','L2'],[.86,.6,.12,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb','Dfb'],{holy:true})},
  /*3*/{key:'marblebirch',name:'Marble birch',H:[18,34],rb:[.5,1.0],crownR:[5,9],barkK:3,bark:PAL.marble,leaf:[0xf4ece8,0xf8f0ec,0xeee6e2,0xf6f0f2],
   how:'a tall pale bole painted in swirled bands of every pastel at once, like cut marble, rising to a lace of near-white foliage; the ground round a grove is marbled too',
-  far:{poleU:.72,taper:.5,blobs:[[.84,1.15,.22,'L0','L2'],[.95,.75,.1,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'],{alien:true})},
+  far:{poleU:.72,taper:.5,blobs:[[.84,1.15,.22,'L0','L2'],[.95,.75,.1,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb'],{alien:true})},
  /*4*/{key:'cloudpine',name:'Cloud pine',H:[6,14],rb:[.35,.7],crownR:[4,7],barkK:4,bark:PAL.pineBark,leaf:[0x6e8a68,0x7a9a74,0x628060,0x88a880],
   how:'a bonsai nobody trimmed (biomes/xanadu): a whorled trunk in an S, level boughs, a flat pad of needles on every tip; on the flats it leans with the wind',
-  far:{poleU:.7,taper:.4,blobs:[[.6,.8,.12,'L0','L1'],[.9,.6,.1,'L1','L2']]},tags:K('cool-temperate','subhumid','no',['Cwb','Cfb','Dwb'],{shared:'xanadu'})},
+  far:{poleU:.7,taper:.4,blobs:[[.6,.8,.12,'L0','L1'],[.9,.6,.1,'L1','L2']]},tags:K('cool-temperate','subhumid','no',['Cfb','Dfb','BSk','Csa'],{shared:'xanadu'})},
  /*5*/{key:'topiary',name:'Cushion tree',H:[6,12],rb:[.25,.45],crownR:[5,8],barkK:4,bark:PAL.cushionBark,leaf:[0x9ab888,0xa8c494,0x8cac7c,0xb4cc9e],
   how:'braided stems from one foot and over them a lumpy dome of smooth leafy cushions, as if clipped (biomes/xanadu)',
-  far:{poleU:.5,taper:.3,blobs:[[.66,1.0,.28,'L0','L2']]},tags:K('cool-temperate','subhumid','no',['Cwb','Cfb'],{shared:'xanadu'})},
+  far:{poleU:.5,taper:.3,blobs:[[.66,1.0,.28,'L0','L2']]},tags:K('cool-temperate','subhumid','no',['Cfb','Csa'],{shared:'xanadu'})},
  /*6*/{key:'hazeblossom',name:'Haze blossom',H:[7,13],rb:[.4,.7],crownR:[6,9],barkK:4,bark:[0x7a5a5c,0x6c4e50,0x886662],leaf:[0xf4f6f0,0xe4f2dc,0xeee2f8,0xd8ecd0,0xf8f0fc],
   how:'a low gnarled trunk, a wide umbrella wholly in blossom, white going green or lavender with the light (biomes/xanadu)',
-  far:{poleU:.5,taper:.4,blobs:[[.74,1.0,.2,'L0','L2'],[.88,.55,.1,'L1','L3']]},tags:K('cool-temperate','subhumid','both',['Cwb','Cfb'],{shared:'xanadu'})},
+  far:{poleU:.5,taper:.4,blobs:[[.74,1.0,.2,'L0','L2'],[.88,.55,.1,'L1','L3']]},tags:K('cool-temperate','subhumid','both',['Cfb','Csa'],{shared:'xanadu'})},
  /*7*/{key:'lotustrumpet',name:'Lotus trumpet',H:[10,18],rb:[1.0,1.7],crownR:[3,5],barkK:2,bark:PAL.trumpetBark,leaf:[0x9ab888,0xa8c494,0x8cac7c,0xb4cc9e],
   how:'a fat fluted bole and arms each ending in a shallow trumpet with a fringe of lotus flowers round its rim (biomes/xanadu); the fringe is the one place every colour shows',
-  far:{poleU:.45,taper:.4,blobs:[[.72,.8,.14,'L0',0xf0b0c8],[.9,.5,.1,'L1',0xf4c6d2]]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'],{shared:'xanadu',holy:true,alien:true})},
+  far:{poleU:.45,taper:.4,blobs:[[.72,.8,.14,'L0',0xf0b0c8],[.9,.5,.1,'L1',0xf4c6d2]]},tags:K('cool-temperate','humid','both',['Cfb'],{shared:'xanadu',holy:true,alien:true})},
  /*8*/{key:'wisteria',name:'Wisteria tree',H:[6,11],rb:[.5,.9],crownR:[6,9],barkK:4,bark:PAL.wisteriaBark,leaf:[0xcbb8e6,0xd8c9ee,0xbfa9dc,0xe2d6f2,0xf0ecf8],
   how:'two stems wound round each other, an umbrella of low boughs and curtains of racemes in lavender and white (biomes/xanadu)',
-  far:{poleU:.5,taper:.4,blobs:[[.7,1.0,.24,'L0','L2'],[.55,.9,.2,'L1','L3']]},tags:K('cool-temperate','subhumid','both',['Cwb','Cfb'],{shared:'xanadu'})},
+  far:{poleU:.5,taper:.4,blobs:[[.7,1.0,.24,'L0','L2'],[.55,.9,.2,'L1','L3']]},tags:K('cool-temperate','subhumid','both',['Cfb','Csa'],{shared:'xanadu'})},
  /*9*/{key:'chalice',name:'Chalice tree',H:[16,30],rb:[.7,1.2],crownR:[6,11],barkK:1,bark:PAL.chaliceStem,leaf:[0x8ec7c0,0x9fd2cb,0x7ab8b0,0xb0dcd6],
   how:'a pale smooth column holding up one great shallow cap, teal above and veined underneath, that fills with rain and cloud-drip and spills it over its rim in threads that fall the whole height of the tree; a fringe of pale grass grows on the rim',
-  far:{poleU:.88,taper:.35,blobs:[[.9,1.0,.05,'L0','L2']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'],{alien:true})},
+  far:{poleU:.88,taper:.35,blobs:[[.9,1.0,.05,'L0','L2']]},tags:K('cool-temperate','humid','both',['Cfb'],{alien:true})},
  /*10*/{key:'bellpod',name:'Bell-pod willow',H:[4,8],rb:[.25,.45],crownR:[3,5],barkK:1,bark:PAL.bellBark,leaf:[0xcfe0d4,0xd8e8dc,0xc4d8ca,0xdcecd8],
   how:'a small weeping tree whose pink stems hang in strings of pale green beads, each string ending in a coral bell; the beads are sweet and the bells are the monks\' sleeping draught',
-  far:{poleU:.6,taper:.3,blobs:[[.62,1.0,.3,'L0',0xf0b0a0]]},tags:K('cool-temperate','humid','yes',['Cwb','Cfb'],{alien:true})},
+  far:{poleU:.6,taper:.3,blobs:[[.62,1.0,.3,'L0',0xf0b0a0]]},tags:K('cool-temperate','humid','yes',['Cfb'],{alien:true})},
  /*11*/{key:'bamboo',name:'Jade bamboo',H:[10,20],rb:[.07,.13],crownR:[1.5,3],barkK:5,bark:PAL.bambooCane,leaf:[0xa9cf9a,0xb8d8a8,0x98c088,0xc4e0b6],
   how:'a clump of pale jade canes, ringed at the nodes, bending a little at the top into a haze of narrow leaves; the groves stand so close the light inside is green',
-  far:{poleU:.95,taper:.05,blobs:[[.85,.9,.14,'L0','L2']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'])},
+  far:{poleU:.95,taper:.05,blobs:[[.85,.9,.14,'L0','L2']]},tags:K('cool-temperate','humid','both',['Cfb'])},
  /*12*/{key:'mossball',name:'Moss-ball tree',H:[7,13],rb:[.3,.55],crownR:[3.5,6],barkK:4,bark:PAL.mossballBark,leaf:[0xa6c45e,0xb0cc68,0x98b852,0xbcd47c],
   how:'a gnarled dark trunk that forks and forks again, and on every fork a ball of moss-fine foliage, the balls stacked up it like a cloud-pruned tree',
-  far:{poleU:.6,taper:.35,blobs:[[.5,.6,.18,'L0','L2'],[.78,.5,.14,'L1','L3'],[.95,.35,.08,'L0','L1']]},tags:K('cool-temperate','humid','no',['Cwb','Cfb'],{alien:true})},
+  far:{poleU:.6,taper:.35,blobs:[[.5,.6,.18,'L0','L2'],[.78,.5,.14,'L1','L3'],[.95,.35,.08,'L0','L1']]},tags:K('cool-temperate','humid','no',['Cfb'],{alien:true})},
  /*13*/{key:'maple',name:'Paper maple',H:[5,10],rb:[.2,.4],crownR:[4,7],barkK:1,bark:PAL.mapleBark,leaf:[0xf4c8ae,0xf6d2bc,0xeeb8a4,0xf9dcc8,0xf2bfb0],
   how:'a small layered maple whose palmate leaves are coral and peach the year round, laid in flat tiers over the moss',
-  far:{poleU:.45,taper:.4,blobs:[[.7,1.0,.22,'L0','L2'],[.5,.8,.16,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb','Dwb'])},
+  far:{poleU:.45,taper:.4,blobs:[[.7,1.0,.22,'L0','L2'],[.5,.8,.16,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb','Dfb'])},
  // THE DARK EVERGREENS (the owner, 2026-10-19: the valley was a little too pastel; these give it its contrast)
  /*14*/{key:'cedar',name:'Temple cedar',H:[18,34],rb:[.5,.9],crownR:[3,5.5],barkK:6,bark:[0x6a4a3c,0x5e4236,0x785248],leaf:[0x2e5a34,0x366a3c,0x2a5030,0x3e7244],
   how:'a straight red-barked column of dark green, its short level boughs in tiers to the tip: the temple timber, the incense wood',
-  far:{poleU:.9,taper:.6,blobs:[[.5,.9,.42,'L0','L2'],[.86,.5,.14,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb','Dwb'])},
+  far:{poleU:.9,taper:.6,blobs:[[.5,.9,.42,'L0','L2'],[.86,.5,.14,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb','Dfb'])},
  /*15*/{key:'camphor',name:'Camphor laurel',H:[12,22],rb:[.7,1.3],crownR:[7,12],barkK:1,bark:[0x7a7064,0x86786c,0x6e645a],leaf:[0x2c5a30,0x34663a,0x28502c,0x3c7040],irid:'gloss',
   how:'a heavy grey bole and a great dark dome of glossy leaves, the darkest shade in the valley; the wood is steamed for its camphor',
-  far:{poleU:.42,taper:.45,blobs:[[.66,1.0,.3,'L0','L2'],[.82,.7,.16,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cwb','Cfb'])},
+  far:{poleU:.42,taper:.45,blobs:[[.66,1.0,.3,'L0','L2'],[.82,.7,.16,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb'])},
  /*16*/{key:'pagodafir',name:'Pagoda fir',H:[14,28],rb:[.4,.7],crownR:[4,7],barkK:6,bark:[0x4e4a44,0x5a5650,0x444038],leaf:[0x24503a,0x2c5c44,0x1e4834,0x346a4c],
   how:'an alien conifer whose limbs leave the bole in level whorls, each whorl a flat plate of blue-green needles like a pagoda roof, smaller to the spire; the snow lies on them in winter',
-  far:{poleU:.95,taper:.6,blobs:[[.4,1.0,.1,'L0','L2'],[.62,.8,.09,'L1','L3'],[.82,.55,.08,'L0','L1']]},tags:K('cool-temperate','humid','no',['Cwb','Cfb','Dwb','ET'],{alien:true})},
+  far:{poleU:.95,taper:.6,blobs:[[.4,1.0,.1,'L0','L2'],[.62,.8,.09,'L1','L3'],[.82,.55,.08,'L0','L1']]},tags:K('cool-temperate','humid','no',['Cfb','Dfb','ET'],{alien:true})},
 ];
 OIDONG.byKey={};OIDONG.SPECIES.forEach((S,i)=>{S.i=i;OIDONG.byKey[S.key]=S;});
 
@@ -148,24 +150,24 @@ OIDONG.SPECIES.forEach(S=>{S.tags.harvest=OIDONG.HARVEST[S.key]||HV('none');});
 // reagents are here: the monks' physic (kits/crops has them as crop records, home 'oidong').
 const PK=(name,c,a,r,kp,items,hv,o)=>({name,tags:Object.assign(K(c,a,r,kp,o),{harvest:hv||HV('none')}),items});
 OIDONG.PLANTS={
- moss:PK('Moss','cool-temperate','humid','both',['Cwb','Cfb','Dwb'],['mossmat','moss','cushion'],HV('none',[],true,'The moss garden: over the floor, the stones, the fallen wood and the roots, bright in the shade.')),
- lotus:PK('Lotus','cool-temperate','humid','yes',['Cwb','Cfb'],['lilypad','cup','lotuspod'],HV('none',['seeds (fresh)','root'],true,'The ordinary lotus among the giants: pads and flowers on the pools, green seed heads after the flowers.','generic_fruit_lotus_seed'),{holy:true}),
- lily:PK('Iridescent water lily','cool-temperate','humid','yes',['Cwb','Cfb'],['lily'],HV('none',[],true,'A lily of no fixed colour: violet, blue, rose and gold shift across it as the eye moves. Its root is a dream reagent, steeped.'),{alien:true}),
- peyote:PK('Peyote buttons','cool-temperate','subhumid','no',['Cwb','Dwb'],['peyote'],HV('none',[],true,'Pale blue-green buttons flush with the gravel, a pink flower in the crown of each; dried, the monks\' seeing reagent, taken on the flats at dawn.'),{holy:true}),
- stonebloom:PK('Stone-blooms','cool-temperate','subhumid','no',['Cwb','Dwb'],['stonebloom'],HV('none',[],false,'Pebble plants that pass for the gravel they lie in until they flower, each a pair of fleshy stones with a daisy between.'),{alien:true}),
- fern:PK('Shade ferns','cool-temperate','humid','both',['Cwb','Cfb'],['fern'],HV('none',['fiddleheads'],false,'')),
- mooncap:PK('Moon caps','cool-temperate','humid','both',['Cwb','Cfb'],['mooncap'],HV('none',['caps (cooked)'],true,'Pink pleated parasols on dark stems, in rings under the cherries; a mild dream mushroom, eaten dried in the winter rites.')),
- bracket:PK('Rainbow brackets','cool-temperate','humid','both',['Cwb','Cfb'],['bracket'],HV('none',[],true,'Shelf fungi banded in rings of teal, gold and blue on the old trunks; a tea of them is the monks\' long-life tonic.')),
- reed:PK('Reeds and iris','cool-temperate','humid','yes',['Cwb','Cfb'],['reed','blade'],HV('thatch, weaving',[],false,'')),
- box:PK('Box domes','cool-temperate','subhumid','no',['Cwb','Cfb'],['boxdome'],HV('none',[],false,'Clipped-looking domes of small leaves on the meadows, nobody\'s clipping.')),
- tea:PK('Mist tea','cool-temperate','humid','no',['Cwb','Cfb'],['teabush'],HV('none',['leaves (dried, steeped)'],true,'Xanadu\'s mist tea, wild on the terraces; the valley\'s drink.')),
- poppy:PK('Sky poppy','cool-temperate','humid','no',['Cwb','Cfb','Dwb'],['poppy'],HV('dye (the leaves: the Order\'s blue)',[],true,'A powder-blue poppy on the slopes; its seed is a sleeping draught and a reagent of the stillness rites, and its leaves are the vat the Order\'s blue is dyed in.'),{holy:true}),
- snowlotus:PK('Snow lotus','cool-temperate','subhumid','no',['Cwb','ET'],['snowlotus'],HV('none',[],true,'A pale woolly rosette high on the cold slopes; the whole plant, dried, is the valley\'s strongest medicine, for the heart and the breath.'),{holy:true}),
- ginseng:PK('Valley ginseng','cool-temperate','humid','no',['Cwb','Cfb'],['ginseng'],HV('none',['root'],true,'A whorl of five leaflets and a cluster of coral berries over a man-shaped root: the monks\' tonic and reagent, dug after seven years.')),
- sage:PK('Monk\'s sage','cool-temperate','subhumid','no',['Cwb','Dwb'],['sagebush'],HV('incense',[],true,'A silver wormwood on the flats, burned for incense and brewed bitter for the stomach.')),
- coin:PK('Coin vine','cool-temperate','humid','both',['Cwb','Cfb'],['coin'],HV('none',[],false,'Strings of round leaves hung from the limbs like coins on a thread.'),{alien:true}),
- petals:PK('Fallen petals','cool-temperate','humid','both',['Cwb','Cfb'],['petal'],HV('none',['petals (cakes)'],false,'')),
- stones:PK('Standing stones','cool-temperate','subhumid','no',['Cwb','Cfb','Dwb'],['standing','boulder','stone'],HV('none',[],false,'The valley\'s stones stand in threes, fives and sevens, as if set; the monks say the valley set them.')),
+ moss:PK('Moss','cool-temperate','humid','both',['Cfb','Dfb'],['mossmat','moss','cushion'],HV('none',[],true,'The moss garden: over the floor, the stones, the fallen wood and the roots, bright in the shade.')),
+ lotus:PK('Lotus','cool-temperate','humid','yes',['Cfb'],['lilypad','cup','lotuspod'],HV('none',['seeds (fresh)','root'],true,'The ordinary lotus among the giants: pads and flowers on the pools, green seed heads after the flowers.','generic_fruit_lotus_seed'),{holy:true}),
+ lily:PK('Iridescent water lily','cool-temperate','humid','yes',['Cfb'],['lily'],HV('none',[],true,'A lily of no fixed colour: violet, blue, rose and gold shift across it as the eye moves. Its root is a dream reagent, steeped.'),{alien:true}),
+ peyote:PK('Peyote buttons','cool-temperate','subhumid','no',['Cfb','Dfb','BSk'],['peyote'],HV('none',[],true,'Pale blue-green buttons flush with the gravel, a pink flower in the crown of each; dried, the monks\' seeing reagent, taken on the flats at dawn.'),{holy:true}),
+ stonebloom:PK('Stone-blooms','cool-temperate','subhumid','no',['Cfb','Dfb','BSk'],['stonebloom'],HV('none',[],false,'Pebble plants that pass for the gravel they lie in until they flower, each a pair of fleshy stones with a daisy between.'),{alien:true}),
+ fern:PK('Shade ferns','cool-temperate','humid','both',['Cfb'],['fern'],HV('none',['fiddleheads'],false,'')),
+ mooncap:PK('Moon caps','cool-temperate','humid','both',['Cfb'],['mooncap'],HV('none',['caps (cooked)'],true,'Pink pleated parasols on dark stems, in rings under the cherries; a mild dream mushroom, eaten dried in the winter rites.')),
+ bracket:PK('Rainbow brackets','cool-temperate','humid','both',['Cfb'],['bracket'],HV('none',[],true,'Shelf fungi banded in rings of teal, gold and blue on the old trunks; a tea of them is the monks\' long-life tonic.')),
+ reed:PK('Reeds and iris','cool-temperate','humid','yes',['Cfb'],['reed','blade'],HV('thatch, weaving',[],false,'')),
+ box:PK('Box domes','cool-temperate','subhumid','no',['Cfb'],['boxdome'],HV('none',[],false,'Clipped-looking domes of small leaves on the meadows, nobody\'s clipping.')),
+ tea:PK('Mist tea','cool-temperate','humid','no',['Cfb'],['teabush'],HV('none',['leaves (dried, steeped)'],true,'Xanadu\'s mist tea, wild on the terraces; the valley\'s drink.')),
+ poppy:PK('Sky poppy','cool-temperate','humid','no',['Cfb','Dfb'],['poppy'],HV('dye (the leaves: the Order\'s blue)',[],true,'A powder-blue poppy on the slopes; its seed is a sleeping draught and a reagent of the stillness rites, and its leaves are the vat the Order\'s blue is dyed in.'),{holy:true}),
+ snowlotus:PK('Snow lotus','cool-temperate','subhumid','no',['Cfb','ET'],['snowlotus'],HV('none',[],true,'A pale woolly rosette high on the cold slopes; the whole plant, dried, is the valley\'s strongest medicine, for the heart and the breath.'),{holy:true}),
+ ginseng:PK('Valley ginseng','cool-temperate','humid','no',['Cfb'],['ginseng'],HV('none',['root'],true,'A whorl of five leaflets and a cluster of coral berries over a man-shaped root: the monks\' tonic and reagent, dug after seven years.')),
+ sage:PK('Monk\'s sage','cool-temperate','subhumid','no',['Cfb','Dfb','BSk'],['sagebush'],HV('incense',[],true,'A silver wormwood on the flats, burned for incense and brewed bitter for the stomach.')),
+ coin:PK('Coin vine','cool-temperate','humid','both',['Cfb'],['coin'],HV('none',[],false,'Strings of round leaves hung from the limbs like coins on a thread.'),{alien:true}),
+ petals:PK('Fallen petals','cool-temperate','humid','both',['Cfb'],['petal'],HV('none',['petals (cakes)'],false,'')),
+ stones:PK('Standing stones','cool-temperate','subhumid','no',['Cfb','Dfb'],['standing','boulder','stone'],HV('none',[],false,'The valley\'s stones stand in threes, fives and sevens, as if set; the monks say the valley set them.')),
 };
 OIDONG.plantOfItem=item=>{for(const k in OIDONG.PLANTS)if(OIDONG.PLANTS[k].items.indexOf(item)>=0)return OIDONG.PLANTS[k];return null;};
 OIDONG.FRUIT_KEYS=[...new Set(OIDONG.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(OIDONG.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];

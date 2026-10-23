@@ -34,7 +34,8 @@ their sources because a change to `core/` was rebuilt into one build only. After
 Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
 are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
 `dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
-on purpose and checked.
+on purpose and checked. A change that rebuilds every build (or most of them) takes the items parked in `TODO.md`, "Ride along with the
+next all-builds rebuild", with it.
 
 **Write code that is the same on every machine and in Godot.**
 - Every text-mode `open()` in a build.py names `encoding='utf-8'` (and `newline='\n'` when writing).
@@ -76,12 +77,12 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | `settlements/port/` | **a kit, not a settlement**: the Ancient Port segments and vessels (a sibling of `kits/ancients`), which will build Hook and may be reused on other coasts. Call it the Ancient Port kit |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 31 vessels, one fragment each |
-| `kits/catalog/` | master catalog: asset engine, 1674 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
+| `kits/catalog/` | master catalog: asset engine, 1696 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/ancients-interiors/` | the Ancients' ship interiors (backported from Noah's Regret) on `kits/interiors`: the ship's room kinds, ship's rooms and cabins, fourteen hall recipes in two dresses, each audited; bundled as `KratorAncientsInteriors` (`kit_bundle.bundle()`). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `kits/motor-vehicles/` | the Motor Vehicles kit: a `VEHICLE` registry on the catalog core, one file per culture (geomancer, republic, iziz, eastabyss, post-apoc: a buggy, an eight-wheeled crawler, a six-wheeler, a caravan truck, a tracked hab), bundled for any world as `KratorVehicles` (`vehicle_bundle.bundle()`), textured from the library as detail maps (`materials.json`, `tex/`). Verified: `build.py`, `verify.py --assert` |
-| `kits/mechs/` | the Mechs kit: skinned, animated walkers (leg IK with planted feet, idle / walk / attack clips with fire and impact events, a z-fighting audit) on the catalog core and the motor-vehicles frame, bundled as `KratorMechs`; one file per mech (now Iziz: eleven war-walkers, the Castra in two variants). Verified: `build.py`, `verify.py --assert`. Read `README.md`, `API.md` |
+| `kits/mechs/` | the Mechs kit: skinned, animated walkers (leg IK with planted feet, idle / walk / attack clips with fire and impact events, a z-fighting audit) on the catalog core and the motor-vehicles frame, bundled as `KratorMechs`; one file per mech (Iziz: seventeen walkers, from a hound-sized drone to a walking siege tower, the Castra in two variants; the Stalkers of the Catch: two, man-sized and sleek). Verified: `build.py`, `verify.py --assert`. Read `README.md`, `API.md` |
 | `kits/pylon/` | the Pylon kit (culture `pylon`): Iziz's vassal arcology city round the ruined Monolith, post-Cataclysm buildings imitating the Ancients in white render and Iziz orange. Written on the Iziz Vernacular contract and built on its page (`settlements/iziz/build.py --kit`; the Vernacular stands beside it: the mixed street). Read `PLAN.md`; the contract shared with the Vernacular and `kits/talia` is `settlements/iziz/VASSAL-KITS.md` |
 | `kits/islanders/` | the Islanders kit (catalog culture `islander`): the Ring Sea Islanders in two styles, the West (rumah: horned saddle roofs on piles) and Kautoa (Sumba: spire roofs over thatch skirts), poor to rich houses, civic, trade, harbour and defence buildings, Kautoa's palace; a building for every Voth census trade in both sets, mines; scrap on the poor; forked from the Scyvoi engine (vendored). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
 | `kits/beast-riders/` | the Beast Riders kit (catalog culture `beast-rider`): the mounts' buildings (raptor stable, great byre, rookery tower) as catalog ASSETs with the library's detail maps, beside Girder's and Mav's Refuge's buildings from the catalog (lossy copies until the faithful port: its `KNOWN_ISSUES.md`); the catalog's inspector, hover and polygon tools. Verified: `build.py`, `verify.py --assert`. Read `README.md` |

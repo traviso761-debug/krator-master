@@ -6,7 +6,8 @@ own so its globals (MAT, REG, TAU, clamp, terrainH, WORLD, KIT...) meet neither 
                        resource nodes (kits/resources) and the farm animals (kits/fauna); ISK.proto(key, v) builds one
                        def at the origin into a group, ISK.dims() is the kit's isDims()
     izv_bundle()       IZV: the Iziz Vernacular with the Ancients core it draws through (settlements/iziz/src,
-                       core/materials), the same files settlements/verge/build.py's IZV takes; IZV.proto(key, v, w)
+                       core/materials), the same files settlements/verge/build.py's IZV takes plus Iziz's own
+                       88y-iziz-matlib.js (its library bind and material records); IZV.proto(key, v, w)
     ringsea_fragment() RINGSEA: the Ring Sea watercraft (kits/ringsea) through settlements/voth/ringsea.py, read in
                        place, with the isle demo's own vessel list (PLAN.md section 8a)
 
@@ -94,6 +95,14 @@ var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, ent
 
 ISK_TAIL = r'''
 reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('ISK: ' + m); };
+/* the material records for the export (core/materials/record), as the kit's own page registers them (93-anim.js, which the
+   bundle skips): every MAT key as one record on the page's KMAT; core/export's materials section reads every adapter */
+(function () { var recs = {}; for (var k in MAT) { var fam = SV_LIB[k], L = fam && KMAT.mode === 'lib' ? KMAT.packed(KIT.pack, fam) : null;
+  recs[k] = { id: KIT.pack + '.' + k, family: k, scale: [TILE[k] || 1, TILE[k] || 1], tint: true, roughness: MAT[k].roughness === undefined ? 1 : MAT[k].roughness, metal: MAT[k].metalness || 0,
+    specular: L ? L.specular : .5, breakup: L ? (L.breakup || null) : null, lib: L ? L.lib : null, doubleSided: MAT[k].side === THREE.DoubleSide,
+    hook: [SV_CLOTH[k] ? 'cloth-flutter' : null, SV_CUT[k] ? 'cut-away' : null, k === 'glow' ? 'unlit flicker' : null].filter(Boolean).join('+') || null,
+    note: L ? 'library set, tint keep ' + L.tint : 'vertex colour only' }; }
+  KMAT.adapter(KIT.pack, recs); })();
 /* ISK.proto(key, v): the def built once at the origin (y 0, front +z) into a new group, its buckets flushed, its sails and
    animals with it; nothing is registered (the city registered the lot in core/tags before drawing it) */
 function iskProto(key, v) {
@@ -106,8 +115,20 @@ function iskProto(key, v) {
   flushBuckets(GB, G, false);
   if (IE_MILLS.length) ieMillFlush(G);
   if (typeof saFlush === 'function') saFlush(G);
-  G.userData = { key: key, v: v | 0, tris: Math.round(GSTAT.tris), w: d.w, d: d.d, h: d.h, doors: rec ? rec.doorCount : 0 };
+  G.userData = { key: key, v: v | 0, tris: Math.round(GSTAT.tris), w: d.w, d: d.d, h: d.h, doors: rec ? rec.doorCount : 0, fixtures: iskFixtures(rec) };
   return G;
+}
+/* the building's openings and lights in its own frame (the proto stands at the origin, front +z): every door() and window
+   isWall cut (kits/islanders 36-def.js, 40-is-kit.js), its sub-buildings' too, and every lit point it recorded (HALOS: the
+   lamps, the hearths and the fires; big = a fire) */
+function iskFixtures(rec) {
+  var f = { doors: [], windows: [], lamps: [] }, r3 = function (v) { return +v.toFixed(3); };
+  (function walk(r) { if (!r) return;
+    (r.doors || []).forEach(function (q) { f.doors.push({ x: r3(q.wx), y: r3(q.wy), z: r3(q.wz), yaw: +q.yaw.toFixed(4), w: q.w, h: q.h || null, part: r.key }); });
+    (r.windows || []).forEach(function (q) { f.windows.push({ x: r3(q.wx), y: r3(q.wy), z: r3(q.wz), yaw: +q.yaw.toFixed(4), w: q.w, h: q.h, sill: q.sill, part: r.key }); });
+    (r.children || []).forEach(walk); })(rec);
+  HALOS.forEach(function (H) { f.lamps.push({ x: r3(H.x), y: r3(H.y), z: r3(H.z), colour: [+H.r.toFixed(3), +H.g.toFixed(3), +H.b.toFixed(3)], big: !!H.big }); });
+  return f;
 }
 return { proto: iskProto, dims: isDims, DEFS: DEFS, MAT: MAT, KIT: KIT, IS_TRADES: (typeof IS_TRADES !== 'undefined' ? IS_TRADES : null),
   RES: (typeof RES_NODES !== 'undefined' ? RES_NODES : null), errors: ISK_ERRS, ANIMU: ANIMU, FRAME_HOOKS: FRAME_HOOKS };
@@ -140,10 +161,12 @@ def izv_files():
         return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
     names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
              '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js']
+             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']   # 69e5: real doors and glass (vnPlate, vnHole, IZDOOR), which the vernacular fragments call since 2026-10-19
     out = [iz(f) for f in names]
     # every vernacular building fragment in its file order: Verge's list stops at 74, and Iziz has since added 71a-c, 73b-c
     out += sorted(glob.glob(os.path.join(IZIZ, '7[0-4]*-vern-*.js')))
+    # Iziz's own library bind (its aliases and tiles) and its material records for the export (KMAT.adapter('iziz'))
+    out.append(os.path.join(IZIZ, '88y-iziz-matlib.js'))
     return out
 
 
@@ -156,13 +179,16 @@ var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: fu
 
 IZV_TAIL = r'''
 reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('IZV: ' + m); };
-if (typeof KMAT !== 'undefined' && KMAT.bindMat) KMAT.bindMat('iziz', MAT, { tile: KMAT.ANCIENT_TILES });
-/* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked */
+/* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked. The kit's
+   items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
+   carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
+function izvKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
 function izvProto(key, v, w) {
   var D = VERN.defs[key]; if (!D) return null;
   var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  izvKitClear();
   withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); });
-  kbake(G); REG.length = r0;
+  kbake(G); izvKitClear(); REG.length = r0;
   G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
   return G;
 }
@@ -186,6 +212,45 @@ def izv_bundle():
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
 CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
+# the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
+# its buildings with the catalog's detail maps (krator-furniture-detail.js: each material's texture family, projected
+# triplanar from the mesh's own position, its mean brightness divided out), over KF_TEX (kits/beast-riders/build.py
+# kf_tex: the catalog's packed maps with the kit's own over them). CAT takes the same: KF_TEX (in side['kftex'] beside the
+# page when side is given), the detail code with a stand-in for the furniture batch it extends (CAT draws no furniture),
+# and catProto details every non-port building as the kit's sheet does; each detailed material is tagged
+# userData.courtTri {tile, detail, gain}, the triplanar hook core/export already carries to Godot (Iziz's court finishes).
+CAT_DETAIL = os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-detail.js')
+CAT_TAIL = r'''
+function catDetail(g) {
+  if (!KF_TEX) return g;
+  g.traverse(function (m) { if (m.isMesh) m.userData.furniture = true; }); KF_API.detailize(g);
+  g.traverse(function (m) {
+    var mt = m.isMesh ? m.material : null; if (!mt || !mt.map || mt.userData.courtTri || mt.customProgramCacheKey() !== 'kf-detail') return;
+    var u = mt.userData, L = KF_TEX[u.texFamily] || KF_TEX[u.family]; if (!L) return;   /* the detail code's own lookup and numbers */
+    u.courtTri = { tile: 1 / (L.scale || 0.5), detail: true, gain: 1 / Math.max(0.05, Math.pow(L.mean == null ? 0.5 : L.mean, 2.2)), family: u.texFamily || u.family };
+  });
+  return g;
+}
+'''
+
+
+def _kf_tex():
+    """the Beast Riders kit's KF_TEX body (kits/beast-riders/build.py kf_tex), as JSON"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('_br_build', os.path.join(BR, 'build.py'))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    js = m.kf_tex()
+    return js[js.index('=') + 1:].strip().rstrip(';')
+
+
+CAT_WINDOW = r'''
+/* the page's window, with one write kept off it: each sealed town loads core/materials/record/23-mat-record.js, whose
+   last line sets window.KMAT to the town's own KMAT, and the page's KMAT (the Islanders' and Iziz's packs registered on
+   it) was replaced by the last town's, so ISK and IZV, sealed after CAT, bound no library maps (2026-10-19: the towns
+   read pale; KNOWN_ISSUES.md). The towns' own KMAT stays their closures' lexical one */
+var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
+  set: function (t, k, v) { if (k === 'KMAT') return true; t[k] = v; return true; } });
+'''
 
 
 def cat_bundle(side=None):
@@ -197,13 +262,24 @@ def cat_bundle(side=None):
         sys.path.insert(0, BR)
     import towns
     tjs, tfiles = towns.bundle(side)
+    kf = _kf_tex()
+    if side is None:
+        kfjs = 'var KF_TEX = ' + kf + ';' + NL
+    else:
+        side['kftex'] = kf
+        kfjs = ("var KF_TEX = (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE.kftex) || (console.warn('CAT: the detail maps are missing "
+                "(the page\\'s .tex.kftex.js did not load)'), null);" + NL)
     return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
                 'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
-                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + body(CAT_FILES) +
+                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(CAT_FILES) +
                 '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
+                '/* ---- the detail maps (KF_TEX: kits/beast-riders/build.py kf_tex) and the catalog\'s detail code over a stand-in batch ---- */' + NL +
+                kfjs + 'var KF_API = { batch: function () { return { flush: function (p) { return p; } }; } };' + NL + body([CAT_DETAIL]) + CAT_TAIL +
                 'function catProto(key, v) { if (!ASSET_BY_KEY[key]) return null; var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;' + NL +
-                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null }; return g; }' + NL +
-                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS)]
+                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null };' + NL +
+                '  if (!A.port) catDetail(g);   /* the kit\'s own buildings take its detail maps, as its sheet draws them (a port keeps its town\'s maps) */' + NL +
+                '  return g; }' + NL +
+                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
 
 
 # ---------------------------------------------------------------- the Ring Sea vessels

@@ -71,3 +71,10 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed screamer_training_<role> */
 FK.set({ culture: 'screamer', tier: 'common', roles: 'training', prefix: 'screamer_training_', S: SCR_COMMON, names: {
   training_dummy: 'Skull-topped practice post', archery_butt: 'Bone-ring target' } });
+
+/* trades and households (FK.ROLES.trade, the 2026-10-19 trades audit) in this culture's style sheet, keyed screamer_trade_<role> */
+FK.set({ culture: 'screamer', tier: 'common', roles: 'trade', prefix: 'screamer_trade_', S: SCR_COMMON, names: {
+  forge: 'Bone-hooded forge', anvil: 'Anvil on a stump', trough: 'Trough', stall: 'Beast stall', hayrack: 'Fodder rack', display: 'Display steps', armour_stand: 'Hide-and-bone armour on a post', weapon_rack: 'Spear rack', vat: 'Dye vat', still: 'Spirit still', bin: 'Grain bins', larder: 'Hanging larder', bunk: 'Lashed bunk', locker: 'Hide locker', lathe: 'Bow lathe', press: 'Press', kiln: 'Clay kiln', grindstone: 'Grindstone', altar: 'Ancestor altar', barrel: 'Cask cradle' } });
+/* the works (FK.ROLES.works): baking, butchery, healing, scribing, shipwrighting, quarrying, customs and dairy pieces, keyed screamer_works_<role>; skipped here: hull_stocks */
+FK.set({ culture: 'screamer', tier: 'common', roles: 'works', prefix: 'screamer_works_', S: SCR_COMMON, skip: ['hull_stocks'], names: {
+  bread_oven: 'Clay oven', butcher_block: 'Butcher\'s block', meat_rack: 'Smoking rack', herb_bench: 'Healer\'s herb bench', sickbed: 'Healer\'s sickbed', scribe_desk: 'Rune-keeper\'s desk', hull_stocks: 'Boat on its stocks', quarry_block: 'Stonecutter\'s bench', weigh_scale: 'Weigh-beam', tally_board: 'Tally board', churn: 'Butter churn', cheese_press: 'Cheese press' } });

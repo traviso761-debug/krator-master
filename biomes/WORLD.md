@@ -27,13 +27,24 @@ scale Krator map for rough placement, not in this repo.
 | eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | the Steampits (and every geyser field: the West Ring's isles, the Throne's) | `geyser` | hyperjungle (it walls the basins in; the showcase loads it), the abyssal savanna (XV) between the basins, the Ring Sea coast. A shared kit: a world lays out each field from its own data or from a scale-model point (`GEYSER.cluster`) |
-| *planned* Korona (`korona/NOTES.md`: the brief, the scale-model reading, the stations) | `korona` | nwlowlands, nhighlands (as first given; the model, 4.21, says nhighlands, sedesert, the east lobe's lake, e badlands, crater drylands, the hyperjungle: `korona/NOTES.md`, "Borders") |
+| Korona (`korona/NOTES.md`; six stations built 2026-10-19: the tepui, the pitcher hollow, the fertile basin, the trenches, the lee gorge, the hoar table) | `korona` | nwlowlands, nhighlands (as first given; the model, 4.21, says nhighlands, sedesert, the east lobe's lake, e badlands, crater drylands, the hyperjungle: `korona/NOTES.md`, "Borders") |
+| north-eastern canyons (overlies the hyperjungle's polygon for now) | `necanyons` | hyperjungle (gentle: the forest thins onto the rock), korona (gentle: the benches rise into tepuis), nhighlands (steep: the Inner Wall). Plan: `biomes/necanyons/PLAN.md` |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| eastern highlands | `ehighlands` | on the model's `e inner wall` polygon (the owner, 2026-10-23): the dry east as station 1, the rainy west face as station 2 (`ehighlands/PLAN-STATIONS.md`) |
+| *planned* the painted highlands (the model's `e highlands` polygon, the altiplano by Korona) | `paintedhighlands` | korona, ehighlands, the savannah rims. Plan: `paintedhighlands/PLAN.md` (banded rock, wildflowers; strata from `core/terrain/STRATA-PLAN.md`) |
+| *planned* the Cut (the eigenweapon's bowl, Dilihan) | `cut` | the NW lowlands through its north mouth (4.22), the crater through the south-east. Plan: `cut/PLAN.md` (the warp field, hyperbamboo) |
+| *planned* the NW outer wall (the Yeti Kingdom, Leng, the frozen lake) | `nwouterwall` | nwlowlands, Farside. Plan: `nwouterwall/PLAN.md` |
+| *planned* the rift rim, N and S, with the w rift highland | `riftrim` | rift, swlowlands, Dalab's country. Plan: `riftrim/PLAN.md` (the highland lakes, the basin and gorge of 4.22, Ledge, the Tungangs) |
+| the Bowl (an abyssal overlay on the eastern desert) | `sedesert` | eastabyss, the Catch. Plan: `sedesert/PLAN-BOWL.md` (the salt lake, Mantis's oasis) |
+| *planned* the Catch (the closed basin SE of the Godthrone) | `catch` | sealed by walls of 10-17 km: no ecotone below 6.2 km. Plan: `catch/PLAN.md` (a sand sea, a few oases only just enough, a salt lake among wind-carved lake beds, the fans; Stair a campground; the model's rain is ~10x too generous, a 4.22 item) |
+| *planned* Farside (the ocean coast, Farport) | `farside` | nwlowlands (the front, where the sea's flora meets the land forest), nwouterwall. Plan: `farside/PLAN.md` (the sea's plants invading the land) |
+| *no kit yet* (the owner's polygons, 2026-10-23) | | w outer wall, sw highlands, godstep valley; the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
 | *possible* | `sbadlands`, micro-biomes | |
-| *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
-| *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
+| n semiarid, the walking steppe (`biomes/nsemiarid/PLAN.md`; built 2026-10-22) | `nsemiarid` | nwlowlands (gradual), nhighlands, korona, NW boreal |
+| overlays, owning no ground (`biomes/nsemiarid/PLAN.md`, section 3): the dam basins' beds (`biomes/dambasins`, begun 2026-10-22: the old port station on the Ancient Port kit), the scablands and the flood lake (planned) | `dambasins`, `scablands` | lie over nsemiarid, nwlowlands and korona |
+| *dropped* tuff country (in "The Catch") | | the owner chose wind-carved lake beds for the Catch (2026-10-23, `catch/PLAN.md`) |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
+| the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *to be placed on the scale model* (a wet subtropical lowland on limestone: Cfa/Cwa, ~1 atm) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
@@ -70,6 +81,9 @@ because their conditions are rare, and Krator has the conditions.
   Olympus-Mons shield is also a lava volcano, not an ash one, and its summit is near airless. It works if the
   Godthrone has had an explosive phase (a lore decision). The two vents just outside the Catch's SW notch, px
   (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
+
+New stations for the old kits (2026-10-23): each kit's `PLAN-STATIONS.md` (nhighlands, shighlands, sedesert, oidong, hyperjungle,
+ebadlands, eastabyss, swlowlands, necanyons, ehighlands).
 
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.

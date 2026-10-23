@@ -33,10 +33,10 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `86-dhelv-extras.js` | 6 |  |
 | `88-dhelv-fungi.js` | 3 |  |
 | `89-dhelv-hills.js` | 9 |  |
-| `90-dhelv-scene.js` | 59 **big** | the ground: the layout's (the flows, the kipuka' (24); the sites: the layout's, each the kit's def (158); the ways: the layout's public ways carved in the (180); the rock, meshed near the camera only (PLAN.md 7 (265); what is seen (PLAN.md P5: the switch that draws  (282); (re)build the world (381); views (436); the rolling stone door (the owner: it rolls back (466) |
+| `90-dhelv-scene.js` | 60 **big** | the ground: the layout's (the flows, the kipuka' (24); the sites: the layout's, each the kit's def (166); the ways: the layout's public ways carved in the (188); the rock, meshed near the camera only (PLAN.md 7 (273); what is seen (PLAN.md P5: the switch that draws  (290); (re)build the world (389); views (444); the rolling stone door (the owner: it rolls back (474) |
 | `91-dhelv-probe.js` | 18 |  |
 | `92-dhelv-camera.js` | 3 |  |
-| `92-dhelv-export.js` | 5 |  |
+| `92-dhelv-export.js` | 4 |  |
 | `93-dhelv-map.js` | 6 |  |
 | `94-dhelv-light.js` | 8 |  |
 | `95-dhelv-life.js` | 9 |  |

@@ -96,7 +96,8 @@ const INSTANCES = [];
       g.position.set(cx, 0, z0);
       g.userData.x = cx; g.userData.z = z0; g.userData.ry = 0;
       scene.add(g); INSTANCES.push(g);
-      figure(cx + E.w / 2 + 0.6, z0 + 1.2);
+      /* the figure stands in front and to the side; beside a man-sized machine it would block the camera, so it stands on the far side */
+      if (E.h < 3) figure(cx - E.w / 2 - 0.7, z0 - 0.3); else figure(cx + E.w / 2 + 0.6, z0 + 1.2);
       const D = KM.dataOf(E.key, v);
       label(E.name + (E.variants > 1 && E.variantNames[v] ? ' · ' + E.variantNames[v] : ''),
         E.role + ' · ' + D.height + ' m · ' + D.mass + ' t · ' + D.speed + ' m/s · ' + g.userData.tris + ' tris', cx, z0 - E.d / 2 - 2.2, Math.max(E.w * 1.3, 4.2), true);
@@ -106,7 +107,7 @@ const INSTANCES = [];
   }
   WIDTH = Math.max(WIDTH, x);
   const ROWS = Math.ceil(lanes.length / ROW);
-  label('Iziz war-walkers', 'the Forgemasters\' machines · ' + lanes.length + ' mechs', WIDTH / 2, -ROWS * ROW_Z + 8, 14, true);
+  label('Krator mechs', 'the Iziz war-walkers and the Stalkers · ' + lanes.length + ' mechs', WIDTH / 2, -ROWS * ROW_Z + 8, 14, true);
 
   /* --- the sky (vendored 81-sky.js) at mid-morning; Night drops it to 21:30 */
   let hour = 10.5;

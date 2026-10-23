@@ -34,7 +34,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `44-zj-gallery.js` | 4 |  |
 | `45-zj-estate.js` | 4 |  |
 | `46-zj-built.js` | 9 |  |
-| `47-zj-shops.js` | 4 |  |
+| `47-zj-shops.js` | 5 |  |
 | `48-zj-sacred.js` | 13 |  |
 | `49-zj-civic.js` | 15 |  |
 | `50-zj-works.js` | 13 |  |
@@ -42,6 +42,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `52-zj-trade.js` | 6 |  |
 | `53-zj-additions.js` | 9 |  |
 | `54-zj-square.js` | 7 |  |
+| `55-zj-trades.js` | 5 | = (2) |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | 2 |  |
 | `90-scene.js` | 8 | layout: rows by family, fronts (+z) toward the c (41); (re)build the world (50) |

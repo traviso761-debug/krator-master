@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -22,7 +22,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
+| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `40-factory-extras.js` | 4 |  |
@@ -31,7 +31,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 29 |  |
+| `52-sky-abc.js` | 30 **big** |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
 | `57-sky-e.js` | 3 |  |
@@ -45,9 +45,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `65-veladiga.js` | 16 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
-| `67-cultural.js` | 7 |  |
+| `67-cultural.js` | 8 |  |
 | `68-hexahedron.js` | 39 **big** |  |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hypertree.js` | 12 |  |
 | `70-sky-g.js` | 8 |  |
@@ -56,14 +56,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `71b-forest.js` | 49 **big** |  |
 | `71c-ring.js` | 73 **big** |  |
 | `72-datacenter.js` | 8 |  |
-| `73-police.js` | 5 |  |
+| `73-police.js` | 8 |  |
 | `74-hospital.js` | 5 |  |
 | `75-biome-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
 | `75-biome-20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `75-biome-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `75-biome-40-core-place.js` | 6 | surface sampling (53) |
 | `75-biome-45-bind.js` | 3 |  |
-| `75-hotel.js` | 15 |  |
+| `75-hotel.js` | 16 |  |
 | `76-50-biome-hyperjungle-species.js` | 14 | leaf textures (38); bark textures (90); materials (126); instanced items (148) |
 | `76-55-biome-hyperjungle-trees.js` | 24 | trunk profile (18); colour (27); polyline helpers (Girder) (62); one hero hypertree (84); an immature hypertree (209); the far forest: impostors (242); the pass (272) |
 | `76-60-biome-hyperjungle-floor.js` | 27 | colour (18); keep-clear (54); bole profiles (68); fields (87); the plants (93); fallen hypertrees (160); lianas (211); the pass (219) |
@@ -71,12 +71,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
 | `77-dam.js` | 13 |  |
-| `77z-iziz-style.js` | 53 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 55 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
 | `80-aa-battery.js` | 1 |  |
 | `81-houses-abc.js` | 6 |  |
-| `82-apartments.js` | 8 |  |
+| `82-apartments.js` | 13 |  |
 | `83-amphitheater.js` | 8 |  |
 | `84-fuel.js` | 4 |  |
 | `85-radar.js` | 3 |  |
@@ -85,13 +85,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-launch.js` | 73 **big** |  |
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
-| `88-plymouth.js` | 58 **big** |  |
+| `88-plymouth.js` | 61 **big** |  |
 | `88y-ancients-matlib.js` | 1 |  |
 | `89-arcbeam.js` | 59 **big** |  |
-| `89-lab.js` | 7 |  |
+| `89-lab.js` | 9 |  |
 | `89b-arcoindian.js` | 26 |  |
 | `89b1-arcoindian-cut.js` | 28 |  |
-| `89b2-arcoindian-plinth.js` | 27 |  |
+| `89b2-arcoindian-plinth.js` | 29 |  |
 | `89c-arcoindian2.js` | 28 |  |
 | `89c1-arcoindian2-lens.js` | 27 |  |
 | `89c2-arcoindian2-stalk.js` | 27 |  |
@@ -122,7 +122,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8aj-alt-f-cult.js` | 9 |  |
 | `8ak-alt-a-houses.js` | 25 | helpers (27) |
 | `8ak-alt-b-civic.js` | 27 | helpers (17) |
-| `8ak-alt-c-works.js` | 20 |  |
+| `8ak-alt-c-works.js` | 21 |  |
 | `8al-alt-00-lib.js` | 10 |  |
 | `8al-alt-01-office-terrace.js` | 6 |  |
 | `8al-alt-02-office-stack.js` | 5 |  |
@@ -186,13 +186,16 @@ Each target adds its own fragments to `src/` and builds one output.
 | `interiors` | `89z-rows.js`, `91z-views.js` | 3 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
+| `kept` | `89z-rows.js`, `8aq5-kept-pass.js`, `91z-views.js` | 6 |
 | `kit` | `89z-rows.js`, `91z-views.js` | 25 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
 | `lighthouse` | `89z-rows.js`, `91z-views.js` | 3 |
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
+| `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 76 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
+| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 37 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |

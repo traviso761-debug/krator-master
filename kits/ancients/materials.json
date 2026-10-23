@@ -211,6 +211,165 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "snOnyx": {
+   "lib": "stone.onyx",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the Sanctum bays' onyx lights"
+  },
+  "snAlab": {
+   "lib": "stone.alabaster",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the Withdrawn's alabaster lights"
+  },
+  "snTitan": {
+   "lib": "metal.titanium",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.6,
+   "own": true,
+   "note": "the Sanctum target: the colossus"
+  },
+  "snScreen": {
+   "lib": "patterns/eternian/screen-pierced",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.5,
+   "own": true,
+   "note": "the Sanctum target: the Sealed House screens (take A)"
+  },
+  "snScreenB": {
+   "lib": "patterns/eternian/screen-pierced.b",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.5,
+   "own": true,
+   "note": "the Sanctum target: the Sealed House screens (take B, per bay)"
+  },
+  "snFrieze": {
+   "lib": "patterns/eternian/face-frieze",
+   "scale": [
+    10,
+    5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the podium frieze, tinted pale stone"
+  },
+  "snMaze": {
+   "lib": "patterns/eternian/circuit-maze",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the circuit-maze bands, tinted gold (take a, per bay)"
+  },
+  "snMazeB": {
+   "lib": "patterns/eternian/circuit-maze.b",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the circuit-maze bands, tinted gold (take b, per bay)"
+  },
+  "snMazeC": {
+   "lib": "patterns/eternian/circuit-maze.c",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "own": true,
+   "note": "the Sanctum target: the circuit-maze bands, tinted gold (take c, per bay)"
+  },
+  "snBanner": {
+   "lib": "patterns/eternian/sign",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "own": true,
+   "size": [
+    512,
+    1024
+   ],
+   "note": "the Sanctum target: the State's banners"
+  },
+  "snFaces": {
+   "lib": "patterns/eternian/talking-heads",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "own": true,
+   "mapOnly": true,
+   "note": "the Sanctum target: the terminal faces, a 3 x 3 sheet cut by the host"
   }
  }
 }

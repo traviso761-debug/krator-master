@@ -25,8 +25,40 @@ DRAW.stage = function () {
   addEventListener('resize', function () { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 };
 /* ---------------------------------------------------------------- the ground and the sea */
+/* the library's layers over the vertex colours (materials.json, pack 'isle'): the town ground's aL weights (tilled, damp sand,
+   sand with rocks, shingle) and the streets' aK (0 gravel, 1 dry grass path), read at world xz; a layer without its set is skipped */
+DRAW.libLayers = function (names) {
+  var o = {}; if (typeof KMAT === 'undefined' || KMAT.mode !== 'lib' || !KMAT.packed) return o;
+  names.forEach(function (k) { var P = KMAT.packed('isle', k); if (P) o[k] = { map: KMAT.textures(P, { aniso: 8 }).map, k: 1 / P.scale[0] }; });
+  return o;
+};
+DRAW.layMat = function (mat, names, attr, weights) {
+  var LY = DRAW.libLayers(names), keys = names.filter(function (k) { return LY[k]; });
+  if (!keys.length) return mat;
+  var u = function (k) { return 'uL_' + k.replace(/\W/g, '_'); }, rd = function (k) { return 'pow(mix(texture2D(' + u(k) + ',vLP*' + LY[k].k.toFixed(4) + ').rgb,texture2D(' + u(k) + ',vec2(vLP.y,-vLP.x)*' + (LY[k].k * 0.37).toFixed(4) + '+0.31).rgb,0.4),vec3(2.2))'; };
+  mat.onBeforeCompile = function (sh) {
+    keys.forEach(function (k) { sh.uniforms[u(k)] = { value: LY[k].map }; });
+    var NL = String.fromCharCode(10);
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>' + NL + 'attribute vec4 ' + attr + ';varying vec4 vLW;varying vec2 vLP;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>' + NL + 'vLW=' + attr + ';vLP=(modelMatrix*vec4(transformed,1.0)).xz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>' + NL + 'varying vec4 vLW;varying vec2 vLP;uniform sampler2D ' + keys.map(u).join(',') + ';')
+      .replace('#include <color_fragment>', '#include <color_fragment>' + NL + '{vec3 lc=diffuseColor.rgb;float lm=max(dot(lc,vec3(0.333)),0.02);' + weights(keys, rd) + 'diffuseColor.rgb=lc;}');
+  };
+  mat.customProgramCacheKey = function () { return 'isleLay|' + attr + '|' + keys.join(','); };
+  return mat;
+};
+DRAW.groundMat = function () {
+  return DRAW.layMat(new THREE.MeshLambertMaterial({ vertexColors: true }), ['ground.tilled', 'ground.damp', 'ground.sandrock', 'ground.shingle'], 'aL', function (keys, rd) {
+    var has = function (k) { return keys.indexOf(k) >= 0; }, o = '';
+    if (has('ground.tilled')) o += 'lc=mix(lc,' + rd('ground.tilled') + '*mix(vec3(1.0),lc/lm,0.45),clamp(vLW.x,0.0,1.0)*0.85);';
+    if (has('ground.sandrock')) o += 'lc=mix(lc,' + rd('ground.sandrock') + ',clamp(vLW.z,0.0,1.0)*(0.55+0.45*sin(vLP.x*0.021)*sin(vLP.y*0.017)));';
+    if (has('ground.damp')) o += 'lc=mix(lc,' + rd('ground.damp') + ',clamp(vLW.y,0.0,1.0)*0.9);';
+    if (has('ground.shingle')) o += 'lc=mix(lc,' + rd('ground.shingle') + ',clamp(vLW.w,0.0,1.0)*0.85);';
+    return o;
+  });
+};
 DRAW.ground = function (G, R) {
-  var st = DRAW.groundStep, n = Math.floor(2 * G.half / st) + 1, pos = new Float32Array(n * n * 3), col = new Float32Array(n * n * 3), F = G.frame, A = [0, 0, 0, 0];
+  var st = DRAW.groundStep, n = Math.floor(2 * G.half / st) + 1, pos = new Float32Array(n * n * 3), col = new Float32Array(n * n * 3), lay = new Float32Array(n * n * 4), F = G.frame, A = [0, 0, 0, 0];
   var paved = R.districts.filter(function (d) { return d.role === 'market' || d.role === 'warriors'; }), beach = R.districts.filter(function (d) { return d.role === 'beach'; });
   var lawn = R.districts.filter(function (d) { return d.role === 'ceremonial' || d.role === 'park'; });
   var inAny = function (L, p) { for (var i = 0; i < L.length; i++) if (KCITY.lib.inPoly(p, L[i].poly)) return true; return false; };
@@ -37,17 +69,19 @@ DRAW.ground = function (G, R) {
     var x = -G.half + i * st, z = -G.half + j * st, y = G.h(x, z), k = (j * n + i) * 3;
     pos[k] = x; pos[k + 1] = y; pos[k + 2] = z;
     WORLD.ground(F.x + x, F.z + z, WORLD.at(F.x + x, F.z + z), A);
-    var c = [A[0], A[1], A[2]];
-    if (y < 1.5 && y > -2 || inAny(beach, [x, z])) { var t = inAny(beach, [x, z]) ? 0.7 : 0.5; c = [c[0] + (0.66 - c[0]) * t, c[1] + (0.62 - c[1]) * t, c[2] + (0.52 - c[2]) * t]; }
+    var c = [A[0], A[1], A[2]], L4 = k / 3 * 4, sl = Math.hypot(G.h(x + st, z) - G.h(x - st, z), G.h(x, z + st) - G.h(x, z - st)) / (2 * st), nearSea = y > -3 ? 1 : 0;
+    lay[L4 + 3] = nearSea * Math.min(1, Math.max(0, (sl - 0.35) / 0.35)) * (1 - Math.min(1, Math.max(0, (y - 3) / 5)));   /* shingle: the steep shore */
+    if (y < 1.5 && y > -2 || inAny(beach, [x, z])) { var t = inAny(beach, [x, z]) ? 0.7 : 0.5; c = [c[0] + (0.66 - c[0]) * t, c[1] + (0.62 - c[1]) * t, c[2] + (0.52 - c[2]) * t];
+      lay[L4 + 1] = Math.min(1, Math.max(0, 1 - (y - 0.2) / 0.8)); lay[L4 + 2] = Math.min(1, Math.max(0, (y - 0.5) / 0.8)); lay[L4 + 3] *= 0.4; }   /* damp sand below the tide line, mossy rocks on the upper beach */
     else if (inAny(paved, [x, z])) c = [0.24, 0.2, 0.15];
     else if (inAny(lawn, [x, z])) c = [c[0] * 0.3 + 0.07, c[1] * 0.3 + 0.16, c[2] * 0.3 + 0.05];
-    else { var fk = fmap[Math.floor((x + G.half) / fc) + ',' + Math.floor((z + G.half) / fc)]; if (fk) c = [c[0] * 0.35 + fk[0] * 0.65, c[1] * 0.35 + fk[1] * 0.65, c[2] * 0.35 + fk[2] * 0.65]; }
+    else { var fk = fmap[Math.floor((x + G.half) / fc) + ',' + Math.floor((z + G.half) / fc)]; if (fk) { c = [c[0] * 0.35 + fk[0] * 0.65, c[1] * 0.35 + fk[1] * 0.65, c[2] * 0.35 + fk[2] * 0.65]; lay[L4] = 1; } }   /* tilled ground under the crop's tone */
     col[k] = c[0]; col[k + 1] = c[1]; col[k + 2] = c[2];
   }
   var idx = []; for (var jj = 0; jj < n - 1; jj++) for (var ii = 0; ii < n - 1; ii++) { var a = jj * n + ii; idx.push(a, a + n, a + 1, a + 1, a + n, a + n + 1); }
-  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('aL', new THREE.BufferAttribute(lay, 4));
   g.setIndex(n * n > 65535 ? new THREE.Uint32BufferAttribute(idx, 1) : new THREE.Uint16BufferAttribute(idx, 1)); g.computeVertexNormals();
-  var m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true })); m.name = 'ground'; scene.add(m);
+  var m = new THREE.Mesh(g, DRAW.groundMat()); m.name = 'ground'; scene.add(m);
   var sea = new THREE.Mesh(new THREE.PlaneGeometry(60000, 60000), new THREE.MeshLambertMaterial({ color: 0x3f87a8, transparent: true, opacity: 0.86 }));
   sea.rotation.x = -Math.PI / 2; sea.position.y = 0; sea.name = 'sea'; sea.renderOrder = 1; scene.add(sea);
 };
@@ -74,17 +108,22 @@ DRAW.orchards = function (R, G) {
 };
 /* ---------------------------------------------------------------- the streets */
 DRAW.streets = function (R, G) {
-  var CL = { avenue: 0x8a7a62, highway: 0x7e705a, main: 0x95856a, side: 0x9c8c70, alley: 0xa29276 }, pos = [], col = [], c3 = new THREE.Color();
+  var CL = { avenue: 0x8a7a62, highway: 0x7e705a, main: 0x95856a, side: 0x9c8c70, alley: 0xa29276 }, pos = [], col = [], kind = [], c3 = new THREE.Color();
   R.plan.ways.forEach(function (w) {
     var P = KCITY.lib.resample(w.pts, 6, false), hw = w.w / 2; c3.setHex(CL[w.cls] || 0x998866);
     for (var i = 1; i < P.length; i++) {
       var a = P[i - 1], b = P[i], d = KCITY.lib.V.norm(KCITY.lib.V.sub(b, a)), nx = -d[1] * hw, nz = d[0] * hw;
       var q = [[a[0] + nx, a[1] + nz], [a[0] - nx, a[1] - nz], [b[0] + nx, b[1] + nz], [b[0] - nx, b[1] - nz]].map(function (p) { return [p[0], Math.max(0.2, G.h(p[0], p[1])) + 0.25, p[1]]; });
-      [0, 1, 2, 2, 1, 3].forEach(function (k) { pos.push(q[k][0], q[k][1], q[k][2]); col.push(c3.r, c3.g, c3.b); });
+      [0, 1, 2, 2, 1, 3].forEach(function (k) { pos.push(q[k][0], q[k][1], q[k][2]); col.push(c3.r, c3.g, c3.b); kind.push(w.cls === 'side' || w.cls === 'alley' ? 1 : 0, 0, 0, 0); });
     }
   });
-  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.computeVertexNormals();
-  var m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide })); m.name = 'streets'; scene.add(m);
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.setAttribute('aK', new THREE.Float32BufferAttribute(kind, 4)); g.computeVertexNormals();
+  var m = new THREE.Mesh(g, DRAW.layMat(new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide }), ['path.gravel', 'path.grass'], 'aK', function (keys, rd) {
+    var o = '';
+    if (keys.indexOf('path.gravel') >= 0) o += 'lc=mix(lc,' + rd('path.gravel') + '*0.9,(1.0-vLW.x)*0.9);';
+    if (keys.indexOf('path.grass') >= 0) o += 'lc=mix(lc,' + rd('path.grass') + '*mix(vec3(1.0),lc/lm,0.3),vLW.x*0.9);';
+    return o;
+  })); m.name = 'streets'; scene.add(m);
   DRAW.stats.streetTris = pos.length / 9;
 };
 /* ---------------------------------------------------------------- a prototype: one build, one geometry per material */
@@ -152,8 +191,9 @@ DRAW.near = function (at, force) {
   var tris = 0;
   for (var id in by) {
     var B = by[id], P = B.P;
-    P.parts.forEach(function (pt) {
+    P.parts.forEach(function (pt, k) {
       var im = new THREE.InstancedMesh(pt.geo, pt.mat, B.L.length);
+      im.userData.isleProto = id; im.userData.part = k; im.userData.lots = B.L.map(function (L) { return L.tag; });   /* the export's owners (62) */
       B.L.forEach(function (L, i) { var sx = L.cls === 'wall' && P.w ? L.w / P.w : 1; im.setMatrixAt(i, DRAW.matOf(L, [sx, 1, 1])); });
       im.instanceMatrix.needsUpdate = true; im.name = id; scene.add(im); DRAW.inst.push(im); tris += pt.tris * B.L.length;
     });

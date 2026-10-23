@@ -8,7 +8,7 @@ rule takes).
 |---|---|
 | `10-hamlet-wood.js` | `KHAMLET.woodUse(text)`: a species' free-text `harvest.wood` as uses (timber, fuel, poles, thatch, fibre, craft, other); bracketed words are notes; `noFell` for a tree marked not to fell. `KHAMLET.woodWorks(text)`: the works it feeds (sawpit, kiln) |
 | `12-hamlet-gather.js` | `KHAMLET.GATHER_KEYS` (pasture, fish, salt), `gatherCheck`, `gatherAt(api, x, z)`, `fieldCapacity(api, poly, cell)`: a biome kit's `gather` tag read without knowing its zone names |
-| `20-hamlet-cultures.js` | `KHAMLET.CULTURES`: a row per building kit (the religious, civic, store and warehouse keys, houses by class, works by focus, the boxes of buildings the kit lacks). `islander_east` first |
+| `20-hamlet-cultures.js` | `KHAMLET.CULTURES`: a row per building kit (the religious, civic, store and warehouse keys, houses by class, works by focus, the boxes of buildings the kit lacks). `islander_east` first; `xanadu` (settlements/xanadu's kit: Longsong's three valley villages, farming and ranch, its pens, corral and dairy pending) |
 | `30-hamlet-village.js` | `KHAMLET.village(spec)` -> `{census, records, lanes, green, site, error?}`; its parts `census`, `program`, `siteFor` kept apart for other layouts |
 
 **What a host does:** pass `dims(key)` (the kit's boxes, as `core/city`'s `kit.dims`) and `ground.ok(x, z)` (dry, not a

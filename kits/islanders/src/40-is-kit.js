@@ -42,8 +42,8 @@ function isWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||IS_T,fr=o.frame===un
   else{seg(x,a,0,h);seg(a,b,0,sy);seg(a,b,Math.min(h,sy+q.h),h);}
   x=Math.max(x,b);pv={a:a,top:sy+q.h};
   if(fr){for(const s of [a,b])box('wood',s,y0+sy,t*.6,.1,q.h,.06,fr);box('wood',q.x,y0+sy+q.h,t*.6,q.w+.2,.12,.07,fr);if(!q.door)box('wood',q.x,y0+sy-.08,t*.6,q.w+.16,.08,.1,fr);}
-  if(q.door)door(q.x,y0,t/2,0,q.w);
-  else if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}
+  if(q.door)door(q.x,y0,t/2,0,q.w,q.h);
+  else{windowAt(q.x,y0+sy,t/2,0,q.w,q.h,sy);if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}}
  seg(x,L/2,0,h);}
 /* four walls round a w x d room from y0 up h; o.front/back/left/right: openings for each side (isWall), o.mkf(side) a
    material per side, o.colf(side) its colour. The front faces +z; the side walls run between the front and back walls. */
@@ -90,7 +90,9 @@ function isFigure(x,y,z,ry,s,o){o=o||{};const mk=o.mk||'carvedR',c=o.col||P(mk==
 function isHorns(x,y,z,ry,s,o){o=o||{};W(x,y,z,ry,()=>{for(const k of [-1,1])tube('bone',t=>[k*(s*.06+t*s*.5),t*t*s*.32+Math.sin(t*PI)*s*.06,-t*s*.05],t=>{const r=s*.07*(1-t*.85);return [r,r];},8,6,o.col||P('bone'),{caps:true});
  ellip('carved',0,0,0,s*.1,s*.08,s*.1,P('woodD'),0,8);});}
 /* the white island moon on a disc (the Islanders' sign): an upright medallion facing ry, radius R */
-function isMoonDisc(x,y,z,ry,R){W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>medallion('medMoon',0,0,0,R*2,{round:true}));cyl('wood',0,-R*1.05,-.04,.04,R*.2,P('woodD'),6);});}
+/* the island moon comes in three takes (the plain white moon, and the moon with a face in two); which one a disc gets is a hash of where it stands */
+const IS_MOONS=['medMoon','medMoonFace','medMoonFaceB'];
+function isMoonDisc(x,y,z,ry,R){const mm=IS_MOONS[Math.abs(Math.round(x*5)*7+Math.round(y*5)*13+Math.round(z*5)*3+Math.round(R*20))%3];W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>medallion(mm,0,0,0,R*2,{round:true}));cyl('wood',0,-R*1.05,-.04,.04,R*.2,P('woodD'),6);});}
 /* a carved board along a polyline (a bargeboard on a gable edge): width along the edge's plane w2 (o.h), thickness t */
 function isBoard(pts,h,t,mk,col){for(let i=0;i<pts.length-1;i++)beam(mk,pts[i],pts[i+1],t,col,false,undefined,h);}
 /* ---------------------------------------------------------------- scrap */
