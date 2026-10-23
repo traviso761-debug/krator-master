@@ -27,7 +27,7 @@
  "50-core-tags.js": "351884caf5b4",
  "50-registry.js": "2dbe98a3a5b6",
  "52-core-furnish-draw.js": "949213456277",
- "52-core-tags-vocab.js": "d5f78e2e5a34",
+ "52-core-tags-vocab.js": "b9d3a1238c0c",
  "52-sky-abc.js": "7995cd3724bf",
  "53-core-furnish-host.js": "9ed629d45803",
  "53-core-tags-host.js": "e2cd8a672016",
@@ -89,7 +89,7 @@
  "88a-core-minimap-host.js": "1e442710c44f",
  "88y-iziz-matlib.js": "44e11aa056e3",
  "88yp-pyl-matlib.js": "ca3642cd68ee",
- "88z-iziz-furniture-bundle.js": "836b0a149dde",
+ "88z-iziz-furniture-bundle.js": "eef2b0903e41",
  "89-lab.js": "a771f81f4b41",
  "89d-arcube.js": "8b3ee3a34131",
  "89d1-arcube-faces.js": "5fb8d82e5e10",
@@ -117,6 +117,6 @@
  "97-lod-auto.js": "88ec9e581127",
  "98-host-edit.js": "66535c6a9cdd",
  "99-host-cutaway.js": "5fc10889d24e",
- "99-start.js": "f4bcbe83d491",
+ "99-start.js": "5f0f2ffa3fad",
  "99-tail.html": "d3aaf402992e"
 }

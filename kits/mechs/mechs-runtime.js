@@ -237,12 +237,13 @@ const KM_API = (function () {
   API.list = function () {
     return MECHS.map(function (A) {
       return { key: A.key, name: A.name, culture: A.culture, role: A.role || '', origin: A.origin || '', lore: A.lore || '',
-        tags: JSON.parse(JSON.stringify(A.tags || {})), variants: A.variants, variantNames: A.variantNames.slice(),
+        tags: mechTags(A, 0), variantTags: A.variants > 1 ? A.variantNames.map(function (n, i) { return mechTags(A, i); }) : [mechTags(A, 0)], variants: A.variants, variantNames: A.variantNames.slice(),
         w: A.w, d: A.d, h: A.h, data: mechData(A, 0) };
     });
   };
   API.has = function (key) { return !!MECH_BY_KEY[key]; };
   API.get = function (key) { return MECH_BY_KEY[key] || null; };
+  API.tagsOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechTags(A, v) : null; };
   API.dataOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechData(A, v) : null; };
   /* a variant's attack clip (variantAttack[v] or the entry's own) */
   API.clip = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechAttack(A, v) : null; };
@@ -321,7 +322,7 @@ const KM_API = (function () {
       phase: 0, atk: -1, atkW: 0, vel: new V3(), last: null, gq: new Q(), reach: 0, events: [], planted: false,
       gait: A.gait, mass: data.mass || 10 };
     g.userData = { key: key, name: A.name, culture: A.culture, role: A.role || '', origin: A.origin || '',
-      tags: JSON.parse(JSON.stringify(A.tags || {})), kind: 'mech', variant: v, variantName: A.variantNames[v] || '', seed: seed,
+      tags: mechTags(A, v), kind: 'mech', variant: v, variantName: A.variantNames[v] || '', seed: seed,
       w: A.w, d: A.d, h: A.h, tris: Math.round(tris), bones: bones.map(function (b) { return b.name; }),
       legs: R.legs.map(function (L) { return { name: L.name, L1: L.L1, L2: L.L2, knee: L.knee, splay: L.splay, ankleH: L.ankleH, rest: L.rest.slice() }; }),
       points: JSON.parse(JSON.stringify(R.points)), data: data, lightsOn: true };

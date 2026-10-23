@@ -80,7 +80,17 @@ FURN_CULTURE('generic', { palette: {
     fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
     fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0,
     fruitCherry: 0xd0485a, fruitCherryStalk: 0x7a9a5a, fruitBodhiFig: 0x8a5a7a, fruitBodhiFigFlesh: 0xe8a0a8,
-    fruitBellPod: 0xbfe6d0, fruitBellPodBell: 0xf0b0a0, fruitBellPodStem: 0xd0a0a8
+    fruitBellPod: 0xbfe6d0, fruitBellPodBell: 0xf0b0a0, fruitBellPodStem: 0xd0a0a8,
+    fruitBayBerry: 0x3a2a3e, fruitBayBerryGreen: 0x6a7a3a, fruitBayOil: 0xb8b058, fruitSkirtDrupe: 0xb8602a, fruitSkirtStone: 0x6a4a30,
+    fruitAcaciaPod: 0x6e4a2a, fruitAcaciaGum: 0xe0a850,
+    fruitPuzzleCone: 0x6a7438, fruitPuzzleSeed: 0xb88a52, fruitPuzzleSeedFlesh: 0xeadcb0,
+    fruitPalePod: 0xd8d0b8, fruitPalePodPulp: 0xf2eedc, fruitPalePodSeed: 0x4a3a2a,
+    fruitWattlePod: 0x7a6a3a, fruitWattleSeed: 0x2e2218, fruitWattleFlour: 0xcaa870,
+    fruitGinkgoFlesh: 0xd8b048, fruitGinkgoNut: 0xe8dcb8, fruitGinkgoKernel: 0xa8c060,
+    fruitKauriCone: 0x5a6a34, fruitKauriSeed: 0x9a6a3a,
+    fruitCereusSkin: 0xd02a58, fruitCereusFlesh: 0xf4eaf0, fruitCereusSeed: 0x2a2024,
+    fruitVigilHeart: 0xe8dcb0, fruitVigilRind: 0x8a7a4a,
+    fruitWormLarva: 0xd8c488, fruitWormStalk: 0x4a3a2e, drinkTowerHoney: 0xc89830
 } });
 /* END PALETTE */
 

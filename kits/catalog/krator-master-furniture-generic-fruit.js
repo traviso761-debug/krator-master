@@ -299,7 +299,7 @@ FURN({
 FURN({
   key: 'generic_fruit_mast', name: 'Beechmast and Acorns', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
-  biome: 'nhighlands', source: ['bluebeech', 'gnarloak', 'ebadlands:oak'],
+  biome: 'nhighlands', source: ['bluebeech', 'gnarloak', 'ebadlands:oak', 'swlowlands:sprawloak', 'swlowlands:corkoak', 'swlowlands:coastoak'],
   w: 0.22, d: 0.22, h: 0.14, variants: 2, variantNames: ['beechmast in husks', 'acorns'],
   build: function (F) {
     KGEN.bowl(F, 0, 0, 0, 0.11, 0.05, F.col('timberOak'), 'wood');
@@ -311,7 +311,7 @@ FURN({
   }
 });
 
-/* ================= North-western Lowlands (1 piece; pandan keys above) ================= */
+/* ================= North-western Lowlands (4 pieces; pandan keys above) ================= */
 
 FURN({
   key: 'generic_fruit_candle_nectar', name: 'Candle Nectar', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'drink', setting: 'both',
@@ -338,7 +338,70 @@ FURN({
   }
 });
 
-/* ================= Rift (4 pieces; lantern fruit is shared with Xanadu) ================= */
+FURN({
+  key: 'generic_fruit_wattle_seed', name: 'Wattle Seed', culture: 'generic', tier: 'poor', wealth: [0, 0.6], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'cloth', 'stone'],
+  biome: 'nwlowlands', source: ['wattle'],
+  w: 0.28, d: 0.2, h: 0.07, variants: 2, variantNames: ['pods on a cloth', 'seed and flour'],
+  variantDims: [{ w: 0.28, d: 0.2, h: 0.04 }, { w: 0.24, d: 0.2, h: 0.07 }],
+  build: function (F) {
+    const pod = F.col('fruitWattlePod'), seed = F.col('fruitWattleSeed'), flour = F.col('fruitWattleFlour');
+    if (F.variant === 0) {
+      /* flat brown pods, some split to show the black seeds in a row */
+      F.box(0, 0, 0, 0.28, 0.01, 0.2, 0.05, F.col('clothLinen'), 'cloth');
+      for (let i = 0; i < 5; i++) F.beam(-0.1, 0.02, -0.07 + i * 0.035, 0.1, 0.02, -0.07 + i * 0.035 + (i % 2 ? 0.01 : -0.01), 0.022, 0.022, F.shade(pod, (i % 3) * 0.05 - 0.05), 'food');
+      for (let i = 0; i < 6; i++) F.ball(-0.07 + i * 0.026, 0.03, 0.095 - 0.02 * (i % 2), 0.008, seed, 'food');
+    } else {
+      /* the seed roasted and ground to flour: a bowl of flour beside a dish of whole seed */
+      KGEN.bowl(F, -0.05, 0, 0, 0.09, 0.05, F.col('timberOak'), 'wood', flour);
+      F.dome(-0.05, 0.05, 0, 0.065, 0.02, 0, flour, 'food');
+      KGEN.plate(F, 0.1, 0, 0, 0.045, F.col('stoneClay'));
+      KGEN.heap(F, 0.1, 0.02, 0, 0.035, 0.008, [seed], 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_ginkgo_seed', name: 'Ginkgo Seeds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
+  biome: 'nwlowlands', source: ['ginkgo'],
+  w: 0.26, d: 0.2, h: 0.08, variants: 2, variantNames: ['fallen fruit', 'roasted and shelled'],
+  variantDims: [{ w: 0.26, d: 0.2, h: 0.05 }, { w: 0.22, d: 0.22, h: 0.08 }],
+  build: function (F) {
+    const flesh = F.col('fruitGinkgoFlesh'), nut = F.col('fruitGinkgoNut'), kern = F.col('fruitGinkgoKernel');
+    if (F.variant === 0) {
+      /* the plum-sized fruit, soft and yellow-orange, stinking: a few nuts lie free of it */
+      for (let i = 0; i < 5; i++) F.blob(-0.09 + (i % 3) * 0.07, 0.02, i < 3 ? -0.045 : 0.05, 0.026, 0.04, i, F.shade(flesh, (i % 2) * 0.08 - 0.04), 'food');
+      for (let i = 0; i < 3; i++) F.blob(0.09, 0.012, -0.06 + i * 0.05, 0.013, 0.024, i * 0.6, nut, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('stoneClay'), 'stone');
+      KGEN.heap(F, 0, 0.03, 0, 0.08, 0.013, [kern, F.shade(kern, 0.08), nut], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.012, z, 0.012, 0.024, x * 30, c, 'food'));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_kauri_cone', name: 'Kauri Cone Seeds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth'],
+  biome: 'nwlowlands', source: ['kauri'],
+  w: 0.26, d: 0.2, h: 0.12, variants: 2, variantNames: ['a round cone', 'winged seeds on a cloth'],
+  variantDims: [{ w: 0.26, d: 0.15, h: 0.12 }, { w: 0.24, d: 0.18, h: 0.03 }],
+  build: function (F) {
+    const cone = F.col('fruitKauriCone'), seed = F.col('fruitKauriSeed');
+    const wing = (x, z, i) => { F.blob(x, 0.01, z, 0.012, 0.016, i, seed, 'food'); F.box(x + 0.014, 0.012, z, 0.024, 0.004, 0.012, i * 0.5, F.shade(seed, 0.12), 'food'); };
+    if (F.variant === 0) {
+      /* the round green cone sheds its winged seeds as it ripens: a few lie at its foot */
+      KFRUIT.studded(F, -0.05, 0, 0, 0.065, F.shade(cone, -0.2), cone, 22);
+      for (let i = 0; i < 5; i++) wing(0.06 + (i % 3) * 0.035, -0.05 + Math.floor(i / 3) * 0.08, i);
+    } else {
+      F.box(0, 0, 0, 0.24, 0.01, 0.18, 0.06, F.col('clothLinen'), 'cloth');
+      for (let i = 0; i < 8; i++) wing(-0.08 + (i % 4) * 0.05, i < 4 ? -0.035 : 0.04, i);
+    }
+  }
+});
+
+/* ================= Rift (5 pieces; the stone pine is the parasol pine below; lantern fruit is shared with Xanadu) ================= */
 
 FURN({
   key: 'generic_fruit_ballmelon', name: 'Ballmelon', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
@@ -419,6 +482,29 @@ FURN({
   }
 });
 
+FURN({
+  key: 'generic_fruit_pale_baobab', name: 'Pale Baobab Pod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'rift', source: ['baobab'],
+  w: 0.3, d: 0.3, h: 0.07, variants: 2, variantNames: ['whole pod', 'cracked: tart pulp and seeds'],
+  variantDims: [{ w: 0.3, d: 0.1, h: 0.07 }, { w: 0.28, d: 0.28, h: 0.05 }],
+  build: function (F) {
+    const pod = F.col('fruitPalePod'), pulp = F.col('fruitPalePodPulp'), seed = F.col('fruitPalePodSeed');
+    if (F.variant === 0) {
+      /* the rift's baobab hangs pale, velvety pods: a long cream capsule on its stalk */
+      F.shift(-0.03, 0);
+      KGEN.capsule(F, -0.1, 0.1, 0, 0, 0.04, pod);
+      F.rod(0.12, 0.05, 0, 0.16, 0.06, 0, 0.007, F.col('timberWalnut'), 'food');
+    } else {
+      /* shell broken open: dry, tart pulp in chalky chunks round dark seeds */
+      KGEN.plate(F, 0, 0, 0, 0.13, F.col('stoneCream'));
+      KFRUIT.half(F, -0.05, 0.02, 0, 0.055, pod, pulp);
+      for (let i = 0; i < 4; i++) F.box(0.04 + (i % 2) * 0.04, 0.02, -0.04 + Math.floor(i / 2) * 0.05, 0.03, 0.02, 0.03, i * 0.5, F.shade(pulp, -(i % 2) * 0.05), 'food');
+      for (let i = 0; i < 4; i++) F.blob(-0.02 + i * 0.03, 0.024, 0.08, 0.011, 0.014, i, seed, 'food');
+    }
+  }
+});
+
 /* ================= South-eastern Desert (3 pieces) ================= */
 
 FURN({
@@ -487,7 +573,7 @@ FURN({
   }
 });
 
-/* ================= South-west Bay (1 piece; gatepod above) ================= */
+/* ================= South-west Bay (3 pieces; gatepod above) ================= */
 
 FURN({
   key: 'generic_fruit_bay_fungi', name: 'Bay Fungi', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
@@ -517,7 +603,53 @@ FURN({
   }
 });
 
-/* ================= South-western Lowlands (4 pieces) ================= */
+FURN({
+  key: 'generic_fruit_acacia_pod', name: 'Thorn Pods', culture: 'generic', tier: 'poor', wealth: [0, 0.6], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'rope', 'stone'],
+  biome: 'swbay', source: ['thorn', 'rift:acacia'],
+  w: 0.33, d: 0.2, h: 0.06, variants: 2, variantNames: ['bundle of pods', 'pods and gum'],
+  variantDims: [{ w: 0.33, d: 0.13, h: 0.05 }, { w: 0.22, d: 0.2, h: 0.06 }],
+  build: function (F) {
+    const pod = F.col('fruitAcaciaPod'), gum = F.col('fruitAcaciaGum');
+    if (F.variant === 0) {
+      /* the twisted pods of the umbrella thorns, tied in a bundle: famine food and fodder */
+      for (let i = 0; i < 8; i++) {
+        const z = -0.04 + (i % 5) * 0.02, y = i < 5 ? 0 : 0.02, w = i % 2 ? 0.014 : -0.014;
+        const pts = [[-0.16, z], [-0.05, z + w], [0.05, z - w], [0.16, z + w * 0.5]];
+        for (let k = 0; k < 3; k++) F.beam(pts[k][0], y + 0.01, pts[k][1], pts[k + 1][0], y + 0.01, pts[k + 1][1], 0.018, 0.02, F.shade(pod, (i % 3) * 0.05 - 0.05), 'food');
+      }
+      F.box(0, 0, 0, 0.02, 0.05, 0.13, 0, F.col('wickerTan'), 'rope');
+    } else {
+      /* a dish of the bark's gum, a sweet, with two pods beside it */
+      KGEN.plate(F, -0.04, 0, 0, 0.1, F.col('stoneClay'));
+      for (let i = 0; i < 5; i++) F.ball(-0.04 + Math.cos(i * 1.3) * 0.04 * (i ? 1 : 0), 0.035 + (i % 2) * 0.01, Math.sin(i * 1.3) * 0.04 * (i ? 1 : 0), 0.022, F.shade(gum, (i % 3) * 0.06 - 0.06), 'food');
+      F.beam(0.07, 0.01, -0.07, 0.09, 0.01, 0.07, 0.018, 0.02, pod, 'food');
+      F.beam(0.09, 0.01, -0.06, 0.1, 0.01, 0.06, 0.018, 0.02, F.shade(pod, 0.08), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_puzzle_seed', name: 'Monkey-puzzle Seeds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'swbay', source: ['puzzle', 'rift:araucaria', 'eastabyss:araucaria'],
+  w: 0.26, d: 0.17, h: 0.16, variants: 2, variantNames: ['a cone and loose seeds', 'boiled seeds'],
+  variantDims: [{ w: 0.26, d: 0.17, h: 0.16 }, { w: 0.22, d: 0.22, h: 0.09 }],
+  build: function (F) {
+    const cone = F.col('fruitPuzzleCone'), seed = F.col('fruitPuzzleSeed'), flesh = F.col('fruitPuzzleSeedFlesh');
+    if (F.variant === 0) {
+      /* the great round cone breaks apart for its big starchy seeds: one stands whole, the seeds lie beside it */
+      KFRUIT.studded(F, -0.06, 0, 0, 0.07, F.shade(cone, -0.2), cone, 24);
+      for (let i = 0; i < 5; i++) F.blob(0.06 + (i % 3) * 0.035, 0.016, -0.04 + Math.floor(i / 3) * 0.07, 0.016, 0.03, i * 0.8, F.shade(seed, (i % 2) * 0.08), 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('timberOak'), 'wood');
+      KGEN.heap(F, 0, 0.03, 0, 0.08, 0.014, [seed, F.shade(seed, 0.1), flesh], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.012, z, 0.014, 0.026, x * 30, c, 'food'));
+    }
+  }
+});
+
+/* ================= South-western Lowlands (6 pieces; acorns are the mast above) ================= */
 
 FURN({
   key: 'generic_fruit_madrone', name: 'Madrone Berries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
@@ -591,6 +723,53 @@ FURN({
       const a = i * 1.26 + 0.3, r = i === 4 ? 0 : 0.07, x = Math.cos(a) * r, z = Math.sin(a) * r;
       if (F.variant === 0) { F.blob(x, 0.055, z, 0.035, 0.07, 0, F.shade(fig, F.rr(-0.1, 0.1)), 'food'); F.cone(x, 0.08, z, 0.015, 0.02, 0, F.shade(fig, -0.2), 'food'); }
       else KFRUIT.half(F, x, 0.02, z, 0.035, fig, flesh);
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_bay_laurel', name: 'Bay Laurel Berries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
+  biome: 'swlowlands', source: ['baylaurel'],
+  w: 0.3, d: 0.2, h: 0.12, variants: 2, variantNames: ['berries on the twig', 'roasted berries and oil'],
+  variantDims: [{ w: 0.3, d: 0.14, h: 0.06 }, { w: 0.3, d: 0.2, h: 0.12 }],
+  build: function (F) {
+    const berry = F.col('fruitBayBerry'), green = F.col('fruitBayBerryGreen');
+    if (F.variant === 0) {
+      /* a leafy twig laid on the top, the glossy berries ripening from green to black along it */
+      F.rod(-0.13, 0.02, 0, 0.13, 0.03, 0.005, 0.004, F.col('timberDark'), 'food');
+      for (let i = 0; i < 4; i++) F.blob(-0.09 + i * 0.06, 0.012, i % 2 ? 0.04 : -0.04, 0.03, 0.02, i * 0.7, F.col('vegLeaf'), 'food');
+      for (let i = 0; i < 6; i++) F.ball(-0.1 + i * 0.045, 0.036, i % 2 ? 0.02 : -0.016, 0.014, i < 2 ? green : F.shade(berry, (i % 2) * 0.08), 'food');
+    } else {
+      /* the oily berries roasted in a bowl, and the oil pressed from them in a jar */
+      KGEN.bowl(F, -0.06, 0, 0, 0.09, 0.045, F.col('timberOak'), 'wood');
+      KGEN.heap(F, -0.06, 0.03, 0, 0.07, 0.014, [berry, F.shade(berry, 0.1)], 'food');
+      KGEN.jar(F, 0.11, 0, 0, 0.04, 0.1, F.col('stoneBuff'), F.col('timberDark'), 'stone');
+      F.ball(0.11, 0.115, 0, 0.012, F.col('fruitBayOil'), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_skirt_palm', name: 'Skirt-palm Fruit', culture: 'generic', tier: 'poor', wealth: [0, 0.6], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'rope', 'stone'],
+  biome: 'swlowlands', source: ['skirtpalm'],
+  w: 0.3, d: 0.22, h: 0.1, variants: 2, variantNames: ['a fruiting strand', 'hard fruit in a basket'],
+  variantDims: [{ w: 0.3, d: 0.17, h: 0.06 }, { w: 0.24, d: 0.22, h: 0.1 }],
+  build: function (F) {
+    const fruit = F.col('fruitSkirtDrupe'), stone = F.col('fruitSkirtStone');
+    if (F.variant === 0) {
+      /* a branched strand of small round fruit, orange where ripe, the stalks the colour of the fibre */
+      F.rod(-0.14, 0.03, 0, 0.14, 0.03, 0.01, 0.006, F.col('wickerTan'), 'rope');
+      for (let k = 0; k < 4; k++) {
+        const x = -0.1 + k * 0.07, z = k % 2 ? 0.05 : -0.05;
+        F.rod(x, 0.03, 0.005, x + 0.01, 0.025, z, 0.004, F.col('wickerTan'), 'rope');
+        for (let i = 0; i < 3; i++) F.ball(x + 0.01 + (i - 1) * 0.012, 0.03, z + (z > 0 ? 0.012 : -0.012) * i, 0.013, F.shade(fruit, (i + k) % 3 * 0.05 - 0.05), 'food');
+      }
+    } else {
+      /* the fruit are small and stone-hard, the colour of the shell where they are cracked */
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('wickerStraw'), 'rope');
+      KGEN.heap(F, 0, 0.03, 0, 0.08, 0.014, [fruit, F.shade(fruit, -0.1), stone], 'food');
     }
   }
 });
@@ -926,7 +1105,7 @@ FURN({
 FURN({
   key: 'generic_fruit_parasol_pine', name: 'Parasol Pine Nuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
-  biome: 'crater-drylands', source: ['parasolpine'],
+  biome: 'crater-drylands', source: ['parasolpine', 'rift:stonepine'],
   w: 0.26, d: 0.18, h: 0.12, variants: 2, variantNames: ['a cone and cracked nuts', 'shelled nuts in a bowl'],
   variantDims: [{ w: 0.26, d: 0.16, h: 0.12 }, { w: 0.18, d: 0.18, h: 0.075 }],
   build: function (F) {
@@ -1018,7 +1197,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_cherry', name: 'Valley Cherries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'oidong', source: ['cherry'],
   w: 0.24, d: 0.22, h: 0.12, variants: 2, variantNames: ['a sprig of cherries', 'a bowl of cherries'],
   variantDims: [{ w: 0.22, d: 0.14, h: 0.09 }, { w: 0.24, d: 0.24, h: 0.12 }],
@@ -1060,7 +1239,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_bell_pod', name: 'Bell-pod Beads', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone'],
   biome: 'oidong', source: ['bellpod'],
   w: 0.3, d: 0.2, h: 0.09, variants: 2, variantNames: ['strings of beads', 'dried bells on a tray'],
   variantDims: [{ w: 0.3, d: 0.2, h: 0.06 }, { w: 0.26, d: 0.2, h: 0.09 }],
@@ -1080,6 +1259,94 @@ FURN({
         const a = i * 2.4, r = i ? 0.03 + (i % 3) * 0.025 : 0, x = Math.cos(a) * r, z = Math.sin(a) * r;
         F.cone(x, 0.02, z, 0.018, 0.036, 0, F.shade(bell, F.rr(-0.1, 0.08)), 'food');
       }
+    }
+  }
+});
+
+/* ================= Eastern Highlands (4 pieces) ================= */
+
+FURN({
+  key: 'generic_fruit_cereus', name: 'Frost Cereus Fruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'ehighlands', source: ['cereus'],
+  w: 0.26, d: 0.2, h: 0.06, variants: 2, variantNames: ['whole fruit', 'halved: flesh and seeds'],
+  variantDims: [{ w: 0.2, d: 0.14, h: 0.06 }, { w: 0.26, d: 0.2, h: 0.06 }],
+  build: function (F) {
+    const skin = F.col('fruitCereusSkin'), flesh = F.col('fruitCereusFlesh'), seed = F.col('fruitCereusSeed');
+    if (F.variant === 0) {
+      /* ripe red fruit from the white-haired cactus, with the scale scars of the flower */
+      for (let i = 0; i < 3; i++) {
+        const x = -0.06 + i * 0.06, z = i % 2 ? 0.03 : -0.03;
+        F.blob(x, 0.03, z, 0.027, 0.055, i, F.shade(skin, (i % 2) * 0.08), 'food');
+        for (let k = 0; k < 4; k++) F.ball(x + Math.cos(k * 1.6) * 0.02, 0.025 + k * 0.01, z + Math.sin(k * 1.6) * 0.02, 0.005, F.shade(skin, -0.2), 'food');
+      }
+    } else {
+      KGEN.plate(F, 0, 0, 0, 0.12, F.col('stoneCream'));
+      KFRUIT.half(F, -0.05, 0.02, 0, 0.05, skin, flesh);
+      KFRUIT.half(F, 0.05, 0.02, 0.03, 0.045, skin, flesh);
+      for (let i = 0; i < 12; i++) F.ball(-0.05 + Math.cos(i * 2.4) * 0.03, 0.045, Math.sin(i * 2.4) * 0.03, 0.004, seed, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_vigil_heart', name: 'Vigil Spike Heart', culture: 'generic', tier: 'poor', wealth: [0, 0.6], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'ehighlands', source: ['vigil'],
+  w: 0.3, d: 0.2, h: 0.1, variants: 2, variantNames: ['a cut length of spike', 'roasted heart slices'],
+  variantDims: [{ w: 0.3, d: 0.2, h: 0.1 }, { w: 0.28, d: 0.18, h: 0.05 }],
+  build: function (F) {
+    const rind = F.col('fruitVigilRind'), heart = F.col('fruitVigilHeart');
+    if (F.variant === 0) {
+      /* a famine food: the flowering spike is felled, the dry husk stripped from a pale pith heart */
+      F.cyl(-0.05, 0, 0, 0.08, 0.09, 0, rind, 'food');
+      F.cyl(-0.05, 0.085, 0, 0.065, 0.012, 0, heart, 'food');
+      for (let i = 0; i < 6; i++) { const a = i * 1.05; F.ball(-0.05 + Math.cos(a) * 0.045, 0.1, Math.sin(a) * 0.045, 0.012, F.shade(heart, -0.1), 'food'); }
+      F.beam(0.1, 0.01, -0.06, 0.13, 0.015, 0.06, 0.03, 0.03, F.shade(rind, 0.1), 'food');
+    } else {
+      F.box(0, 0, 0, 0.28, 0.025, 0.18, 0, F.col('timberPine'), 'wood');
+      for (let i = 0; i < 6; i++) F.cyl(-0.09 + (i % 3) * 0.09, 0.025 + (i < 3 ? 0 : 0.005), i < 3 ? -0.04 : 0.045, 0.036, 0.012, i, F.shade(heart, -(i % 3) * 0.06), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_wormwick', name: 'Wormwick', culture: 'generic', tier: 'court', wealth: [0.6, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'glass', 'cloth', 'timber', 'metal'],
+  biome: 'ehighlands', source: ['wormwick'],
+  w: 0.24, d: 0.16, h: 0.12, variants: 2, variantNames: ['dried, on a cloth', 'a jar of wormwick'],
+  variantDims: [{ w: 0.24, d: 0.16, h: 0.03 }, { w: 0.14, d: 0.14, h: 0.12 }],
+  build: function (F) {
+    const larva = F.col('fruitWormLarva'), stalk = F.col('fruitWormStalk');
+    /* a dried larva with the fungus's dark stalk growing from its head: worth its weight in silver */
+    const one = (x, y, z) => {
+      KGEN.capsule(F, x - 0.07, x + 0.01, y, z, 0.009, larva);
+      F.rod(x + 0.02, y + 0.009, z, x + 0.1, y + 0.012, z, 0.003, stalk, 'food');
+    };
+    if (F.variant === 0) {
+      F.box(0, 0, 0, 0.24, 0.008, 0.16, 0, F.col('clothLinen'), 'cloth');
+      for (let i = 0; i < 6; i++) one(-0.04, 0.008, -0.055 + i * 0.022);
+    } else {
+      KGEN.jar(F, 0, 0, 0, 0.06, 0.1, F.col('glassClear'), F.col('timberDark'), 'glass', F.col('fruitWormLarva'));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_tower_honey', name: 'Tower Honey', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'glass', 'timber', 'metal'],
+  biome: 'ehighlands', source: ['glasstower'],
+  w: 0.22, d: 0.16, h: 0.05, variants: 2, variantNames: ['comb', 'a jar of tower honey'],
+  variantDims: [{ w: 0.22, d: 0.16, h: 0.05 }, { w: 0.18, d: 0.16, h: 0.14 }],
+  build: function (F) {
+    const honey = F.col('drinkTowerHoney'), wax = F.col('waxHoney');
+    if (F.variant === 0) {
+      /* the wild bees' comb from the glass towers, the cells capped with wax: the towers' alkaloid goes into it whole */
+      F.box(0, 0, 0, 0.2, 0.025, 0.14, 0.1, F.shade(wax, -0.1), 'food');
+      for (let j = 0; j < 3; j++) for (let i = 0; i < 4; i++) F.frustum(-0.06 + i * 0.04 + (j % 2) * 0.02, 0.025, -0.04 + j * 0.04, 0.017, 0.016, 0.012, 0, F.shade(i % 2 ? honey : wax, j * 0.03), 'food', 6);
+    } else {
+      KGEN.jar(F, 0, 0, 0, 0.075, 0.12, F.col('glassAmber'), F.col('timberDark'), 'glass', honey);
+      F.rod(0.04, 0.12, 0, 0.07, 0.14, 0, 0.006, F.col('timberOak'), 'food');
     }
   }
 });

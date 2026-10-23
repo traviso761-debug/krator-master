@@ -219,6 +219,8 @@ SEED_COLLISION_EXCEPTIONS = set()   # Library/Campus and Gate/Mega were reseeded
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED_ARG = re.compile(r'\breseed\(\s*([^)]*?)\s*\)')
+# whole-line // comments and /* */ blocks: a rejected reseed(N+d) quoted in prose is not a claim
+RE_JS_COMMENT = re.compile(r'^[ \t]*//[^\n]*|/\*.*?\*/', re.M | re.S)
 RE_DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
 
@@ -291,7 +293,7 @@ def check(order, bodies):
                             'left behind.' % (f, name))
 
         # 1b. collect seed claims
-        for m in RE_RESEED_ARG.finditer(body):
+        for m in RE_RESEED_ARG.finditer(RE_JS_COMMENT.sub('', body)):
             for s in seeds_claimed(m.group(1)):
                 claims.setdefault(s, set()).add(f)
 

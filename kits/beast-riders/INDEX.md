@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `50-br-mounts.js` | 11 | = (2) |
+| `50-br-mounts.js` | 19 | = (2) |
 | `60-br-ports.js` | 4 | = (1) |
 | `90-br-sheet.js` | 5 | = (1) |
 | `99-tail.html` | <1 |  |

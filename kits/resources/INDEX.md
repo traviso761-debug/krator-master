@@ -22,6 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 2 |  |
 | `42r-res-ore.js` | 5 |  |
+| `43r-res-fields.js` | 5 |  |
 | `44r-res-nodes.js` | 14 |  |
 | `89-rows.js` | 1 |  |
 | `99-tail.html` | <1 |  |

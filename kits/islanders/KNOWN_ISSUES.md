@@ -14,8 +14,8 @@
 ## Flora
 
 - [ ] **The plants are placeholders** (`57-fl-flora.js`: coconut, banana, taro, breadfruit, the rice paddy) in simple geometry,
-      class `flora` with biome and harvest tags, placed by the farms and the courts. No Ring Sea islands biome kit exists yet;
-      one would replace them by key.
+      class `flora` with biome and harvest tags, placed by the farms and the courts. biomes/ringisles now exists (2026-10-20 note), but the kit does not take its species yet;
+      they would replace the placeholders by key.
 
 ## Naming
 

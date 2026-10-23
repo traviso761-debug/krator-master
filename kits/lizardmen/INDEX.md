@@ -23,6 +23,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `27-mat.js` | 6 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 6 |  |
+| `37-wk-rec.js` | 2 |  |
 | `40-lz-kit.js` | 30 |  |
 | `42-lz-dress.js` | 3 |  |
 | `50-lz-dwell.js` | 10 |  |
