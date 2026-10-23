@@ -416,7 +416,7 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
   - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
   - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats;
-  - **Stair's point** to the east flank of the springs' hollow in the Catch's interior hills, px ~834,1112 (the Hill
-    arcology's site, `biomes/catch/PLAN.md` section 6b), and its notes (the Hill; a campground of ~200).
+  - a region **"Stalker Peaks"** east of the Catch: the ranges between its eastern wall and Hub 01, and the 13-15 km peaks
+    round Hub 01's high valley (px ~960-1140 by 950-1180; `biomes/catch/PLAN.md` section 6c).
   Done on the model 2026-10-23: **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
-  (px 528,687).
+  (px 528,687); **Stair** moved to the springs' hollow in the Catch's interior hills (px 834,1112), the Hill arcology's site.

@@ -121,7 +121,7 @@ its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). Wha
 - **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, only 33 km in tunnel in the draft: it is to run
   ~340-420 km underground, section 3); Arcbeam to Stair in the Catch (its tunnel **closed by seismic activity since about the Cataclysm**, sealed halfway: the northern half
   stripped by Yuni long ago, the southern half open from Stair; the owner, 2026-10-23: `biomes/catch/PLAN.md`);
-  Hub 01 to Yuni (44 km in tunnel); Cube to Pluton (the key to the Ancients' own tunnels up the Godthrone, section 3).
+  Hub 01 to Yuni (44 km in tunnel; no human has reached Hub 01 since the Cataclysm and come back, `LORE.md` §4); Cube to Pluton (the key to the Ancients' own tunnels up the Godthrone, section 3).
 - **The Inner Wall to the Valley**: the draft finds **surface passes** (Drum to Cascade, and Wing by Nazar and Span),
   not the tunnel the owner wants: at the draft's tunnel cost a pass is cheaper. The Ancient tunnel goes **under the
   Drum-Cascade pass**, with **Cascade** (the Republic's arcology) as its surface access, as the owner described; the

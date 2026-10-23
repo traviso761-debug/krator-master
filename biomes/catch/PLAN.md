@@ -36,7 +36,7 @@ by the path from the floor that climbs least:
 | north-north-west (to the Bowl's side) | **6,158 m** | the one low notch, near px 726,896 (~5,900 m there, mean -12 °C) |
 | south, south-west, west (Strongbow, Theodiga) | 7,296 m | |
 | north | 7,354 m | |
-| east and south-east (Hub 01) | 7,788-7,846 m | |
+| east and south-east (into the Stalker Peaks, toward Hub 01) | 7,788-7,846 m | no caravan takes them (section 6c) |
 | north-east | 8,182 m | |
 | the Godthrone's side (west-north-west) | 8,926-10,206 m | |
 
@@ -128,14 +128,15 @@ species fit has not been checked yet.
 
 ## 6. People and roads
 
-- **The barrier** [the owner, 2026-10-23]. The Catch is the biggest barrier to trade between Xanadu and everywhere else.
+- **The barrier** [the owner, 2026-10-23]. The Catch is the biggest barrier to trade between Xanadu and everywhere else,
+  for two reasons: its distances and its water, and **the Stalkers** (section 6c).
   Most of what goes between them goes by caravan across it. That is why Xanadu's goods are dear and why the lore's merchants "from the crater to
   Xanadu through the Bowl and the Catch" (`LORE.md` §4, Hub 01) are rare and well paid.
 - **The crossing.** In by the 6.2 km notch on the Bowl's side (NNW, near px 726,896), across the floor from oasis to
-  oasis, out by passes of 7.3-7.8 km toward Strongbow (px 754,1264) or Hub 01 (4,417 m, px 1072,1079). At 0.64-0.76 atm the
-  passes are breathable but bitterly cold, and the floor between them is a furnace. *Proposed* hazards: the black storms,
-  an oasis found dry or held by someone else, the beasts' water running out between stages, the Hub 01 stalkers of the
-  lore on the eastern pass.
+  oasis, out by the passes of ~7.3 km to the south and south-west, toward Strongbow (px 754,1264). The eastern passes
+  lead into the Stalker Peaks, and nobody takes them (section 6c). At 0.64-0.76 atm the passes are breathable but
+  bitterly cold, and the floor between them is a furnace. The hazards: **the Stalkers** above all (section 6c), the black
+  storms and their caustic dust, an oasis found dry, the beasts' water running out between stages.
 - **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
   **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
   through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a
@@ -195,6 +196,39 @@ The point moves ~14 km east of where it stands (a record edit on the model, `too
 landform (`89e-hill.js`, "the landform and the route") makes the slope at full scale; the model only has to put the hill
 there, and it does.
 
+## 6c. The Stalker Peaks and the Stalkers
+
+[The owner, 2026-10-23, unless marked.]
+
+**The Stalker Peaks** lie **east of the Catch**, named for the crossing's other great danger. On the model (4.21) they are
+the ranges between the Catch's eastern wall and Hub 01: a first range of 7-11 km straight east of the basin (px ~960-1030),
+then a high valley at ~4.4-6 km where **Hub 01** stands (ruined arcology, px 1072,1079, 4,417 m: mean -2 °C, ~50 mm), and
+round that valley peaks of **13-15 km** (px 1015,963, 15.1 km; 1049,1151, 14.0; 1125,1175, 14.9; 1139,1079, 13.7). They
+are not yet a region on the model (a record edit, `tools/scale-model/README.md`).
+
+**The Stalkers** are **quiet robotic killers that stalk the sands**. They hunt down **straggling caravaneers**, or **lie in
+wait for ambush under the sand**, and they work in **pairs or triads**. They are why a caravan keeps together, why no one
+walks out of sight of the fires at an oasis, and why the Catch's crossing is not safe at any price.
+
+**Where they come from: the author's secret.** Their source is **Hub 01**, a ruined arcology **run by a mad AI**. In the
+world **no one knows this**: no human has reached Hub 01 since the Cataclysm and lived to tell the tale. What the
+caravaneers say is only that the Stalkers come out of the peaks to the east and go back into them, which is how the peaks
+got their name. *Proposed*: the game shows it, never says it. A Stalker that is followed goes east; the Ancient road from
+Hub 01 to Yuni (`openworld/ANCIENT-ROADS.md`, 44 km of it in tunnel) is the one way in, and no one who has taken it has come
+back; a diver's salvage now and then carries Hub 01's mark. And the mind there may be one of the systems the Ancients'
+contamination deranged (`LORE.md` §6.19, the Call), which would make an Heir who reached it either its master or its
+next subject.
+
+*Proposed* for the builds:
+- **Quiet** means no tracks that last (the wind fills them), no light, little sound: a Stalker is seen when it moves, and
+  it moves at the end.
+- **In pairs or triads**: one shows itself while the others close; under the sand, a triad lies along a caravan's line,
+  a stage out from an oasis.
+- **Stragglers**: they take the last beast, the sick, the one who went to relieve themself; they rarely take on a
+  whole caravan.
+- **A kit**: a skinned, animated walker on `kits/mechs` (leg IK, planted feet, idle, walk and attack clips), sand-coloured,
+  low, built to dig in. Not a mech of any culture's: the Ancients' own make, gone feral, and Hub 01's.
+
 ## 7. The lake beds (in place of tuff)
 
 The tuff candidate (`biomes/WORLD.md`) assumed the Godthrone's ash, and the survey did not help it: the two vents near the
@@ -205,7 +239,7 @@ mesas. Shelter for a caravan in a storm, and nowhere to live.
 
 ## 8. Questions for the owner
 
-1. **Stair's site** (section 6b): move the point to the hollow's east flank, px ~834,1112?
+1. **The Stalkers' make** (section 6c): their size, their weapons, how a caravan fights or flees them.
 2. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
 3. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
 4. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
@@ -215,5 +249,7 @@ Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; five o
 Stair's, each named in more than one of the four tongues; the Stair tunnel closed by seismic activity since about the
 Cataclysm, sealed halfway, the northern half stripped by Yuni long ago, the southern half the divers'; Stair the Hill
 arcology, a glorified campground of a couple of hundred people (a handful of merchants, the caravans, arcology divers);
-the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
+Stair's point moved to px 834,1112 on the model; the Stalker Peaks east of the Catch and the Stalkers (quiet robotic
+killers, in pairs or triads, hunting stragglers, ambushing from under the sand; their source Hub 01's mad AI, unknown in
+the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
 potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.
