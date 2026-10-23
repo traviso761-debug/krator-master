@@ -43,17 +43,17 @@ always wet. **Weight**: the plants that made it ashore grew what kelp never need
 algae are), and bladders that hold water, not gas, to ride out the rare dry day. **Salt**: the spray brings it, and the
 invasion is thickest where the spray reaches (the first ~10 km) and thins as it fades.
 
-**What is coming ashore** (*proposed*; the owner's call, section 8):
-- **Krator's own sea**, with nothing in the way: the coast has been wet enough for long enough that the shallows' flora is
-  crossing the strand, slowly, as Earth's plants once did. **Or**
-- **The traders' sea**: the plants came **from over the sea**, on the hulls and in the ballast of the mysterious traders'
-  ships, as the clicks came into Farside's speech (`LORE.md` §6.19), and they are spreading from Farport. A foreign sea's
-  flora, invasive, with no Krator grazers to check it, would explain why it is winning so fast. **Or both**: Krator's
-  shallows took to land, and the traders' weeds, stronger, took to it faster.
+**Where it came from: over the sea** [the owner, 2026-10-23]. The plants came on the hulls and in the ballast of the
+mysterious traders' ships, as the clicks came into Farside's speech (`LORE.md` §6.19), and spread from Farport. A foreign
+sea's flora with nothing on Krator to graze it explains how fast it took the coast.
 
-Either way the coast reads as **an invasion with a front**: the sea's flora holding the strand and the fog belt, the
-land's own forest (the NW lowlands' species) pushed back, strangled or drowned in weed where they meet, and holding the
-higher, drier ground.
+**It has reached a steady state** [the owner, 2026-10-23], held there by **aggressive measures**, the chief of them
+**grazing**: the local goats were let loose on it, and it has been **a bonanza for the goats**, which eat kelp, wrack and
+red weed as readily as grass (as the seaweed-eating sheep of North Ronaldsay do on Earth). *Proposed*, the other
+measures: the front burned back in the dry weeks; kelp cut for ash and food faster than it grows near the towns; wrack
+carted off the strand to the fields. The coast still reads as **an invasion with a front**: the sea's flora holding the
+strand and the kelp coast, the land's own forest (the NW lowlands' species) holding the fog belt and the higher ground,
+and between them a belt of dead and drowned trees, goat-cropped kelp and burned ground that has stopped moving.
 
 ## 3. The look
 
@@ -89,8 +89,31 @@ the light is fog-grey and green; the air smells of iodine and salt.
 
 Nine of its own; the land's own forest comes from `biomes/nwlowlands`, read in place, at the front and inland of it.
 
-*Proposed* fauna, for `kits/fauna` later: the sea's animals following its plants ashore, crabs and snails in the wrack,
-something like an octopus in the kelp forest's pools, birds that dive the fog.
+### The animals
+
+The sea's animals have followed its plants ashore [the owner, 2026-10-23: mudfish and the like; a lung octopus; other
+molluscoid creatures on the land]. All for `kits/fauna`; the names and details are *proposed*.
+
+| Key | Name | Model | What it is | Build |
+|---|---|---|---|---|
+| `kelpgoat` | Farside goat | the goat; North Ronaldsay's seaweed sheep | the local goats gone over to the sea's weed: shaggy, salt-crusted, fat on kelp, browsing the strand and the front in herds; the front's keepers | a variant of the kit's `goat` (a breed: shaggier coat, darker, a kelp-stained muzzle) |
+| `mudfish` | Mudfish | mudskippers (*Periophthalmus*), lungfish | a fish a forearm long that lives out of the water in the wet wrack and the kelp forest's pools, propped on its front fins, its eyes on top of its head, skipping when startled | `faWdFish`, with the pectoral fins as legs (a new crawl on the swimmer gait) |
+| `lungoctopus` | Lung octopus | the octopus | an octopus that breathes air through a lung in its mantle, a metre across the arms, living in the kelp forest's floor and the coral terraces; it hunts the mudfish and the snails, changes colour against the wrack, and walks on its arms | see below |
+| `strandwhelk` | Strand whelk | whelks (*Buccinum*), cone snails | a snail the size of a head with a tall spired shell, gliding over the wrack on a broad foot and hunting other molluscs; its shells pile up round every Farside door | the kit's slug chain (`faWdSerpent`, kind `slug`) with a spired shell part |
+| `seahare` | Sea hare | sea hares (*Aplysia*) | a soft, fat, slug-like grazer the size of a cat, brown-olive with wing-like flaps along its back, grazing the sea lettuce and inking violet when touched | the slug chain, with two flaps and two ear-like tentacles |
+| `bloomslug` | Bloom slug | nudibranchs | small soft slugs in warning colours (orange, violet, white-tipped plumes along the back) on the kelp, the anemones and the fog sponges, which they eat; poisonous | the slug chain, with cerata (rows of plumes) |
+| `rockchiton` | Rock chiton | chitons | flat oval grazers with eight overlapping plates down their backs, clamped to the surf rocks and the coral terraces, a hand to a forearm long | a shell part on a low slug chain |
+
+**The lung octopus's build.** The fauna kit already draws an octopus (`faWdOcto`, the Ring Sea's reef octopus): a mantle
+and eight arms drawn as stiff pieces that the octopod walk swings whole, which `kits/fauna/KNOWN_ISSUES.md` notes makes
+the feet slide. That reads at a distance, not up close. For an octopus that walks on land (the arms curling, gripping and
+reaching), *proposed*: draw each arm as **a chain of segments**, as the kit's serpent and slug builders already do, and
+pose them procedurally: a travelling curl down each arm, the arms in alternating pairs planted and reaching (an octopus
+walks on its rear arms and feels ahead with the front ones), the mantle bobbing and pulsing as it breathes. That is a new
+builder and a new gait in `kits/fauna`, about the size of one of its existing builders; for Godot, the same chains as bone
+chains on one Skeleton3D, posed by a script (or a spring chain for the drape). The alternative, a sculpted and rigged
+model with keyframed clips (the kit's Meshy path, `kits/fauna/rig/`), suits an octopus badly: eight boneless arms are what
+those rigs do worst.
 
 ## 6. Stations
 
@@ -108,16 +131,20 @@ something like an octopus in the kelp forest's pools, birds that dive the fog.
 `kits/crops`: a `farside` entry (`atm: 1`, wet, warm). **The three**: **kelp** (the staple, dried), **wine weed** (the
 food sheet and agar), and the kelp ash (**potash and soda**, the glassmakers' and soapmakers' trade: a third source of
 the alkali salts beside the Catch, `biomes/catch/PLAN.md` section 6a). Farside's fields are walled terraces manured with
-wrack. The spray coral gives the coast its lime.
+wrack. The spray coral gives the coast its lime. **The goats** are the coast's wealth [the owner]: milk, meat, hair and
+hides from herds that eat what the sea sends ashore; *proposed*, their kelp-fed meat is salty and prized in the State.
 
 ## 8. Questions for the owner
 
-1. **Where the invaders came from**: Krator's own shallows, the traders' ships, or both (section 2)?
-2. **How far the front has come**, and whether it is still moving (the people of Farside fighting it, burning the
-   front, or living off it).
-3. **The species** (section 5), and whether the sea's animals come ashore with them.
-4. **The Farside people's relation to it**: kelp-burners and wrack-farmers, lime-burners, nori-makers; the Eternal State's
-   view (a coast it cannot keep its own).
+1. **The species and the animals** (section 5), their names and looks.
+2. **The lung octopus's build**: the new segment-chain builder in `kits/fauna` (proposed), or the existing stiff-armed
+   octopus for now.
+3. **The Farside people's relation to the coast**: kelp-burners, wrack-farmers, goatherds, lime-burners, nori-makers;
+   the Eternal State's view of the traders' invasion.
+
+Settled (2026-10-23): the invaders came **from over the sea**, on the traders' ships; the front has reached **a steady
+state** under aggressive measures, chiefly **grazing**, a bonanza for the local goats; mudfish and the like have followed
+the plants ashore, with a **lung octopus** and other **molluscoid creatures** on the land.
 
 ## 9. Textures
 
