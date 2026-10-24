@@ -35,6 +35,16 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
   sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
   KNOWN_ISSUES items close.
+- **core/host: a broad phase for the probe's `regOccupancy`** (2026-10-23; the owner asked for it here). It tests every
+  registered volume against every probe point (every instance, every mesh's box centre): 118 s of Rift's verify, all of
+  its invariants (`EFFICIENCY.md`, "Rift's checks, profiled"). Index the volumes by their circle (x, z, r) on
+  `core/space` (KSPACE, not a new hash) and call `has` only on the candidates near each point; every build's `regHas`
+  found is the same cylinder test as `inCyl`, so the counts stay the same (if one is not, keep the full loop for that
+  build). Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) buckets by z for reference. Prove it: the
+  `registered-volumes-non-empty` lines (counts and thinnest) unchanged on Rift, Hyperjungle, Sedesert, Iziz, Girder and
+  Yuni, and their wall times before and after written into `EFFICIENCY.md`. Do it with the probe-points item above (same
+  file). With it, try a smaller sky in `tools/harness.py` `check_profile` (`sky` 64, not 256: the stage capture is 37 s
+  of Rift's verify), kept only if every export-profile check still passes.
 - **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
   `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
   arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
