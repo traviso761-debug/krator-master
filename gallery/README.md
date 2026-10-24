@@ -85,6 +85,11 @@ Publishing a re-split, learned 2026-10-16:
 page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
 75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
 
+**New URL (2026-10-23).** The tongues page (with Eternian, its dialects and Yusar, and Matok) is now
+https://claude.ai/artifact/GRxH5C6uTvaJmXeFg5wiya; the old artifact (FFEn2MEBPxMgqPJkcV6sNt) is left as it was. The
+template points at the new one, and every part's live index was edited in place to it (A-H v95, I-S v28, P-V v21, V-Z v3,
+Biomes and Objects v28). Republish the tongues page to the new URL from now on.
+
 ## Character lab links (2026-10-16)
 
 `index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
