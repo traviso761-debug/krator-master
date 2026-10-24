@@ -28,6 +28,12 @@ Both are private until shared from their Share menus. The four indexes link to e
 was re-sorted alphabetically the same day (Throne stations by `order`). `split_site.py --urls` takes the parts in order, so the
 next full split needs the new URL list; the A-H, I-S and Biomes URLs are unchanged.
 
+Voth's city page (`settlements/voth/dist/voth-city.html`, 11.9 MB) is what made Krator Worlds P-V fail the sharing review (2026-10-23;
+P-V passed once it was out, and the other parts passed without it). It is its own artifact, https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy
+(private until shared; it may fail the same review), and P-V's Voth card opens it (`href` in the live index). `build_gallery.py`
+is not changed yet: a rebuild would put the card back on `worlds/voth.html`, so add Voth to `LINKED` and `ELSEWHERE` first (the
+Voth catalog sheet, `voth-catalog`, shares the build folder and stays in the part).
+
 ## Beast Riders kit (2026-10-23)
 
 The kit (`kits/beast-riders`, ENTRIES line under Building kits, tagged new) is in Krator Worlds A–H: the live index lists it and
