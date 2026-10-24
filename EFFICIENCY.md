@@ -74,6 +74,71 @@ lines), not pixels.
 Order: a timing run first (below), then 1 and 3 (small changes to `harness.py` and `test_all.py`), then 2 build by
 build, slowest first.
 
-## Timing run
+## Timing run (2026-10-23)
 
-(Filled in by the first run.)
+On the owner's laptop (16 threads, Intel Arc 140T), branch `claude/water-migration-merge` at `6763cbdef`: the seven
+nightly builds and the isle demo, one at a time, on the committed pages. Script: `timing.py` and `phases.py` in that
+session's scratchpad (load through `harness.open_page`, then each verify `--assert` as a subprocess).
+
+**Page load to `window._ready`**, SwiftShader against the GPU (ANGLE D3D11, the renderer string checked):
+
+| Page | SwiftShader | GPU |
+|---|---|---|
+| hyperjungle | 3.2 s | 4.4 s |
+| rift | 64.7 s | 15.8 s |
+| sedesert | 54.1 s | 7.9 s |
+| iziz | 72.6 s | 21.6 s |
+| girder | 36.7 s | 16.1 s |
+| verge | 48.3 s | 28.3 s |
+| yuni | 26.3 s | 19.0 s |
+| isle-city | 38.7 s | 23.7 s |
+| **total** | **344 s** | **137 s** |
+
+**`verify.py --assert`, wall clock** (SwiftShader, as they run):
+
+| Build | Wall | Result |
+|---|---|---|
+| isle-demo | 386 s | pass |
+| rift | 312 s | FAIL: export profile, `atmos` and `water` empty (page built before `ec7f97c29`) |
+| iziz | 195 s | pass |
+| sedesert | 147 s | pass |
+| hyperjungle | 78 s | FAIL: as Rift (page last built `dbdf85ce9`) |
+| yuni | 66 s | pass |
+| verge | 62 s | pass |
+| girder | 43 s | FAIL: a shader compile error in the render loop (three r128 from cdnjs, not routed), `window._walk.navAudit` missing, `furn.calls` 82 / 54 |
+| **total** | **1289 s (21 min)** | 3 of 8 fail on the committed pages |
+
+**Where a biome verify spends it** (each step timed alone after one load, SwiftShader):
+
+| Step | Rift | Sedesert |
+|---|---|---|
+| load + settle | 15 s | 11 s |
+| `STATS_JS` (first frames, window counters) | 22 s | 21 s |
+| `ASSERT_JS` (invariants) | 114 s | 16 s |
+| `typeStats` | 9 s | 6 s |
+| export profile (`check_profile`) | 103 s | 76 s |
+
+(Load times differ between the two runs: Chromium's first frame lands in `open_page` in one and in `STATS_JS` in the
+other. Load plus the first stats call is the stable figure.)
+
+### What it says
+
+- **The checks cost more than the load.** On Rift, load plus first frames is about 37 s of 312 s; the invariants and
+  the export profile are 217 s. Isle demo's two town loads are about 80 s of 386 s; the rest is its city, sim and
+  trade checks.
+- **The export profile is 75-100 s per biome verify**, and it is data work in JS: the GPU will not speed it. It runs the
+  exporter the nightly export step runs too.
+- **Rift's `ASSERT_JS` is 114 s** against Sedesert's 16 s: one or two invariants there are worth profiling.
+- **The GPU is 2.5x on loads** (4-7x on the biomes, 1.4-3x on the settlements), so about 3.5 minutes of the 21, not more.
+- **Three of eight committed pages fail.** Hyperjungle and Rift are behind `core/` (the atmos and water sections), the
+  2026-10-08 failure again; Girder has a render error and a missing nav audit.
+
+### The order, revised
+
+1. Skip a verify whose page hash is unchanged since its last pass (item 1): removes whole runs.
+2. Run the export profile once per page hash, or read it from the nightly export's output, instead of in every verify
+   (new; 75-100 s per biome).
+3. Profile Rift's `ASSERT_JS` and move its slow invariant to a record check in node (item 2).
+4. Isle demo's sim and trade checks to node (item 2): the largest single verify.
+5. The GPU locally (item 3).
+6. Rebuild Hyperjungle and Rift and fix Girder's render error and nav audit, so the nightly list is green.
