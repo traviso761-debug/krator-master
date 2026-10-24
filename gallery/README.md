@@ -17,6 +17,17 @@ both new sections go to Krator Biomes and Objects with `--alone`. The top list k
 two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
 I–S 26, S–Z 15, Biomes and Objects 24.
 
+## Five artifacts: S-Z split in two (2026-10-23)
+
+Krator Worlds S-Z could not be shared ("couldn't be reviewed for public sharing", at about 235 MiB), so it is two artifacts now:
+
+- **Krator Worlds P-V**: https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM (Pylon, Scyvoi, Shade, Talia, Verge, Voth; the old S-Z URL)
+- **Krator Worlds V-Z**: https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF (Voth buildings, Xanadu buildings, Ys, Yuni, Yuni buildings, Zeijani)
+
+Both are private until shared from their Share menus. The four indexes link to each other under these titles, and every live index
+was re-sorted alphabetically the same day (Throne stations by `order`). `split_site.py --urls` takes the parts in order, so the
+next full split needs the new URL list; the A-H, I-S and Biomes URLs are unchanged.
+
 ## Beast Riders kit (2026-10-23)
 
 The kit (`kits/beast-riders`, ENTRIES line under Building kits, tagged new) is in Krator Worlds A–H: the live index lists it and
