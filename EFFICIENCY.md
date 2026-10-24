@@ -133,12 +133,40 @@ other. Load plus the first stats call is the stable figure.)
 - **Three of eight committed pages fail.** Hyperjungle and Rift are behind `core/` (the atmos and water sections), the
   2026-10-08 failure again; Girder has a render error and a missing nav audit.
 
+### Rift's checks, profiled
+
+Each call timed alone in the page (SwiftShader), then a CPU profile (CDP, 2 ms samples) over the invariants and the
+export (`rift_prof.py` in the session scratchpad). Another session was building at the same time, so absolute times
+run high; the shares hold.
+
+| Call | Time |
+|---|---|
+| `_api.regOccupancy()` | **117.9 s** |
+| `EXPORT.world`, section `stage` alone | **37.0 s** |
+| `EXPORT.world`, every section | 36.8 s |
+| items, buckets, materials, textures (each alone) | 0.4-0.7 s |
+| `hostNegatives()`, `hostChecks()`, `nanSweep()` | 0.35, 0.23, 0.13 s |
+| registry, terrain, atmos, water, `typeStats`, `totals` | under 0.03 s |
+
+- **`regOccupancy` is the whole of Rift's 114 s of invariants.** It is in the shared host probe
+  (`core/host/95-host-probe.js` `K.probeTake`): for every registered volume it tests every probe point (every instance of
+  every InstancedMesh, every mesh's box centre), so registry size x instance count. The profile puts 88 s in its loop and
+  38 s in `inCyl`. Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) already buckets the volumes by z. The
+  fix: a grid over the volumes' circles (x, z, r) in front of `has`, on `core/space` (KSPACE), not a new hash. Every
+  build's `regHas` found is the same cylinder test as `inCyl`, so the counts stay the same; the verifies' printed counts
+  and the hash baseline prove it. It reaches every build on the host probe.
+- **The export's cost is the `stage` section: `KSTAGE.capture` renders the sky panorama and reads it back**
+  (`readPixels` 28 s in the profile) under SwiftShader. The GPU speeds that up; or the check takes a smaller sky
+  (`sky` 64, not 256) and leaves the full one to the export step.
+- Everything else in Rift's verify is under a second.
+
 ### The order, revised
 
 1. Skip a verify whose page hash is unchanged since its last pass (item 1): removes whole runs.
 2. Run the export profile once per page hash, or read it from the nightly export's output, instead of in every verify
    (new; 75-100 s per biome).
-3. Profile Rift's `ASSERT_JS` and move its slow invariant to a record check in node (item 2).
+3. Broad-phase `regOccupancy` in `core/host/95-host-probe.js` on KSPACE (profiled above: Rift's 118 s), and a
+   smaller sky in the verify's stage capture (37 s).
 4. Isle demo's sim and trade checks to node (item 2): the largest single verify.
 5. The GPU locally (item 3).
 6. Rebuild Hyperjungle and Rift and fix Girder's render error and nav audit, so the nightly list is green.
