@@ -17,6 +17,11 @@ both new sections go to Krator Biomes and Objects with `--alone`. The top list k
 two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
 I–S 26, S–Z 15, Biomes and Objects 24.
 
+## Beast Riders kit (2026-10-23)
+
+The kit (`kits/beast-riders`, ENTRIES line under Building kits, tagged new) is in Krator Worlds A–H: the live index lists it and
+`worlds/beast-riders.html` is the current 13.3 MB page (`main` at 7084bbea7's rebuild); no new publish was needed.
+
 ## The north basin's three biomes (2026-10-23)
 
 n semiarid (`biomes/nsemiarid`, "Northern semiarid steppe") and its two overlays, the dam basins (`biomes/dambasins`,
