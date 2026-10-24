@@ -30,5 +30,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `82-host-sky.js` | 13 | the walls (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
+| `89a-host-atmos.js` | <1 |  |
 | `99-host-take.js` | 9 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (56); the host's own checks (verify.py runs them when  (68); the page, handed to the host (91) |
 | `99-tail.html` | <1 |  |

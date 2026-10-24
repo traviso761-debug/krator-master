@@ -69,7 +69,7 @@ ENTRIES = [
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
     ('world', 'verge', 'settlements/verge/dist/verge.html', 'Verge',
      'Twin cities on the abyss escarpment: the upper on the plateau, the lower on the floor beneath the cataracts, joined by a switchback trail and a funicular; caravans on the trail.', 'new'),
-    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world)',
+    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world, deprecated)',
      "The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.", 'new'),
     ('world', 'isle-demo', 'openworld/isle-demo/dist/isle-demo.html', 'Isle Demo (open world)',
      "The scale model's Ring Sea isles at 1:1, streamed: an archipelago of about 11,800 km2 of land, its sea readable from any height, the coast drawn as lagoons, reef crests and mangrove flats, the isles kit's flora by climate class (hypertropic jungle to salt steppe), seagrass and corals in the lagoons, and geyser fields at the scale model's fourteen vents. Kautoa and Valapo are marked; their towns are being laid out."),

@@ -4,7 +4,7 @@
       Closed 2026-10-18: the kit shows the PORTS (`br_port_*`, README), the towns' own builders on their own engines,
       each checked against its town's page (verify.py). The catalog's copies are off the sheet.
 - [ ] **The catalog's copies stay in the catalog** (`kits/catalog/krator-master-buildings-beast-rider.js`) for the builds
-      that read them (Voth; the isle demo's Ridertown, below). Retiring them means re-pointing those builds to the ports.
+      that read them (Voth; the isle demo's Ridertown switched to the ports on 2026-10-18). Retiring them means re-pointing those builds to the ports.
 - [ ] **Not ported**: Girder's towers (the Ancients' frame, not a rider building: the catalog's `br_bldg_girder_tower`
       copy stands), its farm plots and the gallery dressing on the tower floors; Mav's Refuge's platforms' decks, stairs
       and the trees themselves, its market, mustering ground and plaza, the satellites' huts and farms. Their builders are
@@ -19,8 +19,8 @@
       instanced shapes are made plain meshes, so Girder's contact shading along the foot of a wall and the cloth sway
       are not there.
 - [ ] **A clipped port keeps all its mark's furniture** (the palisade places none, so nothing shows today).
-- [ ] **The isle demo's Ridertown still takes the catalog's copies** (`br_bldg_nature_shrine`, `br_bldg_roost_gallery`):
-      see `settlements/isle-demo/KNOWN_ISSUES.md` for the keys to switch and what the switch needs.
+- [x] **The isle demo's Ridertown still takes the catalog's copies** (`br_bldg_nature_shrine`, `br_bldg_roost_gallery`):
+      see `settlements/isle-demo/KNOWN_ISSUES.md` for the keys to switch and what the switch needs. - 2026-10-20: switched 2026-10-18 (see settlements/isle-demo/KNOWN_ISSUES.md), nothing open.
 - [ ] **No interiors yet for the kit's own buildings**: the stables, byre and tower place their outdoor pieces
       (troughs, hay, tack, water butts) but have no planned rooms in `kits/interiors/sets/beast-rider.js`.
 - [ ] **Software GL washes the colours out** on the catalog engine (its tone mapping on a pale ground); judge the look

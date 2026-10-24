@@ -179,7 +179,7 @@ function buildDwelling(S){
   S.shell = { kind:kind, f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, x0:x0, x1:x1, zb:zb, zf:zf, y:y, H:H, lid:lid, openSky:openSky, wcol:wcol };
 
   if(kind==='home' || kind==='store'){
-    var veranda = kind==='home' && !lid && depth>7.5 && chance(0.35), zw = veranda ? zf-1.7 : (kind==='store' ? zf-1.1 : zf);
+    var veranda = kind==='home' && !lid && depth>7.5 && chance(0.35), zw = veranda ? zf-1.7 : (kind==='store' ? zf-1.1 : zf-0.95);   /* a recess before the door: the water butt and the planter stand in it, not in the 1.2 m gallery */
     shell(f,x0,x1,zb,zw,y,H,wcol,tcol,{ doorW:kind==='store'?2.0:1.05, doorCol:kind==='store'?shade(WALLDARKC[1],-0.1):pick(PLANKC) });
     S.shell.z1 = zw; S.shell.doorW = kind==='store'?2.0:1.05; S.shell.veranda = veranda;
     if(kind==='home'){

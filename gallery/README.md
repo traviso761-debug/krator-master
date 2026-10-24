@@ -4,6 +4,7 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
+**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
 ## Cards for builds in their own artifacts (2026-10-20)
 
 The owner (2026-10-20): a build published as its own artifact gets a card in the parts like any other, under its letter in
@@ -15,6 +16,28 @@ one opening the Throne Stations artifact. **Korona**'s six stations are a sectio
 both new sections go to Krator Biomes and Objects with `--alone`. The top list keeps the scale model, the tongues, the
 two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
 I–S 26, S–Z 15, Biomes and Objects 24.
+
+## Five artifacts: S-Z split in two (2026-10-23)
+
+Krator Worlds S-Z could not be shared ("couldn't be reviewed for public sharing", at about 235 MiB), so it is two artifacts now:
+
+- **Krator Worlds P-V**: https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM (Pylon, Scyvoi, Shade, Talia, Verge, Voth; the old S-Z URL)
+- **Krator Worlds V-Z**: https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF (Voth buildings, Xanadu buildings, Ys, Yuni, Yuni buildings, Zeijani)
+
+Both are private until shared from their Share menus. The four indexes link to each other under these titles, and every live index
+was re-sorted alphabetically the same day (Throne stations by `order`). `split_site.py --urls` takes the parts in order, so the
+next full split needs the new URL list; the A-H, I-S and Biomes URLs are unchanged.
+
+Voth's city page (`settlements/voth/dist/voth-city.html`, 11.9 MB) is what made Krator Worlds P-V fail the sharing review (2026-10-23;
+P-V passed once it was out, and the other parts passed without it). It is its own artifact, https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy
+(private until shared; it may fail the same review), and P-V's Voth card opens it (`href` in the live index). `build_gallery.py`
+is not changed yet: a rebuild would put the card back on `worlds/voth.html`, so add Voth to `LINKED` and `ELSEWHERE` first (the
+Voth catalog sheet, `voth-catalog`, shares the build folder and stays in the part).
+
+## Beast Riders kit (2026-10-23)
+
+The kit (`kits/beast-riders`, ENTRIES line under Building kits, tagged new) is in Krator Worlds A–H: the live index lists it and
+`worlds/beast-riders.html` is the current 13.3 MB page (`main` at 7084bbea7's rebuild); no new publish was needed.
 
 ## The north basin's three biomes (2026-10-23)
 

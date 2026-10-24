@@ -37,7 +37,7 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/export/longsong_test.gd', 'res://tests/water/water_test.gd',
-               'res://tests/water/falls_case_test.gd',
+               'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
                ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
@@ -101,6 +101,7 @@ def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
+         ('builds take the core modules (README.md, "Core modules are not optional")', [PY, 'tools/check_core_use.py']),
          ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
          ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]

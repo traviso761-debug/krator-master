@@ -12,8 +12,8 @@ Open items are `- [ ]` lines; build.py prints them.
       Proof: verify.py --assert passes the same six invariants with the same numbers on both pages; the scene census at four views
       of each matches the old pages exactly (two old runs match each other exactly too). Hostcheck: the inspector names "Great
       mudhif" from its record on both pages, minimap and marks work, the error panel is clean.
-- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
-      to core/host, as it was never run by the old camera either.
+- [x] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed to core/host, as it was never run by the old camera either. - 2026-10-20: handed over (`ticks:TICKS` in 99-start.js; `var NIGHT` defined there), so `FIRE_T` runs and the flame cards flicker. NIGHT stays false here, so the fire lights stay off; reading the page's night into it is the open part:
+- [ ] (2026-10-20) The salvage fire lights (`FIRELIGHTS`, 69-mat-salvage.js) never light in Reed Lake: `NIGHT` in 99-start.js is a constant false. Set it from the page's own night (it has no night flag; a Reed Lake night is a design call).
 - [ ] No reclaimed-metal variants yet (the Highlands round-3 `88-hl-dress.js` pass is not vendored; the lake's only salvage is at the smithy).
 - [ ] Boats and islands do not bob. Since 2026-10-13 the lake is core/water's (`90w-rl-lake.js`) with a CPU twin (`WATER.heightAt`), but the boats, rafts and islands are baked into the kit's instanced sets, so nothing can ride it; the lake is kept calm instead (`RL_LAKE_FIELD` .12: at most 7 cm from `RL.WATER`, and the canoes' keels sit 9 cm under it). A boat that should ride needs its own group (`WATER.ride`, as the Ring Sea kit's hulls do).
 - [ ] The loose-reed fringes stand across their edges instead of along them: `hnRLEaveFringe` and the island fringe in `hnRLIsland` (75-rl-helpers.js) turn the plane by `yaw = atan2(dx, dz)`, which lays a unit plane's width across the segment (the lattice in 78/79 adds `+ Math.PI/2`). Seen 2026-10-05 on the thatch hut's front eave: the fringe sticks out toward the viewer. `81-rl-tavern.js` lays its own fringe along the landing eaves. Fixing the helper changes every def's look: rebuild and look at every row.
@@ -30,7 +30,7 @@ Open items are `- [ ]` lines; build.py prints them.
       `89y-hl-furnish.js` and the catalog runtime as Highlands does); until then `--vendor-check` reports it as
       "adapted on purpose".
 - [ ] The reed beds round a pad are placed by angle from the pad centre, so a boat moored just off the landing can stand in reeds on a very irregular outline.
-- [ ] Row labels overlap in the whole-kit overview (the label atlas is the vendored Highlands one; per-row views are clean). 2026-10-01: the re-vendored `93-labels.js` brings Iziz's declutter (overlapping labels are hidden, landmarks and the nearest first); not yet checked against the whole-kit overview, so left open.
+- [x] Row labels overlap in the whole-kit overview (the label atlas is the vendored Highlands one; per-row views are clean). 2026-10-01: the re-vendored `93-labels.js` brings Iziz's declutter (overlapping labels are hidden, landmarks and the nearest first); not yet checked against the whole-kit overview, so left open. - 2026-10-20: checked: the re-vendored declutter holds at the Overview (3 of 48 labels shown, none overlapping); closed.
 - [x] Vendored fragments had drifted behind `../highlands/src` (`--vendor-check` listed 30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b-vern-mat 69c-vern-helpers 73-hl-carve 93-labels). — 2026-10-01: all re-vendored verbatim from Highlands, plus `71-hl-mat.js` (its `hWorldUV` fix); `--vendor-check`: all 23 identical. Brings the Iziz thatch dress, frame rails, `KIT.meshes`, the concrete topple fix, the `hnKryltso` run fix and the label declutter.
 - [x] World-UV materials all drew at one K (the `vWorldUV` and `hWorldUV` closures gave every K the same shader program). — 2026-10-01: Reedlake takes the shared `vWorldUV` from `core/materials/opt/69a-world-uv.js` (`CORE_OPT_FILES` in build.py); its 69b no longer carries a copy, and `hWorldUV` (71-hl-mat) now calls the shared one with its second K.
 
@@ -39,9 +39,9 @@ Open items are `- [ ]` lines; build.py prints them.
 - [x] No LOD: `core/lod` now takes over both pages (README, "Level of detail"). The village is small: the overview
       drops from 223k to 78k triangles, close views by about 4%.
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-reedlake-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
-- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+- [x] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
       warm ones warm). Reed Lake's own reed surfaces too (rlMat, rlMatM, rlThatch, rlIsland, rlLayer, rlBundleX). ?mat=proc shows the old look.
-- [ ] **The Andean patterns take the material library** (2026-10-06): the band, the shield (chakana) and the hanging (chakana-textile-red, a
+- [x] **The Andean patterns take the material library** (2026-10-06): the band, the shield (chakana) and the hanging (chakana-textile-red, a
       diamond weave where the painter drew multi-colour stripes). The chakana cut-outs stay procedural; the fringe (`rlFringe`) and the mudhif lattice (`rlLattice`) take the owner's magenta cut-outs since 2026-10-14. ?mat=proc shows the old look.
 - [ ] **Two hanging styles** (2026-10-06): hRLStyle.hanging (74-rl-mat.js) is 'chakana' (the library's red chakana weave, the default here)
       or 'stripe' (the procedural striped awayo, MAT.rlClothS, never bound). Mungo's reed village sets 'stripe'.

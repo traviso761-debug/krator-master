@@ -10,6 +10,10 @@
 
 ## Open
 
+- [x] **The fruit's colours live in the goods file** (fixed 2026-10-20). `krator-master-furniture-generic-fruit.js` reads
+  `fruit*` colours and the `KGEN` shapes that only `krator-master-furniture-generic-goods.js` defines. `furniture_bundle.files()`
+  now adds `generic-goods` whenever `generic-fruit` is asked for (the fruit file needs its code as well as its colours, so moving
+  the colours alone would not have helped). Bundles that already named both are unchanged.
 - [ ] **The north basin's fruit is not in the catalog** (2026-10-23, from `biomes/nsemiarid`). The n semiarid kit draws
   apples, walnuts, apricots, pears, pomegranates, pistachios and almonds on its trees and as windfall, but
   `krator-master-furniture-generic-fruit.js` has no piece for any of them, so the kit's `harvest.fruit` is null for each
@@ -17,10 +21,6 @@
   them rebuilds every build that takes the catalog (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and
   almond are not in `kits/crops` either. When they land: set each species' `fruit`, empty `FRUIT_NOT_DRAWN` of them, and
   close `biomes/nsemiarid/KNOWN_ISSUES.md`'s "The catalog owes the fruit".
-- [ ] **The fruit's colours live in the goods file.** `krator-master-furniture-generic-fruit.js` reads `fruit*` colours
-  that only `krator-master-furniture-generic-goods.js` defines (FPAL generic). A build that bundles `generic-fruit`
-  without `generic-goods` places the pieces but draws nothing (found in Girder, 2026-10-03; it now bundles both). Move
-  the fruit colours into the fruit file, or have `furniture_bundle.py` add `generic-goods` when `generic-fruit` is asked.
 - [ ] **Hykkousoi has fourteen pieces and no style sheets** (`krator-master-furniture-hykkousoi.js`): the pieces are the Ys
   settlement's (ported 2026-10; Ys keeps its own copy in `settlements/ys/src/66-hyk-furniture.js`), drawn with the core's
   `F.lathe`, `F.tube` and `F.ell`. Their lit pearls and coals are glowing balls with no point light, and `lens` is the

@@ -190,32 +190,9 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Rift floor';scene.add(m);})();
 
 // ---------------------------------------------------------------- the water
-// One plane at y=0 carries the lake and the streams' last reach; its vertex
-// colour is the water's own colour by depth (the algal lake colour in the
-// salt, a clearer green in the streams). The lake colour is RIFT_LAKE
-// (50-species): swap the hue there and everything follows.
+// The lake and the streams' last reach are core/water's (89w-host-water.js, from 2026-10-20; before, one plane at y=0 with a vertex
+// colour by depth). The lake colour is RIFT_LAKE (50-species): swap the hue there and everything follows.
 const WATER_SHALLOW=new THREE.Color().setHSL(RIFT_LAKE.hue,.62,.50),WATER_MID=new THREE.Color().setHSL(RIFT_LAKE.hue-.01,.58,.32),WATER_DEEP=new THREE.Color().setHSL(RIFT_LAKE.hue-.02,.45,.13),WATER_PALE=new THREE.Color().setHSL(RIFT_LAKE.hue+.02,.55,.72);
 const RIVER_COL=new THREE.Color().setHSL((RIFT_LAKE.hue+.28)%1,.35,.30);
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,900,-600).normalize()},uSky:{value:new THREE.Color(0xd8e0d0)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.03*sin(vWP.x*0.31+uT*1.1)+0.018*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.03*cos(vWP.z*0.27+uT*0.9)+0.018*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.06+fr*0.55);',   // a scummy lake reflects less than clear water
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.55*vec3(1.0,0.96,0.86);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h),lk=lakeIn(x,z),fresh=smooth(120,30,streamD(x,z))*(1-smooth(-60,-240,lk));
- const shoal=fbm(x*.0031+2,z*.0031-4,505,2),scum=fbm(x*.0071-3,z*.0071+6,506,2);
- out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.47,.66,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.7,smooth(.58,.7,scum)*smooth(3,.5,d)*.8)).lerp(WATER_MID,smooth(1.2,3.6,d)).lerp(WATER_DEEP,smooth(4,8.5,d));   // pale algal shoals in the shallows, scum mats near the shore
- out.lerp(RIVER_COL,fresh);return out;}
-(function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){waterColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The algal lake';m.renderOrder=1;scene.add(m);})();
+// The water itself is core/water's now (89w-host-water.js: WATER.open for the lake, WATER.flow for the streams' last reach); this file keeps the
+// lake's colours (WATER_*, RIVER_COL), which that fragment hands to the water, and the lake's and streams' geometry (lakeIn, xsE, xsW) above.

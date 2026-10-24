@@ -50,6 +50,10 @@ next all-builds rebuild", with it.
   where things go.
 - Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
   `core/` module, or ask before writing a new one. `GODOT-PLAN.md` section 6 has the full list.
+  **This is checked, and it is the rule that gets dropped mid-session:** `README.md` "CORE MODULES ARE NOT OPTIONAL" has the table of
+  what to take for what, and `tools/check_core_use.py` (a `test_all.py` step) fails a build that skips a module its kind needs or
+  writes its own PRNG, noise, `getImageData`, water shader or sky dome. Start a new build from the nearest finished one, write its
+  `Core adoption` section in `PLAN.md` first, and run the check before calling it done.
 - A city's placement (streets, lots, infill) goes on `core/city` (`core/city/README.md`, "Porting a settlement"),
   not a new bespoke pass. Do not write another spatial hash or occupancy grid: use `core/space` (`KSPACE`), which the biome core
   already takes and `core/city` is moving onto (`core/city/PLAN.md`).

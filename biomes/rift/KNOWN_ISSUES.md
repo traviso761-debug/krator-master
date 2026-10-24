@@ -38,6 +38,8 @@ Read before changing anything here. `build.py` prints the open count.
       foot. The savannah's dry wash is a shallow gravel bed with no bank flora of its own.
 - [ ] The water's ripples are shader-only, so the scum mats (at the local water level +.04)
       never bob. Fine at any distance; wrong if a world animates its water mesh.
+      2026-10-20: the water is core/water's now (lake: WATER.open, a swell of centimetres; streams: WATER.flow), so it does move, and the mats and
+      pads still sit at `BIO.waterH` + .04: they do not ride `WATER.heightAt` (an amplitude of a few cm, under the mats' own height). Still open.
 - [ ] The scale-moss (`clubmoss`, an iridescent tuft) still uses world-up as its iridescence
       normal; the curls and rosettes now carry one (`aN`), so their `softC2` (the second colour
       pulled back toward the base for want of a normal) could be relaxed.
@@ -46,14 +48,16 @@ Read before changing anything here. `build.py` prints the open count.
       bluer and more magenta than the heroes they replace (cyan columns, magenta caps: the far
       impostors' look, which the view already had in its foreground); the lobe trees' and bell
       palms' yellow-green is lost in the blobs.
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
+- [x] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list. 2026-10-20: the host tower hands three shells ({geos, share}: floor plates 1, iron .6, core walls and rubble .4), so the plates no longer take the moss; one test tower is all the host builds (Girder itself is not changed).
 - [ ] No fauna yet.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), done 2026-10-06: every species carries a harvest tag
       (`RIFT.HARVEST`; the ball vine in `RIFT.PLANTS`), the four fruit name their catalog keys (`RIFT.FRUIT_KEYS`), the inspector
       shows the tag, and the probe checks it ("fruit tagged, catalogued and drawn", with two negatives). Split ballmelons: a few
       near-band vines (14%, from the spot's hash) end in a melon split in two, rind cup and yellow flesh face
-      (`melonhalf` / `melonflesh`, 48 tris a melon; about 180 on the stage). Still not drawn: the stone pine's nuts, the
-      acacia pods, the monkey-puzzle cones; the baobab's pale pods are drawn but have no catalog piece.
+      (`melonhalf` / `melonflesh`, 48 tris a melon; about 180 on the stage). 2026-10-20: the stone pine's nuts
+      (`generic_fruit_parasol_pine`), the acacia pods (`generic_fruit_acacia_pod`), the monkey-puzzle seeds (`generic_fruit_puzzle_seed`) and the baobab's
+      pale pods (`generic_fruit_pale_baobab`) are catalogued and tagged; none is drawn on the stage. `FRUIT_NOT_DRAWN` is down to the cycad's
+      starch and the cloud fern's fiddleheads.
 
 ## Done
 
@@ -86,8 +90,14 @@ Read before changing anything here. `build.py` prints the open count.
 
 - [ ] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
       cloud frill and barrel frill (`biomes/README.md`, "To do: frill-tree fins"; the Throne's frill tree is the example).
-- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.
+- [x] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.
 
 ## Export profile: sections left out (2026-10-18)
 
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
+
+2026-10-20: `atmos` is now bound and in the profile (migration phase 0: `89a-host-atmos.js` calls `ATMOS.bindHost`, build.py lists core/atmos's core, presets, export, waves and skylight plus `core/atmos/host/89-atmos-c-hostbind.js`; the binding alone draws nothing, and the page's own sky, fog, sun and water are unchanged). `water` waits for its phase: no core/water surface is drawn here yet.
+
+2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
+
+2026-10-20 (phase 3 of putting every biome's water on core/water): `water` is in the profile. The algal lake is `WATER.open` (a mask of the lake side of the shore, lakeIn < 24 m; a bed baked from terrainH, clamped at 1.4 m to keep the surf bands off a still lake) and the two streams' last reach are `WATER.flow` ribbons (a hand above the lake, y = .1), all in `src/89w-host-water.js`; the 300x300 plane (180k triangles) and its ShaderMaterial are gone. `BIO.waterH` and `terrainH` are unchanged (the water is still y = 0). EXPORT_BOX moved to [760, 1700, 1060, 2000], the east stream's mouth, so the box holds a surface (it was [300, 0, 600, 300], on the savannah's edge: no water). Budgets: the Algal shore camera drew 521 calls / 13.74M triangles before and 522 / 13.59M after (the ceiling 27M held / 17M drawn / 700 calls, all held). What changed in the look: the lake's pale algal shoals and scum patches (a vertex colour) are gone from the water itself, the streams are a ribbon with white banks, the sky in the water is the page's captured sky. Gaps: core/water/README.md, "Open gaps (phase 3, rift/eastabyss)". The water has no raycast (the plane was `probeSkip` already): the inspector names the ground under it.

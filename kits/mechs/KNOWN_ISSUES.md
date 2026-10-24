@@ -25,11 +25,9 @@
   slope, and a foot on a step is not checked against the swing arc.
 - [ ] **Hover raycasts hit the bind pose.** three.js r128 raycasts a SkinnedMesh unskinned; the inspector is right
   for the body and approximate for legs and arms.
-- [ ] **Tags are per mech, not per variant.** The Supply Train Castra carries no ballista but its entry's tags still
-  say `weapon: ['ballista']`; its data (`dataOf('iz_castra', 1).weapon`) and its clip say what it does.
 - [ ] **No exporter yet** (GODOT-PLAN.md rule 10). The data and the clips are data; the skin is rigid weights on a
   skeleton (Skeleton3D), the leg IK a two-bone solve (SkeletonIK3D or code), the banners a CPU flutter (a shader there).
-- [ ] **The tools list only `src/`.** `tools/make_index.py` skips this kit's top-level files (as for
+- [x] 2026-10-20: stale entry, nothing to fix: **The tools list only `src/`.** (2026-10-20, batch 8: left open; `make_index.py` has no notion of a kit's top-level fragments and regenerating the INDEX files touches every build's INDEX.md, which other sessions have open.) `tools/make_index.py` skips this kit's top-level files (as for
   `kits/motor-vehicles`); `INDEX.md` is hand-written and `PORT.md` keeps them under "Notes".
 
 - [ ] **The Stalkers' footprints are lopsided** (2026-10-23): the harpooner's guns and the blade's arms reach well
@@ -44,6 +42,7 @@
 
 ## Closed
 
+- 2026-10-20: tags per variant. An entry may declare `variantTags: [{}, { weapon: [...] }]`, keys replacing the mech's `tags` for that variant (`KratorMechs.tagsOf(key, v)`, `userData.tags`, and `list()[i].variantTags`). The Castra's Supply Train carries `weapon: []` (the Road Camp keeps its ballista), and `verify.py` accepts an empty weapon list only where the variant's `data.weapon` reads 'none'.
 - 2026-10-05: the texture gaps. The owner generated `metal.painted.chipped` (the livery: paint chipped to steel, which
   the shader shows as bare metal where the map is dark), `metal.joint.greasy` (joints and pistons), `hair.crest` (the
   crests) and `patterns/iziz/sun-banner` (the sun flags); batch `tools/textures/batches/chatgpt-2026-10g-mechs.json`.

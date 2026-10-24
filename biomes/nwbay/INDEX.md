@@ -30,8 +30,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `70-biome-nwbay.js` | 1 |  |
 | `75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (67) |
 | `82-host-sky.js` | 10 |  |
-| `85-host-tower.js` | 5 |  |
+| `85-host-tower.js` | 6 |  |
 | `86-host-jetty.js` | 4 |  |
 | `88-host-build.js` | 2 |  |
+| `89a-host-atmos.js` | <1 |  |
 | `99-host-take.js` | 13 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (126) |
 | `99-tail.html` | <1 |  |

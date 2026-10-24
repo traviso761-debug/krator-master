@@ -71,7 +71,7 @@ CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-ani
 CORE_B=os.path.join(ROOT,'core','biome')
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.join(ROOT,'core','space')
-# OTHER KITS read in place (biomes/WORLD.md: several kits on one page; openworld/little-demo/build.py reads its kits the
+# OTHER KITS read in place (biomes/WORLD.md: several kits on one page; openworld/isle-demo/build.py reads its kits the
 # same way). Each kit is ONE block of its fragments in its own order (BIO.kit at the top of its first, BIO.kitEnd at the end
 # of its last): the slots below sort that way, after this page's BIO.init (47) and before this kit (50). The geyser kit's
 # layout (46) is data, read before the land is made (its relief is part of the land).
@@ -95,7 +95,7 @@ KITS={
  '49e3-geyser-sinter.js':'geyser/src/57-biome-geyser-sinter.js','49e4-geyser-floor.js':'geyser/src/60-biome-geyser-floor.js',
  '49e5-geyser-show.js':'geyser/src/65-biome-geyser-show.js','49e6-geyser-build.js':'geyser/src/70-biome-geyser.js'}
 # each kit's last listed fragment must close its registry (a kit that moves BIO.kitEnd to a new fragment would otherwise
-# leave every later kit's items in its registry): the same check little-demo's build.py makes
+# leave every later kit's items in its registry): the same check openworld/isle-demo/build.py makes
 LAST={'throne':'49a5-throne-build.js','swbay':'49b6-swbay-fauna.js','eastabyss':'49c6-eastabyss-fauna.js',
       'sedesert':'49d6-sedesert-fauna.js','geyser':'49e6-geyser-build.js'}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
@@ -116,12 +116,15 @@ for f in CORE_EXPORT:
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the shared atmosphere and core/water: the sea is a WATER.open surface (89w-host-sea.js)
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
-CORE_WATER=['20-core-water.js','50-core-water-draw.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']   # 2026-10-20 (phase 3): the shore grid (21), the still pools and the wet beach (51; 22 is its flow half)
+CORE_WATER_GEYSER=['52-core-water-geyser.js','52b-core-water-geyser-draw.js']   # core/water/geyser/: opt-in, NOT pooled by builds that list core/water (README)   # 52 and 52b: the geyser kit's show draws its springs and columns through them
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(ROOT,'core','atmos',f)
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.join(ROOT,'core','water',f)
+for f in CORE_WATER_GEYSER:
+    PATH[f]=os.path.join(ROOT,'core','water','geyser',f)
 # the host shell from core/host (core/host/README.md); src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,os.path.join(ROOT,'core','host'))
 import host as khost

@@ -7,6 +7,9 @@
   "89-atmos-0p-presets.js",
   "89-atmos-3-particles.js",
   "89-atmos-4-weather.js",
-  "89-atmos-9-host.js"
+  "89-atmos-8-export.js",
+  "89-atmos-9-host.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js"
  ]
 }

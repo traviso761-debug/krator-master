@@ -19,6 +19,16 @@ Open items are `- [ ]`; `build.py` counts them.
 - [ ] **The Throne's `THRONE.small` functions are not wrapped** to the Throne's registry (BIO.kitWrap wraps only the
   export's own functions). This kit does not call them, but a kit that does must switch to the Throne's registry itself.
 
+## Water (core/water)
+
+- [x] **No shore grid; flat tide and brine pools (done 2026-10-20, migration phase 3).** `src/89w-host-sea.js`: the sea's bed (`SEA_BED`, the lagoon floored at 1.6 m) is now a core/water
+  SHORE GRID (`shore:{cell:6, band:100, seeds}` over the terrain box, flooded from the box's deep corners; no `maskLand`, the beaches and the reef are `terrainH`'s own heights): the swell
+  shoals toward the beaches and the reef, a breaker train runs in along the coast, and the ground takes `WATER.wetGround` (wet sand where the swash reaches). The 18 tide pools and 4 brine
+  pools (24-segment `MeshLambertMaterial` discs) are `WATER.still` polygons (`POOL_STILLS`, 84) drawn by `drawStill` with their old colours and opacities (.55 teal, .7 pink), the sky in them,
+  night darker, an invisible disc each for the inspector's click. `build.py` takes core/water 21, 22 and 51 as well. The shore grid and the draw take about 1 s on a real GPU machine
+  (`_t.sea0` to `_t.sea`). `verify.py dist/ringisles.html --assert` passes (default camera 764 calls, 23.85 M triangles, 21.85 M scene of 30 M; the pools are 22 meshes
+  as before, so the calls and triangles do not move). Gaps: `core/water/README.md`, "Open gaps (phase 3, Throne frontier/ringisles)".
+
 ## Stand-ins (procedural or a near library set until the owner's texture comes; prompts below)
 
 - [x] Wired 2026-10-18 from the owner's tex2 delivery (materials.json): the lagoon floor (`ground.wetsand` -> `ground.lagoon.seagrass`; the
@@ -29,7 +39,7 @@ Open items are `- [ ]`; `build.py` counts them.
   mango, coffee and clove (`card.croptree.glossy`). The sea grape, breadfruit and naupaka cards are full colour (`keep` 1, so the red leaves, the fruit and the white flowers show; `RINGISLES.libCol` keeps a sixth of the species colour); the rest are grey detail maps tinted by the instance colour. One cell fills a clump quad (a clump quad draws v up, so these cells are listed bottom-first to stand upright).
 - [ ] The banana's leaves: procedural. `card.paddle` has banana leaves but they lie diagonally in their cells, and BIO.libSwap
   cuts a cell without turning it; the crater drylands' `libCell(..., rot)` would turn one upright (code, no new texture).
-- [ ] The mango's, coffee's and clove's leaves: one procedural glossy-lance card (`glossy`). Wants `card.croptree.glossy`.
+- [x] The mango's, coffee's and clove's leaves: one procedural glossy-lance card (`glossy`). Wants `card.croptree.glossy`. - 2026-10-20: wired 2026-10-18 (see the tex2 entry above), nothing open.
 - [ ] Greens and sweet potato reuse the elephant-ear cell of `card.paddle` (`heart`) and the creeper's mat: near enough at
   a field's distance, wrong up close (no prompt yet: the owner's call whether the crops want their own sheet).
 - [ ] Rice and cane blades: procedural (`card.crop`'s leaves arch sideways, not as a standing clump).
@@ -54,3 +64,5 @@ The prompts for the stand-ins above are in `core/materials/PROMPTS-NEEDED.md` (s
 ## Export profile: sections left out (2026-10-18)
 
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js). Add each back when the kit fills it.
+
+2026-10-20: `atmos` is back in the profile: the build lists `89-atmos-8-export.js` (the one shared fragment sedesert took), so the section fills (clock, wind, presets, skylight).

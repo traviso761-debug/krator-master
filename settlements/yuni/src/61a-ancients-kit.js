@@ -9,7 +9,7 @@ reseed(610001);
 (function(){
 var WORLD_TH = terrainH;
 var ANCK = (function(){
-var ANC_TH=null, KSKIP=false, KTHIN=1, KTN=0, KTNAMES=[], UVK=1, DISHOK=false, WORN=false, LABTIGHT=false, SEGK=0.5, RSC=1, APRK=0.3, YFLAT=true;
+var ANC_TH=null, KSKIP=false, KTHIN=1, KTN=0, KTNAMES=[], UVK=1, DISHOK=false, WORN=false, LABTIGHT=false, SEGK=0.5, RSC=1, APRK=0.3, APRCLIP=null, YFLAT=true;
 var NIGHT=false;          /* the kit's day/night flag (92-camera.js), driven by ANCK.setNight from Yuni's clock */
 function reportErr(m){ ERR('ancients kit: '+m); }
 // ---------------------------------------------------------------- rng + noise

@@ -172,19 +172,19 @@ const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal
 SWLOW.HARVEST={
  mangrove:HV('poles, fuel',[],true,'The lacquered red bark tans hides and dyes nets.'),
  cypress:HV('timber (rot-proof)',[],false,'Shingles and boat planks; the knees are carved.'),
- kapok:HV('light timber, canoes',['seeds (pressed)'],false,'The pod floss stuffs pillows and floats.'),
+ kapok:HV('light timber, canoes',['seeds (pressed)'],false,'The pod floss stuffs pillows and floats.','generic_fruit_silkpod'),
  gum:HV('timber',[],true,'The leaves are steamed against chest colds.'),
  canepalm:HV('canes, furniture',['palm heart (famine)'],false,'The lacquered stems are split for cane-work.'),
- sprawloak:HV('ship knees, fuel',['acorns (leached)'],true,'Acorns leached and ground (not drawn); the bark tans leather.'),
+ sprawloak:HV('ship knees, fuel',['acorns (leached)'],true,'Acorns leached and ground (a catalog piece, not drawn on the stage); the bark tans leather.','generic_fruit_mast'),
  pillarfig:HV('none (one tree is a grove)',['figs'],true,'Purple figs on the limbs and the fused bole, pink inside; the latex is a wart salve.','generic_fruit_pillar_fig'),
  willow:HV('basketry, withies',[],true,'The bark is a fever and pain tea.'),
  ringbark:HV('tool handles',[],false,'The copper bark peels in rings for tinder.'),
  sycamore:HV('furniture, fuel',[],false,'The pale mottled timber turns well.'),
  manzanita:HV('carving, fuel',['berries','cider'],true,'Red berries pressed into a cider; the leaves a tea.','generic_fruit_madrone'),
  madrone:HV('fuel, turnery',['berries'],true,'Bumpy red berries, mealy and sweet; the bark a tea for sore throats.','generic_fruit_madrone'),
- corkoak:HV('cork, fuel',['acorns (leached)'],false,'Stripped for cork every ninth year; acorns not drawn.'),
- skirtpalm:HV('thatch, fibre',['fruit'],false,'Small hard fruit (not drawn); the skirt fibre makes rope.'),
- coastoak:HV('fuel, tool handles',['acorns (leached)'],true,'Acorns leached and ground (not drawn).'),
+ corkoak:HV('cork, fuel',['acorns (leached)'],false,'Stripped for cork every ninth year; the acorns are a catalog piece, not drawn on the stage.','generic_fruit_mast'),
+ skirtpalm:HV('thatch, fibre',['fruit'],false,'Small hard fruit (a catalog piece, not drawn on the stage); the skirt fibre makes rope.','generic_fruit_skirt_palm'),
+ coastoak:HV('fuel, tool handles',['acorns (leached)'],true,'Acorns leached and ground (a catalog piece, not drawn on the stage).','generic_fruit_mast'),
  pompom:HV('none',[],false,'The red cones are poisonous.'),
  cedar:HV('timber, chests',[],true,'The scented wood keeps moths from cloth.'),
  pine:HV('timber, pitch',['pine nuts (small)'],true,'The pitch is tapped for tar and salve.'),
@@ -196,7 +196,7 @@ SWLOW.HARVEST={
  magnolia:HV('light timber',[],true,'The bark is a bitter tonic.'),
  sunburn:HV('fuel',[],true,'The resin dresses sunburn, hence the name.'),
  stargum:HV('timber',[],true,'The resin is a cough syrup.'),
- baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (not drawn) are roasted.'),
+ baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (a catalog piece, not drawn on the stage) are roasted.','generic_fruit_bay_laurel'),
 };
 SWLOW.SPECIES.forEach(S=>{S.tags.harvest=SWLOW.HARVEST[S.key]||HV('none');});
 // the small plants that bear catalogued fruit (60-floor places them); `items` names the instanced items that draw them
