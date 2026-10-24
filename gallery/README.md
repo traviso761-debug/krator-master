@@ -479,3 +479,9 @@ pieces and the ports of Girder's and Mav's Refuge's buildings; verify.py --asser
 its card in the live index (version 91's index with one entry added, as in `build_gallery.py`'s new `ENTRIES` line). Every
 other file is as in version 91; the part holds about 244 MiB.
 
+
+Krator Biomes and Objects version 29 and Krator Worlds I–S version 29 (2026-10-24), from `main` at 4342d3a4d: the Mechs kit
+moves to Biomes and Objects as **Mechs and Robots** (`worlds/mechs.html`, 1.7 MB: nineteen mechs, the seventeen Iziz
+war-walkers and the two Stalkers of the Catch) under Objects; `worlds/iziz-mechs.html` and its card are removed from I–S.
+Both live indexes were edited in place (one card each, as in `build_gallery.py`, where the entry is now `('objects',
+'mechs', ...)`); every other file is as it was.
