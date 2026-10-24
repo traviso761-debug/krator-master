@@ -9,6 +9,9 @@ sources. The job is to rebuild in this order, verifying as you go:
 2. **Settlement kits and object kits** (`kits/*`, `core/charactermodels`, the settlements that are not placed on the map).
 3. **Settlements placed on the open world**: Pinnacle Rock, the isle demo (settlement and open-world page), Hook, Longsong.
 
+The audits behind this plan are in `AUDITS.md` (an index of every audit in the repo, the KNOWN_ISSUES batches and what is
+left, and the per-biome water and atmos scope).
+
 Do not start with a blanket `python3 tools/test_all.py` rebuild: build one stage, verify it, rewrite the baseline for the pages
 of that stage, commit, then the next stage.
 
