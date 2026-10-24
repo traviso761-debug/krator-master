@@ -85,6 +85,11 @@ Publishing a re-split, learned 2026-10-16:
 page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
 75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
 
+**New URL (2026-10-23).** The tongues page (with Eternian, its dialects and Yusar, and Matok) is now
+https://claude.ai/artifact/GRxH5C6uTvaJmXeFg5wiya; the old artifact (FFEn2MEBPxMgqPJkcV6sNt) is left as it was. The
+template points at the new one, and every part's live index was edited in place to it (A-H v95, I-S v28, P-V v21, V-Z v3,
+Biomes and Objects v28). Republish the tongues page to the new URL from now on.
+
 ## Character lab links (2026-10-16)
 
 `index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
@@ -474,3 +479,9 @@ pieces and the ports of Girder's and Mav's Refuge's buildings; verify.py --asser
 its card in the live index (version 91's index with one entry added, as in `build_gallery.py`'s new `ENTRIES` line). Every
 other file is as in version 91; the part holds about 244 MiB.
 
+
+Krator Biomes and Objects version 29 and Krator Worlds I–S version 29 (2026-10-24), from `main` at 4342d3a4d: the Mechs kit
+moves to Biomes and Objects as **Mechs and Robots** (`worlds/mechs.html`, 1.7 MB: nineteen mechs, the seventeen Iziz
+war-walkers and the two Stalkers of the Catch) under Objects; `worlds/iziz-mechs.html` and its card are removed from I–S.
+Both live indexes were edited in place (one card each, as in `build_gallery.py`, where the entry is now `('objects',
+'mechs', ...)`); every other file is as it was.
