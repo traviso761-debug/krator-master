@@ -31,11 +31,11 @@ LEDE = ('Eleven stations on the Throne, the volcano at the heart of Krator, each
         'seconds. <strong>Drag to orbit, scroll to zoom;</strong> every station has preset views, an inspector and night '
         '(N). A desktop browser is recommended.')
 
-BACK = ('  <section class="scale" aria-labelledby="worlds-h">\n'
-        '    <h2 id="worlds-h">Krator Worlds</h2>\n'
-        '    <p>Every other settlement, building kit and biome built so far, and the scale model of the continent.\n'
-        '    <a href="%s" target="_blank" rel="noopener">Open Krator Worlds &rarr;</a></p>\n'
-        '  </section>\n' % WORLDS_URL)
+BACK = ('  <div class="hub">\n    <div class="col">\n      <h2>Krator Worlds</h2>\n'
+        '      <a class="btn" href="%s" target="_blank" rel="noopener"><b>Krator Worlds<i aria-hidden="true">&nearr;</i></b>'
+        '<span>Every other settlement, building kit and biome built so far, and the scale model of the continent.</span></a>\n'
+        '    </div>\n  </div>\n' % WORLDS_URL)
+
 
 SECTION = {'key': 'throne', 'id': 'stations', 'title': 'The stations',
            'note': 'In station order: from the plume\'s edge on the south-east shoulder round the windward flank, '
@@ -94,10 +94,10 @@ def main():
     page = tpl.replace('<title>Krator Worlds</title>', '<title>The Throne Stations</title>', 1)
     page = page.replace('<h1>Krator Worlds</h1>', '<h1>The Throne</h1>', 1)
     page = re.sub(r'<p class="lede">.*?</p>', '<p class="lede">%s</p>' % LEDE, page, count=1, flags=re.S)
-    page = re.sub(r'  <section class="scale".*?</section>\n', lambda m: BACK, page, count=1, flags=re.S)
+    page = re.sub(r'<!--HUB-->.*?<!--/HUB-->\n', lambda m: BACK, page, count=1, flags=re.S)
     page = (page.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
                 .replace('/*SECTIONS*/[]', json.dumps([SECTION], ensure_ascii=False).replace('</', '<\\/')))
-    for want in ('The Throne Stations', 'Open Krator Worlds', '"section": "throne"'):
+    for want in ('The Throne Stations', 'class="btn"', '"section": "throne"'):
         if want not in page:
             sys.exit('build_throne.py: the template changed; "%s" did not go in' % want)
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:

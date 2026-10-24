@@ -61,6 +61,15 @@ a.card:hover .go,a.card:focus-visible .go{color:var(--accent)}
 .scale h2{font:400 22px/1.2 var(--display);letter-spacing:.02em;margin:0 0 6px}
 .scale p{max-width:62ch;margin:0;color:var(--muted)}
 .scale a{color:var(--accent);white-space:nowrap}
+.hub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:32px;padding:18px 0;border-bottom:1px solid var(--rule)}
+.hub .col[hidden]{display:none}
+.hub .col:only-child{grid-column:1/-1}
+.hub h2{font:12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+a.btn{display:grid;gap:2px;margin-bottom:8px;background:var(--accent);color:var(--ground);border-radius:4px;padding:10px 14px;text-decoration:none;border:1px solid var(--accent)}
+a.btn b{font:500 15px/1.3 var(--body);display:flex;justify-content:space-between;gap:8px}
+a.btn span{font-size:12.5px;opacity:.85}
+a.btn:hover,a.btn:focus-visible{background:transparent;color:var(--accent);outline:none}
+@media (max-width:560px){.hub{grid-template-columns:minmax(0,1fr)}}
 footer{margin-top:48px;border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--muted)}
 footer code{font:12px var(--mono)}
 @media (max-width:560px){header{grid-template-columns:minmax(0,1fr)}header canvas{display:none}}
@@ -79,38 +88,21 @@ footer code{font:12px var(--mono)}
     </div>
     <canvas id="giant" width="264" height="264" aria-hidden="true"></canvas>
   </header>
-  <section class="scale" aria-labelledby="scale-h">
-    <h2 id="scale-h">Krator Scale Model</h2>
-    <p>The whole continent as one terrain map: 3,098 × 2,786 km, elevation, climate and the named regions.
-    Every world below sits somewhere on it.
-    <a href="https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q" target="_blank" rel="noopener">Open the scale model &rarr;</a></p>
-  </section>
-  <section class="scale" aria-labelledby="tongues-h">
-    <h2 id="tongues-h">Tongues of Krator</h2>
-    <p>Every people of the crater speaks a descendant of one English. Each tongue's sound changes, its script and a scribe
-    to write in it, a shared phrasebook, and the words the peoples took from one another.
-    <a href="https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt" target="_blank" rel="noopener">Open the tongues &rarr;</a></p>
-  </section>
-  <section class="scale" aria-labelledby="cosmetic-h">
-    <h2 id="cosmetic-h">Cosmetic Lab</h2>
-    <p>The people of Krator: MakeHuman bodies with face, build and ancestry sliders, skin, hair and eyes, the peoples'
-    clothes by class (the Voth, Izani, Beast Riders, Hykkousoi, Dalab, Yuni and the Iron Republic), body mods and the
-    giants, and crowds of strangers drawn from a people. The start of the character editor and of the citizens' bodies.
-    <a href="https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw" target="_blank" rel="noopener">Open the Cosmetic Lab &rarr;</a></p>
-  </section>
-  <section class="scale" aria-labelledby="animlab-h">
-    <h2 id="animlab-h">Animation Lab</h2>
-    <p>Every clip on six bodies at once (a man and a woman, each short, neutral and tall; three giants on a filter): walking, fighting,
-    working, sitting and sleeping, with props in hand, cloth that swings, a posture panel, and marks for what holds up
-    and what breaks.
-    <a href="https://claude.ai/artifact/WStXx16aNHT63stCoz331x" target="_blank" rel="noopener">Open the Animation Lab &rarr;</a></p>
-  </section>
-  <section class="scale" aria-labelledby="ancients-h">
-    <h2 id="ancients-h">The Ancients and the Port</h2>
-    <p>The Ancients' megastructures type by type, the arcologies (whole cities in one structure) and the modular Ancient
-    Port, each intact, ruined and reclaimed: 64 pages in a gallery of their own.
-    <a href="https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1" target="_blank" rel="noopener">Open the Ancients &rarr;</a></p>
-  </section>
+  <!--HUB-->
+  <div class="hub">
+    <div class="col">
+      <h2>Companion pages</h2>
+      <a class="btn" href="https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q" target="_blank" rel="noopener"><b>Krator Scale Model<i aria-hidden="true">&nearr;</i></b><span>The whole continent as one terrain map, 3,098 &times; 2,786 km: elevation, climate and named regions.</span></a>
+      <a class="btn" href="https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt" target="_blank" rel="noopener"><b>Tongues of Krator<i aria-hidden="true">&nearr;</i></b><span>Every people's tongue: sound changes, scripts, a scribe, a phrasebook and loanwords.</span></a>
+      <a class="btn" href="https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw" target="_blank" rel="noopener"><b>Cosmetic Lab<i aria-hidden="true">&nearr;</i></b><span>The character editor: bodies, faces, clothes by people, body mods, giants and crowds.</span></a>
+      <a class="btn" href="https://claude.ai/artifact/WStXx16aNHT63stCoz331x" target="_blank" rel="noopener"><b>Animation Lab<i aria-hidden="true">&nearr;</i></b><span>Every clip on six bodies, with props, cloth, a posture panel and review marks.</span></a>
+      <a class="btn" href="https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1" target="_blank" rel="noopener"><b>The Ancients and the Port<i aria-hidden="true">&nearr;</i></b><span>Megastructures, arcologies and the modular Ancient Port, intact, ruined and reclaimed.</span></a>
+    </div>
+    <div class="col" hidden>
+      <h2>Gallery parts</h2>
+<!--PARTS-->    </div>
+  </div>
+  <!--/HUB-->
   <main id="registers"></main>
   <footer>Built from the <code>krator-master</code> repository. Each card names the file it was built from.</footer>
 </div>
@@ -124,7 +116,7 @@ const SECTIONS = [
   {key:'korona', id:'korona', title:'Korona', note:'The north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne.'},
   {key:'kit', id:'kits', title:'Building kits', note:'Sheets that lay out every building of a culture side by side.'},
   {key:'ancients', id:'ancients', title:'Ancient city kits', note:'The ruined megastructures of the Ancients, type by type, at every level of decay: the full kit, its worn twins, the alternates, the engines, the spaceport and the Lighthouse.'},
-  {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants and watercraft, each tagged by culture.'},
+  {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants, crops, fauna, resources, watercraft, motor vehicles and mechs, each tagged by culture.'},
   {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. This month\'s group is marked new.'},
   {key:'port', id:'port', title:'Ancient Port', note:'Modular port segments and vessels that tile along a coast, each intact, ruined and reclaimed.'},
 ];
