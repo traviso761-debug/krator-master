@@ -87,5 +87,6 @@ veins, seams, pools and grains are vertex colours until their sets arrive (`core
   what it can sell (`RES_LEDGER.tradeGoods` is core/simulation's `SIM.trade` `goods`), and the fairness audit.
 - **The page's geology map** (G, or the button at the bottom left): the provinces, one family's prospectivity, and a 120 km
   window's nodes by family (click the map to move it).
-- `node kits/resources/tests/test-res.js` checks all of it (43 checks, each with a negative).
+- `node kits/resources/tests/test-res.js` checks all of it (44 checks, each with a negative); `godot/kres_field_test.gd`
+  checks the GDScript twin against it.
 

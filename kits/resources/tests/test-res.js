@@ -1,7 +1,7 @@
 // node kits/resources/tests/test-res.js   ->  'all passed'
 // The geology data, the node field (45r-res-field.js), the placers, the evaporite rings and the scarcity ledger
 // (46r-res-ledger.js), each check with a negative. --ledger writes kits/resources/data/ledger.json (the ledger the trade
-// and Godot read); the test then checks the committed file matches a fresh build.
+// and Godot read) and godot/golden-field.json (the GDScript twin's vectors); the test then checks both match a fresh build.
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.resolve(__dirname, '..', '..', '..'), KIT = path.resolve(__dirname, '..');
@@ -124,6 +124,14 @@ const LG = RES_LEDGER.build();
 { const f = path.join(KIT, 'data', 'ledger.json'), txt = JSON.stringify(LG, null, 1) + '\n';
   if (process.argv.indexOf('--ledger') >= 0) { fs.writeFileSync(f, txt); console.log('wrote ' + f); }
   ok(fs.existsSync(f) && fs.readFileSync(f, 'utf8') === txt, 'data/ledger.json is the ledger of this data (node kits/resources/tests/test-res.js --ledger)'); }
+
+/* ---- the Godot twin's golden tile (kits/resources/godot/kres_field_test.gd reads it) */
+{ const f = path.join(KIT, 'godot', 'golden-field.json');
+  const Tg = { x0: 1120 * PM, z0: 680 * PM, x1: 1135 * PM, z1: 695 * PM };
+  const tile = G.nodesIn(Tg).filter(n => n.src !== 'owner').map(n => ({ id: n.id, grade: n.grade, gx: n.gx, gz: n.gz }));
+  const txt = JSON.stringify({ tile: [Tg.x0, Tg.z0, Tg.x1, Tg.z1], nodes: tile, lodes: DATA.stats.lodes }, null, 0) + '\n';
+  if (process.argv.indexOf('--ledger') >= 0) { fs.writeFileSync(f, txt); console.log('wrote ' + f); }
+  ok(fs.existsSync(f) && fs.readFileSync(f, 'utf8') === txt, 'godot/golden-field.json is the tile of this data (--ledger rewrites it)'); }
 
 console.log(fails ? fails + ' of ' + n + ' FAILED' : 'all passed (' + n + ' checks)');
 process.exit(fails ? 1 : 0);

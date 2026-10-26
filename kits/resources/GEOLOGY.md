@@ -9,8 +9,9 @@
 | `src/45r-res-field.js` | `[G data]` `RES_GEO` (also `KRES`): the node field over any tile, `near`, `register` |
 | `src/46r-res-ledger.js` | `[G data]` `RES_LEDGER`: the scarcity ledger and the fairness audit |
 | `data/ledger.json` | the ledger of this data (`node kits/resources/tests/test-res.js --ledger`): what core/simulation and Godot read |
+| `godot/kres_field.gd`, `godot/kres_field_test.gd`, `godot/golden-field.json` | the GDScript twin of the field, its test, its vectors |
 | `src/98r-host-geomap.js` | `[web]` the page's geology map (G): provinces, a family's prospectivity, the nodes of a window by family |
-| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 43 checks, each with a negative |
+| `tests/test-res.js` | `node kits/resources/tests/test-res.js`: 44 checks, each with a negative |
 
 ## Rebake
 
@@ -146,10 +147,13 @@ The open world's `extract_region.py` frame is the local one (`x = (px - cx) x 20
 
 - **The data:** `FileAccess.get_file_as_string` + `JSON.parse_string`; a layer is `Marshalls.base64_to_raw(s)` then the
   run-length loop into a `PackedByteArray` of `w x h` (never `Image.load`: the bytes are the data, not a picture).
-- **The field:** a GDScript twin of `RES_GEO.candidate` on `core/rand/krand.gd` (`KRand.cell`, `KRand.child`,
-  `KRand.hash_ints`, `KRand.unit`, which `golden.json` proves equal to the JS). The arithmetic is doubles in the order above,
-  and the cell is `floor(v + 0.5)`. Not `FastNoiseLite` (its cellular jitter changed between 4.1 and 4.2). The test: a
-  tile's ids and positions against a JS-exported list, and the lode digests in `stats.lodes`.
+- **The field:** `godot/kres_field.gd`, the twin of `RES_GEO.candidate` and `nodesIn` (the baked mask's drop rule) on
+  `core/rand/krand.gd`. Not `FastNoiseLite` (its cellular jitter changed between 4.1 and 4.2).
+- **Proved (2026-10-26, Godot 4.7.2 headless):** `godot/kres_field_test.gd` reads `godot/golden-field.json` (written by
+  `node kits/resources/tests/test-res.js --ledger`): a 30 km tile's 200 nodes match the JS in id, grade and position, and the
+  whole world's gold lodes (105,271) give the bake's digest, so numpy, JS and GDScript agree. To run it: a project folder
+  holding `krand.gd`, `kres_field.gd`, `kres_field_test.gd`, `golden-field.json` and `data/geology.json`, then
+  `godot --headless --path <folder> --script res://kres_field_test.gd`. Into `godot/`, it goes the way
+  `godot/tools/sync_core.py` copies core/rand's test (a request: that file is not this kit's).
 - **Drawing:** one `MultiMeshInstance3D` per node def (`node-<kind>-<grade>`), the records from `KRES.register`'s export.
 - **The ledger:** `data/ledger.json` as a `Resource` (or read as JSON): the sim's imports and exports.
-- Not written yet: `kres_field.gd` and its test (the twin lands with the first Godot world that places nodes).

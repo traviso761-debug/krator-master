@@ -33,8 +33,8 @@
       not fail on it.
 - [ ] **The rejection is coarse without the host's ground:** the baked mask is ~4 km a cell, so a page that passes no
       `ground(x, z)` drops only on whole cells of water or cliff. An open world passes its own heights.
-- [ ] **No GDScript twin yet** (`GEOLOGY.md`, "Godot"): `kres_field.gd` and its test land with the first Godot world that
-      places nodes. `krand.gd` already matches the JS (`core/rand/golden.json`); the lode digests are the cross-check.
+- [ ] **The GDScript twin is not in godot/ yet** (`godot/kres_field.gd` here, proved against the JS and the bake on Godot
+      4.7.2 in a scratch project: `GEOLOGY.md`, "Godot"): `godot/tools/sync_core.py` should copy it with its test and data.
 - [ ] **Hookups requested, not made** (files this kit does not own): `core/hamlet` `KHAMLET.village` should take its
       resource from `KRES.near` when the spec names none; `core/simulation`'s trade takes `RES_LEDGER.tradeGoods` as
       `goods` (an input: no change to the trade is needed, but the isle demo's page must pass it).
