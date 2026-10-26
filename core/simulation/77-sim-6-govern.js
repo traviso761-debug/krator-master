@@ -4,14 +4,14 @@
 // nothing here runs until an economy's config names a rule; an economy without one keeps its books exactly as before.
 //
 //   SIM.economy({ ...,
-//     govern: { every, cover, ti, alpha, min, max, smooth?, window?, minBy?:{good: floor}, buys?:{good: a day} },
+//     govern: { every, cover, ti, alpha, min, max, smooth?, window?, minBy?:{good: floor}, buys?:{good: a day}, least?:{good: n} },
 //     spoil:  { good: share of its stock that rots a night },
 //     keep:   { by (the preserving good: 'salt'), goods:[the goods it keeps], share (of what would rot), per (servings a unit keeps) },
 //     season: { by (the seasoning good: 'salt'), mult (a meal's quality while the town holds it), least? (1) } }, {settlement})
 //   SIM.economyRules(minute)       SIM.step's last act, after the world's own minute (SIM.stepHooks): every economy's
 //                                  governor, then its spoilage, then its seasoning, each in the economies' order
-//   SIM.economyGoverned(s?)  -> {good: {use, pos, cap, mult}}   the governor's last look (its demand a day, its supply line,
-//                                  what the town makes at the full rate, the multiplier it set)
+//   SIM.economyGoverned(s?)  -> {good: {use, pos, cap, mult, target}}   the governor's last look (its demand a day, its
+//                                  supply line, what the town makes at the full rate, the multiplier it set, its target)
 //   SIM.economySeasoned(s?)  -> true while the town's warehouses hold its seasoning (items' meals read it: 77-sim-6-items.js)
 //
 // THE GOVERNOR (an order-up-to rule with its supply line: POUT; Sterman's Beer Game, Towill's IOBPCS). Every `every`
@@ -20,10 +20,12 @@
 // want of it in the other towns its trade routes carry it to from here (77-sim-6-trade.js: their use and unmet draws,
 // the unmet at most once more the use) plus what buyers are set to take a day (`buys`), plus what the goods made from it
 // here want of it (their demand less what was made of them, times the inputs). Its SUPPLY LINE is its stock in the
-// warehouses, at the sites, on the carts and at sea toward the town. Wanted output a day = demand + alpha (cover x demand
-// - supply line) / ti; over what the town makes of it at the full rate (made a day over the multiplier it was made at,
-// both smoothed over `smooth` days), clamped to [min (or minBy[good]), max]. A recipe of several goods runs at the rate
-// its scarcest good asks for; its full rate is the one it had when the governor first looked. On the first day (no
+// warehouses, at the sites, on the carts and at sea toward the town. Wanted output a day = demand + alpha (target - supply
+// line) / ti, the target `cover` days of demand or the shelf stock `least[good]` kept with no demand (a town at the
+// abstract level buys no treats: watched again, it finds some), whichever is more; over what the town makes of it at the full rate (made a day over the multiplier it was made at,
+// both smoothed over `smooth` days), clamped to [min (or minBy[good]), max]; a good never made yet asks for max only
+// when it is wanted. A recipe of several goods runs at the rate its scarcest wanted good asks for (none wanted: the
+// lowest of its goods' floors); its full rate is the one it had when the governor first looked. On the first day (no
 // history) every recipe runs at its full rate.
 // SPOILAGE. At midnight `spoil[good]` of each perishable's stock in the warehouses and at the sites rots, booked as used
 // (consumed: the books balance) and tallied in E.spoiled. The households' own stores do not spoil.
@@ -83,7 +85,7 @@
   }
   function govern(E, minute){
     var M = E.govern, G = M.cfg; if(minute % G.every) return;
-    var a = G.every/(1440*(G.smooth==null ? 2 : G.smooth)), first = minute<1440, memo = {}, want = {}, made = {};
+    var a = G.every/(1440*(G.smooth==null ? 2 : G.smooth)), first = minute<1440, memo = {}, want = {}, wanted = {}, floor = {}, made = {};
     Object.keys(E.recipes).forEach(function(id){ if(M.rates[id]===undefined) M.rates[id] = E.recipes[id].rate;   /* its full rate: the one it had at the first look */
       E.recipes[id].out.forEach(function(g){ (made[g] || (made[g] = [])).push(id); }); });
     Object.keys(made).forEach(function(g){
@@ -92,13 +94,16 @@
       var dm = ((E.made[g]||0) - st.last) * 1440 / G.every; st.last = E.made[g]||0;
       st.made += a*(dm - st.made); st.k += a*(k0 - st.k);
       var use = demand(E, g, minute, memo), pos = position(E, g), cap = st.k>0 ? st.made/st.k : 0;
-      var out = use + G.alpha*(G.cover*use - pos)/G.ti;
-      var lo = G.minBy && G.minBy[g]!=null ? G.minBy[g] : G.min, m = cap>0 ? out/cap : G.max; want[g] = Math.max(lo, Math.min(G.max, m));
-      M.view[g] = { use:use, pos:pos, cap:cap, mult:want[g] };
+      var target = Math.max(G.cover*use, (G.least||{})[g]||0), out = use + G.alpha*(target - pos)/G.ti;   /* `least`: a shelf stock kept with no demand */
+      var lo = G.minBy && G.minBy[g]!=null ? G.minBy[g] : G.min, m = cap>0 ? out/cap : out>0 ? G.max : lo; want[g] = Math.max(lo, Math.min(G.max, m));   /* never made yet: the most only if it is wanted */
+      wanted[g] = out>0; floor[g] = lo;
+      M.view[g] = { use:use, pos:pos, cap:cap, mult:want[g], target:target };
     });
     Object.keys(E.recipes).forEach(function(id){
       var R = E.recipes[id], base = M.rates[id]; if(base==null) return;
-      var k = 1; if(!first){ k = 0; R.out.forEach(function(g){ if(want[g]>k) k = want[g]; }); }
+      /* the scarcest wanted good's rate; none wanted, the lowest of its goods' floors */
+      var k = 1; if(!first){ k = 0; R.out.forEach(function(g){ if(wanted[g] && want[g]>k) k = want[g]; });
+        if(!k){ k = Infinity; R.out.forEach(function(g){ if(floor[g]<k) k = floor[g]; }); } }
       R.rate = base*k; M.last[id] = k;
     });
   }

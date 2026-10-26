@@ -215,10 +215,12 @@ ISLE.TUNE.sim = {
        good (demand, plus `alpha` of the gap to `cover` days of it, closed over `ti` days) over what it makes at full,
        clamped to [min, max], looked at every `every` minutes, its estimates smoothed over `smooth` days, its demand over the
        last `window` whole days (the households' three-day restocking round); `minBy` a lower floor for a good whose makers
-       far outstrip its trade (the weavers' mats, the taverns' kava, the pots). A producer kind
-       with `alternate` makes one of its lists place by place in turn (the weavers: cloth, then garments), so each good is
-       governed on its own */
-    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 } },
+       far outstrip its trade (the weavers' mats, the taverns' kava, the pots). A maker of several goods (the weavers, the
+       potters) makes whichever is furthest below its target, its unmet draws counted as use (`useShort`, 2026-10-26: a
+       good its buyers could not get is still made); `least` the shelf stock of the treats and the gear a town keeps with
+       no demand (a town at the abstract level buys none: watched again, its people find them) */
+    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
+      least: { kava: 300, mats: 200, lamps: 200, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
@@ -230,8 +232,8 @@ ISLE.TUNE.sim = {
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
-      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments'], ['cloth'], ['mats'], ['cloth'], ['hats'], ['garments'], ['nets']], rate: 2, cap: 600 },
-      potter: { alternate: [['pots'], ['lamps']], rate: 0.2, cap: 400 }, tavern: { out: ['kava'], rate: 1.5, cap: 600 },
+      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth', 'garments', 'mats', 'hats', 'nets'], rate: 2, cap: 600 },
+      potter: { out: ['pots', 'lamps'], rate: 0.2, cap: 400 }, tavern: { out: ['kava'], rate: 1.5, cap: 600 },
       dockyard: { out: ['woodtools'], rate: 0.1, cap: 400 }, healer: { out: ['poultices'], rate: 0.25, cap: 200 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.4, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
       /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's

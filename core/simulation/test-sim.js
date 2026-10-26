@@ -700,6 +700,45 @@ function world(seed){
  ok('retry: a worker short of its tool asks again on the hour of work',r1.errand&&r1.errand.item==='axe'&&r1.errand.when==='work',!r1.errand);
  ok('and without the rule it does not',!r0.errand,!!r0.errand);}
 
+// unmet draws as use (77-sim-6-economy.js `useShort`): a good its buyers could not get is wanted, so a maker of several
+// goods makes it; without it the good has no use, never runs out, and is never made
+{const mk=(useShort)=>{const {S,clock}=world(127);
+   ['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'kiln',kind:'workshop',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'potter',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   const E=S.economy(Object.assign({goods:{pots:{},lamps:{}},every:60,window:1,cart:{cap:500,load:5,unload:5,minLoad:5}},useShort?{useShort:true}:{}));
+   S.store('shed',{kind:'warehouse'});S.recipe('kiln',{out:['pots','lamps'],rate:2,cap:10000});S.R.place.shed.stock={pots:500,lamps:0};
+   [0,1].forEach(i=>S.actor({id:'p'+i,role:'potter',home:'homeA',work:'kiln'}));S.cart(S.actor({id:'c',role:'carter',home:'homeA'}));
+   for(let m=0;m<48*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0){S.supply('pots',3);S.supply('lamps',2,true);}S.step();}
+   return {S,E};};
+ const on=mk(true),off=mk(false);
+ ok('unmet draws as use: the lamps nobody could buy are made ('+(on.E.made.lamps||0)+' in two days; short '+JSON.stringify([(on.E.day[0].short||{}).lamps,(on.E.day[1].short||{}).lamps,on.E.used.lamps])+')',(on.E.made.lamps||0)>0&&((on.E.day[1].short||{}).lamps||0)<((on.E.day[0].short||{}).lamps||0),!(on.E.made.lamps>0));
+ ok('without it the lamps are never made (no use booked: never short of days)',!(off.E.made.lamps>0)&&off.E.made.pots>0&&off.S.economyDays('lamps')===Infinity,off.E.made.lamps>0);}
+ // governed, a maker of two goods with both over target runs at the floor: the lamps nobody wants (never made, no
+ // capacity learnt) do not ask for the most, and the pots piling at the kiln's own store are counted
+ const gv=(()=>{const {S,clock}=world(131);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'kiln',kind:'workshop',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'potter',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{pots:{},lamps:{}},every:60,window:1,useShort:true,govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5}});
+   S.store('shed',{kind:'warehouse'});S.recipe('kiln',{out:['pots','lamps'],rate:2,cap:100000});S.R.place.shed.stock={pots:100,lamps:200};
+   [0,1].forEach(i=>S.actor({id:'p'+i,role:'potter',home:'homeA',work:'kiln'}));
+   for(let m=0;m<72*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0)S.supply('pots',1);S.step();}
+   return {S,E};})();
+ const gk=gv.E.recipes.kiln.rate/2,gV=gv.S.economyGoverned();
+ ok('governed, two goods both over target (pots piling at the kiln, lamps unwanted): the kiln at its floor (x'+gk.toFixed(2)+'), not the most',Math.abs(gk-0.3)<1e-9&&gV.lamps.mult===0.3&&gV.pots.pos>gv.S.stockOf('pots'),gk>=1.5);
+ // `least`: a shelf stock kept with no demand: the lamps nobody buys yet are made up to it, then the kiln slows
+ const lt=(least)=>{const {S,clock}=world(137);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'kiln',kind:'workshop',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'potter',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{pots:{},lamps:{}},every:60,window:1,govern:Object.assign({every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5},least?{least:{lamps:40}}:{})});
+   S.store('shed',{kind:'warehouse'});S.recipe('kiln',{out:['pots','lamps'],rate:2,cap:100000});S.R.place.shed.stock={pots:100,lamps:0};
+   [0,1].forEach(i=>S.actor({id:'p'+i,role:'potter',home:'homeA',work:'kiln'}));
+   for(let m=0;m<96*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0)S.supply('pots',4);S.step();}
+   return E;};
+ const L1=lt(true),L0=lt(false);
+ ok('least: the lamps nobody buys are kept on the shelf ('+(L1.made.lamps||0)+' made, about its 40) while the pots go on',(L1.made.lamps||0)>=40&&(L1.made.lamps||0)<=70&&L1.made.pots>0,!(L1.made.lamps>0));
+ ok('without it no lamp is made',!(L0.made.lamps>0),L0.made.lamps>0);
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

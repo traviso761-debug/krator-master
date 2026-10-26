@@ -4,7 +4,8 @@
 //
 //   SIM.economy({ goods:{id:{import?:{route, lot}, minLoad?, export?}}, inputs:{good:{input: per unit}}, every (minutes between ticks),
 //                 cart:{cap, load, unload, minLoad, near}, imports:{days, scan}, routes:{name:{port, minutes}},
-//                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made} })
+//                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made},
+//                 useShort? (the unmet draws count as use: a good nobody could get is wanted) })
 //   SIM.store(place, {kind:'site'|'warehouse', cap})      a place's store: place.stock {good: n}
 //   SIM.recipe(place, {out:[goods], rate, cap, herd?:{out, rate, tended, share}})   a producer: `rate` units a worker-hour (times the
 //                                                           workers' efficiency), each unit of the good in `out` most needed;
@@ -47,6 +48,7 @@
               stores:{}, warehouses:[], sites:[], recipes:{}, carts:[], inflight:[], last:null, lastScan:null, dl:null, dlAt:null,
               made:{}, used:{}, imported:{}, exported:{}, short:{}, blocked:{}, day:{}, trips:0, hauled:{}, sent:0,
               carriers:o.carriers||{}, exports:Object.assign({ minDays:6, made:true }, o.exports||{}), fired:0, landed:{} };
+    if(o.useShort) E.useShort=true;   /* the unmet draws count as use (useRate): opt-in */
     Object.keys(o.goods||{}).forEach(function(g){ E.goods[g]=Object.assign({ id:g }, o.goods[g]); });
     SIM.ECON = E; return E;
   };
@@ -65,10 +67,14 @@
   SIM.cart = function(a){ var E=SIM.ECON; a.driven=true; a.cart={ phase:'idle' }; E.carts.push(a); return a; };
   function held(P){ var n=0; for(var g in P.stock) n+=P.stock[g]; return n; }
   SIM.stockOf = function(g){ var E=SIM.ECON, n=0; E.warehouses.forEach(function(W){ n+=W.stock[g]||0; }); return n; };
-  /* what a good is used a day, over the last `window` whole days and today so far (from its second hour) */
-  function useRate(g){ var E=SIM.ECON, d=today(), m=SIM.minute()%1440, tot=0, days=0;
-    for(var k=Math.max(0, d-E.window); k<d; k++){ if(E.day[k]){ tot+=E.day[k].used[g]||0; days++; } }
-    var td=E.day[d]; if(td && m>60){ tot+=td.used[g]||0; days+=m/1440; }
+  /* what a good is used a day, over the last `window` whole days and today so far (from its second hour). With
+     `useShort` (opt-in) its unmet draws count too, at most once more its use (a shortfall's repeated attempts count each
+     time; 77-sim-6-trade.js reads a town's want the same way): a good its buyers could not get is then wanted, its days
+     finite, and a producer of several goods makes it */
+  function useRate(g){ var E=SIM.ECON, d=today(), m=SIM.minute()%1440, tot=0, sh=0, days=0;
+    for(var k=Math.max(0, d-E.window); k<d; k++){ if(E.day[k]){ tot+=E.day[k].used[g]||0; if(E.useShort) sh+=(E.day[k].short||{})[g]||0; days++; } }
+    var td=E.day[d]; if(td && m>60){ tot+=td.used[g]||0; if(E.useShort) sh+=(td.short||{})[g]||0; days+=m/1440; }
+    if(E.useShort) tot+=tot>0 ? Math.min(sh, tot) : sh;
     return days>0 ? tot/days : 0; }
   SIM.economyUse = useRate;   /* a good's use a day (77-sim-7-stocks.js) */
   SIM.economyDays = function(g){ var r=useRate(g), s=SIM.stockOf(g); return r>0 ? s/r : Infinity; };
@@ -101,12 +107,15 @@
 
   /* ---------------------------------------------------------------- the tick: production */
   /* `units` (with the place's carry under `ck`) of the goods in `outs`, each the one with fewest days left whose inputs
-     are there, into the place's store up to its cap */
+     are there, into the place's store up to its cap. A governed economy (77-sim-6-govern.js) takes the good furthest below
+     its target by the governor's last look (its whole supply line: warehouses, sites, carts, at sea, over its target),
+     so what piles at the makers' own stores is not made again */
+  function pickDays(E, g){ var V=E.govern && E.govern.view[g]; return V ? (V.target>0 ? V.pos/V.target : Infinity) : daysOf(g); }
   function make(P, outs, units, ck){
     var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
     for(var u=0; u<whole; u++){
       if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
-      var best=null, bd=Infinity; outs.forEach(function(g){ if(!inputsFor(P, g)) return; var d=daysOf(g); if(best==null || d<bd){ bd=d; best=g; } });
+      var best=null, bd=Infinity; outs.forEach(function(g){ if(!inputsFor(P, g)) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
       if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }

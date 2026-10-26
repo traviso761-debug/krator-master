@@ -20,14 +20,16 @@ ISLE.simEconomy = function (TS, places) {
   var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
   T.goods.forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; });
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
-  var turn = {}, alt = {};   /* a producer kind with `alternate`: its places take its lists in turn, in place order */
-  places.forEach(function (P) { var Pr = T.producers[P.kind]; if (Pr && Pr.alternate && P.activities.WORK) { var k = turn[P.kind] || 0; alt[P.id] = Pr.alternate[k % Pr.alternate.length]; turn[P.kind] = k + 1; } });
-  var inputs = Object.assign({}, T.inputs, TS.inputs || {}), outOf = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
-    return alt[P.id] ? alt[P.id] : Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
-  var made = {}; places.forEach(function (P) { (outOf(P) || []).forEach(function (g) { made[g] = 1; }); });
-  var can = function (g) { var q = inputs[g]; return made[g] && (!q || Object.keys(q).every(function (x) { return made[x]; })); };
+  var inputs = Object.assign({}, T.inputs, TS.inputs || {}), listed = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
+    return Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
+  /* what the town can make: a listed good whose inputs it can make, to a fixed point (Kautoa grows no cotton, so its
+     weavers make no cloth, so no garments or nets: their mats and hats only); a maker makes only those of its list */
+  var made = {}; places.forEach(function (P) { (listed(P) || []).forEach(function (g) { made[g] = 1; }); });
+  for (var drop = true; drop;) { drop = false; Object.keys(made).forEach(function (g) { var q = inputs[g];
+    if (q && !Object.keys(q).every(function (x) { return made[x]; })) { delete made[g]; drop = true; } }); }
+  var can = function (g) { return !!made[g]; }, outOf = function (P) { var L = listed(P); L = L && L.filter(can); return L && L.length ? L : null; };
   var foods = I.foods.filter(can);
-  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() } }, ISLE.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
+  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, ISLE.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
   var out = { producers: {}, goods: {}, warehouses: 0, carts: 0, foods: foods };
   places.forEach(function (P) {
     if (T.warehouses.indexOf(P.kind) >= 0) { SIM.store(P.id, { kind: 'warehouse' }); out.warehouses++; return; }

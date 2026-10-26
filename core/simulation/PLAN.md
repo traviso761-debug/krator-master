@@ -636,7 +636,10 @@ Locus is already closest to the target. Make it the mobility reference:
   carry the good to, `buys` a day, and the goods made from it; the supply line counts warehouses, sites, carts and what
   is at sea toward it), `spoil` (a share of each perishable's warehoused and site stock a night, booked used), `keep` (a
   preserving good, salt, keeps a share of what would rot), `season` (a town holding its seasoning cooks better meals:
-  the items' meal quality). `SIM.items({retry})` asks again for a tool whose errand failed. They run as SIM.step's last
+  the items' meal quality). `SIM.items({retry})` asks again for a tool whose errand failed. `SIM.economy({useShort})`
+  counts a good's unmet draws as use (at most once more its use), so a good nobody could get is still made; a governed
+  maker of several goods picks by the days of the whole supply line, and a good never made asks for the most rate only
+  when it is wanted (2026-10-26, the isles' `alternate` dropped). They run as SIM.step's last
   act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as
   on its own (2026-10-26); `test-sim.js` holds each rule with a negative.
 

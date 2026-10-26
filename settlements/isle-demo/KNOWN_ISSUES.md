@@ -166,10 +166,25 @@
 - [ ] **Core's treat is one item a wealth:** the last of `treat.items` whose least wealth a person has, so a class buys
       one treat; the isles spread each class's wealth a little a person (`items.wealthSpread`) so the middle splits
       between mats and lamps and the rich between lamps and jewellery. The poor drink kava and nothing else.
-- [ ] **Core counts a good nobody could buy as never running out:** a producer of several goods picks the one with fewest
-      days left, and a good whose buyers all failed has no use booked, so its days are infinite and it is never made
-      (Kautoa's potters made no lamps once the opening lamps were gone; Valapo's weavers no mats). The isles give such
-      goods places of their own (`alternate`); a core fix would count the unmet draws as use.
+- [x] **Core counted a good nobody could buy as never running out** (a producer of several goods picks the one with
+      fewest days left, and a good whose buyers all failed had no use, so it was never made: Kautoa's potters made no
+      lamps once the opening lamps were gone). The isles gave such goods places of their own (`alternate`). Since
+      2026-10-26 core counts the unmet draws as use (`SIM.economy({useShort})`), so the weavers and potters make all their
+      goods again; dropping `alternate` showed two governor faults on a recipe of several goods, fixed in core too: a good
+      never made asked for the most rate whether wanted or not (the kilns ran flat out and the pots piled), and a maker
+      chose by warehouse days, blind to what sat at its own store (Valapo's cloth piled at the weavers): a governed maker
+      now chooses the good furthest below its target over the whole supply line. And over 21 days the piles had hidden two
+      more: Kautoa's weavers had no recipe at all (a maker needed every good of its list makeable, and Kautoa grows no
+      cotton: it now makes those it can, mats and hats), and a town at the abstract level buys no treats, so nothing was
+      made of them and, watched again, its shelves were bare: the governor keeps a shelf stock with no demand (`least`).
+      21 days: one shortfall (21 lamps on one day) where there were 10 (8,131 jewellery).
+- [ ] **Kautoa's mats and hats pile to about 2,700 each** (2026-10-26): its weavers run at the full rate on the first day,
+      as every producer does before the governor has a history, and their goods have no demand at the abstract level. A
+      first-day rate from the opening stock against `least` would stop it.
+- [ ] **The abstract level buys no treats or wear** (77-sim-7-lod.js: no errands, no wear), so the governor learns no
+      demand for them while a town is unwatched; `least` covers it. Booking those purchases abstractly would be better.
+- [ ] **The food supply-line check fails over 21 days** (Kautoa watched drifts away from its target, about -940 a day of
+      28,800 eaten), before and after the 2026-10-26 change alike; the week test runs 7 days and passes.
 - [ ] **Contemplation settles near 60:** few choose worship in their free hours (the temples, shrines and squares are
       few and far for most).
 - [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),

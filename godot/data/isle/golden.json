@@ -165,10 +165,10 @@
       "eaten": 0
      },
      "cloth": {
-      "warehouses": 40,
+      "warehouses": 0,
       "sites": 0,
       "carts": 0,
-      "total": 40,
+      "total": 0,
       "made": 0,
       "used": 0,
       "imported": 0,
