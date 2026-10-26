@@ -87,8 +87,11 @@ function terrainH(x,z){
  let h=1.9+sw*2.4+ro*1.1;
  const chanW=1-.5*smooth(400,1400,lk),cw=smooth(28*chanW,9*chanW,rd);
  // the channel bed climbs in STEPS of five metres once it is on the slope (the
- // cataracts: each riser a fall, each tread a pool); the banks stay smooth
- const sf=rise/5,si=Math.floor(sf),stepped=mix(rise,(si+smooth(.78,1,sf-si))*5,smooth(8,20,rise));
+ // cataracts: each riser a fall, each tread a pool); the banks stay smooth.
+ // 2026-10-26 (the waterfall risers): inside the channel (rk, 1 within 10 m of the river's line, 0 from 16 m: x chanW, so
+ // 16 m up the slope, 8 m on the lowland reach) the riser takes the last 2.5% of each step's run (~1.5 m for 5 m on the ~8%
+ // slope: a drop), not the last 22% (~13 m: a 26-30 degree chute). From 16*chanW out the formula is the old one exactly.
+ const rk=smooth(16*chanW,10*chanW,rd),sf=rise/5,si=Math.floor(sf),stepped=mix(rise,(si+smooth(rk>0?mix(.78,.975,rk):.78,1,sf-si))*5,smooth(8,20,rise));
  h=mix(h+rise,-1.9+ro*.4+stepped,cw);                                                    // the river channel, narrower up the slope
  const inL=smooth(25,-15,lk),bed=-.6-2.0*smooth(0,-220,lk)-11*smooth(-220,-900,lk)+1.6*(fbm(x*.0018+5,z*.0018+9,77,2)-.5)*smooth(-40,-220,lk);
  return mix(h,Math.min(bed,-.35),inL);}
@@ -152,16 +155,38 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);}');};
+// THE RIVER STRIP (2026-10-26, the waterfall risers): the 13.75 m cells chord over a cataract's 1.5 m riser, so the channel is drawn again
+// as a fine strip along the river's line (u from the delta's head to the highlands, 36 m either side; rows every 8 m on the treads and
+// every 0.5 m where the bed steps, columns 4 m apart within 16 m of the line, 5 m beyond), 5 cm over terrainH. Under it the coarse mesh's vertices
+// within 16 m of the line take the lowest ground within a cell of them, so the coarse mesh never stands through the strip (their
+// triangles reach at most ~20 m further, inside the strip). Drawing only: terrainH, placement and the probe do not read either mesh.
+const STRIP={u0:MOUTH_U+400,u1:4300,low:[MOUTH_U+430,4270],lowR:16,W:36};
+const uvXZ=(u,v)=>[BAY.c[0]+(u+v)*SQ,BAY.c[1]+(v-u)*SQ];
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);})();
+ const p=g.attributes.position,cell=S/N;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);let y=terrainH(x,z);
+  const P=uvOf(x,z);if(P[0]>STRIP.low[0]&&P[0]<STRIP.low[1]&&Math.abs(P[1]-vR(P[0]))<STRIP.lowR){
+   for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)y=Math.min(y,terrainH(x+a*cell*.5,z+b*cell*.5));}
+  p.setY(i,y);}
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ // the strip
+ const T=[];for(let t=-STRIP.W;t<-16;t+=5)T.push(t);for(let t=-16;t<=16;t+=4)T.push(t);for(let t=21;t<=STRIP.W;t+=5)T.push(t);
+ const probe=[-16,-8,0,8,16],hAt=(u,t)=>{const q=uvXZ(u,vR(u)+t);return terrainH(q[0],q[1]);};
+ const rows=[];let last=null;
+ for(let u=STRIP.u0;u<=STRIP.u1;u+=.5){const hs=probe.map(t=>hAt(u,t));
+  if(!last||u-last.u>=8||u+.5>STRIP.u1||hs.some((h,k)=>Math.abs(h-last.hs[k])>.25)){rows.push(u);last={u,hs};}}
+ const nc=T.length,pos=new Float32Array(rows.length*nc*3),uv=new Float32Array(rows.length*nc*2),x0=CENTER[0]-S/2,z1=CENTER[1]+S/2;
+ rows.forEach((u,j)=>{const v0=vR(u);T.forEach((t,k)=>{const q=uvXZ(u,v0+t),o=j*nc+k;pos[o*3]=q[0];pos[o*3+1]=terrainH(q[0],q[1])+.05;pos[o*3+2]=q[1];uv[o*2]=(q[0]-x0)/S;uv[o*2+1]=(z1-q[1])/S;});});
+ const idx=[];for(let j=0;j+1<rows.length;j++)for(let k=0;k+1<nc;k++){const a=j*nc+k,b=a+1,c=a+nc,d=c+1;idx.push(a,b,c,b,d,c);}   /* counter-clockwise from above: the normals face up */
+ const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+ sg.setIndex(idx);sg.computeVertexNormals();
+ const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The river banks';scene.add(sm);STRIP.rows=rows.length;STRIP.tris=idx.length/3;})();
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the bay, the river, the cataracts and the outer water are core/water's. The bay and the outer water are
 // WATER.open surfaces (89w-host-water.js: the CDLOD mesh with the bed baked from terrainH, a shore grid flooded from the bay, the shared wave
 // field, the sky in the water); the river is the WATER.flow below (a line down vR at bed+1.1 m, never climbing downstream), the cataracts its
 // WATER.fall records where the descent breaks. The page's own plane (MAT_WATER: one 300x300 plane, vertex colours by depth, ripples in its shader),
-// the 10 m ribbon and the foam cards (MAT_FOAM) are gone. BIO.waterH and terrainH are unchanged.
+// the 10 m ribbon and the foam cards (MAT_FOAM) are gone. BIO.waterH is unchanged (0, the bay); terrainH's risers inside the channel are drops since 2026-10-26.
 // The bay colour is SWBAY_BAY (50-species): swap the hue there and the tints below follow.
 const WATER_SHALLOW=new THREE.Color().setHSL(SWBAY_BAY.hue,.70,.50),WATER_MID=new THREE.Color().setHSL(SWBAY_BAY.hue,.74,.34),WATER_DEEP=new THREE.Color().setHSL(SWBAY_BAY.hue+.03,.70,.14),WATER_PALE=new THREE.Color().setHSL(SWBAY_BAY.hue-.03,.55,.70);
 const RIVER_COL=new THREE.Color().setHSL((SWBAY_BAY.hue+.04)%1,.42,.44);
@@ -175,12 +200,18 @@ const BAY_BOX=(function(){const S=TERR.R*2.2;return[CENTER[0]-S/2,CENTER[1]-S/2,
 // climbing downstream (a running maximum from the mouth up: the water fills a hollow in the bed instead of sinking under a rise, and the bed's bumps do not tilt the ribbon), 24 m wide at the mouth to 14 m up
 // in the highlands (the old ribbon's half-widths 12 to 7), quicker where it falls
 const RIVER_FALL_OPT={steep:.3,minDrop:3.5};
-const RIVER_U=[],RIVER_PTS=[];{let yc=-1e9;for(let u=MOUTH_U+380;u<=4300;u+=10){const v=vR(u),x=BAY.c[0]+(u+v)*SQ,z=BAY.c[1]+(v-u)*SQ;yc=Math.max(yc,terrainH(x,z)+1.1);RIVER_U.push(u);RIVER_PTS.push([x,z,yc]);}RIVER_U.reverse();RIVER_PTS.reverse();}
+// 2026-10-26 (the waterfall risers): sampled every 2 m and thinned to every 10 m on the treads, every 2 m round each kink (a riser's
+// lip and foot and their neighbours), so the line drops where the bed drops and fallsOf finds a fall, not a 26-degree slope
+const RIVER_U=[],RIVER_PTS=[];{let yc=-1e9;const cu=[],cp=[];for(let u=MOUTH_U+380;u<=4300;u+=2){const v=vR(u),x=BAY.c[0]+(u+v)*SQ,z=BAY.c[1]+(v-u)*SQ;yc=Math.max(yc,terrainH(x,z)+1.1);cu.push(u);cp.push([x,z,yc]);}
+ const n=cp.length,kink=i=>i>0&&i<n-1&&Math.abs(cp[i][2]-(cp[i-1][2]+cp[i+1][2])/2)>.05,keep=new Uint8Array(n);
+ for(let i=0;i<n;i++)if(kink(i)){keep[i]=1;if(i>0)keep[i-1]=1;if(i<n-1)keep[i+1]=1;}
+ let last=-1e9;for(let i=0;i<n;i++){if(i===0||i===n-1||keep[i]||cu[i]-last>=10){RIVER_U.push(cu[i]);RIVER_PTS.push(cp[i]);last=cu[i];}}
+ RIVER_U.reverse();RIVER_PTS.reverse();}
 const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_U.map(u=>2*(12-5*smooth(1000,4000,u))),
- speed:RIVER_PTS.map((p,i)=>1.1+2.6*smooth(.02,.14,i+1<RIVER_PTS.length?(p[2]-RIVER_PTS[i+1][2])/10:0))});
-// the CATARACTS: the slope breaks of the line, each a curtain leaving the lip at the speed that lands it at the foot of the chute (the line's samples
-// are 10 m apart, so a five-metre fall is a chute of about 26 degrees: KNOWN_ISSUES.md). The river steps down in terraces of five metres: 58 curtains,
-// of which 89w-host-water.js draws the ones within 900 m of the camera)
+ speed:RIVER_PTS.map((p,i)=>{const q=RIVER_PTS[i+1];return 1.1+2.6*smooth(.02,.14,q?(p[2]-q[2])/Math.max(1,Math.hypot(p[0]-q[0],p[1]-q[1])):0);})});
+// the CATARACTS: the slope breaks of the line, each a curtain leaving the lip at the speed that lands it at the foot. Since 2026-10-26 the bed's riser
+// is a drop (~1.5 m of run for 5 m) and the line has a point every 2 m round it, so every five-metre terrace is a fall: 60 curtains, all drawn as
+// one mesh with one plunge mesh and one spray cloud (89w-host-water.js, WATER.drawFalls)
 const RIVER_FALLS=WATER.fallsOf(RIVER,Object.assign({fit:true},RIVER_FALL_OPT)).map(f=>WATER.fall(f));   // fit: the foot fallsOf returns (2026-10-21), the curtain lands on it
 
 // ---------------------------------------------------------------- the far country

@@ -84,7 +84,7 @@ Read before changing anything here. `build.py` prints the open count.
       range, the coral fungus too; none of them is more than a blob.
       Stays open (2026-10-26): a better far tree is a card impostor (a baked sprite per species), a look item that needs
       the owner's call and either a bake step or new card sheets; nothing changed.
-- [ ] The cataracts' risers are the ribbon's 10 m samples, so a five-metre fall is a 26-degree
+- [x] The cataracts' risers are the ribbon's 10 m samples, so a five-metre fall is a 26-degree
       chute rather than a drop; the pools between them do not spill.
       2026-10-20 (migration phase 3): still the limit, now on core/water: the river is a `WATER.flow` with a sample every 10 m, so each
       five-metre terrace is a 26-degree chute (the ground is not reworked), and the 37 terraces `WATER.fallsOf({steep: .3, minDrop: 3.5})`
@@ -100,6 +100,20 @@ Read before changing anything here. `build.py` prints the open count.
       (`smooth(.95,1,...)`, inside the channel only: it moves the bank plants' heights and the open world reads terrainH,
       so the owner's go first), a fine ground strip along the channel (2 m rows, `probeSkip`, drawn over the coarse mesh),
       and RIVER_PTS every 2 m across each riser (10 m on the treads) so `fallsOf` finds a near-vertical drop.
+      2026-10-26 (the owner: "work on waterfall risers"), done: (1) terrainH's riser inside the channel takes the last 2.5% of
+      each step's run (~1.5 m for 5 m), not 22%; the change reaches 16 m from the river's line on the slope (16 x chanW: 8 m on
+      the lowland reach, where the bed is not stepped anyway) and from there out the formula is the old one exactly. (2) A fine
+      ground strip ('The river banks', 45-host-stage `STRIP`): 36 m either side of the line from the delta's head to the
+      highlands, rows every 8 m on the treads and 0.5 m on the steps, 59k triangles, one call; the coarse mesh's vertices within
+      16 m of the line take the lowest ground within a cell so they never stand through it. (3) RIVER_PTS sampled every 2 m and
+      kept every 10 m on the treads, every 2 m round each kink (317 -> 509 points); the speed reads the true spacing. `fallsOf`
+      now finds 60 falls (37 before): every terrace a curtain with its plunge, and spray on (ATMOS.smoke, core/atmos
+      3-particles added in build.py): 3 calls for all of them. Placement did not move: every flora item's instance count, its
+      count within 30 m of the river and the position checksum of the rest are identical (the fauna differ only by animation);
+      the trees' height sum moved by 0.0015 m (a few bank trees' y0). BIO.waterH stays 0 (the bay; the page never had a river
+      waterH); the river's surface follows the new bed through RIVER_PTS. Voth and the isle demo read only fragments 50-75, not
+      terrainH (45), so this reaches no other build. New preset 'A cataract, close'. Left: the curtains' sides show jagged
+      triangles where the curtain is narrower than the ribbon at the lip (core/water `W.curtain`), and the spray is faint at dusk.
 - [x] (2026-10-20: the Girder test tower now hands three shells, floor plates 1 / iron .6 / core walls and rubble .4, like the jetty; and the `shellsFor` edge case is not a loss: the core's `BIO.faceSamples` already drops a shell with no accepted face and gives its share to the others, so `shellsFor` is only a redundant local pre-filter.) Was: The Girder tower dressed as one list (`dress()` samples by area within a shell, so
       its big slabs take most of the moss); the jetty hands shells (Done). A shell with no face a
       pass grows on sits that pass out (65-dress `shellsFor`): the core's `BIO.faceSamples` gives

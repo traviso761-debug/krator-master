@@ -32,5 +32,6 @@ const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.06,.14],shallow:lin(RIVER_COL),d
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
 // the river steps down in 37 terraces: ALL their curtains are one mesh and all their plunge pools another (WATER.drawFalls, core/water/ext: two draw calls in all; it was two per fall with a per-frame
 // tick that showed only those within 900 m). The curtains land on the chute foot fallsOf found (fit: true in 45-host-stage).
-const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,spray:false,envMapIntensity:.25,renderOrder:3});
+/* 2026-10-26: with spray (ATMOS.smoke's 'spray' kind, three emitters at each plunge: one sprite cloud, one call; core/atmos 3-particles in build.py) */
+const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,envMapIntensity:.25,renderOrder:3});
 FALL_DRAW.mesh.userData.inspectLabel='The cataracts';if(FALL_DRAW.plunge)FALL_DRAW.plunge.userData.inspectLabel='The cataracts';

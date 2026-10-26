@@ -18,6 +18,8 @@ const VIEWS={
  'The jetty':(function(){const J=window.JETTY;if(!J)return V(950,-360,6,850,-360,2);const c=[J.head[0]-J.dir[1]*40+J.dir[0]*-30,J.head[1]+J.dir[0]*40+J.dir[1]*-30],t=[J.head[0]+J.dir[0]*J.L*.45,J.head[1]+J.dir[1]*J.L*.45];return[c[0],9,c[1],t[0],3,t[1]];})(),
  'Gliders over the savannah':V(2500,-100,6,2800,0,170),
  'The cataracts':(function(){const u=1900;return V(u-80,vR(u-80),26,u+260,vR(u+260),4);})(),
+ /* one cataract close, from 30 m downstream (2026-10-26, the waterfall risers): the 26th of RIVER_FALLS' 60, its plunge at 774, 187.2, -656 */
+ 'A cataract, close':[765,190.2,-627,774,187.2,-656],
  'Bay swimmers':(function(){const p=(SWBAY.FAUNA&&SWBAY.FAUNA.pods&&SWBAY.FAUNA.pods[0])||{x:BAY.c[0],z:BAY.c[1],r:100};const cx=p.x+p.r*.9,cz=p.z+p.r*.55;return[cx,16,cz,p.x,0,p.z];})(),
  'The herd':(function(){const h=(SWBAY.FAUNA&&SWBAY.FAUNA.herd)||{x:0,z:0};const cx=h.x-52,cz=h.z+38;return[cx,terrainH(cx,cz)+5,cz,h.x,terrainH(h.x,h.z)+2,h.z];})(),
  'The jungle from above':V(1080,0,160,1500,120,30),

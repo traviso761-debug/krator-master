@@ -99,6 +99,8 @@ for f in VIRTUAL: PATH[f]=None
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+# core/atmos's particles: the cataracts' spray (WATER.drawFalls draws it with ATMOS.smoke; 2026-10-26, the waterfall risers)
+PATH['89-atmos-3-particles.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','89-atmos-3-particles.js'))
 # core/water (core/water/README.md; 2026-10-20, phase 3): the bay and the outer water as WATER.open, the river a WATER.flow, the cataracts WATER.fall (records in
 # 45-host-stage.js and 89w-host-water.js). Explicit paths: the open-water draw (50) and the flow/fall/still kinds (51) as well as the data.
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
