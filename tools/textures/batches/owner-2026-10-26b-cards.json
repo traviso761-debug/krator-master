@@ -1,0 +1,167 @@
+[
+ {
+  "src": "card.flower.bloom.highland.png",
+  "out": "core/materials/library/card.flower.bloom.highland",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.flower.bloom.highland",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.flower.bloom.highland\"",
+    "reuse": "the painted highlands superbloom (nine different flowers); any desert or steppe wildflower bloom",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.bamboo.giant.png",
+  "out": "core/materials/library/card.bamboo.giant",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.bamboo.giant",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.bamboo.giant\"",
+    "reuse": "the Cut hyperbamboo leafy branches; any giant bamboo",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.rankgrass.png",
+  "out": "core/materials/library/card.rankgrass",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.rankgrass",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.rankgrass\"",
+    "reuse": "the Cut salt-flat rankgrass; any salt grass or blue-grey tussock",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.melon.png",
+  "out": "core/materials/library/card.crop.melon",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.melon",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.crop.melon\"",
+    "reuse": "the measure melon; every melon, gourd or squash vine",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.wineweed.png",
+  "out": "core/materials/library/card.wineweed",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.wineweed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.wineweed\"",
+    "reuse": "the Farside wine weed; any red seaweed",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ }
+]

@@ -1837,6 +1837,12 @@ magenta, `cards.py`, anchor none). All in the library, none wired (the kits they
 - Keying: `card.larch` and `card.saltbush` choke 2 with key 80/200 (a pink halo at choke 1); `card.fireweed` spill none (spill `edge` turned
   the deep pink flowers dull red; its seed fluff keys slightly pink). Cell margins are tight on `card.saltbush` and `card.brinelamp`.
 - Left out: `Alien Earth Terrain Atlas.png` (a 2:1 planet map, matches no entry), the second fireweed and desert-shrub sheets.
+- Second drop (2026-10-26, batches `owner-2026-10-26b.json` and `owner-2026-10-26b-cards.json`): surfaces `rock.lichen.circles` (full colour,
+  1 m; yellow-green and orange discs), `bark.kelp.stipe` (tintable, 0.5 m; olive stipe with barnacle spots and knots), `ground.wrack`
+  (full colour, 1.5 m), `organic.sponge` (full colour, 0.5 m); cards `card.flower.bloom.highland` (nine different flowers, one per cell),
+  `card.bamboo.giant`, `card.rankgrass` (blue-grey tussocks, lilac-tinged seed spikes), `card.crop.melon`, `card.wineweed` (spill none: deep
+  red survives; edge spill muddied it). `Layered Eroded Mudstone Texture.png` matches no entry (a pale buff horizontally bedded mud, near
+  `rock.badland.bedded`) and is left out.
 
 #### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
 
