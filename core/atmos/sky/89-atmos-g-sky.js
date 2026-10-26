@@ -23,7 +23,7 @@
   'uniform mat3 uEq;uniform highp sampler3D uNoise;',   // the noise volume (ATMOS.skyNoiseVolume)                                   // world -> inertial (the stars' sphere)
   // uPole: the giant's spin axis (its bands and ring plane), not Krator's pole
   'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
-  'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];',
+  'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];uniform vec4 uPN;',   // uPN: the planetary nebula (inertial direction, radius in radians)
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
   'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;',   // cover, cumulus, cirrus, bank; heights, scale, drift
   'uniform vec3 uNightK;',                               // stars, nebula, galaxy gains
@@ -53,17 +53,22 @@
   'vec3 atmSkyDeep(vec3 e,out float lanes){float cc=dot(e,uCluster);',
   ' float near=smoothstep('+f(Math.cos(S.cluster.reach*Math.PI/180))+',1.0,cc),dust=smoothstep('+f(Math.cos(S.cluster.dust*Math.PI/180))+','+f(Math.cos(20*Math.PI/180))+',cc);',
   // the dust's dark lanes: hide what is behind them
-  ' lanes=0.0;vec3 neb=vec3(0.0);float lit=0.0;',
+  ' lanes=0.0;vec3 neb=vec3(0.0),litC=vec3(0.0);float lit=0.0,blueLit=0.0;',
   ' vec3 bright=vec3(0.0);for(int i=0;i<'+NS+';i++){vec4 st=uStar[i];float ang=length(e-st.xyz);',
   '  float sg=uPixAng*(0.7+0.45*st.w),w2=st.w*st.w;bright+=uStarC[i]*(0.8*st.w*exp(-ang*ang/(sg*sg))+0.05*w2*exp(-ang/(uPixAng*6.0))+0.010*w2*exp(-ang/(uPixAng*26.0)));',
-  '  if(i<14)lit+=st.w*exp(-ang/0.22);}',
+  '  if(i<40){float lw=st.w*exp(-ang/0.22);if(i<14){lit+=lw;litC+=uStarC[i]*lw;}blueLit+=step(uStarC[i].r,0.9)*st.w*exp(-ang/0.09);}}',
   ' if(dust>0.001&&uNightK.y>0.0){vec3 q=e*2.6;vec3 w=vec3(atmSkyFbm(q+vec3(7.1,0.0,0.0),3,40u),atmSkyFbm(q+vec3(0.0,3.3,0.0),3,43u),atmSkyFbm(q+vec3(0.0,0.0,5.9),3,46u));',
   '  float n=atmSkyFbm(q*1.7+w*1.6,5,50u)*0.5+0.5;float fil=1.0-abs(atmSkyFbm(q*3.1+w*2.2,4,60u));',
   '  float den=smoothstep(0.42,0.85,n)*dust;float fl=pow(fil,6.0)*dust*0.8;',
   '  lanes=smoothstep(0.58,0.74,atmSkyFbm(q*2.2+w*0.8,4,70u)*0.5+0.5)*dust*0.9;',
-  '  float L=0.20+0.10*lit;neb=(vec3(0.22,0.40,1.0)*den*L*0.55+vec3(0.55,0.68,1.0)*fl*L*0.22)*(1.0-0.8*lanes)*uNightK.y;}',
+  '  vec3 dc=mix(vec3(1.0,0.66,0.36),litC/max(lit,1e-3),0.55);float hue=atmSkyFbm(q*1.3+vec3(4.0),2,65u)*0.5+0.5;dc=mix(dc,vec3(1.0,0.42,0.56),0.65*smoothstep(0.35,0.70,hue));dc=mix(dc,vec3(0.62,0.42,0.95),0.35*smoothstep(0.70,0.90,hue));',
+  '  dc=mix(dc,vec3(0.35,0.62,1.0),clamp(blueLit*0.35,0.0,0.85));',
+  '  float L=0.20+0.10*lit;neb=(dc*den*L*0.62+mix(dc,vec3(1.0),0.4)*fl*L*0.24)*(1.0-0.8*lanes)*uNightK.y;}',
+  // the planetary nebula: a teal-green glow inside a red rim, ragged, and the hot white dwarf at its heart
+  ' {float pa=length(e-uPN.xyz)/uPN.w;if(pa<1.6){float rag=atmSkyNoise(e*90.0,66u);float sh=exp(-pow((pa-1.0+0.12*rag)/0.22,2.0)),inn=exp(-pow(pa/0.75,2.0));',
+  '  neb+=(vec3(0.20,0.90,0.72)*inn*0.24+vec3(1.0,0.28,0.34)*sh*0.30)*(0.75+0.25*rag)*uNightK.y;}}',
   ' vec3 field=atmSkyField(e,520.0,0.07+0.25*near,1u)*(0.6+0.5*near)+atmSkyField(e,140.0,0.10+0.30*near,9u)*(0.9+0.8*near);',
-  ' field*=mix(vec3(1.0),vec3(0.82,0.9,1.0),near)*uNightK.x;',
+  ' field*=mix(vec3(1.0),vec3(1.0,0.90,0.76),near)*uNightK.x;',   // the cluster's faint members, old and yellow
   // the galaxy's faint band, in the half of the sky that looks out of the cluster
   ' float gb=exp(-pow(e.x,2.0)/0.018)*(1.0-near)*(0.5+0.5*atmSkyFbm(e*7.0,3,80u))*uNightK.z;',
   ' return (field+bright*uNightK.x)*(1.0-0.85*lanes)+neb+vec3(0.55,0.58,0.66)*gb*0.05;}',

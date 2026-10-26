@@ -49,7 +49,10 @@
   doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
   // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
   // the southern winter nights (the owner, 2026-10-25)
-  cluster:{ra:270, dec:-30, core:25, reach:60, dust:100},
+  // An OLD cluster, M67's kind (the owner, 2026-10-25: old enough for complex life, colour welcome): its brightest members
+  // golden and orange giants, a few white stars and blue stragglers; the dust it drifts through lit in their colours; one
+  // planetary nebula (pn: RA, dec, radius in degrees), a dying member's shell
+  cluster:{ra:270, dec:-30, core:25, reach:60, dust:100, pn:[255,-36,3.0]},
   // Jimjam's calendar for display (3.1): Earth's months, Jimjam-ized; Jimjam's weekdays and number words (LORE 6.14)
   months:['Janavari','Pepravari','Mārccu','Ēpral','Mē','Jūn','Julai','Ākasṭu','Ceppaṭampar','Akṭōpar','Navampar','Ṭicampar'],
   monthDays:[31,28,31,30,31,30,31,31,30,31,30,31],
@@ -99,8 +102,9 @@
     e2=[c0[1]*e1[2]-c0[2]*e1[1],c0[2]*e1[0]-c0[0]*e1[2],c0[0]*e1[1]-c0[1]*e1[0]];
    const v=[0,1,2].map(k=>c0[k]*Math.cos(a)+(e1[k]*Math.cos(b)+e2[k]*Math.sin(b))*Math.sin(a));
    return[Math.atan2(v[1],v[0])/D,Math.asin(v[2])/D];};
-  const blue=(i,s)=>{const k=u01(i,3,s);return[.70+.12*k,.80+.08*k,1];};
-  for(let i=0;i<14;i++){const p=nearC(i,C.core,11);out.push([p[0],p[1],2.2+3.4*Math.pow(u01(i,4,11),2)].concat(blue(i,11)));}   // the core's hot members
+  // an old cluster's colours: most bright members are giants, golden to orange; one in five a blue straggler
+  const blue=(i,s)=>{const k=u01(i,3,s),j=u01(i,5,s);return j<.2?[.70+.12*k,.80+.08*k,1]:j<.35?[1,.97,.92]:[1,.80-.16*k,.52-.22*k];};
+  for(let i=0;i<14;i++){const p=nearC(i,C.core,11);out.push([p[0],p[1],2.2+3.4*Math.pow(u01(i,4,11),2)].concat(blue(i,11)));}   // the core's bright members
   for(let i=0;i<26;i++){const p=nearC(i,C.reach,12);out.push([p[0],p[1],.7+1.2*u01(i,4,12)].concat(blue(i,12)));}
   for(let i=0;i<24;i++){const z=2*u01(i,1,13)-1,ra=360*u01(i,2,13),k=u01(i,3,13);   // field stars all over the sky, some warm
    out.push([ra,Math.asin(z)/D,.45+.8*u01(i,4,13),k<.4?1:k<.7?.92:.78,k<.4?.82:k<.7?.92:.86,k<.4?.62:k<.7?.88:1]);}

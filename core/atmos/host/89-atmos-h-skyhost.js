@@ -22,7 +22,7 @@
    uStar:{value:SKY.stars.map(()=>new T.Vector4())},uStarC:{value:SKY.stars.map(s=>new T.Color(s[3],s[4],s[5]))},
    uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
    uCloud:{value:new T.Vector4()},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
-   uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
+   uPN:{value:new T.Vector4()},uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
    uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)}};
   // the noise volume, baked once for the page (64^3 RGBA, 1 MB) and shared by every sky on it
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
@@ -52,6 +52,7 @@
    v(U.uSunDir,st.sunDir);v(U.uGiantDir,st.giantDir);v(U.uPole,st.giantAxis);v(U.uRingN,A.skyRingNormal(st));v(U.uCluster,[0,1,2].map(i=>0));
    const E=st.eq;U.uEq.value.set(E[0][0],E[1][0],E[2][0],E[0][1],E[1][1],E[2][1],E[0][2],E[1][2],E[2][2]);   // W^T: world -> inertial
    const cl=SKY.cluster,D=Math.PI/180;U.uCluster.value.set(Math.cos(cl.dec*D)*Math.cos(cl.ra*D),Math.cos(cl.dec*D)*Math.sin(cl.ra*D),Math.sin(cl.dec*D));
+   {const p=SKY.cluster.pn;U.uPN.value.set(Math.cos(p[1]*D)*Math.cos(p[0]*D),Math.cos(p[1]*D)*Math.sin(p[0]*D),Math.sin(p[1]*D),p[2]*D);}
    SKY.stars.forEach((s,i)=>U.uStar.value[i].set(Math.cos(s[1]*D)*Math.cos(s[0]*D),Math.cos(s[1]*D)*Math.sin(s[0]*D),Math.sin(s[1]*D),s[2]));
    c(U.uZen,L.zen);c(U.uHor,L.hor);c(U.uSunHor,L.sunHor);c(U.uSunC,L.sunC);v(U.uExt,L.ext);c(U.uShineC,L.shineC);c(U.uFogC,L.fogC);
    U.uSunI.value=L.sunI;U.uHazeFloor.value=L.hazeFloor;U.uDayStars.value=L.dayStars;U.uNight.value=L.night;U.uEclipse.value=st.eclipse;U.uShineI.value=L.shineI;
