@@ -1,0 +1,101 @@
+[
+ {
+  "src": "dome-turf.png",
+  "out": "core/materials/patterns/khaayken/dome-turf",
+  "record": {
+   "id": "khaayken/dome-turf",
+   "family": "turf",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "mapping": "crown",
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; magenta corners and vent filled from the disc's edge, converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/dome-turf).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 23)",
+    "reuse": "one sod-roofed dome mapped from its crown: Yeti summer caps, stone houses' turf; any sod dome or mound"
+   }
+  },
+  "options": {
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "dome-snow.png",
+  "out": "core/materials/patterns/khaayken/dome-snow",
+  "record": {
+   "id": "khaayken/dome-snow",
+   "family": "snow",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "mapping": "crown",
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; magenta corners and vent filled from the disc's edge, converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/dome-snow).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 22)",
+    "reuse": "one snow-covered dome mapped from its crown: Yeti stone houses in winter; any snowed dome or hut"
+   }
+  },
+  "options": {
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "dome-lining.png",
+  "out": "core/materials/patterns/khaayken/dome-lining",
+  "record": {
+   "id": "khaayken/dome-lining",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "mapping": "crown",
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; magenta corners and vent filled from the disc's edge, converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/dome-lining).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 24)",
+    "reuse": "one hide-lined dome seen from inside, mapped from its crown: Yeti dome linings; any yurt, chum or yaranga ceiling"
+   }
+  },
+  "options": {
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "normal_strength": 0.8
+  }
+ }
+]

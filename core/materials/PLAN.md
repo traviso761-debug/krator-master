@@ -563,6 +563,12 @@ and `hide.panels.sewn` (tintable, muted 0.4), `stone.soapstone` (reads as green 
 the square one was not installed (its riders cross the left and right edges). Nothing wired yet: `kits/yeti` is a plan
 (`kits/yeti/PLAN.md`); its `materials.json` takes them in Y1.
 
+**Delivered 2026-10-25 and processed, the Yeti dome caps** (`tools/textures/batches/chatgpt-2026-10v-yeti-domes.json`):
+`patterns/khaayken/dome-turf` and `dome-snow`, circular sheets each one unrolled dome (crown at the centre, the radius the
+distance along the surface), their magenta corners and vents filled from the disc's edge before processing (no seam pass:
+a cap is not a tile). Wired in `kits/yeti` (`turfCap`, `snowCap`, mapped from the crown by `ytShell`). `dome-lining` followed on 2026-10-26
+(the same batch), wired as `hideCap` on every lining and warming dome.
+
 **Delivered 2026-10-22 and processed, n semiarid** (`tools/textures/batches/nsemiarid-cards-2026-10-22.json` and
 `nsemiarid-bark-2026-10-22.json`, pasted by the owner as 1254 px WebP): `card.pappus.giant` and `card.stipa` (white silk on
 magenta, keyed with the new `spill: 'line'` of `tools/textures/cards.py`: every blended pixel taken as the white subject at

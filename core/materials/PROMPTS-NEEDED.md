@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 48 prompts.** (The Yeti kit's sixteen, added and delivered 2026-10-25, are logged in `PLAN.md`.) Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
+**Count: 49 prompts.** (The Yeti kit's first sixteen, added and delivered 2026-10-25, are logged in `PLAN.md`; its drift snow, section 15, is owed; its three dome caps were delivered 2026-10-25 and 26.) Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -485,6 +485,16 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one red seaweed hanging from the top of its cell: on five of the nine, thin translucent ruffled sheets (Porphyra) in deep wine-red and crimson (#7a1a2a, #9a2a30) with darker veins; on four, finely branching fronds (Gracilaria) in dark crimson to brown-red (#6a1a1a, #8a3a2a), glistening wet, a few drops at the tips. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. The subject's reds are deep wine and crimson, never the background's pure magenta; key with `spill: edge`.
+```
+
+## 15. The Yeti kit (`kits/yeti`, 2026-10-25)
+
+#### `ground.snow.drift`
+- Kind: surface, near-colourless (tintable).
+- Used by: the Yeti kit's ground and the winter snow banked against its domes and tunnels (`kits/yeti/KNOWN_ISSUES.md`); today a low-contrast `ground.snow011`, whose bootprints show. Reuse: any clean wind-packed snow ground (the NW outer wall's fellfield, the Throne's glacier station, high passes).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Clean wind-packed snow seen from directly above, untrodden: a firm crust carved by the wind into soft low ripples and shallow scalloped sastrugi running one way across the frame, fine granular sparkle in the surface, a few faint grooves where loose snow has blown across, very subtle blue-grey in the hollows and pure white on the crests. No footprints, no dirt, no grass, no rocks, no ice. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 4 metres.
 ```
 
 ## Gaps with no prompt yet
