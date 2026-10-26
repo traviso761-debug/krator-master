@@ -261,6 +261,20 @@
    "specular": 0.2,
    "mapOnly": true
   },
+  "shrub": {
+   "lib": "leaf.understorey",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.4,
+   "specular": 0.1,
+   "mapOnly": true
+  },
   "ground.sand": {
    "lib": "ground.damp_beach_sand",
    "scale": [

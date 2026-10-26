@@ -27,10 +27,12 @@ FARSIDE.dressTrees=function(trees,opt){opt=opt||{};const st={wine:0,wrack:0,crus
   const nr=Math.round(kr*q*lerp(3,9,s.next()));
   for(let i=0;i<nr;i++){const low=s.next()<.4,p=low?(()=>{const a=s.next()*TAU,r=(T.rb||.6)*1.05;return [T.x+Math.cos(a)*r,T.y0+lerp(1,4,s.next()),T.z+Math.sin(a)*r];})():crownPt();
    const L=lerp(.6,1.8,s.next());hang('wrackdrape',p,L,L*.5,pk(s,PAL.wrack));st.wrack++;}
-  // FOG SPONGE: crusts and lumps up the bole's lower ten metres, facing out
-  const ns=Math.round(ks*q*lerp(4,12,s.next()));
-  for(let i=0;i<ns;i++){const a=s.next()*TAU,y=T.y0+lerp(.3,Math.min(10,T.H*.4),Math.pow(s.next(),1.4)),r=(T.rb||.6)*(T.hangs?1:.9);
-   _n.set(Math.cos(a),(s.next()-.5)*.3,Math.sin(a)).normalize();const q4=new T3.Quaternion().setFromUnitVectors(UP,_n),sz=lerp(.15,.5,s.next());
-   BIO.put('crust',[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],q4,[sz,sz*lerp(.4,.9,s.next()),sz*lerp(.8,1.6,s.next())],FARSIDE.vary(C(pk(s,PAL.sponge)),.01,.05,.05));st.crust++;}});
+  // FOG SPONGE: collars wrapped part way round the bole (G.collar: on the trunk's axis, at the bole's radius there), stacked
+  // up its lower ten metres, the lowest from a metre and a half (above the buttress flare). The radius follows the bole's
+  // taper: a snag's (55: rb from 1 to .55 up its height), a native's (biomes/nwlowlands' column: rb, tapering ~35% to its crown)
+  const ns=Math.round(ks*q*lerp(3,9,s.next()));
+  for(let i=0;i<ns;i++){const a=s.next()*TAU,y=T.y0+lerp(1.5,Math.min(10,T.H*.4),Math.pow(s.next(),1.4)),t=clamp((y-T.y0)/Math.max(1,T.H),0,1),
+    r=(T.rb||.6)*(T.hangs?lerp(1,.55,t):(1-.35*t)),h=lerp(.25,.7,s.next())*Math.min(1.5,.6+r*.5);
+   BIO.put('crust'+(i%3),[T.x,y-h*.5,T.z],new T3.Quaternion().setFromAxisAngle(UP,a),[r,h,r],FARSIDE.vary(C(pk(s,PAL.sponge)),.01,.05,.05));st.crust++;}});
  BIO.owner=null;BIO.range=null;return st;};
 })();

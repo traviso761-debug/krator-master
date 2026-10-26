@@ -40,6 +40,9 @@ FAM = {
     'crust': surf('organic.sponge', .6, keep=1.0),                      # fog sponge crusts on bark and rock (delivered 2026-10-26)
     'brain': surf('organic.coral.brain', .8, keep=.3, mean=.75),        # coral heads on the terraces
     'coralstem': surf('stone.coral', .6, keep=.25, mean=.8),           # the 3D colonies (staghorn, plates, the terrace lips), tinted by the instance
+    # THE HOST (88-host-build.js): the native forest's shrub lobes (biomes/nwlowlands' 'lobe' item, untextured in that kit), a
+    # grey leaf mass the shrubs' instance colours tint (the owner, 2026-10-26: "shrub lobes need texture")
+    'shrub': surf('leaf.understorey', 1.0, keep=0.0, mean=.62, rough=.4, spec=.1),
     # THE HOST (47-host-land.js): the ground's layers, full colour
     'ground.sand': surf('ground.damp_beach_sand', 2.0),
     'ground.wrack': surf('ground.wrack', 1.5),

@@ -131,6 +131,16 @@ G.anemone=function(){const parts=[[new T3.CylinderGeometry(.16,.2,.55,6,1,true).
 G.bladder=new T3.SphereGeometry(1,7,5);   /* smooth (the owner, 2026-10-26: the 20-face bladders read as blocky polygons) */
 G.bulb=new T3.SphereGeometry(1,12,8);   /* the bull and elk kelp's big floats: rounder still */
 G.lobe=BIO.geo.lobe();
+// a FOG SPONGE COLLAR (the owner, 2026-10-26: the crusts stood off the bark as open half-domes with no underside): a lumpy
+// shell lathed round the TRUNK'S OWN AXIS (the y axis; the instance stands at the trunk's centre, scaled by its radius), its
+// inner face on the bark (radius .96: a little into it), a closed, sloping underside, a swollen lip, and a thickness that
+// tapers to nothing at both ends of its arc so it grows out of the bark; lumps from a fixed core/rand stream
+G.collar=function(seed,arc){const s=KRAND.stream(seed),P=[[.96,0],[1.1,.06],[1.2,.22],[1.24,.45],[1.2,.7],[1.12,.86],[1.02,.96],[.96,1],[.94,.5],[.96,0]].map(p=>new T3.Vector2(p[0],p[1]));
+ const g=new T3.LatheGeometry(P,14,0,arc),p=g.attributes.position,bump=[];for(let k=0;k<24;k++)bump.push(s.next());
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i),r=Math.hypot(x,z),ph=Math.atan2(x,z),t=Math.min(1,Math.max(0,ph/arc));
+  const end=Math.sin(Math.PI*t),out=Math.max(0,r-.96),lump=1+.35*(bump[Math.floor(t*11)%24]-.5)+.25*(bump[12+Math.floor(y*5)%12]-.5);
+  const nr=.96+out*end*lump;if(r>1e-6){p.setX(i,x/r*nr);p.setZ(i,z/r*nr);}p.setY(i,.5+(y-.5)*(.55+.45*end));}
+ g.computeVertexNormals();return g;};
 G.dome=new T3.SphereGeometry(1,7,3,0,TAU,0,Math.PI*.5);
 // OARWEED: a stiff stipe (unit height to the fan's foot at .5) and a fan of seven straps from its top, rising then bowing over
 // downwind (+x) so the host turns it into the wind; tips paler
@@ -184,7 +194,7 @@ const M=FARSIDE.MAT={
  wrack:leaf(bladeTex(130),'wrack',{swayW:'(-position.y)',swayA:.06,axis:1}),
  eelgrass:leaf(fanTex(170),'eelgrass',{swayW:'(position.y)',swayA:.09}),
  coral0:leaf(fanTex(220),'coral0',{swayA:0}),coral1:leaf(fanTex(220),'coral1',{swayA:0}),spongecard:leaf(sheetTex(190),'spongecard',{swayA:0}),
- heap:BIO.solidMat(grey(150,70)),crust:BIO.solidMat(grey(170,80)),brain:BIO.solidMat(grey(200,60)),coralstem:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff,emissive:0x1a1614,map:grey(205,70)}),weed:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff,side:T3.DoubleSide}),
+ heap:BIO.solidMat(grey(150,70)),crust:BIO.solidMat(grey(170,80)),   /* DoubleSide: the collar's inner face never shows; its underside does */brain:BIO.solidMat(grey(200,60)),coralstem:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff,emissive:0x1a1614,map:grey(205,70)}),weed:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff,side:T3.DoubleSide}),
  seapalm:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff,side:T3.DoubleSide}),
  anemone:new T3.MeshLambertMaterial({vertexColors:true,color:0xffffff}),
  bladder:new T3.MeshLambertMaterial({color:0xffffff,emissive:0x0c0a02})};
@@ -210,12 +220,12 @@ IT('eelgrass',G.tuft(),M.eelgrass,'Strand eelgrass','eelgrass');
 IT('seapalm',G.seapalm(),M.seapalm,'Sea palm','seapalm');
 IT('wine0',G.streamer(4,.7,.5),M.wine0,'Wine weed (sheets)','wineweed');IT('wine1',G.streamer(4,.8,-.5),M.wine1,'Wine weed (fronds)','wineweed');
 IT('lettuce',G.sheet(),M.lettuce,'Sea lettuce','emeraldweed');
-IT('spongetower',G.tuft(),M.spongecard,'Fog sponge (towers)','fogsponge');IT('crust',G.lobe,M.crust,'Fog sponge (a crust)','fogsponge');
+IT('spongetower',G.tuft(),M.spongecard,'Fog sponge (towers)','fogsponge');[0,1,2].forEach(v=>IT('crust'+v,G.collar(KRAND.hash(KRAND.child(BIO.host.seed>>>0,'farside-sponge'),v),[1.1,1.7,2.4][v]),M.crust,'Fog sponge (a collar on the bark)','fogsponge'));
 IT('anemone',G.anemone(),M.anemone,'Strand anemone','strandanemone');
 IT('oarweed',G.oarweed(),M.weed,'Oarweed','oarweed');IT('boa',G.boa(),M.weed,'Boa kelp','boakelp');IT('grapes',G.grapes(),M.weed,'Sea grapes','seagrapes');
 const ITEM_SPECIES={blade0:'landkelp',blade1:'landkelp',blade2:'landkelp',bladder:'landkelp',bulb:'landkelp',kelpfar:'landkelp',wrackdrape:'stormwrack',heap:'stormwrack',
  coral0:'spraycoral',coral1:'spraycoral',brain:'spraycoral',staghorn0:'spraycoral',staghorn1:'spraycoral',staghorn2:'spraycoral',plate0:'spraycoral',plate1:'spraycoral',plate2:'spraycoral',rim:'spraycoral',eelgrass:'eelgrass',seapalm:'seapalm',wine0:'wineweed',wine1:'wineweed',lettuce:'emeraldweed',
- spongetower:'fogsponge',crust:'fogsponge',anemone:'strandanemone',oarweed:'oarweed',boa:'boakelp',grapes:'seagrapes'};
+ spongetower:'fogsponge',crust0:'fogsponge',crust1:'fogsponge',crust2:'fogsponge',anemone:'strandanemone',oarweed:'oarweed',boa:'boakelp',grapes:'seagrapes'};
 FARSIDE.speciesOfItem=it=>FARSIDE.byKey[ITEM_SPECIES[it]]||null;
 FARSIDE.FRUIT_KEYS=[];   /* no fruit: what is eaten here is weed, filed as crops (kits/crops: kelp, wine weed, sea lettuce) */
 })();

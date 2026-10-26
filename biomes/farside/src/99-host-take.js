@@ -46,12 +46,12 @@ const HCHK={
  harvest(SP,crops){const miss=SP.filter(S=>!S.tags.harvest).map(S=>S.key),nocrop=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&crops.indexOf(S.tags.harvest.crop)<0).map(S=>S.key);
   return{ok:!miss.length&&!nocrop.length,detail:(miss.length?'no harvest tag: '+miss.join(', ')+'; ':'')+(nocrop.length?'edible but no crop: '+nocrop.join(', ')+'; ':'')+SP.length+' species; crops '+crops.join(', ')};},
  // THE BLADES STREAM INLAND (PLAN.md section 3): a blade's hanging axis (its local -y) leans down the onshore wind
- stream(B,wind){if(!B.length)return{ok:STAGE.key==='cloud',detail:'no blades drawn'};const d=new THREE.Vector3();let down=0;
+ stream(B,wind){if(!B.length)return{ok:!STAGE.fields.invade(0,0),detail:'no blades drawn (no land kelp on this page)'};const d=new THREE.Vector3();let down=0;
   B.forEach(b=>{d.set(0,-1,0).applyQuaternion(b.q);if(d.x*wind[0]+d.z*wind[1]>0)down++;});
   return{ok:down/B.length>.85,detail:down+' of '+B.length+' blades lean down the wind ('+(100*down/B.length).toFixed(0)+'%, at least 85%)'};},
  // nothing of the sea's flora stands in the sea or the stream, and no kelp stand on the sand, the coral or the surf rock
  place(ST){const bad=ST.filter(T=>T.key==='landkelp'&&(waterMask(T.x,T.z)<.5||F.sand(T.x,T.z)>.5||F.coral(T.x,T.z)>.6||F.rock(T.x,T.z)>.6));
-  return{ok:!bad.length&&(ST.length>0||!STAGE.fields.invade(0,0)),detail:bad.length?bad.length+' stands misplaced, first at '+bad[0].x.toFixed(0)+','+bad[0].z.toFixed(0):ST.length+' stands, none in the water, on the sand, the coral or the rock'};},
+  return{ok:!bad.length&&(ST.some(T=>T.key==='landkelp')||!STAGE.fields.invade(0,0)),detail:bad.length?bad.length+' stands misplaced, first at '+bad[0].x.toFixed(0)+','+bad[0].z.toFixed(0):ST.length+' stands, none in the water, on the sand, the coral or the rock'};},
  // the works: every one the station names is drawn and registered as Eternian furniture (to be backported)
  works(W,R){const named=(STAGE.works||[]).length,rec=R.filter(r=>r.tags&&r.tags.culture==='eternian'&&r.cls==='furniture');
   return{ok:W.length===named&&rec.length===named,detail:W.length+' of '+named+' works drawn; '+rec.length+' registered as Eternian furniture'};}};
@@ -63,8 +63,10 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('an edible species with no crop',HCHK.harvest(FARSIDE.SPECIES,FARSIDE_CROPS.filter(c=>c!=='kelp')));
- add('blades streaming out to sea',HCHK.stream(instOf(/blade[0-2]$/),BIO.host.farside.wind.map(v=>-v)));
- add('a kelp stand in the sea',HCHK.place(FARSIDE.STANDS.concat([{key:'landkelp',x:STAGE.XZ(-1400,0)[0],z:STAGE.XZ(-1400,0)[1],y0:-10,H:30}])));
+ {const B=instOf(/blade[0-2]$/);   /* a page with no blades (the fog belt) is handed one, hanging straight up the wind */
+  add('blades streaming out to sea',HCHK.stream(B.length?B:[{q:new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),new THREE.Vector3(1,0,1).normalize())}],BIO.host.farside.wind.map(v=>-v)));}
+ {const p=SEA?STAGE.XZ(-1400,0):STREAM?STREAM.pts[STREAM.pts.length>>1]:[0,0];   /* in the sea, or in an inland station's stream */
+  add('a kelp stand in the water',HCHK.place(FARSIDE.STANDS.concat([{key:'landkelp',x:p[0],z:p[1],y0:-10,H:30}])));}
  add('a work not registered',HCHK.works(WORKS,REG.filter(r=>!(r.tags&&r.tags.culture))));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
