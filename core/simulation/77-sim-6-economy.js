@@ -3,7 +3,7 @@
 // nothing here runs until a world calls SIM.economy(config).
 //
 //   SIM.economy({ goods:{id:{import?:{route, lot}, minLoad?, export?}}, inputs:{good:{input: per unit}}, every (minutes between ticks),
-//                 cart:{cap, load, unload, minLoad, near}, imports:{days, scan}, routes:{name:{port, minutes}},
+//                 cart:{cap, load, unload, minLoad, near, urgent?}, imports:{days, scan}, routes:{name:{port, minutes}},
 //                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made},
 //                 useShort? (the unmet draws count as use: a good nobody could get is wanted) })
 //   SIM.store(place, {kind:'site'|'warehouse', cap})      a place's store: place.stock {good: n}
@@ -25,7 +25,10 @@
 // in its `out` whose city stock lasts fewest days, made only if its `inputs` are in the producer's own store or the
 // warehouses, into the producer's store up to its `cap`. CARTS (the brief's pick order): an idle cart goes to the site
 // whose stored good is most in demand (fewest days left), then the most stored that no other cart is bound for, then the
-// nearest (a good's own `minLoad` worth a trip, else the cart's); loads up to `cap`, takes it to the warehouse with the least of that good among the `near` nearest (all when
+// nearest (a good's own `minLoad` worth a trip, else the cart's; with `cart.urgent` days, any load of a good the warehouses
+// hold fewer days of whose buyers went short today or yesterday or whose shelves hold under a load of it, taken only
+// when no site has a full load: small stocks spread over many makers reach the
+// shelves); loads up to `cap`, takes it to the warehouse with the least of that good among the `near` nearest (all when
 // unset; the nearest of equals), unloads, and is idle again. CONSUMPTION: SIM.supply and SIM.economyMeal take from the warehouses (the one holding most first); the
 // items module asks them for every purchase and every meal out or at a mess when this module is on (a shop sells from
 // the settlement's store: it can be out). TURNOVER: what is used a day, over the last `window` days and today so far;
@@ -80,6 +83,7 @@
   SIM.economyDays = function(g){ var r=useRate(g), s=SIM.stockOf(g); return r>0 ? s/r : Infinity; };
   /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
   function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }
+  function wentShort(E, g){ var d=today(), D=E.day[d], Y=E.day[d-1]; return !!((D && D.short && D.short[g]>0) || (Y && Y.short && Y.short[g]>0)); }   /* today or yesterday */
   function byMost(g){ return function(p, q){ return (q.stock[g]||0)-(p.stock[g]||0) || (p.id<q.id?-1:1); }; }
   /* a draw unmet: the running count, and the day's (77-sim-6-trade.js reads a town's want of a good it has none of) */
   function shortStat(g, n){ var E=SIM.ECON, d=today(), D=E.day[d]||(E.day[d]={ made:{}, used:{}, imported:{}, exported:{} }); stat(D.short||(D.short={}), g, n); stat(E.short, g, n); }
@@ -109,13 +113,16 @@
   /* `units` (with the place's carry under `ck`) of the goods in `outs`, each the one with fewest days left whose inputs
      are there, into the place's store up to its cap. A governed economy (77-sim-6-govern.js) takes the good furthest below
      its target by the governor's last look (its whole supply line: warehouses, sites, carts, at sea, over its target),
-     so what piles at the makers' own stores is not made again */
+     so what piles at the makers' own stores is not made again; and while one of its goods is under target it makes none
+     that is over (the weavers short of cotton for cloth do not fill their hours with mats) */
   function pickDays(E, g){ var V=E.govern && E.govern.view[g]; return V ? (V.target>0 ? V.pos/V.target : Infinity) : daysOf(g); }
   function make(P, outs, units, ck){
     var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
     for(var u=0; u<whole; u++){
       if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
-      var best=null, bd=Infinity; outs.forEach(function(g){ if(!inputsFor(P, g)) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
+      var best=null, bd=Infinity, V=E.govern && E.govern.view, over=function(g){ var v=V && V[g]; return !!v && !(v.target>0 && v.pos<v.target); };
+      var under=V && outs.length>1 && outs.some(function(g){ return V[g] && !over(g); });   /* a governed maker with a good under target */
+      outs.forEach(function(g){ if(!inputsFor(P, g) || (under && over(g))) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
       if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
@@ -211,10 +218,13 @@
         if(E.dlAt!=null) E.dl[K.load.good]=null; K.load=null; K.phase='unloading'; K.until=minute+C.unload; return; }
       /* idle (or unloaded): the site whose stored good is most in demand, then the most stored nobody is bound for, then the nearest */
       var at=cartAt(a, t), best=null, bk=null;
-      E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity;
-        for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad; if(S.stock[g]<ml) continue; var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } }
-        if(top==null) return; var key=[Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];
-        if(!bk || key[0]<bk[0] || (key[0]===bk[0] && (key[1]<bk[1] || (key[1]===bk[1] && key[2]<bk[2])))){ bk=key; best={ S:S, g:top }; } });
+      E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity, small=false;
+        for(var pass=0; pass<2 && top==null; pass++){ small=pass===1; if(small && !C.urgent) break;   /* `urgent` (opt-in): when the site holds no full load, a small one of a good under that many days whose buyers went short or whose shelves hold under a load */
+          for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad;
+            if(!small ? S.stock[g]<ml : !(S.stock[g]>0 && daysOf(g)<C.urgent && (wentShort(E, g) || SIM.stockOf(g)<ml))) continue;
+            var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } } }
+        if(top==null) return; var key=[small ? 1 : 0, Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];   /* a small load only when no site has a full one */
+        if(!bk || key[0]<bk[0] || (key[0]===bk[0] && (key[1]<bk[1] || (key[1]===bk[1] && (key[2]<bk[2] || (key[2]===bk[2] && key[3]<bk[3])))))){ bk=key; best={ S:S, g:top }; } });
       if(!best){ K.phase='idle'; K.until=minute+30; return; }
       K.site=best.S.id; K.good=best.g; bound[K.site]=1; K.phase='toSite'; go(a, best.S, minute, t);
     });

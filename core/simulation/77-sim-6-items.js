@@ -227,7 +227,8 @@
      presented town books them. Its `people` (else its residents) eat `meals` a day, each meal one serving of the two
      foods its store holds most of (one: a single, none: none); a mess draws its meals on the warehouses. A store under
      `low` days buys `days` days of the foods the town's sellers sell, in proportion to the warehouses' stock (one out:
-     more of the others). No meals out, no errands, no wear: those wait for the town to be watched again */
+     more of the others). No meals out; the wear, the tools, the hurt and the errands they make are the person's
+     abstract day (SIM.itemsAbstractDay) */
   SIM.itemsAbstractHome = function(P, hrs, town, res){
     var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
     var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
@@ -248,6 +249,30 @@
     var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
     foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
     for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
+  };
+  /* THE ABSTRACT DAY (77-sim-7-lod.js, at the first hour of each day a town is abstract): a person's yesterday as the
+     watched town would have lived it, without a step: its tool worn by the hours its schedule gave to WORK (worn out, it
+     wants another), the worked day marked (a hurt's chance), the material meter risen at its rate; then the day's wear
+     (day(): the clothes worn, a hurt healed or taken, an errand for a short set, a poultice or a treat); and the errand
+     done at once at the seller nearest its home in its own town (no trip; out of stock, it fails and cools as watched).
+     Food and meals out stay the household's (SIM.itemsAbstractHome) */
+  SIM.itemsAbstractDay = function(a, d, town){
+    var I=SIM.ITEMS; if(!I || !a.present || a.driven || a.plan) return; if(a.itDay==null) a.itDay=d-1; if(a.itDay>=d) return;   /* lowered before it ever decided: from yesterday */
+    var s=SIM.schedOf(a, (d-1)*1440), hw=0; if(s) for(var h=0;h<24;h++) if(s[h]==='WORK') hw++;
+    var job=a.work!=null ? a.work : (a.mem && a.mem.WORK);
+    if(hw && job!=null){ a.workedDay=d-1;
+      if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
+        if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', d*1440); } }
+      else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
+    if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
+    if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;
+    day(a, d);
+    var E=a.errand; if(!E) return;
+    if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
+    var H=anchor(a), best=null, bd=Infinity;
+    sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
+    if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
+    E.place=best; E.trip=0; complete(a, E, d*1440);
   };
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };

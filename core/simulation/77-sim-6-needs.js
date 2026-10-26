@@ -138,6 +138,10 @@
     a.ndFrom = minute + (task && task.dur ? Math.round(task.dur/N.secPerMinute) : 0);
   };
   /* SIM.jump: the clock moved without the world living it: the meters stay, the gap is not counted */
+  /* THE ABSTRACT LEVEL (77-sim-7-lod.js): the named meters (the material meter: nothing fills it but what is bought)
+     risen `mins` minutes at their rate (the role's multiplier, no activity), the actor's clock untouched */
+  SIM.needsDrift = function(a, names, mins){ var N=SIM.NEED; if(!N || !(mins>0)) return; if(!a.nd) ensure(a, SIM.minute());
+    names.forEach(function(n){ var i=N.idx[n]; if(i==null) return; var v=a.nd[i]+slope(a, null, i)*mins/60; a.nd[i]= v<0?0:v>100?100:v; }); };
   SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
 
   /* ---------------------------------------------------------------- the census of needs */

@@ -1111,7 +1111,7 @@ canvas{display:block;width:100vw;height:100vh}
 // nothing here runs until a world calls SIM.economy(config).
 //
 //   SIM.economy({ goods:{id:{import?:{route, lot}, minLoad?, export?}}, inputs:{good:{input: per unit}}, every (minutes between ticks),
-//                 cart:{cap, load, unload, minLoad, near}, imports:{days, scan}, routes:{name:{port, minutes}},
+//                 cart:{cap, load, unload, minLoad, near, urgent?}, imports:{days, scan}, routes:{name:{port, minutes}},
 //                 window (days the turnover is averaged over), meal:{per, foods}, carriers, exports:{minDays, made},
 //                 useShort? (the unmet draws count as use: a good nobody could get is wanted) })
 //   SIM.store(place, {kind:'site'|'warehouse', cap})      a place's store: place.stock {good: n}
@@ -1133,7 +1133,10 @@ canvas{display:block;width:100vw;height:100vh}
 // in its `out` whose city stock lasts fewest days, made only if its `inputs` are in the producer's own store or the
 // warehouses, into the producer's store up to its `cap`. CARTS (the brief's pick order): an idle cart goes to the site
 // whose stored good is most in demand (fewest days left), then the most stored that no other cart is bound for, then the
-// nearest (a good's own `minLoad` worth a trip, else the cart's); loads up to `cap`, takes it to the warehouse with the least of that good among the `near` nearest (all when
+// nearest (a good's own `minLoad` worth a trip, else the cart's; with `cart.urgent` days, any load of a good the warehouses
+// hold fewer days of whose buyers went short today or yesterday or whose shelves hold under a load of it, taken only
+// when no site has a full load: small stocks spread over many makers reach the
+// shelves); loads up to `cap`, takes it to the warehouse with the least of that good among the `near` nearest (all when
 // unset; the nearest of equals), unloads, and is idle again. CONSUMPTION: SIM.supply and SIM.economyMeal take from the warehouses (the one holding most first); the
 // items module asks them for every purchase and every meal out or at a mess when this module is on (a shop sells from
 // the settlement's store: it can be out). TURNOVER: what is used a day, over the last `window` days and today so far;
@@ -1188,6 +1191,7 @@ canvas{display:block;width:100vw;height:100vh}
   SIM.economyDays = function(g){ var r=useRate(g), s=SIM.stockOf(g); return r>0 ? s/r : Infinity; };
   /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
   function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }
+  function wentShort(E, g){ var d=today(), D=E.day[d], Y=E.day[d-1]; return !!((D && D.short && D.short[g]>0) || (Y && Y.short && Y.short[g]>0)); }   /* today or yesterday */
   function byMost(g){ return function(p, q){ return (q.stock[g]||0)-(p.stock[g]||0) || (p.id<q.id?-1:1); }; }
   /* a draw unmet: the running count, and the day's (77-sim-6-trade.js reads a town's want of a good it has none of) */
   function shortStat(g, n){ var E=SIM.ECON, d=today(), D=E.day[d]||(E.day[d]={ made:{}, used:{}, imported:{}, exported:{} }); stat(D.short||(D.short={}), g, n); stat(E.short, g, n); }
@@ -1217,13 +1221,16 @@ canvas{display:block;width:100vw;height:100vh}
   /* `units` (with the place's carry under `ck`) of the goods in `outs`, each the one with fewest days left whose inputs
      are there, into the place's store up to its cap. A governed economy (77-sim-6-govern.js) takes the good furthest below
      its target by the governor's last look (its whole supply line: warehouses, sites, carts, at sea, over its target),
-     so what piles at the makers' own stores is not made again */
+     so what piles at the makers' own stores is not made again; and while one of its goods is under target it makes none
+     that is over (the weavers short of cotton for cloth do not fill their hours with mats) */
   function pickDays(E, g){ var V=E.govern && E.govern.view[g]; return V ? (V.target>0 ? V.pos/V.target : Infinity) : daysOf(g); }
   function make(P, outs, units, ck){
     var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
     for(var u=0; u<whole; u++){
       if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
-      var best=null, bd=Infinity; outs.forEach(function(g){ if(!inputsFor(P, g)) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
+      var best=null, bd=Infinity, V=E.govern && E.govern.view, over=function(g){ var v=V && V[g]; return !!v && !(v.target>0 && v.pos<v.target); };
+      var under=V && outs.length>1 && outs.some(function(g){ return V[g] && !over(g); });   /* a governed maker with a good under target */
+      outs.forEach(function(g){ if(!inputsFor(P, g) || (under && over(g))) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
       if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
@@ -1319,10 +1326,13 @@ canvas{display:block;width:100vw;height:100vh}
         if(E.dlAt!=null) E.dl[K.load.good]=null; K.load=null; K.phase='unloading'; K.until=minute+C.unload; return; }
       /* idle (or unloaded): the site whose stored good is most in demand, then the most stored nobody is bound for, then the nearest */
       var at=cartAt(a, t), best=null, bk=null;
-      E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity;
-        for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad; if(S.stock[g]<ml) continue; var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } }
-        if(top==null) return; var key=[Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];
-        if(!bk || key[0]<bk[0] || (key[0]===bk[0] && (key[1]<bk[1] || (key[1]===bk[1] && key[2]<bk[2])))){ bk=key; best={ S:S, g:top }; } });
+      E.sites.forEach(function(S){ if(bound[S.id]) return; var top=null, td=Infinity, small=false;
+        for(var pass=0; pass<2 && top==null; pass++){ small=pass===1; if(small && !C.urgent) break;   /* `urgent` (opt-in): when the site holds no full load, a small one of a good under that many days whose buyers went short or whose shelves hold under a load */
+          for(var g in S.stock){ var ml=E.goods[g] && E.goods[g].minLoad!=null ? E.goods[g].minLoad : C.minLoad;
+            if(!small ? S.stock[g]<ml : !(S.stock[g]>0 && daysOf(g)<C.urgent && (wentShort(E, g) || SIM.stockOf(g)<ml))) continue;
+            var d=daysOf(g); if(top==null || d<td || (d===td && S.stock[g]>S.stock[top])){ top=g; td=d; } } }
+        if(top==null) return; var key=[small ? 1 : 0, Math.min(99, Math.floor(td)), -held(S), Math.hypot(S.x-at.x, S.z-at.z)];   /* a small load only when no site has a full one */
+        if(!bk || key[0]<bk[0] || (key[0]===bk[0] && (key[1]<bk[1] || (key[1]===bk[1] && (key[2]<bk[2] || (key[2]===bk[2] && key[3]<bk[3])))))){ bk=key; best={ S:S, g:top }; } });
       if(!best){ K.phase='idle'; K.until=minute+30; return; }
       K.site=best.S.id; K.good=best.g; bound[K.site]=1; K.phase='toSite'; go(a, best.S, minute, t);
     });
@@ -1439,7 +1449,8 @@ canvas{display:block;width:100vw;height:100vh}
 // both smoothed over `smooth` days), clamped to [min (or minBy[good]), max]; a good never made yet asks for max only
 // when it is wanted. A recipe of several goods runs at the rate its scarcest wanted good asks for (none wanted: the
 // lowest of its goods' floors); its full rate is the one it had when the governor first looked. On the first day (no
-// history) every recipe runs at its full rate.
+// history) a recipe runs at its full rate, unless every good it makes has a shelf stock (`least`) already held: then
+// at its floor.
 // SPOILAGE. At midnight `spoil[good]` of each perishable's stock in the warehouses and at the sites rots, booked as used
 // (consumed: the books balance) and tallied in E.spoiled. The households' own stores do not spoil.
 // KEEPING. Of what would rot of `keep.goods` in a place, `keep.share` is kept instead while the warehouses hold `keep.by`,
@@ -1515,7 +1526,9 @@ canvas{display:block;width:100vw;height:100vh}
     Object.keys(E.recipes).forEach(function(id){
       var R = E.recipes[id], base = M.rates[id]; if(base==null) return;
       /* the scarcest wanted good's rate; none wanted, the lowest of its goods' floors */
-      var k = 1; if(!first){ k = 0; R.out.forEach(function(g){ if(wanted[g] && want[g]>k) k = want[g]; });
+      var k = 1, least = G.least||{};
+      if(first){ if(R.out.every(function(g){ return least[g]!=null && M.view[g] && M.view[g].pos>=least[g]; })){ k = Infinity; R.out.forEach(function(g){ if(floor[g]<k) k = floor[g]; }); } }   /* the first day: full, but a shelf already held is not filled */
+      else { k = 0; R.out.forEach(function(g){ if(wanted[g] && want[g]>k) k = want[g]; });
         if(!k){ k = Infinity; R.out.forEach(function(g){ if(floor[g]<k) k = floor[g]; }); } }
       R.rate = base*k; M.last[id] = k;
     });
@@ -1779,7 +1792,8 @@ canvas{display:block;width:100vw;height:100vh}
      presented town books them. Its `people` (else its residents) eat `meals` a day, each meal one serving of the two
      foods its store holds most of (one: a single, none: none); a mess draws its meals on the warehouses. A store under
      `low` days buys `days` days of the foods the town's sellers sell, in proportion to the warehouses' stock (one out:
-     more of the others). No meals out, no errands, no wear: those wait for the town to be watched again */
+     more of the others). No meals out; the wear, the tools, the hurt and the errands they make are the person's
+     abstract day (SIM.itemsAbstractDay) */
   SIM.itemsAbstractHome = function(P, hrs, town, res){
     var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
     var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
@@ -1800,6 +1814,30 @@ canvas{display:block;width:100vw;height:100vh}
     var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
     foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
     for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
+  };
+  /* THE ABSTRACT DAY (77-sim-7-lod.js, at the first hour of each day a town is abstract): a person's yesterday as the
+     watched town would have lived it, without a step: its tool worn by the hours its schedule gave to WORK (worn out, it
+     wants another), the worked day marked (a hurt's chance), the material meter risen at its rate; then the day's wear
+     (day(): the clothes worn, a hurt healed or taken, an errand for a short set, a poultice or a treat); and the errand
+     done at once at the seller nearest its home in its own town (no trip; out of stock, it fails and cools as watched).
+     Food and meals out stay the household's (SIM.itemsAbstractHome) */
+  SIM.itemsAbstractDay = function(a, d, town){
+    var I=SIM.ITEMS; if(!I || !a.present || a.driven || a.plan) return; if(a.itDay==null) a.itDay=d-1; if(a.itDay>=d) return;   /* lowered before it ever decided: from yesterday */
+    var s=SIM.schedOf(a, (d-1)*1440), hw=0; if(s) for(var h=0;h<24;h++) if(s[h]==='WORK') hw++;
+    var job=a.work!=null ? a.work : (a.mem && a.mem.WORK);
+    if(hw && job!=null){ a.workedDay=d-1;
+      if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
+        if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', d*1440); } }
+      else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
+    if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
+    if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;
+    day(a, d);
+    var E=a.errand; if(!E) return;
+    if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
+    var H=anchor(a), best=null, bd=Infinity;
+    sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
+    if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
+    E.place=best; E.trip=0; complete(a, E, d*1440);
   };
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
@@ -1946,6 +1984,10 @@ canvas{display:block;width:100vw;height:100vh}
     a.ndFrom = minute + (task && task.dur ? Math.round(task.dur/N.secPerMinute) : 0);
   };
   /* SIM.jump: the clock moved without the world living it: the meters stay, the gap is not counted */
+  /* THE ABSTRACT LEVEL (77-sim-7-lod.js): the named meters (the material meter: nothing fills it but what is bought)
+     risen `mins` minutes at their rate (the role's multiplier, no activity), the actor's clock untouched */
+  SIM.needsDrift = function(a, names, mins){ var N=SIM.NEED; if(!N || !(mins>0)) return; if(!a.nd) ensure(a, SIM.minute());
+    names.forEach(function(n){ var i=N.idx[n]; if(i==null) return; var v=a.nd[i]+slope(a, null, i)*mins/60; a.nd[i]= v<0?0:v>100?100:v; }); };
   SIM.needsJump = function(a, minute){ if(!SIM.NEED) return; ensure(a, minute); a.ndT=minute; a.ndFrom=minute; a.fr=null; a.intr=null; a.intrCool=0; };
 
   /* ---------------------------------------------------------------- the census of needs */
@@ -2191,7 +2233,10 @@ canvas{display:block;width:100vw;height:100vh}
 // past; the imports and the trade routes (77-sim-6-trade.js) tick as ever. Its households live by the hour
 // (77-sim-6-items.js SIM.itemsAbstractHome): their meals from their stores, a mess's from the warehouses, the stores
 // restocked from the warehouses when low, booked as a watched town books them, so the books balance at every level
-// (made + imported - exported - consumed = the change, per good and per settlement). Meals out, errands and wear wait.
+// (made + imported - exported - consumed = the change, per good and per settlement); each person's day once a day
+// (SIM.itemsAbstractDay, at an hour hashed from the person: its clothes and tool worn, a hurt, the material meter; what
+// that wants bought at once at the nearest seller in the town, no trip), so the governor learns the treats' and the wear's demand while nobody watches.
+// Meals out wait.
 // RAISED, every actor is decided afresh where its schedule says it is now (SIM.jump's rule: most of them already there,
 // a share still on the way), and a cart on an abstract trip is given its route, part-way along so that it arrives at the
 // same minute. Deterministic: raising draws from SIM.rng as SIM.jump does; lowering and the abstract hours draw nothing.
@@ -2200,7 +2245,7 @@ canvas{display:block;width:100vw;height:100vh}
   var SIM = root.SIM;
   SIM.ABSTRACT = null;
   SIM.ABSTRACT_DETOUR = 1.3;
-  var HOMES = {};
+  var HOMES = {}, PEOPLE = {};
   function mine(s){ return SIM.all('actor').filter(function(a){ return SIM.settlementOf(a)===s; }); }
   SIM.levelOf = function(s){ return SIM.ABSTRACT && SIM.ABSTRACT[s] ? 'abstract' : 'presented'; };
   SIM.level = function(s, lv){
@@ -2219,7 +2264,11 @@ canvas{display:block;width:100vw;height:100vh}
     mine(s).forEach(function(a){ var m=SIM.mood ? SIM.mood(a) : null; a.absEff=m ? m.eff : 1; a.wake=null; if(a.home!=null && !a.transient) res[a.home]=(res[a.home]||0)+1; });
     HOMES[s]=SIM.all('place').filter(function(P){ return P.settlement===s && (P.store || P.mess) && (P.people || res[P.id]); })
       .map(function(P){ P.absMeal=P.absMeal||0; return { P:P, res:res[P.id]||0 }; });
-    HOMES[s].last=minute;
+    HOMES[s].last=minute; HOMES[s].hr=Math.floor(minute/60);
+    /* the people, by the hour of the day each lives its abstract day at (a hash: the town's buying spread over the day,
+       as a watched town's is, not in one draw at midnight) */
+    var by=PEOPLE[s]=[]; for(var h=0;h<24;h++) by.push([]);
+    mine(s).forEach(function(a){ if(!a.driven && !a.transient) by[Math.floor(SIM.itemHash(a.k|0, 0, 13)*24)].push(a); });
   }
   /* raising: decided afresh where the schedule says (SIM.jump's rule); a cart on an abstract trip given its route */
   function raise(s, minute, t){
@@ -2231,13 +2280,16 @@ canvas{display:block;width:100vw;height:100vh}
       if(!a.present || a.plan) return;
       a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
-    delete HOMES[s];
+    delete HOMES[s]; delete PEOPLE[s];
   }
   /* the economy's step for an abstract town (inside its turn): the households' hours */
   SIM.lodHour = function(E, minute){
     var L=HOMES[E.settlement]; if(!L || !SIM.ITEMS) return;
     var hrs=(minute-L.last)/60; if(hrs<1) return; L.last=minute;
     L.forEach(function(h){ SIM.itemsAbstractHome(h.P, hrs, E.settlement, h.res); });
+    var by=PEOPLE[E.settlement], H=Math.floor(minute/60);   /* each person's yesterday, at its hour */
+    if(by) for(var k=L.hr+1; k<=H && k<=L.hr+48; k++) by[k%24].forEach(function(a){ SIM.itemsAbstractDay(a, Math.floor(k/24), E.settlement); });
+    L.hr=H;
   };
 })(typeof window!=='undefined'?window:globalThis);
 

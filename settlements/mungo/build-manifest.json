@@ -393,19 +393,19 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "479a4410b035"
+  "2b48f30282fc"
  ],
  "77-sim-6-govern.js": [
   "core/simulation",
-  "7c0601bdc5b6"
+  "7a04c2f5c17f"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "923b87ebf340"
+  "259760b0db7e"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
-  "83b0411da60a"
+  "2d2e39806c93"
  ],
  "77-sim-6-population.js": [
   "core/simulation",
@@ -417,7 +417,7 @@
  ],
  "77-sim-7-lod.js": [
   "core/simulation",
-  "f90a4ab966ae"
+  "5a9beafbe043"
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",

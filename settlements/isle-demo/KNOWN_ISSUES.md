@@ -178,13 +178,26 @@
       cotton: it now makes those it can, mats and hats), and a town at the abstract level buys no treats, so nothing was
       made of them and, watched again, its shelves were bare: the governor keeps a shelf stock with no demand (`least`).
       21 days: one shortfall (21 lamps on one day) where there were 10 (8,131 jewellery).
-- [ ] **Kautoa's mats and hats pile to about 2,700 each** (2026-10-26): its weavers run at the full rate on the first day,
-      as every producer does before the governor has a history, and their goods have no demand at the abstract level. A
-      first-day rate from the opening stock against `least` would stop it.
-- [ ] **The abstract level buys no treats or wear** (77-sim-7-lod.js: no errands, no wear), so the governor learns no
-      demand for them while a town is unwatched; `least` covers it. Booking those purchases abstractly would be better.
-- [ ] **The food supply-line check fails over 21 days** (Kautoa watched drifts away from its target, about -940 a day of
-      28,800 eaten), before and after the 2026-10-26 change alike; the week test runs 7 days and passes.
+- [x] **Kautoa's mats and hats opened high** (about 2,000): its weavers ran at the full rate on the first day, as every
+      producer did before the governor had a history. Once the abstract town bought mats, the carts chose those piles
+      (36 days of mats against 522 of meat) and left Kautoa's meat unhauled on the first day. Since 2026-10-26 a recipe
+      whose every good already holds its shelf stock (`least`) runs at its floor on the first day; mats and hats hold
+      near 300-500.
+- [x] **The abstract level bought no treats or wear** (2026-10-26): core's abstract day (77-sim-6-items.js
+      SIM.itemsAbstractDay) wears each person's clothes and tool, takes a hurt, raises the material meter, and buys what
+      that wants at the nearest seller in the town (no trip), each person at an hour hashed from it. With both towns
+      unwatched or both watched for 12 days, the wear bought agrees within a few a day (a day earlier unwatched: the
+      abstract day books yesterday); the treats run about 25% higher unwatched (every errand succeeds; watched, some go
+      stale on the way). It showed three more things, fixed: the material meters opened between 5 and 30 and rose
+      together, so every treat was first bought in one wave around day 9 (the meter now opens spread to the treat's
+      `at`, 0-55); the potters' lamps sat at 44 kilns in lots under a cart's minLoad while the shelves were empty (core's
+      `cart.urgent`: a good its buyers went short of, under a day on the shelves, is fetched in any amount; any good
+      under a day kept the carts on small lots and left Kautoa's meat unhauled on the first day); the weavers short of cotton filled their
+      hours with mats and hats (12,000 of each by day 21: a governed maker makes nothing over target while one of its goods
+      is under). Valapo opens with 1,000 cloth (the target is about 1,600); both towns keep a shelf of 400 lamps (`least`, and the opening lot).
+- [x] **The food supply-line check failed over 21 days** (before 2026-10-26): it passes since the abstract day.
+- [ ] **Three small shortfalls over 21 days** (2026-10-26; the 7-day week test passes): Kautoa 9 lamps on day 14, and
+      Valapo, unwatched, 31 and 49 kava on days 29-30. The treats are bought about 25% more unwatched than watched.
 - [ ] **Contemplation settles near 60:** few choose worship in their free hours (the temples, shrines and squares are
       few and far for most).
 - [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),

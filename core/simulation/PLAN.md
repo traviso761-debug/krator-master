@@ -639,7 +639,13 @@ Locus is already closest to the target. Make it the mobility reference:
   the items' meal quality). `SIM.items({retry})` asks again for a tool whose errand failed. `SIM.economy({useShort})`
   counts a good's unmet draws as use (at most once more its use), so a good nobody could get is still made; a governed
   maker of several goods picks by the days of the whole supply line, and a good never made asks for the most rate only
-  when it is wanted (2026-10-26, the isles' `alternate` dropped). They run as SIM.step's last
+  when it is wanted (2026-10-26, the isles' `alternate` dropped). A town at the abstract level lives each person's day
+  (77-sim-6-items.js `SIM.itemsAbstractDay`, called by 77-sim-7-lod.js at an hour hashed from the person): clothes and
+  tool worn, a hurt, the material meter risen (`SIM.needsDrift`), and what that wants bought at once at the nearest
+  seller in the town, so the governor learns the demand for treats and wear while nobody watches. On the first day a
+  recipe whose every good already holds its shelf stock (`least`) runs at its floor, not flat out. A governed maker of
+  several goods makes none over target while one is under; `cart.urgent` (opt-in) fetches a good its buyers went short of,
+  the shelves holding under that many days of it, in any amount. They run as SIM.step's last
   act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as
   on its own (2026-10-26); `test-sim.js` holds each rule with a negative.
 

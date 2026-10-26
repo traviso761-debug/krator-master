@@ -644,6 +644,36 @@ function world(seed){
  ok('and a cart caught on a trip given its route, arriving at the same minute',onTrip&&C.task.legs.length>0&&C.task.arrive===arr&&!C.task.abstract,!!C.task.abstract);
  A.run(h+1/60,h+2);ok('watched again it runs as before (decisions, carts walking)',VA.every(a=>a.wanted!=null)&&(A.EV.made.coffee||0)>ma,VA.some(a=>a.wanted==null));}
 
+// the abstract day (77-sim-6-items.js SIM.itemsAbstractDay): a town nobody watches wears its clothes and tools out and
+// buys them again, and its people's material meter rises and buys treats, booked to its economy as a watched town's
+// purchases are, so its governor learns their demand; without the abstract day it buys none
+{const mk=(off)=>{const {S,clock}=world(139);
+   ['WORK','EAT','HAUL','UNLOAD'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:6,EAT:6},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});S.place({id:'vShop',kind:'shop',x:60,z:0,activities:{BUY:4},open:[6,20],settlement:'valapo'});
+   S.place({id:'kHome',kind:'house',x:0,z:0,activities:{SLEEP:4},settlement:'kautoa'});S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});
+   const cfg=()=>({goods:{rice:{},garments:{},tools:{},kava:{}},every:60,window:1});
+   S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.recipe('vFarm',{out:['rice'],rate:1,cap:300});
+   S.R.place.vShed.stock={rice:500,garments:100,tools:100,kava:100};
+   S.needs({list:['eat','material'],rate:{eat:0,material:1},init:10});
+   S.items({kinds:{rice:{cat:'food',food:true},shirt:{cat:'clothes',slot:'torso',life:2,good:'garments'},hoe:{cat:'tool',workLife:20,good:'tools'},
+     kava:{cat:'luxury',material:30,good:'kava'}},free:['IDLE'],secPerMinute:40,treat:{at:30,items:[[0,'kava']]}});
+   S.shop('vShop',['shirt','hoe','kava','rice']);
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
+   const ps=[0,1,2,3].map(i=>{const a=S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'});a.wears=['shirt'];a.sets=1;S.equip(a,'shirt',0.4);a.tool={k:'hoe',w:0};return a;});
+   S.R.place.vHome.store={rice:20};S.R.place.vHome.people=4;
+   if(off) S.itemsAbstractDay=()=>{};
+   clock.d=0;clock.h=0;S.level('valapo','abstract');
+   for(let m=0;m<5*1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}
+   return {S,EV,ps,B:(S.ITEMS.statsBy||{}).valapo||{}};};
+ const A=mk(false),Z=mk(true),bA=A.B.bought||{},bZ=Z.B.bought||{};
+ ok('abstract day: Valapo, unwatched, wears its shirts out and buys them again, booked to it ('+(bA.shirt||0)+' shirts, garments used '+(A.EV.used.garments||0)+')',bA.shirt>=4&&A.EV.used.garments===bA.shirt&&A.ps.every(a=>a.eq.torso),!(bA.shirt>0));
+ ok('its tools worn by the scheduled hours and bought again ('+(bA.hoe||0)+'), its material meter risen to a treat ('+(bA.kava||0)+' bowls)',bA.hoe>=4&&bA.kava>=4&&A.ps.every(a=>a.tool),!(bA.hoe>0));
+ ok('and nobody in it decided (no wants, no routes)',A.ps.every(a=>a.wanted==null&&a.task==null),A.ps.some(a=>a.task!=null));
+ ok('without the abstract day it buys none',!(bZ.shirt>0)&&!(bZ.hoe>0)&&!(bZ.kava>0),bZ.shirt>0);}
+
 // trade on a transport line: the carrier is the line's vehicle; a load leaves as it leaves a landing and lands as it docks
 {const {S,clock}=world(97);
  S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
@@ -738,6 +768,30 @@ function world(seed){
  const L1=lt(true),L0=lt(false);
  ok('least: the lamps nobody buys are kept on the shelf ('+(L1.made.lamps||0)+' made, about its 40) while the pots go on',(L1.made.lamps||0)>=40&&(L1.made.lamps||0)<=70&&L1.made.pots>0,!(L1.made.lamps>0));
  ok('without it no lamp is made',!(L0.made.lamps>0),L0.made.lamps>0);
+ // the first day: a recipe whose every good already has its shelf stock runs at its floor, not flat out (no history yet)
+ const fd=(stock)=>{const {S,clock}=world(151);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'loom',kind:'workshop',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'weaver',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{mats:{}},every:60,window:1,govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,least:{mats:100}}});
+   S.store('shed',{kind:'warehouse'});S.recipe('loom',{out:['mats'],rate:2,cap:100000});S.R.place.shed.stock={mats:stock};
+   [0,1].forEach(i=>S.actor({id:'w'+i,role:'weaver',home:'homeA',work:'loom'}));
+   for(let m=0;m<12*60;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}
+   return E;};
+ const F1=fd(150),F0=fd(0);
+ ok('the first day: a shelf already held (150 mats, least 100) runs at the floor (x'+(F1.recipes.loom.rate/2).toFixed(2)+'), an empty one flat out',Math.abs(F1.recipes.loom.rate/2-0.3)<1e-9&&F0.recipes.loom.rate===2&&F1.made.mats<F0.made.mats,F1.recipes.loom.rate===2);
+
+// an urgent load (cart.urgent): a good the warehouses hold under that many days of is fetched from a maker's store in
+// any amount; without it a load under minLoad waits
+{const mk=(urgent)=>{const {S,clock}=world(149);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'kiln',kind:'workshop',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   const E=S.economy({goods:{lamps:{}},every:60,window:1,useShort:true,cart:Object.assign({cap:50,load:5,unload:5,minLoad:10},urgent?{urgent:1}:{})});
+   S.store('shed',{kind:'warehouse'});S.store('kiln',{kind:'site'});S.R.place.kiln.stock={lamps:3};S.R.place.shed.stock={lamps:0};S.cart(S.actor({id:'c',role:'carter',home:'homeA'}));
+   for(let m=0;m<6*60;m++){clock.h=(m%1440)/60;clock.t+=40;if(m===90)S.supply('lamps',2);S.step();}
+   return {S,E};};
+ const U=mk(true),N=mk(false);
+ ok('urgent: three lamps at the kiln, none on the shelf and buyers short: fetched though under minLoad',U.S.R.place.shed.stock.lamps===3&&U.E.hauled.lamps===3,!(U.E.hauled.lamps>0));
+ ok('without it they wait at the kiln for a load of ten',N.S.R.place.kiln.stock.lamps===3&&!(N.E.hauled.lamps>0),N.E.hauled.lamps>0);}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}

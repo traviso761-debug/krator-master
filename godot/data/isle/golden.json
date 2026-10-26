@@ -8,7 +8,7 @@
   "watched": "valapo",
   "abstract": "kautoa",
   "decided": 0,
-  "moved": 130369
+  "moved": 130862
  },
  "start": {
   "clock": {
@@ -347,10 +347,10 @@
       "eaten": 0
      },
      "lamps": {
-      "warehouses": 200,
+      "warehouses": 400,
       "sites": 0,
       "carts": 0,
-      "total": 200,
+      "total": 400,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -574,10 +574,10 @@
       "eaten": 0
      },
      "cloth": {
-      "warehouses": 40,
+      "warehouses": 1000,
       "sites": 0,
       "carts": 0,
-      "total": 40,
+      "total": 1000,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -756,10 +756,10 @@
       "eaten": 0
      },
      "lamps": {
-      "warehouses": 200,
+      "warehouses": 400,
       "sites": 0,
       "carts": 0,
-      "total": 200,
+      "total": 400,
       "made": 0,
       "used": 0,
       "imported": 0,

@@ -26,7 +26,8 @@
 // both smoothed over `smooth` days), clamped to [min (or minBy[good]), max]; a good never made yet asks for max only
 // when it is wanted. A recipe of several goods runs at the rate its scarcest wanted good asks for (none wanted: the
 // lowest of its goods' floors); its full rate is the one it had when the governor first looked. On the first day (no
-// history) every recipe runs at its full rate.
+// history) a recipe runs at its full rate, unless every good it makes has a shelf stock (`least`) already held: then
+// at its floor.
 // SPOILAGE. At midnight `spoil[good]` of each perishable's stock in the warehouses and at the sites rots, booked as used
 // (consumed: the books balance) and tallied in E.spoiled. The households' own stores do not spoil.
 // KEEPING. Of what would rot of `keep.goods` in a place, `keep.share` is kept instead while the warehouses hold `keep.by`,
@@ -102,7 +103,9 @@
     Object.keys(E.recipes).forEach(function(id){
       var R = E.recipes[id], base = M.rates[id]; if(base==null) return;
       /* the scarcest wanted good's rate; none wanted, the lowest of its goods' floors */
-      var k = 1; if(!first){ k = 0; R.out.forEach(function(g){ if(wanted[g] && want[g]>k) k = want[g]; });
+      var k = 1, least = G.least||{};
+      if(first){ if(R.out.every(function(g){ return least[g]!=null && M.view[g] && M.view[g].pos>=least[g]; })){ k = Infinity; R.out.forEach(function(g){ if(floor[g]<k) k = floor[g]; }); } }   /* the first day: full, but a shelf already held is not filled */
+      else { k = 0; R.out.forEach(function(g){ if(wanted[g] && want[g]>k) k = want[g]; });
         if(!k){ k = Infinity; R.out.forEach(function(g){ if(floor[g]<k) k = floor[g]; }); } }
       R.rate = base*k; M.last[id] = k;
     });
