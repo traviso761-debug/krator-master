@@ -162,6 +162,11 @@ opt-in because it changes the look wherever the view climbs or falls (the point 
 For the roll-out, each biome's numbers: the falloff from its relief (1/700 to 1/1100), the mist level at its valley floors or
 `below`, the band where its plans put a cloud layer (or none). `ATMOS.fog.off = true` shows the plain fog (an A/B check).
 `node core/atmos/test-fog.js` holds the integrals, the twin, the hooks, the compose and the bolts.
+Measured on the pilots (GPU, 2026-10-26): at clear noon nhighlands' crest overview with height fog differs from the plain
+fog by at most 3/255 on every pixel (0 pixels past 3), the same calls and triangles; dawn pools the mist in the low old growth.
+**Known issue:** on swbay the rain occlusion pass throws inside three ("reading 'isInterleavedBufferAttribute' of null")
+although every mesh renders alone into the same target; the module retries five times and then turns the map off (the
+rain falls everywhere, as before). On nhighlands and the glacier the map works (164k pixels of the trumpet colony stay dry).
 
 **For the other workstreams.** core/water's `WATER.wetGround` should hook through `ATMOS.shaderHook` when present (today a
 page hook set after it replaces a core hook layered under it) and (done on the water side, 2026-10-26) multiplies its wetness, puddles and rain rings by `atmRainOpen(worldPos)`
