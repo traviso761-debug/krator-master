@@ -72,8 +72,10 @@
    r.toneMappingExposure=L.exp;
    if(o.fog!==false&&scene.fog){scene.fog.color.setRGB(...L.fogC).convertSRGBToLinear();if(scene.fog.density!=null)scene.fog.density=L.fogD;}
    if(A.U&&A.U.hour)A.U.hour.value=clock.hour;};
-  S.render=function(){scam.quaternion.copy(cam.quaternion);scam.fov=cam.fov;scam.aspect=cam.aspect;scam.updateProjectionMatrix();
-   const ac=r.autoClear;r.autoClear=true;r.render(sscene,scam);r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
+  // S.renderSky(): the sky pass alone, into whatever target is bound (a page with its own post pass draws the world after it)
+  S.renderSky=function(){scam.quaternion.copy(cam.quaternion);scam.fov=cam.fov;scam.aspect=cam.aspect;scam.updateProjectionMatrix();
+   const ac=r.autoClear;r.autoClear=true;r.render(sscene,scam);r.autoClear=ac;};
+  S.render=function(){S.renderSky();const ac=r.autoClear;r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
   // the reflections: ATMOS.skylight captures the sky scene (about the origin) whenever the hour moves or the key does
   if(o.skylight)S.skylight=A.skylight({renderer:r,sky:sscene,scene,ground:()=>new T.Color(...(S.look?S.look.hemiG:[.2,.2,.2])).convertSRGBToLinear(),
    key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.pressure].join()});

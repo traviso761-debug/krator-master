@@ -15,6 +15,8 @@
 // that built its skylight scene from the dome (new THREE.Mesh(sky.geometry, sky.material), giant.clone()) keeps working
 // unchanged: the stand-in sky is the shared sky's own mesh, the giant and ring are empty (the sky draws both).
 (function(){const A=ATMOS;
+ // the page's own weather law, kept for skyBiome's weatherOver (ATMOS.weather calls it before the sky each frame)
+ const w0=A.weather;if(w0&&!w0.skyBiome){A.weather=function(o){A.wxApply=o&&o.apply;return w0.apply(this,arguments);};A.weather.skyBiome=true;}
  A.skyBiome=function(o){const T=o.THREE||(A.T)||window.THREE,scene=o.scene;
   const day0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
   const hc=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
@@ -28,10 +30,20 @@
   let hemi=o.hemi||null;const fills=o.fills||[];if(!hemi||!o.fills)scene.traverse(l=>{if(l.isHemisphereLight&&!hemi)hemi=l;else if(!o.fills&&l.isDirectionalLight&&l!==o.sun)fills.push(l);});
   const base=fills.map(l=>l.intensity);
   const site=o.site||{px:446,py:690},P=A.skyPreset('standard',Object.assign({site},o.preset||{}));
-  const S=A.sky(P,{renderer:o.renderer,camera:o.camera,scene,sun:o.sun,hemi,clock,fog:o.fog!==false});
+  // o.cave: the page lights itself (a lava tube: the sun stays off underground); the sky only draws, seen through its openings
+  // o.weatherLook: the weather (ATMOS.W) greys and clouds the sky itself; o.weatherOver: the page's own weather law (its
+  // ATMOS.weather apply) runs again after the sky each frame, darkening the hour's light instead of a fixed table, once
+  // o.onLook's functions have re-read its base values from the sky's (a station's WXB)
+  const cave=!!o.cave,wl=o.weatherLook?(()=>{const W=A.W;if(!W)return null;const cl=x=>Math.max(0,Math.min(1,x));
+   return{grey:cl(.9*(W.ash||0)+.5*(W.snow||0)+.45*(W.fog||0)+.4*(W.rain||0)),cover:cl(.4*(W.rain||0)+.3*(W.snow||0)+.3*(W.fog||0)),wet:W.rain||0};}):null;
+  const S=A.sky(P,{renderer:o.renderer,camera:o.camera,scene,sun:cave?null:o.sun,hemi:cave?null:hemi,clock,fog:!cave&&o.fog!==false,weather:wl});
+  if(cave&&S.shine&&S.shine.parent)S.shine.parent.remove(S.shine);   /* no giantshine in a cave */
   S.clock=clock;
-  S.view=function(dt){onClock();S.update(dt);const k=Math.min(1,S.look.sunI/2);for(let i=0;i<fills.length;i++)fills[i].intensity=base[i]*k;
-   if(typeof BIO!=='undefined'&&BIO.setSun)BIO.setSun(S.state.sunDir);};
+  S.view=function(dt){onClock();const ex=o.renderer.toneMappingExposure;S.update(dt);
+   if(cave)o.renderer.toneMappingExposure=ex;else{const k=Math.min(1,S.look.sunI/2);for(let i=0;i<fills.length;i++)fills[i].intensity=base[i]*k;}
+   if(typeof BIO!=='undefined'&&BIO.setSun)BIO.setSun(S.state.sunDir);
+   for(const f of(o.onLook||[]))f(S);
+   if(o.weatherOver&&A.W&&A.wxApply)A.wxApply(A.W);};
   S.draw=()=>S.render();
   // S.modes(o): a page whose buttons, views and hooks speak in light modes (day, dawn, night) keeps them on the real hour.
   // o.hours {day, night, dawn?}: the hour each mode jumps the clock to; o.hooks: the page's hook array, each fn(mode) called
