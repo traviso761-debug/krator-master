@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 33 prompts** (2026-10-26, after the merges with main, the NW outer wall and the Bowl): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
+**Count: 35 prompts** (2026-10-26, after the merges with main, the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -225,6 +225,33 @@ patterned in bold two-tone motifs. Nothing in the library or `patterns/` has it 
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The smooth living bark of a tree that grows its own bold two-tone pattern, as if carved and inked: a pale tan ground (#cdb796, with lighter #dcc8a6 and darker #b8a07c streaks running vertically in the grain), patterned in near-black dark brown (#2e2620) motifs: scattered concentric "target" rings of three or four thick rings with a solid dot at the centre, a few larger nested rings, and one vertical chain of scalloped diamonds (each diamond's four edges bowed inward, a small pale eye in its middle) running the full height of the tile. The motif edges are crisp but slightly irregular, like a pattern grown into the bark rather than painted, with fine bark texture and a few small knots visible through both colours. Matte.
 ```
 For `bark.carved.b`, the same with: "the motifs mostly larger nested rings, five or six rings each, and a column of small target rings instead of the diamond chain."
+
+## 24. The abyssal savannah (`biomes/abyssal-savannah`, 2026-10-26)
+
+`biomes/abyssal-savannah/PLAN.md` section 10. **Reuse, so no prompt:** `card.grass.dry`, `card.ichu` and `card.rankgrass`
+for the grasses, `card.saltbush`, `card.flower.bloom.highland`, `card.firelily`, `card.charred`, `card.acacia` (the
+umbrella tree), `card.heartleaf` (the tongue tree), `card.broadleaf` (the kopje fig), `card.fern`, `card.palm` (the Vain
+fronds), `bark.cork`, `bark.lepido`, `bark.armored`, `bark.smooth`, `rock.granite.tor`, `rock.sandstone.bedded.red`,
+`ground.redsoil`. Two gaps: the ground under the tall grass and the tall grass itself (its stand-ins: `ground.redsoil`,
+and `card.grass.dry`'s knee-high bunchgrass drawn three metres tall).
+
+#### `ground.savanna.litter`
+- Kind: surface, full colour. Square 2048 px; one tile covers about 2 m of ground.
+- Used by: the abyssal savannah's parkland (the host's ground detail under the thatch grass, `groundDetail` today
+  `ground.redsoil`). Reuse: any tropical savanna or dry grassland floor (the hyperjungle's and SW bay's savannahs).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The floor of a tall-grass savanna in the dry season seen from straight above: red-brown lateritic earth (#9a5e44, #86503a) with small rounded iron-pisolite gravel (#5a3424) and quartz grit, mostly hidden under a mat of fallen dry grass: long straw-coloured blades (#c8b072, #b09858) lying in every direction, a few grey weathered ones (#9a948a), the cut bases of grass tussocks a hand across every 30 cm with fresh green shoots (#7a8a3e) in their middles, a scatter of tiny dry seed heads. Matte.
+```
+
+#### `card.grass.thatch`
+- Kind: card (nine plants, 3 x 3, on magenta), near-colourless so it can be tinted (the kit tints it gold, green or
+  scorched by the burn age). Square 2048 px.
+- Used by: the thatch grass (`thatch`, today `card.grass.dry`). Reuse: elephant grass, any tall savanna or riverside grass.
+
+```
+Grass card: nine tall tufts of savanna thatching grass, each a dense fountain of long narrow blades rising straight and arching over at the tips, about three times as tall as it is wide, with several tall slender stems carrying feathery seed plumes above the leaves and a few broken and bent blades, standing up from the bottom of each cell, pale cream-white only so they can be tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. No magenta, pink or purple anywhere in the grass.
+```
 
 ## Gaps resolved without a prompt (2026-10-26)
 

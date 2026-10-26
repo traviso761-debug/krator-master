@@ -45,6 +45,7 @@ R('frostroot', 'Frostroot', 'tuber', [0, 1], [1, 2], {atm: [0, 1], reach: 0, car
 R('murnong', 'Murnong', 'tuber', [2, 3], [1, 2], {reach: 1, card: 'card.crop.rosette', home: ['nwlowlands'], note: 'a yam-daisy'});
 R('shade-manioc', 'Shade manioc', 'tuber', [4, 4], [2, 4], {card: 'card.crop.palmate', home: ['hyperjungle'], stores: ['ground', 'dried']});
 R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umbrella', home: ['throne'], stores: ['pressed'], note: 'a konjac-like corm on ash soil'});
+R('stub-cone', 'Stub cone', 'tuber', [4, 4], [0, 2], {reach: 1, form: 'plant', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['ground', 'dried'], note: 'the single cone of the stub lycopsid, pounded for its starch'});
 R('breadfruit', 'Breadfruit', 'starch-fruit', [4, 4], [3, 4], {reach: 1, form: 'tree', card: 'card.breadfruit', src: 'ringisles', home: ['ringisles']});
 R('banana', 'Banana', 'starch-fruit', [4, 4], [3, 4], {card: 'card.paddle', src: 'ringisles', home: ['ringisles']});
 R('plantain', 'Violet plantain', 'starch-fruit', [4, 4], [3, 4], {card: 'card.paddle', src: 'xanadu', home: ['xanadu']});

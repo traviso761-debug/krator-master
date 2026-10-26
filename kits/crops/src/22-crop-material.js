@@ -18,6 +18,7 @@ R('mat-reed', 'Mat reed', 'weaving', [3, 4], [3, 4], {also: ['cordage', 'thatch'
 R('willow', 'Willow withies', 'weaving', [1, 3], [2, 4], {form: 'tree', card: 'card.weeper', home: ['swlowlands', 'xanadu', 'nwlowlands'], src: 'swlowlands'});
 R('pandan', 'Pandanus', 'thatch', [4, 4], [2, 4], {also: ['weaving'], form: 'tree', card: 'card.screwpine', home: ['geyser', 'ringisles', 'nwbay', 'shighlands'], src: 'geyser'});
 R('ichu', 'Ichu', 'thatch', [0, 1], [1, 2], {atm: [0, 1], also: ['cordage'], card: 'card.ichu', home: ['ehighlands'], src: 'ehighlands'});
+R('thatch-grass', 'Thatch grass', 'thatch', [4, 4], [1, 2], {also: ['weaving'], card: 'card.grass.dry', src: 'abyssal-savannah', home: ['abyssal-savannah'], note: 'the tall grass of the abyssal savannah, to 3 m in the dense air; cut after the rains, before the burns'});
 R('mat', 'The mat', 'sheet', [0, 5], [0, 4], {also: ['weaving'], form: 'fungus', grown: 'underground', water: 'bed', works: 'sealed-beds', hazard: 'digests what sleeps on it', home: ['throne'], src: 'throne', stores: ['pressed'], note: 'a slime mould, dried and pressed to a felt-like sheet'});
 
 /* ---- utility: dye */
@@ -47,9 +48,11 @@ R('verdigris', 'Verdigris and malachite', 'dye', [0, 5], [0, 4], {homeOnly: true
 R('sulfur-yellow', 'Sulfur yellow', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'sulfur', colour: 'yellow', home: ['geyser', 'ebadlands', 'throne']});
 R('tar-black', 'Tar black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'oil', colour: 'black', home: ['ringisles']});
 R('flametip-tanbark', 'Flametip tanbark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['necanyons'], src: 'necanyons', note: 'the benches\' scrub tree: tans hides, dyes brown'});
+R('laterite-ochre', 'Laterite ochre', 'dye', [3, 5], [0, 3], {homeOnly: true, node: 'iron', colour: 'ochre', home: ['abyssal-savannah'], note: 'the red-yellow earth of the abyss rim, washed and burnt to a red; the abyssal people paint with it on umbrella gum'});
 R('slickrock-orchil', 'Slickrock orchil', 'dye', [4, 5], [0, 2], {homeOnly: true, colour: 'purple', home: ['necanyons'], note: 'the caps\' orange crust lichens, steeped in stale urine: a red-purple, as orchil is'});
 
 /* ---- utility: reagent and fuel (the Zeijani's dark farms) */
+R('umbrella-gum', 'Umbrella gum', 'reagent', [4, 4], [0, 2], {homeOnly: true, form: 'tree', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['dried'], note: 'the gum of the shelf umbrella-tree: a glue and a binder for paint (gum arabic)'});
 R('glow-mushroom', 'Glow mushroom', 'reagent', [0, 5], [0, 4], {also: ['fuel'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.glow', home: ['throne'], src: 'throne', note: 'the alchemist\'s culture and a light and heat source'});
 R('lamp-cap', 'Lamp cap', 'fuel', [0, 5], [0, 4], {form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', home: ['throne'], src: 'throne', note: 'carried as a lamp; lasts a few days cut'});
 
