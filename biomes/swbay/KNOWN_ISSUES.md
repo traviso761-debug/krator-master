@@ -10,8 +10,8 @@ Read before changing anything here. `build.py` prints the open count.
       daylight; the water's skylight captures the shared sky; the clouds shade the ground, the far country, the plants and the
       structures (`ATMOS.cloudShade`, not the animated fauna). Differences from the old page, for the owner: the page opens at
       06:00 on game start's day (dawn; `#hour=13` is the old light's time); the old sky was a milky white 1.9 atm column, the
-      standard preset at 1.9 atm is bluer with cumulus and its horizon is less white (a `keys` override would bring the milk
-      back); the giant now has its true phase (a crescent by day from the bay) and its ring is the canon hairline, not opened
+      standard preset at 1.9 atm is bluer with cumulus and its horizon is less white: **kept** (the owner, 2026-10-26: the
+      standard blue sky with cumulus stays on swbay; no milky `keys` override); the giant now has its true phase (a crescent by day from the bay) and its ring is the canon hairline, not opened
       6 degrees; the two painted moons are the real six. The dark round patch in the bay's water under "From over the bay" was
       there before the sky changed (the bay's deep colour over its deepest bed), not the sky's.
 
