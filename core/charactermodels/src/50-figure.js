@@ -1598,6 +1598,7 @@ function KCharFigure(body, sliders, load){
   var pRest = J.map(function(){ return Q(); });
   J.forEach(function(j, i){ pRest[i].fromArray(j.r); if(j.parent >= 0) pRest[i].premultiply(pRest[j.parent]); });
   var pR = J.map(function(j){ return j.parent >= 0 ? pRest[j.parent].clone().invert() : Q(); });
+  var pRi = pRest.map(function(q){ return q.clone().invert(); });   // each joint's own rest, inverted ('self')
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
   var pLegs = ['LeftUpLeg', 'RightUpLeg'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; }), pL = [Q(), Q()], pSp = Q();
   function keepWorld(b, q){ b.parent.getWorldQuaternion(qB); b.quaternion.copy(qB.invert().multiply(q)); b.updateMatrixWorld(true); }
@@ -1671,7 +1672,13 @@ function KCharFigure(body, sliders, load){
     }
     PJ.forEach(function(n){
       var b = byName[n] !== undefined && bones[byName[n]], a = P[n]; if(!b || !a) return;
-      if(PF === 'joint'){
+      if(PF === 'self'){
+        // the joint's own side axis as the clip has turned it from rest: a joint the clip twists about its length
+        // bends forward along its own facing, so the bend gains no sideways roll (the parent's axis, 'joint', turned
+        // a mid-back twist of 15 degrees into a sideways crook in a sword's wind-up)
+        b.getWorldQuaternion(qB);
+        pAx.set(1, 0, 0).applyQuaternion(pRi[byName[n]]).applyQuaternion(qB);
+      } else if(PF === 'joint'){
         // the side axis as the clip has turned the parent joint from its rest: a twisted or leaning torso bends
         // forward along its own facing, not about the figure's
         b.parent.getWorldQuaternion(qB);
@@ -1686,7 +1693,8 @@ function KCharFigure(body, sliders, load){
     [['nTurn', 0, 1, 0, 1], ['nSide', 0, 0, 1, -1]].forEach(function(r){
       var a = P[r[0]]; if(!nk || !a) return;
       pAx.set(r[1], r[2], r[3]);
-      if(PF === 'joint'){ nk.parent.getWorldQuaternion(qB); pAx.applyQuaternion(pR[byName.Neck]).applyQuaternion(qB); }
+      if(PF === 'self'){ nk.getWorldQuaternion(qB); pAx.applyQuaternion(pRi[byName.Neck]).applyQuaternion(qB); }
+      else if(PF === 'joint'){ nk.parent.getWorldQuaternion(qB); pAx.applyQuaternion(pR[byName.Neck]).applyQuaternion(qB); }
       else pAx.applyQuaternion(pG);
       turnWorld(nk, pQ.setFromAxisAngle(pAx, r[4] * a * Math.PI / 180));
     });
@@ -1967,4 +1975,4 @@ KCharFigure.clipData = {};   // data/clips.json clips by key: hold, two_hands, f
 KCharFigure.faces = {};      // data/clips.json faces: per body, the face's points (the page fills it)
 KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)
 KCharFigure.postureClips = {};   // data/posture.json clips: per clip, per body, degrees added (the page fills it)
-KCharFigure.postureFrame = 'figure';   // data/posture.json frame: 'joint' pitches about each joint's parent's side axis
+KCharFigure.postureFrame = 'figure';   // data/posture.json frame: 'self' pitches about each joint's own side axis, 'joint' its parent's

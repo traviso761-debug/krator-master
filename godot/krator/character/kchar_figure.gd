@@ -98,6 +98,7 @@ func load_body(data_dir: String, body_id: String) -> void:
 		var pk: String = kit.get("body", "") if pb.has(kit.get("body", "")) else "mpfb_male"
 		posture = pb.get(pk, {})
 		posture_joint = pj.get("frame", "figure") == "joint"
+		posture_self = pj.get("frame", "figure") == "self"
 		var pc: Dictionary = pj.get("clips", {})
 		for c in pc:
 			if pc[c].has(pk):
@@ -589,6 +590,7 @@ const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "bac
 const POSTURE_SHIFT := ["Spine", "Spine1", "Spine2", "Neck"]
 const POSTURE_FADE := 0.25
 var posture := {}
+var posture_self := false               # 'frame': 'self' (the joint's own side axis as the clip turned it)
 var posture_joint := false              # 'frame': 'joint' (the side axis as the clip turned the parent from rest)
 var posture_clips := {}                 # clip -> degrees added while it plays
 var _pose_from := {}                    # the clip change when the last play() began
@@ -628,6 +630,10 @@ func _unshift() -> void:
 		if skeleton.get_bone_pose_position(e[0]).is_equal_approx(e[2]):
 			skeleton.set_bone_pose_position(e[0], e[1])
 	_shifted.clear()
+
+
+func _turned(b: int) -> Quaternion:
+	return _gp(b).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(b).basis.get_rotation_quaternion().inverse()
 
 
 func _pose_change() -> Dictionary:
@@ -684,7 +690,9 @@ func _posture(force := false) -> void:
 		if b >= 0 and a != 0.0:
 			var ax := Vector3(1, 0, 0)
 			var par := skeleton.get_bone_parent(b)
-			if posture_joint and par >= 0:
+			if posture_self:
+				ax = _turned(b) * ax              # the joint's own side axis as the clip turned it (50-figure.js 'self')
+			elif posture_joint and par >= 0:
 				ax = (_gp(par).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(par).basis.get_rotation_quaternion().inverse()) * ax
 			_turn(b, Quaternion(ax.normalized(), -a))
 	# the neck turned (nTurn: positive to the figure's left) and tilted to the side (nSide: positive, the left ear to the
@@ -695,7 +703,9 @@ func _posture(force := false) -> void:
 		if nk < 0 or na == 0.0:
 			continue
 		var nax: Vector3 = r[1]
-		if posture_joint:
+		if posture_self:
+			nax = _turned(nk) * nax
+		elif posture_joint:
 			var npar := skeleton.get_bone_parent(nk)
 			nax = (_gp(npar).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(npar).basis.get_rotation_quaternion().inverse()) * nax
 		_turn(nk, Quaternion(nax.normalized(), float(r[2]) * na))
