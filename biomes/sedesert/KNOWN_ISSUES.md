@@ -4,6 +4,12 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Dry, dusty air. Kept from the dome: the Inner Wall in the west
+      and the ranges behind it, the Abyss's far side and the mesas (ridges); the wall's strata, gullies and talus are not
+      drawn. Draw calls at the default camera (verify.py --assert, GPU): 99 before, 96 after.
+
 - [x] (2026-10-15) The whole core/host interface (ROADMAP.md section 10, step 4; core/host/README.md): the inspector, marks, minimap, and
       the editor's fauna mode (kits/fauna's desert group, 39-host-fauna.js: this biome's own animals first, put down, moved,
       turned, removed, idling and grazing) and ground brushes (raise, lower, flatten, smooth on TFIELD: core/terrain's
