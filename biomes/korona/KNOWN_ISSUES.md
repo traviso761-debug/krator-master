@@ -21,6 +21,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   +2 draw calls per page; about 300 triangles a pit (the hollow's 3,326 pits: +0.5 M). `window._punji('torn')` holds
   every pit in one state for a look. A pit now wants ground flatter than about 1 in 2 (seated on its slope): the
   table's talus kept 2 of its 14 (one stood proud of the scree, its body showing below the lip).
+  The owner's review (2026-10-26, "make the lid litter flecked; can make the pool a little less red"): the peristome
+  carries a broken ring of litter flecks from the same cell (a second, turned look into the pile's dense middle), so the
+  red shows only in its gaps and most at the inner edge; the pool samples the throat map's pale band under a murky
+  amber-olive vertex colour (it sat on the map's red middle). Same draws and triangles.
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
   Stays (2026-10-25): needs the night uniform, i.e. a day cycle on the page (next item) and an emissive pass; a design task.

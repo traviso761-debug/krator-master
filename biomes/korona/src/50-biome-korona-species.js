@@ -251,7 +251,8 @@ function pitBodyGeo(){const P=[],N=[],U=[],Cc=[],I=[],PROF=[[1,.06],[.95,0],[.88
  const rows=PROF.map(([r,y],k)=>{const p0=PROF[Math.max(0,k-1)],p1=PROF[Math.min(PROF.length-1,k+1)],dr=p1[0]-p0[0],dy=p1[1]-p0[1],L=Math.hypot(dr,dy)||1,ir=dy/L,iy=-dr/L,d=dk(y),row=[];
   for(let s=0;s<=NS;s++){const a=s*TAU/NS,ca=Math.cos(a),sa=Math.sin(a);row.push(v(ca*r,y,sa*r,ca*ir,iy,sa*ir,s/NS*2,-y*.8,[d,d*.96,d*.86]));}return row;});
  for(let k=rows.length-2;k>=0;k--){const A=rows[k],B=rows[k+1];for(let s=0;s<NS;s++)I.push(A[s],B[s],B[s+1],A[s],B[s+1],A[s+1]);}
- const fc=[.11,.1,.035],c0=v(0,FL,0,0,1,0,.5,.5,fc),fr=[];for(let s=0;s<=NS;s++){const a=s*TAU/NS;fr.push(v(Math.cos(a)*1.36,FL,Math.sin(a)*1.36,0,1,0,.5,.5,fc));}
+ /* the pool: murky amber-olive with a reddish cast (the owner, 2026-10-26: less red), on the throat map's pale band (v .9) not its red middle */
+ const fc=[.1,.075,.14],c0=v(0,FL,0,0,1,0,.5,.9,fc),fr=[];for(let s=0;s<=NS;s++){const a=s*TAU/NS;fr.push(v(Math.cos(a)*1.36,FL,Math.sin(a)*1.36,0,1,0,.5,.9,fc));}
  for(let s=0;s<NS;s++)I.push(c0,fr[s],fr[s+1]);
  const spike=(b,t,w)=>{const ax=[t[0]-b[0],t[1]-b[1],t[2]-b[2]],L=Math.hypot(ax[0],ax[1],ax[2]);ax[0]/=L;ax[1]/=L;ax[2]/=L;
   const r0=Math.abs(ax[1])<.9?[0,1,0]:[1,0,0],e1=[ax[1]*r0[2]-ax[2]*r0[1],ax[2]*r0[0]-ax[0]*r0[2],ax[0]*r0[1]-ax[1]*r0[0]],l1=Math.hypot(e1[0],e1[1],e1[2]);e1[0]/=l1;e1[1]/=l1;e1[2]/=l1;
@@ -293,7 +294,11 @@ M.pitmem.userData.bio={kind:'leaf',key:BIO.kitKey('pitmem'),opts:{swayW:'0.0',sw
     'float _r=length(vXZ);vec3 _c;',
     'if(vPL.z<-0.5){float _a=atan(vXZ.y,vXZ.x);float _rib=0.74+0.26*cos(_a*44.0);',
     ' vec3 _pe=mix(uPeriB,uPeri,1.0-smoothstep(0.98,1.16,_r))*_rib;',
-    ' _c=mix(_pe,texelColor.rgb,smoothstep(0.3,0.6,texelColor.a)*smoothstep(1.1,1.27,_r)*0.9);}',
+    /* litter flecked over the lip (the owner, 2026-10-26): a second look into the same cell, the pile's dense middle scaled onto the ring and turned, in a broken ring; the red shows in its gaps, most at the inner edge */
+    ' vec2 _xr=mat2(-0.13,0.99,-0.99,-0.13)*vXZ;vec4 _t2=mapTexelToLinear(texture2D(map,(floor(vUv*3.0)+0.5+0.3*_xr/1.3)/3.0));',
+    ' float _br=smoothstep(0.3,0.62,kpitN(_a*5.0+vSeed*41.0)*0.7+kpitN(_a*17.0+_r*9.0+vSeed*13.0)*0.45);',
+    ' float _cv=max(smoothstep(0.3,0.6,texelColor.a)*smoothstep(1.1,1.27,_r)*0.9,smoothstep(0.35,0.6,_t2.a)*_br*mix(0.55,0.97,smoothstep(1.0,1.18,_r)));',
+    ' _c=mix(_pe,mix(texelColor.rgb,_t2.rgb,step(texelColor.a,_t2.a)),_cv);}',
     'else{float _e=min(vPL.y,1.0-vPL.y);float _sd=vPL.y<0.5?0.0:1.0;',
     ' float _gw=vPS.y*(0.05+0.2*clamp(1.0-_r/0.93,0.0,1.0))*(0.55+0.9*kpitN(_r*11.0+vSeed*57.0+vPL.z*5.3+_sd*2.7));',
     ' float _ho=vPS.y*(0.16+0.12*kpitN(atan(vXZ.y,vXZ.x)*2.5+vSeed*31.0));',
