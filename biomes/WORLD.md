@@ -44,7 +44,8 @@ scale Krator map for rough placement, not in this repo.
 | overlays, owning no ground (`biomes/nsemiarid/PLAN.md`, section 3): the dam basins' beds (`biomes/dambasins`, begun 2026-10-22: the old port station on the Ancient Port kit), the scablands and the flood lake (planned) | `dambasins`, `scablands` | lie over nsemiarid, nwlowlands and korona |
 | *dropped* tuff country (in "The Catch") | | the owner chose wind-carved lake beds for the Catch (2026-10-23, `catch/PLAN.md`) |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
-| the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *to be placed on the scale model* (a wet subtropical lowland on limestone: Cfa/Cwa, ~1 atm) |
+| the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *Earth reference, frozen 2026-10-26: not placed; Krator's version is `k-guilin`* |
+| the Hykkoussoi hinterlands (the inland tower karst behind the NW bay, forked from `guilin`) | `k-guilin` | the polygon `k-guilin` on the scale model (owner, 2026-10-26) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and

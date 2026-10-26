@@ -1,5 +1,10 @@
 # guilin — the South China karst
 
+> **Frozen (the owner, 2026-10-26).** This is Earth's South China karst as it stands, kept as a reference page. Do not update
+> it further as part of any Krator-related work. Krator's version is forked from it as **`biomes/k-guilin`, the Hykkoussoi
+> hinterlands** (labelled `k-guilin` on the scale model: the inland tower karst behind the NW bay, `biomes/nwbay`): new work,
+> texture wiring, core adoption and rebuild ride-alongs go there, not here.
+
 The owner's request (2026-10-20): "create the Guilin stone forest in China". Two famous places are in that sentence:
 **Guilin**'s tower karst on the Li River (Guangxi) and the **Stone Forest**, Shilin (Yunnan, 800 km west). Both are in
 UNESCO's *South China Karst* (2007), so the kit is one page with both. A different reading (only one of the two, or
