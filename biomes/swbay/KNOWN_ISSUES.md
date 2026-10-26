@@ -4,6 +4,12 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] **The far country hid the river** (closed 2026-10-25). Its 69 m cells, interpolated over the river's 14 m channel, stood up to
+      2.4 m above the water along the upper river (rays down on the river's line hit the far country first at about a third of
+      it). Inside the map each of its vertices now takes the lowest ground across its own cell (`45-host-stage.js`). The fine
+      ground still chords over the stepped bed at 27 of 106 sampled points (0.15-0.7 m, one 4.3 m at the top step): the
+      cataract-risers item below (a finer channel strip in the ground) is what closes that.
+
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/swbay.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
@@ -47,6 +53,8 @@ Read before changing anything here. `build.py` prints the open count.
       finds are `WATER.fall` curtains that leave the lip at the speed that lands them at the foot of the chute, with a plunge pool each.
       The foam cards are gone. A curtain and its plunge are two draw calls, so only the falls within 900 m of the camera are drawn
       (`89w-host-water.js`; 'The cataracts' view 271 -> 290 calls).
+      2026-10-25: the visibility tick is gone: `WATER.drawFalls(RIVER_FALLS)` (core/water/ext, listed in `build.py`) draws all 37 curtains as one mesh and all
+      the plunge pools as another, two calls in all, the curtains landing on the `fit: true` chute foot. The chute-not-a-drop limit stays (the ground is not reworked: a placement change).
 - [x] (2026-10-20: the Girder test tower now hands three shells, floor plates 1 / iron .6 / core walls and rubble .4, like the jetty; and the `shellsFor` edge case is not a loss: the core's `BIO.faceSamples` already drops a shell with no accepted face and gives its share to the others, so `shellsFor` is only a redundant local pre-filter.) Was: The Girder tower dressed as one list (`dress()` samples by area within a shell, so
       its big slabs take most of the moss); the jetty hands shells (Done). A shell with no face a
       pass grows on sits that pass out (65-dress `shellsFor`): the core's `BIO.faceSamples` gives
@@ -124,5 +132,5 @@ after, from the same named cameras (headless SwiftShader, `verify.py --views`): 
 7.50M; 'The cataracts' 271 / 7.51M -> 290 / 7.36M; 'From over the bay' 226 / 5.89M -> 225 / 5.75M. The scene-triangle ceilings do not move (10.14M held of 10.5M, 172 of 400 calls at
 the initial camera); the build takes about 3.5 s longer for the bed and shore bake (3.7 s -> 7.2 s in the same run). `BIO.waterH` and `terrainH` are unchanged and the random
 stream is too (the old foam texture's painter still runs its draws: `45-host-stage.js`). What changed in the look: the bay is lit and tone-mapped like any standard material, so its tints
-are written darker than the old unlit colours; the shoals are paler and have a surf line; the pale sand shoals and the fresh-water tint where the river meets the bay are not kept (an
+are written darker than the old unlit colours; the shoals are paler and have a surf line; the pale sand shoals and the fresh-water tint where the river meets the bay are not kept (2026-10-25: the fresh-water tint is back, a `tint` field on the bay over the delta in the river's colour, `89w-host-water.js`; the pale sand shoals stay lost) (an
 open surface takes one shallow and one deep colour: `core/water/README.md`, 'Open gaps (phase 3...)'); the water is not click-to-inspect any more (the labels are on the meshes; core/water's meshes have no raycast).

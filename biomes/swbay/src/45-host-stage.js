@@ -203,7 +203,8 @@ function farH(x,z){
  const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
  const NEAR=TERR.R*1.1,SAV=new THREE.Color(0x8e7a4c),ASH=new THREE.Color(0x5a5452),LAVA=new THREE.Color(0x36302e),CAP=new THREE.Color(0xc8c0b4),RIM=new THREE.Color(0x707a7a),BED=new THREE.Color(0x6a7a70);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
-  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz));y=terrainH(x,z)-2*e;}else y=farH(x,z);p.setY(i,y);
+  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz)),cs=S/N;let lo=terrainH(x,z);   /* the lowest ground across this vertex's cell (2026-10-25): a 69 m cell interpolated over the river's channel stood a metre or two above its water and hid it */
+   for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)lo=Math.min(lo,terrainH(x+a*cs*.5,z+b*cs*.5));y=lo-2*e;}else y=farH(x,z);p.setY(i,y);
   const d=Math.hypot(x-VOLC.c[0],z-VOLC.c[1]),up=clamp(y/VOLC.H,0,1),n=fbm(x*.0012,z*.0012,305,2)-.5;
   const ang=Math.atan2(z-VOLC.c[1],x-VOLC.c[0]),flow=smooth(.56,.7,fbm(ang*5+2,d*.0016,306,2))*smooth(.1,.3,up)*smooth(.9,.6,up);   // lava flows: dark tongues down from the notch
   c.copy(SAV).lerp(ASH,smooth(.03,.25,up)+smooth(2400,1400,d)*.5).lerp(LAVA,clamp(.35+n*1.4,0,1)*smooth(.2,.6,up)).lerp(CAP,smooth(.72,.9,up)*.85).lerp(new THREE.Color(0x241c1a),flow*.9);

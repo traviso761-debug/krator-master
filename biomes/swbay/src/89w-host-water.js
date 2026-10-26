@@ -12,7 +12,10 @@
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // the old ribbon's foam cards began at a 6% grade and were full at 14%: that is the river's rapids band (the flow's own option, 2026-10-21; it was a page-wide preset)
 const BAY_WATER=WATER.open({name:'The bay',level:0,swell:[[.06,45,225,0,.04],[.035,18,200,1.3,.03]],field:.12,bounds:BAY_BOX,
- bed:terrainH,bedBox:BAY_BOX,bedCell:8,shore:{seeds:[[BAY.c[0],BAY.c[1]]]}});
+ bed:terrainH,bedBox:BAY_BOX,bedCell:8,shore:{seeds:[[BAY.c[0],BAY.c[1]]]},
+ /* the fresh river water where it meets the bay (the old foam cards' delta tint, lost in phase 3; 2026-10-25): the river's colour over the delta, softest at its edge */
+ /* the water takes the bytes as linear colour, RIVER_COL is in the working (linear) space */
+ tint:{box:[MOUTH_XZ[0]-560,MOUTH_XZ[1]-560,MOUTH_XZ[0]+560,MOUTH_XZ[1]+560],cell:16,at:(x,z)=>{const k=deltaK(x,z);return k>.01?{c:(Math.round(RIVER_COL.r*255)<<16)|(Math.round(RIVER_COL.g*255)<<8)|Math.round(RIVER_COL.b*255),a:.4*k}:null;}}});
 const BAY_DRAW=WATER.draw(BAY_WATER,{renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.3)),deep:lin(WATER_DEEP.clone().multiplyScalar(.75))});
 BAY_DRAW.mesh.userData.inspectLabel='The bay';
@@ -27,7 +30,7 @@ const OUTER_DRAW=WATER.draw(OUTER_WATER,{renderOrder:0,roughness:.2,metalness:.0
 OUTER_DRAW.mesh.userData.inspectLabel='The outer water';
 const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.06,.14],shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.5,step:10,across:6,margin:1.2,renderOrder:2});
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
-const FALL_DRAWS=RIVER_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xdce8e6),opacity:.9,rows:24,cols:6,spray:false,envMapIntensity:.25,renderOrder:3});
- D.mesh.userData.inspectLabel='The cataracts';D.plunge.userData.inspectLabel='The cataracts';D.mid=[(F.lip[0][0]+F.lip[1][0])/2,F.lip[0][2],(F.lip[0][1]+F.lip[1][1])/2];return D;});
-// the river steps down in 58 terraces: a curtain and its plunge pool are two draw calls each, so only the ones within 900 m of the camera are drawn (the ribbon's white water carries the rest)
-TICKS.push(()=>{const c=camera.position;for(const D of FALL_DRAWS){const v=Math.hypot(D.mid[0]-c.x,D.mid[1]-c.y,D.mid[2]-c.z)<900;D.mesh.visible=v;D.plunge.visible=v;}});
+// the river steps down in 37 terraces: ALL their curtains are one mesh and all their plunge pools another (WATER.drawFalls, core/water/ext: two draw calls in all; it was two per fall with a per-frame
+// tick that showed only those within 900 m). The curtains land on the chute foot fallsOf found (fit: true in 45-host-stage).
+const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,spray:false,envMapIntensity:.25,renderOrder:3});
+FALL_DRAW.mesh.userData.inspectLabel='The cataracts';if(FALL_DRAW.plunge)FALL_DRAW.plunge.userData.inspectLabel='The cataracts';
