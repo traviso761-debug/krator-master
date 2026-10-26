@@ -1,345 +1,335 @@
-# outlands: the plan (draft, 2026-10-26)
+# outlands: the plan (2026-10-26)
 
-The **Outlands**: the enclosed, dry basin east of the main crater, reached only through the corner of Korona. The most
-isolated ground on Krator, and its **Socotra**: a flora cut off for millions of years, so most of what stands there
-grows nowhere else. Home of the **Coyote Men**: stone- and bronze-age tribes in the basin, and the Kingdom of the Tiers
-(the Coyote Kingdom) on its threshold. Its exports are **emeralds, turquoise and ostrich feathers**.
+The **Outlands**: the walled basin east of the main crater, outside the Outer Wall, reached only over **the Gate**, a
+7.7 km pass in Korona's corner. The most isolated ground on Krator and its **Socotra**: a native flora cut off for millions
+of years. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
+**Tierhounds** keeps the threshold. Exports: **emeralds, turquoise, ostrich feathers**.
 
-Owner's brief (2026-10-26): N and S Outlands, "maybe a few substations"; a **Tiers** biome (first a new Korona substation; **its own biome `tiers`**, 2026-10-26: see section 7)
-that takes in the new Outlands species and the diffusion of `sedesert` and `ebadlands` species.
-
-**Status: plan, awaiting the owner.** Nothing built, no polygon drawn, nothing surveyed (section 1). Everything marked
-*proposed* is this draft's and waits on the owner.
+**Status: plan, awaiting the owner's yes.** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. Nothing
+is built. Settled points carry the owner's date; *proposed* marks this plan's own suggestions.
 
 ## 0. What the kit is
 
 | | |
 |---|---|
-| Folder | `biomes/outlands/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`) |
-| Pages | stations, as Korona's and the Throne's: `dist/outlands.html` (station 1) and `-<name>` per section 6 |
-| The Tiers | **its own biome, `biomes/tiers/`** (the owner, 2026-10-26: "a biome that's just 'tiers'"; section 7), reading this kit's species and `sedesert`'s and `ebadlands`' in place; Korona keeps its six stations |
-| Core | the biome core (`CORE_BIOME`), `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain`, `core/water`, `core/atmos`, the shared sky |
-| Read in place | `sedesert` (scrub, thorn, dune and wadi species, the coyote walkers) and `ebadlands` (banded mounds, pinyon and chaparral edge, alien-flora sheet) at the margins; nothing copied |
-| Its own flora | section 3: the endemic flora, the large part of the kit |
-| Object | `OUTL` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`), on the `BIOME-API.md` contract |
-| Crops | an `outlands` biome entry in `kits/crops` and a few endemic crops (section 4) |
-| Out of scope | the Coyote Men's buildings, dress and the Kingdom's towns (a **Coyote culture kit**, section 8); the animals' models (`kits/fauna`, section 5); the gem mines (`kits/resources`, section 5) |
+| Folder | `biomes/outlands/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `refs/`) |
+| Pages | stations, as Korona's and the Throne's (`build.py --station <name>`): `dist/outlands.html` (station 1, the Fog Rim) and `dist/outlands-<name>.html` (section 9) |
+| Regions on the model | `N Outlands` and `S Outlands` (biome), `Tiers` (biome, its own kit), `Coyote Kingdom` (political); markers **Trickster's House** (ruined arcology, px 1240,330) and **The Gate** (outpost, px 1136,84) |
+| Object | `OUTL` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `plantOfItem`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape) |
+| Core | `biome`, `rand`, `tags`, `space`, `host`, `atmos`, `water`, `mask`, `terrain` (`KFIELD`, `KCARVE`, `KSTACKS`, `KRELIEF`, `KBASIN`), the shared sky; section 13 |
+| Read in place | `ebadlands` (banded walls at the margins), `sedesert` (the coyote walker; nothing of its flora in the basin), `kits/fauna`, `kits/ancients` (Arcoindian II) |
+| Sibling kits | `biomes/tiers` (its own plan, section 10), `kits/coyote` (the culture kit, later, section 6) |
+| Out of scope | the Coyote and Tierhound buildings and dress (the culture kit); the animals' models (`kits/fauna`); the gem nodes' data (`kits/resources`) |
 
-It is a new biome, so it goes in the gallery when it first reaches `main` (`CLAUDE.md`, "Publishing").
+A new biome: it goes in the gallery when it first reaches `main`.
 
-## 1. The ground (to survey)
+## 1. The ground (scale model 4.22-4.23, `SURVEY.md`)
 
-**Not yet surveyed.** The scale model's rasters live inside the artifact page, not in the repo, so this draft has
-**no polygon and no numbers**. The existing polygons that bear on it (`openworld/*/source/regions.json`, px): Korona / NE
-biome (595-1071 by 9-352), The Tiers (875-1009 by 118-287, wholly inside Korona), e badlands (874-1129 by 180-863),
-east rim (985-1085 by 290-583). The map reaches at least px 1164. The Outlands must lie beyond those, east of the crater.
-
-**On the scale model (the owner, 2026-10-26): `Outlands N` and `Outlands S` are two `biome` regions, and so is `The Tiers`.**
-The Tiers exists only as a *geographic* polygon today (px 875-1009 by 118-287, inside Korona's); it gets a **biome**
-region of its own, named `tiers` (section 7), overlapping Korona's polygon on the same ground (the way `necanyons` overlies the hyperjungle's). Step P0 (section 9) is a survey with
-`tools/scale-model` once the owner has drawn `Outlands N` and `Outlands S` and the Tiers' biome region. The three must
-not leave a gap or overlap Korona's, `e badlands`' or each other's beyond the deliberate ecotone strip; the survey reports
-each overlap, as `korona/NOTES.md` does. It should settle:
-
-- **Air (settled by the owner 2026-10-26; surveyed 2026-10-26, `SURVEY.md`): dense-air valleys in a high basin, behind a
-  thin-air pass.** The owner's intent: a basin walled in by the Outer Wall and reached only over a pass in Korona's corner,
-  the thin air above it the **barrier** that kept a pressure-adapted lowland life out. The survey **confirms the barrier and
-  corrects the floor**: the one crossing is **7,724 m, 0.60 atm** (px 1136,84); the basins behind it are mostly **3.2-3.9 km
-  (1.0-1.07 atm)**, with dense-air valleys down to **289 m (1.54 atm)**. So the test ("the floor below about 2.5 km") fails for
-  the basin as a whole and passes for the valleys. Working rule: **the Outlands flora zones by height**: the valley floors
-  (0.3-2.5 km, 1.2-1.5 atm, warm, the lush end), the basin floor (3-4 km, 1.0 atm), the plateau and rim (over 4.5 km, ET) and
-  the airless crest. `CROPS.ATM` and the fauna sizes follow the zone. The owner is to say if the high floor changes the idea.
-- **The pass (surveyed).** One crossing: the lowest crest is **7,724 m (0.60 atm) at px (1136, 84)**, in the narrow
-  corridor the N Outlands polygon draws along the north (y 36-96). Every route to the S basin crosses it too. It is a high
-  pass in thin air, not a low gap; its width, whether it carries a river (no perennial stream rises near it) and whether it
-  is a defile are for the Gate station to settle on the 2 km height grid. It is the Coyote Kingdom's reason to exist.
-- **The basin's rain (surveyed).** The N main basin is dry (median 235 mm; its p10 is 31 mm), the S main basin is not
-  (median 894 mm); the dry wadis are the drainage, with one perennial river (47 m³/s into a 705 m lake). See `SURVEY.md` 2.
-- **The N/S split**: where the owner draws it, and whether it is a ridge, a river or the two climates (the survey should
-  propose the line from the relief and rain, as `korona/NOTES.md` did for its bands).
-
-- **The arcology (the owner, 2026-10-26): one, Arcoindian II, ruined, built into a cliffside.** `kits/ancients/targets/arcoindian2`
-  (`89c-arcoindian2.js` and its lens and stalk fragments; gallery "Arcoindian II": "the half-cave: a city in a deep shelf on a
-  canyon wall"; `LORE.md` §3 lists "the cliff Arcoindians"). Its **position (chosen 2026-10-26, `SURVEY.md` 5): the west wall of the N main basin, px about (1240, 330)**, over the 2,132 m lake
-  at its foot (the type wants water under its sill), on the basin's western edge, 1.2 atm at the quay. It still goes in
-  `settlements.json` like every other arcology, once the closer look at the wall confirms it (fallback: the wall over the
-  2,496 m lake at (1220, 423)). It is a node in the Ancient road draft
-  (`tools/scale-model/ancient_roads.py`), so it may be what puts the god's road in the basin. The building is the Ancients'
-  kit's; this kit gives it a site, a cliff-and-ground mask (`core/terrain` carve for the shelf) and its surroundings.
-  - **Ruined.** The ruin is not the kit's clean ruin by default: the Outlands' native flora grows over it (rock-eater
-    lace and green fans on the stone, pleat columns and fog-combers on the terraces, glow bells in the dark of the
-    shelf, brood pads where the hexapods nest in the rooms).
-  - **Shunned (the owner).** The Coyote Men **avoid it completely and consider it cursed**: no road, camp, herd, hunting
-    or tapping within sight of it; nothing of theirs on it (no cairns, no offerings: *proposed*: they *do* leave a
-    ring of turned-away stones at the edge of its range, a boundary and not a shrine). The ostriches are not driven there.
-    So it is the one place in the basin **without a human trace**, which the survey and the placement honour as a
-    **keep-out zone** registered in `core/tags` (a `taboo` area; no tribe's records draw inside it). The native
-    hexapods and the flora have it to themselves; it is where the biome's most untouched wildlife is (*proposed*).
-    **Why cursed (the owner, 2026-10-26): the Coyote Men believe the trickster lives there**, and that "very unfortunate
-    things" befall anyone who wanders there too long. It is **fear of a prankster's house, not worship**: the god's
-    road **ends at the cliff** (settled, 2026-10-26), so the Gate's shrine road and the
-    cursed city are the two ends of one line, and a god of cunning and bargains does not lose its tricks when it is home.
-    The misfortunes are told as **pranks gone wrong**: lost paths, doubled tracks, stones that move, herds that scatter,
-    voices from the shelf, a stolen boot, a fever. (*Proposed*: the real causes may be as the owner likes: the ruin's
-    own dangers, the native hexapods, the fog; the Coyote Men simply credit the god.)
-  - **The manhood rite touches it** (settled, 2026-10-26): runner birds are drawn to the road's end, so the surest place to find
-    one is the one place no sane Coyote goes. A boy who catches one there is the stuff of legend (or a cautionary tale).
-  - **Gameplay and tooling hook (settled, 2026-10-26: a real hazard).** The one place a stranger can walk into without a Coyote's leave. The
-    trickster's "misfortune" can be a real system (a luck or prank hazard that grows with time spent within the keep-out
-    ring: wrong turns, scattered gear, a lost item), which suits the god; `core/tags`' hazard key (proposed in
-    `core/tags/PROPOSAL.md`) is where it would live. Whatever is inside is the owner's.
-
-Expected bands, to be replaced by the survey (*proposed*): a **fog/montane rim** on the windward wall (the Socotra
-plateau: mist-fed endemic woodland), **dry plains** (ostrich country), **foothill gem ranges** (emerald, turquoise), a
-**wadi-and-spring farmland** (the sedentary tribe) and a **salt/gravel floor**.
+- **Outside the Outer Wall** (the owner, 2026-10-26). The basin floors stand mostly at **3.2-3.9 km (1.0-1.07 atm)**; valleys
+  run down to **289 m (1.54 atm)**. The rim and plateau round them are ET tundra, ice and the airless crest: 82% of the
+  N polygon and 75% of the S polygon stand over 4.5 km. **The barrier is the Gate: 7,724 m, 0.60 atm**, the one crossing;
+  a pressure-adapted lowland lineage cannot cross it, which is why the flora is alone.
+- **Two basins, two climates** (the climate histogram, `SURVEY.md` section 6): **N Outlands is dry and open** (cold steppe
+  BSk 34% and cold desert BWk 31% of its basin ground, median 235 mm, the driest cells 31 mm); **S Outlands is wet and
+  wooded** (Dfb 43%, Cfa 13%, ~1,000-1,300 mm) with a hot valley floor (BSh, 21 °C mean) and a cold-desert shoulder.
+- **Water**: one perennial river (47 m³/s, from 3,887 m to a **lake at 705 m**, px ~1382,371); a **salt lake at 2,241 m**
+  (1,348 km², px 1314,320); a Cfa lake at 2,345 m (px 1316,186); frozen lakes at 6.1-7.1 km on the plateau; ~60 dry wadis.
+- **Trickster's House** (the owner, 2026-10-26): **Arcoindian II, ruined**, built into the **west wall of the N main basin**
+  (px ~1240,330), over a lake at 2,132 m at the wall's foot; the wall rises ~1,650 m. 1.2 atm at the quay.
+- **The Gate** (an outpost on the map, the owner, 2026-10-26): px 1136,84, 7.7 km. The Tierhounds' toll fort and the
+  trickster's shrine.
+- **The god's road** (the owner, 2026-10-26): from **the Sleeping City** (px 772,446) **through the Gate to Trickster's
+  House**: 1,938 km on the surface, highest 7,728 m beside the Gate (`openworld/gods-road.json`). The Ancients' own way in is
+  a separate rim tunnel from the south-west (`SURVEY.md` section 7).
 
 ## 2. Air, scale and the island rule
 
-- **The mix (the owner, 2026-10-26).** Flora **90% native**, and not closely resembling any Earth plant. Fauna **about 66%
-  native, 33% Earth-like**; the native animals are mostly **hexapods**, and **ostriches roam the region**. Isolation is
-  the premise: the pressure barrier kept Earth's lineages out, so the 10% of the flora and the third of the fauna that
-  look like Earth's are the exceptions section 3 and 5 name, and nothing else is.
-- **Socotra is the model for the biogeography, not for the look.** The island rule holds (endemism, odd body plans,
-  water stored in the plant, forms that comb fog, few big grazers so little armour), but no plant copies Socotra's
-  (no umbrella crowns on a dragon's-blood model, no bottle-and-cucumber trunks, no Welwitschia). The look is the
-  **native fungoid lineage** of `biomes/swhighlands/PLAN.md` section 3 and `biomes/swbay` (cap-trees, bracket trees,
-  coral and tube forms): the big forms carry a **photosynthetic partner** in caps, pads and fringes, as a lichen does, so
-  they are green, teal, violet and rust on top and fleshy underneath; true decomposers keep to dead wood, scars and
-  carrion. Native life here owes nothing to Earth's plants.
-- **Colour carries it**, and the hills supply some: copper in the gem ranges stains the rock-eating forms blue-green and
-  turquoise; the fog rim runs violet and teal; the floor is rust, pale and salt-white. Brighter than `sedesert`'s red-and-tan.
-- **Hexapods and plants evolved together.** The dominant hexapods graze, tend, nest in and pollinate the native flora
-  (section 3's nursery plants); the Earth-like animals (ostriches, a few others) are late and eat what the hexapods leave.
-- Scale rule: dense air allows size, but **no giants**: the tall fog-combers reach 10-16 m, the tribal farms and the
-  Kingdom's terraces set the human scale.
+- **The mix** (the owner, 2026-10-26): flora **90% native**, nothing closely like an Earth plant; fauna **~66% native,
+  ~33% Earth-like**, native **hexapods** dominant, **ostriches** roam.
+- **Socotra for the biogeography, not the look**: endemism, water stored in the body, forms that comb fog. No plant copies
+  Socotra's (no dragon's-blood umbrellas, no bottle trunks, no Welwitschia).
+- **The native lineage is fungoid** (`biomes/swhighlands/PLAN.md` section 3, `biomes/swbay`): fleshy bodies carrying a
+  **photosynthetic partner** in caps, fringes and pads, as a lichen does: green, teal, violet and rust on top, pale and fleshy
+  beneath; true decomposers keep to dead wood, carrion and nests. **No leaves, no flowers, no wood grain**: spores, pods,
+  sealed skins.
+- **Colour carries it**: violet and teal in the fog woods, copper blue-green on the gem hills, rust and bone on the steppe,
+  white salt, the red of the basalt rim.
+- **Hexapods and plants evolved together**: they graze, tend, nest in and carry the spores of the native flora (the nursery
+  plants). The Earth-like animals came late, with people.
+- **Scale**: dense valley air allows size, but **no giants**: the tallest fog-combers reach 16 m.
 
-## 3. The flora: 90% native, fungoid, not Earth's (names are placeholders)
+## 3. Zones by height and water
 
-About **30 species: 27 native and 3 Earth-like**. Every native form is a **fungoid holobiont** in the manner of
-`biomes/swhighlands` (a fleshy body with a photosynthetic partner in its caps, fringes and pads), shaped by two
-pressures: **fog and dryness** (combs, bladders, sealed pleats, drip channels into root basins) and **hexapods** (nursery
-pods, galls, bait). None copies a plant of Earth; where a silhouette comes near one (a column, a rosette), the
-construction is different (no leaves, no flowers, spores and pods). Each is a record in the `SPECIES` shape of
-`sedesert`/`ebadlands` (`BIOME-API.md`) with `harvest`, `gather` and `tags`. Reference plates: the owner's, to be added
-as `refs/NN`, the swhighlands fungoid sheet being the first (`biomes/swhighlands/refs`).
+The survey's working rule: **the flora zones by height first, then by water**. Each zone is a `BIO.field` mix the kit
+derives from height, rain and the fog belt; every zone is a `core/tags` area.
 
-| Form | Native species (placeholder) | What it is | Zone |
+| Zone | Height | Climate | Air | Rain, temp | Where | Stations |
+|---|---|---|---|---|---|---|
+| **Z1 Valley floor** | 0.3-1.4 km | BSh, WH (lake) | 1.4-1.5 | 500-600 mm, 21-22 °C | the river and the 705 m lake | S3, N3 |
+| **Z2 Wet valley** | 2.0-3.0 km | Cfa | 1.1-1.2 | 800-1,300 mm, 11-14 °C | the valleys' sides, Trickster's House | S2 |
+| **Z3 Fog woods** | 3.5-4.4 km | Dfb, the fog belt | 0.95-1.0 | 900-1,200 mm, 5 °C | the S basin's windward wall | S1 |
+| **Z4 Cold steppe** | 3.5-4.0 km | BSk | 1.0 | ~235 mm, 8 °C | the N basin's plains | N1 |
+| **Z5 Cold desert** | 2.3-3.9 km | BWk | 1.0-1.2 | 30-150 mm, 8-14 °C | N2's plateau, S4's gem shoulder | N2, S4 |
+| **Z6 Salt** | ~2.2 km | BSk | 1.2 | dry | the salt lake and the pans | N1 (edge) |
+| **Z7 Wadis** | all | (follows) | | episodic | ~60 dry channels, fans at every wall's foot | all |
+| **Z8 Plateau and rim** | 4.5-7.5 km; crest over 9 km | Dfc, ET, EF; O | 0.9-0.6; none | 0-450 mm, 2 to -15 °C | the frozen lakes, patterned ground, the Gate | the Gate |
+
+## 4. The plant list (34 native, 3 Earth-like: 92% native)
+
+Working names; keys in brackets. **Build** names the parts the builder draws (section 12's fungoid helpers); **Tex** names
+the library set or the new set (section 11). Every plant is a record registered in `core/tags` before it is drawn,
+placed by `KRAND` from a cell hash and `core/mask` rasters, cleared by `BIO.clearOf`.
+
+### Trees and tall forms
+
+| Key | Name | Zone | Form, size | Build | Colour | Harvest | Tex |
+|---|---|---|---|---|---|---|---|
+| `veilcap` | **Veil cap** | Z3 (Z2 high) | a smooth pale pillar under a flat disc cap 4-7 m across, hung with a fringe of fine threads that comb the fog and drip into a ring basin at the foot; 10-16 m | stalk, disc cap, thread fringe (cards), root ring | cap violet-teal on top, flesh-white under; threads silver | fibre (threads), drip water | `organic.cap.violet`, `card.fogcomber` |
+| `combmast` | **Comb mast** | Z3 | an unbranched tapering mast with paired thin comb-plates up its windward side like a ladder; 8-14 m | stalk, comb plates (instanced) | mast rust-brown, combs teal | gum (drip gum: incense for the caravans) | `bark.whorled` (tinted), `organic.cap.glossy` |
+| `deckcap` | **Deck cap** | Z2 | three or four decks of small caps up one stalk, the woodland canopy of the wet valleys; 6-10 m | stalk, stacked caps | green-teal decks, grey stalk | fibre, fodder | `organic.cap.porous` (tinted) |
+| `pleatcol` | **Pleat column** | Z2, Z5 | a ribbed sealed column that swells after fog and shrinks in drought, in groves on ledges; 3-8 m | ribbed bladder (lathe with pleats) | blue-grey to teal skin, rust pleat edges | **water** (tapped: the tribes' wells) | `organic.pleat.skin` |
+| `lantern` | **Lantern stalk** | Z3 understorey | a pale stalk topped by a cluster of pods that glow gold at night; 4-7 m | stalk, pod cluster (emissive) | bone stalk, gold pods | none (sacred to no one; the hexapods eat the pods) | `organic.pod.honeycomb` (owed, §17) |
+| `podtower` | **Pod tower** | Z5 (N2), Z4 | a spongy tapering tower riddled with egg chambers the hexapods tend; 3-6 m | bladder stack, holes (decals) | ochre-orange, dark chambers | food (grub-bread, *proposed*), wax | `organic.pod.honeycomb` |
+| `pipereed` | **Pipe reed** | Z1 | stands of hollow orange tubes in the river shallows and the lake's edge; 2-4 m | tube clusters | orange, black rims | fibre, roofing | `card.fungus.drip` (tinted) |
+
+### Shrubs and cushions
+
+| Key | Name | Zone | Form, size | Build | Colour | Harvest | Tex |
+|---|---|---|---|---|---|---|---|
+| `drums` | **Drum cluster** | Z5, Z2 | fat sealed drums budding off a root mat; 0.5-1.5 m | bladders on a mat | grey-green, rust bands | food (roasted, *proposed*), water | `organic.pleat.skin` |
+| `sacbrush` | **Sac brush** | Z4, Z5 | a low bristle of sealed sacs on wiry stems; 0.6-1.2 m | stems, small bladders | dusty teal | fodder | `card.outlands.scrub` |
+| `greycush` | **Grey cushion** | Z4, Z8 | a dense grey dome of fused stems, the steppe's commonest form; 0.3-1 m | dome (displaced) | grey, rust heart | fodder (goats, ostriches) | `card.outlands.scrub`, `ground.lichen.crust` |
+| `ember` | **Ember scrub** | Z4, Z5 | a red-brown shrub of hard tubes that flushes bright in the heat; 0.8-1.5 m | tube shrub | rust to scarlet | dye (red) | `card.outlands.scrub` |
+| `capshrub` | **Cap-shrub** | Z2, Z4 | small caps on short stalks in clumps; 0.5-1.2 m | small caps | ochre, gold | fodder | `organic.cap.orange` |
+| `stilt` | **Stilt mound** | Z5, Z7 | a mound on rock-gripping stilts that straddles moving gravel; 1-2 m | dome on stilt roots | brown, white stilts | none | `bark.cratered` (tinted) |
+| `broodpad` | **Brood pad** | Z5 (N2) | a flat orange pad where a hexapod lays and its young feed; 1-3 m across | flat pad, egg decals | orange, white eggs | none (taboo to strip: it feeds the herds' grazers) | `organic.cap.orange` |
+| `gallstack` | **Gall stack** | Z5 (N2) | stacked galls grown over a buried nest; 1-2.5 m | bladder stack | bone and violet | none | `organic.flesh.cells` (tinted) |
+
+### Ground, rock and water
+
+| Key | Name | Zone | Form | Build | Colour | Harvest | Tex |
+|---|---|---|---|---|---|---|---|
+| `fogpelt` | **Fog pelt** | Z3 | the damp crust carpet of the fog woods: the ground cover | ground cover class | violet-teal, damp | none | `ground.biocrust.fog` |
+| `needlefur` | **Needle fur** | Z4 | a fine fur of rusty tubes: the steppe's "grass" | grass cards | rust, straw | fodder, thatch | `card.outlands.crust` |
+| `pebblemat` | **Pebble mat** | Z5, Z8 | living-pebble plates among real stones | decals, cover | grey-violet | none | `card.outlands.crust`, `organic.lichen.plates` (owed, §17) |
+| `rosette` | **Crust rosette** | Z5, Z4 | a flat spiral crust that opens in fog; 0.2-0.6 m | flat decal | teal-grey | none | `card.outlands.crust` |
+| `lacecrust` | **Lace crust** | gem hills (Z5) | root-lace sheets on weathered copper rock, blue-green | rock decal, cover | turquoise, green | dye (blue-green) | `organic.lace.copper` |
+| `tqshelf` | **Turquoise shelf** | gem hills, walls | bracket shelves on rock, first onto new rock and spoil | brackets | turquoise, rust undersides | ore sign (miners follow it, *proposed*) | `organic.fungus.bracket` (tinted) |
+| `greenfan` | **Green fan** | gem hills, mine tailings | upright fans on spoil heaps | fans (cards) | copper green | none | `organic.lace.copper` |
+| `saltfan` | **Salt fan** | Z6 | a pale fan standing in the brine's edge, crusted white | fans | white, pink | salt (scraped) | `card.outlands.crust` |
+| `glasstube` | **Glass tube** | Z6 | crystal-crusted tubes standing on the pan | tube clusters | glassy white | none | `ground.efflorescence` (tinted) |
+| `ribbon` | **Ribbon mat** | Z7, Z1-Z2 | green ribbons streaming in spring runoff | water cards | green | fodder | `card.outlands.wadi` |
+| `bellpool` | **Bell pool** | Z1-Z2 springs | hanging bell bladders on a pool's lip | bladders | teal, pale | water | `card.outlands.wadi` |
+| `curtain` | **Curtain weed** | Z1-Z3 seeps | a trailing veil over wet rock | hanging cards | dark green, violet | fibre | `card.outlands.wadi` |
+| `glowbell` | **Glow bell** | Z2-Z3, the cursed shelf | a bell of tubes lit at night | tube cluster, emissive | blue-green glow | none | `card.outlands.wadi` |
+| `mirepad` | **Mire pad** | Z1 (the 705 m lake) | big floating pads round the lake's shallows | floating discs | olive, rust rims | food (*proposed*) | `organic.cap.glossy` (tinted) |
+| `frostpuff` | **Frost puff** | Z8 | white woolly spheres in fellfield; 0.1-0.4 m | spheres | white | none | `organic.mossball` (tinted white) |
+| `icecrust` | **Ice crust** | Z8 | black crust on stones by the frozen lakes | rock cover | black, green | none | `ground.lichen.crust` (tinted) |
+
+### The decay layer (shared with the SW highlands and swbay, defined here first)
+
+| Key | Name | Where | Tex |
 |---|---|---|---|
-| **Fog-combers** (tall, 10-16 m) | **veil cap**; **comb mast**; **lantern stalk** | a pillar under a flat green disc hung with a fringe of threads that catches fog and drips to a root basin; an unbranched mast with paired ladder combs; a pale stalk topped by a glowing pod cluster at night | fog rim, upper wadis |
-| **Bladder forms** (water stores) | **pleat column**; **drum cluster**; **sac brush** | a ribbed sealed column that swells after fog and shrinks in drought; fat drums budding off a root mat; a low bristle of sealed sacs | cliffs, gem ranges, plains edge |
-| **Nursery plants** (the hexapods' crops) | **pod tower**; **brood pad**; **gall stack** | a spongy tower with egg-chambers the hexapods tend; a flat orange pad where a hexapod lays and the young feed; stacked galls grown over a buried nest | S Outlands' dry plateau, plains |
-| **Rock-eaters** (copper-stained) | **lace crust**; **turquoise shelf**; **green fan** | sheets of root-lace that feed on weathered copper rock and come out blue-green, bracket-like shelves and fans, first onto new rock; the gem ranges' signature | gem hills, mine tailings |
-| **Gravel and salt** | **pebble mat**; **crust rosette**; **salt fan**; **needle fur** | living-pebble lichen plates; a flat spiral crust that opens in fog; a pale fan standing in the brine's edge; a fine grey fur of tubes on the pan | plains, pan, S plateau |
-| **Spring and wadi** | **ribbon mat**; **bell pool**; **curtain weed**; **glow bell** | green ribbons in the spring runoff; a hanging bell-shaped bladder on the pool's edge; a trailing veil over wet rock; a night-lit bell of tubes | springs, farmland, wadis |
-| **Cushion and scrub** | **grey cushion**; **ember scrub**; **cap-shrub**; **stilt mound** | a dense grey dome of fused stems; a red-brown shrub that lights in the heat; a small cap on a stalk; a mound on rock-grip stilts | everywhere dry |
-| **The decay layer** | **log crust**; **bone bloom**; **glow tubes** | the swhighlands pattern again for dead wood, carrion and nests | scars, kills, nests |
-| *Earth-like (3)* | **the sedentary tribe's field weeds**, **a spring palm**, **a withy willow** | what came with the Coyote Men and their crops, and is now in the farmland and the Kingdom's gardens only | the farmland, the Gate |
+| `logcrust` | **Log crust**: plates and fans smothering fallen fog-combers | Z2-Z3 | `ground.mycelium.gold`, `organic.lichen.plates` |
+| `bonebloom` | **Bone bloom**: pale caps on carrion and old kills | Z4-Z5 | `card.mushroom.pale` |
+| `glowtubes` | **Glow tubes**: grey tubes lit orange at the tips, in nests and dark rooms | Z3, the cursed city | `card.shelf.glow` |
 
-- **Where they stand** follows fog, not rain: the **windward wall catches the fog**, so the fog rim holds the tall
-  fog-combers; the floor is gravel and salt with the crusts and mats; the farmland is wadi green with the Earth-like three.
-- The **Tiers strip** (section 7) is where the Outlands flora meets Earth-like `sedesert` and `ebadlands` scrub; the
-  basin proper keeps the 90/10 split. Any Earth-like plant added in the basin is an exception the owner approves.
-- Every plant is registered in `core/tags` before it is drawn; placement draws from `core/rand` (cell-hash seeded) and
-  reads `core/mask`, never canvas pixels (`CLAUDE.md`, "Write code that is the same on every machine").
-- **Harvests** (for `core/hamlet` and the Coyote kit): **fibre** (fog-comber threads, rope-like), **resin and gum** (the
-  Izani traders' want: a fog-comber's drip gum, pod-tower wax), **dyes** (the rock-eaters' blue-greens and the ember scrub's
-  red: *proposed*), **water** (a pleat column tapped; the tribes' wells), **fodder** (cushions, pads), **food** (a tapped
-  nursery pod's grub-bread, a roasted drum: *proposed*). Tapping a plant is how the tribes live where no spring runs.
-- The soft, unarmoured look is gone with the Earth thorn: the signature is **colour and construction**, not a lack of
-  thorns.
+### Earth-like (3; the farmland and the Gate only)
 
-## 4. Crops
+`palm` **Spring palm** (date-like, at the springs), `willow` **Withy willow** (the irrigation channels), `fieldweed`
+**Field weeds** (round the bronze-age package). Brought by the Coyote Men's ancestors; never in the wild basin. Taken from
+the library (`card.palm`, `bark.palm`, `bark.bark_willow_02`) and the nearest kit's palm and willow builders, read in place: no new
+species code.
 
-An `outlands` entry in `kits/crops` (`CROPS.forBiome('outlands')`): the sedentary tribe's **bronze-age package** and the
-Kingdom's. Stay with the existing 118 crops where they fit (the Kingdom: **millet, sorghum, barley, chickpea, lentil,
-date, fig, pomegranate, olive, cotton, flax** on terraces), and add a few **native** ones as new records, for the tribes
-that tap and gather rather than sow: a **drum cluster** (a roasted water-store), a **pod tower** grub-bread, a
-**fog-comber gum** (incense, valued by caravans) and a **grey cushion** fodder. Irrigation rule: a field takes water from a wadi, a
-spring or a fog harvest; the Tiers' fields are channel-fed terraces, a Qanat-and-terrace system (Yemen, Ifugao).
+### Where they stand, and the rule
 
-## 5. Fauna, peoples and resources
+- **Fog, not rain, places the tall forms**: the fog belt (section 12) on the S basin's windward wall at ~3.5-4.4 km holds the
+  veil caps and comb masts; outside it they thin to deck caps and pleat columns.
+- **The cursed city** (Trickster's House) carries the most untouched stand: glow bells and glow tubes in the dark shelf,
+  pleat columns on the terraces, lace crust on the panels, brood pads in the rooms.
+- **Harvests** feed `core/hamlet` and the culture kit: fibre (veil threads, pipe reed, curtain weed), gum (comb mast), dye
+  (ember red, lace blue-green), water (pleat column, bell pool, drums), fodder (cushions, sac brush, needle fur), food
+  (*proposed*: drums, pod-tower grub-bread, mire pads). **The tribes tap where no spring runs.**
 
-- **Fauna: about 66% native, 33% Earth-like** (the owner, 2026-10-26). **Native hexapods dominate**, built on the
-  kit's `faWdHex` frame (`kits/fauna/BIOME-FAUNA-PLAN.md`, the "ambiguous anatomy" rule: hide, scale and coat, vertebrate
-  eyes, padded feet, **not insects**; the existing dune runner, plains hopper, badland digger, scytheback and clubback are
-  the nearest kin). A draft of ~12 species: **native (8)**: a plains **grazing hexapod** in herds, a **nursery-tender**
-  (the pod towers' keeper), a **fog-drinker** at the combs, a **rock-grazer** on the gem hills, a **pan-digger**, a small
-  **burrowing hexapod**, a hunter (**stalker**) and a **carrion hexapod**; plus fog-moths and glow-flies (a native insect
-  layer is fine). **Earth-like (5)**: the **ostrich**, the **runner bird** (below), the goat (all three brought by the Coyote Men's ancestors), a gazelle-like grazer and the vulture.
-  Tune the figures when the species list is final.
-- **Ostriches roam the region** (the owner): **farm animals**, kept in flocks by the tribes for meat, eggs, hide and
-  feathers, **ridden** by scouts (the Coyote Men have no horse), and treated with a certain respect: **every part is
-  used** (meat, eggs and shell as vessels, sinew, hide, bone tools, fat, the plain feathers as fans, fletching and trade
-  goods). `kits/fauna` has **no ostrich yet** (the marsh emu in `krator-fauna-abyss.js` is the nearest model): add one
-  with the livestock traits (`eggs`, `feathers`, `rideable`, `hide`) and the kit's biped gaits.
-- **The runner bird** (the owner, 2026-10-26): a **faster, brightly coloured bird** the ancestors brought with the goats
-  and the ostriches, **the trickster's living form**. A small, long-necked, long-legged, long-tailed sprinter, blue and
-  violet with a tall head plume and a fan of wing feathers, quicker than any other animal on the plains. A new species
-  in `kits/fauna` (a biped on the fast `runner` gait: the sprint is its signature, and its wing-fan opens as it turns).
-  **To be a man, a Coyote must catch one successfully** (a coming-of-age rite; see below). Its feathers are **the sacred
-  and most highly prized ones**, worth more than any ostrich plume. It is wild and wary, **not farmed** (nobody has kept
-  one), and it keeps to the roads.
-- **How they came (the owner, 2026-10-26): the Coyote Men's ancestors brought the goats, the ostriches and the runner
-  bird** over the pass. Each is as old as the people and *only* as old as the people: the barrier stopped Earth's
-  animals and plants, but not what was carried. That is why the Earth-like third of the fauna is small and camp-following,
-  and why the wild gazelle and vulture are the exceptions to explain in P1.
-- **The trickster (the owner, 2026-10-26).** The Coyote Men's trickster deity takes the form of **the runner bird, a god
-  who runs the ancient roads**: cunning, errands, borders and bargains. Consequences for the kits:
-  - **Easter egg (the owner).** The god's look is a nod to the Road Runner of the old cartoons: a tall, lean, blue
-    bird with a swept head plume, a long neck, a fan of wing feathers and a knowing grin, forever out of the coyote's
-    reach. Draw it as the Outlands' own bird that *reads* as that (blue and violet, plume and wing-fan, the sprint pose),
-    not as a copy of the character: no cartoon outline, colours or face. The joke is the Coyote Men chasing it for ever,
-    which the manhood rite makes literal. The sedesert's "Wile E. Coyote" mesas (`biomes/sedesert/NOTES.md`) are the
-    same joke on the other side of the crater.
-  - The **ancient roads** are the Ancients' highway network (`tools/scale-model/ancient_roads.py`, `openworld/ANCIENT-ROADS.md`,
-    a draft). The god's roads are those; the survey (P0) should show whether any Ancient road runs through Korona's
-    corner and the pass, and if it does, **the pass is the god's road** and the Gate (station 6) is built on it. If no road
-    reaches the pass, that is a lore question for the owner, not a gap to fill silently.
-  - **Manhood.** A man is one who has caught a runner bird. Boys train as sprinters and trappers; the Kingdom has a
-    ritual race on the old road; the tribes' rite is a hunt. A man without one is a boy at any age (*proposed*: a
-    drab runner-bird feather in the hair of a man who has caught one; a failed man wears none).
-  - **Feathers.** Runner-bird feathers are **sacred**, worn by priests, kings and the caught-it men, gifted at shrines,
-    and the dearest trade good (*proposed*: the Kingdom licenses and counts them). Ostrich plumes are the common export;
-    runner-bird feathers rarely leave the Outlands, and when they do the Izani pay for them in gold.
-  - Art and architecture (for the Coyote kit): the god's running track as a motif, wayside shrines and milestone stones
-    along the road, a long-necked, grinning, plumed figure on gates and boundary stones.
-  - It ties the trade to the faith: caravans are under the trickster's protection, and the toll gate is a shrine as well
-    as a fort (*proposed*).
-- **The phoenix, and the golden bird (the owner, 2026-10-26).** The Coyote Men's **other god is a phoenix** who **dies at
-  the end of every age and rises more glorious in the next**: the god of ages, endings and returns, the trickster's
-  grave counterpart (the runner bird is the god of the road and the day; the phoenix is the god of time). Its living form
-  is **a high-flying golden bird, wholly sacred**, a native or Earth-like soarer (*proposed*: a native one, a golden
-  gliding hexapod-winged or feathered raptor that rides the basin's thermals above the fog rim; a new species for
-  `kits/fauna`' flyers). Consequences:
-  - **The taboo is absolute.** The golden bird is never hunted, eaten or touched. **Anyone the Coyote Men know for a fact to
-    have killed one, they attack on sight**; in play, **carrying its feathers (or any part of it) in your inventory is the
-    same offence**: a **faction-hostility trigger** that makes every Coyote tribe and the Kingdom of the Tiers hostile at
-    once (*proposed*: a witnessed kill is a permanent mark; possession of a feather is hostile until dropped or hidden,
-    and the Tierhounds' gate guards search for them). It is the starkest contrast with the runner bird, whose feathers
-    are prized and traded, and the ostrich, whose plumes are the common export.
-  - **Ages.** The phoenix's death at the end of each age is a Coyote way of counting time (a calendar of ages, with a
-    festival at each turning), and the Kingdom of the Tiers' kings are crowned at a turning (*proposed*). Where the
-    present age stands, and what ended the last one, is the owner's: it may tie to the Ancients' end and to Trickster's
-    House (the cursed city as the last age's ruin: *proposed*, for the owner).
-  - Art and architecture (for the Coyote kit): the golden bird and a flame motif on gates and tombs, rebirth cycles on
-    reliefs, the stepped Tiers as a stair of ages (*proposed*).
+## 5. Landforms
 
-- **The Coyote Men** are **therians** (the owner, 2026-10-26), as Korona's peoples are *human and therian* (`LORE.md`
-  6.18): coyote-headed, digitigrade, upright. Stone and bronze age in the basin; the **Kingdom of the Tiers** (the
-  Coyote Kingdom) on the threshold, more advanced and the gatekeeper. They traded with Izani caravans but were never
-  Izani subjects (their remoteness). They are not in `LORE.md` yet (the only "Tiers" there is the Eternal State's court
-  and houses): the next free section of §6 holds them (section 9, step P1).
-  - **Speech: they bark a dialect of the Hum.** Their throats and lips cannot shape ordinary human speech, which is the
-    problem the Hum was made for (`LORE.md` 6.18: meaning rides on pitch, six tones, ten consonants). The Coyote Men's
-    home speech is **barked, yipped and howled Hum**: the tones as pitch contours of a bark (high, low, rising, falling
-    yips), the consonants reduced to the few their muzzles make (*proposed*: *h, k, w, y, m, n*, with *p t s l* as
-    clipped snaps), the sentence end a howl. Any Hum speaker can follow it slowly; they speak it fast. Its writing is
-    **contour carvings** like Korona's (groove per syllable, above or below the guide line), which suits the milestones
-    and boundary stones along the god's road. Names are barks: a name is a short contour and a meaning.
-  - **The Tierhounds (the owner, 2026-10-26)** are the Kingdom of the Tiers' own people, distinct from the four tribes
-    and from the Coyote Men proper; *proposed*: hound-headed therians, kin to the Coyote Men and long their neighbours,
-    settled, with the Kingdom's towns, terraces and the toll gate. The Kingdom is called the Coyote Kingdom by outsiders
-    (the owner's alias), so the Tierhounds rule the country the Izani call the Coyote Kingdom: how that name stuck is a P1 line.
-  - **The four tribes (the owner, 2026-10-26): Sunset, Sunrise, Valley and Peak.** Where each lives is *proposed* until the
-    survey: the **Valley tribe**, the sedentary bronze-age farmers on the best land (the Farmland, station 2); the **Peak
-    tribe**, high on the fog rim and the ranges (the Fog Rim and the Gem Hills: miners and tappers); the **Sunrise** and
-    **Sunset** tribes, nomadic goat-and-ostrich herders on the plains (the Plains of Runners), their names the east and
-    west sides of the basin, or the dawn and dusk grazing circuits. *Open*: who is the Kingdom's ruling people.
-  - The tribes' arts, dress and settlements are the Coyote kit's (section 8).
-- **Resources.** `kits/resources` has iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil: **no
-  gemstones**. Add **emerald** and **turquoise** nodes (three grades each; the gem ranges mine them: Muzo-style open-cast
-  emerald and Persian-style turquoise workings in weathered copper-bearing rock), and note **ostrich feathers** as a
-  `HARVEST` of the farmed sand runner, not a node.
-- **The trade.** Izani caravans through the Korona corner; the Tiers kingdom takes a toll; emeralds, turquoise and
-  feathers out; grain, metal tools and cloth in. Section 7's gate fixes the road in the world.
+Each with the module that makes it. **New** marks a core amendment (section 12).
 
-## 6. Stations (N and S Outlands, and a few substations)
+| Form | Where | How |
+|---|---|---|
+| **The basin walls**: 1-2 km scarps of red basalt over pale tuffs and red beds, banded green where copper runs | every basin's edge | `KRELIEF.range` + strata (**new**: strata into core, an `outland` recipe) |
+| **The half-cave shelf** of Trickster's House: a deep shelf in the west wall over the lake | N main basin, px 1240,330 | `KCARVE` alcove (`36-core-carve.js`), `KCAVERN` for the deep rooms; the building from `kits/ancients` |
+| **Wadis**: dry channels with braided cobble floors, cut banks, pools after rain | everywhere (Z7) | **new**: `KRELIEF.wadi` (a dry `river`) |
+| **Fans and bajadas** at every wall's foot | Z4-Z5 | **new**: with the wadi (deposition at the mouth) |
+| **Talus aprons** against walls and stacks | gem hills, walls | **new**: lift Korona's `talusH` into `core/terrain` |
+| **Inselbergs and tors**: domed rock islands and boulder piles on the plains | N1, N2 | **new**: `KSTACKS` kinds `dome` and `tor` |
+| **Mesas, fins and buttes** in the gem hills | S4 | `KSTACKS` (existing) |
+| **Open-cast workings**: stepped benches, spoil heaps, adits | S4 | **new**: `KRELIEF.pit` (benches + spoil) |
+| **Desert pavement**: packed varnished pebbles | N2 | **new**: fill `KFIELD`'s cover grid (a `pavement` class) |
+| **The salt lake and pans**: polygon crust, strandlines, brine pools | Z6 | `KBASIN.salt`, `strand` (existing); `WATER.open` with a brine `tint` (**new**: a brine ramp, a pan kind) |
+| **Yardangs**: wind-carved ridges | N2 | `KBASIN.land` (existing) |
+| **The river and its lake**: a perennial river in a green valley, terraced fields | S3, N3 | `WATER.flow`, `WATER.open`; fields as records |
+| **Springs and seeps**: hanging gardens on the fog wall | Z1-Z3 | `WATER.spring`, `WATER.wet` |
+| **The fog belt**: a cloud band hugging the windward wall | S1 | **new**: `ATMOS.fogBelt` |
+| **The frozen lakes and patterned ground** on the plateau | Z8 | ground-cover ice first (`ice.lake.saltrim`, `ground.turf.polygon`); **new** (later): an ice kind in `core/water` |
+| **The Gate**: a high defile through the rim, snow, cairns, the toll fort | px 1136,84 | `KRELIEF`, snow cover; the road as a record (a flattened strip on `KFIELD`) |
 
-Built as Korona's and the Throne's stations are: a station is a small bounded page of one place (`station.json` names the
-kits it reads and the packs it adds), and a station may run past 20 MB only if the build tool allows it (`CLAUDE.md`, the
-Throne's station 1 at its ceiling is the warning).
+## 6. The people's side (settled unless marked)
 
-| # | Station | Place | What it shows |
+- **The Coyote Men** are **therians** (coyote-headed, digitigrade, upright), stone and bronze age, never Izani subjects.
+  They **bark a dialect of the Hum**: the tones as barked pitch contours, a howl ends a sentence (*proposed*: the consonants
+  cut to *h k w y m n*, with snaps for *p t s l*); they write it in **contour carvings** on milestones and boundary stones.
+- **The four tribes**: **Sunset, Sunrise, Valley, Peak**. *Proposed* homes: the **Valley** tribe, the sedentary bronze-age
+  farmers, on the river (S2-S3); the **Peak** tribe on the fog wall and the gem hills (miners and tappers, S1, S4); **Sunrise**
+  and **Sunset**, nomadic goat-and-ostrich herders on the N plains (N1), east and west.
+- **The Tierhounds** rule the **Kingdom of the Tiers** (the "Coyote Kingdom" to outsiders) on the threshold and keep the Gate
+  (*proposed*: hound-headed therians, kin to the Coyote Men).
+- **The trickster** is a god in the shape of **the runner bird**, who runs the ancient roads (the easter egg: it reads as the
+  cartoon Road Runner, drawn as the Outlands' own bird, not a copy). **The god's road** runs from the Sleeping City through the
+  Gate to Trickster's House, where **the god lives**: the Coyote Men **shun the ruin** as cursed, and misfortune is a **real
+  luck hazard** that grows the longer one stays in its keep-out ring (a `core/tags` area; section 12). **A boy is a man when he
+  has caught a runner bird**; the surest place to find one is the road's end.
+- **The phoenix** is the other god: it dies at the end of every age and rises more glorious. Its living form, **the golden
+  bird**, is wholly sacred: **anyone known to have killed one is attacked on sight**; *proposed* in play: carrying its
+  feathers makes every Coyote tribe and the Tierhounds hostile.
+- **Feathers**: the runner bird's are sacred and the dearest; the ostrich's are the common export.
+- **The trade**: Izani caravans over the Gate; emeralds, turquoise and feathers out; grain, metal and cloth in; the Tierhounds
+  take the toll.
+- **Lore status**: none of this is in `LORE.md` yet (P1).
+- **The culture kit** (`kits/coyote`, its own plan later): the Tierhounds' stepped towns and toll fort, the Valley tribe's
+  mud-brick villages, the herders' camps, the shrines and milestones, dress, and a people for
+  `core/charactermodels/data/peoples.json`. Until then the stations carry walls, terraces, huts and the fort as plain records.
+
+## 7. Fauna (`kits/fauna`)
+
+About 13 species: **8 native, 5 Earth-like**.
+
+| Key | Animal | Kind | Where | Note |
+|---|---|---|---|---|
+| `plaingrazer` | plains grazing hexapod | native, herds | N1 | on `faWdHex` with the `amb` anatomy (hide, vertebrate eyes, padded feet: not insects) |
+| `nurser` | nursery-tender | native | N2 | keeps the pod towers and brood pads |
+| `fogdrinker` | fog-drinker | native | S1 | drinks at the veil caps' drip |
+| `rockgrazer` | rock-grazer | native | S4 | scrapes lace crust off the copper rock |
+| `pandigger` | pan-digger | native | Z6 | digs brine shrimp-analogues from the salt |
+| `burrower` | small burrowing hexapod | native | Z4-Z5 | |
+| `stalker` | stalker | native, hunter | all | |
+| `carrier` | carrion hexapod | native | all | with the bone bloom |
+| `ostrich` | **ostrich** | Earth-like, farmed and wild | N1, S2 | ridden by scouts; every part used |
+| `runnerbird` | **runner bird** | Earth-like, wild | the roads | the trickster's form; fast biped gait, wing-fan |
+| `goat` | goat | Earth-like, kept | everywhere settled | from the farm set |
+| `gazelle` | gazelle-like grazer | Earth-like, wild | N1 | its arrival is a P1 lore line |
+| `vulture` | vulture | Earth-like, wild | all | |
+| `goldbird` | **golden bird** | native soarer (*proposed*) | the thermals over S1 | the phoenix's form; sacred |
+
+Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and golden bird are new to the fauna kit.
+
+## 8. Crops and resources
+
+- **`kits/crops`**: an `outlands` biome entry. The Valley tribe and the Kingdom grow the existing records that fit (millet,
+  sorghum, barley, chickpea, lentil, date, fig, pomegranate, flax); new **native** records for what the tribes tap and gather:
+  drum cluster, pod-tower grub-bread, comb-mast gum, grey-cushion fodder. Fields take water from the river, springs or fog
+  nets (Yemen and Ifugao terraces in the Tiers).
+- **`kits/resources`**: **emerald** and **turquoise** nodes (three grades each) in the gem hills (S4): Muzo-style open-cast
+  emerald in dark schist, Persian-style turquoise in pale altered rock. Ostrich feathers are a fauna `HARVEST`, not a node.
+
+## 9. Stations
+
+| # | Station | Site (`SURVEY.md` section 6) | What it shows |
 |---|---|---|---|
-| 1 | **The Fog Rim** (S Outlands; station S1, px 1337,393, Dfb 3.9 km, 1,176 mm) | the windward wall's montane woodland | the fog-combers (veil cap, comb mast) in mist; the biome's showcase and the first built; `dist/outlands.html` |
-| 2 | **The Farmland** (S Outlands; S2 px 1369,346 Cfa 2.9 km, and S3 px 1384,389 BSh 1.1 km on the river) | the sedentary tribe's wadi valley | irrigated fields of the bronze-age package, spring palms, rope-sedge channels; the Coyote culture kit's first stage |
-| 3 | **The Gem Hills** (S Outlands; S4 px 1352,391, BWk 2.3 km) | the emerald and turquoise ranges | weathered copper-green and white rock, rock-eater lace and pleat columns on the cliffs, open-cast workings (a `kits/resources` node set) |
-| 4 | **The Plains of Runners** (N Outlands; N1 px 1344,209, BSk 3.7 km, 235 mm) | the dry plain, herds and a salt pan | ostrich flocks, cushion mats, fog beetles, vultures; the nomads' camps |
-| 5 | **The Nursery Plateau** (N Outlands; N2 px 1269,130, BWk 3.8 km, 31 mm; N3 px 1356,240, the lake shore, WH 1.1 km) | the driest ground | pod towers, brood pads and gall stacks tended by hexapods over pebble mats and crust rosettes; the strangest page |
-| 6 | **The Gate** (the pass) | the corner of Korona | the narrow gap, the toll fort, the road; shared with Korona's station 7 (section 7) |
-| 7 | **The Cursed City** (Arcoindian II; site tbd) | a cliffside the survey proposes | the ruined cliff arcology with the native flora over it and the Coyote Men's keep-out ring round it; the building is `kits/ancients` Arcoindian II |
+| 1 | **The Fog Rim** (`dist/outlands.html`) | S1, px 1337,393, Dfb 3.9 km, 1,176 mm | the fog belt on the windward wall, veil caps and comb masts, fog pelt, lantern stalks, seeps and curtain weed; the showcase, built first |
+| 2 | **The River** (`-river`) | S2 px 1369,346 (Cfa 2.9 km) down to S3 px 1384,389 (BSh 1.1 km) | the Valley tribe's terraced fields on the perennial river, deck caps on the slopes, pipe reeds, mire pads on the 705 m lake; the Earth-like three |
+| 3 | **The Gem Hills** (`-gems`) | S4, px 1352,391, BWk 2.3 km | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
+| 4 | **The Plains of Runners** (`-plains`) | N1, px 1344,209, BSk 3.7 km | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
+| 5 | **The Nursery Plateau** (`-nursery`) | N2, px 1269,130, BWk 3.8 km | pod towers, brood pads and gall stacks on desert pavement, yardangs; the strangest page |
+| 6 | **The Gate** (`-gate`) | px 1136,84, 7.7 km | the defile, snow, the toll fort and shrine, cairns, the god's road; frozen lakes and patterned ground near |
+| 7 | **Trickster's House** (`-house`) | px 1240,330 | the ruined half-cave arcology over its lake, overgrown; the keep-out ring of turned-away stones (*proposed*); the luck hazard |
 
-The climate histogram (`SURVEY.md` section 6) reversed the first guess: **N Outlands is the dry basin** (cold steppe and desert, 65%: stations 4 and 5, the open ostrich country) and **S Outlands the wet, wooded one** with the warm river valley (stations 1, 2 and 3). The stations' px are the histogram's representative cells. The split follows the
-survey (section 1). If the survey gives fewer distinct climates, merge 3 into 2 and 5 into 4.
+Optional later: N3, the 705 m lake shore (a warm oasis page), if station 2 cannot hold it.
 
-## 7. The Tiers: its own biome, `tiers`
+## 10. The Tiers (`biomes/tiers`, its own plan)
 
-**Decision (the owner, 2026-10-26): `tiers` is a biome of its own**, `biomes/tiers/`, not a station of Korona's. It is on the
-ground Korona's polygon holds, so the two overlap (Korona's six stations stay as built; its basin station is the Tiers'
-wet lake shore and is read as that). The **Kingdom of the Tiers has its own people, the Tierhounds**: the Coyote Men's
-neighbours and the Kingdom's rulers, not one of the four tribes (section 5). Where this section says "station 7" or
-"Korona's station", read: a station of the `tiers` biome.
+The owner's decision (2026-10-26): **`tiers` is a biome of its own**, on the `Tiers` biome polygon (px 886-1118 by 52-278;
+the same ground as Korona's NE and the Coyote Kingdom). The dry, terraced country of the Tierhounds between Korona's rings
+and the Gate: sedesert and ebadlands scrub (read in place) with Outlands species leaking out by the Gate (pleat columns and
+cap-shrubs in gardens and as stragglers), terraced fields, the stepped towns. It gets its own `PLAN.md` before it is built
+(phase O8).
 
-The owner's **geographic polygon The Tiers** (px 875-1009 by 118-287, 55,300 km², wholly inside Korona) is the eastern
-sector of the rings, "stepping from the trench at -1,039 m to the plateau at 4,089 m", classes Cfa 17%, BSh 16%, water
-12%, BWk 11%, BWh 11%, Aw 9% (`korona/NOTES.md`, "Borders"). It is the country of the **Kingdom of the Tiers**: terraces
-on the ring's steps, the Tiers' lake at its foot (station 3 of Korona already shows that lake's fertile shore: the **Af**
-side), and at its east end the gate into the Outlands.
+## 11. Textures
 
-- **What it is.** The *dry* half of the Tiers: BSh/BWk/BWh, terraced fields and towns on stepped rings, the toll gate. It
-  complements the existing basin station (the lake, wet).
-- **Diffusion.** The kit's brief: it mixes **Outlands species** (leaked out through the gate: pleat columns and
-  cap-shrubs in the Kingdom's gardens and as a few wild stragglers on the east ring, tapped for water and gum), **sedesert**
-  scrub and thorn (read in place from the south-east border), and **ebadlands** species (the pinyon and chaparral edge,
-  banded mounds, the e badlands' share of the boundary is 5.9%, "one plateau, gradual"). Korona's gorge station
-  (station 5) already reads `sedesert` in place; this station adds `ebadlands` and `outlands` the same way.
-- **Zone rule.** Distance from the gate and from the ring's step set the mix (*proposed*: within a few km of the gate it
-  is Outlands-heavy and sparse; mid-tier it is sedesert/ebadlands scrub with terraced crops; the lake's edge hands over to
-  the basin station's Af flora). Writes as `core/tags`-registered zones, not an ad hoc blend.
-- **The Kingdom's buildings** wait on the Coyote culture kit (section 8). The page has terraces, walls, a toll fort and
-  a few huts as plain records until then.
-- Build: `biomes/tiers/` with its own `build.py`, `PLAN.md` and stations, as Korona's and the Throne's are. Its
-  `station.json` names the kits it reads (the `outlands` species fragments, `ebadlands`' and `sedesert`'s) and its packs.
-  Station 1: the terraces and the Gate. Note the new biome in Korona's `NOTES.md`, "Borders".
+**Reused from the library** (`core/materials/library/`): `ground.steppe`, `ground.puna`, `ground.gravel019`/`042`,
+`ground.gravelly_sand`, `ground.shingle` (plains and wadis); `ground.salt`, `ground.efflorescence`, `ground.playa.red`,
+`ground.lakebed.shells` (the salt lake); `rock.malachite`, `rock.gossan`, `rock.quartz.vein`, `metal.bronze.verdigris` as a stain
+(the gem hills); `ground.clay.popcorn`, `rock.sandstone.bedded.red`, `rock.tuff`, `rock.sandstone.varnish` (the walls);
+`rock.basalt.vesicular`/`oxidised`/`flowbanded`, `rock.columnar`, `ground.scoria`, `ground.cinder` (the rim); `ice.clear`,
+`ice.glacier`, `ground.tundra`, `ground.turf.polygon`, `ground.snow011` (the plateau and the Gate); `ground.lichen.crust`;
+the fungoid sets `organic.cap.porous`/`glossy`/`orange`, `organic.fungus.bracket`, `organic.flesh.cells`, `organic.mossball`,
+`ground.mycelium.gold`, `bark.whorled`, `bark.cratered`, `card.fungus.drip`, `card.mushroom.pale`, `card.shelf.glow`;
+`card.palm`, `bark.palm`, `bark.bark_willow_02` (the Earth-like three); `earth.adobe`, `earth.banco`, `stone.cut` (records until the culture kit).
 
-## 8. A Coyote culture kit (next, not this plan's)
+**Owed elsewhere, needed here too**: `rock.badland.bedded` (section 9 of the prompts), `ground.salt.ochre` and
+`ground.soda.crust` (sections 11, 12), `organic.pod.honeycomb` and `organic.lichen.plates` (section 17).
 
-`kits/coyote/` (catalog culture `coyote`): the Kingdom of the Tiers' stepped mud-brick and stone towns, the toll fort, the
-terrace farms, and the tribes' camps and the bronze-age sedentary tribe's villages; the Coyote Men's dress and body (a
-people for `core/charactermodels/data/peoples.json`, with Korona's therian pieces: `character-modeling` skill). It takes
-this kit's materials, its harvests and the terrace rule; it is its own plan (`kits/coyote/PLAN.md`) after the lore is in.
+**New** (13 prompts, `core/materials/PROMPTS-NEEDED.md` section 19): `ground.wadi.cobble`, `ground.pavement.desert`,
+`ground.biocrust.fog`, `rock.turquoise.vein`, `rock.schist.emerald`, `ice.lake.saltrim`, `organic.cap.violet`,
+`organic.pleat.skin`, `organic.lace.copper`, `card.fogcomber`, `card.outlands.scrub`, `card.outlands.crust`,
+`card.outlands.wadi`. For the culture kit, later: a coursed sun-dried brick (not prompted yet).
 
-## 9. Phases
+Adoption: `biomes/outlands/materials.json` and `python3 tools/textures/pack.py biomes/outlands` (commit `tex/`).
+
+## 12. Core amendments needed
+
+Ranked by when they block. Each follows its module's README and lands with its own node test and baseline check.
+
+| # | Amendment | Module | Why | Blocks |
+|---|---|---|---|---|
+| C1 | **A height-band fog belt**: `ATMOS.fogBelt({y0, y1, windward, density})`, a cloud band that hugs the slope between two heights, thicker to windward, thinning where the ground rises through it, with a JS twin (`fogAt(x, y, z)`) and an export record. Today `cloudDeck` is a level top and the old mist edge was host code | `core/atmos` | the fog belt is the Fog Rim's defining feature; the fog field also places the veil caps | station 1 |
+| C2 | **A shared fungoid geometry library**: `cap`, `capStack`, `bracket`, `bladder` (lathe with pleats), `pod`, `podCluster`, `stalk`, `fringe` (thread cards), `comb`, `tube`, `crust` decals; today each kit copies its own (`bracket()` in swbay, nwbay, rift and hyperjungle; the Throne's `cap`/`capTube`/`bladders`; swbay's `capTop`; nhighlands' `discStalks`) | **the owner's call**: `core/biome` fragment or a `kits/flora-fungoid` kit | 34 species of one lineage; swhighlands and swbay's backfill need the same parts | station 1 |
+| C3 | **Strata into core** (`core/terrain/STRATA-PLAN.md`, step 1 then recipes) with an **`outland` recipe**: red vesicular basalt caps over pale tuffs and red beds, thin green and turquoise copper bands, white altered zones | `core/terrain` | the basin walls, the gem hills, Trickster's wall; and plants placed by bed (`S.at`) | stations 1, 3, 7 |
+| C4 | **Dry relief forms**: `KRELIEF.wadi` (a dry `river`: braided cobble floor, cut banks, a fan at the mouth), `talus` aprons (Korona's `talusH` lifted), `KSTACKS` kinds `dome` and `tor`, `KRELIEF.pit` (stepped benches and spoil heaps), and a `pavement` class in `KFIELD`'s cover grid | `core/terrain` | the plains, the gem hills, every wall's foot | stations 3, 4, 5 |
+| C5 | **Brine and pans**: a brine colour preset for `WATER.open`/`still` (deep red-brown to turquoise to white rim), and a **pan** kind (salt crust with polygon cracks, wet after rain from `W.wet`) | `core/water` | the salt lake | station 4 |
+| C6 | **Hazard and taboo keys** in the tags vocabulary (`core/tags/PROPOSAL.md`, "A hazard key"): a `hazard` record (kind `luck`, strength by time inside) and a `taboo` area (no faction record draws inside) | `core/tags` | Trickster's House's keep-out ring and its luck hazard; mine pits; brine | station 7 |
+| C7 | *Later*: **an ice kind** in `core/water` (frozen lakes with salt rims, snow drifts on the ice); until then the plateau lakes are ground cover | `core/water` | the plateau | station 6 (optional) |
+
+**Kit additions, not core**: `kits/fauna` (the ostrich, the runner bird, the golden bird, the eight hexapods), `kits/resources`
+(emerald and turquoise nodes), `kits/crops` (the `outlands` entry and four native records).
+
+## 13. Core adoption (written first, as the working rules ask)
+
+Start from **`biomes/ebadlands`** (its species, floor and dress fragments) and **`biomes/korona`** (the station build:
+`build.py --station`, `station.json` with `out`, `core`, `kits`, `packs`). Take:
+
+- `core/biome` (`BIO.init` with `terrainH`, the fields and tags; `BIO.kit`/`kitEnd`; `BIO.scatter`, `BIO.clearOf`,
+  `BIO.register`, `BIO.bake`, `BIO.export`), with C2's fungoid parts;
+- `core/rand` (`KRAND.stream`, `hash`, `cell`) for every draw; `core/mask` (`KMASK.canvas`) for every painted raster;
+- `core/tags` (`KTAGS.create`) for every plant, rock, zone and hazard; `core/space` (`KSPACE`) under the scatter;
+- `core/terrain`: `KFIELD`, `KCARVE` (the shelf), `KSTACKS`, `KRELIEF`, `KBASIN`, and C3-C4;
+- `core/water` (`WATER.open`, `flow`, `still`, `spring`, `wet`) with C5; `core/atmos` (`ATMOS.weather`, `cloudDeck`, C1's belt);
+- `core/host` (`KHOST.take`, `khost.SHELL` + the polygon tool); the shared sky.
+
+Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_core_use.py` must pass (a biome names `biome`,
+`rand`, `tags`, `host`, `atmos`, `water`). Fragments are tagged in `PORT.md`; data fragments stay free of the browser.
+
+## 14. Order of work
 
 | Phase | What | Done when |
 |---|---|---|
-| **P0** | Survey (**done 2026-10-26**, `SURVEY.md`): the owner drew `N Outlands`, `S Outlands`, `Tiers` and `Coyote Kingdom`; heights, air, rain, temperature, rivers, lakes, the pass and candidate cliffs read. Open: the ancient roads, a climate histogram, trimming the polygons to the basins | section 1 and `SURVEY.md` hold the numbers and the pass's coordinates |
-| **P1** | Lore: `LORE.md` next §6 entry (the Coyote Men, their Hum dialect, the four tribes, the Kingdom of the Tiers, the pass, the trade); `biomes/README.md` and `WORLD.md` rows for `outlands` (N and S) and the Tiers; `INDEX.md` | the owner has approved the names and the geography |
-| **P2** | Plant sheet: ~30 species drawn and checked, the shapes and the palette; textures list in `PROMPTS-NEEDED.md` | a species sheet with the owner's yes |
-| **P3** | Station 1 (the Fog Rim) built on the shared core, `Core adoption` written and `tools/check_core_use.py` passing | `dist/outlands.html` verified |
-| **P4** | Stations 2-5, one at a time; the `kits/crops` entry; the sand runner and the gem nodes in their kits | each station verified |
-| **P5** | The `tiers` biome (`biomes/tiers/`) and the Gate (station 6) | `dist/tiers.html` verified |
-| **P6** | Gallery, Godot export check, then the Coyote culture kit's plan | published (the owner allows once) |
+| **O0** | P0 survey (done); this plan approved; markers on the model (done); the owner's reference plates in `refs/` | the owner's yes |
+| **O1** | **Lore**: `LORE.md` §6 entry (the Coyote Men, the Hum dialect, the four tribes, the Tierhounds and their kingdom, the two gods, the Gate, the god's road, Trickster's House, the trade); `biomes/README.md`, `WORLD.md`, `INDEX.md` rows | the owner approves the names |
+| **O2** | **Textures**: the 13 new sets and the five owed ones delivered and processed; `materials.json`; `pack.py` | the contact sheet passes in the demo kit |
+| **O3** | **Core amendments C1 and C2** (fog belt; fungoid parts), each with its node test; `port_baseline.py` reads `same` for every build that did not ask to move | tests pass |
+| **O4** | **Station 1, the Fog Rim**: the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
+| **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery); the fauna and resource additions | each verified |
+| **O6** | **C5**; **station 2, the River** (fields as records, the Earth-like three, the lake) | verified |
+| **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II), **station 6, the Gate** | verified |
+| **O8** | `biomes/tiers` plan and build; `kits/coyote` plan | the owner's yes on each |
+| **O9** | `PORT.md`, index tools, the Godot export check, the gallery (the owner allows once) | published |
 
-## 10. Core adoption (to be written first, per the working rules)
+## 15. Open questions
 
-Start the build from the nearest finished sibling, **`biomes/ebadlands`** (its species and station pattern) with
-`biomes/korona` for the multi-station build. Take: the biome core (`CORE_BIOME`) for species, instancing and `BIO.bake()`;
-`core/host` for the shell; `core/rand` (`KRAND`) for every draw; `core/mask` (`KMASK.canvas`) for any painted mask;
-`core/tags` for everything placed; `core/terrain` for relief and carve (the gate, the gem workings); `core/water` for the
-springs and the pan; `core/atmos` for the air and fog (the fog belt is the feature of this biome: use its shared fog,
-do not write a new one); `core/space` (`KSPACE`) for any spatial query. Write no PRNG, noise, `getImageData`, water
-shader or sky dome. Run `python3 tools/check_core_use.py` before calling it done. `BIOME-API.md` follows `sedesert`'s.
-
-## 11. Open questions for the owner
-
-1. ~~Inside or outside the Outer Wall?~~ Settled: outside, low, dense air (section 1); the survey checks the floor height.
-2. **The pass**: a single gate in Korona's corner, or a long defile? Where on the Tiers' east edge?
-3. ~~Therians or humans~~ Settled: therians, barking a dialect of the Hum (section 5).
-4. **Names**: tribes settled (Sunset, Sunrise, Valley, Peak); the pass, the Coyote Kingdom's capital and the Kingdom's rulers still open, and the tribes' places.
-5. ~~N vs S~~ Settled by the climate histogram: N dry and open, S wet and wooded (section 6).
-6. ~~Armour~~ Dropped: the flora is 90% native and fungoid (section 3); the signature is colour and construction.
-7. **Station count**: the six above, fewer for a first pass, or more?
-8. **Gem ranges**: emerald and turquoise in one place, or emerald in the N and turquoise in the S?
-10. ~~The god's road~~ Settled (the owner, 2026-10-26): it runs from the Sleeping City through the Gate and ends at Trickster's House (1,938 km on the surface; `SURVEY.md` section 7b).
-9. ~~The arcology~~ Settled: Arcoindian II, ruined, shunned; the trickster is believed to live there; the god's road ends there; the misfortune is a real luck hazard; the cliff is the N main basin's west wall, px about (1240, 330), over the 2,132 m lake.
+1. **C2's home**: the fungoid parts as a `core/biome` fragment, or a `kits/flora-fungoid` kit the biomes read in place?
+2. **The fog belt (C1)**: approve a core amendment to `core/atmos`, or keep the belt kit-local for the first station?
+3. **Reference plates**: will the owner supply plates for the native flora (as for swhighlands), or work from this list?
+4. **Gem ranges**: emerald and turquoise both in the S gem hills (this plan), or emerald in the N?
+5. **The golden bird**: native (a gliding hexapod-winged soarer) or Earth-like (a raptor)?
+6. **Names still open**: the Kingdom's capital, the pass's own name (beyond "the Gate"), the rivers and lakes in Coyote speech.
+7. **Station count**: seven, or fold the Gate into the Tiers' build?
