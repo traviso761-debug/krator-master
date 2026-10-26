@@ -2,7 +2,7 @@
 // [G data] The ephemeris of the shared sky (core/atmos/SKY-PLAN.md, 3.1), lifted from Voth's 21-sky.js and made whole:
 // the sun from latitude, tilt, day of year and hour; the gas giant FIXED per site (Krator is tidally locked: its
 // position follows from the site's latitude and its longitude from the sub-giant point). THE GIANT IS LIFTED (the
-// owner, 2026-10-25): it hangs at declination -37.6, not on the celestial equator where a tidally locked moon's giant
+// owner, 2026-10-25): it hangs at declination -39 (retuned for the daily nod), not on the celestial equator where a tidally locked moon's giant
 // would be, so the sun (declination -23..23) passes behind it only ~27 days a year round the southern summer solstice
 // (12 of them total) instead of ~2.5 months round each equinox. A deliberate cheat: its ring plane is taken through the
 // line of sight so the rings stay a hairline. The giant's moons orbit in its equator, the plane of its rings, so from
@@ -23,10 +23,15 @@
   dayH:24, yearD:365, tilt:23, solsticeDay:350,      // southern summer solstice (LORE); the spring equinox is day 258.75
   startDay:259, startHour:6,                         // game start: the southern spring equinox, sunrise (the owner, 2026-10-25)
   // the site frame on the scale model (2 km/px, x east, y south): Voth at 40 S, 84 km a degree (radius ~4,800 km), and
-  // the point under the giant 87.1 degrees east of Voth, off the mapped crater, so Voth sees it ESE at the canon 25 degrees
+  // the point under the giant 88.25 degrees east of Voth, off the mapped crater, so Voth sees it ESE at the canon 25 degrees
   // up, low enough for level shots (the owner, 2026-10-25); across the map it stands 17 (west) to 39 (east) degrees up
-  frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:87.12},
-  giant:{diaDeg:30, decDeg:-37.6, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
+  frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:88.25},
+  giant:{diaDeg:30, decDeg:-39, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000,
+   // the daily libration (the owner, 2026-10-25): Krator's orbit is tilted incDeg to the giant's equator, so once an orbit the
+   // giant nods north and south by it and the rings open and close through edge-on (turning their lit face to Krator, then
+   // their unlit one); the Laplace chain keeps the orbit a little eccentric (ecc), so the giant also swings east and west by
+   // 2*ecc radians (~1.1 degrees). phase offsets the nod from the swing
+   libration:{incDeg:1.6, ecc:0.01, phase:4.04}},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
   sunDiaDeg:0.53,
   // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: Day), 1 Callisto-like (dark, cratered),
   // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots), 5 Mimas-like (icy, grooved, one huge crater on its
@@ -119,13 +124,19 @@
   const cl=Math.cos(lst),sl=Math.sin(lst),W=[0,1,2].map(r=>[M[0][r]*cl-M[1][r]*sl,M[0][r]*sl+M[1][r]*cl,M[2][r]]);   // W[row][col]
   const toWorld=e=>[0,1,2].map(r=>W[r][0]*e[0]+W[r][1]*e[1]+W[r][2]*e[2]);
   const sunDir=norm(worldHD(H,dec,phi)),giantDir=norm(worldHD(Hg,S.giant.decDeg*D,phi)),pole=norm(M[2]);
+  // libration: the giant's mean place nudged north-south (along Krator's meridian at the giant) and east-west, once a
+  // sidereal orbit; the ring opening follows the nod
+  const LB=S.giant.libration,ph=2*Math.PI*t*1.0027379,dN=LB.incDeg*D*Math.sin(ph+LB.phase),dE=2*LB.ecc*Math.sin(ph);
+  {const g0=giantDir.slice(),pg=dot(pole,g0),nd=norm(pole.map((v,k)=>v-g0[k]*pg)),ew=norm([nd[1]*g0[2]-nd[2]*g0[1],nd[2]*g0[0]-nd[0]*g0[2],nd[0]*g0[1]-nd[1]*g0[0]]);
+   const gl=norm([0,1,2].map(k=>g0[k]+nd[k]*Math.tan(dN)+ew[k]*dE));giantDir[0]=gl[0];giantDir[1]=gl[1];giantDir[2]=gl[2];}
+  const ringOpen=S.giant.ringOpenDeg*Math.sin(ph+LB.phase);
   const gE1=norm([giantDir[2],0,-giantDir[0]]),gUp=[giantDir[1]*gE1[2]-giantDir[2]*gE1[1],giantDir[2]*gE1[0]-giantDir[0]*gE1[2],giantDir[0]*gE1[1]-giantDir[1]*gE1[0]],ta=S.giant.axisTiltDeg*D;
   const giantAxis=norm([0,1,2].map(k=>gUp[k]*Math.cos(ta)+gE1[k]*Math.sin(ta)));
   // the moons: Krator and each moon in the giant's equatorial plane (km, inertial), then laid on the sky's ring line:
   // the angle b from the giant as Krator sees it becomes cos b along the giant's direction plus sin b along the ring line,
   // and the sun's direction is carried into the same frame (L) so each moon's lit side matches its phase
   const K=kratorAt(lst,Hg),sunE=eq(ra,dec),kr=Math.hypot(K[0],K[1]),xh=[-K[0]/kr,-K[1]/kr],yh=[-xh[1],xh[0]];
-  const rn=A.skyRingNormal({giantAxis,giantDir}),rt=norm([rn[1]*giantDir[2]-rn[2]*giantDir[1],rn[2]*giantDir[0]-rn[0]*giantDir[2],rn[0]*giantDir[1]-rn[1]*giantDir[0]]);
+  const rn=A.skyRingNormal({giantAxis,giantDir,ringOpen}),rt=norm([rn[1]*giantDir[2]-rn[2]*giantDir[1],rn[2]*giantDir[0]-rn[0]*giantDir[2],rn[0]*giantDir[1]-rn[1]*giantDir[0]]);
   const sx=sunE[0]*xh[0]+sunE[1]*xh[1],sy=sunE[0]*yh[0]+sunE[1]*yh[1],L=norm([0,1,2].map(k=>sx*giantDir[k]+sy*rt[k]+sunE[2]*rn[k]));
   const moons=S.moons.map(m=>{let mx,my;
    let th;if(m.periodD){th=m.theta0+2*Math.PI*t/m.periodD;mx=m.orbitKm*Math.cos(th);my=m.orbitKm*Math.sin(th);}
@@ -139,7 +150,7 @@
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
   const sunAlt=Math.asin(Math.max(-1,Math.min(1,sunDir[1])))/D,giantAlt=Math.asin(giantDir[1])/D;
-  return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,ringLine:rt,pole,eq:W,toWorld,
+  return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,ringOpen,ringLine:rt,pole,eq:W,toWorld,
    moons,eclipse,sunAlt,giantAlt,giantLit:(1-dot(sunDir,giantDir))/2,spin:2*Math.PI*((t*24/S.giant.spinH)%1),
    clusterDir:norm(toWorld(eq(S.cluster.ra*D,S.cluster.dec*D)))};};
 
@@ -147,7 +158,7 @@
  // distance. Its spin axis lies in the plane of the sky, tilted axisTiltDeg from the sky's up (the domes' canon: the
  // only reading that gives a tilted planet AND rings seen as a hairline); the ring lies in its equator, opened
  // ringOpenDeg toward us (exactly edge-on it would cover no pixel)
- A.skyRingNormal=s=>{const i=S.giant.ringOpenDeg*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)-g[k]*Math.sin(i)));};   // opened so Krator looks down onto the face the sun lights by day
+ A.skyRingNormal=s=>{const i=(s.ringOpen==null?S.giant.ringOpenDeg:s.ringOpen)*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)-g[k]*Math.sin(i)));};   // opened so Krator looks down onto the face the sun lights by day
  A.skyBodyHit=(s,d)=>{const c=s.giantDir,r=Math.sin(S.giant.diaDeg/2*D),n=A.skyRingNormal(s),b=dot(d,c),h=b*b-(1-r*r);
   const giant=h>0&&b>0,giantT=giant?b-Math.sqrt(h):Infinity,dn=dot(d,n),tR=Math.abs(dn)>1e-9?dot(c,n)/dn:-1;
   let ring=false,rr=0;if(tR>0){const p=d.map((v,k)=>v*tR-c[k]);rr=Math.hypot(p[0],p[1],p[2])/r;ring=rr>=S.giant.ringIn&&rr<=S.giant.ringOut;}

@@ -21,8 +21,8 @@ The readout gives the date in Jimjam's months and counts, and where the sun, the
 hyperjungle at Pinnacle Rock (755,351), Korona (814,189), the Throne's glacier (545,560, 0.5 atm) and an Outer Wall crest
 (450,1040, 0.3 atm). The glacier and the rim pixels are approximate. **The ridges are demo stand-ins**, not any biome's.
 
-What the page is for: the colour script through the day, the giant (lifted to declination -37.6, ESE 25 degrees up at
-Voth, its ice-giant face and sky-plankton bands, its phases, its hairline ring with the far half behind the disc, its eclipse rim),
+What the page is for: the colour script through the day, the giant (lifted to declination -39, ESE 25 degrees up at
+Voth, bobbing ~2 degrees a day with its rings opening and closing, its ice-giant face and sky-plankton bands, its phases, its hairline ring with the far half behind the disc, its eclipse rim),
 the ring's structure, the four moons on the ring line (Ceres-like Companion, Iapetus-like Week, carbon-world Thirteen, Io-like Day,
 whose daily transit has its own view), the procedural Pleiades night
 (nebula, bright members, field, the galaxy's band in the far half), stars by day in thin air, the clouds, and the chrome

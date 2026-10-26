@@ -15,11 +15,15 @@ const at=(site,yearDay,hour)=>A.skyState(site,hour,yearDay-S.startDay);
 const sunAA=(site,yd,h)=>V.altAz(at(site,yd,h).sunDir);
 
 // ---- the site frame and the giant per site
-ok('Voth is the reference: 40 S, the sub-giant point 87.1 E',near(voth.latitude,-40)&&near(voth.subGiantLon,87.12),near(voth.latitude,-41));
-{const g=V.altAz(at(voth,259,12).giantDir);ok('the lifted giant over Voth: ESE, 25 up (the owner, 2026-10-25)',near(g.alt,25,.05)&&near(g.az,119.4,.5),near(g.alt,35,.05));}
+ok('Voth is the reference: 40 S, the sub-giant point 88.25 E',near(voth.latitude,-40)&&near(voth.subGiantLon,88.25),near(voth.latitude,-41));
+{const g=V.altAz(at(voth,259,12).giantDir);ok('the lifted giant over Voth: ESE, 25 up give or take its daily bob (the owner, 2026-10-25)',near(g.alt,25,2.2)&&near(g.az,121.0,2.5),near(g.alt,35,.05));}
 {const a=A.siteAt(446,1087),b=A.siteAt(446,1345);ok('the Rift (px y 1087..1345) lies at 49.5..55.6 S',near(a.latitude,-49.45,.1)&&near(b.latitude,-55.6,.1),near(a.latitude,-48,.1));}
-{const g0=at(voth,259,6).giantDir,g1=at(voth,100,21).giantDir;ok('the giant does not move with the hour or the season',near(V.dot(g0,g1),1,1e-12),!near(V.dot(g0,g1),1,1e-12));}
-{const e=V.altAz(at(A.siteAt(600,690),259,12).giantDir);ok('a site farther east sees the giant higher',e.alt>25+3,e.alt<25);}
+{const L=S.giant.libration,inc=L.incDeg;L.incDeg=0;const e0=L.ecc;L.ecc=0;const g0=at(voth,259,6).giantDir,g1=at(voth,100,21).giantDir;L.incDeg=inc;L.ecc=e0;
+ ok('without libration the giant does not move with the hour or the season',near(V.dot(g0,g1),1,1e-12),!near(V.dot(g0,g1),1,1e-12));
+ let mx=0;for(let h=0;h<24;h+=.25){const g=A.skyState(voth,h,3).giantDir;mx=Math.max(mx,Math.acos(Math.min(1,V.dot(g,g0)))/Math.PI*180);}
+ ok('with it, the giant bobs about its place by up to ~2 degrees a day (a 1.6 degree nod, a 1.1 degree swing)',mx>1.5&&mx<2.2,mx<.5);
+ const op=[];for(let h=0;h<24;h+=1)op.push(A.skyState(voth,h,3).ringOpen);ok('...and the rings open and close through edge-on once a day',Math.max(...op)>1.5&&Math.min(...op)<-1.5,Math.min(...op)>0);}
+{const e=V.altAz(at(A.siteAt(600,690),259,12).giantDir);ok('a site farther east sees the giant higher',e.alt>25+2,e.alt<25);}
 
 // ---- the sun path (21-sky.js's sign table, on the 365-day year with the solstice on day 350)
 {const q=sunAA(voth,258.75,12);ok('spring equinox noon: altitude 50, due north',near(q.alt,50,.3)&&(q.az<.5||q.az>359.5),near(q.alt,40,.3));}
@@ -39,7 +43,7 @@ const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit
 {let best=[9,0];for(let t=S.doubleDark+85;t<S.doubleDark+97;t+=.02){const l=Math.max(lit(t,0),lit(t,1));if(l<best[0])best=[l,t];}
  ok('the next Double Dark is 91 days on, both moons dark together',near(best[1]-S.doubleDark,91,1)&&best[0]<.06,near(best[1]-S.doubleDark,80,1));}
 {const m=A.skyState(voth,12,0).moons[0],q=V.altAz(m.dir),m2=A.skyState(voth,3,40).moons[0];
- ok('the Companion (a Trojan) hangs fixed 60 degrees from the giant along the ring line, about 0.28 degrees across (Ceres-sized)',near(Math.abs(m.along),60,1e-6)&&near(V.dot(m.dir,m2.dir),1,1e-9)&&near(m.radiusDeg*2,.278,.01)&&q.alt>0,Math.abs(m.along)<10);}
+ ok('the Companion (a Trojan) hangs fixed 60 degrees from the giant along the ring line, about 0.28 degrees across (Ceres-sized)',near(Math.abs(m.along),60,1e-6)&&near(Math.abs(m2.along),60,1e-6)&&near(m.radiusDeg*2,.278,.01)&&q.alt>0,Math.abs(m.along)<10);}
 {const l=[0,6,12,18].map(h=>A.skyState(voth,h,0).moons[0].lit);ok('...and waxes and wanes once a day',Math.max(...l)-Math.min(...l)>.5,Math.max(...l)-Math.min(...l)<.1);}
 {let on=true;for(let d=0;d<30;d+=.31){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons){const c=Math.abs(V.dot(m.dir,st.ringLine)),g=V.dot(m.dir,st.giantDir);const g2=st.giantDir,r2=st.ringLine,pn=[g2[1]*r2[2]-g2[2]*r2[1],g2[2]*r2[0]-g2[0]*r2[2],g2[0]*r2[1]-g2[1]*r2[0]];if(Math.abs(V.dot(m.dir,pn))>1e-9)on=false;}}
  ok('every moon rides on the ring line',on,false);}
