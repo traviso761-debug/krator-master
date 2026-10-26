@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Krator Sky Demo</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#000;font:12px/1.35 system-ui,sans-serif;color:#e6e9ee}
+canvas{display:block}
+#ui{position:absolute;left:10px;top:10px;width:300px;max-height:calc(100% - 20px);overflow:auto;background:rgba(14,18,26,.82);border:1px solid #2c3546;border-radius:8px;padding:10px 12px;box-sizing:border-box}
+#ui h1{font-size:14px;margin:0 0 6px}
+#ui .row{display:flex;align-items:center;gap:6px;margin:5px 0}
+#ui label{width:70px;color:#9aa6b8;flex:none}
+#ui input[type=range]{flex:1;min-width:0}
+#ui select{flex:1;background:#1c2330;color:#e6e9ee;border:1px solid #2c3546;border-radius:4px;padding:2px}
+#ui .val{width:56px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
+#ui button{background:#243048;color:#e6e9ee;border:1px solid #39465f;border-radius:4px;padding:3px 7px;margin:2px 2px 2px 0;cursor:pointer;font:inherit}
+#ui button:hover{background:#2e3d5c}
+#ui .sec{margin-top:9px;padding-top:7px;border-top:1px solid #2c3546;color:#9aa6b8}
+#date{font-size:13px;color:#fff;margin:4px 0 2px}
+#info{color:#9aa6b8;white-space:pre-line;font-variant-numeric:tabular-nums}
+#errs{position:absolute;right:10px;bottom:10px;max-width:50%;color:#ff8a80;white-space:pre-wrap;font:11px monospace}
+#hint{position:absolute;right:10px;top:10px;color:#9aa6b8;background:rgba(14,18,26,.6);padding:4px 8px;border-radius:6px}
+</style></head><body>
+<div id="ui"><h1>Krator's sky</h1>
+<div id="date"></div><div id="info"></div>
+<div class="row"><label>Hour</label><input id="hour" type="range" min="0" max="24" step="0.05"><span class="val" id="hourV"></span></div>
+<div class="row"><label>Day</label><input id="day" type="range" min="-182" max="182" step="1"><span class="val" id="dayV"></span></div>
+<div class="row"><label>Time</label><select id="run"><option value="0">held</option><option value="1">running (72 min a day)</option><option value="20">x20</option><option value="200">x200</option></select></div>
+<div class="row"><label>Site</label><select id="site"></select></div>
+<div class="row"><label>Pressure</label><input id="pres" type="range" min="0.2" max="2.2" step="0.05"><span class="val" id="presV"></span></div>
+<div class="row"><label>Clouds</label><input id="cover" type="range" min="0" max="1" step="0.02"><span class="val" id="coverV"></span></div>
+<div class="row"><label>Weather</label><select id="wx"><option value="clear">clear</option><option value="overcast">overcast</option><option value="rain">rain</option><option value="fog">fog</option></select></div>
+<div class="sec">Views</div>
+<div><button data-v="start">Game start, 06:00</button><button data-v="dusk">Game start dusk</button><button data-v="winter">Winter midnight</button><button data-v="summer">Summer night</button><button data-v="eclipse">Next eclipse</button><button data-v="dd">Double Dark</button><button data-v="noon">Noon</button><button data-v="transit">Day's transit</button></div>
+<div class="sec">Look at</div>
+<div><button data-l="giant">Giant</button><button data-l="sun">Sun</button><button data-l="cluster">Cluster</button><button data-l="zenith">Zenith</button><button data-l="station">Station</button><button data-l="moon0">Companion</button><button data-l="moon1">Week</button><button data-l="moon2">Thirteen</button><button data-l="moon3">Day</button><button data-l="moon4">Two-Day</button><button data-l="moon5">Four-Day</button><button data-l="level">Level</button></div>
+</div>
+<div id="hint">drag to look, wheel to zoom</div>
+<div id="errs"></div>
+<script>/*THREE*/</script>
+<script>
+window.onerror=function(m,s,l,c,e){document.getElementById('errs').textContent+=(e&&e.stack||m)+'\n';};
+/*JS*/
+</script></body></html>

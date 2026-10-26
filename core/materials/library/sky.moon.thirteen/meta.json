@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "3e15686d733141e04d1b7235c2eccfa8d4f66afc",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no clouds, no atmosphere, no stars, no background, no labels: the surface of a carbon-rich world. Rust-orange #a84e24 and ochre #c88e44 crusts mottled with brown #6a3a1c, crazed everywhere with fine dark cracking like dried lacquer; black glossy tar seas #0a0806 covering about one quarter of the surface as irregular connected basins, inlets and lakes, with bitumen-brown shores #3e2010 and a few pale salt flats #d8c8b0 beside them. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}
