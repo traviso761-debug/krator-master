@@ -1822,6 +1822,10 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-10-26, later: `rock.cut.polished` (pasted in the Cut's build session, 1254 px)
+
+- Batch `owner-2026-10-26-cut.json`: `rock.cut.polished` (full colour, 2 m, roughness 0.35; bedded rock sawn smooth, two pebble-and-shell beds, quartz veins). For `biomes/cut`'s cut faces (station 3); reuse: any sawn or polished bedded rock.
+
 #### Delivered 2026-10-26 and processed: 29 owed prompts (Downloads, 2026-10-25 23:18-23:45, 1254 px PNG)
 
 Batches `tools/textures/batches/owner-2026-10-26.json` (12 surfaces, `process.py`) and `owner-2026-10-26-cards.json` (17 sheets, 3 x 3 on

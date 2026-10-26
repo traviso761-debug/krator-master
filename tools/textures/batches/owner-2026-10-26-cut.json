@@ -1,0 +1,30 @@
+[
+ {
+  "src": "rock.cut.polished.png",
+  "out": "core/materials/library/rock.cut.polished",
+  "record": {
+   "id": "rock.cut.polished",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the Cut's build session, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.cut.polished\"",
+    "reuse": "the Cut's cut faces (biomes/cut); any sawn or polished bedded rock: a quarry face, a cut stone floor"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "lift": 0.08,
+   "mute": 0
+  }
+ }
+]
