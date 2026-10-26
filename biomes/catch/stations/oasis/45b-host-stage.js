@@ -52,7 +52,7 @@ const apronK=(x,z)=>smooth(60,25,Math.hypot(x-PORTAL.x+25,z-PORTAL.z));
 // ---------------------------------------------------------------- the fields (FNAMES)
 function fieldsAt(x,z,h,slope){const pd=poolD(x,z),rd=runD(x,z),cd=Math.hypot(x-CRUST.x,z-CRUST.z)/CRUST.r;
  const wet=clamp(Math.max(smooth(380,0,pd)*.98,smooth(60,3,rd)*.85*smooth(1.3,.6,cd),smooth(1.1,.4,cd)*.5)+.04,0,1);
- const rock=clamp(smooth(.35,.7,slope)*.9+smooth(1250,1500,h)*.4*smooth(.2,.4,slope),0,1),trod=Math.max(campK(x,z),apronK(x,z)*.8);
+ const rock=clamp(smooth(.2,.45,slope)*.95+smooth(1250,1500,h)*.4*smooth(.2,.4,slope),0,1),trod=Math.max(campK(x,z),apronK(x,z)*.8);
  const crust=smooth(1,.45,cd)*(1-smooth(30,8,rd)*.5);
  const sand=clamp(smooth(.5,.62,nz(x,z,.003,2,68))*smooth(.3,.1,slope)*(1-trod)*smooth(60,220,pd)*.8,0,1);
  return{wet,flow:smooth(30,4,rd),upland:clamp((h-1000)/700,0,1),rock,slope,salt:crust*.6,sand,reg:clamp((1-sand)*(1-rock)*smooth(150,500,pd)*(1-crust)*.8,0,1),
@@ -93,21 +93,21 @@ const STAGE={
  stalkers:[],exportBox:[POOL.x-150,POOL.z-150,POOL.x+150,POOL.z+150],
  registers:[{name:'The spring hollow through the interior hills (the groundwater dammed, rising as springs)',key:'landform.hollow',x:0,z:0,y:960,r:800,h:220},
   {name:'The salt crust where the runnel dies',key:'landform.crust',x:CRUST.x,z:CRUST.z,y:landAt0(CRUST.x,CRUST.z)-6,r:CRUST.r*.8,h:20}]};
-{const K=h=>new THREE.Color(h),SOIL=K(0xa88a68),SOIL2=K(0x9a7c5c),SAND=K(0xd0a676),ROCKC=K(0x7a6250),ROCK2=K(0x8e7660),WETC=K(0x5a4a38),TROD=K(0x8a7058),CR=K(0xe8e0d2),t=new THREE.Color();
+{const K=h=>new THREE.Color(h),SOIL=K(0xa88a68),SOIL2=K(0x9a7c5c),SAND=K(0xd0a676),ROCKC=K(0x5e4a3c),ROCK2=K(0x74604e),WETC=K(0x5a4a38),TROD=K(0x8a7058),CR=K(0xe8e0d2),t=new THREE.Color();
  STAGE.paint=(F,c)=>{const n=nz(F.x,F.z,.02,2,71)-.5;c.copy(SOIL).lerp(SOIL2,clamp(.5+n*2,0,1));t.copy(ROCKC).lerp(ROCK2,clamp(.5+n*2.4,0,1));c.lerp(t,F.rock*.85);
   c.lerp(SAND,F.sand*.8);c.lerp(WETC,smooth(.55,.95,F.wet)*.75);c.lerp(TROD,F.trod*.6);c.lerp(CR,F.crust*.85);};
- STAGE.layers=[['ground.reg',F=>F.reg*(1-F.wet)],['ground.gravel',F=>F.rock*.9],['ground.dune',F=>F.sand],['ground.mud',F=>smooth(.6,.95,F.wet)*(1-F.crust)],
+ STAGE.layers=[['ground.reg',F=>F.reg*(1-F.wet)],['ground.rock',F=>F.rock],['ground.gravel',F=>F.rock*(1-F.rock)*.8],['ground.dune',F=>F.sand],['ground.mud',F=>smooth(.6,.95,F.wet)*(1-F.crust)],
   ['ground.reedbed',F=>F.algal],['ground.crust',F=>F.crust],['ground.silt',F=>F.trod*.7]];
  STAGE.groundLabel='The spring hollow (gravel, blown sand, wet ground, trampled ground)';}
 STAGE.views=function(gh,nearTree){const P=POOL,live=nearTree(0,P.x-60,P.z+40),tam=nearTree(1,P.x+80,P.z+200);
  const at=(T,d,a,h)=>T?[T.x+Math.cos(a)*d,gh(T.x+Math.cos(a)*d,T.z+Math.sin(a)*d)+h,T.z+Math.sin(a)*d,T.x,T.y0+T.H*.5,T.z]:null;
  return{
   'Stair\'s spring from the Hill\'s foot':[HILL.x0+80,gh(HILL.x0+80,P.z+60)+12,P.z+60,P.x,P.lv+2,P.z],
-  'The pool and its reeds':viewAt(gh,P.x+70,P.z+55,3,P.x,P.z,1),
+  'The pool and its reeds':viewAt(gh,P.x+48,P.z-40,9,P.x,P.z,0),
   'The caravans\' campground':viewAt(gh,CAMP.x+170,CAMP.z+170,6,CAMP.x,CAMP.z,1),
   'The tunnel\'s southern portal and the divers\' camp':viewAt(gh,PORTAL.x-110,PORTAL.z+60,5,PORTAL.x,PORTAL.z,5),
   'The Hill\'s slope (Stair\'s site, left empty)':viewAt(gh,-300,300,20,(HILL.x0+HILL.x1)/2,0,120),
-  'Seeps and the salt crust':viewAt(gh,SEEP2.x-90,SEEP2.z-70,4,CRUST.x,CRUST.z,0),
+  'Seeps and the salt crust':viewAt(gh,SEEP2.x+170,SEEP2.z+40,16,CRUST.x-40,CRUST.z,0),
   'From the west ridge':viewAt(gh,-1900,-200,8,0,200,0),
   'From afar':[-2800,1900,2600,200,1000,-200],
   'Tugai, a Euphrates poplar':at(live,22,2.2,2.5),

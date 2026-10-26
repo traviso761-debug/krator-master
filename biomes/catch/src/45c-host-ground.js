@@ -1,5 +1,6 @@
 // ================================================================= HOST — the painted ground, for any station
-// One mesh over 2.2 R, its vertices coloured by the stage's palette from the field cache (STAGE.paint(F, colour)), with the
+// One mesh over 2.2 R, its vertices coloured by the stage's palette from the field cache (STAGE.paint(F, colour), mottled at
+// two large scales: STAGE.macro, default .22), with the
 // library's ground layers (materials.json ground.*) blended over it per vertex by the stage's weights (STAGE.layers:
 // [[family, F => weight], ...], up to twelve). A keep-0 layer multiplies the painted colour by its relief, a keep-1 layer
 // shows its own colour, the others mix the two. Without the pack (?mat=proc) the ground is the painted one.
@@ -21,10 +22,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGNoise={value:GNOISE};
  let lay='';
  if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
   // a custom sampler is not decoded from sRGB for us: pow 2.2 by hand; a keep-0 layer is its relief over the pack's mean;
-  // with distance a layer's grain fades toward the painted ground (60 m to 600 m)
-  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;float _fd=1.0-0.7*smoothstep(60.0,600.0,length(cameraPosition-vGWP));'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
+  // with distance a layer is read from a second tap six times coarser (25 m to 220 m), so a crust's polygons and a gravel's
+  // mottle hold as large shapes instead of averaging to one flat colour (the owner, 2026-10-26: the soda bed read as a blank
+  // blob from far and middle distance); only past 500 m does it give way, a little, to the painted ground
+  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;float _dc=length(cameraPosition-vGWP),_fd=1.0-0.3*smoothstep(500.0,3000.0,_dc),_fm=smoothstep(25.0,220.0,_dc);'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
-   return 'if('+w+'>0.003){vec3 t=pow(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
+   return 'if('+w+'>0.003){vec3 t=pow(mix(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),gTex(uGL'+i+',_p*'+(1/(l.scale*6)).toFixed(5)+'),_fm),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s*_fd,0.0,1.0));}';}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;'+(GL?'attribute vec4 aGL0,aGL1,aGL2;varying vec4 vGL0,vGL1,vGL2;':''))
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;'+(GL?'vGL0=aGL0;vGL1=aGL1;vGL2=aGL2;':''));
@@ -35,7 +38,7 @@ const GROUND=(function(){const N=GROUND_N,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),col=new Float32Array(nx*nx*3),g=GL?[0,1,2].map(()=>new Float32Array(nx*nx*4)):null,F={},c=new THREE.Color();
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;
   FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));F.x=x;F.z=z;F.h=y;
-  STAGE.paint(F,c);c.convertSRGBToLinear();col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;
+  STAGE.paint(F,c);{const mk=STAGE.macro==null?.22:STAGE.macro,m=1+mk*((nz(x,z,.0035,2,301)-.5)*1.6+(nz(x,z,.0009,2,302)-.5)*1.2);c.multiplyScalar(m);}c.convertSRGBToLinear();col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;
   if(GL){let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1);s+=v;return v;}),k1=s>1?1/s:1;for(let q=0;q<12;q++)g[q>>2][k*4+(q&3)]=(w[q]||0)*k1;}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,cc=b+1,d=a+1;

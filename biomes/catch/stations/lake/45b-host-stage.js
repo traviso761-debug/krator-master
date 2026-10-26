@@ -23,13 +23,20 @@ const CH_Z1=[1300,-200];   /* where each reaches the shore */
 const chD=(x,z)=>Math.min(...CH.map((f,i)=>z<CH_Z1[i]+150?Math.abs(x-f(z)):1e9));
 // the land: the old lake's floor, a long slope down to the shore and a shallow shelf under the brine (2-3 m at most
 // here); the pan's flat; the channels' beds
-function baseH(x,z){const s=sOf(x,z);let h=LEVEL+.009*(SHORE_S-s)+5*(nz(x,z,.0012,3,83)-.5);
+/* the shore band (the lowest 600 m up from the water) is steeper, ~1.7 degrees: there the recession's strandlines stand as
+   benches a few tens of metres apart; above it the old floor flattens out */
+function baseH(x,z){const s=sOf(x,z),u=Math.max(0,SHORE_S-s);let h=LEVEL+.009*u+.02*Math.min(u,600)+5*(nz(x,z,.0012,3,83)-.5)*smooth(100,500,u);
  if(s>SHORE_S)h=LEVEL+.4-clamp((s-SHORE_S)*.0035,0,2.8)+.4*(nz(x,z,.004,2,84)-.5);
  h=mix(h,LEVEL+2.2+.3*(nz(x,z,.01,2,85)-.5),panK(x,z));
  h-=2.2*smooth(22,3,chD(x,z));return h;}
 // THE OLD LAKE (KBASIN): flood kind, 362 m at its height, its remnant today's lake; the recession's strandlines up the slope,
 // silt on everything it covered, salt toward the water, the wind's yardangs in the dry silt
-const BASIN=KBASIN.create({seed:8101,wind:WIND,age:9000,recession:7000,strand:{a:.5,top:6,bottom:2},yardang:{h:14,len:340,gap:62},
+/* yardK: the wind-cut lake beds, the old floor north-west of the shore band; nearer the water the strandlines are left whole */
+const yardK=(x,z)=>smooth(-150,-700,sOf(x,z)-SHORE_S+700);
+const BASIN=KBASIN.create({seed:8101,wind:WIND,age:9000,recession:7000,strand:{a:.85,top:7,bottom:3},yardang:{h:14,len:340,gap:62},
+ lakes:[{name:'the old lake (a wetter age, 362 m)',kind:'flood',level:362,remnant:LEVEL,member:(x,z)=>1}]});
+/* the same lake with no yardangs (KBASIN draws its strands from the seed and the lake alone, so the two agree line for line) */
+const BASIN_S=KBASIN.create({seed:8101,wind:WIND,age:9000,recession:7000,strand:{a:.85,top:7,bottom:3},yardang:{h:0,len:340,gap:62},
  lakes:[{name:'the old lake (a wetter age, 362 m)',kind:'flood',level:362,remnant:LEVEL,member:(x,z)=>1}]});
 // THE CASTELLATED MESAS: the old lake's harder beds left standing in the north-west, elongated with the wind (KSTACKS)
 const ROCK=(function(){const L=[],K=KSTACKS,ry=Math.atan2(WIND[1],WIND[0]);
@@ -43,7 +50,7 @@ const ROCK=(function(){const L=[],K=KSTACKS,ry=Math.atan2(WIND[1],WIND[0]);
  return L;})();
 const onRock=(x,z)=>!!KSTACKS.at(ROCK,x,z);
 const _tm={x:NaN,z:NaN,h:0};
-function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const b=baseH(x,z);let h=b>LEVEL-.2?BASIN.land(x,z,b):b;_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const b=baseH(x,z),yk=yardK(x,z);let h=b>LEVEL-.2?(yk>0?mix(BASIN_S.land(x,z,b),BASIN.land(x,z,b),yk):BASIN_S.land(x,z,b)):b;_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function groundAll(x,z){const t=KSTACKS.topAt(ROCK,x,z);return Math.max(terrainH(x,z),t);}
 function waterH(x,z){return sOf(x,z)>SHORE_S-60&&terrainH(x,z)<LEVEL?LEVEL:-1e9;}
 const shoreD=(x,z)=>(sOf(x,z)-SHORE_S);   /* + into the water, - up the shore (m, about) */
@@ -58,7 +65,7 @@ function fieldsAt(x,z,h,slope){const b=BASIN.sample(x,z,baseH(x,z),BS),sd=shoreD
  const crust=clamp(smooth(.5,.9,b.salt)*.85*(1-soda)*(1-ochre)*(1-algal),0,1);
  const rock=onRock(x,z)?1:clamp(smooth(.45,.8,slope),0,1);
  return{wet:clamp(wet,0,1),flow:smooth(160,12,cd),upland:0,rock,slope,salt:ochre,sand:clamp(smooth(150,30,cd)*.5*smooth(-200,-500,sd),0,1),
-  reg:0,silt:b.silt*(1-soda)*(1-ochre),yard:b.yard,crust,bed:b.bed,strand:b.strand,dry:b.dry/1000,spring:0,trod:0,algal,soda,cold:0,
+  reg:0,silt:b.silt*(1-soda)*(1-ochre),yard:b.yard*yardK(x,z),crust,bed:b.bed,strand:b.strand,dry:b.dry/1000,spring:0,trod:0,algal,soda,cold:0,
   canyon:0,rim:0,dune:1,oasis:0,abyss:0};}
 // THE NEBKHAS along the channels (as station 1's)
 const NEBKHAS=(function(){const N=[];CH.forEach((f,c)=>{for(let j=0;j<40;j++){const z=-3000+j*((CH_Z1[c]+3000)/40),h=KRAND.hash(8103,c,j);if(KRAND.unit(h)>.45)continue;
@@ -74,7 +81,7 @@ const FC=BOUND.FC,FIELD=BOUND.FIELD;
 const LAKE_BOX=[-1400,-1600,TERR.R*1.1,TERR.R*1.1];
 const LAKE_TINT={box:LAKE_BOX,cell:16,at:(x,z)=>{const sd=shoreD(x,z);if(sd<-30)return null;
  const bay=smooth(.62,.8,nz(x,z,.0009,2,88))*smooth(900,200,chD(x,z)+150);
- const pink=smooth(200,40,sd),c=bay>.3?0xb08a4e:pink>.5?0xd0788a:0x3c8c88;return{c,a:clamp(Math.max(pink,bay*.85,.45),0,1)};}};
+ const dep=LEVEL-terrainH(x,z),pink=smooth(.9,.15,dep),c=bay>.3?0xa87a3e:pink>.5?0xb85872:0x2e7a78;return{c,a:clamp(Math.max(pink,bay*.85,.45),0,1)};}};
 const STAGE={
  key:'lake',name:'The Catch: the lake and the lake beds',title:'Krator biome — the Catch: the lake and the lake beds',seed:31,hour:13,
  hint:'The Catch, station 3: the terminal soda lake at the basin\'s lowest point (318 m): pink, teal and ochre brine, algal mats, soda crust, white efflorescence and a playa of ochre salt polygons, the old lake\'s strandlines, yardangs and castellated mesas of wind-cut lake beds, dead channels with their dead poplars, saltbush and brine lamps',
@@ -89,15 +96,15 @@ const STAGE={
  water:[{key:'lake',kind:'open',name:'The terminal lake (soda brine: the Catch\'s one great salt field)',
   open:{name:'The terminal lake',level:LEVEL,swell:[[.03,30,240,0,.03]],field:.06,bounds:LAKE_BOX,bed:(x,z)=>terrainH(x,z),bedBox:LAKE_BOX,bedCell:10,
    shore:{seeds:[[2800,2800]]},tint:LAKE_TINT},
-  look:{renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.35,surf:false,ramp:[.2,3],shallow:0x7aa8a0,deep:0x2a6e6a}}],
+  look:{renderOrder:1,roughness:.3,metalness:.02,envMapIntensity:.14,surf:false,ramp:[.2,3],shallow:0x6a9a92,deep:0x235e5c}}],
  sedQ:0,stalkers:[],exportBox:[-1200,-1200,-900,-900],
  registers:[{name:'The playa (a dry salt pan: ochre salt polygons ringed with white)',key:'landform.playa',x:PAN.x,z:PAN.z,y:LEVEL-2,r:PAN.r*.8,h:12},
   {name:'The yardang field (the old lake\'s silt, cut by the wind into ridges)',key:'landform.yardang',x:-600,z:-1200,y:LEVEL+20,r:700,h:60},
   {name:'The old lake\'s strandlines (each a pause in its fall)',key:'landform.strand',x:300,z:-300,y:LEVEL,r:600,h:50}]};
-{const K=h=>new THREE.Color(h),SILT=K(0xb8a486),SILT2=K(0xa89474),CR=K(0xeee9de),SODA=K(0xe6cdb4),OCH=K(0xc89a58),ALG=K(0x6a8a7c),STR=K(0xa89878),SAND=K(0xcca476),t=new THREE.Color();
- STAGE.paint=(F,c)=>{const n=nz(F.x,F.z,.02,2,89)-.5;c.copy(SILT).lerp(SILT2,clamp(.5+n*2,0,1));c.lerp(STR,F.strand*.25);
+{const K=h=>new THREE.Color(h),SILT=K(0xa48e6c),SILT2=K(0x957f5e),CR=K(0xeee9de),SODA=K(0xe6cdb4),OCH=K(0xc89a58),ALG=K(0x6a8a7c),STR=K(0x6e5c44),SAND=K(0xcca476),t=new THREE.Color();
+ STAGE.paint=(F,c)=>{const n=nz(F.x,F.z,.02,2,89)-.5;c.copy(SILT).lerp(SILT2,clamp(.5+n*2,0,1));c.lerp(STR,F.strand*.55);
   c.lerp(SAND,F.sand*.7);c.lerp(CR,F.crust*.85);c.lerp(SODA,F.soda*.9);c.lerp(OCH,F.salt*.85);c.lerp(ALG,F.algal*.9);};
- STAGE.layers=[['ground.silt',F=>F.silt*(1-F.crust)],['ground.crust',F=>F.crust],['ground.soda',F=>F.soda],['ground.ochre',F=>F.salt],
+ STAGE.layers=[['ground.silt',F=>F.silt*(1-F.crust)*(1-F.strand*.6)*.75],['ground.crust',F=>F.crust],['ground.soda',F=>F.soda],['ground.ochre',F=>F.salt],
   ['ground.algal',F=>F.algal],['ground.dune',F=>F.sand*.8],['ground.mud',F=>F.flow*.5*(1-F.sand)]];
  STAGE.groundLabel='The old lake\'s floor (silt, salt and soda crusts, algal mats)';}
 STAGE.views=function(gh,nearTree){const dead=nearTree(0,CH[0](-600),-600,T=>!!T.dead),M=ROCK.slice().sort((a,b)=>b.top-a.top)[0];
@@ -110,7 +117,7 @@ STAGE.views=function(gh,nearTree){const dead=nearTree(0,CH[0](-600),-600,T=>!!T.
   'The playa (ochre salt polygons)':viewAt(gh,PAN.x+500,PAN.z-300,3,PAN.x,PAN.z,0),
   'Yardangs':viewAt(gh,-200,-700,5,-800,-1300,2),
   'The castellated mesas (the White Dragon Mounds)':M?viewAt(gh,M.x+M.R*1.6,M.z+M.R*1.3,4,M.x,M.z,(M.top-M.y0)*.5):null,
-  'The strandlines':viewAt(gh,700,-900,4,1200,-200,0),
+  'The strandlines':viewAt(gh,1050,250,6,350,-450,4),
   'From afar':[-3000,800,-2600,800,320,900]};
  if(dead)V['A dead channel, its poplars dead standing']=at(dead,30,2.4,3);
  return V;};

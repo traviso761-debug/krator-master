@@ -19,7 +19,7 @@ const gorgeD=(x,z)=>Math.abs(x-(APEX.x+60*Math.sin(z*.004)))+Math.max(0,z-APEX.z
 // the fan: a cone falling from the apex (concave: steep near the mouth, flattening toward the toe), braided channels along
 // its radii; the mountain front rising steeply behind it; the gorge's walls either side of the mouth
 function fanH(x,z){const r=fanR(x,z);let h=APEX.h-420*(1-Math.exp(-r/1400))-.06*r;
- const a=fanA(x,z),br=ridgeN(a*40+nz(x,z,.002,2,92)*3,r*.004,1,2,93);h-=3*smooth(.72,.95,br)*smooth(200,900,r);
+ const a=fanA(x,z),br=ridgeN(a*70+nz(x,z,.0015,2,92)*2.2,r*.0015,1,2,93);h-=3*smooth(.72,.95,br)*smooth(200,900,r);
  h+=2.5*(nz(x,z,.006,2,94)-.5);return h;}
 function landH(x,z){let h=fanH(x,z);const fz=FRONT_Z(x),up=smooth(fz+40,fz-500,z);
  const mtn=h+up*(1500*smooth(fz,fz-2600,z)+200*ridgeN(x,z,.0012,3,95)+120*(nz(x,z,.004,3,96)-.5));
@@ -38,7 +38,7 @@ const sandK=(x,z)=>smooth(.62,.75,nz(x,z,.0025,2,97))*smooth(800,2200,fanR(x,z))
 
 // ---------------------------------------------------------------- the fields (FNAMES)
 function fieldsAt(x,z,h,slope){const r=fanR(x,z),fz=FRONT_Z(x),pd=poolD(x,z),a=fanA(x,z);
- const br=ridgeN(a*40+nz(x,z,.002,2,92)*3,r*.004,1,2,93);
+ const br=ridgeN(a*70+nz(x,z,.0015,2,92)*2.2,r*.0015,1,2,93);
  const mtn=smooth(fz+20,fz-200,z),rock=clamp(Math.max(mtn*(.5+.5*smooth(.2,.5,slope)),smooth(.5,.8,slope)),0,1);
  const wet=clamp(Math.max(smooth(260,0,pd)*.97,smooth(.8,.95,br)*smooth(1000,2500,r)*.15)+.03,0,1);
  const sand=sandK(x,z)*(1-rock)*(1-smooth(80,10,pd));
@@ -69,7 +69,7 @@ const STAGE={
 {const K=h=>new THREE.Color(h),GR=K(0x5e5044),GR2=K(0x6e5e4e),CHN=K(0xa89884),ROCKC=K(0x5a4e46),ROCK2=K(0x6e6056),SAND=K(0xc8a070),WETC=K(0x4e4434),t=new THREE.Color();
  STAGE.paint=(F,c)=>{const n=nz(F.x,F.z,.02,2,98)-.5;c.copy(GR).lerp(GR2,clamp(.5+n*2,0,1));c.lerp(CHN,F.flow*.9);t.copy(ROCKC).lerp(ROCK2,clamp(.5+n*2.4,0,1));c.lerp(t,F.rock*.9);
   c.lerp(SAND,F.sand*.8);c.lerp(WETC,smooth(.55,.95,F.wet)*.75);};
- STAGE.layers=[['ground.gravel',F=>F.reg*(1-F.flow)+F.rock*.4],['ground.reg',F=>F.flow*.8],['ground.silt',F=>F.rock*.6],['ground.dune',F=>F.sand],
+ STAGE.layers=[['ground.gravel',F=>F.reg*(1-F.flow)*.7],['ground.reg',F=>F.flow*.8],['ground.rock',F=>F.rock],['ground.dune',F=>F.sand],
   ['ground.mud',F=>smooth(.6,.95,F.wet)],['ground.reedbed',F=>F.algal],['ground.crust',F=>F.crust]];
  STAGE.groundLabel='The north fan (gravel and braided channels)';}
 STAGE.views=function(gh,nearTree){const P=POOL,pop=nearTree(0,P.x,P.z);
