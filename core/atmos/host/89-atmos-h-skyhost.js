@@ -18,7 +18,7 @@
   const U={uSunDir:{value:V3()},uGiantDir:{value:V3()},uPole:{value:V3()},uRingN:{value:V3()},uZen:{value:C3()},uHor:{value:C3()},uSunHor:{value:C3()},
    uSunC:{value:C3()},uExt:{value:V3()},uShineC:{value:C3()},uCluster:{value:V3()},uFogC:{value:C3()},uSunI:{value:1},uHazeFloor:{value:.1},uDayStars:{value:0},
    uNight:{value:0},uEclipse:{value:0},uShineI:{value:0},uSpin:{value:0},uPixAng:{value:.001},uTime:{value:0},uFogD:{value:.0001},uEq:{value:new T.Matrix3()},
-   uMoonDir:{value:[V3(),V3(),V3(),V3()]},uMoonC:{value:[C3(),C3(),C3(),C3()]},uMoonL:{value:[V3(),V3(),V3(),V3()]},uMoonV:{value:[V3(),V3(),V3(),V3()]},uMoonR:{value:[.005,.005,.005,.005]},uMoonK:{value:[0,1,2,3]},uMoonF:{value:[0,0,0,0]},uRingT:{value:V3()},
+   uMoonDir:{value:[V3(),V3(),V3(),V3()]},uMoonC:{value:[C3(),C3(),C3(),C3()]},uMoonL:{value:[V3(),V3(),V3(),V3()]},uMoonV:{value:[V3(),V3(),V3(),V3()]},uMoonR:{value:[.005,.005,.005,.005]},uMoonK:{value:[0,1,2,3]},uMoonF:{value:[0,0,0,0]},uMoonT:{value:0},uRingT:{value:V3()},
    uStar:{value:SKY.stars.map(()=>new T.Vector4())},uStarC:{value:SKY.stars.map(s=>new T.Color(s[3],s[4],s[5]))},
    uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
    uCloud:{value:new T.Vector4()},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
@@ -52,7 +52,7 @@
    c(U.uZen,L.zen);c(U.uHor,L.hor);c(U.uSunHor,L.sunHor);c(U.uSunC,L.sunC);v(U.uExt,L.ext);c(U.uShineC,L.shineC);c(U.uFogC,L.fogC);
    U.uSunI.value=L.sunI;U.uHazeFloor.value=L.hazeFloor;U.uDayStars.value=L.dayStars;U.uNight.value=L.night;U.uEclipse.value=st.eclipse;U.uShineI.value=L.shineI;
    U.uSpin.value=st.spin;U.uFogD.value=L.fogD;
-   v(U.uRingT,st.ringLine);st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonL.value[i].set(m.light[0],m.light[1],m.light[2]);U.uMoonV.value[i].set(m.lead[0],m.lead[1],m.lead[2]);U.uMoonK.value[i]=m.kind;U.uMoonF.value[i]=m.front;U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
+   v(U.uRingT,st.ringLine);U.uMoonT.value=st.t*24;st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonL.value[i].set(m.light[0],m.light[1],m.light[2]);U.uMoonV.value[i].set(m.lead[0],m.lead[1],m.lead[2]);U.uMoonK.value[i]=m.kind;U.uMoonF.value[i]=m.front;U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
    const C=P.clouds;U.uCloud.value.set(L.cover,C.cumulus,C.cirrus,C.bank);U.uCloudH.value.set(C.height,C.cirrusHeight,C.scale,C.drift);
    U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);
    U.uTime.value=(A.clock?A.clock.t:clock.t);
