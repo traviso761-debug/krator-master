@@ -455,10 +455,24 @@ func apply(rec: Dictionary) -> void:
 						if worn.has(int(i)):
 							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
-				_coat(m, b, mi, rec, gain, hide)
-			if part["role"] == "armour":
+				# the coat's edge: the hide without a furred mod's (a therian's head carries the fur on: coatShells)
+				var edge := hide
+				var furred := []
+				for x in KChar.mods(rec, kit):
+					if x.get("furred", false):
+						furred.append(items.find(x))
+				if not furred.is_empty():
+					edge = Image.create(nreg, 1, false, Image.FORMAT_R8)
+					for r in b["cover"].size():
+						for i in b["cover"][r]:
+							if worn.has(int(i)) and not furred.has(int(i)):
+								edge.set_pixel(r, 0, Color(1, 0, 0))
+				_coat(m, b, mi, rec, gain, hide, edge)
+			if part["role"] == "armour" or part["role"] == "mod":
 				var legs: bool = part["slot"] == "legs"
-				_fur(m, _item_of(part), Vector2(feet_top if legs else -1000.0, hem if legs else 1000.0))
+				var fmt: int = mi.mesh.surface_get_format(s)
+				_fur(m, _item_of(part), Vector2(feet_top if legs else -1000.0, hem if legs else 1000.0),
+					(fmt & Mesh.ARRAY_FORMAT_TEX_UV2) != 0, (fmt & Mesh.ARRAY_FORMAT_COLOR) != 0)
 			mi.set_surface_override_material(s, m)
 		if b["ground"] != null:
 			var G: Dictionary = b["ground"]
@@ -503,6 +517,8 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
 	elif role == "hair":
 		m2.albedo_color = _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("hair", 1.0)))
+	elif role == "coat":                 # a therian's head (tools/heads.py): its shades times the coat's colour
+		m2.albedo_color = _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("coat", gain.get("hair", 1.0))))
 	else:
 		var dye = rec.get("dye", {}).get(part["slot"]) if part["role"] == "armour" else null
 		m2.albedo_color = Color(dye) if dye != null else Color.WHITE
@@ -1935,14 +1951,16 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 var fur := {}
 
 
-func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
+# uv2: the piece carries its own fur cover and metres per UV in UV2 (a therian's head: the shells run as a coat's,
+# kchar_fur.gdshader mode 2); colored: it has vertex colours, which the shells take
+func _fur(m: Material, it: Dictionary, band: Vector2, uv2 := false, colored := false) -> void:
 	var rows: Array = it.get("fur", [])
 	if fur.is_empty() or rows.is_empty() or m == null:
 		return
 	var scale := float(fur.get("items", {}).get(it["id"], {}).get("pile", 1.0))
 	if scale <= 0.0:
 		return
-	var n := int(fur.get("layers", 12))
+	var n0 := int(fur.get("layers", 12))
 	var kinds: Dictionary = fur["kinds"]
 	var by_kind := {}
 	for r in rows:
@@ -1956,6 +1974,7 @@ func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
 		var K: Dictionary = kinds[kind]
 		var rs: Array = by_kind[kind].slice(0, 4)
 		var pile := float(K["pile"]) * scale
+		var n := int(K.get("layers", n0)) if uv2 else n0
 		var R := []
 		for k in 4:
 			R.append(Vector4(rs[k][0], rs[k][1], rs[k][3], rs[k][4]) if k < rs.size() else Vector4(2, 2, 0, 0))
@@ -1981,6 +2000,9 @@ func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
 			fm.set_shader_parameter("kfTp", float(K.get("tip", 1.0)))
 			fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
 			fm.set_shader_parameter("kfF", band)
+			fm.set_shader_parameter("mode", 2 if uv2 else 0)
+			fm.set_shader_parameter("use_color", colored)
+			fm.set_shader_parameter("kfU0", 1.0 if uv2 and k == 1 and K.get("undercoat", false) else 0.0)
 			last.next_pass = fm
 			last = fm
 
@@ -2144,7 +2166,7 @@ func _coat_static(b: Dictionary, mi: MeshInstance3D, id: String, coat: Dictionar
 	return out
 
 
-func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain: Dictionary, hide: Image) -> void:
+func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain: Dictionary, hide: Image, edge: Image = null) -> void:
 	var coats: Dictionary = fur.get("coats", {})
 	var id = rec.get("coat")
 	if id == null or not coats.has(id) or b.get("joined") == null:
@@ -2163,7 +2185,7 @@ func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain
 	d.fill(INF)
 	var front := []
 	for i in n:
-		if hide.get_pixel(int(R[i * 4] + 0.5), 0).r > 0.5 and d[src[i]] > 0.0:
+		if (edge if edge != null else hide).get_pixel(int(R[i * 4] + 0.5), 0).r > 0.5 and d[src[i]] > 0.0:
 			d[src[i]] = 0.0
 			front.append(src[i])
 	for r in range(1, COAT_FADE + 1):
@@ -2189,7 +2211,7 @@ func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain
 		var t := float(k) / layers
 		var fm := ShaderMaterial.new()
 		fm.shader = FUR_SHADER
-		fm.set_shader_parameter("body", true)
+		fm.set_shader_parameter("mode", 1)
 		fm.set_shader_parameter("fur_tex", tex)
 		fm.set_shader_parameter("fur_w", W)
 		fm.set_shader_parameter("albedo", col)

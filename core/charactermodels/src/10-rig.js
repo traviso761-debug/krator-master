@@ -140,8 +140,11 @@ var KCHAR = (function(){
       // a four-armed top's lower sleeves are a piece of their own (kit item sleeves2), left off a cybernetic pair
       // (a mod with bare: tools/mods.py split_lower)
       var bare = modsOf(rec, kit).some(function(m){ return m.bare; });
+      // a head mod that covers the hair (a therian's head) leaves out the hair and the beard
+      var headMod = modsOf(rec, kit).some(function(m){ return m.covers_hair; });
       MPFB_SLOTS.forEach(function(slot){
         var it = mpfbItem(rec, kit, slot);
+        if(it && headMod && (slot === 'hair' || slot === 'beard')) return;
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
         if(it && it.sleeves2 && !bare) out.push({ key:key(it.sleeves2), mesh:'*', role:'armour', slot:slot });
       });
@@ -211,6 +214,8 @@ var KCHAR = (function(){
       var it = mpfbItem(rec, kit, slot);
       ((it && it.hide_parts) || []).forEach(function(m){ out[m] = true; });
     });
+    // and a mod's (a therian's head hides the brows, lashes, eyes, lips and ears)
+    modsOf(rec, kit).forEach(function(it){ (it.hide_parts || []).forEach(function(m){ out[m] = true; }); });
     return out;
   }
 

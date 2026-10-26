@@ -89,10 +89,14 @@ static func parts(rec: Dictionary, kit: Dictionary) -> Array:
 	var hat = item(rec, kit, "head")
 	# a four-armed top's lower sleeves are a piece of their own (sleeves2), left off a cybernetic pair (a bare mod)
 	var bare := false
+	var head_mod := false               # a head mod that covers the hair (a therian's head): no hair, no beard
 	for m in mods(rec, kit):
 		bare = bare or m.get("bare", false)
+		head_mod = head_mod or m.get("covers_hair", false)
 	for slot in SLOTS:
 		var it = item(rec, kit, slot)
+		if it != null and head_mod and (slot == "hair" or slot == "beard"):
+			continue
 		if it != null and not (slot == "hair" and hat != null and hat.get("covers_hair", false)):
 			out.append({"key": key(it["glb"]), "mesh": "*", "role": slot if slot == "hair" or slot == "beard" else "armour", "slot": slot})
 		if it != null and it.has("sleeves2") and not bare:
@@ -140,6 +144,9 @@ static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
 		if it != null:
 			for m in it.get("hide_parts", []):
 				out[m] = true
+	for it in mods(rec, kit):           # and a mod's (a therian's head: brows, lashes, eyes, lips, ears)
+		for m in it.get("hide_parts", []):
+			out[m] = true
 	return out
 
 

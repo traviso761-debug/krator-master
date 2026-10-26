@@ -99,7 +99,7 @@ function KCharFigure(body, sliders, load){
         var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
         m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, !!it0.loose, slot0 === 'legs');
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
-      if(part.role === 'armour') furShells(m, itemByKey[part.key]);
+      if(part.role === 'armour' || part.role === 'mod') furShells(m, itemByKey[part.key]);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -129,10 +129,13 @@ function KCharFigure(body, sliders, load){
     if(!(scale > 0)) return;
     var n = F.layers == null ? 12 : F.layers, uv = m.geometry.attributes.uv, i0 = m.userData.index0;
     if(!uv || !i0) return;
+    // a piece that carries its own cover and metres per UV (TEXCOORD_1: a therian's head, tools/heads.py) runs as a coat
+    // does, its strands on its UV scaled per vertex; rows only pick the triangles
+    var piece = m.geometry.attributes.uv2 ? 'uv2' : false;
     var byKind = {}, band = m.userData.furBand = { value:new THREE.Vector2(-1e3, 1e3) };
     rows.forEach(function(r){ if(F.kinds[r[2]]) (byKind[r[2]] = byKind[r[2]] || []).push(r); });
     Object.keys(byKind).forEach(function(kind){
-      var K = F.kinds[kind], rs = byKind[kind].slice(0, 4), pile = K.pile * scale, idx = [];
+      var K = F.kinds[kind], rs = byKind[kind].slice(0, 4), pile = K.pile * scale, idx = [], nk = piece && K.layers ? K.layers : n;
       // the triangles with a corner in the rows (a band's edge is cut in the shader)
       for(var t=0;t<i0.length;t+=3){
         for(var c=0;c<3;c++){
@@ -147,14 +150,16 @@ function KCharFigure(body, sliders, load){
       // the garment's own shader changes (pushOut, opaqueCutout) carry over, keyed by its program
       var own = m.material.hasOwnProperty('onBeforeCompile'), key0 = own && m.material.customProgramCacheKey ? m.material.customProgramCacheKey() : 'own';
       var R = [0, 1, 2, 3].map(function(k){ var r = rs[k] || [2, 2, 0, 0]; return new THREE.Vector4(r[0], r[1], r[3], r[4]); });
-      for(var k=1;k<=n;k++){
-        var tk = k / n, mat = new THREE.MeshStandardMaterial({ map:m.material.map, roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true });
+      for(var k=1;k<=nk;k++){
+        var tk = k / nk, mat = new THREE.MeshStandardMaterial({ map:m.material.map, roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true,
+                                                                 vertexColors:!!m.material.vertexColors });
+        if(!m.material.map) mat.defines = { USE_UV:'' };
         mat.color = m.material.color;       // the same Color: apply()'s dye and tint reach the shells
         mat.onBeforeCompile = furShader(own ? m.material.onBeforeCompile : null, {
           kfH:{ value:pile * tk }, kfC:{ value:(K.comb || 0) * pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:R },
           kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
-          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band });
-        mat.customProgramCacheKey = own ? function(){ return 'kchar-fur-' + key0; } : function(){ return 'kchar-fur'; };
+          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band, kfU0:{ value:k === 1 && K.undercoat ? 1 : 0 } }, piece);
+        mat.customProgramCacheKey = own ? function(){ return 'kchar-fur-' + key0 + (piece || ''); } : function(){ return 'kchar-fur' + (piece || ''); };
         var s = new THREE.SkinnedMesh(geo, mat);
         s.name = m.name + '|fur:' + kind + ':' + k; s.frustumCulled = false; s.castShadow = false;
         s.bind(m.skeleton, new THREE.Matrix4());
@@ -163,8 +168,9 @@ function KCharFigure(body, sliders, load){
       }
     });
   }
-  // body: a coat's shells (coatShells): each vertex's cover (furK, under 1 thins the strands) and the metres one unit
-  // of its UV spans (furM) are attributes, and the strands run on the body's UV map scaled by them, rather than in rows
+  // body: 'coat', a coat's shells (coatShells): each vertex's cover (furK, under 1 thins the strands) and the metres one
+  // unit of its UV spans (furM) are attributes, and the strands run on the body's UV map scaled by them, rather than in
+  // rows; 'uv2', a piece's own (a therian's head): the same two read from its second UV
   function furShader(prev, U, body){
     return function(sh, r){
       if(prev) prev(sh, r);              // the push (pushOut) first: the fur stands on the cloth where it is pushed to
@@ -173,9 +179,9 @@ function KCharFigure(body, sliders, load){
       // tucked in, it came out through the boots' shafts, and through a deel's skirt in a stride. position is the rest,
       // after the morphs, as the boots' top and the hem are)
       sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nvarying float kfK;\n' +
-        (body ? 'attribute float furK;\nattribute float furM;\nvarying float kfM;\n' : '') + sh.vertexShader.replace('#include <project_vertex>',
+        (body === 'uv2' ? 'attribute vec2 uv2;\nvarying float kfM;\n' : body ? 'attribute float furK;\nattribute float furM;\nvarying float kfM;\n' : '') + sh.vertexShader.replace('#include <project_vertex>',
         'vec3 kfN = normalize(objectNormal), kfD = vec3(0.0, -1.0, 0.0);\n\tkfD -= kfN * dot(kfD, kfN);\n' +
-        (body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
+        (body === 'uv2' ? '\tkfK = uv2.x; kfM = uv2.y;\n' : body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
         '\ttransformed += (kfN * kfH + kfD * kfC) * kfK;\n#include <project_vertex>');
       sh.fragmentShader = 'varying float kfK;\nuniform float kfT;\nuniform vec4 kfR[4];\nuniform float kfS;\nuniform float kfW;\nuniform float kfL;\nuniform float kfSh;\nuniform float kfTp;\nuniform float kfV;\n' +
         (body ? 'varying float kfM;\nuniform float kfU0;\n' : '') + FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
@@ -283,7 +289,7 @@ function KCharFigure(body, sliders, load){
       mat.onBeforeCompile = furShader(null, {
         kfH:{ value:K.pile * tk }, kfC:{ value:(K.comb || 0) * K.pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
         kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
-        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 } }, true);
+        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 } }, 'coat');
       mat.customProgramCacheKey = function(){ return 'kchar-coat'; };
       var s = new THREE.SkinnedMesh(geo, mat);
       s.name = m.name + '|coat:' + id + ':' + L; s.frustumCulled = false; s.castShadow = false;
@@ -294,12 +300,17 @@ function KCharFigure(body, sliders, load){
     m.add(group);
     return { id:id, C:C, src:src, nb:nb, ns:ns, geo:geo, group:group, color:color };
   }
+  function coatEdge(rec){
+    var furred = KCHAR.mods(rec, kit).filter(function(x){ return x.furred; }).map(function(x){ return x.id; });
+    if(!furred.length) return null;
+    return KCHAR.hidden(Object.assign({}, rec, { mods:(rec.mods || []).filter(function(id){ return furred.indexOf(id) < 0; }) }), kit).base;
+  }
   function coatHides(rec){
     var F = KCharFigure.fur, c = F && F.coats && rec.coat ? F.coats[rec.coat] : null, out = {};
     ((c && c.hide_parts) || []).forEach(function(p){ out[p] = true; });
     return out;
   }
-  function coatShells(m, rec, gain, hide){
+  function coatShells(m, rec, gain, hide, edge){
     var F = KCharFigure.fur, coat = F && F.coats && rec.coat ? F.coats[rec.coat] : null, S = m.userData.coat;
     var K = coat && F.kinds[coat.kind];
     if(S && (!K || S.id !== rec.coat)){ m.remove(S.group); S = m.userData.coat = null; }
@@ -308,7 +319,9 @@ function KCharFigure(body, sliders, load){
     // the rings from the hidden skin: 0 on a hidden triangle's corners, counting out through what shows
     var i0 = m.userData.index0, d = new Float32Array(S.ns).fill(Infinity), front = [], k, t;
     var sv = function(v){ return S.src ? S.src[v] : v; };
-    if(hide) for(t=0;t<i0.length/3;t++) if(hide[t]) for(k=0;k<3;k++){ var v = sv(i0[3*t+k]); if(d[v]) { d[v] = 0; front.push(v); } }
+    // (edge: the hide without a furred mod's, whose head carries the fur on: no bare ring at the neck)
+    edge = edge || hide;
+    if(edge) for(t=0;t<i0.length/3;t++) if(edge[t]) for(k=0;k<3;k++){ var v = sv(i0[3*t+k]); if(d[v]) { d[v] = 0; front.push(v); } }
     for(var r=1;r<=COAT_FADE && front.length;r++){
       var next = [];
       front.forEach(function(v){ S.nb[v].forEach(function(q){ if(d[q] > r){ d[q] = r; next.push(q); } }); });
@@ -524,11 +537,12 @@ function KCharFigure(body, sliders, load){
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
-              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); coatShells(m, rec, gain, hide.base); }
+              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); coatShells(m, rec, gain, hide.base, coatEdge(rec)); }
               else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
             }
             if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
+            else if(role === 'coat') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.coat || gain.hair));   // a therian's head (tools/heads.py)
             else if(role === 'eye'){ m.material.color.set('#ffffff'); if(m.material.userData.eyeTint) m.material.userData.eyeTint.value.copy(tintOf(rec.eye_color || DEFAULT_EYE, gain.eye || 1)); }
             else {
               var dye = rec.dye && (part.role === 'armour' ? rec.dye[part.slot] : (part.role === 'hair' || part.role === 'beard') ? rec.dye.hair : null);

@@ -1302,6 +1302,12 @@ def main():
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     # the mods (mods.py: a second pair of arms, flesh or cybernetic; rib gills), worn like items in slot 'mods'
     mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
+    if not merge and not big:
+        # the therian heads (tools/heads.py): a body mod made from the base, its morphs and Godot shapes packed here by _VIDX
+        import heads
+        he, hr = heads.make(os.path.join(pieces, 'base.glb'), pieces, name, int(len(BT)))
+        mod_items.append(he)
+        mod_roles.update(hr)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
@@ -1444,6 +1450,9 @@ def main():
     kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
            'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
            'tint': {'roles': roles, 'gain': {k: round(1 / srgb_lin(v), 4) for k, v in TINT_MEAN.items()}}}
+    if not big:
+        import heads
+        kit['tint']['gain']['coat'] = round(kit['tint']['gain']['hair'] / heads.SHADE, 4)
     if big:
         kit.update(giant.kit_extra())
     json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)

@@ -6,7 +6,8 @@
 // cell, of its own length (kfL), tapering to its tip (kfW its width at the root). Roots shaded (kfSh), tips lit (kfTp),
 // each strand lighter or darker (kfV). kfF: a legs item's fur lies between the boots' top and the top's hem (rest
 // heights; here the unmorphed rest, CUSTOM1, where the page takes the morphed one).
-// body: a coat's shell over the joined skin (kchar_figure.gd _coat): each vertex's cover and metres per UV come from
+// mode 2: a piece's own cover and metres per UV in UV2 (a therian's head, tools/heads.py), its vertex colours (use_color).
+// mode 1: a coat's shell over the joined skin (kchar_figure.gd _coat): each vertex's cover and metres per UV come from
 // fur_tex (a texel per vertex, by VERTEX_ID), a cover under 1 keeps that share of the strands, and the strands run on
 // the skin's UV scaled by its metres; kfU0 1 on an undercoat's first layer keeps it whole where the cover is dense.
 shader_type spatial;
@@ -28,7 +29,8 @@ uniform float kfSh = 1.0;
 uniform float kfTp = 1.0;
 uniform float kfV = 0.0;
 uniform vec2 kfF = vec2(-1000.0, 1000.0);
-uniform bool body = false;
+uniform int mode = 0;          // 0 a garment's rows, 1 a coat (fur_tex), 2 a piece's own UV2 (a therian's head)
+uniform bool use_color = false;
 uniform sampler2D fur_tex : filter_nearest;
 uniform int fur_w = 1024;
 uniform float kfU0 = 0.0;
@@ -46,10 +48,13 @@ void vertex() {
 	vec3 n = normalize(NORMAL);
 	vec3 d = vec3(0.0, -1.0, 0.0);
 	d -= n * dot(d, n);
-	if (body) {
+	if (mode == 1) {
 		vec2 km = texelFetch(fur_tex, ivec2(VERTEX_ID % fur_w, VERTEX_ID / fur_w), 0).rg;
 		kfK = km.r;
 		kfM = km.g;
+	} else if (mode == 2) {
+		kfK = UV2.x;
+		kfM = UV2.y;
 	} else {
 		kfK = smoothstep(kfF.x, kfF.x + 0.03, CUSTOM1.x) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, CUSTOM1.x));
 		kfM = 0.0;
@@ -59,6 +64,7 @@ void vertex() {
 
 void fragment() {
 	vec4 r0 = vec4(0.0);
+	bool body = mode > 0;
 	bool inside = body;
 	for (int i = 0; i < 4; i++) {
 		if (!inside && UV.y >= kfR[i].x && UV.y <= kfR[i].y) {
@@ -99,6 +105,6 @@ void fragment() {
 	if (cut) {
 		discard;
 	}
-	ALBEDO = (texture(tex, UV) * albedo).rgb * mix(kfSh, kfTp, kfT) * tone;
+	ALBEDO = (texture(tex, UV) * albedo).rgb * mix(kfSh, kfTp, kfT) * tone * (use_color ? COLOR.rgb : vec3(1.0));
 	ROUGHNESS = rough;
 }

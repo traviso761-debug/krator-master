@@ -36,7 +36,7 @@ TABLE = {
 }
 
 CT = {5121: np.uint8, 5123: np.uint16, 5125: np.uint32, 5126: np.float32}
-NC = {'SCALAR': 1, 'VEC2': 2, 'VEC3': 3, 'VEC4': 4}
+NC = {'SCALAR': 1, 'VEC2': 2, 'VEC3': 3, 'VEC4': 4, 'MAT4': 16}
 
 
 def glb(path):

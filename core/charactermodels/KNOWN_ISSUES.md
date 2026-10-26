@@ -148,7 +148,15 @@
 - **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt, the brush and the short coat read as fur; body hair
   (tuned once: combed flat, inked toward the skin) reads as hair from a few metres and as streaks close up. The Coyote
   Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
-  face has a human face's shape, the eyes and mouth bare by ellipses. A MakeHuman UV seam shows in motion as a darker
+  face has a human face's shape, the eyes and mouth bare by ellipses (until the coyote head, below).
+- **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head: no jaw that opens, no
+  ears that move, no expression; the eyes are spheres in sockets; its fur comes from a UV wrapped round the muzzle, so the
+  strands run unevenly at the back of the skull and the nose's end. It takes the skull's morphs by nearest vertex, so a
+  child's or an old body's head is the man's head moved, a little large on the short ones. Headgear made for a human
+  head floats on it (no people draws one on it yet). In this checkout it was made by `tools/heads.py` from the published
+  base: the Godot twin has no shapes for it and its skin regions do not yet hide the human head under it, until
+  `make_mpfb.py` next runs (which makes it with the other mods); its fur and look were checked in Godot on the bare piece.
+  The digitigrade legs are not built. A MakeHuman UV seam shows in motion as a darker
   line across the chest under a full coat (the strands run on the UV map and break at the seam). The bare face is an ellipse sized from the
   head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the
   temples. The ears (their own primitive) stay bare. A UV seam shows as a faint line in a short coat (round the

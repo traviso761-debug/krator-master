@@ -183,6 +183,15 @@ area you are about to change.
   face weights: everything above the neck rides Head).
 - **A furred face had no eyes** (the coyote coat over the whole head) → leave the eyes and the mouth bare as small ellipses
   in the face ellipse's own measure; first guesses sat a fifth of a face too high and too low, so check them on a shot.
+- **No Blender, no marching cubes, and a head was wanted** → a signed distance field (smooth unions of ellipsoids and
+  round cones) meshed by surface nets in numpy (a vertex per crossed cell, a quad per crossed edge, wound afterwards by
+  the field's gradient, vertices projected onto the surface along it) gives a clean organic mesh in seconds
+  (`tools/heads.py`). Thin parts (an ear's tip) need to be thicker than two grid cells or they break into fragments.
+- **A piece's morphs without the export** → give each vertex `_VIDX` of the base vertex it should follow and ship the
+  base skin's own morph entry under the piece's material names: the page's morph code matches by material and `_VIDX`.
+- **The Godot test hung after a small edit** → a `:=` on a value from an untyped node (`mi.mesh.surface_get_format(s)`)
+  is a parse error, and a parse error hangs Godot instead of quitting: give it a type (`var fmt: int = ...`) and load
+  the script alone to see the error.
 - **Sparse body hair read as dirt** → draw it in a colour partway from the skin's toward the hair's (`ink`), comb it flat
   and keep the comb per layer under a strand's width (more layers), or the streaks step like stairs.
 

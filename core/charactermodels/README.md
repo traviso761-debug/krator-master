@@ -257,6 +257,20 @@ garment's attributes and skeleton, so the morphs, the clips, the push and the dy
 between the top of the boots and the lowest hem of the top (tucked in, it came out through the shafts and a deel's
 skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width, comb, clump, root shade, tip, vary) and a
 per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
+**Therian heads** (2026-10-26; `tools/heads.py`): a body mod (slot `mods`, group `head`) that replaces the MakeHuman head
+with an animal's, so far the **coyote head** the Coyote Men's strangers wear (`data/peoples.json` mods). It is made without
+Blender from the body's own base: a signed distance field (cranium, muzzle, jaw, cheeks, nose pad, ears, a plug into the
+neck, the eye sockets cut out) placed from the base's head at rest, meshed by surface nets on a 4 mm grid; vertex colours
+for the coat's pattern (a darker saddle, pale cheeks and throat, a dark nose, lip line and eye rims) that the kit's `coat`
+tint (the hair colour over the head's base shade) multiplies; a UV round the muzzle's axis; its fur cover and metres per
+UV in the second UV, which the figure's fur shells read (`furShells` `uv2`, Godot `_fur` mode 2; the nose, lips and eye
+rims bare); amber eyes of its own. Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
+the face sliders leave the muzzle alone), weighted to the Head and into the Neck at the cut. The item hides the head's
+skin, the brows, lashes, eyes, lips and ears (`hide_parts`, which `KCHAR.hiddenParts` now takes from mods too), the hair
+and beard (`covers_hair` on a mod), and is `furred`, so a coat runs on up the neck under it. `make_mpfb.py` makes it with
+the other mods (its morphs, the Godot shapes and the skin regions from the export); `python3 tools/heads.py <body> <base>`
+makes it alone (the morph file the base skin's own entry under the head's materials, the Godot shapes empty).
+
 **Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
 no `coat` field). Four so far: a shaggy pelt (the Khaayken; 5 cm), a coyote's brush (the Coyote Men; 2 cm, agouti, its
 face furred but for the eyes and mouth), a short coat (sleek, an animal's) and body hair (sparse, on the chest, arms and
