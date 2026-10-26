@@ -18,9 +18,9 @@
   const U={uSunDir:{value:V3()},uGiantDir:{value:V3()},uPole:{value:V3()},uRingN:{value:V3()},uZen:{value:C3()},uHor:{value:C3()},uSunHor:{value:C3()},
    uSunC:{value:C3()},uExt:{value:V3()},uShineC:{value:C3()},uCluster:{value:V3()},uFogC:{value:C3()},uSunI:{value:1},uHazeFloor:{value:.1},uDayStars:{value:0},
    uNight:{value:0},uEclipse:{value:0},uShineI:{value:0},uSpin:{value:0},uPixAng:{value:.001},uTime:{value:0},uFogD:{value:.0001},uEq:{value:new T.Matrix3()},
-   uMoonDir:{value:[V3(),V3()]},uMoonC:{value:[C3(),C3()]},uMoonR:{value:[.005,.005]},
+   uMoonDir:{value:[V3(),V3(),V3()]},uMoonC:{value:[C3(),C3(),C3()]},uMoonL:{value:[V3(),V3(),V3()]},uMoonR:{value:[.005,.005,.005]},uMoonK:{value:[0,1,2]},uRingT:{value:V3()},
    uStar:{value:SKY.stars.map(()=>new T.Vector4())},uStarC:{value:SKY.stars.map(s=>new T.Color(s[3],s[4],s[5]))},
-   uGZone:{value:C3()},uGBelt:{value:C3()},uGStorm:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
+   uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
    uCloud:{value:new T.Vector4()},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
    uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
    uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)}};
@@ -40,7 +40,7 @@
    if(U.uRidgeTex.value)U.uRidgeTex.value.dispose();
    const t=new T.DataTexture(data,n,A.SKY_MAX_RIDGES,T.RGBAFormat,T.FloatType);t.minFilter=t.magFilter=T.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;
    U.uRidgeTex.value=t;U.uRidgeN.value=L.length;};
-  S.setPreset=p=>{P=S.preset=p;const G=P.giant;['Zone','Belt','Storm','Rim','Night','Ring'].forEach(k=>U['uG'+k].value.setRGB(...G[k.toLowerCase()]));setRidges();S.update(0);};
+  S.setPreset=p=>{P=S.preset=p;const G=P.giant;['Deep','Mid','Pale','Cloud','Plank','Haze','Teal','Rim','Night','Ring'].forEach(k=>U['uG'+k].value.setRGB(...G[k.toLowerCase()]));setRidges();S.update(0);};
   S.setSite=s=>{P.site=s;S.update(0);};
   const v=(u,a)=>u.value.set(a[0],a[1],a[2]),c=(u,a)=>u.value.setRGB(a[0],a[1],a[2]);
   S.update=function(dt){
@@ -52,7 +52,7 @@
    c(U.uZen,L.zen);c(U.uHor,L.hor);c(U.uSunHor,L.sunHor);c(U.uSunC,L.sunC);v(U.uExt,L.ext);c(U.uShineC,L.shineC);c(U.uFogC,L.fogC);
    U.uSunI.value=L.sunI;U.uHazeFloor.value=L.hazeFloor;U.uDayStars.value=L.dayStars;U.uNight.value=L.night;U.uEclipse.value=st.eclipse;U.uShineI.value=L.shineI;
    U.uSpin.value=st.spin;U.uFogD.value=L.fogD;
-   st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
+   v(U.uRingT,st.ringLine);st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonL.value[i].set(m.light[0],m.light[1],m.light[2]);U.uMoonK.value[i]=m.kind;U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
    const C=P.clouds;U.uCloud.value.set(L.cover,C.cumulus,C.cirrus,C.bank);U.uCloudH.value.set(C.height,C.cirrusHeight,C.scale,C.drift);
    U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);
    U.uTime.value=(A.clock?A.clock.t:clock.t);

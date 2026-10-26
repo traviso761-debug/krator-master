@@ -31,13 +31,18 @@ ok('Voth is the reference: 40 S, the sub-giant point 87.1 E',near(voth.latitude,
 {const q=sunAA(voth,350,19.5),w=sunAA(voth,350-182.5,16.8);ok('the sun sets south of west in summer, north of west in winter (WNW)',q.az<270&&q.az>220,q.az>270);}
 
 // ---- the moons: phases and the Double Dark
-const lit=(t,i)=>{const day=Math.floor(t),h=(t-day)*24;return A.skyState({latitude:-40,subGiantLon:0},h,day).moons[i].lit;};
+const lit=(t,i)=>{const day=Math.floor(t),h=(t-day)*24;return A.skyState({latitude:-40,subGiantLon:0},h,day).moons[i+1].lit;};   // i: 0 the Week, 1 the Thirteen
 ok('both moons are new at the Double Dark the day before game start',lit(S.doubleDark,0)<.01&&lit(S.doubleDark,1)<.01,lit(S.doubleDark,0)>.01);
 ok('a day after it, both are thin crescents at game start',lit(0.25,0)<.15&&lit(0.25,1)<.05&&lit(0.25,0)>.005,lit(0.25,0)>.5);
 const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit(t,i);if(l<best[0])best=[l,t];}return best[1];};
 {const w=nextNew(0,S.doubleDark)-S.doubleDark,th=nextNew(1,S.doubleDark)-S.doubleDark;ok('the Week waxes and wanes every 7 days, the Thirteen every 13',near(w,7,.15)&&near(th,13,.15),near(w,6.87,.05));}
 {let best=[9,0];for(let t=S.doubleDark+85;t<S.doubleDark+97;t+=.02){const l=Math.max(lit(t,0),lit(t,1));if(l<best[0])best=[l,t];}
  ok('the next Double Dark is 91 days on, both moons dark together',near(best[1]-S.doubleDark,91,1)&&best[0]<.06,near(best[1]-S.doubleDark,80,1));}
+{const m=A.skyState(voth,12,0).moons[0],q=V.altAz(m.dir),m2=A.skyState(voth,3,40).moons[0];
+ ok('the Companion (a Trojan) hangs fixed 60 degrees from the giant along the ring line, about 0.28 degrees across (Ceres-sized)',near(Math.abs(m.along),60,1e-6)&&near(V.dot(m.dir,m2.dir),1,1e-9)&&near(m.radiusDeg*2,.278,.01)&&q.alt>0,Math.abs(m.along)<10);}
+{const l=[0,6,12,18].map(h=>A.skyState(voth,h,0).moons[0].lit);ok('...and waxes and wanes once a day',Math.max(...l)-Math.min(...l)>.5,Math.max(...l)-Math.min(...l)<.1);}
+{let on=true;for(let d=0;d<30;d+=.31){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons){const c=Math.abs(V.dot(m.dir,st.ringLine)),g=V.dot(m.dir,st.giantDir);const g2=st.giantDir,r2=st.ringLine,pn=[g2[1]*r2[2]-g2[2]*r2[1],g2[2]*r2[0]-g2[0]*r2[2],g2[0]*r2[1]-g2[1]*r2[0]];if(Math.abs(V.dot(m.dir,pn))>1e-9)on=false;}}
+ ok('every moon rides on the ring line',on,false);}
 {const s=A.skyState(voth,22,10),g=s.giantDir;ok('a moon is never between Krator and the giant (it hides behind the disc)',(()=>{for(let d=0;d<60;d+=.37){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons){const c=V.dot(m.dir,st.giantDir);if(c>Math.cos(15*Math.PI/180)&&m.distKm<S.giant.orbitKm)return false;}}return true;})(),false);}
 
 // ---- eclipses come in seasons round the equinoxes

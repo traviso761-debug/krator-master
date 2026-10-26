@@ -5,7 +5,10 @@
 // owner, 2026-10-25): it hangs at declination -37.6, not on the celestial equator where a tidally locked moon's giant
 // would be, so the sun (declination -23..23) passes behind it only ~27 days a year round the southern summer solstice
 // (12 of them total) instead of ~2.5 months round each equinox. A deliberate cheat: its ring plane is taken through the
-// line of sight so the rings stay a hairline. The two sister moons orbit in Krator's equatorial plane; they orbit the giant (the Week 6.87 d, the Thirteen 12.55 d), so their phases,
+// line of sight so the rings stay a hairline. The giant's moons orbit in its equator, the plane of its rings, so from
+// Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Ceres-like, a Trojan sharing Krator's own
+// orbit 60 degrees ahead, so it hangs fixed beside the giant and waxes and wanes once a day; the Week (6.87 d, dark and
+// cratered, Callisto-like) and the Thirteen (12.55 d, clouded, Venus-like) orbit outside Krator, so their phases,
 // 7 and 13 days as seen from Krator, and the Double Dark every 91 days come out of the geometry, not a table; the stars
 // turn at the sidereal rate, so the Pleiades' season follows the year.
 // No THREE, no DOM. Directions are world unit vectors [x,y,z]: x east, y up, z south. Angles in degrees unless named.
@@ -25,10 +28,12 @@
   frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:87.12},
   giant:{diaDeg:30, decDeg:-37.6, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
   sunDiaDeg:0.53,
-  // the sister moons orbit the giant in Krator's equatorial plane. phase0: both new at the Double Dark the day before
-  // game start (the owner, 2026-10-25), solved below
-  moons:[{name:'Week', periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[.86,.84,.80]},
-         {name:'Thirteen', periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[.82,.74,.70]}],
+  // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: a 2:1 inner moon, proposed), 1 Callisto-like (dark, cratered),
+  // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots). The Companion is a Trojan (trojanDeg ahead of Krator on its orbit); the others' phase0 makes
+  // both new at the Double Dark the day before game start, solved below. 'Companion' is a working name
+  moons:[{name:'Companion', kind:3, trojanDeg:60, radiusKm:470, albedo:[1,1,1]},
+         {name:'Week', kind:1, periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[1,1,1]},
+         {name:'Thirteen', kind:2, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]}],
   doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
   // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
   // the southern winter nights (the owner, 2026-10-25)
@@ -68,7 +73,7 @@
  // ---- the moons' epoch: both new (each between Krator and the sun's direction, in the equatorial plane) at S.doubleDark
  const kratorAt=(lst,Hg)=>{const rag=lst-Hg;return[-S.giant.orbitKm*Math.cos(rag),-S.giant.orbitKm*Math.sin(rag)];};
  const lstOf=(t)=>{const yd=S.startDay+t,ra=sunRaDec(yd)[0],h=((t%1)+1)%1*24;return 15*(h-12)*D+ra;};
- S.moons.forEach(m=>{const t=S.doubleDark,lst=lstOf(t),K=kratorAt(lst,0),ra=sunRaDec(S.startDay+t)[0],s=[Math.cos(ra),Math.sin(ra)];
+ S.moons.forEach(m=>{if(!m.periodD)return;const t=S.doubleDark,lst=lstOf(t),K=kratorAt(lst,0),ra=sunRaDec(S.startDay+t)[0],s=[Math.cos(ra),Math.sin(ra)];
   // Hg drops out: the sub-giant longitude only turns the site, not the orbits; K is Krator's position for Hg=0
   const ks=K[0]*s[0]+K[1]*s[1],kk=K[0]*K[0]+K[1]*K[1],d=-ks+Math.sqrt(ks*ks-kk+m.orbitKm*m.orbitKm);
   m.theta0=Math.atan2(K[1]+d*s[1],K[0]+d*s[0])-2*Math.PI*t/m.periodD;});
@@ -99,16 +104,24 @@
   const sunDir=norm(worldHD(H,dec,phi)),giantDir=norm(worldHD(Hg,S.giant.decDeg*D,phi)),pole=norm(M[2]);
   const gE1=norm([giantDir[2],0,-giantDir[0]]),gUp=[giantDir[1]*gE1[2]-giantDir[2]*gE1[1],giantDir[2]*gE1[0]-giantDir[0]*gE1[2],giantDir[0]*gE1[1]-giantDir[1]*gE1[0]],ta=S.giant.axisTiltDeg*D;
   const giantAxis=norm([0,1,2].map(k=>gUp[k]*Math.cos(ta)+gE1[k]*Math.sin(ta)));
-  // the moons: Krator and each moon in the giant's (inertial) equatorial plane, km
-  const K=kratorAt(lst,Hg),sunE=eq(ra,dec);
-  const moons=S.moons.map(m=>{const th=m.theta0+2*Math.PI*t/m.periodD,mx=m.orbitKm*Math.cos(th)-K[0],my=m.orbitKm*Math.sin(th)-K[1],dist=Math.hypot(mx,my);
+  // the moons: Krator and each moon in the giant's equatorial plane (km, inertial), then laid on the sky's ring line:
+  // the angle b from the giant as Krator sees it becomes cos b along the giant's direction plus sin b along the ring line,
+  // and the sun's direction is carried into the same frame (L) so each moon's lit side matches its phase
+  const K=kratorAt(lst,Hg),sunE=eq(ra,dec),kr=Math.hypot(K[0],K[1]),xh=[-K[0]/kr,-K[1]/kr],yh=[-xh[1],xh[0]];
+  const rn=A.skyRingNormal({giantAxis,giantDir}),rt=norm([rn[1]*giantDir[2]-rn[2]*giantDir[1],rn[2]*giantDir[0]-rn[0]*giantDir[2],rn[0]*giantDir[1]-rn[1]*giantDir[0]]);
+  const sx=sunE[0]*xh[0]+sunE[1]*xh[1],sy=sunE[0]*yh[0]+sunE[1]*yh[1],L=norm([0,1,2].map(k=>sx*giantDir[k]+sy*rt[k]+sunE[2]*rn[k]));
+  const moons=S.moons.map(m=>{let mx,my;
+   if(m.periodD){const th=m.theta0+2*Math.PI*t/m.periodD;mx=m.orbitKm*Math.cos(th);my=m.orbitKm*Math.sin(th);}
+   else{const th=Math.atan2(K[1],K[0])+m.trojanDeg*D;mx=kr*Math.cos(th);my=kr*Math.sin(th);}
+   mx-=K[0];my-=K[1];const dist=Math.hypot(mx,my),b=Math.atan2(mx*yh[0]+my*yh[1],mx*xh[0]+my*xh[1]);
    const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
-   return{name:m.name,dir:norm(toWorld(e)),radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,lit:(1+cosPsi)/2,albedo:m.albedo};});
+   return{name:m.name,kind:m.kind,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,
+    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,lit:(1+cosPsi)/2,albedo:m.albedo};});
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
   const sunAlt=Math.asin(Math.max(-1,Math.min(1,sunDir[1])))/D,giantAlt=Math.asin(giantDir[1])/D;
-  return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,pole,eq:W,toWorld,
+  return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,ringLine:rt,pole,eq:W,toWorld,
    moons,eclipse,sunAlt,giantAlt,giantLit:(1-dot(sunDir,giantDir))/2,spin:2*Math.PI*((t*24/S.giant.spinH)%1),
    clusterDir:norm(toWorld(eq(S.cluster.ra*D,S.cluster.dec*D)))};};
 

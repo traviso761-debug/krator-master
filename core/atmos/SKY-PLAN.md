@@ -94,8 +94,16 @@ fragment in a fixed back-to-front order, and the ring's far half is occluded ana
 | The site frame | Voth at 40 S, 84 km a degree: kept |
 | The cluster | owns the winter nights (RA 18 h, dec -30): kept |
 
-Lost with the lift: the moons stay on the celestial equator, so their shadows no longer cross the giant's face at the
-Double Dark (LORE section 2, Moons, still says they do: an owner's call whether the Double Dark keeps that line).
+### 2.3 The giant and its moons, after the first look at the demo (the owner, 2026-10-25)
+
+| Question | Decision |
+|---|---|
+| The giant's face | a quality pass after the owner's ice-giant references: blue zones and belts with wavering edges, sheared by differential rotation; white cloud torn along the belts and curled by two levels of domain warp; vortices that swirl the clouds round them instead of painted ovals; a faint blue-green cast in a few bands, **sky-plankton**; a blue high-haze limb; a soft ring shadow |
+| The moons | they orbit in the giant's equator, so from Krator they **ride along the ring line**. **The Week** is dark and cratered (Callisto-like), **the Thirteen** clouded (Venus-like), their periods unchanged (6.87 and 12.55 days: the Count of 91 holds). **The Companion** (a working name) is Ceres-like: a Trojan 60 degrees ahead on Krator's own orbit, fixed beside the giant, ~0.3 degrees across, through its phases once a day. Seen from Voth the moons never climb above ~33 degrees: the ring line is low |
+| An Io | a Trojan cannot be Io-like (no tidal flexing). A plausible Io orbits **inside Krator in a 2:1 resonance**: 12 h, ~122,000 km, just outside the rings; Krator keeps its orbit eccentric, as Europa does Io's, and the same resonance flexes Krator a little (the Throne). From Krator it would swing ~39 degrees either side of the giant once a day, transiting the disc (~3 degrees across) and hiding behind it. Proposed, not built |
+
+(Superseded by 2.3: the moons ride the ring line, so a moon's shadow can cross the giant's face again; the shader does not
+draw moon shadows on the giant yet.)
 
 Question 2 of the first round (pages whose fixed sun no hour reaches) follows from the first row: there is no pinned
 sun. Each page's light is the model's at its site, and the old light is reproduced only for the before-and-after
@@ -382,7 +390,7 @@ taken into it by agreement), and each step rides one all-builds rebuild where it
 Settled: everything in sections 2, 2.1 and 2.2. Open:
 
 1. **The nebula**: procedural now; the owner judges it on the demo page and asks for a texture only if it falls short.
-2. **The Double Dark's line in LORE** (the moons' shadows crossing the giant's face) cannot hold with the lifted giant:
-   drop it, or keep it as folklore.
-3. **Korona "under the giant"** (LORE section 3): the giant now hangs over a point far east of the crater; Korona sees
+2. **The Io-like moon** (2.3): add it as a fourth moon inside Krator's orbit, or leave the Io out.
+3. **The Republic's orrery** (`settlements/highlands/NOTES.md`) shows two moons; with the Companion there are three.
+4. **Korona "under the giant"** (LORE section 3): the giant now hangs over a point far east of the crater; Korona sees
    it 26 degrees up in the south-east. Reword Korona, or move the point under the giant (it sets the height at Voth).
