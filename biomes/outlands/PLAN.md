@@ -283,7 +283,7 @@ Ranked by when they block. Each follows its module's README and lands with its o
 | # | Amendment | Module | Why | Blocks |
 |---|---|---|---|---|
 | C1 | **A height-band fog belt**: `ATMOS.fogBelt({y0, y1, windward, density})`, a cloud band that hugs the slope between two heights, thicker to windward, thinning where the ground rises through it, with a JS twin (`fogAt(x, y, z)`) and an export record. Today `cloudDeck` is a level top and the old mist edge was host code | `core/atmos` | the fog belt is the Fog Rim's defining feature; the fog field also places the veil caps | station 1 |
-| C2 | **A shared fungoid geometry library**: `cap`, `capStack`, `bracket`, `bladder` (lathe with pleats), `pod`, `podCluster`, `stalk`, `fringe` (thread cards), `comb`, `tube`, `crust` decals; today each kit copies its own (`bracket()` in swbay, nwbay, rift and hyperjungle; the Throne's `cap`/`capTube`/`bladders`; swbay's `capTop`; nhighlands' `discStalks`) | **the owner's call**: `core/biome` fragment or a `kits/flora-fungoid` kit | 34 species of one lineage; swhighlands and swbay's backfill need the same parts | station 1 |
+| C2 | **A shared fungoid geometry fragment** (the owner, 2026-10-26: **in `core/biome`**): `core/biome/33-core-fungoid.js`, opt-in through `CORE_BIOME`, extending `BIO` as `BIO.fung`: `cap` (disc, dome, funnel; gills or pores underneath), `bracket` (shelf rows on a trunk or rock), `bladder` (a lathe body with pleats, swell as a parameter), `pod` and `podCluster`, `stalk` (tapered, bent, ribbed), `fringe` (hanging thread cards), `comb` (paired plates up a mast), `tube` (clusters, open tips, an emissive rim option) and `crust` (flat lobed decals on ground or rock). Each part takes a record (sizes, counts, colours) and a `KRAND` stream, never draw order; defaults as `x == null ? d : x`; geometry goes into the kit's families through the existing `leafMat`/`barkMat` path so instancing, LOD and the export are unchanged. A node test (`test-fungoid.js`: same record and seed, same vertices; counts per part). Today each kit copies its own (`bracket()` in swbay, nwbay, rift and hyperjungle; the Throne's `cap`/`capTube`/`bladders`; swbay's `capTop`; nhighlands' `discStalks`): **those kits are not moved by this step** (their pages would change); each may switch later, page by page, with its baseline rewritten on purpose | `core/biome` | 34 species of one lineage; the SW highlands and the swbay backfill need the same parts | station 1 |
 | C3 | **Strata into core** (`core/terrain/STRATA-PLAN.md`, step 1 then recipes) with an **`outland` recipe**: red vesicular basalt caps over pale tuffs and red beds, thin green and turquoise copper bands, white altered zones | `core/terrain` | the basin walls, the gem hills, Trickster's wall; and plants placed by bed (`S.at`) | stations 1, 3, 7 |
 | C4 | **Dry relief forms**: `KRELIEF.wadi` (a dry `river`: braided cobble floor, cut banks, a fan at the mouth), `talus` aprons (Korona's `talusH` lifted), `KSTACKS` kinds `dome` and `tor`, `KRELIEF.pit` (stepped benches and spoil heaps), and a `pavement` class in `KFIELD`'s cover grid | `core/terrain` | the plains, the gem hills, every wall's foot | stations 3, 4, 5 |
 | C5 | **Brine and pans**: a brine colour preset for `WATER.open`/`still` (deep red-brown to turquoise to white rim), and a **pan** kind (salt crust with polygon cracks, wet after rain from `W.wet`) | `core/water` | the salt lake | station 4 |
@@ -299,7 +299,7 @@ Start from **`biomes/ebadlands`** (its species, floor and dress fragments) and *
 `build.py --station`, `station.json` with `out`, `core`, `kits`, `packs`). Take:
 
 - `core/biome` (`BIO.init` with `terrainH`, the fields and tags; `BIO.kit`/`kitEnd`; `BIO.scatter`, `BIO.clearOf`,
-  `BIO.register`, `BIO.bake`, `BIO.export`), with C2's fungoid parts;
+  `BIO.register`, `BIO.bake`, `BIO.export`), with C2's `BIO.fung` parts (`33-core-fungoid.js` in `CORE_BIOME`);
 - `core/rand` (`KRAND.stream`, `hash`, `cell`) for every draw; `core/mask` (`KMASK.canvas`) for every painted raster;
 - `core/tags` (`KTAGS.create`) for every plant, rock, zone and hazard; `core/space` (`KSPACE`) under the scatter;
 - `core/terrain`: `KFIELD`, `KCARVE` (the shelf), `KSTACKS`, `KRELIEF`, `KBASIN`, and C3-C4;
@@ -326,7 +326,7 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 
 ## 15. Open questions
 
-1. **C2's home**: the fungoid parts as a `core/biome` fragment, or a `kits/flora-fungoid` kit the biomes read in place?
+1. ~~C2's home~~ Settled (the owner, 2026-10-26): a `core/biome` fragment, `33-core-fungoid.js` (section 12).
 2. **The fog belt (C1)**: approve a core amendment to `core/atmos`, or keep the belt kit-local for the first station?
 3. **Reference plates**: will the owner supply plates for the native flora (as for swhighlands), or work from this list?
 4. **Gem ranges**: emerald and turquoise both in the S gem hills (this plan), or emerald in the N?
