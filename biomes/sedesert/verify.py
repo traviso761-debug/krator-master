@@ -50,7 +50,8 @@ EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terr
 # The stations (PLAN-STATIONS.md; build.py --station <name>): each page's own proof box, by the page's file name. The Bowl's
 # is the 300 m tile at the delta's middle mouths (the lake's banded shallows, two distributaries, the salt flat).
 STATION_EXPORT = {'sedesert-bowl.html': ([-150, -1300, 150, -1000], EXPORT_PROFILE),
-                  'sedesert-mantis.html': ([-1300, 550, -1000, 850], EXPORT_PROFILE)}   # Mantis: the first spring, its pool, stream and figs
+                  'sedesert-mantis.html': ([-1300, 550, -1000, 850], EXPORT_PROFILE),   # Mantis: the first spring, its pool, stream and figs
+                  'sedesert-steppe.html': ([550, -1050, 850, -750], EXPORT_PROFILE)}   # the steppe: the pan, its rain water and margin
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:
