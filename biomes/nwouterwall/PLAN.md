@@ -210,6 +210,10 @@ frozen high lake. The fields and seeds are deterministic from the terrain (`KRAN
 3. **The Yeti Valley** (`-yeti`, after the model's 4.22: the floor ~5.5 km, ~0.80 atm): irrigated fields of the Three
    Gifts and open larch round the frozen lake (~5,700 m), meltwater channels, the capital's pycrete halls; fellfield with
    woolly snowballs and cushions on the slopes, goldroot on the cliffs, glaciers, the airless rim standing over it.
+4. *Planned, for a future session* (the owner, 2026-10-26): **the Wall foot** (`-wallfoot`, ~3.2-3.6 km, Csa/BSk, the dry east
+   above nsemiarid): the ecotone station. It reads the nsemiarid kit in place under a noise-warped mask (Korona's form). Wild
+   apple and apricot groves, wormwood and poplar lie on the low side; this kit's steppe, larch and stone pine on the high side.
+   The crossings and the shared-species aliases are in `ECOTONES.md`.
 
 ## 8. Textures
 

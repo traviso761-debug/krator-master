@@ -1,6 +1,6 @@
 # nwouterwall: the ecotones with nsemiarid and nwlowlands (a proposal, 2026-10-26)
 
-**The owner (2026-10-26): leave it as a proposal; the open world's climate envelopes (step 2 below) will carry the crossings. No Wall-foot station.** Nothing here is wired. It proposes which related species cross each border, which way, how far, and how. It is open for the
+**The owner (2026-10-26): a proposal for now. The open world's climate envelopes (step 2 below) will carry the crossings; the Wall foot (step 3) is a planned station for a future session (`PLAN.md` section 7, station 4).** Nothing here is wired. It proposes which related species cross each border, which way, how far, and how. It is open for the
 owner's decisions at the end.
 
 ## The two borders
@@ -79,7 +79,7 @@ plants: its taiga and tundra have no niche in a Csa/Cfa lowland.
    become **climate envelopes** on each species record: an elevation band plus the Köppen tags most `PK` records already
    carry. A species then plants wherever its envelope holds, in whichever kit owns the ground, so the crossing follows the
    climate rather than a kit's name. This is the long-term form, and Godot reads the same records.
-3. **A station** (now, on the page). A fourth nwouterwall station, "the Wall foot" (~3.2-3.6 km, the dry east above
+3. **A station** (planned: a future session). A fourth nwouterwall station, "the Wall foot" (~3.2-3.6 km, the dry east above
    nsemiarid). It reads the nsemiarid kit in place under a mask, the way Korona's shore band reads nwlowlands
    (`korona/src/88-host-build.js`). It plants apple groves, apricot, wormwood and poplar on the low side of a noise-warped
    line, and nwouterwall's steppe, larch and stone pine on the high side, with the band between them. The western,
