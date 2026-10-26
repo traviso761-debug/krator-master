@@ -84,7 +84,7 @@
   function hook(mat,o){o=o||{};var LY=(o.layers||[]).filter(function(L){return L&&L.map;});if(!mat)return mat;
     mat.userData.kground=LY.map(function(L){return L.name||'layer';});if(!LY.length)return mat;
     var T=root.THREE,prev=mat.onBeforeCompile,at=o.at||'/*KGROUND*/',lib=glsl(o),body=code(o,LY);
-    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);LY.forEach(function(L,i){sh.uniforms['uKG'+i]={value:L.map};});
+    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);if(/varying vec3 kgWP;/.test(sh.vertexShader))return;LY.forEach(function(L,i){sh.uniforms['uKG'+i]={value:L.map};});
       var wp='vec4 kgW4=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkgW4=instanceMatrix*kgW4;\n#endif\nkgWP=(modelMatrix*kgW4).xyz;\n';
       sh.vertexShader='varying vec3 kgWP;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp);
       var dec='varying vec3 kgWP;\n'+LY.map(function(L,i){return 'uniform sampler2D uKG'+i+';';}).join('')+'\n'+lib;

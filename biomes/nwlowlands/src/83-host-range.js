@@ -21,25 +21,21 @@ function rangeAdd(x,z){const s=sOf(x,z);const k=smooth(4300,6200,s),k2=smooth(60
 function farH(x,z){return Math.max(terrainH(x,z),.8)+wallW(x,z)*rangeAdd(x,z);}
 NWLOW.farH=farH;
 // ---------------------------------------------------------------- the range
-const N=Math.round(EXT/CELL),PTS=[],COL=[],IDX=[],at=new Map();
+const N=Math.round(EXT/CELL);
 /* colours are written as sRGB and taken to linear, then GAIN folds in the light rig (sun + hemisphere render an albedo about twice as bright: the kit's bark uGain) */
 const GAIN=.5,lin=h=>new THREE.Color(h).convertSRGBToLinear().multiplyScalar(GAIN);
 const ROCK=lin(0x5a6370),ROCK2=lin(0x767a82),SCRUB=lin(0x5c6244),GOLD=lin(0x8e8458),c=new THREE.Color();
 const keep=(x,z)=>sOf(x,z)>-700&&Math.hypot(x,z)<EXT*1.02;
-const vert=(i,j)=>{const k=i+','+j;if(at.has(k))return at.get(k);const x=i*CELL,z=j*CELL,inside=Math.abs(x)<=EDGE&&Math.abs(z)<=EDGE;
- let y=farH(x,z)-(inside?0:120*smooth(-250,-700,sOf(x,z)));if(inside)y-=3;   /* toward the lake the band's open end slopes down out of sight */   /* the square's edge: a hand under the ground, so the two meshes never fight */
- const add=wallW(x,z)*rangeAdd(x,z),hn=KRAND.h3(i,j,0,SEED+3);
- c.copy(GOLD).lerp(SCRUB,clamp(.35+hn*.5,0,1)).lerp(ROCK,smooth(90,500,add)).lerp(ROCK2,smooth(1000,1800,add)*.6);c.multiplyScalar(.9+hn*.18);
- PTS.push(x,y,z);COL.push(c.r,c.g,c.b);const n=PTS.length/3-1;at.set(k,n);return n;};
-for(let i=-N;i<N;i++)for(let j=-N;j<N;j++){const x0=i*CELL,z0=j*CELL,x1=x0+CELL,z1=z0+CELL;
- if(x0>=-EDGE&&x1<=EDGE&&z0>=-EDGE&&z1<=EDGE)continue;   /* the ground square has its own mesh */
- const cx=(x0+x1)/2,cz=(z0+z1)/2;if(!keep(cx,cz))continue;
- const a=vert(i,j),b=vert(i+1,j),d=vert(i,j+1),e=vert(i+1,j+1);IDX.push(a,d,b,b,d,e);}
-const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(PTS,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(COL,3));
-geo.setIndex(IDX);geo.computeVertexNormals();geo.computeBoundingSphere();
-const thinFog=m=>{m.onBeforeCompile=sh=>{sh.uniforms.uFogK={value:FOGK};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uFogK;').replace('#include <fog_vertex>','#include <fog_vertex>\n#ifdef USE_FOG\nfogDepth*=uFogK;\n#endif');};m.customProgramCacheKey=()=>'nwl-farfog';return m;};
-const MAT_RANGE=thinFog(new THREE.MeshLambertMaterial({vertexColors:true}));
-const range=new THREE.Mesh(geo,MAT_RANGE);range.name='innerwall-range';range.userData.farField=true;range.userData.inspectLabel='The Inner Wall range (far field)';scene.add(range);
+// THE RANGE ON KFAR (core/terrain/44-core-farfield.js, 2026-10-26: HEIGHT-RESEARCH item 3 made core): the same lattice
+// (lines i*CELL, i -N..N), the same cells skipped (the ground square, the lake side, past EXT), the same heights and colours
+// per vertex, made in the same order (x outer, z inner): the mesh is the one this fragment drew by hand before
+const RANGE=KFAR.grid({cell:CELL,n:N,
+ h:(x,z)=>{const inside=Math.abs(x)<=EDGE&&Math.abs(z)<=EDGE;let y=farH(x,z)-(inside?0:120*smooth(-250,-700,sOf(x,z)));if(inside)y-=3;return y;},   /* toward the lake the band's open end slopes down out of sight; the square's edge: a hand under the ground, so the two meshes never fight */
+ skip:(x0,z0,x1,z1)=>(x0>=-EDGE&&x1<=EDGE&&z0>=-EDGE&&z1<=EDGE)||!keep((x0+x1)/2,(z0+z1)/2),   /* the ground square has its own mesh */
+ color:(x,z,y,q)=>{const add=wallW(x,z)*rangeAdd(x,z),hn=KRAND.h3(q.i-N,q.j-N,0,SEED+3);
+  c.copy(GOLD).lerp(SCRUB,clamp(.35+hn*.5,0,1)).lerp(ROCK,smooth(90,500,add)).lerp(ROCK2,smooth(1000,1800,add)*.6);c.multiplyScalar(.9+hn*.18);return [c.r,c.g,c.b];}});
+const thinFog=m=>KFAR.fogThin(m,FOGK,'nwl-farfog');
+const range=KFAR.mesh(RANGE,{fogK:FOGK,fogKey:'nwl-farfog',name:'innerwall-range',label:'The Inner Wall range (far field)'}),MAT_RANGE=range.material,IDX={length:RANGE.idx.length};scene.add(range);
 {const bb=new THREE.Box3().setFromObject(range),cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2;
  REGISTER({name:'The Inner Wall range (far field)',type:'far field',x:cx,z:cz,y:bb.min.y,r:Math.hypot(bb.max.x-cx,bb.max.z-cz),h:bb.max.y-bb.min.y});}
 // ---------------------------------------------------------------- the foothill pillars

@@ -39,7 +39,8 @@
   function shade(mat,Hz,o){if(!mat||!Hz)return mat;o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set());if(hk.has(mat))return mat;hk.add(mat);var T=root.THREE,U=uniforms(Hz,o),prev=mat.onBeforeCompile,atm=function(){return root.ATMOS&&root.ATMOS.skyUniforms&&root.ATMOS.skyUniforms.uSunDir;};
     {var dsc=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');if(dsc&&dsc.get)return mat;}   /* a snow-wearing material (fx snowcover) keeps its hook behind a setter: leave it, as ATMOS.cloudShade does */
     var sk=o.sky==null?null:o.sky,sh0=o.shade==null?null:o.shade;
-    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);for(var k in U)sh.uniforms[k]=U[k];var A=atm(),shared=!!A;if(A)sh.uniforms.uKHzSun=A;   /* the shared sky's sun, read when the program is made (the sky is bound after the ground) */
+    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);if(/vKhzWP/.test(sh.vertexShader))return;   /* a clone that kept a hooked material's hook (sedesert's carve) is shaded already */
+      for(var k in U)sh.uniforms[k]=U[k];var A=atm(),shared=!!A;if(A)sh.uniforms.uKHzSun=A;   /* the shared sky's sun, read when the program is made (the sky is bound after the ground) */
       if(sh0!=null||sk!=null)sh.uniforms.uKHzK={value:new T.Vector3(U.uKHzK.value.x,sh0==null?U.uKHzK.value.y:sh0,sk==null?U.uKHzK.value.z:sk)};
       var wp='vec4 khzW=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkhzW=instanceMatrix*khzW;\n#endif\nvKhzWP=(modelMatrix*khzW).xyz;\n';
       sh.vertexShader='varying vec3 vKhzWP;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp);
