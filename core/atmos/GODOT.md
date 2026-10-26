@@ -115,6 +115,24 @@ veer) is about 60 lines in `89-atmos-0-core.js` and `89-atmos-4-weather.js`. It 
 `Atmos`, that sets the global parameters in `_process(delta)`; `test-atmos.js` holds the vectors it is tested against. The host's `weather({apply})` callback becomes the autoload adjusting
 `WorldEnvironment` (fog density, `volumetric_fog_density`, sun energy, ground roughness through a global `atm_wet`).
 
+## The shared sky (SKY-PLAN.md, 2026-10-25)
+
+One `shader_type sky` draws Krator's whole sky in Godot, from the same source as the pages:
+
+| Piece | JavaScript (the pages) | Godot |
+|---|---|---|
+| the shader | `core/atmos/sky/89-atmos-g-sky.js` (`ATMOS.skyGLSL()`, the `atmos_sky` chunk) | `godot/shaders/atmos_sky.gdshaderinc`, **generated** by `node godot/tools/atmos_sky.js`, included by `godot/shaders/sky.gdshader` (the chunk's display colour decoded to linear) |
+| the model and the colour script | `89-atmos-e-skymodel.js`, `89-atmos-f-skypresets.js` | `godot/krator/sky_model.gd`, its constants, presets, bright stars and moon epochs read from `godot/data/sky/sky.json` (generated) |
+| the host | `core/atmos/host/89-atmos-h-skyhost.js` (`ATMOS.sky`) | `godot/krator/sky.gd`: the WorldEnvironment's Sky (incremental, radiance 128), the sun and giantshine DirectionalLight3Ds, fog (`fog_sky_affect` 0) and exposure from the keys |
+| the noise volume | `ATMOS.skyNoiseVolume(64)` | `godot/data/sky/noise64.bin` (generated) as an `ImageTexture3D` |
+| the moon maps | the library's `sky.moon.*`, one atlas | the same files, stacked at load |
+
+Checks: `godot --headless --path godot --script res://tests/sky/sky_test.gd` holds the GDScript model to the JavaScript's
+numbers (`godot/tests/sky/golden.json`: 24 states over four sites, the colour script, dates, the noise volume, the include's
+digest; vectors agree to 1e-6, Godot's `Vector3` being single precision). `godot --path godot --script
+res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|up --hour= --day=` renders it (needs a GPU; first run
+2026-10-25 on Vulkan, Forward+). Rerun the generator after any change to `core/atmos/sky`, then the test.
+
 ## Particles: which Godot tool for which effect
 
 Every particle effect here is **stateless**: a particle's position is a function of its seed attributes and the time.

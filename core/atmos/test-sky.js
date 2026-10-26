@@ -56,6 +56,9 @@ const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit
  const w=x=>{x=((x%(2*Math.PI))+2*Math.PI)%(2*Math.PI);return x>Math.PI?x-2*Math.PI:x;};
  const t0=S.doubleDark,lD=lam(P('Day'),t0),l2=lam(P('Two-Day'),t0),l4=lam(P('Four-Day'),t0),lK=lD;   // Day transits then: it shares Krator's longitude
  ok('...phased as a Laplace resonance: l(Day) - 3 l(Krator) + 2 l(Two-Day) = 180, and the same for the next link',near(Math.abs(w(lD-3*lK+2*l2)),Math.PI,1e-9)&&near(Math.abs(w(lK-3*l2+2*l4)),Math.PI,1e-9),false);}
+{let away=0,ph=0;for(let d=0;d<20;d+=.7){const s=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of s.moons){const sp=s.sunDir.map((v,k)=>v-m.dir[k]*V.dot(s.sunDir,m.dir)),l=Math.hypot(...sp);if(l<1e-3)continue;
+  if(V.dot(m.light,sp)<-1e-9&&m.lit<.999)away++;ph=Math.max(ph,Math.abs(-V.dot(m.light,m.dir)-(2*m.lit-1)));}}
+ ok('every moon is lit from the side of the real sun (as the giant is), at its calendar phase (the owner, 2026-10-25)',away===0&&ph<1e-9,away>0);}
 {const s=A.skyState(voth,22,10),g=s.giantDir;ok('an outer moon is never between Krator and the giant (it hides behind the disc)',(()=>{for(let d=0;d<60;d+=.37){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons.slice(0,3)){const c=V.dot(m.dir,st.giantDir);if(c>Math.cos(15*Math.PI/180)&&m.distKm<S.giant.orbitKm)return false;}}return true;})(),false);}
 
 // ---- eclipses come in seasons round the equinoxes

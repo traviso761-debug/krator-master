@@ -143,7 +143,11 @@
    mx-=K[0];my-=K[1];const dist=Math.hypot(mx,my),b=Math.atan2(mx*yh[0]+my*yh[1],mx*xh[0]+my*xh[1]);
    const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
    const md=norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),gw=norm([0,1,2].map(k=>giantDir[k]*kr-md[k]*dist));   // gw: from the moon to the giant
-   return{name:m.name,kind:m.kind,toGiant:gw,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
+   // its light: toward the real sun on the sky (so its lit limb faces the same sun as the giant's), at the angle that keeps
+   // its phase (cosPsi, from the orbits: the Week's 7 days, the Double Dark)
+   const sp=sunDir.map((v,k)=>v-md[k]*dot(sunDir,md)),spl=Math.hypot(sp[0],sp[1],sp[2]),sn=Math.sqrt(Math.max(0,1-cosPsi*cosPsi));
+   const Lm=spl>1e-6?norm([0,1,2].map(k=>-md[k]*cosPsi+sp[k]/spl*sn)):L;
+   return{name:m.name,kind:m.kind,toGiant:gw,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:Lm,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
     radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;

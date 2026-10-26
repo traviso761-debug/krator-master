@@ -2,7 +2,8 @@
 
 Status: **step S0 built** (2026-10-25): the model, presets, shader, host and the demo page (`core/atmos/sky/`,
 `core/atmos/host/89-atmos-h-skyhost.js`, `core/atmos/demo/`, `node core/atmos/test-sky.js`); no biome has changed. The Godot
-twin is the next piece of S0 (section 5). The plan was written (2026-10-25) Written with the owner in a side session of the all-builds biome rebuild
+twin is built too (`core/atmos/GODOT.md`, "The shared sky"): the generated `atmos_sky.gdshaderinc`, `krator/sky_model.gd`
+and `krator/sky.gd`, tested against the JavaScript and rendered on Vulkan. The plan was written (2026-10-25) Written with the owner in a side session of the all-builds biome rebuild
 (`HANDOFF-REBUILD.md`, stage 1), which left the sky domes out because no `core/atmos` sky existed. This file is the
 plan for that sky; its decisions are in section 2 (the second round in 2.1) and the questions still open are in
 section 12.

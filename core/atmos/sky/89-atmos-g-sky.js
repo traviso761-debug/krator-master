@@ -275,7 +275,7 @@
   ' return o;}',
   // ---- the whole sky
   'vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);',
-  ' float sky=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,sky)*(1.0-uDayStars*0.8),0.0,1.0);',
+  ' float skyL=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,skyL)*(1.0-uDayStars*0.8),0.0,1.0);',
   ' vec3 col=air;float lanes;',
   ' if(vis>0.003&&d.y>-0.05){vec3 e=uEq*d;col+=atmSkyDeep(e,lanes)*T*vis;}',
   // the sun's disc
