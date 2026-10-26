@@ -27,5 +27,9 @@ if(STAGE.water){
  FAR_DRAW=WATER.draw(FAR,{renderOrder:0,roughness:.2,metalness:.05,envMapIntensity:.24,shallow:lin(0x2a5a64),deep:lin(0x1e4a5a)});
  FAR_DRAW.mesh.userData.inspectLabel=STAGE.water.name;
  WATER_STATE.lakes.push(STAGE.water.name);}
-else{/* no standing water: a dry station still records its state (the export's water section) */
- WATER.still&&STAGE.pool?WATER.still(STAGE.pool):null;}
+// a station's still pool (the wall's cistern, the face's snowmelt tarn): WATER.still over its polygon, drawn flat with the sky in it
+let POOL_DRAW=null;
+if(STAGE.pool){if(!STAGE.water){const WENV={environment:null};ATMOS.skylight({renderer,sky:SKY.scene,scene:WENV,ground:()=>new THREE.Color(...(SKY.look?SKY.look.hemiG:[.35,.42,.29])).convertSRGBToLinear(),
+   key:()=>[SKY_CLOCK.day,Math.round(SKY_CLOCK.hour*4),SKY.look&&SKY.look.cover.toFixed(2)].join()});}
+ const P=WATER.still(STAGE.pool);POOL_DRAW=WATER.drawStill(P,{color:new THREE.Color(STAGE.pool.color==null?0x3a6a6a:STAGE.pool.color).convertSRGBToLinear(),renderOrder:1});
+ if(POOL_DRAW&&POOL_DRAW.mesh)POOL_DRAW.mesh.userData.inspectLabel=STAGE.pool.name;WATER_STATE.lakes.push(STAGE.pool.name);}

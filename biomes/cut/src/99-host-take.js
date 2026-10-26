@@ -38,7 +38,7 @@ const HCHK={
  nodes(groves){let bad=0,n=0;for(const G of groves){const y0=G.culms.reduce((a,c)=>Math.min(a,c.y),1e9);for(const c of G.culms){n++;const r=((c.y-y0)%G.L+G.L)%G.L;if(Math.min(r,G.L-r)>.02)bad++;}}
   return{ok:groves.length>0&&!bad,detail:groves.length+' groves, '+n+' culms; '+bad+' off their grove\'s node levels'};},
  // the bites, the echoes and the size steps are there (where the warp is strong enough to make them)
- warped(st,W){const s=CUT.field(...STAGE.toBowl(0,0)).s,need=s>.6;return{ok:(!need||st.echoes>0)&&(s<.2||st.bitten>0)&&(W.trees===0||W.stepped>0||s<=.3),
+ warped(st,W){const s=CUT.field(...STAGE.toBowl(0,0)).s,need=s>.6;return{ok:(!need||st.echoes>0)&&(s<.2||st.bitten+(W.bites||0)>0)&&(W.trees===0||W.stepped>0||s<=.3),
   detail:'s '+s.toFixed(2)+' at the page; culms bitten '+st.bitten+', echoes '+st.echoes+'; read-in trees warped '+W.trees+' (size-stepped '+W.stepped+', crowns bitten '+W.bites+', '+W.floor+' floor plants leaned, '+(W.dropped||0)+' trees not this ring\'s)'};},
  // the camp's props carry the tags Dilihan's kit will look for
  camp(T){if(!STAGE.camp)return{ok:true,detail:'no camp on this station'};const recs=T?T.query({tags:{role:'placeholder',style:'dilihan'}}):[];
@@ -57,7 +57,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=CUT.PLANTS||{groves:[]};
  if(STAGE.groves!==false){add('culms standing straight up',HCHK.combed(culmRecs().map(c=>Object.assign({},c,{m:[1,0,0,0,1,0,0,0,1]}))));
   add('a grove with one culm a metre off its levels',HCHK.nodes(P.groves.slice(0,1).map(G=>Object.assign({},G,{culms:G.culms.map((c,i)=>i?c:Object.assign({},c,{y:c.y+1}))}))));}
- add('no bites and no echoes',HCHK.warped({bitten:0,echoes:0},{trees:1,stepped:0}));
+ if(CUT.field(...STAGE.toBowl(0,0)).s>=.2)add('no bites and no echoes',HCHK.warped({bitten:0,echoes:0},{trees:1,stepped:0,bites:0}));   /* where the warp is under .2 nothing is asked of it */
  if(STAGE.camp)add('a camp with no tags',HCHK.camp({query:()=>[]}));
  add('a meranti on the page',HCHK.ring(['Sky meranti'].concat(treeNames())));
  add('a native with no harvest',HCHK.tagged(CUT.SPECIES.map((S,i)=>i?S:Object.assign({},S,{tags:{climate:S.tags.climate}}))));
@@ -75,4 +75,5 @@ KHOST.take({build:'cut-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return{rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+  exportBox:(function(){const P=STAGE.pool&&STAGE.pool.poly;if(!P)return[-200,-200,200,200];const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);return[Math.min(...xs)-30,Math.min(...zs)-30,Math.max(...xs)+30,Math.max(...zs)+30].map(Math.round);})(),
   biome:()=>window._cut,cut:()=>({warped:CUT.WARPED,plants:CUT.PLANTS?{groves:CUT.PLANTS.groves.length,reeds:CUT.PLANTS.reeds.length,rank:CUT.PLANTS.rank.length,melons:CUT.PLANTS.melons.length,lichen:CUT.PLANTS.lichen.length}:null,site:STAGE.site,s:CUT.field(...STAGE.toBowl(0,0)).s})}});

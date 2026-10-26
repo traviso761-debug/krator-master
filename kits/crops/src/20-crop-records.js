@@ -9,6 +9,7 @@
    also [buckets] other buckets it can stand in for
    grown 'field' (default) | 'underground'   (a dark-grown crop ignores the axes; a works that keeps it takes it)
    form, stores, yield (0.5 / 1 / 2), card (a core/materials/library card id), src ('proposed' or the kit that draws it), colour (a dye)
+   stuck  the share of the fruit that sets unripe at the smallest size and stays there (the Cut's measure melon)
    node  a kits/resources node kind (iron, copper, sulfur, oil) a mineral dye needs; works  the works an underground crop needs */
 CROPS.LIST = [];
 CROPS.BY_ID = {};
@@ -19,7 +20,8 @@ CROPS.def = function (id, name, bucket, w, a, o) {
     warmth: w, arid: a, atm: o.atm || [1, 2], reach: o.reach == null ? 2 : o.reach, water: o.water || 'rain',
     needs: o.needs || null, home: o.home || [], homeOnly: !!o.homeOnly, stores: o.stores || ['fresh'],
     yield: o.yield == null ? 1 : o.yield, card: o.card || null, src: o.src || 'proposed', colour: o.colour || null,
-    node: o.node || null, works: o.works || null, hazard: o.hazard || null, note: o.note || ''
+    node: o.node || null, works: o.works || null, hazard: o.hazard || null, note: o.note || '',
+    stuck: o.stuck == null ? null : o.stuck   /* the Cut's measure melon: the share of its fruit that sets unripe and stays so (2026-10-26) */
   };
   if (CROPS.BY_ID[id]) throw new Error('crops: duplicate id ' + id);
   CROPS.LIST.push(r); CROPS.BY_ID[id] = r; return r;
@@ -115,3 +117,10 @@ R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.cropt
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
 R('rattlepod', 'Rattle coffee', 'beverage', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands'], stores: ['dried']});
 R('alecap', 'Alecap', 'beverage', [0, 5], [0, 4], {also: ['vegetable', 'dye'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.alecap', colour: 'purple', src: 'zeijani', home: ['throne'], stores: ['fermented', 'fresh'], note: 'fermented to a passable beer; the Zeijani beds (zj_farm_alecap)'});
+
+/* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26): the hyperbamboo (its shoots; its culms and leaves stand in for weaving and
+   thatch), the bamboo rice of a grove's gregarious flowering, the measure melon in its three sizes. The rest of the bowl grows
+   nwlowlands' crops, at the warp's fixed sizes */
+R('hyperbamboo', 'Hyperbamboo shoots', 'vegetable', [4, 5], [3, 4], {also: ['weaving', 'thatch'], atm: [2, 2], form: 'grass', card: 'card.bamboo.giant', src: 'cut', home: ['cut'], stores: ['fresh', 'dried'], note: 'the shoots boiled; the culms (60-80 m) are the scaffolds, pipes and bridges of Dilihan; the leaves fodder'});
+R('bamboo-rice', 'Bamboo rice', 'grain', [4, 5], [3, 4], {atm: [2, 2], form: 'grass', src: 'cut', home: ['cut'], yield: .5, stores: ['dried', 'ground'], note: 'a rare harvest: once in decades a hyperbamboo grove flowers together and dies, and the valley gathers its seed'});
+R('measuremelon', 'Measure melon', 'fruit', [3, 4], [1, 3], {form: 'vine', card: 'card.crop.melon', src: 'cut', home: ['cut'], stores: ['fresh'], stuck: .14, note: 'ripens in exactly three sizes; a share stuck unripe at the smallest for ever. a market measure in Dilihan is so many melons'});

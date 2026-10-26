@@ -9,7 +9,7 @@ const REG=[];function REGISTER(o){if(o&&o.kind==='tree'&&CUT.warpDenied&&CUT.war
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xc6ccc4,.00009);
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,40000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1.5,(STAGE.farR==null?120000:STAGE.farR)*1.35);
 const HEMI=new THREE.HemisphereLight(0xc8d4cc,0x4a4630,.62);scene.add(HEMI);   /* the shared sky (89s-host-sky.js) sets it by the hour */
 const sun=new THREE.DirectionalLight(0xfff2d4,1.45);sun.position.set(-1200,900,-600);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xb0cfc8,.30);fill.position.set(800,400,900);scene.add(fill);
@@ -61,3 +61,18 @@ const GROUND=(function(){const N=420,S=TERR.R*2.2,NC=220;
   const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));
   return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);};
  return{mesh:m,mat,S,N,meshH,have};})();
+// ---------------------------------------------------------------- the far ground (the whole bowl: out to STAGE.farR, 120 km)
+// A skirt of the bowl's own heights (CUT.bowl.h) from the page's edge out across the whole bowl, coarse (rings growing outward),
+// vertex-coloured by height and the stage's far paint: the lakes, the salt floor, the green walls, bare rock over ~3.4 km, snow over
+// ~4.4 km. It must be geometry, not a sky ridge: from the lip the floor lies below the eye, and a ridge layer is a curtain that
+// covers everything under its crest. Past it the shared sky's ridges, cast from the same bowl (89s-host-sky.js), carry the land
+// beyond. It sits under the page's mesh where they overlap. The camera's far plane reaches it.
+const FAR_GROUND=(function(){const R0=TERR.R*1.08,R1=STAGE.farR==null?120000:STAGE.farR,NA=200,NR=70,pos=[],col=[],idx=[];
+ const fp=STAGE.farPaint||((x,z,h)=>{const a=STAGE.alt(h),bb=STAGE.toBowl(x,z);if(CUT.lakeAt(bb[0],bb[1]))return[.30,.44,.47];   /* the lakes, from above */
+  const rr=Math.hypot(bb[0],bb[1]),inL=rr<CUT.lipR(CUT.bearing(bb[0],bb[1])),gr=inL?CUT.bowl.grade(bb[0],bb[1]):0;if(inL&&gr>.36)return[.6,.56,.5];   /* the bare cut faces under the lip */const salt=STAGE.water&&a<STAGE.yRef+40?.8:0;let c=a<-900?[.62,.6,.5]:[.32,.36,.24];c=c.map((v,i)=>v+([.80,.78,.72][i]-v)*salt);
+  const rk=smooth(3000,3700,a),sn=smooth(4300,4600,a);c=c.map((v,i)=>v+([.52,.48,.44][i]-v)*rk);return c.map((v,i)=>v+([.9,.92,.95][i]-v)*sn);});
+ for(let r=0;r<=NR;r++){const t=r/NR,rad=R0*Math.pow(R1/R0,t);for(let a=0;a<NA;a++){const an=a/NA*TAU,x=Math.cos(an)*rad,z=Math.sin(an)*rad,b=STAGE.toBowl(x,z),H2=TERR.R*1.1,under=Math.abs(x)<H2&&Math.abs(z)<H2,h=CUT.bowl.h(b[0],b[1])-STAGE.yRef-(under?3:0);   /* under the page's square: kept below its mesh */
+   pos.push(x,h,z);const c=fp(x,z,h);col.push(Math.pow(c[0],2.2),Math.pow(c[1],2.2),Math.pow(c[2],2.2));}}
+ for(let r=0;r<NR;r++)for(let a=0;a<NA;a++){const i=r*NA+a,j=r*NA+(a+1)%NA;idx.push(i,j,i+NA,j,j+NA,i+NA);   /* counter-clockwise from above: the skirt faces up */}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+ const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.probeSkip=true;m.userData.inspectLabel='ground';m.userData.host=true;m.frustumCulled=false;scene.add(m);return m;})();

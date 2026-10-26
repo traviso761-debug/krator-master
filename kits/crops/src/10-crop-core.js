@@ -61,5 +61,8 @@ CROPS.BIOMES = {
   ringisles:   {atm: 2, atmNote: '?', zones: {wet: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 5], arid: [0, 1]}, lagoon: {warmth: [4, 4], arid: [3, 4], wet: true, salt: true}}},
   /* the Oidong Valley (biomes/oidong): an enclosed high valley, its floor at ~2,000-2,200 m on the scale model (~1.24 atm: standard),
      Cfb with BSk toward the drier west; the floor humid in the east, the flats drier, the terraces cool, the pools fresh */
-  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}}
+  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}},
+  /* the Cut (biomes/cut, PLAN.md section 7): the eigenweapon's bowl, ~1.9 atm on the floor and the lakes' shores (hot: the 4.22 floor's
+     +31 degC), the salt steppe dry and salt; the walls and the lip standard air */
+  cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}}
 };

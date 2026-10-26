@@ -77,7 +77,7 @@ G.disc=function(seg){seg=seg||18;const pos=[],nor=[],uv=[],col=[];for(let s=0;s<
    const A=p(r0,a0),B=p(r0,a1),Cq=p(r1,a0),Dq=p(r1,a1);[[A,c0],[Cq,c1],[Dq,c1],[A,c0],[Dq,c1],[B,c0]].forEach(q=>{pos.push(...q[0]);nor.push(0,0,1);uv.push(q[0][0]*.5+.5,q[0][1]*.5+.5);col.push(q[1],q[1],q[1]);});}}
  return make(pos,nor,uv,col);};
 // a melon: a squat sphere
-G.melon=function(){const g=new T3.SphereGeometry(.5,12,8);g.scale(1,.86,1);g.translate(0,.43,0);return g;};
+G.melon=function(){const g=new T3.SphereGeometry(.5,7,5);g.scale(1,.86,1);g.translate(0,.43,0);return g;};
 
 // ---------------------------------------------------------------- textures and materials
 // The no-pack stand-ins (the page without the library's textures, as in the open world): plain shapes in each cell of a
@@ -127,7 +127,7 @@ BIO.def('hshoot',G.shoot(),M.shoot,{label:'Hyperbamboo shoots',cls:'flora'});
 [0,4,8].forEach((c,i)=>BIO.def('rank'+i,G.stand(c,3),M.rank,{label:'Rankgrass',cls:'flora'}));
 [0,4,8].forEach((c,i)=>BIO.def('melon'+i,G.stand(c,2),M.melon,{label:'Measure melon vines',cls:'flora'}));
 BIO.def('mfruit',G.melon(),M.fruit,{label:'Measure melons (three sizes)',cls:'flora'});
-BIO.def('lichen',G.disc(18),M.disc,{label:'Circle lichen',cls:'flora'});
+BIO.def('lichen',G.disc(10),M.disc,{label:'Circle lichen',cls:'flora'});
 CUT.PAL={culm:[0x5e8a6c,0x6a9474,0x7a9a6a,0x5a7e70,0x8aa070],culmOld:[0x9a9a78,0xa8a27e,0x8e8c6c],leaf:[0x7a9a54,0x86a45a,0x6e8c4e],
  reed:[0xa8b07a,0x98a46c,0xb4b884],rank:[0xb8c4c8,0xa8b8c0,0xc4ccd0],melon:[0xd0c48a,0xc8bc80,0xd8cc94],stuck:[0x9aa86a,0x8e9c62],
  lichen:[0xb8c040,0xc8c850,0xe07a2a,0xe8902e,0xd0d070]};

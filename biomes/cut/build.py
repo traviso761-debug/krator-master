@@ -111,6 +111,8 @@ for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE,'atmos',f)
 for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']:
     PATH[f]=os.path.join(CORE,'atmos','host',f)
+# snow that lies (core/atmos/fx): the cold station's weather binding builds it while it snows (ATMOS.bindWeather climate.cold)
+PATH['89-atmos-fx-snowcover.js']=os.path.join(CORE,'atmos','fx','89-atmos-fx-snowcover.js')
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.join(CORE,'atmos','sky',f)
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take)

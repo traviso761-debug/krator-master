@@ -86,3 +86,7 @@ R('moon-cap', 'Moon caps', 'mushroom', [1, 2], [3, 4], {also: ['reagent'], form:
 R('rainbow-bracket', 'Rainbow bracket', 'herb', [1, 2], [3, 4], {form: 'fungus', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'banded shelf fungi on the old trunks: the long-life tea'});
 R('camphor', 'Camphor crystals', 'reagent', [1, 3], [2, 4], {also: ['herb'], form: 'tree', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'steamed out of the camphor laurel\'s wood: the monks\' liniment, a reagent that clears the head'});
 R('cedar-incense', 'Temple-cedar incense', 'fuel', [1, 2], [2, 4], {form: 'tree', src: 'oidong', home: ['oidong'], note: 'cedar shavings burned as incense; the heartwood is the temple timber'});
+
+/* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
+R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
+R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});
