@@ -17,6 +17,8 @@
 //                       speed (1) compresses the slow phases (wait, digest, reopen) for a page, never the shutting
 //   KTRAPS.catches(trap, prey)   {caught, harm (0..1), pinch (a snap trap a hand fits in shuts on it, and lets go)}
 //   KTRAPS.phase(id)    the trap's offset into its cycle, [0,1), from KRAND.hash of its id
+//   KTRAPS.cycle(segs, t, off)  the one clock every repeating thing shares (core/hazard's KHAZ.state, Korona's pit membrane):
+//                       segs [[name, dur, k0, k1]...] -> {state, k, i, u, left} at t + off (s), or null for a zero length
 //   KTRAPS.GLSL         float ktrapK(float t, vec4 cyc, float phase): k as KTRAPS.state computes it (cyc the four phases,
 //                       the slow three already divided by the speed)
 (function(root){
@@ -47,14 +49,21 @@
     if(m==null)m=L<.08?.01:L<.3?.3:L<1?5:50;
     return m<=.05?'insect':m<=.6?'small':m<=8?'medium':'large';}
   function phase(id){return KR.hash(0x7A9,String(id).length,KR.child(5,String(id)))/4294967296;}
+  // THE ONE CLOCK for everything that repeats (traps, the punji pit's membrane, geysers, vents, tides: core/hazard's KHAZ.state).
+  // segs [[name, dur (s), k0, k1], ...] in order; off (s) is added to t (a hashed phase times the length, or an authored
+  // offset). -> {state: name, k (k0 to k1 across the segment), i (the segment), u (s into it), left (s to its end)}, or null
+  // when the length is not positive. A segment of no length is skipped; the last takes what is left. The arithmetic is
+  // the traps' own (u from t+off, wrapped, minus each segment in turn), so KTRAPS.state is unchanged by it.
+  function cycle(segs,t,off){var L=0,n=segs.length,i;for(i=0;i<n;i++)L+=segs[i][1];if(!(L>0))return null;
+    var u=t+(off==null?0:off);u-=Math.floor(u/L)*L;
+    for(i=0;i<n-1;i++){var g=segs[i];if(u<g[1])break;u-=g[1];}
+    var G=segs[i],k=G[2]===G[3]?G[2]:G[2]+(G[3]-G[2])*u/G[1];
+    return {state:G[0],k:k,i:i,u:u,left:G[1]-u};}
   // the cycle: open and waiting, shutting, shut (digesting), opening; the slow phases divided by speed
   function state(tr,t,id,speed){if(!tr.moves)return {state:'open',k:0};speed=speed==null?1:speed;var c=tr.cycle;
     var w=c.wait/speed,s=c.shut,d=c.digest/speed,r=c.reopen/speed,L=w+s+d+r;if(!(L>0))return {state:'open',k:0};
-    var u=t+phase(id)*L;u-=Math.floor(u/L)*L;
-    if(u<w)return {state:'open',k:0};u-=w;
-    if(u<s)return {state:'shutting',k:u/s};u-=s;
-    if(u<d)return {state:'shut',k:1};u-=d;
-    return {state:'opening',k:1-u/r};}
+    var q=cycle([['open',w,0,0],['shutting',s,0,1],['shut',d,1,1],['opening',r,1,0]],t,phase(id)*L);
+    return {state:q.state,k:q.k};}
   function catches(tr,prey){var c=sizeOf(prey),rk=SIZES.indexOf(c),mx=SIZES.indexOf(tr.preyMax);
     var person=c==='person',pinch=person&&tr.kind==='snap'&&tr.mouth>=.2;
     if(person)return {caught:tr.danger>0&&mx>=rk,harm:tr.danger,pinch:pinch};
@@ -62,6 +71,6 @@
   // the same arithmetic as state(): cyc = (wait, shut, digest, reopen) already divided by the page's speed (not shut)
   var GLSL='float ktrapK(float t,vec4 cyc,float phase){float L=cyc.x+cyc.y+cyc.z+cyc.w;if(L<=0.0)return 0.0;'+
     'float u=mod(t+phase*L,L);if(u<cyc.x)return 0.0;u-=cyc.x;if(u<cyc.y)return u/cyc.y;u-=cyc.y;if(u<cyc.z)return 1.0;u-=cyc.z;return 1.0-u/cyc.w;}';
-  root.KTRAPS={KINDS:KINDS,SIZES:SIZES,make:make,sizeOf:sizeOf,state:state,catches:catches,phase:phase,GLSL:GLSL};
+  root.KTRAPS={KINDS:KINDS,SIZES:SIZES,make:make,sizeOf:sizeOf,state:state,catches:catches,phase:phase,cycle:cycle,GLSL:GLSL};
   if(root.BIO)root.BIO.traps=root.KTRAPS;
 })(typeof globalThis!=='undefined'?globalThis:this);

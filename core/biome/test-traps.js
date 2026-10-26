@@ -34,4 +34,20 @@ const kf=eval('('+glsl+')'),sp=1e4,c=snap.cycle,cy=[c.wait/sp,c.shut,c.digest/sp
 let worst=0;for(let t=0;t<200;t+=.013)worst=Math.max(worst,Math.abs(kf(t,cy,T.phase('clap-7'))-T.state(snap,t,'clap-7',sp).k));
 ok('KTRAPS.GLSL computes the same k as state()',worst<1e-6,false);
 ok('a different phase would be caught',true,(()=>{let w=0;for(let t=0;t<200;t+=.013)w=Math.max(w,Math.abs(kf(t,cy,.5)-T.state(snap,t,'clap-7',sp).k));return w<1e-6;})());
+// the one clock (KTRAPS.cycle): KTRAPS.state on it gives what the old inline arithmetic gave, bit for bit
+function oldState(tr,t,id,speed){if(!tr.moves)return {state:'open',k:0};speed=speed==null?1:speed;var c=tr.cycle;
+  var w=c.wait/speed,s=c.shut,d=c.digest/speed,r=c.reopen/speed,L=w+s+d+r;if(!(L>0))return {state:'open',k:0};
+  var u=t+T.phase(id)*L;u-=Math.floor(u/L)*L;
+  if(u<w)return {state:'open',k:0};u-=w;if(u<s)return {state:'shutting',k:u/s};u-=s;if(u<d)return {state:'shut',k:1};u-=d;
+  return {state:'opening',k:1-u/r};}
+let same=true,n=0;for(const tr of [snap,dew,T.make({kind:'grab',preyMax:'person',danger:.6}),T.make({kind:'suction'}),T.make({kind:'snare'})])
+  for(const sp of [1,20000,1e5])for(let t=0;t<4e6;t+=(sp>1?37.3:731)){const a=T.state(tr,t,'id'+n%7,sp),b=oldState(tr,t,'id'+n%7,sp);n++;if(a.state!==b.state||a.k!==b.k){same=false;break;}}
+let shutSeen=0;for(let t=0;t<3000;t+=.007){const a=T.state(snap,t,'clap-7',1e5),b=oldState(snap,t,'clap-7',1e5);n++;if(a.state==='shutting')shutSeen++;if(a.state!==b.state||a.k!==b.k){same=false;break;}}
+ok('KTRAPS.state on the shared clock is identical to the old arithmetic ('+n+' samples, '+shutSeen+' while shutting)',same&&shutSeen>100,false);
+ok('a changed phase would be caught by that comparison',true,(()=>{for(let t=0;t<2e5;t+=13){const a=T.state(snap,t,'a',1e4),b=oldState(snap,t,'b',1e4);if(a.state!==b.state||a.k!==b.k)return false;}return true;})());
+const segs=[['warn',2,0,0],['up',1,0,1],['on',3,1,1],['down',1,1,0],['idle',3,0,0]];
+ok('cycle: the segment and its k at a time',T.cycle(segs,0).state==='warn'&&T.cycle(segs,2.5).state==='up'&&Math.abs(T.cycle(segs,2.5).k-.5)<1e-12&&T.cycle(segs,4).k===1&&T.cycle(segs,9.5).state==='idle',T.cycle(segs,2.5).state==='warn');
+ok('cycle: it wraps, and off shifts it',T.cycle(segs,10).state==='warn'&&T.cycle(segs,-1).state==='idle'&&T.cycle(segs,0,4).state==='on',T.cycle(segs,0,4).state==='warn');
+ok('cycle: left is the time to the segment\'s end',Math.abs(T.cycle(segs,3.5).left-2.5)<1e-12,Math.abs(T.cycle(segs,3.5).left-3)<1e-12);
+ok('cycle: a zero length is null; a zero segment is skipped',T.cycle([['a',0,0,0]],5)===null&&T.cycle([['a',0,0,0],['b',2,1,1]],1).state==='b',T.cycle([['a',0,0,0],['b',2,1,1]],1).state==='a');
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

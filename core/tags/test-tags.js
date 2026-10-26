@@ -143,6 +143,15 @@ const want = {
 ok(K.label(gate) === want.gate, 'label: the gatehouse\n' + K.label(gate));
 ok(K.label(bench) === want.bench, 'label: the bench\n' + K.label(bench));
 ok(K.label(tree, 37) === want.tree, 'label: a plant instance\n' + K.label(tree, 37));
+// the hazard key (2026-10-26, core/hazard): an object, its kinds a table; the label says it on line 2
+ok(V.keys.hazard === 'object' && V.hazardKinds.acid.effect === 'corrode' && V.navLayers.avoid === 2, 'the hazard key and its kinds');
+ok(K.norm({ hazard: { kind: 'acid' } }).problems.length === 0 && K.norm({ hazard: 'acid' }).problems.length === 1, 'negative: a hazard that is not an object is a problem');
+{ const hz = { id: 'feat_x', 'class': 'feature', kind: 'pool', name: 'Acid pool', at: [0, 0, 0], r: 2, tags: { hazard: { kind: 'acid' } } };
+  const l2 = K.label(hz).split('\n')[1];
+  ok(l2 === 'feature · pool · hazard: acid (corrode), danger 0.7', 'label: a hazard on line 2 (' + l2 + ')');
+  hz.tags.hazard = { kind: 'fall', danger: 0 };
+  ok(K.label(hz).split('\n')[1] === 'feature · pool · hazard: fall, danger 0', 'label: no effect, and a danger of 0 is said');
+  ok(K.label(bench).indexOf('hazard') < 0, 'negative: no hazard, no hazard words'); }
 ok(K.label(Object.assign({}, deer, { note: 'shy' })).split('\n')[3] === 'shy', 'label: a note is appended');
 
 // ---- the flora and fauna vocabulary (the biome kits, 2026-10-12) ----
@@ -203,7 +212,7 @@ const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 24, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = '794c58fc';   // 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
+const DIGEST = '5ee8e4c7';   // 2026-10-26: the hazard key (VOCAB.keys.hazard, hazardKinds, hazardEffects, hazardShapes, hazardFalloffs, hazardTriggers, navLayers; core/hazard); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);
