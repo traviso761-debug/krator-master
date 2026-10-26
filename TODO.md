@@ -84,6 +84,21 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
   host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
 
+## With the final biome rebuild *(the owner, 2026-10-26)*
+
+Work parked for the coming rebuild of every biome kit: do it there, rebuild each page once, rewrite each baseline once and on
+purpose. Take an item out when it is done.
+
+- **Rebuild the old fungoid flora on `BIO.fung`** (the owner, 2026-10-26). `core/biome/33-core-fungoid.js` (planned in
+  `biomes/outlands/PLAN.md` section 12, C2: `cap`, `bracket`, `bladder`, `pod`, `stalk`, `fringe`, `comb`, `tube`, `crust`)
+  replaces the copies each kit carries: `bracket()` in the swbay, nwbay, rift and hyperjungle `65-*-dress.js`; the Throne's
+  `cap`, `capTube` (`throne/src/55-biome-throne-trees.js`) and `bladders` (its floor file); swbay's `capTop`
+  (`swbay/src/55-biome-swbay-trees.js`); nhighlands' `mushrooms`/`discStalks`; the `crust` in ebadlands and ringisles; the
+  hyperjungle's `fungi`; the `stalk` in rift and xanadu trees. Each kit switches to the core parts, its own copy goes, and
+  its page is checked by eye against the old one before the baseline is rewritten (the shapes will move a little). Needs
+  the fragment built first (the Outlands' phase O3); the kits that read those fragments in place (Korona's stations, the
+  Throne's) follow automatically.
+
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
 The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),
