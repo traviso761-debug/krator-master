@@ -451,13 +451,15 @@ function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{a
     strap, cropped so it fills the strip's middle as the canvas's did), the spiral-eye daisies (card.cupflower, the top daisy)
     and the paramo's bunchgrass (card.ichu): grey detail under the instance colours, as the canvases were */
  use('fern',libCell('fern',CELL(1,0),256,256,true),.38);use('strap',libCell('strap',[(1+.148)/3,(1+.01)/3,(1+.616)/3,(2-.01)/3],128,256,true));
- use('disc',libCell('daisy',CELL(1,0),256,256));use('bunch',libCell('tussock',CELL(1,1),256,256));}
+ use('disc',libCell('daisy',CELL(1,0),256,256));use('bunch',libCell('tussock',CELL(1,1),256,256));
+ /* 2026-10-26: the escargot begonia's leaf (card.begonia.escargot, the middle leaf, stalk at the top as the canvas had it; full colour, the instance colour stays near white) */
+ use('shell',libCell('escargot',CELL(1,1),256,256),.45);}
 // the barks: bark.wrung keeps half its own colour (its moss), the others are grey detail under the species' vertex colours.
 // The bucket's uvScale becomes the set's tile size (the trunk lathes read it), and means() (55) divides out the pack's
 // brightness instead of the canvas's, so a species' bark colour renders the same on either map
 /* 2026-10-26: the trumpet's ribbing and the frill column on bark.frill.ribbed (fluted culms), the volute's rind on bark.smooth
    (pale lenticels on a smooth rind), the tree fern's leaf scars on bark.lepido (diamond scars in spiral rows) */
-const LIBBARK=['bark.wrung','bark.ribbed','bark.rind','bark.scars','bark.palm',null,'bark.skirt'],LB=[];
+const LIBBARK=['bark.wrung','bark.ribbed','bark.rind','bark.scars','bark.palm','bark.banded','bark.skirt'],LB=[];
 SHIGH.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;SHIGH.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Coilbark (wrung, moss-streaked)','Spiral-trumpet ribbing','Volute rind','Tree-fern leaf scars','Screw-palm rings','Banded bark','Dead-leaf skirts'].forEach((lab,i)=>{

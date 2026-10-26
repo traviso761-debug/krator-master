@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.316,
+    1.307
+   ],
+   "seam_before": [
+    1.656,
+    1.521
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.lichen.plates",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   0.5,
+   0.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.lichen.plates.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.lichen.plates\"",
+  "reuse": "the log crust on fallen trees and landslide scars (southern highlands); any foliose lichen on wood or rock",
+  "sha1": "632bf50230501555ae54c3cebd2885af6b2614ae"
+ }
+}

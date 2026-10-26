@@ -8,9 +8,9 @@
       2026-10-26: wired from the library (`materials.json`, `pack.py`; cut in `50`'s `libCell`): the floor's fern fronds
       (`card.fern.green`, the upright frond, flipped base-up), the screw palm's straps (`card.strap.pandan`, the straight strap),
       the daisies (`card.cupflower`), the trumpet's ribbing and the frill column (`bark.frill.ribbed`), the volute's rind
-      (`bark.smooth`), the tree fern's scars (`bark.lepido`), all grey detail under the species' colours. Stays open: the
-      ruffle-crown's and cereus's bands (`bark5`) and the escargot begonia's leaf have no set; prompts `bark.banded.ring`
-      and `card.begonia.escargot` are in `core/materials/PROMPTS-NEEDED.md` section 27. The page grew ~0.8 MB (seven packed maps).
+      (`bark.smooth`), the tree fern's scars (`bark.lepido`), all grey detail under the species' colours. Delivered 2026-10-26 and pre-wired: the
+      ruffle-crown's and cereus's bands (`bark5`, family `bark.banded` = `bark.banded.ring`) and the escargot begonia's leaf
+      (family `escargot` = `card.begonia.escargot`, the middle cell, full colour); awaiting the all-builds rebuild. The page grew ~0.8 MB (seven packed maps).
 - [ ] **The Koppen classes are an estimate** (Cfb, Cwb, ET, BSk): the scale model's climate rasters were not read for
       this region.
       Stays open (2026-10-26): no local extract covers the southern highlands (`openworld/little-demo` is the east);

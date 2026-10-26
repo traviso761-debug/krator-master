@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 13 prompts** (after the fourth 2026-10-26 drop, 48 delivered; read the headings for what is owed, the paragraph after this is history) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
+**Count: 2 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -38,20 +38,6 @@ Each is the original prompt with a correction at the end. The first take stays i
 
 **2026-10-26:** Korona's two sets came off their prompts (`biomes/korona/KNOWN_ISSUES.md`, "Two textures came off their
 prompts"); both are usable as installed, so the redos are the owner's call. Re-pack `biomes/korona` when they land.
-
-#### `ground.quartzite.black`
-- Installed: Korona's tepui summits. Why again: came pale with black patches, so the summit reads lighter than a tepui's black crust.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Roraima-type tepui summit pavement seen from above: quartzite sandstone weathered jet black by a crust of cyanobacteria and lichen over the whole frame, matte charcoal (#262422) to soot black (#141312), its sugary grain and fine pits showing dark grey (#3a3836) through the crust, a few hairline cracks and shallow rain pockets holding pale quartz sand (#d8d0c0), rare small flakes of pale pink quartz (#d8b8b0) where the crust has spalled. Matte. Full colour. One tile covers 2 metres. Correction: the whole frame is black crust, average brightness about 15 percent; no green, no large pale areas, no pale ground with black patches.
-```
-
-#### `ground.peat.black`
-- Installed: Korona's bogs. Why again: came as a rusty moss, not black peat.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Waterlogged black peat bog floor seen from above: saturated near-black humus, dark chocolate (#2a1e16) to black (#16110d), half-rotted fibrous plant matter and fine root threads, a few blackened sedge blades pressed flat, the hollows darker and wetter, and two or three small pools of dark tea-coloured water (#3a2414). Matte. Full colour. One tile covers 1.5 metres. Correction: no living moss, no rust or orange, no sticks thicker than a finger; average brightness about 12 percent.
-```
 
 ## 1. Beast Riders (optional)
 
@@ -185,15 +171,6 @@ patterned in bold two-tone motifs. Nothing in the library or `patterns/` has it 
 `keep` 1: the species' bark colour is a near-white multiplier), then `LIBBARK[7]` in the species fragment. Two takes
 (`.b` the variant) so a grove does not repeat one trunk.
 
-#### `bark.carved.b` (`bark.carved` itself was delivered 2026-10-26; this is the same prompt with the variation below)
-- Kind: surface, full colour (the colour is the point). Square 2048 px; one tile covers about 0.6 m of trunk.
-- Used by: the Oidong Valley's cloud-pad tree. Reuse: any sacred or "written" tree, carved totem trunks, burl furniture.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The smooth living bark of a tree that grows its own bold two-tone pattern, as if carved and inked: a pale tan ground (#cdb796, with lighter #dcc8a6 and darker #b8a07c streaks running vertically in the grain), patterned in near-black dark brown (#2e2620) motifs: scattered concentric "target" rings of three or four thick rings with a solid dot at the centre, a few larger nested rings, and one vertical chain of scalloped diamonds (each diamond's four edges bowed inward, a small pale eye in its middle) running the full height of the tile. The motif edges are crisp but slightly irregular, like a pattern grown into the bark rather than painted, with fine bark texture and a few small knots visible through both colours. Matte.
-```
-For `bark.carved.b`, the same with: "the motifs mostly larger nested rings, five or six rings each, and a column of small target rings instead of the diamond chain."
-
 ## 24. The abyssal savannah (`biomes/abyssal-savannah`, 2026-10-26)
 
 `biomes/abyssal-savannah/PLAN.md` section 10. **Reuse, so no prompt:** `card.grass.dry`, `card.ichu` and `card.rankgrass`
@@ -264,60 +241,12 @@ glow tubes), `card.fungus.drip` (the drip cap), `card.beads.bell` (the bead cone
 `rock.limestone.karst`, `rock.sandstone.navajo`, `ground.moss001`-`003`, `ground.sphagnum` (the hanging swamps); the glass
 tower is `biomes/ehighlands`' own. Needed before the kit's H1.
 
-#### `organic.lichen.plates`
-- Kind: surface, full colour.
-- Used by: the log crust on fallen trees and landslide scars (`refs/12`). Reuse: any foliose lichen on wood or rock in a wet native forest.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Old weathered grey wood (#6a6660) seen flat-on, covered in rosettes of leafy lichen: round wavy-edged plates from coin to saucer size, teal-green in the middle (#3a8a7a, #4aa090) shading to gold and ochre at their lobed rims (#c8a040, #d8b050), overlapping one another, a few pale blue-white frosted tufts (#c8dce8) of fine branching lichen between them. Full colour. One tile covers 0.5 metres.
-```
-
-#### `card.bulbheath`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one clump per cell.
-- Used by: the bulb heath on the balds (and the bay's savanna). Reuse: any alien water-storing bulb plant.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of two to four swollen water-storing bulbs standing on the bottom of its cell, round to pear-shaped, smooth slate blue-grey (#6a7a98, #8090b0) with scattered round yellow eyespot pores ringed in dark olive (#d8c040, #4a5030); from the tops rise broad curling leaves in deep green (#2a7a5a) and a few lily-like flowers in salmon-orange and coral (#e8784a, #f09060); in three sprites the bulbs carry thin pale-blue antennae ending in glowing blue droplets (#60c0f0). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.wingreed`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one stem per cell.
-- Used by: the wing reed in the hanging swamps. Reuse: any alien reed or patterned-leaf herb.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one or two tall dark stalks (#2a2430) standing on the bottom of their cell, each topped by a pair of upright leaves shaped like butterfly wings: velvety near-black (#1a1820) with bold gold-yellow veins and eye-spots (#e0b030, #f0c840) and a pale cream wing edge, a knobbly olive-green swelling (#5a6a3a) halfway up each stalk. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.triplets`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
-- Used by: the bearded triplets in the rain wall's understorey (and the bay's jungle floor). Reuse: any bat-flower-like shade herb.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a low plant on the bottom of its cell carrying two or three broad drooping bracts like wide leaves, deep teal shading to blue-violet at the base (#1aa890, #2a6a8a, #3a3a7a), each bract crowned with a cluster of pale yellow pointed flowers (#f0e080) and trailing many long thin teal whiskers (#3ac8a8) down past the bottom of the plant, a small rust-red fruiting knot at the centre (#a84a3a). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. The subject's blues and violets are deep and saturated, never the background's pure magenta; key with `spill: edge`.
-```
-
-#### `card.scarp.succulents`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
-- Used by: the dry east scarp: arrowheads (top row), coral melon (middle row), star-fruit caudex (bottom row); the arrowheads and coral melon also in the lowlands' hills. Reuse: any dry alien scrub.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Top row: an aloe-like clump of spiny grey-green leaves on pale swollen roots, throwing up tall slim stems each tipped by a yellow-green spearhead bud (#c8d040, #8ab048) over a skirt of hanging orange tubular flowers (#f08a20). Middle row: a short plant of thick green stems (#4a8a5a) branching into bright red coral-like arms (#d83a20, #e85a30) that carry round pale-green ribbed melons (#a8d070). Bottom row: a squat swollen pale grey-green stem (#a8b08a) with a few broad grey leaves on top and green spiky star-shaped fruits (#6a8a40) on short stalks. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
 ## 23. Godstep valley (`biomes/godstep`, planned 2026-10-26)
 
 The titanium lava staircase (`biomes/godstep/PLAN.md` section 7). Reused: `ground.lava.aa`, `ground.lava.crust`,
 `ground.sand.black` (the black dunes), `ground.scoria` (tinted red for the flank vent's crater), `ground.cinder`,
 `rock.basalt.*`, `rock.columnar` (the colonnades), `ground.redsoil` (the redlands' soil), `ground.playa.red` (the
 lava-dammed playas, tinted pale), `rock.palagonite` (section 20). Needed before the kit's D1.
-
-#### `rock.laterite`
-- Kind: surface, full colour.
-- Used by: the redlands' breakaway cliffs (`refs/05`). Reuse: any tropical laterite or iron-crusted red cliff.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A laterite cliff face seen flat-on: deep brick-red and rust earth (#a83a24, #c04a2a, #8a3020) cut by many fine vertical rain runnels and fluted ribs, a hard iron crust in darker purple-brown nodules and pea-sized pisolites (#5a2a20) near the top, paler pink-orange mottled clay (#d8806a) in patches, crumbling grains at the foot of the runnels. Full colour. One tile covers 2 metres.
-```
 
 ## 25. The Yeti kit (`kits/yeti`, 2026-10-25)
 
@@ -331,22 +260,6 @@ green; no leaves, no flowers), cold steppe and desert, a salt lake, copper-stain
 `card.shelf.glow`, `card.palm`. Also needed here and owed above: `rock.badland.bedded` (section 9), `ground.salt.ochre` and
 `ground.soda.crust` (sections 11, 12), `organic.pod.honeycomb` and `organic.lichen.plates` (section 17). Needed before the
 kit's O2.
-
-#### `rock.turquoise.vein`
-- Kind: surface, full colour.
-- Used by: the gem hills' turquoise workings (station 3). Reuse: any turquoise or copper-altered host rock.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Pale altered rock, chalky cream and buff (#d8cdb8, #c4b49a), with rust-brown limonite stains (#9a5a2a), cut by a network of thin veins and rounded nodules of robin's-egg turquoise (#4ab0b0, #6ac8c0, #2a8a90), some nodules with fine dark brown matrix lines like a spider's web (#4a3a2a). Full colour. One tile covers 1 metre.
-```
-
-#### `card.outlands.wadi`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
-- Used by: the ribbon mat, bell pool, curtain weed and glow bell of the springs and seeps (Z1-Z3, Z7).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Alien water plants with no leaves and no flowers. Sprites 1-2: long flat bright green ribbons (#3a9a4a) streaming sideways as if in a current. Sprites 3-4: a cluster of hanging bell-shaped translucent teal bladders (#4a9a98) on short pale stalks. Sprites 5-6: a trailing veil of dark green and deep blue-grey strands (#2a4a2a, #2a3a4a) hanging straight down. Sprites 7-9: a bell-shaped cluster of upright grey tubes (#7a8080) whose open tips glow soft blue-green (#6ae0c8). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
 
 ## 28. The planned stations' gaps (`biomes/STATIONS-SURVEY.md`, 2026-10-26)
 

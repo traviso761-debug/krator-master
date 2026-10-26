@@ -1,6 +1,34 @@
 {
  "build": "shigh",
  "families": {
+  "bark.banded": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bark.banded.albedo.webp"
+   },
+   "lib": "bark.banded.ring",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "af2dfe532c4f93183bcc1e3b570ff4bf4491978a",
+    "normal": "c5125b258fc490528184233c46168a2413adcf0f",
+    "roughness": "12891914b496ab7a34f60a7a163545d8f2d6a688"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5775
+   }
+  },
   "bark.palm": {
    "breakup": null,
    "card": false,
@@ -193,6 +221,32 @@
     "keep": 0.0,
     "mean": 0.8,
     "sourceMean": 0.7507
+   }
+  },
+  "escargot": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "escargot.albedo.webp"
+   },
+   "lib": "card.begonia.escargot",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a64e577447ea066c941757d97cd5b85efb4e7899"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.37727593289498246,
+    "sourceMean": 0.3773
    }
   },
   "fern": {

@@ -1904,6 +1904,11 @@ magenta, `cards.py`, anchor none). All in the library, none wired (the kits they
   slightly pink). Pre-wired for the final rebuild (no pages rebuilt): `biomes/oidong` (`bark.carved` on bark7, a lib hook in
   `50-biome-oidong-species.js`), `biomes/sedesert/stations/mantis` (`broad` = `card.fig`), `biomes/abyssal-savannah` (`thatch` and
   `groundDetail`), `biomes/nwouterwall` (birch, willow, cloud, deer, edel; cloudberry and caribou moss become upright tufts).
+- Fifth drop (2026-10-26, batches `owner-2026-10-26e.json` and `owner-2026-10-26e-cards.json`): surfaces `ground.quartzite.black` (2 m; "Dark
+  Cracked Rock"), `ground.peat.black` (1.5 m), `organic.lichen.plates` (0.5 m), `bark.carved.b` (0.6 m; large nested rings and the diamond chain),
+  `rock.laterite` (2 m), `rock.turquoise.vein` (1 m); cards `card.scarp.succulents` (spill none: red coral arms), `card.outlands.wadi` (ribbon
+  mat, glass bells, curtain weed, tube clusters), `card.triplets`, `card.bulbheath` (spill none), `card.wingreed`. Owed after it: `metal.enamel.scoured`
+  and `card.cornlily`. Pre-wired: `biomes/shighlands` (`bandedring`, `escargot`).
 
 #### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
 

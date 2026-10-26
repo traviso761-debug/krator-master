@@ -16,6 +16,8 @@
   "bark.scars": {"lib": "bark.lepido", "scale": [1.2, 1.2], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "bark.wrung": {"lib": "bark.wrung", "scale": [1.6, 1.6], "tint": {"keep": 0.55, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "bark.palm": {"lib": "bark.palm_tree_bark", "scale": [1.0, 1.4], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "bark.banded": {"lib": "bark.banded.ring", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "escargot": {"lib": "card.begonia.escargot", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0, "specular": 0.2},
   "bark.skirt": {"lib": "bark.skirt", "scale": [1.0, 1.2], "tint": {"keep": 0.35, "mean": 0.62}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "stone.granite": {"lib": "rock.granite.tor", "scale": [2.5, 2.5], "tint": {"keep": 0.5, "mean": 0.7}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "ground.sphagnum": {"lib": "ground.sphagnum", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
