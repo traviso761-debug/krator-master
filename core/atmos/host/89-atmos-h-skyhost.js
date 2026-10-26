@@ -23,7 +23,8 @@
    uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
    uCloud:{value:new T.Vector4()},uCamPos:{value:V3()},uWet:{value:0},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
    uPN:{value:new T.Vector4()},uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
-   uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)}};
+   uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)},
+   uStaDir:{value:V3()},uStaAx:{value:V3()},uStaV:{value:V3()},uStaK:{value:new T.Vector4()},uRealT:{value:0},uMeteor:{value:1}};
   // the noise volume, baked once for the page (64^3 RGBA, 1 MB) and shared by every sky on it
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
@@ -61,6 +62,8 @@
    const C=P.clouds;U.uCloud.value.set(L.cover,C.cumulus,C.cirrus,C.bank);U.uCloudH.value.set(C.height,C.cirrusHeight,C.scale,C.drift);
    U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);U.uCamPos.value.copy(cam.position);U.uWet.value=W&&W.wet!=null?W.wet:0;
    U.uTime.value=(A.clock?A.clock.t:clock.t);
+   {const q=st.station;v(U.uStaDir,q.dir);v(U.uStaAx,q.axis);v(U.uStaV,q.vel);U.uStaK.value.set(q.radiusDeg*D,q.lit,q.dist,q.up);}
+   U.uRealT.value=(typeof performance!=='undefined'?performance.now():Date.now())/1000%86400;U.uMeteor.value=P.night.meteors==null?1:P.night.meteors;
    U.uPixAng.value=(cam.fov*D)/Math.max(1,r.domElement.height);   // one framebuffer pixel, radians
    // the page's light (the colour script is display-space; three's lights and fog are linear)
    if(o.sun){o.sun.position.set(...st.sunDir).multiplyScalar(1000);if(o.sun.target)o.sun.target.position.set(0,0,0);o.sun.color.setRGB(...L.sunC).convertSRGBToLinear();o.sun.intensity=L.sunI*(st.sunAlt>-1?1:0);}

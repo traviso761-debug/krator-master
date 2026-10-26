@@ -61,7 +61,8 @@ function golden(A) {
       sunDir: s.sunDir, giantDir: s.giantDir, giantAxis: s.giantAxis, pole: s.pole, ringOpen: s.ringOpen, ringLine: s.ringLine,
       ringNormal: A.skyRingNormal(s), eclipse: s.eclipse, giantLit: s.giantLit, spin: s.spin, lst: s.lst, clusterDir: s.clusterDir,
       eq: s.eq, moons: s.moons.map(m => ({ name: m.name, dir: m.dir, light: m.light, lead: m.lead, toGiant: m.toGiant,
-        radiusDeg: m.radiusDeg, distKm: m.distKm, lit: m.lit, front: m.front })) });
+        radiusDeg: m.radiusDeg, distKm: m.distKm, lit: m.lit, front: m.front })),
+      station: { dir: s.station.dir, dist: s.station.dist, axis: s.station.axis, vel: s.station.vel, radiusDeg: s.station.radiusDeg, lit: s.station.lit, up: s.station.up } });
   }
   const P = A.skyPreset('standard', { site: { px: 446, py: 690 } }), look = [];
   for (const [h, d, w] of [[6, 0, null], [12, 0, null], [19.2, 0, null], [0, -88, null], [14, 30, { cover: .45, grey: .8 }], [10, 5, { fog: 1, grey: .4 }]]) {

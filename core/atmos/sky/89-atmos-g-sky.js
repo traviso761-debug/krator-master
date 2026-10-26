@@ -55,6 +55,9 @@
   'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform vec3 uCamPos;',   // uCamPos: the page camera's world position (the clouds are anchored to the world)   // cover, cumulus, cirrus, bank; heights, scale, drift
   'uniform vec3 uNightK;',                               // stars, nebula, galaxy gains
   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];uniform vec3 uRidgeRock['+NR+'],uRidgeForest['+NR+'],uRidgeSnow['+NR+'];',
+  // the broken station (ATMOS.skyStation): its direction, torus axis and motion; uStaK: ring radius (radians), lit, distance (km), over the horizon
+  'uniform vec3 uStaDir,uStaAx,uStaV;uniform vec4 uStaK;',
+  'uniform float uRealT,uMeteor;',   // uRealT: wall-clock seconds (the meteors keep real time whatever the game clock does); uMeteor: their rate, 0 none, 1 the usual night
   // ---- the hash and gradient noise (lowbias32; bit-exact across engines)
   ...NOISE,
   ...CLOUDF,
@@ -297,6 +300,55 @@
   '  float hz=clamp((1.0-exp(-dist*uFogD*R.w))+0.06,0.0,1.0);vec3 ha=mix(uFogC,air,0.35);c=mix(c,ha,hz);',
   '  o.rgb=mix(o.rgb,c,cover);o.a=max(o.a,cover);}',
   ' return o;}',
+  // ---- 3b the broken station (the owner, 2026-10-26): a torus 24 km across, a dozen pixels wide overhead, so its ring is
+  // just readable: a sector torn out, a second small break, a hub and spokes (one snapped) that only a long lens shows.
+  // Drawn on the plane of the sky about its direction, the ring an ellipse from its axis; lines thinner than a pixel dim
+  // rather than flicker. Behind it along its orbit trails its wreckage: specks of sunlit metal (some glinting as they
+  // tumble) spreading wider and thinner with distance, in a faint haze of fine dust; all of it dark in Krator's shadow
+  'vec4 atmSkyStation(vec3 d,out vec3 deb){deb=vec3(0.0);vec3 c=uStaDir;float cd=dot(d,c);float R=uStaK.x,D=uStaK.z,trail='+f(S.station.trailKm)+'/D;',
+  ' if(uStaK.w<0.5||cd<0.0||atmSkyAng(d,c)>trail*1.15+R*2.0+uPixAng*4.0)return vec4(0.0);',
+  ' vec3 q=(d/cd-c)*D;float pk=uPixAng*D;vec3 ax=uStaAx,u=cross(c,ax);float ul=length(u);u=ul>1e-4?u/ul:normalize(cross(c,vec3(0.0,1.0,0.0)));',
+  ' vec3 w=cross(ax,u),wv=w-c*dot(w,c);float kk=max(length(wv),0.03);vec3 vh=wv/kk;float Rk=R*D;',
+  ' float x=dot(q,u),y=dot(q,vh),yk=y/kk,rho=length(vec2(x,yk))/Rk;vec4 o=vec4(0.0);',
+  ' if(rho<2.0){float th=atan(yk,x),tube='+f(S.station.tubeKm)+';',
+  '  vec2 gr=vec2(x,yk/kk)/(Rk*Rk*max(rho,1e-3));float de=(rho-1.0)/max(length(gr),1e-5);',
+  // the torn sector (ragged ends) and a smaller break
+  '  float rag=atmSkyU(uvec3(uint(floor((th+3.2)*40.0)),3u,0u),620u);float a1=abs(mod(th-0.95+3.14159265,6.28318531)-3.14159265),a2=abs(mod(th-3.95+3.14159265,6.28318531)-3.14159265);',
+  '  float keep=step(0.55+0.10*rag,a1)*step(0.10+0.06*rag,a2);',
+  '  float tw=max(tube,0.5*pk);float cov=keep*pow(tube/tw,0.6)*(1.0-smoothstep(tw-0.5*pk,tw+0.5*pk,abs(de)));',
+  // the hub and three spokes, the one into the torn sector snapped short
+  '  float hub=1.0-smoothstep(1.4-0.5*pk,1.4+0.5*pk,length(vec2(x,y)));float sp=0.0;',
+  '  for(int j=0;j<3;j++){float ts=0.40+2.0944*float(j);vec2 e=vec2(cos(ts),sin(ts)*kk)*Rk*(j==0?0.45:0.97);vec2 p=vec2(x,y);float h=clamp(dot(p,e)/dot(e,e),0.0,1.0);',
+  '   float sw=max(0.3,0.5*pk);sp=max(sp,(0.3/sw)*(1.0-smoothstep(sw-0.5*pk,sw+0.5*pk,length(p-e*h))));}',
+  '  float a=max(cov,max(hub*min(1.0,1.4/max(0.5*pk,1.4)),sp));',
+  '  if(a>0.0){vec3 nt=cos(th)*u+sin(th)*w,L=uSunDir;float lam=0.25+0.45*max(dot(nt,L),0.0)+0.30*abs(dot(ax,L));if(cov<a)lam=0.3+0.5*abs(dot(ax,L));',
+  '   float pan=0.75+0.35*atmSkyU(uvec3(uint(floor((th+3.2)*14.0)),5u,0u),621u);',   // its hull panels, some scorched darker
+  '   vec3 alb=vec3(0.92,0.91,0.88)*pan;o=vec4(alb*(lam*uStaK.y*1.5+0.012)+uShineC*uShineI*0.05,a);}}',
+  // the wreckage: along-track distance behind it (true km, undoing the foreshortening) and across it
+  ' if(uStaK.y>0.0){vec3 vb=-(uStaV-c*dot(uStaV,c));float vl=max(length(vb),0.05);vb/=vl;vec3 lt=cross(c,vb);',
+  '  float s=dot(q,vb)/vl,l=dot(q,lt),cell=2.0;float ci=floor(s/cell);',
+  '  if(s>-6.0&&s<'+f(S.station.trailKm)+'+6.0){for(int j=-1;j<=1;j++)for(int m=0;m<3;m++){float cj=ci+float(j);if(cj<-1.0)continue;uvec3 h=uvec3(uint(cj+4.0),uint(m),9u);',
+  '    float sc=(cj+atmSkyU(h,630u))*cell,dn=0.22+0.78*exp(-max(sc,0.0)/160.0);if(atmSkyU(h,631u)>dn)continue;',
+  '    float wid=0.8+0.11*max(sc,0.0),lc=wid*(atmSkyU(h,632u)+atmSkyU(h,633u)-1.0)*1.6;',
+  '    float sz=0.10+0.55*pow(atmSkyU(h,634u),3.0),gl=step(atmSkyU(h,635u),0.3)*pow(max(sin(uRealT*(0.6+2.4*atmSkyU(h,636u))+6.2832*atmSkyU(h,637u)),0.0),40.0)*3.0;',
+  '    float ds=(s-sc)*vl,dl=l-lc,sg=0.75*pk;deb+=vec3(0.84,0.82,0.78)*(min(1.2,max(0.06,10.0*sz*sz/(pk*pk)))*(1.0+gl))*exp(-(ds*ds+dl*dl)/(sg*sg));}',
+  '   float wd=0.8+0.11*max(s,0.0);deb+=vec3(0.72,0.72,0.74)*0.032*exp(-l*l/(wd*wd))*exp(-max(s,0.0)/180.0)*smoothstep(-4.0,6.0,s);}',
+  '  deb*=uStaK.y;}',
+  ' return o;}',
+  // ---- 3c shooting stars (the owner, 2026-10-26): three channels of time slots in wall-clock seconds; a slot fires with a
+  // chance set by uMeteor (about one meteor in 20 s at 1), a streak 6-24 degrees long crossing the sky in under a second,
+  // mostly downward, its head green-white and its train orange; the odd one flares. In the air, so over the bodies and under the clouds
+  'vec3 atmSkyMeteors(vec3 d){vec3 o=vec3(0.0);if(uMeteor<=0.0||d.y<-0.02)return o;',
+  ' for(int j=0;j<3;j++){float per=7.0+3.0*float(j),tt=uRealT/per+0.37*float(j),k=floor(tt),f=fract(tt)*per;uvec3 h=uvec3(uint(k+16.0),uint(j),7u);',
+  '  if(atmSkyU(h,600u)>0.15*uMeteor)continue;float dur=0.35+0.8*atmSkyU(h,601u),t0=(per-dur)*atmSkyU(h,602u),p=(f-t0)/dur;if(p<0.0||p>1.0)continue;',
+  '  float az=6.2831853*atmSkyU(h,603u),el=radians(22.0+55.0*atmSkyU(h,604u));vec3 s=vec3(sin(az)*cos(el),sin(el),-cos(az)*cos(el));',
+  '  vec3 e1=normalize(cross(s,vec3(0.0,1.0,0.0))),e2=cross(e1,s);float pa=4.712389+2.6*(atmSkyU(h,605u)-0.5);vec3 td=cos(pa)*e1+sin(pa)*e2;',
+  '  float len=radians(6.0+18.0*atmSkyU(h,606u)),off=asin(clamp(dot(d,normalize(cross(s,td))),-1.0,1.0)),a=atan(dot(d,td),dot(d,s));',
+  '  float hd=len*p,tl=max(0.0,hd-len*0.4);if(a<tl-0.02||a>hd+0.02)continue;float w=uPixAng*1.1,x=clamp((a-tl)/max(hd-tl,1e-4),0.0,1.0);',
+  '  float br=(0.5+1.3*atmSkyU(h,607u))*pow(sin(3.14159*p),0.7)+step(0.75,atmSkyU(h,608u))*2.2*exp(-pow((p-0.6-0.3*atmSkyU(h,609u))/0.05,2.0));',
+  '  float tr=exp(-off*off/(w*w))*pow(x,1.6)*step(a,hd),hg=exp(-((a-hd)*(a-hd)+off*off)/(w*w*2.2));',
+  '  o+=mix(vec3(1.0,0.60,0.30),vec3(0.82,1.0,0.88),x)*br*(0.7*tr+1.2*hg);}',
+  ' return o;}',
   // ---- the whole sky
   'vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);',
   ' float skyL=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,skyL)*(1.0-uDayStars*0.8),0.0,1.0);',
@@ -314,8 +366,12 @@
   ' vec4 r=atmSkyRing(d,tG,g.a>0.5);if(r.a>0.0){bc=op>0.0?mix(bc,r.rgb,r.a):r.rgb;op=op>0.0?op:r.a;}',
   // a moon nearer than the giant (Day crossing its face) is drawn over it
   ' if(mf&&mo.a>0.0){bc=op>0.0?mix(bc,mo.rgb,mo.a):mo.rgb;op=max(op,mo.a);}',
+  // the station, nearest of all
+  ' vec3 deb;vec4 sta=atmSkyStation(d,deb);if(sta.a>0.0){bc=op>0.0?mix(bc,sta.rgb,sta.a):sta.rgb;op=max(op,sta.a);}',
   ' if(op>0.0){float tm=dot(T,vec3(0.33));float hz=clamp(uHazeFloor*0.55+(1.0-tm)*0.6+0.35*exp(-max(d.y,0.0)/0.10)*uHazeFloor,0.0,0.94);',
   '  vec3 ob=mix(bc*T,air,hz);col=mix(col,ob,op);}',
+  ' col+=deb*T*(1.0-0.9*uHazeFloor);',
+  ' col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);',
   ' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
   ' vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);',
   ' if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a));',

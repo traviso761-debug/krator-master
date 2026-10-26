@@ -28,7 +28,7 @@
   giant:{deep:[.07,.19,.55],mid:[.21,.44,.86],pale:[.52,.68,.94],cloud:[.94,.97,1],plank:[.70,1.12,.92],haze:[.40,.63,.96],teal:[.22,.68,.72],rim:[.55,.72,1],night:[.20,.30,.48],ring:[.88,.84,.76],
    shine:[.60,.72,.86],shineI:.42},          // giantshine: the night's key light from the giant, at full phase
   clouds:{cover:.32,cumulus:1,cirrus:.55,bank:.35,height:1600,cirrusHeight:9000,scale:2600,drift:.004},
-  night:{stars:1,nebula:1,galaxy:1},
+  night:{stars:1,nebula:1,galaxy:1,meteors:1},   // meteors: the shooting stars' rate (0 none; a shower 3 or more)
   fogDensity:.00011,                         // the air's own, x each key's fog
   ridges:[]}};
  const clone=o=>JSON.parse(JSON.stringify(o));

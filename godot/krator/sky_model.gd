@@ -72,6 +72,35 @@ func ring_normal(st: Dictionary) -> Vector3:
 
 
 # ---- the state at a site, an hour and a day count (0 is game start's date)
+# the broken station round Krator (ATMOS.skyStation): its orbit in the inertial equatorial frame, then as the site sees it
+func _station(t: float, lst: float, phi: float, Wx: Vector3, Wy: Vector3, Wz: Vector3, sunE: Vector3, eclipse: float) -> Dictionary:
+	var O: Dictionary = S["station"]
+	var R: float = S["frame"]["kmPerDeg"] * 180.0 / PI
+	var ok: float = O["orbitKm"]
+	var GM := 7.4e-3 * R * R
+	var per := TAU * sqrt(ok * ok * ok / GM) / 86400.0
+	var u: float = O["u0"] * D + TAU * t / per
+	var om: float = (O["node0"] + O["nodeDegPerDay"] * t) * D
+	var i: float = O["incDeg"] * D
+	var ax := Vector3(cos(om), sin(om), 0.0)
+	var ay := Vector3(-sin(om) * cos(i), cos(om) * cos(i), sin(i))
+	var nrm := Vector3(sin(om) * sin(i), -cos(om) * sin(i), cos(i))
+	var rad := ax * cos(u) + ay * sin(u)
+	var vel := -ax * sin(u) + ay * cos(u)
+	var p := rad * ok
+	var rel := p - _eq(lst, phi) * R
+	var dist := rel.length()
+	var LB: Dictionary = O["lib"]
+	var lb: float = (LB["deg"] + LB["swingDeg"] * sin(TAU * t / LB["periodD"])) * D
+	var axis := nrm * cos(lb) + vel * sin(lb)
+	var ps := p.dot(sunE)
+	var perp := sqrt(maxf(0.0, ok * ok - ps * ps))
+	var lit := (1.0 if ps > 0.0 else clampf((perp - R) / 60.0, 0.0, 1.0)) * (1.0 - eclipse)
+	var w := func(e: Vector3) -> Vector3: return (Wx * e.x + Wy * e.y + Wz * e.z).normalized()
+	var dir: Vector3 = w.call(rel)
+	return {"dir": dir, "dist": dist, "axis": w.call(axis), "vel": w.call(vel), "radiusDeg": atan(float(O["radiusKm"]) / dist) / D,
+		"lit": lit, "up": 1 if dir.y > 0.0 else 0, "periodH": per * 24.0}
+
 func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 	var t := day + hour / 24.0
 	var yd: float = S["startDay"] + t
@@ -154,9 +183,10 @@ func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 	var eclipse := 0.0 if sep >= rg + rs else (1.0 if sep <= rg - rs else (rg + rs - sep) / (2.0 * rs))
 	var C: Dictionary = S["cluster"]
 	var ce := _eq(C["ra"] * D, C["dec"] * D)
+	var station := _station(t, lst, phi, Wx, Wy, Wz, sunE, eclipse)
 	return {"site": site, "hour": hour, "day": day, "t": t, "yearDay": fposmod(yd, S["yearD"]), "lst": lst,
 		"sunDir": sun_dir, "giantDir": giant_dir, "giantAxis": giant_axis, "ringOpen": ring_open, "ringLine": rt, "pole": pole,
-		"eq": [Wx, Wy, Wz], "moons": moons, "eclipse": eclipse,
+		"eq": [Wx, Wy, Wz], "moons": moons, "station": station, "eclipse": eclipse,
 		"sunAlt": asin(clampf(sun_dir.y, -1.0, 1.0)) / D, "giantAlt": asin(giant_dir.y) / D,
 		"giantLit": (1.0 - sun_dir.dot(giant_dir)) / 2.0, "spin": TAU * fmod(t * 24.0 / G["spinH"], 1.0),
 		"clusterDir": (Wx * ce.x + Wy * ce.y + Wz * ce.z).normalized()}

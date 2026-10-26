@@ -96,6 +96,13 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
   if(h.ring&&h.giant){if(h.ringT<h.giantT)front++;else back++;if(h.ringShown)shown++;}}
  ok('across the disc the ring passes in front on one half and behind on the other',front>0&&back>0,front===0);
  ok('only the near half is drawn over the disc',shown===front,shown===front+back);}
+// ---- the broken station
+{const s=at(voth,259,6);ok('the site frame: the zenith is world up (the station\'s frame is the stars\')',near(V.dot(s.toWorld([Math.cos(s.lst)*Math.cos(voth.latitude*Math.PI/180),Math.sin(s.lst)*Math.cos(voth.latitude*Math.PI/180),Math.sin(voth.latitude*Math.PI/180)]),[0,1,0]),1,1e-9),false);
+ const st=s.station;ok('its lap: about 2.5 hours',near(st.periodH,2.47,.05),near(st.periodH,1,.05));
+ let ups=0,minD=1e9,maxR=0,lit=0,dark=0,maxAlt=0;for(let h=0;h<240;h+=.02){const q=A.skyState(voth,h%24,Math.floor(h/24)).station;if(q.up){ups++;minD=Math.min(minD,q.dist);maxR=Math.max(maxR,q.radiusDeg);maxAlt=Math.max(maxAlt,V.altAz(q.dir).alt);if(q.lit>.5)lit++;else dark++;}}
+ ok('over ten days Voth sees it often, sometimes high, both lit and in Krator\'s shadow',ups>500&&maxAlt>70&&lit>0&&dark>0,ups===0);
+ ok('overhead it is 2,200 km off, its ring ~0.3 degrees in radius: just readable',near(minD,2190,60)&&maxR>.27&&maxR<.36,maxR>1);
+ const a=A.skyState(voth,7,0).station,b=A.skyState(voth,7.02,0).station;ok('it moves along its velocity',V.dot(V.norm(b.dir.map((v,k)=>v-a.dir[k])),a.vel)>.6,false);}
 {const s=at(voth,259,9);ok('the chunk is written (the sky shader\'s GLSL)',typeof A.skyGLSL==='function'&&/atmSky\(/.test(A.skyGLSL()),false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

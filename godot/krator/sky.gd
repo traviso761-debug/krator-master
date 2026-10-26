@@ -172,6 +172,11 @@ func _update() -> void:
 		mr.append(mo["radiusDeg"] * model.D); mk.append(mo["kind"]); mf.append(mo["front"]); mlp.append(mo["lump"])
 	for k in [["uMoonDir", md], ["uMoonL", ml], ["uMoonV", mv], ["uMoonG", mg], ["uMoonC", mc], ["uMoonR", mr], ["uMoonK", mk], ["uMoonLump", mlp], ["uMoonF", mf]]:
 		m.set_shader_parameter(k[0], k[1])
+	var st: Dictionary = s["station"]
+	m.set_shader_parameter("uStaDir", st["dir"]); m.set_shader_parameter("uStaAx", st["axis"]); m.set_shader_parameter("uStaV", st["vel"])
+	m.set_shader_parameter("uStaK", Vector4(st["radiusDeg"] * model.D, st["lit"], st["dist"], st["up"]))
+	m.set_shader_parameter("uRealT", fmod(Time.get_ticks_msec() / 1000.0, 86400.0))   # the meteors keep wall-clock time
+	m.set_shader_parameter("uMeteor", float(preset["night"].get("meteors", 1.0)))
 	var Cl: Dictionary = preset["clouds"]
 	m.set_shader_parameter("uCloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
 	m.set_shader_parameter("uCloudH", Vector4(Cl["height"], Cl["cirrusHeight"], Cl["scale"], Cl["drift"]))

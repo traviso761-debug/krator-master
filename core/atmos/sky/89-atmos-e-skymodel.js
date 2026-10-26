@@ -49,6 +49,13 @@
          // neighbours never line up: laplace is the moon's lead on Krator then (Day 0: it transits). Working names
          {name:'Two-Day', kind:5, periodD:2, orbitKm:307950, radiusKm:1500, albedo:[1,1,1], laplace:90},      // Mimas-like: grooves, one huge crater
          {name:'Four-Day', kind:6, periodD:4, orbitKm:488840, radiusKm:3400, albedo:[1,1,1], laplace:225}],  // vitriolic: sulfuric-acid seas under bright cloud
+  // the broken station (the owner, 2026-10-26): a torus 24 km across (sized so its ring just reads at a 50 degree view) round Krator itself, 2,200 km up (radius 7,000 km, a
+  // third of Krator's Hill sphere in the giant's pull, so the orbit holds; far above any air, so it has not decayed in a
+  // thousand years). 2.48 h a lap, west to east, inclined 52 degrees so it passes over the crater's latitudes; Krator's
+  // bulge turns its orbit's node backward 1.57 degrees a day. Dead, it hangs by the gravity gradient, its axis across
+  // the track rocking slowly (lib); a sector is torn out and its wreckage trails behind it along the orbit (trailKm)
+  station:{orbitKm:7000, incDeg:52, node0:40, u0:0, nodeDegPerDay:-1.57, radiusKm:12, tubeKm:1.4, trailKm:260,
+   lib:{deg:25, swingDeg:10, periodD:3.1}},
   doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
   // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
   // the southern winter nights (the owner, 2026-10-25)
@@ -153,9 +160,25 @@
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
   const sunAlt=Math.asin(Math.max(-1,Math.min(1,sunDir[1])))/D,giantAlt=Math.asin(giantDir[1])/D;
+  const station=A.skyStation(t,lst,phi,toWorld,sunE,eclipse);
   return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,ringOpen,ringLine:rt,pole,eq:W,toWorld,
-   moons,eclipse,sunAlt,giantAlt,giantLit:(1-dot(sunDir,giantDir))/2,spin:2*Math.PI*((t*24/S.giant.spinH)%1),
+   moons,station,eclipse,sunAlt,giantAlt,giantLit:(1-dot(sunDir,giantDir))/2,spin:2*Math.PI*((t*24/S.giant.spinH)%1),
    clusterDir:norm(toWorld(eq(S.cluster.ra*D,S.cluster.dec*D)))};};
+
+ // ---- the station: its place in Krator's inertial equatorial frame (km from Krator's centre), then as the site sees it.
+ // dir and dist from the site; axis the torus's axis and vel its motion (world unit vectors); radiusDeg its ring's angular
+ // radius; lit 0 in Krator's shadow (or the giant's: the eclipse), 1 in sunlight; up when it is over the horizon
+ A.skyStation=function(t,lst,phi,toWorld,sunE,eclipse){const O=S.station,R=S.frame.kmPerDeg*180/Math.PI;
+  const GM=7.4e-3*R*R,per=2*Math.PI*Math.sqrt(O.orbitKm*O.orbitKm*O.orbitKm/GM)/86400;   // g = 7.4 m/s^2 at the surface: km^3/s^2, period in days
+  const u=O.u0*D+2*Math.PI*t/per,om=(O.node0+O.nodeDegPerDay*t)*D,i=O.incDeg*D,co=Math.cos(om),so=Math.sin(om),ci=Math.cos(i),si=Math.sin(i);
+  const ax=[co,so,0],ay=[-so*ci,co*ci,si],nrm=[so*si,-co*si,ci];   // the node line, 90 degrees on along the orbit, the orbit's pole
+  const rad=[0,1,2].map(k=>ax[k]*Math.cos(u)+ay[k]*Math.sin(u)),vel=[0,1,2].map(k=>-ax[k]*Math.sin(u)+ay[k]*Math.cos(u));
+  const p=rad.map(v=>v*O.orbitKm),zen=eq(lst,phi),rel=p.map((v,k)=>v-zen[k]*R),dist=Math.hypot(rel[0],rel[1],rel[2]);
+  const lb=(O.lib.deg+O.lib.swingDeg*Math.sin(2*Math.PI*t/O.lib.periodD))*D,axis=nrm.map((v,k)=>v*Math.cos(lb)+vel[k]*Math.sin(lb));
+  // Krator's shadow: a cylinder behind it, soft over the penumbra's few km
+  const ps=dot(p,sunE),perp=Math.sqrt(Math.max(0,O.orbitKm*O.orbitKm-ps*ps)),lit=(ps>0?1:Math.min(1,Math.max(0,(perp-R)/60)))*(1-eclipse);
+  const dir=norm(toWorld(rel));
+  return{dir,dist,axis:norm(toWorld(axis)),vel:norm(toWorld(vel)),radiusDeg:Math.atan(O.radiusKm/dist)/D,lit,up:dir[1]>0?1:0,periodH:per*24};};
 
  // ---- the giant and its ring as the shader draws them (its CPU twin, for checks). The giant is a sphere at unit
  // distance. Its spin axis lies in the plane of the sky, tilted axisTiltDeg from the sky's up (the domes' canon: the

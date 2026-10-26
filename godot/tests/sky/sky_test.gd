@@ -36,6 +36,12 @@ func _initialize() -> void:
 				bad += _near(tag + " " + b["name"] + " " + k, a[k], b[k])
 			bad += _near(tag + " " + b["name"] + " distKm", a["distKm"] / 1e5, b["distKm"] / 1e5)
 			bad += 0 if int(a["front"]) == int(b["front"]) else _fail(tag + " " + b["name"] + " front")
+		var sa: Dictionary = s["station"]
+		var sb: Dictionary = g["station"]
+		for k in ["dir", "axis", "vel"]:
+			bad += _vec(tag + " station " + k, sa[k], sb[k])
+		bad += _near(tag + " station dist", sa["dist"] / 1e4, sb["dist"] / 1e4)
+		bad += _near(tag + " station lit", sa["lit"], sb["lit"])
 		n += 1
 	var P: Dictionary = gold["preset"]
 	for g in gold["look"]:

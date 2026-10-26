@@ -114,6 +114,21 @@
     "theta0": 4.7084275365342645
    }
   ],
+  "station": {
+   "orbitKm": 7000,
+   "incDeg": 52,
+   "node0": 40,
+   "u0": 0,
+   "nodeDegPerDay": -1.57,
+   "radiusKm": 12,
+   "tubeKm": 1.4,
+   "trailKm": 260,
+   "lib": {
+    "deg": 25,
+    "swingDeg": 10,
+    "periodD": 3.1
+   }
+  },
   "doubleDark": -0.5,
   "cluster": {
    "ra": 270,
@@ -1080,7 +1095,8 @@
    "night": {
     "stars": 1,
     "nebula": 1,
-    "galaxy": 1
+    "galaxy": 1,
+    "meteors": 1
    },
    "fogDensity": 0.00011,
    "ridges": []

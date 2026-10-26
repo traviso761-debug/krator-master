@@ -1,6 +1,6 @@
 # The shared sky rendered in Godot (shaders/sky.gdshader + krator/sky.gd): proves the generated include compiles on a GPU
 # and shows it. Needs a renderer, not --headless:
-#   godot --path godot --script res://tests/sky/sky_shot.gd -- --out=<png> [--hour=15] [--day=0] [--look=giant|cluster|sun|up]
+#   godot --path godot --script res://tests/sky/sky_shot.gd -- --out=<png> [--hour=15] [--day=0] [--look=giant|cluster|sun|station|up]
 #     [--fov=55] [--px=446 --py=690]      writes the frame and exits 0 when the sky drew (not black, not the error magenta)
 extends SceneTree
 
@@ -58,7 +58,7 @@ func _process(_dt: float) -> bool:
 	if _frames == 2:
 		var s: Dictionary = _sky.state
 		var look: String = _args.get("look", "giant")
-		var d: Vector3 = s["giantDir"] if look == "giant" else (s["clusterDir"] if look == "cluster" else (s["sunDir"] if look == "sun" else Vector3(0, 0.999, -0.04)))
+		var d: Vector3 = s["station"]["dir"] if look == "station" else s["giantDir"] if look == "giant" else (s["clusterDir"] if look == "cluster" else (s["sunDir"] if look == "sun" else Vector3(0, 0.999, -0.04)))
 		_cam.look_at(_cam.global_position + d, Vector3.UP if absf(d.y) < 0.99 else Vector3.FORWARD)
 		if _args.has("pitch"):
 			_cam.rotation.x = float(_args["pitch"])

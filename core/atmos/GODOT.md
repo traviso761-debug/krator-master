@@ -130,8 +130,11 @@ One `shader_type sky` draws Krator's whole sky in Godot, from the same source as
 Checks: `godot --headless --path godot --script res://tests/sky/sky_test.gd` holds the GDScript model to the JavaScript's
 numbers (`godot/tests/sky/golden.json`: 24 states over four sites, the colour script, dates, the noise volume, the include's
 digest; vectors agree to 1e-6, Godot's `Vector3` being single precision). `godot --path godot --script
-res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|up --hour= --day=` renders it (needs a GPU; first run
+res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|station|up --hour= --day= --fov=` renders it (needs a GPU; first run
 2026-10-25 on Vulkan, Forward+). Rerun the generator after any change to `core/atmos/sky`, then the test.
+The broken station (`station` in each golden state) and the shooting stars came on 2026-10-26: `sky.gd` sets `uStaDir`,
+`uStaAx`, `uStaV` and `uStaK` from the model's `station`, `uMeteor` from the preset's `night.meteors`, and `uRealT` from
+`Time.get_ticks_msec()`: the meteors keep wall-clock time, not the game clock.
 
 ## Particles: which Godot tool for which effect
 
