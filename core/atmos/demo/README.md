@@ -23,7 +23,7 @@ hyperjungle at Pinnacle Rock (755,351), Korona (814,189), the Throne's glacier (
 
 What the page is for: the colour script through the day, the giant (lifted to declination -37.6, ESE 25 degrees up at
 Voth, its ice-giant face and sky-plankton bands, its phases, its hairline ring with the far half behind the disc, its eclipse rim),
-the three moons on the ring line (Ceres-like Companion, Callisto-like Week, Venus-like Thirteen), the procedural Pleiades night
+the three moons on the ring line (Ceres-like Companion, Iapetus-like Week, Venus-like Thirteen), the procedural Pleiades night
 (nebula, bright members, field, the galaxy's band in the far half), stars by day in thin air, the clouds, and the chrome
 sphere showing the sky's light (`ATMOS.skylight`) on a standard material.
 

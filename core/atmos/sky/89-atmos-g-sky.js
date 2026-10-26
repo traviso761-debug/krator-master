@@ -22,7 +22,7 @@
   'uniform float uSunI,uHazeFloor,uDayStars,uNight,uEclipse,uShineI,uSpin,uPixAng,uTime,uFogD;',
   'uniform mat3 uEq;',                                   // world -> inertial (the stars' sphere)
   // uPole: the giant's spin axis (its bands and ring plane), not Krator's pole
-  'uniform vec3 uMoonDir[3],uMoonC[3],uMoonL[3];uniform float uMoonR[3],uMoonK[3];uniform vec3 uRingT;',   // uMoonL: each moon's sun (its phase); uMoonK: its kind
+  'uniform vec3 uMoonDir[3],uMoonC[3],uMoonL[3],uMoonV[3];uniform float uMoonR[3],uMoonK[3];uniform vec3 uRingT;',   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];',
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
   'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;',   // cover, cumulus, cirrus, bank; heights, scale, drift
@@ -124,7 +124,7 @@
   ' vec3 c=uGRing*(0.8+0.3*sin((rr-1.3)*41.0))*(0.18+0.82*lit*(1.0-uEclipse));return vec4(c,a);}',
   // ---- 3 the moons, each its own kind (the owner, 2026-10-25): 0 Io-like (sulfur plains, volcanoes, frost), 1 Callisto-like
   // (dark, crowded with bright craters), 2 Venus-like (all cloud, a soft terminator and a glowing limb), 3 Ceres-like (grey,
-  // cratered, a few bright salt spots). q is a frame
+  // cratered, a few bright salt spots), 4 Iapetus-like (two-faced: see atmSkyMoon). q is a frame
   // fixed to the moon; its light is its own sun (uMoonL), so the lit side always matches its phase
   'vec3 atmSkyCraters(vec3 q,vec3 c,vec3 rim,uint s){for(int j=0;j<2;j++){float sc=j==0?7.0:19.0;vec3 g=q*sc+vec3(40.0),fl=floor(g);float best=9.0;',
   '  for(int a=0;a<27;a++){vec3 cc=fl+vec3(float(a%3)-1.0,float((a/3)%3)-1.0,float(a/9)-1.0);uvec3 h=uvec3(ivec3(cc));',
@@ -138,10 +138,16 @@
   ' if(k<2.5)return mix(vec3(0.93,0.87,0.68),vec3(0.99,0.95,0.82),0.5+0.5*atmSkyFbm(vec3(q.xy*1.5,q.z*5.0),3,270u));',
   ' vec3 c=atmSkyCraters(q,mix(vec3(0.33,0.32,0.30),vec3(0.42,0.41,0.39),atmSkyFbm(q*3.5,4,280u)*0.5+0.5),vec3(0.50,0.49,0.47),290u);',
   ' return mix(c,vec3(0.95,0.95,0.92),smoothstep(0.86,0.92,atmSkyFbm(q*5.0,3,300u)*0.5+0.5));}',
+  // Iapetus: the hemisphere that leads in its orbit (V, its velocity) coal-dark, the trailing one bright as snow, the border
+  // ragged, bright craters punched into the dark side, and the equatorial ridge (round its orbit's normal, uRingN)
+  'vec3 atmSkyIapetus(vec3 N,vec3 V,vec3 q){float n=atmSkyFbm(q*3.0,4,310u);float lead=smoothstep(-0.18,0.22,dot(N,V)+0.22*n);',
+  ' vec3 c=mix(atmSkyCraters(q,vec3(0.80,0.78,0.74),vec3(0.92,0.91,0.88),320u),atmSkyCraters(q,vec3(0.11,0.08,0.06),vec3(0.42,0.38,0.34),330u),lead);',
+  ' float rg=1.0-smoothstep(0.0,0.05,abs(dot(N,uRingN)+0.02*n));return mix(c,c*(1.0-0.35*lead)+vec3(0.10)*lead,rg*0.7);}',
   'vec4 atmSkyMoon(vec3 d,int i){vec3 m=uMoonDir[i];float c=dot(d,m),r=uMoonR[i];float ang=acos(clamp(c,-1.0,1.0));if(ang>r+uPixAng)return vec4(0.0);',
   ' vec3 x=(d-m*c)/sin(r);float xx=min(dot(x,x),1.0);vec3 N=normalize(x-m*sqrt(1.0-xx));vec3 L=uMoonL[i];float k=uMoonK[i];',
   ' vec3 q=vec3(dot(N,uRingT),dot(N,normalize(cross(uRingT,m))),dot(N,m));float ndl=dot(N,L),l=(k>1.5&&k<2.5)?smoothstep(-0.12,0.45,ndl):max(ndl,0.0);',
-  ' vec3 col=atmSkyMoonSurf(q,k)*uMoonC[i]*(l*1.05+0.012)+uShineC*uShineI*0.04;',
+  ' vec3 alb=k<3.5?atmSkyMoonSurf(q,k):atmSkyIapetus(N,uMoonV[i],q);',
+  ' vec3 col=alb*uMoonC[i]*(l*1.05+0.012)+uShineC*uShineI*0.04;',
   ' if(k>1.5&&k<2.5)col+=vec3(0.9,0.85,0.7)*pow(1.0-max(dot(N,-d),0.0),3.0)*0.25*smoothstep(-0.3,0.2,ndl);',
   ' return vec4(col,1.0-smoothstep(r-uPixAng,r,ang));}',
   // ---- 7 clouds: (rgb, alpha)
