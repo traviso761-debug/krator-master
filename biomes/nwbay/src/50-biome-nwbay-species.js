@@ -375,11 +375,11 @@ NWBAY.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
 // mean sits 8 % above the brightest channel of every species that wears it; the library maps follow (materials.json means).
 NWBAY.barkLift=function(tex,kind){if(kind===0)return 1;const cv=tex.image;if(!cv||!cv.getContext)return 1;
  let need=0;NWBAY.SPECIES.forEach(S=>{if(S.barkK!==kind||!S.bark)return;S.bark.forEach(h=>{const c=new T3.Color(h).convertSRGBToLinear();need=Math.max(need,c.r,c.g,c.b);});});
- const g=cv.getContext('2d'),id=g.getImageData(0,0,cv.width,cv.height),d=id.data,L=v=>Math.pow(v/255,2.2);let m=1e9,r=0,gg=0,b=0,n=0;
- for(let i=0;i<d.length;i+=4*13){r+=L(d[i]);gg+=L(d[i+1]);b+=L(d[i+2]);n++;}m=Math.min(r,gg,b)/n;
- const F=need*1.08/Math.max(.01,m);if(!(F>1))return 1;const k=Math.pow(F,1/2.2);
- for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]*k);d[i+1]=Math.min(255,d[i+1]*k);d[i+2]=Math.min(255,d[i+2]*k);}
- g.putImageData(id,0,0);tex.needsUpdate=true;return F;};
+ /* the mean from core (BIO.col.texMean, linear); the lift composited 'lighter' onto itself (no pixel read in the kit: check_core_use) */
+ const g=cv.getContext('2d'),M=BIO.col.texMean(tex),m=Math.min(M[0],M[1],M[2]);
+ const F=need*1.08/Math.max(.01,m);if(!(F>1))return 1;let k=Math.pow(F,1/2.2);
+ g.globalCompositeOperation='lighter';while(k>1.001){const a=Math.min(1,k-1);g.globalAlpha=a;g.drawImage(cv,0,0);k/=1+a;}
+ g.globalCompositeOperation='source-over';g.globalAlpha=1;tex.needsUpdate=true;return F;};
 NWBAY.BARKTEX=[0,1,2,3,4,5,6,7].map(k=>NWBAY.barkTex(k));
 NWBAY.BARKLIFT=NWBAY.BARKTEX.map((t,k)=>NWBAY.barkLift(t,k));
 NWBAY.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#5a4634';g.fillRect(0,0,w,h);

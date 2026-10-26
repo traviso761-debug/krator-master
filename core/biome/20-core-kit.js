@@ -95,7 +95,10 @@ BIO.bucket=function(fam,mat,opt){opt=opt||{};
 BIO.libSwap=function(kit,MAT){const out={};
  if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
  const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
-  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  const card=!!(m.map&&m.map.isDataTexture);let t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  /* KMAT caches one texture per sheet: a slot cut to a cell takes its own clone, or every slot of the sheet would draw the last
+     one's cell (found by biomes/nwouterwall, 2026-10-26); the clone shares the image, given to it when the sheet decodes */
+  if(card&&L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});}
   if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
    if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
   else m.userData.libScale=L.scale;
