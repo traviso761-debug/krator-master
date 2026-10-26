@@ -369,7 +369,12 @@ rebuild (one vocabulary change, one rebuild, one baseline rewrite):
 | weapon racks | `claude/weapon-racks` (55c2913f7, the arms file: a rack and an armour stand for every culture) merged, with racks for the six new cultures | |
 
 With them, `TODO.md`'s "Ride along with the next all-builds rebuild" items (the re-vendored culture symbols, the probes'
-sample points and broad phase, the camera's pointer-capture guard, the hamlet comment, the door module where it is ready).
+sample points and broad phase, the camera's pointer-capture guard, the hamlet comment, the catalog's missing fruit, the
+door module where it is ready).
+
+**Paused** (the owner, 2026-10-26): Y1 to Y4 went to `main` (30454b307) without the rebuild. Y5 resumes once at least two
+more kits are waiting on the same rebuild (a new culture to register, or a catalog culture file), so one rebuild serves
+three. The khaayken culture file begun for it is on `claude/yeti-y5` (965afd072: about 22 pieces, not registered).
 
 **Order**: the six culture files, each built and checked on the catalog page (`kits/catalog/verify.py --assert`) before
 the next; the weapon racks merged; the vocabulary changed (`core/tags/52-core-tags-vocab.js`, `test-tags.js`'s digest)

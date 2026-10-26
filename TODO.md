@@ -62,6 +62,21 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
   Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
+- **The waiting cultures** (the owner, 2026-10-26; `kits/yeti/PLAN.md` section 11). The rebuild this list waits for: register
+  `khaayken`, `tungang`, `fellgang`, `talovolci`, `pylon` and `talia` in `core/tags/52-core-tags-vocab.js` (`CATALOG_CULTURES`
+  and `CULTURE_NAMES`, `test-tags.js`'s digest), lift `NO_CATALOG` for `jimjam` and `dalab` with their culture files, and merge
+  the weapon racks (`claude/weapon-racks`, 55c2913f7). It starts once at least two more kits wait on it beside the Yeti kit.
+
+- **kits/catalog: the missing fruit** (2026-10-26, from the kits' own lists). `krator-master-furniture-generic-fruit.js` has no
+  piece for the north basin's apple, walnut, apricot, pear, pomegranate, pistachio and almond (`kits/catalog/KNOWN_ISSUES.md`;
+  `biomes/nsemiarid` `FRUIT_NOT_DRAWN`) nor for Guilin's pomelo, osmanthus flowers and bamboo shoots (`biomes/guilin`
+  `FRUIT_NOT_DRAWN`). Small data pieces in one file; then set each species' `fruit` and empty the two lists. Pistachio and
+  almond go into `kits/crops` too.
+
+- **tools/check_core_use.py: refresh the baseline** (2026-10-26). It reports "252 findings, none new", and some of the 252
+  are already fixed: rerun with `--write-baseline` after the rebuild so the baseline holds only what is still open. No page
+  moves.
+
 - **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
   Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
   a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
