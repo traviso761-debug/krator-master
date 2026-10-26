@@ -1817,6 +1817,27 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-10-26 and processed: 29 owed prompts (Downloads, 2026-10-25 23:18-23:45, 1254 px PNG)
+
+Batches `tools/textures/batches/owner-2026-10-26.json` (12 surfaces, `process.py`) and `owner-2026-10-26-cards.json` (17 sheets, 3 x 3 on
+magenta, `cards.py`, anchor none). All in the library, none wired (the kits they are for are planned, except where noted).
+- Surfaces, full colour: `ground.cladonia` (1 m; reindeer lichen over moss), `ice.aufeis` (3 m), `ground.soda.crust` (2 m; the owner's
+  "Cracked Salt Flat" image: pale curled plates, peach tint, dark cracks, so it fills the soda-crust entry and `ground.salt.ochre` is still owed),
+  `ground.lenswort` (0.5 m; living stones with violet flowers), `rock.lichen.iris` (1 m; violet, rust and black map lichen),
+  `ground.snow.algae` (2 m; pink-red watermelon snow), `ground.lakebed.algal` (2 m; teal and violet mats with stromatolite rings).
+- Surfaces, tintable: `bark.larch` (1 m; reddish plates, lichen, resin), `rock.badland.bedded` (2 m; pale buff, horizontal beds, `mute` 0.45),
+  `ground.sand.dune` (1.5 m; wind ripples), `bark.poplar.euphrates` (1 m; grey, knotted, deeply ridged), `bark.frill.ribbed` (1 m; teal
+  fluted culms with rings: reads as a bamboo as much as a frill trunk, vertical).
+- Cards, full colour, one subject per cell: `card.larch` (green top two rows, gold bottom), `card.snowball`, `card.pasque` (purple with
+  seed-head cells), `card.fireweed` (the "Sprite Grid" sheet: three gone-over spikes as the prompt asks, cells filled; the other sheet had
+  two and looser cells), `card.cottongrass`, `card.seabuckthorn`, `card.crop.thule` (rows: sweetvetch, Eskimo potato, roseroot),
+  `card.saltbush` (the "Cutouts" sheet: crisper, larger leaves, less pink on the twigs than its twin), `card.brinelamp`,
+  `card.poplar.euphrates` (narrow and broad leaves, bottom row gold), `card.lobelarch` (bottom row violet and gold), `card.bellfir`,
+  `card.starberry`, `card.sunrosette`, `card.cushion.anemone` (red; three closed cells), `card.lobelia.lantern`, `card.mistcup`.
+- Keying: `card.larch` and `card.saltbush` choke 2 with key 80/200 (a pink halo at choke 1); `card.fireweed` spill none (spill `edge` turned
+  the deep pink flowers dull red; its seed fluff keys slightly pink). Cell margins are tight on `card.saltbush` and `card.brinelamp`.
+- Left out: `Alien Earth Terrain Atlas.png` (a 2:1 planet map, matches no entry), the second fireweed and desert-shrub sheets.
+
 #### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
 
 Batches `tools/textures/batches/owner-2026-10-25.json` (surfaces) and `owner-2026-10-25-cards.json` (3 x 3 sheets on magenta).

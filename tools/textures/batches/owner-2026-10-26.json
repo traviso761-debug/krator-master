@@ -1,0 +1,338 @@
+[
+ {
+  "src": "bark.larch.png",
+  "out": "core/materials/library/bark.larch",
+  "record": {
+   "id": "bark.larch",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.larch\"",
+    "reuse": "the fur larch; any larch or tamarack"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground.cladonia.png",
+  "out": "core/materials/library/ground.cladonia",
+  "record": {
+   "id": "ground.cladonia",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.cladonia\"",
+    "reuse": "the caribou moss carpets of the NW outer wall; any reindeer-lichen ground (boreal, alpine)"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ice.aufeis.png",
+  "out": "core/materials/library/ice.aufeis",
+  "record": {
+   "id": "ice.aufeis",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ice.aufeis\"",
+    "reuse": "the aufeis sheets over frozen streams; any layered river ice, frozen seeps on any cold kit"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.badland.bedded.png",
+  "out": "core/materials/library/rock.badland.bedded",
+  "record": {
+   "id": "rock.badland.bedded",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.badland.bedded\"",
+    "reuse": "the painted highlands stripe badlands; every badland on the strata module badland recipe"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.45
+  }
+ },
+ {
+  "src": "ground.sand.dune.png",
+  "out": "core/materials/library/ground.sand.dune",
+  "record": {
+   "id": "ground.sand.dune",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.sand.dune\"",
+    "reuse": "the Catch sand sea; any wind-rippled dune field"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground.soda.crust.png",
+  "out": "core/materials/library/ground.soda.crust",
+  "record": {
+   "id": "ground.soda.crust",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.soda.crust\"",
+    "reuse": "the Catch terminal lake crust (also reads as a pale salt flat; ground.salt.ochre is still owed)"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.poplar.euphrates.png",
+  "out": "core/materials/library/bark.poplar.euphrates",
+  "record": {
+   "id": "bark.poplar.euphrates",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.poplar.euphrates\"",
+    "reuse": "the Catch Euphrates poplars; any desert poplar or cottonwood"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "bark.frill.ribbed.png",
+  "out": "core/materials/library/bark.frill.ribbed",
+  "record": {
+   "id": "bark.frill.ribbed",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.frill.ribbed\"",
+    "reuse": "the rift rim frill column; any ribbed fluted alien trunk (also a bamboo-like culm)"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground.lenswort.png",
+  "out": "core/materials/library/ground.lenswort",
+  "record": {
+   "id": "ground.lenswort",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.lenswort\"",
+    "reuse": "the rift rim N lenswort carpets; any window-leaf succulent ground (Lithops fields)"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.lichen.iris.png",
+  "out": "core/materials/library/rock.lichen.iris",
+  "record": {
+   "id": "rock.lichen.iris",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.lichen.iris\"",
+    "reuse": "the rift rim S boulder fields; any lichen-crusted high-alpine boulder"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.snow.algae.png",
+  "out": "core/materials/library/ground.snow.algae",
+  "record": {
+   "id": "ground.snow.algae",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.snow.algae\"",
+    "reuse": "the rift rim S summer snowfields (snowblood); any watermelon-snow field"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.lakebed.algal.png",
+  "out": "core/materials/library/ground.lakebed.algal",
+  "record": {
+   "id": "ground.lakebed.algal",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.lakebed.algal\"",
+    "reuse": "the rift rim N algal lake shallows; any cold algal shallows or stromatolite flats"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]
