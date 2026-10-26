@@ -34,15 +34,26 @@ VERUPT['Geyser Hill']='kettle';VERUPT['The Old Kettle erupting']='kettle';VERUPT
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(VERUPT[k]&&GEYSER.SHOW)GEYSER.erupt(VERUPT[k],GEYSER.SHOW.t-8);};   // the host's onView
 // day and night; THE GEYSERS: set one off (the select), all of them, or run to the timetable (the default: each on its own clock)
 const GSEL={select:LAYOUT.geysers.filter(g=>g.kind!=='spouter').map(g=>[g.key,g.name.replace(/ \(.*/,'')])};
-const GCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')},GSEL,
+// THE CLOCK: the geysers' real periods (THERMAL, 45) or the demo speed (each geyser's demo times, 70-330 s); ?geysers=demo opens the
+// page at the demo speed. The kit's records, core/water's (S.period..., the CPU twin) and the drawn column's uCyc all take the times.
+const GREAL=LAYOUT.geysers.map(g=>({period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,off:g.off}));
+let GCLOCK='real';
+function setClock(mode){GCLOCK=mode==='demo'?'demo':'real';const SH=GEYSER.SHOW;
+ LAYOUT.geysers.forEach((g,i)=>{if(g.kind==='spouter')return;const T=GCLOCK==='demo'&&g.demo?g.demo:GREAL[i];
+  g.period=T.period;g.pre=T.pre;g.dur=T.dur;g.steam=T.steam;g.off=T.off;
+  const S=SH&&SH.waters&&SH.waters[i];if(S){S.period=T.period;S.pre=T.pre;S.dur=T.dur;S.steam=T.steam;}
+  const P=SH&&SH.geysers&&SH.geysers[i],u=P&&P.material&&P.material.uniforms&&P.material.uniforms.uCyc;if(u)u.value.set(T.period,T.pre,T.dur,T.steam);});
+ if(typeof ttText!=='undefined')ttText='';return GCLOCK;}
+const GCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')},{button:'Real time',on:()=>setClock('real')},{button:'Demo speed',on:()=>setClock('demo')},GSEL,
  {button:'Erupt',on:()=>GEYSER.erupt(GSEL.el.value,GEYSER.SHOW?GEYSER.SHOW.t:0)},
  {button:'Erupt all',on:()=>LAYOUT.geysers.forEach((g,i)=>GEYSER.erupt(g.key,(GEYSER.SHOW?GEYSER.SHOW.t:0)+i*1.5))}];
 // the timetable: each geyser's phase and the seconds to its next column, in a panel of its own
 KHOST.panel('timetable','The geysers',null,'right:14px;top:150px').appendChild(document.getElementById('tt'));
 const ttEl=document.getElementById('tt');let ttText='',ttAcc=0;
+const hms=s=>s<120?Math.ceil(s)+' s':s<7200?Math.ceil(s/60)+' min':Math.floor(s/3600)+' h '+('0'+Math.floor(s%3600/60)).slice(-2);
 function timetable(dt){ttAcc+=dt;if(ttAcc<.25||!GEYSER.SHOW)return;ttAcc=0;const t=GEYSER.SHOW.t;
- const s='THE GEYSERS (periods shortened)\n'+LAYOUT.geysers.filter(g=>g.kind!=='spouter').map(g=>{const c=GEYSER.cycle(g,t),nm=g.name.replace(/ \(.*/,'');
-  return(nm+'                    ').slice(0,18)+(c.phase==='column'?'ERUPTING':c.phase==='steam'?'steam phase':c.phase==='pre'?'preplay':'resting')+(c.phase==='column'?'':'  next '+Math.ceil(c.next)+' s');}).join('\n');
+ const s='THE GEYSERS ('+(GCLOCK==='demo'?'demo speed':'real time')+')\n'+LAYOUT.geysers.filter(g=>g.kind!=='spouter').map(g=>{const c=GEYSER.cycle(g,t),nm=g.name.replace(/ \(.*/,'');
+  return(nm+'                    ').slice(0,18)+(c.phase==='column'?'ERUPTING':c.phase==='steam'?'steam phase':c.phase==='pre'?'preplay':'resting')+(c.phase==='column'?'':'  next '+hms(c.next));}).join('\n');
  if(s!==ttText){ttText=s;ttEl.textContent=s;}}
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -144,12 +155,12 @@ KHOST.on(timetable);
 KHOST.on(function geyserScale(){if(GEYSER.SHOW)GEYSER.SHOW.setScale(innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360)));},'view');
 let HOSTED=null;
 HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the Steampits)',
- hint:"The geyser basin: a basin in the Steampits on the Ring Sea's north shore (~1.5 km below the datum, ~1.9 atm, ~33 °C), cut into the hyperjungle. Geysers on sinter cones erupting on their own cycles, prismatic springs with mat-banded run-off, mud pots and fumaroles, travertine terraces stepping down to the sea, a dead forest drowned in silica at the edges, and the thermophile life of the warm ground (ideal type). N for night, G erupts the geyser nearest the view",
+ hint:"The geyser basin: a basin in the Steampits on the Ring Sea's north shore (~1.5 km below the datum, ~1.9 atm, ~33 °C), cut into the hyperjungle. Geysers on sinter cones erupting on their own cycles, prismatic springs with mat-banded run-off, mud pots and fumaroles, travertine terraces stepping down to the sea, a dead forest drowned in silica at the edges, and the thermophile life of the warm ground (ideal type). N for night, R erupts the geyser nearest the view (G flies to the pin, as on every page); the geysers keep their real periods (the Old Kettle ~110 min, Grandmother ~11 h): the panel's Demo speed (or ?geysers=demo) plays them every few minutes",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.6,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:GCTL,
- // N: night; G sets off the geyser nearest the view (it wins over the host's G, fly to the pin: KNOWN_ISSUES.md)
+ // N: night; R sets off the geyser nearest the view (G stays the host's: fly to the pin)
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night'),
-  g:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
+  r:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
@@ -158,5 +169,6 @@ HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the 
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  setLightMode,
- biome:()=>window._biome,records:()=>GEYSER.records(),erupt:k=>GEYSER.erupt(k,GEYSER.SHOW?GEYSER.SHOW.t:0),
+ biome:()=>window._biome,records:()=>GEYSER.records(),erupt:k=>GEYSER.erupt(k,GEYSER.SHOW?GEYSER.SHOW.t:0),setClock,clock:()=>GCLOCK,
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const g=GEYSER.at(x,z);['T','heat','sinter','film','acid','dead','spray','terr','bw'].forEach(k=>o[k]=+(+g[k]).toFixed(3));return o;}}});
+setClock(/[?&]geysers=demo\b/.test(location.search)?'demo':'real');

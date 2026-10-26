@@ -20,7 +20,7 @@ function fern(x,y,z,lv){const L=rr(.5,1.1)*(lv===0?1.4:1);around(x,z,lv===2?ri(1
 function club(x,y,z,lv){around(x,z,lv===2?ri(4,9):2,.2,1.1,(px,pz)=>{if(!hotOK(px,pz))return;const h=rr(.12,.3);tuft('clubmoss',px,BIO.terrainH(px,pz),pz,h,h*1.3,GEYSER.libCol('club',leafCol(PAL.club,1.25,.03,.1,.06)));});}
 function moss(x,y,z,lv){const R=rr(.25,.8);BIO.put('moss',[x,y-.06,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.3,.5),R*rr(.8,1.2)],bright(vary(pick(PAL.moss),.03,.1,.06),1.1));
  if(lv===2)around(x,z,ri(1,3),R,R*2.2,(px,pz)=>{const r=R*rr(.4,.7);BIO.put('moss',[px,BIO.terrainH(px,pz)-.05,pz],qEuler(0,rr(0,TAU),0),[r,r*.4,r],bright(vary(pick(PAL.moss),.03,.1,.06),1.1));});}
-function reed(x,y,z,lv){around(x,z,lv===2?ri(2,4):1,.3,1,(px,pz)=>{const h=rr(1.1,2.2);tuft('reed',px,Math.max(BIO.terrainH(px,pz),BIO.waterH(px,pz)-.3),pz,h,h*.5,leafCol(PAL.reed,1.2,.03,.08,.05));});}
+function reed(x,y,z,lv){around(x,z,lv===2?ri(2,4):1,.3,1,(px,pz)=>{const h=rr(1.1,2.2);tuft('reed',px,Math.max(BIO.terrainH(px,pz),BIO.waterH(px,pz)-.3),pz,h,h*(GEYSER.LIB.reed?.8:.5),GEYSER.libCol('reed',leafCol(PAL.reed,1.2,.03,.08,.05)));});}   /* the library's card (card.reed): a clump about as wide as it is tall */
 
 // ---------------------------------------------------------------- the pass
 GEYSER.FLOOR_ZONES=['warm','margin','creek'];

@@ -16,7 +16,7 @@ GEYSER.lay({
   sink: (x,z)=>bool,               // where run-off ends: the host's river, the sea, a terrace flight
   runLen: 520,                     // the longest run-off (m); each source's own is shorter by its size
   geysers: [{key, name, kind:'cone'|'fountain'|'spouter', x, z, H /* the column, m */,
-             period, pre, dur, steam, off /* s: the cycle, its preplay, column, steam phase, the clock's phase */,
+             period, pre, dur, steam, off /* s: the cycle, its preplay, column, steam phase, the clock's phase */, demo /* optional: the same five at a page's demo speed (the host swaps them in: 99-host-take.js setClock) */,
              cone:{r,h,spire}, mound:{r,h}, pool /* a fountain's or spouter's pool radius */, twin:[dx,dz]}],
   springs: [{key, name, kind:'prismatic'|'pool'|'funnel', x, z, r, temp /* 0..1: 1 boils */, out /* run-off channels */,
             outW /* their width, x */, spread /* their fan, rad */, shield, milky /* a travertine spring: no mats */}],

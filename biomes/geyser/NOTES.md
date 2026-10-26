@@ -76,7 +76,7 @@ acid, dead, spray, terr, the flow's direction), the water (`GEYSER.waterAt`) and
   GLSL). The column stands at once wherever the clock is set; `GEYSER.erupt(key,t)` moves a geyser's clock so its
   column starts at t. Cones jet narrow; fountains burst wide out of their pools; spouters never stop. Steam rises off
   the column and rolls downwind, roaring on through the steam phase; mist where the water lands. Gravity 0.75 g.
-  Periods are shortened for a page (a real geyser like the Old Kettle would play every few hours).
+  Periods are real since 2026-10-26 (each geyser a Yellowstone geyser's of its kind: the Old Kettle ~110 min, Grandmother ~11 h); the panel's Demo speed (or ?geysers=demo) swaps in the old page times (70-330 s).
 
 ## The life (`50`, `55`, `57`, `60`)
 

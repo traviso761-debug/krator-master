@@ -110,21 +110,25 @@ function creekAt(x,z){const L=CRH.H.get(Math.floor(x/CRH.C)*8192+Math.floor(z/CR
  const i=_cq.i,t=_cq.t;_cq.bed=CREEK.bed[i]*(1-t)+CREEK.bed[i+1]*t;_cq.w=CREEK.w[i]*(1-t)+CREEK.w[i+1]*t;return _cq;}
 
 // ---------------------------------------------------------------- the thermal layout (the showcase's; the kit's records)
-// What the kit lays out (46: GEYSER.lay; BIOME-API.md says what each field means). Periods are compressed for a page
-// (a real Old Kettle would play every few hours): the timetable (90) shows them and any one can be set off by hand.
+// What the kit lays out (46: GEYSER.lay; BIOME-API.md says what each field means). The periods are REAL (2026-10-26): each
+// geyser's times are a Yellowstone geyser's of its kind (the Old Kettle Old Faithful's ~110 min, Grandmother Great Fountain's
+// ~11 h with its hour of overflow, the Lantern Castle's ~14 h and its long steam phase, the East Gate Riverside's ~6 h, the
+// Twins Daisy's ~2.5 h); demo holds the page's compressed times (70-330 s) for the demo speed (?geysers=demo or the panel's
+// button: 99-host-take.js, GCLOCK). The timetable shows the seconds to the next column and any one can be set off by hand.
 // kind: cone (a jet from a sinter cone), fountain (bursts out of a pool), spouter (never stops splashing).
-//   H the column (m); period, pre (the preplay's surging), dur (the column), steam (the roaring steam after) in seconds;
+//   H the column (m); period, pre (the preplay's surging), dur (the column), steam (the roaring steam after) in seconds (real);
+//   demo the same four and off at the demo speed;
 //   cone {r,h} the cone, mound {r,h} the sinter shield under it, pool the fountain's pool radius; off its clock's phase
 // springs: kind prismatic (a broad shallow spring on its shield), pool, funnel (deep, steep-sided); temp 0..1 (1 boils
 // at its middle: deep blue; cooler the mats reach in: green, yellow, orange); out how many run-off channels it feeds
 const THERMAL={seed:631,amb:33,ground:landH,sea:SEA,wind:WIND,
  geysers:[
-  {key:'kettle',name:'The Old Kettle (a cone geyser)',kind:'cone',x:-120,z:-300,H:52,period:190,pre:24,dur:32,steam:40,off:30,cone:{r:9,h:6.5},mound:{r:36,h:2.6}},
-  {key:'grandmother',name:'Grandmother (a great fountain geyser in her crater pool)',kind:'fountain',x:95,z:-430,H:64,period:330,pre:40,dur:50,steam:60,off:150,pool:11,mound:{r:44,h:1.9}},
-  {key:'bellows',name:'The Bellows (a fountain geyser)',kind:'fountain',x:160,z:-250,H:26,period:110,pre:14,dur:18,steam:20,off:70,pool:6,mound:{r:24,h:1.2}},
-  {key:'twins',name:'The Twins (two cones that play together)',kind:'cone',x:-282,z:-198,H:17,period:70,pre:8,dur:12,steam:12,off:10,cone:{r:3.6,h:2.3},mound:{r:15,h:.9},twin:[13,-11]},
-  {key:'lantern',name:'The Lantern (a tall cone)',kind:'cone',x:-22,z:-478,H:36,period:150,pre:18,dur:22,steam:26,off:100,cone:{r:5.2,h:4.8,spire:true},mound:{r:22,h:1.6}},
-  {key:'eastgate',name:'The East Gate (a cone geyser)',kind:'cone',x:250,z:-80,H:22,period:95,pre:10,dur:15,steam:16,off:45,cone:{r:4.2,h:2.2},mound:{r:18,h:1.1}},
+  {key:'kettle',name:'The Old Kettle (a cone geyser)',kind:'cone',x:-120,z:-300,H:52,period:6600,pre:90,dur:270,steam:420,off:1042,demo:{period:190,pre:24,dur:32,steam:40,off:30},cone:{r:9,h:6.5},mound:{r:36,h:2.6}},
+  {key:'grandmother',name:'Grandmother (a great fountain geyser in her crater pool)',kind:'fountain',x:95,z:-430,H:64,period:39600,pre:3600,dur:2700,steam:1800,off:18000,demo:{period:330,pre:40,dur:50,steam:60,off:150},pool:11,mound:{r:44,h:1.9}},
+  {key:'bellows',name:'The Bellows (a fountain geyser)',kind:'fountain',x:160,z:-250,H:26,period:7200,pre:300,dur:480,steam:300,off:4582,demo:{period:110,pre:14,dur:18,steam:20,off:70},pool:6,mound:{r:24,h:1.2}},
+  {key:'twins',name:'The Twins (two cones that play together)',kind:'cone',x:-282,z:-198,H:17,period:9000,pre:60,dur:210,steam:120,off:1286,demo:{period:70,pre:8,dur:12,steam:12,off:10},cone:{r:3.6,h:2.3},mound:{r:15,h:.9},twin:[13,-11]},
+  {key:'lantern',name:'The Lantern (a tall cone)',kind:'cone',x:-22,z:-478,H:36,period:50400,pre:1200,dur:1200,steam:2100,off:33600,demo:{period:150,pre:18,dur:22,steam:26,off:100},cone:{r:5.2,h:4.8,spire:true},mound:{r:22,h:1.6}},
+  {key:'eastgate',name:'The East Gate (a cone geyser)',kind:'cone',x:250,z:-80,H:22,period:21600,pre:300,dur:1200,steam:600,off:10232,demo:{period:95,pre:10,dur:15,steam:16,off:45},cone:{r:4.2,h:2.2},mound:{r:18,h:1.1}},
   {key:'chatter',name:'The Chatterer (a spouter)',kind:'spouter',x:-206,z:-372,H:4.5,pool:2.6,mound:{r:12,h:.6}},
   {key:'sputter',name:'A spouter',kind:'spouter',x:38,z:-196,H:3.2,pool:2,mound:{r:9,h:.4}},
   {key:'drum',name:'The Drum (a spouter)',kind:'spouter',x:362,z:-58,H:5.5,pool:3,mound:{r:13,h:.7}}],

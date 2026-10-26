@@ -585,6 +585,38 @@
     "sourceMean": 0.5305
    }
   },
+  "reed": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.672,
+    0.02,
+    0.99,
+    0.342
+   ],
+   "files": {
+    "map": "reed.albedo.webp"
+   },
+   "lib": "card.reed",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 1024,
+   "source": {
+    "albedo": "8510a8eadd2f43d9cf6460115a32c47f98c00826"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3561798040909487,
+    "sourceMean": 0.3562
+   }
+  },
   "rosette": {
    "breakup": null,
    "card": true,

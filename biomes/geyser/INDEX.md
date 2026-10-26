@@ -31,7 +31,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `70-biome-geyser.js` | 2 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
 | `84-host-ground.js` | 14 | the paint (per vertex) (18); the layers (the library, or procedural without i (40); the meshes (107) |
-| `86-host-water.js` | 3 |  |
+| `89w-host-water.js` | 4 |  |
 | `88-host-build.js` | 1 |  |
 | `89w-host-sea.js` | 2 |  |
 | `99-host-take.js` | 18 | the inspector's words (47); the probe's budgets and the kit's own checks (ve (62); the page, handed to the host (141) |

@@ -24,7 +24,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-biome-geyser.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 14.3 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/84-host-ground.js` | 14.0 | [G shader] | 11 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the thermal paint: the kit's record per vertex; the mats, the film and the Stair's pools in the fragment shader |
-| `src/86-host-water.js` | 3.3 | [G shader] | 4 | 0 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
+| `src/89w-host-water.js` | 4.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the creek (WATER.flow) and the Stair's pools (WATER.still, drawPools) |
 | `src/88-host-build.js` | 1.4 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89w-host-sea.js` | 2.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-host-take.js` | 17.9 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |

@@ -1,6 +1,7 @@
 // ================================================================= HOST — the ground (the geyser basin)
 // Three meshes, one material: the map at 5 m, the basin's floor at 2 m and the Stair at 0.8 m (the terraces' rims are a
-// metre wide), the coarse one with holes where the fine ones lie and the fine ones skirted so no seam shows. Each vertex
+// metre wide) as base steps, each mesh adaptive by tile (the meshes, below), the coarse one with holes where the fine ones
+// lie and the fine ones skirted so no seam shows. Each vertex
 // carries the kit's thermal record (GEYSER.at) in byte attributes: heat, sinter, film (the run-off's sheet of water),
 // acid, the flow's direction, dead, mud, terrace, sand, steam vents, meadow; and its macro colour and how rocky it is.
 // The shader lays the library's ground layers by those (materials.json: litter under the jungle, the thermal meadow's
@@ -8,8 +9,8 @@
 // the mud) through a stochastic sampler (GEYSER.GLSL_LAY), then the THERMOPHILE MATS by the temperature: none over
 // ~73 degC (the sinter bare and wet), yellow-green to ~63, orange to ~52, orange-brown, then brown-olive as the water
 // cools, in streamers drawn out along the flow (and fanned out round the springs). The film shines and ripples down the
-// flow; on the Stair the band each fragment lies in gives its pool's level, so the pools fill in the shader itself (no
-// water mesh) and the water sheets down the curtains between them.
+// flow; on the Stair each vertex carries its pool's level, which darkens the floor under the pool (the water itself is
+// core/water's: 89w-host-water.js) and the water sheets down the curtains between them.
 REGISTER({name:BASIN.name,x:BASIN.x,z:BASIN.z,y:20,r:Math.max(BASIN.rx,BASIN.rz),h:120});
 LAYOUT.flats.forEach(f=>{if(f.key==='neck'||f.key==='acidflat')return;REGISTER({name:f.name,x:f.x,z:f.z,y:landH(f.x,f.z)-6,r:Math.max(f.rx,f.rz)*.9,h:80,flat:f.key});});
 LAYOUT.dead.forEach(d=>REGISTER({name:d.name,x:d.x,z:d.z,y:landH(d.x,d.z)-6,r:d.r*.8,h:60,dead:d.key}));
@@ -92,7 +93,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   // a pool: the triangle wholly in one pool (no spread of level across it) and under that pool's level
   ' if(dep>0.0&&spread<0.02){vec3 wc=mix(vec3(0.2,0.48,0.36),vec3(0.18,0.56,0.62),smoothstep(0.05,0.25,heat));wc=mix(wc,vec3(0.3,0.7,0.8),smoothstep(0.3,0.5,heat));'+
   '  float a=smoothstep(0.0,0.35,dep);c=mix(c*0.55,pow(wc,vec3(2.2))*0.5,a*0.9);vec3 N=normalize(vec3(0.02*sin(p.x*1.3+uT*1.1)+0.015*sin(p.y*2.1-uT*0.9),1.0,0.02*cos(p.y*1.1+uT)));'+
-  '  float fr=0.02+0.5*pow(1.0-max(dot(N,V),0.0),5.0);_E+=(fr*uSky*0.2+pow(max(dot(N,normalize(uSun+V)),0.0),160.0)*0.9*vec3(1.0,0.95,0.85))*uLight;}'+
+  '  }'+
   // a wall: fluted, draped with drip ridges running down it (stripes across the face, none down it), the water sheeting over
   ' else if(steep>0.35){float fl=smoothstep(0.35,0.7,steep),k=dot(p,normalize(vec2(-fn.z,fn.x)));float fx=texture2D(uMacro,vec2(k*0.21,vGWP.y*0.004)).b;'+
   '  float rib=0.5+0.5*sin(k*7.0+fx*9.0),rib2=0.5+0.5*sin(k*23.0+fx*17.0);c=mix(c,vec3(0.8,0.79,0.76)*(0.82+0.18*rib),fl*0.65);c*=mix(1.0,0.78+0.3*rib*rib2+0.1*rib,fl);'+
@@ -105,33 +106,88 @@ TICKS.push(dt=>{GRU.uT.value+=dt;});
 _onLight.push(m=>{GRU.uLight.value=m==='night'?.2:1;});
 
 // ---------------------------------------------------------------- the meshes
-// a grid from (x0,z0) to (x1,z1) at cs; hole(x0,z0,x1,z1) drops a cell; skirt hangs the border 1.5 m down
-const PATCHES=[{name:'The basin floor',x0:-680,z0:-680,x1:680,z1:330,cs:2},{name:'The Stair',x0:-200,z0:330,x1:320,z1:870,cs:.8}];
-function groundMesh(x0,z0,x1,z1,cs,label,hole,skirt){const nx=Math.round((x1-x0)/cs),nz=Math.round((z1-z0)/cs),W=nx+1,NV=W*(nz+1),NS=skirt?2*(nx+nz):0,N=NV+NS;
- const pos=new Float32Array(N*3),nor=new Float32Array(N*3),aC=new Uint8Array(N*4),aT=new Uint8Array(N*4),aU=new Uint8Array(N*4),aW=new Uint8Array(N*4),aPL=new Float32Array(N*2);
+// Three meshes, one material: the map at 5 m, the basin floor at 2 m, the Stair at 0.8 m (the base steps), the map with holes where the
+// patches lie and the patches skirted 1.5 m down so no seam shows. Each is ADAPTIVE (2026-10-26; it was 1.1M vertices at the base steps):
+// cut into tiles of 16 base cells, a tile takes the coarsest step (16, 8, 4, 2 or 1 cells) whose bilinear fit of its base grid keeps the
+// height within the patch's tol and the paint (the thermal record, the macro colour) within a few byte steps, the pools' level exactly; so
+// the plateau, the sea floor and the plain meadow drop to 10-80 m cells while the terraces, the rims, the run-off and the mats keep the base
+// step. Tiles over a spring's rim or a pool geyser's pool go finer than the base (fine: 1 m on the basin floor), so the disc meets its lip.
+// A finer tile's vertices along a coarser neighbour's side are laid on that side's line (no T-junction gap); the normals are the base grid's.
+const PATCHES=[{name:'The basin floor',x0:-680,z0:-680,x1:680,z1:330,cs:2,tol:.04,fine:true},{name:'The Stair',x0:-200,z0:330,x1:320,z1:870,cs:.8,tol:.035}];
+// where a tile goes finer than its base: an annulus [r0, r1] round a point (the springs' rims, the pool geysers' pools)
+const FINE_RINGS=LAYOUT.springs.map(s=>[s.x,s.z,Math.max(0,s.r*.8-2),s.r*1.15+4]).concat(LAYOUT.geysers.filter(g=>g.kind!=='cone').map(g=>[g.x,g.z,0,(g.pool||2)*1.2+4]));
+const GTILE=16,GSTEPS=[16,8,4,2,1];
+const GSTAT={verts:0,tris:0,tiles:{}};
+function groundMesh(P,label,hole,skirt){const x0=P.x0,z0=P.z0,cs=P.cs,nx=Math.round((P.x1-x0)/cs),nz=Math.round((P.z1-z0)/cs),W=nx+1,NV=W*(nz+1),tol=P.tol==null?.1:P.tol;
+ // the base grid: height, normal and paint at every base vertex
  const H=new Float32Array(NV);for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++)H[j*W+i]=terrainH(x0+i*cs,z0+j*cs);
  const hAt=(i,j)=>(i>=0&&i<=nx&&j>=0&&j<=nz)?H[j*W+i]:terrainH(x0+i*cs,z0+j*cs);
+ const BN=new Float32Array(NV*3),BA=new Uint8Array(NV*16),BPL=new Float32Array(NV);
  const b=v=>Math.round(clamp(v,0,1)*255);
- const put=(k,x,z,y,i,j)=>{const hx=hAt(i+1,j)-hAt(i-1,j),hz=hAt(i,j+1)-hAt(i,j-1),l=Math.hypot(hx,2*cs,hz);
-  pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;nor[k*3]=-hx/l;nor[k*3+1]=2*cs/l;nor[k*3+2]=-hz/l;
-  const A=paintAt(x,z,y,clamp(Math.hypot(hx,hz)/(2*cs),0,1));
-  aC[k*4]=b(A.r);aC[k*4+1]=b(A.g);aC[k*4+2]=b(A.b);aC[k*4+3]=b(A.rock);
-  aT[k*4]=b(A.heat);aT[k*4+1]=b(A.sinter);aT[k*4+2]=b(A.film);aT[k*4+3]=b(A.acid);
-  aU[k*4]=b(A.dx*.5+.5);aU[k*4+1]=b(A.dz*.5+.5);aU[k*4+2]=b(A.dead);aU[k*4+3]=b(A.mud);
-  aW[k*4]=b(A.terr);aW[k*4+1]=b(A.sand);aW[k*4+2]=b(A.vent);aW[k*4+3]=b(A.grass);aPL[k*2]=A.pl;aPL[k*2+1]=A.pl*A.pl;};
- for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++)put(j*W+i,x0+i*cs,z0+j*cs,H[j*W+i],i,j);
- const idx=[];
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){if(hole&&hole(x0+i*cs,z0+j*cs,x0+(i+1)*cs,z0+(j+1)*cs))continue;const a=j*W+i,bb=a+W,c=bb+1,d=a+1;idx.push(a,bb,d,bb,c,d);}
- if(skirt){const ring=[];for(let i=0;i<nx;i++)ring.push(i);for(let j=0;j<nz;j++)ring.push(j*W+nx);for(let i=nx;i>0;i--)ring.push(nz*W+i);for(let j=nz;j>0;j--)ring.push(j*W);
-  ring.forEach((v,r)=>{const k=NV+r;for(let c=0;c<3;c++){pos[k*3+c]=pos[v*3+c];nor[k*3+c]=nor[v*3+c];}pos[k*3+1]-=1.5;
-   for(let c=0;c<4;c++){aC[k*4+c]=aC[v*4+c];aT[k*4+c]=aT[v*4+c];aU[k*4+c]=aU[v*4+c];aW[k*4+c]=aW[v*4+c];}aPL[k*2]=-100;aPL[k*2+1]=1e4;});
-  for(let r=0;r<ring.length;r++){const a=ring[r],b2=ring[(r+1)%ring.length],sa=NV+r,sb=NV+(r+1)%ring.length;idx.push(a,sa,b2,b2,sa,sb);}}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('normal',new THREE.BufferAttribute(nor,3));
+ const paintInto=(A8,o,PL,po,x,z,y,slope)=>{const A=paintAt(x,z,y,slope);
+  A8[o]=b(A.r);A8[o+1]=b(A.g);A8[o+2]=b(A.b);A8[o+3]=b(A.rock);A8[o+4]=b(A.heat);A8[o+5]=b(A.sinter);A8[o+6]=b(A.film);A8[o+7]=b(A.acid);
+  A8[o+8]=b(A.dx*.5+.5);A8[o+9]=b(A.dz*.5+.5);A8[o+10]=b(A.dead);A8[o+11]=b(A.mud);A8[o+12]=b(A.terr);A8[o+13]=b(A.sand);A8[o+14]=b(A.vent);A8[o+15]=b(A.grass);PL[po]=A.pl;};
+ for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*W+i,hx=hAt(i+1,j)-hAt(i-1,j),hz=hAt(i,j+1)-hAt(i,j-1),l=Math.hypot(hx,2*cs,hz);
+  BN[k*3]=-hx/l;BN[k*3+1]=2*cs/l;BN[k*3+2]=-hz/l;paintInto(BA,k*16,BPL,k,x0+i*cs,z0+j*cs,H[k],clamp(Math.hypot(hx,hz)/(2*cs),0,1));}
+ // the tiles: hole cells (the map under a patch), the step each takes
+ const TX=Math.ceil(nx/GTILE),TZ=Math.ceil(nz/GTILE),step=new Float32Array(TX*TZ),part=new Uint8Array(TX*TZ);
+ const isHole=(i,j)=>hole&&hole(x0+i*cs,z0+j*cs,x0+(i+1)*cs,z0+(j+1)*cs);
+ // the error of a step s over a tile: the base vertices against the bilinear fit of the step's grid (height, paint, pool level)
+ const fits=(i0,j0,i1,j1,s)=>{for(let j=j0;j<=j1;j++){const ja=j0+Math.floor((j-j0)/s)*s,jb=Math.min(j1,ja+s),fv=jb>ja?(j-ja)/(jb-ja):0;
+   for(let i=i0;i<=i1;i++){const ia=i0+Math.floor((i-i0)/s)*s,ib=Math.min(i1,ia+s),fu=ib>ia?(i-ia)/(ib-ia):0;if(fu===0&&fv===0)continue;
+    const k=j*W+i,a=ja*W+ia,bq=ja*W+ib,c=jb*W+ia,d=jb*W+ib,w0=(1-fu)*(1-fv),w1=fu*(1-fv),w2=(1-fu)*fv,w3=fu*fv;
+    if(Math.abs(H[a]*w0+H[bq]*w1+H[c]*w2+H[d]*w3-H[k])>tol)return false;
+    if(BPL[a]!==BPL[k]||BPL[bq]!==BPL[k]||BPL[c]!==BPL[k]||BPL[d]!==BPL[k])return false;
+    const film=BA[k*16+6]/255;
+    for(let q=0;q<16;q++){if((q===8||q===9)&&film<.04)continue;const e=Math.abs(BA[a*16+q]*w0+BA[bq*16+q]*w1+BA[c*16+q]*w2+BA[d*16+q]*w3-BA[k*16+q]);if(e>(q<3?10:14))return false;}}}
+  return true;};
+ const fineHit=(xa,za,xb,zb)=>P.fine&&FINE_RINGS.some(R=>{const dx=Math.max(xa-R[0],0,R[0]-xb),dz=Math.max(za-R[1],0,R[1]-zb),dn=Math.hypot(dx,dz),
+  df=Math.hypot(Math.max(Math.abs(xa-R[0]),Math.abs(xb-R[0])),Math.max(Math.abs(za-R[1]),Math.abs(zb-R[1])));return dn<=R[3]&&df>=R[2];});
+ for(let tj=0;tj<TZ;tj++)for(let ti=0;ti<TX;ti++){const i0=ti*GTILE,j0=tj*GTILE,i1=Math.min(nx,i0+GTILE),j1=Math.min(nz,j0+GTILE),t=tj*TX+ti;
+  let nh=0;if(hole)for(let j=j0;j<j1;j++)for(let i=i0;i<i1;i++)if(isHole(i,j))nh++;
+  if(nh===(i1-i0)*(j1-j0)){step[t]=-1;continue;}
+  if(nh){step[t]=1;part[t]=1;continue;}
+  if(fineHit(x0+i0*cs,z0+j0*cs,x0+i1*cs,z0+j1*cs)){step[t]=.5;continue;}
+  let s=1;for(const q of GSTEPS){if((i1-i0)%q||(j1-j0)%q)continue;if(q===1||fits(i0,j0,i1,j1,q)){s=q;break;}}step[t]=s;}
+ // the vertices: a base vertex is copied, one off the base grid (a fine tile) is sampled, one on a coarser neighbour's side is laid on its line
+ const pos=[],nor=[],att=[],pl=[],idx=[];let nv=0;
+ const tmpA=new Uint8Array(16),tmpPL=new Float32Array(1);
+ const emitBase=(k,dy)=>{pos.push(x0+(k%W)*cs,H[k]+(dy||0),z0+Math.floor(k/W)*cs);nor.push(BN[k*3],BN[k*3+1],BN[k*3+2]);for(let q=0;q<16;q++)att.push(BA[k*16+q]);pl.push(BPL[k]);return nv++;};
+ const emitLerp=(ka,kb,f)=>{const g=1-f;pos.push(x0+((ka%W)*g+(kb%W)*f)*cs,H[ka]*g+H[kb]*f,z0+(Math.floor(ka/W)*g+Math.floor(kb/W)*f)*cs);
+  let n0=BN[ka*3]*g+BN[kb*3]*f,n1=BN[ka*3+1]*g+BN[kb*3+1]*f,n2=BN[ka*3+2]*g+BN[kb*3+2]*f;const l=Math.hypot(n0,n1,n2)||1;nor.push(n0/l,n1/l,n2/l);
+  for(let q=0;q<16;q++)att.push(Math.round(BA[ka*16+q]*g+BA[kb*16+q]*f));pl.push(f<.5?BPL[ka]:BPL[kb]);return nv++;};
+ const emitFresh=(fi,fj)=>{const x=x0+fi*cs,z=z0+fj*cs,y=terrainH(x,z),e=cs*.5,hx=terrainH(x+e,z)-terrainH(x-e,z),hz=terrainH(x,z+e)-terrainH(x,z-e),l=Math.hypot(hx,2*e,hz);
+  pos.push(x,y,z);nor.push(-hx/l,2*e/l,-hz/l);paintInto(tmpA,0,tmpPL,0,x,z,y,clamp(Math.hypot(hx,hz)/(2*e),0,1));for(let q=0;q<16;q++)att.push(tmpA[q]);pl.push(tmpPL[0]);return nv++;};
+ const stepAt=(ti,tj)=>(ti<0||tj<0||ti>=TX||tj>=TZ)?-1:step[tj*TX+ti];
+ for(let tj=0;tj<TZ;tj++)for(let ti=0;ti<TX;ti++){const t=tj*TX+ti,s=step[t];if(s<0)continue;GSTAT.tiles[s]=(GSTAT.tiles[s]||0)+1;
+  const i0=ti*GTILE,j0=tj*GTILE,i1=Math.min(nx,i0+GTILE),j1=Math.min(nz,j0+GTILE),cu=Math.round((i1-i0)/s),cv=Math.round((j1-j0)/s),VW=cu+1;
+  const sW=stepAt(ti-1,tj),sE=stepAt(ti+1,tj),sN=stepAt(ti,tj-1),sS=stepAt(ti,tj+1);
+  // one vertex at tile grid (u, v): base index (fi, fj) = (i0 + u s, j0 + v s)
+  const V=new Int32Array(VW*(cv+1));
+  for(let v=0;v<=cv;v++)for(let u=0;u<=cu;u++){const fi=i0+u*s,fj=j0+v*s;let k=-1;
+   // a side shared with a coarser neighbour: on its line
+   const side=(u===0&&sW>s)?['j',sW]:(u===cu&&sE>s)?['j',sE]:(v===0&&sN>s)?['i',sN]:(v===cv&&sS>s)?['i',sS]:null;
+   if(side){const sn=side[1],tt=side[0]==='j'?fj:fi,lo=Math.floor(tt/sn+1e-9)*sn,hi=Math.min(side[0]==='j'?nz:nx,lo+sn),f=hi>lo?(tt-lo)/(hi-lo):0;
+    if(f>1e-6&&f<1-1e-6){const ka=side[0]==='j'?lo*W+fi:fj*W+lo,kb=side[0]==='j'?hi*W+fi:fj*W+hi;k=emitLerp(ka,kb,f);}}
+   if(k<0)k=(fi%1===0&&fj%1===0)?emitBase(fj*W+fi):emitFresh(fi,fj);V[v*VW+u]=k;}
+  for(let v=0;v<cv;v++)for(let u=0;u<cu;u++){if(part[t]&&isHole(i0+u,j0+v))continue;const a=V[v*VW+u],bb=V[(v+1)*VW+u],c=V[(v+1)*VW+u+1],d=V[v*VW+u+1];idx.push(a,bb,d,bb,c,d);}
+  // the patch's border: a skirt 1.5 m down, the sides in the order the ring ran (j0 east-going, i1 south-going, j1 west-going, i0 north-going)
+  if(skirt){const strip=L=>{const S=L.map(q=>{const k=q;pos.push(pos[k*3],pos[k*3+1]-1.5,pos[k*3+2]);nor.push(nor[k*3],nor[k*3+1],nor[k*3+2]);for(let c2=0;c2<16;c2++)att.push(att[k*16+c2]);pl.push(-100);return nv++;});
+     for(let r=0;r<L.length-1;r++)idx.push(L[r],S[r],L[r+1],L[r+1],S[r],S[r+1]);};
+   if(j0===0){const L=[];for(let u=0;u<=cu;u++)L.push(V[u]);strip(L);}
+   if(i1===nx){const L=[];for(let v=0;v<=cv;v++)L.push(V[v*VW+cu]);strip(L);}
+   if(j1===nz){const L=[];for(let u=cu;u>=0;u--)L.push(V[cv*VW+u]);strip(L);}
+   if(i0===0){const L=[];for(let v=cv;v>=0;v--)L.push(V[v*VW]);strip(L);}}}
+ const N=nv,posA=new Float32Array(pos),norA=new Float32Array(nor),aC=new Uint8Array(N*4),aT=new Uint8Array(N*4),aU=new Uint8Array(N*4),aW=new Uint8Array(N*4),aPL=new Float32Array(N*2);
+ for(let k=0;k<N;k++){for(let q=0;q<4;q++){aC[k*4+q]=att[k*16+q];aT[k*4+q]=att[k*16+4+q];aU[k*4+q]=att[k*16+8+q];aW[k*4+q]=att[k*16+12+q];}const p=pl[k];aPL[k*2]=p;aPL[k*2+1]=p===-100?1e4:p*p;}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(posA,3));g.setAttribute('normal',new THREE.BufferAttribute(norA,3));
  g.setAttribute('aC',new THREE.BufferAttribute(aC,4,true));g.setAttribute('aT',new THREE.BufferAttribute(aT,4,true));g.setAttribute('aU',new THREE.BufferAttribute(aU,4,true));
  g.setAttribute('aW',new THREE.BufferAttribute(aW,4,true));g.setAttribute('aPL',new THREE.BufferAttribute(aPL,2));
  g.setIndex(N>65535?new THREE.BufferAttribute(new Uint32Array(idx),1):idx);
+ GSTAT.verts+=N;GSTAT.tris+=idx.length/3;
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel=label;scene.add(m);return m;}
 const GROUND=(function(){const S=TERR.R*2.2,inP=(a,b,c,d)=>PATCHES.some(P=>a>=P.x0-.01&&b>=P.z0-.01&&c<=P.x1+.01&&d<=P.z1+.01);
- const out=[groundMesh(-S/2,-S/2,S/2,S/2,5,'The Steampits: the jungle plateau and the coast',inP,false)];
- PATCHES.forEach(P=>out.push(groundMesh(P.x0,P.z0,P.x1,P.z1,P.cs,P.name,null,true)));return out;})();
+ const out=[groundMesh({x0:-S/2,z0:-S/2,x1:S/2,z1:S/2,cs:5,tol:.1},'The Steampits: the jungle plateau and the coast',inP,false)];
+ PATCHES.forEach(P=>out.push(groundMesh(P,P.name,null,true)));return out;})();
+window._ground=GSTAT;
 _mark('ground');
