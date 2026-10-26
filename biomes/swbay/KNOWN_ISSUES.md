@@ -43,20 +43,47 @@ Read before changing anything here. `build.py` prints the open count.
       stand-ins are coarse (20-triangle blobs on a one-band bole); the prism gum's is greener
       underneath than its far impostor so the jungle ring reads as it did from the highlands.
       The fauna is not chunked (its own `eye` LOD, below): its eight meshes are always drawn.
-- [ ] THE TEMPLE HEIGHT IS A PLACEHOLDER. The brief says the tallest jungle trees top out
+      2026-10-26: every range is 1200 m now (`SWBAY.LOD` floor and reeds were 800): an item the passes share is one mesh per
+      chunk instead of one per range, 657 chunk meshes -> 516, and draw calls fall at every preset (GPU, all 27 views):
+      the bay from the shore 186 -> 142, under the prism gums 286 -> 255, cap-trees 286 -> 230, bracket trees and the
+      cataracts 285 -> 219, the river mouth 350 -> 291, Krator rising 353 -> 309, the savannah edge 292 -> 240 (24-66 fewer
+      a view). The cost: the near floor band is drawn out to 1200 m, +0-0.8M triangles drawn at some views (cap-trees
+      7.31 -> 7.98M, the worst; still under the probe's 8M drawn line; the other passes unchanged).
+      Stays open: the chunk still sets the near cost and chunks still switch whole. The next saving needs core/biome: a pass
+      chooses its own chunk size (`BIO._lodKey` reads `BIO.chunk==null?BIO.LOD.chunk:BIO.chunk` and writes it into the key;
+      `_lodEntry` reads C back from the key instead of `BIO.LOD.chunk`), so the floor's many small items bake in 2400 m chunks
+      (a quarter of the meshes) while the heroes keep 1200 m.
+- [x] THE TEMPLE HEIGHT IS A PLACEHOLDER. The brief says the tallest jungle trees top out
       at the height of the Voth temple; the canon figure is not in this kit, so
       `SWBAY_TEMPLE_H=110` (45-host-stage). Set it and every canopy height follows.
+      2026-10-26: set to **156 m**, the Temple canton's top terrace in Voth's city plan
+      (`settlements/voth/src/30a-layout-districts.js`, `Temple ... top:156`): the stepped tower itself. Its gilt dome on
+      eight 30 m pillars reaches ~248 m and the finial ~300 m (`65d-canton-structures.js` templeCanton), the hyperjungle's
+      tallest (the Krator mahogany, 245-305 m), and the bay's jungle is "not as tall", so the terrace is the figure. Prism
+      gums now 119-156 m, ironbarks 99-144, baobabs 65-108, cap-trees 43-88, fan-crowns 51-94 (only heights scale). The owner
+      to confirm the reading (terrace, not dome).
 - [ ] The far country is coarse (70 m cells, vertex colour and a detail texture): fine from
       the map, a low-poly hill if a camera is flown out to it. No road, no lava glow; the
       plume and the fumaroles are chains of transparent globes.
-- [ ] The zone weights (SWBAY.zones) are thresholds on the fields; a world with
+      Stays open (2026-10-26): new work, not a defect (a road, a lava glow, a plume that is not globes, a finer ring just past
+      the map's edge); the 2026-10-25 sampling (each vertex inside the map takes the lowest ground across its cell, so the
+      far country no longer stands over the river) is kept as it is.
+- [x] The zone weights (SWBAY.zones) are thresholds on the fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
-- [ ] Bark canvases are near-grey and tinted; texMean is measured at run time; the
+      2026-10-26: the bands are data, `SWBAY.ZONE_BANDS` (55-trees: land, hyperUp/Wet, rainUp/Top/Wet, sav, shoreH/Up/Wet,
+      each a smooth(a,b) edge): a world sets them before the fragment loads or edits them before `SWBAY.build`, no code edit.
+      The defaults are the old numbers (the page draws the same).
+- [x] Bark canvases are near-grey and tinted; texMean is measured at run time; the
       species' bark colours are written a stop darker than they read because the
       sun+hemisphere rig doubles them (inherited).
+      2026-10-26: the kit's own copies of shade / bright / vary / texMean / tint are gone; 55-trees takes the core's
+      `BIO.col` (core/biome 30-core-foliage.js, the same functions and the same rng draws, as ehighlands and geyser do), so
+      the measuring is the core's one path. The darker-written hexes stay (a record of the rig, not a defect).
 - [ ] The far impostors are the hyperjungle's blob technique; dragon trees, parasols and
       tree ferns, splay shrubs and bracket trees get one cheap blob each beyond the mid
       range, the coral fungus too; none of them is more than a blob.
+      Stays open (2026-10-26): a better far tree is a card impostor (a baked sprite per species), a look item that needs
+      the owner's call and either a bake step or new card sheets; nothing changed.
 - [ ] The cataracts' risers are the ribbon's 10 m samples, so a five-metre fall is a 26-degree
       chute rather than a drop; the pools between them do not spill.
       2026-10-20 (migration phase 3): still the limit, now on core/water: the river is a `WATER.flow` with a sample every 10 m, so each
@@ -66,6 +93,13 @@ Read before changing anything here. `build.py` prints the open count.
       (`89w-host-water.js`; 'The cataracts' view 271 -> 290 calls).
       2026-10-25: the visibility tick is gone: `WATER.drawFalls(RIVER_FALLS)` (core/water/ext, listed in `build.py`) draws all 37 curtains as one mesh and all
       the plunge pools as another, two calls in all, the curtains landing on the `fit: true` chute foot. The chute-not-a-drop limit stays (the ground is not reworked: a placement change).
+      Stays open (2026-10-26), checked: the risers are not the river's alone. terrainH's step is `smooth(.78,1,frac)` of
+      each five metres of rise, about 13 m of run for 5 m on the ~8% slope (the S-curve peaks near 30 degrees), and the
+      ground mesh is 13.75 m cells (400 over 5.5 km), so the ground itself is a chute; sampling the river finer alone would
+      follow the same slope. Closing it takes three changes together, all in this kit: a sharper riser in terrainH
+      (`smooth(.95,1,...)`, inside the channel only: it moves the bank plants' heights and the open world reads terrainH,
+      so the owner's go first), a fine ground strip along the channel (2 m rows, `probeSkip`, drawn over the coarse mesh),
+      and RIVER_PTS every 2 m across each riser (10 m on the treads) so `fallsOf` finds a near-vertical drop.
 - [x] (2026-10-20: the Girder test tower now hands three shells, floor plates 1 / iron .6 / core walls and rubble .4, like the jetty; and the `shellsFor` edge case is not a loss: the core's `BIO.faceSamples` already drops a shell with no accepted face and gives its share to the others, so `shellsFor` is only a redundant local pre-filter.) Was: The Girder tower dressed as one list (`dress()` samples by area within a shell, so
       its big slabs take most of the moss); the jetty hands shells (Done). A shell with no face a
       pass grows on sits that pass out (65-dress `shellsFor`): the core's `BIO.faceSamples` gives
@@ -74,6 +108,20 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The fauna's LOD is all-or-nothing at 1.6 km from the eye (frozen beyond, no thinning),
       the stalker never catches anything, and the glint swarms are Points, so the probe
       skips them.
+- [x] **The barks' tints clipped** (found 2026-10-26, from the hyperjungle's 45a48df3d): 55-trees `tint()` divides the bark
+      canvas's mean out of SPECIES.bark and clips at 1. Measured in the page, the brightest channel over the mean was ironbark
+      1.77 (red), the cap-tree / parasol / coral stipe (PAL.stipe on kind 5) 2.26, baobab 1.36, dragon tree 1.32, fan-crown
+      1.24: those boles drew greyer (the stipes near white grey) instead of their colours. Fixed: `barkTex` kinds 2, 3, 5, 6
+      are brightened (times 1.18, 1.2, 1.5, 1.36, composited onto themselves: no pixel read, no rng draw), every ratio is now
+      under 1 (0.86-0.93 at the brightest), and materials.json's means for bark2 / bark3 / bark5 / bark6 follow the new
+      canvases (.628, .631, .940, .497; `tools/textures/pack.py biomes/swbay` rewrote those four albedos). The canvases were
+      already grey (keep 0 in materials.json), so only the brightness was wrong; the prism gum (kind 0, keep 1, near-white
+      tints) keeps its painted colours by design. Calls and triangles unchanged by this.
+- [ ] **The caps, gills, shelves, dead wood and rock tints clip the same way** (measured 2026-10-26, max channel over the
+      canvas mean): PAL.cap 3.31, capSav 3.60, shelf 2.79, shelfUnder 3.97 (all on CAPTEX, mean .49), gill 1.33, deadwood
+      1.84 (WOODTEX), rock 1.25. Stays open: CAPTEX would have to sit near white (mean ~.95) to carry the cap colours, which
+      flattens its warts; a look call for the owner (brighten the canvases as the barks were, or darken the palettes to
+      what renders now). Left as it was.
 - [ ] Verified only under SwiftShader (headless); the iridescent prism-gum leaves and the
       gill texture at grazing angles are untested on real hardware.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), 2026-10-06: every species carries a harvest tag (`SWBAY.HARVEST`,

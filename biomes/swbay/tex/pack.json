@@ -81,7 +81,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.531,
+    "mean": 0.628,
     "sourceMean": 0.6407
    }
   },
@@ -109,7 +109,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.524,
+    "mean": 0.631,
     "sourceMean": 0.4676
    }
   },
@@ -165,7 +165,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.631,
+    "mean": 0.94,
     "sourceMean": 0.689
    }
   },
@@ -193,7 +193,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.363,
+    "mean": 0.497,
     "sourceMean": 0.2545
    }
   },

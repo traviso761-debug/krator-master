@@ -31,9 +31,12 @@ const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=B
 // moss tinge derive from it. The epiphytes stay red and purple (canon).
 var SWBAY_BAY={hue:0.50};
 // THE CANOPY CEILING: the tallest trees top out at the height of the Voth
-// temple. The canon figure is not in this kit; 110 m is the placeholder
-// (KNOWN_ISSUES). Set it before fragment 50 loads.
-var SWBAY_TEMPLE_H=110;
+// temple. 156 m (2026-10-26): the Temple canton's top terrace in Voth's city plan
+// (settlements/voth/src/30a-layout-districts.js, Temple top:156), the stepped tower
+// itself; its gilt dome on pillars reaches ~248 m and the finial ~300 m, which is the
+// hyperjungle's tallest (the Krator mahogany, 245-305 m), and the bay's jungle is
+// "not as tall". Set it before fragment 50 loads; every canopy height follows.
+var SWBAY_TEMPLE_H=156;
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
 window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));

@@ -37,7 +37,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.531
+    "mean": 0.628
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -50,7 +50,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.524
+    "mean": 0.631
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -76,7 +76,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.631
+    "mean": 0.94
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -89,7 +89,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.363
+    "mean": 0.497
    },
    "mapOnly": true,
    "roughLift": 0.3

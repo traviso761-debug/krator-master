@@ -11,39 +11,42 @@
 // lite stand-in impostor past that; a far tree is only ever its impostor.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SWBAY.SPECIES,PAL=SWBAY.PAL,GOLD=2.399963;
+/* the canopy species' heights scale with the temple height (50-species TH); their boles keep the ring count they had at 110 m (2026-10-26) */
+const TK=Math.max(1,SWBAY.TEMPLE_H/110);
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 SWBAY.TREES=[];
 // the runtime LOD ranges (metres from the camera to a chunk's box; BIO.LOD.scale multiplies them):
 // hero trees in full, the floor's near / mid / far bands, the reeds in the shallows, fallen logs,
 // the dressing on a world's structures. Equal ranges share a mesh per item per chunk (the passes
-// use many of the same items), so they are kept to two values: each distinct one is a draw call
-// per item per chunk in view.
-SWBAY.LOD={tree:1200,floor:800,floorMid:1200,farFloor:1200,reeds:800,logs:1200,dress:1200};
+// use many of the same items), so they are kept to one value (2026-10-26: floor and reeds were 800; the 3x3 chunks round
+// the camera are drawn whatever the range, so 800 bought little and cost a second mesh per item per chunk: 30-66 calls a view).
+SWBAY.LOD={tree:1200,floor:1200,floorMid:1200,farFloor:1200,reeds:1200,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'semiarid' species read sav (the highlands), 'humid' ones hyper / rain / shore.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z),land=smooth(.15,1.2,h);
+// The bands are data (SWBAY.ZONE_BANDS, 2026-10-26): each [a,b] is a smooth(a,b,field) edge (a>b falls off), tuned to this
+// page's fields (upland = rise/240 m, wet 0..1, h in metres). A world whose fields are scaled differently retunes them before
+// SWBAY.build, without editing this file.
+const ZB=SWBAY.ZONE_BANDS=Object.assign({land:[.15,1.2],
+ hyperUp:[.30,.09],hyperWet:[.55,.80],
+ rainUp:[.08,.26],rainTop:[.64,.42],rainWet:[.35,.6],
+ sav:[.42,.62],
+ shoreH:[2.4,.5],shoreUp:[.14,.03],shoreWet:[.5,.8]},SWBAY.ZONE_BANDS||{});   /* a host may set some before this file loads, or edit them after */
+const sb=(b,v)=>smooth(b[0],b[1],v);
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z),land=sb(ZB.land,h);
  return{up,wet,salt,flow,h,
-  hyper:smooth(.30,.09,up)*smooth(.55,.80,wet)*land,                     // the tall jungle ringing the bay
-  rain:smooth(.08,.26,up)*smooth(.64,.42,up)*smooth(.35,.6,wet)*land,   // the rainforest on the slope
-  sav:smooth(.42,.62,up),                                              // the parasol savannah, quickly, above it
-  shore:smooth(2.4,.5,h)*smooth(.14,.03,up)*smooth(.5,.8,wet)*land};}   // the beach and the delta
+  hyper:sb(ZB.hyperUp,up)*sb(ZB.hyperWet,wet)*land,                     /* the tall jungle ringing the bay */
+  rain:sb(ZB.rainUp,up)*sb(ZB.rainTop,up)*sb(ZB.rainWet,wet)*land,      /* the rainforest on the slope */
+  sav:sb(ZB.sav,up),                                                    /* the parasol savannah, quickly, above it */
+  shore:sb(ZB.shoreH,h)*sb(ZB.shoreUp,up)*sb(ZB.shoreWet,wet)*land};}   /* the beach and the delta */
 SWBAY.zones=zones;
 
 // ---------------------------------------------------------------- colour
-function shade(hex,f){const c=hex.isColor?hex.clone():C(hex);if(f>=0)c.lerp(C(0xffffff),f);else c.lerp(C(0x120f0a),-f);return c;}
-function bright(col,k){const c=col.isColor?col.clone():C(col);c.convertSRGBToLinear();c.r=Math.min(1,c.r*k);c.g=Math.min(1,c.g*k);c.b=Math.min(1,c.b*k);return c.convertLinearToSRGB();}
-const _hsl={h:0,s:0,l:0};
-function vary(hex,dh,ds,dl){const c=hex.isColor?hex.clone():C(hex);c.getHSL(_hsl);c.setHSL(((_hsl.h+rr(-dh,dh))%1+1)%1,clamp(_hsl.s+rr(-ds,ds),0,1),clamp(_hsl.l+rr(-dl,dl),.03,.97));return c;}
-function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[.25,.25,.25];
- const d=im.getContext('2d').getImageData(0,0,im.width,im.height).data;let r=0,g=0,b=0,n=0;
- for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
- const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
-// the sRGB tint that renders `hex` on a texture of linear mean m
-function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
- c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
+// the core's colour maths (core/biome 30-core-foliage.js BIO.col: the same functions this file used to carry, the same rng
+// draws in vary; 2026-10-26): shade, bright, vary, the linear mean of a canvas texture, and the tint that renders a hex on it
+const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
 function means(){if(MEAN)return MEAN;MEAN={bark:SWBAY.BARKTEX.map(t=>texMean(t)),cap:texMean(SWBAY.CAPTEX),gill:texMean(SWBAY.GILLTEX),wood:texMean(SWBAY.WOODTEX),rock:texMean(SWBAY.ROCKTEX)};return MEAN;}
 SWBAY.means=means;SWBAY.tint=tint;SWBAY.bright=bright;SWBAY.shade=shade;SWBAY.vary=vary;
@@ -106,7 +109,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  const nl=ri(4,6),lobes=[];for(let k=0;k<nl;k++)lobes.push({a:k/nl*TAU+rr(-.3,.3),amp:rr(.3,.7)});
  const lobeSum=ang=>{let s=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,5);}return s;};
  const band=14,rings=[],vs=9;
- for(let yy=0;yy<H*.9;yy+=(yy<10?2:vs*.5)){const b=yy/band+ti,i=Math.floor(b);
+ for(let yy=0;yy<H*.9;yy+=(yy<10?2:vs*.5*TK)){const b=yy/band+ti,i=Math.floor(b);
   const col=barkCol(S,i).lerp(C(PAL.moss[ti%3]),smooth(12,1,yy)*.45);   // neutral: the rainbow strips are in the canvas
   rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:col});}
  rings.push({x:T.x,y:T.y0+H*.9+rAt(.9)*.8,z:T.z,r:.05,yy:H*.9+1,col:barkCol(S,1)});   // closed: a dome, never an open pipe
@@ -137,7 +140,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
 // 1 the gate baobab: a bottle bole, the crown IS the top -- boughs rising from the shoulder, palmate leaves, hanging pods
 B[1]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  const rAt=u=>rb*(u<.55?1+.22*Math.sin(u/.55*Math.PI):mix(1,.22,Math.pow((u-.55)/.45,.9)))*(1+.5*Math.exp(-u*H/8));
- const rings=[],vs=10;for(let yy=0;yy<H*.9;yy+=(yy<8?2:vs*.5))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/24)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(8,1,yy)*.35)});
+ const rings=[],vs=10;for(let yy=0;yy<H*.9;yy+=(yy<8?2:vs*.5*TK))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/24)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(8,1,yy)*.35)});
  rings.push({x:T.x,y:T.y0+H*.9+rAt(.9)*.7,z:T.z,r:.05,yy:H*.9+1,col:barkCol(S,1)});
  const ph=rr(0,TAU),nl=ri(6,9),lobes=[];for(let k=0;k<nl;k++)lobes.push({a:k/nl*TAU+rr(-.2,.2),amp:rr(.15,.4)});
  const lobeSum=ang=>{let s=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,4);}return s;};
@@ -168,7 +171,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
  const stipeC=k=>tint(vary(PAL.stipe[(k+ti)%PAL.stipe.length],.01,.05,.04),m.bark[5]);
  const capC=T.capCol||(T.capCol=vary(pick(T.sav>.5?PAL.capSav:PAL.cap),.02,.08,.05));
  const rings=[],vs=8,skirtU=rr(.58,.7);
- for(let yy=0;yy<H*.8;yy+=(yy<6?1.5:vs*.5)){const u=yy/H;let r=rAt(u);
+ for(let yy=0;yy<H*.8;yy+=(yy<6?1.5:vs*.5*TK)){const u=yy/H;let r=rAt(u);
   if(Math.abs(u-skirtU)<.03)r*=1+.5*(1-Math.abs(u-skirtU)/.03);   // the annulus: a skirt of flesh round the stem
   rings.push({x:T.x,y:T.y0+yy,z:T.z,r:r,yy:yy,col:stipeC(Math.floor(yy/9)).lerp(C(PAL.moss[ti%3]),smooth(5,0,yy)*.4)});}
  rings.push({x:T.x,y:T.y0+H*.8,z:T.z,r:rAt(.8)*.9,yy:H*.8,col:stipeC(1)},{x:T.x,y:T.y0+H*.8+1,z:T.z,r:.05,yy:H*.8+1,col:stipeC(1)});
@@ -197,7 +200,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
 // 3 the fan-crown: a pale bole, a few thick boughs rising steeply, each opening into a splayed fan of huge paddle fronds
 B[3]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3;
  const rAt=u=>rb*(1-.5*u)*(1+.8*Math.exp(-u*H/5));
- const rings=[],vs=6;for(let yy=0;yy<H*.62;yy+=vs*.5)rings.push({x:T.x+.3*Math.sin(yy*.09+ti),y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/18)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(9,1,yy)*.5)});
+ const rings=[],vs=6;for(let yy=0;yy<H*.62;yy+=vs*.5*TK)rings.push({x:T.x+.3*Math.sin(yy*.09+ti),y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/18)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(9,1,yy)*.5)});
  rings.push({x:T.x+.3*Math.sin(H*.62*.09+ti),y:T.y0+H*.62+1,z:T.z,r:.05,yy:H*.62+1,col:barkCol(S,1)});
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.05*Math.sin(4*ang+ph)*smooth(8,0,R.yy)+.02*Math.sin(7*ang+R.yy*.1)),null);
@@ -288,7 +291,7 @@ B[9]=function(T,st,lv){const S=SP[T.sp],fam='bark6',H=T.H,rb=T.rb,ti=T.seed%3;
  const nl=ri(6,8),lobes=[],la=rr(0,TAU);for(let k=0;k<nl;k++)lobes.push({a:la+k/nl*TAU+rr(-.22,.22),amp:rr(.55,1.2),p:9*rr(.8,1.3)});
  const lobeSum=ang=>{let sm=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)sm+=L.amp*Math.pow(c,L.p);}return sm;};
  const butF=yy=>yy<20?1.25*Math.exp(-yy/7)*clamp((20-yy)/8,0,1):0;
- const rings=[],vs=12;for(let yy=0;yy<H*.96;yy+=(yy<14?1.5:vs*.5))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:Math.max(.3,rAt(yy/H)),yy:yy,col:barkCol(S,(Math.floor(yy/22)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(16,2,yy)*.5)});
+ const rings=[],vs=12;for(let yy=0;yy<H*.96;yy+=(yy<14?1.5:vs*.5*TK))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:Math.max(.3,rAt(yy/H)),yy:yy,col:barkCol(S,(Math.floor(yy/22)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(16,2,yy)*.5)});
  rings.push({x:T.x,y:T.y0+H*.96+1,z:T.z,r:.05,yy:H*.96+1,col:barkCol(S,1)});
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.01*Math.sin(3*ang+R.yy*.045+ph)+butF(R.yy)*lobeSum(ang)),(R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.5+.5*clamp(lobeSum(ang)*1.4,0,1),f):1;});

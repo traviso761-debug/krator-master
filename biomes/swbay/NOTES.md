@@ -32,8 +32,8 @@ grows on.
 
 ## The vibe
 A variation of the established hyperjungle, but not as tall: the tallest trees top out
-at the height of the Voth temple (`SWBAY_TEMPLE_H`, 110 m placeholder — the canon figure
-is not in this kit). The baobabs and the prism gums of the megaflora belt are still seen,
+at the height of the Voth temple (`SWBAY_TEMPLE_H`, 156 m since 2026-10-26: the Temple's top
+terrace in Voth's city plan, `settlements/voth/src/30a-layout-districts.js`). The baobabs and the prism gums of the megaflora belt are still seen,
 scaled to that ceiling; the rest of the flora is new and FUNGOID: giant mushrooms as
 canopy trees, and trees and shrubs whose foliage is a splay of wide fronds. Epiphytes are
 everywhere and trend to red and purple. On the savannah the parasol theme: parasol

@@ -19,7 +19,7 @@ SWBAY.TAGS={climate:'hypertropic..tropic',aridity:'semiarid..humid',abyssal:fals
 
 // ---------------------------------------------------------------- THE CANOPY CEILING
 // The tallest tree of the bay jungle reaches the height of the Voth temple.
-// The host sets SWBAY_TEMPLE_H before this file loads (110 m placeholder).
+// The host sets SWBAY_TEMPLE_H before this file loads (this page: 156 m, the Temple's top terrace in Voth's city plan; 110 m if unset).
 SWBAY.TEMPLE_H=(typeof SWBAY_TEMPLE_H!=='undefined'&&SWBAY_TEMPLE_H)?SWBAY_TEMPLE_H:110;
 const TH=SWBAY.TEMPLE_H/110;   // every canopy height below scales with it
 
@@ -291,6 +291,12 @@ SWBAY.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
   for(let i=0;i<260;i++){const x=rng()*w,y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'120,120,120':'205,205,205')+','+(.25+rng()*.4).toFixed(2)+')';
    g.lineWidth=rr(1.5,4);g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-4,4),y+rr(30,120));g.stroke();}
   for(let i=0;i<24;i++){g.fillStyle='rgba(120,120,120,.35)';g.beginPath();g.ellipse(rng()*w,rng()*h,rr(8,22),rr(4,9),0,0,TAU);g.fill();}}
+ /* 2026-10-26: kinds 2, 3, 5 and 6 brightened (each value times SC, composited 'lighter' onto itself: no pixel read, no rng draw)
+    so the canvas's mean sits above the brightest channel of its species' tints (SPECIES.bark, PAL.stipe): 55-trees tint() divides
+    the mean out and clipped at 1 before (ironbark red 1.77, the cap-tree stipe 2.26, baobab 1.36, fan-crown and dragon 1.32), so
+    those boles drew greyer or white instead of their colours (the hyperjungle's 45a48df3d, the same class). materials.json's
+    means for those slots follow. */
+ {const SC=[1,1,1.18,1.2,1,1.5,1.36][kind];if(SC>1){g.globalCompositeOperation='lighter';g.globalAlpha=SC-1;g.drawImage(g.canvas,0,0);g.globalCompositeOperation='source-over';g.globalAlpha=1;}}
 });};
 SWBAY.BARKTEX=[0,1,2,3,4,5,6].map(k=>SWBAY.barkTex(k));
 // the CAP: near-grey flesh with paler warts and a few darker scales, so the
