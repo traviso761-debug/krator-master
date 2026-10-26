@@ -53,7 +53,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # shared fragments from core/terrain, opt-in by name (core/README.md): '30-core-field.js' gives KFIELD, the baked
 # heightmap the ground is read from; '36-core-carve.js' gives BIO.carve, overhangs on the heightfield. A local src/
 # copy with the same name wins.
-CORE_TERRAIN=['30-core-field.js','31-core-field-brush.js','36-core-carve.js']   # 31: the ground brushes (core/host's editor, step 4)
+CORE_TERRAIN=['30-core-field.js','31-core-field-brush.js','36-core-carve.js','43-core-ground.js','45-core-horizon.js']   # 43 KGROUND: the ground's library layers; 45 KHORIZON: its terrain shadows (src/45-host-stage.js)   # 31: the ground brushes (core/host's editor, step 4)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
@@ -65,6 +65,8 @@ CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+# core/terrain's three.js side, by explicit path (core/terrain/host/): KHORIZON.shade, the horizon's shading
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item

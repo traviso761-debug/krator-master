@@ -52,22 +52,15 @@ const RIVERS=[
  riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>30),.6)];
 const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3});
  D.mesh.userData.inspectLabel=S.name;return D;});
-// the lily pads and the leaf rafts ride the swell (2026-10-26; they sat still at BIO.waterH + .04 to .08 while the water moved a
-// few centimetres): their material lifts each instance by the trochoids' height at its own centre, on the water's one clock
-// (atmWaveT), times aBob, the damping core/water gives the water there (S.damp: calm over a shallow bed, 0 off the lake and the
-// pools' masks, so a pad on a river reach stays put). The GLSL is written from LAKE_WATER.waves (both surfaces take SWELL),
-// the sum WATER.troD makes for its height; the horizontal orbit (a few cm) is left out. The water palm's rhizome and the
-// hyacinths (the shared 'rosette', 'rod' and 'bloom' items) do not bob.
-{const gf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},WV=LAKE_WATER.waves;
- const BOB='uniform float atmWaveT;attribute float aBob;\nfloat eaBob(vec2 p){float h=0.0;'+WV.map(w=>'h+=sin(6.283185307*(fract(p.x*'+gf(w.tx)+')+fract(p.y*'+gf(w.tz)+')-fract(atmWaveT*'+gf(w.tc)+'))+'+gf(w.ph)+')*'+gf(w.A)+';').join('')+'return h;}\n';
- const dampAt=(x,z)=>{for(const S of [LAKE_WATER,MARSH_WATER])if(S.contains(x,z))return S.damp?S.damp(x,z,0):1;return 0;};
+// the lily pads and the leaf rafts ride the swell (2026-10-26): their material lifts each instance by the water's own height at its centre
+// (WATER.rideOn, core/water W5: the vertex chunk WATER.rideGLSL, the same swell as WATER.heightAt: the trochoids through the Newton inverse and
+// the lake bed's damping, on the water's one clock), times aBob: 1 on the lake (its bed's damping is in the chunk), the marsh's own damping in
+// its pools (the lake's chunk is undamped outside the lake's bed box; both surfaces take SWELL), 0 off both masks, so a pad on a river reach stays
+// put. Before: the page wrote the trochoids' sum at the instance's rest point itself (no inverse, no bed). The water palm's rhizome and the
+// hyacinths (the shared 'rosette', 'rod' and 'bloom' items) do not bob. The export and a Godot port see the rest height (the bob is shader-only).
+{const dampAt=(x,z)=>LAKE_WATER.contains(x,z)?1:MARSH_WATER.contains(x,z)?(MARSH_WATER.damp?MARSH_WATER.damp(x,z,0):1):0;
  const done=new Set();
  scene.traverse(o=>{if(!o.isInstancedMesh||(o.name!=='biome:pad'&&o.name!=='biome:floatleaf'))return;
   const n=o.count,M=o.instanceMatrix.array,b=new Float32Array(n);for(let i=0;i<n;i++)b[i]=dampAt(M[i*16+12],M[i*16+14]);
   o.geometry.setAttribute('aBob',new THREE.InstancedBufferAttribute(b,1));
-  const m=o.material;if(done.has(m))return;done.add(m);
-  const prev=m.onBeforeCompile,pk=m.customProgramCacheKey.bind(m);
-  m.onBeforeCompile=(sh,r)=>{if(prev)prev(sh,r);ATMOS.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+BOB)
-    .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{vec4 eaC=modelMatrix*instanceMatrix[3];transformed.y+=eaBob(eaC.xz)*aBob/max(length(instanceMatrix[1].xyz),1.0e-3);}\n#endif');};
-  m.customProgramCacheKey=()=>pk()+'|eabob';m.needsUpdate=true;});}
+  const m=o.material;if(done.has(m))return;done.add(m);WATER.rideOn(m,LAKE_WATER,{weight:'aBob'});});}

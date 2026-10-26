@@ -28,10 +28,12 @@ const OUTER_WATER=WATER.open({name:'The outer water',level:-.15,swell:[],field:0
   return{x0:OUTER_BOX[0],z0:OUTER_BOX[1],cell:c,nx,nz,data:d};})()});
 const OUTER_DRAW=WATER.draw(OUTER_WATER,{renderOrder:0,roughness:.2,metalness:.05,envMapIntensity:.5,color:lin(WATER_DEEP)});
 OUTER_DRAW.mesh.userData.inspectLabel='The outer water';
-const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.06,.14],shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.5,step:10,across:6,margin:1.2,renderOrder:2});
+const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.06,.14],shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.5,step:10,across:6,margin:1.2,renderOrder:2,chute:RIVER_FALL_OPT.steep});   /* chute (core/water, 2026-10-26): the ribbon gives way down the chutes, where the curtains draw the water */
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
 // the river steps down in 37 terraces: ALL their curtains are one mesh and all their plunge pools another (WATER.drawFalls, core/water/ext: two draw calls in all; it was two per fall with a per-frame
 // tick that showed only those within 900 m). The curtains land on the chute foot fallsOf found (fit: true in 45-host-stage).
 /* 2026-10-26: with spray (ATMOS.smoke's 'spray' kind, three emitters at each plunge: one sprite cloud, one call; core/atmos 3-particles in build.py) */
-const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,envMapIntensity:.25,renderOrder:3});
+/* 2026-10-26 (core/water W1): margin 1.2, the river ribbon's own, so each curtain is as wide as the ribbon at its lip and its sides fade out under the banks
+   as the ribbon's do (KNOWN_ISSUES: the jagged triangles where the curtain was narrower than the ribbon) */
+const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,envMapIntensity:.25,renderOrder:3,margin:1.2});
 FALL_DRAW.mesh.userData.inspectLabel='The cataracts';if(FALL_DRAW.plunge)FALL_DRAW.plunge.userData.inspectLabel='The cataracts';

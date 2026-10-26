@@ -91,6 +91,10 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
  SH.waters=R.geysers.map((g,gi)=>WATER.geyser({key:g.key,name:g.name,vents:g.vents,top:g.top,top2:g.top2,H:g.H,style:g.kind,period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,
   off:()=>g.off||0,wob:gi*1.7,pool:g.pool,cone:g.cone,mound:g.mound,world:WORLD}));   /* wob: the spouter's wobble phase, as the shader had it */
  SH.geysers=SH.waters.map(S=>{const D=WATER.drawGeyser(S,Object.assign({},WOPT,{scene,gravity:GEYSER.GRAV}));st.drops+=D.count;return D.points;});
+ // the steam over the big columns as a soft volume (WATER.drawPlume, core/water W6, 2026-10-26): one raymarched box each, as thick as the cycle's
+ // steam (the roar after the column), leaning a little downwind; the export's geyser record carries it (Godot: a FogVolume). The spouters keep their puffs.
+ SH.plumes=WATER.drawPlume?SH.waters.filter(S=>S.style!=='spouter'&&S.H>=25).map(S=>WATER.drawPlume(S,Object.assign({},WOPT,{scene,plume:{lean:[.12,-.06],density:.45}})).mesh):[];
+ st.plumes=SH.plumes.length;
  SH.setScale=px=>{U.uScale.value=px;};
  SH.setLight=k=>{U.uLight.value=k;};
  BIO.tick(dt=>{SH.t+=dt;U.uT.value=SH.t;});

@@ -72,7 +72,7 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   chocolate to black, half-rotted fibrous plant matter and fine root threads, a few blackened sedge blades pressed flat,
   a faint wet sheen in the hollows and two or three small pools of dark tea-coloured water. No living moss, no rust or
   orange, no sticks thicker than a finger. Average brightness about 12 percent."
-- [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
+- [x] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
   through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
   segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
   than a 180,000-vertex ring fan.
@@ -81,6 +81,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   `top:{grid:5}` that draws a top with relief as a square grid (5 m) clipped to the top's outline (the outline's ring
   stitched to the grid's edge cells) in place of the 150-ring by 1,200-segment fan, reading the same top function; the
   export's terrain section takes the same grid. The hoar station then passes `top:{grid:5}` in its `45-host-stage.js`.
+  Fixed (2026-10-26, branch claude/core-terrain): `KSTACKS.mesh` opt.top `{grid:5}` (core/terrain/37-core-stacks.js); the hoar station
+  passes `STAGE.stackTop:{grid:5}`, read by `47-host-land.js`. The top is a 5 m grid clipped to the edge ring, watertight with the wall, and
+  the cells hidden under the bed above are left out: the pavement is 272,031 vertices and 513,488 triangles where the rings were 900,750 and
+  1,788,000 (the page 10.11 M triangles at its views, from 11.39 M; 37 draw calls as before). The export reads the same mesh.
 - [x] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
   cycle); a proper Nepenthes lid (a dome with a spur, veined) wants its own geometry when the plant is redone.
   Stays (2026-10-25): a veined dome with a spur is new geometry for when the plant is redone, a design task.

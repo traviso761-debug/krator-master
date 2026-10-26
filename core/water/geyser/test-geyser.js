@@ -4,7 +4,7 @@
 // godot/tests/water/geyser_golden.json: the Old Kettle's data and the states a port replays (GEYSER_STATE).
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..','..');
-const src=['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/water/20-core-water.js','core/water/geyser/52-core-water-geyser.js']
+const src=['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/water/20-core-water.js','core/water/geyser/52-core-water-geyser.js','core/water/geyser/52b-core-water-geyser-draw.js']
  .map(f=>fs.readFileSync(path.join(ROOT,f),'utf8')).join('\n');
 global.window=global;eval(src+';global.ATMOS=ATMOS;global.WATER=WATER;');
 const W=WATER;
@@ -109,4 +109,17 @@ ok('a cone with no period throws; H must be positive',(()=>{try{W.geyser({x:0,z:
    geysers:W.geyserRecords().filter(r=>keep.includes(r.key)),samples:W.geyserGolden().filter(g=>keep.includes(g.key)),
    spring:{record:W.export().surfaces[S1.id].thermal,colours:[0,.25,.5,.75,1].map(t=>[t,W.springColour(S1,t)])}};
   const dir=path.join(ROOT,'godot','tests','water');fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'geyser_golden.json'),JSON.stringify(out,null,1)+'\n');console.log('wrote godot/tests/water/geyser_golden.json');}}
+// ---------------------------------------------------------------- the plume (2026-10-26, W6): a soft volume over a geyser
+{const {glslProgram}=require('../glsl-interp.js');
+ const G=W.geyser({key:'plumed',name:'A plumed geyser',x:300,z:-40,top:12,H:40,period:120,pre:20,dur:30,steam:40,plume:{lean:[.15,-.05]}}),G0=W.geyser({key:'bare',name:'A bare geyser',x:500,z:0,top:5,H:20,period:90,pre:10,dur:10,steam:20});
+ const P=G.plume,Pr=glslProgram(W.plumeGLSL?W.plumeGLSL(P):'',{});let e=0,inside=0;
+ for(const[x,y,z]of[[300,11.5,-40],[300,20,-40],[305,30,-41],[310,45,-44],[300,70,-40],[280,25,-40],[300,P.y0+P.height+1,-40],[303.2,38.7,-42.1]])for(const s of[0,.35,1]){
+  const a=Pr.run('plmDensity',[x,y,z],s),b=W.plumeDensity(P,x,y,z,s);e=Math.max(e,Math.abs(a-b));if(b>0)inside++;}
+ const axis=W.plumeDensity(P,300+.15*20,P.y0+20,-40-.05*20,1),off=W.plumeDensity(P,300,P.y0+20,-40,1),far=W.plumeDensity(P,300+40,P.y0+20,-40,1);
+ ok('W6: the plume\'s density (the shader\'s plmDensity) equals W.plumeDensity ('+e.toExponential(1)+', '+inside+' samples inside); it leans (on its axis '+axis.toFixed(3)+', at the vent\'s plumb '+off.toFixed(3)+'), fades out sideways ('+far.toExponential(1)+') and with no steam',
+  e<1e-12&&axis>off&&far<1e-6&&W.plumeDensity(P,303,P.y0+20,-41,0)===0&&inside>6,false);
+ const B=W.plumeBox(P),rec=W.geyserRecords().find(r=>r.key==='plumed');
+ ok('W6: the box holds the leaning column ('+B.map(v=>v.toFixed(1))+'), the export\'s geyser record carries the plume and its box for a FogVolume; a geyser without one has none',
+  B[1]===P.y0&&B[4]===P.y0+P.height&&B[3]>300+.15*P.height&&rec.plume&&rec.plume.box.length===6&&rec.plume.radius===P.radius&&!('plume' in W.geyserRecords().find(r=>r.key==='bare'))&&G0.plume==null,
+  'plume' in W.geyserRecords().find(r=>r.key==='bare'));}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
