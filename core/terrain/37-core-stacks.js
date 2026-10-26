@@ -27,8 +27,10 @@
 //   KSTACKS.topH(b, x, z)      the bed's top surface at x,z (flat, a little rough: the one top function)
 //   KSTACKS.at(list, x, z)     {S, b, top, d} the highest bed top over (x,z) (d its signed distance to that top's edge,
 //                              negative inside), or null; KSTACKS.topAt(list,x,z) the height alone (-Infinity off the rock)
-//   KSTACKS.surface(list, x, z, fr?)  {S, b, top, d, wall, steep}: as at, but over a tapering bed's wall the wall's own
-//                              height (a tower's dome holds a forest), steep its rise over its run; or null
+//   KSTACKS.surface(list, x, z, fr?, o?)  {S, b, top, d, wall, steep}: as at, but over a tapering bed's wall the wall's own
+//                              height (a tower's dome holds a forest), steep its rise over its run; or null. The wall is a
+//                              straight line from foot to top; o.drawn (2026-10-26, k-guilin's KNOWN_ISSUES) follows the drawn
+//                              wall instead (the notch, the chamfer, the taper: prof and tAt, as mesh draws it)
 //   KSTACKS.wall(B, b, a, u)   {x, y, z, nx, nz}: a point on bed b's wall (u 0 foot .. 1 top edge, a the angle) and its normal
 //   KSTACKS.foot(list, x, z)   {S, d} the nearest body's foot: d the signed distance to its lowest bed's footprint
 //   KSTACKS.ledge(list, x, z)  {S, b, w} when (x,z) is on a ledge (a bed's top out from under the bed above), else null
@@ -159,13 +161,15 @@
   // point crosses the wall (straight up a bed, as the mesh draws it, to the notch and the chamfer), with steep the bed's
   // rise over its run (a dome's beds under ~2.75 hold soil; a cliff's do not). {S, b, top, d, wall, steep} or null.
   // fr(b, ang) replaces footR (guilin passes its interpolated tables).
-  function surface(list,x,z,fr){var best=null,F=fr||footR;
+  function surface(list,x,z,fr,o){var best=null,F=fr||footR,drawn=!!(o&&o.drawn);
     for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R||Math.abs(z-B.z)>B.R)continue;
       for(var k=B.beds.length-1;k>=0;k--){var b=B.beds[k],tp=b.tp==null?1:b.tp,cx=b.cx+(b.tx||0),cz=b.cz+(b.tz||0),dx=x-cx,dz=z-cz;
         var rt=F(b,Math.atan2(dz,dx))*tp*(1-b.ch),d=Math.hypot(dx,dz)-rt;
         if(d<0){var t=topH(b,x,z);if(!best||t>best.top)best={S:B,b:b,top:t,d:d,wall:false,steep:0};break;}
         if(tp<.995||b.tx||b.tz){var ex=x-b.cx,ez=z-b.cz,rf=F(b,Math.atan2(ez,ex)),df=Math.hypot(ex,ez)-rf;
-          if(df<0){var u=clamp(-df/(-df+d),0,1),y=b.y+u*b.h,run=Math.max(.01,rf-rt);
+          if(df<0){var u=clamp(-df/(-df+d),0,1),run=Math.max(.01,rf-rt);
+            if(drawn){var lo=0,hi=1;for(var it=0;it<28;it++){var m=(lo+hi)/2,c=cAt(b,m),R=F(b,Math.atan2(z-c[1],x-c[0]))*prof(b,m)*tAt(b,m);if(Math.hypot(x-c[0],z-c[1])>R)hi=m;else lo=m;}u=(lo+hi)/2;}
+            var y=b.y+u*b.h;
             if(!best||y>best.top)best={S:B,b:b,top:y,d:-1e3,wall:true,steep:b.h/run};break;}}}}
     return best;}
   // a point on a bed's WALL and its outward normal (lifted from biomes/guilin's GUILIN.wall, 2026-10-25): u 0 the bed's foot

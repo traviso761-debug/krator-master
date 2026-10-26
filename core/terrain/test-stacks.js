@@ -184,4 +184,11 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
   ok('12 more bodies, grids of 3, 5 and 7 m: '+nb+' gridded tops, area within '+worst.toExponential(1)+', '+openBad+' with a hole',nb>20&&worst<1e-6&&openBad===0,false);}
  K.topH=_th;}
 
+// ---- surface on the drawn wall (o.drawn, 2026-10-26: k-guilin's trees stood up to a metre proud where the chamfer pulls the wall in)
+{const T=K.tower({id:'t',seed:9,x:0,z:0,H:150,R:60,y0:0});let eD=0,eL=0,n=0;
+ for(let k=0;k<T.beds.length;k++){const b=T.beds[k];if((b.tp==null?1:b.tp)>.995)continue;
+  for(let a=0;a<6.28;a+=.7)for(const u of [.3,.6,.85,.95]){const w=K.wall(T,b,a,u),pD=K.surface([T],w.x,w.z,null,{drawn:true}),pL=K.surface([T],w.x,w.z);
+   if(!pD||!pL||!pD.wall||!pL.wall||pD.b!==b||pL.b!==b)continue;n++;eD=Math.max(eD,Math.abs(pD.top-w.y));eL=Math.max(eL,Math.abs(pL.top-w.y));}}
+ ok('KSTACKS.surface {drawn}: on the drawn wall within '+eD.toFixed(3)+' m ('+n+' points; the straight wall is off by '+eL.toFixed(2)+' m)',n>20&&eD<.05&&eL>eD,eL<.05);
+ ok('without o.drawn surface is as before',JSON.stringify(K.surface([T],30,0))===JSON.stringify(K.surface([T],30,0,null,null)),false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
