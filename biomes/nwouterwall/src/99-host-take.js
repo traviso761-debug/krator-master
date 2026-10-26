@@ -57,7 +57,7 @@ const HCHK={
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===NW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
  // the season: the larch's needles and the snow line are the season's
- season(){const lab=BIO.kits.nwouterwall.defs.larchleaf.label,want=SEASON==='autumn'?/gold/:/green/;const ok=want.test(lab)&&!!ATMOS.snow;
+ season(){const lab=BIO.kits.nwouterwall.defs.larchspray.label,want=SEASON==='winter'?/bare/:SEASON==='autumn'?/gold/:/green/;const ok=want.test(lab)&&!!ATMOS.snow;
   return{ok,detail:SEASON+': '+lab+'; snow base '+(ATMOS.U.snowBase?ATMOS.U.snowBase.value:'?')};}};
 // the water: core/water's records (the stream a flow line never climbing downstream) and drawn
 HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const c=W.stream;if(!c)return{ok:!SITE_STREAM,detail:'no stream at this station'};let climb=0;

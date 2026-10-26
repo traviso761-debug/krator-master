@@ -7,7 +7,7 @@ ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x
 // the winter's last patches lie everywhere the slope lets them (the shaded faces hold it longest: the module's drifts and normals),
 // in summer none below the far ranges. Snow that falls from the weather builds on it and melts by day (o.frozen only in the Yeti
 // Valley's spring). window._snowDepth(d) adds fresh snow (a winter view).
-const SNOW={autumn:{base:.55,line:SITE.snow&&SITE.snow.autumn},spring:{base:.42,line:SITE.snow&&SITE.snow.spring},summer:{base:.6,line:SITE.snow&&SITE.snow.summer}}[SEASON];
-ATMOS.snowCover({base:SNOW.base,line:SNOW.line||[900,1400],frozen:!!(SITE.snow&&SITE.snow.frozen&&SEASON==='spring')});
+const SNOW={autumn:{base:.55,line:SITE.snow&&SITE.snow.autumn},winter:{base:.95,line:SITE.snow&&SITE.snow.winter},spring:{base:.42,line:SITE.snow&&SITE.snow.spring},summer:{base:.6,line:SITE.snow&&SITE.snow.summer}}[SEASON];
+ATMOS.snowCover({base:SNOW.base,line:SNOW.line||[900,1400],frozen:SEASON==='winter'||!!(SITE.snow&&SITE.snow.frozen&&SEASON==='spring')});   /* winter's air never thaws the snow by day */
 window._snowDepth=d=>{ATMOS.snow.depth=d;};
 // THE WEATHER is bound in 89s-host-sky.js, after the clouds' shade (see there)

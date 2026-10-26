@@ -21,10 +21,10 @@ const PAL=NWOW.PAL={
  larchBark:[0x9a7a64,0xa8846c,0x8a6c58,0xb08c74],
  pine:[0x2e4a32,0x36543a,0x284430,0x3e5c40],pineBark:[0x8a7a6c,0x968676,0x7e6e62],cone:[0x7a5a36,0x8a6a42,0x6a4c2e],
  thorn:[0x9aa898,0xa8b4a4,0x8a9a8a],thornBerry:[0xe88a20,0xf09a28,0xd87a18],thornBark:[0x5a5048,0x645a50],
- birch:{autumn:[0xc84a28,0xd8602c,0xb83a24,0xe07a30],summer:[0x4e7a34,0x5a863a,0x46702e],spring:[0x7a9a4a,0x88a854,0x6c8e40]}[SEASON_K],
+ birch:{winter:[0x6a4a3a,0x5a4034,0x74503e],autumn:[0xc84a28,0xd8602c,0xb83a24,0xe07a30],summer:[0x4e7a34,0x5a863a,0x46702e],spring:[0x7a9a4a,0x88a854,0x6c8e40]}[SEASON_K],
  willow:[0xb4bcac,0xc0c8b8,0xa8b0a0,0xccd2c4],catkin:[0xf4f0e4,0xece8dc],
- stipa:{autumn:[0xb8a67c,0xc4b088,0xaa9870],summer:[0xb4b490,0xc0be9a,0xa8aa86],spring:[0xaca488,0xa09a80]}[SEASON_K],
- grass:{autumn:[0xc0a878,0xb89c6c,0xcab486],summer:[0x9aa468,0xa4ae70,0x8e9a5e],spring:[0xa8a080,0x9c9474,0xb2aa8a]}[SEASON_K],
+ stipa:{winter:[0xc8bca0,0xbcb094,0xd0c6ac],autumn:[0xb8a67c,0xc4b088,0xaa9870],summer:[0xb4b490,0xc0be9a,0xa8aa86],spring:[0xaca488,0xa09a80]}[SEASON_K],
+ grass:{winter:[0xb4a88a,0xa89c80,0xbcb296],autumn:[0xc0a878,0xb89c6c,0xcab486],summer:[0x9aa468,0xa4ae70,0x8e9a5e],spring:[0xa8a080,0x9c9474,0xb2aa8a]}[SEASON_K],
  deer:[0xb4b8a4,0xbcc0ac,0xa8ae98,0xc0c4b0],moss:[0x6a7a3a,0x7a8a44],cushion:[0x5e7038,0x6a7a40,0x546430],cushionBloom:[0xe890b8,0xf0a8c8,0xd878a8],
  edel:[0xe8e6dc,0xf0eee6,0xdcdad0],cloud:[0x5a7a3a,0x668644],cloudBerry:[0xe89040,0xf0a050],crow:[0x3a4a30,0x44543a],
  rock:[0x8a8680,0x948e88,0x7e7a74,0x9a968e],rootPale:[0xd8c8a8,0xe0d0b4],soil:[0x5a4a3a,0x665444]};
@@ -33,7 +33,7 @@ const PAL=NWOW.PAL={
 // H height band (m: the forest-steppe's; the taiga's are scaled down by the cold: 55), rb bole radius, crownR (m); far the
 // impostor recipe (blobs [y of H, rx of crownR, ry of H, colour A, B])
 const K=(climate,aridity,riparian,koppen,zone)=>Object.assign({},NWOW.TAGS,{climate,aridity,riparian,koppen,zone});
-const larchFar=SEASON_K==='autumn'?[0xa8873e,0x8a6c34]:SEASON_K==='spring'?[0x7a8a52,0x6a7848]:[0x5e7a36,0x4e682e];
+const larchFar=SEASON_K==='winter'?[0x6a5e52,0x5a5048]:SEASON_K==='autumn'?[0xa8873e,0x8a6c34]:SEASON_K==='spring'?[0x7a8a52,0x6a7848]:[0x5e7a36,0x4e682e];
 NWOW.SPECIES=[
  {key:'furlarch',name:'Fur larch',H:[18,28],rb:[.16,.3],crownR:[2.2,3.6],leaf:SEASON_K==='autumn'?PAL.larchGold:SEASON_K==='spring'?PAL.larchSpring:PAL.larchGreen,barkC:PAL.larchBark,
   far:{blobs:[[.62,.62,.42,larchFar[0],larchFar[1]]]},tags:K('cold','semiarid','no',['Dsb','Dsc'],'larch')},
@@ -151,7 +151,7 @@ NWOW.G=G;
 const leaf=(tex,key,o)=>BIO.leafMat(tex,key,Object.assign({swayW:'(position.y)',swayA:.05,alphaTest:.4},o||{}));
 const M=NWOW.MAT={
  bark:{larch:BIO.barkMat(NWOW.BARKTEX.larch),pine:BIO.barkMat(NWOW.BARKTEX.pine),thorn:BIO.barkMat(NWOW.BARKTEX.thorn)},
- larchgold:BIO.leafMat(TX.needle,'larchgold',{aN:true,swayW:'1.0',swayA:.05}),larchgreen:BIO.leafMat(TX.needle,'larchgreen',{aN:true,swayW:'1.0',swayA:.05}),
+ larchgold:BIO.leafMat(TX.needle,'larchgold',{aN:true,swayW:'(-position.y)',swayA:.06}),larchgreen:BIO.leafMat(TX.needle,'larchgreen',{aN:true,swayW:'(-position.y)',swayA:.06}),   /* hung sprays: they swing from the branch */
  pineleaf:BIO.leafMat(TX.needle,'pineleaf',{aN:true,swayW:'1.0',swayA:.03}),thorn:BIO.leafMat(TX.lance,'thorn',{aN:true,swayW:'1.0',swayA:.05}),
  birch:BIO.leafMat(TX.round,'birch',{aN:true,swayW:'1.0',swayA:.04}),willow:BIO.leafMat(TX.lance,'willow',{aN:true,swayW:'1.0',swayA:.04}),
  beard:leaf(TX.beard,'beard',{swayW:'(-position.y)',swayA:.07}),
@@ -165,6 +165,14 @@ const M=NWOW.MAT={
  stone:BIO.solidMat(null),solid:BIO.solidMat(null)};
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps (cards: one cell of a sheet)
 NWOW.LIB=BIO.libSwap('nwouterwall',M);
+// one texture per cell: KMAT.textures hands back ONE texture per library sheet, so libSwap's offset for the last slot of a sheet
+// won on every slot of it (the three crops all drew goldroot's cell; the larch's gold and green one cell). Each card slot with a
+// cell gets its own clone (the image is shared), its cell set again (KNOWN_ISSUES: a core/biome fix would do this in libSwap)
+(function(){if(typeof KMAT==='undefined'||!KMAT.packed)return;const one=(m,slot)=>{const L=m&&m.isMaterial&&m.map&&KMAT.packed('nwouterwall',slot);
+  if(!L||!L.cell)return;const c=L.cell,src=m.map,t=src.clone();t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);m.map=t;m.needsUpdate=true;
+  /* the sheet decodes later and lands on the cached texture only (KMAT's img.onload): copy it to the clone when it does */
+  const sync=()=>{if(!src.image)return false;t.image=src.image;t.needsUpdate=true;return true;};if(!sync()){const id=setInterval(()=>{if(sync())clearInterval(id);},50);}};
+ for(const k in M){const v=M[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);else one(v,k);}})();
 const LIBWHITE=C(0xf4f2ec);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 const FULL=slot=>{if(!NWOW.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('nwouterwall',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
@@ -175,7 +183,7 @@ NWOW.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('larchleaf',BIO.geo.clump(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],label:'Fur larch needles (in tufts: '+(SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
+BIO.def('larchspray',G.hung(),SEASON_K==='autumn'?M.larchgold:M.larchgreen,{attrs:['aN'],label:'Fur larch shoots (hanging sprays of needle tufts: '+(SEASON_K==='winter'?'none: the larch stands bare in winter':SEASON_K==='autumn'?'autumn gold':SEASON_K==='spring'?'spring green':'summer green')+')'});
 BIO.def('pineleaf',BIO.geo.clump(),M.pineleaf,{attrs:['aN'],label:'Stone pine needles'});
 BIO.def('thorn',BIO.geo.clump(),M.thorn,{attrs:['aN'],label:'Silverthorn (silver leaves, orange berries)'});
 BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Snow birch'});
@@ -184,7 +192,7 @@ BIO.def('beard',G.hung(),M.beard,{label:'Larch beard (hanging lichen)'});
 BIO.def('stipa',G.tuft(),M.stipa,{label:'Plumegrass (feather grass)'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Steppe grass'});
 BIO.def('pasque',G.tuft(),SEASON_K==='spring'?M.pasque:M.pasqueseed,{label:'Furflower (pasqueflower: '+(SEASON_K==='spring'?'in bloom after the melt':'its feathered seed heads')+')'});
-BIO.def('fireweed',G.tuft(),SEASON_K==='autumn'?M.fireweedfluff:M.fireweed,{label:'Ivan-chai (fireweed: '+(SEASON_K==='autumn'?'gone to seed fluff':'in flower')+')'});
+BIO.def('fireweed',G.tuft(),SEASON_K==='autumn'||SEASON_K==='winter'?M.fireweedfluff:M.fireweed,{label:'Ivan-chai (fireweed: '+(SEASON_K==='winter'?'dead stalks, the last fluff':SEASON_K==='autumn'?'gone to seed fluff':'in flower')+')'});
 BIO.def('cotton',G.tuft(),M.cotton,{label:'Cottongrass'});
 BIO.def('snowball',G.tuft(),M.snowball,{label:'Woolly snowball'});
 BIO.def('heath',G.tuft(),M.heath,{label:'Crowberry and heath'});
@@ -197,7 +205,7 @@ BIO.def('catkin',BIO.geo.bloom(),M.catkin,{label:'Woolly willow catkins'});
 // the Thule crops: the sheet draws each plant over its root, the root a third to a half of the cell: the card is sunk so the root is
 // under the ground (G.tuft's sunk)
 BIO.def('sweetroot',G.tuft(.42),M.crop.sweet,{label:'Sweetroot (in its beds)'});
-BIO.def('snowpotato',G.tuft(.3),M.crop.potato,{label:'Snow potato (in its pocket)'});
+BIO.def('snowpotato',G.tuft(.42),M.crop.potato,{label:'Snow potato (in its pocket)'});   /* sunk to the rosette's foot: the card's tuber (its lower third) stays in the ground */
 BIO.def('goldroot',G.tuft(.45),M.crop.gold,{label:'Goldroot (in the rock\'s cracks)'});
 BIO.def('stone',G.stone(),M.stone,{label:'Stones (the pockets\' walls, the frost\'s boulders)'});
 BIO.def('cache',G.mound(),M.solid,{label:'A vole\'s cache (dug open: "mouse nuts")'});

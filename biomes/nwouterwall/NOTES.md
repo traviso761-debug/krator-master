@@ -53,9 +53,17 @@ on the edge, station 3 permanent.
 
 The page is a season (a build input, read once): autumn (day 176 of the sky model: mid-March, the larch's gold), spring melt
 (day 61: late November; furflowers in bloom, the aufeis at its full, the winter's last snow lying in patches everywhere the slope
-lets it), summer (day 121: mid-January; green larch, fireweed in flower). The snow is `core/atmos/fx/89-atmos-fx-snowcover.js`:
+lets it), summer (day 121: mid-January; green larch, fireweed in flower), winter (day 274: mid-July, on every station's picker; snow to the
+valley floors, the larch bare, the aufeis building, the high lake frozen, no flowers; fireweed and cottongrass stand as fluff,
+the grasses straw). The snow is `core/atmos/fx/89-atmos-fx-snowcover.js`:
 a base cover above the season's line (`SITE.snow`: autumn's first snow on the high ground), and the weather (`ATMOS.bindWeather`,
 climate `{cold:true}`: the Weather select's snowfall and blizzard) builds more on it, melting by day.
+
+## The ground's texture
+
+Each of the seven ground layers is read through hex-cell texture bombing (`47-host-land.js`, `GROUND_DITHER`): every cell
+reads the tile rotated and shifted, three cells blended, at two scales mixed by noise, so no tile repeat shows. The layers
+meet along noise-thresholded edges (`nedge`) instead of smooth weight fades, so a layer's edge breaks up like real ground.
 
 ## Decisions (the owner, 2026-10-26)
 

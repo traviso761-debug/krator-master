@@ -40,12 +40,14 @@ const leafCol=(set,k)=>bright(vary(pick(set),.04,.1,.06),k==null?1.15:k);NWOW.le
 const lc=(slot,set,k)=>NWOW.libCol(slot,leafCol(set,k));
 const dirOf=(a,el)=>[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)];
 const P3=p=>[p.x,p.y,p.z];
+// a point at u (0..1) along a branch from s, direction d, length L, rising as the tubes do (.25 L u^2)
+const bpt=(s,d,L,u)=>({x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u,z:s.z+d[2]*L*u});
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.6,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.9,1.1);const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 NWOW.clumpAt=clumpAt;
 // the season's foliage: the larch's needles fall in winter and come back in spring (fewer, smaller tufts), go gold in autumn
-const LARCH_K={spring:.6,summer:1,autumn:.92}[NWOW.season];
+const LARCH_K={spring:.6,summer:1,autumn:.92,winter:0}[NWOW.season];   /* winter: the larch is bare (a deciduous conifer) */
 const LEAF_SLOT=NWOW.season==='autumn'?'larchgold':'larchgreen';
 
 // ---------------------------------------------------------------- the builders: (T, st, lv) with lv 2 near, 1 mid
@@ -56,25 +58,36 @@ const B=[];
 B[0]=function(T,st,lv){const S=SP[0],lean=T.lean||0,la=T.leanA||0,bc=C(pick(S.barkC)),top={x:T.x+Math.cos(la)*lean*T.H,y:T.y0+T.H,z:T.z+Math.sin(la)*lean*T.H};
  const pts=[];for(let i=0;i<=6;i++){const t=i/6;pts.push({x:mix(T.x,top.x,t),y:T.y0-.3+(T.H+.3)*t,z:mix(T.z,top.z,t),r:T.rb*mix(1.15,.06,Math.pow(t,.8))});}
  st.trunk+=lv===2?BIO.tube('bark.larch',pts,bc,{seg:6,cap:true}):BIO.lathe('bark.larch',pts.map(p=>Object.assign({col:(c=>[c.r,c.g,c.b])(bc.clone().convertSRGBToLinear())},p)),5,1,1,(Rg)=>Rg.r,null)||0;
- const nb=Math.round((lv===2?rr(16,22):rr(8,11))*Math.min(1.3,T.H/20)),cr=T.crownR,set=S.leaf,beard=T.beard||0;
- for(let b=0;b<nb;b++){const t=.12+.84*b/nb+rr(-.02,.02),a=b*GOLD+rr(-.4,.4),s={x:mix(T.x,top.x,t),y:T.y0+T.H*t,z:mix(T.z,top.z,t)};
-  const L=cr*Math.pow(1-t,.65)*rr(.75,1.1)+.4,d=dirOf(a,rr(-.15,.05)),bp=[];
+ const nb=Math.round((lv===2?rr(26,32):rr(12,15))*Math.min(1.3,T.H/20)),cr=T.crownR,set=S.leaf,beard=T.beard||0;
+ for(let b=0;b<nb;b++){const t=.2+.76*b/nb+rr(-.02,.02),a=b*GOLD+rr(-.4,.4),s={x:mix(T.x,top.x,t),y:T.y0+T.H*t,z:mix(T.z,top.z,t)};
+  const L=cr*1.2*Math.pow(1-t,.65)*rr(.75,1.1)+.4,d=dirOf(a,rr(-.15,.05)),bp=[];
   for(let k=0;k<=3;k++){const u=k/3;bp.push({x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u,z:s.z+d[2]*L*u,r:T.rb*.16*(1-u*.7)});}
   if(lv===2)st.limb+=BIO.tube('bark.larch',bp,bc,{seg:3});
-  const nc=Math.max(1,Math.round((lv===2?rr(5,8):rr(2,3))*LARCH_K));
-  for(let c=0;c<nc;c++){const u=.2+.8*(c+rr(0,.8))/nc,p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u+rr(-.1,.2),z:s.z+d[2]*L*u};
-   clumpAt('larchleaf',p.x,p.y,p.z,(lv===2?rr(.42,.68):rr(1.2,1.7))*mix(.75,1,LARCH_K),.7,lc(LEAF_SLOT,set,1.1),T.x,T.y0+T.H*.55,T.z,cr,T.H*.5);st.clumps++;}
+  // the foliage HANGS FROM the branch: sprays of tufted shoots (the card's sprig, its stem at the top) every ~0.22 m (alternating sides) along the
+  // outer four-fifths of each branch (0.75 m on a mid tree, its sprays three times the size); a near spray is 0.5-0.75 m, so the card's tufts read near their true few centimetres, so every spray starts on wood; a few stand
+  // up off the branch's back. Winter: none (the larch is bare)
+  if(LARCH_K>0){const sp=lv===2?.22:.75,n=Math.max(1,Math.round(L*.85/sp*LARCH_K));
+   for(let c=0;c<n;c++){const u=.15+.85*(c+rr(.1,.9))/n,q=bpt(s,d,L,u),h=(lv===2?rr(.5,.75):rr(1.8,2.4))*mix(.8,1,LARCH_K),up=rng()<.22,side=(c&1?1:-1)*rr(.04,.12);
+    BIO.put('larchspray',[q.x-d[2]*side,q.y+.02,q.z+d[0]*side],qEuler(up?Math.PI:rr(-.25,.25),rr(0,TAU),rr(-.2,.2)),[h*.6,h,h*.6],lc(LEAF_SLOT,set,1.1),{n:[d[0]*.4,.9,d[2]*.4]});st.clumps++;}}
   if(lv===2&&beard>0&&rng()<beard*.55){const u=rr(.25,.7),p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u,z:s.z+d[2]*L*u},h=rr(.4,.95);
    BIO.put('beard',[p.x,p.y,p.z],qEuler(0,rr(0,TAU),0),[h*.7,h,h*.7],NWOW.libCol('beard',bright(C(pick([0x8a9478,0x6a705e,0x9aa088,0x3a3a34])),1)));st.beards++;}}
+ if(LARCH_K>0){const n=lv===2?ri(8,12):ri(2,4);for(let c=0;c<n;c++){const t=.86+.14*c/n,h=(lv===2?rr(.35,.5):rr(1,1.4));
+  BIO.put('larchspray',[mix(T.x,top.x,t)+rr(-.1,.1),T.y0+T.H*t+h*.4,mix(T.z,top.z,t)+rr(-.1,.1)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[h*.6,h,h*.6],lc(LEAF_SLOT,set,1.1),{n:[0,1,0]});st.clumps++;}}
  regTree(T,S,cr*.9,T.H);};
 // 1 the STONE PINE: a stout trunk, a dense dark rounded crown of five-needled bunches; cones on the upper crown (the nuts: drawn)
-B[1]=function(T,st,lv){const S=SP[1],bc=C(pick(S.barkC)),pts=[];for(let i=0;i<=5;i++){const t=i/5;pts.push({x:T.x+rr(-.1,.1)*t,y:T.y0-.3+T.H*.8*t,z:T.z+rr(-.1,.1)*t,r:T.rb*mix(1.1,.2,t)});}
+B[1]=function(T,st,lv){const S=SP[1],bc=C(pick(S.barkC)),pts=[];for(let i=0;i<=5;i++){const t=i/5;pts.push({x:T.x+rr(-.1,.1)*t,y:T.y0-.3+T.H*.95*t,z:T.z+rr(-.1,.1)*t,r:T.rb*mix(1.1,.12,t)});}
  st.trunk+=lv===2?BIO.tube('bark.pine',pts,bc,{seg:6,cap:true}):BIO.lathe('bark.pine',pts.map(p=>Object.assign({col:(c=>[c.r,c.g,c.b])(bc.clone().convertSRGBToLinear())},p)),5,1,1,(Rg)=>Rg.r,null)||0;
- const cy=T.y0+T.H*.62,ry=T.H*.42,n=lv===2?ri(26,40):ri(10,14);
- for(let k=0;k<n;k++){const a=k*GOLD+rr(-.3,.3),u=rr(.1,1),rad=T.crownR*Math.sqrt(u)*rr(.7,1.05)*(1-.35*smooth(.2,1,(k/n))),y=cy+ry*(1-2*k/n)*rr(.7,1);
-  clumpAt('pineleaf',T.x+Math.cos(a)*rad,y,T.z+Math.sin(a)*rad,rr(1.4,2.1),.75,lc('pineleaf',S.leaf,1),T.x,cy,T.z,T.crownR,ry);st.clumps++;}
- if(lv===2){const nc=ri(3,9);for(let k=0;k<nc;k++){const a=rr(0,TAU),rad=T.crownR*rr(.3,.7),y=cy+ry*rr(.2,.8),s=rr(.05,.07);
-   BIO.put('cone',[T.x+Math.cos(a)*rad,y,T.z+Math.sin(a)*rad],qEuler(rr(-.4,.4),rr(0,TAU),0),[s,s*1.5,s],C(pick(PAL.cone)));st.fruit++;}}
+ // the crown is BRANCHES: whorls of stout limbs rising out from the trunk, each carrying its bunches (the card's radial tuft) from
+ // its inner fifth to its tip, the tip a knot of three or four with the cones among them; the lower limbs longer, the top a dome
+ const bc2=bc,nb=lv===2?ri(16,22):ri(8,11),top=T.y0+T.H;
+ for(let b=0;b<nb;b++){const t=.3+.66*b/nb+rr(-.02,.02),a=b*GOLD+rr(-.4,.4),s={x:T.x,y:T.y0+T.H*t,z:T.z},el=mix(.3,.85,t)+rr(-.1,.1);
+  const L=T.crownR*(1.1-.6*t)*rr(.8,1.1)+.3,d=dirOf(a,el),bp=[];for(let k=0;k<=3;k++){const u=k/3;bp.push({x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.15*L*u*u,z:s.z+d[2]*L*u,r:T.rb*.3*(1-u*.65)});}
+  if(lv===2)st.limb+=BIO.tube('bark.pine',bp,bc2,{seg:3});else BIO.beam('rod',P3(bp[0]),P3(bp[3]),T.rb*.25,T.rb*.1,bc2);
+  const n=lv===2?ri(7,10):3;for(let c=0;c<n;c++){const u=c===n-1?1:.22+.73*c/(n-1),q={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.15*L*u*u,z:s.z+d[2]*L*u};
+   clumpAt('pineleaf',q.x+rr(-.15,.15),q.y+rr(0,.25),q.z+rr(-.15,.15),(lv===2?rr(1.1,1.5):rr(1.6,2.2))*(u===1?1.2:mix(.8,1,u)),.8,lc('pineleaf',S.leaf,1),T.x,top-T.H*.35,T.z,T.crownR,T.H*.4);st.clumps++;}
+  if(lv===2&&t>.55&&rng()<.45){const q=bp[3],sz=rr(.05,.07);BIO.put('cone',[q.x+rr(-.2,.2),q.y+.1,q.z+rr(-.2,.2)],qEuler(rr(-.4,.4),rr(0,TAU),0),[sz,sz*1.5,sz],C(pick(PAL.cone)));st.fruit++;}}
+ // the leader's dome: a knot of bunches over the top
+ {const n=lv===2?ri(4,6):2;for(let c=0;c<n;c++)clumpAt('pineleaf',T.x+rr(-.5,.5),top-rr(0,.8),T.z+rr(-.5,.5),lv===2?rr(1.1,1.5):rr(1.7,2.2),.8,lc('pineleaf',S.leaf,1.05),T.x,top-T.H*.35,T.z,T.crownR,T.H*.4);st.clumps+=n;}
  regTree(T,S,T.crownR*.9,T.H);};
 // 2 the CREEPING STONE PINE: no trunk to speak of, a mat of clumps lying on the slope
 B[2]=function(T,st,lv){const S=SP[2],n=lv===2?ri(9,16):ri(4,6);

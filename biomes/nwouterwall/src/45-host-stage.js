@@ -23,11 +23,11 @@ const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: t
 const BASE=NW_REGION.site.base,ATM=NW_REGION.site.atm;
 // THE SEASON (the owner, 2026-10-26: the page opens in autumn; a selector switches to spring melt and summer). ?season= or #season=;
 // the selector reloads the page with it (the season is a build input: the larch's colour, the snow, the aufeis, the flowers)
-const SEASONS=['autumn','spring','summer'];
+const SEASONS=['autumn','winter','spring','summer'];
 const SEASON=(()=>{const m=/[?&#]season=(\w+)/.exec(location.search+location.hash);return m&&SEASONS.indexOf(m[1])>=0?m[1]:'autumn';})();
 // the season's day (the sky model: game start is day 259, the southern spring equinox; the southern summer solstice is year day 350):
 // spring melt in late November, high summer in mid-January, the larch's gold in mid-March
-const SEASON_DAY={spring:61,summer:121,autumn:176}[SEASON];
+const SEASON_DAY={spring:61,summer:121,autumn:176,winter:274}[SEASON];   /* winter: day 274, mid-June, the southern winter's depth */
 // THE CLIMATE at a height (PLAN.md section 1): the model's annual mean at the pixel, lapsing 6.5 °C a km; the coldest month ~13.5 °C
 // under the mean and the warmest ~11 over it (the continental steps: forest-steppe +5 (17/-9), taiga -1 (12/-14)). A shaded slope
 // runs a degree and a half colder, a sunny one as much warmer (aspect, 46). SITE.warm: a station's own correction (the Yeti Valley's

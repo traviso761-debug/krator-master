@@ -19,11 +19,23 @@
 - [x] **The stone pine wore `card.pine`**, a long-needled sprig. Now `card.pine.b`'s radial tuft (cell 1,1), tinted dark: the
       dense bunches of the Siberian stone pine read right from a few metres off. A true five-needle card would be closer still.
       Fixed 2026-10-26 (known issues pass).
-- [ ] **The fur larch's needles read leafy right under a tree.** `card.larch`'s cells are sprigs ~30 cm long; a hero tree's tufts
-      are now 0.42-0.68 m and five to eight a branch (were 0.6-0.95 m, three to five), so the crowns read as needle tufts from a few
-      metres off; the nearest tufts, a metre from the eye, still show the sprig's shape. Smaller still costs instances (station 1
-      draws ~1.1 M). The lichen beards were toned from near-white to grey-green.
-      Partly fixed 2026-10-26 (known issues pass); stays open as a look item.
+- [x] **The fur larch and the stone pine were sparse, their foliage floating off the branches.** The larch's needles now hang
+      from its branches as sprays (`larchspray`, the card's sprig on a hung quad, stem on the wood) every ~0.22 m along the outer
+      four-fifths of 26-32 branches a near tree, alternating sides, 0.5-0.75 m each (a mid tree: 12-15 branches, sprays 0.75 m
+      apart, three times the size); bare in winter. The stone pine is limbs now: 16-22 whorled branch tubes, each carrying seven
+      to ten bunches from its inner fifth to a knot at the tip, cones among them, a dome over the leader. Station 1: ~1.54 M
+      instances, ~11.3 M triangles (was ~1.1 M, ~9.8 M). Fixed 2026-10-26.
+- [x] **The three crops drew goldroot, and the autumn larch drew its green cell.** `KMAT.textures` caches one texture per
+      library sheet, so `BIO.libSwap`'s cell offset for the last slot of a sheet won on every slot of it (`card.crop.thule`:
+      sweetroot, snow potato and goldroot all showed row 3; `card.larch`: gold showed the green row, tinted). The kit now gives
+      each card slot with a cell its own clone, its image copied across when the sheet decodes (`50-biome-nwow-species.js`,
+      after `libSwap`). The snow potato is also sunk to its rosette's foot (`G.tuft(.42)`), so its tuber stays underground.
+      Fixed 2026-10-26.
+- [ ] **core/biome: `BIO.libSwap` shares one texture between the cells of one sheet** (above). Every kit with two slots on one
+      sheet with different cells draws the last cell on both. The kit-side clone here is the workaround; the fix belongs in
+      `core/biome/20-core-kit.js` (`one()`: clone `t` when `L.cell` is set, and copy the image on load), followed by a rebuild of
+      every biome build.
+      Stays open (2026-10-26): a core change, reported to the starting session.
 - [ ] **Leng is a placeholder massing** (the owner: "a far silhouette"): a stepped ruin of boxes at the model's bearing and distance
       from station 1, its size a guess, no snow on it (it read as a cake). Tagged `placeholder`.
       Stays open (2026-10-26): until Leng has its own plan and build.

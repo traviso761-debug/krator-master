@@ -132,21 +132,43 @@ LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrappin
 const TINT={
  autumn:{steppe:0xc4b494,needles:0xa48a66,gravel:0xb0aaa0,turf:0xa09078,cladonia:0xd0d2c4,sphagnum:0x9a6e56,lichen:0xb0ac9c},
  summer:{steppe:0xa8b078,needles:0x9a8466,gravel:0xb4aca0,turf:0x8e9466,cladonia:0xdcdcd0,sphagnum:0x8a9a52,lichen:0xb4ae9c},
+ winter:{steppe:0xb8ae98,needles:0x7a6a58,gravel:0xa4a09a,turf:0x8a8070,cladonia:0xc8cac0,sphagnum:0x7a5a46,lichen:0xa4a29a},
  spring:{steppe:0xb0a688,needles:0x8e7a62,gravel:0xa8a49c,turf:0x8a8064,cladonia:0xd4d4c8,sphagnum:0x8a6a4a,lichen:0xa8a494}}[SEASON];
 
 // ---------------------------------------------------------------- the ground material (one shader for the near and the mid ground)
+// THE DITHER (the owner, 2026-10-26: "textures of ground need dithering"; the technique is Korona's ground, biomes/korona/src/
+// 47-host-land.js): each layer's map is read through a HEX-CELL BOMB, the plane cut into triangles a couple of tiles across, each
+// corner turning and shifting the tile by its own hash, a point blending its three corners' reads (weights cubed, so most of a
+// cell is one read: no ghosting), so no repeat can line up; done at the map's scale and at a third of it, mixed by a value noise.
+// The LAYERS' EDGES are dithered too: each layer's weight is pushed through a noise threshold (ndith), so a larch litter meets the
+// steppe in ragged drifts, not a smooth gradient. A coarse mottle (48 m and 140 m) gives the ground its own light and dark. A layer
+// whose weight is nil is not read at all. GLSL ES 1.0 (three r128); the hash is Hoskins' fract hash, not a sine.
+const GROUND_DITHER=[
+ 'vec2 nh2(vec2 p){vec3 q=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));q+=dot(q,q.yzx+33.33);return fract((q.xx+q.yz)*q.zy);}',
+ 'float nvn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(nh2(i).x,nh2(i+vec2(1.0,0.0)).x,f.x),mix(nh2(i+vec2(0.0,1.0)).x,nh2(i+vec2(1.0,1.0)).x,f.x),f.y);}',
+ 'float nfbm(vec2 p){return 0.6*nvn(p)+0.3*nvn(p*2.3+7.1)+0.1*nvn(p*5.1+3.7);}',
+ 'vec4 nsamp(sampler2D m,vec2 p,vec2 v,float sd){vec2 h=nh2(v*0.37+sd);float a=(h.x-0.5)*6.2831853,ca=cos(a),sa=sin(a);return texture2D(m,vec2(ca*p.x-sa*p.y,sa*p.x+ca*p.y)+h*13.0);}',
+ 'vec4 nbomb(sampler2D m,vec2 p,float cell,float sd){vec2 st=p/cell;vec2 sk=vec2(st.x-st.y*0.57735027,st.y*1.1547005);vec2 b=floor(sk),f=fract(sk);vec2 v1,v2,v3;vec3 w;',
+ ' if(f.x+f.y<1.0){v1=b;v2=b+vec2(1.0,0.0);v3=b+vec2(0.0,1.0);w=vec3(1.0-f.x-f.y,f.x,f.y);}else{v1=b+vec2(1.0,1.0);v2=b+vec2(1.0,0.0);v3=b+vec2(0.0,1.0);w=vec3(f.x+f.y-1.0,1.0-f.y,1.0-f.x);}',
+ ' w=w*w*w;w/=(w.x+w.y+w.z);return nsamp(m,p,v1,sd)*w.x+nsamp(m,p,v2,sd)*w.y+nsamp(m,p,v3,sd)*w.z;}',
+ 'vec3 ndither(sampler2D m,vec2 p){vec4 a=nbomb(m,p,1.9,0.0);vec4 b=nbomb(m,p*0.33+vec2(2.3,5.1),1.4,7.0);float n=nfbm(p*0.055+vec2(1.7,9.2));return mix(a,b,0.2+0.6*smoothstep(0.3,0.7,n)).rgb;}',
+ 'float nedge(float w,vec2 x,float sd){if(w<=0.001)return 0.0;if(w>=0.999)return 1.0;float n=0.55*nfbm(x*0.35+sd)+0.45*nfbm(x*1.7+sd*3.1);return smoothstep(n-0.12,n+0.12,w);}',
+ ''].join('\n');
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 {const U={},Ls=LAYERS.map(layer);LAYERS.forEach((k,i)=>U['uL'+i]={value:Ls[i].map});
  const T=Object.values(TINT).map(h=>{const c=new THREE.Color(h).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';});
- const tex=i=>'pow(texture2D(uL'+i+',p/'+Ls[i].s.toFixed(2)+').rgb,vec3(2.2))*'+(Ls[i].lib?'1.0':'0.75')+'*'+T[i];
+ const tex=i=>'pow(ndither(uL'+i+',p/'+Ls[i].s.toFixed(2)+'),vec3(2.2))*'+(Ls[i].lib?'1.0':'0.75')+'*'+T[i];
+ // a layer over the colour so far: its weight dithered at its edge, its map read only where it shows
+ const over=(i,w,sd)=>'{float k=nedge('+w+',p,'+sd.toFixed(1)+');if(k>0.0)c=mix(c,'+tex(i)+',k);}';
  MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D '+LAYERS.map((k,i)=>'uL'+i).join(',')+';varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D '+LAYERS.map((k,i)=>'uL'+i).join(',')+';varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;\n'+GROUND_DITHER)
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;vec3 c='+tex(0)+';',
-    'c=mix(c,'+tex(1)+',vW.x);c=mix(c,'+tex(3)+',vW.z);c=mix(c,'+tex(4)+',vW.w);c=mix(c,'+tex(5)+',vW2.x);c=mix(c,'+tex(6)+',vW2.y);c=mix(c,'+tex(2)+',vW.y);',
+    over(1,'vW.x',1.3),over(3,'vW.z',2.9),over(4,'vW.w',4.1),over(5,'vW2.x',5.7),over(6,'vW2.y',6.3),over(2,'vW.y',8.9),
+    'float mv=nfbm(p*0.021+vec2(4.2,1.3)),mh=nfbm(p*0.0072+vec2(9.1,3.3));c*=(0.82+0.36*mv)*mix(vec3(0.95,0.93,0.9),vec3(1.04,1.03,0.98),mh);',
     'diffuseColor.rgb*=c*vW2.z*1.25;}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground';}
+ MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground-dither';}
 // the weights at a point: [needles, gravel, turf, cladonia], [sphagnum, lichen, shade, 0]
 function groundW(F,x,z){const shade=NWOW.shadeOf(F),warm=F.mean+NWOW.AMP.warm,hi=smooth(8.5,6.5,warm),fell=smooth(4,1.5,warm);
  const larch=Math.max(smooth(.06,.32,shade),smooth(10.6,9.6,warm)*smooth(-.6,-.2,shade))*(1-hi)*(F.floor?.2:1);

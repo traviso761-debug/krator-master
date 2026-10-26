@@ -14,7 +14,7 @@ const SITE={
   {x:-760,z:640,r:240,depth:7,lake:.45},{x:1150,z:120,r:200,depth:6,lake:0}],
  pingo:{x:360,z:440,r:95,h:38},
  gifts:[],landforms:['alas','pingo'],aspectCheck:false,larch:.24,
- snow:{autumn:[60,420],spring:[-2000,-1900],summer:[1400,2200]},
+ snow:{autumn:[60,420],winter:[-2000,-1900],spring:[-2000,-1900],summer:[1400,2200]},
  spine:[[0,0],[-420,-180],[360,440],[520,-520]],
  eye:30,
  views:V=>({

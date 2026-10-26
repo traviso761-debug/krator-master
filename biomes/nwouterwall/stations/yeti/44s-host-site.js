@@ -16,8 +16,8 @@ const SITE={
  beds:{c:[-40,-150],len:220,wid:70,ang:.55},pockets:{c:[-420,-120],rad:160,n:22},
  tors:{n:12,seed:4741,ring:[700,2400],maxG:.45,accept:(x,z)=>siteSpurK(x,z)>.18},
  gifts:['sweetroot','snowpotato','goldroot'],landforms:['rockglacier'],aspectCheck:false,larch:.16,
- lakeIce:{spring:true},
- snow:{autumn:[1150,1550],spring:[-2000,-1900],summer:[1500,2300],frozen:true},
+ lakeIce:{winter:true,spring:true},
+ snow:{autumn:[1150,1550],winter:[-2000,-1900],spring:[-2000,-1900],summer:[1500,2300],frozen:true},
  spine:[[0,0],[-40,-150],[296,326],[-1300,-850],[-2000,-1300]],
  eye:30,
  views:V=>({
@@ -52,5 +52,5 @@ SITE.frost=c=>({
  rockGlaciers:[{id:'rockglacier.spur',a:[-1650,-1150],b:[-950,-420],w:150,h:28,ridge:24}],
  lobes:{cell:30,h:1.2,where:(x,z)=>{const k=siteSpurK(x,z);return k>.05&&k<.85?1:0;}},
  polygons:{cell:15,trough:.4,rim:.09,width:.17,where:(x,z)=>{const G=c.grade(x,z);return smooth(.06,.02,G.g)*smooth(-1.4,-2.4,c.meanAt(x,z));}},
- aufeis:c.stream.length?[{id:'aufeis.channel',pts:c.stream,w:22,thick:1.6,seg:[120,300],gap:[160,420],cover:{spring:.9,summer:0,autumn:0}[SEASON]}]:[],
+ aufeis:c.stream.length?[{id:'aufeis.channel',pts:c.stream,w:22,thick:1.6,seg:[120,300],gap:[160,420],cover:{winter:.7,spring:.9,summer:0,autumn:0}[SEASON]}]:[],
  alases:[],pingos:[]});

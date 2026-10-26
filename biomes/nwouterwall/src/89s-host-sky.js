@@ -14,14 +14,14 @@ const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:n
 const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:10;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
 // the far land's colours (display RGB): the season's snow line (absolute metres), the tree line (the larch's top: a mean of -3.5 °C)
-const SNOWLINE={autumn:5600,spring:5150,summer:6700}[SEASON],TREELINE=BASE+(NW_REGION.site.mean+(SITE.warm||0)+3.5)/6.5*1000;
-const RIDGE_FOREST={autumn:[.55,.42,.20],spring:[.30,.32,.22],summer:[.24,.30,.18]}[SEASON];
+const SNOWLINE={autumn:5600,winter:3800,spring:5150,summer:6700}[SEASON],TREELINE=BASE+(NW_REGION.site.mean+(SITE.warm||0)+3.5)/6.5*1000;
+const RIDGE_FOREST={winter:[.36,.33,.28],autumn:[.55,.42,.20],spring:[.30,.32,.22],summer:[.24,.30,.18]}[SEASON];
 const SKY_RIDGES=NW_REGION.ridges.slice().reverse().map((b,i)=>({profile:b.profile.slice(),dist:b.dist,
  snowH:SNOWLINE-(BASE+NW_REGION.eye),forestH:TREELINE-(BASE+NW_REGION.eye),haze:1,rock:[.50,.45,.36],forest:RIDGE_FOREST,snow:[.92,.94,.97]}));
 // the weather's light and air for the sky (core/atmos's weather, bound in 89a): cloud and grey with the rain and the snow, fog
 const SKY_WEATHER=()=>{const W=ATMOS.W;if(!W)return null;const r=W.rain||0,s=W.snow||0,f=W.fog||0;return {cover:Math.min(1,r*.6+s*.75+f*.2),grey:Math.min(1,r*.8+s*.85),fog:Math.min(1,f+s*.7)};};
 const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:NW_REGION.site.px,py:NW_REGION.site.py},air:{pressure:ATM,humidity:.25,turbidity:.7},
- clouds:{cover:SEASON==='summer'?.35:.25},fogDensity:.000045,ridges:SKY_RIDGES}),
+ clouds:{cover:SEASON==='summer'?.35:SEASON==='winter'?.4:.25},fogDensity:.000045,ridges:SKY_RIDGES}),
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true,weather:SKY_WEATHER});
 // the fill light keeps its share of the day and goes out at night (the giantshine light takes the night)
 const SKY_FILL=fill.intensity;

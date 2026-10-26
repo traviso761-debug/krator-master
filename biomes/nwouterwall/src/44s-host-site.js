@@ -23,7 +23,7 @@ const SITE={
  tors:{n:9,seed:4711,ring:[600,1900],accept:(x,z)=>Math.abs(z-SITE.valley.zc(x))>SITE.valley.floor+SITE.valley.wallS*.85},
  // the snow's line by season (page metres: 89a): autumn's first snow on the ranges' tops round the plateau, spring's last patches
  // everywhere, summer's on the far peaks only
- snow:{autumn:[380,900],spring:[-2000,-1900],summer:[1600,2400]},
+ snow:{autumn:[380,900],winter:[-2000,-1900],spring:[-2000,-1900],summer:[1600,2400]},
  // the LOD spine: the middle, the beds, the burn, the pockets
  spine:[[0,0],[260,150],[-650,-560],[-260,520]],
  eye:30,
@@ -71,7 +71,7 @@ function siteFloor(x,z){const V=SITE.valley,ad=Math.abs(z-V.zc(x));return smooth
 // cold hollows, the shaded floor), SOLIFLUCTION LOBES creeping down the shaded north wall (it holds its snow and its permafrost).
 // c: {stream:[[x,z]...], grade(x,z) -> {g, sunny}, meanAt(x,z) -> °C} from the stage (47)
 SITE.frost=c=>({
- aufeis:[{id:'aufeis.valley',pts:c.stream,w:44,thick:2.4,seg:[220,560],gap:[140,420],cover:{spring:1,summer:.26,autumn:.14}[SEASON]}],
+ aufeis:[{id:'aufeis.valley',pts:c.stream,w:44,thick:2.4,seg:[220,560],gap:[140,420],cover:{winter:.8,spring:1,summer:.26,autumn:.14}[SEASON]}],
  polygons:{cell:14,trough:.32,rim:.07,width:.17,where:(x,z)=>{const G=c.grade(x,z);return smooth(.07,.025,G.g)*smooth(-.8,-2.2,c.meanAt(x,z));}},
  lobes:{cell:30,h:1.3,where:(x,z)=>{const V=SITE.valley,d=z-V.zc(x);return d<-V.floor-40&&d>-V.floor-V.wallN*.95?1:0;}},
  alases:[],pingos:[],rockGlaciers:[]});
