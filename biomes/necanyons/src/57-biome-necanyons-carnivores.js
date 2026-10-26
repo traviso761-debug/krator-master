@@ -14,6 +14,9 @@ const PAL=NECANYONS.PAL,C=NECANYONS.C,P=NECANYONS.PLANTS,TRAPS=NECANYONS.TRAPS,K
 const {bright,vary}=BIO.col;
 const col=(slot,set,k)=>NECANYONS.libCol(slot,bright(vary(pick(set),.03,.08,.06),k==null?1.2:k));
 const NAMES=[];NECANYONS.TRAPPED=[];
+/* LURES: each hero pitcher whose trap lures by light (the monkeycup's rim), {key, lure, x, y (its mouth), z, w}: a record
+   only, nothing drawn; a night host lights them (89g-host-nightlife.js: core/atmos glow cards) */
+NECANYONS.LURES=[];
 // a hero patch: a core/tags flora record carrying its trap (and its name for the inspector)
 function reg(key,x,y,z,r,h,zone,id){const o={name:P[key].name,key,kind:'flora',x,y,z,r,h,tags:{trap:TRAPS[key],zone}};BIO.register(o);
  NAMES.push({name:P[key].name,plant:key,x,y,z,r,h});NECANYONS.TRAPPED.push({id,key,x,y,z,r,zone,trap:TRAPS[key]});}
@@ -52,12 +55,13 @@ function vine(B,a,y0,Hc,cups,lv,st){const pts=[];let y=y0;
  pts.forEach((p,i)=>{if(i%2===0||lv<2){const ox=Math.cos(a)*.35,oz=Math.sin(a)*.35;
    BIO.put('vine',[p.x+ox,p.y,p.z+oz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.7,1.1),NECANYONS.libCol('vine',bright(pick(PAL.vine),1.2)),{n:[Math.cos(a),.6,Math.sin(a)]});}
   if(cups&&i>0&&lv===2){const t=(p.y-y0)/Hc,it=t<.35?'cupLow':rng()<.75?'cupUp':'cupWine',w=it==='cupLow'?rr(.3,.45):rr(.22,.32);
-   BIO.put(it,[p.x+Math.cos(a)*.45,p.y-.1,p.z+Math.sin(a)*.45],qEuler(0,rr(0,TAU),0),[w,w*1.4,w],NECANYONS.libCol('cup',pick(PAL.cup)));st.pitchers++;}});
+   BIO.put(it,[p.x+Math.cos(a)*.45,p.y-.1,p.z+Math.sin(a)*.45],qEuler(0,rr(0,TAU),0),[w,w*1.4,w],NECANYONS.libCol('cup',pick(PAL.cup)));st.pitchers++;
+   NECANYONS.LURES.push({key:'monkeycup',lure:'glow',x:p.x+Math.cos(a)*.45,y:p.y-.1+w*1.3,z:p.z+Math.sin(a)*.45,w});}});
  st.vines++;return pts[0];}
 
 // ---------------------------------------------------------------- the passes
 NECANYONS.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),st={rimdew:0,sunpitcher:0,clapjaw:0,traps:0,turncoat:0,yellowtube:0,pitchers:0,vines:0,vineTris:0,curtains:0,wort:0,seeps:0};
- NAMES.length=0;NECANYONS.TRAPPED.length=0;
+ NAMES.length=0;NECANYONS.TRAPPED.length=0;NECANYONS.LURES.length=0;
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.hero?2:d<L.mid?1:0;};
  // THE SEEP LINES: curtains from the lip, plants on the ledge between the lip and the cap's foot
  NECANYONS.SEEPS.forEach((s,i)=>{const lv=lvOf(s.x,s.z);if(lv===0)return;reseed(KRAND.hash(SEED,1,i));
