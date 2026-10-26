@@ -98,13 +98,13 @@ SHIGH.HARVEST={
  trumpet:HV('poles',['trumpet water'],false,'The funnels hold rain and cloud-drip; a ladder up a stacked trumpet is a well.'),
  volute:HV('timber',['young scroll tips (boiled)'],false,'The tips of the scrolls are cut and boiled like fiddleheads; the old scrolls are left: they are a hundred years in the winding.'),
  crozier:HV('none',['croziers (boiled)','trunk starch (famine)'],true,'The croziers are the season\'s first green food; the hairs are a wound packing.'),
- screwpine:HV('thatch, matting',['fruit (roasted)'],false,'The leaves are plaited into mats, always in the plant\'s own sense of turn.'),
+ screwpine:HV('thatch, matting',['fruit (roasted)'],false,'The leaves are plaited into mats, always in the plant\'s own sense of turn.','generic_fruit_pandan_keys'),
  ruffle:HV('fuel',['leaf hearts'],false,'The ruffled leaves hold water like a sponge.'),
  frill:HV('poles',['bud (boiled)'],true,'Kin to the Rift\'s frill tree. The fins are cut for their sap, a bitter tonic; the pale bud is eaten.'),
  groundsel:HV('none',[],true,'The dead-leaf skirts stuff bedding; the pith is a fever bitter.'),
  lobelia:HV('none',['nectar'],true,'The column stands for years before it flowers once and dies.'),
  aloe:HV('none',[],true,'The gel dresses burns and cracked hands; it is never cut against its spiral.'),
- cereus:HV('none',['fruit'],false,'The small red fruits ripen along the ribs\' turn, lowest first.'),
+ cereus:HV('none',['fruit'],false,'The small red fruits ripen along the ribs\' turn, lowest first.','generic_fruit_cereus'),
 };
 SHIGH.SPECIES.forEach(S=>{S.tags.harvest=SHIGH.HARVEST[S.key]||HV('none');});
 

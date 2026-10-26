@@ -93,15 +93,9 @@ const worldV=m=>{const a=m.geometry.attributes.position,o=[];m.updateMatrixWorld
 // the instanced items only (what the biome roots): a mesh's bounding-box centre is not a plant
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z]);}});return o;};
-// the surface as DRAWN: the ground's own triangles (terrainH holds only at their vertices, 17.8 m apart), or the
-// pond's disc at PL where it covers them. Not the river's ribbon: it faces down, so from above it is culled and
-// the river shows its bed (KNOWN_ISSUES); a foot under the ground is under the ribbon too
-const drawnH=(function(){let P=null,X,Z,nx;const at=(A,v)=>{let lo=0,hi=A.length-2;while(lo<hi){const m=(lo+hi+1)>>1;if(A[m]<=v)lo=m;else hi=m-1;}return lo;};
- return (x,z)=>{if(!P){P=GROUND.geometry.attributes.position.array;nx=1;while(P[nx*3+2]===P[2])nx++;X=[];Z=[];
-   for(let i=0;i<nx;i++)X.push(P[i*3]);for(let j=0;j<P.length/3/nx;j++)Z.push(P[j*nx*3+2]);}
-  const i=at(X,x),j=at(Z,z),u=(x-X[i])/(X[i+1]-X[i]),v=(z-Z[j])/(Z[j+1]-Z[j]),h=(a,b)=>P[((j+b)*nx+i+a)*3+1];   // each cell split on its (i,j+1)-(i+1,j) diagonal (45, GROUND)
-  const g=u+v<=1?h(0,0)+u*(h(1,0)-h(0,0))+v*(h(0,1)-h(0,0)):h(1,1)+(1-u)*(h(0,1)-h(1,1))+(1-v)*(h(1,0)-h(1,1));
-  return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};})();
+// the surface as DRAWN: the ground's own triangles (GROUND.userData.hAt, 45: terrainH holds only at their vertices),
+// or the pond's surface at PL where it covers them. Not the river's water: a foot under the ground is under the river too
+const drawnH=(x,z)=>{const g=GROUND.userData.hAt(x,z);return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};
 // the twist-candles' far spires, laid out for every clump (SEDESERT.spiresOf: this spine keeps all of them heroes)
 const candleSpires=()=>{const sp=SEDESERT.SPECIES.indexOf(SEDESERT.byKey.candle);return SEDESERT.TREES.filter(T=>T.sp===sp).flatMap(T=>SEDESERT.spiresOf(T));};
 // species that yield something edible the kit does not draw as a catalog fruit (the cardon's fruit, the agave's heart,
@@ -158,11 +152,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // (KratorFauna.build) and registered as a core/tags life record; they idle and graze by KratorFauna.animate on the host's
 // motion time. Ground brushes: each stroke writes the terrain field (core/terrain/31-core-field-brush.js) and the ground's
 // lattice is lifted where it reached; an undo, a move or a removal replays the strokes left from the field as baked. What
-// stands on the ground (the biome's plants and rocks, the river, the cataract) is not re-seated by a stroke (KNOWN_ISSUES.md).
+// stands on the ground: the biome's plants, rocks and dress are re-seated (2026-10-25: SEDESERT.seat before the field is
+// written, SEDESERT.reseat after, 65-biome-sedesert-dress.js); the river, the cataract and the cave are not (KNOWN_ISSUES.md).
+const sdBox=st=>{const r=st.r*1.1+2;return[st.x-r,st.z-r,st.x+r,st.z+r];};
 const SD_SNAP=KFIELD.snapshot(TFIELD),SD_STROKES=[],SD_LIVE={};
 function sdGround(box){const g=GROUND.geometry,P=g.attributes.position,n=P.count,pad=box?GRID.cs:0;let moved=0;
  for(let k=0;k<n;k++){const x=P.getX(k),z=P.getZ(k);if(box&&(x<box[0]-pad||x>box[2]+pad||z<box[1]-pad||z>box[3]+pad))continue;const y=terrainH(x,z);if(y!==P.getY(k)){P.setY(k,y);moved++;}}
  if(moved){P.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere();}
+ SEDESERT.reseat(box);
  for(const id in SD_LIVE){const L=SD_LIVE[id],r=KTAGS.page.get(id);if(!r)continue;if(!box||(r.at[0]>=box[0]-pad&&r.at[0]<=box[2]+pad&&r.at[2]>=box[1]-pad&&r.at[2]<=box[3]+pad)){r.at[1]=terrainH(r.at[0],r.at[2]);L.g.position.y=r.at[1];}}
  return moved;}
 function sdReplay(){KFIELD.replay(TFIELD,SD_SNAP,SD_STROKES.map(r=>r.stroke));sdGround(null);}
@@ -173,7 +170,7 @@ const SD_WORLD={
  find:(t,tol)=>KEDITS.match(t,KTAGS.page.records.filter(r=>!r.removed&&!r.set),tol),
  add(rec){
   if(rec.kind==='ground'){const r=KTAGS.page.add({'class':'feature',kind:'ground',key:rec.key,name:rec.name||'ground: '+rec.key,at:rec.at,r:rec.r,h:.5,note:'strength '+rec.strength,frag:'99-host-take.js (edit)'});
-   r.stroke=KFIELD.strokeOf(rec);SD_STROKES.push(r);const box=KFIELD.stroke(TFIELD,r.stroke);if(box)sdGround(box);return r;}
+   r.stroke=KFIELD.strokeOf(rec);SD_STROKES.push(r);SEDESERT.seat(sdBox(r.stroke));const box=KFIELD.stroke(TFIELD,r.stroke);if(box)sdGround(box);return r;}
   if(rec['class']==='life'){const E=KratorFauna.entry(rec.key);if(!E)return null;const y=terrainH(rec.at[0],rec.at[2]);
    const g=KratorFauna.build(rec.key,{variant:0,seed:1+(Math.abs(Math.round(rec.at[0]*7+rec.at[2]*13))%997)});g.position.set(rec.at[0],y,rec.at[2]);g.rotation.y=rec.ry||0;
    g.traverse(q=>{q.castShadow=true;});g.userData.inspectLabel=E.name;scene.add(g);
@@ -181,7 +178,7 @@ const SD_WORLD={
     tags:{diet:E.tags.diet||null,biome:(E.tags.biomes||[]).indexOf('sedesert')>=0?'sedesert':null},frag:'99-host-take.js (edit)'});
    SD_LIVE[r.id]={g,phase:(r.at[0]*.37+r.at[2]*.11)%6.283};return r;}
   return null;},
- move(h,at,ry){if(h.kind==='ground'&&h.stroke){h.at=at.slice();h.stroke.x=at[0];h.stroke.z=at[2];sdReplay();return;}
+ move(h,at,ry){if(h.kind==='ground'&&h.stroke){h.at=at.slice();h.stroke.x=at[0];h.stroke.z=at[2];SEDESERT.seat(sdBox(h.stroke));sdReplay();return;}
   const L=SD_LIVE[h.id];if(!L)return;const y=terrainH(at[0],at[2]);h.at=[at[0],y,at[2]];L.g.position.set(at[0],y,at[2]);if(ry!=null){h.ry=ry;L.g.rotation.y=ry;}},
  set(h,path,value){h[path]=value;},
  remove(h){const i=SD_STROKES.indexOf(h);if(i>=0){SD_STROKES.splice(i,1);KTAGS.page.remove(h.id);sdReplay();return;}

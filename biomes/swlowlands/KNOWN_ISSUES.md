@@ -7,6 +7,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/swlowlands.html`. Strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
+      Stays open: a process step for the owner after each pass (publishing needs the owner), not a code fix.
 - [ ] BUDGET. At q=1 the scene HOLDS ~11.6M triangles against a 12M ceiling (9M per pass);
       0.36M of it are the 6.2k heroes' lite stand-ins. Since the runtime LOD (Oct 2026) it
       DRAWS 4.1–8.1M at the 27 preset views (1.3M from afar) in 216–403 draw calls. Before
@@ -17,6 +18,7 @@ Read before changing anything here. `build.py` prints the open count.
       knobs: `DENS` in 55-trees, the per-species cells in the passes, and `quality`
       (`?q=`). The sprawl oak is exempt from `DENS`. `trisBySpecies` in the build report
       lists every species. Drawing knobs: `SWLOW.LOD`, `BIO.LOD.scale`, `BIO.LOD.chunk`.
+      Stays open: a stocking/design trade-off (held 11.6M against 12M), not a bug; re-tuning moves placement.
 - [ ] The runtime LOD costs draw calls: one mesh per item per 1200 m chunk per range (995
       meshes). The 3x3 chunks round the camera are drawn in full whatever the ranges, so a
       range under ~1200 m buys little: the chunk sets the near cost. A host that sets
@@ -25,33 +27,43 @@ Read before changing anything here. `build.py` prints the open count.
       whole: a chunk of heroes becomes stand-ins at once somewhere between 1.2 and 2.9 km.
       This world's haze is thin (FogExp2 .0002, ~6% at 1.2 km), so the switch can be seen
       when flying across the plain.
+      Stays open: the chunk cost is in the shared `BIO.LOD` (core/biome); a smaller chunk is a trade the owner decides.
 - [ ] The zone weights (SWLOW.zones) are thresholds on six fields. A world with
       differently scaled fields will want to retune the `smooth()` bands in 55-trees.
       `tropic` in particular: the rainforest proper starts where it passes ~.7.
+      Stays open: a note for a future host; no defect here.
 - [ ] The two-tone bark's second colour is per BUCKET, not per species: every
       `bk_flay` tree (madrone) shares one underbark green-white, every `bk_furrow` tree
       one lichen. A species that needs its own second colour needs its own bucket
       (one draw call).
+      Stays open: a core/biome bucket design (per bucket, not per species); a new bucket is a design task.
 - [ ] The far impostors are blobs (the hyperjungle's technique, shaped per habit). The
       small species use a 20-triangle blob; from the hills the chaparral reads as lobes.
       The heroes' lite stand-ins (seen past 1.2 km) are coarser still: 20-triangle blobs for
       crowns under 16 m (wider crowns keep the 80-triangle blob), an 8-triangle octahedron
       for the small species.
+      Stays open: a core/biome impostor design task.
 - [ ] The small species' impostors carry no bark (one blob in the leaf colour), so the
       manzanita's ember, the ringbark's copper and the cane palm's lacquer stop at the
       detail ring.
+      Stays open: needs a bark-carrying impostor in core/biome (core change).
 - [ ] The ground mesh shows square brown patches through the bayou's water ('The plain
       from above'): host 45-stage, ground cells standing above the water plane. It predates
       the runtime LOD.
+      Stays open: ground work in host 45-stage (16 m ground cells above the water), not water; it would move the ground the placement reads (checked 2026-10-25: unchanged by the one-surface water).
 - [ ] The river ribbon through the hills has no rapids. The delta has two
       distributaries and no salt-marsh fringe.
+      Stays open: the river now has a rapids band of its own ([.08,.3], 2026-10-25, per flow) but the delta has no salt-marsh fringe; that is new content (a design task).
 - [ ] The Inner and Outer Walls are painted on the sky dome: 5.5° and 8.5° square-on,
       sinking toward NW and SE. Their distance and height are an assumption, not canon.
       A world that draws the walls as geometry does not need them.
+      Stays open: an owner/canon decision (distance and height are assumed).
 - [x] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list. 2026-10-20: the host tower hands three shells ({geos, share}: floor plates 1, iron .6, core walls and rubble .4), so the plates no longer take the moss; one test tower is all the host builds (Girder itself is not changed).
 - [ ] No fauna yet.
+      Stays open: a design task (a fauna kit), out of budget for this pass.
 - [ ] verify.py: under `--assert` a page that never initialised raises in the per-type
       table instead of reporting (inherited). The error panel line above it says why.
+      Stays open: inherited harness behaviour (tools/harness.py is shared, not this biome's).
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): madrone berries, rattlepods, ember tamarind, pillar figs, each a
       catalog piece in `kits/catalog/krator-master-furniture-generic-fruit.js`. Every species carries `tags.harvest` (`SWLOW.HARVEST`,
       `HV()` as nhighlands'), the toyon is tagged in `SWLOW.PLANTS`, `SWLOW.FRUIT_KEYS` lists the four keys; the inspector shows the tag.
@@ -121,3 +133,4 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 
 2026-10-20 (migration phase 3, seas and lakes): `water` is in the profile (`EXPORT_PROFILE` in verify.py) and the page's own water is gone: the one 6.6 km plane (vertex colours by depth and place, ripples in its shader) and the river ribbon. Now `89w-host-water.js`: the inland sea (`SEA_WATER`) and the bayou, the oxbows, the delta and the river's lowland reach (`INLAND_WATER`) are two `WATER.open` surfaces at y=0 on one 8 m bed baked once from terrainH; the first has a shore grid flooded from the middle of the water (the beach laps, the water stops at the shore), a calm swell and 12% of the shared wave field, the bed's tint over sand; the second is flat, bed-less and tea-dark, drawn only over the 16 m cells that hold inland water (ground under 0.4 m, inland of the shore, or the delta's plume within 45 m of a channel and 120 m off the shore). The two masks are complements, so no cell is drawn twice. The river through the hills is a `WATER.flow` (`RIVER`, 45-host-stage: a line down RIVER_T every 24 m at bed + 0.6 m, never climbing downstream, 1.6 x riverW wide, quicker where it falls; `WATER.PRESETS.flow.rapids` is set to [.08, .3] before drawing, the old ribbon had none). Before and after, from the same named cameras (headless SwiftShader): 'The plain from above' 340 calls / 7.23M tris -> 341 / 7.08M; 'Mangrove shore' 259 / 4.75M -> 260 / 4.65M; 'The bayou' 303 / 5.90M -> 304 / 5.78M; 'From afar' 98 / 1.32M -> 99 / 1.15M; 302 of 450 draw calls at the initial camera (301 before); scene triangles unchanged. `BIO.waterH` and `terrainH` are unchanged. What changed in the look: lit and tone-mapped like any standard material, so the tints are written darker than the old unlit colours (the sea's shallow is a third of the way to its mid colour, its deep three quarters of the old deep); the water has a surf line and a sun glint; the tint now steps at the shore and at the plume's edge instead of blending over 90 m and 200 m; the pale sand shoals, the bayou's darker pools and the river's silt colour are one tea-dark colour (core/water's open surface has one tint pair: `core/water/README.md`, 'Open gaps (phase 3...)'); the water is not click-to-inspect any more. the old ground-squares issue ('The ground mesh shows square brown patches', above) is NOT fixed by the clip: those squares are ground-mesh cells (16 m) standing above the surface where the ground, not the water, is the coarse thing, and a shore grid only changes where the water is drawn. Checked on 'The plain from above' (before and after look the same); it needs ground work, which this phase does not do.
 
+2026-10-26 (core/water gap options): merging the bayou into the sea's surface (one WATER.open, a predicate shore seed, the tea-dark colour as a tint field) was tried and REVERTED: on a GPU verify the lily pads (waterH+.04) vanished under the merged surface on 'The bayou'. Not the sea's swell (damp 12 did not help) nor the wave field, and the merged surface sits lower than the level there; cause not found. The page keeps its two surfaces (INLAND_WATER for the bayou and river). The river's rapids band is `drawFlow({rapids:[.08,.3]})` on the flow itself.
