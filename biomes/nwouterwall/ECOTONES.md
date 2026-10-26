@@ -1,6 +1,6 @@
 # nwouterwall: the ecotones with nsemiarid and nwlowlands (a proposal, 2026-10-26)
 
-Nothing here is wired. It proposes which related species cross each border, which way, how far, and how. It is open for the
+**The owner (2026-10-26): leave it as a proposal; the open world's climate envelopes (step 2 below) will carry the crossings. No Wall-foot station.** Nothing here is wired. It proposes which related species cross each border, which way, how far, and how. It is open for the
 owner's decisions at the end.
 
 ## The two borders
