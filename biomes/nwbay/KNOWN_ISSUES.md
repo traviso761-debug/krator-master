@@ -8,75 +8,96 @@ Read before changing anything here. `build.py` prints the open count.
       under a dome, the beds' partings and the waterline notch drawn by `KSTACKS.mesh`, its cliffs dressed by
       `57-biome-nwbay-cliffs.js`), but still solid: no caves, arches or hollow stacks. Ys builds its caves and
       stair-houses into the faces itself (DESIGN §8); the karst field only says where the rock is.
+      Stays open (2026-10-25): a design task (caves, arches); Ys builds its own.
 - [ ] THE DOMES ARE THINNER THAN GUILIN'S. The forest roots on a dome (karst 1: a bed whose wall leans in under steep
       2.75) through the tree passes that read the tops (fan-crowns, tree ferns, palms, figs, scrub), but nwbay has no
       dome skin of packed shrubs as guilin's `57` does, so the upper dome shows soil-coloured rock between the trees.
+      Stays open (2026-10-25): a dome skin of shrubs is new placement (a design task, and it would move the tree passes).
 - [x] THE RIM (closed 2026-10-25): terrainH() over a stack is `KSTACKS.surface`, the drawn rock itself (a dome's walls
       included), so a camera or a plant on the rim stands on what is drawn.
-- [ ] THE RIM: terrainH() inside a footprint is the dome (`domeH`, rho 0..1) and the face
+- [x] THE RIM: terrainH() inside a footprint is the dome (`domeH`, rho 0..1) and the face
       mesh's top ring sits at rho .92, so the last 8 % of a footprint is terrain the mesh does
       not cover (it is the rounded rim, 16 m tall). The host mask is zero there (d > -4 m),
       and the cliff figs root at d < -4 m, so nothing stands on the gap -- but a camera on
       the rim is clamped to a surface that is not drawn.
+      (closed 2026-10-25: a duplicate of the closed THE RIM item above; terrainH() over a stack is `KSTACKS.surface`, the drawn rock, so the camera is no longer clamped to an undrawn surface.)
 - [ ] THE ROOT CURTAINS HANG AT THE FOOTPRINT RADIUS (R0 + 0.4..1.4 m), while the face bellies
       in and out by ~5 % of R0 up its height; on a big stack a curtain can float a few metres
       off the rock at mid-height or clip into a belly. A face-following root needs the host's
       face profile, which the biome cannot see.
+      Stays open (2026-10-25): per-site curtains still hang at the footprint radius; following the KSTACKS wall profile (`KSTACKS.wall`) is a cliff-fig rework beyond an hour.
 - [ ] THE TERRACES' RISERS ARE RAMPS IN THE GROUND: the river is now `WATER.terraces` (core/water ext: a still pool on
       every tread at its level, a fall fitted down every riser, four draw calls for all of them), but the ground mesh's
       strip (3 x 4 m cells) still draws a five-metre riser as a steep grassy chute, so the curtain arcs over a slope,
       not off a drop. The pools are one colour (`drawPools`): the old ribbon's per-pool pale and deep tints are gone.
+      Stays open (2026-10-25): the ground mesh's cell size (3 x 4 m) is the host ground's; a finer riser strip is a design task.
 - [ ] LILY PADS AND LOTUS ARE ONLY ON WATER AT y=0 (the lagoons, the lowland reach): the
       terrace pools' water level is the host's (tread + 1.5 m) and the biome cannot know it,
       so the pools above the delta carry no pads. The lotus trumpets stand on the banks.
+      Stays open (2026-10-25): the terrace pools' level is the host's, which the biome cannot see.
 - [ ] BUDGET. At q=1 the scene is ~9 M triangles (the tree pass ~6 M) against the 10 M
       showcase ceiling; the far strip of the ground mesh (NU 793 x NV 36) and the stacks are
       host geometry. `NWBAY.build({quality:.6})` is the knob.
+      Stays open (2026-10-25): a standing budget note.
 - [ ] The far country is coarse (70 m cells): the Inner Wall is a vertex-coloured ridge and
       the volcano a low-poly cone if a camera is flown out to them. No road, no lava glow.
+      Stays open (2026-10-25): a design task (far-country mesh).
 - [ ] The zone weights (NWBAY.zones) are thresholds on the fields; a world with differently
       scaled fields (Ys's 3.2 km map) will want to retune the smooth() bands in 55-trees,
       the salt rim (260 m here) first.
+      Stays open (2026-10-25): a standing note for hosts with other field scales.
 - [ ] Bark canvases are near-grey and tinted; texMean is measured at run time; the species'
       bark colours are written a stop darker than they read because the sun+hemisphere rig
       doubles them (inherited). The cinder pine's plates are painted mid-grey for the same
       reason and read near-black only through the tint.
+      Stays open (2026-10-25): inherited calibration, not a defect.
 - [ ] The far impostors are the hyperjungle's blob technique: a flame-crown's flush is a second
       red blob, a fig's crown is one blob offset over the edge, a cinder pine a lopsided blob.
+      Stays open (2026-10-25): inherited technique.
 - [ ] `dress()` samples by triangle area (inherited): on a stack most wall samples land on the
       big mid-height faces, few on the ledges; the jetty's deck gets most of its moss.
+      Stays open (2026-10-25): inherited from the core's `dress()`.
 - [ ] The fauna's LOD is all-or-nothing at 1.6 km from the eye (frozen beyond, no thinning);
       the soarers' loops clear the canopy and the stack tops but not a fig's root curtain; the
       glint swarms are Points, so the probe skips them. No herd, no gliders, no cap moths
       (the fungoid canopy and the savannah went with the fork).
+      Stays open (2026-10-25): a design task (fauna LOD).
 - [ ] Verified only under SwiftShader (headless); the iridescent prism-gum leaves, the lotus
       fringe's iridescence and the limestone's vertex colours at grazing angles are untested
       on real hardware.
+      Stays open (2026-10-25): needs a real-hardware visual check by the owner; the GPU verify passes but does not judge looks.
 - [ ] THE TSINGY'S CANYONS ARE GAPS, NOT CUTS. The ground mesh (11 m cells) cannot draw a 2-7 m
       canyon, so the canyon floors are the massif's plateau, level with the fissures; Bemaraha's
       canyons are tens of metres deep. A real cut needs its own fine floor strip (as the travertine
       reach has) or the fins standing taller beside a canyon.
+      Stays open (2026-10-25): needs a fine floor strip: a design task.
 - [ ] THE FINS ARE NOT SOLID TO ANYTHING: terrainH is the ground between them (the camera can fly
       through a blade), they are not obstacles (a crown can grow into one; only the foot is kept out,
       by the mask), and they are not dressed (no moss, no figs on the blades; Bemaraha's blades are
       mostly bare, but their tops carry Pachypodium and lichen).
+      Stays open (2026-10-25): a design task (collision and dressing for the fins).
 - [ ] A SINKHOLE'S WALL IS A LATHE like a stack's: no caves, no arches, no overhang beyond the bell;
       a tiankeng's floor trees can push their crowns into the wall (the mask keeps feet 12 m off it).
       The lip hides the ground mesh's cut with a polygon offset; at a grazing angle from far off the
       cut's jagged edge can show through.
+      Stays open (2026-10-25): a design task.
 - [ ] VARIANTS GROW ON FLAT GROUND: the ironbark's surface roots, the pandan's stilt roots and the
       mangrove's prop roots are grown in the nursery on level ground (or in level water) and stamped
       onto the slope as they are, so on a steep site a root floats or sinks a little. The cliff fig's
       curtains are the only per-site part.
+      Stays open (2026-10-25): a design task (per-site roots).
 - [ ] DRAW CALLS: 254 to 273 in the preset views (2026-10-25, after the stacks and the water moved to the core: 245 to
       280 before), of a 300 budget: ~208 baked meshes, ~140 of them variant parts, each one InstancedMesh, plus the
       host's rock, fins and dolines and nine water meshes. Merging a species' variants per material into one geometry
       with per-instance offsets would cut it to ~60, at the cost of the Godot shape (one MultiMesh per variant part).
+      Stays open (2026-10-25): a counted budget, not a defect.
 - [ ] THE MADAGASCARENE FLORA HAS NO IMPOSTOR OF ITS OWN: past the hero range the four species are
       the generic blobs (a column for the spinewand, a flat disc for the avenue baobab). The avenue
       baobabs stand in stands, not in Morondava's lines: there is no road for them to line.
+      Stays open (2026-10-25): impostors are a design task.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of `dist/nwbay.html`;
       `publish.py` strips the page wrapper 00-head.html carries.
+      Stays open (2026-10-25): a process step for the main session.
 
 ## Done
 

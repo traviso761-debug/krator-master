@@ -13,7 +13,8 @@ ATMOS.init({THREE,scene,camera,hour:()=>LIGHT_MODE==='night'?0:13,onFrame:fn=>TI
 const SKY_ENV=new THREE.Scene(),SEA_ENV={environment:null};
 {SKY_ENV.add(new THREE.Mesh(sky.geometry,sky.material));for(const m of[giant,giantRing]){const c=m.clone();c.position.copy(giantDir).multiplyScalar(GIANT_DIST);SKY_ENV.add(c);}}
 ATMOS.skylight({renderer,sky:SKY_ENV,scene:SEA_ENV,ground:()=>new THREE.Color(0x0d2c30),key:()=>LIGHT_MODE});
-// THE BED the water reads: the lagoon and the reef flat as 1.6 m deep at least (core/water laps a white surf wherever it
+// THE BED the water reads (kept on 2026-10-25: the true bed with the lap off or narrowed was tried, and the swell, shoaling over
+// the true shallows, rose over the sand bars and the mangal's mud): the lagoon and the reef flat as 1.6 m deep at least (core/water laps a white surf wherever it
 // is under 1.4 m: over a whole lagoon that was a white sheet); the beaches' and the mud's own depth near the shore
 const SEA_BED=(x,z)=>{const h=terrainH(x,z),sd=coastD(x,z);return sd<-14&&reefD(x,z)>-80?Math.min(h,-1.6):h;};
 // THE SHORE (core/water Phase 2/3, 2026-10-20): the bed is a shore grid, baked from the same SEA_BED over the terrain box (cell 6 m) and flooded from the open
@@ -28,10 +29,8 @@ const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2
  shallow:new THREE.Color(.2,.5,.46).convertSRGBToLinear(),deep:new THREE.Color(.04,.16,.22).convertSRGBToLinear()});
 SEA_DRAW.mesh.userData.inspectLabel='The Ring Sea';
 // the tide and brine pools (POOL_STILLS, 84): WATER.still discs at their own levels, the old colours and opacities (the tide pools' .55 teal, the brine's .7 pink), the sky in them
-const POOL_DRAWS=POOL_STILLS.map((S,i)=>{const br=i>=POOLS.length,d=WATER.drawStill(S,{color:br?0xc8a8a0:0x4a7a78,opacity:br?.7:.55,roughness:.2,metalness:.05,envMapIntensity:.18,renderOrder:2});
+const POOL_DRAWS=POOL_STILLS.map((S,i)=>{const br=i>=POOLS.length,d=WATER.drawStill(S,{color:br?0xc8a8a0:0x4a7a78,opacity:br?.7:.55,roughness:.2,metalness:.05,envMapIntensity:.18,renderOrder:2,pick:true});
  d.mesh.userData.inspectLabel=br?'A brine pool (pink with its algae: the salt works\' first pans)':'A tide pool';return d;});
-// core/water's meshes take no ray and no probe sample: each pool keeps an invisible flat disc for the inspector's click
-{const PK=new THREE.MeshBasicMaterial({visible:false});POOLS.concat(BRINE).forEach((P,i)=>{const g=new THREE.CircleGeometry(P.r*1.02,12).rotateX(-Math.PI/2);g.translate(P.x,P.level,P.z);
-  const m=new THREE.Mesh(g,PK);m.userData.probeSkip=true;m.userData.inspectLabel=i<POOLS.length?'A tide pool':'A brine pool';scene.add(m);});}
+// each pool takes a ray and a probe sample of its own (pick: true; 2026-10-25, in place of an invisible flat disc a pool)
 _onLight.push(m=>{POOL_DRAWS.forEach((d,i)=>{const br=i>=POOLS.length;d.material.color.setHex(m==='night'?(br?0x2a2222:0x0c1a1a):(br?0xc8a8a0:0x4a7a78));});});
 _mark('sea');

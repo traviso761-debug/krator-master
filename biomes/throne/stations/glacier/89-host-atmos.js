@@ -18,5 +18,9 @@ ATMOS.weather({mode:'clear',snow:true,apply:W=>{const s=W.snow||0,fg=W.fog||0,ni
  scene.fog.density=.00018+.0012*s+.0085*s*s*s+.0032*fg*fg+.0006*W.rain;   // snowfall a soft haze; the blizzard a white-out (~150 m)
  sun.intensity=WXB.sunI*(1-.45*s-.4*s*s)*(1-.5*fg)*(1-.3*W.rain);hemi.intensity=WXB.hemiI*(1+.1*s)*(1-.1*fg);
  SKYVEIL.material.color.copy(_wf);SKYVEIL.material.opacity=clamp(smooth(.3,.95,s)+.7*fg,0,1);}});
+// SNOW THAT LIES (core/atmos/fx/89-atmos-fx-snowcover.js, 2026-10-25): fresh snow builds on every up-facing surface while it snows
+// (a blizzard covers the moraines, the rock and the trees' tops in about seven minutes) and stays: the glacier's air is
+// frozen, so it does not melt by day. The painted accumulation zone stays the ground's own. window._snowDepth(d) sets it.
+ATMOS.snowCover({frozen:true});ATMOS.snowOnScene(scene);window._snowDepth=d=>{ATMOS.snow.depth=d;};
 ATMOS.finish();
 // the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

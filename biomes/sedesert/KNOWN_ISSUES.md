@@ -13,20 +13,25 @@ Read before changing anything here. `build.py` prints the open count.
       river, the pond, the cataract and the carved cap stay where the page put them (an animal put down in the editor is
       re-seated). Re-seating the biome's instances needs their records' positions re-read from the field (BIO keeps them in
       its baked matrices). The field cache (FC) and the painter read the closure, so the ground's paint does not follow a stroke.
+      Stays open (2026-10-25): needs the instances' records re-read from the field (core/biome); not this kit alone.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/sedesert.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
+      Stays open (2026-10-25): a process step for the main session.
 - [ ] BUDGET. The scene is ~12.1M triangles / ~534k instances at q=1 (baseline.json),
       built in ~5.4 s: 8.3k trees, 6.8k of them heroes along a spine that runs the whole
       river, and ~1.9k animals. The probe's ceilings (12.8M scene, 7.0M per pass) are the
       measured numbers, not a target; the abyss kit ran at 7.4M. `SEDESERT.build({quality:.6})` is the knob.
       The heaviest items: the fork trees' tufts and limbs, the candelabras' columns, the
       spinifex hummocks, the floor's stones.
+      Stays open (2026-10-25): a standing budget note.
 - [ ] The Inner Wall's slope is a sketch: 900 m of ramp with ridges, quiver trees and
       agaves on it, and the wall proper painted on the sky dome. The foothills are meant
       to be their own kit.
+      Stays open (2026-10-25): the foothills are meant to be their own kit (design task).
 - [ ] The zone weights (SEDESERT.zones) are thresholds on the ten fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
+      Stays open (2026-10-25): a standing note for hosts with other field scales.
 - [ ] The river's water is core/water's flow (2026-10-13, `RIVER` in 45, drawn in `89w-host-water.js`): a ribbon
       22 m wide plus 1.5 m a side under the banks along WL(x); the channel is cut 2.6 m below the floor so its edges hide
       under the banks. A world whose channel is wider must widen it (`width`). Where WL(x) rises downstream over the
@@ -34,8 +39,10 @@ Read before changing anything here. `build.py` prints the open count.
       The rapids are the flow shader's (white where the line steepens), not geometry: the line falls 25 to 98 % down
       the mountain gorge (x -3440 to -2540), a cascade, so "The wadi gorge" view reads white almost throughout, even after
       the rapids' foam was toned down (core/water's PRESETS.flow: foam from 1.5 % to 12 % slope, at most 0.6).
+      Stays open (2026-10-25): `waterH` and the `WL(x)` line must stay as they are (the open world reads them).
 - [ ] The cataract's plunge pool is core/water's still water (a polygon at -703 m, the old fan's outline) with the
       Abyss floor's rocks standing out of it, and the fall's churn disc where the curtain lands.
+      Stays open (2026-10-25): a description of the water as built; it follows the core/water fall.
 - [ ] THE GROUND IS A BAKED FIELD (2026-10-08, `core/terrain/30-core-field.js`; GODOT-PLAN.md Phase 2 item 2). At
       load `terrainH0` (the closure, with the cave's recess) is baked once onto a 841 x 841 Float32 grid at 8.905 m
       (half the ground mesh's 17.8 m cell) over the map's 7480 m square, plus a 145 x 133 inset at 1.484 m over the
@@ -58,17 +65,22 @@ Read before changing anything here. `build.py` prints the open count.
       (biomes/WORLD.md, Order 6) moves them onto the field with the cell seeding, once, and drops `placeH`. The page's
       `waterH` is still its closure too (the field's surfaces end on the 8.9 m lattice), and `PL` is read from the
       closure. Not baked: the carve patch (its rock is meshed from `terrainBase`, the closure), land cover.
+      Stays open (2026-10-25): a standing description of the baked field (Godot phase 2).
 - [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
       ledges and soft ones are not recessed (that needs the heightfield's profile to read
       the column), and the Abyss cliff and the mountains still get the painter's coarse bands.
+      Stays open (2026-10-25): a design task (shader relief).
 - [ ] The far impostors are the blob technique (icosahedron crowns on a lathe pole, 100-200
       triangles) for every species but the twist-candles, whose spires follow the hero's habit.
+      Stays open (2026-10-25): inherited technique.
 - [ ] The candelabra's columns are individual instances (40-80 per tree at lv 2): the
       heaviest thing per tree in the kit. A merged column fan per tree would halve it.
+      Stays open (2026-10-25): a performance design task.
 - [x] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list. 2026-10-20: the host tower hands three shells ({geos, share}: floor plates 1, iron .6, core walls and rubble .4), so the plates no longer take the moss; one test tower is all the host builds (Girder itself is not changed).
 - [ ] The fauna is a first pass: the kites glide (no flap), the swifts follow a Lissajous
       swarm rather than a boid flock, the striders' legs are two rods swinging fore and aft,
       and the lizards never move. Nothing reacts to the camera.
+      Stays open (2026-10-25): a design task (animation).
 - [ ] The deer and coyotes (2026-10) are rigid parts on a walker: legs are single tapered segments
       (no knee or hock), the head swings with its neck as one piece, the deer's walk uses the
       trot's diagonal pairs, and nothing avoids anything else (two deer of a herd can cross; a
@@ -76,19 +88,24 @@ Read before changing anything here. `build.py` prints the open count.
       1.6 km from `BIO.eye()` a herd or a loop keeps its last pose (this host binds no eye).
       `BIO.dynamic` (core) sets no `userData.kit`, so 75 sets it on the new meshes; the older
       kinds' meshes still export with kit '' (`BIO.export({kit})` drops them).
+      Stays open (2026-10-25): a design task (animation).
 - [ ] The floor's planters are cumulative-threshold ladders (`t<.22`, `t<.55` ...) rather
       than weighted tables; inserting a plant means re-deriving the thresholds after it.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
       rosette helper the way the fork and column trees do.
+      Stays open (2026-10-25): a design task.
 
 - [ ] TODO (the undercut lip): the ground's refinement is separable, so the 1.5 m columns and
       rows of the lip's window run the width of the whole map (~100k vertices more than the
       ~15k the window needs). A local patch of fine ground, stitched to the coarse grid's edges, would not.
+      Stays open (2026-10-25): needs a local fine-ground patch: a core/terrain task.
 - [ ] TODO: the cave's paint comes from the 19.5 m field cache, which reads the recessed
       heightfield: the cave and the cap's top are painted as Abyss wall (dark brown) rather
       than as the canyon floor above them, and the cave's interior shows no strata.
+      Stays open (2026-10-25): needs the field cache at finer resolution: a core/terrain task.
 - [ ] TODO: `waterH` still reports the river's surface over the cave (canyonU < 1.1, x < RIM+40),
       so the cave floor counts as 63 m under water (it keeps plants off it; nothing else reads it).
+      Stays open (2026-10-25): `waterH` must stay as it is (the open world reads it); the cave floor counting as underwater is its only effect.
 - [x] ~~TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap.~~ 2026-10-13:
       core/water's fall (`CATARACT`): the water leaves the 26 m lip at 10.5 m/s (the sill's riffle: what clears the
       promontory) and arcs, a parabola, 730 m down in 11.9 s, landing ~125 m out and widening 29 m a side; 405
@@ -96,14 +113,18 @@ Read before changing anything here. `build.py` prints the open count.
       open: no spray rises from the cave's floor behind it (the mist is the page's sprites, on the old path's offsets).
 - [ ] TODO: meshing and baking the undercut takes ~0.9 s at load, on the main thread; the finer
       ground's own cost is not measured.
+      Stays open (2026-10-25): depends on the finer-ground task above.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
+      Stays open (2026-10-25): a design task.
 - [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
       the gorge and butte faces may show vertical grain. Not checked here.
+      Stays open (2026-10-25): needs a triplanar ground shader in the core's ground; not checked.
 - [ ] The ground's 17.8 m triangles cut chords across the river's 2.6 m channel: up to ~1.5 m
       off terrainH on the banks. 55 of the 1665 hero candle columns float over the drawn ground
       (up to 0.43 m) and 164 end under it (none over 2 m tall: the mint feet and short side
       columns). The far spires carry a 1.5 m skirt for it. A finer strip of ground along the
       river would fix both (the lip's window shows the cost of doing it by refining the grid).
+      Stays open (2026-10-25): a finer river strip is a design task (the lip's window shows its cost).
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): mesquite pods (`pods`), wadi dates (now their own
       item `dates`, same clump and material as the plumes), desert tunas (`fruit`: orange-red icosahedra on the prickly pear
       pads' upper rims, `PAL.tuna` from the catalog's `fruitTuna`, near and mid bands, hashed so the floor's rng stream is

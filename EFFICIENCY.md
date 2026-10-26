@@ -190,3 +190,11 @@ counts compared volume by volume (the branch `claude/biome-rebuild`, the pages r
 `node core/host/test-probe.js` proves the same on random registries (huge, NaN and negative radii, edge points, a build's
 own `regHas`). Rift's whole `verify.py --assert` went from 312 s to 238 s with this and the 64 px stage sky in
 `check_profile` (the export profile still passes on every biome verified).
+
+## The GPU verify, measured (2026-10-25)
+
+`KRATOR_GL=gpu` (ANGLE D3D11 on the owner's Intel Arc 140T; `python3 tools/harness.py renderer` names it) on the rebuilt pages:
+`verify.py --assert` in full, export profile included, took 25 s on nwbay and 31 s on guilin, against 150 to 310 s for a biome
+verify under SwiftShader (the timing run above). A GPU run beside a SwiftShader one on the same machine ran clean (the 1b
+screenshot compare, 24 views), so the one-browser lock is about SwiftShader's memory, not the GPU. The biome rebuild's agents
+verify on the GPU; CI keeps SwiftShader.

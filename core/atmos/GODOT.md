@@ -166,6 +166,13 @@ hash the same lowbias32 on `uint`, `TIME` for the module clock, `EMISSION` = the
 overturned plates and churned patches) so WorldEnvironment glow blooms them, and the swell and vents in `vertex()`. The host
 eases `erupt` per second, as the Throne caldera's `SUMMIT.eruptStep` does.
 
+## Snow that lies (`fx/89-atmos-fx-snowcover.js`)
+
+The `snowcover` record carries `base`, `line` and `frozen`; `PRESETS.snowcover` the rate, the melt (and its night share),
+the normal's band, the noise and the colours. Godot: the depth is a global shader parameter `atm_snow_depth` stepped by the
+autoload exactly as `ATMOS.snowStep` (from the weather's `snow`, `dt` and the hour); `atmSnow(world position, world normal)`
+is a `.gdshaderinc` every ground, rock and foliage shader includes, mixing the snow's albedo (and roughness) after its own.
+
 ## Rules that keep the module portable
 
 1. **A new effect is a preset plus a record.** Put its numbers in `ATMOS.PRESETS` and have its call `A.rec()` what it

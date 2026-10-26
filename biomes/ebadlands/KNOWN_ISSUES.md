@@ -12,10 +12,13 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
   vents. Both belong in `WORLD.at` for every kit (the handoff's rule), from the scale model: `barren` from the
   classes EF, O, HF (and perhaps a mean below about -20 °C), `geo` from a volcanic/geothermal raster or the
   owner's overlay. The kit needs no change when they arrive; its registry entry then wants a `vent` floor profile.
+      Stays open (2026-10-25): the fields come from the scale model / the world binding (open world), not this kit.
 - [ ] **The world's `cold` stops at -10 °C.** ET and EF are both `cold` 1; the kit separates them only by
   `barren` (above).
+      Stays open (2026-10-25): the world's `cold` field is the open world's (core/world), not this kit.
 - [ ] **`upland` is not used for zoning**: the region's median height is 4.5 km, so the world's `upland`
   (height and relief) is high almost everywhere. Altitude reaches the kit through `cold`.
+      Stays open (2026-10-25): a world-field question for the open world; the kit already reads altitude through `cold`.
 
 ## Hosted by Yuni (2026-10-06)
 
@@ -27,7 +30,9 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
 `EBADLANDS.dress()` hangs Zion's gardens on Yuni's butte.
 - [ ] Yuni has no carved channels, so `canyon`, `bench` and `rimZ` never fire there: the canyon flora of the showcase
   (bench pinyon, rim maples) is absent. A host that bound the valley walls as a canyon would get it.
+      Stays open (2026-10-25): Yuni's binding, not this kit.
 - [ ] Yuni's own ground painter draws its terrain; the kit's bedded-rock shader (`35-core-strata.js`) is not used there.
+      Stays open (2026-10-25): Yuni's host, not this kit.
 
 ## The showcase
 
@@ -71,6 +76,7 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   **brimstone reeds only round the acid pools** (a narrow band at their shores, not across the flats). Either load the
   Throne kit as a second kit on the page (as the Throne's kipuka loads the hyperjungle: `station.json` `kits`) or port
   the reeds' items (`rod` stems in two bands, the `tassel`, `PAL.reedLow/reedHigh/tassel`) into this kit.
+      Stays open (2026-10-25): design task and owner choice (second kit or port of the reeds); needs the `geo` field and a `sulph` binding.
 
 
 ## Export profile: sections left out (2026-10-18)

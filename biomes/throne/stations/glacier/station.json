@@ -10,6 +10,7 @@
   "89-atmos-8-export.js",
   "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
-  "89-atmos-b-skylight.js"
+  "89-atmos-b-skylight.js",
+  "fx/89-atmos-fx-snowcover.js"
  ]
 }

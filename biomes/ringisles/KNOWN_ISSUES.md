@@ -25,9 +25,11 @@ Open items are `- [ ]`; `build.py` counts them.
   SHORE GRID (`shore:{cell:6, band:100, seeds}` over the terrain box, flooded from the box's deep corners; no `maskLand`, the beaches and the reef are `terrainH`'s own heights): the swell
   shoals toward the beaches and the reef, a breaker train runs in along the coast, and the ground takes `WATER.wetGround` (wet sand where the swash reaches). The 18 tide pools and 4 brine
   pools (24-segment `MeshLambertMaterial` discs) are `WATER.still` polygons (`POOL_STILLS`, 84) drawn by `drawStill` with their old colours and opacities (.55 teal, .7 pink), the sky in them,
-  night darker, an invisible disc each for the inspector's click. `build.py` takes core/water 21, 22 and 51 as well. The shore grid and the draw take about 1 s on a real GPU machine
+  night darker, `pick: true` for the inspector's click. `build.py` takes core/water 21, 22 and 51 as well. The shore grid and the draw take about 1 s on a real GPU machine
   (`_t.sea0` to `_t.sea`). `verify.py dist/ringisles.html --assert` passes (default camera 764 calls, 23.85 M triangles, 21.85 M scene of 30 M; the pools are 22 meshes
   as before, so the calls and triangles do not move). Gaps: `core/water/README.md`, "Open gaps (phase 3, Throne frontier/ringisles)".
+
+- [x] **Core/water workarounds (2026-10-25).** The 22 invisible pick discs are `pick: true` on each pool's `drawStill`. Kept on purpose: the lagoon's 1.6 m bed floor and the hand seeds. With the true bed (and the lap off, or held to its last 0.6 m) the swell shoals over the real shallows and rises over the sand bars and the mangal's mud, covering them; `seeds:'edge'` gave the same. A per-surface shoaling limit (or a surf mask) in core/water would let the true bed in.
 
 ## Stand-ins (procedural or a near library set until the owner's texture comes; prompts below)
 
