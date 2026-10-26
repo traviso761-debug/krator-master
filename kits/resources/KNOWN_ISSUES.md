@@ -19,3 +19,8 @@
 - [ ] **Two nodes for the Catch** (the owner, 2026-10-23): **potash** and **alkali salts** (soda and its kin, borates and
       lithium folded in), the Catch's salt field (`biomes/catch/PLAN.md` section 6a). Add them when the Catch kit is built,
       no finer than these two.
+- [ ] **Farside's alkali and lime come from its flora, not a node (2026-10-26):** the kelp kilns burn the land kelp to
+      ash (potash and soda: the same two goods as the Catch's planned potash and alkali-salt nodes, `biomes/catch/PLAN.md`
+      6a), and the lime kilns burn the spray coral to lime. They are crops in `kits/crops` (`kelp-ash`, `coral-lime`), not
+      nodes; when the Catch adds its potash and alkali-salt nodes, a works rule that takes either a node or the crop would
+      let Farside's glassmakers draw on both.

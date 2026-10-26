@@ -61,5 +61,8 @@ CROPS.BIOMES = {
   ringisles:   {atm: 2, atmNote: '?', zones: {wet: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 5], arid: [0, 1]}, lagoon: {warmth: [4, 4], arid: [3, 4], wet: true, salt: true}}},
   /* the Oidong Valley (biomes/oidong): an enclosed high valley, its floor at ~2,000-2,200 m on the scale model (~1.24 atm: standard),
      Cfb with BSk toward the drier west; the floor humid in the east, the flats drier, the terraces cool, the pools fresh */
+  /* Farside (biomes/farside, 2026-10-26): the only ocean shore, the wettest coast on the map (Af/Cfa on the coast, ~3,500 mm, +24 degC;
+     Cfb/Dfb in the fog belt at ~2 km, +14 degC; Csa in the drier lee basins): the strand and the kelp coast salt with the spray */
+  farside:     {atm: 1, zones: {strand: {warmth: [4, 4], arid: [4, 4], wet: true, salt: true}, kelpcoast: {warmth: [3, 4], arid: [4, 4], salt: true}, front: {warmth: [2, 3], arid: [3, 4]}, cloud: {warmth: [1, 2], arid: [4, 4]}, lee: {warmth: [2, 3], arid: [1, 2]}}},
   oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}}
 };

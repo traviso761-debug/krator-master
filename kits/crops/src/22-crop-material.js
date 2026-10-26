@@ -86,3 +86,8 @@ R('moon-cap', 'Moon caps', 'mushroom', [1, 2], [3, 4], {also: ['reagent'], form:
 R('rainbow-bracket', 'Rainbow bracket', 'herb', [1, 2], [3, 4], {form: 'fungus', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'banded shelf fungi on the old trunks: the long-life tea'});
 R('camphor', 'Camphor crystals', 'reagent', [1, 3], [2, 4], {also: ['herb'], form: 'tree', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'steamed out of the camphor laurel\'s wood: the monks\' liniment, a reagent that clears the head'});
 R('cedar-incense', 'Temple-cedar incense', 'fuel', [1, 2], [2, 4], {form: 'tree', src: 'oidong', home: ['oidong'], note: 'cedar shavings burned as incense; the heartwood is the temple timber'});
+/* ---- Farside (biomes/farside, 2026-10-26): the coast's materials from the sea's flora. Kelp ash is the third source of the alkali salts
+   beside the Catch's nodes (biomes/catch/PLAN.md 6a: potash and alkali salts, kits/resources); the State taxes it, with the lime */
+R('kelp-ash', 'Kelp ash (potash and soda)', 'reagent', [3, 4], [3, 4], {homeOnly: true, home: ['farside'], src: 'farside', stores: ['dried'], note: 'the stipes and blades burned in the kelp kilns: potash and soda for the glassmakers and soapmakers, iodine'});
+R('coral-lime', 'Spray-coral lime', 'reagent', [3, 4], [3, 4], {homeOnly: true, home: ['farside'], src: 'farside', note: 'the spray coral burned in the lime kilns on the terraces: mortar and the Farside whitewash'});
+R('eelgrass', 'Strand eelgrass', 'thatch', [2, 4], [3, 4], {also: ['weaving'], needs: 'salt', card: 'card.seagrass', home: ['farside'], src: 'farside', stores: ['dried'], note: 'the dead leaf raked from the windrows: thatch, packing, mattresses'});

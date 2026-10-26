@@ -1,0 +1,416 @@
+{
+ "build": "farside",
+ "note": "Farside's adapter onto the material library (core/materials/PLAN.md), written by gen_materials.py. The kit's slots are FARSIDE.MAT's keys (src/50-biome-farside-species.js, BIO.libSwap); the ground's layers are 47-host-land.js's; the works' 86-host-works.js's. Cards keep their own colour unless a slot says otherwise (wrack, eelgrass and the coral are tinted by the instance). The Farside sets delivered 2026-10-26: bark.kelp.stipe, ground.wrack, organic.sponge, card.wineweed. Run python3 tools/textures/pack.py biomes/farside after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "stipe": {
+   "lib": "bark.kelp.stipe",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "snag": {
+   "lib": "wood.silver",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "blade0": {
+   "lib": "card.kelp.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512
+  },
+  "blade1": {
+   "lib": "card.kelp.3",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512
+  },
+  "blade2": {
+   "lib": "card.kelp.7",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512
+  },
+  "lettuce": {
+   "lib": "card.kelp.1",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512
+  },
+  "wine0": {
+   "lib": "card.wineweed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.01,
+    0.32,
+    0.32
+   ]
+  },
+  "wine1": {
+   "lib": "card.wineweed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.01,
+    0.66,
+    0.32
+   ]
+  },
+  "wrack": {
+   "lib": "card.seaweed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.55
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.01,
+    0.32,
+    0.32
+   ]
+  },
+  "eelgrass": {
+   "lib": "card.seagrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "coral0": {
+   "lib": "card.reef",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.68,
+    0.99,
+    0.99
+   ]
+  },
+  "coral1": {
+   "lib": "card.reef",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "spongecard": {
+   "lib": "card.flora.coral",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.01,
+    0.32,
+    0.32
+   ]
+  },
+  "heap": {
+   "lib": "ground.wrack",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "crust": {
+   "lib": "organic.sponge",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "brain": {
+   "lib": "organic.coral.brain",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.75
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "coralstem": {
+   "lib": "stone.coral",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "shrub": {
+   "lib": "leaf.understorey",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.4,
+   "specular": 0.1,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.damp_beach_sand",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.wrack": {
+   "lib": "ground.wrack",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.coral": {
+   "lib": "stone.coral",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.rock": {
+   "lib": "rock.wet.dark",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "ground.burn": {
+   "lib": "ground.burn",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.turf": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.floor": {
+   "lib": "ground.moss002",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "works.stone": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "works.lime": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "works.wood": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  }
+ }
+}

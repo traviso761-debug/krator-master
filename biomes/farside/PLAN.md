@@ -5,7 +5,29 @@ the traders from over the sea), under the Outer Wall and the Yeti's high country
 strange and different from every other biome, **the sea's plants invading the land**. Everything here is *proposed*
 unless marked.
 
-**Status: plan, awaiting the owner.**
+**Status: building (2026-10-26, branch `claude/farside-biome-71703c`).** The owner answered section 8 on 2026-10-26.
+
+## Core adoption (written before the first fragment, README.md "CORE MODULES ARE NOT OPTIONAL")
+
+| Module | Takes it for |
+|---|---|
+| `core/biome` | the kit itself (`FARSIDE` on the BIOME-API contract): items, buckets, foliage, the runtime LOD, export |
+| `core/rand` (`KRAND`) | every placement: a candidate per cell from `KRAND.cell(seed, ix, iz)`, each plant built from its own `KRAND.hash` seed |
+| `core/tags` | every species, item set and registered volume (`BIO.init({tags:'farside'})`); the works as Eternian furniture records |
+| `core/space` | the keep-clear between plants (`KSPACE`, through the core's obstacle index and the kit's own stand index) |
+| `core/host` | camera, loop, panel, inspector, probe, the polygon tool (`KHOST.take`) |
+| `core/atmos` | the shared sky (`ATMOS.sky` at each station's scale-model pixel), the wave field, the sky light, the weather (`ATMOS.bindWeather`) |
+| `core/water` | the sea (`WATER.open` with a shore grid: shoaling, surf, the wet strand; a tint field for the pale shoals and the weed-brown shallows), the outer sea, the inland stations' streams (`WATER.flow`) |
+| `core/materials` | the library through `materials.json` and `tools/textures/pack.py` (the Farside sets delivered 2026-10-26) |
+| `core/export` | the krator-world export (the biome core fills it) |
+| `core/clock` | through `core/host` |
+| `biomes/nwlowlands` | read in place (its own registry and pack): the native forest at the front and in the fog belt |
+
+Not taken: `core/terrain` (each station's landform is a short closed function of the survey's numbers: the coast, the
+rise, the coral terraces; no stacks, carve or relief field fits it; the surf rocks are knolls in that function),
+`core/mask` (nothing reads a raster: every field is a function), `core/city`, `core/hamlet`, `core/simulation`
+(no settlement here: the owner, works only), `core/furnish` (the works are drawn by the page, tagged; they move to
+the Eternian kit later), `core/lod` and `core/minimap` (no biome takes them yet).
 
 ## 0. What the kit is
 
@@ -87,7 +109,12 @@ the light is fog-grey and green; the air smells of iodine and salt.
 | `fogsponge` | Fog sponge | sponges (no plant does this) | ochre, orange and grey crusts and lumpy towers on bark and rock in the fog belt, drinking the fog through their pores; plant or animal, nobody on Farside is sure | bath sponges, stuffing |
 | `strandanemone` | Strand anemone | sea anemones | low clumps of thick stalks crowned with soft tentacles, rose, green and violet, on the kelp forest's floor; they close at a touch and catch insects | none (they sting) |
 
-Nine of its own; the land's own forest comes from `biomes/nwlowlands`, read in place, at the front and inland of it.
+**Added by the owner's review (2026-10-26, "more species diversity to the kelp forests"):** `oarweed` (*Laminaria*: the understorey's
+fans on a stiff stipe), `boakelp` (*Egregia*: long sprawling straps lined with small blades), `seagrapes` (*Caulerpa*: bead
+runners on the floor, eaten fresh), and the land kelp's third form, the **elk kelp** (*Pelagophycus*: a float and two antler arms
+hung with big blades).
+
+Nine of its own (twelve with the review's three); the land's own forest comes from `biomes/nwlowlands`, read in place, at the front and inland of it.
 
 ### The animals
 
@@ -141,6 +168,17 @@ hides from herds that eat what the sea sends ashore; *proposed*, their kelp-fed 
    octopus for now.
 3. **The Farside people's relation to the coast**: kelp-burners, wrack-farmers, goatherds, lime-burners, nori-makers;
    the Eternal State's view of the traders' invasion.
+
+Answered (the owner, 2026-10-26):
+1. **The species** are built as section 5 names and draws them.
+2. **The lung octopus** gets the new segment-chain builder in `kits/fauna`, later (a fauna session). Until then the
+   animals are placeholders: data records (`FARSIDE.FAUNA`), not drawn.
+3. **The people's works only** on the biome pages: kelp kilns, lime kilns, wrack heaps and carts, walled terraces, goat
+   folds, drying racks; no city massing (Farport and Yith are settlement builds). The works are **tagged as Eternian
+   furniture** (core/tags: class `furniture`, culture `eternian`) and noted in `kits/eternian/KNOWN_ISSUES.md` to be
+   backported into the Eternian kit the next time it is rebuilt.
+4. **The Eternal State's view: a managed harvest.** The State taxes the kelp ash, the lime and the goat meat and keeps
+   the front where it is; the traders' invasion is a resource, not a blight.
 
 Settled (2026-10-23): the invaders came **from over the sea**, on the traders' ships; the front has reached **a steady
 state** under aggressive measures, chiefly **grazing**, a bonanza for the local goats; mudfish and the like have followed

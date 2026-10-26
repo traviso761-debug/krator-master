@@ -30,3 +30,10 @@
 - [ ] **The frontier fort (`et_fort`, 2026-10-22)**: the corner towers and the wall walk are solid (no rooms inside the
       towers; a door from the court on each, no stair up); the keep's three storeys have no stair between them (the
       interiors set does not plan the keep yet). Its gatehouse is the city gate, so the fort carries the gate's colossi.
+- [ ] **Backport Farside's works (the owner, 2026-10-26)** the next time this kit is rebuilt: `biomes/farside/src/86-host-works.js`
+      draws the coast's works as Eternian furniture (core/tags class `furniture`, culture `eternian`, keys `farside_<kind>`,
+      tag `backport: kits/eternian`): the **kelp kiln** (a stone-lined trench, ash, a drying heap, its smoke), the **lime kiln**
+      (whitewashed, a draw-arch, coral rubble), the **wrack heap**, the **wrack cart**, the **walled terraces** (dry-stone
+      walls on the contour), the **goat fold** and the **drying rack** (kelp and wine weed hung as kombu and nori). Simple
+      host geometry on the library's `rock.old_stone_wall`, `plaster.white_stucco_02` and `wood.weathered_brown_planks`;
+      the kit's own trades (`etTrade`, the kilns and racks) should draw them properly, and Farside then places the kit's.
