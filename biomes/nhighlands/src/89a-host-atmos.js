@@ -10,6 +10,13 @@ BIO.bindAtmosWind();BIO.setA2C(renderer);
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): a wet upland (rain, storms, fog); it starts clear, so the
 // page looks as it did until the Weather selector picks one. The shared sky (89-host-sky.js) drives the fog and the light; the
 // binding gives it the weather's look and runs its fog law on the hour's fog (they compose, whichever binds first)
+// WET GROUND AND PUDDLES (R9, core/water 51 WATER.wetGround and WATER.hollows): in the rain the ground darkens and glosses, and the local
+// dips hold puddles ringed by the drops; the mask is baked from terrainH over the map's square (512 x 512 cells of 12.9 m, 256 KB; a 30 m
+// blur finds the hollows, not the valley), none in the stream's bed or the tarn (their own water; the crags are too steep to hold one). Before bindWeather,
+// whose own wetGround call then only fills in its options (it is idempotent)
+const WET_HOLLOWS=WATER.hollows({h:(x,z)=>terrainH(x,z),box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],cell:(TERR.X1-TERR.X0)/512,blur:30,depth:.6,
+ mask:(x,z)=>{if(Math.hypot(x-TARN.x,z-TARN.z)<TARN.r+6)return 0;const r=streamNear(x,z);if(r&&r.d<r.w+3)return 0;return 1;}});
+if(GROUND)WATER.wetGround(GROUND.material,{rain:true,porosity:.8,puddles:WET_HOLLOWS});
 ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:GROUND?[GROUND.material]:[]});
 // HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the page's fog is the air's up to the ground
 // under the eye and thins above it (the crest and the range's snow stand clear of the valley haze); the dawn mist pools in the

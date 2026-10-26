@@ -27,6 +27,11 @@ each hold one range (both pilots at 1200 m) exports as before. The fade's `disca
 materials (bark, boulders) inside faded meshes. A mesh with over three ranges, or with no room for three more attribute
 slots, keeps the hard switch.
 
+**Fixed 2026-10-26 (nhighlands):** the fade's vertex shader read `cameraPosition`, which three r128 uploads only to Phong, Toon,
+Standard, shader and env-mapped materials. Every Lambert leaf and bark read (0,0,0), so with the fade on every chunk more than
+about one range from the map's origin dithered out (nhighlands' stream view drew no near trees or floor). It now takes the eye from
+the view matrix. The two earlier pilots (nwlowlands, swbay) carried the bug in their committed pages until they are rebuilt.
+
 ## Per-instance inspector labels (B5)
 
 `BIO.put(name, pos, q, s, col, {label: 'Black grass'})` gives one instance its own label where it differs from the item's,
@@ -53,6 +58,20 @@ a view; 8 MB of GPU memory a species). The quad turns with the tree's yaw, is li
 lights (read every frame) and fogged by the scene's fog; 2 triangles a tree. The bake builds one tree with the kit's own
 builders after `BIO.bake` (so its random numbers come after every placement), renders it, and leaves no instance, charge,
 registration (the kit mutes its own) or scene object behind.
+
+## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
+
+One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the
+copies each kit carried. Two halves: unit geometries for `BIO.def` (origin at the base, +y up, a vertex colour that is a shade:
+`cap` (dome, disc, funnel; gills, pores or none; optionally on a stem), `bracket`, `bladder`, `pod`, `stalk`, `fringe`, `comb`,
+`tube`, `crust`), and plain-record layouts (`troop`, `shelves`, `pods`, `combs` -> `[{p, q, s, i, u}]`, each item drawn from
+`KRAND.hash(seed, i, salt)`, never from draw order) with `BIO.fung.put(name, recs, col, at)` to place them. Every option is
+`x == null ? d : x`. The header of the fragment lists every option. Test: `node core/biome/test-fungoid.js`.
+
+Adopting it: list `'33-core-fungoid.js'` after `30-core-foliage.js` in `CORE_BIOME` (core/rand must be on the page), then
+`BIO.def(item, BIO.fung.cap({...}), mat, {label})` where the kit built its own. Keep the kit's placement as it was (its
+`rng()` draws), so nothing placed after it moves; a new pass can use the layouts. nhighlands' mushroom and disc stalk are the
+first (2026-10-26: `G.mushroom`, `G.disc` in its `50`); the rest of `TODO.md`'s list follows in the final rebuild.
 
 ## Adopting it
 

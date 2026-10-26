@@ -81,11 +81,11 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
-// a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
-BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
+// a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
+BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
  S.v.set(dx/L,dy/L,dz/L);const q=new T.Quaternion().setFromUnitVectors(S.up,S.v);
- BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
+ BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);};
 
 // ---------------------------------------------------------------- merged buckets
 BIO.C2_BUCKETS=true;   /* B3: a bucket made with opt.c2 stores BIO.c2 (a builder's current second colour; none: 0,0,0) per vertex, baked as aC2 */
@@ -287,7 +287,7 @@ BIO.LODFADE_GLSL={
  vertexDecl:['attribute vec4 aLodA;','attribute vec4 aLodB;','attribute vec4 aLodC;','uniform float uLodS;','uniform float uLodF;','varying vec2 vLodK;'].join('\n'),
  vertexMain:['vLodK = vec2(0.0, 1.0);',
   'if (uLodF > 0.0 && aLodB.w < 0.0) {',
-  ' vec3 _lc = cameraPosition;',
+  ' vec3 _lc = -vec3(dot(viewMatrix[0].xyz, viewMatrix[3].xyz), dot(viewMatrix[1].xyz, viewMatrix[3].xyz), dot(viewMatrix[2].xyz, viewMatrix[3].xyz));',   /* the eye from the view matrix: r128 uploads cameraPosition only to Phong, Toon, Standard, shader and env-mapped materials, so a Lambert leaf read (0,0,0) and every chunk 1.3 km from the origin faded out (nhighlands, 2026-10-26) */
   ' float _ldx = max(max(aLodA.x - _lc.x, 0.0), _lc.x - aLodA.z), _ldz = max(max(aLodA.y - _lc.z, 0.0), _lc.z - aLodA.w);',
   ' float _ldy = max(max(aLodB.x - _lc.y, 0.0), _lc.y - aLodB.y), _ld = length(vec3(_ldx, _ldy, _ldz));',
   '#if __VERSION__ >= 300',

@@ -189,4 +189,7 @@ BIO.init({tags:'nhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wat
   return smooth(1.35,.85,FC.at(FC.a.slope,x,z));},                                                                   // the crag faces stay bare rock
  obstacles:OBSTACLES,ticks:tick,seed:31,register:REGISTER,
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
+// B1/B2 (core/biome README, "Adopting it"): one LOD mesh per chunk, rows sorted by range (lodTick draws the prefix that reaches the
+// camera), small meshes merged up to 1500 triangles, and a dithered cross-fade over the last 15% of each range (no pop at a ring)
+BIO.LOD.merge=new URLSearchParams(location.search).get("lodmerge")!=="0";BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&new URLSearchParams(location.search).get("lodfade")!=="0"?.15:0;
 BIO.setSun(SUN_POS);

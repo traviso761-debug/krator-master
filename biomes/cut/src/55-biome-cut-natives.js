@@ -94,4 +94,23 @@
   if(CUT.drawMelons)Object.assign(st,CUT.drawMelons(P.melons,st));
   if(CUT.drawLichen)Object.assign(st,CUT.drawLichen(P.lichen,st));
   range(null);return st;};
+
+ // ---------------------------------------------------------------- a reed bed outside the field (PLAN.md section 12, exchange 8)
+ // CUT.planReedBed(o): the ring reed where a neighbour reads it in place (nhighlands' tarn and stream, Phragmites in the cold), with
+ // the warp off (s is 0 there): an ordinary bed, its heights continuous, no bands, no stretch. o.box [x0,z0,x1,z1], o.cell (1.8 m),
+ // o.wet(x,z) 0..1 (the shallows and the wet margin: the host's own water), o.ground(x,z), o.h [lo,hi] (1.6-2.8 m: shorter than in the
+ // bowl's dense air), o.q (1) the density. Records as CUT.plan's P.reeds (m the identity), seeded per lattice cell.
+ CUT.planReedBed=function(o){const out=[],cell=o.cell==null?1.8:o.cell,B=o.box,q=o.q==null?1:o.q,H=o.h||[1.6,2.8],I=[1,0,0,0,1,0,0,0,1];
+  for(let j=Math.floor(B[1]/cell);j*cell<B[3];j++)for(let i=Math.floor(B[0]/cell);i*cell<B[2];i++){
+   const x=(i+U(i,j,1,23)*.9)*cell,z=(j+U(i,j,2,23)*.9)*cell,w=o.wet(x,z);if(w<=0||U(i,j,3,23)>w*q)continue;
+   /* a clone grows taller toward the water: the height follows the wetness, with a little of its own */
+   out.push({x,y:o.ground(x,z),z,h:mix(H[0],H[1],.55*w+.45*U(i,j,4,23)),w:mix(.9,1.4,U(i,j,5,23)),v:Math.floor(U(i,j,6,23)*3),m:I,yaw:U(i,j,7,23)*TAU});}
+  return out;};
+ // CUT.drawReeds(L, o): any reed records (CUT.plan's or planReedBed's) under o.range (900 m)
+ CUT.drawReeds=function(L,o){o=o||{};BIO.range=o.range==null?900:o.range;BIO.minRange=0;let n=0;
+  for(const r of L||[]){CUT.putM('reed'+r.v,M4(r.m,[r.x,r.y-.1,r.z],RS(r.yaw,r.w,r.h,r.w)),new BIO.host.THREE.Color(col(CUT.PAL.reed,(r.x*.37+r.z*.11)%1)));n++;}
+  BIO.range=null;return{reeds:n};};
+ // the check: an ordinary bed has no bands (the heights spread over the range, at least 20 distinct to the centimetre; the bowl's
+ // reeds take a few values on a 0.3 m step)
+ CUT.checkReedBed=function(L){const hs=new Set((L||[]).map(r=>Math.round(r.h*100)));return{ok:(L||[]).length>50&&hs.size>=Math.min(20,(L||[]).length*.25),detail:(L||[]).length+' reeds, '+hs.size+' distinct heights (cm)'};};
 })();

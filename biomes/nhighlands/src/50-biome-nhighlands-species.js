@@ -372,15 +372,8 @@ G.lantern=function(){const pts=[];for(let i=0;i<=4;i++){const t=i/4;   // four b
  const pos=[],nor=[],uv=[],col=[];[[thread,.3],[g,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);
   const x=a[i],z=a[i+2],rib=e[1]===1?.82+.18*Math.cos(5*Math.atan2(z,x)):e[1];col.push(rib,rib,rib);}});
  return BIO.geo._make(pos,nor,uv,col);};
-// a DISC: the disc stalk's head -- a shallow ribbed dish with a boss, unit radius, face up, vertex-coloured (the rim paler, the ribs dark)
-G.disc=function(){const pos=[],nor=[],uv=[],col=[];const n=12;   // twelve ribs: 36 triangles, not 54
- for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,rib=k%2;
-  const P=(a,r,y)=>[Math.cos(a)*r,y,Math.sin(a)*r];
-  const A=P(0,0,.06),B=P(a0,1,.16+(rib?.03:0)),Cc=P(a1,1,.16+(rib?0:.03)),M0=P(a0,.5,.08),M1=P(a1,.5,.08);
-  const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(c[0],c[1],c[2]);};
-  const cc=rib?[.78,.72,.6]:[1,1,1],cr=[1.18,1.12,.95],cb=[.6,.48,.32];
-  push(A,cb);push(M1,cc);push(M0,cc);push(M0,cc);push(M1,cc);push(Cc,cr);push(M0,cc);push(Cc,cr);push(B,cr);}
- return BIO.geo._make(pos,nor,uv,col);};
+// the core's fungoid cap (core/biome/33-core-fungoid.js): a ribbed saucer, the rim up and lifted on every other rib; 36 triangles
+G.disc=function(){return BIO.fung.cap({form:'funnel',h:.17,seg:12,rings:2,ribs:12,ribK:.75,under:'none'});};
 // a PLEAT FAN: a round pleated fan (the red-stem fan's leaf), unit radius in the xz plane, the pleats radial, red at the heart
 G.pleat=function(){const pos=[],nor=[],uv=[],col=[];const n=16;   // sixteen pleats: 32 triangles, not 44
  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,up=k%2?.07:-.04,dn=k%2?-.04:.07;
@@ -399,10 +392,7 @@ G.boulder=function(seed){const g=new T3.IcosahedronGeometry(1,1),p=g.attributes.
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.22*(fbm(x*1.3+seed,y*1.3,z*1.3,2)-.5)*2+.08*Math.sin(x*6+seed);p.setXYZ(i,x*k,Math.max(-.25,y*k*.78)+.25,z*k);}
  const ng=g.toNonIndexed();ng.computeVertexNormals();return ng;};
 // a MUSHROOM: pale stem, cap takes the colour (vertex-coloured), origin at the base, 1 high
-G.mushroom=function(){const pos=[],nor=[],uv=[],col=[];
- const add=(g,c)=>{g=g.toNonIndexed();const a=g.attributes.position.array,n=g.attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);col.push(c,c,c);}};
- add(new T3.CylinderGeometry(.09,.12,.75,5,1,true).translate(0,.375,0),1.6);add(new T3.SphereGeometry(.42,7,3,0,TAU,0,Math.PI*.5).scale(1,.62,1).translate(0,.72,0),1);
- return BIO.geo._make(pos,nor,uv,col);};
+G.mushroom=function(){return BIO.fung.cap({form:'dome',h:.62,seg:7,rings:3,under:'none',stem:{h:1.7,r:.29,r1:.21,k:1.6}}).scale(.42,.42,.42);};
 G.berry=function(){return new T3.OctahedronGeometry(1,0);};
 // a ROD: an open-ended pentagonal cylinder along y, centred (for BIO.beam): twigs, stalks, stems -- ten triangles, not twenty-four
 G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,5,1,true);};
@@ -505,8 +495,7 @@ BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns'});
 BIO.def('lady',BIO.geo.frond(3),M.lady,{label:'Lady ferns'});
 BIO.def('lace',BIO.geo.frond(3),M.lace,{attrs:['aC2'],label:'Lace ferns'});
 BIO.def('bracken',G.flat(),M.bracken,{label:'Bracken'});
-BIO.def('blade',G.tuft(),M.blade,{label:'Grass'});
-BIO.def('mondo',G.tuft(),M.blade,{label:'Black grass'});
+BIO.def('blade',G.tuft(),M.blade,{label:'Grass'});   /* and black grass, by its instances' label (60: L_MONDO); heath carries dark spurge, cushion the smoke bush, rod the mountain cane */
 BIO.def('spike',G.tuft(),M.spike,{label:'Spikes'});
 BIO.def('bell',G.tuft(),M.bell,{label:'Bluebells'});
 BIO.def('heath',G.tuft(),M.heath,{label:'Heath and bilberry'});
@@ -516,8 +505,6 @@ BIO.def('paddle',G.card(),M.paddle,{attrs:['aN'],label:'Teal aroids'});
 BIO.def('zebra',G.tuft(),M.zebra,{label:'Zebra rosettes'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Moss cushions'});
-BIO.def('smoke',G.cushion(),M.cushion,{label:'Smoke bush'});
-BIO.def('spurge',G.tuft(),M.heath,{label:'Dark spurge'});
 BIO.def('fin',BIO.geo.frond(2),M.fin,{attrs:['aN','aC2'],label:'Trumpet fringes'});
 BIO.def('bulb',G.bulb(),M.bulb,{label:'Bell-bulbs'});
 BIO.def('lantern',G.lantern(),M.pod,{label:'Lantern pods'});
@@ -531,7 +518,6 @@ BIO.def('berry',G.berry(),M.solid,{label:'Berries'});
 BIO.def('mast',new T3.TetrahedronGeometry(1,0),M.solid,{label:'Beechmast and acorns'});   // 4 triangles: hero trees only
 BIO.def('rod',G.rod(),M.solid,{label:'Twigs and stems'});
 BIO.def('trunk',BIO.geo.trunk(7),BIO.solidMat(NHL.BARKTEX[0]),{label:'Saplings'});
-BIO.def('cane',G.rod(),M.solid,{label:'Mountain cane'});
 
 // ---------------------------------------------------------------- the new flora (HANDOFF-FLORA.md)
 // The fan-leaf's leaves, the staghorn's fronds, the sun-wheel, the spore lamps and the shag maple's moss sleeves: four

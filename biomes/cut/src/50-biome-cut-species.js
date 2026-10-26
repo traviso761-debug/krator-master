@@ -16,7 +16,7 @@ const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal
 CUT.SPECIES=[
  {key:'hyperbamboo',name:'Hyperbamboo',habit:'grove',H:[60,80],rb:[.3,.5],tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both',form:'giant bamboo'},
   model:'Dendrocalamus giganteus, after nwlowlands\' sky bamboo, in 2 atm'},
- {key:'ringreed',name:'Ring reeds',habit:'reed',H:[2.4,4.2],rb:[.6,1.2],tags:{climate:'hypertropic..subtropic',aridity:'humid',abyssal:true,riparian:'yes',form:'reed'},model:'Phragmites, Typha'},
+ {key:'ringreed',name:'Ring reeds',habit:'reed',H:[2.4,4.2],rb:[.6,1.2],tags:{climate:'hypertropic..cold',aridity:'humid',abyssal:true,riparian:'yes',form:'reed'},model:'Phragmites, Typha'},
  {key:'rankgrass',name:'Rankgrass',habit:'tussock',H:[.5,1.1],rb:[.4,.8],tags:{climate:'hypertropic..subtropic',aridity:'arid..semiarid',abyssal:true,riparian:'no',form:'salt grass'},model:'Distichlis, Puccinellia'},
  {key:'measuremelon',name:'Measure melon',habit:'vine',H:[.4,.7],rb:[1.2,2],tags:{climate:'subtropic..temperate',aridity:'semiarid..subhumid',abyssal:false,riparian:'no',form:'vine'},model:'Cucumis melo'},
  {key:'circlelichen',name:'Circle lichen',habit:'crust',H:[.005,.01],rb:[.05,.9],tags:{climate:'temperate..cold',aridity:'arid..humid',abyssal:false,riparian:'no',form:'crustose lichen'},model:'Rhizocarpon, Xanthoria'}];

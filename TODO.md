@@ -101,6 +101,8 @@ purpose. Take an item out when it is done.
   its page is checked by eye against the old one before the baseline is rewritten (the shapes will move a little). Needs
   the fragment built first (the Outlands' phase O3); the kits that read those fragments in place (Korona's stations, the
   Throne's) follow automatically.
+  **2026-10-26:** the fragment is written (`core/biome/33-core-fungoid.js`, `test-fungoid.js`, core/biome README "Fungoid parts")
+  and nhighlands' mushroom and disc stalk are on it; the rest of the list is still to switch.
 
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 

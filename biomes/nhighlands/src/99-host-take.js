@@ -89,8 +89,9 @@ const BUDGET={
  type:{'nhighlands/trees':'pass','nhighlands/floor':'pass','nhighlands/dress':'pass','host':'host'},
 };
 // the instances of one item, as positions
-function itemPositions(name,every){const out=[],m=new THREE.Matrix4();every=every||1;
- BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i+=every){o.getMatrixAt(i,m);out.push([m.elements[12],m.elements[13],m.elements[14]]);}});return out;}
+// name 'item' or 'item:Label' (the instances an item draws under their own label: core/biome B5, BIO.instLabel)
+function itemPositions(name,every){const out=[],m=new THREE.Matrix4();every=every||1;const c=name.indexOf(':'),lab=c<0?null:name.slice(c+1);if(c>=0)name=name.slice(0,c);
+ BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i+=every){if(lab!=null&&BIO.instLabel(o,i)!==lab)continue;o.getMatrixAt(i,m);out.push([m.elements[12],m.elements[13],m.elements[14]]);}});return out;}
 function biomeChecks(){const R={};
  // every species placed at least once
  R.missing=NHL.SPECIES.filter((S,i)=>!NHL.TREES.some(T=>T.sp===i)).map(S=>S.key);
@@ -100,7 +101,7 @@ function biomeChecks(){const R={};
  R.stream={monotone:mono,bedUnder:under,drop:+(STREAM.level[0]-STREAM.level[STREAM.level.length-1]).toFixed(1),falls:STREAM.falls.length,lenKm:+(STREAM.LEN/1000).toFixed(2)};
  // nothing rooted in the water: trees, and the floor's plants (the stepping stones are the one thing meant to stand in it)
  R.treesInWater=NHL.TREES.filter(T=>BIO.depth(T.x,T.z)>.05).length;
- const FLOOR=['frond','lady','lace','pleat','blade','bell','heath','sorrel','ucard','mondo','spike','paddle','spurge','smoke','disc','cane','bracken','zebra','wheel','sporepin'];
+ const FLOOR=['frond','lady','lace','pleat','blade','bell','heath','sorrel','ucard','blade:Black grass','spike','paddle','heath:Dark spurge','cushion:Smoke bush','disc','rod:Mountain cane','bracken','zebra','wheel','sporepin'];
  let wet=0,n=0;FLOOR.forEach(it=>itemPositions(it,7).forEach(p=>{n++;if(BIO.depth(p[0],p[2])>.35)wet++;}));R.floorInWater={wet,of:n};
  // nothing rooted on a cliff
  R.treesOnCliffs=NHL.TREES.filter(T=>FC.at(FC.a.slope,T.x,T.z)>1.5&&T.lv>0).length;
@@ -130,10 +131,14 @@ const HCHK={
 const fruitN=()=>({berry:itemPositions('berry').length,lantern:itemPositions('lantern').length,mast:itemPositions('mast').length});
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,fruitN()));
+ /* the Cut's natives read in place with the warp off (87-host-cut.js): the lichen's thalli touch and merge, the reeds have no bands */
+ if(typeof CUT!=='undefined'&&NHL.CUT_LICHEN){add('the circle lichen (the Cut): an ordinary map lichen here',CUT.checkLichenPlain(NHL.CUT_LICHEN));add('the ring reeds (the Cut): an ordinary bed here',CUT.checkReedBed(NHL.CUT_REEDS));}
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=fruitN();
  add('a fruiting species with no catalog fruit',HCHK.fruit(NHL.SPECIES.map(S=>S.key==='rowan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),NHL.PLANTS,N));
  add('no mast drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{mast:0})));
+ if(typeof CUT!=='undefined'&&NHL.CUT_LICHEN){add('the lichen as the bowl draws it (nested circles)',CUT.checkLichenPlain(NHL.CUT_LICHEN.map(q=>Object.assign({},q,{nest:{r:q.r*.4,c:0,dx:0,dz:0}}))));
+  add('the reeds in the bands the bowl gives them (heights on a 0.3 m step)',CUT.checkReedBed(NHL.CUT_REEDS.map(r=>Object.assign({},r,{h:Math.round(r.h/.3)*.3}))));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)

@@ -54,7 +54,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # src/ copy with the same name wins; a kit that lists nothing builds as before.
 CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KGROUND: the ground's library layers (src/84-host-ground.js); KHORIZON: its terrain shadows   # KFAR: the far country's lattice (src/82-host-sky.js; core/terrain/README.md, the far field)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','33-core-fungoid.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -93,6 +93,16 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'nhighlands'),khost.EDITS_JS:khost.edits_js(HERE,'nhighlands')}
+# THE CUT'S TWO NATIVES, read in place (biomes/cut/PLAN.md section 12, exchanges 7 and 8; 87-host-cut.js draws them with the warp off):
+# the Cut kit's field, species, planners and kit surface by path, renamed to run after this kit's own 70 (so the Cut's BIO.kit('cut')
+# and BIO.kitEnd pair up), and its pack's reed sheet only (the lichen's disc is its own canvas)
+CUT_DIR=os.path.normpath(os.path.join(HERE,'..','cut'))
+for _k,_f in [('71a-cut-field.js','41-cut-field.js'),('71b-cut-species.js','50-biome-cut-species.js'),('71c-cut-natives.js','55-biome-cut-natives.js'),
+              ('71d-cut-melon-lichen.js','57-biome-cut-melon-lichen.js'),('71e-cut-build.js','70-biome-cut.js')]:
+    PATH[_k]=os.path.join(CUT_DIR,'src',_f)
+_cpj=os.path.join(CUT_DIR,'tex','pack.json')
+_cex=[f for f in (sorted(__import__('json').load(open(_cpj,encoding='utf-8')).get('families',{})) if os.path.isfile(_cpj) else []) if f!='reed']
+VIRTUAL['44b-host-matlib-pack-cut.js']=matlib_pack.fragment(CUT_DIR,'cut',exclude=_cex)
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own

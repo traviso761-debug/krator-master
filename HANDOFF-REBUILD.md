@@ -60,10 +60,28 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
 6. **Close out:** `tools/check_core_use.py --write-baseline` (it shrinks), `tools/port_baseline.py --update` for checked pages
    only, `tools/test_all.py`, the gallery republish (ask the owner: it is a wider change).
 
+### Progress on step 1 (2026-10-26, the session that picked this up)
+
+- **`BIO.fung` is written**: `core/biome/33-core-fungoid.js` (nine parts and four layouts), `test-fungoid.js`, core/biome
+  README "Fungoid parts". nhighlands' mushroom and disc stalk are on it; the other kits' copies (TODO.md) switch as each is rebuilt.
+- **A core bug fixed on the way:** the LOD cross-fade (`BIO.LOD.fade`) read `cameraPosition`, which r128 never uploads to a
+  Lambert material, so every chunk beyond one range of the origin dithered out. It now takes the eye from the view matrix
+  (`20-core-kit.js`). nwlowlands' and swbay's committed pages still carry the bug until they are rebuilt.
+- **`BIO.beam`** takes BIO.put's `extra` (a per-instance label).
+- **nhighlands took:** the fungoid parts, the LOD merge, `minTris` 1500 and the cross-fade (B1/B2; `?lodmerge=0`, `?lodfade=0`),
+  the four floor pairs merged by label (B5), W1/W2 (the curtains' margin, the ribbon's chutes, spray by drop), R9 (wet ground,
+  puddles from `WATER.hollows`, rain rings on every water), and the Cut's exchanges 7 and 8 (circle lichen on the pillars and
+  crags, ring reeds at the tarn and the stream's pools, the warp off: `87-host-cut.js`, two new planners in `biomes/cut`).
+  It already had R1, R5, R7, R8, R10, R13, KGROUND, KHORIZON, KFAR, the weather and the shared sky from the pilots.
+- **Still to do on nhighlands before the look pass:** B3 two-tone bark (`c2`) if the owner wants it there (no unwired set is
+  owed to it: `card.broadleaf.cloud` and `card.epiphyte.garden` are the eastern highlands', `meta.json` "reuse"); then the
+  owner's look pass, and steps 2-3 (optimization, the Godot spike, the graphic-load assessment). nhighlands has no hazards,
+  so R11 stays with the Throne's vents.
+
 ### Still to write (core) before or during step 1
 
-- **`BIO.fung`** (`core/biome/33-core-fungoid.js`, spec in `biomes/outlands/PLAN.md`; TODO.md): write it, then switch the old
-  fungoid parts (hyperjungle's `fungi`, the `stalk` in rift and xanadu, the rest TODO lists).
+- ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`
+  in rift and xanadu, the rest TODO lists).
 - **The workstreams' open requests** (files they did not own):
   - core/export (`07-core-export.js`, `42-core-export.js`): split a record by `userData.lod.ranges` and export `instLabels`
     (kit); a real `hazards` section (hazard). Until then a Godot port draws a merged mesh's near layer to its longest range.
@@ -80,7 +98,7 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   `test-sim.js`; Verge's layout test (both seen in test_all runs; check whether they fail on this branch); swbay's rain
   occlusion depth pass throws inside three (`isInterleavedBufferAttribute` of null; it retries, then turns the map off).
 - **Per-biome ride-alongs noted on the way:** eastabyss line 163 of `75-biome-eastabyss-fauna.js` can go (BIO.dynamic tags it);
-  nhighlands' four floor pairs merge by `{label}`; k-guilin passes `{drawn:true}` to `KSTACKS.surface`; guilin's osmanthus
+  ~~nhighlands' four floor pairs merge by `{label}`~~ (done); k-guilin passes `{drawn:true}` to `KSTACKS.surface`; guilin's osmanthus
   needs `libCol` before `card.osmanthus` (but guilin is frozen: only if the owner asks); ringisles takes `stone.geode.druze`;
   ehighlands, nhighlands, swlowlands and nwlowlands take their new sets (`card.broadleaf.cloud`, `card.epiphyte.garden`,
   `bark.plane`, `rock.marl.blue`); oidong could alternate `bark.carved.b`; the Cut's species exchanges (section 3a);

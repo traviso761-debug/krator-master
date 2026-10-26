@@ -59,6 +59,12 @@
       label index on the item, `BIO.bake` handing the table to the InstancedMesh (`userData.instLabels`), and
       core/host/93-host-inspect.js reading `hit.instanceId` against it; then mondo->blade, spurge->heath, smoke->cushion,
       cane->rod save four calls a near chunk.
+      2026-10-26, the final rebuild: done. The core carries per-instance labels (B5), so the four are drawn as blade, heath, cushion
+      and rod with their own labels (60-biome-nhighlands-floor.js, `L_MONDO` and the rest; the host's floor check reads them by
+      `item:Label`), and the page takes the LOD merge, `minTris` 1500 and the dithered cross-fade (45-host-stage.js; `?lodmerge=0`,
+      `?lodfade=0` turn them off). Draw calls, --all-views before -> after: The stream 293 -> 217, Fan-leaf 353 -> 285, The tower
+      359 -> 257, Night: the tower 369 -> 263 (worst view now Fan-leaf, 285; with the Cut's lichen and reeds in). Stays open for the optimization pass (the handoff's
+      step 2): the floor band's own cost.
 - [ ] **Mid-range broadleaves are thin.** The broad builder's lv1 trees (three boughs as rods, one
       clump a spot) read sparse at 100–300 m, now that there are twice as many of them low down (the
       low-band view from the NW corner). The conifers' treatment (more, larger masses at lv1) would fit.

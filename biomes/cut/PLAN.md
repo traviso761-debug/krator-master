@@ -267,6 +267,13 @@ s is 0 (rankgrass's rows, the lichen's spacing, the reeds' bands), never the mel
 `crater-drylands` home. Each exchange gets a host check on the page that receives it (the aloe's fans only where s > .5; the
 melon's three sizes in the crater; no ruled rows past the mouth; the lichen's circles touching away from the lip).
 
+**Done on the northern highlands' side (2026-10-26, the final rebuild's test bed):** exchanges 7 and 8. `biomes/nhighlands/build.py`
+reads this kit's `41`, `50`, `55`, `57` and `70` by path (renamed `71a`-`71e`, after its own kit closes) and the pack's `reed` sheet;
+`biomes/nhighlands/src/87-host-cut.js` draws them with the warp off through two new planners here, `CUT.planLichenPlain` (`57`: the
+pillars by rays at the drawn rock, the crag faces) and `CUT.planReedBed` with `CUT.drawReeds` (`55`: the tarn's margin, the stream's
+slack pools), with host checks both ways (`CUT.checkLichenPlain`: thalli touching, none nested; `CUT.checkReedBed`: no bands). The
+ring reed's climate tag widens to `hypertropic..cold` (Phragmites takes the cold). The crater drylands' two (3, 4) are still to do.
+
 ## Core adoption (written before the first fragment, 2026-10-26)
 
 The nearest finished builds: `biomes/korona` (stations, other kits read in place under a mask, core/water) and

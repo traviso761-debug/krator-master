@@ -17,6 +17,7 @@ window._biome=null;window._dress=null;
  lap('biome');if(window._biome&&window._biome.ms)Object.assign(PH,window._biome.ms);
  try{window._dress={tower:shells.length?NHL.dress(shells,{y0:TOWER.y0,h:TOWER.top-TOWER.y0,coldTop:.9,ledges:{moss:1500,plants:520,edges:420,hang:10},soffits:{n:1400,hang:9},walls:{n:460}}):null,
   crags:rocks.length?NHL.dress(rocks,{kind:'crag',tops:60*rocks.length,faces:110*rocks.length,seed:7}):null};}catch(e){reportErr('dress: '+e.stack);}
+ try{window._cut=buildCutNatives(rocks);}catch(e){reportErr('cut natives: '+e.stack);}   /* the Cut's lichen and reeds (87-host-cut.js) */
  lap('dress');
  const b=BIO.bake();lap('bake');
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}
