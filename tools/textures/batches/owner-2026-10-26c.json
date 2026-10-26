@@ -1,0 +1,234 @@
+[
+ {
+  "src": "foliage.thorn.cut.png",
+  "out": "core/materials/library/foliage.thorn.cut",
+  "record": {
+   "id": "foliage.thorn.cut",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"foliage.thorn.cut\"",
+    "reuse": "the Beast Riders thorn hedge (br_hedge_thorn); any cut-thorn barrier, bramble or dry thicket"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "ground.salt.ochre.png",
+  "out": "core/materials/library/ground.salt.ochre",
+  "record": {
+   "id": "ground.salt.ochre",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.salt.ochre\"",
+    "reuse": "the Bowl ochre salt rim; any iron-stained salt rim or evaporite crust"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.grass.lush.png",
+  "out": "core/materials/library/ground.grass.lush",
+  "record": {
+   "id": "ground.grass.lush",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.grass.lush\"",
+    "reuse": "Guilin plain, Ring Sea paddy bunds; any well-watered lowland meadow, pasture or lawn"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "brick.buff.png",
+  "out": "core/materials/library/brick.buff",
+  "record": {
+   "id": "brick.buff",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"brick.buff\"",
+    "reuse": "the Eternian pale brick piers and walls; any pale gault or sand-lime brick"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "detail.plaster.grain.png",
+  "out": "core/materials/library/detail.plaster.grain",
+  "record": {
+   "id": "detail.plaster.grain",
+   "family": "detail",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"detail.plaster.grain\"",
+    "reuse": "the detail normal of every plaster, render, stucco and limewash record; adobe at close range"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "detail.stone.grain.png",
+  "out": "core/materials/library/detail.stone.grain",
+  "record": {
+   "id": "detail.stone.grain",
+   "family": "detail",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"detail.stone.grain\"",
+    "reuse": "the detail normal of every cut stone, ashlar, paving and concrete record; rock at close range"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "tribal_formline.png",
+  "out": "core/materials/patterns/tribal/formline",
+  "record": {
+   "id": "tribal/formline",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"tribal/formline\"",
+    "reuse": "Highlands formF; any tribal formline panel (this REDO replaces the mirror-symmetric first take)"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.5,
+   "delight": 0.15,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "screamers_hide-figure.png",
+  "out": "core/materials/patterns/screamers/hide-figure",
+  "record": {
+   "id": "screamers/hide-figure",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"screamers/hide-figure\"",
+    "reuse": "the Screamers painted hide hangings and screens (catalog culture screamer); any tribal painted hide"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.5,
+   "delight": 0.15,
+   "keep_aspect": true
+  }
+ }
+]

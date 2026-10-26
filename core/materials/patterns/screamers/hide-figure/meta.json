@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1235
+   ],
+   "seam_after": [
+    0.734,
+    0.64
+   ],
+   "seam_before": [
+    1.784,
+    3.91
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "screamers/hide-figure",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "screamers_hide-figure.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"screamers/hide-figure\"",
+  "reuse": "the Screamers painted hide hangings and screens (catalog culture screamer); any tribal painted hide",
+  "sha1": "2f63169623a53216fa17e938a2306ebf7cd20c09"
+ }
+}

@@ -1,0 +1,200 @@
+[
+ {
+  "src": "card.crop.rice.png",
+  "out": "core/materials/library/card.crop.rice",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.rice",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.crop.rice\"",
+    "reuse": "the Ring Sea isles paddies, Guilin rice; kits/crops rice (rows: young, full-grown, ripe)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.cane.png",
+  "out": "core/materials/library/card.crop.cane",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.cane",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.crop.cane\"",
+    "reuse": "the Ring Sea isles sugar cane; giant reed, sorghum stands, any tall jointed cane grass",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.greens.png",
+  "out": "core/materials/library/card.crop.greens",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.greens",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.crop.greens\"",
+    "reuse": "the Ring Sea isles greens and sweet potato beds (last row); the kits/crops greens bucket",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.orchid.dendrobium.png",
+  "out": "core/materials/library/card.orchid.dendrobium",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.orchid.dendrobium",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.orchid.dendrobium\"",
+    "reuse": "Guilin stone orchid; any epiphytic orchid on bark or rock",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.fin.glass.png",
+  "out": "core/materials/library/card.fin.glass",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.fin.glass",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.fin.glass\"",
+    "reuse": "the rift rim frost frill fins; any glassy translucent leaf or fin",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.tracery.bronze.png",
+  "out": "core/materials/library/card.tracery.bronze",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.tracery.bronze",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.tracery.bronze\"",
+    "reuse": "the Eternian window heads over the bronze tracery grid (rows: stepped, lancet, ring); any cast-metal window tracery",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ }
+]

@@ -1848,6 +1848,17 @@ magenta, `cards.py`, anchor none). All in the library, none wired (the kits they
   `card.bamboo.giant`, `card.rankgrass` (blue-grey tussocks, lilac-tinged seed spikes), `card.crop.melon`, `card.wineweed` (spill none: deep
   red survives; edge spill muddied it). `Layered Eroded Mudstone Texture.png` matches no entry (a pale buff horizontally bedded mud, near
   `rock.badland.bedded`) and is left out.
+- Third drop (2026-10-26, batches `owner-2026-10-26c.json` and `owner-2026-10-26c-cards.json`; the `(1)` files in Downloads are byte-identical
+  re-downloads of the second drop): surfaces `foliage.thorn.cut` (tintable, 1.5 m, `mute` 0.4; grey-brown thorn tangle), `ground.salt.ochre`
+  (full colour, 2 m; ochre polygons ringed with white salt ridges), `ground.grass.lush` (full colour, 1.5 m), `brick.buff` (full colour, 0.6 m;
+  running bond, eight courses), `detail.plaster.grain` and `detail.stone.grain` (tintable, 0.25 m; the grey stucco and the grey sandstone
+  chosen for being near-uniform; `Weathered Ivory Plaster Texture.png` has stains and patches, so it is left out); patterns
+  `tribal/formline` (the REDO: replaces the first take in place, now a true repeat, not a mirror; the Highlands' `formF` pack needs a re-pack)
+  and `screamers/hide-figure` ("Tribal Stick Figure on Weathered Hide": complete border and ring on all four sides; its twin
+  "Shaman Hide Painting" has a larger figure and a clipped border); cards `card.crop.rice` (rows: young, grown, ripe), `card.crop.cane`,
+  `card.crop.greens` (last row the sweet potato vine), `card.orchid.dendrobium` ("Nine Orchid Clumps": thin leaning canes and aerial roots,
+  nearer the prompt than "Orchid Specimens"), `card.fin.glass`, `card.tracery.bronze` (rows: stepped, lancet, ring heads; the openings are
+  keyed through). All cards keyed with the defaults, no fringe. Left out: `Weathered Ivory Plaster Texture.png` (above).
 
 #### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
 
