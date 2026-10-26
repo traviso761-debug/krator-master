@@ -197,7 +197,7 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3;
 // 5 the curl succulent: a bunch of spiralling teal tendrils
 B[5]=function(T,st,lv){const S=SP[T.sp],n=lv===2?ri(2,4):lv===1?2:1,c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05);
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.15,.6):0,h=T.H*rr(.7,1.15),w=h*rr(.9,1.3);
-  BIO.put('curl',[T.x+Math.cos(a)*d,T.y0+.4,T.z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(bright(pick(c2s),1.15),hc,.35),n:leanN(a,.3+.6*d)});st.curls++;}
+  BIO.put('curl',[T.x+Math.cos(a)*d,T.y0+.4,T.z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(bright(pick(c2s),1.15),hc,.2),n:leanN(a,.3+.6*d)});st.curls++;}
  if(lv===2&&rng()<.3){BIO.put('urchin',[T.x,T.y0+T.H*.5,T.z],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.5,.9),bright(C(pick(PAL.comp)),1.15));st.blooms++;}};
 // 6 the prism bush: a dark lobe under a crown of pinnate sprays that go green to orange and magenta with the light
 B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,Rs=T.crownR,c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05);
@@ -273,7 +273,7 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hT=H*
  for(let k=0;k<n;k++){const a=a0+k*2.3,l=H*rr(.15,.25),e=[T.x+Math.cos(a)*l*.7,T.y0+hT+l*.6,T.z+Math.sin(a)*l*.7];BIO.beam('rod',[T.x,T.y0+hT-.2,T.z],e,rb*.7,rb*.5,rc);heads.push(e);}
  const hc=vary(pick(S.leaf),.02,.06,.05),R=T.crownR;
  heads.forEach(p=>{const rx=rr(-.08,.08),ry=rr(0,TAU),rz=rr(-.08,.08),ox=p[0]-T.x,oz=p[2]-T.z,fork=Math.hypot(ox,oz)>.01;   // a fork's head leans out from the stem
-  BIO.put('irosette',[p[0],p[1]-.1,p[2]],qEuler(rx,ry,rz),[R,R*1.5,R],bright(vary(hc,.02,.06,.05),1.15),{c2:softC2(bright(pick(c2s),1.1),hc,.6),n:leanN(fork?Math.atan2(oz,ox):ry,fork?.7:.5)});st.rosettes++;
+  BIO.put('irosette',[p[0],p[1]-.1,p[2]],qEuler(rx,ry,rz),[R,R*1.5,R],bright(vary(hc,.02,.06,.05),1.15),{c2:softC2(bright(pick(c2s),1.1),hc,.45),n:leanN(fork?Math.atan2(oz,ox):ry,fork?.7:.5)});st.rosettes++;
   if(lv>=1&&rng()<.7){const m=lv===2?ri(2,4):1,col=bright(C(0xd03a2a).lerp(C(pick(PAL.accent)),.35),1.2);for(let k=0;k<m;k++){const a=rr(0,TAU),d=R*rr(.1,.4),h=R*rr(1.2,1.9);
    BIO.beam('rod',[p[0]+Math.cos(a)*d,p[1]+R*.6,p[2]+Math.sin(a)*d],[p[0]+Math.cos(a)*d*1.4,p[1]+R*.6+h*.55,p[2]+Math.sin(a)*d*1.4],.04,.03,rc);
    BIO.put('candle',[p[0]+Math.cos(a)*d*1.4,p[1]+R*.6+h*.5,p[2]+Math.sin(a)*d*1.4],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R*.3,h*.5,R*.3],col);st.blooms++;}}
@@ -467,16 +467,16 @@ const IRB={0:'frill',23:'frill',21:'carrot',3:'trumpet',1:'bell',24:'bell'};   /
 function keyed(K,T,tris,st){const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 // a blob: ca on top, cb below (linear), c2 the colour it turns (linear) or null. A blob is a whole crown facing every
 // way at once, solid where the hero's leaves are cards and gaps, so it turns only part way (IRID_FAR) or it reads as paint
-const IRID_FAR=.4;
+const IRID_FAR=.4,IRID_LITE=.25;   /* IRID_LITE: a hero's stand-in (2026-10-26) */
 const turn=(r,g,b,c2,s,k)=>pack2([r+(c2[0]*s-r)*k,g+(c2[1]*s-g)*k,b+(c2[2]*s-b)*k]);
-function farBlob(K,ip,x,y,z,rx,ry,ca,cb,c2,sd){const k1=sd*7.3,k2=sd*3.1;
+function farBlob(K,ip,x,y,z,rx,ry,ca,cb,c2,sd,ik){const k1=sd*7.3,k2=sd*3.1,KI=ik==null?IRID_FAR:ik;
  if(c2)cb=[mix(cb[0],ca[0],.5),mix(cb[1],ca[1],.5),mix(cb[2],ca[2],.5)];   // the shift now carries the second colour: the underside only leans to it
  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
   const m=1+.20*Math.sin(dx*4.1+k1)*Math.cos(dz*3.7+k2)+.14*Math.sin(dy*6.3+k2+dx*2);
   const sh=(.50+.50*smooth(-.7,.8,dy))*(.9+.2*Math.sin(dx*9+dz*7+k1)),t=smooth(-.2,.7,dy+.3*Math.sin(dx*5+k2));
   const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
   const r=mix(cb[0],ca[0],t)*sh,g=mix(cb[1],ca[1],t)*sh,b=mix(cb[2],ca[2],t)*sh;
-  K.pos.push(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m);K.nor.push(dx/nl,ny/nl,dz/nl);K.col.push(r,g,b);K.uv.push(c2?turn(r,g,b,c2,sh,IRID_FAR):0,c2?1:0);}
+  K.pos.push(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m);K.nor.push(dx/nl,ny/nl,dz/nl);K.col.push(r,g,b);K.uv.push(c2?turn(r,g,b,c2,sh,KI):0,c2?1:0);}
  return ip.length/9;}
 // a fin: one triangle standing out from the column at azimuth a, rising at elevation e (the frill trees' frill, a hint)
 function farFin(K,T,a,y,r0,L,e,ca,c2){const cx=Math.cos(a),sz=Math.sin(a),nl=Math.hypot(.85,.5),r1=r0+L*Math.cos(e);
@@ -494,24 +494,27 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('far');icos();const ip=lite?I
    else{K.col.push(bc[0]*sh,bc[1]*sh,bc[2]*sh);K.uv.push(0,0);}});tris+=2;}
  // a stand-in a little darker: it stands for a hero whose crown is cards, gaps and shade, seen at 1.2 km and more
  const dk=lite?.8:1,L=S.leaf.map(h=>lin(bright(h,.85*dk))),R=T.crownR,a0=(T.seed%628)/100,I=S.irid?PAL.irid[S.irid].map(h=>lin(h).map(v=>v*dk)):null,c2=k=>I?I[k%I.length]:null;
- const blob=(x,y,z,rx,ry,ca,cb,sd,k)=>{tris+=farBlob(K,ip,x,y,z,rx,ry,ca,cb,k===false?null:c2(k||0),sd);};
- if(T.sp===0||T.sp===23){blob(T.x,T.y0+T.H*.5,T.z,R*.55,T.H*.42,L[fi%4],I?I[0]:L[2],fi,fi);blob(T.x,T.y0+T.H*.93,T.z,R*.8,T.H*.08,L[(fi+1)%4],L[2],fi+1,fi+1);
+ /* the stand-in's underside is its leaves' shade, not the iridescent colour, and it turns less (2026-10-26: the stand-ins read bluer and
+    more magenta than the heroes they replace, the lobe trees' and bell palms' yellow-green lost); the far trees keep the old look */
+ const U=k=>lite||!I?L[2]:I[k%I.length];
+ const blob=(x,y,z,rx,ry,ca,cb,sd,k)=>{tris+=farBlob(K,ip,x,y,z,rx,ry,ca,cb,k===false?null:c2(k||0),sd,lite?IRID_LITE:null);};
+ if(T.sp===0||T.sp===23){blob(T.x,T.y0+T.H*.5,T.z,R*.55,T.H*.42,L[fi%4],U(0),fi,fi);blob(T.x,T.y0+T.H*.93,T.z,R*.8,T.H*.08,L[(fi+1)%4],L[2],fi+1,fi+1);
   // the frill: two rows of fins on the column and the splay at the summit, a triangle each (one row and three in the stand-in)
   const rAt=u=>T.rb*(1-.55*u)*(1+.5*Math.exp(-u*T.H/7)),fk=Math.min(1,T.H/100)*(SP[T.sp].key==='cloudfrill'?1.6:1),fc=k=>lin(bright(S.leaf[(fi+k)%S.leaf.length],1.1));
   (lite?[.55]:[.35,.65]).forEach((u,r)=>{const nf=lite?3:4;for(let k=0;k<nf;k++){const a=a0+(k+(r%2)*.5)/nf*TAU;tris+=farFin(K,T,a,T.y0+T.H*u,rAt(u),lerp(3.5,8.5,smooth(.05,.7,u))*fk*1.5,.95,fc(k),c2(k));}});
   for(let k=0,n=lite?3:5;k<n;k++){const a=a0+.4+k/n*TAU;tris+=farFin(K,T,a,T.y0+T.H*.9,rAt(.9)*.7,T.H*.11*mix(1.6,1,fk),.7,fc(k+2),c2(k+1));}}
- else if(T.sp===1||T.sp===24){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*.88+((k*7)%5),T.z+Math.sin(a)*R*.55,R*.4,T.H*.07,L[(k+fi)%4],I?I[k%I.length]:L[2],fi+k,k+1);}}
- else if(T.sp===2||T.sp===25){blob(T.x,T.y0+T.H*.86,T.z,R*.75,T.H*.14,L[fi%4],I?I[0]:L[2],fi,fi+1);}
+ else if(T.sp===1||T.sp===24){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*.88+((k*7)%5),T.z+Math.sin(a)*R*.55,R*.4,T.H*.07,L[(k+fi)%4],U(k),fi+k,k+1);}}
+ else if(T.sp===2||T.sp===25){blob(T.x,T.y0+T.H*.86,T.z,R*.75,T.H*.14,L[fi%4],U(0),fi,fi+1);}
  else if(T.sp===3){blob(T.x,T.y0+T.H*.92,T.z,R*.95,T.H*.06,L[fi%4],L[2],fi,fi);}
  else if(T.sp===32){blob(T.x,T.y0+T.H*.9,T.z,R*.85,T.H*.08,L[fi%4],L[2],fi);}
  else if(T.sp===4||T.sp===9){blob(T.x,T.y0+T.H*.78,T.z,R*.8,T.H*.2,L[fi%4],L[2],fi,fi);}
  else if(T.sp===8){blob(T.x,T.y0+T.H*.85,T.z,R*.8,T.H*.12,L[fi%4],L[2],fi);}
- else if(T.sp===21){blob(T.x,T.y0+T.H*.4,T.z,R*.8,T.H*.36,L[fi%4],I?I[0]:L[2],fi,fi+1);blob(T.x,T.y0+T.H*.94,T.z,R*.3,T.H*.05,lin(0xff40a0),lin(0xe82a88),fi+2,false);
+ else if(T.sp===21){blob(T.x,T.y0+T.H*.4,T.z,R*.8,T.H*.36,L[fi%4],U(0),fi,fi+1);blob(T.x,T.y0+T.H*.94,T.z,R*.3,T.H*.05,lin(0xff40a0),lin(0xe82a88),fi+2,false);
   // the carrot frill's fins: longest low, shrinking up the column (a triangle each)
   const rAt=u=>T.rb*(1.05-.85*Math.pow(u,1.3))*(1+.4*Math.exp(-u*T.H/6)),ck=Math.min(1,T.H/50),fc=k=>lin(bright(S.leaf[(fi+k)%S.leaf.length],1.1));
   (lite?[.22]:[.16,.38]).forEach((u,r)=>{const nf=lite?3:4;for(let k=0;k<nf;k++){const a=a0+(k+(r%2)*.5)/nf*TAU;tris+=farFin(K,T,a,T.y0+T.H*u,rAt(u),lerp(9,1.2,Math.pow(u,1.15))*ck*1.4,.75,fc(k),c2(k));}});}
- else if(T.sp===22){blob(T.x,T.y0+T.H*.82,T.z,R*.9,T.H*.16,L[fi%4],I?I[0]:L[2],fi,fi+1);}
- else if(T.sp===17||T.sp===26){blob(T.x,T.y0+T.H*.8,T.z,R*.95,T.H*.07,L[fi%4],I?I[0]:L[2],fi,fi+1);if(!cheap)blob(T.x+Math.cos(a0)*R*.4,T.y0+T.H*.78,T.z+Math.sin(a0)*R*.4,R*.55,T.H*.06,L[1],I?I[1]:L[3],fi+3,fi+2);}
+ else if(T.sp===22){blob(T.x,T.y0+T.H*.82,T.z,R*.9,T.H*.16,L[fi%4],U(0),fi,fi+1);}
+ else if(T.sp===17||T.sp===26){blob(T.x,T.y0+T.H*.8,T.z,R*.95,T.H*.07,L[fi%4],U(0),fi,fi+1);if(!cheap)blob(T.x+Math.cos(a0)*R*.4,T.y0+T.H*.78,T.z+Math.sin(a0)*R*.4,R*.55,T.H*.06,L[1],(lite||!I?L[3]:I[1]),fi+3,fi+2);}
  else{blob(T.x,T.y0+T.H*.9,T.z,R*.9,T.H*.12,L[fi%4],L[2],fi,fi);}
  keyed(K,T,tris,st);}
 // the SMALL species far off, and behind their heroes past RIFT.LOD.tree: one 20-triangle blob shaped by the habit, so

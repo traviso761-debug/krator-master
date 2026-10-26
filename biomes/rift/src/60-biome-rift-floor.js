@@ -36,7 +36,7 @@ const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad);
 
 // ---------------------------------------------------------------- small plants
 function card(x,y,z,s,sy,col,tilt){BIO.put('ucard',[x,y,z],qEuler(rr(-(tilt||.2),tilt||.2),rr(0,TAU),rr(-(tilt||.2),tilt||.2)),[s,sy==null?s:sy,s],col);}
-function tuft(item,x,y,z,h,w,col,c2){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col,{c2:c2||null});}
+function tuft(item,x,y,z,h,w,col,c2){const rx=rr(-.06,.06),ry=rr(0,TAU),rz=rr(-.06,.06);BIO.put(item,[x,y-.05,z],qEuler(rx,ry,rz),[w||h*.8,h,w||h*.8],col,{c2:c2||null,n:leanN(ry,.35)});}   /* n: the scale-moss's iridescence normal (2026-10-26; the same draws as before) */
 function groundMoss(x,y,z,r,set){BIO.put('mossmat',[x,y+.06,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),r,leafCol(set||PAL.moss,.95,.03));}
 function blooms(item,x,y,z,r,n,set,sz){const c=bright(vary(pick(set||PAL.comp),.03,.1,.08),1.15);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(.2,.4);BIO.put(item,[x+Math.cos(a)*d,y+rr(.1,.6),z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),s,c);}}
@@ -53,13 +53,13 @@ function shrub(x,y,z,lv,set){const hc=vary(pick(set||PAL.shrub),.07,.14,.07),Rs=
  else{const s=Rs*1.7;card(x,y+s*.35,z,s,s*.75,bright(hc,1.4));}}
 // scale-moss: the jungle's carpet, yellow-green shot with purple
 function scalemoss(x,y,z,lv){const t=rng(),set=t<.6?PAL.yellowGreen:t<.85?PAL.jungleGreen:PAL.comp,h=rr(.35,.7)*(lv===0?1.8:1);
- const col=leafCol(set,1.35,.03);tuft('clubmoss',x,y,z,h,h*2.2,col,rng()<.6?softC2(irid(PAL.irid.GP,1.1),col,.5):null);}
+ const col=leafCol(set,1.35,.03);tuft('clubmoss',x,y,z,h,h*2.2,col,rng()<.6?softC2(irid(PAL.irid.GP,1.1),col,.35):null);}
 // the iridescent rosette (a fan bromeliad): magenta, green and blue at once
 function irosette(x,y,z,lv,set,c2set,k){const R=rr(.5,1.3)*(k||1),c=vary(pick(set||PAL.jungleGreen),.04,.1,.06),rx=rr(-.08,.08),ry=rr(0,TAU),rz=rr(-.08,.08);
- BIO.put('irosette',[x,y-.02,z],qEuler(rx,ry,rz),[R,R*rr(.7,1.0),R],bright(c,1.1),{c2:softC2(irid(c2set||PAL.irid.GP,1.15),c,.3),n:leanN(ry,.5)});
+ BIO.put('irosette',[x,y-.02,z],qEuler(rx,ry,rz),[R,R*rr(.7,1.0),R],bright(c,1.1),{c2:softC2(irid(c2set||PAL.irid.GP,1.15),c,.2),n:leanN(ry,.5)});
  if(lv===2&&rng()<.2){BIO.beam('rod',[x,y,z],[x+rr(-.2,.2),y+R*2,z+rr(-.2,.2)],.03,.02,rodCol(0x5a4a6a));BIO.put('urchin',[x,y+R*2,z],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.3,.5),bright(C(pick(PAL.comp)),1.15));}}
 function curls(x,y,z,lv){const n=lv===2?ri(1,2):1,hc=vary(pick(PAL.tealGreen),.03,.08,.05);
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.7):0,h=rr(.9,2.2),w=h*rr(.9,1.3);BIO.put('curl',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(irid(PAL.irid.GB,1.15),hc,.35),n:leanN(a,.3+.6*d)});}}
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.7):0,h=rr(.9,2.2),w=h*rr(.9,1.3);BIO.put('curl',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(irid(PAL.irid.GB,1.15),hc,.2),n:leanN(a,.3+.6*d)});}}
 function barrels(x,y,z,lv,st){const n=lv===2?ri(1,3):lv===1?2:1,hc=vary(pick(PAL.pore),.02,.08,.05);
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,1.6):0,r=rr(.35,.8),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;
   BIO.put('barrel',[bx,Y(bx,bz)-.1,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r,r*rr(.8,1.2),r],bright(vary(hc,.02,.06,.05),1.05));st.barrels++;}}

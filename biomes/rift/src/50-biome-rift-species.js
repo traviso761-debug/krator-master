@@ -459,6 +459,13 @@ G.tuft=function(){const pos=[],uv=[],nor=[];
 // a FAN: one vertical quad, base at the origin, up to y=1, local +z its face
 G.fan=function(){const pos=[],uv=[],nor=[];const P=[[-.5,0],[.5,0],[.5,1],[-.5,1]].map(q=>[q[0],q[1],0,q[0]+.5,1-q[1]]);
  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(0,0,1);});return BIO.geo._make(pos,nor,uv);};
+// a FIN CARD (2026-10-26, the owner's fractal frond): the frond strip's arch (BIO.geo.frond) but one card along its whole
+// length, half as wide as long; the frond stands upright in the texture (base at the bottom: v 1 at x 0), u across. 6 tris
+G.finquad=function(){const pos=[],uv=[],nor=[],N=3,P=[];
+ for(let i=0;i<=N;i++){const t=i/N;P.push([t,.32*Math.sin(t*2.2)-.22*t*t]);}
+ for(let i=0;i<N;i++){const a=P[i],b=P[i+1];
+  [[a,-.25],[a,.25],[b,-.25],[a,.25],[b,.25],[b,-.25]].forEach(q=>{pos.push(q[0][0],q[0][1],q[1]);uv.push(q[1]*2+.5,1-q[0][0]);nor.push(0,1,0);});}
+ return BIO.geo._make(pos,nor,uv);};
 // a ROSETTE: three tiers of fleshy bent leaves, vertex-coloured pale at the base and full at the tip, unit radius, origin at the ground
 G.rosette=function(){const pos=[],nor=[],uv=[],col=[];
  const tiers=[[10,1.0,.30,.55],[8,.70,.55,.40],[6,.42,.85,.28]];
@@ -567,7 +574,7 @@ RIFT.MAT={
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
  samphire:BIO.leafMat(TX.samphire,'samphire',{swayW:'(position.y)',swayA:.03,alphaTest:.42}),
  grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
- clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{irid:true,swayW:'(position.y)',swayA:.04,alphaTest:.42}),
+ clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{aN:true,irid:true,swayW:'(position.y)',swayA:.04,alphaTest:.42}),
  under:BIO.leafMat(TX.under,'under',{swayW:'1.0',swayA:.06}),
  beard:BIO.leafMat(TX.beard,'beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  hang:BIO.leafMat(TX.under,'hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
@@ -600,7 +607,7 @@ BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('far',RIFT.farMat(),{label:'Far trees (impostors)'});   // iridescent: see RIFT.farMat
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('frill',BIO.geo.frond(3),M.frill,{attrs:['aN','aC2'],label:'Frill tree fins'});
+BIO.def('frill',RIFT.LIB.frill?G.finquad():BIO.geo.frond(3),M.frill,{attrs:['aN','aC2'],label:'Frill tree fins'});
 BIO.def('pleat',G.fan(),M.pleat,{attrs:['aN','aC2'],label:'Bell palm fans'});
 BIO.def('lobeleaf',BIO.geo.clump(),M.lobeleaf,{attrs:['aN','aC2'],label:'Lobe tree pads'});
 BIO.def('spray',BIO.geo.clump(),M.spray,{attrs:['aN','aC2'],label:'Prism bush sprays'});
@@ -632,7 +639,7 @@ BIO.def('spike',G.tuft(),M.spike,{label:'Yucca spikes'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
 BIO.def('samphire',G.tuft(),M.samphire,{label:'Glasswort'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass tufts'});
-BIO.def('clubmoss',G.tuft(),M.clubmoss,{attrs:['aC2'],label:'Scale-moss'});
+BIO.def('clubmoss',G.tuft(),M.clubmoss,{attrs:['aN','aC2'],label:'Scale-moss'});
 BIO.def('ucard',BIO.geo.clump(),M.under,{label:'Understorey foliage'});
 BIO.def('beard',BIO.geo.ribbon(4,.6,.12),M.beard,{label:'Beard moss'});
 BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});

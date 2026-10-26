@@ -27,29 +27,52 @@ Read before changing anything here. `build.py` prints the open count.
       calls). It costs draw calls (one mesh per item per chunk and range): on weak hardware lower
       `BIO.LOD.scale` or raise `BIO.LOD.chunk`. Chunks switch whole: at 1.2 km and more a chunk of
       heroes becomes stand-ins at once, a pop the thin haze (FogExp2 .0002) does not hide.
+      Stays open 2026-10-26: a core change. The chunking and the range test are core/biome's (BIO.LOD, BIO._lodKey, BIO.lodTick); a finer
+      hero chunk only for the near range (say 400 m sub-chunks merged into the 1.2 km chunk past it) or a dithered cross-fade over the last
+      15% of the range in the shared leaf and bark shaders would answer both halves; neither belongs in the kit.
 - [ ] The highlands (cloud forest, ridgetop) are planted from this kit's fields and could still
       become their own kit; the ridgetop has four species of its own and a garrigue floor.
+      Stays open 2026-10-26: a design call for the owner (a new kit), not a defect of this page.
 - [ ] The zone weights (RIFT.zones) are thresholds on the five fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
+      Stays open 2026-10-26: a note for a host with other fields, not a defect here; retuning the bands would move every tree on this page.
 - [ ] The far shore of the lake (the jungle south of it) and the Rift's walls are
       painted on the sky; a world that already draws its horizon as geometry does not
       need the overlay dome (a second 4096x2048 canvas, ~16 MB of texture).
+      Stays open 2026-10-26: the sky fragments are being moved to core/atmos (the shared sky rollout); left alone.
 - [ ] The streams have no cataracts and do not climb the ridge: they rise at its south
       foot. The savannah's dry wash is a shallow gravel bed with no bank flora of its own.
       Stays open 2026-10-25: a design task (the ground has no drop for a WATER.fall; none invented).
+      2026-10-26 (part done, `src/89w-host-water.js`): there IS a drop: each channel starts at a canyon head 420 m south of the crest, a wall
+      from the ridge (east ~131 m, west ~94 m) straight down to the bed (.55 m). A spring now leaves the ridge top there as a WATER.fall
+      (8 m lip on the last ground-mesh row still on the ridge, thrown at 3.5 m/s so the curtain clears the wall the 15.3 m mesh cell leans out),
+      and each stream's WATER.flow runs the whole channel .45 m over its bed (never rising), meeting the lake's level where the bed dips under
+      it: water from the head to the lake, where before the channel was dry until 430 m from the shore. +4 draw calls where the springs are in
+      view, ~3k triangles. terrainH and BIO.waterH unchanged. A look call for the owner.
+      Stays open 2026-10-26: the streams still do not climb the ridge (that is a carve of terrainH up the south face, which moves every
+      placement near it and the open world's ground), the channel's grade is flat (~.1%, so no rapids), and the wash has no bank flora.
 - [ ] The water's ripples are shader-only, so the scum mats (at the local water level +.04)
       never bob. Fine at any distance; wrong if a world animates its water mesh.
       2026-10-20: the water is core/water's now (lake: WATER.open, a swell of centimetres; streams: WATER.flow), so it does move, and the mats and
       pads still sit at `BIO.waterH` + .04: they do not ride `WATER.heightAt` (an amplitude of a few cm, under the mats' own height). Still open.
       Stays open 2026-10-25: the mats are the floor's baked dress (60), which would need a per-frame ride on the water; not an hour's fix, out of budget.
-- [ ] The scale-moss (`clubmoss`, an iridescent tuft) still uses world-up as its iridescence
+      Stays open 2026-10-26: needs core/water: a vertex chunk that evaluates the surface's swell in GLSL (say `WATER.rideGLSL(surface)`, the same
+      sum of waves `WATER.heightAt` evaluates) that a kit's instanced floaters (BIO.leafMat's vertex hook) could add to their y.
+- [x] The scale-moss (`clubmoss`, an iridescent tuft) still uses world-up as its iridescence
       normal; the curls and rosettes now carry one (`aN`), so their `softC2` (the second colour
       pulled back toward the base for want of a normal) could be relaxed.
+      2026-10-26: the scale-moss carries `aN` too (`M.clubmoss` aN, def attrs; 60 `tuft()` and 65's dress give `leanN(yaw, .35)`
+      from the yaw they already drew, so no placement moved), and softC2 is relaxed: scale-moss .5 -> .35, curls .35 -> .2, the trees'
+      rosettes .6 -> .45, the floor's .3 -> .2. A look call for the owner (the small plants turn further toward their second colour).
 - [ ] The stand-ins' blobs are 20-triangle icosahedra: faceted when a hero chunk switches at
       1.2-2 km; the trees built far are 80-triangle blobs. From afar the jungle's stand-ins read
       bluer and more magenta than the heroes they replace (cyan columns, magenta caps: the far
       impostors' look, which the view already had in its foreground); the lobe trees' and bell
       palms' yellow-green is lost in the blobs.
+      2026-10-26 (part done, 55 buildFar): a stand-in's underside is its leaves' shade (L[2]) instead of the iridescent colour, and it turns
+      less (IRID_LITE .25 against IRID_FAR .4); the far trees keep their look. The shift is small (about 1.6% of the From afar shot's pixels
+      moved, a little less blue). Stays open: the faceting. 80-triangle blobs for the 38,611 stand-ins would add ~2.3-2.8M HELD triangles,
+      over the 27M ceiling (25.7M now); a cheaper round blob (or a normal-bent 20-triangle one) is the next try.
 - [x] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list. 2026-10-20: the host tower hands three shells ({geos, share}: floor plates 1, iron .6, core walls and rubble .4), so the plates no longer take the moss; one test tower is all the host builds (Girder itself is not changed).
 - [ ] No fauna yet.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), done 2026-10-06: every species carries a harvest tag
@@ -90,8 +113,12 @@ Read before changing anything here. `build.py` prints the open count.
       parasol tree; the savannah's purple (Vain fronds, heath, pinecone succulents).
 - [x] Every bole lathe ends in a dome ring (inherited lesson, kept).
 
-- [ ] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
+- [x] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
       cloud frill and barrel frill (`biomes/README.md`, "To do: frill-tree fins"; the Throne's frill tree is the example).
+      2026-10-26: the `frill` slot is `card.frond.fractal` (materials.json: the middle frond, cell [.34,.18,.66,.82], 1024, grey at the
+      old mean so each species' fin colour and its iridescence stay), drawn on a whole-length fin card (`G.finquad`, 50: the old frond
+      strip's arch, half as wide as long, 6 triangles as before) when the pack has it; the procedural page keeps the frond strip. All four
+      frill species share the item, so all four changed. Same triangles and calls; the page grows 340 KB (the 1024 card).
 - [x] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.
 
 ## Export profile: sections left out (2026-10-18)

@@ -38,7 +38,7 @@ function plant(p,s){const k=rng();const y=p[1];
  if(k<.35){const rx=rr(-.08,.08),ry=rng()*TAU,rz=rr(-.08,.08);BIO.put('irosette',[p[0],y,p[2]],qEuler(rx,ry,rz),[s*.8,s*.7,s*.8],C(pick(PAL.jungleGreen)),{c2:iridC2(),n:RIFT.leanN(ry,.5)});}
  else if(k<.6){for(let i=0,n=1+Math.floor(rng()*3);i<n;i++){const a=rng()*TAU,d=i?rr(.2,.6):0,h=s*rr(.8,1.4);BIO.put('curl',[p[0]+Math.cos(a)*d,y,p[2]+Math.sin(a)*d],qEuler(rr(-.15,.15),rng()*TAU,rr(-.15,.15)),[h,h,h],C(pick(PAL.tealGreen)),{c2:C(pick(PAL.irid.GB)),n:RIFT.leanN(a,.3+.6*d)});}}
  else if(k<.7){BIO.put('zebra',[p[0],y,p[2]],qEuler(rr(-.08,.08),rng()*TAU,rr(-.08,.08)),[s*.6,s*.45,s*.6],C(0xffffff).lerp(C(0xe0a0c0),.5));}
- else if(k<.8){BIO.put('clubmoss',[p[0],y-.05,p[2]],qEuler(0,rng()*TAU,0),[s*1.6,s*.6,s*1.6],C(pick(PAL.yellowGreen)),{c2:iridC2()});}
+ else if(k<.8){const ry=rng()*TAU;BIO.put('clubmoss',[p[0],y-.05,p[2]],qEuler(0,ry,0),[s*1.6,s*.6,s*1.6],C(pick(PAL.yellowGreen)),{c2:iridC2(),n:RIFT.leanN(ry,.35)});}
  else{const c=C(pick(PAL.jungleGreen)).offsetHSL(rr(-.1,.1),.05,.02);
   BIO.put('lobe',[p[0],y,p[2]],qEuler(0,rng()*TAU,0),[s,s*.7,s],c.clone().multiplyScalar(.82));
   for(let i=0;i<2;i++)BIO.put('ucard',[p[0]+rr(-.4,.4)*s,y+s*.5,p[2]+rr(-.4,.4)*s],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[s*1.3,s,s*1.3],c.clone().multiplyScalar(rr(.9,1.2)));}}
