@@ -953,7 +953,7 @@
     "normalMap": "ground.normal.webp",
     "roughnessMap": "ground.rough.webp"
    },
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.0,
@@ -963,16 +963,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "39f3f3cfcca03ca2f4d5192870f48c62678711b5",
-    "normal": "fa68c795ec2744dc3a9531bf8a7879387bff44c3",
-    "roughness": "85adfbe0533c73f37f58135fa8c7465ce3bac9cb"
+    "albedo": "d1822cb50c45c25d5e9f6f02e06f0564c80d9604",
+    "normal": "fc6a5969163d446cf07abb4ba15958ac024d90e4",
+    "roughness": "f55780e9e52946a5dc5394bf9169a5ed8f90b61c"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 0.4,
     "keep": 0.0,
     "mean": 0.9,
-    "sourceMean": 0.6714
+    "sourceMean": 0.8123
    }
   },
   "gut": {
@@ -1373,7 +1373,7 @@
     "normalMap": "snow.normal.webp",
     "roughnessMap": "snow.rough.webp"
    },
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.0,
@@ -1383,16 +1383,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "39f3f3cfcca03ca2f4d5192870f48c62678711b5",
-    "normal": "fa68c795ec2744dc3a9531bf8a7879387bff44c3",
-    "roughness": "85adfbe0533c73f37f58135fa8c7465ce3bac9cb"
+    "albedo": "d1822cb50c45c25d5e9f6f02e06f0564c80d9604",
+    "normal": "fc6a5969163d446cf07abb4ba15958ac024d90e4",
+    "roughness": "f55780e9e52946a5dc5394bf9169a5ed8f90b61c"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 0.35,
     "keep": 0.0,
     "mean": 0.92,
-    "sourceMean": 0.6714
+    "sourceMean": 0.8123
    }
   },
   "snowCap": {

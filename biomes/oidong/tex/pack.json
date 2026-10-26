@@ -32,6 +32,34 @@
     "sourceMean": 0.5972
    }
   },
+  "bark.carved": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bark.carved.albedo.webp"
+   },
+   "lib": "bark.carved",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "69e0c22f2ebd19086fde21dc273c8cca2833b272",
+    "normal": "e0100bbb2ce7255215c95fdd31eac2d51b5525fb",
+    "roughness": "6aeda396e8fcbbdb1fc667b13acb86dab5018d8d"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5445319398229262,
+    "sourceMean": 0.5445
+   }
+  },
   "bark.cedar": {
    "breakup": null,
    "card": false,

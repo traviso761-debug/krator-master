@@ -258,7 +258,7 @@
    "metal": 0
   },
   "snow": {
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "scale": [
     3,
     3
@@ -307,7 +307,7 @@
    "metal": 0
   },
   "ground": {
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "scale": [
     5,
     5

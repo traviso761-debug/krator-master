@@ -9,7 +9,7 @@
 - [ ] **No clean drift-snow texture.** The library's two snow sets are trodden (`ground.snow011`, bootprints and grit)
   and patchy (`ground.snow015`, grass through it). The ground and the winter banks use `ground.snow011` as a grey detail
   map at low contrast (`materials.json`, `tint.contrast` 0.35 to 0.4) under a white tint; the bootprints still show
-  faintly. Owed: `ground.snow.drift` (`core/materials/PROMPTS-NEEDED.md` section 19).
+  faintly. Delivered 2026-10-26: `ground.snow.drift` (the `snow` and `ground` families in `materials.json` now point at it; pre-wired, awaiting the all-builds rebuild to show).
 - [ ] **The sheet's ground is a holed plane** (`src/90y-yt-ground.js`): the vendored 90-scene.js lays one flat plane at
   y = 0, and this kit's floors and entries are dug below it, so the plane is rebuilt with a hole for each def that
   declares `holes(o)`. The world pages (the capital, Leng) cut their ground on `core/terrain` instead; the def's holes are

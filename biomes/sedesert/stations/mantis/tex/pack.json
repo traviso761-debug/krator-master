@@ -33,6 +33,38 @@
     "sourceMean": 0.5307
    }
   },
+  "broad": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "files": {
+    "map": "broad.albedo.webp"
+   },
+   "lib": "card.fig",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "42435dd996fa9cc099f363c019d84bca765f3c5c"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.3783
+   }
+  },
   "fern": {
    "breakup": null,
    "card": true,

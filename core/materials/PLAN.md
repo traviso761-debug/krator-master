@@ -1879,6 +1879,31 @@ magenta, `cards.py`, anchor none). All in the library, none wired (the kits they
   `card.crop.greens` (last row the sweet potato vine), `card.orchid.dendrobium` ("Nine Orchid Clumps": thin leaning canes and aerial roots,
   nearer the prompt than "Orchid Specimens"), `card.fin.glass`, `card.tracery.bronze` (rows: stepped, lancet, ring heads; the openings are
   keyed through). All cards keyed with the defaults, no fringe. Left out: `Weathered Ivory Plaster Texture.png` (above).
+- Fourth drop (2026-10-26, batches `owner-2026-10-26d.json` and `owner-2026-10-26d-cards.json`; the `(1)` files are byte-identical re-downloads):
+  surfaces, full colour: `organic.pod.honeycomb` (0.5 m), `ground.beads.orange` (0.5 m; diagonal black bands), `rock.megabreccia` (4 m),
+  `ground.riverweed.red` (1 m), `ground.savanna.litter` (2 m; a paler, browner soil than the prompt's red laterite), `bark.carved` (0.6 m;
+  `bark.carved.b` still owed), `rock.sandstone.liesegang` (4 m), `ice.debris` (4 m), `ground.rust.terrace` (1 m; "Mineral Terrace Pools", chosen over
+  "Rust-Orange Geothermal Terrace" for its smoother, darker pool floors), `ice.rust` (2 m), `rock.loess` (2 m), `rock.palagonite` (2 m),
+  `organic.dusttower` ("Rusty Spiral Fossil Bed": orange whorl bosses on dark silt, 1 m); tintable: `bark.cord.braided` (1 m; banyan roots),
+  `bark.banded.ring` (1 m; palm-trunk bands), `rock.rubble.sturzstrom` (4 m), `rock.tafoni` (1 m; "Tafoni Stone" over "Honeycomb Stone": nested hollows,
+  thin ridges). Cards: `card.begonia.escargot`, `card.cloudberry` (bottom row autumn), `card.edelweiss`, `card.pele.hair`, `card.grass.thatch`
+  (tintable, cream), `card.fig` (tintable), `card.cladonia`, `card.birch.dwarf` (top row summer, the rest autumn red; spill none, key 40/120, as
+  `card.fireweed`), `card.puya` (two rosette rows, one spike row), `card.willow.woolly`. Left out: `Polished Layered Stone Strata Texture.png`
+  (banded sediment with a conglomerate band and a quartz vein: no entry; a strata or badland source for a mesa or canyon kit),
+  `Weathered Cream Paint Texture.png` (cream paint over concrete, like the ivory plaster: no entry; any plastered wall), `Weathered Honeycomb Stone
+  Texture.png` (the smaller-pitted twin of the tafoni), `Rust-Orange Geothermal Terrace Texture.png` (the larger-scale twin of `ground.rust.terrace`).
+  Same drop, second half (files from 08:19, plus one sheet pasted in chat): surfaces `ground.pavement.desert` (1 m), `rock.schist.emerald`
+  (1 m; reads as folded gneiss with calcite veins and green beryl), `ice.lake.saltrim` (2 m), `rock.limestone.opal` (1 m; ammonites
+  with iridescent faces), `organic.cap.violet` (1 m), `ground.wadi.cobble` (2 m; "Multicolored Riverbed Pebble" over the duller twin),
+  `bark.plane` (1 m), `organic.pleat.skin` (1 m), `stone.geode.druze` (0.3 m), `organic.lace.copper` (1 m; the paler, thinner-laced of the
+  two "Turquoise Lichen" takes), `rock.marl.blue` (2 m), `ground.biocrust.fog` (1 m), `ground.snow.drift` (tintable, 4 m); cards
+  `card.outlands.scrub` (rows: sac brush, cushion, ember scrub), `card.guyedstalk` (spill none: the red petals), `card.cone.spiral`,
+  `card.broadleaf.cloud`, `card.broadleaf.dry`, `card.epiphyte.garden`, `card.osmanthus` (spill none), `card.fogcomber` (the "Wet Fringe and
+  Patina Comb" sheet over "Droplet Curtains and Rusted Combs"; choke 2, key 80/200: its teeth are finer), `card.outlands.crust` (the owner's
+  chat sheet: rows needle fur, rosettes and pebble mats, pebble mat and salt fans; spill none for the pink cores; the ember tips of row 1 key
+  slightly pink). Pre-wired for the final rebuild (no pages rebuilt): `biomes/oidong` (`bark.carved` on bark7, a lib hook in
+  `50-biome-oidong-species.js`), `biomes/sedesert/stations/mantis` (`broad` = `card.fig`), `biomes/abyssal-savannah` (`thatch` and
+  `groundDetail`), `biomes/nwouterwall` (birch, willow, cloud, deer, edel; cloudberry and caribou moss become upright tufts).
 
 #### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
 
