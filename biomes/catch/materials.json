@@ -1,0 +1,261 @@
+{
+ "build": "catch",
+ "note": "The Catch kit's adapter onto the material library (core/materials/PLAN.md). ground.* are the painted ground's layers (45c-host-ground.js, blended per vertex by the stage's fields); rock.* the lake-bed mesas (46-host-rock.js); bark0/bark1 the kit's bark buckets (MAT.bark, BIO.libSwap); poplar, tamarisk, reed, saltbush and brinelamp are the owner's nine-cell sheets, full colour, each item cutting its own cell in its uv (cellUV in 50-biome-catch-species.js), so no pack cell. Run python3 tools/textures/pack.py biomes/catch after a change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.dune": {
+   "lib": "ground.sand.dune",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.reg": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.soda": {
+   "lib": "ground.soda.crust",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.ochre": {
+   "lib": "ground.salt.ochre",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.algal": {
+   "lib": "ground.lakebed.algal",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.silt": {
+   "lib": "rock.yardang.silt",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.crust": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.72
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.reedbed": {
+   "lib": "ground.reedbed",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "rock.wall": {
+   "lib": "rock.badland.bedded",
+   "scale": [
+    14.0,
+    14.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "rock.top": {
+   "lib": "rock.yardang.silt",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "bark0": {
+   "lib": "bark.poplar.euphrates",
+   "scale": [
+    2.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark1": {
+   "lib": "bark.saxaul",
+   "scale": [
+    1.2,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "poplar": {
+   "lib": "card.poplar.euphrates",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "tamarisk": {
+   "lib": "card.tamarisk",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "saltbush": {
+   "lib": "card.saltbush",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "brinelamp": {
+   "lib": "card.brinelamp",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  }
+ }
+}
