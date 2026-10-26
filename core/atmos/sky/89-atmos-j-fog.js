@@ -23,7 +23,10 @@
 // band are this chunk as a .gdshaderinc in the ground and plant shaders (GODOT.md, "Height fog").
 (function(){const A=ATMOS;
  // optical depth (per unit density) of exp(-b (y - y0)) along ro + rd t, t in [0, L]
- A.fogLayer=(b,y0,roy,rdy,L)=>{const e=Math.exp(-Math.max(-30,Math.min(30,b*(roy-y0)))),k=b*rdy*L,f=Math.abs(k)<1e-4?1-.5*k:(1-Math.exp(-k))/k;return e*L*f;};
+ // (the difference of the two ends' densities over b rdy: no exp(-k) to overflow against a vanishing start density on a long
+ // falling ray; the pool calls it only above its level, so neither exponent is positive)
+ A.fogLayer=(b,y0,roy,rdy,L)=>{const k=b*rdy*L,e0=Math.exp(-Math.max(-30,b*(roy-y0)));if(Math.abs(k)<1e-4)return e0*L*(1-.5*k);
+  return(e0-Math.exp(-Math.max(-30,b*(roy+rdy*L-y0))))/(b*rdy);};
  // a pool: density 1 below lvl, exp(-b (y - lvl)) above it
  A.fogPool=(b,lvl,roy,rdy,L)=>{const y1=roy+rdy*L;if(roy<lvl&&y1<lvl)return L;if(roy>=lvl&&y1>=lvl)return A.fogLayer(b,lvl,roy,rdy,L);
   const tc=(lvl-roy)/rdy;return roy<lvl?tc+A.fogLayer(b,lvl,lvl,rdy,L-tc):A.fogLayer(b,lvl,roy,rdy,tc)+(L-tc);};
@@ -52,7 +55,8 @@
  A.fogGLSL=()=>['#ifndef ATM_FOG_CHUNK','#define ATM_FOG_CHUNK',
   'uniform vec4 atmFogH;uniform vec4 atmFogMist;uniform vec4 atmFogBand;uniform vec4 atmFogX;uniform vec3 atmFogSunDir;uniform vec3 atmFogSunC;uniform vec3 atmFogZen;uniform vec2 atmFogDrift;',
   /* atmFogH: falloff, ref, sun, sky; atmFogMist: density, level, 1/depth, noise; atmFogBand: density, bottom, top, cover; atmFogX: shape (1 exp2, 0 exp), compress start, compress scale, band noise */
-  'float atmFogLayer(float b,float y0,float roy,float rdy,float L){float e=exp(-clamp(b*(roy-y0),-30.0,30.0));float k=b*rdy*L;float g=abs(k)<1e-4?1.0-0.5*k:(1.0-exp(-k))/k;return e*L*g;}',
+  'float atmFogLayer(float b,float y0,float roy,float rdy,float L){float k=b*rdy*L;float e0=exp(-max(-30.0,b*(roy-y0)));if(abs(k)<1e-4)return e0*L*(1.0-0.5*k);',
+  ' return (e0-exp(-max(-30.0,b*(roy+rdy*L-y0))))/(b*rdy);}',
   'float atmFogPool(float b,float lvl,float roy,float rdy,float L){float y1=roy+rdy*L;if(roy<lvl&&y1<lvl)return L;if(roy>=lvl&&y1>=lvl)return atmFogLayer(b,lvl,roy,rdy,L);',
   ' float tc=(lvl-roy)/rdy;return roy<lvl?tc+atmFogLayer(b,lvl,lvl,rdy,L-tc):atmFogLayer(b,lvl,roy,rdy,tc)+(L-tc);}',
   'vec2 atmFogSlab(float y0,float y1,float roy,float rdy,float L){if(abs(rdy)<1e-5)return (roy>y0&&roy<y1)?vec2(L,0.5*L):vec2(0.0);float t0=(y0-roy)/rdy,t1=(y1-roy)/rdy;float lo=max(0.0,min(t0,t1)),hi=min(L,max(t0,t1));return hi>lo?vec2(hi-lo,0.5*(lo+hi)):vec2(0.0);}',

@@ -29,6 +29,6 @@ ATMOS.rainCover({renderer});
 // ground under the eye and thins fast above it (the snow crown stands clear, the far flank below hazes); at dawn a cold mist
 // pools in the ground 80 m under the eye (the bench, the lake, the outwash). The weather's law above keeps writing the fog's
 // density and colour: this fog reads them
-ATMOS.heightFog({falloff:1/1100,sun:.5,sky:.45,mist:{density:.004,below:80,depth:35,noise:.7}});ATMOS.heightFogScene(scene);window._snowDepth=d=>{ATMOS.snow.depth=d;};
+ATMOS.heightFog({falloff:1/1100,sun:.5,sky:.45,mist:{density:.001,below:80,depth:35,noise:.7}});ATMOS.heightFogScene(scene);window._snowDepth=d=>{ATMOS.snow.depth=d;};
 ATMOS.finish();
 // the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

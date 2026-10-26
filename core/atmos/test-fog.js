@@ -18,6 +18,8 @@ const num=(dens,roy,rdy,L,n)=>{let s=0;n=n||20000;for(let i=0;i<n;i++){const y=r
 {const b=1/40,lvl=300,dn=y=>y<lvl?1:Math.exp(-b*(y-lvl));let worst=0;
  for(const [roy,rdy,L] of [[280,.1,500],[350,-.3,400],[200,.05,300],[400,.2,600],[250,0,900]])worst=Math.max(worst,Math.abs(A.fogPool(b,lvl,roy,rdy,L)-num(dn,roy,rdy,L))/Math.max(1,num(dn,roy,rdy,L)));
  ok('the pool (full below its level, thinning above) is exact across the level (5 rays)',worst<2e-3,A.fogPool(b,lvl,350,-.3,400)===A.fogLayer(b,lvl,350,-.3,400));}
+{const v=A.fogPool(1/45,260,1709,-.25,2800),w=A.fogPool(1/45,260,1709,-.25,7000);
+ ok('a long ray falling from far above a thin mist pool picks up none of it until it reaches it (no overflow: nhighlands\' dawn white-out)',v<1e-3&&w>1000,v>1);}
 {const q=A.fogSlab(1000,1200,0,.5,4000),r=A.fogSlab(1000,1200,0,-.5,4000);ok('the band: a ray climbing through 1000..1200 m spends 400 m in it, a falling one none',near(q[0],400,1e-9)&&near(q[1],2200,1e-9)&&r[0]===0,q[0]===0);}
 // the twin: a level view at the reference height is FogExp2 exactly; a view up to a peak sees less; the mist adds in low ground
 {const F={density:.0002,colour:[.6,.65,.7],falloff:1/900,ref:0,shape:'exp2'},a=A.fogAt([0,0,0],[3000,0,0],F).amount,e2=1-Math.exp(-Math.pow(.0002*3000,2));

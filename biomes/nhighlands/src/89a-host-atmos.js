@@ -13,7 +13,7 @@ ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:GROUND?[GROUND.material]:
 // lower old growth and the stream's lower valley (below 260 m, the NW corner); a broken band of cloud hangs just over the crest.
 // The page's fog chunk is exponential and compresses past 4 km (82-host-sky.js): the same shape here
 ATMOS.heightFog({falloff:1/850,shape:'exp',compress:[4000,5000],sun:.35,sky:.35,
- mist:{density:.0045,y:260,depth:45,noise:.7},band:{density:.0016,y:[1560,1720],cover:.38,noise:1}});
+ mist:{density:.0012,y:260,depth:45,noise:.7},band:{density:.0016,y:[1560,1720],cover:.38,noise:1}});
 ATMOS.heightFogScene(scene);
 // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or fresh snow under the old growth's crowns
 ATMOS.rainCover({renderer});

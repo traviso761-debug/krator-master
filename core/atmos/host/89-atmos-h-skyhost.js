@@ -14,9 +14,8 @@
  A.sky=function(P,o){const T=A.T,r=o.renderer,cam=o.camera,scene=o.scene,SKY=A.SKY;
   const site=()=>P.site.latitude!=null?P.site:A.siteAt(P.site.px,P.site.py);
   const clock=o.clock||KCLOCK.make({hour:SKY.startHour,day:0,running:false});
-  // the page's hour is the sky's now: the host's panel shows the hour slider and run / hold (core/host 92-host-panel.js reads
-  // KHOST.wantHour; the swbay-template pages pass no clock.onSet, so they had none: X3). o.clock reads the host's clock
-  if(typeof KHOST!=='undefined')KHOST.wantHour=true;
+  // the page's hour is the sky's now: the host's panel shows the hour slider and run / hold on any page with ATMOS.skyUniforms
+  // (core/host 92-host-panel.js; the swbay-template pages pass no clock.onSet, so they had none: X3)
   const V3=()=>new T.Vector3(),C3=()=>new T.Color();
   const U={uSunDir:{value:V3()},uGiantDir:{value:V3()},uPole:{value:V3()},uRingN:{value:V3()},uZen:{value:C3()},uHor:{value:C3()},uSunHor:{value:C3()},
    uSunC:{value:C3()},uExt:{value:V3()},uShineC:{value:C3()},uCluster:{value:V3()},uFogC:{value:C3()},uSunI:{value:1},uHazeFloor:{value:.1},uDayStars:{value:0},
