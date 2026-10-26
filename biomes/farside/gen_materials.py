@@ -39,6 +39,7 @@ FAM = {
     'heap': surf('ground.wrack', 1.5, keep=1.0),                        # wrack heaps and windrows (delivered 2026-10-26)
     'crust': surf('organic.sponge', .6, keep=1.0),                      # fog sponge crusts on bark and rock (delivered 2026-10-26)
     'brain': surf('organic.coral.brain', .8, keep=.3, mean=.75),        # coral heads on the terraces
+    'coralstem': surf('stone.coral', .6, keep=.25, mean=.8),           # the 3D colonies (staghorn, plates, the terrace lips), tinted by the instance
     # THE HOST (47-host-land.js): the ground's layers, full colour
     'ground.sand': surf('ground.damp_beach_sand', 2.0),
     'ground.wrack': surf('ground.wrack', 1.5),

@@ -247,6 +247,20 @@
    "specular": 0.2,
    "mapOnly": true
   },
+  "coralstem": {
+   "lib": "stone.coral",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
   "ground.sand": {
    "lib": "ground.damp_beach_sand",
    "scale": [

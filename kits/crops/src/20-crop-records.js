@@ -64,6 +64,7 @@ R('lakecake', 'Lakecake', 'alga', [3, 4], [0, 1], {water: 'aquatic', needs: 'sal
 R('kelp', 'Land kelp (kombu)', 'alga', [3, 4], [3, 4], {also: ['greens'], needs: 'salt', card: 'card.kelp.0', home: ['farside'], src: 'farside', stores: ['dried'], note: 'the blades of the land kelp, cut and dried: the coast staple; the stipes go to the kilns for kelp ash'});
 R('wineweed', 'Wine weed (nori)', 'alga', [2, 4], [3, 4], {also: ['greens', 'sheet', 'dye'], colour: 'red', card: 'card.wineweed', home: ['farside'], src: 'farside', stores: ['dried', 'pressed'], note: 'red sheets pressed and dried as nori; boiled down for agar (glue, sizing); its crimson a red dye (proposed)'});
 R('sea-lettuce', 'Sea lettuce', 'greens', [3, 4], [3, 4], {needs: 'salt', card: 'card.kelp.1', home: ['farside'], src: 'farside', note: 'the emerald sheets on every wet surface of the kelp coast'});
+R('sea-grapes', 'Sea grapes', 'greens', [3, 4], [3, 4], {needs: 'salt', home: ['farside'], src: 'farside', note: 'Caulerpa runners on the kelp forest floor, the bead chains eaten fresh'});
 
 /* ---- produce: vegetable, greens, mushroom, fruit, berry, dried-fruit */
 R('yucca-stalk', 'Roasted yucca stalk', 'vegetable', [3, 5], [0, 1], {card: 'card.sword', src: 'ebadlands', home: ['ebadlands', 'crater-drylands']});

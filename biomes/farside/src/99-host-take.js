@@ -33,12 +33,12 @@ function describe(hit){const p=hit.point,o=hit.object;
 
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 const BUDGET={
- showcase:{tris:12000000,calls:420},
- cls:{pass:7000000,host:2500000},
+ showcase:{tris:16000000,calls:460},   /* Korona's (2026-10-26: the kelp forest's understorey and the 3D coral raised it) */
+ cls:{pass:9000000,host:2500000},
  type:{'farside/stands':'pass','farside/floor':'pass','farside/dress':'pass','nwlow/trees':'pass','nwlow/floor':'pass','host':'host'},
 };
 // the crops kits/crops files Farside's yields under (kits/crops/src/20-crop-records.js, 22-crop-material.js: the farside rows)
-const FARSIDE_CROPS=['kelp','wineweed','sea-lettuce','wrack','coral-lime','eelgrass','kelp-ash'];
+const FARSIDE_CROPS=['kelp','wineweed','sea-lettuce','sea-grapes','coral-lime','eelgrass','kelp-ash'];
 const instOf=re=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!re.test(M.name))return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push({x:p.x,y:p.y,z:p.z,q:q.clone(),name:M.name});}});return o;};
 const HCHK={
@@ -73,7 +73,9 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.take({build:'farside',title:'Krator biome — '+STAGE.name,
  hint:STAGE.name+': the sea\'s plants come ashore (land kelp, storm wrack, spray coral, eelgrass, sea palms, wine weed, sea lettuce, fog sponges, anemones)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:()=>SKY.render(),
+ /* the hour slider and run / hold in the panel (core/host shows them when the page takes the hour: onSet; the sky reads the clock
+    each frame, so there is nothing more to do); the page opens at 10:00, in full daylight (the owner, 2026-10-26) */
+ clock:{hour:STAGE.hour==null?10:STAGE.hour,onSet:h=>{}},draw:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'works and ground':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

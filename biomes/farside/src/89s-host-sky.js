@@ -4,7 +4,7 @@
 // cluster and the clouds at the host clock's hour and day, and sets the sun, the hemisphere, the fog and the exposure from
 // the colour script. Farside's air is the wettest on the map (humidity .95, a heavy cloud cover, the sea fog's density). No
 // painted ridges: the far country (47-host-land.js) is real terrain, and the coast opens to the only ocean.
-// The page opens at 06:00 on game start's day; #hour=, #day= and #time=run move it, as the host's slider does.
+// The page opens at 10:00 on game start's day (99-host-take.js); #hour=, #day= and #time=run move it, as the host's slider does.
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
 const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.startHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},

@@ -44,7 +44,7 @@ function streamDir(spray,k){const w=WIND(),dip=-lerp(.75,.28,clamp(spray*1.4,0,1
 FARSIDE.streamDir=streamDir;
 // ---------------------------------------------------------------- the LAND KELP: a stand from one tangle of holdfasts
 // T: {x, z, y0, H, n (stipes), form 'giant'|'bull', spray, seed, lv 2 near, 1 mid}
-function buildKelp(T,st){reseed(T.seed);const w=WIND(),bull=T.form==='bull',lv=T.lv,blades=['blade0','blade1','blade2'];
+function buildKelp(T,st){reseed(T.seed);const w=WIND(),bull=T.form==='bull'||T.form==='elk',lv=T.lv,blades=['blade0','blade1','blade2'];
  const stipeC=()=>vary(C(pick(PAL.stipe)),.01,.06,.05),baseC=C(pick(PAL.stipeBase));
  // the holdfast: a tangle of root-like haptera splaying from the foot over the ground
  const nh=lv>1?ri(6,10):3;for(let i=0;i<nh;i++){const a=rr(0,TAU),L=rr(1,2.6)*(T.H/30),pts=[];
@@ -57,8 +57,16 @@ function buildKelp(T,st){reseed(T.seed);const w=WIND(),bull=T.form==='bull',lv=T
   for(let k=0;k<=seg;k++){const t=k/seg,y=T.y0+H*t;pts.push({x:bx+lx*H*t*t+bow*H*Math.sin(t*Math.PI),y,z:bz+lz*H*t*t-bow*H*Math.sin(t*Math.PI)*.5,r:rb*lerp(1.25,.45,t)*(1+.25*smooth(.25,0,t)),col:t<.18?baseC:col});}
   st.tris+=BIO.tube('stipe',pts,col,{seg:lv>1?6:4});st.stipes++;
   const top=pts[seg];
+  if(T.form==='elk'){// ELK KELP (Pelagophycus): a float at the top and two antler arms from it, each hung with big blades
+   const br=rr(.22,.34)*(T.H/30+.4),fy=top.y+br*.4;BIO.put('bulb',[top.x,fy,top.z],null,[br,br*1.15,br],vary(C(pick(PAL.bladder)),.01,.05,.05));st.bladders++;
+   for(const sd of [-1,1]){const ax=-w[1]*sd,az=w[0]*sd,L=rr(1.6,2.6)*(T.H/30+.4),ap=[{x:top.x,y:fy,z:top.z,r:rb*.5}];
+    for(let k=1;k<=3;k++){const t=k/3;ap.push({x:top.x+ax*L*t+w[0]*L*.3*t,y:fy+L*.35*Math.sin(t*2.2),z:top.z+az*L*t+w[1]*L*.3*t,r:rb*.5*(1-.5*t)});}
+    st.tris+=BIO.tube('stipe',ap,col,{seg:4});
+    const nb=lv>1?ri(5,8):3;for(let b=0;b<nb;b++){const t=rr(.3,1),k=Math.min(2,Math.floor(t*3)),p=ap[k],q=ap[k+1],f=t*3-k,L2=rr(4,8)*(T.H/30+.3),d=streamDir(T.spray,1);
+     BIO.put(pick(blades),[lerp(p.x,q.x,f),lerp(p.y,q.y,f),lerp(p.z,q.z,f)],qHang(d,rr(0,TAU)),[L2*rr(.38,.52),L2,1],pick(PAL.blade));st.blades++;}}
+   continue;}
   if(bull){// BULL KELP: one float the size of a head at the top, a mop of long blades streaming from it
-   const br=rr(.28,.45)*(T.H/30+.4);BIO.put('bladder',[top.x,top.y+br*.5,top.z],null,[br,br*1.25,br],vary(C(pick(PAL.bladder)),.01,.05,.05));st.bladders++;
+   const br=rr(.28,.45)*(T.H/30+.4);BIO.put('bulb',[top.x,top.y+br*.5,top.z],null,[br,br*1.25,br],vary(C(pick(PAL.bladder)),.01,.05,.05));st.bladders++;
    const nb=lv>1?ri(12,18):6;for(let b=0;b<nb;b++){const L=rr(4,8)*(T.H/30+.3),d=streamDir(T.spray,1);BIO.put(pick(blades),[top.x,top.y+br*.4,top.z],qHang(d,rr(0,TAU)),[L*rr(.32,.45),L,1],pick(PAL.blade));st.blades++;}
    continue;}
   // GIANT KELP: a bladder and its blade every metre and a half up the top two thirds, alternating sides; a crown of long
@@ -66,7 +74,7 @@ function buildKelp(T,st){reseed(T.seed);const w=WIND(),bull=T.form==='bull',lv=T
   const step=lv>1?rr(1.3,1.8):rr(2.6,3.4);
   for(let y=H*.3;y<H*.97;y+=step){const t=y/H,k=Math.min(seg-1,Math.floor(t*seg)),f=t*seg-k,p=pts[k],q=pts[k+1],x=lerp(p.x,q.x,f),yy=lerp(p.y,q.y,f),z=lerp(p.z,q.z,f);
    const side=((y/step)|0)%2?1:-1,ox=-w[1]*side*.18,oz=w[0]*side*.18,bs=rr(.08,.2)*(T.H/30+.4);
-   if(lv>1){BIO.put('bladder',[x+ox,yy,z+oz],null,[bs,bs*1.6,bs],vary(C(pick(PAL.bladder)),.01,.06,.06));st.bladders++;}
+   if(lv>1&&((y/step)|0)%2===0){BIO.put('bladder',[x+ox,yy,z+oz],null,[bs,bs*1.6,bs],vary(C(pick(PAL.bladder)),.01,.06,.06));st.bladders++;}
    const L=rr(2.6,5.5)*(T.H/30+.35),d=streamDir(T.spray,1);BIO.put(pick(blades),[x+ox,yy+bs*.5,z+oz],qHang(d,rr(0,TAU)),[L*rr(.34,.48),L,1],pick(PAL.blade));st.blades++;}
   const nc=lv>1?ri(8,13):4;for(let b=0;b<nc;b++){const L=rr(3.5,7.5)*(T.H/30+.3),d=streamDir(T.spray,1);BIO.put(pick(blades),[top.x,top.y,top.z],qHang(d,rr(0,TAU)),[L*rr(.3,.42),L,1],pick(PAL.blade));st.blades++;}}
 }
@@ -94,7 +102,7 @@ FARSIDE.buildStands=function(R,q,opt){opt=opt||{};q=q==null?1:q;FARSIDE._R=R;con
  // wind-cut in the spray; seedlings ahead of it at the front
  FARSIDE.kgrid('kelp',17/Math.sqrt(q),Z=>(Z.sand>.35||Z.coral>.45||Z.rock>.45)?0:Z.kelpcoast*(1-Z.sand)*(1-Z.coral*.9)*(1-Z.rock)*(1-Z.graze*.8)*(1-Z.burn)*.5+Z.front*(1-Z.burn)*.12,(x,y,z,seed,Z)=>{
   const r=3.2;if(!clear(x,z,r))return;const fr=Z.front>.3,s=KRAND.stream(seed);
-  const T={x,z,y0:y,seed,spray:Z.spray,form:s.next()<.16?'bull':'giant',n:fr?1:2+Math.floor(s.next()*4),
+  const T={x,z,y0:y,seed,spray:Z.spray,form:(f=>f<.14?'bull':f<.24?'elk':'giant')(s.next()),n:fr?1:2+Math.floor(s.next()*4),
    H:(fr?lerp(4,12,s.next()):lerp(20,40,s.next()))*lerp(1,.45,smooth(.8,1,Z.spray)),lv:lvOf(x,z),key:'landkelp'};
   sp.push({x,z,r});S.push(T);},{pad:1});
  // THE DEAD: drowned kauri and meranti standing in the front, the sea's weed hung from them

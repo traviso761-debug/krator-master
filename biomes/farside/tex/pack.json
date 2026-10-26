@@ -171,6 +171,34 @@
     "sourceMean": 0.5453
    }
   },
+  "coralstem": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "coralstem.albedo.webp"
+   },
+   "lib": "stone.coral",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "1b2da64ae15e8db9b73949a8a16b5d5217e192cc",
+    "normal": "ceeaadab11a25b82f71bfa01953580a7c7d462de",
+    "roughness": "aa44ffccb6a0a468b3d27080c7d9a784677d6960"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.25,
+    "mean": 0.8,
+    "sourceMean": 0.7402
+   }
+  },
   "crust": {
    "breakup": null,
    "card": false,

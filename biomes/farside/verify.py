@@ -43,8 +43,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # The export profile (core/export/README.md, "Profiles"): the sections a tile of this kit must fill, checked under --assert
 # over EXPORT_BOX (a strand of the coast, or an inland station's stream). Sampled terrain (no krator-field). --profile a,b,c
 # replaces the list for one run.
-EXPORT_BOX = [-620, -620, -300, -300]   # station 1: the strand by the cove (the sea, the coral, the kelp); the other stations' boxes by page name. Every box holds a core/water record
-EXPORT_BOXES = {'farside-strand.html': [-620, -620, -300, -300], 'farside-front.html': [-160, -160, 160, 160], 'farside-cloud.html': [-160, -160, 160, 160]}
+EXPORT_BOX = [-480, -480, -160, -160]   # station 1: the strand by the cove (the sea, the coral, the kelp); the other stations' boxes by page name. Every box holds a core/water record
+EXPORT_BOXES = {'farside-strand.html': [-400, -400, 250, 250], 'farside-front.html': [-160, -160, 160, 160], 'farside-cloud.html': [-160, -160, 160, 160]}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']   # atmos, water: core/atmos and core/water (89w-host-water.js)
 
 # Structure names contain em dashes; the Windows console default codepage

@@ -79,6 +79,8 @@ const WORKS=[];
   WORKS.push({kind,x:p[0],z:p[1],y,r:info.r});REGISTER(rec);OBSTACLES.push({x:p[0],z:p[1],r:info.r+1.5,y0:y-3,y1:y+info.h+4});});
  for(const k in BUF){const B=BUF[k];if(!B.pos.length)continue;const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(B.pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(B.nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(B.uv,2));
-  const m=new THREE.Mesh(g,MATS[k]);m.userData.host=true;m.userData.inspectLabel='The works ('+k+')';scene.add(m);}
+  const m=new THREE.Mesh(g,MATS[k]);m.userData.host=true;m.userData.inspectLabel='The works ('+k+')';
+  m.userData.probePoints=[].concat(...WORKS.map(o=>[o.x,o.y+.5,o.z]));   /* one point a work: the probe finds each work in its registered volume */
+  scene.add(m);}
  window._works=WORKS.length;
 })();
