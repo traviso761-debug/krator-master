@@ -27,7 +27,7 @@ ok(G.prospect('iron', 1000 * PM, 700 * PM) >= 0 && G.at(1000 * PM, 700 * PM) && 
 ok(DATA.families.every(f => DATA.layers[f]), 'every family has a layer');
 
 /* ---- the field: deterministic, streamable (any tile alone), every node kept by the rule */
-const T0 = { x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM };   /* ~120 km round Kautoa and Valapo */
+const T0 = { x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM };   /* 120 km of the eastern uplands */
 const A = G.nodesIn(T0), B = G.nodesIn(T0);
 ok(A.length > 50 && JSON.stringify(ids(A)) === JSON.stringify(ids(B)), 'deterministic (' + A.length + ' nodes)');
 { const mx = (T0.x0 + T0.x1) / 2, mz = (T0.z0 + T0.z1) / 2, q = [];

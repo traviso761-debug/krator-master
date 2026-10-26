@@ -12,7 +12,7 @@
   sulfur:'#f0e030',saltpeter:'#f4f1e8',oil:'#5a4430',gypsum:'#cfc4ae',halite:'#ffffff',potash:'#d8604e',alkali:'#f0b48a',stone:'#999',clay:'#b07a50',wood:'#3a8a3a',water:'#4a8ad8'};
  const PROV=[[46,70,110],[176,160,112],[128,128,138],[170,62,40],[236,234,226],[60,140,100]];
  const LG=typeof RES_LEDGERDATA!=='undefined'?RES_LEDGERDATA:null;
- let built=false,fam='all',win={px:1130,py:690,km:120},stats=null,cv,zv,info,panel,keyBox;
+ let built=false,fam='all',win={px:692,py:395,km:120},stats=null,cv,zv,info,panel,keyBox;
  const el=(t,css,par,txt)=>{const e=document.createElement(t);if(css)e.style.cssText=css;if(txt!=null)e.textContent=txt;if(par)par.appendChild(e);return e;};
  function inPoly(P,x,y){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
  function drawWorld(){const g=cv.getContext('2d'),im=g.createImageData(W,H),pr=[];
@@ -58,7 +58,7 @@
  function open(){if(!panel){panel=KHOST.panel('geomap','Geology and nodes (G)',null,'right:14px;top:70px;max-height:92vh;overflow:auto');}
   panel.style.display='';panel.classList.remove('min');if(panel._paint)panel._paint();if(!built)build();return stats;}
  function close(){if(panel)panel.style.display='none';}
- {const b=el('button','position:fixed;left:14px;bottom:14px;z-index:20;font:12px system-ui;padding:4px 9px;background:#2a2a2a;color:#eee;border:1px solid #666;cursor:pointer',document.body,'Geology map (G)');
+ {const b=el('button','position:fixed;left:560px;bottom:14px;z-index:20;font:12px system-ui;padding:4px 9px;background:#2a2a2a;color:#eee;border:1px solid #666;cursor:pointer',document.body,'Geology map (G)');
   b.onclick=()=>{if(panel&&panel.style.display!=='none'&&built)close();else open();};}
  addEventListener('keydown',e=>{if((e.key==='g'||e.key==='G')&&!e.ctrlKey&&!e.metaKey&&!(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))){if(panel&&panel.style.display!=='none'&&built)close();else open();}});
  window._geomap={open:open,close:close,stats:()=>stats,family:f=>{fam=f;if(built){drawWorld();drawWindow();}return stats;},
