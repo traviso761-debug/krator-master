@@ -76,16 +76,22 @@ on the upper flank; the hyperjungle's savannah rim at the low end.
 ## 4. Landforms (`core/terrain`)
 
 - **Flow fronts**: each step ends in a **lobate flow front** tens of metres high, the god's step; **frozen lava falls**
-  where a flow poured over the next lip.
+  where a flow poured over the next lip. Where a rille or the valley's side cuts the stack, the flows show as a
+  **staircase of flat-topped benches**, one per flow, as the Faroes' flood basalts do (`refs/07`): a "trap", the old
+  word for these steps.
 - **Mare floors**: each step's floor a smooth dark plain of ponded flows, crossed by low ridges and pressure plates.
 - **Sinuous rilles**: lava-carved canyons meandering down the steps, 1-3 km wide and a few hundred metres deep, their walls
   colonnaded (the Moon's Hadley Rille, with no water in it); **lava tubes** and **pit chains** along the tube-fed flows.
 - **Kipukas**: islands of older ground the flows went round, with older soil and older flora.
 - **Lava-dammed basins**: closed basins behind the flow fronts on the upper steps, playas in the cold desert
   (Vali de Daridel's at 2,693 m).
-- **Black sand**: dunes of ilmenite and basalt sand on the cold-desert steps, as on Iceland's black sand plains.
+- **Black sand**: dunes of ilmenite and basalt sand on the cold-desert steps, as on Iceland's black sand plains, with
+  old cones standing out of it under a skin of bright moss (`refs/08`, Mælifell).
+- **Falls off the steps**: where a stream reaches a step's lip it falls into a canyon cut through the stack of flows, the
+  flows banded in the walls, the plateau above rust and moss (`refs/09`, Háifoss).
 - **The flank vent** (if added): a cinder cone at the valley's head, its crater **red with oxidised scoria**, a
-  spring-fed moss lawn and stream in its floor (`refs/04`).
+  spring-fed moss lawn and stream in its floor (`refs/04`); an older, larger crater beside it holds a **lake**, its
+  inner slopes divided by the Talovolci's **stone field walls** (`refs/06`, Corvo's caldera).
 - **Laterite breakaways** at the low end: red cliffs and gullied red slopes under a forest edge (`refs/05`).
 
 The fields and seeds are deterministic from the terrain (`KRAND` by cell), as every kit's.
@@ -105,16 +111,17 @@ The fields and seeds are deterministic from the terrain (`KRAND` by cell), as ev
 2. **The rille** (`-rille`, ~2 km): a colonnaded rille wall with its overhanging fan of columns, the Talovolci's red
    stalk fields and a spring on its floor, a pit chain above.
 3. **The flank vent** (`-vent`, optional, the valley's head, ~4-5 km): the red cinder crater with its spring and moss
-   lawn (the vent on the model in 4.23 if the owner wants it).
+   lawn, and the older crater beside it with its lake and walled fields (the vent on the model in 4.23 if the owner
+   wants it).
 4. **The redlands** (`-redlands`, the low end, ~0.6-1 km, Cfa): laterite breakaways, red gullies, the forest closing in
    toward the hyperjungle.
 
 ## 7. Textures
 
 In the library: `ground.lava.aa`, `ground.lava.crust`, `ground.sand.black`, `ground.scoria`, `ground.cinder`,
-`rock.basalt.*`, `rock.columnar`. To source or generate (generic ids; the prompts in `core/materials/PROMPTS-NEEDED.md`
-in D0): a **colonnade** wall (regular columns under a fanned hackly tier), **palagonite** (shared with `godthrone`),
-**laterite** (red, gullied, iron-crusted), **red scoria** (oxidised), the red stalk's card.
+`rock.basalt.*`, `rock.columnar`. The colonnades take `rock.columnar`, the red scoria
+`ground.scoria` tinted. To generate (`core/materials/PROMPTS-NEEDED.md` sections 15 and 18, 2026-10-26):
+`rock.palagonite` (shared with `godthrone`), `rock.laterite`, `card.guyedstalk`.
 
 ## 8. Order of work
 

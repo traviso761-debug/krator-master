@@ -136,6 +136,10 @@ Two strata recipes for `core/terrain/STRATA-PLAN.md` (added there on approval):
 - **The dry-cold line and the orange belt** (~7-9 km): where meltwater reaches the glass a few days a year it turns to
   palagonite, so the black and orange halos fade downslope into **ochre and rust-orange**; tafoni and honeycomb rock in
   the salt-weathered flows.
+- **Palagonite ridges**: in the orange belt the soft altered glass weathers into knife-edged ridges and deep gullies
+  that hold snow all summer, moss on the lower slopes (`refs/05`).
+- **The ice belt's edge**: the ice cap ends over a cliff of stacked flows, meltwater falling from under it, turquoise
+  proglacial lakes on the black outwash below (`refs/06`); the bloodfalls are one such fall, red.
 - **Debris-covered ice** (6-8 km, EF): relic cold-based glaciers buried under rubble, as on the Tharsis volcanoes'
   flanks on Mars and in Antarctica's Dry Valleys: lobate tongues and ridged fans of moraine with ice under them,
   sublimation pits where the cover is thin.

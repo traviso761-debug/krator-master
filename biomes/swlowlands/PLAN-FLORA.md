@@ -20,6 +20,13 @@ never a copy of its code.
 | **Candelabra puya** (derived) | wouterwall's puya spike | `med` (the hills, with the agaves and yuccas) | a multi-headed puya: the rosette branches into several heads, each throwing a red-flowered spike, wide rather than tall |
 | **Red dust reef** (derived) | wouterwall's dust tower | `med`, the driest hills | low, wide, branching reefs of red-cemented silt, the dust towers' lowland kin where the wall's dust reaches the foot |
 
+Two more of the kit's own, for the edge under the highlands (references in `refs/`):
+
+| Species | From | Zone | What it is here |
+|---|---|---|---|
+| **Spring cypress** (derived) | the kit's own cypress | `rip`, at the clear springs where the SW highlands' karst rivers come out | the Montezuma cypress (the Tule tree's kind): a bole many metres wide, fluted and buttressed, red-brown, roots sprawling over the bank and into gin-clear blue water, the crown low and wide (`refs/01`-`03`) |
+| **Ribbon-root tree** (derived) | the kit's swamp builder | `swamp` | the Caribbean swamp bloodwood's habit: plank roots running far out over the mud in red-brown ribbons that snake and fold back on themselves (`refs/04`) |
+
 What goes up: the sprawl oak (as the derived sprawl cap), the tier cedar, the flayed madrone and the ember manzanita to
 the SW highlands; the tier cedar and the ember manzanita to the W outer wall (their plans, section 3).
 

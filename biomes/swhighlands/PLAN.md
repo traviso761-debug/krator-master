@@ -20,7 +20,7 @@ counterpart of the bay; the references are in `refs/`. Some of it is backfilled 
 | Folder | `biomes/swhighlands/` (`src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`) |
 | Pages | stations: `dist/swhighlands.html` (station 1) and `-rainwall`, `-span`, `-pillars`, `-coast` (section 7) |
 | Core | the biome core (`CORE_BIOME`), `core/host`, `core/rand`, `core/mask`, `core/tags`, `core/terrain` (relief, carve, strata), the shared sky |
-| Read in place | `biomes/swbay` (cap-tree, bracket tree, coral fungus at the bay's edge and in the low coves); `biomes/swlowlands` (four species, one derived: section 3); `biomes/riftrim` or `biomes/nhighlands` for the crest's fellfield; nothing copied |
+| Read in place | `biomes/swbay` (cap-tree, bracket tree, coral fungus at the bay's edge and in the low coves); `biomes/swlowlands` (four species, one derived: section 3); `biomes/riftrim` or `biomes/nhighlands` for the crest's fellfield; `biomes/ehighlands` for the glass tower; nothing copied |
 | Its own flora | section 3 |
 | Object | `SWHI` (`build`, `dress`, `SPECIES`, `PLANTS`), on the `BIOME-API.md` contract; its species are read by key from `biomes/swbay` for the backfill |
 | Out of scope | Span's ruin and Dalab's outpost (a settlement plan); the Iron Republic's farms (the Republic's builds); the scarp's foot and the coast below it (the Vothic coast's kit, an ecotone) |
@@ -51,7 +51,7 @@ It is a new biome, so it goes in the gallery when it first reaches `main`.
   m³/s), Ancient's Valley river 2 (604), river 3 (268), an unnamed river (308), and dozens of streams; **Pan Riba** (the
   Span river, 153 m³/s) to the south-western lowlands; east to the Ring Sea the Drum river (75) and **Volz Chhim** (the
   falls stream, 39). **One lake: 48 km² at 2,878 m, 281 m deep**, a through lake (px 278,629).
-- **People**: **Span** (ruined arcology, px 282,680, 2,534 m, 1,819 mm, +11 °C), Dalab's outpost against the machines and
+- **People**: **Span** (ruined arcology, px 282,680, 2,534 m, 1,819 mm, +11 °C; in Pan Riba's canyon, section 6), Dalab's outpost against the machines and
   mutants of the Ancient's Valley (`LORE.md` §6.1). The Iron Republic overlaps 14,000 km² in the north; Drum (Vothic)
   stands on the coast below the scarp; the Ruins of Nazar on the south.
 - **Neighbours**: the south-western lowlands and the Ancient's Valley (west), the south-western bay (south), the
@@ -111,7 +111,7 @@ Working names. `refs/NN` is the reference.
 | **Wing reed** | 03, 08 | the hanging swamps | dark stalks with patterned wing-shaped leaves, in stands |
 | **Bulb trumpets** | 20 (E), 19 | the hanging swamps | purple spotted trumpets on red bulbs, and a dark hooked pitcher: the swamps' meat-eaters |
 | **Torch spike** | 03, 08 | the tableland | red flower spikes, the tableland's spring colour |
-| **Glasshouse spire** | 05 | 5-6.5 km, the wet west face | a tower of translucent cream bracts that keeps its flowers warm (the noble rhubarb's habit) |
+| **Glass tower** | 05 | 5-6.5 km, the wet west face | read in place from `biomes/ehighlands` (`glasstower`, the noble rhubarb's habit): a spire of translucent bracts that keeps its flowers warm; not a new species |
 | **Glass leaf** | 19 | 4-5.5 km | twisted translucent blue-green leaves, frost-proof |
 
 ### Epiphytes and on structures
@@ -155,20 +155,33 @@ Unused for now: the mossy arch tree and the thorny log with blue eggs (`refs/08`
   cut **water gaps** through the ridges and leave **wind gaps** where a stream was captured; trellised drainage; **arches**
   where a hard bed is breached on a ridge (`refs/24`); coves in the hollows, balds on the crests. Earth's ridge-and-valley
   country, here the crater ring's own compression, like the Moon's wrinkle ridges folded hard.
+  - **The folds laid bare**: where a stream cuts a ridge's nose, the beds show bent into a tight chevron round a cave
+    mouth, under grass and mist (`refs/26`).
+  - **Karst in the limestone ridges**: a river that goes *through* a ridge in a **cave** instead of a gap, its roof
+    holed by skylights (`refs/30`); a gorge where a stream falls **through a chain of natural bridges** into a sinkhole
+    (`refs/28`, `refs/29`); **karst springs** where the ridges' water comes out, gin-clear rivers combed by long green
+    weed (`refs/35`).
+  - **The Cascade river**: gin-clear green water over smooth, banded, water-polished rock, deep pools between boulders,
+    an old arched bridge (`refs/36`-`38`).
 - **The rain wall**: slopes failing constantly as in Taiwan and Nepal: fresh scars, debris-flow chutes, forest at every
   stage of regrowth; **fluted pinnacles** where the ridges' limestone meets 4 m of rain (`refs/22`); **potholes** and
   polished rock in the Cascade river's bed (`refs/25`).
 - **The landslide lake**: the model's lake (48 km², 2,878 m, 281 m deep) is dammed by a **rock avalanche**, as Sarez is:
   a hummocky dam that seeps rather than spills, the old valley's drowned trees standing in the water, the scar on the
-  mountain above.
+  mountain above. Where the seep finds the dam's face it comes out as a **thread of falls hundreds of metres high**
+  below the hanging lake (`refs/34`).
 - **Span's tableland**: cliff-ringed canyons in `pillar` sandstone, **slot canyons**, **hanging swamps** on the seepage
   ledges, **pagoda and beehive domes** banded by iron and crust (`refs/21`); **twin falls** where Pan Riba and its fellows
-  leave the tableland (`refs/23`).
+  leave the tableland (`refs/23`), and Pan Riba's own **plunge fall** off the rim into a forested gorge (`refs/33`,
+  Kaieteur); **potholes** in the slot canyons' floors (`refs/39`).
 - **The pillar rim** (`refs/01`): where the tableland breaks down on its west and south, rain has widened the joints into
   **free-standing towers** 250-300 m tall, red and white with diagonal Liesegang bands, mist round their tops, a green
-  floor and a meandering stream between them.
+  floor and a meandering stream between them. One tower carries a **post on its flat top**, reached by a stair cut up
+  its side through the cloud forest (`refs/27`): Dalab's watch on the Valley, near Span.
 - **The fan coast**: the dry 4 km scarp's wadis build **steep fan deltas** straight into the Ring Sea (the Gulf of Corinth,
-  the Gulf of Aqaba). No raised reefs: the Ring Sea's level has not changed.
+  the Gulf of Aqaba). No raised reefs: the Ring Sea's level has not changed. Where the scarp's thin-bedded rock meets
+  the sea, **sea arches** and caves along a sand beach (`refs/31`), and the folds' steep thin beds planed off by the waves
+  into **flysch platforms**: ribs of hard rock running out to sea, mossed and weeded between the tides (`refs/32`).
 - **The crest**: cirques and fellfield, read from `riftrim` or `nhighlands`.
 
 The fields and seeds are deterministic from the terrain (`KRAND` by cell), as every kit's.
@@ -182,8 +195,16 @@ scarp's foot.
 
 ## 6. The people's side
 
-- **Span**: Dalab's outpost in a wrecked arcology, on the tableland's rim over the Ancient's Valley, holding the line
-  against the Valley's machines and mutants. Its settlement plan is its own; this kit dresses its ruin (the drip cap).
+- **Span** (the owner, 2026-10-26; `refs/40`): the Ancient arcology **stands in a canyon**: **Pan Riba's canyon**
+  through the tableland, at or near the model's marker. On 4.22 the river runs 2 km from the marker (px 282,679), its bed
+  at ~2,416 m and ~42 m³/s there, in a valley only ~250 m under its shoulders at the model's 2 km a pixel; the kit carves
+  the real canyon (`core/terrain` carve), a few hundred metres deep in `pillar` sandstone. As the concept shows: white
+  curved terraces and ring-walled domes built along both rims and **down into the canyon**, its floors stepping down the
+  walls to hangars and works on the canyon's bottom; round landing pads on the rims; bridges spanning the gap (the
+  name); a lake upstream, on the tableland, with outlying ring-walled sites by it. Now a wreck: the white panels
+  tarnished and overgrown (the drip cap, log crust and anemone trees on it), Dalab's outpost in the sound parts, holding
+  the line against the Ancient's Valley's machines and mutants. The arcology is its settlement plan's (on `kits/ancients`);
+  this kit carves the canyon, makes the lake and dresses the ruin.
 - **The Iron Republic's** northern farms; **Drum** on the coast below the scarp.
 - *Proposed*: Dalab's genepriests prize the shelf coral (it eats rock: an ore-finder) and the fishing bridge's venom;
   the cell lamp's spheres are a lowland delicacy.
@@ -192,26 +213,29 @@ scarp's foot.
 
 1. **The ring folds** (`dist/swhighlands.html`, ~2-3 km, Cfa and Dfb): a ridge with an arch, a water gap, a cove of
    lattice oaks and bead cones, a bald under one pillar cap with bulb heath and banded coral; the Republic's last farm in
-   the distance.
+   the distance. In the next ridge, the river cave and the chevron fold over its mouth; the falls through the natural
+   bridges a short walk up the gorge.
 2. **The rain wall and the landslide lake** (`-rainwall`, ~2-2.9 km, in cloud): the lake behind its hummocky dam, drowned
    trees, a fresh scar with stilt pod trees and shelf coral, weeping wisps, glow tubes and bearded triplets, a fishing
    bridge over the outlet seep, fluted pinnacles on the ridge above.
 3. **Span's tableland** (`-span`, ~2.5-3 km): slot canyons, a hanging swamp with cell lamps, wing reeds and bulb
-   trumpets, beehive domes, torch spikes, the twin falls at the rim, Span's ruin on the skyline.
+   trumpets, beehive domes, torch spikes, the twin falls at the rim; **Span's canyon** with the arcology's ruin down its
+   walls and across it, the lake upstream.
 4. **The pillar rim** (`-pillars`, the tableland's south-west edge): the painting: red and white towers in mist, anemone
-   trees on their tops, the green floor and Pan Riba's meanders.
+   trees on their tops, the green floor and Pan Riba's meanders; Dalab's watch post on one tower's top.
 5. **The fan coast** (`-coast`, optional, the ecotone): the dry scarp with the star-fruit caudex, arrowheads and coral
-   melons, a fan delta into the Ring Sea, Drum's lights along the shore.
+   melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore.
 
 ## 8. Textures
 
 Read the library first (`core/materials/PLAN.md`): sandstone and bedded red sets, `rock.limestone.karst`,
 `rock.sandstone.navajo`, `ground.needles`, mossy ground and the bay's cap and gill textures (read in place).
 
-To source or generate (generic ids; the prompts go into `core/materials/PROMPTS-NEEDED.md` in H0): a red-and-white
-banded quartz sandstone with Liesegang bands; an opal-shell limestone (iridescent shell bed); braided-cord bark (the
-lattice oak); a honeycomb spore-pod surface; a spongy cone-cap surface; a lichen-plate ground (teal and gold); cards for
-the bulb heath, wing reed, bearded triplets, arrowheads and the glasshouse spire's bracts; the cell lamp's cell surface.
+To source or generate (generic ids): a red-and-white banded quartz sandstone with Liesegang bands; an opal-shell
+limestone (iridescent shell bed); braided-cord bark (the lattice oak); a honeycomb spore-pod surface; teal-and-gold
+lichen plates; cards for
+the bulb heath, wing reed, bearded triplets and the dry scarp's succulents. The prompts: `core/materials/PROMPTS-NEEDED.md`
+section 17 (2026-10-26), which also lists the library sets reused.
 
 ## 9. Order of work
 

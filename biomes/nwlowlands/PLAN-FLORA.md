@@ -17,6 +17,12 @@ never a copy of its code.
 | **Blue larch** (derived) | the larch the wall reads from `nwouterwall` | `med` uplands, at the wall's foot | a clean-boled larch with blue-green needles, crown high on steep limbs, in stands like the spire cedar's |
 | **Dust spire** (derived) | wouterwall's dust tower | `med`, the driest hills nearest the wall | slender blue-grey spires of cemented silt, 10-25 m, where the wall's dust reaches the foot |
 
+## A landform for the same edge
+
+A **blue-grey marl gorge** (`refs/01`): a stream cut deep into soft blue clay under the wall's foot, its walls smooth and
+undercut, turquoise water, mossy lanky trees leaning over the rim. It fits the kit's blue theme; a `core/terrain` carve
+along the `rip` zone's streams where they leave the wall.
+
 ## The budget
 
 The kit holds about **9.6M triangles** (`KNOWN_ISSUES.md`). **The owner gave it 3M more for the newcomers (2026-10-26):

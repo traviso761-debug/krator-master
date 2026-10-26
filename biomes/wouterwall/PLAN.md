@@ -100,7 +100,9 @@ The other way, the bench gives each lowland kit species in that kit's own theme:
   by the cold katabatic wind that drains off the wall every night.
 - **The slump terraces** (4-5 km): the crater's rim collapsing inward, as Tycho's and Copernicus's walls do: **back-tilted
   blocks** tens of km long, **uphill-facing scarps**, **trench lakes and sag ponds** along each head scarp, double-crested
-  ridges (*sackung*). The bench's escarpment is the outermost block's toe. The model's bench is a smooth ramp at 2 km a
+  ridges (*sackung*). The bench's escarpment is the outermost block's toe. Where a block's front has broken up, its
+  **landslip pinnacles** stand in the grass below the scarp (`refs/08`, the Storr); a block's back is a grass ramp up to
+  a cliff of spires on its broken front edge (`refs/09`, Seceda). The model's bench is a smooth ramp at 2 km a
   pixel: two to four benches 100-400 m high are a model edit or the kit's own relief (H0).
 - **The sturzstrom fields** (5.5-7 km): long-runout rock avalanches from the crest, running out tens of km across the
   bench as Mars's in the Valles Marineris and Earth's at Saidmarreh and Köfels do: hummocky hills, grooved lobes,
@@ -116,7 +118,9 @@ The fields and seeds are deterministic from the terrain (`KRAND` by cell), as ev
 
 - **The Hayrant** (the Eternal State's Outer Wall subjects; `LORE.md` §6.19, *proposed* there): *proposed* here, they
   live in **cave houses cut into the loess** (as China's *yaodong*: vaulted rooms dug into a gully wall or sunk round a
-  courtyard pit), farm the terraces, and keep the spring line. Mirabilis is the first to place.
+  courtyard pit), farm the terraces, and keep the spring line. Where the loess thins over rock, they build **dug-in
+  cellars and houses with dry-stone fronts and turf roofs**, half buried in the slope in clusters (`refs/07`). Mirabilis is
+  the first to place.
 - **Dalab's** road to the Rift line's portals crosses the southern arc; the Free Giants of Giant Country hold its
   southernmost reach.
 
