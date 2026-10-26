@@ -455,6 +455,26 @@ are still to do. swbay (S1) hooks its own materials from its host fragment (`ATM
    need the biome core's material makers, which the biome rebuild owns; the two sessions coordinate that step. Cost: one
    three-octave fbm per ground fragment (per vertex on Lambert), a texture read each.
 
+### 11.2 The star's other planets (the owner, 2026-10-26; not in the sky until the final rebuild)
+
+The giant (with Krator) is one of seven planets of a Sun-like star. They are in the lore (`LORE.md` section 2) and in the
+Krator System page (`gallery/krator-system`: `planets.py` holds the numbers below, the orrery its planets view). They go into
+the skybox with the final rebuild, not before, so that no page is left behind its source: then `S.planets` in
+`89-atmos-e-skymodel.js` takes this table, a Kepler solve places each one on the ecliptic as Krator sees it (the giant's own
+orbit, 1 AU and 365 days, is the reference), and the night pass draws them as stars of their colour and brightness, Rust and
+Cinder as one point. The Godot twin takes the same data.
+
+| Planet | a (AU) | e | Tilt | Radius | Mass | Year | From Krator |
+|---|---|---|---|---|---|---|---|
+| Ash: dark, airless, cratered | 0.32 | 0.08 | 3° | 3,400 km | 0.11 Earths | 66 d | a grey spark in bright twilight, never more than 19° from the sun |
+| Rust: a super-Earth desert, Mars-like | 0.55 | 0.05 | 1.5° | 9,500 km | 3.4 Earths | 149 d | a ruddy evening or morning star, up to 33° out |
+| Cinder: Rust's partner, Earth-sized, grey-red, barren | (with Rust) | | | 6,100 km | 0.9 Earths | 14 d round Rust, 400,000 km apart, face to face | beside Rust, at the limit of the eye |
+| Veil: clouded, a garden world under the deck (Tohul's kind) | 0.763 | 0.02 | 2° | 6,300 km | 0.85 Earths | 243 d (3:2 with the giant) | the brightest star, white, up to 50° out |
+| the giant, with Krator | 1 | 0.01 | 0° | 50,211 km | | 365 d | |
+| Crown: a Jovian giant | 3.4 | 0.05 | 1.2° | 71,000 km | 2.6 Jupiters | 6.3 y | a steady bright yellow star all night at opposition |
+| Frost: a small ice giant, a faint ring | 9.0 | 0.03 | 0.8° | 22,000 km | 11 Earths | 27 y | a faint blue-green star |
+| Wanderer: Mercury-sized, eccentric | 11.8 | 0.5 | 17° | 2,400 km | 0.06 Earths | 40.5 y (2:3 with Frost) | a telescope's |
+
 ## 12. Open decisions for the owner
 
 Settled: everything in sections 2, 2.1 and 2.2. Open:
