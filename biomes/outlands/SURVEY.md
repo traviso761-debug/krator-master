@@ -154,8 +154,11 @@ including the new arcologies and the Sleeping City):
 9.8 km (the Ancient profile does not cross above 9 km on the surface): about 60 px (120 km) west of Trickster's House.
 **It does not use the Gate**, the surface pass at px (1136, 84), 7.7 km (0.60 atm), which is the Coyote Men's way in. So the Ancients'
 road and the Coyote Men's are two different ways over the rim: the Ancients' underground from the south-west, the Coyote Men's over
-the north pass. (The owner: the god's road ends at the cliff. Whether the god's road is the Ancient road's approach from the
-tunnel mouth or the road from the Gate is for the lore: `PLAN.md` section 11.)
+the north pass. (The owner settled it: **the god's road runs from the Sleeping City through the Gate to Trickster's House**, section 7b: the Ancient road's tunnel is a separate way.)
+
+## 7b. The god's road (settled, 2026-10-26)
+
+**The god's road (the owner, 2026-10-26): from the Sleeping City, through the Gate, to Trickster's House.** `tools/scale-model/god_road.py` routes it on the Ancient profile with the surface capped at 8.2 km (so it crosses by the Gate, not by a higher crest): **1,938 km, all on the surface** (no tunnel; 4 km of causeway), the highest point **7,728 m at px (1171, 106)**, beside the Gate; leg 1, Sleeping City (px 772,446) to the Gate (px 1136,84): 1,265 km; leg 2, the Gate to Trickster's House (px 1240,330): 672 km. The route is `openworld/gods-road.json` (the polyline in map px with the ground under it) and `gods-road.jpg`. It is **not** the Ancient network's own road to Trickster's House, which comes in by a rim tunnel from the south-west (`SURVEY.md` section 7): the Ancients' road and the god's are two roads, and the god's is the one the Coyote Men run.
 
 ## 8. Not yet done
 

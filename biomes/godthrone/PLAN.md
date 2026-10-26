@@ -176,7 +176,7 @@ Blood Falls (`refs/02`) and Colombia's Caño Cristales (`refs/04`).
   because of its **riverweed**: a native red water plant that thrives on the iron (Caño Cristales' red weed is the habit),
   carpeting every rapid and pool in crimson and purple. Its lower course is the Xanadu and rift kits' ground; they draw
   the weed.
-- **On the model** (*proposed*, 4.23, awaiting the owner): on 4.22 Qol Ḍrāi is a dry valley (9.3 m³/s at its end) that
+- **On the model** (**done in 4.23, 2026-10-26**: Qol Drai (r442) is perennial and named Red Riwa on the model, +4 m3/s, joined to Siwipt Sitrim (r272), which runs on to the Rift's lake; `tools/scale-model/README.md` "4.23". The plan below was the proposal): on 4.22 Qol Ḍrāi is a dry valley (9.3 m³/s at its end) that
   dies out at 1,208 m (px 555,1134). Made **perennial** (the brine and the ice belt's melt), carried ~25 km on into the
   Rift's lake at -717 m (px 541,1156, where Wāiṭ Ḍrāi ends), it would put a red plume into the Rift's lake. Its name
   stays the owner's call (the Xanadui for "blood river").

@@ -341,4 +341,5 @@ shader or sky dome. Run `python3 tools/check_core_use.py` before calling it done
 6. ~~Armour~~ Dropped: the flora is 90% native and fungoid (section 3); the signature is colour and construction.
 7. **Station count**: the six above, fewer for a first pass, or more?
 8. **Gem ranges**: emerald and turquoise in one place, or emerald in the N and turquoise in the S?
+10. ~~The god's road~~ Settled (the owner, 2026-10-26): it runs from the Sleeping City through the Gate and ends at Trickster's House (1,938 km on the surface; `SURVEY.md` section 7b).
 9. ~~The arcology~~ Settled: Arcoindian II, ruined, shunned; the trickster is believed to live there; the god's road ends there; the misfortune is a real luck hazard; the cliff is the N main basin's west wall, px about (1240, 330), over the 2,132 m lake.

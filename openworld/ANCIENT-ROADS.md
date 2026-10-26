@@ -143,6 +143,8 @@ Fort Kalor, Nusidi** and **the Sleeping City** (which joins by Fort Kreia, 87 km
 (`biomes/outlands/SURVEY.md` section 7 has the routes to the nearest sites: Yuni 1,120 km, Fort Kreia 1,111, the Sleeping City 1,115,
 Fort Ordo 1,125, Crescent 1,186; every one crosses at that same rim tunnel). It is not by the surface pass the Coyote Men use
 (the Gate, px 1136,84, 7.7 km).
+**The god's road** (the Coyote Men's trickster, `biomes/outlands/PLAN.md`) is a separate, surface road from the Sleeping City through the Gate to
+Trickster's House: 1,938 km, highest 7,728 m (`openworld/gods-road.json`, `.jpg`; `tools/scale-model/god_road.py`).
 
 ## 5. Data and drawing
 

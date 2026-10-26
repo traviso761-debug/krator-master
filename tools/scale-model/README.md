@@ -450,7 +450,13 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
     O stays. The legend reads "8-27 km". Not redone: `DATA.rivers`' own heights (the one river in the polygon, Qol Drai, keeps its
     4.22 `source_m`/`mouth_m`; its course still falls), the lakes (nine water cells, untouched). Still to do: the docs of other builds that
     quote 17.1 km, `biomes/godthrone`'s heights on the open world, and a re-extract of any region that holds the cone.
-  - *Candidates, awaiting the owner* (2026-10-26):
+  - **The two candidates, done the same day (the owner asked; the page is version 89)**: **the blood river** (the plan's "carried ~25 km on" turned out to be
+    already on the model: Qol Drai (r442) ends at px 554.7, 1133.6 where Siwipt Sitrim (r272, perennial, 43 km) begins and runs to the Rift's lake at -717 m): r442 is
+    made **perennial** (+4 m3/s the whole way for the brine and the ice belt's melt: 13.3 m3/s at its mouth, 16 m wide), **renamed Red Riwa**
+    (Xanadui, "red river"; the owner's to change), joined to r272 (+4 m3/s, 14.4 m3/s at its mouth), and drawn in dark red (178, 52, 42) on the satellite and relief
+    maps; **the flank vent**: a small cinder cone in `DATA.vents` at px 620.8, 815.2 on the 4,973 m ground at Godstep valley's head (the highest ground of the 4.4-5.0 km band
+    inside the `godstep valley` polygon; scale 0.18, radius 1.8 px). Not redone: the river audit's water books (`DATA.hydro`) and the Rift lake's inflow figure.
+  - *Candidates, awaiting the owner* (2026-10-26; both now done, above):
     - **The blood river** (`biomes/godthrone/PLAN.md` section 4): Qol Ḍrāi (r442, from ~5.3 km below the Godthrone's
       ice belt) made perennial, fed by the bloodfalls' brine and the ice belt's melt, and carried ~25 km on from its
       4.22 end (px 555,1134, 1,208 m) into the Rift's lake at -717 m (px 541,1156). Rerouted the 4.22 way (`edit_422.py`'s

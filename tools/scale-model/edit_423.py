@@ -21,7 +21,13 @@ On 4.22 the summit is not a peak but the raster's ceiling: a table of 8,416 km2 
 3. A SUMMIT VENT in `DATA.vents` on the pit's floor.
 4. RELIGHTS the painted maps (`st`, `t`, `rt`, `ct`) where the heights moved (edit_heights.relight). The climate is not
    touched: above 9 km the page reads "airless", with no air temperature, rain or wind, and class O stays.
-5. Version strings and the legend's "8-17 km" (the outer rim) become 4.23 and "8-27 km".
+5. THE BLOOD RIVER (the owner, 2026-10-26; biomes/godthrone/PLAN.md section 4): Qol Drai (r442), a dry valley on 4.22 that ends
+   at 1,208 m (px 554.7, 1133.6) where Siwipt Sitrim (r272, perennial, 43 km) begins, is made perennial (the bloodfalls' brine and the
+   ice belt's melt, +4 m3/s along its length), named Red Riwa (Xanadui, "red river"; a placeholder the owner may change), joined to r272
+   (which carries the added flow on to the Rift's lake at -717 m), and drawn in red on the satellite and relief maps.
+6. THE FLANK VENT (biomes/godstep/PLAN.md, station 3): a small cinder cone in `DATA.vents` on the Godthrone's north-east flank in
+   Godstep valley's head, in the 4.4-5.0 km band (the highest ground of that band inside the `godstep valley` polygon).
+7. Version strings and the legend's "8-17 km" (the outer rim) become 4.23 and "8-27 km".
 
 Deterministic. Writes <out> and <out>.report.json beside it.
 """
@@ -34,6 +40,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from edit_heights import LO, load, raster, b64, relight, sstep   # noqa: E402
 from edit_dams import set_data   # noqa: E402
 from extract_region import docs   # noqa: E402
+from edit_422 import strokes   # noqa: E402
+from PIL import ImageDraw, ImageFilter   # noqa: E402
+
+BLOOD_RGB = (178, 52, 42)         # the blood river's stroke on the painted maps
+BLOOD_EXTRA_M3S = 4.0             # the brine seep and the ice belt's melt, added along the whole course
 
 VERSION = '4.23'
 OLD_HI, NEW_HI = 17100.0, 27000.0
@@ -176,6 +187,46 @@ def main():
     print('encode error %.2f m (step %.2f m)' % (err, (NEW_HI - LO) / 65535))
     assert err < 0.5
 
+    # ---- the blood river: Qol Drai made perennial, joined to Siwipt Sitrim (r272)
+    rivers = [dict(r_) for r_ in D['rivers']]
+    r442 = next(r_ for r_ in rivers if r_['id'] == 'r442')
+    r272 = next(r_ for r_ in rivers if r_['id'] == 'r272')
+    assert r442['kind'] == 'wadi' and abs(r442['to']['at_px'][0] - r272['px'][0][0]) < 1 and abs(r442['to']['at_px'][1] - r272['px'][0][1]) < 1
+    r442['q_m3s'] = [round(q_ + BLOOD_EXTRA_M3S, 1) for q_ in r442['q_m3s']]
+    r272['q_m3s'] = [round(q_ + BLOOD_EXTRA_M3S, 1) for q_ in r272['q_m3s']]
+    r442['q_mouth_m3s'] = round(r442['q_mouth_m3s'] + BLOOD_EXTRA_M3S, 1)
+    r272['q_mouth_m3s'] = round(r272['q_mouth_m3s'] + BLOOD_EXTRA_M3S, 1)
+    r442.update({'kind': 'river', 'perennial': True, 'order': 1, 'name': 'Re\u1e0d Riw\u0101', 'gloss': 'red river (the blood river; was Qol \u1e0cr\u0101i, the cold dry valley)',
+                 'width_m': round(4.5 * r442['q_mouth_m3s'] ** .5), 'depth_m': 1.0,
+                 'to': {'river': 'r272', 'name': r272['name'], 'at_px': list(r442['to']['at_px'])}})
+    r442['width_src_m'] = r442['width_m']
+    r272['width_m'] = round(4.5 * r272['q_mouth_m3s'] ** .5)
+    r272['width_src_m'] = r272['width_m']
+    for key in ('st', 't'):                          # drawn red on the satellite and relief maps
+        src = Image.open(io.BytesIO(base64.b64decode(rep[key])))
+        im = src.convert('RGBA')
+        over = Image.new('RGBA', im.size, (0, 0, 0, 0))
+        dr = ImageDraw.Draw(over)
+        for pts, w_, al in strokes(r442):
+            dr.line(list(pts), fill=BLOOD_RGB + (al,), width=w_, joint='curve')
+        im = Image.alpha_composite(im, over.filter(ImageFilter.GaussianBlur(.5))).convert('RGB')
+        qt = getattr(src, 'quantization', None)
+        rep[key] = b64(im, 'JPEG', **({'qtables': qt, 'subsampling': 2} if qt else {'quality': 90}))
+    print('blood river: r442 -> perennial %s, q %.1f m3s at its mouth (r272 %.1f), width %d m' % (r442['name'].encode('ascii', 'replace').decode(),
+          r442['q_mouth_m3s'], r272['q_mouth_m3s'], r442['width_m']))
+
+    # ---- the flank vent: the highest ground in the 4.4-5.0 km band inside Godstep valley's head
+    GV = next(r_ for r_ in docs(rpath) if r_['name'] == 'godstep valley' and r_.get('kind') == 'biome')['points']
+    gm = Image.new('L', (VW, VH), 0)
+    ImageDraw.Draw(gm).polygon([(x_ * su, y_ * sv) for x_, y_ in GV], fill=1)
+    band = np.array(gm).astype(bool) & (En >= 4400) & (En <= 5000)
+    assert band.any()
+    ys_, xs_ = np.where(band)
+    k_ = int(np.argmax(En[ys_, xs_]))
+    fy, fx = int(ys_[k_]), int(xs_[k_])
+    fvent = {'px': [round(fx / su, 2), round(fy / sv, 2)], 'floor': round(float(En[fy, fx]), 1), 'scale': 0.18, 'radius': 1.8}
+    print('flank vent: px %s, ground %.0f m (the band holds %d cells)' % (fvent['px'], En[fy, fx], int(band.sum())))
+
     s = lines[li]
     for k, v in rep.items():                         # the images: base64 strings (set_data is for lists and objects)
         a = s.index('"%s": "' % k) + len('"%s": "' % k)
@@ -184,7 +235,8 @@ def main():
     pj, pi = int(round(cy + PIT_OFF[1] / km)), int(round(cx + PIT_OFF[0] / km))
     vx, vy = (cx + PIT_OFF[0] / km) / su, (cy + PIT_OFF[1] / km) / sv
     vfloor = float(np.round(En[pj, pi], 1))
-    s = set_data(s, 'vents', D['vents'] + [{'px': [round(vx, 2), round(vy, 2)], 'floor': vfloor, 'scale': 0.6, 'radius': 5.5}])
+    s = set_data(s, 'vents', D['vents'] + [{'px': [round(vx, 2), round(vy, 2)], 'floor': vfloor, 'scale': 0.6, 'radius': 5.5}, fvent])
+    s = set_data(s, 'rivers', rivers)
     lines[li] = s
     html = '\n'.join(lines)
     html, n1 = re.subn(r'scale model 4\.\d+ ·', 'scale model %s ·' % VERSION, html)
@@ -192,7 +244,7 @@ def main():
     assert n1 == 1 and n2 == 1, (n1, n2)
     open(out, 'w', encoding='utf8', newline='\n').write(html)
     report = {'version': VERSION, 'from': '4.22', 'hi': NEW_HI, 'cells_raised': n_raised, 'cells_changed': int(moved.sum()),
-              'peak_m': float(En.max()), 'rim_m': H_RIM, 'floor_m': H_FLOOR, 'vent': {'px': [round(vx, 2), round(vy, 2)], 'floor_m': vfloor},
+              'peak_m': float(En.max()), 'rim_m': H_RIM, 'floor_m': H_FLOOR, 'vent': {'px': [round(vx, 2), round(vy, 2)], 'floor_m': vfloor}, 'flank_vent': fvent, 'blood_river': {'id': 'r442', 'q_mouth_m3s': r442['q_mouth_m3s']},
               'rim_radius_km': [float(rim.min()), float(rim.max())], 'polygon_radius_km': [float(rb_t.min() * km), float(rb_t.max() * km)],
               'profile_km_m': {str(k): round(float(En[(r >= k) & (r < k + 10)].mean())) for k in range(0, 260, 10)}}
     json.dump(report, open(out + '.report.json', 'w', encoding='utf-8', newline='\n'), indent=1)
