@@ -6,7 +6,7 @@
 // Station 10, the caldera rim, about 0.4 atm: an indigo zenith. No far land; the plume is real geometry (86). The cloud sea all round
 // below the horizon is not drawn (no landmark layer yet). Snow and ash weather grey the sky and darken the hour's light.
 const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:571,py:514},
- preset:{"air":{"pressure":0.4,"humidity":0.5},"clouds":{"cover":0.05},"fogDensity":0.00036,"ridges":[]},onLook:SKY_LOOK,weatherOver:true,weatherLook:true});
+ preset:{"air":{"pressure":0.4,"humidity":0.5},"clouds":{"cover":0.05},"fogDensity":0.00036,"ridges":[],"landmarks":[{"kind":"sea","top":-2.0,"win":[0,360,1],"bump":0.8,"lit":[1,1,1],"shade":[0.66,0.7,0.8],"alpha":0.95}]},onLook:SKY_LOOK,weatherOver:true,weatherLook:true});
 const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
 SKY.modes({hours:{day:13,night:22},hooks:_onLight,set:m=>{LIGHT_MODE=m;}});   /* the Day and Night buttons, the night views, key n */
 HEAT.before=SKY.renderSky;   /* the shared sky drawn first into the shimmer's target (83-host-heat.js) */

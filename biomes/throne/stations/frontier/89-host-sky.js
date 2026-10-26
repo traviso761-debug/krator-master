@@ -5,6 +5,6 @@
 // sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
 // Station 3, the frontier. Kept from the dome: the Throne's flank to the ENE (ridge); the painted sea is the real sea now.
 const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:571,py:514},
- preset:{"air":{"pressure":1.85,"humidity":0.5},"clouds":{"cover":0.5},"fogDensity":0.0002076,"ridges":[{"base":5.4,"amp":0.36,"cycles":25,"octaves":3,"seed":42,"win":[64,180,4.4],"floor":-1.6,"dist":115000,"snowH":7235,"forestH":3010,"haze":0.0179,"rock":[0.46,0.49,0.49],"forest":[0.23,0.31,0.22],"snow":[0.93,0.94,0.96]}]}});
+ preset:{"air":{"pressure":1.85,"humidity":0.5},"clouds":{"cover":0.5},"fogDensity":0.0002076,"ridges":[{"base":5.4,"amp":0.36,"cycles":25,"octaves":3,"seed":42,"win":[64,180,4.4],"floor":-1.6,"dist":115000,"snowH":7235,"forestH":3010,"haze":0.0179,"rock":[0.46,0.49,0.49],"forest":[0.23,0.31,0.22],"snow":[0.93,0.94,0.96]}],"landmarks":[{"kind":"plume","from":[64,5.4],"via":[73.0,6.1000000000000005],"to":[94,6.4],"width":[1,5],"lit":[0.8,0.78,0.74],"belly":[0.42,0.39,0.36],"alpha":0.5,"haze":0.3,"drift":0.02},{"kind":"band","win":[64,80,1],"el":[1.6,3.2],"lit":[0.95,0.95,0.95],"alpha":0.45,"noise":0.8,"haze":0.3}]}});
 const {sky,giant,giantRing,giantDir,GIANT_DIST}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
 SKY.modes({hours:{day:13,night:22},hooks:_onLight,set:m=>{LIGHT_MODE=m;}});   /* the Day and Night buttons, the night views, key n */
