@@ -72,7 +72,7 @@
  // streak.across, its fall time tFall); per plunge-disc vertex: position and (the disc's centre x, z, the churn's radius). Indices run on from each
  // fall's own (a vertex offset); `segs` is the disc's rim (48, as drawFall's CircleGeometry).
  W.mergedFalls=(list,o)=>{o=o||{};const Q=W.PRESETS.fall,cp={pos:[],nrm:[],uv:[],fp:[],idx:[],count:0,falls:list.length},pl={pos:[],pc:[],idx:[],count:0,r:[]},segs=o.segs==null?48:o.segs;
-  for(const S of list){const M=W.curtain(S,{rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols}),base=cp.count,lw=S.lipW*Q.streak.across;
+  for(const S of list){const M=W.curtain(S,{rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols,margin:o.margin}),base=cp.count,lw=S.lipW*Q.streak.across;
    for(let i=0;i<M.pos.length;i++){cp.pos.push(M.pos[i]);cp.nrm.push(M.nrm[i]);}for(let i=0;i<M.uv.length;i++)cp.uv.push(M.uv[i]);
    for(let i=0;i<M.count;i++)cp.fp.push(lw,S.tFall);for(const k of M.idx)cp.idx.push(base+k);cp.count+=M.count;
    if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,b0=pl.count;

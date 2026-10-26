@@ -28,17 +28,20 @@
    'float wtrFallFoam(float fl,float s){return clamp(0.25+0.6*smoothstep(0.0,0.4,fl)+0.7*(s-0.5),0.0,1.0);}',
    'vec2 wtrPlungeA(vec2 p,vec3 c){vec2 d=p-c.xy;float r=length(d);float ph=fract(atmWaveT*'+f(PQ.cycles/per)+');float a=6.283185307*(fract(r*'+f(1/PQ.ring)+')-ph);'+
     'float e=exp(-r/c.z);float nz=wtrNoiseP(vec2(d.x*0.45+d.y*0.21,ph*12.0+r*0.3),12.0);return vec2(e*clamp(0.35+0.25*sin(a)+0.8*(nz-0.35),0.0,1.0),0.08*e*sin(a));}'].join('\n');};
- W.drawFalls=(list,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.mergedFalls(list,o),C=M.curtain,name=o.name||'falls',ids=list.map(S=>S.id);
+ W.drawFalls=(list,o)=>{o=o||{};
+  // (a margin or edge is the curtains' record too, for the export: Godot widens and fades them the same way; nothing is recorded without one)
+  if(o.margin!=null||o.edge!=null)for(const S of list)S.curtainOpt=W.sideOpt({rows:W.curtainRows(S,o),cols:o.cols==null?W.PRESETS.fall.cols:o.cols},o);
+  const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.mergedFalls(list,o),C=M.curtain,name=o.name||'falls',ids=list.map(S=>S.id);
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(C.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(C.nrm,3));
   g.setAttribute('wtrUF',new T.Float32BufferAttribute(C.uv,2));g.setAttribute('wtrFP',new T.Float32BufferAttribute(C.fp,2));g.setIndex(C.idx);g.computeBoundingSphere();
   const col=o.color==null?0xb8d4d6:o.color,op=o.opacity==null?.92:o.opacity;
   const mat=new T.MeshStandardMaterial({color:col,roughness:.42,metalness:0,transparent:true,depthWrite:false,side:T.DoubleSide});sky(mat,o);W.biasMaterial(mat,o);
-  const CH='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec2 vWtrUF;varying vec2 vWtrFP;';mat.customProgramCacheKey=()=>'wtr-falls:'+W.hashStr(CH+op);
+  const CH='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec2 vWtrUF;varying vec2 vWtrFP;';const SD=o.margin==null&&o.edge==null?'':JSON.stringify([o.margin,o.edge]);mat.customProgramCacheKey=()=>'wtr-falls:'+W.hashStr(CH+op+SD);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;attribute vec2 wtrFP;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;vWtrFP=wtrFP;');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
     'float wtrSt=wtrStreakA(vWtrUF.x,vWtrUF.y,vWtrFP.x,vWtrFP.y);float wtrFm=wtrFallFoam(vWtrUF.y,wtrSt);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.95,0.97,0.97),wtrFm);'+
-    'diffuseColor.a='+f(op)+'*(0.45+0.55*smoothstep(0.25,0.8,wtrSt))*smoothstep(0.0,0.08,vWtrUF.x)*smoothstep(1.0,0.92,vWtrUF.x)*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));');};
+    'diffuseColor.a='+f(op)+'*(0.45+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(W.sideOpt({},o),'(vWtrFP.x*'+f(1/W.PRESETS.fall.streak.across)+')')+'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));');};
   const mesh=tag(new T.Mesh(g,mat),name,ids,o);mesh.renderOrder=o.renderOrder==null?3:o.renderOrder;scene.add(mesh);
   const D={mesh,material:mat,falls:list,merged:M};
   if(o.plunge!==false&&M.plunge.count){const P=M.plunge,pg=new T.BufferGeometry();pg.setAttribute('position',new T.Float32BufferAttribute(P.pos,3));
@@ -49,20 +52,33 @@
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2+'\nattribute vec3 wtrPC;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;vWtrPC=wtrPC;');
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlungeA(vWtrW.xz,vWtrPC);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);');};
    D.plunge=tag(new T.Mesh(pg,pm),name+':plunge',ids,o);D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
-   if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const pts=[];for(const S of list){const Pl=W.plunge(S),y=(o.plungeY==null?Pl.y+.06:o.plungeY)+1;pts.push([Pl.x,y,Pl.z,'spray'],[Pl.x+Pl.r*.5,y,Pl.z,'spray'],[Pl.x-Pl.r*.5,y,Pl.z-Pl.r*.4,'spray']);}
+   if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const pts=[],sd=W.sprayByDrop(o);for(const S of list){const Pl=W.plunge(S),y=(o.plungeY==null?Pl.y+.06:o.plungeY)+1;
+     if(sd){for(const p of W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)))pts.push([p[0],p[1],p[2],'spray']);continue;}
+     pts.push([Pl.x,y,Pl.z,'spray'],[Pl.x+Pl.r*.5,y,Pl.z,'spray'],[Pl.x-Pl.r*.5,y,Pl.z-Pl.r*.4,'spray']);}
     D.spray=A.smoke(pts);}}
   W.drawn.push(D);return D;};
 
  // ---- the pools: one mesh, one material (drawStill's, without a fountain)
+ // GRADIENT (2026-10-26): a pool with a gradient of its own (WATER.still({gradient})) keeps it here, and o.gradient {centre, rim, power} gives one
+ // to every pool without (its own middle and radius, W.gradientOf; the pool's record takes it, so the export lists it); each pool's (x, z,
+ // 1/radius, power) and its two colours ride as vertex attributes (power -1: no gradient, the material's colour). The colour step is wtrPoolT
+ // (W.poolGLSL; twin: the surface's gradientT). o.tint: a hex multiplier on the colour (drawStill's). Without either, all is as before.
+ W.poolGLSL='float wtrPoolT(vec2 p,vec4 g){return pow(clamp(length(p-g.xy)*g.z,0.0,1.0),g.w);}';
  W.drawPools=(list,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,name=o.name||'pools',pos=[],idx=[];
-  for(const S of list){const M=W.stillMesh(S),b=pos.length/3;for(const v of M.pos)pos.push(v);for(const k of M.idx)idx.push(b+k);}
+  const GR=list.map(S=>S.gradient||(o.gradient?(S.gradient=W.gradientOf(S,o.gradient)):null)),anyG=GR.some(Boolean),ga=[],gc=[],gr=[],cv=c=>{const q=new T.Color(c);return[q.r,q.g,q.b];};
+  list.forEach((S,si)=>{const M=W.stillMesh(S),b=pos.length/3,G=GR[si];for(const v of M.pos)pos.push(v);for(const k of M.idx)idx.push(b+k);
+   if(anyG){const a=G?[G.at[0],G.at[1],1/G.radius,G.power]:[0,0,0,-1],c0=G?cv(G.centre):[0,0,0],c1=G?cv(G.rim):[0,0,0];for(let k=0;k<M.pos.length/3;k++){ga.push(...a);gc.push(...c0);gr.push(...c1);}}});
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(pos.length).map((v,i)=>i%3===1?1:0),3));g.setIndex(idx);g.computeBoundingSphere();
+  if(anyG){g.setAttribute('wtrGA',new T.Float32BufferAttribute(ga,4));g.setAttribute('wtrGC',new T.Float32BufferAttribute(gc,3));g.setAttribute('wtrGR',new T.Float32BufferAttribute(gr,3));}
+  const CF=(anyG?'if(vWtrGA.w>=0.0)diffuseColor.rgb=mix(vWtrGC,vWtrGR,wtrPoolT(vWtrW.xz,vWtrGA));':'')+(o.tint!=null?'diffuseColor.rgb*='+(q=>'vec3('+[q.r,q.g,q.b].map(f).join(',')+')')(new T.Color(o.tint))+';':''),
+   GV=anyG?'\n'+W.poolGLSL+'\nvarying vec4 vWtrGA;varying vec3 vWtrGC;varying vec3 vWtrGR;':'';
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness,
    transparent:o.opacity!=null&&o.opacity<1,opacity:o.opacity==null?1:o.opacity,depthWrite:!(o.opacity!=null&&o.opacity<1)});sky(mat,o);W.biasMaterial(mat,o);
-  const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;';mat.customProgramCacheKey=()=>'wtr-still:'+W.hashStr(CH);
+  const CH='#include <atmos_waves>\n'+W.stillGLSL({fountain:null})+'\nvarying vec3 vWtrW;'+GV;mat.customProgramCacheKey=()=>'wtr-still:'+W.hashStr(CH+CF)+W.rainK(o);
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrStillN(vWtrW.xz),0.0)).xyz);');};
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+(anyG?'\nattribute vec4 wtrGA;attribute vec3 wtrGC;attribute vec3 wtrGR;':'')).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(anyG?'vWtrGA=wtrGA;vWtrGC=wtrGC;vWtrGR=wtrGR;':''));
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);');
+   if(CF)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+CF);};
   const mesh=tag(new T.Mesh(g,mat),name,list.map(S=>S.id),o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   const D={mesh,material:mat,list};W.drawn.push(D);return D;};
 
