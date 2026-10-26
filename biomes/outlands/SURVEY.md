@@ -89,11 +89,75 @@ has room. Air is 1.2 atm (2.1 km) at the quay and 1.0 atm (3.8 km) at the crest.
 look (the model's 4 km cells hide the wall's real profile) fails: the N west basin's wall at (1218, 410), over the 2,496 m
 lake at (1220, 423), relief 2,574 m.
 
-## 6. Not yet done
+## 6. Climate classes, and the stations (2026-10-26)
 
-- **The ancient roads**: `tools/scale-model/ancient_roads.py` needs the page and the settlements collection; not run.
-  Whether an Ancient road already reaches the pass or the basin is open.
-- **Climate classes** per basin (the model's `c` raster): the lake list gives BSk, Cfa, Dfb, ET, EF at its lakes; a
-  per-polygon histogram is not in this pass.
+The model's class raster over each polygon and over its **basin ground** (under 4.5 km); medians of elevation, rain and the
+mean, warmest-month and coldest-month temperatures (°C):
+
+| | Class | Area | Share | Elevation | Rain | Mean / warm / cold |
+|---|---|---|---|---|---|---|
+| **N Outlands** polygon | ET tundra | 137,600 km² | 34% | 6,483 m | 0 mm | -10 / 3 / -23 |
+| | O airless rim | 121,700 | 30% | 10,553 | 0 | -34 |
+| | BSk cold steppe | 30,400 | 7.5% | 3,749 | 220 | 7 / 20 / -6 |
+| | BWk cold desert | 23,300 | 5.8% | 3,837 | 31 | 7 / 20 / -6 |
+| N basin ground (71,800 km²) | **BSk cold steppe** | 24,700 | 34% | 3,684 | 235 | 8 / 21 / -5 |
+| | **BWk cold desert** | 22,400 | 31% | 3,829 | 31 | 7 / 20 / -6 |
+| | Dfb warm-summer continental | 9,700 | 13.5% | 3,938 | 894 | 5 / 18 / -8 |
+| | Cfa humid subtropical | 8,400 | 11.7% | 2,592 | 1,020 | 14 / 25 / 3 |
+| | WH highland lake | 2,600 | 3.6% | 1,389 | 596 | 22 / 29 / 14 |
+| **S Outlands** polygon | ET tundra | 99,700 | 46% | 6,456 | 157 | -11 |
+| | EF ice cap | 31,800 | 15% | 7,129 | 157 | -15 |
+| | Dfb | 23,600 | 11% | 3,887 | 1,067 | 5 / 18 / -8 |
+| S basin ground (54,700 km²) | **Dfb warm-summer continental** | 23,600 | 43% | 3,887 | 1,067 | 5 / 18 / -8 |
+| | BWk cold desert | 9,000 | 16% | 2,216 | 157 | 14 / 26 / 2 |
+| | Cfa humid subtropical | 7,100 | 13% | 2,691 | 1,318 | 12 / 24 / -1 |
+| | Dfc subarctic | 3,900 | 7% | 4,366 | 455 | 2 / 15 / -11 |
+| | **BSh hot steppe** | 3,900 | 7% | 1,070 | 502 | 21 / 31 / 10 |
+
+**The N and S split is a dry/wet split, the reverse of the plan's first guess.** N Outlands' basin is **cold steppe and cold
+desert (65% of it)**: the dry, open, ostrich country. S Outlands' basin is **cool, wet and wooded (Dfb 43%, Cfa 13%)** with a
+**hot valley floor (BSh) and a cold desert shoulder (BWk)** on its lower ground. The plan's stations are moved accordingly
+(`PLAN.md` section 6).
+
+**Representative stations** (for each class, the cell of its largest patch nearest that class's own median elevation, rain and
+temperature; px, then elevation and air, rain, mean (warm / cold; hottest afternoon / coldest night)):
+
+| Station | Class | px | Elevation, air | Rain | Mean (warm / cold; hi / lo) | For |
+|---|---|---|---|---|---|---|
+| **N1** the cold steppe | BSk | (1344, 209) | 3,693 m, 1.01 atm | 235 mm | 8 (21 / -5; 30 / -14) | the Plains of Runners: ostrich herds, the nomads' ground |
+| **N2** the cold desert | BWk | (1269, 130) | 3,802 m, 0.99 | 31 mm | 8 (21 / -5; 31 / -15) | the Nursery Plateau: the driest ground, the hexapods' nests |
+| **N3** the lake shore | WH | (1356, 240) | 1,121 m, 1.39 | 596 mm | 22 (29 / 14; 35 / 8) | the deep valley's lake: the lush end |
+| **S1** the montane woods | Dfb | (1337, 393) | 3,883 m, 0.98 | 1,176 mm | 5 (18 / -8; 25 / -15) | the Fog Rim: the tall fog-combers, the most endemic flora |
+| **S2** the wet valley | Cfa | (1369, 346) | 2,858 m, 1.12 | 1,318 mm | 11 (24 / -2; 31 / -9) | the Farmland: the sedentary tribe's irrigated valley |
+| **S3** the hot valley floor | BSh | (1384, 389) | 1,097 m, 1.39 | 502 mm | 21 (31 / 10; 40 / 2) | the warm foot of the river (47 m³/s into the 705 m lake) |
+| **S4** the dry shoulder | BWk | (1352, 391) | 2,274 m, 1.20 | 141 mm | 14 (26 / 1; 35 / -8) | the Gem Hills: weathered rock and the workings |
+
+The Cursed City (Trickster's House, px 1240, 330) stands between N1 and S2: Cfa at 2.9 km and cold steppe at 3.7 km round it; no
+station of its own.
+
+## 7. Routes from the nearest Ancient sites to Trickster's House (2026-10-26)
+
+`tools/scale-model/ancient_roads.py`'s cost (the Ancient profile: a 4% ruling grade, tunnel where cheaper, only in tunnel over 9 km,
+a bridge over water), from Trickster's House at px (1240, 330), with the settlements as the collection now holds them (54 nodes,
+including the new arcologies and the Sleeping City):
+
+| To | Cost | Route | In tunnel | Highest point |
+|---|---|---|---|---|
+| **Verge** (a city on Ancient ground; the nearest by cost, the one route in the draft network) | 1,351 | 845 km | 56 km | 9,805 m at px (1178, 419) |
+| Yuni (the Ancient laboratory's city) | 1,596 | 1,120 km | 51 km | 9,424 m at (1182, 451) |
+| **Fort Kreia** (the nearest ruin) | 1,728 | 1,111 km | 68 km | 9,902 m at (1180, 411) |
+| Fort Ordo | 1,727 | 1,125 km | 68 km | 9,805 m at (1178, 419) |
+| **The Sleeping City** | 1,740 | 1,115 km | 68 km | 9,805 m at (1178, 419) |
+| Crescent (ruined arcology) | 1,768 | 1,186 km | 70 km | 9,728 m at (1178, 282) |
+
+**Every route comes in by a rim tunnel on the basin's west side at about px (1178, 411-419)**, 56-70 km long under a crest of about
+9.8 km (the Ancient profile does not cross above 9 km on the surface): about 60 px (120 km) west of Trickster's House.
+**It does not use the Gate**, the surface pass at px (1136, 84), 7.7 km (0.60 atm), which is the Coyote Men's way in. So the Ancients'
+road and the Coyote Men's are two different ways over the rim: the Ancients' underground from the south-west, the Coyote Men's over
+the north pass. (The owner: the god's road ends at the cliff. Whether the god's road is the Ancient road's approach from the
+tunnel mouth or the road from the Gate is for the lore: `PLAN.md` section 11.)
+
+## 8. Not yet done
+
 - **The polygons** themselves: the owner may want N Outlands and S Outlands trimmed to the basins (they enclose mostly
   rim), and the `Tiers` biome and `Coyote Kingdom` polygons are the same ground; decide what each is for.

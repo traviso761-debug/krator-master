@@ -57,7 +57,7 @@ kilometre (several times the surface's); the airless rim crossable only in tunne
   natural caves (`biomes/riftrim/PLAN.md`). The surface road over the crest is Dalab's own, for when the tunnel's keepers
   close it.
 - **Pluton's tunnels** (the owner, 2026-10-23): Pluton (px 471,998, 9.7 km, on the Godthrone's airless flank) is the key
-  to the tunnels the Ancients drove up inside **the Godthrone** to its summit (px 574,909, 17.1 km, ~270 km away), for
+  to the tunnels the Ancients drove up inside **the Godthrone** to its summit (px 574,909 on 4.22, moved to ~575,937 on 4.23; 17.1 km on 4.22, a caldera rim at ~25 km after, so the climb is ~8 km longer over the same ~270 km; ~270 km away), for
   their own purposes. **Not part of the public network**, and **uninhabitable now**. The draft's Cube-Pluton route stands
   for the way to Pluton from the Rift.
 - **At least one route under the Inner Wall.** Straight-line checks between Ancient sites on either side (2026-10-23;
@@ -130,6 +130,19 @@ its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). Wha
   climbing cost will put more of the mountain crossings underground.
 
 It is a draft for looking at: the settlements are to be reworked first, then the network is routed for real.
+
+## 4c. The second draft (2026-10-26)
+
+Re-run on 4.22's heights and the settlements as the collection now holds them (`ancient_roads.py`; the draft files above are
+overwritten): **54 nodes, 63 routes, ~17,200 km (241 km in tunnel)**, up from 42, 48, ~14,400 and 161. New nodes: the new
+arcologies and ruins **Shell, Crescent, Stump, Flooded Tower, Tilted Tower, Shelf, Loj Twenny**, the ruins **Fort Kreia, Fort Ordo,
+Fort Kalor, Nusidi** and **the Sleeping City** (which joins by Fort Kreia, 87 km, and Fort Ordo, 122 km), and **Trickster's House**
+(Arcoindian II, a ruined arcology on the N Outlands basin's west wall at px 1240,330, the owner, 2026-10-26; `biomes/outlands/PLAN.md`).
+**Lunapolis** is no longer in the collection. **Trickster's House joins the network by one route only, to Verge: 845 km, of which
+56 km is tunnel and 4 km causeway**, the Ancient profile crossing the east rim under about 9.8 km at px (1178, 419)
+(`biomes/outlands/SURVEY.md` section 7 has the routes to the nearest sites: Yuni 1,120 km, Fort Kreia 1,111, the Sleeping City 1,115,
+Fort Ordo 1,125, Crescent 1,186; every one crosses at that same rim tunnel). It is not by the surface pass the Coyote Men use
+(the Gate, px 1136,84, 7.7 km).
 
 ## 5. Data and drawing
 

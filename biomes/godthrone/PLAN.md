@@ -35,6 +35,13 @@ It is a new biome, so it goes in the gallery when it first reaches `main`.
 
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26; the summit after 4.23)
 
+**4.23 is built** (2026-10-26, `tools/scale-model/edit_423.py`, `tools/scale-model/README.md` "4.23"; the model page is version 88): `DATA.hi` is 27,000 m;
+the **cone is a weathered shield that fills this polygon** (contours from a round summit rim out to the polygon's outline,
+each lower contour parallel to its edges, a slope of ~0.065 over the 210 km from the rim to the 11 km contour), the **rim at 25.0 km**
+(0.07 atm; no cell is higher), a 65-77 km caldera with its floor at ~22 km and a nested pit 900 m deeper, and the summit vent at px 577.85, 932.59.
+~317,000 km² of ground rose, up to 10.7 km, and radial gullies were cut into it (a stream-power pass, mean cut 110 m, none over 1,200 m).
+The rows below were surveyed on 4.22; re-survey them on 4.23 before the open world is cut.
+
 **The polygon**: 323,368 km² (px 389-739 by 748-1159). Climate class O 248,888 km², HF 39,796, EF 29,316, ET 5,280.
 Rain is nil over almost all of it (median 0 mm; the wettest twentieth of it ~80 mm).
 

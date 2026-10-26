@@ -205,6 +205,25 @@ spring or a fog harvest; the Tiers' fields are channel-fed terraces, a Qanat-and
     along the road, a long-necked, grinning, plumed figure on gates and boundary stones.
   - It ties the trade to the faith: caravans are under the trickster's protection, and the toll gate is a shrine as well
     as a fort (*proposed*).
+- **The phoenix, and the golden bird (the owner, 2026-10-26).** The Coyote Men's **other god is a phoenix** who **dies at
+  the end of every age and rises more glorious in the next**: the god of ages, endings and returns, the trickster's
+  grave counterpart (the runner bird is the god of the road and the day; the phoenix is the god of time). Its living form
+  is **a high-flying golden bird, wholly sacred**, a native or Earth-like soarer (*proposed*: a native one, a golden
+  gliding hexapod-winged or feathered raptor that rides the basin's thermals above the fog rim; a new species for
+  `kits/fauna`' flyers). Consequences:
+  - **The taboo is absolute.** The golden bird is never hunted, eaten or touched. **Anyone the Coyote Men know for a fact to
+    have killed one, they attack on sight**; in play, **carrying its feathers (or any part of it) in your inventory is the
+    same offence**: a **faction-hostility trigger** that makes every Coyote tribe and the Kingdom of the Tiers hostile at
+    once (*proposed*: a witnessed kill is a permanent mark; possession of a feather is hostile until dropped or hidden,
+    and the Tierhounds' gate guards search for them). It is the starkest contrast with the runner bird, whose feathers
+    are prized and traded, and the ostrich, whose plumes are the common export.
+  - **Ages.** The phoenix's death at the end of each age is a Coyote way of counting time (a calendar of ages, with a
+    festival at each turning), and the Kingdom of the Tiers' kings are crowned at a turning (*proposed*). Where the
+    present age stands, and what ended the last one, is the owner's: it may tie to the Ancients' end and to Trickster's
+    House (the cursed city as the last age's ruin: *proposed*, for the owner).
+  - Art and architecture (for the Coyote kit): the golden bird and a flame motif on gates and tombs, rebirth cycles on
+    reliefs, the stepped Tiers as a stair of ages (*proposed*).
+
 - **The Coyote Men** are **therians** (the owner, 2026-10-26), as Korona's peoples are *human and therian* (`LORE.md`
   6.18): coyote-headed, digitigrade, upright. Stone and bronze age in the basin; the **Kingdom of the Tiers** (the
   Coyote Kingdom) on the threshold, more advanced and the gatekeeper. They traded with Izani caravans but were never
@@ -242,15 +261,15 @@ Throne's station 1 at its ceiling is the warning).
 
 | # | Station | Place | What it shows |
 |---|---|---|---|
-| 1 | **The Fog Rim** (N Outlands) | the windward wall's montane woodland | the fog-combers (veil cap, comb mast) in mist; the biome's showcase and the first built; `dist/outlands.html` |
-| 2 | **The Farmland** (N Outlands) | the sedentary tribe's wadi valley | irrigated fields of the bronze-age package, spring palms, rope-sedge channels; the Coyote culture kit's first stage |
-| 3 | **The Gem Hills** (N/S line) | the emerald and turquoise ranges | weathered copper-green and white rock, rock-eater lace and pleat columns on the cliffs, open-cast workings (a `kits/resources` node set) |
-| 4 | **The Plains of Runners** (S Outlands) | the dry plain, herds and a salt pan | ostrich flocks, cushion mats, fog beetles, vultures; the nomads' camps |
-| 5 | **The Nursery Plateau** (S Outlands) | the driest ground | pod towers, brood pads and gall stacks tended by hexapods over pebble mats and crust rosettes; the strangest page |
+| 1 | **The Fog Rim** (S Outlands; station S1, px 1337,393, Dfb 3.9 km, 1,176 mm) | the windward wall's montane woodland | the fog-combers (veil cap, comb mast) in mist; the biome's showcase and the first built; `dist/outlands.html` |
+| 2 | **The Farmland** (S Outlands; S2 px 1369,346 Cfa 2.9 km, and S3 px 1384,389 BSh 1.1 km on the river) | the sedentary tribe's wadi valley | irrigated fields of the bronze-age package, spring palms, rope-sedge channels; the Coyote culture kit's first stage |
+| 3 | **The Gem Hills** (S Outlands; S4 px 1352,391, BWk 2.3 km) | the emerald and turquoise ranges | weathered copper-green and white rock, rock-eater lace and pleat columns on the cliffs, open-cast workings (a `kits/resources` node set) |
+| 4 | **The Plains of Runners** (N Outlands; N1 px 1344,209, BSk 3.7 km, 235 mm) | the dry plain, herds and a salt pan | ostrich flocks, cushion mats, fog beetles, vultures; the nomads' camps |
+| 5 | **The Nursery Plateau** (N Outlands; N2 px 1269,130, BWk 3.8 km, 31 mm; N3 px 1356,240, the lake shore, WH 1.1 km) | the driest ground | pod towers, brood pads and gall stacks tended by hexapods over pebble mats and crust rosettes; the strangest page |
 | 6 | **The Gate** (the pass) | the corner of Korona | the narrow gap, the toll fort, the road; shared with Korona's station 7 (section 7) |
 | 7 | **The Cursed City** (Arcoindian II; site tbd) | a cliffside the survey proposes | the ruined cliff arcology with the native flora over it and the Coyote Men's keep-out ring round it; the building is `kits/ancients` Arcoindian II |
 
-N Outlands is wetter and settled (stations 1, 2, 3); S Outlands is drier, emptier and wilder (4, 5). The split follows the
+The climate histogram (`SURVEY.md` section 6) reversed the first guess: **N Outlands is the dry basin** (cold steppe and desert, 65%: stations 4 and 5, the open ostrich country) and **S Outlands the wet, wooded one** with the warm river valley (stations 1, 2 and 3). The stations' px are the histogram's representative cells. The split follows the
 survey (section 1). If the survey gives fewer distinct climates, merge 3 into 2 and 5 into 4.
 
 ## 7. The Tiers: its own biome, `tiers`
@@ -318,7 +337,7 @@ shader or sky dome. Run `python3 tools/check_core_use.py` before calling it done
 2. **The pass**: a single gate in Korona's corner, or a long defile? Where on the Tiers' east edge?
 3. ~~Therians or humans~~ Settled: therians, barking a dialect of the Hum (section 5).
 4. **Names**: tribes settled (Sunset, Sunrise, Valley, Peak); the pass, the Coyote Kingdom's capital and the Kingdom's rulers still open, and the tribes' places.
-5. **N vs S**: wetter-and-settled / drier-and-wild, or a different split?
+5. ~~N vs S~~ Settled by the climate histogram: N dry and open, S wet and wooded (section 6).
 6. ~~Armour~~ Dropped: the flora is 90% native and fungoid (section 3); the signature is colour and construction.
 7. **Station count**: the six above, fewer for a first pass, or more?
 8. **Gem ranges**: emerald and turquoise in one place, or emerald in the N and turquoise in the S?

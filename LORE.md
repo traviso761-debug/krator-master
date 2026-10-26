@@ -43,6 +43,16 @@ A lost high civilisation, **the Ancients**, built everything that matters and th
 
 The air pressure has real consequences. Dalab's genepriests sell **pressure adaptation** as a body modification, so moving between altitudes is a problem people live with. The highlands are for the most part earthlike; the lowlands, and especially the central crater, the Eastern Abyss, and the Rift, are not quite like anything on Earth – they are about as far under the atmosphere as the Marianas Trench; an atm of 2.0 has great consequences. Insects and flying creatures grow larger, the air is more humid, and fires burn so hot that even a charcoal flame is enough to smelt steel.
 
+**Why Krator is volcanic** (settled with the owner 2026-10-26; `tools/scale-model/README.md`, "4.23"). Krator is a **moon locked to its
+gas giant**, flexed and heated by tides from an orbit kept slightly eccentric by its sibling moons (as Io's is), at **2-5x
+Earth's heat flow** (Io's is ~25x). It has **no plate tectonics: one thick, unmoving shell** (a 3,000 km crater survives only
+on such a world). It loses its heat as a **heat-pipe** world does, through long-lived vents, and the buried flows thicken and
+stiffen the shell; that shell holds up a volcano of **Olympus Mons size**, and a plume that never moves builds it. The
+volcanism is **focused, not global** (Io, at ~1 cm of new rock a year, has no craters at all): the Throne fills the crater's
+centre as lava filled the Moon's basins, the Godthrone sits on its plume, and the Rift and the vent fields take the rest;
+tides crack the shell into rifts without moving it. **The Godthrone's lava is titanium-rich**: black, very fluid, and its
+fountain glass orange, as on the Moon.
+
 ## 3. Geography
 
 ### 3.1 The shape of the crater
@@ -95,7 +105,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
 | *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians; Korona's tepui tribes, human and therian (§6.18) |
 
-The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from −2,600 to +17,100 m, plus climate rasters. Its database holds 35 named cultural and political region polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of Xanadu**.
+The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from −2,600 to +27,000 m (the Godthrone's rim stands near 25 km on version 4.23), plus climate rasters. Its database holds 35 named cultural and political region polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of Xanadu**.
 
 ## 4. The Ancients
 
