@@ -14,8 +14,9 @@
       core's own clock and the mist is this host's sprites. The pools' water is the host's own near-still shader, not the shared
       wave field (biomes/README.md asks for it on open water; these are small still pools, mirror-still by design): bind it
       when the valley joins a world, with `vOpen` 0 on the pools.
-- [ ] **The stream is painted, not water**: the channel between the pools is a dark wet band on the ground; the cataract is a
-      ribbon plane and spray sprites, not a water surface.
+      2026-10-25: the pools' water is now core/water's (`WATER.still`, 89w-host-water.js); the wind, cloud deck and the foliage's clock still wait (a core/biome change to take ATMOS's wind), so the item stays open.
+- [x] **The stream is painted, not water** (closed 2026-10-25): the stream is a `WATER.flow` from the cataract's foot to the Mirror, the four pools are `WATER.still`, the cataract is a `WATER.fall` fitted to the head's step (`rowStep` 1.5, plunge spray from core/atmos); all in `89w-host-water.js`. The ground keeps its dark wet band along the channel (the banks). The canvas ribbon and the cataract's spray sprites are gone.
+
 - [ ] **A few surfaces are still procedural**: the owner's own cards and surfaces (2026-10-19) dress the sacred fig, the birch lace,
       the cherry blossom, the lilies, the giant pad, the moon caps, the peyote, the bead strings, and the marble, bamboo, cedar,
       chalice-cap and moss-ball surfaces; the library dresses the rest (`materials.json`). Still the kit's own canvases: the lotus
@@ -48,3 +49,5 @@ EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the b
 kit binds none). Add each back when the kit fills it.
 
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
+
+2026-10-25: `water` is now in `EXPORT_PROFILE` (phase 4: the pools, the stream and the cataract are core/water surfaces; `89-atmos-3-particles.js` is listed for the plunge's spray).

@@ -43,7 +43,7 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  const P=[];for(let i=0;i<22;i++)P.push([rng()*w,rng()*h]);
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.34)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.4);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-14,14)+k*w,(a[1]+b[1])/2+rr(-14,14)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
-// THE LIBRARY GROUND LAYERS (materials.json ground.*): seven surfaces blended per vertex by zone over the painted ground,
+// THE LIBRARY GROUND LAYERS (materials.json ground.*): eight surfaces (the two vec4 weights' whole room) blended per vertex by zone over the painted ground,
 // as the eastern badlands' host does. A keep-0 layer multiplies the painted colour by its relief, a keep-1 layer shows its
 // own colour, the others mix the two. Without the pack (?mat=proc, or no tex/) the ground is exactly the painted one.
 // GL: [library set, weight(F)] with F the cached fields at the vertex.
@@ -51,7 +51,10 @@ const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null
  const P=n=>KMAT.packed('nsemiarid','ground.'+n),rk=F=>smooth(.45,.85,F.rock),dn=F=>smooth(.1,.5,F.dune),open=F=>(1-F.bed*.9)*(1-dn(F))*(1-rk(F));
  const L=[['steppe',F=>smooth(.42,.3,F.wet)*open(F)],['withered',F=>smooth(.3,.42,F.wet)*smooth(.6,.46,F.wet)*open(F)],
   ['grass',F=>smooth(.46,.6,F.wet)*open(F)],['silt',F=>.6*F.bed*smooth(.1,.5,F.silt)*smooth(.6,.3,F.salt)*(1-dn(F))*(1-F.ring)],
-  ['crust',F=>.5*clamp(F.ring*.8+smooth(.2,.45,F.salt)*smooth(.85,.6,F.salt),0,1)*(1-dn(F))],['sand',F=>dn(F)],['basalt',F=>rk(F)*.85]];
+  ['crust',F=>.5*clamp(F.ring*.8+smooth(.2,.45,F.salt)*smooth(.85,.6,F.salt),0,1)*(1-dn(F))],['sand',F=>dn(F)*(1-.9*smooth(.6,.85,F.salt))],['basalt',F=>rk(F)*.85],
+  // the eighth (2026-10-26): the soda crust's curled plates (ground.soda.crust) on the pan's middle, where the efflorescence
+  // fades; the pan lies under the dune field (dune ~.6 there), so on the salt the crust takes most of the sand's share
+  ['soda',F=>smooth(.6,.85,F.salt)*(1-.4*dn(F))]];
  if(L.some(l=>!P(l[0])))return null;
  return L.map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 // the layers' anti-tiling (2026-10-22): a library set repeats every few metres, and over a plain the repeat reads as a

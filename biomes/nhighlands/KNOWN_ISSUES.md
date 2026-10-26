@@ -14,44 +14,76 @@
       fragments in place but calls `NHL.buildTrees` itself: it gets none of the new flora until its build passes
       `{flora:true}` and calls `NHL.buildNewFlora` (the owner: when Roketstad goes into the open world).
       Stays open (2026-10-25): textures owed (core/materials/PROMPTS-NEEDED.md) and the Roketstad hookup is the owner's call.
+      2026-10-26: the 2026-10-25/26 deliveries wired (materials.json, re-packed): `card.larch` on the larch's needles, `card.fireweed`
+      on the `spike` item (fireweed, purple millet), `ground.cladonia` as the ground's third layer over the boreal floor
+      (84-host-ground.js, `aGL.z`, at most .4). Not wired: `bark.larch` (a larch bark bucket is one more draw call in every chunk
+      with a hero larch), `card.cottongrass`, `card.pasque`, `card.snowball` (no such plant in this kit).
+      Stays open (2026-10-26): the textures still owed and the Roketstad hookup, as above.
 
 - [ ] **Density against the budget.** The map is 43 km² of old growth; the canopy is closed
       only near the LOD spine (the stream, the tower, the old wood, a boreal stand, the crest).
       Beyond ~600 m the stands thin (the passes' `lodK`) and the impostors are drawn larger to
       make up for it. A world that shows a smaller area can raise the density (`quality`) there.
       Stays open (2026-10-25): a trade against the 32 M triangle budget; an owner decision.
+      Stays open (2026-10-26): held is 30.21 M of 32 M now (trees 18.20 M, floor 11.78 M, dress .22 M; +.14 M from the mid-range
+      broadleaves below), so there is ~1.8 M of room; raising density is still the owner's call.
 - [ ] **Memory.** ~24M triangles held (trees ~16M, floor ~8M), ~2.0M instances. Plain-array
       buckets crashed the page at ~16M; the core now stores Float32 (BIOME-API.md). Software GL
       (SwiftShader) takes ~22 s to build on a quiet machine (`window._phases`: trees ~10 s, the
       core's bake ~5 s, floor ~4 s, ground ~2 s) and 20–60 s a screenshot.
       Stays open (2026-10-25): a budget fact, not a defect; the core stores Float32 already.
+      2026-10-26: the figures above are stale: 30.2 M triangles held, 2.65 M instances, 1211 LOD chunk meshes (1258 before
+      the boulder merge). Stays open: a budget fact.
 - [ ] **Draw calls: the near-band floor.** ~330–380 calls at the stream views (from ~480–510), most of
       them the near floor's ~30 item types times the chunks within 650 m. Four pairs of items share
       geometry and material (black grass and grass, dark spurge and heath, smoke bush and moss
       cushions, mountain cane and rods) and could merge, four calls a chunk, but the inspector names
       a small plant by its item's label: that needs a per-instance label in the core first.
       Stays open (2026-10-25): needs a per-instance inspector label in core/biome first.
+      2026-10-26, what could be done here without the core: (1) the two boulder items (`boulderA`, `boulderB`: same
+      material and label, two noise shapes) are one, `boulderA` (60-biome-nhighlands-floor.js; the coin is still drawn so no
+      placement moves): one call less in every floor, far-floor and log chunk in view; (2) the mist (84-host-ground.js) was
+      74 sheets and sprites, one draw call each; it is now two meshes (the sheets' quads, the sprites as camera-facing quads
+      rewritten each frame), the same placement, drift and colours. Draw calls, --all-views before -> after: Overview 238 -> 164,
+      The stream 366 -> 293, Night: the stream 421 -> 357, The tarn 296 -> 235, The waterfall 280 -> 235, Moss hummocks
+      316 -> 243, The burn 346 -> 306, Fan-leaf 383 -> 353, The tower 369 -> 359 (worst view now Night: the tower, 369).
+      Stays open (2026-10-26): the four pairs still need the core change: `BIO.put(..., extra.label)` storing a per-instance
+      label index on the item, `BIO.bake` handing the table to the InstancedMesh (`userData.instLabels`), and
+      core/host/93-host-inspect.js reading `hit.instanceId` against it; then mondo->blade, spurge->heath, smoke->cushion,
+      cane->rod save four calls a near chunk.
 - [ ] **Mid-range broadleaves are thin.** The broad builder's lv1 trees (three boughs as rods, one
       clump a spot) read sparse at 100–300 m, now that there are twice as many of them low down (the
       low-band view from the NW corner). The conifers' treatment (more, larger masses at lv1) would fit.
       Stays open (2026-10-25): a design task (more lv1 masses); it costs triangles against the budget.
+      2026-10-26: B.broad at lv 1 draws its masses 1.3x larger and a second mass at one spot in two (55-biome-nhighlands-trees.js),
+      +135k triangles held, +.05-.08 M drawn at the near views. Stays open (2026-10-26): for the owner to judge at 100-300 m.
 - [ ] **The boreal spires read near-black against the light.** The denser needle masses carry the
       spire spruce's dark palette (`PAL.conifer` x .82) further; judge it in review, lighten if wanted.
       Stays open (2026-10-25): waits on the owner's review of the palette.
-- [ ] **Placement evaluates the zones for every cell of every pass** (~2 s of the trees' ~10 s): a
+      2026-10-26: the spire spruce's leaf is PAL.conifer a third toward PAL.coniferBlue and x1.25 (was x.82): green-teal, not black,
+      in the Boreal band view. Stays open (2026-10-26): for the owner's review (no triangle or call cost).
+- [x] **Placement evaluates the zones for every cell of every pass** (~2 s of the trees' ~10 s): a
       zone lattice (like the host's field cache) would halve it.
-      Stays open (2026-10-25): a zone lattice is a core/biome placement change (no biome-side fix).
+      2026-10-26: fixed biome-side and exactly: `NHL.zones` returns a record whose six noise-driven zones (glade, burn, colony,
+      grove, cane, dark: an fbm each) are worked out on first read and kept (55-biome-nhighlands-trees.js `Zone`). Most tree passes
+      read none of them. In the page, 300k calls reading the cheap zones take 129 ms against 253 ms reading every zone (the old
+      cost per call). Same expressions, so every placement is unchanged.
 - [ ] Fauna deferred (a stub, as in the other kits).
       Stays open (2026-10-25): a feature not yet designed.
 - [ ] The far country's lake shore is a little polygonal (its grid is ~460 m out there), and
       the Outer Wall reads as an even band (82-host-sky.js).
       Stays open (2026-10-25): the coarse ~460 m grid is the far lake's mask resolution (core/water shore grid cell / sky 82); out of this pass's budget.
+      Stays open (2026-10-26): the far country is drawn in 82-host-sky.js, which waits on the shared sky rollout (not touched here).
 - [x] The night is very dark on open ground away from the glow (by design: the glow carries it). - 2026-10-20: by design, nothing open.
 - [ ] **Snow reads as one band down the valley, not patches** (found in review, Oct 2026). `cold` includes valley
       cold-air pooling (`45-host-stage.js:155`) and snow is gated on `cold>.94*alpine` (`84-host-ground.js`, the snow lerp), so the
       default SE-crest overview shows a continuous white band on the valley floor. (The near trees there no longer read
       as bare poles: the bushy conifers, Oct 2026.)
       Stays open (2026-10-25): a look decision (cold gate in the ground shader) for the owner.
+      2026-10-26: the ground's snow takes its own cold, `cold` less the valley's pooled air (.0573 x valley, the 55/960 term of
+      45-host-stage.js), for both its gates (84-host-ground.js): the band down the valley floor in the SE-crest overview is gone;
+      the north faces and high flanks keep their patches. ATMOS.snowCover was not added: it whitens every up-facing surface above
+      a height line, and this band follows the valley, not a height. Stays open (2026-10-26): for the owner to judge.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`; 2026-10-06): yew-lantern arils, frost rowan, wall bilberries, lantern pods, beechmast and acorns.
       `HV()` carries `fruit` (the catalog key) on `elderyew`, `rowan`, `bluebeech`, `gnarloak` and the bilberry and lantern-pod plants; `NHL.FRUIT_KEYS` lists them.
       Beechmast (`bluebeech`) and acorns (`gnarloak`) are now drawn: the `mast` item, a tetrahedron (4 triangles) in three-nut clusters at hero-level leaf
@@ -59,6 +91,9 @@
 - [ ] (Travis, Oct 2 2026) **Floating forest: lime foliage.** The floating forest's foliage reads lime green against
       the rest of the kit; retune it to the kit's palette.
       Stays open (2026-10-25): a palette retune the owner must judge by eye; not done without a look pass.
+      2026-10-26: read as the mid-range broadleaves' masses (lit whole on bare boughs, no inner crown): at lv 1 they are drawn a
+      shade darker (`shade(hc,-.16)`, 55-biome-nhighlands-trees.js) as well as fuller. The hero crowns (a lime blob on a tall bare
+      bole in the Boreal band view) are unchanged. Stays open (2026-10-26): the owner should say which trees he meant.
 
 ## Done
 

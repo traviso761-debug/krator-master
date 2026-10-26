@@ -123,6 +123,18 @@ function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-l
 // the record nearest a point (the inspector names a tree from it)
 function nearest(x,z,r){let b=null,bd=r||1e9;for(const T of NSEMIARID.TREES){const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;}
 TICKS.push(()=>{if(typeof NSWIND!=='undefined')SPIN.value=NSWIND.spin;});
-const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,SPIN,
+// THE SPIN IN ?unique=1 (2026-10-26): there the trumpet's bell, throat and blades are the core's instanced items, drawn
+// with the core's foliage shader, which has no spin. Each item's own origin is the crown's pivot (the stalk's top), so
+// the turn is the same one, made about the instance's own up axis before its matrix: this wraps the core's hook on the
+// two spin materials, adding the turn after begin_vertex (which the core leaves alone), and keys the program apart
+function spinUnique(m){if(!m||m.userData.spinUnique)return;const base=m.onBeforeCompile,ck=m.customProgramCacheKey();
+ /* its own names: the core's hook already declares _sc and _ph in main() */
+ const G=SPIN_GLSL.replace(/_sp\b/g,'_usp').replace(/_sa\b/g,'_usa').replace(/_sc\b/g,'_usc').replace(/_ss\b/g,'_uss');
+ m.onBeforeCompile=function(sh){base.call(this,sh);sh.uniforms.uSpin=SPIN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uSpin;')
+   .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\n'+G+'\nobjectNormal.xz=vec2(objectNormal.x*_usc-objectNormal.z*_uss,objectNormal.x*_uss+objectNormal.z*_usc);')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.xz=vec2(transformed.x*_usc-transformed.z*_uss,transformed.x*_uss+transformed.z*_usc);');};
+ m.customProgramCacheKey=()=>ck+'|uspin';m.userData.spinUnique=true;m.needsUpdate=true;}
+const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,SPIN,spinUnique,
  init(){growAll();api.ready=true;update(camera.position,true);},update};
 return api;})();

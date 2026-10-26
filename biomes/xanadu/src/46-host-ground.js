@@ -95,43 +95,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
 
 // ---------------------------------------------------------------- the lake
 const WATER_SHALLOW=new THREE.Color().setHSL(XANADU_LAKE.hue,.50,.55),WATER_MID=new THREE.Color().setHSL(XANADU_LAKE.hue+.02,.58,.34),WATER_DEEP=new THREE.Color().setHSL(XANADU_LAKE.hue+.05,.60,.15),WATER_PALE=new THREE.Color().setHSL(XANADU_LAKE.hue-.02,.45,.70);
-function waterMat(label){const m=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,950,-600).normalize()},uSky:{value:new THREE.Color(0xd6e2e0)},uFlow:{value:label==='river'?1:0}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
-  'void main(){vCol=color;vUv=uv;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uFlow;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,480.0,dcam);',
-  ' float fl=uFlow*vUv.y*0.07-uT*uFlow*0.9;',   // the river's ripples run downstream
-  ' vec3 n=normalize(vec3(rk*(0.03*sin(vWP.x*0.31+uT*1.1+fl*6.0)+0.018*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.03*cos(vWP.z*0.27+uT*0.9+fl*5.0)+0.018*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);',
-  ' float foam=uFlow*vUv.x*(0.55+0.45*sin(vUv.y*0.9-uT*6.0+sin(vWP.x*0.3)*2.0));',
-  ' col=mix(col,vec3(0.93,0.95,0.94),clamp(foam,0.0,0.9));',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),150.0)*0.6*vec3(1.0,0.96,0.88);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
- m.uniforms.fogColor.value=scene.fog.color;m.uniforms.fogDensity.value=scene.fog.density;TICKS.push(dt=>{m.uniforms.uT.value+=dt;});return m;}
 function lakeColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h);
  const shoal=fbm(x*.0031+2,z*.0031-4,505,2);
  out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.5,.68,shoal)*smooth(3,.4,d),smooth(.9,.1,d)*.6)).lerp(WATER_MID,smooth(1.5,6,d)).lerp(WATER_DEEP,smooth(8,30,d));return out;}
-(function(){const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,g=new THREE.PlaneGeometry(SX,SZ,320,300);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){lakeColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,waterMat('lake'));m.userData.probeSkip=true;m.userData.inspectLabel='The lake';m.renderOrder=1;scene.add(m);})();
-// ---------------------------------------------------------------- the river
-// A ribbon across the bed at every resample point. Its level is a hand above
-// the bed; it reaches out to where the banks rise above that level. uv.y runs
-// downstream in metres (the ripples follow it), uv.x carries the foam: the
-// cascades, the chasm's rapids.
-const RIVER_WATER=(function(){const P=RIV.P,n=P.length,pos=[],col=[],uv=[],idx=[],c=new THREE.Color(),cl=new THREE.Color().setHSL(XANADU_LAKE.hue+.03,.45,.40),cd=new THREE.Color().setHSL(XANADU_LAKE.hue+.05,.5,.24);
- const ACROSS=6;
- for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
-  const s=RIV.S[i],g=RIV.gorgeK(s),w=RIV.halfW(s),kf=mix(.06,.35,g),lvl0=RIV.bed[i]+.65,lvl=s/RIV.LEN>.97?Math.min(lvl0,-.06):lvl0,half=w+.8*.65/kf;
-  const drop=Math.max(0,(RIV.bed[Math.max(0,i-1)]-RIV.bed[Math.min(n-1,i+1)])/Math.max(1,RIV.S[Math.min(n-1,i+1)]-RIV.S[Math.max(0,i-1)]));
-  const foam=clamp(smooth(.03,.16,drop)+g*.25,0,1);
-  for(let k=0;k<=ACROSS;k++){const t=k/ACROSS*2-1,x=P[i][0]+nx*half*t,z=P[i][1]+nz*half*t;
-   pos.push(x,lvl,z);c.copy(cl).lerp(cd,(1-Math.abs(t))*mix(.3,.8,g));c.convertSRGBToLinear();col.push(c.r,c.g,c.b);uv.push(foam*(.6+.4*Math.abs(t)),s);}}
- for(let i=0;i<n-1;i++)for(let k=0;k<ACROSS;k++){const a=i*(ACROSS+1)+k,b=a+1,c2=a+ACROSS+1,d=c2+1;idx.push(a,c2,b,b,c2,d);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);
- const m=new THREE.Mesh(g,waterMat('river'));m.userData.probeSkip=true;m.userData.inspectLabel='The sacred river';m.renderOrder=2;m.material.side=THREE.DoubleSide;scene.add(m);return m;})();
+// the lake and the river are drawn by core/water: the records here (RIV, terrainH, lakeColorAt) and src/89w-host-water.js (2026-10-25)

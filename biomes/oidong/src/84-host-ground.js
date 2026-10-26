@@ -100,52 +100,25 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aFlat',new THREE.BufferAttribute(fl,1));g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Oidong Valley';scene.add(m);return m;})();
 
-// ---------------------------------------------------------------- the water (the pools)
-// Mirror-still by design: the pools are the valley's calm. The ripple is a hair's breadth; most of the colour is the
-// sky thrown back. (The shared wave field of core/atmos is for open water, biomes/README.md; these are small still
-// pools, and the open-water surface is a KNOWN_ISSUES item.)
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,900,-700).normalize()},uSky:{value:new THREE.Color(0xd4dcea)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.012*sin(vWP.x*0.31+uT*0.6)+0.008*sin(vWP.z*0.53-uT*0.4),1.0,0.012*cos(vWP.z*0.27+uT*0.5)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),2.6);',
-  ' vec3 col=mix(vCol,uSky,0.18+fr*0.7);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),260.0)*0.6*vec3(1.0,0.98,0.95);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterDisc(X,Z,R,L,name,c0h,c1h){const c0=new THREE.Color(c0h).convertSRGBToLinear(),c1=new THREE.Color(c1h).convertSRGBToLinear(),PN=48,pos=[X,L,Z],col=[c0.r,c0.g,c0.b],idx=[];
- for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(X+Math.cos(a)*R,L,Z+Math.sin(a)*R);col.push(c1.r,c1.g,c1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=name+' (water)';m.renderOrder=1;scene.add(m);return m;}
-POOLS.forEach(P=>waterDisc(P.x,P.z,P.r*1.5,P.l,P.name,0x2e4a44,0x7a9a8a));
+// ---------------------------------------------------------------- the water
+// The pools, the stream and the cataract are core/water's (89w-host-water.js); the records (POOLS, CATARACT, streamOff) are in 45-host-stage.js.
 
 // ---------------------------------------------------------------- the cataract and the mist
-// The cataract: a white ribbon down the head's step, and spray standing over its foot; thin sheets of mist lie over the
+// Thin sheets of mist lie over the
 // pools, and a few drift along the floor. All drift slowly and keep to the ground's height.
 const MIST=(function(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),id=g.createImageData(128,128);
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const dx=(x-64)/64,dy=(y-64)/64,r=Math.hypot(dx,dy),a=clamp(1-r,0,1)*(.55+.45*fbm(x/22,y/22,3,3));id.data[(y*128+x)*4]=id.data[(y*128+x)*4+1]=id.data[(y*128+x)*4+2]=255;id.data[(y*128+x)*4+3]=clamp(a*a*255,0,255);}
  g.putImageData(id,0,0);const tex=new THREE.CanvasTexture(c);
  const sheetM=new THREE.MeshBasicMaterial({map:tex,color:0xe8ecf0,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
  const spriteM=new THREE.SpriteMaterial({map:tex,color:0xf0f4f6,transparent:true,opacity:.3,depthWrite:false});
- // the cataract's ribbon: a tall canvas of white streaks on a plane across the step's face
- const rc=document.createElement('canvas');rc.width=128;rc.height=512;const rg=rc.getContext('2d');rg.clearRect(0,0,128,512);rg.lineCap='round';
- reseed(84019);for(let k=0;k<60;k++){const x0=rr(8,120),lum=ri(225,255);rg.strokeStyle='rgba('+lum+','+lum+','+lum+','+rr(.3,.8).toFixed(2)+')';rg.lineWidth=rr(1.2,4);rg.beginPath();rg.moveTo(x0,0);let x=x0,y=0;while(y<512){x+=rr(-1,1);y+=rr(10,20);rg.lineTo(x,y);}rg.stroke();}
- const rtex=new THREE.CanvasTexture(rc),ribM=new THREE.MeshBasicMaterial({map:rtex,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide,fog:true});
- const top=floor0(2095)+2,bot=floor0(1995)-1,rib=new THREE.Mesh(new THREE.PlaneGeometry(26,top-bot),ribM);rib.position.set(CATARACT.x-4,(top+bot)/2,CATARACT.z);rib.rotation.y=-Math.PI/2;rib.userData.probeSkip=true;rib.renderOrder=2;scene.add(rib);
- const L=[];
+ reseed(84019);const L=[];
  const place=(kind,x,z,lift,sz,op)=>{const h=FC.at(FC.a.h,x,z);let o;
   if(kind==='sheet'){o=new THREE.Mesh(new THREE.PlaneGeometry(rr(100,240),rr(50,120)),sheetM);o.rotation.x=-Math.PI/2;o.rotation.z=rr(0,TAU);}
   else{o=new THREE.Sprite(spriteM.clone());if(op!=null)o.material.opacity=op;const s=sz||rr(60,160);o.scale.set(s,s*rr(.4,.7),1);}
   o.position.set(x,Math.max(h,waterH(x,z))+lift,z);o.userData.probeSkip=true;o.renderOrder=3;scene.add(o);L.push({o,ax:x,az:z,lift,ph:rr(0,TAU),sp:rr(.01,.03),amp:rr(10,40)});};
- // the spray at the cataract's foot, and up its face
- for(let k=0;k<14;k++)place('sprite',CATARACT.x-rr(0,120),CATARACT.z+rr(-70,70),rr(4,30),rr(60,140),.38);
- for(let k=0;k<6;k++)place('sprite',CATARACT.x+rr(-20,30),CATARACT.z+rr(-30,30),rr(30,80),rr(40,90),.3);
  // morning mist on the pools: low sheets
  POOLS.forEach(P=>{for(let k=0,m=Math.round(P.r/80);k<m;k++)place('sheet',P.x+rr(-P.r*.6,P.r*.6),P.z+rr(-P.r*.5,P.r*.5),rr(1.5,4));});
  // a few drifting along the floor in the shade
  for(let k=0;k<10;k++){const x=rr(-2300,1800),z=axisZ(x)+rr(-380,380);place('sprite',x,z,rr(3,12),rr(90,200),.14);}
  tick((dt,t)=>{for(const m of L){const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;m.o.position.x=x;m.o.position.z=z;m.o.position.y=Math.max(FC.at(FC.a.h,x,z),waterH(x,z))+m.lift;}});
- return{L,sheetM,spriteM,rib};})();
+ return{L,sheetM,spriteM};})();

@@ -26,10 +26,11 @@ Read before changing anything here. `build.py` prints the open count.
       clear its footprints through `mask` / `obstacles` and keep the fields.
 - [ ] The cataract that drains the lake is paint (a notch and a spray plume at
       azimuth 112 on the sky); the lake's outlet is not geometry.
-- [ ] The river's ribbon is a hand above the bed and reaches out to where the banks
+      Stays: the outlet lies off the map (no terrain there to hold a `WATER.fall`) and the sky is planned elsewhere (2026-10-25).
+- [x] (2026-10-25: the ribbon is a `WATER.flow` with `depthBias` and a clipped margin, `89w-host-water.js`) The river's ribbon is a hand above the bed and reaches out to where the banks
       rise above that; on a very gentle floodplain its edge can float a few
       centimetres over the ground at grazing angles.
-- [ ] The fountain is a host particle system (2600 points). It is not a biome
+- [x] (2026-10-25: now a `WATER.geyser` of style 'fountain' drawn by `WATER.drawGeyser`, `89x-host-fountain.js`; the drops are core/rand hashes, no `Math.random`, no per-frame CPU) The fountain is a host particle system (2600 points). It is not a biome
       concern and is skipped by the probe.
 - [ ] Impostors are the hyperjungle's blob technique, one or three blobs by habit;
       the lotus trumpet's impostor is three pink-rimmed blobs, not cups.
@@ -64,3 +65,5 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 2026-10-20: `atmos` is now bound and in the profile (migration phase 0: `89a-host-atmos.js` calls `ATMOS.bindHost`, build.py lists core/atmos's core, presets, export, waves and skylight plus `core/atmos/host/89-atmos-c-hostbind.js`; the binding alone draws nothing, and the page's own sky, fog, sun and water are unchanged). `water` waits for its phase: no core/water surface is drawn here yet.
 
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
+
+2026-10-25: `water` is in the profile now (migration phase 4): the lake is a `WATER.open` (shore grid, tint field for the pale shoals), the sacred river a `WATER.flow` with `WATER.fall` for the two chasm cascades, the fountain a `WATER.geyser` drawn by `WATER.drawGeyser` (`src/89w-host-water.js`, `src/89x-host-fountain.js`; core/water listed in `build.py`). The painted cataract on the sky stays paint (no terrain at the outlet).

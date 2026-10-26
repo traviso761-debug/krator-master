@@ -68,7 +68,7 @@ function cane(x,y,z,lv,st){const n=lv===2?ri(8,18):4,hc=C(0x5a8a3a);
   BIO.beam('cane',[px,y-.1,pz],[tx,y+h,tz],.035,.025,bright(C(pick([0x8aa04a,0x7a9440,0x9aaa58])),1.05));
   if(lv>=1)for(let k=0;k<(lv===2?3:1);k++){const u=rr(.5,1);BIO.put('lance',[px+(tx-px)*u,y+h*u,pz+(tz-pz)*u],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[rr(.8,1.3),rr(.4,.6),rr(.8,1.3)],bright(vary(hc,.02,.06,.05),1.2),{n:[0,1,0]});}}
  st.cane++;}
-function boulder(x,y,z,lv,st,big,mossK){const s=(big?rr(1.4,3.6):rr(.5,1.4)),it=rng()<.5?'boulderA':'boulderB';
+function boulder(x,y,z,lv,st,big,mossK){const s=(big?rr(1.4,3.6):rr(.5,1.4)),it=(rng(),'boulderA');   /* one boulder item (2026-10-26): the second shape was one more draw call in every floor chunk out to 2.4 km; the coin is still drawn so nothing after it moves */
  BIO.put(it,[x,y-s*.3,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.6,.9),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,rr(.5,.7)));st.boulders++;
  const mk=mossK==null?.75:mossK;
  if(rng()<mk){mossCushion(x+rr(-.2,.2)*s,y+s*.45,z+rr(-.2,.2)*s,s*rr(.75,1.1));st.moss++;}
@@ -81,7 +81,7 @@ function log(x,y,z,st,cold){const a=rr(0,TAU),L=rr(12,34),r=rr(.5,1.3),n=Math.ma
  pts.forEach((p,i)=>{p.col=wc.clone().lerp(mc,clamp(.45+.35*Math.sin(i*1.7),0,.85));});
  BIO.tube('nwood',pts,wc,{seg:7,cap:true});
  // the root plate at the foot: a ragged disc of roots and earth
- const p0=pts[0],R0=r*rr(2.2,3.2);BIO.put('boulderB',[p0.x-Math.cos(a)*r*.6,Y(p0.x,p0.z)-R0*.4,p0.z-Math.sin(a)*r*.6],qEuler(0,-a,0),[R0*.35,R0*1.1,R0],C(0x4a3e30));
+ const p0=pts[0],R0=r*rr(2.2,3.2);BIO.put('boulderA',[p0.x-Math.cos(a)*r*.6,Y(p0.x,p0.z)-R0*.4,p0.z-Math.sin(a)*r*.6],qEuler(0,-a,0),[R0*.35,R0*1.1,R0],C(0x4a3e30));
  for(let i=1;i<n;i++){const p=pts[i];BIO.put('mossmat',[p.x,p.y+p.r*.8,p.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[p.r*1.6,1,p.r*1.6],bright(vary(pick(PAL.moss),.03,.08,.05),.95));
   if(rng()<.35){const h=rr(1.2,3.5);BIO.put('trunk',[p.x,p.y+p.r*.7,p.z],null,[h*.04+.05,h,h*.04+.05],C(0x6a5040));BIO.put('needle',[p.x,p.y+p.r*.7+h*.75,p.z],qEuler(0,rr(0,TAU),0),[h*.35,h*.5,h*.35],bright(vary(pick(PAL.conifer),.02,.06,.05),1.2),{n:[0,1,0]});}
   else if(rng()<.3)swordFern(p.x,p.y+p.r*.6,p.z,2,.7);
@@ -190,7 +190,7 @@ NHL.buildFloor=function(R,q,box){
  BIO.range=NHL.LOD.floor;
  // stepping stones in the stream: mossy boulders standing in the water (the depth window)
  O.forEach((o,oi)=>{BIO.grid(5,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;return .16*q;},
-  (x,y,z)=>{const s=rr(.5,1.6);BIO.put(rng()<.5?'boulderA':'boulderB',[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.45));
+  (x,y,z)=>{const s=rr(.5,1.6);BIO.put((rng(),'boulderA'),[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.45));
    if(rng()<.55)BIO.put('mossmat',[x,y+s*.5,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s*.8,1,s*.8],bright(vary(pick(PAL.moss),.03,.08,.05),.95));st.stones++;},
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;

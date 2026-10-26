@@ -1,6 +1,6 @@
 {
  "build": "nhighlands",
- "note": "The nhighlands kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nhighlands after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The bark, fallen-wood and boulder buckets (2026-10-06, late; NHL.BKMAT in 50-biome-nhighlands-species.js): plated (bark.ponderosa), fibrous (bark.juniper), smooth, birch, furrowed (bark.ironbark), pine (bark.pine.scale), charred snags (bark.char), fallen wood (wood.gnarled) and boulders (as rock), grey at the measured means of the procedural maps; the trumpet stalks keep their iridescent procedural bark. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. (2026-10-06, late) fin: card.reef, the ridged-fin cell. nbark8 (2026-10-25): the ghost alder's own bark, the owner's bark.alder.lichen (full colour; 3 m a tile up the trunk, so its moss foot repeats every 3 m, not every metre).",
+ "note": "The nhighlands kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nhighlands after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The bark, fallen-wood and boulder buckets (2026-10-06, late; NHL.BKMAT in 50-biome-nhighlands-species.js): plated (bark.ponderosa), fibrous (bark.juniper), smooth, birch, furrowed (bark.ironbark), pine (bark.pine.scale), charred snags (bark.char), fallen wood (wood.gnarled) and boulders (as rock), grey at the measured means of the procedural maps; the trumpet stalks keep their iridescent procedural bark. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. (2026-10-06, late) fin: card.reef, the ridged-fin cell. nbark8 (2026-10-25): the ghost alder's own bark, the owner's bark.alder.lichen (full colour; 3 m a tile up the trunk, so its moss foot repeats every 3 m, not every metre). (2026-10-26) larch: the owner's card.larch (the larch's needles, whole sheet, grey at keep 0 under PAL.larch); spike: card.fireweed (the fireweed of the glades and the burn, and the purple millet, middle cell) in place of card.flowerspike; groundCladonia: ground.cladonia, the host's third ground layer (84-host-ground.js), reindeer lichen over the boreal band's floor. bark.larch is not wired: a larch bark bucket is one more draw call in every chunk with a hero larch.",
  "size": 512,
  "families": {
   "needle": {
@@ -72,6 +72,18 @@
    "tint": {
     "keep": 0.0,
     "mean": 0.713
+   },
+   "size": 512
+  },
+  "larch": {
+   "lib": "card.larch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
    },
    "size": 512
   },
@@ -204,7 +216,7 @@
    ]
   },
   "spike": {
-   "lib": "card.flowerspike",
+   "lib": "card.fireweed",
    "scale": [
     1,
     1
@@ -545,6 +557,20 @@
    },
    "mapOnly": true,
    "roughLift": 0.3
+  },
+  "groundCladonia": {
+   "lib": "ground.cladonia",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

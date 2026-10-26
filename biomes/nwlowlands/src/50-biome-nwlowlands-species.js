@@ -555,6 +555,14 @@ const M=NWLOW.MAT={
  halo:new T3.MeshBasicMaterial({map:TX.glow,color:0xffffff,transparent:true,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide,fog:false}),
  solid:BIO.solidMat(null,0xffffff),
 };
+/* the halos fade with range (KNOWN_ISSUES, 2026-10-26): an additive card cannot take the fog (fog would ADD the haze colour), so
+   at range in the haze it read as a bright speck. Its alpha now falls to nothing between NWLOW.HALO.near and .far metres from the
+   eye, times the clear share of a FogExp2 of density NWLOW.HALO.fog (the page's own), so a halo glows only near its lantern. */
+NWLOW.HALO={near:90,far:420,fog:.0002};
+M.halo.onBeforeCompile=sh=>{const H=NWLOW.HALO;sh.uniforms.uHalo={value:new T3.Vector3(H.near,H.far,H.fog)};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying float vHaloD;').replace('#include <project_vertex>','#include <project_vertex>\nvHaloD=-mvPosition.z;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vHaloD;uniform vec3 uHalo;').replace('#include <fog_fragment>','gl_FragColor.a*=(1.0-smoothstep(uHalo.x,uHalo.y,vHaloD))*exp(-vHaloD*vHaloD*uHalo.z*uHalo.z);\n#include <fog_fragment>');};
+M.halo.customProgramCacheKey=()=>'nwl-halo-fade';
 // the material library (core/materials/PLAN.md): with a 'nwlowlands' pack on the page (materials.json -> KMAT.pack), the slots it names
 // take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
 NWLOW.LIB=BIO.libSwap('nwlowlands',NWLOW.MAT);

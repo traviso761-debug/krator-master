@@ -142,7 +142,8 @@ function columnTree(T,st,lv,cfg){const S=SP[T.sp],fam=cfg.fam,H=T.H,rb=T.rb,ti=T
   st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:r0>.8?6:4,cap:true});
   for(let s=1;s<=4;s++){const p=pts[s],u=s/4;spots.push({p:p,r:p.r,u:Math.hypot(p.x-T.x,p.z-T.z)/T.crownR,along:u});}}
  spots.push({p:{x:T.x,y:T.y0+trH,z:T.z,r:rAt(1)*.6},r:rAt(1)*.6,u:0,along:1});
- // the columns: from every arm point a cluster rises; height by the dome / vase shape
+ // the columns: from every arm point a cluster rises; height by the dome / vase shape. The hero's main columns are the
+ // ribbed 40-triangle 'column', its side shoots and a mid tree's columns the light 18-triangle 'columnLo' (2026-10-25)
  const nCol=lv===2?ri(S.cols[0],S.cols[1]):Math.round(S.cols[0]*.45);let placed=0;
  const dome=u=>cfg.vase?mix(.55,1,smooth(0,1,u)):mix(1,.35,u*u);
  const topY=T.y0+H;
@@ -151,8 +152,8 @@ function columnTree(T,st,lv,cfg){const S=SP[T.sp],fam=cfg.fam,H=T.H,rb=T.rb,ti=T
   const h=(topY-s.p.y)*dome(u)*rr(.7,1.05),w=cfg.colW*rb*rr(.8,1.25);if(h<1.5)continue;
   const tilt=(cfg.vase?.14:.06)*u*rr(.5,1.4),ta=Math.atan2(z-T.z,x-T.x);
   if(!clear3(x,s.p.y+h*.5,z,w,h*.5))continue;
-  BIO.put('column',[x,s.p.y-.3,z],qEuler(Math.sin(ta)*tilt,rr(0,TAU),-Math.cos(ta)*tilt),[w,h+.3,w],bright(vary(i%5?hc:C(pick(S.leaf)),.02,.06,.05),rr(.9,1.08)));placed++;
-  if(lv===2&&rng()<cfg.sideK){const hh=h*rr(.25,.5),yy=s.p.y+h*rr(.3,.7),aa=rr(0,TAU);BIO.put('column',[x+Math.cos(aa)*w*.7,yy,z+Math.sin(aa)*w*.7],qEuler(Math.sin(aa)*.5,0,-Math.cos(aa)*.5),[w*.6,hh,w*.6],bright(vary(hc,.02,.06,.05),1.0));placed++;}
+  BIO.put(lv===2?'column':'columnLo',[x,s.p.y-.3,z],qEuler(Math.sin(ta)*tilt,rr(0,TAU),-Math.cos(ta)*tilt),[w,h+.3,w],bright(vary(i%5?hc:C(pick(S.leaf)),.02,.06,.05),rr(.9,1.08)));placed++;
+  if(lv===2&&rng()<cfg.sideK){const hh=h*rr(.25,.5),yy=s.p.y+h*rr(.3,.7),aa=rr(0,TAU);BIO.put('columnLo',[x+Math.cos(aa)*w*.7,yy,z+Math.sin(aa)*w*.7],qEuler(Math.sin(aa)*.5,0,-Math.cos(aa)*.5),[w*.6,hh,w*.6],bright(vary(hc,.02,.06,.05),1.0));placed++;}
   if(lv===2&&cfg.bloom&&rng()<.12)bloomsAt(x,s.p.y+h+.3,z,w*.8,ri(2,5),cfg.bloom,[.25,.45]);}
  if(!placed){BIO.put('column',[T.x,T.y0+trH-.3,T.z],qEuler(0,0,0),[cfg.colW*rb,H-trH,cfg.colW*rb],bright(hc,1.0));placed++;}
  st.cols+=placed;regTree(T,S,T.crownR,T.H);}

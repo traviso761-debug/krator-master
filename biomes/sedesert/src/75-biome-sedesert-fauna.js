@@ -16,7 +16,10 @@
 //   COYOTES    (2026-10) singly or in pairs (in file), trotting long loops through the scrub and the
 //              canyon floor, pausing to sniff or look round; 0.6 m at the shoulder
 // The deer and coyotes are walkers: their pose is a pure function of the clock (walkAt), so a port can
-// replay it; their legs are separate instances swinging on the hips (this kit does not load 35-core-anim).
+// replay it. (2026-10-25) Their legs are JOINTED: two segments a leg (thigh or forearm, then the cannon and hoof), set by
+// a two-bone reach to a foot that plants and swings on the gait's own clock: the deer walk (a four-beat lateral sequence,
+// each foot down 62 % of the stride), the coyotes trot (diagonal pairs, 42 %). The kites and swifts are 35-core-anim
+// bodies (BIO.animMat): wing-beats in bouts, the swifts on looping parties (the pass, below).
 // Tags follow the project rule. No fauna is ever part of a building.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const PAL=SEDESERT.PAL,zones=SEDESERT.zones,C=SEDESERT.C,{bright,vary}=SEDESERT;
@@ -43,6 +46,11 @@ G.bird=function(){const pos=[],nor=[],col=[];
   tri(root,mid,back,.5);tri(mid,tip,back,.5);tri(root,back,mid,.95);tri(mid,back,tip,.95);}
  const tail=[[0,0,-.12],[.06,0,-.24],[-.06,0,-.24]];tri(tail[0],tail[1],tail[2],.6);tri(tail[0],tail[2],tail[1],.9);
  return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);};
+// the bird turned a quarter for 35-core-anim (+x forward, the span on z: its flap hinges beyond |z| > root)
+G.birdX=()=>G.bird().rotateY(Math.PI/2);
+// a swift party's loop at angle th: a circle bent by its 2nd and 3rd harmonics, stretched by e, turned by rot, R metres
+function loopXZ(Q,th){const px=Math.cos(th)+Q.A2*Math.cos(2*th+Q.p2)+Q.A3*Math.cos(3*th+Q.p3),pz=Q.e*(Math.sin(th)+Q.B2*Math.sin(2*th+Q.q2)+Q.B3*Math.sin(3*th+Q.q3)),c=Math.cos(Q.rot),sn=Math.sin(Q.rot);
+ return[Q.cx+Q.R*(px*c-pz*sn),Q.cz+Q.R*(px*sn+pz*c)];}
 // a strider's body: a plump spindle with a long neck and a small head, facing +z, legs are rods
 G.striderBody=function(){const g=new T3.SphereGeometry(.5,8,6);g.scale(.55,.6,1);
  const neck=new T3.CylinderGeometry(.06,.1,1.0,5).translate(0,.5,0).rotateX(-.7).translate(0,.4,.4);
@@ -61,10 +69,13 @@ G.lizard=function(){const pos=[],nor=[],col=[];const P=[];
  return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);};
 // ---------------------------------------------------------------- materials
 const M={
- bird:BIO.leafMat(null,'fauna-bird',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  body:BIO.leafMat(null,'fauna-body',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the birds' (2026-10-25): 35-core-anim's 'walk' mode with a flap; the beat's phase is aP1.x, which the tick writes (the
+// shader's own rate is 1e-9: the core reads 0 as its default 6, and a beat on the clock alone could not hold a glide)
+const FM={kite:BIO.animMat('sd-kite',{mode:'walk',flap:{root:.04,rate:1e-9,amp:.5},vertexColors:true}),
+ swift:BIO.animMat('sd-swift',{mode:'walk',flap:{root:.04,rate:1e-9,amp:.65},vertexColors:true})};
 BIO.def('lizard',G.lizard(),M.body,{label:'Rock lizards'});
 // ---------------------------------------------------------------- walkers: a pose that is a function of the clock (2026-10)
 // The deer and the coyotes are WALKERS: each goes round a closed polyline at a trapezoid speed (it eases
@@ -107,7 +118,7 @@ function walkAt(W,t,back,rc){let r=(t+W.off)%W.P;if(r<0)r+=W.P;
   else if(tau>e.D-ta){const k=e.D-tau;s=e.Lr-v*k*k/(2*ta);o.vf=k/ta;}else{s=v*(tau-ta/2);o.vf=1;}
   o.s=e.s0+s;o.hd=wHd(W,o.s,false,rc);}
  if(back){o.s-=back;o.hd=wHd(W,o.s,true,rc);}
- const p=wAt(W,o.s);o.x=p[0];o.z=p[1];o.y=wY(W,o.s);o.ph=Math.PI*o.s/W.hs;return o;}
+ const p=wAt(W,o.s);o.x=p[0];o.z=p[1];o.y=wY(W,o.s);o.ph=Math.PI*o.s/W.hs;o.hs=W.hs;return o;}
 // the body's pitch from the ground along the path, half-length e
 const wPitch=(W,s,e)=>clamp(-Math.atan2(wY(W,s+e)-wY(W,s-e),2*e),-.3,.3);
 // ---------------------------------------------------------------- quadrupeds: deer and coyotes (2026-10)
@@ -126,7 +137,10 @@ const ell=(rx,ry,rz,x,y,z,ws,hs,rotx,rotz)=>{const g=new T3.SphereGeometry(1,ws|
 const tube=(a,b,r0,r1,seg)=>{const d=new T3.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),L=d.length(),g=new T3.CylinderGeometry(r1,r0,L,seg||5,1,true);g.translate(0,L/2,0);
  g.applyMatrix4(new T3.Matrix4().makeRotationFromQuaternion(new T3.Quaternion().setFromUnitVectors(new T3.Vector3(0,1,0),d.normalize())));g.translate(a[0],a[1],a[2]);return g;};
 // a leg: hip at y=0, the hoof or paw at y=-1 (scaled by the leg's length), tapered, hooves dark
-const legGeo=(r0,r1,up,low,foot)=>{const g=new T3.CylinderGeometry(r0,r1,1,5,3,true);g.translate(0,-.5,0);return asm([{g,c:(x,y,z)=>y<-.93?foot:y<-.45?low:up}]);};
+// a leg SEGMENT (2026-10-25): its joint at y=0, the next at y=-1 (scaled by the segment's length L), tapered; foot: the
+// bottom eighth is the hoof or paw; ball: a joint knob of that radius at the top (y squashed by 1/L, so it stays round)
+const segGeo=(r0,r1,c,foot,ball,L)=>{const g=new T3.CylinderGeometry(r0,r1,1,6,2,true);g.translate(0,-.5,0);const P=[{g,c:foot?(x,y,z)=>y<-.88?foot:c:c}];
+ if(ball)P.push({g:ell(ball,ball/L,ball,0,0,0,6,4),c});return asm(P);};
 const DEER_C={tan:0x8a6c4c,belly:0xd2c2a2,rump:0xe4dac6,face:0x75604a,muz:0xcfc4b0,dark:0x18130f,antler:0xd6cab0};
 G.deerBody=function(){const K=DEER_C,coat=(x,y,z)=>z<-.36&&y>.66?K.rump:y<.69?K.belly:K.tan;
  return asm([{g:ell(.19,.21,.5,0,.83,0,10,7),c:coat},{g:ell(.16,.19,.21,0,.87,.3,8,5),c:(x,y,z)=>y<.73?K.belly:K.tan},
@@ -140,7 +154,7 @@ G.deerAntler=function(){const K=DEER_C,P=[];
  for(const s of [1,-1]){const b0=[s*.035,.52,.33],b1=[s*.12,.66,.3],b2=[s*.2,.74,.37],b3=[s*.16,.79,.24],b4=[s*.25,.86,.43],b5=[s*.23,.88,.33],b6=[s*.19,.92,.21],b7=[s*.13,.9,.27];
   [[b0,b1,.02,.016],[b1,b2,.016,.012],[b1,b3,.016,.012],[b2,b4,.012,.006],[b2,b5,.012,.006],[b3,b6,.012,.006],[b3,b7,.011,.006]].forEach(e=>P.push({g:tube(e[0],e[1],e[2],e[3],3),c:K.antler}));}
  return asm(P);};
-G.deerLeg=()=>legGeo(.034,.018,DEER_C.tan,0x6e5840,DEER_C.dark);
+G.deerLeg=()=>segGeo(.05,.028,DEER_C.tan,null,0,1);G.deerShin=()=>segGeo(.024,.017,0x6e5840,DEER_C.dark,.03,.424);
 const COY_C={grey:0x8e7e68,back:0x5c5042,belly:0xcfc1a6,muz:0xbcad92,dark:0x1c1814};
 G.coyBody=function(){const K=COY_C,coat=(x,y,z)=>y>.6?K.back:y<.43?K.belly:K.grey;
  return asm([{g:ell(.12,.14,.34,0,.5,0,9,6),c:coat},{g:ell(.11,.14,.15,0,.52,.21,7,5),c:coat},
@@ -148,23 +162,34 @@ G.coyBody=function(){const K=COY_C,coat=(x,y,z)=>y>.6?K.back:y<.43?K.belly:K.gre
 G.coyHead=function(){const K=COY_C,ear=s=>{const g=new T3.CylinderGeometry(0,.032,.085,4,1,true);g.rotateZ(-s*.25);g.translate(s*.042,.245,.13);return{g,c:K.back};};
  return asm([{g:tube([0,-.06,-.04],[0,.12,.12],.075,.055,6),c:K.grey},{g:ell(.07,.065,.09,0,.15,.16,7,5),c:K.grey},
   {g:tube([0,.13,.22],[0,.105,.345],.042,.018,5),c:K.muz},{g:ell(.016,.014,.014,0,.104,.348,4,3),c:K.dark},ear(1),ear(-1)]);};
-G.coyLeg=()=>legGeo(.024,.013,COY_C.grey,0x9a8a72,COY_C.dark);
+G.coyLeg=()=>segGeo(.034,.019,COY_C.grey,null,0,1);G.coyShin=()=>segGeo(.017,.012,0x9a8a72,COY_C.dark,.02,.254);
 // the rigs: hips [front L, front R, hind L, hind R] and the neck's root in the body, the leg length, the
-// swing (rad) and the bob (m) at full speed
-const DEER={hips:[[.085,.78,.33],[-.085,.78,.33],[.085,.8,-.34],[-.085,.8,-.34]],neck:[0,.95,.36],legLen:.8,amp:.34,bob:.02};
-const COY={hips:[[.06,.47,.22],[-.06,.47,.22],[.06,.48,-.24],[-.06,.48,-.24]],neck:[0,.56,.27],legLen:.48,amp:.5,bob:.035};
+// swing (rad) and the bob (m) at full speed; (2026-10-25) seg: the two segments' lengths (6 % more than the hip's height,
+// so a standing leg is a little bent), gait: each foot's place in the stride (0..1), duty: the share of it a foot is down,
+// lift: the swinging foot's height (m)
+const DEER={hips:[[.085,.78,.33],[-.085,.78,.33],[.085,.8,-.34],[-.085,.8,-.34]],neck:[0,.95,.36],legLen:.8,amp:.34,bob:.02,seg:[.424,.424],gait:[.25,.75,0,.5],duty:.62,lift:.1};
+const COY={hips:[[.06,.47,.22],[-.06,.47,.22],[.06,.48,-.24],[-.06,.48,-.24]],neck:[0,.56,.27],legLen:.48,amp:.5,bob:.035,seg:[.254,.254],gait:[0,.5,.5,0],duty:.42,lift:.07};
 const _w1=new T3.Color(1,1,1),_m4=new T3.Matrix4(),_p3=new T3.Vector3(),_q1=new T3.Quaternion(),_q2=new T3.Quaternion(),_eu=new T3.Euler(),_s3=new T3.Vector3(),_v3=new T3.Vector3();
 // pose animal i of rig R (its meshes in R.body, R.head, R.legs, R.ant) from walker pose o at size k, the head
 // angle `head`; col (linear) on the first frame; ai the antler instance (-1: none). Legs stay plumb on a slope.
-function rigPose(R,i,o,k,head,col,ai){const hd=o.hd,pt=o.pt||0,sw=R.amp*o.vf,y=o.y+R.bob*k*o.vf*Math.abs(Math.sin(o.ph));
+function rigPose(R,i,o,k,head,col,ai){const hd=o.hd,pt=o.pt||0,y=o.y+R.bob*k*o.vf*Math.abs(Math.sin(o.ph));
  _eu.set(pt,hd,0,'YXZ');_q1.setFromEuler(_eu);_p3.set(o.x,y,o.z);_s3.set(k,k,k);_m4.compose(_p3,_q1,_s3);R.body.setMatrixAt(i,_m4);if(col)R.body.setColorAt(i,col);
  _v3.set(R.neck[0]*k,R.neck[1]*k,R.neck[2]*k).applyQuaternion(_q1);_eu.set(pt+head,hd,0,'YXZ');_q2.setFromEuler(_eu);
  _p3.set(o.x+_v3.x,y+_v3.y,o.z+_v3.z);_m4.compose(_p3,_q2,_s3);R.head.setMatrixAt(i,_m4);if(col)R.head.setColorAt(i,col);
  if(R.ant&&ai>=0){R.ant.setMatrixAt(ai,_m4);if(col)R.ant.setColorAt(ai,_w1);}   // every mesh on M.body needs instance colours (one program for all of them)
- _s3.set(k,k*R.legLen,k);
- for(let l=0;l<4;l++){const H=R.hips[l],a=sw*Math.sin(o.ph+(l===0||l===3?0:Math.PI));
-  _v3.set(H[0]*k,H[1]*k,H[2]*k).applyQuaternion(_q1);_eu.set(a,hd,0,'YXZ');_q2.setFromEuler(_eu);
-  _p3.set(o.x+_v3.x,y+_v3.y,o.z+_v3.z);_m4.compose(_p3,_q2,_s3);R.legs.setMatrixAt(i*4+l,_m4);if(col)R.legs.setColorAt(i*4+l,col);}}
+ // the legs (2026-10-25): each foot's target from its place in the stride, then a two-bone reach from the hip. A foot down
+ // moves back under the body as far as the body goes (hs*duty each way: it does not slide at full speed); a foot up comes
+ // forward, lifted. Both scale with the speed, so a standing animal's feet are under its hips. The reach is worked in the
+ // heading's vertical plane (the legs stay plumb on a slope): the front joint (the carpus) bends forward, the hind (the hock) back
+ const A=R.seg[0],B=R.seg[1],fx=Math.sin(hd),fz=Math.cos(hd),tp=Math.tan(pt),hs=o.hs||.5,du=R.duty;
+ for(let l=0;l<4;l++){const H=R.hips[l];let ph=o.ph/TAU+R.gait[l];ph-=Math.floor(ph);let ex,lift=0;
+  if(ph<du)ex=hs*du*(1-2*ph/du);else{const u=(ph-du)/(1-du);ex=hs*du*(2*smooth(0,1,u)-1);lift=R.lift*k*Math.sin(Math.PI*u);}
+  _v3.set(H[0]*k,H[1]*k,H[2]*k).applyQuaternion(_q1);const hx=o.x+_v3.x,hy=y+_v3.y,hz=o.z+_v3.z,hf=_v3.x*fx+_v3.z*fz;   // the hip, and how far ahead of the centre
+  const ff=hf+ex*o.vf,Dz=(ff-hf)/k,Dy=(o.y-ff*tp+lift*o.vf-hy)/k;   // the foot on the ground under its place, from the hip, in the animal's units
+  let d=Math.hypot(Dz,Dy);d=clamp(d,.35*(A+B),.999*(A+B));const tD=Math.atan2(Dz,-Dy),al=Math.acos(clamp((A*A+d*d-B*B)/(2*A*d),-1,1));
+  const t1=l<2?tD+al:tD-al,Kz=A*Math.sin(t1),Ky=-A*Math.cos(t1),Fz=d*Math.sin(tD),Fy=-d*Math.cos(tD),t2=Math.atan2(Fz-Kz,-(Fy-Ky));
+  _eu.set(-t1,hd,0,'YXZ');_q2.setFromEuler(_eu);_p3.set(hx,hy,hz);_s3.set(k,k*A,k);_m4.compose(_p3,_q2,_s3);R.legs.setMatrixAt(i*4+l,_m4);if(col)R.legs.setColorAt(i*4+l,col);
+  _eu.set(-t2,hd,0,'YXZ');_q2.setFromEuler(_eu);_p3.set(hx+fx*Kz*k,hy+Ky*k,hz+fz*Kz*k);_s3.set(k,k*B,k);_m4.compose(_p3,_q2,_s3);R.shin.setMatrixAt(i*4+l,_m4);if(col)R.shin.setColorAt(i*4+l,col);}}
 // the head: `base` while walking; at a stop it eases to `down` (browsing, sniffing) and, for a glance
 // (stop.ga, stop.gd: when and how long), up to `alert`
 function headAt(o,base,down,alert,ramp){if(!o.stop)return base;const S=o.stop,u=o.u,d=S.d,dn=smooth(0,ramp,u)*smooth(d,d-ramp*1.2,u);
@@ -197,25 +222,69 @@ SEDESERT.buildFauna=function(R,q,keep){
   bands.push({x,z,n:ri(4,9),ph:rr(0,TAU),dir:rr(0,TAU),len:rr(40,80),sp:rr(.9,1.4)});},{patch:.2,pad:3});
  const striders=[];bands.forEach(b=>{for(let i=0;i<b.n;i++)striders.push({b,ox:rr(-9,9),oz:rr(-9,9),H:rr(2.0,2.7),ph:rr(0,TAU),c:bright(vary(pick([0xa88858,0x987848,0xb09060,0x8a6a40]),.02,.08,.05),.9).convertSRGBToLinear()});st.bands++;});   // an instance colour is LINEAR (BIO.put converts; a dynamic mesh must itself)
  st.striders=striders.length;
+ // ---- the birds' flight (2026-10-25). Their extra numbers come from KRAND streams of their own (hash of the kind and
+ // the bird's index), so every draw of the rng() stream, and every animal laid out after them, is where it was.
+ // KITES: the thermal's orbit, the climb (a third of the orbit's rate) and the sway (four times it), so a kite's
+ // flight repeats every three orbits (its motion period, at most 157 s); a few slow beats (1.3-1.8 a second) every
+ // fifth to eighth of that period, the wings held in a shallow glide between.
+ // SWIFTS: each flock flies as one to three PARTIES, each round its own closed loop over the water (a circle bent by
+ // its second and third harmonics, stretched and turned): 9 to 14 m/s, rising and swooping to a metre over the water or
+ // the bank (the loop's floor, sampled once at build), banked into each turn by its own curvature (a level turn's
+ // bank, atan(v^2 k / g)), the swifts strung out along it a few metres apart, weaving; bursts of fast beats (7-9 a
+ // second) between glides. Each repeats every lap of its party's loop (its motion period).
+ const KR=(salt,i)=>KRAND.stream(KRAND.hash(700021,salt,i));
+ const flapB=(s,P,m,n,f,g)=>{const Pc=P/m;return{Pc,n,f,off:s.range(0,Pc),g};};
+ // the wing-beat's phase at clock t: whole beats from the glide pose g in a bout at the start of each cycle, held after
+ const flapPh=(t,B)=>{const T=t+B.off,c=Math.floor(T/B.Pc),u=T-c*B.Pc;return B.g+TAU*(B.n*c+B.f*Math.min(u,B.n/B.f));};
+ kites.forEach((k,i)=>{const s=KR(1,i),P=3*TAU/Math.abs(k.t.w);k.P=P;k.B=flapB(s,P,s.int(5,8),s.int(2,4),s.range(1.3,1.8),.2);});
+ const parties=[];
+ flocks.forEach((f,fi)=>{const s=KR(2,fi),np=s.int(1,3),own=[];
+  for(let j=0;j<np;j++){const R=f.r*s.range(.7,1.15),Q={cx:f.x,cz:f.z,R,e:s.range(.55,.9),rot:s.range(0,TAU),A2:s.range(.12,.32),p2:s.range(0,TAU),A3:s.range(.04,.14),p3:s.range(0,TAU),
+    B2:s.range(.12,.32),q2:s.range(0,TAU),B3:s.range(.04,.14),q3:s.range(0,TAU),v:s.range(9,14),y0:f.y0-s.range(1,4),hA:s.range(2.5,5.5),hp:s.range(0,TAU),ph:s.range(0,TAU),n:0,fl:new Float32Array(96)};
+   let len=0,q0=loopXZ(Q,0);for(let k=1;k<=256;k++){const q1=loopXZ(Q,k/256*TAU);len+=Math.hypot(q1[0]-q0[0],q1[1]-q0[1]);q0=q1;}
+   Q.len=len;Q.w=TAU*Q.v/len;Q.P=len/Q.v;
+   for(let k=0;k<96;k++){const q=loopXZ(Q,k/96*TAU);let fy=-1e9;for(let a=0;a<4;a++){const xx=q[0]+Math.cos(a*1.57)*3,zz=q[1]+Math.sin(a*1.57)*3;fy=Math.max(fy,Y(xx,zz),BIO.waterH(xx,zz));}Q.fl[k]=fy+1;}
+   own.push(Q);parties.push(Q);}
+  f.parties=own;});
+ swifts.forEach((w,i)=>{const s=KR(3,i),Q=w.f.parties[i%w.f.parties.length],j=Q.n++;
+  w.Q=Q;w.lag=TAU*(j*s.range(1.6,3.2)+s.range(0,1))/Q.len;w.lo=s.range(-2,2);w.vo=s.range(-1,1);w.wq=s.range(0,TAU);
+  w.B=flapB(s,Q.P,Math.max(1,Math.round(Q.P/2.4)),s.int(3,6),s.range(7,9),.12);});
  // ---- the dynamic meshes
- const kiteM=kites.length?BIO.dynamic('kite',G.bird(),M.bird,kites.length,{label:'Desert kites'}):null;
- const swiftM=swifts.length?BIO.dynamic('swift',G.bird(),M.bird,swifts.length,{label:'Wadi swifts'}):null;
+ // the birds are 35-core-anim bodies (BIO.animMat, mode 'walk': the tick moves the matrix, the shader beats the wings
+ // beyond |z| .04 about the body); the body is the old bird turned a quarter (+x forward, the span on z), so its matrix
+ // is the old pose times QB. aP1.x is the beat's phase (flapPh), written by the tick: the export bakes it as a channel
+ const kiteM=kites.length?BIO.dynamic('kite',G.birdX(),FM.kite,kites.length,{label:'Desert kites',motion:{period:i=>kites[i].P}}):null;
+ const swiftM=swifts.length?BIO.dynamic('swift',G.birdX(),FM.swift,swifts.length,{label:'Wadi swifts',motion:{period:i=>swifts[i].Q.P,hz:15}}):null;
+ [kiteM,swiftM].forEach(im=>{if(!im)return;const n=im.count,a1=new T.InstancedBufferAttribute(new Float32Array(n*4),4);a1.setUsage(T.DynamicDrawUsage);
+  im.geometry.setAttribute('aP0',new T.InstancedBufferAttribute(new Float32Array(n*4),4));im.geometry.setAttribute('aP1',a1);});
  const bodyM=striders.length?BIO.dynamic('strider',G.striderBody(),M.body,striders.length,{label:'Sand striders'}):null;
  const legM=striders.length?BIO.dynamic('striderleg',BIO.geo.rod(5),M.solid,striders.length*2,{label:'Sand striders'}):null;
  const m=new T.Matrix4(),p=new T.Vector3(),qq=new T.Quaternion(),s=new T.Vector3(),e=new T.Euler(),c=new T.Color();
  const setI=(im,i,x,y,z,rx,ry,rz,sx,sy,sz,col)=>{p.set(x,y,z);e.set(rx,ry,rz,'YXZ');qq.setFromEuler(e);s.set(sx,sy,sz);m.compose(p,qq,s);im.setMatrixAt(i,m);if(col)im.setColorAt(i,col);};
+ const QB=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),-Math.PI/2);
+ const setB=(im,i,x,y,z,rx,ry,rz,sc,col)=>{p.set(x,y,z);e.set(rx,ry,rz,'YXZ');qq.setFromEuler(e).multiply(QB);s.set(sc,sc,sc);m.compose(p,qq,s);im.setMatrixAt(i,m);if(col)im.setColorAt(i,col);};
  const kiteCol=C(0x4a3a2c).convertSRGBToLinear(),swiftCol=C(0x3a3a3c).convertSRGBToLinear();
+ // a swift's place at loop angle th: on its party's line, lo metres to its side, at the line's height (never under the floor)
+ const swiftAt=(w,th,out)=>{const Q=w.Q,q=loopXZ(Q,th),q2=loopXZ(Q,th+.004),dx=q2[0]-q[0],dz=q2[1]-q[1],l=Math.hypot(dx,dz)||1,lo=w.lo+.8*Math.sin(th*7+w.wq);
+  const k=((th/TAU)%1+1)%1*96,k0=Math.floor(k)%96,u=k-Math.floor(k),fl=Q.fl[k0]+(Q.fl[(k0+1)%96]-Q.fl[k0])*u;
+  out[0]=q[0]+dz/l*lo;out[2]=q[1]-dx/l*lo;out[1]=Math.max(Q.y0+Q.hA*Math.sin(2*th+Q.hp)+w.vo,fl);return out;};
+ const _a=[0,0,0],_b=[0,0,0],_c3=[0,0,0];
  // the first frame lays everyone out; the colours are set once
  let first=true;
- BIO.tick((dt,t)=>{
-  if(kiteM){kites.forEach((k,i)=>{const th=k.t,a=k.a+t*th.w,r=th.r*k.dr,x=th.x+Math.cos(a)*r,z=th.z+Math.sin(a)*r,y=th.y0+k.dy+th.climb*Math.sin(t*.05+k.ph);
-   const sg=Math.sign(th.w),heading=Math.atan2(-Math.sin(a)*sg,Math.cos(a)*sg);   // along the circle's tangent
-   setI(kiteM,i,x,y,z,.06*Math.sin(t*.7+k.ph),heading,-.45*sg,k.span,k.span,k.span,first?kiteCol:null);});kiteM.instanceMatrix.needsUpdate=true;if(first)kiteM.instanceColor.needsUpdate=true;}
-  if(swiftM){swifts.forEach((w,i)=>{const f=w.f,u=t*f.w*w.k,x=f.x+Math.cos(u+w.p)*f.r*Math.sin(u*.37+w.q),z=f.z+Math.sin(u*1.13+w.q)*f.r*.8,y=f.y0+4*Math.sin(u*1.7+w.p)+2*Math.cos(u*.6);
-   const vx=-Math.sin(u+w.p)*f.r*Math.sin(u*.37+w.q),vz=Math.cos(u*1.13+w.q)*f.r*.8,heading=Math.atan2(vx,vz);
-   setI(swiftM,i,x,y,z,0,heading,.3*Math.sin(u*2+w.p),w.span,w.span,w.span,first?swiftCol:null);});swiftM.instanceMatrix.needsUpdate=true;if(first)swiftM.instanceColor.needsUpdate=true;}
-  if(bodyM){striders.forEach((sd,i)=>{const b=sd.b,u=(t*b.sp+sd.ph*20)%(b.len*2),along=u<b.len?u:b.len*2-u,fwd=u<b.len?1:-1;
-   const x=b.x+Math.cos(b.dir)*(along-b.len/2)+sd.ox,z=b.z+Math.sin(b.dir)*(along-b.len/2)+sd.oz,g=Y(x,z),legH=sd.H*.5,step=t*b.sp*2.4+sd.ph,bob=.06*Math.abs(Math.sin(step));
+ BIO.tick((dt,tp)=>{const t=BIO.WIND.t.value;   // the birds: the BIO clock (the foliage's and the walkers'), which the export pins to bake; the striders keep the tick's
+  if(kiteM){const a1=kiteM.geometry.attributes.aP1;kites.forEach((k,i)=>{const th=k.t,wa=Math.abs(th.w),a=k.a+t*th.w,r=th.r*k.dr,x=th.x+Math.cos(a)*r,z=th.z+Math.sin(a)*r,y=th.y0+k.dy+th.climb*Math.sin(t*wa/3+k.ph);
+   const sg=Math.sign(th.w),heading=Math.atan2(-Math.sin(a)*sg,Math.cos(a)*sg);   // along the circle's tangent, banked INTO the turn (it leaned out before 2026-10-25)
+   setB(kiteM,i,x,y,z,.06*Math.sin(t*wa*4+k.ph),heading,.42*sg,k.span,first?kiteCol:null);a1.setX(i,flapPh(t,k.B));});
+   kiteM.instanceMatrix.needsUpdate=true;a1.needsUpdate=true;if(first)kiteM.instanceColor.needsUpdate=true;}
+  if(swiftM){const a1=swiftM.geometry.attributes.aP1,h=.01;swifts.forEach((w,i)=>{const Q=w.Q,th=Q.ph+Q.w*t-w.lag;
+   swiftAt(w,th-h,_a);swiftAt(w,th,_b);swiftAt(w,th+h,_c3);
+   const vx=_c3[0]-_a[0],vy=_c3[1]-_a[1],vz=_c3[2]-_a[2],hv=Math.hypot(vx,vz)||1e-6,hd=Math.atan2(vx,vz),dtm=h/Q.w;
+   const ux=_b[0]-_a[0],uz=_b[2]-_a[2],wx=_c3[0]-_b[0],wz=_c3[2]-_b[2];
+   const turn=Math.atan2(ux*wz-uz*wx,ux*wx+uz*wz)/dtm,spd=hv/(2*dtm);   // the heading's rate (rad/s), positive turning right (the heading falling)
+   setB(swiftM,i,_b[0],_b[1],_b[2],clamp(-Math.atan2(vy,hv),-.6,.6),hd,clamp(Math.atan(spd*turn/9.8),-1.2,1.2),w.span,first?swiftCol:null);a1.setX(i,flapPh(t,w.B));});
+   swiftM.instanceMatrix.needsUpdate=true;a1.needsUpdate=true;if(first)swiftM.instanceColor.needsUpdate=true;}
+  if(bodyM){const t2=tp;striders.forEach((sd,i)=>{const b=sd.b,u=(t2*b.sp+sd.ph*20)%(b.len*2),along=u<b.len?u:b.len*2-u,fwd=u<b.len?1:-1;
+   const x=b.x+Math.cos(b.dir)*(along-b.len/2)+sd.ox,z=b.z+Math.sin(b.dir)*(along-b.len/2)+sd.oz,g=Y(x,z),legH=sd.H*.5,step=t2*b.sp*2.4+sd.ph,bob=.06*Math.abs(Math.sin(step));
    const heading=Math.atan2(Math.cos(b.dir)*fwd,Math.sin(b.dir)*fwd),y=g+legH+bob;
    setI(bodyM,i,x,y,z,0,heading,0,sd.H*.62,sd.H*.62,sd.H*.62,first?sd.c:null);
    const dz=Math.sin(step)*.35,cd=Math.cos(heading),sn=Math.sin(heading);
@@ -271,19 +340,19 @@ SEDESERT.buildFauna=function(R,q,keep){
  const DR=deer.length?Object.assign({body:BIO.dynamic('deer',G.deerBody(),M.body,deer.length,{label:'Canyon mule deer'}),
    head:BIO.dynamic('deerhead',G.deerHead(),M.body,deer.length,{label:'Canyon mule deer'}),
    ant:nB?BIO.dynamic('deerantler',G.deerAntler(),M.body,nB,{label:'Canyon mule deer (buck)'}):null,
-   legs:BIO.dynamic('deerleg',G.deerLeg(),M.body,deer.length*4,{label:'Canyon mule deer'})},DEER):null;
+   legs:BIO.dynamic('deerleg',G.deerLeg(),M.body,deer.length*4,{label:'Canyon mule deer'}),shin:BIO.dynamic('deershin',G.deerShin(),M.body,deer.length*4,{label:'Canyon mule deer'})},DEER):null;
  const CY=coys.length?Object.assign({body:BIO.dynamic('coyote',G.coyBody(),M.body,coys.length,{label:'Coyotes'}),
    head:BIO.dynamic('coyotehead',G.coyHead(),M.body,coys.length,{label:'Coyotes'}),ant:null,
-   legs:BIO.dynamic('coyoteleg',G.coyLeg(),M.body,coys.length*4,{label:'Coyotes'})},COY):null;
- [DR,CY].forEach(Rg=>Rg&&[Rg.body,Rg.head,Rg.legs,Rg.ant].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';}));   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
+   legs:BIO.dynamic('coyoteleg',G.coyLeg(),M.body,coys.length*4,{label:'Coyotes'}),shin:BIO.dynamic('coyoteshin',G.coyShin(),M.body,coys.length*4,{label:'Coyotes'})},COY):null;
+ [DR,CY].forEach(Rg=>Rg&&[Rg.body,Rg.head,Rg.legs,Rg.shin,Rg.ant].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';}));   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
  // the export bakes their motion (biomes/GODOT.md, "Motion"): each walker's pose repeats every W.P seconds, so a port
  // replays one loop exactly; a coyote's trot (2.5 strides a second) wants 30 frames a second, a deer's walk 10
  const antOf=[],MO=BIO.motion||(()=>{});deer.forEach(d=>{if(d.ai>=0)antOf[d.ai]=d;});   // MO: a vendored core older than BIO.motion
- if(DR){MO(DR.body,{period:i=>deer[i].W.P});MO(DR.head,{period:i=>deer[i].W.P});MO(DR.legs,{period:i=>deer[i>>2].W.P});
+ if(DR){MO(DR.body,{period:i=>deer[i].W.P});MO(DR.head,{period:i=>deer[i].W.P});MO(DR.legs,{period:i=>deer[i>>2].W.P});MO(DR.shin,{period:i=>deer[i>>2].W.P});
   if(DR.ant)MO(DR.ant,{period:i=>antOf[i].W.P});}
- if(CY){const P=i=>coys[i].W.P;MO(CY.body,{period:P,hz:30});MO(CY.head,{period:P,hz:30});MO(CY.legs,{period:i=>P(i>>2),hz:30});}
+ if(CY){const P=i=>coys[i].W.P;MO(CY.body,{period:P,hz:30});MO(CY.head,{period:P,hz:30});MO(CY.legs,{period:i=>P(i>>2),hz:30});MO(CY.shin,{period:i=>P(i>>2),hz:30});}
  const FAR2=1600*1600;let first2=true;
- const flag=Rg=>{for(const m of [Rg.body,Rg.head,Rg.legs,Rg.ant])if(m){m.instanceMatrix.needsUpdate=true;if(first2&&m.instanceColor)m.instanceColor.needsUpdate=true;}};
+ const flag=Rg=>{for(const m of [Rg.body,Rg.head,Rg.legs,Rg.shin,Rg.ant])if(m){m.instanceMatrix.needsUpdate=true;if(first2&&m.instanceColor)m.instanceColor.needsUpdate=true;}};
  // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own), the one the
  // foliage sways to, so one world clock drives both and a port replays the same poses from it
  BIO.tick(dt=>{const t=BIO.WIND.t.value,E=BIO.eye(),far=(x,z)=>!first2&&E&&(x-E[0])*(x-E[0])+(z-E[2])*(z-E[2])>FAR2;   // past 1.6 km a herd keeps its last pose

@@ -146,20 +146,6 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The crater drylands';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water (the seep)
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,900,-700).normalize()},uSky:{value:new THREE.Color(0xe4e2da)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.03*sin(vWP.x*0.41+uT*1.1)+0.02*sin(vWP.z*0.63-uT*0.7),1.0,0.03*cos(vWP.z*0.37+uT*0.9)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.95,0.85);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-(function(){const X=SEEP.x,Z=SEEP.z,R=SEEP.r*1.35,L=SEEPL,c0=new THREE.Color(0x2e5a4a).convertSRGBToLinear(),c1=new THREE.Color(0x6a8a6a).convertSRGBToLinear(),PN=32,pos=[X,L,Z],col=[c0.r,c0.g,c0.b],idx=[];
- for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(X+Math.cos(a)*R,L,Z+Math.sin(a)*R);col.push(c1.r,c1.g,c1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The seep';m.renderOrder=1;scene.add(m);
+// The seep's pool is core/water's (89w-host-water.js, a WATER.still); the record (SEEP, SEEPL) is in 45-host-stage.js.
+(function(){const X=SEEP.x,Z=SEEP.z,L=SEEPL;
  REGISTER({name:'The seep',x:X,z:Z,y:L-5,r:SEEP.r*3,h:30});})();
