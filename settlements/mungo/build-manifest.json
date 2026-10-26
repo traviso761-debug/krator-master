@@ -49,7 +49,7 @@
  ],
  "20-core-water.js": [
   "core/water",
-  "e0cca349eeb2"
+  "28f0ea1219a3"
  ],
  "20-stage.js": [
   "mungo (overrides locus)",
@@ -57,7 +57,7 @@
  ],
  "21-core-water-shore.js": [
   "core/water",
-  "8448b3d3ac84"
+  "ef82e7936f65"
  ],
  "21-sky.js": [
   "locus",
@@ -65,7 +65,7 @@
  ],
  "22-core-water-flow.js": [
   "core/water",
-  "1f53c733e2d2"
+  "8d87348437bd"
  ],
  "23-mat-record.js": [
   "virtual",
@@ -129,7 +129,7 @@
  ],
  "50-core-water-draw.js": [
   "core/water",
-  "935eaeecabcb"
+  "5cbc3f47d315"
  ],
  "50-structure.js": [
   "locus",
@@ -137,7 +137,7 @@
  ],
  "51-core-water-kinds.js": [
   "core/water",
-  "8bdb6550ca70"
+  "f30dd9927f01"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
@@ -145,7 +145,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "c18d6512f692"
+  "8d9d4d23231e"
  ],
  "53-assets.js": [
   "locus",
@@ -377,7 +377,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "e04abbe2996e"
+  "b84015a27544"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -395,9 +395,13 @@
   "core/simulation",
   "8ef9b0253f9e"
  ],
+ "77-sim-6-govern.js": [
+  "core/simulation",
+  "f8ac92d43b60"
+ ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "eeb6c057732e"
+  "923b87ebf340"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -502,6 +506,10 @@
  "89-atmos-3-particles.js": [
   "core/atmos",
   "b1e3bdf515f2"
+ ],
+ "89-atmos-3d-dust.js": [
+  "core/atmos",
+  "652d79059d42"
  ],
  "89-atmos-4-weather.js": [
   "core/atmos",

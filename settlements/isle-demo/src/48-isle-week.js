@@ -46,8 +46,8 @@ ISLE.weekSnap = function () {
         v.forEach(function (x, i) { nd[i] += x; }); hp += SIM.happiness(a, v); nn++; });
       T.needs = { n: nn, happy: nn ? hp / nn : 0, mean: {} }; NE.list.forEach(function (k, i) { T.needs.mean[k] = nn ? nd[i] / nn : 0; }); }
     /* the governor's view of the town's food: its supply line and its target (cover days of demand) */
-    var GV = S.govern && S.govern.view, GC = ISLE.TUNE.sim.economy.govern; T.gov = { pos: 0, target: 0 };
-    if (GV) X.econ.foods.forEach(function (f) { var v = GV[s + ':' + f]; if (v) { T.gov.pos += v.pos; T.gov.target += GC.cover * v.use; } });
+    var GV = ISLE.simGoverned(s), GC = ISLE.TUNE.sim.economy.govern; T.gov = { pos: 0, target: 0 };
+    if (GC) X.econ.foods.forEach(function (f) { var v = GV[f]; if (v) { T.gov.pos += v.pos; T.gov.target += GC.cover * v.use; } });
     out.towns[s] = T;
   });
   var rep = SIM.tradeReport ? SIM.tradeReport() : {};

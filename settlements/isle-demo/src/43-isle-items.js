@@ -16,9 +16,9 @@
      (the smithies). And (2026-10-19) each home with a store keeps a cooking pot (its houseworker, else its first
      resident, holds it: `household`), cracked and bought again; the tooled kinds of work own their tool at a hashed
      wear (`tools`: the stone tools, the cooks' pots), replaced in work time when worn through.
-   THE SEASONING (salt, 2026-10-19): a food's quality is read in its town's turn (core's meal draws it inside the town's
-     economy), as `economy.salt.season` while ISLE.SIM.seasoned[town] (49: the town's warehouses hold salt), else 1: a
-     meal at home is then a better one (core counts it `fine`). A getter on the kinds, until core takes a seasoning rule. */
+   THE SEASONING (salt, 2026-10-19): while a town's warehouses hold salt its meals at home count `economy.salt.season`
+     times their foods' quality, a better meal (core counts it `fine`): core's `season` rule (49, 77-sim-6-govern.js).
+   A worker whose tool wore through and whose errand for another failed asks again every hour of work (core's `retry`). */
 ISLE.simItemsInit = function () {
   if (SIM.ITEMS) return SIM.ITEMS;
   var T = ISLE.TUNE.sim, I = T.items, kinds = {};
@@ -30,11 +30,8 @@ ISLE.simItemsInit = function () {
   Object.keys(I.medicine || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.medicine[k]); });   /* the poultice */
   Object.keys(I.treats || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.treats[k]); });   /* the treats */
   var IT = SIM.items({ kinds: kinds, free: T.sched.free, secPerMinute: T.clock.secPerMinute, mins: I.mins, cool: I.cool, low: I.low, days: I.days,
-    meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: I.hurt || 0, heal: I.heal, lack: I.lack || 0, treat: I.treat || null });
-  /* the seasoning: on core's own kinds (SIM.items copies the config's) */
-  var SA = T.economy.salt;
-  if (SA && SA.season) I.foods.forEach(function (f) { Object.defineProperty(IT.kinds[f], 'quality', { enumerable: true, configurable: true,
-    get: function () { var E = SIM.ECON, Z = ISLE.SIM && ISLE.SIM.seasoned; return E && Z && Z[E.settlement] ? SA.season : 1; } }); });
+    meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: I.hurt || 0, heal: I.heal, lack: I.lack || 0, treat: I.treat || null,
+    retry: I.tools ? 60 : 0 });   /* a tool errand that failed, asked again every hour of work (core's retry) */
   return IT;
 };
 ISLE.simHouseholds = function (TS, places, foods) {
@@ -82,11 +79,4 @@ ISLE.simHouseholds = function (TS, places, foods) {
   });
   if (SIM.placesChanged) SIM.placesChanged();
   return out;
-};
-/* a worker whose tool wore through and whose errand for another failed (the town out of tools) works at half its pace;
-   core asks for the tool only when it breaks, so the page asks again every hour of work, once the errand has cooled
-   (SIM.errand keeps the cooling). A core rule later (KNOWN_ISSUES.md) */
-ISLE.simToolRetry = function (minute) {
-  if (minute % 60) return;
-  SIM.all('actor').forEach(function (a) { if (a.toolNeed && !a.errand && a.present && a.activity === 'WORK') SIM.errand(a, a.toolNeed, 'work'); });
 };

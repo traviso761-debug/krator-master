@@ -229,6 +229,8 @@ core/simulation/
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
     77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
+    77-sim-6-govern.js    the economy's opt-in rules: a production governor (order-up-to with its supply line), spoilage,
+                          keeping (salt), seasoning (lifted from the isle demo 2026-10-26)
     77-sim-7-lod.js       tiers 0–2 (Phase 5+)
     77-sim-8-export.js    SIM.export() / SIM.download(), format 'krator-sim' (Phase 7)
     77-sim-9-debug.js     window._sim, census, audits, pathviz hooks
@@ -627,6 +629,16 @@ Locus is already closest to the target. Make it the mobility reference:
   because it *knows* of them.
 - `77-sim-7-lod.js`: tier 0/1/2 state for actors beyond an embodiment radius;
   Voth's 1200 CPU pedestrians are the forcing case.
+- **Done 2026-10-26, `77-sim-6-govern.js`:** the economy's rules, proved on the isle demo (its `49`, 2026-10-19) and
+  lifted here, each opt-in through `SIM.economy(config)`: `govern` (every `every` minutes a producer's rate is its full
+  rate times what is wanted of its good, demand + alpha (cover x demand - supply line) / ti, over what the town makes at
+  full, clamped; the demand counts the town's use and unmet draws, its exports or the want of the towns its trade routes
+  carry the good to, `buys` a day, and the goods made from it; the supply line counts warehouses, sites, carts and what
+  is at sea toward it), `spoil` (a share of each perishable's warehoused and site stock a night, booked used), `keep` (a
+  preserving good, salt, keeps a share of what would rot), `season` (a town holding its seasoning cooks better meals:
+  the items' meal quality). `SIM.items({retry})` asks again for a tool whose errand failed. They run as SIM.step's last
+  act, after the world's `stepHooks`. The isle demo's week test gives the same books, byte for byte, on core's rules as
+  on its own (2026-10-26); `test-sim.js` holds each rule with a negative.
 
 ### Phase 6: player faction
 

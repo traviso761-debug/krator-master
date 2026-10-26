@@ -4,7 +4,7 @@
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
+//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth}, retry? (minutes) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -48,7 +48,7 @@
   SIM.items = function(o){
     var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
               stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
-              treat:o.treat||null, eatOut:o.eatOut||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              treat:o.treat||null, eatOut:o.eatOut||null, retry:o.retry==null?0:o.retry, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
               stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenBy:{}, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, eaten:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0, out:0 }, outOf:{} } };
     Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
     (o.free||[]).forEach(function(a){ I.free[a]=1; });
@@ -106,6 +106,11 @@
     a.errand={ act:'BUY', item:item, when:when, since:minute }; stat(I.stats.errands, item); return true;
   }
   SIM.errand = function(a, item, when){ return errand(a, item, when||'free', SIM.minute()); };
+  /* RETRY (opt-in: `retry` minutes): a worker whose tool wore through and whose errand for another failed (the town out of
+     tools) asks again every `retry` minutes of work, once the errand has cooled; without it the worker stays at half
+     pace. SIM.step's last act (after the world's minute and the economies' rules) */
+  SIM.itemsRetry = function(minute){ var I=SIM.ITEMS; if(!I || !I.retry || minute % I.retry) return;
+    SIM.all('actor').forEach(function(a){ if(a.toolNeed && !a.errand && a.present && a.activity==='WORK') errand(a, a.toolNeed, 'work', minute); }); };
   /* a purchase draws on the shop's settlement's store (P7a: keyed economies); an unkeyed page calls complete0 as before */
   function complete(a, E, minute){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(E.place), function(){ return complete0(a, E, minute); }) : complete0(a, E, minute); }
   function complete0(a, E, minute){
@@ -212,7 +217,7 @@
     if(P.mess){ mealStat(a, 'mess'); return M.mess; }
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
-    var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
+    var sz=SIM.economySeasoning ? SIM.economySeasoning() : 1, Q=function(f){ var K=I.kinds[f]; return (K && K.quality!=null ? K.quality : 1)*sz; };   /* a better food (cheese) makes a better meal; a seasoned one too (77-sim-6-govern.js) */
     if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
     if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
     mealStat(a, 'none'); return M.none;

@@ -27,7 +27,7 @@ ISLE.simEconomy = function (TS, places) {
   var made = {}; places.forEach(function (P) { (outOf(P) || []).forEach(function (g) { made[g] = 1; }); });
   var can = function (g) { var q = inputs[g]; return made[g] && (!q || Object.keys(q).every(function (x) { return made[x]; })); };
   var foods = I.foods.filter(can);
-  var E = SIM.economy({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() } }, { settlement: s });
+  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() } }, ISLE.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
   var out = { producers: {}, goods: {}, warehouses: 0, carts: 0, foods: foods };
   places.forEach(function (P) {
     if (T.warehouses.indexOf(P.kind) >= 0) { SIM.store(P.id, { kind: 'warehouse' }); out.warehouses++; return; }
