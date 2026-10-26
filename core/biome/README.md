@@ -59,6 +59,15 @@ lights (read every frame) and fogged by the scene's fog; 2 triangles a tree. The
 builders after `BIO.bake` (so its random numbers come after every placement), renders it, and leaves no instance, charge,
 registration (the kit mutes its own) or scene object behind.
 
+## Welded item geometry (`BIO.INDEX_ITEMS`, opt-in)
+
+`BIO.def` un-indexes every item's geometry (triangle soup). With `BIO.INDEX_ITEMS = true` (set before the kits define their
+items) or `BIO.def(name, geo, mat, {indexed: true})` the soup is welded: vertices whose every attribute is equal become one, drawn
+by index. The same triangles in the same order, so the same pixels; a 6-triangle card runs its vertex shader for 12 vertices,
+not 18. nhighlands' leaf and floor cards were vertex-bound on an integrated GPU, and welding saved 17-18% of the frame on its
+stream and tower views (`biomes/nhighlands/PERF.md`). The export writes the index (`42-core-export.js` already handled
+indexed buckets). Test: `test-lod.js`.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the

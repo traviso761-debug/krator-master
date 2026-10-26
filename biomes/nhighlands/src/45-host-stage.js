@@ -191,5 +191,8 @@ BIO.init({tags:'nhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wat
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
 // B1/B2 (core/biome README, "Adopting it"): one LOD mesh per chunk, rows sorted by range (lodTick draws the prefix that reaches the
 // camera), small meshes merged up to 1500 triangles, and a dithered cross-fade over the last 15% of each range (no pop at a ring)
+// the items' geometry welded and drawn by index (core/biome BIO.INDEX_ITEMS; ?index=0 for the soup): the leaf and floor cards were
+// vertex-bound on an integrated GPU (the optimization pass, 2026-10-26: a quarter of the pixels saved a tenth of the frame)
+BIO.INDEX_ITEMS=new URLSearchParams(location.search).get('index')!=='0';
 BIO.LOD.merge=new URLSearchParams(location.search).get("lodmerge")!=="0";BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&new URLSearchParams(location.search).get("lodfade")!=="0"?.15:0;
 BIO.setSun(SUN_POS);

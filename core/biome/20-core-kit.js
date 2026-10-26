@@ -46,10 +46,22 @@ const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32()
 BIO._newItem=newItem;   /* an empty store (34-core-impostor's capture empties a kit's stores after its scratch tree) */
 // opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
 // (BIO.tagItem, below) would guess wrong
+// opt.indexed (default BIO.INDEX_ITEMS, false): weld the item's geometry (vertices whose every attribute is equal become one)
+// and draw it by index. The same triangles in the same order, so the same pixels; a 6-triangle card runs its vertex shader for
+// 12 vertices, not 18 (nhighlands' leaf and floor cards were vertex-bound on an integrated GPU: 2026-10-26). Off by default.
+BIO.INDEX_ITEMS=false;
+function weldGeo(g){const T=BIO.host.THREE,names=Object.keys(g.attributes),n=g.attributes.position.count,A=names.map(k=>g.attributes[k]),seen=new Map(),idx=new Uint32Array(n),keep=[];
+ for(let i=0;i<n;i++){let key='';for(const a of A){const s=a.itemSize,o=i*s;for(let c=0;c<s;c++)key+=a.array[o+c]+',';}
+  let j=seen.get(key);if(j==null){j=keep.length;seen.set(key,j);keep.push(i);}idx[i]=j;}
+ if(keep.length===n)return g;
+ const out=new T.BufferGeometry();A.forEach((a,q)=>{const s=a.itemSize,arr=new a.array.constructor(keep.length*s);keep.forEach((i,j)=>{for(let c=0;c<s;c++)arr[j*s+c]=a.array[i*s+c];});
+  out.setAttribute(names[q],new T.BufferAttribute(arr,s,a.normalized));});
+ out.setIndex(new T.BufferAttribute(keep.length>65535?idx:new Uint16Array(idx),1));return out;}
+BIO.weldGeo=weldGeo;
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
- const g=geo.index?geo.toNonIndexed():geo;
- BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
+ const g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,g=(opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed)?weldGeo(g0):g0;
+ BIO.defs[name]={geo:g,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};

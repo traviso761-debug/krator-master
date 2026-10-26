@@ -315,6 +315,18 @@ PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
 
+async def evaluate_big(pg, js, arg, chunk=4 << 20):
+    """pg.evaluate(js, arg) for a result too big to come back in one piece: the page keeps the result as one JSON string
+    and Python pulls it in slices of `chunk` characters. One evaluate returning a large object took over 25 minutes on
+    nhighlands' 2.4 km export (2026-10-26) where the page's own work was seconds; the slices take seconds too."""
+    n = await pg.evaluate("([js, arg]) => { const f = (0, eval)(js); window.__kbig = JSON.stringify(f(arg)); return window.__kbig.length; }", [js, arg])
+    parts = []
+    for i in range(0, n, chunk):
+        parts.append(await pg.evaluate("([i, k]) => window.__kbig.slice(i, i + k)", [i, chunk]))
+    await pg.evaluate("() => { window.__kbig = null; }")
+    return json.loads(''.join(parts))
+
+
 async def inject_export(pg):
     """core/export and the stage module into a page whose build does not list them (the Throne and its stations, Verge:
     core/export/README.md, "Not done"): their modules queued their parts in EXPORT_QUEUE, which 07 drains on load.
@@ -421,7 +433,7 @@ async def export_main(argv):
             injected = await inject_export(pg)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
-            res = await pg.evaluate(EXPORT_JS, [opt, not a.json])
+            res = await evaluate_big(pg, EXPORT_JS, [opt, not a.json])
             panel = await pg.evaluate("document.getElementById('errs')?document.getElementById('errs').textContent:''")
             await pg.close()
         await b.close()

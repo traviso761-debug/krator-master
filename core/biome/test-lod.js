@@ -167,4 +167,18 @@ function lathe(rep) { const P = page(), { BIO } = P; BIO.bucket('b', new THREE.M
   ok(src({ rate: 0 }) === src({ rate: 1e-9 }), 'animMat: rate 0 draws what sedesert\'s 1e-9 did');
   ok(/_w \* _f \* 0\.000/.test(src({ amp: 0 })) && /_w \* _f \* 0\.350/.test(src({})), 'animMat: amp 0 is 0, no amp .35'); }
 
+// ---------------------------------------------------------------- BIO.INDEX_ITEMS: welded item geometry (2026-10-26)
+{ const P = page(), B = P.BIO, m = new THREE.MeshLambertMaterial();
+  B.def('plain', new THREE.PlaneGeometry(1, 1, 2, 1), m, { label: 'p' });
+  B.INDEX_ITEMS = true; B.def('welded', new THREE.PlaneGeometry(1, 1, 2, 1), m, { label: 'w' }); B.INDEX_ITEMS = false;
+  const a = B.defs.plain, b = B.defs.welded, ga = a.geo, gb = b.geo;
+  ok(!ga.index && ga.attributes.position.count === 12, 'INDEX_ITEMS off: the item is triangle soup as before (12 vertices for 4 triangles)');
+  ok(gb.index && gb.attributes.position.count === 6 && gb.index.count === 12 && b.tris === 4, 'INDEX_ITEMS on: 6 welded vertices, 12 indices, still 4 triangles');
+  let same = true; for (let i = 0; i < 12; i++) for (let c = 0; c < 3; c++) if (ga.attributes.position.array[i * 3 + c] !== gb.attributes.position.array[gb.index.array[i] * 3 + c]) same = false;
+  ok(same, 'the welded item draws the same triangles in the same order');
+  B.def('opt', new THREE.PlaneGeometry(1, 1), m, { label: 'o', indexed: false }); ok(!B.defs.opt.geo.index, 'opt.indexed false keeps the soup');
+  const g3 = new THREE.PlaneGeometry(1, 1).toNonIndexed(), col = new Float32Array(18); for (let i = 0; i < 6; i++) col[i * 3] = i;   /* every vertex its own colour: nothing welds */
+  g3.setAttribute('color', new THREE.BufferAttribute(col, 3)); B.def('distinct', g3, m, { label: 'd', indexed: true });
+  ok(!B.defs.distinct.geo.index, 'negative: vertices that differ in any attribute are not welded'); }
+
 console.log(fails ? fails + ' FAILED' : 'all passed'); process.exit(fails ? 1 : 0);

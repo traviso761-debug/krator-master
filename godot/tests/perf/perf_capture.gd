@@ -30,6 +30,17 @@ const POSES := [
 	{"name": "near, a walker at the centre", "eye": [10.0, 1.7, 10.0], "at": [0.0, 1.0, 0.0], "ground": true},  # the near LOD, the ground up close
 ]
 
+# A case's own poses, after POSES: the page's preset views in world coordinates ("abs"), so the table compares with the three.js
+# page's own camera (its verify.py views). nhighlands' wide tile (2.4 km about the stream view): the final rebuild's spike.
+const CASE_POSES := {
+	"world-nhighlands-wide": [
+		{"name": "page: The stream", "eye": [-1701.49, 214.33, -1692.73], "at": [-1622.84, 242.23, -1601.56], "abs": true},
+		{"name": "page: The tower", "eye": [-1229.3, 443.8, -1111.0], "at": [-1141.1, 460.8, -1192.4], "abs": true},
+		{"name": "page: Temperate cathedral", "eye": [-2370.3, 214.2, -1284.8], "at": [-2365.6, 271.8, -1297.9], "abs": true},
+		{"name": "page: Moss hummocks", "eye": [-1940.6, 169.2, -1856.1], "at": [-1931.4, 168.1, -1850.9], "abs": true},
+	],
+}
+
 var cases: PackedStringArray = ["world-sedesert", "world-iziz"]
 var frames := 120
 var warmup := 10
@@ -128,9 +139,10 @@ func _capture(c: String) -> Dictionary:
 	print("  import %.0f ms (importer %s ms), first frame at %.0f ms; %d nodes, %d mesh nodes, %d multimeshes, %d instances" % [
 		r["import_ms"], str(r["load_ms"]), r["first_frame_ms"], r["nodes_world"], r["mesh_nodes"], r["multimeshes"], r["instances"]])
 	var focus: Vector3 = spike.case_focus
-	for p in POSES:
-		var eye := focus + Vector3(p["eye"][0], p["eye"][1], p["eye"][2])
-		var at := focus + Vector3(p["at"][0], p["at"][1], p["at"][2])
+	for p in POSES + Array(CASE_POSES.get(spike.current, [])):
+		var base := Vector3.ZERO if p.get("abs", false) else focus
+		var eye := base + Vector3(p["eye"][0], p["eye"][1], p["eye"][2])
+		var at := base + Vector3(p["at"][0], p["at"][1], p["at"][2])
 		if p.get("ground", false) and spike.ground:
 			eye.y = KData.height_at(spike.ground, eye.x, eye.z) + p["eye"][1]
 			at.y = KData.height_at(spike.ground, at.x, at.z) + p["at"][1]
