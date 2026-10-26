@@ -360,16 +360,18 @@ const vc=(g,cfn)=>{g=g.index?g.toNonIndexed():g;const p=g.attributes.position,co
 G.bulb=function(){const thread=new T3.CylinderGeometry(.01,.01,.55,3,1,true).translate(0,-.275,0).toNonIndexed();
  const bulb=new T3.SphereGeometry(.17,6,3);   // 24 triangles, not 36: a bulb is a hand across, and there are ~19k
  const p=bulb.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),k=y<0?1+(-y/.17)*.15:1-.35*(y/.17);p.setXYZ(i,p.getX(i)*k,y*1.5,p.getZ(i)*k);}
- bulb.translate(0,-.76,0);const b2=bulb.toNonIndexed();
- const pos=[],nor=[],uv=[],col=[];[[thread,.25],[b2,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);const sh=e[1]===1?lerp(.82,1.08,clamp((-a[i+1]-.6)/.3,0,1)):e[1];col.push(sh,sh,sh);}});
+ /* smooth normals on the indexed shape before it is un-indexed, and its own uv (M.bulb's skin): the bulbs read polygonal (the owner's look pass, 2026-10-26) */
+ bulb.computeVertexNormals();bulb.translate(0,-.76,0);const b2=bulb.toNonIndexed();
+ const pos=[],nor=[],uv=[],col=[];[[thread,.25],[b2,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array,U=e[0].attributes.uv.array;for(let i=0,j=0;i<a.length;i+=3,j+=2){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(U[j]*2,U[j+1]);const sh=e[1]===1?lerp(.82,1.08,clamp((-a[i+1]-.6)/.3,0,1)):e[1];col.push(sh,sh,sh);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a LANTERN POD: a papery five-ribbed calyx hung from y=0 to y=-1 (the physalis reference)
 G.lantern=function(){const pts=[];for(let i=0;i<=4;i++){const t=i/4;   // four bands: 80 triangles, not 100
  pts.push(new T3.Vector2(Math.max(.01,Math.sin(t*Math.PI)*.34*(1-.25*t)),-.12-t*.86));}
- const g=new T3.LatheGeometry(pts,10).toNonIndexed(),p=g.attributes.position;   // ten segments: two to each of the five ribs
+ const g0=new T3.LatheGeometry(pts,10),p=g0.attributes.position;   // ten segments: two to each of the five ribs
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.22*Math.cos(5*a);p.setXYZ(i,x*k,p.getY(i),z*k);}
- g.computeVertexNormals();const thread=new T3.CylinderGeometry(.012,.012,.14,3,1,true).translate(0,-.07,0).toNonIndexed();
- const pos=[],nor=[],uv=[],col=[];[[thread,.3],[g,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);
+ /* smooth normals on the indexed lathe, then un-indexed (normals after un-indexing gave every triangle its own facet), and its uv for M.pod's skin */
+ g0.computeVertexNormals();const g=g0.toNonIndexed(),thread=new T3.CylinderGeometry(.012,.012,.14,3,1,true).translate(0,-.07,0).toNonIndexed();
+ const pos=[],nor=[],uv=[],col=[];[[thread,.3],[g,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;const U=e[0].attributes.uv.array;for(let i=0,j=0;i<a.length;i+=3,j+=2){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(U[j]*2,U[j+1]);
   const x=a[i],z=a[i+2],rib=e[1]===1?.82+.18*Math.cos(5*Math.atan2(z,x)):e[1];col.push(rib,rib,rib);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // the core's fungoid cap (core/biome/33-core-fungoid.js): a ribbed saucer, the rim up and lifted on every other rib; 36 triangles

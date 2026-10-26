@@ -16,7 +16,7 @@ const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // own band, the old foam's (white from a 20% grade, full at 100%: the cascades and the two chutes): the flow's `rapids` option (2026-10-21; it was the page-wide preset)
 const STREAM_DRAW=WATER.drawFlow(STREAM_FLOW,{rapids:[.2,1],shallow:lin(0x66706c),deep:lin(0x34403f),color:0xffffff,roughness:.22,metalness:.05,envMapIntensity:.35,step:12,across:6,margin:1.2,chute:.5,rain:true,renderOrder:2});
 STREAM_DRAW.mesh.userData.probeSkip=true;STREAM_DRAW.mesh.userData.inspectLabel='The stream';
-const FALL_DRAWS=STREAM_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:30,cols:6,margin:1.2,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
+const FALL_DRAWS=STREAM_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:30,cols:6,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});   /* lipK: solid at the lip (from above it read as bare ground) */
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=k?'The waterfall':'The upper fall';D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='The plunge pool';return D;});
 const TARN_DRAW=WATER.drawStill(TARN_STILL,{color:lin(0x2c3834),roughness:.16,metalness:0,envMapIntensity:.1,rain:true,renderOrder:1});
 TARN_DRAW.mesh.userData.probeSkip=true;TARN_DRAW.mesh.userData.inspectLabel='The tarn';

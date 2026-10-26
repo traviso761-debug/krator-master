@@ -104,6 +104,9 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
 - `core/atmos/fx/89-atmos-fx-raincover.js`: the shelter margin 1.2 -> 3 m (the floor's ferns read as a roof: a dry rectangle of
   light followed the camera in the rain); swbay and the Throne's glacier take it too.
 - `core/biome/30-core-foliage.js` `BIO.geo.cells` (new); `33-core-fungoid.js` the cap's planar uv (new). No page moves by these.
+- `core/water/51-core-water-kinds.js`: `drawFall({lipK})` (opt-in; nhighlands .85): a curtain solid at its lip (at the old 45% it
+  read as bare ground from above). Round 2 on nhighlands also: the ground grid's vertices snapped onto the stream's and the tarn's
+  edges (`84-host-ground.js`: the sawtooth shoreline), smooth-shaded and textured lantern pods and bell-bulbs.
 
 ### Every build in the rebuild: its card cells (the owner, 2026-10-26)
 

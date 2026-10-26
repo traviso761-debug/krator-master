@@ -99,7 +99,17 @@ function buildGround(){
  /* and on what stands on the land (the forest is built before the ground: the canopy's shade is baked from it) */
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  const NXg=720,g=new THREE.PlaneGeometry(SX,SZ,NXg,NXg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
- const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
+ const p=g.attributes.position;
+ /* THE SHORELINES FOLLOW THE WATER: the 9.2 m grid's diagonals crossed the water's surface in a sawtooth along the stream and round the
+    tarn (the owner's look pass, 2026-10-26). A grid vertex within half a cell of a water edge moves onto it, along the edge's normal:
+    the stream's (its channel's half width plus the 4.5 m the ground is held under the ribbon: the ribbon's own edge) and the tarn's
+    (radius r, where its bowl meets its level), a little inside each so the snapped row stays under the water. The crossing then runs
+    along the edge line; no triangle is added */
+ {const P=STREAM.P,half=SX/NXg*.48;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);
+   const dt=Math.hypot(x-TARN.x,z-TARN.z);if(Math.abs(dt-TARN.r)<half&&dt>1){const k=(TARN.r-.5)/dt;p.setX(i,TARN.x+(x-TARN.x)*k);p.setZ(i,TARN.z+(z-TARN.z)*k);continue;}
+   const r=streamNear(x,z);if(!r||r.d<.5)continue;const e=r.w+4.2;   /* just inside the hold (w + 4.5), so the snapped row stays under the water */if(Math.abs(r.d-e)>=half)continue;
+   const a=P[r.i],b=P[r.i+1],nx=a[0]+(b[0]-a[0])*r.f,nz=a[1]+(b[1]-a[1])*r.f,k=e/r.d;p.setX(i,nx+(x-nx)*k);p.setZ(i,nz+(z-nz)*k);}}
+ for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);
  {const gl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;gl[i*3]=zat('montane',u,v);gl[i*3+1]=zat('glade',u,v);gl[i*3+2]=zat('boreal',u,v)*(1-zat('alpine',u,v))*(1-zat('burn',u,v))*(1-zat('rip',u,v));}g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));}   /* z: the boreal floor (cladonia) */
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);

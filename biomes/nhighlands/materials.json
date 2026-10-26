@@ -597,6 +597,32 @@
    },
    "mapOnly": true,
    "size": 512
+  },
+  "pod": {
+   "lib": "organic.flesh.cells",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "mapOnly": true,
+   "size": 512
+  },
+  "bulb": {
+   "lib": "organic.cap.porous",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.92
+   },
+   "mapOnly": true,
+   "size": 512
   }
  }
 }
