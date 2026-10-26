@@ -1,0 +1,10 @@
+// ================================================================= HOST — Krator's sky: the shared sky (core/atmos, SKY-PLAN.md section 9)
+// 2026-10-26: the painted dome and the giant mesh (the old 82-host-sky.js) are gone. ATMOS.skyBiome draws ATMOS.sky at this
+// biome's place on the scale model (the Rift, px 374, 1137), on the host clock (the page opens at 06:00 on game
+// start's day; #hour=, #day=, #time=run), with the real sun, giant, ring, moons, station, stars and clouds, and drives the
+// sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
+// Kept from the dome: the Rift's two walls, the far rim down the valley and the far shore's canopy (ridges, in front of the giant
+// as the old overlay dome kept them); the far salt lakes east and west, the walls' notches and talus are not drawn.
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:374,py:1137},
+ preset:{"air":{"pressure":1.9,"humidity":0.7},"clouds":{"cover":0.4},"fogDensity":0.0001684,"ridges":[{"base":0.75,"amp":0.9,"cycles":17,"octaves":2,"seed":41,"dist":30000,"haze":0.14,"forestH":0,"rock":[0.59,0.64,0.67]},{"base":8.6,"amp":3.0,"cycles":19,"octaves":3,"seed":42,"win":[180,90,1.5],"floor":0.77,"dist":9000,"haze":0.12,"forestH":0,"rock":[0.36,0.37,0.34]},{"base":11.7,"amp":2.5,"cycles":19,"octaves":3,"seed":43,"win":[0,90,1.5],"floor":0.77,"dist":6000,"haze":0.18,"forestH":0,"rock":[0.36,0.37,0.34]},{"base":0.52,"amp":1.2,"cycles":56,"octaves":3,"seed":44,"win":[180,90,1.5],"floor":0,"dist":7000,"haze":0.29,"forestH":100000.0,"rock":[0.41,0.54,0.52],"forest":[0.36,0.48,0.46]}]}});
+const {sky,giant}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
