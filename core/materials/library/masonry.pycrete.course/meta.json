@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.99,
+    0.753
+   ],
+   "seam_before": [
+    1.388,
+    0.871
+   ],
+   "source_size": [
+    1254,
+    927
+   ]
+  },
+  "options": {
+   "band": 0.02,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.25,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ice",
+  "id": "masonry.pycrete.course",
+  "metal": 0,
+  "roughness": 0.45,
+  "scale": [
+   2,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "masonry.pycrete.course.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 4), cropped to (0, 24, 1254, 951)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id masonry.pycrete.course).",
+  "reuse": "pycrete block courses (3 courses per tile): dome spirals, tunnel vaults; any ice- or snow-block masonry",
+  "sha1": "4a42bb4433fb98ec1ec53b501411a9c41d9de1f6"
+ }
+}
