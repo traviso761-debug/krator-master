@@ -45,7 +45,25 @@ function resOutcrop(S,rich,fn,o){o=o||{};const nb=4+rich*3,strike=rr(0,PI);
   const bw=rr(.22,.34)*S,bd=rr(.18,.28)*S,bh=(.55-Math.abs(t)*.6)*S*rr(.75,1.05),sink=bh*.18;
   WX(x,-sink,z,strike+rr(-.25,.25),rr(-.18,.18),rr(-.22,.22),()=>{box('stone',0,0,0,bw,bh,bd,o.col?o.col(i):(i%3?P('stoneD'):P('stone')));fn(i,bw,bh,bd);});}}
 function resLoose(S,n,cols,mk){for(let i=0;i<n;i++){const a=rr(0,TAU),r=rr(.45,.75)*S,q=rr(.04,.09)*S;box(mk||'plain',Math.cos(a)*r,0,Math.sin(a)*r,q,q*.7,q*.9,cols[i%cols.length],rr(0,TAU));}}
+/* the evaporite rings' rim and middle (the geology bake, 2026-10-26): gypsum, a low bank of pale bedded crust slabs
+   tilted out of the ground with glassy selenite blades in clusters; halite, rock salt cut from the pan, a square pit in
+   the white crust with the cut blocks stacked and polygon ridges round it. Vertex colours until their sets arrive (the
+   efflorescence set reads as dark marble on them: KNOWN_ISSUES.md). */
+const RES_EVLOOK={gypsum:{vein:[0xe8e4dc,0xd8d2c6,0xf2efe8],lump:0xf4f2ec,pile:0xc8c0b0},halite:{vein:[0xf6f4f0,0xeceae4,0xfcfbf8],lump:0xffffff,pile:0xd8d4cc}};
+function resEvap(kind,S,rich){const L=RES_EVLOOK[kind],ek='plain';
+ if(kind==='gypsum'){const n=4+rich*3,strike=rr(0,PI);
+  for(let i=0;i<n;i++){const t=n<2?0:i/(n-1)-.5,x=Math.cos(strike)*t*S*.8,z=Math.sin(strike)*t*S*.8,bw=rr(.2,.32)*S,bh=rr(.05,.09)*S*(1+rich*.3);
+   WX(x,0,z,strike+rr(-.3,.3),rr(-.25,.25),rr(-.1,.1),()=>{box(ek,0,0,0,bw,bh,bw*rr(.6,.9),resC(ek,L.vein[i%3]));box('plain',0,bh,0,bw*.9,.006*S,bw*.55,L.pile);});}
+  for(let i=0;i<3+rich*4;i++){const a=rr(0,TAU),r=rr(.2,.6)*S,cx=Math.cos(a)*r,cz=Math.sin(a)*r;
+   for(let k=0;k<3+rich;k++)cone('plain',cx+rr(-.04,.04)*S,0,cz+rr(-.04,.04)*S,rr(.008,.016)*S,rr(.035,.07)*S*(1+rich*.25),L.lump,4);}
+  return;}
+ const R=.6*S;ellip(ek,0,0,0,R*1.25,.008*S,R*1.1,resC(ek,L.vein[1]),rr(0,TAU),16);
+ for(let i=0;i<8+rich*4;i++){const a=i/(8+rich*4)*TAU,r=R*rr(.8,1.15);box(ek,Math.cos(a)*r,.004*S,Math.sin(a)*r,R*.5,.012*S,.02*S,resC(ek,L.vein[i%3]),a+PI/2);}
+ box('plain',0,-.01*S,0,R*.5,.012*S,R*.5,L.pile);
+ const ns=2+rich*3,ang=rr(0,TAU);for(let i=0;i<ns;i++){const a=ang+rr(-.4,.4),r=R*rr(.55,.8),q=rr(.08,.12)*S,y=(i%3)*.06*S;
+  box(ek,Math.cos(a)*r,y,Math.sin(a)*r,q,q*.7,q,resC(ek,L.lump),a);}}
 function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.size,rich=G.rank;
+ if(kind==='gypsum'||kind==='halite'){resEvap(kind,S,rich);return;}
  if(kind==='iron'||kind==='copper'||kind==='gold'||kind==='silver'){
   resOutcrop(S,rich,(i,bw,bh,bd)=>{const nv=1+rich+(i%2);for(let k=0;k<nv;k++){const c=L.vein[(i+k)%L.vein.length],y=bh*rr(.25,.85),th=(kind==='gold'?.06:.035)*S*(1+rich*.35),side=k%2?1:-1;
     {const vk=resK(RES_SET[kind],kind==='gold'?'stone':kind==='silver'?'iron':'plain');box(vk,0,y,side*(bd/2+.006),bw*rr(.7,1.0),th,.012,resC(vk,c));}
@@ -167,3 +185,11 @@ defBuilding({key:'node-alkali-high',seed:5912,...resNodeDef('alkali','high')});
 defBuilding({key:'node-oil-low',seed:5870,...resNodeDef('oil','low')});
 defBuilding({key:'node-oil-medium',seed:5871,...resNodeDef('oil','medium')});
 defBuilding({key:'node-oil-high',seed:5872,...resNodeDef('oil','high')});
+/* the geology bake's two evaporite kinds (2026-10-26) */
+Object.assign(RES_NAME,{gypsum:'Gypsum',halite:'Rock salt'});Object.assign(RES_H,{gypsum:.14,halite:.12});
+defBuilding({key:'node-gypsum-low',seed:5920,...resNodeDef('gypsum','low')});
+defBuilding({key:'node-gypsum-medium',seed:5921,...resNodeDef('gypsum','medium')});
+defBuilding({key:'node-gypsum-high',seed:5922,...resNodeDef('gypsum','high')});
+defBuilding({key:'node-halite-low',seed:5930,...resNodeDef('halite','low')});
+defBuilding({key:'node-halite-medium',seed:5931,...resNodeDef('halite','medium')});
+defBuilding({key:'node-halite-high',seed:5932,...resNodeDef('halite','high')});
