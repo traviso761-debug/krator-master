@@ -88,6 +88,36 @@ same Intel GPU (three.js: 34-63 ms) and 6-9 ms on the RTX, drawing nearly the wh
 export` now pulls its result in slices (a 1 M-instance export went from over 25 minutes to 95 s). **Step 3, the graphic-load
 assessment, is next**: PERF.md's "Levers not taken here" and the spike's findings are its starting list.
 
+### The owner's look pass on nhighlands, round 1 (2026-10-26)
+
+Fixed on nhighlands: the whole-sheet cards (below); the broadleaf builders' floating leaf masses (the mid-range tree's masses hung
+on the curved bough its straight rod stands for, and the crown's top mass floated up to 10 m over the boughs: `onRod`, `tipY`);
+the conifers' thin tops (a mass round the bole at every upper tier, two masses at the tip); the trumpets' funnels growing through
+each other (`fitFunnel`, `funnelBlock`: funnels shrink to clear a neighbour, a colony stem is cut down or grown so its funnel
+nests under or over one it cannot clear; about 10% of pairs still touch, mostly the great trumpet's fixed heads, now buds);
+the tarn hanging over its downhill slope (a moraine dam in `terrainH`) and its shine; tree feet on slopes (a skirt ring under
+the flare, `bole`); textures for the disc stalk's cap (`organic.cap.glossy`, a planar uv: `BIO.fung.cap({uv:'planar'})`) and the
+red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that takes them (all rebuilt in this rebuild):**
+- `core/atmos/sky/89-atmos-e-skymodel.js`: **the giant's axis is Krator's pole** (`giant.axis:'equator'`, the new default; `'sky'`
+  the old 23-degree canon): the sun lights it along its rings, within its declination all year (`test-sky.js`). Every page on
+  the shared sky shows the ring on the celestial equator's slant instead of near-level.
+- `core/atmos/fx/89-atmos-fx-raincover.js`: the shelter margin 1.2 -> 3 m (the floor's ferns read as a roof: a dry rectangle of
+  light followed the camera in the rain); swbay and the Throne's glacier take it too.
+- `core/biome/30-core-foliage.js` `BIO.geo.cells` (new); `33-core-fungoid.js` the cap's planar uv (new). No page moves by these.
+
+### Every build in the rebuild: its card cells (the owner, 2026-10-26)
+
+The owner caught cut-out cards "loading as a sheet rather than discretely" in many builds. `python3 tools/textures/check_cells.py
+[build ...]` finds each library card's grid from its alpha and checks every card slot in a build's `materials.json`: **WHOLE
+SHEET** (a 3x3 sheet drawn whole on one card: a grid of sprigs), **CELL ON ONE** (a cell cut from a single-plant image: a
+fragment), **CELL OFF GRID**. On 2026-10-26 it found **284 in 31 builds** (223 whole sheets, 50 cells on single plants, 11 off
+grid): the Throne 34, crops 42, Korona 15, necanyons 15, ringisles 14, Longsong 14, eastabyss, nwbay and rift 12 each, and the rest.
+Fix each build as it is rebuilt, by eye: a floor card or a strand gets the sheet's `cell` (`[.34,.34,.66,.66]` is the centre
+plant of a 3x3); a crown clump keeps the whole sheet and takes the cells in its geometry, `BIO.geo.cells(BIO.geo.clump(), {n:3})`
+(three sprigs a card at .6; `about:'origin'` for a stem spray), with `"sheet": "geometry"` on the slot so the check knows; a
+single-plant image loses its cell. nhighlands and the Cut are done. Then `python3 tools/textures/pack.py <build>` and rebuild.
+At close-out, add `check_cells.py --strict` to `tools/test_all.py`.
+
 ### Still to write (core) before or during step 1
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`

@@ -23,7 +23,8 @@
 //              o.ribs alternate rib shading and lift (0: none; a count, shaded by ribK .8), o.lump (0) a seeded wobble;
 //              o.under 'gills' (default: o.gillN plates, o.gillD deep, shaded gillK .55), 'pores' (a closed underside,
 //              poreK .6) or 'none'; o.stem null or {h (.6), r (.12), r1 (r*.8), seg (5), k (1.5)}: the cap on a stem,
-//              the origin at the stem's foot. Radius 1.
+//              the origin at the stem's foot; o.uv 'planar' (the uv from above, the centre at .5, .5; else u round, v along).
+//              Radius 1.
 //   bracket(o) a shelf on a wall: the wall at z 0, the shelf out along +z, o.arc (PI), o.seg (8), o.thick (.3), o.droop
 //              (.15: the lip below the root), o.wav/o.wavA, o.lump; the top shaded 1, the underside poreK, the lip lipK 1.15.
 //   bladder(o) a lathe body: o.swell (.5: 0 a spindle, 1 a ball), o.neck (.25: the top's radius), o.pleats (8) and
@@ -113,6 +114,8 @@ F.cap=function(o){o=o||{};const form=o.form||'dome',h=nz(o.h,.35),seg=nz(o.seg,1
    for(const fl of [false,true])grid(out,q,[[gk,gk],[gk*.8,gk*.8]],[0,1],V,fl);}}
  /* the stem, from under the cap down to the foot (the lathe rule: a profile that runs down faces out) */
  if(st)lathe(out,[[st.r1,ru-h*.02,st.k],[lerp(st.r,st.r1,.5),y0*.5,st.k*.95],[st.r,0,st.k*.85]],{seg:st.seg});
+ /* o.uv 'planar': the uv from above (x, z over the radius: .5 at the centre), for a cap texture whose pattern radiates from its middle */
+ if(o.uv==='planar')for(let i=0,j=0;i<out.pos.length;i+=3,j+=2){out.uv[j]=out.pos[i]*.5+.5;out.uv[j+1]=out.pos[i+2]*.5+.5;}
  return make(out);};
 
 // ---------------------------------------------------------------- bracket

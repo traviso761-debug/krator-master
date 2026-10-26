@@ -149,9 +149,43 @@
     "sourceMean": 0.3268
    }
   },
+  "disc": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "disc.albedo.webp"
+   },
+   "lib": "organic.cap.glossy",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2451a40900713fc0388e5065506b07a006f906f4",
+    "normal": "3c61e576bb5ece01ee5305925be05baf116d1187",
+    "roughness": "706f5a198fc240ba843b4bcdbabd955a27dbc307"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.85,
+    "sourceMean": 0.5256
+   }
+  },
   "drape": {
    "breakup": null,
    "card": true,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
    "files": {
     "map": "drape.albedo.webp"
    },
@@ -210,12 +244,6 @@
   "frond": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "frond.albedo.webp"
    },
@@ -386,12 +414,6 @@
   "lady": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "lady.albedo.webp"
    },
@@ -496,12 +518,6 @@
   "moss": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "moss.albedo.webp"
    },
@@ -889,6 +905,34 @@
     "sourceMean": 0.4059
    }
   },
+  "pleat": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pleat.albedo.webp"
+   },
+   "lib": "organic.pleat.skin",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9ad646b1c5c6620e35db026e1713137e882457bd",
+    "normal": "b9bbede7c5daae28bbcade398da40e0d4800fce7",
+    "roughness": "9e321cca8ad68e535216c0313a78c4bbb97387d2"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.85,
+    "sourceMean": 0.4433
+   }
+  },
   "rock": {
    "breakup": null,
    "card": false,
@@ -978,6 +1022,12 @@
   "spray": {
    "breakup": null,
    "card": true,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
    "files": {
     "map": "spray.albedo.webp"
    },

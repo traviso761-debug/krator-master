@@ -15,7 +15,8 @@
    },
    "roughLift": 0,
    "specular": 0.3,
-   "size": 1024
+   "size": 1024,
+   "sheet": "geometry"
   },
   "reed": {
    "lib": "card.reed",
@@ -29,7 +30,8 @@
    },
    "roughLift": 0,
    "specular": 0.3,
-   "size": 1024
+   "size": 1024,
+   "sheet": "geometry"
   },
   "rank": {
    "lib": "card.rankgrass",
@@ -43,7 +45,8 @@
    },
    "roughLift": 0,
    "specular": 0.3,
-   "size": 1024
+   "size": 1024,
+   "sheet": "geometry"
   },
   "melon": {
    "lib": "card.crop.melon",
@@ -57,7 +60,8 @@
    },
    "roughLift": 0,
    "specular": 0.3,
-   "size": 1024
+   "size": 1024,
+   "sheet": "geometry"
   },
   "culm": {
    "lib": "bark.bamboo.jade",

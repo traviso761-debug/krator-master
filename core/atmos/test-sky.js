@@ -111,4 +111,12 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  ok('at most SKY_MAX_LANDMARKS are kept',A.skyLandmarks(new Array(9).fill({kind:'band'})).n===A.SKY_MAX_LANDMARKS,false);}
 {const s=at(voth,259,9);ok('the chunk is written (the sky shader\'s GLSL)',typeof A.skyGLSL==='function'&&/atmSky\(/.test(A.skyGLSL()),false);}
 
+// the giant lit along its rings (axis 'equator', the owner, 2026-10-26): the sun stays within its declination (plus the libration's
+// nod) of the ring plane all year; the old sky-up axis put it up to ~60 degrees out of that plane (the negative)
+{const out=mode=>{const was=S.giant.axis;S.giant.axis=mode;let mx=0,dmx=0;for(let d=0;d<S.yearD;d+=S.yearD/12)for(let h=0;h<24;h+=2){const st=at(voth,d,h);
+  const rn=A.skyRingNormal(st),e=Math.asin(Math.min(1,Math.abs(V.dot(st.sunDir,rn))))/Math.PI*180;mx=Math.max(mx,e);
+  dmx=Math.max(dmx,Math.abs(Math.asin(Math.max(-1,Math.min(1,V.dot(st.sunDir,st.pole))))/Math.PI*180));}S.giant.axis=was;return[mx,dmx];};
+ const [eq,dec]=out('equator'),[sky]=out('sky');
+ ok('the sun lights the giant along its rings: '+eq.toFixed(1)+' degrees out of the ring plane at most (its declination reaches '+dec.toFixed(1)+')',eq<=dec+S.giant.ringOpenDeg+S.giant.libration.incDeg+1,sky<=dec+S.giant.ringOpenDeg+S.giant.libration.incDeg+1);}
+
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

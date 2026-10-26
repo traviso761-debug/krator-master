@@ -18,5 +18,5 @@ const STREAM_DRAW=WATER.drawFlow(STREAM_FLOW,{rapids:[.2,1],shallow:lin(0x66706c
 STREAM_DRAW.mesh.userData.probeSkip=true;STREAM_DRAW.mesh.userData.inspectLabel='The stream';
 const FALL_DRAWS=STREAM_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:30,cols:6,margin:1.2,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=k?'The waterfall':'The upper fall';D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='The plunge pool';return D;});
-const TARN_DRAW=WATER.drawStill(TARN_STILL,{color:lin(0x3a4640),roughness:.12,metalness:.05,envMapIntensity:.45,rain:true,renderOrder:1});
+const TARN_DRAW=WATER.drawStill(TARN_STILL,{color:lin(0x2c3834),roughness:.16,metalness:0,envMapIntensity:.1,rain:true,renderOrder:1});
 TARN_DRAW.mesh.userData.probeSkip=true;TARN_DRAW.mesh.userData.inspectLabel='The tarn';

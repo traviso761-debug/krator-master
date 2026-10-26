@@ -3,8 +3,9 @@
 // the sun from latitude, tilt, day of year and hour; the gas giant FIXED per site (Krator is tidally locked: its
 // position follows from the site's latitude and its longitude from the sub-giant point). THE GIANT IS ON THE EQUATOR (the owner, 2026-10-25,
 // after a spell lifted to declination -39 for rarer eclipses): where a tidally locked moon's giant hangs, so the sun passes behind it
-// ~2 h a day for ~2.5 months round each equinox, the realistic count. decDeg would lift it again. Its ring plane is taken through
-// the line of sight, tilted axisTiltDeg in the sky, so the rings stay a near-level hairline. The giant's moons orbit in its equator, the plane of its rings, so from
+// ~2 h a day for ~2.5 months round each equinox, the realistic count. decDeg would lift it again. Its ring plane is Krator's
+// equatorial plane (giant.axis 'equator', 2026-10-26), through the line of sight, so the rings stay a hairline and the sun lights
+// the giant along them; giant.axis 'sky' is the old canon (tilted axisTiltDeg from the sky's up). The giant's moons orbit in its equator, the plane of its rings, so from
 // Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Vesta-like and lumpy, a Trojan sharing Krator's own
 // orbit 60 degrees ahead, so it hangs fixed beside the giant and waxes and wanes once a day; the Week (6.87 d, two-faced,
 // Iapetus-like) and the Thirteen (12.55 d, a carbon world with tar seas) orbit outside Krator, so their phases,
@@ -24,7 +25,7 @@
   // the site frame on the scale model (2 km/px, x east, y south): Voth at 40 S, 84 km a degree (radius ~4,800 km), and
   // the point under the giant 57 degrees east of Voth (21-sky.js): Voth sees it NE, 24.7 degrees up (the canon)
   frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:57},
-  giant:{diaDeg:30, decDeg:0, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000,
+  giant:{diaDeg:30, decDeg:0, axis:'equator', axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000,
    // the daily libration (the owner, 2026-10-25): Krator's orbit is tilted incDeg to the giant's equator, so once an orbit the
    // giant nods north and south by it and the rings open and close through edge-on (turning their lit face to Krator, then
    // their unlit one); the Laplace chain keeps the orbit a little eccentric (ecc), so the giant also swings east and west by
@@ -136,7 +137,12 @@
    const gl=norm([0,1,2].map(k=>g0[k]+nd[k]*Math.tan(dN)+ew[k]*dE));giantDir[0]=gl[0];giantDir[1]=gl[1];giantDir[2]=gl[2];}
   const ringOpen=S.giant.ringOpenDeg*Math.sin(ph+LB.phase);
   const gE1=norm([giantDir[2],0,-giantDir[0]]),gUp=[giantDir[1]*gE1[2]-giantDir[2]*gE1[1],giantDir[2]*gE1[0]-giantDir[0]*gE1[2],giantDir[0]*gE1[1]-giantDir[1]*gE1[0]],ta=S.giant.axisTiltDeg*D;
-  const giantAxis=norm([0,1,2].map(k=>gUp[k]*Math.cos(ta)+gE1[k]*Math.sin(ta)));
+  /* the giant's spin axis. 'equator' (the default since the owner's look pass, 2026-10-26): Krator orbits in the giant's equator and
+     the giant hangs on Krator's celestial equator, so the ring plane is Krator's equatorial plane: the axis is Krator's pole, taken
+     square to the line of sight. The sun, within its declination of that plane all year, lights the giant along its rings (the
+     sky-up tilt put the sun over a pole whenever it stood high, a Uranus look). 'sky': the old canon, axisTiltDeg from the sky's up */
+  let giantAxis;if(S.giant.axis==='sky')giantAxis=norm([0,1,2].map(k=>gUp[k]*Math.cos(ta)+gE1[k]*Math.sin(ta)));
+  else{const pg=dot(pole,giantDir);giantAxis=norm(pole.map((v,k)=>v-giantDir[k]*pg));}
   // the moons: Krator and each moon in the giant's equatorial plane (km, inertial), then laid on the sky's ring line:
   // the angle b from the giant as Krator sees it becomes cos b along the giant's direction plus sin b along the ring line,
   // and the sun's direction is carried into the same frame (L) so each moon's lit side matches its phase
@@ -181,8 +187,8 @@
   return{dir,dist,axis:norm(toWorld(axis)),vel:norm(toWorld(vel)),radiusDeg:Math.atan(O.radiusKm/dist)/D,lit,up:dir[1]>0?1:0,periodH:per*24};};
 
  // ---- the giant and its ring as the shader draws them (its CPU twin, for checks). The giant is a sphere at unit
- // distance. Its spin axis lies in the plane of the sky, tilted axisTiltDeg from the sky's up (the domes' canon: the
- // only reading that gives a tilted planet AND rings seen as a hairline); the ring lies in its equator, opened
+ // distance. Its spin axis lies in the plane of the sky: Krator's pole projected there (axis 'equator'), or tilted axisTiltDeg
+ // from the sky's up (axis 'sky', the domes' old canon); the ring lies in its equator, opened
  // ringOpenDeg toward us (exactly edge-on it would cover no pixel)
  A.skyRingNormal=s=>{const i=(s.ringOpen==null?S.giant.ringOpenDeg:s.ringOpen)*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)-g[k]*Math.sin(i)));};   // opened so Krator looks down onto the face the sun lights by day
  A.skyBodyHit=(s,d)=>{const c=s.giantDir,r=Math.sin(S.giant.diaDeg/2*D),n=A.skyRingNormal(s),b=dot(d,c),h=b*b-(1-r*r);

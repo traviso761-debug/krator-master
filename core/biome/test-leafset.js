@@ -23,6 +23,16 @@ check('  negative: an anchor that only says where the subject sits (center) does
  const s=B.geo.spray({stem:[.5,.96]}),c=B.geo.clump({stem:true}),t=B.geo.clump();
  check('spray (and clump({stem})): three cards from one stem at the origin',s.attributes.position.count===18&&c.attributes.position.count===18);
  check('  negative: clump() with no option is the old tripod (centred, not on the origin)',t.attributes.position.count===18&&Math.abs(t.attributes.position.getY(0))>.01);}
+// ---------------------------------------------------------------- a sheet drawn a plant a quad (30-core-foliage BIO.geo.cells)
+{const g=B.geo.cells(B.geo.clump(),{n:3}),U=g.attributes.uv,P=g.attributes.position,t=B.geo.clump(),Pt=t.attributes.position;
+ const box=q=>{let a=1e9,b=-1e9,c=1e9,d=-1e9;for(let v=0;v<6;v++){const k=q*6+v;a=Math.min(a,U.getX(k));b=Math.max(b,U.getX(k));c=Math.min(c,U.getY(k));d=Math.max(d,U.getY(k));}return[a,b,c,d];};
+ const b0=box(0),b1=box(1),b2=box(2),inC=(b,cx,cy)=>b[0]>=cx/3-1e-9&&b[1]<=(cx+1)/3+1e-9&&b[2]>=cy/3-1e-9&&b[3]<=(cy+1)/3+1e-9;
+ check('cells: each tripod quad takes its own cell (0, 4, 8: the diagonal), inside it',inC(b0,0,0)&&inC(b1,1,1)&&inC(b2,2,2),JSON.stringify([b0,b1,b2].map(b=>b.map(x=>+x.toFixed(2)))));
+ const span=(G,q,ax)=>{let a=1e9,b=-1e9;for(let v=0;v<6;v++){const x=G.array[(q*6+v)*3+ax];a=Math.min(a,x);b=Math.max(b,x);}return b-a;};
+ check('cells: each quad shrinks to .6 about its own centre',Math.abs(span(P,0,1)/span(Pt,0,1)-.6)<1e-6);
+ const s=B.geo.cells(B.geo.spray({stem:[.5,.96]}),{n:3,about:'origin'}),Ps=s.attributes.position,So=B.geo.spray({stem:[.5,.96]}).attributes.position;
+ check('cells about the origin: a spray stays held at its stem (scaled about it)',Math.abs(Ps.getY(0)-So.getY(0)*.6)<1e-6);
+ const w=B.geo.clump().attributes.uv;check('  negative: a plain clump maps the whole sheet on every quad',Math.abs(w.getX(0)-0)<1e-6||Math.abs(w.getX(0)-1)<1e-6);}
 // ---------------------------------------------------------------- placement
 const seg={a:[0,10,0],b:[4,11,0]},d=[4/Math.hypot(4,1),1/Math.hypot(4,1),0];
 {const r=B.leafOn(seg,.5,{seed:7,i:3,droop:0,pitch:0,roll:0});

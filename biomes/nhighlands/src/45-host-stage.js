@@ -130,7 +130,11 @@ function streamNear(x,z){const B=STREAM.box;if(x<B[0]||x>B[2]||z<B[1]||z>B[3])re
 function terrainH(x,z){let h=baseH(x,z);
  // the tarn: a bowl in the boreal band, its floor 5 m under the water
  const dt=Math.hypot(x-TARN.x,z-TARN.z);
- if(dt<TARN.r+60){const bowl=TARN.level-5.5*(1-Math.pow(Math.min(1,dt/TARN.r),2))+Math.max(0,dt-TARN.r)*.32+ (dt<TARN.r?0:.6);if(bowl<h)h=bowl;}
+ if(dt<TARN.r+60){const bowl=TARN.level-5.5*(1-Math.pow(Math.min(1,dt/TARN.r),2))+Math.max(0,dt-TARN.r)*.32+ (dt<TARN.r?0:.6);if(bowl<h)h=bowl;
+  /* its MORAINE DAM: on its downhill side the hillside fell 10-21 m below the water within metres of the shore and the tarn hung
+     over it like a disc (the owner's look pass, 2026-10-26); a crest 0.9 m over the water at the rim, ramping down at ~29 degrees
+     to the natural slope. The stream's channel (below) still cuts through it where the outflow leaves */
+  const crest=TARN.level+.9-Math.max(0,dt-TARN.r-4)*.55-Math.max(0,TARN.r+2-dt)*.4;if(dt>TARN.r-2&&crest>h)h=crest;}
  // the stream's channel: a bed, a low bank, then the valley floor
  const r=streamNear(x,z);
  if(r){const w=r.w,t=Math.max(0,r.d-w),bank=Math.max(r.bank,r.level-.35)+.55+t*.2+Math.max(0,t-8)*.9;

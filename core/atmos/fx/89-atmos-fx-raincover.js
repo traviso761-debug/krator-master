@@ -22,7 +22,10 @@
 // Godot: GPUParticlesCollisionHeightField3D for the rain and snow particles, and the same height texture (an orthographic
 // SubViewport depth) as a global shader parameter for wetness and snow (GODOT.md, "The rain occlusion map").
 (function(){const A=ATMOS;
- A.PRESETS.raincover=A.PRESETS.raincover||{margin:1.2,soft:1.0,edge:[.42,.5]};
+ /* margin: the shelter counts only cover this far over the point. 1.2 m took the floor's ferns, bushes and cane (1-2.6 m, full
+    quads in the depth pass) for a roof: all the ground in the box read dry and the box showed as a rectangle of light that
+    followed the camera in the rain (nhighlands, the owner's look pass, 2026-10-26). 3 m keeps crowns, roofs and ledges */
+ A.PRESETS.raincover=A.PRESETS.raincover||{margin:3.0,soft:1.0,edge:[.42,.5]};
  const f=v=>A.glf(v);
  A.rainCoverGLSL=()=>{const P=A.PRESETS.raincover;return['#ifndef ATM_RAINCOVER','#define ATM_RAINCOVER',
   'uniform sampler2D atmRainOcc;uniform vec4 atmRainOccBox;uniform vec4 atmRainOccCam;',

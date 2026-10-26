@@ -373,13 +373,14 @@ G.lantern=function(){const pts=[];for(let i=0;i<=4;i++){const t=i/4;   // four b
   const x=a[i],z=a[i+2],rib=e[1]===1?.82+.18*Math.cos(5*Math.atan2(z,x)):e[1];col.push(rib,rib,rib);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // the core's fungoid cap (core/biome/33-core-fungoid.js): a ribbed saucer, the rim up and lifted on every other rib; 36 triangles
-G.disc=function(){return BIO.fung.cap({form:'funnel',h:.17,seg:12,rings:2,ribs:12,ribK:.75,under:'none'});};
+G.disc=function(){return BIO.fung.cap({form:'funnel',h:.17,seg:12,rings:2,ribs:12,ribK:.75,under:'none',uv:'planar'});};   /* planar: M.disc's cap texture radiates from the middle */
 // a PLEAT FAN: a round pleated fan (the red-stem fan's leaf), unit radius in the xz plane, the pleats radial, red at the heart
 G.pleat=function(){const pos=[],nor=[],uv=[],col=[];const n=16;   // sixteen pleats: 32 triangles, not 44
  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,up=k%2?.07:-.04,dn=k%2?-.04:.07;
   const P=(a,r,y)=>[Math.cos(a)*r,y+r*r*.12,Math.sin(a)*r];const O=[0,0,0],B=P(a0,1,up),Cc=P(a1,1,dn),M=P((a0+a1)/2,.55,(up+dn)/2);
-  const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(c[0],c[1],c[2]);};
-  const red=[1.35,.42,.48],g1=[1,1,1],g2=[.84,.9,.84];push(O,red);push(M,k%2?g1:g2);push(B,k%2?g1:g2);push(O,red);push(Cc,k%2?g2:g1);push(M,k%2?g1:g2);}
+  /* uv: u round the fan (two texture repeats a pleat, so M.pleat's stripes run along the pleats), v out from the heart */
+  const push=(p,c,t)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push((k+t)*.5,Math.hypot(p[0],p[2]));col.push(c[0],c[1],c[2]);};   /* t: 0 at the pleat's first edge, 1 at its second */
+  const red=[1.35,.42,.48],g1=[1,1,1],g2=[.84,.9,.84];push(O,red,.5);push(M,k%2?g1:g2,.5);push(B,k%2?g1:g2,0);push(O,red,.5);push(Cc,k%2?g2:g1,1);push(M,k%2?g1:g2,.5);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a CUSHION: a lumpy dome, origin at the centre (moss mounds, smoke bush, yew domes)
 G.cushion=function(){   // 49 triangles, not 72: there are 14k of them, and the lumps hide the facets
@@ -438,6 +439,10 @@ const M=NHL.MAT={
  cushion:new T3.MeshLambertMaterial({map:NHL.MOSSTEX,vertexColors:true}),
  vcol:BIO.leafMat(null,'nh-vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'nh-vsway',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
+ /* the disc stalk's cap and the red-stem fan, given the library's skins as grey detail maps (materials.json: organic.cap.glossy,
+    organic.pleat.skin; the owner's look pass, 2026-10-26): vertex-coloured as before, the map multiplies in */
+ disc:BIO.leafMat(null,'nh-disc',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ pleat:BIO.leafMat(null,'nh-pleat',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
  rock:BIO.solidMat(NHL.ROCKTEX),
  solid:BIO.solidMat(null,0xffffff),
  // THE GLOW. Lambert with an emissive the host's night raises (NHL.setNight). In daylight the
@@ -480,15 +485,19 @@ BIO.bucket('nrock',NHL.BKMAT.nrock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Conifer needles'});
+/* the crown sheets (card.pine, card.lobed, card.sage, card.aspen, card.larch, card.acacia: nine sprigs each) are drawn a sprig a
+   quad, three cells a card at .75, the needles .88 (core BIO.geo.cells; the owner, 2026-10-26: whole sheets read as a grid). The
+   library's cell is in the geometry, so these slots carry no cell in materials.json (without the pack each quad shows a ninth of the stand-in) */
+const SHEET=(g,about,scale)=>BIO.geo.cells?BIO.geo.cells(g,{n:3,about,scale:scale==null?.75:scale}):g;   /* .75: the sprigs overlap into a mass (.6 read sparse) */
+BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles'});
 BIO.def('spray',BIO.geo.frond(3),M.spray,{label:'Cedar and hemlock sprays'});
-BIO.def('maple',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.maple?{stem:true}:null),M.maple,{attrs:['aN'],label:'Maple leaves'});
+BIO.def('maple',NHL.LEAFSET&&NHL.LEAFSET.maple?SHEET(BIO.geo.clump({stem:true}),'origin'):SHEET(BIO.geo.clump()),M.maple,{attrs:['aN'],label:'Maple leaves'});
 BIO.def('broad',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.broad?{stem:true}:null),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
-BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Oak and laurel leaves'});
-BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Birch leaves'});
-BIO.def('larch',BIO.geo.clump(),M.larch,{attrs:['aN'],label:'Larch needles'});
+BIO.def('small',SHEET(BIO.geo.clump()),M.small,{attrs:['aN'],label:'Oak and laurel leaves'});
+BIO.def('birch',SHEET(BIO.geo.clump()),M.birch,{attrs:['aN'],label:'Birch leaves'});
+BIO.def('larch',SHEET(BIO.geo.clump()),M.larch,{attrs:['aN'],label:'Larch needles'});
 BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN'],label:'Willow leaves'});
-BIO.def('pinnate',BIO.geo.clump(),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
+BIO.def('pinnate',SHEET(BIO.geo.clump()),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
 BIO.def('drape',BIO.geo.ribbon(4,.7,.14),M.drape,{label:'Hanging moss'});
 BIO.def('beard',BIO.geo.ribbon(4,.55,.10),M.beard,{label:'Beard lichen'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns'});
@@ -510,8 +519,8 @@ BIO.def('bulb',G.bulb(),M.bulb,{label:'Bell-bulbs'});
 BIO.def('lantern',G.lantern(),M.pod,{label:'Lantern pods'});
 BIO.def('halo',BIO.geo.bloom(),M.halo,{label:'Bulb glow'});
 BIO.def('haloV',BIO.geo.bloom(),M.haloV,{label:'Pod glow'});
-BIO.def('disc',G.disc(),M.vcol,{label:'Disc stalks'});
-BIO.def('pleat',G.pleat(),M.vsway,{label:'Red-stem fans'});
+BIO.def('disc',G.disc(),M.disc,{label:'Disc stalks'});
+BIO.def('pleat',G.pleat(),M.pleat,{label:'Red-stem fans'});
 BIO.def('boulderA',G.boulder(1.3),M.rock,{label:'Boulders'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Mushrooms'});
 BIO.def('berry',G.berry(),M.solid,{label:'Berries'});

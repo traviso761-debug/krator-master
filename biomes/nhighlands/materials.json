@@ -13,7 +13,8 @@
     "keep": 0.0,
     "mean": 0.651
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "spray": {
    "lib": "card.spruce",
@@ -25,7 +26,13 @@
     "keep": 0.0,
     "mean": 0.707
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
   },
   "maple": {
    "lib": "card.lobed",
@@ -37,7 +44,8 @@
     "keep": 0.0,
     "mean": 0.687
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "broad": {
    "lib": "card.broadleaf",
@@ -61,7 +69,8 @@
     "keep": 0.0,
     "mean": 0.635
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "birch": {
    "lib": "card.aspen",
@@ -73,7 +82,8 @@
     "keep": 0.0,
     "mean": 0.713
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "larch": {
    "lib": "card.larch",
@@ -85,7 +95,8 @@
     "keep": 0.0,
     "mean": 0.7
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "lance": {
    "lib": "card.prismgum",
@@ -109,7 +120,8 @@
     "keep": 0.0,
     "mean": 0.652
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "drape": {
    "lib": "card.weeper",
@@ -121,7 +133,13 @@
     "keep": 0.0,
     "mean": 0.617
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
   },
   "beard": {
    "lib": "card.beard",
@@ -151,13 +169,7 @@
     "keep": 0.0,
     "mean": 0.732
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "lady": {
    "lib": "card.fern",
@@ -169,13 +181,7 @@
     "keep": 0.0,
     "mean": 0.758
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "bracken": {
    "lib": "card.frond.needle",
@@ -291,13 +297,7 @@
     "keep": 0.0,
     "mean": 0.674
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "rock": {
    "lib": "rock.rock058",
@@ -571,6 +571,32 @@
    "roughLift": 0.35,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "disc": {
+   "lib": "organic.cap.glossy",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "size": 512
+  },
+  "pleat": {
+   "lib": "organic.pleat.skin",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "size": 512
   }
  }
 }

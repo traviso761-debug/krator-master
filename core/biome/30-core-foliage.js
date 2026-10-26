@@ -132,6 +132,20 @@ BIO.geo.clump=function(o){if(o&&o.stem&&BIO.geo.spray)return BIO.geo.spray(o);co
 BIO.geo._make=function(pos,nor,uv,col){const T=BIO.host.THREE,g=new T.BufferGeometry();
  g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nor,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  if(col)g.setAttribute('color',new T.Float32BufferAttribute(col,3));return g;};
+// BIO.geo.cells(geo, o) -> geo: a card SHEET (n x n plants, o.n 3) drawn a plant a quad. Each quad of a card geometry (its
+// triangles in pairs, as clump, spray and leafCard write them) takes its own cell of the sheet in its uv, o.pick[q % length]
+// (cells counted from the sheet's top left, row by row; default 0, 4, 8: the diagonal), inset by o.inset (.01) of the sheet,
+// and shrinks by o.scale (.6) about its own centre (o.about 'quad', the tripod clumps) or the origin ('origin': cards held by
+// their stem). The material keeps the whole sheet (no texture cell): the owner, 2026-10-26, saw crown cards drawing all nine
+// sprigs of a sheet as a grid; one cell a card made each sprig three times too large, three cells at .6 keeps the card's cover.
+// The uv is the unflipped library convention (v down the sheet, as BIO.libSwap's cells); o.flipY for a CanvasTexture.
+BIO.geo.cells=function(geo,o){o=o||{};const n=o.n==null?3:o.n,pick=o.pick||[0,Math.floor(n*n/2),n*n-1],sc=o.scale==null?.6:o.scale,ins=o.inset==null?.01:o.inset,
+ g=geo.index?geo.toNonIndexed():geo,P=g.attributes.position.array,U=g.attributes.uv.array,nq=Math.floor(P.length/18);
+ for(let q=0;q<nq;q++){const c=pick[q%pick.length],cx=c%n,cy=Math.floor(c/n),o0=q*18;let mx=0,my=0,mz=0;
+  if(o.about!=='origin'){for(let v=0;v<6;v++){mx+=P[o0+v*3];my+=P[o0+v*3+1];mz+=P[o0+v*3+2];}mx/=6;my/=6;mz/=6;}
+  for(let v=0;v<6;v++){const i=o0+v*3,j=q*12+v*2;P[i]=mx+(P[i]-mx)*sc;P[i+1]=my+(P[i+1]-my)*sc;P[i+2]=mz+(P[i+2]-mz)*sc;
+   const u=U[j],w=o.flipY?1-U[j+1]:U[j+1],a=cx/n+ins+u*(1/n-2*ins),b=cy/n+ins+w*(1/n-2*ins);U[j]=a;U[j+1]=o.flipY?1-b:b;}}
+ g.attributes.position.needsUpdate=true;g.attributes.uv.needsUpdate=true;return g;};
 // hanging raceme / strand: two crossed quads, local y 0 (hung) .. -1
 BIO.geo.hang=function(){const pos=[],uv=[],nor=[];
  for(let k=0;k<2;k++){const ca=Math.cos(k*Math.PI/2+.4),sa=Math.sin(k*Math.PI/2+.4);
