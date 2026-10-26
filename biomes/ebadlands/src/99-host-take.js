@@ -31,6 +31,8 @@ const VIEWS={
  // from just outside the north wall's top, looking across and down to the floor on the far side
  'The canyon from the rim':[CX,gh(CX,rimN(CX,1.4),28),rimN(CX,1.4),CX-260,floorC(CX-260)+4,zR(CX-260)+Wc(CX-260,0)*.45],
  'Sulphur flats':[POOL0[0]-150,POOLL[0]+16,POOL0[1]+120,POOL0[0],POOLL[0]+1,POOL0[1]],
+ // the Throne's brimstone reeds on the shore of the largest pool, the camera on its bank looking along the shore
+ 'Brimstone reeds at a sulphur pool':(function(){const P=POOL0,a=2.6,c=[P[0]+Math.cos(a)*P[2]*1.32,P[1]+Math.sin(a)*P[2]*1.32],t=[P[0]+Math.cos(a+.55)*P[2]*1.08,P[1]+Math.sin(a+.55)*P[2]*1.08];return[c[0],Math.max(gh(c[0],c[1],3),POOLL[0]+4),c[1],t[0],POOLL[0]+1.4,t[1]];})(),
  'Stilt pods at the vents':atTree(nearTree('stiltpod',VENTS.x,VENTS.z),26,.8,2),
  'Ember crowns and sunspires':atTree(nearTree('embercrown',P.waste[0],P.waste[1]),38,2.4,3),
  'Needle bloom stand':atTree(nearTree('needlebloom',P.waste[0],P.waste[1]),14,1.2,2),
@@ -72,7 +74,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={
  showcase:{tris:19500000,calls:700},   // scene triangles DRAWN at the camera (variants: the level by the camera); calls: one per variant pool part on this 6.8 km map (KNOWN_ISSUES), not a target
  cls:{pass:16000000,host:900000},
- type:{'badlands/trees':'pass','badlands/floor':'pass','badlands/dress':'pass','badlands/nursery':'pass','host':'host'},
+ type:{'badlands/trees':'pass','badlands/floor':'pass','badlands/dress':'pass','badlands/nursery':'pass','badlands/sulphur':'pass','host':'host'},
 };
 // the instanced items only (what the kit roots): a mesh's bounding-box centre is not a plant. The kit's hanging
 // things (weeper strands, stilt-pod tendrils) and the floor's flat mats are origins too, all at or above the ground.
@@ -111,6 +113,9 @@ const HCHK={
  variants(V,T){if(!window._variants)return{ok:true,detail:'unique trees (?unique=1)'};const P=V.protos,sps=new Set(T.map(r=>r.sp)),miss=[];
   for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv))miss.push(EBADLANDS.SPECIES[sp].key+' v'+v+' lv'+lv);
   return{ok:!miss.length&&V.stats.drawn>0&&P.size<=EBADLANDS.SPECIES.length*2*3*V.K,detail:(miss.length?'missing: '+miss.slice(0,6).join(', ')+'; ':'')+P.size+' prototypes for '+T.length+' trees; '+V.stats.drawn+' drawn here (hero '+V.stats.levels[2]+', mid '+V.stats.levels[1]+', far '+V.stats.levels[0]+'), '+V.stats.tris+' triangles, grown in '+V.stats.growMs+' ms'};},
+ // the Throne's brimstone reeds (the owner, 2026-10-06): grown, and only in a band at the sulphur pools' shores, not across the flats
+ reeds(P){const T=P.filter(p=>p[3]==='biome:tassel'),off=T.filter(p=>poolD(p[0],p[2])[0]>1.8||waterH(p[0],p[2])-terrainH(p[0],p[2])>.8);   /* out past a pool's bank, or standing in deep water */
+  return{ok:T.length>=300&&!off.length,detail:off.length?off.length+' of '+T.length+' reed tassels off a pool shore (past the bank or in deep water; first at '+off[0].slice(0,3).map(v=>v|0)+')':T.length+' brimstone-reed stems, all at a sulphur pool shore'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('every species placed',HCHK.placed(EBADLANDS.COUNTS||[]));
@@ -121,6 +126,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(typeof VARIANTS!=='undefined')add('trees drawn as shared variants',HCHK.variants(VARIANTS,EBADLANDS.TREES));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(EBADLANDS.SPECIES,EBADLANDS.PLANTS,P));
  add('no tree on a layered cliff face',HCHK.cliffs(EBADLANDS.TREES));
+ add('brimstone reeds at the sulphur pools only',HCHK.reeds(P));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
@@ -137,6 +143,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the dressing never ran',HCHK.hanging(null,P));
  if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},EBADLANDS.TREES));
  add('a fruiting species with no catalog fruit',HCHK.fruit(EBADLANDS.SPECIES.map(S=>S.key==='pinyon'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),EBADLANDS.PLANTS,P));
+ add('a brimstone reed out on the flats',HCHK.reeds(P.concat([[VENTS.x,terrainH(VENTS.x,VENTS.z),VENTS.z,'biome:tassel']])));
  add('a camera under the canyon floor',HCHK.camerasOut([{view:'under',x:x,y:floorC(x)-5,z:zR(x)}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

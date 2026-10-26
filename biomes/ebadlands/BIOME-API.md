@@ -29,6 +29,7 @@ with the alien species of the reference sheets. **Dryness and temperature lead, 
 | `upland` | height and relief | read, not used for zoning (most of the region is high) |
 | `geo` | **not bound by the world yet** | geothermal ground: the sulphur vents. 0 when unbound |
 | `barren` | **not bound by the world yet** | ice cap and airless rim: nothing grows. 0 when unbound |
+| `sulph` | **not bound by the world yet** (the Throne kit's field, `biomes/throne/BIOME-API.md`) | sulphurous ground: the Throne's **brimstone reeds** (`EBADLANDS.buildSulphur`, ported from `THRONE.buildSulphur`), only in a narrow band at the shores of the acid pools (the shallows to 0.45 m and the lip half a metre above). The showcase binds it as `max(geo, the pools' banks)`; a world can bind it from its `geo`. 0 when unbound: no reeds |
 
 `geo` and `barren` are the two fields this kit needs that `openworld/little-demo` does not give
 (`KNOWN_ISSUES.md`). The showcase host binds both.

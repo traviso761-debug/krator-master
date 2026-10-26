@@ -69,14 +69,20 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
 
 ## From other kits
 
-- [ ] **Import the Throne's sulphur layer onto the sulphur flats** (the owner, 2026-10-06). `biomes/throne` station 8
-  (vent country) grows Krator's sulphur extremophiles wherever its host hands in a `sulph` field (`THRONE.buildSulphur`
-  in `src/60-biome-throne-floor.js`, the brimstone candelabra `sp 23` in `55`; `BIOME-API.md`, the `sulph` row). Bring
-  that layer here for the north's Danakil-like flats: bind a `sulph` field from the flats' `geo` ground, and take the
-  **brimstone reeds only round the acid pools** (a narrow band at their shores, not across the flats). Either load the
-  Throne kit as a second kit on the page (as the Throne's kipuka loads the hyperjungle: `station.json` `kits`) or port
-  the reeds' items (`rod` stems in two bands, the `tassel`, `PAL.reedLow/reedHigh/tassel`) into this kit.
-      Stays open (2026-10-25): design task and owner choice (second kit or port of the reeds); needs the `geo` field and a `sulph` binding.
+- [x] **Import the Throne's sulphur layer onto the sulphur flats** (the owner, 2026-10-06). Done 2026-10-26 as a **port of
+  the reeds** (not the Throne kit as a second kit: its species, trees and floor are ~225 KB of fragments with their own
+  `BIO.init`, palettes and library, for one plant). `EBADLANDS.buildSulphur` (`src/60`, its own seed 640047 and budget type
+  `badlands/sulphur`, run after the floor in `70` and in the showcase's `88`) is `THRONE.buildSulphur`'s reed stand as the
+  Throne has it: `rod` stems in two bands (`PAL.reedLow/reedHigh`), a crusted `tassel` (`PAL.tassel`, new item), the plant
+  `brimreed` in `EBADLANDS.PLANTS`. Only in a narrow band at the acid pools' shores (the grid's depth window: the shallows to
+  0.45 m and the lip half a metre above), on the Throne's `sulph` field (`BIOME-API.md`): the showcase binds it as
+  `max(geo, the pools' banks)` (`45`); unbound it is 0 and nothing grows (the open world, until it binds `sulph` from its
+  `geo`). The Throne's acid pads, gas bladders and brimstone candelabra (`sp 23`) stay out, as the owner asked for the reeds.
+  New view `Brimstone reeds at a sulphur pool`; check `brimstone reeds at the sulphur pools only` (and its negative). Cost:
+  4639 stems, 13917 instances, 185,560 triangles; +1 draw call (366 -> 367 at the default camera; Sulphur flats 187 -> 188).
+- [ ] **The brimstone reeds are procedural rods.** The Throne draws them from the owner's `card.reedbrim` sheet when its pack
+  carries it (`THRONE.buildSulphur`, `RB`). Adding that slot to `materials.json` (and the Throne's cell cutter) would give
+  the pools the same card stands; left for a pass that owns `materials.json`.
 
 
 ## Export profile: sections left out (2026-10-18)

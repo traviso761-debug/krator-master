@@ -13,7 +13,8 @@ window._biome=null;window._dress=null;
  try{
   if(unique)window._biome=EBADLANDS.build({R:TERR.R-150,quality:q});
   else{const out={R:TERR.R-150,quality:q};BIO.cur='badlands/trees';Object.assign(out,EBADLANDS.buildTrees(out.R,q,{records:true}));
-   BIO.cur='badlands/floor';Object.assign(out,EBADLANDS.buildFloor(out.R,q));BIO.cur=null;window._biome=out;}}
+   BIO.cur='badlands/floor';Object.assign(out,EBADLANDS.buildFloor(out.R,q));
+   BIO.cur='badlands/sulphur';Object.assign(out,EBADLANDS.buildSulphur(out.R,q));BIO.cur=null;window._biome=out;}}
  catch(e){reportErr('biome: '+e.stack);}
  if(shells.length){try{window._dress=EBADLANDS.dress(shells,{ledges:{n:360,plants:180,edges:150,hang:5.5},soffits:{n:220,hang:4.5},walls:{n:260,hang:3}});}catch(e){reportErr('dress: '+e.stack);}}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}

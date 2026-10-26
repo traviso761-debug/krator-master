@@ -228,4 +228,26 @@ EBADLANDS.buildFloor=function(R,q){
  // fallen logs in the forests and on the canyon floor
  BIO.grid(40,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return (Z.boreal*.55+Z.pine*.3+Z.rip*.25+Z.tundra*.06)*q;},(x,y,z,d)=>{const Z=zones(x,z),pale=Z.tundra>.3||Z.rip>.4;for(let t=0;t<4;t++)if(log(x+rr(-14,14),y,z+rr(-14,14),st,pale))break;},{patch:0,pad:2});
  return{under:st};};
+
+// ---------------------------------------------------------------- the sulphur life (the Throne's, at the sulphur pools)
+// The Throne kit's sulphur layer (biomes/throne src/60 THRONE.buildSulphur, station 8: vent country), ported for the north's
+// Danakil-like flats (KNOWN_ISSUES, From other kits; the owner, 2026-10-06): BRIMSTONE REEDS only, and only in a narrow band at
+// the acid pools' shores (the grid's depth window: the shallows to 0.45 m and the wet lip half a metre above them; away from a
+// pool the local water is none, so nothing passes), where the host hands in its 'sulph' field (BIOME-API.md; the showcase binds
+// it from the flats' geo ground and the pools' banks; 0 where no host binds it, so the open world grows none yet). The reeds'
+// items as the Throne has them: 'rod' stems in two bands (rust below, sulphur above) and a crusted 'tassel'. The Throne's acid
+// pads and gas bladders stay out (the owner asked for the reeds). Its own seed, after the floor, so no other plant moves.
+EBADLANDS.buildSulphur=function(R,q){reseed(640047);q=q==null?1:q;R=R||3000;const st={reeds:0,stems:0},L=BIO.LOD();
+ const SF=(x,z)=>BIO.field('sulph',x,z)*(1-smooth(.6,.85,BIO.field('slope',x,z)));
+ const reeds=(x,y,z,lv)=>{const w=Math.max(y,BIO.waterH(x,z));
+  for(let k=0,n=lv===2?ri(6,11):ri(2,4);k<n;k++){const a=rr(0,TAU),d=k?rr(.2,1.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=Y(px,pz),h=rr(1.4,3.4),la=rr(0,TAU),ln=rr(.02,.12)*h,
+    tx=px+Math.cos(la)*ln,tz=pz+Math.sin(la)*ln,mx=mix(px,tx,.45),mz=mix(pz,tz,.45),my=mix(Math.max(py,w-.05),py+h,.45),r=rr(.035,.06);
+   if(BIO.depth(px,pz)>.6||BIO.depth(px,pz)<-.8)continue;
+   BIO.beam('rod',[px,py-.1,pz],[mx,my,mz],r*1.2,r,vary(C(pick(PAL.reedLow)),.03,.08,.06));BIO.beam('rod',[mx,my,mz],[tx,py+h,tz],r,r*.6,vary(C(pick(PAL.reedHigh)),.03,.08,.06));
+   const ts=rr(.045,.075);BIO.put('tassel',[tx,py+h+ts*1.2,tz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[ts,ts*rr(1.6,2.4),ts],C(pick(PAL.tassel)));st.stems++;}
+  st.reeds++;};
+ /* dense near, thinner to the mid band; the shore band only (the depth window) */
+ [[3,L.floor[0],0,2],[6,L.mid,L.floor[0],1]].forEach(([cell,hi,lo,lv])=>BIO.grid(cell,0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=hi||ld<lo)return 0;return SF(x,z)*.7*q;},
+  (x,y,z)=>{if(blocked(x,z,.8))return;reeds(x,y,z,lv);},{patch:.9,patchScale:.03,pad:.5,depth:[-.5,.45],noMask:true,box:BIO.originBox(hi)}));
+ return{sulphur:st};};
 })();

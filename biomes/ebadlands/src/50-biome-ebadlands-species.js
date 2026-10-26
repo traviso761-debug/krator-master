@@ -49,6 +49,8 @@ const PAL=EBADLANDS.PAL={
  sedge:[0x7a8a4a,0x8a9a54,0x6e7e44],reed:[0x6a8a3a,0x7a9a44,0x5a7a30],fern:[0x4e7a34,0x5a8a3a,0x46702e],
  lichen:[0xd88a3a,0xe0a048,0xc0c0a0,0x9aa090,0xb8b088,0xa8c070],
  sulphur:[0xe8d040,0xd8b030,0xf0e060,0xc8a020],ochre:[0xc8862a,0xb87420,0xd89a3a],crust:[0xf0ece0,0xe8e4d4,0xdcd8c8],
+ // the brimstone reeds (the Throne's, biomes/throne src/50 PAL: station 8's sulphur life): rust below, sulphur above, crusted tassels
+ reedLow:[0x8a5a2a,0x7a4a22,0x9a6430],reedHigh:[0xc8c040,0xd4cc4c,0xb8b034],tassel:[0xf0dc50,0xe8d040,0xf4e468],
  rockRed:[0xa86048,0x9a5440,0xb87058,0x8a4a3a],rockGrey:[0x8a8480,0x7a7470,0x9a948e],rockBand:[0xb87888,0xd8c8a8,0xc8a868,0x8a8a90,0x8a4a44],
  basalt:[0x4a4440,0x3e3a38,0x56504a],deadwood:[0xb8b0a4,0xa8a094,0xc8c0b4,0x989084],
  acorn:[0x9a7a3a,0x8a6a34,0xa8843e],tuna:[0xd83a48,0xc82a3a,0xe05040],pitaya:[0xe0206a,0xd01860],grape:[0x3a2a4a,0x4a3458,0x2e2440],grapeLeaf:[0x5a8a3a,0x6a9a44,0x4e7a34],
@@ -146,6 +148,8 @@ EBADLANDS.PLANTS={
  grape:PK('Canyon grape','temperate','subhumid','yes',['Cfa','BSk','Dfb'],['vine','grapes'],HV('none',['grapes','leaves'],false,'Small dark grapes in late summer; climbs cottonwoods and hangs off ledges.','generic_fruit_canyon_grape')),
  moss:PK('Moss and lichen','cold','subhumid','both',['Dfc','ET','Dfb'],['lichen'],HV('none',[],true,'')),
  cushion:PK('Tundra cushion plants','cold','semiarid','no',['ET'],['lobe'],HV('none',[],false,'')),
+ // the Throne's (biomes/throne, station 8: THRONE.buildSulphur), ported for the sulphur pools' shores (KNOWN_ISSUES, From other kits); the stems are the shared 'rod', so the tassel names the plant
+ brimreed:PK('Brimstone reeds','tropic','semiarid','yes',['BSh'],['tassel'],HV('fibre',[],false,'Krator\'s own: stands of hollow stems a man high and more in the acid shallows, banded rust below and sulphur-yellow above, each topped by a tassel of crusted sulphur. They live on the gas bubbling up round their roots.')),
 };
 EBADLANDS.plantOfItem=item=>{for(const k in EBADLANDS.PLANTS)if(EBADLANDS.PLANTS[k].items.indexOf(item)>=0)return EBADLANDS.PLANTS[k];return null;};
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
@@ -348,10 +352,11 @@ G.podhead=function(){const pos=[],nor=[],uv=[],col=[];const seg=10,nr=9,P=[];
 // a ribbed succulent COLUMN (the moonflower cactus), unit height, radius .5, domed top
 G.column=function(){const pos=[],nor=[],uv=[],col=[];const seg=8,prof=[[0,.5],[.55,.49],[.86,.42],[1.0,.22]];
  const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=s%2?1:.84;r.push([Math.cos(a)*p[1]*rib,p[0],Math.sin(a)*p[1]*rib,s%2?1:.78]);}return r;});
- const push=(p,n)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(0,0);col.push(p[3],p[3],p[3]);};
- for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];
-  push(a,[a[0],.15,a[2]]);push(d,[d[0],.3,d[2]]);push(c,[c[0],.3,c[2]]);push(a,[a[0],.15,a[2]]);push(b,[b[0],.15,b[2]]);push(d,[d[0],.3,d[2]]);}
- const top=[0,1.05,0,1];for(let s=0;s<seg;s++){const a=R[prof.length-1][s],b=R[prof.length-1][(s+1)%seg];push(a,[0,1,0]);push(b,[0,1,0]);push(top,[0,1,0]);}
+ /* uv (2026-10-25, so the library's skin.cactus can dress it): u once round, v up the height */
+ const push=(p,n,u)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(u,p[1]*1.6);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  push(a,[a[0],.15,a[2]],u0);push(d,[d[0],.3,d[2]],u1);push(c,[c[0],.3,c[2]],u0);push(a,[a[0],.15,a[2]],u0);push(b,[b[0],.15,b[2]],u1);push(d,[d[0],.3,d[2]],u1);}
+ const top=[0,1.05,0,1];for(let s=0;s<seg;s++){const a=R[prof.length-1][s],b=R[prof.length-1][(s+1)%seg];push(a,[0,1,0],s/seg);push(b,[0,1,0],(s+1)/seg);push(top,[0,1,0],(s+.5)/seg);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a PARASOL cap: a shallow translucent-looking cone, radial veins in the vertex colour, radius 1, origin at the stem top
 G.parasol=function(){const pos=[],nor=[],uv=[],col=[];const seg=16;
@@ -467,6 +472,7 @@ EBADLANDS.MAT={
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  litter:BIO.leafMat(TX.litter,'litter',{swayW:'0.0',swayA:0,alphaTest:.35}),
  vcol:BIO.leafMat(null,'vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ column:BIO.barkMat(null),   /* the moonflower cactus (2026-10-25): a bark material, so the library's skin.cactus (materials.json `column`) is normalised as a skin */
  maiden:BIO.leafMat(TX.maiden,'maiden',{swayW:'(-position.y)',swayA:.1,axis:1,alphaTest:.38}),
  vine:BIO.leafMat(TX.vine,'vine',{swayW:'(-position.y)',swayA:.08,axis:1,alphaTest:.4}),
  vhang:BIO.leafMat(null,'vhang',{swayW:'(-position.y)',swayA:.05,axis:1,alphaTest:0,vertexColors:true}),
@@ -520,7 +526,7 @@ BIO.def('urchin',G.urchin(),M.vcol,{label:'Spiked heads'});
 BIO.def('gem',G.gem(),M.gemLib||M.vcol,{label:'Ember-crown pods'});
 EBADLANDS.LIB.gem=!!M.gemLib;
 BIO.def('podhead',G.podhead(),M.vsway,{label:'Stilt-pod heads'});
-BIO.def('column',G.column(),M.vcol,{label:'Moonflower cacti'});
+BIO.def('column',G.column(),M.column,{label:'Moonflower cacti'});
 BIO.def('parasol',G.parasol(),M.vsway,{label:'Gold parasols'});
 BIO.def('funnel',G.funnel(),M.vsway,{label:'Fan cups'});
 BIO.def('spiral',M.spiralCard?BIO.geo.mat():G.spiral(),M.spiralCard||M.vcol,{label:'Spiral mats'});
@@ -528,6 +534,7 @@ BIO.def('tendril',BIO.geo.ribbon(3,.4,.2),BIO.leafMat(TX.reed,'tendril',{swayW:'
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub and cushion lobes'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones'});
 BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
+BIO.def('tassel',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Brimstone-reed tassels'});
 BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});

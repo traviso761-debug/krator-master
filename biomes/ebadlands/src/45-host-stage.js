@@ -128,6 +128,9 @@ const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Fl
   const k=L.k,fu=L.fu,fv=L.fv;return arr[k]*(1-fu)*(1-fv)+arr[k+1]*fu*(1-fv)+arr[k+N]*(1-fu)*fv+arr[k+N+1]*fu*fv;};
  return{N,S,a,at};})();
 const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));
+// 'sulph' (the Throne kit's field, BIOME-API.md: sulphurous ground), bound from the flats' geo ground and the sulphur pools' banks
+// (every pool is acid, but the geo field's patches leave some banks out); the kit grows the Throne's brimstone reeds on it, at the shores
+FIELD.sulph=(x,z)=>Math.max(FIELD.geo(x,z),smooth(1.9,1.2,poolD(x,z)[0]));
 
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
