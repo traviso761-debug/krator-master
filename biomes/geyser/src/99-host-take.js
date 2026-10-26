@@ -143,6 +143,7 @@ KHOST.on(timetable);
 // the geysers' particles keep their size on screen
 KHOST.on(function geyserScale(){if(GEYSER.SHOW)GEYSER.SHOW.setScale(innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360)));},'view');
 let HOSTED=null;
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the Steampits)',
  hint:"The geyser basin: a basin in the Steampits on the Ring Sea's north shore (~1.5 km below the datum, ~1.9 atm, ~33 °C), cut into the hyperjungle. Geysers on sinter cones erupting on their own cycles, prismatic springs with mat-banded run-off, mud pots and fumaroles, travertine terraces stepping down to the sea, a dead forest drowned in silica at the edges, and the thermophile life of the warm ground (ideal type). N for night, G erupts the geyser nearest the view",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.6,registry:REG,regHas,views:VIEWS,ticks:TICKS,
@@ -150,7 +151,7 @@ HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the 
  // N: night; G sets off the geyser nearest the view (it wins over the host's G, fly to the pin: KNOWN_ISSUES.md)
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night'),
   g:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

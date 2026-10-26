@@ -1,0 +1,11 @@
+// ================================================================= HOST — Krator's sky: the shared sky (core/atmos, SKY-PLAN.md section 9)
+// 2026-10-26: the painted dome and the giant mesh (the old 82-host-sky.js) are gone. ATMOS.skyBiome draws ATMOS.sky at this
+// biome's place on the scale model (the Steampits, px 589, 384), on the host clock (the page opens at 06:00 on game
+// start's day; #hour=, #day=, #time=run), with the real sun, giant, ring, moons, station, stars and clouds, and drives the
+// sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
+// Kept from the dome: the Throne far to the south and its shoulders, the coast's canopy lines (ridges); its plume and crater
+// glow are not drawn. Day and night are hours now (13:00 and 22:00: the old SW sun is out of reach at the equinox here).
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:589,py:384},
+ preset:{"air":{"pressure":1.9,"humidity":0.85},"clouds":{"cover":0.45},"fogDensity":0.0002863,"ridges":[{"base":1.5,"amp":1.4,"cycles":6,"octaves":3,"seed":11,"win":[190.0,105,0.6],"floor":-0.4,"dist":300000,"haze":0.0087,"forestH":0,"rock":[0.65,0.72,0.7]},{"base":2.2,"amp":0.3,"cycles":24,"octaves":3,"seed":12,"win":[187.5,35,3.5],"floor":-0.4,"dist":244000,"haze":0.0094,"forestH":0,"rock":[0.56,0.62,0.61]},{"base":1.4,"amp":1.4,"cycles":9,"octaves":3,"peaks":30,"peakAmp":1.1,"seed":13,"win":[2,118,0.35],"floor":-1.2,"dist":12000,"haze":0.165,"forestH":100000.0,"rock":[0.44,0.53,0.48],"forest":[0.44,0.53,0.48]},{"base":0.9,"amp":1.0,"cycles":14,"octaves":3,"peaks":40,"peakAmp":0.6,"seed":14,"win":[2,118,0.35],"floor":-1.2,"dist":5000,"haze":0.2908,"forestH":100000.0,"rock":[0.3,0.4,0.35],"forest":[0.3,0.4,0.35]}]}});
+const {sky,giant,giantRing,giantDir,GIANT_DIST}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
+SKY.modes({hours:{day:13,night:22},hooks:_onLight,set:m=>{LIGHT_MODE=m;}});   /* the Day and Night buttons, the night views, key n */
