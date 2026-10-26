@@ -9,10 +9,11 @@ Read before changing anything here. `build.py` prints the open count.
       `57-biome-nwbay-cliffs.js`), but still solid: no caves, arches or hollow stacks. Ys builds its caves and
       stair-houses into the faces itself (DESIGN §8); the karst field only says where the rock is.
       Stays open (2026-10-25): a design task (caves, arches); Ys builds its own.
-- [ ] THE DOMES ARE THINNER THAN GUILIN'S. The forest roots on a dome (karst 1: a bed whose wall leans in under steep
+- [x] THE DOMES ARE THINNER THAN GUILIN'S (closed 2026-10-26: `57-biome-nwbay-cliffs.js` "THE DOME'S SKIN", guilin's model with
+      the bay's plants: a glossy-shrub cushion every 3.4 m over every dome and cap (karst field 1), one stream per stack, drawn
+      after every tree pass, so no tree moved; ~4,100 clumps. The cliff points' scrub on a dome bed gives way to it). The forest roots on a dome (karst 1: a bed whose wall leans in under steep
       2.75) through the tree passes that read the tops (fan-crowns, tree ferns, palms, figs, scrub), but nwbay has no
       dome skin of packed shrubs as guilin's `57` does, so the upper dome shows soil-coloured rock between the trees.
-      Stays open (2026-10-25): a dome skin of shrubs is new placement (a design task, and it would move the tree passes).
 - [x] THE RIM (closed 2026-10-25): terrainH() over a stack is `KSTACKS.surface`, the drawn rock itself (a dome's walls
       included), so a camera or a plant on the rim stands on what is drawn.
 - [x] THE RIM: terrainH() inside a footprint is the dome (`domeH`, rho 0..1) and the face
@@ -21,16 +22,24 @@ Read before changing anything here. `build.py` prints the open count.
       and the cliff figs root at d < -4 m, so nothing stands on the gap -- but a camera on
       the rim is clamped to a surface that is not drawn.
       (closed 2026-10-25: a duplicate of the closed THE RIM item above; terrainH() over a stack is `KSTACKS.surface`, the drawn rock, so the camera is no longer clamped to an undrawn surface.)
-- [ ] THE ROOT CURTAINS HANG AT THE FOOTPRINT RADIUS (R0 + 0.4..1.4 m), while the face bellies
+- [x] (closed 2026-10-26: the host hands its stacks as `NWBAY.ROCK`; `55 onRock` puts every point of a curtain's run, its
+      strands and moss, and the rock figs' laced roots (57) on their bed's wall at that height with `KSTACKS.wall`, off the face
+      by the root's radius; runs have a point every 7 m instead of 9.) THE ROOT CURTAINS HUNG AT THE FOOTPRINT RADIUS (R0 + 0.4..1.4 m), while the face bellies
       in and out by ~5 % of R0 up its height; on a big stack a curtain can float a few metres
       off the rock at mid-height or clip into a belly. A face-following root needs the host's
       face profile, which the biome cannot see.
-      Stays open (2026-10-25): per-site curtains still hang at the footprint radius; following the KSTACKS wall profile (`KSTACKS.wall`) is a cliff-fig rework beyond an hour.
-- [ ] THE TERRACES' RISERS ARE RAMPS IN THE GROUND: the river is now `WATER.terraces` (core/water ext: a still pool on
+- [x] (closed 2026-10-26: risers are DROPS. `45 RISERS` works out the treads and risers exactly as 89w hands them to
+      WATER.terraces; downstream of every lip the strip (now rows at every lip, 1.5 m columns over the channel) and the coarse
+      mesh are drawn down under the lower pool (`riserDrawH`; terrainH/groundH untouched, the mask is zero in the channel); a
+      rimstone face of crust with a lip tube and a foot ledge stands under the lip (merged crust mesh, no new call); 89w runs
+      each lower pool up to 1.5 m from the lip, so the curtain drops down a face into a pool. The FAR COUNTRY mesh hid the
+      river: inside the map it copied groundH 2 m down, and its 69 m cells stood above the water at 437 of 632 river samples
+      (worst 5.7 m: the "grassy chutes" were mostly this mesh). Now each inside vertex takes the lowest ground across its cell
+      (swbay's 3c47ae0f7), sinkhole and tsingy drops kept: 0 of 632.) THE TERRACES' RISERS WERE RAMPS IN THE GROUND: the river is now `WATER.terraces` (core/water ext: a still pool on
       every tread at its level, a fall fitted down every riser, four draw calls for all of them), but the ground mesh's
       strip (3 x 4 m cells) still draws a five-metre riser as a steep grassy chute, so the curtain arcs over a slope,
       not off a drop. The pools are one colour (`drawPools`): the old ribbon's per-pool pale and deep tints are gone.
-      Stays open (2026-10-25): the ground mesh's cell size (3 x 4 m) is the host ground's; a finer riser strip is a design task.
+      The pools are still one colour (`drawPools`). A camera over a riser is held above terrainH, a little over the drawn drop.
 - [ ] LILY PADS AND LOTUS ARE ONLY ON WATER AT y=0 (the lagoons, the lowland reach): the
       terrace pools' water level is the host's (tread + 1.5 m) and the biome cannot know it,
       so the pools above the delta carry no pads. The lotus trumpets stand on the banks.
@@ -66,22 +75,31 @@ Read before changing anything here. `build.py` prints the open count.
       fringe's iridescence and the limestone's vertex colours at grazing angles are untested
       on real hardware.
       Stays open (2026-10-25): needs a real-hardware visual check by the owner; the GPU verify passes but does not judge looks.
-- [ ] THE TSINGY'S CANYONS ARE GAPS, NOT CUTS. The ground mesh (11 m cells) cannot draw a 2-7 m
+- [ ] THE TSINGY'S CANYONS ARE GAPS, NOT CUTS (2026-10-26, part: a fin on a canyon's edge stands up to 1.9x taller plus 6 m,
+      no draws changed, 1,303 of 2,270 fins, so the canyons read as walled cuts; the floor is still the plateau's, since a cut
+      would change terrainH and move what grows in the canyons). The ground mesh (11 m cells) cannot draw a 2-7 m
       canyon, so the canyon floors are the massif's plateau, level with the fissures; Bemaraha's
       canyons are tens of metres deep. A real cut needs its own fine floor strip (as the travertine
       reach has) or the fins standing taller beside a canyon.
       Stays open (2026-10-25): needs a fine floor strip: a design task.
-- [ ] THE FINS ARE NOT SOLID TO ANYTHING: terrainH is the ground between them (the camera can fly
+- [x] (closed 2026-10-26 for the camera and walkers: `finTop` is the drawn blade's height; KHOST.take's `floor` is
+      max(terrainH, finTop), so the eye cannot fly through a blade, and the fins are 23,092 KWALK blocks (core/walk, one box per
+      metre of a blade's core, so the fissures stay open) for the walker. Crowns growing into blades and the bare blades stay as
+      they were.) THE FINS WERE NOT SOLID TO ANYTHING: terrainH is the ground between them (the camera can fly
       through a blade), they are not obstacles (a crown can grow into one; only the foot is kept out,
       by the mask), and they are not dressed (no moss, no figs on the blades; Bemaraha's blades are
       mostly bare, but their tops carry Pachypodium and lichen).
       Stays open (2026-10-25): a design task (collision and dressing for the fins).
-- [ ] A SINKHOLE'S WALL IS A LATHE like a stack's: no caves, no arches, no overhang beyond the bell;
+- [ ] A SINKHOLE'S WALL IS A LATHE like a stack's (2026-10-26, part: alcoves, shallow dark caves let into the wall, five in
+      the tiankeng's lower wall (10-17 m deep), three above each cenote's water; the walls take 96/48 segments and 30/14 rows;
+      they read as recesses up close, faintly from the rim. No arches, no through-caves): no caves, no arches, no overhang beyond the bell;
       a tiankeng's floor trees can push their crowns into the wall (the mask keeps feet 12 m off it).
       The lip hides the ground mesh's cut with a polygon offset; at a grazing angle from far off the
       cut's jagged edge can show through.
       Stays open (2026-10-25): a design task.
-- [ ] VARIANTS GROW ON FLAT GROUND: the ironbark's surface roots, the pandan's stilt roots and the
+- [x] (closed 2026-10-26 for the ironbark and the pandan: a variant keeps its surface roots and stilts as specs, and each
+      placed tree grows its own on its own ground in `stamp` (55 ironRoots, pandanStilts; the roots in the root bucket, no new
+      call); the mangrove's prop roots stand in water and stay as grown.) VARIANTS GREW ON FLAT GROUND: the ironbark's surface roots, the pandan's stilt roots and the
       mangrove's prop roots are grown in the nursery on level ground (or in level water) and stamped
       onto the slope as they are, so on a steep site a root floats or sinks a little. The cliff fig's
       curtains are the only per-site part.
@@ -100,6 +118,14 @@ Read before changing anything here. `build.py` prints the open count.
       Stays open (2026-10-25): a process step for the main session.
 
 ## Done
+
+- [x] BARK TINTS CLIPPED (2026-10-26, the hyperjungle's 45a48df3d checked here): the grey bark canvases were darker than their
+      species' tints asked (55 tint divides the colour by the canvas mean and clamps at 1): the ironbark 2.23x over, the rock
+      bottle 2.32, the cliff fig 2.01, the avenue baobab 1.75, so those boles showed the canvas's grey, not their colour.
+      `50 barkLift` lifts each grey canvas (kinds 1-6) in linear light until its mean is 8 % over the brightest channel of the
+      species that wear it; materials.json's bark1..6 means are the lifted canvases' (re-packed). Every species now at or under
+      1.0 except the ironbark's brightest red (1.16: the canvas's light strokes cap at white) and the prism gum (its colour strips
+      are kept on purpose). Roots drawn on the root canvas are tinted against it (the rock figs' at their old brightness).
 
 - [x] FRUIT (2026-10-06): every species carries a harvest tag (`NWBAY.HARVEST`; the inspector shows it under a
       tree); the cliff figs bear figs (`fig` items, clusters under the crown's spots, placed by a hash of the tree so

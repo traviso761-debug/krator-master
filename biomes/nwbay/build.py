@@ -78,6 +78,10 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/walk (KWALK: what a walker may not enter): the tsingy's fins register as blocks (45-host-stage.js, the tsingy meshes)
+CORE_WALK=['20-core-walk.js']
+for f in CORE_WALK:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','walk',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))

@@ -1,6 +1,6 @@
 {
  "build": "nwbay",
- "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales.",
+ "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales. 2026-10-26: the grey bark canvases (kinds 1-6) are lifted in linear light (50 barkLift) until their mean sits above the brightest channel of the species' tints (they clipped to white before, the ironbark 2.2x over); bark1..6 means are the lifted canvases' measured sRGB luminance.",
  "size": 512,
  "families": {
   "bark0": {
@@ -24,7 +24,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.524
+    "mean": 0.612
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -37,7 +37,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.536
+    "mean": 0.804
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -50,7 +50,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.528
+    "mean": 0.617
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -63,7 +63,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.525
+    "mean": 0.609
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -76,7 +76,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.464
+    "mean": 0.673
    },
    "mapOnly": true,
    "roughLift": 0.3
@@ -89,7 +89,7 @@
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.327
+    "mean": 0.446
    },
    "mapOnly": true,
    "roughLift": 0.3

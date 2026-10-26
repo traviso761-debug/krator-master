@@ -65,7 +65,7 @@ function protoFor(sp,v,lv,wetV){const key=sp+'|'+v+'|'+lv;let P=PROTO.get(key);i
  if(!bake)cap.parts.forEach(pt=>{const g=new T3.BufferGeometry();g.setAttribute('position',new T3.BufferAttribute(pt.P,3));g.setAttribute('normal',new T3.BufferAttribute(pt.N,3));
   g.setAttribute('uv',new T3.BufferAttribute(pt.U,2));g.setAttribute('color',new T3.BufferAttribute(pt.C,3));
   const name='v'+(SEQ++)+':'+S.key+':'+v+':'+lv+':'+pt.fam;BIO.def(name,g,pt.mat,{label:(BIO.buckets[pt.fam].label||pt.fam)+' ('+S.name+', variant)'});defs.push(name);});
- P={sp,v,lv,H:T.H,wet:wetV,y0:T.y0,spread:T.spread||T.crownR,crownR:T.crownR,rb:T.rb,defs,parts:bake?cap.parts:null,items:cap.items,reg:r.reg,hangs:T.hangs||null,st,man};
+ P={sp,v,lv,H:T.H,wet:wetV,y0:T.y0,spread:T.spread||T.crownR,crownR:T.crownR,rb:T.rb,defs,parts:bake?cap.parts:null,items:cap.items,reg:r.reg,hangs:T.hangs||null,roots:T.roots||null,stilts:T.stilts||null,st,man};
  PROTO.set(key,P);return P;}
 NWBAY.PROTOS=PROTO;
 
@@ -96,6 +96,8 @@ function stamp(P,T,st){const S=SP[T.sp];
  if(typeof REGISTER==='function')P.reg.forEach(o=>REGISTER(Object.assign({},o,{x:T.x,z:T.z,y:P.man?Math.max(T.y0+.5,0):T.y0,r:(o.r||0)*s,h:(o.h||0)*s})));
  // a cliff fig's curtains: from its own hang points, down its own rim to its own waterline
  if(P.hangs&&T.edgeD!=null){const hw=P.hangs.map(h=>{_p.set(h.x,h.y,h.z).applyMatrix4(_M);return{x:_p.x,y:_p.y,z:_p.z};});NWBAY._figCurtains(T,st,P.lv,hw);}
+ // the roots that must meet the ground where the tree stands (an ironbark's surface roots, a pandan's stilts): grown per site
+ if(P.roots)NWBAY._ironRoots(T,st,P.roots,th,s);if(P.stilts)NWBAY._pandanStilts(T,st,P.stilts,th,s);
  for(const k in P.st)if(typeof P.st[k]==='number'&&k in st)st[k]+=P.st[k];}
 
 // plant every placed tree: impostors as before, heroes as variants. Called by the pass (55) once TREES is final.

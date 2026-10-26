@@ -368,7 +368,20 @@ NWBAY.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
    g.beginPath();g.moveTo(x+rr(-2,2),y+rr(-2,2));g.lineTo(x+dx*.9,y+rr(-3,3));g.lineTo(x+dx*.88,y+dy*.85);g.lineTo(x+rr(-2,2),y+dy*.9);g.closePath();g.fill();}
   for(let i=0;i<40;i++){g.strokeStyle='rgba(25,25,25,.6)';g.lineWidth=rr(1.5,3.5);g.beginPath();const x=rng()*w;g.moveTo(x,-5);g.lineTo(x+rr(-20,20),h+5);g.stroke();}}
 });};
+// BRIGHT ENOUGH NOT TO CLIP (2026-10-26, hyperjungle's 45a48df3d): the builders tint a near-grey canvas by SPECIES.bark over its
+// measured mean (55 tint: colour / mean, clamped at 1), so a canvas darker than its species' brightest channel clipped the tint
+// to white and the bole showed the canvas's grey, not the species' colour (the ironbark's furrowed canvas, linear mean .087,
+// clipped 2.2 times over). Each grey canvas (all but the prism gum's colour strips) is lifted, in linear light, until its
+// mean sits 8 % above the brightest channel of every species that wears it; the library maps follow (materials.json means).
+NWBAY.barkLift=function(tex,kind){if(kind===0)return 1;const cv=tex.image;if(!cv||!cv.getContext)return 1;
+ let need=0;NWBAY.SPECIES.forEach(S=>{if(S.barkK!==kind||!S.bark)return;S.bark.forEach(h=>{const c=new T3.Color(h).convertSRGBToLinear();need=Math.max(need,c.r,c.g,c.b);});});
+ const g=cv.getContext('2d'),id=g.getImageData(0,0,cv.width,cv.height),d=id.data,L=v=>Math.pow(v/255,2.2);let m=1e9,r=0,gg=0,b=0,n=0;
+ for(let i=0;i<d.length;i+=4*13){r+=L(d[i]);gg+=L(d[i+1]);b+=L(d[i+2]);n++;}m=Math.min(r,gg,b)/n;
+ const F=need*1.08/Math.max(.01,m);if(!(F>1))return 1;const k=Math.pow(F,1/2.2);
+ for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]*k);d[i+1]=Math.min(255,d[i+1]*k);d[i+2]=Math.min(255,d[i+2]*k);}
+ g.putImageData(id,0,0);tex.needsUpdate=true;return F;};
 NWBAY.BARKTEX=[0,1,2,3,4,5,6,7].map(k=>NWBAY.barkTex(k));
+NWBAY.BARKLIFT=NWBAY.BARKTEX.map((t,k)=>NWBAY.barkLift(t,k));
 NWBAY.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#5a4634';g.fillRect(0,0,w,h);
  for(let i=0;i<220;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'40,30,22':'120,100,80')+','+(.2+rng()*.4).toFixed(2)+')';g.lineWidth=1+rng()*2;
   g.beginPath();g.moveTo(-4,y);g.lineTo(w+4,y+rr(-5,5));g.stroke();}});

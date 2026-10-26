@@ -208,6 +208,19 @@ B[2]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3;
  let spread=T.crownR;tips.forEach(t=>{spread=Math.max(spread,Math.hypot(t.p.x-T.x,t.p.z-T.z)+L);});T.spread=spread;
  epiBole(T,rAt,st,lv,1.8,.1,.55);
  reg(T,S);};
+// the ironbark's SURFACE ROOTS, grown where the tree stands (per site: on a slope a root runs over the ground it crosses,
+// not over the nursery's level floor): specs {ang, R0, len, rr0, wob} in the tree's frame, turned by th and scaled by s
+function ironRoots(T,st,specs,th,s){const S=SP[T.sp];
+ specs.forEach(R=>{const ang=R.ang-th,R0=R.R0*s,len=R.len*s,rr0=R.rr0*s,pts=[];
+  for(let j=0;j<=7;j++){const t=j/7,d=R0*.75+len*t,a=ang+.3*Math.sin(R.wob+t*5.2)*t;const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
+   const r=mix(rr0,.18,Math.pow(t,.75));pts.push({x:x,y:Y(x,z)+r*(j===0?1.4:.22)+(j===0?2:0),z:z,r:r});}
+  if(pts.length>3){st.limb+=BIO.tube('root',pts,tint(S.bark[1%S.bark.length],means().bark[2]),{seg:6});st.roots++;}});}   /* the root bucket (the curtains'): a per-site root costs no draw call of its own */
+NWBAY._ironRoots=ironRoots;
+// the stilt pandan's STILT ROOTS, the same way: specs {a, Rr, dy (the root's top over the foot)}; each foot on its own ground
+function pandanStilts(T,st,specs,th,s){const S=SP[T.sp],rb=T.rb==null?.3:T.rb,rc=rodCol(S,T.seed);
+ specs.forEach(R=>{const a=R.a-th,Rr=R.Rr*s,gx=T.x+Math.cos(a)*Rr,gz=T.z+Math.sin(a)*Rr;
+  BIO.beam('rod',[T.x+Math.cos(a)*R.rb*.5*s,T.y0+R.dy*s,T.z+Math.sin(a)*R.rb*.5*s],[gx,Y(gx,gz)-.4,gz],R.rb*.32*s,R.rb*.28*s,rc);st.sapTris+=BIO.defs.rod.tris;st.roots++;});}
+NWBAY._pandanStilts=pandanStilts;
 // 3 the ironbark (the hyperjungle's, scaled to the ceiling): a fluted, buttressed bole in furrowed red-brown bark,
 // surface roots off every buttress, level tiers of boughs with drooping tips, a top tuft, combed needle sprays
 B[3]=function(T,st,lv){const S=SP[T.sp],fam='bark6',H=T.H,rb=T.rb,ti=T.seed%3;
@@ -220,10 +233,9 @@ B[3]=function(T,st,lv){const S=SP[T.sp],fam='bark6',H=T.H,rb=T.rb,ti=T.seed%3;
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.01*Math.sin(3*ang+R.yy*.045+ph)+butF(R.yy)*lobeSum(ang)),(R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.5+.5*clamp(lobeSum(ang)*1.4,0,1),f):1;});
  // surface roots, one off each buttress, running out along the ground
- if(lv===2)lobes.forEach(L=>{if(rng()<.3)return;const ang=L.a,R0=rAt(.03)*(1+.4*L.amp),len=rr(10,26)*(.6+.4*L.amp),rr0=clamp(rb*.16*L.amp,.5,1.6),pts=[],wob=rr(0,TAU);
-  for(let j=0;j<=7;j++){const t=j/7,d=R0*.75+len*t,a=ang+.3*Math.sin(wob+t*5.2)*t;const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
-   const r=mix(rr0,.18,Math.pow(t,.75));pts.push({x:x,y:Y(x,z)+r*(j===0?1.4:.22)+(j===0?2:0),z:z,r:r,col:barkCol(S,1)});}
-  if(pts.length>3){st.limb+=BIO.tube(fam,pts,barkCol(S,1),{seg:6});st.roots++;}});
+ // (a variant grown in the nursery keeps them as specs, and each placed tree grows its own on its own slope: 56 stamp)
+ if(lv===2){const specs=[];lobes.forEach(L=>{if(rng()<.3)return;const R0=rAt(.03)*(1+.4*L.amp),len=rr(10,26)*(.6+.4*L.amp),rr0=clamp(rb*.16*L.amp,.5,1.6),wob=rr(0,TAU);specs.push({ang:L.a,R0,len,rr0,wob});});
+  if(T.nursery)T.roots=specs;else ironRoots(T,st,specs,0,1);}
  // boughs: the level tiers with drooping tips, and the top tuft
  const spots=[],boughs=[],a0=rr(0,TAU),nB=ri(S.boughs[0],S.boughs[1]);
  function bough(u,a,len,el,curve,rs){const r0=clamp(rAt(u)*rs,.4,2.2),o={x:T.x+Math.cos(a)*Math.max(0,rAt(u)-1),y:T.y0+H*u,z:T.z+Math.sin(a)*Math.max(0,rAt(u)-1)};
@@ -338,17 +350,26 @@ B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3,ha
  epiBole(T,rAt,st,lv,1.2,.1,.5);
  if(lv===2)for(let i=0,q=ri(2,4);i<q;i++){const a=rr(0,TAU),yy=rr(.5,6),R=rAt(yy/H)*(1+butF(yy)*lobeSum(a))+.15;BIO.put('mossmat',[T.x+Math.cos(a)*R,T.y0+yy,T.z+Math.sin(a)*R],qUp([Math.cos(a),rr(-.1,.3),Math.sin(a)]),rr(1,2),bright(vary(pick(PAL.moss),.03,.1,.06),.95));st.moss++;}
  reg(T,S);};
-// a fig's root curtains: from the hang points (outward boughs) to the rim, then down the face to T.footY
+// a fig's root curtains: from the hang points (outward boughs) to the rim, then down the face to T.footY, ON THE ROCK: when
+// the host hands its stacks (NWBAY.ROCK, KSTACKS records) every point of the run is put on its bed's wall at that height
+// (KSTACKS.wall at the root's angle about the bed's centre, off the face by the root's radius), so a curtain follows the
+// dome's lean, the cliff's bellies and the waterline notch instead of hanging at one radius
+function onRock(x,z,y,off){const RK=NWBAY.ROCK;if(!RK||typeof KSTACKS==='undefined')return null;const F=KSTACKS.foot(RK,x,z);if(!F||F.d>30)return null;
+ const B=F.S,bs=B.beds;let b=null;for(let k=0;k<bs.length;k++){if(y>=bs[k].y&&y<=bs[k].y+bs[k].h){b=bs[k];break;}}if(!b)return null;
+ const u=clamp((y-b.y)/b.h,0,1),cx=b.cx+(b.tx||0)*u,cz=b.cz+(b.tz||0)*u,w=KSTACKS.wall(B,b,Math.atan2(z-cz,x-cx),u);return[w.x+w.nx*off,w.z+w.nz*off];}
+NWBAY._onRock=onRock;
 function figCurtains(T,st,lv,hangs){const H=T.H,out=T.out||[1,0];
 const n=lv===2?ri(5,10):lv===1?3:0,px=-out[1],pz=out[0];
   for(let i=0;i<n;i++){const h0=hangs.length?pick(hangs):{x:T.x+out[0]*T.crownR*.5,y:T.y0+H*.5,z:T.z+out[1]*T.crownR*.5};
    const side=rr(-1,1)*4,ex2=T.x+out[0]*(T.edgeD+rr(.4,1.4))+px*side,ez2=T.z+out[1]*(T.edgeD+rr(.4,1.4))+pz*side;
    const yTop=h0.y-.3,yBot=T.footY+rr(-.4,.4),L=yTop-yBot;if(L<4)continue;
-   const r0=rr(.16,.4),pts=[{x:h0.x,y:h0.y,z:h0.z,r:r0},{x:mix(h0.x,ex2,.5),y:yTop-Math.min(5,L*.2),z:mix(h0.z,ez2,.5),r:r0*.95}],n2=Math.max(3,Math.round(L/9)),wob0=rr(0,9);
-   for(let j=0;j<=n2;j++){const t=j/n2,w=(fbm(t*3+wob0,i*1.7,909,2)-.5)*1.4;pts.push({x:ex2+px*w,y:yTop-Math.min(8,L*.3)-(L-Math.min(8,L*.3))*t,z:ez2+pz*w,r:r0*mix(1,.5,t)});}
+   const r0=rr(.16,.4),pts=[{x:h0.x,y:h0.y,z:h0.z,r:r0},{x:mix(h0.x,ex2,.5),y:yTop-Math.min(5,L*.2),z:mix(h0.z,ez2,.5),r:r0*.95}],n2=Math.max(3,Math.round(L/(NWBAY.ROCK?7:9))),wob0=rr(0,9);
+   for(let j=0;j<=n2;j++){const t=j/n2,w=(fbm(t*3+wob0,i*1.7,909,2)-.5)*1.4,yy=yTop-Math.min(8,L*.3)-(L-Math.min(8,L*.3))*t,rr0=r0*mix(1,.5,t),q=onRock(ex2+px*w,ez2+pz*w,yy,rr0+.12);
+    pts.push(q?{x:q[0],y:yy,z:q[1],r:rr0}:{x:ex2+px*w,y:yy,z:ez2+pz*w,r:rr0});}
    st.limb+=BIO.tube('root',pts,rootCol(),{seg:lv===2?5:4});st.roots++;
-   if(lv===2){for(let q=0,m=ri(1,3);q<m;q++)BIO.put('strand',[ex2+px*rr(-1.5,1.5),yTop-rr(3,10),ez2+pz*rr(-1.5,1.5)],qEuler(0,rr(0,TAU),0),[rr(.4,.9),Math.min(L*.6,rr(6,24)),1],bright(vary(pick(PAL.root),.02,.06,.06),1.0));
-    if(rng()<.5)BIO.put('mossmat',[ex2,yTop-L*rr(.3,.8),ez2],qUp([out[0],.2,out[1]]),rr(.8,1.6),bright(vary(pick(PAL.moss),.03,.1,.06),.95));}}}
+   if(lv===2){for(let q=0,m=ri(1,3);q<m;q++){const sx=ex2+px*rr(-1.5,1.5),sy=yTop-rr(3,10),sz2=ez2+pz*rr(-1.5,1.5),sl=Math.min(L*.6,rr(6,24)),sq=onRock(sx,sz2,sy,.35);
+     BIO.put('strand',[sq?sq[0]:sx,sy,sq?sq[1]:sz2],qEuler(0,rr(0,TAU),0),[rr(.4,.9),sl,1],bright(vary(pick(PAL.root),.02,.06,.06),1.0));}
+    if(rng()<.5){const my=yTop-L*rr(.3,.8),mq=onRock(ex2,ez2,my,.1);BIO.put('mossmat',[mq?mq[0]:ex2,my,mq?mq[1]:ez2],qUp([out[0],.2,out[1]]),rr(.8,1.6),bright(vary(pick(PAL.moss),.03,.1,.06),.95));}}}}
 NWBAY._figCurtains=figCurtains;
 // 9 the FLAME-CROWN (new): a short bole, three to five limbs rising and flattening into one wide flat umbrella
 // of fern-fine leaves, and a scarlet flush of bloom on one side of the crown in patches (Delonix): the
@@ -431,8 +452,8 @@ B[11]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,g
 // 12 the STILT PANDAN (new; a screwpine): a cone of straight stilt roots, a stem forking once or twice, every tip
 // a head of long serrated straps, dead straps hanging under it, the odd orange fruit head
 B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hc=C(pick(S.leaf)),rc=rodCol(S,T.seed),gy=T.y0+.5,base=gy+H*rr(.2,.35),heads=[];
- const nR=lv===2?ri(7,12):5;for(let k=0;k<nR;k++){const a=k/nR*TAU+rr(-.2,.2),Rr=rr(.8,2.2)*(rb/.3),gx=T.x+Math.cos(a)*Rr,gz=T.z+Math.sin(a)*Rr;
-  BIO.beam('rod',[T.x+Math.cos(a)*rb*.5,base+rr(-.3,.6),T.z+Math.sin(a)*rb*.5],[gx,Y(gx,gz)-.4,gz],rb*.32,rb*.28,rc);st.sapTris+=BIO.defs.rod.tris;st.roots++;}
+ const nR=lv===2?ri(7,12):5,stilts=[];for(let k=0;k<nR;k++){const a=k/nR*TAU+rr(-.2,.2),Rr=rr(.8,2.2)*(rb/.3);stilts.push({a,Rr,rb,dy:base+rr(-.3,.6)-T.y0});}
+ if(T.nursery)T.stilts=stilts;else pandanStilts(T,st,stilts,0,1);   /* a variant's stilts are grown per site (56 stamp): each foot on its own ground */
  function fork(o,a,el,len,r,depth){const e=[o[0]+Math.cos(a)*Math.cos(el)*len,o[1]+Math.sin(el)*len,o[2]+Math.sin(a)*Math.cos(el)*len];BIO.beam('rod',o,e,r,r*.8,rc);st.sapTris+=BIO.defs.rod.tris;
   if(depth<(lv===2?2:1)&&rng()<.8){const n=ri(2,3),a0=rr(0,TAU);for(let k=0;k<n;k++)fork(e,a0+k/n*TAU+rr(-.3,.3),rr(.7,1.1),len*rr(.5,.7),r*.75,depth+1);}else heads.push(e);}
  fork([T.x,base-.3,T.z],rr(0,TAU),rr(1.2,1.5),H*.35,rb,0);

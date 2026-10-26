@@ -53,7 +53,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.524,
+    "mean": 0.612,
     "sourceMean": 0.3154
    }
   },
@@ -81,7 +81,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.536,
+    "mean": 0.804,
     "sourceMean": 0.6407
    }
   },
@@ -109,7 +109,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.528,
+    "mean": 0.617,
     "sourceMean": 0.4676
    }
   },
@@ -137,7 +137,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.525,
+    "mean": 0.609,
     "sourceMean": 0.4334
    }
   },
@@ -165,7 +165,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.464,
+    "mean": 0.673,
     "sourceMean": 0.5513
    }
   },
@@ -193,7 +193,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.327,
+    "mean": 0.446,
     "sourceMean": 0.2545
    }
   },

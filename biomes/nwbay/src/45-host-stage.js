@@ -191,8 +191,22 @@ const PINS=[],PGRID=new Map();
    if(canyonK(x,z)>.3||canyonK(e0[0],e0[1])>.3||canyonK(e1[0],e1[1])>.3)continue;
    const Q=sinkAt(x,z);if(Q&&Q.d<Lf*.5+6)continue;
    const H=(5+25*Math.pow(tk,1.3))*(.55+.6*hs),w=clamp(2+H*.085,2.4,4.6)*(.85+.3*w1);
-   const P={x:x,z:z,H:H,rb:Lf/2,rz:w/2,ang:j+da,proto:Math.floor(pk*8),tint:tint};PINS.push(P);
+   // a fin on a canyon's edge stands taller (up to 1.9x, Bemaraha's walls: the canyon reads as a cut tens of metres deep
+   // though its floor is the plateau's, terrainH unchanged); measured across the fin both ways and off its ends, no draws
+   let ck=0;for(const o of [3,7,12]){for(const sd of [-1,1]){ck=Math.max(ck,canyonK(x+bx*(w/2+o)*sd,z+bz*(w/2+o)*sd)*(o<10?1:.6),canyonK(x+ax*(Lf/2+o)*sd,z+az*(Lf/2+o)*sd)*(o<10?.7:.4));}}
+   const Hc=H*(1+.9*smooth(.15,.8,ck))+6*smooth(.3,.9,ck);
+   const P={x:x,z:z,H:Hc,rb:Lf/2,rz:w/2,ang:j+da,proto:Math.floor(pk*8),tint:tint,ck};PINS.push(P);
    const rr2=P.rb+.5;for(let gz=Math.floor((z-rr2)/c);gz<=Math.floor((z+rr2)/c);gz++)for(let gx=Math.floor((x-rr2)/c);gx<=Math.floor((x+rr2)/c);gx++){const key=gx+','+gz;let A=PGRID.get(key);if(!A){A=[];PGRID.set(key,A);}A.push(PINS.length-1);}}}})();
+// THE FINS ARE SOLID (2026-10-25): finTop(x,z) is the drawn blade's height over (x,z) (its prototype's saw-toothed crest and
+// the faces narrowing to it, as the mesh below draws them), or -Infinity off every fin. The camera's floor is the higher of
+// terrainH and finTop (99-host-take.js: KHOST.take floor), so the eye cannot fly through a blade; walkers are stopped by the
+// fins' blocks in KWALK (registered with the meshes). terrainH itself is the ground between them, as before.
+const FIN_TOP=[];   // per prototype: its crest height (0..1) at x (-1..1), filled when the prototypes are made
+function finTop(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.floor(z/c));if(!A)return -Infinity;let best=-Infinity;
+ for(let i=0;i<A.length;i++){const P=PINS[A[i]],tp=FIN_TOP[P.proto];if(!tp)continue;const dx=x-P.x,dz=z-P.z,ca=Math.cos(P.ang),sa=Math.sin(P.ang),X=(dx*ca+dz*sa)/P.rb,Z=Math.abs(-dx*sa+dz*ca)/P.rz;
+  if(Math.abs(X)>=1)continue;const cs=Math.pow(Math.abs(X),1/.45),ze=Math.pow(Math.sqrt(Math.max(0,1-cs*cs)),.8);if(Z>=ze)continue;
+  const t=1-Math.pow(Z/ze,1/.85),y=groundBase(P.x,P.z)-2+(P.H+2)*(-.05+t*(tp(X)+.05));if(y>best)best=y;}
+ return best;}
 // signed distance (m, roughly) to the nearest fin's footprint (an ellipse rb x rz along its joint)
 function pinAt(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.floor(z/c));if(!A)return 1e9;let best=1e9;
  for(let i=0;i<A.length;i++){const P=PINS[A[i]],dx=x-P.x,dz=z-P.z,ca=Math.cos(P.ang),sa=Math.sin(P.ang),lx=dx*ca+dz*sa,lz=-dx*sa+dz*ca,d=(Math.hypot(lx/P.rb,lz/P.rz)-1)*P.rz;if(d<best)best=d;}
@@ -320,19 +334,50 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);}');};
+// THE RISERS AS DROPS (2026-10-25): the river's treads and risers worked out here exactly as 89w-host-water.js hands them to
+// WATER.terraces (the samples every 5 m, a tread a run of non-ramp samples on one step, kept when 4 m or longer, a step that
+// does not descend joining the one above), so the ground can be drawn to them: downstream of every lip (the top of a riser,
+// where the fall leaves) the channel is drawn down to under the lower pool (RISER_DROP: the strip and the coarse mesh only;
+// terrainH and groundH are untouched, and nothing roots in the channel: the mask is zero there), a rimstone face of crust
+// stands under the lip (the crust mesh, below), and 89w runs the lower pool up to the face, so a riser reads as a drop: a
+// pool brimming at a lip, a curtain down a face, a pool at its foot. Each record: {x, z (the lip on the line), dx, dz (down
+// the line), hw (the pool's half width), yUp, yLo (the two pools' levels), run (lip to the lower tread's first sample, m)}.
+const RISERS=(function(){const SM=[];
+ for(let u=MOUTH_U+380;u<4300;u+=5){const vc=vR(u),P=XZ(u,vc),rise=riseAt(P[0],P[1]),bed=groundH(P[0],P[1]),lk=bayIn(P[0],P[1]);
+  const sf=rise/5,si=Math.floor(sf),f=sf-si,k=smooth(8,20,rise),chanW=1-.45*smooth(400,1400,lk),tread=-1.9+si*5+1.5;
+  SM.push({u,x:P[0],z:P[1],y:mix(bed+1.1,f>.8?Math.max(bed+.35,tread):tread,k),w:13*chanW+3,ramp:f>.8&&k>.5,si,k});}
+ const up=SM.reverse().filter(q=>q.k>.95),acc=[0];for(let i=1;i<up.length;i++)acc.push(acc[i-1]+Math.hypot(up[i].x-up[i-1].x,up[i].z-up[i-1].z));
+ const tr=[];let run=null;
+ up.forEach((q,i)=>{if(q.ramp){run=null;return;}if(run&&run.si===q.si){run.s1=acc[i];run.i1=i;run.ys.push(q.y);run.ws.push(q.w);return;}
+  run={si:q.si,s0:acc[i],s1:acc[i],i0:i,i1:i,ys:[q.y],ws:[q.w]};tr.push(run);});
+ const avg=a=>a.reduce((p,q)=>p+q,0)/a.length,T=tr.filter(t=>t.s1-t.s0>=4).map(t=>({i0:t.i0,i1:t.i1,y:avg(t.ys),w:avg(t.ws)}));
+ for(let i=1;i<T.length;i++)if(T[i].y>=T[i-1].y-.05){T[i-1].i1=T[i].i1;T.splice(i,1);i--;}
+ const out=[];for(let i=0;i+1<T.length;i++){const a=T[i],b=T[i+1],L=up[a.i1],N=up[Math.min(up.length-1,a.i1+1)],F=up[b.i0],dl=Math.hypot(N.x-L.x,N.z-L.z)||1;
+  out.push({x:L.x,z:L.z,u:L.u,dx:(N.x-L.x)/dl,dz:(N.z-L.z)/dl,hw:a.w/2,yUp:a.y,yLo:b.y,run:Math.hypot(F.x-L.x,F.z-L.z),uBot:F.u});}
+ return out;})();
+// how far the drawn channel is let down at (x,z) for a riser: {r, a (m down the line from the lip), c (m across), w (0..1)} or null
+function riserAt(x,z,pad){pad=pad||0;for(let i=0;i<RISERS.length;i++){const R=RISERS[i],ex=x-R.x,ez=z-R.z;if(Math.abs(ex)>R.run+40+pad||Math.abs(ez)>R.run+40+pad)continue;
+  const a=ex*R.dx+ez*R.dz,c=-ex*R.dz+ez*R.dx;if(a<-1-pad||a>R.run+3+pad||Math.abs(c)>R.hw+5+pad)continue;return{R,a,c};}return null;}
+// the drawn channel's height over a riser: the ground, let down under the lower pool from just past the lip
+function riserDrawH(x,z,gh){const q=riserAt(x,z);if(!q)return gh;const w=smooth(-.6,.4,q.a)*smooth(q.R.hw+4.5,q.R.hw+1.5,Math.abs(q.c));return mix(gh,Math.min(gh,q.R.yLo-.9),w);}
 // the terrace reach of the river gets a finer strip (3 x 4 m cells); the coarse
 // mesh is pushed a metre down under it, feathered to meet it at the strip's edge
 const STRIP={u0:1040,u1:3420,hw:72};
 function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smooth(STRIP.u0,STRIP.u0+40,u)*smooth(STRIP.u1,STRIP.u1-40,u);}
 (function(){const N=480,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
+ const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));{const q=riserAt(x,z,14);if(q&&stripK(uv[0],uv[1])>.99)p.setY(i,Math.min(p.getY(i),q.R.yLo-2.5));}const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
  // cut round each sinkhole: drop every triangle with a corner inside a rim (the lip hides the jagged edge)
  {const I=g.index.array,keep=[];for(let t=0;t<I.length;t+=3){if(inS[I[t]]||inS[I[t+1]]||inS[I[t+2]])continue;keep.push(I[t],I[t+1],I[t+2]);}g.setIndex(keep);}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip: along u, across v, uv matched to the big texture by world position
- const NU=Math.round((STRIP.u1-STRIP.u0)/3),NV=Math.round(STRIP.hw*2/4),pos=[],uvs=[],idx=[];
- for(let i=0;i<=NU;i++){const u=STRIP.u0+(STRIP.u1-STRIP.u0)*i/NU,vc=vR(u);for(let j=0;j<=NV;j++){const v=vc-STRIP.hw+2*STRIP.hw*j/NV,P=XZ(u,v);
-  pos.push(P[0],groundH(P[0],P[1]),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
+ // rows every 3 m along u, and two more at every riser's lip (the drop is drawn within a metre of it); columns 1.5 m apart over
+ // the channel (|v| < 18 m: the pools, the faces' ends), 4 m over the banks, 8 m at the strip's feathered edge
+ const US=[];{const NU=Math.round((STRIP.u1-STRIP.u0)/3);for(let i=0;i<=NU;i++)US.push(STRIP.u0+(STRIP.u1-STRIP.u0)*i/NU);
+  RISERS.forEach(R=>{if(R.u>STRIP.u0+2&&R.u<STRIP.u1-2)US.push(R.u+.4,R.u-.5,R.u-1.4);});US.sort((a,b)=>a-b);}
+ const VS=[];for(let v=-72;v<-40;v+=8)VS.push(v);for(let v=-40;v<-18;v+=4)VS.push(v);for(let v=-18;v<18-1e-6;v+=1.5)VS.push(v);for(let v=18;v<40;v+=4)VS.push(v);for(let v=40;v<=72;v+=8)VS.push(v);
+ const NU=US.length-1,NV=VS.length-1,pos=[],uvs=[],idx=[];
+ for(let i=0;i<=NU;i++){const u=US[i],vc=vR(u);for(let j=0;j<=NV;j++){const v=vc+VS[j],P=XZ(u,v);
+  pos.push(P[0],riserDrawH(P[0],P[1],groundH(P[0],P[1])),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
  for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const a=i*(NV+1)+j,b=a+NV+1;idx.push(a,a+1,b,a+1,b+1,b);}   // CCW seen from above
  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));sg.setIndex(idx);sg.computeVertexNormals();
  const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
@@ -391,7 +436,7 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
  // rows up the faces narrowing to the knife edge, whose height along x is a saw of 3-5 teeth
  function proto(sd){reseed(8200+sd);const pos=[],col=[],uv=[],idx=[],NU=28,NV=5;
   const nT=ri(3,5),teeth=[];for(let i=0;i<nT;i++)teeth.push({x:-1+(2*i+1)/nT+rr(-.12,.12),h:rr(.62,1),w:(2/nT)*rr(.75,1.15)});teeth[ri(0,nT-1)].h=1;
-  const top=x=>{let h=.1;for(const t of teeth)h=Math.max(h,t.h*(1-Math.abs(x-t.x)/t.w));return h*smooth(1.02,.75,Math.abs(x));};
+  const top=x=>{let h=.1;for(const t of teeth)h=Math.max(h,t.h*(1-Math.abs(x-t.x)/t.w));return h*smooth(1.02,.75,Math.abs(x));};FIN_TOP[sd]=top;
   const ring=[];for(let k=0;k<=NU;k++){const a=k/NU*TAU,ca=Math.cos(a),sa=Math.sin(a);ring.push([Math.sign(ca)*Math.pow(Math.abs(ca),.45),Math.sign(sa)*Math.pow(Math.abs(sa),.8)]);}
   for(let r=0;r<=NV;r++){const t=r/NV;
    for(let k=0;k<=NU;k++){const x0=ring[k][0],z0=ring[k][1],x=x0*(1-.06*t),ht=top(x),y=-.05+t*(ht+.05),z=z0*Math.pow(1-t,.85)*(1+.05*Math.sin(x*11+sd));
@@ -410,7 +455,12 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
    M4.compose(Pv,Q,Sv);im.setMatrixAt(j,M4);cc.setHSL(.09,.06,.74+.2*P.tint);im.setColorAt(j,cc);});
   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
   im.userData.inspectLabel='Tsingy blades';im.userData.host=true;im.userData.probeSkip=true;scene.add(im);tris+=L.length*g.index.count/3;});
- window._tsingy={blades:PINS.length,tris:tris};
+ // the fins as KWALK blocks: a box per metre along each blade's core (0.65 of its half-width, so the fissures stay open),
+ // from 2 m under the ground to its crest: a walker slides along a blade, it does not pass through one
+ let nb=0;if(typeof KWALK!=='undefined')PINS.forEach(P=>{const ca=Math.cos(P.ang),sa=Math.sin(P.ang),y0=groundBase(P.x,P.z)-2,n=Math.max(2,Math.round(P.rb*1.8)),hl=P.rb*.9/n,hw=P.rz*.65;
+  for(let i=0;i<n;i++){const m=-P.rb*.9+hl*(2*i+1),cx=P.x+ca*m,cz=P.z+sa*m,ex=Math.abs(ca)*hl+Math.abs(sa)*hw,ez=Math.abs(sa)*hl+Math.abs(ca)*hw;
+   KWALK.block([cx-ex,cx+ex,cz-ez,cz+ez,y0,y0+P.H+2],'tsingy');nb++;}});
+ window._tsingy={blades:PINS.length,tris:tris,blocks:nb,tall:PINS.filter(P=>P.ck>.3).length};
  REGISTER({name:'The tsingy (knife-edged limestone)',x:TSINGY.x,z:TSINGY.z,y:groundBase(TSINGY.x,TSINGY.z),r:TSINGY.ru,h:40});})();
 
 // ---------------------------------------------------------------- the sinkholes (meshes)
@@ -423,29 +473,37 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
 // hanging gardens of a doline.
 const SINK_GEOS=[];
 (function(){const LIME=new THREE.Color(0xb0a898),LIME2=new THREE.Color(0xccc4b4),DARK=new THREE.Color(0x46403a),MOSS=new THREE.Color(0x4e6a34),SLIME=new THREE.Color(0x3e5a46),WETC=new THREE.Color(0x52524a),
-  LITTER=new THREE.Color(0x3e3020),LITTER2=new THREE.Color(0x56462c),BED=new THREE.Color(0xb8b4a0),c=new THREE.Color();
+  LITTER=new THREE.Color(0x3e3020),LITTER2=new THREE.Color(0x56462c),BED=new THREE.Color(0xb8b4a0),BLK_ALC=new THREE.Color(0x1e1c1a),c=new THREE.Color();
  const S0=TERR.R*2.2,gUV=(x,z)=>[(x-(CENTER[0]-S0/2))/S0,1-(z-(CENTER[1]-S0/2))/S0];
  const MAT_FLOOR=new THREE.MeshLambertMaterial({map:TEX_DETAIL,vertexColors:true,color:0xffffff});
  const MAT_LIP=MAT_GROUND.clone();MAT_LIP.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_LIP.polygonOffset=true;MAT_LIP.polygonOffsetFactor=-2;MAT_LIP.polygonOffsetUnits=-4;
  function mesh(pos,col,uv,idx,mat,label){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return g;}
- SINKS.forEach((S,si)=>{const seg=S.r>50?72:40,cen=S.kind==='cenote';
+ SINKS.forEach((S,si)=>{const seg=S.r>50?96:48,cen=S.kind==='cenote';
   const rim=[];for(let s=0;s<=seg;s++){const ang=s/seg*TAU,R0=sinkRad(S,ang),x=S.x+Math.cos(ang)*R0,z=S.z+Math.sin(ang)*R0;rim.push({ang:ang,R0:R0,y:groundBase(x,z)});}
   const footY=S.floorY+S.talus;
+  // ALCOVES (2026-10-25): shallow caves let into the wall, mouths 8-36 m wide and 5-14 m tall, dark inside; a tiankeng's in
+  // its lower wall (the floor's forest reaching in under them), a cenote's above its water, never at the wall's foot (the
+  // floor meets the wall there). Each from a hash of the sinkhole and its index: nothing else draws from it.
+  const tw0=cen?clamp(rim[0].y/(rim[0].y-footY),.1,.95):1,span=Math.max(1,rim[0].y-footY),ALC=[];
+  for(let i=0,n=cen?3:5;i<n;i++){const h=k=>KRAND.unit(KRAND.hash(0xA1C0,S.sd,i,k)),R=S.r*S.e;
+   ALC.push({a:(i+.2+.6*h(1))/n*TAU,t:cen?tw0*mix(.5,.82,h(2)):mix(.5,.74,h(2)),w:(cen?mix(4,7,h(3)):mix(12,20,h(3)))/R,h:(cen?mix(2.5,4.5,h(4)):mix(5,8,h(4)))/span,d:cen?mix(3,5,h(5)):mix(10,17,h(5))});}
+  const alc=(ang,tt)=>{let k=0;for(const A of ALC){const da=Math.atan2(Math.sin(ang-A.a),Math.cos(ang-A.a))/A.w,dt=(tt-A.t)/A.h,q=1-da*da-dt*dt*(dt>0?1.6:1);if(q>0)k=Math.max(k,Math.pow(q,.55)*A.d);}return k;};
   // the wall: t 0 at the rim .. 1 at the floor; a cenote's in two pieces, above and below the water
   function wall(t0,t1,nRow){const pos=[],col=[],uv=[],idx=[];
    for(let r=0;r<=nRow;r++){const tt=mix(t0,t1,Math.pow(r/nRow,1.15));
     for(let s=0;s<=seg;s++){const q=rim[s],y=mix(q.y,footY,tt),bell=1+S.bell*smooth(.04,.55,tt),
-      rough=1+.035*(fbm(q.ang*6+S.sd,y*.08,93,2)-.5)*2+.025*Math.sin(y*.21+q.ang*3+S.sd),ledge=1-.03*smooth(.05,0,Math.abs(tt-.38)),r=q.R0*bell*rough*ledge;
+      rough=1+.035*(fbm(q.ang*6+S.sd,y*.08,93,2)-.5)*2+.025*Math.sin(y*.21+q.ang*3+S.sd),ledge=1-.03*smooth(.05,0,Math.abs(tt-.38)),ak=alc(q.ang,tt),r=q.R0*bell*rough*ledge+ak;
      pos.push(S.x+Math.cos(q.ang)*r,y,S.z+Math.sin(q.ang)*r);uv.push(q.ang*q.R0/14,y/22);
      const streak=fbm(q.ang*7+S.sd*2,y*.012,94,3),bed=fbm(q.ang*3+S.sd,y*.03,95,2);
      c.copy(LIME).lerp(LIME2,clamp(.5+(bed-.5)*2.2,0,1)).lerp(DARK,smooth(.5,.68,streak)*.8);
      c.lerp(MOSS,smooth(.3,0,tt)*smooth(.4,.6,fbm(q.ang*5,y*.05,96,2))*.8);
+     if(ak>0)c.lerp(BLK_ALC,clamp(ak/3.5,0,1)*.92);   /* an alcove's shadowed back */
      if(cen){c.lerp(SLIME,smooth(3,.5,y)*smooth(-2,.2,y)*.85);c.lerp(WETC,smooth(.5,-3,y)*.7);}else c.lerp(MOSS,smooth(.75,1,tt)*.5);   // the damp foot of a tiankeng's wall
      col.push(c.r,c.g,c.b);}}
    for(let r=0;r<nRow;r++)for(let s=0;s<seg;s++){const a=r*(seg+1)+s,b=a+seg+1;idx.push(a,b,a+1,a+1,b,b+1);}   // rows run down: this winding faces the axis
    return{pos,col,uv,idx};}
-  const tw=cen?clamp(rim[0].y/(rim[0].y-footY),.1,.95):1,parts=cen?[[0,tw,10],[tw,1,4]]:[[0,1,22]];
+  const tw=tw0,parts=cen?[[0,tw,14],[tw,1,4]]:[[0,1,30]];
   parts.forEach((pp,k)=>{const W=wall(pp[0],pp[1],pp[2]),g=mesh(W.pos,W.col,W.uv,W.idx,MAT_LIME,'Sinkhole wall');if(k===0)SINK_GEOS.push(g);});
   // the floor: rings in from the wall's foot to the centre
   {const pos=[],col=[],uv=[],idx=[],rhos=[1+S.bell,1.0,.86,.7,.52,.34,.16,.001];
@@ -503,13 +561,24 @@ const RIVER_SM=[],SHELF_POOLS=[];   // the terraced river's samples, the shelf p
  for(let i=0;i<SM.length-1;i++){const A=SM[i],B=SM[i+1],slope=(B.y-A.y)/5,k=smooth(.1,.3,slope);/* the river comes DOWN toward the bay: upstream is the larger u */
   // a RIMSTONE LIP where a tread's pool spills onto the riser below it: a cream
   // crescent across the channel, bowed downstream, standing just above the pool
-  if(B.k>.5&&!B.ramp&&A.ramp&&B.y>A.y+1.2){const pts=[],w=B.w*1.05,n=11;
+  if(B.k>.5&&B.k<=.95&&!B.ramp&&A.ramp&&B.y>A.y+1.2){const pts=[],w=B.w*1.05,n=11;   /* the lowland lips; the terraces' own (k > .95) are the RISERS' faces below */
    for(let j=0;j<=n;j++){const t=j/n-.5,v=B.v+t*2*w,bow=5.5*(1-4*t*t),P=XZ(B.u-2.2-bow,v);const yy=B.y+.28-Math.abs(t)*.3;pts.push([P[0],yy,P[1],.55+.5*(1-Math.abs(t)*1.6)]);}
    hgTube(pts,CRUST,6);lips++;
    // the crust apron under the lip, draped down the riser: a second, lower, wider lip
    const pts2=[];for(let j=0;j<=n;j++){const t=j/n-.5,v=B.v+t*2*w*1.08,bow=9*(1-4*t*t),P=XZ(B.u-5-bow,v);pts2.push([P[0],B.y-1.3-Math.abs(t)*.4,P[1],.7]);}
    hgTube(pts2,CRUST2,5);}}
- window._lips=lips;
+ // THE RISERS' FACES (RISERS, above): under every lip of the terraces a rimstone face of crust from the crest (a hand over the
+ // upper pool, just behind where the curtain leaves) down past the lower pool's level, bellied out a little under the curtain
+ // and swept back upstream at its ends into the banks, the crest sinking there to the bed; a lip tube along the crest and a
+ // crust ledge at its foot where the curtain lands. One merged crust mesh with the rest (no call of its own).
+ RISERS.forEach(R=>{const hs=R.hw+3.5,n=14,TS=[0,.1,.3,.55,.8,1],px=-R.dz,pz=R.dx,P=(a,c)=>[R.x+R.dx*a+px*c,R.z+R.dz*a+pz*c],rows=[],crest=[],foot=[];
+  for(let j=0;j<=n;j++){const c=(j/n*2-1)*hs,e=Math.abs(c)/hs,back=-1.6*smooth(.7,1,e),C0=P(back-.1,c),gh=groundH(C0[0],C0[1]),yc=Math.max(gh+.2,mix(R.yUp+.25,gh+.2,smooth(.75,1,e))),yb=R.yLo-1.2;
+   rows.push(TS.map(t=>{const a=back-.1+.3*Math.sin(Math.PI*t)*(1-.6*e),Q=P(a,c);return[Q[0],mix(yc,yb,t),Q[1]];}));
+   const Q=P(back-.2,c);crest.push([Q[0],yc+.05,Q[1],.42*(1-.35*e)]);
+   if(Math.abs(c)<R.hw+1.5){const F=P(.5,c);foot.push([F[0],R.yLo+.06,F[1],.38]);}}
+  for(let j=0;j<n;j++)for(let r=0;r+1<TS.length;r++){const a=rows[j][r],b=rows[j+1][r],c2=rows[j+1][r+1],d=rows[j][r+1],col=r<2?CRUST:CRUST2;hgTri(a,c2,b,col);hgTri(a,d,c2,col);}
+  hgTube(crest,CRUST,6);if(foot.length>2)hgTube(foot,CRUST2,5);lips++;});
+ window._lips=lips;window._risers=RISERS.length;
  // the SHELF POOLS on the shore: each mound carries a stair of rimstone pools
  // stepping down toward the sea -- a lip ring, a crust skirt and a water disc apiece
  SHELVES.forEach((S,si)=>{const c=S.xz,top=groundH(c[0],c[1]);
@@ -574,7 +643,8 @@ function farH(x,z){
  const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
  const NEAR=TERR.R*1.1,SAV=new THREE.Color(0x8e7a4c),ASH=new THREE.Color(0x5a5452),LAVA2=new THREE.Color(0x36302e),CAP=new THREE.Color(0xc8c0b4),RIM=new THREE.Color(0x6e7878),RIM2=new THREE.Color(0x8a8e86),BED=new THREE.Color(0x6a7a70),FOR=new THREE.Color(0x4e6a3e);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
-  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz));y=groundH(x,z)-2*e;
+  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz)),cs=S/N;let lo=groundH(x,z);   /* the lowest ground across this vertex's cell (2026-10-25, swbay's fix 3c47ae0f7): a 69 m cell interpolated over the river's channel, a riser's drop or a lowland pool stood above the water and hid it */
+   for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)lo=Math.min(lo,groundH(x+a*cs*.5,z+b*cs*.5));y=lo-2*e;
    for(const S of SINKS)if(Math.hypot(x-S.x,z-S.z)<S.r*S.e*1.4+100)y=Math.min(y,S.floorY-6);
    y-=6*tsingyK(x,z);}                                                                   // and further down under the tsingy, whose fins and floor its cells cannot follow   // well under a sinkhole (its 70 m cells would bridge the hole)
   else y=farH(x,z);p.setY(i,y);

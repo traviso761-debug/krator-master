@@ -42,6 +42,7 @@ let RIVER_TERRACES=null,RIVER_LOW=null;
    run={si:q.si,s0:acc[i],s1:acc[i],ys:[q.y],ws:[q.w]};treads.push(run);});
   const T=treads.filter(t=>t.s1-t.s0>=4).map(t=>({s0:t.s0,s1:t.s1,y:t.ys.reduce((a,b)=>a+b,0)/t.ys.length,w:t.ws.reduce((a,b)=>a+b,0)/t.ws.length}));
   for(let i=1;i<T.length;i++)if(T[i].y>=T[i-1].y-.05){T[i-1].s1=T[i].s1;T.splice(i,1);i--;}   // a step that does not descend joins the one above
+  for(let i=1;i<T.length;i++)if(T[i].s0-T[i-1].s1>1.5)T[i].s0=T[i-1].s1+1.5;   // each lower pool runs up to the riser's face (45 RISERS: the channel is drawn down under it), so the fall drops 1.5 m out down a face, not over a slope
   try{RIVER_TERRACES=WATER.terraces({name:'The river (terraced pools)',line,treads:T,speed:1.6,spread:.6,treadSpeed:.25});}catch(e){reportErr('terraces: '+e.message);}}
  if(low.length>2)RIVER_LOW=WATER.flow({name:'The river (the lowland reach)',pts:low.map(q=>[q.x,q.z,q.y]),width:low.map(q=>q.w*2),speed:.8,rapids:[.04,.12]});})();
 const RIVER_DRAW=RIVER_TERRACES?WATER.drawTerraces(RIVER_TERRACES,{pool:{color:lin(POOL_COL),roughness:.08,metalness:.1,envMapIntensity:.35,renderOrder:2,pick:true},

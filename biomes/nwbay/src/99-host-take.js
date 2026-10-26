@@ -126,7 +126,8 @@ function extra(){const R=[];const T=NWBAY.TREES||[];
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.take({build:'nwbay',title:'Krator biome — the north-west bay',
  hint:'The north-west bay (the biome of Ys): karst stacks in a turquoise bay, travertine terraces, lava coves, mangrove lagoons, the volcano in the SE (ideal type)',
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),finTop(x,z)),walk:typeof KWALK!=='undefined'?KWALK:null,clear:1.8,   /* the eye's floor and the walker's blocks: the tsingy's fins are solid */
+registry:REG,views:VIEWS,ticks:TICKS,
  sky:{follow(c){sky.position.copy(c.position);if(typeof wallSky!=='undefined')wallSky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing,typeof wallSky!=='undefined'?wallSky:null]}},

@@ -9,6 +9,7 @@ window._biome=null;
  let shells=[];
  if(typeof buildTestTower==='function'){try{shells=buildTestTower()||[];}catch(e){reportErr('tower: '+e.stack);}}
  let jetty=[];if(typeof buildJetty==='function'){try{jetty=buildJetty()||[];}catch(e){reportErr('jetty: '+e.stack);}}
+ NWBAY.ROCK=ROCK;   // the stacks' records: the cliff figs' root curtains follow their walls (55 onRock)
  try{window._biome=NWBAY.build({R:TERR.R-100,quality:1});}catch(e){reportErr('biome: '+e.stack);}
  try{Object.assign(window._biome||{},NWBAY.buildCliffs(ROCK,{R:TERR.R-100,floor:groundH}));}catch(e){reportErr('cliffs: '+e.stack);}   // the stacks' cliffs dressed (57)
  if(shells.length){try{NWBAY.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
