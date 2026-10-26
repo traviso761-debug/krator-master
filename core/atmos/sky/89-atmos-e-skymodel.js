@@ -218,6 +218,35 @@
  // noise on the hash, so the profile closes on itself at 360 and is the same in every engine.
  const grad1=(i,c,s)=>{const k=((i%c)+c)%c;return u01(k,7,s)*2-1;};
  const noise1=(x,c,s)=>{const i=Math.floor(x),f=x-i,g0=grad1(i,c,s),g1=grad1(i+1,c,s),u=f*f*f*(f*(f*6-15)+10);return(g0*f+u*(g1*(f-1)-g0*f))*2;};
+ // ---- the landmarks (SKY-PLAN.md 4, layer 8): what a far ridge cannot draw, in the page's own sky. preset.landmarks, at most
+ // SKY_MAX_LANDMARKS, drawn in order over the air and the bodies, under the clouds and the ridges. Angles in degrees,
+ // azimuth from north clockwise, elevation above the true horizon; colours display [r,g,b]:
+ //   {kind:'plume', from:[az,el], via:[az,el], to:[az,el], width:[w0,w1], lit, belly, alpha, haze, drift}  smoke or steam along a
+ //        curve (a quadratic through via's pull), widening from w0 to w1, puffs drifting at `drift`, lit on its sun side
+ //   {kind:'ceiling', el, soft, gap:[az, halfWidth, elMax], lit, belly, alpha, lump}  an overcast underside over the whole sky
+ //        above el (a plume's spread: the ash desert), open in a gap low toward gap's azimuth
+ //   {kind:'sea', top, win:[az, halfWidth, power], bump, lit, shade, alpha}  a cloud sea from top down to the foot, billowing,
+ //        in an azimuth window (halfWidth 180 or more: all round)
+ //   {kind:'band', win:[az, halfWidth, power], el:[lo, hi], lit, alpha, noise}  a strip on the horizon: water's glint, a far lake,
+ //        a cataract (a narrow window and a tall strip), a cloud belt on a slope (noise: billows)
+ // A.skyLandmarks(list) packs them for the shader: {n, kind[SKY_MAX_LANDMARKS], v[SKY_MAX_LANDMARKS*5*4]} (five vec4 a landmark)
+ A.SKY_MAX_LANDMARKS=6;
+ A.skyLandmarks=function(list){const N=A.SKY_MAX_LANDMARKS,L=(list||[]).slice(0,N),kind=new Float32Array(N),v=new Float32Array(N*20);
+  const dir=(az,el)=>A.skyVec.fromAltAz(el,az),R=x=>x*D,K={plume:0,ceiling:1,sea:2,band:3};
+  const put=(i,k,a)=>{for(let j=0;j<4;j++)v[i*20+k*4+j]=a[j]==null?0:a[j];};
+  L.forEach((m,i)=>{const k=K[m.kind];kind[i]=k==null?-1:k;const lit=m.lit||[1,1,1],dk=m.belly||m.shade||lit;
+   if(k===0){const w=m.width||[1,4],a=dir(m.from[0],m.from[1]),b=dir((m.via||m.from)[0],(m.via||m.from)[1]),c=dir(m.to[0],m.to[1]);
+    put(i,0,[a[0],a[1],a[2],R(w[0])]);put(i,1,[b[0],b[1],b[2],R(w[1])]);put(i,2,[c[0],c[1],c[2],m.alpha==null?.5:m.alpha]);
+    put(i,3,[lit[0],lit[1],lit[2],m.haze==null?.3:m.haze]);put(i,4,[dk[0],dk[1],dk[2],m.drift==null?.02:m.drift]);}
+   else if(k===1){const g=m.gap||[0,0,-90],h=dir(g[0],0);put(i,0,[h[0],0,h[2],R(g[1])]);
+    put(i,1,[Math.sin(R(m.el==null?6:m.el)),R(m.soft==null?8:m.soft),Math.sin(R(g[2])),m.alpha==null?.9:m.alpha]);
+    put(i,2,[m.lump==null?.35:m.lump,0,0,0]);put(i,3,[lit[0],lit[1],lit[2],m.haze==null?.2:m.haze]);put(i,4,[dk[0],dk[1],dk[2],0]);}
+   else if(k===2||k===3){const w=m.win||[0,360,1],h=dir(w[0],0);put(i,0,[h[0],0,h[2],R(Math.min(w[1],720))]);
+    if(k===2)put(i,1,[Math.sin(R(m.top==null?-1:m.top)),R(m.bump==null?.4:m.bump),w[2]==null?1:w[2],m.alpha==null?.95:m.alpha]);
+    else{const e=m.el||[-1,0];put(i,1,[R(e[0]),R(e[1]),w[2]==null?1:w[2],m.alpha==null?.6:m.alpha]);}
+    put(i,2,[m.noise==null?(k===2?1:0):m.noise,0,0,0]);put(i,3,[lit[0],lit[1],lit[2],m.haze==null?.25:m.haze]);put(i,4,[dk[0],dk[1],dk[2],0]);}});
+  return{n:L.length,kind,v};};
+
  // win: [azimuth, half-width, power], or an array of them (a ridge in two lobes: the larger wins); notch: [azimuth, inner, outer
  // half-widths, depth] lowers it by depth (0..1) inside inner, easing out by outer (a gap in the ranges: Xanadu's cataract)
  A.ridgeProfile=function(L,n){n=n==null?1024:n;const out=new Float32Array(n),c0=L.cycles==null?12:L.cycles,oct=L.octaves==null?5:L.octaves,sd=L.seed==null?1:L.seed;

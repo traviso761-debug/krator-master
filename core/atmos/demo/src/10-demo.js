@@ -38,7 +38,12 @@
  // ---- the sky
  const clock=KCLOCK.make({hour:SKY.startHour,day:0,running:false});const hooks=[];
  A.init({THREE:T,scene,camera,hour:()=>clock.hour,onFrame:fn=>hooks.push(fn),ground:()=>0,seed:1,err:m=>{$('errs').textContent+=m+'\n';},viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
- const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges});};
+ // the landmark layer's samples (#lm=1: a plume, a cloud sea, a glint; #lm=2: the ash desert's ceiling and plume)
+ const LMSETS={1:[{kind:'plume',from:[200,3],via:[195,14],to:[170,20],width:[1.2,6],lit:[.86,.84,.80],belly:[.42,.38,.35],alpha:.75,drift:.02},
+   {kind:'sea',top:-1.2,win:[300,90,.8],bump:.5,lit:[1,1,1],shade:[.70,.74,.82]},{kind:'band',win:[150,40,2],el:[-.35,-.1],lit:[1.2,1.2,1.15],alpha:.7}],
+  2:[{kind:'ceiling',el:6,soft:10,gap:[225,53,26],lit:[.62,.56,.50],belly:[.33,.30,.27],alpha:.92,lump:.4},{kind:'plume',from:[315,6.6],via:[318,60],to:[135,10],width:[1.6,30],lit:[.70,.64,.58],belly:[.35,.31,.28],alpha:.85,drift:.01}]};
+ const lmSet=()=>{const m=/[?&#]lm=(\d)/.exec(location.search+location.hash);return m&&LMSETS[m[1]]?LMSETS[m[1]]:[];};
+ const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges,landmarks:lmSet()});};
  const S=A.sky(preset(site),{renderer,camera,scene,sun,hemi,clock,weather:()=>WX[wx],skylight:true,moonAtlas:typeof SKY_MOON_ATLAS!=='undefined'?SKY_MOON_ATLAS:null});
  window._sky=S;
  /* the clouds' shadows and the rain on the ground and the test pieces (SKY-PLAN.md 11.1): the same field as the sky's clouds */
@@ -90,9 +95,9 @@
   $('presV').textContent=P.air.pressure.toFixed(2);$('coverV').textContent=P.clouds.cover.toFixed(2);};
  // ---- the frame
  setSite(site);
- const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));
+ const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));else if(q.has('lm'))setSite(site);
   if(q.has('day'))clock.day=+q.get('day');if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('hour'))clock.set(+q.get('hour'));
-  if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}if(q.has('alt'))camera.position.y=+q.get('alt');if(q.has('pitch'))pitch=+q.get('pitch');};
+  if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}if(q.has('alt'))camera.position.y=+q.get('alt');if(q.has('pitch'))pitch=+q.get('pitch');ground.visible=q.get('ground')!=='0';scene.traverse(m=>{if(m.isMesh&&m.userData.demoPiece!==false&&m!==ground&&q.get('ground')==='0')m.visible=false;});if(q.has('az'))look(A.skyVec.fromAltAz(q.has('el')?+q.get('el'):8,+q.get('az')));};
  hashView();addEventListener('hashchange',hashView);
  let last=null,frames=0;
  const frame=now=>{const dt=last==null?1/60:Math.min(.1,(now-last)/1000);last=now;

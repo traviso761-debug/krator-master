@@ -82,6 +82,8 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 
 ## Open
 
+- [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the Throne's plume (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
+
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Throne far to the south and its

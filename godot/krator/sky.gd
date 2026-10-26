@@ -112,6 +112,11 @@ func _constants() -> void:
 		mat.set_shader_parameter("uG" + k, _v(G[k.to_lower()]))
 	var N: Dictionary = preset["night"]
 	mat.set_shader_parameter("uNightK", Vector3(N["stars"], N["nebula"], N["galaxy"]))
+	# the landmarks: plumes, ceilings, cloud seas and horizon bands (sky_model.landmarks)
+	var LM: Dictionary = model.landmarks(preset.get("landmarks", []))
+	mat.set_shader_parameter("uLm", PackedVector4Array(LM["v"]))
+	mat.set_shader_parameter("uLmK", LM["kind"])
+	mat.set_shader_parameter("uLmN", LM["n"])
 
 
 static func _v(a: Array) -> Vector3:

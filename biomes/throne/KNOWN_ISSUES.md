@@ -235,6 +235,8 @@
 
 ## Open
 
+- [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the Throne's plume arcing over station 1 and the tube, the plumes over the summits of kipuka, savanna, frontier, isle and the glacier, the cloud belts on their flanks, the ash ceiling with its plume over the ash desert and the vents, the cloud seas round the caldera and west of the glacier, and the Ring Sea's silver line (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
+
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. Station 1, the plume's edge, 1.26 atm with the plume's dust. Kept

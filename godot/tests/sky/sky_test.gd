@@ -43,6 +43,16 @@ func _initialize() -> void:
 		bad += _near(tag + " station dist", sa["dist"] / 1e4, sb["dist"] / 1e4)
 		bad += _near(tag + " station lit", sa["lit"], sb["lit"])
 		n += 1
+	# the landmarks: the same packing as ATMOS.skyLandmarks
+	var LG: Dictionary = gold["landmarks"]
+	var LM: Dictionary = M.landmarks(LG["input"])
+	bad += 0 if int(LM["n"]) == int(LG["n"]) else _fail("landmarks n")
+	for i in LM["kind"].size():
+		bad += _near("landmark kind %d" % i, LM["kind"][i], LG["kind"][i])
+	for i in LM["v"].size():
+		var lv: Vector4 = LM["v"][i]
+		for c in 4:
+			bad += _near("landmark v %d.%d" % [i, c], lv[c], LG["v"][i * 4 + c])
 	var P: Dictionary = gold["preset"]
 	for g in gold["look"]:
 		var site: Dictionary = M.site_at(446, 690)
