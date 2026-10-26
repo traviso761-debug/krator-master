@@ -489,7 +489,7 @@
       $('bodies').appendChild(btn);
     });
     var pick = $('idle-pick');
-    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
+    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle' && ((D.clips && D.clips.dropped) || []).indexOf(c.name) < 0; }).forEach(function(c){
       var o = document.createElement('option'); o.value = c.name; o.textContent = c.label + ' · ' + c.seconds.toFixed(1) + ' s';
       pick.appendChild(o);
     });

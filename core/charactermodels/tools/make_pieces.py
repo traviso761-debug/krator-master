@@ -545,6 +545,8 @@ IDLES = os.path.join(HERE, 'donors', 'anims')
 CLIPS = [(STYV_GLB, 'walk', 'walk', 'Walk', 'move'), (STYV_GLB, 'run', 'run', 'Run', 'move'),
          (STYV_GLB, 'idle', 'stretch', 'Stretch', 'idle')]
 FPS = 30
+# data/clips.json dropped: clips no longer built (idle_2 was the Stretch again)
+DROPPED = set(json.load(open(os.path.join(HERE, 'data', 'clips.json'), encoding='utf-8')).get('dropped', []))
 
 
 def idle_clips():
@@ -558,7 +560,8 @@ def idle_clips():
         names = [a['name'] for a in glbio.read_glb(open(src, 'rb').read())[0]['animations']]
         for clip, label in zip(names, b['names']):
             key = label.lower().replace(' ', '_') if label.startswith('Idle') else label.split()[0].lower()
-            out.append((src, clip, key, label, 'idle'))
+            if key not in DROPPED:
+                out.append((src, clip, key, label, 'idle'))
     return out
 
 

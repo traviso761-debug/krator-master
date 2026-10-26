@@ -107,7 +107,9 @@
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
-  var lead = D.bodies[CAST[0].body].skeleton.clips;
+  // data/clips.json dropped: clips still in anims.glb that the lab leaves out
+  var DROP = (D.clips && D.clips.dropped) || [];
+  var lead = D.bodies[CAST[0].body].skeleton.clips.filter(function(c){ return DROP.indexOf(c.name) < 0; });
   lead.forEach(function(c){ META[c.name] = c; });
   var GROUPS = [{ id:'idle', label:'Idle' }].concat((D.clips && D.clips.groups) || []);
   GROUPS.forEach(function(g){ g.clips = lead.filter(function(c){ return c.group === g.id; }).map(function(c){ return c.name; }); });
