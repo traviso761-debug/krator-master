@@ -49,9 +49,11 @@
    if(sh.fragmentShader.indexOf('#include <fog_fragment>')<0)return;   /* the page's own fog (a far-land fade) stands */
    sh.uniforms.atmFogH=U.fogH;sh.uniforms.atmFogMist=U.fogMist;sh.uniforms.atmFogBand=U.fogBand;sh.uniforms.atmFogX=U.fogX;
    sh.uniforms.atmFogSunDir=U.fogSunDir;sh.uniforms.atmFogSunC=U.fogSunC;sh.uniforms.atmFogZen=U.fogZen;sh.uniforms.atmFogDrift=U.fogDrift;
-   sh.vertexShader='varying vec3 vAtmFogP;\n'+sh.vertexShader.replace('#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;}');
-   sh.fragmentShader='varying vec3 vAtmFogP;\n'+A.fogGLSL()+'\n'+sh.fragmentShader.replace('#include <fog_fragment>',
-    '#ifdef USE_FOG\n#ifdef FOG_EXP2\n{vec3 atmFd=vAtmFogP-cameraPosition;float atmFL=length(atmFd);vec4 atmFz=atmFog(cameraPosition,atmFd/max(atmFL,1e-4),atmFL,fogColor,fogDensity);gl_FragColor.rgb=mix(gl_FragColor.rgb,atmFz.rgb,atmFz.a);}\n#else\n#include <fog_fragment>\n#endif\n#endif');});};
+   /* the eye from the view matrix, in the vertex shader: three r128 sets the fragment's cameraPosition only for Phong, Standard,
+      Toon, ShaderMaterial or an envMap, so a Lambert ground read (0,0,0) there (the first pilot run's dawn white-out) */
+   sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+sh.vertexShader.replace('#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');
+   sh.fragmentShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+A.fogGLSL()+'\n'+sh.fragmentShader.replace('#include <fog_fragment>',
+    '#ifdef USE_FOG\n#ifdef FOG_EXP2\n{vec3 atmFd=vAtmFogP-vAtmFogC;float atmFL=length(atmFd);vec4 atmFz=atmFog(vAtmFogC,atmFd/max(atmFL,1e-4),atmFL,fogColor,fogDensity);gl_FragColor.rgb=mix(gl_FragColor.rgb,atmFz.rgb,atmFz.a);}\n#else\n#include <fog_fragment>\n#endif\n#endif');});};
  A.heightFogScene=function(scene,o){o=o||{};const seen=new Set();let n=0;scene.traverse(ob=>{if(!ob.isMesh||!ob.material||ob.userData.noHeightFog||(ob.name&&ob.name.indexOf('water:')===0))return;
   for(const m of(Array.isArray(ob.material)?ob.material:[ob.material])){if(seen.has(m)||!m.fog||m.userData.noHeightFog)continue;seen.add(m);
    if(!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial||(o.basic&&m.isMeshBasicMaterial)))continue;A.heightFogOn(m);n++;}});return n;};

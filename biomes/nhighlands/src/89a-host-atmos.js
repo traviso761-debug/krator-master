@@ -13,10 +13,10 @@ BIO.bindAtmosWind();BIO.setA2C(renderer);
 ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:GROUND?[GROUND.material]:[]});
 // HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the page's fog is the air's up to the ground
 // under the eye and thins above it (the crest and the range's snow stand clear of the valley haze); the dawn mist pools in the
-// lower old growth and the stream's lower valley (below 260 m, the NW corner); a broken band of cloud hangs just over the crest.
+// lower old growth and the stream's lower valley (below 260 m, the NW corner); a broken band of cloud hangs over the crest (1950-2100 m: the views from the crest stay under it).
 // The page's fog chunk is exponential and compresses past 4 km (82-host-sky.js): the same shape here
 ATMOS.heightFog({falloff:1/850,shape:'exp',compress:[4000,5000],sun:.35,sky:.35,
- mist:{density:.0012,y:260,depth:45,noise:.7},band:{density:.0016,y:[1560,1720],cover:.38,noise:1}});
+ mist:{density:.0012,y:260,depth:45,noise:.7},band:{density:.0012,y:[1950,2100],cover:.38,noise:1}});
 ATMOS.heightFogScene(scene);
 // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or fresh snow under the old growth's crowns
 ATMOS.rainCover({renderer});

@@ -70,7 +70,7 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);}
 // the height fog's hook replaces the fog chunk (only where the page left it)
 {A.heightFog({mist:{density:.002,y:-100,depth:30}});const m=new Material();A.heightFogOn(m);const sh=compile(m);
- ok('heightFogOn: the fog chunk becomes atmFog under FOG_EXP2, the world position reaches the fragment',/atmFog\(cameraPosition/.test(sh.fragmentShader)&&/vAtmFogP=/.test(sh.vertexShader)&&sh.uniforms.atmFogH===A.U.fogH,!/atmFog\(/.test(sh.fragmentShader));
+ ok('heightFogOn: the fog chunk becomes atmFog under FOG_EXP2, the world position and the eye (from the view matrix: a Lambert fragment has no cameraPosition) reach the fragment',/atmFog\(vAtmFogC/.test(sh.fragmentShader)&&!/atmFog\(cameraPosition/.test(sh.fragmentShader)&&/vAtmFogP=/.test(sh.vertexShader)&&/vAtmFogC=-\(transpose\(mat3\(viewMatrix\)\)/.test(sh.vertexShader)&&sh.uniforms.atmFogH===A.U.fogH,!/atmFog\(/.test(sh.fragmentShader));
  const own=new Material();own.onBeforeCompile=function(sh){sh.fragmentShader=sh.fragmentShader.replace('#include <fog_fragment>','OWNFOG');};A.heightFogOn(own);const s2=compile(own);
  ok('...and leaves a page\'s own fog alone (nhighlands\' far land)',/OWNFOG/.test(s2.fragmentShader)&&!/atmFog\(/.test(s2.fragmentShader),false);
  A.fog.step(0,5,0);const dawn=A.U.fogMist.value.x;A.fog.step(0,13,0);const noon=A.U.fogMist.value.x;

@@ -47,8 +47,10 @@
   const cam=new T.OrthographicCamera(-box/2,box/2,box/2,-box/2,.1,lift+depth);cam.up.set(0,0,-1);
   const over=new T.MeshBasicMaterial({colorWrite:false,side:T.DoubleSide});
   const R={target:rt,camera:cam,stats:{renders:0,hidden:0},cx:null,cz:null,last:-1e9};
+  /* a geometry carrying a null attribute (a slot a kit cleared) cannot be uploaded: three throws on it when this view's frustum takes in an object the page's own never draws */
+  const badAttr=g=>{for(const k in g.attributes)if(!g.attributes[k])return true;return false;};
   const skip=ob=>{if(ob===A.root)return true;if(ob.userData&&ob.userData.noRainCover)return true;if(ob.isSprite||ob.isPoints||ob.isLine)return true;
-   if(ob.name&&ob.name.indexOf('water:')===0)return true;if(ob.isSkinnedMesh||(ob.geometry&&(ob.geometry.isInstancedBufferGeometry||!ob.geometry.attributes||!ob.geometry.attributes.position)))return true;
+   if(ob.name&&ob.name.indexOf('water:')===0)return true;if(ob.isSkinnedMesh||(ob.geometry&&(ob.geometry.isInstancedBufferGeometry||!ob.geometry.attributes||!ob.geometry.attributes.position||badAttr(ob.geometry))))return true;
    const m=ob.material;if(m&&!Array.isArray(m)&&(m.isShaderMaterial||m.transparent&&m.opacity<.5))return true;return o.skip?!!o.skip(ob):false;};
   R.render=function(){const scene=A.h.scene,c=A.h.camera.position,s=step/4,cx=Math.round(c.x/s)*s,cz=Math.round(c.z/s)*s,top=c.y+lift;
    cam.position.set(cx,top,cz);cam.lookAt(cx,top-1,cz);cam.updateMatrixWorld();
