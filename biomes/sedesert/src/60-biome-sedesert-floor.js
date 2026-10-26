@@ -76,7 +76,7 @@ function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,
  for(let i=0;i<n;i++){const a=rr(0,TAU),el=rr(.2,1.2),L=rr(.5,1.1),y0=y+h*rr(.3,.6);const e=[x+Math.cos(a)*Math.cos(el)*L,y0+Math.sin(el)*L,z+Math.sin(a)*Math.cos(el)*L];
   BIO.put('cone',[e[0],e[1]-.1,e[2]],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[.3,rr(.5,.9),.3],hc);BIO.beam('rod',[x,y0,z],e,.05,.05,hc);}}
 function hoodia(x,y,z,lv){const hc=leafCol(PAL.hoodia,1.15,.02,.06,.05),n=lv===2?ri(5,10):3;
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.8),h=rr(.4,1.1);BIO.put('column',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[.22,h,.22],hc);}
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.8),h=rr(.4,1.1);BIO.put(lv===2?'column':'columnLo',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[.22,h,.22],hc);}
  blooms(x,y+.8,z,.9,lv===2?ri(5,12):3,PAL.comp,[.28,.5]);}
 function stone(x,y,z,lv,set,st){around(x,z,lv===2?ri(1,3):1,.5,1.5,(px,pz)=>{const r=rr(.15,.5);
  if(putRooted(px,pz,'stone',[px,y+r*.2,pz],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*rr(.9,1.4),r*.7,r*rr(.9,1.4)],rockTint(set)))st.stones++;});}
@@ -99,55 +99,51 @@ function log(x,y,z,st){const a=rr(0,TAU),L=rr(6,16),r0=rr(.25,.55),hx=Math.cos(a
 
 SEDESERT.small={tuft,card,agaveR,barrel};   // the dressing pass grows the same plants on a ledge
 // ---------------------------------------------------------------- the zone planters
-// Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.
-function plantScrub(x,y,z,Z,lv,st){const t=rng(),ek=echK(x,z),hk=hoodK(x,z),hm=hummK(x,z);
- if(t<.22+.2*smooth(.4,.7,hm)){hummock(x,y,z,lv);st.hummocks++;if(lv>=1&&hm>.55)hummock(x+rr(-2.5,2.5),y,z+rr(-2.5,2.5),lv,.8);}
- else if(t<.55){if(rng()<ek){echium(x,y,z,lv);st.spires++;}else{drygrass(x,y,z,lv);st.tufts++;}}
- else if(t<.66){creosote(x,y,z,lv);st.shrubs++;}
- else if(t<.72){saltbush(x,y,z,lv);st.shrubs++;}
- else if(t<.78){if(rng()<hk*.8){hoodia(x,y,z,lv);st.hoodia++;}else{agaveR(x,y,z,rng()<.5?PAL.agave:PAL.agaveRed);st.rosettes++;}}
- else if(t<.84){barrel(x,y,z,lv);st.cacti++;}
- else if(t<.89){pear(x,y,z,lv);st.cacti++;}
- else if(t<.93){cholla(x,y,z,lv);st.cacti++;}
- else if(t<.98){stone(x,y,z,lv,PAL.rock,st);}
- else{boulder(x,y,z,lv,PAL.rock,st);}}
-function plantBad(x,y,z,Z,lv,st){const t=rng();
- if(t<.45){stone(x,y,z,lv,PAL.rock,st);}
- else if(t<.62){boulder(x,y,z,lv,PAL.rock,st);}
- else if(t<.74){agaveR(x,y,z,PAL.agave,.9);st.rosettes++;}
- else if(t<.82){barrel(x,y,z,lv);st.cacti++;}
- else if(t<.92){drygrass(x,y,z,lv);st.tufts++;}
- else{hummock(x,y,z,lv,.7);st.hummocks++;}}
-function plantRip(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow);
- if(t<.3*nearW+.05){reed(x,y,z,lv,rng()<.25);st.reeds++;}
- else if(t<.45){sedge(x,y,z,lv);st.tufts++;}
- else if(t<.62){drygrass(x,y,z,lv);st.tufts++;}
- else if(t<.74){creosote(x,y,z,lv);st.shrubs++;}
- else if(t<.8){saltbush(x,y,z,lv);st.shrubs++;}
- else if(t<.9){stone(x,y,z,lv,rng()<.5?PAL.rock:PAL.rockGrey,st);}
- else if(t<.96){boulder(x,y,z,lv,rng()<.6?PAL.rock:PAL.rockGrey,st);}
- else{blooms(x,y,z,rr(.6,1.4),ri(2,6),rng()<.5?PAL.comp:[0xe8d040,0xf0f0d0]);st.blooms++;}}
-function plantOasis(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.3,.8,Z.flow);
- if(t<.4*nearW+.05){reed(x,y,z,lv,rng()<.3);st.reeds++;}
- else if(t<.55){sedge(x,y,z,lv);st.tufts++;}
- else if(t<.7){drygrass(x,y,z,lv);st.tufts++;}
- else if(t<.8){creosote(x,y,z,lv);st.shrubs++;}
- else if(t<.9){blooms(x,y,z,rr(.6,1.6),ri(3,8),rng()<.6?PAL.comp:[0xe8d040,0xf0f0d0]);st.blooms++;}
- else{stone(x,y,z,lv,PAL.rockGrey,st);}}
-function plantMtn(x,y,z,Z,lv,st){const t=rng();
- if(t<.25){agaveR(x,y,z,rng()<.6?PAL.agave:PAL.agaveRed,1.1);st.rosettes++;}
- else if(t<.45){hummock(x,y,z,lv,.8);st.hummocks++;}
- else if(t<.6){drygrass(x,y,z,lv);st.tufts++;}
- else if(t<.85){stone(x,y,z,lv,PAL.rockGrey,st);}
- else{boulder(x,y,z,lv,PAL.rockGrey,st);}}
-function plantRim(x,y,z,Z,lv,st){const t=rng();
- if(t<.3){creosote(x,y,z,lv);st.shrubs++;}
- else if(t<.5){agaveR(x,y,z,PAL.agave);st.rosettes++;}
- else if(t<.7){hummock(x,y,z,lv,.9);st.hummocks++;}
- else if(t<.9){stone(x,y,z,lv,PAL.rock,st);}
- else{barrel(x,y,z,lv);st.cacti++;}}
-function plantDune(x,y,z,Z,lv,st){const t=rng();
- if(t<.7){drygrass(x,y,z,lv);st.tufts++;}else{stone(x,y,z,lv,PAL.rock,st);}}
+// Each zone's mix is a WEIGHTED TABLE (2026-10-25; it was a ladder of cumulative thresholds): one row a plant,
+// [weight, put], the weight a number or a function of the spot's context c ({x,z,Z,ek,hk,hm,nearW}), the put
+// (x,y,z,lv,st,c). One rng() draw picks a row by weight over the row total, so a row is inserted or reweighted
+// without re-deriving the rows after it. The weights are the old thresholds' differences (each zone sums to 1,
+// a varying row's growth taken from its neighbour's), so the world is the one the ladders made.
+const P_={
+ hummock:k=>(x,y,z,lv,st)=>{hummock(x,y,z,lv,k);st.hummocks++;},
+ grass:(x,y,z,lv,st)=>{drygrass(x,y,z,lv);st.tufts++;},
+ sedge:(x,y,z,lv,st)=>{sedge(x,y,z,lv);st.tufts++;},
+ creosote:(x,y,z,lv,st)=>{creosote(x,y,z,lv);st.shrubs++;},
+ saltbush:(x,y,z,lv,st)=>{saltbush(x,y,z,lv);st.shrubs++;},
+ agave:(set,k)=>(x,y,z,lv,st)=>{agaveR(x,y,z,typeof set==='function'?set():set,k);st.rosettes++;},
+ barrel:(x,y,z,lv,st)=>{barrel(x,y,z,lv);st.cacti++;},
+ pear:(x,y,z,lv,st)=>{pear(x,y,z,lv);st.cacti++;},
+ cholla:(x,y,z,lv,st)=>{cholla(x,y,z,lv);st.cacti++;},
+ stone:set=>(x,y,z,lv,st)=>stone(x,y,z,lv,typeof set==='function'?set():set,st),
+ boulder:set=>(x,y,z,lv,st)=>boulder(x,y,z,lv,typeof set==='function'?set():set,st),
+ reed:acc=>(x,y,z,lv,st)=>{reed(x,y,z,lv,rng()<acc);st.reeds++;},
+ blooms:(r0,r1,n0,n1,k)=>(x,y,z,lv,st)=>{blooms(x,y,z,rr(r0,r1),ri(n0,n1),rng()<k?PAL.comp:[0xe8d040,0xf0f0d0]);st.blooms++;},
+};
+const either=(k,set1,set2)=>()=>rng()<k?set1:set2;
+const MIX={
+ scrub:[
+  [c=>.22+.2*smooth(.4,.7,c.hm),(x,y,z,lv,st,c)=>{hummock(x,y,z,lv);st.hummocks++;if(lv>=1&&c.hm>.55)hummock(x+rr(-2.5,2.5),y,z+rr(-2.5,2.5),lv,.8);}],
+  [c=>.33-.2*smooth(.4,.7,c.hm),(x,y,z,lv,st,c)=>{if(rng()<c.ek){echium(x,y,z,lv);st.spires++;}else{drygrass(x,y,z,lv);st.tufts++;}}],   /* the tower of jewels in its stands, else dry grass */
+  [.11,P_.creosote],[.06,P_.saltbush],
+  [.06,(x,y,z,lv,st,c)=>{if(rng()<c.hk*.8){hoodia(x,y,z,lv);st.hoodia++;}else{agaveR(x,y,z,rng()<.5?PAL.agave:PAL.agaveRed);st.rosettes++;}}],
+  [.06,P_.barrel],[.05,P_.pear],[.04,P_.cholla],[.05,P_.stone(PAL.rock)],[.02,P_.boulder(PAL.rock)]],
+ bad:[[.45,P_.stone(PAL.rock)],[.17,P_.boulder(PAL.rock)],[.12,P_.agave(PAL.agave,.9)],[.08,P_.barrel],[.10,P_.grass],[.08,P_.hummock(.7)]],
+ rip:[
+  [c=>.3*c.nearW+.05,P_.reed(.25)],[c=>.4-.3*c.nearW,P_.sedge],[.17,P_.grass],[.12,P_.creosote],[.06,P_.saltbush],
+  [.10,P_.stone(either(.5,PAL.rock,PAL.rockGrey))],[.06,P_.boulder(either(.6,PAL.rock,PAL.rockGrey))],[.04,P_.blooms(.6,1.4,2,6,.5)]],
+ oasis:[
+  [c=>.4*c.nearW+.05,P_.reed(.3)],[c=>.5-.4*c.nearW,P_.sedge],[.15,P_.grass],[.10,P_.creosote],[.10,P_.blooms(.6,1.6,3,8,.6)],[.10,P_.stone(PAL.rockGrey)]],
+ mtn:[[.25,P_.agave(either(.6,PAL.agave,PAL.agaveRed),1.1)],[.20,P_.hummock(.8)],[.15,P_.grass],[.25,P_.stone(PAL.rockGrey)],[.15,P_.boulder(PAL.rockGrey)]],
+ rim:[[.3,P_.creosote],[.2,P_.agave(PAL.agave)],[.2,P_.hummock(.9)],[.2,P_.stone(PAL.rock)],[.1,P_.barrel]],
+ dune:[[.7,P_.grass],[.3,P_.stone(PAL.rock)]],
+};
+// the spot's context, the fields a table's weights and puts read (computed only for the zone that asks)
+const CTX={scrub:(x,z,Z)=>({ek:echK(x,z),hk:hoodK(x,z),hm:hummK(x,z)}),rip:(x,z,Z)=>({nearW:smooth(.4,.9,Z.flow)}),oasis:(x,z,Z)=>({nearW:smooth(.3,.8,Z.flow)})};
+function plantMix(key,x,y,z,Z,lv,st){const tab=MIX[key],t=rng(),c=CTX[key]?CTX[key](x,z,Z):{};
+ let tot=0;const w=tab.map(e=>{const v=typeof e[0]==='function'?e[0](c):e[0];tot+=v;return v;});
+ let acc=0,k=0;const r=t*tot;for(;k<tab.length-1;k++){acc+=w[k];if(r<acc)break;}
+ tab[k][1](x,y,z,lv,st,c);}
+SEDESERT.FLOOR_MIX=MIX;   // the tables, for a host or a port that reads the mix as data
 
 // ---------------------------------------------------------------- the pass
 SEDESERT.ROCKS=[];
@@ -156,10 +152,10 @@ SEDESERT.buildFloor=function(R,q){
  const st={hummocks:0,tufts:0,shrubs:0,spires:0,rosettes:0,cacti:0,hoodia:0,reeds:0,blooms:0,stones:0,boulders:0,hoodoos:0,logs:0};
  // one plant of the right zone's mix at (x,z); density by zone
  function plant(x,y,z,lv){if(blocked(x,z,.8))return;const Z=zones(x,z);if(Z.ab>.3)return;
-  const w=[Z.scrub*.95,Z.bad*.5,Z.rip*1.3,Z.bank*1.2,Z.oasis*1.3,Z.mtn*.6,Z.rim*.7,Z.bench*.5,Z.desert*.1],P=[plantScrub,plantBad,plantRip,plantRip,plantOasis,plantMtn,plantRim,plantRim,plantDune];
+  const w=[Z.scrub*.95,Z.bad*.5,Z.rip*1.3,Z.bank*1.2,Z.oasis*1.3,Z.mtn*.6,Z.rim*.7,Z.bench*.5,Z.desert*.1],P=['scrub','bad','rip','rip','oasis','mtn','rim','rim','dune'];
   let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
-  P[k](x,y,z,Z,lv,st);}
+  plantMix(P[k],x,y,z,Z,lv,st);}
  // three bands along the LOD spine (the core's floor radii); each band's window is the spine's reach
  const L=BIO.LOD(),bands=[[9,L.floor[0],0],[18,L.floor[1],L.floor[0]],[36,1e9,L.floor[1]]];
  bands.forEach((b,bi)=>{const lv=2-bi;

@@ -125,6 +125,10 @@ The red desert stays red.
 SEDESERT.build({R:3250, quality:1, waterHue:.42}) -> {trees, heroes, far, bySpecies, ..., under, tris}
 SEDESERT.dress(geometries, opt)     // growth on a structure (lichen, ledge plants, a rose or a young dragon tree)
 SEDESERT.canopyH(x,z)               // approximate canopy top
+SEDESERT.seat(box) / reseat(box)    // a ground edit (2026-10-25): seat() before the host writes its ground in box [x0,z0,x1,z1],
+                                    // reseat() after (null: all seated): the kit's plants, rocks and dress follow the ground
+                                    // (a tree whole, by its foot); the host's editor calls both (99-host-take.js)
+SEDESERT.FLOOR_MIX                  // the floor's planters as weighted tables per zone: [weight | c=>weight, put]
 SEDESERT.SPECIES                    // the 13 tree-scale species (tagged), SEDESERT.PAL the palettes
 SEDESERT.zones(x,z)                 // the zone weights a world can reuse for its own placement
 SEDESERT.PASSES                     // the species passes as data: {sp, cell, accept(Z,x,z), opt}
@@ -157,9 +161,13 @@ replays it from the clock and the layout (`FAUNA_LAYOUT.deer`, `.coyotes`: `W.pt
 Their ground is dry (`BIO.depth < -.3`), gentle (`slope < .45`), unmasked (`BIO.mask > .5`), clear of
 the obstacles and the tree trunks; every 3 m of a path is tested, so a host's `mask` keeps them out of
 its footprints. `build({fauna})`: `false` builds no fauna; a function `(kind,x,z)->bool` ('deer',
-'coyote') is a host's own filter on top. Legs are their own instances swinging on the hips (this kit
-does not load `35-core-anim.js`: its walk hook would need per-instance attributes the dynamic meshes
-do not carry, and a CPU pose exports as plain matrices). Herds and loops are registered volumes
+'coyote') is a host's own filter on top. Legs (2026-10-25) are two instances each (`deerleg` and
+`deershin`, `coyoteleg` and `coyoteshin`), set on the CPU by a two-bone reach to a foot that plants and
+swings on the gait's clock (the deer's lateral-sequence walk, the coyotes' trot), so the pose still
+exports as plain matrices. The kites and swifts (2026-10-25) are `35-core-anim` bodies
+(`BIO.animMat`, mode 'walk' with a flap): the tick sets their matrices and the beat's phase in `aP1.x`
+(bouts of beats between glides), both pure functions of the clock, so the export bakes the matrix and
+that one channel; the swifts fly in parties round looping paths over the water (`FAUNA_LAYOUT.flocks[i].parties`). Herds and loops are registered volumes
 (`kind:'fauna'`, with the kind's `tags`). The presets 'Mule deer' and 'Coyotes' frame one where it is.
 
 Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~45).
@@ -179,13 +187,14 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 36-core-carve.js    (read from core/terrain) carve patches: overhangs on a heightfield (BIO.carve)
 20-core-kit.js      instanced items (def/put), merged vertex-coloured buckets
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook, wind
+35-core-anim.js     animated bodies (BIO.animMat: the kites' and swifts' wing-beats; 2026-10-25)
 40-core-place.js    stands, jittered grids (+ box, noMask), keep-clear, face sampling
 50-biome-sedesert-species.js   water-hue palettes, 13 species, textures, geometries (columns, candles, hoodoos, agaves), items (data only)
 55-biome-sedesert-trees.js     zones from the fields; one builder per species (fork trees, column trees, the rest); impostors
 60-biome-sedesert-floor.js     the floor by zone; reeds in the shallows; hoodoos; fallen mesquites
-65-biome-sedesert-dress.js     growth on structures (lichen, ledge plants, a hanging succulent)
+65-biome-sedesert-dress.js     growth on structures (lichen, ledge plants, a hanging succulent); SEDESERT.seat / reseat
 70-biome-sedesert.js           SEDESERT.build / dress / canopyH
-75-biome-sedesert-fauna.js     the fauna: kites, swifts, striders, lizards; deer and coyotes (walkers); BIO.kitEnd
+75-biome-sedesert-fauna.js     the fauna: kites and swifts (35-core-anim wing-beats), striders, lizards; deer and coyotes (walkers, jointed legs); BIO.kitEnd
 45-host-stage.js (ideal type only): renderer, the desert terrain (mountains, canyon, butte, mesas,
                                     badland, dunes, the Abyss), the fields (cached), the river ribbon,
                                     the pond, the cataract with its mist, the painted ground, BIO.init

@@ -40,6 +40,7 @@ const VIEWS={
  'From the foothills':viewAxis(2400,100,90,-1500,-100,0),
  'From afar':viewAxis(3000,2200,420,-400,0,0),
  'Krator rising':viewAxis(-400,-200,30,1200,1400,900),
+ 'The Inner Wall':viewAxis(1600,-250,30,5600,250,700),   /* the far-field range and its foothill pillars (83-host-range.js) */
 };
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -92,7 +93,7 @@ KHOST.take({build:'nwlowlands',title:'Krator Northwestern Lowlands',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  sky:{follow(c){sky.position.copy(c.position);if(typeof wallSky!=='undefined')wallSky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing,typeof wallSky!=='undefined'?wallSky:null]}},
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'the Inner Wall (far field)':{match:o=>!!(o.userData&&o.userData.farField)},'sky':{objects:()=>[sky,giant,giantRing,typeof wallSky!=='undefined'?wallSky:null]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

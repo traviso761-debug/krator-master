@@ -21,7 +21,7 @@ NWLOW.TREES=[];
 // near / mid / far bands, the understorey under the crowns, fallen logs, the dressing on a world's
 // structures. Equal ranges share a mesh per item per chunk (the passes use many of the same items),
 // so they are kept to a few values: each distinct one is a draw call per item per chunk in view.
-NWLOW.LOD={tree:1200,grove:1200,avenue:2000,floor:800,floorMid:1200,farFloor:1200,under:800,logs:1200,dress:1200};
+NWLOW.LOD={tree:1200,grove:1200,avenue:2000,floor:1200,floorMid:1200,farFloor:1200,under:1200,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);

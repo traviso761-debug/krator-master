@@ -90,6 +90,13 @@ CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, 
 khost.resolve(PATH,CORE_HOST)
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE_A,f)
+# core/water (core/water/README.md; 2026-10-25, migration phase 4): the tarn and the bog pools WATER.still, the ravine streams WATER.flow
+# (records in 45-host-stage.js, drawn in 89zw-host-water.js, after the atmosphere binds). Explicit paths, never the folder.
+CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:   # drawPools lives in the ext pair
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -126,7 +133,7 @@ out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f:
+    if 10<=n<80 and '-host-' not in f and not (PATH[f] and os.sep+'core'+os.sep in os.path.normpath(PATH[f])):
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
