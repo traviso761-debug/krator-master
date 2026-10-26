@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 1 prompt** (`metal.enamel.scoured`, optional; the third 2026-10-26 drop delivered the other 14, see `PLAN.md`) (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. The shared sky's six moon maps (added 2026-10-25) were delivered the same day: `PLAN.md`, the Delivered log. A short list at the end names gaps that have no prompt yet.
+**Count: 2 prompts** (`metal.enamel.scoured`, optional; `card.fig` for Mantis's figs, optional, 2026-10-26; the third 2026-10-26 drop delivered the other 14, see `PLAN.md`) (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. The shared sky's six moon maps (added 2026-10-25) were delivered the same day: `PLAN.md`, the Delivered log. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -97,6 +97,15 @@ culms (scaled up), `ground.salt` and `ground.efflorescence` on the flats, the NW
 The abyssal salt lake in the eastern desert. Reuse: `ground.salt`, `ground.efflorescence`, `ground.playa.red`,
 `ground.clay.popcorn`, `card.tamarisk`, `bark.saxaul`, `card.samphire` for the glasswort (green; tint its crimson), the
 kit's own sets. The banded shallows are water tints, not a texture.
+
+#### `card.fig` (2026-10-26, Mantis's pocket, `PLAN-BOWL.md` section 11)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable (grey-green, each instance's colour tints it); a clump fills each cell.
+- Used by: the Mantis fig's crown (`biomes/sedesert/stations/mantis`, slot `broad`). Stands in today: the kit's procedural
+  small-leaf map (`card.broadleaf` is a monstera bunch, wrong for a fig). Reuse: any fig, banyan or laurel-leaved crown.
+
+```
+A sheet of nine separate cut-out foliage sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a dense rounded clump of fig foliage seen from outside the crown, many leathery oval leaves ten to fifteen centimetres long with blunt tips and a pale midrib, overlapping in layers, a few short grey twigs showing between them and two or three small round figs on the twigs; vary the outline and the density of the nine clumps. Keep colours natural but slightly muted and even, a mid grey-green, so the sprite can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
 
 ## 12. The Catch (`biomes/catch`, planned 2026-10-23)
 

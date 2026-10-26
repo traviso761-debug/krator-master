@@ -173,6 +173,15 @@ the shimmer and the mirage). Lessons: a ridged noise term `1-|2f-1|` is near 1 w
 under .95 makes broad plateaus, not crests; a salt lake 0.3 m deep reads as a white sheen from eye height (it is all sky
 reflection at that angle): the shore views stand 9 m up; a far town at its true 50 km is under a pixel high.
 
+## Station 2b: Mantis's pocket (2026-10-26)
+`python3 build.py --station mantis`: `station.json` "base": "bowl" starts from the Bowl's files, and the Bowl's code is split for it
+(45-host-shell, the layout in 45-host-stage, 46-host-land, 83-host-regions, 98-host-checks; STATION carries a station's options:
+its lattice, LOD, air, heat, ground layers, spring pools, channel reach, halophyte counts, budget). The forest's species are pushed
+onto `SEDESERT.SPECIES` and drawn with `SEDESERT.TOOLS` (55), so the kit's pass, impostors, registry and inspector take them. Lessons:
+a fragment shader has 16 texture units (the ground's layers, the strata, the noise and the cloud shade add up); a uniform named in
+two injected chunks must have one type (`uNoise` was the strata's); a host's `BIO.put` after a kit's `BIO.kitEnd` finds none of the
+kit's items (put through a kit function: `SEDESERT.bed`); a channel narrower than two of the ground field's steps sits under its bed.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

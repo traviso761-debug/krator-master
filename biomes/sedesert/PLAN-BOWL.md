@@ -174,3 +174,26 @@ brine lamp records) and the salt village at Mantis (`core/hamlet`); the fauna of
 (`core/terrain/STRATA-PLAN.md`) is not built, so the rim walls are the sky's ridges and the kaluts use the kit's own strata
 shader; the brine's bands do not shift with the season yet (the tint is baked once); the gallery (a publish is the owner's call).
 
+## 11. Station 2b: Mantis's pocket (2026-10-26)
+
+The owner (2026-10-26): a second station, near Mantis, "where the flora actually gets somewhat lush"; **a unique Socotran-style
+monsoon forest** (not another kit's trees); **the town's edge only** (its own build is a settlement's work); the stations' ceiling
+raised to **21M triangles**. `python3 build.py --station mantis` -> `dist/sedesert-mantis.html`, `stations/mantis/` (it inherits the
+Bowl's files through `station.json` "base" and writes its own layout, regions, forest, floor, build and views).
+
+**The site**: the wetter green pocket on the south-west shore, a few km north-east of Mantis (px ~838,830): a diagonal shore with the
+lake to the north-east (its banded shallows, the springs' plumes in them), a reed shore, four springs at the foot of the rise feeding
+streams to the lake, savanna between, the pocket thinning to saltbush, saxaul and the reg in the south-east, the town's walled
+gardens and houses in the south-west.
+
+**The forest** (`57-biome-sedesert-forest.js`; Socotra's own wet woodland as the model): the **Mantis fig** (*Ficus vasta*: a fused,
+buttressed grey bole, limbs running out level, a dark dome forty metres across, aerial roots, figs, beard lichen), **Socotran
+frankincense** (*Boswellia*: papery bark, pinnate leaves; the resin the Izani merchant houses came for), the **cucumber tree**
+(*Dendrosicyos*: a swollen trunk), the **Socotran pomegranate** (*Punica protopunica*), the **sterculia**; the kit's dragon's blood
+trees in close groves; beard lichen (*Usnea*) on the forest's limbs. The floor (`67-biome-sedesert-pocket.js`): tall monsoon grass,
+croton, kalanchoe, aloes, ferns at the springs. **The town's edge** (`88-host-build.js`): outlying mud-brick houses, a merchant
+house's tower with its wind-catcher, a domed shrine, walled gardens (date groves in rows, fig gardens, kitchen beds), as hashed
+records (core/rand), registered and drawn as one mesh.
+
+**Left**: the town's own build (core/city; its look: Yuni's under the Izani merchants'); textures for the houses (vertex colours now);
+the forest's fauna; a fig card (the library's `card.broadleaf` is a monstera bunch: the figs use the kit's procedural small-leaf map).

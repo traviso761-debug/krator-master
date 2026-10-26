@@ -1,4 +1,4 @@
-// ================================================================= HOST — stage (station 3 of the Bowl: Mantis's green pocket, PLAN-BOWL.md)
+// ================================================================= HOST — stage (station 2b, the Bowl's second: Mantis's green pocket, PLAN-BOWL.md)
 // The Bowl's one lush place (the owner, 2026-10-26: a station near Mantis "where the flora actually gets somewhat lush"). On the
 // south-west shore of the Bowl's salt lake two green pockets of monsoon forest and savanna (Am, Aw; ~1,000-1,550 mm against the
 // shore's 300) hold where springs come up at the foot of the higher ground; Mantis, the oasis town (an Iziz holding grown under
@@ -84,7 +84,7 @@ const STATION={key:'mantis',tags:'sedesert-mantis',seed:3,chanBox:[-3300,-3300,3
  halo:{saltreed:150,rankgrass:300,glasswort:50,saltbush:30},
  chanReach:190,   /* the gallery forest reads the streams this far out */
  groundLayers:['salt','ochre','efflor','playa','reedbed','popcorn'],   /* with the green two: 8 layers, inside the 16 texture units */
- budget:{tris:21000000,calls:170}};   /* the owner's ceiling for the Bowl's stations, 2026-10-26 */
+ budget:{tris:21000000,calls:170},cls:{pass:11000000,host:900000}};   /* the owner's ceiling for the Bowl's stations, 2026-10-26 */
 // ---------------------------------------------------------------- the fields (cached in 46; these are the definitions)
 // The kit's, the Bowl's (lake, shore, flat, salt, delta, halo, reg, yard, damp, fan, ridge, strand, plat) and swlowlands' (tropic,
 // dry: its zones read wet, tropic, dry, salt, flow, upland: rain = tropical and wet, swamp, rip by the streams), and the pocket's

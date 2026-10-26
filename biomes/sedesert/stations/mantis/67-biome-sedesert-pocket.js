@@ -39,7 +39,7 @@ SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670021);q=q==null?1
   (x,y,z)=>plant(x,y,z,lv),{patch:.6,patchScale:.012,pad:.6,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // THE TALL GRASS: the monsoon's savanna is grass to the knee and the waist, not a lawn: a sward of tufts close by, bigger ones
  // further off (past that the ground's grass layer carries it)
- [[3.2,L.floor[0],0,2],[6.5,L.floor[1],L.floor[0],1]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*(1-F('garden',x,z))*.95*q;},
+ [[3.6,L.floor[0],0,2],[7.5,L.floor[1],L.floor[0],1]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*(1-F('garden',x,z))*.95*q;},
   (x,y,z)=>{if(SEDESERT.blocked(x,z,.4))return;const lv=b[3],h=rr(.7,1.5)*(lv===1?1.4:1),rk=rng()<.3;
    tuft(rk?'rankgrass':'grass',x,y,z,h,h*rr(1.1,1.5)*(lv===1?1.3:1),leafCol(rk?PP.rank:PP.grass,1.25,.04));st.grass++;},{patch:.5,patchScale:.02,pad:.3,box:BIO.originBox(b[1])});});
  return Object.assign(out,{pocket:st});};

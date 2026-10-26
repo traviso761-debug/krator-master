@@ -38,6 +38,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | Tag | Note |
 |---|---|---|
 | `stations/bowl/00-head.html` | [web] | page shell |
+| `stations/bowl/45-host-shell.js` | [web] | the shell every Bowl station shares: the error panel, the registry, the renderer, scene and lights |
+| `stations/bowl/46-host-land.js` | [web] | split: the channels' grid, the baked ground (KFIELD), the local water and the fields' cache are data from the layout; BIO.init is host |
+| `stations/bowl/83-host-regions.js` | [web] | the Bowl's named regions (registered volumes) |
+| `stations/bowl/98-host-checks.js` | [web] | the inspector's words and the checks, shared by the Bowl's stations |
 | `stations/bowl/45-host-stage.js` | [web] | split: the layout (shore `zS`, plateau, fan, dunes), `baseH`, the delta's channel lines and levels (KRELIEF.river), the kaluts' lattice (KRAND per cell) and `terrainH0` are plain maths of (x, z) and port as data; the old lake is core/terrain's KBASIN ([G data]); the ground is baked into a KFIELD field (TFIELD) and exported as the terrain; the field cache and BIO.init are host |
 | `stations/bowl/56-biome-sedesert-bowl.js` | [G data] | the dense-air habit (`SEDESERT.ABYSSAL`, multipliers on H, rb, crownR) and the Bowl's tree passes as data (species, cell, acceptance, options); no three.js |
 | `stations/bowl/66-biome-sedesert-halo.js` | [draw] | split: the halophytes' materials and items (library cards, BIO.libSwap('bowl')), their builders and the floor pass, placing and drawing in one pass (BIO.grid then BIO.put / BIO.tube), as 60 |
@@ -49,3 +53,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `stations/bowl/89s-host-sky.js` | [G native] | the shared sky preset at px 866,826 (1.83 atm, dusty, two ridges): Godot's krator/sky.gd reads the same preset |
 | `stations/bowl/89w-host-water.js` | [draw] | the lake (two WATER.open surfaces; the banded shallows a baked tint field) and the delta's six flows, drawn by core/water and exported in its water section |
 | `stations/bowl/99-host-take.js` | [web] | KHOST.take, the views, the inspector's words and the station's checks: host shell |
+
+**Station 2b, Mantis's pocket (2026-10-26; `python3 build.py --station mantis`, `stations/mantis/`).** It inherits the Bowl's fragments
+(above) and replaces or adds:
+
+| Fragment | Tag | Note |
+|---|---|---|
+| `stations/mantis/45-host-stage.js` | [web] | split: the layout (shore, springs, streams, the pocket, the town's records from KRAND), groundH and fieldsAt are data; STATION its options |
+| `stations/mantis/57-biome-sedesert-forest.js` | [draw] | split: the forest's five species (data, pushed onto SEDESERT.SPECIES) and their builders on the kit's tools; the pocket's passes (data) |
+| `stations/mantis/67-biome-sedesert-pocket.js` | [draw] | split: the pocket's floor, placing and drawing in one pass, as 60 |
+| `stations/mantis/83-host-regions.js` | [web] | the pocket's named regions |
+| `stations/mantis/88-host-build.js` | [draw] | the town's edge as one mesh (its records are 45's), the gardens' trees and beds, the kit's build, the bake |
+| `stations/mantis/99-host-take.js` | [web] | the views and the forest check, KHOST.take |
+

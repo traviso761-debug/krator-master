@@ -4,6 +4,16 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### Mantis's pocket (station 2b, `stations/mantis/`, 2026-10-26)
+- [ ] **The town's edge is massing**: vertex-coloured boxes, a dome and a tower, no library textures; the town proper is a settlement's
+      work (core/city).
+- [ ] **The figs' leaves are the kit's procedural small-leaf map**: `card.broadleaf` is a monstera bunch. A fig card (glossy oval
+      leaves in a clump) is owed if the figs want one.
+- [ ] **The streams are 8-12 m wide** (narrower ones fell under the ground field's 5 m step: their beds came out over the water).
+- [ ] **The ground takes six of the Bowl's nine layers** here (`STATION.groundLayers`), with the two green ones, to stay inside a
+      fragment shader's 16 texture units.
+- [ ] **The forest floor is thin under the figs** away from the springs; the floor pass could fill it further within the 21M budget.
+
 ### The Bowl (station 2, `stations/bowl/`, 2026-10-26)
 - [ ] **The rings are compressed** (the owner, 2026-10-26): the ochre rim, the flat, the halo and the kaluts each a few hundred
       metres to a kilometre where the model has 10 to 28 km. Mantis is placed the same way (12 km, truly 50) and drawn looming

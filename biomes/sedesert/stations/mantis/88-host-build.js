@@ -28,7 +28,9 @@ const TOWN_MESH=(function(){const pos=[],nor=[],col=[],c=new THREE.Color();
    box(p[0],p[1],(k%2?.3:L/n/2+.15),(k%2?L/n/2+.15:.3),y0,y0+1.9,G.rot,0xb08c68,0xa8845e);}});
   OBSTACLES.push({x:G.x,z:G.z,r:Math.max(G.w,G.d)*.62});REGISTER({name:G.name,x:G.x,z:G.z,y:terrainH(G.x,G.z)-2,r:Math.hypot(G.w,G.d)*.5,h:G.kind==='dates'?24:G.kind==='figs'?22:6,garden:G.kind});}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
- const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.host=true;m.userData.inspectLabel=TOWN.name;scene.add(m);return m;})();
+ const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.host=true;m.userData.inspectLabel=TOWN.name;
+ /* the probe counts a merged mesh by its points: one a house (a metre up) and one a garden wall */
+ m.userData.probePoints=TOWNREC.houses.map(H=>[H.x,terrainH(H.x,H.z)+1,H.z]).concat(TOWNREC.gardens.map(G=>[G.x+Math.cos(G.rot)*G.w/2,terrainH(G.x,G.z)+.5,G.z+Math.sin(G.rot)*G.w/2])).flat();scene.add(m);return m;})();
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
@@ -49,6 +51,6 @@ const TOWN_MESH=(function(){const pos=[],nor=[],col=[],c=new THREE.Color();
   BIO.cur=null;window._gardens=st;}catch(e){reportErr('gardens: '+e.stack);}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'Mantis\'s green pocket: the Socotran monsoon forest on the Bowl\'s south-west shore (the eastern desert, station 3)',x:0,z:0,y:LAKE.level-8,r:TERR.R,h:400});
+ REGISTER({name:'Mantis\'s green pocket: the Socotran monsoon forest on the Bowl\'s south-west shore (the eastern desert, station 2b)',x:0,z:0,y:LAKE.level-8,r:TERR.R,h:400});
  _mark('bake');
 })();

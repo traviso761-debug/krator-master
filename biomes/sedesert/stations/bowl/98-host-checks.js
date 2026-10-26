@@ -15,7 +15,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 // ---------------------------------------------------------------- the probe's budgets and the station's own checks (verify.py --assert)
 const BUDGET={
  showcase:STATION.budget||{tris:14000000,calls:150},   // measured on this station (KNOWN_ISSUES.md, "The Bowl"), not a target
- cls:{pass:7000000,host:900000},
+ cls:STATION.cls||{pass:7000000,host:900000},
  type:Object.assign({'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','host':'host'},STATION.types||{}),
 };
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
