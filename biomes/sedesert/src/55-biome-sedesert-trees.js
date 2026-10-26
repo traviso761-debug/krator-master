@@ -139,20 +139,22 @@ function columnTree(T,st,lv,cfg){const S=SP[T.sp],fam=cfg.fam,H=T.H,rb=T.rb,ti=T
  for(let k=0;k<nA;k++){const a=a0+k*GOLD+rr(-.3,.3),el=cfg.armEl*rr(.8,1.2),len=T.crownR*cfg.armK*rr(.8,1.1),r0=rAt(1)*rr(.45,.6);
   const o={x:T.x+Math.cos(a)*rAt(1)*.5,y:T.y0+trH*rr(.8,1),z:T.z+Math.sin(a)*rAt(1)*.5},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,r0*.55,4,cfg.armCurve,.05);
   let ok=true;for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+2,pts[i].r+2)){ok=false;break;}if(!ok)continue;
-  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:r0>.8?6:4,cap:true});
-  for(let s=1;s<=4;s++){const p=pts[s],u=s/4;spots.push({p:p,r:p.r,u:Math.hypot(p.x-T.x,p.z-T.z)/T.crownR,along:u});}}
+  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:r0>.8?9:7,cap:true});   /* (2026-10-26) round arms: they were 4 and 6 sided */
+  /* (2026-10-26) spots all along the arm, three to a segment past its first quarter, so the columns rise from the arm itself */
+  for(let s=1;s<pts.length;s++)for(let k=1;k<=3;k++){const a=pts[s-1],b=pts[s],t=k/3,u=(s-1+t)/(pts.length-1);if(u<.25)continue;
+   const p={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t,r:a.r+(b.r-a.r)*t};spots.push({p:p,r:p.r,u:Math.hypot(p.x-T.x,p.z-T.z)/T.crownR,along:u});}}
  spots.push({p:{x:T.x,y:T.y0+trH,z:T.z,r:rAt(1)*.6},r:rAt(1)*.6,u:0,along:1});
  // the columns: from every arm point a cluster rises; height by the dome / vase shape. The hero's main columns are the
  // ribbed 40-triangle 'column', its side shoots and a mid tree's columns the light 18-triangle 'columnLo' (2026-10-25)
  const nCol=lv===2?ri(S.cols[0],S.cols[1]):Math.round(S.cols[0]*.45);let placed=0;
  const dome=u=>cfg.vase?mix(.55,1,smooth(0,1,u)):mix(1,.35,u*u);
  const topY=T.y0+H;
- for(let i=0;i<nCol&&spots.length;i++){const s=spots[i%spots.length],a=rr(0,TAU),d=Math.max(.3,s.r)*rr(.4,1.6)+(i%3?0:rr(0,1.5));
+ for(let i=0;i<nCol&&spots.length;i++){const s=spots[i%spots.length],a=rr(0,TAU),d=s.r*rr(0,.55);   /* (2026-10-26) on the arm: within its radius (it was up to 1.6 radii and 1.5 m off, the feet in the air) */
   const x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,u=clamp(Math.hypot(x-T.x,z-T.z)/T.crownR,0,1.2);
   const h=(topY-s.p.y)*dome(u)*rr(.7,1.05),w=cfg.colW*rb*rr(.8,1.25);if(h<1.5)continue;
   const tilt=(cfg.vase?.14:.06)*u*rr(.5,1.4),ta=Math.atan2(z-T.z,x-T.x);
   if(!clear3(x,s.p.y+h*.5,z,w,h*.5))continue;
-  BIO.put(lv===2?'column':'columnLo',[x,s.p.y-.3,z],qEuler(Math.sin(ta)*tilt,rr(0,TAU),-Math.cos(ta)*tilt),[w,h+.3,w],bright(vary(i%5?hc:C(pick(S.leaf)),.02,.06,.05),rr(.9,1.08)));placed++;
+  BIO.put(lv===2?'column':'columnLo',[x,s.p.y-s.r*.35,z],qEuler(Math.sin(ta)*tilt,rr(0,TAU),-Math.cos(ta)*tilt),[w,h+s.r*.35,w],bright(vary(i%5?hc:C(pick(S.leaf)),.02,.06,.05),rr(.9,1.08)));placed++;
   if(lv===2&&rng()<cfg.sideK){const hh=h*rr(.25,.5),yy=s.p.y+h*rr(.3,.7),aa=rr(0,TAU);BIO.put('columnLo',[x+Math.cos(aa)*w*.7,yy,z+Math.sin(aa)*w*.7],qEuler(Math.sin(aa)*.5,0,-Math.cos(aa)*.5),[w*.6,hh,w*.6],bright(vary(hc,.02,.06,.05),1.0));placed++;}
   if(lv===2&&cfg.bloom&&rng()<.12)bloomsAt(x,s.p.y+h+.3,z,w*.8,ri(2,5),cfg.bloom,[.25,.45]);}
  if(!placed){BIO.put('column',[T.x,T.y0+trH-.3,T.z],qEuler(0,0,0),[cfg.colW*rb,H-trH,cfg.colW*rb],bright(hc,1.0));placed++;}

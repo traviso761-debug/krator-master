@@ -310,18 +310,23 @@ G.agave=function(){const pos=[],nor=[],uv=[],col=[];
 // (2026-10-25) two profiles: the hero's (8 sides, ribbed, a shaft, a shoulder and a dome cap: 40 triangles, was 56 with a third
 // ring that the cap's fan now rounds off) and a light one (6 plain sides, the shaft and the cap: 18) for the side shoots and the
 // mid trees' columns, where the skin's own ribs carry the fluting
+// (2026-10-26, the owner: the stems' feet read as cut polygons) the profiles start at a NARROW, ROUNDED FOOT: the stem constricts where it
+// joins the arm (as a Euphorbia's segments do) over its first sixth, the foot closed by a small cap; a profile row may give its
+// normal's y (third value: down-out at the foot, so the constriction shades as a curve)
 const columnGeo=(seg,prof,ribbed,top)=>{const pos=[],nor=[],uv=[],col=[];
  const ring=(i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=ribbed&&!(s%2)?.84:1;r.push([Math.cos(a)*prof[i][1]*rib,prof[i][0],Math.sin(a)*prof[i][1]*rib,ribbed&&!(s%2)?.78:1]);}return r;};
- const R=prof.map((p,i)=>ring(i)),ny=i=>i===0?.15:.3;
+ const R=prof.map((p,i)=>ring(i)),ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
  /* uv (2026-10-25, so the library's skin.cactus can dress the columns): u once round (the skin's ribs over the mesh's), v up the height */
  const push=(p,n,u)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(u,p[1]*1.6);col.push(p[3],p[3],p[3]);};
  for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
   const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
   push(a,na,u0);push(d,nd,u1);push(c,nc,u0);push(a,na,u0);push(b,nb,u1);push(d,nd,u1);}
  const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];push(a,[a[0],.6,a[2]],s/seg);push(b,[b[0],.6,b[2]],(s+1)/seg);push(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (inside the arm it stands on, but a side shoot's shows) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];push(a,[a[0],-.8,a[2]],s/seg);push(bp,[0,-1,0],(s+.5)/seg);push(b,[b[0],-.8,b[2]],(s+1)/seg);}
  return BIO.geo._make(pos,nor,uv,col);};
-G.column=()=>columnGeo(8,[[0,.5],[.6,.485],[.9,.38]],true,1.02);
-G.columnLo=()=>columnGeo(6,[[0,.5],[.82,.43]],false,1.04);
+G.column=()=>columnGeo(8,[[0,.2,-.2],[.07,.42,-.18],[.17,.5,.15],[.6,.485],[.9,.38]],true,1.02);   /* 80 triangles (was 40) */
+G.columnLo=()=>columnGeo(6,[[0,.24,-.22],[.12,.47,-.03],[.82,.43]],false,1.04);   /* 36 triangles (was 18) */
 // a TWIST-CANDLE: a tapered, three-lobed column twisting as it rises, unit height, vertex-coloured pale at the base
 G.candle=function(){const pos=[],nor=[],uv=[],col=[];const seg=9,nr=8;const P=[];
  for(let i=0;i<=nr;i++){const t=i/nr,r=.5*Math.pow(1-.72*t,.7)*(i===nr?.2:1),row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rr2=r*(1+.28*Math.cos(3*a+t*3.6));row.push([Math.cos(a)*rr2,t,Math.sin(a)*rr2,lerp(.66,1,t)]);}P.push(row);}

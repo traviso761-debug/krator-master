@@ -19,10 +19,20 @@ function bandAt(x,z){const d=-uOf(x,z)+180*(BIO.fn.fbm(x*.0012+4,z*.0012,8921,2)
  let i=0;while(i<BANDS.length-2&&d>BANDS[i+1][0])i++;const A=BANDS[i],B=BANDS[i+1],t=smooth(B[0]-90,B[0]+40,d);
  if(!B[1])return{c:A[1],a:A[2]*(1-t)};
  const ca=new THREE.Color(A[1]),cb=new THREE.Color(B[1]),c=ca.lerp(cb,t);return{c:c.getHex(),a:A[2]+(B[2]-A[2])*t};}
+// THE PLUMES: each distributary's silty water fans out into the brine from its mouth (fresh water floats on brine), the river's
+// colour at the mouth fading into the bands over ~400 m out and widening as it goes, so the ribbon's end meets water of its own colour
+const RIVER_TINT=new THREE.Color(linI(0x6e6a44)),MOUTHS=CHAN.slice(1).map(C=>{let k=C.pts.length-1;while(k>1&&uOf(C.pts[k][0],C.pts[k][1])<6)k--;
+ const a=C.pts[Math.max(0,k-6)],b=C.pts[k],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1;return{x:b[0],z:b[1],dx:(b[0]-a[0])/L,dz:(b[1]-a[1])/L,w:C.w,k};});
+function plumeAt(x,z){let k=0;for(const M of MOUTHS){const rx=x-M.x,rz=z-M.z,al=rx*M.dx+rz*M.dz,ac=Math.abs(rx*M.dz-rz*M.dx);if(al<-40)continue;
+  const hw=M.w*.6+.38*Math.max(0,al),wob=1+.25*(BIO.fn.fbm(x*.01,z*.01,8922,2)-.5);
+  k=Math.max(k,Math.exp(-Math.pow(ac/(hw*wob),2))*smooth(-40,0,al)*Math.exp(-Math.max(0,al)/(260+6*M.w)));}return k;}
+const _bc=new THREE.Color();
+function tintAt(x,z){const B=bandAt(x,z),k=plumeAt(x,z);if(k<.02)return B;
+ if(!B)return{c:RIVER_TINT.getHex(),a:.8*k};_bc.set(B.c).lerp(RIVER_TINT,k);return{c:_bc.getHex(),a:B.a+(.82-B.a)*k};}
 const LAKE_BOX=[-GRID.S/2,-GRID.S/2,GRID.S/2,800];
 const LAKE_WATER=WATER.open({name:'The Bowl lake',level:LAKE.level,swell:[[.012,26,160,0,.01],[.008,11,200,1.3,.01]],field:.03,bounds:LAKE_BOX,
  bed:terrainH,bedBox:LAKE_BOX,bedCell:6,
- tint:{box:LAKE_BOX,cell:12,at:bandAt}});
+ tint:{box:LAKE_BOX,cell:8,at:tintAt}});
 const LAKE_DRAW=WATER.draw(LAKE_WATER,{transparent:true,renderOrder:1,roughness:.1,metalness:.05,envMapIntensity:.55,surf:false,ramp:[.3,5],
  shallow:lin(0x8ac4bc),deep:lin(0x2a8a8e)});
 LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
@@ -35,8 +45,9 @@ const FAR_LAKE=WATER.open({name:'The Bowl lake (far)',level:LAKE.level-.1,swell:
   return{x0:FAR_BOX[0],z0:FAR_BOX[1],cell:c,nx,nz,data:d};})()});
 const FAR_LAKE_DRAW=WATER.draw(FAR_LAKE,{renderOrder:0,roughness:.12,metalness:.05,envMapIntensity:.55,color:lin(0x3a9a9a)});
 FAR_LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
-// THE DELTA: each channel's line to the waterline (its last points out in the lake are the lake's), the main river faster
-const DELTA_FLOWS=CHAN.map((C,ci)=>{const P=[];for(let k=0;k<C.pts.length;k++){const p=C.pts[k];P.push([p[0],p[1],C.y[k]]);if(uOf(p[0],p[1])<-25)break;}
+// THE DELTA: each channel's line to its mouth on the shore (the plume carries its colour out into the lake), the main river faster
+// each line ends at its mouth on the shore (MOUTHS): the lake and its plume take the water from there
+const DELTA_FLOWS=CHAN.map((C,ci)=>{const P=[],end=ci?MOUTHS[ci-1].k:C.pts.length-1;for(let k=0;k<=end;k++){const p=C.pts[k];P.push([p[0],p[1],C.y[k]]);}
  const S=WATER.flow({name:C.name,pts:P,width:C.w,speed:ci?.55+C.w*.012:1.1,rapids:[.03,.08]});   /* a delta has no white water */
  const D=WATER.drawFlow(S,{shallow:lin(0x6e6a44),deep:lin(0x3a4632),color:0xffffff,roughness:.2,metalness:.02,envMapIntensity:.22,step:6,across:ci?4:6,margin:1.5});
  D.mesh.userData.inspectLabel=C.name;C.flow=S;C.draw=D;return S;});
