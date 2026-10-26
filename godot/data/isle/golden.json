@@ -431,10 +431,10 @@
     "level": "presented",
     "goods": {
      "sweet-potato": {
-      "warehouses": 8206,
+      "warehouses": 8104,
       "sites": 0,
       "carts": 0,
-      "total": 11405,
+      "total": 11303,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -457,10 +457,10 @@
       "eaten": 0
      },
      "rice": {
-      "warehouses": 0,
+      "warehouses": 323,
       "sites": 0,
       "carts": 0,
-      "total": 0,
+      "total": 323,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -470,10 +470,10 @@
       "eaten": 0
      },
      "banana": {
-      "warehouses": 6060,
+      "warehouses": 5984,
       "sites": 0,
       "carts": 0,
-      "total": 9306,
+      "total": 9230,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -483,10 +483,10 @@
       "eaten": 0
      },
      "coconut": {
-      "warehouses": 2272,
+      "warehouses": 2244,
       "sites": 0,
       "carts": 0,
-      "total": 5630,
+      "total": 5602,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -496,10 +496,10 @@
       "eaten": 0
      },
      "fish": {
-      "warehouses": 5744,
+      "warehouses": 5673,
       "sites": 0,
       "carts": 0,
-      "total": 9011,
+      "total": 8940,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -509,10 +509,10 @@
       "eaten": 0
      },
      "meat": {
-      "warehouses": 421,
+      "warehouses": 416,
       "sites": 0,
       "carts": 0,
-      "total": 3708,
+      "total": 3703,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -522,10 +522,10 @@
       "eaten": 0
      },
      "bread": {
-      "warehouses": 3156,
+      "warehouses": 3117,
       "sites": 0,
       "carts": 0,
-      "total": 6291,
+      "total": 6252,
       "made": 0,
       "used": 0,
       "imported": 0,

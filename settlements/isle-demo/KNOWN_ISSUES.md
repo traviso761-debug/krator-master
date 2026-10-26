@@ -118,8 +118,11 @@
       instancing or impostors, LOD, a download budget), so its bodies replace these later. A place's workers stand round
       its door's spot (the posts have no spots of their own: no interiors), so a market's traders cluster.
 - [ ] **The canoe line's want is a town's use, not its shelves** (P7c): each town draws hourly on its warehouses what it
-      uses of the other's goods (`ISLE.TUNE.sim.trade.uses`: Valapo's salt, rice, cloves and cacao, Kautoa's sugar), as an
-      abstract use; the imported foods are not yet sold in its shops or eaten in its meals, and the weavers of Kautoa still
+      uses of the other's non-food goods (`ISLE.TUNE.sim.trade.uses`: Valapo's salt, cloves and cacao, Kautoa's sugar), as
+      an abstract use. The imported foods are on the shelves since 2026-10-26: Valapo sells and eats Kautoa's rice at its
+      ration (`trade.diet`, 0.05 a person a day, core's SIM.itemsDiet: about 140 eaten and 150 landed a day over 21
+      days; a week-test check with its negative). The lakatoi lands it in lumps (it fills six days of a one-day use that
+      swings with the restocking round), so Valapo holds about ten days of rice; and the weavers of Kautoa still
       lack cotton (a recipe whose input never was made is not declared). Valapo makes no coffee yet (its upland farms are
       a world record), so the oruwa comes back from Valapo empty.
 - [x] **Kautoa's kin mostly stayed home in their free hours** (2026-10-19): 425 places to be in company for 3,700. The
@@ -143,7 +146,8 @@
 - [x] **The governor and spoilage were the page's hooks** (`49`, on `SIM.stepHooks`): since 2026-10-26 they are
       core/simulation's (`77-sim-6-govern.js`: `SIM.economy({govern, spoil, keep, season})`), with the ships' buys as the
       governor's `buys`; `49` only maps the tuning. The week test's books are byte-identical on core's rules.
-- [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
+- [ ] **Demand follows supply in the households** (except the imported foods, bought at their diet share since
+      2026-10-26): a household buys each food in proportion to the warehouses' stock,
       so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
 - [x] **The material meter pinned at 100 by day 14** (needs on, 2026-10-19): only replacements were bought. The treats

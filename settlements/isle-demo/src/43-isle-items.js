@@ -64,7 +64,7 @@ ISLE.simHouseholds = function (TS, places, foods) {
   var people = {};
   SIM.all('actor').forEach(function (a) { if (a.home && !a.driven) people[a.home] = (people[a.home] || 0) + 1; });
   /* the household's pot: its houseworker (an elder or a child at home), else its first resident */
-  var hold = {}, HP = Object.keys(I.household || {})[0];
+  var hold = {}, HP = Object.keys(I.household || {})[0], DI = (T.trade && T.trade.diet || {})[s] || {}, own = foods.filter(function (f) { return !(DI[f] > 0); });   /* stores open with the town's own foods: the imported come by the canoes */
   SIM.all('actor').forEach(function (a) { if (a.driven || !a.home || SIM.settlementOf(a) !== s) return; var job = a.role.slice(s.length + 1), h = hold[a.home];
     if (!h || ((job === 'elder' || job === 'child') && h.job !== 'elder' && h.job !== 'child')) hold[a.home] = { a: a, job: job }; });
   places.forEach(function (P, i) {
@@ -73,7 +73,7 @@ ISLE.simHouseholds = function (TS, places, foods) {
     if (HP && hold[P.id]) { var a = hold[P.id].a; a.keep = a.keep || {}; a.keep[HP] = 1; a.wears.push(HP); SIM.equip(a, HP, u(a.k, 10) * 0.999); P.potBy = a.id; out.pots = (out.pots || 0) + 1; }
     var days = I.storeDays[0] + (I.storeDays[1] - I.storeDays[0]) * u(i, 1), serv = Math.round(P.people * I.meals * I.perMeal * days), k = 2 + Math.floor(u(i, 2) * 2);
     P.store = {};
-    for (var j = 0; j < k; j++) { var f = foods[Math.floor(u(i, 3, j) * foods.length) % foods.length]; P.store[f] = (P.store[f] || 0) + Math.round(serv / k); }
+    for (var j = 0; j < k; j++) { var f = own[Math.floor(u(i, 3, j) * own.length) % own.length]; P.store[f] = (P.store[f] || 0) + Math.round(serv / k); }
     for (var f2 in P.store) out.servings += P.store[f2];
     out.stores++;
   });

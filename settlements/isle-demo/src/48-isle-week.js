@@ -113,6 +113,14 @@ ISLE.weekChecks = function (w1, w2, o) {
     buy.push({ g: g, made: made, sold: sold }); });
   ok('the ships from beyond the isles bought the cloves and the cacao the towns made', buy.every(function (x) { return x.made > 0 && x.sold >= 0.75 * x.made; }),
     buy.map(function (x) { return x.g + ' ' + x.sold + ' bought of ' + x.made + ' made'; }).join('; '));
+  /* the other town's foods eaten (2026-10-26, `trade.diet`): over the two weeks each imported food bought a person a day
+     within half to twice its ration, and the canoes landed at least three quarters of what was bought */
+  var DT = (ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.diet) || {}, eat = [];
+  Object.keys(DT).forEach(function (s) { Object.keys(DT[s]).forEach(function (g) { var bought = 0, landed = 0, days = 0, ppl = ISLE.SIM.towns[s] ? ISLE.SIM.towns[s].pop.actors : 0;
+    weeks.forEach(function (W) { var A = W.a.towns[s].goods[g] || {}, Bt = W.b.towns[s].goods[g] || {}; bought += (Bt.bought || 0) - (A.bought || 0); landed += (Bt.imported || 0) - (A.imported || 0); days += (W.b.minute - W.a.minute) / 1440; });
+    eat.push({ s: s, g: g, per: ppl && days ? bought / ppl / days : 0, plan: DT[s][g], bought: bought, landed: landed }); }); });
+  ok('the other town\'s foods eaten near their ration and landed by the canoes', eat.every(function (x) { return x.per >= 0.5 * x.plan && x.per <= 2 * x.plan && x.landed >= 0.75 * x.bought; }),
+    eat.map(function (x) { return x.s + ' ' + x.g + ' ' + x.per.toFixed(3) + ' a person a day (ration ' + x.plan + '), ' + x.bought + ' bought, ' + x.landed + ' landed'; }).join('; ') || 'none');
   /* the governor's regression checks (49), on the midnight snapshots: no good short after the second day; each good's
      stock steady (its mean day-to-day change at most `swing` of its mean, where it holds `swingMin` or more; not the
      goods the ships buy, drawn a thousand at a call); each town's food supply line (the governor's position) holding,

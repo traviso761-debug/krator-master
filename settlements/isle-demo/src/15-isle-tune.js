@@ -276,7 +276,10 @@ ISLE.TUNE.sim = {
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
         { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
       ] },
-    uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
+    uses: { valapo: { salt: 0.02, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
+    /* the other town's foods a town eats (2026-10-26), servings a person a day: on its shelves and in its meals at that
+       share of its diet (44, core's SIM.itemsDiet), the canoe line bringing what is eaten (Kautoa's rice in Valapo) */
+    diet: { valapo: { rice: 0.05 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
         goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools'], valapo: ['sugar', 'garments', 'nets'] } },

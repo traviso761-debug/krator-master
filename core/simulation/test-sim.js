@@ -793,6 +793,32 @@ function world(seed){
  ok('urgent: three lamps at the kiln, none on the shelf and buyers short: fetched though under minLoad',U.S.R.place.shed.stock.lamps===3&&U.E.hauled.lamps===3,!(U.E.hauled.lamps>0));
  ok('without it they wait at the kiln for a load of ten',N.S.R.place.kiln.stock.lamps===3&&!(N.E.hauled.lamps>0),N.E.hauled.lamps>0);}
 
+// the diet (SIM.itemsDiet): a household buys a named food at its share of its days of food (split by largest remainders,
+// so a small share is bought too), the rest by the warehouses' stock; without it, all by the stock
+{const buy=(diet)=>{const {S}=world(157);
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'stall',kind:'shop',x:50,z:0,activities:{BUY:4},open:[0,24]});
+   S.economy({goods:{corn:{},rice:{}},window:1});S.store('shed',{kind:'warehouse'});S.R.place.shed.stock={corn:1000,rice:1000};
+   S.items({kinds:{corn:{cat:'food',food:true},rice:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,days:3,low:1});
+   S.shop('stall',['corn','rice']);if(diet) S.itemsDiet(null,diet);
+   const H=S.R.place.homeA;H.people=5;H.store={};S.itemsAbstractHome(H,1,null,5);return H.store;};
+ const D=buy({rice:0.03}),N=buy(null);
+ ok('diet: rice at its 3% of 60 servings ('+D.rice+'), the corn the rest ('+D.corn+')',D.rice===2&&D.corn===58,D.rice!==2);
+ ok('without it the stock splits them (equal stock: '+N.rice+' and '+N.corn+')',N.rice===30&&N.corn===30,N.rice===2);}
+
+// a route's `expect`: the receiver's planned use of a good, a floor on its want, so a load sails before anyone there
+// has bought any; without it the carrier sails empty
+{const go=(expect)=>{const {S,clock}=world(163);
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{}},window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:2000};
+   S.trade(Object.assign({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:500,minutes:60,mins:30,keep:0,want:3},expect?{expect:{valapo:{rice:100}}}:{}));
+   for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}
+   return EV;};
+ const X=go(true),N=go(false);
+ ok('expect: a load of rice sails to Valapo before anyone there wanted it (3 days of its 100 a day: '+(X.imported.rice||0)+')',X.imported.rice===300,!(X.imported.rice>0));
+ ok('without it the line carries none',!(N.imported.rice>0),N.imported.rice>0);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

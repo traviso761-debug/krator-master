@@ -28,7 +28,7 @@ ISLE.simTrade = function () {
   var pair = ['kautoa', 'valapo'].filter(function (s) { return out.stops[s]; }); if (pair.length < 2) return out;
   T.lines.forEach(function (L) {
     SIM.trade({ id: L.id, stops: pair.map(function (s) { return { settlement: s, place: out.stops[s] }; }), cap: L.cap, carriers: L.carriers, minutes: L.minutes, mins: L.mins,
-      keep: L.keep, want: L.want, goods: L.goods });
+      keep: L.keep, want: L.want, goods: L.goods, expect: ISLE.simExpect(L) });
     out.routes.push(L.id);
   });
   /* the uses: each town's people counted once, the hourly draw carried in fractions */
@@ -36,6 +36,15 @@ ISLE.simTrade = function () {
   towns.forEach(function (s) { S.uses.pop[s] = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length; });
   SIM.stepHooks.push(ISLE.simUses);
   SIM.stepHooks.push(ISLE.simBuyers);
+  return out;
+};
+/* a line's planned want (core's `expect`): the other town's foods a town eats (`diet`), its ration times its people, of
+   those the line carries to it, so the canoes bring rice from the first voyage, before anyone has bought any */
+ISLE.simExpect = function (L) {
+  var D = ISLE.TUNE.sim.trade.diet || {}, out = {};
+  Object.keys(D).forEach(function (s) { var X = ISLE.SIM.towns[s]; if (!X) return;
+    Object.keys(D[s]).forEach(function (g) { if (!Object.keys(L.goods).some(function (o) { return o !== s && L.goods[o].indexOf(g) >= 0; })) return;
+      (out[s] || (out[s] = {}))[g] = D[s][g] * X.pop.actors; }); });
   return out;
 };
 ISLE.simUses = function (minute) {

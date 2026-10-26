@@ -37,5 +37,6 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const a = cp(w1); a.b.towns.valapo.needs.mean.eat = 95; caught('a hungry Valapo', ISLE.weekChecks(a, w2), /content enough/); }
 { const a = cp(w1); a.b.towns.valapo.wear.hurtOld = 4; caught('four hurt past their healing days', ISLE.weekChecks(a, w2), /keep their clothes/); }
 { const a = cp(w1); a.decided = 3; caught('three of the abstract town deciding', ISLE.weekChecks(a, w2), /decided/); }
+{ const a = cp(w1), b = cp(w2); [a, b].forEach(W => { W.b.towns.valapo.goods.rice.bought = W.a.towns.valapo.goods.rice.bought; }); caught('a Valapo that ate none of the rice', ISLE.weekChecks(a, b), /foods eaten/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);
