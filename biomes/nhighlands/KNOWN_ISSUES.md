@@ -4,7 +4,7 @@
 
 - [ ] **The new flora (HANDOFF-FLORA.md, 2026-10-18): procedural, and what to look at again.** Everything new is painted
       in code: the fan-leaf cards (the staghorn and the sun-wheel took the owner's `card.staghorn` and `card.sunwheel` on 2026-10-19), the moss sleeves (the moss cushion's skin as a bark), the
-      ghost alder (the birch bark tinted grey), the serpentwood's and the banyan's bark (the kit's furrowed and smooth
+      ghost alder (its own bark since 2026-10-25: the owner's bark.alder.lichen, nbark8), the serpentwood's and the banyan's bark (the kit's furrowed and smooth
       kinds). Textures wanted: `core/materials/PROMPTS-NEEDED.md` and `HANDOFF-FLORA-REPORT.md`. Cut from the plan to
       hold the 32 M budget: the fern sea's cell is 5 m (the plan's 3 m held 9.8 M triangles of fronds), the ghost
       alder's weight is a fifth of the plan's (12.8k trees), spore lamps sit on about one hummock in seven with 8-22
@@ -13,41 +13,52 @@
       far. The hummocks are the 49-triangle cushion scaled to 4 m: faceted close up. **Roketstad** reads these
       fragments in place but calls `NHL.buildTrees` itself: it gets none of the new flora until its build passes
       `{flora:true}` and calls `NHL.buildNewFlora` (the owner: when Roketstad goes into the open world).
+      Stays open (2026-10-25): textures owed (core/materials/PROMPTS-NEEDED.md) and the Roketstad hookup is the owner's call.
 
 - [ ] **Density against the budget.** The map is 43 km² of old growth; the canopy is closed
       only near the LOD spine (the stream, the tower, the old wood, a boreal stand, the crest).
       Beyond ~600 m the stands thin (the passes' `lodK`) and the impostors are drawn larger to
       make up for it. A world that shows a smaller area can raise the density (`quality`) there.
+      Stays open (2026-10-25): a trade against the 32 M triangle budget; an owner decision.
 - [ ] **Memory.** ~24M triangles held (trees ~16M, floor ~8M), ~2.0M instances. Plain-array
       buckets crashed the page at ~16M; the core now stores Float32 (BIOME-API.md). Software GL
       (SwiftShader) takes ~22 s to build on a quiet machine (`window._phases`: trees ~10 s, the
       core's bake ~5 s, floor ~4 s, ground ~2 s) and 20–60 s a screenshot.
+      Stays open (2026-10-25): a budget fact, not a defect; the core stores Float32 already.
 - [ ] **Draw calls: the near-band floor.** ~330–380 calls at the stream views (from ~480–510), most of
       them the near floor's ~30 item types times the chunks within 650 m. Four pairs of items share
       geometry and material (black grass and grass, dark spurge and heath, smoke bush and moss
       cushions, mountain cane and rods) and could merge, four calls a chunk, but the inspector names
       a small plant by its item's label: that needs a per-instance label in the core first.
+      Stays open (2026-10-25): needs a per-instance inspector label in core/biome first.
 - [ ] **Mid-range broadleaves are thin.** The broad builder's lv1 trees (three boughs as rods, one
       clump a spot) read sparse at 100–300 m, now that there are twice as many of them low down (the
       low-band view from the NW corner). The conifers' treatment (more, larger masses at lv1) would fit.
+      Stays open (2026-10-25): a design task (more lv1 masses); it costs triangles against the budget.
 - [ ] **The boreal spires read near-black against the light.** The denser needle masses carry the
       spire spruce's dark palette (`PAL.conifer` x .82) further; judge it in review, lighten if wanted.
+      Stays open (2026-10-25): waits on the owner's review of the palette.
 - [ ] **Placement evaluates the zones for every cell of every pass** (~2 s of the trees' ~10 s): a
       zone lattice (like the host's field cache) would halve it.
+      Stays open (2026-10-25): a zone lattice is a core/biome placement change (no biome-side fix).
 - [ ] Fauna deferred (a stub, as in the other kits).
+      Stays open (2026-10-25): a feature not yet designed.
 - [ ] The far country's lake shore is a little polygonal (its grid is ~460 m out there), and
       the Outer Wall reads as an even band (82-host-sky.js).
+      Stays open (2026-10-25): the coarse ~460 m grid is the far lake's mask resolution (core/water shore grid cell / sky 82); out of this pass's budget.
 - [x] The night is very dark on open ground away from the glow (by design: the glow carries it). - 2026-10-20: by design, nothing open.
 - [ ] **Snow reads as one band down the valley, not patches** (found in review, Oct 2026). `cold` includes valley
       cold-air pooling (`45-host-stage.js:155`) and snow is gated on `cold>.94*alpine` (`84-host-ground.js`, the snow lerp), so the
       default SE-crest overview shows a continuous white band on the valley floor. (The near trees there no longer read
       as bare poles: the bushy conifers, Oct 2026.)
+      Stays open (2026-10-25): a look decision (cold gate in the ground shader) for the owner.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`; 2026-10-06): yew-lantern arils, frost rowan, wall bilberries, lantern pods, beechmast and acorns.
       `HV()` carries `fruit` (the catalog key) on `elderyew`, `rowan`, `bluebeech`, `gnarloak` and the bilberry and lantern-pod plants; `NHL.FRUIT_KEYS` lists them.
       Beechmast (`bluebeech`) and acorns (`gnarloak`) are now drawn: the `mast` item, a tetrahedron (4 triangles) in three-nut clusters at hero-level leaf
       spots (17,064 instances, about 68k triangles). The probe's host check `fruit tagged, catalogued and drawn` (with two negatives) guards it.
 - [ ] (Travis, Oct 2 2026) **Floating forest: lime foliage.** The floating forest's foliage reads lime green against
       the rest of the kit; retune it to the kit's palette.
+      Stays open (2026-10-25): a palette retune the owner must judge by eye; not done without a look pass.
 
 ## Done
 
@@ -101,3 +112,5 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
 
 2026-10-20 (migration phase 2): `water` is now in the profile (the box [-1500,-1200,-1200,-900] holds the stream near -1230,-1060). The stream, its two falls and the tarn are core/water's. In `45-host-stage.js`: `STREAM_FLOW` (a `WATER.flow` along STREAM.P at STREAM.level, 12 m, as wide as the old ribbon's visible water: 2 (halfW + 4.5)), `STREAM_FALLS` (`WATER.fallsOf(STREAM_FLOW, {steep: .5, minDrop: 8})`: the 30 m and 23 m chutes, each `WATER.fall` with its lip speed raised to run / time of fall so the curtain lands at the foot of the chute and stays over its water) and `TARN_STILL` (a `WATER.still` disc, r + 4, at the tarn's level); drawn in `89w-host-water.js` (`drawFlow`, `drawFall` with their plunge pools, `drawStill`; `ATMOS.skylight` on a capture of the dome and giant, recaptured at each light mode, given to the water only). `84-host-ground.js` lost its water shader, ribbon and disc; the mist stays its sprites. `BIO.waterH` and `terrainH` are unchanged. build.py lists `CORE_WATER` (20, 21, 22, 50, 51). Cost, same cameras, before -> after (calls, triangles): The stream 360 -> 364, 12.94 M -> 12.95 M; The waterfall 275 -> 279, 7.96 M -> 7.97 M; The upper fall 189 -> 191, 6.57 M -> 6.58 M; The tarn 292 -> 296, 7.43 M -> 7.44 M; Night: the stream 415 -> 419, 15.77 M -> 15.78 M (the ceilings are 22 M triangles per type; nothing near). Look: bluer-green and glossier than the old grey-brown, which was an unlit shader reading its colours straight; night keeps the page's lights (the old shader's 0.14 multiplier is gone) and picks up a glint. Two things the page had to do about core/water, recorded in `core/water/README.md` "Open gaps": (1) the flow's white water is a **global preset** (`WATER.PRESETS.flow.rapids`, a 1.5% to 12% grade): this stream falls 17% on average and came out white end to end, so `89w` sets the preset to `[.2, 1]` (the old foam's band); there is no per-flow setting. (2) `WATER.drawStill` takes one colour, so the tarn lost its peat rim running into deep blue (it is one mean colour, 0x3a4640); it is a disc, not the old per-vertex gradient.
+
+2026-10-25 (water options, `core/water` gaps closed 2026-10-21): the migration workarounds named above are gone. (1) The global preset write `WATER.PRESETS.flow.rapids = [.2, 1]` is out: the stream carries its own band, `WATER.drawFlow(STREAM_FLOW, {rapids: [.2, 1]})`, the same picture. (2) The falls take `WATER.fallsOf(STREAM_FLOW, {steep: .5, minDrop: 8, fit: true})`, so `foot`/`run` come from the fall and the curtain speed is fitted by core (`run / time of fall`); no hand-raised speed and no lip re-found in `F.pts`. (3) The tarn is `WATER.still({gradient: {centre: 0x24343a, rim: 0x5a6250, power: 1.6}})`: peat at the rim running into the old deep blue at the middle (the old disc's two colours), which the one-colour `drawStill` had lost. Cost, same cameras: The tarn 296 calls / 7.44 M, The stream 366 / 12.95 M, The waterfall 280 / 7.97 M, Night: the stream 421 / 15.77 M (the migration's own figures were 296 / 364 / 279 / 419: no new draw call; the two or three extra are the main session's bark slot). `verify.py --assert` passes. Look: the tarn from the preset view (a grazing angle) is dominated by the sky in the water, so the peat rim shows only faintly; judge the gradient from a high camera. Only day and night views were looked at, not dawn.

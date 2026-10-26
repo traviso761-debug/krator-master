@@ -116,7 +116,7 @@ const TARN={x:STREAM.src[0],z:STREAM.src[1],r:78,level:STREAM.TARN_LEVEL};
 const STREAM_FLOW=WATER.flow({name:'The stream',pts:STREAM.P.map((p,i)=>[p[0],p[1],STREAM.level[i]]),width:STREAM.P.map((p,i)=>2*(STREAM.halfW(i)+4.5)),
  speed:STREAM.P.map((p,i)=>1+3*smooth(.1,.9,STREAM.drop[i]))});
 const STREAM_FALLS=WATER.fallsOf(STREAM_FLOW,{steep:.5,minDrop:8,fit:true}).map(f=>WATER.fall(f));
-const TARN_STILL=WATER.still({name:'The tarn',level:TARN.level,poly:Array.from({length:48},(_,k)=>{const a=k/48*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+4),TARN.z+Math.sin(a)*(TARN.r+4)];})});
+const TARN_STILL=WATER.still({name:'The tarn',level:TARN.level,gradient:{centre:0x24343a,rim:0x5a6250,power:1.6},poly:Array.from({length:48},(_,k)=>{const a=k/48*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+4),TARN.z+Math.sin(a)*(TARN.r+4)];})});
 // nearest point on the stream: {d, s (metres downstream), i, f, bed, level, w}
 function streamNear(x,z){const B=STREAM.box;if(x<B[0]||x>B[2]||z<B[1]||z>B[3])return null;
  const P=STREAM.P;let bd=1e18,bi=0,bf=0;

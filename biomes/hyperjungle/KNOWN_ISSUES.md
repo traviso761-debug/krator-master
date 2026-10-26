@@ -8,6 +8,7 @@ Read before changing anything here. `build.py` prints the open count.
       58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
       exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
       fur is set to repeat 2x.
+      Stays open (2026-10-25): owner decision (whether the sheets become the default look) and textures.
 - [x] (2026-10-16) Tree tints and bark: a hero's limbs, boughs, twigs and roots now wear its own bole's bark (buckets `limb0`..`limb5` on
       `MAT.bark[sp]`, with the bole tint; still out of the `bark`+sp buckets, which 60-floor's `boleProfile` reads). Before, they shared one `limb` map
       painted in ironbark's browns, whose tint clipped at white, so ghostwood and baobab grew brown limbs under pale boles. Young trees' trunks
@@ -16,28 +17,36 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
+      Stays open (2026-10-25): a process rule for the main session, not a code defect.
 - [ ] The four older species' bark textures are pre-coloured, so 55-trees
       normalises each texture's mean before tinting (`texMean`). The mahogany
       and kapok canvases are painted near-grey and tinted from SPECIES.bark only;
       repaint the older four the same way. Until then, changing one of those
       canvases changes the rendered bole colour twice.
+      Stays open (2026-10-25): a repaint of the older four canvases, a design/texture task.
 - [x] Ghostwood limbs are slightly warmer than its near-white bole: gone with the limbs on the bole's own bark (2026-10-16).
 - [ ] Faint horizontal seams where a bole's lathe sections change texture repeat
       (inherited from Girder).
+      Stays open (2026-10-25): inherited from Girder's lathe texture repeat; a core/biome lathe change.
 - [ ] Saplings beyond 760 m from the origin have clumps on virtual arcs with no
       bough geometry; fine at that range, wrong if the LOD origin moves.
+      Stays open (2026-10-25): only wrong if the LOD origin moves; no host does that yet.
 - [ ] The far impostor ring starts at heroR+30: a host preset that stands inside
       it sees blob crowns at close range. A host should keep cameras inside heroR
       or raise heroR (cost: ~12k tris per hero tree; this host runs 2000 m).
+      Stays open (2026-10-25): a host-contract note, not a defect of this kit.
 - [ ] The host's floor mesh is Lambert-lit with no shadow maps, so open floor
       between plants reads a shade too bright; the litter colour is painted dark
       to compensate. A world with shadows should lighten `MAT_GROUND`.
+      Stays open (2026-10-25): waits on a world with shadows; an owner decision.
 - [ ] Fauna: the herds' waypoints avoid boles, saplings, the host mask and its
       obstacles, but not logs or boulders (a strider can walk through a fallen
       trunk). The flyers' paths are tested against boles at their centre only:
       a wide orbit can clip a crown. No predators, nothing lands.
+      Stays open (2026-10-25): a fauna design task (log/boulder avoidance, predators, landing).
 - [ ] Wings and legs move in the vertex shader but their lighting normals do not
       follow the hinge, so a flapping wing does not brighten and darken.
+      Stays open (2026-10-25): a fauna shader task (hinge-following normals); out of budget.
 - [x] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
       and arctic biomes are to be written against the same core. - 2026-10-20: stale; other biome kits exist now (see INDEX.md), nothing open.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): gatepod (baobab pods), mahogany nut (capsules), silkpod
@@ -89,3 +98,5 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
 
 2026-10-20 (migration phase 2): `water` is now in the profile, and the earlier "checked, nothing to wire" note above is out of date. The brook is core/water's: `BROOK = WATER.flow(...)` in `45-host-stage.js` (a polyline down 90 sin(z .0012) every 40 m, y = bed + .35 exactly, so it equals `BIO.waterH`, which is unchanged, as is `terrainH`), drawn by `WATER.drawFlow` in `89w-host-water.js` (18 m wide, a metre under each bank, ripples carried down the current, white on riffles and along the banks, the sky from `ATMOS.skylight` on a capture of the dome and giant given to the water only), replacing the static MeshStandardMaterial ribbon. `build.py` lists `CORE_WATER` (20, 21, 22, 50, 51) by path. Cost, the brook view `--cam 40,30,-90,0,0,0`: 3,938,285 -> 3,940,925 triangles (+2,640: 180 rows of 8; the old ribbon was 240), 54 -> 54 draw calls; the scene stays far under both ceilings (11 M and 140). EXPORT_BOX moved from [-600,-300,-300,0] to [-150,-300,150,0] so the box holds the brook (the old one lay 300 m west of it); the profile still passes (registry through water, 9 of 9). Look: the new ribbon reads deeper green than the old one, which a lit standard material washed to pale aqua; wherever the bed falls steeper than 1.2% over a line segment the flow shader whitens it (a riffle), which the old flat ribbon never showed. Not a gap: the surface rises and falls with the bed (a brook on a rolling floor, as `waterH` always said), where a river would be a monotone line.
+
+2026-10-25 (water options, `core/water` gaps closed 2026-10-21): checked the brook for workarounds. It has none: no preset write (`WATER.PRESETS` is untouched, the default rapids band suits a lowland brook), no clamped bed, no lifted ribbon, no pick discs (the mesh keeps `probeSkip`, as before), one flow so no second surface. Its width stays the flat 18 m the old ribbon had (no profile was recorded to restore). Nothing changed in `src/`.
