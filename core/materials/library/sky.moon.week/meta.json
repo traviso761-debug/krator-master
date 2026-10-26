@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "1e30698b0d28ca798031e2a46c39bfde6204fad4",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of an Iapetus-like two-faced icy moon. The hemisphere centred 25% across from the left edge, on the middle row, is coal-dark reddish-brown #2a1c14 to #1a120c; the opposite hemisphere, centred 75% across, is bright snow-white ice #e8e6e0 to #cfcac0. The boundary between them is ragged and irregular, with dark streaks and spots spilling onto the bright side and bright crater rims poking through the dark. A thin straight raised ridge runs along the equator (the middle row) across the dark hemisphere. Craters all over, of every size. Matte. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}

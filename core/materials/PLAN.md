@@ -553,6 +553,11 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-25, the shared sky's moon maps** (pasted by the owner; resized to 1024x512 by hand, albedo only, no batch: they are
+equirectangular maps, not tiles): `sky.moon.companion`, `sky.moon.week`, `sky.moon.thirteen`, `sky.moon.day`, `sky.moon.two-day`,
+`sky.moon.four-day`. Wired in `core/atmos` (the sky's moon atlas, `core/atmos/demo/build.py` `moon_atlas()`); the prompts are in
+each `meta.json`. Before the Godot export the atlas goes through the build's `materials.json` like any set.
+
 **Delivered 2026-10-22 and processed, n semiarid** (`tools/textures/batches/nsemiarid-cards-2026-10-22.json` and
 `nsemiarid-bark-2026-10-22.json`, pasted by the owner as 1254 px WebP): `card.pappus.giant` and `card.stipa` (white silk on
 magenta, keyed with the new `spill: 'line'` of `tools/textures/cards.py`: every blended pixel taken as the white subject at

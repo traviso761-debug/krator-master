@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "0387a5bab51aca9457a77790faa007e311397b06",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of an Io-like volcanic moon. Pale yellow #e8d890 and mustard #c8a040 sulfur plains, white sulfur-dioxide frost patches #f0f0e4, orange #d07028 and red-brown #8a3418 deposits, scattered black and dark red volcanic calderas #1a0e08 with dark lava flows spreading from them, and rings of red plume fallout round a few large vents. No glowing lava: the surface only. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}

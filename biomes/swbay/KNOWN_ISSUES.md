@@ -4,6 +4,17 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md S1, 2026-10-26): the look to judge.** The painted dome, the giant mesh and its RingGeometry
+      (`82-host-sky.js`) are gone; `89s-host-sky.js` draws `ATMOS.sky` at Voth's site (the scale model's 446, 690: the bay Voth
+      stands on), on the host clock, and drives the sun, the hemisphere, the fog and the exposure; the fill light follows the
+      daylight; the water's skylight captures the shared sky; the clouds shade the ground, the far country, the plants and the
+      structures (`ATMOS.cloudShade`, not the animated fauna). Differences from the old page, for the owner: the page opens at
+      06:00 on game start's day (dawn; `#hour=13` is the old light's time); the old sky was a milky white 1.9 atm column, the
+      standard preset at 1.9 atm is bluer with cumulus and its horizon is less white: **kept** (the owner, 2026-10-26: the
+      standard blue sky with cumulus stays on swbay; no milky `keys` override); the giant now has its true phase (a crescent by day from the bay) and its ring is the canon hairline, not opened
+      6 degrees; the two painted moons are the real six. The dark round patch in the bay's water under "From over the bay" was
+      there before the sky changed (the bay's deep colour over its deepest bed), not the sky's.
+
 - [x] **The far country hid the river** (closed 2026-10-25). Its 69 m cells, interpolated over the river's 14 m channel, stood up to
       2.4 m above the water along the upper river (rays down on the river's line hit the far country first at about a third of
       it). Inside the map each of its vertices now takes the lowest ground across its own cell (`45-host-stage.js`). The fine

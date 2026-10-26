@@ -46,7 +46,6 @@
  "biomes/shighlands: OWN sky-dome in src/82-host-sky.js": 1,
  "biomes/shighlands: OWN water-shader in src/84-host-ground.js": 1,
  "biomes/swbay: OWN getImageData in src/55-biome-swbay-trees.js": 1,
- "biomes/swbay: OWN sky-dome in src/82-host-sky.js": 1,
  "biomes/swlowlands: OWN getImageData in src/50-biome-swlowlands-species.js": 2,
  "biomes/swlowlands: OWN getImageData in src/55-biome-swlowlands-trees.js": 1,
  "biomes/swlowlands: OWN sky-dome in src/82-host-sky.js": 1,

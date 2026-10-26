@@ -108,6 +108,11 @@ for f in CORE_WATER:
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
+# the shared sky (core/atmos/SKY-PLAN.md, step S1, 2026-10-26): its model, presets and shader, and the host that draws it
+# (src/89s-host-sky.js calls ATMOS.sky); they replace the painted dome and the giant mesh of the old 82-host-sky.js
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+PATH['89-atmos-h-skyhost.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-h-skyhost.js'))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

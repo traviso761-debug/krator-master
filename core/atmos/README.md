@@ -129,6 +129,14 @@ particles) and 49 (culling). The code is new and the behaviour follows those sta
 
 ## Still to do for the port
 
+- **One shared sky** to replace every biome's painted dome (`82-host-sky.js`): the plan, the owner's decisions and the
+  open questions are in `SKY-PLAN.md` beside this file. Step S0 is built (2026-10-25): `sky/` holds the model
+  (`ATMOS.siteAt`, `skyState`, `skyDate`, `ridgeProfile`: [G data]), the presets and colour script (`PRESETS.sky`,
+  `skyPreset`, `skyLook`) and the `atmos_sky` chunk ([G shader]); `host/89-atmos-h-skyhost.js` is `ATMOS.sky(preset, o)`, the
+  sky as a background pass driving the page's light and `ATMOS.skylight`; `demo/` is the viewer; `node core/atmos/test-sky.js`.
+  The files sit in subfolders so the builds that take every `89-atmos-*` file in this folder are unchanged. No biome takes
+  it yet; the Godot twin is next.
+
 - The cloud deck's edge mist (the southern highlands' sprites along the deck's edge and up the ravines) is the host's own and
   is not exported; in Godot it would be `FogVolume`s along the deck's contour, as the fog banks are.
 

@@ -88,6 +88,36 @@
         "biomes/korona/dist"
       ],
       "port": 8813
+    },
+    {
+      "name": "sky-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8841",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "core/atmos/demo/dist"
+      ],
+      "port": 8841,
+      "autoPort": false
+    },
+    {
+      "name": "swbay",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8843",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "biomes/swbay"
+      ],
+      "port": 8843,
+      "autoPort": false
     }
   ]
 }

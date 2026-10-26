@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 15 prompts** (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
+**Count: 15 prompts** (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. The shared sky's six moon maps (added 2026-10-25) were delivered the same day: `PLAN.md`, the Delivered log. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -36,13 +36,6 @@ colours them. **Full colour** blocks keep their hexes. Pattern sheets put "a fla
 Each is the original prompt with a correction at the end. The first take stays installed until the redo arrives.
 **2026-10-15:** five of the six redos arrived (all but `patterns/tribal/formline`) and are in the library, **not wired**: each says which build to re-pack. Do those re-packs before the Godot export (`GODOT-PLAN.md`, "Before an export: textures delivered but not wired").
 
-#### `patterns/tribal/formline`
-- Installed: Highlands `formF`. Why again: came mirror-symmetric, not periodic: the seam shows a doubled eye pair.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Northwest-coast formline painting on cedar: bold swelling black (#171311) formlines with ovoids and U-shapes, the inner shapes in red (#b3322a) and teal (#2e9488), on a cedar-wood ground (#b27a4c, shading to #8a5634), hand-painted and slightly worn, the wood grain faintly showing. Abstract: no readable figures. The pattern repeats horizontally. Full colour. Correction: the design must repeat, not mirror: the right half is not a reflection of the left, and the motif at the right edge continues straight into the motif at the left edge.
-```
-
 ## 1. Beast Riders (optional)
 
 ### The Beast Riders kit's tents (`kits/beast-riders`, 2026-10-19)
@@ -51,12 +44,6 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 (`br_hedge_thorn`, `src/75-br-tents-bounds.js`) is thin branches of geometry with `bark.ironbark` on them as a detail
 map. Lands as the family `thorn` in `kits/beast-riders/materials.json` (tinted: the branches keep their two palette
 browns); `70-br-tent-kit.js` `BRT_THORN` then reads `'thorn/bark'`.
-
-#### `foliage.thorn.cut`
-
-```
-Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: a dense tangle of cut, dry thorn-tree branches piled as a livestock barrier (an African boma), seen side-on: grey-brown twisted branches #5a4632 and #7a6446, thin twigs crossing every way, long straight pale thorns #c8b896 in pairs along every twig, a few dead curled leaves #8a7448, small gaps of near-black shadow #1e1812 between the branches. Muted, tintable. Matte. One tile covers 1.5 metres.
-```
 
 ## 2. Northern Highlands
 
@@ -111,14 +98,6 @@ The abyssal salt lake in the eastern desert. Reuse: `ground.salt`, `ground.efflo
 `ground.clay.popcorn`, `card.tamarisk`, `bark.saxaul`, `card.samphire` for the glasswort (green; tint its crimson), the
 kit's own sets. The banded shallows are water tints, not a texture.
 
-#### `ground.salt.ochre`
-- Kind: surface, full colour.
-- Used by: the ochre salt rim round the Bowl's lake. Reuse: any iron-stained salt rim or evaporite crust.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Salt crust at the edge of a hypersaline lake seen from directly above: a hard crust of salt in low polygonal ridges, stained ochre and rust (#c89a5a, #b87a3a) where iron-rich brine has dried, paler cream-white salt (#e8e0cc) on the ridge tops, a few small pink-orange stains (#d89070) of salt-loving algae in the hollows. Full colour. One tile covers 2 metres.
-```
-
 ## 12. The Catch (`biomes/catch`, planned 2026-10-23)
 
 The sealed basin, its sand sea, its five oases and its salt (`biomes/catch/PLAN.md`). Reuse: `rock.yardang.silt` (above)
@@ -132,14 +111,6 @@ for the sailwort (tinted rust), `card.moss.hanging` and `card.beard` for the vei
 the prism heath (the kit tints it by season), `ground.sphagnum` for the moor sponge, `card.groundsel`, `ground.tundra`,
 `ground.lichen.crust`, the snows and ices, and the Rift's, the SW lowlands' and the S highlands' own sets for the borrowed
 species.
-
-#### `card.fin.glass`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one fin cluster per cell.
-- Used by: the frost frill's translucent fins. Reuse: any glassy, translucent leaf or fin (light-piping alien plants).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a whorl of three to five short stiff fins radiating from a stub on the bottom of its cell, each fin a thin pointed blade like a fin of ice: translucent pale teal glass (#a8d8d8) with clearer edges (#d8f0f0), fine darker veins (#4a8a8c) running from base to tip, the light passing through it. Vary the length and angle of the fins. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
 
 ## 14. Farside (`biomes/farside`, planned 2026-10-23)
 
@@ -155,46 +126,6 @@ of its cell (the clump quads draw v up). Reuse, so no prompt: the banana's leave
 2026-10-26); its lotus pads `card.lotus` and `ground.lilypond`; its osmanthus `card.croptree.glossy`; its ferns and moss
 `card.fern.green`, `card.fern`, `card.moss`.
 
-#### `card.crop.rice`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one clump per cell, upright.
-- Used by: the Ring Sea isles' paddies (`crop-rice`), Guilin's rice. Reuse: `kits/crops` rice in every paddy country; any upright tufted grass in water.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no water, no text. Each sprite: one clump of paddy rice (Oryza sativa) standing upright on the bottom of its cell, all its blades rising from a single narrow base: on three cells, young tufts of short bright green blades (#7aa844); on three, full-grown clumps of long narrow green blades (#6a9a3a, #88b04a) arching outward near the tips; on three, ripe clumps whose leaves are yellowing (#b0a848) and whose heavy golden panicles of grain (#c8b45a, #d4c062) droop over to one side. Vary the height and spread. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
-```
-
-#### `card.crop.cane`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one stand per cell, upright.
-- Used by: the Ring Sea isles' sugar cane (`crop-sugarcane`). Reuse: sugar cane anywhere in `kits/crops`; giant reed (Arundo) and sorghum stands; any tall jointed cane grass (`card.crop` stays the broad strap-leaf crops and maize).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one stand of sugar cane (Saccharum officinarum) standing upright on the bottom of its cell: four to eight thick jointed canes (#a89a5a, #8a9a4a) with pale rings at the nodes, rising straight and a little apart, long narrow strap leaves (#7a9a44, #88a84e) springing from the upper half and arching outward and down, dry brown leaves (#a08a5a) hanging against the lower canes. On three of the nine, a silvery-white feathery tassel (#e0dccc) at the top. Vary the height and the number of canes. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
-```
-
-#### `card.crop.greens`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell, upright.
-- Used by: the Ring Sea isles' greens (`crop-greens`) and sweet potato beds (`crop-sweetpotato`), which take `card.paddle`'s elephant-ear cell today. Reuse: the `greens` bucket of `kits/crops` in every kitchen garden; any sweet potato or morning-glory vine on the ground.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one leafy vegetable plant standing on the bottom of its cell, seen from the side and a little above, a different plant in each: bok choy with white stalks and dark green spoon leaves (#3e6a2e); a loose head of frilly mustard greens (#6aa040); slippery cabbage (aibika) with deeply lobed hand-shaped leaves (#4e7a30); water spinach (kangkong) with hollow stems and long arrow-shaped leaves (#5a9038); a bushy amaranth with oval leaves (#6a9a3a); a low leaf lettuce (#8ab858). On the last three cells, a mound of sweet potato vine: trailing stems with heart-shaped and three-lobed leaves (#4e7a30, #5a8636), the stems and young leaves a dull red-brown (#6a4a3a). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
-```
-
-#### `card.orchid.dendrobium`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one orchid per cell.
-- Used by: Guilin's stone orchid on the karst. Reuse: any epiphytic orchid on bark or rock (the hyperjungle, the cloud forests, the NW lowlands).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no rock, no text. Each sprite: one clump of a stone orchid (Dendrobium) growing from the bottom of its cell as it would from a crack in a rock: a tuft of thin jointed cane-like stems (#8a9a4a, #a8a060) leaning outward, narrow leathery leaves (#4a7a34) along their upper parts, grey-white aerial roots (#c8c4b4) at the base, and on six of the nine short sprays of flowers in creamy white (#f4f0e0) and pale yellow (#e8d870), each flower with a small deep orange-brown spot on its lip (#a8582a). Vary the length and lean of the canes. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
-```
-
-#### `ground.grass.lush`
-- Kind: surface, full colour.
-- Used by: Guilin's plain (`ground.leafy_grass` greened in its shader today). Reuse: any well-watered lowland meadow, pasture or lawn; the paddy bunds of the Ring Sea isles; the NW and SW lowlands' pastures.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Lush, short, well-watered green grass of a rice-growing plain seen from directly above: dense fine blades in fresh green (#5a9a3a, #7ab048) with a few broader darker blades (#4a7a30), scattered clover leaves and small creeping weeds, a little damp dark soil (#3a3424) in a few small gaps. No flowers, no paths, no bare patches, no dry yellow grass. Matte. Full colour. One tile covers 1.5 metres.
-```
-
 ## 16. Catalog hangings: the Screamers (the Eastern Abyss reuses a set) (2026-10-26)
 
 `PLAN.md`, catalog audit, "No pattern sheet at all". Style read of `kits/catalog/krator-master-furniture-screamer.js`:
@@ -206,36 +137,12 @@ and turquoise (`krator-master-furniture-eastabyss.js`), which is `patterns/commo
 madder, saffron, teal, indigo and cream); its mosaic panel takes `patterns/common/mosaic-star-lapis` or `zellige-blue`.
 (Nomad has `patterns/nomad/` and the Lizardmen `patterns/lizardmen/`: both delivered.)
 
-#### `patterns/screamers/hide-figure`
-- Kind: pattern sheet, a single motif, full colour.
-- Used by: the Screamers' painted hide hangings and hide screens (catalog culture `screamer`). Reuse: any tribal painted hide (a shield face, a drum head, a hide door in the Beast Riders' or the Highlands' tribal set).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. Material: Flat, front-on decorative panel of a stretched, scraped animal hide (#9a7a52, paler #b8986a where it is thin, darker #6a5238 toward its edges) painted by hand with fingertips and a frayed stick: in the middle one stick figure of a person with both arms flung up and its mouth a wide open ring, as if screaming, in black (#2a2622) outlined in bone white (#e6dcc6); round it rings and rows of round dots in red ochre (#c8342a), yellow (#e0b030) and blue (#2a6aa0); along all four edges a border of dots and short tally strokes. The paint is cracked and flaking a little, the hide's pores and a few healed scars showing through it. Naive, primitive body-paint style, as on an Amazonian shield: no realistic anatomy, no letters, no readable signs. A single motif filling the frame, not a repeat. Full colour.
-```
-
 ## 17. The shared detail sets (`detail.*`, for the record's `detail` field) (2026-10-26)
 
 `PLAN.md`, "From spiderbench": a tiling micro-relief normal blended over the base normal at close range, one shared set
 per surface kind for every culture. The field is not built yet (`TODO.md`), so these are the lowest priority: deliver them
 before it is. They are relief only: near-uniform, with no feature that would show when a tile repeats every 25 cm.
 **Metal brush, reuse, so no prompt:** `metal.steel.brushed` (its normal, at a finer tile).
-
-#### `detail.plaster.grain`
-- Kind: surface, tintable (only its normal is used).
-- Used by: the `detail` normal of every plaster, render, stucco and limewash record. Reuse: adobe and earth walls at close range.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fine lime plaster seen flat-on at very close range: an even micro-texture of tiny trowel ripples, fine sand grains and pinholes, all of the same small size and spread evenly over the whole frame, with no cracks, no stains, no patches, no joints and nothing larger than a few millimetres, so that no spot is recognisable when the tile repeats. Near-uniform light grey: the relief only. Matte. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.25 metres.
-```
-
-#### `detail.stone.grain`
-- Kind: surface, tintable (only its normal is used).
-- Used by: the `detail` normal of every cut stone, ashlar, paving and concrete record. Reuse: rock faces at close range.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The dressed face of a fine-grained sandstone block seen flat-on at very close range: an even granular micro-relief of mineral grains, tiny pits and a faint fine chisel stipple, all of the same small size and spread evenly over the whole frame, with no joints, no edges, no veins, no cracks, no stains and nothing larger than a few millimetres, so that no spot is recognisable when the tile repeats. Near-uniform mid grey: the relief only. Matte. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.25 metres.
-```
 
 ## 18. The Eternian kit (`kits/eternian`, list agreed by the owner 2026-10-26)
 
@@ -248,22 +155,6 @@ tinted gold on black or white on black); the fish-scale roofs are `metal.scale` 
 `metal.bronze.cast`; the glazed scale look `patterns/highlands/tile-*`; the Ancient white panels `metal.ancient.white`; the
 tracery's grid is `patterns/eternian/screen-pierced` (`.b`), a keyed, tiling pierced cast-bronze screen on magenta. Not
 covered: the brick (the kit tints the plain `brick` set today) and the tracery's three window heads.
-
-#### `brick.buff`
-- Kind: surface, full colour.
-- Used by: the Eternians' pale brick piers and walls (the `brick` family in `kits/eternian/materials.json`). Reuse: any pale gault or sand-lime brick in any culture (the Republic, Voth's suburbs, the Ancient-lineage towns).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A wall of pale buff brick seen flat-on, laid in running bond: smooth, slightly sandy bricks in pale buff and cream (#d8c8a0, #e2d4b0) with a few a shade warmer (#c8b088) and a few paler (#ece2c8), small dark flecks and the odd chipped corner, set in thin flush joints of white lime mortar (#ece8dc), slightly recessed and a little crumbly. Eight courses of brick from top to bottom, every course the same height. No stains, no soot, no moss. Matte. Full colour. One tile covers 0.6 metres.
-```
-
-#### `card.tracery.bronze`
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one window head per cell.
-- Used by: the Eternians' lancet and window heads over the bronze tracery grid (the kept hosts' glazing, alabaster behind it). Reuse: any cast-metal window tracery or grille head (Pylon, Voth's palace, the Ancient-lineage ruins).
-
-```
-A sheet of nine separate cut-out sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no wall, no glass, no text. Each sprite: the head of a window in cast bronze openwork, seen straight on, its bottom edge straight and flat along the bottom of its cell, the openings between the bars showing the magenta through them: on the top row, three stepped heads (a rectangle rising in three to five square steps to a flat top, Art Deco); on the middle row, three pointed lancet heads (two arcs meeting in a point); on the bottom row, three ring heads (a round arch with a circle of radiating bars, like an oculus). Inside each, a grid of thin straight bronze bars (#8a6a3a) with heavier outer frames (#6a5028), worn brighter bronze (#b08848) on the edges and a little green-grey patina (#6a8a74) in the corners. Each head in a row is a different variant of its shape. Hard, precise, machine-exact edges. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
-```
 
 ## Gaps resolved without a prompt (2026-10-26)
 
