@@ -156,6 +156,24 @@ tinted gold on black or white on black); the fish-scale roofs are `metal.scale` 
 tracery's grid is `patterns/eternian/screen-pierced` (`.b`), a keyed, tiling pierced cast-bronze screen on magenta. Not
 covered: the brick (the kit tints the plain `brick` set today) and the tracery's three window heads.
 
+## 19. The Oidong Valley's carved bark (`biomes/oidong`, 2026-10-26)
+
+The cloud-pad tree (species 17, the diversity pass from the owner's reference photo of patterned trunks) wears a bark
+patterned in bold two-tone motifs. Nothing in the library or `patterns/` has it (`bark.tapestry` is carpet-like,
+`bark.mosaic` full-colour plates, `bark.cratered` grey pits), so `50-biome-oidong-species.js` paints a procedural stand-in
+(`OIDONG.barkTex7`, bucket `bark7`). Lands as the family `bark.carved` in `biomes/oidong/materials.json` (full colour,
+`keep` 1: the species' bark colour is a near-white multiplier), then `LIBBARK[7]` in the species fragment. Two takes
+(`.b` the variant) so a grove does not repeat one trunk.
+
+#### `bark.carved` (and `bark.carved.b`)
+- Kind: surface, full colour (the colour is the point). Square 2048 px; one tile covers about 0.6 m of trunk.
+- Used by: the Oidong Valley's cloud-pad tree. Reuse: any sacred or "written" tree, carved totem trunks, burl furniture.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The smooth living bark of a tree that grows its own bold two-tone pattern, as if carved and inked: a pale tan ground (#cdb796, with lighter #dcc8a6 and darker #b8a07c streaks running vertically in the grain), patterned in near-black dark brown (#2e2620) motifs: scattered concentric "target" rings of three or four thick rings with a solid dot at the centre, a few larger nested rings, and one vertical chain of scalloped diamonds (each diamond's four edges bowed inward, a small pale eye in its middle) running the full height of the tile. The motif edges are crisp but slightly irregular, like a pattern grown into the bark rather than painted, with fine bark texture and a few small knots visible through both colours. Matte.
+```
+For `bark.carved.b`, the same with: "the motifs mostly larger nested rings, five or six rings each, and a column of small target rings instead of the diamond chain."
+
 ## Gaps resolved without a prompt (2026-10-26)
 
 Each was on the old "Gaps with no prompt yet" list or in a build's notes; an existing set covers it, so the work left is
