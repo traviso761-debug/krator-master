@@ -86,9 +86,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   // at night the fissure's veins glow orange (still hot, four years on), the mat its pink, the mycelium a faint gold
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=uNight*(vL2.y*vec3(0.55,0.08,0.3)+vL0.y*vec3(0.42,0.34,0.1)*0.6)+(0.12+uNight)*vL0.w*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL0.w*vL0.w)+(0.06+uNight*0.8)*vL2.w*_E_crust*smoothstep(0.05,0.25,_E_crust.r-_E_crust.b)*2.0;');};
-const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
- for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
+// a vertex's layer weights (the main mesh and the fine patch both)
+function layersAtV(x,z,k,L0,L1,L2){
   const at=n=>FC.at(FC.a[n],x,z),th=FLOWS.thickAt(x,z),age=FLOWS.ageAt(x,z),onF=smooth(.4,2,th)*(1-smooth(2500,7000,age));
   const mr=at('marsh'),pl=at('pools'),hw=at('hollow'),vl=at('valley'),cn=at('cinder'),vent=at('vent'),sl=at('slope'),rk=at('rock');
   const soil=(1-onF)*(1-mr)*(1-pl)*(1-hw)*(1-cn),n1=fbm(x*.008,z*.008,4722,2),fz=FC.at(FC.a.fiss,x,z);
@@ -99,10 +98,33 @@ const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
   L2[k*4]=Math.max(pl*smooth(.5,.8,fbm(x*.04,z*.04,4734,2))*.6,mr*.35);L2[k*4+1]=hw*(.12+.65*smooth(.45,.7,fbm(x*.06,z*.06,4735,2)));L2[k*4+2]=smooth(.55,.85,sl)*rk*.4*smooth(.4,.65,n1)*(1-vl*.6);
   /* the library's glowing lava crust over the fissure's hottest flow, a fresh crust cracked over the still-molten */
   L2[k*4+3]=hot*onF*smooth(.5,.72,fbm(x*.03+9,z*.03-2,4736,2))*.8;}
- const idx=new Uint32Array(N*N*6);let t=0;
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+// THE FINE PATCH (2026-10-26, KNOWN_ISSUES: the small features were coarser than the 6.5 m mesh): the hot pools and the mud pots stand on
+// a patch four times finer (1.6 m), cut out of the main mesh; its border vertices lie on the coarse mesh's own edges (no crack). The
+// pots' floors and the pools' bowls are drawn as cut, not flattened under a 6.5 m triangle
+const GN=880,GS=TERR.R*2.2,GCS=GS/GN,GNX=GN+1,GX0=-GS/2,GH=new Float32Array(GNX*GNX);
+const PATCH=(function(){let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;const add=(x,z,r)=>{x0=Math.min(x0,x-r);z0=Math.min(z0,z-r);x1=Math.max(x1,x+r);z1=Math.max(z1,z+r);};
+ POOLS.forEach(P=>add(P.x,P.z,P.r*2.6+8));MUD.forEach(M=>add(M.x,M.z,M.r*2+8));
+ const i0=Math.floor((x0-GX0)/GCS),i1=Math.ceil((x1-GX0)/GCS),j0=Math.floor((z0-GX0)/GCS),j1=Math.ceil((z1-GX0)/GCS);
+ return{i0,i1,j0,j1,sub:4,x0:GX0+i0*GCS,z0:GX0+j0*GCS,sx:(i1-i0)*GCS,sz:(j1-j0)*GCS};})();
+const GROUND=(function(){const N=GN,S=GS,cs=GCS,nx=GNX;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
+ for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);GH[k]=y;pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
+  layersAtV(x,z,k,L0,L1,L2);}
+ const idx=[];
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1)continue;const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Vent country: the east rift under the plume';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx),1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Vent country: the east rift under the plume';scene.add(m);return m;})();
+const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j0)*P.sub+1,cs=GCS/P.sub,S=GS;
+ const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),L0=new Float32Array(nx*nz*4),L1=new Float32Array(nx*nz*4),L2=new Float32Array(nx*nz*4);
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=P.x0+i*cs,z=P.z0+j*cs;let y;const bi=i===0||i===nx-1,bj=j===0||j===nz-1;
+  if(bi||bj){const gi=P.i0+i/P.sub,gj=P.j0+j/P.sub,i0=Math.floor(gi),j0=Math.floor(gj),fi=gi-i0,fj=gj-j0,H=(a,b)=>GH[Math.min(GN,b)*GNX+Math.min(GN,a)];
+   y=bi&&bj?H(i0,j0):bi?mix(H(i0,j0),H(i0,j0+1),fj):mix(H(i0,j0),H(i0+1,j0),fi);}else y=terrainH(x,z);
+  pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;layersAtV(x,z,k,L0,L1,L2);}
+ const idx=new Uint32Array((nx-1)*(nz-1)*6);let t=0;
+ for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Vent country: the hot pools and the mud pots';scene.add(m);return m;})();
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 _mark('ground');

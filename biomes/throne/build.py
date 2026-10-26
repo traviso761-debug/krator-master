@@ -55,6 +55,8 @@ OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "th
 #                                        station.json names the page ("out"), extra core files ("core") and other kits'
 #                                        fragments read in place ("kits": {slot name: path from this folder})
 STATION=None
+# station 1's core/water fragments (a station names its own in station.json "water")
+S1_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js','geyser/52-core-water-geyser.js','geyser/52b-core-water-geyser-draw.js']
 if '--station' in sys.argv:
     STATION=sys.argv[sys.argv.index('--station')+1]
     import json as _json
@@ -80,6 +82,8 @@ if STATION:
     # src/89a-host-atmos.js (the atmosphere binding of station 1, 2, 6 and 11) is a station's only when station.json says "atmosHost"
     # (the others bind core/atmos in their own 89-host-atmos.js, with weather)
     if not STN.get('atmosHost'): PATH.pop('89a-host-atmos.js',None)
+    # src/89w-host-water.js is station 1's water (core/water, 2026-10-26): a station draws its own water in its own 89w (or none)
+    PATH.pop('89w-host-water.js',None)
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
@@ -89,12 +93,15 @@ if STATION:
     # 2026-10-20 (phase 0 of the water migration): a station with no ATMOS.init of its own binds core/atmos through ATMOS.bindHost
     # (core/atmos/host/, a subfolder so the kits that take core/atmos whole are not changed): station.json "atmosHost": true
     # 2026-10-20 (phase 2 of the water migration): core/water fragments a station draws with, by explicit path ("water" in station.json)
-    for f in STN.get('water',[]): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+    # 2026-10-26: keyed by the file's name, as the atmos list is, so a subfolder fragment (geyser/52-..., ext/53-...) sorts by its number
+    for f in STN.get('water',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
     if STN.get('atmosHost'): PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))
 else:
     # station 1 (the plume's edge): core, presets, export, the wave field and the sky's light, bound by src/89a-host-atmos.js
     for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
     PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))
+    # 2026-10-26 (the water migration, station 1): the acid lake on WATER.still, the hot pools on WATER.spring (src/89w-host-water.js)
+    for f in S1_WATER: PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -165,7 +172,8 @@ out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f:
+    # the scan is for this kit's own leaves: a shared core/water fragment may name a river (ext/53's comments say RIVER) (2026-10-26)
+    if 10<=n<80 and '-host-' not in f and not (PATH[f] and os.path.normpath(PATH[f]).startswith(os.path.normpath(os.path.join(HERE,'..','..','core','water')))):
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

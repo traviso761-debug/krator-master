@@ -8,5 +8,14 @@
   "89-atmos-8-export.js",
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js"
  ]
 }

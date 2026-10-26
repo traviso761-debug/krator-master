@@ -11,5 +11,14 @@
   "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "ext/53-core-water-terraces.js",
+  "ext/53b-core-water-terraces-draw.js"
  ]
 }

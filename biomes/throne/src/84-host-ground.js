@@ -109,26 +109,8 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s south-east shoulder';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water: the acid lake, the hot pools
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd8d6ce)},uLight:{value:1}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.02*sin(vWP.x*0.31+uT*0.8)+0.015*sin(vWP.z*0.53-uT*0.5),1.0,0.02*cos(vWP.z*0.27+uT*0.7)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.55);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),120.0)*0.7*vec3(1.0,0.95,0.85);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function pond(X,Z,R,Lv,c0,c1,label){const C0=new THREE.Color(c0).convertSRGBToLinear(),C1=new THREE.Color(c1).convertSRGBToLinear(),PN=48,pos=[X,Lv,Z],col=[C0.r,C0.g,C0.b],idx=[];
- for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(X+Math.cos(a)*R,Lv,Z+Math.sin(a)*R);col.push(C1.r,C1.g,C1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
-// the acid lake: milky turquoise, as Ijen's; the hot pools: deep blue-green with an orange rim of mats
-pond(PIT.x,PIT.z,PIT.r*.98,PIT.lake,0x58b8a8,0x8ad0b0,'The acid lake');
-POOLS.forEach((P,i)=>pond(P.x,P.z,P.r*1.5,POOLL[i],0x1e7a90,0xc89a40,'A hot pool'));
-_onLight.push(m=>{MAT_WATER.uniforms.uLight.value=m==='night'?.18:1;GROUNDU.uNight.value=m==='night'?1:0;});
+// 2026-10-26: on core/water (src/89w-host-water.js, after core/atmos is bound in 89a): the lake a WATER.still, the pools WATER.spring.
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 
 // ---------------------------------------------------------------- the steam
 // Each fumarole breathes a column of soft puffs that rise, swell and thin; the lake and the pools steam too. One Points

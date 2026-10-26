@@ -12,5 +12,12 @@
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js",
   "fx/89-atmos-fx-snowcover.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js"
  ]
 }

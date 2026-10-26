@@ -50,7 +50,8 @@ const PAL=THRONE.PAL={
  // the windward station (kipuka): Earth's pioneers on young lava, the crater's palms, the great ruff, the frill tree, the siphon tree
  hfrillBark:[0x5e4c3e,0x544436,0x685446],hfrillLeaf:[0x3e6a2e,0x4a7634,0x365e28],
  siphon:[0x8a9a86,0x7e8e7a,0x96a690],siphonLip:[0x6a8a6a,0x5e7e5e],siphonFrond:[0x5a8a4a,0x6a9a52,0x4e7e40],
- lehuaBark:[0x8a8478,0x7e786c,0x96907e],lehuaLeaf:[0x6a7a5a,0x76866a,0x5e6e50],pompom:[0xd8202a,0xe8302a,0xc81828,0xf04a3a],
+ lehuaBark:[0x5e5a52,0x56524a,0x68625a],   /* 2026-10-26: was [0x8a8478,0x7e786c,0x96907e], which read near white in the isle's dense stands (KNOWN_ISSUES) */
+ lehuaLeaf:[0x6a7a5a,0x76866a,0x5e6e50],pompom:[0xd8202a,0xe8302a,0xc81828,0xf04a3a],
  treeFernTrunk:[0x4a3a2a,0x54422e,0x403224],treeFern:[0x4a7a2e,0x56883a,0x3e6a28],
  palmTrunk:[0x7a6a50,0x6e5e46,0x86765a],palm:[0x2e5a2e,0x3a6a36,0x264e28],
  glassfern:[0x14161c,0x1a1c24,0x101218],glassIrid:[0x3a5aa8,0x5a3ab0,0x2a7a8a],
@@ -132,8 +133,10 @@ THRONE.SPECIES=[
  /*20*/{key:'coconut',name:'Coconut palm',isle:true,H:[12,24],rb:[.16,.26],crownR:[4,5.5],barkK:6,bark:PAL.coconutTrunk,leaf:PAL.palmFrond,
   far:{poleU:.95,taper:.2,blobs:[[.97,.75,.12,'L0','L1']]},tags:K('tropic','humid','both',['Af'],'earth','windward')},
  // the cloud forest's (cloud:true: only its page plants them; the owner 2026-10-06: "elfin forest in the mist"). The elfin
- // tree has no far impostor: in the cloud nothing is seen that far, and the ground's canopy layer stands in when it clears
+ // tree had no far impostor until 2026-10-26 (in the cloud nothing is seen that far); now it has a light one (below)
  /*21*/{key:'elfin',name:'Elfin tree',cloud:true,H:[3,9],rb:[.16,.36],crownR:[2.4,4.4],barkK:3,bark:PAL.elfinBark,leaf:PAL.elfinLeaf,
+  /* 2026-10-26: a far impostor after all (a low flat crown on a short pole), so the sparse stand stays on the map past the near range */
+  far:{poleU:.5,taper:.3,blobs:[[.78,1.0,.22,'L0','L1']]},
   far:null,tags:K('temperate','humid','both',['Cfb'],'earth','windward')},
  /*22*/{key:'veil',name:'Veil tree',alien:true,cloud:true,H:[8,16],rb:[.18,.3],crownR:[4,7],barkK:7,bark:PAL.veilBark,leaf:PAL.veilLeaf,
   far:{poleU:.8,taper:.4,blobs:[[.75,.8,.25,'L0','L1']]},tags:K('temperate','humid','yes',['Cfb'],'native','windward')},
@@ -643,6 +646,15 @@ M.funnelT=capMat('cap.funnel','funnelT');
 M.gcoralT=capMat('cap.gillcoral','gcoralT');   // the owner's gill-coral cap (radial, mapped from above)
 // the drizzle trumpet's pitcher: the cells-and-veins skin as grey detail under its green, still faintly lit from within
 {const L=LIBP('pitcher.cells');if(L){M.pitcher=glowMat('pitcher',.16,.32,KMAT.textures(L,{aniso:4}).map);THRONE.LIB.pitcher=true;}}
+/* 2026-10-26 (KNOWN_ISSUES, the alien surfaces still procedural): the lamp caps' dishes take the library's radial gills (cap.gill, organic.fungus.gill)
+ as the grey detail under their glow, in place of the drawn veins (the same program: glowMat reads its map in the emissive too); the mat takes the cells and
+ pale veins (pitcher.cells) as its colour and its glow, tinted pink by the instance colour, its ragged outline kept from the drawn disc (an alpha map) */
+{const L=LIBP('cap.gill');if(L){M.lamp.map=KMAT.textures(L,{aniso:4}).map;THRONE.LIB.lampGill=true;}}
+{const L=LIBP('pitcher.cells');if(L){const t=KMAT.textures(L,{aniso:4}).map,c=TX.mat.image,A=document.createElement('canvas');A.width=c.width;A.height=c.height;
+ /* the disc's alpha as grey (white where the disc is, over black), by compositing: no pixel read */
+ const g=A.getContext('2d');g.drawImage(c,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#fff';g.fillRect(0,0,A.width,A.height);
+ g.globalCompositeOperation='destination-over';g.fillStyle='#000';g.fillRect(0,0,A.width,A.height);g.globalCompositeOperation='source-over';
+ const am=new T3.CanvasTexture(A);am.encoding=T3.LinearEncoding;M.mat.map=t;M.mat.emissiveMap=t;M.mat.alphaMap=am;M.mat.needsUpdate=true;THRONE.LIB.matCells=true;}}
 THRONE._glow=[M.lamp,M.bracket,M.ventcone,M.pitcher,M.mat];
 THRONE._night=0;
 // the glow's day and night levels: the procedural glowers and every glowing card (their material's own pair)

@@ -22,8 +22,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-biome-throne.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 14.6 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/83-host-heat.js` | 4.5 | [G shader] | 8 | 0 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 |  |
-| `src/84-host-ground.js` | 17.2 | [G shader] | 17 | 4 | 0 | 0 | 0 | 3 | 16 | 0 | 0 | 0 | 0 | the ground's library layers and the night glow (onBeforeCompile), the water, the steam points |
+| `src/84-host-ground.js` | 17.2 | [G shader] | 17 | 4 | 0 | 0 | 0 | 3 | 16 | 0 | 0 | 0 | 0 | the ground's library layers and the night glow (onBeforeCompile), the steam points (the water moved to 89w, core/water, 2026-10-26) |
 | `src/88-host-build.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/89w-host-water.js` | 2.6 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 1's water on core/water (2026-10-26): the acid lake a WATER.still, the hot pools WATER.spring; the records cross over through WATER.export |
 | `src/99-host-take.js` | 16.6 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

@@ -51,15 +51,16 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GROUNDU={uNight:{value:0}};
 // THE LIBRARY GROUND: eight layers, the later winning, each sampled twice (anti-tiling, as the other stations)
-const GL_KEYS=['litter','sandblack','sinter','rim','mud','lichenrock','packed','sulphur','shingle'];
+const GL_KEYS=['litter','sandblack','sinter','rim','mud','lichenrock','packed','sulphur','shingle','basalt'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS.concat(['wetmoss','canopy'])){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
-function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa4});
+const GROUND_MATS=[];   /* the isle's mesh first, then the basin's patch: 89w wets the first where the swash reaches */
+function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa4});GROUND_MATS.push(m);
  m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.concat(['wetmoss','canopy']).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
-  const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x'};
+  const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x',basalt:'vL2.y'};
   let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
   if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
    // the sinter, the rims and the sulphur keep the paint's colour (the mats' bands, the white): their texture is detail
@@ -97,7 +98,11 @@ const GROUND=(function(){const pos=new Float32Array(GNX*GNX*3),uv=new Float32Arr
  const idx=[];for(let j=0;j<GN;j++)for(let i=0;i<GN;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1)continue;const a=j*GNX+i,b=a+GNX,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
- g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser isle';scene.add(m);return m;})();
+ g.setIndex(idx);g.computeVertexNormals();
+ /* THE FACES (2026-10-26): the rock field is read off the 11 m field cache, too coarse for the sea cliffs' ~10 m walls, which took the forest
+    floor's paint; the mesh's own normals find them: where a vertex leans past ~50 degrees the library's flow-banded basalt (ground.basalt, L2.y) */
+ {const N=g.attributes.normal.array;for(let k=0;k<GNX*GNX;k++){const st=1-N[k*3+1];if(st<.3)continue;L2[k*4+1]=smooth(.3,.55,st)*smooth(SEA-1,SEA+.5,GH[k])*.95;}}
+ const m=new THREE.Mesh(g,groundMat(TEX_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser isle';scene.add(m);return m;})();
 _mark('ground');
 // THE BASIN'S PATCH: sub x sub vertices a coarse cell; its painted texture its own (0.9 m a pixel), the fields computed
 // directly where they are fine-grained (the springs' rims, the mats), the cache elsewhere
@@ -119,37 +124,10 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_PATCH));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser basin';scene.add(m);return m;})();
 _mark('patch');
 
-// ---------------------------------------------------------------- THE SEA: the shared wave field (core/atmos, bound in 89)
-// A grid over the map and out to the horizon's fog, its depth an attribute (the shallows settle toward glass and foam
-// at the edge); the swell displaces it, the chop and the mid waves only shade. The lagoon is the same water, warm and still
-const SEAU={uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uShallow:{value:new THREE.Color(0x4a9a8a)},uDeep:{value:new THREE.Color(0x1a4050)},
- uSky:{value:new THREE.Color(0xc8d0d0)},uFogCol:{value:HAZE.clone()},uFogDen:{value:scene.fog.density},uCam:{value:new THREE.Vector3()},uBodyK:{value:1}};
-const SEA_MAT=new THREE.ShaderMaterial({uniforms:SEAU,transparent:true,
- vertexShader:['#include <atmos_waves>','attribute float aDepth;','varying vec3 vW; varying float vD; varying vec2 vP;',
-  'void main(){vec3 pos=position;vP=pos.xz;vD=aDepth;float att=clamp(aDepth/7.0,0.0,1.0);pos.y+=atmWaveHeight(pos.xz,0.0)*att;',
-  ' vec4 wp=modelMatrix*vec4(pos,1.0);vW=wp.xyz;gl_Position=projectionMatrix*viewMatrix*wp;}'].join('\n'),
- fragmentShader:['precision highp float;','#include <atmos_waves>','uniform float uFogDen,uBodyK;uniform vec3 uSun,uShallow,uDeep,uSky,uFogCol,uCam;','varying vec3 vW; varying float vD; varying vec2 vP;',
-  'void main(){float att=clamp(vD/7.0,0.0,1.0);float vdist=length(uCam-vW);float lod=1.0-smoothstep(260.0,1500.0,vdist);',
-  ' vec3 N=atmWaveNormal(vP,vdist,3.0*(0.08+0.92*att));vec3 V=normalize(uCam-vW);float fres=pow(1.0-clamp(dot(N,V),0.0,1.0),3.4);',
-  ' vec3 body=mix(uShallow,uDeep,smoothstep(0.8,25.0,vD));body*=(0.66+0.44*clamp(dot(N,uSun),0.0,1.0))*uBodyK;',
-  ' vec3 H=normalize(uSun+V);float spec=pow(clamp(dot(N,H),0.0,1.0),190.0)*1.4*lod;',
-  ' vec3 col=mix(body,uSky*uBodyK,clamp(fres*0.86,0.0,0.82))+vec3(1.0,0.95,0.86)*spec*uBodyK;',
-  ' float foam=smoothstep(1.4,0.1,vD)*(0.55+0.45*sin(vP.x*0.18+vP.y*0.13+6.283185307*fract(atmWaveT*0.255)));col=mix(col,vec3(0.92)*uBodyK,foam*0.55);',
-  ' float fog=1.0-exp(-uFogDen*uFogDen*vdist*vdist);col=mix(col,uFogCol,clamp(fog,0.0,1.0));',
-  ' gl_FragColor=vec4(col,mix(0.42,0.94,smoothstep(0.0,16.0,vD)));}'].join('\n')});
-(function(){const N=320,S=TERR.R*2.6,cs=S/N,nx=N+1,pos=[],dep=[],idx=[];
- for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const x=-S/2+i*cs,z=-S/2+j*cs;pos.push(x,SEA,z);dep.push(Math.max(0,SEA-terrainH(x,z)));}
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx;if(dep[a]<=0&&dep[a+1]<=0&&dep[b]<=0&&dep[b+1]<=0)continue;idx.push(a,b,a+1,b,b+1,a+1);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aDepth',new THREE.Float32BufferAttribute(dep,1));g.setIndex(idx);
- const m=new THREE.Mesh(g,SEA_MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The Ring Sea';m.renderOrder=1;m.frustumCulled=false;scene.add(m);})();
-// and the open sea round it out to 13.5 km, coarse (338 m cells meet the fine grid's edge at 3380 m), every cell deep
-(function(){const N=80,S=TERR.R*2.6*4,cs=S/N,nx=N+1,pos=[],dep=[],idx=[],inner=TERR.R*1.3;
- for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){pos.push(-S/2+i*cs,SEA,-S/2+j*cs);dep.push(60);}
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-S/2+(i+.5)*cs,z=-S/2+(j+.5)*cs;if(Math.abs(x)<inner&&Math.abs(z)<inner)continue;const a=j*nx+i,b=a+nx;idx.push(a,b,a+1,b,b+1,a+1);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aDepth',new THREE.Float32BufferAttribute(dep,1));g.setIndex(idx);
- const m=new THREE.Mesh(g,SEA_MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The Ring Sea';m.renderOrder=1;m.frustumCulled=false;scene.add(m);})();
-TICKS.push(()=>SEAU.uCam.value.copy(camera.position));
-
+// ---------------------------------------------------------------- THE SEA, THE FALL, THE STREAMS: on core/water (89w-host-water.js)
+// 2026-10-26: the sea (two grids of the page's own shader over the shared wave field) is one WATER.open with a shore grid, the fall a
+// WATER.fall, each stream a WATER.flow per run; drawn in 89w-host-water.js, after core/atmos is bound (89). FALL (the record) stays here:
+// the steam (85) puts the fall's spray at its foot.
 // ---------------------------------------------------------------- THE FALL: the cliff stream going over the edge
 // Where the stream's bed drops away at the cliff (its lip), a curtain of water arcs out and falls to the sea, streaked and
 // running on the clock; spray at its foot (85). The stream's ribbon stops at the lip
@@ -158,35 +136,11 @@ const FALL=(function(){const G=GULLIES.find(g=>g.cliff);if(!G)return null;const 
   for(let s=0;s<L;s+=1){const x=a[0]+dx*s,z=a[1]+dz*s,h0=terrainH0(x,z),h1=terrainH0(x+dx*2.5,z+dz*2.5);
    if(h0-h1>3&&h0>SEA+6){const v=2.4,drop=h0+.3-SEA,reach=v*Math.sqrt(2*drop/9.8);return{x,z,y:h0+.3,dx,dz,drop,reach,w:G.w*.6,name:'The fall (the cliff stream into the sea)'};}}}
  return null;})();
-const FALLU={uT:{value:0},uLight:{value:1}};
-if(FALL){const nw=8,nr=40,pos=[],aF=[],idx=[],px=-FALL.dz,pz=FALL.dx;
- for(let r=0;r<=nr;r++){const t=r/nr,drop=FALL.drop*t*t,y=FALL.y-drop,w=FALL.w*(1+.5*t);
-  // thrown out from the lip, but never inside the face: where the wall leans out under it, the water slides down the wall
-  let o=2.4*Math.sqrt(2*Math.max(0,drop)/9.8)+.2;for(let s=0;s<60;s+=.5){if(terrainH0(FALL.x+FALL.dx*s,FALL.z+FALL.dz*s)<y-.2){o=Math.max(o,s+.5);break;}}
- 
-  for(let c=0;c<=nw;c++){const s=(c/nw-.5)*w;pos.push(FALL.x+FALL.dx*o+px*s,y,FALL.z+FALL.dz*o+pz*s);aF.push(c/nw,t*t);}}
- for(let r=0;r<nr;r++)for(let c=0;c<nw;c++){const a=r*(nw+1)+c,b=a+nw+1;idx.push(a,b,a+1,b,b+1,a+1);}
- const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,FALLU]),
-  vertexShader:['#include <fog_pars_vertex>','attribute vec2 aF;varying vec2 vF;','void main(){vF=aF;vec4 mvPosition=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
-  fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;varying vec2 vF;',
-   'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
-   'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-   'void main(){float s=vF.x,t=vF.y;float streak=n(vec2(s*14.0,t*5.0-uT*2.6))*0.6+n(vec2(s*31.0,t*11.0-uT*4.1))*0.4;',
-   ' float edge=smoothstep(0.0,0.18,s)*smoothstep(1.0,0.82,s);float a=edge*(0.35+0.55*smoothstep(0.35,0.75,streak))*(0.75+0.25*t);',
-   ' vec3 c=mix(vec3(0.62,0.72,0.74),vec3(0.96,0.98,1.0),smoothstep(0.4,0.8,streak));gl_FragColor=vec4(c*uLight,a);','#include <fog_fragment>','}'].join('\n')});
- ['uT','uLight'].forEach(k=>mat.uniforms[k]=FALLU[k]);mat.uniforms.fogColor.value=scene.fog.color;mat.uniforms.fogDensity.value=scene.fog.density;
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(aF,2));g.setIndex(idx);
- const m=new THREE.Mesh(g,mat);m.userData.inspectLabel=FALL.name;m.renderOrder=2;scene.add(m);
+if(FALL){
  REGISTER({name:FALL.name,x:FALL.x+FALL.dx*FALL.reach*.5,z:FALL.z+FALL.dz*FALL.reach*.5,y:SEA-2,r:FALL.reach+FALL.w,h:FALL.drop+4,fall:true});
- TICKS.push(dt=>{FALLU.uT.value+=dt;});}
+}
 
 // ---------------------------------------------------------------- the streams (on the gullies' beds; the creek warm)
-const STREAM_MAT=new THREE.MeshLambertMaterial({color:0x4a6a62,transparent:true,opacity:.85,side:THREE.DoubleSide});
-GULLIES.forEach(G=>{const pos=[],idx=[];let prev=-1;const P=G.pts;
- for(let i=0;i<P.length;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l,x=P[i][0],z=P[i][1];
-  const L=terrainH0(x,z)+.3;if(L<=SEA+.15){prev=-1;continue;}if(G.cliff&&FALL&&(x-FALL.x)*FALL.dx+(z-FALL.z)*FALL.dz>0){prev=-1;continue;}if(!G.warm&&Math.hypot(x-P[0][0],z-P[0][1])<60){prev=-1;continue;}
-  const w=G.w*.38+1.2*Math.sin(i*.7),n=pos.length/3;pos.push(x+nx*w,L,z+nz*w,x-nx*w,L,z-nz*w);if(prev>=0)idx.push(prev,prev+1,n,prev+1,n+1,n);prev=n;}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,STREAM_MAT);m.userData.probeSkip=true;m.userData.inspectLabel=G.name;m.renderOrder=1;scene.add(m);
+GULLIES.forEach(G=>{const P=G.pts;
  REGISTER({name:G.name,x:P[Math.floor(P.length/2)][0],z:P[Math.floor(P.length/2)][1],y:terrainH(P[Math.floor(P.length/2)][0],P[Math.floor(P.length/2)][1])-6,r:Math.hypot(P[P.length-1][0]-P[0][0],P[P.length-1][1]-P[0][1])*.5,h:40,gully:G.key});});
-_onLight.push(m=>{const k=m==='night'?.16:1;FALLU.uLight.value=m==='night'?.2:1;SEAU.uBodyK.value=k;STREAM_MAT.color.setHex(m==='night'?0x101818:0x4a6a62);SEAU.uFogCol.value.copy(scene.fog.color);GROUNDU.uNight.value=m==='night'?1:0;});
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});

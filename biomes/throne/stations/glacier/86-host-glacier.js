@@ -7,38 +7,8 @@ const GLACIER={lake:{level:LAKE.level},caves:CAVES.map(C=>({x:C.x,z:C.z,R:C.R,H:
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 
 // ---------------------------------------------------------------- the waters
-const WATERU={uT:{value:0},uLight:{value:1}};
-const MAT_LAKE=new THREE.ShaderMaterial({fog:true,side:THREE.DoubleSide,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,WATERU,{uSun:{value:new THREE.Vector3(...SUN_POS).normalize()}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;','void main(){vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun;varying vec3 vWP;',
-  'void main(){vec3 n=normalize(vec3(0.015*sin(vWP.x*0.21+uT*0.6)+0.01*sin(vWP.z*0.37-uT*0.4),1.0,0.015*cos(vWP.z*0.19+uT*0.5)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vec3(0.30,0.58,0.62),vec3(0.80,0.88,0.94),0.1+fr*0.6);col+=pow(max(dot(n,normalize(uSun+V)),0.0),140.0)*0.6;',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-// the river: grey-green meltwater, streaked; v runs DOWNSTREAM along each ribbon and the streaks move down it with time
-const MAT_RIVER=new THREE.ShaderMaterial({fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,WATERU]),
- vertexShader:['#include <fog_pars_vertex>','attribute vec2 aF;varying vec2 vF;','void main(){vF=aF;vec4 mvPosition=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;varying vec2 vF;',
-  'void main(){float s=sin(vF.y*0.35-uT*3.2+sin(vF.x*9.0)*1.5)*0.5+0.5,s2=sin(vF.y*0.9-uT*5.0+vF.x*14.0)*0.5+0.5;',
-  ' vec3 col=mix(vec3(0.42,0.56,0.58),vec3(0.78,0.86,0.88),0.25*s+0.25*s2*s);col=mix(col,vec3(0.86,0.9,0.92),smoothstep(0.75,1.0,abs(vF.x*2.0-1.0))*0.5);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-['uT','uLight'].forEach(k=>{MAT_LAKE.uniforms[k]=WATERU[k];MAT_RIVER.uniforms[k]=WATERU[k];});
-[MAT_LAKE,MAT_RIVER].forEach(m=>{m.uniforms.fogColor.value=scene.fog.color;m.uniforms.fogDensity.value=scene.fog.density;});
-TICKS.push(dt=>{WATERU.uT.value+=dt;});
-// the lake: a grid over its basin at the level (what the ground or the ice covers does not show)
-(function(){const pos=[],idx=[],D=8,pu0=TERM.u0-20,pu1=GL.SNOUT+280,pp0=TERM.p0-TERM.W0*1.4,pp1=TERM.p0+TERM.W0*1.4,nu=Math.ceil((pu1-pu0)/D),np=Math.ceil((pp1-pp0)/D);const id=new Int32Array((nu+1)*(np+1)).fill(-1);
- const vid=(i,j)=>{const k=i*(np+1)+j;if(id[k]<0){const c=upAt(pu0+i*D,pp0+j*D);id[k]=pos.length/3;pos.push(c[0],LAKE.level,c[1]);}return id[k];};
- for(let i=0;i<nu;i++)for(let j=0;j<np;j++){const c=upAt(pu0+(i+.5)*D,pp0+(j+.5)*D);if(lakeAt(c[0],c[1])<.12)continue;const a=vid(i,j),b=vid(i+1,j),cc=vid(i+1,j+1),d=vid(i,j+1);idx.push(a,d,b,b,d,cc);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);
- const m=new THREE.Mesh(g,MAT_LAKE);m.userData.probeSkip=true;m.userData.inspectLabel=LAKE.name;m.renderOrder=1;scene.add(m);})();
-// the river's braids: a ribbon down each, a little above its cut bed
-(function(){const pos=[],F=[],idx=[];let n=0;
- BRAIDS.forEach((B,bi)=>{let run=false,v=0,prev=null;
-  for(let u=BREACH_U+12;u>-TERR.R*1.05;u-=6){const sp=braidSp(u),hw=B.hw*(bi?sp:1);if(bi&&hw<.8){run=false;continue;}
-   const p=riverC(u)+B.o(u)*(bi?sp:1),c=upAt(u,p),y=RIV(u),l=upAt(u,p-hw-3.6),r=upAt(u,p+hw+3.6);   // out to where the bank rises through the waterif(prev)v+=Math.hypot(c[0]-prev[0],c[1]-prev[1]);prev=c;
-   pos.push(l[0],y,l[1],r[0],y,r[1]);F.push(0,v,1,v);if(run)idx.push(n-2,n-1,n,n-1,n+1,n);n+=2;run=true;}});
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(F,2));g.setIndex(idx);
- const m=new THREE.Mesh(g,MAT_RIVER);m.userData.probeSkip=true;m.userData.inspectLabel='The meltwater river (flowing down the flank)';m.renderOrder=1;m.material.side=THREE.DoubleSide;scene.add(m);})();
+// 2026-10-26: the proglacial lake and the river's braids are core/water's (89w-host-water.js: a WATER.open over the lake's basin, a
+// WATER.flow per braid), drawn after core/atmos is bound (89). The page's own lake and river shaders are gone.
 
 // ---------------------------------------------------------------- the ice: seracs, icebergs, ice towers
 const ICECLEAR=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=KMAT.packed('throne','ground.iceclear');if(!P)return null;const t=KMAT.textures(P,{aniso:4}).map;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
@@ -138,6 +108,6 @@ STEAM_MAT.uniforms.fogColor.value=scene.fog.color;STEAM_MAT.uniforms.fogDensity.
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(A,4));
  const pts=new THREE.Points(g,STEAM_MAT);pts.frustumCulled=false;pts.userData.probeSkip=true;pts.renderOrder=2;scene.add(pts);})();
 TICKS.push(dt=>{STEAMU.uT.value+=dt;STEAMU.uScale.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));});
-_onLight.push(m=>{const n=m==='night';STEAMU.uCol.value.setHex(n?0x40444c:0xf2f4f6);WATERU.uLight.value=n?.2:1;CAVE_IN.uniforms.uNight.value=n?1:0;});
+_onLight.push(m=>{const n=m==='night';STEAMU.uCol.value.setHex(n?0x40444c:0xf2f4f6);CAVE_IN.uniforms.uNight.value=n?1:0;});
 OBSTACLES.push(...CAVES.map(C=>({x:C.x,z:C.z,r:C.R*1.1})),...TOWERS.map(T=>({x:T.x,z:T.z,r:T.r*1.2})),{x:ARCH.x,z:ARCH.z,r:ARCH.span*.6});
 _mark('layout');

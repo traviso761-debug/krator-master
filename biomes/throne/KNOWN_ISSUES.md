@@ -13,13 +13,19 @@
   (150-300 m); the windward station did not tune them down. On this page they take the library barks (the hyperjungle's
   opt-in pack, `station.json` 'packs') with their limbs on the trunk's own map; the hyperjungle's own page does not.
   Stays open (2026-10-25): owner decision (tune the hypertrees down for the windward station or not); the kit's own species heights.
-- [ ] **The frill tree's fins** stand close and steep (the Rift's spacing and pitch); from below it reads as a furred column.
+- [x] **The frill tree's fins** stood close and steep (the Rift's spacing and pitch); from below it read as a furred column.
+  2026-10-26: the rows stand every 3.6 m (were 3 m) and the fins splay flatter, 40 degrees low on the column to 29 at the top (were 60 to 43:
+  `B[17]`, `55-biome-throne-trees.js`), so each row reads as a tier. A look call for the owner (before/after: the kipuka's 'Frill trees').
 - [ ] **The standbys are this kit's own copies.** The frill-tree, the trumpet tree and the star aloe are drawn by this
   kit's builders, not the crater drylands' or the Rift's. In an open world where those kits are resident too, the
   standbys should come from their own kits at the border (`biomes/WORLD.md`, gradual borders).
-- [ ] **Some alien surfaces are still procedural.** The caps, tiers, bells and pitchers take the owner's fungal skins
+- [x] **Some alien surfaces are still procedural.** The caps, tiers, bells and pitchers take the owner's fungal skins
   (mapped from above); the mat's veins, the star aloe's head, the trumpet tree's funnels, the lamp caps and the frill pods
   are vertex colour only (`core/materials/PLAN.md`, The Throne: gaps).
+  2026-10-26: the star aloe's head (`card.flower.staraloe`) and the funnels (`organic.funnel.trumpet`) were already wired (2026-10-06); the lamp
+  caps' dishes now take `organic.fungus.gill` (`cap.gill`, a grey detail under their glow) and the mat takes `organic.flesh.cells` (its cells and
+  pale veins as its colour and glow, tinted by the instance colour, the drawn disc's ragged outline kept as an alpha map; `50-biome-throne-species.js`,
+  materials.json, re-packed). The frill pods are only the no-pack fallback of the ruff (with the pack it draws `card.frond.frill`).
 - [ ] **The far horizon from the air.** Seen from high up, the map's edge meets the painted dome's near flank as a hard
   dark band (as in the other showcases). Ground views are fine.
 - [ ] **Budget.** ~18.6M triangles and ~550k instances at q=1 (the near spore puffs' hairs are 130 strands each) on the 5.2 km map (2026-10-06, measured in the browser);
@@ -54,21 +60,35 @@
   library's acid travertine; the sinter is the popcorn clay (`ground.clay.popcorn`), which reads as geyserite but is a
   badland clay. The coconut's fronds, its coir trunk and the seaweed are the owner's (2026-10-06). See
   `core/materials/PLAN.md`, The Throne, for the prompts.
-- [ ] **The lehua read pale:** on the isle the lehua's grey bark under its vertex colours reads near white in a dense stand.
+- [x] **The lehua read pale:** on the isle the lehua's grey bark under its vertex colours reads near white in a dense stand.
+  2026-10-26: `PAL.lehuaBark` darkened from 0x8a8478 / 0x7e786c / 0x96907e to 0x5e5a52 / 0x56524a / 0x68625a (a grey-brown ohia bark), on every
+  station that grows it. A look call for the owner.
 - [ ] **The geysers are particles:** the column is water drops and a steam cloud on the clock (`85-host-springs.js`); no
   splash on the cone, no runoff surge when one plays, and the springs' water does not boil.
-- [ ] **The sea cliffs' face** takes the forest floor's paint, not basalt: the rock field is read off the 11 m field cache,
+- [x] **The sea cliffs' face** takes the forest floor's paint, not basalt: the rock field is read off the 11 m field cache,
   too coarse for a ~10 m wall. The fall is a curtain that follows the face (`84-host-ground.js`, THE FALL), spray at its foot.
+  2026-10-26: the ground mesh's own normals find the faces: where a vertex leans past ~50 degrees (above the sea) a new layer (L2.y) lays the
+  library's flow-banded basalt (`ground.basalt` = `rock.basalt.flowbanded`, materials.json, re-packed) over the paint. The fall is core/water's now
+  (a WATER.fall thrown out fast enough to clear the face; 89w-host-water.js).
 - [ ] **The cloud forest is dense only near the cameras** (2026-10-06): the elfin trees are heavy (crooked tubes, moss), so a
   sparse stand covers the map and a dense one stands only within 90 m of the cameras' spine; the elfin tree has no far
   impostor (the cloud hides it; when it clears the ground's canopy layer stands in). ~12 s to build, ~21.5M triangles.
+  2026-10-26: the elfin tree has a light far impostor (a flat crown blob on a pole, `far` in its species), so the sparse stand stays on the map
+  past the near range, and the dense stand thins from 65 m to 90 m (it ended at a hard edge at 90 m; taking it to 140 m cost 2.6M triangles,
+  over the page's 24M). Stays open: a dense stand over the whole map is still out of budget; a look call for the owner (before/after: 'The elfin woods', 'Above the cloud').
 - [ ] **The cloud forest's moss curtains** are the six greener cells of `card.moss.hanging` (its red and orange ones read as autumn).
+  Stays open (2026-10-26): not a defect in code; the three warm cells would need a recoloured sheet (the instance colour multiplies, it cannot turn
+  red to green). A prompt for a nine-cell green sheet, or the warm cells as a rare red-moss accent, is the owner's call.
 - [ ] **The sky dome takes no fog**, so in the cloud a fog-coloured veil sphere hides it (`89-host-atmos.js`); the
   mountain shows only in a clear spell.
 - [ ] **The savanna's parasol caps are heavy** (2026-10-06): the gill-parasols' and stilt parasols' discs and gills are dense
   lathes, ~10M of its ~17M triangles, so their woods are thinner than they might be. A lighter cap far off would let them
   thicken. No grazers (the fauna kit) and no people yet.
   Stays open (2026-10-25): a lighter far cap is a kit change in the biome core's parasol builders (shared with other stations), plus fauna and people are separate kits.
+  2026-10-26, the proposal: the caps are instanced (`BIO.def('disc')` 336 triangles, `BIO.def('gills')` 224, `50-biome-throne-species.js`), so the
+  fix is a distance LOD on an instanced def: core/biome `BIO.def(key, geo, mat, {lod: [[geoFar, metres]]})` splitting each item set into a near and a
+  far InstancedMesh by the camera's LOD key (as `BIO._lodKey` does for the baked buckets), then here a 7 x 12 disc and no gills past ~250 m. That is
+  a core change (core/biome/20-core-kit.js and 40-core-place.js), not made here.
 - [ ] **The ash desert's storm is particles and fog** (2026-10-06): the shared atmosphere's ash weather (flecks, streaks,
   veils, warm lightning) and the host's brown-out; nothing settles on the ground or the trees as it falls, and the dunes
   do not move. No grazers, no rats or birds yet (the fauna kit).
@@ -79,9 +99,14 @@
   overhangs: `core/terrain` could carve them). No fauna. The sulphur life (the candelabras, reeds, pads, bladders) is
   the owner's textures where they came (`bark.brimstone`, `card.reed.brimstone`); the acid pads and gas bladders are still
   procedural geometry in vertex and instance colours.
-- [ ] **The heat shimmer turns off antialiasing while it runs** (2026-10-07): in reach of the heat the frame renders to
+  2026-10-26: the hot pools and the mud pots stand on a fine patch (1.6 m, four times the mesh; `84-host-ground.js`, THE FINE PATCH), cut out
+  of the main mesh with its border on the coarse edges, so the pots' floors and the pools' bowls are drawn as cut. Stays open: the open cracks
+  across the graben still read as notches (a patch along each would cost ~0.2M triangles each), the valley's walls carry nothing.
+- [x] **The heat shimmer turns off antialiasing while it runs** (2026-10-07): in reach of the heat the frame renders to
   an offscreen target (WebGL cannot read an antialiased screen back), so edges step a little there; out of reach the page
   renders as before. The renderer's draw-call count in the HUD then shows only the last pass.
+  2026-10-26: the screen quad runs FXAA over the target (`83-host-heat.js`): three r128's multisampled target cannot resolve the depth texture the
+  sheets read, so the antialiasing is a post pass. The HUD's draw-call count still shows only the last pass.
 - [ ] **The lava tube is one swept mesh** (2026-10-06, station 11): the walls and roof are a section swept along a centre
   line (no overhangs beyond its arch, no breakdown blocks fused into the walls); the skylights are holes in it with a pit
   wall up to the surface (small gaps can show where the two meet). The skylights' light is three spot lights (no shadows:
@@ -108,6 +133,9 @@
   chalices, the snare rafts' runners; the braid caps and the chalice's cap take the parasol skin (`cap.disc`) tinted, the
   moss domes the brain cap's. Library sets that could serve: `bark.ghostwood` or `bark.smooth` (the chalice stalk),
   `ground.moss001` (the domes).
+  Stays open (2026-10-26): checked against the library: the moss domes already take `ground.moss001` and the chalice's stalk the pale bark's
+  `organic.fungus.bracket` (`bark2`), so those two are done; the chalice's skirt, the braid cap's vines, the geode pods, ember burrs, wire stalks,
+  gold pins, blood chalices and the rafts' runners have no matching set in the library (Delivered 2026-10-25/26 holds none for them): prompts are owed.
 - [ ] **Station 1 is near its triangle ceiling** after the new flora: 19.79M scene triangles of 20M (19.06M before). The
   moss domes reuse the brain cap (~480 triangles each), so there are only ~800; a lighter dome would let them thicken.
   Its draw calls at the default camera were over the 140 ceiling before the flora (186) and are ~200 now (the verify
@@ -130,7 +158,9 @@
 
 - [x] **core/atmos bound on every page (migration phase 0, 2026-10-20).** `ATMOS.bindHost` (`core/atmos/host/89-atmos-c-hostbind.js`, a subfolder so the kits that list core/atmos whole are unchanged) is called by `src/89a-host-atmos.js` on station 1 and, through `station.json` `"atmosHost": true`, on the kipuka, the savanna and the tube (hour 13, 0 in the night mode); all ten stations now list the core, presets, export, wave field and skylight fragments. The binding alone draws nothing (no triangles or calls added); the page's own sky, fog, sun and water are unchanged. `atmos` joins the profiles of stations 1, 2, 6 and 11. Station 1's triangle ceiling is raised from 20M to 22M (`BUDGET.showcase` in `src/99-host-take.js`, owner's approval) for core/water's drawing in later phases; the draw-call ceiling stays 140 (the page is over it already, above).
 
-- [ ] **The Throne keeps the injection route.** No page of the Throne lists core/export in its build: station 1's page is
+- [ ] **The Throne keeps the injection route.** Stays open (2026-10-26): the water moved onto core/water saved no page bytes (each page grew
+      ~100-130 KB with core/water's fragments), so core/export is still injected, not listed.
+      No page of the Throne lists core/export in its build: station 1's page is
       at its 20M size ceiling (above), so the two fragments are not added to the pages. `tools/harness.py export` injects
       them at export time (the biome core's `42`/`43` queued their parts), and `verify.py --assert` checks each page's
       export profile through the same injection (`check_profile(..., inject=True)`), one box and profile per page in
@@ -153,7 +183,7 @@
       without its fauna. Both `core` lists now hold `36-core-walker.js` (the sort by name puts it after `35-core-anim.js`
       and before the hyperjungle fragments, as the hyperjungle's own build orders them); the two pages were rebuilt, verify
       clean with their profile PASS, and their baseline rows were rewritten (only those two).
-- [ ] **`water` is left out of every profile.** (2026-10-20: re-checked: still true, no station binds core/water; the section reads `empty` on all eleven.) No page of the Throne is on core/water (the acid lake, the hot pools, the lava
+- [x] **`water` is left out of every profile.** (2026-10-26: closed, below. 2026-10-20: re-checked: still true, no station binds core/water; the section reads `empty` on all eleven.) No page of the Throne is on core/water (the acid lake, the hot pools, the lava
       lake and the sea are the hosts' own surfaces), so the section reads `empty` everywhere. Add it back when a station's
       water is named to core/water.
       **2026-10-20 (migration phase 2): stations 2 (kipuka) and 6 (savanna) are on core/water, and `water` is in their profiles.** The rest stay out.
@@ -183,3 +213,22 @@
       page-wide `WATER.PRESETS.flow.rapids` write is deleted. Savanna: the sixteen pools take `pick: true`, the invisible flat discs are gone (`registered-volumes-non-empty` is read from the
       pools themselves). Frontier: the streams' `width` is the old ribbon's profile again, 2 (5 + 2 sin(.03 u)) m, a per-point array (6 to 14 m, breathing along the valley), not a flat 10 m;
       the sea's `pick: true` replaced its plane. The kipuka's ribbon was always a flat 2.3 w (the old code offset by a constant S.w * 1.15), so its width stays a number.
+      **2026-10-26 (the last stations): every station's water is on core/water, and `water` is in every profile that has water.** `station.json` "water" (and, for
+      station 1, `S1_WATER` in build.py) lists the core/water fragments, a subfolder fragment (`geyser/52*`, `ext/53*`) keyed by its name; each station draws in its own
+      `89w-host-water.js` (station 1's is `src/89w-host-water.js`, kept off the other stations), after core/atmos is bound, the sky in the water from core/atmos's skylight.
+      Station 1: the acid lake a `WATER.still` (its 48-gon, the old middle-to-rim colours as the gradient at 60% brightness, the surface being lit where the old one was not),
+      the three hot pools `WATER.spring` (banded by heat). Station 4 (the isle): the sea one unbounded `WATER.open` with a shore grid over the isle and shelf (8 m, seeds 'edge';
+      both old grids gone), the wet sand by `WATER.wetGround`; the six springs `WATER.spring` (core/water's ramp is this page's old one); the cliff fall a `WATER.fall`
+      (its speed the least that clears the face); each gully stream and the warm creek a `WATER.flow` per run. Station 5 (the cloud forest): the four falls a
+      `WATER.fall` each (fitted to land on the old foot, where the spray rises), drawn by `WATER.drawFalls` in two meshes; the four plunge pools `WATER.still`, one mesh
+      (`WATER.drawPools`, its probe points the pools' middles); each ravine's stream a `WATER.flow` per run between the falls. Station 8 (vents): the marsh a `WATER.still`
+      (gradient, 60%), the nine hot pools `WATER.spring`. Station 9 (the glacier): the proglacial lake a `WATER.open` over its basin, calm (field .1, no surf), its shore
+      grid flooded from the middle with the cells the lake does not hold set as land (so it cannot run down the river), the three braids a `WATER.flow` each.
+      Not water, left out and said so: the caldera's lava lake and the tube's lava stream (core/atmos fx lava), the glacier's ice (its seracs, bergs, towers), the mud
+      pots of the isle and vents (mud: core/water has no kind for it), the geysers' columns (the page's particles; `WATER.geyser` could take them later). The ash desert,
+      the caldera and the tube have no water, so their profiles do not name it. waterH and terrainH are unchanged everywhere. EXPORT_STATIONS: station 1's box moved
+      to the acid lake [55, -517, 355, -217], vents' to the hot pools [280, -600, 580, -300]; the isle, cloud forest and glacier boxes already held water.
+      Cost (draw calls, triangles at the default camera, before -> after): station 1 210 -> 210, 19.76M scene triangles -> 19.76M (renderer 20.41M -> 20.41M; under the
+      20M the brief keeps it to); the isle 130 -> 129, 16.94M -> 16.80M (renderer); vents 202 -> 203, 21.62M -> 21.74M (renderer; +0.12M is the pools' fine ground patch);
+      the glacier 42 -> 42 (the outwash view 42 -> 44: one flow per braid), 6.31M -> 6.31M. The cloud forest 75 -> 72, 21.41M -> 20.06M scene triangles (the falls two meshes for
+      four, the pools one for four, the streams one per run; the triangles fell with the dense stand's thinning edge, its item).

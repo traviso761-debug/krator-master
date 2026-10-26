@@ -395,11 +395,13 @@ B[17]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs;
  const finCol=()=>FN.length?null:bright(vary(hc,.02,.06,.05),1.3),c2=()=>bright(C(pick(PAL.frillIrid)),1.1);
  // twice the Rift's rows (the owner: "about 2x as many frills, cover the gaps on the way up"), each row staggered half a
  // rib from the last and jittered up and down a little, so no ring of bare column shows between them
- const rows=lv===2?Math.max(6,Math.round(H/3)):Math.max(4,Math.round(H/6)),nf=lv===2?nR:nR/2;
+ // 2026-10-26 (KNOWN_ISSUES, the fins): from below the rows every 3 m at the Rift's 60-43 degree pitch read as a furred column; the rows
+ // now stand every 3.6 m and the fins splay flatter (40 degrees low on the column to 29 at the top), so each row shows as a tier of fins
+ const rows=lv===2?Math.max(6,Math.round(H/3.6)):Math.max(4,Math.round(H/6)),nf=lv===2?nR:nR/2;
  for(let r=0;r<rows;r++){const u=lerp(.08,.86,r/(rows-1)),yy=T.y0+H*u,R=rAt(u)*1.05;
   // longer and wider toward the top (the owner): short narrow fins low on the column, long broad plumes high up
   for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=lerp(3.2,13,Math.pow(u,1.3))*fk*(.85+.3*fbm(u*9,k*.7,T.seed%97,1))*rr(.9,1.1),W=lerp(.28,.85,u);
-   BIO.put(fin(),[T.x+Math.cos(a)*R,yy+rr(-.3,.3)*H/rows,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,lerp(1.05,.75,u)+rr(-.1,.1)),[L,L*.9,L*W],finCol(),{c2:c2(),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.clumps++;}}
+   BIO.put(fin(),[T.x+Math.cos(a)*R,yy+rr(-.3,.3)*H/rows,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,lerp(.7,.5,u)+rr(-.1,.1)),[L,L*.9,L*W],finCol(),{c2:c2(),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.clumps++;}}
  const top=T.y0+H*.9,n=lv===2?14:8,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.15,.15),L=H*rr(.12,.16)*mix(1.6,1,fk);
   BIO.put(fin(),[T.x+Math.cos(a)*rAt(.9)*.7,top+rr(-1,1),T.z+Math.sin(a)*rAt(.9)*.7],qEuler(rr(-.1,.1),-a,rr(.55,.95)),[L,L,L*.9],finCol(),{c2:c2(),n:[Math.cos(a)*.7,.7,Math.sin(a)*.7]});st.clumps++;}
@@ -748,8 +750,9 @@ THRONE.PASSES=[
  {sp:14,cell:26,accept:Z=>Z.cforest*Z.wetW*.14,opt:{pad:3,patch:.5,patchScale:.008}},
  {sp:22,cell:38,accept:Z=>(Z.cforest*.07+Z.gully*Z.cforest*.25)*Z.wetW,opt:{pad:4,patch:.5,patchScale:.01}},
  {sp:21,cell:16,accept:Z=>Z.cforest*Z.wetW*.8,opt:{pad:1.6,patch:.4,patchScale:.012}},
- // and close round the cameras a second, denser stand (in the cloud nothing farther is seen)
- {sp:21,cell:9,accept:(Z,x,z)=>BIO.lodD(x,z)<90?Z.cforest*Z.wetW*.75:0,opt:{pad:1.4,patch:.3,patchScale:.012}},
+ // and close round the cameras a second, denser stand (in the cloud nothing farther is seen); 2026-10-26: thinning from 65 m to 90 m (it ended
+ // at a hard edge at 90 m; reaching 140 m cost 2.6M triangles, over the page's 24M), and the elfin tree's far impostor keeps the sparse stand on the map beyond the near range
+ {sp:21,cell:9,accept:(Z,x,z)=>BIO.lodD(x,z)<90?Z.cforest*Z.wetW*.75*smooth(90,65,BIO.lodD(x,z)):0,opt:{pad:1.4,patch:.3,patchScale:.012}},
  {sp:15,cell:18,accept:Z=>(Z.cforest*.2+Z.gully*Z.cforest*.45)*Z.wetW,opt:{pad:1.4,patch:.5,patchScale:.012,small:true}},
  // THE SAVANNA's (stations/savanna), after the cloud forest's: stilt parasols along the braided channels, the gill-parasol
  // woodland, star aloes over the grass, Krator's familiar crossers scattered (frill-trees, trumpet trees); fewer on the burn

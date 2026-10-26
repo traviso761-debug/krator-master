@@ -90,42 +90,14 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_PATCH));m.userData.probeSkip=true;m.userData.inspectLabel='The ravine of the falls';scene.add(m);return m;})();
 _mark('patch');
 
-// ---------------------------------------------------------------- THE FALLS: a curtain at each step of the ravine
-// From the lip (just above the step) the water is thrown out and falls, but never inside the wall: where the wall leans out
-// under it, the water slides down the wall. Streaked, running on the clock; spray at each foot (85)
-const FALLU={uT:{value:0},uLight:{value:1}};
-const FALL_MAT=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,FALLU]),
- vertexShader:['#include <fog_pars_vertex>','attribute vec2 aF;varying vec2 vF;','void main(){vF=aF;vec4 mvPosition=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;varying vec2 vF;',
-  'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
-  'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-  'void main(){float s=vF.x,t=vF.y;float streak=n(vec2(s*14.0,t*5.0-uT*2.6))*0.6+n(vec2(s*31.0,t*11.0-uT*4.1))*0.4;',
-  ' float edge=smoothstep(0.0,0.18,s)*smoothstep(1.0,0.82,s);float a=edge*(0.35+0.55*smoothstep(0.35,0.75,streak))*(0.75+0.25*t);',
-  ' vec3 c=mix(vec3(0.62,0.72,0.74),vec3(0.96,0.98,1.0),smoothstep(0.4,0.8,streak));gl_FragColor=vec4(c*uLight,a);','#include <fog_fragment>','}'].join('\n')});
-['uT','uLight'].forEach(k=>FALL_MAT.uniforms[k]=FALLU[k]);FALL_MAT.uniforms.fogColor.value=scene.fog.color;FALL_MAT.uniforms.fogDensity.value=scene.fog.density;
+// ---------------------------------------------------------------- THE FALLS, THE STREAMS, THE POOLS: the records here, drawn on core/water (89w)
+// 2026-10-26: a fall at each step of the ravine (FALLS: its lip just above the step, its drop to the pool, its foot where the spray rises, 85),
+// each plunge pool (POOLS, 47) and each ravine's stream are core/water's (89w-host-water.js: WATER.fall, WATER.still, WATER.flow), drawn after
+// core/atmos is bound (89). The page's own streaked curtain shader, the Lambert ribbons and the pools' discs are gone.
 const FALLS=[];
 RAVINES.forEach(V=>(V.steps||[]).forEach((S,si)=>{const dx=-1,dz=0,lx=S.x+1.6,lz=ravC(V,lx),y=terrainH0(lx,lz)+.3,P=POOLS.find(p=>p.key===V.key+'_pool'+si),base=P?P.level:terrainH0(S.x-10,ravC(V,S.x-10)),drop=y-base;
- if(drop<4)return;const w=V.w*.7,nw=8,nr=36,pos=[],aF=[],idx=[],px=0,pz=1;
- for(let r=0;r<=nr;r++){const t=r/nr,dr=drop*t*t,yy=y-dr,ww=w*(1+.4*t);
-  let o=2.0*Math.sqrt(2*Math.max(0,dr)/9.8)+.2;for(let s=0;s<40;s+=.4){if(terrainH0(lx+dx*s,lz+dz*s)<yy-.2){o=Math.max(o,s+.4);break;}}
-  for(let c=0;c<=nw;c++){const s=(c/nw-.5)*ww;pos.push(lx+dx*o+px*s,yy,lz+dz*o+pz*s);aF.push(c/nw,t*t);}}
- for(let r=0;r<nr;r++)for(let c=0;c<nw;c++){const a=r*(nw+1)+c,b=a+nw+1;idx.push(a,b,a+1,b,b+1,a+1);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(aF,2));g.setIndex(idx);
- const name='Fall '+(si+1)+' of the ravine ('+Math.round(drop)+' m)',m=new THREE.Mesh(g,FALL_MAT);m.userData.inspectLabel=name;m.renderOrder=2;scene.add(m);
+ if(drop<4)return;const w=V.w*.7,name='Fall '+(si+1)+' of the ravine ('+Math.round(drop)+' m)';
  const F={key:V.key+'_fall'+si,name,x:lx,z:lz,y,drop,dx,dz,w,foot:[lx+dx*Math.max(4,drop*.25),base,lz]};FALLS.push(F);
  REGISTER({name,x:lx-drop*.15,z:lz,y:base-2,r:Math.max(10,drop*.4),h:drop+4,fall:F.key});}));
-TICKS.push(dt=>{FALLU.uT.value+=dt;});
-
-// ---------------------------------------------------------------- the streams (on the ravines' floors) and the pools
-const STREAM_MAT=new THREE.MeshLambertMaterial({color:0x5a6e68,transparent:true,opacity:.82,side:THREE.DoubleSide});
-RAVINES.forEach(V=>{const pos=[],idx=[];let prev=-1;
- for(let x=2120;x>=-2700;x-=4){const c=ravC(V,x);if(Math.abs(c)>TERR.R*1.08||x<-TERR.R*1.08){prev=-1;continue;}
-  // the stream breaks at each fall (the curtain carries it down)
-  if(V.steps&&V.steps.some(S=>x<S.x+2&&x>S.x-6)){prev=-1;continue;}
-  const L=terrainH0(x,c)+.3,w=V.w*.42+.8*Math.sin(x*.05),n=pos.length/3;pos.push(x,L,c-w,x,L,c+w);if(prev>=0)idx.push(prev,prev+1,n,prev+1,n+1,n);prev=n;}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,STREAM_MAT);m.userData.probeSkip=true;m.userData.inspectLabel=V.name+' (its stream)';m.renderOrder=1;scene.add(m);});
-POOLS.forEach(P=>{const g=new THREE.CircleGeometry(P.r,28).rotateX(-Math.PI/2);g.translate(P.x,P.level,P.z);
- const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x3e5650,transparent:true,opacity:.88}));m.userData.inspectLabel=P.name;m.renderOrder=1;scene.add(m);P.mesh=m;
- REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-4,r:P.r,h:8,pool:P.key});});
-_onLight.push(m=>{FALLU.uLight.value=m==='night'?.2:1;STREAM_MAT.color.setHex(m==='night'?0x101818:0x5a6e68);POOLS.forEach(P=>P.mesh.material.color.setHex(m==='night'?0x0e1414:0x3e5650));GROUNDU.uNight.value=m==='night'?1:0;});
+POOLS.forEach(P=>REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-4,r:P.r,h:8,pool:P.key}));
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});

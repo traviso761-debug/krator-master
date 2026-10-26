@@ -48,7 +48,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # (check_profile(..., inject=True)), so it proves the route the export takes. Each box is a 300 m tile round the station's
 # default view that holds item sets and at least one bucket; the profile is the sections that box must fill. Sampled
 # terrain (no krator-field). atmos and water are named only where that station's box fills them (the stations with core/atmos
-# list no 89-atmos-8-export.js, so atmos reads none or throws; no page is on core/water): KNOWN_ISSUES.md, "Export profile".
+# list no 89-atmos-8-export.js, so atmos reads none or throws): KNOWN_ISSUES.md, "Export profile". 2026-10-26: every page with water is on
+# core/water and names water (stations 1-6, 8, 9); the ash desert, the caldera and the tube have none (the lava lake and stream are not water).
 # "only": export the profile's sections alone (the five pages whose atmos section throws: a section error would fail the
 # check whatever the profile names; tools/harness.py export takes --sections the same way). The boxes were found by
 # exporting round each page's default view and, for the caldera and the glacier, by scanning the map in 300 m cells
@@ -56,25 +57,27 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 EXPORT_SECTIONS = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
 EXPORT_STATIONS = {
     # station 1, the plume's edge: the rift's shoulder east of the default view (95 item sets, 7 buckets)
-    'throne.html': {'box': [-400, 40, -100, 340], 'profile': EXPORT_SECTIONS + ['atmos']},
+    # 2026-10-26: moved from [-400, 40, -100, 340] (the rift's shoulder: no water) to the acid lake (core/water: WATER.still at PIT.lake)
+    'throne.html': {'box': [55, -517, 355, -217], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the kipuka (2): the old hyperjungle west of the skylight (42 sets, 8 buckets, 30k bucket triangles)
     # 2026-10-20: moved from [-240,-700,60,-400] (the old hyperjungle west of the skylight, no stream) to the stream's reach at -570,-2139 (core/water: STREAM_FLOWS)
     'throne-kipuka.html': {'box': [-720, -2300, -420, -2000], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the spice frontier (3): the terraces at the default view (20 sets, 3 buckets)
     'throne-frontier.html': {'box': [-900, -700, -260, -100], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},  # holds the stream of the first lahar valley (a surface of the water) and the old terraces
     # the geyser isle (4): the basin's crown, the richest cell of the scan (49 sets, 8 buckets, 24k instances)
-    'throne-isle.html': {'box': [-300, -300, 0, 0], 'profile': EXPORT_SECTIONS + ['atmos']},
+    'throne-isle.html': {'box': [-300, -300, 0, 0], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the cloud forest (5): the elfin wood at the default view (41 sets, 6 buckets, 98k instances)
-    'throne-cloud.html': {'box': [-1720, 570, -1420, 870], 'profile': EXPORT_SECTIONS + ['atmos']},
+    'throne-cloud.html': {'box': [-1720, 570, -1420, 870], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the savanna (6): moved 2026-10-20 from the gill-parasol wood at the default view ([-1050,350,-750,650]) to a tile with a dry-season pool
     # (core/water: a pool at -158,-271), so the water section has a surface to fill
     'throne-savanna.html': {'box': [-310, -420, -10, -120], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the ash desert (7): the dunes at the default view (110 sets, 4 buckets)
     'throne-ash.html': {'box': [-350, 50, -50, 350], 'profile': EXPORT_SECTIONS + ['atmos']},
     # vent country (8): the graben at the default view (104 sets, 3 buckets)
-    'throne-vents.html': {'box': [-330, -430, -30, -130], 'profile': EXPORT_SECTIONS + ['atmos']},
+    # 2026-10-26: moved from [-330, -430, -30, -130] (the graben: no water) to the hot pools (core/water: WATER.spring)
+    'throne-vents.html': {'box': [280, -600, 580, -300], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the glacier (9): the glass willows by the outwash river, the richest cell of the scan (6 sets, 3 buckets)
-    'throne-glacier.html': {'box': [-1800, -600, -1500, -300], 'profile': EXPORT_SECTIONS + ['atmos']},
+    'throne-glacier.html': {'box': [-1800, -600, -1500, -300], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the caldera rim (10): the penitentes' plateau. No cell of its map holds a bucket (the kit's baked plain meshes are
     # trees; the summit has none, and the rim, the lake and the penitentes are the host's own or instanced), so buckets
     # may read empty here (4 sets, 139 instances)

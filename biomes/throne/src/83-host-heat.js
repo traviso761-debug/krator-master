@@ -4,16 +4,28 @@
 // hint_screen_texture and hint_depth_texture), that target is drawn to the screen, and the sheets over the heat are drawn
 // on top, each re-reading the frame at an offset that rises and wavers (SCREEN_UV + offset), the offset fading to nothing at
 // a sheet's edges, with height and with distance, so a sheet never shows as itself; a sheet behind the scene (by the depth
-// target) draws nothing. Out of reach the scene renders straight to the screen as always (and keeps its antialiasing).
+// target) draws nothing. Out of reach the scene renders straight to the screen as always (and keeps its antialiasing); in reach the
+// screen quad runs FXAA over the target (2026-10-26).
 // (The screen cannot simply be copied: an antialiased default framebuffer cannot be read into a texture in WebGL.)
 const HEAT=(function(){const scene2=new THREE.Scene(),U={uScreen:{value:null},uDepth:{value:null},uRes:{value:new THREE.Vector2(1,1)},uT:{value:0}};let rt=null,W=0,H=0,on=false;
  // the colour target is encoded as the screen is (sRGB, tone-mapped: three r128 does both into a target whose texture says
  // sRGB, and the kit's raw shaders write the same raw values they write to the screen), so the screen quad and the sheets
  // pass its values through untouched
  const OUT='';
- const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,uniforms:{uScreen:U.uScreen},
+ const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,uniforms:{uScreen:U.uScreen,uRes:U.uRes},
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',
-  fragmentShader:'uniform sampler2D uScreen;varying vec2 vUv;void main(){gl_FragColor=texture2D(uScreen,vUv);'+OUT+'}'}));
+  // 2026-10-26 (KNOWN_ISSUES, the shimmer turned off antialiasing): the target cannot be multisampled with a depth texture in three r128, so the
+  // quad that puts it on the screen runs FXAA (the classic reduce/span variant): the edges in reach of the heat are smoothed again
+  fragmentShader:'uniform sampler2D uScreen;uniform vec2 uRes;varying vec2 vUv;'+
+   'vec3 fxaa(vec2 uv){vec2 px=1.0/uRes;vec3 L=vec3(0.299,0.587,0.114);vec3 cM=texture2D(uScreen,uv).rgb;'+
+   'float lNW=dot(texture2D(uScreen,uv+vec2(-1.0,-1.0)*px).rgb,L),lNE=dot(texture2D(uScreen,uv+vec2(1.0,-1.0)*px).rgb,L),lSW=dot(texture2D(uScreen,uv+vec2(-1.0,1.0)*px).rgb,L),lSE=dot(texture2D(uScreen,uv+vec2(1.0,1.0)*px).rgb,L),lM=dot(cM,L);'+
+   'float lMin=min(lM,min(min(lNW,lNE),min(lSW,lSE))),lMax=max(lM,max(max(lNW,lNE),max(lSW,lSE)));'+
+   'vec2 dir=vec2(-((lNW+lNE)-(lSW+lSE)),((lNW+lSW)-(lNE+lSE)));float red=max((lNW+lNE+lSW+lSE)*0.03125,0.0078125);'+
+   'float rc=1.0/(min(abs(dir.x),abs(dir.y))+red);dir=clamp(dir*rc,vec2(-8.0),vec2(8.0))*px;'+
+   'vec3 A=0.5*(texture2D(uScreen,uv+dir*(1.0/3.0-0.5)).rgb+texture2D(uScreen,uv+dir*(2.0/3.0-0.5)).rgb);'+
+   'vec3 B=A*0.5+0.25*(texture2D(uScreen,uv-dir*0.5).rgb+texture2D(uScreen,uv+dir*0.5).rgb);float lB=dot(B,L);'+
+   'return (lB<lMin||lB>lMax)?A:B;}'+
+   'void main(){gl_FragColor=vec4(fxaa(vUv),1.0);'+OUT+'}'}));
  quad.frustumCulled=false;const qs=new THREE.Scene();qs.add(quad);const qc=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
  const mat=amp=>new THREE.ShaderMaterial({depthWrite:false,depthTest:false,toneMapped:false,side:THREE.DoubleSide,
   uniforms:{uScreen:U.uScreen,uDepth:U.uDepth,uRes:U.uRes,uT:U.uT,uAmp:{value:amp},uFall:{value:.035}},

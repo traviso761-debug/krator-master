@@ -7,4 +7,4 @@ ATMOS.init({THREE:THREE,scene:scene,camera:camera,
  onFrame:fn=>TICKS.push(dt=>fn(dt)),
  ground:(x,z)=>terrainH(x,z),seed:90041,err:m=>console.warn(m),
  viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
-ATMOS.waveUniforms(SEAU);
+// the sea's wave field is core/water's (89w-host-water.js: WATER.open reads it from ATMOS); the page's own sea shader and its uniforms are gone (2026-10-26)
