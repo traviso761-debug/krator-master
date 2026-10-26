@@ -1,0 +1,146 @@
+// ================================================================= ATMOS — sky model: where everything in Krator's sky is, at any site and hour
+// [G data] The ephemeris of the shared sky (core/atmos/SKY-PLAN.md, 3.1), lifted from Voth's 21-sky.js and made whole:
+// the sun from latitude, tilt, day of year and hour; the gas giant FIXED per site (Krator is tidally locked: its
+// position follows from the site's latitude and its longitude from the sub-giant point). THE GIANT IS LIFTED (the
+// owner, 2026-10-25): it hangs at declination -37.6, not on the celestial equator where a tidally locked moon's giant
+// would be, so the sun (declination -23..23) passes behind it only ~27 days a year round the southern summer solstice
+// (12 of them total) instead of ~2.5 months round each equinox. A deliberate cheat: its ring plane is taken through the
+// line of sight so the rings stay a hairline. The two sister moons orbit in Krator's equatorial plane; they orbit the giant (the Week 6.87 d, the Thirteen 12.55 d), so their phases,
+// 7 and 13 days as seen from Krator, and the Double Dark every 91 days come out of the geometry, not a table; the stars
+// turn at the sidereal rate, so the Pleiades' season follows the year.
+// No THREE, no DOM. Directions are world unit vectors [x,y,z]: x east, y up, z south. Angles in degrees unless named.
+//   ATMOS.SKY                       the constants (LORE section 2); ATMOS.SKY.stars the bright stars, made once
+//   ATMOS.siteAt(px, py)            a site from the scale model's pixel: {px, py, latitude, subGiantLon}
+//   ATMOS.skyState(site, hour, dayCount)   everything one frame needs (below); dayCount 0 is game start's date
+//   ATMOS.skyDate(dayCount, hour)  the date: day of year, month and day, Jimjam's counts
+//   ATMOS.ridgeProfile(layer, n)    a far ridge's elevation by azimuth (degrees), n samples round the compass
+// Godot: the same functions in krator/sky.gd (the sky's own twin of this file), test vectors from core/atmos/test-sky.js.
+(function(){const A=ATMOS,D=Math.PI/180;
+ const S=A.SKY={
+  dayH:24, yearD:365, tilt:23, solsticeDay:350,      // southern summer solstice (LORE); the spring equinox is day 258.75
+  startDay:259, startHour:6,                         // game start: the southern spring equinox, sunrise (the owner, 2026-10-25)
+  // the site frame on the scale model (2 km/px, x east, y south): Voth at 40 S, 84 km a degree (radius ~4,800 km), and
+  // the point under the giant 87.1 degrees east of Voth, off the mapped crater, so Voth sees it ESE at the canon 25 degrees
+  // up, low enough for level shots (the owner, 2026-10-25); across the map it stands 17 (west) to 39 (east) degrees up
+  frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:87.12},
+  giant:{diaDeg:30, decDeg:-37.6, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
+  sunDiaDeg:0.53,
+  // the sister moons orbit the giant in Krator's equatorial plane. phase0: both new at the Double Dark the day before
+  // game start (the owner, 2026-10-25), solved below
+  moons:[{name:'Week', periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[.86,.84,.80]},
+         {name:'Thirteen', periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[.82,.74,.70]}],
+  doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
+  // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
+  // the southern winter nights (the owner, 2026-10-25)
+  cluster:{ra:270, dec:-30, core:25, reach:60, dust:100},
+  // Jimjam's calendar for display (3.1): Earth's months, Jimjam-ized; Jimjam's weekdays and number words (LORE 6.14)
+  months:['Janavari','Pepravari','Mārccu','Ēpral','Mē','Jūn','Julai','Ākasṭu','Ceppaṭampar','Akṭōpar','Navampar','Ṭicampar'],
+  monthDays:[31,28,31,30,31,30,31,31,30,31,30,31],
+  weekdays:['Sanḍē','Manḍē','Ṭyūsḍē','Vensḍē','Tarsḍē','Firaiḍē',"Sa'arḍē"],
+  numbers:['Van','Ṭū','Tirī','Fōr','Faiv','Siks','Cevan','Eyiṭ','Nain','Ṭen','Ilevan','Ṭvelv','Tarṭīn']};
+ // lowbias32: the same bits as the cloud deck's and the GLSL sky's hash
+ const hash=A.skyHash=(x,y,s)=>{let h=(Math.imul(x,1597334677)^Math.imul(y,-482951495)^Math.imul(s,-1640531527))>>>0;
+  h=(h^(h>>>16))>>>0;h=Math.imul(h,2146121005)>>>0;h=(h^(h>>>15))>>>0;h=Math.imul(h,-2073254261)>>>0;return(h^(h>>>16))>>>0;};
+ const u01=(x,y,s)=>hash(x,y,s)/4294967296;
+ const wrap360=a=>(a%360+360)%360;
+ const norm=v=>{const l=Math.hypot(v[0],v[1],v[2]);return[v[0]/l,v[1]/l,v[2]/l];};
+ const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+ A.skyVec={dot,norm,altAz:v=>({alt:Math.asin(Math.max(-1,Math.min(1,v[1])))/D,az:wrap360(Math.atan2(v[0],-v[2])/D)}),
+  fromAltAz:(alt,az)=>[Math.sin(az*D)*Math.cos(alt*D),Math.sin(alt*D),-Math.cos(az*D)*Math.cos(alt*D)]};
+
+ // ---- the site
+ A.siteAt=(px,py,o)=>{const F=S.frame,lat=F.refLat-(py-F.refPx[1])*F.mPerPx/1000/F.kmPerDeg;
+  const sub=F.refSubLon-(px-F.refPx[0])*F.mPerPx/1000/(F.kmPerDeg*Math.cos(lat*D));
+  return Object.assign({px,py,latitude:lat,subGiantLon:sub},o||{});};
+
+ // ---- the frames. An equatorial direction (hour angle H, declination d) at latitude phi, as a world vector: the
+ // horizontal-coordinate transform of 21-sky.js (its sign table is core/atmos/test-sky.js's first check)
+ const worldHD=(H,d,phi)=>{const sa=Math.sin(phi)*Math.sin(d)+Math.cos(phi)*Math.cos(d)*Math.cos(H),alt=Math.asin(Math.max(-1,Math.min(1,sa)));
+  const az=Math.atan2(-Math.cos(d)*Math.sin(H),Math.cos(phi)*Math.sin(d)-Math.sin(phi)*Math.cos(d)*Math.cos(H));
+  return[Math.sin(az)*Math.cos(alt),Math.sin(alt),-Math.cos(az)*Math.cos(alt)];};
+ // q(H,d) = (cos d cos H, -cos d sin H, sin d) maps linearly to the world: M's columns are q's basis vectors' images
+ const local=phi=>{const c1=worldHD(0,0,phi),c2=worldHD(-Math.PI/2,0,phi),c3=worldHD(0,Math.PI/2,phi);return[c1,c2,c3];};
+ // the sun's ecliptic longitude: 270 at the southern summer solstice (declination -tilt), 180 at the spring equinox
+ const sunLon=t=>(270+360*(t-S.solsticeDay)/S.yearD)*D;
+ const sunRaDec=t=>{const l=sunLon(t),e=S.tilt*D;return[Math.atan2(Math.cos(e)*Math.sin(l),Math.cos(l)),Math.asin(Math.sin(e)*Math.sin(l))];};
+ const eq=(ra,dec)=>[Math.cos(dec)*Math.cos(ra),Math.cos(dec)*Math.sin(ra),Math.sin(dec)];
+
+ // ---- the moons' epoch: both new (each between Krator and the sun's direction, in the equatorial plane) at S.doubleDark
+ const kratorAt=(lst,Hg)=>{const rag=lst-Hg;return[-S.giant.orbitKm*Math.cos(rag),-S.giant.orbitKm*Math.sin(rag)];};
+ const lstOf=(t)=>{const yd=S.startDay+t,ra=sunRaDec(yd)[0],h=((t%1)+1)%1*24;return 15*(h-12)*D+ra;};
+ S.moons.forEach(m=>{const t=S.doubleDark,lst=lstOf(t),K=kratorAt(lst,0),ra=sunRaDec(S.startDay+t)[0],s=[Math.cos(ra),Math.sin(ra)];
+  // Hg drops out: the sub-giant longitude only turns the site, not the orbits; K is Krator's position for Hg=0
+  const ks=K[0]*s[0]+K[1]*s[1],kk=K[0]*K[0]+K[1]*K[1],d=-ks+Math.sqrt(ks*ks-kk+m.orbitKm*m.orbitKm);
+  m.theta0=Math.atan2(K[1]+d*s[1],K[0]+d*s[0])-2*Math.PI*t/m.periodD;});
+
+ // ---- the bright stars (3.4), made once from the hash so they are canon: [ra, dec, intensity, r, g, b]
+ S.stars=(function(){const C=S.cluster,out=[],c0=eq(C.ra*D,C.dec*D);
+  // a point within `r` degrees of the cluster's centre, its density falling off outward
+  const nearC=(i,r,s)=>{const a=Math.acos(1-(1-Math.cos(r*D))*Math.pow(u01(i,1,s),1.6)),b=2*Math.PI*u01(i,2,s);
+   const up=Math.abs(c0[2])<.9?[0,0,1]:[1,0,0],e1=norm([c0[1]*up[2]-c0[2]*up[1],c0[2]*up[0]-c0[0]*up[2],c0[0]*up[1]-c0[1]*up[0]]),
+    e2=[c0[1]*e1[2]-c0[2]*e1[1],c0[2]*e1[0]-c0[0]*e1[2],c0[0]*e1[1]-c0[1]*e1[0]];
+   const v=[0,1,2].map(k=>c0[k]*Math.cos(a)+(e1[k]*Math.cos(b)+e2[k]*Math.sin(b))*Math.sin(a));
+   return[Math.atan2(v[1],v[0])/D,Math.asin(v[2])/D];};
+  const blue=(i,s)=>{const k=u01(i,3,s);return[.70+.12*k,.80+.08*k,1];};
+  for(let i=0;i<14;i++){const p=nearC(i,C.core,11);out.push([p[0],p[1],2.2+3.4*Math.pow(u01(i,4,11),2)].concat(blue(i,11)));}   // the core's hot members
+  for(let i=0;i<26;i++){const p=nearC(i,C.reach,12);out.push([p[0],p[1],.7+1.2*u01(i,4,12)].concat(blue(i,12)));}
+  for(let i=0;i<24;i++){const z=2*u01(i,1,13)-1,ra=360*u01(i,2,13),k=u01(i,3,13);   // field stars all over the sky, some warm
+   out.push([ra,Math.asin(z)/D,.45+.8*u01(i,4,13),k<.4?1:k<.7?.92:.78,k<.4?.82:k<.7?.92:.86,k<.4?.62:k<.7?.88:1]);}
+  return out;})();
+
+ // ---- the state at a site, a world hour and a day count. Returns plain numbers (the shader's uniforms come from it)
+ A.skyState=function(site,hour,dayCount){
+  const t=(dayCount||0)+hour/24,yd=S.startDay+t,phi=site.latitude*D,Hg=-site.subGiantLon*D;
+  const [ra,dec]=sunRaDec(yd),H=15*(hour-12)*D,lst=H+ra;
+  const M=local(phi);
+  // W = M * Rz(-lst): world = W e for an inertial equatorial vector e. Rows of W^T take the world back to e (the shader's uEq)
+  const cl=Math.cos(lst),sl=Math.sin(lst),W=[0,1,2].map(r=>[M[0][r]*cl-M[1][r]*sl,M[0][r]*sl+M[1][r]*cl,M[2][r]]);   // W[row][col]
+  const toWorld=e=>[0,1,2].map(r=>W[r][0]*e[0]+W[r][1]*e[1]+W[r][2]*e[2]);
+  const sunDir=norm(worldHD(H,dec,phi)),giantDir=norm(worldHD(Hg,S.giant.decDeg*D,phi)),pole=norm(M[2]);
+  const gE1=norm([giantDir[2],0,-giantDir[0]]),gUp=[giantDir[1]*gE1[2]-giantDir[2]*gE1[1],giantDir[2]*gE1[0]-giantDir[0]*gE1[2],giantDir[0]*gE1[1]-giantDir[1]*gE1[0]],ta=S.giant.axisTiltDeg*D;
+  const giantAxis=norm([0,1,2].map(k=>gUp[k]*Math.cos(ta)+gE1[k]*Math.sin(ta)));
+  // the moons: Krator and each moon in the giant's (inertial) equatorial plane, km
+  const K=kratorAt(lst,Hg),sunE=eq(ra,dec);
+  const moons=S.moons.map(m=>{const th=m.theta0+2*Math.PI*t/m.periodD,mx=m.orbitKm*Math.cos(th)-K[0],my=m.orbitKm*Math.sin(th)-K[1],dist=Math.hypot(mx,my);
+   const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
+   return{name:m.name,dir:norm(toWorld(e)),radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,lit:(1+cosPsi)/2,albedo:m.albedo};});
+  // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
+  const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
+  const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
+  const sunAlt=Math.asin(Math.max(-1,Math.min(1,sunDir[1])))/D,giantAlt=Math.asin(giantDir[1])/D;
+  return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,pole,eq:W,toWorld,
+   moons,eclipse,sunAlt,giantAlt,giantLit:(1-dot(sunDir,giantDir))/2,spin:2*Math.PI*((t*24/S.giant.spinH)%1),
+   clusterDir:norm(toWorld(eq(S.cluster.ra*D,S.cluster.dec*D)))};};
+
+ // ---- the giant and its ring as the shader draws them (its CPU twin, for checks). The giant is a sphere at unit
+ // distance. Its spin axis lies in the plane of the sky, tilted axisTiltDeg from the sky's up (the domes' canon: the
+ // only reading that gives a tilted planet AND rings seen as a hairline); the ring lies in its equator, opened
+ // ringOpenDeg toward us (exactly edge-on it would cover no pixel)
+ A.skyRingNormal=s=>{const i=S.giant.ringOpenDeg*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)+g[k]*Math.sin(i)));};
+ A.skyBodyHit=(s,d)=>{const c=s.giantDir,r=Math.sin(S.giant.diaDeg/2*D),n=A.skyRingNormal(s),b=dot(d,c),h=b*b-(1-r*r);
+  const giant=h>0&&b>0,giantT=giant?b-Math.sqrt(h):Infinity,dn=dot(d,n),tR=Math.abs(dn)>1e-9?dot(c,n)/dn:-1;
+  let ring=false,rr=0;if(tR>0){const p=d.map((v,k)=>v*tR-c[k]);rr=Math.hypot(p[0],p[1],p[2])/r;ring=rr>=S.giant.ringIn&&rr<=S.giant.ringOut;}
+  return{giant,giantT,ring,ringT:tR,ringR:rr,ringShown:ring&&!(giant&&tR>giantT)};};
+
+ // ---- the date, for display
+ A.skyDate=function(dayCount,hour){const t=(dayCount||0)+(hour||0)/24,yd=Math.floor(((S.startDay+t)%S.yearD+S.yearD)%S.yearD);
+  let m=0,d=yd;while(d>=S.monthDays[m]){d-=S.monthDays[m];m++;}
+  // Jimjam's count: the day of the Count of 91, from the Double Dark (Van Sanda, the Count's first day)
+  const dd=Math.floor(t-Math.floor(S.doubleDark)),c=((dd%91)+91)%91;
+  return{yearDay:yd,month:S.months[m],day:d+1,count:c+1,week:S.weekdays[c%7],thirteen:c%13+1,
+   name:S.numbers[c%13]+' '+S.weekdays[c%7],text:(d+1)+' '+S.months[m]};};
+
+ // ---- a far ridge's profile: elevation (degrees) at n azimuths round the compass (sample i is azimuth 360 i/n).
+ // layer: {base, amp, cycles, octaves, peaks, peakAmp, win:[az, width, power] or null, floor, seed}. Periodic 1D gradient
+ // noise on the hash, so the profile closes on itself at 360 and is the same in every engine.
+ const grad1=(i,c,s)=>{const k=((i%c)+c)%c;return u01(k,7,s)*2-1;};
+ const noise1=(x,c,s)=>{const i=Math.floor(x),f=x-i,g0=grad1(i,c,s),g1=grad1(i+1,c,s),u=f*f*f*(f*(f*6-15)+10);return(g0*f+u*(g1*(f-1)-g0*f))*2;};
+ A.ridgeProfile=function(L,n){n=n==null?1024:n;const out=new Float32Array(n),c0=L.cycles==null?12:L.cycles,oct=L.octaves==null?5:L.octaves,sd=L.seed==null?1:L.seed;
+  for(let i=0;i<n;i++){const az=360*i/n,x=i/n;let v=0,a=1,c=c0,an=0;
+   for(let o=0;o<oct;o++){v+=a*noise1(x*c,c,sd+o);an+=a;a*=.5;c*=2;}v/=an;
+   let p=0;if(L.peaks){const r=1-Math.abs(noise1(x*L.peaks,L.peaks,sd+40));p=Math.pow(r,4)*(L.peakAmp==null?1:L.peakAmp);}
+   let w=1;if(L.win){const dz=Math.abs(((az-L.win[0])%360+540)%360-180);w=Math.pow(Math.max(0,Math.cos(Math.min(90,dz*90/L.win[1])*D)),L.win[2]==null?1:L.win[2]);}
+   const e=(L.base==null?1:L.base)+(L.amp==null?1:L.amp)*(.5+.5*v)+p;
+   out[i]=L.win?(L.floor==null?-1:L.floor)+(e-(L.floor==null?-1:L.floor))*w:e;}
+  return out;};
+})();

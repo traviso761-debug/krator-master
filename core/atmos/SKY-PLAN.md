@@ -1,6 +1,8 @@
 # core/atmos: one sky for every world (plan)
 
-Status: **plan, no code yet** (2026-10-25). Written with the owner in a side session of the all-builds biome rebuild
+Status: **step S0 built** (2026-10-25): the model, presets, shader, host and the demo page (`core/atmos/sky/`,
+`core/atmos/host/89-atmos-h-skyhost.js`, `core/atmos/demo/`, `node core/atmos/test-sky.js`); no biome has changed. The Godot
+twin is the next piece of S0 (section 5). The plan was written (2026-10-25) Written with the owner in a side session of the all-builds biome rebuild
 (`HANDOFF-REBUILD.md`, stage 1), which left the sky domes out because no `core/atmos` sky existed. This file is the
 plan for that sky; its decisions are in section 2 (the second round in 2.1) and the questions still open are in
 section 12.
@@ -79,6 +81,21 @@ fragment in a fixed back-to-front order, and the ring's far half is occluded ana
 | Game start | **the spring equinox**, which puts sunrise at 06:00 on every page (at an equinox the sun rises at six everywhere) |
 | The calendar | **Earth's months, with Jimjam-style names**, until a formal Krator calendar exists (3.1, "The calendar") |
 | Review | **a demo page first** (step S0): no biome changes until the owner has seen it |
+
+### 2.2 The third round, while S0 was built (the owner, 2026-10-25)
+
+| Question | Decision |
+|---|---|
+| Eclipses | **a few weeks a year, not two seasons.** A giant 30 degrees across on Krator's celestial equator (where a tidally locked moon's giant hangs) hides the sun ~2 h a day for ~2.5 months round each equinox (165 days at Voth); no tilt or nod fixes that, because the eclipse depends only on the sun, the giant and Krator in space. So the giant is **lifted** to declination **-37.6**: the sun grazes it only round the southern summer solstice, ~27 days a year, 12 of them total. A deliberate cheat, written as one number (`SKY.giant.decDeg`) |
+| Where it stands | **low, for level shots**: the point under it is 87 degrees east of Voth, off the mapped crater, so Voth sees it **ESE, 25 degrees up**; across the map 17 (west) to 39 (east). It is no longer NE, nor "over Korona" (LORE section 2 updated; Korona's "under the giant" in section 3 is now loose) |
+| The rings | **edge-on as much as possible**: the giant's spin axis lies in the plane of the sky, tilted 23 degrees from its up (the domes' canon), the ring opened 1.6 degrees, so every site sees a near-level hairline. A daily nod was allowed but buys nothing for the eclipses, so the giant stays fixed |
+| Game start | the day after a Double Dark (both moons thin crescents at the first dusk) |
+| The months | Jimjam-ized versions of the western calendar (3.1's list) |
+| The site frame | Voth at 40 S, 84 km a degree: kept |
+| The cluster | owns the winter nights (RA 18 h, dec -30): kept |
+
+Lost with the lift: the moons stay on the celestial equator, so their shadows no longer cross the giant's face at the
+Double Dark (LORE section 2, Moons, still says they do: an owner's call whether the Double Dark keeps that line).
 
 Question 2 of the first round (pages whose fixed sun no hour reaches) follows from the first row: there is no pinned
 sun. Each page's light is the model's at its site, and the old light is reproduced only for the before-and-after
@@ -362,20 +379,10 @@ taken into it by agreement), and each step rides one all-builds rebuild where it
 
 ## 12. Open decisions for the owner
 
-Settled on 2026-10-25 and moved into the plan: the giant per site, latitudes from the scale model, no pinned sun, the
-procedural nebula first, the cluster's place and seasons, stars by day on the heights, 06:00 openings, the spring
-equinox as game start, Earth's months with Jimjam-style names, and the demo page first (section 2.1). What is left:
+Settled: everything in sections 2, 2.1 and 2.2. Open:
 
-1. **The site frame's two numbers**: Voth at 40 S as the anchor and 84 km per degree (a radius of about 4,800 km, from
-   7.4 m/s2 at Earth's density), which put the Rift at 49.5 to 55.6 S against the model's rough 48 to 57 S. Keep them,
-   or give Krator a canon radius? Either way they become constants in the scale model, and LORE section 2 gains a
-   radius row.
-2. **The month names** (3.1) are a proposal in the style of Jimjam's weekdays: confirm or rename. They are display only;
-   the sky runs on the day number.
-3. **The moons at game start.** Their phases on day 259 need an epoch: the Count's day on which game start falls.
-   Proposal: game start is the day after a Double Dark (the Count's first day after *Van Sanḍē*), so both moons are new
-   crescents at the first dusk and the next Double Dark is 90 days off; or open the game on the Double Dark itself, in
-   eclipse season.
-4. **The cluster's direction** (declination -30, right ascension 18 h) gives the seasons in 3.4: best in southern
-   winter, gone in southern summer, half the night at game start. A different right ascension shifts which season
-   owns it; say if the winter nights should not be the cluster's.
+1. **The nebula**: procedural now; the owner judges it on the demo page and asks for a texture only if it falls short.
+2. **The Double Dark's line in LORE** (the moons' shadows crossing the giant's face) cannot hold with the lifted giant:
+   drop it, or keep it as folklore.
+3. **Korona "under the giant"** (LORE section 3): the giant now hangs over a point far east of the crater; Korona sees
+   it 26 degrees up in the south-east. Reword Korona, or move the point under the giant (it sets the height at Voth).
