@@ -110,7 +110,7 @@ and temperatures lapse-corrected to match: the scripts are in `tools/scale-model
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
 
-- `h`: elevation, 16 bits (R,G) from -2,600 to +17,100 m, plus a water flag (B); `wl` water level;
+- `h`: elevation, 16 bits (R,G) from -2,600 to +27,000 m (+17,100 before 4.23), plus a water flag (B); `wl` water level;
 - `z`: zones (basin, highland, outer rim, arctic, lake/sea, salt basin);
 - `p`: rain (mm/yr); `tm`/`th`/`tl`/`tw`/`tc`: temperatures; `wd`: wind power;
 - `c`: climate class, Köppen plus Krator's own (X abyssal above 1.9 atm, H hyperalpine
