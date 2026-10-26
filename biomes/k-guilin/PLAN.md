@@ -110,7 +110,7 @@ The jungle giants read `plain` with a wetness (the lake's distance and the wadi'
 
 | Species | Where | Notes |
 |---|---|---|
-| Cliff fig | at the tower rims (the `rim` band and the dome's top beds) | nwbay's root curtains down the face to the foot (its `T.out`, `T.edgeD`) |
+| Cliff fig | at the towers' feet, on the ground (the owner, 2026-10-26: no top holds its root spread; roots may not hang off a stack) | its buttresses on the ground short of the wall; no root curtains |
 | Prism gum | the plain between towers, wet ground | the jungle giant; nwbay's ceiling (110 m) holds |
 | Ironbark | the plain between towers | |
 | Fan-crown | the plain, the wadi's banks | |
@@ -172,7 +172,8 @@ farm villages (`core/hamlet`); fauna (nwbay's soarers and darters read in place)
 
 ## 8. Questions
 
-Settled 2026-10-26: the spelling, the lake, the page's place, reading nwbay in place (section 0).
+Settled 2026-10-26: the spelling, the lake, the page's place, reading nwbay in place (section 0); after the owner's review,
+roots never hang off a stack (trees on the tops moved in or dropped) and the cliff figs stand at the towers' feet.
 
 Open:
 1. **The guilin species in the heat.** The model makes the lakeshore +32 °C mean (+27 °C in the coldest month) under

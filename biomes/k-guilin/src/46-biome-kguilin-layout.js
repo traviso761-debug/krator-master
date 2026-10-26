@@ -8,7 +8,9 @@
 //                 rim     within 2.5 m of a top's edge (the cliff rule: nothing roots)
 //                 blade   the top of a stone-forest blade or pinnacle (moss, a stone orchid)
 //   OFF IT        wall    within 3 m of a wall's foot (nothing roots)      foot   within 30 m of it: talus, ferns, shrubs
-//                 water   the river, the pond, a flooded paddy             bank   the river's sand and pebble bars
+//                 water   the lake past its shallows, the wadi's channel, the pond, a flooded paddy
+//                 shallows the lake under 0.15 m of ground .. 2 m of water   shore  the beach: within 45 m of the lake, under 2.5 m
+//                 bank    the wadi's bed of sand and pebble bars
 //                 paddy   a field (its rice: the field's own state)        grove  the stone forest's floor between the rock
 //                 plain   the rest: groves, grass, bamboo by the water
 // and the dressing of the cliffs as records: CLIFF (points on the tower walls where scrub, a fig or a stone orchid holds
@@ -21,11 +23,12 @@ const SMALL={spire:1,fin:1,balanced:1},isSmall=B=>!!SMALL[B.kind]&&!B.tower;   /
 let L=null,G=null,SP=null;
 
 // ---------------------------------------------------------------- lay: the grid of beds and wall distances
-// o: {bodies, floor:(x,z)=>y, R, cell (5 m), seed, footMax (34), riverD:(x,z)=>m from the river's line, riverW (its
-// half-width), sfD:(x,z)=>m from the stone forest's middle, sfR (its radius), pondE:(x,z)=>the pond's ellipse distance
+// o: {bodies, floor:(x,z)=>y, R, cell (5 m), seed, footMax (34), riverD:(x,z)=>m from the wadi's line, riverW (its bed's
+// half-width), riverWW (its channel's), lakeD:(x,z)=>m from the lake's shore line (> 0 on land), lakeLevel, sfD:(x,z)=>m from the stone forest's middle, sfR (its radius), pondE:(x,z)=>the pond's ellipse distance
 // (1 at its edge), pondLevel, paddy:{cell:[w,d], bund, seed}}
 KGUILIN.lay=function(o){
  L={bodies:o.bodies,floor:o.floor,R:o.R,seed:o.seed==null?1:o.seed,FM:o.footMax==null?34:o.footMax,riverD:o.riverD,riverW:o.riverW,
+  riverWW:o.riverWW==null?o.riverW:o.riverWW,lakeD:o.lakeD||(()=>1e9),lakeLevel:o.lakeLevel==null?0:o.lakeLevel,
   sfD:o.sfD,sfR:o.sfR,pondE:o.pondE,pondLevel:o.pondLevel};
  KGUILIN._riverW=o.riverW;
  // the bodies by place (core/space): a point reads only the bodies whose square holds it
@@ -86,25 +89,29 @@ KGUILIN.nearestFoot=function(x,z){const out=[];SP.query(x,z,L.FM,out);let best=n
 
 // ---------------------------------------------------------------- the zone of a point
 // {zone, rock, top, d (to the top's edge, < 0 inside), footD, B (the body), b (the bed), small, grove (0..1: how far into
-// the stone forest), river (m from the river's line), paddy (its record, or null), up (0..1: how high on its tower)}
-KGUILIN.at=function(x,z){const r=KGUILIN.rockAt(x,z),rd=L.riverD(x,z),gv=sm(L.sfR+60,L.sfR*.7,L.sfD(x,z));
- if(!r){const fd=KGUILIN.footD(x,z),P=paddyAt(x,z);let zone='plain';
-  if(rd<L.riverW||L.pondE(x,z)<1)zone='water';
+// the stone forest), river (m from the wadi's line), lake (m from the lake's shore line, > 0 on land), paddy (its record, or
+// null), up (0..1: how high on its tower)}
+KGUILIN.at=function(x,z){const r=KGUILIN.rockAt(x,z),rd=L.riverD(x,z),ld=L.lakeD(x,z),gv=sm(L.sfR+60,L.sfR*.7,L.sfD(x,z));
+ if(!r){const fd=KGUILIN.footD(x,z),P=paddyAt(x,z),h=L.floor(x,z)-L.lakeLevel;let zone='plain';
+  if(ld<60&&h<-2)zone='water';
+  else if(ld<60&&h<.15)zone='shallows';
+  else if(rd<L.riverWW||L.pondE(x,z)<1)zone='water';
   else if(fd<3)zone='wall';
   else if(P)zone=P.state==='flooded'?'water':'paddy';
-  else if(rd<L.riverW+30)zone='bank';
+  else if(rd<L.riverW+18)zone='bank';
+  else if(ld<45&&h<2.5)zone='shore';
   else if(gv>.2)zone='grove';
   else if(fd<30)zone='foot';
   else if(gv>.05)zone='grove';
-  return {zone,rock:false,top:L.floor(x,z),d:fd,footD:fd,B:null,b:null,small:false,grove:gv,river:rd,paddy:P,up:0};}
+  return {zone,rock:false,top:L.floor(x,z),d:fd,footD:fd,B:null,b:null,small:false,grove:gv,river:rd,lake:ld,paddy:P,up:0};}
  const B=r.B,b=r.b,small=isSmall(B),up=clamp((r.top-B.y0)/Math.max(1,B.top-B.y0),0,1);
- if(r.wall)return {zone:!small&&r.steep<2.75?'slope':'cliff',rock:true,top:r.top,d:-1e3,footD:0,B,b,small,grove:gv,river:rd,paddy:null,up,steep:r.steep};
+ if(r.wall)return {zone:!small&&r.steep<2.75?'slope':'cliff',rock:true,top:r.top,d:-1e3,footD:0,B,b,small,grove:gv,river:rd,lake:ld,paddy:null,up,steep:r.steep};
  const d=r.d!=null?r.d:(Math.hypot(x-b.cx-(b.tx||0),z-b.cz-(b.tz||0))-tabR(b,Math.atan2(z-b.cz-(b.tz||0),x-b.cx-(b.tx||0)))*(b.tp==null?1:b.tp)*(1-b.ch));
  let zone=small?'blade':'crown';
  if(d>-2.5)zone='rim';
  else if(!small&&!B.tower){const nxt=B.beds.find(q=>q.tier===b.tier+1);
   if(nxt){const out=Math.hypot(x-nxt.cx,z-nxt.cz)-tabR(nxt,Math.atan2(z-nxt.cz,x-nxt.cx))*(1-nxt.nt);if(out<14)zone='ledge';}}
- return {zone,rock:true,top:r.top,d,footD:0,B,b,small,grove:gv,river:rd,paddy:null,up,steep:0};};
+ return {zone,rock:true,top:r.top,d,footD:0,B,b,small,grove:gv,river:rd,lake:ld,paddy:null,up,steep:0};};
 
 // ---------------------------------------------------------------- the wall: a point on a bed's face, and its outward normal
 // u 0 the bed's foot .. 1 its top edge; a the angle about the bed's centre (its taper and lean followed up the bed)
@@ -138,12 +145,13 @@ function drapes(){const out=[];
     out.push({id:B.id+'/v'+k+'.'+i,body:bi,bed:k,x:b.cx+Math.cos(a)*R,y:b.y+b.h,z:b.cz+Math.sin(a)*R,nx:Math.cos(a),nz:Math.sin(a),len:4+14*KR.unit(KR.hash(h,1))});}});});
  return out;}
 
-// ---------------------------------------------------------------- the paddies (data: fields by the river)
-// A grid of fields cell[0] x cell[1] metres, turned to the river's run where they lie (one angle a block of 8 x 8 cells,
-// so neighbours share their bunds), kept on the flat between the bank and 450 m out, off the towers' talus and the stone
+// ---------------------------------------------------------------- the paddies (data: fields by the wadi and the lake)
+// A grid of fields cell[0] x cell[1] metres, turned a little block by block (one angle a block of 8 x 8 cells, so
+// neighbours share their bunds), kept on the flats: off the wadi's bars to 450 m out, and on the lake's flats from 70 to
+// 520 m back from its shore (the lake and the wet season water them), off the towers' talus and the stone
 // forest, in patches; each field level (its water a hand over its highest corner) and in one STATE, hashed from its
 // cell: 'flooded' (bare water, the seedlings not yet out), 'young' (bright green rice in water), 'green', 'ripe'
-// (gold). The fields are the river plain's crop (kits/crops: 'rice', water 'paddy').
+// (gold). The fields are the bay people's crop (kits/crops: 'rice', water 'paddy').
 let PG=null;
 function paddies(o){const W=o.cell?o.cell[0]:34,D=o.cell?o.cell[1]:22,bund=o.bund==null?.7:o.bund,S=o.seed==null?77:o.seed,R=L.R*.9,out=[];
  PG=KSPACE.create({cell:48});
@@ -151,7 +159,7 @@ function paddies(o){const W=o.cell?o.cell[0]:34,D=o.cell?o.cell[1]:22,bund=o.bun
  for(let bj=-Math.ceil(R/(D*blk));bj<=Math.ceil(R/(D*blk));bj++)for(let bi=-Math.ceil(R/(W*blk));bi<=Math.ceil(R/(W*blk));bi++){
   const bx=bi*W*blk,bz=bj*D*blk,ang=.35*(KR.unit(KR.hash(S,bi,bj,1))-.5),ca=Math.cos(ang),sa=Math.sin(ang);
   for(let j=0;j<blk;j++)for(let i=0;i<blk;i++){const lx=(i-blk/2+.5)*W,lz=(j-blk/2+.5)*D,cx=bx+lx*ca-lz*sa,cz=bz+lx*sa+lz*ca;
-   if(Math.hypot(cx,cz)>R)continue;const rd=L.riverD(cx,cz);if(rd<L.riverW+42||rd>L.riverW+450)continue;
+   if(Math.hypot(cx,cz)>R)continue;const rd=L.riverD(cx,cz),ld=L.lakeD(cx,cz);if(rd<L.riverW+30||ld<70||(rd>L.riverW+450&&ld>520))continue;
    if(L.sfD(cx,cz)<L.sfR+140)continue;if(KR.fbm(cx*.0035+9,cz*.0035-4,3,2,S+5)<.47)continue;
    const corners=[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>{const px=q[0]*(W/2-bund/2),pz=q[1]*(D/2-bund/2);return [cx+px*ca-pz*sa,cz+px*sa+pz*ca];});
    if(corners.concat([[cx,cz]]).some(p=>KGUILIN.footD(p[0],p[1])<26||KGUILIN.rockAt(p[0],p[1])))continue;
@@ -163,6 +171,10 @@ function paddies(o){const W=o.cell?o.cell[0]:34,D=o.cell?o.cell[1]:22,bund=o.bun
 function inPoly(P,x,z){const dx=x-P.x,dz=z-P.z,c=Math.cos(P.ang),s=Math.sin(P.ang),u=dx*c+dz*s,v=-dx*s+dz*c;return Math.abs(u)<=P.w/2&&Math.abs(v)<=P.d/2;}
 function paddyAt(x,z){if(!PG)return null;let hit=null;PG.some(x,z,0,P=>{if(inPoly(P,x,z)){hit=P;return true;}return false;});return hit;}
 KGUILIN.paddyAt=paddyAt;
+// how far a point is from the nearest field's edge (m, capped at r: 60), for the trees that stand at the field edges
+KGUILIN.paddyDist=function(x,z,r){r=r==null?60:r;if(!PG)return r;const out=[];PG.query(x,z,r,out);let d=r;
+ out.forEach(P=>{const dx=x-P.x,dz=z-P.z,c=Math.cos(P.ang),s=Math.sin(P.ang),u=Math.abs(dx*c+dz*s)-P.w/2,v=Math.abs(-dx*s+dz*c)-P.d/2;
+  d=Math.min(d,Math.hypot(Math.max(u,0),Math.max(v,0)));});return d;};
 // the water over a point: the field's level when it holds water (every state but ripe: drained before the harvest)
 KGUILIN.paddyWater=function(x,z){const P=paddyAt(x,z);return P&&P.state!=='ripe'?P.level:-1e9;};
 

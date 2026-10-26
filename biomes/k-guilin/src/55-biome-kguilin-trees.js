@@ -145,27 +145,115 @@ const patch=(x,z,s,salt,lo,hi)=>smooth(lo,hi,fbm(x*s+salt*.37,z*s-salt*.21,salt,
 KGUILIN.PASSES=[
  {sp:6,cell:14,accept:(x,z,Z)=>Z.zone==='slope'?.12+.5*smooth(.72,.95,Z.up):Z.zone==='crown'?.6*smooth(-3,-5,Z.d):Z.zone==='ledge'?.1:0,pad:2.2},
  {sp:5,cell:5,accept:(x,z,Z)=>Z.zone==='slope'?.9:Z.zone==='crown'?.9*smooth(-2.6,-4.5,Z.d):Z.zone==='ledge'?.55*smooth(-2.6,-4,Z.d):0,pad:1.8},
- {sp:1,cell:70,accept:(x,z,Z)=>Z.zone==='bank'||(Z.zone==='plain'&&Z.river<RW()+90)?.55:0,pad:12},
- {sp:0,cell:9,accept:(x,z,Z)=>(Z.zone==='bank'?.6*smooth(RW()+3,RW()+10,Z.river):0)+(Z.zone==='plain'||Z.zone==='foot'?.12*patch(x,z,.006,11,.5,.62):0),pad:1.6},
+ {sp:1,cell:70,accept:(x,z,Z)=>Z.zone==='bank'||(Z.zone==='plain'&&(Z.river<RW()+90||Z.lake<140))?.55:0,pad:12},
+ {sp:0,cell:9,accept:(x,z,Z)=>(Z.zone==='bank'?.6*smooth(RW(),RW()+8,Z.river):0)+(Z.zone==='shore'?.25*smooth(8,20,Z.lake):0)+(Z.zone==='plain'||Z.zone==='foot'?.12*patch(x,z,.006,11,.5,.62):0),pad:1.6},
  {sp:2,cell:28,accept:(x,z,Z)=>(Z.zone==='plain'?.55*patch(x,z,.003,21,.48,.6):0)+(Z.zone==='foot'?.25:0),pad:6},
  {sp:3,cell:10,accept:(x,z,Z)=>(Z.zone==='plain'?.7*patch(x,z,.005,31,.68,.72):0)+(Z.zone==='foot'?.15*smooth(6,12,Z.footD):0)+(Z.zone==='grove'?.06:0),pad:2.2},
  {sp:4,cell:8,accept:(x,z,Z)=>Z.zone==='plain'?.75*patch(x,z,.006,41,.69,.73):0,pad:2.6},
  {sp:7,cell:11,accept:(x,z,Z)=>Z.zone==='grove'?.6*Z.grove*patch(x,z,.01,51,.3,.5)*smooth(1.5,4,Z.footD):0,pad:2.5},
 ];
 const RW=()=>KGUILIN._riverW||55;
+// ---------------------------------------------------------------- nwbay's species, read in place (PLAN.md section 4)
+// The owner (2026-10-26): the bay's species toned for inland, placed by THIS kit's zones. Each pass makes the tree with nwbay's
+// own NWBAY.make (its height band under the bay's canopy ceiling, its seed from the cell's stream) and nwbay grows it as one of
+// its variants (NWBAY.plantTrees: six grown once in its nursery per species and level, each placed tree an instance of the
+// nearest). The jungle giants (prism gum, ironbark, fan-crown) stand in stands on the wet plain between the towers, never on
+// a tower's thin-soiled top; the flame-crown at the field edges; crown ferns at the towers' wet feet and on the banks; the
+// cliff fig at a tower's foot, its buttressed roots on the ground short of the wall and its crown leaning on the face (the
+// owner, 2026-10-26: no tower top here holds a fig's 11-20 m root spread, and roots may not hang off a stack; strangler
+// figs on Krabi's karst stand at the cliff's base, so no root curtains: nothing hangs over); the pandan and the lotus trumpet on the beach
+// and the wadi's banks; the pipe reed in the lake's shallows. Left out: the mangrove, the cinder pine, the tsingy's and the
+// dry slopes' species (a freshwater lake inland, no lava, no tsingy).
+const wetPlain=(Z)=>Math.max(smooth(900,150,Z.lake==null?1e9:Z.lake),smooth(320,60,Z.river));
+KGUILIN.BPASSES=[
+ {key:'clifffig',cell:26,accept:(x,z,Z)=>(Z.zone==='foot'||Z.zone==='plain')&&Z.grove<.05&&Z.footD>4&&Z.footD<34?.55*smooth(34,12,Z.footD):0,pad:10,ground:true},
+ {key:'prismgum',cell:64,accept:(x,z,Z)=>Z.zone==='plain'&&Z.footD>22?.85*wetPlain(Z)*patch(x,z,.004,61,.5,.62):0,pad:14},
+ {key:'ironbark',cell:70,accept:(x,z,Z)=>Z.zone==='plain'&&Z.footD>22?.7*patch(x,z,.004,71,.52,.64)*(.4+.6*wetPlain(Z)):0,pad:14},
+ {key:'fancrown',cell:44,accept:(x,z,Z)=>(Z.zone==='plain'&&Z.footD>16?.6*wetPlain(Z)*patch(x,z,.005,81,.5,.6):0)+(Z.zone==='bank'?.15:0),pad:9},
+ {key:'flamecrown',cell:36,accept:(x,z,Z)=>Z.zone==='plain'&&Z.footD>12?.35*patch(x,z,.007,91,.55,.65)*smooth(40,0,KGUILIN.paddyDist?KGUILIN.paddyDist(x,z):40):0,pad:7},
+ {key:'treefern',cell:12,accept:(x,z,Z)=>(Z.zone==='foot'?.45*smooth(30,8,Z.footD):0)+(Z.zone==='bank'?.12:0),pad:3},
+ {key:'pandan',cell:12,accept:(x,z,Z)=>Z.zone==='shore'?.5:Z.zone==='bank'&&Z.river>RW()-6?.12:0,pad:3},
+ {key:'lotustrumpet',cell:30,accept:(x,z,Z)=>Z.zone==='shore'?.35:Z.zone==='bank'?.08:0,pad:5},
+ {key:'pipereed',cell:7,accept:(x,z,Z)=>Z.zone==='shallows'?.55*patch(x,z,.02,97,.45,.6):0,pad:1.4,water:true},
+];
+KGUILIN.BTREES=[];
+// ---------------------------------------------------------------- roots on the rock (the owner, 2026-10-26)
+// A tree on a tower's top keeps its whole root spread on the rock: no buttress, root plate or flare may reach past the top's
+// edge and hang in the air off the stack. reach(T) is how far the base spreads from the bole (the cliff fig's plate buttresses
+// on their lobes: about 6.3 x its bole's radius, nwbay's B[8]; a tree of this kit's: 3 x). rootsFit samples the spread at 16
+// angles (at half and full reach): every sample must be on the same body's top or dome (not its cliff, its rim band or off
+// it) within a slope of the foot's height. A tree that does not fit is moved in toward the top's middle, a fifth of its
+// reach at a time, as far as its whole reach; one that fits nowhere is not placed (a top too small for a tree that size).
+// A tree at a tower's FOOT (the cliff fig) keeps its spread on the ground instead (groundFit: no sample on the rock, in the
+// water or a paddy, none far above or below its foot), moved out from the wall the same way, and stays at the foot.
+const reachOf=(key,rb)=>key==='clifffig'?6.3*rb:Math.max(1,3*rb);KGUILIN.reachOf=reachOf;
+function rootsFit(x,z,y0,reach,B){for(let k=0;k<16;k++){const a=k/16*TAU,ca=Math.cos(a),sa=Math.sin(a);
+  for(const f of [.55,1]){const px=x+ca*reach*f,pz=z+sa*reach*f,Z=KGUILIN.at(px,pz);
+   if(!Z.rock||Z.B!==B||Z.small||Z.zone==='cliff'||Z.zone==='rim')return false;
+   if(Math.abs(Z.top-y0)>Math.max(1.5,.45*reach*f))return false;}}
+ return true;}
+KGUILIN.rootsFit=rootsFit;
+function groundFit(x,z,y0,reach){for(let k=0;k<16;k++){const a=k/16*TAU,ca=Math.cos(a),sa=Math.sin(a);
+  for(const f of [.55,1]){const Z=KGUILIN.at(x+ca*reach*f,z+sa*reach*f);
+   if(Z.rock||Z.zone==='water'||Z.zone==='shallows'||Z.zone==='paddy')return false;
+   if(Math.abs(Z.top-y0)>Math.max(1.5,.45*reach*f))return false;}}
+ return true;}
+KGUILIN.groundFit=groundFit;
+// the nearest spot, moving out from the nearest wall, where the roots fit on the ground and the tree is still at its foot
+function seatAtFoot(x,z,reach){const N=KGUILIN.nearestFoot(x,z);if(!N)return null;const dx=x-N.S.x,dz=z-N.S.z,dl=Math.hypot(dx,dz)||1;
+ for(let s=0;s<=5;s++){const d=reach*s/5,px=x+dx/dl*d,pz=z+dz/dl*d,Z=KGUILIN.at(px,pz);if(Z.rock||Z.footD>reach+14)continue;
+  const y=BIO.terrainH(px,pz);if(groundFit(px,pz,y,reach))return {x:px,z:pz,y,Z};}
+ return null;}
+// the nearest spot, moving in toward the body's top, where the roots fit: {x, z, y, Z}, or null
+function seatOnTop(x,z,reach,B,ok){const b=B.beds[B.beds.length-1],cx=b.cx+(b.tx||0),cz=b.cz+(b.tz||0),dx=cx-x,dz=cz-z,dl=Math.hypot(dx,dz)||1;
+ for(let s=0;s<=5;s++){const d=Math.min(dl,reach*s/5),px=x+dx/dl*d,pz=z+dz/dl*d,Z=KGUILIN.at(px,pz);if(!Z.rock||Z.B!==B||(ok&&!ok(Z)))continue;
+  const y=BIO.terrainH(px,pz);if(rootsFit(px,pz,y,reach,B))return {x:px,z:pz,y,Z};}
+ return null;}
+function borrowTrees(R,q,LOD){const BT=KGUILIN.BTREES;BT.length=0;
+ if(typeof NWBAY==='undefined'||!NWBAY.make||!NWBAY.plantTrees){BIO.err('kguilin: nwbay\'s species are not on the page (build.py KITS)');return null;}
+ KGUILIN.BPASSES.forEach((P,pi)=>{const S=NWBAY.byKey[P.key],sp=NWBAY.SPECIES.indexOf(S);if(!S){BIO.err('kguilin: nwbay has no species '+P.key);return;}
+  KGUILIN.place(P.cell,300+pi,(x,z,Z)=>P.accept(x,z,Z)*q,(x,y,z,Z,i,j)=>{if(blocked(x,z,P.pad))return;
+   let E=null;if(P.edge){E=NWBAY.karstEdge(x,z);if(!E||E.d>=26)return;}
+   let T=NWBAY.make(sp,x,y,z,{wet:BIO.field('wet',x,z)});
+   if(P.ground){   /* its roots on the ground at the foot: moved out from the wall, or not placed. The reach is the band's widest bole
+      scaled as far as a variant stretches (1.15): nwbay grows six variants per species, each with its own bole from the band
+      whatever its height, and a placed tree is the nearest variant scaled, so its height does not bound its bole */
+    const reach=reachOf(P.key,S.rb[1]*1.15),seat=seatAtFoot(x,z,reach);
+    if(!seat||blocked(seat.x,seat.z,P.pad))return;
+    T.x=seat.x;T.z=seat.z;T.y0=seat.y-.5;x=seat.x;z=seat.z;T.reach=reach;}
+   else if(Z.rock){   /* its roots on the rock: moved in, or not placed (the size nwbay grows it at: its band's widest bole for its height) */
+    const reach=reachOf(P.key,S.rb[1]*Math.min(1.15,1.15*T.H/S.H[1])),seat=seatOnTop(x,z,reach,Z.B,Z2=>Z2.zone==='slope'||Z2.zone==='crown');
+    if(!seat||blocked(seat.x,seat.z,P.pad))return;
+    if(P.edge){E=NWBAY.karstEdge(seat.x,seat.z);if(!E||E.d>=40)return;}
+    T.x=seat.x;T.z=seat.z;T.y0=seat.y-.5;x=seat.x;z=seat.z;T.reach=reach;}
+   T.key=P.key;T.water=!!P.water;T.seed=KRAND.hash(SEED,300+pi,i,j);
+   if(E){T.out=E.out;T.edgeD=E.d;T.footY=E.footY;}
+   const ld=BIO.lodD(x,z);T.lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
+   BT.push(T);SPACE.insert({x,z,r:T.crownR*.45+.6},x,z,T.crownR+2);},{R,wet:!!P.water});});
+ const st={trunk:0,limb:0,cups:0,far:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,lianas:0,roots:0,whorls:0,heroes:0,fars:0,figsOnEdge:0,protos:0,
+  byS:NWBAY.SPECIES.map(()=>0)};
+ const cur=BIO.cur;BIO.cur='kguilin/nwbay';try{NWBAY.plantTrees(BT,st);}finally{BIO.cur=cur;}
+ st.figsOnEdge=0;
+ return{trees:BT.length,heroes:st.heroes,far:st.fars,variants:st.protos,figsOnEdge:st.figsOnEdge,roots:st.roots,
+  bySpecies:KGUILIN.BPASSES.map(P=>P.key+':'+BT.filter(T=>T.key===P.key).length).join(' ')};}
 const newStats=()=>({trunk:0,limb:0,far:0,leaves:0,clumps:0,fruit:0,flowers:0,heroes:0,fars:0,byS:SP.map(()=>0)});
 KGUILIN.buildTrees=function(R,q){q=q==null?1:q;R=R||1500;
  const st=newStats(),TREES=KGUILIN.TREES;TREES.length=0;SPACE.clear();const LOD=BIO.radii();
+ // nwbay's first: the giants and the figs take their room before the groves fill the plain round them
+ st.borrowed=borrowTrees(R,q,LOD);
  KGUILIN.PASSES.forEach((P,pi)=>{const S=SP[P.sp];
   KGUILIN.place(P.cell,100+pi,(x,z,Z)=>P.accept(x,z,Z)*q,(x,y,z,Z,i,j)=>{if(blocked(x,z,P.pad))return;
    const T={x,z,y0:y-.25,sp:P.sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:KRAND.hash(SEED,pi,i,j),Z,body:Z.B};
+   if(Z.rock&&!Z.small){const reach=reachOf(S.key,T.rb);if(!rootsFit(x,z,y,reach,Z.B)){   /* its roots on the rock: moved in, or not placed */
+     const seat=seatOnTop(x,z,reach,Z.B,Z2=>Z2.zone==='slope'||Z2.zone==='crown'||Z2.zone==='ledge');if(!seat||blocked(seat.x,seat.z,P.pad))return;
+     T.x=x=seat.x;T.z=z=seat.z;T.y0=seat.y-.25;T.Z=Z=seat.Z;T.body=Z.B;}}
    if(Z.rock&&(P.sp===5||P.sp===6)){const k=.75+.5*Z.up;T.H*=k;}   // the crests' trees stand taller than the low ledges'
    const ld=BIO.lodD(x,z);T.lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
    TREES.push(T);SPACE.insert({x,z,r:(P.sp===0?1.2:P.sp===1?T.crownR*.5:T.crownR*.45)+.4},x,z,T.crownR+2);},{R});});
  // each tree drawn from its own stream (its seed), so its shape does not depend on the trees before it
  TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  KGUILIN.COUNTS=SP.map((S,i)=>st.byS[i]);
- return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,fruit:st.fruit,flowers:st.flowers,
+ return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,fruit:st.fruit,flowers:st.flowers,borrowed:st.borrowed,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
 KGUILIN._canopyH=function(x,z){let h=0;for(const T of KGUILIN.TREES){if(Math.hypot(x-T.x,z-T.z)<T.crownR+4)h=Math.max(h,T.y0+T.H);}return h||BIO.terrainH(x,z)+2;};
 KGUILIN.nearestTree=function(sp,x,z){let b=null,bd=1e9;for(const T of KGUILIN.TREES){if(T.sp!==sp||T.lv<2)continue;const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;};

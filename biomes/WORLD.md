@@ -45,7 +45,7 @@ scale Krator map for rough placement, not in this repo.
 | *dropped* tuff country (in "The Catch") | | the owner chose wind-carved lake beds for the Catch (2026-10-23, `catch/PLAN.md`) |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
 | the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *Earth reference, frozen 2026-10-26: not placed; Krator's version is `k-guilin`* |
-| the Hykkoussoi hinterlands (the inland tower karst behind the NW bay, forked from `guilin`) | `k-guilin` | the polygon `k-guilin` on the scale model (owner, 2026-10-26) |
+| the Hykkousoi hinterlands (the inland tower karst behind the NW bay, forked from `guilin`; `k-guilin/PLAN.md`) | `k-guilin` | the polygon `k-guilin` on the scale model (owner, 2026-10-26): 14,860 km² round a freshwater lake (3,641 km² at -1,500 m, Trigon on its south shore); the plain at about -1,050 m, 1.82 atm, +31 °C (+37/+25), ~1,000 mm, tropical savanna (Aw) with hypertropic jungle (XA, Af) where the lake wets it. Touches NW bay (south; the same limestone, drowned) and the crater drylands (north-east; the Scyvoi). The page: the lakeshore by Trigon (px 444.5,414.5) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and

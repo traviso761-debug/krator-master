@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (filename order) into dist/<target>.html: guilin, the South China karst (NOTES.md).
+"""Concatenate src/* (filename order) into dist/<target>.html: k-guilin, the Hykkousoi hinterlands (PLAN.md, NOTES.md):
+the inland tower karst behind the NW bay, forked from biomes/guilin (Earth's South China karst, frozen as a reference).
 
   00-head.html        page shell, opens <script>
   10..44              BIOME CORE (core/biome), core/rand, core/tags, core/space, core/export, the material library;
                       core/terrain/37-core-stacks.js (KSTACKS: the towers, the fengcong's base, the stone forest's blades)
   41-hyperjungle-globals  the core's helpers as globals (TAU, clamp, smooth, fbm...), read in place from biomes/hyperjungle
-  45-host-stage       HOST: renderer, light, the plain, the Li River, the rock as KSTACKS records
-  46-biome-guilin     THE KIT's layout (data): zones on the rock and the plain, the paddies, the cliff points, the pond
+  45-host-stage       HOST: renderer, light, the lake, the plain, the wadi, the rock as KSTACKS records
+  46-biome-kguilin    THE KIT's layout (data): zones on the rock, the plain and the lake's shore, the paddies, the cliff points
   47-host-land        HOST: terrainH, the water, the fields, the ground and rock meshes, BIO.init
-  50..79              THE KIT: species, trees, cliff dress, floor, build
-  82-host-sky         the hyperjungle's sky, read in place (the standard Krator sky with the giant)
+  48n0..48n9          biomes/nwbay's species, trees and variants READ IN PLACE in their own registry (BIO.kit('nwbay') in
+                      48n0, BIO.kitEnd(NWBAY) in 48n9, both this kit's): the borrowed species (PLAN.md section 4)
+  50..79              THE KIT: species, trees (its own and the borrowed ones placed by its zones), cliff dress, floor, build
   88-host-build       HOST: the build order
-  89-atmos-*          core/atmos's core, presets, export, wave clock and sky light (the water's)
-  89n-host-night      HOST: the night, read in place from biomes/necanyons (the light, the fog and the dome by the hour)
-  89w-host-water      HOST: the river, the paddies and the pond on core/water (records made in 47)
+  89-atmos-*          core/atmos: core, presets, weather and its selector, export, waves, skylight, the shared sky
+  89a-host-atmos      HOST: ATMOS.bindHost
+  89s-host-sky        HOST: the shared sky at the page's pixel on the scale model; the cloud shade; the weather (ATMOS.bindWeather)
+  89w-host-water      HOST: the lake, the wadi, the paddies and the pond on core/water (records made in 47)
   90..99              HOST (core/host's whole interface; core/edits, core/minimap)
   99-host-take        the page handed to core/host
   99-tail.html        closes <script>
@@ -67,12 +70,15 @@ CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
-# OTHER KITS read in place (biomes/WORLD.md): the hyperjungle's globals (the core's helpers by their old names) and its sky
-# (the standard Krator sky with the giant); the necanyons' night (the light, the fog and the dome by the world hour)
+# OTHER KITS read in place (biomes/WORLD.md): the hyperjungle's globals (the core's helpers by their old names); biomes/nwbay's
+# species, trees and variants (the owner, 2026-10-26: read in place, so k-guilin follows nwbay), in the registry this kit opens
+# for them (src/48n0-kguilin-nwbay-open.js: BIO.kit('nwbay'); src/48n9-kguilin-nwbay-close.js: BIO.kitEnd(NWBAY)), after this
+# page's BIO.init (47) and before this kit (50), as biomes/ringisles reads its kits
 HJ=os.path.normpath(os.path.join(HERE,'..','hyperjungle'))
-NC=os.path.normpath(os.path.join(HERE,'..','necanyons'))
-KITS={'41-hyperjungle-globals.js':os.path.join(HJ,'src/41-hyperjungle-globals.js'),'82-host-sky.js':os.path.join(HJ,'src/82-host-sky.js'),
-      '89n-host-night.js':os.path.join(NC,'src/89n-host-night.js')}
+NWB=os.path.normpath(os.path.join(HERE,'..','nwbay'))
+KITS={'41-hyperjungle-globals.js':os.path.join(HJ,'src/41-hyperjungle-globals.js'),
+      '48n1-nwbay-species.js':os.path.join(NWB,'src/50-biome-nwbay-species.js'),'48n2-nwbay-trees.js':os.path.join(NWB,'src/55-biome-nwbay-trees.js'),
+      '48n3-nwbay-variants.js':os.path.join(NWB,'src/56-biome-nwbay-variants.js')}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
@@ -96,9 +102,16 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+# core/atmos: the core, presets, the weather (4) and its selector (9), the export, the waves, the skylight; ATMOS.bindHost,
+# ATMOS.bindWeather and the shared sky's host (core/atmos/host) and the shared sky (core/atmos/sky, SKY-PLAN.md step S1), as
+# biomes/swbay and biomes/nwouterwall take them: src/89a-host-atmos.js binds, src/89s-host-sky.js draws the sky and the weather
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
@@ -120,7 +133,9 @@ sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures
 import matlib_pack as _mp
 SIDE=None if '--inline-packs' in sys.argv else {}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
-VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'kguilin',side=SIDE),
+# the borrowed species' maps: nwbay's committed pack read in place (its tex/; not its own-page families), keyed 'nwbay' as its
+# species file asks KMAT for them
+VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'kguilin',side=SIDE),'44-host-matlib-pack-nwbay.js':_mp.fragment(NWB,'nwbay',side=SIDE),
          khost.EDITS_JS:khost.edits_js(HERE,'kguilin')}   # the page's edits (edits.json or this browser's draft)
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
