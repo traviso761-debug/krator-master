@@ -9,5 +9,5 @@
 // of reach at 40 S (SKY-PLAN 8).
 const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:571,py:514},
  preset:{"air":{"pressure":1.26,"humidity":0.45,"dustK":0.3,"dust":[0.59,0.55,0.47]},"clouds":{"cover":0.3},"fogDensity":0.0002667,"ridges":[{"base":0.1,"amp":0.5,"cycles":16,"octaves":2,"seed":41,"win":[165,70,0.5],"floor":-0.6,"dist":300000,"haze":0.0142,"forestH":0,"rock":[0.69,0.71,0.73]},{"base":5.25,"amp":0.36,"cycles":25,"octaves":3,"seed":42,"win":[330,180,4.4],"floor":-1.2,"dist":95000,"snowH":5150,"forestH":0,"haze":0.0248,"rock":[0.59,0.59,0.6],"snow":[0.93,0.93,0.95]},{"base":0.93,"amp":0.35,"cycles":33,"octaves":3,"peaks":49,"peakAmp":0.6,"seed":43,"win":[330,180,3.2],"floor":-0.4,"dist":12000,"haze":0.1649,"forestH":0,"rock":[0.38,0.36,0.32]}]}});
-const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
+const {sky,giant,giantRing,giantDir,GIANT_DIST}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
 SKY.modes({hours:{day:13,night:22},hooks:_onLight,set:m=>{LIGHT_MODE=m;}});   /* the Day and Night buttons, the night views, key n */
