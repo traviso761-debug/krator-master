@@ -22,7 +22,10 @@ function fanH(x,z){const r=fanR(x,z);let h=APEX.h-420*(1-Math.exp(-r/1400))-.06*
  const a=fanA(x,z),br=ridgeN(a*70+nz(x,z,.0015,2,92)*2.2,r*.0015,1,2,93);h-=3*smooth(.72,.95,br)*smooth(200,900,r);
  h+=2.5*(nz(x,z,.006,2,94)-.5);return h;}
 function landH(x,z){let h=fanH(x,z);const fz=FRONT_Z(x),up=smooth(fz+40,fz-500,z);
- const mtn=h+up*(1500*smooth(fz,fz-2600,z)+200*ridgeN(x,z,.0012,3,95)+120*(nz(x,z,.004,3,96)-.5));
+ /* the front rises to a crest ~600 m in from its foot, peaks and saddles along it, and falls away behind it before the map's
+    edge (a front still rising at the edge was cut off by the ground mesh into a straight, flat top: a grey slab in the haze) */
+ const cz=fz-620,crest=Math.exp(-((z-cz)/430)*((z-cz)/430)),pk=.5+.45*nz(x,0,.0011,3,97)+.2*ridgeN(x,0,.0007,2,98);
+ const mtn=h+up*(1050*smooth(fz,cz,z)*(z>cz?1:.45+.55*crest)*pk+420*crest*pk+200*ridgeN(x,z,.0012,3,95)+120*(nz(x,z,.004,3,96)-.5));
  const g=smooth(90,30,gorgeD(x,z))*smooth(APEX.z+100,APEX.z-200,z);h=mix(mtn,h+(APEX.z-z)*.08,g);return h;}
 // KOLLI, the first oasis, at the fan's toe: a seep's pool and its runnel, the water from under the gravel
 const SEEP={x:350,z:2050};
@@ -53,13 +56,13 @@ fireRing(SEEP.x-40,SEEP.z-30,'A caravan\'s fire ring at Kolli (the first night d
 const STAGE={
  key:'fan',name:'The Catch: the north fan and the walls',title:'Krator biome — the Catch: the north fan and the walls',seed:37,hour:13,
  hint:'The Catch, station 4: the way in, the gravel fan under the 6.2 km notch (~1,400 m at its toe): braided dry channels down from the gorge\'s mouth, the mountain front, the walls\' snowfields and the bare crests above the air, the Godthrone north-west, and Kolli, the first oasis, a cold seep at the fan\'s toe',
- site:{px:738,py:944},air:{pressure:1.38,humidity:.15},clouds:{cover:.06},fogDensity:.00008,siteH:1400,
+ site:{px:738,py:944},air:{pressure:1.38,humidity:.15},clouds:{cover:.06},fogDensity:0.00013,fogH:{y0:1340,H:160,k:.75},siteH:1400,
  // the walls are close here: the notch's shoulders 40 km north, the inner wall's flank on the west
  ridges:[
-  {dist:120000,base:2.3,amp:4.3,cycles:9,octaves:5,peaks:8,peakAmp:2,seed:71,rock:[0.39,0.34,0.32],haze:0.018},
-  {dist:200000,base:2.2,amp:2.8,cycles:6,octaves:4,peaks:3,peakAmp:1.6,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],haze:0.015},
-  {dist:35000,base:2.5,amp:7.2,cycles:12,octaves:5,peaks:10,peakAmp:1.6,win:[330,95,.8],floor:.4,seed:73,rock:[0.46,0.39,0.34],snowH:3000,haze:0.042},
-  {dist:9000,base:0.23,amp:2.5,cycles:14,octaves:4,win:[150,90,1.2],floor:-.2,seed:74,rock:[0.63,0.52,0.41],haze:0.12}],
+  {dist:120000,base:-2.10,amp:12.60,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:71,rock:[0.39,0.34,0.32],hz:0.55},
+  {dist:200000,base:2.2,amp:2.8,cycles:6,octaves:4,peaks:3,peakAmp:1.6,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],hz:0.62},
+  {dist:35000,base:-3.00,amp:16.80,cycles:42,octaves:6,peaks:26,peakAmp:3,win:[330,160,.8],floor:-1,seed:73,rock:[0.46,0.39,0.34],snowH:4400,hz:0.36},
+  {peaks:14,peakAmp:1.2,dist:9000,base:0.23,amp:2.5,cycles:34,octaves:5,win:[150,90,1.2],floor:-1,seed:74,rock:[0.63,0.52,0.41],hz:0.18}],
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','broom'],
  bias:{poplar:(x,z)=>smooth(300,60,poolD(x,z))*2,tamarisk:(x,z)=>smooth(320,40,poolD(x,z))*1.5},
  water:[{key:'kolli',kind:'still',rec:POOL.rec,name:POOL.name,look:{color:0x2a6a70,roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1}}],

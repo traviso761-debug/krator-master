@@ -85,12 +85,12 @@ const LAKE_TINT={box:LAKE_BOX,cell:16,at:(x,z)=>{const sd=shoreD(x,z);if(sd<-30)
 const STAGE={
  key:'lake',name:'The Catch: the lake and the lake beds',title:'Krator biome — the Catch: the lake and the lake beds',seed:31,hour:16,
  hint:'The Catch, station 3: the terminal soda lake at the basin\'s lowest point (318 m): pink, teal and ochre brine, algal mats, soda crust, white efflorescence and a playa of ochre salt polygons, the old lake\'s strandlines, yardangs and castellated mesas of wind-cut lake beds, dead channels with their dead poplars, saltbush and brine lamps',
- site:{px:763,py:1062},air:{pressure:1.57,humidity:.2},clouds:{cover:.04},fogDensity:.0001,siteH:318,
+ site:{px:763,py:1062},air:{pressure:1.57,humidity:.2},clouds:{cover:.04},fogDensity:0.00015,fogH:{y0:316,H:45,k:.8},siteH:318,
  ridges:[
-  {dist:200000,base:1.3,amp:3.1,cycles:9,octaves:5,peaks:7,peakAmp:1.6,seed:61,rock:[0.41,0.36,0.32],haze:0.013},
-  {dist:260000,base:1.7,amp:2.2,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[322,24,1.6],floor:-1,seed:62,rock:[0.38,0.33,0.31],haze:0.012},
-  {dist:60000,base:1.4,amp:3.7,cycles:14,octaves:5,peaks:11,peakAmp:1,seed:63,rock:[0.48,0.40,0.33],snowH:4200,haze:0.036},
-  {dist:18000,base:0.27,amp:2.8,cycles:12,octaves:4,win:[140,80,1.4],floor:-.3,seed:64,rock:[0.67,0.53,0.39],haze:0.12}],
+  {dist:200000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:61,rock:[0.41,0.36,0.32],hz:0.68},
+  {dist:260000,base:1.7,amp:2.2,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[322,24,1.6],floor:-1,seed:62,rock:[0.38,0.33,0.31],hz:0.64},
+  {dist:60000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:63,rock:[0.48,0.40,0.33],snowH:4200,hz:0.48},
+  {peaks:14,peakAmp:1.2,dist:18000,base:0.27,amp:2.8,cycles:34,octaves:5,win:[140,80,1.4],floor:-1,seed:64,rock:[0.67,0.53,0.39],hz:0.28}],
  spine:SPINE,nebkhas:NEBKHAS,expect:['saltbush','brinelamp','poplar','tamarisk'],
  bias:{broom:.5,salt:.3,reed:(x,z)=>smooth(260,60,chD(x,z)),poplar:(x,z)=>smooth(-250,-450,shoreD(x,z))},
  water:[{key:'lake',kind:'open',name:'The terminal lake (soda brine: the Catch\'s one great salt field)',

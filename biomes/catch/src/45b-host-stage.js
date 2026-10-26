@@ -76,15 +76,15 @@ const STALK_C=(function(){let best=null,bh=1e9;for(let k=0;k<40;k++){const z=-50
 const STAGE={
  key:'sand',name:'The Catch: the sand sea',title:'Krator biome — the Catch: the sand sea',seed:23,
  hint:'The Catch, station 1: the sand sea on the sealed basin\'s floor (~350 m, 18 mm of rain): linear and star dunes, the gravel reg, yardangs on an old lake bed, a dead channel with its tugai dead standing, salt cedars on their sand cones, and something under the sand',
- site:{px:800,py:1010},air:{pressure:1.56,humidity:.12},clouds:{cover:.04},fogDensity:.00009,siteH:350,
+ site:{px:800,py:1010},air:{pressure:1.56,humidity:.12},clouds:{cover:.04},fogDensity:0.00016,fogH:{y0:335,H:70,k:.85},siteH:350,   /* the haze thick enough that each dune ridge back is paler than the one before it (the owner, 2026-10-26: depth between near and far dunes) */
  // the walls on every horizon (PLAN.md section 1): far crests 12-17 km, bare above the air, the Godthrone's mass north-west;
  // the inner walls 3-6 km nearer, their snowfields; the interior hills low in the south
  ridges:[
-  {dist:240000,base:1.6,amp:2.6,cycles:11,octaves:5,peaks:9,peakAmp:1.6,seed:41,rock:[.46,.38,.32],haze:.016},
-  {dist:300000,base:3.6,amp:1.2,cycles:7,octaves:4,peaks:3,peakAmp:.6,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],haze:.02},   /* the Godthrone's mass, north-west */
-  {dist:70000,base:.9,amp:3.2,cycles:17,octaves:5,peaks:13,peakAmp:1.4,seed:43,rock:[.5,.4,.32],snowH:4300,haze:.035},
-  {dist:22000,base:.1,amp:1.3,cycles:18,octaves:4,win:[185,70,1.5],floor:-.3,seed:44,rock:[.62,.48,.34],haze:.08}],
- spine:SPINE,nebkhas:NEBKHAS,bias:{},expect:['poplar','tamarisk','broom'],hour:13,
+  {dist:240000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:41,rock:[.46,.38,.32],hz:0.7},
+  {dist:300000,base:3.6,amp:1.2,cycles:7,octaves:4,peaks:3,peakAmp:.6,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],hz:0.66},   /* the Godthrone's mass, north-west */
+  {dist:70000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:43,rock:[.5,.4,.32],snowH:4300,hz:0.5},
+  {peaks:14,peakAmp:1.2,dist:22000,base:.1,amp:1.3,cycles:34,octaves:5,win:[185,70,1.5],floor:-1,seed:44,rock:[.62,.48,.34],hz:0.3}],
+ spine:SPINE,nebkhas:NEBKHAS,bias:{},expect:['poplar','tamarisk','broom'],hour:15.5,
  water:[],                                    /* the sand sea has none: the channel's water is underground */
  sedQ:0,                                      /* no sedesert flora: no oasis here */
  stalkers:[{kind:'st_harpooner',x:STALK_C[0]+28,z:STALK_C[1]-40,bury:.38,yaw:2.4},{kind:'st_blade',x:STALK_C[0]-6,z:STALK_C[1]+12,bury:.45,yaw:.6}],

@@ -94,12 +94,12 @@ BIO.record({name:'Stair: the Hill arcology\'s site (kits/ancients targets/hill; 
 const STAGE={
  key:'oasis',name:'The Catch: Stair\'s oasis',title:'Krator biome — the Catch: Stair\'s oasis',seed:29,hour:13,
  hint:'The Catch, station 2: Stair\'s spring in a hollow through the interior hills (~1,000 m): the pool and its seeps, Euphrates poplars, salt cedars and reeds, the eastern desert\'s palms and mesquite, the caravans\' campground, the Hill\'s empty slope (Stair\'s site) and the tunnel\'s southern portal with the divers\' camp',
- site:{px:834,py:1112},air:{pressure:1.43,humidity:.18},clouds:{cover:.05},fogDensity:.0001,siteH:1000,
+ site:{px:834,py:1112},air:{pressure:1.43,humidity:.18},clouds:{cover:.05},fogDensity:0.00016,fogH:{y0:990,H:90,k:.8},siteH:1000,
  ridges:[
-  {dist:220000,base:0.99,amp:2.8,cycles:9,octaves:5,peaks:7,peakAmp:1.6,seed:51,rock:[0.41,0.36,0.32],haze:0.013},
-  {dist:280000,base:1.4,amp:1.9,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[318,22,1.6],floor:-1,seed:52,rock:[0.38,0.33,0.31],haze:0.012},
-  {dist:60000,base:1.2,amp:3.4,cycles:14,octaves:5,peaks:11,peakAmp:1,seed:53,rock:[0.48,0.40,0.33],snowH:3500,haze:0.036},
-  {dist:12000,base:0.72,amp:3.7,cycles:12,octaves:4,seed:54,rock:[0.57,0.46,0.34],haze:0.15}],
+  {dist:220000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:51,rock:[0.41,0.36,0.32],hz:0.68},
+  {dist:280000,base:1.4,amp:1.9,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[318,22,1.6],floor:-1,seed:52,rock:[0.38,0.33,0.31],hz:0.64},
+  {dist:60000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:53,rock:[0.48,0.40,0.33],snowH:3500,hz:0.48},
+  {peaks:14,peakAmp:1.2,dist:12000,base:0.72,amp:3.7,cycles:34,octaves:5,seed:54,rock:[0.57,0.46,0.34],hz:0.28}],
  rockSets:{wall:'ground.rock',top:'ground.rock',wallLabel:'Oxidised basalt (a crag of the interior hills)',topLabel:'The weathered top of a crag',band:[0x9a6a50,0x8a5c44,0xa87a5c,0x7e5440],topCol:0x9a7458},
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','saltbush','palm'],
  bias:{poplar:(x,z)=>1.4*(1-smooth(.5,.9,FC.at(FC.a.trod,x,z)))},

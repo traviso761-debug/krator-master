@@ -11,6 +11,19 @@
       browned so the walls vanish first. When core/atmos gains the mode, this file goes and the select becomes its.
 - [x] **The weather host** (`core/atmos/host/89-atmos-e-weatherhost.js`): committed on the biome rebuild (7f174cae0) byte for
       byte as this branch carries it, so the merge is clean.
+- [ ] **core/atmos's dust box smears into a band from a high camera** (found 2026-10-26: a flat grey or tan slab across the
+      horizon in every "From afar" view). The box of dust sprites rides the camera, so a camera hundreds of metres up sees
+      them as one sheet. The page shows the dust only within 140 m of the ground (99-host-take.js); the fix belongs in
+      core/atmos (fade the box with the camera's height over the ground).
+- [x] **Depth** (the owner, 2026-10-26: more contrast between near and far dunes, and the haze on the far mountains too):
+      every station's fog is 2-3x thicker (.00018-.00024), the sand sea opens at 15:30, and each sky ridge takes a target
+      share of haze (`hz`) from which 89s works out its haze factor for the station's fog and its distance, so the walls
+      fade in the same air as the dunes (far crests ~.7, inner walls ~.5, hills ~.3).
+      The walls read as ranges, not slabs: the far and inner layers keep their mean height with twice the variation, more
+      cycles and peaks; the fan's snowline is high enough that only peaks carry snow (a level snowline at 35 km read as a
+      flat top); a far apron (45c) lays plain ground to 200 km under the same fog (the camera's far plane is 250 km), so a
+      high camera no longer sees the void past the mesh filled by the ridges' bodies; the fan's mountain front has a crest
+      inside the map and falls behind it, instead of being cut off rising at the mesh's edge.
 - [ ] **The Stalkers have no buried pose.** kits/mechs has none yet (kits/mechs/KNOWN_ISSUES.md): the pair stands, pitched
       forward and sunk into the sand. A crouched or lying pose in the kit would read better.
 - [ ] **The tunnel's portal is a placeholder** (station 2): a plain concrete frame and a dark mouth, until the Stair build

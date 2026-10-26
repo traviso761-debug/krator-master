@@ -48,3 +48,13 @@ const GROUND=(function(){const N=GROUND_N,S=TERR.R*2.2,cs=S/N,nx=N+1;
  if(GL)g.forEach((a,q)=>geo.setAttribute('aGL'+q,new THREE.BufferAttribute(a,4)));
  geo.setIndex(new THREE.BufferAttribute(idx,1));geo.computeVertexNormals();
  const m=new THREE.Mesh(geo,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel=STAGE.groundLabel||STAGE.name;m.userData.host=true;scene.add(m);return m;})();
+// THE FAR APRON: a ring of plain ground from just inside the mesh's edge out to 200 km, at the lowest height round the edge,
+// in the floor's own colour (the mean of the mesh's edge vertices). From a high camera the land beyond the 2.2 R mesh was
+// a void the sky's ridge layers filled down to the horizon in one flat hazed colour (a slab under the walls); the apron is
+// fogged like the ground, so the walls stand on land that fades into the same haze. A stage may set STAGE.apron {dy, col}.
+const APRON=(function(){const g=GROUND.geometry,P=g.attributes.position.array,Cl=g.attributes.color.array,N=GROUND_N+1;let lo=1e9,r=0,gg=0,b=0,n=0;
+ for(let k=0;k<N*N;k++){const i=k%N,j=Math.floor(k/N);if(i>0&&i<N-1&&j>0&&j<N-1)continue;lo=Math.min(lo,P[k*3+1]);r+=Cl[k*3];gg+=Cl[k*3+1];b+=Cl[k*3+2];n++;}
+ const A=STAGE.apron||{},geo=new THREE.RingGeometry(TERR.R*1.02,200000,128,6);geo.rotateX(-Math.PI/2);
+ const col=A.col!=null?new THREE.Color(A.col).convertSRGBToLinear():new THREE.Color(r/n,gg/n,b/n);
+ const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:col}));m.position.y=lo-(A.dy==null?10:A.dy);
+ m.userData.probeSkip=true;m.userData.host=true;m.userData.inspectLabel=(STAGE.groundLabel||STAGE.name)+' (the far country, plain)';m.renderOrder=-1;scene.add(m);return m;})();

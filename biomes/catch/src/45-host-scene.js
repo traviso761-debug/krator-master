@@ -18,7 +18,7 @@ function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xd8c8ac,.00011);
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,30000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,250000);   /* far enough for the far apron (45c) */
 const HEMI=new THREE.HemisphereLight(0xd8d4c8,0x8a6a48,.6);scene.add(HEMI);
 const sun=new THREE.DirectionalLight(0xfff0d8,1.6);sun.position.set(-900,1300,-500);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xd8c0a0,.26);fill.position.set(900,300,900);scene.add(fill);
@@ -93,3 +93,19 @@ function drawCamps(){if(!CAMP_STONES.length)return;const M4=new THREE.Matrix4(),
  sm.userData.host=true;sm.userData.inspectLabel='A fire ring (the caravans\', blackened stones)';sm.frustumCulled=false;scene.add(sm);
  const ag=new THREE.CircleGeometry(.7,10);ag.rotateX(-Math.PI/2);const am=new THREE.InstancedMesh(ag,new THREE.MeshLambertMaterial({color:0x2a2622,polygonOffset:true,polygonOffsetFactor:-2}),CAMP_ASH.length);
  CAMP_ASH.forEach((c,i)=>{M4.makeTranslation(c[0],c[1],c[2]);am.setMatrixAt(i,M4);});am.userData.host=true;am.userData.inspectLabel='Ash and charcoal (a fire ring\'s bed)';am.frustumCulled=false;scene.add(am);}
+// HEIGHT FOG (the owner, 2026-10-26: a uniform haze thick enough to part near dunes from far ones looked like a lake on the
+// plain; desert haze is dust, low and warm). three's FogExp2 is replaced, for this page, by its height form: the density
+// falls off as e^(-(y - y0)/H) above the station's floor y0, integrated along the view ray, so the troughs and the far plain
+// haze over while the dune crests and the higher ground stand clear (the analytic height fog game engines pair with their
+// sky: Hoffman and Preetham 2002, Unreal's exponential height fog). k is how much of it is height fog (1) or plain (0).
+// Set once (heightFog, 89s) before the first frame compiles a material.
+function heightFog(y0,H,k){const f=x=>(+x).toFixed(4);
+ THREE.ShaderChunk.fog_pars_vertex='#ifdef USE_FOG\n varying float fogDepth;\n varying vec3 vFogWorld;\n#endif';
+ THREE.ShaderChunk.fog_vertex='#ifdef USE_FOG\n fogDepth=-mvPosition.z;\n #ifdef USE_INSTANCING\n vFogWorld=(modelMatrix*instanceMatrix*vec4(transformed,1.0)).xyz;\n #else\n vFogWorld=(modelMatrix*vec4(transformed,1.0)).xyz;\n #endif\n#endif';
+ THREE.ShaderChunk.fog_pars_fragment='#ifdef USE_FOG\n uniform vec3 fogColor;\n varying float fogDepth;\n varying vec3 vFogWorld;\n #ifdef FOG_EXP2\n  uniform float fogDensity;\n #else\n  uniform float fogNear;\n  uniform float fogFar;\n #endif\n#endif';
+ THREE.ShaderChunk.fog_fragment='#ifdef USE_FOG\n #ifdef FOG_EXP2\n'+
+  '  float _a=1.0/'+f(H)+',_yc=cameraPosition.y-('+f(y0)+'),_yp=vFogWorld.y-('+f(y0)+'),_dy=_yp-_yc;\n'+
+  '  float _k=abs(_dy)>0.5?(exp(-_a*_yc)-exp(-_a*_yp))/(_a*_dy):exp(-_a*_yc);\n'+
+  '  _k=mix(1.0,clamp(_k,0.0,3.0),'+f(k)+');float _d=length(vFogWorld-cameraPosition);\n'+
+  '  float fogFactor=1.0-exp(-fogDensity*fogDensity*_d*_d*_k);\n'+
+  ' #else\n  float fogFactor=smoothstep(fogNear,fogFar,fogDepth);\n #endif\n gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,fogFactor);\n#endif';}

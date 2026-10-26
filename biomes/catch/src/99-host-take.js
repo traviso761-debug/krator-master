@@ -70,7 +70,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('an oasis with one name',HCHK.oases(CATCH.OASES.map((o,i)=>i?o:Object.assign({},o,{names:{yuni:'Kolli'}}))));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
-KHOST.on(function sky(dt){skyView(dt);STORM.apply(dt||0);},'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js), then the storm's share (89y) */
+KHOST.on(function sky(dt){skyView(dt);STORM.apply(dt||0);},'view');
+/* the dust box rides the camera (core/atmos 3d-dust): from a camera high over the ground its sprites smear into a flat band
+   across the horizon (KNOWN_ISSUES.md, a core/atmos gap), so it is shown only near the ground: walking, riding, flying low */
+{let DUST=null;scene.traverse(m=>{if(m.name==='atmos:dust')DUST=m;});
+ if(DUST)KHOST.on(function dustNear(){const h=camera.position.y-groundAll(camera.position.x,camera.position.z);DUST.visible=h<140;},'view');}   /* the shared sky, its lights and fog at the hour (89s-host-sky.js), then the storm's share (89y) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'catch',title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:groundAll,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,

@@ -9,10 +9,20 @@ const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.h
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
 const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.startHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
-const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:STAGE.site,air:STAGE.air,clouds:STAGE.clouds,fogDensity:STAGE.fogDensity,ridges:STAGE.ridges}),
+// THE WALLS IN THE SAME AIR AS THE DUNES (the owner, 2026-10-26: the haze should apply to the far mountains too): a stage
+// gives each ridge layer `hz`, the share of it the haze should take (far crests ~.7, the inner walls ~.5, the hills ~.3),
+// and its haze factor is worked out from the station's fog and the layer's distance (the sky's own curve, 1 - e^(-d f h)),
+// so thicker air hazes the walls in step with the near ground and a layer keeps its place in the depth
+const RIDGES=(STAGE.ridges||[]).map(r=>r.hz==null?r:Object.assign({},r,{haze:-Math.log(1-Math.min(.95,r.hz))/(r.dist*STAGE.fogDensity)}));
+const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:STAGE.site,air:STAGE.air,clouds:STAGE.clouds,fogDensity:STAGE.fogDensity,ridges:RIDGES}),
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true});
+// THE HAZE IS DUST (the owner, 2026-10-26): low, warm and thickest on the floor. Height fog for this page (45-host-scene.js,
+// STAGE.fogH {y0, H, k}); the sky's own fog colour and the world's are pulled toward the dust's colour (STAGE.dust {col, k})
+// each frame after the colour script sets them, so the walls fade into the same warm haze as the far dunes, not a blue one
+{const H=STAGE.fogH||{};heightFog(H.y0==null?(STAGE.siteH||0):H.y0,H.H==null?80:H.H,H.k==null?.85:H.k);}
+const DUST=Object.assign({col:0xcdb592,k:.5},STAGE.dust||{}),DUST_C=new THREE.Color(DUST.col);
 const SKY_FILL=fill.intensity;
-function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame: 99-host-take.js subscribes it */
+function skyView(dt){SKY.update(dt);const L=SKY.look;if(scene.fog)scene.fog.color.lerp(DUST_C,DUST.k);SKY.uniforms.uFogC.value.lerp(DUST_C,DUST.k);fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame: 99-host-take.js subscribes it */
 // the clouds' shadows on every lit material the build made, once (SKY-PLAN.md 11.1)
 {const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
   if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
