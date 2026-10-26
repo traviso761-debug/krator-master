@@ -1,7 +1,7 @@
 # guilin — the South China karst
 
 > **Frozen (the owner, 2026-10-26).** This is Earth's South China karst as it stands, kept as a reference page. Do not update
-> it further as part of any Krator-related work. Krator's version is forked from it as **`biomes/k-guilin`, the Hykkoussoi
+> it further as part of any Krator-related work. Krator's version is forked from it as **`biomes/k-guilin`, the Hykkousoi
 > hinterlands** (labelled `k-guilin` on the scale model: the inland tower karst behind the NW bay, `biomes/nwbay`): new work,
 > texture wiring, core adoption and rebuild ride-alongs go there, not here.
 
