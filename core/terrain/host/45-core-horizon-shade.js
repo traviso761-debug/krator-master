@@ -11,13 +11,14 @@
 //                                (soft, shade strength, sky strength); o.soft (.035), o.shade (1), o.sky (.85)
 //   KHORIZON.glsl()              the GLSL: khzShadow(worldPos, sunDir) and khzSky(worldPos) (0..1), for a material that
 //                                writes its own shading (a foliage hook): declare it, bind KHORIZON.uniforms
+//   KHORIZON.shadeScene(scene, Hz, o)  the same on every lit material in the scene, once (o.filter(mesh)); the count
 //   KHORIZON.shade(mat, Hz, o)   the hook: wraps mat.onBeforeCompile (the page's own hook runs first) and keys the program;
 //                                o.shade, o.sky (strengths; 0 leaves that term alone). Returns mat
 //
 // Godot: the two maps as ImageTextures (FORMAT_RGBA8), the same chunk as a .gdshaderinc called in light() on DIFFUSE_LIGHT
 // and ATTENUATION, the sky term on AMBIENT_LIGHT (core/terrain/README.md, "Godot").
 (function(root){
-  var K=root.KHORIZON;if(!K)return;
+  var K=root.KHORIZON||(root.KHORIZON={});   /* the data half may load after this one (the build sorts by name): it merges into the same object */
   function textures(Hz){if(Hz._tex)return Hz._tex;var T=root.THREE;
     var mk=function(a){var t=new T.DataTexture(a,Hz.n,Hz.n,T.RGBAFormat,T.UnsignedByteType);t.magFilter=T.LinearFilter;t.minFilter=T.LinearFilter;t.generateMipmaps=false;
       t.wrapS=t.wrapT=T.ClampToEdgeWrapping;t.flipY=false;t.needsUpdate=true;return t;};
@@ -35,7 +36,7 @@
     ' float f=mod(atan(L.z,L.x)*1.2732395+8.0,8.0),q0=floor(f),t=f-q0;float h=mix(khzPick(a,b,q0),khzPick(a,b,mod(q0+1.0,8.0)),t);',
     ' float sy=L.y/max(length(L),1e-5);return mix(1.0,smoothstep(h-uKHzK.x,h+uKHzK.x,sy),uKHzK.y*smoothstep(-0.06,0.0,sy));}',
     'float khzSky(vec3 p){vec2 uv=khzUV(p);if(khzIn(uv)<0.5||uKHzK.z<=0.0)return 1.0;float v=1.0-dot(texture2D(uKHzA,uv)+texture2D(uKHzB,uv),vec4(0.125));return mix(1.0,v,uKHzK.z);}'].join('\n')+'\n';}
-  function shade(mat,Hz,o){if(!mat||!Hz)return mat;o=o||{};var T=root.THREE,U=uniforms(Hz,o),prev=mat.onBeforeCompile,atm=function(){return root.ATMOS&&root.ATMOS.skyUniforms&&root.ATMOS.skyUniforms.uSunDir;};
+  function shade(mat,Hz,o){if(!mat||!Hz)return mat;o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set());if(hk.has(mat))return mat;hk.add(mat);var T=root.THREE,U=uniforms(Hz,o),prev=mat.onBeforeCompile,atm=function(){return root.ATMOS&&root.ATMOS.skyUniforms&&root.ATMOS.skyUniforms.uSunDir;};
     {var dsc=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');if(dsc&&dsc.get)return mat;}   /* a snow-wearing material (fx snowcover) keeps its hook behind a setter: leave it, as ATMOS.cloudShade does */
     var sk=o.sky==null?null:o.sky,sh0=o.shade==null?null:o.shade;
     mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);for(var k in U)sh.uniforms[k]=U[k];var A=atm(),shared=!!A;if(A)sh.uniforms.uKHzSun=A;   /* the shared sky's sun, read when the program is made (the sky is bound after the ground) */
@@ -48,5 +49,10 @@
       if(fn)sh.fragmentShader=sh.fragmentShader.replace('void main() {',fn+'void main() {');};
     var own=mat.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?mat.customProgramCacheKey:null,src=prev?prev.toString():'';
     mat.customProgramCacheKey=function(){return (own?own.call(this):src)+'|khorizon'+(atm()?'s':'l');};mat.needsUpdate=true;return mat;}
-  K.textures=textures;K.uniforms=uniforms;K.glsl=glsl;K.shade=shade;
+  // every lit material in the scene, once (the flora, the rock, the dress), as ATMOS.cloudShadeScene does: the land's
+  // shadow falls on what stands on it. o.filter(mesh) false skips a mesh; o as for shade. Returns the count hooked
+  function shadeScene(scene,Hz,o){o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set()),n=0;
+    scene.traverse(function(m){if(!m.isMesh||!m.material||(o.filter&&!o.filter(m)))return;(Array.isArray(m.material)?m.material:[m.material]).forEach(function(mt){
+      if(!mt||hk.has(mt)||!(mt.isMeshLambertMaterial||mt.isMeshStandardMaterial||mt.isMeshPhongMaterial))return;shade(mt,Hz,o);n++;});});return n;}
+  K.textures=textures;K.uniforms=uniforms;K.glsl=glsl;K.shade=shade;K.shadeScene=shadeScene;
 })(typeof globalThis!=='undefined'?globalThis:this);

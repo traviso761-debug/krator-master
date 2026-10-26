@@ -13,7 +13,7 @@
 // Godot: a MeshInstance3D of the same arrays (vertex colours), visibility_range for the far end; the fog is the
 // Environment's (core/terrain/README.md, "Godot").
 (function(root){
-  var K=root.KFAR;if(!K)return;
+  var K=root.KFAR||(root.KFAR={});   /* the data half may load after this one (the build sorts by name): it merges into the same object */
   function fogThin(m,k,key){var prev=m.onBeforeCompile;
     m.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);sh.uniforms.uFogK={value:k};
       sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uFogK;').replace('#include <fog_vertex>','#include <fog_vertex>\n#ifdef USE_FOG\nfogDepth*=uFogK;\n#endif');};

@@ -9,7 +9,7 @@
 //   crest  a crest pass: a vertex standing above the mean of its four neighbours is lifted by k times the excess, so
 //          ridgelines stay sharp on a coarse lattice (dense lattices only: it needs the neighbours)
 //
-// No THREE, no DOM: plain maths, node-tested (test-farfield.js). The drawing is core/terrain/host/44h-core-farfield-draw.js
+// No THREE, no DOM: plain maths, node-tested (test-farfield.js). The drawing is core/terrain/host/44-core-farfield-draw.js
 // (KFAR.mesh). Axes: y up, metres, x east, z south.
 //
 //   KFAR.lines({cell, inner, out, grow})  grid line positions, the same for x and z: every cell (integer multiples of
@@ -80,5 +80,5 @@
   function hash(g){var h=KR?KR.hash(7,g.pos.length,g.idx.length):(g.pos.length*31+g.idx.length)>>>0;
     var mix=function(a,b){return KR?KR.hash(a,b):((a*16777619)^b)>>>0;};
     for(var i=0;i<g.pos.length;i+=5)h=mix(h,Math.round(g.pos[i]*100));for(i=0;i<g.col.length;i+=7)h=mix(h,Math.round(g.col[i]*1e4));for(i=0;i<g.idx.length;i+=11)h=mix(h,g.idx[i]);return h>>>0;}
-  root.KFAR={lines:lines,grid:grid,shape:shapeY,hash:hash,locate:locate,R:4.81e6};
+  root.KFAR=Object.assign(root.KFAR||{},{lines:lines,grid:grid,shape:shapeY,hash:hash,locate:locate,R:4.81e6});
 })(typeof globalThis!=='undefined'?globalThis:this);

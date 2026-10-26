@@ -42,7 +42,8 @@
 //                              a bed) for a top that carries relief of its own through a wrapped topH (finer than 5 rings);
 //                              or opt.top {grid: G, minCells: 3}: such a top drawn as a square G-metre grid (on world
 //                              multiples of G) clipped to the top's edge ring, the ring shared with the wall's top row
-//                              (a bed narrower than minCells cells keeps its rings). Without opt.top the mesh is as before
+//                              (a bed narrower than minCells cells keeps its rings; cells hidden under the bed above, a cell
+//                              in from its foot, are left out unless cull: false). Without opt.top the mesh is as before
 //   KSTACKS.row({id, seed, a:[x,z], b:[x,z], n, kind:'fin', H:[lo,hi], r:[lo,hi], e:[lo,hi], ground})   fins along a
 //                              strike: one line, one lean
 //   KSTACKS.cluster({id, seed, c:[x,z], rad, n, kinds:{spire,balanced,fin}, H, r, gap, ground, accept})   a garden of stacks
@@ -209,7 +210,8 @@
     // vertices) and ear-clipped. A crossing's height is the ring edge's own (linear), so it lies on the wall's top edge.
     // Every vertex but those crossings is on topH. The edge ring is star-shaped about the top's centre (one radius per
     // angle), so inside/outside is one edge test.
-    function gridTop(b,k,seg,ang,c1,t1,G){var n=seg,RX=new Float64Array(n),RZ=new Float64Array(n),RY=new Float64Array(n),id=new Map();
+    // up: the bed standing on this one; a whole cell under its foot (a cell's width in from it) is hidden and left out
+    function gridTop(b,k,seg,ang,c1,t1,G,up){var n=seg,RX=new Float64Array(n),RZ=new Float64Array(n),RY=new Float64Array(n),id=new Map();
       var mnx=Infinity,mxx=-Infinity,mnz=Infinity,mxz=-Infinity;
       for(var s=0;s<n;s++){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1;RX[s]=c1[0]+Math.cos(a)*R;RZ[s]=c1[1]+Math.sin(a)*R;RY[s]=TH(b,RX[s],RZ[s]);
         if(RX[s]<mnx)mnx=RX[s];if(RX[s]>mxx)mxx=RX[s];if(RZ[s]<mnz)mnz=RZ[s];if(RZ[s]>mxz)mxz=RZ[s];}
@@ -223,6 +225,8 @@
         return (ex*(z-RZ[s0])-ez*(x-RX[s0]))*(ex*(c1[1]-RZ[s0])-ez*(c1[0]-RX[s0]))>=0;}
       function tri(p,q,r){var ny=(q.z-p.z)*(r.x-p.x)-(q.x-p.x)*(r.z-p.z);if(Math.abs(ny)<1e-10)return;
         var A=V(p.key,p.x,p.y,p.z),Bv=V(q.key,q.x,q.y,q.z),C=V(r.key,r.x,r.y,r.z);if(ny>0)idx.push(A,Bv,C);else idx.push(A,C,Bv);}
+      function under(x,z){var dx=x-up.cx,dz=z-up.cz;return Math.hypot(dx,dz)<footR(up,Math.atan2(dz,dx))*(1-up.nt)-G;}
+      function hidden(i,j){return under(i*G,j*G)&&under(i*G+G,j*G)&&under(i*G,j*G+G)&&under(i*G+G,j*G+G);}
       /* the cells a ring edge touches */
       var edge=new Set(),e=1e-7;
       for(s=0;s<n;s++){var s1=(s+1)%n,ia=Math.floor((Math.min(RX[s],RX[s1])-e)/G),ib=Math.floor((Math.max(RX[s],RX[s1])+e)/G),ja=Math.floor((Math.min(RZ[s],RZ[s1])-e)/G),jb=Math.floor((Math.max(RZ[s],RZ[s1])+e)/G);
@@ -238,7 +242,7 @@
       var ring=[];for(s=0;s<n;s++)ring.push({x:RX[s],z:RZ[s],y:RY[s],key:'r'+s,e:[0,s]});
       var i0=Math.floor(mnx/G)-1,i1=Math.floor(mxx/G)+1,j0=Math.floor(mnz/G)-1,j1=Math.floor(mxz/G)+1;
       for(var j=j0;j<=j1;j++)for(var i=i0;i<=i1;i++){
-        if(!edge.has(i+','+j)){if(!inside((i+.5)*G,(j+.5)*G))continue;var g00=corner(i,j),g10=corner(i+1,j),g11=corner(i+1,j+1),g01=corner(i,j+1);tri(g00,g10,g11);tri(g00,g11,g01);continue;}
+        if(!edge.has(i+','+j)){if(!inside((i+.5)*G,(j+.5)*G)||(up&&hidden(i,j)))continue;var g00=corner(i,j),g10=corner(i+1,j),g11=corner(i+1,j+1),g01=corner(i,j+1);tri(g00,g10,g11);tri(g00,g11,g01);continue;}
         var P=clip(clip(clip(clip(ring,0,i,true),0,i+1,false),1,j,true),1,j+1,false);
         /* drop repeats (a ring vertex on a grid line), then ear-clip, counter-clockwise in x-z */
         var Q=[];for(var q=0;q<P.length;q++){var pq=P[q],pr=Q.length?Q[Q.length-1]:null;if(!pr||Math.abs(pr.x-pq.x)+Math.abs(pr.z-pq.z)>1e-9)Q.push(pq);}
@@ -284,7 +288,7 @@
       // the top: rings in from the chamfer's edge to the centre, on topH exactly; or (opt.top.grid, a top wide enough to hold
       // opt.top.minCells cells across its narrowest radius) a square grid clipped to the same edge ring (gridTop)
       var GT=opt.top&&opt.top.grid>0?opt.top.grid:0,MC=opt.top&&opt.top.minCells!=null?opt.top.minCells:3;
-      if(GT&&Math.min(b.rx,b.rz)*(1-b.ch)*t1*(1-b.lob)>GT*MC)gridTop(b,k,seg,ang,c1,t1,GT);
+      if(GT&&Math.min(b.rx,b.rz)*(1-b.ch)*t1*(1-b.lob)>GT*MC)gridTop(b,k,seg,ang,c1,t1,GT,k+1<B.beds.length&&opt.top.cull!==false?B.beds[k+1]:null);
       else{var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
         grid(tops,seg,1,k,false);}
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot

@@ -184,11 +184,11 @@ Godot (`biomes/GODOT.md`).
 | `test-scour.js` | `node core/terrain/test-scour.js`, each check with a negative |
 | `43-core-ground.js` | the ground shader's layers (global `KGROUND`, [G shader]; DETAIL-RESEARCH item 1, 2026-10-26): the material library's ground sets laid over a page's painted ground by the page's own weights, each sampled with Mikkelsen's hex tiling, scaled with distance (its tile doubling at each doubling past 60 m, two scales cross-faded) and blended by height (each layer's luminance about its mean against what is under it). `KGROUND.layer(build, slot, o)` takes a `materials.json` slot through KMAT; `KGROUND.hook(mat, o)` wraps the page's hook. JS twins of the GLSL in `KGROUND.fn`. Below, "The ground, the far field and the horizon" |
 | `test-ground.js` | `node core/terrain/test-ground.js`: the twins (hex weights, the height lerp, the distance level) and the hook's shader edits, each check with a negative |
-| `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44h-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
+| `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
 | `test-farfield.js` | `node core/terrain/test-farfield.js`, each check with a negative |
-| `45-core-horizon.js` | horizon maps (global `KHORIZON`, [G data]; HEIGHT-RESEARCH item 2): `bake` (the horizon's elevation in eight directions over a heightfield, two RGBA8 arrays, and the sky visibility; an optional coarse far grid the rays read past the map; about 1 s at 256 x 256), `at`/`skyAt`/`horizon` (what the shader computes, for tests and placement). Its three.js side is `host/45h-core-horizon-shade.js` (`KHORIZON.shade(mat, Hz)`: the sun's direct light cut and the ambient darkened; `uniforms`, `glsl` for a material with its own shading) |
+| `45-core-horizon.js` | horizon maps (global `KHORIZON`, [G data]; HEIGHT-RESEARCH item 2): `bake` (the horizon's elevation in eight directions over a heightfield, two RGBA8 arrays, and the sky visibility; an optional coarse far grid the rays read past the map; about 1 s at 256 x 256), `at`/`skyAt`/`horizon` (what the shader computes, for tests and placement). Its three.js side is `host/45-core-horizon-shade.js` (`KHORIZON.shade(mat, Hz)`: the sun's direct light cut and the ambient darkened; `uniforms`, `glsl` for a material with its own shading) |
 | `test-horizon.js` | `node core/terrain/test-horizon.js`, each check with a negative |
-| `host/` | the three.js halves of 44 and 45, listed by explicit path in a build.py (below) |
+| `host/` | the three.js halves of 44 and 45 (`44-core-farfield-draw.js`, `45-core-horizon-shade.js`: named to sort before a page's host fragment of the same number, and merging into the same global as the data half whichever loads first), listed by explicit path in a build.py (below) |
 
 ### The ground, the far field and the horizon (2026-10-26: the final rebuild's R2-R4, and KSTACKS' gridded top)
 
@@ -199,7 +199,8 @@ wrapped `KSTACKS.topH`) is drawn as a square grid on world multiples of `grid` m
 the wall's top row (so wall and top share their edge). Cells the ring crosses are the ring clipped to the cell (Sutherland-Hodgman
 with keyed vertices, relinked Weiler-Atherton where the ring enters a cell twice) and ear-clipped; a crossing's height is the ring
 edge's own, so no crack opens at the wall. A bed narrower than `minCells` (3) cells keeps its rings. Without `opt.top` every mesh
-hashes as before (`test-stacks.js` holds the hashes). Korona's hoar table takes it (`STAGE.stackTop` in its station's `45-host-stage.js`,
+hashes as before (`test-stacks.js` holds the hashes). Cells wholly under the bed above (a cell in from its foot) are left out
+(`cull: false` keeps them): hidden tops cost nothing. Korona's hoar table takes it (`STAGE.stackTop` in its station's `45-host-stage.js`,
 read by `biomes/korona/src/47-host-land.js`).
 
 **Adopting KGROUND** (a biome's ground; the pilots are `biomes/sedesert/src/45-host-stage.js` and `biomes/nhighlands/src/84-host-ground.js`):
@@ -219,7 +220,7 @@ Cost: 3 fetches per layer per hex sample, 6 in the cross-fade bands past 60 m; n
 **Adopting KFAR** (a far field round the ground square; the pilots are `biomes/nwlowlands/src/83-host-range.js` and
 `biomes/nhighlands/src/82-host-sky.js`):
 1. `build.py`: `CORE_TERRAIN` gets `'44-core-farfield.js'`, and after the `CORE_TERRAIN` loop
-   `PATH.setdefault('44h-core-farfield-draw.js', os.path.join(CORE_T, 'host', '44h-core-farfield-draw.js'))`.
+   `PATH.setdefault('44-core-farfield-draw.js', os.path.join(CORE_T, 'host', '44-core-farfield-draw.js'))`.
 2. `const G = KFAR.grid({lines: KFAR.lines({cell, inner, out, grow}) /* or cell, n */, h: (x, z) => ..., skip: (x0, z0, x1, z1) => ...,
    color: (x, z, y, q) => [r, g, b], dense, exag, curve, crest})`; then `const m = KFAR.mesh(G, {fogK, name, label}); scene.add(m)` and
    register it, or `KFAR.geometry(G, {attrs: true})` under the page's own material. `h` is the page's `terrainH` carried past the map (or
@@ -229,11 +230,12 @@ nwlowlands' range draws the lattice it drew by hand; nhighlands' far country is 
 square's edge, `crest` k .5 past 9 km, `exag` 1.15 past 12-24 km over the plain's -330 m) is the look change the pilot shows.
 
 **Adopting KHORIZON** (terrain shadows and sky visibility; the pilots are sedesert and nhighlands, both on the ground):
-1. `build.py`: `CORE_TERRAIN` gets `'45-core-horizon.js'`, and `PATH.setdefault('45h-core-horizon-shade.js', os.path.join(CORE_T, 'host',
-   '45h-core-horizon-shade.js'))`.
+1. `build.py`: `CORE_TERRAIN` gets `'45-core-horizon.js'`, and `PATH.setdefault('45-core-horizon-shade.js', os.path.join(CORE_T, 'host',
+   '45-core-horizon-shade.js'))`.
 2. Once the ground is built: `const HZ = KHORIZON.bake({box: [x0, z0, x1, z1], n: 256, h: terrainH, far: {h, box, n}})` (the far grid is
-   optional: KFAR's `G.at` reads a lattice for it), then `KHORIZON.shade(MAT_GROUND, HZ)`. Any other material on the land (rock, flora) takes
-   the same call; a foliage hook with its own shading binds `KHORIZON.uniforms(HZ)` and calls `khzShadow(worldPos, sunDir)` and
+   optional: KFAR's `G.at` reads a lattice for it), then `KHORIZON.shade(MAT_GROUND, HZ)`, and once the biome is baked
+   `KHORIZON.shadeScene(scene, HZ, {filter})` hooks every lit material standing on the land (the flora, the rock; the pilots
+   leave out the far field). Any single material takes `shade`; a foliage hook with its own shading binds `KHORIZON.uniforms(HZ)` and calls `khzShadow(worldPos, sunDir)` and
    `khzSky(worldPos)` from `KHORIZON.glsl()`.
 3. The sun is the shared sky's `uSunDir` (read when the program is made) or the page's first directional light. With the sun below the
    horizon (under about -3 degrees) nothing is cut, so the giantshine and the night lights keep their direct light.

@@ -4,7 +4,7 @@
 // a horizon below level counts as level). At run time a pixel is in shadow when the sun stands below the horizon
 // interpolated for the sun's azimuth (soft over a few degrees): mountains cast long shadows across the valleys at a low
 // sun, at every distance, which a shadow map does not. The mean of the eight is sky visibility: an ambient occlusion for
-// gorges, canyon floors and the feet of cliffs. The shading is core/terrain/host/45h-core-horizon-shade.js
+// gorges, canyon floors and the feet of cliffs. The shading is core/terrain/host/45-core-horizon-shade.js
 // (KHORIZON.shade). Sources: Timonen and Westerholm 2010 (horizon mapping), HEIGHT-RESEARCH.md.
 //
 // No THREE, no DOM: plain maths, node-tested (test-horizon.js). Axes: y up, metres, x east, z south. Direction d points
@@ -63,5 +63,5 @@
     var sy=s[1]/l,hz=horizon(Hz,x,z,Math.atan2(s[2],s[0])),k=soft==null?.035:soft;return sm(hz-k,hz+k,sy);}
   function skyAt(Hz,x,z){var b=Hz.box;if(x<b[0]||z<b[1]||x>b[2]||z>b[3])return 1;return reader(Hz.sky,b,Hz.n)(x,z);}
   function hash(Hz){var h=KR?KR.hash(11,Hz.n,Hz.dirs):Hz.n>>>0;for(var i=0;i<Hz.A.length;i+=3)h=KR?KR.hash(h,Hz.A[i],Hz.B[i]):((h*31+Hz.A[i]*7+Hz.B[i])>>>0);return h>>>0;}
-  root.KHORIZON={bake:bake,at:at,skyAt:skyAt,horizon:horizon,hash:hash,grid:grid,dirs:D};
+  root.KHORIZON=Object.assign(root.KHORIZON||{},{bake:bake,at:at,skyAt:skyAt,horizon:horizon,hash:hash,grid:grid,dirs:D});
 })(typeof globalThis!=='undefined'?globalThis:this);
