@@ -10,6 +10,8 @@ const K=hx=>new THREE.Color(hx);
 const PAINT={SALT:K(0xeee8dc),SALT2:K(0xe2d9c8),EFF:K(0xf6f2ea),SODA:K(0xe0c8b0),OCHRE:K(0xc8945a),OCHRE2:K(0xd8a868),BED:K(0xb89a72),
  MUD:K(0x6e6252),SILT:K(0x8e8270),SILT2:K(0xa49478),REED:K(0x6e7048),SAND:K(0xc8ae88),SAND2:K(0xb89c78),GRAV:K(0x9a7660),GRAV2:K(0x86624e),
  DUNE:K(0xdcae7c),DUNE2:K(0xe8c094),YARD:K(0xd8c4a0),STRAND:K(0xcfc0a4),GRASS:K(0x9a9446),GRASS2:K(0x7a8a3c),LITTER:K(0x55603a),SOIL:K(0x6a5038)};
+if(STATION.paint)for(const k in STATION.paint)PAINT[k]=K(STATION.paint[k]);   /* a station's own colours over the Bowl's */
+PAINT.BARE=PAINT.BARE||K(0xb48a68);PAINT.GRANITE=PAINT.GRANITE||K(0xa89890);
 const _t=new THREE.Color();
 function paintAt(c,x,z,at,n,n2){const sa=at('salt'),lu=at('lush'),fo=at('forest'),ga=at('garden'),de=at('delta'),ha=at('halo'),rg=at('reg'),dm=at('damp'),yd=at('yard'),dn=at('dune'),lk=at('lake'),rd=at('ridge'),fa=at('fan'),fl=at('flow');
  c.copy(PAINT.GRAV).lerp(PAINT.GRAV2,clamp(.5+n*1.8,0,1));                                       /* the reg's gravel */
@@ -23,6 +25,7 @@ function paintAt(c,x,z,at,n,n2){const sa=at('salt'),lu=at('lush'),fo=at('forest'
  /* a green station's (Mantis's pocket): the savanna's grass, the forest's litter, the gardens' dark worked soil (0 on the Bowl) */
  _t.copy(PAINT.GRASS).lerp(PAINT.GRASS2,clamp(.5+n*1.8,0,1));c.lerp(_t,lu*.85);c.lerp(PAINT.LITTER,fo*.8);c.lerp(PAINT.SOIL,ga*.75);
  _t.copy(PAINT.OCHRE).lerp(PAINT.OCHRE2,clamp(.5+n*1.8,0,1));c.lerp(_t,Math.max(rd,lk*.85));          /* the ochre rim, and the bed under the shallows */
+ c.lerp(PAINT.GRANITE,at('granite')*.9);c.lerp(PAINT.BARE,at('bare')*.85);                             /* a station's granite and its bare ground (0 on the Bowl) */
  return c;}
 const paintTex=(W,x0,z0,S)=>BIO.canvasTex(W,W,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const c=new THREE.Color();
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=x0+(x/w)*S,wz=z0+(y/h)*S;
@@ -47,10 +50,11 @@ const STRATA=BIO.strata({seed:8402,columnM:40,dip:[1,.3,.006],palette:{sand:[0xd
 const GL_PICK=k=>!STATION.groundLayers||STATION.groundLayers.indexOf(k)>=0;
 const GL_FULL=['salt','ochre','soda','efflor'].filter(GL_PICK),GL_TINT=['dune','yard','playa','reedbed','popcorn'].filter(GL_PICK);
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
- for(const k of GL_FULL.concat(GL_TINT)){const P=KMAT.packed('bowl','ground.'+k);if(!P)return null;
+ /* STATION.layerPack: a station's own pack takes a layer's family first (the steppe's granite for the 'yard' slot) */
+ for(const k of GL_FULL.concat(GL_TINT)){const P=(STATION.layerPack&&KMAT.packed(STATION.layerPack,'ground.'+k))||KMAT.packed('bowl','ground.'+k);if(!P)return null;
   o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0],m:Math.pow(P.tint&&P.tint.mean!=null?P.tint.mean:.78,2.2)};}
  /* a green station's two layers (Mantis's pack, 'mantis'): the savanna's grass (full colour) and the forest floor (multiplied) */
- for(const k of ['lush','forest']){const P=KMAT.packed('mantis','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0],m:Math.pow(P.tint&&P.tint.mean!=null?P.tint.mean:.78,2.2)};}
+ for(const k of ['lush','forest']){const P=(STATION.layerPack&&KMAT.packed(STATION.layerPack,'ground.'+k))||KMAT.packed('mantis','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0],m:Math.pow(P.tint&&P.tint.mean!=null?P.tint.mean:.78,2.2)};}
  return o;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb4aca4});
 MAT_GROUND.extensions={derivatives:true};
@@ -100,8 +104,8 @@ const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;MAT_GROUND.
   L0[k*4+1]=Math.max(rd,lk*.8)*.9;                                 /* the ochre rim; the bed under the shallows */
   L0[k*4+2]=crust*smooth(.55,.7,BIO.fn.fbm(x*.0016,z*.0016,8401,2))*.6*(1-wetEdge);   /* the soda crust's curled plates */
   L0[k*4+3]=crust*wetEdge*.8+ha*(1-dn)*(1-yd)*smooth(.62,.78,BIO.fn.fbm(x*.005,z*.005,8403,2))*.5;   /* efflorescence */
-  L1[k*4]=dn*.9;L1[k*4+1]=yd*.8;L1[k*4+2]=fa*(1-fl)*(1-crust)*smooth(.2,.6,de)*.6;L1[k*4+3]=de*smooth(.45,.85,at('wet'))*(1-fl)*.55;
-  L2[k*4]=ha*(1-yd)*(1-dn)*.55;L2[k*4+1]=yd*smooth(.22,.5,sl)*.95;L2[k*4+2]=at('lush')*.5;L2[k*4+3]=at('forest')*.6;}
+  L1[k*4]=dn*.9;L1[k*4+1]=Math.max(yd*.8,at('granite')*.9);L1[k*4+2]=fa*(1-fl)*(1-crust)*smooth(.2,.6,de)*.6;L1[k*4+3]=de*smooth(.45,.85,at('wet'))*(1-fl)*.55;
+  L2[k*4]=ha*(1-yd)*(1-dn)*.55;L2[k*4+1]=STATION.strata===false?0:yd*smooth(.22,.5,sl)*.95;const br=1-at('bare');L2[k*4+2]=at('lush')*.5*br;L2[k*4+3]=at('forest')*.6*br;}
  const idx=new Uint32Array((nx-1)*(nz-1)*6);let t=0;
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));

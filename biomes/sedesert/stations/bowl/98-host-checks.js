@@ -40,22 +40,22 @@ const HCHK={
  halo(N){const low=Object.keys(HALO_ITEMS).filter(k=>!(N[k]>=HALO_ITEMS[k])),untagged=Object.keys(HALO_ITEMS).filter(k=>{const P=SEDESERT.plantOfItem(k);return!P||!P.tags.harvest;});
   return{ok:!low.length&&!untagged.length,detail:Object.keys(HALO_ITEMS).map(k=>k+' '+(N[k]||0)).join(', ')+(low.length?'; TOO FEW: '+low.join(', '):'')+(untagged.length?'; untagged: '+untagged.join(', '):'')};},
  // every built tree of a dense-air species is in its habit's band (the mesquite sizes itself by the delta: left out)
- habit(TR){const A=SEDESERT.ABYSSAL,bad=[];let n=0;for(const T of TR){const S=SEDESERT.SPECIES[T.sp],a=A[S.key];if(!a||S.key==='mesquite')continue;n++;
+ habit(TR){const A=SEDESERT[STATION.habitKey||'ABYSSAL'],bad=[];let n=0;for(const T of TR){const S=SEDESERT.SPECIES[T.sp],a=A[S.key];if(!a||S.key==='mesquite')continue;n++;
    if(T.H>S.H[1]*a.H*1.001||T.H<S.H[0]*a.H*.999||T.rb>S.rb[1]*a.rb*1.001||T.rb<S.rb[0]*a.rb*.999)bad.push(S.key);}
   return{ok:n>0&&!bad.length,detail:n+' dense-air trees'+(bad.length?'; OUT OF THE HABIT: '+[...new Set(bad)].join(', ')+' ('+bad.length+')':', all in their habit')};}};
 // the channels' lines as [x, y, z] (the flow record's points are [x, z, y])
 const chanLines=()=>CHAN.map((C,ci)=>{const P=[];for(let k=0;k<C.pts.length;k++){if(uOf(C.pts[k][0],C.pts[k][1])<-25)break;P.push([C.pts[k][0],C.y[k],C.pts[k][1]]);}return{id:ci,w:C.w,pts:P};});
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('preset-cameras-over-the-ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
- add('delta: the water in its banks',HCHK.banks(chanLines(),'the delta'));
+ if(!STATION.dryChannels)add('delta: the water in its banks',HCHK.banks(chanLines(),'the delta'));
  add('nothing rooted under the water',HCHK.dry(P,'plants'));
  add('halophytes drawn and tagged',HCHK.halo(itemCounts()));
  add('dense-air habit',HCHK.habit(SEDESERT.TREES));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('a camera under the salt',HCHK.camerasOut([{view:'buried',x:0,y:terrainH(0,500)-2,z:500}]));
- add('the delta raised 1.5 m over its banks',HCHK.banks(chanLines().map(C=>({id:C.id,w:C.w,pts:C.pts.map(p=>[p[0],p[1]+1.5,p[2]])})),'raised'));
- add('a saltbush out in the lake',HCHK.dry([[0,LAKE.level-1,zS(0)-600,'saltbush']],'saltbush'));
+ if(!STATION.dryChannels)add('the delta raised 1.5 m over its banks',HCHK.banks(chanLines().map(C=>({id:C.id,w:C.w,pts:C.pts.map(p=>[p[0],p[1]+1.5,p[2]])})),'raised'));
+ {const P=STATION.noLake&&STATION.pools&&STATION.pools[0];add(P?"a saltbush in the pan's water":'a saltbush out in the lake',HCHK.dry([P?[P.x,P.level-1,P.z,'saltbush']:[0,LAKE.level-1,zS(0)-600,'saltbush']],'saltbush'));}
  {const k=Object.keys(HALO_ITEMS)[0];add('none of the '+k+' drawn',HCHK.halo(Object.assign(itemCounts(),{[k]:0})));}
  add('a dragon tree in its plain form',HCHK.habit([{sp:SEDESERT.SPECIES.indexOf(SEDESERT.byKey.dragon),H:SEDESERT.byKey.dragon.H[1],rb:SEDESERT.byKey.dragon.rb[1]}]));
  return R;}

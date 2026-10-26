@@ -55,7 +55,8 @@ CROPS.BIOMES = {
   /* the Bowl (biomes/sedesert/PLAN-BOWL.md, station 2): the abyssal salt basin, 1.8 atm: its salt flat and halophyte belt, and the deltas */
   sedesert:    {atm: 1, atmNote: '?', zones: {desert: {warmth: [4, 5], arid: [0, 1]}, wadi: {warmth: [4, 5], arid: [1, 2], wet: true},
                 salt: {warmth: [4, 5], arid: [0, 1], salt: true, atm: 2}, halo: {warmth: [4, 5], arid: [0, 1], salt: true, atm: 2},
-                delta: {warmth: [4, 5], arid: [2, 3], wet: true, atm: 2}}},
+                delta: {warmth: [4, 5], arid: [2, 3], wet: true, atm: 2},
+                steppe: {warmth: [4, 5], arid: [1, 2]}}},   /* the steppe fringe (biomes/sedesert/PLAN-STEPPE.md, station 3) */
   shighlands:  {atm: 1, zones: {cloudforest: {warmth: [1, 2], arid: [3, 4]}, paramo: {warmth: [0, 1], arid: [2, 3]}}},
   swbay:       {atm: 2, atmNote: '?', zones: {ring: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}}},
   swlowlands:  {atm: 1, atmNote: '?', zones: {bayou: {warmth: [4, 4], arid: [3, 4], wet: true}, plain: {warmth: [3, 3], arid: [2, 3]}, hills: {warmth: [2, 3], arid: [1, 2]}}},

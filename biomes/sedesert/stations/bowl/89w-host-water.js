@@ -31,25 +31,29 @@ function plumeAt(x,z){let k=0;for(const M of MOUTHS){if(!M)continue;const rx=x-M
 const _bc=new THREE.Color();
 function tintAt(x,z){const B=bandAt(x,z),k=plumeAt(x,z);if(k<.02)return B;
  if(!B)return{c:RIVER_TINT.getHex(),a:.8*k};_bc.set(B.c).lerp(RIVER_TINT,k);return{c:_bc.getHex(),a:B.a+(.82-B.a)*k};}
-const LAKE_BOX=[-GRID.S/2,-GRID.S/2,GRID.S/2,800];
-const LAKE_WATER=WATER.open({name:'The Bowl lake',level:LAKE.level,swell:[[.012,26,160,0,.01],[.008,11,200,1.3,.01]],field:.03,bounds:LAKE_BOX,
+// STATION.noLake: a station with no lake (the steppe) draws neither surface
+let LAKE_WATER=null,LAKE_DRAW=null,FAR_LAKE=null,FAR_LAKE_DRAW=null;
+if(!STATION.noLake){
+var LAKE_BOX=[-GRID.S/2,-GRID.S/2,GRID.S/2,800];
+LAKE_WATER=WATER.open({name:'The Bowl lake',level:LAKE.level,swell:[[.012,26,160,0,.01],[.008,11,200,1.3,.01]],field:.03,bounds:LAKE_BOX,
  bed:terrainH,bedBox:LAKE_BOX,bedCell:6,
  tint:{box:LAKE_BOX,cell:8,at:tintAt}});
-const LAKE_DRAW=WATER.draw(LAKE_WATER,{transparent:true,renderOrder:1,roughness:.1,metalness:.05,envMapIntensity:.55,surf:false,ramp:[.3,5],
+LAKE_DRAW=WATER.draw(LAKE_WATER,{transparent:true,renderOrder:1,roughness:.1,metalness:.05,envMapIntensity:.55,surf:false,ramp:[.3,5],
  shallow:lin(0x8ac4bc),deep:lin(0x2a8a8e)});
 LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
 // the far lake: flat, a decimetre under the station's, only where the shore formula says water and off the station's box
-const FAR_BOX=[-60000,-60000,60000,60000];
-const FAR_LAKE=WATER.open({name:'The Bowl lake (far)',level:LAKE.level-.1,swell:[],field:.02,bounds:FAR_BOX,
+var FAR_BOX=[-60000,-60000,60000,60000];
+FAR_LAKE=WATER.open({name:'The Bowl lake (far)',level:LAKE.level-.1,swell:[],field:.02,bounds:FAR_BOX,
  mask:(function(){const c=100,nx=1200,nz=1200,d=new Uint8Array(nx*nz),m=60;
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=FAR_BOX[0]+(i+.5)*c,z=FAR_BOX[1]+(j+.5)*c;
    const inside=x>LAKE_BOX[0]+m+c&&x<LAKE_BOX[2]-m-c&&z>LAKE_BOX[1]+m+c&&z<LAKE_BOX[3]-m-c;d[j*nx+i]=!inside&&uOf(x,z)<-c?255:0;}
   return{x0:FAR_BOX[0],z0:FAR_BOX[1],cell:c,nx,nz,data:d};})()});
-const FAR_LAKE_DRAW=WATER.draw(FAR_LAKE,{renderOrder:0,roughness:.12,metalness:.05,envMapIntensity:.55,color:lin(0x3a9a9a)});
+FAR_LAKE_DRAW=WATER.draw(FAR_LAKE,{renderOrder:0,roughness:.12,metalness:.05,envMapIntensity:.55,color:lin(0x3a9a9a)});
 FAR_LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
+}
 // THE DELTA: each channel's line to its mouth on the shore (the plume carries its colour out into the lake), the main river faster
 // each line ends at its mouth on the shore (MOUTHS): the lake and its plume take the water from there
-const DELTA_FLOWS=CHAN.map((C,ci)=>{const P=[],end=MOUTHS[ci]?MOUTHS[ci].k:C.pts.length-1;for(let k=0;k<=end;k++){const p=C.pts[k];P.push([p[0],p[1],C.y[k]]);}
+const DELTA_FLOWS=STATION.dryChannels?[]:CHAN.map((C,ci)=>{const P=[],end=MOUTHS[ci]?MOUTHS[ci].k:C.pts.length-1;for(let k=0;k<=end;k++){const p=C.pts[k];P.push([p[0],p[1],C.y[k]]);}
  const S=WATER.flow({name:C.name,pts:P,width:C.w,speed:ci?.55+C.w*.012:1.1,rapids:[.03,.08]});   /* a delta has no white water */
  const D=WATER.drawFlow(S,{shallow:lin(0x6e6a44),deep:lin(0x3a4632),color:0xffffff,roughness:.2,metalness:.02,envMapIntensity:.22,step:6,across:ci?4:6,margin:1.5});
  D.mesh.userData.inspectLabel=C.name;C.flow=S;C.draw=D;return S;});

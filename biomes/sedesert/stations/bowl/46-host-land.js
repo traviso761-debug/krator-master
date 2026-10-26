@@ -34,12 +34,15 @@ const GRID={N:STATION.grid.N,S:TERR.R*2.2,M:STATION.grid.M,win:STATION.grid.win}
 GRID.cells=(lo,hi)=>{let a0=null,a1=null;for(let i=0;i<GRID.N;i++){const a=-GRID.S/2+i*GRID.cs;if(a+GRID.cs>lo&&a<hi){if(a0===null)a0=a;a1=a+GRID.cs;}}return[a0,a1];};
 // the station's own still water (a spring's pool), when it has any: STATION.pool(x,z) -> level or -1e9
 const poolAt=STATION.pool||((x,z)=>-1e9);
+// STATION.dryChannels: the channels are cut but hold no water (a dry wadi)
+const WET_CH=!STATION.dryChannels;
 function waterAt0(x,z){const u=uOf(x,z);if(u<260){const h=terrainH0(x,z);if(h<LAKE.level+.02||u<0)return LAKE.level;}
- const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:poolAt(x,z);}
+ const C=CHG.at(x,z,_ch);return WET_CH&&C.u<1.08?C.y:poolAt(x,z);}
 const TFIELD=(function(){const t0=performance.now(),S=GRID.S;
  const f=KFIELD.bake(terrainH0,[-S/2,-S/2,S/2,S/2],GRID.cs/2,{name:STATION.tags,
-  water:{lake:(x,z)=>uOf(x,z)<260?LAKE.level:NaN,delta:(x,z)=>{const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:NaN;}},
-  waterBox:{lake:[-S/2,-S/2,S/2,Math.min(S/2,Math.max(...[-S/2,-S/4,0,S/4,S/2].map(x=>zS(x)))+400)],delta:[CHG.x0,CHG.z0,CHG.x0+CHG.c*(CHG.nx-1),CHG.z0+CHG.c*(CHG.nz-1)]}});
+  /* the named water surfaces the export carries: the lake (none on a station without one) and the channels (none when dry) */
+  water:Object.assign(STATION.noLake?{}:{lake:(x,z)=>uOf(x,z)<260?LAKE.level:NaN},WET_CH?{delta:(x,z)=>{const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:NaN;}}:{}),
+  waterBox:Object.assign(STATION.noLake?{}:{lake:[-S/2,-S/2,S/2,Math.min(S/2,Math.max(...[-S/2,-S/4,0,S/4,S/2].map(x=>zS(x)))+400)]},WET_CH?{delta:[CHG.x0,CHG.z0,CHG.x0+CHG.c*(CHG.nx-1),CHG.z0+CHG.c*(CHG.nz-1)]}:{})});
  window._field={step:f.step,nx:f.nx,nz:f.nz,ms:Math.round(performance.now()-t0)};return f;})();
 _mark('field');
 function terrainH(x,z){return TFIELD.h(x,z);}
@@ -47,7 +50,7 @@ const _tm={x:NaN,z:NaN,h:0};
 function placeH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the local water: the lake where the ground is under its level near the shore, a channel's surface inside its banks
 function waterH(x,z){const u=uOf(x,z);if(u<0)return LAKE.level;if(u<260&&terrainH(x,z)<LAKE.level+.02)return LAKE.level;
- const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:poolAt(x,z);}
+ const C=CHG.at(x,z,_ch);return WET_CH&&C.u<1.08?C.y:poolAt(x,z);}
 const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}

@@ -120,3 +120,6 @@ R('glasswort', 'Glasswort (sea asparagus)', 'vegetable', [3, 5], [0, 3], {also: 
 R('tamarisk-manna', 'Tamarisk manna', 'sweetener', [3, 5], [0, 2], {form: 'tree', card: 'card.tamarisk', src: 'sedesert', home: ['sedesert'], stores: ['dried'], yield: 0.5, note: 'the sweet secretion scale insects leave on tamarisk twigs: gathered, not sown'});
 R('saxaul', 'Saxaul wood', 'fuel', [3, 5], [0, 1], {form: 'tree', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: 'Haloxylon: the densest firewood there is, and charcoal'});
 R('brine-lamp', 'Brine lamp', 'medicine', [4, 5], [0, 1], {needs: 'salt', card: 'card.brinelamp', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Krator's: the crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness"});
+/* ---- the steppe fringe (biomes/sedesert/PLAN-STEPPE.md; drawn on its station 3) */
+R('myrrh', 'Myrrh', 'medicine', [4, 5], [0, 2], {form: 'tree', also: ['fuel'], src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Commiphora: the resin bled from the peeling bark; a wound wash and an incense, the merchant houses' second trade"});
+
