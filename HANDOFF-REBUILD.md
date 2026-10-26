@@ -99,7 +99,9 @@ every biome; known-issues passes; the owner's three texture drops in the library
 
 **3a. Species exchanges agreed for this rebuild (after the shared sky is merged).** The Cut (`biomes/cut/PLAN.md` section 12,
 owner 2026-10-26): crater drylands -> the Cut (tree aloe, parasol pine); the Cut -> crater drylands (rankgrass, the measure
-melon, whose three sizes breed true outside the bowl: a crater-drylands home for it in `kits/crops`); nhighlands -> the Cut
+melon, whose three sizes breed true outside the bowl: a crater-drylands home for it in `kits/crops`), **the drylands' northern
+region only** (`rmuqlfgh1u6d8`, north and west of the Throne where the crater mouth opens; a mask of that region on the drylands
+side; the southern region `rmuqlgonah5tp` neither sends nor takes them); nhighlands -> the Cut
 (rowan, great trumpet); the Cut -> nhighlands (circle lichen, ring reeds). Each species stays in its home kit and the neighbour
 reads it in place under a mask. The Cut-side lists are in `biomes/cut`; the crater-drylands and nhighlands reads are to do.
 The NW outer wall's crossings (`biomes/nwouterwall/ECOTONES.md`) stay a proposal: its station 4, the Wall foot, is for a future
