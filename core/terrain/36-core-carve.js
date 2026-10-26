@@ -46,6 +46,10 @@
 //                         heightfield beside it) and aSun (1 lit, 0 shaded; 'hood': only the rock
 //                         over the void casts, for a world whose cliffs cast no shadow; 'patch': all
 //                         of it, for one with shadow maps of its own). Stats on each patch's .stats.
+//                         opt.gridNormals (2026-10-25, default false): each vertex's normal from the density grid
+//                         already sampled (central differences of its trilinear field, one cell either side) instead of
+//                         six fresh density samples, four of them calling Q.base: a world whose base is an expensive
+//                         closure saves most of the mesh's time (sedesert). The default path is unchanged
 (function(root){
 const local=(Q,x,z)=>{const dx=x-Q.c[0],dz=z-Q.c[1];return{u:dx*Q.n[1]-dz*Q.n[0],q:-(dx*Q.n[0]+dz*Q.n[1])};};   // u along the wall, q into the rock
 // the built-in shapes
@@ -98,7 +102,7 @@ function makeCarve(){
   // surface nets: one vertex per sign-changing cell (the mean of its edge crossings), one quad per sign-changing edge
   mesh(material,opt){opt=Array.isArray(opt)?{sun:opt}:(opt||{});
    const T=opt.THREE||(typeof BIO!=='undefined'&&BIO.host&&BIO.host.THREE)||root.THREE;if(!T)throw new Error('carve.mesh: no THREE');
-   const SD=opt.sun?unit(opt.sun):null,AO=opt.ao!==false,REACH=opt.aoReach||32,CAST=opt.cast||'hood',out=[];
+   const SD=opt.sun?unit(opt.sun):null,AO=opt.ao!==false,GN=!!opt.gridNormals,REACH=opt.aoReach||32,CAST=opt.cast||'hood',out=[];
    const STEPS=[1,2.2,4,7,11,16,23,32].map(t=>t*REACH/32);
    const now=()=>(typeof performance!=='undefined'?performance.now():Date.now());
    for(const Q of P){const t0=now(),c=Q.cell,R=Q.hw+Q.depth+Q.margin+1,x0=Q.c[0]-R,z0=Q.c[1]-R,nx=Math.ceil(2*R/c),nz=nx;
@@ -106,19 +110,35 @@ function makeCarve(){
     const y0=Q.floorY-1.5,ny=Math.ceil((ymax+1.5-y0)/c),W=nx+1,H=ny+1,F=new Float32Array(W*H*(nz+1)),B=new Float32Array(W*(nz+1));
     for(let k=0;k<=nz;k++)for(let i=0;i<=nx;i++)B[k*W+i]=Q.base(x0+i*c,z0+k*c);
     const id=(i,j,k)=>(k*H+j)*W+i;
-    for(let k=0;k<=nz;k++)for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++)F[id(i,j,k)]=dens(Q,x0+i*c,y0+j*c,z0+k*c,B[k*W+i]);
-    const V=new Int32Array(nx*ny*nz).fill(-1),pos=[],nrm=[],idx=[];
+    // dens() a column at a time: the plan's distance and the ceiling do not depend on y (the same arithmetic, so the same values)
+    // the columns inside the patch's region (sd < margin): outside it every point is open (f >= reg > 0), so no cell or
+    // edge out there changes sign and the loops below run over the region's box only (the same vertices in the same order)
+    let iA=nx+1,iB=-1,kA=nz+1,kB=-1;
+    for(let k=0;k<=nz;k++)for(let i=0;i<=nx;i++){const x=x0+i*c,z=z0+k*c,base=B[k*W+i],sd=planSD(Q,x,z),reg=sd-Q.margin,bb=base-(sd>0?Q.sink:0),cy=sd<0?(L=>ceil(Q,L.u,L.q))(local(Q,x,z)):0;
+     for(let j=0;j<=ny;j++){const y=y0+j*c;let f=Math.max(y-bb,reg);if(sd<0){const v=Math.max(sd,y-cy,Q.floorY-.5-y);f=Math.max(f,-v);}F[id(i,j,k)]=f;}
+     if(!(reg>0)){if(i<iA)iA=i;if(i>iB)iB=i;if(k<kA)kA=k;if(k>kB)kB=k;}}
+    const I0=Math.max(0,iA-1),I1=Math.min(nx,iB+1),K0=Math.max(0,kA-1),K1=Math.min(nz,kB+1);
+    const V=new Int32Array(nx*ny*nz).fill(-1),pos=[],nrm=[],idx=[],nrmAt=[];
     const cid=(i,j,k)=>(k*ny+j)*nx+i;
     const corner=[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]],edges=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
-    for(let k=0;k<nz;k++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const v=corner.map(o=>F[id(i+o[0],j+o[1],k+o[2])]);let m=0;for(let a=0;a<8;a++)if(v[a]<0)m|=1<<a;if(m===0||m===255)continue;
+    // a cell is skipped unless its eight corners differ in sign (read in place: no array per cell for the uncut ones)
+    const oC=corner.map(o=>id(o[0],o[1],o[2])-id(0,0,0));
+    for(let k=K0;k<Math.min(nz,K1);k++)for(let j=0;j<ny;j++)for(let i=I0;i<Math.min(nx,I1);i++){const b0=id(i,j,k),s0=F[b0]<0;let cut=false;for(let a=1;a<8;a++)if((F[b0+oC[a]]<0)!==s0){cut=true;break;}if(!cut)continue;
+     const v=corner.map(o=>F[id(i+o[0],j+o[1],k+o[2])]);
      let sx=0,sy=0,sz=0,n=0;for(const [a,b] of edges){if((v[a]<0)===(v[b]<0))continue;const t=v[a]/(v[a]-v[b]),A=corner[a],Bc=corner[b];sx+=A[0]+(Bc[0]-A[0])*t;sy+=A[1]+(Bc[1]-A[1])*t;sz+=A[2]+(Bc[2]-A[2])*t;n++;}
      const X=x0+(i+sx/n)*c,Y=y0+(j+sy/n)*c,Z=z0+(k+sz/n)*c;V[cid(i,j,k)]=pos.length/3;pos.push(X,Y,Z);
+     if(GN){nrmAt.push(X,Y,Z);nrm.push(0,1,0);continue;}
      const e=c*.5,bx=Q.base(X,Z),g=[dens(Q,X+e,Y,Z,Q.base(X+e,Z))-dens(Q,X-e,Y,Z,Q.base(X-e,Z)),dens(Q,X,Y+e,Z,bx)-dens(Q,X,Y-e,Z,bx),dens(Q,X,Y,Z+e,Q.base(X,Z+e))-dens(Q,X,Y,Z-e,Q.base(X,Z-e))],gl=Math.hypot(...g)||1;
      nrm.push(g[0]/gl,g[1]/gl,g[2]/gl);}
     // the field, trilinear (outside the grid is open)
     const Fat=(X,Y,Z)=>{const fi=(X-x0)/c,fj=(Y-y0)/c,fk=(Z-z0)/c;if(fi<0||fj<0||fk<0||fi>=nx||fj>=ny||fk>=nz)return 1;
      const i=fi|0,j=fj|0,k=fk|0,u=fi-i,v=fj-j,w=fk-k,L=(a,b,t)=>a+(b-a)*t;
      return L(L(L(F[id(i,j,k)],F[id(i+1,j,k)],u),L(F[id(i,j+1,k)],F[id(i+1,j+1,k)],u),v),L(L(F[id(i,j,k+1)],F[id(i+1,j,k+1)],u),L(F[id(i,j+1,k+1)],F[id(i+1,j+1,k+1)],u),v),w);};
+    if(GN)for(let v=0;v<nrm.length;v+=3){const X=nrmAt[v],Y=nrmAt[v+1],Z=nrmAt[v+2],g=[Fat(X+c,Y,Z)-Fat(X-c,Y,Z),Fat(X,Y+c,Z)-Fat(X,Y-c,Z),Fat(X,Y,Z+c)-Fat(X,Y,Z-c)],gl=Math.hypot(...g)||1;
+     nrm[v]=g[0]/gl;nrm[v+1]=g[1]/gl;nrm[v+2]=g[2]/gl;}
+    // inside the grid's box: a ray that has been in it and is out again stays out (the box is convex) and Fat is open
+    // there, so the loops below stop it (the same answers, fewer steps)
+    const inG=(X,Y,Z)=>{const fi=(X-x0)/c,fj=(Y-y0)/c,fk=(Z-z0)/c;return!(fi<0||fj<0||fk<0||fi>=nx||fj>=ny||fk>=nz);};
     const DIRS=[];for(let d=0;d<14;d++){const yv=1-(d+.5)/14*2,r=Math.sqrt(1-yv*yv),a=d*2.39996;DIRS.push([Math.cos(a)*r,yv,Math.sin(a)*r]);}
     const SOFT=SD?soft(SD,opt.penumbra===undefined?.052:Math.tan(opt.penumbra*Math.PI/180)):null,occ=new Float32Array(pos.length/3).fill(1),sunA=new Float32Array(pos.length/3).fill(1);
     for(let v=0;v<occ.length;v++){const X=pos[v*3],Y=pos[v*3+1],Z=pos[v*3+2],nX=nrm[v*3],nY=nrm[v*3+1],nZ=nrm[v*3+2];
@@ -126,17 +146,18 @@ function makeCarve(){
      // of its plan, above its floor) occludes, so an open face of the patch does not darken
      if(AO){let seen=0,tot=0;
       for(const D of DIRS){let dx=D[0],dy=D[1],dz=D[2],dn=dx*nX+dy*nY+dz*nZ;if(dn<0){dx=-dx;dy=-dy;dz=-dz;dn=-dn;}
-       let open=1;for(const t of STEPS){const px=X+dx*t,py=Y+dy*t,pz=Z+dz*t;if(py>Q.floorY+.3&&Fat(px,py,pz)<0&&planSD(Q,px,pz)<3){open=0;break;}}
+       let open=1,was=inG(X,Y,Z);for(const t of STEPS){const px=X+dx*t,py=Y+dy*t,pz=Z+dz*t;if(inG(px,py,pz))was=true;else if(was)break;if(py>Q.floorY+.3&&Fat(px,py,pz)<0&&planSD(Q,px,pz)<3){open=0;break;}}
        seen+=open*dn;tot+=dn;}
       occ[v]=Math.max(.22,seen/tot);}
      // the sun, on faces turned to it: 'hood' counts only the rock inside the plan (over the void)
-     if(SD&&nX*SD[0]+nY*SD[1]+nZ*SD[2]>0){let lit=0;for(const J of SOFT){let l=1;for(let t=.8;t<60;t+=.9){const px=X+nX*.3+J[0]*t,py=Y+nY*.3+J[1]*t,pz=Z+nZ*.3+J[2]*t;
+     if(SD&&nX*SD[0]+nY*SD[1]+nZ*SD[2]>0){let lit=0;for(const J of SOFT){let l=1,was=inG(X+nX*.3,Y+nY*.3,Z+nZ*.3);for(let t=.8;t<60;t+=.9){const px=X+nX*.3+J[0]*t,py=Y+nY*.3+J[1]*t,pz=Z+nZ*.3+J[2]*t;
+       if(inG(px,py,pz))was=true;else if(was)break;
        if(Fat(px,py,pz)<0&&(CAST==='patch'||planSD(Q,px,pz)<0)){l=0;break;}}lit+=l/SOFT.length;}sunA[v]=lit;}}
     // quads: an edge between grid points that changes sign is shared by the four cells round it
     const quad=(a,b,c2,d,flip)=>{if(a<0||b<0||c2<0||d<0)return;if(flip)idx.push(a,b,c2,a,c2,d);else idx.push(a,c2,b,a,d,c2);};
-    for(let k=1;k<nz;k++)for(let j=1;j<ny;j++)for(let i=0;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i+1,j,k)]<0;if(s0===s1)continue;quad(V[cid(i,j-1,k-1)],V[cid(i,j,k-1)],V[cid(i,j,k)],V[cid(i,j-1,k)],s0);}
-    for(let k=1;k<nz;k++)for(let j=0;j<ny;j++)for(let i=1;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j+1,k)]<0;if(s0===s1)continue;quad(V[cid(i-1,j,k-1)],V[cid(i-1,j,k)],V[cid(i,j,k)],V[cid(i,j,k-1)],s0);}
-    for(let k=0;k<nz;k++)for(let j=1;j<ny;j++)for(let i=1;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j,k+1)]<0;if(s0===s1)continue;quad(V[cid(i-1,j-1,k)],V[cid(i,j-1,k)],V[cid(i,j,k)],V[cid(i-1,j,k)],s0);}
+    for(let k=Math.max(1,K0);k<Math.min(nz,K1+1);k++)for(let j=1;j<ny;j++)for(let i=I0;i<Math.min(nx,I1);i++){const s0=F[id(i,j,k)]<0,s1=F[id(i+1,j,k)]<0;if(s0===s1)continue;quad(V[cid(i,j-1,k-1)],V[cid(i,j,k-1)],V[cid(i,j,k)],V[cid(i,j-1,k)],s0);}
+    for(let k=Math.max(1,K0);k<Math.min(nz,K1+1);k++)for(let j=0;j<ny;j++)for(let i=Math.max(1,I0);i<Math.min(nx,I1+1);i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j+1,k)]<0;if(s0===s1)continue;quad(V[cid(i-1,j,k-1)],V[cid(i-1,j,k)],V[cid(i,j,k)],V[cid(i,j,k-1)],s0);}
+    for(let k=K0;k<Math.min(nz,K1);k++)for(let j=1;j<ny;j++)for(let i=Math.max(1,I0);i<Math.min(nx,I1+1);i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j,k+1)]<0;if(s0===s1)continue;quad(V[cid(i-1,j-1,k)],V[cid(i,j-1,k)],V[cid(i,j,k)],V[cid(i-1,j,k)],s0);}
     const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nrm,3));
     g.setAttribute('aOcc',new T.Float32BufferAttribute(occ,1));g.setAttribute('aSun',new T.Float32BufferAttribute(sunA,1));g.setIndex(idx);g.computeBoundingSphere();
     const m=new T.Mesh(g,material);m.name='carve:'+Q.id;m.userData.carve=Q.id;m.userData.inspectLabel=Q.name||Q.id;out.push(m);

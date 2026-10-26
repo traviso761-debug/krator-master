@@ -22,6 +22,11 @@ ok('instances are independent',KCARVE.patches.length===0&&C.patches.length===2,f
 const T3=['../../biomes/sedesert/three.min.js'].map(p=>path.join(__dirname,p)).find(p=>fs.existsSync(p));
 if(T3){const THREE=require(T3);global.performance=global.performance||{now:Date.now};C.get('s').cell=1;Q.cell=1;
  const M=C.mesh(null,{THREE,sun:[0,1,1.2]}),g=M[0].geometry,o=g.attributes.aOcc.array,s=g.attributes.aSun.array;
- ok('meshes one per patch, with occlusion and sun',M.length===2&&g.index.count>0&&Math.min(...o)<.6&&Math.min(...s)<.5,false);}
+ ok('meshes one per patch, with occlusion and sun',M.length===2&&g.index.count>0&&Math.min(...o)<.6&&Math.min(...s)<.5,false);
+ // gridNormals (opt-in): the same vertices and triangles, the normals near the sampled ones on average (negative: flipped)
+ const G=C.mesh(null,{THREE,sun:[0,1,1.2],gridNormals:true})[0].geometry,na=g.attributes.normal.array,nb=G.attributes.normal.array,pa=g.attributes.position.array,pb=G.attributes.position.array;
+ let same=pa.length===pb.length&&G.index.count===g.index.count,dot=0;for(let i=0;same&&i<pa.length;i++)if(pa[i]!==pb[i])same=false;
+ for(let i=0;same&&i<na.length;i+=3)dot+=na[i]*nb[i]+na[i+1]*nb[i+1]+na[i+2]*nb[i+2];dot/=na.length/3;
+ ok('gridNormals: the same mesh, normals near the sampled ones (mean cos '+dot.toFixed(3)+')',same&&dot>.95,-dot>.95);}
 else console.log('skip  mesh (no three.min.js found)');
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
