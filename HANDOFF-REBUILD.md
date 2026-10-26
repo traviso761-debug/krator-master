@@ -97,6 +97,14 @@ every biome; known-issues passes; the owner's three texture drops in the library
 | The water export section filtered to the test box | `core/export` adapter, or each verify's box | water cannot join a profile whose 300 m box holds none (shighlands, ehighlands) |
 | `ATMOS.sky` overwrites the weather's fog unless given `weather:`; swbay-template pages have no hour slider without `clock.onSet`; the ground dither copied in two biomes | core/atmos, core/host | Farside's notes |
 
+**3a. Species exchanges agreed for this rebuild (after the shared sky is merged).** The Cut (`biomes/cut/PLAN.md` section 12,
+owner 2026-10-26): crater drylands -> the Cut (tree aloe, parasol pine); the Cut -> crater drylands (rankgrass, the measure
+melon, whose three sizes breed true outside the bowl: a crater-drylands home for it in `kits/crops`); nhighlands -> the Cut
+(rowan, great trumpet); the Cut -> nhighlands (circle lichen, ring reeds). Each species stays in its home kit and the neighbour
+reads it in place under a mask. The Cut-side lists are in `biomes/cut`; the crater-drylands and nhighlands reads are to do.
+The NW outer wall's crossings (`biomes/nwouterwall/ECOTONES.md`) stay a proposal: its station 4, the Wall foot, is for a future
+session.
+
 **3. From main's plans (c984cef0f, 47c645159).** The flora exchanges (`biomes/swbay`, `swlowlands`, `nwlowlands` `PLAN-FLORA.md`)
 wait on species from two kits not yet built (`biomes/swhighlands`, `biomes/wouterwall`), so they are not part of this rebuild.
 What can ride along now: the budget lines (swlowlands' ceiling 12M -> 15M, nwlowlands ~9.6M -> ~12.6M, `KNOWN_ISSUES.md`);
