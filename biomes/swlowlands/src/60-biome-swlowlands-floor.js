@@ -104,6 +104,35 @@ function log(x,y,z,st,tropical){const a=rr(0,TAU),L=rr(14,40),r0=rr(.6,1.4),hx=M
   else if(tropical)brom(px,py+r*.9,pz,st);
   else BIO.put('fungus',[px,py+r*.3,pz],qEuler(0,rr(0,TAU),0),[rr(.3,.6),rr(.12,.2),rr(.3,.6)],C(pick(PAL.fungus)));}
  return true;}
+// THE SALT MARSH (2026-10-26): the delta's fringe, where a channel meets the sea (the salt and flow fields both), on the
+// tidal mud and the channel banks from a hand under the water to ~1.5 m over it, ground the floor's mask (dry ground only) and the fresh-water
+// pass (salt under .35) leave bare. Low marsh at the water: cordgrass swards, taller toward the channel. High marsh:
+// glasswort, green to crimson, with sea lavender in flower. One item ('marsh', a core/tags set of kind 'saltmarsh'; the
+// lavender is 'bloom'), one range (SWLOW.LOD.floorMid) for both bands. Every cell draws from core/rand (KRAND: seed, band, world cell), never the
+// floor's stream, so nothing else on the page moved. A coarse 40 m pass finds the delta first (the fields cost fbm calls).
+const MARSH={seed:600777,grass:[0x7a8a44,0x8a9a4c,0x96944e,0x6c7c3c,0xa49a5a],wort:[0x6a8a3a,0x7e8a3e,0x9a5a34,0xa8443a,0x8a3a34],lav:[0xa08ad0,0x9a7ac8,0xb4a0e0]};
+const _mh={h:0,s:0,l:0};
+function marshCol(S,set,k){const c=C(S.pick(set));c.getHSL(_mh);c.setHSL(((_mh.h+S.range(-.02,.02))%1+1)%1,clamp(_mh.s+S.range(-.08,.08),0,1),clamp(_mh.l+S.range(-.05,.05),.03,.97));return bright(c,k);}
+function marshK(Z){return smooth(.04,.18,Z.salt)*smooth(.08,.3,Z.flow)*smooth(-.3,-.08,Z.h)*smooth(1.8,1.2,Z.h);}
+function marshPlant(S,x,y,z,Z,lv,st){const n=lv===2?S.int(6,9):S.int(3,4),wort=Z.h>.15&&S.next()<smooth(.15,.7,Z.h);
+ for(let i=0;i<n;i++){const a=S.range(0,TAU),d=i?S.range(.4,1.8):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,q=qEuler(S.range(-.08,.08),S.range(0,TAU),S.range(-.08,.08));
+  if(wort){const h=S.range(.3,.55),w=S.range(.9,1.5);BIO.put('marsh',[px,y-.04,pz],q,[w,h,w],marshCol(S,MARSH.wort,1.2));}
+  else{const h=S.range(.8,1.4)*mix(1.3,1,smooth(-.1,.3,Z.h));BIO.put('marsh',[px,y-.05,pz],q,[h*1.2,h,h*1.2],marshCol(S,MARSH.grass,1.3));}
+  st.marsh++;}
+ if(wort&&lv>=1&&S.next()<.3){const c=marshCol(S,MARSH.lav,1.15);for(let k=0,m=lv===2?S.int(4,8):2;k<m;k++){const a=S.range(0,TAU),d=S.range(0,1.2);
+  BIO.put('bloom',[x+Math.cos(a)*d,y+S.range(.22,.45),z+Math.sin(a)*d],qEuler(S.range(-.4,.4),S.range(0,TAU),S.range(-.4,.4)),S.range(.07,.12),c);}st.blooms++;}}
+function buildMarsh(R,q,st){const o=BIO.center(),CO=40,NC=Math.ceil(R*2/CO),hot=[];
+ for(let j=0;j<NC;j++)for(let i=0;i<NC;i++){const x=o[0]-R+(i+.5)*CO,z=o[1]-R+(j+.5)*CO;if(Math.hypot(x-o[0],z-o[1])>R+CO)continue;
+  if(BIO.field('salt',x,z)>.02&&BIO.field('flow',x,z)>.05)hot.push([x-CO*.75,z-CO*.75,x+CO*.75,z+CO*.75]);}   /* padded: the fields bend inside a coarse cell */
+ const bands=[[4,0,560,2],[8,560,1400,1]],seen=new Set();
+ for(const b of bands){const cell=b[0],lv=b[3];BIO.range=SWLOW.LOD.floorMid;seen.clear();   /* both bands on one range: one mesh a chunk */
+  for(const H of hot)for(let iz=Math.floor(H[1]/cell);iz<=Math.floor(H[3]/cell);iz++)for(let ix=Math.floor(H[0]/cell);ix<=Math.floor(H[2]/cell);ix++){
+   const key=ix+','+iz;if(seen.has(key))continue;seen.add(key);
+   const S=KRAND.stream(KRAND.hash(MARSH.seed,lv,ix,iz)),x=(ix+S.next())*cell,z=(iz+S.next())*cell,u=S.next();
+   const ld=BIO.lodD(x,z);if(ld<b[1]||ld>=b[2]||Math.hypot(x-o[0],z-o[1])>R)continue;
+   const Z=zones(x,z),k=marshK(Z);if(k<=0)continue;
+   const patch=.55+.6*fbm(x*.021+3,z*.021-8,6011,2);if(u>k*q*clamp(patch,0,1))continue;
+   if(!okGround(x,z,.6))continue;marshPlant(S,x,Y(x,z),z,Z,lv,st);}}}
 
 // ---------------------------------------------------------------- the understorey (under the crowns)
 // A SAPLING: the next generation in the shade -- a thin stem and a few leaf clumps
@@ -234,6 +263,8 @@ SWLOW.buildFloor=function(R,q){
  BIO.range=L.logs;
  BIO.grid(120,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.swamp*.4+Z.sub*.35)*q;},
   (x,y,z,d)=>{const trop=zones(x,z).rain>.4;for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st,trop))break;},{patch:0,pad:3});
+ // the delta's salt marsh (buildMarsh, above): last, on its own core/rand cells
+ st.marsh=0;buildMarsh(R,q,st);
  BIO.range=null;
  return{under:st};};
 // ONE PLANT AT A POINT, by name, for a world's gardens: the same small-plant builders the floor pass

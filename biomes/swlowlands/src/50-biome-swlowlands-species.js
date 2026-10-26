@@ -582,4 +582,7 @@ BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(SWLOW.FIBRETEX),{label:'Small trun
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(SWLOW.SMOOTHTEX),{label:'Small trunks (smooth)'});
 BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SWLOW.ROCKTEX),{label:'Boulders (small)'});
+/* the delta's salt marsh (60-floor, buildMarsh; 2026-10-26): cordgrass swards and glasswort, one core/tags item set of kind 'saltmarsh' (last, so the other items keep their order) */
+BIO.def('marsh',G.tuft(),M.grass,{label:'Salt marsh (cordgrass, glasswort)',kind:'saltmarsh',
+ tags:{climate:'tropic..subtropic',aridity:'humid',abyssal:false,riparian:'yes',zone:'salt marsh',form:'halophyte'}});
 })();

@@ -168,8 +168,26 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGA,uGB;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);'+(GLAY?'vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGA,vGWP.xz,'+GLAY.aK.toFixed(4)+')*1.2,clamp(vGL.x*0.65,0.0,0.65));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGB,vGWP.xz,'+GLAY.bK.toFixed(4)+')*1.2,clamp(vGL.y*0.7,0.0,0.7));':'')+'}');};
-(function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
+/* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal, so meshH below still holds), but
+   every cell that straddles the waterline (its corners both under .3 m and over -.3 m: ~3.7k cells, the bayou, the oxbows and
+   the shore) is split 4 x 4 (~4.1 m) on terrainH. The coarse facets stood above the water as straight-edged brown islets
+   ('The plain from above', KNOWN_ISSUES); the finer cells follow the real waterline. terrainH is unchanged: only the drawn
+   ground moves, toward it. A split cell's edge against a coarse neighbour takes the coarse edge's line (no cracks). */
+(function(){const N=400,S=TERR.R*2.2,c=S/N,F=4,NF=N*F,cf=c/F,N1=N+1,H=new Float32Array(N1*N1);
+ for(let j=0;j<=N;j++)for(let i=0;i<=N;i++)H[j*N1+i]=terrainH(-S/2+i*c,-S/2+j*c);
+ const sub=new Uint8Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=H[j*N1+i],b=H[j*N1+i+1],d=H[(j+1)*N1+i],e=H[(j+1)*N1+i+1];if(Math.min(a,b,d,e)<.3&&Math.max(a,b,d,e)>-.3)sub[j*N+i]=1;}
+ const isSub=(i,j)=>i>=0&&j>=0&&i<N&&j<N&&sub[j*N+i]===1;
+ const pos=[],uvs=[],idx=[],V=new Map();
+ function vid(I,J){const k=J*(NF+1)+I;let v=V.get(k);if(v!==undefined)return v;const x=-S/2+I*cf,z=-S/2+J*cf,i=Math.floor(I/F),j=Math.floor(J/F),fi=I%F,fj=J%F;let h;
+  if(!fi&&!fj)h=H[j*N1+i];
+  else if(fi&&fj)h=terrainH(x,z);
+  else if(!fi)h=(isSub(i-1,j)&&isSub(i,j))?terrainH(x,z):H[j*N1+i]+(H[(j+1)*N1+i]-H[j*N1+i])*fj/F;   /* on a vertical cell edge */
+  else h=(isSub(i,j-1)&&isSub(i,j))?terrainH(x,z):H[j*N1+i]+(H[j*N1+i+1]-H[j*N1+i])*fi/F;            /* on a horizontal cell edge */
+  v=pos.length/3;pos.push(x,h,z);uvs.push(I/NF,1-J/NF);V.set(k,v);return v;}
+ const quad=(I,J,s)=>{const a=vid(I,J),b=vid(I,J+s),cc=vid(I+s,J+s),d=vid(I+s,J);idx.push(a,b,d,b,cc,d);};   /* PlaneGeometry's diagonal */
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(sub[j*N+i]){for(let v=0;v<F;v++)for(let u=0;u<F;u++)quad(i*F+u,j*F+v,1);}else quad(i*F,j*F,F);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(idx);
+ const p=g.attributes.position;
  {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=sk;gl[i*2+1]=open;}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);})();
 
@@ -187,7 +205,7 @@ const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.
 // ---------------------------------------------------------------- the road
 // A ribbon a few cm over the ground in its own dirt texture: two wheel ruts, a grassy
 // crown, leaf litter, pale sand. (The ground canvas is ~4 m a pixel; a road needs its own.)
-// the height of the RENDERED ground (400 cells of ~16 m, split on the same diagonal as PlaneGeometry):
+// the height of the RENDERED ground (400 cells of ~16 m, split on the same diagonal as PlaneGeometry; the cells at the waterline are finer, and the road crosses none):
 // between its vertices it rides above or below terrainH, and a road laid on terrainH sinks into it
 function meshH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,X=k=>-S/2+k*c;
  const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));

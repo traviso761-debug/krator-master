@@ -21,7 +21,9 @@ SWLOW.TREES=[];
 // Equal ranges share a mesh per item per chunk (the passes use many of the same items), so they
 // are kept to a few values: each distinct one is a draw call per item per chunk in view (the far
 // floor band, ~10k triangles in all, cost 30-90 calls at a range of its own).
-SWLOW.LOD={tree:1200,avenue:2000,floor:800,floorMid:1200,farFloor:1200,under:800,logs:1200,dress:1200};
+// 2026-10-26: floor and under 800 -> 1200, so every floor item takes ONE mesh a chunk (the near and the mid band's were two):
+// a chunk under 1200 m is mostly drawn anyway (the 3x3 round the camera), so the 800 range bought few triangles for ~50-70 calls a view.
+SWLOW.LOD={tree:1200,avenue:2000,floor:1200,floorMid:1200,farFloor:1200,under:1200,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. Aridity tags are honoured by which weight a species reads:
@@ -520,12 +522,17 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.Ic
 
 // the SMALL species far off: one 20-triangle blob in the leaf colour, so the chaparral
 // and the palm groves still read at range instead of stopping at the band edge.
-// lite (the stand-in behind a hero): an 8-triangle octahedron, its colour from the tree's seed
+// lite (the stand-in behind a hero): an 8-triangle octahedron, its colour from the tree's seed.
+// The blob's underside carries the bark (2026-10-26): its shade colour is half the species' bark (the second colour mixed in
+// by the mask's mean, as buildFar's trunk) and its gloss rides in uv.x toward the bottom, so the manzanita's ember, the
+// ringbark's copper and the cane palm's lacquer go on past the detail ring. No triangles added and no random draws (the bark by the tree's seed).
 function buildFarSmall(T,st,lite){const K=BIO.bucket('far');if(!ICO0)ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;if(!OCT)OCT=new T3.OctahedronGeometry(1,0).attributes.position.array;
  const S=SP[T.sp],ip=lite?OCT:ICO0;
  const ca=bright(C(lite?S.leaf[T.seed%S.leaf.length]:pick(S.leaf)),.85).convertSRGBToLinear(),cb=ca.clone().multiplyScalar(.55),R=T.crownR*.85,H=T.H,cy=T.y0+H*.62;
+ const BL=SWLOW.BARKLOOK&&SWLOW.BARKLOOK[S.bk],bc=C(S.bark[T.seed%S.bark.length]).convertSRGBToLinear(),gl=BL?BL.gloss*(1-.8*BL.mask):0;
+ if(BL)bc.lerp(BL.alt,BL.mask);cb.lerp(bc.multiplyScalar(.45),.5);
  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2],t=smooth(-.5,.7,dy),ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
-  K.pos.push(T.x+dx*R,cy+dy*Math.max(R*.6,H*.38),T.z+dz*R);K.nor.push(dx/nl,ny/nl,dz/nl);K.uv.push(0,0);K.col.push(mix(cb.r,ca.r,t),mix(cb.g,ca.g,t),mix(cb.b,ca.b,t));}
+  K.pos.push(T.x+dx*R,cy+dy*Math.max(R*.6,H*.38),T.z+dz*R);K.nor.push(dx/nl,ny/nl,dz/nl);K.uv.push(gl*(1-t)*.6,0);K.col.push(mix(cb.r,ca.r,t),mix(cb.g,ca.g,t),mix(cb.b,ca.b,t));}
  const tris=ip.length/9,kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);
  K.tris+=tris;BIO.tally(tris,0,0);if(lite)st.lite+=tris;else st.far+=tris;}
 
