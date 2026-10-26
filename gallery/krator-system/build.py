@@ -66,6 +66,7 @@ BLOCK = """    <div class="orr-cta"><button id="orr-btn" type="button" aria-cont
       <div class="bar">
         <button id="orr-play" type="button" class="ghost">Pause</button>
         <label for="orr-speed">Speed <select id="orr-speed"><option value="1">1 hour a second</option><option value="6" selected>6 hours a second</option><option value="24">1 day a second</option><option value="96">4 days a second</option><option value="336">2 weeks a second</option></select></label>
+        <label for="orr-view">View <select id="orr-view"><option value="moons" selected>the giant's moons</option><option value="planets">the star's planets</option></select></label>
         <label for="orr-scale">Distances <select id="orr-scale"><option value="sqrt" selected>compressed</option><option value="lin">true scale</option></select></label>
         <div id="orr-date"></div>
       </div>
@@ -88,6 +89,12 @@ for key, name, kind, desc, rows in M:
     dl = ''.join(f'<dt>{a}</dt><dd>{b}</dd>' for a, b in rows)
     cards.append(f'<article class="card"><header><img data-body="{key}" src="{p[key]}" alt="{html.escape(name)}, rendered from its map" width="112" height="112"><div><h3>{name}</h3><span class="tag">{kind}</span></div></header><p>{html.escape(desc)}</p><dl>{dl}</dl></article>')
 t = t.replace('{{giant}}', p['giant']).replace('{{cards}}', '\n      '.join(cards))
+# the star's other planets (planets.py writes planets.json and their globes)
+pc = []
+for key, name, kind, desc, rows in json.load(open('planets.json', encoding='utf-8')):
+    dl = ''.join(f'<dt>{a}</dt><dd>{b}</dd>' for a, b in rows)
+    pc.append(f'<article class="card"><header><img data-body="{key}" src="{p[key]}" alt="{html.escape(name)}, an impression" width="112" height="112"><div><h3>{name}</h3><span class="tag">{kind}</span></div></header><p>{html.escape(desc)}</p><dl>{dl}</dl></article>')
+t = t.replace('{{planets}}', '\n      '.join(pc))
 maps = json.load(open('maps.json'))
 t = t.rstrip() + '\n<script>window.ORR_MAPS=' + json.dumps(maps) + ';</script>\n' + open('orrery3d.js', encoding='utf-8').read()
 t = t.replace('A top-down model, seen from above Krator\'s north pole.', 'A 3D model you can turn: every moon at its real period, lit by the sun.')

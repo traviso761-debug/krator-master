@@ -11,6 +11,27 @@
     {k:'week',n:'Week',P:6.87,a:700000,t0:3.594923,R:4000},
     {k:'thirteen',n:'Thirteen',P:12.55,a:1050000,t0:3.387957,R:4600},
     {k:'krator',n:'Krator',P:1,a:KR,R:4800,home:true}];
+  /* the star's planets (the owner, 2026-10-26): a (AU), e, inclination, radius (km), their looks; the giant (with Krator and
+     its moons) at 1 AU. A year is 365 a^1.5 days (a Sun-like star). Positions from Kepler's equation; distances by their
+     square root so Wanderer's far swing fits; bodies larger than life */
+  const PLANETS=[
+    {k:'ash',n:'Ash',a:.32,e:.08,i:3,R:3400,M0:1.1,w:.6,O:.3,look:'dark'},
+    {k:'rust',n:'Rust',a:.55,e:.05,i:1.5,R:9500,M0:3.9,w:2.1,O:1.2,look:'rust'},
+    {k:'cinder',n:'Cinder',of:'rust',R:6100,look:'cinder',P:14,sep:7,q:0.9/4.3},
+    {k:'veil',n:'Veil',a:.763,e:.02,i:2,R:6300,M0:5.2,w:4.0,O:2.4,look:'cloud'},
+    {k:'giant',n:'the giant · Krator',a:1,e:.01,i:0,R:50211,M0:0,w:0,O:0,look:'giant',home:true},
+    {k:'crown',n:'Crown',a:3.4,e:.05,i:1.2,R:71000,M0:2.4,w:5.1,O:3.3,look:'jove'},
+    {k:'frost',n:'Frost',a:9,e:.03,i:.8,R:22000,M0:4.4,w:1.0,O:5.0,look:'ice'},
+    {k:'wanderer',n:'Wanderer',a:11.8,e:.5,i:17,R:2400,M0:.2,w:3.0,O:1.7,look:'stone'}];
+  const PYR=a=>365*Math.pow(a,1.5),PR=r=>28*Math.sqrt(r),pbodyR=p=>p.home?2.2:0.7+3.0*Math.sqrt(p.R/71000);
+  /* a point of a planet's orbit: true anomaly nu at distance r (AU), the argument of perihelion w, tilted i about its node O */
+  function orbitPoint(p,nu,r){const s=PR(r),u=nu+p.w,i=p.i*D,v=new THREE.Vector3(Math.cos(u)*s,Math.sin(u)*s*Math.sin(i),-Math.sin(u)*s*Math.cos(i));
+    return v.applyAxisAngle(new THREE.Vector3(0,1,0),p.O);}
+  /* a double planet: the pair round their barycentre (on the primary's orbit) every P days, apart sep (drawn), the primary
+     q of the way from it (the partner's share of the pair's mass) */
+  function pairOffset(c,t){const u=TAU*t/c.P;return new THREE.Vector3(Math.cos(u),0,-Math.sin(u)).multiplyScalar(c.sep);}
+  function kepler(p,t){let M=p.M0+TAU*t/PYR(p.a),E=M;for(let j=0;j<8;j++)E-=(E-p.e*Math.sin(E)-M)/(1-p.e*Math.cos(E));
+    const x=Math.cos(E)-p.e,y=Math.sqrt(1-p.e*p.e)*Math.sin(E);return orbitPoint(p,Math.atan2(y,x),p.a*Math.hypot(x,y));}
   const MONTHS=["Janavari","Pepravari","Mārccu","Ēpral","Mē","Jūn","Julai","Ākasṭu","Ceppaṭampar","Akṭōpar","Navampar","Ṭicampar"],MD=[31,28,31,30,31,30,31,31,30,31,30,31];
   const WD=["Sanḍē","Manḍē","Ṭyūsḍē","Vensḍē","Tarsḍē","Firaiḍē","Sa'arḍē"],NUM=["Van","Ṭū","Tirī","Fōr","Faiv","Siks","Cevan","Eyiṭ","Nain","Ṭen","Ilevan","Ṭvelv","Tarṭīn"];
   /* the sky model's frame (core/atmos/sky): the sun's ecliptic place through the year, Krator's longitude from the
@@ -49,6 +70,7 @@
     uCol:{value:new THREE.Color(col)},uShade:{value:new THREE.Color(shade)}},vertexShader:CLOUD_V,fragmentShader:CLOUD_F,transparent:true,depthWrite:false});
    const c=new THREE.Mesh(new THREE.SphereGeometry(1+lift,64,48),mat);m.add(c);cloudShells.push(c);return c;};
   let renderer,scene,camera,sun,giant,ring,mesh={},orbitLines=[],lab={},sta,staPlane,debris;
+  let view='moons',pscene=null,pmesh={},plab={};
   let yaw=0.6,pitch=0.55,dist=190,focus=null,fdist=6;const tgt=new THREE.Vector3();
   const R0=100,rad=a=>scale==='lin'?R0*a/1.06e6:R0*Math.sqrt(a/1.06e6);
   const bodyR=b=>scale==='lin'?0.35+b.R/1800:0.9+b.R/1100;
@@ -97,6 +119,43 @@
      debris=new THREE.Points(new THREE.BufferGeometry().setFromPoints(pts),new THREE.PointsMaterial({color:0xcfcac2,size:2,sizeAttenuation:false}));staPlane.add(debris);}
     const sl=document.createElement('div');sl.className='orr-lab';sl.textContent='Station';labels.appendChild(sl);lab.station=sl;
     built=true;rescale();}
+  /* a planet's surface, painted once from the value noise by its look */
+  function planetTexture(look){const w=256,h=128,c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d'),im=g.createImageData(w,h);
+    for(let y=0;y<h;y++){const lat=(0.5-y/h)*Math.PI;for(let x=0;x<w;x++){const u=x/w*12,v=y/h*6,n=vnoise(u,v)*0.6+vnoise(u*2.3,v*2.3)*0.3+vnoise(u*5,v*5)*0.1;let r,gg,b;
+      if(look==='dark'){r=gg=b=0.10+0.12*n;}
+      else if(look==='cinder'){const sc=Math.max(0,0.4-vnoise(u*3,v*3))*1.5;r=0.42+0.14*n-0.1*sc;gg=0.33+0.1*n-0.08*sc;b=0.31+0.08*n-0.07*sc;}
+      else if(look==='rust'){const basin=Math.max(0,0.45-n)*3;r=0.66+0.18*n-0.2*basin;gg=0.32+0.1*n-0.1*basin;b=0.17+0.05*n;if(Math.abs(lat)>1.3){r=gg=b=0.86;}}
+      else if(look==='cloud'){const s=Math.sin(lat*6+n*3);r=0.90+0.05*s;gg=0.87+0.05*s;b=0.76+0.04*s;}
+      else if(look==='jove'){const s=Math.sin(lat*13+n*2.2);r=0.80+0.12*s;gg=0.65+0.12*s;b=0.47+0.1*s;const sd=Math.hypot((x/w-0.6)/0.06,(lat+0.38)/0.1);if(sd<1){r=0.74;gg=0.34;b=0.24;}}
+      else if(look==='ice'){r=0.56+0.04*n;gg=0.80+0.04*n;b=0.86+0.03*n;}
+      else{r=0.52+0.15*n;gg=0.47+0.13*n;b=0.40+0.1*n;}
+      const k=(y*w+x)*4;im.data[k]=r*255;im.data[k+1]=gg*255;im.data[k+2]=b*255;im.data[k+3]=255;}}
+    g.putImageData(im,0,0);const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;return tx;}
+  /* the second view: the star, its planets on their orbits, the giant (with Krator) among them */
+  function buildPlanets(){pscene=new THREE.Scene();pscene.add(new THREE.AmbientLight(0x1a2233,0.6));
+    const pl=new THREE.PointLight(0xfff4e0,2.2,0,0);pscene.add(pl);
+    const star=new THREE.Mesh(new THREE.SphereGeometry(4,48,32),new THREE.MeshBasicMaterial({color:0xfff2d0}));pscene.add(star);
+    const halo=new THREE.Mesh(new THREE.SphereGeometry(6.5,32,24),new THREE.MeshBasicMaterial({color:0xffd890,transparent:true,opacity:0.18,depthWrite:false}));pscene.add(halo);
+    const sg=new THREE.BufferGeometry(),sp=[];for(let i=0;i<1600;i++){const u=hash(i,1)*2-1,th=hash(i,2)*TAU,r=1600;sp.push(r*Math.sqrt(1-u*u)*Math.cos(th),r*u,r*Math.sqrt(1-u*u)*Math.sin(th));}
+    sg.setAttribute('position',new THREE.Float32BufferAttribute(sp,3));pscene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xc8d4ee,size:1.6,sizeAttenuation:false})));
+    for(const p of PLANETS){if(p.of){const m=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),new THREE.MeshStandardMaterial({map:planetTexture(p.look),roughness:0.95,metalness:0}));
+        m.scale.setScalar(pbodyR(p));pscene.add(m);pmesh[p.k]=m;const l=document.createElement('div');l.className='orr-lab';l.textContent=p.n;l.hidden=true;labels.appendChild(l);plab[p.k]=l;continue;}
+      const pts=[];for(let j=0;j<=240;j++){const nu=j/240*TAU;pts.push(orbitPoint(p,nu,p.a*(1-p.e*p.e)/(1+p.e*Math.cos(nu))));}
+      pscene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:p.home?0x8ec5ff:0x3a4a66,transparent:true,opacity:p.home?0.8:0.55})));
+      const m=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),new THREE.MeshStandardMaterial({map:p.look==='giant'?giant.material.map:planetTexture(p.look),roughness:0.9,metalness:0}));
+      m.scale.setScalar(pbodyR(p));pscene.add(m);pmesh[p.k]=m;
+      if(p.look==='giant'){const r=new THREE.Mesh(ring.geometry,ring.material);r.rotation.x=-Math.PI/2+0.4;m.add(r);}
+      const l=document.createElement('div');l.className='orr-lab'+(p.home?' home':'');l.textContent=p.n;l.hidden=true;labels.appendChild(l);plab[p.k]=l;}}
+  function placePlanets(){const v=new THREE.Vector3(),w=cv.clientWidth,h=cv.clientHeight;
+    const pairs={};for(const c of PLANETS)if(c.of)pairs[c.of]=c;
+    for(const p of PLANETS){const m=pmesh[p.k];
+      if(p.of){m.position.copy(kepler(PLANETS.find(q=>q.k===p.of),t)).add(pairOffset(p,t).multiplyScalar(1-p.q));}
+      else{m.position.copy(kepler(p,t));if(pairs[p.k])m.position.add(pairOffset(pairs[p.k],t).multiplyScalar(-pairs[p.k].q));}m.rotation.y=TAU*((t*24/10)%1);v.copy(m.position).project(camera);const el=plab[p.k];
+      if(v.z>1){el.hidden=true;continue;}el.hidden=false;el.style.transform='translate('+((v.x*0.5+0.5)*w+8)+'px,'+((-v.y*0.5+0.5)*h-8-pbodyR(p)*2)+'px)';}
+    document.getElementById('orr-date').textContent='Day '+(t>=0?'+':'')+Math.floor(t)+' · '+date(t);}
+  function setView(vw){view=vw;focus=null;if(view==='planets'&&!pscene)buildPlanets();
+    for(const k in lab)lab[k].hidden=view!=='moons';for(const k in plab)plab[k].hidden=view!=='planets';
+    dist=view==='planets'?260:(scale==='lin'?70:190);}
   function rescale(){for(const l of orbitLines)scene.remove(l);orbitLines=[];
     for(const b of BODIES){if(b.k==='companion')continue;const r=rad(b.a),pts=[];for(let i=0;i<=180;i++){const a=i/180*TAU;pts.push(new THREE.Vector3(Math.cos(a)*r,0,-Math.sin(a)*r));}
       const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:b.home?0x8ec5ff:0x3a4a66,transparent:true,opacity:b.home?0.8:0.55}));scene.add(ln);orbitLines.push(ln);}
@@ -117,10 +176,10 @@
     const show=(el,p,dy)=>{v.copy(p).project(camera);if(v.z>1||(el!==lab.giant&&hidden(p))){el.hidden=true;return;}el.hidden=false;el.style.transform='translate('+((v.x*0.5+0.5)*w+8)+'px,'+((-v.y*0.5+0.5)*h-8-dy)+'px)';};
     for(const b of BODIES)show(lab[b.k],mesh[b.k].position,bodyR(b)*2);show(lab.station,sta.getWorldPosition(new THREE.Vector3()),0);show(lab.giant,new THREE.Vector3(0,rad(50211)*1.1,0),0);
     document.getElementById('orr-date').textContent='Day '+(t>=0?'+':'')+Math.floor(t)+' · '+date(t);}
-  function frame(ts){if(last!=null&&playing)t+=Math.min(0.1,(ts-last)/1000)*speed/24;last=ts;
-    place();if(focus)focus.getWorldPosition(tgt);else tgt.set(0,0,0);const dd=focus?fdist:dist;   /* following a body: double-click it */
+  function frame(ts){if(last!=null&&playing)t+=Math.min(0.1,(ts-last)/1000)*speed/24*(view==='planets'?30:1);last=ts;   /* the planets' view runs 30 times faster */
+    if(view==='planets')placePlanets();else place();if(focus)focus.getWorldPosition(tgt);else tgt.set(0,0,0);const dd=focus?fdist:dist;   /* following a body: double-click it */
     camera.position.set(tgt.x+Math.cos(pitch)*Math.sin(yaw)*dd,tgt.y+Math.sin(pitch)*dd,tgt.z+Math.cos(pitch)*Math.cos(yaw)*dd);camera.lookAt(tgt);
-    renderer.render(scene,camera);raf=requestAnimationFrame(frame);}
+    renderer.render(view==='planets'?pscene:scene,camera);raf=requestAnimationFrame(frame);}
   /* drag to turn, wheel or pinch to zoom */
   let drag=null,pinch=null;
   cv.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId);});
@@ -132,15 +191,18 @@
   cv.addEventListener('touchend',()=>{pinch=null;});
   /* double-click (or double-tap) a body to follow it close up; on the giant or empty space, back to the whole system */
   cv.addEventListener('dblclick',e=>{if(!built)return;const r=cv.getBoundingClientRect(),p=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),rc=new THREE.Raycaster();
-   rc.setFromCamera(p,camera);const hits=rc.intersectObjects([giant].concat(BODIES.map(b=>mesh[b.k]),[sta]),false);const o=hits.length?hits[0].object:null;
+   rc.setFromCamera(p,camera);
+   if(view==='planets'){const hp=rc.intersectObjects(PLANETS.map(q=>pmesh[q.k]),false);if(!hp.length){focus=null;return;}focus=hp[0].object;fdist=focus.scale.x*6;return;}
+   const hits=rc.intersectObjects([giant].concat(BODIES.map(b=>mesh[b.k]),[sta]),false);const o=hits.length?hits[0].object:null;
    if(!o||o===giant){focus=null;return;}focus=o;const b=BODIES.find(q=>mesh[q.k]===o);fdist=b?bodyR(b)*5:2.5;});
   document.getElementById('orr-btn').addEventListener('click',function(){const open=box.hidden;box.hidden=!open;this.setAttribute('aria-expanded',String(open));
     this.textContent=open?'Hide the model':'Show the system in motion';
-    if(open){if(!built){if(!window.THREE){document.getElementById('orr-date').textContent='The 3D library did not load.';return;}build();}size();last=null;raf=requestAnimationFrame(frame);}else cancelAnimationFrame(raf);});
+    if(open){if(!built){if(!window.THREE){document.getElementById('orr-date').textContent='The 3D library did not load.';return;}build();if(view!=='moons')setView(view);}size();last=null;raf=requestAnimationFrame(frame);}else cancelAnimationFrame(raf);});
   play.textContent=playing?'Pause':'Play';
   play.addEventListener('click',()=>{playing=!playing;play.textContent=playing?'Pause':'Play';});
   document.getElementById('orr-speed').addEventListener('change',e=>{speed=+e.target.value;});
   document.getElementById('orr-scale').addEventListener('change',e=>{scale=e.target.value;if(built)rescale();});
+  document.getElementById('orr-view').addEventListener('change',e=>{if(built)setView(e.target.value);else view=e.target.value;});
   addEventListener('resize',()=>{if(built&&!box.hidden)size();});
 })();
 </script>
