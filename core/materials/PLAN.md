@@ -554,7 +554,7 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
 **Delivered 2026-10-25 and processed, the Yeti kit** (`tools/textures/batches/chatgpt-2026-10u-yeti.json`, pasted by the
-owner as 1254 px WebP, the prompts of `PROMPTS-NEEDED.md` section 15): nine surfaces in `library/` (`ice.pycrete`,
+owner as 1254 px WebP, the prompts of `PROMPTS-NEEDED.md` section 15, now 19): nine surfaces in `library/` (`ice.pycrete`,
 `ice.pycrete.weathered`, `masonry.pycrete.course` (cut to three courses, joint to joint, 2 x 1.5 m), `stone.corbel.slab`
 and `hide.panels.sewn` (tintable, muted 0.4), `stone.soapstone` (reads as green serpentine too), `fur.muskox`,
 `fur.caribou`, `hide.gut` (cut to eight strips and rolled so the seam falls mid-strip)) and seven sheets in
