@@ -58,12 +58,13 @@
    const ov=scene.overrideMaterial,bg=scene.background,fogS=scene.fog,prevT=r.getRenderTarget(),ac=r.autoClear,info=r.info.autoReset,calls=r.info.render.calls,tris=r.info.render.triangles;
    let ok=true;scene.overrideMaterial=over;scene.background=null;scene.fog=null;r.info.autoReset=false;
    try{r.setRenderTarget(rt);r.autoClear=true;r.clear(true,true,false);r.render(scene,cam);}
-   catch(e){ok=false;R.failed=(e&&e.message)||String(e);A.err('rainCover: the depth pass failed ('+R.failed+'): the map is off');}
+   catch(e){ok=false;R.fails=(R.fails||0)+1;R.error=(e&&e.message)||String(e);R.retry=A.clock.t+2;if(R.fails>=5){R.failed=R.error;A.err('rainCover: the depth pass failed five times ('+R.failed+'): the map is off');}}
    finally{r.setRenderTarget(prevT);r.autoClear=ac;scene.overrideMaterial=ov;scene.background=bg;scene.fog=fogS;r.info.render.calls=calls;r.info.render.triangles=tris;r.info.autoReset=info;
     for(const ob of hid)ob.visible=true;}
    if(!ok){A.U.rainOccBox.value.w=0;return;}   /* a page whose scene the pass cannot draw keeps the rain everywhere, as before */
    A.U.rainOccBox.value.set(cx,cz,box,1);A.U.rainOccCam.value.set(top,.1,lift+depth,P.margin);R.cx=cx;R.cz=cz;R.last=A.clock.t;R.stats.renders++;R.stats.hidden=hid.length;};
-  A.hook((t)=>{if(R.failed)return;const c=A.h.camera.position,W=A.W||{};const moved=R.cx==null||Math.hypot(c.x-R.cx,c.z-R.cz)>step;
+  /* a pass that throws (a page still filling a geometry in its first frames: swbay) is tried again 2 s on, five times */
+  A.hook((t)=>{if(R.failed||(R.retry&&t<R.retry&&R.cx==null))return;const c=A.h.camera.position,W=A.W||{};const moved=R.cx==null||Math.hypot(c.x-R.cx,c.z-R.cz)>step;
    const wet=(W.rain||0)>.01||(W.snow||0)>.01||(W.ash||0)>.01;if(moved||(wet&&every>0&&t-R.last>every))R.render();});
   patch(A.rainMat);if(A.flakeMats)for(const k in A.flakeMats)patch(A.flakeMats[k]);
   A.rainCoverPatch=patch;

@@ -48,7 +48,7 @@
   const amount=1-Math.exp(-(oA+tM+tB));
   const up=ss(0,.6,rd[1])*(F.sky||0),sd=F.sunDir||[0,1,0],mie=Math.min(1,(F.sun||0)*Math.pow(Math.max(0,rd[0]*sd[0]+rd[1]*sd[1]+rd[2]*sd[2]),8)*ss(-.05,.05,sd[1]));
   const fc=F.colour||[.5,.5,.5],z=F.zen||fc,sc=F.sunC||[1,1,1];
-  const cA=fc.map((v,i)=>{const a=v+(z[i]-v)*up;return a+(sc[i]-a)*mie;}),cM=fc.map((v,i)=>Math.min(1,v*1.06+.04*sc[i])),cB=fc.map((v,i)=>v+(sc[i]*.9-v)*.35);
+  const cA=fc.map((v,i)=>{const a=v+(z[i]-v)*up;return a+(sc[i]-a)*mie;}),cM=fc.slice(),cB=fc.map((v,i)=>v+(sc[i]*.9-v)*.35);
   const w=oA+tM+tB||1,colour=[0,1,2].map(i=>(cA[i]*oA+cM[i]*tM+cB[i]*tB)/w);
   return{amount,colour};};
  const f=v=>A.glf(v);
@@ -72,7 +72,7 @@
   '  tB=atmFogBand.x*q.x*smoothstep(1.0-atmFogBand.w-0.15,1.0-atmFogBand.w+0.15,mix(0.5,n,atmFogX.w));}}',
   ' float amount=1.0-exp(-(oA+tM+tB));',
   ' float up=smoothstep(0.0,0.6,rd.y)*atmFogH.w;float mie=clamp(atmFogH.z*pow(max(dot(rd,atmFogSunDir),0.0),8.0)*smoothstep(-0.05,0.05,atmFogSunDir.y),0.0,1.0);',
-  ' vec3 cA=mix(mix(fc,atmFogZen,up),atmFogSunC,mie);vec3 cM=min(vec3(1.0),fc*1.06+0.04*atmFogSunC);vec3 cB=mix(fc,atmFogSunC*0.9,0.35);',
+  ' vec3 cA=mix(mix(fc,atmFogZen,up),atmFogSunC,mie);vec3 cM=fc;vec3 cB=mix(fc,atmFogSunC*0.9,0.35);',
   ' float w=oA+tM+tB;w=w>0.0?w:1.0;return vec4((cA*oA+cM*tM+cB*tB)/w,amount);}',
   '#endif'].join('\n');
 })();
