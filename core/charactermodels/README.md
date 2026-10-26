@@ -33,6 +33,7 @@ blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
 python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
 tools/rebuild.sh [--only <male ids> <female ids>]                  # all of the above in order, both bodies at once, then the pages
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
+python3 build.py --pages-only                                      # the pages alone where pieces/ is missing (the manifest keeps the pieces' hashes)
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
 python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run

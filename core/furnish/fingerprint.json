@@ -28,7 +28,7 @@
  "girder": {
   "interiors-off": {
    "batchTris": 101204,
-   "geometry": "444ef14c",
+   "geometry": "eeeccbf",
    "groupTris": 101204,
    "interiorPieces": 0,
    "interiors": 0,
@@ -36,11 +36,11 @@
    "meshes": 21,
    "missing": {},
    "placed": 1331,
-   "records": "721ba00d"
+   "records": "c0a5e129"
   },
   "interiors-on": {
    "batchTris": 101204,
-   "geometry": "444ef14c",
+   "geometry": "eeeccbf",
    "groupTris": 101204,
    "interiorPieces": 0,
    "interiors": 0,
@@ -48,7 +48,7 @@
    "meshes": 21,
    "missing": {},
    "placed": 1331,
-   "records": "721ba00d"
+   "records": "c0a5e129"
   }
  },
  "highlands": {

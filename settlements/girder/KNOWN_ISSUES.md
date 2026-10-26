@@ -9,16 +9,16 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       (every mesh's name, visibility and triangles at four views, the camera to 4 decimals) matches the old page within the old
       page's own run-to-run difference (the interiors' merge and the life layer); chrome-hidden shots differ only where the
       wind, the water and the villagers move. The budget row `furn.calls 80 / 54` fails as it did on main before the move.
-- [ ] (2026-10-15) Keys changed with the host's one keymap: **F** walks (it was G), **G** flies to the pin (double-click the
-      ground to drop one), Esc lifts it; I is the hover tip (the old Inspector button), P marks, B edits, X cuts, O is free.
+- [x] (2026-10-15) Keys changed with the host's one keymap: **F** walks (it was G), **G** flies to the pin (double-click the
+      ground to drop one), Esc lifts it; I is the hover tip (the old Inspector button), P marks, B edits, X cuts, O is free. - 2026-10-20: description of the port, nothing open.
 - [ ] (2026-10-15) The editor moves, removes and places **catalog pieces** only. A piece the page was made with is merged into
       the furniture batch, so moving or removing it is marked and applies on reload (`53-furnish.js gfVetoed`); a placed piece is
       drawn on its own at once. Plant mode offers the catalog's planters and shrine saplings: the hypertrees, saplings and
       undergrowth are woven into shared stores and cannot be edited one by one yet; the plant registry (krator-master-plants.js)
       needs the asset engine, which Girder does not load.
-- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+- [x] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
       buttons (pause, 1x to 8x) set the motion time the sky, the wind and the life layer advance by. One clock is the host's
-      (`KCLOCK`) once the sky takes an hour from it.
+      (`KCLOCK`) once the sky takes an hour from it. - 2026-10-20: description of the port, nothing open.
 - [x] (2026-10-05) The NAV walk graph against the walk solids (`navAudit()` in Girder Hero, `hero/PORT.md`): 810 of 2,958
       edges and 184 nodes could not be walked. Fixed in 30-layout.js: the gallery loops ran along the column line (now
       `GALLERY_WALK`, 20.2 m, inside the columns; 704 edges, 176 nodes), the roost-deck walk crossed the lift notch (its nodes
@@ -26,15 +26,21 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       core), roost nodes stood among the stall's furniture (now at the stall's open back), the lift foot ran through the capstan
       (a node round it), fields and house yards reach the road through an apron node outside the gate. Left: the four below.
       `verify.py --assert` passes; the villagers now walk the galleries 1.8 m further in and tend the beasts from the stall's back.
-- [ ] (2026-10-05) NAV: 105 gallery edges and 16 gallery nodes run through furniture standing on the gallery lane (20.2 m).
+- [x] (2026-10-05) NAV: 105 gallery edges and 16 gallery nodes run through furniture standing on the gallery lane (20.2 m).
       The furniture is placed after the graph (53-furnish.js, 56-interiors.js); either keep a lane clear there or repair the
       graph against the solids after furnishing. Girder Hero detours round them.
-- [ ] (2026-10-05) NAV: 17 field and 2 house links to the road cross a neighbouring plot's fence on the way to a road node up to
+      2026-10-20: measured on core/walk (`_walk.navAudit()`, new in 83-walk.js; the hero's own audit stopped working with the 2026-10-19 port): 121 edges, 16 nodes.
+      Cause: the water butt or planter a corner dwelling set before its door (55-arch.js `buildDwelling`, `zw+0.45`) stood a metre deep in the 1.2 m gallery.
+      A home with no veranda now sets its front wall back 0.95 m (as a store already did), so those pieces stand in the recess: 0 nodes, 0 edges. `verify.py --assert` checks it (`nav-walkable`).
+- [x] (2026-10-05) NAV: 17 field and 2 house links to the road cross a neighbouring plot's fence on the way to a road node up to
       43 m off (`navNearest`); they want to follow the lanes between the plots.
-- [ ] (2026-10-05) NAV: on each roost deck the walk node moved out of the lift notch sits by a stall partition, so its link back
+      2026-10-20: 17 field and 2 house links (the audit counted 19 again); now 0. `navLaneRoute` (30-layout.js) takes the nearest road or patrol node that no plot's or house yard's
+      fence stands in the way of, else walks the apron's own lane between the plots (a node in the lane, either way) to the first point with a clear run.
+- [x] (2026-10-05) NAV: on each roost deck the walk node moved out of the lift notch sits by a stall partition, so its link back
       to the walk line clips a post (4 edges).
-- [ ] (2026-10-05) NAV: the lift-head nodes are inside the shaft; the edge to the deck walk is only walkable with the cage up
-      (by design, but `navAudit()` lists it).
+      2026-10-20: the notch nodes stepped out to 3.4 m from the lift, the x of the stall's back posts (29.8 m from the tower centre); they now step to 3.0 m. 4 edges, now 0.
+- [x] (2026-10-05) NAV: the lift-head nodes are inside the shaft; the edge to the deck walk is only walkable with the cage up
+      (by design, but `navAudit()` lists it). - 2026-10-20: by design, nothing open.
 
 - [x] (2026-10-05) Tree tints: roots take the trunk's tint at their height above the ground (colour band and moss) and limbs, boughs and twigs take the trunk's tint
       at the height where the limb leaves it (60-trees.js: `trunkPt(...)`, `lc`); the old lighter-base, darker-outer split along a limb is gone. Looked at in headless
@@ -90,10 +96,10 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] "Girder from the brook" view was moved onto the footbridge after the last render — never re-shot
 - [ ] Life: under the default 2-minute day, worker commutes fade instead of walking (pause/slow the clock to see real walks)
 - [ ] Life: sentries never change shift; wall-walk pacers have no way up or down (no ladder/nav link to the ledge)
-- [ ] Life: lift-foot nav edge runs through the capstan circle (walkers detour); capstan bar is static and cannot turn with the millipede (30-layout / 50-structure)
+- [ ] Life: capstan bar is static and cannot turn with the millipede (30-layout / 50-structure). 2026-10-20: the lift-foot edge round the capstan is done (2026-10-05; the audit lists no lift-foot edge)
 - [ ] Life: a lift queue does not steer round the sentry posted at the lift foot; hand lanterns do not light the ground
-- [ ] Life: 78-life still carries 12 private road links (_life.virtualLinks) now redundant with the crossing fix in 30-layout — remove and re-test
-- [ ] Layout: gallery walk-loop corners at (+-22,+-22) sit inside the corner columns (20.8-24)
+- [x] Life: 78-life still carries 12 private road links (_life.virtualLinks) now redundant with the crossing fix in 30-layout — remove and re-test. 2026-10-20: checked, not redundant and not 12: the four ring-to-avenue links are no longer made (the crossing fix joins them), the eight court-side tower-door links are 33 m shortcuts to the avenue where the ground-only path is 98 m. Kept.
+- [x] Layout: gallery walk-loop corners at (+-22,+-22) sit inside the corner columns (20.8-24). 2026-10-20: stale, done 2026-10-05 (the loop is `GALLERY_WALK`, +-20.2 m); the audit finds no node or edge stopped by a column
 - [ ] Flyers: the 12 court-side roost stalls are static residents (every approach crosses a bridge); quetzals use outer bays only
 - [ ] Flyers: circuit joins fail ~25% (fall back to plain departure); formations dissolve; quetzal head clearance under the eave judged by eye
 - [ ] Flyers: rider-lantern / bat-eye glints never confirmed in a night frame; re-run the obstacle audit against the real forest (it was run against placeholder crowns)
@@ -105,8 +111,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   2026-10-01: night floors cut (hemi 0.30 -> 0.07, ambient 0.22 -> 0.035, planetshine fill 0.15/0.08 -> 0.07/0.03) and the night fill turned cool blue-grey instead of a dimmed day colour (82-daynight); the giant's key 0.44 -> 0.18 x phase (21-sky); a full giant now cuts the lamps by 8 % instead of 28 %, so lamps, windows and fires are the main light. An eclipse keeps its own fill (DN_ECL_*) so it still reads as twilight. 21:00 lights: hemi 0.53 -> ~0.17, ambient 0.38 -> ~0.09, key 0.45 -> ~0.19. Same code in both builds.
 - [ ] Interiors are furnished AFTER load (56-interiors.js): ~16 s of placer time in a desktop browser (118 s headless), nearest the camera first; frames drop while it runs. The interiors placer (kits/interiors 45-placer.js, its geometry tests) is the cost: a faster placer or cached plans would let it run at load
 - [ ] Interior lamps, hearths and braziers are data only (their lights are on the placements, not in the night light volume): furnished rooms are lit at night only by the window spill
-- [ ] Furniture budget (BUDGET.furniture: measured 39 calls / 1.47 M tris + 15 %; 10 of the calls are painted-panel materials; 1331 outdoor pieces 0.10 M, 3809 interior pieces 1.37 M). The heavy pieces at setDetail(.5), count x tris: br_common_chair 246 x 704 (12 %), br_common_low_table 162 x 952 (11 %), br_common_stool 287 x 536 (11 %), br_common_table 116 x 1148 (9 %), br_common_bench 233 x 560 (9 %), br_common_bed 154 x 824 (9 %): the lashed legs and lashings of the Beast Rider common style sheet (kits/catalog FK, `legs: 'lashed'`); a lighter lashing at settlement detail in the catalog would cut ~0.4 M
-- [ ] Walk mode: closed door leaves are drawn in the shells' doorways and the walker passes through them; no head collisions; no ladders (watch posts, wall-walk and orchard ladders are not climbable); no rail on the gallery or deck edges, so the walker can fall off (the stairwell at each half landing now has a rail, and the well an invisible wall)
+- [x] Furniture budget (BUDGET.furniture: measured 39 calls / 1.47 M tris + 15 %; 10 of the calls are painted-panel materials; 1331 outdoor pieces 0.10 M, 3809 interior pieces 1.37 M). The heavy pieces at setDetail(.5), count x tris: br_common_chair 246 x 704 (12 %), br_common_low_table 162 x 952 (11 %), br_common_stool 287 x 536 (11 %), br_common_table 116 x 1148 (9 %), br_common_bench 233 x 560 (9 %), br_common_bed 154 x 824 (9 %): the lashed legs and lashings of the Beast Rider common style sheet (kits/catalog FK, `legs: 'lashed'`); a lighter lashing at settlement detail in the catalog would cut ~0.4 M 2026-10-20: re-baselined by the owner: BUDGET.furniture.drawCalls is now 78 (measured 78; was 54), not merging materials. A later catalog detail variant may bring it down again.
+- [ ] Walk mode: no head collisions (a lintel or a low beam is not a block); no ladders (watch posts, wall-walk and orchard ladders are not climbable). 2026-10-20: the rest is stale: the front doors are drawn open (55-arch.js `doorAt`: the leaf swung in against the jamb, no closed leaf anywhere), and the host's walker drops at most 1.4 m, so it keeps to a gallery or deck edge without a rail (2026-10-19)
 - [ ] Woodpiles are the catalog's stave stack: the beast-rider culture file has no log pile (br_woodpile is only in the harvested registry, krator-master-furniture.js, which the bundle leaves out)
 - [ ] Still geometry that is arguably furniture: 72-lights.js LAMPPOSTs on the roads and deck corners (planner-owned; the culture file has no lantern post), the hides hung across workshop fronts, gallery banners, prayer flags, roost pennants and plaques (kept as facade dressing)
 - [ ] The Beast Rider set's Girder items (kits/interiors/sets/beast-rider.js) describe the catalog's buildings, not Girder's shells (sizes, door widths, floor heights differ; Girder sizes every slot and house itself): 56-interiors.js derives each building's item from its real shell instead. The roost deck item's keeper's shelter did not exist in Girder: 55-arch now draws one on each deck's outer corner apron
@@ -147,8 +153,9 @@ here maps onto the catalog's correction. The catalog copy is the centred one.
       walker (`KHOST.take({walk: KWALK, walker: {step .55, drop 1.4, r .28, h 1.75}})`; F, W A S D, Shift) walks it. `window._walk` stays as a thin layer for
       `tools/harness.py walk` and scripts. Checked headless: the first flight of a tower climbs to its half landing, a core wall stops the walker, a bridge
       is crossed along its sag, the rope sides hold, the palisade stops the walker between the gates and a gate lets it out.
-- [ ] No jump and no gravity any more (Space did both): the host keeps to a deck's edge instead of letting a walker fall. The lift ride (the cage floor follows
-      the cage, a rider sends it) is written but I did not ride one.
+- [ ] Girder Hero (hero/88-hero.js, 89-talk.js) still calls the walker the 2026-10-19 port removed (`wkSupport`, `wkBlocked`, `wkPush`, `wkStops`, `WALKER`): `_hero.navAudit()` throws `wkSupport is not defined`, and its routing and body want porting onto `KWALK` (`floorBelow`, `blocked`, `push`). Use `_walk.navAudit()` (83-walk.js) for the graph meanwhile.
+- [ ] No jump and no gravity any more (Space did both): the host keeps to a deck's edge instead of letting a walker fall (a design choice of the host; jump is not planned).
+- [x] The lift ride (the cage floor follows the cage, a rider sends it) is written but I did not ride one. 2026-10-20: ridden headless: the walker set on lift 0's cage sent it after its wait, and the walker's feet followed the cage from 34.95 m to 43.7 m, within 0.15 m of the cage floor all the way; the top step-off and the stop at the head were not watched.
 
 
 ## Voth census trades (2026-10-19)
@@ -156,3 +163,5 @@ here maps onto the catalog's correction. The catalog copy is the centred one.
 The table is `src/65-gi-trades.js` (`GI_TRADES`; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 11 trades carried, 3 partly, 17 gaps, 13 na (no coast, no electricity, no embassies, no palace).
 - [ ] Gaps (a later session builds them; Girder's buildings are copied into `kits/beast-riders`, which already has most of these as `br_bldg_*`): bakery, butcher, brewhouse/mead hall (also innkeepers and servers), tannery, temple hall (priests, monks, undertakers' funerary court), barracks, school, toll house, house of healing, mine head, quarry, granary and mill, dairy shed, fungus house.
 - [ ] Partly carried: weavers and dyers (stall only; no weaving house or dye works), innkeepers and grooms (roost keepers; no inn), swineherds and duck keepers (millipede pen; no sties or coops).
+- [ ] (2026-10-20) `verify.py girder.html --assert` ends `FAILED: error panel not clean; budget furn.calls` on this Windows box, both also on a clean HEAD build (0002ec725), so not from the trades table or the nav fixes. (1) The error panel: `render: TypeError ... reading 'trim'` is three.js reading a null program log. A MeshStandardMaterial with the night glow (45-kit.js `applyNightGlow`; USE_MAP, USE_ENVMAP, DOUBLE_SIDED) fails to link in the headless SwiftShader run, the 163rd `linkProgram`, empty info log, context not lost; the same two shaders link when compiled alone in a blank page, `?interiors=0` is clean, Mav's Refuge is clean, and the page is clean on a real GPU (in-app browser, 90 s, `#errs` empty). It needs the interiors on, so it is the furnished interiors' materials (114 live programs when it fails, 88 in a clean run without them) meeting SwiftShader, not a shader error; check on the Linux CI image before spending time on it. (2) `furn.calls 78 / 54` (was 80 / 54 on 2026-10-15): the furniture's distinct materials, the open item above (BUDGET.furniture was measured at 39 calls). Re-baseline it or merge the painted-panel and family materials; the assert is not weakened. The new `nav-walkable`, `voth-trades` (GI_TRADES: 11 carried, 3 partly, 17 gaps, 13 na of 44) and every other invariant PASS.
+- [x] (2026-10-20) `verify.py --assert` died at its last check with `ModuleNotFoundError: check_trades`: `tools/check_trades.py`, `tools/_read_trades.js` and `tools/trades_census.json` were missing from this checkout; taken from commit 49bee4d3a (Voth census tables for 19 builds), unchanged. core/furnish's girder fingerprint moved (records c0a5e129, geometry eeeccbf; 1331 pieces, same triangles) with the layout and terrain work of the same day; every other furnished page reads `same`.

@@ -633,7 +633,7 @@ balconies, 4 391 washing lines, 693 arcade arches, 188 stair runs.
       approximate (decks lerp between two octagons at equal arc length, which
       skews slightly at the corners — invisible at every preset).
 
-### Bugs this type found in SHARED kit code — still unfixed
+### Bugs this type found in SHARED kit code (`stripRing` fixed; the entries still open below are not)
 - [x] ~~**`stripRing()` aims each strip radially**~~ — FIXED in `src/36-decor.js`. It was true that a ring of light strips
       renders as a starburst of spokes pointing at the viewer rather than a line
       following the ring. Plymouth worked around it with a local tangential
@@ -652,7 +652,7 @@ balconies, 4 391 washing lines, 693 arcade arches, 188 stair runs.
       every water stain hung off them instead of off the long face. Still
       radial, so still wrong on a rectangle; every existing caller passes
       nothing and is unchanged.
-- [ ] **`holeFn`'s `u` is multiplied by ~7 internally.** Fed a `u` normalised
+- [x] **`holeFn`'s `u` is multiplied by ~7 internally.** 2026-10-20: documented in API.md (the `holeFn` line: `u` is scaled by 4.5*scale inside, feed arc length / ~216); no behaviour change. Fed a `u` normalised
       over a 2.3 km perimeter it ate 330 m rectangles out of whole terraces.
       Callers must feed it arc length / ~216, which is documented nowhere.
 
@@ -852,9 +852,9 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
       fine enough to line up with it (80x56, was 64x40), and each plate is pale
       concrete with its own dark soffit 1.5 m under it. `Toppled A` now shows a
       stack of floor/ceiling/void in the open top of the stump.
-- [ ] This works here because a 420 m cone has 80 m of diameter to cut through.
+- [x] This works here because a 420 m cone has 80 m of diameter to cut through.
       It does not contradict the standing rule from Arcbeam — a thin-skinned
-      form still has nothing to section.
+      form still has nothing to section. - 2026-10-20: explanatory note, nothing open.
 - [x] ~~Only Skyscraper A was done.~~ Towers QA round 1: B, C and G punched too; D and H already were. The other seven towers all still have an
       unpunched `MAT.guts` inner lathe and dark floor plates, and will all read
       the same way. It is the same two-line change in each.
@@ -897,7 +897,7 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
       measured at **5.2 s on the 9 993-line launch build** against a ~7 minute
       verify round. Three agents relied on it from a scratchpad that would have
       been deleted with the session.
-- [ ] **`beam(name,a,b,w,dp)` — `w` is the beam's DEPTH, not its width.**
+- [x] **`beam(name,a,b,w,dp)` — `w` is the beam's DEPTH, not its width.** 2026-10-20: documented in API.md (the `beam` line, pointing at `rbeam`); parameters not renamed.
       Verified in source: it emits `kput(name, mid, q, [w, L, dp])` where `q` is
       `setFromUnitVectors(+Y, axis)`. For a HORIZONTAL beam that shortest-arc
       rotation carries local X onto the vertical, so `w` sets how deep the beam
@@ -915,7 +915,7 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
       invariants all passed. Now takes the largest script block. A false
       positive on the project's only real syntax check is worse than no check —
       it sends you hunting a bug that is not there.
-- [ ] **`build.py`'s reseed scan does not skip comments.** Writing a rejected
+- [x] **`build.py`'s reseed scan does not skip comments.** 2026-10-20: the claim scan strips whole-line `//` comments and `/* */` blocks (`RE_JS_COMMENT`) first; the seed check passes on the current kit. Writing a rejected
       `reseed(NNNN+d)` call literally in a header comment creates a phantom
       seed collision that fails the build for every target. Paraphrase seeds in
       prose, or teach the scanner to strip comments.

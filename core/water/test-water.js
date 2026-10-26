@@ -7,7 +7,7 @@
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const src=['core/terrain/30-core-field.js','core/mask/25-core-mask.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js',
- 'core/water/20-core-water.js','core/water/21-core-water-shore.js','core/water/22-core-water-flow.js','core/water/50-core-water-draw.js','core/water/51-core-water-kinds.js']
+ 'core/water/20-core-water.js','core/water/21-core-water-shore.js','core/water/22-core-water-flow.js','core/water/50-core-water-draw.js','core/water/51-core-water-kinds.js','core/water/ext/53-core-water-terraces.js','core/water/ext/53b-core-water-terraces-draw.js']
  .filter(f=>fs.existsSync(path.join(ROOT,f))).map(f=>fs.readFileSync(path.join(ROOT,f),'utf8')).join('\n');
 global.window=global;eval(src+';global.ATMOS=ATMOS;global.WATER=WATER;');
 const A=ATMOS,W=WATER,TAU=Math.PI*2;
@@ -381,5 +381,47 @@ const GP=(text,t,extra)=>glslProgram(A.waveGLSL()+'\n'+text,Object.assign({atmWa
  ok('W.wet: the weather\'s wetness ('+w+'), on what faces up ('+W.wetGroundRain(1,1)+'; a wall '+W.wetGroundRain(1,0)+')',w===.8&&w0===0&&W.wetGroundRain(1,1)===1&&W.wetGroundRain(1,0)===0,w!==.8);}
 {const X=W.export(),sh=X.surfaces.find(s=>s.name==='tarn'),rv=X.surfaces.find(s=>s.name==='test river');
  ok('export: the shore grid (band, clip, the flood\'s cells) and the flow\'s ribbon travel as data',sh&&sh.shore&&sh.shore.band===40&&sh.shore.wetCells===LAKE.bed.wetCells&&rv&&rv.pts.length===31&&JSON.parse(JSON.stringify(X)).surfaces.length===W.surfaces.length,!sh);}
+
+// ================================================================ the gaps closed 2026-10-21 (their options' GLSL against their twins; test-gaps.js has the rest)
+{// (1) a flow's own rapids band: the fragment's text, written from S.rapids, equals the twins taking it; the preset's differs; the default text is unchanged
+ const RAP=[.2,1],FR=W.flow({name:'torrent',pts:[[0,0,50],[100,0,40]],width:6,speed:3,rapids:RAP});let e1=0,eF=0,dPre=0,dFoamPre=0;
+ for(const t of[2.2,333.3]){const P=GP(W.flowGLSL(FR.rapids),t);
+  for(const p of[[10,3],[200,40]])for(const v of[[1.6,0],[.3,-1.1]])for(const sl of[0,.1,.3,.8]){const g=P.run('wtrFlowN',p,v,sl),c=W.flowNormal(p[0],p[1],v[0],v[1],sl,t,FR.rapids),c0=W.flowNormal(p[0],p[1],v[0],v[1],sl,t);
+   e1=Math.max(e1,...g.map((q,k)=>Math.abs(q-c[k])));if(sl===.3)dPre=Math.max(dPre,...g.map((q,k)=>Math.abs(q-c0[k])));
+   for(const bk of[-1,.4,5]){eF=Math.max(eF,Math.abs(P.run('wtrFlowFoam',sl,bk)-W.flowFoam(sl,bk,FR.rapids)));if(sl===.1&&bk===5)dFoamPre=Math.max(dFoamPre,Math.abs(P.run('wtrFlowFoam',sl,bk)-W.flowFoam(sl,bk)));}}}
+ ok('gap 1, rapids per flow: the fragment with the flow\'s own band equals the twins taking it ('+e1.toExponential(1)+', '+eF.toExponential(1)+'); the global preset would be off by '+dPre.toFixed(3)+' in the normal and '+dFoamPre.toFixed(3)+' in the foam at the same slope',
+  e1<1e-9&&eF<1e-12&&dPre>1e-3&&dFoamPre>.1,false);
+ ok('...and with no band the GLSL text is the one it always was (the preset\'s)',W.flowGLSL()===W.flowGLSL(null)&&W.flowGLSL()===W.flowGLSL(W.PRESETS.flow.rapids)&&W.flowGLSL()!==W.flowGLSL(RAP),W.flowGLSL()===W.flowGLSL(RAP));
+ W.surfaces.pop();}
+{// (5) the tint field: bytes, twin, and the GLSL's lookup
+ const TF={box:[-100,-80,100,80],cell:10,at:(x,z)=>x>0?{c:0x336699,a:Math.min(1,x/80)}:(z>50?0xaa2222:null)},ST=W.open({name:'tinted',swell:[],field:0,level:0,tint:TF}),M=ST.tint;
+ const Pt=prog(ST,3,{texture2D:texOf(M),wtrTint:'tint'});let e=0,eOut=0;
+ for(const[x,z]of[[-90,-70],[5,3],[33,-41],[79.9,10],[-50,60],[99,79],[-3,52]])e=Math.max(e,...Pt.run('wtrTintAt',[x,z]).map((q,k)=>Math.abs(q-ST.tintAt(x,z)[k])));
+ for(const[x,z]of[[-101,0],[0,81],[300,-300]])eOut=Math.max(eOut,Math.abs(Pt.run('wtrTintAt',[x,z])[3]),Math.abs(ST.tintAt(x,z)[3]));
+ const mid=ST.tintAt(40,0),c40=Math.min(1,.5);   // x = 40: half way to full
+ ok('gap 5, tint: the fragment\'s lookup equals the twin ('+e.toExponential(1)+') over a baked '+M.nx+' x '+M.nz+' field, and it is zero outside the box ('+eOut+')',e<1e-9&&eOut===0&&M.nx===20&&M.nz===16,false);
+ ok('...premultiplied: a half-strength blue cell is half its colour with alpha .5 ('+mid.map(v=>v.toFixed(2))+')',Math.abs(mid[3]-c40)<.07&&Math.abs(mid[2]-.6*mid[3])<.02&&Math.abs(mid[0]-.2*mid[3])<.02,Math.abs(mid[3]-.9)<.02);
+ const Pbad=prog(ST,3,{texture2D:texOf(Object.assign({},M,{data:(()=>{const d=new Uint8Array(M.data.length);d.set(M.data.subarray(12));return d;})()})),wtrTint:'tint'});
+ const wrong=Math.max(...Pbad.run('wtrTintAt',[-90,-70]).map((q,k)=>Math.abs(q-ST.tintAt(-90,-70)[k])));
+ ok('negative: a texture of the field shifted three cells is not the twin ('+(Math.max(wrong,...Pbad.run('wtrTintAt',[33,-41]).map((q,k)=>Math.abs(q-ST.tintAt(33,-41)[k])))).toFixed(3)+')',
+  Math.max(wrong,...Pbad.run('wtrTintAt',[33,-41]).map((q,k)=>Math.abs(q-ST.tintAt(33,-41)[k])))>.02,false);
+ ok('...and a surface without a tint has no such function in its GLSL (its text is the old one)',!/wtrTint/.test(W.glsl(SEA))&&/wtrTintAt/.test(W.glsl(ST)),/wtrTint/.test(W.glsl(SEA)));
+ W.surfaces.pop();}
+{// (5) a still pool's centre-to-rim gradient
+ const GS=W.still({name:'gradient pool',level:2,poly:[[0,0],[40,0],[40,20],[0,20]],gradient:{centre:0xaa8844,rim:0x223322,power:1.6}});let e=0;
+ for(const t of[1,222.2]){const P=GP(W.stillGLSL(GS),t);for(const[x,z]of[[20,10],[0,0],[33,4],[10,19],[20.5,10.2],[-30,5]])e=Math.max(e,Math.abs(P.run('wtrStillT',[x,z])-GS.gradientT(x,z)));}
+ const g0=GS.gradientT(20,10),g1=GS.gradientT(0,0),g2=GS.gradientT(30,10);
+ ok('gap 5, still gradient: the fragment\'s t equals the twin ('+e.toExponential(1)+'): 0 at the middle ('+g0+'), 1 at a corner ('+g1.toFixed(3)+'), '+g2.toFixed(3)+' half way out (power 1.6)',e<1e-12&&g0===0&&Math.abs(g1-1)<1e-12&&Math.abs(g2-Math.pow(10/Math.hypot(20,10),1.6))<1e-12,g2===.5);
+ const NG=W.still({name:'plain pool',level:2,bounds:[0,0,5,5]});
+ ok('...a pool without one has no wtrStillT in its GLSL, gradientT is 0 and the export lists no gradient',!/wtrStillT/.test(W.stillGLSL(NG))&&NG.gradientT(1,1)===0&&!('gradient' in W.export().surfaces.find(s=>s.name==='plain pool'))&&'gradient' in W.export().surfaces.find(s=>s.name==='gradient pool'),/wtrStillT/.test(W.stillGLSL(NG)));
+ W.surfaces.pop();W.surfaces.pop();}
+{// (7) the merged falls' GLSL: the per-fall numbers as arguments equal the twins; wrong ones do not
+ const F=W.fall({name:'merged g',lip:[[100,0,60],[100,20,60]],dir:[1,0],speed:2,drop:45}),Q=W.PRESETS.fall;let eS=0,eF=0,eP=0,neg=0;
+ for(const t of[.7,250.25,1e5+.3]){const P=GP(W.fallGLSLMerged(),t);for(const u of[0,.31,.77])for(const fl of[0,.2,.93]){eS=Math.max(eS,Math.abs(P.run('wtrStreakA',u,fl,F.lipW*Q.streak.across,F.tFall)-W.fallStreak(u,fl,t,F)));
+   eF=Math.max(eF,Math.abs(P.run('wtrFallFoam',fl,.6)-W.fallFoam(fl,.6)));neg=Math.max(neg,Math.abs(P.run('wtrStreakA',u,fl,F.lipW*Q.streak.across,F.tFall*1.5)-W.fallStreak(u,fl,t,F)));}
+  const PL=W.plunge(F);for(const p of[[103,0],[110,4],[130,-20]]){const g=P.run('wtrPlungeA',p,[PL.x,PL.z,PL.r]),c=W.plungeAt(F,p[0],p[1],t);eP=Math.max(eP,Math.abs(g[0]-c[0]),Math.abs(g[1]-c[1]));}}
+ ok('gap 7, merged falls: the streak (lip scale and fall time as arguments), the foam and the plunge churn (centre and radius as an argument) equal the twins ('+eS.toExponential(1)+', '+eF.toExponential(1)+', '+eP.toExponential(1)+'); negative: a fall time half again as long is off by '+neg.toFixed(3),
+  eS<1e-8&&eF<1e-12&&eP<1e-9&&neg>.01,false);
+ W.surfaces.pop();}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

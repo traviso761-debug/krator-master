@@ -21,7 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 15 | the land (47); the climate fields (cached below; these are the  (137); the host binding (169) |
-| `50-biome-ehigh-species.js` | 36 **big** | the giant (29); palettes (38); the tree species (60); harvest (biomes/FRUIT.md) (84); the small plants (the floor), tagged (99); leaf and surface textures (115); bark textures (165); geometries local to this biome (196); materials (297); the library (core/materials/PLAN.md, Eastern hig (328) |
+| `50-biome-ehigh-species.js` | 37 **big** | the giant (29); palettes (38); the tree species (60); harvest (biomes/FRUIT.md) (84); the small plants (the floor), tagged (99); leaf and surface textures (116); bark textures (166); geometries local to this biome (197); materials (298); the library (core/materials/PLAN.md, Eastern hig (329) |
 | `55-biome-ehigh-trees.js` | 27 | zones from the fields (12); colour (the maths is the core's, BIO.col) (43); the lean toward the giant (55); polyline helpers (Girder's) (62); keep-clear between plants (71); helpers (78); the builders (88); the Mother Cushion (196); impostors (the far plants) (221); the pass (250) |
 | `60-biome-ehigh-floor.js` | 13 | small plants (24); the zone planters (50); the pass (101) |
 | `70-biome-ehigh.js` | <1 |  |
@@ -29,5 +29,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `84-host-ground.js` | 18 | the ground (20); the water (121) |
 | `86-host-geysers.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
-| `99-host-take.js` | 14 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (120) |
+| `89a-host-atmos.js` | <1 |  |
+| `99-host-take.js` | 16 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (57); the page, handed to the host (127) |
 | `99-tail.html` | <1 |  |

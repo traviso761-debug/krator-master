@@ -4,6 +4,15 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
+**Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+## The Krator System in the top list (2026-10-26)
+
+The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
+orrery, is in every part's top list beside the scale model and the tongues (a reference page, not a world: no card). Its own
+artifact, https://claude.ai/artifact/5zNpcvRQR1h8Ax7yaTeB49 (private until shared from its Share menu); its source is
+`gallery/krator-system/` (`python3 build.py` writes `dist/krator-system.html`). `index.template.html` has the button; every
+part's live index was edited in place the same day, no page changed (the biome pages wait for the biome rebuild's final pass).
+
 ## Cards for builds in their own artifacts (2026-10-20)
 
 The owner (2026-10-20): a build published as its own artifact gets a card in the parts like any other, under its letter in
@@ -15,6 +24,28 @@ one opening the Throne Stations artifact. **Korona**'s six stations are a sectio
 both new sections go to Krator Biomes and Objects with `--alone`. The top list keeps the scale model, the tongues, the
 two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
 I–S 26, S–Z 15, Biomes and Objects 24.
+
+## Five artifacts: S-Z split in two (2026-10-23)
+
+Krator Worlds S-Z could not be shared ("couldn't be reviewed for public sharing", at about 235 MiB), so it is two artifacts now:
+
+- **Krator Worlds P-V**: https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM (Pylon, Scyvoi, Shade, Talia, Verge, Voth; the old S-Z URL)
+- **Krator Worlds V-Z**: https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF (Voth buildings, Xanadu buildings, Ys, Yuni, Yuni buildings, Zeijani)
+
+Both are private until shared from their Share menus. The four indexes link to each other under these titles, and every live index
+was re-sorted alphabetically the same day (Throne stations by `order`). `split_site.py --urls` takes the parts in order, so the
+next full split needs the new URL list; the A-H, I-S and Biomes URLs are unchanged.
+
+Voth's city page (`settlements/voth/dist/voth-city.html`, 11.9 MB) is what made Krator Worlds P-V fail the sharing review (2026-10-23;
+P-V passed once it was out, and the other parts passed without it). It is its own artifact, https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy
+(private until shared; it may fail the same review), and P-V's Voth card opens it (`href` in the live index). `build_gallery.py`
+is not changed yet: a rebuild would put the card back on `worlds/voth.html`, so add Voth to `LINKED` and `ELSEWHERE` first (the
+Voth catalog sheet, `voth-catalog`, shares the build folder and stays in the part).
+
+## Beast Riders kit (2026-10-23)
+
+The kit (`kits/beast-riders`, ENTRIES line under Building kits, tagged new) is in Krator Worlds A–H: the live index lists it and
+`worlds/beast-riders.html` is the current 13.3 MB page (`main` at 7084bbea7's rebuild); no new publish was needed.
 
 ## The north basin's three biomes (2026-10-23)
 
@@ -61,6 +92,11 @@ Publishing a re-split, learned 2026-10-16:
 `index.template.html` links the Tongues of Krator artifact (https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt, the
 page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
 75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
+
+**New URL (2026-10-23).** The tongues page (with Eternian, its dialects and Yusar, and Matok) is now
+https://claude.ai/artifact/GRxH5C6uTvaJmXeFg5wiya; the old artifact (FFEn2MEBPxMgqPJkcV6sNt) is left as it was. The
+template points at the new one, and every part's live index was edited in place to it (A-H v95, I-S v28, P-V v21, V-Z v3,
+Biomes and Objects v28). Republish the tongues page to the new URL from now on.
 
 ## Character lab links (2026-10-16)
 
@@ -451,3 +487,9 @@ pieces and the ports of Girder's and Mav's Refuge's buildings; verify.py --asser
 its card in the live index (version 91's index with one entry added, as in `build_gallery.py`'s new `ENTRIES` line). Every
 other file is as in version 91; the part holds about 244 MiB.
 
+
+Krator Biomes and Objects version 29 and Krator Worlds I–S version 29 (2026-10-24), from `main` at 4342d3a4d: the Mechs kit
+moves to Biomes and Objects as **Mechs and Robots** (`worlds/mechs.html`, 1.7 MB: nineteen mechs, the seventeen Iziz
+war-walkers and the two Stalkers of the Catch) under Objects; `worlds/iziz-mechs.html` and its card are removed from I–S.
+Both live indexes were edited in place (one card each, as in `build_gallery.py`, where the entry is now `('objects',
+'mechs', ...)`); every other file is as it was.

@@ -81,6 +81,16 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  W.maskSample=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/((M.cellZ==null?M.cell:M.cellZ)*M.nz);if(u<0||v<0||u>1||v>1)return 0;
   const fx=u*M.nx-.5,fz=v*M.nz-.5,i0=Math.floor(fx),j0=Math.floor(fz),ax=fx-i0,az=fz-j0,ch=(i,j)=>M.data[cl(j,0,M.nz-1)*M.nx+cl(i,0,M.nx-1)]/255;
   return(ch(i0,j0)*(1-ax)+ch(i0+1,j0)*ax)*(1-az)+(ch(i0,j0+1)*(1-ax)+ch(i0+1,j0+1)*ax)*az;};
+ W.bakeTint=T=>{if(T.data)return{x0:T.x0,z0:T.z0,cell:T.cell,nx:T.nx,nz:T.nz,data:T.data};
+  const b=T.box,c=T.cell,nx=Math.max(2,Math.ceil((b[2]-b[0])/c)),nz=Math.max(2,Math.ceil((b[3]-b[1])/c)),data=new Uint8Array(nx*nz*4);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const r=T.at(b[0]+(i+.5)*c,b[1]+(j+.5)*c),k=(j*nx+i)*4;if(r==null)continue;
+   const col=typeof r==='number'?r:r.c,a=typeof r==='number'?1:(r.a==null?1:cl(r.a,0,1));
+   data[k]=Math.round(((col>>16)&255)*a);data[k+1]=Math.round(((col>>8)&255)*a);data[k+2]=Math.round((col&255)*a);data[k+3]=Math.round(255*a);}
+  return{x0:b[0],z0:b[1],cell:c,nx,nz,data};};
+ // the tint at (x,z): its four bytes bilinear over the cell centres (clamped), as the GPU filters; zero outside the box (the GLSL's wtrTint)
+ W.tintSample=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/(M.cell*M.nz);if(u<0||v<0||u>1||v>1)return[0,0,0,0];
+  const fx=u*M.nx-.5,fz=v*M.nz-.5,i0=Math.floor(fx),j0=Math.floor(fz),ax=fx-i0,az=fz-j0,ch=(i,j,k)=>M.data[(cl(j,0,M.nz-1)*M.nx+cl(i,0,M.nx-1))*4+k]/255;
+  return[0,1,2,3].map(k=>(ch(i0,j0,k)*(1-ax)+ch(i0+1,j0,k)*ax)*(1-az)+(ch(i0,j0+1,k)*(1-ax)+ch(i0+1,j0+1,k)*ax)*az);};
  W.bedDecode=(r,g)=>{const P=W.PRESETS.bed,D=P.deep,F=P.fine;return(g>.004&&g<.996)?F[0]+g*(F[1]-F[0]):D[0]+r*r*(D[1]-D[0]);};
  // a shore grid's (21-core-water-shore.js): the linear mid channel (A), the deep one (R) past its top
  W.bedDecodeShore=(r,g,a)=>{const M=W.PRESETS.shore.mid,D=W.PRESETS.bed.deep;return a<.996?M[0]+a*(M[1]-M[0]):D[0]+r*r*(D[1]-D[0]);};
@@ -91,6 +101,8 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
 
  // ---- the surfaces
  W.surfaces=[];
+ // groups: linked sets of surfaces a helper makes (core/water/ext's terraces): each {kind, name, export()}; listed in the export only when there are any
+ W.groups=[];
  const add=S=>{S.id=W.surfaces.length;S.name=S.name||S.kind+' '+S.id;W.surfaces.push(S);return S;};
  const inBox=(b,x,z)=>!b||(x>=b[0]&&z>=b[1]&&x<=b[2]&&z<=b[3]);
  // OPEN: {name, level (number; omitted = seaLevel(t)), swell (name or list), field, chop, tilt, bounds [x0,z0,x1,z1] (omitted =
@@ -117,6 +129,11 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    S.maskAt=(x,z)=>W.maskSample(S.mask,x,z)>.5;
    S.maskIn=(x0,z0,x1,z1)=>{const G=S.mask,c=G.cell,cz=G.cellZ,i0=cl(Math.floor((x0-G.x0)/c),0,G.nx),j0=cl(Math.floor((z0-G.z0)/cz),0,G.nz),i1=cl(Math.ceil((x1-G.x0)/c),0,G.nx),j1=cl(Math.ceil((z1-G.z0)/cz),0,G.nz);
     if(i1<=i0||j1<=j0)return false;const T=G.sat,w=G.nx+1;return T[j1*w+i1]-T[j0*w+i1]-T[j1*w+i0]+T[j0*w+i0]>0;};}
+  // a TINT field: a colour laid over the depth ramp where a body differs (a bayou in a sea, a river's plume, shoals): a raster over a box,
+  // {box [x0,z0,x1,z1], cell, at(x,z) -> null | colour | {c, a}} baked at cell centres, or {x0, z0, cell, nx, nz, data} of premultiplied RGBA bytes;
+  // S.tintAt(x,z) -> [r, g, b, a] (0..1, premultiplied: the surface's colour becomes colour*(1-a) + rgb), 0 outside the box
+  if(o.tint){S.tint=W.bakeTint(o.tint);}
+  S.tintAt=(x,z)=>S.tint?W.tintSample(S.tint,x,z):[0,0,0,0];
   S.shore=!!(S.bed&&S.bed.shore);
   // depth below the surface at (x,z) and t; the damping it gives (1 where there is no bed); on a shore grid the waves
   // also shoal (Green's law) before they calm
@@ -152,11 +169,22 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   S.heightAt=(x,z,t)=>S.of.heightAt(x,z,t);S.contains=(x,z)=>S.of.contains(x,z);return add(S);};
  // FLOW: a river line [[x,z,y],...] or KRELIEF.river's [{x,z,y,slope}], width m (number or per point), speed m/s at the
  // line (number or per point). flowAt is the current along the nearest segment, heightAt the line's surface there.
- W.flow=o=>{const pts=(o.river||o.pts).map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]}:{x:p.x,z:p.z,y:p.y});
-  const per=(v,i,d)=>v==null?d:Array.isArray(v)?v[i]:v;
+ // width and speed (m, m/s) are a number, an array with a value per point, a PROFILE [[s, v], ...] over the metres along the line
+ // (linear between its entries, held beyond them), or a function (s, i) => v; densify: m puts a point at least that often along the
+ // line first (a per-point array is then spread over its original points), so a profile that breathes faster than the line's own
+ // vertices is drawn as it is; rapids [lo, hi] is this flow's own white-water band on the line's slope (default PRESETS.flow.rapids).
+ W.flow=o=>{let pts=(o.river||o.pts).map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]}:{x:p.x,z:p.z,y:p.y});
+  let ix=pts.map((p,i)=>i),uu=pts.map(()=>0);
+  if(o.densify>0){const d=[pts[0]],di=[0],du=[0];for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1],k=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/o.densify));
+    for(let j=1;j<=k;j++){const u=j/k;if(j===k){d.push(b);di.push(i+1);du.push(0);}else{d.push({x:a.x+(b.x-a.x)*u,z:a.z+(b.z-a.z)*u,y:a.y+(b.y-a.y)*u});di.push(i);du.push(u);}}}
+   pts=d;ix=di;uu=du;}
+  const arc=[0];for(let i=1;i<pts.length;i++)arc.push(arc[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].z-pts[i-1].z));
+  const per=(v,i,d)=>{if(v==null)return d;if(typeof v==='function')return v(arc[i],i);if(!Array.isArray(v))return v;
+   if(Array.isArray(v[0])){const s=arc[i];if(s<=v[0][0])return v[0][1];for(let k=0;k+1<v.length;k++)if(s<=v[k+1][0])return v[k][1]+(v[k+1][1]-v[k][1])*(s-v[k][0])/Math.max(1e-9,v[k+1][0]-v[k][0]);return v[v.length-1][1];}
+   const j=Math.min(ix[i],v.length-1),j1=Math.min(j+1,v.length-1);return v[j]+(v[j1]-v[j])*uu[i];};
   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[Math.min(i+1,pts.length-1)],c=pts[Math.max(i-1,0)],L=Math.hypot(b.x-a.x,b.z-a.z);
    a.slope=L>0?(a.y-b.y)/L:(i?pts[i-1].slope:0);a.w=per(o.width,i,6);a.v=per(o.speed,i,1);void c;}
-  const S={kind:'flow',name:o.name,pts};
+  const S={kind:'flow',name:o.name,pts,rapids:o.rapids?[o.rapids[0],o.rapids[1]]:null};
   S.nearest=(x,z)=>{let best=null;for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1],ex=b.x-a.x,ez=b.z-a.z,L2=ex*ex+ez*ez||1,u=cl(((x-a.x)*ex+(z-a.z)*ez)/L2,0,1),
      px=a.x+ex*u,pz=a.z+ez*u,d=Math.hypot(x-px,z-pz);if(!best||d<best.d)best={i,u,d,ex,ez,L:Math.sqrt(L2),a,b};}return best;};
   S.contains=(x,z)=>{const n=S.nearest(x,z);return!!n&&n.d<=(n.a.w+(n.b.w-n.a.w)*n.u)/2;};
@@ -169,6 +197,10 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  // plunge [x,y,z] the pool's centre (default: the curtain's foot); spread m wider a side at the foot
  W.fall=o=>{const S={kind:'fall',name:o.name,lip:o.lip,dir:o.dir,speed:o.speed||1.5,drop:o.drop,plunge:o.plunge||null};
   S.tFall=Math.sqrt(2*S.drop/G);
+  // the chute's foot [x, z, y] (WATER.fallsOf gives it) and the run from the lip's middle to it along `dir` (null without one); fit: true
+  // sets the speed so the arc lands on the foot (run / tFall), the fall of a chute the flow line follows
+  S.foot=o.foot||null;S.run=null;
+  if(S.foot){const la0=S.lip[0],lb0=S.lip[S.lip.length-1];S.run=(S.foot[0]-(la0[0]+lb0[0])/2)*S.dir[0]+(S.foot[1]-(la0[1]+lb0[1])/2)*S.dir[1];if(o.fit&&S.run>0)S.speed=S.run/S.tFall;}
   // the lip's width, and how much wider the curtain is at its foot (m a side: o.spread, else PRESETS.fall.spread per 100 m of
   // drop when 22-core-water-flow.js is loaded)
   const la=S.lip[0],lb=S.lip[S.lip.length-1];S.lipW=Math.hypot(lb[0]-la[0],lb[1]-la[1]);
@@ -182,6 +214,13 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  // STILL: pools, fountains, troughs, cisterns, moats: a level over a box (or a polygon [[x,z],...])
  W.still=o=>{const S={kind:'still',name:o.name,level:o.level,bounds:o.bounds||null,poly:o.poly||null,fountain:o.fountain||null};
   S.contains=(x,z)=>{if(S.poly){let c=false;const P=S.poly;for(let i=0,j=P.length-1;i<P.length;j=i++)if((P[i][1]>z)!==(P[j][1]>z)&&x<(P[j][0]-P[i][0])*(z-P[i][1])/(P[j][1]-P[i][1])+P[i][0])c=!c;return c;}return inBox(S.bounds,x,z);};
+  // gradient: {centre, rim (hex colours), power (1), at [x, z] (the vertex mean), radius (m: the farthest vertex)}: the colour runs from the middle
+  // out as the drawing mixes it, t = (distance / radius)^power clamped to 0..1 (S.gradientT, the shader's wtrStillT); null without one
+  S.gradient=null;
+  if(o.gradient){const g=o.gradient,pp=S.poly||(S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:[[0,0]]);
+   const at=g.at||[pp.reduce((a,p)=>a+p[0],0)/pp.length,pp.reduce((a,p)=>a+p[1],0)/pp.length];
+   S.gradient={centre:g.centre,rim:g.rim,power:g.power==null?1:g.power,at,radius:g.radius==null?Math.max(1e-6,...pp.map(p=>Math.hypot(p[0]-at[0],p[1]-at[1]))):g.radius};}
+  S.gradientT=(x,z)=>{const g=S.gradient;return g?Math.pow(cl(Math.hypot(x-g.at[0],z-g.at[1])/g.radius,0,1),g.power):0;};
   S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];return add(S);};
  // WET (Phase 4): how wet the ground is, 0..1: the weather's W.wet (core/atmos 4-weather) when a build has it
  W.wet=()=>{const A=AT();return A&&A.W?A.W.wet||0:0;};
@@ -189,8 +228,9 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  // ---- the queries: the surface over (x,z) (still, flow, a bounded open water, then the unbounded sea), its height, its flow
  const RANK={still:0,flow:1,open:2,shore:3};
  W.at=(x,z)=>{let best=null,r=9;for(const S of W.surfaces){const k=(RANK[S.kind]==null?9:RANK[S.kind])+(S.kind==='open'&&!S.bounds?.5:0);if(k<r&&S.contains(x,z)){best=S;r=k;}}return best;};
- W.heightAt=(x,z,t)=>{const S=W.at(x,z);return S?S.heightAt(x,z,t):null;};
- W.flowAt=(x,z)=>{for(const S of W.surfaces)if(S.kind==='flow'&&S.contains(x,z))return S.flowAt(x,z);return[0,0,0,0];};
+ // (a group's own water, where no surface holds the point: a terraced river's riser face, which belongs to no pool)
+ W.heightAt=(x,z,t)=>{const S=W.at(x,z);if(S)return S.heightAt(x,z,t);for(const g of W.groups)if(g.heightAt){const h=g.heightAt(x,z,t);if(h!=null)return h;}return null;};
+ W.flowAt=(x,z)=>{for(const S of W.surfaces)if(S.kind==='flow'&&S.contains(x,z))return S.flowAt(x,z);for(const g of W.groups)if(g.flowAt&&g.contains&&g.contains(x,z))return g.flowAt(x,z);return[0,0,0,0];};
 
  // ---- floating: a hull of length L and beam B at (x,z), heading yaw, on the water at t (heights from hFn, default
  // WATER.heightAt). Heave is the mean of five samples (amidships twice, bow, stern, both beams), pitch and roll the slopes
@@ -204,14 +244,15 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
  W.ride=(G,D,x,z,yaw,t,heel,hFn)=>{const r=W.rideAt(D.L,D.B,x,z,yaw,t,heel,hFn);G.position.set(r.x,r.y,r.z);G.rotation.set(r.rx,r.ry,r.rz,'YXZ');return r;};
 
  // ---- export: every surface as plain data (core/export; Godot rebuilds the twins from it)
- W.export=()=>({presets:JSON.parse(JSON.stringify(W.PRESETS)),period:W.period(),surfaces:W.surfaces.map(S=>{const o={kind:S.kind,name:S.name};
+ W.export=()=>Object.assign({presets:JSON.parse(JSON.stringify(W.PRESETS)),period:W.period(),surfaces:W.surfaces.map(S=>{const o={kind:S.kind,name:S.name};
   if(S.kind==='open')Object.assign(o,{level:S.level,swell:S.swellSpec,waves:S.waves.map(w=>({A:w.A,lambda:w.lam,dir:[w.dx,w.dz],H:w.H,phase:w.ph,cycles:w.n})),field:S.field,chop:S.chop,tilt:S.tilt,bounds:S.bounds,
    bed:S.bed?{x0:S.bed.x0,z0:S.bed.z0,cell:S.bed.cell,nx:S.bed.nx,nz:S.bed.nz,level:S.bed.level}:null},
    // a shore grid (Phase 2): the bed's B channel is the signed shore distance over [-band, band]; clip in cells
    S.shore?{shore:{band:S.bed.band,clip:S.bed.clip,seeded:S.bed.seeded,wetCells:S.bed.wetCells,window:S.shoreWin?S.shoreWin.n*S.shoreWin.cell:null}}:{},
-   S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,cellZ:S.mask.cellZ,nx:S.mask.nx,nz:S.mask.nz}}:{});
-  else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{});
-  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{});
-  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain});
-  else if(S.kind==='shore')Object.assign(o,{of:S.of.id,band:S.band});return o;})});
+   S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,cellZ:S.mask.cellZ,nx:S.mask.nx,nz:S.mask.nz}}:{},
+   S.tint?{tint:{x0:S.tint.x0,z0:S.tint.z0,cell:S.tint.cell,nx:S.tint.nx,nz:S.tint.nz}}:{},S.drawOpt?{draw:S.drawOpt}:{});
+  else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{},S.rapids?{rapids:S.rapids}:{});
+  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{});
+  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{});
+  else if(S.kind==='shore')Object.assign(o,{of:S.of.id,band:S.band});return o;})},W.groups.length?{groups:W.groups.map(g=>g.export())}:{});
  return W;})();

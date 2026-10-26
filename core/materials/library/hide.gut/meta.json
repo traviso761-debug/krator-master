@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.388,
+    1.072
+   ],
+   "seam_before": [
+    0.597,
+    2.108
+   ],
+   "source_size": [
+    1247,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.02,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "seam_axes": "y",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "hide.gut",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "hide.gut.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 8), cropped to (4, 0, 1251, 1254) and rolled 78 px so the seam falls mid-strip",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id hide.gut).",
+  "reuse": "sewn gut-membrane panes (8 strips per tile; drawn translucent): windows, lantern shades, drum heads",
+  "sha1": "c270f332ee6900e53a8fcf706c377315bb2367ce"
+ }
+}

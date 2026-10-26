@@ -41,9 +41,9 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # kit must fill, checked under --assert over EXPORT_BOX. Sampled terrain (no krator-field); the box is the densest 300 m cell of the tile that holds a bucket (2026-10-18 probe).
 # A section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one run
 # (add sim to see a stub fail).
-# Left out of the profile: atmos and water (see KNOWN_ISSUES.md).
-EXPORT_BOX = [2100, -300, 2400, 0]
-EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+# Water joined the profile 2026-10-20 (the salt lake, the marsh pools and the rivers, core/water; see KNOWN_ISSUES.md).
+EXPORT_BOX = [1180, -100, 1480, 200]   # 2026-10-20: moved to the marsh so the box holds core/water's surfaces (the marsh pools, the east river); was [2100, -300, 2400, 0]
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.

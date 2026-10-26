@@ -27,7 +27,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `55-biome-geyser-trees.js` | 18 | zones (11); colour (29); keep-clear between trees (41); the builders: (T, st, lv) with lv 2 near, 1 mid (54); impostors (the far canopy) (132); the pass (147); the passes (data: species, cell, acceptance from (170); one tree alone (biomes/WORLD.md: trees as varian (180) |
 | `57-biome-geyser-sinter.js` | 3 |  |
 | `60-biome-geyser-floor.js` | 6 | the pass (25) |
-| `65-biome-geyser-show.js` | 17 |  |
+| `65-biome-geyser-show.js` | 12 |  |
 | `70-biome-geyser.js` | 2 |  |
 | `82-host-sky.js` | 14 | day and night (209) |
 | `84-host-ground.js` | 14 | the paint (per vertex) (18); the layers (the library, or procedural without i (40); the meshes (107) |

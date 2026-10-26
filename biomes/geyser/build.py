@@ -88,14 +88,17 @@ for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the sea is a WATER.open surface (89w-host-sea.js)
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 CORE_A=os.path.normpath(os.path.join(HERE,'..','..','core','atmos'))
 CORE_WATER=['20-core-water.js','50-core-water-draw.js']
+CORE_WATER_GEYSER=['52-core-water-geyser.js','52b-core-water-geyser-draw.js']   # core/water/geyser/: opt-in, NOT pooled by builds that list core/water (README)
 CORE_W=os.path.normpath(os.path.join(HERE,'..','..','core','water'))
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE_A,f)
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.join(CORE_W,f)
+for f in CORE_WATER_GEYSER:
+    PATH[f]=os.path.join(CORE_W,'geyser',f)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))

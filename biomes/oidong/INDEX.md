@@ -34,5 +34,6 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `82-host-sky.js` | 12 |  |
 | `84-host-ground.js` | 17 | the ground (13); the water (the pools) (103); the cataract and the mist (125) |
 | `88-host-build.js` | 1 |  |
+| `89a-host-atmos.js` | <1 |  |
 | `99-host-take.js` | 14 | the inspector's words (42); the probe's budgets and the kit's own checks (ve (56); the page, handed to the host (129) |
 | `99-tail.html` | <1 |  |

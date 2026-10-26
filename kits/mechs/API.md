@@ -13,6 +13,7 @@ Origin at the footprint centre on the ground. **+z is forward**, y up, x across:
 
 ```js
 KratorMechs.list()            // -> [{ key, name, culture, role, origin, lore, tags, variants, variantNames, w, d, h, data }]
+KratorMechs.tagsOf(key, v)    // the variant's tags (list() carries variant 0's, plus variantTags[v] for each)
 KratorMechs.dataOf(key, v)    // data (with speed, gait, attack { kind, dur })
 KratorMechs.build(key, { variant, seed, linear }) -> THREE.Group, posed standing
 KratorMechs.update(group, dt, { ground(x, z) -> y })   // advance and pose; returns this step's events
@@ -66,6 +67,7 @@ MECH({
   tags: { class: 'mech', type: [...], drive, crew, pilot, weapon: [...], setting, guild },
   variants, variantNames, w, d, h,
   variantData: [{ ... }],             per variant, merged over data
+  variantTags: [{ weapon: [...] }],   per variant, keys replace the entry's tags (weapon: [] for an unarmed variant)
   variantAttack: [null, { ... }],     per variant, in place of attack (null keeps it)
   data: { height, mass, crew, pilot, reach, weapon, ... },
   gait: { period, duty, stride, lift, bob, sway, roll, twist, lean, offsets: [per leg], arms: { bone: [rx, ry, rz] } },

@@ -51,7 +51,7 @@ function jjMilArchRingGeo(jjW,jjS,jjF,jjDepth){const jjK=['ring',jjW,jjS,jjF,jjD
 
 // sock() ignores JJ.frame (it reads only CM), so a banner inside jjWithYaw lands unrotated: carry the
 // frame through by hand
-function jjMilSock(jjType,jjX,jjY,jjZ,jjRy,jjO){if(JJ.frame){const jjV=new THREE.Vector3(jjX,jjY,jjZ).applyMatrix4(JJ.frame),jjA=new THREE.Vector3(1,0,0).transformDirection(JJ.frame);return sock(jjType,jjV.x,jjV.y,jjV.z,(jjRy||0)+Math.atan2(-jjA.z,jjA.x),jjO||{});}return sock(jjType,jjX,jjY,jjZ,jjRy||0,jjO||{});}
+function jjMilSock(jjType,jjX,jjY,jjZ,jjRy,jjO){return jjSock(jjType,jjX,jjY,jjZ,jjRy,jjO);}
 
 // ---- vocabulary ---------------------------------------------------------------------------------------
 // merlons along x (period about 2 m, dividing jjL exactly), base at jjY

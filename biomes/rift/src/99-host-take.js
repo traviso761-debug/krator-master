@@ -41,7 +41,7 @@ const BUDGET={
 };
 // ---------------------------------------------------------------- fruit (biomes/FRUIT.md)
 // species that yield something edible the kit does not draw as a catalog fruit (nuts, pods, pith...): named, not hidden
-const FRUIT_NOT_DRAWN=['baobab','araucaria','acacia','cycad','cloudfern','stonepine'];
+const FRUIT_NOT_DRAWN=['cycad','cloudfern'];
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.

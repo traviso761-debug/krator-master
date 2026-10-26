@@ -26,7 +26,7 @@ Siberian direction** (Chukchi, Koryak, Nenets, Sakha), and in it they call their
 | Its own flora | section 3: the larch woods, the steppe, the alas bogs, the tundra and the fellfield |
 | Crops | the Thule package and its second wave as `kits/crops` records, and a `nwouterwall` biome entry (section 4) |
 | Object | `NWOW` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`), on the `BIOME-API.md` contract |
-| Out of scope | the Yeti's buildings (pycrete halls, winter forts, Leng's occupation: a **Yeti culture kit**, which takes this kit's materials and pycrete rule, section 5); the riding caribou, the musk oxen and the cache voles (`kits/fauna`); the wall's foot facing the State (an ecotone the Eternian lowland kits meet) |
+| Out of scope | the Yeti's buildings (pycrete halls, winter forts, Leng's occupation: a **Yeti culture kit**, `kits/yeti/PLAN.md`, which takes this kit's materials and pycrete rule, section 5); the riding caribou, the musk oxen and the cache voles (`kits/fauna`); the wall's foot facing the State (an ecotone the Eternian lowland kits meet) |
 
 It is a new biome, so it goes in the gallery when it first reaches `main`.
 

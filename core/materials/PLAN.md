@@ -553,6 +553,22 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-25 and processed, the Yeti kit** (`tools/textures/batches/chatgpt-2026-10u-yeti.json`, pasted by the
+owner as 1254 px WebP, the prompts of `PROMPTS-NEEDED.md` section 15, now 19): nine surfaces in `library/` (`ice.pycrete`,
+`ice.pycrete.weathered`, `masonry.pycrete.course` (cut to three courses, joint to joint, 2 x 1.5 m), `stone.corbel.slab`
+and `hide.panels.sewn` (tintable, muted 0.4), `stone.soapstone` (reads as green serpentine too), `fur.muskox`,
+`fur.caribou`, `hide.gut` (cut to eight strips and rolled so the seam falls mid-strip)) and seven sheets in
+`patterns/khaayken/` (`serge-carving` (tintable), `amur-scroll`, `ob-band`, `beadwork`, `fur-mosaic`, `applique-hanging`,
+`engraved-antler`). Two appliqué hangings came: the 2:1 sheet holds two exact periods and one was taken (887 px square);
+the square one was not installed (its riders cross the left and right edges). Nothing wired yet: `kits/yeti` is a plan
+(`kits/yeti/PLAN.md`); its `materials.json` takes them in Y1.
+
+**Delivered 2026-10-25 and processed, the Yeti dome caps** (`tools/textures/batches/chatgpt-2026-10v-yeti-domes.json`):
+`patterns/khaayken/dome-turf` and `dome-snow`, circular sheets each one unrolled dome (crown at the centre, the radius the
+distance along the surface), their magenta corners and vents filled from the disc's edge before processing (no seam pass:
+a cap is not a tile). Wired in `kits/yeti` (`turfCap`, `snowCap`, mapped from the crown by `ytShell`). `dome-lining` followed on 2026-10-26
+(the same batch), wired as `hideCap` on every lining and warming dome.
+
 **Delivered 2026-10-22 and processed, n semiarid** (`tools/textures/batches/nsemiarid-cards-2026-10-22.json` and
 `nsemiarid-bark-2026-10-22.json`, pasted by the owner as 1254 px WebP): `card.pappus.giant` and `card.stipa` (white silk on
 magenta, keyed with the new `spill: 'line'` of `tools/textures/cards.py`: every blended pixel taken as the white subject at

@@ -202,7 +202,7 @@
     back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
     opening, and the cloth chains do not collide with the tail.
   - *Its scales are a procedural stand-in* (`mods.scale_texture`) and the body under them is human skin tinted olive:
-    the textures are asked for in `core/materials/PROMPTS-NEEDED.md`, section 15. In Godot the stand-in aliases more.
+    the textures are asked for in `core/materials/PROMPTS-NEEDED.md`, section 21. In Godot the stand-in aliases more.
   - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
   - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
     published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.

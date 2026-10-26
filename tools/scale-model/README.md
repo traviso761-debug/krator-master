@@ -406,6 +406,63 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
 
 ## To do on the model (owner's list)
 
+- **Done in 4.23 (2026-10-26, `edit_423.py`; the page republished as version 87): the Godthrone's summit** (the owner, 2026-10-26; `biomes/godthrone/PLAN.md` section 1). On 4.22 the
+  summit is not a peak but the raster's ceiling: a table of 8,416 km² (100 by 108 km, centred on px 575,937) flat at
+  17,098 ± 9 m, the volcano cut off at `hi`. The edit:
+  - **Raise the ceiling**: `DATA.hi` 17,100 -> 27,000 m and re-encode `h` and `wl` (the step goes from 0.30 to 0.45 m).
+    The page, `edit_422.py` and `extract_region.py` read `DATA.lo`/`hi`; `assemble.py`, `edit_heights.py`, `features.py`
+    and `inner_wall_smooth.py` hard-code `LO, HI` (records of past edits, never run on a later page: update the
+    constants anyway).
+  - **Rebuild the top** above ~14 km only (eased in from 14 to 17 km, nothing lower moves): the flanks' own slope carried
+    up to a **summit caldera rim at ~25 km** (0.07 atm on the model's formula), an Olympus Mons-style nested caldera
+    60-80 km across and 2-3 km deep, its floor ~22 km.
+  - **A summit vent** on the caldera floor in `DATA.vents`.
+  - **Climate there**: class O over the new ground; rain stays 0, so no river moves. Relight. **Do not carry the lapse
+    rate past ~17 km**: 4.22 already reads a mean of -82 °C on the clipped table, and -6.5 °C/km more would put the rim
+    near -135 °C. Below ~0.1 atm the ground's temperature is set by sunlight, not by the air (Mars: a mean near -60 °C,
+    days to +20, nights to -80), so hold the mean at about -75 °C above 17 km.
+  - **The docs**: `LORE.md` (the model's height range, the Godthrone's height, the note below); `biomes/throne/NOTES.md`'s
+    pressure table; `biomes/WORLD.md`'s raster line; `biomes/catch/PLAN.md` (its walls run to the new summit);
+    `openworld/ANCIENT-ROADS.md` (the summit moves from px 574,909 to ~575,937, and Pluton's tunnels climb ~8 km more
+    over the same ~270 km).
+  - **A lore note for `LORE.md` §2, "Why Krator is volcanic"** (settled with the owner 2026-10-26): Krator is a moon
+    locked to its gas giant, flexed and heated by tides from an orbit kept slightly eccentric by its sibling moons
+    (as Io's is), at **2-5x Earth's heat flow** (Io's is ~25x). It has **no plate tectonics: one thick, unmoving shell**
+    (a 3,000 km crater survives only on such a world). It loses its heat as a **heat-pipe** world does, through
+    long-lived vents, and the buried flows thicken and stiffen the shell; that shell holds up a volcano of **Olympus
+    Mons size**, and a plume that never moves builds it. The volcanism is **focused, not global** (Io, at ~1 cm of new
+    rock a year, has no craters at all): the Throne fills the crater's centre as lava filled the Moon's basins, the
+    Godthrone sits on its plume, and the Rift and the vent fields take the rest; tides crack the shell into rifts
+    without moving it. **The Godthrone's lava is titanium-rich** (the owner, 2026-10-26): black, very fluid, and its
+    fountain glass orange, as on the Moon.
+  - **As built** (`edit_423.py <4.22 page> <regions> <out>`; `DATA.hi` 27,000 m, every `h` and `wl` cell re-encoded, no cell moved by more
+    than the 0.45 m step; the page republished as version 88 after the owner's second brief the same day: *wider, parallel to the
+    edges of its polygon, the overall height unchanged, then weathered*): the **cone is a shield that fills the `godthrone` biome
+    polygon**: contours run from a round summit rim out to the polygon's outline (each lower contour parallel to the polygon's edges: the
+    polygon's radius from the summit, 173-473 km, smoothed 7 deg of bearing so its notches do not crease the cone), at a slope of
+    ~0.065 over the 210 km from the rim to the 11 km contour (so the plan's "flank's own slope" now holds), added to the 4.22 ground's
+    own relief (smoothed 48 km, detail kept) and fading out toward the polygon's edge so nothing steps; **the peak is unchanged** at
+    the caldera rim, **25.0 km** (rim radius 32.5-38.7 km: a 65-77 km caldera), floor ~22 km, a nested pit 900 m deeper
+    (the summit vent: px 577.85, 932.59, floor 21,194 m, in `DATA.vents`). ~19,800 cells (317,000 km2) rose, by up to 10.7 km. **Weathering**: a
+    stream-power pass (60 iterations; D8 flow accumulation, incision by sqrt(area) x slope, never below the receiver) and a thermal pass
+    (slopes over 0.3), nothing within 6 km of the rim, none cut over 1,200 m (mean cut 110 m, p99 600 m): radial gullies on the flanks.
+    Painted maps relit; the page's rain, temperature and wind already read "airless" above 9 km, so no climate raster moved and class
+    O stays. The legend reads "8-27 km". Not redone: `DATA.rivers`' own heights (the one river in the polygon, Qol Drai, keeps its
+    4.22 `source_m`/`mouth_m`; its course still falls), the lakes (nine water cells, untouched). Still to do: the docs of other builds that
+    quote 17.1 km, `biomes/godthrone`'s heights on the open world, and a re-extract of any region that holds the cone.
+  - **The two candidates, done the same day (the owner asked; the page is version 89)**: **the blood river** (the plan's "carried ~25 km on" turned out to be
+    already on the model: Qol Drai (r442) ends at px 554.7, 1133.6 where Siwipt Sitrim (r272, perennial, 43 km) begins and runs to the Rift's lake at -717 m): r442 is
+    made **perennial** (+4 m3/s the whole way for the brine and the ice belt's melt: 13.3 m3/s at its mouth, 16 m wide), **renamed Red Riwa**
+    (Xanadui, "red river"; the owner's to change), joined to r272 (+4 m3/s, 14.4 m3/s at its mouth), and drawn in dark red (178, 52, 42) on the satellite and relief
+    maps; **the flank vent**: a small cinder cone in `DATA.vents` at px 620.8, 815.2 on the 4,973 m ground at Godstep valley's head (the highest ground of the 4.4-5.0 km band
+    inside the `godstep valley` polygon; scale 0.18, radius 1.8 px). Not redone: the river audit's water books (`DATA.hydro`) and the Rift lake's inflow figure.
+  - *Candidates, awaiting the owner* (2026-10-26; both now done, above):
+    - **The blood river** (`biomes/godthrone/PLAN.md` section 4): Qol Ḍrāi (r442, from ~5.3 km below the Godthrone's
+      ice belt) made perennial, fed by the bloodfalls' brine and the ice belt's melt, and carried ~25 km on from its
+      4.22 end (px 555,1134, 1,208 m) into the Rift's lake at -717 m (px 541,1156). Rerouted the 4.22 way (`edit_422.py`'s
+      routing), its new name the owner's.
+    - **A flank vent at Godstep valley's head** (`biomes/godstep/PLAN.md`, station 3): a small cinder cone on the
+      Godthrone's north-east flank at ~4-5 km, in `DATA.vents`.
 - **Done in 4.22 (2026-10-23)**, above: Pinnacle Rock's knoll, the Cut's floor, climate and north mouth, the great lake at the Rift's head (and Ledge moved to its cliff), the Yeti's valley, the Bowl's lake effect, the Catch as a closed basin. Still to do from them: re-cut `settlements/pinnacle-rock/region/` and any region holding the Cut or the Catch.
 - **Done in 4.21 (the owner asked, 2026-10-19): the Lake of Shim**, above. Still to do from this item: refresh
   `openworld/little-demo/source/` from the live collections. Almua's river is drawn (Dip Rivrh, above).

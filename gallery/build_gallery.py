@@ -69,7 +69,7 @@ ENTRIES = [
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
     ('world', 'verge', 'settlements/verge/dist/verge.html', 'Verge',
      'Twin cities on the abyss escarpment: the upper on the plateau, the lower on the floor beneath the cataracts, joined by a switchback trail and a funicular; caravans on the trail.', 'new'),
-    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world)',
+    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world, deprecated)',
      "The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.", 'new'),
     ('world', 'isle-demo', 'openworld/isle-demo/dist/isle-demo.html', 'Isle Demo (open world)',
      "The scale model's Ring Sea isles at 1:1, streamed: an archipelago of about 11,800 km2 of land, its sea readable from any height, the coast drawn as lagoons, reef crests and mangrove flats, the isles kit's flora by climate class (hypertropic jungle to salt steppe), seagrass and corals in the lagoons, and geyser fields at the scale model's fourteen vents. Kautoa and Valapo are marked; their towns are being laid out."),
@@ -116,6 +116,8 @@ ENTRIES = [
      "The Ancients' ship interiors as a kit, from Noah's Regret: fourteen halls laid out the way a ship would (crew mess, dining hall, greenhouse, engine room, bridge, officers' hall, chart deck, chain locker, store hall, drill hall, gallery, stern lounge, plaza, quay), each as the Ancients fitted it and as the pirates hold it, plus the ship's rooms (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) and cabins furnished by the placer. Every room audited; C cycles the cut-away.", 'new'),
     ('objects', 'interiors-walk', 'kits/interiors/dist/interiors-walk.html', 'Interiors walk-through',
      'The Highlands, Post-Apoc, Beast Rider, Locus and Abyss buildings with their rooms planned and furnished from the catalog: every residence with a bed, a food store and an item store. Walk in through the doors and up the stairs.', 'new'),
+    ('objects', 'crops', 'kits/crops/dist/crops.html', 'Crops',
+     'World content that belongs to no culture or biome: 118 crops in 25 buckets, each a range on warmth, air pressure and aridity, so a settlement can ask what its place could plausibly grow, with the dyes, fibres and fuels they give.'),
     ('objects', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),
     ('kit', 'voth-catalog', 'settlements/voth/catalog/index.html', 'Voth buildings',
      'Every Voth building on one walkable sheet: the structures the city builds, housing, manors, shops, taverns, warehouses, civic and military sets, with automatic LOD.'),
@@ -129,17 +131,17 @@ ENTRIES = [
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
     ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
-    ('kit', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
+    ('objects', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
      "Five motor vehicles of five cultures: the Geomancers' dune buggy, the Iron Republic's eight-wheeled salvage crawler with its solar lid, the Izani armoured six-wheeler, the abyssal caravan truck under its tarps and the Post-Apoc tracked hab. Textured from the material library; wheels that roll and steer, tracks that run, lamps that switch (Drive R, Lights L, Night N).", 'new'),
-    ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
-     "Seventeen Iziz mechs, Ancient industrial walkers refitted for the legions, from a hound-sized drone to a walking siege tower (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple, an iron fist, a clap).", 'new'),
+    ('objects', 'mechs', 'kits/mechs/dist/mechs.html', 'Mechs and Robots',
+     "Nineteen walkers, skinned and animated, with leg IK and planted feet, idle, walk, march with U-turns and attacks: seventeen Iziz war-walkers, Ancient industrial machines refitted for the legions, from a hound-sized drone to a walking siege tower (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple, an iron fist, a clap); and the Stalkers of the Catch, man-sized and sleek in white enamel, the harpooner with its pneumatic harpoon guns and the blade with hooked blades on its long arms.", 'new'),
     ('kit', 'lizardmen', 'kits/lizardmen/dist/lizardmen.html', 'Lizardmen',
      "The Lizardmen of the Rift floor: ribs, horns and tusks outside the skin, walls that lean wrong, triangular doors sized by caste and nested seven deep, the squared spiral built and the round whorl carved, spiral eyes of rank; the caste dwellings, the nest hall's Fermat spiral of grown chambers, the bone hall, the camp's hide tents, the stone circle and the clapperless bells, the warlord's capital in cyclopean basalt with its gatehouse and twisted towers, and the reliquary with its dusty antechamber (C opens them).", 'new'),
     ('kit', 'pylon', 'kits/pylon/dist/pylon.html', 'Pylon',
      "Pylon, Iziz's vassal arcology city on a savannah plateau round the ruined Monolith: post-Cataclysm buildings imitating the Ancients in white render and Iziz orange (folk houses with orange cornice bands, concrete blocks with pill-shaped niches, vault houses, tank houses and hex cells for the poor), the scrap and salvage trade (yards under portal cranes, a breakers' floor, a smelter, the scrap exchange), the Salvagers' Guild and the watch, six Ancient families intact, ruined and repaired, the temple of the Ancients, the governor's palace, and the Monolith itself at full scale; with the Iziz Vernacular in mixed streets beside them. Nine of its buildings are furnished inside (X cuts them away): orange leather banquettes, hearth blocks and walnut beds among Iziz furniture.", 'new'),
     ('kit', 'talia', 'kits/talia/dist/talia.html', 'Talia',
      "Talia, Iziz's vassal university and caravan city at the foot of the eastern passes: Greek and Byzantine forms with baroque, neoclassical and Indian dress, white with Iziz orange and gilt. Whitewash cubes and loggias, the orange quarter's tenements, palazzi and jharokha fronts; the caravan trade (customs house, domed bourse, caravanserai, stoa, baths); the University (the great hall's clock tower, the cloister, the library rotunda, faculties, the observatory, colleges), the odeon, theatre and glasshouse; the temple of the Sun and the Giant, the Gate of the Passes, the governor's palace; real doors and glazed windows throughout, 64 buildings furnished inside (X cuts them away); with the Iziz Vernacular in mixed streets beside them.", 'new'),
-    ('kit', 'resources', 'kits/resources/dist/resources.html', 'Resources',
+    ('objects', 'resources', 'kits/resources/dist/resources.html', 'Resources',
      "Placeable resource nodes for any culture's mines: iron, copper, gold, tin, silver, rare earth, coal, sulphur, saltpetre and oil seeps, each in a low, medium and high grade. A mine works its nearest node, and the grade sets its yield (half, once, twice); oil needs a derrick."),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
      "The salamander riders of the crater drylands, in polychrome and appliqué: gers, a bell tent, goat-hair tents, Tibetan white appliqué tents and halls under prayer flags, the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished (C opens them); salamanders, goats, bison and cattle with their pens; chariots and carts; the Baelu, a fitted-stone fire redoubt."),
@@ -149,7 +151,7 @@ ENTRIES = [
      "The Beast Riders' buildings as a set of their own, in Girder's palette (tarred staves, shingle hips with verdigris ribs, red and gilt carved posts, beast-head finials): the mounts' raptor stable, great byre and rookery tower; the sedentary trades and larger houses with no electricity; the bands' camps of hide domes and barrel tents with their pens and trainers' yards; the Deep Root's rock-cut door, niches and storerooms; and Girder's and Mav's Refuge's own buildings ported in. Click to inspect, measure and cycle variants.", 'new'),
     ('kit', 'ash-nomads', 'kits/ash-nomads/dist/ash-nomads.html', 'Ash Nomads',
      "The beetle riders of the ash plains: black peaked tents of every kind under blue and saffron Nazca and Dunmer bands, the chieftain's five-spired tent, the assembly and mess hall under the gas giant emblem, the shaman's hut, smithy, chitin worker and supply tents, all furnished in chitin, banners and lanterns (C opens them); staghorn beetles, pack millipedes, millipede and runner pens.", 'new'),
-    ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
+    ('objects', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
      "Every animal of Krator in one kit, 51 species (now with the bison, the rideable staghorn beetle and the six-legged ash runner): farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
@@ -586,7 +588,7 @@ def main():
                             % html.escape(lod.get('menagerie', '/menagerie')), 1)
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
-    total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)
+    total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items if not i.get('href'))
     print('wrote %s/: %d pages, %.1f MB' % (os.path.relpath(site, ROOT), len(items), total / 1048576))
 
 

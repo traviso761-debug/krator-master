@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.051,
+    0.995
+   ],
+   "seam_before": [
+    1.45,
+    1.313
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.02,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ice",
+  "id": "ice.pycrete",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ice.pycrete.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 2)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id ice.pycrete).",
+  "reuse": "fresh pycrete (ice + larch sawdust): Yeti domes, tunnel slabs, forts; any fibre-reinforced ice",
+  "sha1": "655a022e4f6f63f47809d5793c561a2fb23ad3e4"
+ }
+}

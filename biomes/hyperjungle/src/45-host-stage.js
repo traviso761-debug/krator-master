@@ -63,11 +63,11 @@ if(GLIT)MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGLit={value:GLIT.map};
  const p=g.attributes.position;for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));}
  {const bk=new Float32Array(p.count);for(let i=0;i<p.count;i++)bk[i]=clamp(1-brookDist(p.getX(i),p.getZ(i))/28,0,1);g.setAttribute('aBk',new THREE.BufferAttribute(bk,1));}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Forest floor';scene.add(m);
- // the brook water: a narrow ribbon at the bed level
- const W=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0x2a5a4a,roughness:.2,metalness:.2,transparent:true,opacity:.8}));
- const pts=[];for(let z=-TERR.R;z<=TERR.R;z+=60)pts.push([90*Math.sin(z*.0012),z]);
- const geo=new THREE.BufferGeometry(),pos=[];
- for(let k=0;k<pts.length-1;k++){const a=pts[k],b=pts[k+1];const ya=terrainH(a[0],a[1])+.35,yb=terrainH(b[0],b[1])+.35;
-  pos.push(a[0]-9,ya,a[1], b[0]-9,yb,b[1], b[0]+9,yb,b[1],  a[0]-9,ya,a[1], b[0]+9,yb,b[1], a[0]+9,ya,a[1]);}
- geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.computeVertexNormals();
- const wm=new THREE.Mesh(geo,W.material);wm.userData.probeSkip=true;wm.userData.inspectLabel='The brook';scene.add(wm);})();
+ // the brook water is core/water's (BROOK below, drawn in 89w-host-water.js)
+ })();
+// THE BROOK (core/water, 2026-10-20: the old static 18 m ribbon in a MeshStandardMaterial): a flow line down the centreline
+// 90 sin(z .0012) every 40 m, its surface exactly BIO.waterH (the bed + .35 m: the floor mask and the open world's readers),
+// 18 m wide with a metre tucked under each bank. Its speed is a slow brook's; where the bed falls steeper than 1.2% the flow shader
+// whitens it (a riffle), which the old flat ribbon never showed.
+const BROOK_PTS=[];for(let z=-TERR.R;z<=TERR.R;z+=40){const cx=90*Math.sin(z*.0012);BROOK_PTS.push([cx,z,terrainH(cx,z)+.35]);}
+const BROOK=WATER.flow({name:'The brook',pts:BROOK_PTS,width:18,speed:.9});

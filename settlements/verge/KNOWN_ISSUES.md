@@ -17,11 +17,11 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
       flushed (`?furnishMs=100000`; old against old 0 differences too); with the default 28 ms a frame the first view's
       furniture differs by how far the queue got, old against old as well; the inspector names a tavern (`bld_00312`) from its
       record, the minimap draws 1580 records, a mark measures, 0 unknown tags, no errors; the host's clock and CLOCK agree.
-- [ ] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P); the Inspector box is
+- [x] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P); the Inspector box is
       the hover button (I, on as before); the HUD's camera line is the stats panel (the day there, the hour in the time row);
       the hour slider and run / hold are the host's (`#clk-hour`, `#clk-run`). The keys are the host's (W A S D, Q / E, F walk,
       G and double-click the pin, I, P, M minimap). The 'Sky panel' button is a host control (81's own button found no `#ui`
-      at load).
+      at load). - 2026-10-20: description of the port, nothing open.
 - [x] (2026-10-15) The marks file: core/host (94) reads `<build>/marks.json` only on a page served by `tools/edits/serve.py`
       (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
       no `marksUrl`.

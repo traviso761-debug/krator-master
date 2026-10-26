@@ -166,46 +166,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);})();
 
 // ---------------------------------------------------------------- the water
-// One plane at y=0 carries the inland sea, the bayou and the river's lowland
-// reach; its vertex colour is the water's own: a clear green-blue sea over
-// sand, tea-dark in the bayou, silty in the river. Where the river runs down
-// through the hills it is a ribbon in the same material.
+// 2026-10-20 (migration phase 3): the water is core/water's. The lake, the lowland river and the ponds were one plane at y=0 in the page's own
+// shader (vertex colours by depth and place); now they are two WATER.open surfaces on the same level, drawn in 89w-host-water.js: the lake (a shore grid
+// flooded from its middle: the beach laps, the water stops at the shore) and the inland water (the bayou pools, the oxbows, the delta and the river's
+// lowland reach, tea-dark, flat, drawn only over the cells that hold water); the river through the hills is the WATER.flow below, a line down RIVER_T at bed+0.6 m that
+// never climbs downstream. BIO.waterH and terrainH are unchanged. The tints are the old plane's constants.
 const SEA_SHALLOW=new THREE.Color(0x5aa8a8),SEA_MID=new THREE.Color(0x2a7a90),SEA_DEEP=new THREE.Color(0x163e6a),SEA_PALE=new THREE.Color(0xa8d8cc);   // the lake: jade to blue
 const BAYOU_COL=new THREE.Color(0x2e4a44),RIVER_COL=new THREE.Color(0x3e6a64);
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,900,-600).normalize()},uSky:{value:new THREE.Color(0xd8e2dc)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.75*vec3(1.0,0.96,0.86);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h),si=seaIn(x,z),rd=riverD(x,z);
- const shoal=fbm(x*.0031+2,z*.0031-4,505,2);
- out.copy(SEA_SHALLOW).lerp(SEA_PALE,Math.max(smooth(.5,.68,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.6)).lerp(SEA_MID,smooth(1.4,4,d)).lerp(SEA_DEEP,smooth(4.5,10,d));
- out.lerp(BAYOU_COL,smooth(-30,60,si)*.9);                                   // everything inland of the shore is fresh and dark
- out.lerp(RIVER_COL,smooth(60,15,rd)*smooth(-200,20,si)*.85);return out;}
-(function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){waterColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The lake';m.renderOrder=1;scene.add(m);
- // the river down through the hills: a ribbon at bed+0.6 wherever the bed is above the plane
- const pos=[],cc=[],rc=RIVER_COL.clone().convertSRGBToLinear(),ds=24;
- for(let s=-300;s<TERR.R*1.25;s+=ds){const t0=RIVER_T(s),t1=RIVER_T(s+ds);
-  const a=xzOf(s,t0),b=xzOf(s+ds,t1),w=riverW(a[0],a[1])*.8;
-  const ya=terrainH(a[0],a[1])+.6,yb=terrainH(b[0],b[1])+.6;if(ya<.05&&yb<.05)continue;
-  // the across-stream offset is along t, i.e. (RT2,-RT2) in x,z
-  const ox=RT2*w,oz=-RT2*w;
-  pos.push(a[0]-ox,ya,a[1]-oz, b[0]-ox,yb,b[1]-oz, b[0]+ox,yb,b[1]+oz,  a[0]-ox,ya,a[1]-oz, b[0]+ox,yb,b[1]+oz, a[0]+ox,ya,a[1]+oz);for(let k=0;k<6;k++)cc.push(rc.r,rc.g,rc.b);}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));geo.computeVertexNormals();
- const rm=new THREE.Mesh(geo,MAT_WATER);rm.userData.probeSkip=true;rm.userData.inspectLabel='The river';scene.add(rm);})();
+const RIVER_PTS=[];{let yc=-1e9,on=false;for(let s=-300;s<TERR.R*1.25;s+=24){const a=xzOf(s,RIVER_T(s)),y=terrainH(a[0],a[1])+.6;if(!on&&y<.05)continue;on=true;yc=Math.max(yc,y);RIVER_PTS.push([a[0],a[1],yc]);}RIVER_PTS.reverse();}
+const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.6*riverW(p[0],p[1])),
+ speed:RIVER_PTS.map((p,i)=>1+2.2*smooth(.01,.08,i+1<RIVER_PTS.length?(p[2]-RIVER_PTS[i+1][2])/24:0))});
 // ---------------------------------------------------------------- the road
 // A ribbon a few cm over the ground in its own dirt texture: two wheel ruts, a grassy
 // crown, leaf litter, pale sand. (The ground canvas is ~4 m a pixel; a road needs its own.)

@@ -59,8 +59,8 @@ const BUDGET={
  type:{'bay/trees':'pass','bay/floor':'pass','bay/dress':'pass','bay/fauna':'pass','host':'host'},
 };
 // species that yield something edible the kit does not draw as a catalog fruit: named, not hidden. The umbrella
-// thorn's pods and the monkey-puzzle cones are not drawn (biomes/FRUIT.md); the tree fern's are fiddleheads.
-const FRUIT_NOT_DRAWN=['thorn','puzzle','treefern','cherry'];
+// the tree fern's fruit are fiddleheads: no catalog piece (biomes/FRUIT.md); the thorn's pods, the monkey-puzzle seeds and the cherries are catalogued, not drawn on the stage.
+const FRUIT_NOT_DRAWN=['treefern'];
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.

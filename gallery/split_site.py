@@ -145,10 +145,10 @@ def main():
         title = titles[n - 1]
         html = html.replace('<title>Krator Worlds</title>', '<title>%s</title>' % title, 1)
         html = html.replace('<h1>Krator Worlds</h1>', '<h1>%s</h1>' % title, 1)
-        blocks = ''.join('  <section class="scale">\n    <h2>%s</h2>\n    <p>More of Krator\'s worlds, kits and biomes: the gallery is '
-                         'split in parts, each one artifact. <a href="%s" target="_blank" rel="noopener">Open %s &rarr;</a></p>\n'
-                         '  </section>\n' % (name, url, name) for name, url in links if name != title)
-        html = html.replace('  <main id="registers"></main>', blocks + '  <main id="registers"></main>', 1)
+        blocks = ''.join('      <a class="btn" href="%s" target="_blank" rel="noopener"><b>%s<i aria-hidden="true">&nearr;</i></b>'
+                         "<span>More of Krator's worlds, kits and biomes: the gallery is split in parts, each one artifact.</span></a>\n"
+                         % (url, name) for name, url in links if name != title)
+        html = html.replace('<div class="col" hidden>', '<div class="col">', 1).replace('<!--PARTS-->', blocks, 1)
         open(os.path.join(out, 'index.html'), 'w', encoding='utf-8', newline='\n').write(html)
         print('site-%d  %-18s %2d pages  %3d files  %.1f MB' % (n, title, len(b), len(os.listdir(os.path.join(out, 'worlds'))),
                                                             sum(os.path.getsize(os.path.join(out, 'worlds', f)) for f in os.listdir(os.path.join(out, 'worlds'))) / 1e6))

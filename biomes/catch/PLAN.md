@@ -27,8 +27,8 @@ The classes include **Cfa 7.3% and Csa 1.8%**, humid subtropical and Mediterrane
 800 mm (px 805-870 by 1075-1133, round Stair). The rain rises from the floor to the foothills and falls up the walls:
 the floor and foothills are wetter than the walls that should be catching what little gets in.
 
-**The walls.** No crest round the basin is under ~10 km (they run 10-17 km, the Godthrone's 17.1 km summit on the
-north-west), and the ground 40-120 km outside the polygon stands 6.5-12.7 km with no rain at all. The lowest ways out,
+**The walls.** No crest round the basin is under ~10 km (they run 10-17 km, the Godthrone's summit on the
+north-west: 17.1 km on 4.22, a caldera rim near 25 km after 4.23), and the ground 40-120 km outside the polygon stands 6.5-12.7 km with no rain at all. The lowest ways out,
 by the path from the floor that climbs least:
 
 | Toward | Pass | |

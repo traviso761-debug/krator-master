@@ -7,8 +7,7 @@
      cls furniture     by its type: statue a landmark, fountain and pool a feature, else a prop; the kind is the type
      cls flora         flora; the kind is the type (the two placeholder plants)
    Jimjam's own spellings onto the vocabulary (core/tags/README.md: a build that adopts core/tags reads zero unknowns):
-     culture 'jimjam'  is not in the vocabulary (core/tags/52-core-tags-vocab.js has no Jimjam culture yet): it is said as
-                       style 'jimjam' and the record has no culture until the vocabulary takes it (KNOWN_ISSUES.md)
+     culture 'jimjam'  is a vocabulary culture since 2026-10-20 (core/tags VOCAB.noCatalog: no catalog furniture set): kept as given
      a furniture or plant's type (bench, palm...)        its kind, not a type
      harvestable / edible false                          harvest {wood: false, edible: [], medicinal: false}
      animated true                                       the record's note ('animated': the windmill's sails)
@@ -19,7 +18,6 @@ const JJ_REG_ID=new Map();
  const FURN_CLASS={statue:'landmark',fountain:'feature',pool:'feature'};
  for(const r of REG){
   const t=Object.assign({},r.tags||{});let cls=r.cls||'building',kind=r.key||null,note=null;
-  if(t.culture==='jimjam'){delete t.culture;t.style='jimjam';}
   if(t.harvestable!==undefined||t.edible!==undefined){t.harvest={wood:!!t.harvestable,edible:t.edible?[].concat(t.edible):[],medicinal:false};delete t.harvestable;delete t.edible;}
   if(t.animated){note='animated';}delete t.animated;
   if(cls==='furniture'||cls==='flora'){const ty=[].concat(t.type||[]);delete t.type;kind=ty[0]||kind;if(cls==='furniture')cls=FURN_CLASS[kind]||'prop';}
