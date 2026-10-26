@@ -24,3 +24,6 @@
       6a), and the lime kilns burn the spray coral to lime. They are crops in `kits/crops` (`kelp-ash`, `coral-lime`), not
       nodes; when the Catch adds its potash and alkali-salt nodes, a works rule that takes either a node or the crop would
       let Farside's glassmakers draw on both.
+- [x] **Two nodes for the Catch** (the owner, 2026-10-23; added 2026-10-26 with `biomes/catch`): **potash** (`node-potash-*`)
+      and **alkali salts** (`node-alkali-*`: soda and its kin, borates and lithium folded in), the library's `ground.salt.ochre` and
+      `ground.soda.crust` on their crusts. kits/islanders reads 42r and 44r in place, so its page carries the six new defs (unplaced).

@@ -51,7 +51,7 @@ EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terr
 # is the 300 m tile at the delta's middle mouths (the lake's banded shallows, two distributaries, the salt flat).
 STATION_EXPORT = {'sedesert-bowl.html': ([-150, -1300, 150, -1000], EXPORT_PROFILE),
                   'sedesert-mantis.html': ([-1300, 550, -1000, 850], EXPORT_PROFILE),   # Mantis: the first spring, its pool, stream and figs
-                  'sedesert-steppe.html': ([1050, -1050, 1350, -750], EXPORT_PROFILE)}   # the steppe: the pan's east margin and the grass beyond
+                  'sedesert-steppe.html': ([850, -1050, 1150, -750], EXPORT_PROFILE)}   # the steppe: the pan's water and its planted east margin
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:

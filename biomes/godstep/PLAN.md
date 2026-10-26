@@ -44,7 +44,7 @@ Median rain 173 mm.
   upper steps (BWk, BSk) to humid country at the low end, where the valley opens north-east toward the hyperjungle.
 - **Its head** climbs the Godthrone's north-east flank to 8-9 km. No vent of its own on 4.22: the Godthrone's two are
   ~640 km off, and the Throne's small vents ~145 km north. The flows came from the Godthrone (250 km from its summit to the valley's head; the Moon's titanium flows run up
-  to 1,200 km); a **flank vent near the head** is an optional 4.23 item (station 3).
+  to 1,200 km); a **flank vent near the head** is on the model since 4.23 (2026-10-26, the owner's go-ahead): px 620.8, 815.2, on 4,973 m ground, in `DATA.vents` (station 3).
 - **Water**: dry valleys only on the upper steps: **Vali de Daridel** (from 5,051 m to a closed basin at 2,693 m by
   px 604,797), Vali Guaida (the white dry valley) into it. The upper steps drain into closed basins: lava-dammed.
 - **People**: the Talovolci (35,780 km² of overlap; `LORE.md` §6.21). **Daridel** stood here on the upper step (px

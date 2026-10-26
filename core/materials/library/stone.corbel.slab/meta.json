@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.186,
+    1.041
+   ],
+   "seam_before": [
+    1.804,
+    1.236
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.04,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.corbel.slab",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone.corbel.slab.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 5)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id stone.corbel.slab).",
+  "reuse": "dry-laid split-slab walls: Yeti stone domes, tunnel trenches, tombs, byres; clochans, brochs, tholoi, pirka walls",
+  "sha1": "99905a8e59ac53855855e3197f913c82a77362e6"
+ }
+}

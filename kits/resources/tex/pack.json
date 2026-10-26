@@ -275,6 +275,36 @@
     "sourceMean": 0.5271
    }
   },
+  "potash": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "potash.albedo.webp",
+    "normalMap": "potash.normal.webp",
+    "roughnessMap": "potash.rough.webp"
+   },
+   "lib": "ground.salt.ochre",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "768b19db352ba6429507eba3d5b8675ce4d83fd5",
+    "normal": "9fd7ea5b27d94c36999376ed2dc1609f13b6ddb2",
+    "roughness": "956877bf8c284517469ff26b3860a65cda21dd18"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6612749599621343,
+    "sourceMean": 0.6613
+   }
+  },
   "quartz": {
    "breakup": null,
    "card": false,
@@ -303,6 +333,36 @@
     "keep": 0.0,
     "mean": 0.5783963940848555,
     "sourceMean": 0.5784
+   }
+  },
+  "soda": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "soda.albedo.webp",
+    "normalMap": "soda.normal.webp",
+    "roughnessMap": "soda.rough.webp"
+   },
+   "lib": "ground.soda.crust",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "82e19a978e77f32717b1a12900fde5e33258311c",
+    "normal": "ffe5d41ea29101191aecb15a702fb1294d868aac",
+    "roughness": "c9e4218168ad97727d9d38d752508fa42b2b108b"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7459601223964317,
+    "sourceMean": 0.746
    }
   },
   "stone": {

@@ -2,7 +2,9 @@
 
 World content that belongs to no culture (owner, 2026-10-15). So far it holds the **resource nodes** the building kits'
 works draw on.
-- **The kinds:** ten: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil.
+- **The kinds:** twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
+  Potash and alkali salts (soda and its kin, borates and lithium folded in: no finer than these two, the owner, 2026-10-23)
+  are the Catch's salt field (`biomes/catch/PLAN.md` section 6a); elsewhere on Krator they are traces.
 - **The grades:** each kind comes in a low, a medium and a high grade, visible and placeable.
 - **Who works them:** a **mine** takes everything but oil; oil takes a **derrick**. The only derrick so far is Locus's
   Geomancer pumpjack (`ind_pumpjack`). The owner: no derrick for other cultures yet.
@@ -30,6 +32,8 @@ python3 ../../tools/textures/pack.py kits/resources       # (from the repo root)
 | coal | `coal` | mine | a cut bank in a low rise: pale sandstone beds stepping back, black coal seams between them |
 | sulfur | `sulfur` | mine | a low stained mound crusted yellow, a fuming vent ringed with crystals on top |
 | saltpeter | `saltpeter` | mine | a weathered outcrop of dark earth, white saltpeter blooming on its faces and crusting the ground |
+| potash | `potash` | mine | a salt pan's crust broken open: a pit through the white halite skin into pink-red potash beds, the slabs stacked, ochre salt polygons round it |
+| alkali | `alkali_salts` | mine | a soda pan: peach plates of soda crust curling round a cut brine pit, white trona nodules heaped by it |
 | oil | `crude_oil` | derrick | a seep: black pools with a sheen in a tar-crusted stain, tar humps, bubbles |
 
 Each kind has a def per grade:

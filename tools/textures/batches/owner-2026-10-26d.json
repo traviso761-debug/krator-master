@@ -1,0 +1,842 @@
+[
+ {
+  "src": "organic.pod.honeycomb.png",
+  "out": "core/materials/library/organic.pod.honeycomb",
+  "record": {
+   "id": "organic.pod.honeycomb",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.pod.honeycomb\"",
+    "reuse": "the SW highlands stilt pod tree spore pods; any alien seed head or honeycombed fruiting body"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.beads.orange.png",
+  "out": "core/materials/library/ground.beads.orange",
+  "record": {
+   "id": "ground.beads.orange",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.beads.orange\"",
+    "reuse": "the Godthrone glass halo round the summit vent; any fire-fountain bead deposit (diagonal black bands in the source)"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.megabreccia.png",
+  "out": "core/materials/library/rock.megabreccia",
+  "record": {
+   "id": "rock.megabreccia",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.megabreccia\"",
+    "reuse": "the Godthrone airless rim crest and the W outer wall slump scarps; any impact breccia"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.riverweed.red.png",
+  "out": "core/materials/library/ground.riverweed.red",
+  "record": {
+   "id": "ground.riverweed.red",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.riverweed.red\"",
+    "reuse": "the Godthrone blood river riverweed; any red aquatic carpet"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.savanna.litter.png",
+  "out": "core/materials/library/ground.savanna.litter",
+  "record": {
+   "id": "ground.savanna.litter",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.savanna.litter\"",
+    "reuse": "the abyssal savannah parkland floor; any tropical savanna or dry grassland floor (a paler, browner soil than the prompt asked)"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.carved.png",
+  "out": "core/materials/library/bark.carved",
+  "record": {
+   "id": "bark.carved",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.carved\"",
+    "reuse": "the Oidong cloud-pad tree; any sacred or written tree, carved totem trunks"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.cord.braided.png",
+  "out": "core/materials/library/bark.cord.braided",
+  "record": {
+   "id": "bark.cord.braided",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.cord.braided\"",
+    "reuse": "the SW highlands lattice oak (tinted lacquer-red in the lowlands); any braided-cord or banyan-root trunk"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "bark.banded.ring.png",
+  "out": "core/materials/library/bark.banded.ring",
+  "record": {
+   "id": "bark.banded.ring",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.banded.ring\"",
+    "reuse": "the southern highlands ruffle-crown trunk and corkscrew cereus columns; any ringed stem, palm or cycad trunk"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "rock.sandstone.liesegang.png",
+  "out": "core/materials/library/rock.sandstone.liesegang",
+  "record": {
+   "id": "rock.sandstone.liesegang",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.sandstone.liesegang\"",
+    "reuse": "the SW highlands Span tableland and pillar rim; any banded red-and-white sandstone country"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ice.debris.png",
+  "out": "core/materials/library/ice.debris",
+  "record": {
+   "id": "ice.debris",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ice.debris\"",
+    "reuse": "the Godthrone relic debris-covered glaciers; any rubble-covered glacier or rock glacier"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.rust.terrace.png",
+  "out": "core/materials/library/ground.rust.terrace",
+  "record": {
+   "id": "ground.rust.terrace",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.rust.terrace\"",
+    "reuse": "the Godthrone rust terraces under the bloodfalls; any iron-rich spring deposit"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ice.rust.png",
+  "out": "core/materials/library/ice.rust",
+  "record": {
+   "id": "ice.rust",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ice.rust\"",
+    "reuse": "the Godthrone bloodfalls ice cliff; any glacier stained by iron seeps"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.rubble.sturzstrom.png",
+  "out": "core/materials/library/rock.rubble.sturzstrom",
+  "record": {
+   "id": "rock.rubble.sturzstrom",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.rubble.sturzstrom\"",
+    "reuse": "the W outer wall sturzstrom hummocks; any rock-avalanche debris or moraine rubble"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "rock.loess.png",
+  "out": "core/materials/library/rock.loess",
+  "record": {
+   "id": "rock.loess",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.loess\"",
+    "reuse": "the W outer wall gully walls, earth pillars and cave-house fronts; any loess or soft silt cliff"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.tafoni.png",
+  "out": "core/materials/library/rock.tafoni",
+  "record": {
+   "id": "rock.tafoni",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.tafoni\"",
+    "reuse": "the Godthrone dry-cold line and airless rim; any honeycomb-weathered rock face"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "rock.palagonite.png",
+  "out": "core/materials/library/rock.palagonite",
+  "record": {
+   "id": "rock.palagonite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.palagonite\"",
+    "reuse": "the Godthrone orange belt; any palagonite tuff or altered basaltic glass"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.dusttower.png",
+  "out": "core/materials/library/organic.dusttower",
+  "record": {
+   "id": "organic.dusttower",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.dusttower\"",
+    "reuse": "the W outer wall dust towers (tinted: the red dust reef and dust spire); any colonial mound"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.pavement.desert.png",
+  "out": "core/materials/library/ground.pavement.desert",
+  "record": {
+   "id": "ground.pavement.desert",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.pavement.desert\"",
+    "reuse": "the Outlands cold desert plateau (Z5); any desert pavement, reg or gibber plain"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.schist.emerald.png",
+  "out": "core/materials/library/rock.schist.emerald",
+  "record": {
+   "id": "rock.schist.emerald",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.schist.emerald\"",
+    "reuse": "the Outlands gem hills emerald workings; any dark schist or gem-bearing metamorphic rock (reads as folded gneiss with calcite veins)"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ice.lake.saltrim.png",
+  "out": "core/materials/library/ice.lake.saltrim",
+  "record": {
+   "id": "ice.lake.saltrim",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ice.lake.saltrim\"",
+    "reuse": "the Outlands frozen plateau lakes (Z8); any frozen saline lake or pan"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.limestone.opal.png",
+  "out": "core/materials/library/rock.limestone.opal",
+  "record": {
+   "id": "rock.limestone.opal",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.limestone.opal\"",
+    "reuse": "the SW highlands opal-shell limestone; any ammolite or shell-bed limestone"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.cap.violet.png",
+  "out": "core/materials/library/organic.cap.violet",
+  "record": {
+   "id": "organic.cap.violet",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.cap.violet\"",
+    "reuse": "the Outlands veil caps and fog-woods caps; any violet or teal alien fungal cap"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.wadi.cobble.png",
+  "out": "core/materials/library/ground.wadi.cobble",
+  "record": {
+   "id": "ground.wadi.cobble",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.wadi.cobble\"",
+    "reuse": "the Outlands dry wadi floors (Z7); any dry river bed or arroyo (the twin \"Riverbed Pebble Texture\" is browner and duller)"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.plane.png",
+  "out": "core/materials/library/bark.plane",
+  "record": {
+   "id": "bark.plane",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.plane\"",
+    "reuse": "sycamore creek (nhighlands) and the swlowlands gorge; any sycamore or plane tree"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.pleat.skin.png",
+  "out": "core/materials/library/organic.pleat.skin",
+  "record": {
+   "id": "organic.pleat.skin",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.pleat.skin\"",
+    "reuse": "the Outlands pleat columns and drum clusters; any ribbed succulent-like alien skin"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "stone.geode.druze.png",
+  "out": "core/materials/library/stone.geode.druze",
+  "record": {
+   "id": "stone.geode.druze",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"stone.geode.druze\"",
+    "reuse": "the Throne geode pod crystal cores (geocore); any crystal-lined cavity"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.lace.copper.png",
+  "out": "core/materials/library/organic.lace.copper",
+  "record": {
+   "id": "organic.lace.copper",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.lace.copper\"",
+    "reuse": "the Outlands gem hills lace crust; any copper-stained rock crust (the paler, thinner-laced of two takes)"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.marl.blue.png",
+  "out": "core/materials/library/rock.marl.blue",
+  "record": {
+   "id": "rock.marl.blue",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.marl.blue\"",
+    "reuse": "the NW lowlands blue-grey marl gorge; any soft clay bank or mudstone"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.biocrust.fog.png",
+  "out": "core/materials/library/ground.biocrust.fog",
+  "record": {
+   "id": "ground.biocrust.fog",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.biocrust.fog\"",
+    "reuse": "the Outlands fog woods floor (Z3); any damp alien biocrust or moss crust"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.snow.drift.png",
+  "out": "core/materials/library/ground.snow.drift",
+  "record": {
+   "id": "ground.snow.drift",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.snow.drift\"",
+    "reuse": "the Yeti kit ground and banked snow; any wind-rippled snow field"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ }
+]

@@ -146,5 +146,15 @@ SHIGH.buildFloor=function(R,q){
  // corkscrew rush standing in the tarn's shallows
  BIO.grid(2.6,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;return .5*q*smooth(1.0,.3,BIO.depth(x,z));},
   (x,y,z,d)=>{tuft('rush',x,Math.max(y,BIO.waterH(x,z)-.35),z,rr(.6,1.1),rr(.5,.8),leafCol(PAL.rush,1.25,.03));st.rush++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,.8],pad:1,box:BIO.window('water')});
+ // the paramo's bunchgrass (2026-10-26): crossed tuft cards (card.ichu in the library) standing between the swirl
+ // tussocks in the near band, so close up the open paramo and the dry side are a sward with height, not the ground's
+ // printed swirls alone. KRAND, one draw set per 3.2 m cell (hash of the cell), so it moves nothing placed before it
+ {const CELLB=3.2,BX=BIO.originBox(L.floor[0]),u=(ix,iz,k)=>KRAND.unit(KRAND.hash(600091,ix,iz,k));st.bunch=0;
+  for(let iz=Math.floor(BX[1]/CELLB);iz<=Math.ceil(BX[3]/CELLB);iz++)for(let ix=Math.floor(BX[0]/CELLB);ix<=Math.ceil(BX[2]/CELLB);ix++){
+   const x=(ix+u(ix,iz,1))*CELLB,z=(iz+u(ix,iz,2))*CELLB;if(Math.hypot(x,z)>R||BIO.lodD(x,z)>=L.floor[0])continue;
+   const Z=zones(x,z),a=q*(Z.paramo*(1-Z.crag)*.34+Z.dry*.2)*(1-Z.bog)*(1-smooth(.3,.6,Z.cliff));if(a<=0||u(ix,iz,3)>a)continue;
+   if(BIO.mask(x,z)<=0||BIO.depth(x,z)>-.15||!BIO.clearOf(x,z,.6)||blocked(x,z,.5))continue;
+   const set=Z.dry>Z.paramo?[0xd8c48a,0xc8b07a,0xe0cc96]:PAL.tussock,h=.45+.4*u(ix,iz,4),w=h*(.8+.4*u(ix,iz,6));
+   BIO.put('bunch',[x,Y(x,z)-.05,z],qEuler(0,u(ix,iz,5)*TAU,0),[w,h,w],bright(C(set[Math.floor(u(ix,iz,7)*set.length)]),1.05+.3*u(ix,iz,8)));st.bunch++;}}
  return{under:st};};
 })();

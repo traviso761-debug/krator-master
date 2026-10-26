@@ -23,12 +23,12 @@ const D={
  pasque:(x,y,z)=>{const h=rr(.18,.32);tuft('pasque',x,y,z,h,h*1.1,col('pasque',[0xffffff],1));},
  fireweed:(x,y,z)=>{const h=rr(.9,1.6);tuft('fireweed',x,y,z,h,h*.55,col('fireweed',[0xffffff],1));},
  cotton:(x,y,z)=>{const h=rr(.3,.55);tuft('cotton',x,y,z,h,h*1.1,col('cotton',[0xffffff],1));},
- deermoss:(x,y,z)=>pad('deermoss',x,y,z,rr(.25,.6),col('deer',PAL.deer,.9)),
+ deermoss:(x,y,z)=>{if(NWOW.LIB.deer){const h=rr(.1,.22);tuft('deermoss',x,y,z,h,h*rr(1.5,2.2),col('deer',PAL.deer,.9));}else pad('deermoss',x,y,z,rr(.25,.6),col('deer',PAL.deer,.9));},
  birch:(x,y,z)=>{const s=rr(.5,.95);BIO.put('birch',[x,y+s*.35,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*1.5,s*.8,s*1.5],col('birch',PAL.birch,1.05),{n:[0,1,0]});},
  willow:(x,y,z)=>{const s=rr(.8,1.4);BIO.put('willow',[x,y+s*.45,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*1.3,s,s*1.3],col('willow',PAL.willow,1.1),{n:[0,1,0]});
   if(S==='spring'||S==='summer'){const n=ri(2,5);for(let k=0;k<n;k++){const a=rr(0,TAU),r=s*rr(.2,.5);BIO.put('catkin',[x+Math.cos(a)*r,y+s*rr(.55,.9),z+Math.sin(a)*r],qEuler(0,rr(0,TAU),0),rr(.07,.12),C(pick(PAL.catkin)));}}},
  heath:(x,y,z)=>{const h=rr(.15,.3);tuft('heath',x,y,z,h,h*2.2,col('heath',[0xffffff],1));},
- cloud:(x,y,z)=>{pad('cloud',x,y+.04,z,rr(.18,.3),col('cloud',PAL.cloud,1));if((S==='summer'||S==='autumn')&&rng()<.6)BIO.put('berry',[x+rr(-.05,.05),y+.12,z+rr(-.05,.05)],null,rr(.012,.018),C(pick(PAL.cloudBerry)));},
+ cloud:(x,y,z)=>{if(NWOW.LIB.cloud){const h=rr(.1,.18);tuft('cloud',x,y,z,h,h*rr(1.6,2.2),col('cloud',PAL.cloud,1));}else pad('cloud',x,y+.04,z,rr(.18,.3),col('cloud',PAL.cloud,1));if((S==='summer'||S==='autumn')&&rng()<.6)BIO.put('berry',[x+rr(-.05,.05),y+.12,z+rr(-.05,.05)],null,rr(.012,.018),C(pick(PAL.cloudBerry)));},
  snowball:(x,y,z)=>{const h=rr(.18,.32);tuft('snowball',x,y,z,h,h*.9,col('snowball',[0xffffff],1));},
  edelweiss:(x,y,z)=>BIO.put('edelweiss',[x,y+.08,z],qEuler(-Math.PI/2+rr(-.3,.3),rr(0,TAU),0),rr(.06,.1),col('edel',PAL.edel,1)),
  cushion:(x,y,z)=>{const r=rr(.25,.7);BIO.put('cushion',[x,y-.03,z],qEuler(0,rr(0,TAU),0),[r*2,r*1.1,r*2],bright(C(pick(PAL.cushion)),rr(.9,1.1)));

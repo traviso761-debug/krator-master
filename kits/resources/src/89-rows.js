@@ -10,5 +10,7 @@ const FAMILIES=[
  {name:'Coal',keys:['node-coal-low','node-coal-medium','node-coal-high']},
  {name:'Sulfur',keys:['node-sulfur-low','node-sulfur-medium','node-sulfur-high']},
  {name:'Saltpeter',keys:['node-saltpeter-low','node-saltpeter-medium','node-saltpeter-high']},
+ {name:'Potash (the Catch)',keys:['node-potash-low','node-potash-medium','node-potash-high']},
+ {name:'Alkali salts (the Catch)',keys:['node-alkali-low','node-alkali-medium','node-alkali-high']},
  {name:'Oil (a derrick works it)',keys:['node-oil-low','node-oil-medium','node-oil-high']}
 ];
