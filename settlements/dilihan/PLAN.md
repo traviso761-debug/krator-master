@@ -13,6 +13,11 @@ Talia's but with Jimjamite flourish; the region was loyalist, but its remoteness
 state; Iziz maintains extensive diplomatic contact, increasing lately as relations with the Hykkousoi have improved,
 allowing the Izani to cross their territory.
 
+The owner, 2026-10-26 (`LORE.md` §6.2): the independence has a date. Dilihan's lifeline to Iziz was **Port Visas**, on
+the coast, until a Screamer raid all but destroyed it about 120 years ago; since then the colony has governed itself,
+until the Hykkousoi reconciliation reopened the sea road. Dilihan is no longer the Empire's only veterans' enclave:
+**Shell Province**, west of the Beast Riders, is held far more tightly through Port Goto; **Nusidi** is a ruin.
+
 ## 0. What the build is
 
 | | |
