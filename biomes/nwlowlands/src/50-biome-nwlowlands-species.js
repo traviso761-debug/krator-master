@@ -101,27 +101,27 @@ NWLOW.SPECIES=[
   tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'no'}},
  /*8*/{key:'glowwillow',name:'Glow-willow',habit:'willow',H:[16,24],rb:[1.0,1.5],crownR:[10,15],bk:'bk_silver',bark:[0xd8dcdc,0xccd2d4,0xe2e4e2],leaf:PAL.willow,
   tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'yes'}},
- /*9*/{key:'ginkgo',name:'Column ginkgo',habit:'fastigiate',H:[30,42],rb:[.6,1.0],crownR:[5,8],bk:'bk_smooth',bark:[0x8a948a,0x7e887e,0x96a094],leaf:PAL.ginkgo,item:'ginkgo',
+ /*9*/{key:'ginkgo',name:'Column ginkgo',habit:'fastigiate',H:[30,42],rb:[.6,1.0],crownR:[5,8],bk:'bk_smooth',alt2:0x8e8670,bark:[0x8a948a,0x7e887e,0x96a094],leaf:PAL.ginkgo,item:'ginkgo',
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'no'}},
  /*10*/{key:'paperbark',name:'Pale paperbark',habit:'column',H:[20,30],rb:[.4,.7],crownR:[5,8],bk:'bk_paper',bark:[0xe4e0d0,0xdcd8c8,0xece8da],leaf:PAL.gum,item:'lance',
   crotch:[.45,.6],limbs:[3,5],tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
- /*11*/{key:'poplar',name:'Spindle poplar',habit:'fastigiate',H:[35,48],rb:[.6,.9],crownR:[3.5,5.5],bk:'bk_smooth',bark:[0xa8b2a6,0x9ca69a,0xb4bcb0],leaf:PAL.poplar,item:'broad',
+ /*11*/{key:'poplar',name:'Spindle poplar',habit:'fastigiate',H:[35,48],rb:[.6,.9],crownR:[3.5,5.5],bk:'bk_smooth',alt2:0x3e4440,bark:[0xa8b2a6,0x9ca69a,0xb4bcb0],leaf:PAL.poplar,item:'broad',
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'yes'}},
  /*12*/{key:'kauri',name:'Column kauri',habit:'column',H:[50,70],rb:[2.0,3.0],crownR:[12,18],bk:'bk_plate',bark:[0x8a989e,0x7e8c94,0x96a2a8],leaf:PAL.kauri,item:'glossy',
   crotch:[.66,.74],limbs:[4,6],tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'no'}},
- /*13*/{key:'towerash',name:'Tower ash',habit:'column',H:[80,105],rb:[2.0,3.0],crownR:[12,18],bk:'bk_ghost',bark:[0xd4d8d0,0xcacec6,0xdedfd6],leaf:PAL.gum,item:'lance',
+ /*13*/{key:'towerash',name:'Tower ash',habit:'column',H:[80,105],rb:[2.0,3.0],crownR:[12,18],bk:'bk_ghost',alt2:0x8c9a8c,bark:[0xd4d8d0,0xcacec6,0xdedfd6],leaf:PAL.gum,item:'lance',
   crotch:[.72,.8],limbs:[4,6],ribbons:true,tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'both'}},
- /*14*/{key:'needlecypress',name:'Needle cypress',habit:'spire',H:[24,36],rb:[.5,.8],crownR:[2.2,3.4],bk:'bk_fibre',bark:[0x8a949a,0x7e8890,0x96a0a6],leaf:PAL.cypress,item:'needle',
+ /*14*/{key:'needlecypress',name:'Needle cypress',habit:'spire',H:[24,36],rb:[.5,.8],crownR:[2.2,3.4],bk:'bk_fibre',alt2:0x84583c,bark:[0x8a949a,0x7e8890,0x96a0a6],leaf:PAL.cypress,item:'needle',
   columnar:true,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*15*/{key:'sheoak',name:'Drape she-oak',habit:'column',H:[24,34],rb:[.4,.7],crownR:[5,8],bk:'bk_fibre',bark:[0x6e7c78,0x627070,0x7a8884],leaf:PAL.sheoak,item:'drape',
+ /*15*/{key:'sheoak',name:'Drape she-oak',habit:'column',H:[24,34],rb:[.4,.7],crownR:[5,8],bk:'bk_fibre',alt2:0x4a3e36,bark:[0x6e7c78,0x627070,0x7a8884],leaf:PAL.sheoak,item:'drape',
   crotch:[.4,.55],limbs:[4,6],tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'both'}},
- /*16*/{key:'cragpine',name:'Crag pine',habit:'spire',H:[30,42],rb:[.5,.8],crownR:[6,10],bk:'bk_plate',bark:[0x5a8a88,0x4e7e7c,0x669694],leaf:PAL.pine,item:'needle',
+ /*16*/{key:'cragpine',name:'Crag pine',habit:'spire',H:[30,42],rb:[.5,.8],crownR:[6,10],bk:'bk_plate',alt2:0x8a5a34,bark:[0x5a8a88,0x4e7e7c,0x669694],leaf:PAL.pine,item:'needle',
   flatTop:true,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
  /*17*/{key:'grasstree',name:'Grass tree',habit:'grasstree',H:[3,6],rb:[.25,.4],crownR:[1.5,2.4],bk:'bk_char',bark:[0x2e3238,0x383c42,0x26292e],leaf:PAL.gum,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*18*/{key:'banksia',name:'Candle banksia',habit:'banksia',H:[6,12],rb:[.25,.4],crownR:[3,5],bk:'bk_smooth',bark:[0x8a9090,0x7e8484,0x969c9a],leaf:PAL.banksia,
+ /*18*/{key:'banksia',name:'Candle banksia',habit:'banksia',H:[6,12],rb:[.25,.4],crownR:[3,5],bk:'bk_smooth',alt2:0x8a6448,bark:[0x8a9090,0x7e8484,0x969c9a],leaf:PAL.banksia,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*19*/{key:'wattle',name:'Tall wattle',habit:'column',H:[16,24],rb:[.35,.55],crownR:[5,8],bk:'bk_smooth',bark:[0x7a8a94,0x6e7e88,0x8694a0],leaf:PAL.wattle,item:'feather',
+ /*19*/{key:'wattle',name:'Tall wattle',habit:'column',H:[16,24],rb:[.35,.55],crownR:[5,8],bk:'bk_smooth',alt2:0x5e7486,bark:[0x7a8a94,0x6e7e88,0x8694a0],leaf:PAL.wattle,item:'feather',
   crotch:[.35,.5],limbs:[4,6],flower:PAL.wattleGold,tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'no'}},
  // the bamboos: placed by the GROVE pass (their own sub-biome), not the tree passes
  /*20*/{key:'skybamboo',name:'Sky bamboo',habit:'bamboo',H:[26,36],rb:[.08,.14],crownR:[2,3],bark:PAL.culm,leaf:PAL.bamboo,
@@ -506,16 +506,16 @@ NWLOW.G=G;
 // ---------------------------------------------------------------- materials
 const M=NWLOW.MAT={
  bk:{
-  smooth:NWLOW.barkMat2(BK.smooth,'smooth',{alt:0x6a8a70,gloss:.06}),
+  smooth:NWLOW.barkMat2(BK.smooth,'smooth',{c2:true,alt:0x6a8a70,gloss:.06}),
   ring:NWLOW.barkMat2(BK.ring,'ring',{alt:0x5a6660,gloss:.2}),
   fern:NWLOW.barkMat2(BK.fern,'fern',{alt:0x5a4a3a,gloss:0}),
-  ghost:NWLOW.barkMat2(BK.ghost,'ghost',{alt:0xb8bab4,gloss:.08}),
+  ghost:NWLOW.barkMat2(BK.ghost,'ghost',{c2:true,alt:0xb8bab4,gloss:.08}),
   bluegum:NWLOW.barkMat2(BK.bluegum,'bluegum',{alt:0xe0dcc8,gloss:.05}),
   birch:NWLOW.barkMat2(BK.birch,'birch',{alt:0x1e2022,gloss:.05}),
-  fibre:NWLOW.barkMat2(BK.fibre,'fibre',{alt:0x6a5a4e,gloss:0}),
+  fibre:NWLOW.barkMat2(BK.fibre,'fibre',{c2:true,alt:0x6a5a4e,gloss:0}),
   silver:NWLOW.barkMat2(BK.silver,'silver',{alt:0xa8b0b4,gloss:.25}),
   paper:NWLOW.barkMat2(BK.paper,'paper',{alt:0xb4a484,gloss:0}),
-  plate:NWLOW.barkMat2(BK.plate,'plate',{alt:0x6a4a38,gloss:0}),
+  plate:NWLOW.barkMat2(BK.plate,'plate',{c2:true,alt:0x6a4a38,gloss:0}),
   char:NWLOW.barkMat2(BK.char,'char',{alt:0x8a8a86,gloss:0})},
  wood:BIO.barkMat(NWLOW.WOODTEX),
  rock:BIO.barkMat(NWLOW.ROCKTEX),
@@ -569,7 +569,7 @@ NWLOW.LIB=BIO.libSwap('nwlowlands',NWLOW.MAT);
 [['smooth','Smooth bark (meranti, ginkgo, poplar, wattle, banksia)',[3,5]],['ring','Ringed stems (mist palm, pandan)',[1,1.6]],['fern','Tree-fern trunks',[1.2,1.6]],
  ['ghost','Ghost bark (ghost gum, tower ash)',[3,5]],['bluegum','Ribbon bark (blue gum)',[2.4,6]],['birch','Birch bark',[1.2,2.2]],['fibre','Fibrous bark (spire cedar, cypress, she-oak)',[2.4,5]],
  ['silver','Silver bark (glow-willow)',[2.4,4]],['paper','Paperbark',[2,2.4]],['plate','Plated bark (kauri, crag pine)',[2,3.4]],['char','Grass-tree trunks',[1,1.4]]]
- .forEach(b=>BIO.bucket('bk_'+b[0],M.bk[b[0]],{label:b[1],uvScale:b[2]}));
+ .forEach(b=>BIO.bucket('bk_'+b[0],M.bk[b[0]],{label:b[1],uvScale:b[2],c2:!!M.bk[b[0]].userData.bio.opts.c2}));   /* c2: the species' own second colour per vertex (alt2), where the core's buckets carry it */
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});

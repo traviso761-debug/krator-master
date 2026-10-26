@@ -423,7 +423,7 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
  const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>farImp(T)?0:SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
  TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const t0=cur(),S=SP[T.sp],rg=T.row?NWLOW.LOD.avenue:NWLOW.LOD.tree;
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;}
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;BIO.c2=S.alt2==null?null:S.alt2;B[S.habit](T,st,T.lv);BIO.c2=null;st.heroes++;}
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
   if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
@@ -439,5 +439,5 @@ NWLOW._canopyH=function(x,z){let h=0;for(const T of NWLOW.TREES){if(Math.hypot(x
 NWLOW.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
 NWLOW.grow=function(T,lv){const m=means();if(!m.culm)m.culm=texMean(NWLOW.CULMTEX);
  const st={trunk:0,limb:0,far:0,lite:0,limbs:0,clumps:0,blooms:0,moss:0,fronds:0,veils:0,lanterns:0,epi:0,culms:0,heroes:0,fars:0,byS:SP.map(()=>0)};
- T.lv=lv;if(lv===0){if({1:1,2:1,3:1,17:1,18:1}[T.sp])buildFarSmall(T,st,false);else buildFar(T,T.seed%7,st,false);}else B[SP[T.sp].habit](T,st,lv);return st;};
+ T.lv=lv;if(lv===0){if({1:1,2:1,3:1,17:1,18:1}[T.sp])buildFarSmall(T,st,false);else buildFar(T,T.seed%7,st,false);}else{BIO.c2=SP[T.sp].alt2==null?null:SP[T.sp].alt2;B[SP[T.sp].habit](T,st,lv);BIO.c2=null;}return st;};
 })();

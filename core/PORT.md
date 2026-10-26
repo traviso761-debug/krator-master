@@ -34,6 +34,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/10-core-head.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 33.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
 | `biome/30-core-foliage.js` | 18.7 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
+| `biome/31-core-dither.js` | 3.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the hex-cell ground dither (BIO.DITHER GLSL, X4) and its JS twin ditherCell: ground.gdshader writes the same functions |
+| `biome/31b-core-leafset.js` | 9.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | leaves held by the stem: stems, stem-pivoted cards and sprays (geometry), BIO.leafOn/leafAlong placement on KRAND (plain maths) |
 | `biome/32-core-variants.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `biome/35-core-anim.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | fauna paths are data; the body shader is [G shader] |
 | `biome/36-core-walker.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | walkers: a pose from the clock (loop, stops, gait); no three.js, no DOM |

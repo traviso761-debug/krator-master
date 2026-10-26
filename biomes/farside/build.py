@@ -83,7 +83,7 @@ if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
 # the biome core (core/biome): one copy for every kit. 32: the variants; 44: the stage the export carries
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=core('biome',f)
 # core/rand and core/tags: with BIO.init({tags}) every item set, instance and registered volume is a core/tags record

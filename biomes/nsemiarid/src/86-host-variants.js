@@ -23,7 +23,7 @@ const WMAT=new Map();
 // THE SPIN (2026-10-22): a material whose kit options say spin (the helicopter trumpet's bell, throat and blades) turns
 // its vertices about their item's own origin (aPivot, written by harvest(): the stalk's top) round the vertical, by
 // SPIN.value (the wind integrated, 89b-host-atmos.js NSWIND.spin), each tree at its own speed and phase
-const SPIN={value:0};
+const SPIN=BIO.SPIN;   /* the core's (core/biome 30-core-foliage.js, B9): the kit's spin materials turn by it in ?unique=1 too */
 const SPIN_GLSL=['float _sp=0.0;','#ifdef USE_INSTANCING','_sp=dot(instanceMatrix[3].xyz,vec3(0.173,0.091,0.137));','#endif',
  'float _sa=uSpin*(0.8+0.4*fract(_sp*3.7))+_sp*6.2831;float _sc=cos(_sa),_ss=sin(_sa);'].join('\n');
 function leafHook(o){return function(sh){
@@ -123,18 +123,9 @@ function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-l
 // the record nearest a point (the inspector names a tree from it)
 function nearest(x,z,r){let b=null,bd=r||1e9;for(const T of NSEMIARID.TREES){const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;}
 TICKS.push(()=>{if(typeof NSWIND!=='undefined')SPIN.value=NSWIND.spin;});
-// THE SPIN IN ?unique=1 (2026-10-26): there the trumpet's bell, throat and blades are the core's instanced items, drawn
-// with the core's foliage shader, which has no spin. Each item's own origin is the crown's pivot (the stalk's top), so
-// the turn is the same one, made about the instance's own up axis before its matrix: this wraps the core's hook on the
-// two spin materials, adding the turn after begin_vertex (which the core leaves alone), and keys the program apart
-function spinUnique(m){if(!m||m.userData.spinUnique)return;const base=m.onBeforeCompile,ck=m.customProgramCacheKey();
- /* its own names: the core's hook already declares _sc and _ph in main() */
- const G=SPIN_GLSL.replace(/_sp\b/g,'_usp').replace(/_sa\b/g,'_usa').replace(/_sc\b/g,'_usc').replace(/_ss\b/g,'_uss');
- m.onBeforeCompile=function(sh){base.call(this,sh);sh.uniforms.uSpin=SPIN;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uSpin;')
-   .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\n'+G+'\nobjectNormal.xz=vec2(objectNormal.x*_usc-objectNormal.z*_uss,objectNormal.x*_uss+objectNormal.z*_usc);')
-   .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.xz=vec2(transformed.x*_usc-transformed.z*_uss,transformed.x*_uss+transformed.z*_usc);');};
- m.customProgramCacheKey=()=>ck+'|uspin';m.userData.spinUnique=true;m.needsUpdate=true;}
-const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,SPIN,spinUnique,
+// THE SPIN IN ?unique=1: there the trumpet's bell, throat and blades are the core's instanced items, and their materials'
+// spin option turns them in the core's foliage shader (BIO.foliageHook o.spin, 2026-10-26: the same turn, about each item's
+// own origin, the crown's pivot, by this SPIN); the host's wrap of the core hook that did it before is gone.
+const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,SPIN,
  init(){growAll();api.ready=true;update(camera.position,true);},update};
 return api;})();

@@ -86,11 +86,20 @@ function blocked(x,z,pad){const L=HASH[Math.floor(x/HC)+','+Math.floor(z/HC)];if
 NHL.blocked=blocked;
 
 // ---------------------------------------------------------------- foliage and epiphyte helpers
-function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
+// LEAVES HELD BY THE STEM (core/biome 31b-core-leafset.js, the owner 2026-10-26): with NHL.LEAFSET the items it names are
+// sprays (BIO.geo.clump({stem})) hung from their twig by BIO.leafOn: the stem at the spot, the blade out along the twig
+// (twig: the bough's direction there; none: out from the crown's centre), drooping, the face to the sky, jittered from
+// KRAND by the spot. The page's random stream draws exactly as before (the old turn is still drawn), so nothing else moves.
+// ?leafset=0 shows the old random tripods. Pilot: the broadleaf crowns (B.broad's maple and broad items).
+function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,twig){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.78,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+ const q0=qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3));
+ if(NHL.LEAFSET&&NHL.LEAFSET[item]){const tw=twig||[x-cx,(y-cy)*.5+.3*ey,z-cz],tl=Math.hypot(tw[0],tw[1],tw[2])||1;
+  const r=BIO.leafOn({a:[x-tw[0]/tl,y-tw[1]/tl,z-tw[2]/tl],b:[x,y,z]},1,{seed:KRAND.hash(3171,Math.round(x*50),Math.round(y*50),Math.round(z*50)),angle:.55,droop:.25,roll:.35,pitch:.2});
+  BIO.put(item,[x,y,z],BIO.leafQ(r),[size*.8,size*.8,size*.8],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});return;}
+ BIO.put(item,[x,y,z],q0,[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 // a drooping SPRAY (frond card pinned at the branch, hanging out along a)
 function sprayAt(x,y,z,a,L,pitch,col){BIO.put('spray',[x,y,z],qEuler(rr(-.25,.25),-a,pitch),[L,L*rr(.8,1),L*rr(1.5,2)],col);}   // broad: a narrow spray reads as a fishbone at range
 // HANGING MOSS (temperate) or BEARD LICHEN (boreal) off a point
@@ -203,11 +212,11 @@ B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.ste
     if(f.drape&&moss>.3)for(let i=1;i<5;i++)if(rng()<f.drape*moss*.85){const p=pts[i];drape(p.x+rr(-.4,.4),p.y-p.r,p.z+rr(-.4,.4),rr(1.5,5.5)*(f.drape>.8?1.2:.8),false);st.drapes++;}
     if(f.bulbs&&rng()<f.bulbs){const p=pts[ri(2,4)];glowCluster(p.x,p.y-p.r,p.z,ri(3,8),st);}}
    else BIO.beam('rod',P3(pts[0]),P3(pts[5]),r0,.08,rodCol(S,k));
-   for(let i=2;i<=5;i++)spots.push(pts[i]);}
+   for(let i=2;i<=5;i++){const p=pts[i],q=pts[i-1];p.d=[p.x-q.x,p.y-q.y,p.z-q.z];spots.push(p);}}
   spots.push({x:top.x,y:T.y0+H*.95,z:top.z});}
  /* the mid-range tree (lv 1, 100-500 m): its three boughs carry larger masses, and one spot in two a second one (2026-10-26: the conifers' lv-1 treatment; read sparse at 100-300 m) */
  const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72,lvK=lv===2?1:1.3,hcM=lv===2?hc:shade(hc,-.16);   /* and a shade darker: lit whole with no inner crown behind them, its masses read lime against the hero trees */
- spots.forEach(p=>{for(let c=0,m=lv===2?cnt:(rng()<.5?2:1);c<m;c++){const sz=rr(f.clump[0],f.clump[1])*lvK;clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hcM,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
+ spots.forEach(p=>{for(let c=0,m=lv===2?cnt:(rng()<.5?2:1);c<m;c++){const sz=rr(f.clump[0],f.clump[1])*lvK;{const jx=rr(-1.2,1.2),jy=rr(-.3,1.2),jz=rr(-1.2,1.2),ls=NHL.LEAFSET&&NHL.LEAFSET[S.item]?.25:1;clumpAt(S.item,p.x+jx*ls,p.y+jy*ls,p.z+jz*ls,sz,.58,hcM,cx,cy,T.z,T.crownR,H*.28,p.d);}st.clumps++;
   if(f.berries&&lv>=1&&rng()<.6)for(let b=0,m=lv===2?ri(5,10):3;b<m;b++)BIO.put('berry',[p.x+rr(-1,1),p.y+rr(-.6,.4),p.z+rr(-1,1)],null,rr(.06,.09),bright(C(pick(PAL.berry)),1.1));}});
  // SUCKERS: the old lime's skirt of leafy shoots round its foot
  if(f.mast&&lv===2)mastOn(spots,f.mast,st);
