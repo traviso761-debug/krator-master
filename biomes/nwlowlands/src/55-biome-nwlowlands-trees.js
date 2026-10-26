@@ -21,7 +21,7 @@ NWLOW.TREES=[];
 // near / mid / far bands, the understorey under the crowns, fallen logs, the dressing on a world's
 // structures. Equal ranges share a mesh per item per chunk (the passes use many of the same items),
 // so they are kept to a few values: each distinct one is a draw call per item per chunk in view.
-NWLOW.LOD={tree:1200,grove:1200,avenue:2000,floor:1200,floorMid:1200,farFloor:1200,under:1200,logs:1200,dress:1200};
+NWLOW.LOD={tree:1200,grove:1200,avenue:2000,floor:800,floorMid:1200,farFloor:1200,under:800,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -409,7 +409,19 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  // runtime LOD: a hero is drawn in full while the camera is within NWLOW.LOD.tree of its chunk (its foot
  // keys all of it; the avenue's row: NWLOW.LOD.avenue) and as its lite stand-in past that; a far tree is
  // only ever its impostor, always drawn. trisBySpecies counts the tree itself; the stand-ins are tris.lite.
- const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; on when the page lists it, NWLOW.IMPOSTORS false turns them off):
+ // a far tree and a hero's stand-in are one quad showing the species baked from 8 x 8 directions, in place of the blobs; every
+ // species on one atlas (64 px a view), so one item, one call a chunk as the blob bucket was. Each
+ // species bakes one of its own trees (the first hero, built again in place after the bake, its registration muted); the
+ // quad is scaled by height and turned by the tree's seed. The blobs draw no random numbers, so no tree moves.
+ const IMPON=NWLOW.IMPOSTORS==null?typeof BIO.impostor==='function':!!NWLOW.IMPOSTORS,IMPS=[],ISET=IMPON?BIO.impostorSet('nwlowlands.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{if(!B[S.habit])return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+  const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+  const rec=BIO.impostor('nwlowlands.'+S.key,()=>{const R0=window.REGISTER;window.REGISTER=null;try{B[S.habit](Object.assign({},T1),st1,2);}finally{window.REGISTER=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(!rec)return;IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>farImp(T)?0:SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
  TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const t0=cur(),S=SP[T.sp],rg=T.row?NWLOW.LOD.avenue:NWLOW.LOD.tree;
   if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;}
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;

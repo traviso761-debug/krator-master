@@ -9,14 +9,20 @@
 // from grid x grid directions over the upper hemisphere (a hemi-octahedral grid: views evenly spread, the top one straight
 // down), each into its cell of two atlases: the colour under a flat white ambient (the albedo: map, vertex and instance
 // colours, the kit's own shader hooks) and the normal (rgb, from the crown's bent normal aN where the item has one) with the
-// coverage (alpha). The tree's draws are undone: its instances, triangles and charges leave no trace in the page, and the
+// coverage (alpha). The tree is built alone (an empty BIO.host.obstacles while it builds: a tree rebuilt in place would
+// otherwise find its own crown in the way). The tree's draws are undone: its instances, triangles and charges leave no trace in the page, and the
 // random numbers it draws come after every placement (call it last). opt: grid (8), cell (128 px: 1024 px atlases, 8 MB
 // of the two at RGBA8), label, at ([x, y, z]: where build() puts the tree's foot when it builds it in place, on a real
 // tree's spot so its roots meet the ground; default the origin).
 //
-// THE DRAW. BIO.impostorItem(name, imp, opt) defines an instanced item (BIO.def: a unit quad, the impostor's material) that
-// the kit puts in place of a blob: BIO.put(name, [x, y, z], qEuler(0, yaw, 0), scale, colour), scale relative to the baked
-// tree, colour a tint (white: as baked). Its vertex shader turns the quad to the camera at the tree's centre, finds the
+// SETS. Species share one material, one atlas pair and so one item (one draw call a chunk, as the blob bucket was) when they
+// are given one set: const S = BIO.impostorSet(key, {grid, cell (64), slots (up to 25)}), then BIO.impostor(key, build,
+// {set: S, ...}) per species; each takes the next slot of the set's atlas (slots a side: the square root, rounded up).
+// Without a set a species has a set of its own.
+//
+// THE DRAW. BIO.impostorItem(name, impOrSet, opt) defines an instanced item (BIO.def: a unit quad, the set's material, a
+// per-instance aImp = [slot]) that the kit puts in place of a blob: BIO.impostorPut(name, imp, [x, y, z], yaw, scale, colour),
+// scale relative to the baked tree, colour a tint (null: as baked). Its vertex shader turns the quad to the camera at the tree's centre, finds the
 // three baked views nearest the camera's direction (in the tree's own frame, so its yaw turns it), and projects the quad onto
 // each view's plane; the fragment blends the three by their weights and coverage, cuts at half coverage and lights the
 // blended normal by the scene's sun, ambient and hemisphere lights (read each frame from the scene), with the scene's fog.
@@ -42,11 +48,12 @@ const GLSL_FN=[
  'vec3 impDec(vec2 uv){vec2 t=uv*2.0-1.0;vec2 p=vec2(t.x+t.y,t.x-t.y)*0.5;return normalize(vec3(p.x,1.0-abs(p.x)-abs(p.y),p.y));}',
  'vec2 impEnc(vec3 d){d/=(abs(d.x)+abs(d.y)+abs(d.z));return vec2(d.x+d.z,d.x-d.z)*0.5+0.5;}',
  'void impBasis(vec3 d,out vec3 r,out vec3 u){vec3 up=abs(d.y)>0.999?vec3(0.0,0.0,-1.0):vec3(0.0,1.0,0.0);r=normalize(cross(up,d));u=cross(d,r);}'].join('\n');
-const VERT=['uniform float uN;','uniform float uR;','uniform vec3 uC;',
+const VERT=['uniform float uN;','uniform float uK;','uniform vec4 uRS[25];','attribute vec4 aImp;',
  'varying vec4 vF0;','varying vec4 vF1;','varying vec4 vF2;','varying vec3 vW;','varying vec3 vR0;','varying vec3 vR1;','varying vec3 vR2;','varying vec3 vTint;',
  '#include <fog_pars_vertex>',GLSL_FN,
+ 'vec2 impSlot;',
  'vec4 impFrame(vec2 k,vec3 q,vec3 d){vec3 dk=impDec(k/(uN-1.0)),rk,uk;impBasis(dk,rk,uk);vec3 Q=q-d*(dot(q,dk)/max(dot(d,dk),1e-3));vec2 ab=vec2(dot(Q,rk),dot(Q,uk));',
- ' return vec4((k+ab*0.5+0.5)/uN,ab);}',
+ ' return vec4((impSlot+(k+ab*0.5+0.5)/uN)/uK,ab);}',
  'void main(){',
  '#ifdef USE_INSTANCING',
  ' mat4 IM=instanceMatrix;',
@@ -55,6 +62,7 @@ const VERT=['uniform float uN;','uniform float uR;','uniform vec3 uC;',
  '#endif',
  ' vec3 c0=IM[0].xyz,c1=IM[1].xyz,c2=IM[2].xyz;float s=max(length(c0),max(length(c1),length(c2)));c0=normalize(c0);c1=normalize(c1);c2=normalize(c2);',
  ' vR0=c0;vR1=c1;vR2=c2;',
+ ' float sl=floor(aImp.x+0.5);impSlot=vec2(mod(sl,uK),floor(sl/uK));vec4 RS=uRS[int(sl)];vec3 uC=RS.yzw;float uR=RS.x;',
  ' vec3 O=(modelMatrix*vec4(IM[3].xyz+(c0*uC.x+c1*uC.y+c2*uC.z)*s,1.0)).xyz;',
  ' vec3 dw=normalize(cameraPosition-O),d=vec3(dot(c0,dw),dot(c1,dw),dot(c2,dw));d.y=max(d.y,0.0);d=normalize(d);',
  ' vec3 r,u;impBasis(d,r,u);vec3 q=r*position.x+u*position.y;',
@@ -76,7 +84,7 @@ const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform vec3
  'void impTap(vec4 F,float w,inout vec3 c,inout vec3 n,inout float a){if(w<=0.0||abs(F.z)>1.0||abs(F.w)>1.0)return;vec4 C=texture2D(uAtlas,F.xy),N=texture2D(uNorm,F.xy);',
  ' c+=w*C.rgb;n+=w*N.a*(N.rgb*2.0-1.0);a+=w*N.a;}',
  'void main(){vec3 c=vec3(0.0),n=vec3(0.0);float a=0.0;impTap(vF0,vW.x,c,n,a);impTap(vF1,vW.y,c,n,a);impTap(vF2,vW.z,c,n,a);',
- ' float W=vW.x+vW.y+vW.z;if(a<0.5*W)discard;c/=max(a,1e-4);',
+ ' float W=vW.x+vW.y+vW.z;if(a<0.35*W)discard;c/=max(a,1e-4);',
  ' vec3 nl=normalize(n+vec3(0.0,1e-4,0.0)),nw=normalize(vR0*nl.x+vR1*nl.y+vR2*nl.z);',
  ' vec3 L=uAmb+mix(uGround,uSky,nw.y*0.5+0.5)+uSunCol*max(dot(nw,uSun),0.0);',
  ' gl_FragColor=vec4(c*vTint*L,1.0);',
@@ -98,22 +106,31 @@ function readLights(){const TH=T(),sc=BIO.host.scene;if(!LU.uSun.value){LU.uSun.
  else LU.uSunCol.value.setRGB(0,0,0);}
 IMP.readLights=readLights;let ticking=false;
 
-// a species to bake: returns {key, mat, ready, radius, centre}
-BIO.impostor=function(key,build,opt){opt=opt||{};const TH=T(),N=opt.grid==null?IMP.grid:opt.grid,px=opt.cell==null?IMP.cell:opt.cell;
- if(typeof build!=='function'){BIO.err('BIO.impostor: '+key+': no build function');return null;}
- if(!(N>=2)){BIO.err('BIO.impostor: '+key+': grid under 2');return null;}
+// a set of species on one atlas pair and one material
+BIO.impostorSet=function(key,opt){opt=opt||{};const TH=T(),N=opt.grid==null?IMP.grid:opt.grid,px=opt.cell==null?(opt.slots===1?IMP.cell:64):opt.cell,max=Math.min(25,opt.slots==null?25:opt.slots);
+ if(!(N>=2)){BIO.err('BIO.impostorSet: '+key+': grid under 2');return null;}
+ if(!(max>=1)){BIO.err('BIO.impostorSet: '+key+': no slots');return null;}
  readLights();
  const blank=new TH.DataTexture(new Uint8Array(4),1,1,TH.RGBAFormat);blank.needsUpdate=true;
- const mat=new TH.ShaderMaterial({uniforms:Object.assign(TH.UniformsUtils.clone(TH.UniformsLib.fog),{uAtlas:{value:blank},uNorm:{value:blank},uN:{value:N},uR:{value:1},uC:{value:new TH.Vector3()}},LU),   /* LU: the shared light uniforms, by reference */
+ const RS=[];for(let i=0;i<25;i++)RS.push(new TH.Vector4(1,0,0,0));
+ const mat=new TH.ShaderMaterial({uniforms:Object.assign(TH.UniformsUtils.clone(TH.UniformsLib.fog),{uAtlas:{value:blank},uNorm:{value:blank},uN:{value:N},uK:{value:1},uRS:{value:RS}},LU),   /* LU: the shared light uniforms, by reference */
   vertexShader:VERT,fragmentShader:FRAG,fog:true,side:TH.DoubleSide});
- mat.userData.bio={kind:'impostor',key:BIO.kitKey(key),opts:{grid:N,cell:px}};
- const rec={key,kit:BIO.kitName||'',build,N,px,mat,ready:false,radius:1,centre:[0,0,0],at:opt.at||[0,0,0],label:opt.label||key};
- IMP.list.push(rec);
+ const set={key,N,px,max,mat,recs:[],K:1,label:opt.label||key};
+ mat.userData.bio={kind:'impostor',key:BIO.kitKey(key),opts:{grid:N,cell:px,slots:[]}};
  if(!ticking&&BIO.host.ticks){ticking=true;BIO.tick(readLights);}
+ return set;};
+// a species to bake: returns {key, set, slot, mat, ready, radius, centre}
+BIO.impostor=function(key,build,opt){opt=opt||{};
+ if(typeof build!=='function'){BIO.err('BIO.impostor: '+key+': no build function');return null;}
+ const set=opt.set||BIO.impostorSet(key,{grid:opt.grid,cell:opt.cell,slots:1,label:opt.label});if(!set)return null;
+ if(set.recs.length>=set.max){BIO.err('BIO.impostor: '+key+': set '+set.key+' is full ('+set.max+')');return null;}
+ const rec={key,kit:BIO.kitName||'',build,set,slot:set.recs.length,N:set.N,px:set.px,mat:set.mat,ready:false,radius:1,centre:[0,0,0],at:opt.at||[0,0,0],label:opt.label||key};
+ set.recs.push(rec);set.K=Math.ceil(Math.sqrt(set.recs.length));IMP.list.push(rec);set.mat.userData.bio.opts.slots.push({key:BIO.kitKey(key)});
  return rec;};
-// the item a kit puts in place of a far tree
-BIO.impostorItem=function(name,imp,opt){opt=opt||{};if(!imp||!imp.mat){BIO.err('BIO.impostorItem: '+name+': no impostor');return;}
- BIO.def(name,new (T().PlaneGeometry)(2,2),imp.mat,{label:opt.label||imp.label,cls:opt.cls||'flora',kind:opt.kind||null,tags:opt.tags||null});};
+// the item a kit puts in place of a far tree (every species of a set: one item)
+BIO.impostorItem=function(name,imp,opt){opt=opt||{};const set=imp&&(imp.set||imp);if(!set||!set.mat){BIO.err('BIO.impostorItem: '+name+': no impostor');return;}
+ BIO.def(name,new (T().PlaneGeometry)(2,2),set.mat,{attrs:['aImp'],label:opt.label||imp.label,cls:opt.cls||'flora',kind:opt.kind||null,tags:opt.tags||null});};
+BIO.impostorPut=function(name,imp,pos,yaw,scale,col){BIO.put(name,pos,BIO.fn.qEuler(0,yaw||0,0),scale==null?1:scale,col==null?null:col,{aImp:[imp.slot,0,0,0]});};
 
 // one kit's stores as meshes in a scratch group (bake's work, for the capture: nothing is charged, tagged or kept)
 function scratchMeshes(R){const TH=T(),G=new TH.Group();
@@ -149,11 +166,11 @@ function normalMat(src,hasAN,cache){const k=src.uuid+(hasAN?'|n':'');if(cache.ha
 // one species: build, render the views, read the atlases back
 function capture(rec,renderer){const TH=T(),R0=BIO.kits[rec.kit];if(!R0){BIO.err('BIO.impostor: '+rec.key+': no kit '+rec.kit);return false;}
  for(const n of R0.order)if(R0.items[n].count){BIO.err('BIO.impostor: '+rec.key+': kit '+rec.kit+' holds unbaked instances (call BIO.bakeImpostors after BIO.bake)');return false;}
- const save={range:BIO.range,minRange:BIO.minRange,owner:BIO.owner,chunk:BIO.chunk,cur:BIO.cur,stats:JSON.stringify(BIO.stats),tags:BIO.host.tags};
+ const save={range:BIO.range,minRange:BIO.minRange,owner:BIO.owner,chunk:BIO.chunk,cur:BIO.cur,stats:JSON.stringify(BIO.stats),tags:BIO.host.tags,obs:BIO.host.obstacles};   /* the tree is built alone: no keep-clear (its own twin would block its crown) */
  const prev=BIO.kit(rec.kit);let G;
- try{BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.host.tags=null;rec.build();G=scratchMeshes(R0);}
+ try{BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.host.tags=null;BIO.host.obstacles=[];rec.build();G=scratchMeshes(R0);}
  catch(e){BIO.err('BIO.impostor: '+rec.key+': '+e.message);for(const n of R0.order)R0.items[n]=BIO._newItem(R0.defs[n].attrs);return false;}
- finally{BIO.kit(prev);BIO.range=save.range;BIO.minRange=save.minRange;BIO.owner=save.owner;BIO.chunk=save.chunk;BIO.cur=save.cur;BIO.host.tags=save.tags;
+ finally{BIO.kit(prev);BIO.range=save.range;BIO.minRange=save.minRange;BIO.owner=save.owner;BIO.chunk=save.chunk;BIO.cur=save.cur;BIO.host.tags=save.tags;BIO.host.obstacles=save.obs;
   const st=JSON.parse(save.stats);for(const k in BIO.stats)delete BIO.stats[k];Object.assign(BIO.stats,st);}
  if(!G.children.length){BIO.err('BIO.impostor: '+rec.key+': the build put nothing');return false;}
  const B=boxOf(G),O=B.getCenter(new TH.Vector3()),rad=B.getSize(new TH.Vector3()).length()*.5;
@@ -172,16 +189,36 @@ function capture(rec,renderer){const TH=T(),R0=BIO.kits[rec.kit];if(!R0){BIO.err
  const cache=new Map();
  try{pass(rtC,null);pass(rtN,m=>normalMat(m.material,!!m.geometry.attributes.aN,cache));}
  finally{renderer.setRenderTarget(oldRT);renderer.setClearColor(oldCol,oldA);renderer.autoClear=oldAuto;}
- const read=rt=>{const a=new Uint8Array(W*W*4);rt.scissorTest=false;renderer.readRenderTargetPixels(rt,0,0,W,W,a);
-  const t=new TH.DataTexture(a,W,W,TH.RGBAFormat);t.generateMipmaps=true;t.minFilter=TH.LinearMipmapLinearFilter;t.magFilter=TH.LinearFilter;t.needsUpdate=true;return t;};
- const tC=read(rtC),tN=read(rtN);
+ const set=rec.set,SW=set.K*W,ox=(rec.slot%set.K)*W,oy=Math.floor(rec.slot/set.K)*W,a=new Uint8Array(W*W*4);
+ if(!set.C||set.C.W!==SW){set.C=new Uint8Array(SW*SW*4);set.C.W=SW;set.Nm=new Uint8Array(SW*SW*4);}
+ const read=(rt,into)=>{rt.scissorTest=false;renderer.readRenderTargetPixels(rt,0,0,W,W,a);for(let y=0;y<W;y++)into.set(a.subarray(y*W*4,(y+1)*W*4),((oy+y)*SW+ox)*4);};
+ read(rtC,set.C);read(rtN,set.Nm);
  rtC.dispose();rtN.dispose();cache.forEach(m=>m.dispose());G.children.forEach(m=>m.geometry.dispose());
- const U=rec.mat.uniforms;U.uAtlas.value=tC;U.uNorm.value=tN;U.uR.value=rad;U.uC.value.set(O.x-rec.at[0],O.y-rec.at[1],O.z-rec.at[2]);
- rec.radius=rad;rec.centre=[O.x,O.y,O.z];rec.ready=true;rec.atlas=tC;rec.normal=tN;
- rec.mat.userData.bio.opts.radius=rad;rec.mat.userData.bio.opts.centre=rec.centre;return true;}
+ rec.mat.uniforms.uRS.value[rec.slot].set(rad,O.x-rec.at[0],O.y-rec.at[1],O.z-rec.at[2]);
+ rec.radius=rad;rec.centre=[O.x,O.y,O.z];rec.ready=true;
+ Object.assign(set.mat.userData.bio.opts.slots[rec.slot],{radius:rad,centre:[O.x-rec.at[0],O.y-rec.at[1],O.z-rec.at[2]]});return true;}
+// a set's atlases from its arrays (after its species are captured)
+function setTextures(set){const TH=T(),SW=set.C.W,mk=a=>{const t=new TH.DataTexture(a,SW,SW,TH.RGBAFormat);t.generateMipmaps=true;t.minFilter=TH.LinearMipmapLinearFilter;t.magFilter=TH.LinearFilter;t.needsUpdate=true;return t;};
+ const U=set.mat.uniforms;if(U.uAtlas.value&&U.uAtlas.value.image.width>1){U.uAtlas.value.dispose();U.uNorm.value.dispose();}
+ set.atlas=U.uAtlas.value=mk(set.C);set.normal=U.uNorm.value=mk(set.Nm);U.uK.value=set.K;}
 IMP.capture=capture;
-// bake every species not baked yet; returns how many were
-BIO.bakeImpostors=function(renderer){if(!renderer){BIO.err('BIO.bakeImpostors: no renderer');return 0;}let n=0;
- for(const rec of IMP.list)if(!rec.ready&&!rec.failed){if(capture(rec,renderer))n++;else rec.failed=true;}
- readLights();return n;};
+// Whether a kit's textures have decoded: the library maps (BIO.libSwap) load after the build, and a leaf card drawn before its
+// map arrives is cut away whole by its alpha test, so a bake before then shows bare boughs
+const imgReady=t=>{if(!t)return true;const i=t.image;if(!i)return false;if(i.data)return true;return (i.naturalWidth||i.width||0)>0&&i.complete!==false;};
+function kitReady(kit){const R=BIO.kits[kit];if(!R)return true;const mats=[];for(const n of R.order)mats.push(R.defs[n].mat);for(const f in R.buckets)mats.push(R.buckets[f].mat);
+ return mats.every(m=>!m||!m.isMaterial||(imgReady(m.map)&&imgReady(m.alphaMap)));}
+IMP.kitReady=kitReady;
+// bake every species not baked yet once its kit's textures are in (each frame until then, by a tick, for up to opt.wait
+// seconds, 30 by default; then anyway); returns how many it baked now. opt.onDone(n) is called when the last one is baked.
+BIO.bakeImpostors=function(renderer,opt){opt=opt||{};if(!renderer){BIO.err('BIO.bakeImpostors: no renderer');return 0;}
+ const t0=Date.now(),wait=(opt.wait==null?30:opt.wait)*1000;
+ const run=force=>{let n=0;const sets=new Set();let pending=0;
+  for(const rec of IMP.list){if(rec.ready||rec.failed)continue;if(!force&&!kitReady(rec.kit)){pending++;continue;}
+   if(capture(rec,renderer)){n++;sets.add(rec.set);}else rec.failed=true;}
+  sets.forEach(setTextures);readLights();IMP.pending=pending;return n;};
+ const n=run(false);
+ if(IMP.pending&&BIO.host.ticks&&!IMP.waiting){IMP.waiting=true;BIO.tick(function(){if(!IMP.waiting)return;const late=Date.now()-t0>wait,k=run(late);
+  if(!IMP.pending||late){IMP.waiting=false;if(late&&k)BIO.err('BIO.bakeImpostors: textures not in after '+(wait/1000)+' s: baked anyway');if(opt.onDone)opt.onDone(k);}});}
+ else if(!IMP.pending&&opt.onDone)opt.onDone(n);
+ return n;};
 })();
