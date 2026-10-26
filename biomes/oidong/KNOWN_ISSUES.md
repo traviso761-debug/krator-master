@@ -15,6 +15,8 @@
       wave field (biomes/README.md asks for it on open water; these are small still pools, mirror-still by design): bind it
       when the valley joins a world, with `vOpen` 0 on the pools.
       2026-10-25: the pools' water is now core/water's (`WATER.still`, 89w-host-water.js); the wind, cloud deck and the foliage's clock still wait (a core/biome change to take ATMOS's wind), so the item stays open.
+      Stays open (2026-10-26): the wind and the foliage clock are a core/biome change (`30-core-foliage.js`: read `ATMOS.wind`
+      and `ATMOS.clock` into the sway uniforms when ATMOS is bound); the cloud deck waits for the shared sky rollout.
 - [x] **The stream is painted, not water** (closed 2026-10-25): the stream is a `WATER.flow` from the cataract's foot to the Mirror, the four pools are `WATER.still`, the cataract is a `WATER.fall` fitted to the head's step (`rowStep` 1.5, plunge spray from core/atmos); all in `89w-host-water.js`. The ground keeps its dark wet band along the channel (the banks). The canvas ribbon and the cataract's spray sprites are gone.
 
 - [ ] **A few surfaces are still procedural**: the owner's own cards and surfaces (2026-10-19) dress the sacred fig, the birch lace,
@@ -22,10 +24,14 @@
       chalice-cap and moss-ball surfaces; the library dresses the rest (`materials.json`). Still the kit's own canvases: the lotus
       trumpets' ribbed stalks, the haze blossom's and wisteria's cards, the cushion domes, the bead-willow's leaves, the grass and
       iris tufts, the ginseng and tea. Ask the owner before generating any (core/materials/PLAN.md has the template).
+      2026-10-26: the cloud-pad tree's CARVED bark (`OIDONG.barkTex7`, bucket `bark7`) is a procedural stand-in too; its prompt
+      is in `core/materials/PROMPTS-NEEDED.md` section 19 (`bark.carved`, `.b`). Stays open: the textures are the owner's to source.
 - [ ] **Longsong is not built**: its rock is kept bare (`KNOLL`, an obstacle of 150 m, the mask zero on the top) and
       registered as the monastery's site; `settlements/longsong` holds the blueprint. A build places its 400 x 400 m grounds on
       and round the rock (the lower ward at its foot on the south side, the terraces up the west flank, the hermits' cells on the
       east cliff), and its gardens draw this kit's species (the owner's rule for Voth: feedback-swbay-plants).
+      Stays open (2026-10-26): the monastery is `settlements/longsong`'s build, not this kit's. (The diversity pass's new
+      species keep off the rock: the probe's "nothing planted on Longsong's rock" passes.)
 - [ ] **Not in the open world**: `openworld/` has no Oidong region yet; a world must bind the kit's `flat` field (the gravel
       flats) and a `mist` field at any cataract, or it gets no raked flats and no chalice trees (BIOME-API.md).
       `settlements/longsong` is the first world on the model's land that grows it (its `45-host-stage.js` binds both), and
@@ -33,13 +39,26 @@
       `tools/scale-model/extract_region.py`'s KITS).
 - [ ] **The raked ripples ring only the first 32 stone groups** (`NSTONE` in 84-host-ground.js, a uniform array); the floor
       places about 125 groups, so the rest sit in the parallel ripples. Raise the count or pack the groups into a texture.
-- [ ] **The budget is the measured total, 13.3M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 11.9M of a 15.5M ceiling); draw calls 65-100 by
-      view. The bamboo groves (6,600 clumps) and the marble groves' lace are the heaviest passes: thin them first if it creeps up.
-- [ ] **The far marble birches read as pale poles** past the hero range: their lace impostor blobs are near-white against a
+      Stays open (2026-10-26): 84-host-ground.js was being moved onto core/water by another session, so it was left alone. The
+      change: `setStones` writes every group into a 256 x 1 float DataTexture (x, z, r, n per texel) and the ground shader loops
+      over `uStoneN` texels instead of the `NSTONE` 32-entry uniform array (the floor now places 244 groups).
+- [ ] **The budget is the measured total, 14.5M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 12.6M of a 15.5M ceiling); draw calls 65-100 by
+      view. The bamboo groves (8,400 clumps) and the marble groves' lace are the heaviest passes: thin them first if it creeps up.
+      2026-10-26: the diversity pass (cloud-pad 462, stupa 57, lattice 4) added 0.73M (13.8M to 14.5M) and two items (the
+      lattice tree's saucers and umbrella fronds) plus the carved bark bucket: +2 to +4 draw calls by view. A record: stays open.
+- [x] **The far marble birches read as pale poles** past the hero range: their lace impostor blobs are near-white against a
       pale sky. A second, tinted blob or a denser lace card would fix it.
+      Fixed 2026-10-26: the impostor's blobs are tinted (lavender-cream above, a muted lilac underneath) and its pole takes a
+      greyer `farBark` (a new optional species field `buildFar` reads before `bark`); the near trees are unchanged. A look call:
+      the owner should judge the 'From afar' view.
+- [x] **The temple cedars and pagoda firs read bare** (found 2026-10-26, on the 'Chalice trees in the mist' view): their
+      `darkneedle` clumps drew the needle card, whose 1.8 px strokes the alpha test erased past a few metres. Fixed: `darkneedle`
+      draws the dense small-leaf card (`M.small`, the library's `card.sage`), and the needle card's strokes are 4.2 px (the cloud
+      pine's pads are fuller too). Same items, same draw calls.
 - [ ] **The lilies' card, the lotus trumpet's fringe and the cherry card are the loud colours** (the lilies by design; the cherry
       card is a stronger pink than the old blush, the owner's call); the probe's
       "calm palette" check measures species' leaf and bark sets only, not the floor plants' colours.
+      Stays open (2026-10-26): the owner's call, a record rather than a defect.
 
 ## Export profile: sections left out (2026-10-19)
 

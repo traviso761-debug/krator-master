@@ -38,6 +38,21 @@ dome, the darkest shade on the floor; its camphor is a reagent in `kits/crops`) 
 whorls of blue-green needle plates like a pagoda's roofs, smaller to the spire, on the terraces and the crags). They pass
 the calm-palette check (low saturation, low lightness) while breaking the pastel field.
 
+## The diversity pass (the owner, 2026-10-26)
+
+"Add a diversity pass ... adding flora based off these pics": eight reference pictures split between Xanadu and Oidong.
+Oidong took four, stylised and kept in the valley's calm palette:
+
+| the picture | the kit |
+|---|---|
+| a low sinuous bonsai trunk with tall stems of flat tiered olive pads (concept art) | the **cloud-pad tree** (17): the trunk snakes along the ground, two or three thin stems rise from it, each with level pads on short side shoots, the TOP pad the widest (where the moss-ball tree stacks balls and the pagoda fir narrows, this one widens); on the flats in the wind, the terraces and the crag edges |
+| very tall thin trunks of stacked teal dome canopies ending in a spire, in groups (concept art) | the **stupa tree** (18): named for the shape the monks build; groups of three to five of different heights, bulb saplings at the first one's foot; in the mist at the valley's head and the moss woods |
+| a leaning tree whose trunk is an openwork lattice, limbs ending in saucers of blue umbrella fronds (a painting) | the **lattice tree** (19): a landmark, at most four in the valley, 700 m apart on the open floor; holy (each has a name and a keeper) |
+| real trunks carved in dark target rings and scalloped diamonds | the **carved bark** (bark kind 7) of the cloud-pad tree: the monks read it like script. A procedural stand-in until the library has `bark.carved` (`core/materials/PROMPTS-NEEDED.md` section 19) |
+
+All three are placed from core/rand after every older pass (`55-biome-oidong-trees.js`, `placeNew`): nothing that stood
+before them moved. Presets: 'Cloud-pad trees', 'Carved bark', 'Stupa trees in the mist', 'A lattice tree'.
+
 ## The showcase
 
 One 5.2 km length of the valley (`45-host-stage.js`): the axis runs east-west; the floor a kilometre wide between walls that

@@ -56,7 +56,8 @@ function means(){if(MEAN)return MEAN;MEAN={bark:OIDONG.BARKTEX.map(t=>texMean(t)
 Object.assign(OIDONG,{means,tint,bright,shade,vary});
 const BARKC={};
 // the marble (3) is painted in its own colours: its bark colour is a multiplier on them, not a tint
-const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);if(S.barkK===3)return C(S.bark[k%S.bark.length]);return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK],.4));};
+const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);if(S.barkK===3)return C(S.bark[k%S.bark.length]);
+ if(S.barkK===7)return C([0xf2eee8,0xe8e2da,0xfaf6f0][k%3]);   /* the carved bark (7) is painted in its own two colours too */return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK],.4));};
 const rodCol=(hex,f)=>shade(C(hex),f==null?-.25:f);
 const leafCol=(set,k,dh,ds,dl)=>bright(vary(pick(set),dh==null?.03:dh,ds==null?.08:ds,dl==null?.05:dl),k==null?1.25:k);
 const nearW=(k)=>bright(vary(C(0xffffff),.02,.04,.04),k==null?1:k);
@@ -389,6 +390,111 @@ B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  BIO.put('cone',[T.x,T.y0+H*.94,T.z],qUp([0,1,0]),[rAt(.9)*3,H*.08,rAt(.9)*3],hc);
  regTree(T,S,R,H+1);};
 
+// ---------------------------------------------------------------- the diversity pass (the owner's reference pictures, 2026-10-26)
+// 17 the CLOUD-PAD TREE: a low trunk that snakes along the ground (a bonsai nobody potted), two or three thin stems rising
+// from it, each with flat level pads of olive foliage on short side shoots, the top pad the widest; the CARVED bark (7):
+// target rings and scalloped diamonds; a burl at every fork; moss at the root
+B[17]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=vary(pick(S.leaf),.02,.05,.04),a0=rr(0,TAU),ph=rr(0,TAU);
+ const run=H*rr(.55,.8),hz=rr(.5,1.1),sx=-Math.sin(a0),sz=Math.cos(a0),pts=[];let reach=2,top=T.y0+1;
+ for(let i=0;i<=8;i++){const t=i/8,d=run*t,w=Math.sin(t*TAU*.9+ph)*run*.16,px=T.x+Math.cos(a0)*d+sx*w,pz=T.z+Math.sin(a0)*d+sz*w;
+  pts.push({x:px,y:(i?Y(px,pz)+.25:T.y0)+hz*smooth(0,.25,t)+.2*Math.sin(t*9+ph),z:pz,r:rb*(1-.4*t)});}
+ limb(S,pts,st,{seg:lv===2?8:5});
+ const burl=C(0xa08a6a),nS=lv===2?ri(2,3):2,ats=[1,.48,.76];
+ for(let k=0;k<nS;k++){const b=along(pts,ats[k]),h=H*(k?rr(.6,.85):1),la=a0+rr(-1,1),sp=[];
+  for(let i=0;i<=6;i++){const t=i/6,w=.12*h*Math.sin(t*Math.PI*1.4+ph+k);sp.push({x:b.x+Math.cos(la)*w,y:b.y+h*t,z:b.z+Math.sin(la)*w,r:mix(b.r*.8,.05,Math.pow(t,.7))});}
+  limb(S,sp,st,{seg:lv===2?6:4});
+  BIO.put('ball',[b.x,b.y+b.r*.3,b.z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[b.r*1.25,b.r*1.05,b.r*1.25],bright(vary(burl,.02,.05,.05),1));
+  const nT=lv===2?ri(2,3):2;
+  for(let t=0;t<nT;t++){const u=t===nT-1?1:lerp(.42,.86,t/Math.max(1,nT-1)),p=along(sp,u),Rp=R*mix(.42,1,u)*(k?.8:1)*rr(.9,1.1)*(t===nT-1?1.15:1);
+   const aa=rr(0,TAU),off=t===nT-1?0:Rp*.45,cx=p.x+Math.cos(aa)*off,cz=p.z+Math.sin(aa)*off,cy=p.y+(t===nT-1?.3:rr(-.1,.2));
+   if(off&&lv===2)BIO.beam('rod',[p.x,p.y,p.z],[cx,cy,cz],p.r*.7+.03,.03,rodCol(S.bark[0],-.45));
+   /* a pad: a flat solid cushion of foliage (the cloud-pruned look), lobed by smaller cushions round its rim, a fringe of needle sprays */
+   BIO.put('cushion',[cx,cy,cz],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[Rp*.8,Rp*.2,Rp*.8],bright(vary(hc,.015,.04,.04),rr(1.2,1.38)));st.cushions++;
+   const m=lv===2?(Rp>2.4?4:3):0;
+   for(let c=0;c<m;c++){const ca=aa+c/m*TAU+rr(-.2,.2),cr=Rp*rr(.5,.7),s2=Rp*rr(.32,.42);
+    BIO.put('cushion',[cx+Math.cos(ca)*cr,cy+rr(-.05,.08),cz+Math.sin(ca)*cr],qEuler(0,rr(0,TAU),0),[s2,s2*.4,s2],bright(vary(hc,.015,.04,.04),rr(1.15,1.35)));st.cushions++;
+    if(lv===2)clumpAt('needle',cx+Math.cos(ca+.5)*Rp*.75,cy+.05,cz+Math.sin(ca+.5)*Rp*.75,Rp*.4,.25,hc,cx,cy-.4,cz,Rp+.5,.8,null),st.clumps++;}
+   reach=Math.max(reach,Math.hypot(cx-T.x,cz-T.z)+Rp);top=Math.max(top,cy+.6);}}
+ if(lv===2){mossAt(T.x,T.y0+.45,T.z,rr(.6,1.0));mossAt(pts[2].x,pts[2].y,pts[2].z,rr(.4,.7));}
+ regTree(T,S,Math.max(reach,run+1),top-T.y0+.5);};
+// 18 the STUPA TREE: a very tall thin straight trunk, dome on dome of rounded teal puffs narrowing upward, a slender spire
+// tip; it stands in groups (placeNew) and the group's first tree has the bulb saplings at its feet (T.saplings)
+B[18]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=vary(pick(S.leaf),.02,.05,.04);
+ const rAt=u=>rb*(1-.6*u)*(1+.6*Math.exp(-u*H/1.5));
+ bole(T,S,H*.96,rAt,{vs:6,seg:lv===2?8:5});
+ const nT=lv===2?ri(4,6):3,a0=rr(0,TAU);
+ for(let t=0;t<nT;t++){const f=t/(nT-1),u=lerp(.44,.86,f),y=T.y0+H*u,Rd=R*(1-.6*f)*rr(.9,1.1),c0=bright(vary(hc,.015,.04,.04),rr(1.12,1.25));
+  BIO.put('cushion',[T.x,y,T.z],qEuler(0,rr(0,TAU),0),[Rd*.72,Rd*.5,Rd*.72],c0);st.cushions++;
+  const np=lv===2?(Rd>2?5:4):1;
+  for(let k=0;k<np;k++){const a=a0+t*GOLD+k/np*TAU,d=Rd*rr(.5,.62),s=Rd*rr(.38,.5);
+   BIO.put('cushion',[T.x+Math.cos(a)*d,y+rr(-.15,.25)*Rd*.4,T.z+Math.sin(a)*d],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*.78,s],bright(vary(hc,.015,.04,.04),rr(1.08,1.28)));st.cushions++;}}
+ BIO.put('cone',[T.x,T.y0+H*.88,T.z],qUp([0,1,0]),[rAt(.9)*3+.2,H*.13,rAt(.9)*3+.2],shade(C(hc.getHex()),-.15));
+ if(T.saplings&&lv===2)T.saplings.forEach(p=>{const g=Y(p[0],p[1]),h=p[2];BIO.beam('rod',[p[0],g-.1,p[1]],[p[0],g+h*.55,p[1]],.035,.025,rodCol(S.bark[0],-.1));
+  BIO.put('cushion',[p[0],g+h*.62,p[1]],qEuler(0,rr(0,TAU),0),[h*.26,h*.36,h*.26],bright(vary(hc,.02,.05,.05),1.1));
+  BIO.put('cone',[p[0],g+h*.86,p[1]],qUp([0,1,0]),[h*.08,h*.22,h*.08],shade(C(hc.getHex()),-.1));st.cushions++;});
+ regTree(T,S,R+.5,H+.5);};
+// 19 the LATTICE TREE: a lone leaning tree whose trunk is an openwork lattice, strands twisting both ways round an empty core
+// and fusing where they cross; at the fork its limbs curve out and up, each ending in a flat green saucer holding small
+// blue umbrella fronds and violet flower clusters. A landmark (placeNew: a handful, far apart, on the open floor)
+B[19]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,la=rr(0,TAU),lean=rr(.16,.26),fy=H*.5;
+ const ax=u=>({x:T.x+Math.cos(la)*lean*fy*u*u*1.6,y:T.y0+fy*u,z:T.z+Math.sin(la)*lean*fy*u*u*1.6});
+ const nS=lv===2?7:5,tw=rr(1.0,1.4)*Math.PI,php=rr(0,TAU);
+ for(let s=0;s<nS;s++){const ph=php+s/nS*TAU,dir=s%2?1:-1,pts=[];
+  for(let i=0;i<=10;i++){const u=i/10,c=ax(u),r=rb*(1.25-.5*u+.35*Math.exp(-u*7)),a=ph+dir*tw*u;
+   pts.push({x:c.x+Math.cos(a)*r,y:c.y-(i?0:.4),z:c.z+Math.sin(a)*r,r:rb*(.15-.04*u)*(1+.5*Math.exp(-u*7))});}
+  limb(S,pts,st,{seg:lv===2?6:4});}
+ const F=ax(1),grn=[S.leaf[0],S.leaf[2]],blu=[S.leaf[1],S.leaf[3],0x98b4d8],vio=[0xb89ad8,0xc4a8e0,0xa890d0],cups=[];let reach=R*.6;
+ const nL=lv===2?ri(5,7):4;
+ for(let k=0;k<nL;k++){const a=la+k/nL*TAU+rr(-.3,.3)+(k%2?.0:.2),L=R*rr(.55,1.0),e=[F.x+Math.cos(a)*L,F.y+H*rr(.18,.45),F.z+Math.sin(a)*L];
+  const c=[F.x+Math.cos(a)*L*.35,F.y+H*.3,F.z+Math.sin(a)*L*.35],pts=arc([F.x,F.y,F.z],c,e,rb*.42,.14,8);
+  if(lv===2)limb(S,pts,st,{seg:6});else BIO.beam('rod',[F.x,F.y,F.z],e,rb*.35,.14,rodCol(S.bark[0],-.1));
+  cups.push({x:e[0],y:e[1],z:e[2],R:rr(1.5,2.5)});reach=Math.max(reach,L+2.5);
+  if(lv===2&&rng()<.7){const m=along(pts,.55),b2=rr(-1.2,1.2)+a,l2=L*rr(.3,.45),e2=[m.x+Math.cos(b2)*l2,m.y+rr(.6,1.8),m.z+Math.sin(b2)*l2];
+   limb(S,arc([m.x,m.y,m.z],[(m.x+e2[0])/2,e2[1],(m.z+e2[2])/2],e2,m.r*.7,.1,5),st,{seg:5});cups.push({x:e2[0],y:e2[1],z:e2[2],R:rr(1.0,1.7)});}}
+ cups.forEach(cp=>{BIO.put('saucer',[cp.x,cp.y,cp.z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[cp.R,cp.R,cp.R],leafCol(grn,1.35,.02,.05,.05));
+  const nu=lv===2?ri(4,7):2;for(let i=0;i<nu;i++){const a=rr(0,TAU),d=cp.R*.62*Math.sqrt(rng()),h=rr(.5,.95)*Math.min(1.2,cp.R*.5);
+   BIO.put('umbrella',[cp.x+Math.cos(a)*d,cp.y+.05,cp.z+Math.sin(a)*d],qEuler(rr(-.22,.22),rr(0,TAU),rr(-.22,.22)),[h*1.5,h,h*1.5],leafCol(blu,1.1,.02,.05,.05));}
+  if(lv===2)for(let j=0,nv=ri(1,2);j<nv;j++){const a=rr(0,TAU),d=cp.R*rr(.3,.7);for(let b=0;b<3;b++)BIO.put('ball',[cp.x+Math.cos(a)*d+rr(-.12,.12),cp.y+rr(.35,.6),cp.z+Math.sin(a)*d+rr(-.12,.12)],qEuler(0,0,0),rr(.1,.16),leafCol(vio,1.1,.02,.05,.05));}
+  st.caps++;});
+ regTree(T,S,reach,H+2);};
+
+// PLACEMENT of the three (core/rand: each cell is seeded from a hash of (the kit's seed, the species, the cell), never from
+// how many draws came before it; each tree's builder runs on its own reseeded stream). Data, as the passes above are.
+OIDONG.NEWPASSES=[
+ // cloud-pads: the flats in the wind, the terraces and the crags' edges
+ {sp:17,cell:36,accept:(Z)=>Z.flats*.2+Z.terrace*.12+Z.crag*.14+Z.meadow*.02,opt:{pad:4,small:true,keep:6}},
+ // stupa trees: groups of three to five in the mist at the valley's head and in the moss woods
+ {sp:18,cell:120,accept:(Z)=>Z.mistZ*.55+Z.moss*.2+Z.shore*.05,opt:{pad:6,group:[3,5],keep:3}},
+ // lattice trees: a handful of landmarks on the open floor, far apart
+ {sp:19,landmarks:4,spacing:700,accept:(Z)=>Z.meadow*.7+Z.flats*.35+Z.shore*.1,opt:{pad:14,keep:14}},
+];
+function placeNew(R,q,st,LOD){const TREES=OIDONG.TREES,o=BIO.center(),NEW=[];
+ const mkT=(sp,x,y,z,s,hk)=>{const S=SP[sp];return{x:x,z:z,y0:y-.35,sp:sp,H:s.range(S.H[0],S.H[1])*(hk==null?1:hk),rb:s.range(S.rb[0],S.rb[1]),crownR:s.range(S.crownR[0],S.crownR[1]),seed:s.int(0,999999),wet:BIO.field('wet',x,z)};};
+ const lvOf=(x,z,small)=>{const ld=BIO.lodD(x,z);return ld<LOD.hero*(small?.94:1)?2:(ld<LOD.mid*(small?.87:1)?1:0);};
+ const ok=(x,z,pad)=>BIO.mask(x,z)>0&&BIO.clearOf(x,z,pad)&&!blocked(x,z,pad);
+ const add=(T,P)=>{T.lv=lvOf(T.x,T.z,P.opt.small);NEW.push(T);hadd({x:T.x,z:T.z,r:P.opt.keep==null?T.rb*1.4+1:P.opt.keep});};
+ OIDONG.NEWPASSES.forEach(P=>{const S=SP[P.sp],seed=KRAND.child(550019,'oidong/'+S.key),pad=P.opt.pad==null?4:P.opt.pad;
+  if(P.landmarks){const C=[];   // score every point of a coarse lattice, then take the best ones far enough apart
+   for(let z=o[1]-R;z<=o[1]+R;z+=40)for(let x=o[0]-R;x<=o[0]+R;x+=40){if(Math.hypot(x-o[0],z-o[1])>R-60)continue;const a=P.accept(zones(x,z),x,z);if(a<=.3)continue;
+    C.push([a+.05*KRAND.unit(KRAND.hash(seed,x,z)),x,z]);}
+   C.sort((a,b)=>b[0]-a[0]);const got=[];
+   for(const c of C){if(got.length>=P.landmarks)break;if(got.some(g=>Math.hypot(g[1]-c[1],g[2]-c[2])<P.spacing))continue;if(!ok(c[1],c[2],pad))continue;
+    got.push(c);const T=mkT(P.sp,c[1],Y(c[1],c[2]),c[2],KRAND.stream(KRAND.hash(seed,c[1],c[2])));add(T,P);T.lv=2;}   /* a landmark is always the hero */
+   return;}
+  const N=Math.ceil(R*2/P.cell);
+  for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){const s=KRAND.stream(KRAND.cell(seed,ix,iz));
+   const x=o[0]-R+(ix+s.next())*P.cell,z=o[1]-R+(iz+s.next())*P.cell,u=s.next();if(Math.hypot(x-o[0],z-o[1])>R)continue;
+   const a=P.accept(zones(x,z),x,z)*q;if(a<=0||u>a*(.7+.6*KRAND.fbm(x*.01,0,z*.01,2,seed)))continue;
+   if(!ok(x,z,pad))continue;
+   if(!P.opt.group){add(mkT(P.sp,x,Y(x,z),z,s),P);continue;}
+   const n=s.int(P.opt.group[0],P.opt.group[1]),a0=s.range(0,TAU);let first=null;
+   for(let j=0;j<n;j++){const aa=a0+j*GOLD,d=j?s.range(4,9):0,px=x+Math.cos(aa)*d,pz=z+Math.sin(aa)*d;if(j&&!ok(px,pz,2.5))continue;
+    if(j&&zones(px,pz).cliff>.3)continue;
+    const T=mkT(P.sp,px,Y(px,pz),pz,s,j?s.range(.55,.9):1);add(T,P);if(!first){first=T;T.saplings=[];}}
+   if(first)for(let k=0,m=s.int(2,4);k<m;k++){const aa=s.range(0,TAU),d=s.range(2.5,7);first.saplings.push([x+Math.cos(aa)*d,z+Math.sin(aa)*d,s.range(.8,1.8)]);}}});
+ NEW.forEach(T=>{TREES.push(T);const i=TREES.length-1;if(T.lv===0){buildFar(T,i,st);st.fars++;}else{reseed(KRAND.hash(550019,T.sp,T.seed));B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ st.newTrees=NEW.length;}
+
 // ---------------------------------------------------------------- impostors (the far canopy)
 // far.blobs: icosahedral blobs on a pole (sedesert's recipe, as shighlands)
 let ICO=null;
@@ -396,7 +502,7 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
  let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  const kk=BIO._lodKey(T.x,T.z),F=S.far||{poleU:.35,blobs:[]};
- const bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear();
+ const FB=S.farBark||S.bark,bc=C(FB[fi%FB.length]).convertSRGBToLinear();
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
    const m=1+.16*Math.sin(dx*4.1+k1)*Math.cos(dz*3.7+k2)+.1*Math.sin(dy*6.3+k2+dx*2);
@@ -433,6 +539,7 @@ OIDONG.buildTrees=function(R,q){
   return n;}
  OIDONG.PASSES.forEach(pass);
  TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ placeNew(R,q,st,LOD);   /* the diversity pass (2026-10-26): its own KRAND streams, after everything above, so nothing above moves */
  OIDONG.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,pads:st.pads,blooms:st.blooms,pods:st.pods,
   caps:st.caps,threads:st.threads,beads:st.beads,bells:st.bells,balls:st.balls,racemes:st.racemes,cushions:st.cushions,brackets:st.epi,vines:st.vines,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};

@@ -75,7 +75,7 @@ OIDONG.SPECIES=[
   far:{poleU:.5,taper:.4,blobs:[[.72,1.0,.22,'L0','L2'],[.86,.6,.12,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb','Dfb'],{holy:true})},
  /*3*/{key:'marblebirch',name:'Marble birch',H:[18,34],rb:[.5,1.0],crownR:[5,9],barkK:3,bark:PAL.marble,leaf:[0xf4ece8,0xf8f0ec,0xeee6e2,0xf6f0f2],
   how:'a tall pale bole painted in swirled bands of every pastel at once, like cut marble, rising to a lace of near-white foliage; the ground round a grove is marbled too',
-  far:{poleU:.72,taper:.5,blobs:[[.84,1.15,.22,'L0','L2'],[.95,.75,.1,'L1','L3']]},tags:K('cool-temperate','humid','both',['Cfb'],{alien:true})},
+  far:{poleU:.72,taper:.5,blobs:[[.84,1.15,.22,0xdcd2e2,0xa69ab6],[.95,.75,.1,0xe4dce8,0xb4a8c2]]},farBark:[0xb2a8a6,0xaaa0a8,0xbab0aa],tags:K('cool-temperate','humid','both',['Cfb'],{alien:true})},
  /*4*/{key:'cloudpine',name:'Cloud pine',H:[6,14],rb:[.35,.7],crownR:[4,7],barkK:4,bark:PAL.pineBark,leaf:[0x6e8a68,0x7a9a74,0x628060,0x88a880],
   how:'a bonsai nobody trimmed (biomes/xanadu): a whorled trunk in an S, level boughs, a flat pad of needles on every tip; on the flats it leans with the wind',
   far:{poleU:.7,taper:.4,blobs:[[.6,.8,.12,'L0','L1'],[.9,.6,.1,'L1','L2']]},tags:K('cool-temperate','subhumid','no',['Cfb','Dfb','BSk','Csa'],{shared:'xanadu'})},
@@ -116,6 +116,18 @@ OIDONG.SPECIES=[
  /*16*/{key:'pagodafir',name:'Pagoda fir',H:[14,28],rb:[.4,.7],crownR:[4,7],barkK:6,bark:[0x4e4a44,0x5a5650,0x444038],leaf:[0x24503a,0x2c5c44,0x1e4834,0x346a4c],
   how:'an alien conifer whose limbs leave the bole in level whorls, each whorl a flat plate of blue-green needles like a pagoda roof, smaller to the spire; the snow lies on them in winter',
   far:{poleU:.95,taper:.6,blobs:[[.4,1.0,.1,'L0','L2'],[.62,.8,.09,'L1','L3'],[.82,.55,.08,'L0','L1']]},tags:K('cool-temperate','humid','no',['Cfb','Dfb','ET'],{alien:true})},
+ // THE DIVERSITY PASS (the owner's reference pictures, 2026-10-26): three alien trees, placed from core/rand (KRAND) after
+ // the passes above (55, placeNew), so nothing placed before them moves. barkK 7 is the CARVED bark: pale tan patterned in
+ // dark target rings and scalloped diamonds, painted in its own two colours (like the marble: its bark colour multiplies)
+ /*17*/{key:'cloudpad',name:'Cloud-pad tree',H:[5,9],rb:[.17,.3],crownR:[2.2,3.6],barkK:7,bark:[0xc8b494,0xbca888,0xd4c0a0],farBark:[0x8e7c64,0x9a8870],leaf:[0x8a9a5c,0x96a468,0x7e8e52,0xa2ae74],
+  how:'a low trunk that snakes along the ground like a pruned bonsai, then two or three thin stems rising from it, each carrying flat level pads of olive foliage, the top pad the widest; its bark grows in bold dark rings and scalloped diamonds on pale tan, which the monks read like script, and it burls at every fork',
+  far:{poleU:.75,taper:.3,blobs:[[.95,.9,.05,'L0','L2'],[.68,.6,.05,'L1','L3']]},tags:K('cool-temperate','subhumid','no',['Cfb','Dfb','BSk'],{alien:true})},
+ /*18*/{key:'stupa',name:'Stupa tree',H:[20,36],rb:[.22,.4],crownR:[2.6,4.4],barkK:1,bark:[0x9aa8a0,0xa6b2aa,0x8e9c94],leaf:[0x6aa898,0x78b4a4,0x5e9c8c,0x88c0b0],
+  how:'very tall thin straight trunks carrying dome on dome of rounded teal puffs, tier over tier and narrowing to a slender spire like a stupa\'s; it stands in groups of three to five of different heights, with bulb-shaped saplings at their feet',
+  far:{poleU:.97,taper:.3,blobs:[[.6,.85,.07,'L0','L2'],[.76,.65,.06,'L1','L3'],[.9,.42,.05,'L0','L1']]},tags:K('cool-temperate','humid','both',['Cfb'],{alien:true})},
+ /*19*/{key:'lattice',name:'Lattice tree',H:[13,19],rb:[1.2,1.7],crownR:[9,13],barkK:1,bark:[0xa09484,0xaca090,0x948878],leaf:[0x9cc49a,0xa8c0dc,0x8eb890,0xb4c8e4],
+  how:'a lone leaning tree whose trunk is an openwork lattice of fused twisting strands, holes right through it; its curving limbs end in flat green saucers that hold small blue umbrella fronds and a few violet flower clusters. A landmark: the valley has only a handful',
+  far:{poleU:.55,taper:.3,blobs:[[.66,1.0,.12,'L0','L1'],[.8,.6,.08,'L2','L3']]},tags:K('cool-temperate','subhumid','no',['Cfb','BSk'],{alien:true,holy:true})},
 ];
 OIDONG.byKey={};OIDONG.SPECIES.forEach((S,i)=>{S.i=i;OIDONG.byKey[S.key]=S;});
 
@@ -142,6 +154,9 @@ OIDONG.HARVEST={
  cedar:HV('timber (the temple beams), incense',[],true,'The heartwood is Longsong\'s timber; the shavings are burned as incense and the resin seals wounds.'),
  camphor:HV('chests and boxes (the wood keeps the moth out)',[],true,'Camphor: the wood is steamed for its crystals, the monks\' liniment and a reagent that clears the head.'),
  pagodafir:HV('poles, resin',['nuts (roasted)'],false,'Its tiers hold the snow like roofs; the cones of the top tier drop oily nuts.'),
+ cloudpad:HV('carving (the patterned bark is kept on: boxes, bowls)',[],true,'The burls are turned into bowls with the rings and diamonds left on; a tea of the pads is a bitter for the stomach.'),
+ stupa:HV('poles (light, straight)',['puff buds (pickled)'],false,'The trunks are the straightest poles in the valley: the printing house\'s scaffold; the young puff buds are pickled.'),
+ lattice:HV('none (never cut)',['saucer water (sweet)'],true,'Each tree has a name and a keeper; the rain its saucers hold is drunk at the end of a fast, and the violet flowers are a calming tea.'),
 };
 OIDONG.SPECIES.forEach(S=>{S.tags.harvest=OIDONG.HARVEST[S.key]||HV('none');});
 
@@ -200,7 +215,7 @@ TX.lace=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,10,.66);
 /* NEEDLES: the cloud pine's pads (Xanadu's painter) */
 TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,10,.66);
  for(let i=0;i<560;i++){const p=BIO.tex.clPt(S,.10,.72),a=rr(0,TAU),L=rr(16,30),lum=lerp(100,228,rng());
-  g.strokeStyle=G2(lum);g.lineWidth=1.8;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}},[135,135,135]);
+  g.strokeStyle=G2(lum);g.lineWidth=4.2;   /* 2026-10-26: was 1.8, which the alpha test erased past a few metres (the cedars and firs read bare) */g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}},[135,135,135]);
 /* MAPLE: palmate leaves, five lobes, in flat sprays */
 TX.maple=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,8,.62);
  for(let i=0;i<64;i++){const c=BIO.tex.clPt(S,.11,.74),lum=lerp(120,240,i/64)+rr(-12,10),R=rr(16,24),a0=rr(0,TAU);
@@ -330,6 +345,24 @@ OIDONG.barkTex=function(kind){
   for(let y=30;y<h;y+=64){g.fillStyle='rgba(60,60,60,.7)';g.fillRect(0,y,w,4);g.fillStyle='rgba(215,215,215,.7)';g.fillRect(0,y+4,w,5);g.fillStyle='rgba(90,90,90,.35)';g.fillRect(0,y+9,w,10);}}
 });};
 OIDONG.BARKTEX=[0,1,2,3,4,5,6].map(k=>OIDONG.barkTex(k));
+// 7 the CARVED bark (the cloud-pad tree; the owner's photo of patterned trunks, 2026-10-26): pale tan with bold dark motifs,
+// scattered concentric "target" rings, a vertical chain of scalloped diamonds and a few big nested rings; tileable (every
+// motif is drawn again across the wrap). Painted in its own colours and drawn from KRAND, not the shared stream, so no
+// other painter moves. A PROCEDURAL STAND-IN: the library has no such bark (core/materials/PROMPTS-NEEDED.md asks for one)
+OIDONG.barkTex7=function(){const s=KRAND.stream(KRAND.child(510019,'oidong/carvedbark'));
+ return BIO.canvasTex(256,512,(g,w,h)=>{g.fillStyle='#cdb796';g.fillRect(0,0,w,h);
+  for(let i=0;i<260;i++){const v=s.range(-22,18)|0;g.fillStyle='rgba('+(196+v)+','+(174+v)+','+(140+v)+',.5)';g.fillRect(s.range(0,w),s.range(0,h),s.range(2,9),s.range(10,40));}
+  const DK='#2e2620',wrap=(fn,x,y,r)=>{for(const ox of [-w,0,w])for(const oy of [-h,0,h])if(x+ox>-r&&x+ox<w+r&&y+oy>-r&&y+oy<h+r)fn(x+ox,y+oy);};
+  const rings=(x,y,R,n)=>wrap((cx,cy)=>{for(let k=0;k<n;k++){const r=R*(1-k/n);g.lineWidth=R/n*.5;g.strokeStyle=DK;g.beginPath();g.ellipse(cx,cy,r,r*1.15,0,0,TAU);g.stroke();}
+   g.fillStyle=DK;g.beginPath();g.arc(cx,cy,R/n*.4,0,TAU);g.fill();},x,y,R*1.2);
+  // the diamond chain up one side: each diamond's edges scalloped (bowed in), a pale eye in its middle
+  const dx=w*.72,dh=64;for(let y=0;y<h;y+=dh){const cy=y+dh/2,hw=28;wrap((cx,yy)=>{g.fillStyle=DK;g.beginPath();g.moveTo(cx,yy-dh/2);
+    g.quadraticCurveTo(cx+hw*.35,yy-dh*.18,cx+hw,yy);g.quadraticCurveTo(cx+hw*.35,yy+dh*.18,cx,yy+dh/2);g.quadraticCurveTo(cx-hw*.35,yy+dh*.18,cx-hw,yy);g.quadraticCurveTo(cx-hw*.35,yy-dh*.18,cx,yy-dh/2);g.fill();
+    g.fillStyle='#d8c4a2';g.beginPath();g.ellipse(cx,yy,hw*.32,dh*.16,0,0,TAU);g.fill();},dx,cy,40);}
+  for(let i=0;i<3;i++)rings(s.range(w*.1,w*.5),i/3*h+s.range(20,120),s.range(30,40),4);
+  for(let i=0;i<9;i++)rings(s.range(0,w*.6),s.range(0,h),s.range(8,15),2);
+  for(let i=0;i<14;i++){const x=s.range(0,w),y=s.range(0,h);wrap((cx,cy)=>{g.fillStyle='rgba(46,38,32,.8)';g.beginPath();g.arc(cx,cy,s.range(1.5,3.5),0,TAU);g.fill();},x,y,6);}});};
+OIDONG.BARKTEX.push(OIDONG.barkTex7());
 OIDONG.WOODTEX=OIDONG.barkTex(1);
 // pale granite: fine speckle, the valley's stones tint it
 OIDONG.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -485,6 +518,16 @@ G.standing=function(){const g=new T3.IcosahedronGeometry(1,1).toNonIndexed(),p=g
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.12*Math.sin(x*4.1+y*3.3)+.08*Math.cos(z*5.7-y*2.2);p.setXYZ(i,x*.42*k*(1-.25*y),(y+1)*.5,z*.3*k*(1-.2*y));}
  g.computeVertexNormals();return g;};
 G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,7,1,true);};
+// a SAUCER (the lattice tree's cups): a shallow dish, unit radius, origin at its foot; paler on the rim, darker beneath
+G.saucer=function(){const M=Mesh(),n=12,prof=[[0,-.1],[.35,-.07],[.7,0],[.95,.1],[1.0,.14],[.94,.13],[.6,.05],[0,.02]];
+ const P=prof.map(q=>{const row=[];for(let s=0;s<=n;s++){const a=s/n*TAU,R=q[0]*(1+.04*Math.sin(s*3));row.push([Math.cos(a)*R,q[1],Math.sin(a)*R]);}return row;});
+ for(let r=0;r<prof.length-1;r++)for(let s=0;s<n;s++){const a=P[r][s],b=P[r+1][s],c=P[r+1][s+1],d=P[r][s+1],up=r>=4,c0=up?[1.05,1.05,1]:[.6,.62,.58],c1=r+1>=4?[1.05,1.05,1]:[.6,.62,.58];
+  if(up)M.quad(a,b,c,d,c0,c1,c1,c0);else M.quad(a,d,c,b,c0,c0,c1,c1);}
+ return M.out(false);};
+// an UMBRELLA frond (in the saucers): a thin stalk and a flat ribbed canopy; origin at the base, 1 high; the canopy takes the
+// instance colour whole, the stalk a pale green
+G.umbrella=function(){const o={pos:[],nor:[],uv:[],col:[]};vadd(o,new T3.CylinderGeometry(.025,.03,.85,3,1,true).translate(0,.425,0),[.75,.85,.65]);
+ vadd(o,new T3.ConeGeometry(.42,.16,6,1,true).translate(0,.92,0),[1,1,1]);return mk(o.pos,o.nor,o.uv,o.col);};
 OIDONG.G=G;
 const LO={giantpad:1,giantcup:1};
 OIDONG.it=(name,lv)=>lv===2||!LO[name]?name:name+'lo';
@@ -559,6 +602,7 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 ['Cherry bark (banded)','Smooth pale bark','Ribbed stalks','Marble bark (painted)','Whorled bark','Bamboo canes','Fibrous bark'].forEach((lab,i)=>{
  const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L){M.bark[i].map=L.t;if(i===3)OIDONG.MARBLE=L;}
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===5?1.2:i===3?4:3,i===5?4:i===3?6:4]});});
+BIO.bucket('bark7',M.bark[7],{label:'Carved bark (the cloud-pad tree; procedural stand-in)',uvScale:[1.6,2.4]});
 {const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
 // the chalice cap's veins and the moss balls' skin (the library's own): the cap tiles round its rim, the moss repeats over the ball
 {const Lc=libMap('organic.cap','cap');if(Lc){Lc.t.wrapS=Lc.t.wrapT=T3.RepeatWrapping;M.capskin.map=Lc.t;}}
@@ -579,7 +623,7 @@ BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN','aC2'],label:'Blossom'}
 BIO.def('cherrybloom',BIO.geo.clump(),M.cherrybloom,{attrs:['aN'],label:'Cherry blossom'});
 BIO.def('lace',BIO.geo.clump(),M.lace,{attrs:['aN','aC2'],label:'Marble birch lace'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Needle pads'});
-BIO.def('darkneedle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Cedar and pagoda-fir needles'});
+BIO.def('darkneedle',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Cedar and pagoda-fir needles'});   /* 2026-10-26: the dense small-leaf card (was the needle card, whose thin strokes the alpha test erased: the cedars read bare) */
 BIO.def('gloss',BIO.geo.clump(),M.broad,{attrs:['aN','aC2'],label:'Camphor leaves'});
 BIO.def('maple',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Maple leaves'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Small leaves'});
@@ -634,4 +678,6 @@ BIO.def('rod',G.rod(),M.solid,{label:'Stems and stalks'});
 BIO.def('standing',G.standing(),M.rock,{label:'Standing stones'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
+BIO.def('saucer',G.saucer(),M.vcol,{label:'Lattice tree saucers'});
+BIO.def('umbrella',G.umbrella(),M.vsway,{label:'Umbrella fronds (the lattice tree\'s saucers)'});
 })();
