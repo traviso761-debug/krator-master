@@ -38,3 +38,14 @@ EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the b
 2026-10-20: `atmos` is in the profile and fills (the build lists `89-atmos-8-export.js`). `water` stays out: the page binds no core/water (its water is the host's own MAT_WATER shader), so there is no surface for the section to export. 2026-10-20 (migration phase 0): the wave field and the sky's light (`89-atmos-a-waves.js`, `89-atmos-b-skylight.js`) are in its `CORE_ATMOS` now, ready for core/water; nothing is drawn by them.
 
 2026-10-25 (migration phase 4): `water` is in `EXPORT_PROFILE`: the page draws the tarn and bog pools (`WATER.still`) and the ravine streams (`WATER.flow`) on core/water (`89zw-host-water.js`, after 89z binds ATMOS). The cloud deck stays core/atmos's.
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. A true blue 1 atm column. Kept from the dome: the Throne far to
+      the north (now at az 25, where the scale model puts it; the dome painted it at 8), the Inner Wall running east and
+      west (one ridge in two lobes) and the warm lowland to the south. The cloud sea in the north beyond the real cloud deck
+      and the Throne's plume are not drawn; 89z's cloud deck keeps its fixed sun. Draw calls at the default camera
+      (verify.py --assert, GPU): 98 before, 95 after.
+
