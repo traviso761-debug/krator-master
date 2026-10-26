@@ -12,9 +12,7 @@ window._biome=null;
  NSEMIARID.liveGusts=true;   // the furlers are placed open and shut by core/atmos's gusts (89b-host-atmos.js)
  NSEMIARID.frillLook=Q.get('frill')==='white'?'white':'tint';   // the frill's fins: tinted while green, white ripe (default), or ?frill=white
  try{
-  if(unique){window._biome=NSEMIARID.build({R:TERR.R-150,quality:q});
-   /* the trumpets' crowns turn here too: the core's foliage shader has no spin, so the host wraps it (86-host-variants.js) */
-   if(typeof VARIANTS!=='undefined')[NSEMIARID.MAT.spin,NSEMIARID.MAT.spinVane].forEach(m=>VARIANTS.spinUnique(m));}
+  if(unique){window._biome=NSEMIARID.build({R:TERR.R-150,quality:q});}   /* the trumpets' crowns turn here too: the core's foliage spin (BIO.SPIN) */
   else{const out={R:TERR.R-150,quality:q};BIO.cur='nsemiarid/trees';Object.assign(out,NSEMIARID.buildTrees(out.R,q,{records:true}));
    BIO.cur='nsemiarid/floor';Object.assign(out,NSEMIARID.buildFloor(out.R,q));BIO.cur=null;window._biome=out;}}
  catch(e){reportErr('biome: '+e.stack);}

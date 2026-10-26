@@ -1,0 +1,54 @@
+// node core/biome/test-leafset.js: leaves held by the stem (31b-core-leafset.js), each check with a negative.
+const path=require('path'),vm=require('vm'),fs=require('fs');
+const F=require('./test-foliage.js');   /* its loader: three r128, the biome head, 30-core-foliage */
+const D=__dirname;
+function load(){const B=F.load(fs.readFileSync(path.join(D,'30-core-foliage.js'),'utf8')),ctx=B.__ctx;
+ vm.runInContext(fs.readFileSync(path.join(D,'..','rand','08-core-rand.js'),'utf8'),ctx);
+ vm.runInContext(fs.readFileSync(path.join(D,'31b-core-leafset.js'),'utf8'),ctx);return B;}
+let fails=0;const check=(name,ok,detail)=>{console.log((ok?'ok   ':'FAIL ')+name+(detail?'  ('+detail+')':''));if(!ok)fails++;};
+const B=load(),T=B.host.THREE;
+const near=(a,b,e)=>Math.abs(a-b)<(e||1e-9),len=v=>Math.hypot(v[0],v[1],v[2]),qlen=q=>Math.hypot(q[0],q[1],q[2],q[3]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const rot=(q,v)=>{const Q=new T.Quaternion(q[0],q[1],q[2],q[3]),V=new T.Vector3(v[0],v[1],v[2]).applyQuaternion(Q);return[V.x,V.y,V.z];};
+// ---------------------------------------------------------------- the stem
+check('leafStem: an upright card\'s stem is bottom-centre; a library meta record with anchor top hangs',
+ JSON.stringify(B.leafStem())==='[0.5,0.96]'&&B.leafStem({processing:{options:{anchor:'top'}}})[1]===.04&&B.leafStem('bottom')[1]===.96&&B.leafStem([.3,.8])[0]===.3);
+check('  negative: an anchor that only says where the subject sits (center) does not move the stem off the bottom',B.leafStem('center')[1]===.96);
+// ---------------------------------------------------------------- the card pivots at its stem
+{const g=B.geo.leafCard({stem:[.5,.9]}),P=g.attributes.position,U=g.attributes.uv;let ymin=1e9,ymax=-1e9,stemUV=null;
+ for(let k=0;k<P.count;k++){ymin=Math.min(ymin,P.getY(k));ymax=Math.max(ymax,P.getY(k));}
+ // the uv at the origin (interpolated along the card's centre line): u .5, v the stem's
+ const vAt=y=>{for(let k=0;k<P.count;k++)if(near(P.getY(k),y,1e-6))return U.getY(k);return null;};
+ check('leafCard: the stem at the origin, the blade up +y (the image\'s top at the tip)',near(ymin,-.1,1e-6)&&near(ymax,.9,1e-6)&&near(vAt(.9),0,1e-6)&&near(vAt(-.1),1,1e-6),'y '+ymin.toFixed(3)+'..'+ymax.toFixed(3));
+ const gf=B.geo.leafCard({stem:[.5,.9],flipY:true}),Uf=gf.attributes.uv;check('  negative: a flipped texture (a CanvasTexture) gets the flipped v',near(Uf.getY(0),1-U.getY(0),1e-9));
+ const s=B.geo.spray({stem:[.5,.96]}),c=B.geo.clump({stem:true}),t=B.geo.clump();
+ check('spray (and clump({stem})): three cards from one stem at the origin',s.attributes.position.count===18&&c.attributes.position.count===18);
+ check('  negative: clump() with no option is the old tripod (centred, not on the origin)',t.attributes.position.count===18&&Math.abs(t.attributes.position.getY(0))>.01);}
+// ---------------------------------------------------------------- placement
+const seg={a:[0,10,0],b:[4,11,0]},d=[4/Math.hypot(4,1),1/Math.hypot(4,1),0];
+{const r=B.leafOn(seg,.5,{seed:7,i:3,droop:0,pitch:0,roll:0});
+ check('leafOn: the stem lands on the twig at t',near(r.p[0],2)&&near(r.p[1],10.5)&&near(r.p[2],0));
+ check('leafOn: the blade leaves the twig at the angle asked (no droop, no jitter)',near(dot(r.dir,d),Math.cos(.9),1e-9),dot(r.dir,d).toFixed(6));
+ const y=rot(r.q,[0,1,0]),z=rot(r.q,[0,0,1]);check('leafOn: q turns the card\'s +y to the blade and +z to its face, orthonormal',near(dot(y,r.dir),1,1e-9)&&near(dot(z,r.n),1,1e-9)&&near(dot(r.n,r.dir),0,1e-9)&&near(qlen(r.q),1,1e-12));
+ check('leafOn: the face turns to the sky (its normal has a positive up component)',r.n[1]>.3,r.n[1].toFixed(3));
+ // the card's stem (the middle of its bottom edge sits 0.04 below it), put by q at p, lands on the twig
+ const g=B.geo.leafCard({stem:[.5,.96],w:2,h:2}),P=g.attributes.position;let yb=1e9;for(let k=0;k<P.count;k++)yb=Math.min(yb,P.getY(k));
+ const w=rot(r.q,[0,yb,0]),e=[w[0]+r.p[0],w[1]+r.p[1],w[2]+r.p[2]],u=dot([e[0],e[1]-10,e[2]],d)/Math.hypot(4,1),c=[4*u,10+u,0],best=Math.hypot(e[0]-c[0],e[1]-c[1],e[2]-c[2]);
+ check('a placed 2 m card meets the twig at its stem (its bottom edge within 10 cm of the twig)',best<.1&&Math.abs(yb+.08)<1e-6,best.toFixed(4)+' m');
+ const dr=B.leafOn(seg,.5,{seed:7,i:3,droop:.6,pitch:0,roll:0});check('droop pulls the blade down',dr.dir[1]<r.dir[1]);
+ const rx=B.leafOn(seg,.5,{seed:7,i:3,axis:'x'}),x=rot(rx.q,[1,0,0]),yy=rot(rx.q,[0,1,0]);check('axis x (a frond): +x to the blade, +y to the face',near(dot(x,rx.dir),1,1e-9)&&near(dot(yy,rx.n),1,1e-9));}
+// ---------------------------------------------------------------- phyllotaxy, determinism
+{const az=(r)=>{const v=[r.dir[0]-d[0]*dot(r.dir,d),r.dir[1]-d[1]*dot(r.dir,d),r.dir[2]-d[2]*dot(r.dir,d)];return v;};
+ const ang=(a,b)=>Math.acos(Math.max(-1,Math.min(1,dot(a,b)/len(a)/len(b))));
+ const o={seed:3,droop:0,pitch:0,roll:0};
+ const s0=B.leafOn(seg,.5,Object.assign({i:0},o)),s1=B.leafOn(seg,.5,Object.assign({i:1},o));
+ check('spiral: consecutive leaves 137.5 degrees round the twig',near(ang(az(s0),az(s1))*180/Math.PI,180-(180-137.5),1e-6),(ang(az(s0),az(s1))*180/Math.PI).toFixed(3));
+ const a0=B.leafOn(seg,.5,Object.assign({i:0,phyl:'alternate'},o)),a1=B.leafOn(seg,.5,Object.assign({i:1,phyl:'alternate'},o));
+ check('alternate: 180 degrees',near(ang(az(a0),az(a1)),Math.PI,1e-6));
+ const L=B.leafAlong(seg,6,Object.assign({phyl:'opposite'},o));check('leafAlong opposite: pairs share a node, the pairs crossed',L.length===6&&near(L[0].p[0],L[1].p[0])&&!near(L[0].p[0],L[2].p[0])&&near(ang(az(L[0]),az(L[2])),Math.PI/2,1e-6));
+ const W=B.leafAlong(seg,6,Object.assign({phyl:'whorl',whorl:3},o));check('whorl of 3: 120 degrees within a node',near(ang(az(W[0]),az(W[1])),2*Math.PI/3,1e-6)&&near(W[0].p[0],W[2].p[0]));
+ const r1=B.leafOn(seg,.4,{seed:11,i:5}),r2=load().leafOn(seg,.4,{seed:11,i:5});
+ check('deterministic: the same seed and index give the same leaf on a fresh load',JSON.stringify(r1)===JSON.stringify(r2));
+ const r3=B.leafOn(seg,.4,{seed:12,i:5});check('  negative: another tree\'s seed turns it differently',JSON.stringify(r3.q)!==JSON.stringify(r1.q));
+ const z=B.leafOn({a:[1,1,1],b:[1,1,1]},.5,{seed:1});check('  negative: a twig of no length still gives a finite, orthonormal leaf (no NaN)',z.q.every(Number.isFinite)&&near(qlen(z.q),1,1e-9));
+ const up=B.leafOn({a:[0,0,0],b:[0,1,0]},1,{seed:2,i:1});check('a vertical twig works (its frame from another reference)',up.q.every(Number.isFinite)&&near(len(up.dir),1,1e-9));}
+console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);

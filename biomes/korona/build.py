@@ -73,7 +73,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the tepui's beds, the stacks (core/terrain/37-core-stacks.js)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim and 36-core-walker: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))

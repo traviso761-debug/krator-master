@@ -130,6 +130,8 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   bomb (`47`, `kdither`: each cell of ~2 tiles turns and shifts the tile by its own hash, three corners blended, at the
   map's scale and at a third of it, mixed by a value noise) under a coarse luminance and hue drift (48 m and 140 m), so
   no repeat can line up and the mottle is no longer one flat field; the walls keep their beds level (`kditherW`).
+  (2026-10-26, X4: the dither's GLSL is core now, `core/biome/31-core-dither.js` `BIO.DITHER`, the same text; `47`'s `DITHER`
+  is that string and `build.py` lists the fragment. Farside took the same copy. The core ground shader, R4, is to take it over.)
   **The trenches' two faces were too alike**: the windward face wears sphagnum (a fourth floor layer, `STAGE.layers.d`)
   over litter pulled green (`STAGE.layerMul`, on the library's colour), the lee pale warm scree; the rainforest climbs
   higher and denser (`jungleQ` .9, the lace fans and great sundews biased up). **The stacks all looked alike**: every

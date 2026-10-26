@@ -413,13 +413,20 @@ NHL.G=G;
 
 // ---------------------------------------------------------------- materials
 // the bark buckets: one per texture kind; the trumpets' bucket shimmers (the Rift's iridescent bark)
+// the floor cover's ground tint (core/biome 30-core-foliage.js, R5): the root takes the painted ground's colour (88-host-build
+// binds it, BIO.setGround) and the tuft shades to its own colour at the tip; past 520 m it turns to the ground and dissolves by
+// 700 m, inside the floor's 650 m chunk range, so the band ends without an edge. gain: the ground material's tint (0x84847a)
+// times its detail map's mean, so the root matches the ground it stands on.
+// leaves held by the stem on the broadleaf crowns (55-trees clumpAt; core/biome 31b-core-leafset.js); ?leafset=0: the old tripods
+NHL.LEAFSET=(typeof BIO.leafOn==='function'&&!(typeof location!=='undefined'&&/[?&]leafset=0/.test(location.search)))?{maple:1,broad:1}:null;
+NHL.FLOOR_GROUND={k:.8,gain:.42,fade:[520,700]};
 const M=NHL.MAT={
  needle:BIO.leafMat(TX.needle,'nh-needle',{aN:true,swayW:'1.0',swayA:.05}),
  spray:BIO.leafMat(TX.spray,'nh-spray',{swayW:'(position.x)',swayA:.10}),
- maple:BIO.leafMat(TX.maple,'nh-maple',{aN:true,swayW:'1.0',swayA:.10}),
- broad:BIO.leafMat(TX.broad,'nh-broad',{aN:true,swayW:'1.0',swayA:.10}),
- small:BIO.leafMat(TX.small,'nh-small',{aN:true,swayW:'1.0',swayA:.07}),
- birch:BIO.leafMat(TX.birch,'nh-birch',{aN:true,swayW:'1.0',swayA:.14}),
+ maple:BIO.leafMat(TX.maple,'nh-maple',{backlit:.35,aN:true,swayW:'1.0',swayA:.10}),
+ broad:BIO.leafMat(TX.broad,'nh-broad',{backlit:.35,aN:true,swayW:'1.0',swayA:.10}),
+ small:BIO.leafMat(TX.small,'nh-small',{backlit:.35,aN:true,swayW:'1.0',swayA:.07}),
+ birch:BIO.leafMat(TX.birch,'nh-birch',{backlit:.35,aN:true,swayW:'1.0',swayA:.14}),
  larch:BIO.leafMat(TX.larch,'nh-larch',{aN:true,swayW:'1.0',swayA:.10}),
  lance:BIO.leafMat(TX.lance,'nh-lance',{aN:true,swayW:'1.0',swayA:.12}),
  pinnate:BIO.leafMat(TX.pinnate,'nh-pinnate',{aN:true,swayW:'1.0',swayA:.10}),
@@ -429,10 +436,10 @@ const M=NHL.MAT={
  lady:BIO.leafMat(TX.lady,'nh-lady',{swayW:'(position.x)',swayA:.08}),
  lace:BIO.leafMat(TX.lace,'nh-lace',{irid:true,swayW:'(position.x)',swayA:.08,alphaTest:.38}),
  bracken:BIO.leafMat(TX.bracken,'nh-bracken',{swayW:'1.0',swayA:.04}),
- blade:BIO.leafMat(TX.blade,'nh-blade',{swayW:'(position.y)',swayA:.10,alphaTest:.4}),
- spike:BIO.leafMat(TX.spike,'nh-spike',{swayW:'(position.y)',swayA:.08,alphaTest:.38}),
- bell:BIO.leafMat(TX.bell,'nh-bell',{swayW:'(position.y)',swayA:.06,alphaTest:.38}),
- heath:BIO.leafMat(TX.heath,'nh-heath',{swayW:'(position.y)',swayA:.03,alphaTest:.4}),
+ blade:BIO.leafMat(TX.blade,'nh-blade',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.10,alphaTest:.4}),
+ spike:BIO.leafMat(TX.spike,'nh-spike',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.08,alphaTest:.38}),
+ bell:BIO.leafMat(TX.bell,'nh-bell',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.06,alphaTest:.38}),
+ heath:BIO.leafMat(TX.heath,'nh-heath',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.03,alphaTest:.4}),
  under:BIO.leafMat(TX.under,'nh-under',{swayW:'1.0',swayA:.05}),
  paddle:BIO.leafMat(TX.paddle,'nh-paddle',{aN:true,swayW:'(position.y)',swayA:.05,alphaTest:.45}),
  zebra:BIO.leafMat(TX.zebra,'nh-zebra',{swayW:'(position.y)',swayA:.02,alphaTest:.42}),
@@ -485,8 +492,8 @@ BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
 // ---------------------------------------------------------------- instanced items
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Conifer needles'});
 BIO.def('spray',BIO.geo.frond(3),M.spray,{label:'Cedar and hemlock sprays'});
-BIO.def('maple',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Maple leaves'});
-BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
+BIO.def('maple',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.maple?{stem:true}:null),M.maple,{attrs:['aN'],label:'Maple leaves'});
+BIO.def('broad',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.broad?{stem:true}:null),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Oak and laurel leaves'});
 BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Birch leaves'});
 BIO.def('larch',BIO.geo.clump(),M.larch,{attrs:['aN'],label:'Larch needles'});

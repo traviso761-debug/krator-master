@@ -20,6 +20,7 @@ window._biome=null;window._dress=null;
  lap('dress');
  const b=BIO.bake();lap('bake');
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}
+ if(GROUND&&GROUND.material&&GROUND.material.map)BIO.setGround(GROUND.material.map,[TERR.X0,TERR.Z1,TERR.X1,TERR.Z0]);   /* R5: the floor cover's root colour (the paint's v runs z1..z0) */
  lap('ground');
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:'The Northern Highlands (ideal type)',x:0,z:0,y:-50,r:TERR.R*1.42,h:1700});
