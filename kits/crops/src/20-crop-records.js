@@ -91,8 +91,8 @@ R('ember-plum', 'Ember plum', 'fruit', [4, 5], [0, 2], {also: ['medicine'], form
 R('lantern-fruit', 'Lantern fruit', 'fruit', [3, 4], [2, 3], {form: 'tree', src: 'rift', home: ['rift', 'xanadu']});
 R('serviceberry', 'Canyon serviceberry', 'berry', [1, 3], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.orchard.broad', home: ['ebadlands']});
 R('sunthorn', 'Gully sunthorn', 'berry', [0, 2], [1, 2], {atm: [0, 1], form: 'shrub', card: 'card.sunthorn', home: ['ehighlands']});
-R('rowan', 'Frost rowan', 'berry', [0, 2], [2, 3], {atm: [0, 2], form: 'tree', src: 'nhighlands', home: ['nhighlands']});
-R('bilberry', 'Wall bilberry', 'berry', [0, 2], [2, 3], {atm: [0, 2], form: 'shrub', src: 'nhighlands', home: ['nhighlands']});
+R('rowan', 'Frost rowan', 'berry', [0, 2], [2, 3], {atm: [0, 2], form: 'tree', src: 'nhighlands', home: ['nhighlands', 'nwouterwall']});
+R('bilberry', 'Wall bilberry', 'berry', [0, 2], [2, 3], {atm: [0, 2], form: 'shrub', src: 'nhighlands', home: ['nhighlands', 'nwouterwall']});
 R('madrone', 'Madrone berries', 'berry', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands']});
 R('arbutus', 'Strawberry-tree berries', 'berry', [3, 3], [1, 2], {form: 'tree', src: 'xanadu', home: ['xanadu']});
 R('wadi-date', 'Wadi date', 'dried-fruit', [4, 5], [0, 2], {form: 'tree', card: 'card.palm', src: 'sedesert', home: ['sedesert'], stores: ['dried']});
@@ -115,3 +115,17 @@ R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.cropt
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
 R('rattlepod', 'Rattle coffee', 'beverage', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands'], stores: ['dried']});
 R('alecap', 'Alecap', 'beverage', [0, 5], [0, 4], {also: ['vegetable', 'dye'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.alecap', colour: 'purple', src: 'zeijani', home: ['throne'], stores: ['fermented', 'fresh'], note: 'fermented to a passable beer; the Zeijani beds (zj_farm_alecap)'});
+
+/* ---- the High Country (biomes/nwouterwall, PLAN.md section 4, 2026-10-26): the Thule package of *The Lands of Ice and Mice*, the
+   Yeti's arctic roots. The Three Gifts (Tiri Gipler) are sweetroot, snow potato and goldroot; a part of every root is buried again and a
+   gift left for the spirits (and the vole whose cache was raided). The High Country names are in each note */
+R('sweetroot', 'Sweetroot', 'tuber', [0, 1], [0, 2], {atm: [0, 1], reach: 1, card: 'card.crop.thule', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'dried'], note: 'sweetvetch (Hedysarum alpinum): a carrot-like taproot to a metre long, a perennial bed 3-7 years to full root, dug in early spring and late autumn (woody in summer); gravel, till and poor soil. The staple: isiit, "the sweet"'});
+R('bearroot', 'Bearroot', 'reagent', [0, 1], [0, 2], {atm: [0, 1], hazard: 'poison', src: 'nwouterwall', home: ['nwouterwall'], note: 'Hedysarum mackenzii, sweetroot\'s twin: the same leaves and flowers, a poisonous root; no harvest. Telling them apart is the farmer\'s first skill: beer-isiit, "the bear\'s sweet"'});
+R('snowpotato', 'Snow potato', 'tuber', [0, 1], [0, 2], {atm: [0, 1], reach: 0, card: 'card.crop.thule', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'dried'], note: 'Claytonia tuberosa (the Eskimo potato): a white taproot near the surface; the seedlings die in frost, so it is grown in stone-walled pockets that hold the day\'s warmth. Isnoo-pa\'a'});
+R('goldroot', 'Goldroot', 'herb', [0, 1], [0, 2], {also: ['tuber', 'medicine'], atm: [0, 1], reach: 1, card: 'card.crop.thule', src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried'], note: 'roseroot (Rhodiola rosea): a nest of thick roots that smell of roses dried; the remedy for fatigue and thin air, 4-5 years to harvest; the Yeti\'s trade good. Gooldruut'});
+R('bistort', 'Snow bistort', 'grain', [0, 1], [1, 3], {atm: [0, 1], reach: 1, src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried', 'ground'], note: 'alpine bistort (Bistorta vivipara): a spike of bulbils, threshed and cooked like a grain; voles cache them ("mouse nuts")'});
+R('mountain-sorrel', 'Mountain sorrel', 'greens', [0, 1], [1, 3], {atm: [0, 1], src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'fermented'], note: 'Oxyria digyna: sour greens, eaten fresh or fermented'});
+R('stonepine', 'Pine nuts', 'nut', [0, 1], [1, 2], {atm: [0, 1], form: 'tree', card: 'card.pine', src: 'nwouterwall', home: ['nwouterwall'], stores: ['dried'], note: 'the Siberian stone pine (Pinus sibirica) and its creeping mat above the tree line: the fat crop, stored for winter'});
+R('cloudberry', 'Cloudberry', 'berry', [0, 1], [3, 4], {atm: [0, 1], src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'cured'], note: 'Rubus chamaemorus, in the alas bogs: frozen, or kept in fat'});
+R('crowberry', 'Crowberry', 'berry', [0, 1], [1, 3], {atm: [0, 1], form: 'shrub', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'dried'], note: 'Empetrum, on the tundra'});
+R('ivanchai', 'Ivan-chai', 'beverage', [0, 2], [1, 3], {also: ['greens'], atm: [0, 2], card: 'card.fireweed', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fermented', 'dried'], note: 'fireweed (Chamerion angustifolium) on the burns and the larch edges: the fermented leaves are the Yeti\'s tea; the young shoots greens'});

@@ -61,5 +61,10 @@ CROPS.BIOMES = {
   ringisles:   {atm: 2, atmNote: '?', zones: {wet: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 5], arid: [0, 1]}, lagoon: {warmth: [4, 4], arid: [3, 4], wet: true, salt: true}}},
   /* the Oidong Valley (biomes/oidong): an enclosed high valley, its floor at ~2,000-2,200 m on the scale model (~1.24 atm: standard),
      Cfb with BSk toward the drier west; the floor humid in the east, the flats drier, the terraces cool, the pools fresh */
-  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}}
+  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}},
+  /* the NW outer wall (biomes/nwouterwall/PLAN.md section 4): the Yeti's High Country. The forest-steppe (~4.2 km, 0.93 atm, 220 mm,
+     dry summers) and the larch taiga (~5.2 km, 0.85 atm) are standard air; the tundra and the fellfield above are thin. The alases are
+     the thaw hollows' meadows and lakes on the permafrost */
+  nwouterwall: {atm: 1, zones: {steppe: {warmth: [1, 1], arid: [1, 1]}, larchwood: {warmth: [0, 1], arid: [1, 2]}, alas: {warmth: [0, 1], arid: [3, 3], wet: true},
+    tundra: {warmth: [0, 0], arid: [0, 1], atm: 0}, fellfield: {warmth: [0, 0], arid: [0, 0], atm: 0}}}
 };
