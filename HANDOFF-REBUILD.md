@@ -84,6 +84,8 @@ every biome; known-issues passes; the owner's three texture drops in the library
 
 | Change | Where | Fixes |
 |---|---|---|
+| **A bug in every textured biome:** `BIO.libSwap` sets a card's cell offset on the texture `KMAT.textures` caches once per sheet, so every slot cut from one sheet draws the LAST slot's cell. Fix: clone the texture when `L.cell` is set (copy the image when it loads) | `core/biome/20-core-kit.js` (`libSwap`), `core/materials/record` | found by the NW outer wall (its three crops all drew goldroot; it works around it in the kit). Every biome with two slots on one sheet is affected: rebuild them all after |
+| `cloudShade` recursion | core/atmos (the shared sky) | reported by the NW outer wall; for the sky rollout to fix before its merge |
 | LOD meshes keyed by chunk with instances sorted by range (`lodTick` sets counts), or a per-material merge plus `minTris`, or a per-pass chunk size | `core/biome/20-core-kit.js` (`bake`, `_lodEntry`, `_lodKey`, `lodTick`) | the runtime-LOD draw-call cost in nwlowlands, swlowlands, swbay, rift (hero sub-chunks or a dithered cross-fade for the pop at 1.2 km) |
 | A per-vertex second bark colour (`aC2`) | `BIO.glossBarkMat` (`core/biome/30-core-foliage.js`) | two-tone bark shared per bucket (both lowlands) |
 | `BIO.lathe` `rep` as a function of the ring | `core/biome/20-core-kit.js` | seams where bole sections change repeat (hyperjungle and its takers) |
