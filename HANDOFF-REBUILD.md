@@ -120,6 +120,29 @@ thinner shallows and pad bob; swbay's 156 m temple and taller canopy, and its ca
 flattens the warts); hyperjungle's terracotta ironbark; rift's fractal fins and new waterfalls; swlowlands' salt marsh;
 the LOD trade (fewer calls for more triangles) in nwlowlands, swlowlands, swbay.
 
+**4a. The research picks, for one approval (2026-10-26).** Five reports: `biomes/DETAIL-RESEARCH.md`, `HEIGHT-RESEARCH.md`,
+`WEATHER-RESEARCH.md`, `HAZARD-RESEARCH.md`, `kits/resources/PLACEMENT-RESEARCH.md`. Their top picks, merged (two reports
+proposed the same height fog, two the same wind field):
+
+| # | Feature | From | Where | Cost |
+|---|---|---|---|---|
+| R1 | Height fog with sky and sun in-scatter, valley mist pooling, a cloud band at mid-height, drifting with the gusts (replaces `FogExp2`) | height 1+4, weather 4 | `core/atmos` (one fog chunk), with the sky-fog fix above | 0 draws, ~20 ops/pixel |
+| R2 | Horizon-map terrain shadows and sky visibility (a ~1 s bake per page) | height 2 | `core/terrain/43-core-horizon.js` | 2-4 MB, 3 reads/pixel |
+| R3 | A shared far-field ring (`KFAR`, nwlowlands' range made core; optional height exaggeration, curvature drop) | height 3 | `core/terrain/44-core-farfield.js` | 0.1-0.3M tris, 1-3 draws |
+| R4 | One core ground shader: height-blended layers, hex tiling, distance scale (ends the per-biome ground copies; lifts the dither) | detail 1 | `core/terrain/43-core-ground.js` (rename one of R2/R4) | 0 draws, ~3 reads/layer |
+| R5 | Floor cover takes the ground's colour at its root and fades into it past its band | detail 2 | `core/biome/30-core-foliage.js` | 1 read/vertex |
+| R6 | Octahedral impostors for far trees (in place of blobs) | detail 3 | `core/biome/33-core-impostor.js` | 2 tris/tree, 1-4 MB/species |
+| R7 | Alpha-to-coverage on leaf and grass cards with MSAA | detail 4 | `leafMat` | free |
+| R8 | One wind field: foliage, grass and water chop read ATMOS's travelling gusts | detail 7, weather 5 | `core/biome/30-core-foliage.js` | 1 noise/vertex |
+| R9 | Wetness and puddles in hollows, rain rings on puddles and water | weather 1+2 | `core/water/51-core-water-kinds.js` | shader only, mask <1 MB |
+| R10 | A rain occlusion map (dry under canopies and roofs; snow and drips read it too) | weather 3 | `core/atmos/89-atmos-4-weather.js` | 1 small depth pass every ~20 m |
+| R11 | The hazard key and `KHAZ` queries, the hazard overlay and inspector, one clock for cyclic hazards, navigation costs in the walk export | hazard 1-4 | `core/tags`, new `core/hazard`, `core/walk` | records only |
+| R12 | Geology provinces baked on the scale model, a cell-hashed node field, river-carried placers and ringed salt basins, a polity scarcity ledger | resources 1-4 | `tools/scale-model/geology.py`, `kits/resources` | offline bake |
+
+R1-R3 and R10 land after the shared sky merges (they read its `air` preset and hook the same materials). R4 and R6 are the
+large ones; R6 fits the LOD rework (core change B1). R11 and R12 add data, not looks: no page should change except where a
+kit registers hazards or nodes.
+
 **5. The rebuild.** Rebuild every biome and station (`python3 build.py`; Throne and Korona `--station`), verify each with
 `KRATOR_GL=gpu verify.py --assert --all-views` on the one GPU lock, `python3 tools/check_core_use.py --write-baseline` (it should
 shrink), `tools/port_baseline.py --update` only for pages checked, `tools/test_all.py`. Then everything a shared change reached:
