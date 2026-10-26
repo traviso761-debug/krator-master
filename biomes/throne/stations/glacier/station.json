@@ -11,7 +11,10 @@
   "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js",
-  "fx/89-atmos-fx-snowcover.js"
+  "fx/89-atmos-fx-snowcover.js",
+  "fx/89-atmos-fx-raincover.js",
+  "sky/89-atmos-j-fog.js",
+  "host/89-atmos-j-heightfog.js"
  ],
  "water": [
   "20-core-water.js",

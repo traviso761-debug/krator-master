@@ -7,3 +7,6 @@
 ATMOS.init({THREE,scene,camera,hour:()=>11,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>FC.at(FC.a.h,x,z),seed:47,err:reportErr});
 const DECK=ATMOS.cloudDeck({y:CLOUD_Y,sun:[-1000,900,-700],bounds:[-13000,-12600,13000,rimZ(0)+400],name:'The cloud sea'});
 REGISTER({name:'The cloud sea (the hyperjungle\'s air, pooled below the Wall)',x:0,z:-2600,y:CLOUD_Y-60,r:1400,h:110});
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26; here, after ATMOS.init): wet: the southern highlands over the hyperjungle's
+// cloud sea, rain and the cloud's fog. // It starts clear, so the page looks as it did; the Weather selector in the panel picks the rest.
+ATMOS.bindWeather({climate:{wet:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});

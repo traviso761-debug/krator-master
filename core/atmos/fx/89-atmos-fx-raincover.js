@@ -11,7 +11,8 @@
 //                             every (s while it rains, default 6), lift (m over the eye the view starts, default 400),
 //                             depth (m it reaches down, default 1200), skip(object) -> true to leave an object out}
 //   R.render()                re-render now (after the page moved something big); R.stats {renders, hidden}
-//   GLSL (ATMOS.rainCoverGLSL(), guarded, so several hooks can include it): float atmRainCover(vec3 worldPos) (0 open
+//   GLSL (ATMOS.rainCoverGLSL(), guarded, so several hooks can include it): float atmRainOpen(vec3 worldPos) (1 open sky,
+//   0 under cover: core/water's wetness, puddles and rain rings read it), float atmRainCover(vec3 worldPos) (0 open
 //   .. 1 sheltered; 0 outside the box, faded at its edge), float atmRainOccY(vec2 xz) (the cover's height there)
 //   uniforms (shared objects in ATMOS.U): atmRainOcc (the depth texture), atmRainOccBox (cx, cz, box, valid),
 //   atmRainOccCam (top y, near, far, shelter margin)
@@ -32,7 +33,7 @@
   ' float tx=0.75/float(textureSize(atmRainOcc,0).x);float s=0.0;',
   ' s+=smoothstep(atmRainOccCam.w,atmRainOccCam.w+'+f(P.soft)+',atmRainOccYuv(uv+vec2(tx,tx))-wp.y);s+=smoothstep(atmRainOccCam.w,atmRainOccCam.w+'+f(P.soft)+',atmRainOccYuv(uv+vec2(-tx,tx))-wp.y);',
   ' s+=smoothstep(atmRainOccCam.w,atmRainOccCam.w+'+f(P.soft)+',atmRainOccYuv(uv+vec2(tx,-tx))-wp.y);s+=smoothstep(atmRainOccCam.w,atmRainOccCam.w+'+f(P.soft)+',atmRainOccYuv(uv-vec2(tx,tx))-wp.y);',
-  ' return edge*0.25*s;}','#endif'].join('\n');};
+  ' return edge*0.25*s;}','float atmRainOpen(vec3 wp){return 1.0-atmRainCover(wp);}','#endif'].join('\n');};
  A.onInit.push(()=>{const T=A.T;A.U.rainOcc=null;A.U.rainOccBox=A.U.rainOccBox||{value:new T.Vector4(0,0,160,0)};A.U.rainOccCam=A.U.rainOccCam||{value:new T.Vector4(0,.1,1200,1.2)};});
  A.rainCoverUniforms=u=>{if(!A.U.rainOcc)return u;u.atmRainOcc=A.U.rainOcc;u.atmRainOccBox=A.U.rainOccBox;u.atmRainOccCam=A.U.rainOccCam;return u;};
  // the readers in 4-weather: the streaks and the flakes fade out under cover (their vertex shaders gain atmRainCover)

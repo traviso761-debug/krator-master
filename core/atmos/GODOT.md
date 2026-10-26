@@ -194,6 +194,41 @@ the normal's band, the noise and the colours. Godot: the depth is a global shade
 autoload exactly as `ATMOS.snowStep` (from the weather's `snow`, `dt` and the hour); `atmSnow(world position, world normal)`
 is a `.gdshaderinc` every ground, rock and foliage shader includes, mixing the snow's albedo (and roughness) after its own.
 
+The `lee` (2026-10-26, WEATHER item 10) is a global `atm_snow_lee` and `atm_snow_wind_dir` (the wind's direction, from
+`atm_wind`); under the rain occlusion map (below) only the base cover lies.
+
+## Height fog, valley mist and the cloud band (R1: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`)
+
+The `heightfog` record carries the falloff, the reference (`ground` or metres), the sun and sky shares, the shape (`exp2`
+or `exp`, with a distance compression), the mist (density, level or `below`, depth, noise, the dawn hours) and the band
+(density, bottom and top, cover, noise). Godot: the air is `Environment.fog_height` (the reference), `fog_height_density`
+(the falloff), `fog_sun_scatter` (sun), `fog_aerial_perspective` (sky), with `fog_density` from the hour as the sky sets
+it; the mist and the band are `atmos_fog.gdshaderinc` (the same three closed-form integrals, `atmFogLayer`, `atmFogPool`,
+`atmFogSlab`, and the lowbias32 patch noise) mixed in `fragment()` of the ground and plant shaders over globals `atm_fog_h`,
+`atm_fog_mist`, `atm_fog_band`, `atm_fog_x`, `atm_fog_drift`; or, for a world with volumetric fog on, `FogVolume` boxes:
+one under the mist level (density from the dawn curve), one slab for the band. The dawn curve and the drift (the wind at the
+eye times the gust factor) are the autoload's, as `F.step` is.
+
+## The rain occlusion map (R10: `fx/89-atmos-fx-raincover.js`)
+
+The `raincover` record carries the size, box, step, lift, depth and the shelter margin. Godot: a
+`GPUParticlesCollisionHeightField3D` (follow-camera, the same box) for the rain, snow and ash particles, and an orthographic
+`SubViewport` depth of the same box, re-rendered when the eye moves `step` metres, as a global `sampler2D` `atm_rain_occ` with
+`atm_rain_occ_box` and `atm_rain_occ_cam`; `atm_rain_cover(world_pos)` (a `.gdshaderinc`, four taps, the margin, the edge
+fade) multiplies the wetness (cloud shade's and core/water's) and the fresh snow.
+
+## The wind for leaf shaders (R8: `ATMOS.windGLSL`, `ATMOS.windUniforms`)
+
+`atm_wind` (vec2), `atm_gust_amp`, `atm_time` are already globals (above); `atmos_wind.gdshaderinc` carries `atm_gust(t, xz, w)`
+and `atm_wind(t, xz, w, amp)` written from `PRESETS.wind` (the same sum of sines on the travelling front), and
+`atm_gust_here(xz)`, `atm_wind_here(xz)`. Foliage and grass sway read them in `vertex()`.
+
+## Lightning (`fx/89-atmos-fx-lightning.js`)
+
+`ATMOS.boltPath(seed, from, to)` is pure data (mulberry32 per strike): the same segments in GDScript, drawn as an
+`ImmediateMesh` of camera-facing quads at the weather's flash, with an `OmniLight3D` pulse at the cloud. Each strike queues a
+thunder event at `t + dist / 343`; the autoload emits `thunder(dist, power)` and an `AudioStreamPlayer3D` plays it.
+
 ## Rules that keep the module portable
 
 1. **A new effect is a preset plus a record.** Put its numbers in `ATMOS.PRESETS` and have its call `A.rec()` what it

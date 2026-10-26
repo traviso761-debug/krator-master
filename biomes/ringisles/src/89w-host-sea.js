@@ -34,3 +34,7 @@ const POOL_DRAWS=POOL_STILLS.map((S,i)=>{const br=i>=POOLS.length,d=WATER.drawSt
 // each pool takes a ray and a probe sample of its own (pick: true; 2026-10-25, in place of an invisible flat disc a pool)
 _onLight.push(m=>{POOL_DRAWS.forEach((d,i)=>{const br=i>=POOLS.length;d.material.color.setHex(m==='night'?(br?0x2a2222:0x0c1a1a):(br?0xc8a8a0:0x4a7a78));});});
 _mark('sea');
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26; here, after ATMOS.init): wet: a Ring Sea isle, monsoon rain and storms. The
+// sand already takes the rain through its shore wetting above (WATER.wetGround with the surface), so no ground is passed twice.
+// It starts clear, so the page looks as it did; the Weather selector in the panel picks the rest.
+ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:[]});

@@ -97,7 +97,7 @@ for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
 # sky, fog, sun and water are unchanged; core/water draws here in a later phase.
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # core/water (core/water/README.md; 2026-10-20, phase 2): the brook as a WATER.flow (record in 45-host-stage.js, drawn in 89w-host-water.js). Explicit paths:
@@ -112,7 +112,7 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 PATH.pop('82-host-sky.js',None)   # the old dome stays in src/ for the builds that still read it in place; this page draws the shared sky
 # the syntax check cannot see a core fragment that is simply absent

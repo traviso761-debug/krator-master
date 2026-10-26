@@ -98,8 +98,9 @@ if STATION:
     if STN.get('atmosHost'): PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))
 else:
     # station 1 (the plume's edge): core, presets, export, the wave field and the sky's light, bound by src/89a-host-atmos.js
-    for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+    for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))   # 4, 9: the weather and its selector (2026-10-26)
     PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))
+    PATH['89-atmos-e-weatherhost.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-e-weatherhost.js'))   # ATMOS.bindWeather (src/89a-host-atmos.js; a station lists it in station.json "atmos")
     # 2026-10-26 (the water migration, station 1): the acid lake on WATER.still, the hot pools on WATER.spring (src/89w-host-water.js)
     for f in S1_WATER: PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 for f in CORE_BIOME:

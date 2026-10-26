@@ -25,3 +25,6 @@ POOL_DRAW.mesh.userData.inspectLabel='The plunge pool';
 // (about 110,150,160 sRGB across the view): the tints are that, not the wadi's saturated teal, which the lit surface would show whole
 const POND_DRAW=WATER.draw(POND_WATER,{transparent:true,renderOrder:1,roughness:.08,metalness:.05,envMapIntensity:.6,shallow:lin(new THREE.Color(0x5a8e98)),deep:lin(new THREE.Color(0x3a6a78))});
 POND_DRAW.mesh.userData.inspectLabel='The pond';
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26; here, after ATMOS.init): dry: the south-east desert, rain rare; the haze goes
+// the colour of dust and the ground never wets. // It starts clear, so the page looks as it did; the Weather selector in the panel picks the rest.
+ATMOS.bindWeather({climate:{dry:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});

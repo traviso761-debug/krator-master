@@ -21,6 +21,14 @@ ATMOS.weather({mode:'clear',snow:true,apply:W=>{const s=W.snow||0,fg=W.fog||0,ni
 // SNOW THAT LIES (core/atmos/fx/89-atmos-fx-snowcover.js, 2026-10-25): fresh snow builds on every up-facing surface while it snows
 // (a blizzard covers the moraines, the rock and the trees' tops in about seven minutes) and stays: the glacier's air is
 // frozen, so it does not melt by day. The painted accumulation zone stays the ground's own. window._snowDepth(d) sets it.
-ATMOS.snowCover({frozen:true});ATMOS.snowOnScene(scene);window._snowDepth=d=>{ATMOS.snow.depth=d;};
+ATMOS.snowCover({frozen:true,lee:.45});ATMOS.snowOnScene(scene);   /* lee .45 (2026-10-26, WEATHER item 10): the faces downwind of the gale hold more of it, the windward faces less */
+// THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no fresh snow and no flakes under the conifers, the ice
+// arch and the caves' roofs (the painted accumulation zone stays the ground's own)
+ATMOS.rainCover({renderer});
+// HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the thin air's haze is the page's own at the
+// ground under the eye and thins fast above it (the snow crown stands clear, the far flank below hazes); at dawn a cold mist
+// pools in the ground 80 m under the eye (the bench, the lake, the outwash). The weather's law above keeps writing the fog's
+// density and colour: this fog reads them
+ATMOS.heightFog({falloff:1/1100,sun:.5,sky:.45,mist:{density:.004,below:80,depth:35,noise:.7}});ATMOS.heightFogScene(scene);window._snowDepth=d=>{ATMOS.snow.depth=d;};
 ATMOS.finish();
 // the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

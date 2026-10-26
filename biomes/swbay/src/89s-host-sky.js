@@ -22,3 +22,14 @@ function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Mat
   if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
   const k=m.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(/^biofauna|^bioanim/.test(k))continue;
   ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): the wet tropics (rain, storms, fog); it starts clear, so the
+// page looks as it did until the Weather selector picks one. The sky (above) drives the fog and the light; the binding gives it
+// the weather's look and runs its fog law on the hour's fog (they compose, whichever binds first)
+ATMOS.bindWeather({climate:{wet:true},sun,hemi:HEMI,grounds:[MAT_GROUND]});
+// HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the bay's thick air is the page's fog at the
+// ground under the eye, thinning above it (the canopy's crowns and the highlands stand out of the haze); at dawn a mist pools over
+// the bay and the lowland jungle (below 22 m) and a broken band of cloud hangs over the rainforest's rise
+ATMOS.heightFog({falloff:1/700,sun:.4,sky:.3,mist:{density:.006,y:22,depth:28,noise:.65},band:{density:.0012,y:[430,560],cover:.32,noise:1}});
+ATMOS.heightFogScene(scene);
+// THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain and no wet ground under the canopy
+ATMOS.rainCover({renderer});

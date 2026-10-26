@@ -61,8 +61,11 @@ EXTRA_CORE = {'08-core-rand.js': os.path.join(ROOT, 'core', 'rand', '08-core-ran
               '52-core-tags-vocab.js': os.path.join(ROOT, 'core', 'tags', '52-core-tags-vocab.js'),
               '53-core-tags-host.js': os.path.join(ROOT, 'core', 'tags', '53-core-tags-host.js'),
               '40-core-basin.js': os.path.join(ROOT, 'core', 'terrain', '40-core-basin.js'),
-              '89-atmos-3d-dust.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-3d-dust.js')}   # the bed's dust (91c)
-PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js', '52-db-flotsam.js', '91b-db-flotsam.js', '91c-db-dust.js'}   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream
+              '89-atmos-3d-dust.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-3d-dust.js'),   # the bed's dust (91c)
+              '89-atmos-4-weather.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-4-weather.js'),   # the weather (91d, 2026-10-26)
+              '89-atmos-9-host.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-9-host.js'),   # its selector
+              '89-atmos-e-weatherhost.js': os.path.join(ROOT, 'core', 'atmos', 'host', '89-atmos-e-weatherhost.js')}   # ATMOS.bindWeather (91d)
+PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js', '52-db-flotsam.js', '91b-db-flotsam.js', '91c-db-dust.js', '91d-db-weather.js'}   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream
 
 
 def discover():

@@ -19,3 +19,6 @@ const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2
  shallow:new THREE.Color(.14,.32,.3).convertSRGBToLinear(),deep:new THREE.Color(.05,.17,.19).convertSRGBToLinear()});
 SEA_DRAW.mesh.userData.inspectLabel='The Ring Sea';
 _mark('sea');
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26; here, after ATMOS.init): wet: the geyser basin's sea coast, rain, storms and
+// the sea fog. // It starts clear, so the page looks as it did; the Weather selector in the panel picks the rest.
+ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:[MAT_GROUND]});

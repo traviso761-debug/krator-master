@@ -115,6 +115,15 @@ PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','cor
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
 PATH['89-atmos-h-skyhost.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-h-skyhost.js'))
+# the weather (2026-10-26): core/atmos's weather and its selector, ATMOS.bindWeather; height fog (R1: the sky's chunk and its
+# host), the rain occlusion map (R10) and the branched lightning (core/atmos/fx/)
+for f in ['89-atmos-4-weather.js','89-atmos-9-host.js']:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+for f in ['89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

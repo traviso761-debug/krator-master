@@ -7,5 +7,5 @@
 // and the rock ribs on the snow are not drawn. Snow weather greys the sky and darkens the hour's light.
 const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:571,py:514},
  preset:{"air":{"pressure":0.7,"humidity":0.5},"clouds":{"cover":0.08},"fogDensity":0.0004114,"ridges":[{"base":4.75,"amp":0.3,"cycles":16,"octaves":2,"seed":46,"win":[135,140,1.2],"floor":-0.2,"dist":54000,"snowH":-2000,"forestH":0,"haze":0.0317,"rock":[0.38,0.39,0.43],"snow":[0.93,0.94,0.96]}]},onLook:SKY_LOOK,weatherOver:true,weatherLook:true});
-const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
+const {sky,giant,giantRing,giantDir,GIANT_DIST}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */
 SKY.modes({hours:{day:13,night:22},hooks:_onLight,set:m=>{LIGHT_MODE=m;}});   /* the Day and Night buttons, the night views, key n */

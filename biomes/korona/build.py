@@ -118,7 +118,7 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, called by src/89a-host-atmos.js
@@ -133,7 +133,7 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 PATH.pop('82-host-sky.js',None)   # the hyperjungle's old dome (still mapped in by KITS above): this page draws the shared sky
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

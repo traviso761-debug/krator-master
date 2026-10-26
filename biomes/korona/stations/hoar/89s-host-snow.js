@@ -5,5 +5,5 @@
 // The page has no weather (KNOWN_ISSUES.md, "No night"), so the cover is a base (SNOW_BASE), not a fall that builds; the air is
 // frozen, so a fall added later will not melt by day. window._snowDepth(d) adds fresh snow over the base (a winter view).
 const SNOW_BASE=.32;
-ATMOS.snowCover({base:SNOW_BASE,frozen:true});ATMOS.snowOnScene(scene);
+if(!ATMOS.snow){ATMOS.snowCover({base:SNOW_BASE,frozen:true});ATMOS.snowOnScene(scene);}   /* the weather (89a: ATMOS.bindWeather, STAGE.climate cold and frozen, STAGE.snowBase) starts the cover first, falls building on it */
 window._snowDepth=d=>{ATMOS.snow.depth=d;};

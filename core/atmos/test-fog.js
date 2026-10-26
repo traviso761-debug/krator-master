@@ -89,7 +89,7 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
 // X3 lives in core/host (92-host-panel.js: KHOST.wantHour, set by ATMOS.sky); its check is the pages' slider (verify)
 
 // ---------------------------------------------------------------- R10: the rain occlusion chunk, R8: the gust uniforms
-{const g=A.rainCoverGLSL();ok('the rain-cover chunk: guarded, an edge fade, a shelter margin, 4 taps',/#ifndef ATM_RAINCOVER/.test(g)&&/atmRainCover\(vec3 wp\)/.test(g)&&(g.match(/atmRainOccYuv\(uv/g)||[]).length===4,!/ATM_RAINCOVER/.test(g));
+{const g=A.rainCoverGLSL();ok('the rain-cover chunk: guarded, an edge fade, a shelter margin, 4 taps',/#ifndef ATM_RAINCOVER/.test(g)&&/float atmRainOpen\(vec3 wp\)/.test(g)&&/atmRainCover\(vec3 wp\)/.test(g)&&(g.match(/atmRainOccYuv\(uv/g)||[]).length===4,!/ATM_RAINCOVER/.test(g));
  const rm={uniforms:{},vertexShader:'void main(){vec3 p=position;vec4 mv=viewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;}',userData:{}};A.U.rainOcc={value:1};A.rainCoverPatch=A.rainCoverPatch||null;
  const patchSrc=fs.readFileSync(path.join(D,'fx/89-atmos-fx-raincover.js'),'utf8');ok('the rain streaks fade under cover (the patch\'s pattern matches 4-weather\'s shader end)',
   /vA\*=1\.0-atmRainCover\(p\)/.test(patchSrc)&&/gl_Position=projectionMatrix\*mv;\}`/.test(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8')),false);

@@ -3,3 +3,6 @@
 // (WATER.draw, drawFlow: they need ATMOS.init, and for the sky in the water the skylight) and the shared sky can draw here.
 // The hour is the host clock's (the shared sky reads it too: 89s-host-sky.js).
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock.hour:16.8,seed:8902,viewH:()=>innerHeight});
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): dry: the Bowl's salt basin in the south-east desert, rain rare;
+// the haze goes the colour of dust. It starts clear, so the page looks as it did; the panel's Weather selector picks the rest.
+ATMOS.bindWeather({climate:{dry:true},sun,hemi:HEMI,grounds:[MAT_GROUND]});

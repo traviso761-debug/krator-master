@@ -54,3 +54,5 @@ const DONGAS=[{x:-1100,amp:60,f:.002,ph:.4,w:5,d:4},{x:1200,amp:70,f:.0017,ph:2.
 const BURN={x:1050,z:-150,rx:620,rz:480};
 const burnAt=(x,z)=>{const d=Math.hypot((x-BURN.x)/BURN.rx,(z-BURN.z)/BURN.rz)+.35*(fbm(x*.004,z*.004,41,3)-.5);return smooth(1.0,.9,d);};
 function plumeAt(x,z){return 0;}
+// the weather's climate (src/89a-host-atmos.js, ATMOS.bindWeather, 2026-10-26): wet, no ash: the south flank's savanna, out of the plume, its rains and storms
+const WX_CLIMATE={wet:true};

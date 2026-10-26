@@ -63,7 +63,7 @@ CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 # the shared atmosphere (core/atmos/README.md): its core, presets and the cloud deck (89-atmos-d-clouddeck.js), bound by
 # 89z-host-atmos.js. The deck is a field written from the presets, so a game engine draws the same cloud (GODOT.md).
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 2026-10-20: bound by 89a-host-atmos.js (the one-time init; core/water waits for its phase)
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']   # 2026-10-20: bound by 89a-host-atmos.js (the one-time init; core/water waits for its phase)
 CORE_A=os.path.normpath(os.path.join(HERE,'..','..','core','atmos'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
@@ -101,7 +101,7 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 PATH.pop('82-host-sky.js',None)   # the old dome stays in src/ for the builds that still read it in place; this page draws the shared sky
 # the syntax check cannot see a core fragment that is simply absent

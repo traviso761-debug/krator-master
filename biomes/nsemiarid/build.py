@@ -99,7 +99,7 @@ def build(OUT='nsemiarid.html',overlay=None):
     # core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
     # weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
     # the water needs, and the export. Bound in 89b-host-atmos.js.
-    CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+    CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
     for f in CORE_ATMOS:
         if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
     PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost (src/89b-host-atmos.js)
@@ -115,7 +115,7 @@ def build(OUT='nsemiarid.html',overlay=None):
         if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
     for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
         PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-    for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+    for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
         PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
     # the syntax check cannot see a core fragment that is simply absent
     miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

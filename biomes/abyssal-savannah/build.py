@@ -95,10 +95,11 @@ VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'abyssal-savanna
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos (core/atmos/README.md): its core, presets, export, the wave field and the sky's light, bound by 89a-host-atmos.js
-CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-4-weather.js', '89-atmos-8-export.js', '89-atmos-9-host.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']   # 4, 9: the weather and its selector (2026-10-26)
 for f in CORE_ATMOS:
     PATH.setdefault(f, core('atmos', f))
 PATH['89-atmos-c-hostbind.js'] = core('atmos', 'host', '89-atmos-c-hostbind.js')   # ATMOS.bindHost
+PATH['89-atmos-e-weatherhost.js'] = core('atmos', 'host', '89-atmos-e-weatherhost.js')   # ATMOS.bindWeather (src/89a-host-atmos.js, 2026-10-26)
 # the shared sky (core/atmos/SKY-PLAN.md): its model, presets and shader, and the host that draws it (src/89s-host-sky.js)
 for f in ['89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js']:
     PATH[f] = core('atmos', 'sky', f)

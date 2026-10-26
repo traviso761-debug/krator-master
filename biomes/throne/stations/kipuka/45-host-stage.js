@@ -56,3 +56,5 @@ function streamAt(x,z){let cut=0,bank=0,bed=0;for(const S of STREAMS){const g=st
 function landH0(x,z){return slopeH(x,z)+hillH(x,z);}
 // no plume here: it leans away to the south-east, far over the shoulder (the kit's plume field is 0)
 function plumeAt(x,z){return 0;}
+// the weather's climate (src/89a-host-atmos.js, ATMOS.bindWeather, 2026-10-26): wet, no ash: the windward west flank's old hyperjungle, rain most days
+const WX_CLIMATE={wet:true};

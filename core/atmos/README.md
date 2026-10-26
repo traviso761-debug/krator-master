@@ -88,6 +88,11 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `b-skylight` | `skylight({renderer, sky, scene, ground, key})`, `skyEnv` | the host's sky scene captured into a prefiltered cube map as `scene.environment`, recaptured as the hour moves (`PRESETS.skylight`). Standard materials only (Lambert ignores it). Specular by default: `diffuse` 0 keeps a build's tuned hemisphere and ambient fill |
 | `fx/lava` (opt-in, a subfolder: `core/atmos/fx/89-atmos-fx-lava.js`) | `lavaMaterial(o)`, `lavaGLSL(P)`, `PRESETS.lava` | a lava surface (2026-10-25, lifted from the Throne caldera's lake): a moving, warped Voronoi crust of plates with glowing cracks, finer facets riding them, seams, thin facets the heat shows through, plates overturning; the swell and the vents' domes in the vertex shader; the night raises the heat, `erupt` (a uniform the host eases) widens the cracks and churns patches; `flow` slides it, `channel: {width, speed}` runs it down a stream's mesh (aF across and along); `scale` and `crack` size it. An integer hash (lowbias32), never sin. Recorded as `lava`. Taken by the Throne's caldera (the lake) and tube (the stream) |
 | `fx/snowcover` (opt-in: `core/atmos/fx/89-atmos-fx-snowcover.js`) | `snowCover(o)`, `snowStep(S,W,dt,hour)`, `snowOn(mat,o)`, `snowOnScene(scene)`, `snowGLSL()`, `PRESETS.snowcover` | snow that LIES (2026-10-25; the weather's `snow` modes make it fall): a depth 0..1 that builds while it snows and melts when it does not (slower at night, never in `frozen` air), a pure step; any lit material whitens where it holds (up-facing first, patchy at the edges by an integer-hash noise, steeper faces as it deepens, a cliff stays bare), `base` cover and a snow `line` [y0, y1] for permanent snow, the biome core's bent normal (`aN`) on leaf cards. `node core/atmos/fx/test-fx.js`. Taken by the Throne's glacier |
+| `fx/lightning` (opt-in: `core/atmos/fx/89-atmos-fx-lightning.js`) | `boltPath(seed, from, to, o)`, `thunderDelay(d)`, `thunder`, `onThunder(fn)`, `PRESETS.lightning` | branched lightning (2026-10-26, WEATHER item 8): 4-weather's storm strikes become seeded midpoint-displacement bolts with forks, a flash of the cloud above, and thunder events at `dist / 343` s (`onThunder` for the host's sound). Without the file the old ribbon stays |
+| `fx/raincover` (opt-in: `core/atmos/fx/89-atmos-fx-raincover.js`) | `rainCover({renderer, size, box, step, every, lift, depth, skip})`, `rainCoverGLSL()`, `rainCoverUniforms(u)`, GLSL `atmRainOpen(wp)` (1 open sky), `atmRainCover(wp)`, `atmRainOccY(xz)` | the rain occlusion map (2026-10-26, R10): a top-down depth map of a 160 m box round the eye, re-rendered every 20 m; rain streaks, flakes, cloudShade's wet darkening and the fresh snow stay off what is more than 1.2 m under cover (crowns, roofs, overhangs; grass shelters nothing). core/water's wetness takes it through `rainCoverGLSL` |
+| `sky/fog` + `host/heightfog` (opt-in: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`) | `heightFog(o)`, `heightFogOn(mat)`, `heightFogScene(scene)`, `fogGLSL()`, `fogAt(ro, P, F)`, `fogLayer/fogPool/fogSlab` | height fog (2026-10-26, R1): the page's fog (its colour and density, which the sky and the weather drive) up to the ground under the eye and thinning above it, graded toward the sky's zenith colour up the ray and the sun's in a forward lobe; dawn mist pooling under a level; a broken cloud band at mid-height; the patches drifting on the wind and its gusts. Exact closed-form integrals (Quilez), ~20 ops a fragment. A level view at the reference height is FogExp2's own fog (`test-fog.js`) |
+| `host/hostbind` | `windUniforms(u)`, `windGLSL()` | the gust field for any shader (R8): `atmWindV`, `atmGustAmp`, `atmTime` (the shared uniforms) and `atmGust`, `atmWind`, `atmGustHere(xz)`, `atmWindHere(xz)` |
+| `host/skyhost` | `shaderHook(mat, key, fn)` | every core hook on a material's `onBeforeCompile` (cloudShade, heightFog, snowOn) goes through it: any number compose in any order, a page's own hook (set before or after) runs first, no hook can call itself, the program key carries each layer |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
 `(sin ry, cos ry)`. A *bearing* is the angle from `+x` toward `+z`.
@@ -114,6 +119,55 @@ Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is abou
 - **Capture with the sky as drawn:** the cube target takes the renderer's output encoding, so custom sky shaders that
   write display values (the giant, the dome's onBeforeCompile) land in the map as the screen shows them.
 - **`renderer.info` is left as it was** after a capture, so a build's draw-call budget does not count it.
+
+## Adopting the final rebuild's atmos items (2026-10-26)
+
+**What applies by default** (every page that takes the files; today's output unchanged at the clear weather):
+- `ATMOS.shaderHook`: `cloudShade` and `snowOn` compose with each other, with core/water's `wetGround` and with the page's own
+  hooks in any order (the NW outer wall's recursion is gone; its `89s-host-sky.js` workaround can stay or go).
+- The sky and `ATMOS.bindWeather` compose whichever binds first (X2): with the shared sky the binding hands the sky its look
+  (`ATMOS.wxLook`: the weather greys and clouds the sky, dims the sun and wets the ground through cloudShade's `uWet`) and runs
+  its fog law on the hour's fog (`ATMOS.wxFog`). A sky given `o.weather` keeps it (Farside, the NW outer wall): unchanged. A
+  stand-in fog for the binding is no longer needed.
+- Every page on the shared sky shows the hour slider and run / hold in the host's panel (X3: `ATMOS.sky` sets `KHOST.wantHour`).
+- `bindWeather` takes `climate.dry` (no wet ground, a dust-coloured haze; `climate.dust` the colour) beside wet, cold, frozen, ash.
+  Every biome kit and station binds the weather (the roll-out, 2026-10-26), except guilin (frozen as an Earth reference) and
+  the Throne's tube (underground); the Throne's ash desert, caldera, cloud forest, glacier and vents keep their own weather law.
+
+**Opt-in** (pilots: nhighlands, swbay, the Throne's glacier). The build lists the files by path:
+
+```python
+for f in ['89-atmos-4-weather.js','89-atmos-9-host.js']:          # the weather and its selector, if not already listed
+    if f not in PATH: PATH[f]=J('core','atmos',f)
+for f in ['89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']: PATH[f]=J('core','atmos','host',f)
+PATH['89-atmos-j-fog.js']=J('core','atmos','sky','89-atmos-j-fog.js')
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']: PATH[f]=J('core','atmos','fx',f)
+```
+
+(a Throne or Korona station: `"sky/89-atmos-j-fog.js"`, `"host/89-atmos-j-heightfog.js"`, `"fx/89-atmos-fx-raincover.js"`,
+`"fx/89-atmos-fx-lightning.js"` in station.json `"atmos"`). Then, in the host fragment that runs after `ATMOS.bindHost` /
+`ATMOS.init` and after the scene is built (before `KHOST.take`, so the first compile sees it):
+
+```js
+ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:[MAT_GROUND]});
+ATMOS.heightFog({falloff:1/850,sun:.35,sky:.35,                       /* the biome's own numbers */
+ mist:{density:.0045,y:260,depth:45,noise:.7},                        /* or below: metres under the eye's ground */
+ band:{density:.0016,y:[1560,1720],cover:.38,noise:1}});
+ATMOS.heightFogScene(scene);
+ATMOS.rainCover({renderer});
+```
+
+A page whose fog chunk is not FogExp2's passes its shape (`shape:'exp'`, `compress:[4000,5000]`: nhighlands). Height fog is
+opt-in because it changes the look wherever the view climbs or falls (the point of it); at a level view it is the page's fog.
+For the roll-out, each biome's numbers: the falloff from its relief (1/700 to 1/1100), the mist level at its valley floors or
+`below`, the band where its plans put a cloud layer (or none). `ATMOS.fog.off = true` shows the plain fog (an A/B check).
+`node core/atmos/test-fog.js` holds the integrals, the twin, the hooks, the compose and the bolts.
+
+**For the other workstreams.** core/water's `WATER.wetGround` should hook through `ATMOS.shaderHook` when present (today a
+page hook set after it replaces a core hook layered under it) and (done on the water side, 2026-10-26) multiplies its wetness, puddles and rain rings by `atmRainOpen(worldPos)`
+when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms(sh.uniforms)`). `ATMOS.bindWeather`'s `o.wet` is passed
+to `WATER.wetGround(mat, o.wet)` (porosity, puddles, ripples). The terrain workstream's KHORIZON reads the sky's `uSunDir`: a stable name. core/biome's foliage and grass
+sway can read the travelling gusts with `ATMOS.windGLSL()` and `ATMOS.windUniforms(sh.uniforms)` (R8).
 
 ## Tags
 

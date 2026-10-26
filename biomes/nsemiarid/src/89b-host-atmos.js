@@ -11,6 +11,9 @@
 // given to the water only).
 ATMOS.PRESETS.wind.base=[WIND[0]/Math.hypot(WIND[0],WIND[1]),WIND[1]/Math.hypot(WIND[0],WIND[1])];
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>14,seed:61,err:reportErr,viewH:()=>innerHeight});
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): dry: the walking steppe (median ~410 mm), rain rare, the haze
+// the colour of dust (the scablands overlay, built on this kit, the same). It starts clear; the panel's Weather selector picks the rest.
+ATMOS.bindWeather({climate:{dry:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});
 const NSWIND=(function(){const WIND_MS=6,SCALE={calm:.4,breeze:1,high:2.6};
  const Q=new URLSearchParams(location.search);let mode=SCALE[Q.get('wind')]!=null?Q.get('wind'):'breeze';
  ATMOS.windScale=SCALE[mode];

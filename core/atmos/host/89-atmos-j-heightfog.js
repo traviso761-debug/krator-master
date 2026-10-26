@@ -7,7 +7,7 @@
 //               climbing ray takes (default .4); both read the shared sky's uniforms (host/89-atmos-h-skyhost.js)
 //     shape     'exp2' (FogExp2's own curve, the default when scene.fog is a FogExp2) or 'exp' (a page whose fog chunk is
 //               exponential, as nhighlands' is); compress [start, scale]: a page's distance compression (nhighlands 4000, 5000)
-//     mist      {density (1/m at full), y (the level it pools below, m), depth (m: how fast it thins above), noise (0..1:
+//     mist      {density (1/m at full), y (the level it pools below, m; or below: metres under the reference), depth (m: how fast it thins above), noise (0..1:
 //               patchiness), night (its share at night, default .25), dawn [h0, h1, h2, h3] (rises h0..h1, burns off h2..h3;
 //               default [3.5, 5.2, 8, 10.5])}: thicker in the weather's fog (W.fog), thinner in a gale
 //     band      {density (1/m), y [bottom, top] (m), cover (0..1), noise (0..1)}: a cloud layer at mid-height; the rain and
@@ -33,7 +33,8 @@
    const wind=W.wind==null?1:W.wind,calm=Math.max(0,1-.35*Math.max(0,wind-1));
    F.mistD=(M.density||0)*Math.min(1,A.ss(dawn[0],dawn[1],hour)*(1-A.ss(dawn[2],dawn[3],hour))+(M.night==null?.25:M.night)*A.night(hour))*(1+2*(W.fog||0))*calm;
    F.bandD=(B.density||0)*(1+1.5*(W.rain||0)+(W.fog||0));
-   U.fogH.value.set(F.falloff,F.ref,F.sun,F.sky);U.fogMist.value.set(F.mistD,M.y||0,1/Math.max(1,M.depth||40),M.noise==null?.6:M.noise);
+   if(F.off){F.mistD=F.bandD=0;}   /* F.off: the plain fog in the same shape (an A/B check: verify's before shots) */
+   U.fogH.value.set(F.off?0:F.falloff,F.ref,F.off?0:F.sun,F.off?0:F.sky);U.fogMist.value.set(F.mistD,M.below!=null?F.ref-M.below:(M.y||0),1/Math.max(1,M.depth||40),M.noise==null?.6:M.noise);
    U.fogBand.value.set(F.bandD,B.y?B.y[0]:0,B.y?B.y[1]:0,B.cover==null?.5:B.cover);
    U.fogX.value.set(F.shape==='exp'?0:1,F.compress?F.compress[0]:0,F.compress?F.compress[1]:0,B.noise==null?1:B.noise);
    if(S){U.fogSunDir.value.copy(S.uSunDir.value);lin(S.uSunC.value,U.fogSunC.value);U.fogSunC.value.multiplyScalar(Math.min(1,Math.max(0,S.uSunI.value)));lin(S.uZen.value,U.fogZen.value);}
