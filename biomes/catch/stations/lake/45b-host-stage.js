@@ -83,7 +83,7 @@ const LAKE_TINT={box:LAKE_BOX,cell:16,at:(x,z)=>{const sd=shoreD(x,z);if(sd<-30)
  const bay=smooth(.62,.8,nz(x,z,.0009,2,88))*smooth(900,200,chD(x,z)+150);
  const dep=LEVEL-terrainH(x,z),pink=smooth(.9,.15,dep),c=bay>.3?0xa87a3e:pink>.5?0xb85872:0x2e7a78;return{c,a:clamp(Math.max(pink,bay*.85,.45),0,1)};}};
 const STAGE={
- key:'lake',name:'The Catch: the lake and the lake beds',title:'Krator biome — the Catch: the lake and the lake beds',seed:31,hour:13,
+ key:'lake',name:'The Catch: the lake and the lake beds',title:'Krator biome — the Catch: the lake and the lake beds',seed:31,hour:16,
  hint:'The Catch, station 3: the terminal soda lake at the basin\'s lowest point (318 m): pink, teal and ochre brine, algal mats, soda crust, white efflorescence and a playa of ochre salt polygons, the old lake\'s strandlines, yardangs and castellated mesas of wind-cut lake beds, dead channels with their dead poplars, saltbush and brine lamps',
  site:{px:763,py:1062},air:{pressure:1.57,humidity:.2},clouds:{cover:.04},fogDensity:.0001,siteH:318,
  ridges:[

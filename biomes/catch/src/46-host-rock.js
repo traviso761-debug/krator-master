@@ -6,8 +6,8 @@
 const ROCK_GEOS=[];
 (function(){if(!ROCK.length)return;
  const lib=n=>{if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const e=KMAT.packed('catch',n);return e?{e,t:KMAT.textures(e,{aniso:8})}:null;};
- const Lw=lib('rock.wall'),Lt=lib('rock.top');
- const BAND=[0xd8cbb0,0xcab89a,0xe0d4bc,0xbfa888,0xd2c0a0].map(h=>new THREE.Color(h)),TOPC=new THREE.Color(0xd6c8aa),c=new THREE.Color();
+ const RS=STAGE.rockSets||{},Lw=lib(RS.wall||'rock.wall'),Lt=lib(RS.top||'rock.top');   /* a stage may name its own sets and colours (the oasis's varnished crags) */
+ const BAND=(RS.band||[0xd8cbb0,0xcab89a,0xe0d4bc,0xbfa888,0xd2c0a0]).map(h=>new THREE.Color(h)),TOPC=new THREE.Color(RS.topCol==null?0xd6c8aa:RS.topCol),c=new THREE.Color();
  const acc={wall:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]}};
  const sW=Lw?Lw.e.scale[0]:8,sT=Lt?Lt.e.scale[0]:6;
  ROCK.forEach(B=>{const small=B.kind!=='mesa'&&B.kind!=='butte',m=KSTACKS.mesh(B,{step:small?2.5:5}),nv=m.part.length;
@@ -27,6 +27,6 @@ const ROCK_GEOS=[];
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
   ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
- mk(acc.wall,Lw,'Lake-bed mudstone (an old lake\'s sediment, bedded, wind-cut into a castellated mesa)');
- mk(acc.top,Lt,'Wind-fluted silt (a mesa\'s top)');})();
+ mk(acc.wall,Lw,RS.wallLabel||'Lake-bed mudstone (an old lake\'s sediment, bedded, wind-cut into a castellated mesa)');
+ mk(acc.top,Lt,RS.topLabel||'Wind-fluted silt (a mesa\'s top)');})();
 drawCamps();   /* the stage's fire rings (45-host-scene.js fireRing) */

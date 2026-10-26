@@ -38,6 +38,7 @@ Read in place: `biomes/sedesert/src/50,55,60,70` (as `49a`..`49d`); `kits/mechs`
 | `src/89s-host-sky.js` | 2 |  |
 | `src/89w-host-water.js` | 2 |  |
 | `src/89x-host-weather.js` | 1 |  |
+| `src/89y-host-storm.js` | 2 |  |
 | `src/99-host-take.js` | 9 | the inspector's words (7); the probe's budgets and the kit's own checks (ve (21); the page, handed to the host (72) |
 | `src/99-tail.html` | <1 |  |
 | `stations/oasis/00-head.html` | 1 |  |

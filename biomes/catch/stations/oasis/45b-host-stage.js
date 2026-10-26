@@ -42,7 +42,22 @@ function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;let h=landH(x,z);
  h-=.7*smooth(9,2,runD(x,z))*smooth(POOL.r*1.2,POOL.r*1.8,POOL.d(x,z));
  for(const P of POOLS)h=P.carve(h,x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function waterH(x,z){for(const P of POOLS)if(P.contains(x,z))return P.lv;return -1e9;}
-const ROCK=[],groundAll=terrainH;
+/* THE CRAGS (the look pass, 2026-10-26): the interior hills' rock standing out of their steep faces, as KSTACKS buttes (the
+   oxidised basalt set, STAGE.rockSets): on the west ridge and the east ridge behind the Hill, never on the Hill's own slope
+   (Stair's site) or near the water */
+const ROCK=(function(){const L=[],K=KSTACKS;
+ const slopeAt=(x,z)=>Math.hypot(landH(x+6,z)-landH(x-6,z),landH(x,z+6)-landH(x,z-6))/12;
+ const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<20;i++){const a=i/20*TAU;for(const k of [.3,.7,1.1])m=Math.min(m,landH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-2;};
+ for(let k=0;k<300&&L.length<40;k++){const x=-2700+5400*KRAND.unit(KRAND.hash(2901,k)),z=-2700+5400*KRAND.unit(KRAND.hash(2901,k,1));
+  if(Math.hypot(x,z)>TERR.R*.9||(x>-500&&x<HILL.x1+200)||slopeAt(x,z)<.32||L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+60))continue;
+  const H=26+44*KRAND.unit(KRAND.hash(2901,k,2)),R=18+26*KRAND.unit(KRAND.hash(2901,k,3)),ry=KRAND.unit(KRAND.hash(2901,k,4))*TAU;
+  const B=K.make({id:'crag'+k,kind:'butte',x,z,y0:footY(x,z,R*1.4),seed:2950+k,bed:[2.5,6],lobes:.32,weather:1,
+   tiers:[{h:H*.65,r:R,e:1.5,ry},{h:H*.35,r:R*.68,e:1.3,ry:ry+.4,dx:rr0(k,5)*R*.2,dz:rr0(k,6)*R*.2}]});
+  B.name='A crag of the interior hills (oxidised basalt)';L.push(B);}
+ return L;})();
+function rr0(k,j){return KRAND.unit(KRAND.hash(2901,k,j))-.5;}
+const onRock=(x,z)=>!!KSTACKS.at(ROCK,x,z);
+function groundAll(x,z){return Math.max(terrainH(x,z),KSTACKS.topAt(ROCK,x,z));}
 const poolD=(x,z)=>Math.min(...POOLS.map(P=>P.d(x,z)-P.r));
 // THE CAMPGROUND: trampled ground east of the pool, between the water and the Hill's foot
 const CAMP={x:110,z:40,rx:150,rz:190};
@@ -52,13 +67,13 @@ const apronK=(x,z)=>smooth(60,25,Math.hypot(x-PORTAL.x+25,z-PORTAL.z));
 // ---------------------------------------------------------------- the fields (FNAMES)
 function fieldsAt(x,z,h,slope){const pd=poolD(x,z),rd=runD(x,z),cd=Math.hypot(x-CRUST.x,z-CRUST.z)/CRUST.r;
  const wet=clamp(Math.max(smooth(380,0,pd)*.98,smooth(60,3,rd)*.85*smooth(1.3,.6,cd),smooth(1.1,.4,cd)*.5)+.04,0,1);
- const rock=clamp(smooth(.2,.45,slope)*.95+smooth(1250,1500,h)*.4*smooth(.2,.4,slope),0,1),trod=Math.max(campK(x,z),apronK(x,z)*.8);
+ const rock=onRock(x,z)?1:clamp(smooth(.2,.45,slope)*.95+smooth(1250,1500,h)*.4*smooth(.2,.4,slope),0,1),trod=Math.max(campK(x,z),apronK(x,z)*.8);
  const crust=smooth(1,.45,cd)*(1-smooth(30,8,rd)*.5);
  const sand=clamp(smooth(.5,.62,nz(x,z,.003,2,68))*smooth(.3,.1,slope)*(1-trod)*smooth(60,220,pd)*.8,0,1);
  return{wet,flow:smooth(30,4,rd),upland:clamp((h-1000)/700,0,1),rock,slope,salt:crust*.6,sand,reg:clamp((1-sand)*(1-rock)*smooth(150,500,pd)*(1-crust)*.8,0,1),
   silt:0,yard:0,crust,bed:0,strand:0,dry:0,spring:smooth(80,0,pd),trod,algal:smooth(14,2,pd)*.6,soda:0,cold:0,canyon:0,rim:0,dune:1,oasis:0,abyss:0};}
 const SPINE=[[POOL.x,POOL.z],[CAMP.x,CAMP.z],[SEEP1.x,SEEP1.z],[SEEP2.x,SEEP2.z],[CRUST.x,CRUST.z],[PORTAL.x-40,PORTAL.z],[(HILL.x0+HILL.x1)/2,0],[-1200,0],[-300,-900],[0,1600]];
-const BOUND=bindStage({R:TERR.R,N:420,terrainH,waterH,fieldsAt,seed:29,spine:SPINE,keep:(x,z)=>Math.max(campK(x,z)*.85,apronK(x,z))});
+const BOUND=bindStage({R:TERR.R,N:420,terrainH,waterH,fieldsAt,seed:29,spine:SPINE,rockAt:onRock,keep:(x,z)=>Math.max(campK(x,z)*.85,apronK(x,z))});
 const FC=BOUND.FC,FIELD=BOUND.FIELD;
 
 // ---------------------------------------------------------------- the camps: the caravans' fire rings and the divers'
@@ -85,6 +100,7 @@ const STAGE={
   {dist:280000,base:1.4,amp:1.9,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[318,22,1.6],floor:-1,seed:52,rock:[0.38,0.33,0.31],haze:0.012},
   {dist:60000,base:1.2,amp:3.4,cycles:14,octaves:5,peaks:11,peakAmp:1,seed:53,rock:[0.48,0.40,0.33],snowH:3500,haze:0.036},
   {dist:12000,base:0.72,amp:3.7,cycles:12,octaves:4,seed:54,rock:[0.57,0.46,0.34],haze:0.15}],
+ rockSets:{wall:'ground.rock',top:'ground.rock',wallLabel:'Oxidised basalt (a crag of the interior hills)',topLabel:'The weathered top of a crag',band:[0x9a6a50,0x8a5c44,0xa87a5c,0x7e5440],topCol:0x9a7458},
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','saltbush','palm'],
  bias:{poplar:(x,z)=>1.4*(1-smooth(.5,.9,FC.at(FC.a.trod,x,z)))},
  water:POOLS.map((P,k)=>({key:'pool'+k,kind:'still',rec:P.rec,name:P.name,look:{color:0x2a6a64,roughness:.08,metalness:.05,envMapIntensity:.45,renderOrder:1}})),

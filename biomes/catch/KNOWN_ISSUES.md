@@ -4,12 +4,13 @@
       survey's distances (PLAN.md section 1): far crests 12-17 km, the Godthrone north-west, the inner walls' snowfields,
       the interior hills. A horizon cast from the scale model's heightfield at the site (SKY-PLAN.md 3.3, "Later") replaces
       them with no code change: the stage's `ridges` take a `profile`.
-- [ ] **No dust-storm weather mode.** The black storms (the karaburan, PLAN.md section 3) are core/atmos's dust (89a) at a
-      gale; core/atmos's weather has rain, storm, fog, snow and ash modes but no dust storm (a darkened, ochre fog and the
-      dust box at its thickest). A core/atmos change (an opt-in `o.dust` like `o.ash`), not this kit's.
-- [ ] **The weather host is carried byte for byte.** `core/atmos/host/89-atmos-e-weatherhost.js` was untracked in the
-      biome rebuild's worktree when this kit was built; this branch commits the same file so the page builds. Merging into
-      the rebuild: if the rebuild has committed a newer copy, take theirs.
+- [x] **The black storm** (2026-10-26): core/atmos's weather still has no dust-storm mode (a core change: an opt-in `o.dust`
+      like `o.ash`), so the host composes one (`src/89y-host-storm.js`, the panel's "air" select or `?air=storm`): ATMOS's
+      wind base scaled to a gale (the dust box lifts thick off every bare patch), then, after the shared sky has set the
+      hour's light, the fog thickened and turned ochre-brown, the sun dimmed, and the sky pass's own zenith, horizon and haze
+      browned so the walls vanish first. When core/atmos gains the mode, this file goes and the select becomes its.
+- [x] **The weather host** (`core/atmos/host/89-atmos-e-weatherhost.js`): committed on the biome rebuild (7f174cae0) byte for
+      byte as this branch carries it, so the merge is clean.
 - [ ] **The Stalkers have no buried pose.** kits/mechs has none yet (kits/mechs/KNOWN_ISSUES.md): the pair stands, pitched
       forward and sunk into the sand. A crouched or lying pose in the kit would read better.
 - [ ] **The tunnel's portal is a placeholder** (station 2): a plain concrete frame and a dark mouth, until the Stair build
@@ -33,7 +34,10 @@
       under dry ground before), and the water takes less of the sky. The oasis's hills and the fan's mountain front take a
       desert-varnished rock set (`ground.rock`, rock.sandstone.varnish) on their steep faces; the fan's braids run down its
       radii; two oasis cameras moved out of a crown and the reeds. The Stalkers lie pitched forward and lower.
-- [ ] **Still to judge**: the strandlines read at a low sun better than at noon; the oasis hills' rock is a texture over a
-      heightfield, not cliffs (KSTACKS outcrops would be the next step).
+- [x] **The oasis hills' outcrops and the lake's low sun** (2026-10-26): forty crags (KSTACKS buttes, 26-70 m) of oxidised
+      basalt stand out of the interior hills' steep faces on the west and east ridges, never on the Hill's slope (Stair's
+      site) or near the water; the steep faces take the same set (`ground.rock`: the varnished sandstone first tried streaked
+      into corduroy in a top-down mapping). The lake station opens at 16:00 (the sun ~19 degrees) so the strandline benches
+      and the crusts' polygons throw shadow.
 - [ ] **The morning is the giant's eclipse here.** At these sites the sky model puts the eclipse between ~08:00 and ~10:00
-      on day 0, so every station opens at 13:00.
+      on day 0, so the stations open at 13:00 (the lake at 16:00).

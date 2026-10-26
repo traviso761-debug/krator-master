@@ -313,26 +313,26 @@
    "files": {
     "map": "ground.rock.albedo.webp"
    },
-   "lib": "rock.sandstone.varnish",
+   "lib": "rock.basalt.oxidised",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.35,
    "scale": [
-    7.0,
-    7.0
+    9.0,
+    9.0
    ],
    "size": 512,
    "source": {
-    "albedo": "9dab1e38ff3de88874aae9f6e83f1c4d3e1879c8",
-    "normal": "f159db228c37556229ce18e448d2088f0602e28c",
-    "roughness": "64be8d24363024081ffb61d8d6aca9a762dfd753"
+    "albedo": "ba199276e054a777accb795c99ca9fcbd04e5852",
+    "normal": "33275e44b8e4a8847959270926ce22d8bf6e6e9f",
+    "roughness": "fb5e87f99be864c9f4e284c8db34309568a70be0"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 0.55,
-    "mean": 0.398486380776798,
-    "sourceMean": 0.3985
+    "mean": 0.4178146090069939,
+    "sourceMean": 0.4178
    }
   },
   "ground.silt": {

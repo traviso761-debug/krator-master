@@ -22,6 +22,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 | `src/89s-host-sky.js` | 2.3 | [web] | - | - | - | - | - | - | - | - | - | - | - | ATMOS.sky at the site, with the ridges |
 | `src/89w-host-water.js` | 1.5 | [draw] | - | - | - | - | - | - | - | - | - | - | - | core/water drawn |
 | `src/89x-host-weather.js` | 0.6 | [web] | - | - | - | - | - | - | - | - | - | - | - | ATMOS.bindWeather |
+| `src/89y-host-storm.js` | 2.5 | [web] | - | - | - | - | - | - | - | - | - | - | - | the black storm composed from core/atmos (goes when core/atmos has a dust mode) |
 | `src/99-host-take.js` | 9.1 | [web] | - | - | - | - | - | - | - | - | - | - | - | views, inspector, checks, KHOST.take |
 | `src/99-tail.html` | 0.0 | [web] | - | - | - | - | - | - | - | - | - | - | - | page shell |
 | `stations/oasis/45b-host-stage.js` | 11.4 | [web] | - | - | - | - | - | - | - | - | - | - | - | station 2 (split as station 1's) |
