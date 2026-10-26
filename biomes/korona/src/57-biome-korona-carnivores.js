@@ -7,13 +7,14 @@
 //   THE FLOOR, where the hell field is high: cobra lilies at the seeps' outflow, blood trumpets, ground stars, blood bulbs,
 //     snare flowers; then, where it is highest, the MAN-EATERS with their lures and the coil tendrils
 //   THE SUCKING POOLS (a station's pools of that kind): trap pads floating on them
-(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,fbm}=BIO.fn;const qEuler=KORONA.qEuler;
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,fbm,qUp}=BIO.fn;const qEuler=KORONA.qEuler;
 const PAL=KORONA.PAL,C=KORONA.C,P=KORONA.PLANTS,TRAPS=KORONA.TRAPS,K=KSTACKS,SEED=0x0C0A2;
 const {bright,vary}=BIO.col;
 const col=(slot,set,k)=>KORONA.libCol(slot,bright(vary(pick(set),.03,.08,.06),k==null?1.2:k));
-const NAMES=[];KORONA.TRAPPED=[];KORONA.NAMED=[];
-function reg(key,x,y,z,r,h,zone,id){const o={name:P[key].name,key,kind:'flora',x,y,z,r,h,tags:{trap:TRAPS[key],zone}};BIO.register(o);
- NAMES.push({name:P[key].name,plant:key,x,y,z,r,h});KORONA.TRAPPED.push({id,key,x,y,z,r,zone,trap:TRAPS[key]});}
+const NAMES=[];KORONA.TRAPPED=[];KORONA.NAMED=[];KORONA.PITS=[];
+/* trap: the plant's record, or a pit's own (the punji pit: its record plus its membrane's state data) */
+function reg(key,x,y,z,r,h,zone,id,trap){const tr=trap||TRAPS[key],o={name:P[key].name,key,kind:'flora',x,y,z,r,h,tags:{trap:tr,zone}};BIO.register(o);
+ NAMES.push({name:P[key].name,plant:key,x,y,z,r,h});KORONA.TRAPPED.push({id,key,x,y,z,r,zone,trap:tr});}
 const SPACE=KSPACE.create({cell:16});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad)||KORONA.blocked(x,z,pad)||NECANYONS.blocked(x,z,pad);
 const offPath=(x,z)=>smooth(3,9,KORONA.pathD(x,z));
@@ -67,20 +68,17 @@ function tendril(x,y,z,lv,st,id){const n=lv===2?26:14,turns=rr(1.3,2),r0=rr(2,3.
  const e=pts[n],pv=pts[n-1],L=clamp(r0*(1-.65*T0)*TAU*turns*(1-T0)*.5,1.1,2);
  BIO.put('tendriltip',[e.x,e.y-.04,e.z],qEuler(0,Math.atan2(e.x-pv.x,e.z-pv.z),0),[.22,L,.22],KORONA.LIB.tendril?C(0xe8e4d8):col('tendril',PAL.tendril,1),{aTrap:[KTRAPS.phase(id),1,rr(1.1,1.35),0]});   /* an instanced rod takes its colour straight (the bucket lifts the tube's; FULL is for cards: a skin's pack tint is a number) */
  BIO.put('mouth',[x,y+.02,z],qEuler(0,rr(0,TAU),0),[.6,1,.6],C(0x1a2a12));st.tendril++;return r0;}
-// THE PUNJI PIT: a lid of dead leaves flush with the floor with the spikes just through it; a third stand open, the lid
-// thrown back, the mouth black, the spikes round its rim (the owner, 2026-10-19: a pitcher that lives under the ground)
-function punji(x,y,z,lv,st,id){const r=rr(.5,.85),open=KTRAPS.phase(id+'/o')<.35,bone=bright(pick([0xd8d0b8,0xc8c0a8,0xe0d8c0]),1),n=lv===2?ri(7,12):5;
- /* the lid lifted to 1.8x (the owner, 2026-10-19: the pits read too dark; the litter card is dark and lies in the peat's shade) */
- const lidCol=()=>col('lid',[0x6a5a38,0x7a6a48,0x5e4e30],1).multiplyScalar(1.8);
- const spike=(px,pz,py,h,tilt,ta)=>BIO.put('spike',[px,py+h*.5,pz],qEuler(tilt*Math.cos(ta),0,tilt*Math.sin(ta)),[.022,h,.022],bone);
- if(!open){BIO.put('lid',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[r*2.1,1,r*2.1],lidCol());
-  for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*.75*Math.sqrt(rng()),h=rr(.22,.45);spike(x+Math.cos(a)*d,z+Math.sin(a)*d,y,h,rr(.05,.3),a+Math.PI);}}
- else{BIO.put('mouth',[x,y+.03,z],qEuler(0,rr(0,TAU),0),[r*1.9,1,r*1.9],C(0x07100a));const la=rr(0,TAU);
-  /* the lid thrown back: lying on the ground beyond the rim, its near edge up on the rim (the owner, 2026-10-19: it floated) */
-  const lx=x+Math.cos(la)*r*1.9,lz=z+Math.sin(la)*r*1.9,ly=Math.max(BIO.terrainH(lx,lz),y-.1)+.09;
-  BIO.put('lid',[lx,ly,lz],qEuler(-.12,-la+Math.PI/2,0),[r*2,1,r*2],lidCol());
-  for(let k=0;k<n;k++){const a=rr(0,TAU),h=rr(.3,.55);spike(x+Math.cos(a)*r*.92,z+Math.sin(a)*r*.92,y-.05,h,rr(.35,.6),a+Math.PI);}}
- st.punji++;return r;}
+// THE PUNJI PIT (the owner, 2026-10-26: a buried pitcher with a tear-through membrane that regrows after a meal; 50 draws
+// it): three instances on one transform, seated on the ground's slope, and a record whose membrane state is data: the
+// phase (a hash of the id, so some pits are torn or mid-regrowth at any time), the tear's seed, the flaps' hang, the litter cell
+function punji(x,y,z,lv,st,id){const r=rr(.5,.85),e=1,H=BIO.terrainH;
+ const q=qUp([H(x-e,z)-H(x+e,z),2*e,H(x,z-e)-H(x,z+e)]).multiply(qEuler(0,rr(0,TAU),0)),pos=[x,y,z];
+ const m={phase:KTRAPS.phase(id+'/membrane'),seed:KTRAPS.phase(id+'/tear'),hang:rr(.9,1.1),cell:pick([4,7,0]),flaps:4};
+ BIO.put('pitmask',pos,q,r,null);
+ BIO.put('pitbody',pos,q,r,bright(pick([0xc0a878,0xb09868,0xc8b088]),1));
+ BIO.put('pitmem',pos,q,r,KORONA.libCol('lid',bright(pick([0xb0a080,0xa89878,0xb8a888]),1)).multiplyScalar(.82),{aPit:[m.phase,m.seed,m.hang,m.cell]});
+ const rec=Object.assign({id,x,y,z,r,depth:r*1.55},m);KORONA.PITS.push(rec);
+ st.punji++;return {r,trap:Object.assign({},TRAPS.punjipit,{membrane:Object.assign({cycle:KORONA.MEMBRANE},m)})};}
 // THE BEAR TRAP: two toothed jaws hinged on the ground, open nearly flat (aTrap: phase, side, open angle), a stub between
 function beartrap(x,y,z,lv,st,id){const w=rr(.9,1.45),a=rr(0,TAU),ph=KTRAPS.phase(id),op=rr(1.15,1.4),c=KORONA.libCol('jaw',bright(pick([0xa8202a,0xc83a30,0xb8c050]),1.1));
  for(const side of[1,-1])BIO.put('jaw',[x,y+.04,z],qEuler(0,-a,0),[w,w*.62,1],c,{aTrap:[ph,side,op,0]});
@@ -127,7 +125,7 @@ function cairnAt(x,z,st){const y=BIO.terrainH(x,z),n=ri(3,5);for(let k=0;k<n;k++
 // ---------------------------------------------------------------- the passes
 KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),H=BIO.host.korona||{};
  const st={greatsundew:0,cobra:0,trumpet:0,star:0,bulb:0,snare:0,maneater:0,lure:0,tendril:0,pad:0,stag:0,cairn:0,punji:0,beartrap:0,numbthorn:0,frosttank:0,butterwort:0,tris:0};
- NAMES.length=0;KORONA.TRAPPED.length=0;SPACE.clear();
+ NAMES.length=0;KORONA.TRAPPED.length=0;KORONA.PITS.length=0;SPACE.clear();
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.hero?2:d<L.mid?1:0;};
  const F=KORONA.F,hell=KORONA.hell,bias=KORONA.bias;
  // STAGHORNS on the wet wall under every seep line (the necanyons layout's SEEPS)
@@ -153,7 +151,9 @@ KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.
   bulbs(x,y,z,lv,st);if(lv===2&&(i+j)%9===0)reg('bloodbulb',x,y,z,1.2,1.7,Z.zone,'bulb:'+i+','+j);},{R,lodMax:L.floor[1]});
  // PUNJI PITS and BEAR TRAPS on the hell floor, hidden among the rest
  KORONA.place(14,209,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.4,.7,hell(x,z))*.35*bias('punjipit',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.6))return;
-  const id='punji:'+i+','+j,r=punji(x,y,z,lv,st,id);SPACE.insert({x,z,r:r+.4},x,z,r+1);reg('punjipit',x,y,z,r+.3,.8,Z.zone,id);},{R,lodMax:L.mid});
+  /* a buried flask wants level ground: none on the talus or a slope steeper than about 1 in 2 (2026-10-26: one stood proud of the table's talus) */
+  {const T=BIO.terrainH,g=Math.hypot(T(x+2,z)-T(x-2,z),T(x,z+2)-T(x,z-2))/4;if(g>.45)return;}
+  const id='punji:'+i+','+j,pj=punji(x,y,z,lv,st,id),r=pj.r;SPACE.insert({x,z,r:r*1.3+.4},x,z,r*1.3+1);reg('punjipit',x,y,z,r*1.3+.2,.8,Z.zone,id,pj.trap);},{R,lodMax:L.mid});
  KORONA.place(12,210,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.35,.65,hell(x,z))*.35*bias('beartrap',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.4))return;
   const id='bear:'+i+','+j,r=beartrap(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);reg('beartrap',x,y,z,r+.3,.5,Z.zone,id);},{R,lodMax:L.mid});
  KORONA.place(11,211,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.3,.6,hell(x,z))*.3*bias('numbthorn',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.2))return;

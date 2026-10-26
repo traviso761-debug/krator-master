@@ -88,7 +88,7 @@ KORONA.PLANTS={
  bladderpool:PK('Sucking pool','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A black pool whose bed is a carpet of green bladders: a foot that stirs them is sucked down to the knee. Danger 0.3. Trap pads float on it.'),'bladderpool'),
  trappad:PK('Trap pad','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A giant lily pad floating on a sucking pool, its edge fringed with hairs: it folds on what lands on it. Danger 0.4.'),'trappad'),
  snareflower:PK('Snare flower','tropic','humid','yes',['Af'],'floor',['snare'],HV('none',[],false,'The Throne\'s snare flower, here on the warm poor floor: petals that are a noose. Danger 0.5.'),'snareflower'),
- punjipit:PK('Punji pit','hypertropic','humid','yes',['Af','XA'],'floor',['lid','spike','mouth'],HV('none',[],false,'A pitcher that lives under the ground: only its lid shows, a round of dead leaves flush with the floor, and a person who steps on it goes through onto spikes of bone-hard leaf and into the fluid below. A third stand with the mouth open and the lid thrown back. Danger 1.'),'punjipit'),
+ punjipit:PK('Punji pit','hypertropic','humid','yes',['Af','XA'],'floor',['pitmem','pitbody','pitmask'],HV('none',[],false,'A pitcher that lives under the ground: only its waxy lip shows at grade, and over its mouth a thin membrane it covers with dead leaves. A person who steps on it tears through onto spikes of bone-hard leaf and into the fluid below; the torn flaps hang into the pit, and the membrane grows back over the mouth in minutes. Danger 1.'),'punjipit'),
  beartrap:PK('Bear-trap plant','tropic','humid','yes',['Af'],'floor',['jaw'],HV('none',[],false,'A flytrap of a kind: two toothed jaws a metre and more across lying open on the peat, their teeth interlocked when they shut. A leg stepped between them is held to the bone; they shut in a blink and open again in a week. Danger 0.8.'),'beartrap'),
  numbthorn:PK('Lash flower (the numb thorn)','tropic','humid','yes',['Af','Cfa'],'floor',['petal','mouth'],HV('none',[],true,'A thick segmented stalk out of a rosette of leaves, and on it a flower of four big pleated orange petals round a hot-pink throat, a long tongue hanging from it. The tongue lashes at what comes near and its touch numbs a limb in a minute, the whole body in ten; the petals fold over the throat on what it holds, and the floor\'s other traps finish the rest. The tribes milk the tongue for a hunting poison and a surgeon\'s numbing. Danger 0.7.'),'numbthorn'),
  frosttank:PK('Frost tank','polar','humid','yes',['ET','Dsc'],'cap',['mouth'],HV('none',[],false,'A small pale pitcher of the ice tables that holds meltwater: it freezes at night, takes what falls through the thin ice by day, and splits in spring to drop a winter\'s catch. A foot goes through it to the ankle. Danger 0.2.'),'frosttank'),
@@ -193,6 +193,120 @@ trapHook(M.petal,KORONA.TRAPS.numbthorn,'hinge');
 // its base (whip: lying on along the coil while it waits, standing up when it shuts: the grab)
 trapHook(M.hood,KORONA.TRAPS.maneater,'hinge');trapHook(M.tendriltip,KORONA.TRAPS.coiltendril,'whip');
 
+// ---------------------------------------------------------------- THE PUNJI PIT: a buried pitcher with a membrane that tears and regrows
+// The owner, 2026-10-26: "a buried pitcher plant with a tear-through membrane that slowly regrows after a meal". A flask
+// sunk in the ground (its pool and its bone-hard spikes inside), a waxy ribbed peristome at grade, and over the mouth a
+// thin membrane disguised with ONE litter cell of the card sheet (KNOWN_ISSUES, closed 2026-10-26: the lid showed the
+// whole sheet). Something falls through: the membrane tears into four ragged flaps that hang into the pit; then the flaps
+// lift and the tear closes over minutes of world time, pale fresh tissue on the seams until the litter settles back.
+// THE STATE IS DATA (Godot): KORONA.MEMBRANE is the cycle (world seconds); KORONA.pitState(rec,t) the state at world time t
+// (pure; KORONA.PIT_GLSL is the same arithmetic in the shader, on the motion clock BIO.WIND.t, so the speed buttons, pause
+// and ?t= drive it); each pit's record (KORONA.PITS; tags.trap.membrane on its core/tags volume) carries its phase (a hash
+// of its id: KTRAPS.phase, core/rand), its seed (the tear's shape), its hang and its litter cell.
+// THREE INSTANCED DRAWS for all the pits of a page: the MOUTH MASK (renderOrder 20: no colour, no depth; it writes the
+// stencil where the mouth is seen), the BODY (21: the flask's inside, drawn only inside the stencil and over what the
+// ground drew there: the hole in the ground), the MEMBRANE and its peristome (22: depth-tested against the body).
+// KORONA.afterBake sets the orders (88-host-build.js calls it after BIO.bake).
+KORONA.MEMBRANE={whole:720,tear:.6,torn:120,regrow:360};
+const sstep=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x);};
+KORONA.pitState=function(p,t){const c=KORONA.MEMBRANE,L=c.whole+c.tear+c.torn+c.regrow;let u=t+(p.phase||0)*L;u-=Math.floor(u/L)*L;
+ if(u<c.whole)return {state:'whole',hang:0,gap:0,scar:1-sstep(0,c.whole*.3,u)};u-=c.whole;
+ if(u<c.tear){const k=u/c.tear;return {state:'tearing',hang:k,gap:k,scar:1};}u-=c.tear;
+ if(u<c.torn)return {state:'torn',hang:1,gap:1,scar:1};u-=c.torn;
+ const q=u/c.regrow;return {state:'regrowing',hang:1-sstep(0,.35,q),gap:1-sstep(.2,1,q),scar:1,progress:q};};
+KORONA.PIT_GLSL=['float kpitH(float p){p=fract(p*.1031);p*=p+33.33;p*=p+p;return fract(p);}',
+ 'float kpitN(float x){float i=floor(x),f=fract(x);f=f*f*(3.0-2.0*f);return mix(kpitH(i),kpitH(i+1.0),f);}',
+ 'vec3 kpitState(float t,vec4 c,float ph){float L=c.x+c.y+c.z+c.w;float u=mod(t+ph*L,L);',
+ ' if(u<c.x)return vec3(0.0,0.0,1.0-smoothstep(0.0,c.x*0.3,u));u-=c.x;',
+ ' if(u<c.y){float k=u/c.y;return vec3(k,k,1.0);}u-=c.y;',
+ ' if(u<c.z)return vec3(1.0);u-=c.z;',
+ ' float q=u/c.w;return vec3(1.0-smoothstep(0.0,0.35,q),1.0-smoothstep(0.2,1.0,q),1.0);}'].join('\n');
+const PITU={uPitCyc:{value:new T3.Vector4(KORONA.MEMBRANE.whole,KORONA.MEMBRANE.tear,KORONA.MEMBRANE.torn,KORONA.MEMBRANE.regrow)},uPitForce:{value:new T3.Vector4(0,0,0,0)}};
+/* a review aid: every pit held in one state ('whole', 'torn', 'regrowing', or [hang, gap, scar]); null hands them back to the clock */
+KORONA.pitForce=function(s){const F={whole:[0,0,0],tearing:[.5,.5,1],torn:[1,1,1],regrowing:[.12,.45,1]},v=s==null?null:Array.isArray(s)?s:F[s];
+ if(v)PITU.uPitForce.value.set(1,v[0],v[1],v[2]);else PITU.uPitForce.value.set(0,0,0,0);return v?s:'clock';};
+// geometry: a triangle faces the way its vertices' normals say (the body is drawn front faces only, from inside)
+function pitGeo(P,N,U,Cc,I){for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3,ux=P[b]-P[a],uy=P[b+1]-P[a+1],uz=P[b+2]-P[a+2],vx=P[c]-P[a],vy=P[c+1]-P[a+1],vz=P[c+2]-P[a+2];
+  const cx=uy*vz-uz*vy,cy=uz*vx-ux*vz,cz=ux*vy-uy*vx,nx=N[a]+N[b]+N[c],ny=N[a+1]+N[b+1]+N[c+1],nz=N[a+2]+N[b+2]+N[c+2];
+  if(cx*nx+cy*ny+cz*nz<0){const s=I[t+1];I[t+1]=I[t+2];I[t+2]=s;}}
+ const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(P,3));g.setAttribute('normal',new T3.Float32BufferAttribute(N,3));
+ g.setAttribute('uv',new T3.Float32BufferAttribute(U,2));g.setAttribute('color',new T3.Float32BufferAttribute(Cc,3));g.setIndex(I);return g;}
+/* the membrane (unit mouth radius): four flaps of three columns by five rings, each flap its own vertices so a tear runs
+   between them; the vertex colour is data, not colour (r: the flap, -1 on the peristome; g: across the flap, 0..1); the
+   uv is planar, one litter cell spread over the mouth (the shader picks the cell) */
+function pitMembraneGeo(){const P=[],N=[],U=[],Cc=[],I=[],RING=[0,.32,.6,.82,.93,1],NF=4,NC=3,Y=.04;
+ const v=(x,y,z,f,w)=>{P.push(x,y,z);N.push(0,1,0);U.push(.5+.37*x,.5+.37*z);Cc.push(f,w,0);return P.length/3-1;};
+ for(let f=0;f<NF;f++){const a0=f*TAU/NF,da=TAU/NF/NC,ac=a0+TAU/NF/2,tip=v(Math.cos(ac)*.002,Y,Math.sin(ac)*.002,f,.5);let prev=null;
+  for(let b=1;b<RING.length;b++){const row=[];for(let c=0;c<=NC;c++){const a=a0+c*da;row.push(v(Math.cos(a)*RING[b],Y,Math.sin(a)*RING[b],f,c/NC));}
+   if(b===1)for(let c=0;c<NC;c++)I.push(tip,row[c],row[c+1]);else for(let c=0;c<NC;c++)I.push(prev[c],row[c],row[c+1],prev[c],row[c+1],prev[c+1]);
+   prev=row;}}
+ const PR=[[.97,.05],[1.06,.095],[1.17,.075],[1.3,-.05]],NS=12;let prev=null;   /* the peristome: up over the membrane's edge, its outer edge under the litter */
+ for(const [r,y] of PR){const row=[];for(let s=0;s<=NS;s++){const a=s*TAU/NS;row.push(v(Math.cos(a)*r,y,Math.sin(a)*r,-1,0));}
+  if(prev)for(let s=0;s<NS;s++)I.push(prev[s],row[s],row[s+1],prev[s],row[s+1],prev[s+1]);prev=row;}
+ return pitGeo(P,N,U,Cc,I);}
+/* the body: the flask's inside from the lip down to the pool (normals inward; drawn deep first, then the pool, then the
+   spikes, since it draws over whatever is there), darkening with depth (vertex colour) */
+function pitBodyGeo(){const P=[],N=[],U=[],Cc=[],I=[],PROF=[[1,.06],[.95,0],[.88,-.25],[1.02,-.65],[1.3,-1.15],[1.37,-1.55]],NS=10,FL=-1.55;
+ const dk=y=>1-.8*sstep(0,1.4,-y),v=(x,y,z,nx,ny,nz,u,w,c)=>{P.push(x,y,z);N.push(nx,ny,nz);U.push(u,w);Cc.push(c[0],c[1],c[2]);return P.length/3-1;};
+ const rows=PROF.map(([r,y],k)=>{const p0=PROF[Math.max(0,k-1)],p1=PROF[Math.min(PROF.length-1,k+1)],dr=p1[0]-p0[0],dy=p1[1]-p0[1],L=Math.hypot(dr,dy)||1,ir=dy/L,iy=-dr/L,d=dk(y),row=[];
+  for(let s=0;s<=NS;s++){const a=s*TAU/NS,ca=Math.cos(a),sa=Math.sin(a);row.push(v(ca*r,y,sa*r,ca*ir,iy,sa*ir,s/NS*2,-y*.8,[d,d*.96,d*.86]));}return row;});
+ for(let k=rows.length-2;k>=0;k--){const A=rows[k],B=rows[k+1];for(let s=0;s<NS;s++)I.push(A[s],B[s],B[s+1],A[s],B[s+1],A[s+1]);}
+ const fc=[.11,.1,.035],c0=v(0,FL,0,0,1,0,.5,.5,fc),fr=[];for(let s=0;s<=NS;s++){const a=s*TAU/NS;fr.push(v(Math.cos(a)*1.36,FL,Math.sin(a)*1.36,0,1,0,.5,.5,fc));}
+ for(let s=0;s<NS;s++)I.push(c0,fr[s],fr[s+1]);
+ const spike=(b,t,w)=>{const ax=[t[0]-b[0],t[1]-b[1],t[2]-b[2]],L=Math.hypot(ax[0],ax[1],ax[2]);ax[0]/=L;ax[1]/=L;ax[2]/=L;
+  const r0=Math.abs(ax[1])<.9?[0,1,0]:[1,0,0],e1=[ax[1]*r0[2]-ax[2]*r0[1],ax[2]*r0[0]-ax[0]*r0[2],ax[0]*r0[1]-ax[1]*r0[0]],l1=Math.hypot(e1[0],e1[1],e1[2]);e1[0]/=l1;e1[1]/=l1;e1[2]/=l1;
+  const e2=[ax[1]*e1[2]-ax[2]*e1[1],ax[2]*e1[0]-ax[0]*e1[2],ax[0]*e1[1]-ax[1]*e1[0]],d=dk(t[1])*.9,c=[.8*d,.74*d,.6*d];
+  for(let j=0;j<3;j++){const a=j*TAU/3,a2=a+TAU/3,am=a+TAU/6,n=[0,1,2].map(q=>e1[q]*Math.cos(am)+e2[q]*Math.sin(am));
+   const p=aa=>[0,1,2].map(q=>b[q]+w*(e1[q]*Math.cos(aa)+e2[q]*Math.sin(aa)));
+   I.push(v(...p(a),...n,.5,.5,c),v(...p(a2),...n,.5,.5,c),v(t[0],t[1],t[2],...n,.5,.5,c));}};
+ for(let k=0;k<5;k++){const a=k*TAU/5+.3,ca=Math.cos(a),sa=Math.sin(a);spike([ca*1.22,-1.05,sa*1.22],[ca*.42,-.42,sa*.42],.06);}
+ for(let k=0;k<3;k++){const a=k*TAU/3+1.1,ca=Math.cos(a),sa=Math.sin(a);spike([ca*.55,FL,sa*.55],[ca*.4,-.8,sa*.4],.05);}
+ return pitGeo(P,N,U,Cc,I);}
+function pitMaskGeo(){const P=[0,.065,0],N=[0,1,0],U=[.5,.5],Cc=[1,1,1],I=[],NS=12;
+ for(let s=0;s<=NS;s++){const a=s*TAU/NS;P.push(Math.cos(a)*.97,.065,Math.sin(a)*.97);N.push(0,1,0);U.push(.5,.5);Cc.push(1,1,1);if(s)I.push(0,s,s+1);}
+ return pitGeo(P,N,U,Cc,I);}
+// materials (made after the library's swap: the membrane takes the litter card's map, the body the throat's)
+const linC=h=>C(h).convertSRGBToLinear();
+M.pitmask=new T3.MeshBasicMaterial({colorWrite:false,depthWrite:false});
+Object.assign(M.pitmask,{stencilWrite:true,stencilRef:1,stencilFunc:T3.AlwaysStencilFunc,stencilFail:T3.KeepStencilOp,stencilZFail:T3.KeepStencilOp,stencilZPass:T3.ReplaceStencilOp});
+M.pitmask.userData.bio={kind:'mask',key:BIO.kitKey('pitmask'),pit:'mask (a stencil: where the ground is cut)'};
+M.pitbody=new T3.MeshLambertMaterial({color:0xffffff,map:M.throat.map||null,vertexColors:true,side:T3.FrontSide});
+Object.assign(M.pitbody,{stencilWrite:true,stencilRef:1,stencilFunc:T3.EqualStencilFunc,stencilFail:T3.KeepStencilOp,stencilZFail:T3.KeepStencilOp,stencilZPass:T3.KeepStencilOp,depthFunc:T3.AlwaysDepth});
+M.pitbody.userData.bio={kind:'bark',key:BIO.kitKey('pitbody'),pit:'body (drawn inside the mask, over the ground)'};
+M.pitmem=new T3.MeshLambertMaterial({color:0xffffff,map:M.lid.map||null,side:T3.DoubleSide});
+M.pitmem.userData.bio={kind:'leaf',key:BIO.kitKey('pitmem'),opts:{swayW:'0.0',swayA:0},pit:'membrane (KORONA.PIT_GLSL: aPit = phase, seed, hang, cell)'};
+{const U=Object.assign({uTis:{value:linC(0x7a6a46)},uTisB:{value:linC(0x4a3c26)},uScar:{value:linC(0xc8c27a)},uPeri:{value:linC(0x9a2e24)},uPeriB:{value:linC(0x4a4220)}},PITU),ck='kopit|'+BIO.kitKey('pitmem');
+ M.pitmem.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.uniforms.uWindT=BIO.WIND.t;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>',['#include <common>','attribute vec4 aPit;','attribute vec3 color;','uniform float uWindT;','uniform vec4 uPitCyc;','uniform vec4 uPitForce;',
+    'varying vec3 vPS;','varying vec3 vPL;','varying vec2 vXZ;','varying float vPD;','varying float vSeed;',KORONA.PIT_GLSL].join('\n'))
+   .replace('#include <uv_vertex>','#include <uv_vertex>\n#ifdef USE_UV\nvUv=(vec2(mod(aPit.w,3.0),floor(aPit.w/3.0+0.01))+uv)/3.0;\n#endif')
+   .replace('#include <beginnormal_vertex>',['vec3 _ps=uPitForce.x>0.5?uPitForce.yzw:kpitState(uWindT,uPitCyc,aPit.x);',
+    'float _rho=length(position.xz);vec3 _pos=position;vec3 objectNormal=normal;float _dep=0.0;',
+    'if(color.x>-0.5&&_rho<0.93){float d=0.93-_rho;float th=_ps.x*aPit.z*(0.95+0.3*kpitH(aPit.y*97.0+color.x*13.0))*(1.0+0.25*d);',
+    ' vec2 dir=position.xz/max(_rho,1e-4);float rr=0.93-d*cos(th);_pos=vec3(dir.x*rr,position.y-d*sin(th),dir.y*rr);_dep=d*sin(th);',
+    ' objectNormal=vec3(-sin(th)*dir.x,cos(th),-sin(th)*dir.y);}',
+    'vPS=_ps;vPL=vec3(_rho,color.y,color.x);vXZ=position.xz;vPD=_dep;vSeed=aPit.y;'].join('\n'))
+   .replace('#include <begin_vertex>','vec3 transformed=_pos;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',['#include <common>','uniform vec3 uTis;','uniform vec3 uTisB;','uniform vec3 uScar;','uniform vec3 uPeri;','uniform vec3 uPeriB;',
+    'varying vec3 vPS;','varying vec3 vPL;','varying vec2 vXZ;','varying float vPD;','varying float vSeed;',KORONA.PIT_GLSL].join('\n'))
+   .replace('#include <map_fragment>',['vec4 texelColor=vec4(0.45,0.38,0.26,1.0);','#ifdef USE_MAP','texelColor=mapTexelToLinear(texture2D(map,vUv));','#endif',
+    'float _r=length(vXZ);vec3 _c;',
+    'if(vPL.z<-0.5){float _a=atan(vXZ.y,vXZ.x);float _rib=0.74+0.26*cos(_a*44.0);',
+    ' vec3 _pe=mix(uPeriB,uPeri,1.0-smoothstep(0.98,1.16,_r))*_rib;',
+    ' _c=mix(_pe,texelColor.rgb,smoothstep(0.3,0.6,texelColor.a)*smoothstep(1.1,1.27,_r)*0.9);}',
+    'else{float _e=min(vPL.y,1.0-vPL.y);float _sd=vPL.y<0.5?0.0:1.0;',
+    ' float _gw=vPS.y*(0.05+0.2*clamp(1.0-_r/0.93,0.0,1.0))*(0.55+0.9*kpitN(_r*11.0+vSeed*57.0+vPL.z*5.3+_sd*2.7));',
+    ' float _ho=vPS.y*(0.16+0.12*kpitN(atan(vXZ.y,vXZ.x)*2.5+vSeed*31.0));',
+    ' if(_r<0.93&&(_e<_gw||_r<_ho))discard;',
+    ' float _sc=vPS.z*max(1.0-smoothstep(0.02,0.15,_e),1.0-smoothstep(0.1,0.28,_r))*step(_r,0.95);',
+    ' float _li=smoothstep(0.3,0.6,texelColor.a)*(1.0-0.85*_sc);',
+    ' _c=gl_FrontFacing?mix(mix(uTis,uScar,_sc),texelColor.rgb,_li):uTisB;',
+    ' _c*=mix(1.0,0.35,smoothstep(0.0,0.8,vPD));}',
+    'diffuseColor.rgb*=_c;diffuseColor.a=1.0;'].join('\n'));};
+ M.pitmem.customProgramCacheKey=function(){return ck;};BIO._tickWind();}
+KORONA.RENDER_ORDER={pitmask:20,pitbody:21,pitmem:22};
+KORONA.afterBake=function(meshes){let n=0;(meshes||BIO.baked).forEach(m=>{const o=KORONA.RENDER_ORDER[(m.name||'').replace(/^biome:/,'')];if(o!=null){m.renderOrder=o;n++;}});return n;};
+
 [['bark.coin','Coin-tree trunks'],['bark.lacefan','Lace-fan boles (dark, fibrous)'],['pitcher','Man-eater pitchers (the waxy outside)'],['throat','Man-eater throats (hairs and fluid)'],['tendril','Coil tendrils (banded, warty)']]
  .forEach(([k,lab])=>{const m=k==='bark.coin'?M.bark.coin:k==='bark.lacefan'?M.bark.lacefan:M[k];BIO.bucket(k,m,{label:lab,uvScale:k==='pitcher'?[1.4,1.4]:k==='throat'?[1,1]:k==='tendril'?[.8,.8]:[2,3]});});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
@@ -215,11 +329,25 @@ BIO.def('pad',G.pad(),M.giantpad,{attrs:['aTrap'],label:'Trap pads (on the sucki
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns (on the wet wall)'});
 BIO.def('cairn',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Cairns (the safe path)'});
 BIO.def('jaw',cellUV(G.lobe(),CELL(4)),M.jaw,{attrs:['aTrap'],label:'Bear-trap jaws'});
-BIO.def('lid',G.pad(),M.lid,{label:'Punji-pit lids (dead leaves flush with the floor)'});
-BIO.def('mouth',G.pad(),M.solid,{label:'Maws (a punji pit\'s open mouth, a trap pad\'s middle)'});
+/* the punji pit's three draws (above): M.lid stays in M only to take the library's litter card for the membrane */
+BIO.def('pitmask',pitMaskGeo(),M.pitmask,{label:'Punji-pit mouths (a stencil: the hole in the ground)'});
+BIO.def('pitbody',pitBodyGeo(),M.pitbody,{label:'Punji-pit throats (the buried flask, its pool and spikes)'});
+BIO.def('pitmem',pitMembraneGeo(),M.pitmem,{attrs:['aPit'],label:'Punji-pit membranes (litter over the mouth: they tear and regrow)'});
+BIO.def('mouth',G.pad(),M.solid,{label:'Maws (a trap pad\'s middle, a throat\'s fluid)'});
 BIO.def('spike',BIO.geo.rod(4),M.solid,{label:'Spikes and teeth'});
 {const g=BIO.geo.rod(4);g.translate(0,.5,0);BIO.def('thorn',g,M.thorn,{attrs:['aTrap'],label:'Numb thorns (they whip)'});}
-{const g=G.pad();g.translate(0,0,.5);BIO.def('hood',g,M.hood,{attrs:['aTrap'],label:'Man-eater lids (hinged on the rim: they drop)'});}
+/* THE MAN-EATER'S LID (KNOWN_ISSUES, closed 2026-10-26: it was a flat card): a Nepenthes lid, a shallow dome over the mouth
+   (unit disc on x, z from the hinge at z 0; y in metres, 0.22 high, its edge turned down) with the spur standing up and
+   back at the hinge; 63 triangles where the card had 10. The trap hook turns it about the hinge as it turned the card */
+{const pos=[],nor=[],uv=[],RG=[0,.42,.78,1],NS=12,Hd=.22,yOf=f=>Hd*(1-f*f)-(f>.9?.03:0);
+ const P=(f,a)=>{const x=Math.cos(a)*.5*f,z=.5+Math.sin(a)*.5*f,g=2*Hd*f/.5,n=[Math.cos(a)*g,1,Math.sin(a)*g],l=Math.hypot(n[0],n[1],n[2]);return {p:[x,yOf(f),z],n:[n[0]/l,n[1]/l,n[2]/l],u:[.5+x,z]};};
+ const tri=(...vs)=>vs.forEach(v=>{pos.push(...v.p);nor.push(...v.n);uv.push(...v.u);});
+ for(let r=1;r<RG.length;r++)for(let s=0;s<NS;s++){const a0=s/NS*TAU,a1=(s+1)/NS*TAU;
+  if(r===1)tri(P(0,0),P(RG[1],a1),P(RG[1],a0));else tri(P(RG[r-1],a0),P(RG[r-1],a1),P(RG[r],a1),P(RG[r-1],a0),P(RG[r],a1),P(RG[r],a0));}
+ const sp=(p,n)=>({p,n,u:[.5+p[0],Math.max(0,p[2])]}),up=[0,.6,-.8];
+ tri(sp([-.05,yOf(.92),.04],up),sp([.05,yOf(.92),.04],up),sp([0,.34,-.1],up),sp([-.05,yOf(.92),.04],[-1,0,0]),sp([0,yOf(.85),.1],[-1,0,0]),sp([0,.34,-.1],[-1,0,0]),
+  sp([.05,yOf(.92),.04],[1,0,0]),sp([0,yOf(.85),.1],[1,0,0]),sp([0,.34,-.1],[1,0,0]));
+ BIO.def('hood',BIO.geo._make(pos,nor,uv),M.hood,{attrs:['aTrap'],label:'Man-eater lids (a domed lid with its spur, hinged on the rim: they drop)'});}
 {const g=BIO.geo.rod(6);g.translate(0,.5,0);BIO.def('tendriltip',g,M.tendriltip,{attrs:['aTrap'],label:'Coil-tendril tips (they whip up)'});}
 BIO.def('petal',cellUV(G.lobe(),CELL(4)),M.petal,{attrs:['aTrap'],label:'Lash-flower petals (they fold over the throat)'});
 BIO.def('stalk',BIO.geo.rod(5),M.solid,{label:'Stalks and stems'});

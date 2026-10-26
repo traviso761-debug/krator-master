@@ -31,6 +31,8 @@ window._biome=null;window._jungle=null;window._korona=null;window._desert=null;w
  _mark('jungle');
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
+ // the punji pits' three draws in their order (mask, body, membrane: 50-biome-korona-species.js); window._punji('torn'|'whole'|'regrowing'|null) holds every pit in one state for a look
+ if(typeof KORONA!=='undefined'&&KORONA.afterBake){KORONA.afterBake(BIO.baked);window._punji=KORONA.pitForce;window._pits=()=>KORONA.PITS.length;}
  _mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:STAGE.R,h:600});
 })();

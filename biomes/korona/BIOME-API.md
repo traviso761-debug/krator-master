@@ -68,6 +68,11 @@ ground is not bog (`60`). `99-host-take.js` checks both under `verify.py --asser
   person .. 1 kills), `KORONA.HARVEST`.
 - `KORONA.TREES`, `KORONA.TRAPPED` (every registered trap: `{id, key, x, y, z, r, zone, trap}`), `KORONA.NAMED` (the
   inspector's names: the rainbow fans, the dangerous plants), `KORONA.plantOfItem(item)`, `KORONA.nearestTree(sp,x,z)`.
+- THE PUNJI PITS' MEMBRANES (2026-10-26), as data: `KORONA.MEMBRANE` (`{whole, tear, torn, regrow}`, world seconds),
+  `KORONA.PITS` (`{id, x, y, z, r, depth, phase, seed, hang, cell, flaps}`; the same on each pit's volume as
+  `tags.trap.membrane`), `KORONA.pitState(rec, t)` -> `{state: 'whole'|'tearing'|'torn'|'regrowing', hang, gap, scar}`
+  at world time t (pure: the shader runs the same arithmetic, `KORONA.PIT_GLSL`). A torn pit is open: a game reads
+  `state` to know whether the trap is hidden. `KORONA.pitForce(state|null)` holds every drawn pit in one state (a review aid).
 - `KORONA.place(cell, salt, accept, fn, opt)`: the seeded cell grid (`KRAND.hash(seed, salt, i, j)`), `KORONA.hell`,
   `KORONA.bias(key,x,z,Z)`, `KORONA.pathD(x,z)`, `KORONA.blocked(x,z,pad)`.
 
