@@ -72,3 +72,20 @@ The kit's own files:
 
 The rock, earth, sand, ground and the sulfur crust (`ground.sulphur`) are library sets (`materials.json`). The other
 veins, seams, pools and grains are vertex colours until their sets arrive (`core/materials/PROMPTS-NEEDED.md`). See `API.md` and `KNOWN_ISSUES.md`.
+
+## Where the nodes are: the geology, the node field and the ledger (2026-10-26)
+
+`GEOLOGY.md` has the format, the rules, adoption and the Godot notes. In short:
+- **Two more kinds,** from the evaporite rings: **gypsum** (`node-gypsum-*`, a closed basin's rim: pale bedded crust, selenite
+  blades) and **rock salt** (`node-halite-*`, item `salt`: a pit cut in the pan's white crust, the blocks stacked). Fourteen in all.
+- **The geology** (`tools/scale-model/geology.py` -> `data/geology.json`): a province per scale-model cell (sedimentary,
+  crystalline, volcanic, evaporite, rift; ruin ground as a flag) and one prospectivity byte per family per cell.
+- **The node field** (`45r-res-field.js`, `KRES.nodesIn(tile)`): one candidate per family per placement cell, by KRAND, kept
+  under the cell's prospectivity; any tile alone, the same in Godot. Gold and tin **placers** are carried down the model's rivers
+  from the lode nodes; **potash and alkali** (the Catch's) sit where its closed basins dry last, inside halite, inside gypsum.
+- **The ledger** (`46r-res-ledger.js`, `data/ledger.json`): what each polity's towns reach within a day, what it must import,
+  what it can sell (`RES_LEDGER.tradeGoods` is core/simulation's `SIM.trade` `goods`), and the fairness audit.
+- **The page's geology map** (G, or the button at the bottom left): the provinces, one family's prospectivity, and a 120 km
+  window's nodes by family (click the map to move it).
+- `node kits/resources/tests/test-res.js` checks all of it (43 checks, each with a negative).
+

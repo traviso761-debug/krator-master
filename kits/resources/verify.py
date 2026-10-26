@@ -44,6 +44,14 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
   ok(resRate('low','mine')*2===resRate('medium','mine')&&resRate('medium','mine')*2===resRate('high','mine'),'yield x0.5, x1, x2');
   const nk=Object.keys(RES_ORE.kinds).length*Object.keys(RES_ORE.grades).length;
   R.push({name:'resource-nodes',ok:N.length===nk&&!E.length,detail:E.length?E.join(', '):N.length+' nodes ('+Object.keys(RES_ORE.kinds).join(', ')+' x low, medium, high), tagged rock, level, harvest; the rule checked (mines and derricks)'});}
+ {const E=[];const ok=(c,t)=>{if(!c)E.push(t);};const G=window.RES_GEO,D=G&&G.data();ok(D&&D.format==='krator-geology','no geology data');
+  let st=null;if(D){const t={x0:1100*2000,z0:660*2000,x1:1160*2000,z1:720*2000},a=G.nodesIn(t),b=G.nodesIn(t);
+   ok(a.length>50&&JSON.stringify(a.map(n=>n.id))===JSON.stringify(b.map(n=>n.id)),'the field is not deterministic or is empty');
+   ok(a.every(n=>RES_ORE.kinds[n.kind]&&RES_ORE.grades[n.grade]),'a node of an unknown kind');
+   ok(window.RES_LEDGERDATA&&Object.keys(RES_LEDGERDATA.polities).length>=20,'no ledger');
+   st=window._geomap&&window._geomap.open();ok(st&&st.nodes>0,'the geology map drew no nodes');if(window._geomap)window._geomap.close();}
+  const au=window.RES_LEDGERDATA&&RES_LEDGERDATA.audit;
+  R.push({name:'node-field',ok:!E.length,detail:E.length?E.join(', '):'geology '+D.source+'; '+(st?st.nodes+' nodes in the Kautoa window ('+Object.entries(st.byKind).map(e=>e.join(' ')).join(', ')+'), '+st.placers+' placers':'')+'; fairness audit '+(au.ok?'ok':au.failures.length+' findings (data/ledger.json audit)')});}
  return R;}"""
 async def run(a):
     from playwright.async_api import async_playwright

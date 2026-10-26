@@ -5,7 +5,9 @@ Usage: python3 build.py [--no-checks]
 
 The page is one <script> made of, in filename order:
   src/*                 the kit: 00-head.html, 26k-kit.js (identity), 42r-res-ore.js (the rule, [G data]), 44r-res-nodes.js
-                        (the nodes), 89-rows.js (the sheet), 99-tail.html
+                        (the nodes), 45r-res-field.js (the node field, [G data]), 46r-res-ledger.js (the scarcity ledger,
+                        [G data]), 89-rows.js (the sheet), 98r-host-geomap.js (the geology map, G), 99-tail.html
+  45q-res-geodata.js    GENERATED from data/geology.json and data/ledger.json (RES_GEODATA, RES_LEDGERDATA)
   kits/scyvoi/src       the engine, READ IN PLACE (not vendored: nothing here to drift): 10-core, 27-mat, 30-geo, 36-def,
                         90-scene, 91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take
   settlements/iziz/src  81-sky.js (KratorSky, the standard Krator sky), read in place
@@ -72,7 +74,7 @@ ENGINE.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-c
     '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js')})
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic']   # the engine's furniture pass needs a bundle; the nodes place none
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '45q-res-geodata.js'}
 BUNDLE_GLOBALS = ('KratorFurniture',)
 
 
@@ -112,7 +114,20 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
+            '45q-res-geodata.js': geodata()}
+
+
+def geodata():
+    """data/geology.json (tools/scale-model/geology.py) and data/ledger.json (tests/test-res.js --ledger), as the page's
+    RES_GEODATA and RES_LEDGERDATA: 45r-res-field.js loads the first, the geology map (98r) reads both. Read as text and
+    written as it is, so the build stays deterministic."""
+    out = ['/* ============================== GEOLOGY DATA (generated from kits/resources/data: do not edit) ============================== */' + chr(10)]
+    for name, var in (('geology.json', 'RES_GEODATA'), ('ledger.json', 'RES_LEDGERDATA')):
+        f = os.path.join(HERE, 'data', name)
+        body = open(f, encoding='utf-8').read().strip() if os.path.isfile(f) else 'null'
+        out.append('const %s=%s;' % (var, body) + chr(10))
+    return ''.join(out)
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
