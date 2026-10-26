@@ -4,7 +4,8 @@
 of BSh at ~670 m, ~1.5 atm, ~330 mm, mean +22 °C, against the desert proper's ~170 mm. It is **station 3 of the sedesert kit**
 (`python3 build.py --station steppe` -> `dist/sedesert-steppe.html`, `stations/steppe/`), built on the Bowl's station code.
 
-**Status (2026-10-26): planned with the owner; building.**
+**Status (2026-10-26): S0-S3 built, S4 in part** (`python3 build.py --station steppe` -> `dist/sedesert-steppe.html`; section 6 says what
+is built and left).
 
 ## 0. What the owner asked (2026-10-26)
 
@@ -79,3 +80,23 @@ a bunchgrass card, a Welwitschia ribbon card.
 - **S2.** The flora: the steppe forms, the umbrella thorn and the myrrh, the rare three, the grass.
 - **S3.** The alien plants (the sun-dials turning with the sun, the whistle reeds, the drift lanterns rolling on the wind).
 - **S4.** Views, checks, `verify.py --assert`, docs; the crops wiring; the site checked on the model.
+
+## 6. Core adoption, and what is built (2026-10-26)
+
+The steppe inherits Mantis's and the Bowl's station code (`station.json` "base": "mantis"; their shell, land, ground, heat, far
+country, sky, water and checks) and takes, besides theirs: **core/terrain KSTACKS** (the tors as piles of rounded plates, the
+edge's mesa and hoodoos), **core/rand** (the fairy circles' lattice and every disc's radius from its cell's hash), **core/biome**'s
+dynamic meshes and clock for the sun-dials and the loose lanterns, **core/atmos**'s shared sky at the provisional site (1.5 atm).
+
+**Built.** S1: the rolling plain, four granite kopjes with their tors (honeycomb weathering on the walls by a vertex weight: the
+`steppe` pack's `rock.tafoni`), the pan with its rain water, the dry wadi, the pavement, the desert edge, three fields of fairy
+circles (discs and their rings of taller grass). S2: the steppe forms (the dragon as Dracaena ombet, the frankincense as Boswellia
+sacra, the rose, the bottle trees on the kopjes, the candelabras and cardons at the edge), the umbrella thorn and the myrrh, the
+old twoleafs (Welwitschia), the rock figs (Dorstenia gigas), the pebble plants (living stones); bunchgrass and plume grass. S3: the
+sun-dials (each disc turned to the sky's sun three times a second, folded at night), the whistle reeds, the drift lanterns (on
+stems, and loose ones rolling down the wind). S4: the views and checks (the rare and alien plants drawn, the sun-dials facing the
+sun), `verify.py`'s export box, the crops (`sedesert`'s `steppe` zone, myrrh).
+
+**Left.** The site on the scale model (provisional px ~800,690); the gnamma pools (the kopjes' rock basins) are not cut; the
+whistle reeds make no sound; the twoleafs and the rock figs have no cards of their own (vertex colour and the kit's leaves).
+

@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### The steppe fringe (station 3, `stations/steppe/`, 2026-10-26)
+- [ ] **The site is provisional** (px ~800,690): the steppe has not been placed on the scale model; check it when the model is surveyed.
+- [ ] **The sun-dials turn only while frames run**: a hidden tab's page does not tick, so a check run on it reads the last pose
+      (`the sun-dials face the sun` is honest only on a page that draws).
+- [ ] **No gnamma pools** in the kopjes' rock yet; the whistle reeds are silent; the twoleaf and the rock fig are vertex-coloured.
+- [ ] **The loose lanterns loop**: each rolls its run down the wind and shrinks away at its end to start again.
+
 ### Mantis's pocket (station 2b, `stations/mantis/`, 2026-10-26)
 - [ ] **The town's edge is massing**: vertex-coloured boxes, a dome and a tower, no library textures; the town proper is a settlement's
       work (core/city).

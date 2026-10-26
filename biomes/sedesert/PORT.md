@@ -66,3 +66,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `stations/mantis/88-host-build.js` | [draw] | the town's edge as one mesh (its records are 45's), the gardens' trees and beds, the kit's build, the bake |
 | `stations/mantis/99-host-take.js` | [web] | the views and the forest check, KHOST.take |
 
+**Station 3, the steppe fringe (2026-10-26; `python3 build.py --station steppe`, `stations/steppe/`).** It inherits Mantis's
+fragments (and so the Bowl's), drops Mantis's passes and floor (58, 67), and adds or replaces:
+
+| Fragment | Tag | Note |
+|---|---|---|
+| `stations/steppe/45-host-stage.js` | [web] | split: the layout (kopjes, the pan, the wadi, the fairy lattice from KRAND) and fieldsAt are data; STATION its options |
+| `stations/steppe/47-host-rock.js` | [draw] | split: the tors, the mesa and the hoodoos are KSTACKS records ([G data]); the mesh and its tafoni shader are drawing |
+| `stations/steppe/59-biome-sedesert-steppe.js` | [draw] | split: the steppe habit, the species and passes are data; the items' geometries, the plants and the sun-dials' and lanterns' motion draw |
+| `stations/steppe/67-biome-sedesert-steppefloor.js` | [draw] | split: the floor, placing and drawing in one pass |
+| `stations/steppe/83-host-regions.js` | [web] | the steppe's named regions |
+| `stations/steppe/88-host-build.js` | [web] | split: the fairy discs handed to the floor, the build, the bake |
+| `stations/steppe/99-host-take.js` | [web] | the views, the rare and alien check, the sun-dial check, KHOST.take |
+

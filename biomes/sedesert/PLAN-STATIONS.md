@@ -27,6 +27,8 @@ the rims, mirages over the flats. Arcbeam (arcology) and Mantis (village) stand 
 
 ## Station 3: the steppe fringe
 
+The detailed plan is `PLAN-STEPPE.md` (**built 2026-10-26**: `python3 build.py --station steppe` -> `dist/sedesert-steppe.html`). In short:
+
 Desert grassland and thorn steppe at ~330 mm: bunchgrass between acacia-like thorn trees and frankincense, the kit's
 species thinning in, gravel plains, a seasonal pan that greens after rain; the hoodoos and mesas giving way to low
 rolling ground.
