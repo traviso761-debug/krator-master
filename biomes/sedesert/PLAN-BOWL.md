@@ -7,7 +7,8 @@ of the sedesert kit** (`PLAN-STATIONS.md`), not a kit of its own: the kit's spec
 by the air, the heat and the salt. Its Earth model is **the Dasht-e Lut**: the hottest surface on Earth, its salt lake
 basin, its yardangs (*kaluts*) and its dunes.
 
-**Status: plan, awaiting the owner.**
+**Status (2026-10-26): B0-B3 built, B4 in part, B5 verified** (`python3 build.py --station bowl` -> `dist/sedesert-bowl.html`,
+`stations/bowl/`; section 10 says what is built and what is left).
 
 ## 0. What it is
 
@@ -127,6 +128,11 @@ glasswort (green and crimson), tamarisk in flower, brine lamp; a yardang-silt ro
 - **The brine** is banded pink, teal and ochre (section 3).
 - **The lake effect** is corrected on the model in 4.22 (section 1).
 
+- **2026-10-26 (the owner):** the site is the proposed one (the south shore at the Bowl river 2's delta, px 866,826); the rings
+  are **compressed** into the station as a showcase (the lake's banded shallows and ochre rim, the white flat, the delta, the
+  halophyte belt and a yardang field all in it, each a few hundred metres to a kilometre, in the order they lie from the water);
+  the page opens in the **late afternoon** (the clock runs through the day); Mantis is **a far glimpse** (its own build later).
+
 ## 9. Order of work
 
 - **B0.** The owner answers section 8; the site chosen (proposed: the south shore at the Bowl river 2's delta, about px
@@ -136,3 +142,58 @@ glasswort (green and crimson), tamarisk in flower, brine lamp; a yardang-silt ro
 - **B3.** Yardangs and dunes; the heat shimmer and mirages; the light.
 - **B4.** Mantis seen from the station (its own build, or a vassal kit, is a settlement's work); the crops wiring.
 - **B5.** `verify.py --assert` for the station, `PORT.md`, the gallery (a fix to one kit republishes only its files).
+
+## 10. Core adoption, and what is built (2026-10-26)
+
+| Module | What it does on the Bowl's page |
+|---|---|
+| core/biome | the kit's species, builders, floor helpers and fauna (50-75), the bake; the Bowl's passes on `SEDESERT.PASSES` and `SEDESERT.buildFloor` |
+| core/rand (KRAND) | the kaluts' lattice (one ridge per cell, from the cell's hash), Mantis's houses; the passes keep the kit's seeded stream per pass |
+| core/tags | every item set, instance and registered volume (`BIO.init({tags:'sedesert-bowl'})`) |
+| core/terrain | KBASIN (40): the lake's high stand at -930 m falling to -990, its strandlines as benches, its silt, salt and the yardangs' ground; KRELIEF.river (38): the delta's water levels; KFIELD (30): the baked ground the page and the export read |
+| core/space | the halophyte trees' keep-clear (KSPACE), and the core's own keep-clear |
+| core/water | the lake (two open surfaces: the station's with its bed and the banded tint field, the far lake masked to the water) and the river with its five distributaries (flows) |
+| core/atmos | the shared sky at px 866,826 (1.83 atm, dusty, the Inner Wall and the rim as ridges), its light, fog and cloud shadows; the skylight in the water; ATMOS.bindHost |
+| core/host | the camera, loop, panel, probe, inspector, minimap; the frame is the heat pass's (`draw`) |
+| core/materials | the 'bowl' pack (`stations/bowl/materials.json`): nine ground layers and eight cards and barks (section 7), beside the kit's own pack |
+| core/mask | not taken: nothing places from a canvas (the ground's paint is drawn from the fields, placement reads the fields) |
+
+**Built.** B1: the lake (banded ochre, pink, ochre-orange and teal shallows over the depth ramp), the ochre rim's crust ridges in
+the shallows, the white flat (salt polygons, soda crust, efflorescence, damp hollows), the delta (the river from the south edge to
+an apex 1.4 km from the water, five distributaries on levees, its silt fan), the halo. B2: saxaul woods, saltbush, glasswort
+(crimson where the salt is strongest), tamarisk with its plumes, salt reed in the channels' shallows, brine lamps, rank grass and
+blooms on the delta; the kit's species in their dense-air forms (`SEDESERT.ABYSSAL`: the dragon tree squat and wide, the bottle tree
+a baobab, the rose's caudex a boulder, the candelabra and cardon short and thick, the quiver tree and boojum rare). B3: the kaluts
+(flat-topped, fluted ridges along the wind on the old lake silt of a raised western plateau, their beds in the kit's strata shader
+in a pale badland palette), dunes downwind of the flat, the heat shimmer and the inferior mirage (by the hour, gone at dawn and
+dusk and as the eye climbs), the late-afternoon light. B4: Mantis's far glimpse (compressed to 12 km and drawn looming). B5: the
+station's views and checks in `verify.py`.
+
+**Left.** The crops wiring (`kits/crops`: `sedesert`'s `salt`, `delta` and `halo` zones and the glasswort, manna, saxaul and
+brine lamp records) and the salt village at Mantis (`core/hamlet`); the fauna of section 6 (`kits/fauna`); the strata module
+(`core/terrain/STRATA-PLAN.md`) is not built, so the rim walls are the sky's ridges and the kaluts use the kit's own strata
+shader; the brine's bands do not shift with the season yet (the tint is baked once); the gallery (a publish is the owner's call).
+
+## 11. Station 2b: Mantis's pocket (2026-10-26)
+
+The owner (2026-10-26): a second station, near Mantis, "where the flora actually gets somewhat lush"; **a unique Socotran-style
+monsoon forest** (not another kit's trees); **the town's edge only** (its own build is a settlement's work); the stations' ceiling
+raised to **21M triangles**. `python3 build.py --station mantis` -> `dist/sedesert-mantis.html`, `stations/mantis/` (it inherits the
+Bowl's files through `station.json` "base" and writes its own layout, regions, forest, floor, build and views).
+
+**The site**: the wetter green pocket on the south-west shore, a few km north-east of Mantis (px ~838,830): a diagonal shore with the
+lake to the north-east (its banded shallows, the springs' plumes in them), a reed shore, four springs at the foot of the rise feeding
+streams to the lake, savanna between, the pocket thinning to saltbush, saxaul and the reg in the south-east, the town's walled
+gardens and houses in the south-west.
+
+**The forest** (`57-biome-sedesert-forest.js`; Socotra's own wet woodland as the model): the **Mantis fig** (*Ficus vasta*: a fused,
+buttressed grey bole, limbs running out level, a dark dome forty metres across, aerial roots, figs, beard lichen), **Socotran
+frankincense** (*Boswellia*: papery bark, pinnate leaves; the resin the Izani merchant houses came for), the **cucumber tree**
+(*Dendrosicyos*: a swollen trunk), the **Socotran pomegranate** (*Punica protopunica*), the **sterculia**; the kit's dragon's blood
+trees in close groves; beard lichen (*Usnea*) on the forest's limbs. The floor (`67-biome-sedesert-pocket.js`): tall monsoon grass,
+croton, kalanchoe, aloes, ferns at the springs. **The town's edge** (`88-host-build.js`): outlying mud-brick houses, a merchant
+house's tower with its wind-catcher, a domed shrine, walled gardens (date groves in rows, fig gardens, kitchen beds), as hashed
+records (core/rand), registered and drawn as one mesh.
+
+**Left**: the town's own build (core/city; its look: Yuni's under the Izani merchants'); textures for the houses (vertex colours now);
+the forest's fauna; a fig card (the library's `card.broadleaf` is a monstera bunch: the figs use the kit's procedural small-leaf map).

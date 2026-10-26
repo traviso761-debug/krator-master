@@ -4,6 +4,39 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### The steppe fringe (station 3, `stations/steppe/`, 2026-10-26)
+- [ ] **The site is provisional** (px ~800,690): the steppe has not been placed on the scale model; check it when the model is surveyed.
+- [ ] **The sun-dials turn only while frames run**: a hidden tab's page does not tick, so a check run on it reads the last pose
+      (`the sun-dials face the sun` is honest only on a page that draws).
+- [ ] **No gnamma pools** in the kopjes' rock yet; the whistle reeds are silent; the twoleaf and the rock fig are vertex-coloured.
+- [ ] **The loose lanterns loop**: each rolls its run down the wind and shrinks away at its end to start again.
+
+### Mantis's pocket (station 2b, `stations/mantis/`, 2026-10-26)
+- [ ] **The town's edge is massing**: vertex-coloured boxes, a dome and a tower, no library textures; the town proper is a settlement's
+      work (core/city).
+- [ ] **The figs' leaves are the kit's procedural small-leaf map**: `card.broadleaf` is a monstera bunch. A fig card (glossy oval
+      leaves in a clump) is owed if the figs want one.
+- [ ] **The streams are 8-12 m wide** (narrower ones fell under the ground field's 5 m step: their beds came out over the water).
+- [ ] **The ground takes six of the Bowl's nine layers** here (`STATION.groundLayers`), with the two green ones, to stay inside a
+      fragment shader's 16 texture units.
+- [ ] **The forest floor is thin under the figs** away from the springs; the floor pass could fill it further within the 21M budget.
+
+### The Bowl (station 2, `stations/bowl/`, 2026-10-26)
+- [ ] **The rings are compressed** (the owner, 2026-10-26): the ochre rim, the flat, the halo and the kaluts each a few hundred
+      metres to a kilometre where the model has 10 to 28 km. Mantis is placed the same way (12 km, truly 50) and drawn looming
+      (x3 upward). The open world must lay them out at their true widths.
+- [ ] **The heat pass draws into a target without antialiasing** (1.5 times the screen, filtered down) while the heat is up and the
+      eye is low (`86-host-shimmer.js`); `#heat=0` turns it off. A Godot port reads the screen and depth textures instead.
+- [ ] **The shallows read as a white-pink sheen from eye height**: 0.15-0.7 m of brine, all sky reflection at a grazing angle. The bands
+      show from a few metres up and from the air (`The banded shallows`). They do not shift with the season (the tint is baked once).
+- [ ] **The kaluts' beds are the kit's strata shader** (35) in a pale palette, not the strata module (`core/terrain/STRATA-PLAN.md`,
+      not built); the rim walls are the shared sky's ridges, not ground.
+- [ ] **Glasswort's colour follows the salt, not the season** (crimson where the salt is strongest). The saxaul's twigs borrow the
+      glasswort card (`card.samphire`): no saxaul card exists.
+- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's Bowl mantis, brine flies,
+      wading bird and salt beetles are `kits/fauna`'s work.
+- [ ] **The station's `dist/sedesert-bowl.html` is not in `PORT-BASELINE.json`** (the baseline is rewritten on the merged branch).
+
 - [x] (2026-10-15) The whole core/host interface (ROADMAP.md section 10, step 4; core/host/README.md): the inspector, marks, minimap, and
       the editor's fauna mode (kits/fauna's desert group, 39-host-fauna.js: this biome's own animals first, put down, moved,
       turned, removed, idling and grazing) and ground brushes (raise, lower, flatten, smooth on TFIELD: core/terrain's

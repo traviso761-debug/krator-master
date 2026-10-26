@@ -1,0 +1,15 @@
+{
+ "name": "The Bowl (station 2): the south shore of the Bowl's salt lake at the Bowl river 2's delta, the abyssal salt basin under 1.83 atm (PLAN-BOWL.md)",
+ "out": "sedesert-bowl.html",
+ "pack": "bowl",
+ "drop": ["82-host-sky.js", "85-host-tower.js"],
+ "core": [
+  "terrain/38-core-relief.js",
+  "terrain/40-core-basin.js",
+  "atmos/host/89-atmos-c-hostbind.js",
+  "atmos/sky/89-atmos-e-skymodel.js",
+  "atmos/sky/89-atmos-f-skypresets.js",
+  "atmos/sky/89-atmos-g-sky.js",
+  "atmos/host/89-atmos-h-skyhost.js"
+ ]
+}

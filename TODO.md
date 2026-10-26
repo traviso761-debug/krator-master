@@ -26,6 +26,15 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **Backport the succulent columns' quality pass** (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
+  `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
+  `G.column` 80 triangles, `G.columnLo` 36), `columnTree` seats every column on its arm (spots three to a segment along each arm,
+  the column within the arm's radius, its foot sunk a third of a radius: they stood up to 1.6 radii plus 1.5 m off, feet in the
+  air) and the arms are 7- and 9-sided tubes (`55-biome-sedesert-trees.js`). The same column geometry is in `biomes/ebadlands`,
+  `biomes/nsemiarid` and `biomes/throne` (their `50-*-species.js`, and their trees fragment where it has a column tree) and
+  vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
+  pages' hashes and their per-type triangle counts (the hero column doubles).
+
 - **Done in the sources 2026-10-25, waiting for stage 2's rebuild** (branch `claude/biome-rebuild`): core/host's probe reads
   `userData.probePoints` and indexes the volumes on KSPACE (`regOccupancy`: Rift 96 s to 0.6 s, the same counts;
   `core/host/test-probe.js`), the Ancient Port kit's probe reads `probePoints`, the camera's pointer capture is guarded and

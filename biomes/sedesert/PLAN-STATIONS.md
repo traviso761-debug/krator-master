@@ -16,7 +16,9 @@ page as built stays station 1. The strata upgrade (`core/terrain/STRATA-PLAN.md`
 
 ## Station 2: the Bowl
 
-The detailed plan is `PLAN-BOWL.md`; in short:
+The detailed plan is `PLAN-BOWL.md` (**built 2026-10-26**: `python3 build.py --station bowl` -> `dist/sedesert-bowl.html`, the station's files
+in `stations/bowl/`; its section 10 says what is built and left; **station 2b, Mantis's pocket**, a Socotran monsoon forest at the oasis
+town, `python3 build.py --station mantis`: its section 11); in short:
 
 The abyssal desert: a salt basin under dense air, 4.21's lakes painted in the Bowl's own look (an ochre salt rim, a teal
 core, a pale salt flat round each: `tools/scale-model/README.md`, `LAKE_STYLE`), salt polygons and efflorescence, the
@@ -24,6 +26,8 @@ kit's Socotran flora grown larger and squatter in the dense air (bottle trees, d
 the rims, mirages over the flats. Arcbeam (arcology) and Mantis (village) stand in it.
 
 ## Station 3: the steppe fringe
+
+The detailed plan is `PLAN-STEPPE.md` (**built 2026-10-26**: `python3 build.py --station steppe` -> `dist/sedesert-steppe.html`). In short:
 
 Desert grassland and thorn steppe at ~330 mm: bunchgrass between acacia-like thorn trees and frankincense, the kit's
 species thinning in, gravel plains, a seasonal pan that greens after rain; the hoodoos and mesas giving way to low

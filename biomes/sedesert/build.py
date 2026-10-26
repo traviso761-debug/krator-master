@@ -108,6 +108,36 @@ import fauna_bundle
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'sedesert'),'39-host-fauna.js':fauna_bundle.bundle(['desert'],tex=False),
          khost.EDITS_JS:khost.edits_js(HERE,'sedesert')}
 for f in VIRTUAL: PATH[f]=None
+# STATIONS (PLAN-STATIONS.md; laid out as the Throne's): python3 build.py --station bowl builds stations/bowl/ into the page
+# its station.json names ("out"). The station's .js and .html files replace src/'s of the same name or add to them; "drop"
+# removes src/ fragments it has no use for; "core" adds core files by path from core/; its own textures are a second pack
+# (stations/<name>/materials.json -> tools/textures/pack.py -> stations/<name>/tex/, the pack named by "pack"). Without
+# --station nothing here runs and the kit's own page is built as before.
+if '--station' in sys.argv:
+    import json as _json
+    STATION=sys.argv[sys.argv.index('--station')+1]
+    STN_DIR=os.path.join(HERE,'stations',STATION)
+    STN=_json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
+    OUT=STN['out']
+    # "base": another station whose files and settings this one starts from (its own files then replace them by name)
+    CHAIN=[]
+    _d,_s=STN_DIR,STN
+    while True:
+        CHAIN.insert(0,(_d,_s))
+        if not _s.get('base'): break
+        _d=os.path.join(HERE,'stations',_s['base']);_s=_json.load(open(os.path.join(_d,'station.json'),encoding='utf-8'))
+    for _d,_s in CHAIN:
+        for f in _s.get('drop',[]): PATH.pop(f,None)
+        for f in os.listdir(_d):
+            if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(_d,f)
+        for f in _s.get('core',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core',f))
+        # "kits": other kits' fragments read in place, {slot name on this page: path from this folder} (as the Throne's stations)
+        for slot,p in _s.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
+        if _s.get('pack'):
+            VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(_d,_s['pack'])
+        # "packs": other kits' library packs, {pack name: that kit's folder from this one}
+        for name,p in _s.get('packs',{}).items():
+            VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(os.path.normpath(os.path.join(HERE,p)),name)
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 32 prompts** (2026-10-26, after the merges with main and the NW outer wall): 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
+**Count: 33 prompts** (2026-10-26, after the merges with main, the NW outer wall and the Bowl): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -140,6 +140,15 @@ culms (scaled up), `ground.salt` and `ground.efflorescence` on the flats, the NW
 The abyssal salt lake in the eastern desert. Reuse: `ground.salt`, `ground.efflorescence`, `ground.playa.red`,
 `ground.clay.popcorn`, `card.tamarisk`, `bark.saxaul`, `card.samphire` for the glasswort (green; tint its crimson), the
 kit's own sets. The banded shallows are water tints, not a texture.
+
+#### `card.fig` (2026-10-26, Mantis's pocket, `PLAN-BOWL.md` section 11)
+- Kind: cut-out card sheet, 3 x 3 on magenta, tintable (grey-green, each instance's colour tints it); a clump fills each cell.
+- Used by: the Mantis fig's crown (`biomes/sedesert/stations/mantis`, slot `broad`). Stands in today: the kit's procedural
+  small-leaf map (`card.broadleaf` is a monstera bunch, wrong for a fig). Reuse: any fig, banyan or laurel-leaved crown.
+
+```
+A sheet of nine separate cut-out foliage sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a dense rounded clump of fig foliage seen from outside the crown, many leathery oval leaves ten to fifteen centimetres long with blunt tips and a pale midrib, overlapping in layers, a few short grey twigs showing between them and two or three small round figs on the twigs; vary the outline and the density of the nine clumps. Keep colours natural but slightly muted and even, a mid grey-green, so the sprite can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
 
 ## 12. The Catch (`biomes/catch`, planned 2026-10-23)
 

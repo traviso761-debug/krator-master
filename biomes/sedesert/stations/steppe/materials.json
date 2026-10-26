@@ -1,0 +1,14 @@
+{
+ "build": "sedesert-steppe",
+ "note": "The steppe fringe's own textures (station 3, PLAN-STEPPE.md section 4), a pack beside the kit's, the Bowl's and Mantis's ('steppe'). The ground's slots (84-host-ground.js, STATION.layerPack 'steppe' takes them first): ground.lush is the steppe's dry grass ground (ground.steppe, its own colours), ground.forest the desert pavement of the west (ground.gravel019, dark pebbles, multiplied), ground.yard the kopjes' bare granite (rock.granite.tor, multiplied over the granite paint). rock.*: the tors (47-host-rock.js, KSTACKS meshes): the lichened granite and its honeycomb (tafoni) weathering (bark.honeycomb, tinted to the granite). Cards (59-biome-sedesert-steppe.js): the bunchgrass (card.grass.dry) and the plume grass (card.stipa), one cell each, grey so each tussock's colour tints them.",
+ "size": 512,
+ "families": {
+  "ground.lush": {"lib": "ground.steppe", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "ground.forest": {"lib": "ground.gravel019", "scale": [2.5, 2.5], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.3, "mapOnly": true},
+  "ground.yard": {"lib": "rock.granite.tor", "scale": [5.0, 5.0], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.3, "mapOnly": true},
+  "rock.tor": {"lib": "rock.granite.tor", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "rock.tafoni": {"lib": "bark.honeycomb", "scale": [2.5, 2.5], "tint": {"keep": 0.0, "mean": 0.7, "contrast": 1.3}, "roughLift": 0.3, "mapOnly": true},
+  "bunch": {"lib": "card.grass.dry", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "stipa": {"lib": "card.stipa", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.72}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]}
+ }
+}

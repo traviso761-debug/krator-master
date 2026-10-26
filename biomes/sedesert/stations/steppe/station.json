@@ -1,0 +1,8 @@
+{
+ "name": "The steppe fringe (station 3): desert-steppe at ~330 mm, the kit's Socotran flora in its steppe forms, kopjes with tors and honeycomb faces, fairy circles, a seasonal pan; old twoleafs, rock figs, pebble plants; sun-dials, whistle reeds, drift lanterns (PLAN-STEPPE.md)",
+ "out": "sedesert-steppe.html",
+ "base": "mantis",
+ "pack": "steppe",
+ "drop": ["58-biome-sedesert-pocketpasses.js", "67-biome-sedesert-pocket.js"],
+ "core": ["terrain/37-core-stacks.js"]
+}
