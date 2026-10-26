@@ -18,6 +18,9 @@ SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670031);q=q==null?1
  H.discs.forEach(D=>{if(!BIO.clearOf(D.x,D.z,D.r))return;const y=BIO.terrainH(D.x,D.z);PL.fairy(D.x,y,D.z,D.r);st.discs++;
   const lv=lvAt(D.x,D.z);if(lv===0)return;for(let k=0,n=Math.round(D.r*(lv===2?3.2:1.4));k<n;k++){const a=k/n*TAU+rr(-.1,.1),rr0=D.r*rr(1.05,1.3),x=D.x+Math.cos(a)*rr0,z=D.z+Math.sin(a)*rr0;
    PL.bunch(x,BIO.terrainH(x,z),z,1,rr(.9,1.4));st.grass++;}});
+ // the gnamma pools: moss and ferns round each rim, where the rain lingers in the rock
+ (H.gnamma||[]).forEach(G=>{for(let k=0,n=Math.round(G.r*5);k<n;k++){const a=rr(0,TAU),d=G.r*rr(1.02,1.35),x=G.x+Math.cos(a)*d,z=G.z+Math.sin(a)*d,y=BIO.terrainH(x,z);if(y<G.level+.05)continue;
+  if(rng()<.6)BIO.put('lichen',[x,y+.02,z],BIO.fn.qEuler(0,rr(0,TAU),0),rr(.4,1.1),SEDESERT.leafCol([0x5a7a3a,0x6a8a42,0x4e6e34],1.15,.04));else BIO.put('fern',[x,y-.03,z],BIO.fn.qEuler(0,rr(0,TAU),0),[rr(.5,.9),rr(.4,.8),rr(.5,.9)],SEDESERT.leafCol([0x4a7a2e,0x56883a],1.2,.03));}});
  // the grass: three bands along the LOD spine
  [[3.6,L.floor[0],0,2],[10,L.floor[1],L.floor[0],1],[28,1e9,L.floor[1],0]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*.9*q;},
   (x,y,z)=>{if(H.insideDisc(x,z))return;if(SEDESERT.blocked(x,z,.3))return;const lv=b[3],h=rr(.45,.95)*(lv===0?1.7:lv===1?1.25:1);

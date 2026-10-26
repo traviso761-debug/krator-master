@@ -29,12 +29,17 @@ const FAIRY=[{x:-600,z:1000,r:430},{x:1500,z:450,r:380},{x:250,z:-1950,r:360}].m
 // a kopje's dome over the plain: steep sides, a rounded crown, its outline lobed; 0 off it
 function domeAt(K,x,z){const dx=x-K.x,dz=z-K.z,d=Math.hypot(dx,dz),a=Math.atan2(dz,dx),R=K.r*(1+.14*Math.sin(3*a+K.i)+.08*Math.sin(7*a+2*K.i)+.05*(fbm(x*.01,z*.01,4501+K.i,2)-.5));
  if(d>R)return 0;const u=d/R;return K.h*Math.pow(1-u*u,.85)+3*(fbm(x*.03,z*.03,4511,2)-.5)*(1-u);}
+// THE GNAMMA POOLS: rock basins weathered into the kopjes' upper flanks that hold the rain for weeks; a few to each dome, from its
+// index's hash (core/rand), on the gentler ground below the crown
+const GNAMMA=[];KOPJES.forEach(K=>{for(let i=0;i<5;i++){const R=KRAND,h=k=>R.unit(R.hash(4540+K.i,i,k));if(h(0)<.25)continue;
+ const a=h(1)*TAU,d=K.r*(.18+.3*h(2));GNAMMA.push({x:K.x+Math.cos(a)*d,z:K.z+Math.sin(a)*d,r:2.5+4*h(3),k:K.i,name:'A gnamma pool (a rock basin that holds the rain)'});}});
+const gnammaDent=(x,z)=>{let h=0;for(const G of GNAMMA){const d=Math.hypot(x-G.x,z-G.z);if(d<G.r*1.6)h=Math.max(h,1.1*Math.pow(smooth(G.r*1.5,G.r*.35,d),1.3));}return h;};
 const kopjeAt=(x,z)=>{let h=0,k=0;for(const K of KOPJES){const v=domeAt(K,x,z);if(v>h){h=v;k=K.i;}}return{h,k};};
 const panK=(x,z)=>{const d=Math.hypot(x-PAN.x,(z-PAN.z)*1.25)*(1+.08*Math.sin(Math.atan2(z-PAN.z,x-PAN.x)*3));return smooth(PAN.r*1.15,PAN.r*.65,d);};
 const paveK=(x,z)=>smooth(-1100,-2300,x+250*Math.sin(z*.0011))*(1-edgeK(x,z));
 const edgeK=(x,z)=>smooth(-3000,-4300,x+z+200*Math.sin(x*.002));
 function baseH(x,z){let h=H0+9*(fbm(x*.0005+3,z*.0005-1,4521,3)-.5)+3.2*(fbm(x*.0021,z*.0021,4522,2)-.5)+.4*(fbm(x*.02,z*.02,4523,2)-.5);
- h+=kopjeAt(x,z).h;
+ h+=kopjeAt(x,z).h-gnammaDent(x,z);
  const pk=panK(x,z);h-=PAN.depth*pk+.3*(fbm(x*.01,z*.01,4524,2)-.5)*(1-pk);
  h+=14*edgeK(x,z)*(.5+.5*fbm(x*.001,z*.001,4525,2));
  return h;}
@@ -43,6 +48,7 @@ function extraH(x,z,h){return 0;}
 // the pan's rain water: a sheet a few hand-breadths deep over its floor
 const PAN_POOL={x:PAN.x,z:PAN.z,r:PAN.r*.42,name:'The pan\'s rain water (it lasts a few weeks after the wet season)'};
 PAN_POOL.level=baseH(PAN.x,PAN.z)+.45;
+GNAMMA.forEach(G=>{G.level=Math.min(...[0,1,2,3,4,5,6,7].map(k=>baseH(G.x+Math.cos(k*.785)*G.r*1.55,G.z+Math.sin(k*.785)*G.r*1.55)))-.2;});
 // THE WADI: a dry channel across the map from the north-west to the south-east, 24 m wide, its bed 1.5 m under the plain
 const CHAN=(function(){const pts=[];for(let k=0;k<=240;k++){const t=k/240,x=-3250+6500*t,z=-1100+2900*t+180*Math.sin(t*Math.PI*4.2+.4)+70*Math.sin(t*Math.PI*11);pts.push([x,z]);}
  return[{key:'wadi',name:'The wadi (a dry sandy bed; it runs a day or two a year)',w:24,depth:1.5,pts}];})();
@@ -65,8 +71,8 @@ const STATION={key:'steppe',tags:'sedesert-steppe',seed:4,chanBox:[-3300,-3300,3
  noLake:true,dryChannels:true,habitKey:'STEPPE',strata:false,layerPack:'steppe',chanReach:130,
  groundLayers:['yard','playa','popcorn'],   /* the kopjes' granite, the pan's clay; with the grass and the pavement: 5 layers */
  paint:{GRASS:0xb0a068,GRASS2:0x8e8a58,LITTER:0x948472,BARE:0xb89070,GRANITE:0xb4a89e,GRAV:0x9a7a62,GRAV2:0x8a6a54,SAND:0xb89a7a,SAND2:0xa88a6a},
- pools:[{x:PAN_POOL.x,z:PAN_POOL.z,r:PAN_POOL.r,level:PAN_POOL.level,name:PAN_POOL.name}],
- pool:(x,z)=>Math.hypot(x-PAN_POOL.x,z-PAN_POOL.z)<PAN_POOL.r*1.25?PAN_POOL.level:-1e9,
+ pools:[{x:PAN_POOL.x,z:PAN_POOL.z,r:PAN_POOL.r,level:PAN_POOL.level,name:PAN_POOL.name}].concat(GNAMMA.map(G=>({x:G.x,z:G.z,r:G.r*1.05,level:G.level,name:G.name}))),
+ pool:(x,z)=>{if(Math.hypot(x-PAN_POOL.x,z-PAN_POOL.z)<PAN_POOL.r*1.25)return PAN_POOL.level;for(const G of GNAMMA)if(Math.hypot(x-G.x,z-G.z)<G.r*1.3)return G.level;return -1e9;},
  halo:{bunch:3000,stipa:300,twoleaf:15,whistle:100,lantern:60},   /* items counted (the rock figs and pebble plants are kit parts: 99 counts them) */
  budget:{tris:21000000,calls:170},cls:{pass:11000000,host:900000}};
 // ---------------------------------------------------------------- the fields (cached in 46; these are the definitions)
