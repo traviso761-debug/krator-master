@@ -118,6 +118,12 @@ static func _kind_nodes(k: KWater) -> Array:
 		var mi: MeshInstance3D = mk.call(_mesh(v, M["idx"], n, t, null), SHADERS["fall"], "")
 		if L.has("colour"):
 			(mi.material_override as ShaderMaterial).set_shader_parameter("colour", _lin(L["colour"]))
+		# a margin or edge (core/water W1, 2026-10-26): the side fade in metres, as WATER.drawFall's
+		if k.curtain_opt.get("margin") != null or k.curtain_opt.get("edge") != null:
+			var fm := mi.material_override as ShaderMaterial
+			fm.set_shader_parameter("side_margin", float(k.curtain_opt.get("margin", 0.0)))
+			fm.set_shader_parameter("side_edge", float(k.curtain_opt["edge"]) if k.curtain_opt.get("edge") != null else 0.08 * k.lip_w)
+			fm.set_shader_parameter("lip_w", k.lip_w)
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop, "matches_page": _same_mesh(k.curtain_opt, M["count"], P)})
 		out.append(mi)
 		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's)

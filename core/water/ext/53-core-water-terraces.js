@@ -3,7 +3,7 @@
 // core/water/ext/ on purpose: many builds pool the top-level fragments of core/water, so a new top-level fragment would leak into all of
 // them; a build opts in by path (CORE_WATER_EXT in its build.py). 53b-core-water-terraces-draw.js draws what this makes.
 //
-//   WATER.terraces({name, line, treads | levels, width, riser, speed, spread, treadSpeed, step})  a STEPPED RIVER: a chain of still pools, each at its
+//   WATER.terraces({name, line, treads | levels, width, riser, speed, spread, treadSpeed, step})  a stepped river: a chain of still pools, each at its
 //        tread's level, joined by a fall down each riser; the nwbay river, the Ys rimstone terraces, a rice-terrace stream.
 //        line      [[x, z], ...]: the river's course (its y is ignored: the levels say it)
 //        treads    [{s0, s1, y, w?}, ...] explicit: the tread i is the part of the line from s0 to s1 metres along it, at height y, w m wide

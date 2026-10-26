@@ -7,9 +7,10 @@
 //        one for the plunge discs (each disc's centre and radius an attribute); the same shading as drawFall (the streaks fall with the water,
 //        the foam grows toward the foot, the churn rings). o: {color, opacity, rows, rowStep, cols, plunge (false: none), plungeY, spray (false:
 //        none), renderOrder, depthBias, depthWrite, pick, name}. -> {mesh, plunge, material, spray, falls: list, merged: W.mergedFalls' arrays}
-//   WATER.drawPools(list, o)   the still pools of `list` as ONE mesh (their polygons' triangles, each at its own level) with drawStill's ripple and sky;
-//        no fountain or gradient (those pools keep drawStill). o: {color, roughness, metalness, envMapIntensity, opacity, renderOrder, depthBias,
-//        depthWrite, pick, name}. -> {mesh, material, list}
+//   WATER.drawPools(list, o)   the still pools of `list` as ONE mesh (their polygons' triangles, each at its own level) with drawStill's ripple and sky,
+//        each pool's own gradient (2026-10-26; o.gradient gives one to the pools without); no fountain (those pools keep drawStill). o: {color,
+//        roughness, metalness, envMapIntensity, opacity, renderOrder, depthBias, depthWrite, pick, name, gradient, tint, rain}. -> {mesh, material, list}
+//   (2026-10-26) drawFalls also takes margin and edge (the curtains' sides, W.curtain) and spray: 'drop' (WATER.fallSpray); see 51's header
 //   WATER.drawTerraces(T, o)   a stepped river (WATER.terraces) in about four calls: its pools one mesh, its falls two. o: {pool: {...}, fall: {...}}
 //        over the options both take. -> {pools, falls}
 // Meshes carry userData.lodSkip and, unless o.pick, probeSkip; userData.water = the ids of the surfaces they hold.

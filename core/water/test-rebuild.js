@@ -57,6 +57,9 @@ const texOf1=M=>(s,uv)=>{const fx=uv[0]*M.nx-.5,fz=uv[1]*M.nz-.5,i0=Math.floor(f
  const DD=W.drawFalls(L,{margin:1.2}),cf=compiled(DD.mesh.material).fs;
  ok('W1: drawFalls({margin}) widens every curtain (the merged arrays: '+DD.merged.curtain.uv[0].toFixed(4)+' = -1.2/8) and fades by each fall\'s own lip width (from its streak scale)',
   Math.abs(DD.merged.curtain.uv[0]+1.2/8)<1e-9&&/min\(vWtrUF\.x,1\.0-vWtrUF\.x\)\*\(vWtrFP\.x\*/.test(cf)&&L[1].curtainOpt.margin===1.2,!/vWtrFP\.x\*/.test(cf));
+ const CF=W.flow({name:'w1chute',pts:[[0,0,40],[10,0,40],[14,0,20],[22,0,20]],width:6,speed:1}),fc=compiled(W.drawFlow(CF,{chute:.35}).material),rec=CF.ribbonOpt.chute,fo=compiled(W.drawFlow(CF,{chute:.35,transparent:false}).material),f0=compiled(W.drawFlow(CF,{}).material);
+ ok('W1: drawFlow({chute}) lets the ribbon give way down a chute steeper than the falls\' steep (faded when transparent, discarded when opaque), records it, keys it apart; without it the old text',
+  /1\.0-smoothstep\(0\.297\d*,0\.35,vWtrS\)/.test(fc.fs)&&/if\(vWtrS>=0\.35\)discard;/.test(fo.fs)&&rec===.35&&fc.key!==f0.key&&!/1\.0-smoothstep\([^)]*,vWtrS\)/.test(f0.fs)&&!/discard/.test(f0.fs),/discard/.test(f0.fs));
  W.surfaces.length=0;W.drawn.length=0;}
 
 // ================================================================ W2: spray scaled to the drop

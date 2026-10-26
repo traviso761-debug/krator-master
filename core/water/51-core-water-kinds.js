@@ -25,6 +25,12 @@
 // probeSkip, so click-to-inspect and registered-volumes see the mesh; userData.inspectLabel = the surface's name). drawFlow also takes rapids [lo, hi]
 // (this flow's own band; else the flow's S.rapids; else PRESETS.flow.rapids) and spray (true or {every, min, max, lift}: ATMOS.smoke 'spray' at the
 // steep reaches, WATER.sprayPoints); drawStill takes gradient (a surface's own, see WATER.still) and tint (a hex multiplier on the colour).
+// The final rebuild's options (2026-10-26, all off by default; core/water/test-rebuild.js): drawFall and drawFalls take margin (m a side the curtain runs
+// past the lip, as wide as the river's ribbon there) and edge (m of side fade inside the lip's edge), and spray: 'drop' or {drop: true, every, max,
+// column, top, layer} (WATER.fallSpray: emitters across the foot and up a mist column scaled to the drop, for the three fixed ones); drawFlow takes
+// chute (the slope above which the ribbon gives way to the falls' curtains); drawStill, stillMaterial, drawFlow, draw and drawPools take rain: true
+// (rain rings, WATER.rainRippleGLSL, scaled by the live rain, under open sky by core/atmos's cover map when it exists); wetGround takes porosity,
+// puddles (a WATER.hollows record) and ripples (Lagarde's wet look, puddles in the hollows, rain rings on them; idempotent).
 (function(){const W=WATER,TAU=Math.PI*2;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},f=glf;
  const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
@@ -56,7 +62,7 @@
  W.drawFlow=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period();
   if(o.rapids)S.rapids=[o.rapids[0],o.rapids[1]];const rap=S.rapids||null;
   S.ribbonOpt={step:o.step==null?Q.step:o.step,across:o.across==null?Q.across:o.across,margin:o.margin==null?Q.margin:o.margin};
-  if(o.depthBias!=null)S.ribbonOpt.depthBias=o.depthBias;
+  if(o.depthBias!=null)S.ribbonOpt.depthBias=o.depthBias;if(o.chute!=null)S.ribbonOpt.chute=o.chute;
   const R=W.ribbon(S,S.ribbonOpt),g=new T.BufferGeometry();
   // o.origin: the mesh stands at the ribbon's middle and its vertices are local to it (a river a hundred km long, a
   // million metres out, keeps its float precision); the shader still reads world positions through modelMatrix
@@ -67,7 +73,7 @@
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
    transparent:o.transparent!==false,depthWrite:o.transparent===false});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;';
-  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o);
+  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;')
     .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
@@ -79,7 +85,10 @@
      'float wtrFoamK=wtrFlowFoam(vWtrS,vWtrB)*smoothstep(0.42,0.82,wtrNz+0.15*wtrFlowFoam(vWtrS,vWtrB));'+
      'diffuseColor.rgb=mix('+lin(T,o.shallow==null?0x6f9a8a:o.shallow)+','+lin(T,o.deep==null?0x1d3f44:o.deep)+',smoothstep(0.3,3.5,vWtrB));'+
      'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.86,0.9,0.9),wtrFoamK);'+
-     (o.transparent!==false?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);':''))
+     (o.transparent!==false?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);':'')+
+     // chute (2026-10-26): the ribbon gives way where the line is steeper than this (the falls' curtains draw the water there: fallsOf's steep),
+     // so its sheet down a chute, cut by the banks, does not show beside the curtain
+     (o.chute!=null?(o.transparent!==false?'diffuseColor.a*=1.0-smoothstep('+f(.85*o.chute)+','+f(o.chute)+',vWtrS);':'if(vWtrS>='+f(o.chute)+')discard;'):''))
     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);')
     .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);');};
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?1:o.renderOrder;mesh.position.set(org[0],0,org[2]);scene.add(mesh);
@@ -218,7 +227,7 @@
   const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain')+
    (model()?'|lag:'+[o.porosity,o.puddles?W.hashStr(W.puddleGLSL(o.puddles)):'',o.ripples!==false].join()+W.rainKey():'');
   const wet=function(sh,r){if(page)page.call(this,sh,r);const S2=o.surface||S,M=model(),A=AT();let CH=W.wetChunk(S2,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
-   if(M){if(!(S2&&S2.shore)){CH+='\nuniform float atmWaveT;';sh.uniforms.atmWaveT=A.U.waveTime;}
+   if(M){if(!(S2&&S2.shore)){CH+='\nuniform float atmWaveT;';sh.uniforms.atmWaveT=A.U.waveTime;}CH+='\nuniform float wtrLight;';sh.uniforms.wtrLight=A.U.light||{value:1};
     CH+='\n'+W.rainChunk(sh.uniforms)+W.wetLookGLSL()+'\n'+(o.puddles?W.puddleGLSL(o.puddles):'float wtrPuddle(vec2 p,float wet){return 0.0;}')+'\n';
     if(o.puddles)sh.uniforms.wtrHollowT={value:W.hollowTexture(o.puddles,A.T)};}
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <project_vertex>','#include <project_vertex>\n'+
@@ -228,8 +237,12 @@
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrOk=wtrOpen(vWtrW);float wtrW=max(wtrWG.x,wtrRain*wtrOk*smoothstep(0.35,0.8,vWtrNy));'+
     'float wtrPd=wtrPuddle(vWtrW.xz,wtrRain*wtrOk)*smoothstep(0.85,0.97,vWtrNy);diffuseColor.rgb*=wtrWetDarkL(wtrW,wtrPd,'+f(o.porosity==null?.7:o.porosity)+');\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRoughL(roughnessFactor,wtrW,wtrPd,wtrWG.y);\n#endif\n'+
-    '#if defined(STANDARD)||defined(PHONG)\nif(wtrPd>0.001){vec3 wtrPN=wtrRainN(vec3(0.0,1.0,0.0),'+(o.ripples===false?'vec2(0.0)':'wtrRainRipple(vWtrW.xz,wtrRainNow*wtrOk)')+');'+
-    'normal=normalize(mix(normal,normalize((viewMatrix*vec4(wtrPN,0.0)).xyz),wtrPd));}\n#endif\n}\n#include <emissivemap_fragment>':
+    'vec3 wtrPN=wtrPd>0.001?wtrRainN(vec3(0.0,1.0,0.0),'+(o.ripples===false?'vec2(0.0)':'wtrRainRipple(vWtrW.xz,wtrRainNow*wtrOk)')+'):vec3(0.0,1.0,0.0);\n'+
+    '#if defined(STANDARD)||defined(PHONG)\nif(wtrPd>0.001)normal=normalize(mix(normal,normalize((viewMatrix*vec4(wtrPN,0.0)).xyz),wtrPd));\n#endif\n'+
+    // the sky in a puddle where the material has no environment map (a Lambert ground most of all): Schlick's Fresnel on the rippled normal
+    // times W.WET.sky and the daylight (core/atmos's light), added to the emission after the page's emissive map
+    '#include <emissivemap_fragment>\n#ifndef USE_ENVMAP\nif(wtrPd>0.001){float wtrFr=0.02+0.98*pow(1.0-clamp(dot(normalize(cameraPosition-vWtrW),wtrPN),0.0,1.0),5.0);'+
+    'totalEmissiveRadiance+=wtrPd*wtrFr*vec3('+W.WET.sky.map(f).join(',')+')*wtrLight;}\n#endif\n}':
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
   Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>wet,set:fn=>{page=fn;}});

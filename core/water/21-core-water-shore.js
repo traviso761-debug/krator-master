@@ -188,6 +188,6 @@
  // WET LOOK (Lagarde's porous model, 2026-10-26; WATER.wetGround with porosity or puddles): wetness w darkens the albedo by dark * porosity * w and
  // cuts the roughness to `rough` of itself; standing water (a puddle pd, or the swash's film) darkens it by puddleDark more and takes the roughness
  // to puddleRough (a mirror). -> [albedo factor, roughness] (twins of the shader's wtrWetDarkL and wtrWetRoughL). NOT in PRESETS (see W.RIPPLE)
- W.WET={dark:.65,rough:.4,puddleDark:.25,puddleRough:.03};
+ W.WET={dark:.65,rough:.4,puddleDark:.25,puddleRough:.03,sky:[.55,.62,.7]};   /* sky: the colour a puddle reflects on a material with no environment map, times the daylight */
  W.wetLook=(r,w,pd,porosity,film)=>{const Q=W.WET;return[(1-Q.dark*porosity*w)*(1-Q.puddleDark*pd),r*(1+(Q.rough-1)*w)*(1-Math.max(pd,film||0))+Q.puddleRough*Math.max(pd,film||0)];};
 })();
