@@ -60,10 +60,10 @@ each overlap, as `korona/NOTES.md` does. It should settle:
 
 - **The arcology (the owner, 2026-10-26): one, Arcoindian II, ruined, built into a cliffside.** `kits/ancients/targets/arcoindian2`
   (`89c-arcoindian2.js` and its lens and stalk fragments; gallery "Arcoindian II": "the half-cave: a city in a deep shelf on a
-  canyon wall"; `LORE.md` §3 lists "the cliff Arcoindians"). Its **position is still to be decided**; the survey (P0)
-  offers candidate **cliffs or canyon walls** (the type needs a tall, steep, deep-cut wall: a gem-range canyon or the
-  basin's edge under the wall, at least as tall as the building, and near the god's road if one reaches it), the owner
-  picks, and it goes in `settlements.json` like every other arcology. It is a node in the Ancient road draft
+  canyon wall"; `LORE.md` §3 lists "the cliff Arcoindians"). Its **position (chosen 2026-10-26, `SURVEY.md` 5): the west wall of the N main basin, px about (1240, 330)**, over the 2,132 m lake
+  at its foot (the type wants water under its sill), on the basin's western edge, 1.2 atm at the quay. It still goes in
+  `settlements.json` like every other arcology, once the closer look at the wall confirms it (fallback: the wall over the
+  2,496 m lake at (1220, 423)). It is a node in the Ancient road draft
   (`tools/scale-model/ancient_roads.py`), so it may be what puts the god's road in the basin. The building is the Ancients'
   kit's; this kit gives it a site, a cliff-and-ground mask (`core/terrain` carve for the shelf) and its surroundings.
   - **Ruined.** The ruin is not the kit's clean ruin by default: the Outlands' native flora grows over it (rock-eater
@@ -322,4 +322,4 @@ shader or sky dome. Run `python3 tools/check_core_use.py` before calling it done
 6. ~~Armour~~ Dropped: the flora is 90% native and fungoid (section 3); the signature is colour and construction.
 7. **Station count**: the six above, fewer for a first pass, or more?
 8. **Gem ranges**: emerald and turquoise in one place, or emerald in the N and turquoise in the S?
-9. **The arcology** (Arcoindian II, ruined, shunned; the trickster is believed to live there): which cliff? The road ends there and the misfortune is a real luck hazard (both settled).
+9. ~~The arcology~~ Settled: Arcoindian II, ruined, shunned; the trickster is believed to live there; the god's road ends there; the misfortune is a real luck hazard; the cliff is the N main basin's west wall, px about (1240, 330), over the 2,132 m lake.

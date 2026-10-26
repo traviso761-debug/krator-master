@@ -79,10 +79,15 @@ A cliff on a 4 km grid shows only as relief in a 16 km window; the candidates ar
 | (1270, 138-166) | 2,200-2,430 m | 1,491-3,736 m | N main basin's north wall, near the lake at (1316,186) |
 | (1368, 230) | 1,911 m | 1,215-2,751 m | N main's eastern floor, a lower wall |
 
-The **west wall of the N main basin at about (1240, 330)** is the strongest: the largest, steepest wall, at 2.1-3.8 km (1.2-1.0
-atm), above a salt lake and beside the stream mouths. It is also the nearest wall to the pass of the candidates in the
-**N** basin (the pass at (1136,84) is about 250 px, 500 km, away), so the god's road could run from the Gate to it. *A
-suggestion, not a choice: the owner decides.*
+**Chosen (the owner's go-ahead, 2026-10-26): the west wall of the N main basin at about px (1240, 330).** It is the largest
+and steepest wall in the survey, and Arcoindian II wants **water at its foot** (the building stands on a sill about 340 m over
+the water, its hollow 280 m high, with a 340 m access shaft and a quay at the bottom; `kits/ancients/KNOWN_ISSUES.md`,
+"Arcoindian II"): the model has **a lake at 2,132 m at (1240, 330)**, fed by wadi 60 (63 km, 3.8 m³/s) and wadi 143, at the
+foot of a wall that rises to 3,789 m, a drop of about 1,650 m over the 16 km window, so a wall of 620 m or more over the water
+has room. Air is 1.2 atm (2.1 km) at the quay and 1.0 atm (3.8 km) at the crest. It lies on the basin's western edge, **about
+530 km (a route of the Gate's road down the basin's west side) from the pass at (1136, 84)**. Fallbacks, if the closer
+look (the model's 4 km cells hide the wall's real profile) fails: the N west basin's wall at (1218, 410), over the 2,496 m
+lake at (1220, 423), relief 2,574 m.
 
 ## 6. Not yet done
 
