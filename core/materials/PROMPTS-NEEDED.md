@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 1 prompt** (`metal.enamel.scoured`, optional; the third 2026-10-26 drop delivered the other 14, see `PLAN.md`) (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. The shared sky's six moon maps (added 2026-10-25) were delivered the same day: `PLAN.md`, the Delivered log. A short list at the end names gaps that have no prompt yet.
+**Count: 6 prompts** (five in section 8 for the NW outer wall's procedural plants, 2026-10-26; `metal.enamel.scoured`, optional; the third 2026-10-26 drop delivered the other 14, see `PLAN.md`) (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. The shared sky's six moon maps (added 2026-10-25) were delivered the same day: `PLAN.md`, the Delivered log. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -81,6 +81,49 @@ The Yeti Kingdom's high country (`biomes/nwouterwall/PLAN.md` section 8, which l
 `ground.tundra`, `ground.turf.polygon`, `ground.sphagnum`, `ground.lichen.crust`, the snows and ices, `card.lichen`,
 `card.moss.hanging` and `card.beard` for the larch beard, `card.pine`, `card.spruce`, `card.stipa` for the plumegrass,
 `card.heath`, `surface.cushion` for the cushions, the birch barks). Needed before the kit's N2.
+
+**Built 2026-10-26** (`biomes/nwouterwall`, its own branch): everything section 8 asked for was delivered and is wired. Five plants
+still draw a procedural stand-in (`biomes/nwouterwall/KNOWN_ISSUES.md`, "Procedural plants"); their cards:
+
+#### `card.birch.dwarf`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one shrub per cell.
+- Used by: the snow birch (Betula nana) of the tundra and the alases' edges. Reuse: any dwarf birch or low tundra shrub turning in autumn.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one knee-high dwarf birch shrub (Betula nana) standing on the bottom of its cell: a low tangle of thin dark red-brown twigs (#4a2a20) carrying small round leaves with scalloped edges, each the size of a fingernail. Top row in summer green (#4e7a34, #5a863a); middle and bottom rows in autumn: scarlet, orange and wine red (#c84a28, #e07a30, #8a2a24). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. The subject's reds are deep and warm, never the background's pure magenta; key with `spill: edge`.
+```
+
+#### `card.willow.woolly`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one shrub per cell.
+- Used by: the woolly willow (Salix lanata) of the stream banks and the wet tundra. Reuse: any grey-felted willow, sallow or arctic willow scrub.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one woolly willow shrub (Salix lanata) a metre tall standing on the bottom of its cell: several stout grey-brown stems (#6a5e52) with broad oval leaves covered in dense silvery-grey felt (#b4bcac, #ccd2c4); on six of the nine, fat upright woolly catkins like little white-gold caterpillars (#f4f0e4, #e8d8a0) at the branch tips. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.edelweiss`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
+- Used by: the felt star (edelweiss) of the fellfield and the stony tundra. Reuse: any edelweiss or felted alpine star.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a small clump of edelweiss (Leontopodium) on the bottom of its cell, a hand high: narrow grey-green leaves (#8a9478) under one to four flower heads, each a star of thick white-grey woolly bracts (#e8e6dc, #d4d2c8) round a cluster of small yellowish-grey florets (#c8c0a0), everything covered in felt. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.cloudberry`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
+- Used by: the cloudberry (Rubus chamaemorus) of the alas bogs. Reuse: any bog berry or low lobed-leaf herb of the tundra.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one low cloudberry plant (Rubus chamaemorus) on the bottom of its cell, ankle high: two or three wrinkled kidney-shaped leaves with five shallow lobes (#5a7a3a, #668644) on short stems, and a single upright berry on its own stalk, amber-orange like a small raspberry (#e89040, #f0a050). Top row: the berry still hard and red-gold; middle row: ripe amber; bottom row: autumn, the leaves turned rust-red (#a0482a). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.cladonia`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one tuft per cell.
+- Used by: caribou moss (reindeer lichen) tufts standing out of the `ground.cladonia` carpet under the larch and on the tundra. Reuse: any fruticose lichen tuft, coral lichen, cup lichen.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one cushion of reindeer lichen (Cladonia rangiferina) seen from a low side angle, sitting on the bottom of its cell: a rounded clump a hand to two hands across of densely branched, hollow, antler-like tips, pale grey-green and ash white (#c8ccb8, #b4b8a4, #e4e4d4), darker grey toward the base. Vary the size and roundness. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
 
 ## 9. Painted highlands (`biomes/paintedhighlands`, planned 2026-10-23)
 

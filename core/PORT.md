@@ -127,6 +127,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/39-core-cavern.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/40-core-basin.js` | 11.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/41-core-scour.js` | 13.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `terrain/42-core-frost.js` | 14.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KFROST: the periglacial landforms (patterned ground, alases, pingos, aufeis, solifluction lobes, rock glaciers); plain maths on KRAND, no trig; test-frost.js |
 | `walk/20-core-walk.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |
 | `walk/box/24-core-walk-box.js` | 5.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `water/20-core-water.js` | 27.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WATER: the six kinds, the CPU twins, ride, export; becomes a Water autoload (core/water/README.md, "Godot") |

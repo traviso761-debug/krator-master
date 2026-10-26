@@ -1,0 +1,5 @@
+{
+ "name": "taiga",
+ "out": "nwouterwall-taiga.html",
+ "note": "Station 2 (PLAN.md section 7): the taiga and alases at px 218,190 on scale model 4.22 (region/station-taiga.json). Its 44s-host-site.js replaces src/'s: the site, its relief and its landforms (five alases, a pingo, ice-wedge polygons); no stream, no fields."
+}
