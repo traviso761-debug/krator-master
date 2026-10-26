@@ -121,6 +121,17 @@ ISLE.weekChecks = function (w1, w2, o) {
     eat.push({ s: s, g: g, per: ppl && days ? bought / ppl / days : 0, plan: DT[s][g], bought: bought, landed: landed }); }); });
   ok('the other town\'s foods eaten near their ration and landed by the canoes', eat.every(function (x) { return x.per >= 0.5 * x.plan && x.per <= 2 * x.plan && x.landed >= 0.75 * x.bought; }),
     eat.map(function (x) { return x.s + ' ' + x.g + ' ' + x.per.toFixed(3) + ' a person a day (ration ' + x.plan + '), ' + x.bought + ' bought, ' + x.landed + ' landed'; }).join('; ') || 'none');
+  /* the households' restocking spread out (2026-10-26, core's `stagger` and the opening stores' spread): the food the
+     watched town's households buy a day, from its third day, varies by at most `wave` (its standard deviation over its
+     mean); in step, every house buying on the same morning, it swung by 0.7 on a three-day round */
+  var wv = o.wave == null ? 0.25 : o.wave, waves = [];
+  weeks.forEach(function (W) { var s = W.watched, D = [W.a].concat(W.days || []), fo = ISLE.SIM.towns[s].econ.foods, v = [];
+    var tot = function (x) { var n = 0; fo.forEach(function (g) { n += (x.towns[s].goods[g] || {}).bought || 0; }); return n; };
+    for (var i = 1; i < D.length; i++) if (Math.round(D[i].minute / 1440) - Math.round(W.a.minute / 1440) >= 3) v.push(tot(D[i]) - tot(D[i - 1]));
+    var m = v.reduce(function (p, c) { return p + c; }, 0) / Math.max(1, v.length), sd = Math.sqrt(v.reduce(function (p, c) { return p + (c - m) * (c - m); }, 0) / Math.max(1, v.length));
+    waves.push({ s: s, n: v.length, m: m, cv: m > 0 ? sd / m : 1 }); });
+  ok('the watched town\'s households buy their food steadily (a day\'s buying within ' + wv + ' of its mean, its standard deviation)', waves.every(function (x) { return x.n >= 2 && x.cv <= wv; }),
+    waves.map(function (x) { return x.s + ' ' + Math.round(x.m) + ' a day, ' + x.cv.toFixed(3) + ' over ' + x.n + ' days'; }).join('; '));
   /* the governor's regression checks (49), on the midnight snapshots: no good short after the second day; each good's
      stock steady (its mean day-to-day change at most `swing` of its mean, where it holds `swingMin` or more; not the
      goods the ships buy, drawn a thousand at a call); each town's food supply line (the governor's position) holding,

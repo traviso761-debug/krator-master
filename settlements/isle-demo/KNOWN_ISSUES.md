@@ -215,8 +215,11 @@
       first free hour's walk reached a shop after it closed, the errand went stale, and from day 13 about 370 meals a day
       were eaten from empty stores (the no-shortfall check missed it: the warehouses had the food). The staples shops and
       the market now stay open till 21:00; none since.
-- [ ] **The households restock on a three-day round,** in step, so the warehouses swing about 15% around their target
-      and the governor reads its demand over three whole days. Staggered restocking would smooth both.
+- [x] **The households restocked on a three-day round, in step** (the warehouses swung about 16% a day, the food
+      bought a day by 0.7 of its mean). Since 2026-10-26 each house buys 1.5 to 4.5 days of food (core's `items.stagger`,
+      0.5, a hash of the home) and the stores open with 1 to 3.5 days (the same mean as before, 2.25): the food bought a day varies by about 0.18 in
+      each town over ten days, the warehouses about 7% a day; a week-test check holds the watched town's buying within 0.25. The
+      governor still reads its demand over three whole days (`govern.window`), which could now be shortened.
 - [ ] **The ships are timers, not vessels:** they buy on their days at the landing; the moored foreign vessels are drawn
       as before, and no ship comes or goes. Their goods leave the map (exported) for nothing in return yet: no money.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
@@ -241,6 +244,6 @@
       (a hinterland village, core/hamlet H5) brings ore; Kautoa's weavers make nothing (the cotton is Valapo's, and the
       garments come by canoe).
 - [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
-- [ ] **The second morning's buying wave.** Every house opens with 1.5 to 3 days of food, so on day 2 most of them buy at
+- [x] **The second morning's buying wave** (gone since 2026-10-26: the stores open with 1 to 3.5 days). Every house opened with 1.5 to 3 days of food, so on day 2 most of them bought at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.

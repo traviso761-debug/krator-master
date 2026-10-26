@@ -31,7 +31,7 @@ ISLE.simItemsInit = function () {
   Object.keys(I.treats || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.treats[k]); });   /* the treats */
   var IT = SIM.items({ kinds: kinds, free: T.sched.free, secPerMinute: T.clock.secPerMinute, mins: I.mins, cool: I.cool, low: I.low, days: I.days,
     meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: I.hurt || 0, heal: I.heal, lack: I.lack || 0, treat: I.treat || null,
-    retry: I.tools ? 60 : 0 });   /* a tool errand that failed, asked again every hour of work (core's retry) */
+    retry: I.tools ? 60 : 0, stagger: I.stagger || 0 });   /* each house buys 1.5 to 4.5 days of food (a hash): the rounds drift apart */   /* a tool errand that failed, asked again every hour of work (core's retry) */
   return IT;
 };
 ISLE.simHouseholds = function (TS, places, foods) {

@@ -819,6 +819,18 @@ function world(seed){
  ok('expect: a load of rice sails to Valapo before anyone there wanted it (3 days of its 100 a day: '+(X.imported.rice||0)+')',X.imported.rice===300,!(X.imported.rice>0));
  ok('without it the line carries none',!(N.imported.rice>0),N.imported.rice>0);}
 
+// the stagger (items.stagger): each household buys days x (1 +- stagger) of food by a hash of its home, so the rounds
+// drift apart; without it every house buys the same days
+{const run=(st)=>{const {S}=world(167);
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'stall',kind:'shop',x:50,z:0,activities:{BUY:4},open:[0,24]});
+   S.economy({goods:{corn:{}},window:1});S.store('shed',{kind:'warehouse'});S.R.place.shed.stock={corn:100000};
+   S.items({kinds:{corn:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,days:3,low:1,stagger:st});S.shop('stall',['corn']);
+   const got=[];for(let i=0;i<20;i++){S.place({id:'h'+i,kind:'home',x:i,z:0,activities:{SLEEP:4}});const H=S.R.place['h'+i];H.people=5;H.store={};S.itemsAbstractHome(H,1,null,5);got.push(H.store.corn);}
+   return got;};
+ const A=run(0.5),B=run(0);
+ ok('stagger: twenty homes buy between 1.5 and 4.5 days of food, no two rounds alike ('+Math.min(...A)+'-'+Math.max(...A)+' servings)',Math.min(...A)>=30&&Math.max(...A)<=90&&new Set(A).size>=10,new Set(A).size===1);
+ ok('without it every home buys three days (60 servings)',B.every(x=>x===60),!B.every(x=>x===60));}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

@@ -199,7 +199,7 @@ ISLE.TUNE.sim = {
       shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
       weaver: ['shirt', 'wrap', 'mat', 'sarong', 'sun hat', 'net'], workshop: ['sandal', 'stone tool', 'necklace'], smithy: ['cuirass'], potter: ['pot', 'cookpot', 'lamp'], tavern: ['kava bowl'],
       dockyard: ['wood tool', 'club'], fishdock: ['net'], healer: ['poultice'] },
-    meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
+    meals: 2, perMeal: 2, low: 1, days: 3, stagger: 0.5, mins: 15, cool: 120, storeDays: [1, 3.5], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
