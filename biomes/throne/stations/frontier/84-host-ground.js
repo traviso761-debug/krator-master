@@ -68,10 +68,10 @@ _mark('ground');
 // ---------------------------------------------------------------- the streams' water (the sea is 89w-host-sea.js)
 // 2026-10-20 (core/water migration, phase 3): the sea (a grid of 220 x 220 cells with its own wave shader and foam) and the streams (ribbons of
 // MeshLambertMaterial every 6 m) are core/water's now. Each stream's water, run by run (it ends where the bed falls under the sea), is a
-// WATER.flow along the valley's centre line at streamLevel every 10 m, as wide as the old ribbon (2 w, w = 5 + 2 sin); STREAM_FLOWS
+// WATER.flow along the valley's centre line at streamLevel every 10 m, as wide as the old ribbon, 2 (5 + 2 sin(.03 u)) m, a per-point `width` array (6 to 14 m, breathing along the valley); STREAM_FLOWS
 // and the sea are drawn by 89w-host-sea.js. waterH (47) is unchanged: the CPU twin the checks read.
 const STREAM_FLOWS=[];
-VALLEYS.forEach(V=>{let run=[];const flush=()=>{if(run.length>2){if(run[0][2]<run[run.length-1][2])run.reverse();STREAM_FLOWS.push(WATER.flow({name:'A stream in a lahar valley',pts:run,width:10,speed:1.6}));}run=[];};
+VALLEYS.forEach(V=>{let run=[],ws=[];const flush=()=>{if(run.length>2){if(run[0][2]<run[run.length-1][2]){run.reverse();ws.reverse();}STREAM_FLOWS.push(WATER.flow({name:'A stream in a lahar valley',pts:run,width:ws,speed:1.6}));}run=[];ws=[];};
  for(let u=-1600;u<=3000;u+=10){const c=V.p+V.amp*Math.sin(u*V.f+V.ph),q=xzOf(u,c);if(Math.abs(q[0])>TERR.R*1.08||Math.abs(q[1])>TERR.R*1.08){flush();continue;}
-  const L=streamLevel(u,V);if(L<=SEA+.2){flush();continue;}run.push([q[0],q[1],L]);}
+  const L=streamLevel(u,V);if(L<=SEA+.2){flush();continue;}run.push([q[0],q[1],L]);ws.push(2*(5+2*Math.sin(u*.03)));}
  flush();});

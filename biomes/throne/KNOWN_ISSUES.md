@@ -12,6 +12,7 @@
 - [ ] **The kipuka's hyperjungle is the kit as it is.** Its hypertrees are its own species at their own heights
   (150-300 m); the windward station did not tune them down. On this page they take the library barks (the hyperjungle's
   opt-in pack, `station.json` 'packs') with their limbs on the trunk's own map; the hyperjungle's own page does not.
+  Stays open (2026-10-25): owner decision (tune the hypertrees down for the windward station or not); the kit's own species heights.
 - [ ] **The frill tree's fins** stand close and steep (the Rift's spacing and pitch); from below it reads as a furred column.
 - [ ] **The standbys are this kit's own copies.** The frill-tree, the trumpet tree and the star aloe are drawn by this
   kit's builders, not the crater drylands' or the Rift's. In an open world where those kits are resident too, the
@@ -34,12 +35,15 @@
   same way (their `_lay` replaced by `THRONE.GLSL_LAY`).
 - [ ] **The frontier's people are not there yet.** The traps, trails, road and fields are records (`FRONTIER`, `ROAD`,
   `TRAILS`) for the life layer, but no colonist works a field and no native walks a trail. Zey'danin is an empty footprint.
+  Stays open (2026-10-25): needs the life layer (core/hamlet, the characters) and a design for who works where; not a station-local fix.
 - [ ] **The frontier's terraces** are cut into the heightfield (2.6 m risers) and faced with stones only within the
   cameras' mid range; farther out the risers are painted.
+  Stays open (2026-10-25): a design task (a stone-facing LOD across the mid range) with a triangle cost; station 3 has budget but no brief.
 - [ ] **The frontier's north flow is off the planted map** (2026-10-06). `47-host-land.js` lays it from (2700,-1900);
   all its ground falls past `TERR.R-150`, in the unplanted rim, so it gets no registered volume (`84-host-ground.js`
   counts only in-map cells) and the station shows one old flow, the southern headland. Move its source inward to bring
   it onto the map.
+  Stays open (2026-10-25): moving the source inward moves the flow's placement and its registered volumes, which the owner has not asked for.
 - [ ] **The geyser isle is ideal type and small** (2026-10-06): ~4 km across where the scale model's isles are 20-35 km
   domes, so the whole isle and its beaches fit the page (the owner wanted the beach). An open world would put the basin on
   a big isle's crown and the beaches 10-17 km away.
@@ -64,6 +68,7 @@
 - [ ] **The savanna's parasol caps are heavy** (2026-10-06): the gill-parasols' and stilt parasols' discs and gills are dense
   lathes, ~10M of its ~17M triangles, so their woods are thinner than they might be. A lighter cap far off would let them
   thicken. No grazers (the fauna kit) and no people yet.
+  Stays open (2026-10-25): a lighter far cap is a kit change in the biome core's parasol builders (shared with other stations), plus fauna and people are separate kits.
 - [ ] **The ash desert's storm is particles and fog** (2026-10-06): the shared atmosphere's ash weather (flecks, streaks,
   veils, warm lightning) and the host's brown-out; nothing settles on the ground or the trees as it falls, and the dunes
   do not move. No grazers, no rats or birds yet (the fauna kit).
@@ -174,3 +179,7 @@
       to build (390 k cells; `_t.sea0` -> `_t.sea`). EXPORT_STATIONS: the frontier's box moved from [-560, -400, -260, -100] (no water) to
       [-900, -700, -260, -100] (the first lahar valley's stream and the old terraces: 67 sets, 15 buckets), profile + `water` (9 of 9 met). This is the template for stations 4 and 5
       (an open sea with a shore grid, streams as flows). Gaps: `core/water/README.md`, "Open gaps (phase 3, Throne frontier/ringisles)".
+      **2026-10-25 (core/water options, 2026-10-21): the three workarounds are gone.** Rapids: kipuka and frontier give each flow its own band (`drawFlow({rapids:[.1,.3]})`), the
+      page-wide `WATER.PRESETS.flow.rapids` write is deleted. Savanna: the sixteen pools take `pick: true`, the invisible flat discs are gone (`registered-volumes-non-empty` is read from the
+      pools themselves). Frontier: the streams' `width` is the old ribbon's profile again, 2 (5 + 2 sin(.03 u)) m, a per-point array (6 to 14 m, breathing along the valley), not a flat 10 m;
+      the sea's `pick: true` replaced its plane. The kipuka's ribbon was always a flat 2.3 w (the old code offset by a constant S.w * 1.15), so its width stays a number.
