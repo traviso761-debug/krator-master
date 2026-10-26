@@ -84,6 +84,19 @@ The shared sky (`core/atmos/sky`, `89s-host-sky.js`) at px 444,414 with the mode
 guilin's borrowed hyperjungle dome and necanyons' night; the clouds' shade on every lit material; the weather
 (`ATMOS.bindWeather`: wet, the base five modes, the ground wetting in the rain), starting clear.
 
-## Numbers (verify.py --assert)
+## Numbers (verify.py --assert on the GPU, 2026-10-26)
 
-See the end of this file once the first verify is written up.
+| | |
+|---|---|
+| Error panel | clean |
+| Build | ~10 s (bake 11.7 s from load) |
+| Draw calls | 156-160 over 18 views (budget 220; guilin's were 37-43: nwbay's variants, KNOWN_ISSUES.md) |
+| Triangles | 7.4-8.3 M in view (kit trees 3.84 M, floor 1.37 M, nwbay's 1.12 M, cliffs 0.57 M) |
+| Instances | 631k |
+| Registered volumes | 15.6k |
+| Borrowed trees | 2,015 (prism gum 94, ironbark 94, fan-crown 107, cliff fig 85, flame-crown 19, crown fern 491, pandan 596, lotus trumpet 55, pipe reed 474) |
+| Trees on the rock | 6,973, every one with its roots on its top |
+| Paddies | 1,308 (flooded 280, young 328, green 428, ripe 272) |
+
+Every host check passes and all 17 negatives fail as they must; `python tools/check_core_use.py biomes/k-guilin` reports no
+finding; the port lint is clean.
