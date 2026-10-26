@@ -5,7 +5,7 @@
 // it, HONEYCOMB (tafoni: cells and lattices eaten into the faces), a vertex weight from the face's height and a noise; the tops the
 // granite alone. Each body is registered and an obstacle; the plants keep off it.
 const ROCK=(function(){const L=[];let n=0;
- const ground=(x,z)=>terrainH(x,z),clear=(x,z,r)=>!L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+r);
+ const ground=(x,z)=>terrainH(x,z),clear=(x,z,r)=>!L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+r)&&!GNAMMA.some(G=>Math.hypot(G.x-x,G.z-z)<G.r*1.6+r);   /* off the gnamma pools */
  KOPJES.forEach(K=>{KSTACKS.cluster({id:'tors'+K.i,seed:4601+K.i,c:[K.x,K.z],rad:K.r*.55,n:Math.round(K.r/14),H:[6,18],r:[3.5,8],gap:5,
   kinds:{balanced:.55,spire:.45},plates:[2.2,4.2],platesShare:.9,crown:[.85,1],taper:[.02,.18],lean:[0,.08],e:[1,1.5],
   ground:(x,z)=>ground(x,z)-.4,accept:(x,z,r)=>clear(x,z,r)&&domeAt(K,x,z)>K.h*.45}).forEach(B=>{B.name=B.kind==='balanced'?'A balanced tor (granite blocks weathered round along their joints)':'A tor (a pile of granite blocks)';L.push(B);});});
@@ -32,7 +32,7 @@ const ROCK=(function(){const L=[];let n=0;
  if(mTor){mat.onBeforeCompile=sh=>{sh.uniforms.uHon={value:mHon};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aT;varying float vT;varying vec2 vRU;').replace('#include <uv_vertex>','#include <uv_vertex>\nvT=aT;vRU=uv;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uHon;varying float vT;varying vec2 vRU;')
-   .replace('#include <map_fragment>','{vec4 t=texture2D(map,vRU/'+sT.toFixed(2)+');t=mapTexelToLinear(t);'+(mHon?'vec3 h=pow(texture2D(uHon,vRU/'+sH.toFixed(2)+').rgb,vec3(2.2))/0.48;t.rgb=mix(t.rgb,t.rgb*h,vT);':'')+'diffuseColor*=t;}');};
+   .replace('#include <map_fragment>','{vec4 t=texture2D(map,vRU/'+sT.toFixed(2)+');t=mapTexelToLinear(t);'+(mHon?'vec3 h=pow(texture2D(uHon,vRU/'+sH.toFixed(2)+').rgb,vec3(2.2))/0.48;t.rgb=mix(t.rgb,t.rgb*h*h*1.1,vT);   /* squared: the cells read dark, the rims pale */':'')+'diffuseColor*=t;}');};
   mat.customProgramCacheKey=()=>'steppe-rock';}
  const me=new THREE.Mesh(g,mat);me.userData.host=true;me.userData.inspectLabel='Granite (the kopjes\' tors: lichened, honeycombed where the weather hollowed it)';
  me.userData.probePoints=ROCK.map(B=>[B.x,B.y0+1,B.z]).flat();scene.add(me);})();

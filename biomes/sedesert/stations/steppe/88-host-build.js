@@ -8,7 +8,7 @@ window._biome=null;
  // the discs: every lattice point of each field, kept off the rock, the wadi and the pan
  const discs=fairyDiscs().filter(D=>FIELD.wadi(D.x,D.z)<.2&&FIELD.pan(D.x,D.z)<.2&&FIELD.kopje(D.x,D.z)<.1);
  const near=(x,z)=>{const D=fairyAt(x,z);return D&&D.u<1?D:null;};
- SEDESERT.STEPPE_HOST={discs,wind:WIND,insideDisc:near};
+ SEDESERT.STEPPE_HOST={discs,wind:WIND,insideDisc:near,gnamma:GNAMMA.map(G=>({x:G.x,z:G.z,r:G.r,level:G.level}))};
  const fauna=(kind,x,z)=>kind!=='deer'&&FIELD.kopje(x,z)<.5;
  try{window._biome=SEDESERT.build({R:TERR.R-150,quality:q,fauna});}catch(e){reportErr('biome: '+e.stack);}
  _mark('biome');

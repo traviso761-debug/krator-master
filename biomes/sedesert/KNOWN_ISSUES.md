@@ -6,9 +6,12 @@ Read before changing anything here. `build.py` prints the open count.
 
 ### The steppe fringe (station 3, `stations/steppe/`, 2026-10-26)
 - [ ] **The site is provisional** (px ~800,690): the steppe has not been placed on the scale model; check it when the model is surveyed.
-- [ ] **The sun-dials turn only while frames run**: a hidden tab's page does not tick, so a check run on it reads the last pose
-      (`the sun-dials face the sun` is honest only on a page that draws).
-- [ ] **No gnamma pools** in the kopjes' rock yet; the whistle reeds are silent; the twoleaf and the rock fig are vertex-coloured.
+- [x] (2026-10-26) **The sun-dials turn only while frames run**: a hidden tab's page does not tick. The check now poses every dial
+      to the sun first (`SEDESERT.STEPPE_MOTION.pose()`), so it holds on a page that is not drawing.
+- [x] (2026-10-26) **Gnamma pools**: a few rock basins to each kopje's upper flank (hashed per dome), cut into the ground, holding still
+      water, moss and ferns round their rims; the tors keep off them. The honeycomb on the tors is squared in the shader so its
+      cells read.
+- [ ] **The whistle reeds are silent**; the twoleaf and the rock fig are vertex-coloured (no cards of their own).
 - [ ] **The loose lanterns loop**: each rolls its run down the wind and shrinks away at its end to start again.
 
 ### Mantis's pocket (station 2b, `stations/mantis/`, 2026-10-26)
@@ -19,7 +22,9 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **The streams are 8-12 m wide** (narrower ones fell under the ground field's 5 m step: their beds came out over the water).
 - [ ] **The ground takes six of the Bowl's nine layers** here (`STATION.groundLayers`), with the two green ones, to stay inside a
       fragment shader's 16 texture units.
-- [ ] **The forest floor is thin under the figs** away from the springs; the floor pass could fill it further within the 21M budget.
+- [x] (2026-10-26) **The forest floor was thin under the figs**: an understorey pass under the canopy (croton, kalanchoe, aloes, ferns
+      where it is wetter), close and mid range; 20.6M triangles. The pocket's floor tests the water as well as the mask (they part
+      at a pool's rim: two ferns stood in a spring).
 
 ### The Bowl (station 2, `stations/bowl/`, 2026-10-26)
 - [ ] **The rings are compressed** (the owner, 2026-10-26): the ochre rim, the flat, the halo and the kaluts each a few hundred

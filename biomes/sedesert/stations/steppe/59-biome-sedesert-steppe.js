@@ -127,16 +127,19 @@ SEDESERT.steppeMotion=function(dials,loose,wind){const M4=new T3.Matrix4(),q=new
  const DM=dials.length?BIO.dynamic('dialdisc',DIAL_GEO,MS.vcol,dials.length,{label:'Sun-dials (each turns to face the sun)'}):null;
  const LM=loose.length?BIO.dynamic('lanternloose',LANT_GEO,MS.vcol,loose.length,{label:'Drift lanterns (loose, rolling on the wind)'}):null;
  let last=-1e9,first=true;const W=wind||[0,1];   /* the host's wind, the way it blows */
- BIO.tick((dt,t)=>{const now=performance.now()/1000;   /* the dials turn on the wall clock, three times a second (a tick may hand no dt) */
-  if(DM&&(now-last>.3||first)){last=now;const S=BIO.SUN.value;const up=S?S.y:1,night=smooth(.05,-.08,up);
+ /* pose(): every dial faced to the sky's sun now (the tick does it three times a second; a check calls it first, so a page that is
+    not drawing still measures the pose it would draw) */
+ const pose=()=>{if(!DM)return;const S=BIO.SUN.value;const up=S?S.y:1,night=smooth(.05,-.08,up);
    dials.forEach((D,i)=>{dir.set(S?S.x:0,S?Math.max(.08,S.y):1,S?S.z:0).normalize();
     /* a little lag and a wobble each, so a drift is not a parade */dir.x+=.12*Math.sin(D.ph);dir.z+=.12*Math.cos(D.ph*1.3);dir.normalize();
     if(night>0)dir.lerp(new T3.Vector3(Math.cos(D.ph),-.6,Math.sin(D.ph)),night).normalize();
-    q.setFromUnitVectors(fwd,dir);const k=1-.75*night;s.set(D.r*k,D.r*(.25+.75*(1-night)),D.r);p.set(D.x,D.y,D.z);M4.compose(p,q,s);DM.setMatrixAt(i,M4);});DM.instanceMatrix.needsUpdate=true;}
+    q.setFromUnitVectors(fwd,dir);const k=1-.75*night;s.set(D.r*k,D.r*(.25+.75*(1-night)),D.r);p.set(D.x,D.y,D.z);M4.compose(p,q,s);DM.setMatrixAt(i,M4);});DM.instanceMatrix.needsUpdate=true;};
+ BIO.tick((dt,t)=>{const now=performance.now()/1000;   /* the dials turn on the wall clock, three times a second (a tick may hand no dt) */
+  if(DM&&(now-last>.3||first)){last=now;pose();}
   if(LM){const tt=t!=null?t:BIO.WIND.t.value;loose.forEach((L,i)=>{const u=(tt*L.v+L.ph)%L.len,f=smooth(0,6,u)*smooth(L.len,L.len-6,u),x=L.x+W[0]*u,z=L.z+W[1]*u,y=BIO.terrainH(x,z)+L.r*(1+.4*Math.abs(Math.sin(u*.9)));
     e.set(u/L.r*W[1],0,-u/L.r*W[0]);q.setFromEuler(e);s.set(L.r*f,L.r*1.08*f,L.r*f);p.set(x,y,z);M4.compose(p,q,s);LM.setMatrixAt(i,M4);});LM.instanceMatrix.needsUpdate=true;}
   first=false;});
- return{dials:DM,loose:LM};};
+ return SEDESERT.STEPPE_MOTION={dials:DM,loose:LM,pose};};
 // ---------------------------------------------------------------- the passes (they replace the others)
 const lu=(x,z)=>F('lush',x,z)*(1-F('circles',x,z)*.6),kp=(x,z)=>F('kopje',x,z),wd=(x,z)=>F('wadi',x,z),eg=(x,z)=>F('edge',x,z),pv=(x,z)=>F('pave',x,z);
 SEDESERT.PASSES=[

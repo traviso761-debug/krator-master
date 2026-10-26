@@ -12,6 +12,7 @@ const VIEWS={
  'A kopje and its tors':look(K0.x+K0.r*1.6,K0.z+K0.r*.9,3,K0.x,K0.z,K0.h*.8),
  'A balanced tor':[TOR.x+TOR.R*3.2,TOR.y0+(TOR.top-TOR.y0)*.4,TOR.z+TOR.R*2.4,TOR.x,TOR.y0+(TOR.top-TOR.y0)*.6,TOR.z],
  'Honeycomb in the granite':[TOR.x+TOR.R*1.6,Math.max(gh(TOR.x+TOR.R*1.6,TOR.z+TOR.R*1.2,1.7),TOR.y0+1.5),TOR.z+TOR.R*1.2,TOR.x,TOR.y0+(TOR.top-TOR.y0)*.35,TOR.z],
+ 'A gnamma pool':(G=>[G.x+G.r*2.6,G.level+3.5,G.z+G.r*2.2,G.x,G.level,G.z])(GNAMMA[0]),
  'The pan':look(PAN.x+PAN.r*1.3,PAN.z+PAN.r*.6,3,PAN.x,PAN.z,0),
  'Old twoleaf on the pavement':look(-2050,60,2.4,-2150,-40,0),
  'Umbrella thorns along the wadi':look(CHAN[0].pts[150][0]+60,CHAN[0].pts[150][1]+50,2.2,CHAN[0].pts[130][0],CHAN[0].pts[130][1],4),
@@ -30,7 +31,7 @@ function rareCheck(N,dials){const low=Object.keys(RARE).filter(k=>!((N[k]||0)>=R
  const ok=!low.length&&(st.rockfig||0)>=8&&(st.pebbles||0)>=50&&(dials||0)>=200;
  return{ok,detail:Object.keys(RARE).map(k=>k+' '+(N[k]||0)).join(', ')+', rock figs '+(st.rockfig||0)+', pebble colonies '+(st.pebbles||0)+', sun-dials '+(dials||0)+(low.length?'; TOO FEW: '+low.join(', '):'')};}
 // the sun-dials face the sun: the mean angle between a disc's face and the sun, by day (the disc's +z)
-function dialCheck(M){if(!M)return{ok:false,detail:'no sun-dials'};const S=BIO.SUN.value;if(!S||S.y<.1)return{ok:true,detail:'the sun is down: the dials fold'};
+function dialCheck(M){if(!M)return{ok:false,detail:'no sun-dials'};if(SEDESERT.STEPPE_MOTION)SEDESERT.STEPPE_MOTION.pose();const S=BIO.SUN.value;if(!S||S.y<.1)return{ok:true,detail:'the sun is down: the dials fold'};
  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),p=new THREE.Vector3(),s=new THREE.Vector3(),f=new THREE.Vector3();let sum=0,n=Math.min(M.count,300);
  for(let i=0;i<n;i++){M.getMatrixAt(i,m);m.decompose(p,q,s);f.set(0,0,1).applyQuaternion(q);sum+=Math.acos(clamp(f.dot(S),-1,1));}const deg=sum/n*57.3;
  return{ok:deg<30,detail:'mean '+deg.toFixed(1)+' degrees between a disc\'s face and the sun ('+n+' dials)'};}
