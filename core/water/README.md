@@ -51,11 +51,13 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `51-core-water-kinds.js` | [draw] + [G shader] | `WATER.drawFlow`, `drawFall`, `drawStill`, `stillMaterial`, `wetGround` and their GLSL (`flowGLSL`, `fallGLSL`, `stillGLSL`, `wetChunk`) |
 | `geyser/52-core-water-geyser.js` | [G data] | `WATER.spring`, `WATER.geyser`: hot pools with a temperature and mineral colour ramp and geyser columns on a period/duration cycle, their CPU twins (`S.colourAt`, `S.state(t)`), the ramp and the cycle as GLSL text, the particles as plain arrays, export records. Optional, and in the SUBFOLDER `core/water/geyser/` on purpose: many builds pool every numbered `*.js` of `core/water` with `os.listdir`, so a new top-level fragment would leak into all of them. A build opts in by path (`biomes/geyser/build.py`: `CORE_WATER_GEYSER`). Needs core/rand (`KRAND`) for particles and phase jitter |
 | `geyser/52b-core-water-geyser-draw.js` | [draw] + [G shader] | `WATER.drawSpring` (the banded disc), `WATER.drawGeyser` (one Points per column), `WATER.thermalUniforms` / `thermalStep` |
-| `geyser/test-geyser.js` | | `node core/water/geyser/test-geyser.js [--golden]`: the ramp and cycle GLSL run as text against the twins, the Old Kettle's schedule, determinism, export; `--golden` (`node core/water/geyser/test-geyser.js --golden`) writes `godot/tests/water/geyser_golden.json` |
+| `geyser/test-geyser.js` | | `node core/water/geyser/test-geyser.js [--golden]`: the ramp and cycle GLSL run as text against the twins, the Old Kettle's schedule, determinism, export; `--golden` (`node core/water/geyser/test-geyser.js --golden`) writes `godot/tests/water/geyser_golden.json` |
 | `ext/53-core-water-terraces.js` | [G data] | `WATER.terraces` (a stepped river: a still pool per tread, a fall per riser, linked: `T.heightAt`, `at`, `flowAt`, `export`) and `WATER.mergedFalls` (the arrays of many falls in one). Optional, in the SUBFOLDER `core/water/ext/` for the same reason as `geyser/` (a build opts in by path) |
 | `ext/53b-core-water-terraces-draw.js` | [draw] + [G shader] | `WATER.drawFalls` (two meshes for any number of falls), `WATER.drawPools` (one mesh for many pools), `WATER.drawTerraces`, `WATER.fallGLSLMerged` |
 | `test-gaps.js` | | `node core/water/test-gaps.js`: every new option's default is the old output (snapshots of the shaders' text, the meshes, the materials and the export hashed against `test-gaps.golden.json`, taken from the code of 2026-10-20) and each option, with its negative control (the GLSL against the twins for them is at the end of `test-water.js`) |
 | `test-water.js` | | `node core/water/test-water.js`: every check with a negative control; runs the shaders' own GLSL in a small interpreter against the twins |
+| `test-rebuild.js` | | `node core/water/test-rebuild.js`: the final rebuild's items (2026-10-26, "Final rebuild items" below), each against its twin with a negative |
+| `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
 
 ## Taking it into a build
 
@@ -466,3 +468,45 @@ Every option below reproduces the previous output exactly when it is not given (
 **`WATER.open({bed})` reads the ground at cell centres** (`bed(x, z)` at `box0 + (i + .5) cell`, for `bakeBed` and `shoreGrid` alike), so a page that already holds the ground in an array at that cell hands `bed` a lookup instead of a second sweep.
 
 **What did not ship.** (1) A tiled shore grid (several textures chosen per fragment) is not written: the box is still one grid, and the answers are the shore window (`shore.window`, which a camera-following host moves with `shoreJob`), `seeds: 'edge'` for finding the sea, and the staged job so a load does not stall. A page whose water is bigger than a few hundred thousand cells at its cell size still has to window it. (2) A frozen-water kind is out of scope (recorded here only). (3) Forks and junctions in a flow record, a flow holding a level over a rising bed, and a far sea under a near one with a rectangular hole stay as the phase 3 entries say. (4) Godot: `KWater` is the twin of `rapids`, `foot`/`run`, `gradient`, `tint` and the edge seeds (`godot/tests/water/gaps_test.gd`, golden `node godot/tools/water_gaps_golden.js`); `water_import.gd` ignores the new fields (it draws what it drew), and does not draw the tint field, the gradient, the terraces (their pools and falls are ordinary `still` and `fall` records and are drawn as such) or the merged meshes (a port builds its own batching).
+
+## Final rebuild items (2026-10-26: W1 to W6, R9; `node core/water/test-rebuild.js`)
+
+All opt-in: a page that passes none of these options draws what it drew (`test-gaps.js`'s snapshot of every default still
+passes). One default changed on purpose: **`drawPools` keeps a pool's own gradient** (`WATER.still({gradient})`); before,
+it dropped it. Only ehighlands' bog pools declare one (they drew in the material's white; now in their black-blue).
+
+| Item | Call | What |
+|---|---|---|
+| W1 clean curtain sides | `drawFall`/`drawFalls({margin, edge})`, `W.curtain(S, {margin})`, `W.curtainSide`; `drawFlow({chute})` | `margin`: m a side the curtain runs past the lip (the river ribbon's own margin), u from -margin/lipW to 1 + margin/lipW, the sides faded by metres from the lip's edge (-margin to `edge`, default 8% of the lip) as the ribbon fades under its banks; recorded in the fall's `curtain` record. `chute` (a slope, fallsOf's `steep`): the ribbon gives way down the chutes where the curtains draw the water, so its sheet cut by the banks does not show beside them |
+| W2 spray to the drop | `drawFall`/`drawFalls({spray: 'drop' or {drop: true, every, max, column, top, layer}})`, `WATER.fallSpray(S, o)` | core/atmos `spray` emitters across the curtain's foot every 6 m and in layers up a mist column min(0.4 drop, 30) m tall, pushed downstream, at most 24 a fall (a 70 m fall: 21; a 6 m fall: 4 at one height; under 3 m: 1). No random draw |
+| W3 a fall on a sloped face | `WATER.fall({foot, face, faceLift, faceN})` | `face`: true (a straight face lip to foot), a function (x, z) -> ground (sampled at faceN + 1 points, faceLift m over it, never rising), or the drops (the export's `face`). The curtain follows it instead of arcing a quarter of the drop off it; its normal is square to the face |
+| W4 pools' gradient | `drawPools(list, {gradient, tint})`, `W.poolGLSL`, `W.gradientOf` | each pool's own gradient as vertex attributes (at, 1/radius, power, two colours), `o.gradient` for the pools without; oidong's four pools are one call now |
+| W5 GPU riding | `WATER.rideGLSL(S)`, `WATER.rideOn(material, S, {weight, scaleY})` | the vertex chunk `wtrRide(p) = wtrHeight(p) - wtrLevel` (twin: `S.heightAt - S.levelAt`, 5e-12 m), hooked after the page's own `onBeforeCompile` (either order): each instance heaves by the swell at its centre, times a per-instance weight attribute |
+| R9 wetness | `WATER.wetGround(mat, {rain, porosity, puddles, ripples})`, `W.wetLook`, `W.WET` | Lagarde's porous model: albedo x (1 - 0.65 porosity wet), roughness x mix(1, 0.4, wet); standing water darker again, roughness 0.03, its normal flat and ringed; on a material without an environment map (a Lambert ground) a Fresnel sky sheen (`W.WET.sky` x the daylight) in the puddles. Idempotent: a second call fills in only the options the first left out (bindWeather's `{rain: true}` after the page's own) |
+| R9 puddles | `WATER.hollows({h, box, cell, blur, depth, slope, fill, soft})`, `W.hollowAt`, `W.puddleAt`, `W.puddleGLSL` | a hollow mask baked from the ground's height (its blur minus it, over `depth`, times flatness: no puddle steeper than 6%), one byte a cell (512 x 512 = 256 KB); the puddle's line drops from the top of the hollow as W.wet climbs (1 - wet x fill), so the deepest fill first and drain last |
+| R9 rain rings | `WATER.rainRippleGLSL()`, `W.rainRipple`, `W.rainNormal`, `W.RIPPLE`; `rain: true` on `drawStill`, `stillMaterial`, `drawPools`, `drawFlow`, `draw` | two octaves of hashed cells (W.hash2, no sin hash), each an expanding ring on its own phase, active where the live rain (`ATMOS.U.rain`) is over the cell's threshold; on puddles (wetGround) and on any water surface given `rain: true` |
+| R9 rain cover | `WATER.coverGLSL()`, `W.rainChunk(u)` | where core/atmos defines `ATMOS.rainCoverGLSL()` (a chunk with `float atmRainOpen(vec3 p)`: 1 open sky, 0 under cover) and `ATMOS.rainCoverUniforms(u)`, the rain's wetness, the puddles and the rings are multiplied by it; until then `wtrOpen` is 1 (the hook is in place; R10 fills it) |
+| W6 plume | `WATER.geyser({plume})`, `WATER.plumeOf`, `W.plumeDensity`, `W.plumeBox`, `WATER.drawPlume(S, o)` (geyser/) | the steam over a geyser as a soft volume: one box per geyser raymarched (12 steps) through a leaning, widening column times a drifting value noise, as thick as the cycle's steam (`stm`), lit by the daylight, fogged; front faces, back faces from inside. The export's geyser record carries `plume` with its box (Godot: a FogVolume of that box, density `W.plumeDensity`) |
+
+**Adopting it** (the exact lines; the final rebuild rolls these out):
+
+- Falls under a river with a ribbon margin `m`: `WATER.drawFalls(FALLS, {..., margin: m, spray: 'drop'})` (or `drawFall`), and
+  `WATER.drawFlow(RIVER, {..., chute: FALL_OPT.steep})` with the `steep` the page gave `fallsOf`. swbay: margin 1.2, chute .3.
+- A fall down a face the page has the ground for: `WATER.fall({..., foot, fit: true, face: terrainH, faceLift: .5})`. oidong.
+- Many pools: `WATER.drawPools(STILLS, {..., gradient: {centre, rim, power}})` (the pools' own gradients are kept anyway).
+  A build lists `core/water/ext/53-core-water-terraces.js` and `53b-core-water-terraces-draw.js` by path (biomes/oidong/build.py).
+- Floaters: `WATER.rideOn(material, SURFACE, {weight: 'aBob'})` after giving the instanced geometry a per-instance float
+  attribute `aBob` (1 on the surface, its own damping elsewhere, 0 off the water). eastabyss.
+- A ground that wets: before `ATMOS.bindWeather`, `const H=WATER.hollows({h: groundOrTerrainH, box, cell: size/512, blur: 30, depth: .6});`
+  `WATER.wetGround(MAT_GROUND, {rain: true, porosity: .8, puddles: H});` and `rain: true` on the page's water drawings. necanyons.
+- Geysers: `WATER.drawPlume(S, Object.assign({}, WOPT, {scene, plume: {lean: [.12, -.06]}}))` for the columns (biomes/geyser 65).
+
+**Godot.** `KWater` (godot/krator/water.gd) is the twin of the fall's `face` (curtain_at, curtain_normal), the curtain's
+`margin` (curtain) and side fade (curtain_side), `fall_spray`, `rain_ripple`/`rain_normal`, `hollow_at`/`puddle_at` and
+`wet_look` (W.RIPPLE and W.WET are constants there too: they are not in the export's presets, so nothing a page exports
+moves): `godot/tests/water/rebuild_test.gd`, golden `node godot/tools/water_rebuild_golden.js`. `water_import.gd` widens and
+fades a curtain with a margin (`water_fall.gdshader`'s side_margin, side_edge, lip_w). Not yet in Godot: the pools'
+gradient attributes and `chute` in the importer (it draws pools one by one and the ribbon whole), the ride (a floater's
+vertex shader calls the library's height: the same `wtrHeight` maths), the puddle mask on the terrain shader (the record
+is plain data: an `Image.FORMAT_R8`), the rings as a `.gdshaderinc`, and the plume as a `FogVolume` (its record carries the
+box and the density's formula).

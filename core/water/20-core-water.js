@@ -206,20 +206,40 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   const la=S.lip[0],lb=S.lip[S.lip.length-1];S.lipW=Math.hypot(lb[0]-la[0],lb[1]-la[1]);
   S.spread=o.spread!=null?o.spread:W.PRESETS.fall?W.PRESETS.fall.spread*S.drop/100:0;
   const lx=S.lipW>0?(lb[0]-la[0])/S.lipW:0,lz=S.lipW>0?(lb[1]-la[1])/S.lipW:0;
+  // FACE (2026-10-26): the curtain FOLLOWS a sloped face from the lip to the foot instead of arcing through the air (a 70 m fall fitted to its foot
+  // arcs a quarter of its drop off a straight face half way down). o.face: true (a straight face from the lip to the foot), a function (x, z) -> the
+  // ground's height, or the drops themselves (an array, as the export carries them). It is sampled at o.faceN (24) + 1 points evenly along the run
+  // from the lip's middle, `faceLift` m (.3) over the ground, never rising (a running minimum) and never under the foot; the ends are the lip and the
+  // foot. S.face holds the drops from the lip (m, <= 0); null without one. Needs foot (the run); the streaks keep tFall.
+  S.face=null;
+  if(o.face&&S.foot&&S.run>0){const lift=o.faceLift==null?.3:o.faceLift,mx=(la[0]+lb[0])/2,mz=(la[1]+lb[1])/2,my=(la[2]+lb[2])/2,fy=S.foot[2]-my;
+   if(Array.isArray(o.face))S.face=o.face.map(v=>+v);
+   else{const N=o.faceN==null?24:o.faceN,d=[0];for(let i=1;i<=N;i++){const f=i/N,x=mx+S.dir[0]*S.run*f,z=mz+S.dir[1]*S.run*f;let v=i===N?fy:typeof o.face==='function'?o.face(x,z)+lift-my:fy*f;
+     v=Math.min(v,d[i-1]);d.push(Math.max(v,fy));}S.face=d;}}
+  if(S.face){
+   // the face's drop at fall fraction f (linear between its samples) and its slope (m of drop per unit f)
+   const D=S.face,N=D.length-1,seg=f=>Math.min(N-1,Math.floor(cl(f,0,1)*N)),faceY=f=>{const i=seg(f);return D[i]+(D[i+1]-D[i])*(cl(f,0,1)*N-i);},faceD=f=>{const i=seg(f);return(D[i+1]-D[i])*N;};
+   S.faceY=faceY;
+   S.curtainAt=(u,f)=>{const a=S.lip[0],b=S.lip[S.lip.length-1],q=(u*2-1)*S.spread*f,r=S.run*f;return[a[0]+(b[0]-a[0])*u+S.dir[0]*r+lx*q,a[2]+(b[2]-a[2])*u+faceY(f),a[1]+(b[1]-a[1])*u+S.dir[1]*r+lz*q];};
+   // across the lip x down the face, turned to face out and up
+   S.curtainNormal=f=>{const T=[S.dir[0]*S.run,faceD(f),S.dir[1]*S.run],n=[T[1]*lz,T[2]*lx-T[0]*lz,-T[1]*lx],m=Math.hypot(n[0],n[1],n[2])||1,sg=(n[0]*S.dir[0]+n[2]*S.dir[1]+n[1]*1e-6)<0?-1:1;
+    return[sg*n[0]/m,sg*n[1]/m,sg*n[2]/m];};
+   S.contains=()=>false;S.heightAt=()=>null;return add(S);}
   S.curtainAt=(u,f)=>{const a=S.lip[0],b=S.lip[S.lip.length-1],s=f*S.tFall,q=(u*2-1)*S.spread*f;return[a[0]+(b[0]-a[0])*u+S.dir[0]*S.speed*s+lx*q,a[2]+(b[2]-a[2])*u-G*s*s/2,a[1]+(b[1]-a[1])*u+S.dir[1]*S.speed*s+lz*q];};
   // the curtain's normal at fall fraction f: across the lip x along the arc, turned to face out (the way the water goes) and up
   S.curtainNormal=f=>{const s=f*S.tFall,T=[S.dir[0]*S.speed,-G*s,S.dir[1]*S.speed],n=[T[1]*lz-T[2]*0,T[2]*lx-T[0]*lz,T[0]*0-T[1]*lx],m=Math.hypot(n[0],n[1],n[2])||1,sg=(n[0]*S.dir[0]+n[2]*S.dir[1]+n[1]*1e-6)<0?-1:1;
    return[sg*n[0]/m,sg*n[1]/m,sg*n[2]/m];};
   S.contains=()=>false;S.heightAt=()=>null;return add(S);};
  // STILL: pools, fountains, troughs, cisterns, moats: a level over a box (or a polygon [[x,z],...])
+ // a still surface's gradient record from {centre, rim, power, at, radius} (W.still's own; drawPools' gradient option gives one to a pool without one)
+ W.gradientOf=(S,g)=>{const pp=S.poly||(S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:[[0,0]]);
+  const at=g.at||[pp.reduce((a,p)=>a+p[0],0)/pp.length,pp.reduce((a,p)=>a+p[1],0)/pp.length];
+  return{centre:g.centre,rim:g.rim,power:g.power==null?1:g.power,at,radius:g.radius==null?Math.max(1e-6,...pp.map(p=>Math.hypot(p[0]-at[0],p[1]-at[1]))):g.radius};};
  W.still=o=>{const S={kind:'still',name:o.name,level:o.level,bounds:o.bounds||null,poly:o.poly||null,fountain:o.fountain||null};
   S.contains=(x,z)=>{if(S.poly){let c=false;const P=S.poly;for(let i=0,j=P.length-1;i<P.length;j=i++)if((P[i][1]>z)!==(P[j][1]>z)&&x<(P[j][0]-P[i][0])*(z-P[i][1])/(P[j][1]-P[i][1])+P[i][0])c=!c;return c;}return inBox(S.bounds,x,z);};
   // gradient: {centre, rim (hex colours), power (1), at [x, z] (the vertex mean), radius (m: the farthest vertex)}: the colour runs from the middle
   // out as the drawing mixes it, t = (distance / radius)^power clamped to 0..1 (S.gradientT, the shader's wtrStillT); null without one
-  S.gradient=null;
-  if(o.gradient){const g=o.gradient,pp=S.poly||(S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:[[0,0]]);
-   const at=g.at||[pp.reduce((a,p)=>a+p[0],0)/pp.length,pp.reduce((a,p)=>a+p[1],0)/pp.length];
-   S.gradient={centre:g.centre,rim:g.rim,power:g.power==null?1:g.power,at,radius:g.radius==null?Math.max(1e-6,...pp.map(p=>Math.hypot(p[0]-at[0],p[1]-at[1]))):g.radius};}
+  S.gradient=o.gradient?W.gradientOf(S,o.gradient):null;
   S.gradientT=(x,z)=>{const g=S.gradient;return g?Math.pow(cl(Math.hypot(x-g.at[0],z-g.at[1])/g.radius,0,1),g.power):0;};
   S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];return add(S);};
  // WET (Phase 4): how wet the ground is, 0..1: the weather's W.wet (core/atmos 4-weather) when a build has it
@@ -252,7 +272,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,cellZ:S.mask.cellZ,nx:S.mask.nx,nz:S.mask.nz}}:{},
    S.tint?{tint:{x0:S.tint.x0,z0:S.tint.z0,cell:S.tint.cell,nx:S.tint.nx,nz:S.tint.nz}}:{},S.drawOpt?{draw:S.drawOpt}:{});
   else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{},S.rapids?{rapids:S.rapids}:{});
-  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{});
+  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{},S.face?{face:S.face}:{});
   else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{});
   else if(S.kind==='shore')Object.assign(o,{of:S.of.id,band:S.band});return o;})},W.groups.length?{groups:W.groups.map(g=>g.export())}:{});
  return W;})();

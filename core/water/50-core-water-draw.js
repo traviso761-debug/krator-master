@@ -123,6 +123,22 @@
    tx.generateMipmaps=false;tx.flipY=false;tx.needsUpdate=true;S.U.wtrBed={value:tx};}
   A.hook(t=>{S.U.wtrLevel.value=S.levelAt(t);});return S.U;};
  W.shaderOn=(S,sh)=>{ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));return'#include <atmos_waves>\n'+W.glsl(S)+'\n';};
+ // ---- RIDING ON THE GPU (2026-10-26): floaters drawn as instances (lily pads, leaf rafts, flotsam) heave with the water in their vertex shader,
+ // on the swell heightAt gives (the trochoids through the Newton inverse, the field, the bed's damping and shoaling): no CPU work a frame.
+ //   WATER.rideGLSL(S)  the surface's chunk (W.glsl) and wtrRide(p) = wtrHeight(p) - wtrLevel: the swell over the level at world (x, z) (twin:
+ //        S.heightAt(x, z, t) - S.levelAt(t)). Needs atmos_waves and the surface's uniforms (WATER.shaderOn gives both).
+ //   WATER.rideOn(material, S, {weight, scaleY})  hooks a material (instanced or not) so each instance's vertices rise by wtrRide at the instance's
+ //        own centre: weight names a per-instance float attribute that scales it (0 off the water: a pad on a river reach stays put); scaleY
+ //        (default true) divides by the instance's y scale (the lift is added in the mesh's own space). Heave only (no pitch or roll); the page's
+ //        own onBeforeCompile runs first, whenever it is assigned (as WATER.wetGround). Returns the material.
+ W.rideGLSL=S=>W.glsl(S)+'\nfloat wtrRide(vec2 p){return wtrHeight(p)-wtrLevel;}';
+ W.rideOn=(mat,S,o)=>{o=o||{};const wt=o.weight||null,sy=o.scaleY!==false;let page=mat.onBeforeCompile;
+  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|wtr-ride:'+W.hashStr(W.rideGLSL(S))+(wt||'')+(sy?'s':'');
+  const ride=function(sh,r){if(page)page.call(this,sh,r);ATMOS.waveUniforms(sh.uniforms);Object.assign(sh.uniforms,W.uniformsOf(S));
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n#include <atmos_waves>\n'+W.rideGLSL(S)+'\n'+(wt?'attribute float '+wt+';\n':''))
+    .replace('#include <begin_vertex>','#include <begin_vertex>\n{\n#ifdef USE_INSTANCING\nvec4 wtrRc=modelMatrix*instanceMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs='+(sy?'max(length(instanceMatrix[1].xyz),1.0e-3)':'1.0')+';\n'+
+     '#else\nvec4 wtrRc=modelMatrix*vec4(0.0,0.0,0.0,1.0);float wtrRs=1.0;\n#endif\ntransformed.y+=wtrRide(wtrRc.xz)'+(wt?'*'+wt:'')+'/wtrRs;\n}');};
+  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>ride,set:fn=>{page=fn;}});mat.needsUpdate=true;return mat;};
 
  // FNV-1a of a string (a program cache key)
  W.hashStr=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
@@ -171,20 +187,20 @@
   const U2={wtrOrigin:{value:new T.Vector2()}};
   // the program's cache key: its GLSL (every surface writes its own literals, and three.js would otherwise share one
   // program among materials whose onBeforeCompile has the same source text)
-  mat.customProgramCacheKey=()=>'wtr-open:'+W.hashStr(W.glsl(S)+fragColor+VARY+(o.origin?'o':'')+(o.normalMap?'n':''));
+  mat.customProgramCacheKey=()=>'wtr-open:'+W.hashStr(W.glsl(S)+fragColor+VARY+(o.origin?'o':'')+(o.normalMap?'n':''))+W.rainK(o);
   mat.onBeforeCompile=sh=>{const CH=W.shaderOn(S,sh)+VARY;
    if(o.origin)sh.uniforms.wtrOrigin=U2.wtrOrigin;
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec4 wtrNode;'+(o.origin?'uniform vec2 wtrOrigin;':''))
     .replace('#include <beginnormal_vertex>','vec3 objectNormal=vec3(0.0,1.0,0.0);')
     .replace('#include <begin_vertex>','vec3 wtrM=wtrMorph(position.xz,wtrNode);vec4 wtrS=wtrSurface(wtrM.xy,wtrM.z);vWtrP0=wtrM.xy;vWtrP=wtrS.xz;vWtrDamp=wtrS.w;vec3 transformed=wtrS.xyz'+(o.origin?'-vec3(wtrOrigin.x,0.0,wtrOrigin.y)':'')+';'+
      (o.normalMap?'\n#ifdef USE_UV\nvUv=(uvTransform*vec3(wtrS.xz*'+f(1/(o.detailSize||46))+',1.0)).xy;\n#endif\n':''));
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+'\n'+
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)+'\n'+
      'float wtrHash(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}\n'+
      'float wtrNoise(vec2 p){vec2 i=floor(p);vec2 u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(wtrHash(i),wtrHash(i+vec2(1.0,0.0)),u.x),mix(wtrHash(i+vec2(0.0,1.0)),wtrHash(i+vec2(1.0,1.0)),u.x),u.y);}')
     .replace('#include <color_fragment>','#include <color_fragment>\n'+fragColor)
     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.85,wtrFoamK);')
     .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.0-wtrFoamK;')
-    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrN,0.0)).xyz);');};
+    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrN','vWtrP','vec3(vWtrP.x,wtrLevel,vWtrP.y)')+',0.0)).xyz);');};
   const mesh=new T.Mesh(g,mat);mesh.name='water:'+S.name;mesh.frustumCulled=false;mesh.raycast=o.pick?W.pickRay(S,mesh,T,()=>U.wtrLevel.value):()=>{};if(o.pick)mesh.userData.inspectLabel=S.name;else mesh.userData.probeSkip=true;mesh.userData.water=S.id;
   mesh.userData.lodSkip=true;   // the CDLOD mesh is its own level of detail: core/lod's pass must not take it (it would cull or copy the unit grid)
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);

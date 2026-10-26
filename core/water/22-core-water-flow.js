@@ -75,10 +75,27 @@
  // the rows a curtain gets: o.rows, else PRESETS.fall.rows (28), or with o.rowStep (m of drop per row) at least that many (a 70 m cataract
  // at 28 rows is 2.5 m a row; rowStep: 1 makes it 70)
  W.curtainRows=(S,o)=>{o=o||{};const Q=PL();return o.rows!=null?o.rows:o.rowStep>0?Math.max(Q.rows,Math.ceil(S.drop/o.rowStep)):Q.rows;};
- W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=W.curtainRows(S,o),C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[];
-  for(let r=0;r<=R;r++){const f=r/R;for(let c=0;c<=C;c++){const u=c/C,p=S.curtainAt(u,f),n=S.curtainNormal(f);pos.push(p[0],p[1],p[2]);nrm.push(n[0],n[1],n[2]);uv.push(u,f);}}
+ // margin (2026-10-26): m a side the curtain runs past the lip, so it is as wide as the river's ribbon there (drawFlow's margin) and its sides tuck under
+ // the banks; u then runs from -margin/lipW to 1 + margin/lipW and the drawing fades the sides by the metres from the lip's edge (W.curtainSide), as
+ // the ribbon fades under its banks. Without it the curtain is the lip's width, as before (u 0..1)
+ W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=W.curtainRows(S,o),C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[],mu=o.margin>0&&S.lipW>0?o.margin/S.lipW:0;
+  for(let r=0;r<=R;r++){const f=r/R;for(let c=0;c<=C;c++){const u=mu?-mu+(1+2*mu)*c/C:c/C,p=S.curtainAt(u,f),n=S.curtainNormal(f);pos.push(p[0],p[1],p[2]);nrm.push(n[0],n[1],n[2]);uv.push(u,f);}}
   for(let r=0;r<R;r++)for(let c=0;c<C;c++){const a=r*(C+1)+c,b=a+C+1;idx.push(a,b,b+1,a,b+1,a+1);}
   return{count:(R+1)*(C+1),rows:R,cols:C,pos,nrm,uv,idx};};
+ // the curtain's side fade with a margin (the shader's wtrSide): metres in from the lip's nearer edge (u's distance to 0 or 1 times the lip width; negative
+ // past it), faded from -margin (0, under the bank) to `edge` m inside (1). edge: drawFall's option (default 8% of the lip, the old fade's width)
+ W.curtainSide=(u,lipW,margin,edge)=>ss(-margin,edge,Math.min(u,1-u)*lipW);
+ // SPRAY scaled to the drop (2026-10-26; drawFall and drawFalls with spray: 'drop' or {drop: true, ...}): emitters of core/atmos's 'spray' across the
+ // curtain's foot every `every` m (6) and in layers up a mist column min(drop * `column` (.4), `top` (30)) m tall, one layer per `layer` m (6), each
+ // layer pushed downstream by a share of the plunge's radius and staggered half a step; at most `max` (24) a fall (layers go first, then the
+ // across count). A fall under 3 m gets one emitter. In order, no random draw: [[x, y, z], ...]. Without the option the three fixed emitters stay.
+ W.fallSpray=(S,o)=>{o=o||{};const P=W.plunge(S),y0=(o.plungeY==null?P.y+.06:o.plungeY)+1,max=o.max==null?24:o.max,every=o.every==null?6:o.every,lay=o.layer==null?6:o.layer;
+  if(S.drop<3)return[[P.x,y0,P.z]];
+  const wFoot=S.lipW+2*S.spread,H=Math.min(S.drop*(o.column==null?.4:o.column),o.top==null?30:o.top);let k=cl(Math.ceil(wFoot/every),1,8),L=cl(Math.round(H/lay),1,5);
+  while(k*L>max&&L>1)L--;while(k*L>max&&k>1)k--;
+  const out=[];for(let j=0;j<L;j++){const y=y0+(L>1?H*j/L:0),push=P.r*.3*j/Math.max(1,L-1),st=j%2?.5:0;
+   for(let i=0;i<k;i++){const u=Math.min(1,(i+.5+st)/k),p=S.curtainAt(u,1);out.push([p[0]+S.dir[0]*push,y,p[2]+S.dir[1]*push]);}}
+  return out;};
  // value noise, the shaders' wtrHash and wtrNoise (51-core-water-kinds.js) to the operation; wtrNoiseP repeats every `per`
  // cells in y, so a pattern on a wrapped phase has no seam
  const fr3=v=>v.map(fr);
@@ -102,6 +119,22 @@
      // the chute's foot [x, z, y] (the line's point where the run ends) and the run from the lip: W.fall takes both; {fit: true} lands the curtain there
      foot:[b.x,b.z,b.y],run:(b.x-a.x)*dx+(b.z-a.z)*dz},o.fit?{fit:true}:{}));}
    i=j;}return out;};
+
+ // ---- RAIN RINGS (2026-10-26, WEATHER-RESEARCH item 2): the twin of 51's WATER.rainRippleGLSL. Per octave (cells of oct[i] m) every cell has a ring
+ // centre, a phase and a threshold from the integer-lattice hash (W.hash2, the shaders' wtrHash: no Math.sin); a ring runs out from its centre to
+ // R cells over `sec` s (whole cycles per wave period), a wave packet F rings to a cell, sharpness K, fading as it grows; a cell rings only where
+ // the rain is over its threshold (more rain, more rings). The 3 x 3 cells round the point are summed. -> the slope [gx, gz] of the ripple's
+ // height (0 without rain), amp times smoothstep(0, .15, rain). NOT in PRESETS (the export carries PRESETS; nothing here moves a page that does not ask)
+ W.RIPPLE={oct:[.6,.37],sec:.9,amp:.45,R:.9,F:2.5,K:60};
+ W.rippleCycles=()=>Math.max(1,Math.round(W.period()/W.RIPPLE.sec));
+ W.rainRipple=(x,z,t,rain)=>{const Q=W.RIPPLE,c=W.rippleCycles()/W.period(),g=[0,0];if(rain<=0)return g;
+  Q.oct.forEach((sz,o)=>{const qx=x*(1/sz),qz=z*(1/sz),ix=Math.floor(qx),iz=Math.floor(qz),ph0=t*c+o*.37;
+   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const cx=ix+dx,cz=iz+dy,h1=W.hash2(cx,cz),h2=W.hash2(cx+17.3,cz+4.1),h3=W.hash2(cx+5.7,cz+31.9),on=rain<fr(h1*7.13+h2*3.71)?0:1;
+    const ex=qx-(cx+(.25+.5*h1)),ez=qz-(cz+(.25+.5*h2)),r=Math.hypot(ex,ez),ph=fr(ph0+h3),u=r-ph*Q.R,sv=Math.sin(TAU*Q.F*u)*Math.exp(-u*u*Q.K)*(1-ph)*(1-ph)*on;
+    if(r>1e-4){g[0]+=ex*(sv/r);g[1]+=ez*(sv/r);}}});
+  const k=Q.amp*ss(0,.15,rain);return[g[0]*k,g[1]*k];};
+ // a shading normal [x, y, z] with the ripple's slope added (the shaders' wtrRainN)
+ W.rainNormal=(n,g)=>{const a=n[0]/n[1]-g[0],b=n[2]/n[1]-g[1],l=Math.hypot(a,1,b);return[a/l,1/l,b/l];};
 
  // ---- still water
  W.stillMesh=S=>{if(!S.poly){const b=S.bounds;return{pos:[b[0],S.level,b[1],b[2],S.level,b[1],b[2],S.level,b[3],b[0],S.level,b[3]],idx:[0,3,2,0,2,1]};}

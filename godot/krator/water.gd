@@ -61,6 +61,8 @@ var rapids = null
 var foot = null
 var run := 0.0
 var tint = null
+# fall (2026-10-26, core/water W3): the face it follows, the drops from the lip (m, <= 0) at even steps of the run, or null (it arcs)
+var face = null
 const G := 9.81
 
 
@@ -103,6 +105,7 @@ static func from_record(r: Dictionary, sec: Dictionary, atm: Object = null) -> K
 		w.lip_w = sqrt((float(b[0]) - float(a[0])) ** 2 + (float(b[1]) - float(a[1])) ** 2)
 		w.plunge_at_rec = r.get("plunge")
 		w.foot = r.get("foot")
+		w.face = r.get("face") if r.get("face") is Array else null
 		w.run = float(r.get("run", 0.0))
 		if r.get("curtain") is Dictionary:
 			w.curtain_opt = r["curtain"]
@@ -841,10 +844,32 @@ func _lip_dir() -> PackedFloat64Array:
 	return PackedFloat64Array([(float(b[0]) - float(a[0])) / lip_w, (float(b[1]) - float(a[1])) / lip_w])
 
 
+# the face's drop at fall fraction f (linear between its samples) and its slope (m per unit f): WATER.fall's faceY and faceD
+func _face_seg(f: float) -> int:
+	var N: int = face.size() - 1
+	return mini(N - 1, int(floor(clampf(f, 0.0, 1.0) * N)))
+
+
+func face_y(f: float) -> float:
+	var N: int = face.size() - 1
+	var i := _face_seg(f)
+	return float(face[i]) + (float(face[i + 1]) - float(face[i])) * (clampf(f, 0.0, 1.0) * N - i)
+
+
+func _face_d(f: float) -> float:
+	var i := _face_seg(f)
+	return (float(face[i + 1]) - float(face[i])) * (face.size() - 1)
+
+
 func curtain_at(u: float, f: float) -> PackedFloat64Array:
 	var a: Array = lip[0]
 	var b: Array = lip[lip.size() - 1]
 	var L := _lip_dir()
+	if face is Array:
+		var qf := (u * 2.0 - 1.0) * spread * f
+		var rf := run * f
+		return PackedFloat64Array([float(a[0]) + (float(b[0]) - float(a[0])) * u + dir[0] * rf + L[0] * qf, float(a[2]) + (float(b[2]) - float(a[2])) * u + face_y(f),
+			float(a[1]) + (float(b[1]) - float(a[1])) * u + dir[1] * rf + L[1] * qf])
 	var s := f * t_fall
 	var q := (u * 2.0 - 1.0) * spread * f
 	return PackedFloat64Array([float(a[0]) + (float(b[0]) - float(a[0])) * u + dir[0] * speed * s + L[0] * q, float(a[2]) + (float(b[2]) - float(a[2])) * u - G * s * s / 2.0,
@@ -857,6 +882,8 @@ func curtain_normal(f: float) -> PackedFloat64Array:
 	var lz := L[1]
 	var s := f * t_fall
 	var T := PackedFloat64Array([dir[0] * speed, -G * s, dir[1] * speed])
+	if face is Array:
+		T = PackedFloat64Array([dir[0] * run, _face_d(f), dir[1] * run])
 	var n := PackedFloat64Array([T[1] * lz - T[2] * 0.0, T[2] * lx - T[0] * lz, T[0] * 0.0 - T[1] * lx])
 	var m := sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2])
 	if m == 0.0:
@@ -869,6 +896,9 @@ func curtain(o := {}) -> Dictionary:
 	var Q := _fall_p()
 	var R := int(o.get("rows", Q["rows"]))
 	var C := int(o.get("cols", Q["cols"]))
+	# margin (2026-10-26, W1): m a side past the lip, u from -margin/lipW to 1 + margin/lipW (WATER.curtain's)
+	var mg = o.get("margin")
+	var mu: float = float(mg) / lip_w if (mg != null and float(mg) > 0.0 and lip_w > 0.0) else 0.0
 	var pos := PackedFloat64Array()
 	var nrm := PackedFloat64Array()
 	var uv := PackedFloat64Array()
@@ -876,7 +906,7 @@ func curtain(o := {}) -> Dictionary:
 	for r in R + 1:
 		var f := float(r) / R
 		for c in C + 1:
-			var u := float(c) / C
+			var u := (-mu + (1.0 + 2.0 * mu) * float(c) / C) if mu > 0.0 else float(c) / C
 			pos.append_array(curtain_at(u, f))
 			nrm.append_array(curtain_normal(f))
 			uv.append_array([u, f])
@@ -945,6 +975,120 @@ func plunge_at(x: float, z: float, t: float) -> PackedFloat64Array:
 	var e := exp(-r / P[3])
 	var nz := noise_p((x - P[0]) * 0.45 + (z - P[2]) * 0.21, ph * 12.0 + r * 0.3, 12.0)
 	return PackedFloat64Array([e * clampf(0.35 + 0.25 * sin(a) + 0.8 * (nz - 0.35), 0.0, 1.0), 0.08 * e * sin(a)])
+
+
+# ================================================================ 2026-10-26: the final rebuild's items (core/water/test-rebuild.js)
+# W1: the curtain's side fade with a margin (WATER.curtainSide): metres in from the lip's nearer edge, faded from -margin to edge
+static func curtain_side(u: float, lw: float, margin: float, edge: float) -> float:
+	return _ss(-margin, edge, minf(u, 1.0 - u) * lw)
+
+
+# W2: spray scaled to the drop (WATER.fallSpray): [[x, y, z], ...] in the page's order. o: {plungeY, max, every, layer, column, top}
+func fall_spray(o := {}) -> Array:
+	var P := plunge()
+	var y0: float = (P[1] + 0.06 if o.get("plungeY") == null else float(o["plungeY"])) + 1.0
+	var mx: int = int(o.get("max", 24))
+	var every: float = float(o.get("every", 6.0))
+	var lay: float = float(o.get("layer", 6.0))
+	if drop < 3.0:
+		return [[P[0], y0, P[2]]]
+	var w_foot := lip_w + 2.0 * spread
+	var H := minf(drop * float(o.get("column", 0.4)), float(o.get("top", 30.0)))
+	var k := clampi(int(ceil(w_foot / every)), 1, 8)
+	var L := clampi(_jsround(H / lay), 1, 5)
+	while k * L > mx and L > 1:
+		L -= 1
+	while k * L > mx and k > 1:
+		k -= 1
+	var out := []
+	for j in L:
+		var y := y0 + (H * j / L if L > 1 else 0.0)
+		var push := P[3] * 0.3 * j / maxf(1.0, L - 1.0)
+		var st := 0.5 if j % 2 == 1 else 0.0
+		for i in k:
+			var u := minf(1.0, (i + 0.5 + st) / k)
+			var p := curtain_at(u, 1.0)
+			out.append([p[0] + dir[0] * push, y, p[2] + dir[1] * push])
+	return out
+
+
+# R9: rain rings (WATER.rainRipple): the constants are core/water's W.RIPPLE (not in the export's presets)
+const RIPPLE := {"oct": [0.6, 0.37], "sec": 0.9, "amp": 0.45, "R": 0.9, "F": 2.5, "K": 60.0}
+
+
+func rain_ripple(x: float, z: float, t: float, rain: float) -> PackedFloat64Array:
+	var g := PackedFloat64Array([0.0, 0.0])
+	if rain <= 0.0:
+		return g
+	var c: float = maxf(1.0, _jsround(period / float(RIPPLE["sec"]))) / period
+	var o := 0
+	for sz in RIPPLE["oct"]:
+		var qx := x * (1.0 / float(sz))
+		var qz := z * (1.0 / float(sz))
+		var ix := floorf(qx)
+		var iz := floorf(qz)
+		var ph0 := t * c + o * 0.37
+		for dy in [-1, 0, 1]:
+			for dx in [-1, 0, 1]:
+				var cx: float = ix + float(dx)
+				var cz: float = iz + float(dy)
+				var h1 := hash2(cx, cz)
+				var h2 := hash2(cx + 17.3, cz + 4.1)
+				var h3 := hash2(cx + 5.7, cz + 31.9)
+				var on := 0.0 if rain < _fr(h1 * 7.13 + h2 * 3.71) else 1.0
+				var ex: float = qx - (cx + (0.25 + 0.5 * h1))
+				var ez: float = qz - (cz + (0.25 + 0.5 * h2))
+				var r := sqrt(ex * ex + ez * ez)
+				var ph := _fr(ph0 + h3)
+				var u := r - ph * float(RIPPLE["R"])
+				var sv := sin(TAU * float(RIPPLE["F"]) * u) * exp(-u * u * float(RIPPLE["K"])) * (1.0 - ph) * (1.0 - ph) * on
+				if r > 1e-4:
+					g[0] += ex * (sv / r)
+					g[1] += ez * (sv / r)
+		o += 1
+	var k := float(RIPPLE["amp"]) * _ss(0.0, 0.15, rain)
+	return PackedFloat64Array([g[0] * k, g[1] * k])
+
+
+static func rain_normal(n: PackedFloat64Array, g: PackedFloat64Array) -> PackedFloat64Array:
+	var a := n[0] / n[1] - g[0]
+	var b := n[2] / n[1] - g[1]
+	var l := sqrt(a * a + 1.0 + b * b)
+	return PackedFloat64Array([a / l, 1.0 / l, b / l])
+
+
+# R9: the hollows a rain fills (a WATER.hollows record: {x0, z0, cell, nx, nz, fill, soft, data: PackedByteArray}), as the GPU filters them
+static func hollow_at(M: Dictionary, x: float, z: float) -> float:
+	var nx: int = int(M["nx"])
+	var nz: int = int(M["nz"])
+	var u: float = (x - float(M["x0"])) / (float(M["cell"]) * nx)
+	var v: float = (z - float(M["z0"])) / (float(M["cell"]) * nz)
+	if u < 0.0 or v < 0.0 or u > 1.0 or v > 1.0:
+		return 0.0
+	var fx: float = u * nx - 0.5
+	var fz: float = v * nz - 0.5
+	var i0 := int(floor(fx))
+	var j0 := int(floor(fz))
+	var ax := fx - i0
+	var az := fz - j0
+	var d: PackedByteArray = M["data"]
+	var C := func(i: int, j: int) -> float: return d[clampi(j, 0, nz - 1) * nx + clampi(i, 0, nx - 1)] / 255.0
+	return (C.call(i0, j0) * (1.0 - ax) + C.call(i0 + 1, j0) * ax) * (1.0 - az) + (C.call(i0, j0 + 1) * (1.0 - ax) + C.call(i0 + 1, j0 + 1) * ax) * az
+
+
+static func puddle_at(M: Dictionary, x: float, z: float, wet: float) -> float:
+	var L: float = 1.0 - wet * float(M["fill"])
+	return _ss(L, L + float(M["soft"]), hollow_at(M, x, z))
+
+
+# R9: the wet look (WATER.wetLook, W.WET): [albedo factor, roughness]
+const WET := {"dark": 0.65, "rough": 0.4, "puddleDark": 0.25, "puddleRough": 0.03, "sky": [0.55, 0.62, 0.7]}
+
+
+static func wet_look(r: float, w: float, pd: float, porosity: float, film := 0.0) -> PackedFloat64Array:
+	var m := maxf(pd, film)
+	return PackedFloat64Array([(1.0 - float(WET["dark"]) * porosity * w) * (1.0 - float(WET["puddleDark"]) * pd),
+		r * (1.0 + (float(WET["rough"]) - 1.0) * w) * (1.0 - m) + float(WET["puddleRough"]) * m])
 
 
 # ================================================================ Phase 4: still water

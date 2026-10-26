@@ -138,12 +138,28 @@
   ' if(u<b){float v=u-a;return sm(0.0,2.5,v)*(1.0-0.3*sm(uCyc.z*0.5,uCyc.z,v))*sm(uCyc.z,uCyc.z-3.0,v);}return 0.0;}',
   'float stm(float t){if(uKind>1.5)return 0.35;float P=uCyc.x,a=uCyc.y,b=a+uCyc.z,c=b+uCyc.w,u=mod(t-uOff,P);',
   ' if(u<a)return 0.15+0.2*u/a;if(u<b)return 1.0;if(u<c)return 0.1+0.9*sm(c,b+2.0,u);return 0.1;}'].join('\n');
+ // ---- the PLUME (2026-10-26, W6): the steam over a geyser as a soft volume. WATER.plumeOf(S, {height, radius, density, lean, base, noise}) -> a plain
+ // record {x, z, y0, height, radius, density, lean [dx, dz] (m sideways per m of rise: downwind), noise (the drift noise's share)}: a column from the
+ // vent's top (y0 = top - base), widening from radius/2 to 1.5 radius up its height, leaning, faded in at its foot and out at its head, as thick as
+ // the cycle's steam (S.state(t).steam: the roar after the column). WATER.drawPlume (52b) raymarches it; Godot fills a FogVolume of its box with
+ // the same density (WATER.plumeBox, W.plumeDensity). WATER.geyser({plume: true | {...}}) keeps one as S.plume and the export's geyser record then
+ // carries it with its box (nothing changes without the option).
+ W.plumeOf=(S,o)=>{o=o&&typeof o==='object'?o:{};const v=S.vents[0],H=S.H;
+  return{x:v[0],z:v[1],y0:rd(S.top-num(o.base,1)),height:rd(num(o.height,H*1.3+10)),radius:rd(num(o.radius,Math.max(S.ventR*2,H*.16,3))),density:num(o.density,.5),
+   lean:(o.lean||[0,0]).map(rd),noise:num(o.noise,.35)};};
+ // the density at (x, y, z) for steam s (0..1): the twin of the shader's plmDensity (the drifting noise multiplies after it, by up to `noise`)
+ W.plumeDensity=(P,x,y,z,s)=>{const h=(y-P.y0)/P.height;if(h<0||h>1)return 0;const cx=P.x+P.lean[0]*(y-P.y0),cz=P.z+P.lean[1]*(y-P.y0),r=P.radius*(.5+h),
+   d=Math.hypot(x-cx,z-cz)/r;return P.density*s*Math.exp(-2*d*d)*ss(0,.12,h)*(1-ss(.55,1,h));};
+ // the box the volume fills [x0, y0, z0, x1, y1, z1] (the drawing's mesh, Godot's FogVolume): 1.6 times the widest radius round the leaning axis
+ W.plumeBox=P=>{const R=P.radius*1.5*1.6,lx=P.lean[0]*P.height,lz=P.lean[1]*P.height;
+  return[Math.min(P.x,P.x+lx)-R,P.y0,Math.min(P.z,P.z+lz)-R,Math.max(P.x,P.x+lx)+R,P.y0+P.height,Math.max(P.z,P.z+lz)+R].map(rd);};
+ const gey0=W.geyser;W.geyser=o=>{const S=gey0(o);if(o.plume)S.plume=W.plumeOf(S,o.plume);return S;};
 
  // ---- plain records, for export and a port
  const geyserRecord=S=>{const o={key:S.key,style:S.style,vents:S.vents.map(v=>v.map(rd)),top:rd(S.top),H:S.H,period:S.period,pre:S.pre,dur:S.dur,steam:S.steam,
    off:rd(S.offAt()),wob:S.wob,spread:S.spread,drop:rd(S.drop),ventR:rd(S.ventR),world:S.world,seed:S.seed,
    cycle:'rest, pre, column, steam on u = (t - off) mod period: GEYSER_STATE in core/water/README.md (twin: S.state)'};
-  if(S.top2!=null)o.top2=rd(S.top2);if(S.pool!=null)o.pool=S.pool;if(S.cone)o.cone=S.cone;if(S.mound)o.mound=S.mound;return o;};
+  if(S.top2!=null)o.top2=rd(S.top2);if(S.pool!=null)o.pool=S.pool;if(S.cone)o.cone=S.cone;if(S.mound)o.mound=S.mound;if(S.plume)o.plume=Object.assign({box:W.plumeBox(S.plume)},S.plume);return o;};
  W.geyserRecords=()=>W.surfaces.filter(S=>S.kind==='geyser').map(S=>Object.assign({name:S.name},geyserRecord(S)));
  // sampled states at times (default a spread through each period): the vectors a port tests its replay against
  W.geyserGolden=ts=>W.surfaces.filter(S=>S.kind==='geyser').map(S=>{const T0=ts||(S.period?[0,.13,.31,.5,.77,.97].map(f=>f*S.period).concat([S.period*3.37]):[0,3.7,41.9]),c={};

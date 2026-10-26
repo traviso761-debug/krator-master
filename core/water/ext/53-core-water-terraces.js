@@ -3,7 +3,7 @@
 // core/water/ext/ on purpose: many builds pool the top-level fragments of core/water, so a new top-level fragment would leak into all of
 // them; a build opts in by path (CORE_WATER_EXT in its build.py). 53b-core-water-terraces-draw.js draws what this makes.
 //
-//   WATER.terraces({name, line, treads | levels, width, riser, speed, spread, treadSpeed, step})  a STEPPED RIVER: a chain of still pools, each at its
+//   WATER.terraces({name, line, treads | levels, width, riser, speed, spread, treadSpeed, step})  a stepped river: a chain of still pools, each at its
 //        tread's level, joined by a fall down each riser; the nwbay river, the Ys rimstone terraces, a rice-terrace stream.
 //        line      [[x, z], ...]: the river's course (its y is ignored: the levels say it)
 //        treads    [{s0, s1, y, w?}, ...] explicit: the tread i is the part of the line from s0 to s1 metres along it, at height y, w m wide
@@ -72,7 +72,7 @@
  // streak.across, its fall time tFall); per plunge-disc vertex: position and (the disc's centre x, z, the churn's radius). Indices run on from each
  // fall's own (a vertex offset); `segs` is the disc's rim (48, as drawFall's CircleGeometry).
  W.mergedFalls=(list,o)=>{o=o||{};const Q=W.PRESETS.fall,cp={pos:[],nrm:[],uv:[],fp:[],idx:[],count:0,falls:list.length},pl={pos:[],pc:[],idx:[],count:0,r:[]},segs=o.segs==null?48:o.segs;
-  for(const S of list){const M=W.curtain(S,{rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols}),base=cp.count,lw=S.lipW*Q.streak.across;
+  for(const S of list){const M=W.curtain(S,{rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols,margin:o.margin}),base=cp.count,lw=S.lipW*Q.streak.across;
    for(let i=0;i<M.pos.length;i++){cp.pos.push(M.pos[i]);cp.nrm.push(M.nrm[i]);}for(let i=0;i<M.uv.length;i++)cp.uv.push(M.uv[i]);
    for(let i=0;i<M.count;i++)cp.fp.push(lw,S.tFall);for(const k of M.idx)cp.idx.push(base+k);cp.count+=M.count;
    if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,b0=pl.count;
