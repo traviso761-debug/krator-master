@@ -150,6 +150,23 @@ parts (the hyperjungle's `fungi`, the `stalk` in rift and xanadu, and the rest t
 The Yeti kit (Y1-Y4) is in; its section 11 ("the shared culture rebuild") waits on two more kits. The kit workstream's
 impostor fragment is `34-core-impostor.js` so as not to clash.
 
+**4c. The order (the owner, 2026-10-26).** First the new core modules and the infrastructure fixes (the seven workstreams,
+merged with their tests and pilots). Then the biome pages one by one, each taking every old and new core module, its unwired
+textures (the pre-wired sets of the fourth drop) and its ride-alongs. **The test bed is `biomes/nhighlands`** (it exercises
+R1-R10, R13, B1-B5, W1/W2/W4, snow, weather, BIO.fung, the Cut's exchanges). After nhighlands is rebuilt:
+1. **An optimization pass on it**: draw calls and triangles per view against its budget (32M held), the floor bands, shader
+   cost of the new chunks on an integrated GPU, page size and texture memory (the packs, the impostor atlases, the horizon maps).
+2. **A Godot spike of it**: export it (`tools/harness.py export`, core/export's profile) and bring it up in the Godot project
+   (`godot/`, 4.7.2; the importers and shaders the port spike has, `GODOT-PLAN.md`), with MultiMesh for the instanced flora,
+   then measure draw calls, GPU time and memory there.
+3. **Assess ways to cut the graphic load, both engines**: merging textures (a texture array or atlas per bucket: the isle
+   demo's M7 texture arrays are prior art, `settlements/isle-demo/PLAN.md`), material merging so more items share a draw,
+   GPU-compressed textures (KTX2/Basis in three.js, VRAM-compressed imports in Godot), mip and size caps per family, HLOD for the
+   far field, and what the octahedral impostors and the LOD rework already bought. Write the findings and a recommendation
+   before the remaining biomes are rebuilt, so they take the chosen scheme.
+Then the next biomes: Korona or the Throne's vents (hazards, snow, weather), then the rest, starting with nhighlands' readers
+(the Cut, nwouterwall).
+
 **5. The rebuild.** Rebuild every biome and station (`python3 build.py`; Throne and Korona `--station`), verify each with
 `KRATOR_GL=gpu verify.py --assert --all-views` on the one GPU lock, `python3 tools/check_core_use.py --write-baseline` (it should
 shrink), `tools/port_baseline.py --update` only for pages checked, `tools/test_all.py`. Then everything a shared change reached:
