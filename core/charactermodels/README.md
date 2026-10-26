@@ -258,11 +258,15 @@ between the top of the boots and the lowest hem of the top (tucked in, it came o
 skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width, comb, clump, root shade, tip, vary) and a
 per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
 **Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
-no `coat` field, so the golden and Godot's records are as they were). Three so far: a shaggy pelt (the Khaayken, any
-yeti; 5 cm), a short coat (sleek, an animal's) and body hair (sparse, on the chest, arms and legs). Each vertex of the
+no `coat` field). Four so far: a shaggy pelt (the Khaayken; 5 cm), a coyote's brush (the Coyote Men; 2 cm, agouti, its
+face furred but for the eyes and mouth), a short coat (sleek, an animal's) and body hair (sparse, on the chest, arms and
+legs, its colour taken partway from the skin's toward the hair's: `ink`). A people with a `coat` in `data/peoples.json`
+gives it to every stranger (`KCHAR.stranger`, no draw of its own): the **Khaayken** and the **Coyote Men** (the owner,
+2026-10-26: both furred), drawn on the human body until the Khaayken's 1.15 scale (Y5) and the Coyote Men's coyote head and
+digitigrade legs (a body of their own) are built. Each vertex of the
 skin's own primitive gets a cover, its joints' covers (`cover`, by joint name without its side; `fingers`, `*`) summed
 by its skin weights, less the parts left bare (`bare`), found in the rest pose: the face (an ellipse on the head's front,
-chin to brow), the palms (the hands' undersides) and the soles. The shells (`50-figure.js` `coatShells`, Godot
+chin to brow; or within it only the eyes and the mouth, for a furred face), the palms (the hands' undersides) and the soles. The shells (`50-figure.js` `coatShells`, Godot
 `_coat`) take the skin that the clothes leave and fade in over three rings from what is hidden, so a coat stops short of
 every garment's edge; their strands run on the skin's UV map scaled to metres per vertex, in the hair's colour; a kind
 with `undercoat` has its first layer whole where the cover is dense, and a coat hides the skin parts it lists

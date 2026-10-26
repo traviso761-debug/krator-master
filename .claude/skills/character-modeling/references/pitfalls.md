@@ -181,6 +181,10 @@ area you are about to change.
 - **Fur hung over the eyes and down the nose sides** → a bare face found by the normal alone keeps the eye sockets and
   the nose's sides; mark it as an ellipse on the head's front, sized from the head's extents at rest (the base has no
   face weights: everything above the neck rides Head).
+- **A furred face had no eyes** (the coyote coat over the whole head) → leave the eyes and the mouth bare as small ellipses
+  in the face ellipse's own measure; first guesses sat a fifth of a face too high and too low, so check them on a shot.
+- **Sparse body hair read as dirt** → draw it in a colour partway from the skin's toward the hair's (`ink`), comb it flat
+  and keep the comb per layer under a strand's width (more layers), or the streaks step like stairs.
 
 ## 5. Cloth chains
 

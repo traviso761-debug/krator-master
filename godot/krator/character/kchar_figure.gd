@@ -1991,6 +1991,8 @@ func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
 # to a texture (RG, a texel per vertex, read by VERTEX_ID) that kchar_fur.gdshader's body mode reads; the shells chained
 # after the skin's material. A UV seam's halves (and a region border's) are one vertex for the rings (by position)
 const COAT_FADE := 3
+const EYE := [0.42, 0.48, 0.3, 0.22]       # the eyes and the mouth on the face's ellipse (coatBuild)
+const MOUTH := [0.0, -0.3, 0.4, 0.2]
 
 
 func _coat_hides(rec: Dictionary) -> Dictionary:
@@ -2087,10 +2089,16 @@ func _coat_static(b: Dictionary, mi: MeshInstance3D, id: String, coat: Dictionar
 	var ax := 0.3 * (x1 - x0)
 	for i in n:
 		var f := 0.0
-		if bare.has("face") and hw[i] > 0.0 and P[i].z > zc:
+		if hw[i] > 0.0 and P[i].z > zc:
 			var ex := (P[i].x - xc) / ax
 			var ey := (P[i].y - fy) / ay
-			f = maxf(f, hw[i] * (1.0 - _smooth(0.85, 1.15, sqrt(ex * ex + ey * ey))))
+			if bare.has("face"):
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.85, 1.15, sqrt(ex * ex + ey * ey))))
+			if bare.has("eyes"):           # a furred face's eyes and mouth (coatBuild EYE, MOUTH)
+				var e := minf(Vector2((ex - EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]).length(), Vector2((ex + EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]).length())
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.8, 1.2, e)))
+			if bare.has("mouth"):
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.8, 1.2, Vector2((ex - MOUTH[0]) / MOUTH[2], (ey - MOUTH[1]) / MOUTH[3]).length())))
 		if bare.has("palms"):
 			f = maxf(f, aw[i] * _smooth(0.1, 0.45, -N[i].y))
 		if bare.has("soles"):

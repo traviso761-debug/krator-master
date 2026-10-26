@@ -201,12 +201,15 @@ function KCharFigure(body, sliders, load){
   /* ---- coats: a furred body (data/fur.json coats, a record's coat) ----
      the skin's fur, as shells of the base's skin primitive (furShader body). Each vertex's cover is its joints' covers
      summed by its skin weights (the joint's name without its side; 'fingers' for any finger, '*' for the rest), less
-     the parts left bare, found in the rest pose: the face (an ellipse on the head's front), the palms (the hands'
+     the parts left bare, found in the rest pose: the face (an ellipse on the head's front; or in it only the eyes and
+     the mouth, for a furred face), the palms (the hands'
      undersides, the A-pose's palms face down) and the soles. The shells take the skin the clothes leave (filterBase)
      and fade in over COAT_FADE rings of it from what is hidden, so the pile stops short of a garment's edge. The
      colour is the hair's; where the cover is dense a kind with undercoat has its first layer whole ( the skin between the strands
      made the pelt read as speckle) and the coat hides the skin's parts it lists (hide_parts: the nipples showed through).
      A UV seam splits vertices; the rings run through the source vertices so it does not show */
+  // the eyes and the mouth on the face's ellipse (x, y of a centre, its half-width and half-height, in the ellipse's units)
+  var EYE = [0.42, 0.48, 0.3, 0.22], MOUTH = [0, -0.3, 0.4, 0.2];
   var COAT_FADE = 3, FINGER = /^Hand(Index|Middle|Pinky|Ring|Thumb)/;
   function coverOf(coat, j){
     var n = J[j] ? J[j].name.replace(/^(Left|Right)2?/, '') : '', c = coat.cover || {};
@@ -238,9 +241,13 @@ function KCharFigure(body, sliders, load){
     var zc = zn ? zs / zn : 0, xc = (x0 + x1) / 2, hh = Math.max(y1 - y0, 1e-6), fy = y0 + 0.37 * hh, ay = 0.37 * hh, ax = 0.3 * (x1 - x0);
     for(i=0;i<n;i++){
       var ny = Nn[3*i+1], f = 0;
-      if(bare.face && hw[i] > 0 && P[3*i+2] > zc){
+      if(hw[i] > 0 && P[3*i+2] > zc){
         var ex = (P[3*i] - xc) / ax, ey = (P[3*i+1] - fy) / ay;
-        f = Math.max(f, hw[i] * (1 - smooth(0.85, 1.15, Math.sqrt(ex * ex + ey * ey))));
+        if(bare.face) f = Math.max(f, hw[i] * (1 - smooth(0.85, 1.15, Math.sqrt(ex * ex + ey * ey))));
+        // a furred face's eyes and mouth (a coyote's): small ellipses in the face's own measure
+        if(bare.eyes) f = Math.max(f, hw[i] * (1 - smooth(0.8, 1.2, Math.min(Math.hypot((ex - EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]),
+                                                                             Math.hypot((ex + EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3])))));
+        if(bare.mouth) f = Math.max(f, hw[i] * (1 - smooth(0.8, 1.2, Math.hypot((ex - MOUTH[0]) / MOUTH[2], (ey - MOUTH[1]) / MOUTH[3]))));
       }
       if(bare.palms) f = Math.max(f, aw[i] * smooth(0.1, 0.45, -ny));
       if(bare.soles) f = Math.max(f, fw[i] * smooth(0.3, 0.6, -ny));
@@ -315,7 +322,10 @@ function KCharFigure(body, sliders, load){
       if(A.array[i0[3*t]] > 0 || A.array[i0[3*t+1]] > 0 || A.array[i0[3*t+2]] > 0) idx.push(i0[3*t], i0[3*t+1], i0[3*t+2]);
     }
     S.geo.setIndex(idx);
+    // the hair's colour, or (ink under 1) that far from the skin's toward it
+    var ink = K.ink == null ? 1 : K.ink;
     S.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair || 1));
+    if(ink < 1) S.color.lerp(tintOf(rec.skin || DEFAULT_SKIN, gain.skin || 1).clone(), 1 - ink);
   }
 
   /* the eyes: make_mpfb.py greys the irises and puts their mask in the texture's alpha; the eye colour multiplies in

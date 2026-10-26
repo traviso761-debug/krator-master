@@ -145,8 +145,11 @@
   (`tools/fur.py`): rebuilding those garments rewrites them from the source (a few texels apart at a band's edge). The
   Godot twin's legs band takes the unmorphed rest heights (CUSTOM1), the page the morphed ones: a few cm apart at the
   slider ends. The crowd's baked looks leave the shells out.
-- **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt and the short coat read as fur; body hair reads as
-  fine dark dashes, closer to stubble than hair, and wants the owner's eye. The bare face is an ellipse sized from the
+- **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt, the brush and the short coat read as fur; body hair
+  (tuned once: combed flat, inked toward the skin) reads as hair from a few metres and as streaks close up. The Coyote
+  Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
+  face has a human face's shape, the eyes and mouth bare by ellipses. A MakeHuman UV seam shows in motion as a darker
+  line across the chest under a full coat (the strands run on the UV map and break at the seam). The bare face is an ellipse sized from the
   head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the
   temples. The ears (their own primitive) stay bare. A UV seam shows as a faint line in a short coat (round the
   areola). A coat stops at what the clothes hide; a library item with no delete group hides nothing, so a coat comes

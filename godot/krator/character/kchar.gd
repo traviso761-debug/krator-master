@@ -329,6 +329,8 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 	rec["hair_color"] = hair
 	var eyes: Array = P.get("eyes", ["#3b2414", "#5a3a22", "#6e5a2e", "#4a5a3a", "#4e6a80"])
 	rec["eye_color"] = eyes[int(floor(r.next() * eyes.size()))]
+	if P.get("coat") != null:            # a furred people's coat (as KCHAR.stranger)
+		rec["coat"] = P["coat"]
 	rec["people"] = P.get("id")
 	return rec
 
