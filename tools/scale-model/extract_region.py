@@ -12,6 +12,13 @@
 --add <file>       (optional) more polygons that are part of the cut: a JSON list of {name, map_px:[[x, y], ...]} (map
                    pixels, as the open world's polygon tool copies them). The box covers them all and the mask is the
                    union; region.json records each as 'added'. Without it the cut is the named region's alone.
+--keep <dir>       (optional) grow an existing cut without moving it: <dir> is the build's data/ as it is. The frame's
+                   origin and the heights' 16-bit range are kept from its region.json (otherwise the origin is the new
+                   box's centre and every world coordinate in the build would move), and where its height cells overlap
+                   the new grid and agree with the model within KEEP_TOL metres, its elev, wlev, scarpl and scarpu
+                   values are kept exactly (a newer model quantizes its heights to a different range, so a re-cut of
+                   unchanged ground would still shift it by a few decimetres). A cell that disagrees by more is the
+                   model's: it is counted and reported, and the new value is written.
 
 Map pixels are the scale model's full grid (fullW x fullH, 2 km a pixel); its heights are a half-resolution grid
 (DATA.w x DATA.hh, about 4 km a pixel) that the page samples at u = px*(w-1)/(fullW-1). World coordinates: metres,
@@ -114,6 +121,30 @@ def poly_area(pts):
         a, b = pts[i], pts[(i + 1) % len(pts)]
         s += a[0] * b[1] - b[0] * a[1]
     return abs(s) / 2
+
+
+KEEP_TOL = 0.5   # metres: --keep keeps an old height cell when the model agrees with it to this
+
+
+def keep_cells(old, new, oi0, oj0, i0, j0, tol=KEEP_TOL):
+    """--keep: write the old grid's values into the new grid where the cells overlap and agree within tol. Returns
+    (kept, changed): the counts of cells kept and of overlapping cells the model has moved."""
+    di, dj = oi0 - i0, oj0 - j0
+    ny, nx = old.shape
+    a0, b0 = max(0, -dj), max(0, -di)
+    a1, b1 = min(ny, new.shape[0] - dj), min(nx, new.shape[1] - di)
+    if a1 <= a0 or b1 <= b0:
+        return 0, 0
+    o = old[a0:a1, b0:b1]
+    n = new[a0 + dj:a1 + dj, b0 + di:b1 + di]
+    ok = np.abs(o - n) <= tol
+    n[ok] = o[ok]
+    return int(ok.sum()), int((~ok).sum())
+
+
+def load16(path, lo, hi):
+    a = np.asarray(Image.open(path).convert('RGB')).astype(np.int32)
+    return lo + ((a[..., 0] << 8) | a[..., 1]) / 65535 * (hi - lo)
 
 
 def save16(path, v, lo, hi, flag):
@@ -305,6 +336,12 @@ def main():
         k = argv.index('--add')
         added = json.load(open(argv[k + 1], encoding='utf-8'))
         argv = argv[:k] + argv[k + 2:]
+    keep = None
+    if '--keep' in argv:
+        k = argv.index('--keep')
+        kd = argv[k + 1]
+        keep = {'dir': kd, 'meta': json.load(open(os.path.join(kd, 'region.json'), encoding='utf-8'))}
+        argv = argv[:k] + argv[k + 2:]
     if len(argv) != 5:
         sys.exit(__doc__)
     page, rdir, sdir, name, out = argv
@@ -326,6 +363,10 @@ def main():
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(OW - 1, x1), min(OH - 1, y1)
     W, H = x1 - x0 + 1, y1 - y0 + 1
     cx, cy = int((min(xs) + max(xs)) // 2), int((min(ys) + max(ys)) // 2)
+    olo, ohi = lo, hi   # the 16-bit range the rasters are written in
+    if keep:
+        cx, cy = keep['meta']['frame']['origin_px']
+        olo, ohi = keep['meta']['heights']['lo'], keep['meta']['heights']['hi']
     os.makedirs(out, exist_ok=True)
 
     # ---- heights and water, on their own grid
@@ -338,6 +379,14 @@ def main():
     w = raster(D, 'wl')[j0:j1 + 1, i0:i1 + 1]
     whas = w[..., 2] > 127
     wlev = np.where(whas, lo + ((w[..., 0].astype(np.int32) << 8) | w[..., 1]) / 65535 * (hi - lo), lo)
+    kept = {}
+    if keep:
+        KH = keep['meta']['heights']
+        oi0, oj0 = KH['origin_cell']
+        if abs(KH['su'] - (VW - 1) / (OW - 1)) > 1e-9 or abs(KH['sv'] - (VH - 1) / (OH - 1)) > 1e-9:
+            sys.exit("--keep: the model's height grid has changed size; the old cut cannot be kept")
+        for nm, arr in (('elev', elev), ('wlev', wlev)):
+            kept[nm] = keep_cells(load16(os.path.join(keep['dir'], nm + '.png'), olo, ohi), arr, oi0, oj0, i0, j0)
     # A lake cannot stand above the lowest point of its own shore: it would spill. A few bodies in the model carry a
     # level kilometres over the ground round them (the abyss's floor holds pools at 0 m and -900 m over a floor near
     # -2,300 m). Each connected body standing more than SPILL_SLACK over it is clamped to its spill height: the lower quartile of the dry cells touching it, not
@@ -359,8 +408,8 @@ def main():
         if over.any():
             spilled += int(over.sum())
             wlev[over] = spill
-    save16(os.path.join(out, 'elev.png'), elev, lo, hi, wflag)
-    save16(os.path.join(out, 'wlev.png'), wlev, lo, hi, whas)
+    save16(os.path.join(out, 'elev.png'), elev, olo, ohi, wflag)
+    save16(os.path.join(out, 'wlev.png'), wlev, olo, ohi, whas)
 
     # ---- full-resolution rasters
     crop = lambda a: a[y0:y1 + 1, x0:x1 + 1]
@@ -383,7 +432,21 @@ def main():
     over.sort(key=lambda r: -poly_area(r['points']))        # largest first, so a smaller one paints over it
     bmap = np.full((H, W), 255, np.uint8)
     biomes = []
-    for k, r in enumerate(over):
+    # --keep: a biome the old cut had keeps its index (the build's biome.png and its kit table stay valid); a new one
+    # takes the next free index. The painting order (largest first) is not changed by the numbering.
+    ids = list(range(len(over)))
+    if keep:
+        old = {b['name'].strip().lower(): b['id'] for b in keep['meta'].get('biomes', [])}
+        nxt = max(list(old.values()) + [-1]) + 1
+        for k, r in enumerate(over):
+            nm = r['name'].strip().lower()
+            if nm in old:
+                ids[k] = old[nm]
+            else:
+                ids[k] = nxt
+                nxt += 1
+    for k0, r in enumerate(over):
+        k = ids[k0]
         m = poly_mask(r['points'], x0, y0, W, H)
         bmap[m] = k
         nm = r['name'].strip()
@@ -391,6 +454,7 @@ def main():
         biomes.append({'id': k, 'name': nm, 'doc': r['id'], 'kind': r.get('kind'), 'colour': r.get('color'),
                        'kit': kit, 'water': nm.lower() in WATER_OVERLAYS,
                        'drawn_px': int(m.sum()), 'notes': r.get('notes', '')})
+    biomes.sort(key=lambda b: b['id'])   # the page reads the table by index
     empty = bmap == 255
     filled = int(empty.sum())
     if empty.any():
@@ -454,8 +518,13 @@ def main():
             dr = ndimage.distance_transform_edt(~np.array(im).astype(bool))
             sw = sw * np.clip((dr - 3) / 3, 0, 1)
         sw = ndimage.gaussian_filter(sw, 1.2)
-    save16(os.path.join(out, 'scarpl.png'), Lr, lo, hi, np.zeros(elev.shape, bool))
-    save16(os.path.join(out, 'scarpu.png'), Ur, lo, hi, np.zeros(elev.shape, bool))
+    if keep:
+        for nm, arr in (('scarpl', Lr), ('scarpu', Ur)):
+            kept[nm] = keep_cells(load16(os.path.join(keep['dir'], nm + '.png'), olo, ohi), arr, oi0, oj0, i0, j0)
+        for nm in kept:
+            print('  --keep %-6s %6d cells kept, %d moved by the model (more than %.1f m)' % (nm, kept[nm][0], kept[nm][1], KEEP_TOL))
+    save16(os.path.join(out, 'scarpl.png'), Lr, olo, ohi, np.zeros(elev.shape, bool))
+    save16(os.path.join(out, 'scarpu.png'), Ur, olo, ohi, np.zeros(elev.shape, bool))
     save8(os.path.join(out, 'scarpw.png'), np.clip(sw * 255, 0, 255))
 
     # ---- drainage on the height grid: lakes and the sea are sinks, rain from the full grid
@@ -592,7 +661,7 @@ def main():
                    'added': [{'name': a.get('name', ''), 'points_px': a['map_px'], 'area_km2': round(poly_area(a['map_px']) * 4)} for a in added]},
         'frame': {'units': 'm', 'x': 'east', 'z': 'south', 'm_per_px': 2000.0, 'origin_px': [cx, cy],
                   'box_px': [x0, y0, x1, y1], 'size_px': [W, H]},
-        'heights': {'grid': [nx, ny], 'origin_cell': [i0, j0], 'su': su, 'sv': sv, 'lo': lo, 'hi': hi,
+        'heights': {'grid': [nx, ny], 'origin_cell': [i0, j0], 'su': su, 'sv': sv, 'lo': olo, 'hi': ohi,
                     'note': 'cell (i,j) sits at full px ((i+i0)/su, (j+j0)/sv); elev.png and wlev.png are this grid'},
         'rain': {'scale_mm': 4000 / 255}, 'temp': {'offset': -90},
         'pressure': {'atm0': 1.6, 'scale_m': 8000},
