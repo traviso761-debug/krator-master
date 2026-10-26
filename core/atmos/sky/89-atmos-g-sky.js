@@ -41,7 +41,7 @@
  // the chunk any ground or plant material includes (ATMOS.cloudShade): its own uniforms, the noise, the field, the shade
  A.cloudShadeGLSL=function(){return['uniform highp sampler3D uNoise;','uniform vec4 uCloud;','uniform vec4 uCloudH;','uniform vec2 uWind;',
   'uniform float uTime;','uniform float uWet;'].concat(NOISE,CLOUDF,SHADE).join('\n');};
- A.skyGLSL=function(){const f=A.glf,S=A.SKY,G=S.giant,NR=A.SKY_MAX_RIDGES,NS=S.stars.length;
+ A.skyGLSL=function(){const f=A.glf,S=A.SKY,G=S.giant,NR=A.SKY_MAX_RIDGES,NS=S.stars.length,NL=A.SKY_MAX_LANDMARKS;
   const rg=Math.sin(G.diaDeg/2*Math.PI/180),cosG=Math.cos(G.diaDeg/2*Math.PI/180);
   return[
   'uniform vec3 uSunDir,uGiantDir,uPole,uRingN,uZen,uHor,uSunHor,uSunC,uExt,uShineC,uCluster,uFogC;',
@@ -57,7 +57,8 @@
   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];uniform vec3 uRidgeRock['+NR+'],uRidgeForest['+NR+'],uRidgeSnow['+NR+'];',
   // the broken station (ATMOS.skyStation): its direction, torus axis and motion; uStaK: ring radius (radians), lit, distance (km), over the horizon
   'uniform vec3 uStaDir,uStaAx,uStaV;uniform vec4 uStaK;',
-  'uniform float uRealT,uMeteor;',   // uRealT: wall-clock seconds (the meteors keep real time whatever the game clock does); uMeteor: their rate, 0 none, 1 the usual night
+  'uniform float uRealT,uMeteor;',
+  'uniform vec4 uLm['+NL*5+'];uniform float uLmK['+NL+'];uniform int uLmN;',   // the landmarks (ATMOS.skyLandmarks): five vec4 each, their kinds, how many   // uRealT: wall-clock seconds (the meteors keep real time whatever the game clock does); uMeteor: their rate, 0 none, 1 the usual night
   // ---- the hash and gradient noise (lowbias32; bit-exact across engines)
   ...NOISE,
   ...CLOUDF,
@@ -349,6 +350,40 @@
   '  float tr=exp(-off*off/(w*w))*pow(x,1.6)*step(a,hd),hg=exp(-((a-hd)*(a-hd)+off*off)/(w*w*2.2));',
   '  o+=mix(vec3(1.0,0.60,0.30),vec3(0.82,1.0,0.88),x)*br*(0.7*tr+1.2*hg);}',
   ' return o;}',
+  // ---- 8 the landmarks (ATMOS.skyLandmarks, SKY-PLAN.md 4): plumes, an overcast ceiling, cloud seas and horizon bands, lit by
+  // the sun, the sky and the giantshine as the clouds are, hazed toward the air by their own haze; drawn in order, the later over
+  'float atmSkyWin(vec3 d,vec4 W,float pw){if(W.w>=3.14)return 1.0;vec2 h=normalize(d.xz+1e-5),c=normalize(W.xz+1e-5);float dz=acos(clamp(dot(h,c),-1.0,1.0));return pow(max(0.0,cos(min(1.5708,dz*1.5708/W.w))),pw);}',
+  'vec3 atmSkyLmLight(vec3 c){return c*(uSunC*uSunI*0.25+mix(uZen,uHor,0.55)*0.62+uShineC*uShineI*0.3);}',
+  // low: the seas and bands (drawn after the ridges, lapping their feet); else the plumes and ceilings (before the clouds)
+  'vec4 atmSkyLandmarks(vec3 d,vec3 air,bool low){vec4 o=vec4(0.0);float el=asin(clamp(d.y,-1.0,1.0));',
+  ' for(int i=0;i<'+NL+';i++){if(i>=uLmN)break;float k=uLmK[i];if(k<-0.5||(k>1.5)!=low)continue;vec4 lA=uLm[i*5],lB=uLm[i*5+1],lC=uLm[i*5+2],lD=uLm[i*5+3],lE=uLm[i*5+4];vec4 m=vec4(0.0);',
+  // a plume: the nearest point of a quadratic curve through via's pull, sampled in 12 chords; puffs from the noise drifting up it
+  '  if(k<0.5){float best=9.0,bt=0.0;vec3 bp=lA.xyz,prev=lA.xyz;',
+  '   for(int j=1;j<=12;j++){float t=float(j)/12.0,u=1.0-t;vec3 p=normalize(u*u*lA.xyz+2.0*u*t*lB.xyz+t*t*lC.xyz),sg=p-prev;float h=clamp(dot(d-prev,sg)/max(dot(sg,sg),1e-9),0.0,1.0);vec3 q=prev+sg*h;float dd=length(d-q);if(dd<best){best=dd;bt=(float(j-1)+h)/12.0;bp=q;}prev=p;}',
+  '   float w=mix(lA.w,lB.w,bt);if(best<w*1.8){float pr=exp(-best*best/(w*w)*1.3);',
+  // billows: two scales of noise riding up the plume; the edge breaks into puffs, the core is thick and its belly dark
+  '    vec3 np=d*(2.4/max(w,0.004))+vec3(0.0,-uTime*lE.w,uTime*lE.w*0.6);float n=atmSkyFbm(np,4,700u+uint(i)*7u)*0.5+0.5,n2=atmSkyFbm(np*2.7+vec3(3.1),3,705u+uint(i)*7u)*0.5+0.5;',
+  '    float dens=smoothstep(0.42,0.72,0.55*pr+0.55*n+0.15*n2-0.12)*smoothstep(0.03,0.35,pr)*smoothstep(0.0,0.05,bt)*(1.0-smoothstep(0.7,1.0,bt));',
+  '    float side=clamp(dot(d-bp,uSunDir)/(w*0.9),-1.0,1.0),th=pr*n;float lt=clamp(0.55+0.35*side+0.45*(n2-0.5)-0.35*th,0.0,1.0);',
+  '    vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,lt));m=vec4(mix(c,air,lD.w),clamp(dens*lC.w,0.0,1.0));}}',
+  // a ceiling: the underside of a spread plume over the sky above its elevation, lumpy, open low in its gap
+  '  else if(k<1.5){if(d.y>lB.x-0.2){float cov=smoothstep(lB.x,lB.x+sin(lB.y),d.y),gap=atmSkyWin(d,lA,1.0)*(1.0-smoothstep(lB.z-0.05,lB.z+0.05,d.y));',
+  '   float n=atmSkyFbm(d*4.0+vec3(uTime*0.002,0.0,0.0),4,720u+uint(i))*0.5+0.5;cov*=clamp(1.0-gap*1.2,0.0,1.0)*(1.0-lC.x+lC.x*smoothstep(0.3,0.7,n));',
+  '   vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,smoothstep(0.35,0.75,n)));m=vec4(mix(c,air,lD.w*(1.0-d.y)),cov*lB.w);}}',
+  // a cloud sea: a billowing floor from its top down, in its window, sunlit on top
+  '  else if(k<2.5){float w=atmSkyWin(d,lA,lB.z);if(w>0.0&&d.y<lB.x+lB.y){float az=atan(d.x,-d.z);',
+  '   float ne=atmSkyFbm(vec3(cos(az)*14.0,sin(az)*14.0,uTime*0.002),3,741u+uint(i))*0.5+0.5,top=lB.x+lB.y*(ne-0.35)*w;',
+  // the billows on the floor in perspective: the floor's coordinates under the eye, so they crowd toward the horizon
+  '   vec2 g=d.xz/max(top+0.004-d.y,0.003)*0.35;float n=atmSkyFbm(vec3(g,uTime*0.003),4,740u+uint(i))*0.5+0.5;',
+  '   float cov=(1.0-smoothstep(top-0.002,top+0.002,d.y))*w,lt=0.75*smoothstep(0.25,0.8,n)+0.25*smoothstep(-0.03,0.0,d.y-top);',
+  '   vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,lt));m=vec4(mix(c,air,lD.w*smoothstep(-0.12,0.0,d.y)),cov*lB.w);}}',
+  // a band: a strip between two elevations in its window (a glint, a far lake, a cataract, a cloud belt with noise)
+  '  else{float w=atmSkyWin(d,lA,lB.z);if(w>0.0&&el>lB.x-0.01&&el<lB.y+0.01){float sf=max(uPixAng*1.5,(lB.y-lB.x)*0.12);',
+  '   float cov=smoothstep(lB.x-sf,lB.x+sf,el)*(1.0-smoothstep(lB.y-sf,lB.y+sf,el))*w;',
+  '   if(lC.x>0.0){float n=atmSkyFbm(d*vec3(14.0,40.0,14.0)+vec3(uTime*0.004,0.0,0.0),3,760u+uint(i))*0.5+0.5;cov*=mix(1.0,smoothstep(0.35,0.65,n),lC.x);}',
+  '   m=vec4(mix(atmSkyLmLight(lD.rgb),air,lD.w),cov*lB.w);}}',
+  '  o.rgb=o.rgb*(1.0-m.a)+m.rgb*m.a;o.a=o.a*(1.0-m.a)+m.a;}',
+  ' return o.a>0.0?vec4(o.rgb/o.a,o.a):o;}',
   // ---- the whole sky
   'vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);',
   ' float skyL=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,skyL)*(1.0-uDayStars*0.8),0.0,1.0);',
@@ -372,9 +407,11 @@
   '  vec3 ob=mix(bc*T,air,hz);col=mix(col,ob,op);}',
   ' col+=deb*T*(1.0-0.9*uHazeFloor);',
   ' col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);',
+  ' vec4 lm=uLmN>0?atmSkyLandmarks(d,air,false):vec4(0.0);col=mix(col,lm.rgb,lm.a);',
   ' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
   ' vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);',
-  ' if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a));',
+  ' vec4 lo=uLmN>0?atmSkyLandmarks(d,air,true):vec4(0.0);col=mix(col,lo.rgb,lo.a);',
+  ' if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a)*(1.0-lm.a)*(1.0-lo.a));',
   ' return col;}'].join('\n');};
  A.onInit.push(()=>{if(A.T.ShaderChunk)A.T.ShaderChunk.atmos_sky=A.skyGLSL();});
 })();

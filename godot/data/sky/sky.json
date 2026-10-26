@@ -1102,5 +1102,6 @@
    "ridges": []
   }
  },
- "maxRidges": 4
+ "maxRidges": 4,
+ "maxLandmarks": 6
 }

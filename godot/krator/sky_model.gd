@@ -291,6 +291,62 @@ static func key_at(keys: Array, alt: float) -> Dictionary:
 	return o
 
 
+# the landmarks (ATMOS.skyLandmarks): a preset's plumes, ceilings, cloud seas and horizon bands packed for the shader, five
+# Vector4 a landmark ({n, kind, v}); the same numbers as the JavaScript's (godot/tests/sky/golden.json)
+func landmarks(list: Array) -> Dictionary:
+	var N: int = int(S.get("maxLandmarks", 6))
+	var kind := PackedFloat32Array()
+	kind.resize(N)
+	kind.fill(0.0)
+	var v: Array = []
+	for i in N * 5:
+		v.append(Vector4.ZERO)
+	var K := {"plume": 0, "ceiling": 1, "sea": 2, "band": 3}
+	var dir := func(az: float, el: float) -> Vector3: return Vector3(sin(az * D) * cos(el * D), sin(el * D), -cos(az * D) * cos(el * D))
+	var n: int = mini(list.size(), N)
+	for i in n:
+		var m: Dictionary = list[i]
+		var k: int = K.get(m.get("kind", ""), -1)
+		kind[i] = k
+		var lit: Array = m.get("lit", [1, 1, 1])
+		var dk: Array = m.get("belly", m.get("shade", lit))
+		if k == 0:
+			var w: Array = m.get("width", [1, 4])
+			var fr: Array = m["from"]
+			var vi: Array = m.get("via", fr)
+			var to: Array = m["to"]
+			var a: Vector3 = dir.call(fr[0], fr[1])
+			var b: Vector3 = dir.call(vi[0], vi[1])
+			var c: Vector3 = dir.call(to[0], to[1])
+			v[i * 5] = Vector4(a.x, a.y, a.z, w[0] * D)
+			v[i * 5 + 1] = Vector4(b.x, b.y, b.z, w[1] * D)
+			v[i * 5 + 2] = Vector4(c.x, c.y, c.z, m.get("alpha", .5))
+			v[i * 5 + 3] = Vector4(lit[0], lit[1], lit[2], m.get("haze", .3))
+			v[i * 5 + 4] = Vector4(dk[0], dk[1], dk[2], m.get("drift", .02))
+		elif k == 1:
+			var g: Array = m.get("gap", [0, 0, -90])
+			var h: Vector3 = dir.call(g[0], 0.0)
+			v[i * 5] = Vector4(h.x, 0.0, h.z, g[1] * D)
+			v[i * 5 + 1] = Vector4(sin(m.get("el", 6.0) * D), m.get("soft", 8.0) * D, sin(g[2] * D), m.get("alpha", .9))
+			v[i * 5 + 2] = Vector4(m.get("lump", .35), 0, 0, 0)
+			v[i * 5 + 3] = Vector4(lit[0], lit[1], lit[2], m.get("haze", .2))
+			v[i * 5 + 4] = Vector4(dk[0], dk[1], dk[2], 0)
+		elif k == 2 or k == 3:
+			var wn: Array = m.get("win", [0, 360, 1])
+			var h: Vector3 = dir.call(wn[0], 0.0)
+			var pw: float = wn[2] if wn.size() > 2 else 1.0
+			v[i * 5] = Vector4(h.x, 0.0, h.z, minf(wn[1], 720.0) * D)
+			if k == 2:
+				v[i * 5 + 1] = Vector4(sin(m.get("top", -1.0) * D), m.get("bump", .4) * D, pw, m.get("alpha", .95))
+			else:
+				var e: Array = m.get("el", [-1, 0])
+				v[i * 5 + 1] = Vector4(e[0] * D, e[1] * D, pw, m.get("alpha", .6))
+			v[i * 5 + 2] = Vector4(m.get("noise", 1.0 if k == 2 else 0.0), 0, 0, 0)
+			v[i * 5 + 3] = Vector4(lit[0], lit[1], lit[2], m.get("haze", .25))
+			v[i * 5 + 4] = Vector4(dk[0], dk[1], dk[2], 0)
+	return {"n": n, "kind": kind, "v": v}
+
+
 func look(P: Dictionary, s: Dictionary, w = null) -> Dictionary:
 	if w == null:
 		w = {}

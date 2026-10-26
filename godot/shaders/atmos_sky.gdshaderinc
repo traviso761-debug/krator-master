@@ -72,6 +72,9 @@ uniform vec3 uStaV;
 uniform vec4 uStaK;
 uniform float uRealT;
 uniform float uMeteor;
+uniform vec4 uLm[30];
+uniform float uLmK[6];
+uniform int uLmN;
 uint atmSkyH(uvec3 c,uint s){uint h=(c.x*1597334677u)^(c.y*3812015801u)^(c.z*2246822519u)^(s*2654435769u);h^=h>>16u;h*=2146121005u;h^=h>>15u;h*=2221713035u;h^=h>>16u;return h;}
 float atmSkyAng(vec3 a,vec3 b){return 2.0*asin(clamp(0.5*length(a-b),0.0,1.0));}
 float atmSkyU(uvec3 c,uint s){return float(atmSkyH(c,s))/4294967296.0;}
@@ -310,6 +313,31 @@ vec3 atmSkyMeteors(vec3 d){vec3 o=vec3(0.0);if(uMeteor<=0.0||d.y<-0.02)return o;
   float tr=exp(-off*off/(w*w))*pow(x,1.6)*step(a,hd),hg=exp(-((a-hd)*(a-hd)+off*off)/(w*w*2.2));
   o+=mix(vec3(1.0,0.60,0.30),vec3(0.82,1.0,0.88),x)*br*(0.7*tr+1.2*hg);}
  return o;}
+float atmSkyWin(vec3 d,vec4 W,float pw){if(W.w>=3.14)return 1.0;vec2 h=normalize(d.xz+1e-5),c=normalize(W.xz+1e-5);float dz=acos(clamp(dot(h,c),-1.0,1.0));return pow(max(0.0,cos(min(1.5708,dz*1.5708/W.w))),pw);}
+vec3 atmSkyLmLight(vec3 c){return c*(uSunC*uSunI*0.25+mix(uZen,uHor,0.55)*0.62+uShineC*uShineI*0.3);}
+vec4 atmSkyLandmarks(vec3 d,vec3 air,bool low){vec4 o=vec4(0.0);float el=asin(clamp(d.y,-1.0,1.0));
+ for(int i=0;i<6;i++){if(i>=uLmN)break;float k=uLmK[i];if(k<-0.5||(k>1.5)!=low)continue;vec4 lA=uLm[i*5],lB=uLm[i*5+1],lC=uLm[i*5+2],lD=uLm[i*5+3],lE=uLm[i*5+4];vec4 m=vec4(0.0);
+  if(k<0.5){float best=9.0,bt=0.0;vec3 bp=lA.xyz,prev=lA.xyz;
+   for(int j=1;j<=12;j++){float t=float(j)/12.0,u=1.0-t;vec3 p=normalize(u*u*lA.xyz+2.0*u*t*lB.xyz+t*t*lC.xyz),sg=p-prev;float h=clamp(dot(d-prev,sg)/max(dot(sg,sg),1e-9),0.0,1.0);vec3 q=prev+sg*h;float dd=length(d-q);if(dd<best){best=dd;bt=(float(j-1)+h)/12.0;bp=q;}prev=p;}
+   float w=mix(lA.w,lB.w,bt);if(best<w*1.8){float pr=exp(-best*best/(w*w)*1.3);
+    vec3 np=d*(2.4/max(w,0.004))+vec3(0.0,-uTime*lE.w,uTime*lE.w*0.6);float n=atmSkyFbm(np,4,700u+uint(i)*7u)*0.5+0.5,n2=atmSkyFbm(np*2.7+vec3(3.1),3,705u+uint(i)*7u)*0.5+0.5;
+    float dens=smoothstep(0.42,0.72,0.55*pr+0.55*n+0.15*n2-0.12)*smoothstep(0.03,0.35,pr)*smoothstep(0.0,0.05,bt)*(1.0-smoothstep(0.7,1.0,bt));
+    float side=clamp(dot(d-bp,uSunDir)/(w*0.9),-1.0,1.0),th=pr*n;float lt=clamp(0.55+0.35*side+0.45*(n2-0.5)-0.35*th,0.0,1.0);
+    vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,lt));m=vec4(mix(c,air,lD.w),clamp(dens*lC.w,0.0,1.0));}}
+  else if(k<1.5){if(d.y>lB.x-0.2){float cov=smoothstep(lB.x,lB.x+sin(lB.y),d.y),gap=atmSkyWin(d,lA,1.0)*(1.0-smoothstep(lB.z-0.05,lB.z+0.05,d.y));
+   float n=atmSkyFbm(d*4.0+vec3(uTime*0.002,0.0,0.0),4,720u+uint(i))*0.5+0.5;cov*=clamp(1.0-gap*1.2,0.0,1.0)*(1.0-lC.x+lC.x*smoothstep(0.3,0.7,n));
+   vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,smoothstep(0.35,0.75,n)));m=vec4(mix(c,air,lD.w*(1.0-d.y)),cov*lB.w);}}
+  else if(k<2.5){float w=atmSkyWin(d,lA,lB.z);if(w>0.0&&d.y<lB.x+lB.y){float az=atan(d.x,-d.z);
+   float ne=atmSkyFbm(vec3(cos(az)*14.0,sin(az)*14.0,uTime*0.002),3,741u+uint(i))*0.5+0.5,top=lB.x+lB.y*(ne-0.35)*w;
+   vec2 g=d.xz/max(top+0.004-d.y,0.003)*0.35;float n=atmSkyFbm(vec3(g,uTime*0.003),4,740u+uint(i))*0.5+0.5;
+   float cov=(1.0-smoothstep(top-0.002,top+0.002,d.y))*w,lt=0.75*smoothstep(0.25,0.8,n)+0.25*smoothstep(-0.03,0.0,d.y-top);
+   vec3 c=atmSkyLmLight(mix(lE.rgb,lD.rgb,lt));m=vec4(mix(c,air,lD.w*smoothstep(-0.12,0.0,d.y)),cov*lB.w);}}
+  else{float w=atmSkyWin(d,lA,lB.z);if(w>0.0&&el>lB.x-0.01&&el<lB.y+0.01){float sf=max(uPixAng*1.5,(lB.y-lB.x)*0.12);
+   float cov=smoothstep(lB.x-sf,lB.x+sf,el)*(1.0-smoothstep(lB.y-sf,lB.y+sf,el))*w;
+   if(lC.x>0.0){float n=atmSkyFbm(d*vec3(14.0,40.0,14.0)+vec3(uTime*0.004,0.0,0.0),3,760u+uint(i))*0.5+0.5;cov*=mix(1.0,smoothstep(0.35,0.65,n),lC.x);}
+   m=vec4(mix(atmSkyLmLight(lD.rgb),air,lD.w),cov*lB.w);}}
+  o.rgb=o.rgb*(1.0-m.a)+m.rgb*m.a;o.a=o.a*(1.0-m.a)+m.a;}
+ return o.a>0.0?vec4(o.rgb/o.a,o.a):o;}
 vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);
  float skyL=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,skyL)*(1.0-uDayStars*0.8),0.0,1.0);
  vec3 col=air;float lanes;
@@ -328,8 +356,10 @@ vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);
   vec3 ob=mix(bc*T,air,hz);col=mix(col,ob,op);}
  col+=deb*T*(1.0-0.9*uHazeFloor);
  col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);
+ vec4 lm=uLmN>0?atmSkyLandmarks(d,air,false):vec4(0.0);col=mix(col,lm.rgb,lm.a);
  vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);
  vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);
- if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a));
+ vec4 lo=uLmN>0?atmSkyLandmarks(d,air,true):vec4(0.0);col=mix(col,lo.rgb,lo.a);
+ if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a)*(1.0-lm.a)*(1.0-lo.a));
  return col;}
 #endif

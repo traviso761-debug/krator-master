@@ -24,7 +24,8 @@
    uCloud:{value:new T.Vector4()},uCamPos:{value:V3()},uWet:{value:0},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
    uPN:{value:new T.Vector4()},uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
    uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)},
-   uStaDir:{value:V3()},uStaAx:{value:V3()},uStaV:{value:V3()},uStaK:{value:new T.Vector4()},uRealT:{value:0},uMeteor:{value:1}};
+   uStaDir:{value:V3()},uStaAx:{value:V3()},uStaV:{value:V3()},uStaK:{value:new T.Vector4()},uRealT:{value:0},uMeteor:{value:1},
+   uLm:{value:Array.from({length:A.SKY_MAX_LANDMARKS*5},()=>new T.Vector4())},uLmK:{value:new Array(A.SKY_MAX_LANDMARKS).fill(-1)},uLmN:{value:0}};
   // the noise volume, baked once for the page (64^3 RGBA, 1 MB) and shared by every sky on it
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
@@ -45,7 +46,9 @@
    if(U.uRidgeTex.value)U.uRidgeTex.value.dispose();
    const t=new T.DataTexture(data,n,A.SKY_MAX_RIDGES,T.RGBAFormat,T.FloatType);t.minFilter=t.magFilter=T.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;
    U.uRidgeTex.value=t;U.uRidgeN.value=L.length;};
-  S.setPreset=p=>{P=S.preset=p;const G=P.giant;['Deep','Mid','Pale','Cloud','Plank','Haze','Teal','Rim','Night','Ring'].forEach(k=>U['uG'+k].value.setRGB(...G[k.toLowerCase()]));setRidges();S.update(0);};
+  // the landmarks (ATMOS.skyLandmarks): packed once a preset, the shader's five vec4 each
+  const setLandmarks=()=>{const M=A.skyLandmarks(P.landmarks);U.uLmN.value=M.n;for(let i=0;i<A.SKY_MAX_LANDMARKS;i++){U.uLmK.value[i]=M.kind[i];for(let k=0;k<5;k++){const j=(i*5+k)*4;U.uLm.value[i*5+k].set(M.v[j],M.v[j+1],M.v[j+2],M.v[j+3]);}}};
+  S.setPreset=p=>{P=S.preset=p;const G=P.giant;['Deep','Mid','Pale','Cloud','Plank','Haze','Teal','Rim','Night','Ring'].forEach(k=>U['uG'+k].value.setRGB(...G[k.toLowerCase()]));setRidges();setLandmarks();S.update(0);};
   S.setSite=s=>{P.site=s;S.update(0);};
   const v=(u,a)=>u.value.set(a[0],a[1],a[2]),c=(u,a)=>u.value.setRGB(a[0],a[1],a[2]);
   S.update=function(dt){
