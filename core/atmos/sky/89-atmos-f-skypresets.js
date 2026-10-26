@@ -25,7 +25,7 @@
    K(50,[.23,.43,.76],[.70,.79,.87],[.86,.89,.90],[1,.97,.92],2.35,[.75,.82,.90],[.34,.32,.27],.62,1.0,1)],
   // the giant: an ice giant's blues (the owner's references, 2026-10-25); plank multiplies the sky-plankton bands;
   // haze and teal colour the mid-level deck between the white belts, teal on the equator
-  giant:{deep:[.07,.19,.55],mid:[.21,.44,.86],pale:[.52,.68,.94],cloud:[.94,.97,1],plank:[.70,1.12,.92],haze:[.40,.63,.96],teal:[.22,.68,.72],rim:[.55,.72,1],night:[.20,.30,.48],ring:[.74,.70,.62],
+  giant:{deep:[.07,.19,.55],mid:[.21,.44,.86],pale:[.52,.68,.94],cloud:[.94,.97,1],plank:[.70,1.12,.92],haze:[.40,.63,.96],teal:[.22,.68,.72],rim:[.55,.72,1],night:[.20,.30,.48],ring:[.88,.84,.76],
    shine:[.60,.72,.86],shineI:.42},          // giantshine: the night's key light from the giant, at full phase
   clouds:{cover:.32,cumulus:1,cirrus:.55,bank:.35,height:1600,cirrusHeight:9000,scale:2600,drift:.004},
   night:{stars:1,nebula:1,galaxy:1},

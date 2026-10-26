@@ -28,13 +28,17 @@
   frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:87.12},
   giant:{diaDeg:30, decDeg:-37.6, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
   sunDiaDeg:0.53,
-  // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: a 2:1 inner moon, proposed), 1 Callisto-like (dark, cratered),
+  // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: Day), 1 Callisto-like (dark, cratered),
   // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots), 4 Iapetus-like
   // (its leading hemisphere coal-dark, its trailing one bright, an equatorial ridge). The Companion is a Trojan (trojanDeg ahead of Krator on its orbit); the others' phase0 makes
   // both new at the Double Dark the day before game start, solved below. 'Companion' is a working name
   moons:[{name:'Companion', kind:3, trojanDeg:60, radiusKm:470, albedo:[1,1,1]},
          {name:'Week', kind:4, periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[1,1,1]},
-         {name:'Thirteen', kind:2, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]}],
+         {name:'Thirteen', kind:2, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]},
+         // Day (the owner, 2026-10-25): Io-like, inside Krator's orbit in a 2:1 resonance (12 h, Kepler from Krator's 24 h and
+         // 194,000 km), just outside the rings; Krator keeps its orbit eccentric, so it is tidally torn into volcanoes. It laps
+         // Krator once a day: it swings ~39 degrees either side of the giant, crosses its face (~3 degrees across) and hides behind it
+         {name:'Day', kind:0, periodD:0.5, orbitKm:122200, radiusKm:1820, albedo:[1,1,1], inner:true}],
   doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
   // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
   // the southern winter nights (the owner, 2026-10-25)
@@ -75,6 +79,7 @@
  const kratorAt=(lst,Hg)=>{const rag=lst-Hg;return[-S.giant.orbitKm*Math.cos(rag),-S.giant.orbitKm*Math.sin(rag)];};
  const lstOf=(t)=>{const yd=S.startDay+t,ra=sunRaDec(yd)[0],h=((t%1)+1)%1*24;return 15*(h-12)*D+ra;};
  S.moons.forEach(m=>{if(!m.periodD)return;const t=S.doubleDark,lst=lstOf(t),K=kratorAt(lst,0),ra=sunRaDec(S.startDay+t)[0],s=[Math.cos(ra),Math.sin(ra)];
+  if(m.inner){m.theta0=Math.atan2(-K[1],-K[0])-2*Math.PI*t/m.periodD;return;}
   // Hg drops out: the sub-giant longitude only turns the site, not the orbits; K is Krator's position for Hg=0
   const ks=K[0]*s[0]+K[1]*s[1],kk=K[0]*K[0]+K[1]*K[1],d=-ks+Math.sqrt(ks*ks-kk+m.orbitKm*m.orbitKm);
   m.theta0=Math.atan2(K[1]+d*s[1],K[0]+d*s[0])-2*Math.PI*t/m.periodD;});
@@ -118,7 +123,7 @@
    mx-=K[0];my-=K[1];const dist=Math.hypot(mx,my),b=Math.atan2(mx*yh[0]+my*yh[1],mx*xh[0]+my*xh[1]);
    const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
    return{name:m.name,kind:m.kind,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
-    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,lit:(1+cosPsi)/2,albedo:m.albedo};});
+    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
@@ -131,7 +136,7 @@
  // distance. Its spin axis lies in the plane of the sky, tilted axisTiltDeg from the sky's up (the domes' canon: the
  // only reading that gives a tilted planet AND rings seen as a hairline); the ring lies in its equator, opened
  // ringOpenDeg toward us (exactly edge-on it would cover no pixel)
- A.skyRingNormal=s=>{const i=S.giant.ringOpenDeg*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)+g[k]*Math.sin(i)));};
+ A.skyRingNormal=s=>{const i=S.giant.ringOpenDeg*D,p=s.giantAxis,g=s.giantDir;return norm([0,1,2].map(k=>p[k]*Math.cos(i)-g[k]*Math.sin(i)));};   // opened so Krator looks down onto the face the sun lights by day
  A.skyBodyHit=(s,d)=>{const c=s.giantDir,r=Math.sin(S.giant.diaDeg/2*D),n=A.skyRingNormal(s),b=dot(d,c),h=b*b-(1-r*r);
   const giant=h>0&&b>0,giantT=giant?b-Math.sqrt(h):Infinity,dn=dot(d,n),tR=Math.abs(dn)>1e-9?dot(c,n)/dn:-1;
   let ring=false,rr=0;if(tR>0){const p=d.map((v,k)=>v*tR-c[k]);rr=Math.hypot(p[0],p[1],p[2])/r;ring=rr>=S.giant.ringIn&&rr<=S.giant.ringOut;}

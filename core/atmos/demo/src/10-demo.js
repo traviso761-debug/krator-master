@@ -62,7 +62,8 @@
  const st=()=>S.state;
  const nextEclipse=()=>{const s=S.preset.site;for(let d=clock.day;d<clock.day+366;d++){let best=[0,0];for(let h=0;h<24;h+=.05){const e=A.skyState(A.siteAt(s.px,s.py),h,d).eclipse;if(e>best[0])best=[e,h];}
   if(best[0]>.9)return[d,best[1]];}return null;};
- const views={start:()=>{clock.day=0;clock.set(6);look(A.skyVec.fromAltAz(4,92));},
+ const views={transit:()=>{const s0=S.preset.site;let best=[-1,0];for(let h=0;h<24;h+=.02){const m=A.skyState(A.siteAt(s0.px,s0.py),h,clock.day).moons[3];if(m.front&&m.radiusDeg>best[0])best=[m.radiusDeg,h];}clock.set(best[1]);S.update(0);look(st().giantDir);},
+  start:()=>{clock.day=0;clock.set(6);look(A.skyVec.fromAltAz(4,92));},
   dusk:()=>{clock.day=0;clock.set(19.2);look(A.skyVec.fromAltAz(18,60));},
   winter:()=>{clock.day=171-SKY.startDay;clock.set(0);look(A.skyVec.fromAltAz(55,20));},
   summer:()=>{clock.day=350-SKY.startDay;clock.set(23.5);look(A.skyVec.fromAltAz(55,20));},
@@ -70,7 +71,7 @@
   dd:()=>{clock.day=-1;clock.set(21);look(A.skyVec.fromAltAz(30,90));},
   noon:()=>{clock.set(12);}};
  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{views[b.dataset.v]();S.update(0);});
- const looks={giant:()=>{const g=st().giantDir;look([g[0],g[1]-.08,g[2]]);},sun:()=>look(st().sunDir),cluster:()=>look(st().clusterDir),zenith:()=>look([0,.999,-.04]),level:()=>{pitch=.05;},moon0:()=>look(st().moons[0].dir),moon1:()=>look(st().moons[1].dir),moon2:()=>look(st().moons[2].dir)};
+ const looks={giant:()=>{const g=st().giantDir;look([g[0],g[1]-.08,g[2]]);},sun:()=>look(st().sunDir),cluster:()=>look(st().clusterDir),zenith:()=>look([0,.999,-.04]),level:()=>{pitch=.05;},moon0:()=>look(st().moons[0].dir),moon1:()=>look(st().moons[1].dir),moon2:()=>look(st().moons[2].dir),moon3:()=>look(st().moons[3].dir)};
  document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>looks[b.dataset.l]());
  // ---- the readout
  const hm=h=>{const m=Math.round(h*60)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
@@ -88,7 +89,7 @@
  // ---- the frame
  setSite(site);
  const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));
-  if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('day'))clock.day=+q.get('day');if(q.has('hour'))clock.set(+q.get('hour'));
+  if(q.has('day'))clock.day=+q.get('day');if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('hour'))clock.set(+q.get('hour'));
   if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}};
  hashView();addEventListener('hashchange',hashView);
  let last=null,frames=0;

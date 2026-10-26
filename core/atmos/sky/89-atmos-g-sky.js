@@ -22,7 +22,7 @@
   'uniform float uSunI,uHazeFloor,uDayStars,uNight,uEclipse,uShineI,uSpin,uPixAng,uTime,uFogD;',
   'uniform mat3 uEq;',                                   // world -> inertial (the stars' sphere)
   // uPole: the giant's spin axis (its bands and ring plane), not Krator's pole
-  'uniform vec3 uMoonDir[3],uMoonC[3],uMoonL[3],uMoonV[3];uniform float uMoonR[3],uMoonK[3];uniform vec3 uRingT;',   // uMoonL: each moon's sun (its phase); uMoonK: its kind
+  'uniform vec3 uMoonDir[4],uMoonC[4],uMoonL[4],uMoonV[4];uniform float uMoonR[4],uMoonK[4],uMoonF[4];uniform vec3 uRingT;',   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];',
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
   'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;',   // cover, cumulus, cirrus, bank; heights, scale, drift
@@ -73,8 +73,20 @@
   ' if(d.y<0.0)c=mix(c,uFogC,1.0-smoothstep(-0.06,0.0,d.y));return c;}',
   'vec3 atmSkyT(vec3 d){float el=degrees(asin(clamp(d.y,-1.0,1.0)));float am=1.0/(max(d.y,0.0)+0.15*pow(max(el,0.0)+3.885,-1.253));return exp(-uExt*min(am,30.0));}',
   // ---- 4 and 5 the giant and its ring
-  'float atmSkyRingA(float rr){float t=(rr-'+f(G.ringIn)+')/'+f(G.ringOut-G.ringIn)+';if(t<0.0||t>1.0)return 0.0;',
-  ' float a=0.62*(0.45+0.55*sin(t*34.0))*(1.0-smoothstep(0.86,1.0,t))*smoothstep(0.0,0.06,t);return a*(1.0-0.55*smoothstep(0.40,0.46,t)*(1.0-smoothstep(0.46,0.52,t)));}',
+  // the ring's optical depth across its width (t 0 at ringIn, 1 at ringOut; the 2026-10-25 pass, on Saturn's plan): a faint
+  // grey inner ring, a dense bright middle ring, a near-empty gap, an outer ring with a narrow gap of its own, and a thin
+  // outermost ringlet; `fine` adds the ringlets (0 where a pixel spans many of them, so they never shimmer)
+  'float atmSkyRingTau(float rr,float fine){float t=(rr-'+f(G.ringIn)+')/'+f(G.ringOut-G.ringIn)+';if(t<0.0||t>1.0)return 0.0;',
+  ' float tau=0.10*smoothstep(0.0,0.02,t)*(1.0-smoothstep(0.20,0.23,t))',
+  '  +(0.55+0.45*smoothstep(0.30,0.48,t))*smoothstep(0.20,0.24,t)*(1.0-smoothstep(0.600,0.610,t))',
+  '  +0.03*smoothstep(0.600,0.610,t)*(1.0-smoothstep(0.672,0.682,t))',
+  '  +0.50*smoothstep(0.672,0.684,t)*(1.0-smoothstep(0.918,0.930,t))*(1.0-0.95*(1.0-smoothstep(0.003,0.007,abs(t-0.868))))',
+  '  +0.40*exp(-pow((t-0.982)/0.004,2.0));',
+  ' if(fine>0.0){float n=atmSkyNoise(vec3(t*150.0,0.5,0.5),340u)+0.55*atmSkyNoise(vec3(t*520.0,0.5,0.5),341u)+0.3*atmSkyNoise(vec3(t*1600.0,0.5,0.5),342u);tau*=1.0+fine*1.1*n;}',
+  ' return max(tau,0.0);}',
+  // its colour across the width: the inner ring grey, the dense ring warm, the outer ring paler
+  'vec3 atmSkyRingC(float rr){float t=(rr-'+f(G.ringIn)+')/'+f(G.ringOut-G.ringIn)+';vec3 c=mix(vec3(0.62,0.62,0.66),uGRing*1.12,smoothstep(0.18,0.30,t));',
+  ' c=mix(c,uGRing*vec3(1.0,0.99,1.02),smoothstep(0.62,0.70,t));return c*(0.92+0.16*atmSkyNoise(vec3(t*60.0,2.5,0.5),343u));}',
   // the giant's face (2026-10-25 pass, after the owner's ice-giant references): blue zones and belts whose edges waver,
   // sheared by differential rotation; white cloud streaks and filaments torn along the belts (domain-warped noise
   // stretched in longitude, never painted ovals); two vortices that SWIRL the clouds round them, the big one with a
@@ -109,7 +121,7 @@
   ' vec3 col=atmSkyGiantSurf(lat,lon);',
   ' float ndv=clamp(dot(N,-d),0.0,1.0),limb=pow(max(ndv,0.0015),0.35),ndl=dot(N,uSunDir),day=smoothstep(-0.10,0.14,ndl);',
   // the ring's shadow on the disc: from the point toward the sun, across the ring plane
-  ' float dn=dot(uSunDir,uRingN);if(abs(dn)>1e-4){float k=-dot(N,uRingN)/dn;if(k>0.0){vec3 q=N+uSunDir*k;float rq=length(q);day*=1.0-0.28*smoothstep(1.30,1.40,rq)*(1.0-smoothstep(1.95,2.12,rq));}}',
+  ' float dn=dot(uSunDir,uRingN);if(abs(dn)>1e-4){float k=-dot(N,uRingN)/dn;if(k>0.0){vec3 q=N+uSunDir*k;float rq=length(q);day*=1.0-0.5*(1.0-exp(-atmSkyRingTau(rq,0.0)/max(abs(dn),0.08)));}}',
   ' vec3 o=col*limb*1.15*day+col*limb*uGNight*0.10;',
   ' o+=uGRim*pow(max(1.0-ndv,0.0),2.6)*0.30*mix(smoothstep(-0.35,0.45,ndl),1.0,0.12);',   // the high haze: an ice giant's blue limb
   // the eclipse's main feature (21-sky.js): sunlight bent through the giant's air, a burning ring round the limb, brightest
@@ -119,9 +131,16 @@
   ' return vec4(o,cov);}',
   'vec4 atmSkyRing(vec3 d,float tG,bool hitG){float dn=dot(d,uRingN);if(abs(dn)<1e-6)return vec4(0.0);float t=dot(uGiantDir,uRingN)/dn;if(t<=0.0)return vec4(0.0);',
   ' if(hitG&&t>tG)return vec4(0.0);',                    // the far half: behind the disc
-  ' vec3 q=(d*t-uGiantDir)/'+f(rg)+';float rr=length(q),a=atmSkyRingA(rr);if(a<=0.0)return vec4(0.0);',
-  ' float b=dot(q,uSunDir),h=b*b-(dot(q,q)-1.0);float lit=(h>0.0&&b<0.0)?0.12:1.0;',   // the giant's shadow across the ring
-  ' vec3 c=uGRing*(0.8+0.3*sin((rr-1.3)*41.0))*(0.18+0.82*lit*(1.0-uEclipse));return vec4(c,a);}',
+  ' vec3 q=(d*t-uGiantDir)/'+f(rg)+';float rr=length(q);if(rr<'+f(G.ringIn)+'||rr>'+f(G.ringOut)+')return vec4(0.0);',
+  ' float fine=1.0-smoothstep(0.0012,0.012,fwidth(rr));float tau=atmSkyRingTau(rr,fine);if(tau<=0.0)return vec4(0.0);',
+  // seen at a slant the ring is thicker: optical depth over |cos| of the view angle, so near edge-on it is a crisp line
+  ' float a=1.0-exp(-tau/max(abs(dn),0.10));',
+  ' float b=dot(q,uSunDir),h=b*b-(dot(q,q)-1.0);float sh=(h>0.0&&b<0.0)?0.06:1.0;',   // the giant's shadow across the ring
+  // lit face or back-lit: seen from the sun's side the dense rings are bright; from the other side light comes only
+  // through, so the dense ring goes dark and the thin rings and gaps glow
+  ' float ls=dot(uSunDir,uRingN),vs=-dot(uGiantDir,uRingN);float face=ls*vs>0.0?1.0:0.0,el=min(1.0,abs(ls)*5.0);',
+  ' vec3 base=atmSkyRingC(rr);vec3 c=face>0.5?base*(0.45+0.65*el):base*(0.38+1.3*el*exp(-1.2*tau)*(1.0-exp(-2.5*tau)));',
+  ' c*=sh*(1.0-uEclipse);c+=uShineC*uShineI*0.05;return vec4(c,a*0.97);}',
   // ---- 3 the moons, each its own kind (the owner, 2026-10-25): 0 Io-like (sulfur plains, volcanoes, frost), 1 Callisto-like
   // (dark, crowded with bright craters), 2 Venus-like (all cloud, a soft terminator and a glowing limb), 3 Ceres-like (grey,
   // cratered, a few bright salt spots), 4 Iapetus-like (two-faced: see atmSkyMoon). q is a frame
@@ -192,9 +211,11 @@
   ' col+=uSunC*sd*6.0*T*(0.25+0.75*min(uSunI,1.0));',
   // opaque bodies: the moons, then the giant over them, the ring over both on its near half
   ' vec3 bc=vec3(0.0);float op=0.0;',
-  ' for(int i=0;i<3;i++){vec4 m=atmSkyMoon(d,i);if(m.a>0.0){bc=mix(bc,m.rgb,m.a);op=max(op,m.a);}}',
+  ' for(int i=0;i<4;i++){if(uMoonF[i]>0.5)continue;vec4 m=atmSkyMoon(d,i);if(m.a>0.0){bc=mix(bc,m.rgb,m.a);op=max(op,m.a);}}',
   ' float tG;vec4 g=atmSkyGiant(d,tG);if(g.a>0.0){bc=mix(bc,g.rgb,g.a);op=max(op,g.a);}',
   ' vec4 r=atmSkyRing(d,tG,g.a>0.5);if(r.a>0.0){bc=op>0.0?mix(bc,r.rgb,r.a):r.rgb;op=op>0.0?op:r.a;}',
+  // a moon nearer than the giant (Day crossing its face) is drawn over it
+  ' for(int i=0;i<4;i++){if(uMoonF[i]<0.5)continue;vec4 m=atmSkyMoon(d,i);if(m.a>0.0){bc=op>0.0?mix(bc,m.rgb,m.a):m.rgb;op=max(op,m.a);}}',
   ' if(op>0.0){float tm=dot(T,vec3(0.33));float hz=clamp(uHazeFloor*0.55+(1.0-tm)*0.6+0.35*exp(-max(d.y,0.0)/0.10)*uHazeFloor,0.0,0.94);',
   '  vec3 ob=mix(bc*T,air,hz);col=mix(col,ob,op);}',
   ' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',

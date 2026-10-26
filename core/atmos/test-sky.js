@@ -43,7 +43,10 @@ const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit
 {const l=[0,6,12,18].map(h=>A.skyState(voth,h,0).moons[0].lit);ok('...and waxes and wanes once a day',Math.max(...l)-Math.min(...l)>.5,Math.max(...l)-Math.min(...l)<.1);}
 {let on=true;for(let d=0;d<30;d+=.31){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons){const c=Math.abs(V.dot(m.dir,st.ringLine)),g=V.dot(m.dir,st.giantDir);const g2=st.giantDir,r2=st.ringLine,pn=[g2[1]*r2[2]-g2[2]*r2[1],g2[2]*r2[0]-g2[0]*r2[2],g2[0]*r2[1]-g2[1]*r2[0]];if(Math.abs(V.dot(m.dir,pn))>1e-9)on=false;}}
  ok('every moon rides on the ring line',on,false);}
-{const s=A.skyState(voth,22,10),g=s.giantDir;ok('a moon is never between Krator and the giant (it hides behind the disc)',(()=>{for(let d=0;d<60;d+=.37){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons){const c=V.dot(m.dir,st.giantDir);if(c>Math.cos(15*Math.PI/180)&&m.distKm<S.giant.orbitKm)return false;}}return true;})(),false);}
+{const ds=[];for(let h=0;h<24;h+=.05){const m=A.skyState(voth,h,3).moons[3];ds.push([h,m.front,Math.abs(m.along),m.radiusDeg*2]);}
+ const fr=ds.filter(x=>x[1]),mx=Math.max(...ds.map(x=>x[2]).filter(a=>a<90));
+ ok('Day (2:1, 12 h) laps Krator once a day: it crosses the giant\'s face, ~3 degrees across, and swings ~39 degrees out',fr.length>0&&fr.length<ds.length/2&&near(Math.max(...fr.map(x=>x[3])),2.9,.15)&&near(mx,39,2),fr.length===0);}
+{const s=A.skyState(voth,22,10),g=s.giantDir;ok('an outer moon is never between Krator and the giant (it hides behind the disc)',(()=>{for(let d=0;d<60;d+=.37){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons.slice(0,3)){const c=V.dot(m.dir,st.giantDir);if(c>Math.cos(15*Math.PI/180)&&m.distKm<S.giant.orbitKm)return false;}}return true;})(),false);}
 
 // ---- eclipses come in seasons round the equinoxes
 {const any=[],tot=[];for(let d=0;d<365;d++){let m=0;for(let h=0;h<24;h+=.1)m=Math.max(m,at(voth,d,h).eclipse);if(m>0)any.push(d);if(m>.99)tot.push(d);}
