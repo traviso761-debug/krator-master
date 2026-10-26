@@ -565,6 +565,7 @@ static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D
 	if err != OK:
 		return null
 	img.generate_mipmaps()
+	KratorKmat.vram(img)
 	return ImageTexture.create_from_image(img)
 
 

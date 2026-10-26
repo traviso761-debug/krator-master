@@ -108,6 +108,14 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
   read as bare ground from above). Round 2 on nhighlands also: the ground grid's vertices snapped onto the stream's and the tarn's
   edges (`84-host-ground.js`: the sawtooth shoreline), smooth-shaded and textured lantern pods and bell-bulbs.
 
+### Step 3 (2026-10-26): the graphic-load assessment is written
+
+`GRAPHIC-LOAD.md`. The scheme it recommends, in order: welding (done) and **per-instance range culling** in core/biome's LOD fade
+(prototyped: -5% to -28% a view; a third to a half of the instanced triangles were drawn past their own range); **the far band's
+diet** decided with the owner on nhighlands (the far floor band shortened, octahedral impostors for crowns past ~600-800 m); the
+export split by `lod.ranges` with Godot culling per instance; Godot importing textures VRAM-compressed; not now: texture arrays,
+material merging, new size caps. **Waiting on the owner** before the per-instance cull and the far band are built.
+
 ### Pages load at day (the owner, 2026-10-26)
 
 `ATMOS.SKY.viewHour` (11, `core/atmos/sky/89-atmos-e-skymodel.js`) is the hour a page loads at; `startHour` (6, sunrise) stays

@@ -87,6 +87,17 @@ static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:
 	return out
 
 
+# VRAM compression of a loaded map (the final rebuild's graphic-load assessment, 2026-10-26): KRATOR_VRAM=s3tc (BC1/BC3 by
+# etcpak), bptc (BC7) or astc; unset, the map stays RGBA8 as before. An editor import does this ahead of time; at load it costs
+# CPU time, which the perf capture's import time shows.
+static func vram(img: Image) -> void:
+	var m := OS.get_environment("KRATOR_VRAM")
+	if m == "":
+		return
+	var mode := Image.COMPRESS_S3TC if m == "s3tc" else (Image.COMPRESS_BPTC if m == "bptc" else Image.COMPRESS_ASTC)
+	img.compress(mode, Image.COMPRESS_SOURCE_SRGB)
+
+
 static func _tex(path: String, cache: Dictionary) -> Texture2D:
 	if cache.has(path):
 		return cache[path]
@@ -96,6 +107,7 @@ static func _tex(path: String, cache: Dictionary) -> Texture2D:
 	var t: Texture2D = null
 	if err == OK:
 		img.generate_mipmaps()
+		vram(img)
 		t = ImageTexture.create_from_image(img)
 	cache[path] = t
 	return t
