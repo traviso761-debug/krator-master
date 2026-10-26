@@ -24,8 +24,15 @@
 //   W.setBlock(rec, on)           switch a block (or an array of them) off or on: a door that opens and shuts. rec is what block() returned;
 //                                 off, blocked() and push() skip it and export() marks it off:true
 //   W.bounds()                    [x0,x1,z0,z1] over everything registered, or null
-//   W.export()                    {format:'krator-walk', version, convention, floors, blocks}: for Godot, the
-//                                 floors become navigation-mesh source and the blocks collision boxes
+//   W.zone({id, kind, shape:{type, at, ry, r, h, w, d, pts}, travel, enter, avoid, layer})   a navigation zone by hand (a
+//                                 hazard with no core/tags record); the hazards' own come from core/hazard (below)
+//   W.export(opt)                 {format:'krator-walk', version, convention, floors, blocks, zones}: for Godot, the
+//                                 floors become navigation-mesh source, the blocks collision boxes and the zones
+//                                 NavigationRegion3D cost regions (travel_cost, enter_cost; avoid: on the avoid layer only,
+//                                 cut out of the walk layer). zones: the hand ones, then KHAZ.zones(opt.hazards or
+//                                 KTAGS.page) when core/hazard is loaded (opt.hazards false leaves them out). Each zone:
+//                                 {id, kind, shape (world metres: type cyl|sphere|box|poly, at, ry, r, h, w, d, pts [[dx,dz]]
+//                                 in its frame), travel (cost multiplier), enter (m), avoid, layer (navigation layer bits)}
 //   W.clear()
 //
 // A spatial hash (cell 16 m) keeps the queries local. Records keep insertion order, and a later floor at the
@@ -34,7 +41,7 @@
   'use strict';
   var CELL=16;
   function create(){
-    var floors=[],blocks=[],grid=new Map(),seq=0;
+    var floors=[],blocks=[],zoneL=[],grid=new Map(),seq=0;
     function key(i,j){return i+','+j;}
     function put(rec,x0,x1,z0,z1){
       var i0=Math.floor(x0/CELL),i1=Math.floor(x1/CELL),j0=Math.floor(z0/CELL),j1=Math.floor(z1/CELL);
@@ -137,19 +144,33 @@
       blocks.forEach(function(k){grow(k.box[0],k.box[1],k.box[2],k.box[3]);});
       return b;
     }
-    function exp(){
+    // a navigation zone (a hazard's cost region): checked, stored as given, exported after the floors and blocks
+    function zone(o){
+      if(!o||!o.shape||['cyl','sphere','box','poly'].indexOf(o.shape.type)<0)throw new Error('KWALK.zone: shape {type: cyl|sphere|box|poly, at, ...} required');
+      var at=o.shape.at;if(!at||at.length!==3)throw new Error('KWALK.zone: shape.at is [x,y,z]');
+      var t=o.travel==null?1:num(o.travel,'zone travel'),e=o.enter==null?0:num(o.enter,'zone enter');if(t<1)throw new Error('KWALK.zone: travel is 1 or more (Godot: travel_cost)');
+      var z={id:o.id==null?'zone_'+zoneL.length:String(o.id),kind:o.kind||'',shape:JSON.parse(JSON.stringify(o.shape)),travel:t,enter:e,avoid:!!o.avoid,
+        layer:o.layer==null?(o.avoid?2:1):o.layer};
+      zoneL.push(z);return z;
+    }
+    function zonesOf(opt){var out=zoneL.map(function(z){return JSON.parse(JSON.stringify(z));});
+      var H=root.KHAZ,T=opt&&opt.hazards!=null?opt.hazards:(root.KTAGS&&root.KTAGS.page);
+      if(H&&T&&!(opt&&opt.hazards===false))H.zones(T).forEach(function(z){out.push(z);});
+      return out;}
+    function exp(opt){
       return {format:'krator-walk',version:1,
         convention:{units:'m',up:'+y',x:'east',z:'south',handed:'right'},
         floors:floors.map(function(f){return f.kind==='rect'?{kind:'rect',rect:f.rect.slice(),y:f.y,name:f.name,tag:f.tag}
           :f.kind==='poly'?{kind:'poly',pts:f.pts.map(function(p){return p.slice();}),name:f.name,tag:f.tag}
           :{kind:'strip',a:f.a.slice(),b:f.b.slice(),w:f.w,name:f.name,tag:f.tag};}),
-        blocks:blocks.map(function(k){var o={box:k.box.slice(),tag:k.tag};if(k.off)o.off=true;return o;})};
+        blocks:blocks.map(function(k){var o={box:k.box.slice(),tag:k.tag};if(k.off)o.off=true;return o;}),
+        zones:zonesOf(opt)};
     }
     // a block that can be switched: a door that opens and shuts. rec is what block() returned (or an array of them); on false takes it out of
     // blocked() and push() until it is put back. The grid is untouched (the record stays where it was indexed); export() marks it off:true.
     function setBlock(r,on){var L=Array.isArray(r)?r:[r];for(var i=0;i<L.length;i++){if(!L[i]||!L[i].box)throw new Error('KWALK.setBlock: not a block record');L[i].off=!on;}return on;}
-    function clear(){floors.length=0;blocks.length=0;grid.clear();seq=0;}
-    return {floor:floor,strip:strip,poly:poly,block:block,setBlock:setBlock,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
+    function clear(){floors.length=0;blocks.length=0;zoneL.length=0;grid.clear();seq=0;}
+    return {floor:floor,strip:strip,poly:poly,block:block,setBlock:setBlock,zone:zone,zones:zoneL,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
       bounds:bounds,export:exp,clear:clear,floors:floors,blocks:blocks,heightOn:heightOn};
   }
   var W=create();W.create=create;

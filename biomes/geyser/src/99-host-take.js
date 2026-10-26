@@ -69,7 +69,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · '+tg.origin+' · lives: '+tg.heat+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':''):'')+
   '\nground: '+(g.spring?'hot water':g.terr>.5?'the Stair\'s travertine':g.acid>.5?'acid clay':g.mud>.5?'mud':g.dead>.5?'the dead forest (silica)':g.sinter>.5?'sinter':FIELD.floor(p.x,p.z)>.5?'the basin\'s warm ground':'the jungle')+
-  ' · '+T+' degC'+(g.film>.3?' · the run-off':'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  ' · '+T+' degC'+(g.film>.3?' · the run-off':'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): each one's kind, danger and state now */
+function hazardWords(p){const w=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';return w?'\n'+w:'';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside each kit).
 const BUDGET={
@@ -164,7 +166,7 @@ HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the 
   r:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
  clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

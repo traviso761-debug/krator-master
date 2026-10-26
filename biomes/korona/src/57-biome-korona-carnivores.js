@@ -13,7 +13,8 @@ const {bright,vary}=BIO.col;
 const col=(slot,set,k)=>KORONA.libCol(slot,bright(vary(pick(set),.03,.08,.06),k==null?1.2:k));
 const NAMES=[];KORONA.TRAPPED=[];KORONA.NAMED=[];KORONA.PITS=[];
 /* trap: the plant's record, or a pit's own (the punji pit: its record plus its membrane's state data) */
-function reg(key,x,y,z,r,h,zone,id,trap){const tr=trap||TRAPS[key],o={name:P[key].name,key,kind:'flora',x,y,z,r,h,tags:{trap:tr,zone}};BIO.register(o);
+function reg(key,x,y,z,r,h,zone,id,trap){const tr=trap||TRAPS[key],o={name:P[key].name,key,kind:'flora',x,y,z,r,h,tags:{trap:tr,zone}};
+ {const hz=KORONA.hazardOf(key,tr,id);if(hz)o.tags.hazard=hz;}BIO.register(o);
  NAMES.push({name:P[key].name,plant:key,x,y,z,r,h});KORONA.TRAPPED.push({id,key,x,y,z,r,zone,trap:tr});}
 const SPACE=KSPACE.create({cell:16});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad)||KORONA.blocked(x,z,pad)||NECANYONS.blocked(x,z,pad);

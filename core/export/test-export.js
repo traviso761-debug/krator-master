@@ -316,5 +316,21 @@ const SM = un(shear.items[0].matrices); SM[4] += 0.5; shear.items[0].matrices = 
 ok(E.glb(shear).stats.trsMaxError > 0.1, 'negative: a sheared matrix shows as a TRS error (' + E.glb(shear).stats.trsMaxError.toFixed(2) + ')');
 ok(E.check(G.json).ok, 'the JSON half still passes the joins (materials, sets, bucket records)');
 
+// ---- the hazards (core/hazard): the registry carries KHAZ.export, cropped to the tile; none without core/hazard ----
+{ const hz = (withHaz) => { const c = { console, Math }; c.globalThis = c; vm.createContext(c);
+    ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js'].concat(withHaz ? ['core/biome/37-core-traps.js', 'core/hazard/20-core-hazard.js'] : [])
+      .concat(EXP).forEach(f => vm.runInContext(read(f) + (f.endsWith('07-core-export.js') ? '\nthis.EXPORT=EXPORT;' : ''), c, { filename: f }));
+    const T = c.KTAGS.create({ build: 'hz' }); c.KTAGS.page = T;
+    T.add({ 'class': 'feature', kind: 'pool', name: 'Acid pool', at: [10, 0, 10], r: 4, h: 2, tags: { hazard: { kind: 'acid' } } });
+    T.add({ 'class': 'feature', kind: 'hollow', name: 'CO2 hollow', at: [500, 0, 500], r: 30, h: 8, tags: { hazard: { kind: 'gas' } } });
+    T.add({ 'class': 'feature', kind: 'rock', name: 'A rock', at: [12, 0, 12], r: 1 });
+    return c.EXPORT; };
+  const EH = hz(true), all = EH.world({ sections: ['registry'] }), tile = EH.world({ box: [0, 0, 100, 100], sections: ['registry'] });
+  ok(all.registry.hazards && all.registry.hazards.format === 'krator-hazard' && all.registry.hazards.records.length === 2 &&
+    all.registry.hazards.records[0].hazard.nav.avoid && all.registry.hazards.records[1].hazard.effect === 'suffocate',
+    'the registry carries the hazards, filled from their kinds');
+  ok(tile.registry.hazards.records.length === 1 && tile.registry.hazards.records[0].shape.type === 'cyl', 'a tile crops the hazards by their at (1 of 2)');
+  ok(!hz(false).world({ sections: ['registry'] }).registry.hazards, 'negative: without core/hazard the registry has no hazards'); }
+
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

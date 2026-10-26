@@ -113,7 +113,39 @@
      fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free',
      // necanyons (2026-10-19): where on the rock a plant lives (floor, foot, ledge, bench, cap, stack), and a carnivorous
      // plant's trap record (core/biome/37-core-traps.js: kind, mouth, preyMax, cycle, lure, danger)
-     zone: 'free', trap: 'object' },
+     zone: 'free', trap: 'object',
+     // what can hurt a walker (biomes/HAZARD-RESEARCH.md; PROPOSAL.md, "A hazard key"; 2026-10-26): the record core/hazard's
+     // KHAZ reads ({kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}); its
+     // kind is one of hazardKinds, whose row fills what the record leaves out
+     hazard: 'object' },
+   // the hazard kinds and their defaults (core/hazard/20-core-hazard.js KHAZ.make fills a record from its row). danger 0..1
+   // as the traps use it (.3 hurts, .7 holds a person, 1 kills); dose: effect units a second at the core (a build-up meter
+   // fills at it); falloff from the core to the shape's edge; nav in Godot's NavigationRegion3D terms: travel (a cost
+   // multiplier on the path through it), enter (metres added on entering), avoid (never path through: the avoid layer);
+   // tell: the readable warning, its colour (sRGB hex: the overlay's tint too), particles and sound
+   hazardKinds: {
+     heat:   { effect: 'burn',      danger: .5, dose: 1,  falloff: 'smooth', nav: { travel: 4, enter: 10, avoid: false }, tell: { colour: '#ff7a20', fx: 'shimmer', sound: 'hiss' } },
+     cold:   { effect: 'freeze',    danger: .3, dose: .2, falloff: 'linear', nav: { travel: 2, enter: 0, avoid: false },  tell: { colour: '#bfe6ff', fx: 'frost', sound: 'wind' } },
+     gas:    { effect: 'suffocate', danger: .8, dose: .5, falloff: 'smooth', nav: { travel: 8, enter: 20, avoid: true },  tell: { colour: '#c8d84a', fx: 'haze', sound: null } },
+     acid:   { effect: 'corrode',   danger: .7, dose: 1,  falloff: 'none',   nav: { travel: 10, enter: 30, avoid: true }, tell: { colour: '#9cff3a', fx: 'fume', sound: 'fizz' } },
+     poison: { effect: 'poison',    danger: .5, dose: .3, falloff: 'linear', nav: { travel: 4, enter: 5, avoid: false },  tell: { colour: '#a050c0', fx: 'spores', sound: null } },
+     fall:   { effect: null,        danger: .8, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#e8e8e8', fx: 'edge', sound: null } },
+     pit:    { effect: 'bleed',     danger: 1,  dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c03020', fx: 'litter', sound: null } },
+     thorn:  { effect: 'bleed',     danger: .3, dose: .5, falloff: 'none',   nav: { travel: 3, enter: 2, avoid: false },  tell: { colour: '#80a040', fx: null, sound: 'rustle' } },
+     grab:   { effect: 'hold',      danger: .8, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#d02060', fx: 'lure', sound: null } },
+     drown:  { effect: 'drown',     danger: .8, dose: .3, falloff: 'none',   nav: { travel: 6, enter: 10, avoid: true },  tell: { colour: '#2050c0', fx: null, sound: null } },
+     sink:   { effect: 'hold',      danger: .5, dose: 0,  falloff: 'linear', nav: { travel: 6, enter: 5, avoid: false },  tell: { colour: '#806040', fx: 'bubbles', sound: 'suck' } },
+     slip:   { effect: null,        danger: .2, dose: 0,  falloff: 'none',   nav: { travel: 2, enter: 0, avoid: false },  tell: { colour: '#d0e8f0', fx: 'sheen', sound: null } },
+     crush:  { effect: 'bleed',     danger: 1,  dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#808080', fx: 'dust', sound: 'creak' } },
+     hunter: { effect: 'bleed',     danger: .9, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c00000', fx: 'ripple', sound: null } }
+   },
+   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown'],
+   hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
+   hazardFalloffs: ['none', 'linear', 'smooth'],
+   hazardTriggers: ['step', 'weight', 'near'],
+   // the navigation layers a hazard's zone is on (Godot's navigation_layers bits): walk, the one every agent asks for; avoid,
+   // the one no agent asks for (an avoid zone's polygons are cut out of the walk layer)
+   navLayers: { walk: 1, avoid: 2 },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

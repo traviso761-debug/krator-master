@@ -6,7 +6,8 @@
 // branch's agreement, its adapter moves into it as an EXPORT.register call and leaves this file.
 //
 //   registry   KTAGS.page.export() (core/tags), cropped to a tile: the records an item or bucket names, the records
-//              placed in the box, and their parents (`cropped` says how many of how many)
+//              placed in the box, and their parents (`cropped` says how many of how many); with core/hazard loaded,
+//              `hazards`: KHAZ.export (krator-hazard: each hazard record filled, its world shape and nav) for the tile
 //   atmos      ATMOS.export({stage: false}) (core/atmos): krator-atmos as it is (its own colour convention, sRGB)
 //   materials  KMAT.table(build) for every build that declared an adapter (core/materials/record): records keyed
 //              kmat:<build>:<name>, maps by library reference
@@ -27,10 +28,18 @@
 if(typeof EXPORT === 'undefined') throw new Error('09-core-export-adapters: load core/export/07-core-export.js first');
 const E = EXPORT;
 
+// the hazards (core/hazard, KHAZ.export): every record that carries tags.hazard, a set's instances each, filled from its
+// kind's row and with its shape in world metres, cropped to the tile by its at. Joins the registry as `hazards` (the
+// registry is one section with one contributor; its records already carry tags.hazard as given). null without core/hazard
+const hazards = (T, ctx) => {
+ const H = typeof KHAZ !== 'undefined' ? KHAZ : null;
+ return H && typeof H.export === 'function' ? H.export(T, ctx.box ? ctx.inBox : null) : null;
+};
 E.register('registry', ctx => {
  const T = typeof KTAGS !== 'undefined' && KTAGS ? KTAGS.page : null;
  if(!T || typeof T.export !== 'function') return null;
- const e = T.export();
+ const e = T.export(), hz = hazards(T, ctx);
+ if(hz) e.hazards = hz;
  if(!ctx.box) return e;
  const byId = new Map(e.records.map(r => [r.id, r])), keep = new Set();
  ctx.out.items.forEach(it => { if(it.record != null) keep.add(it.record); });

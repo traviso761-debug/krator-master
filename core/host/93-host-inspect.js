@@ -20,6 +20,7 @@
 //   KHOST.selected                the record last inspected (98 edit acts on it), or null
 //   KHOST.hover(on), .hoverOn     the hover tip (key I, and the inspector's "hover" button; #khost-tip)
 //   KHOST.reindex()               rebuild the record index (after records were added or moved)
+//   KHOST.hazardNote(w, point)    the words w ({t, html, rec}) with the record's hazard state now added (core/hazard: below)
 // Keys: I hover tip. The click is the panel's (92): the build's click, the tools' (KHOST.clickHooks), then this.
 (function(root){
 'use strict';
@@ -57,8 +58,8 @@ K.onTake(function inspectTake(H){
  const insp0=K.inspector,pre=doc.getElementById('insp-text');
  K.inspector=function(t,html){if(pre)pre.style.whiteSpace=html?'normal':'';if(html&&pre){pre.innerHTML=t;return;}insp0(t);};
  // the words for a screen point: the build's own ray pick, else the scene's hits; {w, hit} or null
- function at(x,y){if(o.inspectRay){const w=o.inspectRay(ray(x,y).ray);if(w==null)return null;const v=own(w,null);return {w:v,hit:v.point?{point:v.point}:null};}
-  const hits=hitsAt(x,y);if(!hits.length)return null;return {w:words(hits[0],hits),hit:hits[0]};}
+ function at(x,y){if(o.inspectRay){const w=o.inspectRay(ray(x,y).ray);if(w==null)return null;const v=K.hazardNote(own(w,null),w.point);return {w:v,hit:v.point?{point:v.point}:null};}
+  const hits=hitsAt(x,y);if(!hits.length)return null;return {w:K.hazardNote(words(hits[0],hits),hits[0].point),hit:hits[0]};}
  // ---------------------------------------------------------------- the mark round the record inspected
  let box=null;
  function mark(r){if(box){H.scene.remove(box);box.geometry.dispose();box=null;}if(!r)return;
@@ -67,7 +68,7 @@ K.onTake(function inspectTake(H){
   box=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x9fe8ff,depthTest:false,transparent:true}));g.dispose();
   box.position.set(r.at[0],r.at[1]+h/2,r.at[2]);box.rotation.y=r.ry||0;box.renderOrder=46;box.frustumCulled=false;box.userData.khost='inspect';box.userData.probeSkip=true;H.scene.add(box);}
  K.selected=null;
- K.inspectRecord=function(r){K.selected=r||null;mark(r);if(r)K.inspector(label(r));if(K.holdsFor)K.holdsFor(r,null);if(K.onSelect)K.onSelect(r);};
+ K.inspectRecord=function(r){K.selected=r||null;mark(r);if(r)K.inspector(K.hazardNote({t:label(r),html:false,rec:r}).t);if(K.holdsFor)K.holdsFor(r,null);if(K.onSelect)K.onSelect(r);};
  // ---------------------------------------------------------------- the click (the panel calls K.inspectAt; this replaces its words)
  const ray=C.ray,hidden=()=>K.hiddenSet?K.hiddenSet():new Set();
  // an instance with its own label (core/biome BIO.put's extra.label: userData.instLabels by row, 2026-10-26) is named by it:
@@ -101,4 +102,10 @@ K.onTake(function inspectTake(H){
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='i'||e.key==='I'){if(o.keys&&o.keys.i)return;K.hover();}});
 });
+// ---------------------------------------------------------------- the hazard's state now (core/hazard; the hazard workstream's, 2026-10-26)
+// One line under the words when the record they are about carries tags.hazard (KTAGS.hazardNow, core/tags' host fragment:
+// its state on the host's motion clock and the dose at the point). Kept apart from the words so a build's own inspect and
+// the label stay what they are.
+K.hazardNote=function(w,p){const KT=root.KTAGS,r=w&&w.rec;if(!KT||!KT.hazardNow||!r)return w;
+ const line=KT.hazardNow(r,K.host&&K.host.clock?K.host.clock.t:0,p);if(line)w.t=(w.t==null?'':w.t)+(w.html?'<br>':'\n')+line;return w;};
 })(typeof window!=='undefined'?window:globalThis);

@@ -87,6 +87,11 @@ if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
+    # core/hazard (core/hazard/README.md, "Adopting it"; 2026-10-26): station.json "hazard": true takes it and the one clock
+    # (core/biome/37-core-traps.js KTRAPS.cycle); the station's records carry tags.hazard and its 99 shows the overlay
+    if STN.get('hazard'):
+        PATH['20-core-hazard.js']=os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js'))
+        if '37-core-traps.js' not in CORE_BIOME: CORE_BIOME=CORE_BIOME+['37-core-traps.js']
     for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
     # the shared atmosphere (core/atmos/README.md): the open-water wave field a station's sea reads
     for f in STN.get('atmos',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))   # a subfolder file (fx/...) keyed by its name
