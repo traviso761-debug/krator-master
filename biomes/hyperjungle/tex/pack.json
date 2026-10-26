@@ -24,8 +24,8 @@
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.169,
+    "keep": 0.0,
+    "mean": 0.549,
     "sourceMean": 0.2545
    }
   },
@@ -52,8 +52,8 @@
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.804,
+    "keep": 0.0,
+    "mean": 0.954,
     "sourceMean": 0.7076
    }
   },
@@ -108,8 +108,8 @@
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.423,
+    "keep": 0.0,
+    "mean": 0.638,
     "sourceMean": 0.4676
    }
   },

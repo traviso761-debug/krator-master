@@ -331,7 +331,8 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
  const ct=BIO.defs.clump0.tris,bark=st.trunk+st.limb+st.bough+st.twig+st.root,leaves=st.clumps*ct,hang=st.racemes*BIO.defs.raceme.tris+(st.pods+st.capsules)*BIO.defs.pod.tris;
  const sap=st.sapTris+st.sapClumps*ct;
  const mix6=SP.map(S=>0);heroes.forEach(T=>mix6[T.sp]++);
- return{trees:TREES.length,hyper:heroes.length,far:fars.length,saplings:SAPS.length,heroMix:mix6,
+ /* rings: the hero disc and the far impostor ring (heroR+30 to R), for a host's camera check (99-host-take: preset views) */
+ return{trees:TREES.length,hyper:heroes.length,far:fars.length,saplings:SAPS.length,heroMix:mix6,rings:{hero:heroR,far:[heroR+30,R]},
   boughs:st.topBoughs,secondaries:st.boughs,twigs:st.twigs,roots:st.roots,clumps:st.clumps,racemes:st.racemes,pods:st.pods,capsules:st.capsules,flowers:st.flowers,sapClumps:st.sapClumps,
   tris:{trunk:st.trunk,limbs:st.limb,boughs:st.bough,twigs:st.twig,roots:st.root,bark:bark,leaves:leaves,hang:hang,far:st.far,saplings:sap,total:bark+leaves+hang+st.far+sap}};};
 

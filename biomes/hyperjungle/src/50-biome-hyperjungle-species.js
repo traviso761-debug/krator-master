@@ -166,20 +166,28 @@ HYPERJUNGLE.MOSSTEX=BIO.alphaTex(128,(g,S)=>{for(let i=0;i<260;i++){const d=Math
 // newer species (5 mahogany: flaky rectangular plates in deep fissures;
 // 6 kapok: smooth bands studded with conical thorn bosses) are painted
 // NEAR-GREY and take their colour from SPECIES.bark alone, as the eastern
-// abyss kit learnt to (KNOWN_ISSUES: the older four are still pre-coloured).
+// abyss kit learnt to. Since 2026-10-26 ironbark, ghostwood and baobab (kinds
+// 0, 1, 3) are greyed the same way: gc() turns each painted colour into its
+// luminance grey, scaled (SC) so the canvas's mean sits above the brightest
+// channel of the species' SPECIES.bark tints (55-trees tints() then never clips
+// and the bole renders SPECIES.bark). Only colours change, not one draw, so the
+// random stream is the old one. The prism gum keeps its colour strips (its
+// tints are white); kind 4, the limb canvas, keeps its browns.
 HYPERJUNGLE.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
- const base=['#5a3424','#d9d4c4','#8c8666','#7a6e5e','#b8a494','#8e8a86','#b0b0aa'][kind];
- g.fillStyle=base;g.fillRect(0,0,w,h);
+ const GR=kind===0||kind===1||kind===3,SC=[3.7,1.2,1,1.5][kind]||1;
+ const gc=(r,gg,b)=>{if(!GR)return r+','+gg+','+b;const v=Math.min(255,Math.round(SC*(.2126*r+.7152*gg+.0722*b)));return v+','+v+','+v;};
+ const base=['#5a3424','#d9d4c4','#8c8666','#7a6e5e','#b8a494','#8e8a86','#b0b0aa'][kind],bh=parseInt(base.slice(1),16);
+ g.fillStyle=GR?'rgb('+gc(bh>>16,bh>>8&255,bh&255)+')':base;g.fillRect(0,0,w,h);
  if(kind===0||kind===4){
   for(let i=0;i<260;i++){const x=rng()*w,d=rng();
-   g.strokeStyle='rgba('+(d<.5?'30,16,10':'140,80,52')+','+(.35+rng()*.5).toFixed(2)+')';
+   g.strokeStyle='rgba('+(d<.5?gc(30,16,10):gc(140,80,52))+','+(.35+rng()*.5).toFixed(2)+')';
    g.lineWidth=d<.5?2+rng()*5:1+rng()*2;g.beginPath();g.moveTo(x,-10);
    g.bezierCurveTo(x+rr(-14,14),h*.33,x+rr(-14,14),h*.66,x+rr(-10,10),h+10);g.stroke();}
-  for(let i=0;i<40;i++){g.fillStyle='rgba(20,10,6,.55)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,5),rr(20,90));}}
+  for(let i=0;i<40;i++){g.fillStyle='rgba('+gc(20,10,6)+',.55)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,5),rr(20,90));}}
  else if(kind===1){
-  for(let k=0;k<18;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?'200,196,184':'236,232,222')+',.45)';g.fillRect(0,y,w,rr(6,30));}
-  for(let i=0;i<120;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(50,44,38,'+(.5+rng()*.45).toFixed(2)+')';g.fillRect(x,y,rr(8,36),rr(1.5,4));}
-  for(let i=0;i<30;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(120,110,96,.35)';g.fillRect(x,y,rr(2,6),rr(10,60));}}
+  for(let k=0;k<18;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?gc(200,196,184):gc(236,232,222))+',.45)';g.fillRect(0,y,w,rr(6,30));}
+  for(let i=0;i<120;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba('+gc(50,44,38)+','+(.5+rng()*.45).toFixed(2)+')';g.fillRect(x,y,rr(8,36),rr(1.5,4));}
+  for(let i=0;i<30;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba('+gc(120,110,96)+',.35)';g.fillRect(x,y,rr(2,6),rr(10,60));}}
  else if(kind===2){
   const C=['154,143,106','111,154,106','184,104,62','90,111,160','138,79,120','194,162,78','120,150,120'];
   for(let i=0;i<70;i++){const x=rng()*w,ww=rr(6,26),y0=rng()*h,L=rr(60,260);
@@ -202,9 +210,9 @@ HYPERJUNGLE.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
    g.fillStyle=gl;g.beginPath();g.arc(x,y,r,0,TAU);g.fill();g.fillStyle='rgba(40,36,34,.55)';g.beginPath();g.ellipse(x+r*.25,y+r*.3,r*.45,r*.28,.6,0,TAU);g.fill();}
   for(let i=0;i<90;i++){const x=rng()*w;g.strokeStyle='rgba(90,88,84,'+(.1+rng()*.2).toFixed(2)+')';g.lineWidth=1+rng()*1.5;g.beginPath();g.moveTo(x,-5);g.lineTo(x+rr(-8,8),h+5);g.stroke();}}
  else{
-  for(let i=0;i<160;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'60,52,44':'150,140,126')+','+(.15+rng()*.3).toFixed(2)+')';
+  for(let i=0;i<160;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?gc(60,52,44):gc(150,140,126))+','+(.15+rng()*.3).toFixed(2)+')';
    g.lineWidth=1+rng()*2;g.beginPath();g.moveTo(-5,y);g.bezierCurveTo(w*.3,y+rr(-8,8),w*.7,y+rr(-8,8),w+5,y+rr(-4,4));g.stroke();}
-  for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba(90,80,70,.25)';g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
+  for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba('+gc(90,80,70)+',.25)';g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
 });};
 HYPERJUNGLE.BARKTEX=[0,1,2,3,5,6].map(k=>HYPERJUNGLE.barkTex(k));   // one per species, in SPECIES order
 HYPERJUNGLE.LIMBTEX=HYPERJUNGLE.barkTex(4);                           // pale, tinted per species for limbs and small trunks

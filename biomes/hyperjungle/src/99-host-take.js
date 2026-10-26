@@ -59,14 +59,21 @@ const HCHK={
   const ok=!untagged.length&&!miss.length&&!undrawn.length&&keys.length>=4&&(N.pandankeys||0)>=20;
   return{ok,detail:(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+
    (undrawn.length?'catalogued but not drawn: '+undrawn.join(', ')+'; ':'')+all.length+' tagged, '+keys.length+' catalog keys ('+keys.join(', ')+'); drawn: '+
-   ['pod','capsule','bloom','pandankeys'].map(k=>k+' '+(N[k]||0)).join(', ')};}};
+   ['pod','capsule','bloom','pandankeys'].map(k=>k+' '+(N[k]||0)).join(', ')};},
+ /* views: the far forest is blob impostors from heroR+30 out (55-trees, KNOWN_ISSUES): a preset camera inside that ring sees blobs at
+    close range, so every preset stands inside the hero disc (with 30 m to spare) or beyond the ring's outer edge, looking in */
+ views(V,rg){if(!rg)return{ok:false,detail:'the build reported no rings'};const c=BIO.center(),bad=[];let n=0;
+  for(const k in V){const v=V[k];if(!v)continue;n++;const d=Math.hypot(v[0]-c[0],v[2]-c[1]);if(!(d<rg.hero||d>rg.far[1]))bad.push(k+' at '+Math.round(d)+' m');}
+  return{ok:!bad.length,detail:(bad.length?'in the impostor ring: '+bad.join(', ')+'; ':'')+n+' views; hero disc '+rg.hero+' m, far forest '+rg.far[0]+'-'+rg.far[1]+' m'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,_itemCounts()));
+ add('preset views stand inside the hero disc or outside the far forest',HCHK.views(VIEWS,window._biome&&window._biome.rings));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts();
  const noFruit=(S,k)=>S.key===k?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S;
  add('a fruiting species with no catalog fruit',HCHK.fruit(HYPERJUNGLE.SPECIES.map(S=>noFruit(S,'mahogany')),HYPERJUNGLE.PLANTS,N));
  add('screwpines with no pandan-key heads drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,Object.assign({},N,{pandankeys:0})));
+ add('a preset view standing in the impostor ring',HCHK.views(Object.assign({},VIEWS,{test:[ (window._biome&&window._biome.rings?window._biome.rings.hero:1500)+120+BIO.center()[0],60,BIO.center()[1],0,0,0]}),window._biome&&window._biome.rings));
  add('a plant with no harvest tag',HCHK.fruit(HYPERJUNGLE.SPECIES,Object.assign({},HYPERJUNGLE.PLANTS,{test:{name:'test',tags:{},items:[]}}),N));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

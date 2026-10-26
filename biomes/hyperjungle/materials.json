@@ -1,6 +1,6 @@
 {
  "build": "hyperjungle",
- "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. The older four species' canvases are painted in colour (55-trees tints() then sets a near-white tint), so their library barks keep their own colour (keep 1, brightness still matched); mahogany and kapok are near-grey, tinted by the species. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. limb (bark.smooth) and wood (wood.gnarled: the dead wood and logs), 2026-10-06 late: grey at the procedural maps' brightness and colour.",
+ "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. Since 2026-10-26 ironbark, ghostwood and baobab are grey (keep 0) like mahogany and kapok: their canvases are painted in luminance greys (50-species barkTex gc()) bright enough that the SPECIES.bark tints never clip, and the means are the new canvases' measured means (0.549, 0.954, 0.638); the prism gum keeps its own colour (keep 1, white tints). The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. limb (bark.smooth) and wood (wood.gnarled: the dead wood and logs), 2026-10-06 late: grey at the procedural maps' brightness and colour.",
  "size": 512,
  "families": {
   "bark0": {
@@ -10,8 +10,8 @@
     18
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.169
+    "keep": 0.0,
+    "mean": 0.549
    },
    "roughLift": 0.3,
    "mapOnly": true
@@ -23,8 +23,8 @@
     12
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.804
+    "keep": 0.0,
+    "mean": 0.954
    },
    "roughLift": 0.3,
    "mapOnly": true
@@ -49,8 +49,8 @@
     8
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.423
+    "keep": 0.0,
+    "mean": 0.638
    },
    "roughLift": 0.3,
    "mapOnly": true

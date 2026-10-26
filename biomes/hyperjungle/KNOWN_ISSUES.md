@@ -18,27 +18,50 @@ Read before changing anything here. `build.py` prints the open count.
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
       Stays open (2026-10-25): a process rule for the main session, not a code defect.
-- [ ] The four older species' bark textures are pre-coloured, so 55-trees
+- [x] The four older species' bark textures are pre-coloured, so 55-trees
       normalises each texture's mean before tinting (`texMean`). The mahogany
       and kapok canvases are painted near-grey and tinted from SPECIES.bark only;
       repaint the older four the same way. Until then, changing one of those
       canvases changes the rendered bole colour twice.
       Stays open (2026-10-25): a repaint of the older four canvases, a design/texture task.
+      Done (2026-10-26): ironbark, ghostwood and baobab are grey and tinted from SPECIES.bark alone. `barkTex` paints kinds
+      0, 1, 3 through `gc()` (each colour to its luminance grey, scaled so the canvas mean, 0.549 / 0.954 / 0.638, sits above
+      the brightest SPECIES.bark channel: no tint clips); only colours changed, so the random stream and every plant are the
+      same. materials.json bark0/1/3: keep 1 -> 0 at those means (the library's own bark.ironbark, bark.ghostwood,
+      bark.baobab, greyed; no new set needed), tex/ repacked. The prism gum keeps its colour strips (its tints are white by
+      design) and the limb canvas its browns. Look change for the owner to judge: before, every tint clipped to white and the
+      boles showed the library sets' own colour; now they show SPECIES.bark, so the three tints per species vary again and
+      ironbark reads lighter and redder (#7a4630 family, was the set's darker #5a3424). To retune, change SPECIES.bark only.
 - [x] Ghostwood limbs are slightly warmer than its near-white bole: gone with the limbs on the bole's own bark (2026-10-16).
 - [ ] Faint horizontal seams where a bole's lathe sections change texture repeat
       (inherited from Girder).
       Stays open (2026-10-25): inherited from Girder's lathe texture repeat; a core/biome lathe change.
+      Stays open (2026-10-26): traced. 55-trees `buildHero` cuts a bole into lathe sections wherever the radius changes by
+      more than 22%, and each `BIO.lathe` call takes one scalar `rep = round(TAU*rm/sc0)` for its whole section, so the
+      shared ring between two sections has u = s/seg*rep on one side and s/seg*rep' on the other: the seam. No kit-side fix
+      (any change of a scalar rep at a shared ring jumps). Proposed core change: `core/biome/20-core-kit.js` `BIO.lathe` takes
+      `rep` as a number or a function of the ring (`typeof rep==='function'?rep(rings[i]):rep`, u = s/seg*rep_i), kept an
+      integer per ring so the wrap at s=seg stays seamless; the kit then passes `R=>Math.max(1,Math.round(TAU*R.r/sc0))`
+      and the u scale changes ring by ring with no jump. Existing callers (numbers) are unchanged.
 - [ ] Saplings beyond 760 m from the origin have clumps on virtual arcs with no
       bough geometry; fine at that range, wrong if the LOD origin moves.
       Stays open (2026-10-25): only wrong if the LOD origin moves; no host does that yet.
+      Stays open (2026-10-26): not a sapling defect of its own. Every LOD choice in this kit is baked at build time against
+      the host's origin (hero `farHalf` segments, sapling `lodK` and beams, the impostor ring), so a host that moves the
+      origin must rebuild the forest anyway. Giving every far sapling a bough would add triangles for nothing on this page.
 - [ ] The far impostor ring starts at heroR+30: a host preset that stands inside
       it sees blob crowns at close range. A host should keep cameras inside heroR
       or raise heroR (cost: ~12k tris per hero tree; this host runs 2000 m).
       Stays open (2026-10-25): a host-contract note, not a defect of this kit.
+      2026-10-26: now checked. `buildTrees` reports `rings:{hero, far:[heroR+30, R]}` and the probe's host check
+      "preset views stand inside the hero disc or outside the far forest" (99-host-take, `HCHK.views`, with a negative)
+      fails any preset camera inside the impostor ring. Stays open only as the contract for other hosts that vendor the kit.
 - [ ] The host's floor mesh is Lambert-lit with no shadow maps, so open floor
       between plants reads a shade too bright; the litter colour is painted dark
       to compensate. A world with shadows should lighten `MAT_GROUND`.
       Stays open (2026-10-25): waits on a world with shadows; an owner decision.
+      Stays open (2026-10-26): unchanged; the floor material is the host's and this page has no shadow maps, so there is
+      nothing to lighten against yet.
 - [ ] Fauna: the herds' waypoints avoid boles, saplings, the host mask and its
       obstacles, but not logs or boulders (a strider can walk through a fallen
       trunk). The flyers' paths are tested against boles at their centre only:
