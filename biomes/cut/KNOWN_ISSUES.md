@@ -37,7 +37,7 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
 - [ ] **LORE.md §6.2's wording** ("the bottom of the sphere", the orbital reading and the air column: `PLAN.md` section 11) is to be
   edited on `main`; the lore file is not this kit's.
 - [ ] **The exchanges with the crater drylands and the northern highlands** (`PLAN.md` section 12, agreed 2026-10-26): eight
-  species, two each way, for the final biome rebuild. Not built.
+  species, two each way, for the final biome rebuild (the crater drylands' northern region only). Not built.
 - [ ] **The gallery**: a new biome goes in it when it first reaches `main` (left to the session that merges it).
 
 ## The probe and the read-in kits
