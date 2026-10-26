@@ -48,3 +48,14 @@ EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the b
 kit binds none). Add each back when the kit fills it.
 
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Clear cold air, about 1 atm at 1600 m. Kept from the dome: the
+      snow ranges and near walls (the valley's head east, the pass west) and the Throne far WNW over the pass (ridges); the
+      Throne's plume and the cataract at the head are not drawn. The old dome stays in src/ for settlements/longsong, which
+      reads it in place with its own OIDONG_SKY; build.py leaves it out here. Draw calls at the default camera (verify.py
+      --assert, GPU): 71 before, 70 after.
+
