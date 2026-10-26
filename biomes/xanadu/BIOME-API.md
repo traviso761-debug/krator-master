@@ -69,8 +69,9 @@ XANADU.build({R:3400, quality:1, lakeHue:.49}) -> {trees, heroes, far, rings, ar
 XANADU.dress(geometries, opt)   // growth on a structure: {ledges:{moss,plants,edges,hang}, soffits:{n,mossR,hang}, walls:{n}}
 XANADU.canopyH(x,z)             // approximate canopy top
 XANADU.zones(x,z)               // the zone weights a world can reuse for its own placement
-XANADU.SPECIES / XANADU.PAL     // the 33 species (tagged), the palettes
+XANADU.SPECIES / XANADU.PAL     // the 38 species (tagged; 33-35 and the grove's 36-37 from the 2026-10-26 diversity pass), the palettes
 XANADU.RINGS / XANADU.ARCHES    // where the fairy rings and the hornbeam alleys stood ({x,z,r|a,n,lv})
+XANADU.GROVE                    // the enchanted grove ({x,z,r,y,oak:[x,z],n:{palms,oak,rosettes,mounds,bulbs},floor:[{x,z,y,kind,seed}]}) or null
 XANADU.LOD                      // the runtime ranges: {tree:1500, floor:750, farFloor:3000, dress:1500, logs:1500}
 ```
 
@@ -78,6 +79,11 @@ How the biome uses the runtime LOD: every hero tree (full detail near the spine 
 time) is drawn in full within `XANADU.LOD.tree` of its chunk and as a cheap stand-in impostor
 past it; trees built as impostors from the start (far from the spine) are always drawn; the
 floor near the spine shows within `floor`, the far band's coarse floor within `farFloor`.
+
+A species may say `noStand` (no stand-in past the tree range: the plants under 5 m) and `range` (its own hero range in
+metres: the hive lily's 600). The diversity pass's trees (2026-10-26) are placed after every older pass, each cell of a
+species' lattice seeded by `KRAND.hash(seed, species, i, j)`, and each tree carries its own seed (`T.kr`), so they move no
+older tree; the floor steps round them (it reads `XANADU.blocked`), so the floor's own draws shift once.
 
 Then `BIO.bake()` once, and `BIO.lodTick(camera)` every frame.
 
@@ -98,7 +104,7 @@ part of a building: `dress()` places plants ON geometry the host hands it.
 
 ```
 10-40  the core (the Rift kit's, unchanged)
-50-biome-xanadu-species.js  lake-hue palette, the petrified-wood and psychedelic palettes, 31 species, bark/leaf/flower textures, geometries, materials, items (data only)
+50-biome-xanadu-species.js  lake-hue palette, the petrified-wood and psychedelic palettes, 38 species, bark/leaf/flower textures, geometries, materials, items (data only)
 55-biome-xanadu-trees.js    zones from the fields; one builder per species; the rings and the arches; impostors; the passes
 60-biome-xanadu-floor.js    the floor by zone; lotus on still water; the fairy rings' lawns; fallen and petrified logs
 65-biome-xanadu-dress.js    growth on structures (wisteria and willow curtains, ledge plants, soffits, walls)

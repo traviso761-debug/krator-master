@@ -43,7 +43,7 @@ Everything the biome knows about the map arrives through the fields (wet / uplan
 flow / mist; salt is 0, the lake is fresh) plus terrainH.
 
 ## The flora (50/55/60)
-Thirty-three species. Unique to the Vale:
+Thirty-eight species (the diversity pass's five at the end of this list). Unique to the Vale:
 
 - **Dawn redwood** — a fluted, buttressed column and tiers of copper feathers that turn
   green away from the sun (iridescent orange-green). Some stand in the lake's shallows.
@@ -88,6 +88,26 @@ Thirty-three species. Unique to the Vale:
   red and orange berries, white bells.
 
 The uplands also carry a maquis on the floor: lavender, broom, cistus and rosemary mounds.
+
+The diversity pass (2026-10-26, from the owner's reference pictures; the other five of the eight are Oidong's). Each is placed
+from core/rand after every older pass (`xPass` in 55: a cell's draws are `KRAND.stream(hash(seed, species, cell))`), so no
+older tree moved:
+
+- **Breaker crown** (the "wave crown" reference) — a short, thick, twisted dark bole leaning one way, teal moss at its
+  root, and one crescent of long curved blades that sweeps up from behind and breaks over the lean like a wave or a
+  rooster's tail: crimson at the back, orange and coral at the front, coral at grazing angles. The vale's open ground,
+  the crag's ledges, the chasm's spray.
+- **Braided cloud tree** (the "braid-cloud" reference) — three to five purple-red stems braided round each other, parting
+  near the top, two or three of them each carrying one huge soft round crown (pink, peach, butter, lilac, speckled cream);
+  one long vine hangs from a crown. The vale's groves.
+- **Hive lily** (the "beehive bud" reference) — an understorey clump of broad pointed teal leaves streaked pale, slender
+  teal stalks each topped by an orange ribbed bud stacked like a beehive, and wiry stems with tiny orange buds. The damp
+  forest's floor, the river banks, the chasm.
+- **The enchanted grove** (the "neon grove" palette; "as holy and enchanted") — one sacred place on the vale's lake
+  shore, sited on the most open stretch (`XANADU.GROVE`): a single great **Veil oak** (the oak's builder in violet, hung
+  with long magenta moss veils), **Ember palms** (the cloud tree-fern's builder with orange-to-amber fronds), teal
+  succulent rosettes with white bulb fruit, orange-red grass mounds and white bulb flowers on stalks; the lake below
+  it is the still water. Its own preset view.
 
 From the Rift ridge, altered: the cloud tree-fern, the lantern tree (its lanterns now in
 the psychedelic set), the fan tree as a silver fan palm (flat wheels), the barrel frill

@@ -36,8 +36,10 @@ const VIEWS={
   C.slice(0,400).forEach(T=>{const crowd=around(T.x,T.z,dist+10).length;if(best&&crowd>=best.crowd)return;
    for(let q=0;q<16;q++){const a=q/16*TAU,cx=T.x+Math.cos(a)*dist,cz=T.z+Math.sin(a)*dist;if(G(cx,cz)<.5||blockedLine(T,cx,cz,T))continue;best={T,crowd,cx,cz};break;}});
   if(!best)return null;const T=best.T;return[best.cx,Math.max(G(best.cx,best.cz),0)+h,best.cz,T.x,T.y0+T.H*.5,T.z];};
- [[2,'The lotus trumpets',34,7],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',26,4],[6,'The agate tree',34,4],[20,"Traveller's palm",22,4],[10,'Persian ironwood',28,5],[18,'Haze blossom',24,4],[31,'Flame cypress',30,6],[32,'Strawberry tree',16,3],[1,'A ginkgo',30,5],[16,'A bottle palm',14,3]].forEach(v=>{const r=specimen(v[0],v[2],v[3]);if(r)VIEWS[v[1]]=r;});
+ [[2,'The lotus trumpets',34,7],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',26,4],[6,'The agate tree',34,4],[20,"Traveller's palm",22,4],[10,'Persian ironwood',28,5],[18,'Haze blossom',24,4],[31,'Flame cypress',30,6],[32,'Strawberry tree',16,3],[1,'A ginkgo',30,5],[16,'A bottle palm',14,3],[33,'A breaker crown',26,5],[34,'Braided cloud trees',28,5],[35,'Hive lilies',6,1.4]].forEach(v=>{const r=specimen(v[0],v[2],v[3]);if(r)VIEWS[v[1]]=r;});
  {const T=near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&BIO.field('wet',T.x,T.z)>.84);if(T){const r=specimen(0,60,4);if(r)VIEWS['Dawn redwoods']=[r[0],r[1],r[2],T.x,T.y0+T.H*.45,T.z];}}
+ {const Gv=XANADU.GROVE;if(Gv&&Gv.oak){let bA=0,bH=1e9;for(let q=0;q<24;q++){const a=q/24*TAU,h=G(Gv.oak[0]+Math.cos(a)*80,Gv.oak[1]+Math.sin(a)*80);if(h<bH){bH=h;bA=a;}}   /* from the lake side: the water below the grove */
+  const cx=Gv.oak[0]+Math.cos(bA)*80,cz=Gv.oak[1]+Math.sin(bA)*80;VIEWS['The enchanted grove']=[cx,Math.max(G(cx,cz),0)+7,cz,Gv.oak[0],G(Gv.oak[0],Gv.oak[1])+9,Gv.oak[1]];}}
  {const x=-1000,z=-400,a=.9,cx=x+Math.cos(a)*95,cz=z+Math.sin(a)*95;VIEWS['The pleasure dome']=[cx,G(cx,cz)+26,cz,x,(DOME.y0||G(x,z))+9,z];}
  ['The vale','The lake shore','The garden ridge','The green flank'].forEach(k=>{const v=VIEWS[k];if(v)v[1]=Math.max(v[1],G(v[0],v[2])+(k==='The lake shore'?24:40));});
 })();

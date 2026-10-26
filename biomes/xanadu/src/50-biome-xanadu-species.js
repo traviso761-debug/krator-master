@@ -50,7 +50,9 @@ Object.assign(PAL.irid,{
  SG:[0x9aa878,0xa8b488,0x8a9a70],                               // the olive: silver -> sage
  TL:[0x2a9a8a,0x3aaa98,0x1e8a8a],                               // teal
  LG:[0xa8d868,0xb8e070,0x98c860],                               // the cloud forest's light green
- RP:[0x8a3a8a,0x9a4a7a,0x7a3a9a]});                             // red-purple (the barrel frill)
+ RP:[0x8a3a8a,0x9a4a7a,0x7a3a9a],                               // red-purple (the barrel frill)
+ CR:[0xff8a5a,0xff9c6a,0xf87048,0xffb07a],                      // the breaker crown: crimson blades, coral at grazing angles
+ PS:[0xfff0d8,0xf8d8f0,0xe8e0ff,0xfff4c0]});                    // the braided cloud tree: pastel crowns, cream speckle
 XANADU.setLake(XANADU.LAKE.hue);
 Object.assign(PAL,{
  // the petrified-wood palette: every bark in the Vale is drawn from it
@@ -75,7 +77,8 @@ Object.assign(PAL,{
 // H height band, rb bole radius, crownR, barkK (0 whorl, 1 agate, 2 mottled,
 // 3 rufous fibre, 4 ribbed, 5 smooth, 6 cactus skin), bark colours (from the
 // petrified palette), leaf colours, irid the second-colour set, and the habit
-// the builder reads.
+// the builder reads. noStand: no stand-in impostor past the trees' range (plants under 5 m, too small to read at 1.2 km;
+// 2026-10-26); range: a hero range of its own in metres (else XANADU.LOD.tree).
 XANADU.SPECIES=[
  /*0*/{key:'dawnredwood',name:'Dawn redwood',H:[30,48],rb:[.9,1.6],crownR:[5,8],barkK:3,bark:[0xa05030,0xb86038,0x8a4428],
   leaf:[0xd87a30,0xe08a38,0xc86a28,0xe89a48],irid:'OG',
@@ -119,16 +122,16 @@ XANADU.SPECIES=[
  /*13*/{key:'cacao',name:'Cacao',H:[4,7],rb:[.14,.24],crownR:[2.4,3.8],barkK:2,bark:[0xb0a090,0xa09080,0xc0b0a0],
   leaf:[0x3a6a2a,0x4a7a30,0x8a3a2a,0x2e5a28],irid:null,
   tags:{climate:'subtropic',aridity:'humid',abyssal:false,riparian:'both'}},
- /*14*/{key:'pitaya',name:'Pitaya',H:[2,4],rb:[.08,.12],crownR:[1.4,2.4],barkK:6,bark:[0x5a9a50,0x4a8a44,0x6aa458],
+ /*14*/{key:'pitaya',noStand:true,name:'Pitaya',H:[2,4],rb:[.08,.12],crownR:[1.4,2.4],barkK:6,bark:[0x5a9a50,0x4a8a44,0x6aa458],
   leaf:[0x5a9a50],irid:null,
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
- /*15*/{key:'opuntia',name:'Prickly pear',H:[1.5,3.5],rb:[.15,.25],crownR:[1,2],barkK:6,bark:[0x6a9a58,0x5a8a4c,0x7aa864],
+ /*15*/{key:'opuntia',noStand:true,name:'Prickly pear',H:[1.5,3.5],rb:[.15,.25],crownR:[1,2],barkK:6,bark:[0x6a9a58,0x5a8a4c,0x7aa864],
   leaf:[0x6a9a58],irid:null,
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
  /*16*/{key:'ponytail',name:'Bottle palm',H:[4,8],rb:[.7,1.3],crownR:[1.8,3],barkK:5,bark:[0xa89888,0x98887a,0xb8a898],
   leaf:[0x6a9a40,0x7aa848,0x5a8a38],irid:null,forks:[2,5],
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
- /*17*/{key:'adenium',name:'Desert rose',H:[1.2,2.6],rb:[.4,.7],crownR:[1,1.8],barkK:5,bark:[0xb8a890,0xa89880,0xc8b8a0],
+ /*17*/{key:'adenium',noStand:true,name:'Desert rose',H:[1.2,2.6],rb:[.4,.7],crownR:[1,1.8],barkK:5,bark:[0xb8a890,0xa89880,0xc8b8a0],
   leaf:[0x4a7a34,0x3e6a2e],irid:null,
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
  /*18*/{key:'hazeblossom',name:'Haze blossom',H:[8,14],rb:[.4,.7],crownR:[6,9],barkK:0,bark:[0x6b4a4c,0x5c3e40,0x7a5652],
@@ -156,10 +159,10 @@ XANADU.SPECIES=[
  /*25*/{key:'silverfan',name:'Silver fan palm',H:[4,9],rb:[.25,.4],crownR:[2.5,4],barkK:3,bark:[0x8a7a68,0x7a6a58,0x9a8a78],
   leaf:[0xd8e0d8,0xe0e8e0,0xc8d0c8,0xb8c8c0],irid:null,forks:[1,3],
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'no'}},
- /*26*/{key:'barrelfrill',name:'Barrel frill',H:[2.5,5],rb:[.8,1.5],crownR:[1.4,2.4],barkK:4,bark:[0x7a6a58,0x8a7a60,0x6a5a4a],
+ /*26*/{key:'barrelfrill',noStand:true,name:'Barrel frill',H:[2.5,5],rb:[.8,1.5],crownR:[1.4,2.4],barkK:4,bark:[0x7a6a58,0x8a7a60,0x6a5a4a],
   leaf:[0x7a8a4a,0x8a9a52,0x6a7a44,0x9aa85a],irid:'RP',ribs:9,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:true,riparian:'no'}},
- /*27*/{key:'silverscrub',name:'Silver scrub',H:[.8,2],rb:[.08,.15],crownR:[.8,1.8],barkK:3,bark:[0x7a6a60],
+ /*27*/{key:'silverscrub',noStand:true,name:'Silver scrub',H:[.8,2],rb:[.08,.15],crownR:[.8,1.8],barkK:3,bark:[0x7a6a60],
   leaf:[0xb0bca8,0xa0ac98,0xc0ccb8],irid:null,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
  /*28*/{key:'cloudfrill',name:'Chasm frill',H:[12,22],rb:[.9,1.5],crownR:[3,5],barkK:4,bark:[0x6a7a5a,0x5e7050,0x768a64],
@@ -178,7 +181,24 @@ XANADU.SPECIES=[
  /*32*/{key:'arbutus',name:'Strawberry tree',H:[5,9],rb:[.3,.5],crownR:[3,5],barkK:1,bark:[0xffb898,0xffc8a8,0xf0a888],
   leaf:[0x2e5a2a,0x3a6a30,0x2a5028],irid:null,boughs:[4,6],
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ // the diversity pass (2026-10-26, from the owner's reference pictures): three of the eight, the other five are Oidong's
+ /*33*/{key:'breakercrown',name:'Breaker crown',H:[5,9],rb:[.45,.75],crownR:[4.5,7],barkK:0,bark:[0x3a2a2e,0x2e2228,0x46323a],
+  leaf:[0x8a1420,0xa81c22,0xc8341c,0xe8502a,0xff7a3a],irid:'CR',blades:[30,42],
+  tags:{climate:'temperate..subtropic',aridity:'semiarid..subhumid',abyssal:true,riparian:'no'}},
+ /*34*/{key:'braidcloud',name:'Braided cloud tree',H:[10,16],rb:[.45,.7],crownR:[3.6,5.2],barkK:0,bark:[0x7a2a5a,0x8a2e44,0x6a2a6a],
+  leaf:[0xf4b0c8,0xf8c8a0,0xf6e6a0,0xd4bcf2,0xf0d0e8],irid:'PS',stems:[3,5],
+  tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'both'}},
+ /*35*/{key:'hivelily',noStand:true,range:600,name:'Hive lily',H:[1.4,2.6],rb:[.03,.05],crownR:[.9,1.5],barkK:4,bark:[0x2a8a80,0x22786e,0x349a8e],
+  leaf:[0x1e6a62,0x1a5e58,0x24766c],irid:null,stalks:[3,6],
+  tags:{climate:'subtropic',aridity:'humid',abyssal:false,riparian:'both'}},
 ];
+// the enchanted grove's two (the "neon grove" palette, one sacred place on the lake shore): colour variants that take a
+// builder of the kit's own (the cloud tree-fern's and the oak's) under their own key, name, colours and harvest
+XANADU.SPECIES.push(
+ /*36*/Object.assign({},XANADU.SPECIES[23],{key:'emberpalm',name:'Ember palm',H:[6,11],leaf:[0xff7a14,0xff9a26,0xf06410,0xffb03a],bark:[0x5a3a2a,0x4e3226,0x664436],
+  base:23,tags:{climate:'subtropic',aridity:'humid',abyssal:false,riparian:'both'}}),
+ /*37*/Object.assign({},XANADU.SPECIES[11],{key:'veiloak',name:'Veil oak',H:[24,32],crownR:[12,16],leaf:[0x5a2290,0x6a2aa0,0x7a38b8,0x4a1a7a],bark:[0x4a3a48,0x3e3040,0x5a4858],
+  base:11,veil:[0xe030a0,0xf048b8,0xc82890],tags:{climate:'subtropic',aridity:'humid',abyssal:false,riparian:'both'}}));
 XANADU.byKey={};XANADU.SPECIES.forEach((S,i)=>{S.i=i;XANADU.byKey[S.key]=S;});
 
 // ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
@@ -219,6 +239,11 @@ XANADU.HARVEST={
  anemonestalk:HV('none',[],false,'The red tufts sting.'),
  flamecypress:HV('timber, incense',[],true,'The wood is burned as incense.'),
  arbutus:HV('fuel, turnery',['berries (jam)'],false,'Bumpy berries ripening red through orange; cooked into jam, heady when overripe.','generic_fruit_arbutus'),
+ breakercrown:HV('carving (the dark twisted wood)',[],false,'One crescent of crimson blades, always swept the way the wind bent it.'),
+ braidcloud:HV('none',[],false,'Several stems braid as they grow and part at the top; the soft crowns shed pastel petals all summer.'),
+ hivelily:HV('none',[],true,'The ribbed orange buds are dried and burned against midges.'),
+ emberpalm:HV('thatch',[],false,'Grows only in the enchanted grove; the fronds are never cut.'),
+ veiloak:HV('none',[],false,'The magenta veils are a moss; nothing is gathered in the grove.'),
 };
 XANADU.SPECIES.forEach(S=>{S.tags.harvest=XANADU.HARVEST[S.key]||HV('none');});
 // the small plants (60-floor places them): tagged too. `items` names the instanced items that draw them, so the
@@ -418,9 +443,9 @@ XANADU.barkTex=function(kind){
   g.putImageData(id,0,0);});
  return BIO.canvasTex(256,512,(g,w,h)=>{
  g.fillStyle='#8c8c8c';g.fillRect(0,0,w,h);
- if(kind===0){const id=g.getImageData(0,0,w,h),d=id.data;   // tileable: the stripe runs along x+y, period 64 (divides both sides)
+ if(kind===0){const id=g.createImageData(w,h),d=id.data;   // tileable: the stripe runs along x+y, period 64 (divides both sides); every pixel written, nothing read back (2026-10-26)
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,s=(x+y)/64*TAU+.9*Math.sin((x-y)/128*TAU),band=Math.sin(s),fine=Math.sin(s*5+1.1);
-   const v=140+62*smooth(-.2,.6,band)-40*smooth(.3,.9,-band)+10*fine+14*(h3(x,y,7)-.5);d[i]=d[i+1]=d[i+2]=clamp(v,0,255);}
+   const v=140+62*smooth(-.2,.6,band)-40*smooth(.3,.9,-band)+10*fine+14*(h3(x,y,7)-.5);d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);}
  else if(kind===2){for(let i=0;i<260;i++){const x=rng()*w,y=rng()*h,l=rng()<.5?rr(95,125):rr(160,200);g.fillStyle='rgba('+(l|0)+','+(l|0)+','+(l|0)+',.75)';g.beginPath();
    for(let k=0;k<7;k++){const a=k/7*TAU,r=rr(8,24);g.lineTo(x+Math.cos(a)*r*1.4,y+Math.sin(a)*r);}g.closePath();g.fill();}}
@@ -457,7 +482,8 @@ G.fan=function(){const pos=[],uv=[],nor=[];const P=[[-.5,0],[.5,0],[.5,1],[-.5,1
 G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]].map(q=>[q[0],0,q[1],q[0]+.5,q[1]+.5]);
  [0,2,1,0,3,2].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(0,1,0);});return BIO.geo._make(pos,nor,uv);};
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
-G.ball=function(){return new T3.SphereGeometry(1,6,4);};
+G.ball=function(){const g=new T3.IcosahedronGeometry(1,0),p=g.attributes.position,n=g.attributes.normal;   /* 20 triangles, smooth (was a 6x4 sphere, 36 triangles: the 2026-10-26 diversity pass's room) */
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),l=Math.hypot(x,y,z)||1;n.setXYZ(i,x/l,y/l,z/l);}return g;};
 // a CUSHION: a smooth dome with uvs for the leafy skin, origin at its centre
 G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.attributes.position,col=[];
  const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);

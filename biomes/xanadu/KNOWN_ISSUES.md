@@ -14,16 +14,27 @@ Read before changing anything here. `build.py` prints the open count.
       stand-ins included) and draws 3–14.5M at the preset views, in 100–460 draw calls.
       The probe's ceilings: 30M held, 14M drawn (tracked, not asserted by verify.py),
       600 calls. `XANADU.build({quality:.6})` (or `?q=.6`) and `BIO.LOD.scale` are the knobs.
-- [ ] Runtime LOD costs draw calls: one mesh per item per chunk. The vale's densest views
+      2026-10-26 (the diversity pass): 29.78M held before, 29.05M after, with the breaker crown (615), braided cloud
+      tree (377), hive lily (1628) and the enchanted grove (16 ember palms, 1 veil oak, ~175 floor plants) added. Room
+      made by: the fruit/berry ball 36 -> 20 triangles (an icosahedron with smooth normals, ~118k balls, ~1.9M saved); no
+      stand-in impostor past 1.2 km for plants under 5 m (`noStand`: pitaya, prickly pear, desert rose, barrel frill,
+      silver scrub, hive lily; 9509 stand-ins, ~0.3M saved; they were sub-pixel there); the hive lily's own 600 m range.
+      Drawn: 3.3-16.6M per view, worst draw calls 514 (Wisteria, was 499). The trees pass is 21.6M of its 19M soft class
+      budget (22.3M before). Stays open: a record of the budget, not a defect.- [ ] Runtime LOD costs draw calls: one mesh per item per chunk. The vale's densest views
       draw ~460 calls; on weak hardware lower `BIO.LOD.scale` or raise `BIO.LOD.chunk`.
       Chunks switch whole: at the edge of a range a chunk of hero trees becomes stand-ins at
       once (a visible pop at 1.5 km, softened by fog).
+      Stays open (2026-10-26): needs core. `BIO.lodTick` (`core/biome/40-core-place.js`) would fade a chunk over a band
+      (a per-chunk `uLodFade` uniform dithered in the leaf and bark shaders) and could merge a chunk's small items into one
+      mesh per material; this kit has nothing to change.
 - [ ] THE MAP IS READ AT 44 m. Anything on the scale model smaller than a cell (a
       single escarpment line, a narrow spit) is lost or softened; the escarpments
       between the green slopes and the uplands are slopes here, not cliffs.
+      Stays open (2026-10-26): the scale model's resolution (tools/scale-model), not this kit's.
 - [ ] The city is not here. The map's districts (markets, farms, the palace) are
       treated as the wild ground under them; a world that builds the city should
       clear its footprints through `mask` / `obstacles` and keep the fields.
+      Stays open (2026-10-26): by design; `settlements/xanadu` (Erewhon) is the world that builds the city.
 - [ ] The cataract that drains the lake is paint (a notch and a spray plume at
       azimuth 112 on the sky); the lake's outlet is not geometry.
       Stays: the outlet lies off the map (no terrain there to hold a `WATER.fall`) and the sky is planned elsewhere (2026-10-25).
@@ -34,10 +45,21 @@ Read before changing anything here. `build.py` prints the open count.
       concern and is skipped by the probe.
 - [ ] Impostors are the hyperjungle's blob technique, one or three blobs by habit;
       the lotus trumpet's impostor is three pink-rimmed blobs, not cups.
+      2026-10-26: the lotus trumpet's part is fixed: its three blobs are CUPS now (`blob(..., cup)` in 55: the upper half
+      pressed into a dish, green inside, the pink fringe at the rim, green under it; same triangles; not yet judged in a
+      close shot of a far lotus). New habits: 'wave'
+      (the breaker crown: one blob thrown forward over the lean). Stays open: the far canopy is still blobs, not baked
+      cards; a card impostor (an octahedral atlas rendered from each species' hero) is a core/biome feature
+      (`core/biome/40-core-place.js`, a `BIO.impostorAtlas(species, builder)` beside the blob path), not this kit's.
 - [ ] Flowers are two-tone through the iridescence hook (a second colour away from
       the sun and at grazing angles), not painted in two colours: seen face-on in
       full sun a painted orchid shows mostly its first colour.
-- [ ] Only one test structure dresses (the dome ruin). `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
+      Stays open (2026-10-26): needs core. `BIO.leafMat` (`core/biome/30-core-foliage.js`) would take an option `paint2:
+      true` that mixes `aC2` in by a mask channel of the card (the texture's blue channel, or a second mask map) as well as
+      by the view angle; the kit's flower cards would then paint their throat/edge mask. Not editable from this kit.
+- [x] (2026-10-26: `buildTestDome` hands six shells, podium, columns, architrave, drum, dome and rubble, each `{geos, share}`
+      (`85-host-dome.js`); the drawn mesh is unchanged) Only one test structure dresses (the dome ruin). `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
+      Still one test structure: a second one is a world's job (`settlements/xanadu` dresses Erewhon's).
 - [ ] No fauna yet.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): every species carries `tags.harvest`
       (`XANADU.HARVEST`, `HV()` as ebadlands), the floor's small plants too (`XANADU.PLANTS`); nine fruit name their
@@ -46,6 +68,12 @@ Read before changing anything here. `build.py` prints the open count.
       ~200). The probe's "fruit tagged, catalogued and drawn" check and three negatives; the inspector shows the tag.
       `settlements/xanadu` vendors this kit and needs re-vendoring. The trees pass was already over its 19M class
       budget (soft) before this; the showcase total is now 29.8M of 30M, so further fruit needs a cut elsewhere.
+
+- [x] (2026-10-26) **No canvas is read back.** `check_core_use` named two `getImageData` calls: neither was placement (the
+      whorled bark map read its own grey fill back before writing every pixel; the trees took the mean colour of each
+      procedural bark map and the rock map by reading the canvas). The bark map now writes a fresh `createImageData`;
+      the means are the measured constants (`BARKMEAN`, `ROCKMEAN` in 55), so GPU and CPU canvases and Godot tint alike.
+      Nothing here is placed from a raster, so `core/mask` is not needed. Also `XANADU.build` reads `opt.R==null`, not `||`.
 
 ## Done
 
