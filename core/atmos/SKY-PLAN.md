@@ -393,6 +393,51 @@ taken into it by agreement), and each step rides one all-builds rebuild where it
 - Exposure and grade apply per hour through `renderer.toneMappingExposure` and a split-tone in the weather hook (the
   `VISUAL-BAR.md` section 6 rows for tone, exposure and per-hour grade, now as data in the preset).
 
+### 11.1 Cloud shadows and rain darkening on the ground (asked by the biome rebuild, 2026-10-25)
+
+`TODO.md`, "Rendering ideas": cloud shade in the lighting of every ground and plant material, driven by **the same cloud field
+as the sky**, and the ground darkening when wet, through one shared chunk. The biome rebuild left it for the sky because its
+clouds must be the sky's clouds. How the field reaches the ground:
+
+1. **One cloud field, anchored to the world.** Today `atmSkyClouds` (S0) puts the cumulus layer on a plane `uCloudH.x` metres
+   above the *viewer* and samples it at `d.xz/d.y*H`, so the clouds travel with the camera. It becomes a function of world
+   position, `float atmCloudCover(vec2 xz)` (cover 0..1 at world `xz` on the cloud plane, drifting on `uWind*uTime`), and the
+   sky samples it at `uCamPos.xz + d.xz/d.y*(H - uCamPos.y)` (`uCamPos`: the page camera's world position, a new uniform; the
+   sky scene's own camera stays at the origin). Its fbm reads the noise volume, as everything in the sky does.
+2. **The shade.** A ground point `P` is in a cloud's shadow when the ray toward the light crosses the cloud plane inside a
+   cloud: `Q = P.xz + L.xz/L.y*(H - P.y)`, `shade = 1 - k*atmCloudCover(Q)` (`k` from the preset: thick cumulus 0.75, thin 0.4;
+   0 when `L.y <= 0`). The shadow takes **only the field's first three octaves**: a cloud 1.6 km up casts a penumbra ~15 m wide
+   (the sun is 0.53 degrees), so the fine detail would not reach the ground anyway, and it costs a third. The same function
+   shades **giantshine** at night, with the giant's direction as `L`.
+3. **The chunk** `#include <atmos_cloudshade>` (`core/atmos/sky/`, [G shader], registered at `ATMOS.init` like `atmos_waves`)
+   declares the shared uniforms (`uCloud`, `uCloudH`, `uWind`, `uTime`, `uNoise`, `uSunDir`, `uGiantDir`, `uWet`, `uCamPos`)
+   and `atmCloudShade(vec3 worldPos, vec3 L)`. `ATMOS.cloudShade(material)` hooks a material by `onBeforeCompile`: a world
+   position varying, then
+   - **standard materials** (the library families): in `lights_fragment_begin`, after the first directional light's
+     irradiance, `directLight.color *= atmCloudShade(vWorldPosition, directLight.direction)` (light 0 is the sun; the
+     giantshine light, when it exists, is light 1 and gets its own call);
+   - **Lambert** (most flora today): r128 lights Lambert per vertex, so the shade multiplies the directional term in
+     `lights_lambert_vertex` with the vertex's world position. Coarse on big triangles, right on grass and leaves.
+   - Uniform objects are **shared**, not copied: every hooked material points at the sky's uniforms (`ATMOS.U` gains them),
+     so one update a frame moves every shadow.
+   The biome core's material makers (`BIO`'s ground and foliage materials) call `ATMOS.cloudShade` once each; a page with no
+   shared sky yet gets `cover 0` and a shade of 1, so nothing changes until it migrates.
+4. **Rain darkening**, in the same chunk: `uWet` (0..1) is `ATMOS.weather`'s `W.wet` (it already eases up in rain and dries
+   slowly). Ground and rock darken (`diffuseColor.rgb *= 1.0 - 0.38*uWet*porosity`), standard materials lose roughness
+   (`roughness *= 1.0 - 0.55*uWet`) so wet stone catches the sky in `ATMOS.skylight`, and leaves darken a little
+   (`0.15*uWet`). `porosity` is a per-material constant passed to `cloudShade` (soil 1, rock 0.6, leaves 0.4, metal 0).
+   Puddles are core/water's, not this.
+5. **Agreement.** `test-sky.js` gains: a ground point straight under a cloud is shaded and one under a gap is not, at sample
+   positions, from the JS twin `ATMOS.cloudCoverAt(x, z, t)` against the GLSL; and the sky and the ground agree (the sky's
+   cover at the zenith over a point equals that point's shade at noon with the sun overhead).
+6. **Godot.** `atmos_cloudshade.gdshaderinc` over the `atm_*` global shader parameters (`atm_cloud`, `atm_cloud_h`,
+   `atm_wind`, `atm_time`, `atm_wet`, `atm_cam_pos`, the noise as a global `sampler3D`). Each ground and plant shader includes
+   it and in `light()` does `ATTENUATION *= atm_cloud_shade(world_pos, LIGHT)` when `LIGHT_IS_DIRECTIONAL` (so the sun and
+   the giantshine light are each shaded along their own direction), and the wet terms in `fragment()`.
+7. **Order.** It lands with the sky's first biome (S1): the world-anchored field is a change to the sky shader, and the hooks
+   need the biome core's material makers, which the biome rebuild owns; the two sessions coordinate that step. Cost: one
+   three-octave fbm per ground fragment (per vertex on Lambert), a texture read each.
+
 ## 12. Open decisions for the owner
 
 Settled: everything in sections 2, 2.1 and 2.2. Open:
