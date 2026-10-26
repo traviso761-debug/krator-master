@@ -77,7 +77,7 @@ GUILIN.SPECIES.forEach(S=>{S.tags.harvest=GUILIN.HARVEST[S.key]||HV('none');});
 // Placed by 57 (the cliffs) and 60 (the floor). `items` names the instanced items that draw each, for the inspector.
 const PK=(name,c,a,r,kp,zone,items,hv,extra)=>({name,tags:Object.assign(K(c,a,r,kp,zone),{harvest:hv||HV('none')},extra||{}),items});
 GUILIN.PLANTS={
- rice:PK('Rice','temperate','humid','yes',['Cfa','Cwa'],'paddy',['rice','ricebed','ricerows'],HV('straw (thatch, rope, sandals)',['rice (the staple: boiled, ground for rice noodles)'],false,'The plain\'s crop in flooded fields behind earth bunds: planted out as seedlings into water, grown green, drained before the harvest when the field turns gold. Guilin\'s rice noodles are made of it.'),{crop:'rice'}),
+ rice:PK('Rice','temperate','humid','yes',['Cfa','Cwa'],'paddy',['rice','riceyoung','riceripe','ricebed','ricerows'],HV('straw (thatch, rope, sandals)',['rice (the staple: boiled, ground for rice noodles)'],false,'The plain\'s crop in flooded fields behind earth bunds: planted out as seedlings into water, grown green, drained before the harvest when the field turns gold. Guilin\'s rice noodles are made of it.'),{crop:'rice'}),
  scrub:PK('Cliff scrub','temperate','subhumid','no',['Cfa','Cwa'],'crown',['scrub'],HV('firewood',[],false,'The evergreen shrubs that clothe a tower\'s faces wherever a crack holds soil: loropetalum, sageretia, box-leaved holly. They are why the towers are green to their feet.')),
  orchid:PK('Stone orchid','temperate','subhumid','no',['Cfa','Cwa'],'blade',['orchid','orchidbloom'],HV('none',[],true,'Dendrobium on the bare rock: jointed yellow-green canes and sprays of white and pink flowers. The canes, dried and twisted into coils, are a tonic for the stomach and the throat; gatherers climb the towers on ropes for it.')),
  fern:PK('Karst ferns','temperate','humid','no',['Cfa','Cwa'],'foot',['fern'],HV('none',[],false,'Holly fern and maidenhair in the shade at the towers\' feet and between the blades.')),
@@ -171,7 +171,7 @@ const M=GUILIN.MAT={
  osmleaf:BIO.leafMat(TX.thick,'osmleaf',{aN:true,swayW:'1.0',swayA:.04}),pomeloleaf:BIO.leafMat(TX.broad,'pomeloleaf',{aN:true,swayW:'1.0',swayA:.04}),
  oakleaf:BIO.leafMat(TX.thick,'oakleaf',{aN:true,swayW:'1.0',swayA:.03}),scrub:BIO.leafMat(TX.thick,'scrub',{aN:true,swayW:'1.0',swayA:.03}),
  pineleaf:BIO.leafMat(TX.needle,'pineleaf',{aN:true,swayW:'1.0',swayA:.04}),
- rice:leaf(TX.grass,'rice',{swayA:.09}),silvergrass:leaf(TX.grass,'silvergrass',{swayA:.1}),
+ rice:leaf(TX.grass,'rice',{swayA:.09}),silvergrass:leaf(TX.grass,'silvergrass',{swayA:.1}),plume:leaf(TX.grass,'plume',{swayA:.1}),riceyoung:leaf(TX.grass,'riceyoung',{swayA:.09}),riceripe:leaf(TX.grass,'riceripe',{swayA:.09}),
  ricerows:leaf(TX.rows,'ricerows',{swayW:'0.0',swayA:0,alphaTest:.35}),ricebed:BIO.leafMat(TX.bed,'ricebed',{swayW:'0.0',swayA:0,alphaTest:0}),
  fern:leaf(TX.fern,'fern',{swayW:'(position.x)',swayA:.06}),moss:leaf(TX.moss,'moss',{swayW:'0.0',swayA:0}),
  vine:leaf(TX.hang,'vine',{swayW:'(-position.y)',swayA:.06}),orchid:leaf(TX.orchid,'orchid',{swayA:.03}),
@@ -182,6 +182,8 @@ const M=GUILIN.MAT={
 // without the pack
 GUILIN.LIB=BIO.libSwap('guilin',M);
 const LIBWHITE=C(0xf4f2ec);
+/* a slot the library cut to one cell (materials.json `cell`) takes the geometry's whole uv; a procedural 3x3 sheet is cut by the geometry */
+const CU=(slot,geo,cell)=>GUILIN.LIB[slot]?geo:cellUV(geo,cell);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 const FULL=slot=>{if(!GUILIN.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('guilin',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
 GUILIN.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):c;
@@ -199,12 +201,14 @@ BIO.def('pomeloleaf',BIO.geo.clump(),M.pomeloleaf,{attrs:['aN'],label:'Pomelo fo
 BIO.def('oakleaf',BIO.geo.clump(),M.oakleaf,{attrs:['aN'],label:'Ring-cupped oak foliage'});
 BIO.def('pineleaf',BIO.geo.clump(),M.pineleaf,{attrs:['aN'],label:'Pine needles (in pads)'});
 BIO.def('scrub',BIO.geo.clump(),M.scrub,{attrs:['aN'],label:'Cliff scrub'});
-BIO.def('rice',cellUV(G.tuft(),CELL(1,1)),M.rice,{label:'Rice'});
+BIO.def('riceyoung',CU('riceyoung',G.tuft(),CELL(1,1)),M.riceyoung,{label:'Rice (young tufts)'});
+BIO.def('riceripe',CU('riceripe',G.tuft(),CELL(1,1)),M.riceripe,{label:'Rice (ripe tufts)'});
+BIO.def('rice',CU('rice',G.tuft(),CELL(1,1)),M.rice,{label:'Rice'});
 BIO.def('ricerows',G.field(),M.ricerows,{label:'Rice (young, in rows over water)'});
 BIO.def('ricebed',G.field(),M.ricebed,{label:'Rice (a field grown in)'});
-BIO.def('silvergrass',cellUV(G.tuft(),CELL(1,1)),M.silvergrass,{label:'Chinese silvergrass'});
-BIO.def('plume',cellUV(G.tuft(),CELL(0,0)),M.silvergrass,{label:'Silvergrass plumes'});
-BIO.def('fern',cellUV(G.frond(),[.333,0,.667,.333]),M.fern,{label:'Karst ferns'});
+BIO.def('silvergrass',CU('silvergrass',G.tuft(),CELL(1,1)),M.silvergrass,{label:'Chinese silvergrass'});
+BIO.def('plume',CU('plume',G.tuft(),CELL(0,0)),M.plume,{label:'Silvergrass plumes'});
+BIO.def('fern',CU('fern',G.frond(),[.333,0,.667,.333]),M.fern,{label:'Karst ferns'});
 BIO.def('moss',G.pad(),M.moss,{label:'Moss'});
 BIO.def('vine',G.sheet(),M.vine,{label:'Creepers (hanging off the ledges)'});
 BIO.def('orchid',cellUV(G.tuft(),[0,0,1,1]),M.orchid,{label:'Stone orchid (canes)'});

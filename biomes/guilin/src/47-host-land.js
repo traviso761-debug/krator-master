@@ -63,7 +63,7 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
   const col=(lib,hex)=>{if(lib)return'vec3(1.0)';const c=new THREE.Color(hex).convertSRGBToLinear();return'vec3('+[c.r,c.g,c.b].map(v=>(v*1.6).toFixed(4)).join(',')+')';};
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uG,uL,uS,uM;varying vec4 vW;varying vec3 vGWP;')
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;',
-    'vec3 gr=pow(texture2D(uG,p/'+Lg.s.toFixed(2)+').rgb,vec3(2.2))*'+(Lg.lib?'vec3(0.55,0.86,0.4)':col(false,0x58703a))+';',   // the library's grass greened: a wet subtropical plain
+    'vec3 gr=pow(texture2D(uG,p/'+Lg.s.toFixed(2)+').rgb,vec3(2.2))*'+(Lg.lib?'vec3(0.95)':col(false,0x58703a))+';',   // the library's green lawn (ground.moss003) carries its own green: a little lift only
     'vec3 lt=pow(texture2D(uL,p/'+Lt.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lt.lib,0x4a4030)+';',
     'vec3 sd=pow(texture2D(uS,p/'+Ls.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Ls.lib,0xa89c88)+';',
     'vec3 md=pow(texture2D(uM,p/'+Lm.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lm.lib,0x5a4a38)+';',

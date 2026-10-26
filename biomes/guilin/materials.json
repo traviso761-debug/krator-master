@@ -1,13 +1,13 @@
 {
  "build": "guilin",
- "note": "The guilin kit's adapter onto the material library (core/materials/PLAN.md). The host's layers (47-host-land.js): ground.grass (the plain: ground.leafy_grass, greened in the ground's shader), ground.litter (the towers' feet), ground.sand (the river's bars), ground.mud (the paddies, the pond's edge), rock.wall (the towers: rock.limestone.karst, grey with black rain streaks and ochre iron stains), rock.blade (the stone forest's blades: the same stone greyed, keep 0, its grey from the vertex colour: Shilin's rock is grey, not Guilin's ochre), rock.top (a tower's cap under the scrub). The kit's slots (BIO.libSwap, 50-biome-guilin-species.js): the karst cards Ys commissioned (card.jungle.clump.0 for the cliff scrub, card.vine.hanging.0 for the creepers: full colour), the broadleaf, orchard and pine cards (tinted grey, keep 0) and the barks. Procedural still (no fitting card): the bamboo's narrow leaves, rice and silvergrass, ferns, moss, the lotus, the stone orchid. Run python3 tools/textures/pack.py biomes/guilin after any change, then python3 build.py.",
+ "note": "The guilin kit's adapter onto the material library (core/materials/PLAN.md). The host's layers (47-host-land.js): ground.grass (the plain: ground.grass.lush, full colour, 1.5 m), ground.litter (the towers' feet), ground.sand (the river's bars), ground.mud (the paddies, the pond's edge), rock.wall (the towers: rock.limestone.karst, grey with black rain streaks and ochre iron stains), rock.blade (the stone forest's blades: the same stone greyed, keep 0, its grey from the vertex colour: Shilin's rock is grey, not Guilin's ochre), rock.top (a tower's cap under the scrub). The kit's slots (BIO.libSwap, 50-biome-guilin-species.js): the karst cards Ys commissioned (card.jungle.clump.0 for the cliff scrub, card.vine.hanging.0 for the creepers: full colour), the broadleaf, orchard and pine cards (tinted grey, keep 0) and the barks. Cards of the library: rice (card.crop.rice: young, grown, ripe rows), the bamboo leaf (card.bamboo.giant), the stone orchid (card.orchid.dendrobium), silvergrass and its plumes (card.reed cells), ferns (card.fern.green), moss (card.moss), the lotus pad (card.lotus) and flower (card.lotus.bloom). Run python3 tools/textures/pack.py biomes/guilin after any change, then python3 build.py.",
  "size": 512,
  "families": {
   "ground.grass": {
-   "lib": "ground.leafy_grass",
+   "lib": "ground.grass.lush",
    "scale": [
-    3.0,
-    3.0
+    1.5,
+    1.5
    ],
    "tint": {
     "keep": 1.0,
@@ -272,6 +272,219 @@
    "roughLift": 0.3,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "rice": {
+   "lib": "card.crop.rice",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ]
+  },
+  "silvergrass": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "size": 512,
+   "cell": [
+    0.672,
+    0.338,
+    0.995,
+    0.662
+   ]
+  },
+  "plume": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "size": 512,
+   "cell": [
+    0.672,
+    0.005,
+    0.995,
+    0.328
+   ]
+  },
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "size": 512,
+   "cell": [
+    0.333,
+    0.0,
+    0.667,
+    0.333
+   ]
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "lotus": {
+   "lib": "card.lotus",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.337,
+    0.005,
+    0.662,
+    0.328
+   ]
+  },
+  "lotusbloom": {
+   "lib": "card.lotus.bloom",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.837
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "riceyoung": {
+   "lib": "card.crop.rice",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.338,
+    0.005,
+    0.662,
+    0.328
+   ]
+  },
+  "riceripe": {
+   "lib": "card.crop.rice",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.338,
+    0.672,
+    0.662,
+    0.995
+   ]
+  },
+  "bambooleaf": {
+   "lib": "card.bamboo.giant",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "size": 512,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ]
+  },
+  "orchid": {
+   "lib": "card.orchid.dendrobium",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ]
   }
  }
 }

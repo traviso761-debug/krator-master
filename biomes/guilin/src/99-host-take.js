@@ -13,6 +13,7 @@ const VIEWS={
  {let best=null;for(let k=0;k<40&&!best;k++){const a=k*2.4,r=60+k*3,x=SF.c[0]+Math.cos(a)*r,z=SF.c[1]+Math.sin(a)*r,Z=GUILIN.at(x,z);if(!Z.rock&&Z.footD>2&&Z.footD<6&&pondE(x,z)>1.6)best=[x,z,a];}
   if(best){const y=terrainH(best[0],best[1]);VIEWS['In the stone forest']=[best[0],y+1.7,best[1],best[0]+Math.cos(best[2]+1.6)*40,y+7,best[1]+Math.sin(best[2]+1.6)*40];}}
  VIEWS['The pond in the stone forest']=[POND.x+POND.rx*1.7,POND.level+4,POND.z+POND.rz*1.5,POND.x,POND.level,POND.z];
+ VIEWS['The lotus pond (close)']=[POND.x+POND.rx*.55,POND.level+2.2,POND.z+POND.rz*.5,POND.x,POND.level,POND.z];
  const fc=by('fcbase');if(fc)VIEWS['The fengcong']=[fc.x-950,160,fc.z+700,fc.x,90,fc.z];
  const bn=by('bendN');if(bn)VIEWS['A tower at the river\'s edge']=[RIVER.x(-200),18,-200,bn.x,bn.top*.45,bn.z];
  const t=R.filter(B=>/^tower/.test(B.id)).sort((a,b)=>Math.hypot(a.x,a.z)-Math.hypot(b.x,b.z))[0];

@@ -19,7 +19,7 @@ GUILIN.buildFloor=function(R,q,pond){q=q==null?1:q;R=R==null?1500:R;const L=BIO.
   const ca=Math.cos(P.ang),sa=Math.sin(P.ang),sp=P.state==='young'?1.0:1.3;
   for(let u=-P.w/2+sp/2;u<P.w/2;u+=sp)for(let v=-P.d/2+sp/2;v<P.d/2;v+=sp){if(rng()>.75*q)continue;const x=P.x+u*ca-v*sa,z=P.z+u*sa+v*ca,g=BIO.terrainH(x,z);
    const h=P.state==='young'?rr(.25,.4)+(P.level-g):rr(.75,1.0)+(P.state==='ripe'?.1:(P.level-g)*.3);
-   tuft('rice',x+rr(-.15,.15),z+rr(-.15,.15),h,h*(P.state==='young'?.6:.9),col('rice',set,1.1),g-.02);st.rice++;}});
+   tuft(P.state==='young'?'riceyoung':P.state==='ripe'?'riceripe':'rice',x+rr(-.15,.15),z+rr(-.15,.15),h,h*(P.state==='young'?.6:.9),col('rice',set,1.1),g-.02);st.rice++;}});
  // KARST FERNS at the towers' feet (in their shade) and between the blades
  GUILIN.place(2.6,301,(x,z,Z)=>(Z.zone==='foot'?smooth(3,6,Z.footD)*smooth(22,8,Z.footD)*.55:Z.zone==='grove'?.3*Z.grove:0)*q,(x,y,z,Z)=>{const lv=lvOf(x,z),n=lv===2?ri(4,7):2,a0=rr(0,TAU);
   for(let k=0;k<n;k++){const a=a0+k*TAU/n+rr(-.25,.25),l=rr(.45,.95);BIO.put('fern',[x,BIO.terrainH(x,z)+.03,z],qEuler(rr(-.08,.08),-a,rr(.25,.75)),[l,l,l*rr(.8,1)],col('fern',PAL.fern,1.2));st.ferns++;}},{R,lodMax:L.floor[1]});
