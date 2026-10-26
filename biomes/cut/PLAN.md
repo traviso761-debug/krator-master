@@ -244,15 +244,17 @@ sets. To generate: `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `ro
 Two species each way with the crater drylands and the northern highlands, each where the two biomes meet on the model, each
 showing the warp (or its absence). Every species stays in its home kit; the neighbour reads it in place under its own mask
 (`biomes/WORLD.md`), as the Cut reads nwlowlands and nhighlands today. **Settled:** the measure melon's three sizes and its stuck
-share **breed true outside the bowl** (the owner: that is why Dilihan's measures hold in the crater too). Not built yet: they go
+share **breed true outside the bowl** (the owner: that is why Dilihan's measures hold in the crater too). **The crater drylands' half is
+its northern region only** (the owner, 2026-10-26: `rmuqlfgh1u6d8`, north and west of the Throne, the one the crater mouth opens
+into); the southern region (`rmuqlgonah5tp`, south of the volcano) neither sends nor takes these species. Not built yet: they go
 into the final rebuild, after the shared-sky rebuild of both neighbours has merged.
 
 | # | Species (home kit) | Into | Where | What it shows |
 |---|---|---|---|---|
 | 1 | Tree aloe (`crater-drylands`) | the Cut | the salt steppe's edge (station 1) and the wall's BWh patches (station 2) | where s > .5 its spiral rosettes grow as flat two-ranked fans (as *Aloe plicatilis*): the straight ranks on a succulent |
 | 2 | Parasol pine (`crater-drylands`) | the Cut | the dry wall about the crater mouth (station 2) | its long fire-proof column makes the comb plain: whole stands leaning one way, crowns stretched along the field, three height steps |
-| 3 | Rankgrass (`cut`) | the crater drylands | the salt pans and seeps near the mouth | outside the field it seeds as an ordinary salt grass; the ruled rows fade with distance from the mouth |
-| 4 | Measure melon (`cut`) | the crater drylands | feral on the seeps along Dilihan's road | still three sizes and its stuck share (it breeds true); a crop of the crater's farms through `kits/crops` (`home` gains `crater-drylands`) |
+| 3 | Rankgrass (`cut`) | the crater drylands (north) | the salt pans and seeps near the mouth | outside the field it seeds as an ordinary salt grass; the ruled rows fade with distance from the mouth |
+| 4 | Measure melon (`cut`) | the crater drylands (north) | feral on the seeps along Dilihan's road | still three sizes and its stuck share (it breeds true); a crop of the northern crater's farms through `kits/crops` (`home` gains `crater-drylands`, its note naming the northern region) |
 | 5 | Rowan (`nhighlands`) | the Cut | the upper walls' gullies, 64-72 km out (Csa to Dsc) | the stuck fruit: clusters set small and green beside the ripe red ones |
 | 6 | Great trumpet (`nhighlands`) | the Cut | the walls' ravines, with the hyperbamboo | where the ranks apply its colonies stand in straight rows of fixed sizes, like organ pipes; its glowing bell-bulbs beside the dusk echoes |
 | 7 | Circle lichen (`cut`) | the northern highlands | the crag pillars and boulder fields | away from the warp an ordinary map lichen: round-ish, irregular, touching and merging; the perfect circles only near the lip |
@@ -260,7 +262,7 @@ into the final rebuild, after the shared-sky rebuild of both neighbours has merg
 
 The work: 1, 2, 5 and 6 are lists in this kit (the stations' allow lists for read-in kits, with `crater-drylands` read in place
 on the wall station, its pack a sidecar); the warp does the rest. 3, 4, 7 and 8 are additive reads of `src/50-biome-cut-species.js`
-(and 55/57's planners) by those two kits' pages, each under its own mask, with a flag that turns the warp's traits off where
+(and 55/57's planners) by those two kits' pages, each under its own mask (on the crater drylands, a mask of its northern region only), with a flag that turns the warp's traits off where
 s is 0 (rankgrass's rows, the lichen's spacing, the reeds' bands), never the melon's sizes. `CROPS` gains the melon's
 `crater-drylands` home. Each exchange gets a host check on the page that receives it (the aloe's fans only where s > .5; the
 melon's three sizes in the crater; no ruled rows past the mouth; the lichen's circles touching away from the lip).
