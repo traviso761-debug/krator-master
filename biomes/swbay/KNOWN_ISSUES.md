@@ -53,6 +53,12 @@ Read before changing anything here. `build.py` prints the open count.
       chooses its own chunk size (`BIO._lodKey` reads `BIO.chunk==null?BIO.LOD.chunk:BIO.chunk` and writes it into the key;
       `_lodEntry` reads C back from the key instead of `BIO.LOD.chunk`), so the floor's many small items bake in 2400 m chunks
       (a quarter of the meshes) while the heroes keep 1200 m.
+      2026-10-26 (core/biome B1/B2 and R6, branch claude/core-kit): the page sets `BIO.LOD.merge`, `minTris` 1500 and `fade` .15
+      (45-host-stage) and the floor and reeds are back at 800 m (one mesh per chunk holds both ranges). GPU, 28 views against
+      the page before: calls -11 to +5 (108 fewer in all), triangles -0.78 to +0.02M. The far trees and the heroes' stand-ins
+      are octahedral impostors (core/biome 34-core-impostor.js, the 14 species on one 2048 px atlas pair, one item): the same
+      calls, triangles -1.69 to -0.87M a view; the bake takes ~7 s after the build. Owner: judge the far band (silhouettes and
+      boles, but crowns darker and thinner than the green blobs were).
 - [x] THE TEMPLE HEIGHT IS A PLACEHOLDER. The brief says the tallest jungle trees top out
       at the height of the Voth temple; the canon figure is not in this kit, so
       `SWBAY_TEMPLE_H=110` (45-host-stage). Set it and every canopy height follows.

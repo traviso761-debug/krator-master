@@ -150,6 +150,12 @@ function boxOf(G){const TH=T(),B=new TH.Box3(),b=new TH.Box3(),M=new TH.Matrix4(
  G.children.forEach(m=>{const g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();
   if(m.isInstancedMesh)for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);b.copy(g.boundingBox).applyMatrix4(M);B.union(b);}else B.union(g.boundingBox);});
  return B;}
+// the farthest vertex of a scratch group from O (instances included)
+function reach(G,O){const TH=T(),M=new TH.Matrix4(),v=new TH.Vector3();let r2=0;
+ G.children.forEach(m=>{const P=m.geometry.attributes.position,n=m.isInstancedMesh?m.count:1;
+  for(let i=0;i<n;i++){if(m.isInstancedMesh)m.getMatrixAt(i,M);else M.identity();
+   for(let j=0;j<P.count;j++){v.fromBufferAttribute(P,j).applyMatrix4(M);const d=v.distanceToSquared(O);if(d>r2)r2=d;}}});
+ return Math.sqrt(r2);}
 // the normal pass's material for a source material: its map's alpha and alpha test, its sides; the bent normal aN if any
 const NV=['varying vec3 vN;','varying vec2 vUv;','uniform mat3 uvTransform;','#ifdef IMP_AN','attribute vec3 aN;','#endif',
  'void main(){vUv=(uvTransform*vec3(uv,1.0)).xy;',
@@ -173,7 +179,7 @@ function capture(rec,renderer){const TH=T(),R0=BIO.kits[rec.kit];if(!R0){BIO.err
  finally{BIO.kit(prev);BIO.range=save.range;BIO.minRange=save.minRange;BIO.owner=save.owner;BIO.chunk=save.chunk;BIO.cur=save.cur;BIO.host.tags=save.tags;BIO.host.obstacles=save.obs;
   const st=JSON.parse(save.stats);for(const k in BIO.stats)delete BIO.stats[k];Object.assign(BIO.stats,st);}
  if(!G.children.length){BIO.err('BIO.impostor: '+rec.key+': the build put nothing');return false;}
- const B=boxOf(G),O=B.getCenter(new TH.Vector3()),rad=B.getSize(new TH.Vector3()).length()*.5;
+ const B=boxOf(G),O=B.getCenter(new TH.Vector3()),rad=Math.min(B.getSize(new TH.Vector3()).length()*.5,reach(G,O))*1.02||1;   /* the farthest vertex: tighter than the box */
  const N=rec.N,px=rec.px,W=N*px,scene=new TH.Scene();scene.add(G);scene.add(new TH.AmbientLight(0xffffff,1));
  const rtC=new TH.WebGLRenderTarget(W,W,{depthBuffer:true}),rtN=new TH.WebGLRenderTarget(W,W,{depthBuffer:true});
  const cam=new TH.OrthographicCamera(-rad,rad,rad,-rad,rad*.01,rad*4);

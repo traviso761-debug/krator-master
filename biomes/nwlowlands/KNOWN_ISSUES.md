@@ -46,6 +46,12 @@ Read before changing anything here. `build.py` prints the open count.
       -> 258, the lake shore 278 -> 218, from the foothills 221 -> 176, glow-willow 260 -> 200; afar 92 -> 93 with the far field's 3),
       for up to +0.5M drawn (the avenue 6.24 -> 6.84M with the far field's 0.11M; the lake shore and the foothills +0.1M, the far
       field alone). Owner: check the near-floor cost is worth the calls (revert: floor 800, under 800).
+      2026-10-26 (core/biome B1/B2, branch claude/core-kit): the page sets `BIO.LOD.merge`, `minTris` 1500 and `fade` .15
+      (45-host-stage) and the floor and understorey are back at 800 m: one mesh per chunk holds both ranges, so the 800 m band
+      costs no call. GPU, 19 views against the page before: calls -33 to +4 (217 fewer in all), triangles -0.42 to +0.08M;
+      819 -> 717 chunk meshes. The chunk switch dithers over its last 15% instead of popping. The far trees and the heroes'
+      stand-ins are octahedral impostors (core/biome 34, one atlas for every species): with them calls -32 to +7 (151 fewer in
+      all), triangles -0.65 to -0.11M. Owner: judge the impostors' far band (darker, thinner crowns than the blobs).
       Stays open: the rest is core. Proposed for `core/biome/20-core-kit.js` (`bake` and `_lodEntry`): (1) key a chunk mesh by
       chunk and range but MERGE the items that share a material into one mesh per material per chunk (the buckets already do this;
       most of the 128 visible chunk meshes under 3k triangles are small card items on one leaf or solid material), and (2) a
