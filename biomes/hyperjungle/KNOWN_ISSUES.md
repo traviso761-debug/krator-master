@@ -4,6 +4,14 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the volcano due south and its satellite
+      hills, the two canopy lines (ridges); its plume and crater glow are not drawn (no landmark layer yet).
+      src/82-host-sky.js stays for the builds that read it in place (guilin, korona, necanyons until they move;
+      settlements/pinnacle-rock); build.py leaves it out of this page. Draw calls at the default camera (verify.py --assert,
+      GPU): 58 before, 56 after.
+
 - [ ] (2026-10-05) Fauna sheets are an opt-in hook, not a look: `HYPERJUNGLE.FAUNATEX = {wing, fur, hide, ray}` (THREE.Texture or image URL) set before
       58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
       exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
