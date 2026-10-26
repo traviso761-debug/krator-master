@@ -4,30 +4,59 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **The trumpets stand still in `?unique=1`**: the core's foliage shader has no spin; the variants' shader, which
-      the page draws with, has.
-      Stays open (2026-10-25): needs a spin in the core foliage shader (core/biome 30-core-foliage), a shared change.
 - [ ] **The catalog owes the fruit.** Apples, walnuts, apricots, pears, pomegranates, pistachios and almonds are drawn
       (on the trees and as windfall) but `kits/catalog/krator-master-furniture-generic-fruit.js` has no piece for any
       of them, so `fruit` is null and the probe names them (`FRUIT_NOT_DRAWN`). Adding them is a catalog change: every
       build that takes the catalog rebuilds (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and almond are
       not in `kits/crops` either.
       Stays open (2026-10-25): a catalog change (every catalog build rebuilds) waiting for the owner's go-ahead.
+      Stays open (2026-10-26): still the catalog's (`kits/catalog`, not this kit's files). The proposal: seven pieces in
+      `krator-master-furniture-generic-fruit.js` in its SPEC shape (apple, walnut in its husk, apricot, pear, pomegranate,
+      pistachio, almond in its hull), plus the sea buckthorn's berry cluster (the new tugai shrub, 2026-10-26); then set
+      `fruit` in `NSEMIARID.HARVEST` and empty `FRUIT_NOT_DRAWN` (98-host-checks.js) of them, and rebuild every catalog build.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
       Stays open (2026-10-25): a design task (PLAN.md reads nhighlands and ebadlands in place), not a fix.
+      Stays open (2026-10-26): still a design task: it means taking two other kits' fragments into this page and a zone for
+      them over 2.5 km, a plan step rather than a defect in this kit's files.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
       Stays open (2026-10-25): waits for the owner's judgement from the shots.
+      Second pass (2026-10-26, `50-biome-nsemiarid-species.js`, a new `lathe2` with true normals and relief): the censer caps
+      (a crumpled sheet with blotches) are sponge domes with a rolled rim over a dark pore face and soft pore dots; the
+      furlers (fourteen flat spikes) are eleven strap petals cupped round a dark eye; their bulbs (the core's plain lobe in
+      one colour) are ribbed, darker at the foot; the roll-egg's cells (a checker) are raised pale cells in a dark net,
+      rows offset like a honeycomb. Placement is unchanged (geometry only). Cost: +0.6 M floor triangles (14.30 M ->
+      14.84 M of 16 M: censers 5.8k x +28, bulbs 7.6k x +16, furlers 7.6k x +25, eggs 2.1k x +48).
+      Stays open (2026-10-26): the mace heads, bead chains, step cones, hitchers and windows are untouched first passes;
+      the owner judges the four reworked from the garden shots before the rest go the same way.
 - [ ] **The hulk gardens are not here**: the rust vine has its tag and item and nothing places it; it belongs to the dam
       bed's hulks (`biomes/dambasins`, D3, after its flora, D2). The pothole pools' plants are the scablands' own
       (`biomes/scablands`, 2026-10-23: kolk lilies, pothole quills, seep sedge, spray ferns).
       Stays open (2026-10-25): waits for dambasins' flora (D2) and its D3.
+      Stays open (2026-10-26): unchanged; the hulks are dambasins' (another biome's files).
 - [ ] **Not in the open world yet.** The kit is ready for `WORLD_KITS` (a pass table, make/grow, record mode); the north
       basin's open world (`openworld/north-basin`, data only) is `PLAN.md` step 6.
       Stays open (2026-10-25): a design task (PLAN.md step 6), outside the kit's own src.
+      Stays open (2026-10-26): open-world work was out of this pass's scope (the owner).
 
 ## Closed
+
+- [x] **The trumpets stood still in `?unique=1`** (closed 2026-10-26). The core's foliage shader has no spin, but the core
+      leaves `begin_vertex` alone and each crown item's own origin is the pivot, so the host wraps the core's hook on the
+      two spin materials there (`86-host-variants.js`, `VARIANTS.spinUnique`, called from `88-host-build.js` in unique mode):
+      the same turn by `SPIN`, made about the instance's own up axis before its matrix, with its own GLSL names (the core
+      already declares `_sc`). No core change. A core spin option (`30-core-foliage.js`, `foliageHook`: `o.spin` adding this
+      turn) would let other kits have it too; not needed here.
+- [x] **The 2026-10-25/26 library sets that fit, wired** (2026-10-26; `materials.json`, `tools/textures/pack.py`): the golden
+      poplar (the Euphrates poplar) takes `card.poplar.euphrates` as its own crown card (`poplarLeaf`, whole sheet, keep 0)
+      and `bark.poplar.euphrates` as its own bark bucket (`bark6`; the furrowed canvas without the pack); `ground.soda.crust`
+      is the eighth ground layer, on the salt pan's middle where the efflorescence fades (the pan lies under the dune field,
+      so there it takes most of the sand's share); `card.saltbush` and `card.seabuckthorn` (keep 1, the middle cell) are two
+      new floor shrubs: saltbush on salty desert ground and the pan's edge, sea buckthorn in the tugai and on the stream
+      banks (+2 draw calls a view, their two items). Not wired: `rock.badland.bedded` and `rock.yardang.silt` (vertical beds
+      and flutes want a wall; this stage's ground is one top-down projected sheet), `ground.salt.ochre` (the soda crust took
+      the pan), `ground.sand.dune` (the dunes keep the coast sand; worth a look).
 
 - [x] **The frills' fins stayed on the column** (closed 2026-10-23). A gale now strips them: a bearer of the seed weather
       may name its species (`89c-host-seeds.js`, `BEAR.frillFin`), so the frill lets go of its fins as well as its plumes,

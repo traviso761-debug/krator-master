@@ -197,7 +197,7 @@ B[9]=function(T,st,lv){decTree(T,st,lv,{fam:'bark0',item:'lobed',stems:[1,1],for
  samara:{p:.45}});};
 // 10 the golden poplar (after the Euphrates poplar): gold in its season, willow-narrow leaves low and round leaves high;
 // on the salt behind the living forest it stands DEAD (salt in its zone, or the pass marks it), grey and leafless
-B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark0',item:'round',stems:[1,2],forkU:rr(.3,.45),limbs:[3,6],el:.7,limbK:.85,sec:2,curve:-.02,wig:.16,tuftK:.4,flat:.75,
+B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark6',item:'poplarLeaf',stems:[1,2],forkU:rr(.3,.45),limbs:[3,6],el:.7,limbK:.85,sec:2,curve:-.02,wig:.16,tuftK:.4,flat:.75,
  mixCol:[.35,PAL.poplarGreen],dead});
  // its cotton: torn off the crown by the wind and drifting downwind (89c-host-seeds.js)
 };
