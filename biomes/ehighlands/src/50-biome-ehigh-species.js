@@ -252,7 +252,7 @@ G.rosette=function(tiers,droop){const pos=[],nor=[],uv=[],col=[];droop=droop||0;
  return BIO.geo._make(pos,nor,uv,col);};
 // a FLOWER SPIKE: a tall knobbly column, the florets a checker of light and dark (vertex colour); unit height, radius .5
 G.spire=function(){const pos=[],nor=[],uv=[],col=[];const seg=10,nr=26,P=[];
- const hh=(i,s)=>{const v=Math.sin(i*12.9898+s*78.233)*43758.5453;return v-Math.floor(v);};
+ const hh=(i,s)=>KRAND.unit(KRAND.hash(1511,i,s));   /* core/rand: a cell hash of (seed, row, segment), 2026-10-25 */
  for(let i=0;i<=nr;i++){const t=i/nr,r=.5*Math.pow(Math.sin(Math.PI*Math.min(1,t*.96+.03)),.45)*(1-.55*t),row=[];
   for(let s=0;s<seg;s++){const a=s/seg*TAU,k=hh(i,s),bump=i===0||i===nr?1:1+.28*k;row.push([Math.cos(a)*r*bump,t,Math.sin(a)*r*bump,mix(.68,1.15,k)]);}P.push(row);}
  const pv=p=>{const l=Math.hypot(p[0],p[2])||1;pos.push(p[0],p[1],p[2]);nor.push(p[0]/l,.2,p[2]/l);uv.push(0,0);col.push(p[3],p[3],p[3]);};
