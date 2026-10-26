@@ -69,15 +69,7 @@ POND.level=plainH(POND.x,POND.z)-.7;
 const ROCK=(function(){const K=KSTACKS,L=[];
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,floorH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-3;};
  const add=(B,name)=>{B.name=name;L.push(B);return B;};
- function tower(id,seed,x,z,H,R,name,y0){const s=KRAND.stream(KRAND.hash(seed,0x70E)),e=s.range(1.0,1.3);
-  const B=K.make({id,kind:'spire',x,z,y0:y0==null?footY(x,z,R*Math.sqrt(e)):y0,seed,H,r:R,e,ry:s.range(0,TAU),lean:s.range(0,.045),taper:0,crown:1});
-  const tw=s.range(.45,.62),pw=s.range(.84,.94),kx=s.range(1.7,2.7),phi=s.range(0,TAU),drift=s.range(.04,.16)*R;
-  const prof=t=>t<=tw?1-(1-pw)*t/tw:pw*Math.pow(Math.max(0,1-.95*Math.pow((t-tw)/(1-tw),kx)),1/kx);
-  const sh=t=>t<=tw?0:drift*Math.pow((t-tw)/(1-tw),1.5);   // the dome's drift off the axis
-  B.beds.forEach(b=>{const t0=(b.y-B.y0)/H,t1=(b.y+b.h-B.y0)/H,f0=prof(t0),f1=prof(t1);b.rx*=f0;b.rz*=f0;b.tp=f1/Math.max(.01,f0);b.lob=.2;
-   b.cx+=Math.cos(phi)*sh(t0);b.cz+=Math.sin(phi)*sh(t0);b.tx+=Math.cos(phi)*(sh(t1)-sh(t0));b.tz+=Math.sin(phi)*(sh(t1)-sh(t0));});
-  let RR=0;B.beds.forEach(b=>{RR=Math.max(RR,Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z));});B.R=RR+2;B.tower=true;
-  return add(B,name);}
+ function tower(id,seed,x,z,H,R,name,y0){return add(K.tower({id,seed,x,z,H,R,y0,foot:footY}),name);}   // the tower's profile: KSTACKS.tower (core/terrain)
  const big=[];
  // THE FENGCONG: one low base in the north-east, its peaks crowded on it
  const FC={x:930,z:-940},base=add(K.make({id:'fcbase',kind:'butte',x:FC.x,z:FC.z,y0:footY(FC.x,FC.z,380),seed:2101,

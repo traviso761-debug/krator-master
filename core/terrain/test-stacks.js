@@ -123,5 +123,28 @@ ok('the same garden from the same seed',JSON.stringify(K.cluster({id:'g',seed:5,
    gv.every((B,i)=>tp(B)===tp(gd[i])));}
 ok('a mesh is the same every time',K.hash(K.mesh(mesa))===K.hash(K.mesh(K.load(K.export([mesa]))[0])),K.hash(K.mesh(mesa))===K.hash(K.mesh(sp)));
 threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export is refused',threw,false);
+// ---- the karst tower: KSTACKS.tower is guilin's tower() as it stood (biomes/guilin/src/45-host-stage.js before 2026-10-25),
+// so the guilin page's rock is unchanged; the copy below is that function, kept as the golden
+{const TAU=Math.PI*2,KR=global.KRAND;
+ function oldTower(id,seed,x,z,H,R,y0,footY){const s=KR.stream(KR.hash(seed,0x70E)),e=s.range(1.0,1.3);
+  const B=K.make({id,kind:'spire',x,z,y0:y0==null?footY(x,z,R*Math.sqrt(e)):y0,seed,H,r:R,e,ry:s.range(0,TAU),lean:s.range(0,.045),taper:0,crown:1});
+  const tw=s.range(.45,.62),pw=s.range(.84,.94),kx=s.range(1.7,2.7),phi=s.range(0,TAU),drift=s.range(.04,.16)*R;
+  const prof=t=>t<=tw?1-(1-pw)*t/tw:pw*Math.pow(Math.max(0,1-.95*Math.pow((t-tw)/(1-tw),kx)),1/kx);
+  const sh=t=>t<=tw?0:drift*Math.pow((t-tw)/(1-tw),1.5);
+  B.beds.forEach(b=>{const t0=(b.y-B.y0)/H,t1=(b.y+b.h-B.y0)/H,f0=prof(t0),f1=prof(t1);b.rx*=f0;b.rz*=f0;b.tp=f1/Math.max(.01,f0);b.lob=.2;
+   b.cx+=Math.cos(phi)*sh(t0);b.cz+=Math.sin(phi)*sh(t0);b.tx+=Math.cos(phi)*(sh(t1)-sh(t0));b.tz+=Math.sin(phi)*(sh(t1)-sh(t0));});
+  let RR=0;B.beds.forEach(b=>{RR=Math.max(RR,Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z));});B.R=RR+2;B.tower=true;return B;}
+ const foot=(x,z,r)=>-3-.01*r+.001*x;let same=true,n=0;
+ for(let i=0;i<40;i++){const seed=2200+i*7,x=i*37-700,z=500-i*23,H=90+i*3.5,R=40+i*2,y0=i%3?null:-2;
+  const a=oldTower('t'+i,seed,x,z,H,R,y0,foot),b=K.tower({id:'t'+i,seed,x,z,H,R,y0:y0==null?undefined:y0,foot});
+  if(JSON.stringify(a)!==JSON.stringify(b))same=false;n++;}
+ const T=K.tower({id:'t',seed:9,x:0,z:0,H:150,R:60,y0:0});
+ // the surface over the dome: never under the beds' tops, on the wall where a bed tapers, and a slope (not a staircase)
+ {let under=0,walls=0,soil=0,jump=0,prev=null;for(let r=0;r<=70;r+=1){const p=K.surface([T],r,0),a=K.at([T],r,0);if(!p)break;
+   if(a&&p.top<a.top-1e-9)under++;if(p.wall){walls++;if(p.steep<2.75)soil++;}if(prev!=null&&r<55&&Math.abs(p.top-prev)>14)jump++;prev=p.top;}
+  ok('KSTACKS.surface: on the dome\'s walls ('+walls+' samples, '+soil+' hold soil), never under a top, no staircase',under===0&&walls>5&&soil>0&&jump===0,
+   K.at([T],30,0)&&K.surface([T],30,0)&&K.at([T],30,0).top===K.surface([T],30,0).top&&K.surface([T],30,0).wall);}
+ ok('KSTACKS.tower is guilin\'s tower(), record for record ('+n+' towers), a cliff under a dome',same&&T.tower===true&&T.top>140&&T.beds[T.beds.length-1].rx<T.beds[0].rx*.7,
+   JSON.stringify(K.tower({id:'t',seed:10,x:0,z:0,H:150,R:60,y0:0}))===JSON.stringify(T));}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

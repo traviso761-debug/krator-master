@@ -429,21 +429,7 @@ function barkTex2(kind){const W=256,H=512,cl=document.createElement('canvas'),cm
  for(let i=0;i<o.length;i+=4){o[i]=Ld[i];o[i+1]=Md[i];o[i+2]=Ld[i];o[i+3]=255;s+=Ld[i];}
  const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(out,0,0);
  const t=new T3.CanvasTexture(c);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=8;t.encoding=T3.LinearEncoding;t.biomeMean=s/(W*H)/255;return t;}   // r128 textures have no userData
-NWLOW.barkMat2=function(tex,key,o){o=o||{};
- const m=new T3.MeshLambertMaterial({color:0xffffff,map:tex,vertexColors:true,side:T3.DoubleSide});
- const alt=C(o.alt==null?0x808080:o.alt).convertSRGBToLinear();
- m.onBeforeCompile=sh=>{
-  sh.uniforms.uAlt={value:alt};sh.uniforms.uMean={value:tex.biomeMean||.55};sh.uniforms.uGain={value:o.gain==null?.52:o.gain};sh.uniforms.uGloss={value:o.gloss||0};
-  if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBWP;varying vec3 vBWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvBWP=(modelMatrix*vec4(transformed,1.0)).xyz;vBWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uAlt,uSunDir;uniform float uMean,uGain,uGloss;varying vec3 vBWP;varying vec3 vBWN;')
-   .replace('#include <map_fragment>','vec4 _bt=texture2D(map,vUv);float _bl=_bt.r/uMean;float _bm=_bt.g;')
-   .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
-   .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
-    'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
- m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain:o.gain==null?.52:o.gain,gloss:o.gloss||0}};   // as data (42-core-export)
- const ck='nwlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};return m;};
+NWLOW.barkMat2=(tex,key,o)=>BIO.glossBarkMat(tex,key,o);   // the two-tone gloss bark: the core's 'gloss' kind (core/biome/30-core-foliage.js)
 const BK={};['smooth','ring','fern','ghost','bluegum','birch','fibre','silver','paper','plate','char'].forEach(k=>BK[k]=barkTex2(k==='ring'?'cane':k==='fibre'?'fibrenw':k));
 NWLOW.BARKTEX=BK;
 // greyscale canvases for the instanced small trunks and the logs/rocks (the kit's usual tint() path)

@@ -85,7 +85,7 @@ if STATION:
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
     for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
     # the shared atmosphere (core/atmos/README.md): the open-water wave field a station's sea reads
-    for f in STN.get('atmos',[]): PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+    for f in STN.get('atmos',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))   # a subfolder file (fx/...) keyed by its name
     # 2026-10-20 (phase 0 of the water migration): a station with no ATMOS.init of its own binds core/atmos through ATMOS.bindHost
     # (core/atmos/host/, a subfolder so the kits that take core/atmos whole are not changed): station.json "atmosHost": true
     # 2026-10-20 (phase 2 of the water migration): core/water fragments a station draws with, by explicit path ("water" in station.json)

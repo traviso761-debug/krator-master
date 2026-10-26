@@ -405,18 +405,7 @@ RIFT.IRIDBARK={frill:[[0.80,1.16,1.06],[1.22,0.86,1.30]],bell:[[1.0,1.02,0.98],[
 // sqrt(linear) packed into one float (exact below 2^24), decoded per vertex so it interpolates; v 0 none, 1 the
 // leaves' rule (the foliage hook's: the second colour away from the sun and at grazing angles), 2 the iridescent
 // bark's (iridBarkMat's: the second colour at grazing angles). A slow shimmer at the impostors' scale.
-RIFT.farMat=function(){const m=BIO.barkMat(null);
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFP=(modelMatrix*vec4(transformed,1.0)).xyz;vFN=normalize(mat3(modelMatrix)*objectNormal);vFM=uv.y;'+
-    '{float p=uv.x;float r=floor(p*(1.0/65536.0));p-=r*65536.0;float g=floor(p*(1.0/256.0));float b=p-g*256.0;vFC2=vec3(r,g,b)*(1.0/255.0);vFC2*=vFC2;}');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform vec3 uSunDir;varying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
-   .replace('#include <color_fragment>','#include <color_fragment>\nif(vFM>0.5){vec3 V=normalize(cameraPosition-vFP);vec3 N=normalize(vFN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.12*sin(uWindT*0.5+dot(vFP,vec3(0.011,0.017,0.013)));float k;'+
-    'if(vFM<1.5){float sf=dot(N,uSunDir)*0.5+0.5;k=1.0-smoothstep(0.22,0.78,sf*1.15-fr*0.80+0.30+sh);}'+
-    'else k=smoothstep(0.12,0.82,fr*0.85+0.15+sh);'+
-    'diffuseColor.rgb=mix(diffuseColor.rgb,vFC2,k);}');};
- const ck='riftfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{pack:'c2-rule',uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}};BIO._tickWind();return m;};
+RIFT.farMat=()=>BIO.farMat({rule:'irid'});   // the core's 'far' kind (core/biome/30-core-foliage.js)
 // the iridescence's normal per instance (aN), the lighting the geometry's as before (bent toward world-up): a curl or a
 // rosette is real geometry, not a clump of cards, so it keeps its own shading (leafMat with aN would light it by aN)
 RIFT.iridOnlyN=function(m){const f=m.onBeforeCompile;m.onBeforeCompile=sh=>{f(sh);

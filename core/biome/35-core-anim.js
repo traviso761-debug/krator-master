@@ -91,6 +91,22 @@ BIO.animMat=function(key,o){const T=BIO.host.THREE;o=o||{};let m;
  else m=new T.MeshLambertMaterial({color:0xffffff,map:o.tex||null,alphaTest:o.alphaTest||0,side:T.DoubleSide,vertexColors:!!o.vertexColors});
  m.onBeforeCompile=BIO.animHook(o);const ck='bioanim|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'anim',key:BIO.kitKey(key),opts:o};
  BIO._tickWind();return m;};
+// a PHASE-DRIVEN body (the 'anim-phase' kind; swbay's and nwbay's animMat, one copy since 2026-10-25): vertex-coloured
+// Lambert whose vertex shader moves the body by a per-instance phase (attribute aPh, which the kit sets) on the biome's
+// clock (BIO.WIND.t). mode 'bird': the wings (|x| past 0.12) beat and the body bobs; 'swim': a bob and a body wave along
+// z; 'grazer': the legs (y below 0.5) swing in diagonal pairs and the body nods.
+BIO.phaseAnimMat=function(mode){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide});
+ m.onBeforeCompile=sh=>{sh.uniforms.uT=BIO.WIND.t;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uT;\nattribute float aPh;')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\n'+(mode==='bird'?
+    ['{float w=abs(position.x)-0.12; if(w>0.0){float fl=sin(uT*aPh+aPh*7.0)*0.75; transformed.y+=w*sin(fl)*0.9; transformed.x=sign(position.x)*(0.12+w*cos(fl));}',
+     ' transformed.y+=0.03*sin(uT*aPh*0.5+aPh);}'].join('\n'):
+    mode==='swim'?['{float bob=sin(uT*aPh+aPh*5.0); transformed.y+=bob*0.16-0.06; transformed.y+=position.z*sin(uT*aPh*0.9+aPh)*0.12;}'].join('\n'):
+    ['{if(position.y<0.5){float side=sign(position.x)*sign(position.z); float sw=sin(uT*aPh+aPh*3.0+(side>0.0?0.0:3.14159))*0.55;',
+     ' transformed.z+=(0.5-position.y)*sw;} transformed.y+=0.02*sin(uT*aPh*2.0+aPh);}'].join('\n')));};
+ const ck='biofauna|'+BIO.kitKey(mode);m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'anim-phase',key:BIO.kitKey(mode),opts:{mode,attribute:'aPh'}};   // as data (42-core-export): a wing-beat, bob or leg-swing driven by a per-instance phase
+ BIO._tickWind();return m;};
 // assemble a body from parts [[geometry, colour hex], ...] into one
 // vertex-coloured, non-indexed geometry (colours sRGB in, linear out)
 BIO.geo.assemble=function(parts){const T=BIO.host.THREE,pos=[],nor=[],col=[],uv=[],c=new T.Color();

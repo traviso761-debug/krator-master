@@ -107,25 +107,11 @@ CORE_M=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record')
 for f in CORE_MAT:
     if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
 TEX_DIR=os.path.join(HERE,'tex')
-def matlib_pack():
-    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
-    tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same)."""
-    import base64, json
-    pj=os.path.join(TEX_DIR,'pack.json')
-    if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('ebadlands', {});\n"
-    pack=json.load(open(pj,encoding='utf-8'));out=[]
-    for fam in sorted(pack['families']):
-        e=pack['families'][fam]
-        f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
-           'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
-        for k,name in sorted(e['files'].items()):
-            f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
-        out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))
-    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
-            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('ebadlands', {\n" + ',\n'.join(out) + '\n});\n')
-# named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
+# the library pack (core/materials/PLAN.md): the shared writer, tools/textures/matlib_pack.py (2026-10-25: it was an inline copy that
+# dropped a slot's `cell`, so a celled card showed its whole sheet; TODO.md, "Card sheets shown whole")
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
+import matlib_pack
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'ebadlands',own=True)}
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

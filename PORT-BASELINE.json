@@ -25,8 +25,8 @@
    "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
   },
   "biomes/guilin/dist/guilin.html": {
-   "bytes": 648171,
-   "sha256": "3487d011085236b9f033d31c2259db4c0768ad5c06e22ba0822ca5d0666fdbd8"
+   "bytes": 675886,
+   "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 4764402,
@@ -69,8 +69,8 @@
    "sha256": "68a6882d78400715579f412d68dbe8b688401be94846087f9286c755bdc1ec30"
   },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 7032178,
-   "sha256": "416019789c33e46b7b19896baab8604b4a31755c1f1c2a32d9c1c7ecb65b43b1"
+   "bytes": 7967514,
+   "sha256": "38f3d879dae58bf43249896a00f98eeed24c6a236f9fa68bef8e6307d7c84c4b"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
    "bytes": 6732478,

@@ -26,32 +26,11 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
-  (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
-  (`settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
-  piece among a thousand merged into one mesh, so a registered volume round each reads empty
-  (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
-  never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics
-  (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
-  sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
-  KNOWN_ISSUES items close.
-- **core/host: a broad phase for the probe's `regOccupancy`** (2026-10-23; the owner asked for it here). It tests every
-  registered volume against every probe point (every instance, every mesh's box centre): 118 s of Rift's verify, all of
-  its invariants (`EFFICIENCY.md`, "Rift's checks, profiled"). Index the volumes by their circle (x, z, r) on
-  `core/space` (KSPACE, not a new hash) and call `has` only on the candidates near each point; every build's `regHas`
-  found is the same cylinder test as `inCyl`, so the counts stay the same (if one is not, keep the full loop for that
-  build). Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) buckets by z for reference. Prove it: the
-  `registered-volumes-non-empty` lines (counts and thinnest) unchanged on Rift, Hyperjungle, Sedesert, Iziz, Girder and
-  Yuni, and their wall times before and after written into `EFFICIENCY.md`. Do it with the probe-points item above (same
-  file). With it, try a smaller sky in `tools/harness.py` `check_profile` (`sky` 64, not 256: the stage capture is 37 s
-  of Rift's verify), kept only if every export-profile check still passes.
-- **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
-  `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
-  arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
-  `releasePointerCapture`) in `try { } catch (e) { }`, as `core/host/98-host-edit.js` already does. About 138 builds take
-  core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
-  its first lines): take that out in the same change.
-
+- **Done in the sources 2026-10-25, waiting for stage 2's rebuild** (branch `claude/biome-rebuild`): core/host's probe reads
+  `userData.probePoints` and indexes the volumes on KSPACE (`regOccupancy`: Rift 96 s to 0.6 s, the same counts;
+  `core/host/test-probe.js`), the Ancient Port kit's probe reads `probePoints`, the camera's pointer capture is guarded and
+  the Iziz palace's own guard is gone, and `check_profile` takes a 64 px sky. The biome pages are rebuilt; the settlement
+  and kit pages that take core/host or the port probe (port, Hook, Ys, Iziz's palace ...) pick it up in stage 2.
 - **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
   pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
   Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
@@ -235,13 +214,12 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   nhighlands, shighlands, xanadu guarded), so with several kits resident the last definer loaded won (a residency
   bug: eastabyss before xanadu gave xanadu's boles eastabyss's tints). It is now the `irid` kind in
   `core/biome/30-core-foliage.js`, one definition with Rift's signature and eastabyss's tints as the defaults;
-  every kit's baked geometry and tints were proven unchanged. Still to do: the two-tone gloss bark `barkMat2` (nwlowlands,
-  swlowlands), the impostor `farMat` (rift: iridescent; swlowlands: gloss), nhighlands' hanging sway on its
-  bulbs and pods, and swbay's own `animMat` beside `core/biome/35-core-anim.js`. Move them into
-  `30-core-foliage.js` and `35-core-anim.js` as material kinds (`irid`, `gloss`, `far`, `hang`, `anim`) with
-  their options as data, so the export names them and Godot writes about seven shaders for every kit: leaf
-  card, bark, iridescent bark, gloss bark, far impostor, hanging sway, fauna body. Prove it with mesh
-  fingerprints and screenshots: the HTML changes, the pictures must not.
+  every kit's baked geometry and tints were proven unchanged. *Done 2026-10-25 (branch `claude/biome-rebuild`):* the
+  two-tone gloss bark is `BIO.glossBarkMat` (nwlowlands, swlowlands), the impostor is `BIO.farMat({rule:'irid'|'gloss'})`
+  (rift, swlowlands), nhighlands' hanging sway is `BIO.hangMat`, and swbay's and nwbay's phase-driven fauna body is
+  `BIO.phaseAnimMat` (`35-core-anim.js`, which swbay and nwbay now list). The kits' names stay as one-line forwards. Proven
+  by same-view screenshots before and after (the HTML changes, the pictures do not). Godot's set is now the seven
+  shaders: leaf card, bark, iridescent bark, gloss bark, far impostor, hanging sway, fauna body (`anim` and `anim-phase`).
 - **[G data] Tags and ids on what the kits place.** Only nhighlands (harvest) and swlowlands carry tags in kit
   data, and no species has its Köppen classes. Put class, species, biome, Köppen and harvest in the `BIO.def`
   options, and give every item, bucket and placement record a deterministic id in build order, so
@@ -623,7 +601,10 @@ hulls floats, and no water reflects the sky. `WATER.md` section 1 is the table.
 Krator has no molten lava. swbay's flows are cold vertex colours (`biomes/swbay/src/45-host-stage.js:231-236`),
 and its plume is a chain of spheres.
 
-- **[G shader] A lava field shader.** Kharak's fire is a single fragment shader, with no particles. Fire fronts
+- **[G shader] A lava field shader.** *Done in part 2026-10-25 (branch `claude/biome-rebuild`): `core/atmos/fx/89-atmos-fx-lava.js`
+  (`ATMOS.lavaMaterial`, `PRESETS.lava`), lifted from the Throne caldera's lake, an integer hash, the module clock, a `flow` drift
+  and a `channel` mode; the caldera's lake and the tube's stream take it. Still open: the downslope flow map (one drift per
+  surface today) and the emission output for bloom (it returns `hotK`; the three.js page writes colour only).* Kharak's fire is a single fragment shader, with no particles. Fire fronts
   are a thin band where a drifting fbm crosses 0.5. A finer front drifts the other way. Embers come from a
   high-frequency fbm, only on the burnt side. A `burn` 0..1 uniform blends the whole effect in. To make it lava:
   - sample world xz in metres, using a tiled 3D noise texture rather than `fract(sin())`, which loses

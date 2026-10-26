@@ -107,6 +107,7 @@ function beardsAt(p,wet,k,st){const n=Math.round(rr(0,1.6)*k*smooth(.7,.97,wet))
 function lianasAt(p,wet,st,lv,k){if(lv<2||rng()>k*.6*smooth(.5,.9,wet))return;const L=Math.min(p.y-1.5,rr(8,34));if(L<4)return;
  BIO.put('liana',[p.x+rr(-.5,.5),p.y-(p.r||.3)*.5,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(.8,1.6),L,1],bright(vary(pick(PAL.vine),.03,.1,.06),1.1));st.lianas++;}
 // ---------------------------------------------------------------- foliage helpers
+NWBAY.clumpAt=clumpAt;   // the cliffs' dressing (57) presses its cushions with it
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,c2){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
@@ -631,11 +632,12 @@ NWBAY.buildTrees=function(R,q){
  // opt.water:[lo,hi] lets a species stand in the shallows (past the host
  // mask); opt.prep(T) lets a species read its surroundings (the figs the
  // karst's edge, the cinder pines the wind).
+ const ON_TOP={2:1,4:1,5:1,8:1,17:1};   // the species that read Z.top: the fan-crowns, tree ferns, understorey palms, cliff figs, the scrub
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;const yr=opt.water||[.3,1e9];
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
    (x,y,z,d)=>{const S=SP[sp];if(y<yr[0]||y>yr[1])return;
-    if(sp!==8&&BIO.field('karst',x,z)>.02)return;   // nothing but a fig on the rock, and never on the rim band (a species past the mask could reach a sea stack's foot)
+    {const kv=BIO.field('karst',x,z);if(kv>.02&&kv<.97)return;if(kv>=.97&&!ON_TOP[sp])return;}   /* never on a cliff or the rim band (a species past the mask could reach a stack's foot); on a dome or a cap the species whose zone reads the tops (the forest over a tower's dome, guilin's way) */
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp,zones(x,z));
     const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);

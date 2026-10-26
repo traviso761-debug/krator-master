@@ -27,6 +27,9 @@
 //   KSTACKS.topH(b, x, z)      the bed's top surface at x,z (flat, a little rough: the one top function)
 //   KSTACKS.at(list, x, z)     {S, b, top, d} the highest bed top over (x,z) (d its signed distance to that top's edge,
 //                              negative inside), or null; KSTACKS.topAt(list,x,z) the height alone (-Infinity off the rock)
+//   KSTACKS.surface(list, x, z, fr?)  {S, b, top, d, wall, steep}: as at, but over a tapering bed's wall the wall's own
+//                              height (a tower's dome holds a forest), steep its rise over its run; or null
+//   KSTACKS.wall(B, b, a, u)   {x, y, z, nx, nz}: a point on bed b's wall (u 0 foot .. 1 top edge, a the angle) and its normal
 //   KSTACKS.foot(list, x, z)   {S, d} the nearest body's foot: d the signed distance to its lowest bed's footprint
 //   KSTACKS.ledge(list, x, z)  {S, b, w} when (x,z) is on a ledge (a bed's top out from under the bed above), else null
 //   KSTACKS.ring(S, y, n)      the outline at height y: n [x,z] points (the roost placer fits a deck to it), or null
@@ -44,6 +47,7 @@
 //        with platesShare (.5): that share of the stacks are piles of plates (Roraima's kind); lift:(x,z,r)=>m
 //        adds metres to a stack's height (a stack on a slope: its foot is set under the lowest ground round it, so the
 //        uphill side buries that much of it; lift by the drop and the stack stands as tall above the uphill ground)
+//   KSTACKS.tower({id, seed, x, z, H, R, y0 | foot})   a karst tower: a sheer cliff under a dome (guilin, nwbay); tower:true
 //   KSTACKS.export(list) / KSTACKS.load(json)   {format:'krator-stacks', version:1, bodies}
 //   KSTACKS.hash(mesh)         a fingerprint of a mesh's arrays (determinism)
 (function(root){
@@ -146,6 +150,26 @@
     for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R||Math.abs(z-B.z)>B.R)continue;
       for(var k=B.beds.length-1;k>=0;k--){var b=B.beds[k],d=inTop(b,x,z,1-b.ch);if(d<0){var t=topH(b,x,z);if(!best||t>best.top)best={S:B,b:b,top:t,d:d};break;}}}
     return best;}
+  // THE SURFACE, walls included (lifted from biomes/guilin's fastAt, 2026-10-25): KSTACKS.at answers a bed's TOP, so over
+  // a tapering bed's wall (a tower's dome, a blade's flank: the plan between its top's outline and its foot's) it answers
+  // the bed below's top, under the drawn slope. surface() answers the wall there: the height where the ray through the
+  // point crosses the wall (straight up a bed, as the mesh draws it, to the notch and the chamfer), with steep the bed's
+  // rise over its run (a dome's beds under ~2.75 hold soil; a cliff's do not). {S, b, top, d, wall, steep} or null.
+  // fr(b, ang) replaces footR (guilin passes its interpolated tables).
+  function surface(list,x,z,fr){var best=null,F=fr||footR;
+    for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R||Math.abs(z-B.z)>B.R)continue;
+      for(var k=B.beds.length-1;k>=0;k--){var b=B.beds[k],tp=b.tp==null?1:b.tp,cx=b.cx+(b.tx||0),cz=b.cz+(b.tz||0),dx=x-cx,dz=z-cz;
+        var rt=F(b,Math.atan2(dz,dx))*tp*(1-b.ch),d=Math.hypot(dx,dz)-rt;
+        if(d<0){var t=topH(b,x,z);if(!best||t>best.top)best={S:B,b:b,top:t,d:d,wall:false,steep:0};break;}
+        if(tp<.995||b.tx||b.tz){var ex=x-b.cx,ez=z-b.cz,rf=F(b,Math.atan2(ez,ex)),df=Math.hypot(ex,ez)-rf;
+          if(df<0){var u=clamp(-df/(-df+d),0,1),y=b.y+u*b.h,run=Math.max(.01,rf-rt);
+            if(!best||y>best.top)best={S:B,b:b,top:y,d:-1e3,wall:true,steep:b.h/run};break;}}}}
+    return best;}
+  // a point on a bed's WALL and its outward normal (lifted from biomes/guilin's GUILIN.wall, 2026-10-25): u 0 the bed's foot
+  // .. 1 its top edge, a the angle about the bed's centre, the taper, lean, notch and chamfer followed up the bed (prof)
+  function wall(B,b,a,u){var f=prof(b,u)*(1+((b.tp==null?1:b.tp)-1)*u),cx=b.cx+(b.tx||0)*u,cz=b.cz+(b.tz||0)*u,R=footR(b,a)*f,x=cx+Math.cos(a)*R,z=cz+Math.sin(a)*R;
+    var e=.01,R1=footR(b,a+e)*f,tx=cx+Math.cos(a+e)*R1-x,tz=cz+Math.sin(a+e)*R1-z,tl=Math.hypot(tx,tz)||1;
+    return {x:x,y:b.y+u*b.h,z:z,nx:tz/tl,nz:-tx/tl};}
   function topAt(list,x,z){var a=at(list,x,z);return a?a.top:-Infinity;}
   function foot(list,x,z){var best=null;
     for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R+400||Math.abs(z-B.z)>B.R+400)continue;
@@ -213,11 +237,27 @@
         var B=make(variety(o,i,x,z,rad,{id:o.id+'-'+i,kind:kind,x:x,z:z,y0:g(x,z)-1,seed:KR.hash(o.seed,i,405),H:r.range(o.H[0],o.H[1]),r:rad}));B._r=rad;out.push(B);break;}}
     out.forEach(function(B){delete B._r;});return out;}
 
+  // a KARST TOWER (guilin's fenglin and fengcong peaks, nwbay's sea stacks; lifted from biomes/guilin 2026-10-25): a spire
+  // (one column, its beds' taper running on into each other: partings, not ledges) given the tower's profile: a cliff
+  // standing almost sheer for 45-62% of its height, then a dome closing in to a small cap (a superellipse: a sugarloaf or a
+  // beehive), its upper beds drifting off the axis. o: {id, seed, x, z, H, R, y0 | foot(x, z, r) -> y0, e, ry (else drawn)}. The record is a
+  // plain record marked tower:true; R is its bounding radius about x, z.
+  function tower(o){var s=S(KR.hash(o.seed,0x70E)),e0=s.range(1.0,1.3),e=o.e==null?e0:o.e,x=o.x,z=o.z,H=o.H,R=o.R;   // o.e, o.ry: a footprint's own (the draws are taken either way)
+    var y0=o.y0!=null?o.y0:o.foot?o.foot(x,z,R*Math.sqrt(e)):0;
+    var B=make({id:o.id,kind:'spire',x:x,z:z,y0:y0,seed:o.seed,H:H,r:R,e:e,ry:(function(v){return o.ry==null?v:o.ry;})(s.range(0,TAU)),lean:s.range(0,.045),taper:0,crown:1});
+    var tw=s.range(.45,.62),pw=s.range(.84,.94),kx=s.range(1.7,2.7),phi=s.range(0,TAU),drift=s.range(.04,.16)*R;
+    var pr=function(t){return t<=tw?1-(1-pw)*t/tw:pw*Math.pow(Math.max(0,1-.95*Math.pow((t-tw)/(1-tw),kx)),1/kx);};
+    var sh=function(t){return t<=tw?0:drift*Math.pow((t-tw)/(1-tw),1.5);};   // the dome's drift off the axis
+    B.beds.forEach(function(b){var t0=(b.y-B.y0)/H,t1=(b.y+b.h-B.y0)/H,f0=pr(t0),f1=pr(t1);b.rx*=f0;b.rz*=f0;b.tp=f1/Math.max(.01,f0);b.lob=.2;
+      b.cx+=Math.cos(phi)*sh(t0);b.cz+=Math.sin(phi)*sh(t0);b.tx+=Math.cos(phi)*(sh(t1)-sh(t0));b.tz+=Math.sin(phi)*(sh(t1)-sh(t0));});
+    var RR=0;B.beds.forEach(function(b){RR=Math.max(RR,Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z));});B.R=RR+2;B.tower=true;
+    return B;}
+
   function exp(list){return {format:'krator-stacks',version:1,bodies:list.map(function(B){return JSON.parse(JSON.stringify(B));})};}
   function load(j){if(!j||j.format!=='krator-stacks')throw new Error('KSTACKS.load: not a krator-stacks export');return j.bodies.map(function(B){return JSON.parse(JSON.stringify(B));});}
   function hash(m){var h=KR.hash(1,m.pos.length,m.idx.length);
     for(var i=0;i<m.pos.length;i+=7)h=KR.hash(h,Math.round(m.pos[i]*1000));for(i=0;i<m.idx.length;i+=11)h=KR.hash(h,m.idx[i]);return h>>>0;}
 
-  root.KSTACKS={make:make,footR:footR,topH:topH,prof:prof,at:at,topAt:topAt,foot:foot,ledge:ledge,ring:ring,mesh:mesh,row:row,cluster:cluster,
+  root.KSTACKS={make:make,tower:tower,footR:footR,topH:topH,prof:prof,at:at,surface:surface,wall:wall,topAt:topAt,foot:foot,ledge:ledge,ring:ring,mesh:mesh,row:row,cluster:cluster,
     export:exp,load:load,hash:hash};
 })(typeof globalThis!=='undefined'?globalThis:this);

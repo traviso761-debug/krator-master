@@ -201,6 +201,63 @@ BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
  m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
  const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+// a TWO-TONE GLOSS BARK (the 'gloss' kind; nwlowlands' and swlowlands' barkMat2, one copy since 2026-10-25): the map's red
+// channel the bark's light (divided by its mean, tex.biomeMean), its green a mask blending the vertex colour toward o.alt
+// (lenticels, peeling strips, a second bark), and a sun highlight of o.gloss on the unmasked part. o: {alt, gain (.52),
+// gloss (0)}. m.barkLook is what a far impostor's trunk carries (swlowlands 55, buildFar). Godot: bark.gdshader mode 2.
+BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
+ const m=new T.MeshLambertMaterial({color:0xffffff,map:tex,vertexColors:true,side:T.DoubleSide});
+ const alt=new T.Color(o.alt==null?0x808080:o.alt).convertSRGBToLinear(),gain=o.gain==null?.52:o.gain;
+ m.onBeforeCompile=sh=>{
+  sh.uniforms.uAlt={value:alt};sh.uniforms.uMean={value:tex.biomeMean||.55};sh.uniforms.uGain={value:gain};sh.uniforms.uGloss={value:o.gloss||0};
+  if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBWP;varying vec3 vBWN;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvBWP=(modelMatrix*vec4(transformed,1.0)).xyz;vBWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uAlt,uSunDir;uniform float uMean,uGain,uGloss;varying vec3 vBWP;varying vec3 vBWN;')
+   .replace('#include <map_fragment>','vec4 _bt=texture2D(map,vUv);float _bl=_bt.r/uMean;float _bm=_bt.g;')
+   .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
+   .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
+    'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
+ m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain,gloss:o.gloss||0}};   // as data (42-core-export)
+ const ck='biogloss|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
+ m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};
+// the FAR IMPOSTORS' material (the 'far' kind; rift's and swlowlands' farMat, one copy since 2026-10-25): vertex-coloured
+// Lambert, with the trunks' look carried in the impostor's uv. o.rule:
+//   'irid'  (rift): u a second colour (8 bits a channel on sqrt(linear) packed into one float, decoded per vertex), v 0
+//           none, 1 the leaves' rule (the second colour away from the sun and at grazing angles), 2 the iridescent
+//           bark's (the second colour at grazing angles), with a slow shimmer at the impostors' scale;
+//   'gloss' (swlowlands): u the trunk's gloss (the bucket's, less the matte share of its mask; 0 on the blobs), the
+//           gloss bark's sun highlight, so a glossy trunk shines the same either side of the switch.
+BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
+ m.onBeforeCompile=irid?sh=>{sh.uniforms.uWindT=BIO.WIND.t;if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFP=(modelMatrix*vec4(transformed,1.0)).xyz;vFN=normalize(mat3(modelMatrix)*objectNormal);vFM=uv.y;'+
+    '{float p=uv.x;float r=floor(p*(1.0/65536.0));p-=r*65536.0;float g=floor(p*(1.0/256.0));float b=p-g*256.0;vFC2=vec3(r,g,b)*(1.0/255.0);vFC2*=vFC2;}');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform vec3 uSunDir;varying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
+   .replace('#include <color_fragment>','#include <color_fragment>\nif(vFM>0.5){vec3 V=normalize(cameraPosition-vFP);vec3 N=normalize(vFN);float fr=1.0-abs(dot(N,V));'+
+    'float sh=0.12*sin(uWindT*0.5+dot(vFP,vec3(0.011,0.017,0.013)));float k;'+
+    'if(vFM<1.5){float sf=dot(N,uSunDir)*0.5+0.5;k=1.0-smoothstep(0.22,0.78,sf*1.15-fr*0.80+0.30+sh);}'+
+    'else k=smoothstep(0.12,0.82,fr*0.85+0.15+sh);'+
+    'diffuseColor.rgb=mix(diffuseColor.rgb,vFC2,k);}');}
+ :sh=>{if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFWP=(modelMatrix*vec4(transformed,1.0)).xyz;vFWN=normalize(mat3(modelMatrix)*objectNormal);vFGl=uv.x;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
+   .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
+    'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
+ const ck='biofar|'+(irid?'irid|':'gloss|')+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:irid?{pack:'c2-rule',uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}
+  :{pack:'gloss',uv:'u: the trunk gloss (0 on the blobs)'}};   // as data (42-core-export)
+ if(irid)BIO._tickWind();return m;};
+// a HANGING SWAY (the 'hang' kind; nhighlands' bulbs and pods, one copy since 2026-10-25) on an instanced material m: each
+// instance swings on its thread, the offset growing with o.swayW (a GLSL expression, default the depth below the
+// attachment, -position.y) times o.swayA (.05), its phase from where the instance stands. o.night (the emissive
+// intensity by day and by night) is carried as data for a host that lights them. Returns m.
+BIO.hangMat=function(m,key,o){o=o||{};const A=o.swayA==null?.05:+o.swayA,W=o.swayW||'(-position.y)',Ag=A.toFixed(4);   /* Ag: a GLSL float literal */
+ m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+='+W+'*'+Ag+'*sin(uWindT*1.1+ph);transformed.z+='+W+'*'+Ag+'*cos(uWindT*.8+ph*1.3);}\n#endif');};
+ const ck='biohang|'+BIO.kitKey(key)+'|'+W+'|'+A;m.customProgramCacheKey=()=>ck;
+ m.userData.bio={kind:'hang',key:BIO.kitKey(key),opts:Object.assign({swayA:A,swayW:W},o.night?{night:o.night}:{})};BIO._tickWind();return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
 

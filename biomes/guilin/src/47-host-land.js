@@ -127,11 +127,10 @@ const ROCK_GEOS=[];
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
   const mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
- // one anchor per body at its middle (an invisible instance): the rock is merged meshes, so the probe's samples (a mesh's box
- // centre) would leave each body's registered volume to whatever grows on it
- {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
-  ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
- mk(acc.wall,Lw,'Limestone (a karst tower\'s cliff: rain-streaked black, iron-stained ochre)');mk(acc.top,Lt,'A tower\'s top (soil and moss under the scrub)');
+ // one sample per body at its middle for the probe (userData.probePoints, core/host/95-host-probe.js): the rock is merged
+ // meshes, so the probe's samples (a mesh's box centre) would leave each body's registered volume to whatever grows on it
+ const PP=[];ROCK.forEach(B=>PP.push(B.x,(B.y0+B.top)/2,B.z));
+ mk(acc.wall,Lw,'Limestone (a karst tower\'s cliff: rain-streaked black, iron-stained ochre)').userData.probePoints=PP;mk(acc.top,Lt,'A tower\'s top (soil and moss under the scrub)');
  mk(acc.blade,Lb,'Limestone of the stone forest (grooved by the rain: karren)');mk(acc.btop,Lt,'A blade\'s crest (moss)');})();
 
 // ---------------------------------------------------------------- the horizon: the karst going on into the mist

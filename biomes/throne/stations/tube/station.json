@@ -7,7 +7,8 @@
   "89-atmos-0p-presets.js",
   "89-atmos-8-export.js",
   "89-atmos-a-waves.js",
-  "89-atmos-b-skylight.js"
+  "89-atmos-b-skylight.js",
+  "fx/89-atmos-fx-lava.js"
  ],
  "atmosHost": true
 }

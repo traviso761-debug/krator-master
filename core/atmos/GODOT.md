@@ -157,6 +157,15 @@ the shaders.
 (Compatibility) is a target, keep the sprite versions of `mist` and `fogbank` and the halo quads as the fallback.
 Check which `GPUParticles3D` features Compatibility supports in the Godot version the port uses.
 
+## Lava (`fx/89-atmos-fx-lava.js`)
+
+The export's `lava` records carry the surface's name, its pattern's anchor (`centre`), `flow` (m/s), the vents, `swell`, `channel`
+and the preset's name; `PRESETS.lava` carries every number (the plates' and facets' cells, the crack and seam widths, the
+colours, the heat by day, night and eruption). Godot: one `.gdshader` with the chunk `lavaGLSL` writes (`lavaSurface`), its
+hash the same lowbias32 on `uint`, `TIME` for the module clock, `EMISSION` = the colour times `hotK` (the cracks, seams,
+overturned plates and churned patches) so WorldEnvironment glow blooms them, and the swell and vents in `vertex()`. The host
+eases `erupt` per second, as the Throne caldera's `SUMMIT.eruptStep` does.
+
 ## Rules that keep the module portable
 
 1. **A new effect is a preset plus a record.** Put its numbers in `ATMOS.PRESETS` and have its call `A.rec()` what it

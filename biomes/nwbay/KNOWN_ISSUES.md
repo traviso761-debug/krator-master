@@ -4,10 +4,15 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] THE STACK FACES ARE A HEIGHT PROFILE ON A LATHE, not a cave system. The notch at the
-      waterline is an undercut ring (13 % of the radius), the two ledges are rings; there are
-      no real caves, arches or hollow stacks yet. Ys builds its caves and stair-houses into
-      the faces itself (DESIGN §8); the karst field only says where the rock is.
+- [ ] THE STACKS HAVE NO CAVES. Since 2026-10-25 each stack is a KSTACKS tower (guilin's: `KSTACKS.tower`, a sheer cliff
+      under a dome, the beds' partings and the waterline notch drawn by `KSTACKS.mesh`, its cliffs dressed by
+      `57-biome-nwbay-cliffs.js`), but still solid: no caves, arches or hollow stacks. Ys builds its caves and
+      stair-houses into the faces itself (DESIGN §8); the karst field only says where the rock is.
+- [ ] THE DOMES ARE THINNER THAN GUILIN'S. The forest roots on a dome (karst 1: a bed whose wall leans in under steep
+      2.75) through the tree passes that read the tops (fan-crowns, tree ferns, palms, figs, scrub), but nwbay has no
+      dome skin of packed shrubs as guilin's `57` does, so the upper dome shows soil-coloured rock between the trees.
+- [x] THE RIM (closed 2026-10-25): terrainH() over a stack is `KSTACKS.surface`, the drawn rock itself (a dome's walls
+      included), so a camera or a plant on the rim stands on what is drawn.
 - [ ] THE RIM: terrainH() inside a footprint is the dome (`domeH`, rho 0..1) and the face
       mesh's top ring sits at rho .92, so the last 8 % of a footprint is terrain the mesh does
       not cover (it is the rounded rim, 16 m tall). The host mask is zero there (d > -4 m),
@@ -17,10 +22,10 @@ Read before changing anything here. `build.py` prints the open count.
       in and out by ~5 % of R0 up its height; on a big stack a curtain can float a few metres
       off the rock at mid-height or clip into a belly. A face-following root needs the host's
       face profile, which the biome cannot see.
-- [ ] THE TERRACES' RISERS ARE RAMPS: the ground mesh's strip (3 x 4 m cells) and the water's
-      5 m samples render a five-metre riser as a steep chute, not a drop; the rimstone lips
-      sit on the pool's downstream edge and the foam sheet runs down the ramp. Semuc reads
-      from the air and from across a pool; from on the lip the drop is too shallow.
+- [ ] THE TERRACES' RISERS ARE RAMPS IN THE GROUND: the river is now `WATER.terraces` (core/water ext: a still pool on
+      every tread at its level, a fall fitted down every riser, four draw calls for all of them), but the ground mesh's
+      strip (3 x 4 m cells) still draws a five-metre riser as a steep grassy chute, so the curtain arcs over a slope,
+      not off a drop. The pools are one colour (`drawPools`): the old ribbon's per-pool pale and deep tints are gone.
 - [ ] LILY PADS AND LOTUS ARE ONLY ON WATER AT y=0 (the lagoons, the lowland reach): the
       terrace pools' water level is the host's (tread + 1.5 m) and the biome cannot know it,
       so the pools above the delta carry no pads. The lotus trumpets stand on the banks.
@@ -63,10 +68,10 @@ Read before changing anything here. `build.py` prints the open count.
       mangrove's prop roots are grown in the nursery on level ground (or in level water) and stamped
       onto the slope as they are, so on a steep site a root floats or sinks a little. The cliff fig's
       curtains are the only per-site part.
-- [ ] DRAW CALLS: 276 at the first view (99 before; the budget was 130, now 300): 208 baked meshes, of
-      which ~140 are variant parts, each one InstancedMesh, plus the host's stacks, fins and dolines. Merging
-      a species' variants per material into one geometry with per-instance offsets would cut it to
-      ~60, at the cost of the Godot shape (one MultiMesh per variant part).
+- [ ] DRAW CALLS: 254 to 273 in the preset views (2026-10-25, after the stacks and the water moved to the core: 245 to
+      280 before), of a 300 budget: ~208 baked meshes, ~140 of them variant parts, each one InstancedMesh, plus the
+      host's rock, fins and dolines and nine water meshes. Merging a species' variants per material into one geometry
+      with per-instance offsets would cut it to ~60, at the cost of the Godot shape (one MultiMesh per variant part).
 - [ ] THE MADAGASCARENE FLORA HAS NO IMPOSTOR OF ITS OWN: past the hero range the four species are
       the generic blobs (a column for the spinewand, a flat disc for the avenue baobab). The avenue
       baobabs stand in stands, not in Morondava's lines: there is no road for them to line.
