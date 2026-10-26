@@ -108,6 +108,10 @@ ORDER = (
        ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
+    # the camps (core/camp, PLAN.md section 10, "the first build"): the census and the pitch, the Beast Riders' camp table
+    # (BR_CAMP, read in place: [G data]), and this world's bands; CAT carries the kit's tent set (cat_bundle(tents=True))
+    + [('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
+       ('kits/beast-riders/src', '79-br-camp.js'), ('src', '48k-world-camps.js')]
     # M7 (settlements/isle-demo/PLAN.md section 7): the two towns planned live here, as the city page plans them: the city
     # page's data (the kits' boxes, the census trades, the site file), the Iziz Vernacular and its pack, core/city (KCITY),
     # the Ring Sea vessels, core/simulation, core/export (+ core/biome's stage), the city page's [G data] half (src/15-50),
@@ -121,7 +125,7 @@ ORDER = (
     + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
-    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'),
+    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'), ('src', '88k-world-camps.js'),
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
@@ -201,7 +205,7 @@ def main():
             elif f == 'izv':
                 js, _ = _bd.izv_bundle()
             else:
-                js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE)
+                js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE, tents=True)
             out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
             out.append(js)
             continue

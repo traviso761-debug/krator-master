@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 801 (64%) | 107 (8%) | 52 (4%) | 163 (13%) | 137 (11%) |
+| KB | 851 (63%) | 131 (10%) | 52 (4%) | 163 (12%) | 151 (11%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -27,6 +27,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/89-atmos-a-waves.js` | 6.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | the wave field: the atmos_waves chunk becomes a .gdshaderinc (uniforms atm_wave_t, atm_wave_amp); PRESETS.waves and the JS twin (waveHeight, waveSlope: boats, buoys) are data |
 | `atmos/89-atmos-b-skylight.js` | 4.9 | [G native] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the sky captured into scene.environment: WorldEnvironment builds this from its Sky; keep for the preview |
 | `atmos/89-atmos-d-clouddeck.js` | 14.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | split: the field, its twin and its chunk port (godot/tools/atmos_clouddeck.js); cloudDeck() is the three.js draw (godot/krator/clouddeck.gd) |
+| `atmos/host/89-atmos-c-hostbind.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `biome/10-core-head.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 33.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
 | `biome/30-core-foliage.js` | 18.7 | [G shader] | 1 | 4 | 0 | 0 | 0 | 6 | 15 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
@@ -38,6 +39,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/42-core-export.js` | 25.3 | [G data] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 7 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |
 | `biome/43-core-export-host.js` | 3.7 | [web] | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1) |
 | `biome/44-core-stage.js` | 14.0 | [draw] | 1 | 2 | 0 | 0 | 0 | 2 | 4 | 1 | 2 | 0 | 0 |  |
+| `camp/10-camp-cultures.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the culture rows (KCAMP.CULTURES): plain data |
+| `camp/20-camp-census.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a band's census (KCAMP.census): no three.js, no geometry, no DOM; test-camp.js |
+| `camp/30-camp-pitch.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the pitch (KCAMP.pitch, check): plain records, no three.js (its 'box' is a footprint's corners); test-camp.js |
 | `city/10-city-core.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/12-city-index.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/15-city-ground.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -47,13 +51,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/32-city-steps-c.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
 | `city/33-city-strategies.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/34-city-radial.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the optional radial strategy (the toy's rings and spokes): the layout, no three.js |
+| `city/36-city-covered.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/40-city-kcity.js` | 9.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/50-city-host-streets.js` | 15.5 | [draw] | 32 | 5 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | streets, overlay, labels, step visibility |
 | `city/52-city-host-buildings.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | lots as instanced LOD prototypes |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `edits/40-core-edits.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
-| `export/07-core-export.js` | 36.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
-| `export/09-core-export-adapters.js` | 13.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos', the material records' and core/water's parts until those modules register themselves (water: the surfaces, bed bytes, the twin's probes); EXPORT.ground for a build without its own terrain part; EXPORT.groundLayers for a ground hook's world-uv layers |
+| `export/07-core-export.js` | 36.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
+| `export/09-core-export-adapters.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos', the material records' and core/water's parts until those modules register themselves (water: the surfaces, bed bytes, the twin's probes); EXPORT.ground for a build without its own terrain part; EXPORT.groundLayers for a ground hook's world-uv layers |
 | `export/10-core-export-scene.js` | 15.4 | [web] | 6 | 3 | 0 | 0 | 0 | 1 | 4 | 3 | 0 | 0 | 0 | the scene reader (lifted from Iziz's 94, 2026-10-20): reads a page's three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing; Iziz's 94 and the isle demo's 62 use it |
 | `furnish/50-core-furnish.js` | 8.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `furnish/52-core-furnish-draw.js` | 2.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
@@ -113,7 +118,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `sockets/80-cultures.js` | 20.5 | [draw] | 2 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
 | `space/20-core-space.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `tags/50-core-tags.js` | 18.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tag registry: ids, the KRAND uid (GDScript twin ktags.gd, passing in Godot 4.5), norm, query, audit, export; test-tags.js. Used by Yuni |
-| `tags/52-core-tags-vocab.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
+| `tags/52-core-tags-vocab.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
 | `tags/53-core-tags-host.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the inspector's label text; the inspector hook goes to core/host (Phase 1) |
 | `terrain/30-core-field.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/31-core-field-brush.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the field's ground brushes (raise, lower, flatten, smooth), snapshot and replay: plain data on KFIELD's heights; a GDScript twin to come |
@@ -125,13 +130,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/41-core-scour.js` | 13.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `walk/20-core-walk.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |
 | `walk/box/24-core-walk-box.js` | 5.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `water/20-core-water.js` | 27.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WATER: the six kinds, the CPU twins, ride, export; becomes a Water autoload (core/water/README.md, "Godot") |
-| `water/21-core-water-shore.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shore grid (the flood, the exact distance transform, the bytes) and the shore's twins (shoaling, breakers, the beach); GDScript twin in godot/krator/water.gd (KWater.shore_grid) |
-| `water/22-core-water-flow.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | flow ribbons, fall curtains, plunge pools, still meshes as arrays and their shading twins; KWater builds the same meshes |
-| `water/50-core-water-draw.js` | 25.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 13 | 1 | 0 | 0 | 0 | the GLSL becomes water_open.gdshader (generated, like atmos_waves); the CDLOD selection (WATER.cdlod) is data and ports to GDScript with a MultiMesh |
-| `water/51-core-water-kinds.js` | 21.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 4 | 30 | 0 | 0 | 0 | 0 | flow, fall, plunge, still and wet-ground drawing; the GLSL is godot/shaders/lib/water_kinds.gdshaderinc and water_*.gdshader |
-| `water/ext/53-core-water-terraces.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder: not pooled): WATER.terraces (a stepped river: a still pool per tread, a fall per riser, linked) and WATER.mergedFalls (the arrays of many falls in one); GDScript twin: the pools and falls are ordinary still and fall records |
-| `water/ext/53b-core-water-terraces-draw.js` | 8.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 2 | 12 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.drawFalls (two meshes for any number of falls), drawPools, drawTerraces; the GLSL is the per-fall functions with the lip scale, fall time and plunge centre as arguments |
+| `water/20-core-water.js` | 26.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WATER: the six kinds, the CPU twins, ride, export; becomes a Water autoload (core/water/README.md, "Godot") |
+| `water/21-core-water-shore.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shore grid (the flood, the exact distance transform, the bytes) and the shore's twins (shoaling, breakers, the beach); GDScript twin in godot/krator/water.gd (KWater.shore_grid) |
+| `water/22-core-water-flow.js` | 12.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | flow ribbons, fall curtains, plunge pools, still meshes as arrays and their shading twins; KWater builds the same meshes |
+| `water/50-core-water-draw.js` | 24.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 13 | 1 | 0 | 0 | 0 | the GLSL becomes water_open.gdshader (generated, like atmos_waves); the CDLOD selection (WATER.cdlod) is data and ports to GDScript with a MultiMesh |
+| `water/51-core-water-kinds.js` | 20.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 4 | 32 | 0 | 0 | 0 | 0 | flow, fall, plunge, still and wet-ground drawing; the GLSL is godot/shaders/lib/water_kinds.gdshaderinc and water_*.gdshader |
+| `water/ext/53-core-water-terraces.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder: not pooled): WATER.terraces (a stepped river: a still pool per tread, a fall per riser, linked) and WATER.mergedFalls (the arrays of many falls in one); GDScript twin: the pools and falls are ordinary still and fall records |
+| `water/ext/53b-core-water-terraces-draw.js` | 8.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.drawFalls (two meshes for any number of falls), drawPools, drawTerraces; the GLSL is the per-fall functions with the lip scale, fall time and plunge centre as arguments |
+| `water/geyser/52-core-water-geyser.js` | 14.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `water/geyser/52b-core-water-geyser-draw.js` | 9.1 | [G shader] | 0 | 0 | 0 | 0 | 0 | 2 | 9 | 0 | 0 | 0 | 0 |  |
 
 ## Notes
 

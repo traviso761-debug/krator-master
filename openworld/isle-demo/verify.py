@@ -13,6 +13,9 @@ highway, no town tile). The isle's own checks:
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
   - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
+  - the camps (core/camp, 48k/88k-world-camps.js): the Raptor band in the east jungle pitched whole, 40 to 70 people, no
+    two boxes within 2 m, every box on good ground and inside the hedge, the flora kept off it, every tag known (the
+    negatives: two tents moved together; the keep-clear hook without the camp's).
   - the towns (M7, 48t/88t-world-towns.js): Kautoa and Valapo planned here as the city page plans them (no error, their
     census, every one of the city page's own plan checks, the sim declared); the world's land is each town's ground
     inside its square (24 samples a town, to 5 cm); the flora and floor keep off every lot (WORLD.townW at each lot);
@@ -136,6 +139,15 @@ async def run(a):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)
+                print('--- the camps (core/camp) ---')
+                nm = 'the camps: pitched whole, a band of 40 to 70, no overlap, on good ground, inside the hedge, cleared, tagged'
+                r = (await pg.evaluate('_camps.checks()'))[0]
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + nm + ' : ' + r['detail'])
+                if not r['ok']: fails.append(nm)
+                for neg in ('overlap', 'clear'):
+                    r = (await pg.evaluate('_camps.checks(%r)' % neg))[0]
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (%s) : ' % neg + r['detail'])
+                    if r['ok']: fails.append('negative camps ' + neg)
                 print('--- the towns (M7) ---')
                 for r in await pg.evaluate(TOWNS_JS, None):
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])

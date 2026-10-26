@@ -19,9 +19,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46-world-config.js` | 1 |  |
 | `47-world-kits.js` | 2 |  |
 | `48-world-hamlets.js` | 6 |  |
+| `48k-world-camps.js` | 10 |  |
 | `48t-world-towns.js` | 8 |  |
 | `88a-world-atlas.js` | 10 |  |
 | `88c-world-life.js` | 13 |  |
 | `88h-world-hamlets.js` | 11 |  |
+| `88k-world-camps.js` | 12 |  |
 | `88t-world-towns.js` | 25 |  |
 | `89-world-geysers.js` | 6 |  |
