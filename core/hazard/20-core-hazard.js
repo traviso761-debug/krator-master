@@ -3,7 +3,7 @@
 // (biomes/HAZARD-RESEARCH.md, features 1, 3 and 4; core/tags/PROPOSAL.md, "A hazard key"). A hazard is a core/tags record
 // that carries `tags.hazard` (registered before it is drawn, like everything placed); its kind's row in
 // KTAGS.VOCAB.hazardKinds fills what the record leaves out. These are plain functions on those records: no THREE, no DOM.
-// Load after core/rand, core/tags (50, 52) and core/biome/37-core-traps.js (KTRAPS.cycle: the one clock).
+// Needs core/rand, core/tags (50, 52) and core/biome/37-core-traps.js (KTRAPS.cycle: the one clock), looked up at first use.
 //
 // The record (tags.hazard), every field optional but kind:
 //   kind     one of VOCAB.hazardKinds: heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter
@@ -42,17 +42,19 @@
 //   KHAZ.speed                   the page's compression of slow phases (1; Korona's page sets KORONA.SPEED)
 (function(root){
   'use strict';
-  var KR=root.KRAND,KT=root.KTAGS,TR=root.KTRAPS;
-  if(!KR) throw new Error('20-core-hazard: load core/rand/08-core-rand.js first');
-  if(!KT||!KT.VOCAB||!KT.VOCAB.hazardKinds) throw new Error('20-core-hazard: load core/tags (50, 52) first');
-  if(!TR||!TR.cycle) throw new Error('20-core-hazard: load core/biome/37-core-traps.js first (KTRAPS.cycle, the one clock)');
-  var V=KT.VOCAB;
+  // what it reads is looked up at first use, so the file may load anywhere on a page (a build lists it by path)
+  var KT=null,TR=null,V=null;
+  function need(){if(V)return;KT=root.KTAGS;TR=root.KTRAPS;
+    if(!root.KRAND) throw new Error('core/hazard: load core/rand/08-core-rand.js');
+    if(!KT||!KT.VOCAB||!KT.VOCAB.hazardKinds) throw new Error('core/hazard: load core/tags (50, 52: the hazard kinds)');
+    if(!TR||!TR.cycle) throw new Error('core/hazard: load core/biome/37-core-traps.js (KTRAPS.cycle, the one clock)');
+    V=KT.VOCAB;}
   function has(L,v){return L.indexOf(v)>=0;}
   function d(v,x){return v==null?x:v;}
   function copy(o){if(o==null||typeof o!=='object')return o;if(Array.isArray(o))return o.map(copy);var c={};for(var k in o)c[k]=copy(o[k]);return c;}
   function num(v,what){if(typeof v!=='number'||!isFinite(v))throw new Error('KHAZ.make: '+what+' must be a finite number');return v;}
 
-  function make(h){
+  function make(h){need();
     if(!h||typeof h!=='object')throw new Error('KHAZ.make: a hazard is an object');
     var K=V.hazardKinds[h.kind];if(!K)throw new Error('KHAZ.make: unknown kind '+h.kind);
     var effect=h.effect===undefined?K.effect:h.effect;
@@ -117,7 +119,7 @@
     var q=TR.cycle(segs,t,c.offset!=null?c.offset:TR.phase(h.seed!=null?h.seed:id)*L);
     if(!q)return {state:'steady',k:1,on:true};
     var o={state:q.state,k:q.k,on:q.k>0,left:q.left};if(q.state==='warn')o.warn=true;return o;}
-  function state(rec,t,speed){var h=of(rec);if(!h)return null;speed=speed==null?KHAZ.speed:speed;
+  function state(rec,t,speed){need();var h=of(rec);if(!h)return null;speed=speed==null?KHAZ.speed:speed;
     if(h.stateFn){var f=STATES[h.stateFn];if(!f)throw new Error('KHAZ.state: no state function '+h.stateFn+' (a kit adds it to KHAZ.STATES)');return f(rec,h,t,speed);}
     if(h.cycle)return cycleState(h,rec.id,t,speed);
     return {state:'steady',k:1,on:true};}
@@ -125,7 +127,7 @@
     var s=state(rec,t);return h.dose*fall(h.falloff,f)*s.k;}
 
   // ---- the records: live, carrying a hazard; an item set's instances each (built on demand by the registry)
-  function reg(T){T=T||KT.page;if(!T)throw new Error('KHAZ: no registry (pass one, or a page\'s KTAGS.page)');return T;}
+  function reg(T){need();T=T||KT.page;if(!T)throw new Error('KHAZ: no registry (pass one, or a page\'s KTAGS.page)');return T;}
   var LIST=typeof WeakMap!=='undefined'?new WeakMap():null;
   // cached per registry until a record is added or removed or a hazard set's count changes
   function list(T){T=reg(T);var R=T.records||T.query({removed:true}),n=R.length,c=LIST&&LIST.get(T),i,r,key=n+':';

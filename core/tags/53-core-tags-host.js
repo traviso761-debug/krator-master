@@ -57,24 +57,60 @@
    return out;
  };
 
+ // ---------------------------------------------------------------- the hazard's state in words ([web]: the inspector's)
+ // KTAGS.hazardNow(rec, t?, point?) -> 'hazard now: on · 100% · 40 s to the next · dose 0.85/s here · paths avoid it', or ''
+ //   (no hazard, or no core/hazard). t defaults to the host's motion clock (KHOST.host.clock.t), as the shaders run on it.
+ // KTAGS.hazardAt(x, y, z, t?, tags?) -> the same for every hazard whose shape holds the point (KHAZ.at, the worst first, at
+ //   most three), one line each with its name and kind: a biome's own inspector words add it (its describe(hit))
+ function now(){ var r = typeof globalThis !== 'undefined' ? globalThis : window, h = r.KHOST && r.KHOST.host; return h && h.clock ? h.clock.t : 0; }
+ function zroot(){ return (typeof globalThis !== 'undefined' ? globalThis : window).KHAZ || null; }
+ K.hazardNow = function(rec, t, p){
+   var Z = zroot(); if (!Z || !rec || !rec.tags || !rec.tags.hazard) return '';
+   try {
+     t = t == null ? now() : t;
+     var s = Z.state(rec, t), h = Z.of(rec);
+     var line = 'hazard now: ' + s.state + (s.hidden ? ' (hidden)' : '') + (s.warn ? ' (warning)' : '') + ' · ' + Math.round(s.k * 100) + '%';
+     if (s.left != null && isFinite(s.left)) line += ' · ' + (s.left < 90 ? s.left.toFixed(0) + ' s' : (s.left / 60).toFixed(0) + ' min') + ' to the next';
+     if (p && h.dose > 0) line += ' · dose ' + Z.dose(rec, p.x, p.z, t, p.y).toFixed(2) + '/s here';
+     if (h.nav.avoid) line += ' · paths avoid it'; else if (h.nav.travel > 1) line += ' · path cost x' + h.nav.travel;
+     return line;
+   } catch (e) { return ''; }
+ };
+ K.hazardAt = function(x, y, z, t, T){
+   var Z = zroot(); if (!Z || !(T || K.page)) return '';
+   try {
+     t = t == null ? now() : t;
+     return Z.at(x, z, t, y, T || K.page).slice(0, 3).map(function(a){
+       return (a.rec.name || a.kind) + ' — ' + hazardWords(a.rec.tags.hazard) + '\n  ' + K.hazardNow(a.rec, t, { x: x, y: y, z: z }); }).join('\n');
+   } catch (e) { return ''; }
+ };
  // ---------------------------------------------------------------- the hazard overlay ([web]: THREE, the host's clock)
- // KTAGS.hazardLayer({scene, tags?, time?, max?}) -> {on: false, set(on), objects(), update(t), count}: hand it to the host
+ // KTAGS.hazardLayer({scene, tags?, time?, max?, camera?}) -> {on: false, set(on), objects(), update(t), count}: hand it to the host
  // as o.layers.hazards and its button shows each hazard record's shape (core/hazard KHAZ.list of tags, else KTAGS.page):
  // cylinders, spheres and boxes as three instanced draws, polygons as one extruded mesh each, additive and unlit, coloured
  // by the kind's tell colour times (.25 + .75 danger) times its state now (KHAZ.state: a vent between plays fades out; a
- // warn pulses). time() is the motion clock (KHOST.host.clock.t); the meshes are made on first show, and skipped by the
+ // warn pulses). time() is the motion clock (KHOST.host.clock.t); the meshes are made on show (the nearest max, 4000, to the
+ // camera when there are more: shown again 60 m from where they were made, they are made again there), and skipped by the
  // inspector and the probe (userData.khost, probeSkip). Godot: a debug draw of the Area3D shapes (core/hazard/GODOT.md).
  K.hazardLayer = function(o){
    o = o || {};
    var root = typeof globalThis !== 'undefined' ? globalThis : window, THREE = root.THREE, H = root.KHAZ;
    var L = { on: false, count: 0, group: null };
    var max = o.max == null ? 4000 : o.max, rows = [], meshes = [], sub = null, col = null;
+   function camPos(){ var h = root.KHOST && root.KHOST.host, c = o.camera || (h && h.camera); return c ? [c.position.x, c.position.y, c.position.z] : [0, 0, 0]; }
+   function drop(){ if (!L.group) return; L.group.parent && L.group.parent.remove(L.group);
+     L.group.traverse(function(m){ if (m.geometry) m.geometry.dispose(); if (m.material) m.material.dispose(); }); L.group = null; rows = []; meshes = []; }
    function clock(){ if (o.time) return o.time(); var h = root.KHOST && root.KHOST.host; return h && h.clock ? h.clock.t : 0; }
    function make(){
      if (!THREE || !H) throw new Error('KTAGS.hazardLayer: needs THREE and core/hazard (KHAZ)');
-     var T = o.tags || K.page, recs = H.list(T).slice(0, max), G = new THREE.Group();
+     var T = o.tags || K.page, all = H.list(T), recs = all, G = new THREE.Group(), cam = camPos();
+     if (all.length > max) {   // the nearest max to the camera, when there are more (Korona's hollow has 27 840)
+       recs = all.map(function(r){ var dx = r.at[0] - cam[0], dz = r.at[2] - cam[2]; return [dx * dx + dz * dz, r]; })
+         .sort(function(a, b){ return a[0] - b[0]; }).slice(0, max).map(function(a){ return a[1]; });
+     }
+     L.from = cam;
      G.name = 'hazards'; G.userData.khost = true; G.userData.probeSkip = true; G.renderOrder = 30;
-     var unit = { cyl: new THREE.CylinderGeometry(1, 1, 1, 28, 1, false), sphere: new THREE.SphereGeometry(1, 20, 12), box: new THREE.BoxGeometry(1, 1, 1) };
+     var unit = { cyl: new THREE.CylinderGeometry(1, 1, 1, 20, 1, false), sphere: new THREE.SphereGeometry(1, 16, 10), box: new THREE.BoxGeometry(1, 1, 1) };
      unit.cyl.translate(0, .5, 0); unit.box.translate(0, .5, 0);
      var mat = function(){ return new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, blending: THREE.AdditiveBlending,
        depthWrite: false, side: THREE.DoubleSide, fog: false }); };
@@ -113,6 +149,7 @@
    };
    L.set = function(on){
      L.on = !!on;
+     if (L.on && L.group && L.count >= max) { var c = camPos(), f = L.from, d = Math.hypot(c[0] - f[0], c[2] - f[2]); if (d > 60) drop(); }
      if (L.on && !L.group) make();
      if (L.group) L.group.visible = L.on;
      if (L.on && !sub && root.KHOST && root.KHOST.on) { sub = function(dt, t){ L.update(t); }; sub.khostName = 'hazard overlay'; root.KHOST.on(sub); }

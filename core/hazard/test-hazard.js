@@ -106,4 +106,18 @@ ok('export: a copy, not the record',(()=>{ex.records[0].hazard.danger=0;return H
 ok('export is the same twice',JSON.stringify(H.export(T).records.slice(1))===JSON.stringify(ex.records.slice(1)),false);
 ok('no registry is an error',throws(()=>H.list(null)),throws(()=>H.list(T)));
 
+// the inspector's words (core/tags' host fragment, 53): the state now, and every hazard at a point
+require(C('tags/53-core-tags-host.js'));
+{let tOn=null;for(let t=0;t<60;t+=.5)if(H.state(vent,t).state==='on'){tOn=t;break;}
+ const w=KT.hazardNow(vent,tOn,{x:-18,y:1,z:0});
+ ok('hazardNow says the state, its share, the time to the next, the dose and the path cost ('+w+')',/^hazard now: on · 100% · \d+ s to the next · dose 0\.50\/s here · path cost x4$/.test(w),false);
+ ok('hazardNow is empty for a record without a hazard',KT.hazardNow(plain,0)==='',KT.hazardNow(pool,0)==='');
+ const a=KT.hazardAt(10,1,0,0,T);
+ ok('hazardAt names each hazard at a point ('+a.split('\n')[0]+')',/^An acid pool — hazard: acid \(corrode\), danger 0\.7/.test(a)&&/paths avoid it/.test(a),KT.hazardAt(300,0,300,0,T)!=='');}
+// it may load first on a page: what it needs is looked up at first use, and its absence is said then
+{const vm=require('vm'),c={};c.globalThis=c;vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'20-core-hazard.js'),'utf8'),c);
+ let msg='';try{c.KHAZ.make({kind:'heat'});}catch(e){msg=e.message;}
+ ok('loaded alone it waits, and says what is missing at first use ('+msg+')',/core\/rand/.test(msg),msg==='');
+ ['rand/08-core-rand.js','tags/50-core-tags.js','tags/52-core-tags-vocab.js','biome/37-core-traps.js'].forEach(f=>vm.runInContext(fs.readFileSync(C(f),'utf8'),c));
+ ok('the same page works once they load after it',c.KHAZ.make({kind:'heat'}).effect==='burn',false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

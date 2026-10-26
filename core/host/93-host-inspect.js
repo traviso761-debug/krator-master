@@ -96,16 +96,9 @@ K.onTake(function inspectTake(H){
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='i'||e.key==='I'){if(o.keys&&o.keys.i)return;K.hover();}});
 });
 // ---------------------------------------------------------------- the hazard's state now (core/hazard; the hazard workstream's, 2026-10-26)
-// One line under the words when the record they are about carries tags.hazard and core/hazard is loaded: its state on the
-// host's motion clock (KHAZ.state at KHOST.host.clock.t, the page's KHAZ.speed) and the dose at the point. Kept apart from
-// the words so a build's own inspect and the label stay what they are.
-K.hazardNote=function(w,p){const Z=root.KHAZ,r=w&&w.rec;if(!Z||!r||!r.tags||!r.tags.hazard)return w;
- try{const t=K.host&&K.host.clock?K.host.clock.t:0,s=Z.state(r,t),h=Z.of(r);
-  let line='hazard now: '+s.state+(s.hidden?' (hidden)':'')+(s.warn?' (warning)':'')+' · '+Math.round(s.k*100)+'%';
-  if(s.left!=null&&isFinite(s.left))line+=' · '+(s.left<90?s.left.toFixed(0)+' s':(s.left/60).toFixed(0)+' min')+' to the next';
-  if(p&&h.dose>0)line+=' · dose '+Z.dose(r,p.x,p.z,t,p.y).toFixed(2)+'/s here';
-  if(h.nav.avoid)line+=' · paths avoid it';else if(h.nav.travel>1)line+=' · path cost x'+h.nav.travel;
-  w.t=(w.t==null?'':w.t)+(w.html?'<br>':'
-')+line;}catch(e){}
- return w;};
+// One line under the words when the record they are about carries tags.hazard (KTAGS.hazardNow, core/tags' host fragment:
+// its state on the host's motion clock and the dose at the point). Kept apart from the words so a build's own inspect and
+// the label stay what they are.
+K.hazardNote=function(w,p){const KT=root.KTAGS,r=w&&w.rec;if(!KT||!KT.hazardNow||!r)return w;
+ const line=KT.hazardNow(r,K.host&&K.host.clock?K.host.clock.t:0,p);if(line)w.t=(w.t==null?'':w.t)+(w.html?'<br>':'\n')+line;return w;};
 })(typeof window!=='undefined'?window:globalThis);
