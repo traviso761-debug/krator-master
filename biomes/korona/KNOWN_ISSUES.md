@@ -7,33 +7,49 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   `50-biome-korona-species.js`) is not cut with `cellUV` as every other Korona card is, so each lid is the whole sheet of
   nine pieces. Fix: `cellUV(G.pad(), CELL(k))` on the leaf-pile piece, or a `cell` in `materials.json` (`BIO.libSwap`
   windows it); then rebuild and screenshot a pit.
+  Stays (2026-10-25): a card-sheet item for later, per the owner; not touched in this pass.
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
+  Stays (2026-10-25): needs the night uniform, i.e. a day cycle on the page (next item) and an emissive pass; a design task.
 - [ ] **No night.** `core/atmos` is bound (2026-10-19: `89w-host-water.js`, its clock and skylight for the water, its
   export section) with the hour pinned at 13; the giant's light at night, the dusk glow (above) and the weather wait for
   a day cycle on the page. The station's pressure is a record (`STAGE.air`, exported with the layout: 1.3 atm on the
   table, 1.74 in the hollow, 1.44 in the basin, 2.1 at the salt, 1.7 in the gorge, .8 on the hoar table) and changes
   nothing drawn: the dense-air look (a heavier haze with the pressure) is the owner's call, since the six pages' fog was
   judged as it is.
+  Stays (2026-10-25): a day cycle and the dense-air haze are the owner's call; `89a-host-atmos.js` binds `core/atmos` with the hour at 13 and takes a night toggle when one lands.
+  Available (2026-10-25): `core/atmos/fx/89-atmos-fx-snowcover.js` (`ATMOS.snowCover({base,line,frozen})`, `ATMOS.snowOnScene`) could give the hoar table a light permanent hoarfrost above a line; not adopted, since it changes the look the six pages were judged on and the page has no weather yet. Owner's call.
 - [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). The key is
   proposed (`core/tags/PROPOSAL.md`, "A hazard key", 2026-10-19); when it lands, the Throne's CO2 hollows and the
   natives' punji pits take it too.
+  Stays (2026-10-25): the key is only proposed (`core/tags/PROPOSAL.md`), not built in `core/tags`: a core change.
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will. Since 2026-10-19 they are `core/water` still
   records like every pool (`89w-host-water.js`); the open world will make them `WATER.open` surfaces on a shore window.
+  Stays (2026-10-25): needs the open world's shore windows (a `WATER.open` on real depth); a station cannot hold it.
 - [ ] **The tepui is one record.** The open world wants many tables placed from the scale model's ring crests
   (`NOTES.md`, "The ground"); the station builds one by hand (`STAGE.bodies`).
+  Stays (2026-10-25): wants the scale model's ring crests, an open-world design task.
 - [ ] **Two textures came off their prompts** (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, Korona"):
   `ground.quartzite.black` is pale with black patches (the summit reads lighter than Roraima's crust), `ground.peat.black`
   a rusty moss rather than black peat. Usable; a redo is the owner's call.
+  Stays (2026-10-25): a redo is the owner's call (a texture owed).
 - [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
   through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
   segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
   than a 180,000-vertex ring fan.
+  Stays (2026-10-25): a gridded top is a terrain-drawing redesign in `KSTACKS` (core/terrain) and the export, over an hour and a core change.
 - [ ] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
   cycle); a proper Nepenthes lid (a dome with a spur, veined) wants its own geometry when the plant is redone.
+  Stays (2026-10-25): a veined dome with a spur is new geometry for when the plant is redone, a design task.
 
 ## Closed
+
+- **Atmos host binding and the hoar sin-hash lint** (2026-10-25, the biome rebuild): `src/89a-host-atmos.js` calls
+  `ATMOS.bindHost` (hour 13) as the migrated biomes do, `build.py` lists `core/atmos/host/89-atmos-c-hostbind.js`, and
+  `89w-host-water.js` no longer calls `ATMOS.init` itself. The water was already `WATER.flow` / `WATER.still` with no
+  workaround (no preset write, no own shader). The `OWN sin-hash` finding in `stations/hoar/45-host-stage.js` was a false
+  positive (`Math.sin(a)*1000`, the radius of the spine's ring of points, not a hash); the radius is a named constant now.
 
 - **Water and air on the core** (2026-10-19, the core adoption audit, `CORE-ADOPTION.md`): the stream is a `WATER.flow`
   (its ribbon drawn by `core/water`), every pool and every rain pool on the rock a `WATER.still` record, all drawn as one

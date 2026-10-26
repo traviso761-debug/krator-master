@@ -30,6 +30,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `60-biome-korona-floor.js` | 3 |  |
 | `70-biome-korona.js` | <1 |  |
 | `88-host-build.js` | 4 |  |
+| `89a-host-atmos.js` | <1 | ATMOS.bindHost |
 | `89w-host-water.js` | 4 |  |
 | `99-host-take.js` | 12 | the inspector's words: a plant names its species (34); the probe's budgets and the kit's own checks (ve (50); the page, handed to the host (98) |
 | `99-tail.html` | <1 |  |

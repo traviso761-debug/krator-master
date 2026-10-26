@@ -121,6 +121,7 @@ for f in CORE_WATER:
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, called by src/89a-host-atmos.js
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost

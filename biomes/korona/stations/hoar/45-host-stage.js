@@ -93,5 +93,5 @@ const STAGE={
  windows:{mother:[MOTHER.x-MOTHER.r*1.3,MOTHER.z-MOTHER.r*1.3,MOTHER.x+MOTHER.r*1.3,MOTHER.z+MOTHER.r*1.3]},
  bias:{butterwort:1,frosttank:1,lacepitcher:.5,rainbowfan:.25,stormpod:1,cointree:.3,wallfern:0,lacefan:0,greatsundew:0,cobralily:0,bloodbulb:0,bloodtrumpet:0,maneater:0,coiltendril:0,groundstar:0,punjipit:0,beartrap:0,numbthorn:0,snareflower:0},
  carvings:{body:'table',bed:TABLE.beds.length-1,a0:-2.4,a1:-1.4,y0:TABLE.beds[TABLE.beds.length-1].h-9,h:3,name:'Contour carvings: the Hum (an ice tribe\'s road-marks, cut under the rim)'},
- spine:(function(){const S=[[0,0]];for(let k=0;k<8;k++){const a=k/8*TAU;S.push([Math.cos(a)*1000,Math.sin(a)*1000]);}POOLS.forEach(p=>S.push([p.x,p.z]));S.push([MOTHER.x,MOTHER.z]);return S;})(),
+ spine:(function(){const RING_R=1000,S=[[0,0]];for(let k=0;k<8;k++){const a=k/8*TAU;S.push([Math.cos(a)*RING_R,Math.sin(a)*RING_R]);}POOLS.forEach(p=>S.push([p.x,p.z]));S.push([MOTHER.x,MOTHER.z]);return S;})(),
 };

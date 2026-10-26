@@ -1,5 +1,5 @@
 // ================================================================= HOST — the water on core/water, bound to core/atmos
-// core/atmos (0-core, 0p-presets, 8-export, a-waves, b-skylight; core/atmos/README.md) is bound once here: its clock
+// core/atmos (0-core, 0p-presets, 8-export, a-waves, b-skylight; core/atmos/README.md) is bound once in 89a-host-atmos.js (ATMOS.bindHost, hour 13); here: its clock
 // drives the wave field every water shader reads (atmWaveT), its skylight captures this page's sky (the hyperjungle's
 // dome, the giant and its ring: 82) for the water alone (WENV: the page's own materials keep the lighting they were
 // tuned on), and ATMOS.export fills the export's atmos section. The page has no night yet (KNOWN_ISSUES.md: the hour is
@@ -12,8 +12,6 @@
 // all, with probes). They are drawn as ONE mesh on WATER.stillMaterial (the sky in them, the ripple on them: one draw
 // call for a hundred potholes) rather than a mesh each. Before 2026-10-19 the page drew a flat disc per pool and the
 // stream's ribbon on a plain standard material (47).
-ATMOS.init({THREE,scene,camera,hour:()=>13,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:(STAGE.seed==null?11:STAGE.seed)+4400,
- err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 {const env=new THREE.Scene(),WENV={environment:null};
  env.add(new THREE.Mesh(sky.geometry,sky.material));env.add(giant.clone());env.add(giantRing.clone());
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x2c3a2e)});}
