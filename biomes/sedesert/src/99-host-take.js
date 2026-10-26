@@ -190,7 +190,7 @@ KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  // the eye kept over the ground, and out of the carved cap's rock (on top of it)
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
   if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;},
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

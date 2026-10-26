@@ -155,7 +155,7 @@ KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands'
  // the fire's controls (89-host-fire.js): its bar after the view select, F arms a click-to-light (it wins over walking),
  // and an armed click lights a fire instead of inspecting
  controls:[FIREFX.bar],keys:{f:()=>FIREFX.arm(!FIREFX.armed())},click:(x,y)=>FIREFX.armed()?(FIREFX.click(x,y),true):false,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

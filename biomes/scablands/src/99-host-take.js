@@ -102,7 +102,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'scablands',title:'Krator overlay — the scablands: a coulee and dry falls',
  hint:'The west breach in small: the flood from the broken dam scoured this coulee to bare basalt, butte-and-basin and potholes, fell over a dry falls into a plunge-pool lake, and laid bars with giant current ripples below; streamlined loess islands kept the steppe (the n semiarid kit, read in place)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL],
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>(SEEDS?[SEEDS.points]:[]).concat(FLIGHT?FLIGHT.meshes:[])},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

@@ -164,7 +164,7 @@ HOSTED=KHOST.take({build:'geyser',title:'Krator biome — the geyser basin (the 
  // N: night; R sets off the geyser nearest the view (G stays the host's: fly to the pin)
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night'),
   r:()=>{if(!GEYSER.SHOW)return;const T=HOSTED.ctl.target;let b=null,bd=1e9;for(const g of LAYOUT.geysers){if(g.kind==='spouter')continue;const d=Math.hypot(g.x-T.x,g.z-T.z);if(d<bd){bd=d;b=g;}}if(b)GEYSER.erupt(b.key,GEYSER.SHOW.t);}},
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

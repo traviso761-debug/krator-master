@@ -7,7 +7,7 @@
 // The echoes (PLAN.md section 3) are seen only at dusk: their opacity follows the sun's height each frame (CUT.echoLight).
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
-const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.startHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
+const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.viewHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
 const SKY_RIDGES=(function(){const eye=STAGE.eyeH==null?3:STAGE.eyeH,FR=STAGE.farR==null?120000:STAGE.farR,bands=STAGE.horizonBands||[[FR,FR*1.6],[FR*1.6,FR*3]],P=CUT.horizon(STAGE.site,bands,1024,eye),
   y0=CUT.bowl.h(STAGE.site.x,STAGE.site.z)+eye,dist=bands.map(b=>Math.sqrt(b[0]*b[1])),col=h=>h.map(v=>v/255);

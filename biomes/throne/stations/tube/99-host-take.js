@@ -107,7 +107,7 @@ KHOST.take({build:'throne-tube',title:'Krator biome — the Throne: the lava tub
   if(inT){const T=tt.T;let c=T.near(cp.x,cp.z);if(c.u<1)c.u=1;if(c.u>T.L-2)c.u=T.L-2;const W=T.W(c.u)-1.2,l=clamp(c.l,-W,W),p=T.P(c.u),t=T.tan(c.u);
    cp.x=p[0]-t[1]*l;cp.z=p[1]+t[0]*l;const f=T.floor(c.u)+floorRel(T,c.u,l,cp.x,cp.z),top=T.floor(c.u)+roofAt(T,c.u,l)-.8;cp.y=clamp(cp.y,f+.8,Math.max(f+1,top));}
   else{const gw=Math.max(terrainH(cp.x,cp.z),waterH(cp.x,cp.z))+1.8;if(cp.y<gw)cp.y=gw;}},
- clock:{hour:ATMOS.SKY.startHour},   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

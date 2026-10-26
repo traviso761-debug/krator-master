@@ -129,7 +129,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'ehighlands',title:'Krator biome — the eastern highlands',
  hint:'The eastern highlands: a cold high plateau in thin air (~0.6 atm). Poured cushions and the Mother Cushion, woolbacks, thorn cushions, vigil spikes, ragbark gullies, glass towers, a cushion bog and a frozen tarn, a geyser field; everything grows toward the giant (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.2,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

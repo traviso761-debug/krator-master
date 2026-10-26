@@ -94,7 +94,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'nsemiarid',title:'Krator biome — the northern semiarid country',
  hint:'The walking steppe: an old lake bed with its strandlines and a remnant salt lake in the north, the hot steppe, the Mediterranean foothills and the feral fruit forest on the rainy upland in the south; everything here travels (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'  wind '+NSWIND.mode+' '+NSWIND.mean().toFixed(1)+' m/s',controls:[WIND_CONTROL],
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'seed weather':{objects:()=>(SEEDS?[SEEDS.points]:[]).concat(FLIGHT?FLIGHT.meshes:[])},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

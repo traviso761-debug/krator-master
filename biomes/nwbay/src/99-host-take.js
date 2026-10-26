@@ -129,7 +129,7 @@ KHOST.take({build:'nwbay',title:'Krator biome — the north-west bay',
  hint:'The north-west bay (the biome of Ys): karst stacks in a turquoise bay, travertine terraces, lava coves, mangrove lagoons, the volcano in the SE (ideal type)',
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),finTop(x,z)),walk:typeof KWALK!=='undefined'?KWALK:null,clear:1.8,   /* the eye's floor and the walker's blocks: the tsingy's fins are solid */
 registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89s-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89s-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

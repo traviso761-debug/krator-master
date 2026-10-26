@@ -118,7 +118,7 @@ KHOST.take({build:'guilin',title:'Krator biome — Guilin, the South China karst
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (89n-host-night.js); N flips noon and midnight
  sky:{hour:h=>NIGHT.hour(h)},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- clock:{hour:ATMOS.SKY.startHour},keys:{n:()=>NIGHT.flip()},
+ clock:{hour:ATMOS.SKY.viewHour},keys:{n:()=>NIGHT.flip()},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[SKY.mesh]}},

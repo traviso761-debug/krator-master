@@ -132,7 +132,7 @@ KHOST.take({build:'throne-vents',title:'Krator biome — the Throne: vent countr
  hint:'The Throne, station 8: vent country, the east rift under the plume, ~1.4 km up, ~80 km from the vent. A graben, its floor dropped between two fault scarps; an eruptive fissure four years quiet, its crack still glowing at night, spatter cones along it and its young flow; the sulphur marsh with its antler-stalked rosettes; hot pools ringed in colour by their mats, vent coral and brain caps round them; mud pots; a steam valley of bone bells; the mat in two still hollows (ideal type) · weather: acid fog (and the ash, and the rest) · N night',
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

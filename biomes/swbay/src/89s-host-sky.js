@@ -8,7 +8,7 @@
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
 // the host makes the clock (91-host-loop.js, which loads after this fragment); the sky reads it through this view of it, so there is one hour on the page
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
-const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.startHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
+const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.viewHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
 const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:446,py:690},air:{pressure:1.9,humidity:.8},
  clouds:{cover:.45},fogDensity:.000143}),   /* the old page's fog, .00017 at 1.9 atm */

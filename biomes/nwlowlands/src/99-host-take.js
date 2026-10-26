@@ -92,7 +92,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'nwlowlands',title:'Krator Northwestern Lowlands',
  hint:'The northwestern lowlands: lake shore, rainforest strip, subtropical forest and bamboo groves, Mediterranean foothills (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'the Inner Wall (far field)':{match:o=>!!(o.userData&&o.userData.farField)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

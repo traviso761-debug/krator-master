@@ -87,7 +87,7 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.take({build:'swbay',title:'Krator biome — the southwest bay',
  hint:'The southwest bay: bay hyperjungle, rainforest, parasol savannah, the volcano in the NE (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js); the page opens at 06:00 */
+ clock:{hour:ATMOS.SKY.viewHour},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js); the page opens at 06:00 */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

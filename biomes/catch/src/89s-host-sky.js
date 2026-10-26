@@ -7,7 +7,7 @@
 // horizon cast from the scale model's heightfield replaces them (SKY-PLAN.md 3.3, "Later").
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
-const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.startHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
+const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.viewHour;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
 // THE WALLS IN THE SAME AIR AS THE DUNES (the owner, 2026-10-26: the haze should apply to the far mountains too): a stage
 // gives each ridge layer `hz`, the share of it the haze should take (far crests ~.7, the inner walls ~.5, the hills ~.3),

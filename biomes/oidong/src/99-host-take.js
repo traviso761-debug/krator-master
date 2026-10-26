@@ -135,7 +135,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'oidong',title:'Krator biome — the Oidong Valley',
  hint:"The Oidong Valley east of Xanadu: the History Monks' country, the safest ground on Krator. Still pools with giant lotuses, moss woods, cherry and haze blossom, a marble grove, chalice trees in the mist at the head, pale flats the wind rakes round standing stones; the holy plants and the monks' physic grow wild (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

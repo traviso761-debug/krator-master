@@ -22,6 +22,7 @@
  const S=A.SKY={
   dayH:24, yearD:365, tilt:23, solsticeDay:350,      // southern summer solstice (LORE); the spring equinox is day 258.75
   startDay:259, startHour:6,                         // game start: the southern spring equinox, sunrise (the owner, 2026-10-25)
+  viewHour:11,                                       // a page loads at late morning (the owner, 2026-10-26: day, not dawn); startHour stays the game's start
   // the site frame on the scale model (2 km/px, x east, y south): Voth at 40 S, 84 km a degree (radius ~4,800 km), and
   // the point under the giant 57 degrees east of Voth (21-sky.js): Voth sees it NE, 24.7 degrees up (the canon)
   frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:57},

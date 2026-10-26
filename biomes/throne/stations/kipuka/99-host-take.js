@@ -141,7 +141,7 @@ KHOST.take({build:'throne-kipuka',title:'Krator biome — the Throne: the kipuka
  hint:"The Throne, station 2: the kipuka on the windward west flank (~0.3 km below the datum, ~4 m of rain). Islands of old hyperjungle the lava went round, in flows from three years to centuries old; great ruffs on the forest's rim, their seedlings on the young lava, lehua and tree ferns, lava casts of swallowed trees, siphon trees breathing the tube's mist (ideal type) · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

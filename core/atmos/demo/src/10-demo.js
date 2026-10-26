@@ -36,7 +36,7 @@
  put(new T.BoxGeometry(2,3,2),new T.MeshStandardMaterial({color:0xe8e4dc,roughness:.7}),0,1.5,-16);
  put(new T.CylinderGeometry(.4,.5,6,24),new T.MeshStandardMaterial({color:0x6a5a48,roughness:.8}),-2,3,-20);
  // ---- the sky
- const clock=KCLOCK.make({hour:SKY.startHour,day:0,running:false});const hooks=[];
+ const clock=KCLOCK.make({hour:SKY.viewHour,day:0,running:false});const hooks=[];
  A.init({THREE:T,scene,camera,hour:()=>clock.hour,onFrame:fn=>hooks.push(fn),ground:()=>0,seed:1,err:m=>{$('errs').textContent+=m+'\n';},viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
  // the landmark layer's samples (#lm=1: a plume, a cloud sea, a glint; #lm=2: the ash desert's ceiling and plume)
  const LMSETS={1:[{kind:'plume',from:[200,3],via:[195,14],to:[170,20],width:[1.2,6],lit:[.86,.84,.80],belly:[.42,.38,.35],alpha:.75,drift:.02},

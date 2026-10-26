@@ -20,7 +20,7 @@
  A.skyBiome=function(o){const T=o.THREE||(A.T)||window.THREE,scene=o.scene;
   const day0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):0;return isFinite(d)?d:0;})();
   const hc=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
-  const clock={get hour(){const c=hc();return c?c.hour:A.SKY.startHour;},get day(){const c=hc();return day0+(c?c.day||0:0);},get t(){const c=hc();return c?c.t:0;}};
+  const clock={get hour(){const c=hc();return c?c.hour:A.SKY.viewHour;},get day(){const c=hc();return day0+(c?c.day||0:0);},get t(){const c=hc();return c?c.t:0;}};
   // the sky needs only three.js and its chunk: a page that binds core/atmos later (its water or atmos fragment calls
   // ATMOS.bindHost or ATMOS.init after this) keeps its own binding, and S.view puts that binding's hour on the clock
   const hourFn=()=>clock.hour;

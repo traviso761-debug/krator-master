@@ -108,6 +108,13 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
   read as bare ground from above). Round 2 on nhighlands also: the ground grid's vertices snapped onto the stream's and the tarn's
   edges (`84-host-ground.js`: the sawtooth shoreline), smooth-shaded and textured lantern pods and bell-bulbs.
 
+### Pages load at day (the owner, 2026-10-26)
+
+`ATMOS.SKY.viewHour` (11, `core/atmos/sky/89-atmos-e-skymodel.js`) is the hour a page loads at; `startHour` (6, sunrise) stays
+the game's start. Every host that read `SKY.startHour` for its clock now reads `viewHour` (47 source files: the biome kits, the
+Korona and Throne stations, the core sky hosts). **Only nhighlands is rebuilt**; the owner (2026-10-26): change the sources now,
+verify each build when its turn in the rebuild comes. Each build's verify views keep their own day/dawn/night modes.
+
 ### Every build in the rebuild: its card cells (the owner, 2026-10-26)
 
 The owner caught cut-out cards "loading as a sheet rather than discretely" in many builds. `python3 tools/textures/check_cells.py

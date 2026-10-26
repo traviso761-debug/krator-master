@@ -138,7 +138,7 @@ HOSTED=KHOST.take({build:'ringisles',title:'Krator biome — the Ring Sea isles'
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.6,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:GCTL,
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+' · animals '+FAUNA.length,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'fauna':{match:o=>{let q=o;while(q){if(q.userData&&q.userData.fauna)return true;q=q.parent;}return false;}},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
