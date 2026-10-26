@@ -147,6 +147,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands',
  hint:"The crater drylands: the fire mosaic in the Throne's rain shadow. Fresh char, the bloom that follows it, regrowth and old scrub; granite kopjes where the Scyvoi live, dry washes, prism mallees and pyre pillars (ideal type). F arms a fire: click the ground to light it",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
@@ -154,7 +155,7 @@ KHOST.take({build:'crater-drylands',title:'Krator biome — the crater drylands'
  // the fire's controls (89-host-fire.js): its bar after the view select, F arms a click-to-light (it wins over walking),
  // and an armed click lights a fire instead of inspecting
  controls:[FIREFX.bar],keys:{f:()=>FIREFX.arm(!FIREFX.armed())},click:(x,y)=>FIREFX.armed()?(FIREFX.click(x,y),true):false,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
