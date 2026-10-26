@@ -83,5 +83,17 @@ ok('a preferred crop that fits wins', how(hj, 'mango') === 'no' || pickOf(1, { p
 ok('a group pick finds a staple', !!C.pick(C.forBiome('xanadu'), 'staple', { seed: 5, asGroup: true }), C.pick(C.forBiome('xanadu'), 'nonesuch', { seed: 5 }) === null);
 ok('a pick never returns a crop outside the bucket', ['grain', 'tuber', 'fruit', 'spinning'].every(b => { const p = C.pick(C.forBiome('swlowlands'), b, { seed: 2 }); return !p || C.isBucket(p.crop, b); }), true);
 
+// ---- the High Country (biomes/nwouterwall, PLAN.md section 4)
+const nw = C.forBiome('nwouterwall');
+ok('nwouterwall: the Three Gifts are its own (sweetroot, snow potato, goldroot)', ['sweetroot', 'snowpotato', 'goldroot'].every(id => how(nw, id) === 'wild'),
+  how(C.forBiome('swbay'), 'sweetroot') === 'no' && how(tropicWet, 'goldroot') === 'no');
+ok('nwouterwall: goldroot is a medicine, bearroot a poison with no harvest', C.isBucket(C.BY_ID.goldroot, 'medicine') && C.BY_ID.bearroot.hazard === 'poison' && !C.BY_ID.bearroot.card,
+  C.BY_ID.sweetroot.hazard !== 'poison');
+ok('nwouterwall: a thin-air polar point grows the Thule crops, not the lowland ones', ['sweetroot', 'bistort', 'snowpotato'].every(id => how(polarThin, id) !== 'no'),
+  how(polarThin, 'rice') === 'no');
+ok('nwouterwall: the High Country makes a plaid (larch red-brown, silverthorn yellow, birch-tar black)',
+  C.canPlaid('nwouterwall') && ['brown', 'yellow', 'black'].every(k => C.palette('nwouterwall').colours.includes(k)) && C.palette('nwouterwall').sources.brown.includes('larch-bark:wild'),
+  !C.palette('nwouterwall').colours.includes('purple'));
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);

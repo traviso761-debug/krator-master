@@ -64,5 +64,10 @@ CROPS.BIOMES = {
   /* Farside (biomes/farside, 2026-10-26): the only ocean shore, the wettest coast on the map (Af/Cfa on the coast, ~3,500 mm, +24 degC;
      Cfb/Dfb in the fog belt at ~2 km, +14 degC; Csa in the drier lee basins): the strand and the kelp coast salt with the spray */
   farside:     {atm: 1, zones: {strand: {warmth: [4, 4], arid: [4, 4], wet: true, salt: true}, kelpcoast: {warmth: [3, 4], arid: [4, 4], salt: true}, front: {warmth: [2, 3], arid: [3, 4]}, cloud: {warmth: [1, 2], arid: [4, 4]}, lee: {warmth: [2, 3], arid: [1, 2]}}},
-  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}}
+  oidong:      {atm: 1, zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}},
+  /* the NW outer wall (biomes/nwouterwall/PLAN.md section 4): the Yeti's High Country. The forest-steppe (~4.2 km, 0.93 atm, 220 mm,
+     dry summers) and the larch taiga (~5.2 km, 0.85 atm) are standard air; the tundra and the fellfield above are thin. The alases are
+     the thaw hollows' meadows and lakes on the permafrost */
+  nwouterwall: {atm: 1, zones: {steppe: {warmth: [1, 1], arid: [1, 1]}, larchwood: {warmth: [0, 1], arid: [1, 2]}, alas: {warmth: [0, 1], arid: [3, 3], wet: true},
+    tundra: {warmth: [0, 0], arid: [0, 1], atm: 0}, fellfield: {warmth: [0, 0], arid: [0, 0], atm: 0}}}
 };

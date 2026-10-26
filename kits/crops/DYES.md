@@ -27,6 +27,7 @@ One for every biome with none, and one more where the region's own colour is mis
 
 | Biome | Region colour (`LORE.md` section 10) | Proposed dye | Source | Colour |
 |---|---|---|---|---|
+| abyssal-savannah | the abyssal people (red lacquer, teal and gold) | **Laterite ochre**: the rim's red-yellow earth, washed and burnt to a red, bound with umbrella gum (2026-10-26, `biomes/abyssal-savannah/PLAN.md`) | mineral (iron) | ochre |
 | crater-drylands | Scyvoi: none recorded; fire country | **Burn-black**: lampblack from the char of the last fire, set with frill-tree gall | soot, plant gall | black |
 | eastabyss | red lacquer, teal and gold | **Abyss lac**: scale insects on the jungle trees (red lacquer and a carmine); teal from salt-flat copper (below) | insect | red |
 | ehighlands | (Reed Lake: madder, ochre, black) | **Cushion cochineal**: scale insects on the thorn cushions; tola gives a yellow | insect, plant | crimson |
