@@ -80,10 +80,10 @@ HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const c
  if(c)c.pts.forEach(p=>{worst=Math.max(worst,Math.abs(p.y-RIVER.level(p.z)));});
  const ok=!!c&&c.kind==='flow'&&worst<.01&&!!W.pond&&W.pond.kind==='still'&&W.paddies.every(S=>S.kind==='still')&&!!D&&!!D.river&&!!D.still;
  return{ok,detail:(c?'the river: '+c.pts.length+' points, off its level by '+worst.toFixed(3)+' m':'no river')+'; the pond '+(W.pond?W.pond.kind:'missing')+'; '+W.paddies.length+' paddies; drawn: '+(D?Object.keys(D).join(', '):'none')};};
-// the night: midnight's key light is the giant's and dim, the dome and the fog dark; noon's are the page's own
-HCHK.night=N=>{const h0=N.hourNow;N.hour(0);const n={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f};
- N.hour(13);const d={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f};N.hour(h0);
- return{ok:n.f===1&&d.f===0&&n.i<d.i*.3&&n.sky<.3&&n.fog<.2&&d.sky>.9,detail:'midnight: key '+n.i.toFixed(2)+', dome '+n.sky.toFixed(2)+', fog '+n.fog.toFixed(2)+'; noon: key '+d.i.toFixed(2)+', dome '+d.sky.toFixed(2)};};
+// the night: midnight's key light is dim and the sky and the fog dark, noon's bright (the shared sky's colour script)
+HCHK.night=(N,look)=>{const site=ATMOS.siteAt(SKY.preset.site.px,SKY.preset.site.py),lk=look||(h=>ATMOS.skyLook(SKY.preset,ATMOS.skyState(site,h,SKY.clock.day))),lum=c=>.3*c[0]+.55*c[1]+.15*c[2];
+ const h0=N.hourNow;N.hour(0);const nf=N.f;N.hour(13);const df=N.f;N.hour(h0);const n=lk(0),d=lk(13);   /* the shared sky's light at midnight and noon (89-host-sky.js), and NIGHT's phase */
+ return{ok:nf===1&&df===0&&n.sunI<d.sunI*.3&&lum(n.zen)<.1&&lum(n.fogC)<.2&&lum(d.zen)>.3,detail:'midnight: key '+n.sunI.toFixed(2)+', zenith '+lum(n.zen).toFixed(2)+', fog '+lum(n.fogC).toFixed(2)+'; noon: key '+d.sunI.toFixed(2)+', zenith '+lum(d.zen).toFixed(2)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts();
  add('the river, the pond and the paddies on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
  add('the night darkens the light, the dome and the fog',HCHK.night(NIGHT));
@@ -97,7 +97,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts(),PL=GUILIN.PLANTS;
  add('the river lifted off its level',HCHK.water(Object.assign({},WATER_RECS,{river:Object.assign({},WATER_RECS.river,{pts:WATER_RECS.river.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+1}):p)})}),WATER_DRAW));
  add('no pond',HCHK.water(Object.assign({},WATER_RECS,{pond:null}),WATER_DRAW));
- add('a night that does not darken',HCHK.night({hourNow:12,f:0,hour(h){this.hourNow=h;this.f=h<6?1:0;}}));
+ add('a night that does not darken',HCHK.night({hourNow:12,f:0,hour(h){this.hourNow=h;this.f=h<6?1:0;}},()=>({sunI:.5,zen:[.4,.55,.8],fogC:[.7,.72,.7]})));
  add('an edible plant with no catalog fruit and not listed',HCHK.fruit(GUILIN.SPECIES.map(S=>S.key==='camphor'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{edible:['x']})})}):S),PL,N));
  add('no lotus seed heads drawn',HCHK.fruit(GUILIN.SPECIES,PL,Object.assign({},N,{lotuspod:0})));
  add('the medicinal plant not medicinal',HCHK.three(GUILIN.SPECIES,Object.assign({},PL,{orchid:{name:'x',items:PL.orchid.items,tags:Object.assign({},PL.orchid.tags,{harvest:Object.assign({},PL.orchid.tags.harvest,{medicinal:false})})}}),N));
@@ -112,15 +112,16 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'guilin',title:'Krator biome — Guilin, the South China karst',
  hint:'Guilin: limestone towers over the Li River and its paddies, the fengcong, and the stone forest. N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (89n-host-night.js); N flips noon and midnight
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},hour:h=>NIGHT.hour(h)},
- clock:{hour:10},keys:{n:()=>NIGHT.flip()},
+ sky:{hour:h=>NIGHT.hour(h)},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.startHour},keys:{n:()=>NIGHT.flip()},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[sky,giant,giantRing]}},
+  'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),layout:()=>GUILIN.records()},
  minimap:{title:'Guilin, the South China karst'},
  budget:BUDGET,types:()=>BIO.stats,

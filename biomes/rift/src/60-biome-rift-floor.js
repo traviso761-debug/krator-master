@@ -238,4 +238,7 @@ RIFT.buildFloor=function(R,q){
  BIO.grid(30,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=1500)return 0;return .82*q*.7;},(x,y,z,d)=>{BIO.minRange=BIO.lodD(x,z)<600?LOD.floor:LOD.midFloor;plant(x,y,z,0);},{patch:.75,patchScale:.014,pad:.6,box:[-1540,-R,1540,R]});
  BIO.range=null;BIO.minRange=0;
  return{under:st};};
+// the small plants a world may plant in place (2026-10-26, biomes/ringisles: the termite spires on its savanna): (x, y, z, lv, st),
+// wrapped to this kit's registry (BIO.kitEnd wraps only the export's own functions); the kit's own pass calls them unwrapped
+RIFT.small=BIO.kitWrap('rift',{termite});
 })();

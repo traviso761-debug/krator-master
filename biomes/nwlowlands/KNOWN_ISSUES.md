@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Outer Wall far across the lake (NW) and
+      the canopy lines, open over the inland sea (ridges). The Inner Wall's range is far-field geometry now
+      (83-host-range.js), so its painted band is not drawn again. Draw calls at the default camera (verify.py --assert,
+      GPU): 256 before, 253 after.
+
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/nwlowlands.html`. Strip everything before `<title>` and the trailing
       `</body></html>` before publishing.

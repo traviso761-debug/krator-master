@@ -50,3 +50,12 @@
 - [x] **Pinnacle Rock does not take the kit yet** (its `PLAN.md` "Biome" row).
       Closed 2026-10-25 (found already done): `settlements/pinnacle-rock/build.py` reads the layout, land, species, trees,
       carnivores, floor, kit and night fragments in place from here.
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. It read the hyperjungle's dome in place; now its own shared sky
+      with the canopy lines (ridges). NIGHT (89n) keeps its hooks and the skylight key; the sky drives the lights, fog and
+      exposure over it each frame. Draw calls at the default camera (verify.py --assert, GPU): 90 before, 89 after.
+

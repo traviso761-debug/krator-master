@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. The NW bay keeps swbay's choice: the standard blue sky with
+      cumulus over 1.9 atm air (the owner, 2026-10-26); the fog is the old page's. No ridges: the far country is real
+      terrain. The water's skylight takes the shared sky through the old names (SKY.legacy). Draw calls at the default
+      camera (verify.py --assert, GPU): 273 before, 270 after.
+
 - [ ] THE STACKS HAVE NO CAVES. Since 2026-10-25 each stack is a KSTACKS tower (guilin's: `KSTACKS.tower`, a sheer cliff
       under a dome, the beds' partings and the waterline notch drawn by `KSTACKS.mesh`, its cliffs dressed by
       `57-biome-nwbay-cliffs.js`), but still solid: no caves, arches or hollow stacks. Ys builds its caves and

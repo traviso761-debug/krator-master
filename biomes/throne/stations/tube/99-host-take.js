@@ -96,6 +96,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKYB.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'throne-tube',title:'Krator biome — the Throne: the lava tube',
  hint:"The Throne, station 11: inside a lava tube under an old flow on the south-east shoulder, ~1.6 km up, under the plume's edge. The tube runs ~1.4 km, its roof arched, flow ledges along its walls and lavacicles on its roof; three skylights where the roof fell in pour daylight onto breakdown piles, and in their light grow siphon trees, lamp caps, ferns and moss; in the dark between them Krator's own cave life glows (the mat, glow mushrooms, lantern brackets, fungi dripping from the roof); a side passage ends in a choke; downstream a young reach is still hot, a lava stream running in its channel (ideal type) · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
@@ -106,7 +107,7 @@ KHOST.take({build:'throne-tube',title:'Krator biome — the Throne: the lava tub
   if(inT){const T=tt.T;let c=T.near(cp.x,cp.z);if(c.u<1)c.u=1;if(c.u>T.L-2)c.u=T.L-2;const W=T.W(c.u)-1.2,l=clamp(c.l,-W,W),p=T.P(c.u),t=T.tan(c.u);
    cp.x=p[0]-t[1]*l;cp.z=p[1]+t[0]*l;const f=T.floor(c.u)+floorRel(T,c.u,l,cp.x,cp.z),top=T.floor(c.u)+roofAt(T,c.u,l)-.8;cp.y=clamp(cp.y,f+.8,Math.max(f+1,top));}
   else{const gw=Math.max(terrainH(cp.x,cp.z),waterH(cp.x,cp.z))+1.8;if(cp.y<gw)cp.y=gw;}},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

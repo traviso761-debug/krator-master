@@ -1,0 +1,11 @@
+// ================================================================= HOST — Krator's sky: the shared sky (core/atmos, SKY-PLAN.md section 9)
+// 2026-10-26: the painted dome and the giant mesh (the old 82-host-sky.js) are gone. ATMOS.skyBiome draws ATMOS.sky at this
+// biome's place on the scale model (the Oidong valley, px 894, 1286), on the host clock (the page opens at 06:00 on game
+// start's day; #hour=, #day=, #time=run), with the real sun, giant, ring, moons, station, stars and clouds, and drives the
+// sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
+// Clear cold air, about 1 atm at 1600 m. Kept from the dome: the snow ranges and near walls (the valley's head east, the pass
+// west) and the Throne far WNW over the pass (ridges); the Throne's plume and the cataract at the head are not drawn. The old
+// dome stays in src/ for settlements/longsong, which reads it in place with its own OIDONG_SKY; build.py leaves it out here.
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:894,py:1286},
+ preset:{"air":{"pressure":1.0,"humidity":0.35},"clouds":{"cover":0.12,"cumulus":0,"cirrus":0.6},"fogDensity":0.000224,"ridges":[{"base":3.7,"amp":3.0,"cycles":48,"octaves":3,"seed":61,"peaks":40,"peakAmp":0.8,"win":[90,180,2.3],"floor":1.2,"dist":25000,"haze":0.15,"snowH":1440,"forestH":0,"rock":[0.66,0.71,0.81],"snow":[0.93,0.95,0.97]},{"base":2.4,"amp":2.4,"cycles":48,"octaves":3,"seed":62,"peaks":40,"peakAmp":0.6,"win":[90,180,1.57],"floor":0.1,"dist":9000,"haze":0.27,"snowH":390,"forestH":0,"rock":[0.46,0.54,0.65],"snow":[0.93,0.94,0.96]},{"base":1.75,"amp":0.15,"cycles":60,"octaves":2,"seed":63,"win":[285,19.3,2.1],"floor":-0.2,"dist":120000,"haze":0.035,"forestH":0,"rock":[0.67,0.71,0.78]}]}});
+const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */

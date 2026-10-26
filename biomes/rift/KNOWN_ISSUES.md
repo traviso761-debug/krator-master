@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Rift's two walls, the far rim down the
+      valley and the far shore's canopy (ridges, in front of the giant as the old overlay dome kept them); the far salt
+      lakes east and west, the walls' notches and talus are not drawn. Draw calls at the default camera (verify.py --assert,
+      GPU): 523 before, 521 after.
+
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/rift.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).

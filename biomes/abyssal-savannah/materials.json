@@ -1,0 +1,401 @@
+{
+ "build": "abyssal-savannah",
+ "note": "The abyssal savannah's adapter onto the material library (PLAN.md section 10; core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-absav-species.js; an array entry by index: bark0 corky umbrella, bark1 smooth tongue and fig, bark2 the stub lycopsid's scales, bark3 the ember cycad's armour), stubbark and cycadbark the solid items' maps, and the host's ground layers (groundDetail, groundRock: 45-host-stage.js). Grey detail maps (keep 0) are tinted by the species' instance colours; the full-colour cards (charred stems, ember lilies, the bench forbs: keep 1) keep their own colour under a near-white instance colour. Single plants show one cell of their nine-plant sheet (cell); clump and crown cards keep the whole sheet. Reused sets: card.rankgrass (the Cut's) for the blue pan-grass, card.ichu (the puna's) for the bench bunchgrass and the stub lycopsid's leaf tuft, rock.granite.tor and card.charred (the crater drylands'). Owed: ground.savanna.litter, card.grass.thatch (PROMPTS-NEEDED.md section 20). Run python3 tools/textures/pack.py biomes/abyssal-savannah after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "bark0": {
+   "lib": "bark.cork",
+   "scale": [
+    3,
+    5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bark1": {
+   "lib": "bark.smooth",
+   "scale": [
+    3,
+    5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bark2": {
+   "lib": "bark.lepido",
+   "scale": [
+    3,
+    5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bark3": {
+   "lib": "bark.armored",
+   "scale": [
+    3,
+    5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "stubbark": {
+   "lib": "bark.lepido",
+   "scale": [
+    1,
+    2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "cycadbark": {
+   "lib": "bark.armored",
+   "scale": [
+    1,
+    2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "rock": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "cap": {
+   "lib": "rock.sandstone.bedded.red",
+   "scale": [
+    5,
+    5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "thatch": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "bunch": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "stubtuft": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.34,
+    0.32,
+    0.66
+   ]
+  },
+  "pangrass": {
+   "lib": "card.rankgrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "saltbush": {
+   "lib": "card.saltbush",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "charred": {
+   "lib": "card.charred",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "lily": {
+   "lib": "card.firelily",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "forb0": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.01,
+    0.99,
+    0.32
+   ]
+  },
+  "forb1": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.34,
+    0.99,
+    0.66
+   ]
+  },
+  "forb2": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.68,
+    0.99,
+    0.99
+   ]
+  },
+  "vain": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "cycfrond": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "size": 512
+  },
+  "leaflet": {
+   "lib": "card.acacia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "size": 512
+  },
+  "plate": {
+   "lib": "card.acacia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512
+  },
+  "tongue": {
+   "lib": "card.heartleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "size": 512
+  },
+  "fig": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512
+  },
+  "groundDetail": {
+   "lib": "ground.redsoil",
+   "scale": [
+    6,
+    6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  },
+  "groundRock": {
+   "lib": "rock.sandstone.bedded.red",
+   "scale": [
+    9,
+    9
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.5
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  }
+ }
+}

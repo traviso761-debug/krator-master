@@ -154,3 +154,16 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   vertical), and the table stands on a forested apron.
 - A density bug (an undefined meadow bias read as 1) put 918,000 cobra lilies on the first page and stalled the
   headless harness for its whole timeout; a station's extras (`cobraMeadow`, `rainbowfanFloor`) now default to 0.
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. It read the hyperjungle's dome in place (all six pages); now the
+      shared sky at Korona with each page's own air (STAGE.air.pressure: tepui 1.3 here; each station's
+      stations/<name>/89-host-sky.js gives its own). No ridges: the tepuis and gorges are real terrain. Draw calls per
+      station before and after (verify.py --assert, GPU, all passing after; the committed basin and gorge pages passed
+      before, hoar, hollow and trench failed only their export profile): basin 223 to 222, gorge 115 to 112, hoar 40 to 37,
+      hollow 127 to 124, trench 220 to 217. Draw calls at the default camera (verify.py --assert, GPU): 130 before, 129
+      after.
+

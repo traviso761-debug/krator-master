@@ -132,12 +132,13 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.on(function geyserScale(){if(GEYSER.SHOW)GEYSER.SHOW.setScale(innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360)));},'view');
 KHOST.on(function fauna(dt,clock){if(FAUNA_TICK)FAUNA_TICK(dt,clock.t);});
 let HOSTED=null;
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 HOSTED=KHOST.take({build:'ringisles',title:'Krator biome — the Ring Sea isles',
  hint:"An island of the Ring Sea archipelago at the sea's level (~1.9 atm, hot): its zones chosen by the scale model's climate class (Koppen as fields). The windward rainforest (Af) and hypertropic jungle (XA) under the mountain, monsoon forest (Am), tall-grass savanna (Aw) and abyssal savanna (XV) burnt in a mosaic, hot steppe (BSh), salt steppe (XS) and a salt pan; the beach, the mangrove lagoon, the reef flat, the tide pools, a geyser field and a village's gardens (ideal type). N for night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.6,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:GCTL,
  keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+' · animals '+FAUNA.length,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'fauna':{match:o=>{let q=o;while(q){if(q.userData&&q.userData.fauna)return true;q=q.parent;}return false;}},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

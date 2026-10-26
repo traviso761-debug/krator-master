@@ -79,3 +79,13 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
 
 2026-10-20: `atmos` is back in the profile: the build lists `89-atmos-8-export.js` (the one shared fragment sedesert took) and the section reads ok. `water` is back too (2026-10-20): the springs and the geysers are core/water surfaces (`WATER.spring`: a still surface with a polygon extent, so the box crops it; `WATER.geyser`: kind `geyser`, no extent, so core/export's adapter lists it whatever the box). The sea (`WATER.open`, bounds z >= 560) still lies outside the case's box `300,0,600,300`, so the section reads ok on the kit's own surfaces, not the sea's: move the box to the coast to require the sea too. A real extent for the geyser kind is a one-line change in `core/export/09-core-export-adapters.js` (`extentOf`: a `geyser` branch returning the mist's reach); not made here because the adapter is shared by every build.
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Throne far to the south and its
+      shoulders, the coast's canopy lines (ridges); its plume and crater glow are not drawn. Day and night are hours now
+      (13:00 and 22:00: the old SW sun is out of reach at the equinox here). Draw calls at the default camera (verify.py
+      --assert, GPU): 105 before, 103 after.
+

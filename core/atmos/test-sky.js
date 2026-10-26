@@ -83,6 +83,8 @@ ok('game start: high at dusk, set by dawn',cAlt(259,18.5)>50&&cAlt(259,5)<0,cAlt
 {const p=A.ridgeProfile({base:2,amp:4,cycles:9,seed:3}),n=p.length,jump=Math.abs(p[0]-p[n-1]),step=Math.abs(p[1]-p[0]);
  ok('a ridge profile closes on itself at 360',jump<.2&&n===1024,jump>.2);}
 {const p=A.ridgeProfile({base:6,amp:8,cycles:9,win:[0,60,1.5],floor:-1,seed:4});ok('a windowed ridge stands only round its azimuth',p[0]>5&&p[512]===-1&&p[256]<0,p[512]>0);}
+{const p=A.ridgeProfile({base:6,amp:2,cycles:9,win:[[90,40,1],[270,40,1]],floor:-1,seed:6});ok('a ridge in two lobes stands east and west, not north or south',p[256]>5&&p[768]>5&&p[0]===-1&&p[512]===-1,p[0]>0);}
+{const p=A.ridgeProfile({base:8,amp:0,cycles:9,notch:[112,4,16,.8],seed:7}),i=Math.round(112/360*1024);ok('a notch lowers the ridge round its azimuth and leaves it whole 20 degrees off',near(p[i],1.6,.01)&&near(p[i+60],8,.01),near(p[i],8,.01));}
 {const a=A.ridgeProfile({base:2,amp:4,seed:5}),b=A.ridgeProfile({base:2,amp:4,seed:5});ok('the same layer gives the same profile',a.every((v,i)=>v===b[i]),false);}
 ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length===64&&S.stars.slice(0,14).every(s=>s[2]>2),S.stars.length!==64);
 

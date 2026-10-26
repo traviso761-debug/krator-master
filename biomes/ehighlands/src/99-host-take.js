@@ -125,10 +125,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARNL-8,z:TARN.z}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'ehighlands',title:'Krator biome — the eastern highlands',
  hint:'The eastern highlands: a cold high plateau in thin air (~0.6 atm). Poured cushions and the Mother Cushion, woolbacks, thorn cushions, vigil spikes, ragbark gullies, glass towers, a cushion bog and a frozen tarn, a geyser field; everything grows toward the giant (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.2,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

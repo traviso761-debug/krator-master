@@ -614,4 +614,11 @@ RIFT.buildTrees=function(R,q){
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,standins:st.standins,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,domes:st.domes,curls:st.curls,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 RIFT._canopyH=function(x,z){let h=0;for(const T of RIFT.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// RIFT.make(sp, x, y, z) -> T (the pass's own record: H, rb, crownR and seed from the kit's stream); RIFT.grow(T, lv) -> stats:
+// lv 2 near, 1 mid (its own builder), 0 its far impostor (T.small: the small species' blob). A world that plants the Rift's
+// species in place calls them (biomes/ringisles); the kit's own pass does not, so its page is unchanged (2026-10-26)
+RIFT.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+RIFT.grow=function(T,lv){means();const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fins:0,fans:0,domes:0,curls:0,candles:0,rosettes:0,heroes:0,fars:0,standins:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,T.seed%7,st,false);}else B[T.sp](T,st,lv);return st;};
 })();

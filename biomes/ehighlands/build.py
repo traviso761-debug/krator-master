@@ -98,6 +98,14 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
+# the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
+# presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
+for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

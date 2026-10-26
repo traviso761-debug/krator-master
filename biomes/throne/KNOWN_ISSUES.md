@@ -232,3 +232,17 @@
       20M the brief keeps it to); the isle 130 -> 129, 16.94M -> 16.80M (renderer); vents 202 -> 203, 21.62M -> 21.74M (renderer; +0.12M is the pools' fine ground patch);
       the glacier 42 -> 42 (the outwash view 42 -> 44: one flow per braid), 6.31M -> 6.31M. The cloud forest 75 -> 72, 21.41M -> 20.06M scene triangles (the falls two meshes for
       four, the pools one for four, the streams one per run; the triangles fell with the dense stand's thinning edge, its item).
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Station 1, the plume's edge, 1.26 atm with the plume's dust. Kept
+      from the dome: the Throne's flank to the summit NNW, the near flank's swells and cones, the Inner Wall's faint line
+      over the Ring Sea (ridges); the plume across the sky, its haze and the sea's silver line are not drawn (no landmark
+      layer yet). Day and night are hours (13:00, 22:00): the old sun is out of reach at 40 S (SKY-PLAN 8). Stations on the
+      shared sky: 1, kipuka, savanna, frontier and isle (each its own stations/<name>/89-host-sky.js; their 82 keeps only
+      the light-mode names). Draw calls before and after (verify.py --assert, GPU, all passing): station 1 210 to 207,
+      kipuka 112 to 111, savanna 73 to 71, frontier 102 to 101, isle 130 to 127. The six that waited moved on 2026-10-26 too: the weather stations (ashdesert, vents, caldera, glacier, cloudforest) keep their weather law, which now darkens the hour's light (their 89-host-atmos re-reads WXB from the sky each frame through SKY_LOOK and ATMOS.skyBiome weatherOver runs it again after the sky; weatherLook greys the sky in ash, snow, fog and rain), and the tube is a cave (skyBiome cave: the sky only draws, through the skylights and above ground, and the tube keeps its own light; 82 keeps its light table as caveLight). Caldera and tube draw through HEAT, which now takes the sky first (HEAT.before = SKY.renderSky; the tube calls its sky SKYB, since its stage already has a SKY, the skylights). The snowy surfaces (fx snowcover) take no cloud shade. Not drawn: the plume's brown ceiling over the ash desert and the vents, the cloud seas round the caldera and west of the glacier (no landmark layer yet). Draw calls before and after (all passing): ashdesert 145 to 143, vents 202 to 199, caldera 5 to 5, glacier 42 to 39, cloudforest 75 to 73, tube 92 to 89.
+      Draw calls at the default camera (verify.py --assert, GPU): 210 before, 207 after.
+

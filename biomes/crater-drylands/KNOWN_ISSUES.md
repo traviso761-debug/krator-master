@@ -80,3 +80,11 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
 
 2026-10-25: `water` is now in `EXPORT_PROFILE` (phase 4: the seep is a `WATER.still` in `89w-host-water.js`; its own MAT_WATER is gone). The fire (flames, smoke) and its `OWN sin-hash` are untouched.
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Throne's cone far to the SSE and the
+      kopjes (ridges); its plume, the wildfire smoke at az 48 and the Ring Sea's silver line are not drawn (no landmark
+      layer in the sky yet: KNOWN_ISSUES). Draw calls at the default camera (verify.py --assert, GPU): 50 before, 47 after.
+

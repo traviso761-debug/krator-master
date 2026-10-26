@@ -218,12 +218,15 @@
  // noise on the hash, so the profile closes on itself at 360 and is the same in every engine.
  const grad1=(i,c,s)=>{const k=((i%c)+c)%c;return u01(k,7,s)*2-1;};
  const noise1=(x,c,s)=>{const i=Math.floor(x),f=x-i,g0=grad1(i,c,s),g1=grad1(i+1,c,s),u=f*f*f*(f*(f*6-15)+10);return(g0*f+u*(g1*(f-1)-g0*f))*2;};
+ // win: [azimuth, half-width, power], or an array of them (a ridge in two lobes: the larger wins); notch: [azimuth, inner, outer
+ // half-widths, depth] lowers it by depth (0..1) inside inner, easing out by outer (a gap in the ranges: Xanadu's cataract)
  A.ridgeProfile=function(L,n){n=n==null?1024:n;const out=new Float32Array(n),c0=L.cycles==null?12:L.cycles,oct=L.octaves==null?5:L.octaves,sd=L.seed==null?1:L.seed;
   for(let i=0;i<n;i++){const az=360*i/n,x=i/n;let v=0,a=1,c=c0,an=0;
    for(let o=0;o<oct;o++){v+=a*noise1(x*c,c,sd+o);an+=a;a*=.5;c*=2;}v/=an;
    let p=0;if(L.peaks){const r=1-Math.abs(noise1(x*L.peaks,L.peaks,sd+40));p=Math.pow(r,4)*(L.peakAmp==null?1:L.peakAmp);}
-   let w=1;if(L.win){const dz=Math.abs(((az-L.win[0])%360+540)%360-180);w=Math.pow(Math.max(0,Math.cos(Math.min(90,dz*90/L.win[1])*D)),L.win[2]==null?1:L.win[2]);}
-   const e=(L.base==null?1:L.base)+(L.amp==null?1:L.amp)*(.5+.5*v)+p;
+   let w=1;if(L.win){const W=Array.isArray(L.win[0])?L.win:[L.win];w=0;for(const q of W){const dz=Math.abs(((az-q[0])%360+540)%360-180);w=Math.max(w,Math.pow(Math.max(0,Math.cos(Math.min(90,dz*90/q[1])*D)),q[2]==null?1:q[2]));}}
+   let e=(L.base==null?1:L.base)+(L.amp==null?1:L.amp)*(.5+.5*v)+p;
+   if(L.notch){const q=L.notch,dz=Math.abs(((az-q[0])%360+540)%360-180),t=Math.max(0,Math.min(1,(q[2]-dz)/(q[2]-q[1])));e*=1-q[3]*t*t*(3-2*t);}
    out[i]=L.win?(L.floor==null?-1:L.floor)+(e-(L.floor==null?-1:L.floor))*w:e;}
   return out;};
 })();

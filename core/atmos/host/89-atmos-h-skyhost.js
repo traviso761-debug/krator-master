@@ -72,8 +72,10 @@
    r.toneMappingExposure=L.exp;
    if(o.fog!==false&&scene.fog){scene.fog.color.setRGB(...L.fogC).convertSRGBToLinear();if(scene.fog.density!=null)scene.fog.density=L.fogD;}
    if(A.U&&A.U.hour)A.U.hour.value=clock.hour;};
-  S.render=function(){scam.quaternion.copy(cam.quaternion);scam.fov=cam.fov;scam.aspect=cam.aspect;scam.updateProjectionMatrix();
-   const ac=r.autoClear;r.autoClear=true;r.render(sscene,scam);r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
+  // S.renderSky(): the sky pass alone, into whatever target is bound (a page with its own post pass draws the world after it)
+  S.renderSky=function(){scam.quaternion.copy(cam.quaternion);scam.fov=cam.fov;scam.aspect=cam.aspect;scam.updateProjectionMatrix();
+   const ac=r.autoClear;r.autoClear=true;r.render(sscene,scam);r.autoClear=ac;};
+  S.render=function(){S.renderSky();const ac=r.autoClear;r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
   // the reflections: ATMOS.skylight captures the sky scene (about the origin) whenever the hour moves or the key does
   if(o.skylight)S.skylight=A.skylight({renderer:r,sky:sscene,scene,ground:()=>new T.Color(...(S.look?S.look.hemiG:[.2,.2,.2])).convertSRGBToLinear(),
    key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.pressure].join()});
@@ -87,7 +89,10 @@
  // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
  // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing.
- A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity,prev=mat.onBeforeCompile;
+ A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;
+  // a material that wears the snow look (fx snowcover's snowOn) keeps its hook behind a setter that slips a new hook under
+  // the snow and hides the old one: wrapping it would make the two call each other, so it takes no cloud shade
+  {const d=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');if(d&&d.get)return mat;}const por=o.porosity==null?1:o.porosity,prev=mat.onBeforeCompile;
   mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);
    for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'])sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';

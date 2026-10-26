@@ -161,6 +161,12 @@ TX.strap=BIO.alphaTex(256,(g,S)=>{const x0=S/2;
 TX.rush=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
  for(let k=0;k<26;k++){const x0=S/2+rr(-40,40),H=S*rr(.55,.96),ph=rr(0,TAU),f=rr(.07,.11),lum=lerp(110,230,rng());g.strokeStyle=G2(lum);g.lineWidth=rr(1.8,2.8);g.beginPath();
   for(let y=0;y<=H;y+=2){const t=y/H,A=2+t*t*16;g.lineTo(x0+A*Math.sin(y*f+ph)+(t-.5)*rr(-6,6),S-y);}g.stroke();}},[130,130,130]);
+/* a BUNCHGRASS fountain (a vertical tuft card, 2026-10-26): fine wiry blades fanning up and out from a tight base, the
+   paramo's ichu between the swirl tussocks; the library's card.ichu replaces it. Its own KRAND stream, so the kit's
+   stream (and every texture painted after it) is unchanged */
+TX.bunch=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const s=KRAND.stream(510091),sr=(a,b)=>a+(b-a)*s.next();
+ for(let k=0;k<60;k++){const ang=sr(-1.05,1.05)*Math.pow(s.next(),.6),H=S*sr(.5,.95)*(1-.25*Math.abs(ang)),x0=S/2+sr(-10,10),lum=lerp(120,240,s.next());g.strokeStyle=G2(lum);g.lineWidth=sr(1.2,2.2);g.beginPath();g.moveTo(x0,S);
+  g.quadraticCurveTo(x0+Math.sin(ang)*H*.45,S-H*.6,x0+Math.sin(ang)*H*.9,S-H*Math.cos(ang)*.95);g.stroke();}},[150,150,150]);
 /* a SPIRAL-EYE DAISY seen from above: a ring of petals round a disc of florets set by Vogel's spiral (the golden
    angle), alternately light and dark so the crossing parastichies show */
 TX.disc=BIO.alphaTex(256,(g,S)=>{const cx=S/2,cy=S/2;
@@ -366,6 +372,16 @@ G.swirl=function(nb){const M=Mesh();
   for(let i=0;i<3;i++){const p=P[i],q=P[i+1],w0=.035*(1-i/3),w1=.035*(1-(i+1)/3),c0=[mix(.5,.85,i/3),mix(.62,.72,i/3),mix(.28,.38,i/3)],c1=[mix(.5,.85,(i+1)/3),mix(.62,.72,(i+1)/3),mix(.28,.38,(i+1)/3)];
    if(i<2)M.quad([p[0]-Math.sin(p[3])*w0,p[1],p[2]+Math.cos(p[3])*w0],[q[0]-Math.sin(q[3])*w1,q[1],q[2]+Math.cos(q[3])*w1],[q[0]+Math.sin(q[3])*w1,q[1],q[2]-Math.cos(q[3])*w1],[p[0]+Math.sin(p[3])*w0,p[1],p[2]-Math.cos(p[3])*w0],c0,c1,c1,c0);
    else M.tri([p[0]-Math.sin(p[3])*w0,p[1],p[2]+Math.cos(p[3])*w0],[q[0],q[1],q[2]],[p[0]+Math.sin(p[3])*w0,p[1],p[2]-Math.cos(p[3])*w0],c0,c1,c0);}}
+ /* the BODY (2026-10-26): a paramo tussock is a hummock of its own dead leaves, so the live blades leave a low dome of
+    thatch (dark at the foot, straw at the crown) and a skirt of dead blades hangs from its rim to the ground, leaning
+    the same way round as the live ones. 21 + 27 triangles near, 15 + 15 at mid distance */
+ const nd=nb>=11?7:5,ns=nb>=11?9:5,cF=[.3,.26,.18],cM=[.46,.41,.28],cC=[.58,.53,.36],top=[0,.32,0];
+ const ring=(r,y,k)=>{const a=k/nd*TAU+.2;return[Math.cos(a)*r,y,Math.sin(a)*r];};
+ for(let k=0;k<nd;k++){const a0=ring(.52,-.04,k),a1=ring(.52,-.04,k+1),b0=ring(.4,.2,k),b1=ring(.4,.2,k+1);
+  M.quad(a0,a1,b1,b0,cF,cF,cM,cM);M.tri(b0,b1,top,cM,cM,cC);}
+ for(let k=0;k<ns;k++){const a=k/ns*TAU+.5,P=[[.2,.3,0],[.48,.24,.35],[.72,.02,.7]].map(q=>[Math.cos(a+q[2])*q[0],q[1],Math.sin(a+q[2])*q[0],a+q[2]]),w=.05;
+  const cs=[[.62,.57,.44],[.74,.68,.54],[.66,.6,.47]],Ls=(p,s)=>[p[0]-Math.sin(p[3])*w*s,p[1],p[2]+Math.cos(p[3])*w*s],Rs=(p,s)=>[p[0]+Math.sin(p[3])*w*s,p[1],p[2]-Math.cos(p[3])*w*s];
+  M.quad(Ls(P[0],1),Ls(P[1],.8),Rs(P[1],.8),Rs(P[0],1),cs[0],cs[1],cs[1],cs[0]);M.tri(Ls(P[1],.8),P[2].slice(0,3),Rs(P[1],.8),cs[1],cs[2],cs[1]);}
  return M.out(true);};
 // CORKSCREW BELLS: a thread wound in a helix hanging from y=0 to y=-1, beaded with seven cream bells (refs/06, 15)
 G.bells=function(){const M=Mesh(),P=[];
@@ -391,6 +407,7 @@ SHIGH.MAT={
  fern:BIO.leafMat(TX.fern,'fern',{swayW:'(position.x)',swayA:.05,alphaTest:.38}),
  strap:BIO.leafMat(TX.strap,'strap',{swayW:'(position.x)',swayA:.06,alphaTest:.4}),
  rush:BIO.leafMat(TX.rush,'rush',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
+ bunch:BIO.leafMat(TX.bunch,'bunch',{swayW:'(position.y)',swayA:.08,alphaTest:.4}),
  disc:BIO.leafMat(TX.disc,'disc',{swayW:'1.0',swayA:.03,alphaTest:.4}),
  shell:BIO.leafMat(TX.shell,'shell',{swayW:'(position.y)',swayA:.03,alphaTest:.45}),
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
@@ -451,6 +468,7 @@ BIO.def('mossmat',BIO.geo.mat(),M.mossmat,{label:'Star moss and sphagnum'});
 BIO.def('fern',G.strip(4,.18,.32),M.fern,{label:'Fern fronds'});
 BIO.def('strap',G.strip(5,.1,.55),M.strap,{label:'Screw-palm straps'});
 BIO.def('rush',G.tuft(),M.rush,{label:'Corkscrew rush'});
+BIO.def('bunch',G.tuft(),M.bunch,{label:'Paramo bunchgrass'});
 BIO.def('daisy',G.disc(),M.disc,{label:'Spiral-eye daisies'});
 BIO.def('begonia',G.leafFan(),M.shell,{label:'Escargot begonias'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Rosette lichen'});

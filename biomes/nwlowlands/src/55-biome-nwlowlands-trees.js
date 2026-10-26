@@ -420,4 +420,12 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  return{trees:TREES.length,avenue:st.avenue||0,heroes:st.heroes,far:st.fars,culms:st.culms,lanterns:st.lanterns,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
   trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,tris:{trunk:st.trunk,limbs:st.limb,far:st.far,lite:st.lite}};};
 NWLOW._canopyH=function(x,z){let h=0;for(const T of NWLOW.TREES){if(Math.hypot(x-T.x,z-T.z)<Math.max(30,T.crownR))h=Math.max(h,T.y0+T.H);}return h||12;};
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// NWLOW.make(sp, x, y, z) -> T (the pass's own record); NWLOW.grow(T, lv) -> stats: lv 2 near, 1 mid (its habit's builder),
+// 0 its far impostor (the small species' blob for the palms, ferns, pandan, grass tree and banksia). A world that plants this
+// kit's species in place calls them (biomes/ringisles: the she-oak on the strand); the kit's own pass does not (2026-10-26)
+NWLOW.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+NWLOW.grow=function(T,lv){const m=means();if(!m.culm)m.culm=texMean(NWLOW.CULMTEX);
+ const st={trunk:0,limb:0,far:0,lite:0,limbs:0,clumps:0,blooms:0,moss:0,fronds:0,veils:0,lanterns:0,epi:0,culms:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){if({1:1,2:1,3:1,17:1,18:1}[T.sp])buildFarSmall(T,st,false);else buildFar(T,T.seed%7,st,false);}else B[SP[T.sp].habit](T,st,lv);return st;};
 })();

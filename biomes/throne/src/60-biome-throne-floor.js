@@ -93,6 +93,7 @@ function angel(x,y,z,lv,st){const Rs=rr(.8,1.6),L=LC('angel');card('small',x,y+R
 function spiderlily(x,y,z,lv,st){const L=LC('spiderlily');if(!L.length)return;around(x,z,lv===2?ri(2,5):1,.2,.8,(px,pz)=>{const h=rr(.3,.6),py=Y(px,pz);
   if(lv===2)BIO.beam('rod',[px,py-.05,pz],[px,py+h,pz],.02,.02,leafCol([0x3a6a2a,0x4a7a32],1.0));BIO.put(pick(L),[px,py+h,pz],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.25,.4),null);});st.lilies++;}
 THRONE.small={tuft,card,grass,bunch,fern,creeper,soot,matPatch,glassfern,bromeliad,moss,angel,spiderlily};
+BIO.kitWrap('throne',THRONE.small);   /* 2026-10-26: a world calling these runs in the Throne's registry (BIO.kitEnd wraps only the export's own functions); the kit's own passes call the locals */
 
 // ---------------------------------------------------------------- the zone planters
 // the WINDWARD's mixes (wet ground: the kipuka station). Fresh lava: glassferns and lichen; young: glassferns, ferns,

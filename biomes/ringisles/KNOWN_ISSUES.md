@@ -68,3 +68,13 @@ The prompts for the stand-ins above are in `core/materials/PROMPTS-NEEDED.md` (s
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js). Add each back when the kit fills it.
 
 2026-10-20: `atmos` is back in the profile: the build lists `89-atmos-8-export.js` (the one shared fragment sedesert took), so the section fills (clock, wind, presets, skylight).
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Throne, moved to where it stands from the
+      isles (due west, about 160 km); the canopy lines the dome inherited from the geyser kit's coast are dropped (sea on
+      every side). Day and night are hours now (13:00 and 22:00). Draw calls at the default camera (verify.py --assert,
+      GPU): 764 before, 762 after.
+

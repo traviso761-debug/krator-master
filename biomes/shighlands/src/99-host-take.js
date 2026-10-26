@@ -130,10 +130,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARNL-5,z:TARN.z}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'shighlands',title:'Krator biome — the southern highlands',
  hint:"The southern highlands: the spiral biome. A cloud forest on the Inner Wall's scarp where the cloud sea laps against it, and above the cloud a paramo of giant rosettes; every plant grows in a spiral, and every spiral turns the same way (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

@@ -183,15 +183,16 @@ const SD_WORLD={
  set(h,path,value){h[path]=value;},
  remove(h){const i=SD_STROKES.indexOf(h);if(i>=0){SD_STROKES.splice(i,1);KTAGS.page.remove(h.id);sdReplay();return;}
   const L=SD_LIVE[h.id];if(L){scene.remove(L.g);delete SD_LIVE[h.id];}KTAGS.page.remove(h.id);}};
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  hint:"The eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the eye kept over the ground, and out of the carved cap's rock (on top of it)
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
   if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing]}},
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  palette:{items:SD_FAUNA,build:key=>KratorFauna.build(key,{variant:0,seed:1})},
  edits:{world:SD_WORLD,log:typeof KHOST_EDITS!=='undefined'?KHOST_EDITS:null,brushes:{modes:['raise','lower','flatten','smooth'],r:[3,120,18]},

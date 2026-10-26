@@ -49,8 +49,10 @@ const HEAT=(function(){const scene2=new THREE.Scene(),U={uScreen:{value:null},uD
   // the station says when its heat is in reach of the camera
   near:()=>true,
   // the frame: straight to the screen, or (heat in reach) through the target, the screen quad and the sheets
-  render(scene,camera,dt){U.uT.value+=dt||.016;if(!on||!H_.near(camera.position)){renderer.render(scene,camera);H_.active=false;return;}
-   ensure();renderer.setRenderTarget(rt);renderer.render(scene,camera);renderer.setRenderTarget(null);
+  // H_.before(): drawn first into the same target, the world over it (the shared sky's pass: ATMOS.skyBiome's renderSky)
+  render(scene,camera,dt){U.uT.value+=dt||.016;const world=()=>{if(!H_.before){renderer.render(scene,camera);return;}H_.before();const a=renderer.autoClear;renderer.autoClear=false;renderer.clearDepth();renderer.render(scene,camera);renderer.autoClear=a;};
+   if(!on||!H_.near(camera.position)){world();H_.active=false;return;}
+   ensure();renderer.setRenderTarget(rt);world();renderer.setRenderTarget(null);
    const ac=renderer.autoClear;renderer.render(qs,qc);renderer.autoClear=false;renderer.render(scene2,camera);renderer.autoClear=ac;H_.active=true;},
   active:false,scene:scene2,U};
  return H_;})();
