@@ -187,6 +187,13 @@ area you are about to change.
   round cones) meshed by surface nets in numpy (a vertex per crossed cell, a quad per crossed edge, wound afterwards by
   the field's gradient, vertices projected onto the surface along it) gives a clean organic mesh in seconds
   (`tools/heads.py`). Thin parts (an ear's tip) need to be thicker than two grid cells or they break into fragments.
+- **The procedural head's eyes looked uncanny** → bare spheres with a dot pupil staring straight ahead. Carve lids (an
+  almond opening in the head, the eyeball recessed behind it), draw the iris in rings round the gaze with a dark limbal
+  ring and a dark sclera, and turn each eye a little out. Check against the owner's photographs, not memory.
+- **Its crown fur stood up like a hedgehog** → fur combed straight down stands up where the surface faces up; on a head
+  comb it back along the head (nose to nape), and keep the fur sleek on the face, long only in the ruff.
+- **A small feature (a nose's nostrils) is finer than the mesh's grid** → give it its own primitive on a finer grid,
+  and keep the main field's blob under it smaller, or the smooth union bulges over it and hides it.
 - **A piece's morphs without the export** → give each vertex `_VIDX` of the base vertex it should follow and ship the
   base skin's own morph entry under the piece's material names: the page's morph code matches by material and `_VIDX`.
 - **The Godot test hung after a small edit** → a `:=` on a value from an untyped node (`mi.mesh.surface_get_format(s)`)

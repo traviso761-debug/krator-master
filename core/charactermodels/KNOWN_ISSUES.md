@@ -150,8 +150,10 @@
   Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
   face has a human face's shape, the eyes and mouth bare by ellipses (until the coyote head, below).
 - **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head: no jaw that opens, no
-  ears that move, no expression; the eyes are spheres in sockets; its fur comes from a UV wrapped round the muzzle, so the
-  strands run unevenly at the back of the skull and the nose's end. It takes the skull's morphs by nearest vertex, so a
+  ears that move, no expression; the eyes do not turn; the lids' almond and the nose's nostrils are carved, not modelled
+  (no lid thickness, no wet line); the colours are vertex colours on a 4 mm mesh, so the pattern's edges are soft and
+  the ears' pale hollows show the mesh's steps close up; the fur's box projection meets itself at 45-degree seams. The
+  owner's photographs (2026-10-26) set the look; a second round against them is owed. It takes the skull's morphs by nearest vertex, so a
   child's or an old body's head is the man's head moved, a little large on the short ones. Headgear made for a human
   head floats on it (no people draws one on it yet). In this checkout it was made by `tools/heads.py` from the published
   base: the Godot twin has no shapes for it and its skin regions do not yet hide the human head under it, until

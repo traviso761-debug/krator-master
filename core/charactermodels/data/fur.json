@@ -11,8 +11,7 @@
  },
  "items": {
   "beast_m_trade_trousers": {"pile": 0.6},
-  "beast_f_trade_trousers": {"pile": 0.6},
-  "mod_head_coyote": {"pile": 0.5}
+  "beast_f_trade_trousers": {"pile": 0.6}
  },
  "coats": {
   "pelt": {"name": "Shaggy pelt", "kind": "pelt", "cover": {"*": 1, "Hand": 0.7, "fingers": 0.25, "Foot": 0.8, "ToeBase": 0.4}, "bare": ["face", "palms", "soles"], "hide_parts": ["Human.nipple"]},

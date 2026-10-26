@@ -259,12 +259,18 @@ skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width,
 per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
 **Therian heads** (2026-10-26; `tools/heads.py`): a body mod (slot `mods`, group `head`) that replaces the MakeHuman head
 with an animal's, so far the **coyote head** the Coyote Men's strangers wear (`data/peoples.json` mods). It is made without
-Blender from the body's own base: a signed distance field (cranium, muzzle, jaw, cheeks, nose pad, ears, a plug into the
-neck, the eye sockets cut out) placed from the base's head at rest, meshed by surface nets on a 4 mm grid; vertex colours
-for the coat's pattern (a darker saddle, pale cheeks and throat, a dark nose, lip line and eye rims) that the kit's `coat`
-tint (the hair colour over the head's base shade) multiplies; a UV round the muzzle's axis; its fur cover and metres per
-UV in the second UV, which the figure's fur shells read (`furShells` `uv2`, Godot `_fur` mode 2; the nose, lips and eye
-rims bare); amber eyes of its own. Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
+Blender from the body's own base: a signed distance field (cranium, a nape into the neck, muzzle, jaw, cheeks, ears
+cupped forward and out, a plug into the neck, almond lid openings) placed from the base's head at rest, meshed by surface
+nets on a 4 mm grid, stray specks dropped. Its look follows the owner's coyote photographs (2026-10-26): vertex colours
+that the kit's `coat` tint (the hair colour over the head's base shade) multiplies, with cream lips, chin, throat and
+cheeks, a reddish muzzle top and ear backs, a grizzled buff-grey crown with a darker streak, dark-rimmed and dark-tipped
+ears with white fluff at the base of the hollow, dark lids and a tear line; its fur's density and length in the second
+UV (sleek on the muzzle and face, a ruff on the cheeks and neck), its strands' UV a box projection in metres (wrapped
+round the muzzle, the UV had a pole at the back of the skull and the fur fanned from a whorl), combed back along the head
+(`furShells` `uv2` and `COMB_BACK`, Godot `_fur` mode 2 and `kfDir`). The eyes are their own primitive, behind the lids,
+turned a little out, the iris drawn in rings round the gaze (a round pupil, gold to amber, a dark limbal ring, a dark
+sclera); the nose pad is its own primitive on a 1.2 mm grid (a flat front, comma nostrils, the philtrum), glossy and
+untinted. Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
 the face sliders leave the muzzle alone), weighted to the Head and into the Neck at the cut. The item hides the head's
 skin, the brows, lashes, eyes, lips and ears (`hide_parts`, which `KCHAR.hiddenParts` now takes from mods too), the hair
 and beard (`covers_hair` on a mod), and is `furred`, so a coat runs on up the neck under it. `make_mpfb.py` makes it with

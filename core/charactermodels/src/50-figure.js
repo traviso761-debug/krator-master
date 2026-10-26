@@ -121,6 +121,9 @@ function KCharFigure(body, sliders, load){
      so a tube's seam meets itself), each jittered in its cell, of its own length (clump), tapering to its tip. The
      roots are shaded (shade), the tips lit (tip) and each strand a little lighter or darker (vary); the colour is the
      garment's own (its texture, its dye). Godot: kchar_fur.gdshader, kchar_figure.gd _fur */
+  // the way the tips lean: down (garments, coats); back along a head (a therian's: its fur lies from the nose to the
+  // nape; combed down it stood up on the crown)
+  var COMB_DOWN = new THREE.Vector3(0, -1, 0), COMB_BACK = new THREE.Vector3(0, -0.45, -0.9).normalize();
   var FUR_GLSL = 'vec3 kfHash(vec3 p){ p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yxz + 33.33); return fract((p.xxy + p.yxx) * p.zyx); }\n';
   function furShells(m, it){
     var F = KCharFigure.fur, rows = it && it.fur;
@@ -158,7 +161,8 @@ function KCharFigure(body, sliders, load){
         mat.onBeforeCompile = furShader(own ? m.material.onBeforeCompile : null, {
           kfH:{ value:pile * tk }, kfC:{ value:(K.comb || 0) * pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:R },
           kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
-          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band, kfU0:{ value:k === 1 && K.undercoat ? 1 : 0 } }, piece);
+          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band, kfU0:{ value:k === 1 && K.undercoat ? 1 : 0 },
+          kfDir:{ value:piece ? COMB_BACK : COMB_DOWN } }, piece);
         mat.customProgramCacheKey = own ? function(){ return 'kchar-fur-' + key0 + (piece || ''); } : function(){ return 'kchar-fur' + (piece || ''); };
         var s = new THREE.SkinnedMesh(geo, mat);
         s.name = m.name + '|fur:' + kind + ':' + k; s.frustumCulled = false; s.castShadow = false;
@@ -170,7 +174,8 @@ function KCharFigure(body, sliders, load){
   }
   // body: 'coat', a coat's shells (coatShells): each vertex's cover (furK, under 1 thins the strands) and the metres one
   // unit of its UV spans (furM) are attributes, and the strands run on the body's UV map scaled by them, rather than in
-  // rows; 'uv2', a piece's own (a therian's head): the same two read from its second UV
+  // rows; 'uv2', a piece's own (a therian's head): its second UV the fur's density and its length (of the pile), its
+  // strands' UV in metres (tools/heads.py)
   function furShader(prev, U, body){
     return function(sh, r){
       if(prev) prev(sh, r);              // the push (pushOut) first: the fur stands on the cloth where it is pushed to
@@ -178,11 +183,11 @@ function KCharFigure(body, sliders, load){
       // (kfF: a legs item's fur fades out below the top of the boots over it and above the hem of the top over it, kfK:
       // tucked in, it came out through the boots' shafts, and through a deel's skirt in a stride. position is the rest,
       // after the morphs, as the boots' top and the hem are)
-      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nvarying float kfK;\n' +
+      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nuniform vec3 kfDir;\nvarying float kfK;\n' +
         (body === 'uv2' ? 'attribute vec2 uv2;\nvarying float kfM;\n' : body ? 'attribute float furK;\nattribute float furM;\nvarying float kfM;\n' : '') + sh.vertexShader.replace('#include <project_vertex>',
-        'vec3 kfN = normalize(objectNormal), kfD = vec3(0.0, -1.0, 0.0);\n\tkfD -= kfN * dot(kfD, kfN);\n' +
-        (body === 'uv2' ? '\tkfK = uv2.x; kfM = uv2.y;\n' : body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
-        '\ttransformed += (kfN * kfH + kfD * kfC) * kfK;\n#include <project_vertex>');
+        'vec3 kfN = normalize(objectNormal), kfD = kfDir;\n\tkfD -= kfN * dot(kfD, kfN);\n\tfloat kfLn = 1.0;\n' +
+        (body === 'uv2' ? '\tkfK = uv2.x; kfLn = uv2.y; kfM = 1.0;\n' : body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
+        '\ttransformed += (kfN * kfH + kfD * kfC) * (' + (body === 'uv2' ? 'kfLn' : 'kfK') + ');\n#include <project_vertex>');
       sh.fragmentShader = 'varying float kfK;\nuniform float kfT;\nuniform vec4 kfR[4];\nuniform float kfS;\nuniform float kfW;\nuniform float kfL;\nuniform float kfSh;\nuniform float kfTp;\nuniform float kfV;\n' +
         (body ? 'varying float kfM;\nuniform float kfU0;\n' : '') + FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
         (body ? 'if(kfK < 0.05) discard;\n\tfloat kfU = 1e6;\n\tvec4 kfR0 = vec4(0.0);\n\tvec2 kfG = vUv * kfM / kfS' :
@@ -289,7 +294,8 @@ function KCharFigure(body, sliders, load){
       mat.onBeforeCompile = furShader(null, {
         kfH:{ value:K.pile * tk }, kfC:{ value:(K.comb || 0) * K.pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
         kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
-        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 } }, 'coat');
+        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 },
+        kfDir:{ value:COMB_DOWN } }, 'coat');
       mat.customProgramCacheKey = function(){ return 'kchar-coat'; };
       var s = new THREE.SkinnedMesh(geo, mat);
       s.name = m.name + '|coat:' + id + ':' + L; s.frustumCulled = false; s.castShadow = false;

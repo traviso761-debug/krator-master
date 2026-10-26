@@ -29,6 +29,7 @@ uniform float kfSh = 1.0;
 uniform float kfTp = 1.0;
 uniform float kfV = 0.0;
 uniform vec2 kfF = vec2(-1000.0, 1000.0);
+uniform vec3 kfDir = vec3(0.0, -1.0, 0.0);     // the way the tips lean (back along a therian's head)
 uniform int mode = 0;          // 0 a garment's rows, 1 a coat (fur_tex), 2 a piece's own UV2 (a therian's head)
 uniform bool use_color = false;
 uniform sampler2D fur_tex : filter_nearest;
@@ -46,20 +47,22 @@ vec3 kf_hash(vec3 p) {
 void vertex() {
 	kc_push(VERTEX, NORMAL);
 	vec3 n = normalize(NORMAL);
-	vec3 d = vec3(0.0, -1.0, 0.0);
+	vec3 d = kfDir;
+	float ln = 1.0;
 	d -= n * dot(d, n);
 	if (mode == 1) {
 		vec2 km = texelFetch(fur_tex, ivec2(VERTEX_ID % fur_w, VERTEX_ID / fur_w), 0).rg;
 		kfK = km.r;
 		kfM = km.g;
 	} else if (mode == 2) {
-		kfK = UV2.x;
-		kfM = UV2.y;
+		kfK = UV2.x;                 // a piece's fur density, its length, its strands' UV in metres
+		ln = UV2.y;
+		kfM = 1.0;
 	} else {
 		kfK = smoothstep(kfF.x, kfF.x + 0.03, CUSTOM1.x) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, CUSTOM1.x));
 		kfM = 0.0;
 	}
-	VERTEX += (n * kfH + d * kfC) * kfK;
+	VERTEX += (n * kfH + d * kfC) * (mode == 2 ? ln : kfK);
 }
 
 void fragment() {

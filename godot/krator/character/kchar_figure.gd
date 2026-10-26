@@ -2001,6 +2001,7 @@ func _fur(m: Material, it: Dictionary, band: Vector2, uv2 := false, colored := f
 			fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
 			fm.set_shader_parameter("kfF", band)
 			fm.set_shader_parameter("mode", 2 if uv2 else 0)
+			fm.set_shader_parameter("kfDir", Vector3(0.0, -0.45, -0.9).normalized() if uv2 else Vector3(0.0, -1.0, 0.0))   # back along a head (furShells COMB_BACK)
 			fm.set_shader_parameter("use_color", colored)
 			fm.set_shader_parameter("kfU0", 1.0 if uv2 and k == 1 and K.get("undercoat", false) else 0.0)
 			last.next_pass = fm
