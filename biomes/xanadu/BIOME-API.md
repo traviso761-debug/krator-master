@@ -107,7 +107,7 @@ part of a building: `dress()` places plants ON geometry the host hands it.
 46-host-ground.js (ideal type) the painted ground with the cliffs' strata, the lake, the river ribbon
 82-host-sky.js    (ideal type) the ranges round the Vale, the cataract's spray, the gas giant
 85-host-dome.js   (ideal type) the pleasure dome, a ruin to dress
-86-host-fountain.js (ideal type) the fountain at the chasm
+89x-host-fountain.js (ideal type) the fountain at the chasm
 88/90/91          build order, camera + inspector, probe
 ```
 
