@@ -141,6 +141,32 @@
     "sourceMean": 0.4128
    }
   },
+  "card.reedbrim": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card.reedbrim.albedo.webp"
+   },
+   "lib": "card.reed.brimstone",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d381547a48b543528e00553a4bba0bbd7b08f99c"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4996845979849162,
+    "sourceMean": 0.4997
+   }
+  },
   "column": {
    "breakup": null,
    "card": false,

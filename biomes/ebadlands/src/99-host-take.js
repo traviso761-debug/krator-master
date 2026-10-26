@@ -114,7 +114,7 @@ const HCHK={
   for(const sp of sps)for(const lv of [2,1,0])for(let v=0;v<V.K;v++)if(!P.has(sp+'|n|'+v+'|'+lv)&&!P.has(sp+'|s|'+v+'|'+lv))miss.push(EBADLANDS.SPECIES[sp].key+' v'+v+' lv'+lv);
   return{ok:!miss.length&&V.stats.drawn>0&&P.size<=EBADLANDS.SPECIES.length*2*3*V.K,detail:(miss.length?'missing: '+miss.slice(0,6).join(', ')+'; ':'')+P.size+' prototypes for '+T.length+' trees; '+V.stats.drawn+' drawn here (hero '+V.stats.levels[2]+', mid '+V.stats.levels[1]+', far '+V.stats.levels[0]+'), '+V.stats.tris+' triangles, grown in '+V.stats.growMs+' ms'};},
  // the Throne's brimstone reeds (the owner, 2026-10-06): grown, and only in a band at the sulphur pools' shores, not across the flats
- reeds(P){const T=P.filter(p=>p[3]==='biome:tassel'),off=T.filter(p=>poolD(p[0],p[2])[0]>1.8||waterH(p[0],p[2])-terrainH(p[0],p[2])>.8);   /* out past a pool's bank, or standing in deep water */
+ reeds(P){const T=P.filter(p=>p[3]==='biome:tassel'||/^biome:reedbrim/.test(p[3])),off=T.filter(p=>poolD(p[0],p[2])[0]>1.8||waterH(p[0],p[2])-terrainH(p[0],p[2])>.8);   /* out past a pool's bank, or standing in deep water */
   return{ok:T.length>=300&&!off.length,detail:off.length?off.length+' of '+T.length+' reed tassels off a pool shore (past the bank or in deep water; first at '+off[0].slice(0,3).map(v=>v|0)+')':T.length+' brimstone-reed stems, all at a sulphur pool shore'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();

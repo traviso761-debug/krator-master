@@ -239,7 +239,10 @@ EBADLANDS.buildFloor=function(R,q){
 // pads and gas bladders stay out (the owner asked for the reeds). Its own seed, after the floor, so no other plant moves.
 EBADLANDS.buildSulphur=function(R,q){reseed(640047);q=q==null?1:q;R=R||3000;const st={reeds:0,stems:0},L=BIO.LOD();
  const SF=(x,z)=>BIO.field('sulph',x,z)*(1-smooth(.6,.85,BIO.field('slope',x,z)));
+ const RB=EBADLANDS.LIB.reedbrim||[];
  const reeds=(x,y,z,lv)=>{const w=Math.max(y,BIO.waterH(x,z));
+  /* with the owner's sheet: a stand of the cards rising from the ground under the water (the Throne's branch) */
+  if(RB.length){for(let k=0,n=lv===2?ri(2,4):ri(1,2);k<n;k++){const a=rr(0,TAU),d=k?rr(.5,1.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(BIO.depth(px,pz)>.5||BIO.depth(px,pz)<-.8)continue;const h=rr(1.8,3.4);BIO.put(pick(RB),[px,Y(px,pz)-.1,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.8,h,h*.8],null);st.stems++;}st.reeds++;return;}
   for(let k=0,n=lv===2?ri(6,11):ri(2,4);k<n;k++){const a=rr(0,TAU),d=k?rr(.2,1.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=Y(px,pz),h=rr(1.4,3.4),la=rr(0,TAU),ln=rr(.02,.12)*h,
     tx=px+Math.cos(la)*ln,tz=pz+Math.sin(la)*ln,mx=mix(px,tx,.45),mz=mix(pz,tz,.45),my=mix(Math.max(py,w-.05),py+h,.45),r=rr(.035,.06);
    if(BIO.depth(px,pz)>.6||BIO.depth(px,pz)<-.8)continue;

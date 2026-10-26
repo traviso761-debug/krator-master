@@ -80,9 +80,12 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   `geo`). The Throne's acid pads, gas bladders and brimstone candelabra (`sp 23`) stay out, as the owner asked for the reeds.
   New view `Brimstone reeds at a sulphur pool`; check `brimstone reeds at the sulphur pools only` (and its negative). Cost:
   4639 stems, 13917 instances, 185,560 triangles; +1 draw call (366 -> 367 at the default camera; Sulphur flats 187 -> 188).
-- [ ] **The brimstone reeds are procedural rods.** The Throne draws them from the owner's `card.reedbrim` sheet when its pack
+- [x] **The brimstone reeds are procedural rods.** The Throne draws them from the owner's `card.reedbrim` sheet when its pack
   carries it (`THRONE.buildSulphur`, `RB`). Adding that slot to `materials.json` (and the Throne's cell cutter) would give
   the pools the same card stands; left for a pass that owns `materials.json`.
+  2026-10-26: done. `materials.json` slot `card.reedbrim` (`card.reed.brimstone`, full colour); `50` cuts its nine cells and
+  defines `reedbrim0`-`8` on `G.tuft` with the Throne's sway; `60`'s reeds draw a stand of the cards (2-4 near, 1-2 mid) when
+  the pack has them, the rods and tassels otherwise; the check counts either. 1,652 stands, all at a pool shore.
 
 
 ## Export profile: sections left out (2026-10-18)

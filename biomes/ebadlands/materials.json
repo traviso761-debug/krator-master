@@ -432,6 +432,19 @@
    },
    "mapOnly": true,
    "roughLift": 0.3
+  },
+  "card.reedbrim": {
+   "lib": "card.reed.brimstone",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
   }
  }
 }

@@ -535,6 +535,11 @@ BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub and cushion lobes'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones'});
 BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
 BIO.def('tassel',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Brimstone-reed tassels'});
+/* the brimstone reeds from the owner's sheet (card.reed.brimstone, 3 x 3, full colour), cut and drawn as the Throne draws them
+   (biomes/throne src/50 sheet('card.reedbrim'), a three-quad tuft swaying by height); without the pack the stems and tassels stand in */
+EBADLANDS.LIB.reedbrim=[];
+if(LIBP('card.reedbrim'))for(let j=0;j<3;j++)for(let i=0;i<3;i++){const t=libCell('card.reedbrim',[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005],256,256);if(!t)continue;
+ const k='reedbrim'+(j*3+i);M[k]=BIO.leafMat(t,k,{swayW:'(position.y)',swayA:.05,alphaTest:.42});BIO.def(k,G.tuft(),M[k],{label:'Brimstone reeds'});EBADLANDS.LIB.reedbrim.push(k);}
 BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
