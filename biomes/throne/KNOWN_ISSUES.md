@@ -194,9 +194,6 @@
       layer yet). Day and night are hours (13:00, 22:00): the old sun is out of reach at 40 S (SKY-PLAN 8). Stations on the
       shared sky: 1, kipuka, savanna, frontier and isle (each its own stations/<name>/89-host-sky.js; their 82 keeps only
       the light-mode names). Draw calls before and after (verify.py --assert, GPU, all passing): station 1 210 to 207,
-      kipuka 112 to 111, savanna 73 to 71, frontier 102 to 101, isle 130 to 127. NOT moved yet: ashdesert, vents, caldera,
-      glacier and cloudforest (their ATMOS.weather writes the fog, sun and hemisphere every frame from per-mode base values,
-      which would fight the sky: the weather has to feed skyLook first) and tube (a cave: the sun must stay off underground,
-      which the sky host does not allow yet). They keep their painted domes; build.py gives them none of the shared sky.
+      kipuka 112 to 111, savanna 73 to 71, frontier 102 to 101, isle 130 to 127. The six that waited moved on 2026-10-26 too: the weather stations (ashdesert, vents, caldera, glacier, cloudforest) keep their weather law, which now darkens the hour's light (their 89-host-atmos re-reads WXB from the sky each frame through SKY_LOOK and ATMOS.skyBiome weatherOver runs it again after the sky; weatherLook greys the sky in ash, snow, fog and rain), and the tube is a cave (skyBiome cave: the sky only draws, through the skylights and above ground, and the tube keeps its own light; 82 keeps its light table as caveLight). Caldera and tube draw through HEAT, which now takes the sky first (HEAT.before = SKY.renderSky; the tube calls its sky SKYB, since its stage already has a SKY, the skylights). The snowy surfaces (fx snowcover) take no cloud shade. Not drawn: the plume's brown ceiling over the ash desert and the vents, the cloud seas round the caldera and west of the glacier (no landmark layer yet). Draw calls before and after (all passing): ashdesert 145 to 143, vents 202 to 199, caldera 5 to 5, glacier 42 to 39, cloudforest 75 to 73, tube 92 to 89.
       Draw calls at the default camera (verify.py --assert, GPU): 210 before, 207 after.
 

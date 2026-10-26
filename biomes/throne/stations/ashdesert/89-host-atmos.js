@@ -9,9 +9,9 @@ ATMOS.init({THREE:THREE,scene:scene,camera:camera,
  onFrame:fn=>TICKS.push(dt=>fn(dt)),
  ground:(x,z)=>terrainH(x,z),seed:90071,err:m=>console.warn(m),
  viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
-// the light mode's own values, which the weather darkens from (re-read whenever the mode changes)
+// the sky's values at this hour, which the weather darkens from
 const WXB={sunI:sun.intensity,hemiI:hemi.intensity,fog:scene.fog.color.clone(),dens:scene.fog.density};
-_onLight.push(()=>{WXB.sunI=sun.intensity;WXB.hemiI=hemi.intensity;WXB.fog.copy(scene.fog.color);});
+SKY_LOOK.push(()=>{WXB.sunI=sun.intensity;WXB.hemiI=hemi.intensity;WXB.fog.copy(scene.fog.color);});   /* from the shared sky each frame, before the weather runs again over it (82, 89-host-sky.js) */
 const ASH_FOG=new THREE.Color(0x6b5d49),ASH_FOG_NIGHT=new THREE.Color(0x1e1a16),FLASH=new THREE.Color(0xffd8b8),_wf=new THREE.Color();
 const SKYVEIL=new THREE.Mesh(new THREE.SphereGeometry(8800,32,16),new THREE.MeshBasicMaterial({color:ASH_FOG.clone(),transparent:true,opacity:0,side:THREE.BackSide,fog:true,depthWrite:false}));   // fogged: at its distance it is exactly the fog's colour (three mixes fog after tone mapping)
 SKYVEIL.userData.probeSkip=true;SKYVEIL.renderOrder=-9;scene.add(SKYVEIL);TICKS.push(()=>SKYVEIL.position.copy(camera.position));

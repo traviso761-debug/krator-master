@@ -116,11 +116,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'throne-glacier',title:'Krator biome — the Throne: the glacier',
  hint:"The Throne, station 9: the glacier and its ice caves, the north-west flank ~5.6-6.5 km up, ~60 km from the vent (the summit plateau's snowfield in the south-east). A valley glacier: snow on its upper basin, the icefall's seracs and crevasses, bare ice with dirt bands and a medial moraine, an ice cliff calving into a milky proglacial lake; lateral and terminal moraines; the meltwater river braiding down the flank; low down the cold belt: conifers and gill-coral trees in the snow. Beside the ice a geothermal shelf: ice towers of frozen steam round the fumaroles, ice caves the steam has hollowed (warm inside: Krator's own life), an ice arch (ideal type) · weather: snowfall, the blizzard (and the rest) · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

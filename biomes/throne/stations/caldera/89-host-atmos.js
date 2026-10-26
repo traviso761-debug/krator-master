@@ -9,7 +9,7 @@ ATMOS.init({THREE:THREE,scene:scene,camera:camera,
  ground:(x,z)=>terrainH(x,z),seed:90101,err:m=>console.warn(m),
  viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 const WXB={sunI:sun.intensity,hemiI:hemi.intensity,fog:scene.fog.color.clone()};
-_onLight.push(()=>{WXB.sunI=sun.intensity;WXB.hemiI=hemi.intensity;WXB.fog.copy(scene.fog.color);});
+SKY_LOOK.push(()=>{WXB.sunI=sun.intensity;WXB.hemiI=hemi.intensity;WXB.fog.copy(scene.fog.color);});   /* from the shared sky each frame, before the weather runs again over it (82, 89-host-sky.js) */
 const WHITE=new THREE.Color(0xdde4ec),WHITE_NIGHT=new THREE.Color(0x262c36),ASH_FOG=new THREE.Color(0x6b5d49),ASH_FOG_NIGHT=new THREE.Color(0x1e1a16),FLASH=new THREE.Color(0xffd8b8),_wf=new THREE.Color();
 const SKYVEIL=new THREE.Mesh(new THREE.SphereGeometry(8800,32,16),new THREE.MeshBasicMaterial({color:WHITE.clone(),transparent:true,opacity:0,side:THREE.BackSide,fog:true,depthWrite:false}));   // fogged: at its distance it is exactly the fog's colour (three mixes fog after tone mapping)
 SKYVEIL.userData.probeSkip=true;SKYVEIL.renderOrder=-9;scene.add(SKYVEIL);TICKS.push(()=>SKYVEIL.position.copy(camera.position));
