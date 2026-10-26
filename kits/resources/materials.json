@@ -1,6 +1,6 @@
 {
  "build": "resources",
- "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The ore faces (coal, tar, efflor, malachite, quartz, cassiterite, galena, gossan, pegmatite) are library sets in full colour, no tint; the vertex colour only varies them. The nuggets are vertex colours. The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour.",
+ "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The ore faces (coal, tar, efflor, malachite, quartz, cassiterite, galena, gossan, pegmatite) are library sets in full colour, no tint; the vertex colour only varies them. The nuggets are vertex colours. The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour. potash and soda (2026-10-26, the Catch's two salts): the library's ochre salt polygons and soda crust, full colour.",
  "size": 512,
  "families": {
   "stone": {
@@ -147,6 +147,32 @@
    ],
    "roughLift": 0.1,
    "specular": 0.2
+  },
+  "potash": {
+   "lib": "ground.salt.ochre",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "soda": {
+   "lib": "ground.soda.crust",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
   }
  }
 }
