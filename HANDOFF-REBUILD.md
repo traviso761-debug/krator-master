@@ -63,6 +63,59 @@ Order: core first, then the biomes, then Throne.
    one shared flame and heat-haze effect (crater-drylands, Throne caldera), a lava field shader (Throne caldera and tube), cloud
    shadows through one shared chunk, the `jet`/`dustburst`/`burst` fx kinds. Hot-spring ramps are already `WATER.spring`.
 
+## Stage 1, final: consolidate, then rebuild every biome (2026-10-26)
+
+The owner (2026-10-26): "let the subagent sessions finish up, then consolidate, synthesize, and rebuild all biomes again", with
+the plans committed to main that day folded in. Stage 1's items above are done on `claude/biome-rebuild` (water on core/water in
+every biome; known-issues passes; the owner's three texture drops in the library). What is left, in order:
+
+**1. Let the running work land** (each reviewed and committed separately; none merged without the owner's word):
+- Agents in the worktree: Korona (the buried-pitcher punji pit), necanyons, geyser, the Throne (water in every station's export
+  profile), nwbay design, swbay's waterfall risers, the Xanadu and Oidong diversity passes, the abyssal savannah
+  (`biomes/abyssal-savannah`, a new kit), ebadlands' brimstone reeds on `card.reedbrim` (built, verify pending).
+- Sessions on their own branches, to merge into `claude/biome-rebuild` when the owner says so: the shared sky rollout
+  (`claude/sky-plan-200841`; S1 swbay already merged), the Cut, the NW outer wall (its station 3 draws the Yeti capital only
+  with `kits/yeti`, branch `claude/yeti-kit`), the Catch, Farside, the Bowl (sedesert station 2), k-guilin (the Hykkoussoi
+  hinterlands; `biomes/guilin` is frozen as an Earth reference). Merge order: the sky first (it touches every biome's sky
+  fragments), then the new biomes (new folders; `kits/crops`, `kits/resources`, `PROMPTS-NEEDED.md` and
+  `painting-to-3d-world.skill` are the shared files to watch).
+
+**2. Core changes, one approval** (each proposed by a biome agent; none made yet; each needs every taker rebuilt):
+
+| Change | Where | Fixes |
+|---|---|---|
+| LOD meshes keyed by chunk with instances sorted by range (`lodTick` sets counts), or a per-material merge plus `minTris`, or a per-pass chunk size | `core/biome/20-core-kit.js` (`bake`, `_lodEntry`, `_lodKey`, `lodTick`) | the runtime-LOD draw-call cost in nwlowlands, swlowlands, swbay, rift (hero sub-chunks or a dithered cross-fade for the pop at 1.2 km) |
+| A per-vertex second bark colour (`aC2`) | `BIO.glossBarkMat` (`core/biome/30-core-foliage.js`) | two-tone bark shared per bucket (both lowlands) |
+| `BIO.lathe` `rep` as a function of the ring | `core/biome/20-core-kit.js` | seams where bole sections change repeat (hyperjungle and its takers) |
+| Per-instance inspect labels (`BIO.put` `extra.label` to the bake, `93-host-inspect` by `instanceId`) | core/biome, core/host | lets floor item pairs merge (nhighlands: 4 calls per near chunk) |
+| `BIO.dynamic` sets `userData.kit`; a runtime `BIO.range` | core/biome | eastabyss's export tags and far ring |
+| `BIO.animMat` reads a flap rate of 0 as 6 (`x || d`) | `core/biome/35-core-anim.js` | a default bug (sedesert passes 1e-9) |
+| A `spin` option in `foliageHook` | `core/biome/30-core-foliage.js` | nsemiarid's trumpets did it host-side |
+| An ice kind; per-flow foam; a shoaling limit; flow junctions; a flow holding a level over a rising bed; `drawPools` gradient; a fall that follows a sloped face; spray scaled to the drop; `WATER.rideGLSL` for instanced floaters | `core/water` | ehighlands, nsemiarid, ringisles, eastabyss, oidong, rift, eastabyss's pads |
+| The water export section filtered to the test box | `core/export` adapter, or each verify's box | water cannot join a profile whose 300 m box holds none (shighlands, ehighlands) |
+| `ATMOS.sky` overwrites the weather's fog unless given `weather:`; swbay-template pages have no hour slider without `clock.onSet`; the ground dither copied in two biomes | core/atmos, core/host | Farside's notes |
+
+**3. From main's plans (c984cef0f, 47c645159).** The flora exchanges (`biomes/swbay`, `swlowlands`, `nwlowlands` `PLAN-FLORA.md`)
+wait on species from two kits not yet built (`biomes/swhighlands`, `biomes/wouterwall`), so they are not part of this rebuild.
+What can ride along now: the budget lines (swlowlands' ceiling 12M -> 15M, nwlowlands ~9.6M -> ~12.6M, `KNOWN_ISSUES.md`);
+swlowlands' own derived species (the spring cypress at the clear springs, the ribbon-root tree in the swamp: its own builders);
+nwlowlands' blue-grey marl gorge (a `core/terrain` carve along the `rip` streams at the wall's foot). The four new kits'
+24 texture prompts are in `PROMPTS-NEEDED.md` sections 20-23.
+
+**4. The owner's looks to judge** (shots in the session scratchpad, folders named in each commit): nwlowlands' Inner Wall range;
+nhighlands' fireweed, lichen floor and floating-forest trees; nsemiarid's poplar crowns, soda crust, dew garden; eastabyss's
+thinner shallows and pad bob; swbay's 156 m temple and taller canopy, and its caps/gills/shelves (they clip too: the fix
+flattens the warts); hyperjungle's terracotta ironbark; rift's fractal fins and new waterfalls; swlowlands' salt marsh;
+the LOD trade (fewer calls for more triangles) in nwlowlands, swlowlands, swbay.
+
+**5. The rebuild.** Rebuild every biome and station (`python3 build.py`; Throne and Korona `--station`), verify each with
+`KRATOR_GL=gpu verify.py --assert --all-views` on the one GPU lock, `python3 tools/check_core_use.py --write-baseline` (it should
+shrink), `tools/port_baseline.py --update` only for pages checked, `tools/test_all.py`. Then everything a shared change reached:
+the hyperjungle's readers (geyser, guilin, korona, necanyons, ringisles, the Throne incl. kipuka and frontier, Dhelv, Highlands,
+Iziz, Pinnacle Rock, Screamers, the Lizardmen, openworld isle-demo and little-demo), sedesert's readers (ringisles, korona's gorge,
+little-demo, isle-demo), eastabyss's (isle-demo, Locus, Mungo, Verge), swbay's species (Voth's gardens), `core/terrain`'s carve
+(Shade), nsemiarid's overlay (scablands), oidong (Longsong), necanyons (Pinnacle Rock). Then stages 2 and 3 below.
+
 ## Stage 2: kits and the unplaced settlements
 
 - Rebuild every kit and settlement that bundles the catalog, `core/water`, `core/atmos`, `core/tags` or `core/host`: the pooled-folder
