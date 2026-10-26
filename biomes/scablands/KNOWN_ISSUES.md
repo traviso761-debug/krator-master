@@ -4,15 +4,18 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 - [ ] **One station.** The flood lake's high line over NW lowlands (station 2) needs NW lowlands' rock zone and its
   response to `bed` and `silt` (`biomes/nsemiarid/PLAN.md` section 8).
+  Stays open (2026-10-25): waits for NW lowlands' rock zone (a design task in another kit).
 - [ ] **The coulee is drawn by the station, not the world.** In the open world the scale model's heights hold the
   channel at 4 km and `KSCOUR.land` adds what lies under a cell; the station cuts its own coulee (walls, the fall's
   cliff) so the falls can be seen at all. `WORLD_OVERLAYS` (PLAN.md, S3) is where the two meet.
+  Stays open (2026-10-25): the open-world overlay hook (WORLD_OVERLAYS, PLAN.md S3) is a design task, not a fix.
 - [ ] **The falls' cliff is a heightfield.** A real dry falls overhangs where the columns break away under the
   entablature; core/terrain's carve patches (`36-core-carve.js`, kind `undercut`) are made for it, but a patch's pad must
   exceed the ground grid's cell diagonal, and this station's ground is 10 m cells (`STAGE_GROUND.N` 640 over 6.6 km): an
   undercut along a 2 km lip would be a patch kilometres long at half-metre cells, and crude at that grid. It wants a
   finer ground under the falls first (a second, local ground mesh round the horseshoe; the stage's ground hooks would
   take it).
+  Stays open (2026-10-25): needs a finer local ground under the falls first (a design task, past the hour budget); core/terrain's carve is not the gap.
 - [x] **The probe and the merged erratics** (closed 2026-10-25). core/host's probe samples a merged mesh by its box; it
   now also reads a mesh's own sample points (`userData.probePoints`), which `87-host-erratics.js` sets one an erratic on
   its group, so the hidden marker is gone (`registered-volumes-non-empty` passes, 250 volumes).

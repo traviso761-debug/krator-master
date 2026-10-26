@@ -15,10 +15,14 @@ Read before changing anything here. `build.py` prints the open count.
       `ysGroundTint`). They belong upstream as generic hooks in `settlements/port` (a natural-ground function, a ground
       tint, a dry flag): a shared change that rebuilds the port and Hook pages (and lets Ys drop its copy). Until then
       `python3 build.py --vendor-check` reports the drift.
+      Stays open (2026-10-25): the generic hooks belong upstream in settlements/port (a shared change that rebuilds the port, Hook and Ys pages).
 - [ ] **No flora yet** (PLAN.md, D2): the n semiarid kit, read in place, its fields from `KBASIN.sample`; then the hulk
       gardens (D3).
+      Stays open (2026-10-25): a design task (PLAN.md D2/D3), not a fix.
 - [ ] **One station.** The ship graveyard at the west notch (station 2) and the east bed inside Korona (3) are to come;
       so are the dress (drowned villages, stumps, shell banks: D4) and the overlay in the open world (D5).
+      Stays open (2026-10-25): a design task (stations 2 and 3, the dress, the open world).
 - [ ] **Segments that carry boats** (the fishing harbour, the marina) are left out: their small boats float at y = 0 over
       dry silt. Grounding them needs the same pose as the hulks, for the kit's small craft (they are segment props, not
       registered vessels).
+      Stays open (2026-10-25): needs the grounding pose for the kit's small craft, a port-kit change (settlements/port).

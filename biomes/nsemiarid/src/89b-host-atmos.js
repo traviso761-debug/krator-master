@@ -10,8 +10,7 @@
 // with core/atmos's clock and wave chunk, the sky in them core/atmos's skylight (a capture of this page's dome and giant,
 // given to the water only).
 ATMOS.PRESETS.wind.base=[WIND[0]/Math.hypot(WIND[0],WIND[1]),WIND[1]/Math.hypot(WIND[0],WIND[1])];
-ATMOS.init({THREE,scene,camera,hour:()=>14,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:61,err:reportErr,
- viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
+ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>14,seed:61,err:reportErr,viewH:()=>innerHeight});
 const NSWIND=(function(){const WIND_MS=6,SCALE={calm:.4,breeze:1,high:2.6};
  const Q=new URLSearchParams(location.search);let mode=SCALE[Q.get('wind')]!=null?Q.get('wind'):'breeze';
  ATMOS.windScale=SCALE[mode];
@@ -55,5 +54,5 @@ if(NSWIND.mode!=='breeze')WIND_CONTROL.select.sort((a,b)=>(b[0]===NSWIND.mode)-(
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 // the stage's water (45b-host-stage.js STAGE_WATER: a record and its look, colours sRGB), drawn in its order
 const WATER_DRAW={};
-for(const e of STAGE_WATER){const L=Object.assign({},e.look);for(const c of ['color','shallow','deep'])if(L[c]!=null)L[c]=lin(L[c]);
- const d=WATER_DRAW[e.key]=e.flow?WATER.drawFlow(e.rec,L):WATER.drawStill(e.rec,L);d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=e.rec.name;}
+for(const e of STAGE_WATER){const L=Object.assign({pick:true},e.look);for(const c of ['color','shallow','deep'])if(L[c]!=null)L[c]=lin(L[c]);
+ const d=WATER_DRAW[e.key]=e.flow?WATER.drawFlow(e.rec,L):WATER.drawStill(e.rec,L);d.mesh.userData.inspectLabel=e.rec.name;}

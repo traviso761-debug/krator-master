@@ -13,7 +13,9 @@ const DB_WRECKS=(()=>{const run=PORT_LAYOUT.runs[0],moor=(PORT_LAYOUT.db&&PORT_L
  const accept=(x,z,h)=>{const s=DB_BASIN.sample(x,z,h,S),B=KBASIN.BAND;
   return s.band===B.ring?.03:s.band===B.drain?.1:s.band===B.recession?.2+.55*s.strand:0;};
  return DBW.records({x0:run.x0-2600,x1:run.x1+2600,z0:dbShore(0)+40,z1:dbShore(0)+5600,cell:240,seed:9031,ground:terrainH,accept,avoid});})();
+const DB_TAGS=KTAGS.page||(KTAGS.page=KTAGS.create({build:'dambasins'}));   /* core/tags: every wreck and piece of debris placed here is a record (the kit's REGISTER stays the probe's) */
 {const root=new THREE.Group();root.name='wrecks';
  for(const rec of DB_WRECKS){const G=DBW.draw(THREE,rec,{ground:terrainH,materials:DB_WRECK_MAT});root.add(G);
-  REGISTER({name:'Wreck: '+rec.kind+' ('+rec.state+')',x:rec.x,z:rec.z,y:rec.h-rec.H,r:rec.L*.7,h:rec.H*2.5});}
+  REGISTER({name:'Wreck: '+rec.kind+' ('+rec.state+')',x:rec.x,z:rec.z,y:rec.h-rec.H,r:rec.L*.7,h:rec.H*2.5});
+  DB_TAGS.add({'class':'prop',kind:'wreck',key:rec.kind,name:'Wreck: '+rec.kind+' ('+rec.state+')',at:[rec.x,rec.h-rec.H,rec.z],r:rec.L*.7,h:rec.H*2.5,tags:{culture:'ancient',state:'ruined'},frag:'91a-db-wrecks.js'});}
  scene.add(root);window._wrecks=DB_WRECKS.length;}

@@ -11,6 +11,7 @@ const DB_FLOTSAM=(()=>{const run=PORT_LAYOUT.runs[0],moorF=(PORT_LAYOUT.db&&PORT
  const accept=(x,z,h)=>{if(h>-.5)return 0;const s=DB_BASIN.sample(x,z,h,S),B=KBASIN.BAND;
   return s.band===B.ring?.18:s.band===B.drain?.5:s.band===B.recession?.14+.3*s.strand:0;};
  return DBF.records({x0:run.x0-2200,x1:run.x1+2200,z0:dbShore(0)+30,z1:dbShore(0)+4800,cell:70,field:8,seed:4417,ground:terrainH,accept,avoid});})();
-{for(const r of DB_FLOTSAM){const sz=r.kind==='plate'?Math.max(r.w,r.l):r.L;REGISTER({name:DBF.WHO[r.kind],x:r.x,z:r.z,y:r.h-1,r:sz*.6,h:3});}
+{for(const r of DB_FLOTSAM){const sz=r.kind==='plate'?Math.max(r.w,r.l):r.L;REGISTER({name:DBF.WHO[r.kind],x:r.x,z:r.z,y:r.h-1,r:sz*.6,h:3});
+  DB_TAGS.add({'class':'prop',kind:'debris',key:r.kind,name:DBF.WHO[r.kind],at:[r.x,r.h-1,r.z],r:sz*.6,h:3,tags:{culture:'ancient',state:'ruined'},frag:'91b-db-flotsam.js'});}
  const G=DBF.draw(THREE,DB_FLOTSAM,{ground:terrainH,materials:DB_FLOTSAM_MAT});G.name='flotsam';scene.add(G);
  window._flotsam=DB_FLOTSAM.length;}

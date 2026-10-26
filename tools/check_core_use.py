@@ -46,8 +46,10 @@ REQUIRED = {
 
 # build -> modules it is excused from, with the reason (keep this short; an entry is a decision, not a convenience)
 NOT_APPLICABLE = {
-    'biomes/dambasins': {'biome': 'an overlay on the Ancient Port kit, owns no flora', 'water': 'overlay: the flood bed has no standing water yet'},
-    'biomes/scablands': {'biome': 'an overlay on the n semiarid kit, read in place'},
+    'biomes/dambasins': {'biome': 'an overlay on the Ancient Port kit, owns no flora', 'water': 'overlay: the flood bed has no standing water yet',
+                         'host': "the page's host is the Ancient Port kit's own scene, probe and camera (90-scene, 91-probe, 92-camera)"},
+    'biomes/scablands': {m: "an overlay built by biomes/nsemiarid/build.py (build(overlay=...)): the kit's build takes it" for m in
+                         ('biome', 'atmos', 'host', 'rand', 'tags', 'water')},
     'kits/crops': {'rand': 'plain data and pure functions; nothing is placed', 'tags': 'data only'},
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }

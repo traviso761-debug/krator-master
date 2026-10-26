@@ -1,14 +1,12 @@
 // ================================================================= HOST — the creek and the rain pools on core/water
 // The records are made in 47-host-land.js (WATER_RECS: the creek a flow line, each rain pool on the slickrock still water);
-// drawn here once core/atmos is bound (its clock on the host's hour, its wave chunk, the sky's light): the creek as its
+// drawn here once core/atmos is bound (89a-host-atmos.js: its clock on the host's hour, its wave chunk, the sky's light): the creek as its
 // ribbon (the ripples carried down the current, white along the banks), the pools as one mesh of discs with one still
 // material (WATER.stillMaterial: the sky in them, a faint ripple). The sky in the water is core/atmos's skylight: a capture
 // of this page's dome and giant given to the water only (the page's own materials keep their lighting), taken again as
 // the hour moves (89n-host-night.js tints the dome). Their CPU twins: WATER.heightAt, WATER.flowAt; core/export carries
 // them to Godot (godot/krator/water_import.gd draws them).
 const WATER_DRAW=(function(){if(typeof ATMOS==='undefined'||!WATER_RECS)return null;try{
- ATMOS.init({THREE,scene,camera,hour:()=>NIGHT.hourNow,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:4747,
-  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
  const env=new THREE.Scene(),WENV={environment:null};
  env.add(new THREE.Mesh(sky.geometry,sky.material));env.add(giant.clone());
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x3a2c22),key:()=>Math.round(NIGHT.f*8)});

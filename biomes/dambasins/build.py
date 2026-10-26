@@ -57,6 +57,9 @@ PB = port_build()
 # core/rand and core/terrain's basin: IIFE-scoped, their own hashes, nothing drawn from the kit's stream; and this
 # build's deterministic fragments (the bed is a function of x and z; the layout and views are tables)
 EXTRA_CORE = {'08-core-rand.js': os.path.join(ROOT, 'core', 'rand', '08-core-rand.js'),
+              '50-core-tags.js': os.path.join(ROOT, 'core', 'tags', '50-core-tags.js'),   # core/tags: the wrecks and the debris are records (91a, 91b)
+              '52-core-tags-vocab.js': os.path.join(ROOT, 'core', 'tags', '52-core-tags-vocab.js'),
+              '53-core-tags-host.js': os.path.join(ROOT, 'core', 'tags', '53-core-tags-host.js'),
               '40-core-basin.js': os.path.join(ROOT, 'core', 'terrain', '40-core-basin.js'),
               '89-atmos-3d-dust.js': os.path.join(ROOT, 'core', 'atmos', '89-atmos-3d-dust.js')}   # the bed's dust (91c)
 PB.DETERMINISTIC |= set(EXTRA_CORE) | {'50-db-wrecks.js', '80-db-bed.js', '81-db-hulks.js', '89c-db-ground.js', '91a-db-wrecks.js', '52-db-flotsam.js', '91b-db-flotsam.js', '91c-db-dust.js'}   # the wrecks: KRAND hashes, no stream   # 81: the hulks' pose from KRAND hashes, no stream

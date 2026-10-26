@@ -5,8 +5,8 @@
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"
   },
   "biomes/dambasins/dist/port.html": {
-   "bytes": 957899,
-   "sha256": "acb87ff365e27683e03cd586c9248d89ddf9f7293b78b728932abea110d18f94"
+   "bytes": 989760,
+   "sha256": "bd205bb7742ba1a693cc28be7087744b6847ec105ab052012373fe82637a23a8"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
    "bytes": 6807183,
@@ -57,16 +57,16 @@
    "sha256": "faf48500933c917f9585903b980cda6b1bbfa53e30cf68dbda0f2308271ed6a3"
   },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 781270,
-   "sha256": "a483157815264dda7007b73278386da5da0221c54fa5ec38cefeef5bef5199a3"
+   "bytes": 813465,
+   "sha256": "7e1b56a832df8d6cfb961a493bd6f6ca7ba3ad5883b3b50522700d47c55f81a4"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 6308440,
    "sha256": "0783c4c6bda9ff80eb1e2fcff5df2665c7df0f97377fd88f39b37a1d5e7d271e"
   },
   "biomes/nsemiarid/dist/nsemiarid.html": {
-   "bytes": 4164082,
-   "sha256": "68a6882d78400715579f412d68dbe8b688401be94846087f9286c755bdc1ec30"
+   "bytes": 4190529,
+   "sha256": "0f6199c0d6fd6b47fa4e8249f13c255a503eef0f2383830c6ce5634db43f3017"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 7967514,
@@ -89,8 +89,8 @@
    "sha256": "04a9e0ee9e02fa0811c7327f389b919cc8e03e7440cc71c9d8816ce26e46b4d8"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 6082881,
-   "sha256": "30b52527cd6f94d268415ef670e7a459c4ab56babcd0c58263226bdc7028f57e"
+   "bytes": 6091636,
+   "sha256": "834728e99ab725b2a5d4dcfa8ecf8fe1de4d3a06faa7a649213e78faaab009e5"
   },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4780240,

@@ -6,20 +6,26 @@ Read before changing anything here. `build.py` prints the open count.
 
 - [ ] **The trumpets stand still in `?unique=1`**: the core's foliage shader has no spin; the variants' shader, which
       the page draws with, has.
+      Stays open (2026-10-25): needs a spin in the core foliage shader (core/biome 30-core-foliage), a shared change.
 - [ ] **The catalog owes the fruit.** Apples, walnuts, apricots, pears, pomegranates, pistachios and almonds are drawn
       (on the trees and as windfall) but `kits/catalog/krator-master-furniture-generic-fruit.js` has no piece for any
       of them, so `fruit` is null and the probe names them (`FRUIT_NOT_DRAWN`). Adding them is a catalog change: every
       build that takes the catalog rebuilds (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and almond are
       not in `kits/crops` either.
+      Stays open (2026-10-25): a catalog change (every catalog build rebuilds) waiting for the owner's go-ahead.
 - [ ] **No highland spurs.** 12% of the region is over 2.5 km (Dsb, Csb, Dfb, Cfb): `PLAN.md` reads nhighlands and
       ebadlands in place there. Not wired yet.
+      Stays open (2026-10-25): a design task (PLAN.md reads nhighlands and ebadlands in place), not a fix.
 - [ ] **The small and weird are first passes**: lathed and card geometry at a few hundred triangles each, read from the
       owner's two reference boards. Judge them from the shots and say which to push further.
+      Stays open (2026-10-25): waits for the owner's judgement from the shots.
 - [ ] **The hulk gardens are not here**: the rust vine has its tag and item and nothing places it; it belongs to the dam
       bed's hulks (`biomes/dambasins`, D3, after its flora, D2). The pothole pools' plants are the scablands' own
       (`biomes/scablands`, 2026-10-23: kolk lilies, pothole quills, seep sedge, spray ferns).
+      Stays open (2026-10-25): waits for dambasins' flora (D2) and its D3.
 - [ ] **Not in the open world yet.** The kit is ready for `WORLD_KITS` (a pass table, make/grow, record mode); the north
       basin's open world (`openworld/north-basin`, data only) is `PLAN.md` step 6.
+      Stays open (2026-10-25): a design task (PLAN.md step 6), outside the kit's own src.
 
 ## Closed
 

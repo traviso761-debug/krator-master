@@ -12,6 +12,7 @@
   82-host-sky         the hyperjungle's sky, read in place (the standard Krator sky with the giant)
   88-host-build       HOST: the build order
   89-atmos-*          core/atmos's core, presets, export, wave clock and sky light (the water's)
+  89a-host-atmos      HOST: ATMOS.bindHost (core/atmos/host/89-atmos-c-hostbind.js), the clock on the world hour
   89n-host-night      HOST: the night: the light, the fog and the dome by the world hour (N; the hour slider)
   89w-host-water      HOST: the creek and the rain pools on core/water (records made in 47)
   90..99              HOST (core/host's whole interface: camera, loop, panel, probe, inspector, marks, pictures,
@@ -101,6 +102,7 @@ for f in CORE_WATER:
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost (src/89a-host-atmos.js)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))

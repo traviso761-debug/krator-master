@@ -126,18 +126,12 @@ const ROCK_GEOS=[];
 // On a page with core/water (core/water/README.md) they are its records: the creek a flow line down the canyon (WATER.flow,
 // its surface the bed plus its depth every 12 m, from its high end), each rain pool on the slickrock still water
 // (WATER.still at the pool's level, its disc); WATER.heightAt and core/export read them, and the page's own water fragment
-// draws them on core/atmos (necanyons' and Pinnacle Rock's 89w-host-water.js). Without core/water, the plain ribbon below.
+// draws them on core/atmos (necanyons' and Pinnacle Rock's 89w-host-water.js). The page's own ribbon and MAT_WATER are gone (2026-10-25).
 const WATER_RECS=typeof WATER==='undefined'?null:(function(){
  let creek=null;if(LANDO.creek!==false){const P=[];for(let z=-TERR.R*1.1;z<=TERR.R*1.1;z+=12)P.push([CREEK.x(z),z,creekBed(z)+CREEK.depth]);
   if(P[0][2]<P[P.length-1][2])P.reverse();creek=WATER.flow({name:CREEK.name,pts:P,width:CREEK.w*2,speed:.6});}
  const pools=NECANYONS.POTHOLES.map((p,i)=>{const poly=[];for(let k=0;k<14;k++){const a=k/14*TAU;poly.push([p.x+Math.cos(a)*p.r,p.z+Math.sin(a)*p.r]);}
   return WATER.still({name:'A rain pool on the slickrock ('+i+')',level:p.y,poly});});
  return {creek,pools};})();
-const MAT_WATER=new THREE.MeshStandardMaterial({color:0x2a3a34,roughness:.08,metalness:.3,transparent:true,opacity:.88});
-if(!WATER_RECS)(function(){const pos=[];if(LANDO.creek!==false)for(let z=-TERR.R*1.1;z<TERR.R*1.1;z+=20){const a=[CREEK.x(z),z],b=[CREEK.x(z+20),z+20],ya=creekBed(a[1])+CREEK.depth,yb=creekBed(b[1])+CREEK.depth,w=CREEK.w;
-  pos.push(a[0]-w,ya,a[1],b[0]-w,yb,b[1],b[0]+w,yb,b[1],a[0]-w,ya,a[1],b[0]+w,yb,b[1],a[0]+w,ya,a[1]);}
- const P=NECANYONS.POTHOLES;P.forEach(p=>{const n=14;for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;pos.push(p.x,p.y,p.z,p.x+Math.cos(a0)*p.r,p.y,p.z+Math.sin(a0)*p.r,p.x+Math.cos(a1)*p.r,p.y,p.z+Math.sin(a1)*p.r);}});
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.material.side=THREE.DoubleSide;m.userData.probeSkip=true;m.userData.inspectLabel='Water (the creek; a rain pool on the slickrock)';scene.add(m);})();
 _mark('meshes');
 
