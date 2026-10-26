@@ -15,7 +15,7 @@ function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='li
 // stones, dark in the pools, white where it drops); the tarn is a disc; the mist
 // is sheets lying in the hollows and soft sprites standing in them, drifting.
 // Host-only.
-let GROUND=null;
+let GROUND=null,GROUND_HZ=null;   /* GROUND_HZ: the terrain's horizon maps (KHORIZON), for any material that would take its shadows */
 function buildGround(){
  const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,TW=2048,ZN=256;
  // the zones on a coarse lattice (they cost a dozen noise calls each)
@@ -72,22 +72,32 @@ function buildGround(){
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
  const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
- /* the library's two ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow), by zone: the montane needle floor and the glades */
- const GLY=(function(){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.mulch'):null,M=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.meadow'):null;if(!L||!M)return null;
-  const Cl=KMAT.packed('nhighlands','groundCladonia');   /* (2026-10-26) the owner's ground.cladonia: reindeer lichen over the boreal floor, a third layer when the pack carries it */
-  return{mulch:KMAT.textures(L,{aniso:8}).map,mulchK:1/L.scale[0],meadow:KMAT.textures(M,{aniso:8}).map,meadowK:1/M.scale[0],clad:Cl?KMAT.textures(Cl,{aniso:8}).map:null,cladK:Cl?1/Cl.scale[0]:0};})();
- MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};if(GLY){sh.uniforms.uGMulch={value:GLY.mulch};sh.uniforms.uGMeadow={value:GLY.meadow};if(GLY.clad)sh.uniforms.uGClad={value:GLY.clad};}
+ /* the library's ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow, groundCladonia:
+    the owner's reindeer lichen over the boreal floor), by zone: on core/terrain's ground shader (KGROUND, 43-core-ground.js, 2026-10-26),
+    hex-tiled, scaled with distance and blended by height; the same weights and strengths as the page's own mix before it */
+ const GLY=(function(){const M=KGROUND.layer('nhighlands','ground.mulch',{w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse'}),G=KGROUND.layer('nhighlands','ground.meadow',{w:'vGL.y',amt:.75,gain:1.2,tint:'diffuse'});
+  return M&&G?[M,G,KGROUND.layer('nhighlands','groundCladonia',{w:'vGL.z',amt:.4,gain:1.1,tint:'diffuse'})]:[];})();
+ MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec3 aGL;varying vec3 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;'+(GLY?'uniform sampler2D uGMulch,uGMeadow'+(GLY.clad?',uGClad':'')+';vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
     '{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
-    (GLY?'{vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGMulch,vGWP.xz,'+GLY.mulchK.toFixed(4)+')*1.25,clamp(vGL.x*0.7,0.0,0.7));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGMeadow,vGWP.xz,'+GLY.meadowK.toFixed(4)+')*1.2,clamp(vGL.y*0.75,0.0,0.75));'+(GLY.clad?'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGClad,vGWP.xz,'+GLY.cladK.toFixed(4)+')*1.1,clamp(vGL.z*0.4,0.0,0.4));':'')+'}':''),
+    '/*KGROUND*/',
     // granite on the steep: grey bands, wandering, lichen-stained (the paint is sRGB-decoded, so these are linear)
     ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+5.0*sin(vGWP.x*0.005+vGWP.z*0.004)+2.0*sin(vGWP.x*0.033);',
     ' float b1=0.5+0.5*sin(y*0.24), b2=smoothstep(0.6,0.95,sin(y*0.08+1.3));',
     ' vec3 st=mix(vec3(0.17,0.18,0.17),vec3(0.26,0.27,0.25),b1); st=mix(st,vec3(0.12,0.14,0.11),b2*0.6);',
     ' st*=0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
     ' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};
+ KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground'});
+ /* THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
+    directions baked over the map (256 texels a side, ~26 m) and, beyond it, over the far country's drawn lattice (FAR.G), so at a
+    low sun the ridges and the Inner Wall throw their shadows across the valley; the hollows and the stream's cut see less sky */
+ const HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],n:256,h:terrainH,
+  far:{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-16000,-16000,16000,16000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
+ KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;
+ /* and on what stands on the land (the forest is built before the ground: the canopy's shade is baked from it) */
+ window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  const NXg=720,g=new THREE.PlaneGeometry(SX,SZ,NXg,NXg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);

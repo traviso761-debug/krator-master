@@ -154,8 +154,9 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
  const BAND=RC.band.map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(RC.top),SOIL=new THREE.Color(RC.soil),c=new THREE.Color();
  const acc={wall:{pos:[],uv:[],col:[],idx:[],b:[],s:[]},top:{pos:[],uv:[],col:[],idx:[],b:[],s:[]}};
  // a top that carries the station's own relief (STAGE.topExtra: the hoar table's knolls and its tarn's basin) is drawn on
- // many more rings and segments, so the drawn pavement follows the field the plants stand on (the owner, 2026-10-19)
- STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?{step:7,topRings:150,segMax:1200}:{step:small?2.5:7}),nv=m.part.length;
+ // many more rings and segments, so the drawn pavement follows the field the plants stand on (the owner, 2026-10-19); with
+ // STAGE.stackTop ({grid:5}: the hoar table, 2026-10-26) that top is a 5 m grid clipped to the edge ring (KSTACKS.mesh opt.top)
+ STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?(STAGE.stackTop?{step:7,segMax:1200,top:STAGE.stackTop}:{step:7,topRings:150,segMax:1200}):{step:small?2.5:7}),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),top:new Int32Array(nv).fill(-1)};
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':'wall',A=acc[key],R=remap[key];
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
