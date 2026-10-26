@@ -184,7 +184,7 @@
   side, back) no gap showed through to the background, only the jagged crossing, which the trunk-frame tuck
   (README, Clipping) made smaller but did not remove. If the gap is still seen, note the body, view and zoom.
 - **Godot's skin regions are behind the page's hides** for the cargo trousers (widened 2026-10-20 by `make_mpfb.py
-  hides`, which rewrites kit.json only): the twin draws the skin by `base.gshapes.bin`'s cover regions, which the
+  hides`, which rewrites kit.json only) and the sleeved tops (their openings, 2026-10-23): the twin draws the skin by `base.gshapes.bin`'s cover regions, which the
   next whole build (`mpfb_build.py`, `make_mpfb.py`) remakes from the new hides. The nipples' `hide_parts` and the tuck's
   trunk frame are in the twin already.
 - **Download size.** Pieces are served gzipped as base64 text (the page unzips them with the browser's

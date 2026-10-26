@@ -64,6 +64,10 @@ Godot's skin regions for the trousers wait for the next whole build. The culture
 take the same cover (`legged_trousers`; shot red in `ual_crouch` 1.0 and `ual_jog` 0.25, before and after, on the man,
 the woman and the giant: knee skin had come through the Iziz, Yuni, Dalab and Republic trousers and the braccae).
 
+Sleeves (2026-10-23): with the arm overhead a sleeve's opening lifted off the arm and showed a hole (the tops' hides
+reached the opening; the page drew library tops one-sided). The pack opens 4 cm of skin at each sleeve opening
+(`open_sleeves`) and the page draws garments both sides, as Godot's push shader already did.
+
 ## Open, by priority
 
 1. **Tall bodies (height above about +0.7) tear long robes in a run**, and at +1 open small tears in the walk and idle
