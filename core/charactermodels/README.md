@@ -245,6 +245,18 @@ buckskin, fur, felt, nacre, the metals; a plain weave otherwise) or `P(fabric=)`
 Named per garment: plaited straw for the petasos and the Fulani cone, astrakhan for both papakhas, brass braid for the
 Hall's festive epaulettes and the Free Giants' torc, glass beads for the Dalab bead cap and the Beast Riders' bead
 belt (and the `beads` motif), oiled cloth for the Izani rain hood.
+**Fur.** A garment's fur (the parts whose fabric is `fur.*`, but a sole; and a `feather` or `solid` band in the fur
+colours, a cape's edge) stands off the cloth as shells. `make_garments.py` `fur_of` writes its rows of the texture into
+the `.cloth.json` (`[v0, v1, kind, mu, mv]`: glTF v, the kind from the fabric, the metres a unit of u and of v spans),
+`make_mpfb.py` carries them into the kit item's `fur`, and `tools/fur.py` derived them from the published pieces for the
+garments built before (2026-10-26: the ushankas, the papakhas, the Beast Riders' hat, horned cap, pauldron, boot cuffs and
+riding trousers, the festive cap's band and the gown's cape edge). The figure (`50-figure.js` `furShells`; Godot
+`kchar_fur.gdshader` chained by `_fur`) draws `layers` copies of the fur rows' triangles, each a little further out along
+the skinned normal after the push, combed down, keeping only the texels a strand passes through; they share the
+garment's attributes and skeleton, so the morphs, the clips, the push and the dye carry over. A legs item's fur lies
+between the top of the boots and the lowest hem of the top (tucked in, it came out through the shafts and a deel's
+skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width, comb, clump, root shade, tip, vary) and a
+per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
 The cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets
 (`SHEETS`), recoloured in each garment's own two colours. The sets and their sources: `prompt-clothes.md`.
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its
@@ -628,6 +640,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
 | `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
+| `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |
 | `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |

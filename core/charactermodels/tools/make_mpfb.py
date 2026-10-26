@@ -1335,6 +1335,8 @@ def main():
             print('%-8s %s: %d vertices pinned to the hips' % (name, it['id'], mods.pin_hips(os.path.join(pieces, it['id'] + '.glb'), cl['spec']['hips'])))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
+        if cl and cl['spec'].get('fur'):
+            entry['fur'] = cl['spec']['fur']          # its fur rows (make_garments.py fur_of): the figure's fur shells
         if culture_of(it['id']):
             entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
         if big and it['slot'] not in ('hair', 'beard'):

@@ -99,6 +99,7 @@ function KCharFigure(body, sliders, load){
         var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
         m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, !!it0.loose, slot0 === 'legs');
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
+      if(part.role === 'armour') furShells(m, itemByKey[part.key]);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -109,6 +110,85 @@ function KCharFigure(body, sliders, load){
      texture alpha reaches the page's transparent canvas and the background shows through the hair */
   function opaqueCutout(sh){
     sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', '#include <alphatest_fragment>\n\tdiffuseColor.a = 1.0;');
+  }
+
+  /* ---- fur (data/fur.json; kit items' fur, make_garments.py fur_of, tools/fur.py) ----
+     a garment's fur rows ([v0, v1, kind, mu, mv]: rows of its texture, the kind, the metres a unit of u and of v spans)
+     drawn as shells: fur.layers copies of the triangles in those rows, children of the garment so they show and hide
+     with it, sharing its attributes (the morphs, summed on the CPU, carry over) and its skeleton. Layer k of n stands
+     k/n of the pile out along the skinned normal, after the push, its tips combed down (comb * pile * t^2), and keeps
+     only the texels a strand passes through: strands on a grid of 'strand' metres in u and v (a whole number across u,
+     so a tube's seam meets itself), each jittered in its cell, of its own length (clump), tapering to its tip. The
+     roots are shaded (shade), the tips lit (tip) and each strand a little lighter or darker (vary); the colour is the
+     garment's own (its texture, its dye). Godot: kchar_fur.gdshader, kchar_figure.gd _fur */
+  var FUR_GLSL = 'vec3 kfHash(vec3 p){ p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yxz + 33.33); return fract((p.xxy + p.yxx) * p.zyx); }\n';
+  function furShells(m, it){
+    var F = KCharFigure.fur, rows = it && it.fur;
+    if(!F || !rows || !rows.length) return;
+    var scale = F.items && F.items[it.id] && F.items[it.id].pile != null ? F.items[it.id].pile : 1;
+    if(!(scale > 0)) return;
+    var n = F.layers == null ? 12 : F.layers, uv = m.geometry.attributes.uv, i0 = m.userData.index0;
+    if(!uv || !i0) return;
+    var byKind = {}, band = m.userData.furBand = { value:new THREE.Vector2(-1e3, 1e3) };
+    rows.forEach(function(r){ if(F.kinds[r[2]]) (byKind[r[2]] = byKind[r[2]] || []).push(r); });
+    Object.keys(byKind).forEach(function(kind){
+      var K = F.kinds[kind], rs = byKind[kind].slice(0, 4), pile = K.pile * scale, idx = [];
+      // the triangles with a corner in the rows (a band's edge is cut in the shader)
+      for(var t=0;t<i0.length;t+=3){
+        for(var c=0;c<3;c++){
+          var v = uv.getY(i0[t + c]);
+          if(rs.some(function(r){ return v >= r[0] - 0.002 && v <= r[1] + 0.002; })){ idx.push(i0[t], i0[t+1], i0[t+2]); break; }
+        }
+      }
+      if(!idx.length) return;
+      var geo = new THREE.BufferGeometry();
+      Object.keys(m.geometry.attributes).forEach(function(a){ geo.setAttribute(a, m.geometry.attributes[a]); });
+      geo.setIndex(idx);
+      // the garment's own shader changes (pushOut, opaqueCutout) carry over, keyed by its program
+      var own = m.material.hasOwnProperty('onBeforeCompile'), key0 = own && m.material.customProgramCacheKey ? m.material.customProgramCacheKey() : 'own';
+      var R = [0, 1, 2, 3].map(function(k){ var r = rs[k] || [2, 2, 0, 0]; return new THREE.Vector4(r[0], r[1], r[3], r[4]); });
+      for(var k=1;k<=n;k++){
+        var tk = k / n, mat = new THREE.MeshStandardMaterial({ map:m.material.map, roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true });
+        mat.color = m.material.color;       // the same Color: apply()'s dye and tint reach the shells
+        mat.onBeforeCompile = furShader(own ? m.material.onBeforeCompile : null, {
+          kfH:{ value:pile * tk }, kfC:{ value:(K.comb || 0) * pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:R },
+          kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
+          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band });
+        mat.customProgramCacheKey = own ? function(){ return 'kchar-fur-' + key0; } : function(){ return 'kchar-fur'; };
+        var s = new THREE.SkinnedMesh(geo, mat);
+        s.name = m.name + '|fur:' + kind + ':' + k; s.frustumCulled = false; s.castShadow = false;
+        s.bind(m.skeleton, new THREE.Matrix4());
+        s.userData.fur = true;
+        m.add(s);
+      }
+    });
+  }
+  function furShader(prev, U){
+    return function(sh, r){
+      if(prev) prev(sh, r);              // the push (pushOut) first: the fur stands on the cloth where it is pushed to
+      Object.keys(U).forEach(function(k){ sh.uniforms[k] = U[k]; });
+      // (kfF: a legs item's fur fades out below the top of the boots over it and above the hem of the top over it, kfK:
+      // tucked in, it came out through the boots' shafts, and through a deel's skirt in a stride. position is the rest,
+      // after the morphs, as the boots' top and the hem are)
+      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nvarying float kfK;\n' + sh.vertexShader.replace('#include <project_vertex>',
+        'vec3 kfN = normalize(objectNormal), kfD = vec3(0.0, -1.0, 0.0);\n\tkfD -= kfN * dot(kfD, kfN);\n' +
+        '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n\ttransformed += (kfN * kfH + kfD * kfC) * kfK;\n#include <project_vertex>');
+      sh.fragmentShader = 'varying float kfK;\nuniform float kfT;\nuniform vec4 kfR[4];\nuniform float kfS;\nuniform float kfW;\nuniform float kfL;\nuniform float kfSh;\nuniform float kfTp;\nuniform float kfV;\n' +
+        FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
+        'vec4 kfR0 = vec4(0.0); bool kfIn = false;\n' +
+        '\tfor(int i = 0; i < 4; i++){ if(!kfIn && vUv.y >= kfR[i].x && vUv.y <= kfR[i].y){ kfIn = true; kfR0 = kfR[i]; } }\n' +
+        '\tif(!kfIn || kfK < 0.05) discard;\n' +
+        '\tfloat kfU = max(1.0, floor(kfR0.z / kfS + 0.5));\n' +
+        '\tvec2 kfG = vec2(vUv.x * kfU, vUv.y * kfR0.w / kfS), kfC0 = floor(kfG), kfFr = fract(kfG);\n' +
+        '\tfloat kfD0 = 1e9, kfLen = 1.0, kfTone = 1.0;\n' +
+        '\tfor(int j = -1; j <= 1; j++) for(int i = -1; i <= 1; i++){\n' +
+        '\t\tvec2 o = vec2(float(i), float(j)), cc = kfC0 + o; cc.x = mod(cc.x, kfU);\n' +
+        '\t\tvec3 h = kfHash(vec3(cc, kfR0.x * 1024.0));\n' +
+        '\t\tfloat d = length(o + 0.15 + 0.7 * h.xy - kfFr);\n' +
+        '\t\tif(d < kfD0){ kfD0 = d; kfLen = 1.0 - kfL * h.z; kfTone = 1.0 + kfV * (fract(h.z * 7.13) - 0.5); }\n\t}\n' +
+        '\tif(kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen)) discard;\n' +
+        '#include <map_fragment>\n\tdiffuseColor.rgb *= mix(kfSh, kfTp, kfT) * kfTone;');
+    };
   }
 
   /* the eyes: make_mpfb.py greys the irises and puts their mask in the texture's alpha; the eye colour multiplies in
@@ -211,6 +291,11 @@ function KCharFigure(body, sliders, load){
     }
     g.computeBoundingSphere();
   }
+  function highest(m){
+    var P = m.geometry.attributes.position.array, y = -Infinity;
+    for(var i=1;i<P.length;i+=3) if(P[i] > y) y = P[i];
+    return y;
+  }
   function lowest(m){
     var P = m.geometry.attributes.position.array, y = Infinity;
     for(var i=1;i<P.length;i+=3) if(P[i] < y) y = P[i];
@@ -282,6 +367,13 @@ function KCharFigure(body, sliders, load){
               p.stature = top - lowest(want[base]);
             }
           }
+          // a legs item's fur lies between the top of the boots and the lowest hem of the top (furShells kfF)
+          var feetTop = -1e3, hem = 1e3;
+          Object.keys(want).forEach(function(k){ var pt = want[k].userData.part; if(pt.role !== 'armour') return;
+            if(pt.slot === 'feet') feetTop = Math.max(feetTop, highest(want[k]));
+            else if(pt.slot === 'torso') hem = Math.min(hem, lowest(want[k])); });
+          Object.keys(want).forEach(function(k){ var u = want[k].userData.furBand, legs = want[k].userData.part.slot === 'legs';
+            if(u) u.value.set(legs ? feetTop : -1e3, legs ? hem : 1e3); });
           self.morphDelta = mj ? mj.d : null;
           bones.forEach(function(b, i){ if(b !== self.hips) b.position.fromArray(p.t[i]); });
           self.inner.scale.setScalar(p.root * SCALE);

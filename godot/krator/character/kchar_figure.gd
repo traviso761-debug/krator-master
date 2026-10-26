@@ -24,6 +24,7 @@ extends Node3D
 const EYE_SHADER := preload("res://krator/character/kchar_eye.gdshader")
 const SKIN_SHADER := preload("res://krator/character/kchar_skin.gdshader")
 const PUSH_SHADER := preload("res://krator/character/kchar_push.gdshader")
+const FUR_SHADER := preload("res://krator/character/kchar_fur.gdshader")
 
 static var _cache := {}                  # piece path -> Array of built meshes (see _build)
 
@@ -92,6 +93,8 @@ func load_body(data_dir: String, body_id: String) -> void:
 			clip_data[c["key"]] = c
 		var fcs: Dictionary = cj.get("faces", {})
 		faces = fcs.get(kit.get("body", ""), fcs.get("mpfb_male", {}))
+	if FileAccess.file_exists(dir + "/fur.json"):
+		fur = JSON.parse_string(FileAccess.get_file_as_string(dir + "/fur.json"))
 	if FileAccess.file_exists(dir + "/posture.json"):
 		var pj: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/posture.json"))
 		var pb: Dictionary = pj["bodies"]
@@ -165,6 +168,8 @@ static func _build(glb: String) -> Array:
 		var regions := []                 # per surface: whether it is the joined skin (hidden by region)
 		var joined := {}
 		var verts0 = null                 # the first surface's positions and shapes (the cloth chains' rest)
+		var y_lo := INF
+		var y_hi := -INF
 		var offs0 := []
 		for s in src.get_surface_count():
 			var arrays := src.surface_get_arrays(s)
@@ -213,6 +218,16 @@ static func _build(glb: String) -> Array:
 				var flags := 0
 				if arr[Mesh.ARRAY_BONES] != null and arr[Mesh.ARRAY_BONES].size() == arr[Mesh.ARRAY_VERTEX].size() * 8:
 					flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+				# each vertex's rest height (CUSTOM1), and the piece's lowest and highest: the fur shells' band (_fur)
+				var pv: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+				var ys := PackedFloat32Array()
+				ys.resize(pv.size())
+				for q in pv.size():
+					ys[q] = pv[q].y
+					y_lo = minf(y_lo, pv[q].y)
+					y_hi = maxf(y_hi, pv[q].y)
+				arr[Mesh.ARRAY_CUSTOM1] = ys
+				flags |= Mesh.ARRAY_CUSTOM_R_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT
 				if verts0 == null:
 					verts0 = arr[Mesh.ARRAY_VERTEX]
 					for sh in bs:
@@ -244,7 +259,7 @@ static func _build(glb: String) -> Array:
 			if sf.get("region") != null:
 				ground = H.get("ground")
 		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0,
-			"whole": whole, "cover": H.get("cover", [])})
+			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -407,6 +422,15 @@ func apply(rec: Dictionary) -> void:
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (core/charactermodels/tools/mods.py)
 	skeleton.position.y = 0.0
+	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
+	var feet_top := -1000.0
+	var hem := 1000.0
+	for mi in want:
+		var pt: Dictionary = mi.get_meta("part")
+		if pt["role"] == "armour" and pt["slot"] == "feet":
+			feet_top = maxf(feet_top, float(mi.get_meta("built")["y_hi"]))
+		elif pt["role"] == "armour" and pt["slot"] == "torso":
+			hem = minf(hem, float(mi.get_meta("built")["y_lo"]))
 	for mi in want:
 		var b: Dictionary = mi.get_meta("built")
 		var shapes: PackedInt32Array = b["shapes"]
@@ -431,6 +455,9 @@ func apply(rec: Dictionary) -> void:
 						if worn.has(int(i)):
 							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
+			if part["role"] == "armour":
+				var legs: bool = part["slot"] == "legs"
+				_fur(m, _item_of(part), Vector2(feet_top if legs else -1000.0, hem if legs else 1000.0))
 			mi.set_surface_override_material(s, m)
 		if b["ground"] != null:
 			var G: Dictionary = b["ground"]
@@ -1898,6 +1925,63 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("kcSH", float(top.get("hem", 0.0)) if squeeze and not long_top else 1000.0)
 	_push_mats.append(pm)
 	return pm
+
+
+# ---- fur (data/fur.json; kit items' fur: the twin of furShells in 50-figure.js) ----
+# a garment's fur rows drawn as shells: fur.layers ShaderMaterials (kchar_fur.gdshader) chained after its material
+# (next_pass), layer k of n standing k/n of the pile out; each takes the garment's look and, on a pushed garment, its
+# push (the capsules each frame with the push materials). band: the rest heights a legs item's fur lies between
+var fur := {}
+
+
+func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
+	var rows: Array = it.get("fur", [])
+	if fur.is_empty() or rows.is_empty() or m == null:
+		return
+	var scale := float(fur.get("items", {}).get(it["id"], {}).get("pile", 1.0))
+	if scale <= 0.0:
+		return
+	var n := int(fur.get("layers", 12))
+	var kinds: Dictionary = fur["kinds"]
+	var by_kind := {}
+	for r in rows:
+		if kinds.has(r[2]):
+			if not by_kind.has(r[2]):
+				by_kind[r[2]] = []
+			by_kind[r[2]].append(r)
+	var pushed := m is ShaderMaterial and (m as ShaderMaterial).shader == PUSH_SHADER
+	var last := m
+	for kind in by_kind:
+		var K: Dictionary = kinds[kind]
+		var rs: Array = by_kind[kind].slice(0, 4)
+		var pile := float(K["pile"]) * scale
+		var R := []
+		for k in 4:
+			R.append(Vector4(rs[k][0], rs[k][1], rs[k][3], rs[k][4]) if k < rs.size() else Vector4(2, 2, 0, 0))
+		for k in range(1, n + 1):
+			var t := float(k) / n
+			var fm := ShaderMaterial.new()
+			fm.shader = FUR_SHADER
+			if pushed:
+				for p in ["tex", "albedo", "kcL", "kcP", "kcT", "kcS", "kcSH"]:
+					fm.set_shader_parameter(p, m.get_shader_parameter(p))
+				_push_mats.append(fm)
+			elif m is BaseMaterial3D:
+				fm.set_shader_parameter("tex", (m as BaseMaterial3D).albedo_texture)
+				fm.set_shader_parameter("albedo", (m as BaseMaterial3D).albedo_color)
+			fm.set_shader_parameter("kfH", pile * t)
+			fm.set_shader_parameter("kfC", float(K.get("comb", 0.0)) * pile * t * t)
+			fm.set_shader_parameter("kfT", t)
+			fm.set_shader_parameter("kfR", R)
+			fm.set_shader_parameter("kfS", float(K["strand"]))
+			fm.set_shader_parameter("kfW", float(K["thick"]))
+			fm.set_shader_parameter("kfL", float(K.get("clump", 0.0)))
+			fm.set_shader_parameter("kfSh", float(K.get("shade", 1.0)))
+			fm.set_shader_parameter("kfTp", float(K.get("tip", 1.0)))
+			fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
+			fm.set_shader_parameter("kfF", band)
+			last.next_pass = fm
+			last = fm
 
 
 # a surface left out: a part of the base drawn over the skin that a worn item covers (KChar.hidden_parts)

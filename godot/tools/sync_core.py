@@ -21,7 +21,7 @@ PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd
 _CH = "core/charactermodels"
 _BODIES = sorted(b for b in os.listdir(os.path.join(REPO, _CH, "data")) if b.startswith("mpfb_"))
 PAIRS += [(f"{_CH}/data/{b}/{f}.json", f"godot/data/characters/{b}/{f}.json") for b in _BODIES for f in ("skeleton", "kit")]
-PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props", "posture")]
+PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props", "posture", "fur")]
 _PP = os.path.join(REPO, _CH, "pieces", "props")   # gitignored: absent on CI, so the props are copied only where built
 PAIRS += [(f"{_CH}/pieces/props/{f}", f"godot/data/characters/pieces/props/{f}")
           for f in (sorted(os.listdir(_PP)) if os.path.isdir(_PP) else []) if f.endswith(".glb")]

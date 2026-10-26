@@ -137,6 +137,15 @@
   and the gele are rigid; the grand boubou is one stiff sheet over the arms (it swings at the hem but has no folds and
   does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
   held overhead.
+- **Fur is shells, not strands** (2026-10-26; README, "Fur"). Seen edge-on it has a soft, spiky silhouette; seen
+  face-on it is a speckle of strand ends with no lighting of its own (it is lit as the cloth under it), and strands do
+  not move apart in a bend or sway. Fur under another item is trimmed only for trousers (between the boots' top and the
+  top's hem); a fur trim under a part of its own garment (the gown's cape edge under the lace collar) can show through
+  it. The rows of the garments built before `make_garments.py` wrote them were derived from the published pieces
+  (`tools/fur.py`): rebuilding those garments rewrites them from the source (a few texels apart at a band's edge). The
+  Godot twin's legs band takes the unmorphed rest heights (CUSTOM1), the page the morphed ones: a few cm apart at the
+  slider ends. No furred bodies yet: the shells read a garment's texture rows, so a coat on a body (the Khaayken, an
+  animal) needs a fur mask on the skin first. The crowd's baked looks leave the shells out.
 - **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
   and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
   close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the

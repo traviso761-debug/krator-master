@@ -12,6 +12,7 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};     // data/posture.json, before any figure
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   KCharFigure.clipData = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ KCharFigure.clipData[c.key] = c; });   // data/clips.json
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
   var SLOT_LABEL = { head:'Headgear', torso:'Torso & arms', legs:'Legs', feet:'Feet' };

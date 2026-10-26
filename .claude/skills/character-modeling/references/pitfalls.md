@@ -164,6 +164,17 @@ area you are about to change.
 - **A corrupt PNG CRC in a downloaded pack** → fall back to ImageMagick.
 - **Some library and community assets are broken** (404, corrupt, wrong texture names) → keep a SKIP list and a
   fix-up step; record CC-BY assets in CREDITS.
+- **Fur shells hovered in a ring above the hat, level while the head stooped** → they were drawn in the bind pose:
+  three r128 skins only a material made with `skinning: true` (the glTF materials carry it; a new
+  `MeshStandardMaterial` does not). Set it on every material a SkinnedMesh draws with.
+- **A garment's fur came out through what is worn over it** (trousers' pile through the boots' shafts and a deel's
+  skirt in a stride) → shells stand off the cloth by the pile, so anything lying within the pile under another layer
+  shows. Trim the under-item's fur by rest height (the boots' top, the top's hem: `furShells` kfF) rather than shortening
+  the pile everywhere.
+- **Which texels are fur is not in a baked garment** (one texture atlas per garment, a strip per part) → record it at
+  build time (`fur_of`: the rows per part and band, with the metres per unit of u and v); for pieces already built,
+  map strips to parts in source order and use the paint colours only to place band edges: by colour alone the
+  ushanka's umber crown band read as fur.
 
 ## 5. Cloth chains
 

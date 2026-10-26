@@ -1,0 +1,12 @@
+{
+ "note": "Fur drawn as shells over a garment's fur rows (kit items' fur: [v0, v1, kind, mu, mv], make_garments.py fur_of, tools/fur.py). layers: shells over the cloth. Per kind: pile (metres from the cloth to the tips), strand (metres between strands), thick (a strand's width at its root, of the space between strands), comb (how far the tips lean down, of the pile), clump (how much strands' lengths vary), shade (the colour at the roots, of the cloth's: the tips take 1), tip (the colour at the tips), vary (how much lighter or darker one strand is than the next). items: per kit item id, pile (a factor on its kind's pile; 0: no fur).",
+ "layers": 14,
+ "kinds": {
+  "short": {"pile": 0.022, "strand": 0.0024, "thick": 0.85, "comb": 0.8, "clump": 0.5, "shade": 0.45, "tip": 1.2, "vary": 0.35},
+  "astrakhan": {"pile": 0.006, "strand": 0.004, "thick": 1.0, "comb": 0.1, "clump": 0.3, "shade": 0.55, "tip": 1.1, "vary": 0.25}
+ },
+ "items": {
+  "beast_m_trade_trousers": {"pile": 0.6},
+  "beast_f_trade_trousers": {"pile": 0.6}
+ }
+}

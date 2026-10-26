@@ -102,6 +102,7 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
