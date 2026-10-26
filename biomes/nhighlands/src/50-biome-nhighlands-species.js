@@ -112,7 +112,7 @@ NHL.SPECIES=[
   tags:TG('temperate','subhumid','no',HV('timber',['sap'],false,''))},
  /*12*/{key:'elderyew',name:'Elder yew',habit:'yew',H:[9,16],rb:[1.3,2.2],crownR:[7,10],bk:4,bark:[0x6a3a3a,0x5a3040,0x7a4446],leaf:PAL.yew,item:'needle',
   tags:TG('temperate','humid','no',HV('timber',['arils (not the seed)'],true,'Every part poisonous but the red aril: eat the cup, spit the stone. Bows from the heartwood.','generic_fruit_yew_lantern'))},
- /*13*/{key:'spirespruce',name:'Spire spruce',habit:'conifer',H:[24,40],rb:[.4,.7],crownR:[1.8,3.0],bk:0,bark:[0x5a5048,0x4e463e,0x665c52],leaf:PAL.conifer.map(c=>C(c).multiplyScalar(.82).getHex()),item:'needle',
+ /*13*/{key:'spirespruce',name:'Spire spruce',habit:'conifer',H:[24,40],rb:[.4,.7],crownR:[1.8,3.0],bk:0,bark:[0x5a5048,0x4e463e,0x665c52],leaf:PAL.conifer.map((c,i)=>C(c).lerp(C(PAL.coniferBlue[i%4]),.35).multiplyScalar(1.25).getHex()),item:'needle',   /* (2026-10-26) the conifer green a third toward the fir's blue-grey and x1.25, no longer x.82: the dense spires read near-black against the light */
   form:{clear:.08,crown:'spire',step:1.3,droop:.55,L:1,buttress:0,flutes:0,fluteA:0,top:'spire',moss:.2,drape:0,lichen:.6},
   tags:TG('cold','subhumid','no',HV('timber',[],false,'The straight poles of every boreal lodge.'))},
  /*14*/{key:'frostfir',name:'Frost fir',habit:'conifer',H:[18,30],rb:[.35,.6],crownR:[1.8,2.8],bk:0,bark:[0x8a9090,0x7a8282,0x969c9c],leaf:PAL.coniferBlue,item:'needle',
@@ -519,7 +519,6 @@ BIO.def('haloV',BIO.geo.bloom(),M.haloV,{label:'Pod glow'});
 BIO.def('disc',G.disc(),M.vcol,{label:'Disc stalks'});
 BIO.def('pleat',G.pleat(),M.vsway,{label:'Red-stem fans'});
 BIO.def('boulderA',G.boulder(1.3),M.rock,{label:'Boulders'});
-BIO.def('boulderB',G.boulder(4.7),M.rock,{label:'Boulders'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Mushrooms'});
 BIO.def('berry',G.berry(),M.solid,{label:'Berries'});
 BIO.def('mast',new T3.TetrahedronGeometry(1,0),M.solid,{label:'Beechmast and acorns'});   // 4 triangles: hero trees only

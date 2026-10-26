@@ -25,19 +25,26 @@ NHL.LOD={tree:1300,floor:650,farFloor:2400,dress:1300,logs:1300,glow:650};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const cold=BIO.field('cold',x,z),wet=BIO.field('wet',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),rock=BIO.field('rock',x,z),up=BIO.field('upland',x,z);
- const temperate=smooth(.44,.28,cold),montane=smooth(.24,.40,cold)*smooth(.74,.58,cold),boreal=smooth(.56,.72,cold),alpine=smooth(.88,.985,cold);
- const rip=smooth(.3,.8,flow);
- const glade=smooth(.62,.72,fbm(x*.0042+13,z*.0042-29,4401,2))*(1-rip)*(1-alpine);                 // clearings: bluebells, bracken, disc stalks
- const oldwood=smooth(.32,.6,rock)*smooth(.14,.30,cold)*smooth(.78,.62,cold)*(1-rip);            // the old wood on the boulder fields
- const crag=smooth(.55,.9,rock)*smooth(.3,.5,cold);
- const burn=boreal*(1-alpine)*smooth(.65,.71,fbm(x*.0015+77,z*.0015-31,4402,2));                  // the old burn: snags over fireweed, birch coming back
- const colony=smooth(.52,.64,fbm(x*.0062-3,z*.0062+8,4403,2));                                   // where the understorey trumpets sucker
- const grove=smooth(.54,.64,fbm(x*.0044+5,z*.0044+41,4404,2));                                   // birch stands
- const cane=smooth(.68,.74,fbm(x*.008+2,z*.008-12,4405,2))*temperate*(1-glade);                  // mountain cane patches
- const dark=smooth(.56,.66,fbm(x*.0055-17,z*.0055+3,4406,2))*smooth(.75,.4,cold);                 // where the dark understorey seeps in
- const low=smooth(.34,.12,cold);                                                                  // the foot of the temperate band: broadleaf country
- return{cold,wet,flow,mist,rock,up,temperate,montane,boreal,alpine,rip,glade,oldwood,crag,burn,colony,grove,cane,dark,low};}
+// A ZONE RECORD: the field reads and the cheap bands are filled at once; the six noise-driven zones (glade, burn,
+// colony, grove, cane, dark: an fbm each) are worked out the first time a pass reads them and kept. Most tree passes
+// read none of them, so the placement grids stop paying ~6 fbm a cell for values they never use (2026-10-26). The
+// values are the same expressions as before, so every placement is unchanged.
+function Zone(x,z){this.x=x;this.z=z;
+ const cold=this.cold=BIO.field('cold',x,z);this.wet=BIO.field('wet',x,z);const flow=this.flow=BIO.field('flow',x,z);this.mist=BIO.field('mist',x,z);const rock=this.rock=BIO.field('rock',x,z);this.up=BIO.field('upland',x,z);
+ this.temperate=smooth(.44,.28,cold);this.montane=smooth(.24,.40,cold)*smooth(.74,.58,cold);this.boreal=smooth(.56,.72,cold);this.alpine=smooth(.88,.985,cold);
+ const rip=this.rip=smooth(.3,.8,flow);
+ this.oldwood=smooth(.32,.6,rock)*smooth(.14,.30,cold)*smooth(.78,.62,cold)*(1-rip);            // the old wood on the boulder fields
+ this.crag=smooth(.55,.9,rock)*smooth(.3,.5,cold);
+ this.low=smooth(.34,.12,cold);                                                                  // the foot of the temperate band: broadleaf country
+ this._gl=-1;this._bu=-1;this._co=-1;this._gr=-1;this._ca=-1;this._da=-1;}
+Object.defineProperties(Zone.prototype,{
+ glade:{enumerable:true,get(){return this._gl>=0?this._gl:(this._gl=smooth(.62,.72,fbm(this.x*.0042+13,this.z*.0042-29,4401,2))*(1-this.rip)*(1-this.alpine));}},   // clearings: bluebells, bracken, disc stalks
+ burn:{enumerable:true,get(){return this._bu>=0?this._bu:(this._bu=this.boreal*(1-this.alpine)*smooth(.65,.71,fbm(this.x*.0015+77,this.z*.0015-31,4402,2)));}},   // the old burn: snags over fireweed, birch coming back
+ colony:{enumerable:true,get(){return this._co>=0?this._co:(this._co=smooth(.52,.64,fbm(this.x*.0062-3,this.z*.0062+8,4403,2)));}},   // where the understorey trumpets sucker
+ grove:{enumerable:true,get(){return this._gr>=0?this._gr:(this._gr=smooth(.54,.64,fbm(this.x*.0044+5,this.z*.0044+41,4404,2)));}},   // birch stands
+ cane:{enumerable:true,get(){return this._ca>=0?this._ca:(this._ca=smooth(.68,.74,fbm(this.x*.008+2,this.z*.008-12,4405,2))*this.temperate*(1-this.glade));}},   // mountain cane patches
+ dark:{enumerable:true,get(){return this._da>=0?this._da:(this._da=smooth(.56,.66,fbm(this.x*.0055-17,this.z*.0055+3,4406,2))*smooth(.75,.4,this.cold));}}});   // where the dark understorey seeps in
+function zones(x,z){return new Zone(x,z);}
 NHL.zones=zones;
 
 // ---------------------------------------------------------------- colour
@@ -198,8 +205,9 @@ B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.ste
    else BIO.beam('rod',P3(pts[0]),P3(pts[5]),r0,.08,rodCol(S,k));
    for(let i=2;i<=5;i++)spots.push(pts[i]);}
   spots.push({x:top.x,y:T.y0+H*.95,z:top.z});}
- const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72;
- spots.forEach(p=>{for(let c=0;c<cnt;c++){const sz=rr(f.clump[0],f.clump[1]);clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hc,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
+ /* the mid-range tree (lv 1, 100-500 m): its three boughs carry larger masses, and one spot in two a second one (2026-10-26: the conifers' lv-1 treatment; read sparse at 100-300 m) */
+ const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72,lvK=lv===2?1:1.3,hcM=lv===2?hc:shade(hc,-.16);   /* and a shade darker: lit whole with no inner crown behind them, its masses read lime against the hero trees */
+ spots.forEach(p=>{for(let c=0,m=lv===2?cnt:(rng()<.5?2:1);c<m;c++){const sz=rr(f.clump[0],f.clump[1])*lvK;clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hcM,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
   if(f.berries&&lv>=1&&rng()<.6)for(let b=0,m=lv===2?ri(5,10):3;b<m;b++)BIO.put('berry',[p.x+rr(-1,1),p.y+rr(-.6,.4),p.z+rr(-1,1)],null,rr(.06,.09),bright(C(pick(PAL.berry)),1.1));}});
  // SUCKERS: the old lime's skirt of leafy shoots round its foot
  if(f.mast&&lv===2)mastOn(spots,f.mast,st);
