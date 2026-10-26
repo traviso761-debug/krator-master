@@ -2,7 +2,8 @@
 
 Status: **plan, no code yet** (2026-10-25). Written with the owner in a side session of the all-builds biome rebuild
 (`HANDOFF-REBUILD.md`, stage 1), which left the sky domes out because no `core/atmos` sky existed. This file is the
-plan for that sky; its decisions are in section 2 and the questions still open are in section 12.
+plan for that sky; its decisions are in section 2 (the second round in 2.1) and the questions still open are in
+section 12.
 
 It retires the `OWN sky-dome` findings of `python3 tools/check_core_use.py --list` (29 today, section 9), closes
 `AUDITS.md` section B gap 4 ("Painted-dome skies have no `core/atmos` sky preset and no shared hour clock"), and does
@@ -65,6 +66,24 @@ fragment in a fixed back-to-front order, and the ring's far half is occluded ana
 | Clouds | **a procedural layer** in the sky shader, riding the `ATMOS` wind, lit by the sun and giantshine, with cover and type per preset. VISUAL-BAR bans "clouds as a texture dome" |
 | The night sky | **Krator lies in the Pleiades** (the owner): a spectacular night of many bright blue-white stars and a reflection-dust nebula, a layer of its own (section 3.4) |
 
+### 2.1 The second round (the owner, 2026-10-25)
+
+| Question | Decision |
+|---|---|
+| The giant's position | **worked out per site** from the site's latitude and sub-giant longitude; no canon constant |
+| Latitudes | **from the Krator scale model**. The model stores no latitude today (a 2 km/px frame and rough labels), so the plan adds a frame to it (3.1, "The site frame") |
+| The nebula | **procedural first**; the owner judges it on the demo page and asks for a texture only if it is needed |
+| Where the cluster lies | **plausible for a star on the edge of the nebula**, and more or less visible by the time of year (3.4) |
+| Stars by day | **on the highest peaks**, more so toward the airless Outer Wall (3.4) |
+| The page's first hour | **every page opens at sunrise, 06:00** |
+| Game start | **the spring equinox**, which puts sunrise at 06:00 on every page (at an equinox the sun rises at six everywhere) |
+| The calendar | **Earth's months, with Jimjam-style names**, until a formal Krator calendar exists (3.1, "The calendar") |
+| Review | **a demo page first** (step S0): no biome changes until the owner has seen it |
+
+Question 2 of the first round (pages whose fixed sun no hour reaches) follows from the first row: there is no pinned
+sun. Each page's light is the model's at its site, and the old light is reproduced only for the before-and-after
+comparison (section 8).
+
 ## 3. The sky as data
 
 Three records, all plain JSON-able data, `[G data]`, no THREE and no DOM:
@@ -80,8 +99,28 @@ checked by the same sign table (`skyCheckSigns`) as a node test:
   moons' periods (6.87 and 12.55 days), sizes and orbits, so their phases and positions follow the day count and the
   Double Dark falls every 91 days when it should.
 - **Per site:** `latitude` and `subGiantLon` (degrees east of the site to the sub-giant point). From them, the giant's
-  altitude and azimuth are derived, never typed; `giantAzOverride`/`giantAltOverride` stay for a showcase page only
-  (section 12, question 1).
+  altitude and azimuth are derived, never typed (the owner: per site). There is no override.
+- **The site frame.** Both come from the scale model's pixel (2 km/px, `x` east, `y` south: `extract_region.py`'s
+  `frame`), which today has no latitude. The model gets two constants and two functions, `latOf(px, py)` and
+  `subGiantLonOf(px, py)`:
+  - the anchor: the reference site, **Voth, at 40 S** (LORE section 2), about px 446,690 (275 km south of Almua's
+    px 446,553);
+  - the scale: **84 km per degree**, a radius of about 4,800 km: Krator's 7.4 m/s2 at an Earth-like density. Checked
+    against the model's own rough labels: it puts the Rift (px y 1087 to 1345) at 49.5 to 55.6 S, against the labelled
+    48 to 57 S;
+  - the sub-giant meridian: Voth's 21-sky.js puts it 57 degrees east of Voth (giant at altitude 24.7, azimuth 67.3), so
+    `subGiantLon = 57 - (px - 446) * 2 / (84 cos lat)`.
+  Over the crater's span (about 1,200 by 1,300 px) the giant then moves by some degrees between biomes, rising toward
+  the east and the north; the S0 demo shows it at a few sites so the owner can judge the spread.
+- **The calendar.** A 365-day year counted from day 0; the southern summer solstice on **day 350** (LORE), so the
+  southern spring equinox is day 258.75 and the autumn one day 76.25. Until a formal Krator calendar exists the days are
+  dated in **Earth's months**, named in the style of Jimjam's weekdays (the Ancients' words as Jimjam says them;
+  *proposed*, the owner to confirm or rename): *Janavari, Pepravari, Mārccu, Ēpral, Mē, Jūn, Julai, Ākasṭu,
+  Ceppaṭampar, Akṭōpar, Navampar, Ṭicampar*, with Earth's month lengths, so the solstice is 17 Ṭicampar and the
+  equinox **17 Ceppaṭampar**. Jimjam's own counts (the Week, the Thirteen, the Count of 91, the Day Outside) run beside
+  it from the moons; the sky shows the date in both.
+- **Game start** is the southern spring equinox: **day 259 (17 Ceppaṭampar), 06:00**, sunrise. It is also eclipse season
+  (LORE: eclipses come round each equinox), so the demo can show one within a few days of the start.
 - **Functions** of `(site, hour, dayOfYear, day)`: `sunDir`, `giantDir`, `giantPhase` (the sun's direction in the giant's
   frame), `moons` (direction, phase), `eclipse` (the sun's fraction hidden by the giant, softened over its disc),
   `starRot` (the celestial sphere's rotation about the south pole), `night` and `twilight` factors.
@@ -99,7 +138,7 @@ What makes a place's sky its own. A biome's `src/82-host-sky.js` becomes this re
 | `ridges` | the far land (3.3) |
 | `landmarks` | named far features that are not ridges: the Throne's plume (lean, width, glow at night when the summit glows), a cloud sea below the horizon (shighlands, glacier: a floor at an elevation band with billows, or `core/atmos`'s cloud deck when the page has real ground under it) |
 | `night` | the night sky's gains: giantshine strength (scaled by the giant's phase), star and nebula visibility (scaled by `air`: thin air at the glacier shows the brightest stars by day, the Abyss shows few) |
-| `defaultHour`, `defaultDay` | the hour and day the page opens on, chosen so its acceptance frames keep today's light where the model can reach it (section 8) |
+| `defaultHour`, `defaultDay` | the hour and day the page opens on: **06:00 on game start day** for every page (the owner), so these keys exist only for a showcase view or a test. The acceptance frames are views with their own `#hour=` (section 8) |
 
 `PRESETS.sky.standard` is "the standard Krator skybox" `README.md` names: the reference site's air and keys, no ridges.
 Every preset is that plus overrides, so most biomes are a page of numbers.
@@ -141,7 +180,35 @@ Krator lies inside the Pleiades, so its night is not Earth's:
   disc (and by its night side, which is dark against it), dimmed by haze near the horizon, by cloud, and by giantshine
   on the side of the sky near a bright giant.
 
-Whether the nebula is procedural or an authored texture is question 4 in section 12.
+**Where the cluster lies** (the owner: plausible for a star on the edge of the nebula). Krator's sun sits on the
+cluster's edge, so the sky is lopsided rather than evenly starry:
+
+- **The near half.** The cluster's core lies in one direction: its brightest members (a dozen hot blue-white stars,
+  some brighter than Venus from Earth) within about 25 degrees of the centre, the cluster's fainter members thinning out
+  to about 60 degrees. The dust is thickest there: wisps and filaments lit blue by those stars, with dark lanes where
+  it is thick enough to hide what is behind it, fading to nothing about 100 degrees from the centre.
+- **The far half** looks out of the cluster: an ordinary dark sky, fewer and fainter stars, and the faint band of the
+  galaxy, so the contrast between the two halves is itself the show.
+- **The direction** is fixed among the stars (as Earth's sky is): the centre at declination **-30** and right ascension
+  **18 h**, so seen from 40 S it crosses the meridian 80 degrees up, near the zenith, and is not circumpolar.
+- **By the season** (the owner: more or less visible by the time of year): the night sky is the half away from the sun,
+  which moves round the stars once a year. In **southern winter** (Jūn, Julai) the cluster is up all night and
+  overhead at midnight: the long nights are its season. At the spring equinox (game start) it stands high in the evening
+  sky at dusk and sets after midnight; at the autumn equinox it rises after midnight and is high at dawn. In **southern summer** (Ṭicampar, Janavari) it is up by day, near the sun, and gone
+  from the night: those are the plain, dark-skied nights. Nothing is scripted for this: the stars turn at the sidereal
+  rate (one turn more per year than the sun), and the season follows.
+
+**Stars by day** (the owner: on the highest peaks, more so toward the airless rim). The air's own brightness hides
+stars; in thin air it is dimmer. A day-visibility gain from the preset's `air.pressure` lets the brightest cluster
+stars and the nebula's core show by day **only where the air is thin**: from about 0.6 atm (the high Walls, the
+glacier) faintly, more as it thins, and plainly on the airless Outer Wall's crests, where the sky is dark blue to black
+overhead. On the crater floor and the lowlands (1.3 to 2.0 atm) the day sky shows none. Godot reads the same gain.
+
+**The nebula is procedural first** (the owner): domain-warped noise on the celestial sphere, a few octaves on an
+integer lattice (bit-exact across engines), shaped by distance from the cluster's centre, lit blue by the bright
+stars' directions, with the dark lanes as a second, sharper field. If the owner wants more after seeing it on the demo
+page, an authored texture replaces the large forms and the procedural layer keeps the fine wisps (its prompt would go
+in `core/materials/PROMPTS-NEEDED.md`).
 
 ## 4. One shader: the layers and their order
 
@@ -188,8 +255,8 @@ instead of `KSTAGE`'s one-frame panorama PNG (that stays as the fallback for bui
 A biome's host fragment becomes:
 
 ```js
-ATMOS.sky(ATMOS.skyPreset('standard', {site:{latitude:-38.5, subGiantLon:61}, air:{pressure:1.9, humidity:.8},
-  clouds:{cover:.45, type:{cumulus:.7, veil:.3}}, ridges:[/* the far canopy */], defaultHour:15.2, defaultDay:273}),
+ATMOS.sky(ATMOS.skyPreset('standard', {site:ATMOS.siteAt(px, py), air:{pressure:1.9, humidity:.8},   /* the scale model's pixel */
+  clouds:{cover:.45, type:{cumulus:.7, veil:.3}}, ridges:[/* the far canopy */]}),   /* opens 06:00, day 259 */
   {renderer, sun, hemi, fill});
 ```
 
@@ -224,9 +291,10 @@ Every page that changes its sky changes its hash: all of them, by design. The pr
 2. **Sun fit.** A tool (`tools/sky_fit.py` or a node script) takes each page's `sun.position` and finds the nearest
    `(hour, day)` the model reaches at the page's site. Measured for three pages at 40 S: swbay's sun is reached within
    0.2 degrees (15:12, day 273), shighlands' exactly (14:45, day 76), **the Throne's is not: 23 degrees off** (its sun
-   stands WSW at 42 degrees, which 40 S never reaches). Pages within a degree or two keep their light; the others are
-   question 2 in section 12.
-3. **After**, the same frames at the fitted hour. Side by side per page (reference left), with the sky ablation flag
+   stands WSW at 42 degrees, which 40 S never reaches). The fit runs again at each page's own latitude from the site
+   frame. There is no pinned sun (2.1): a page the model cannot match changes its light, and its side-by-side says
+   so in its `KNOWN_ISSUES.md`.
+3. **After**, the same frames at the fitted hour (the page itself opens at 06:00, day 259). Side by side per page (reference left), with the sky ablation flag
    (`#sky=old` while both exist, VISUAL-BAR section 5) so before and after come from the same pose.
 4. **Gates** (`tools/harness.py`, shared): the hour sweep (hours 6, 12, 17, 22: the sky's and the lit ground's mean
    colours differ between each pair, none grey), the shadow-colour gate at the golden hour, and two new ones:
@@ -257,7 +325,7 @@ show the drift; record it in its `KNOWN_ISSUES.md`).
 
 | Step | What | Why first |
 |---|---|---|
-| S0 | the model, the presets, the shader and its Godot twin, the tests; a demo page in `core/atmos/demo/` showing the standard preset at any hour and day, with the ring and ridge checks | nothing changes on any page; the owner judges the sky itself, the Pleiades night and the giant's phases here |
+| S0 | the model, the presets, the shader and its Godot twin, the tests; a demo page in `core/atmos/demo/` showing the standard preset at any hour and day, with the ring and ridge checks. Its controls: hour, date (in the Jimjam-named months and Jimjam's counts), a site picker (Voth, the hyperjungle, the Throne, the glacier, an Outer Wall crest) so the giant's spread and stars by day can be judged, air pressure, cloud cover, weather; presets for game start at 06:00, a winter midnight under the cluster, a summer night without it, and an eclipse near the equinox | nothing changes on any page; the owner judges the sky itself, the procedural Pleiades night and the giant's phases here, and decides on the nebula texture |
 | S1 | swbay (the template biome; nwbay shares its file) | the simplest dome, a reachable sun |
 | S2 | nhighlands | the hardest: the three light modes, the far-country mesh in front, its fog curve; proves the `setLightMode` shim |
 | S3 | the remaining biome kits, in groups by sky family: the painted Walls (sedesert, nsemiarid, ebadlands, eastabyss, crater-drylands), the humid ones (hyperjungle and its readers, swlowlands, nwlowlands, rift, xanadu, oidong and Longsong), the ones with light modes (geyser, ringisles), shighlands (the cloud sea), ehighlands | the readers rebuild with their source |
@@ -294,28 +362,20 @@ taken into it by agreement), and each step rides one all-builds rebuild where it
 
 ## 12. Open decisions for the owner
 
-1. **The giant's position: derived per site, or one canon placement?** Deriving it from each site's latitude and
-   sub-giant longitude is what a tidally locked moon does (Voth's model): the giant stands higher nearer the sub-giant
-   point and lower away from it, so it would move between biomes. LORE gives "~25 degrees, ~66 degrees" as canon, and
-   nhighlands raised its own to 30. Proposal: derive, and check that every biome's giant stays NE between about 15 and
-   40 degrees; a site where it would sink behind its ridges is a showcase override in its preset.
-2. **Pages whose fixed sun no hour reaches** (the Throne's, 23 degrees off at 40 S; more after the fit tool runs). Take
-   the nearest reachable light and re-shoot the acceptance frames, or allow a pinned sun on a showcase preset? Proposal:
-   no pinned sun (Godot has one model); fix the Throne's site latitude first, which may close most of the gap.
-3. **Each site's latitude** from the scale model (about 40 S overall, the Rift 48-57 S) or one reference 40 S for every
-   biome until the scale model labels latitudes exactly. Proposal: the scale model where it has one, 40 S otherwise.
-4. **The nebula: procedural or an authored texture?** Procedural (noise on the celestial sphere, a few octaves) needs no
-   asset but tends to look like noise; a painted or generated equirectangular nebula (blue reflection dust, filaments,
-   dark lanes, about 4096 x 2048) reads as a real sky and is one shared texture in `core/materials` (its prompt would go
-   in `PROMPTS-NEEDED.md`). Proposal: the texture, with procedural fine wisps over it.
-5. **Where the cluster lies in Krator's sky**: which part of the sky the nebula and the brightest stars fill (seen from
-   40 S, the south celestial pole is fixed and the rest wheels round it), and whether any of the bright stars or
-   lanes is already named in the lore or a culture's calendar (Jimjam's).
-6. **Seen by day?** In thin air (the glacier, 6 km; the hyperalpine climate) the brightest stars and the nebula's core
-   could show faintly by day. Proposal: yes, scaled by pressure, as a preset gain.
-7. **The default hour and day per page** (for the acceptance frames and the pages' first look): the fitted hour from
-   section 8, or a chosen showcase hour per biome (a colour script's best moment).
-8. **The moons** follow their real periods from a day count, so a page opens with the moons at some phase: pick a
-   canonical "game start" day (LORE has the solstice on day 350 and the Double Dark every 91 days) or a per-page day.
-9. **Step S0's review**: the owner judges the standard sky, the Pleiades night and the giant's phases on the demo page
-   before any biome changes. Agreed?
+Settled on 2026-10-25 and moved into the plan: the giant per site, latitudes from the scale model, no pinned sun, the
+procedural nebula first, the cluster's place and seasons, stars by day on the heights, 06:00 openings, the spring
+equinox as game start, Earth's months with Jimjam-style names, and the demo page first (section 2.1). What is left:
+
+1. **The site frame's two numbers**: Voth at 40 S as the anchor and 84 km per degree (a radius of about 4,800 km, from
+   7.4 m/s2 at Earth's density), which put the Rift at 49.5 to 55.6 S against the model's rough 48 to 57 S. Keep them,
+   or give Krator a canon radius? Either way they become constants in the scale model, and LORE section 2 gains a
+   radius row.
+2. **The month names** (3.1) are a proposal in the style of Jimjam's weekdays: confirm or rename. They are display only;
+   the sky runs on the day number.
+3. **The moons at game start.** Their phases on day 259 need an epoch: the Count's day on which game start falls.
+   Proposal: game start is the day after a Double Dark (the Count's first day after *Van Sanḍē*), so both moons are new
+   crescents at the first dusk and the next Double Dark is 90 days off; or open the game on the Double Dark itself, in
+   eclipse season.
+4. **The cluster's direction** (declination -30, right ascension 18 h) gives the seasons in 3.4: best in southern
+   winter, gone in southern summer, half the night at game start. A different right ascension shifts which season
+   owns it; say if the winter nights should not be the cluster's.
