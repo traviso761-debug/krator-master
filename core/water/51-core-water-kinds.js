@@ -244,7 +244,7 @@
     // vIndirectFront: the hemisphere and ambient irradiance, over pi); any other takes W.WET.sky times the daylight (core/atmos's light)
     '#include <emissivemap_fragment>\n#ifndef USE_ENVMAP\nif(wtrPd>0.001){float wtrFr=0.02+0.98*pow(1.0-clamp(dot(normalize(cameraPosition-vWtrW),wtrPN),0.0,1.0),5.0);'+
     '\n#if defined(LAMBERT)\nvec3 wtrSkyL=vIndirectFront*0.3183099;\n#else\nvec3 wtrSkyL=vec3('+W.WET.sky.map(f).join(',')+')*wtrLight;\n#endif\n'+
-    'totalEmissiveRadiance+=wtrPd*wtrFr*wtrSkyL;}\n#endif\n}':
+    'totalEmissiveRadiance+=wtrPd*min(wtrFr,0.6)*'+f(W.WET.sheen)+'*wtrSkyL;}\n#endif\n}':
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
   Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>wet,set:fn=>{page=fn;}});

@@ -33,6 +33,7 @@ for (let i = 0; i < 40; i++) { const x = -50 + 100 * rnd(), z = -50 + 100 * rnd(
 const h = (x, z) => .002 * x + .3 * Math.sin(x * .05) * Math.cos(z * .04) - (Math.hypot(x - 60, z + 40) < 14 ? .6 * (1 - Math.hypot(x - 60, z + 40) / 14) : 0);
 const M = W.hollows({ h, box: [-100, -100, 200, 100], cell: 4, blur: 20, depth: .4 });
 out.hollow = { rec: { x0: M.x0, z0: M.z0, cell: M.cell, nx: M.nx, nz: M.nz, depth: M.depth, fill: M.fill, soft: M.soft, bytes: Buffer.from(M.data).toString('base64') }, samples: [] };
+for (const [x, z, wet] of [[60, -40, 1], [58, -38, .8], [62, -42, .6], [55, -40, 1]]) out.hollow.samples.push({ x, z, wet, m: W.hollowAt(M, x, z), p: W.puddleAt(M, x, z, wet) });
 for (let i = 0; i < 40; i++) { const x = -110 + 320 * rnd(), z = -110 + 220 * rnd(), wet = [0, .3, .7, 1][i % 4]; out.hollow.samples.push({ x, z, wet, m: W.hollowAt(M, x, z), p: W.puddleAt(M, x, z, wet) }); }
 // the wet look
 for (const [r, w, pd, por, film] of [[.9, 0, 0, .7, 0], [.9, 1, 0, .7, 0], [.6, .5, .3, .4, 0], [.8, 1, 1, 1, 0], [.7, .2, 0, .7, .6]]) out.wet.push({ r, w, pd, por, film, v: W.wetLook(r, w, pd, por, film) });

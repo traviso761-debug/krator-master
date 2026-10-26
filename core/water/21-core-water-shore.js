@@ -163,7 +163,7 @@
  W.wetGroundRain=(wet,ny)=>wet*ss(.35,.8,ny);
 
  // ---- PUDDLES (2026-10-26, WEATHER-RESEARCH item 1): the hollows a rain fills, baked from the ground's height on the CPU (plain data)
- // WATER.hollows({h, box [x0, z0, x1, z1], cell (4 m), blur (24 m), depth (.5 m), slope ([.06, .2]), fill (.9), soft (.12)}): the ground sampled at
+ // WATER.hollows({h, box [x0, z0, x1, z1], cell (4 m), blur (24 m), depth (.5 m), slope ([.06, .2]), fill (.7), soft (.12)}): the ground sampled at
  // cell centres, its blur (a box blur of radius blur/cell cells, twice, edges clamped), and per cell the hollow: how far the ground lies under its
  // blur, over `depth` m, clamped to 0..1, times its flatness (1 - smoothstep(slope[0], slope[1], the gradient's length)): a puddle forms only where
  // the ground is flatter than a 6% grade; o.mask(x, z) (0..1) multiplies it (0 where the page has water already: a creek's channel is a hollow too). -> {x0, z0, cell, nx, nz, depth, fill, soft, data: Uint8Array (one byte a cell)}. 512 x 512 cells is 256 KB.
@@ -177,7 +177,7 @@
   const data=new Uint8Array(N),hv=(i,j)=>H[Math.min(nz-1,Math.max(0,j))*nx+Math.min(nx-1,Math.max(0,i))];
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,gx=(hv(i+1,j)-hv(i-1,j))/((Math.min(nx-1,i+1)-Math.max(0,i-1))*c),gz=(hv(i,j+1)-hv(i,j-1))/((Math.min(nz-1,j+1)-Math.max(0,j-1))*c);
    data[k]=Math.round(255*Math.min(1,Math.max(0,(A[k]-H[k])/depth))*(1-ss(SL[0],SL[1],Math.hypot(gx,gz)))*(o.mask?Math.min(1,Math.max(0,o.mask(B[0]+(i+.5)*c,B[1]+(j+.5)*c))):1));}
-  return{x0:B[0],z0:B[1],cell:c,nx,nz,depth,fill:o.fill==null?.9:o.fill,soft:o.soft==null?.12:o.soft,data};};
+  return{x0:B[0],z0:B[1],cell:c,nx,nz,depth,fill:o.fill==null?.7:o.fill,soft:o.soft==null?.12:o.soft,data};};
  // the hollow at a world point, 0..1: the bytes bilinear over the cell centres, clamped, as the GPU filters them; 0 outside the box (twin: wtrHollow)
  W.hollowAt=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/(M.cell*M.nz);if(u<0||v<0||u>1||v>1)return 0;
   const fx=u*M.nx-.5,fz=v*M.nz-.5,i0=Math.floor(fx),j0=Math.floor(fz),ax=fx-i0,az=fz-j0,C=(i,j)=>M.data[Math.min(M.nz-1,Math.max(0,j))*M.nx+Math.min(M.nx-1,Math.max(0,i))]/255;
@@ -188,6 +188,6 @@
  // WET LOOK (Lagarde's porous model, 2026-10-26; WATER.wetGround with porosity or puddles): wetness w darkens the albedo by dark * porosity * w and
  // cuts the roughness to `rough` of itself; standing water (a puddle pd, or the swash's film) darkens it by puddleDark more and takes the roughness
  // to puddleRough (a mirror). -> [albedo factor, roughness] (twins of the shader's wtrWetDarkL and wtrWetRoughL). NOT in PRESETS (see W.RIPPLE)
- W.WET={dark:.65,rough:.4,puddleDark:.25,puddleRough:.03,sky:[.55,.62,.7]};   /* sky: the colour a puddle reflects on a material with no environment map, times the daylight */
+ W.WET={dark:.65,rough:.4,puddleDark:.25,puddleRough:.03,sky:[.55,.62,.7],sheen:.4};   /* sky: the colour a puddle reflects on a material with no environment map, times the daylight */
  W.wetLook=(r,w,pd,porosity,film)=>{const Q=W.WET;return[(1-Q.dark*porosity*w)*(1-Q.puddleDark*pd),r*(1+(Q.rough-1)*w)*(1-Math.max(pd,film||0))+Q.puddleRough*Math.max(pd,film||0)];};
 })();
