@@ -149,15 +149,17 @@
   (tuned once: combed flat, inked toward the skin) reads as hair from a few metres and as streaks close up. The Coyote
   Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
   face has a human face's shape, the eyes and mouth bare by ellipses (until the coyote head, below).
-- **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head: no jaw that opens, no
-  ears that move, no expression; the eyes do not turn; the lids' almond and the nose's nostrils are carved, not modelled
-  (no lid thickness, no wet line); the colours are vertex colours on a 4 mm mesh, so the pattern's edges are soft and
-  the ears' pale hollows show the mesh's steps close up; the fur's box projection meets itself at 45-degree seams. The
-  owner's photographs (2026-10-26) set the look; a second round against them is owed. It takes the skull's morphs by nearest vertex, so a
-  child's or an old body's head is the man's head moved, a little large on the short ones. Headgear made for a human
-  head floats on it (no people draws one on it yet). In this checkout it was made by `tools/heads.py` from the published
-  base: the Godot twin has no shapes for it and its skin regions do not yet hide the human head under it, until
-  `make_mpfb.py` next runs (which makes it with the other mods); its fur and look were checked in Godot on the bare piece.
+- **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head, two quality passes
+  against the owner's photographs. It blinks (upper lids only; the lower lids are carved, still). Its jaw does not open
+  and its ears do not turn: nothing drives the face joints yet (no clip has a face track), so a jaw or ear joint would
+  sit still; that wants the activities' clips (README, "A core module: where it goes next"). The eyes do not turn either.
+  The colours are vertex colours, so the pattern's edges are soft; the fur's box projection meets itself at 45-degree
+  seams (strands that run on 3D position would need the rest position in Godot's vertex shader); the ears are furred only
+  at the base. It takes the skull's morphs by nearest vertex, so a child's or an old body's head is the man's head
+  moved, a little large on the short ones. Headgear made for a human head floats on it (no people draws one on it yet).
+  In this checkout it was made by `tools/heads.py` from the published base: the Godot twin has no slider shapes for it
+  and its skin regions do not yet hide the human head under it, until `make_mpfb.py` next runs (which makes it with the
+  other mods); its look and its blink were checked in Godot on the bare piece.
   The digitigrade legs are not built. A MakeHuman UV seam shows in motion as a darker
   line across the chest under a full coat (the strands run on the UV map and break at the seam). The bare face is an ellipse sized from the
   head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the

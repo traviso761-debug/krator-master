@@ -270,7 +270,12 @@ round the muzzle, the UV had a pole at the back of the skull and the fur fanned 
 (`furShells` `uv2` and `COMB_BACK`, Godot `_fur` mode 2 and `kfDir`). The eyes are their own primitive, behind the lids,
 turned a little out, the iris drawn in rings round the gaze (a round pupil, gold to amber, a dark limbal ring, a dark
 sclera); the nose pad is its own primitive on a 1.2 mm grid (a flat front, comma nostrils, the philtrum), glossy and
-untinted. Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
+untinted; the ears are their own on a 1.8 mm grid (furred only where they meet the head: on a thin ear the shells' layers
+stepped). The cheekbones are a ridge under each eye back toward the ear, the sides of the skull a little wider (after
+the photographs). **It blinks**: an upper lid per eye, a band of sphere round the eyeball hidden in the head when open,
+with a glTF morph target `blink` that turns it down to the lower lid; the figure shuts it every few seconds for a fifth
+of a second (`blinks` in 50-figure.js: GPU morph target over the CPU morphs; `fig.blink()` starts one, `fig.blinkHold`
+holds it; Godot `_blinks`, the shape carried through `_build` after the morphs' shapes). Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
 the face sliders leave the muzzle alone), weighted to the Head and into the Neck at the cut. The item hides the head's
 skin, the brows, lashes, eyes, lips and ears (`hide_parts`, which `KCHAR.hiddenParts` now takes from mods too), the hair
 and beard (`covers_hair` on a mod), and is `furred`, so a coat runs on up the neck under it. `make_mpfb.py` makes it with

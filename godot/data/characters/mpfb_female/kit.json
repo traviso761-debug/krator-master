@@ -75838,7 +75838,9 @@
    "Human.culturalibre_hair_17": "hair",
    "Human.o4saken_chinesebob01": "hair",
    "Human.culturalibre_hair_13": "hair",
-   "Mod.coyote_head": "coat"
+   "Mod.coyote_head": "coat",
+   "Mod.coyote_ears": "coat",
+   "Mod.coyote_lids": "coat"
   },
   "gain": {
    "skin": 1.6561,

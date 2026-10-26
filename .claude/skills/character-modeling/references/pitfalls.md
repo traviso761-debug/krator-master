@@ -194,6 +194,12 @@ area you are about to change.
   comb it back along the head (nose to nape), and keep the fur sleek on the face, long only in the ruff.
 - **A small feature (a nose's nostrils) is finer than the mesh's grid** → give it its own primitive on a finer grid,
   and keep the main field's blob under it smaller, or the smooth union bulges over it and hides it.
+- **Shell fur stepped on a thin ear** → its layers show edge-on along the rim and the cup: fur a thin part only where it
+  meets the body and let its shading carry the rest. A finer mesh did not help.
+- **A blink without a face rig** → a lid as a band of sphere round the eyeball, hidden in the head open, and a glTF morph
+  target that turns it shut; three.js runs morph targets on the GPU over the CPU slider morphs (copy the source mesh's
+  `morphTargetDictionary` onto the figure's clone), Godot imports them as blend shapes (carry them through any mesh
+  rebuild, after the morphs' shapes).
 - **A piece's morphs without the export** → give each vertex `_VIDX` of the base vertex it should follow and ship the
   base skin's own morph entry under the piece's material names: the page's morph code matches by material and `_VIDX`.
 - **The Godot test hung after a small edit** → a `:=` on a value from an untyped node (`mi.mesh.surface_get_format(s)`)

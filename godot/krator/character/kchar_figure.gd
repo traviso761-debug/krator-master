@@ -165,6 +165,15 @@ static func _build(glb: String) -> Array:
 		mesh.blend_shape_mode = Mesh.BLEND_SHAPE_MODE_NORMALIZED if whole else Mesh.BLEND_SHAPE_MODE_RELATIVE
 		for t in shapes:
 			mesh.add_blend_shape("t%d" % t)
+		# a shape the piece itself carries (a therian's lids: 'blink', tools/heads.py), after the morphs' (_blinks)
+		var blink := -1
+		var am := src as ArrayMesh
+		if am != null:
+			for i in am.get_blend_shape_count():
+				if am.get_blend_shape_name(i) == "blink":
+					blink = i
+		if blink >= 0:
+			mesh.add_blend_shape("blink")
 		var regions := []                 # per surface: whether it is the joined skin (hidden by region)
 		var joined := {}
 		var verts0 = null                 # the first surface's positions and shapes (the cloth chains' rest)
@@ -232,6 +241,27 @@ static func _build(glb: String) -> Array:
 					verts0 = arr[Mesh.ARRAY_VERTEX]
 					for sh in bs:
 						offs0.append(sh[Mesh.ARRAY_VERTEX])
+				if blink >= 0:
+					var sb: Array = src.surface_get_blend_shape_arrays(s)[blink]
+					var dv: PackedVector3Array = sb[Mesh.ARRAY_VERTEX]
+					var v0: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+					if am.blend_shape_mode == Mesh.BLEND_SHAPE_MODE_NORMALIZED:
+						dv = dv.duplicate()
+						for q in dv.size():
+							dv[q] -= v0[q]
+					var shb := []
+					shb.resize(Mesh.ARRAY_MAX)
+					if whole:
+						var wv := v0.duplicate()
+						for q in wv.size():
+							wv[q] += dv[q]
+						shb[Mesh.ARRAY_VERTEX] = wv
+					else:
+						shb[Mesh.ARRAY_VERTEX] = dv
+					shb[Mesh.ARRAY_NORMAL] = arr[Mesh.ARRAY_NORMAL]
+					if arr[Mesh.ARRAY_TANGENT] != null:
+						shb[Mesh.ARRAY_TANGENT] = arr[Mesh.ARRAY_TANGENT]
+					bs.append(shb)
 				mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, bs, {}, flags)
 				if mat:
 					mesh.surface_set_material(mesh.get_surface_count() - 1, mat)
@@ -259,7 +289,8 @@ static func _build(glb: String) -> Array:
 			if sf.get("region") != null:
 				ground = H.get("ground")
 		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0,
-			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi, "joined": joined.get("arr")})
+			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi, "joined": joined.get("arr"),
+			"blink": shapes.size() if blink >= 0 else -1})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -2735,7 +2766,39 @@ func play(clip: String) -> void:
 	player.play(clip, 0.25)
 
 
+# ---- blinks (the twin of blinks in 50-figure.js): a piece's 'blink' shape shut every few seconds, a fifth of a second
+# each, at intervals from the figure's own count; blink() starts one now, blink_hold (0 to 1) holds the lids there
+var _blink_at := 2.0
+var _blink_n := 0
+var _blink_t := 0.0
+var blink_hold = null
+
+
+func blink() -> void:
+	_blink_at = _blink_t
+
+
+func _blinks(dt: float) -> void:
+	_blink_t += dt
+	if _blink_t > _blink_at + 0.18:
+		_blink_n += 1
+		_blink_at = _blink_t + 2.5 + 3.5 * fmod(_blink_n * 0.6180339887, 1.0)
+	var t := _blink_t - _blink_at
+	var b := 0.0
+	if blink_hold != null:
+		b = float(blink_hold)
+	elif t >= 0.0:
+		b = t / 0.07 if t < 0.07 else (1.0 if t < 0.1 else (1.0 - (t - 0.1) / 0.08 if t < 0.18 else 0.0))
+	for id in _live:
+		var mi: MeshInstance3D = _live[id]
+		if mi.visible and mi.has_meta("built"):
+			var k := int(mi.get_meta("built").get("blink", -1))
+			if k >= 0:
+				mi.set_blend_shape_value(k, b)
+
+
 func _process(dt: float) -> void:
+	_blinks(dt)
 	if _clip == "":
 		return
 	# the hips start from the base body's rest (a clip without a hips position track leaves them there), so the

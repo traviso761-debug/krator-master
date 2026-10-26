@@ -88,6 +88,7 @@ function KCharFigure(body, sliders, load){
         geo.setAttribute('skinIndex', new THREE.BufferAttribute(arr, 4));
       }
       var m = new THREE.SkinnedMesh(geo, s.material.clone());
+      if(s.morphTargetDictionary) m.morphTargetDictionary = Object.assign({}, s.morphTargetDictionary);   // its own targets by name (a lid's blink)
       if(m.material.alphaTest > 0) m.material.onBeforeCompile = opaqueCutout;
       if(kit.tint && kit.tint.roles[s.material.name] === 'eye') irisTint(m.material);
       m.name = id; m.frustumCulled = false; m.castShadow = true;
@@ -2002,7 +2003,24 @@ function KCharFigure(body, sliders, load){
      scrubbed clip, a held pose) kept last frame's turned bone and the passes turned it again, frame after frame */
   var clipQ = J.map(function(j){ return Q().fromArray(j.r); });
 
+  /* ---- blinks: a piece with a 'blink' morph target (a therian's lids, tools/heads.py) shuts it every few seconds,
+     a fifth of a second each (shut in 70 ms, held 30, open in 80), at intervals from the figure's own count (the same
+     every run). blink() starts one now; blinkHold (0 to 1) holds the lids there (a still shot) ---- */
+  var blinkAt = 2.0, blinkN = 0, blinkT = 0;
+  function blinkWeight(t){ return t < 0.07 ? t / 0.07 : t < 0.1 ? 1 : t < 0.18 ? 1 - (t - 0.1) / 0.08 : 0; }
+  function blinks(dt){
+    blinkT += dt;
+    if(blinkT > blinkAt + 0.18){ blinkN++; blinkAt = blinkT + 2.5 + 3.5 * ((blinkN * 0.6180339887) % 1); }
+    var b = self.blinkHold != null ? self.blinkHold : blinkT >= blinkAt ? blinkWeight(blinkT - blinkAt) : 0;
+    Object.keys(live).forEach(function(k){
+      var m = live[k], d = m.morphTargetDictionary;
+      if(d && d.blink !== undefined && m.visible) m.morphTargetInfluences[d.blink] = b;
+    });
+  }
+  this.blink = function(){ blinkAt = blinkT; };
+
   this.update = function(dt){
+    blinks(dt);
     if(!self.action) return;
     for(var i = 0; i < bones.length; i++) bones[i].quaternion.copy(clipQ[i]);
     // the morph and lift below are added to the hips once, not once a frame: hipsTrack starts them from the rest

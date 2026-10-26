@@ -33,6 +33,8 @@ import fur as G                                     # the GLB reader (fur.glb, f
 ID = 'mod_head_coyote'
 CELL = 0.004
 MAT, EYE_MAT, NOSE_MAT = 'Mod.coyote_head', 'Mod.coyote_eyes', 'Mod.coyote_nose'
+EAR_MAT, LID_MAT = 'Mod.coyote_ears', 'Mod.coyote_lids'
+EAR_CELL = 0.0018                                   # the ears' own grid (on the head's their hollows stepped)
 NOSE_CELL = 0.0012                                  # the nose pad's own grid (the nostrils are a few mm)
 HIDE_PARTS = ['Human.eyebrow001', 'Human.eyebrow002', 'Human.eyelashes01', 'Human.eyelashes02', 'Human.low-poly',
               'Human.lips', 'Human.ears']
@@ -116,12 +118,17 @@ class Head:
         y0, ye, zf, zb, xw = m['chin'], m['eye_y'], m['front'], m['back'], m['half_width']
         self.s = s
         cz = zb + 0.5 * (zf - zb)
-        self.cranium = (np.array([0.0, ye + 0.033 * s, cz]), np.array([xw * 0.86, 0.063 * s, (zf - zb) * 0.38]))
+        # (the sides of the skull and the cheekbones a little wider than a first guess, after the owner's photographs: a
+        # coyote's head is broad across the cheeks and narrows sharply into the muzzle)
+        self.cranium = (np.array([0.0, ye + 0.033 * s, cz]), np.array([xw * 0.93, 0.063 * s, (zf - zb) * 0.38]))
         root = np.array([0.0, ye - 0.012 * s, zf - 0.055 * s])
         tip = np.array([0.0, ye - 0.044 * s, zf + 0.10 * s])
         self.muzzle = (root, tip, 0.044 * s, 0.0125 * s)
         self.jaw = (root + np.array([0.0, -0.034 * s, -0.025 * s]), tip + np.array([0.0, -0.024 * s, -0.022 * s]), 0.036 * s, 0.010 * s)
-        self.cheeks = [(np.array([sd * xw * 0.62, ye - 0.022 * s, zf - 0.075 * s]), np.array([0.032, 0.03, 0.04]) * s) for sd in (-1, 1)]
+        self.cheeks = [(np.array([sd * xw * 0.72, ye - 0.018 * s, zf - 0.072 * s]), np.array([0.038, 0.03, 0.042]) * s) for sd in (-1, 1)]
+        # the cheekbones: a ridge under each eye running back toward the ear
+        self.zygoma = [(np.array([sd * xw * 0.62, ye - 0.006 * s, zf - 0.045 * s]), np.array([sd * xw * 0.86, ye + 0.004 * s, zf - 0.105 * s]),
+                        0.011 * s, 0.014 * s) for sd in (-1, 1)]
         self.nose = (tip + np.array([0.0, 0.004 * s, 0.006 * s]), 0.012 * s)
         # the nose pad (the rhinarium): wider than tall, its front flat, two comma nostrils on the front turning out and
         # back, a groove (the philtrum) from between them down to the lip. Its own primitive on a finer grid (nose_sdf);
@@ -149,7 +156,7 @@ class Head:
             e = np.array([sd * xw * 0.42, ye + 0.006 * s, zf - 0.036 * s])
             g = np.array([sd * 0.34, 0.05, 0.94]); g /= np.linalg.norm(g)
             axes = frame(g, sd, 0.22)
-            self.eyes.append({'c': e - g * self.eye_r * 0.4, 'open': e + g * self.eye_r * 0.15, 'axes': axes, 'side': sd})
+            self.eyes.append({'c': e - g * self.eye_r * 0.6, 'open': e + g * self.eye_r * 0.15, 'axes': axes, 'side': sd})
         self.lids = (1.22, 0.56, 1.2)                   # the almond's half-length, half-height and depth, of the eye's radius
         self.floor = m['cut'] - 0.03                 # below it nothing: the plug stands inside the neck
 
@@ -159,12 +166,16 @@ class Head:
         d = smin(d, round_cone(P, *self.jaw), 0.02 * self.s)
         for c, r in self.cheeks:
             d = smin(d, ellipsoid(P, c, r), 0.025 * self.s)
+        for a, b, ra, rb in self.zygoma:
+            d = smin(d, round_cone(P, a, b, ra, rb), 0.018 * self.s)
         d = smin(d, ellipsoid(P, self.pad[0], self.pad[1] - 0.0045 * self.s), 0.003 * self.s)   # under the pad (nose_sdf)
         d = smin(d, round_cone(P, *self.plug), 0.03 * self.s)
         d = smin(d, round_cone(P, *self.nape), 0.04 * self.s)
-        for base, tip, w, dp, sd in self.ears:
-            d = smin(d, ear(P, base, tip, w, dp, sd), 0.01 * self.s)
-        for e in self.eyes:                          # the lids' opening, the eyeball behind it
+        for base, tip, w, dp, sd in self.ears:                # a stub under each (the ear is its own piece)
+            d = smin(d, ear(P, base, base + (tip - base) * 0.3, w * 0.8, dp, sd), 0.01 * self.s)
+        for e in self.eyes:                          # the lids: a soft rim round the almond, the opening, the eyeball behind it
+            rim = socket(P, e['open'], e['axes'], np.array(self.lids) * self.eye_r * np.array([1.18, 1.45, 0.75]))
+            d = smin(d, rim, 0.004 * self.s)
             d = smax(d, -socket(P, e['open'], e['axes'], np.array(self.lids) * self.eye_r), 0.0025 * self.s)
         return np.maximum(d, self.floor - P[:, 1])
 
@@ -364,7 +375,11 @@ def paint(h, V, N):
         # the hollow: white fluff at its base (dense, long), bare above
         fluff = inner * (1 - sm(0.3 * L, 0.55 * L, t))
         dens = np.minimum(dens, 1 - inner + fluff)
-        ln = ln * (1 - on) + on * (0.3 * (1 - fluff) + 0.85 * fluff)
+        # no shells above the ear's lower third: on a thin ear their layers stepped along the rim and the cup seen
+        # edge-on; the velvet there is its shading
+        dens = np.minimum(dens, 1 - on * sm(0.28 * L, 0.42 * L, t) * (1 - fluff))
+        # (short on the ear: the shells' layers stepped where its cup and rim are seen edge-on)
+        ln = ln * (1 - on) + on * (0.12 * (1 - fluff) + 0.6 * fluff)
     # the nose: the head under the pad dark and bare
     nd = h.nose_sdf(V)
     col = col * (1 - 0.85 * (1 - sm(0.0, 0.004 * s, nd)))[:, None]
@@ -441,63 +456,134 @@ def nose_paint(h, V, N):
     return np.clip(c, 0, 1)
 
 
+def mesh_field(f, grad, lo, hi, cell, smooth=2):
+    """a field's zero set as a clean mesh: surface nets, projected onto the surface, wound out, stray islands dropped,
+    smoothed (and back onto the surface); its vertices, triangles, normals and each vertex's neighbours"""
+    V, T = surface_nets(f, lo, hi, cell)
+    for _ in range(3):
+        V = V - f(V)[:, None] * grad(V)
+    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
+    flip = (fn * grad(V[T].mean(1))).sum(1) < 0
+    T[flip] = T[flip][:, ::-1]
+    V, T = largest(V, T)
+    nb = [[] for _ in range(len(V))]
+    for a, b, c in T:
+        nb[a] += [b, c]; nb[b] += [a, c]; nb[c] += [a, b]
+    for _ in range(smooth):
+        V = np.array([V[n].mean(0) if n else v for v, n in zip(V, nb)]) * 0.5 + V * 0.5
+        V = V - f(V)[:, None] * grad(V)
+    return V, T, grad(V), nb
+
+
+def soften(nb, *arrays, times=2):
+    """each array averaged half with its vertex's neighbours, times over (a hard paint edge stepped vertex to vertex)"""
+    out = []
+    for x in arrays:
+        for _ in range(times):
+            x = np.array([x[n].mean(0) if n else c for c, n in zip(x, nb)]) * 0.5 + x * 0.5
+        out.append(x)
+    return out
+
+
+def box_uv(V, T, *attrs):
+    """the strands' UV: each triangle projected onto the plane its face turns to most (x: zy, y: xz, z: xy), in metres,
+    each of the six charts offset from the others; a vertex shared by triangles of two charts is split. (Wrapped round
+    the muzzle's axis the UV had its pole at the back of the skull, and the strands fanned out of a whorl there)"""
+    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
+    ax_ = np.abs(fn).argmax(1)
+    chart = ax_ * 2 + (fn[np.arange(len(T)), ax_] < 0)
+    uk, inv = np.unique((T * 6 + chart[:, None]).ravel(), return_inverse=True)
+    sv, sc = uk // 6, uk % 6
+    T = inv.reshape(-1, 3)
+    V = V[sv]
+    U = np.zeros((len(V), 2))
+    for c in range(6):
+        k = sc == c
+        a0, a1 = {0: (2, 1), 1: (0, 2), 2: (0, 1)}[c // 2]
+        U[k, 0] = V[k, a0] + 10.0 * c
+        U[k, 1] = V[k, a1]
+    return (V, T, U) + tuple(x[sv] for x in attrs)
+
+
+def lids(h):
+    """the upper lids: for each eye a band of a sphere a little larger than the eyeball, round its horizontal axis from
+    the almond's upper edge up into the head (hidden there, open); the 'blink' morph turns it down over the eye to just
+    down to the lower lid. The outside a shade darker than the coat, the edge dark"""
+    V, N, C, T, dV, dN = [], [], [], [], [], []
+    rl = h.eye_r * 1.1
+    open_, shut = np.radians(35.0), np.radians(-38.0)
+    A = np.radians(np.linspace(-82.0, 82.0, 25))
+    F = np.radians(np.linspace(0.0, 70.0, 9))
+    for e in h.eyes:
+        g, hh, v = e['axes']
+        base = sum(len(x) for x in V)
+        aa, ff = np.meshgrid(A, F, indexing='ij')
+
+        def at(phi):
+            d = np.cos(aa)[..., None] * (np.cos(phi)[..., None] * g + np.sin(phi)[..., None] * v) + np.sin(aa)[..., None] * hh
+            return d.reshape(-1, 3)
+        d0, d1 = at(open_ + ff), at(shut + ff)
+        V.append(e['c'] + d0 * rl); N.append(d0)
+        dV.append((d1 - d0) * rl); dN.append(d1 - d0)
+        edge = (ff.ravel() < np.radians(9.0))
+        c = np.tile([SHADE * 0.75] * 3, (len(d0), 1))
+        c[edge] = 0.1
+        C.append(c)
+        na, nf = len(A), len(F)
+        for i in range(na - 1):
+            for j in range(nf - 1):
+                p0, p1 = base + i * nf + j, base + (i + 1) * nf + j
+                T += [[p0, p1, p1 + 1], [p0, p1 + 1, p0 + 1]]
+    V, N, C, dV, dN = (np.concatenate(x) for x in (V, N, C, dV, dN))
+    T = np.array(T)
+    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
+    flip = (fn * N[T].mean(1)).sum(1) < 0
+    T[flip] = T[flip][:, ::-1]
+    return V, N, C, T, dV, dN
+
+
 def build(body, src):
     M = measure(src)
     h = Head(M['m'])
     m = M['m']
-    lo = np.array([-m['half_width'] * 2.2, h.floor - 0.01, m['back'] - 0.02])
-    hi = np.array([m['half_width'] * 2.2, m['top'] + 0.14 * h.s, h.nose[0][2] + 0.03])
-    V, T = surface_nets(h.sdf, lo, hi, CELL)
-    for _ in range(3):                                   # onto the surface
-        V = V - h.sdf(V)[:, None] * h.grad(V)
-    # each triangle wound to face out (the field's gradient at its centre)
-    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
-    flip = (fn * h.grad(V[T].mean(1))).sum(1) < 0
-    T[flip] = T[flip][:, ::-1]
-    V, T = largest(V, T)
-    N = h.grad(V)
-    # a smooth pass over the positions (the nets' faceting), then back onto the surface
-    nb = [[] for _ in range(len(V))]
-    for a, b, c in T:
-        nb[a] += [b, c]; nb[b] += [a, c]; nb[c] += [a, b]
-    for _ in range(2):
-        V = np.array([V[n].mean(0) if n else v for v, n in zip(V, nb)]) * 0.5 + V * 0.5
-        V = V - h.sdf(V)[:, None] * h.grad(V)
-    N = h.grad(V)
-    col, cover, ln = paint(h, V, N)
-    # the strands' UV: each triangle projected onto the plane its face turns to most (x: zy, y: xz, z: xy), in metres,
-    # each of the six charts offset from the others; a vertex shared by triangles of two charts is split. Wrapped round
-    # the muzzle's axis the UV had its pole at the back of the skull, and the strands fanned out of a whorl there
-    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
-    ax_ = np.abs(fn).argmax(1)
-    chart = ax_ * 2 + (fn[np.arange(len(T)), ax_] < 0)
-    key = T * 6 + chart[:, None]
-    uk, inv = np.unique(key.ravel(), return_inverse=True)
-    src_v, src_c = uk // 6, uk % 6
-    T = inv.reshape(-1, 3)
-    V, N, col, cover, ln = V[src_v], N[src_v], col[src_v], cover[src_v], ln[src_v]
-    PLANE = {0: (2, 1), 1: (0, 2), 2: (0, 1)}
-    U = np.zeros((len(V), 2))
-    for c in range(6):
-        k = src_c == c
-        a0, a1 = PLANE[c // 2]
-        U[k, 0] = V[k, a0] + 10.0 * c
-        U[k, 1] = V[k, a1]
-    # weights: the Head, blending into the Neck at the cut
-    wn = np.clip((m['cut'] + 0.02 - V[:, 1]) / 0.05, 0, 1)
-    # the base vertex each takes its morph from: the nearest of the skull's
     S = np.nonzero(M['skull'])[0]
-    vid = np.zeros(len(V), np.float32)
-    if M['VI'] is not None:
-        SP = M['P'][S]
-        for k in range(0, len(V), 2048):
-            d = ((V[k:k + 2048, None, :] - SP[None]) ** 2).sum(2)
-            vid[k:k + 2048] = M['VI'][S[d.argmin(1)]]
+    SP = M['P'][S]
+
+    def vids(P):
+        """the base vertex each takes its morph from: the nearest of the skull's"""
+        out = np.zeros(len(P), np.float32)
+        if M['VI'] is not None:
+            for k in range(0, len(P), 2048):
+                out[k:k + 2048] = M['VI'][S[((P[k:k + 2048, None, :] - SP[None]) ** 2).sum(2).argmin(1)]]
+        return out
+    none = lambda P: np.full((len(P), 2), [0.5, 1e4])      # no fur: its triangles outside every fur row
+    # the head (its ears but stubs: they are their own, finer, below)
+    lo = np.array([-m['half_width'] * 2.4, h.floor - 0.01, m['back'] - 0.02])
+    hi = np.array([m['half_width'] * 2.4, m['top'] + 0.06 * h.s, h.nose[0][2] + 0.03])
+    V, T, N, nb = mesh_field(h.sdf, h.grad, lo, hi, CELL)
+    col, dens, ln = soften(nb, *paint(h, V, N))
+    V, T, U, N, col, dens, ln = box_uv(V, T, N, col, dens, ln)
+    wn = np.clip((m['cut'] + 0.02 - V[:, 1]) / 0.05, 0, 1)            # the Head, into the Neck at the cut
+    # (TEXCOORD_1: the fur's density and length; the strands' UV in metres)
+    prims = [(V, N, col, U, np.stack([dens, ln], 1), T, wn, vids(V), MAT, None)]
+    # the ears, on a finer grid (on the head's 4 mm grid their hollows stepped)
+    for k, (base, tip, w, dp, sd) in enumerate(h.ears):
+        lo_ = np.minimum(base, tip) - w * 1.6
+        hi_ = np.maximum(base, tip) + w * 1.6
+        f = lambda P, a=(base, tip, w, dp, sd): ear(P, *a)
+        gr = lambda P, f=f, e=2e-5: (lambda g: g / np.maximum(np.linalg.norm(g, axis=1, keepdims=True), 1e-12))(
+            np.stack([f(P + np.array(o)) - f(P - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1))
+        aV, aT, aN, anb = mesh_field(f, gr, lo_, hi_, EAR_CELL)
+        ac, ad, al = soften(anb, *paint(h, aV, aN))
+        aV, aT, aU, aN, ac, ad, al = box_uv(aV, aT, aN, ac, ad, al)
+        aU[:, 0] += 100.0 * (k + 1)                       # its strands not the head's
+        prims.append((aV, aN, ac, aU, np.stack([ad, al], 1), aT, np.zeros(len(aV)), vids(aV), EAR_MAT, None))
     # the eyes: spheres behind the lids, their poles on the gaze so the iris is drawn in rings round it: a round black
     # pupil, the iris golden by the pupil and deeper amber outward, a dark limbal ring, and the little sclera the lids
     # show dark (a coyote's is hardly ever seen white, and a lighter one caught the light at the corner)
     eV, eN, eC, eT = [], [], [], []
     RI, RJ = 24, 33
+    sm = lambda a, b, x: (lambda t: t * t * (3 - 2 * t))(np.clip((x - a) / (b - a), 0, 1))
     for e in h.eyes:
         g, hh, v = e['axes']
         th, ph = np.meshgrid(np.linspace(0, np.pi, RI), np.linspace(0, 2 * np.pi, RJ), indexing='ij')
@@ -505,7 +591,6 @@ def build(body, src):
         base = sum(len(x) for x in eV)
         eV.append(e['c'] + d * h.eye_r); eN.append(d)
         cg = d @ g
-        sm = lambda a, b, x: (lambda t: t * t * (3 - 2 * t))(np.clip((x - a) / (b - a), 0, 1))
         gold, amber, ring, sclera = np.array([0.98, 0.76, 0.2]), np.array([0.78, 0.46, 0.08]), np.array([0.2, 0.11, 0.03]), np.array([0.16, 0.1, 0.06])
         c = gold[None] * sm(0.78, 0.92, cg)[:, None] + amber[None] * (1 - sm(0.78, 0.92, cg))[:, None]
         c = c * (1 - sm(0.7, 0.66, cg))[:, None] + ring[None] * sm(0.7, 0.66, cg)[:, None]
@@ -517,29 +602,14 @@ def build(body, src):
                 a0, b0 = base + i * RJ + j, base + (i + 1) * RJ + j
                 eT += [[a0, b0, b0 + 1], [a0, b0 + 1, a0 + 1]]
     eV, eN, eC, eT = np.concatenate(eV), np.concatenate(eN), np.concatenate(eC), np.array(eT)
-    eVid = np.zeros(len(eV), np.float32)
-    if M['VI'] is not None:
-        SP = M['P'][S]
-        eVid = M['VI'][S[((eV[:, None, :] - SP[None]) ** 2).sum(2).argmin(1)]].astype(np.float32)
+    # the lids, which blink
+    lV, lN, lC, lT, ldV, ldN = lids(h)
     # the nose pad, on its own grid
     nc, nr_ = h.pad
-    nV, nT = surface_nets(h.nose_sdf, nc - nr_ - 0.004, nc + nr_ + 0.004, NOSE_CELL)
-    for _ in range(3):
-        nV = nV - h.nose_sdf(nV)[:, None] * ngrad(h, nV)
-    fn = np.cross(nV[nT[:, 1]] - nV[nT[:, 0]], nV[nT[:, 2]] - nV[nT[:, 0]])
-    flip = (fn * ngrad(h, nV[nT].mean(1))).sum(1) < 0
-    nT[flip] = nT[flip][:, ::-1]
-    nV, nT = largest(nV, nT)
-    nN = ngrad(h, nV)
-    nC = nose_paint(h, nV, nN)
-    nVid = np.zeros(len(nV), np.float32)
-    if M['VI'] is not None:
-        SP = M['P'][S]
-        nVid = M['VI'][S[((nV[:, None, :] - SP[None]) ** 2).sum(2).argmin(1)]].astype(np.float32)
-    # (TEXCOORD_1: the fur's density and length; the strands' UV is in metres)
-    prims = [(V, N, col, U, np.stack([cover, ln], 1), T, wn, vid, MAT),
-             (nV, nN, nC, np.full((len(nV), 2), [0.5, 1e4]), np.zeros((len(nV), 2)), nT, np.zeros(len(nV)), nVid, NOSE_MAT),
-             (eV, eN, eC, np.full((len(eV), 2), [0.5, 1e4]), np.zeros((len(eV), 2)), eT, np.zeros(len(eV)), eVid, EYE_MAT)]
+    nV, nT, nN, _ = mesh_field(h.nose_sdf, lambda P: ngrad(h, P), nc - nr_ - 0.004, nc + nr_ + 0.004, NOSE_CELL, smooth=0)
+    prims += [(nV, nN, nose_paint(h, nV, nN), none(nV), np.zeros((len(nV), 2)), nT, np.zeros(len(nV)), vids(nV), NOSE_MAT, None),
+              (eV, eN, eC, none(eV), np.zeros((len(eV), 2)), eT, np.zeros(len(eV)), vids(eV), EYE_MAT, None),
+              (lV, lN, lC, none(lV), np.zeros((len(lV), 2)), lT, np.zeros(len(lV)), vids(lV), LID_MAT, {'blink': (ldV, ldN)})]
     return M, h, prims
 
 
@@ -557,7 +627,7 @@ def write_glb(path, M, prims):
         accs.append(a)
         return len(accs) - 1
     meshes, mats = [], []
-    for V, N, C, U, U2, T, wn, vid, name in prims:
+    for V, N, C, U, U2, T, wn, vid, name, targets in prims:
         n = len(V)
         J = np.zeros((n, 4), np.uint16); J[:, 1] = 1                     # joints: 0 Head, 1 Neck
         W = np.zeros((n, 4), np.float32); W[:, 0] = 1 - wn; W[:, 1] = wn
@@ -567,8 +637,15 @@ def write_glb(path, M, prims):
                  'WEIGHTS_0': add(W, 5126, 'VEC4', 34962), '_VIDX': add(vid.astype(np.float32).reshape(-1, 1), 5126, 'SCALAR', 34962)}
         idx = add(T.astype(np.uint32).ravel(), 5125, 'SCALAR', 34963)
         mats.append({'name': name, 'pbrMetallicRoughness': {'baseColorFactor': [1, 1, 1, 1], 'metallicFactor': 0,
-                     'roughnessFactor': {MAT: 0.9, NOSE_MAT: 0.35}.get(name, 0.12)}})
-        meshes.append({'name': name, 'primitives': [{'attributes': attrs, 'indices': idx, 'material': len(mats) - 1}]})
+                     'roughnessFactor': {MAT: 0.9, EAR_MAT: 0.9, LID_MAT: 0.8, NOSE_MAT: 0.35}.get(name, 0.2)}})
+        prim = {'attributes': attrs, 'indices': idx, 'material': len(mats) - 1}
+        me = {'name': name, 'primitives': [prim]}
+        if targets:                                   # morph targets (the lids' blink): the figure drives their weights
+            prim['targets'] = [{'POSITION': add(dv.astype(np.float32), 5126, 'VEC3', 34962, True), 'NORMAL': add(dn.astype(np.float32), 5126, 'VEC3', 34962)}
+                               for dv, dn in targets.values()]
+            me['weights'] = [0.0] * len(targets)
+            me['extras'] = {'targetNames': list(targets)}
+        meshes.append(me)
     ibm = add(np.stack([M['ibm']['Head'], M['ibm']['Neck']]).astype(np.float32), 5126, 'MAT4')
     nodes = [{'name': 'mixamorig:Neck', 'children': [1]}, {'name': 'mixamorig:Head', 'translation': [0, 0.1, 0]}]
     for k, me in enumerate(meshes):
@@ -613,9 +690,9 @@ def make(src, out, body, base_tris):
              'kind': 'therian', 'hide': bits(base_tris, tris), 'hides': int(len(tris)),
              'hide_parts': [p for p in HIDE_PARTS if p in have], 'covers_hair': True, 'furred': True,
              'fur': [[-1000.0, 1000.0, 'brush', 0, 0]]}
-    print(body, ID, 'head, nose, eyes: %s vertices, %s triangles; hides %d skin triangles' % (
+    print(body, ID, 'head, ears, nose, eyes, lids: %s vertices, %s triangles; hides %d skin triangles' % (
         ' + '.join(str(len(p[0])) for p in prims), ' + '.join(str(len(p[5])) for p in prims), len(tris)))
-    return entry, {MAT: 'coat'}
+    return entry, {MAT: 'coat', EAR_MAT: 'coat', LID_MAT: 'coat'}
 
 
 def main():
@@ -625,7 +702,7 @@ def main():
     kit = json.load(open(kpath, encoding='utf-8'))
     entry, roles = make(src, out, body, kit['base_tris'])
     # the morphs: the base skin's own entry under the head's materials (make_mpfb.py packs them from the export)
-    mb = morph_entry(src, [MAT, EYE_MAT, NOSE_MAT])
+    mb = morph_entry(src, [MAT, EAR_MAT, EYE_MAT, NOSE_MAT, LID_MAT])
     if mb:
         open(os.path.join(out, ID + '.morph.bin'), 'wb').write(mb)
     kit['items'] = [it for it in kit['items'] if it['id'] != ID] + [entry]

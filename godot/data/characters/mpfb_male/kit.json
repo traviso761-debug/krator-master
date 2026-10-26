@@ -66638,7 +66638,9 @@
    "Human.fourstrandbraid": "hair",
    "Human.braided_curly_beads4": "hair",
    "Human.elvs_unkempt_french_braid": "hair",
-   "Mod.coyote_head": "coat"
+   "Mod.coyote_head": "coat",
+   "Mod.coyote_ears": "coat",
+   "Mod.coyote_lids": "coat"
   },
   "gain": {
    "skin": 1.6561,
