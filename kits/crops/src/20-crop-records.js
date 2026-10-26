@@ -60,6 +60,10 @@ R('coconut', 'Coconut', 'oil', [4, 5], [2, 4], {also: ['nut', 'starch-fruit'], f
 R('whorl-olive', 'Whorl olive', 'oil', [3, 3], [1, 2], {form: 'tree', card: 'card.orchard.small', src: 'xanadu', home: ['xanadu'], stores: ['pressed', 'brined']});
 R('avocado', 'Ashfall avocado', 'oil', [3, 4], [2, 3], {also: ['fruit'], form: 'tree', card: 'card.croptree.glossy', home: ['throne'], note: 'volcanic soil'});
 R('lakecake', 'Lakecake', 'alga', [3, 4], [0, 1], {water: 'aquatic', needs: 'salt', home: ['rift'], stores: ['pressed', 'dried'], note: 'skimmed from the lake; no card (the water shader draws it)'});
+/* Farside's weeds (biomes/farside, 2026-10-26): the sea's flora come ashore on the wettest coast, eaten as the coast's staple greens */
+R('kelp', 'Land kelp (kombu)', 'alga', [3, 4], [3, 4], {also: ['greens'], needs: 'salt', card: 'card.kelp.0', home: ['farside'], src: 'farside', stores: ['dried'], note: 'the blades of the land kelp, cut and dried: the coast staple; the stipes go to the kilns for kelp ash'});
+R('wineweed', 'Wine weed (nori)', 'alga', [2, 4], [3, 4], {also: ['greens', 'sheet', 'dye'], colour: 'red', card: 'card.wineweed', home: ['farside'], src: 'farside', stores: ['dried', 'pressed'], note: 'red sheets pressed and dried as nori; boiled down for agar (glue, sizing); its crimson a red dye (proposed)'});
+R('sea-lettuce', 'Sea lettuce', 'greens', [3, 4], [3, 4], {needs: 'salt', card: 'card.kelp.1', home: ['farside'], src: 'farside', note: 'the emerald sheets on every wet surface of the kelp coast'});
 
 /* ---- produce: vegetable, greens, mushroom, fruit, berry, dried-fruit */
 R('yucca-stalk', 'Roasted yucca stalk', 'vegetable', [3, 5], [0, 1], {card: 'card.sword', src: 'ebadlands', home: ['ebadlands', 'crater-drylands']});
