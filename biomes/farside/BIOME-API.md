@@ -30,7 +30,7 @@ FARSIDE.build({R, quality}) -> {stands, snags, heroes, far, stipes, bladders, bl
 FARSIDE.dress(trees, {salt, quality})   // hang the sea's weed on trees another kit placed: [{x, z, y0, H, rb, crownR}]
 FARSIDE.zones(x, z)                     // {spray, inv, front, nat, fog, sand, coral, rock, graze, burn, strand, kelpcoast, cloud, lee, ...}
 FARSIDE.kgrid(salt, cell, accept, fn, opt)   // the kit's core/rand grid, for a host that places with the same rule
-FARSIDE.SPECIES                         // the nine (tagged, with harvest and the crop each yield is filed as)
+FARSIDE.SPECIES                         // the twelve: the plan's nine and the review's three (oarweed, boa kelp, sea grapes), tagged with harvest and crop
 FARSIDE.DEAD                            // the dead native tree at the front (drawn here)
 FARSIDE.FAUNA_PLACEHOLDERS              // the animals of PLAN.md section 5, data only (kits/fauna builds them later)
 FARSIDE.STANDS                          // the stands' records: {key, x, z, y0, H, n, form, seed, lv}

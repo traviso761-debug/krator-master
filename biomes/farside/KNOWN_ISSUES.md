@@ -12,7 +12,7 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   (`DENS .4`) times the station's `natives.q` (1.4 in the fog belt, 1.1 at the front), and its floor is its own. A denser
   canopy wants a higher q (triangles) or a stocking knob in that kit (not this kit's file).
 - [ ] **The spray coral's terraces are coarse**: the ground mesh's ~7 m cells soften the 2.6 m treads into a stepped slope;
-  the thickets and heads carry the look. A finer inset over the cove (a `KFIELD` inset, or a separate terrace mesh) would
+  since the owner's review (2026-10-26) 3D colonies (staghorn, plate shelves) and coral lips along the risers carry the look. A finer inset over the cove (a `KFIELD` inset, or a separate terrace mesh) would
   draw them crisp.
 - [ ] **Wrack heaps are lumps** (`G.lobe` with `ground.wrack`): they read as wet heaps at a distance, as smooth domes close
   to. A heap of draped straps (the wrack card over a mound) would be truer.
@@ -21,3 +21,8 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **The front is compressed**: the real front is 15 km deep (10 to 25 km from the sea); the page draws its transition
   in 3 km so one view shows the kelp, the dead belt and the native forest together.
 - [ ] **Not in the gallery yet**: a new biome goes in when it first reaches `main` (the main session's merge).
+- [ ] **The ground's dither is a copy** (the owner, 2026-10-26: "ground needs dithering"): `47-host-land.js` carries Korona's
+  hex-cell bomb (`GDITHER`, from `biomes/korona/src/47-host-land.js`) whole. Two biomes now have it: it belongs in core (a
+  `core/materials` or `core/biome` GLSL chunk both take). A core change, not this kit's.
+- [ ] **The page holds ~15M triangles** on the kelp coast (budget 16M, Korona's): the review's understorey and 3D coral added
+  ~4M. The runtime LOD draws 8 to 12M of them at a view. A lighter far band for the floor would bring it down.

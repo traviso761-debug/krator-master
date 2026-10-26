@@ -109,7 +109,12 @@ the light is fog-grey and green; the air smells of iodine and salt.
 | `fogsponge` | Fog sponge | sponges (no plant does this) | ochre, orange and grey crusts and lumpy towers on bark and rock in the fog belt, drinking the fog through their pores; plant or animal, nobody on Farside is sure | bath sponges, stuffing |
 | `strandanemone` | Strand anemone | sea anemones | low clumps of thick stalks crowned with soft tentacles, rose, green and violet, on the kelp forest's floor; they close at a touch and catch insects | none (they sting) |
 
-Nine of its own; the land's own forest comes from `biomes/nwlowlands`, read in place, at the front and inland of it.
+**Added by the owner's review (2026-10-26, "more species diversity to the kelp forests"):** `oarweed` (*Laminaria*: the understorey's
+fans on a stiff stipe), `boakelp` (*Egregia*: long sprawling straps lined with small blades), `seagrapes` (*Caulerpa*: bead
+runners on the floor, eaten fresh), and the land kelp's third form, the **elk kelp** (*Pelagophycus*: a float and two antler arms
+hung with big blades).
+
+Nine of its own (twelve with the review's three); the land's own forest comes from `biomes/nwlowlands`, read in place, at the front and inland of it.
 
 ### The animals
 
