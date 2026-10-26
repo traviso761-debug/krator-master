@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 13 prompts** (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
+**Count: 15 prompts** (2026-10-26, later: 8 added in sections 15-17 for the gaps that had no prompt, and the rest of those gaps resolved as reuse; 2 for the Eternian kit in section 18; 2026-10-26: 29 of the 41 added on 2026-10-23 arrived and are in the library, see `PLAN.md` "Delivered 2026-10-26"; the rest of this paragraph is the history of what was owed). Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -237,6 +237,34 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The dressed face of a fine-grained sandstone block seen flat-on at very close range: an even granular micro-relief of mineral grains, tiny pits and a faint fine chisel stipple, all of the same small size and spread evenly over the whole frame, with no joints, no edges, no veins, no cracks, no stains and nothing larger than a few millimetres, so that no spot is recognisable when the tile repeats. Near-uniform mid grey: the relief only. Matte. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.25 metres.
 ```
 
+## 18. The Eternian kit (`kits/eternian`, list agreed by the owner 2026-10-26)
+
+`kits/eternian/PLAN.md` section 10. Only the surfaces with no set get a prompt. **Reuse, so no prompt** (most already in
+`kits/eternian/materials.json`): the celadon glazed tile is `roof.tile.celadon` (roofs) and `ceramic.celadon.crackle`
+(ware, glaze); the alabaster is `stone.alabaster` (a colour map only: no separate thickness map exists, so the
+translucency reads from its albedo); the pattern block is `concrete.block.relief` and its takes `.b`-`.e`; the verdigris
+copper sheet is `metal.bronze.verdigris`; the culture pattern sheet is `patterns/eternian/circuit-maze` (`.b`, `.c`;
+tinted gold on black or white on black); the fish-scale roofs are `metal.scale` and `roof.scale.gilt`; the bronze is
+`metal.bronze.cast`; the glazed scale look `patterns/highlands/tile-*`; the Ancient white panels `metal.ancient.white`; the
+tracery's grid is `patterns/eternian/screen-pierced` (`.b`), a keyed, tiling pierced cast-bronze screen on magenta. Not
+covered: the brick (the kit tints the plain `brick` set today) and the tracery's three window heads.
+
+#### `brick.buff`
+- Kind: surface, full colour.
+- Used by: the Eternians' pale brick piers and walls (the `brick` family in `kits/eternian/materials.json`). Reuse: any pale gault or sand-lime brick in any culture (the Republic, Voth's suburbs, the Ancient-lineage towns).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A wall of pale buff brick seen flat-on, laid in running bond: smooth, slightly sandy bricks in pale buff and cream (#d8c8a0, #e2d4b0) with a few a shade warmer (#c8b088) and a few paler (#ece2c8), small dark flecks and the odd chipped corner, set in thin flush joints of white lime mortar (#ece8dc), slightly recessed and a little crumbly. Eight courses of brick from top to bottom, every course the same height. No stains, no soot, no moss. Matte. Full colour. One tile covers 0.6 metres.
+```
+
+#### `card.tracery.bronze`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one window head per cell.
+- Used by: the Eternians' lancet and window heads over the bronze tracery grid (the kept hosts' glazing, alabaster behind it). Reuse: any cast-metal window tracery or grille head (Pylon, Voth's palace, the Ancient-lineage ruins).
+
+```
+A sheet of nine separate cut-out sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no wall, no glass, no text. Each sprite: the head of a window in cast bronze openwork, seen straight on, its bottom edge straight and flat along the bottom of its cell, the openings between the bars showing the magenta through them: on the top row, three stepped heads (a rectangle rising in three to five square steps to a flat top, Art Deco); on the middle row, three pointed lancet heads (two arcs meeting in a point); on the bottom row, three ring heads (a round arch with a circle of radiating bars, like an oculus). Inside each, a grid of thin straight bronze bars (#8a6a3a) with heavier outer frames (#6a5028), worn brighter bronze (#b08848) on the edges and a little green-grey patina (#6a8a74) in the corners. Each head in a row is a different variant of its shape. Hard, precise, machine-exact edges. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
 ## Gaps resolved without a prompt (2026-10-26)
 
 Each was on the old "Gaps with no prompt yet" list or in a build's notes; an existing set covers it, so the work left is
@@ -263,10 +291,5 @@ wiring (a `materials.json` row and code), not an image.
 
 ## Gaps with no prompt yet
 
-Owed, but a prompt waits on something first; listed so they are not lost. (2026-10-26: the five gaps listed here were
-prompted in sections 15-17 or resolved above.)
-
-- **The Eternian kit's list** (`kits/eternian/PLAN.md` section 10): its prompts wait for the owner to agree the list. Most
-  of it is in the library already (`roof.tile.celadon`, `ceramic.celadon.crackle`, `stone.alabaster`,
-  `metal.bronze.verdigris`, `concrete.block.relief`, `patterns/eternian/`); a pale buff brick with lime mortar is the one
-  surface with no set seen by name (the bronze tracery cut-out not checked against `patterns/eternian/screen-pierced`).
+Owed, but a prompt waits on something first; listed so they are not lost. None open (2026-10-26: the five gaps listed
+here were prompted in sections 15-17 or resolved above, and the Eternian list in section 18).

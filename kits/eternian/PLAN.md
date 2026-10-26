@@ -264,7 +264,8 @@ for the glazed scale look. Likely gaps: **pale buff brick** with lime mortar; **
 glaze); **alabaster** (translucent, veined; a colour map and a thickness map); **bronze tracery** as a cut-out on magenta
 (the grid, three heads: stepped, pointed, ring); **pattern block** relief (three geometric blocks, normal map); **verdigris
 copper sheet**; **a culture pattern sheet**: the circuit-maze band in black and white and in gold on black. The prompts are
-written when the owner agrees the list.
+written when the owner agrees the list. **Agreed and written 2026-10-26:** `core/materials/PROMPTS-NEEDED.md` section 18
+(`brick.buff`, `card.tracery.bronze`; the rest reuse library sets, listed there).
 
 ## 11. Phases
 
