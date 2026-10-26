@@ -41,17 +41,20 @@ region of its own, named `tiers` (section 7), overlapping Korona's polygon on th
 not leave a gap or overlap Korona's, `e badlands`' or each other's beyond the deliberate ecotone strip; the survey reports
 each overlap, as `korona/NOTES.md` does. It should settle:
 
-- **Settled (the owner, 2026-10-26): the basin lies outside the Outer Wall, low, in dense air** (working figure 1.2-1.6
-  atm, from Farside's side; the survey gives the real one), walled in by the Outer Wall and reached only over a pass in
-  Korona's corner. The thin air above the wall is the **barrier**: a pressure-adapted lowland life cannot cross it, which
-  is why the flora has been alone for millions of years. The survey **checks** it: the floor should sit below about
-  2.5 km, with the rim and the pass above. If the floor is instead near the Tiers' 4 km, tell the owner before going on.
-  `CROPS.ATM` and the fauna sizes follow: dense air allows bigger animals than the Tiers' Earth-sized ones.
-- **The pass.** The "corner of Korona": where it is, its height, its width, whether it holds a river, and whether it is
-  one gate or a long defile. It is the only road in; it is also the Coyote Kingdom's reason to exist (a toll gate).
-- **The basin's own rain.** A closed basin behind a wall is in the rain shadow, hence dry: the survey reads rain, Köppen
-  class and the floor height, whether a salt lake or pan sits at the lowest point, and the rivers (`DATA.basins`: where
-  the Tiers stream and any others end).
+- **Air (settled by the owner 2026-10-26; surveyed 2026-10-26, `SURVEY.md`): dense-air valleys in a high basin, behind a
+  thin-air pass.** The owner's intent: a basin walled in by the Outer Wall and reached only over a pass in Korona's corner,
+  the thin air above it the **barrier** that kept a pressure-adapted lowland life out. The survey **confirms the barrier and
+  corrects the floor**: the one crossing is **7,724 m, 0.60 atm** (px 1136,84); the basins behind it are mostly **3.2-3.9 km
+  (1.0-1.07 atm)**, with dense-air valleys down to **289 m (1.54 atm)**. So the test ("the floor below about 2.5 km") fails for
+  the basin as a whole and passes for the valleys. Working rule: **the Outlands flora zones by height**: the valley floors
+  (0.3-2.5 km, 1.2-1.5 atm, warm, the lush end), the basin floor (3-4 km, 1.0 atm), the plateau and rim (over 4.5 km, ET) and
+  the airless crest. `CROPS.ATM` and the fauna sizes follow the zone. The owner is to say if the high floor changes the idea.
+- **The pass (surveyed).** One crossing: the lowest crest is **7,724 m (0.60 atm) at px (1136, 84)**, in the narrow
+  corridor the N Outlands polygon draws along the north (y 36-96). Every route to the S basin crosses it too. It is a high
+  pass in thin air, not a low gap; its width, whether it carries a river (no perennial stream rises near it) and whether it
+  is a defile are for the Gate station to settle on the 2 km height grid. It is the Coyote Kingdom's reason to exist.
+- **The basin's rain (surveyed).** The N main basin is dry (median 235 mm; its p10 is 31 mm), the S main basin is not
+  (median 894 mm); the dry wadis are the drainage, with one perennial river (47 m³/s into a 705 m lake). See `SURVEY.md` 2.
 - **The N/S split**: where the owner draws it, and whether it is a ridge, a river or the two climates (the survey should
   propose the line from the relief and rain, as `korona/NOTES.md` did for its bands).
 
@@ -291,7 +294,7 @@ this kit's materials, its harvests and the terrace rule; it is its own plan (`ki
 
 | Phase | What | Done when |
 |---|---|---|
-| **P0** | Survey: the owner draws `Outlands N`, `Outlands S`; `tools/scale-model` reads height, air, rain, Köppen, rivers, the pass; section 1 filled with numbers | section 1 has a table and the pass's coordinates |
+| **P0** | Survey (**done 2026-10-26**, `SURVEY.md`): the owner drew `N Outlands`, `S Outlands`, `Tiers` and `Coyote Kingdom`; heights, air, rain, temperature, rivers, lakes, the pass and candidate cliffs read. Open: the ancient roads, a climate histogram, trimming the polygons to the basins | section 1 and `SURVEY.md` hold the numbers and the pass's coordinates |
 | **P1** | Lore: `LORE.md` next §6 entry (the Coyote Men, their Hum dialect, the four tribes, the Kingdom of the Tiers, the pass, the trade); `biomes/README.md` and `WORLD.md` rows for `outlands` (N and S) and the Tiers; `INDEX.md` | the owner has approved the names and the geography |
 | **P2** | Plant sheet: ~30 species drawn and checked, the shapes and the palette; textures list in `PROMPTS-NEEDED.md` | a species sheet with the owner's yes |
 | **P3** | Station 1 (the Fog Rim) built on the shared core, `Core adoption` written and `tools/check_core_use.py` passing | `dist/outlands.html` verified |
