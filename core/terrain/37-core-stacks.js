@@ -37,7 +37,10 @@
 //                              part 0 wall, 1 top, 2 underside; occ 0..1 (the notch and the underside dark); uv in metres
 //                              (walls: arc length and y; tops: x and z). opt.step (5 m: the wall's segment length);
 //                              opt.topRings (5: rings in from a top's edge) and opt.segMax (160: the most segments round
-//                              a bed) for a top that carries relief of its own through a wrapped topH (finer than 5 rings)
+//                              a bed) for a top that carries relief of its own through a wrapped topH (finer than 5 rings);
+//                              or opt.top {grid: G, minCells: 3}: such a top drawn as a square G-metre grid (on world
+//                              multiples of G) clipped to the top's edge ring, the ring shared with the wall's top row
+//                              (a bed narrower than minCells cells keeps its rings). Without opt.top the mesh is as before
 //   KSTACKS.row({id, seed, a:[x,z], b:[x,z], n, kind:'fin', H:[lo,hi], r:[lo,hi], e:[lo,hi], ground})   fins along a
 //                              strike: one line, one lean
 //   KSTACKS.cluster({id, seed, c:[x,z], rad, n, kinds:{spire,balanced,fin}, H, r, gap, ground, accept})   a garden of stacks
@@ -194,6 +197,79 @@
       for(var r=0;r<rows.length;r++)for(var s=0;s<=seg;s++){var q=rows[r](s);pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);part.push(p);bedA.push(bk);occ.push(q[5]);}
       for(r=0;r<rows.length-1;r++)for(s=0;s<seg;s++){var a=base+r*(seg+1)+s,c=a+seg+1;
         if(flip)idx.push(a,c,a+1,a+1,c,c+1);else idx.push(a,a+1,c,a+1,c+1,c);}}
+    // THE GRIDDED TOP (opt.top {grid: G metres, minCells}; Korona's hoar pavement, 2026-10-26): a square grid on world
+    // multiples of G, clipped to the top's edge ring, the ring being the wall's top row exactly (the same seg vertices on
+    // topH), so wall and top share their edge and no crack opens. A cell no ring edge touches is a quad (inside) or
+    // nothing; a cell a ring edge crosses is the ring polygon clipped to the cell (Sutherland-Hodgman, each vertex keyed:
+    // a grid corner, a ring vertex, or a ring edge's crossing of a grid line, so neighbouring cells meet on the same
+    // vertices) and ear-clipped. A crossing's height is the ring edge's own (linear), so it lies on the wall's top edge.
+    // Every vertex but those crossings is on topH. The edge ring is star-shaped about the top's centre (one radius per
+    // angle), so inside/outside is one edge test.
+    function gridTop(b,k,seg,ang,c1,t1,G){var n=seg,RX=new Float64Array(n),RZ=new Float64Array(n),RY=new Float64Array(n),id=new Map();
+      var mnx=Infinity,mxx=-Infinity,mnz=Infinity,mxz=-Infinity;
+      for(var s=0;s<n;s++){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1;RX[s]=c1[0]+Math.cos(a)*R;RZ[s]=c1[1]+Math.sin(a)*R;RY[s]=TH(b,RX[s],RZ[s]);
+        if(RX[s]<mnx)mnx=RX[s];if(RX[s]>mxx)mxx=RX[s];if(RZ[s]<mnz)mnz=RZ[s];if(RZ[s]>mxz)mxz=RZ[s];}
+      function V(key,x,y,z){var v=id.get(key);if(v!==undefined)return v;v=pos.length/3;id.set(key,v);pos.push(x,y,z);uv.push(x,z);part.push(1);bedA.push(k);occ.push(1);return v;}
+      function corner(i,j){var x=i*G,z=j*G;return {x:x,z:z,y:TH(b,x,z),key:'g'+i+','+j};}
+      /* the crossing of ring edge s with grid line li (ax 0: x = li*G, 1: z = li*G) */
+      function cross(s,ax,li){var s1=(s+1)%n,x0=RX[s],z0=RZ[s],x1=RX[s1],z1=RZ[s1],L=li*G,t=ax?(L-z0)/(z1-z0):(L-x0)/(x1-x0);if(!(t>=0))t=0;if(t>1)t=1;
+        if(t<1e-9)return {x:x0,z:z0,y:RY[s],key:'r'+s};if(t>1-1e-9)return {x:x1,z:z1,y:RY[s1],key:'r'+s1};   /* a ring vertex on the line: the same vertex from either side */
+        return {x:ax?x0+t*(x1-x0):L,z:ax?L:z0+t*(z1-z0),y:RY[s]+t*(RY[s1]-RY[s]),key:(ax?'z':'x')+s+','+li};}
+      function inside(x,z){var a=Math.atan2(z-c1[1],x-c1[0]),f=(-a/TAU*n)%n;if(f<0)f+=n;var s0=Math.floor(f)%n,s1=(s0+1)%n,ex=RX[s1]-RX[s0],ez=RZ[s1]-RZ[s0];
+        return (ex*(z-RZ[s0])-ez*(x-RX[s0]))*(ex*(c1[1]-RZ[s0])-ez*(c1[0]-RX[s0]))>=0;}
+      function tri(p,q,r){var ny=(q.z-p.z)*(r.x-p.x)-(q.x-p.x)*(r.z-p.z);if(Math.abs(ny)<1e-10)return;
+        var A=V(p.key,p.x,p.y,p.z),Bv=V(q.key,q.x,q.y,q.z),C=V(r.key,r.x,r.y,r.z);if(ny>0)idx.push(A,Bv,C);else idx.push(A,C,Bv);}
+      /* the cells a ring edge touches */
+      var edge=new Set(),e=1e-7;
+      for(s=0;s<n;s++){var s1=(s+1)%n,ia=Math.floor((Math.min(RX[s],RX[s1])-e)/G),ib=Math.floor((Math.max(RX[s],RX[s1])+e)/G),ja=Math.floor((Math.min(RZ[s],RZ[s1])-e)/G),jb=Math.floor((Math.max(RZ[s],RZ[s1])+e)/G);
+        for(var i=ia;i<=ib;i++)for(var j=ja;j<=jb;j++)edge.add(i+','+j);}
+      /* Sutherland-Hodgman against one side of a cell: e on each vertex is the owner of the segment leaving it ([0,s] ring
+         edge s, [1,i] the grid line x = i*G, [2,j] the line z = j*G), so a crossing is keyed by what it lies on */
+      function clip(P,ax,li,ge){var out=[],L=li*G,m=P.length;
+        for(var q=0;q<m;q++){var A=P[q],Bq=P[(q+1)%m],av=ax?A.z:A.x,bv=ax?Bq.z:Bq.x,ai=ge?av>=L:av<=L,bi=ge?bv>=L:bv<=L;
+          if(ai===bi){if(bi)out.push(Bq);continue;}
+          var I=A.e[0]===0?cross(A.e[1],ax,li):(ax?corner(A.e[1],li):corner(li,A.e[1]));
+          if(ai){I.e=[ax?2:1,li];out.push(I);}else{I.e=A.e;out.push(I);out.push(Bq);}}
+        return out;}
+      var ring=[];for(s=0;s<n;s++)ring.push({x:RX[s],z:RZ[s],y:RY[s],key:'r'+s,e:[0,s]});
+      var i0=Math.floor(mnx/G)-1,i1=Math.floor(mxx/G)+1,j0=Math.floor(mnz/G)-1,j1=Math.floor(mxz/G)+1;
+      for(var j=j0;j<=j1;j++)for(var i=i0;i<=i1;i++){
+        if(!edge.has(i+','+j)){if(!inside((i+.5)*G,(j+.5)*G))continue;var g00=corner(i,j),g10=corner(i+1,j),g11=corner(i+1,j+1),g01=corner(i,j+1);tri(g00,g10,g11);tri(g00,g11,g01);continue;}
+        var P=clip(clip(clip(clip(ring,0,i,true),0,i+1,false),1,j,true),1,j+1,false);
+        /* drop repeats (a ring vertex on a grid line), then ear-clip, counter-clockwise in x-z */
+        var Q=[];for(var q=0;q<P.length;q++){var pq=P[q],pr=Q.length?Q[Q.length-1]:null;if(!pr||Math.abs(pr.x-pq.x)+Math.abs(pr.z-pq.z)>1e-9)Q.push(pq);}
+        while(Q.length>1&&Math.abs(Q[0].x-Q[Q.length-1].x)+Math.abs(Q[0].z-Q[Q.length-1].z)<=1e-9)Q.pop();
+        if(Q.length<3)continue;
+        relink(Q,i,j).forEach(function(L){if(L.length<3)return;var ar=0;for(var q=0;q<L.length;q++){var u=L[q],w=L[(q+1)%L.length];ar+=u.x*w.z-w.x*u.z;}if(Math.abs(ar)<1e-9)return;if(ar<0)L.reverse();earClip(L,tri);});}
+      /* A cell the ring enters more than once: Sutherland-Hodgman joins the pieces by runs along the cell's sides, which can
+         cross outside the top. Weiler-Atherton instead: the ring's chains inside the cell (runs of ring-owned segments)
+         are linked exit to entry by walking the cell's boundary the ring's way round (the ring runs clockwise in x-z,
+         against tau, the boundary's parameter), the corners passed on the way put in. One loop per piece. */
+      function relink(Q,i,j){var m=Q.length,q,rg=function(v){return v.e[0]===0;},hs=false,hr=false;for(q=0;q<m;q++){if(rg(Q[q]))hr=true;else hs=true;}
+        if(!hs||!hr)return [Q];
+        var X0=i*G,Z0=j*G,P4=4*G,tau=function(v){var d=[Math.abs(v.z-Z0),Math.abs(v.x-X0-G),Math.abs(v.z-Z0-G),Math.abs(v.x-X0)],k=0;for(var t=1;t<4;t++)if(d[t]<d[k])k=t;
+          var r=k===0?v.x-X0:k===1?G+(v.z-Z0):k===2?2*G+(X0+G-v.x):3*G+(Z0+G-v.z);return ((r%P4)+P4)%P4;};
+        var CN=[corner(i,j),corner(i+1,j),corner(i+1,j+1),corner(i,j+1)],CT=[0,G,2*G,3*G],ch=[];
+        for(q=0;q<m;q++){if(!rg(Q[q])||rg(Q[(q+m-1)%m]))continue;var c=[Q[q]],r=q;while(rg(Q[r])){r=(r+1)%m;c.push(Q[r]);if(r===q)break;}ch.push({v:c,ti:tau(c[0]),to:tau(c[c.length-1]),used:false});}
+        var out=[];for(var a=0;a<ch.length;a++){if(ch[a].used)continue;var L=[],cur=ch[a],guard=0;
+          while(guard++<=ch.length){cur.used=true;L.push.apply(L,cur.v);var to=cur.to,best=null,bd=Infinity;
+            for(var b=0;b<ch.length;b++){if(ch[b].used&&ch[b]!==ch[a])continue;var d=((to-ch[b].ti)%P4+P4)%P4;if(d<1e-9)d=0;if(d<bd){bd=d;best=ch[b];}}
+            var cs=[];for(var t=0;t<4;t++){var dc=((to-CT[t])%P4+P4)%P4;if(dc>1e-9&&dc<bd-1e-9)cs.push([dc,CN[t]]);}cs.sort(function(x,y){return x[0]-y[0];});cs.forEach(function(x){L.push(x[1]);});
+            if(!best||best===ch[a])break;cur=best;}
+          var D=[];L.forEach(function(v){var pv=D.length?D[D.length-1]:null;if(!pv||Math.abs(pv.x-v.x)+Math.abs(pv.z-v.z)>1e-9)D.push(v);});
+          while(D.length>1&&Math.abs(D[0].x-D[D.length-1].x)+Math.abs(D[0].z-D[D.length-1].z)<=1e-9)D.pop();out.push(D);}
+        return out;}}
+    function earClip(Q,tri){var guard=0;
+      function cr(a,b,c){return (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x);}
+      while(Q.length>3&&guard++<4096){var m=Q.length,cut=-1;
+        for(var q=0;q<m&&cut<0;q++){var a=Q[(q+m-1)%m],b=Q[q],c=Q[(q+1)%m];if(cr(a,b,c)<=1e-12)continue;var clear=true;
+          for(var t=0;t<m&&clear;t++){var p=Q[t];if(p===a||p===b||p===c)continue;if(Math.abs(p.x-b.x)+Math.abs(p.z-b.z)<1e-9)continue;
+            if(cr(a,b,p)>=-1e-12&&cr(b,c,p)>=-1e-12&&cr(c,a,p)>=-1e-12)clear=false;}
+          if(clear)cut=q;}
+        if(cut<0){/* only flat corners left: drop the flattest, or fan what remains */var fl=-1;for(q=0;q<m;q++)if(Math.abs(cr(Q[(q+m-1)%m],Q[q],Q[(q+1)%m]))<=1e-9){fl=q;break;}
+          if(fl>=0){Q.splice(fl,1);continue;}for(q=1;q<m-1;q++)tri(Q[0],Q[q],Q[q+1]);return;}
+        tri(Q[(cut+m-1)%m],Q[cut],Q[(cut+1)%m]);Q.splice(cut,1);}
+      if(Q.length===3)tri(Q[0],Q[1],Q[2]);}
     for(var k=0;k<B.beds.length;k++){var b=B.beds[k],per=TAU*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(SMAX,Math.round(per/step)));
       var ang=function(s){return -s/seg*TAU;};                                        // clockwise from above
       var arc=[0];for(var s=1;s<=seg;s++){var a0=ang(s-1),a1=ang(s),r0=footR(b,a0),r1=footR(b,a1);arc.push(arc[s-1]+Math.hypot(Math.cos(a1)*r1-Math.cos(a0)*r0,Math.sin(a1)*r1-Math.sin(a0)*r0));}
@@ -201,9 +277,12 @@
         return [c[0]+Math.cos(a)*R,y,c[1]+Math.sin(a)*R,arc[s],y,u<.2?.55+.45*(u/.2):1];};});
       wall[wall.length-1]=(function(){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,arc[s],b.y+b.h,1];};})();
       grid(wall,seg,0,k,false);
-      // the top: rings in from the chamfer's edge to the centre, on topH exactly
-      var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
-      grid(tops,seg,1,k,false);
+      // the top: rings in from the chamfer's edge to the centre, on topH exactly; or (opt.top.grid, a top wide enough to hold
+      // opt.top.minCells cells across its narrowest radius) a square grid clipped to the same edge ring (gridTop)
+      var GT=opt.top&&opt.top.grid>0?opt.top.grid:0,MC=opt.top&&opt.top.minCells!=null?opt.top.minCells:3;
+      if(GT&&Math.min(b.rx,b.rz)*(1-b.ch)*t1*(1-b.lob)>GT*MC)gridTop(b,k,seg,ang,c1,t1,GT);
+      else{var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
+        grid(tops,seg,1,k,false);}
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot
       var below=k>0?B.beds[k-1]:null,over=false;
       // (any overhang at all: a weathered bed standing proud of the one under it leaves a slit to the sky otherwise)

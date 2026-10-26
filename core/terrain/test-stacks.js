@@ -147,4 +147,41 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
  ok('KSTACKS.tower is guilin\'s tower(), record for record ('+n+' towers), a cliff under a dome',same&&T.tower===true&&T.top>140&&T.beds[T.beds.length-1].rx<T.beds[0].rx*.7,
    JSON.stringify(K.tower({id:'t',seed:10,x:0,z:0,H:150,R:60,y0:0}))===JSON.stringify(T));}
 
+// ---- the gridded top (opt.top {grid}: Korona's hoar pavement, 2026-10-26). Without it every mesh is as before (the hashes
+// below are the module's before the option); with it a relief top is a clipped grid, watertight with its wall
+{const H0={mesa:305465533,sp:3674188268,relief:3343314386};
+ ok('without opt.top the meshes are unchanged (default and the hoar\'s 150-ring options)',K.hash(K.mesh(mesa))===H0.mesa&&K.hash(K.mesh(sp))===H0.sp&&K.hash(K.mesh(mesa,{step:7,topRings:150,segMax:1200}))===H0.relief,
+  K.hash(K.mesh(mesa,{top:{grid:5}}))===H0.mesa);
+ ok('a bed too narrow for the grid keeps its rings (a spire)',K.hash(K.mesh(sp,{top:{grid:5}}))===H0.sp,K.hash(K.mesh(sp,{top:{grid:2,minCells:1}}))===H0.sp);
+ // a relief top, as the hoar table wraps it: knolls on the beds' tops
+ const _th=K.topH;K.topH=function(b,x,z){return _th(b,x,z)+4*Math.sin(x*.05)*Math.cos(z*.04);};
+ const G=K.mesh(mesa,{step:7,segMax:1200,top:{grid:5}}),F=K.mesh(mesa,{step:7,topRings:150,segMax:1200});
+ function topStats(m,B){const P=m.pos,I=m.idx,area={},edges=new Map();let up=0,n=0;
+   for(let t=0;t<I.length;t+=3){const a=I[t],b=I[t+1],c=I[t+2];if(m.part[a]!==1)continue;n++;
+     const ux=P[3*b]-P[3*a],uz=P[3*b+2]-P[3*a+2],vx=P[3*c]-P[3*a],vz=P[3*c+2]-P[3*a+2],ny=uz*vx-ux*vz;if(ny>0)up++;
+     area[m.bed[a]]=(area[m.bed[a]]||0)+Math.abs(ny)/2;
+     [[a,b],[b,c],[c,a]].forEach(([p,q])=>{const k=p<q?p+','+q:q+','+p;edges.set(k,(edges.get(k)||0)+1);});}
+   let bLen=0,over=0;edges.forEach((v,k)=>{if(v>2)over++;if(v===1){const [p,q]=k.split(',').map(Number);bLen+=Math.hypot(P[3*p]-P[3*q],P[3*p+2]-P[3*q+2]);}});
+   return {up:up/n,n,area,bLen,over};}
+ function ringOf(B,k,opt){const b=B.beds[k],per=2*Math.PI*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(opt.segMax,Math.round(per/opt.step))),c=[b.cx+(b.tx||0),b.cz+(b.tz||0)],t1=b.tp==null?1:b.tp;
+   let A=0,L=0;const pts=[];for(let s=0;s<seg;s++){const a=-s/seg*2*Math.PI,R=K.footR(b,a)*(1-b.ch)*t1;pts.push([c[0]+Math.cos(a)*R,c[1]+Math.sin(a)*R]);}
+   for(let s=0;s<seg;s++){const p=pts[s],q=pts[(s+1)%seg];A+=p[0]*q[1]-q[0]*p[1];L+=Math.hypot(q[0]-p[0],q[1]-p[1]);}return {A:Math.abs(A)/2,L};}
+ const st=topStats(G,mesa),opt={step:7,segMax:1200};let aErr=0,perim=0;
+ let nG=0;mesa.beds.forEach((b,k)=>{const r=ringOf(mesa,k,opt);perim+=r.L;if(Math.min(b.rx,b.rz)*(1-b.ch)*(b.tp==null?1:b.tp)*(1-b.lob)<=15)return;nG++;aErr=Math.max(aErr,Math.abs((st.area[k]||0)-r.A)/r.A);});
+ ok('the grid top covers each top exactly (area within 1e-6 of the edge ring\'s: '+aErr.toExponential(1)+') and faces up ('+(st.up*100).toFixed(2)+'%)',aErr<1e-6&&st.up===1,false);
+ ok('it is watertight: only the edge ring is open (open length '+st.bLen.toFixed(1)+' m, the rings '+perim.toFixed(1)+' m), no edge shared three ways',Math.abs(st.bLen-perim)<1e-6*perim&&st.over===0,false);
+ {const m=K.mesh(mesa,{step:7,segMax:1200,top:{grid:5}}),I=m.idx;let t=0;while(m.part[I[t]]!==1)t+=3;t+=3*600;const cut={pos:m.pos,idx:Array.from(I).filter((_,q)=>Math.floor(q/3)!==t/3),part:m.part,bed:m.bed};
+  const s2=topStats(cut,mesa);ok('a missing triangle would be caught (a hole opens in the edges)',true,Math.abs(s2.bLen-perim)<1e-6*perim);}
+ // the vertices: on topH, except a ring edge's crossings of a grid line (on the wall's straight top edge)
+ {let on=0,off=0,worst=0,tv=0;for(let i=0;i<G.part.length;i++){if(G.part[i]!==1)continue;tv++;const d=Math.abs(G.pos[3*i+1]-K.topH(mesa.beds[G.bed[i]],G.pos[3*i],G.pos[3*i+2]));if(d<1e-3)on++;else{off++;worst=Math.max(worst,d);}}
+  let ftv=0;for(let i=0;i<F.part.length;i++)if(F.part[i]===1)ftv++;
+  ok('its vertices are on topH but the ring crossings ('+on+' on, '+off+' crossings, worst '+worst.toFixed(3)+' m), and far fewer than the ring fan ('+tv+' against '+ftv+')',off<on*.2&&worst<.5&&tv<ftv*.5,false);}
+ ok('the grid top is the same every time',K.hash(K.mesh(mesa,{step:7,segMax:1200,top:{grid:5}}))===K.hash(G),K.hash(K.mesh(mesa,{step:7,segMax:1200,top:{grid:6}}))===K.hash(G));
+ // many bodies and grid sizes: every top covered once, only its edge open
+ {let worst=0,openBad=0,nb=0;for(let q=0;q<12;q++){const B=K.make({id:'g'+q,kind:'mesa',x:q*37.3-200,z:q*-21.7+90,y0:0,seed:300+q*11,lobes:.1+.03*q,tiers:[{h:120,r:90+q*17,e:1+q*.07,ry:q*.4},{h:60,r:40+q*6,e:1.2,dx:q*3,dz:-q*2}]}),Gs=[3,5,7][q%3],o={step:5+q%3,segMax:900,top:{grid:Gs}},m=K.mesh(B,o),t=topStats(m,B);
+   let L=0;B.beds.forEach((b,k)=>{const r=ringOf(B,k,o);L+=r.L;if(Math.min(b.rx,b.rz)*(1-b.ch)*(b.tp==null?1:b.tp)*(1-b.lob)<=Gs*3)return;nb++;worst=Math.max(worst,Math.abs((t.area[k]||0)-r.A)/r.A);});
+   if(Math.abs(t.bLen-L)>1e-5*L||t.over)openBad++;}
+  ok('12 more bodies, grids of 3, 5 and 7 m: '+nb+' gridded tops, area within '+worst.toExponential(1)+', '+openBad+' with a hole',nb>20&&worst<1e-6&&openBad===0,false);}
+ K.topH=_th;}
+
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
