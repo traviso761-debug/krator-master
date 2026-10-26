@@ -34,3 +34,13 @@
       Stays open (2026-10-25): a design choice (view-only); an open world must make its own.
 - [ ] **Not in Godot yet**: the rock is meshes made from KSTACKS records (exported as `GUILIN.records()`).
       Stays open (2026-10-25): the Godot port of KSTACKS meshes is a separate task (core/terrain).
+
+## Open
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. It read the hyperjungle's dome in place; now its own shared sky
+      with the hyperjungle's canopy lines (ridges). The night module (necanyons' 89n, read in place) keeps its hooks; the
+      sky drives the lights, fog and exposure over it each frame. Draw calls at the default camera (verify.py --assert,
+      GPU): 40 before, 38 after.
+
