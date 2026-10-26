@@ -166,7 +166,7 @@
  // WATER.hollows({h, box [x0, z0, x1, z1], cell (4 m), blur (24 m), depth (.5 m), slope ([.06, .2]), fill (.9), soft (.12)}): the ground sampled at
  // cell centres, its blur (a box blur of radius blur/cell cells, twice, edges clamped), and per cell the hollow: how far the ground lies under its
  // blur, over `depth` m, clamped to 0..1, times its flatness (1 - smoothstep(slope[0], slope[1], the gradient's length)): a puddle forms only where
- // the ground is flatter than a 6% grade. -> {x0, z0, cell, nx, nz, depth, fill, soft, data: Uint8Array (one byte a cell)}. 512 x 512 cells is 256 KB.
+ // the ground is flatter than a 6% grade; o.mask(x, z) (0..1) multiplies it (0 where the page has water already: a creek's channel is a hollow too). -> {x0, z0, cell, nx, nz, depth, fill, soft, data: Uint8Array (one byte a cell)}. 512 x 512 cells is 256 KB.
  W.hollows=o=>{const h=o.h,B=o.box,c=o.cell==null?4:o.cell,nx=Math.max(2,Math.round((B[2]-B[0])/c)),nz=Math.max(2,Math.round((B[3]-B[1])/c)),N=nx*nz,
    depth=o.depth==null?.5:o.depth,SL=o.slope||[.06,.2],r=Math.max(1,Math.round((o.blur==null?24:o.blur)/c)),H=new Float64Array(N);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)H[j*nx+i]=h(B[0]+(i+.5)*c,B[1]+(j+.5)*c);
@@ -176,7 +176,7 @@
   let A=Float64Array.from(H),T=new Float64Array(N);for(let k=0;k<2;k++){pass(A,T,1);pass(T,A,0);}
   const data=new Uint8Array(N),hv=(i,j)=>H[Math.min(nz-1,Math.max(0,j))*nx+Math.min(nx-1,Math.max(0,i))];
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,gx=(hv(i+1,j)-hv(i-1,j))/((Math.min(nx-1,i+1)-Math.max(0,i-1))*c),gz=(hv(i,j+1)-hv(i,j-1))/((Math.min(nz-1,j+1)-Math.max(0,j-1))*c);
-   data[k]=Math.round(255*Math.min(1,Math.max(0,(A[k]-H[k])/depth))*(1-ss(SL[0],SL[1],Math.hypot(gx,gz))));}
+   data[k]=Math.round(255*Math.min(1,Math.max(0,(A[k]-H[k])/depth))*(1-ss(SL[0],SL[1],Math.hypot(gx,gz)))*(o.mask?Math.min(1,Math.max(0,o.mask(B[0]+(i+.5)*c,B[1]+(j+.5)*c))):1));}
   return{x0:B[0],z0:B[1],cell:c,nx,nz,depth,fill:o.fill==null?.9:o.fill,soft:o.soft==null?.12:o.soft,data};};
  // the hollow at a world point, 0..1: the bytes bilinear over the cell centres, clamped, as the GPU filters them; 0 outside the box (twin: wtrHollow)
  W.hollowAt=(M,x,z)=>{const u=(x-M.x0)/(M.cell*M.nx),v=(z-M.z0)/(M.cell*M.nz);if(u<0||v<0||u>1||v>1)return 0;

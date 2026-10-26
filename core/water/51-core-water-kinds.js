@@ -240,9 +240,11 @@
     'vec3 wtrPN=wtrPd>0.001?wtrRainN(vec3(0.0,1.0,0.0),'+(o.ripples===false?'vec2(0.0)':'wtrRainRipple(vWtrW.xz,wtrRainNow*wtrOk)')+'):vec3(0.0,1.0,0.0);\n'+
     '#if defined(STANDARD)||defined(PHONG)\nif(wtrPd>0.001)normal=normalize(mix(normal,normalize((viewMatrix*vec4(wtrPN,0.0)).xyz),wtrPd));\n#endif\n'+
     // the sky in a puddle where the material has no environment map (a Lambert ground most of all): Schlick's Fresnel on the rippled normal
-    // times W.WET.sky and the daylight (core/atmos's light), added to the emission after the page's emissive map
+    // times the sky's radiance, added to the emission after the page's emissive map. A Lambert ground has the sky light it is lit by (three's
+    // vIndirectFront: the hemisphere and ambient irradiance, over pi); any other takes W.WET.sky times the daylight (core/atmos's light)
     '#include <emissivemap_fragment>\n#ifndef USE_ENVMAP\nif(wtrPd>0.001){float wtrFr=0.02+0.98*pow(1.0-clamp(dot(normalize(cameraPosition-vWtrW),wtrPN),0.0,1.0),5.0);'+
-    'totalEmissiveRadiance+=wtrPd*wtrFr*vec3('+W.WET.sky.map(f).join(',')+')*wtrLight;}\n#endif\n}':
+    '\n#if defined(LAMBERT)\nvec3 wtrSkyL=vIndirectFront*0.3183099;\n#else\nvec3 wtrSkyL=vec3('+W.WET.sky.map(f).join(',')+')*wtrLight;\n#endif\n'+
+    'totalEmissiveRadiance+=wtrPd*wtrFr*wtrSkyL;}\n#endif\n}':
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
   Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>wet,set:fn=>{page=fn;}});
