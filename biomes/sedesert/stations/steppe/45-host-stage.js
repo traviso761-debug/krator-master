@@ -42,7 +42,7 @@ function groundH(x,z){return baseH(x,z);}
 function extraH(x,z,h){return 0;}
 // the pan's rain water: a sheet a few hand-breadths deep over its floor
 const PAN_POOL={x:PAN.x,z:PAN.z,r:PAN.r*.42,name:'The pan\'s rain water (it lasts a few weeks after the wet season)'};
-PAN_POOL.level=baseH(PAN.x,PAN.z)+.28;
+PAN_POOL.level=baseH(PAN.x,PAN.z)+.45;
 // THE WADI: a dry channel across the map from the north-west to the south-east, 24 m wide, its bed 1.5 m under the plain
 const CHAN=(function(){const pts=[];for(let k=0;k<=240;k++){const t=k/240,x=-3250+6500*t,z=-1100+2900*t+180*Math.sin(t*Math.PI*4.2+.4)+70*Math.sin(t*Math.PI*11);pts.push([x,z]);}
  return[{key:'wadi',name:'The wadi (a dry sandy bed; it runs a day or two a year)',w:24,depth:1.5,pts}];})();

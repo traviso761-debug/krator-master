@@ -19,7 +19,7 @@ SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670031);q=q==null?1
   const lv=lvAt(D.x,D.z);if(lv===0)return;for(let k=0,n=Math.round(D.r*(lv===2?3.2:1.4));k<n;k++){const a=k/n*TAU+rr(-.1,.1),rr0=D.r*rr(1.05,1.3),x=D.x+Math.cos(a)*rr0,z=D.z+Math.sin(a)*rr0;
    PL.bunch(x,BIO.terrainH(x,z),z,1,rr(.9,1.4));st.grass++;}});
  // the grass: three bands along the LOD spine
- [[3.6,L.floor[0],0,2],[9,L.floor[1],L.floor[0],1],[28,1e9,L.floor[1],0]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*.9*q;},
+ [[3.6,L.floor[0],0,2],[10,L.floor[1],L.floor[0],1],[28,1e9,L.floor[1],0]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*.9*q;},
   (x,y,z)=>{if(H.insideDisc(x,z))return;if(SEDESERT.blocked(x,z,.3))return;const lv=b[3],h=rr(.45,.95)*(lv===0?1.7:lv===1?1.25:1);
    if(rng()<.14)PL.stipa(x,y,z,lv,h*1.25);else PL.bunch(x,y,z,lv,h);st.grass++;},{patch:.55,patchScale:.02,pad:.25,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // the old twoleafs: the pavement and the pan's margin
