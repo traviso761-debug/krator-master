@@ -190,7 +190,7 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
   luck hazard** that grows the longer one stays in its keep-out ring (a `core/tags` area; section 12). **A boy is a man when he
   has caught a runner bird**; the surest place to find one is the road's end.
 - **The phoenix** is the other god: it dies at the end of every age and rises more glorious. Its living form, **the golden
-  bird**, is wholly sacred: **anyone known to have killed one is attacked on sight**; *proposed* in play: carrying its
+  bird** (an Earth-like great raptor, the owner, 2026-10-26), is wholly sacred: **anyone known to have killed one is attacked on sight**; *proposed* in play: carrying its
   feathers makes every Coyote tribe and the Tierhounds hostile.
 - **Feathers**: the runner bird's are sacred and the dearest; the ostrich's are the common export.
 - **The trade**: Izani caravans over the Gate; emeralds, turquoise and feathers out; grain, metal and cloth in; the Tierhounds
@@ -202,7 +202,7 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
 
 ## 7. Fauna (`kits/fauna`)
 
-About 13 species: **8 native, 5 Earth-like**.
+About 14 species: **8 native, 6 Earth-like**.
 
 | Key | Animal | Kind | Where | Note |
 |---|---|---|---|---|
@@ -219,7 +219,7 @@ About 13 species: **8 native, 5 Earth-like**.
 | `goat` | goat | Earth-like, kept | everywhere settled | from the farm set |
 | `gazelle` | gazelle-like grazer | Earth-like, wild | N1 | its arrival is a P1 lore line |
 | `vulture` | vulture | Earth-like, wild | all | |
-| `goldbird` | **golden bird** | native soarer (*proposed*) | the thermals over S1 | the phoenix's form; sacred |
+| `goldbird` | **golden bird** | Earth-like soarer (the owner, 2026-10-26): a great golden raptor | the thermals over S1 and the rim | the phoenix's form; sacred. *Proposed*: the one Earth animal that **crossed the rim on its own wings** (Rüppell's vulture flies at 11 km), so it was in the basin before the people: a sign, to the Coyote Men, that it belongs to the god |
 
 Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and golden bird are new to the fauna kit.
 
@@ -282,7 +282,7 @@ Ranked by when they block. Each follows its module's README and lands with its o
 
 | # | Amendment | Module | Why | Blocks |
 |---|---|---|---|---|
-| C1 | **A height-band fog belt**: `ATMOS.fogBelt({y0, y1, windward, density})`, a cloud band that hugs the slope between two heights, thicker to windward, thinning where the ground rises through it, with a JS twin (`fogAt(x, y, z)`) and an export record. Today `cloudDeck` is a level top and the old mist edge was host code | `core/atmos` | the fog belt is the Fog Rim's defining feature; the fog field also places the veil caps | station 1 |
+| C1 | **A height-band fog belt** (approved by the owner, 2026-10-26): `ATMOS.fogBelt({y0, y1, windward, density})`, a cloud band that hugs the slope between two heights, thicker to windward, thinning where the ground rises through it, with a JS twin (`fogAt(x, y, z)`) and an export record. Today `cloudDeck` is a level top and the old mist edge was host code | `core/atmos` | the fog belt is the Fog Rim's defining feature; the fog field also places the veil caps | station 1 |
 | C2 | **A shared fungoid geometry fragment** (the owner, 2026-10-26: **in `core/biome`**): `core/biome/33-core-fungoid.js`, opt-in through `CORE_BIOME`, extending `BIO` as `BIO.fung`: `cap` (disc, dome, funnel; gills or pores underneath), `bracket` (shelf rows on a trunk or rock), `bladder` (a lathe body with pleats, swell as a parameter), `pod` and `podCluster`, `stalk` (tapered, bent, ribbed), `fringe` (hanging thread cards), `comb` (paired plates up a mast), `tube` (clusters, open tips, an emissive rim option) and `crust` (flat lobed decals on ground or rock). Each part takes a record (sizes, counts, colours) and a `KRAND` stream, never draw order; defaults as `x == null ? d : x`; geometry goes into the kit's families through the existing `leafMat`/`barkMat` path so instancing, LOD and the export are unchanged. A node test (`test-fungoid.js`: same record and seed, same vertices; counts per part). Today each kit copies its own (`bracket()` in swbay, nwbay, rift and hyperjungle; the Throne's `cap`/`capTube`/`bladders`; swbay's `capTop`; nhighlands' `discStalks`): **those kits are not moved by this step** (their pages would change); each may switch later, page by page, with its baseline rewritten on purpose | `core/biome` | 34 species of one lineage; the SW highlands and the swbay backfill need the same parts | station 1 |
 | C3 | **Strata into core** (`core/terrain/STRATA-PLAN.md`, step 1 then recipes) with an **`outland` recipe**: red vesicular basalt caps over pale tuffs and red beds, thin green and turquoise copper bands, white altered zones | `core/terrain` | the basin walls, the gem hills, Trickster's wall; and plants placed by bed (`S.at`) | stations 1, 3, 7 |
 | C4 | **Dry relief forms**: `KRELIEF.wadi` (a dry `river`: braided cobble floor, cut banks, a fan at the mouth), `talus` aprons (Korona's `talusH` lifted), `KSTACKS` kinds `dome` and `tor`, `KRELIEF.pit` (stepped benches and spoil heaps), and a `pavement` class in `KFIELD`'s cover grid | `core/terrain` | the plains, the gem hills, every wall's foot | stations 3, 4, 5 |
@@ -313,11 +313,11 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 
 | Phase | What | Done when |
 |---|---|---|
-| **O0** | P0 survey (done); this plan approved; markers on the model (done); the owner's reference plates in `refs/` | the owner's yes |
+| **O0** | P0 survey (done); this plan approved; markers on the model (done) | the owner's yes |
 | **O1** | **Lore**: `LORE.md` §6 entry (the Coyote Men, the Hum dialect, the four tribes, the Tierhounds and their kingdom, the two gods, the Gate, the god's road, Trickster's House, the trade); `biomes/README.md`, `WORLD.md`, `INDEX.md` rows | the owner approves the names |
 | **O2** | **Textures**: the 13 new sets and the five owed ones delivered and processed; `materials.json`; `pack.py` | the contact sheet passes in the demo kit |
 | **O3** | **Core amendments C1 and C2** (fog belt; fungoid parts), each with its node test; `port_baseline.py` reads `same` for every build that did not ask to move | tests pass |
-| **O4** | **Station 1, the Fog Rim**: the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
+| **O4** | **Station 1, the Fog Rim** (the owner's reference images arrive at build time, into `refs/`, before each station's flora): the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
 | **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery); the fauna and resource additions | each verified |
 | **O6** | **C5**; **station 2, the River** (fields as records, the Earth-like three, the lake) | verified |
 | **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II), **station 6, the Gate** | verified |
@@ -327,9 +327,9 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 ## 15. Open questions
 
 1. ~~C2's home~~ Settled (the owner, 2026-10-26): a `core/biome` fragment, `33-core-fungoid.js` (section 12).
-2. **The fog belt (C1)**: approve a core amendment to `core/atmos`, or keep the belt kit-local for the first station?
-3. **Reference plates**: will the owner supply plates for the native flora (as for swhighlands), or work from this list?
+2. ~~The fog belt~~ Approved as a `core/atmos` amendment (the owner, 2026-10-26).
+3. ~~Reference plates~~ The owner gives reference images at build time.
 4. **Gem ranges**: emerald and turquoise both in the S gem hills (this plan), or emerald in the N?
-5. **The golden bird**: native (a gliding hexapod-winged soarer) or Earth-like (a raptor)?
+5. ~~The golden bird~~ Earth-like (the owner, 2026-10-26): a great golden raptor.
 6. **Names still open**: the Kingdom's capital, the pass's own name (beyond "the Gate"), the rivers and lakes in Coyote speech.
 7. **Station count**: seven, or fold the Gate into the Tiers' build?
