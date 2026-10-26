@@ -10,7 +10,7 @@ harmless way. Settled the same day: the floor takes **nwlowlands flora adapted t
 abyss's, which is too far away to share it), led by a **hyperbamboo**; the warp's ideas (combed growth, fixed sizes,
 clean bites, straight ranks, echoes, the compass) were approved; a detailed plan was asked for.
 
-**Status: plan, awaiting the owner.** The kit does not decide what the eigenweapon was, who fired it or at what
+**Status: building (2026-10-26, branch `claude/cut-biome-75af1e`); the owner's decisions of that day are in section 11.** The kit does not decide what the eigenweapon was, who fired it or at what
 (`LORE.md` §12 keeps that open).
 
 ## 0. What the kit is
@@ -212,8 +212,55 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 - **C5.** Stations 2 and 3, the cut faces (with the strata module if it has landed).
 - **C6.** The crops; `verify.py --assert`; `PORT.md`; the gallery (a new biome); Dilihan's plan switched to read this kit.
 
+**Where it stands (2026-10-26, branch `claude/cut-biome-75af1e`).** C0: the lore settled (section 11), the texture prompt
+for the face written and delivered (`rock.cut.polished`), the four other sets already in the library; the north mouth and the
+4.22 floor are on the model. C1: done (`src/41-cut-field.js`, `tests/test-cut.js`). C2, C3: done (station 1). C4: the echoes
+(the hyperbamboo's), the compass (the page's needle, `CUT.north`), the camp: done. C5: stations 2 and 3: done, without the strata
+module (not landed). C6: the crops (`kits/crops`, a `cut` biome and five records), `verify.py --assert` and `PORT.md` done; the
+gallery and Dilihan's plan switched to read this kit are left (`KNOWN_ISSUES.md`), with what the warp does not yet reach.
+
 ## Textures
 
 Reuse `bark.bamboo.jade` (the hyperbamboo's culms, scaled up), `ground.salt`, `ground.efflorescence` and the NW lowlands'
 sets. To generate: `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `rock.lichen.circles`
 (`core/materials/PROMPTS-NEEDED.md` section 10, 2026-10-23).
+
+## 11. Decisions of 2026-10-26 (the owner, at the build)
+
+- **The lore (C0, section 9): both.** The bowl is the bottom of a sphere some 500-1,300 km across, centred in orbit: an
+  orbital detonation or a deletion projected from orbit. And the second story: the same sphere took a column of air, and
+  the atmosphere falling into the void was heard and felt across the crater. `LORE.md` §6.2's "the sphere's lower half"
+  becomes "the bottom of the sphere"; that edit is made on `main` (the lore file is not this kit's), with this note as
+  its source.
+- **The cutters' camp: props only**, tagged so a future Dilihan kit (an Iziz vassal kit on `settlements/iziz/VASSAL-KITS.md`)
+  can take them over: every prop is a core/tags record with `culture:'iziz'`, `style:'dilihan'`, `role:'placeholder'`,
+  `job:'carpentry'` and its kind in `variant` (culm stack, drying rack, lean-to, hearth), registered before it is drawn.
+- **The cut face: a new set**, `rock.cut.polished`, prompted and delivered the same day (in the library: bedded rock
+  sawn smooth, full colour).
+- **Scope: all three stations** this session (C1-C6, the gallery left to `main`).
+
+## Core adoption (written before the first fragment, 2026-10-26)
+
+The nearest finished builds: `biomes/korona` (stations, other kits read in place under a mask, core/water) and
+`biomes/swbay` (the shared sky, `ATMOS.cloudShade`). `build.py` starts from Korona's; the sky from swbay's.
+
+| Module | Taken | For |
+|---|---|---|
+| `core/biome` (`CORE_BIOME`) | yes | the kit contract, items, buckets, bake, runtime LOD, export; the nwlowlands and nhighlands kits read in place on it |
+| `core/host` (`CORE_HOST`) | yes | camera, loop, clock, panel, inspector, polygon tool, probe (`99-host-take.js` hands it each station) |
+| `core/rand` (`KRAND`) | yes | every draw of this kit's own: the natives, the camp, the bites, the echoes, the size steps, each seeded by a hash of (world, cell, index, salt). The read-in kits keep their own streams |
+| `core/tags` (`KTAGS`) | yes | every plant and prop registered before it is drawn (`BIO.init({tags:'cut'})`), the camp's placeholder tags |
+| `core/atmos` | yes | `ATMOS.bindHost`; **the shared sky** (`core/atmos/sky`, `89-atmos-h-skyhost.js`) at the Cut's pixel, the bowl's walls as **ridge profiles cast from the kit's own bowl model** (`CUT.horizon`), the dense air; `ATMOS.cloudShade`; the weather binding (`ATMOS.bindWeather`) for the afternoon storms (section 6) |
+| `core/water` | yes | the lakes as `WATER.open` (station 1), the wall's terrace channels none; the face none (a kit-level check: every station page has a core/water record, as Korona's) |
+| `core/terrain` | yes | `38-core-relief.js` (`KRELIEF`) for the face's stamp where the smooth sweep meets the broken mountain (station 3); `36-core-carve.js` for the bitten boulders. **Not** the strata module (`STRATA-PLAN.md`): not landed |
+| `core/space` (`KSPACE`) | yes | the natives' keep-clear (groves, melon terraces, the camp) through the biome core's `BIO.clearOf` and its index |
+| `core/mask` (`KMASK`) | no | nothing reads a canvas: every mask is a function of the bowl model and the fields |
+| `core/materials` | yes | the library through `materials.json` and `tools/textures/pack.py`: `bark.bamboo.jade`, `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `rock.lichen.circles`, `ground.salt`, `ground.efflorescence`, `rock.cut.polished` (the faces); the read-in kits' own packs as sidecars |
+| `core/export` | yes | `BIO.export()` (the export profile in `verify.py --assert`) |
+| `core/clock` | yes (through core/host) | the hour for the echoes (dusk) and the sky |
+| `core/lod`, `core/minimap` | no | the biome core's runtime LOD does the work, as in every biome kit; no minimap on a biome page |
+| `core/city`, `core/hamlet`, `core/simulation`, `core/furnish` | no | a biome kit: no town (the camp is props for Dilihan's kit) |
+
+The kit's own data side (`[G data]`, `src/50-biome-cut-field.js`): the bowl model (the radial profile on the 4.22
+survey, the lip by bearing, the two lakes), `CUT.field`, the warp's transforms (lean, stretch, size steps, bites, echoes,
+ranks) and `CUT.north`. No three.js, no DOM: `tests/test-cut.js` runs it in node.

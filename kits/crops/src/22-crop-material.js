@@ -103,3 +103,7 @@ R('beard-lichen', 'Larch beard', 'medicine', [0, 1], [1, 3], {atm: [0, 1], src: 
 R('larch-bark', 'Fur-larch bark', 'dye', [0, 1], [1, 2], {atm: [0, 2], form: 'tree', colour: 'red-brown', src: 'nwouterwall', home: ['nwouterwall'], note: 'the bark\'s tannin: a red-brown, and the tanner\'s bark; the larch\'s gum is chewed'});
 R('silverthorn', 'Silverthorn', 'berry', [0, 2], [0, 2], {also: ['dye'], atm: [0, 2], form: 'shrub', card: 'card.seabuckthorn', colour: 'yellow', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'cured'], note: 'sea buckthorn in the forest-steppe\'s gullies: the berries against the winter\'s scurvy, a yellow dye'});
 R('birch-tar', 'Birch tar', 'dye', [0, 1], [1, 3], {also: ['fuel'], atm: [0, 1], form: 'shrub', colour: 'black', src: 'nwouterwall', home: ['nwouterwall'], note: 'dry-distilled from the snow birch\'s bark: glue, waterproofing and a black'});
+
+/* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
+R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
+R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});

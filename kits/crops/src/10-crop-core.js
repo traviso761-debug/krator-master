@@ -69,5 +69,8 @@ CROPS.BIOMES = {
      dry summers) and the larch taiga (~5.2 km, 0.85 atm) are standard air; the tundra and the fellfield above are thin. The alases are
      the thaw hollows' meadows and lakes on the permafrost */
   nwouterwall: {atm: 1, zones: {steppe: {warmth: [1, 1], arid: [1, 1]}, larchwood: {warmth: [0, 1], arid: [1, 2]}, alas: {warmth: [0, 1], arid: [3, 3], wet: true},
-    tundra: {warmth: [0, 0], arid: [0, 1], atm: 0}, fellfield: {warmth: [0, 0], arid: [0, 0], atm: 0}}}
+    tundra: {warmth: [0, 0], arid: [0, 1], atm: 0}, fellfield: {warmth: [0, 0], arid: [0, 0], atm: 0}}},
+  /* the Cut (biomes/cut, PLAN.md section 7): the eigenweapon's bowl, ~1.9 atm on the floor and the lakes' shores (hot: the 4.22 floor's
+     +31 degC), the salt steppe dry and salt; the walls and the lip standard air */
+  cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}}
 };

@@ -1,0 +1,178 @@
+{
+ "build": "cut",
+ "note": "The Cut kit's adapter onto the material library (core/materials/PLAN.md; biomes/cut/PLAN.md, Textures). The natives' sheets (card.bamboo.giant, card.reed, card.rankgrass, card.crop.melon: 3x3, each card geometry takes its own cell in its uv, so no 'cell' here) and the hyperbamboo's culm (bark.bamboo.jade, a detail map normalised to the culm's tint); the host's ground layers (47-host-land.js, STAGE.layers): ground.salt and ground.efflorescence on the salt steppe, the lake bed's shells on the shore, leaf litter under the forest, rock.cut.polished on the cut faces and rock.lichen.circles over them. Run python3 tools/textures/pack.py biomes/cut after any change, then python3 build.py (and --station wall, --station face).",
+ "size": 512,
+ "families": {
+  "hleaf": {
+   "lib": "card.bamboo.giant",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "rank": {
+   "lib": "card.rankgrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "melon": {
+   "lib": "card.crop.melon",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "culm": {
+   "lib": "bark.bamboo.jade",
+   "scale": [
+    1.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.salt": {
+   "lib": "ground.salt",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.efflor": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.shore": {
+   "lib": "ground.lakebed.shells",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85,
+    "contrast": 1.2
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.face": {
+   "lib": "rock.cut.polished",
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "rock.lichen.circles",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    6,
+    6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  }
+ }
+}
