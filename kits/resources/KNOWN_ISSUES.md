@@ -16,9 +16,9 @@
       - salt pans;
       - timber stands.
 - [ ] The engine is read in place from kits/scyvoi/src: a change there changes this page (port_baseline shows it).
-- [ ] **Two nodes for the Catch** (the owner, 2026-10-23): **potash** and **alkali salts** (soda and its kin, borates and
-      lithium folded in), the Catch's salt field (`biomes/catch/PLAN.md` section 6a). Add them when the Catch kit is built,
-      no finer than these two.
+- [x] **Two nodes for the Catch** (the owner, 2026-10-23; added 2026-10-26 with `biomes/catch`): **potash** (`node-potash-*`)
+      and **alkali salts** (`node-alkali-*`: soda and its kin, borates and lithium folded in), the library's `ground.salt.ochre` and
+      `ground.soda.crust` on their crusts. kits/islanders reads 42r and 44r in place, so its page carries the six new defs (unplaced).
 - [ ] **Farside's alkali and lime come from its flora, not a node (2026-10-26):** the kelp kilns burn the land kelp to
       ash (potash and soda: the same two goods as the Catch's planned potash and alkali-salt nodes, `biomes/catch/PLAN.md`
       6a), and the lime kilns burn the spray coral to lime. They are crops in `kits/crops` (`kelp-ash`, `coral-lime`), not
