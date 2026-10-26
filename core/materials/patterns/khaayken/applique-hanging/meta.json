@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    887,
+    887
+   ],
+   "seam_after": [
+    0.899,
+    0.395
+   ],
+   "seam_before": [
+    1.986,
+    0.96
+   ],
+   "source_size": [
+    887,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "khaayken/applique-hanging",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.95,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "khaayken-applique-hanging.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 16), cropped to (0, 0, 887, 887)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/applique-hanging).",
+  "reuse": "Baker Lake-style felt appliqu\u00e9 hanging (one period of the delivered 2:1 sheet): hall and song-house walls",
+  "sha1": "215e3cdba8406d3454b88ec0c37cb238f9f7a655"
+ }
+}

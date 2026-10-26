@@ -420,6 +420,10 @@
    "bytes": 2435546,
    "sha256": "02ea7e9d50041ab78d897736d2e758cfa31000ae757902615822a246cb2a9b46"
   },
+  "kits/yeti/dist/yeti.html": {
+   "bytes": 946029,
+   "sha256": "1f979932fe0e2468d33f0bede442c9b3df95e8cc821ef05357fb579cfbc1de7e"
+  },
   "kits/zeijani/dist/zeijani.html": {
    "bytes": 1369934,
    "sha256": "d97f6da704acfa3275efe886af974432c66101fe058450aebc529150f0a47da4"

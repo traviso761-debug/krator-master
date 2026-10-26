@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1254,
+    1254
+   ],
+   "seam_after": [
+    0.732,
+    1.166
+   ],
+   "seam_before": [
+    1.053,
+    1.806
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "khaayken/amur-scroll",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "khaayken-amur-scroll.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 11)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/amur-scroll).",
+  "reuse": "Nanai/Ulch hide appliqu\u00e9 scrollwork: borders, bags, chests; any curvilinear spiral ornament",
+  "sha1": "dbdda4cdb8e325d9948552292ed25afe930ce500"
+ }
+}
