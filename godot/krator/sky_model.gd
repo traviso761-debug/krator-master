@@ -146,7 +146,7 @@ func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 			lm = (-mdir * cos_psi + sp.normalized() * sqrt(maxf(0.0, 1.0 - cos_psi * cos_psi))).normalized()
 		moons.append({"name": m["name"], "kind": m["kind"], "dir": mdir, "along": b / D, "light": lm,
 			"lead": (giant_dir * lx + rt * ly).normalized(), "toGiant": (giant_dir * kr - mdir * dist).normalized(),
-			"radiusDeg": atan(float(m["radiusKm"]) / dist) / D, "distKm": dist, "front": 1 if dist < kr * 0.98 else 0,
+			"radiusDeg": atan(float(m["radiusKm"]) / dist) / D, "lump": float(m.get("lump", 0.0)), "distKm": dist, "front": 1 if dist < kr * 0.98 else 0,
 			"lit": (1.0 + cos_psi) / 2.0, "albedo": m["albedo"]})
 	var sep := acos(clampf(sun_dir.dot(giant_dir), -1.0, 1.0)) / D
 	var rg: float = G["diaDeg"] / 2.0

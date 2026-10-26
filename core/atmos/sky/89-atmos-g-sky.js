@@ -49,7 +49,7 @@
   'uniform mat3 uEq;uniform highp sampler3D uNoise;',   // the noise volume (ATMOS.skyNoiseVolume)                                   // world -> inertial (the stars' sphere)
   // uPole: the giant's spin axis (its bands and ring plane), not Krator's pole
   'uniform sampler2D uMoonMaps;uniform float uMoonMapOn;uniform vec3 uMoonG[6];',   // the moon maps, one atlas, a row a moon (core/materials/library/sky.moon.*); uMoonG: moon to giant
-  'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
+  'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonLump[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];uniform vec4 uPN;',   // uPN: the planetary nebula (inertial direction, radius in radians)
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
   'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform vec3 uCamPos;',   // uCamPos: the page camera's world position (the clouds are anchored to the world)   // cover, cumulus, cirrus, bank; heights, scale, drift
@@ -234,13 +234,18 @@
   'vec3 atmSkyIapetus(vec3 N,vec3 V,vec3 q,float cm){float n=atmSkyFbm(q*3.0,4,310u);float lead=smoothstep(-0.18,0.22,dot(N,V)+0.22*n);',
   ' vec3 c=mix(mix(vec3(0.80,0.78,0.74),vec3(0.92,0.91,0.88),cm),mix(vec3(0.11,0.08,0.06),vec3(0.42,0.38,0.34),cm),lead);',
   ' float rg=1.0-smoothstep(0.0,0.05,abs(dot(N,uRingN)+0.02*n));return mix(c,c*(1.0-0.35*lead)+vec3(0.10)*lead,rg*0.7);}',
-  'vec4 atmSkyMoon(vec3 d,int i){vec3 m=uMoonDir[i];float c=dot(d,m),r=uMoonR[i];float ang=atmSkyAng(d,m),k=uMoonK[i];if(ang>(k<0.5?r*1.16:r)+uPixAng)return vec4(0.0);',
+  'vec4 atmSkyMoon(vec3 d,int i){vec3 m=uMoonDir[i];float c=dot(d,m),r=uMoonR[i];float ang=atmSkyAng(d,m),k=uMoonK[i],lp=uMoonLump[i];if(ang>(k<0.5?r*1.16:r*(1.0+lp))+uPixAng)return vec4(0.0);',
+  // a lumpy body (the Companion, Vesta-like): its outline wanders round the limb and is squashed along its pole
+  ' if(lp>0.0){vec3 xd=normalize(d-m*c+1e-7*uRingT),sN=normalize(cross(uRingT,m)),np=normalize(uRingN-m*dot(uRingN,m));float th=atan(dot(xd,sN),dot(xd,uRingT));',
+  '  float sc=(1.0+lp*(0.6*atmSkyNoise(vec3(cos(th)*1.4,sin(th)*1.4,7.0),370u)+0.35*atmSkyNoise(vec3(cos(th)*3.2,sin(th)*3.2,9.0),371u)))*(1.0-0.6*lp*abs(dot(xd,np)));',
+  '  if(ang>r*sc+uPixAng)return vec4(0.0);r*=sc;}',
   // Day's umbrella plumes standing over its limb, lit on the sunward side, rising and falling with the vents
-  ' if(ang>r){vec3 x=normalize(d-m*c);float pa=atan(dot(x,normalize(cross(uRingT,m))),dot(x,uRingT));float hgt=(ang-r)/(0.16*r);',
+  ' if(ang>r&&k<0.5){vec3 x=normalize(d-m*c);float pa=atan(dot(x,normalize(cross(uRingT,m))),dot(x,uRingT));float hgt=(ang-r)/(0.16*r);',
   '  float pl=smoothstep(0.62,0.92,atmSkyNoise(vec3(cos(pa)*2.6,sin(pa)*2.6,uMoonT*0.06),360u)*0.5+0.5+0.15*atmSkyNoise(vec3(cos(pa)*9.0,sin(pa)*9.0,hgt*3.0+uMoonT*0.1),361u));',
   '  float a=pl*(1.0-smoothstep(0.0,1.0,hgt))*smoothstep(0.0,0.08,hgt+0.08)*0.6;float lit=smoothstep(-0.2,0.5,dot(x,uMoonL[i]));',
   '  return vec4(vec3(0.86,0.82,0.66)*(0.10+0.95*lit),a);}',
   ' vec3 x=(d-m*c)/sin(r);float xx=min(dot(x,x),1.0);vec3 N=normalize(x-m*sqrt(1.0-xx));vec3 L=uMoonL[i];',
+  ' if(lp>0.0)N=normalize(N+lp*1.3*vec3(atmSkyNoise(N*2.6,372u),atmSkyNoise(N*2.6+3.0,373u),atmSkyNoise(N*2.6+6.0,374u)));',   // and its surface heaves
   ' vec3 q=vec3(dot(N,uRingT),dot(N,normalize(cross(uRingT,m))),dot(N,m));float ndl=dot(N,L),l=((k>1.5&&k<2.5)||k>5.5)?smoothstep(-0.12,0.45,ndl):max(ndl,0.0);',
   ' vec3 nN=normalize(uRingN),fG=uMoonG[i],fP=normalize(fG-nN*dot(fG,nN)),lV=uMoonV[i],lP=normalize(lV-fP*dot(lV,fP)-nN*dot(lV,nN)+1e-5);',
   ' vec3 P=vec3(dot(N,fP),-dot(N,lP),dot(N,nN));vec3 alb;vec4 cb=vec4(0.0);vec3 em=vec3(0.0);',
@@ -249,6 +254,8 @@
   '  if(k>6.5)cb.a=1.0-smoothstep(0.05,0.13,dot(alb,vec3(0.3,0.55,0.15)));}',   // the tar seas, from the map: its near-black
   ' else{float cm=(k>0.5&&k<5.5&&(k<1.5||k>2.5))?atmSkyCraterMask(q,240u+uint(k)*16u):0.0;if(k>6.5)cb=atmSkyCarbon(q,uMoonT);',
   '  alb=k<3.5?atmSkyMoonSurf(q,k,cm):k<4.5?atmSkyIapetus(N,uMoonV[i],q,cm):k<5.5?atmSkyMimas(N,uMoonV[i],L,q,cm):k<6.5?atmSkyVitriol(q,uMoonT):cb.rgb;}',
+  // Vesta's Rheasilvia: a basin over its south pole with a bright rim and a bright central peak
+  ' if(lp>0.0){float bz=-P.z;alb*=1.0-0.20*smoothstep(0.55,0.72,bz)*(1.0-smoothstep(0.90,0.96,bz));alb+=vec3(0.10)*exp(-pow((bz-0.58)/0.04,2.0))+vec3(0.14)*smoothstep(0.95,0.995,bz);}',
   ' if(k>5.5&&k<6.5){vec4 vc=atmSkyVitriolCloud(P,uMoonT);alb=mix(alb,vc.rgb,vc.a);}',
   ' if(k>6.5){vec4 cc=atmSkyCarbonCloud(P,uMoonT);alb=mix(alb,vec3(0.80,0.52,0.28),0.10);alb=mix(alb,cc.rgb,cc.a);cb.a*=1.0-cc.a;}',
   ' if(k<0.5){vec4 dv=atmSkyDayVolc(q,uMoonT);alb=mix(alb,vec3(0.10,0.045,0.025),dv.x*(uMoonMapOn>0.5?0.35:1.0));alb=mix(alb,vec3(0.80,0.76,0.62),dv.z*0.8);',
@@ -300,7 +307,7 @@
   ' col+=uSunC*sd*6.0*T*(0.25+0.75*min(uSunI,1.0));',
   // opaque bodies: the moons, then the giant over them, the ring over both on its near half
   ' vec3 bc=vec3(0.0);float op=0.0;',
-  ' int mi=-1;for(int i=0;i<6;i++){float rr=uMoonR[i]*(uMoonK[i]<0.5?1.16:1.0)+uPixAng;if(atmSkyAng(d,uMoonDir[i])<rr&&(mi<0||uMoonF[i]>0.5))mi=i;}',
+  ' int mi=-1;for(int i=0;i<6;i++){float rr=uMoonR[i]*(uMoonK[i]<0.5?1.16:1.0+uMoonLump[i])+uPixAng;if(atmSkyAng(d,uMoonDir[i])<rr&&(mi<0||uMoonF[i]>0.5))mi=i;}',
   ' vec4 mo=mi>=0?atmSkyMoon(d,mi):vec4(0.0);bool mf=mi>=0&&uMoonF[mi]>0.5;',
   ' if(!mf&&mo.a>0.0){bc=mix(bc,mo.rgb,mo.a);op=max(op,mo.a);}',
   ' float tG;vec4 g=atmSkyGiant(d,tG);if(g.a>0.0){bc=mix(bc,g.rgb,g.a);op=max(op,g.a);}',

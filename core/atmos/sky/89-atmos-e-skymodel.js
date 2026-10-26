@@ -5,7 +5,7 @@
 // after a spell lifted to declination -39 for rarer eclipses): where a tidally locked moon's giant hangs, so the sun passes behind it
 // ~2 h a day for ~2.5 months round each equinox, the realistic count. decDeg would lift it again. Its ring plane is taken through
 // the line of sight, tilted axisTiltDeg in the sky, so the rings stay a near-level hairline. The giant's moons orbit in its equator, the plane of its rings, so from
-// Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Ceres-like, a Trojan sharing Krator's own
+// Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Vesta-like and lumpy, a Trojan sharing Krator's own
 // orbit 60 degrees ahead, so it hangs fixed beside the giant and waxes and wanes once a day; the Week (6.87 d, two-faced,
 // Iapetus-like) and the Thirteen (12.55 d, a carbon world with tar seas) orbit outside Krator, so their phases,
 // 7 and 13 days as seen from Krator, and the Double Dark every 91 days come out of the geometry, not a table; the stars
@@ -32,12 +32,12 @@
    libration:{incDeg:1.6, ecc:0.01, phase:4.04}},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
   sunDiaDeg:0.53,
   // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: Day), 1 Callisto-like (dark, cratered),
-  // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots), 5 Mimas-like (icy, grooved, one huge crater on its
+  // 2 Venus-like (clouded), 3 Ceres- or Vesta-like (grey, cratered; lump > 0 makes it irregular), 5 Mimas-like (icy, grooved, one huge crater on its
   // leading face), 6 vitriolic (sulfuric-acid seas, dark red land, bright brownish cloud, a pale green limb), 7 a carbon world (rust and
   // ochre crusts, tar seas over a quarter of it, pale haze: the Thirteen, the owner 2026-10-25), 4 Iapetus-like
   // (its leading hemisphere coal-dark, its trailing one bright, an equatorial ridge). The Companion is a Trojan (trojanDeg ahead of Krator on its orbit); the others' phase0 makes
   // both new at the Double Dark the day before game start, solved below. 'Companion' is a working name
-  moons:[{name:'Companion', kind:3, trojanDeg:60, radiusKm:470, albedo:[1,1,1]},
+  moons:[{name:'Companion', kind:3, trojanDeg:60, radiusKm:470, albedo:[1,1,1], lump:0.24},   // lump: Vesta's lopsided, squashed shape (the owner, 2026-10-25)
          {name:'Week', kind:4, periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[1,1,1]},
          {name:'Thirteen', kind:7, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]},
          // Day (the owner, 2026-10-25): Io-like, inside Krator's orbit in a 2:1 resonance (12 h, Kepler from Krator's 24 h and
@@ -148,7 +148,7 @@
    const sp=sunDir.map((v,k)=>v-md[k]*dot(sunDir,md)),spl=Math.hypot(sp[0],sp[1],sp[2]),sn=Math.sqrt(Math.max(0,1-cosPsi*cosPsi));
    const Lm=spl>1e-6?norm([0,1,2].map(k=>-md[k]*cosPsi+sp[k]/spl*sn)):L;
    return{name:m.name,kind:m.kind,toGiant:gw,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:Lm,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
-    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
+    radiusDeg:Math.atan(m.radiusKm/dist)/D,lump:m.lump==null?0:m.lump,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);

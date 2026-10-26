@@ -166,11 +166,11 @@ func _update() -> void:
 	m.set_shader_parameter("uCamPos", cam3.global_position if cam3 else Vector3(0, 1.7, 0))
 	m.set_shader_parameter("uMoonT", s["t"] * 24.0)
 	var md := PackedVector3Array(); var ml := PackedVector3Array(); var mv := PackedVector3Array(); var mg := PackedVector3Array(); var mc := PackedVector3Array()
-	var mr := PackedFloat32Array(); var mk := PackedFloat32Array(); var mf := PackedFloat32Array()
+	var mr := PackedFloat32Array(); var mk := PackedFloat32Array(); var mf := PackedFloat32Array(); var mlp := PackedFloat32Array()
 	for mo in s["moons"]:
 		md.append(mo["dir"]); ml.append(mo["light"]); mv.append(mo["lead"]); mg.append(mo["toGiant"]); mc.append(_v(mo["albedo"]))
-		mr.append(mo["radiusDeg"] * model.D); mk.append(mo["kind"]); mf.append(mo["front"])
-	for k in [["uMoonDir", md], ["uMoonL", ml], ["uMoonV", mv], ["uMoonG", mg], ["uMoonC", mc], ["uMoonR", mr], ["uMoonK", mk], ["uMoonF", mf]]:
+		mr.append(mo["radiusDeg"] * model.D); mk.append(mo["kind"]); mf.append(mo["front"]); mlp.append(mo["lump"])
+	for k in [["uMoonDir", md], ["uMoonL", ml], ["uMoonV", mv], ["uMoonG", mg], ["uMoonC", mc], ["uMoonR", mr], ["uMoonK", mk], ["uMoonLump", mlp], ["uMoonF", mf]]:
 		m.set_shader_parameter(k[0], k[1])
 	var Cl: Dictionary = preset["clouds"]
 	m.set_shader_parameter("uCloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
