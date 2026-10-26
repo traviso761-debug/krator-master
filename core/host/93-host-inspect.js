@@ -70,7 +70,14 @@ K.onTake(function inspectTake(H){
  K.inspectRecord=function(r){K.selected=r||null;mark(r);if(r)K.inspector(label(r));if(K.holdsFor)K.holdsFor(r,null);if(K.onSelect)K.onSelect(r);};
  // ---------------------------------------------------------------- the click (the panel calls K.inspectAt; this replaces its words)
  const ray=C.ray,hidden=()=>K.hiddenSet?K.hiddenSet():new Set();
- function hitsAt(x,y){return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hidden().has(h.object)&&h.object.visible);}
+ // an instance with its own label (core/biome BIO.put's extra.label: userData.instLabels by row, 2026-10-26) is named by it:
+ // the hit's object becomes a view of the mesh whose userData.inspectLabel is the instance's (the mesh itself is hit.mesh),
+ // so every build's own describe() reads it unchanged
+ const instView=h=>{const ob=h.object,L=ob.userData.instLabels;if(!L||h.instanceId==null||h.instanceId>=L.idx.length)return h;
+  const lab=L.names[L.idx[h.instanceId]];if(lab==null||lab===ob.userData.inspectLabel)return h;
+  h.mesh=ob;h.label=lab;h.object=Object.create(ob,{userData:{value:Object.assign({},ob.userData,{inspectLabel:lab})}});return h;};
+ K.instView=instView;
+ function hitsAt(x,y){return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hidden().has(h.object)&&h.object.visible).map(instView);}
  K.inspectAt=function(x,y){if(o.click&&o.click(x,y))return;for(const f of K.clickHooks)if(f(x,y))return;
   let A;try{A=at(x,y);}catch(e){A={w:{t:'inspector: '+e.message,rec:null},hit:null};K.err('inspect: '+((e&&e.stack)||e));}
   if(!A){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}

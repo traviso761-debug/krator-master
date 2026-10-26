@@ -11,7 +11,8 @@
 //   mode 'walk'   no path (the host or a tick moves the matrix); aP1.x is the
 //                 gait phase, advanced by whoever moves it, aP1.y the flap phase
 //   billboard     the item is a camera-facing card (motes)
-//   flap          vertices beyond |z| > root hinge up and down (wings)
+//   flap          vertices beyond |z| > root hinge up and down (wings); rate 0 is a still wing
+//                 (each number defaults only when left out: `x == null`, 2026-10-26)
 //   legs          vertices below y < legTop swing fore and aft, diagonal pairs
 // Also charged to BIO.cur, baked with everything else.
 BIO.animHook=function(o){o=o||{};
@@ -47,14 +48,14 @@ BIO.animHook=function(o){o=o||{};
    .replace('#include <begin_vertex>',[
     'vec3 transformed = vec3( position );',
     flap?[' { float _w = max(0.0, abs(position.z) - '+(flap.root==null?.12:flap.root).toFixed(3)+');',
-          '   float _f = sin(uWindT*'+(flap.rate||6).toFixed(2)+' + aP1.y*7.0'+(mode==='walk'?' + aP1.x':'')+');',
-          '   transformed.y += _w * _f * '+(flap.amp||.35).toFixed(3)+';',
-          '   transformed.z -= sign(position.z) * _w * (1.0 - cos(_f*'+(flap.amp||.35).toFixed(3)+')) * 0.5; }'].join('\n'):'',
-    legs?[' { float _lt = '+(legs.top||.5).toFixed(3)+';',
+          '   float _f = sin(uWindT*'+(flap.rate==null?6:flap.rate).toFixed(2)+' + aP1.y*7.0'+(mode==='walk'?' + aP1.x':'')+');',
+          '   transformed.y += _w * _f * '+(flap.amp==null?.35:flap.amp).toFixed(3)+';',
+          '   transformed.z -= sign(position.z) * _w * (1.0 - cos(_f*'+(flap.amp==null?.35:flap.amp).toFixed(3)+')) * 0.5; }'].join('\n'):'',
+    legs?[' { float _lt = '+(legs.top==null?.5:legs.top).toFixed(3)+';',
           '   if(position.y < _lt){ float _k = (_lt - position.y)/_lt;',
           '     float _ph = aP1.x + (position.x > 0.0 ? 0.0 : 3.14159) + (position.z > 0.0 ? 0.0 : 3.14159);',
-          '     transformed.x += _k * sin(_ph) * '+(legs.amp||.18).toFixed(3)+';',
-          '     transformed.y += _k * max(0.0, cos(_ph)) * '+((legs.amp||.18)*.35).toFixed(3)+'; }',
+          '     transformed.x += _k * sin(_ph) * '+(legs.amp==null?.18:legs.amp).toFixed(3)+';',
+          '     transformed.y += _k * max(0.0, cos(_ph)) * '+((legs.amp==null?.18:legs.amp)*.35).toFixed(3)+'; }',
           '   else transformed.y += 0.02*sin(aP1.x*2.0); }'].join('\n'):''].join('\n'))
    .replace('#include <project_vertex>',[
     'mat3 _M; vec3 _P; _anim(_M,_P);',
