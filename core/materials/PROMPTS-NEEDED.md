@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 48 prompts.** Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. A short list at the end names gaps that have no prompt yet.
+**Count: 54 prompts.** Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. Added 2026-10-25: 6 optional for the shared sky's moons (section 15). A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -485,6 +485,52 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one red seaweed hanging from the top of its cell: on five of the nine, thin translucent ruffled sheets (Porphyra) in deep wine-red and crimson (#7a1a2a, #9a2a30) with darker veins; on four, finely branching fronds (Gracilaria) in dark crimson to brown-red (#6a1a1a, #8a3a2a), glistening wet, a few drops at the tips. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. The subject's reds are deep wine and crimson, never the background's pure magenta; key with `spill: edge`.
+```
+
+## 15. The shared sky's moons (`core/atmos/sky`, 2026-10-25; optional)
+
+The six moons are procedural today (`core/atmos/sky/89-atmos-g-sky.js`, `atmSkyMoonSurf` and friends); a map each gives
+real crater fields, a proper giant crater and better seas, and is what Godot will read. **Equirectangular, 2048x1024 (2:1),
+full colour, albedo only.** Map convention for every block: the centre of the map faces the giant; the point 25% across
+from the left edge, on the middle row, is the moon's **leading** face (the way it moves); north is up. The moving parts stay
+procedural over the map: Day's glowing vents, flows and ash, and Four-Day's clouds. Land as
+`core/materials/library/sky.moon.<name>/` (albedo only; `meta.json` with the prompt). Wiring: a `map` per moon in the sky
+presets and one texture read in place of the procedural surface.
+
+#### `sky.moon.companion` (Ceres-like Trojan)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of a small Ceres-like dwarf world. Dusty dark grey regolith #5a5856 to #6e6b66, densely cratered with craters of every size, old craters softened and overlapping, one large ancient basin, a few fresh craters with brighter ejecta rays #8a8780, and two or three small brilliant white salt deposits #f2f2ec on the floors of young craters. Matte. Full colour, not tinted.
+```
+
+#### `sky.moon.week` (Iapetus-like, two-faced)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of an Iapetus-like two-faced icy moon. The hemisphere centred 25% across from the left edge, on the middle row, is coal-dark reddish-brown #2a1c14 to #1a120c; the opposite hemisphere, centred 75% across, is bright snow-white ice #e8e6e0 to #cfcac0. The boundary between them is ragged and irregular, with dark streaks and spots spilling onto the bright side and bright crater rims poking through the dark. A thin straight raised ridge runs along the equator (the middle row) across the dark hemisphere. Craters all over, of every size. Matte. Full colour, not tinted.
+```
+
+#### `sky.moon.thirteen` (a carbon world with tar seas)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no clouds, no atmosphere, no stars, no background, no labels: the surface of a carbon-rich world. Rust-orange #a84e24 and ochre #c88e44 crusts mottled with brown #6a3a1c, crazed everywhere with fine dark cracking like dried lacquer; black glossy tar seas #0a0806 covering about one quarter of the surface as irregular connected basins, inlets and lakes, with bitumen-brown shores #3e2010 and a few pale salt flats #d8c8b0 beside them. Full colour, not tinted.
+```
+
+#### `sky.moon.day` (Io-like; the glow is added by the shader)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of an Io-like volcanic moon. Pale yellow #e8d890 and mustard #c8a040 sulfur plains, white sulfur-dioxide frost patches #f0f0e4, orange #d07028 and red-brown #8a3418 deposits, scattered black and dark red volcanic calderas #1a0e08 with dark lava flows spreading from them, and rings of red plume fallout round a few large vents. No glowing lava: the surface only. Full colour, not tinted.
+```
+
+#### `sky.moon.two-day` (Mimas-like, one huge crater on the leading face)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of a Mimas-like icy moon. Grey-white ice #c8c8cc to #a8a8ae saturated with craters of every size, long narrow grooves and fractures crossing the surface, and one enormous crater a third of the moon's width centred 25% across from the left edge on the middle row, with a raised bright rim #dcdce0, a darker floor #8e8e94 and a central peak. Matte. Full colour, not tinted.
+```
+
+#### `sky.moon.four-day` (a vitriolic world, the surface under its clouds)
+
+```
+Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no clouds, no atmosphere, no stars, no background, no labels: the surface of a world with seas of sulfuric acid. Broad oceans stained brown #5a3c18 to #3a2810 cover about 60% of the surface; their coasts are rimmed with pale sulfate salt crusts #e0d4b0; the continents are covered in dark red vegetation #5a1a10 and #7a2a18, with ochre bare rock #a07848 in the highlands. Full colour, not tinted.
 ```
 
 ## Gaps with no prompt yet
