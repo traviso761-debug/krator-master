@@ -81,13 +81,14 @@ window._registered=REG.length;
 // the runtime LOD of the kits that build on chunk ranges (the nwlowlands' hero trees and their far stand-ins, BIO.range):
 // which chunk meshes this camera draws, after the camera is placed and before the draw (the lowlands page does the same)
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'korona',title:'Krator biome — Korona: the fertile basin',
  hint:'Korona, station 3: the Tiers\' lake and its shore meadows, where the rule turns kind: reagents in drifts, lace fans at the water, the rainforest behind; one bog corner keeps the traps',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ clock:{hour:ATMOS.SKY.startHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'carnivores':{match:o=>{if(!(o.isInstancedMesh&&o.userData&&o.userData.biome))return false;const it=(o.name||'').replace(/^biome:/,''),P=KORONA.plantOfItem(it)||NECANYONS.plantOfItem(it);return !!(P&&P.tags.trap);}},
-  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'sky':{objects:()=>[sky,giant,giantRing]}},
+  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),layout:()=>Object.assign(NECANYONS.records(),{carvings:CARVINGS,pools:STAGE.pools,air:STAGE.air})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
