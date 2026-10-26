@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the snow ranges round the Vale and the near
+      walls, all dipping at the cataract (az 112) as the paint did (ridges with a notch); the cataract's white fall and its
+      spray are not drawn (no landmark layer yet). Draw calls at the default camera (verify.py --assert, GPU): 128 before,
+      127 after.
+
 - [ ] PUBLISH AFTER EVERY PASS. A claude.ai artifact is a separate copy of
       `dist/xanadu.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
