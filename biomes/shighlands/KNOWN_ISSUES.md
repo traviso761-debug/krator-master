@@ -31,3 +31,5 @@
 ## Export profile: sections left out (2026-10-18)
 
 EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
+
+2026-10-20: `atmos` is in the profile and fills (the build lists `89-atmos-8-export.js`). `water` stays out: the page binds no core/water (its water is the host's own MAT_WATER shader), so there is no surface for the section to export. 2026-10-20 (migration phase 0): the wave field and the sky's light (`89-atmos-a-waves.js`, `89-atmos-b-skylight.js`) are in its `CORE_ATMOS` now, ready for core/water; nothing is drawn by them.

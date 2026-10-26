@@ -270,7 +270,7 @@ function buildCombShort(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];const G=new
 /* the builders the slice carries (tools/gen_ancients.py FRAGS); add a fragment there to place another type */
 const B={gsilo:buildGreatSilo,quad:buildQuad,combShort:buildCombShort,skyA:buildSkyA,skyB:buildSkyB,skyC:buildSkyC,fac:buildFactory,port:buildStarport,lib:buildLibrary,off:buildOffices,apt:buildApartments,fuel:buildFuelStation,radar:buildRadarTower,dish:buildDish,lab:buildLab,house2:buildHouses2,skyD:buildSkyD,skyE:buildSkyE,robo:buildRobotics,skyH:buildSkyH,dc:buildDataCenter,hosp:buildHospital};
 return { B:B, MAT:MAT, KIT:KIT, TSTAT:TSTAT, rust:rustPass,
-  setWorn:function(w){WORN=!!w;}, setDish:function(k){DISHOK=!!k;}, setTight:function(t){LABTIGHT=!!t;},
+  setWorn:function(w){WORN=!!w;}, setDish:function(k){DISHOK=!!k;}, setTight:function(t){LABTIGHT=!!t;}, setApronClip:function(f){APRCLIP=f||null;},
   /* the kit's frame hook (10-core.js TICKS) and day/night flag (92-camera.js NIGHT): Yuni's render loop calls tick,
      its day/night pass calls setNight. Only the fire flicker and firelight (69-mat-salvage.js, decay 4) listen. */
   tick:function(dt,t){for(let i=0;i<TICKS.length;i++)TICKS[i](dt,t);}, setNight:function(on){NIGHT=!!on;},

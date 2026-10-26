@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.732,
+    1.552
+   ],
+   "seam_before": [
+    3.429,
+    3.137
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "khaayken/dome-lining",
+  "mapping": "crown",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "dome-lining.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; magenta corners and vent filled from the disc's edge, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 24)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/dome-lining).",
+  "reuse": "one hide-lined dome seen from inside, mapped from its crown: Yeti dome linings; any yurt, chum or yaranga ceiling",
+  "sha1": "1cb025df10fad32c0ff5ee8e352ab5223c84cdb8"
+ }
+}

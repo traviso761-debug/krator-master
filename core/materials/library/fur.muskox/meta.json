@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.014,
+    0.942
+   ],
+   "seam_before": [
+    0.847,
+    1.705
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.02,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fur",
+  "id": "fur.muskox",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "fur.muskox.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 7)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id fur.muskox).",
+  "reuse": "long shaggy pelt: musk-ox robes; yak, highland cattle, any shaggy coat",
+  "sha1": "7855bf5a61918db1379c24bde5ff138e5881843c"
+ }
+}

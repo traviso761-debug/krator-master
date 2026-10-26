@@ -106,6 +106,9 @@
       village; it is what the strokes make of the sea floor there.
 - [ ] **The in-app browser pane can stall** loading this page while several world pages are open in other tabs (GPU).
       Close them first. Headless and alone it loads in under a second.
+- [x] **2026-10-20: rebuilt with core/tags' new cultures (jimjam, dalab).** `isle-city.html` took the refreshed tags vocabulary
+      (+137 bytes); `isle-site.html` and the city page take no geyser fragments (they read the world's ground only), so the
+      geyser water change does not reach them. `verify.py dist/isle-site.html --assert` passes; `node tests/test-isle-city.js` passes.
 
 ## The towns on core/simulation (P7b, 2026-10-19)
 

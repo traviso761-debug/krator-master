@@ -109,6 +109,14 @@ const STREAM=(function(){const P=[],S=[];const ds=12;
  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;P.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);});
  return{P,S,LEN,bed,bank,dep,level,drop,halfW,falls,TARN_LEVEL,box:[x0-200,z0-200,x1+200,z1+200],src:P[0]};})();
 const TARN={x:STREAM.src[0],z:STREAM.src[1],r:78,level:STREAM.TARN_LEVEL};
+// core/water records (2026-10-20, migration phase 2; drawn in 89w-host-water.js, replacing 84's own ribbon and disc): the stream is a WATER.flow along
+// STREAM.P at STREAM.level (monotone), as wide as the old ribbon's visible water (the ground is held under the surface out to halfW + 4.5 m),
+// quicker where the bed falls; its two falls are WATER.fallsOf's slope breaks, their curtain leaving the lip at the speed that lands it at the
+// foot of the chute (fallsOf's fit option: run / time of fall, the chute being 2.5:1 here) so it stays over the chute's water; the tarn is a WATER.still disc at its level
+const STREAM_FLOW=WATER.flow({name:'The stream',pts:STREAM.P.map((p,i)=>[p[0],p[1],STREAM.level[i]]),width:STREAM.P.map((p,i)=>2*(STREAM.halfW(i)+4.5)),
+ speed:STREAM.P.map((p,i)=>1+3*smooth(.1,.9,STREAM.drop[i]))});
+const STREAM_FALLS=WATER.fallsOf(STREAM_FLOW,{steep:.5,minDrop:8,fit:true}).map(f=>WATER.fall(f));
+const TARN_STILL=WATER.still({name:'The tarn',level:TARN.level,poly:Array.from({length:48},(_,k)=>{const a=k/48*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+4),TARN.z+Math.sin(a)*(TARN.r+4)];})});
 // nearest point on the stream: {d, s (metres downstream), i, f, bed, level, w}
 function streamNear(x,z){const B=STREAM.box;if(x<B[0]||x>B[2]||z<B[1]||z>B[3])return null;
  const P=STREAM.P;let bd=1e18,bi=0,bf=0;

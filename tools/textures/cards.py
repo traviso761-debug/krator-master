@@ -10,7 +10,8 @@ Steps:
   0. key      (option `key`: "#ff00ff" or "#00ff00", with `key_lo`/`key_hi` distances) cuts a flat-colour background out first;
               `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out), or 'unmix' (key_unmix:
               each blended pixel split back into the subject's colour and an alpha; key_hi is then the distance from the
-              key beyond which a pixel is solid subject); `choke` (n pixels) then
+              key beyond which a pixel is solid subject), or 'line' (key_line: a near-colourless subject finer than a pixel,
+              every blended pixel taken as `subject` at some alpha); `choke` (n pixels) then
               shrinks the alpha to drop a tinted fringe the spill pass leaves.
   1. crop     (anchor 'none': no crop at all, the frame kept, for a 3 x 3 sheet a host cuts into equal cells or a
               keyed surface that tiles; anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
@@ -136,10 +137,36 @@ def key_unmix(im, key, solid_d):
     return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
 
 
+def key_line(im, key, subject, tol):
+    """Chroma key onto a LINE (option `spill`: 'line', with `subject`, e.g. '#ffffff'): for a near-colourless subject drawn
+    finer than a pixel (dandelion silk, feather-grass awns) whose generator blended it with the key everywhere, so no pixel
+    of it is the subject's own colour and 'unmix' carries the key's tint into it. Every pixel within `tol` (option
+    `key_hi`) of the segment from the key to `subject` is taken as a*subject + (1 - a)*key: alpha a, colour the subject's.
+    Every pixel further off it (the seed, the stalk, the straw at a clump's foot) is keyed as key_out keys it, its spill
+    taken out."""
+    k = np.array([int(key.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float64)
+    s = np.array([int(subject.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float64)
+    P = np.asarray(im.convert('RGB')).astype(np.float64)
+    SK = s - k
+    a = np.clip(((P - k) * SK).sum(-1) / max((SK * SK).sum(), 1.0), 0, 1)
+    off = np.sqrt(((P - (k + a[..., None] * SK)) ** 2).sum(-1))
+    line = off < tol
+    # off the line: keyed by distance as key_out does, the key's tint taken out of every pixel (straw blended with the key)
+    d = np.sqrt(((P - k) ** 2).sum(-1))
+    spill = np.maximum(np.minimum(P[..., 0], P[..., 2]) - P[..., 1], 0)[..., None] * 0.9 if k[0] > 200 and k[2] > 200 else 0 * P
+    own = np.clip(P - np.concatenate([spill[..., :1], 0 * spill[..., :1], spill[..., :1]], -1), 0, 255)
+    col = np.where(line[..., None], s, own)
+    a = np.where(line, np.where(a < 0.06, 0.0, a), np.clip((d - 45) / 75, 0, 1))
+    out = np.concatenate([np.clip(col, 0, 255), (a * 255)[..., None]], -1)
+    return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
+
+
 def run_one(src, out_dir, rec, opt):
     size, anchor, pad = int(opt.get('size', 1024)), opt.get('anchor', 'center'), float(opt.get('pad', 0.03))
     im = Image.open(src).convert('RGBA')
-    if opt.get('key') and opt.get('spill') == 'unmix':
+    if opt.get('key') and opt.get('spill') == 'line':
+        im = key_line(im, opt['key'], opt.get('subject', '#ffffff'), float(opt.get('key_hi', 60)))
+    elif opt.get('key') and opt.get('spill') == 'unmix':
         im = key_unmix(im, opt['key'], float(opt.get('key_hi', 200)))
     elif opt.get('key'):
         im = key_out(im, opt['key'], float(opt.get('key_lo', 45)), float(opt.get('key_hi', 120)), opt.get('spill', 'edge'))
@@ -156,7 +183,7 @@ def run_one(src, out_dir, rec, opt):
     meta = {'record': rec, 'maps': {'map': 'albedo.png'},
             'source': dict({'file': os.path.basename(src), 'sha1': sha}, **src_meta),
             'processing': {'script': 'tools/textures/cards.py', 'version': VERSION,
-                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'spill', 'choke') if k in opt}), 'source_size': list(im.size)}}
+                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'spill', 'subject', 'choke') if k in opt}), 'source_size': list(im.size)}}
     with open(os.path.join(out_dir, 'meta.json'), 'w') as fh:
         json.dump(meta, fh, indent=1, sort_keys=True)
     cover = float((arr[..., 3] > 127).mean())

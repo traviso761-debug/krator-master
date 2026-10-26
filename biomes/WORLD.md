@@ -30,10 +30,23 @@ scale Krator map for rough placement, not in this repo.
 | Korona (`korona/NOTES.md`; six stations built 2026-10-19: the tepui, the pitcher hollow, the fertile basin, the trenches, the lee gorge, the hoar table) | `korona` | nwlowlands, nhighlands (as first given; the model, 4.21, says nhighlands, sedesert, the east lobe's lake, e badlands, crater drylands, the hyperjungle: `korona/NOTES.md`, "Borders") |
 | north-eastern canyons (overlies the hyperjungle's polygon for now) | `necanyons` | hyperjungle (gentle: the forest thins onto the rock), korona (gentle: the benches rise into tepuis), nhighlands (steep: the Inner Wall). Plan: `biomes/necanyons/PLAN.md` |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| eastern highlands | `ehighlands` | on the model's `e inner wall` polygon (the owner, 2026-10-23): the dry east as station 1, the rainy west face as station 2 (`ehighlands/PLAN-STATIONS.md`) |
+| *planned* the painted highlands (the model's `e highlands` polygon, the altiplano by Korona) | `paintedhighlands` | korona, ehighlands, the savannah rims. Plan: `paintedhighlands/PLAN.md` (banded rock, wildflowers; strata from `core/terrain/STRATA-PLAN.md`) |
+| *planned* the Cut (the eigenweapon's bowl, Dilihan) | `cut` | the NW lowlands through its north mouth (4.22), the crater through the south-east. Plan: `cut/PLAN.md` (the warp field, hyperbamboo) |
+| *planned* the NW outer wall (the Yeti Kingdom, Leng, the frozen lake) | `nwouterwall` | nwlowlands, Farside. Plan: `nwouterwall/PLAN.md` |
+| *planned* the rift rim, N and S, with the w rift highland | `riftrim` | rift, swlowlands, Dalab's country. Plan: `riftrim/PLAN.md` (the highland lakes, the basin and gorge of 4.22, Ledge, the Tungangs) |
+| the Bowl (an abyssal overlay on the eastern desert) | `sedesert` | eastabyss, the Catch. Plan: `sedesert/PLAN-BOWL.md` (the salt lake, Mantis's oasis) |
+| *planned* the Catch (the closed basin SE of the Godthrone) | `catch` | sealed by walls of 10-17 km: no ecotone below 6.2 km. Plan: `catch/PLAN.md` (a sand sea, a few oases only just enough, a salt lake among wind-carved lake beds, the fans; Stair a campground; the model's rain is ~10x too generous, a 4.22 item) |
+| *planned* Farside (the ocean coast, Farport) | `farside` | nwlowlands (the front, where the sea's flora meets the land forest), nwouterwall. Plan: `farside/PLAN.md` (the sea's plants invading the land) |
+| *planned* the Godthrone and the airless rim (the titanium shield volcano; the class O band on every wall) | `godthrone` | godstep valley, shighlands, the Catch, riftrim; above every wall kit's top band. Plan: `godthrone/PLAN.md` (the summit vent and glass halo after the model's 4.23, the orange belt, the megabreccia crest) |
+| *planned* the W outer wall (the slumping wall, the loess, the Hayrant) | `wouterwall` | nwouterwall, the NW and SW lowlands, the Ancient's Valley, godthrone (the airless crest). Plan: `wouterwall/PLAN.md` (loess tablelands, slump terraces, sturzstroms, box canyons) |
+| *planned* the SW highlands (the Inner Wall's south-west sector; native fungoid life) | `swhighlands` | swbay (its kin; backfill `swbay/PLAN-FLORA.md`), swlowlands, the Ancient's Valley, nhighlands, the Ring Sea coast (steep). Plan: `swhighlands/PLAN.md` (ring folds, the rain wall and its landslide lake, Span's tableland and pillar rim, the fan coast) |
+| *planned* Godstep valley (the god's stair: titanium lava steps) | `godstep` | godthrone, shighlands, the Bowl, ehighlands, the savannah rim, the hyperjungle; inside `openworld/little-demo` for 24,584 km². Plan: `godstep/PLAN.md` (flow fronts, sinuous rilles, colonnades, black sand, laterite) |
+| *no kit yet* (the owner's polygons, 2026-10-23) | | the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
 | *possible* | `sbadlands`, micro-biomes | |
-| *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
-| *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
+| n semiarid, the walking steppe (`biomes/nsemiarid/PLAN.md`; built 2026-10-22) | `nsemiarid` | nwlowlands (gradual), nhighlands, korona, NW boreal |
+| overlays, owning no ground (`biomes/nsemiarid/PLAN.md`, section 3): the dam basins' beds (`biomes/dambasins`, begun 2026-10-22: the old port station on the Ancient Port kit), the scablands and the flood lake (planned) | `dambasins`, `scablands` | lie over nsemiarid, nwlowlands and korona |
+| *dropped* tuff country (in "The Catch") | | the owner chose wind-carved lake beds for the Catch (2026-10-23, `catch/PLAN.md`) |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
 | the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *to be placed on the scale model* (a wet subtropical lowland on limestone: Cfa/Cwa, ~1 atm) |
 
@@ -73,6 +86,9 @@ because their conditions are rare, and Krator has the conditions.
   Godthrone has had an explosive phase (a lore decision). The two vents just outside the Catch's SW notch, px
   (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
 
+New stations for the old kits (2026-10-23): each kit's `PLAN-STATIONS.md` (nhighlands, shighlands, sedesert, oidong, hyperjungle,
+ebadlands, eastabyss, swlowlands, necanyons, ehighlands).
+
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
 
@@ -94,7 +110,7 @@ and temperatures lapse-corrected to match: the scripts are in `tools/scale-model
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
 
-- `h`: elevation, 16 bits (R,G) from -2,600 to +17,100 m, plus a water flag (B); `wl` water level;
+- `h`: elevation, 16 bits (R,G) from -2,600 to +27,000 m (+17,100 before 4.23), plus a water flag (B); `wl` water level;
 - `z`: zones (basin, highland, outer rim, arctic, lake/sea, salt basin);
 - `p`: rain (mm/yr); `tm`/`th`/`tl`/`tw`/`tc`: temperatures; `wd`: wind power;
 - `c`: climate class, Köppen plus Krator's own (X abyssal above 1.9 atm, H hyperalpine

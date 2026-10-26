@@ -8,7 +8,17 @@ const el=renderer.domElement;
 const CAM=C.camera||{};   // a city whose subject is an interior wants to look level along a lane
 const ctl={target:new THREE.Vector3(0,40,0),az:0.6,el:0.5,dist:1400,goal:null,
   elMin:CAM.elMin!==undefined?CAM.elMin:0.03,elMax:CAM.elMax!==undefined?CAM.elMax:1.5};
-function applyCam(){const e=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el));camera.position.set(ctl.target.x+Math.cos(ctl.az)*Math.cos(e)*ctl.dist,ctl.target.y+Math.sin(e)*ctl.dist,ctl.target.z+Math.sin(ctl.az)*Math.cos(e)*ctl.dist);camera.lookAt(ctl.target);}
+function applyCam(){const e=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el));camera.position.set(ctl.target.x+Math.cos(ctl.az)*Math.cos(e)*ctl.dist,ctl.target.y+Math.sin(e)*ctl.dist,ctl.target.z+Math.sin(ctl.az)*Math.cos(e)*ctl.dist);camera.lookAt(ctl.target);nearFollow();}
+// The near plane follows the camera up. A depth buffer's resolution goes as the square of the distance over the
+// near plane, so with the plane four metres from a camera forty kilometres up, the sea sheet 0.7 m above the land
+// (plus the water's polygon offset, which is in depth units) outweighed any land under a few hundred metres: the
+// sea drowned the Olympic Peninsula's valleys in steps that read as contour lines, and from the zoom limit the
+// whole of it but the glaciers. Nothing is nearer the camera than the ground under it, so the plane rises to an
+// eightieth of that height (no more: the aeroplane flies through its own rain) and comes back down with the
+// camera. The projection is rebuilt only when the plane moves by a tenth.
+const NEAR0=camera.near;
+function nearFollow(){const p=camera.position,g=groundH(p.x,p.z),n=Math.max(NEAR0,(p.y-(Number.isFinite(g)?g:0))/80);
+  if(Math.abs(n-camera.near)>camera.near*0.1){camera.near=n;camera.updateProjectionMatrix();}}
 function setView(px,py,pz,tx,ty,tz,fly){const t=new THREE.Vector3(tx,ty,tz),p=new THREE.Vector3(px,py,pz),d=p.clone().sub(t);const goal={target:t,az:Math.atan2(d.z,d.x),el:Math.atan2(d.y,Math.hypot(d.x,d.z)),dist:d.length()};
   if(fly===false||matchMedia('(prefers-reduced-motion: reduce)').matches){Object.assign(ctl,goal);ctl.goal=null;return;}ctl.goal=Object.assign(goal,{t0:performance.now(),from:{target:ctl.target.clone(),az:ctl.az,el:ctl.el,dist:ctl.dist}});}
 // How far out you may pull, and how close you may get. Both used to be fixed at 8 and 9000 metres, which is

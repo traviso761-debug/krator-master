@@ -30,4 +30,4 @@ from a Hook task.
       change: `KMAT.pack` could refuse an entry under 1 KB).
 - [ ] **`hook-vessels-afloat` reads the kit's silted berths as shallow.** `slBerth` and `slPen` at d=1 silt their
       basins by design; the carrier and the pen's submarine report ground above their draft. The check is soft.
-- [ ] **The segment-boundary labels overlap** at this run's length (29 placed items; the kit's own issue).
+- [x] **The segment-boundary labels overlap** at this run's length (29 placed items; the kit's own issue). - 2026-10-20: fixed in the kit (`portBoundsDeclutter`, settlements/port/src/92-camera.js; Hook builds it): 11 of the 29 labels show at the Overview, none overlapping.

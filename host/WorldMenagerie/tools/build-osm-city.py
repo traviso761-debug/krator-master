@@ -210,6 +210,112 @@ def height_of(t, c=None):
 
 
 # ---------- elevation ----------
+def coast_cut(hs, nx, nz, step, water, floor, cc):
+    """terrain.coast: the coastline decides what is sea. The elevation tiles smear the land a few hundred metres out
+    over the water (Yachats: half the ground 150 m seaward of the shore read a metre above sea level), and a map flooded
+    at sea level draws that as land. Every cell on the sea side of OSM's natural=coastline is cut to at most
+    -(shore + slope * metres from the coast) under the water, down to the floor; the land side is left alone. With
+    `maxH` only cells at most that far over the water level are cut (a lidar survey: its sea reads as the surface),
+    and past `far` metres (100) out every cell is.
+    The side is the nearest segment's: OSM keeps the land on the left going along a coastline, which with z south
+    (as here) is the right, so the sea is where the cross product is positive. At a shared vertex the segment the
+    cell is most squarely beside decides (the larger perpendicular), which holds at both convex and concave corners."""
+    import numpy as np
+    pad = 3000
+    segs = []
+    for e in load("water"):
+        if e["type"] != "way" or e.get("tags", {}).get("natural") != "coastline":
+            continue
+        pts = way_pts(e)
+        for a, b in zip(pts, pts[1:]):
+            if min(a[0], b[0]) < BX1 + pad and max(a[0], b[0]) > BX0 - pad and min(a[1], b[1]) < BZ1 + pad and max(a[1], b[1]) > BZ0 - pad:
+                segs.append((a[0], a[1], b[0], b[1]))
+    if not segs:
+        print("terrain.coast: no coastline in the box, nothing cut")
+        return hs
+    # the basalt shelves (natural=bare_rock) lie seaward of the mapped coastline but stand over the tide: Thor's Well and
+    # the Spouting Horn are holes in them, and the survey has their height, so they are kept as surveyed
+    from matplotlib.path import Path as MPath
+    rocks = []
+    if cc.get("keepRock", True):
+        for e in load("land"):
+            if e["type"] == "way" and e.get("tags", {}).get("natural") == "bare_rock" and len(e.get("geometry", [])) >= 4:
+                rocks.append(MPath(way_pts(e)))
+    S = np.array(segs, dtype=np.float64)
+    ax, az, bx, bz = S[:, 0], S[:, 1], S[:, 2], S[:, 3]
+    dx, dz = bx - ax, bz - az
+    ll = np.maximum(dx * dx + dz * dz, 1e-9)
+    shore, slope = float(cc.get("shore", 0.5)), float(cc.get("slope", 0.04))
+    mh = None if cc.get("maxH") is None else float(cc["maxH"])
+    far = float(cc.get("far", 100))
+    H = np.array(hs, dtype=np.float64).reshape(nz, nx)
+    xs = BX0 + np.arange(nx) * step
+    cut = 0
+    for j in range(nz):
+        px, pz = xs[:, None], BZ0 + j * step
+        t = np.clip(((px - ax) * dx + (pz - az) * dz) / ll, 0, 1)
+        qx, qz = ax + t * dx - px, az + t * dz - pz
+        d = np.sqrt(qx * qx + qz * qz)
+        cr = dx * (pz - az) - dz * (px - ax)
+        perp = np.abs(cr) / np.sqrt(ll)
+        k = np.argmin(d - 1e-6 * perp, axis=1)
+        r = np.arange(nx)
+        sea = cr[r, k] > 0
+        dd = d[r, k]
+        lim = np.maximum(water - shore - slope * dd, water + floor)
+        row = H[j]
+        m = sea & (row > lim)
+        if mh is not None:   # a survey that is right about the land (3dep) needs only its water surface sunk: never a cliff
+            m &= (row - water <= mh) | (dd > far)   # past `far` metres out, what the survey has is the swell's noise
+        if rocks and m.any():
+            pts = np.stack([xs, np.full(nx, pz)], axis=1)
+            for rp in rocks:
+                m &= ~rp.contains_points(pts)
+        cut += int(m.sum())
+        row[m] = lim[m]
+    print(f"terrain.coast: {cut} cells on the sea side of the coastline cut under the water ({len(segs)} coastline segments)")
+    return [float(v) for v in H.ravel()]
+
+
+def water_cut(t, water, waterways, wc):
+    """terrain.cutWater: a survey that records the water's surface (lidar: the river a metre or two over the sea) has the
+    ground over the river and the ponds the page draws at the water level, so they vanish under it. Every cell inside a
+    mapped water area (not the sea's own rectangle) and within `river` metres of a mapped waterway is cut to `depth`
+    metres under the water level."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    H = np.array(t["h"], dtype=np.int32).reshape(nz, nx)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    lim = int(round(-float(wc.get("depth", 0.8)) * 10))
+    mask = np.zeros(nx * nz, dtype=bool)
+    for w in water:
+        if w.get("n") == "Sea level":
+            continue
+        o = w["o"]
+        mask |= MPath([(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]).contains_points(pts, radius=step * 0.5)
+    r = float(wc.get("river", 0))
+    if r > 0:
+        for ww in waterways:
+            p = ww["p"]
+            q = [(p[i] / 10, p[i + 1] / 10) for i in range(0, len(p), 2)]
+            for (ax, az), (bx, bz) in zip(q, q[1:]):
+                if max(ax, bx) < x0 - r or min(ax, bx) > x0 + nx * step + r or max(az, bz) < z0 - r or min(az, bz) > z0 + nz * step + r:
+                    continue
+                dx, dz = bx - ax, bz - az
+                ll = max(dx * dx + dz * dz, 1e-9)
+                tt = np.clip(((pts[:, 0] - ax) * dx + (pts[:, 1] - az) * dz) / ll, 0, 1)
+                d2 = (pts[:, 0] - ax - tt * dx) ** 2 + (pts[:, 1] - az - tt * dz) ** 2
+                mask |= d2 < r * r
+    Hr = H.ravel()
+    m = mask & (Hr > lim)
+    Hr[m] = lim
+    t["h"] = [int(v) for v in Hr]
+    print(f"terrain.cutWater: {int(m.sum())} cells under the mapped water cut to {lim / 10} m")
+
+
 def terrain_grid():
     """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
     cfg = CITY.get("terrain")
@@ -222,6 +328,34 @@ def terrain_grid():
         print("terrain: Pillow not installed, skipping")
         return None
     z = cfg.get("zoom", 14)
+    if cfg.get("source") == "3dep":   # one USGS GeoTIFF over the map (tools/fetch-terrain.py): north row first, west column first
+        tif, meta = os.path.join(tdir, "3dep.tif"), os.path.join(tdir, "3dep.json")
+        if not os.path.exists(tif):
+            print("terrain: source 3dep but no 3dep.tif (run tools/fetch-terrain.py), skipping")
+            return None
+        M3 = json.load(open(meta, encoding="utf-8"))
+        s3, w3, n3, e3 = M3["bbox"]
+        im = Image.open(tif)
+        W3, H3 = im.size
+        tg = im.tag_v2   # the GeoTIFF's own placing wins: the server keeps its pixels square and grows the box to fit
+        if 33550 in tg and 33922 in tg:
+            sx, sy = tg[33550][0], tg[33550][1]
+            w3, n3 = tg[33922][3], tg[33922][4]
+            e3, s3 = w3 + sx * W3, n3 - sy * H3
+        D3 = list(im.getdata())
+
+        def elev(lat, lon):   # bilinear; no data (the open sea past the survey) reads as -6 m
+            px = (lon - w3) / (e3 - w3) * W3 - 0.5
+            py = (n3 - lat) / (n3 - s3) * H3 - 0.5
+            x0, y0 = int(math.floor(px)), int(math.floor(py))
+            fx, fy = px - x0, py - y0
+            tot = 0.0
+            for dx, dy, wgt in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)), (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
+                X, Y = min(W3 - 1, max(0, x0 + dx)), min(H3 - 1, max(0, y0 + dy))
+                v = D3[Y * W3 + X]
+                tot += wgt * (v if -100 < v < 9000 else -6.0)
+            return tot
+        return grid_of(cfg, elev)
     tiles = {}
     for f in glob.glob(os.path.join(tdir, f"{z}_*.png")):
         _, x, y = os.path.basename(f)[:-4].split("_")
@@ -246,6 +380,11 @@ def terrain_grid():
             tot += wgt * (r * 256 + g + b / 256 - 32768)
         return tot
 
+    return grid_of(cfg, elev)
+
+
+def grid_of(cfg, elev):
+    """The height grid over the map from elev(lat, lon) in metres above sea level."""
     step = cfg.get("step", 20)
     nx, nz = int(BX1 - BX0) // step + 2, int(BZ1 - BZ0) // step + 2
     hs = []
@@ -273,6 +412,8 @@ def terrain_grid():
     # A tidal city's tiles carry the harbour's bathymetry, which is metres of depth nobody will ever see through
     # the water plane, and the odd bad sample a long way below that. The bed is clamped just under the surface.
     floor = -6.0 if CITY.get("seaLevelWater") else -400.0
+    if cfg.get("coast"):
+        hs = coast_cut(hs, nx, nz, step, water, floor, cfg["coast"])
     res = {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
             "h": [int(round(max(h - water, floor) * 10)) for h in hs],
             "_": "heights in decimetres above the water level (datum, metres above sea level)"}
@@ -563,6 +704,8 @@ def main():
         buildings.append(rec)
     out["buildings"] = buildings
     t = terrain_grid()
+    if t and (CITY.get("terrain") or {}).get("cutWater"):
+        water_cut(t, polys["water"], out.get("waterways") or [], CITY["terrain"]["cutWater"])
     if t:
         out["terrain"] = t
         lo, hi = min(t["h"]) / 10, max(t["h"]) / 10

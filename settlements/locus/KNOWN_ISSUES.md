@@ -17,11 +17,11 @@
       and on; only the tags' record counts grow); `audit().unknown` 0 on all four; an edits.json of three ops applied on load
       (one batched piece vetoed, one moved and drawn on its own, one added). `fingerprint.json` itself was already stale for these
       pages before the change (not rewritten).
-- [ ] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker; the page had none), G flies to the pin, I is the
+- [x] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker; the page had none), G flies to the pin, I is the
       hover tip (the old Inspector button), P marks, B edits, X cuts. On a kit sheet P still steps back (89-sheetui.js; marks stay on
       their button) and there is no editor (a sheet has no edits log). M is the page's own minimap (88b-locus-minimap.js on
       core/minimap's KMAP, which colours footprints by family and which Mungo extends): the host's minimap is not mounted; with the
-      editor on and a piece selected M also starts a move.
+      editor on and a piece selected M also starts a move. - 2026-10-20: status note, nothing open.
 - [ ] (2026-10-15) The cutaway's storeys are a guess (the asset's height in steps of about 3.4 m): the assets do not record their floors.
 - [ ] (2026-10-15) Mungo and Verge read Locus's fragments by name: Mungo takes 45-kit, 53-assets, 66-locus-furnish, 86-inspect and
       98-start (it moved onto core/host in the next commit); Verge's YKIT bundle takes 45-kit and 53-assets, whose REGISTER leaves
@@ -50,7 +50,7 @@
 - [ ] The canonical eastern-abyss biome (`core/biome` + `biomes/eastabyss`, since 2026-10-05) has six species the old port lacked (seal-tree, cordaite, seed fern, araucaria, beard oak, water palm): about +3 M triangles headless (Locus 6.2 M -> 9.0 M, Mungo 6.0 M -> 7.8 M, which reads these fragments), and the triangle budget (`05-palette.js`, shared) went from 7 M to 10 M. The town trees are grown after the biome's passes (`EASTABYSS.make` / `grow`, 69z), so they no longer take a keep-clear entry the passes would avoid; the town is masked out of the passes anyway. If the frame rate on a weak GPU suffers, thin the new species in the kit or pass a lower `quality` in 69z.
 - [x] The open lake shades with `core/atmos`'s wave field (`90-atmos-host.js`, 75-terrain `waterOpenAt`) but is not displaced: a swell would rise through the reed decks and jetties. The sky's light (`ATMOS.skylight`) is not taken: it lights MeshStandardMaterial only and this is a Lambert world. — 2026-10-13: the open lake is core/water's (`90w-lake.js`, Locus's, read by Mungo): displaced by a calm share of the wave field (at most ~6 cm, so the decks and jetties keep their waterlines), the sky's light given to the lake only. The river, the channels and the pools stay on 75-terrain's sheet (core/water's flow and still kinds, later phases); the life layer's boats ride the lake (`lakeHeave`).
 - [ ] The lake and the sheet meet on the shoreline through a baked mask (`LAKE_MASK`, 8 m cells, linear across the line): both shaders split on the same texture, but the water is displaced a few centimetres and the sheet is not, so at a grazing angle the line can show as a hairline where a channel crosses the shore. Phase 2's shore field (core/water) replaces the mask.
-- [ ] The sky panel's own clock controls drive the world clock now (`core/clock`): its hour slider moves the clock, its 0x/1x/60x/600x row sets the day's speed while time runs; Run time / Hold time is the button.
+- [x] The sky panel's own clock controls drive the world clock now (`core/clock`): its hour slider moves the clock, its 0x/1x/60x/600x row sets the day's speed while time runs; Run time / Hold time is the button. - 2026-10-20: status note, nothing open.
 - [ ] The life layer (84-life.js) is Locus's own, not `core/simulation`: it reads the world clock's hour but keeps its own schedules, places and motion. Moving it onto SIM is a port of its own (Mungo is the worked example: `78b-mungo-world.js`, `84-mungo-life.js`, `world/*.json`). Locus's clock is held by default now (it ran a 2-minute day of its own): its life layer stands at 10:00 until Run time.
 - [ ] Fauna ignores the life layer (flamingos don't flush from boats; emus don't avoid riders).
 - [ ] The kit's own open items (LOCUS-KIT-KNOWN-ISSUES.md) still stand, except the chapterhouse wall/fountain, now fixed.

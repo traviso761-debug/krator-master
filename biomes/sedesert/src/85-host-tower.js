@@ -16,7 +16,7 @@ function hostTowerLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib
 function buildTestTower(){
  const TX=TOWER.x,TZ=TOWER.z,HALF=24,N=30,FH=5,SLAB=1,COLS=[-HALF+1.6,-8,8,HALF-1.6];
  const y0=terrainH(TX,TZ);
- const conc=[],rust=[];
+ const conc=[],rust=[],wall=[];
  const box=(list,x,y,z,w,h,d,rot)=>{const g=new THREE.BoxGeometry(w,h,d);if(rot){g.rotateX(rot[0]||0);g.rotateY(rot[1]||0);g.rotateZ(rot[2]||0);}g.translate(x,y+h/2,z);list.push(g);};
  const beam=(list,ax,ay,az,bx,by,bz,w,d)=>{const L=Math.hypot(bx-ax,by-ay,bz-az);const g=new THREE.BoxGeometry(w,L,d);
   const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(bx-ax,by-ay,bz-az).normalize());
@@ -34,14 +34,14 @@ function buildTestTower(){
    else if(F.k<N){box(conc,TX-6.2,yb,TZ,3.6,SLAB,16);box(conc,TX+1.8,yb,TZ-6.1,12.4,SLAB,3.8);box(conc,TX+1.8,yb,TZ+6.1,12.4,SLAB,3.8);}}
   [[0,-1],[0,1],[-1,0],[1,0]].forEach(f=>box(rust,TX+f[0]*(HALF-.35),yb-.9,TZ+f[1]*(HALF-.35),f[0]?.7:48,1.5,f[0]?48:.7));
   [-8,8].forEach(c=>{box(rust,TX+c,yb-.8,TZ,.9,.8,47);box(rust,TX,yb-.8,TZ+c,47,.8,.9);});
-  if(F.k<N&&F.k<20){box(conc,TX,F.y,TZ-7.6,16,FH,.8);box(conc,TX,F.y,TZ+7.6,16,FH,.8);box(conc,TX+7.6,F.y,TZ,.8,FH,14.4);}
+  if(F.k<N&&F.k<20){box(wall,TX,F.y,TZ-7.6,16,FH,.8);box(wall,TX,F.y,TZ+7.6,16,FH,.8);box(wall,TX+7.6,F.y,TZ,.8,FH,14.4);}
  });
  // X-bracing, two storeys at a time, gaps where it has fallen
  [[0,-1],[0,1],[-1,0],[1,0]].forEach(f=>{for(let k=0;k<N;k+=2){if(rng()<.22)continue;
   const ya=floors[k].y,yb2=floors[Math.min(N,k+2)].y-SLAB,px=TX+f[0]*(HALF-.4),pz=TZ+f[1]*(HALF-.4),ax=f[0]?0:-8,az=f[1]?0:-8;
   beam(rust,px+ax,ya,pz+az,px-ax,yb2,pz-az,.55,.55);beam(rust,px-ax,ya,pz-az,px+ax,yb2,pz+az,.55,.55);}});
  // rubble at the foot
- for(let i=0;i<40;i++){const a=rng()*TAU,r=rr(26,52);const x=TX+Math.cos(a)*r,z=TZ+Math.sin(a)*r;box(conc,x,terrainH(x,z)-.5,z,rr(2,7),rr(1,3),rr(2,6),[rr(-.3,.3),rng()*TAU,rr(-.3,.3)]);}
+ for(let i=0;i<40;i++){const a=rng()*TAU,r=rr(26,52);const x=TX+Math.cos(a)*r,z=TZ+Math.sin(a)*r;box(wall,x,terrainH(x,z)-.5,z,rr(2,7),rr(1,3),rr(2,6),[rr(-.3,.3),rng()*TAU,rr(-.3,.3)]);}
  // merge per material
  const TEXC=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=150+(fbm(x/18,y/18,2.2,3)-.5)*60+(fbm(x/3,y/3,8,1)-.5)*20;d[i]=v*.92;d[i+1]=v*.86;d[i+2]=v*.74;d[i+3]=255;}g.putImageData(id,0,0);});
  const TEXR=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=fbm(x/14,y/9,5.5,3),u=fbm(x/4,y/4,3,2);d[i]=96+v*46+u*16;d[i+1]=70+v*34+u*8;d[i+2]=52+v*22;d[i+3]=255;}g.putImageData(id,0,0);});
@@ -51,8 +51,11 @@ function buildTestTower(){
    for(let i=0;i<p.length;i+=3){uv.push((p[i]+p[i+2])/6,p[i+1]/6);}});   // triplanar-ish world uv
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   const m=new THREE.Mesh(geo,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return geo;};
- const gC=merge(conc,new THREE.MeshLambertMaterial({map:hostTowerLib('towerConcrete',TEXC),color:0x8e8878}),'Girder tower — concrete');
+ const matC=new THREE.MeshLambertMaterial({map:hostTowerLib('towerConcrete',TEXC),color:0x8e8878});
+ const gC=merge(conc,matC,'Girder tower — concrete');
+ const gW=merge(wall,matC,'Girder tower — core walls and rubble');
  const gR=merge(rust,new THREE.MeshLambertMaterial({map:hostTowerLib('towerRust',TEXR),color:0x6e4a36}),'Girder tower — iron');
  OBSTACLES.push({x:TX,z:TZ,r:HALF*1.5+6,y0:y0-5,y1:top+20});
  REGISTER({name:'Girder tower (test structure, ruined)',x:TX,z:TZ,y:y0,r:HALF*1.5,h:top-y0+16});
- return [gC,gR];}
+ /* SHELLS (core/biome/40-core-place.js): the floor plates (huge), the iron, the core walls and rubble each take a share of every pass, so the plates do not take all the moss */
+ return [{geos:[gC],share:1},{geos:[gR],share:.6},{geos:[gW],share:.4}];}

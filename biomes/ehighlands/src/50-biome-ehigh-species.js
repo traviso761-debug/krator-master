@@ -89,10 +89,10 @@ EHIGH.HARVEST={
  cushion:HV('fuel (resin)',[],true,'Cut and dried it burns hot with a resin smoke; a cushion takes a lifetime to grow a hand\'s depth, so the clans that cut them are cursed by the ones that do not. The resin is a salve for frostbite.'),
  woolback:HV('none',[],false,'From a hundred metres a flock of sheep; herders have walked an hour to round up a hillside of them.'),
  thorn:HV('none',['flowers (in tea)'],true,'Tapped for its gum: a cut at the root crown weeps a white resin that sets hard. Traded down to the lowlands as a binder for paint and medicine.'),
- vigil:HV('none',['heart (famine)','nectar'],false,'Flowers once, after decades, all together across a plain; then stands as a dead torch for years. The dry spike burns like a beacon and is lit for festivals.'),
+ vigil:HV('none',['heart (famine)','nectar'],false,'Flowers once, after decades, all together across a plain; then stands as a dead torch for years. The dry spike burns like a beacon and is lit for festivals.','generic_fruit_vigil_heart'),
  ragbark:HV('fuel, carving',[],true,'The bark peels in a hundred papery layers: a winter coat for the tree, kindling and writing paper for people.'),
- glasstower:HV('none',['young stalk (peeled, bitter)'],true,'Makes pallidine in its bracts and roots. Moth larvae that feed on the roots store it; a fungus that infects them works most of it into a milder tonic (wormwick). The wild bees that work its hidden flowers carry it into their honey whole: tower honey, the dangerous version.'),
- cereus:HV('none',['fruit'],false,'The white hair is the frost\'s; the red flowers open toward the giant.'),
+ glasstower:HV('none',['young stalk (peeled, bitter)'],true,'Makes pallidine in its bracts and roots. Moth larvae that feed on the roots store it; a fungus that infects them works most of it into a milder tonic (wormwick). The wild bees that work its hidden flowers carry it into their honey whole: tower honey, the dangerous version.','generic_fruit_tower_honey'),
+ cereus:HV('none',['fruit'],false,'The white hair is the frost\'s; the red flowers open toward the giant.','generic_fruit_cereus'),
 };
 EHIGH.SPECIES.forEach(S=>{S.tags.harvest=EHIGH.HARVEST[S.key]||HV('none');});
 
@@ -106,11 +106,12 @@ EHIGH.PLANTS={
  tola:PK('Tola','polar','arid','no',['BSk'],'shrub',['tola','tolabloom'],HV('fuel',[],true,'Resinous scrub; it smells of tar in the sun.')),
  snowwool:PK('Snow wool','polar','semiarid','no',['ET','EF'],'woolly',['snowwool'],HV('none',[],true,'Fist-sized cones of white wool, the last plant below the snow. Moths sleep in the wool at night.')),
  gentian:PK('Gentian','polar','subhumid','no',['ET'],'herb',['bloom'],HV('none',[],true,'')),
- wormwick:PK('Wormwick','polar','subhumid','no',['ET'],'fungus',['wick'],HV('none',['the stalk and the larva (dried)'],true,'A fungus\'s stalk out of a moth larva\'s head, in the turf near the glass towers. The fungus has worked the towers\' pallidine into a mild tonic: worth its weight in silver in the lowland cities. Clans fight over the slopes in the spring.')),
+ wormwick:PK('Wormwick','polar','subhumid','no',['ET'],'fungus',['wick'],HV('none',['the stalk and the larva (dried)'],true,'A fungus\'s stalk out of a moth larva\'s head, in the turf near the glass towers. The fungus has worked the towers\' pallidine into a mild tonic: worth its weight in silver in the lowland cities. Clans fight over the slopes in the spring.','generic_fruit_wormwick')),
  lichen:PK('Lichens','polar','arid','no',['BSk','ET','EF'],'crust',['lichen'],HV('none',[],false,'')),
  sinter:PK('Mat algae','polar','humid','yes',['BSk'],'mat',['sinter'],HV('none',[],false,'Orange and green mats in the geysers\' run-off: each colour lives at its own temperature.')),
 };
 EHIGH.plantOfItem=item=>{for(const k in EHIGH.PLANTS)if(EHIGH.PLANTS[k].items.indexOf(item)>=0)return EHIGH.PLANTS[k];return null;};
+EHIGH.FRUIT_KEYS=[...new Set(EHIGH.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(EHIGH.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf and surface textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.

@@ -20,6 +20,7 @@ MECH({
   tags: { class: 'mech', type: ['war machine', 'transport', 'siege'], drive: 'quadruped', crew: 3, pilot: 'cab', weapon: ['ballista'],
     setting: 'outdoor', guild: 'Forgemasters' },
   variants: 2, variantNames: ['Road Camp', 'Supply Train'],
+  variantTags: [{}, { weapon: [] }],
   w: 3.6, d: 5.8, h: 7.8,
   data: { height: 6.2, mass: 26, crew: 3, pilot: 'cab', reach: 360, weapon: 'deck ballista on a turntable (1.4 m bolts)', cargo: 3000,
     engine: 'Ancient cell pack, hydraulic', armour: 'cargo hull' },

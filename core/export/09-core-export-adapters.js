@@ -93,6 +93,7 @@ E.register('water', ctx => {
    r.damp = S.dampDepth; r.amp = S.amp;
    r.bed = S.bed ? { x0: S.bed.x0, z0: S.bed.z0, cell: S.bed.cell, nx: S.bed.nx, nz: S.bed.nz, level: S.bed.level, bytes: E.pack(S.bed.data) } : null;
    const D = (W.drawn || []).find(d => d.S === S), M = D && D.material;
+   if(S.tint) r.tint = Object.assign({}, r.tint, { bytes: E.pack(S.tint.data) });   // the tint field (premultiplied RGBA, 2026-10-21): the same bytes the shader samples
    r.look = Object.assign(M ? { colour: '#' + M.color.getHexString(), roughness: M.roughness, metal: M.metalness, envMapIntensity: M.envMapIntensity,
     transparent: !!M.transparent, drawn: 'WATER.draw' } : {}, plain(S.look) || {});
    if(!M && !S.look) r.look = null;
@@ -122,10 +123,10 @@ E.register('water', ctx => {
   out.push(r);
  });
  if(!out.length) return null;
- return { format: 'krator-water', version: 1, period: X.period, presets: X.presets, field: A ? 'atmos' : 'none',
+ return Object.assign({ format: 'krator-water', version: 1, period: X.period, presets: X.presets, field: A ? 'atmos' : 'none',
   clock: 'the shaders read the module clock wrapped at period (atmWaveT; Godot: the global atm_wave_t); the twins take seconds and wrap them',
   note: 'open: rest point p0 moves to p0 + m * sum H D cos(th), y = level + m * (sum A sin(th) + field * waveHeight(p)), th = 2 pi (fract(p0.x tx) + fract(p0.z tz) - fract(t tc)) + phase; m = smoothstep(0, damp, depth) from the bed (1 without one); heightAt inverts it by Newton (core/water/README.md)',
-  surfaces: out, probes };
+  surfaces: out, probes }, X.groups ? { groups: X.groups } : {});
 }, { by: 'water' });
 
 // ---- a ground's world-space layers (the biome hosts' detail and crack maps, multiplied over the painted ground)

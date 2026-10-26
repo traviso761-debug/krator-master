@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.097,
+    1.028
+   ],
+   "seam_before": [
+    1.83,
+    1.233
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.04,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "hide.panels.sewn",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "hide.panels.sewn.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 10)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id hide.panels.sewn).",
+  "reuse": "sewn smoked hides: the Yeti domes' lining; yaranga, chum and tipi covers",
+  "sha1": "536c7b221d11142c81555770e1f11eb6be9295f9"
+ }
+}

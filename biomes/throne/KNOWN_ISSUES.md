@@ -123,6 +123,8 @@
 
 ## Export profile (core/export, 2026-10-18)
 
+- [x] **core/atmos bound on every page (migration phase 0, 2026-10-20).** `ATMOS.bindHost` (`core/atmos/host/89-atmos-c-hostbind.js`, a subfolder so the kits that list core/atmos whole are unchanged) is called by `src/89a-host-atmos.js` on station 1 and, through `station.json` `"atmosHost": true`, on the kipuka, the savanna and the tube (hour 13, 0 in the night mode); all ten stations now list the core, presets, export, wave field and skylight fragments. The binding alone draws nothing (no triangles or calls added); the page's own sky, fog, sun and water are unchanged. `atmos` joins the profiles of stations 1, 2, 6 and 11. Station 1's triangle ceiling is raised from 20M to 22M (`BUDGET.showcase` in `src/99-host-take.js`, owner's approval) for core/water's drawing in later phases; the draw-call ceiling stays 140 (the page is over it already, above).
+
 - [ ] **The Throne keeps the injection route.** No page of the Throne lists core/export in its build: station 1's page is
       at its 20M size ceiling (above), so the two fragments are not added to the pages. `tools/harness.py export` injects
       them at export time (the biome core's `42`/`43` queued their parts), and `verify.py --assert` checks each page's
@@ -131,7 +133,7 @@
       `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain: the kit has no krator-field). The
       caldera's and the tube's `stage` and `terrain` sections read ok: `HEAT.render` draws on the frame after the scene,
       and the stage capture renders the scenes with its own cube camera, so the shimmer is not in the panorama.
-- [ ] **`atmos` is left out of every profile, and errors on four stations.** The ash desert, the caldera, the cloud forest,
+- [x] **`atmos` is left out of every profile, and errors on four stations.** 2026-10-20: fixed. `89-atmos-8-export.js` is in the `atmos` list of the seven stations that bind core/atmos (ash desert, caldera, cloud forest, glacier, vents, frontier, isle: their `station.json`), so `ATMOS.export` exists under the host fragment's wrapper; `atmos` joins those seven profiles (`EXPORT_STATIONS` in verify.py) and the `--sections` restriction is gone. Pages rebuilt, every profile PASS. The text below is the finding as made: The ash desert, the caldera, the cloud forest,
       the glacier and vent country list `89-atmos-9-host.js` but not `89-atmos-8-export.js`; the host fragment wraps
       `ATMOS.export` over the export fragment's, so on those pages `ATMOS.export` throws (`_export is not a function`) and
       the section reads `error` (the frontier and the isle, on the waves only, read `none`; station 1, the kipuka, the
@@ -146,6 +148,29 @@
       without its fauna. Both `core` lists now hold `36-core-walker.js` (the sort by name puts it after `35-core-anim.js`
       and before the hyperjungle fragments, as the hyperjungle's own build orders them); the two pages were rebuilt, verify
       clean with their profile PASS, and their baseline rows were rewritten (only those two).
-- [ ] **`water` is left out of every profile.** No page of the Throne is on core/water (the acid lake, the hot pools, the lava
+- [ ] **`water` is left out of every profile.** (2026-10-20: re-checked: still true, no station binds core/water; the section reads `empty` on all eleven.) No page of the Throne is on core/water (the acid lake, the hot pools, the lava
       lake and the sea are the hosts' own surfaces), so the section reads `empty` everywhere. Add it back when a station's
       water is named to core/water.
+      **2026-10-20 (migration phase 2): stations 2 (kipuka) and 6 (savanna) are on core/water, and `water` is in their profiles.** The rest stay out.
+      `station.json` has a new `"water"` key (the five core/water fragments by name; build.py reads them from `core/water`). Station 2: its streams, run by
+      run where no flow has buried the bed, are `WATER.flow` records (`STREAM_FLOWS`, 84-host-ground.js: the stream's centre line at `streamLevel` every
+      10 m, 2.3 w wide), drawn by `stations/kipuka/89w-host-water.js` (`drawFlow`, skylight keyed on `LIGHT_MODE`), the page's own water shader and ribbon gone;
+      the page sets `WATER.PRESETS.flow.rapids = [.1, .3]` (the streams fall 3% to 12%; the global default whitens them, `core/water/README.md` "Open gaps").
+      Station 6: the sixteen dry-season pools are `WATER.still` discs (`POOL_STILLS`, 84), drawn by `stations/savanna/89w-host-water.js` (the old colour and .86
+      opacity, night 0x101814 as before, the sky in them), each keeping an invisible flat disc for the inspector's click and the probe's occupancy of its
+      registered volume (core/water's meshes take no ray and no probe sample: without the disc `registered-volumes-non-empty` failed for the two pools nothing else
+      stands in). EXPORT_STATIONS: the savanna's box moved from the wood at the default view ([-1050,350,-750,650], no pool) to [-310,-420,-10,-120] (a pool at -158,-271;
+      48 sets, 4 buckets), the kipuka's box is named in its row. Cost, same cameras, before -> after (calls, triangles): the savanna's A dry-season pool 69 -> 69, 17.97 M -> 17.97 M (the invisible discs draw nothing), Night: the savanna 73 -> 73, 17.97 M; the kipuka's A stream in the kipuka 111 -> 111, 9.16 M -> 9.17 M (a strip of two vertices every 5 m is a ribbon of three every 10 m).
+      **2026-10-20 (migration phase 3): station 3 (frontier) is on core/water too, `water` is in its profile; stations 1, 4, 5, 8, 9 stay open.** The Ring Sea and the
+      harbour bay (`SEA_MAT`, a 220 x 220 ShaderMaterial grid with its own foam and depth attribute) are one `WATER.open` (`stations/frontier/89w-host-sea.js`): level `SEA`,
+      the shared wave field at full strength (no trochoid swell: this coast has no swell kit), `bed: terrainH` over [-3380, -3380, 300, 3380] (the sea lies west of x = 300),
+      with a SHORE GRID (8 m cells, flooded from the bay's centre and a point at u = -3000): the swell shoals toward the black beaches and the headland, a breaker train runs in
+      along the coast, and the ground (`MAT_GROUND`) takes `WATER.wetGround` (wet sand where the swash reaches). The two streams are `WATER.flow` per run (`STREAM_FLOWS`, 84: the
+      valley's centre line at `streamLevel` every 10 m, 10 m wide, `drawFlow`; before, a `MeshLambertMaterial` ribbon every 6 m, 2 (5 + 2 sin) m wide), `WATER.PRESETS.flow.rapids`
+      set to `[.1, .3]` as the kipuka does. `waterH` and `terrainH` are unchanged (the sea check, 'nothing rooted under the water', the camera clearance read them). The sky in the water is
+      core/atmos's skylight (a capture of the dome and the giant, given to the water only, recaptured at each light mode). An invisible flat plane at `SEA` keeps the inspector's click on the
+      sea. `ATMOS.waveUniforms(SEAU)` and the page's own foam and `_onLight` colours are gone. Hour stays 1 / 14. Cost, same camera (the default view), before -> after: 102 calls -> 102,
+      7,664,442 -> 7,663,364 triangles (the old grid was never frustum-culled; the CDLOD mesh is selected per view: a net saving of about 1,100 at this camera, more where the camera looks away from the sea); the budget (24 M) is not near it (6.92 M scene). The shore grid and the draw take 0.2 s
+      to build (390 k cells; `_t.sea0` -> `_t.sea`). EXPORT_STATIONS: the frontier's box moved from [-560, -400, -260, -100] (no water) to
+      [-900, -700, -260, -100] (the first lahar valley's stream and the old terraces: 67 sets, 15 buckets), profile + `water` (9 of 9 met). This is the template for stations 4 and 5
+      (an open sea with a shore grid, streams as flows). Gaps: `core/water/README.md`, "Open gaps (phase 3, Throne frontier/ringisles)".

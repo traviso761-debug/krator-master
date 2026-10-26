@@ -17,7 +17,7 @@
       features (the kilns, vats, racks, cranes) carry the difference. A second pass per trade could vary their massing.
 - [x] **In the gallery (2026-10-20)**: its own artifact, https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu, linked from every
       part's index; the Sanctum and the kept hosts in The Ancients and the Port (`gallery/README.md`).
-- [ ] **The catalog's `verify.py --assert` fails on two generic fruit pieces** (`generic_fruit_bell_pod`,
+- [x] **(Passes again, 2026-10-22.) The catalog's `verify.py --assert` failed on two generic fruit pieces** (`generic_fruit_bell_pod`,
       `generic_fruit_cherry`: materials missing stone, timber). Not this kit's: it fails the same without the Eternian
       file (checked 2026-10-20).
 - [ ] **The palace and canton staffs** are the census's one trade the kit does not carry: the Sanctum
@@ -27,3 +27,6 @@
       caps showed through the roofs (every roof is lifted over the wall's outer edge by its own slope: `etRoofLift`;
       cornices 3 cm out); the hexagonal roofs' tiles ran straight across the hexagon (`etOgee` is drawn face by face, each
       face's courses along its own eave, as `etHexHip` and `etHip` already were).
+- [ ] **The frontier fort (`et_fort`, 2026-10-22)**: the corner towers and the wall walk are solid (no rooms inside the
+      towers; a door from the court on each, no stair up); the keep's three storeys have no stair between them (the
+      interiors set does not plan the keep yet). Its gatehouse is the city gate, so the fort carries the gate's colossi.

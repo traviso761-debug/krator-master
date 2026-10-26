@@ -151,6 +151,6 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
 - **From the known issues:** the hexagonal roofs are six-faced hips with their tile rolls (`etHexHip`); the veils are
   cloth in folds over a bare head (`etVeilGeo`, the Sanctum's too); the figures have hands; the gate's colossi hold
   closer (`spread`); the canals' water is rougher and reads deep; the flutes are thicker; the pier bundle has dark joints;
-  the Sanctum is classed 'mega' for the per-type guide (it is Plymouth's volume); the export carries the meshes.
+  the Sanctum is classed 'mega' for the per-type guide (between Plymouth's mass and Hexahedron's); the export carries the meshes.
 
 Next: the capital's page (PLAN.md section 8) as its own plan; the second pass (KNOWN_ISSUES.md).

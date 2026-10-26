@@ -58,9 +58,9 @@
       (trees are laid down eight fragments before placement and can never be taken out again).
 - [x] FARM_PLOTS carries farmsteads: one plot in five takes a walled compound with its granary, well and stock pen.
 - [x] The summit carries the starport ruin plus three ruined dishes and a ruined radar mast, hand-placed.
-- [ ] The budget was raised to 190 draw calls / 7.0 M triangles / 460 k instances to take the full city. The world
+- [x] The budget was raised to 190 draw calls / 7.0 M triangles / 460 k instances to take the full city. The world
       now sits at 116 calls and 4.53 M triangles. There is still no LOD: everything is drawn at full detail at
-      every distance, which is why the frame rate is what it is on a soft renderer.
+      every distance, which is why the frame rate is what it is on a soft renderer. - 2026-10-20: the budget note is history; LOD is done (core/lod, see 'No LOD' below), nothing open.
 - [ ] 778 district candidates were refused outright because no grid axis fitted them. That is the slums crowding
       themselves; it reads fine, but a relaxation pass would recover some of that density.
 - [ ] The inner-city fill is wealthy fabric only (rich + civic). It reads right for the core, but the density is
@@ -92,11 +92,11 @@
       before placing a tower inside the wall.
 - [ ] The kit's cut sections end in pale floor plates (0xbdb7ad). From Yuni's aerial views the top plate of a
       patched or ruined tower reads as a white lid. The kit's design; tint it in Yuni if it bothers.
-- [ ] The kit's new graded aprons poke out of three Yuni footprints: radar 4.5 m, dish 2.4 m, toppled Sail 5.1 m
+- [x] 2026-10-20: fixed Yuni-side (kits/ancients untouched): `apron()` takes an `APRCLIP` hook that `ANC_build` sets from the plot (`fw`,`fd`,`cx`,`cz`, scale, yaw); a skirt vertex that would leave the footprint is pulled back 0.3 m inside it and its height read there, so the kit's aprons no longer poke out (`window._anc.over` is empty; was radar 4.5 m, dish 2.4 m, Sail 5.1 m). Edited in `tools/gen_ancients.py` (patch list), `tools/anc_glue.js`, `tools/anc_kit_tail.js` and the same lines in `src/61a`, `61a1`, `61b`, `61c`. Original entry: (batch 8): the aprons are the shared kit's (kits/ancients) and clipping or re-centring them moves what the plots look like, an owner's call. The kit's new graded aprons poke out of three Yuni footprints: radar 4.5 m, dish 2.4 m, toppled Sail 5.1 m
       (`window._anc.over`). The radar's pad already overhung its plot by ~2.7 m before the sync. They are ground
       skirts and the plots sit in 104 m superblocks, so nothing collides; re-centre `cx/cz` if one is ever packed
       tight.
-- [ ] The kit's tower plinths shrank (Conocylinder 110 -> 92, Scallop 82 -> 66, Monolith -> 48, Warden -> 56 kit
+- [ ] 2026-10-20: left open, not ticked: the entry gives no target ("~15%" or "the plots shrink"), the scale is the owner's look call and a bigger tower is not checked against its 100 m plot. The kit's tower plinths shrank (Conocylinder 110 -> 92, Scallop 82 -> 66, Monolith -> 48, Warden -> 56 kit
       units). Yuni's tower scales (0.34-0.37) were chosen to fit the OLD plinths in a 100 m plot; they could rise
       ~15% now, or the plots shrink.
 - [ ] Fire flicker / firelight: the kit's `tick` hook and NIGHT flag are driven from Yuni's frame loop, but the kit
@@ -118,7 +118,7 @@
       plants likewise (yuni-plants.html) with a climate band and a preferred aridity. Only the Order's furniture is
       wired back into a building so far (the library and the school build from the registry); everything else in
       the city still draws its own.
-- [ ] `F.lantern` is a fixed 0.5 m hanging lantern, too big for anything standing on a table. The ancients agent
+- [ ] 2026-10-20 (batch 8): left open: promoting `F.oillamp` to the contract is a design decision on the shared furniture contract. `F.lantern` is a fixed 0.5 m hanging lantern, too big for anything standing on a table. The ancients agent
       wrote a local `oilLamp()` helper; consider promoting it to the contract as `F.oillamp`.
 - [x] THE LIFE LAYER is in: 454 people and 53 carts and caravans walking the NAV graph — ramblers, factory
       workers, academics, saffron-robed monks of the Order and market merchants, each with a day and a home.
@@ -359,8 +359,8 @@ with a library set and, under `?mat=proc`, the procedural map and scale of the f
 roof-tile family for its colour, which on the library put roof courses on a pot. Draw calls in the city are unchanged
 (112); the furniture pieces placed outdoors (water jars, counters) now draw in `clay`. The page is 7.1 MB with 23
 families inlined (Girder's is 12.9 MB).
-- [ ] `kits/catalog` harvested these pieces with the old family strings: re-harvest after the catalog learns `clay`,
-      `rug` and `reedmat` (it already lacks the interiors pass's pieces: "Open after merging main" below).
+- [x] `kits/catalog` harvested these pieces with the old family strings: re-harvest after the catalog learns `clay`,
+      `rug` and `reedmat` (it already lacks the interiors pass's pieces: "Open after merging main" below). - 2026-10-20: duplicate; merged into the open re-harvest entry under 'Open after merging main' (that one stays open).
 - [x] The interiors' last three sets were generated by the owner on 2026-10-05 and processed with
       `tools/textures/batches/chatgpt-2026-10g-yuni-interiors.json`: `wood.beam` now carries the `timber` family
       everywhere (beams, posts, toron, furniture legs, outdoors too; 1.2 x 2.4 m), `cloth.rug.pile` the rugs (0.6 m),
@@ -411,7 +411,7 @@ monkeyflower and columbine, grape curtains, moss and lichen, ledge plants).
       furniture sheets reflow. fig_courtyard and salvage_hearth_hood already fitted, so they were not changed.
       Nothing was recentred. The catalog's F.shift offsets come from its rewritten geometry, and Yuni's own
       pieces sit within 0.07 m of centre, except the mat rack (next item).
-- [ ] order_mat_rack: each mat roll is an F.cyl turned [0,0,PI/2], which grows from its base along -x, so every
+- [x] 2026-10-20: the rolls are moved +0.29 m (+0.26 m for the shorter lower rolls) in `59c-civic-furniture.js`, so they sit on the rack; the School's rack geometry moved, no layout did (w and d unchanged). Was: order_mat_rack: each mat roll is an F.cyl turned [0,0,PI/2], which grows from its base along -x, so every
       roll hangs 0.29 m out of the rack's left end (it builds x -1.20..+0.87). The fix is to move the rolls +0.29
       in x. That moves geometry in the School, so the catalog sync left it alone.
 - [ ] More furniture builds bigger than it declares (same measurement; h can include a lamp's glow ball):

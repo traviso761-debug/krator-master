@@ -20,7 +20,12 @@
 //    water (rest-point space, so it rides the orbits and needs no clock); with a bed, the shallows' tint and a surf lap.
 // o: {THREE, scene (default ATMOS's), color, roughness, metalness, envMapIntensity, normalMap + detailSize m + detailCycles
 //    [x,z] (a detail normal map scrolled whole cycles per period), normalScale, transparent, shallow, deep (colours with a bed),
-//    surf (cycles of the surf lap per period), renderOrder, name}
+//    surf (cycles of the surf lap per period; FALSE: no lap at all), surfDepth (the lap's depth band: a number n = the band 0.1..n m, or [lo, hi];
+//    default [0.1, 1.4]), ramp ([a, b]: the depths m over which shallow turns to deep; default [0.5, 9]), renderOrder, name,
+//    depthBias (n: pull the surface toward the camera by n of polygon offset, negative pushes it back, so a flow can sit AT the level; [factor, units]
+//    or {factor, units} to set both), depthWrite (override the policy), pick (true: the surface keeps a ray cast, the plane at its level refined by
+//    heightAt, and no probeSkip, so a click-to-inspect and a registered-volumes check see it; userData.inspectLabel = its name)}
+//    A surface made with WATER.open({tint}) also blends its tint field over the ramp (premultiplied: colour*(1-a) + rgb).
 // -> {mesh, material, uniforms, update(camera), count()} ; mesh.userData.probeSkip and lodSkip, its raycast is off (a build keeps its own
 // flat pick plane), name 'water:<name>'.
 // WATER.shaderOn(S, sh) gives another material (a wake, a buoy's ring) the surface's uniforms and returns the chunk to inject,
@@ -79,6 +84,9 @@
    // the CDLOD morph of grid point g (0..1) in node n (x0, z0, size, level): (x, z, vertex spacing)
    'vec3 wtrMorph(vec2 g,vec4 n){vec2 w=n.xy+g*n.z;float d=distance(cameraPosition,vec3(w.x,wtrLevel,w.y));float e='+f(C.range)+'*n.z;float s=e*'+f(C.morph)+';'+
     'float m=clamp((d-s)/(e-s),0.0,1.0);w-=fract(g*'+f(C.grid*.5)+')*'+f(2/C.grid)+'*n.z*m;return vec3(w,n.z*'+f(1/C.grid)+'*(1.0+m));}'];
+  // a TINT field's lookup (20's W.tintSample): premultiplied RGBA at a world point, zero outside the box; only a surface with one has it
+  if(S.tint){const T=S.tint;o.push('uniform sampler2D wtrTint;vec4 wtrTintAt(vec2 p){vec2 uv=(p-vec2('+f(T.x0)+','+f(T.z0)+'))*vec2('+f(1/(T.cell*T.nx))+','+f(1/(T.cell*T.nz))+');'+
+   'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return vec4(0.0);return texture2D(wtrTint,uv);}');}
   return o.join('\n');};
 
  // ---- a shore grid's functions (21-core-water-shore.js's twins): the damping with Green's shoaling, the signed shore
@@ -109,6 +117,8 @@
   // a shore window: its box as a uniform, and its bytes refreshed in place each time it is re-baked (the same size)
   if(S.shoreWin){const B=S.bed;S.U.wtrBedBox={value:new T.Vector4(B.x0,B.z0,1/(B.cell*B.nx),1/(B.cell*B.nz))};
    const prev=S.onShore;S.onShore=G=>{if(prev)prev(G);const tx=S.U.wtrBed.value;tx.image.data.set(G.data);tx.needsUpdate=true;S.U.wtrBedBox.value.set(G.x0,G.z0,1/(G.cell*G.nx),1/(G.cell*G.nz));};}
+  if(S.tint){const B=S.tint,tx=new T.DataTexture(B.data,B.nx,B.nz,T.RGBAFormat,T.UnsignedByteType);tx.minFilter=tx.magFilter=T.LinearFilter;tx.wrapS=tx.wrapT=T.ClampToEdgeWrapping;
+   tx.generateMipmaps=false;tx.flipY=false;tx.needsUpdate=true;S.U.wtrTint={value:tx};}
   if(S.bed){const B=S.bed,tx=new T.DataTexture(B.data,B.nx,B.nz,T.RGBAFormat,T.UnsignedByteType);tx.minFilter=tx.magFilter=T.LinearFilter;tx.wrapS=tx.wrapT=T.ClampToEdgeWrapping;
    tx.generateMipmaps=false;tx.flipY=false;tx.needsUpdate=true;S.U.wtrBed={value:tx};}
   A.hook(t=>{S.U.wtrLevel.value=S.levelAt(t);});return S.U;};
@@ -117,6 +127,16 @@
  // FNV-1a of a string (a program cache key)
  W.hashStr=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
  W.drawn=[];
+ // the depth state a drawing takes from its options (50 and 51 share it): depthBias n (or [factor, units], {factor, units}) is polygon offset toward the camera,
+ // the sign reversed to push back; depthWrite overrides the drawing's own policy. Neither is set without its option.
+ W.biasMaterial=(mat,o)=>{const b=o&&o.depthBias;if(b!=null&&b!==0){const fa=Array.isArray(b)?b[0]:typeof b==='object'?b.factor:b,un=Array.isArray(b)?b[1]:typeof b==='object'?b.units:b;
+   mat.polygonOffset=true;mat.polygonOffsetFactor=-fa;mat.polygonOffsetUnits=-un;}
+  if(o&&o.depthWrite!=null)mat.depthWrite=!!o.depthWrite;return mat;};
+ // pick: the ray cast of a drawing whose mesh is not its surface (the CDLOD grid): the plane at its level, then (three times) the plane at the height of the water
+ // where the ray lands, kept if the surface contains that point
+ W.pickRay=(S,mesh,T,level)=>(rc,hits)=>{const r=rc.ray,dy=r.direction.y;if(Math.abs(dy)<1e-9)return;const A=AT(),t=A&&A.clock?A.clock.t:0;let d=(level()-r.origin.y)/dy,y=0;
+  for(let k=0;k<3;k++){const h=S.heightAt(r.origin.x+r.direction.x*d,r.origin.z+r.direction.z*d,t);if(h==null)return;y=h;d=(y-r.origin.y)/dy;}
+  if(d<rc.near||d>rc.far)return;const x=r.origin.x+r.direction.x*d,z=r.origin.z+r.direction.z*d;if(!S.contains(x,z))return;hits.push({distance:d,point:new T.Vector3(x,y,z),object:mesh});};
  W.draw=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,C=Object.assign({},W.PRESETS.cdlod,o.cdlod||{}),F=W.PRESETS.foam,f=glf,N=C.grid;
   // the node: (N+1)^2 vertices on [0,1]^2 in x,z
   const pos=[],uv=[],idx=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){pos.push(i/N,0,j/N);uv.push(i/N,j/N);}
@@ -129,12 +149,16 @@
   if(o.normalMap)mat.normalScale.set(o.normalScale==null?.5:o.normalScale,o.normalScale==null?.5:o.normalScale);
   if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;
   const U=W.uniformsOf(S),col=c=>v3(c),lin=c=>{const q=new T.Color(c);return[q.r,q.g,q.b];};
-  const per=W.period(),dc=o.detailCycles||[3,2],surf=o.surf==null?153:o.surf;
+  const per=W.period(),dc=o.detailCycles||[3,2],surf=o.surf==null?153:o.surf,RP=o.ramp||[0.5,9],SD=o.surfDepth==null?[0.1,1.4]:Array.isArray(o.surfDepth)?o.surfDepth:[0.1,o.surfDepth];
+  // the options a page chose over the defaults, for the export (nothing is recorded for a default)
+  {const dop={};if(o.surf===false)dop.surf=false;if(o.surfDepth!=null)dop.surfDepth=o.surfDepth;if(o.ramp)dop.ramp=o.ramp;if(o.depthBias!=null)dop.depthBias=o.depthBias;if(Object.keys(dop).length)S.drawOpt=dop;}
+  W.biasMaterial(mat,o);
   const fragColor=['float wtrMpp=max(length(fwidth(vWtrP0)),1.0e-4);vec4 wtrNJ=wtrTroNJ(vWtrP0,wtrMpp,atmWaveT);',
    'vec3 wtrN=wtrNormal(wtrNJ,vWtrP,distance(cameraPosition,vec3(vWtrP.x,wtrLevel,vWtrP.y)),vWtrDamp);float wtrDp=wtrDepth(vWtrP);',
    'float wtrFoamK='+f(F.amount)+'*wtrFoam(vWtrP0,wtrMpp,wtrNJ.w)*smoothstep(0.55,0.85,wtrNoise(vWtrP0*'+f(F.noise[0])+')*0.55+wtrNoise(vWtrP0*'+f(F.noise[1])+')*0.45)*mix(1.0,0.45,smoothstep(1.0,6.0,wtrMpp))*vWtrDamp;',
-   S.bed?'diffuseColor.rgb=mix('+col(lin(o.shallow==null?0x2a524d:o.shallow))+','+col(lin(o.deep==null?0x0d2c30:o.deep))+',smoothstep(0.5,9.0,wtrDp));'+
-    'wtrFoamK=max(wtrFoamK,0.55*(1.0-smoothstep(0.1,1.4,wtrDp))*(0.5+0.5*sin(wtrDp*5.0-6.283185307*fract(atmWaveT*'+f(surf/per)+')+sin(vWtrP.x*0.05)*2.0)));':'',
+   (S.bed?'diffuseColor.rgb=mix('+col(lin(o.shallow==null?0x2a524d:o.shallow))+','+col(lin(o.deep==null?0x0d2c30:o.deep))+',smoothstep('+f(RP[0])+','+f(RP[1])+',wtrDp));'+
+    (o.surf===false?'':'wtrFoamK=max(wtrFoamK,0.55*(1.0-smoothstep('+f(SD[0])+','+f(SD[1])+',wtrDp))*(0.5+0.5*sin(wtrDp*5.0-6.283185307*fract(atmWaveT*'+f(surf/per)+')+sin(vWtrP.x*0.05)*2.0)));'):'')+
+    (S.tint?'{vec4 wtrTt=wtrTintAt(vWtrP);diffuseColor.rgb=diffuseColor.rgb*(1.0-wtrTt.a)+wtrTt.rgb;}':''),
    o.transparent?'diffuseColor.a*=mix(0.86,0.97,smoothstep(0.0,2.0,wtrDp))*smoothstep(-0.1,0.15,wtrDp);':'',
    S.bounds?'if(vWtrP.x<'+f(S.bounds[0])+'||vWtrP.y<'+f(S.bounds[1])+'||vWtrP.x>'+f(S.bounds[2])+'||vWtrP.y>'+f(S.bounds[3])+')discard;':'',
    S.shore?'if(!wtrWet(vWtrP))discard;wtrFoamK=max(wtrFoamK,wtrSurfFoam(vWtrP));':'',
@@ -161,7 +185,7 @@
     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.85,wtrFoamK);')
     .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.0-wtrFoamK;')
     .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(wtrN,0.0)).xyz);');};
-  const mesh=new T.Mesh(g,mat);mesh.name='water:'+S.name;mesh.frustumCulled=false;mesh.raycast=()=>{};mesh.userData.probeSkip=true;mesh.userData.water=S.id;
+  const mesh=new T.Mesh(g,mat);mesh.name='water:'+S.name;mesh.frustumCulled=false;mesh.raycast=o.pick?W.pickRay(S,mesh,T,()=>U.wtrLevel.value):()=>{};if(o.pick)mesh.userData.inspectLabel=S.name;else mesh.userData.probeSkip=true;mesh.userData.water=S.id;
   mesh.userData.lodSkip=true;   // the CDLOD mesh is its own level of detail: core/lod's pass must not take it (it would cull or copy the unit grid)
   if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
   // the nodes for the camera that is about to render (every render of the scene: the attribute uploads in that render)

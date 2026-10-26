@@ -68,7 +68,7 @@ const BUDGET={
 // ---------------------------------------------------------------- the host's own checks (verify.py runs them when present)
 // species that yield something edible the kit does not draw as a catalog fruit (acorns, palm fruit, bay berries,
 // seeds, palm heart): named, not hidden (biomes/FRUIT.md)
-const FRUIT_NOT_DRAWN=['kapok','canepalm','sprawloak','corkoak','coastoak','skirtpalm','pine','baylaurel'];
+const FRUIT_NOT_DRAWN=['canepalm','pine'];
 function _instNames(){const o=[];scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)o.push([M.name,M.count]);});return o;}
 const HCHK={
  // fruit: every species and fruiting plant carries a harvest tag, every edible one names a catalog piece (or is listed

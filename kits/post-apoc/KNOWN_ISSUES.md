@@ -14,7 +14,7 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 - Rust weathering is heavy by request (`WEATHER` in `src/22-mat.js`); metal is now matt (roughness ~.9, metalness ~.08) so dusk and moon light do not glaze it. Doors use unweathered `plain` paint so they stay readable against rusted walls.
 
-- [ ] Collision and nav are coarse by design: colliders are oriented boxes (cylinders, tyres and domes boxed, beams and poles skipped, so deck posts, rails and lamp posts do not block); the nav grid is 0.5 m, 2.5-D (up to 4 levels a cell), with a 0.6 m step, a body band of 0.45 to 1.55 m (lower parts are steps, thin lintels above are ignored) and no headroom test on stairs. Doors are checked for an approach from open ground, not walked through: interiors are not guaranteed connected.
+- [x] Collision and nav are coarse by design: colliders are oriented boxes (cylinders, tyres and domes boxed, beams and poles skipped, so deck posts, rails and lamp posts do not block); the nav grid is 0.5 m, 2.5-D (up to 4 levels a cell), with a 0.6 m step, a body band of 0.45 to 1.55 m (lower parts are steps, thin lintels above are ignored) and no headroom test on stairs. Doors are checked for an approach from open ground, not walked through: interiors are not guaranteed connected. - 2026-10-20: by design, nothing open.
 - [ ] Rotated compound slots: the footprint check swaps w and d for a quarter-turned site, but measures in the compound's frame only when the compound itself stands at ry 0 (as in the showcase).
 
 ## Fixed / measured

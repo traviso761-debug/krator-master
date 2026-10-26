@@ -13,13 +13,13 @@
       marker pin (the host's pin is its own), and the walkers' instanced bodies, which move (old against old: 112 triangles
       at the west mouth); the inspector names the Smithy (`bld_00027`) from its record, the minimap draws 169 records, a mark
       measures, 0 unknown tags, no errors; C and N and the buttons work; `node tests/test-layout.js` all passed.
-- [ ] (2026-10-15) **Keys changed with the host:** Dhelv's own map is K (M is the host's minimap; `93-dhelv-map.js`); T (the
+- [x] (2026-10-15) **Keys changed with the host:** Dhelv's own map is K (M is the host's minimap; `93-dhelv-map.js`); T (the
       inspector) is I, the hover button; P (the polygon tool) is the host's marks, P; R (run) is gone (Shift is faster, the wheel
       sets the walking speed); the marker is the host's pin (double-click, G, F walks from it, Esc lifts it, as Esc still lets
-      a followed walker go). The inspector's card is plain text (the kit's was coloured HTML). C, N, V, [ and ] are as before.
-- [ ] (2026-10-15) `?t=` (verify.py loads `?t=4`) pins the host's motion time: FRAME_HOOKS and the atmosphere are handed dt 0
+      a followed walker go). The inspector's card is plain text (the kit's was coloured HTML). C, N, V, [ and ] are as before. - 2026-10-20: description of the port, nothing open.
+- [x] (2026-10-15) `?t=` (verify.py loads `?t=4`) pins the host's motion time: FRAME_HOOKS and the atmosphere are handed dt 0
       (the kit's loop handed them real seconds; the shader clock was the only thing `?t` pinned). The ramblers keep their own
-      clock (95), the stone door its own step.
+      clock (95), the stone door its own step. - 2026-10-20: description of the port, nothing open.
 - [x] (2026-10-15) The marks file: core/host (94) reads `<build>/marks.json` only on a page served by `tools/edits/serve.py`
       (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
       no `marksUrl`.

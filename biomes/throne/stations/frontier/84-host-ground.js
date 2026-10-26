@@ -65,37 +65,13 @@ const GROUND=(function(){const N=600,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s south-west shore';scene.add(m);return m;})();
 
 _mark('ground');
-// ---------------------------------------------------------------- THE SEA: the shared wave field (core/atmos, bound in 89)
-// A grid over the map and out to the horizon's fog, its depth an attribute (the shallows settle toward glass and foam
-// at the edge); the swell displaces it, the chop and the mid waves only shade (Voth's water, from the same module).
-const SEAU={uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uShallow:{value:new THREE.Color(0x4a8a80)},uDeep:{value:new THREE.Color(0x1a3a46)},
- uSky:{value:new THREE.Color(0xc6ccc8)},uFogCol:{value:HAZE.clone()},uFogDen:{value:scene.fog.density},uCam:{value:new THREE.Vector3()},uBodyK:{value:1}};
-const SEA_MAT=new THREE.ShaderMaterial({uniforms:SEAU,transparent:true,
- vertexShader:['#include <atmos_waves>','attribute float aDepth;','varying vec3 vW; varying float vD; varying vec2 vP;',
-  'void main(){vec3 pos=position;vP=pos.xz;vD=aDepth;float att=clamp(aDepth/7.0,0.0,1.0);pos.y+=atmWaveHeight(pos.xz,0.0)*att;',
-  ' vec4 wp=modelMatrix*vec4(pos,1.0);vW=wp.xyz;gl_Position=projectionMatrix*viewMatrix*wp;}'].join('\n'),
- fragmentShader:['precision highp float;','#include <atmos_waves>','uniform float uFogDen,uBodyK;uniform vec3 uSun,uShallow,uDeep,uSky,uFogCol,uCam;','varying vec3 vW; varying float vD; varying vec2 vP;',
-  'void main(){float att=clamp(vD/7.0,0.0,1.0);float vdist=length(uCam-vW);float lod=1.0-smoothstep(260.0,1500.0,vdist);',
-  ' vec3 N=atmWaveNormal(vP,vdist,3.0*(0.08+0.92*att));vec3 V=normalize(uCam-vW);float fres=pow(1.0-clamp(dot(N,V),0.0,1.0),3.4);',
-  ' vec3 body=mix(uShallow,uDeep,smoothstep(0.8,25.0,vD));body*=(0.66+0.44*clamp(dot(N,uSun),0.0,1.0))*uBodyK;',
-  ' vec3 H=normalize(uSun+V);float spec=pow(clamp(dot(N,H),0.0,1.0),190.0)*1.4*lod;',
-  ' vec3 col=mix(body,uSky*uBodyK,clamp(fres*0.86,0.0,0.82))+vec3(1.0,0.95,0.86)*spec*uBodyK;',
-  ' float foam=smoothstep(1.4,0.1,vD)*(0.55+0.45*sin(vP.x*0.18+vP.y*0.13+6.283185307*fract(atmWaveT*0.255)));col=mix(col,vec3(0.92)*uBodyK,foam*0.55);',
-  ' float fog=1.0-exp(-uFogDen*uFogDen*vdist*vdist);col=mix(col,uFogCol,clamp(fog,0.0,1.0));',
-  ' gl_FragColor=vec4(col,mix(0.82,0.96,att));}'].join('\n')});
-(function(){const N=220,S=TERR.R*2.6,cs=S/N,nx=N+1,pos=[],dep=[],idx=[];
- for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const x=-S/2+i*cs,z=-S/2+j*cs;pos.push(x,SEA,z);dep.push(Math.max(0,SEA-terrainH(x,z)));}
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx;if(dep[a]<=0&&dep[a+1]<=0&&dep[b]<=0&&dep[b+1]<=0)continue;idx.push(a,b,a+1,b,b+1,a+1);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aDepth',new THREE.Float32BufferAttribute(dep,1));g.setIndex(idx);
- const m=new THREE.Mesh(g,SEA_MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The Ring Sea';m.renderOrder=1;m.frustumCulled=false;scene.add(m);})();
-TICKS.push(()=>SEAU.uCam.value.copy(camera.position));
-
-// ---------------------------------------------------------------- the streams (on the valleys' gravel beds)
-const STREAM_MAT=new THREE.MeshLambertMaterial({color:0x4a6a62,transparent:true,opacity:.85,side:THREE.DoubleSide});
-VALLEYS.forEach(V=>{const pos=[],idx=[];let prev=-1;
- for(let u=-1600;u<=3000;u+=6){const c=V.p+V.amp*Math.sin(u*V.f+V.ph),q=xzOf(u,c);if(Math.abs(q[0])>TERR.R*1.08||Math.abs(q[1])>TERR.R*1.08){prev=-1;continue;}
-  const L=streamLevel(u,V);if(L<=SEA+.2){prev=-1;continue;}const w=5+2*Math.sin(u*.03),a=xzOf(u,c-w),b=xzOf(u,c+w),n=pos.length/3;
-  pos.push(a[0],L,a[1],b[0],L,b[1]);if(prev>=0)idx.push(prev,prev+1,n,prev+1,n+1,n);prev=n;}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,STREAM_MAT);m.userData.probeSkip=true;m.userData.inspectLabel='A stream in a lahar valley';m.renderOrder=1;scene.add(m);});
-_onLight.push(m=>{const k=m==='night'?.16:1;SEAU.uBodyK.value=k;STREAM_MAT.color.setHex(m==='night'?0x101818:0x4a6a62);SEAU.uFogCol.value.copy(scene.fog.color);});
+// ---------------------------------------------------------------- the streams' water (the sea is 89w-host-sea.js)
+// 2026-10-20 (core/water migration, phase 3): the sea (a grid of 220 x 220 cells with its own wave shader and foam) and the streams (ribbons of
+// MeshLambertMaterial every 6 m) are core/water's now. Each stream's water, run by run (it ends where the bed falls under the sea), is a
+// WATER.flow along the valley's centre line at streamLevel every 10 m, as wide as the old ribbon (2 w, w = 5 + 2 sin); STREAM_FLOWS
+// and the sea are drawn by 89w-host-sea.js. waterH (47) is unchanged: the CPU twin the checks read.
+const STREAM_FLOWS=[];
+VALLEYS.forEach(V=>{let run=[];const flush=()=>{if(run.length>2){if(run[0][2]<run[run.length-1][2])run.reverse();STREAM_FLOWS.push(WATER.flow({name:'A stream in a lahar valley',pts:run,width:10,speed:1.6}));}run=[];};
+ for(let u=-1600;u<=3000;u+=10){const c=V.p+V.amp*Math.sin(u*V.f+V.ph),q=xzOf(u,c);if(Math.abs(q[0])>TERR.R*1.08||Math.abs(q[1])>TERR.R*1.08){flush();continue;}
+  const L=streamLevel(u,V);if(L<=SEA+.2){flush();continue;}run.push([q[0],q[1],L]);}
+ flush();});

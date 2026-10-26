@@ -64,7 +64,8 @@ The model's formula is 1.6 atm × e^(−h / 8 km), with oxygen at about 21%.
 | 10.9 km (the Throne's summit) | 0.41 atm | between La Rinconada and the top of Everest: climbable, not liveable |
 | 12.5 km | 0.33 atm | the top of Everest: the death zone for the unadapted |
 | ~15 km | 0.2 atm | blackout within minutes. The practical meaning of **airless** |
-| 17 km (the Godthrone) | 0.19 atm | blackout in about a minute |
+| 17 km (the Godthrone's flank) | 0.19 atm | blackout in about a minute |
+| 25 km (the Godthrone's caldera rim, 4.23) | 0.07 atm | far past the Armstrong limit: the rim is vacuum to the body |
 | 26 km | 0.06 atm | blood boils (the Armstrong limit) |
 
 The model's class O starts at 9 km. On the Throne that band is **the death zone**, not airless. "Airless" stays the

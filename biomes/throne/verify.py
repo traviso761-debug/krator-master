@@ -56,30 +56,32 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 EXPORT_SECTIONS = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
 EXPORT_STATIONS = {
     # station 1, the plume's edge: the rift's shoulder east of the default view (95 item sets, 7 buckets)
-    'throne.html': {'box': [-400, 40, -100, 340]},
+    'throne.html': {'box': [-400, 40, -100, 340], 'profile': EXPORT_SECTIONS + ['atmos']},
     # the kipuka (2): the old hyperjungle west of the skylight (42 sets, 8 buckets, 30k bucket triangles)
-    'throne-kipuka.html': {'box': [-240, -700, 60, -400]},
+    # 2026-10-20: moved from [-240,-700,60,-400] (the old hyperjungle west of the skylight, no stream) to the stream's reach at -570,-2139 (core/water: STREAM_FLOWS)
+    'throne-kipuka.html': {'box': [-720, -2300, -420, -2000], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the spice frontier (3): the terraces at the default view (20 sets, 3 buckets)
-    'throne-frontier.html': {'box': [-560, -400, -260, -100]},
+    'throne-frontier.html': {'box': [-900, -700, -260, -100], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},  # holds the stream of the first lahar valley (a surface of the water) and the old terraces
     # the geyser isle (4): the basin's crown, the richest cell of the scan (49 sets, 8 buckets, 24k instances)
-    'throne-isle.html': {'box': [-300, -300, 0, 0]},
+    'throne-isle.html': {'box': [-300, -300, 0, 0], 'profile': EXPORT_SECTIONS + ['atmos']},
     # the cloud forest (5): the elfin wood at the default view (41 sets, 6 buckets, 98k instances)
-    'throne-cloud.html': {'box': [-1720, 570, -1420, 870], 'only': True},
-    # the savanna (6): the gill-parasol wood at the default view (53 sets, 4 buckets)
-    'throne-savanna.html': {'box': [-1050, 350, -750, 650]},
+    'throne-cloud.html': {'box': [-1720, 570, -1420, 870], 'profile': EXPORT_SECTIONS + ['atmos']},
+    # the savanna (6): moved 2026-10-20 from the gill-parasol wood at the default view ([-1050,350,-750,650]) to a tile with a dry-season pool
+    # (core/water: a pool at -158,-271), so the water section has a surface to fill
+    'throne-savanna.html': {'box': [-310, -420, -10, -120], 'profile': EXPORT_SECTIONS + ['atmos', 'water']},
     # the ash desert (7): the dunes at the default view (110 sets, 4 buckets)
-    'throne-ash.html': {'box': [-350, 50, -50, 350], 'only': True},
+    'throne-ash.html': {'box': [-350, 50, -50, 350], 'profile': EXPORT_SECTIONS + ['atmos']},
     # vent country (8): the graben at the default view (104 sets, 3 buckets)
-    'throne-vents.html': {'box': [-330, -430, -30, -130], 'only': True},
+    'throne-vents.html': {'box': [-330, -430, -30, -130], 'profile': EXPORT_SECTIONS + ['atmos']},
     # the glacier (9): the glass willows by the outwash river, the richest cell of the scan (6 sets, 3 buckets)
-    'throne-glacier.html': {'box': [-1800, -600, -1500, -300], 'only': True},
+    'throne-glacier.html': {'box': [-1800, -600, -1500, -300], 'profile': EXPORT_SECTIONS + ['atmos']},
     # the caldera rim (10): the penitentes' plateau. No cell of its map holds a bucket (the kit's baked plain meshes are
     # trees; the summit has none, and the rim, the lake and the penitentes are the host's own or instanced), so buckets
     # may read empty here (4 sets, 139 instances)
-    'throne-caldera.html': {'box': [0, -1500, 300, -1200], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage'], 'only': True},
+    'throne-caldera.html': {'box': [0, -1500, 300, -1200], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage', 'atmos']},
     # the lava tube (11): the tube under the skylights at the default view (68 sets, 2 buckets); HEAT.render's shimmer
     # draws on the frame after the scene, so the stage's panorama and the terrain read ok
-    'throne-tube.html': {'box': [-320, -320, -20, -20]},
+    'throne-tube.html': {'box': [-320, -320, -20, -20], 'profile': EXPORT_SECTIONS + ['atmos']},
 }
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.

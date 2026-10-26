@@ -1,5 +1,20 @@
 {
  "name": "The south-flank savanna (station 6): tall grass, star aloes, gill-parasol woods, the braided lahar fan with its stilt parasols and boulders, a fresh burn, kopjes",
  "out": "throne-savanna.html",
- "core": []
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-8-export.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js"
+ ],
+ "atmosHost": true
 }

@@ -26,6 +26,25 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **The probes read a merged mesh's own sample points** (2026-10-23; the owner asked for it here). core/host's probe
+  (`core/host/95-host-probe.js`, `_probePoints`: 24 builds) samples a merged mesh by its box, and the Ancient Port kit's
+  (`settlements/port/src/91-probe.js`: port, Hook, Ys, the dam bed) by up to 3000 of its vertices; neither finds one small
+  piece among a thousand merged into one mesh, so a registered volume round each reads empty
+  (`registered-volumes-non-empty`). Two overlays work round it with a hidden `InstancedMesh` marker a piece, no triangles,
+  never drawn: the dam bed's flood debris (`biomes/dambasins/src/52-db-flotsam.js`) and the scablands' erratics
+  (`biomes/scablands/src/87-host-erratics.js`). The fix: both probes take `userData.probePoints` (a merged mesh's own
+  sample points, one a piece) when a mesh carries them; then those two set it and drop their markers, and their
+  KNOWN_ISSUES items close.
+- **core/host: a broad phase for the probe's `regOccupancy`** (2026-10-23; the owner asked for it here). It tests every
+  registered volume against every probe point (every instance, every mesh's box centre): 118 s of Rift's verify, all of
+  its invariants (`EFFICIENCY.md`, "Rift's checks, profiled"). Index the volumes by their circle (x, z, r) on
+  `core/space` (KSPACE, not a new hash) and call `has` only on the candidates near each point; every build's `regHas`
+  found is the same cylinder test as `inCyl`, so the counts stay the same (if one is not, keep the full loop for that
+  build). Reed Lake's own probe (`settlements/reedlake/src/91-probe.js`) buckets by z for reference. Prove it: the
+  `registered-volumes-non-empty` lines (counts and thinnest) unchanged on Rift, Hyperjungle, Sedesert, Iziz, Girder and
+  Yuni, and their wall times before and after written into `EFFICIENCY.md`. Do it with the probe-points item above (same
+  file). With it, try a smaller sky in `tools/harness.py` `check_profile` (`sky` 64, not 256: the stage capture is 37 s
+  of Rift's verify), kept only if every export-profile check still passes.
 - **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
   `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
   arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
@@ -42,6 +61,21 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
   Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
+
+- **The waiting cultures** (the owner, 2026-10-26; `kits/yeti/PLAN.md` section 11). The rebuild this list waits for: register
+  `khaayken`, `tungang`, `fellgang`, `talovolci`, `pylon` and `talia` in `core/tags/52-core-tags-vocab.js` (`CATALOG_CULTURES`
+  and `CULTURE_NAMES`, `test-tags.js`'s digest), lift `NO_CATALOG` for `jimjam` and `dalab` with their culture files, and merge
+  the weapon racks (`claude/weapon-racks`, 55c2913f7). It starts once at least two more kits wait on it beside the Yeti kit.
+
+- **kits/catalog: the missing fruit** (2026-10-26, from the kits' own lists). `krator-master-furniture-generic-fruit.js` has no
+  piece for the north basin's apple, walnut, apricot, pear, pomegranate, pistachio and almond (`kits/catalog/KNOWN_ISSUES.md`;
+  `biomes/nsemiarid` `FRUIT_NOT_DRAWN`) nor for Guilin's pomelo, osmanthus flowers and bamboo shoots (`biomes/guilin`
+  `FRUIT_NOT_DRAWN`). Small data pieces in one file; then set each species' `fruit` and empty the two lists. Pistachio and
+  almond go into `kits/crops` too.
+
+- **tools/check_core_use.py: refresh the baseline** (2026-10-26). It reports "252 findings, none new", and some of the 252
+  are already fixed: rerun with `--write-baseline` after the rebuild so the baseline holds only what is still open. No page
+  moves.
 
 - **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
   Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
@@ -64,6 +98,21 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   `core/walk`): leaves as plain records keyed by stable ids (hinge, width, swing, state, locked), open and close as
   plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
   host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
+
+## With the final biome rebuild *(the owner, 2026-10-26)*
+
+Work parked for the coming rebuild of every biome kit: do it there, rebuild each page once, rewrite each baseline once and on
+purpose. Take an item out when it is done.
+
+- **Rebuild the old fungoid flora on `BIO.fung`** (the owner, 2026-10-26). `core/biome/33-core-fungoid.js` (planned in
+  `biomes/outlands/PLAN.md` section 12, C2: `cap`, `bracket`, `bladder`, `pod`, `stalk`, `fringe`, `comb`, `tube`, `crust`)
+  replaces the copies each kit carries: `bracket()` in the swbay, nwbay, rift and hyperjungle `65-*-dress.js`; the Throne's
+  `cap`, `capTube` (`throne/src/55-biome-throne-trees.js`) and `bladders` (its floor file); swbay's `capTop`
+  (`swbay/src/55-biome-swbay-trees.js`); nhighlands' `mushrooms`/`discStalks`; the `crust` in ebadlands and ringisles; the
+  hyperjungle's `fungi`; the `stalk` in rift and xanadu trees. Each kit switches to the core parts, its own copy goes, and
+  its page is checked by eye against the old one before the baseline is rewritten (the shapes will move a little). Needs
+  the fragment built first (the Outlands' phase O3); the kits that read those fragments in place (Korona's stations, the
+  Throne's) follow automatically.
 
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
@@ -165,6 +214,34 @@ loads each build's `tex/` pack, which is WebP. What is left:
   best-looking one that appears to run downhill under gravity, leaves no gaps, fills where it should (basins,
   channels, pools) and stays out of where it should not (no water through floors, walls or banks). **[G shader]**
   for the surface, **[G data]** for where it fills.
+
+## Card sheets shown whole *(2026-10-23)*
+
+Most library cards are sheets (three by three plants, or an atlas of pieces). A page shows ONE of them when the slot in
+its `materials.json` names a `cell` (the pack carries it; `BIO.libSwap` and n semiarid's `libCard` window the texture
+to it) or when the page cuts it by hand (`libCell(..., CELL(i, j))`, or the geometry's UVs: Korona's `cellUV`). Miss
+both and every instance shows the whole sheet: n semiarid's steppe grass read as "a sheet of 9" and its maple keys flew
+as a sheet (the owner, 2026-10-23; fixed: its inline pack writer dropped `cell`). Korona's punji-pit lids show the whole
+`card.litter` atlas (`biomes/korona/KNOWN_ISSUES.md`). The library does not mark a card as a sheet, which is why nothing
+caught it.
+
+`python3 tools/textures/cell_audit.py [--list] [<build>]` lists, per build, the slots that take a sheet card with no
+`cell` (215 in 25 builds today) and how the build writes its pack. Each slot is a candidate, not a bug: open the page's
+code and see whether it cuts that slot by hand.
+
+- [ ] **Audit every candidate slot**, build by build, and give each a `cell` or a hand cut, or a note that the whole
+  sheet is meant (a crown card may want a cluster of nine sprays: n semiarid's aspen, blossom, broom, lobed and sage
+  crowns are such, unjudged). Biggest first: Throne 39, Crops 44 (it picks cells by code: check how), Korona 15,
+  Necanyons 15, Longsong 14, crater-drylands 12, ebadlands 10. Take one screenshot of each judged slot.
+- [ ] **The inline pack writers that drop `cell`**: crater-drylands, ebadlands, ehighlands, shighlands, oidong, Throne,
+  Zeijani and Girder each keep a `matlib_pack()` copied from ebadlands that leaves `cell` out of the pack, so a slot
+  given a `cell` in `materials.json` still shows the whole sheet. Nothing shows wrong today (their celled slots are cut
+  by hand, or not swapped in: ebadlands' `litter`), but it is a trap. Pass `cell` (n semiarid's `build.py`, one line),
+  or move them onto the shared `tools/textures/matlib_pack.py`, which keeps it. A page's hashes do not move unless a
+  celled slot reaches the page.
+- [ ] **Mark sheets in the library**: a `sheet: [3, 3]` (or the atlas's grid) in each sheet card's `meta.json` record,
+  written by `tools/textures/cards.py`, so `pack.py` can warn when a build packs a sheet with no `cell` and no
+  `"whole": true` saying it means it; `cell_audit.py` then reads the mark, not the source note's words.
 
 ## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
 

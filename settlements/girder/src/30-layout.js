@@ -227,6 +227,25 @@ function navEdge(a,b,kind,extra){
   NAV.edges.push(e); NAV.adj[a.id].push(e.id); NAV.adj[b.id].push(e.id); return e;
 }
 function navNearest(list, x, z){ var b=null, bd=1e9; list.forEach(function(n){ var d=Math.hypot(n.x-x,n.z-z); if(d<bd){bd=d;b=n;} }); return b; }
+/* does the segment a->b cross a field plot's or a house yard's fence (the plot's rectangle grown by 0.5 m: the fence and a walker's radius)? Liang-Barsky */
+function navCrossesPlot(ax,az,bx,bz){
+  var lots=PLOTS.concat(HOUSES);    /* a house's yard is fenced like a plot */
+  for(var i=0;i<lots.length;i++){ var p=lots[i], x0=p.x-p.w/2-0.5, x1=p.x+p.w/2+0.5, z0=p.z-p.d/2-0.5, z1=p.z+p.d/2+0.5, t0=0, t1=1, dx=bx-ax, dz=bz-az, ok=true;
+    [[-dx,ax-x0],[dx,x1-ax],[-dz,az-z0],[dz,z1-az]].forEach(function(c){ if(!ok) return;
+      if(Math.abs(c[0])<1e-9){ if(c[1]<0) ok=false; } else { var t=c[1]/c[0]; if(c[0]<0){ if(t>t1) ok=false; else if(t>t0) t0=t; } else { if(t<t0) ok=false; else if(t<t1) t1=t; } } });
+    if(ok && t0<t1) return true; }
+  return false;
+}
+/* a walk from an apron node outside a gate to the trunk (roads, patrol): the nearest trunk node that no plot's fence is in the way of; failing that
+   the way along the lane between the plots (the apron's own lane, either way) to a point with a clear run. Returns the trunk node and a waypoint or null. */
+function navLaneRoute(ap, trunk, lx, lz){
+  var best=null, bl=1e9;
+  function clearest(x,z){ var b=null, bd=1e9; trunk.forEach(function(n){ var d=Math.hypot(n.x-x,n.z-z); if(d<bd && !navCrossesPlot(x,z,n.x,n.z)){ bd=d; b=n; } }); return b ? [b,bd] : null; }
+  var c0=clearest(ap.x,ap.z); if(c0) return { to:c0[0], via:null };
+  [-1,1].forEach(function(sg){ for(var d=2; d<=90; d+=2){ var wx=ap.x+lx*sg*d, wz=ap.z+lz*sg*d; if(navCrossesPlot(ap.x,ap.z,wx,wz)) break;
+    var c=clearest(wx,wz); if(c && d+c[1]<bl){ bl=d+c[1]; best={ to:c[0], via:[wx,wz] }; } } });
+  return best || { to:navNearest(trunk,ap.x,ap.z), via:null };
+}
 var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
 (function(){
   /* --- roads: a node every ~12 m along each road, joined where roads meet --- */
@@ -259,14 +278,21 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
        road from running back along or through the fence */
     var ox=(Math.abs(p.x)>Math.abs(p.z)? -Math.sign(p.x):0), oz=(Math.abs(p.x)>Math.abs(p.z)?0:-Math.sign(p.z)),
         ap=navNode(e.x+ox*1.5, NAV_GY, e.z+oz*1.5, null,-2,'field');
-    navEdge(p.node,e,'ground'); navEdge(e,ap,'ground'); navEdge(ap,navNearest(trunk,ap.x,ap.z),'ground'); p.edge=e; });
+    navEdge(p.node,e,'ground'); navEdge(e,ap,'ground');
+    /* on to the road along the lane between the plots, not across a neighbour's fence */
+    var lr=navLaneRoute(ap, trunk, oz?1:0, ox?1:0), lp=ap;
+    if(lr.via){ lp=navNode(lr.via[0], NAV_GY, lr.via[1], null,-2,'field'); navEdge(ap,lp,'ground'); }
+    navEdge(lp,lr.to,'ground'); p.edge=e; });
   if(HOUSES.length && !HOUSES.some(function(h){ return h.kind==='longhouse'; })) HOUSES.slice().sort(function(a,b){ return b.w*b.d-a.w*a.d; })[0].kind='longhouse';
   HOUSES.forEach(function(h){ var nr=navNearest(NAVROAD,h.x,h.z), dx=nr.x-h.x, dz=nr.z-h.z;
     if(Math.abs(dx)>Math.abs(dz)){ h.ox=Math.sign(dx); h.oz=0; } else { h.ox=0; h.oz=Math.sign(dz); }
     h.door=navNode(h.x+h.ox*(h.w/2-3), NAV_GY, h.z+h.oz*(h.d/2-3), null,-2,'housedoor'); h.door.house=h.id;
     /* out through the yard's gate (the fence gap on the door side, 55-arch.js) before turning for the road */
     var ap=navNode(h.x+h.ox*(h.w/2+1.2), NAV_GY, h.z+h.oz*(h.d/2+1.2), null,-2,'housedoor');
-    navEdge(h.door,ap,'ground'); navEdge(ap,nr,'ground'); });
+    navEdge(h.door,ap,'ground');
+    var hr=navLaneRoute(ap, NAVROAD, h.oz?1:0, h.ox?1:0), hp=ap;
+    if(hr.via){ hp=navNode(hr.via[0], NAV_GY, hr.via[1], null,-2,'housedoor'); navEdge(ap,hp,'ground'); }
+    navEdge(hp,hr.to,'ground'); });
   STALLS.forEach(function(s){ s.node=navNode(s.x - Math.sin(s.ry)*0 + (-s.x/Math.hypot(s.x,s.z))*3, NAV_GY, s.z + (-s.z/Math.hypot(s.x,s.z))*3, null,-2,'market'); navEdge(s.node,navNearest(hring,s.x,s.z),'ground'); });
 
   /* --- towers --- */
@@ -309,7 +335,7 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
     /* the deck is notched 2.6 m round the lift shaft (83-walk.js, 50-structure.js): walk nodes in the notch step out
        to its outer side, where the deck carries on */
     var Lw=T.lift, lsx=Math.sign(Lw.x-T.x)||1;
-    walk.forEach(function(n){ if(Math.abs(n.x-Lw.x)<3.3 && Math.abs(n.z-Lw.z)<3.3) n.x=Lw.x+lsx*3.4; });
+    walk.forEach(function(n){ if(Math.abs(n.x-Lw.x)<3.3 && Math.abs(n.z-Lw.z)<3.3) n.x=Lw.x+lsx*3.0; });
     walk.forEach(function(n,i){ navEdge(n,walk[(i+1)%walk.length],'deck'); }); P.nav={ walk:walk };
     [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ navEdge(navNearest(walk,T.x+f[0]*dw,T.z+f[1]*dw), navNearest(T.nav.gallery[DECK_K],T.x+f[0]*GALLERY_WALK,T.z+f[1]*GALLERY_WALK),'deck'); });
     P.heads.forEach(function(h){ h.node=navNode(h.x,h.y,h.z,P,0,'bridgehead'); navEdge(h.node,navNearest(walk,h.x,h.z),'deck'); });

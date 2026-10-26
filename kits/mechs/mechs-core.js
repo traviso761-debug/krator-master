@@ -22,6 +22,7 @@
        key, name, culture,                culture: registered with MECH_CULTURE
        role, origin, lore,                what it does in the legion, what it was built as, one line of story
        tags: { class:'mech', type:[...], drive, crew, pilot, weapon:[...], setting, guild },
+       variantTags: [{ weapon: [...] }, ...]   (optional: per variant, merged over tags),
        variants, variantNames: [...],
        w, d, h,                           box in metres at rest (idle), banners and booms included
        data: { height, mass, crew, pilot, reach, weapon, ... },   (a sim reads it; speed comes from the gait)
@@ -58,13 +59,16 @@ const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility'
 const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
 const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle', 'none'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
-  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'none'];
+  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'none'];
 
 /* a culture: its palette goes into the catalog core's FPAL (inside this closure only), so F.col('orange')
    resolves against the mech's own culture */
 const MECH_CULTURES = {};
 function MECH_CULTURE(key, info) {
-  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '' };
+  MECH_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '', livery: info.livery || '',
+    /* detail: { tile, mix } a culture's own take on the shared detail maps: tile multiplies how often they repeat (a small,
+       sleek machine wants them finer), mix how strongly they show (0 none, 1 as the Iziz). Its mechs get a material set of their own. */
+    detail: info.detail || null };
   FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
 }
 
@@ -75,6 +79,7 @@ function MECH(o) {
   o.variants = o.variants || 1;
   o.variantNames = o.variantNames || [];
   o.variantData = o.variantData || [];
+  o.variantTags = o.variantTags || [];
   o.data = o.data || {};
   o.idle = Object.assign({ breathe: 0.025, scan: 0.12, look: 0.35 }, o.idle || {});
   o.anim = o.anim || {};
@@ -84,6 +89,8 @@ function MECH(o) {
 function mechAttack(A, v) { return (A.variantAttack && A.variantAttack[v || 0]) || A.attack || null; }
 /* the gait's ground speed: the stance foot travels one stride while the body passes over it */
 function mechSpeed(G) { return G ? G.stride / (G.duty * G.period) : 0; }
+/* the tags of one variant: the entry's tags with that variant's variantTags[v] keys (weapon, type, ...) replacing the mech's */
+function mechTags(A, v) { return JSON.parse(JSON.stringify(Object.assign({}, A.tags || {}, A.variantTags[v || 0] || {}))); }
 /* the data of one variant: the entry's data with that variant's overrides on top, plus what the gait implies */
 function mechData(A, v) {
   const d = Object.assign({}, A.data, A.variantData[v || 0] || {});

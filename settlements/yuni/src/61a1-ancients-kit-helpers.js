@@ -244,7 +244,7 @@ function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()
 function apron(parent,cx,cz,rIn,rOut,d,hIn){
  const wx=KOFF[0]+cx,wz=KOFF[2]+cz;
  mesh(gridSurface((u,v)=>{const th=u*TAU,r=lerp(rIn,rIn+(rOut-rIn)*APRK,v)*(1+.04*fbm(u*7,1.3,17,2));
-  const x=r*Math.cos(th),z=r*Math.sin(th);
+  let x=r*Math.cos(th),z=r*Math.sin(th);if(APRCLIP){const q=APRCLIP(cx+x,cz+z);x=q[0]-cx;z=q[1]-cz;}
   return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),
   d>0?MAT.mud:MAT.rock,parent,cx,0,cz);}
 function figures(gx,gz,n,spread){for(let i=0;i<n;i++){const x=gx+rr(-spread,spread),z=gz+rr(-spread,spread);const c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));

@@ -16,15 +16,15 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       and a piece added: 4 of 4 applied on load, the batched piece vetoed at draw, the interior pieces left out of their unit.
       Note: `fingerprint.json` itself already differed from this page before the change (batchTris 1,277,994 recorded); not
       rewritten here.
-- [ ] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker, feet on the ground; the page had no walk), G flies
-      to the pin (double-click to drop one), I is the hover tip (the old Inspector button), P marks, B edits, X cuts, M the map.
+- [x] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker, feet on the ground; the page had no walk), G flies
+      to the pin (double-click to drop one), I is the hover tip (the old Inspector button), P marks, B edits, X cuts, M the map. - 2026-10-20: description of the port, nothing open.
 - [ ] (2026-10-15) The editor moves, removes and places catalog pieces only. A piece the page was made with is merged into the
       furniture batch or its unit's interior drawing, so moving or removing it is marked and applies on reload
       (`53-furnish.js brfVetoed`, `57a-interiors.js piecesNow`); a placed piece is drawn on its own at once. An op on an interior
       piece waits until that unit's record is made (98-start.js `mStartEdits`). The interiors' own edit overlay (`MIX.edit`,
       kept in this browser) is separate from the host's log and is not offered in the editor.
-- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
-      buttons set the motion time the sky and the life layer advance by.
+- [x] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+      buttons set the motion time the sky and the life layer advance by. - 2026-10-20: description of the port, nothing open.
 - [ ] (2026-10-15) interiors-bake.json was stale before this change (kit cb8c15876eb8) and still is (57a changed again):
       rerun `python3 bake_interiors.py` (the page computes every unit itself meanwhile).
 

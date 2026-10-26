@@ -257,10 +257,15 @@ lathe({rFn, H, cut, jag, flutes, amp, sharp, twist, nu, nv, hole, seed})
 holeFn(d, seed, cut, scale, foot)  // the standard decay predicate; foot {y,h,k}
                                // (optional) eats k*d more below y+h, ramping in:
                                // a shell that thins toward its foot
+                               // `u` is multiplied by 4.5*scale inside (the noise frequency), so feed it arc length /
+                               // ~216 (a metre-scale u eats whole terraces); `y` is in metres (x0.028*scale)
 mesh(geo, mat, parent, x,y,z)  // the ONLY way to add a non-instanced mesh
 meshMerged(geos, mat, parent)  // many geometries -> one mesh, one draw call; keeps
                                // `color` when every input has one or mat.vertexColors
-beam(name, a, b, w, dp, c)     // a kit box stretched and aimed from a to b
+beam(name, a, b, w, dp, c)     // a kit box stretched and aimed from a to b. `w` is the section's DEPTH,
+                               // not its width: kput scale [w, L, dp] on a shortest-arc turn from +Y, which carries
+                               // local X onto the vertical for a horizontal beam (so `dp` is how wide it reads). For
+                               // a flat section with a known roll use rbeam
 rbeam(name, a, b, w, dp, c)    // the same with its ROLL fixed: w in the vertical
                                // plane through the beam, dp horizontal (struts, spokes)
 moulding(profile, path, opt)   // a section swept along a path in a wall -> geometry

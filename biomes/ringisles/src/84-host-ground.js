@@ -141,8 +141,6 @@ const GROUND=(function(){const inP=(a,b,c,d)=>PATCHES.some(P=>a>=P.x0-.01&&b>=P.
 _mark('ground');
 
 // ---------------------------------------------------------------- the small waters: the tide pools and the brine pools
-const MAT_POOL=new THREE.MeshLambertMaterial({color:0x4a7a78,transparent:true,opacity:.55,depthWrite:false,emissive:0x0a1a18});
-const MAT_BRINE=new THREE.MeshLambertMaterial({color:0xc8a8a0,transparent:true,opacity:.7,depthWrite:false,emissive:0x1a1010});
-POOLS.concat(BRINE).forEach((P,i)=>{const m=new THREE.Mesh(new THREE.CircleGeometry(P.r*1.02,24).rotateX(-Math.PI/2),i<POOLS.length?MAT_POOL:MAT_BRINE);
- m.position.set(P.x,P.level,P.z);m.renderOrder=2;m.userData.probeSkip=true;m.userData.inspectLabel=i<POOLS.length?'A tide pool':'A brine pool (pink with its algae: the salt works\' first pans)';scene.add(m);});
-_onLight.push(m=>{MAT_POOL.emissive.setHex(m==='night'?0x020404:0x0a1a18);MAT_BRINE.emissive.setHex(m==='night'?0x040202:0x1a1010);});
+// 2026-10-20 (core/water migration, phase 3): each pool is a WATER.still disc at its own level (before, a MeshLambertMaterial disc of 24 segments each), drawn by
+// 89w-host-sea.js (the tide pools .55 teal, the brine pools .7 pink, as before; the sky in them; night darker)
+const POOL_STILLS=POOLS.concat(BRINE).map((P,i)=>WATER.still({name:i<POOLS.length?'A tide pool':'A brine pool',level:P.level,poly:Array.from({length:24},(_,k)=>{const a=k/24*TAU;return[P.x+Math.cos(a)*P.r*1.02,P.z+Math.sin(a)*P.r*1.02];})}));

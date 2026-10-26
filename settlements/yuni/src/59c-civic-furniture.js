@@ -102,8 +102,8 @@
       F.box(0,0.55,0, 1.70,0.08,0.58, 0, PLANKC[2], 'plank'); F.box(0,1.25,0, 1.74,0.09,0.62, 0, PLANKC[0], 'plank');
       var n=F.variant?6:4;
       for(var i=0;i<n;i++){ var lx=(i-(n-1)/2)*(1.5/n), lo=i%2;
-        F.cyl(lx,0.63+lo*0.0,0, 0.14,0.58, [0,0,PI/2], F.pick(CLOTHC), 'cloth');
-        F.cyl(lx,0.10,0, 0.13,0.52, [0,0,PI/2], F.pick(CLOTHC), 'cloth'); }
+        F.cyl(lx+0.29,0.63+lo*0.0,0, 0.14,0.58, [0,0,PI/2], F.pick(CLOTHC), 'cloth');
+        F.cyl(lx+0.26,0.10,0, 0.13,0.52, [0,0,PI/2], F.pick(CLOTHC), 'cloth'); }
       if(F.variant===1) F.lathe('thatch', 0.55,0, [[0.24,1.34],[0.30,1.52],[0.26,1.66]], THATCHC[1], { seg:10 }); } });
 
   /* place a registered piece from inside an ASSET's local frame */

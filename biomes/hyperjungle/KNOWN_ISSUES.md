@@ -38,8 +38,8 @@ Read before changing anything here. `build.py` prints the open count.
       a wide orbit can clip a crown. No predators, nothing lands.
 - [ ] Wings and legs move in the vertex shader but their lighting normals do not
       follow the hinge, so a flapping wing does not brighten and darken.
-- [ ] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
-      and arctic biomes are to be written against the same core.
+- [x] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
+      and arctic biomes are to be written against the same core. - 2026-10-20: stale; other biome kits exist now (see INDEX.md), nothing open.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): gatepod (baobab pods), mahogany nut (capsules), silkpod
       (the kapok's burst silk pods, 'bloom' items in the silk colour), pandan keys. Harvest tags on the six species
       (`HYPERJUNGLE.HARVEST`) and four understorey plants (`HYPERJUNGLE.PLANTS`: screwpine, tree fern, ginger, bromeliad);
@@ -72,7 +72,7 @@ Read before changing anything here. `build.py` prints the open count.
       build time and split at the quantiles for the target shares (six species).
 - [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
       on the same contract, with 35-core-anim as the one core extension.
-- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
+- [x] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
 - [x] The screwpine's second-head stem rendered nearly white (an untextured rod given the textured trunk's tint): fixed
       2026-10-06 (60, `screwpine`).
 - [x] **The hypertrees' limbs and the dead wood kept their painted canvases** beside the library's bark (the owner, from Dhelv:
@@ -83,3 +83,9 @@ Read before changing anything here. `build.py` prints the open count.
 ## Export profile: sections left out (2026-10-18)
 
 EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
+
+2026-10-20: `atmos` is now bound and in the profile (migration phase 0: `89a-host-atmos.js` calls `ATMOS.bindHost`, build.py lists core/atmos's core, presets, export, waves and skylight plus `core/atmos/host/89-atmos-c-hostbind.js`; the binding alone draws nothing, and the page's own sky, fog, sun and water are unchanged). `water` waits for its phase: no core/water surface is drawn here yet.
+
+2026-10-20: checked, nothing to wire. This page binds neither core/atmos nor core/water (its water, where it has any, is the host's own MAT_WATER shader), so there is nothing for the two sections to export and both stay out of the profile. The shared pieces are in place for the day it does: core/export's adapters (`09`) fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and a kit that binds core/atmos lists `89-atmos-8-export.js` in its `CORE_ATMOS` and adds `atmos` to `EXPORT_PROFILE` (geyser, ringisles, sedesert, the Throne's stations).
+
+2026-10-20 (migration phase 2): `water` is now in the profile, and the earlier "checked, nothing to wire" note above is out of date. The brook is core/water's: `BROOK = WATER.flow(...)` in `45-host-stage.js` (a polyline down 90 sin(z .0012) every 40 m, y = bed + .35 exactly, so it equals `BIO.waterH`, which is unchanged, as is `terrainH`), drawn by `WATER.drawFlow` in `89w-host-water.js` (18 m wide, a metre under each bank, ripples carried down the current, white on riffles and along the banks, the sky from `ATMOS.skylight` on a capture of the dome and giant given to the water only), replacing the static MeshStandardMaterial ribbon. `build.py` lists `CORE_WATER` (20, 21, 22, 50, 51) by path. Cost, the brook view `--cam 40,30,-90,0,0,0`: 3,938,285 -> 3,940,925 triangles (+2,640: 180 rows of 8; the old ribbon was 240), 54 -> 54 draw calls; the scene stays far under both ceilings (11 M and 140). EXPORT_BOX moved from [-600,-300,-300,0] to [-150,-300,150,0] so the box holds the brook (the old one lay 300 m west of it); the profile still passes (registry through water, 9 of 9). Look: the new ribbon reads deeper green than the old one, which a lit standard material washed to pale aqua; wherever the bed falls steeper than 1.2% over a line segment the flow shader whitens it (a riffle), which the old flat ribbon never showed. Not a gap: the surface rises and falls with the bed (a brook on a rolling floor, as `waterH` always said), where a river would be a monotone line.

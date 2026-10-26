@@ -91,10 +91,16 @@ const HCHK={
  cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
   return{ok:!bad.length,detail:bad.length?bad.length+' plants on sheer rock (first '+EHIGH.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' plants, none on a sheer face'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.3);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
+/* species and plants that yield something edible the kit has no catalog fruit for: named, not hidden (biomes/FRUIT.md); none since 2026-10-20 */
+const FRUIT_NOT_DRAWN=['thorn'];   /* the thorn cushion's edible part is its flowers (tea), not a fruit: no catalog piece wanted */
+/* fruit: every edible species and plant names a catalog piece (the pieces are catalogued, not drawn on the stage) */
+HCHK.fruit=(SP,PL)=>{const id=x=>x.key||x.name,miss=SP.concat(PL).filter(x=>x.tags.harvest&&x.tags.harvest.edible.length&&!x.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(id(x))<0).map(id),untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id);
+ return{ok:!miss.length&&!untagged.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+'catalog keys: '+EHIGH.FRUIT_KEYS.join(', ')};};
 const T5=()=>EHIGH.TREES.filter(t=>t.sp===SPI('glasstower'));
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),b=window._biome||{};
  add('every species placed',HCHK.placed(EHIGH.COUNTS||[]));
  add('every species tagged',HCHK.tagged(EHIGH.SPECIES));
+ add('fruit tagged and catalogued',HCHK.fruit(EHIGH.SPECIES,Object.values(EHIGH.PLANTS)));
  add('every plant grows toward the giant',HCHK.lean(EHIGH.TREES,EHIGH.GIANT));
  add('the vigil spikes in every stage',HCHK.vigil(EHIGH.TREES.filter(t=>t.sp===SPI('vigil')&&t.lv>0)));
  add('the glass towers\' chemistry drawn',HCHK.chemistry(EHIGH.WICKS||[],EHIGH.COMBS||[],T5()));
@@ -111,6 +117,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a plateau where no stand flowers',HCHK.vigil(EHIGH.TREES.filter(t=>t.sp===SPI('vigil')&&t.lv>0&&t.stage!=='flower')));
  add('a wormwick far from any tower',HCHK.chemistry((EHIGH.WICKS||[]).concat([[TORS[2].x,TORS[2].z]]),EHIGH.COMBS||[],T5()));
  add('no Mother',HCHK.mother(0));
+ add('a fruiting species with no catalog fruit',HCHK.fruit(EHIGH.SPECIES.map(S=>S.key==='cereus'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),Object.values(EHIGH.PLANTS)));
  add('a plant on the tarn bed',HCHK.dry([[TARN.x,TARNL-3,TARN.z,'test']]));
  // the steepest rock on the west gully's walls (found, not typed)
  {let bx=0,bz=0,bs=-1;const G=GULLY[0];for(let z=zF(G.x0)+100;z<=zF(G.x0)+900;z+=4)for(let x=xg(G,z)-90;x<=xg(G,z)+90;x+=4){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}

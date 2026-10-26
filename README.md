@@ -1,6 +1,30 @@
 Note for all builds: when creating new flora or fauna, tag by biome (arid/mild/wet, hypertropic/tropic/temperate/cold, abyssal vs non, riparian vs non vs both), and harvestability/edibility. If making new flora to be part of a park or compound, don’t make it part of the building: make it a separate plant, with tags, then place it - if making a new building set without any biome specified, make a placeholder and expect it to be replaced later. When making furniture, tag by culture and type (table, chair etc); include outdoor furniture and decorations (fountains, statues, benches etc) as furniture for this purpose, tagged indoor, outdoor, or both. When making buildings, tag by culture, type (civic, market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family dwelling, infrastructure, religious, funerary; buildings can have more than one tag eg a funerary temple would be funerary+religious). Keep dependencies as segregated as possible; the idea is it should be easy to swap in one culture's buildings or one biome’s flora without affecting anything else.  Modular is better! It should be as easy as possible for an agent to identify what components need to be exported to place an object in a different artifact.
 
-Write code with an eye to an eventual port to Godot. We want new builds to reference core modules as much as possible rather than building bespoke systems for each build.
+Write code with an eye to an eventual port to Godot.
+
+**CORE MODULES ARE NOT OPTIONAL** (a build that needs something `core/` already is takes the module; it does not write its own, copy it, or leave a "temporary" stand-in.  The rule is easy to drop halfway through a long session: re-read this table before each new fragment, and run the check at the end.)
+- **Before the first fragment**, write a `Core adoption` section in the build's `PLAN.md`: the modules the build takes (by name) and, for each module it does not, one line of reason. Start `build.py` from the nearest finished build of the same kind, not from a blank file: a biome from `biomes/swbay` (atmos host binding, water on `core/water`, fruit, tags, the export profile) or `biomes/nhighlands`; a Throne-style station set from `biomes/throne`; a settlement from `settlements/pinnacle-rock` or `settlements/isle-demo` (`CORE-ADOPTION.md` has every build's checklist).
+- **Before each new fragment**, ask whether a core module covers it, and read the table before you write it:
+
+  | You need | Take |
+  |---|---|
+  | randomness, a seed, a hash of (world, cell, index, salt) | `core/rand` (`KRAND`): never `Math.random`, a hand-rolled PRNG or `fract(sin())` |
+  | height, relief, strata, noise, rivers on the ground | `core/terrain` (and the scale model's fields), not your own `fbm` or `terrainH` |
+  | what is where, overlap tests, occupancy | `core/space` (`KSPACE`), `core/mask` (`KMASK.canvas`); never `getImageData` for placement |
+  | sky, sun, fog, light, weather, cloud deck, the wave field | `core/atmos` (`ATMOS.bindHost` from `core/atmos/host`), the standard skybox plus local detail |
+  | the sea, a lake, a river, a fall, a pool, a hot spring, a geyser | `core/water` (open, shore, flow, fall, still, spring, geyser, terraces): no `MAT_WATER`, no ripple shader of your own |
+  | camera, viewer, inspector, polygon tool, walk keys, probe, cut-away | `core/host` (`KHOST`), `core/walk`: do not write a camera or a probe |
+  | records, tags, names, vocabulary | `core/tags` (`KTAGS`); everything placed is registered before it is drawn |
+  | furniture and interiors | `kits/catalog` through `core/furnish`, with `kits/interiors` for rooms |
+  | streets, lots, a town | `core/city`; a village or camp: `core/hamlet`; people and time: `core/simulation`, `core/sched`, `core/clock` |
+  | flora, fauna, biome zones | `core/biome` and the biome kits (`kits/fauna`, `kits/crops`); new species go into the kit, not the page |
+  | surfaces and textures | `core/materials` (the library through `materials.json` and `tools/textures/pack.py`) |
+  | export, LOD, minimap | `core/export`, `core/lod`, `core/minimap` |
+
+- **If core lacks it, stop and say so.** Add the piece to core (an opt-in subfolder if builds that pool the folder would change: `core/water/geyser`, `core/atmos/host`) or ask; do not write a bespoke one in the build, and never leave a vendored copy of a core fragment.
+- **A check enforces it.** `python3 tools/check_core_use.py` (a step of `tools/test_all.py`) fails on a build that does not list the core modules its kind needs, or whose own fragments write a PRNG, a `fract(sin())` hash, a value noise, `getImageData`, `MAT_WATER =` or a sky dome. It compares with `tools/core_use_baseline.json` (today's findings), so old code passes and new code cannot add to the pile. A deliberate exception is a line in the script with its reason: `NOT_APPLICABLE` (a module a build cannot use), `PLACED` (settlements already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the sky and water rules apply to them and they are rebuilt when the biome files change; every other settlement is left alone until it is placed), and `SINGLE_COMPLEX` / `CAVERN` (Longsong, Dhelv: exempt from "takes `core/simulation` therefore takes `core/city`" until `core/city` has a single-complex mode and a cavern setting). Run it before you say a build is done.
+
+We want new builds to reference core modules as much as possible rather than building bespoke systems for each build.
 
 When placing streets, paths, and highways, make sure they connect to existing network unless otherwise specified. Ask if unclear.
 By default, builds should use the standard Krator skybox with gas giant and sun, +/- relevant local details (distant mountains and volcano position, etc). This will eventually be replaced with a more fully rendered open world.

@@ -26,7 +26,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|
 | `mechs-core.js` | [draw] | split: MECH, the vocabularies, `mechData` and the rig records are [G data]; the frame and the merge draw |
 | `mechs-parts.js` | [draw] | |
-| `krator-mechs-iziz*.js` | [draw] | split: each entry's tags, data, gait, idle and attack keys are [G data] (a sim reads them); `build` draws |
+| `krator-mechs-iziz*.js`, `krator-mechs-stalker*.js` | [draw] | split: each entry's tags, data, gait, idle and attack keys are [G data] (a sim reads them); `build` draws |
 | `mechs-runtime.js` | [draw] | the pose layers, the stepping and the two-bone IK are engine-neutral maths on bone transforms; the detail-map shader hook is [G shader] (triplanar is native in StandardMaterial3D); the banner painter is canvas |
 | `mech_bundle.py`, `build.py`, `verify.py` | [web] | tooling |
 

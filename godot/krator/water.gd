@@ -51,9 +51,16 @@ var t_fall := 0.0
 var lip_w := 0.0
 var plunge_at_rec = null
 var curtain_opt: Dictionary = {}
-# still: a level over a box or a polygon, a fountain [x, z] or null
+# still: a level over a box or a polygon, a fountain [x, z] or null; gradient {centre, rim, power, at, radius} or null (2026-10-21)
 var poly = null
 var fountain = null
+var gradient = null
+# flow: this flow's own rapids band [lo, hi] or null (the preset's); fall: the chute's foot [x, z, y] and the run to it (null / 0); open: a tint field
+# {x0, z0, cell, nx, nz, data} (premultiplied RGBA bytes) or null (2026-10-21: core/water's gap options, each absent from a record that does not use it)
+var rapids = null
+var foot = null
+var run := 0.0
+var tint = null
 const G := 9.81
 
 
@@ -82,6 +89,7 @@ static func from_record(r: Dictionary, sec: Dictionary, atm: Object = null) -> K
 			w.pts.append({"x": float(p[0]), "z": float(p[1]), "y": float(p[2]), "slope": float(p[3]), "w": float(p[4]), "v": float(p[5])})
 		if r.get("ribbon") is Dictionary:
 			w.ribbon_opt = r["ribbon"]
+		w.rapids = r.get("rapids")
 		return w
 	if w.kind == "fall":
 		w.lip = r["lip"]
@@ -94,6 +102,8 @@ static func from_record(r: Dictionary, sec: Dictionary, atm: Object = null) -> K
 		var b: Array = w.lip[w.lip.size() - 1]
 		w.lip_w = sqrt((float(b[0]) - float(a[0])) ** 2 + (float(b[1]) - float(a[1])) ** 2)
 		w.plunge_at_rec = r.get("plunge")
+		w.foot = r.get("foot")
+		w.run = float(r.get("run", 0.0))
 		if r.get("curtain") is Dictionary:
 			w.curtain_opt = r["curtain"]
 		return w
@@ -102,6 +112,7 @@ static func from_record(r: Dictionary, sec: Dictionary, atm: Object = null) -> K
 		w.bounds = r.get("bounds")
 		w.poly = r.get("poly")
 		w.fountain = r.get("fountain")
+		w.gradient = r.get("gradient")
 		return w
 	w.level = r.get("level")
 	w.base = float(r.get("base", 0.0))
@@ -123,6 +134,10 @@ static func from_record(r: Dictionary, sec: Dictionary, atm: Object = null) -> K
 		var b: Dictionary = r["bed"]
 		w.bed = {"x0": float(b["x0"]), "z0": float(b["z0"]), "cell": float(b["cell"]), "nx": int(b["nx"]), "nz": int(b["nz"]),
 			"level": float(b["level"]), "data": Marshalls.base64_to_raw(str(b["bytes"]["b64"]))}
+	if r.get("tint") is Dictionary and (r["tint"] as Dictionary).has("bytes"):
+		var tn: Dictionary = r["tint"]
+		w.tint = {"x0": float(tn["x0"]), "z0": float(tn["z0"]), "cell": float(tn["cell"]), "nx": int(tn["nx"]), "nz": int(tn["nz"]),
+			"data": Marshalls.base64_to_raw(str(tn["bytes"]["b64"]))}
 	return w
 
 
@@ -557,7 +572,29 @@ static func shore_grid(ground: PackedFloat64Array, nx: int, nz: int, x0: float, 
 		q.resize(n)
 		var h := 0
 		var t := 0
-		for p in seeds:
+		# EDGE seeds (WATER.shoreGrid's seeds: 'edge' or {edge: true, depth, sides, points}): the cells on the box's rim at least `depth` m (2)
+		# under the level, on `sides` ('wesn'), then any `points`
+		var edge = null
+		if seeds is String and str(seeds) == "edge":
+			edge = {}
+		elif seeds is Dictionary and (seeds as Dictionary).get("edge"):
+			edge = seeds
+		var plist: Array = []
+		if edge != null:
+			var dm: float = float(edge.get("depth", 2.0))
+			var sd: String = str(edge.get("sides", "wesn"))
+			for j in nz:
+				for i in nx:
+					var on_edge: bool = (i == 0 and "w" in sd) or (i == nx - 1 and "e" in sd) or (j == 0 and "n" in sd) or (j == nz - 1 and "s" in sd)
+					var k0 := j * nx + i
+					if on_edge and level - ground[k0] >= dm and below[k0] and not wet[k0]:
+						wet[k0] = 1
+						q[t] = k0
+						t += 1
+			plist = edge.get("points", [])
+		else:
+			plist = seeds
+		for p in plist:
 			var i := int(floor((float(p[0]) - x0) / cell))
 			var j := int(floor((float(p[1]) - z0) / cell))
 			if i >= 0 and j >= 0 and i < nx and j < nz:
@@ -768,6 +805,7 @@ func _rip_grad(qx: float, qz: float, cx: float, cz: float, R: Array, g: PackedFl
 # the advected normal (WATER.flowNormal)
 func flow_normal(x: float, z: float, vx: float, vz: float, slope: float, t: float) -> PackedFloat64Array:
 	var Q := _flow_p()
+	var RP: Array = rapids if rapids is Array else Q["rapids"]
 	var R: Array = Q["ripple"]
 	var P := flow_phase(t)
 	var v := sqrt(vx * vx + vz * vz)
@@ -777,7 +815,7 @@ func flow_normal(x: float, z: float, vx: float, vz: float, slope: float, t: floa
 	var l0 := float(R[0][1])
 	var g1 := _rip_grad(x - vx * P[1] * P[2] + 0.37 * l0, z - vz * P[1] * P[2] + 0.61 * l0, cx, cz, R, PackedFloat64Array([0.0, 0.0]))
 	var w0 := 1.0 - absf(2.0 * P[0] - 1.0)
-	var k := 1.0 + float(Q["rapidGain"]) * _ss(float(Q["rapids"][0]), float(Q["rapids"][1]), slope)
+	var k := 1.0 + float(Q["rapidGain"]) * _ss(float(RP[0]), float(RP[1]), slope)
 	var sx := (g0[0] * w0 + g1[0] * (1.0 - w0)) * k
 	var sz := (g0[1] * w0 + g1[1] * (1.0 - w0)) * k
 	var l := sqrt(sx * sx + 1.0 + sz * sz)
@@ -786,7 +824,8 @@ func flow_normal(x: float, z: float, vx: float, vz: float, slope: float, t: floa
 
 func flow_foam(slope: float, bank: float) -> float:
 	var Q := _flow_p()
-	return maxf(float(Q["foam"][0]) * _ss(float(Q["rapids"][0]), float(Q["rapids"][1]), slope), float(Q["foam"][1]) * (1.0 - _ss(0.0, float(Q["edge"]), bank)))
+	var RP: Array = rapids if rapids is Array else Q["rapids"]
+	return maxf(float(Q["foam"][0]) * _ss(float(RP[0]), float(RP[1]), slope), float(Q["foam"][1]) * (1.0 - _ss(0.0, float(Q["edge"]), bank)))
 
 
 # ================================================================ Phase 3: falls
@@ -931,6 +970,43 @@ func still_normal(x: float, z: float, t: float) -> PackedFloat64Array:
 	return PackedFloat64Array([-sx / l, 1.0 / l, -sz / l])
 
 
+# a still pool's gradient (S.gradientT): 0 at the middle, 1 at the rim, (distance / radius)^power clamped; 0 without one
+func gradient_t(x: float, z: float) -> float:
+	if not (gradient is Dictionary):
+		return 0.0
+	var g: Dictionary = gradient
+	var d := sqrt((x - float(g["at"][0])) ** 2 + (z - float(g["at"][1])) ** 2)
+	return pow(clampf(d / float(g["radius"]), 0.0, 1.0), float(g["power"]))
+
+
+# an open surface's tint field (S.tintAt): premultiplied [r, g, b, a], the bytes bilinear over the cell centres (clamped), zero outside its box
+func tint_at(x: float, z: float) -> PackedFloat64Array:
+	var out := PackedFloat64Array([0.0, 0.0, 0.0, 0.0])
+	if not (tint is Dictionary):
+		return out
+	var M: Dictionary = tint
+	var u: float = (x - float(M["x0"])) / (float(M["cell"]) * float(M["nx"]))
+	var v: float = (z - float(M["z0"])) / (float(M["cell"]) * float(M["nz"]))
+	if u < 0.0 or v < 0.0 or u > 1.0 or v > 1.0:
+		return out
+	var nx: int = int(M["nx"])
+	var nz: int = int(M["nz"])
+	var fx: float = u * nx - 0.5
+	var fz: float = v * nz - 0.5
+	var i0 := int(floor(fx))
+	var j0 := int(floor(fz))
+	var ax := fx - i0
+	var az := fz - j0
+	var d: PackedByteArray = M["data"]
+	for k in 4:
+		var c00 := float(d[(clampi(j0, 0, nz - 1) * nx + clampi(i0, 0, nx - 1)) * 4 + k]) / 255.0
+		var c10 := float(d[(clampi(j0, 0, nz - 1) * nx + clampi(i0 + 1, 0, nx - 1)) * 4 + k]) / 255.0
+		var c01 := float(d[(clampi(j0 + 1, 0, nz - 1) * nx + clampi(i0, 0, nx - 1)) * 4 + k]) / 255.0
+		var c11 := float(d[(clampi(j0 + 1, 0, nz - 1) * nx + clampi(i0 + 1, 0, nx - 1)) * 4 + k]) / 255.0
+		out[k] = (c00 * (1.0 - ax) + c10 * ax) * (1.0 - az) + (c01 * (1.0 - ax) + c11 * ax) * az
+	return out
+
+
 # any kind's height at (x, z): open (its twin), flow (the line's), still (the level); null for a fall
 func height(x: float, z: float, t: float):
 	if kind == "flow":
@@ -957,8 +1033,9 @@ func kind_uniforms() -> Dictionary:
 			else:
 				rip.append(Vector4.ZERO)
 		var n := float(Q["phases"])
+		var RP: Array = rapids if rapids is Array else Q["rapids"]
 		u = {"wk_rip_n": mini(R.size(), 4), "wk_rip": rip, "wk_flow_t": Vector4(n / period, period / n, 0.37 * float(R[0][1]), 0.61 * float(R[0][1])),
-			"wk_flow_r": Vector4(float(Q["rapids"][0]), float(Q["rapids"][1]), float(Q["rapidGain"]), float(Q["edge"])),
+			"wk_flow_r": Vector4(float(RP[0]), float(RP[1]), float(Q["rapidGain"]), float(Q["edge"])),
 			"wk_flow_f": Vector2(float(Q["foam"][0]), float(Q["foam"][1]))}
 	elif kind == "fall":
 		var Q := _fall_p()

@@ -46,10 +46,14 @@ function ANC_build(type, F, decay, scale, opt){
   var qW=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), (F?F.ry:0)+yaw0);
   if(F) ANCK.setTH(function(x,z){ _av.set(x,0,z).applyMatrix4(MW); return (WORLD_TH(_av.x,_av.z)-F.y)/scale; }); else ANCK.setTH(null);
   ANCK.setRSC(1/scale); ANCK.setSeg(opt.segk||0.5, opt.thin||1, opt.thinNames, opt.uvk||1); ANCK.setWorn(!!opt.worn); ANCK.setDish(!!opt.dishWhole); ANCK.setTight(!!opt.tight);
+  /* 2026-10-20: the kit's graded aprons are clamped to the plot: a skirt vertex (kit units) is taken to F-local, pulled inside the footprint, and brought back */
+  if(opt.fw&&opt.fd){ var cy0=Math.cos(yaw0), sy0=Math.sin(yaw0), ax=opt.fw/2-0.3, az=opt.fd/2-0.3;
+    ANCK.setApronClip(function(kx,kz){ var dx=kx-cx, dz=kz-cz, fx=scale*(cy0*dx+sy0*dz), fz=scale*(-sy0*dx+cy0*dz); fx=Math.max(-ax,Math.min(ax,fx)); fz=Math.max(-az,Math.min(az,fz));
+      return [cx+(cy0*fx-sy0*fz)/scale, cz+(sy0*fx+cy0*fz)/scale]; }); }
   var lens0=ancItemLens(), holder=new THREE.Group(), key=opt.key||type, G=null;
   ANCK.TSTAT.by[key]=null; ANCK.TSTAT.cur=key; ANCK.setHoles(opt.holes!=null?opt.holes:(decay===3?0.55:1));
   try{ G=fn(holder,0,0,bd); if(G && rep) ANCK.repair(G, scale); if(G && opt.weather){ ANCK.rust(G, scale, lens0); ANCK.weather(G, scale, opt.plants||0); } }catch(e){ ERR('ancients '+type+': '+(e&&e.stack||e)); }
-  ANCK.setHoles(1); ANCK.setWorn(false); ANCK.setDish(false); ANCK.setTight(false); ANCK.TSTAT.cur=null; ANCK.setTH(null); ANCK.resetXF();
+  ANCK.setHoles(1); ANCK.setWorn(false); ANCK.setDish(false); ANCK.setTight(false); ANCK.setApronClip(null); ANCK.TSTAT.cur=null; ANCK.setTH(null); ANCK.resetXF();
   if(!G) return null;
   var walls = (F && opt.walls) ? ancWallSamples(G, opt.walls, 16/scale, F.rnd).map(function(s){ _av.set(s[0],s[1],s[2]).applyMatrix4(ML); var c=Math.cos(yaw0), sn=Math.sin(yaw0); return [_av.x,_av.y,_av.z, s[3]*c+s[4]*sn, -s[3]*sn+s[4]*c]; }).filter(function(s){ return Math.abs(s[0])<(opt.fw||1e9)/2 && Math.abs(s[2])<(opt.fd||1e9)/2; }) : [];
   /* meshes: measure, cull, queue */

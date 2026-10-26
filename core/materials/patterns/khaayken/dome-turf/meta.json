@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.874,
+    0.861
+   ],
+   "seam_before": [
+    1.753,
+    1.712
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "turf",
+  "id": "khaayken/dome-turf",
+  "mapping": "crown",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.95,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "dome-turf.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; magenta corners and vent filled from the disc's edge, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 23)",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/dome-turf).",
+  "reuse": "one sod-roofed dome mapped from its crown: Yeti summer caps, stone houses' turf; any sod dome or mound",
+  "sha1": "c53a08e690a9a2271c67b78f8aacad3f7326ea9e"
+ }
+}

@@ -60,14 +60,22 @@
  const ripGrad=(qx,qz,cx,cz,R,g)=>{for(const r of R){const a=r[2]*Math.PI/180,dx=cx*Math.cos(a)-cz*Math.sin(a),dz=cz*Math.cos(a)+cx*Math.sin(a),c=Math.cos((qx*dx+qz*dz)*(TAU/r[1]))*r[0];g[0]+=c*dx;g[1]+=c*dz;}};
  // the two phases: each copy of the pattern carried downstream for T = period/phases s, faded in and out
  W.flowPhase=t=>{const n=PF().phases,ph=fr(t*n/W.period());return[ph,fr(ph+.5),W.period()/n];};
- W.flowNormal=(x,z,vx,vz,slope,t)=>{const Q=PF(),R=Q.ripple,[p0,p1,T]=W.flowPhase(t),v=Math.hypot(vx,vz),cx=v>1e-6?vx/v:1,cz=v>1e-6?vz/v:0,
+ // rap [lo, hi]: the flow's own white-water band on the slope (S.rapids; default PRESETS.flow.rapids)
+ W.flowNormal=(x,z,vx,vz,slope,t,rap)=>{const Q=PF(),R=Q.ripple,[p0,p1,T]=W.flowPhase(t),v=Math.hypot(vx,vz),cx=v>1e-6?vx/v:1,cz=v>1e-6?vz/v:0,
    g0=[0,0],g1=[0,0];ripGrad(x-vx*p0*T,z-vz*p0*T,cx,cz,R,g0);ripGrad(x-vx*p1*T+.37*R[0][1],z-vz*p1*T+.61*R[0][1],cx,cz,R,g1);
-  const w0=1-Math.abs(2*p0-1),k=1+Q.rapidGain*ss(Q.rapids[0],Q.rapids[1],slope),sx=(g0[0]*w0+g1[0]*(1-w0))*k,sz=(g0[1]*w0+g1[1]*(1-w0))*k,l=Math.hypot(sx,1,sz);
+  const RP=rap||Q.rapids,w0=1-Math.abs(2*p0-1),k=1+Q.rapidGain*ss(RP[0],RP[1],slope),sx=(g0[0]*w0+g1[0]*(1-w0))*k,sz=(g0[1]*w0+g1[1]*(1-w0))*k,l=Math.hypot(sx,1,sz);
   return[-sx/l,1/l,-sz/l];};
- W.flowFoam=(slope,bank)=>{const Q=PF();return Math.max(Q.foam[0]*ss(Q.rapids[0],Q.rapids[1],slope),Q.foam[1]*(1-ss(0,Q.edge,bank)));};
+ W.flowFoam=(slope,bank,rap)=>{const Q=PF(),RP=rap||Q.rapids;return Math.max(Q.foam[0]*ss(RP[0],RP[1],slope),Q.foam[1]*(1-ss(0,Q.edge,bank)));};
+ // where a flow throws spray (drawFlow's spray option): along the line wherever the slope is over `min` (default: the middle of the flow's rapids band),
+ // at least `every` m (40) apart, at most `max` (24) of them, `lift` m over the surface (1): [[x, y, z], ...], in order, no random draw
+ W.sprayPoints=(F,o)=>{o=o||{};const RP=F.rapids||PF().rapids,min=o.min==null?(RP[0]+RP[1])/2:o.min,every=o.every==null?40:o.every,max=o.max==null?24:o.max,lift=o.lift==null?1:o.lift,P=F.pts,out=[];let s=0,last=-1e9;
+  for(let i=0;i<P.length&&out.length<max;i++){if(i>0)s+=Math.hypot(P[i].x-P[i-1].x,P[i].z-P[i-1].z);if(P[i].slope>=min&&s-last>=every){out.push([P[i].x,P[i].y+lift,P[i].z]);last=s;}}return out;};
 
  // ---- falls
- W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=o.rows==null?Q.rows:o.rows,C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[];
+ // the rows a curtain gets: o.rows, else PRESETS.fall.rows (28), or with o.rowStep (m of drop per row) at least that many (a 70 m cataract
+ // at 28 rows is 2.5 m a row; rowStep: 1 makes it 70)
+ W.curtainRows=(S,o)=>{o=o||{};const Q=PL();return o.rows!=null?o.rows:o.rowStep>0?Math.max(Q.rows,Math.ceil(S.drop/o.rowStep)):Q.rows;};
+ W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=W.curtainRows(S,o),C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[];
   for(let r=0;r<=R;r++){const f=r/R;for(let c=0;c<=C;c++){const u=c/C,p=S.curtainAt(u,f),n=S.curtainNormal(f);pos.push(p[0],p[1],p[2]);nrm.push(n[0],n[1],n[2]);uv.push(u,f);}}
   for(let r=0;r<R;r++)for(let c=0;c<C;c++){const a=r*(C+1)+c,b=a+C+1;idx.push(a,b,b+1,a,b+1,a+1);}
   return{count:(R+1)*(C+1),rows:R,cols:C,pos,nrm,uv,idx};};
@@ -90,7 +98,9 @@
  W.fallsOf=(F,o)=>{o=o||{};const steep=o.steep==null?.35:o.steep,minDrop=o.minDrop==null?3:o.minDrop,P=F.pts,out=[];let i=0;
   while(i+1<P.length){if(P[i].slope<steep){i++;continue;}let j=i;while(j+1<P.length&&P[j].slope>=steep)j++;
    const a=P[i],b=P[j],drop=a.y-b.y;if(drop>=minDrop){const ex=P[i+1].x-a.x,ez=P[i+1].z-a.z,L=Math.hypot(ex,ez)||1,dx=ex/L,dz=ez/L,h=a.w/2;
-    out.push({name:(F.name||'flow')+' fall '+out.length,lip:[[a.x+dz*h,a.z-dx*h,a.y],[a.x-dz*h,a.z+dx*h,a.y]],dir:[dx,dz],speed:Math.max(.5,a.v),drop});}
+    out.push(Object.assign({name:(F.name||'flow')+' fall '+out.length,lip:[[a.x+dz*h,a.z-dx*h,a.y],[a.x-dz*h,a.z+dx*h,a.y]],dir:[dx,dz],speed:Math.max(.5,a.v),drop,
+     // the chute's foot [x, z, y] (the line's point where the run ends) and the run from the lip: W.fall takes both; {fit: true} lands the curtain there
+     foot:[b.x,b.z,b.y],run:(b.x-a.x)*dx+(b.z-a.z)*dz},o.fit?{fit:true}:{}));}
    i=j;}return out;};
 
  // ---- still water

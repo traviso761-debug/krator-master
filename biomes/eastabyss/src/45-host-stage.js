@@ -148,41 +148,9 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The basin floor';scene.add(m);})();
 
 // ---------------------------------------------------------------- the water
-// One plane at y=0 carries the lake, the marsh pools and the basin reaches of
-// both rivers; its vertex colour is the water's own colour by depth and
-// salinity (lake colour in the salt, river colour in the fresh). The rivers'
-// climb up the slope is a ribbon in the same material. The lake colour is
-// EASTABYSS_LAKE (50-species): swap the hue there and everything follows.
+// The lake, the marsh pools and the rivers are core/water's (89w-host-water.js, from 2026-10-20; before, one plane at y=0 with a vertex colour by
+// depth and salinity, and a ribbon for the east river's climb). The lake colour is EASTABYSS_LAKE (50-species): swap the hue there and everything follows.
 const WATER_SHALLOW=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.80,.47),WATER_MID=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.82,.33),WATER_DEEP=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.70,.13),WATER_PALE=new THREE.Color().setHSL(EASTABYSS_LAKE.hue+.02,.50,.70);
 const RIVER_COL=new THREE.Color().setHSL((EASTABYSS_LAKE.hue+.5)%1,.42,.30),POOL_COL=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.55,.30).lerp(new THREE.Color(0x4a4a30),.35);
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,900,-600).normalize()},uSky:{value:new THREE.Color(0xd8e2dc)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.75*vec3(1.0,0.96,0.86);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h),lk=lakeIn(x,z),fresh=smooth(160,40,riverD(x,z))*(1-smooth(-80,-300,lk));
- const W=zoneW(x,z),marsh=Math.max(W.marshW,W.marshE)*smooth(-40,60,lk);
- const shoal=fbm(x*.0031+2,z*.0031-4,505,2);
- out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.47,.66,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.7)).lerp(WATER_MID,smooth(1.2,3.6,d)).lerp(WATER_DEEP,smooth(4,8.5,d));   // pale salt shoals in the shallows, a pale rim at the shore
- out.lerp(POOL_COL,marsh*.85);out.lerp(RIVER_COL,fresh);return out;}
-(function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){waterColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The salt lake';m.renderOrder=1;scene.add(m);
- // the east river up the slope: a ribbon at bed+0.5 from x=2000 to the edge — the west river stays in the basin
- const pos=[],cc=[],rc=RIVER_COL.clone().convertSRGBToLinear();
- for(let x=1990;x<TERR.R+100;x+=30){const z0=zE(x),z1=zE(x+30),w=13-4*smooth(2000,3400,x);
-  const ya=terrainH(x,z0)+.5,yb=terrainH(x+30,z1)+.5;
-  pos.push(x,ya,z0-w, x+30,yb,z1-w, x+30,yb,z1+w,  x,ya,z0-w, x+30,yb,z1+w, x,ya,z0+w);for(let k=0;k<6;k++)cc.push(rc.r,rc.g,rc.b);}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));geo.computeVertexNormals();
- const rm=new THREE.Mesh(geo,MAT_WATER);rm.userData.probeSkip=true;rm.userData.inspectLabel='The east river';scene.add(rm);})();
+// The water itself is core/water's now (89w-host-water.js: WATER.open for the lake and the marsh pools, WATER.flow for the rivers); this file keeps the
+// colours (WATER_*, RIVER_COL, POOL_COL), which that fragment hands to the water, and the geometry (lakeIn, zE, zW, riverD, zoneW) above.

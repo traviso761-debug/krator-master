@@ -389,3 +389,43 @@ FURN({
     F.box(0, 0.08, 0.36, 0.7, 0.12, 0.3, 0, F.col('onyx'), 'stone');                      /* the kneeling step */
   }
 });
+
+/* ---- the frontier army's (the frontier fort, 2026-10-22) ---- */
+
+FURN({
+  key: 'eternian_common_arms_rack', name: 'Glaive rack', culture: 'eternian', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['barracks', 'guardroom', 'store'], anchor: 'wall', clearance: { front: 0.9 },
+  materials: ['timber', 'metal', 'bronze'],
+  w: 2.2, d: 0.5, h: 2.5, variants: 1,
+  build: function (F) {
+    const tim = F.col('timber'), br = F.col('bronze');
+    F.box(0, 0, 0, 2.2, 0.14, 0.42, 0, F.shade(tim, -0.1), 'wood');                      /* the trough the butts stand in */
+    for (const s of [-1, 1]) F.box(s * 1.04, 0, -0.17, 0.1, 1.7, 0.08, 0, tim, 'wood');    /* the uprights */
+    F.box(0, 1.55, -0.17, 2.2, 0.08, 0.1, 0, tim, 'wood');                                /* the rail the shafts lean on */
+    F.box(0, 1.6, -0.11, 0.36, 0.05, 0.02, 0, br, 'bronze');                               /* the State's band on the rail */
+    for (let g = 0; g < 7; g++) {                                                           /* seven glaives, bronze blades up */
+      const x = -0.9 + g * 0.3;
+      F.rod(x, 0.12, 0.02, x, 2.05, -0.1, 0.02, F.shade(tim, g % 2 ? -0.06 : 0.04), 'wood');
+      F.box(x, 2.05, -0.1, 0.09, 0.38, 0.02, 0, br, 'bronze');
+      F.box(x + 0.05, 2.12, -0.1, 0.06, 0.1, 0.02, 0, F.shade(br, -0.12), 'bronze');      /* the back hook */
+    }
+  }
+});
+
+FURN({
+  key: 'eternian_common_bunk', name: 'Two-tier bunk', culture: 'eternian', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['barracks', 'dormitory'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'cloth'],
+  w: 1.0, d: 2.1, h: 1.85, variants: 1,
+  build: function (F) {
+    const tim = F.col('timber');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.box(sx * 0.45, 0, sz * 0.99, 0.08, 1.85, 0.08, 0, tim, 'wood');   /* the posts */
+    for (const y of [0.3, 1.3]) {                                                          /* two decks, each with its pallet and grey blanket */
+      F.box(0, y, 0, 0.98, 0.06, 2.0, 0, F.shade(tim, -0.06), 'wood');
+      F.box(0, y + 0.06, 0.02, 0.86, 0.1, 1.9, 0, F.col('linen'), 'cloth');
+      F.box(0, y + 0.16, 0.35, 0.86, 0.03, 1.1, 0, F.shade(F.col('linen'), -0.3), 'cloth');
+    }
+    F.box(0, 1.36, -0.99, 0.98, 0.3, 0.05, 0, tim, 'wood');                               /* the upper deck's head rail */
+    for (let i = 0; i < 4; i++) F.box(0.45, 0.35 + i * 0.3, 1.04, 0.08, 0.04, 0.06, 0, tim, 'wood');   /* the ladder's rungs at the foot */
+  }
+});

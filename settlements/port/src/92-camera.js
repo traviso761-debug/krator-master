@@ -40,7 +40,7 @@ function portBoundsLabel(txt,col){const c=document.createElement('canvas');c.wid
  g.fillStyle='#fff';g.font='bold 44px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,256,50);
  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,depthWrite:false,transparent:true,sizeAttenuation:false,fog:false}));
- s.scale.set(.16,.03,1);s.renderOrder=1001;return s;}
+ s.scale.set(.16,.03,1);s.renderOrder=1001;s.userData.boundsLabel=true;return s;}
 function portBoundsBuild(){const G=new THREE.Group();G.name='bounds';G.userData.probeSkip=true;G.userData.bounds=true;
  const y=PORT.DECK+.4,rib={},lin={};const add=(k,x0,z0,x1,z1,w)=>{const P=rib[k]||(rib[k]=[]),Q=lin[k]||(lin[k]=[]);
   const dx=x1-x0,dz=z1-z0,L=Math.hypot(dx,dz)||1,nx=-dz/L*w/2,nz=dx/L*w/2;
@@ -56,6 +56,15 @@ function portBoundsBuild(){const G=new THREE.Group();G.name='bounds';G.userData.
   const ln=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:PORT_BCOL[k],depthTest:false,depthWrite:false,transparent:true,fog:false}));ln.renderOrder=1000;G.add(ln);}
  G.traverse(o=>{o.userData.probeSkip=true;o.userData.bounds=true;o.frustumCulled=false;});
  scene.add(G);return G;}
+/* DECLUTTER: at overview distance neighbouring segment labels overlap. Every 4th frame the labels are projected to the screen and, nearest to the camera first (ties by build order), a label whose box overlaps one already kept is faded out; opacity eases every frame. Deterministic. */
+let BOUNDS_TICK=0;
+function portBoundsDeclutter(){if(!BOUNDS||!BOUNDS.visible)return;const P=camera.projectionMatrix.elements,W=innerWidth,H=innerHeight,v=new THREE.Vector3();
+ if(!(BOUNDS_TICK++%4)){const items=[];BOUNDS.children.forEach((o,i)=>{if(!o.userData.boundsLabel)return;v.copy(o.position).project(camera);const on=v.z<1&&v.z>-1;
+   items.push({o,i,on,d:camera.position.distanceTo(o.position),x:(v.x*.5+.5)*W,y:(.5-v.y*.5)*H,w:o.scale.x*P[0]*W/2,h:o.scale.y*P[5]*H/2});});
+  items.sort((a,b)=>(a.d-b.d)||(a.i-b.i));const kept=[];
+  for(const it of items){let ok=it.on;if(ok)for(const k of kept)if(Math.abs(it.x-k.x)<(it.w+k.w)/2&&Math.abs(it.y-k.y)<(it.h+k.h)/2){ok=false;break;}
+   if(ok)kept.push(it);it.o.userData.want=ok?1:0;}}
+ for(const o of BOUNDS.children)if(o.userData.boundsLabel){const w=o.userData.want==null?1:o.userData.want,m=o.material;m.opacity+=(w-m.opacity)*.25;if(Math.abs(w-m.opacity)<.02)m.opacity=w;o.visible=m.opacity>0;}}
 function setBounds(on){on=!!on;if(on===BOUNDS_ON&&(!on||BOUNDS))return;BOUNDS_ON=on;
  if(on&&!BOUNDS)BOUNDS=portBoundsBuild();if(BOUNDS)BOUNDS.visible=on;
  const lg=document.getElementById('boundsLegend');if(lg)lg.style.display=on?'block':'none';
@@ -134,7 +143,7 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  const sp=ctl.radius*.6*dt;const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta)),rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));
  if(keys.w)ctl.target.addScaledVector(fw,sp);if(keys.s)ctl.target.addScaledVector(fw,-sp);if(keys.d)ctl.target.addScaledVector(rt,sp);if(keys.a)ctl.target.addScaledVector(rt,-sp);
  if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;
- applyCam();sky.position.copy(camera.position);giant.position.copy(camera.position).addScaledVector(giantDir,7000);
+ applyCam();portBoundsDeclutter();sky.position.copy(camera.position);giant.position.copy(camera.position).addScaledVector(giantDir,7000);
  if(typeof PORT_FRAME!=='undefined')for(const f of PORT_FRAME)f(dt);   // core/atmos's clock (the sea, the skylight)
  try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;

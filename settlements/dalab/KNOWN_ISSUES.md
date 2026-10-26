@@ -18,11 +18,11 @@ saying what fixed it.
       from their records, minimap and marks work, the error panel is clean. **2026-10-18:** re-proven on main (a rebuild
       reproduces both committed pages bit for bit, the baseline rows unchanged; `verify.py --assert` passes on both) and the
       docs reconciled (ROADMAP.md section 10, step 5; `core/host/README.md`, "Used by"), which the port's commit had left behind.
-- [ ] (2026-10-15) 'dalab' is not a core/tags culture: `91t-dalab-tags.js` gives Dalab's records culture null and style 'dalab', the castes
+- [x] (2026-10-15) 'dalab' is not a core/tags culture: `91t-dalab-tags.js` gives Dalab's records culture null and style 'dalab', the castes
       (peasant, noble, priest) as wealth (poor, rich, rich) with the caste as the role, an embassy's guest as its role ('embassy:voth'),
       the lab's `ancient` as state reclaimed. When core/tags takes the culture (with its test and golden), map it there and drop this.
-- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
-      to core/host, as it was never run by the old camera either.
+      2026-10-20: done. core/tags takes `jimjam` and `dalab` as cultures with no catalog furniture set (`VOCAB.noCatalog`, `test-tags.js` 23 cultures; golden and `ktags.gd` unchanged: they hold the uid only); the records keep culture 'dalab' and the style line is gone.
+- [x] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed to core/host, as it was never run by the old camera either. - 2026-10-20: handed over (`ticks:TICKS` in 99-start.js; `var NIGHT` defined there), so `FIRE_T` runs and the flame cards flicker. NIGHT follows `DNIGHT`, so the fire lights come on at dusk.
 - [x] The mound is a real mesh, one draw call each. **Round 3:** every mound and
       ring bank goes into `DMOUND_GEOS` in world space and `94-dalab-light.js`
       merges them into ONE mesh (`window._mounds` counts them).
@@ -128,13 +128,13 @@ saying what fixed it.
       for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.
-- [ ] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
-- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+- [x] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
+- [x] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
       warm ones warm). ?mat=proc shows the old look.
-- [ ] **Dalab's own patterns take the material library** (2026-10-06): the four murals (planes alias the box families), relief-squares,
+- [x] **Dalab's own patterns take the material library** (2026-10-06): the four murals (planes alias the box families), relief-squares,
       relief-tile-teal, the harlequin checker, god-panel-a, the mosaic and the banner card (88y gives it its alpha test). The lizard mural
       set stacks three lizard bands where the procedural frieze had one. dRammed, dTurf and dTile stay procedural. ?mat=proc shows the old look.
-- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+- [x] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
       vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
 
 ## Voth census trades (2026-10-19)

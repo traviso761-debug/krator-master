@@ -18,6 +18,9 @@ through window._kchar:
   props        in every clip whose two_hands names a prop, the left hand reaches that prop's support (data/props.json);
                the bow's string is drawn in bow_scan
   random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
+  nonhuman     the Lizardman test (tools/nonhuman.py): the head leaves out the hair and the head's skin; the tail's skin
+               keeps to its joints under the morphs; in idle, walk and a crouch its points stay out of the legs and above
+               the floor and lag behind the hips; the jaw opens
 The Animation Lab (window._lab) is checked instead for: six figures dressed, each body's short one shorter than its
 neutral one and its tall one taller; a clip plays on all six in step; a review mark is kept; and on the six, the hand
 props (the owner's review, 2026-10-20): the bucket hangs plumb in Carry bucket; Draw from quiver has the arrow on the
@@ -36,7 +39,7 @@ THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
 
 CHECKS = r'''async () => {
-  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {} };
+  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {}, nonhuman: [] };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
   for (const body of Object.keys(D.bodies)) {
     await K.body(body);
@@ -135,6 +138,66 @@ CHECKS = r'''async () => {
       if (bad || moved < 0.01) out.props.push(body + ' cloth: ' + bad + ' non-finite points, largest swing ' + moved.toFixed(3) + ' m');
       if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
       await window._kchar.set(r0);
+    }
+    // the non-human parts (tools/nonhuman.py, a spike): with the Lizardman's tail and head on, the head leaves out the
+    // hair and beard; in the A-pose, heavy morph or none, the tail's skin keeps to its joints (the pieces' recipes and
+    // the joints' morph rows agree) and every bone carrying it is at its bind; in the idle, a walk and a crouch the
+    // tail's points stay finite, out of the thighs and shins (their radius less 5 mm) and above the floor, and lag behind
+    // the hips; the jaw opens now and then
+    if (kit.items.some(it => it.id === 'mod_tail')) {
+      const lz = Object.assign(JSON.parse(JSON.stringify(dressed)), { mods: ['mod_tail', 'mod_head_lizard'] });
+      const NH = out.nonhuman, tl = kit.items.find(it => it.id === 'mod_tail').tail;
+      await k2.set(lz); fig.play(null); await new Promise(r => setTimeout(r, 50));
+      if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(lz))) NH.push(body + ' lizard shows ' + shownKeys());
+      if (shownKeys().some(k => k === KCHAR.key(kit.items.find(i => i.id === dressed.hair).glb))) NH.push(body + ' lizard: the hair is drawn');
+      if (!(skin().geometry.index.count < out.hide.find(h => h[0] === body)[1])) NH.push(body + ' lizard: the head skin is not left out');
+      for (const [tag, mo] of [['lizard', {}], ['lizard heavy', heavy]]) {
+        await k2.set(Object.assign({}, lz, { morph: mo })); rest(tag);
+        const tm = shown().find(m => m.userData.part.key.endsWith('/mod_tail')), sc = fig.inner.getWorldScale(new THREE.Vector3()).x;
+        const pts = tl.joints.map(n => fig.bones.find(b => b.name === n).getWorldPosition(new THREE.Vector3()));
+        pts.push(fig.tailState().x[pts.length].clone());
+        const P = tm.geometry.attributes.position.array, v = new THREE.Vector3();
+        let worst = 0;
+        for (let i = 0; i < P.length; i += 3) {
+          v.set(P[i], P[i + 1], P[i + 2]).applyMatrix4(tm.matrixWorld);
+          let d = 1e9;
+          for (let k = 0; k + 1 < pts.length; k++) { const ab = pts[k + 1].clone().sub(pts[k]), t = Math.max(0, Math.min(1, v.clone().sub(pts[k]).dot(ab) / ab.lengthSq())); d = Math.min(d, v.distanceTo(pts[k].clone().addScaledVector(ab, t))); }
+          worst = Math.max(worst, d);
+        }
+        // the allowance grows with the tail (a tall body's is longer, and so thicker, its root rings sunk further)
+        let len = 0, len0 = 0; for (let k = 1; k < tl.joints.length; k++) { len += pts[k].distanceTo(pts[k - 1]); len0 += new THREE.Vector3().fromArray(D.bodies[body].skeleton.joints.find(j => j.name === tl.joints[k]).t).length(); }
+        if (worst > (tl.radius[0] * 1.35 + 0.01) * sc * Math.max(1, len / (len0 * sc))) NH.push(body + ' ' + tag + ': the tail skin stands ' + worst.toFixed(3) + ' m off its joints');
+      }
+      await k2.set(lz);
+      const legs = fig.clothState().caps.filter(cp => !cp.pa && /UpLeg|Leg$|Foot|Toe/.test(fig.bones[cp.a].name));
+      for (const c of ['idle', 'walk', 'ual_crouch']) {
+        await fig.play(c);
+        let deep = 0, low = 0, bad = 0, lag = 0;
+        for (let k = 0; k < 90; k++) {
+          fig.update(1 / 30);
+          const T = fig.tailState(), sc = fig.inner.getWorldScale(new THREE.Vector3()).x, floor = fig.group.getWorldPosition(new THREE.Vector3()).y;
+          T.x.forEach((x, i) => {
+            if (!isFinite(x.x + x.y + x.z)) { bad++; return; }
+            if (i === 0) return;
+            lag = Math.max(lag, x.distanceTo(T.tw[i]));
+            if (x.y < floor - 0.001) low++;
+            legs.forEach(cp => {
+              const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
+              const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
+              const r = ((cp.ra || cp.r) + ((cp.rb || cp.r) - (cp.ra || cp.r)) * t + tl.radius[Math.min(i, tl.radius.length - 1)]) * sc;
+              deep = Math.max(deep, r - x.distanceTo(a.clone().addScaledVector(ab, t)));
+            });
+          });
+        }
+        if (bad || low) NH.push(body + ' ' + c + ': ' + bad + ' non-finite tail points, ' + low + ' below the floor');
+        if (deep > 0.005) NH.push(body + ' ' + c + ': the tail ' + deep.toFixed(3) + ' m into a leg');
+        if (c === 'walk' && lag < 0.01) NH.push(body + ' walk: the tail does not lag (' + lag.toFixed(3) + ' m)');
+      }
+      const jb = fig.bones.find(b => b.name === 'face_jaw'), q0 = new THREE.Quaternion();
+      let open = 0;
+      for (let k = 0; k < 180; k++) { fig.update(1 / 30); open = Math.max(open, 2 * Math.acos(Math.min(1, Math.abs(jb.quaternion.dot(q0))))); }
+      if (open < 0.05) NH.push(body + ': the jaw does not open (' + open.toFixed(3) + ' rad)');
+      await fig.play('idle'); await k2.set(dressed);
     }
     // the fold: a court robe and skirt in a walk, every chain segment within 1.5 rad of its rest (the Verlet threw chain
     // tops sideways and Z-folded them: 60 to 90 segments past it; kchar_test.gd measures the same in Godot)
@@ -323,6 +386,7 @@ async def run(page_path, do_assert, out_dir):
             if r['clips'] < 1e-4:
                 fails.append('clips: walk did not move the thigh')
             fails += ['props: ' + m for m in r['props']]
+            fails += ['nonhuman: ' + m for m in r['nonhuman']]
             if not r['random']:
                 fails.append('random: one seed, two strangers')
             if r['ranges']:

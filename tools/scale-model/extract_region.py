@@ -27,7 +27,13 @@ What it writes (every raster cropped to the region's box plus a margin):
               makes cliffs of them)
   biome.png   the biome overlay index (region.json "biomes"), full resolution. Overlapping overlays: the smaller wins.
               A pixel no overlay covers takes the nearest overlay's index (pixel distance); a pixel of the bounding
-              polygon itself is 'inside' in region.json's mask (mask.png: 255 inside, 0 outside)
+              polygon itself is 'inside' in region.json's mask (mask.png: 255 inside, 0 outside). The regions in
+              OVERLAYS and the owner's tool polygons ('Region 65') are not biomes and stay out of it
+  overlay.png the OVERLAYS (biomes/nsemiarid/PLAN.md, section 3: layers that own no ground and lie over any biome),
+              full resolution: bit k set where region.json "overlays"[k]'s polygon is drawn. Only when one is in the box
+  palaeo.png  the old water bodies (DATA.palaeolakes, and the flood lake the dams' breach filled), on the height grid:
+              bit k set where region.json "palaeo".lakes[k] stood, dilated by PALAEO_PAD cells so the world's own
+              contour at the level (WORLD.H < level) draws the shore. Only when one is in the box
   region.json the frame, the class table, the biome table, the drainage network, the settlements inside the polygon
               and the canyon candidates for each ruin (the nearest troughs in the heights: CANYON_MIN)
 
@@ -58,6 +64,14 @@ EXTRA_BIOMES = ('e highlands',)   # ('oidong valley' was read from here until th
 KITS = {'sedesert': 'sedesert', 'e abysss': 'eastabyss', 'hyperjungle': 'hyperjungle', 'e badlands': 'ebadlands',
         'oidong valley': 'oidong'}
 WATER_OVERLAYS = ('ring sea',)
+# the overlays: regions of the biome layer that own no ground (biomes/nsemiarid/PLAN.md, section 3), each with the build
+# that draws it. They stay out of biome.png, each its own bit in overlay.png
+OVERLAYS = {'floodzone': 'scablands', 'dam': 'dambasins', 'dam 2': 'dambasins'}
+TOOL_REGION = ('region ',)   # the owner's tool polygons ('Region 65': edit_rivers.py's LOWER) are no biome
+# the old water bodies (palaeo.png, region.json "palaeo")
+RING_M = 30.0        # m: the bathtub ring under a dam lake's full level, its yearly drawdown (the owner, 2026-10-20)
+PALAEO_PAD = 2       # height cells round an old lake's bed in palaeo.png
+DAM_R = 5            # height cells: a dam's body, for the lake held behind it (as edit_dams.py stands it)
 
 
 def load_page(path):
@@ -155,6 +169,131 @@ def drainage(E, sink, rain_w):
     return F, rec, acc
 
 
+def palaeo_waters(D, box, hbox, cx, cy, out):
+    """the old water bodies of the north basin (scale model 4.20: DATA.palaeolakes, DATA.dams, DATA.floods), as the
+    overlays read them (biomes/nsemiarid/PLAN.md, section 2). On the whole height grid, since a basin runs past any box:
+
+    - each dam lake: its bed (the ground under its level behind its dam), its sill (the floor of its dam's notch,
+      DATA.dams foot_m: the level it drained to in the flood), the water over the sill (which left in the flood) and the
+      water under it (trapped, since evaporated to the remnant lakes, listed with their level and area today);
+    - the flood lake: the flood's water (every dam lake's above its sill) pooled in the water body the last breach ends
+      in, taken at that body's level today (the owner, 2026-10-20: the trough stood at 430 m before the flood), joined
+      with any dam basin full to its sill: its level is where that water fills it;
+    - the dams and the floods' courses, in map px and in the region's metres.
+
+    Writes palaeo.png (one bit per body, on the cropped height grid) and returns region.json's "palaeo", or None when no
+    body or course reaches the box."""
+    lakes0, dams0, floods0 = D.get('palaeolakes') or [], D.get('dams') or [], D.get('floods') or []
+    if not lakes0:
+        return None
+    lo, hi, OW, OH, VW, VH = D['lo'], D['hi'], D['fullW'], D['fullH'], D['w'], D['hh']
+    su, sv = (VW - 1) / (OW - 1), (VH - 1) / (OH - 1)
+    KM2 = (2 / su) * (2 / sv)
+    h = raster(D, 'h')
+    E = lo + ((h[..., 0].astype(np.int32) << 8) | h[..., 1]) / 65535 * (hi - lo)
+    w = raster(D, 'wl')
+    whas = w[..., 2] > 127
+    wlev = np.where(whas, lo + ((w[..., 0].astype(np.int32) << 8) | w[..., 1]) / 65535 * (hi - lo), np.nan)
+    cell = lambda p: (int(round(p[1] * sv)), int(round(p[0] * su)))
+    to_px = lambda j, i: [round(i / su, 1), round(j / sv, 1)]
+    S8 = np.ones((3, 3))
+    jj, ii = np.mgrid[0:VH, 0:VW]
+    barrier = np.zeros(E.shape, bool)
+    for d in dams0:
+        j, i = cell(d['site_px'])
+        barrier |= (np.hypot(jj - j, ii - i) <= DAM_R) & (E < d['crest_m'])
+
+    def comp(seed, level, bar=None):
+        m = E <= level
+        if bar is not None:
+            m &= ~bar
+        lab, _ = ndimage.label(m, structure=S8)
+        return (lab == lab[seed]) & (lab > 0)
+
+    def vol(m, base, level):
+        return float(np.clip(level - np.maximum(E[m], base[m] if np.ndim(base) else base), 0, None).sum() * KM2 / 1000)
+
+    wl_lab, _ = ndimage.label(whas, structure=S8)
+
+    def remnants(m):
+        out_ = []
+        for k in np.unique(wl_lab[m & whas]):
+            if k == 0:
+                continue
+            b = wl_lab == k
+            if (b & m).sum() < 0.5 * b.sum():
+                continue
+            j, i = np.argwhere(b).mean(0)
+            out_.append({'level_m': round(float(np.nanmedian(wlev[b])), 1), 'km2': round(float(b.sum() * KM2)), 'at_px': to_px(j, i)})
+        return sorted(out_, key=lambda r: -r['km2'])
+
+    lakes, masks = [], []
+    for L in lakes0:
+        seed = cell(L['seed_px'])
+        m = comp(seed, L['level_m'], barrier)
+        dam = next((d for d in dams0 if d.get('basin') == L['basin']), None)
+        sill = float(dam['foot_m']) if dam else None
+        rec = {'name': L['basin'], 'kind': 'dam lake', 'level_m': L['level_m'], 'sill_m': sill, 'ring_m': RING_M,
+               'seed_px': L['seed_px'], 'km2': round(float(m.sum() * KM2)), 'dry_km2': round(float((m & ~whas).sum() * KM2)),
+               'model_km2': L.get('km2'), 'model_km3': L.get('km3'), 'remnants': remnants(m)}
+        if sill is not None:
+            rec['volume_above_sill_km3'] = round(vol(m, sill, L['level_m']))
+            rec['volume_below_sill_km3'] = round(vol(m & (E < sill), -1e9, sill))
+        lakes.append(rec)
+        masks.append(m)
+    # the flood lake: the water over every sill pooled where the last breach ends
+    last = max(floods0, key=lambda f: f.get('order', 0)) if floods0 else None
+    if last is not None and all('volume_above_sill_km3' in r for r in lakes):
+        jt, it = cell(last['px'][-1])
+        ys, xs = np.nonzero(wl_lab > 0)
+        c = np.argmin((ys - jt) ** 2 + (xs - it) ** 2)
+        tb = wl_lab == wl_lab[ys[c], xs[c]]
+        t_level = float(np.nanmedian(wlev[tb]))
+        tseed = (int(ys[c]), int(xs[c]))
+        flood = sum(r['volume_above_sill_km3'] for r in lakes)
+        base = np.full(E.shape, t_level)
+        for r, m in zip(lakes, masks):
+            base[m & (E < r['sill_m'])] = r['sill_m']      # a dam basin stood full to its sill when the flood came
+        a, b = t_level, hi
+        for _ in range(40):
+            mid = (a + b) / 2
+            if vol(comp(tseed, mid), base, mid) < flood:
+                a = mid
+            else:
+                b = mid
+        fm = comp(tseed, a)
+        lakes.append({'name': 'flood lake', 'kind': 'flood lake', 'level_m': round(a, 1), 'before_m': round(t_level, 1),
+                      'volume_km3': round(flood), 'seed_px': to_px(*tseed), 'km2': round(float(fm.sum() * KM2)),
+                      'dry_km2': round(float((fm & ~whas).sum() * KM2)), 'remnants': remnants(fm),
+                      'note': "every dam lake's water over its sill, pooled where the last breach ends; the body there "
+                              "taken at its level today (the owner, 2026-10-20)"})
+        masks.append(fm)
+    # the crop: only when a body reaches the box
+    i0, j0, nx, ny = hbox
+    pal = np.zeros((ny, nx), np.uint8)
+    for k, m in enumerate(masks):
+        md = ndimage.binary_dilation(m, structure=S8, iterations=PALAEO_PAD)
+        lakes[k]['bit'] = k
+        pal |= (md[j0:j0 + ny, i0:i0 + nx] << k).astype(np.uint8)
+    x0, y0, x1, y1 = box
+    inb = lambda p: x0 <= p[0] <= x1 and y0 <= p[1] <= y1
+    floods = []
+    for f in floods0:
+        if not any(inb(p) for p in f['px']):
+            continue
+        floods.append({'name': f['name'], 'order': f.get('order'), 'from': f.get('from'), 'to': f.get('to'),
+                       'floor_km': f.get('floor_km'), 'walls_km': f.get('walls_km'), 'px': f['px'],
+                       'm': [[round((a - cx) * 2000.0, 1), round((b - cy) * 2000.0, 1)] for a, b in f['px']],
+                       'bed_m': f.get('bed_m'),
+                       'note': 'bed_m runs evenly along the course, first to last'})
+    dams = [dict(d, m=[round((d['site_px'][0] - cx) * 2000.0, 1), round((d['site_px'][1] - cy) * 2000.0, 1)])
+            for d in dams0 if inb(d['site_px'])]
+    if not pal.any() and not floods and not dams:
+        return None
+    save8(os.path.join(out, 'palaeo.png'), pal)
+    return {'lakes': lakes, 'dams': dams, 'floods': floods, 'grid': 'the height grid (elev.png)', 'pad_cells': PALAEO_PAD}
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding='utf-8')   # the rivers' names are in their tongues
@@ -238,6 +377,8 @@ def main():
 
     # ---- biome overlays: the smaller polygon wins an overlap; the rest of the box takes the nearest overlay
     over = [r for r in R if r.get('kind') == 'biome' or r.get('name', '').lower() in EXTRA_BIOMES]
+    over = [r for r in over if r.get('name', '').strip().lower() not in OVERLAYS
+            and not r.get('name', '').strip().lower().startswith(TOOL_REGION)]
     over = [r for r in over if poly_mask(r['points'], x0, y0, W, H).any()]
     over.sort(key=lambda r: -poly_area(r['points']))        # largest first, so a smaller one paints over it
     bmap = np.full((H, W), 255, np.uint8)
@@ -259,6 +400,24 @@ def main():
         b['px'] = int((bmap == b['id']).sum())
         b['px_in_region'] = int(((bmap == b['id']) & inside).sum())
     save8(os.path.join(out, 'biome.png'), bmap)
+
+    # ---- the overlays: drawn polygons, one bit each (no nearest-fill: an overlay is only where it is drawn)
+    overlays = []
+    omap = np.zeros((H, W), np.uint8)
+    for r in R:
+        nm = r.get('name', '').strip()
+        if nm.lower() not in OVERLAYS:
+            continue
+        m = poly_mask(r['points'], x0, y0, W, H)
+        if not m.any():
+            continue
+        k = len(overlays)
+        omap[m] |= 1 << k
+        overlays.append({'bit': k, 'name': nm, 'doc': r['id'], 'build': OVERLAYS[nm.lower()], 'colour': r.get('color'),
+                         'drawn_px': int(m.sum()), 'px_in_region': int((m & inside).sum()), 'notes': r.get('notes', '')})
+    if overlays:
+        save8(os.path.join(out, 'overlay.png'), omap)
+    palaeo = palaeo_waters(D, (x0, y0, x1, y1), (i0, j0, elev.shape[1], elev.shape[0]), cx, cy, out)
 
     # ---- the escarpments: where the land drops from a plateau to a floor (the eastern abyss's rim), the open world
     # sharpens the drop into a cliff at 1:1 (WORLD.H). Per height cell: the floor's level L and the plateau's level U
@@ -444,6 +603,10 @@ def main():
         'settlements': sett, 'canyon_candidates': cand,
         'volcano': D.get('volc'), 'vents': [v for v in D.get('vents', []) if x0 <= v['px'][0] <= x1 and y0 <= v['px'][1] <= y1],
     }
+    if overlays:
+        meta['overlays'] = overlays
+    if palaeo:
+        meta['palaeo'] = palaeo
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells; %d channels, %d vertices; %d water cells lowered to their spill height' % (nx, ny, len(lines), sum(len(l) for l in lines), spilled))
@@ -453,6 +616,11 @@ def main():
     for b in biomes:
         print('  biome %2d %-16s kit %-12s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)
+    for o in overlays:
+        print('  overlay %d %-16s build %-12s %7d px (%d in region)' % (o['bit'], o['name'], o['build'], o['drawn_px'], o['px_in_region']))
+    for L in (palaeo or {}).get('lakes', []):
+        print('  old water %d %-16s level %6.0f m  sill %s  %6d km2 (%d km2 dry today)  %s' % (
+            L['bit'], L['name'], L['level_m'], L.get('sill_m'), L['km2'], L['dry_km2'], L.get('volume_above_sill_km3', '')))
     for s in sett:
         print('  settlement %-14s %-16s px (%s, %s) -> (%.0f, %.0f) m  in %s' % (s['name'], s['type'], s['px'], s['py'], s['x'], s['z'], s['biome']))
     for k, v in cand.items():

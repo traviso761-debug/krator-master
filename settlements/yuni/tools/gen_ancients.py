@@ -87,6 +87,9 @@ rep("const lat=(u,y)=>{const a=u*TAU*10,b=y*.28;return Math.abs(Math.sin(a+b))>.
     "const lat=(u,y)=>{if(SEGK<.55)return false;const a=u*TAU*5,b=y*.15;return Math.abs(Math.sin(a+b))>.34&&Math.abs(Math.sin(a-b))>.34;};")
 # the apron: a short skirt only (footprints are hard limits in Yuni)
 rep("const th=u*TAU,r=lerp(rIn,rOut,v)*(1+.07*fbm(u*7,1.3,17,2));", "const th=u*TAU,r=lerp(rIn,rIn+(rOut-rIn)*APRK,v)*(1+.04*fbm(u*7,1.3,17,2));")
+# 2026-10-20: and clamp the skirt to the plot (APRCLIP, set per build by ANC_build): a vertex that would leave the footprint is pulled back onto its edge, the height read there
+rep("  const x=r*Math.cos(th),z=r*Math.sin(th);\n  return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),",
+    "  let x=r*Math.cos(th),z=r*Math.sin(th);if(APRCLIP){const q=APRCLIP(cx+x,cz+z);x=q[0]-cx;z=q[1]-cz;}\n  return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),")
 
 # ------------------------------------------------------------------------------------------- Yuni variants
 # TERRACE-STACK APARTMENTS: full roofs. Each tray's terrace deck gets a parapet lip and a soffit, and the top
@@ -180,7 +183,7 @@ pre = """reseed(610001);
 (function(){
 var WORLD_TH = terrainH;
 var ANCK = (function(){
-var ANC_TH=null, KSKIP=false, KTHIN=1, KTN=0, KTNAMES=[], UVK=1, DISHOK=false, WORN=false, LABTIGHT=false, SEGK=0.5, RSC=1, APRK=0.3, YFLAT=true;
+var ANC_TH=null, KSKIP=false, KTHIN=1, KTN=0, KTNAMES=[], UVK=1, DISHOK=false, WORN=false, LABTIGHT=false, SEGK=0.5, RSC=1, APRK=0.3, APRCLIP=null, YFLAT=true;
 var NIGHT=false;          /* the kit's day/night flag (92-camera.js), driven by ANCK.setNight from Yuni's clock */
 function reportErr(m){ ERR('ancients kit: '+m); }
 """

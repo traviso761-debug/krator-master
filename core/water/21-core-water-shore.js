@@ -50,34 +50,55 @@
   return out;};
  W.EDT_INF=INF;
 
- // ---- the grid
- W.shoreGrid=o=>{const Q=P(),B=W.PRESETS.bed,c=o.cell==null?Q.cell:o.cell,box=o.box,level=o.level,band=o.band==null?Q.band:o.band,
+ // ---- the grid, as a JOB of stages (sampling the ground, the flood, the two distance transforms, the bytes), so a host that cannot
+ // spend half a second in one frame runs it a few milliseconds at a time: J.step(ms) works until the budget is spent (a stage is
+ // never cut: the transforms are tens of ms on a 400 k grid) and returns true when J.G is in place; J.step() runs it whole, which
+ // is all WATER.shoreGrid does; J.step(0) is one stage (a sampling call: one row) a call, for a host that budgets by call. The bytes are the
+ // same either way (test-gaps.js checks).
+ // seeds: points [[x,z],...], a predicate (x,z)=>bool, null (every cell under the level), or EDGE: 'edge' (or {edge: true, depth, sides,
+ // points}) seeds the flood from the cells on the box's rim that are at least `depth` m (2) under the level, on `sides` ('wesn': the
+ // west, east, north (z0) and south (z1) rims; all four by default), so a sea needs no hand-placed point; a lake that the rim cuts
+ // through shallower than `depth` stays dry unless a seed or `points` reaches it.
+ W.shoreGridJob=o=>{const Q=P(),B=W.PRESETS.bed,c=o.cell==null?Q.cell:o.cell,box=o.box,level=o.level,band=o.band==null?Q.band:o.band,
    nx=Math.max(2,Math.ceil((box[2]-box[0])/c)),nz=Math.max(2,Math.ceil((box[3]-box[1])/c)),n=nx*nz;
   const gfn=typeof o.ground==='function'?o.ground:(x,z)=>o.ground.h(x,z);
   const ground=new Float64Array(n),below=new Uint8Array(n),wet=new Uint8Array(n);
-  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+(i+.5)*c,z=box[1]+(j+.5)*c,k=j*nx+i,g=gfn(x,z);ground[k]=g;
-   below[k]=g<level&&!(o.land&&o.land(x,z))?1:0;}
+  const S=o.seeds,E=S==='edge'?{}:(S&&typeof S==='object'&&!Array.isArray(S)&&S.edge)?S:null;
+  const J={done:false,G:null,stage:0,left:()=>0};let row=0,din=null,dout=null;
+  const sample=until=>{while(row<nz){const j=row;for(let i=0;i<nx;i++){const x=box[0]+(i+.5)*c,z=box[1]+(j+.5)*c,k=j*nx+i,g=gfn(x,z);ground[k]=g;
+    below[k]=g<level&&!(o.land&&o.land(x,z))?1:0;}row++;if(until&&Date.now()>=until)break;}if(row>=nz)J.stage=1;};
   // the flood: from the seed cells under the level, 4-connected, in a fixed order (a queue)
-  const S=o.seeds;
-  if(S==null)wet.set(below);
-  else{const q=new Int32Array(n);let h=0,t=0;const push=k=>{if(below[k]&&!wet[k]){wet[k]=1;q[t++]=k;}};
-   if(typeof S==='function'){for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)if(S(box[0]+(i+.5)*c,box[1]+(j+.5)*c))push(j*nx+i);}
-   else for(const p of S){const i=Math.floor((p[0]-box[0])/c),j=Math.floor((p[1]-box[1])/c);if(i>=0&&j>=0&&i<nx&&j<nz)push(j*nx+i);}
-   while(h<t){const k=q[h++],i=k%nx,j=(k-i)/nx;if(i>0)push(k-1);if(i<nx-1)push(k+1);if(j>0)push(k-nx);if(j<nz-1)push(k+nx);}}
+  const flood=()=>{if(S==null)wet.set(below);
+   else{const q=new Int32Array(n);let h=0,t=0;const push=k=>{if(below[k]&&!wet[k]){wet[k]=1;q[t++]=k;}};
+    if(E){const dm=E.depth==null?2:E.depth,sd=E.sides||'wesn',deep=k=>level-ground[k]>=dm;
+     for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const edge=(i===0&&sd.indexOf('w')>=0)||(i===nx-1&&sd.indexOf('e')>=0)||(j===0&&sd.indexOf('n')>=0)||(j===nz-1&&sd.indexOf('s')>=0);
+      if(edge&&deep(j*nx+i))push(j*nx+i);}
+     if(E.points)for(const p of E.points){const i=Math.floor((p[0]-box[0])/c),j=Math.floor((p[1]-box[1])/c);if(i>=0&&j>=0&&i<nx&&j<nz)push(j*nx+i);}}
+    else if(typeof S==='function'){for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)if(S(box[0]+(i+.5)*c,box[1]+(j+.5)*c))push(j*nx+i);}
+    else for(const p of S){const i=Math.floor((p[0]-box[0])/c),j=Math.floor((p[1]-box[1])/c);if(i>=0&&j>=0&&i<nx&&j<nz)push(j*nx+i);}
+    while(h<t){const k=q[h++],i=k%nx,j=(k-i)/nx;if(i>0)push(k-1);if(i<nx-1)push(k+1);if(j>0)push(k-nx);if(j<nz-1)push(k+nx);}}
+   J.stage=2;};
   // the signed distance (m): + on the water (to the nearest cell not wet), - elsewhere (to the nearest wet cell); the
   // shoreline between two cell centres is at 0
-  const dry=new Uint8Array(n);for(let k=0;k<n;k++)dry[k]=wet[k]?0:1;
-  const din=W.edt(dry,nx,nz),dout=W.edt(wet,nx,nz),dist=new Float64Array(n),data=new Uint8Array(n*4),D=B.deep,F=B.fine;
-  for(let k=0;k<n;k++){const s=wet[k]?(din[k]>=INF/2?band:(Math.sqrt(din[k])-.5)*c):(dout[k]>=INF/2?-band:-(Math.sqrt(dout[k])-.5)*c);dist[k]=s;
-   const dd=level-ground[k],o4=k*4;data[o4]=Math.round(255*Math.sqrt(cl((dd-D[0])/(D[1]-D[0]),0,1)));data[o4+1]=Math.round(255*cl((dd-F[0])/(F[1]-F[0]),0,1));
-   data[o4+2]=Math.round(255*cl(.5+s/(2*band),0,1));data[o4+3]=Math.round(255*cl((dd-Q.mid[0])/(Q.mid[1]-Q.mid[0]),0,1));}
-  const G={x0:box[0],z0:box[1],cell:c,nx,nz,data,level,shore:true,band,clip:o.clip==null?Q.clip:o.clip,wet,dist,
-   wetCells:wet.reduce((a,b)=>a+b,0),seeded:S!=null};
-  // the cells the surface may draw over (shore distance > -(clip + 1) cells: a node holding none is dropped), as a
-  // summed-area table, so S.wetIn(box) is four lookups
-  const sat=new Int32Array((nx+1)*(nz+1)),lim=-(G.clip+1)*c;
-  for(let j=0;j<nz;j++){let row=0;for(let i=0;i<nx;i++){row+=dist[j*nx+i]>lim?1:0;sat[(j+1)*(nx+1)+i+1]=sat[j*(nx+1)+i+1]+row;}}
-  G.sat=sat;return G;};
+  const t1=()=>{const dry=new Uint8Array(n);for(let k=0;k<n;k++)dry[k]=wet[k]?0:1;din=W.edt(dry,nx,nz);J.stage=3;};
+  const t2=()=>{dout=W.edt(wet,nx,nz);J.stage=4;};
+  const bytes=()=>{const dist=new Float64Array(n),data=new Uint8Array(n*4),D=B.deep,F=B.fine;
+   for(let k=0;k<n;k++){const s=wet[k]?(din[k]>=INF/2?band:(Math.sqrt(din[k])-.5)*c):(dout[k]>=INF/2?-band:-(Math.sqrt(dout[k])-.5)*c);dist[k]=s;
+    const dd=level-ground[k],o4=k*4;data[o4]=Math.round(255*Math.sqrt(cl((dd-D[0])/(D[1]-D[0]),0,1)));data[o4+1]=Math.round(255*cl((dd-F[0])/(F[1]-F[0]),0,1));
+    data[o4+2]=Math.round(255*cl(.5+s/(2*band),0,1));data[o4+3]=Math.round(255*cl((dd-Q.mid[0])/(Q.mid[1]-Q.mid[0]),0,1));}
+   const G={x0:box[0],z0:box[1],cell:c,nx,nz,data,level,shore:true,band,clip:o.clip==null?Q.clip:o.clip,wet,dist,
+    wetCells:wet.reduce((a,b)=>a+b,0),seeded:S!=null};
+   // the cells the surface may draw over (shore distance > -(clip + 1) cells: a node holding none is dropped), as a
+   // summed-area table, so S.wetIn(box) is four lookups
+   const sat=new Int32Array((nx+1)*(nz+1)),lim=-(G.clip+1)*c;
+   for(let j=0;j<nz;j++){let r=0;for(let i=0;i<nx;i++){r+=dist[j*nx+i]>lim?1:0;sat[(j+1)*(nx+1)+i+1]=sat[j*(nx+1)+i+1]+r;}}
+   G.sat=sat;J.G=G;J.stage=5;J.done=true;din=dout=null;};
+  J.left=()=>J.stage===0?nz-row:5-J.stage;
+  J.step=ms=>{const until=ms==null?0:ms>0?Date.now()+ms:-1;
+   while(!J.done){if(J.stage===0)sample(until);else if(J.stage===1)flood();else if(J.stage===2)t1();else if(J.stage===3)t2();else bytes();
+    if(until&&Date.now()>=until)break;}return J.done;};
+  return J;};
+ W.shoreGrid=o=>{const J=W.shoreGridJob(o);J.step();return J.G;};
  // a core/mask raster as land: (x,z)=>true where the mask's red channel at toPx(x,z) is over thresh (a KMASK.canvas's own
  // bytes, mask.data: no canvas is read)
  W.maskLand=(mask,toPx,thresh)=>{const w=mask.width,h=mask.height,d=mask.data,t=thresh==null?127:thresh;
@@ -96,11 +117,17 @@
  // ... or a job that samples the ground a slice at a time (step(n): n samples, -> true when the new grid is in place; the
  // host decides how many fit its frame), so a streamed world re-bakes as the camera moves without a long frame; the
  // flood, the transform and the bytes run in the last step
- W.shoreJob=(S,cx,cz)=>{const Q=S.shoreWin,box=W.shoreBox(S,cx,cz),n=Q.n,c=Q.cell,gfn=typeof Q.ground==='function'?Q.ground:(x,z)=>Q.ground.h(x,z),H=new Float64Array(n*n);let k=0;
-  return{box,done:false,left:()=>n*n-k,step(m){const end=Math.min(n*n,k+Math.max(1,m==null?n*n:m));
-   while(k<end){const i=k%n,j=(k-i)/n;H[k]=gfn(box[0]+(i+.5)*c,box[1]+(j+.5)*c);k++;}if(k<n*n)return false;
-   S.bed=W.shoreGrid({ground:(x,z)=>H[Math.min(n-1,Math.floor((z-box[1])/c))*n+Math.min(n-1,Math.floor((x-box[0])/c))],level:S.base,box,cell:c,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip});
-   if(S.onShore)S.onShore(S.bed);this.done=true;return true;}};};
+ W.shoreJob=(S,cx,cz,staged)=>{const Q=S.shoreWin,box=W.shoreBox(S,cx,cz),n=Q.n,c=Q.cell,gfn=typeof Q.ground==='function'?Q.ground:(x,z)=>Q.ground.h(x,z),H=new Float64Array(n*n);let k=0;
+  // staged: {staged: true, ms: 2} spreads the finish too (the flood, each transform, the bytes: a stage a call, `ms` ms a call), as W.shoreGridJob does
+  const job={box,done:false,left:()=>n*n-k+(job.fin?job.fin.left():0),fin:null,step(m){
+   if(!job.fin){const end=Math.min(n*n,k+Math.max(1,m==null?n*n:m));
+    while(k<end){const i=k%n,j=(k-i)/n;H[k]=gfn(box[0]+(i+.5)*c,box[1]+(j+.5)*c);k++;}if(k<n*n)return false;
+    const go={ground:(x,z)=>H[Math.min(n-1,Math.floor((z-box[1])/c))*n+Math.min(n-1,Math.floor((x-box[0])/c))],level:S.base,box,cell:c,seeds:Q.seeds,land:Q.land,band:Q.band,clip:Q.clip};
+    if(!(staged&&staged.staged)){S.bed=W.shoreGrid(go);if(S.onShore)S.onShore(S.bed);job.done=true;return true;}
+    job.fin=W.shoreGridJob(go);}
+   const J=job.fin;J.step(staged.ms==null?2:staged.ms);if(!J.done)return false;
+   S.bed=J.G;if(S.onShore)S.onShore(S.bed);job.done=true;return true;}};
+  return job;};
 
  // ---- the twins on a grid (G as W.shoreGrid makes it, or as an export carries it: the bytes are the truth)
  // channel k (0..3) bilinear over the texel centres, clamped at the edges, as the GPU filters; null outside the box

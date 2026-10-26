@@ -279,31 +279,33 @@ injects core/export the way `export` does into a page that does not embed it (th
 | eastabyss (2026-10-18) | `2100,-300,2400,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | ebadlands (2026-10-18) | `-300,0,0,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | ehighlands (2026-10-18) | `900,1200,1200,1500` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
-| geyser (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| geyser (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (sampled terrain; atmos since 2026-10-20 (`89-atmos-8-export.js`); water left out: the sea's bounds, z >= 560, miss the box) |
 | hyperjungle (2026-10-18) | `-600,-300,-300,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | nhighlands (2026-10-18) | `-1500,-1200,-1200,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | nwbay (2026-10-18) | `600,600,900,900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | nwlowlands (2026-10-18) | `-900,-1200,-600,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | rift (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
-| ringisles (2026-10-18) | `-300,-900,0,-600` | `registry, items, buckets, materials, textures, terrain, stage, water` (sampled terrain; atmos left out, its KNOWN_ISSUES.md) |
+| ringisles (2026-10-18) | `-300,-900,0,-600` | `registry, items, buckets, materials, textures, terrain, stage, atmos, water` (sampled terrain; atmos since 2026-10-20 (`89-atmos-8-export.js`)) |
 | shighlands (2026-10-18) | `-1800,-900,-1500,-600` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (sampled terrain; water left out, its KNOWN_ISSUES.md) |
 | swbay (2026-10-18) | `0,0,300,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | swlowlands (2026-10-18) | `600,0,900,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | xanadu (2026-10-18) | `-300,1800,0,2100` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
-| the Throne, station 1 (`biomes/throne/dist/throne.html`; 2026-10-18; its eleven pages check through `check_profile(..., inject=True)`: the pages do not embed core/export, below, "Not done"; the table is `EXPORT_STATIONS` in its verify.py) | `-400,40,-100,340` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; water left out: no page is on core/water; atmos left out of every Throne row, `biomes/throne/KNOWN_ISSUES.md`, "Export profile") |
+| the Throne, station 1 (`biomes/throne/dist/throne.html`; 2026-10-18; its eleven pages check through `check_profile(..., inject=True)`: the pages do not embed core/export, below, "Not done"; the table is `EXPORT_STATIONS` in its verify.py) | `-400,40,-100,340` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; water left out: no page is on core/water; `atmos` since 2026-10-20 on the seven stations that bind core/atmos, `89-atmos-8-export.js` in their `station.json`, `biomes/throne/KNOWN_ISSUES.md`, "Export profile") |
 | the Throne, the kipuka (`throne-kipuka.html`) | `-240,-700,60,-400` | `registry, items, buckets, materials, textures, terrain, stage` |
-| the Throne, the spice frontier (`throne-frontier.html`) | `-560,-400,-260,-100` | `registry, items, buckets, materials, textures, terrain, stage` |
-| the Throne, the geyser isle (`throne-isle.html`) | `-300,-300,0,0` | `registry, items, buckets, materials, textures, terrain, stage` |
-| the Throne, the cloud forest (`throne-cloud.html`) | `-1720,570,-1420,870` | `registry, items, buckets, materials, textures, terrain, stage`; exported with `--sections` of the same (its atmos section throws: the station lists the atmos host without `89-atmos-8-export.js`) |
+| the Throne, the spice frontier (`throne-frontier.html`) | `-560,-400,-260,-100` | `registry, items, buckets, materials, textures, terrain, stage, atmos` |
+| the Throne, the geyser isle (`throne-isle.html`) | `-300,-300,0,0` | `registry, items, buckets, materials, textures, terrain, stage, atmos` |
+| the Throne, the cloud forest (`throne-cloud.html`) | `-1720,570,-1420,870` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (since 2026-10-20 the station lists `89-atmos-8-export.js`; no `--sections` restriction) |
 | the Throne, the savanna (`throne-savanna.html`) | `-1050,350,-750,650` | `registry, items, buckets, materials, textures, terrain, stage` |
-| the Throne, the ash desert (`throne-ash.html`) | `-350,50,-50,350` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws, as the cloud forest's) |
-| the Throne, vent country (`throne-vents.html`) | `-330,-430,-30,-130` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
-| the Throne, the glacier (`throne-glacier.html`) | `-1800,-600,-1500,-300` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
+| the Throne, the ash desert (`throne-ash.html`) | `-350,50,-50,350` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (as the cloud forest's) |
+| the Throne, vent country (`throne-vents.html`) | `-330,-430,-30,-130` | `registry, items, buckets, materials, textures, terrain, stage, atmos` |
+| the Throne, the glacier (`throne-glacier.html`) | `-1800,-600,-1500,-300` | `registry, items, buckets, materials, textures, terrain, stage, atmos` |
 | the Eternian kit's sheet (`kits/eternian` P7, 2026-10-20; part of the canal street) | `-30,-200,10,-165` | `registry, buckets, materials, terrain` (the kit's `93e-et-export.js`: the Scyvoi engine's merged meshes as buckets, a `standard` material record per mesh linked to its KMAT record, the ground sampled). Godot: `tests/export/eternian_test.gd` (the meshes, their triangles and materials, records' uids recomputed, cultures, parents, the ground at the probes) |
-| the Throne, the caldera rim (`throne-caldera.html`) | `0,-1500,300,-1200` | `registry, items, buckets?, materials, textures, terrain, stage`; `--sections` the same (atmos throws). No cell of its map holds a bucket: the kit's baked meshes are trees and the summit has none, so `buckets?` |
+| the Throne, the caldera rim (`throne-caldera.html`) | `0,-1500,300,-1200` | `registry, items, buckets?, materials, textures, terrain, stage, atmos`. No cell of its map holds a bucket: the kit's baked meshes are trees and the summit has none, so `buckets?` |
 | the Throne, the lava tube (`throne-tube.html`) | `-320,-320,-20,-20` | `registry, items, buckets, materials, textures, terrain, stage` (`HEAT.render` draws the shimmer after the scene; the stage's panorama and the terrain read ok, as the caldera's) |
 
 Every other build is preview-only until it names a profile and meets it.
+
+**Opting a page into `atmos` or `water` (2026-10-20).** The mechanism is shared and already here: `09`'s adapters fill `atmos` from `ATMOS.export` and `water` from `WATER.surfaces`, and answer null (status `empty`) on a page without the module, so a page that lacks them still exports. A page opts in with one line: `89-atmos-8-export.js` in its `CORE_ATMOS` (or a Throne station's `station.json` `atmos` list, beside `89-atmos-0-core.js`; it must come before `89-atmos-9-host.js`, which wraps it) and `atmos` in its verify's profile; `water` fills once a page binds core/water (`20-core-water.js`, `50-core-water-draw.js`) with a surface that meets the case's box. The eleven biome kits whose water is a host shader (`MAT_WATER`) and that bind no core/atmos have nothing to export and stay as they are.
 
 ## Godot
 

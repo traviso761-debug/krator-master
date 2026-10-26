@@ -8,7 +8,7 @@ The planner is Voth's site editor, read IN PLACE from settlements/voth (never co
 shell (with this page's own words swapped in), the site model (10), the scene (50) and the tools (55). Voth's own
 ground, cantons and start are left out. In their place:
   - the open world's ground: the isle demo's region (openworld/isle-demo/data) and the world's height and colour
-    fragments (little-demo's 41 and 42, isle-demo's 43: the coast as terrain), so what is drawn here stands on the
+    fragments (the world's 41 and 42 in openworld/isle-demo/src/world, and 43: the coast as terrain), so what is drawn here stands on the
     ground the open world draws;
   - src/10-isle-frame.js [G data]: a town's frame (local metres round its settlement, the sea at 0) and a VOTH object
     made from that ground, the names Voth's fragments read;
@@ -25,7 +25,7 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 VOTH = os.path.join(ROOT, 'settlements', 'voth')
 VSITE = os.path.join(VOTH, 'targets', 'voth-site')
 WORLD = os.path.join(ROOT, 'openworld', 'isle-demo')
-LD = os.path.join(ROOT, 'openworld', 'little-demo', 'src')
+LD = os.path.join(ROOT, 'openworld', 'isle-demo', 'src', 'world')
 DIST = os.path.join(HERE, 'dist')
 SITE_JSON = os.path.join(HERE, 'site', 'isle-site.json')
 REC = os.path.join(HERE, 'voth-sources.json')

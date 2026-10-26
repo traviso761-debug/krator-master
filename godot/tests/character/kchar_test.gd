@@ -355,6 +355,7 @@ func _init() -> void:
 		var q0 := fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))
 		fig._process(0.4)
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
+		_lizard(fig, rec)
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
@@ -435,3 +436,91 @@ func _init() -> void:
 
 	print("kchar_test: %s" % ("all passed" if fails == 0 else "%d failed" % fails))
 	quit(1 if fails else 0)
+
+
+# the non-human parts (core/charactermodels/tools/nonhuman.py, a spike; as verify.py's nonhuman): the Lizardman's tail and
+# head drawn in place of the hair and the head's skin, its face parts left out; at rest every bone carrying them at its
+# bind; in the idle, a walk and a crouch the tail's points finite, out of the thighs and shins (their radius less 5 mm)
+# and above the floor, lagging behind the hips in the walk; the jaw opens now and then
+func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
+	var tl := {}
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_tail":
+			tl = it["tail"]
+	if tl.is_empty():
+		return
+	var r2 := rec.duplicate(true)
+	r2["mods"] = ["mod_tail", "mod_head_lizard"]
+	if r2.get("hair") == null:
+		r2["hair"] = "short02"
+	fig.play("")
+	fig.apply(r2)
+	var shown := {}
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible:
+			shown[mi.get_meta("part")["key"]] = true
+	var want := {}
+	for p in KChar.parts(r2, fig.kit):
+		want[p["key"]] = true
+	ok(shown.keys().size() == want.keys().size() and shown.has("mpfb_male/mod_tail") and shown.has("mpfb_male/mod_head_lizard")
+		and not shown.has("mpfb_male/short02"), "lizard: tail and head drawn, the hair not (%s)" % [shown.keys()])
+	var nothing := 0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base":
+			for s in mi.mesh.get_surface_count():
+				if mi.mesh.surface_get_name(s) in ["Human.lips", "Human.low-poly", "Human.eyebrow001"] and mi.get_surface_override_material(s) == KCharFigure._nothing():
+					nothing += 1
+	ok(nothing == 3, "lizard: the lips, eyes and brows are left out (%d of 3)" % nothing)
+	fig.rest_pose()
+	var worst := 0.0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.skin and mi.get_meta("part")["role"] == "mod":
+			for k in mi.skin.get_bind_count():
+				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
+				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
+	ok(worst < 1e-3, "lizard: at rest the tail's and head's bones are at their binds (worst %f)" % worst)
+	var legs := []
+	for cp in fig._caps:
+		var nm := fig.skeleton.get_bone_name(cp["a"])
+		if cp.get("pa") == null and (nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe")):
+			legs.append(cp)
+	var rad: Array = tl["radius"]
+	for c in ["idle", "walk", "ual_crouch"]:
+		fig.play(c)
+		var deep := 0.0
+		var low := 0
+		var bad := 0
+		var lag := 0.0
+		for f in 90:
+			fig._process(1.0 / 30.0)
+			var st := fig.tail_state()
+			var floor_y := -fig.skeleton.position.y / fig.size
+			for i in st["x"].size():
+				var x: Vector3 = st["x"][i]
+				if not x.is_finite():
+					bad += 1
+					continue
+				if i == 0:
+					continue
+				lag = maxf(lag, (x - st["tw"][i]).length())
+				if x.y < floor_y - 0.001:
+					low += 1
+				for cp in legs:
+					var e := fig._cap_ends(cp)
+					var ab: Vector3 = e[1] - e[0]
+					var t := clampf((x - e[0]).dot(ab) / ab.length_squared(), 0.0, 1.0)
+					var rr := float(cp["ra"]) + (float(cp["rb"]) - float(cp["ra"])) * t + float(rad[mini(i, rad.size() - 1)])
+					deep = maxf(deep, rr - x.distance_to(e[0] + ab * t))
+		ok(bad == 0 and low == 0, "lizard %s: tail points finite and above the floor (%d, %d)" % [c, bad, low])
+		ok(deep < 0.005, "lizard %s: the tail keeps out of the legs (%.3f m in)" % [c, deep])
+		if c == "walk":
+			ok(lag > 0.01, "lizard walk: the tail lags behind the hips (%.3f m)" % lag)
+	var jb := fig.skeleton.find_bone("face_jaw")
+	var open := 0.0
+	for f in 180:
+		fig._process(1.0 / 30.0)
+		open = maxf(open, fig.skeleton.get_bone_pose_rotation(jb).angle_to(KChar._q(fig.skel["joints"][jb]["r"])))
+	ok(open > 0.05, "lizard: the jaw opens (%.3f rad)" % open)
+	print("kchar_test: the lizard checked (tail in idle, walk and crouch; jaw open %.2f rad)" % open)
+	fig.play("")
+	fig.apply(rec)

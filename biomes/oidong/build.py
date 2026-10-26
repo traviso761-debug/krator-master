@@ -63,7 +63,7 @@ CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 # the shared atmosphere (core/atmos/README.md): its core, presets and the cloud deck (89-atmos-d-clouddeck.js), bound by
 # 89z-host-atmos.js. The deck is a field written from the presets, so a game engine draws the same cloud (GODOT.md).
-CORE_ATMOS=[]
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 2026-10-20: bound by 89a-host-atmos.js (the one-time init; core/water waits for its phase)
 CORE_A=os.path.normpath(os.path.join(HERE,'..','..','core','atmos'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
@@ -90,6 +90,7 @@ CORE_HOST=khost.FULL   # the whole interface (core/host/README.md): the record-d
 khost.resolve(PATH,CORE_HOST)
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE_A,f)
+PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)

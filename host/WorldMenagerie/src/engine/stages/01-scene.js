@@ -1,6 +1,12 @@
 // ---------- scene: renderer, camera, the sun's day, sky ----------
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),(C.cameraFar||24000)*WORLD);   // a streamed metropolis draws further (C.cameraFar)
+// The far plane has to cover what the controls allow. The camera may pull out to 1.15 map diagonals from a target
+// that can itself be at a corner (07-ui, DIST_MAX), and from there the far corner of the map is another diagonal
+// away; 24 km times the world scale is only 1.2 times the map's longer side, so on every map the far side of the
+// ground, the sea and the horizon ring were cut off along a straight line once the wheel went past about two
+// thirds of the way out, and on the Olympic Peninsula, 160 km across, a sliver of the near edge was all that was left.
+const DIAG=Math.hypot(B.w,B.d),REACH=Math.max(9000,DIAG*1.15)+DIAG/2;   // how far from the origin the camera can get, before altitude
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),Math.max((C.cameraFar||24000)*WORLD,REACH*2.1));   // a streamed metropolis draws further (C.cameraFar)
 const renderer=createRenderer(THREE,{pixelCap:1.5});installContextLoss(renderer);
 // quality: ?quality=low|medium|high, or the city's own default. Low drops shadows entirely, which on a
 // weak GPU is worth more than everything else put together.
@@ -53,7 +59,7 @@ const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor
 // of the dome is clipped away and the clear colour shows through along the sphere's own facets.
 // Order is: horizon ring < sky dome < far plane.
 const SKY_R=Math.max(2000,(camera.far-Math.hypot(B.w,B.d)/2)*0.92);ctx.skyR=Math.round(SKY_R);
-const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.userData.noWire=true;sky.renderOrder=-1;scene.add(sky);   // the dome is not part of the model, so the wireframe leaves it alone
+const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.userData.noWire=true;sky.userData.noFingerprint=true;sky.renderOrder=-1;scene.add(sky);   // the backdrop is sized by the far plane, so it is no part of a page's layout fingerprint   // the dome is not part of the model, so the wireframe leaves it alone
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
 function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);

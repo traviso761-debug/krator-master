@@ -61,8 +61,7 @@ const GROUND=(function(){const N=800,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
 _mark('ground');
 
 // ---------------------------------------------------------------- the pools
-const POOL_MAT=new THREE.MeshLambertMaterial({color:0x5a6a5a,transparent:true,opacity:.86});
-POOLS.forEach(P=>{const g=new THREE.CircleGeometry(P.r*1.2,28).rotateX(-Math.PI/2);g.translate(P.x,P.level,P.z);
- const m=new THREE.Mesh(g,POOL_MAT);m.userData.inspectLabel=P.name;m.renderOrder=1;scene.add(m);
- REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-3,r:P.r*1.2,h:6,pool:P.key});});
-_onLight.push(m=>{POOL_MAT.color.setHex(m==='night'?0x101814:0x5a6a5a);GROUNDU.uNight.value=m==='night'?1:0;});
+// 2026-10-20 (core/water migration, phase 2): each pool is a WATER.still disc (POOL_STILLS), drawn by 89w-host-water.js (before, a Lambert disc each)
+const POOL_STILLS=POOLS.map(P=>WATER.still({name:P.name,level:P.level,poly:Array.from({length:28},(_,k)=>{const a=k/28*TAU;return[P.x+Math.cos(a)*P.r*1.2,P.z+Math.sin(a)*P.r*1.2];})}));
+POOLS.forEach(P=>{REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-3,r:P.r*1.2,h:6,pool:P.key});});
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
