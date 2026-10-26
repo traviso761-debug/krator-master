@@ -46,7 +46,7 @@ const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();const HAZE=new THREE.Color(0xc6ccbc);scene.fog=new THREE.FogExp2(HAZE.getHex(),.00017);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,14000);
-scene.add(new THREE.HemisphereLight(0xc8d4cc,0x4a4630,.62));
+const HEMI=new THREE.HemisphereLight(0xc8d4cc,0x4a4630,.62);scene.add(HEMI);   /* the shared sky (89s-host-sky.js) sets it by the hour */
 const sun=new THREE.DirectionalLight(0xfff2d4,1.45);sun.position.set(-1200,900,-600);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xb0cfc8,.30);fill.position.set(800,400,900);scene.add(fill);
 

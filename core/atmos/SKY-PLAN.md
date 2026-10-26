@@ -362,7 +362,7 @@ show the drift; record it in its `KNOWN_ISSUES.md`).
 | Step | What | Why first |
 |---|---|---|
 | S0 | the model, the presets, the shader and its Godot twin, the tests; a demo page in `core/atmos/demo/` showing the standard preset at any hour and day, with the ring and ridge checks. Its controls: hour, date (in the Jimjam-named months and Jimjam's counts), a site picker (Voth, the hyperjungle, the Throne, the glacier, an Outer Wall crest) so the giant's spread and stars by day can be judged, air pressure, cloud cover, weather; presets for game start at 06:00, a winter midnight under the cluster, a summer night without it, and an eclipse near the equinox | nothing changes on any page; the owner judges the sky itself, the procedural Pleiades night and the giant's phases here, and decides on the nebula texture |
-| S1 | swbay (the template biome; nwbay shares its file) | the simplest dome, a reachable sun |
+| S1 | swbay (the template biome; nwbay keeps its own copy of the same file, migrated later) | the simplest dome, a reachable sun. **Done 2026-10-26** on `claude/sky-s1-swbay` (from the biome rebuild's 3c47ae0f7): `biomes/swbay/src/89s-host-sky.js` at Voth's site on the host clock, the cloud shade on its lit materials from the page (core/biome untouched), the water's skylight from the sky's scene; the look differences are in its `KNOWN_ISSUES.md` |
 | S2 | nhighlands | the hardest: the three light modes, the far-country mesh in front, its fog curve; proves the `setLightMode` shim |
 | S3 | the remaining biome kits, in groups by sky family: the painted Walls (sedesert, nsemiarid, ebadlands, eastabyss, crater-drylands), the humid ones (hyperjungle and its readers, swlowlands, nwlowlands, rift, xanadu, oidong and Longsong), the ones with light modes (geyser, ringisles), shighlands (the cloud sea), ehighlands | the readers rebuild with their source |
 | S4 | Throne station 1, then the ten stations | the most landmarks (the mountain, the plume), the unreachable sun, station 1's budget |
@@ -448,7 +448,7 @@ shade), the `atmos_cloudshade` chunk (`ATMOS.cloudShadeGLSL()`), `ATMOS.cloudSha
 pixel, Lambert per vertex, rain darkening and wet roughness from `W.wet`), the demo's ground (`#alt=600&pitch=-0.5` shows
 the shadows from above; a rain weather), and Godot's `shaders/atmos_cloudshade.gdshaderinc` over new `atm_*` globals
 (`project.godot`), shown on `tests/sky/sky_shot.gd`'s ground. The JS twin `ATMOS.cloudCoverAt` and the biome core's hooks
-are still to do.
+are still to do. swbay (S1) hooks its own materials from its host fragment (`ATMOS.cloudShade` over the scene once the build is done), so the biome core's makers need no change until a later step wants every kit at once. `ATMOS.cloudShade` keeps a material's own program key and appends its own (the biome kits key each foliage and animation variant; overwriting it merged their programs).
 
 7. **Order.** It lands with the sky's first biome (S1): the world-anchored field is a change to the sky shader, and the hooks
    need the biome core's material makers, which the biome rebuild owns; the two sessions coordinate that step. Cost: one

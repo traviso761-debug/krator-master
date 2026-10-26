@@ -100,5 +100,8 @@
     sh.fragmentShader=head+'varying vec3 atmWPos;\n'+sh.fragmentShader.replace('#include <lights_fragment_begin>',lfb)
      .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*uWet*step(0.01,uPorosity);');}
    sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=1.0-0.38*uWet*uPorosity;');};
-  mat.customProgramCacheKey=()=>'atmos-cloudshade-'+por;mat.needsUpdate=true;return mat;};
+  // keep the material's own program key (the biome kits key each foliage and animation variant) and add ours; with none,
+  // its old hook's source stands in, as three's default key would have read it
+  const own=mat.customProgramCacheKey!==A.T.Material.prototype.customProgramCacheKey?mat.customProgramCacheKey:null,src=prev?prev.toString():'';
+  mat.customProgramCacheKey=function(){return(own?own.call(this):src)+'|atmos-cloudshade-'+por;};mat.needsUpdate=true;return mat;};
 })();

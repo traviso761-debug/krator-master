@@ -4,11 +4,11 @@
 // flooded from the bay's middle so the water stops where the beach is and laps a white edge where it is under 1.4 m, the sky in the water from core/atmos's
 // skylight); the far country's water is a second, flat surface under it (OUTER_WATER, a metre-wide step below, masked off over the bay); the river is
 // RIVER's ribbon (ripples carried down the current, white where it steepens, along the banks), the cataracts RIVER_FALLS' curtains with their plunge
-// pools. The page's own plane, ribbon, foam cards and shader are gone (45-host-stage.js). The sky in the water is a capture of this page's dome and
-// giant, given to the water only (WENV: the page's own materials keep their lighting). CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is unchanged.
-{const env=new THREE.Scene(),WENV={environment:null};
- env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
- ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x5a6a4a)});}
+// pools. The page's own plane, ribbon, foam cards and shader are gone (45-host-stage.js). The sky in the water is a capture of the shared sky (its
+// giant, ring and clouds at the hour), given to the water only (WENV: the page's own materials keep their lighting). CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is unchanged.
+{const WENV={environment:null};   /* the shared sky's own scene (89s-host-sky.js), recaptured as the hour moves */
+ ATMOS.skylight({renderer,sky:SKY.scene,scene:WENV,ground:()=>new THREE.Color(...(SKY.look?SKY.look.hemiG:[.35,.42,.29])).convertSRGBToLinear(),
+  key:()=>[SKY_CLOCK.day,Math.round(SKY_CLOCK.hour*4),SKY.look&&SKY.look.cover.toFixed(2)].join()});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // the old ribbon's foam cards began at a 6% grade and were full at 14%: that is the river's rapids band (the flow's own option, 2026-10-21; it was a page-wide preset)
 const BAY_WATER=WATER.open({name:'The bay',level:0,swell:[[.06,45,225,0,.04],[.035,18,200,1.3,.03]],field:.12,bounds:BAY_BOX,
