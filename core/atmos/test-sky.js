@@ -15,8 +15,8 @@ const at=(site,yearDay,hour)=>A.skyState(site,hour,yearDay-S.startDay);
 const sunAA=(site,yd,h)=>V.altAz(at(site,yd,h).sunDir);
 
 // ---- the site frame and the giant per site
-ok('Voth is the reference: 40 S, the sub-giant point 88.25 E',near(voth.latitude,-40)&&near(voth.subGiantLon,88.25),near(voth.latitude,-41));
-{const g=V.altAz(at(voth,259,12).giantDir);ok('the lifted giant over Voth: ESE, 25 up give or take its daily bob (the owner, 2026-10-25)',near(g.alt,25,2.2)&&near(g.az,121.0,2.5),near(g.alt,35,.05));}
+ok('Voth is the reference: 40 S, the sub-giant point 57 E',near(voth.latitude,-40)&&near(voth.subGiantLon,57),near(voth.latitude,-41));
+{const g=V.altAz(at(voth,259,12).giantDir);ok('the giant over Voth: NE, ~24.7 up (21-sky.js) give or take its daily bob',near(g.alt,24.66,2.2)&&near(g.az,67.34,2.5),near(g.alt,35,.05));}
 {const a=A.siteAt(446,1087),b=A.siteAt(446,1345);ok('the Rift (px y 1087..1345) lies at 49.5..55.6 S',near(a.latitude,-49.45,.1)&&near(b.latitude,-55.6,.1),near(a.latitude,-48,.1));}
 {const L=S.giant.libration,inc=L.incDeg;L.incDeg=0;const e0=L.ecc;L.ecc=0;const g0=at(voth,259,6).giantDir,g1=at(voth,100,21).giantDir;L.incDeg=inc;L.ecc=e0;
  ok('without libration the giant does not move with the hour or the season',near(V.dot(g0,g1),1,1e-12),!near(V.dot(g0,g1),1,1e-12));
@@ -61,8 +61,9 @@ const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit
 // ---- eclipses come in seasons round the equinoxes
 {const any=[],tot=[];for(let d=0;d<365;d++){let m=0;for(let h=0;h<24;h+=.1)m=Math.max(m,at(voth,d,h).eclipse);if(m>0)any.push(d);if(m>.99)tot.push(d);}
  const nearSol=d=>Math.min(Math.abs(d-350),Math.abs(d+15));
- ok('eclipses: 14..28 days a year, all round the summer solstice, a few total (the owner: a few a year)',any.length>=14&&any.length<=28&&any.every(d=>nearSol(d)<16)&&tot.length>0,any.length>60);}
-{const s=at(voth,258.75,8);ok('no eclipse at the equinoxes',s.eclipse===0&&at(voth,76.25,8).eclipse===0,s.eclipse>0);}
+ const nearEq=d=>Math.min(Math.abs(d-258.75),Math.abs(d-76.25),Math.abs(d-76.25-365));
+ ok('eclipses as they would be (the owner: realistic): ~2.5 months round each equinox, none near the solstices',any.length>120&&any.length<200&&any.every(d=>nearEq(d)<50)&&tot.length>100,any.length<60);}
+{const s=at(voth,258.75,12);ok('no eclipse at an equinox noon (the sun is north, the giant north-east)',s.eclipse===0,s.eclipse>0);}
 
 // ---- the Pleiades' season: the winter nights' cluster
 const cAlt=(yd,h)=>V.altAz(at(voth,yd,h).clusterDir).alt;

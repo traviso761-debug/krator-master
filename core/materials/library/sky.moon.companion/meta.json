@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "ad10fa5e9a06235e715dc670abc77ed119c8dbb7",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of a small Ceres-like dwarf world. Dusty dark grey regolith #5a5856 to #6e6b66, densely cratered with craters of every size, old craters softened and overlapping, one large ancient basin, a few fresh craters with brighter ejecta rays #8a8780, and two or three small brilliant white salt deposits #f2f2ec on the floors of young craters. Matte. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}

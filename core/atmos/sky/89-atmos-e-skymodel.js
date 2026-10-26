@@ -1,11 +1,10 @@
 // ================================================================= ATMOS — sky model: where everything in Krator's sky is, at any site and hour
 // [G data] The ephemeris of the shared sky (core/atmos/SKY-PLAN.md, 3.1), lifted from Voth's 21-sky.js and made whole:
 // the sun from latitude, tilt, day of year and hour; the gas giant FIXED per site (Krator is tidally locked: its
-// position follows from the site's latitude and its longitude from the sub-giant point). THE GIANT IS LIFTED (the
-// owner, 2026-10-25): it hangs at declination -39 (retuned for the daily nod), not on the celestial equator where a tidally locked moon's giant
-// would be, so the sun (declination -23..23) passes behind it only ~27 days a year round the southern summer solstice
-// (12 of them total) instead of ~2.5 months round each equinox. A deliberate cheat: its ring plane is taken through the
-// line of sight so the rings stay a hairline. The giant's moons orbit in its equator, the plane of its rings, so from
+// position follows from the site's latitude and its longitude from the sub-giant point). THE GIANT IS ON THE EQUATOR (the owner, 2026-10-25,
+// after a spell lifted to declination -39 for rarer eclipses): where a tidally locked moon's giant hangs, so the sun passes behind it
+// ~2 h a day for ~2.5 months round each equinox, the realistic count. decDeg would lift it again. Its ring plane is taken through
+// the line of sight, tilted axisTiltDeg in the sky, so the rings stay a near-level hairline. The giant's moons orbit in its equator, the plane of its rings, so from
 // Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Ceres-like, a Trojan sharing Krator's own
 // orbit 60 degrees ahead, so it hangs fixed beside the giant and waxes and wanes once a day; the Week (6.87 d, two-faced,
 // Iapetus-like) and the Thirteen (12.55 d, a carbon world with tar seas) orbit outside Krator, so their phases,
@@ -23,10 +22,9 @@
   dayH:24, yearD:365, tilt:23, solsticeDay:350,      // southern summer solstice (LORE); the spring equinox is day 258.75
   startDay:259, startHour:6,                         // game start: the southern spring equinox, sunrise (the owner, 2026-10-25)
   // the site frame on the scale model (2 km/px, x east, y south): Voth at 40 S, 84 km a degree (radius ~4,800 km), and
-  // the point under the giant 88.25 degrees east of Voth, off the mapped crater, so Voth sees it ESE at the canon 25 degrees
-  // up, low enough for level shots (the owner, 2026-10-25); across the map it stands 17 (west) to 39 (east) degrees up
-  frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:88.25},
-  giant:{diaDeg:30, decDeg:-39, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000,
+  // the point under the giant 57 degrees east of Voth (21-sky.js): Voth sees it NE, 24.7 degrees up (the canon)
+  frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:57},
+  giant:{diaDeg:30, decDeg:0, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000,
    // the daily libration (the owner, 2026-10-25): Krator's orbit is tilted incDeg to the giant's equator, so once an orbit the
    // giant nods north and south by it and the rings open and close through edge-on (turning their lit face to Krator, then
    // their unlit one); the Laplace chain keeps the orbit a little eccentric (ecc), so the giant also swings east and west by
@@ -144,7 +142,8 @@
    const vx=-Math.sin(th),vy=Math.cos(th),lx=vx*xh[0]+vy*xh[1],ly=vx*yh[0]+vy*yh[1];
    mx-=K[0];my-=K[1];const dist=Math.hypot(mx,my),b=Math.atan2(mx*yh[0]+my*yh[1],mx*xh[0]+my*xh[1]);
    const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
-   return{name:m.name,kind:m.kind,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
+   const md=norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),gw=norm([0,1,2].map(k=>giantDir[k]*kr-md[k]*dist));   // gw: from the moon to the giant
+   return{name:m.name,kind:m.kind,toGiant:gw,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
     radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;

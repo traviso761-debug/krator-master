@@ -39,7 +39,7 @@
  const clock=KCLOCK.make({hour:SKY.startHour,day:0,running:false});const hooks=[];
  A.init({THREE:T,scene,camera,hour:()=>clock.hour,onFrame:fn=>hooks.push(fn),ground:()=>0,seed:1,err:m=>{$('errs').textContent+=m+'\n';},viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
  const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges});};
- const S=A.sky(preset(site),{renderer,camera,scene,sun,hemi,clock,weather:()=>WX[wx],skylight:true});
+ const S=A.sky(preset(site),{renderer,camera,scene,sun,hemi,clock,weather:()=>WX[wx],skylight:true,moonAtlas:typeof SKY_MOON_ATLAS!=='undefined'?SKY_MOON_ATLAS:null});
  window._sky=S;
  // ---- looking about: drag, wheel
  let yaw=-Math.PI/2,pitch=.05,drag=null;

@@ -9,7 +9,7 @@ weather, and preset views (game start at sunrise, a winter midnight under the Pl
 the next eclipse, the Double Dark). A chrome sphere shows the sky's light (ATMOS.skylight) on standard materials.
 Nothing here is a runtime dependency: the page is a viewer. three.js r128 is inlined from a local copy. Deterministic.
 """
-import argparse, os, sys
+import argparse, base64, io, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ATMOS = os.path.dirname(HERE)
@@ -35,6 +35,24 @@ def find_three():
     sys.exit('build.py: no local three.min.js (r128) found (an LFS pointer is not enough: git lfs pull)')
 
 
+MOONS = ['companion', 'week', 'thirteen', 'day', 'two-day', 'four-day']   # ATMOS.SKY.moons order
+
+
+def moon_atlas():
+    """The six moon maps (core/materials/library/sky.moon.*) stacked into one 512x1536 JPEG, a 2:1 row a moon, as a data URL."""
+    from PIL import Image
+    W, H = 512, 256
+    atlas = Image.new('RGB', (W, H * len(MOONS)))
+    for i, m in enumerate(MOONS):
+        p = os.path.join(ROOT, 'core', 'materials', 'library', 'sky.moon.' + m, 'albedo.jpg')
+        if os.path.getsize(p) < 1000:
+            sys.exit('build.py: %s is an LFS pointer (git lfs pull)' % p)
+        atlas.paste(Image.open(p).convert('RGB').resize((W, H), Image.LANCZOS), (0, H * i))
+    b = io.BytesIO()
+    atlas.save(b, 'JPEG', quality=86, optimize=True)
+    return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
+
+
 def read(p):
     with open(p, encoding='utf-8') as f:
         return f.read()
@@ -44,7 +62,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default=os.path.join(HERE, 'dist', 'sky-demo.html'))
     a = ap.parse_args()
-    js = '\n'.join('// ---- ' + os.path.relpath(p, ROOT).replace(os.sep, '/') + '\n' + read(p) for p in FRAGMENTS)
+    js = 'var SKY_MOON_ATLAS="' + moon_atlas() + '";\n' + '\n'.join('// ---- ' + os.path.relpath(p, ROOT).replace(os.sep, '/') + '\n' + read(p) for p in FRAGMENTS)
     page = read(os.path.join(HERE, 'src', '00-head.html')).replace('/*THREE*/', read(find_three())).replace('/*JS*/', js)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, 'w', encoding='utf-8', newline='\n') as f:

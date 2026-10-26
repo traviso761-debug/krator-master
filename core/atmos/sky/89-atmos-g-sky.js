@@ -22,6 +22,7 @@
   'uniform float uSunI,uHazeFloor,uDayStars,uNight,uEclipse,uShineI,uSpin,uPixAng,uTime,uFogD;',
   'uniform mat3 uEq;uniform highp sampler3D uNoise;',   // the noise volume (ATMOS.skyNoiseVolume)                                   // world -> inertial (the stars' sphere)
   // uPole: the giant's spin axis (its bands and ring plane), not Krator's pole
+  'uniform sampler2D uMoonMaps;uniform float uMoonMapOn;uniform vec3 uMoonG[6];',   // the moon maps, one atlas, a row a moon (core/materials/library/sky.moon.*); uMoonG: moon to giant
   'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];uniform vec4 uPN;',   // uPN: the planetary nebula (inertial direction, radius in radians)
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
@@ -192,7 +193,7 @@
   'vec3 atmSkyVitriol(vec3 q,float T){float land=smoothstep(0.02,0.12,atmSkyFbm(q*2.2+vec3(5.0),5,380u));',
   ' vec3 g=mix(vec3(0.30,0.21,0.10),vec3(0.36,0.12,0.08),land);',
   ' vec3 qc=vec3(q.x*cos(T*0.02)-q.z*sin(T*0.02),q.y,q.x*sin(T*0.02)+q.z*cos(T*0.02));float cl=atmSkyFbm(vec3(qc.xz*2.0,qc.y*6.0),5,390u)*0.5+0.5;',
-  ' float cov=smoothstep(0.38,0.62,cl+0.15*sin(q.y*9.0));vec3 cc=mix(vec3(0.86,0.78,0.60),vec3(0.95,0.91,0.80),smoothstep(0.5,0.9,cl));return mix(g,cc,cov);}',
+  ' return g+0.0*cl;}',   // its clouds are atmSkyVitriolCloud, over the map or this
   // the Thirteen, a carbon world (the owner's references, 2026-10-25): rust-orange and ochre crusts crazed with dark lace,
   // black tar seas over about a quarter of it with bitumen shores, thin pale haze drifting over. a = the sea (for its glint)
   'vec4 atmSkyCarbon(vec3 q,float T){float n=atmSkyFbm(q*1.8+vec3(11.0),5,400u);float sea=1.0-smoothstep(-0.13,-0.09,n),shore=1.0-smoothstep(-0.09,-0.02,n);',
@@ -200,6 +201,17 @@
   ' float lace=pow(1.0-abs(atmSkyNoise(q*9.0+vec3(2.0),404u)),10.0);c=mix(c,vec3(0.20,0.10,0.06),lace*0.6);c=mix(c,vec3(0.26,0.13,0.07),shore*0.8);',
   ' c=mix(c,vec3(0.030,0.025,0.022),sea);float hz=smoothstep(0.62,0.85,atmSkyFbm(vec3(q.xz*2.0+T*0.004,q.y*6.0),3,406u)*0.5+0.5);',
   ' return vec4(mix(c,vec3(0.86,0.80,0.72),hz*0.6),sea*(1.0-hz));}',
+  // clouds over the two moons with air (the owner, 2026-10-25), in the moon's own frame P (x to the giant, y back from the
+  // leading face, z north), zonal and turning with world time T, faster at the equator: the vitriolic world's
+  // sulfuric-acid decks, bright cream-yellow banded cloud over about half of it; the carbon world's thin organic smog,
+  // tan and orange, with white high wisps. Each returns (colour, cover)
+  'vec3 atmSkyCloudP(vec3 P,float T,float rate){float la=asin(clamp(P.z,-1.0,1.0)),lo=atan(P.y,P.x)+T*rate*(1.0+0.35*cos(la*2.0));return vec3(cos(lo)*cos(la),sin(lo)*cos(la),P.z);}',
+  'vec4 atmSkyVitriolCloud(vec3 P,float T){vec3 c=atmSkyCloudP(P,T,0.05);vec3 z=vec3(c.xy*2.2,c.z*7.0+T*0.002);',
+  ' float n=atmSkyFbm(z+vec3(0.6*atmSkyFbm(z*0.7,2,412u)),5,410u)*0.5+0.5;float cov=smoothstep(0.42,0.66,n+0.12*sin(c.z*8.0));',
+  ' vec3 cc=mix(vec3(0.84,0.76,0.52),vec3(0.97,0.94,0.80),smoothstep(0.55,0.9,n));return vec4(cc,cov*0.92);}',
+  'vec4 atmSkyCarbonCloud(vec3 P,float T){vec3 c=atmSkyCloudP(P,T,0.035);vec3 z=vec3(c.xy*1.7,c.z*3.6-T*0.003);',
+  ' float w=atmSkyFbm(z+vec3(0.5*atmSkyFbm(z*0.8,2,424u)),4,420u)*0.5+0.5,f=pow(1.0-abs(atmSkyFbm(z*2.0+vec3(1.3),3,422u)),3.0);float cov=smoothstep(0.60,0.80,w+0.10*f);',
+  ' return vec4(mix(vec3(0.88,0.66,0.44),vec3(0.96,0.92,0.86),smoothstep(0.62,0.9,w+0.1*f)),cov*0.7);}',
   // Iapetus: the hemisphere that leads in its orbit (V, its velocity) coal-dark, the trailing one bright as snow, the border
   // ragged, bright craters punched into the dark side, and the equatorial ridge (round its orbit's normal, uRingN)
   'vec3 atmSkyIapetus(vec3 N,vec3 V,vec3 q,float cm){float n=atmSkyFbm(q*3.0,4,310u);float lead=smoothstep(-0.18,0.22,dot(N,V)+0.22*n);',
@@ -213,10 +225,16 @@
   '  return vec4(vec3(0.86,0.82,0.66)*(0.10+0.95*lit),a);}',
   ' vec3 x=(d-m*c)/sin(r);float xx=min(dot(x,x),1.0);vec3 N=normalize(x-m*sqrt(1.0-xx));vec3 L=uMoonL[i];',
   ' vec3 q=vec3(dot(N,uRingT),dot(N,normalize(cross(uRingT,m))),dot(N,m));float ndl=dot(N,L),l=((k>1.5&&k<2.5)||k>5.5)?smoothstep(-0.12,0.45,ndl):max(ndl,0.0);',
-  ' float cm=(k>0.5&&k<5.5&&(k<1.5||k>2.5))?atmSkyCraterMask(q,240u+uint(k)*16u):0.0;',
-  ' vec4 cb=k>6.5?atmSkyCarbon(q,uMoonT):vec4(0.0);',
-  ' vec3 alb=k<3.5?atmSkyMoonSurf(q,k,cm):k<4.5?atmSkyIapetus(N,uMoonV[i],q,cm):k<5.5?atmSkyMimas(N,uMoonV[i],L,q,cm):k<6.5?atmSkyVitriol(q,uMoonT):cb.rgb;vec3 em=vec3(0.0);',
-  ' if(k<0.5){vec4 dv=atmSkyDayVolc(q,uMoonT);alb=mix(alb,vec3(0.10,0.045,0.025),dv.x);alb=mix(alb,vec3(0.80,0.76,0.62),dv.z*0.8);',
+  ' vec3 nN=normalize(uRingN),fG=uMoonG[i],fP=normalize(fG-nN*dot(fG,nN)),lV=uMoonV[i],lP=normalize(lV-fP*dot(lV,fP)-nN*dot(lV,nN)+1e-5);',
+  ' vec3 P=vec3(dot(N,fP),-dot(N,lP),dot(N,nN));vec3 alb;vec4 cb=vec4(0.0);vec3 em=vec3(0.0);',
+  ' if(uMoonMapOn>0.5){vec2 muv=vec2(0.5+atan(P.y,P.x)/6.2831853,0.5-asin(clamp(P.z,-1.0,1.0))/3.14159265);',
+  '  alb=texture(uMoonMaps,vec2(muv.x,1.0-(float(i)+clamp(muv.y,0.004,0.996))/6.0)).rgb;',
+  '  if(k>6.5)cb.a=1.0-smoothstep(0.05,0.13,dot(alb,vec3(0.3,0.55,0.15)));}',   // the tar seas, from the map: its near-black
+  ' else{float cm=(k>0.5&&k<5.5&&(k<1.5||k>2.5))?atmSkyCraterMask(q,240u+uint(k)*16u):0.0;if(k>6.5)cb=atmSkyCarbon(q,uMoonT);',
+  '  alb=k<3.5?atmSkyMoonSurf(q,k,cm):k<4.5?atmSkyIapetus(N,uMoonV[i],q,cm):k<5.5?atmSkyMimas(N,uMoonV[i],L,q,cm):k<6.5?atmSkyVitriol(q,uMoonT):cb.rgb;}',
+  ' if(k>5.5&&k<6.5){vec4 vc=atmSkyVitriolCloud(P,uMoonT);alb=mix(alb,vc.rgb,vc.a);}',
+  ' if(k>6.5){vec4 cc=atmSkyCarbonCloud(P,uMoonT);alb=mix(alb,vec3(0.80,0.52,0.28),0.10);alb=mix(alb,cc.rgb,cc.a);cb.a*=1.0-cc.a;}',
+  ' if(k<0.5){vec4 dv=atmSkyDayVolc(q,uMoonT);alb=mix(alb,vec3(0.10,0.045,0.025),dv.x*(uMoonMapOn>0.5?0.35:1.0));alb=mix(alb,vec3(0.80,0.76,0.62),dv.z*0.8);',
   '  em=vec3(1.0,0.40,0.07)*1.7*dv.y*(1.0-0.6*dv.z)*(0.35+0.65*(1.0-l));}',   // the glow, strongest where the sun is not
   ' vec3 col=alb*uMoonC[i]*(l*1.05+0.012)+uShineC*uShineI*0.04+em;',
   ' if(k>6.5){col+=vec3(1.0,0.92,0.80)*pow(max(dot(reflect(-L,N),-d),0.0),60.0)*1.4*cb.a;col+=vec3(0.95,0.55,0.25)*pow(1.0-max(dot(N,-d),0.0),3.0)*0.22*smoothstep(-0.3,0.2,ndl);}',   // the tar seas glint; a thin orange haze at the limb
