@@ -4,6 +4,14 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. 1.42 atm (PLAN.md), a milky dust haze. Kept from the dome: the
+      iced Outer Rim in the north and the ranges behind it, the mesas (ridges); the Inner Wall highlands in the south are
+      the map's own upland. biomes/scablands (an overlay build) takes this sky. biomes/scablands draws it too: 149 draw
+      calls before, 148 after, verify.py --assert passing. Draw calls at the default camera (verify.py --assert, GPU): 90
+      before, 87 after.
+
 - [ ] **The trumpets stand still in `?unique=1`**: the core's foliage shader has no spin; the variants' shader, which
       the page draws with, has.
       Stays open (2026-10-25): needs a spin in the core foliage shader (core/biome 30-core-foliage), a shared change.
