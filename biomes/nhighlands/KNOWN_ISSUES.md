@@ -2,6 +2,14 @@
 
 ## Open
 
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Outer Wall far over the lowlands (NW),
+      the Inner Wall's crest (SE, snow and forest by height) and the flank's spurs NE and SW (one ridge in two lobes), all
+      beyond the far country's real mesh (82-host-sky.js keeps it, with the fog curve and the light modes). The mist wisps
+      and the cumulus pinned over the range are not drawn. Draw calls at the default camera (verify.py --assert, GPU): 237
+      before, 234 after.
+
 - [ ] **The new flora (HANDOFF-FLORA.md, 2026-10-18): procedural, and what to look at again.** Everything new is painted
       in code: the fan-leaf cards (the staghorn and the sun-wheel took the owner's `card.staghorn` and `card.sunwheel` on 2026-10-19), the moss sleeves (the moss cushion's skin as a bark), the
       ghost alder (its own bark since 2026-10-25: the owner's bark.alder.lichen, nbark8), the serpentwood's and the banyan's bark (the kit's furrowed and smooth
