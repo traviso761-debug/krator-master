@@ -18,7 +18,7 @@
   rim:{name:'An Outer Wall crest (near airless)',px:450,py:1040,pressure:.3,ground:[.50,.50,.52],
    ridges:[{dist:38000,base:-1.4,amp:3.2,cycles:11,peaks:19,peakAmp:2.2,snowH:-200,rock:[.30,.30,.32],seed:31},
     {dist:110000,base:-3,amp:1.6,cycles:8,rock:[.36,.36,.34],forest:[.22,.26,.18],forestH:-3500,snowH:500,seed:32}]}};
- const WX={clear:{},overcast:{cover:.45,grey:.8},fog:{cover:.2,grey:.45,fog:1}};
+ const WX={clear:{},overcast:{cover:.45,grey:.8},rain:{cover:.5,grey:.65,wet:1},fog:{cover:.2,grey:.45,fog:1}};
  let site='voth',wx='clear';
  // ---- the page
  const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -41,6 +41,8 @@
  const preset=k=>{const s=SITES[k];return A.skyPreset('standard',{site:{px:s.px,py:s.py},air:{pressure:s.pressure},ridges:s.ridges});};
  const S=A.sky(preset(site),{renderer,camera,scene,sun,hemi,clock,weather:()=>WX[wx],skylight:true,moonAtlas:typeof SKY_MOON_ATLAS!=='undefined'?SKY_MOON_ATLAS:null});
  window._sky=S;
+ /* the clouds' shadows and the rain on the ground and the test pieces (SKY-PLAN.md 11.1): the same field as the sky's clouds */
+ A.cloudShade(groundMat,{porosity:1});scene.traverse(m=>{if(m.isMesh&&m!==ground&&m.material.isMeshStandardMaterial)A.cloudShade(m.material,{porosity:m.material.metalness>0.5?0:0.6});});
  // ---- looking about: drag, wheel
  let yaw=-Math.PI/2,pitch=.05,drag=null;
  const look=d=>{yaw=Math.atan2(-d[0],-d[2]);pitch=Math.max(-1.4,Math.min(1.55,Math.asin(d[1])));};
@@ -90,7 +92,7 @@
  setSite(site);
  const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));
   if(q.has('day'))clock.day=+q.get('day');if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('hour'))clock.set(+q.get('hour'));
-  if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}};
+  if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}if(q.has('alt'))camera.position.y=+q.get('alt');if(q.has('pitch'))pitch=+q.get('pitch');};
  hashView();addEventListener('hashchange',hashView);
  let last=null,frames=0;
  const frame=now=>{const dt=last==null?1/60:Math.min(.1,(now-last)/1000);last=now;

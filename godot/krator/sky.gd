@@ -15,6 +15,7 @@ const MOONS := ["companion", "week", "thirteen", "day", "two-day", "four-day"]  
 @export var running := false
 @export var day_seconds := 4320.0              # a 72-minute day (core/clock)
 @export var pressure := -1.0                   # atm; < 0 takes the preset's
+@export var cover := -1.0                      # cloud cover 0..1; < 0 takes the preset's
 @export var weather := {}                      # {cover, grey, fog}
 
 var model
@@ -67,6 +68,7 @@ func _textures() -> void:
 	var vol := ImageTexture3D.new()
 	vol.create(Image.FORMAT_RGBA8, 64, 64, 64, false, layers)
 	mat.set_shader_parameter("uNoise", vol)
+	RenderingServer.global_shader_parameter_set("atm_sky_noise", vol)   # the cloud shade on the ground (atmos_cloudshade.gdshaderinc)
 	var W := 512
 	var atlas := Image.create(W, W / 2 * MOONS.size(), false, Image.FORMAT_RGB8)
 	var ok := true
@@ -133,6 +135,8 @@ func _process(dt: float) -> void:
 func _update() -> void:
 	if pressure >= 0.0:
 		preset["air"]["pressure"] = pressure
+	if cover >= 0.0:
+		preset["clouds"]["cover"] = cover
 	var site: Dictionary = model.site_at(site_px.x, site_px.y)
 	state = model.sky_state(site, hour, day)
 	look_now = model.look(preset, state, weather)
@@ -158,6 +162,8 @@ func _update() -> void:
 	m.set_shader_parameter("uSpin", s["spin"])
 	m.set_shader_parameter("uFogD", L["fogD"])
 	m.set_shader_parameter("uTime", _t)
+	var cam3 := get_viewport().get_camera_3d() if get_viewport() else null
+	m.set_shader_parameter("uCamPos", cam3.global_position if cam3 else Vector3(0, 1.7, 0))
 	m.set_shader_parameter("uMoonT", s["t"] * 24.0)
 	var md := PackedVector3Array(); var ml := PackedVector3Array(); var mv := PackedVector3Array(); var mg := PackedVector3Array(); var mc := PackedVector3Array()
 	var mr := PackedFloat32Array(); var mk := PackedFloat32Array(); var mf := PackedFloat32Array()
@@ -170,6 +176,11 @@ func _update() -> void:
 	m.set_shader_parameter("uCloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
 	m.set_shader_parameter("uCloudH", Vector4(Cl["height"], Cl["cirrusHeight"], Cl["scale"], Cl["drift"]))
 	m.set_shader_parameter("uWind", Vector2(1.0, 0.3))
+	RenderingServer.global_shader_parameter_set("atm_cloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
+	RenderingServer.global_shader_parameter_set("atm_cloud_h", Vector4(Cl["height"], Cl["cirrusHeight"], Cl["scale"], Cl["drift"]))
+	RenderingServer.global_shader_parameter_set("atm_cloud_wind", Vector2(1.0, 0.3))
+	RenderingServer.global_shader_parameter_set("atm_time", _t)
+	RenderingServer.global_shader_parameter_set("atm_wet", float(weather.get("wet", 0.0)))
 	var vp := get_viewport()
 	var cam := vp.get_camera_3d() if vp else null
 	var fov := deg_to_rad(cam.fov) if cam else deg_to_rad(62.0)

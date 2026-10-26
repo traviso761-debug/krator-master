@@ -28,5 +28,6 @@ whose daily transit has its own view), the procedural Pleiades night
 (nebula, bright members, field, the galaxy's band in the far half), stars by day in thin air, the clouds, and the chrome
 sphere showing the sky's light (`ATMOS.skylight`) on a standard material.
 
-Not yet here: the Godot twin (`atmos_sky.gdshaderinc`, `krator/sky.gd`), the per-hour grade (split tone), the plume
+The ground and the test pieces take the clouds' shadows and the rain (`ATMOS.cloudShade`); `#alt=600&pitch=-0.5` looks down on
+the shadows. Not yet here: the per-hour grade (split tone), the plume
 and cloud-sea landmarks, ATMOS.weather's rain and lightning (the weather select only greys and fogs the sky).

@@ -15,6 +15,32 @@
 // GLSL ES 3 (uint, texelFetch): three r128 compiles a ShaderMaterial as ES 3 on WebGL2.
 (function(){const A=ATMOS;
  A.SKY_MAX_RIDGES=4;
+ // the hash and the noise read from the volume: shared by the sky and the cloud-shade chunk (atmos_cloudshade)
+ const NOISE=[
+  'uint atmSkyH(uvec3 c,uint s){uint h=(c.x*1597334677u)^(c.y*3812015801u)^(c.z*2246822519u)^(s*2654435769u);h^=h>>16u;h*=2146121005u;h^=h>>15u;h*=2221713035u;h^=h>>16u;return h;}',
+  // the angle between two unit vectors from their chord: exact for small angles, where dot() against cos() loses the
+  // last digits (on ANGLE/Direct3D a moon 0.35 degrees across vanished)
+  'float atmSkyAng(vec3 a,vec3 b){return 2.0*asin(clamp(0.5*length(a-b),0.0,1.0));}',
+  'float atmSkyU(uvec3 c,uint s){return float(atmSkyH(c,s))/4294967296.0;}',
+  'vec3 atmSkyGrad(ivec3 c,uint s){uint h=atmSkyH(uvec3(c),s);return vec3(float(h&1023u),float((h>>10u)&1023u),float((h>>20u)&1023u))/511.5-1.0;}',
+  // gradient noise read from the volume (period 16 lattice cells): the seed picks one of its four channels and shifts
+  // the lookup, so different seeds are different fields
+  'float atmSkyNoise(vec3 x,uint s){vec3 o=vec3(float(s*7u%16u),float(s*11u%16u),float(s*13u%16u))+0.37*float(s/4u);',
+  ' vec4 t=texture(uNoise,(x+o)/16.0);uint c=s%4u;return (c==0u?t.r:c==1u?t.g:c==2u?t.b:t.a)*2.0-1.0;}',
+  'float atmSkyFbm(vec3 p,int oct,uint s){float v=0.0,a=0.5,n=0.0;for(int i=0;i<6;i++){if(i>=oct)break;v+=a*atmSkyNoise(p,s+uint(i));n+=a;p=p*2.03+vec3(1.7,9.2,3.1);a*=0.5;}return v/n;}',];
+ // THE CLOUD FIELD, anchored to the world (SKY-PLAN.md 11.1): the cumulus cover at world xz on the cloud plane, drifting
+ // on the wind. The sky reads it along each view ray, the ground along the ray toward each light, so a cloud and its
+ // shadow are the same cloud. oct: octaves (the sky 5, a shadow 3: a cloud 1.6 km up casts a penumbra ~15 m wide)
+ const CLOUDF=[
+  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;return atmSkyFbm(vec3(xz/uCloudH.z+w,0.0),oct,100u)*0.5+0.5;}',
+  'float atmCloudCover(float n){return smoothstep(1.0-uCloud.x,1.0-uCloud.x+0.22,n);}'];
+ // the shade of the cloud deck on a world point P lit along L (1 in the open, down to 1-0.72 under thick cumulus)
+ const SHADE=[
+  'float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||uCloud.x<=0.0||uCloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*(uCloudH.x-P.y);',
+  ' return 1.0-0.72*uCloud.y*atmCloudCover(atmCloudField(Q,3));}'];
+ // the chunk any ground or plant material includes (ATMOS.cloudShade): its own uniforms, the noise, the field, the shade
+ A.cloudShadeGLSL=function(){return['uniform highp sampler3D uNoise;','uniform vec4 uCloud;','uniform vec4 uCloudH;','uniform vec2 uWind;',
+  'uniform float uTime;','uniform float uWet;'].concat(NOISE,CLOUDF,SHADE).join('\n');};
  A.skyGLSL=function(){const f=A.glf,S=A.SKY,G=S.giant,NR=A.SKY_MAX_RIDGES,NS=S.stars.length;
   const rg=Math.sin(G.diaDeg/2*Math.PI/180),cosG=Math.cos(G.diaDeg/2*Math.PI/180);
   return[
@@ -26,21 +52,12 @@
   'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];uniform vec4 uPN;',   // uPN: the planetary nebula (inertial direction, radius in radians)
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
-  'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;',   // cover, cumulus, cirrus, bank; heights, scale, drift
+  'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform vec3 uCamPos;',   // uCamPos: the page camera's world position (the clouds are anchored to the world)   // cover, cumulus, cirrus, bank; heights, scale, drift
   'uniform vec3 uNightK;',                               // stars, nebula, galaxy gains
   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];uniform vec3 uRidgeRock['+NR+'],uRidgeForest['+NR+'],uRidgeSnow['+NR+'];',
   // ---- the hash and gradient noise (lowbias32; bit-exact across engines)
-  'uint atmSkyH(uvec3 c,uint s){uint h=(c.x*1597334677u)^(c.y*3812015801u)^(c.z*2246822519u)^(s*2654435769u);h^=h>>16u;h*=2146121005u;h^=h>>15u;h*=2221713035u;h^=h>>16u;return h;}',
-  // the angle between two unit vectors from their chord: exact for small angles, where dot() against cos() loses the
-  // last digits (on ANGLE/Direct3D a moon 0.35 degrees across vanished)
-  'float atmSkyAng(vec3 a,vec3 b){return 2.0*asin(clamp(0.5*length(a-b),0.0,1.0));}',
-  'float atmSkyU(uvec3 c,uint s){return float(atmSkyH(c,s))/4294967296.0;}',
-  'vec3 atmSkyGrad(ivec3 c,uint s){uint h=atmSkyH(uvec3(c),s);return vec3(float(h&1023u),float((h>>10u)&1023u),float((h>>20u)&1023u))/511.5-1.0;}',
-  // gradient noise read from the volume (period 16 lattice cells): the seed picks one of its four channels and shifts
-  // the lookup, so different seeds are different fields
-  'float atmSkyNoise(vec3 x,uint s){vec3 o=vec3(float(s*7u%16u),float(s*11u%16u),float(s*13u%16u))+0.37*float(s/4u);',
-  ' vec4 t=texture(uNoise,(x+o)/16.0);uint c=s%4u;return (c==0u?t.r:c==1u?t.g:c==2u?t.b:t.a)*2.0-1.0;}',
-  'float atmSkyFbm(vec3 p,int oct,uint s){float v=0.0,a=0.5,n=0.0;for(int i=0;i<6;i++){if(i>=oct)break;v+=a*atmSkyNoise(p,s+uint(i));n+=a;p=p*2.03+vec3(1.7,9.2,3.1);a*=0.5;}return v/n;}',
+  ...NOISE,
+  ...CLOUDF,
   // ---- 1 deep sky, on the inertial sphere e
   // a star field on a cube-face grid of n cells a face: one star at most per cell, kept off the cell's edges
   'vec3 atmSkyField(vec3 e,float n,float dens,uint s){vec3 a=abs(e);float m=max(a.x,max(a.y,a.z));vec2 uv;uint fc;',
@@ -246,14 +263,14 @@
   ' vec2 w=uWind*uTime*uCloudH.w;vec3 amb=mix(uZen,uHor,0.55);float cs=max(dot(d,uSunDir),0.0);',
   ' vec3 sunL=uSunC*uSunI*(1.0-uEclipse);vec2 s2=normalize(uSunDir.xz+1e-5);',
   ' vec4 o=vec4(0.0);',
-  ' if(uCloud.z>0.0){vec2 p=d.xz/d.y*uCloudH.y/uCloudH.z;vec3 q=vec3(p.x*0.35+w.x*0.5,p.y*1.6+w.y*0.5,3.0);',
+  ' if(uCloud.z>0.0&&(uCloudH.y-uCamPos.y)/d.y>0.0){vec2 p=(uCamPos.xz+d.xz/d.y*(uCloudH.y-uCamPos.y))/uCloudH.z;vec3 q=vec3(p.x*0.35+w.x*0.5,p.y*1.6+w.y*0.5,3.0);',
   '  float n=atmSkyFbm(q,4,90u)*0.5+0.5;float a=smoothstep(0.58,0.86,n)*uCloud.z*0.5*smoothstep(0.004,0.08,d.y)*exp(-uCloudH.y/max(d.y,0.004)/160000.0);',
   '  vec3 c=sunL*0.42*(0.75+0.5*pow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;o=vec4(c,a);}',
-  ' if(uCloud.y>0.0){vec2 p=d.xz/d.y*uCloudH.x/uCloudH.z;vec3 q=vec3(p+w,0.0);',
-  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmSkyFbm(q,5,100u)*0.5+0.5+bank*0.35;',
-  '  float cov=smoothstep(1.0-uCloud.x,1.0-uCloud.x+0.22,n);',
-  '  float n2=atmSkyFbm(q+vec3(s2*0.18,0.0),5,100u)*0.5+0.5+bank*0.35;float sh=clamp(0.62+(n-n2)*3.2,0.0,1.0);',
-  '  float dist=uCloudH.x/max(d.y,0.004);float a=cov*smoothstep(0.004,0.05,d.y)*exp(-dist/60000.0);',
+  ' float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0){vec2 xz=uCamPos.xz+d.xz/d.y*hc;',
+  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;',
+  '  float cov=atmCloudCover(n);',
+  '  float n2=atmCloudField(xz+s2*0.18*uCloudH.z,5)+bank*0.35;float sh=clamp(0.62+(n-n2)*3.2,0.0,1.0);',
+  '  float dist=abs(hc/max(abs(d.y),0.004));float a=cov*smoothstep(0.004,0.05,d.y)*exp(-dist/60000.0);',
   '  vec3 c=sunL*0.40*(0.35+0.65*sh)*(1.0+0.6*pow(cs,10.0)*(1.0-cov))+amb*(0.75-0.25*cov)+uShineC*uShineI*0.35*sh;',
   '  c=mix(c,air,1.0-exp(-dist/45000.0));o.rgb=mix(o.rgb,c,a);o.a=o.a+a*(1.0-o.a);}',
   ' return o;}',

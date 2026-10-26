@@ -28,10 +28,28 @@ func _initialize() -> void:
 	var pm := PlaneMesh.new()
 	pm.size = Vector2(4000, 4000)
 	ground.mesh = pm
-	var gm := StandardMaterial3D.new()
-	gm.albedo_color = Color(0.33, 0.36, 0.25)
+	# the ground takes the sky's cloud shadows and its wet (shaders/atmos_cloudshade.gdshaderinc), as every ground and plant
+	# shader is to
+	var gs := Shader.new()
+	gs.code = """shader_type spatial;
+#include "res://shaders/atmos_cloudshade.gdshaderinc"
+varying vec3 wpos;
+void vertex() { wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
+void fragment() { ALBEDO = vec3(0.33, 0.36, 0.25) * (1.0 - 0.38 * atm_wet); ROUGHNESS = 0.95 * (1.0 - 0.55 * atm_wet); }
+void light() {
+	float shade = atmCloudShade(wpos, normalize((INV_VIEW_MATRIX * vec4(LIGHT, 0.0)).xyz));
+	DIFFUSE_LIGHT += clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION * LIGHT_COLOR / PI * shade;
+}"""
+	var gm := ShaderMaterial.new()
+	gm.shader = gs
 	ground.material_override = gm
-	ground.position.y = -1.7
+	ground.position.y = 0.0
+	pm.size = Vector2(12000, 12000)
+	pm.subdivide_width = 64
+	pm.subdivide_depth = 64
+	_cam.position.y = float(_args.get("alt", "1.7"))
+	if _args.has("cover"):
+		_sky.cover = float(_args["cover"])
 	root.add_child(ground)
 
 
@@ -42,6 +60,8 @@ func _process(_dt: float) -> bool:
 		var look: String = _args.get("look", "giant")
 		var d: Vector3 = s["giantDir"] if look == "giant" else (s["clusterDir"] if look == "cluster" else (s["sunDir"] if look == "sun" else Vector3(0, 0.999, -0.04)))
 		_cam.look_at(_cam.global_position + d, Vector3.UP if absf(d.y) < 0.99 else Vector3.FORWARD)
+		if _args.has("pitch"):
+			_cam.rotation.x = float(_args["pitch"])
 	if _frames < 30:
 		return false
 	var img := root.get_texture().get_image()

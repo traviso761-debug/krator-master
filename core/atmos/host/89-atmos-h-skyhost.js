@@ -21,7 +21,7 @@
    uMoonDir:{value:[0,1,2,3,4,5].map(V3)},uMoonC:{value:[0,1,2,3,4,5].map(C3)},uMoonL:{value:[0,1,2,3,4,5].map(V3)},uMoonV:{value:[0,1,2,3,4,5].map(V3)},uMoonR:{value:[.005,.005,.005,.005,.005,.005]},uMoonK:{value:[0,1,2,3,4,5]},uMoonF:{value:[0,0,0,0,0,0]},uMoonT:{value:0},uMoonG:{value:[0,1,2,3,4,5].map(V3)},uMoonMaps:{value:null},uMoonMapOn:{value:0},uRingT:{value:V3()},
    uStar:{value:SKY.stars.map(()=>new T.Vector4())},uStarC:{value:SKY.stars.map(s=>new T.Color(s[3],s[4],s[5]))},
    uGDeep:{value:C3()},uGMid:{value:C3()},uGPale:{value:C3()},uGCloud:{value:C3()},uGPlank:{value:C3()},uGHaze:{value:C3()},uGTeal:{value:C3()},uGRim:{value:C3()},uGNight:{value:C3()},uGRing:{value:C3()},
-   uCloud:{value:new T.Vector4()},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
+   uCloud:{value:new T.Vector4()},uCamPos:{value:V3()},uWet:{value:0},uCloudH:{value:new T.Vector4()},uWind:{value:new T.Vector2(1,.3)},uNightK:{value:V3()},
    uPN:{value:new T.Vector4()},uRidgeTex:{value:null},uRidgeN:{value:0},uRidge:{value:[0,1,2,3].map(()=>new T.Vector4())},
    uRidgeRock:{value:[0,1,2,3].map(C3)},uRidgeForest:{value:[0,1,2,3].map(C3)},uRidgeSnow:{value:[0,1,2,3].map(C3)}};
   // the noise volume, baked once for the page (64^3 RGBA, 1 MB) and shared by every sky on it
@@ -59,7 +59,7 @@
    U.uSpin.value=st.spin;U.uFogD.value=L.fogD;
    v(U.uRingT,st.ringLine);U.uMoonT.value=st.t*24;st.moons.forEach((m,i)=>{U.uMoonDir.value[i].set(m.dir[0],m.dir[1],m.dir[2]);U.uMoonL.value[i].set(m.light[0],m.light[1],m.light[2]);U.uMoonV.value[i].set(m.lead[0],m.lead[1],m.lead[2]);U.uMoonG.value[i].set(m.toGiant[0],m.toGiant[1],m.toGiant[2]);U.uMoonK.value[i]=m.kind;U.uMoonF.value[i]=m.front;U.uMoonC.value[i].setRGB(...m.albedo);U.uMoonR.value[i]=m.radiusDeg*D;});
    const C=P.clouds;U.uCloud.value.set(L.cover,C.cumulus,C.cirrus,C.bank);U.uCloudH.value.set(C.height,C.cirrusHeight,C.scale,C.drift);
-   U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);
+   U.uNightK.value.set(P.night.stars,P.night.nebula,P.night.galaxy);U.uCamPos.value.copy(cam.position);U.uWet.value=W&&W.wet!=null?W.wet:0;
    U.uTime.value=(A.clock?A.clock.t:clock.t);
    U.uPixAng.value=(cam.fov*D)/Math.max(1,r.domElement.height);   // one framebuffer pixel, radians
    // the page's light (the colour script is display-space; three's lights and fog are linear)
@@ -76,6 +76,26 @@
    key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.pressure].join()});
   // the moon maps: one atlas image, a 2:1 row a moon in SKY.moons order (o.moonAtlas: a URL); procedural until it loads
   if(o.moonAtlas)new T.TextureLoader().load(o.moonAtlas,t=>{t.wrapS=T.RepeatWrapping;t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=4;U.uMoonMaps.value=t;U.uMoonMapOn.value=1;});
+  A.skyUniforms=U;
   S.setPreset(P);
   return S;};
+ // ATMOS.cloudShade(material, {porosity}): the sky's clouds shade this ground or plant material (SKY-PLAN.md 11.1), and
+ // rain darkens it. Every directional light is shaded along its own direction (the sun, the giantshine); a standard
+ // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
+ // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
+ // Call it after ATMOS.sky; on a page with no shared sky it does nothing.
+ A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity,prev=mat.onBeforeCompile;
+  mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);
+   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'])sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};
+   const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
+   const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';
+   if(/lights_lambert_vertex/.test(sh.vertexShader)){
+    const lam=A.T.ShaderChunk.lights_lambert_vertex.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLights\[\s*i\s*\],\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);
+    sh.vertexShader=head+sh.vertexShader.replace('#include <lights_lambert_vertex>',wp+'vec3 atmWPos=atmWP.xyz;\n'+lam);}
+   else{sh.vertexShader='varying vec3 atmWPos;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp+'atmWPos=atmWP.xyz;');
+    const lfb=A.T.ShaderChunk.lights_fragment_begin.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLight,\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);   /* the include is not expanded yet: expand it here */
+    sh.fragmentShader=head+'varying vec3 atmWPos;\n'+sh.fragmentShader.replace('#include <lights_fragment_begin>',lfb)
+     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*uWet*step(0.01,uPorosity);');}
+   sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=1.0-0.38*uWet*uPorosity;');};
+  mat.customProgramCacheKey=()=>'atmos-cloudshade-'+por;mat.needsUpdate=true;return mat;};
 })();

@@ -90,3 +90,23 @@ atm_deck_t={
 "type": "float",
 "value": 0.0
 }
+atm_cloud={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+atm_cloud_h={
+"type": "vec4",
+"value": Vector4(1600, 9000, 2600, 0.004)
+}
+atm_cloud_wind={
+"type": "vec2",
+"value": Vector2(1, 0.3)
+}
+atm_wet={
+"type": "float",
+"value": 0.0
+}
+atm_sky_noise={
+"type": "sampler3D",
+"value": ""
+}

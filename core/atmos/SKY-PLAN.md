@@ -439,6 +439,13 @@ clouds must be the sky's clouds. How the field reaches the ground:
    `atm_wind`, `atm_time`, `atm_wet`, `atm_cam_pos`, the noise as a global `sampler3D`). Each ground and plant shader includes
    it and in `light()` does `ATTENUATION *= atm_cloud_shade(world_pos, LIGHT)` when `LIGHT_IS_DIRECTIONAL` (so the sun and
    the giantshine light are each shaded along their own direction), and the wet terms in `fragment()`.
+**Built (2026-10-25), the core side:** the world-anchored field (`atmCloudField`, `atmCloudCover`, shared by the sky and the
+shade), the `atmos_cloudshade` chunk (`ATMOS.cloudShadeGLSL()`), `ATMOS.cloudShade(material, {porosity})` (standard per
+pixel, Lambert per vertex, rain darkening and wet roughness from `W.wet`), the demo's ground (`#alt=600&pitch=-0.5` shows
+the shadows from above; a rain weather), and Godot's `shaders/atmos_cloudshade.gdshaderinc` over new `atm_*` globals
+(`project.godot`), shown on `tests/sky/sky_shot.gd`'s ground. The JS twin `ATMOS.cloudCoverAt` and the biome core's hooks
+are still to do.
+
 7. **Order.** It lands with the sky's first biome (S1): the world-anchored field is a change to the sky shader, and the hooks
    need the biome core's material makers, which the biome rebuild owns; the two sessions coordinate that step. Cost: one
    three-octave fbm per ground fragment (per vertex on Lambert), a texture read each.
