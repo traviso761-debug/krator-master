@@ -47,6 +47,9 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # heights. --profile a,b,c replaces the list for one run (add sim to see a stub fail).
 EXPORT_BOX = [80, 490, 380, 790]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'stage', 'atmos', 'water']
+# The stations (PLAN-STATIONS.md; build.py --station <name>): each page's own proof box, by the page's file name. The Bowl's
+# is the 300 m tile at the delta's middle mouths (the lake's banded shallows, two distributaries, the salt flat).
+STATION_EXPORT = {'sedesert-bowl.html': ([-150, -1300, 150, -1000], EXPORT_PROFILE)}
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:
@@ -183,11 +186,12 @@ async def run(a):
                              "   OVER" if v["over"] else ""))
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                box, prof0 = STATION_EXPORT.get(name, (EXPORT_BOX, EXPORT_PROFILE))
+                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else prof0
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

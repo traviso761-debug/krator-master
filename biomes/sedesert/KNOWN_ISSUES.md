@@ -4,6 +4,22 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### The Bowl (station 2, `stations/bowl/`, 2026-10-26)
+- [ ] **The rings are compressed** (the owner, 2026-10-26): the ochre rim, the flat, the halo and the kaluts each a few hundred
+      metres to a kilometre where the model has 10 to 28 km. Mantis is placed the same way (12 km, truly 50) and drawn looming
+      (x3 upward). The open world must lay them out at their true widths.
+- [ ] **The heat pass draws into a target without antialiasing** (1.5 times the screen, filtered down) while the heat is up and the
+      eye is low (`86-host-shimmer.js`); `#heat=0` turns it off. A Godot port reads the screen and depth textures instead.
+- [ ] **The shallows read as a white-pink sheen from eye height**: 0.15-0.7 m of brine, all sky reflection at a grazing angle. The bands
+      show from a few metres up and from the air (`The banded shallows`). They do not shift with the season (the tint is baked once).
+- [ ] **The kaluts' beds are the kit's strata shader** (35) in a pale palette, not the strata module (`core/terrain/STRATA-PLAN.md`,
+      not built); the rim walls are the shared sky's ridges, not ground.
+- [ ] **Glasswort's colour follows the salt, not the season** (crimson where the salt is strongest). The saxaul's twigs borrow the
+      glasswort card (`card.samphire`): no saxaul card exists.
+- [ ] **The fauna is the kit's** (kites, swifts, striders, lizards, coyotes; no deer: too hot). Section 6's Bowl mantis, brine flies,
+      wading bird and salt beetles are `kits/fauna`'s work.
+- [ ] **The station's `dist/sedesert-bowl.html` is not in `PORT-BASELINE.json`** (the baseline is rewritten on the merged branch).
+
 - [x] (2026-10-15) The whole core/host interface (ROADMAP.md section 10, step 4; core/host/README.md): the inspector, marks, minimap, and
       the editor's fauna mode (kits/fauna's desert group, 39-host-fauna.js: this biome's own animals first, put down, moved,
       turned, removed, idling and grazing) and ground brushes (raise, lower, flatten, smooth on TFIELD: core/terrain's
