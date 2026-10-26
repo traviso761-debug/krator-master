@@ -1,4 +1,108 @@
-# Handoff: the all-builds rebuild (written 2026-10-23)
+# Handoff: the all-builds rebuild
+
+## START HERE: the final rebuild (handoff of 2026-10-26)
+
+**For the session that runs the final rebuild.** Everything below this section is the earlier plan and its record; this
+section is the state as of 2026-10-26 and the job. Read it, then "Stage 1, final" further down (the approved lists in its
+sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
+
+### Where things are
+
+- **Branch `claude/biome-rebuild`**, worktree `C:/Users/travi/Documents/krator-biome-rebuild` (cut from origin/main; origin/main
+  last merged in at d72ba6dba). **Not pushed.** Push it (or merge it to main) only when the owner says so. Big pages make pushes
+  time out: raise `http.postBuffer` first.
+- **All the session's work is merged into it**, each piece reviewed and its tests rerun after the merge:
+  - water on core/water in every biome; known-issues passes on every built biome (ringisles, shighlands and the rest);
+  - the shared sky (every biome kit and station, with the landmark layer) and `ATMOS.bindWeather` in every biome;
+  - the new biomes: Farside, the NW outer wall, the Cut, the Catch, the Bowl/Mantis/steppe (sedesert stations), k-guilin (the
+    Hykkousoi hinterlands; `biomes/guilin` is frozen as an Earth reference), the abyssal savannah (station 1);
+  - the seven core workstreams (each module's README has an "Adopting it" section with the exact build.py lines and calls):
+    - **kit** (core/biome 20/35/34): B6 animMat defaults (on), B4 lathe rep (hyperjungle uses it), B1/B2 LOD merge, minTris,
+      per-pass chunks, dithered cross-fade (opt-in: `BIO.LOD.merge/minTris/fade`, `BIO.chunk`), B5 per-instance labels,
+      R6 octahedral impostors (`34-core-impostor.js`, opt-in);
+    - **foliage** (core/biome 30/31/31b): B3 per-species second bark colour (`aC2`, `glossBarkMat({c2})`), B9 spin, X4 the
+      core dither (`31-core-dither.js`), R5 floor from the ground (`BIO.setGround`), R7 alpha-to-coverage (`BIO.setA2C`),
+      R8 one wind field (`BIO.bindAtmosWind`), back-light, the `BIO.FADE` hook, R13 leaves on stems (`31b-core-leafset.js`:
+      `BIO.leafStem/leafOn/leafAlong`, `clump({stem:true})`). With nothing asked, every shader is byte-identical to before;
+    - **atmos** (core/atmos, core/host): the cloudShade recursion and X2 fixed (on), X3 hour slider (on), R1 height fog and
+      R10 rain occlusion (opt-in), lightning (opt-in), snow cover's `lee`, `ATMOS.shaderHook`, `bindWeather` in every biome;
+    - **terrain** (core/terrain): X6 gridded stack tops, `KSTACKS.surface({drawn:true})`, R4 `KGROUND` (43), R2 `KHORIZON`
+      (45 + host), R3 `KFAR` (44 + host); all opt-in;
+    - **water** (core/water): W1 curtain sides and chutes, W2 spray by drop, W3 falls on their face, W4 per-pool gradients
+      (the one default change), W5 `rideGLSL`/`rideOn`, R9 wetness, puddles (`WATER.hollows`) and rain rings, W6 geyser
+      plumes; Godot twins and tests;
+    - **hazard**: the `hazard` key in core/tags (on: the tags export digest moved on purpose), `core/hazard` (KHAZ), one clock
+      (`KTRAPS.cycle`), the hazards overlay and inspector line, walk zones, the export adapter;
+    - **resources**: the geology bake (`tools/scale-model/geology.py` -> `kits/resources/data/geology.json`), `KRES` node
+      field, placers and ringed evaporites, the ledger and fairness audit, the GDScript twin.
+- **Textures:** five drops of 2026-10-26 are in the library (`core/materials/PLAN.md`, "Delivered 2026-10-26"); **2 prompts are
+  owed** (`card.cornlily`, optional `metal.enamel.scoured`; `PROMPTS-NEEDED.md`). Pre-wired (packed, pages not rebuilt):
+  oidong's carved bark, Mantis's fig, the abyssal savannah's thatch and litter, the NW outer wall's shrub and flower cards,
+  the Yeti kit's drift snow, the southern highlands' banded bark and begonia, Korona's redone black quartzite and peat.
+- **Research and plans:** `biomes/DETAIL-RESEARCH.md`, `HEIGHT-RESEARCH.md`, `WEATHER-RESEARCH.md`, `HAZARD-RESEARCH.md`,
+  `kits/resources/PLACEMENT-RESEARCH.md`, `biomes/STATIONS-SURVEY.md` (28 planned stations at the old biomes).
+- **Built pages are stale.** Most committed `dist/` pages predate the core merges (several merges took one side of a page
+  conflict on purpose). Every page is rebuilt in the final rebuild; trust no committed page until it is rebuilt and verified.
+
+### The job, in the owner's order (section 4c below)
+
+1. **nhighlands first, the test bed**: rebuild it taking every old and new core module (R1-R10, R13, B1-B5, W1/W2/W4, KGROUND,
+   KHORIZON, KFAR, snow, weather, `BIO.fung` once written, the Cut's exchanges), its unwired textures and its ride-alongs.
+   Full `verify.py --assert --all-views` on the GPU, then a look pass with the owner.
+2. **An optimization pass on nhighlands**, then **a Godot spike of it**, then **the graphic-load assessment** (texture arrays
+   or atlases, material merging, KTX2/Basis and VRAM compression, size caps, HLOD): write a recommendation before the rest.
+3. **The Throne's vents** (hazards, snow, weather), **the NW outer wall**, **the rift** (graphic load again), **then every other
+   biome and station**, one by one, each taking every module, its textures and its ride-alongs, verified on the GPU.
+4. **Then the planned kits as core tests**: the SW highlands (BIO.fung in earnest; unblocks the lowland flora exchanges), the
+   Godthrone, Godstep valley.
+5. **Then stages 2 and 3 below** (kits and settlements), including every page that reads a changed biome (section 5 below
+   lists the readers) and every settlement that takes core/atmos, core/host (92-host-panel), core/tags or core/biome.
+6. **Close out:** `tools/check_core_use.py --write-baseline` (it shrinks), `tools/port_baseline.py --update` for checked pages
+   only, `tools/test_all.py`, the gallery republish (ask the owner: it is a wider change).
+
+### Still to write (core) before or during step 1
+
+- **`BIO.fung`** (`core/biome/33-core-fungoid.js`, spec in `biomes/outlands/PLAN.md`; TODO.md): write it, then switch the old
+  fungoid parts (hyperjungle's `fungi`, the `stalk` in rift and xanadu, the rest TODO lists).
+- **The workstreams' open requests** (files they did not own):
+  - core/export (`07-core-export.js`, `42-core-export.js`): split a record by `userData.lod.ranges` and export `instLabels`
+    (kit); a real `hazards` section (hazard). Until then a Godot port draws a merged mesh's near layer to its longest range.
+  - core/water: route `WATER.wetGround` through `ATMOS.shaderHook` (atmos).
+  - core/biome: per-instance AO/crowding from `KSPACE` counts at placement (foliage, research item 5); `khzShadow` in the
+    leaf hooks or keep `KHORIZON.shadeScene` per page (terrain); optionally `ATMOS.windGLSL()` (atmos).
+  - `tools/textures/pack.py`: a height channel (the `disp` extras) for KGROUND's `h:{from:'a'}` (terrain).
+  - core/hamlet `KHAMLET.village`: take `KRES.near(...)` when a spec has no resource (resources); the isle demo passes
+    `RES_LEDGER.tradeGoods(...)` to `SIM.trade`.
+  - `godot/tools/sync_core.py`: copy `kits/resources/godot/kres_field.gd` with its test and vectors; GODOT-PLAN.md: a pointer
+    to `core/hazard/GODOT.md`; the Godot water importer does not yet draw gradients, chutes, riding, puddles, rings, plumes.
+  - Prompts to add: `ground.gypsum.crust`, `rock.halite.cut` (resources).
+- **Known failures to fix:** core/hamlet's tag parse error from nsemiarid and nwouterwall (seen in test_all); Longsong's
+  `test-sim.js`; Verge's layout test (both seen in test_all runs; check whether they fail on this branch); swbay's rain
+  occlusion depth pass throws inside three (`isInterleavedBufferAttribute` of null; it retries, then turns the map off).
+- **Per-biome ride-alongs noted on the way:** eastabyss line 163 of `75-biome-eastabyss-fauna.js` can go (BIO.dynamic tags it);
+  nhighlands' four floor pairs merge by `{label}`; k-guilin passes `{drawn:true}` to `KSTACKS.surface`; guilin's osmanthus
+  needs `libCol` before `card.osmanthus` (but guilin is frozen: only if the owner asks); ringisles takes `stone.geode.druze`;
+  ehighlands, nhighlands, swlowlands and nwlowlands take their new sets (`card.broadleaf.cloud`, `card.epiphyte.garden`,
+  `bark.plane`, `rock.marl.blue`); oidong could alternate `bark.carved.b`; the Cut's species exchanges (section 3a);
+  swlowlands' spring cypress and ribbon-root, nwlowlands' marl gorge (section 3); the 21 fairness findings in
+  `kits/resources/data/ledger.json` are for the owner.
+- **Looks waiting on the owner** (section 4 below, plus): the octahedral far trees (darker, thinner crowns than the blobs),
+  R13's sprays fanning along the boughs, necanyons' puddles on its Lambert floor (KGROUND's Standard ground should fix them),
+  the geyser plumes' density, the hazards overlay's brightness, the punji pit's lip flecks, xanadu's breaker crown (another
+  look pass), the swbay temple at 156 m, the far-country and fog changes on the pilots.
+
+### Practical rules (learned this session)
+
+- **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
+  in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
+  process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
+- **Stage files by name.** `git add biomes` swept other agents' unfinished work into a merge commit once.
+- **Never kill processes by matching a session id or scratchpad path**: claude.exe carries it. Kill exact PIDs.
+- Agents working in parallel take their own git worktree and branch (`git worktree add ../krator-<x> -b claude/<x>
+  refs/heads/claude/biome-rebuild`); a fresh worktree needs `git lfs pull --include=` for the textures a page uses.
+- Merging a branch onto a worktree with other agents' uncommitted edits: save their diff as a patch, check the files out, merge,
+  commit, then reapply the patch to the working tree only (`git apply --reject`), fixing rejected hunks by hand.
+
 
 For the next session. The sources are merged and pushed (`origin/main` e1d57696e, which contains the branch
 `claude/water-migration-merge`: 5 work commits, the merge of 415 upstream commits, the core-use check). **Almost nothing has
