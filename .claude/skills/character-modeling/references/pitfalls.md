@@ -175,6 +175,12 @@ area you are about to change.
   build time (`fur_of`: the rows per part and band, with the metres per unit of u and v); for pieces already built,
   map strips to parts in source order and use the paint colours only to place band edges: by colour alone the
   ushanka's umber crown band read as fur.
+- **A coat read as sand, not fur** → the skin showed between the strands and the tips were too bright: give a full
+  coat an undercoat (its first shell whole where the cover is dense) and soften the tip and per-strand contrast. Not for
+  sparse body hair: there the undercoat painted solid patches.
+- **Fur hung over the eyes and down the nose sides** → a bare face found by the normal alone keeps the eye sockets and
+  the nose's sides; mark it as an ellipse on the head's front, sized from the head's extents at rest (the base has no
+  face weights: everything above the neck rides Head).
 
 ## 5. Cloth chains
 

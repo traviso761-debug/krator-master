@@ -257,6 +257,16 @@ garment's attributes and skeleton, so the morphs, the clips, the push and the dy
 between the top of the boots and the lowest hem of the top (tucked in, it came out through the shafts and a deel's
 skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width, comb, clump, root shade, tip, vary) and a
 per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
+**Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
+no `coat` field, so the golden and Godot's records are as they were). Three so far: a shaggy pelt (the Khaayken, any
+yeti; 5 cm), a short coat (sleek, an animal's) and body hair (sparse, on the chest, arms and legs). Each vertex of the
+skin's own primitive gets a cover, its joints' covers (`cover`, by joint name without its side; `fingers`, `*`) summed
+by its skin weights, less the parts left bare (`bare`), found in the rest pose: the face (an ellipse on the head's front,
+chin to brow), the palms (the hands' undersides) and the soles. The shells (`50-figure.js` `coatShells`, Godot
+`_coat`) take the skin that the clothes leave and fade in over three rings from what is hidden, so a coat stops short of
+every garment's edge; their strands run on the skin's UV map scaled to metres per vertex, in the hair's colour; a kind
+with `undercoat` has its first layer whole where the cover is dense, and a coat hides the skin parts it lists
+(`hide_parts`: the nipples). The Cosmetic Lab's Head page has a Coat picker.
 The cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets
 (`SHEETS`), recoloured in each garment's own two colours. The sets and their sources: `prompt-clothes.md`.
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its

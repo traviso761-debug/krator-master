@@ -259,7 +259,7 @@ static func _build(glb: String) -> Array:
 			if sf.get("region") != null:
 				ground = H.get("ground")
 		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0,
-			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi})
+			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi, "joined": joined.get("arr")})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -445,8 +445,8 @@ func apply(rec: Dictionary) -> void:
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
-			if part["role"] == "base" and hide_parts.has(mi.mesh.surface_get_name(s)):
-				m = _nothing()          # the nipples under a top (kit hide_parts)
+			if part["role"] == "base" and (hide_parts.has(mi.mesh.surface_get_name(s)) or _coat_hides(rec).has(mi.mesh.surface_get_name(s))):
+				m = _nothing()          # the nipples under a top (kit hide_parts) or a coat
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -455,6 +455,7 @@ func apply(rec: Dictionary) -> void:
 						if worn.has(int(i)):
 							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
+				_coat(m, b, mi, rec, gain, hide)
 			if part["role"] == "armour":
 				var legs: bool = part["slot"] == "legs"
 				_fur(m, _item_of(part), Vector2(feet_top if legs else -1000.0, hem if legs else 1000.0))
@@ -1982,6 +1983,220 @@ func _fur(m: Material, it: Dictionary, band: Vector2) -> void:
 			fm.set_shader_parameter("kfF", band)
 			last.next_pass = fm
 			last = fm
+
+
+# ---- coats: a furred body (data/fur.json coats, a record's coat: the twin of coatShells in 50-figure.js) ----
+# the joined skin's fur: each vertex's cover (its joints' covers summed by its weights, less the face, palms and soles in
+# the rest pose) faded in over COAT_FADE rings from a hidden region, and the metres one unit of UV spans there, written
+# to a texture (RG, a texel per vertex, read by VERTEX_ID) that kchar_fur.gdshader's body mode reads; the shells chained
+# after the skin's material. A UV seam's halves (and a region border's) are one vertex for the rings (by position)
+const COAT_FADE := 3
+
+
+func _coat_hides(rec: Dictionary) -> Dictionary:
+	var out := {}
+	var c = fur.get("coats", {}).get(rec.get("coat") if rec.get("coat") != null else "", null)
+	if c != null:
+		for p in c.get("hide_parts", []):
+			out[p] = true
+	return out
+
+
+static func _side_less(n: String) -> String:
+	for p in ["Left2", "Right2", "Left", "Right"]:
+		if n.begins_with(p):
+			return n.substr(p.length())
+	return n
+
+
+func _cover_of(coat: Dictionary, n: String) -> float:
+	var c: Dictionary = coat.get("cover", {})
+	if c.has(n):
+		return float(c[n])
+	for f in ["HandIndex", "HandMiddle", "HandPinky", "HandRing", "HandThumb"]:
+		if n.begins_with(f) and c.has("fingers"):
+			return float(c["fingers"])
+	return float(c.get("*", 1.0))
+
+
+func _smooth(a: float, b: float, x: float) -> float:
+	var t := clampf((x - a) / (b - a), 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
+
+
+# the coat's cover, the metres per UV and the rings' graph, once per built skin and coat
+func _coat_static(b: Dictionary, mi: MeshInstance3D, id: String, coat: Dictionary) -> Dictionary:
+	var cache: Dictionary = b.get_or_add("coats", {})
+	if cache.has(id):
+		return cache[id]
+	var A: Array = b["joined"]
+	var P: PackedVector3Array = A[Mesh.ARRAY_VERTEX]
+	var N: PackedVector3Array = A[Mesh.ARRAY_NORMAL]
+	var U: PackedVector2Array = A[Mesh.ARRAY_TEX_UV]
+	var BI: PackedInt32Array = A[Mesh.ARRAY_BONES]
+	var BW: PackedFloat32Array = A[Mesh.ARRAY_WEIGHTS]
+	var IX: PackedInt32Array = A[Mesh.ARRAY_INDEX]
+	var n := P.size()
+	var per := BI.size() / n
+	var names := []
+	for k in mi.skin.get_bind_count():
+		names.append(_side_less(mi.skin.get_bind_name(k)))
+	var bare := {}
+	for x in coat.get("bare", []):
+		bare[x] = true
+	var C := PackedFloat32Array()
+	C.resize(n)
+	var hw := PackedFloat32Array()
+	hw.resize(n)
+	var aw := PackedFloat32Array()
+	aw.resize(n)
+	var fw := PackedFloat32Array()
+	fw.resize(n)
+	var y0 := INF
+	var y1 := -INF
+	var x0 := INF
+	var x1 := -INF
+	var zs := 0.0
+	var zn := 0
+	for i in n:
+		for k in per:
+			var w := BW[i * per + k]
+			if w <= 0.0:
+				continue
+			var nm: String = names[BI[i * per + k]] if BI[i * per + k] < names.size() else ""
+			C[i] += w * _cover_of(coat, nm)
+			if nm == "Head":
+				hw[i] += w
+			elif nm == "Hand" or (nm.begins_with("Hand") and nm != "Hand"):
+				aw[i] += w
+			elif nm == "Foot" or nm == "ToeBase":
+				fw[i] += w
+		if hw[i] > 0.5:
+			y0 = minf(y0, P[i].y)
+			y1 = maxf(y1, P[i].y)
+			x0 = minf(x0, P[i].x)
+			x1 = maxf(x1, P[i].x)
+			zs += P[i].z
+			zn += 1
+	# the face: an ellipse on the head's front (coatBuild)
+	var zc := zs / zn if zn > 0 else 0.0
+	var xc := (x0 + x1) * 0.5
+	var hh := maxf(y1 - y0, 1e-6)
+	var fy := y0 + 0.37 * hh
+	var ay := 0.37 * hh
+	var ax := 0.3 * (x1 - x0)
+	for i in n:
+		var f := 0.0
+		if bare.has("face") and hw[i] > 0.0 and P[i].z > zc:
+			var ex := (P[i].x - xc) / ax
+			var ey := (P[i].y - fy) / ay
+			f = maxf(f, hw[i] * (1.0 - _smooth(0.85, 1.15, sqrt(ex * ex + ey * ey))))
+		if bare.has("palms"):
+			f = maxf(f, aw[i] * _smooth(0.1, 0.45, -N[i].y))
+		if bare.has("soles"):
+			f = maxf(f, fw[i] * _smooth(0.3, 0.6, -N[i].y))
+		C[i] = clampf(C[i] * (1.0 - f), 0.0, 1.0)
+	var M := PackedFloat32Array()
+	M.resize(n)
+	var mc := PackedInt32Array()
+	mc.resize(n)
+	for t in range(0, IX.size(), 3):
+		var l3 := 0.0
+		var l2 := 0.0
+		for k in 3:
+			var a := IX[t + k]
+			var c := IX[t + (k + 1) % 3]
+			l3 += P[a].distance_to(P[c])
+			l2 += U[a].distance_to(U[c])
+		if l2 > 1e-9:
+			for k in 3:
+				M[IX[t + k]] += l3 / l2
+				mc[IX[t + k]] += 1
+	for i in n:
+		M[i] = M[i] / mc[i] if mc[i] > 0 else 1.0
+	var key := {}
+	var src := PackedInt32Array()
+	src.resize(n)
+	for i in n:
+		var q := Vector3i(roundi(P[i].x * 1e5), roundi(P[i].y * 1e5), roundi(P[i].z * 1e5))
+		if not key.has(q):
+			key[q] = key.size()
+		src[i] = key[q]
+	var nb := []
+	for i in key.size():
+		nb.append({})
+	for t in range(0, IX.size(), 3):
+		for k in 3:
+			var p := src[IX[t + k]]
+			var q := src[IX[t + (k + 1) % 3]]
+			nb[p][q] = true
+			nb[q][p] = true
+	var out := {"C": C, "M": M, "src": src, "nb": nb, "ns": key.size()}
+	cache[id] = out
+	return out
+
+
+func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain: Dictionary, hide: Image) -> void:
+	var coats: Dictionary = fur.get("coats", {})
+	var id = rec.get("coat")
+	if id == null or not coats.has(id) or b.get("joined") == null:
+		return
+	var coat: Dictionary = coats[id]
+	var K: Dictionary = fur["kinds"].get(coat.get("kind", ""), {})
+	if K.is_empty():
+		return
+	var S := _coat_static(b, mi, id, coat)
+	var A: Array = b["joined"]
+	var R: PackedFloat32Array = A[Mesh.ARRAY_CUSTOM0]
+	var n: int = S["C"].size()
+	var src: PackedInt32Array = S["src"]
+	var d := PackedFloat32Array()
+	d.resize(S["ns"])
+	d.fill(INF)
+	var front := []
+	for i in n:
+		if hide.get_pixel(int(R[i * 4] + 0.5), 0).r > 0.5 and d[src[i]] > 0.0:
+			d[src[i]] = 0.0
+			front.append(src[i])
+	for r in range(1, COAT_FADE + 1):
+		var next := []
+		for v in front:
+			for q in S["nb"][v]:
+				if d[q] > r:
+					d[q] = r
+					next.append(q)
+		front = next
+	var W := 1024
+	var img := Image.create(W, (n + W - 1) / W, false, Image.FORMAT_RGF)
+	for i in n:
+		img.set_pixel(i % W, i / W, Color(S["C"][i] * minf(1.0, d[src[i]] / COAT_FADE), S["M"][i], 0.0))
+	var tex := ImageTexture.create_from_image(img)
+	var layers := int(K.get("layers", fur.get("layers", 12)))
+	var pile := float(K["pile"])
+	var col := _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("hair", 1.0)))
+	var last := m
+	while last.next_pass != null:
+		last = last.next_pass
+	for k in range(1, layers + 1):
+		var t := float(k) / layers
+		var fm := ShaderMaterial.new()
+		fm.shader = FUR_SHADER
+		fm.set_shader_parameter("body", true)
+		fm.set_shader_parameter("fur_tex", tex)
+		fm.set_shader_parameter("fur_w", W)
+		fm.set_shader_parameter("albedo", col)
+		fm.set_shader_parameter("kfU0", 1.0 if k == 1 and K.get("undercoat", false) else 0.0)
+		fm.set_shader_parameter("kfH", pile * t)
+		fm.set_shader_parameter("kfC", float(K.get("comb", 0.0)) * pile * t * t)
+		fm.set_shader_parameter("kfT", t)
+		fm.set_shader_parameter("kfS", float(K["strand"]))
+		fm.set_shader_parameter("kfW", float(K["thick"]))
+		fm.set_shader_parameter("kfL", float(K.get("clump", 0.0)))
+		fm.set_shader_parameter("kfSh", float(K.get("shade", 1.0)))
+		fm.set_shader_parameter("kfTp", float(K.get("tip", 1.0)))
+		fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
+		last.next_pass = fm
+		last = fm
 
 
 # a surface left out: a part of the base drawn over the skin that a worn item covers (KChar.hidden_parts)

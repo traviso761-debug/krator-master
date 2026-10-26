@@ -144,8 +144,16 @@
   it. The rows of the garments built before `make_garments.py` wrote them were derived from the published pieces
   (`tools/fur.py`): rebuilding those garments rewrites them from the source (a few texels apart at a band's edge). The
   Godot twin's legs band takes the unmorphed rest heights (CUSTOM1), the page the morphed ones: a few cm apart at the
-  slider ends. No furred bodies yet: the shells read a garment's texture rows, so a coat on a body (the Khaayken, an
-  animal) needs a fur mask on the skin first. The crowd's baked looks leave the shells out.
+  slider ends. The crowd's baked looks leave the shells out.
+- **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt and the short coat read as fur; body hair reads as
+  fine dark dashes, closer to stubble than hair, and wants the owner's eye. The bare face is an ellipse sized from the
+  head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the
+  temples. The ears (their own primitive) stay bare. A UV seam shows as a faint line in a short coat (round the
+  areola). A coat stops at what the clothes hide; a library item with no delete group hides nothing, so a coat comes
+  through it (the polo, the fisherman's sweater). The Godot twin takes its rings through vertices merged by position
+  (the page through MakeHuman's source vertices) and reads its cover from a texture by VERTEX_ID; its figure test
+  could not run here (no pieces), only a test sphere. No people draws a coat yet: the Khaayken's people entry and their
+  1.15 scale are for Y5 (`kits/yeti/PLAN.md`).
 - **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
   and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
   close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the

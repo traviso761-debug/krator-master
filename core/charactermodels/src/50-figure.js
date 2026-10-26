@@ -163,32 +163,159 @@ function KCharFigure(body, sliders, load){
       }
     });
   }
-  function furShader(prev, U){
+  // body: a coat's shells (coatShells): each vertex's cover (furK, under 1 thins the strands) and the metres one unit
+  // of its UV spans (furM) are attributes, and the strands run on the body's UV map scaled by them, rather than in rows
+  function furShader(prev, U, body){
     return function(sh, r){
       if(prev) prev(sh, r);              // the push (pushOut) first: the fur stands on the cloth where it is pushed to
       Object.keys(U).forEach(function(k){ sh.uniforms[k] = U[k]; });
       // (kfF: a legs item's fur fades out below the top of the boots over it and above the hem of the top over it, kfK:
       // tucked in, it came out through the boots' shafts, and through a deel's skirt in a stride. position is the rest,
       // after the morphs, as the boots' top and the hem are)
-      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nvarying float kfK;\n' + sh.vertexShader.replace('#include <project_vertex>',
+      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nvarying float kfK;\n' +
+        (body ? 'attribute float furK;\nattribute float furM;\nvarying float kfM;\n' : '') + sh.vertexShader.replace('#include <project_vertex>',
         'vec3 kfN = normalize(objectNormal), kfD = vec3(0.0, -1.0, 0.0);\n\tkfD -= kfN * dot(kfD, kfN);\n' +
-        '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n\ttransformed += (kfN * kfH + kfD * kfC) * kfK;\n#include <project_vertex>');
+        (body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
+        '\ttransformed += (kfN * kfH + kfD * kfC) * kfK;\n#include <project_vertex>');
       sh.fragmentShader = 'varying float kfK;\nuniform float kfT;\nuniform vec4 kfR[4];\nuniform float kfS;\nuniform float kfW;\nuniform float kfL;\nuniform float kfSh;\nuniform float kfTp;\nuniform float kfV;\n' +
-        FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
+        (body ? 'varying float kfM;\nuniform float kfU0;\n' : '') + FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
+        (body ? 'if(kfK < 0.05) discard;\n\tfloat kfU = 1e6;\n\tvec4 kfR0 = vec4(0.0);\n\tvec2 kfG = vUv * kfM / kfS' :
         'vec4 kfR0 = vec4(0.0); bool kfIn = false;\n' +
         '\tfor(int i = 0; i < 4; i++){ if(!kfIn && vUv.y >= kfR[i].x && vUv.y <= kfR[i].y){ kfIn = true; kfR0 = kfR[i]; } }\n' +
         '\tif(!kfIn || kfK < 0.05) discard;\n' +
         '\tfloat kfU = max(1.0, floor(kfR0.z / kfS + 0.5));\n' +
-        '\tvec2 kfG = vec2(vUv.x * kfU, vUv.y * kfR0.w / kfS), kfC0 = floor(kfG), kfFr = fract(kfG);\n' +
-        '\tfloat kfD0 = 1e9, kfLen = 1.0, kfTone = 1.0;\n' +
+        '\tvec2 kfG = vec2(vUv.x * kfU, vUv.y * kfR0.w / kfS)') + ', kfC0 = floor(kfG), kfFr = fract(kfG);\n' +
+        '\tfloat kfD0 = 1e9, kfLen = 1.0, kfTone = 1.0, kfP = 0.0;\n' +
         '\tfor(int j = -1; j <= 1; j++) for(int i = -1; i <= 1; i++){\n' +
         '\t\tvec2 o = vec2(float(i), float(j)), cc = kfC0 + o; cc.x = mod(cc.x, kfU);\n' +
         '\t\tvec3 h = kfHash(vec3(cc, kfR0.x * 1024.0));\n' +
         '\t\tfloat d = length(o + 0.15 + 0.7 * h.xy - kfFr);\n' +
-        '\t\tif(d < kfD0){ kfD0 = d; kfLen = 1.0 - kfL * h.z; kfTone = 1.0 + kfV * (fract(h.z * 7.13) - 0.5); }\n\t}\n' +
-        '\tif(kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen)) discard;\n' +
+        '\t\tif(d < kfD0){ kfD0 = d; kfLen = 1.0 - kfL * h.z; kfTone = 1.0 + kfV * (fract(h.z * 7.13) - 0.5); kfP = fract(h.x * 5.37 + h.y * 3.11); }\n\t}\n' +
+        // (a cover under 1 keeps that share of the strands)
+        (body ? '\tif(!(kfU0 > 0.5 && kfK > 0.6) && (kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen) || kfP > kfK)) discard;\n' :
+        '\tif(kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen)) discard;\n') +
         '#include <map_fragment>\n\tdiffuseColor.rgb *= mix(kfSh, kfTp, kfT) * kfTone;');
     };
+  }
+
+  /* ---- coats: a furred body (data/fur.json coats, a record's coat) ----
+     the skin's fur, as shells of the base's skin primitive (furShader body). Each vertex's cover is its joints' covers
+     summed by its skin weights (the joint's name without its side; 'fingers' for any finger, '*' for the rest), less
+     the parts left bare, found in the rest pose: the face (an ellipse on the head's front), the palms (the hands'
+     undersides, the A-pose's palms face down) and the soles. The shells take the skin the clothes leave (filterBase)
+     and fade in over COAT_FADE rings of it from what is hidden, so the pile stops short of a garment's edge. The
+     colour is the hair's; where the cover is dense a kind with undercoat has its first layer whole ( the skin between the strands
+     made the pelt read as speckle) and the coat hides the skin's parts it lists (hide_parts: the nipples showed through).
+     A UV seam splits vertices; the rings run through the source vertices so it does not show */
+  var COAT_FADE = 3, FINGER = /^Hand(Index|Middle|Pinky|Ring|Thumb)/;
+  function coverOf(coat, j){
+    var n = J[j] ? J[j].name.replace(/^(Left|Right)2?/, '') : '', c = coat.cover || {};
+    if(c[n] != null) return c[n];
+    if(FINGER.test(n) && c.fingers != null) return c.fingers;
+    return c['*'] == null ? 1 : c['*'];
+  }
+  function smooth(a, b, x){ var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+  function coatBuild(m, id, coat, K){
+    var g = m.geometry, M = m.userData.morph, P = M ? M.pos0 : g.attributes.position.array;
+    var Nn = M && M.nrm0 ? M.nrm0 : g.attributes.normal.array, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+    var uv = g.attributes.uv, n = P.length / 3, C = new Float32Array(n), hw = new Float32Array(n), aw = new Float32Array(n), fw = new Float32Array(n);
+    var bare = {}; (coat.bare || []).forEach(function(b){ bare[b] = true; });
+    var y0 = Infinity, y1 = -Infinity, x0 = Infinity, x1 = -Infinity, zs = 0, zn = 0;
+    for(var i=0;i<n;i++){
+      for(var k=0;k<4;k++){
+        var j = si.getComponent ? si.getComponent(i, k) : si.array[4 * i + k], w = sw.array[4 * i + k];
+        if(!w) continue;
+        C[i] += w * coverOf(coat, j);
+        var nm = J[j] ? J[j].name.replace(/^(Left|Right)2?/, '') : '';
+        if(nm === 'Head') hw[i] += w;
+        else if(nm === 'Hand' || FINGER.test(nm)) aw[i] += w;
+        else if(nm === 'Foot' || nm === 'ToeBase') fw[i] += w;
+      }
+      if(hw[i] > 0.5){ y0 = Math.min(y0, P[3*i+1]); y1 = Math.max(y1, P[3*i+1]); x0 = Math.min(x0, P[3*i]); x1 = Math.max(x1, P[3*i]); zs += P[3*i+2]; zn++; }
+    }
+    // the face: an ellipse on the head's front, from the chin to the brow and three fifths of the head's width
+    // (by the normal alone the eye sockets and the sides of the nose kept fur, and it hung over the eyes)
+    var zc = zn ? zs / zn : 0, xc = (x0 + x1) / 2, hh = Math.max(y1 - y0, 1e-6), fy = y0 + 0.37 * hh, ay = 0.37 * hh, ax = 0.3 * (x1 - x0);
+    for(i=0;i<n;i++){
+      var ny = Nn[3*i+1], f = 0;
+      if(bare.face && hw[i] > 0 && P[3*i+2] > zc){
+        var ex = (P[3*i] - xc) / ax, ey = (P[3*i+1] - fy) / ay;
+        f = Math.max(f, hw[i] * (1 - smooth(0.85, 1.15, Math.sqrt(ex * ex + ey * ey))));
+      }
+      if(bare.palms) f = Math.max(f, aw[i] * smooth(0.1, 0.45, -ny));
+      if(bare.soles) f = Math.max(f, fw[i] * smooth(0.3, 0.6, -ny));
+      C[i] = Math.min(1, Math.max(0, C[i] * (1 - f)));
+    }
+    // the metres one unit of UV spans at each vertex: its triangles' edges in metres over their length in UV
+    var i0 = m.userData.index0, mm = new Float32Array(n), mc = new Float32Array(n), U = uv.array;
+    for(var t=0;t<i0.length;t+=3){
+      var l3 = 0, l2 = 0;
+      for(k=0;k<3;k++){
+        var a = i0[t + k], b = i0[t + (k + 1) % 3];
+        l3 += Math.hypot(P[3*a] - P[3*b], P[3*a+1] - P[3*b+1], P[3*a+2] - P[3*b+2]);
+        l2 += Math.hypot(U[2*a] - U[2*b], U[2*a+1] - U[2*b+1]);
+      }
+      if(l2 > 1e-9) for(k=0;k<3;k++){ mm[i0[t + k]] += l3 / l2; mc[i0[t + k]]++; }
+    }
+    for(i=0;i<n;i++) mm[i] = mc[i] ? mm[i] / mc[i] : 1;
+    // the source vertices' neighbours, for the rings
+    var src = M ? M.src : null, ns = M ? M.nsrc : n, nb = [];
+    for(i=0;i<ns;i++) nb.push([]);
+    for(t=0;t<i0.length;t+=3) for(k=0;k<3;k++){
+      var p = src ? src[i0[t + k]] : i0[t + k], q = src ? src[i0[t + (k + 1) % 3]] : i0[t + (k + 1) % 3];
+      if(nb[p].indexOf(q) < 0){ nb[p].push(q); nb[q].push(p); }
+    }
+    var geo = new THREE.BufferGeometry();
+    Object.keys(g.attributes).forEach(function(a){ geo.setAttribute(a, g.attributes[a]); });
+    geo.setAttribute('furK', new THREE.BufferAttribute(new Float32Array(n), 1));
+    geo.setAttribute('furM', new THREE.BufferAttribute(mm, 1));
+    var F = KCharFigure.fur, layers = K.layers || F.layers || 12, group = new THREE.Group(), color = new THREE.Color();
+    for(var L=1;L<=layers;L++){
+      var tk = L / layers, mat = new THREE.MeshStandardMaterial({ roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true });
+      mat.color = color; mat.defines = { USE_UV:'' };
+      mat.onBeforeCompile = furShader(null, {
+        kfH:{ value:K.pile * tk }, kfC:{ value:(K.comb || 0) * K.pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
+        kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
+        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 } }, true);
+      mat.customProgramCacheKey = function(){ return 'kchar-coat'; };
+      var s = new THREE.SkinnedMesh(geo, mat);
+      s.name = m.name + '|coat:' + id + ':' + L; s.frustumCulled = false; s.castShadow = false;
+      s.bind(m.skeleton, new THREE.Matrix4());
+      s.userData.fur = true;
+      group.add(s);
+    }
+    m.add(group);
+    return { id:id, C:C, src:src, nb:nb, ns:ns, geo:geo, group:group, color:color };
+  }
+  function coatHides(rec){
+    var F = KCharFigure.fur, c = F && F.coats && rec.coat ? F.coats[rec.coat] : null, out = {};
+    ((c && c.hide_parts) || []).forEach(function(p){ out[p] = true; });
+    return out;
+  }
+  function coatShells(m, rec, gain, hide){
+    var F = KCharFigure.fur, coat = F && F.coats && rec.coat ? F.coats[rec.coat] : null, S = m.userData.coat;
+    var K = coat && F.kinds[coat.kind];
+    if(S && (!K || S.id !== rec.coat)){ m.remove(S.group); S = m.userData.coat = null; }
+    if(!K) return;
+    if(!S) S = m.userData.coat = coatBuild(m, rec.coat, coat, K);
+    // the rings from the hidden skin: 0 on a hidden triangle's corners, counting out through what shows
+    var i0 = m.userData.index0, d = new Float32Array(S.ns).fill(Infinity), front = [], k, t;
+    var sv = function(v){ return S.src ? S.src[v] : v; };
+    if(hide) for(t=0;t<i0.length/3;t++) if(hide[t]) for(k=0;k<3;k++){ var v = sv(i0[3*t+k]); if(d[v]) { d[v] = 0; front.push(v); } }
+    for(var r=1;r<=COAT_FADE && front.length;r++){
+      var next = [];
+      front.forEach(function(v){ S.nb[v].forEach(function(q){ if(d[q] > r){ d[q] = r; next.push(q); } }); });
+      front = next;
+    }
+    var A = S.geo.attributes.furK, n = S.C.length, idx = [];
+    for(var i=0;i<n;i++) A.array[i] = S.C[i] * Math.min(1, d[sv(i)] / COAT_FADE);
+    A.needsUpdate = true;
+    for(t=0;t<i0.length/3;t++){
+      if(hide && hide[t]) continue;
+      if(A.array[i0[3*t]] > 0 || A.array[i0[3*t+1]] > 0 || A.array[i0[3*t+2]] > 0) idx.push(i0[3*t], i0[3*t+1], i0[3*t+2]);
+    }
+    S.geo.setIndex(idx);
+    S.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair || 1));
   }
 
   /* the eyes: make_mpfb.py greys the irises and puts their mask in the texture's alpha; the eye colour multiplies in
@@ -387,8 +514,8 @@ function KCharFigure(body, sliders, load){
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
-              else if(m.userData.srcMaterial === kit.base_material) filterBase(m, hide.base);
-              else if(hideParts[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts)
+              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); coatShells(m, rec, gain, hide.base); }
+              else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
             }
             if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));

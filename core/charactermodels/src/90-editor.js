@@ -373,6 +373,17 @@
     var hs = itemChips(headp, kit, 'hair', 'Hair');
     swatches(hs, 'Colour', 'hair-pick', rec.hair_color || '#4a3424', (cur ? cur.hair : HAIR_ANY).concat(['#9a9894', '#d8d6d2']).filter(function(c, i, a){ return a.indexOf(c) === i; }),
              function(c){ rec.hair_color = c; apply(); });
+    // a coat (data/fur.json coats): the body furred, in the hair's colour; a record without one has no 'coat'
+    var coats = (D.fur && D.fur.coats) || {};
+    if(Object.keys(coats).length){
+      var cs = section(headp, 'Coat', rec.coat && coats[rec.coat] ? coats[rec.coat].name : 'None');
+      chips(cs, [{ id:null, name:'None', domId:'chip-coat-none' }].concat(Object.keys(coats).map(function(id){
+        return { id:id, name:coats[id].name, domId:'chip-coat-' + id };
+      })), rec.coat || null, function(id){ if(id) rec.coat = id; else delete rec.coat; apply(); buildPanel(); }, true);
+      var cn = document.createElement('p'); cn.className = 'hint';
+      cn.textContent = 'Fur over the skin, in the hair colour; it stops short of the clothes. The face, palms and soles stay bare.';
+      cs.appendChild(cn);
+    }
     itemChips(headp, kit, 'beard', 'Beard');
     var es = section(headp, 'Eyes', '');
     swatches(es, 'Eye colour', 'eye-pick', rec.eye_color || '#5a3a22', cur && cur.eyes ? cur.eyes : EYES_ANY, function(c){ rec.eye_color = c; apply(); });
