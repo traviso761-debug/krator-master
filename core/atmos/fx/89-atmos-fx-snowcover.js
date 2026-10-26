@@ -41,7 +41,8 @@
   ' float line=atmSnowLine.y>atmSnowLine.x?smoothstep(atmSnowLine.x,atmSnowLine.y,wp.y):1.0;',
   ' float n=0.65*atmSnowN(wp.xz/'+f(P.noise.cell)+')+0.35*atmSnowN(wp.xz/'+f(P.noise.cell*.31)+'+17.0);',
   ' float hold=mix('+f(P.up[1])+','+f(P.up[0]-.2)+',k)+'+f(P.noise.amp)+'*(n-0.5);',   // the deeper the snow, the steeper the faces it holds on (a cliff past ~75 degrees stays bare)
-  ' return line*smoothstep(hold,hold+0.12,wn.y)*smoothstep(0.0,0.25,k);}',
+  ' float drift=atmSnowN(wp.xz/'+f(P.noise.cell*5)+'+41.0)*0.7+0.3*n;',   // a light cover lies in drifts: it covers about k*1.45 of flat ground, whole by k ~ .7
+  ' return line*smoothstep(hold,hold+0.12,wn.y)*smoothstep(0.0,0.25,k)*smoothstep(drift-0.1,drift+0.1,k*1.45);}',
   'vec3 atmSnowAlbedo(vec3 c,float s,float wny){return mix(c,mix('+v3(P.shade)+','+v3(P.colour)+',clamp(wny,0.0,1.0)),s);}'].join('\n');};
  A.onInit.push(()=>{A.U.snowDepth=A.U.snowDepth||{value:0};A.U.snowBase=A.U.snowBase||{value:0};A.U.snowLine=A.U.snowLine||{value:new A.T.Vector2(0,0)};});
  // THE BINDING
