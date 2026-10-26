@@ -40,6 +40,7 @@
     void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)},${F(P.box)})-${F(B)}+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+windOff*${F(P.windRide)},${F(P.box)})-${F(B)}+cameraPosition.xz;
      p+=normalize(vec3(wind.x*${F(P.slant)},-1.0,wind.y*${F(P.slant)}))*tip*${F(P.streak)};vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
    fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.35+0.65*light),vA*${F(P.alpha)});}`});
+  A.rainMat=rm;if(A.rainCoverPatch)A.rainCoverPatch(rm);   /* the readers of the rain occlusion map (fx/89-atmos-fx-raincover.js) */
   const rain=new T.LineSegments(g,rm);rain.frustumCulled=false;rain.renderOrder=4;rain.name='atmos:rain';A.add(rain);A.noRay(rain);
   // lightning: a jagged ribbon far off, a double flash
   const K=14,bp=new Float32Array((K+1)*6),idx=[];for(let k=0;k<K;k++){const q=k*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}
@@ -48,11 +49,12 @@
   const bolt=new T.Mesh(bg,bm);bolt.frustumCulled=false;bolt.visible=false;A.add(bolt);A.noRay(bolt);
   const reduce=!!o.reduceMotion;let next=A.clock.t*1000+6000,t0=-1e9;
   const strike=()=>{const cam=A.h.camera.position,a=A.rnd()*Math.PI*2,dist=700+A.rnd()*500,cx=cam.x+Math.cos(a)*dist,cz=cam.z+Math.sin(a)*dist,top=380+A.rnd()*120,base=A.ground(cx,cz);
+   if(A.boltFx){t0=A.clock.t*1000;next=t0+5000+A.rnd()*9000;A.boltFx({x:cx,z:cz,top,base,dist,t:A.clock.t,ash:W.mode==='ash'});return;}   /* the branched bolt and its thunder (fx/89-atmos-fx-lightning.js) */
    const sx=-Math.sin(a),sz=Math.cos(a);let x=cx,z=cz;for(let k=0;k<=K;k++){const y=top+(base-top)*k/K;if(k){x+=(A.rnd()-.5)*40;z+=(A.rnd()-.5)*40;}const w=3.2-2.4*k/K;bp.set([x-sx*w,y,z-sz*w,x+sx*w,y,z+sz*w],k*6);}
    bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=A.clock.t*1000;next=t0+5000+A.rnd()*9000;};
   A.hook((t,h,dt)=>{const now=t*1000;A.weatherStep(W,h,dt);
    if(((W.mode==='storm'&&W.rain>.6)||(W.mode==='ash'&&W.ash>.6))&&!reduce&&now>next){strike();bm.color.setHex(W.mode==='ash'?((A.PRESETS.ash||{}).bolt||0xffc8a0):0xe8ecff);}W.flash=A.flashAt(now-t0);A.windScale=W.wind;A.U.gustAmp.value=.55+.25*Math.min(1,W.wind-1);
-   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;if(A.U.ash)A.U.ash.value=W.ash||0;if(A.U.snow)A.U.snow.value=W.snow||0;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
+   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;if(A.U.ash)A.U.ash.value=W.ash||0;if(A.U.snow)A.U.snow.value=W.snow||0;rain.visible=W.rain>.01;bolt.visible=!A.boltFx&&W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
    if(o.apply)o.apply(W);});
   A.rec('weather',{preset:'rain',modes:W.MODES,mode:W.mode,drops:N,auto:{rain:[19.5,19.9,21.6,22],fog:[.7,4.3,5.5,8.4,9.6]},storm:{fog:.3,strikeEvery:[5,14],strikeDist:[700,1200]},
    note:'auto: rain ramps up over the first pair of hours and down over the second; fog = scale * ramps. W.rain/fog/wet/flash/wind are the state a host reads'});
@@ -74,7 +76,7 @@
      float tumble=0.45+0.55*abs(sin(time*pp.w*3.0+pp.x*20.0));float ps=clamp(pp.z*tumble*px/dd,1.5,9.0);
      vA=step(fract(pp.x*7.31),amt)*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},dd))*${F(P.alpha)};gl_Position=atmQuad(mv,ps);}`,
    fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.004)discard;gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.3+0.7*light),vA*smoothstep(0.5,0.38,r));}`});
-  A.sprites(key+'flecks',{ipos:[3,pos],pp:[4,pp]},fm,4);
+  A.sprites(key+'flecks',{ipos:[3,pos],pp:[4,pp]},fm,4);(A.flakeMats=A.flakeMats||{})[key]=fm;if(A.rainCoverPatch)A.rainCoverPatch(fm);
   // the streaks: short lines of ash driven nearly flat along the gale (the storm's sense of speed), riding the camera
   {const SB=P.streakBox/2,NS=P.streaks,sp=new Float32Array(NS*6),tip=new Float32Array(NS*2),sd=new Float32Array(NS*2);
    for(let i=0;i<NS;i++){const x=A.rr(-SB,SB),y=A.rr(-SB*.4,SB*.6),z=A.rr(-SB,SB),r=A.rnd();sp.set([x,y,z,x,y,z],i*6);tip[i*2+1]=1;sd[i*2]=r;sd[i*2+1]=r;}

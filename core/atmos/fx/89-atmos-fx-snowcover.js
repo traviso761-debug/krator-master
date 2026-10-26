@@ -32,36 +32,46 @@
  A.snowStep=(S,W,dt,hour)=>{const P=A.PRESETS.snowcover,s=W&&W.snow||0,night=hour!=null&&(hour<6||hour>19);
   let d=S.depth+P.rate*s*dt;if(!S.frozen&&s<.05)d-=P.melt*(night?P.nightMelt:1)*dt;S.depth=d<0?0:d>1?1:d;return S;};
  // THE CHUNK: atmSnow(world position, world normal) -> how much snow covers the point (0..1)
- A.snowGLSL=()=>{const P=A.PRESETS.snowcover;return[
-  'uniform float atmSnowDepth;uniform float atmSnowBase;uniform vec2 atmSnowLine;',
+ // THE CHUNK. Under cover (the rain occlusion map, fx/89-atmos-fx-raincover.js, when the page takes it) the falling snow does
+ // not lie: only the base cover does (a canopy keeps the fresh snow off, not the season's). atmSnowLee (snowCover's o.lee,
+ // default 0): the lee faces (their normal downwind, A.U.wind) hold more of it, the windward faces less (WEATHER item 10)
+ A.snowGLSL=()=>{const P=A.PRESETS.snowcover,occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;return[
+  'uniform float atmSnowDepth;uniform float atmSnowBase;uniform vec2 atmSnowLine;uniform float atmSnowLee;uniform vec2 atmSnowWindDir;',
+  occ?occ:'',
   'uint atmSnowHashU(uvec2 c){uint h=(c.x*1597334677u)^(c.y*3812015801u);h^=h>>16u;h*=2146121005u;h^=h>>15u;h*=2221713035u;h^=h>>16u;return h;}',
   'float atmSnowH(vec2 p){return float(atmSnowHashU(uvec2(ivec2(floor(p))+ivec2(1<<20)))&65535u)/65535.0;}',
   'float atmSnowN(vec2 p){vec2 i=floor(p),q=p-i;q=q*q*(3.0-2.0*q);return mix(mix(atmSnowH(i),atmSnowH(i+vec2(1,0)),q.x),mix(atmSnowH(i+vec2(0,1)),atmSnowH(i+vec2(1,1)),q.x),q.y);}',
-  'float atmSnow(vec3 wp,vec3 wn){float k=clamp(atmSnowDepth+atmSnowBase,0.0,1.0);if(k<=0.0)return 0.0;',
+  'float atmSnow(vec3 wp,vec3 wn){float k=clamp(atmSnowDepth'+(occ?'*(1.0-atmRainCover(wp))':'')+'+atmSnowBase,0.0,1.0);',
+  ' k=clamp(k*(1.0+atmSnowLee*dot(normalize(wn.xz+vec2(1e-4)),atmSnowWindDir)*(1.0-abs(wn.y))),0.0,1.0);if(k<=0.0)return 0.0;',
   ' float line=atmSnowLine.y>atmSnowLine.x?smoothstep(atmSnowLine.x,atmSnowLine.y,wp.y):1.0;',
   ' float n=0.65*atmSnowN(wp.xz/'+f(P.noise.cell)+')+0.35*atmSnowN(wp.xz/'+f(P.noise.cell*.31)+'+17.0);',
   ' float hold=mix('+f(P.up[1])+','+f(P.up[0]-.2)+',k)+'+f(P.noise.amp)+'*(n-0.5);',   // the deeper the snow, the steeper the faces it holds on (a cliff past ~75 degrees stays bare)
   ' float drift=atmSnowN(wp.xz/'+f(P.noise.cell*5)+'+41.0)*0.7+0.3*n;',   // a light cover lies in drifts: it covers about k*1.45 of flat ground, whole by k ~ .7
   ' return line*smoothstep(hold,hold+0.12,wn.y)*smoothstep(0.0,0.25,k)*smoothstep(drift-0.1,drift+0.1,k*1.45);}',
   'vec3 atmSnowAlbedo(vec3 c,float s,float wny){return mix(c,mix('+v3(P.shade)+','+v3(P.colour)+',clamp(wny,0.0,1.0)),s);}'].join('\n');};
- A.onInit.push(()=>{A.U.snowDepth=A.U.snowDepth||{value:0};A.U.snowBase=A.U.snowBase||{value:0};A.U.snowLine=A.U.snowLine||{value:new A.T.Vector2(0,0)};});
+ A.onInit.push(()=>{A.U.snowDepth=A.U.snowDepth||{value:0};A.U.snowBase=A.U.snowBase||{value:0};A.U.snowLine=A.U.snowLine||{value:new A.T.Vector2(0,0)};
+  A.U.snowLee=A.U.snowLee||{value:0};A.U.snowWind=A.U.snowWind||{value:new A.T.Vector2(1,0)};});
  // THE BINDING
  A.snowCover=o=>{o=o||{};const S={depth:o.depth==null?0:o.depth,frozen:!!o.frozen};A.snow=S;
-  A.U.snowBase.value=o.base==null?0:o.base;if(o.line)A.U.snowLine.value.set(o.line[0],o.line[1]);
-  A.hook((t,hour,dt)=>{A.snowStep(S,A.W||null,dt||0,hour);A.U.snowDepth.value=S.depth;});
-  A.rec('snowcover',{preset:'snowcover',base:o.base||0,line:o.line||null,frozen:!!o.frozen,note:'depth = snowStep(depth, W.snow, dt, hour): builds while it snows, melts while it does not'});
+  A.U.snowBase.value=o.base==null?0:o.base;if(o.line)A.U.snowLine.value.set(o.line[0],o.line[1]);A.U.snowLee.value=o.lee==null?0:o.lee;
+  A.hook((t,hour,dt)=>{A.snowStep(S,A.W||null,dt||0,hour);A.U.snowDepth.value=S.depth;const w=A.U.wind.value,l=Math.hypot(w.x,w.y);if(l>1e-6)A.U.snowWind.value.set(w.x/l,w.y/l);});
+  A.rec('snowcover',{preset:'snowcover',base:o.base||0,line:o.line||null,frozen:!!o.frozen,lee:o.lee||0,note:'depth = snowStep(depth, W.snow, dt, hour): builds while it snows, melts while it does not'});
   return S;};
  // THE LOOK on a material
+ // (through ATMOS.shaderHook when the page has it, host/89-atmos-h-skyhost.js: any order with cloudShade, wetGround, heightFog)
  A.snowOn=(mat,o)=>{o=o||{};let page=mat.onBeforeCompile;
-  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|atm-snow'+(o.aN?'-aN':'');
   const snow=function(sh,r){if(page)page.call(this,sh,r);
-   sh.uniforms.atmSnowDepth=A.U.snowDepth;sh.uniforms.atmSnowBase=A.U.snowBase;sh.uniforms.atmSnowLine=A.U.snowLine;
+   sh.uniforms.atmSnowDepth=A.U.snowDepth;sh.uniforms.atmSnowBase=A.U.snowBase;sh.uniforms.atmSnowLine=A.U.snowLine;sh.uniforms.atmSnowLee=A.U.snowLee;sh.uniforms.atmSnowWindDir=A.U.snowWind;
+   if(A.rainCoverUniforms&&A.U.rainOcc)A.rainCoverUniforms(sh.uniforms);
    const V='varying vec3 vAtmSnP;varying vec3 vAtmSnN;';
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+V).replace('#include <project_vertex>','#include <project_vertex>\n'+
     'vec4 atmSnWp=vec4(transformed,1.0);vec3 atmSnN='+(o.aN?'aN':'objectNormal')+';\n#ifdef USE_INSTANCING\natmSnWp=instanceMatrix*atmSnWp;atmSnN=mat3(instanceMatrix)*atmSnN;\n#endif\nvAtmSnP=(modelMatrix*atmSnWp).xyz;vAtmSnN=normalize(mat3(modelMatrix)*atmSnN);');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+V+A.snowGLSL()).replace('#include <emissivemap_fragment>',
     '{vec3 atmSnNf=normalize(vAtmSnN);'+(o.twoSided?'if(!gl_FrontFacing)atmSnNf=-atmSnNf;':'')+'float atmS=atmSnow(vAtmSnP,atmSnNf);diffuseColor.rgb=atmSnowAlbedo(diffuseColor.rgb,atmS,atmSnNf.y);\n'+
     '#if defined(STANDARD)\nroughnessFactor=mix(roughnessFactor,'+f(A.PRESETS.snowcover.roughness)+',atmS);\n#endif\n}\n#include <emissivemap_fragment>');};
+  const key='atm-snow'+(o.aN?'-aN':'');
+  if(A.shaderHook){page=null;return A.shaderHook(mat,key,snow);}
+  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|'+key;
   Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>snow,set:fn=>{page=fn;}});
   mat.needsUpdate=true;return mat;};
  // every lit material of a scene at once (ground, rock, bark, leaves), each material once: not ShaderMaterials, nor water

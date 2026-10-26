@@ -123,7 +123,7 @@ K.panelTake=function(H){const o=H.o,clock=H.clock,C=K.cam;
   const b=el('button',{text:k},rowLayers);const paint=()=>b.classList.toggle('on',!!s.on);
   b.onclick=()=>{s.on=!s.on;s.cache=null;if(s.set)s.set(s.on);paint();};paint();}
  // the time controls: the speeds always (motion time); the hour slider and run / hold when the sky takes an hour
- const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour)||!!CO.onSet,speeds=CO.speeds||[0,1,2,4,8];
+ const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour)||!!CO.onSet||!!K.wantHour,speeds=CO.speeds||[0,1,2,4,8];
  rowTime.style.display='block';
  const clk=el('span',{id:'clk',cls:'lbl'},rowTime);
  let run=null,hr=null;

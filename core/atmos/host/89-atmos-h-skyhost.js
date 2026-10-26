@@ -14,6 +14,9 @@
  A.sky=function(P,o){const T=A.T,r=o.renderer,cam=o.camera,scene=o.scene,SKY=A.SKY;
   const site=()=>P.site.latitude!=null?P.site:A.siteAt(P.site.px,P.site.py);
   const clock=o.clock||KCLOCK.make({hour:SKY.startHour,day:0,running:false});
+  // the page's hour is the sky's now: the host's panel shows the hour slider and run / hold (core/host 92-host-panel.js reads
+  // KHOST.wantHour; the swbay-template pages pass no clock.onSet, so they had none: X3). o.clock reads the host's clock
+  if(typeof KHOST!=='undefined')KHOST.wantHour=true;
   const V3=()=>new T.Vector3(),C3=()=>new T.Color();
   const U={uSunDir:{value:V3()},uGiantDir:{value:V3()},uPole:{value:V3()},uRingN:{value:V3()},uZen:{value:C3()},uHor:{value:C3()},uSunHor:{value:C3()},
    uSunC:{value:C3()},uExt:{value:V3()},uShineC:{value:C3()},uCluster:{value:V3()},uFogC:{value:C3()},uSunI:{value:1},uHazeFloor:{value:.1},uDayStars:{value:0},
@@ -37,6 +40,10 @@
   const sscene=new T.Scene();sscene.add(mesh);const scam=new T.PerspectiveCamera(50,1,1,1000);
   const shine=o.shine||(()=>{const l=new T.DirectionalLight(0x9cbad6,0);l.name='atmos:giantshine';scene.add(l);scene.add(l.target);return l;})();
   const S={scene:sscene,mesh,uniforms:U,clock,preset:P,state:null,look:null,shine};
+  // what this sky drives each frame (ATMOS.bindWeather reads it live, so either may bind first): the fog, and the sun and the
+  // hemisphere. A page that passes o.weather composes the weather into the colour script itself; otherwise the binding's look
+  // (A.wxLook: grey, cover, wet) goes in and its fog law (A.wxFog) runs on the hour's fog
+  A.skyDrives={fog:o.fog!==false,light:!!(o.sun||o.hemi),own:!!o.weather};
   // the ridges: elevation (degrees) and slope (degrees a degree) in a float texture, a row a layer, far to near
   const setRidges=()=>{const L=(P.ridges||[]).slice(0,A.SKY_MAX_RIDGES),n=1024,data=new Float32Array(n*A.SKY_MAX_RIDGES*4);
    L.forEach((l,i)=>{const e=l.profile||A.ridgeProfile(l,n);for(let k=0;k<n;k++){const j=(i*n+k)*4,sl=(e[(k+1)%n]-e[(k+n-1)%n])/(2*360/n);data[j]=e[k];data[j+1]=sl;}
@@ -49,7 +56,7 @@
   S.setSite=s=>{P.site=s;S.update(0);};
   const v=(u,a)=>u.value.set(a[0],a[1],a[2]),c=(u,a)=>u.value.setRGB(a[0],a[1],a[2]);
   S.update=function(dt){
-   const st=S.state=A.skyState(site(),clock.hour,clock.day),W=o.weather?o.weather():null,L=S.look=A.skyLook(P,st,W);
+   const st=S.state=A.skyState(site(),clock.hour,clock.day),W=o.weather?o.weather():(A.wxLook?A.wxLook():null),L=S.look=A.skyLook(P,st,W);
    v(U.uSunDir,st.sunDir);v(U.uGiantDir,st.giantDir);v(U.uPole,st.giantAxis);v(U.uRingN,A.skyRingNormal(st));v(U.uCluster,[0,1,2].map(i=>0));
    const E=st.eq;U.uEq.value.set(E[0][0],E[1][0],E[2][0],E[0][1],E[1][1],E[2][1],E[0][2],E[1][2],E[2][2]);   // W^T: world -> inertial
    const cl=SKY.cluster,D=Math.PI/180;U.uCluster.value.set(Math.cos(cl.dec*D)*Math.cos(cl.ra*D),Math.cos(cl.dec*D)*Math.sin(cl.ra*D),Math.sin(cl.dec*D));
@@ -70,7 +77,8 @@
    shine.position.set(...st.giantDir).multiplyScalar(1000);shine.color.setRGB(...L.shineC).convertSRGBToLinear();shine.intensity=L.shineI;
    if(o.hemi){o.hemi.color.setRGB(...L.hemiS).convertSRGBToLinear();o.hemi.groundColor.setRGB(...L.hemiG).convertSRGBToLinear();o.hemi.intensity=L.hemiI;}
    r.toneMappingExposure=L.exp;
-   if(o.fog!==false&&scene.fog){scene.fog.color.setRGB(...L.fogC).convertSRGBToLinear();if(scene.fog.density!=null)scene.fog.density=L.fogD;}
+   if(o.fog!==false&&scene.fog){scene.fog.color.setRGB(...L.fogC).convertSRGBToLinear();if(scene.fog.density!=null)scene.fog.density=L.fogD;
+    if(!o.weather&&A.wxFog)A.wxFog(scene.fog);}   /* ATMOS.bindWeather's fog law on top of the hour's fog (X2): the two compose, whichever bound first */
    if(A.U&&A.U.hour)A.U.hour.value=clock.hour;};
   // S.renderSky(): the sky pass alone, into whatever target is bound (a page with its own post pass draws the world after it)
   S.renderSky=function(){scam.quaternion.copy(cam.quaternion);scam.fov=cam.fov;scam.aspect=cam.aspect;scam.updateProjectionMatrix();
@@ -89,24 +97,45 @@
  // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
  // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing.
- A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;
-  // a material that wears the snow look (fx snowcover's snowOn) keeps its hook behind a setter that slips a new hook under
-  // the snow and hides the old one: wrapping it would make the two call each other, so it takes no cloud shade
-  {const d=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');if(d&&d.get)return mat;}const por=o.porosity==null?1:o.porosity,prev=mat.onBeforeCompile;
-  mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);
+ // ATMOS.shaderHook(material, key, fn(shader, renderer)): adds fn to a material's onBeforeCompile so that any number of hooks
+ // (cloudShade, heightFog, snowOn, WATER.wetGround, the page's own) compose in ANY order. The material's onBeforeCompile
+ // becomes an accessor (as wetGround's and snowOn's are): reading it gives this layer's hook, which runs the layer under it
+ // first; assigning it goes down to the innermost layer (the page's own hook), so a page that sets its hook after the core
+ // hooks keeps them. A layer over an accessor reads the one under through ITS getter, never through mat.onBeforeCompile,
+ // so no hook can call itself (the NW outer wall's recursion: cloudShade after wetGround). The program key composes the same
+ // way: the layer's key appended to the one under (with no key under, the innermost hook's source, as three's default).
+ // Returns the material; a material that already carries the key is left alone (each layer once).
+ A.shaderHook=function(mat,key,fn){if(!mat)return mat;mat.userData=mat.userData||{};const keys=mat.userData.atmHooks||(mat.userData.atmHooks=[]);
+  if(keys.indexOf(key)>=0)return mat;keys.push(key);
+  const d=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');let get,set;
+  if(d&&d.get){get=()=>d.get.call(mat);set=d.set?v=>d.set.call(mat,v):()=>{};}else{let page=mat.onBeforeCompile;get=()=>page;set=v=>{page=v;};}
+  const hook=function(sh,r){const p=get();if(p)p.call(this,sh,r);fn.call(this,sh,r);};
+  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>hook,set});
+  const proto=A.T?A.T.Material.prototype.customProgramCacheKey:null,own=mat.customProgramCacheKey&&mat.customProgramCacheKey!==proto?mat.customProgramCacheKey:null;
+  mat.customProgramCacheKey=function(){let k;if(own)k=own.call(this);else{const p=get();k=p?p.toString():'';}return k+'|'+key;};
+  mat.needsUpdate=true;return mat;};
+ // ATMOS.cloudShade(material, {porosity}): the sky's clouds shade this ground or plant material (SKY-PLAN.md 11.1), and
+ // rain darkens it. Every directional light is shaded along its own direction (the sun, the giantshine); a standard
+ // material per pixel, a Lambert one per vertex (as r128 lights it). The uniforms are the sky's own objects, so one
+ // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
+ // Under cover (the rain occlusion map, fx/89-atmos-fx-raincover.js, when the page takes it) the ground stays dry.
+ // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
+ A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
+  return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
    for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'])sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};
+   const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
    const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';
-   if(/lights_lambert_vertex/.test(sh.vertexShader)){
+   const lambert=/lights_lambert_vertex/.test(sh.vertexShader);
+   if(lambert){
     const lam=A.T.ShaderChunk.lights_lambert_vertex.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLights\[\s*i\s*\],\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);
-    sh.vertexShader=head+sh.vertexShader.replace('#include <lights_lambert_vertex>',wp+'vec3 atmWPos=atmWP.xyz;\n'+lam);}
+    sh.vertexShader=head+(occ?'varying vec3 atmWPosF;\n':'')+sh.vertexShader.replace('#include <lights_lambert_vertex>',wp+'vec3 atmWPos=atmWP.xyz;\n'+(occ?'atmWPosF=atmWPos;\n':'')+lam);}
    else{sh.vertexShader='varying vec3 atmWPos;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp+'atmWPos=atmWP.xyz;');
     const lfb=A.T.ShaderChunk.lights_fragment_begin.replace(/(getDirectionalDirectLightIrradiance\(\s*directionalLight,\s*geometry,\s*directLight\s*\);)/,'$1 '+shade);   /* the include is not expanded yet: expand it here */
     sh.fragmentShader=head+'varying vec3 atmWPos;\n'+sh.fragmentShader.replace('#include <lights_fragment_begin>',lfb)
-     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*uWet*step(0.01,uPorosity);');}
-   sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=1.0-0.38*uWet*uPorosity;');};
-  // keep the material's own program key (the biome kits key each foliage and animation variant) and add ours; with none,
-  // its old hook's source stands in, as three's default key would have read it
-  const own=mat.customProgramCacheKey!==A.T.Material.prototype.customProgramCacheKey?mat.customProgramCacheKey:null,src=prev?prev.toString():'';
-  mat.customProgramCacheKey=function(){return(own?own.call(this):src)+'|atmos-cloudshade-'+por;};mat.needsUpdate=true;return mat;};
+     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);');}
+   /* the wet here: W.wet, none under cover when the page takes the rain occlusion map (the world position reaches the fragment) */
+   const wetHere=occ?'float atmWetHere=uWet*(1.0-atmRainCover('+(lambert?'atmWPosF':'atmWPos')+'));':'float atmWetHere=uWet;';
+   sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+(occ?(lambert?'varying vec3 atmWPosF;\n':'')+occ+'\n':'')
+    +sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n'+wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;');});};
 })();
