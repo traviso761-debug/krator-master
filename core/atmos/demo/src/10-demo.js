@@ -71,7 +71,7 @@
   dd:()=>{clock.day=-1;clock.set(21);look(A.skyVec.fromAltAz(30,90));},
   noon:()=>{clock.set(12);}};
  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{views[b.dataset.v]();S.update(0);});
- const looks={giant:()=>{const g=st().giantDir;look([g[0],g[1]-.08,g[2]]);},sun:()=>look(st().sunDir),cluster:()=>look(st().clusterDir),zenith:()=>look([0,.999,-.04]),level:()=>{pitch=.05;},moon0:()=>look(st().moons[0].dir),moon1:()=>look(st().moons[1].dir),moon2:()=>look(st().moons[2].dir),moon3:()=>look(st().moons[3].dir)};
+ const looks={giant:()=>{const g=st().giantDir;look([g[0],g[1]-.08,g[2]]);},sun:()=>look(st().sunDir),cluster:()=>look(st().clusterDir),zenith:()=>look([0,.999,-.04]),level:()=>{pitch=.05;},moon0:()=>look(st().moons[0].dir),moon1:()=>look(st().moons[1].dir),moon2:()=>look(st().moons[2].dir),moon3:()=>look(st().moons[3].dir),moon4:()=>look(st().moons[4].dir),moon5:()=>look(st().moons[5].dir)};
  document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>looks[b.dataset.l]());
  // ---- the readout
  const hm=h=>{const m=Math.round(h*60)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};

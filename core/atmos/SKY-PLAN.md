@@ -100,6 +100,7 @@ fragment in a fixed back-to-front order, and the ring's far half is occluded ana
 |---|---|
 | The giant's face | a quality pass after the owner's ice-giant references: blue zones and belts with wavering edges, sheared by differential rotation; white cloud torn along the belts and curled by two levels of domain warp; vortices that swirl the clouds round them instead of painted ovals; a faint blue-green cast in a few bands, **sky-plankton**; a blue high-haze limb; a soft ring shadow |
 | The ring | a quality pass on Saturn's plan: a faint grey inner ring, a dense bright middle ring, a near-empty gap, an outer ring with a narrow gap, a thin outer ringlet, fine ringlets (filtered so they never shimmer); optical depth over the view angle, so near edge-on it is a crisp line; the sunlit face bright, the unlit face glowing only through its thin parts; opened so Krator looks down on the face the sun lights by day; its shadow on the giant from the same structure |
+| More moons | **Day**'s vents (lava flows, glow, ash, limb plumes) change with world time. The Laplace chain is filled out: **Two-Day** (Mimas-like) and **Four-Day** (a vitriolic world, cooler than the classic kind). **The Thirteen** becomes a carbon world with tar seas over a quarter of it. The **Week** is Iapetus-like |
 | The moons | they orbit in the giant's equator, so from Krator they **ride along the ring line**. **The Week** is two-faced (Iapetus-like, changed from Callisto-like for visibility: its trailing hemisphere bright, its leading one coal-dark, an equatorial ridge), **the Thirteen** clouded (Venus-like), their periods unchanged (6.87 and 12.55 days: the Count of 91 holds). **The Companion** (a working name) is Ceres-like: a Trojan 60 degrees ahead on Krator's own orbit, fixed beside the giant, ~0.3 degrees across, through its phases once a day. Seen from Voth the moons never climb above ~33 degrees: the ring line is low |
 | An Io | a Trojan cannot be Io-like (no tidal flexing). A plausible Io orbits **inside Krator in a 2:1 resonance**: 12 h, ~122,000 km, just outside the rings; Krator keeps its orbit eccentric, as Europa does Io's, and the same resonance flexes Krator a little (the Throne). From Krator it would swing ~39 degrees either side of the giant once a day, transiting the disc (~3 degrees across) and hiding behind it. Built as **Day** (the owner's name): it transits the disc once a day, drawn over the giant while it is nearer; its crossing hour drifts ~4 minutes a day against the sun |
 
@@ -363,6 +364,12 @@ The biome rebuild session owns the biome sources and their pages now: S1 onward 
 taken into it by agreement), and each step rides one all-builds rebuild where it can (`TODO.md`, "Ride along").
 
 ## 10. Budgets
+
+- **Shader compile time** (measured on the owner's Windows machine, Chrome on ANGLE/Direct3D, 2026-10-25): with the noise
+  inlined (eight hashes a call) the sky shader took 16.8 s to compile; reading the noise from a 64^3 volume
+  (`ATMOS.skyNoiseVolume`, baked in ~90 ms) brought it to 2.2 s. Keep every new layer on the volume, keep one call site per
+  costly function (the moons: one moon a pixel), and measure the compile after each pass. Small angles are taken from the
+  chord (`atmSkyAng`): Direct3D's cos is not precise near 1, and a moon under a degree across vanished.
 
 - **Throne station 1** is at 19.79 M triangles of its 22 M ceiling and about 200 draw calls against 140. The sky saves
   about 18 k triangles and two draw calls there; it adds no geometry. Its cost is fragment time: one full-screen sky

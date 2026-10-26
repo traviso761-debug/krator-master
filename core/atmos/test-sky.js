@@ -46,6 +46,12 @@ const nextNew=(i,t0)=>{let best=[9,0];for(let t=t0+2;t<t0+16;t+=.02){const l=lit
 {const ds=[];for(let h=0;h<24;h+=.05){const m=A.skyState(voth,h,3).moons[3];ds.push([h,m.front,Math.abs(m.along),m.radiusDeg*2]);}
  const fr=ds.filter(x=>x[1]),mx=Math.max(...ds.map(x=>x[2]).filter(a=>a<90));
  ok('Day (2:1, 12 h) laps Krator once a day: it crosses the giant\'s face, ~3 degrees across, and swings ~39 degrees out',fr.length>0&&fr.length<ds.length/2&&near(Math.max(...fr.map(x=>x[3])),2.9,.15)&&near(mx,39,2),fr.length===0);}
+{const P=n=>S.moons.find(m=>m.name===n);ok('the Laplace chain: Day 1/2, Krator 1, Two-Day 2, Four-Day 4 days, orbits by Kepler from Krator\'s',
+  P('Day').periodD===.5&&P('Two-Day').periodD===2&&P('Four-Day').periodD===4&&[P('Day'),P('Two-Day'),P('Four-Day')].every(m=>near(m.orbitKm/194000,Math.pow(m.periodD,2/3),.002)),false);
+ const lam=(m,t)=>m.theta0+2*Math.PI*t/m.periodD;
+ const w=x=>{x=((x%(2*Math.PI))+2*Math.PI)%(2*Math.PI);return x>Math.PI?x-2*Math.PI:x;};
+ const t0=S.doubleDark,lD=lam(P('Day'),t0),l2=lam(P('Two-Day'),t0),l4=lam(P('Four-Day'),t0),lK=lD;   // Day transits then: it shares Krator's longitude
+ ok('...phased as a Laplace resonance: l(Day) - 3 l(Krator) + 2 l(Two-Day) = 180, and the same for the next link',near(Math.abs(w(lD-3*lK+2*l2)),Math.PI,1e-9)&&near(Math.abs(w(lK-3*l2+2*l4)),Math.PI,1e-9),false);}
 {const s=A.skyState(voth,22,10),g=s.giantDir;ok('an outer moon is never between Krator and the giant (it hides behind the disc)',(()=>{for(let d=0;d<60;d+=.37){const st=A.skyState(voth,(d*24)%24,Math.floor(d));for(const m of st.moons.slice(0,3)){const c=V.dot(m.dir,st.giantDir);if(c>Math.cos(15*Math.PI/180)&&m.distKm<S.giant.orbitKm)return false;}}return true;})(),false);}
 
 // ---- eclipses come in seasons round the equinoxes

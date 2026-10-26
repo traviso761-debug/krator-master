@@ -8,7 +8,7 @@
 // line of sight so the rings stay a hairline. The giant's moons orbit in its equator, the plane of its rings, so from
 // Krator they ride along the ring line (the owner, 2026-10-25): the Companion, Ceres-like, a Trojan sharing Krator's own
 // orbit 60 degrees ahead, so it hangs fixed beside the giant and waxes and wanes once a day; the Week (6.87 d, two-faced,
-// Iapetus-like) and the Thirteen (12.55 d, clouded, Venus-like) orbit outside Krator, so their phases,
+// Iapetus-like) and the Thirteen (12.55 d, a carbon world with tar seas) orbit outside Krator, so their phases,
 // 7 and 13 days as seen from Krator, and the Double Dark every 91 days come out of the geometry, not a table; the stars
 // turn at the sidereal rate, so the Pleiades' season follows the year.
 // No THREE, no DOM. Directions are world unit vectors [x,y,z]: x east, y up, z south. Angles in degrees unless named.
@@ -29,16 +29,23 @@
   giant:{diaDeg:30, decDeg:-37.6, axisTiltDeg:23, spinH:10, ringIn:1.30, ringOut:2.12, ringOpenDeg:1.6, orbitKm:194000},   // orbitKm: Krator's (a 24 h orbit, Kepler from the Week's)
   sunDiaDeg:0.53,
   // the giant's moons (the owner, 2026-10-25). kind: 0 Io-like (sulfur, volcanoes: Day), 1 Callisto-like (dark, cratered),
-  // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots), 4 Iapetus-like
+  // 2 Venus-like (clouded), 3 Ceres-like (small, grey, salt spots), 5 Mimas-like (icy, grooved, one huge crater on its
+  // leading face), 6 vitriolic (sulfuric-acid seas, dark red land, bright brownish cloud, a pale green limb), 7 a carbon world (rust and
+  // ochre crusts, tar seas over a quarter of it, pale haze: the Thirteen, the owner 2026-10-25), 4 Iapetus-like
   // (its leading hemisphere coal-dark, its trailing one bright, an equatorial ridge). The Companion is a Trojan (trojanDeg ahead of Krator on its orbit); the others' phase0 makes
   // both new at the Double Dark the day before game start, solved below. 'Companion' is a working name
   moons:[{name:'Companion', kind:3, trojanDeg:60, radiusKm:470, albedo:[1,1,1]},
          {name:'Week', kind:4, periodD:6.87, orbitKm:700000, radiusKm:4000, albedo:[1,1,1]},
-         {name:'Thirteen', kind:2, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]},
+         {name:'Thirteen', kind:7, periodD:12.55, orbitKm:1050000, radiusKm:4600, albedo:[1,1,1]},
          // Day (the owner, 2026-10-25): Io-like, inside Krator's orbit in a 2:1 resonance (12 h, Kepler from Krator's 24 h and
          // 194,000 km), just outside the rings; Krator keeps its orbit eccentric, so it is tidally torn into volcanoes. It laps
          // Krator once a day: it swings ~39 degrees either side of the giant, crosses its face (~3 degrees across) and hides behind it
-         {name:'Day', kind:0, periodD:0.5, orbitKm:122200, radiusKm:1820, albedo:[1,1,1], inner:true}],
+         {name:'Day', kind:0, periodD:0.5, orbitKm:122200, radiusKm:1820, albedo:[1,1,1], laplace:0},
+         // the rest of the Laplace chain (the owner, 2026-10-25): Day 1/2 day, Krator 1, the 2-day moon, the 4-day moon
+         // (1:2:4:8). Their longitudes at the Double Dark keep each link's Laplace relation, l1 - 3 l2 + 2 l3 = 180, so three
+         // neighbours never line up: laplace is the moon's lead on Krator then (Day 0: it transits). Working names
+         {name:'Two-Day', kind:5, periodD:2, orbitKm:307950, radiusKm:1500, albedo:[1,1,1], laplace:90},      // Mimas-like: grooves, one huge crater
+         {name:'Four-Day', kind:6, periodD:4, orbitKm:488840, radiusKm:3400, albedo:[1,1,1], laplace:225}],  // vitriolic: sulfuric-acid seas under bright cloud
   doubleDark:-0.5,                                   // world days from game start's midnight: noon of the day before
   // the Pleiades (3.4): Krator's sun sits on the cluster's edge; its centre at RA 18 h, dec -30, so the cluster owns
   // the southern winter nights (the owner, 2026-10-25)
@@ -79,7 +86,7 @@
  const kratorAt=(lst,Hg)=>{const rag=lst-Hg;return[-S.giant.orbitKm*Math.cos(rag),-S.giant.orbitKm*Math.sin(rag)];};
  const lstOf=(t)=>{const yd=S.startDay+t,ra=sunRaDec(yd)[0],h=((t%1)+1)%1*24;return 15*(h-12)*D+ra;};
  S.moons.forEach(m=>{if(!m.periodD)return;const t=S.doubleDark,lst=lstOf(t),K=kratorAt(lst,0),ra=sunRaDec(S.startDay+t)[0],s=[Math.cos(ra),Math.sin(ra)];
-  if(m.inner){m.theta0=Math.atan2(-K[1],-K[0])-2*Math.PI*t/m.periodD;return;}
+  if(m.laplace!=null){m.theta0=Math.atan2(K[1],K[0])+m.laplace*D-2*Math.PI*t/m.periodD;return;}
   // Hg drops out: the sub-giant longitude only turns the site, not the orbits; K is Krator's position for Hg=0
   const ks=K[0]*s[0]+K[1]*s[1],kk=K[0]*K[0]+K[1]*K[1],d=-ks+Math.sqrt(ks*ks-kk+m.orbitKm*m.orbitKm);
   m.theta0=Math.atan2(K[1]+d*s[1],K[0]+d*s[0])-2*Math.PI*t/m.periodD;});
@@ -123,7 +130,7 @@
    mx-=K[0];my-=K[1];const dist=Math.hypot(mx,my),b=Math.atan2(mx*yh[0]+my*yh[1],mx*xh[0]+my*xh[1]);
    const e=[mx/dist,my/dist,0],cosPsi=-(sunE[0]*e[0]+sunE[1]*e[1]+sunE[2]*e[2]);
    return{name:m.name,kind:m.kind,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:L,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
-    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
+    radiusDeg:Math.atan(m.radiusKm/dist)/D,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
   // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
   const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
   const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
@@ -141,6 +148,21 @@
   const giant=h>0&&b>0,giantT=giant?b-Math.sqrt(h):Infinity,dn=dot(d,n),tR=Math.abs(dn)>1e-9?dot(c,n)/dn:-1;
   let ring=false,rr=0;if(tR>0){const p=d.map((v,k)=>v*tR-c[k]);rr=Math.hypot(p[0],p[1],p[2])/r;ring=rr>=S.giant.ringIn&&rr<=S.giant.ringOut;}
   return{giant,giantT,ring,ringT:tR,ringR:rr,ringShown:ring&&!(giant&&tR>giantT)};};
+
+ // ---- the noise volume every sky noise reads (SKY-PLAN.md, section 10): tileable gradient noise, 4 samples to a lattice
+ // cell, period 16 cells, four seeds in R, G, B, A. A texture read instead of eight hashes per call is what keeps the
+ // sky shader compiling in a second or two under ANGLE/Direct3D (it took 16 s with the noise inlined). Made from the
+ // same lowbias32 hash, so every engine bakes the same bytes. ATMOS.skyNoiseVolume(n) -> Uint8Array n*n*n*4
+ A.skyNoiseVolume=function(n){n=n==null?64:n;const P=16,k=n/P,out=new Uint8Array(n*n*n*4),G=[];
+  for(let c=0;c<4;c++){const g=new Float32Array(P*P*P*3);for(let z=0;z<P;z++)for(let y=0;y<P;y++)for(let x=0;x<P;x++){const h=hash(x+P*y,z,500+c),j=3*(x+P*(y+P*z));
+   g[j]=(h&1023)/511.5-1;g[j+1]=((h>>>10)&1023)/511.5-1;g[j+2]=((h>>>20)&1023)/511.5-1;}G.push(g);}
+  const f5=t=>t*t*t*(t*(t*6-15)+10);
+  for(let z=0;z<n;z++)for(let y=0;y<n;y++)for(let x=0;x<n;x++){const px=x/k,py=y/k,pz=z/k,ix=Math.floor(px),iy=Math.floor(py),iz=Math.floor(pz),fx=px-ix,fy=py-iy,fz=pz-iz,u=f5(fx),v=f5(fy),w=f5(fz);
+   for(let c=0;c<4;c++){const g=G[c];let r=0;
+    for(let a=0;a<8;a++){const ox=a&1,oy=(a>>1)&1,oz=a>>2,j=3*(((ix+ox)&15)+P*(((iy+oy)&15)+P*((iz+oz)&15)));
+     const d=g[j]*(fx-ox)+g[j+1]*(fy-oy)+g[j+2]*(fz-oz);r+=d*(ox?u:1-u)*(oy?v:1-v)*(oz?w:1-w);}
+    out[4*(x+n*(y+n*z))+c]=Math.max(0,Math.min(255,Math.round((r*0.5+0.5)*255)));}}
+  return out;};
 
  // ---- the date, for display
  A.skyDate=function(dayCount,hour){const t=(dayCount||0)+(hour||0)/24,yd=Math.floor(((S.startDay+t)%S.yearD+S.yearD)%S.yearD);
