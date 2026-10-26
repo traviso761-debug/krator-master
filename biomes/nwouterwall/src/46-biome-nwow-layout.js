@@ -42,7 +42,7 @@ NWOW.zoneOf=function(F){
  // the forest-steppe's split (section 1): larch where the slope is shaded and holds its snow, steppe where the sun dries it; on
  // the flats the permafrost decides (the open Yakutian larch lives on the melt the frozen ground holds), and above the steppe's
  // reach (a mean under ~0 °C) the larch takes the sunny slopes too
- const shade=-F.sunny*Math.min(1,F.slope*6);
+ const shade=NWOW.shadeOf(F);
  if(shade>.18)return 'larch';
  if(warm<NWOW.BANDS.larchFlat&&shade>-.5)return 'larch';
  if(F.perma>.5&&shade>-.3)return 'larch';
@@ -54,6 +54,9 @@ NWOW.ZONES={
  burn:{crop:'larchwood',name:'a burn (Ivan-chai on the larch\'s edge)'},gully:{crop:'steppe',name:'a gully (silverthorn)'},rock:{crop:'fellfield',name:'rock (a tor, a crag)'},
  fellfield:{crop:'fellfield',name:'fellfield'},tundra:{crop:'tundra',name:'shrub tundra'},larch:{crop:'larchwood',name:'larch wood (shaded slope, permafrost)'},
  steppe:{crop:'steppe',name:'feather-grass steppe (sunny slope)'}};
+// how shaded a point is (0..1 a south-facing slope): only a real slope counts (a swell of a few degrees on the floor does not hold
+// its snow any longer than the flat round it)
+NWOW.shadeOf=function(F){const t=F.slope<.05?0:F.slope>.16?1:(F.slope-.05)/.11;return -F.sunny*t*t*(3-2*t);};
 NWOW.lay=function(o){NWOW.FIELDS=o.fields;NWOW.R=o.R;NWOW.seed=o.seed==null?4700:o.seed;return NWOW;};
 NWOW.at=function(x,z){const F=NWOW.FIELDS(x,z);return {zone:NWOW.zoneOf(F),F,clim:NWOW.climate(F.mean)};};
 NWOW.pycAt=function(x,z){return NWOW.climate(NWOW.FIELDS(x,z).mean).pyc;};

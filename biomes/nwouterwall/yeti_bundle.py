@@ -13,8 +13,8 @@ and the station builds without the capital's halls (stations/yeti/86y-host-yeti.
 
 What goes in, in the kit's own file order: its engine (10-core.js without its error panel, 26k-kit.js, 27-mat.js, 28-yt-mat.js,
 30-geo.js, 36-def.js, 37-wk-rec.js) with core/walk (KWALK, KWALKBOX: the boxes a building draws are its floors), the toolkit
-(40-44 but the tunnels, 42-yt-tunnel.js: it needs core/city's covered ways, which are kits/yeti's addition on its branch) and the
-buildings (50-53 the dwellings, 60-64 the state, works, stores, stock and war). The catalog's furniture is NOT taken (the
+(40-44: the tunnels' pieces too, which the dwellings' passages use; not their network, which needs core/city's covered ways,
+kits/yeti's addition on its branch) and the buildings (50-53 the dwellings, 60-64 the state, works, stores, stock and war). The catalog's furniture is NOT taken (the
 interiors are not seen from outside; FURNISH is a no-op here), nor the kit's sky, scene, night, animation or host.
 
     KratorYeti.setError(fn)            route the kit's errors (default console.error)

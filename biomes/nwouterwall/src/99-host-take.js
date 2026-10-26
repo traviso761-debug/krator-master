@@ -37,8 +37,8 @@ const HCHK={
   return{ok:!untagged.length&&!miss.length&&!undrawn.length&&keys.length>=1,detail:(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+
    (undrawn.length?'catalogued but not drawn: '+undrawn.join(', ')+'; ':'')+all.length+' tagged; drawn: stone pine cones '+(N.cone||0)+', cloudberries '+(N.berry||0)};},
  // the crops: every crop a plant names is a kits/crops record, and the station's Three Gifts are drawn (the dug rows count in autumn)
- crops(PL,N,st){const ids=Object.keys(PL).map(k=>PL[k].tags.harvest.crop||PL[k].tags.crop).filter(Boolean),bad=ids.filter(id=>!CROPS.BY_ID[id]);
-  const want=SITE.gifts||[],got={sweetroot:(N.sweetroot||0)+(st?st.heaps:0),snowpotato:N.snowpotato||0,goldroot:N.goldroot||0},short=want.filter(k=>!(got[k]>0));
+ crops(PL,N,st,want){const ids=Object.keys(PL).map(k=>PL[k].tags.harvest.crop||PL[k].tags.crop).filter(Boolean),bad=ids.filter(id=>!CROPS.BY_ID[id]);
+  want=want||SITE.gifts||[];const got={sweetroot:(N.sweetroot||0)+(st?st.heaps:0),snowpotato:N.snowpotato||0,goldroot:N.goldroot||0},short=want.filter(k=>!(got[k]>0));
   return{ok:!bad.length&&!short.length&&ids.length>=8,detail:ids.length+' plants name a crop'+(bad.length?' (not in kits/crops: '+bad.join(', ')+')':'')+'; drawn: '+want.map(k=>k+' '+got[k]).join(', ')+(short.length?'; missing: '+short.join(', '):'')};},
  // pycrete's rule (PLAN.md section 5): permanent at or below -2 °C, seasonal where the coldest month is at or below -8 °C, none above
  pyc(clim){const A=NWOW.AMP,mS=-9+A.cold,mN=-7+A.cold,a=clim(-2.5).pyc,b=clim(mS).pyc,c=clim(mN).pyc,ok=a==='permanent'&&b==='seasonal'&&c==='none';
@@ -50,9 +50,9 @@ const HCHK={
  roots(TREES){let wet=0,ice=0,field=0,rock=0;TREES.forEach(T=>{const F=NWOW.FIELDS(T.x,T.z);if(F.water)wet++;if(F.aufeis)ice++;if(F.field||F.pocket)field++;if(NWOW.torAt&&NWOW.torAt(T.x,T.z)>.5)rock++;});
   return{ok:wet+ice+field+rock===0&&TREES.length>100,detail:TREES.length+' trees; '+wet+' in water, '+ice+' on the aufeis, '+field+' in a field or pocket, '+rock+' in a tor'};},
  // the landforms: core/terrain's KFROST records, each registered where it is drawn (the aufeis)
- frost(F,reg,need){const rec=F.records(),kinds=[...new Set(rec.map(r=>r.kind))],au=rec.filter(r=>r.kind==='aufeis'),regd=au.filter(r=>reg.some(q=>q.key==='landform.aufeis'&&Math.abs(q.x-r.x)<1&&Math.abs(q.z-r.z)<1)).length;
+ frost(F,reg,need){const rec=F.records(),kinds=[...new Set(rec.map(r=>r.kind))],au=NWOW.AUFEIS_DRAWN||[],regd=au.filter(r=>reg.some(q=>q.key==='landform.aufeis'&&Math.abs(q.x-r.x)<1&&Math.abs(q.z-r.z)<1)).length;
   need=need||SITE.landforms||[];const lack=need.filter(k=>!kinds.includes(k));
-  return{ok:!lack.length&&regd===au.length,detail:rec.length+' landforms ('+kinds.join(', ')+')'+(lack.length?'; missing '+lack.join(', '):'')+'; '+regd+' of '+au.length+' aufeis patches registered'};},
+  return{ok:!lack.length&&regd===au.length,detail:rec.length+' landforms ('+kinds.join(', ')+')'+(lack.length?'; missing '+lack.join(', '):'')+'; '+regd+' of '+au.length+' drawn aufeis patches registered'};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===NW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -80,12 +80,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('an edible plant with no catalog fruit and not listed',HCHK.fruit(NWOW.SPECIES.map(S=>S.key==='pinemat'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),PL,N));
  add('no cones drawn',HCHK.fruit(NWOW.SPECIES,PL,Object.assign({},N,{cone:0})));
  add('a crop the kit does not have',HCHK.crops(Object.assign({},PL,{x:{tags:{harvest:{crop:'nonesuch'}}}}),N,st));
- add('no snow potato drawn',HCHK.crops(PL,Object.assign({},N,{snowpotato:0}),st));
+ add('no snow potato drawn',HCHK.crops(PL,Object.assign({},N,{snowpotato:0}),st,['snowpotato']));
  add('pycrete\'s rule moved a degree',HCHK.pyc(m=>NWOW.climate(m+1.5)));
  add(SITE.aspectCheck===false?'no larch at all':'the larch on the sunny slopes',SITE.aspectCheck===false?HCHK.aspect([],NWOW.FIELDS):HCHK.aspect(NWOW.TREES,(x,z)=>{const F=NWOW.FIELDS(x,z);return {sunny:-F.sunny};}));
  add('a tree on the aufeis or in the water',HCHK.roots(NWOW.TREES.concat([(()=>{const r=NWOW.frost.records().find(q=>q.kind==='aufeis'),a=NWOW.frost.alases.find(q=>q.lake>0);
   return r?{x:r.x,z:r.z}:a?{x:a.x,z:a.z}:STREAM?{x:STREAM.pts[40][0],z:STREAM.pts[40][1]}:{x:MODEL_WATER.length?MODEL_WATER[0].x:0,z:MODEL_WATER.length?MODEL_WATER[0].z:0};})()])));
- const AU=NWOW.frost.records().some(r=>r.kind==='aufeis');
+ const AU=(NWOW.AUFEIS_DRAWN||[]).length>0;
  add(AU?'an aufeis patch not registered':'a landform the station lacks',AU?HCHK.frost(NWOW.frost,REG.filter(q=>q.key!=='landform.aufeis')):HCHK.frost(NWOW.frost,REG,(SITE.landforms||[]).concat(['rockglacier-none'])));
  add('the sky at another pixel',HCHK.sky({preset:Object.assign({},SKY.preset,{site:{px:0,py:0}})}));
  return R;}

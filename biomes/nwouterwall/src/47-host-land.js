@@ -148,12 +148,12 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     'diffuseColor.rgb*=c*vW2.z*1.25;}'].join('\n'));};
  MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground';}
 // the weights at a point: [needles, gravel, turf, cladonia], [sphagnum, lichen, shade, 0]
-function groundW(F,x,z){const shade=-F.sunny*Math.min(1,F.slope*6),warm=F.mean+NWOW.AMP.warm,hi=smooth(8.5,6.5,warm),fell=smooth(4,1.5,warm);
+function groundW(F,x,z){const shade=NWOW.shadeOf(F),warm=F.mean+NWOW.AMP.warm,hi=smooth(8.5,6.5,warm),fell=smooth(4,1.5,warm);
  const larch=Math.max(smooth(.06,.32,shade),smooth(10.6,9.6,warm)*smooth(-.6,-.2,shade))*(1-hi)*(F.floor?.2:1);
  const gravel=Math.max(F.floor?.85:0,smooth(.75,1.05,F.g)*.8,F.field?.7:0,F.pocket?.3*KRAND.vnoise(x*.08,z*.08,0,4793):0,F.rockG*.9,smooth(STREAM?STREAM.w*2.6:0,STREAM?STREAM.w:0,F.streamD));
- const turf=Math.max(F.poly*.9,hi*.7,F.lobe*.4);
+ const turf=Math.max(F.poly*.9,hi*.7,F.lobe*.4,F.meadow*.85);   /* an alas's floor: sedge and hay meadow */
  const clad=Math.max(larch*smooth(-.5,-2,F.mean)*.75,hi*(1-fell)*.6*(.6+.8*(KRAND.vnoise(x*.03,z*.03,0,4798)-.5)));
- const sph=Math.max(F.meadow,F.alas?.6:0,smooth(10,3,F.streamD)*.35);
+ const sph=Math.max(F.alas?.35*(1-F.meadow):0,smooth(10,3,F.streamD)*.35,F.lake>0&&F.lake<1?.8:0);   /* bog moss at the lakes' rims and the alases' sides */
  const lich=Math.max(fell,F.rock*.9,F.rockG*.6);
  // the brightness: broad patches (the grass thick or thin, old snow's ground, a burn's soot), finer mottling, the lobes' risers
  const br=.78+.36*KRAND.fbm(x*.0045,z*.0045,0,3,4797)+.1*(KRAND.vnoise(x*.06,z*.06,0,4792)-.5)-.12*F.front-.22*(F.burnK||0)-.12*larch;
@@ -230,7 +230,14 @@ const AUFEIS_MESH=(function(){const st=6,pos=[],uv=[],col=[],idx=[],S={};
  // its edge fades: the sheet thins to nothing at its rim (the vertex colour's lightness is not its alpha: the ice is opaque, its edge
  // is where KFROST's coverage ends)
  const m=new THREE.Mesh(g,mat);m.userData.inspectLabel='Aufeis (naled): the winter\'s overflow ice on the valley floor ('+SEASON+')';m.userData.host=true;m.name='ice:aufeis';m.renderOrder=1;scene.add(m);
- NWOW.frost.records().filter(r=>r.kind==='aufeis').forEach(r=>REGISTER({name:'Aufeis (naled), '+r.thick.toFixed(1)+' m thick',key:'landform.aufeis',x:r.x,z:r.z,y:terrainH(r.x,r.z)-1,r:Math.min(r.r,60),h:r.thick+2}));
+ // register the patches the mesh draws (a remnant shorter than the ice grid's cells draws nothing and is no landform on the page);
+ // each one's sample point for the probe is its drawn ice nearest its middle (the mesh is one merged mesh)
+ const P=g.attributes.position,PP=[];NWOW.AUFEIS_DRAWN=[];
+ NWOW.frost.records().filter(r=>r.kind==='aufeis').forEach(r=>{const R2=Math.min(r.r,60);let best=-1,bd=1e18;
+  for(let i=0;i<P.count;i++){const dx=P.getX(i)-r.x,dz=P.getZ(i)-r.z,d=dx*dx+dz*dz;if(d<bd){bd=d;best=i;}}
+  if(best<0||bd>R2*R2*.5)return;NWOW.AUFEIS_DRAWN.push(r);const px=P.getX(best),py=P.getY(best),pz=P.getZ(best);PP.push(px,py,pz);
+  REGISTER({name:'Aufeis (naled), '+r.thick.toFixed(1)+' m thick',key:'landform.aufeis',x:r.x,z:r.z,y:terrainH(r.x,r.z)-1,r:R2,h:r.thick+2});});
+ m.userData.probePoints=PP;
  return m;})();
 _mark('aufeis');
 

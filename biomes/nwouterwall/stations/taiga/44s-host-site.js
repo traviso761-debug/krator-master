@@ -12,7 +12,7 @@ const SITE={
  name:'taiga',title:'The taiga and alases',R:2000,seed:4721,warm:-1,
  alases:[{x:-420,z:-180,r:430,depth:11,lake:.62},{x:520,z:-520,r:300,depth:8,lake:.5},{x:350,z:420,r:360,depth:12,lake:0},
   {x:-760,z:640,r:240,depth:7,lake:.45},{x:1150,z:120,r:200,depth:6,lake:0}],
- pingo:{x:360,z:440,r:85,h:26},
+ pingo:{x:360,z:440,r:95,h:38},
  gifts:[],landforms:['alas','pingo'],aspectCheck:false,larch:.24,
  snow:{autumn:[60,420],spring:[-2000,-1900],summer:[1400,2200]},
  spine:[[0,0],[-420,-180],[360,440],[520,-520]],

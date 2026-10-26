@@ -56,12 +56,12 @@ const B=[];
 B[0]=function(T,st,lv){const S=SP[0],lean=T.lean||0,la=T.leanA||0,bc=C(pick(S.barkC)),top={x:T.x+Math.cos(la)*lean*T.H,y:T.y0+T.H,z:T.z+Math.sin(la)*lean*T.H};
  const pts=[];for(let i=0;i<=6;i++){const t=i/6;pts.push({x:mix(T.x,top.x,t),y:T.y0-.3+(T.H+.3)*t,z:mix(T.z,top.z,t),r:T.rb*mix(1.15,.06,Math.pow(t,.8))});}
  st.trunk+=lv===2?BIO.tube('bark.larch',pts,bc,{seg:6,cap:true}):BIO.lathe('bark.larch',pts.map(p=>Object.assign({col:(c=>[c.r,c.g,c.b])(bc.clone().convertSRGBToLinear())},p)),5,1,1,(Rg)=>Rg.r,null)||0;
- const nb=Math.round((lv===2?rr(18,26):rr(9,12))*Math.min(1.3,T.H/20)),cr=T.crownR,set=S.leaf,beard=T.beard||0;
+ const nb=Math.round((lv===2?rr(16,22):rr(8,11))*Math.min(1.3,T.H/20)),cr=T.crownR,set=S.leaf,beard=T.beard||0;
  for(let b=0;b<nb;b++){const t=.12+.84*b/nb+rr(-.02,.02),a=b*GOLD+rr(-.4,.4),s={x:mix(T.x,top.x,t),y:T.y0+T.H*t,z:mix(T.z,top.z,t)};
   const L=cr*Math.pow(1-t,.65)*rr(.75,1.1)+.4,d=dirOf(a,rr(-.15,.05)),bp=[];
   for(let k=0;k<=3;k++){const u=k/3;bp.push({x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u,z:s.z+d[2]*L*u,r:T.rb*.16*(1-u*.7)});}
   if(lv===2)st.limb+=BIO.tube('bark.larch',bp,bc,{seg:3});
-  const nc=Math.max(1,Math.round((lv===2?rr(5,8):rr(2,3))*LARCH_K));
+  const nc=Math.max(1,Math.round((lv===2?rr(4,6):rr(2,3))*LARCH_K));
   for(let c=0;c<nc;c++){const u=.2+.8*(c+rr(0,.8))/nc,p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u+rr(-.1,.2),z:s.z+d[2]*L*u};
    clumpAt('larchleaf',p.x,p.y,p.z,(lv===2?rr(.6,.95):rr(1.2,1.7))*mix(.75,1,LARCH_K),.7,lc(LEAF_SLOT,set,1.1),T.x,T.y0+T.H*.55,T.z,cr,T.H*.5);st.clumps++;}
   if(lv===2&&beard>0&&rng()<beard*.55){const u=rr(.25,.7),p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u,z:s.z+d[2]*L*u},h=rr(.4,.95);
@@ -121,7 +121,11 @@ NWOW.buildTrees=function(R,q){q=q==null?1:q;R=R||2000;
  NWOW.PASSES.forEach((P,pi)=>{const S=SP[P.sp];
   NWOW.place(P.cell,100+pi,(x,z,Z)=>P.accept(x,z,Z)*q,(x,y,z,Z,i,j)=>{if(blocked(x,z,P.pad))return;
    if(NWOW.clearings&&NWOW.clearings.some(c=>Math.hypot(x-c.x,z-c.z)<c.r))return;   /* a host's clearing (a town: its larch felled) */
-   const F=NWOW.FIELDS(x,z);if(F.water||F.aufeis||F.field||F.pocket)return;const cold=smooth(13,7.5,F.mean+NWOW.AMP.warm);   /* shorter as the warmest month cools toward the tree line */
+   const F=NWOW.FIELDS(x,z);if(F.water||F.aufeis||F.field||F.pocket)return;
+   // the wood's edge feathers out toward the sunny side: where the slope is only just shaded the larch stand thinner (the zone
+   // flips at a shade of .18; a hard edge there read as a planted line)
+   if(P.sp===0&&Z==='larch'&&F.mean+NWOW.AMP.warm>=NWOW.BANDS.larchFlat){const sh=NWOW.shadeOf(F);if(rng()>smooth(.12,.5,sh))return;}
+   const cold=smooth(13,7.5,F.mean+NWOW.AMP.warm);   /* shorter as the warmest month cools toward the tree line */
    const T={x,z,y0:y-.25,sp:P.sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:KRAND.hash(SEED,pi,i,j),zone:Z};
    if(P.sp<=1){const k=mix(1,.45,cold);T.H*=k;T.crownR*=mix(1,.8,cold);T.rb*=mix(1,.7,cold);}
    // the drunken forest: on the permafrost the larch leans as the frozen ground heaves (up to ~6 degrees)

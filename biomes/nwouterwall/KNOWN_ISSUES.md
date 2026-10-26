@@ -1,11 +1,16 @@
 # nwouterwall — known issues
 
-- [ ] **Station 3 without the Yeti's domes on this branch.** The owner asked station 3 to read `kits/yeti` now (2026-10-26). The kit
-      is on its own branch (`claude/yeti-kit`), on its own vendored Scyvoi engine (kdef/kput, its materials core, the catalog's
-      furniture): it cannot be concatenated into a biome page, it has to be wrapped in a closure with a `build(sites)` API, as
-      `kits/post-apoc/apoc_bundle.py` does. Until that bundle exists and the kit is in the tree, station 3 shows the capital's
-      country (the fields, the channel, the lake, the larch, the spur) without its halls.
-      Stays open (2026-10-26): needs kits/yeti merged and a yeti bundle (kits/yeti's own, or a reader here).
+- [ ] **Station 3's capital needs `kits/yeti` in the tree.** The owner asked station 3 to read `kits/yeti` now (2026-10-26). The
+      kit is on its own branch (`claude/yeti-kit`) on its own vendored Scyvoi engine, so `yeti_bundle.py` wraps its engine and
+      buildings in one closure (`KratorYeti`, the way `kits/post-apoc/apoc_bundle.py` does) and `stations/yeti/86y-host-yeti.js`
+      lays out a piece of the capital: the High Chief's and the council's halls, the clan compound, family clusters, composite
+      houses, domes, stores, caches, the works, the ice quarry at the lake's edge, the byre and the corral, a watch tower and a
+      signal cairn (37 placements, 66 records, ~440k triangles; tested 2026-10-26 with the kit restored from its branch into the
+      tree: no errors, every check passing). The committed page is built WITHOUT it (the kit is not on this branch, so a rebuild
+      here must match): after the yeti branch merges, `python3 build.py --station yeti` draws the capital. Not taken from the kit:
+      the catalog's furniture (FURNISH is a no-op: the interiors are not seen), the winter street and the samples; the sunk floors
+      are not holed in the biome's ground.
+      Stays open (2026-10-26): merge order (kits/yeti's branch), then rebuild station 3.
 - [ ] **Procedural plants** (no card in the library): the snow birch, the woolly willow, caribou moss tufts (the ground's
       `ground.cladonia` carries the carpet), the felt star (edelweiss), the cloudberry's leaves, the moss campion's flowers.
       Prompts: `core/materials/PROMPTS-NEEDED.md` section 8 (`card.birch.dwarf`, `card.willow.woolly`, `card.edelweiss`,

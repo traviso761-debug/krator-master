@@ -33,7 +33,7 @@ const PAL=NWOW.PAL={
 // H height band (m: the forest-steppe's; the taiga's are scaled down by the cold: 55), rb bole radius, crownR (m); far the
 // impostor recipe (blobs [y of H, rx of crownR, ry of H, colour A, B])
 const K=(climate,aridity,riparian,koppen,zone)=>Object.assign({},NWOW.TAGS,{climate,aridity,riparian,koppen,zone});
-const larchFar=SEASON_K==='autumn'?[0xc8962e,0xa87a28]:SEASON_K==='spring'?[0x7a8a52,0x6a7848]:[0x5e7a36,0x4e682e];
+const larchFar=SEASON_K==='autumn'?[0xa8873e,0x8a6c34]:SEASON_K==='spring'?[0x7a8a52,0x6a7848]:[0x5e7a36,0x4e682e];
 NWOW.SPECIES=[
  {key:'furlarch',name:'Fur larch',H:[18,28],rb:[.16,.3],crownR:[2.2,3.6],leaf:SEASON_K==='autumn'?PAL.larchGold:SEASON_K==='spring'?PAL.larchSpring:PAL.larchGreen,barkC:PAL.larchBark,
   far:{blobs:[[.62,.62,.42,larchFar[0],larchFar[1]]]},tags:K('cold','semiarid','no',['Dsb','Dsc'],'larch')},

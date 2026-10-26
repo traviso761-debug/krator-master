@@ -113,7 +113,7 @@
       // the side: a steep fall from the rim to the floor; the floor flat, a little dished toward the lake
       var drop=a.depth*smooth(1.08,fl,q)+.6*smooth(fl,0,q);
       if(inside>out.alas){out.alas=inside;out.alasId=a.id;out.lake=a.lake>0?smooth(a.lake*fl+.03,a.lake*fl-.03,q):0;
-        out.meadow=smooth(fl,fl*.92,q)*(1-out.lake);}
+        out.meadow=smooth(fl*1.04,fl*.9,q)*(1-out.lake);}   /* the whole floor outside the water: the hay meadow */
       return -drop;}
     function pingoAt(x,z,p,out){var dx=x-p.x,dz=z-p.z,d=Math.sqrt(dx*dx+dz*dz);if(d>=p.r)return 0;
       var t=d/p.r,v=1-t*t,h=p.h*v*Math.sqrt(v);var rc=p.crater;if(t<rc){var u=t/rc;h-=p.h*p.craterD*(1-u*u);}

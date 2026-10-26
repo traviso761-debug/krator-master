@@ -21,10 +21,10 @@ const SITE={
  spine:[[0,0],[-40,-150],[296,326],[-1300,-850],[-2000,-1300]],
  eye:30,
  views:V=>({
-  'The lake from the fields':V([200,120,8],[1400,1500,-30]),
+  'The lake through the open larch':V([200,120,8],[1400,1500,-30]),
   'The Three Gifts by the channel':V([60,-80,5],[-60,-160,0]),
   'Snow-potato pockets at the spur\'s foot':V([-330,-40,5],[-420,-120,0]),
-  'Fellfield: woolly snowballs and cushions':V([-2050,-1250,2],[-2150,-1350,0]),
+  'Fellfield, woolly snowballs and cushions':V([-2050,-1250,2],[-2150,-1350,0]),
   'A rock glacier below the spur':V([-700,-80,40],[-1300,-650,0]),
   'The valley from the spur':V([-1700,-1100,25],[900,1100,-60]),
   'The Yeti Valley from above':V([-300,-2600,700],[400,600,0]),
