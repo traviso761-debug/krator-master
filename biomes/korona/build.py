@@ -107,6 +107,9 @@ for f in CORE_BIOME:
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+# core/hazard (core/hazard/README.md, "Adopting it"): every trap of danger .3 and over is a hazard record (57's reg;
+# KORONA.HAZARDS), the punji pits on KORONA.pitState; 99 hands the overlay to the host (layers: hazards). A src/ copy wins.
+if '20-core-hazard.js' not in PATH: PATH['20-core-hazard.js']=os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js'))
 CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
 for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))

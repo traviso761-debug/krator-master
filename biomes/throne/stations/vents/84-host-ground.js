@@ -8,6 +8,18 @@
 // water, then yellow, orange, brown as it cools, streaming out down the runoff. (No library texture for them yet:
 // core/materials/PLAN.md, ground.mat.thermal; procedural until the owner's arrives.) At night the fissure's veins, the
 // mat and the mycelium light by their own colours.
+// THE HAZARDS (core/hazard, 2026-10-26): what can hurt a walker here, on the records below (tags.hazard; KHAZ reads them,
+// the host's 'hazards' layer shows them, the walk export turns them into navigation zones). The pools scald (the hotter, the
+// worse), the pots spit, the hollows' CO2 kills (paths never go down into them), the marsh is acid, the cracks are falls; the
+// shapes are the water's and the cracks', not the records' wider footprints
+const HZ={pool:P=>({kind:'heat',danger:Math.min(1,.5+.5*P.hot),dose:1+2*P.hot,shape:{type:'cyl',r:P.r*1.45,h:8,y0:2},tell:{sign:'scalding: the bluer, the hotter'}}),
+ mud:M=>({kind:'heat',danger:.6,dose:1.5,shape:{type:'cyl',r:M.r*1.1,h:6,y0:1}}),
+ hollow:H=>({kind:'gas',danger:1,dose:1,falloff:'none',shape:{type:'cyl',r:H.r,h:H.depth+3,y0:0},tell:{sign:'bones on the rim'}}),
+ marsh:()=>{const pts=[];for(let k=0;k<20;k++){const a=k/20*TAU,c=upAt(MARSH.u+MARSH.ru*Math.cos(a),MARSH.p+MARSH.rp*Math.sin(a));pts.push([c[0]-MARSH.x,c[1]-MARSH.z]);}
+  return {kind:'acid',danger:.6,falloff:'linear',shape:{type:'poly',pts,h:8,y0:2,edge:25}};},
+ crack:C=>{const ax=C.dx*C.len,az=C.dz*C.len,bx=-C.dz*C.hw,bz=C.dx*C.hw;
+  return {kind:'fall',danger:.8,shape:{type:'poly',pts:[[ax+bx,az+bz],[-ax+bx,-az+bz],[-ax-bx,-az-bz],[ax-bx,az-bz]],h:C.d+6}};},
+ fumarole:S=>({kind:'heat',danger:Math.round((.3+.4*S.s)*100)/100,dose:.5+S.s,shape:{type:'cyl',r:S.R*.25,h:8+6*S.s}})};
 FLOWS.flows.forEach(f=>{let sx=0,sz=0,n=0;const F=FLOWS;
  for(let k=0;k<F.id.length;k+=7){if(F.id[k]!==f.fi)continue;const i=k%F.N,j=(k-i)/F.N,x=F.x0+i*F.cs,z=F.z0+j*F.cs;if(x*x+z*z>(TERR.R-150)*(TERR.R-150))continue;sx+=x;sz+=z;n++;}
  if(!n)return;f.cx=sx/n;f.cz=sz/n;f.rad=Math.sqrt(n*7*F.cs*F.cs/Math.PI);
@@ -16,11 +28,15 @@ REGISTER({name:'The graben (the rift\'s floor, dropped between its scarps)',x:0,
 {const p=fissPt((FISS.u0+FISS.u1)/2);REGISTER({name:FISS.name,x:p[0],z:p[1],y:terrainH(p[0],p[1])-10,r:(FISS.u1-FISS.u0)/2+40,h:40,fissure:true});}
 CONES.forEach(C=>REGISTER({name:C.name,x:C.x,z:C.z,y:terrainH(C.x,C.z)-C.h-6,r:C.r*1.1,h:C.h*2+20,cone:C.i}));
 {const p=upAt(-100,valL(-100));REGISTER({name:VALLEY.name,x:p[0],z:p[1],y:terrainH(p[0],p[1])-6,r:2000,h:60,valley:true});}
-REGISTER({name:MARSH.name,x:MARSH.x,z:MARSH.z,y:MARSH.level-4,r:MARSH.ru*1.15,h:16,marsh:true});
-CRACKS.forEach(C=>REGISTER({name:'An open crack in the graben floor (a gjá)',x:C.x,z:C.z,y:terrainH(C.x,C.z)-C.d-3,r:C.len,h:C.d+8,crack:true}));
-POOLS.forEach((P,i)=>REGISTER({name:'A hot pool',x:P.x,z:P.z,y:POOLL[i]-4,r:P.r*2.2,h:14,pool:i}));
-MUD.forEach((M,i)=>REGISTER({name:'A mud pot',x:M.x,z:M.z,y:MUDL[i]-3,r:M.r*1.6,h:10,mud:i}));
-HOLLOWS.forEach(H=>REGISTER({name:H.name,x:H.x,z:H.z,y:terrainH(H.x,H.z)-3,r:H.r*1.3,h:H.depth+8,hollow:H.i}));
+REGISTER({name:MARSH.name,x:MARSH.x,z:MARSH.z,y:MARSH.level-4,r:MARSH.ru*1.15,h:16,marsh:true,tags:{hazard:HZ.marsh()}});
+CRACKS.forEach(C=>REGISTER({name:'An open crack in the graben floor (a gjá)',x:C.x,z:C.z,y:terrainH(C.x,C.z)-C.d-3,r:C.len,h:C.d+8,crack:true,tags:{hazard:HZ.crack(C)}}));
+POOLS.forEach((P,i)=>REGISTER({name:'A hot pool',x:P.x,z:P.z,y:POOLL[i]-4,r:P.r*2.2,h:14,pool:i,tags:{hazard:HZ.pool(P)}}));
+MUD.forEach((M,i)=>REGISTER({name:'A mud pot',x:M.x,z:M.z,y:MUDL[i]-3,r:M.r*1.6,h:10,mud:i,tags:{hazard:HZ.mud(M)}}));
+HOLLOWS.forEach(H=>REGISTER({name:H.name,x:H.x,z:H.z,y:terrainH(H.x,H.z)-3,r:H.r*1.3,h:H.depth+8,hollow:H.i,tags:{hazard:HZ.hollow(H)}}));
+// the fumaroles (47's STEAM, the pools' and pots' own left out: their pools are the hazard): heat at the vent, a hazard record
+// each (core/tags only: not in REG, so the inspector's region names stay the pages' own)
+STEAM.slice(0,STEAM.length-POOLS.length-MUD.length).forEach((S,i)=>BIO.record({name:'A fumarole (steam at 90 C and more, and its gas)',key:'fumarole',kind:'vent',
+ x:S.x,z:S.z,y:terrainH(S.x,S.z)-1,r:S.R*.25,h:8+6*S.s,tags:{hazard:HZ.fumarole(S)}}));
 
 // ---------------------------------------------------------------- the paint
 const K=hx=>new THREE.Color(hx);

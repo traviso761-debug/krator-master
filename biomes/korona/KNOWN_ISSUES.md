@@ -42,13 +42,12 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   Available (2026-10-25): `core/atmos/fx/89-atmos-fx-snowcover.js` (`ATMOS.snowCover({base,line,frozen})`, `ATMOS.snowOnScene`) could give the hoar table a light permanent hoarfrost above a line; not adopted, since it changes the look the six pages were judged on and the page has no weather yet. Owner's call.
   Stays open (2026-10-26): the host offers an hour slider only when the sky takes an hour, and the sky is the shared sky
   rollout's (not touched here). The hoar table's snow cover (`stations/hoar/89s-host-snow.js`, 2026-10-25) is kept as is.
-- [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). The key is
-  proposed (`core/tags/PROPOSAL.md`, "A hazard key", 2026-10-19); when it lands, the Throne's CO2 hollows and the
-  natives' punji pits take it too.
-  Stays (2026-10-25): the key is only proposed (`core/tags/PROPOSAL.md`), not built in `core/tags`: a core change.
-  Stays open (2026-10-26): still a core change. Proposed: `core/tags/52-core-tags-vocab.js`, `keys`: `hazard: 'object'`
-  ({kind, danger, how}); then `57`'s `reg` writes `tags.hazard={kind:'trap',danger:trap.danger}` beside `tags.trap`, the
-  punji pit adding `open` from `KORONA.pitState` for the game. The kit is ready for it (one line in `reg`).
+- [x] **The hazard key.** Done 2026-10-26 (core/hazard, branch claude/core-hazard): `core/tags` has the `hazard` key and
+  `57`'s `reg` writes `tags.hazard` beside `tags.trap` for every trap of danger .3 and over (`KORONA.hazardOf`,
+  `KORONA.HAZARDS` in `50`): the punji pits as pits on `KORONA.pitState` (now on the one clock, `KTRAPS.cycle`; hidden while
+  the membrane is whole), the man-eaters, coil tendrils, ground stars, bear traps, snare flowers and trap pads as grabs on
+  their trap's clock, the numb thorn as poison, the sucking pools as drowning. Every page's `hazards` layer shows them; the
+  inspector says their state now. The Throne's CO2 hollows took it too (station 8).
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will. Since 2026-10-19 they are `core/water` still
   records like every pool (`89w-host-water.js`); the open world will make them `WATER.open` surfaces on a shore window.

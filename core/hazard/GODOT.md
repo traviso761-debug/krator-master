@@ -58,4 +58,4 @@ shows the dose and the state, as the page's inspector does.
 ## The overlay
 
 A debug draw of the Areas (an `ImmediateMesh` or a `MeshInstance3D` per shape, unshaded, additive, the kind's tell
-colour times (.25 + .75 danger) times k now), toggled from the debug menu, as `KTAGS.hazardLayer` does on the page.
+colour times (.1 + .25 danger) times k now), toggled from the debug menu, as `KTAGS.hazardLayer` does on the page.

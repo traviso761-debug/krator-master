@@ -19,7 +19,7 @@ GEYSER.buildSinter=function(q){reseed(570631);q=q==null?1:q;const R=GEYSER.R,M=G
  R.geysers.forEach((g,i)=>{if(g.kind==='cone')g.vents.forEach((v,j)=>{const c=j?Object.assign({},g.cone,{r:g.cone.r*.9,h:g.cone.h*.9}):g.cone,y0=BIO.terrainH(v[0],v[1]);if(j)g.top2=y0+c.h;cone(v[0],v[1],c,y0,i*3.1+j);});
   else{const pr=g.pool||2;for(let k=0,n=Math.round((g.kind==='spouter'?40:70)*q);k<n;k++){const a=rr(0,TAU),rad=pr*rr(1.05,2.2),bx=g.x+Math.cos(a)*rad,bz=g.z+Math.sin(a)*rad;
     BIO.put('bead',[bx,BIO.terrainH(bx,bz)+.02,bz],qEuler(rr(0,1),rr(0,TAU),rr(0,1)),[rr(.1,.35),rr(.06,.2),rr(.1,.35)],col(1.05));st.beads++;}}
-  BIO.register({name:g.name,geyser:g.key,x:g.x,z:g.z,y:g.base-2,r:Math.max(4,(g.cone?g.cone.r:g.pool||3)*1.5),h:(g.cone?g.cone.h:2)+6});});
+  BIO.register({name:g.name,geyser:g.key,x:g.x,z:g.z,y:g.base-2,r:Math.max(4,(g.cone?g.cone.r:g.pool||3)*1.5),h:(g.cone?g.cone.h:2)+6,tags:{hazard:GEYSER.hazard.geyser(g)}});});
  R.springs.forEach(s=>{if(s.kind!=='funnel')return;for(let k=0,n=Math.round(24*q);k<n;k++){const a=rr(0,TAU),rad=s.r*rr(1.02,1.5),bx=s.x+Math.cos(a)*rad,bz=s.z+Math.sin(a)*rad;
   BIO.put('bead',[bx,BIO.terrainH(bx,bz)+.02,bz],qEuler(rr(0,1),rr(0,TAU),rr(0,1)),[rr(.08,.25),rr(.05,.14),rr(.08,.25)],col(1.08));st.beads++;}});
  return{sinter:st};};

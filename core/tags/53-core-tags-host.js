@@ -88,7 +88,7 @@
  // KTAGS.hazardLayer({scene, tags?, time?, max?, camera?}) -> {on: false, set(on), objects(), update(t), count}: hand it to the host
  // as o.layers.hazards and its button shows each hazard record's shape (core/hazard KHAZ.list of tags, else KTAGS.page):
  // cylinders, spheres and boxes as three instanced draws, polygons as one extruded mesh each, additive and unlit, coloured
- // by the kind's tell colour times (.25 + .75 danger) times its state now (KHAZ.state: a vent between plays fades out; a
+ // by the kind's tell colour times (.1 + .25 danger) times its state now (KHAZ.state: a vent between plays fades out; a
  // warn pulses). time() is the motion clock (KHOST.host.clock.t); the meshes are made on show (the nearest max, 4000, to the
  // camera when there are more: shown again 60 m from where they were made, they are made again there), and skipped by the
  // inspector and the probe (userData.khost, probeSkip). Godot: a debug draw of the Area3D shapes (core/hazard/GODOT.md).
@@ -125,14 +125,14 @@
          v.set(r.at[0], r.at[1] + y0, r.at[2]); q.setFromEuler(e.set(0, r.ry || 0, 0));
          if (k === 'box') sc.set(s.w, Math.max(h, .2), s.d); else if (k === 'cyl') sc.set(s.r, Math.max(h, .2), s.r); else sc.set(s.r, s.r, s.r);
          im.setMatrixAt(i, m4.compose(v, q, sc)); im.setColorAt(i, col.set(0x000000));
-         rows.push({ rec: r, mesh: im, i: i, base: new THREE.Color(H.of(r).tell.colour).multiplyScalar(.25 + .75 * H.of(r).danger) }); });
+         rows.push({ rec: r, mesh: im, i: i, base: new THREE.Color(H.of(r).tell.colour).multiplyScalar(.1 + .25 * H.of(r).danger) }); });
        im.userData.khost = true; im.userData.probeSkip = true; im.frustumCulled = false; im.renderOrder = 30; G.add(im); meshes.push(im); });
      polys.forEach(function(p){ var r = p[0], s = p[1], sh = new THREE.Shape(), y0 = s.y0 == null ? 0 : s.y0, h = Math.max((s.y1 == null ? s.h : s.y1) - y0, .2);
        s.pts.forEach(function(pt, i){ if (i) sh.lineTo(pt[0], -pt[1]); else sh.moveTo(pt[0], -pt[1]); });
        var g = new THREE.ExtrudeGeometry(sh, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2);
        var m = new THREE.Mesh(g, mat()); m.position.set(r.at[0], r.at[1] + y0, r.at[2]); m.rotation.y = r.ry || 0;
        m.userData.khost = true; m.userData.probeSkip = true; m.renderOrder = 30; G.add(m); meshes.push(m);
-       rows.push({ rec: r, mesh: m, i: -1, base: new THREE.Color(H.of(r).tell.colour).multiplyScalar(.25 + .75 * H.of(r).danger) }); });
+       rows.push({ rec: r, mesh: m, i: -1, base: new THREE.Color(H.of(r).tell.colour).multiplyScalar(.1 + .25 * H.of(r).danger) }); });
      L.count = rows.length; L.group = G;
      (o.scene || (root.KHOST && root.KHOST.host && root.KHOST.host.scene)).add(G);
    }

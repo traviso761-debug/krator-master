@@ -56,7 +56,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 CORE_TERRAIN=[]   # no carve patches in this kit's showcase
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']   # 37: the one clock (KTRAPS.cycle) core/hazard runs on
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -81,6 +81,9 @@ for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
 # core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,
 # materials, textures and terrain (42-core-export.js), 43 its stage, the adapters its registry. A src/ copy wins.
+# core/hazard (core/hazard/README.md, "Adopting it"; 2026-10-26): the geysers on the one clock (46: GEYSER.hazard, GEYSER.state),
+# the springs and the acid flats; 99 hands the overlay to the host (layers: hazards). A src/ copy wins.
+if '20-core-hazard.js' not in PATH: PATH['20-core-hazard.js']=os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js'))
 CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
 for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
