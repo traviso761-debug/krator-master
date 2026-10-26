@@ -1,0 +1,58 @@
+[
+ {
+  "src": "bark.alder.lichen.png",
+  "out": "core/materials/library/bark.alder.lichen",
+  "record": {
+   "id": "bark.alder.lichen",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.alder.lichen\"",
+    "reuse": "the nhighlands new flora's alder; any pale lichened bark (alder, birch, beech, aspen) with moss at its foot"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.yardang.silt.png",
+  "out": "core/materials/library/rock.yardang.silt",
+  "record": {
+   "id": "rock.yardang.silt",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.yardang.silt\"",
+    "reuse": "the Bowl's silt cliffs, the Catch's wind-carved lake beds, every yardang or wind-fluted lake bed (the dam basins)"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ }
+]

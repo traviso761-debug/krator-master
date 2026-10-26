@@ -1,0 +1,101 @@
+[
+ {
+  "src": "card.treelily.png",
+  "out": "core/materials/library/card.treelily",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.treelily",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.treelily\" (a 3 x 3 sheet on flat magenta)",
+    "reuse": "the necanyons stilt lily; any tree-lily or dracaena-like tuft",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); the lilac flowers keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.flametip.png",
+  "out": "core/materials/library/card.flametip",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.flametip",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.flametip\" (a 3 x 3 sheet on flat magenta)",
+    "reuse": "the necanyons flametip scrub; any tree with a red new flush (tepuis, mango, cinnamon)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); the scarlet flush keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.palm.fan.png",
+  "out": "core/materials/library/card.palm.fan",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.palm.fan",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.palm.fan\" (a 3 x 3 sheet on flat magenta)",
+    "reuse": "the necanyons gorge fan palm; any fan palm (Livistona, Washingtonia, the bays' palms)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); one leaf per cell"
+   }
+  }
+ }
+]

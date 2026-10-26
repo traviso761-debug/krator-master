@@ -1817,6 +1817,17 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
+
+Batches `tools/textures/batches/owner-2026-10-25.json` (surfaces) and `owner-2026-10-25-cards.json` (3 x 3 sheets on magenta).
+- `bark.alder.lichen` (full colour, 1 m): wired as nhighlands' `nbark8`, the ghost alder's own bark (it borrowed the birch's), 3 m a tile
+  up the trunk so its moss foot does not band every metre.
+- `card.palm.fan`, `card.flametip`, `card.treelily` (full colour): wired in necanyons (`fan`, `flametip`, `lilytuft`, keep 1, 1024 px:
+  a 512 px sheet blurs a fan's sixty segments into a blob). The fan and the tuft cut their cell in their own uv (`cellUV`): a pack
+  `cell` on them cuts twice and shows the middle tenth of the sheet as a square.
+- `rock.yardang.silt` (tintable, 2 m): in the library for the Bowl and the Catch (both planned, not built) and any wind-fluted
+  lake bed; not wired yet.
+
 #### Delivered 2026-10-18 and processed: the Throne's new flora (pasted, 6 images)
 
 Batches `throne-flora-2026-10-18.json` (surfaces: `ground.moss.crimson`, `organic.cap.medusa`, `organic.coil.ribbed`) and

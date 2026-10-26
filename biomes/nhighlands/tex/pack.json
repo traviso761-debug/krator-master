@@ -667,6 +667,34 @@
     "sourceMean": 0.2623
    }
   },
+  "nbark8": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "nbark8.albedo.webp"
+   },
+   "lib": "bark.alder.lichen",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3febad6617774b6ce684ca3a67ca3f23493f9172",
+    "normal": "d7df57890bf727df5988c8557a6c9a77e921bd2a",
+    "roughness": "d842f613bc669d6ac7c64ccc17292ff5b1d27c30"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.55585488563388,
+    "sourceMean": 0.5559
+   }
+  },
   "needle": {
    "breakup": null,
    "card": true,

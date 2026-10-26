@@ -66,42 +66,13 @@ Painted in code today (`biomes/nhighlands/KNOWN_ISSUES.md`, the new flora). The 
 cedar, the serpentwood and the banyan have library candidates already (`card.ginkgo`, `ground.moss001`-`003`,
 `card.spruce`, `bark.mossy`, `bark.smooth`): wiring them is the owner's call, no prompt needed.
 
-#### `bark.alder.lichen`
-
-```
-Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: smooth pale grey alder bark #9c9e96 heavily mottled with white and pale green-grey crustose lichen patches #d8dcd0 and #b8c4a8, a few dark horizontal lenticels #4a4a44, green moss creeping up from the bottom edge #5a7a26. Matte. One tile covers 1 metre.
-```
-
 ## 6. necanyons (`biomes/necanyons`, 2026-10-19)
 
 The north-eastern canyons, the hyperjungle's transition to Korona (`biomes/necanyons/PLAN.md` section 6, which lists the
 library sets it reuses). The five required images were delivered on 2026-10-19 (see "Delivered 2026-10-19, necanyons"
-below); `rock.sandstone.bedded.red` was delivered on 2026-10-18 for Pinnacle Rock and serves here too. Three optional
-sheets are left; each names the library fallback the kit uses without it.
+below); `rock.sandstone.bedded.red` was delivered on 2026-10-18 for Pinnacle Rock and serves here too. The three optional sheets were delivered on 2026-10-25 (card.palm.fan, card.flametip,
+card.treelily: PLAN.md, "Delivered 2026-10-25").
 
-#### `card.palm.fan` (optional; fallback `card.palm`'s palmetto cells)
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one leaf per cell.
-- Used by: the gorge fan palm's crown. Reuse: any fan palm (Livistona, Washingtonia, the bays' palms).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one fan-palm leaf (Livistona) on a long, thin, spiny stalk rising from the bottom of its cell: a round fan wider than it is tall, split two thirds of the way to its centre into about sixty narrow ribbon segments whose tips droop and hang down; glossy mid green (#4a7a3a, #5a8a40) with paler yellow-green (#a0b060) along the folds, one or two old leaves going brown (#8a6a3a) at the tips. Vary how far the segments droop between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.flametip` (optional; fallback `card.croptree.glossy`, tinted)
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one twig end per cell.
-- Used by: the flametip scrub forest of the benches. Reuse: any tree with a red new flush (the tepuis, mango and cinnamon flushes).
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a short leafy twig end of a tepui shrub-tree standing up from the bottom of its cell: thick, leathery, glossy oval leaves crowded in a spiral at the twig tip, the older leaves below dark olive green (#3e5230), the new flush at the tip bright scarlet to orange-red (#c8321e, #e0602a); on four of the nine a few pale cream five-petalled flowers (#efe2c8) among the leaves. Vary how much of each twig is in red flush. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.treelily` (optional; fallback `card.ichu` and `card.flower.claw`)
-- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one branch tip per cell. The flowers are lilac: key with `spill: edge` (as `card.crop.saffron`).
-- Used by: the stilt lily of the cap plateaus. Reuse: any tree-lily or dracaena-like tuft.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
-```
 ## 7. The Stalkers (`kits/mechs`, 2026-10-23; optional)
 
 The two man-sized Stalkers (`st_harpooner`, `st_blade`) wear the kit's `metal.scrap` plate map, three times finer and at a
@@ -290,14 +261,6 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one brine lamp: a low succulent standing on the bottom of its cell, fleshy upright blue-green leaves (#5a8a7a) whose surfaces are crusted with sparkling white salt crystals (#f0f0ea) secreted from its glands, the crystals catching the light like frost; a short spike of small pale yellow flowers on four of the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `rock.yardang.silt`
-- Kind: surface, tintable.
-- Used by: the Bowl's silt cliffs and the Catch's wind-carved lake beds. Reuse: every wind-carved lake bed or yardang (the Catch, the Bowl, the dam basins).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Wind-carved old lake-bed silt and clay seen flat-on: fine horizontal laminations a few millimetres thick, smoothed and fluted by the wind into long shallow grooves running one way, the harder layers standing out as thin ridges, pale buff and cream (#d0c0a0, #bcac8c), small fallen flakes and a little blown sand in the grooves. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 2 metres.
 ```
 
 ## 12. The Catch (`biomes/catch`, planned 2026-10-23)

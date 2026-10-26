@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.treelily",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.treelily.png",
+  "generator": "supplied by the owner (pasted into the session, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); the lilac flowers keyed with spill: edge",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.treelily\" (a 3 x 3 sheet on flat magenta)",
+  "reuse": "the necanyons stilt lily; any tree-lily or dracaena-like tuft",
+  "sha1": "161b73c35092fc613f307d731e95dfc6676dc17f"
+ }
+}

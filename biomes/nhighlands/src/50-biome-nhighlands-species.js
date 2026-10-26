@@ -145,7 +145,7 @@ NHL.SPECIES=[
   tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
  // THE NEW FLORA (HANDOFF-FLORA.md): more canopy, more moss, a few alien touches. farShape names the far impostor's blob
  // (55, HABIT) for a habit the old expression does not know; only these species carry it
- /*25*/{key:'ghostalder',name:'Ghost alder',habit:'broad',H:[16,26],rb:[.2,.36],crownR:[4,6],bk:3,bark:[0x9c9e96,0x929489,0xa8aaa2],leaf:PAL.broad.map(c=>C(c).lerp(C(0x9aba5a),.25).getHex()),item:'broad',
+ /*25*/{key:'ghostalder',name:'Ghost alder',habit:'broad',H:[16,26],rb:[.2,.36],crownR:[4,6],bk:8,bark:[0x9c9e96,0x929489,0xa8aaa2],leaf:PAL.broad.map(c=>C(c).lerp(C(0x9aba5a),.25).getHex()),item:'broad',
   form:{hB:.55,boughs:[3,5],el:[.85,1.25],L:[.55,.8],wig:.1,curve:-.03,moss:.9,drape:.25,bulbs:.05,clump:[2.4,3.4],stems:[1,3]},
   tags:TG('temperate','humid','yes',HV('fuel',[],true,'Grows where nothing else will stand the wet; the lichen on it is a wound dressing.'))},
  /*26*/{key:'shagmaple',name:'Shag maple',habit:'shag',H:[14,24],rb:[1.0,1.6],crownR:[10,15],bk:4,bark:[0x4a4438,0x403a30,0x56503e],leaf:PAL.broad,item:'maple',farShape:'dome',
@@ -334,7 +334,7 @@ NHL.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{g.fillStyle='#
   for(let i=0;i<40;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(200,200,200,.55)';g.fillRect(x,y,rr(10,40),rr(20,90));}}
  if(kind===6){const id=g.getImageData(0,0,w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=id.data[i];id.data[i]=id.data[i+1]=id.data[i+2]=clamp(v+12*Math.sin(x*.3+y*.07),0,255);}g.putImageData(id,0,0);}
 });};
-NHL.BARKTEX=[0,1,2,3,4,5,6,7].map(k=>NHL.barkTex(k));
+NHL.BARKTEX=[0,1,2,3,4,5,6,7,3].map(k=>NHL.barkTex(k));   /* 8: the ghost alder's own slot (2026-10-25), painted as the birch until the library's bark.alder.lichen replaces it */
 NHL.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=120+(fbm(x/30,y/6,7,3)-.5)*70+(h3(x,y,3)-.5)*14;d[i]=v;d[i+1]=v*.94;d[i+2]=v*.86;d[i+3]=255;}g.putImageData(id,0,0);});
 NHL.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -465,7 +465,7 @@ NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;
  if(M.spore)M.spore.emissiveIntensity=lerp(.04,1.2,k);   /* the spore lamps (the new flora, at the end of this fragment) */
  M.halo.opacity=.20*k;M.haloV.opacity=.18*k;M.halo.visible=M.haloV.visible=k>0;
  return{bulb:M.bulb.emissiveIntensity,pod:M.pod.emissiveIntensity,halo:M.halo.opacity};};
-const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags'];
+const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags','Alder bark (lichen, moss at the foot)'];
 // the bark, fallen-wood and boulder materials are made first and offered to the library as one table (NHL.BKMAT:
 // nbark0..7 but the trumpets, nwood, nrock), so BIO.libSwap binds them before their buckets read the set's tile size
 NHL.BKMAT={nwood:BIO.barkMat(NHL.WOODTEX),nrock:BIO.barkMat(NHL.ROCKTEX)};
