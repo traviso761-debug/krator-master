@@ -12,7 +12,7 @@ const VIEWS={
  'A kopje and its tors':look(K0.x+K0.r*1.6,K0.z+K0.r*.9,3,K0.x,K0.z,K0.h*.8),
  'A balanced tor':[TOR.x+TOR.R*3.2,TOR.y0+(TOR.top-TOR.y0)*.4,TOR.z+TOR.R*2.4,TOR.x,TOR.y0+(TOR.top-TOR.y0)*.6,TOR.z],
  'Honeycomb in the granite':[TOR.x+TOR.R*1.6,Math.max(gh(TOR.x+TOR.R*1.6,TOR.z+TOR.R*1.2,1.7),TOR.y0+1.5),TOR.z+TOR.R*1.2,TOR.x,TOR.y0+(TOR.top-TOR.y0)*.35,TOR.z],
- 'A gnamma pool':(G=>[G.x+G.r*2.6,G.level+3.5,G.z+G.r*2.2,G.x,G.level,G.z])(GNAMMA[0]),
+ 'A gnamma pool':(G=>{const cx=G.x+G.r*2.6,cz=G.z+G.r*2.2;return[cx,Math.max(gh(cx,cz,1.7),G.level+3.5),cz,G.x,G.level,G.z];})(GNAMMA[0]),
  'The pan':look(PAN.x+PAN.r*1.3,PAN.z+PAN.r*.6,3,PAN.x,PAN.z,0),
  'Old twoleaf on the pavement':look(-2050,60,2.4,-2150,-40,0),
  'Umbrella thorns along the wadi':look(CHAN[0].pts[150][0]+60,CHAN[0].pts[150][1]+50,2.2,CHAN[0].pts[130][0],CHAN[0].pts[130][1],4),
