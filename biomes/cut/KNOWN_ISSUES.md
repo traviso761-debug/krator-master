@@ -38,6 +38,15 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
   edited on `main`; the lore file is not this kit's.
 - [ ] **The gallery**: a new biome goes in it when it first reaches `main` (left to the session that merges it).
 
+## The probe and the read-in kits
+
+- [x] **Warped trees left their registered volumes behind** (20 empty paperbark volumes at the first verify): the warp now moves
+  and widens each tree's volume with it (`CUT.warpKit`'s `adjust`, `88-host-build.js`), and drops the volume of a tree the kit
+  registered but drew nothing of.
+- [ ] **The face station leaves out nhighlands' burn snags** (`nhlDeny`): four far snags on the page's west corner were bare
+  trunks the probe could not find in their volumes. The plan asks for the old mountain's normal forest, so nothing is lost; a
+  station that wants a burn must look at why a far snag reads empty.
+
 ## Budgets
 
 - [x] **The culms were 21M triangles held** at the first build (one dense mesh at every range): three LOD tiers (near 350 m in

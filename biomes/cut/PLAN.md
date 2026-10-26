@@ -212,6 +212,13 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 - **C5.** Stations 2 and 3, the cut faces (with the strata module if it has landed).
 - **C6.** The crops; `verify.py --assert`; `PORT.md`; the gallery (a new biome); Dilihan's plan switched to read this kit.
 
+**Where it stands (2026-10-26, branch `claude/cut-biome-75af1e`).** C0: the lore settled (section 11), the texture prompt
+for the face written and delivered (`rock.cut.polished`), the four other sets already in the library; the north mouth and the
+4.22 floor are on the model. C1: done (`src/41-cut-field.js`, `tests/test-cut.js`). C2, C3: done (station 1). C4: the echoes
+(the hyperbamboo's), the compass (the page's needle, `CUT.north`), the camp: done. C5: stations 2 and 3: done, without the strata
+module (not landed). C6: the crops (`kits/crops`, a `cut` biome and five records), `verify.py --assert` and `PORT.md` done; the
+gallery and Dilihan's plan switched to read this kit are left (`KNOWN_ISSUES.md`), with what the warp does not yet reach.
+
 ## Textures
 
 Reuse `bark.bamboo.jade` (the hyperbamboo's culms, scaled up), `ground.salt`, `ground.efflorescence` and the NW lowlands'

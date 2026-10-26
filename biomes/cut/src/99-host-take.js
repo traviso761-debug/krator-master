@@ -75,5 +75,9 @@ KHOST.take({build:'cut-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return{rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  exportBox:(function(){const P=STAGE.pool&&STAGE.pool.poly;if(!P)return[-200,-200,200,200];const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);return[Math.min(...xs)-30,Math.min(...zs)-30,Math.max(...xs)+30,Math.max(...zs)+30].map(Math.round);})(),
+  /* the export box: round the station's core/water record (the lake, or its pool) and out to the nearest read-in tree, so it holds
+     items, buckets and water alike */
+  get exportBox(){const P=STAGE.pool&&STAGE.pool.poly;if(!P)return[-200,-200,200,200];const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2;
+   let t=null,d=1e9;for(const r of REG)if(r.kind==='tree'){const e=Math.hypot(r.x-cx,r.z-cz);if(e<d){d=e;t=r;}}if(t){xs.push(t.x);zs.push(t.z);}
+   return[Math.min(...xs)-40,Math.min(...zs)-40,Math.max(...xs)+40,Math.max(...zs)+40].map(Math.round);},
   biome:()=>window._cut,cut:()=>({warped:CUT.WARPED,plants:CUT.PLANTS?{groves:CUT.PLANTS.groves.length,reeds:CUT.PLANTS.reeds.length,rank:CUT.PLANTS.rank.length,melons:CUT.PLANTS.melons.length,lichen:CUT.PLANTS.lichen.length}:null,site:STAGE.site,s:CUT.field(...STAGE.toBowl(0,0)).s})}});

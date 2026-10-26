@@ -51,7 +51,7 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
   fields:{cold,wet:(x,z)=>.62,mist:(x,z)=>.2,rock:(x,z)=>clamp(smooth(.5,.9,grade(x,z))+.4*faceK(x,z),0,1),flow:(x,z)=>0,upland:(x,z)=>.9,dry:(x,z)=>.3,tropic:(x,z)=>0},
   zone:(x,z)=>{const f=faceK(x,z),a=above(x,z),o=out(x,z),gr=grade(x,z);return{grove:0,reed:0,rank:0,melon:0,
    nw:(1-f)*smooth(-60,-400,o)*smooth(.5,.3,gr),nhl:a*(1-smooth(.75,1,gr))*(1-smooth(TARN.r*1.3,TARN.r*.9,Math.hypot(x-TARN.x,z-TARN.z)))};},
-  nwAllow:['spire','needlecypress','cragpine'],nwQ:1.2,nhlQ:.8,nhlOpt:{flora:false},
+  nwAllow:['spire','needlecypress','cragpine'],nwQ:1.2,nhlQ:.8,nhlOpt:{flora:false},nhlDeny:['burnsnag'],   /* the plan's 'normal forest': no burn above the lip */
   groves:false,reeds:false,rank:false,
   lichen:P=>CUT.planLichen({spine:STAGE.spine,r:260,bare:lichenK,normal,ground}),
   layers:['ground.face','ground.lichen','ground.litter','ground.efflor'],layerMul:[0,0,1,1],
@@ -62,7 +62,7 @@ const STAGE=(function(){const site=CUT.SITES.face,yRef=CUT.bowl.h(site.x,site.z)
    const Lc=(CUT.PLANTS&&CUT.PLANTS.lichen||[]).slice().sort((a,b)=>b.r-a.r)[0]||{x:LIPX+150,z:0,n:[1,0,0]};
    return{
     'The cut face (polished, the beds in section)':Vw([LIPX+620,120],40,[LIPX+60,-60],-20),
-    'Circle lichen (nesting, never touching)':Vw([Lc.x+Lc.n[0]*4,Lc.z+Lc.n[2]*4],2.5,[Lc.x,Lc.z],0),
+    'Circle lichen (nesting, never touching)':Vw([Lc.x+Lc.n[0]*7,Lc.z+Lc.n[2]*7],6,[Lc.x,Lc.z],0),
     'Along the lip (the smooth meets the broken)':Vw([LIPX+40,700],12,[LIPX-60,-500],30),
     'The whole bowl below':Vw([LIPX-120,0],40,[30000,0],-4500),
     'The old mountain\'s forest':Vw([LIPX-260,520],14,[LIPX-700,0],60),

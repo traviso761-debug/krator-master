@@ -47,7 +47,7 @@ const STAGE=(function(){const site=CUT.SITES.floor,yRef=CUT.LAKES[0].level,R=280
   hint:'The floor of the Cut by the upper lake (-1,456 m, 1.92 atm): hyperbamboo combed into rings, rankgrass ruled across the salt, the walls round the horizon',
   site,yRef,R,px:[468,322],air:{pressure:1.92,humidity:.78},toBowl,alt:y=>y+yRef,ground,bowlY,up,across:ac,
   creek:{d:creekD,centre:creekC,s:creekS,up,ac,CR},campAt:CAMP,
-  water:{level:0,name:'The upper lake (-1,456 m: endorheic, salt at its far end)'},
+  water:{level:0,shallow:0x467e76,deep:0x1a3e4c,name:'The upper lake (-1,456 m: endorheic, salt at its far end)'},
   floorLabel:y=>y>15?'The salt steppe (abyssal salt flats, XS)':y>.6?'The lake shore':'The shallows',
   // what the kits read: NW lowlands' fields (tropic on the hot wet shore, dry on the salt and the creek's banks so its
   // she-oaks and wattles take the creek), the natives' zones, and the mask the NW kit plants under
@@ -79,7 +79,8 @@ const STAGE=(function(){const site=CUT.SITES.floor,yRef=CUT.LAKES[0].level,R=280
     'The cutters\' camp':V(toward(camp,P(0,0),-26).map((v,i)=>v+(i?ac[1]:ac[0])*14),5,camp,2),
     'The ring reeds':V(P(-40,-600),3,P(-30,-200),0),
     'The creek and its she-oaks':V(P(1100,CR.x0-140),14,P(400,CR.x0),4),
-    'The walls round the horizon':V(P(1400,0),8,P(9000,0),900),
+    'Out the crater mouth (no wall there)':V(P(1400,0),8,P(9000,0),300),
+    'The walls round the horizon (the ENE lip, 6.4 km)':(function(){const b=67*Math.PI/180,R=CUT.lipR(67),t=[Math.sin(b)*R-site.x,-Math.cos(b)*R-site.z],l=Math.hypot(...t),c=[t[0]/l*400,t[1]/l*400];return[c[0],Y(c[0],c[1])+30,c[1],t[0],CUT.lipH(67)-yRef-2500,t[1]];})(),
     'Echoes at dusk':(function(){const E=(CUT.PLANTS&&CUT.PLANTS.groves||[]).flatMap(G=>G.culms.filter(c=>c.echo).map(c=>[G,c]))[0];if(!E)return{cam:V(toward([g.x,g.z],[0,0],g.r+40),6,[g.x,g.z],20),hour:18.1};
      const G0=E[0],c=E[1],e=[c.x+c.echo.dx,c.z+c.echo.dz],out=toward([G0.x,G0.z],e,Math.hypot(e[0]-G0.x,e[1]-G0.z)+G0.r+45);return{cam:V(out,5,e,28),hour:18.1};})(),
     'The whole floor':V(P(-900,0),420,P(2400,0),0)};},

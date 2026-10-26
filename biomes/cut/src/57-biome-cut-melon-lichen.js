@@ -46,7 +46,7 @@
  const onFace=(n,r,p)=>{const z=n,ref=Math.abs(z[1])>.9?[1,0,0]:[0,1,0];let x=[ref[1]*z[2]-ref[2]*z[1],ref[2]*z[0]-ref[0]*z[2],ref[0]*z[1]-ref[1]*z[0]];const l=Math.hypot(...x);x=x.map(v=>v/l);
   const y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];return[x[0]*r,x[1]*r,x[2]*r,0,y[0]*r,y[1]*r,y[2]*r,0,z[0],z[1],z[2],0,p[0],p[1],p[2],1];};
  CUT.drawLichen=function(L,st){if(!L||!L.length)return{};const C=h=>new BIO.host.THREE.Color(h),PAL=CUT.PAL;let n=0;BIO.range=320;BIO.minRange=0;
-  for(const q of L){const p=[q.x+q.n[0]*.01,q.y+q.n[1]*.01,q.z+q.n[2]*.01];CUT.putM('lichen',onFace(q.n,q.r,p),C(PAL.lichen[q.c]));n++;
-   if(q.nest){const pn=[q.x+q.nest.dx+q.n[0]*.02,BIO.terrainH(q.x+q.nest.dx,q.z+q.nest.dz)+q.n[1]*.02,q.z+q.nest.dz+q.n[2]*.02];CUT.putM('lichen',onFace(q.n,q.nest.r,pn),C(PAL.lichen[q.nest.c]));n++;}}
+  for(const q of L){const p=[q.x+q.n[0]*.12,q.y+q.n[1]*.12,q.z+q.n[2]*.12];   /* over the polished face's mesh (48z: 6 cm up) */CUT.putM('lichen',onFace(q.n,q.r,p),C(PAL.lichen[q.c]));n++;
+   if(q.nest){const pn=[q.x+q.nest.dx+q.n[0]*.13,BIO.terrainH(q.x+q.nest.dx,q.z+q.nest.dz)+q.n[1]*.13,q.z+q.nest.dz+q.n[2]*.13];CUT.putM('lichen',onFace(q.n,q.nest.r,pn),C(PAL.lichen[q.nest.c]));n++;}}
   BIO.range=null;return{lichen:n};};
 })();

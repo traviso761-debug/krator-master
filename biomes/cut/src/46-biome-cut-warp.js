@@ -10,6 +10,8 @@
 // branches show through the hole). The floor pass's plants lean and stretch about their own feet (items whose shape stands
 // up; mats, pads and carpets stay flat). Godot gets the same result from the same CUT.warp on the same records.
 //   CUT.warpKit(api, {toBowl:(x,z)=>[bx,bz], ground:(x,z)=>y, trees:api.TREES, species:api.SPECIES})
+//   o.adjust(T, {dx, dz, h, kx}): called after each tree is warped (its top's offset from the foot, its new height, its widening);
+//                    o.adjust(T, null) for a tree the kit registered but drew nothing of
 //   o.allow: a Set of the read-in species' keys the station keeps (the plan's list for its ring); the rest are taken back
 //   CUT.warpDenied(name): true for a read-in species' name the station does not keep (the host's REGISTER skips its volume)
 //   CUT.WARPED  what it did: trees, instances moved, bites, instances bitten, floor instances leaned
@@ -45,7 +47,9 @@
   for(const fm in BIO.buckets){const K=BIO.buckets[fm],p0=sp.S.buckets[fm]||0;if(K.pos.length<=p0)continue;const t=(K.pos.length-p0)/9;tris+=t;
    K.pos.length=p0;K.nor.length=p0;K.col.length=p0;K.uv.length=p0/9*6;K.k.length=p0/9;K.tris-=t;}
   BIO.tally(-tris,-inst,0);W.dropped=(W.dropped||0)+1;}
- function close(sp,o){const T=sp.T;if(!T){return;}const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}const f=[T.x,o.ground(T.x,T.z),T.z],b=o.toBowl(T.x,T.z);
+ function close(sp,o){const T=sp.T;if(!T){return;}const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}
+  {let any=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}if(!any)for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;break;}
+   if(!any){if(o.adjust)o.adjust(T,null);return;}}   /* the kit registered it but drew nothing (a far snag has no impostor): its volume goes */const f=[T.x,o.ground(T.x,T.z),T.z],b=o.toBowl(T.x,T.z);
   const mean=S.H?(S.H[0]+S.H[1])/2:T.H,Wp=CUT.warp(b[0],b[1],{id:T.seed,salt:31,size:T.H/mean}),air=CUT.airScale(o.alt(f[1])),k=Wp.step==null?1:Wp.step/(T.H/mean);
   if(k!==1)W.stepped++;
   const L=mul3(Wp.m,diag(air[0]*k,air[1]*k,air[0]*k)),N=invT(L),A=affine(L,f);
@@ -56,6 +60,7 @@
    const lx=Wp.bite.u*T.crownR,ly=Wp.bite.v*T.H,lz=Wp.bite.w*T.crownR;c[0]=f[0]+L[0]*lx+L[1]*ly+L[2]*lz;c[1]=f[1]+L[3]*lx+L[4]*ly+L[5]*lz;c[2]=f[2]+L[6]*lx+L[7]*ly+L[8]*lz;
    const r=Wp.bite.k*Math.max(cr,H*.3);let gone=0;for(const n in BIO.items){const it=BIO.items[n],i0=sp.S.items[n]||0;if(it.count>i0)gone+=biteInst(it,i0,c,r);}
    if(gone){W.bites++;W.bitten+=gone;(CUT.BITES||(CUT.BITES=[])).push({x:c[0],y:c[1],z:c[2],r,tree:T.seed});}}
+  if(o.adjust){const top=[L[1]*T.H,L[4]*T.H,L[7]*T.H];o.adjust(T,{dx:top[0],dz:top[2],h:top[1],kx:air[0]*k});}   /* the tree's registered volume follows it */
   W.trees++;}
  // the floor pass: every new instance of an upright item leans about its own foot (its matrix's translation)
  function floorLean(S0,o){for(const n in BIO.items){const it=BIO.items[n],i0=S0.items[n]||0;if(it.count<=i0)continue;const def=BIO.defs[n];
