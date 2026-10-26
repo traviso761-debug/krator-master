@@ -8,8 +8,8 @@ const WATER_DRAW=(function(){if(!WATER_RECS)return null;try{
   ATMOS.skylight({renderer,sky:SKY.scene,scene:WENV,ground:()=>new THREE.Color(...(SKY.look?SKY.look.hemiG:[.35,.32,.26])).convertSRGBToLinear(),
    key:()=>[SKY_CLOCK.day,Math.round(SKY_CLOCK.hour*4),SKY.look&&SKY.look.cover.toFixed(2)].join()});}
  const lin=h=>new THREE.Color(h).convertSRGBToLinear(),out={};
- if(WATER_RECS.stream){out.stream=WATER.drawFlow(WATER_RECS.stream,{rapids:[.04,.12],shallow:lin(0x6a8a7e),deep:lin(0x2a4a46),color:0xffffff,roughness:.08,metalness:.05,
-  envMapIntensity:.55,step:10,across:4,margin:1,renderOrder:2});out.stream.mesh.userData.inspectLabel=WATER_RECS.stream.name;}
+ if(WATER_RECS.stream){out.stream=WATER.drawFlow(WATER_RECS.stream,{rapids:[.04,.12],shallow:lin(0x5a7a70),deep:lin(0x223e3c),color:0xffffff,roughness:.2,metalness:.02,
+  envMapIntensity:.25,   /* a cold clear stream over gravel; at .55 the sky's glare turned a narrow channel into a white road */step:10,across:4,margin:1,renderOrder:2});out.stream.mesh.userData.inspectLabel=WATER_RECS.stream.name;}
  const still=(WATER_RECS.alases||[]).slice();
  const iced=WATER_RECS.lake&&SITE.lakeIce&&SITE.lakeIce[SEASON];
  if(WATER_RECS.lake&&!iced)still.push(WATER_RECS.lake);

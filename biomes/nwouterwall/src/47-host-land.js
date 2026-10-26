@@ -28,8 +28,8 @@ NWOW.frost=KFROST.create(Object.assign({seed:SITE.seed,ground:baseH},SITE.frost(
 NWOW.frostH=(x,z)=>NWOW.frost.h(x,z);
 _mark('frost');
 // the ground with the stream's channel cut in: a bed ~0.6 m under the water across the stream's width, its banks eased
-function cutH(x,z){const h=groundH(x,z);if(!STREAM)return h;const n=STREAM.near(x,z,STREAM.w*2.5);if(n.i<0)return h;
- const k=smooth(STREAM.w*2.2,STREAM.w*.6,n.d);return k>0?Math.min(h,h+(n.y-.65-h)*k):h;}
+function cutH(x,z){const h=groundH(x,z);if(!STREAM)return h;const n=STREAM.near(x,z,Math.max(STREAM.w*2.5,NEAR.step*2));if(n.i<0)return h;
+ const k=smooth(Math.max(STREAM.w*2.2,NEAR.step*1.7),Math.max(STREAM.w*.6,NEAR.step*.7),n.d);   /* at least the ground grid's cells: a narrower cut is not drawn */return k>0?Math.min(h,h+(n.y-.65-h)*k):h;}
 // THE BAKED GROUND: the near box on KFIELD (the mesh's grid); terrainH reads it there and the function beyond
 const FIELD=KFIELD.bake(cutH,NEAR.box,NEAR.step,{name:'nwouterwall.'+SITE.name});
 _mark('bake-ground');
@@ -185,7 +185,8 @@ _mark('ground-near');
   const y=h(i,j)-(ax<inner&&az<inner?30:2.5*smooth(NEAR.S*1.6,NEAR.S,Math.max(ax,az)));pos.push(x,y,z);
   const hx=(h(i+1,j)-h(i-1,j))/(2*st),hz=(h(i,j+1)-h(i,j-1))/(2*st),g=Math.hypot(hx,hz),sunny=g>.005?hz/g:0;
   const F={g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),floor:false,field:false,pocket:false,rockG:0,poly:0,lobe:0,front:0,meadow:0,alas:false,rock:smooth(.6,1,g),streamD:1e9};
-  const W=groundW(F,x,z);w1.push(...W[0]);w2.push(...W[1]);}
+  const W=groundW(F,x,z);W[1][2]-=.22*W[0][0];   /* the woods from afar: a larch slope reads darker than its litter alone (the mid ground has no trees) */
+  w1.push(...W[0]);w2.push(...W[1]);}
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-R2+(i+.5)*st,z=-R2+(j+.5)*st;if(Math.abs(x)<NEAR.S-st&&Math.abs(z)<NEAR.S-st)continue;
   const a=j*n1+i,b=a+1,c=a+n1,d=c+1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aW',new THREE.Float32BufferAttribute(w1,4));g.setAttribute('aW2',new THREE.Float32BufferAttribute(w2,4));
@@ -212,23 +213,25 @@ _mark('ground-mid');
 // ---------------------------------------------------------------- the aufeis: the ice's own surface over the floor (KFROST's sheets)
 // The naled builds over the valley floor in winter as the stream overflows and freezes, layer on layer; a spring sheet is metres
 // thick, flat across, blue-white and glossy; summer and autumn leave its remnants (44s: SITE.frost's cover by season)
-const AUFEIS_MESH=(function(){const st=6,pos=[],uv=[],col=[],idx=[],S={};
+const AUFEIS_MESH=(function(){const st=6,pos=[],uv=[],col=[],al=[],idx=[],S={};
  if(!NWOW.frost.aufeis.length)return null;
  NWOW.frost.aufeis.forEach(l=>{const b=[Math.max(l.box[0],NEAR.box[0]),Math.max(l.box[1],NEAR.box[1]),Math.min(l.box[2],NEAR.box[2]),Math.min(l.box[3],NEAR.box[3])];
   if(b[0]>=b[2]||b[1]>=b[3])return;const nx=Math.floor((b[2]-b[0])/st)+2,nz=Math.floor((b[3]-b[1])/st)+2,cov=new Float32Array(nx*nz),top=new Float32Array(nx*nz),vid=new Int32Array(nx*nz).fill(-1);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=b[0]+i*st,z=b[1]+j*st;NWOW.frost.sample(x,z,S);cov[j*nx+i]=S.aufeis;top[j*nx+i]=S.iceH;}
   const vert=(i,j)=>{const k=j*nx+i;if(vid[k]>=0)return vid[k];const x=b[0]+i*st,z=b[1]+j*st,e=smooth(0,.5,cov[k]);
-   vid[k]=pos.length/3;pos.push(x,terrainH(x,z)+Math.max(.03,top[k]),z);uv.push(x,z);col.push(.8+.2*e,.86+.14*e,.92+.08*e);return vid[k];};
-  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const k=j*nx+i;if(!(cov[k]>0&&cov[k+1]>0&&cov[k+nx]>0&&cov[k+nx+1]>0))continue;   /* the sheet's own outline: no fringe at ground level */
+   vid[k]=pos.length/3;pos.push(x,terrainH(x,z)+Math.max(.03,top[k]),z);uv.push(x,z);col.push(.8+.2*e,.86+.14*e,.92+.08*e);al.push(smooth(0,.35,cov[k]));return vid[k];};
+  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const k=j*nx+i;if(!(cov[k]>0||cov[k+1]>0||cov[k+nx]>0||cov[k+nx+1]>0))continue;   /* the sheet and one cell round it: the rim fades out (aIce) */
    const a=vert(i,j),c1=vert(i+1,j),c=vert(i,j+1),d=vert(i+1,j+1);idx.push(a,c,c1,c1,c,d);}});
  if(!idx.length)return null;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
- g.setIndex(idx);g.computeVertexNormals();
+ g.setAttribute('aIce',new THREE.Float32BufferAttribute(al,1));g.setIndex(idx);g.computeVertexNormals();
  const L=LIB['ice.aufeis'];const mat=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.22,metalness:0,map:L?L.map:null,normalMap:L?L.normalMap||null:null,
-  roughnessMap:L?L.roughnessMap||null:null,transparent:true,opacity:.96});
+  roughnessMap:L?L.roughnessMap||null:null,transparent:true,opacity:.97});
+ // the rim fades: each vertex carries KFROST's coverage (aIce), so the sheet thins to nothing where the overflow stopped spreading
+ mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aIce;varying float vIce;').replace('#include <begin_vertex>','#include <begin_vertex>\nvIce=aIce;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vIce;').replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.a*=vIce;');};
+ mat.customProgramCacheKey=()=>'nwouterwall-aufeis';
  if(L){[mat.map,mat.normalMap,mat.roughnessMap].forEach(t=>{if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/L.scale,1/L.scale);}});}
- // its edge fades: the sheet thins to nothing at its rim (the vertex colour's lightness is not its alpha: the ice is opaque, its edge
- // is where KFROST's coverage ends)
  const m=new THREE.Mesh(g,mat);m.userData.inspectLabel='Aufeis (naled): the winter\'s overflow ice on the valley floor ('+SEASON+')';m.userData.host=true;m.name='ice:aufeis';m.renderOrder=1;scene.add(m);
  // register the patches the mesh draws (a remnant shorter than the ice grid's cells draws nothing and is no landform on the page);
  // each one's sample point for the probe is its drawn ice nearest its middle (the mesh is one merged mesh)

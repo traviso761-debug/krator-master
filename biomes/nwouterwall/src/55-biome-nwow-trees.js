@@ -61,9 +61,9 @@ B[0]=function(T,st,lv){const S=SP[0],lean=T.lean||0,la=T.leanA||0,bc=C(pick(S.ba
   const L=cr*Math.pow(1-t,.65)*rr(.75,1.1)+.4,d=dirOf(a,rr(-.15,.05)),bp=[];
   for(let k=0;k<=3;k++){const u=k/3;bp.push({x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u,z:s.z+d[2]*L*u,r:T.rb*.16*(1-u*.7)});}
   if(lv===2)st.limb+=BIO.tube('bark.larch',bp,bc,{seg:3});
-  const nc=Math.max(1,Math.round((lv===2?rr(4,6):rr(2,3))*LARCH_K));
+  const nc=Math.max(1,Math.round((lv===2?rr(5,8):rr(2,3))*LARCH_K));
   for(let c=0;c<nc;c++){const u=.2+.8*(c+rr(0,.8))/nc,p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u+.25*L*u*u+rr(-.1,.2),z:s.z+d[2]*L*u};
-   clumpAt('larchleaf',p.x,p.y,p.z,(lv===2?rr(.6,.95):rr(1.2,1.7))*mix(.75,1,LARCH_K),.7,lc(LEAF_SLOT,set,1.1),T.x,T.y0+T.H*.55,T.z,cr,T.H*.5);st.clumps++;}
+   clumpAt('larchleaf',p.x,p.y,p.z,(lv===2?rr(.42,.68):rr(1.2,1.7))*mix(.75,1,LARCH_K),.7,lc(LEAF_SLOT,set,1.1),T.x,T.y0+T.H*.55,T.z,cr,T.H*.5);st.clumps++;}
   if(lv===2&&beard>0&&rng()<beard*.55){const u=rr(.25,.7),p={x:s.x+d[0]*L*u,y:s.y+d[1]*L*u,z:s.z+d[2]*L*u},h=rr(.4,.95);
    BIO.put('beard',[p.x,p.y,p.z],qEuler(0,rr(0,TAU),0),[h*.7,h,h*.7],NWOW.libCol('beard',bright(C(pick([0x8a9478,0x6a705e,0x9aa088,0x3a3a34])),1)));st.beards++;}}
  regTree(T,S,cr*.9,T.H);};

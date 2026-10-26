@@ -113,7 +113,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.7,
+    "mean": 0.48,
     "sourceMean": 0.5307
    }
   },
@@ -791,15 +791,15 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.0,
     0.3333,
     0.3333,
+    0.6667,
     0.6667
    ],
    "files": {
     "map": "pineleaf.albedo.webp"
    },
-   "lib": "card.pine",
+   "lib": "card.pine.b",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0,
@@ -809,14 +809,14 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "09bd6b96b7fb7ecec51689c38a5fb138fa07e1a2"
+    "albedo": "0787ea388840b701fe042b08d5ad7b3d626c38a9"
    },
    "specular": 0.22,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.62,
-    "sourceMean": 0.3049
+    "sourceMean": 0.2958
    }
   },
   "rock.tor": {
