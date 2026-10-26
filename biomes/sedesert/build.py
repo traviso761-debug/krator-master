@@ -108,6 +108,23 @@ import fauna_bundle
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'sedesert'),'39-host-fauna.js':fauna_bundle.bundle(['desert'],tex=False),
          khost.EDITS_JS:khost.edits_js(HERE,'sedesert')}
 for f in VIRTUAL: PATH[f]=None
+# STATIONS (PLAN-STATIONS.md; laid out as the Throne's): python3 build.py --station bowl builds stations/bowl/ into the page
+# its station.json names ("out"). The station's .js and .html files replace src/'s of the same name or add to them; "drop"
+# removes src/ fragments it has no use for; "core" adds core files by path from core/; its own textures are a second pack
+# (stations/<name>/materials.json -> tools/textures/pack.py -> stations/<name>/tex/, the pack named by "pack"). Without
+# --station nothing here runs and the kit's own page is built as before.
+if '--station' in sys.argv:
+    import json as _json
+    STATION=sys.argv[sys.argv.index('--station')+1]
+    STN_DIR=os.path.join(HERE,'stations',STATION)
+    STN=_json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
+    OUT=STN['out']
+    for f in STN.get('drop',[]): PATH.pop(f,None)
+    for f in os.listdir(STN_DIR):
+        if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
+    for f in STN.get('core',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core',f))
+    if STN.get('pack'):
+        VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(STN_DIR,STN['pack'])
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
