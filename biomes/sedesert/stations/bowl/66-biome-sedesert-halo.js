@@ -86,7 +86,7 @@ function tamarisk(x,y,z,lv,st){const H=rr(3.5,7.5),R=H*rr(.42,.6),a0=rr(0,TAU),l
  haloAdd({x,z,r:R*.8});st.tamarisks++;}
 function saltbush(x,y,z,lv,st){const Rs=rr(.7,1.7),hc=leafCol(PB.saltbush,1.2,.03);
  BIO.put('saltbush',[x,y+Rs*.42,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[Rs*1.5,Rs*.95,Rs*1.5],hc,{n:[0,1,0]});
- if(lv===2&&rng()<.6)BIO.put('saltbush',[x+rr(-.6,.6)*Rs,y+Rs*.3,z+rr(-.6,.6)*Rs],qEuler(0,rr(0,TAU),0),[Rs,Rs*.7,Rs],bright(hc,.92),{n:[0,1,0]});st.saltbush++;}
+ if(lv===2&&rng()<.6){const ox=x+rr(-.6,.6)*Rs,oz=z+rr(-.6,.6)*Rs;if(BIO.mask(ox,oz)>0)BIO.put('saltbush',[ox,y+Rs*.3,oz],qEuler(0,rr(0,TAU),0),[Rs,Rs*.7,Rs],bright(hc,.92),{n:[0,1,0]});}st.saltbush++;}
 // glasswort: a carpet of jointed sprigs, its colour by the salt: crimson where it is strongest
 function glasswort(x,y,z,lv,st){const red=smooth(.45,.85,F('salt',x,z)+(BIO.fn.fbm(x*.01,z*.01,6601,2)-.5)*.5);
  const n=lv===2?ri(5,10):lv===1?ri(3,5):2,r=lv===0?2.4:1.6;
@@ -115,7 +115,7 @@ SEDESERT.buildFloor=function(R,q){
  BIO.grid(16,0,R,(x,z)=>{if(BIO.lodD(x,z)>L.far)return 0;return (F('delta',x,z)*.32*(1-F('flow',x,z))+F('halo',x,z)*.07)*(1-F('lake',x,z))*q;},(x,y,z)=>{if(!clearT(x,z,3)||!halo2(x,z,3))return;
   const lv=BIO.lodD(x,z)<L.hero?2:1;tamarisk(x,y,z,lv,st);},{patch:.6,patchScale:.008,pad:3});
  // one plant of the zone's mix at a point
- function plant(x,y,z,lv){if(SEDESERT.blocked(x,z,.8)||!halo2(x,z,.4))return;
+ function plant(x,y,z,lv){if(SEDESERT.blocked(x,z,.8)||!halo2(x,z,.4)||!BIO.clearOf(x,z,.5))return;
   const de=F('delta',x,z),ha=F('halo',x,z),dm=F('damp',x,z),rg=F('reg',x,z),yd=F('yard',x,z),dn=F('dune',x,z),sa=F('salt',x,z),fl=F('flat',x,z);
   const w=[de*1.2,ha*1.0,dm*fl*.9,rg*(1-yd)*(1-dn)*.35,yd*.15,dn*.12],t=rng();
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;

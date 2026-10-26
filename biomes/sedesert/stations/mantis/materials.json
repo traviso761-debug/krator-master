@@ -1,0 +1,69 @@
+{
+ "build": "sedesert-mantis",
+ "note": "Mantis's pocket's own textures (the Bowl's station 3), a third pack beside the kit's and the Bowl's ('mantis'). Cards (57-biome-sedesert-forest.js, BIO.libSwap('mantis')): (the broad leaves of the fig, the cucumber tree and the sterculia keep the kit's procedural small-leaf map: card.broadleaf is a monstera bunch, wrong for a fig) beard lichen hanging from the forest's limbs (card.beard, one cell), ferns at the springs (card.fern.green, one cell), all grey so each instance's colour tints them. ground.*: the ground's two green layers (84-host-ground.js, by the 'lush' and 'forest' fields): the savanna's grass in the monsoon (ground.grass.lush, full colour) and the forest floor (ground.leafy_grass, multiplied over the paint).",
+ "size": 512,
+ "families": {
+  "beard": {
+   "lib": "card.beard",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "ground.lush": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "ground.forest": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  }
+ }
+}

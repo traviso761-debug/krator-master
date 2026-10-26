@@ -372,6 +372,10 @@ SEDESERT.PASSES=[
  {sp:12,cell:16,accept:(Z)=>(Z.bank+Z.oasis*Z.flow)*.45,opt:{pad:1.5,lodK:.5,patch:.5,patchScale:.02,small:true,water:true}},
 ];
 
+// ---------------------------------------------------------------- the builders' tools, for species a host or a station adds
+// (2026-10-26, the Bowl's Mantis station: its Socotran monsoon forest's species push their records onto SEDESERT.SPECIES and their
+// builders onto TOOLS.B, and draw with the kit's own fork tree, clumps, bark colours and registry; the passes take them by index)
+SEDESERT.TOOLS={B,forkTree,columnTree,clumpAt,treeGrow,barkCol,rodCol,leafCol,regTree,blocked,clear3};
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
 // make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed drawn from the kit's stream: reseed first for a
 // repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,

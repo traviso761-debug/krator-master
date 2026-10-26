@@ -56,6 +56,6 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera under the salt',HCHK.camerasOut([{view:'buried',x:0,y:terrainH(0,500)-2,z:500}]));
  add('the delta raised 1.5 m over its banks',HCHK.banks(chanLines().map(C=>({id:C.id,w:C.w,pts:C.pts.map(p=>[p[0],p[1]+1.5,p[2]])})),'raised'));
  add('a saltbush out in the lake',HCHK.dry([[0,LAKE.level-1,zS(0)-600,'saltbush']],'saltbush'));
- add('no brine lamps drawn',HCHK.halo(Object.assign(itemCounts(),{brinelamp:0})));
+ {const k=Object.keys(HALO_ITEMS)[0];add('none of the '+k+' drawn',HCHK.halo(Object.assign(itemCounts(),{[k]:0})));}
  add('a dragon tree in its plain form',HCHK.habit([{sp:SEDESERT.SPECIES.indexOf(SEDESERT.byKey.dragon),H:SEDESERT.byKey.dragon.H[1],rb:SEDESERT.byKey.dragon.rb[1]}]));
  return R;}

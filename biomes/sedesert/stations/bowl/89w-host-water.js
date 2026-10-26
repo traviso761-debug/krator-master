@@ -53,3 +53,8 @@ const DELTA_FLOWS=CHAN.map((C,ci)=>{const P=[],end=MOUTHS[ci]?MOUTHS[ci].k:C.pts
  const S=WATER.flow({name:C.name,pts:P,width:C.w,speed:ci?.55+C.w*.012:1.1,rapids:[.03,.08]});   /* a delta has no white water */
  const D=WATER.drawFlow(S,{shallow:lin(0x6e6a44),deep:lin(0x3a4632),color:0xffffff,roughness:.2,metalness:.02,envMapIntensity:.22,step:6,across:ci?4:6,margin:1.5});
  D.mesh.userData.inspectLabel=C.name;C.flow=S;C.draw=D;return S;});
+// A station's spring pools (STATION.pools: [{x, z, r, level, name}]): still water, a disc each, the springs' clear teal
+const POOLS=(STATION.pools||[]).map(P=>{const poly=[];for(let k=0;k<24;k++){const a=k/24*TAU,r=P.r*(1+.12*Math.sin(3*a+P.x*.01)+.06*Math.sin(5*a));poly.push([P.x+Math.cos(a)*r,P.z+Math.sin(a)*r]);}
+ const S=WATER.still({name:P.name,level:P.level,poly}),D=WATER.drawStill(S,{color:lin(0x3a8a86),roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1});
+ D.mesh.userData.inspectLabel=P.name;return S;});
+

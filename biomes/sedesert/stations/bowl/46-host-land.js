@@ -5,7 +5,7 @@
 // and half-width, so the ground, the water and the plants read a channel in one lookup
 const CHG=(function(){const c=4,x0=STATION.chanBox[0],z0=STATION.chanBox[1],x1=STATION.chanBox[2],z1=STATION.chanBox[3],nx=Math.ceil((x1-x0)/c)+1,nz=Math.ceil((z1-z0)/c)+1;
  const U=new Float32Array(nx*nz).fill(99),Y=new Float32Array(nx*nz).fill(LAKE.level),HW=new Float32Array(nx*nz).fill(10),ID=new Uint8Array(nx*nz).fill(255);
- CHAN.forEach((C,ci)=>{const hw=C.w/2,P=C.pts;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],ya=C.y[k],yb=C.y[k+1],rr2=hw*3.2;
+ CHAN.forEach((C,ci)=>{const hw=C.w/2,P=C.pts;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],ya=C.y[k],yb=C.y[k+1],rr2=Math.max(hw*3.2,STATION.chanReach||0);   /* chanReach: how far out a station reads its channels (Mantis's galleries) */
   const i0=Math.max(0,Math.floor((Math.min(a[0],b[0])-rr2-x0)/c)),i1=Math.min(nx-1,Math.ceil((Math.max(a[0],b[0])+rr2-x0)/c)),
    j0=Math.max(0,Math.floor((Math.min(a[1],b[1])-rr2-z0)/c)),j1=Math.min(nz-1,Math.ceil((Math.max(a[1],b[1])+rr2-z0)/c));
   const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1;
