@@ -5,8 +5,8 @@
    "sha256": "7bac59031db19178179eac574e1944ab2b5c92afa3616c34e3eb6c6d0ccdfebe"
   },
   "biomes/dambasins/dist/port.html": {
-   "bytes": 948831,
-   "sha256": "fe80ac890b6bc73a633e87be48867728f0513f72d40e838f4b3b9fa86668aa2c"
+   "bytes": 957899,
+   "sha256": "acb87ff365e27683e03cd586c9248d89ddf9f7293b78b728932abea110d18f94"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
    "bytes": 6807183,
@@ -29,8 +29,8 @@
    "sha256": "3487d011085236b9f033d31c2259db4c0768ad5c06e22ba0822ca5d0666fdbd8"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 4763031,
-   "sha256": "92753de6a8412e76e4c046c6d0a5de57efb1ca4c3d16fa8c24479ac16fdb3781"
+   "bytes": 4764402,
+   "sha256": "6bbdf1dacd5cdafdb746fce3c5e1aa1bcc9e17680dfb6a5a17777052e0dacac4"
   },
   "biomes/korona/dist/korona-basin.html": {
    "bytes": 865124,
@@ -81,20 +81,20 @@
    "sha256": "484a3f4c51dd56ef8d6025da680ed61b794afeeb5e2efcccdbaf66a705704c87"
   },
   "biomes/rift/dist/rift.html": {
-   "bytes": 6326118,
-   "sha256": "d3b9d17ad0b0be364f375f6caaba9057e7639a45ae458d958409fb1433fac976"
+   "bytes": 6327489,
+   "sha256": "b321e556031b17569e2b358d69717f5d753fdf4e59e895e9f9c999ac0c13c967"
   },
   "biomes/ringisles/dist/ringisles.html": {
    "bytes": 2118608,
    "sha256": "1f5e1dce6fbbf83372f102e9a5ac10f5ff8b7470daf01486cd312d6dc9990e47"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 6065387,
-   "sha256": "c7775b73edcb7d9ea7e88f839199abde46d5c13a18c4679372a3ab09e5f4c517"
+   "bytes": 6082881,
+   "sha256": "30b52527cd6f94d268415ef670e7a459c4ab56babcd0c58263226bdc7028f57e"
   },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 4764916,
-   "sha256": "ae5e7b222a24fed106e06bda05293a14f9893d614f8330ee8a7a72ab2b5e680d"
+   "bytes": 4780240,
+   "sha256": "08091e86c81a30b1df13d9d155c22e11032b51b788e9f3725b5636002c83d3ee"
   },
   "biomes/shighlands/dist/shighlands.html": {
    "bytes": 1988354,

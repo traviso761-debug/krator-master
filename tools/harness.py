@@ -18,6 +18,10 @@ console stayed clean:
 
     python3 tools/harness.py walk settlements/girder/girder.html --route KeyW:20f --start auto --min 2 --dir 0,-1
 
+Locally, KRATOR_GL=gpu launches on the real GPU instead of SwiftShader (`python3 tools/harness.py renderer` says which
+renderer a page gets); `tools/verify_cache.py` skips a verify whose page, verify.py and arguments are unchanged since
+its last pass.
+
 and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world container written headless for Godot
 (world.json, world.glb, the library pack's maps; core/export/README.md):
 
@@ -26,7 +30,15 @@ and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world c
 import asyncio, contextlib, functools, glob, http.server, json, os, re, socketserver, sys, threading, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+# Software GL (SwiftShader) by default: the Linux cloud containers and CI have no GPU. KRATOR_GL=gpu runs on the real GPU
+# through ANGLE (D3D11 on Windows, Metal on a Mac, OpenGL elsewhere): 2.5x on page loads locally (EFFICIENCY.md, the
+# timing run). The renderer a page got is printed by `renderer` below; CI keeps SwiftShader.
+SWIFTSHADER_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+GPU_ARGS = ["--use-angle=" + ("d3d11" if sys.platform == "win32" else "metal" if sys.platform == "darwin" else "gl"),
+            "--enable-gpu", "--enable-webgl", "--ignore-gpu-blocklist"]
+GL_ARGS = GPU_ARGS if os.environ.get("KRATOR_GL", "").lower() == "gpu" else SWIFTSHADER_ARGS
+RENDERER_JS = ("()=>{try{const g=document.createElement('canvas').getContext('webgl');const e=g&&g.getExtension('WEBGL_debug_renderer_info');"
+               "return g?(e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)):'no webgl';}catch(err){return 'error: '+err;}}")
 # Every page builds its world in one synchronous script, so "load" fires only when the world is built: minutes under
 # software GL on a shared box (Dalab's city took 285 s with seven other agents running; 180 s timed Locus out).
 LOAD_MS = 900000
@@ -336,7 +348,8 @@ async def check_profile(pg, box, profile, opt=None, inject=False):
     injected = await inject_export(pg)
     o = dict(opt or {})
     o['box'] = list(box)
-    o.setdefault('sky', 256)
+    o.setdefault('sky', 64)   # the stage's sky panorama: 64 px is enough for the check (256 was 37 s of Rift's verify under
+                              # SwiftShader, EFFICIENCY.md); the export step itself keeps its own size
     r = await pg.evaluate(PROFILE_JS, [o, list(profile)])
     chk, lines = r['check'], []
     if injected:
@@ -482,7 +495,20 @@ async def export_main(argv):
     return 1 if fails else 0
 
 
+async def renderer_main():
+    """Print the WebGL renderer the launcher gives a page (KRATOR_GL=gpu should name the GPU, not SwiftShader)."""
+    from playwright.async_api import async_playwright
+    async with async_playwright() as p:
+        b = await launch_chromium(p)
+        pg = await b.new_page()
+        print('KRATOR_GL=%s  renderer: %s' % (os.environ.get('KRATOR_GL', ''), await pg.evaluate(RENDERER_JS)))
+        await b.close()
+    return 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "renderer":
+        sys.exit(asyncio.run(renderer_main()))
     if len(sys.argv) > 2 and sys.argv[1] == "export":
         sys.exit(asyncio.run(export_main(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "smoke":

@@ -33,7 +33,7 @@ is served from this folder, $VERIFY_THREE, or the first copy found beside anothe
 import argparse, asyncio, http.server, json, os, socketserver, sys, threading
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
-from harness import check_profile
+from harness import check_profile, launch_chromium
 
 # The export profile (core/export/README.md, "Profiles"; ROADMAP.md section 11, item 1): the sections a tile of this
 # kit must fill, checked under --assert over EXPORT_BOX. Sampled terrain (no krator-field); the box is the densest 300 m cell of the tile that holds a bucket (2026-10-18 probe).
@@ -133,11 +133,8 @@ async def run(a):
     fails = []
     try:
         async with async_playwright() as p:
-            # VERIFY_CHROME: launch a specific Chromium build (a machine whose
-            # installed browser does not match the playwright package's pin)
-            b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl",
-                                              "--ignore-gpu-blocklist"],
-                                        executable_path=os.environ.get("VERIFY_CHROME") or None)
+            # the shared launcher (tools/harness.py): VERIFY_CHROME or KRATOR_CHROME names a Chromium, KRATOR_GL=gpu the GPU
+            b = await launch_chromium(p)
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})
             pg.set_default_timeout(600000)

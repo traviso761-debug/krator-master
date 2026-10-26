@@ -4,11 +4,11 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **The probe and the merged debris.** The kit's probe (`settlements/port/src/91-probe.js`, `_probePoints`) samples
-  at most 3000 vertices of a merged mesh, too few to find one plate among the flood's 1,400-odd pieces, so their
-  registered volumes read empty (`registered-volumes-non-empty`). The debris (`52-db-flotsam.js`) gives it a hidden
-  instanced marker a piece, with no triangles, which it does read. Upstream fix: the probe takes a merged mesh's own
-  sample points (`userData.probePoints`); a shared change (the port, Hook and Ys pages rebuild), then drop the markers.
+- [x] **The probe and the merged debris** (closed 2026-10-25). The kit's probe samples at most 3000 vertices of a merged
+  mesh, too few to find one plate among the flood's 1,400-odd pieces. Both probes now read a merged mesh's own sample
+  points (`userData.probePoints`); the debris (`52-db-flotsam.js`) sets one a piece on its group and the hidden marker
+  is gone (`registered-volumes-non-empty` passes, 1885 volumes). The port, Hook and Ys pages take the probe change at
+  their next rebuild.
 - [ ] **Two kit fragments are adapted copies.** `src/71-port-terrain.js` (the bed's ground and colours, no sea, no
       underwater fade, no port scrub) and `src/92-camera.js` (the camera's floor on a dry page) shadow the port kit's,
       each hook marked `[dambasins]`; Ys has its own copy of the terrain with the same kind of hooks (`YS_NAT`,

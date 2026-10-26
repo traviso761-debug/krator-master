@@ -111,7 +111,7 @@ K.camera=function(o){
  // ---------------------------------------------------------------- input
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  let drag=null;
- cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
+ cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};try{cv.setPointerCapture(e.pointerId);}catch(err){}});   /* inside the artifact viewer's frame the pointer can be gone already (NotFoundError) */
  cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&!e.altKey&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4&&o.inspect)o.inspect(e.clientX,e.clientY);drag=null;});
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;

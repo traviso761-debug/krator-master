@@ -8,7 +8,11 @@
 //     REG             o.registry: the registered volumes [{name, x, y?, z, r, h, type?}]
 //     regOccupancy()  per volume, how many scene samples fall in it (an instanced item's every instance; a mesh's box centre):
 //                     in the cylinder [r, from y-2 to y+h+5], or o.regHas(volume, x, y, z) when the build has its own shapes;
-//                     o.probeSample caps the samples taken from one instanced mesh
+//                     o.probeSample caps the samples taken from one instanced mesh. An object carrying userData.probePoints
+//                     (a flat [x,y,z, ...] in its own frame: one point a piece of a merged mesh) adds those points too.
+//                     With KSPACE in the page the volumes are indexed by their circle (x, z, r) and `has` runs only on
+//                     the candidates near each point: the same counts, so o.regHas must hold nothing outside the
+//                     volume's circle; a build whose shapes reach past it passes o.regHasWide for the full loop
 //     nanSweep()      meshes with a NaN vertex, instanced meshes with a NaN matrix
 //     typeStats()     per type (o.types(): {type: {tris, inst, meshes}}, e.g. () => BIO.stats), its class, limit and whether over
 //     setView(cx,cy,cz,tx,ty,tz), views(), go(name)
@@ -22,14 +26,21 @@ const K=root.KHOST=root.KHOST||{};
 K.probeTake=function(H){const o=H.o,THREE=o.THREE||root.THREE,scene=H.scene,REG=H.registry,BUDGET=o.budget||{showcase:{},cls:{},type:{}};
  function probePoints(){const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3(),cap=o.probeSample;
   scene.traverse(ob=>{if(ob.userData&&ob.userData.probeSkip)return;
+   const own=ob.userData&&ob.userData.probePoints;
+   if(own&&own.length){ob.updateMatrixWorld();const v=new THREE.Vector3();
+    for(let i=0;i+2<own.length;i+=3){v.set(own[i],own[i+1],own[i+2]).applyMatrix4(ob.matrixWorld);pts.push([v.x,v.y,v.z]);}}
    if(ob.isInstancedMesh){const st=cap?Math.max(1,Math.floor(ob.count/cap)):1;for(let i=0;i<ob.count;i+=st){ob.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
    if(!ob.isMesh)return;bb.setFromObject(ob);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
    pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
   return pts;}
  const inCyl=(r,x,y,z)=>{const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;};
  const has=o.regHas||inCyl;
- function regOccupancy(){const n=new Array(REG.length).fill(0);const P=probePoints();
-  REG.forEach((r,i)=>{for(const p of P)if(has(r,p[0],p[1],p[2]))n[i]++;});
+ function regOccupancy(){const n=new Array(REG.length).fill(0);const P=probePoints(),KS=root.KSPACE;
+  if(!KS||o.regHasWide||!REG.length){REG.forEach((r,i)=>{for(const p of P)if(has(r,p[0],p[1],p[2]))n[i]++;});}
+  else{   // the broad phase: the volumes' circles on KSPACE, cell from their median diameter; `has` only on the candidates
+   const d=REG.map(r=>2*Math.abs(+r.r)).filter(isFinite).sort((a,b)=>a-b),med=d.length?d[d.length>>1]:32;
+   const S=KS.create({cell:Math.min(256,Math.max(16,med))}),c=[];REG.forEach((r,i)=>S.insert(i,r.x,r.z,Math.abs(+r.r)));
+   for(const p of P){S.query(p[0],p[2],0,c);for(const i of c)if(has(REG[i],p[0],p[1],p[2]))n[i]++;}}
   return REG.map((r,i)=>({name:r.name,type:r.type,n:n[i]}));}
  function nanSweep(){const bad=[];let badInst=0;
   scene.traverse(ob=>{if(!ob.isMesh&&!ob.isInstancedMesh)return;if(ob.userData&&ob.userData.probeSkip)return;

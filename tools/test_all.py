@@ -7,6 +7,7 @@
                                            # cases (each skipped, and said so, when its tool is missing: playwright,
                                            # godot, numpy and Pillow)
     python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only)
+    python3 tools/test_all.py --nightly --no-cache   # run every verify, even one that passed on the same page before
     python3 tools/test_all.py --list       # print the steps and exit
 
 Exit code 1 if any step fails. Each step prints PASS, FAIL or SKIP with its time; failures print the tail of their
@@ -122,9 +123,14 @@ def steps(nightly, build):
     if nightly:
         pw = importlib.util.find_spec('playwright') is not None
         s.append(('furniture fingerprint', [PY, 'core/furnish/fingerprint.py'] if pw else None))
+        # through tools/verify_cache.py: a verify that passed on the same page bytes is skipped (a fresh CI checkout has no
+        # cache, so it runs them all); --no-cache runs every one
         for b, page, args in NIGHTLY_VERIFY:
             ok = pw and os.path.isfile(os.path.join(ROOT, b, 'verify.py'))
-            s.append(('verify ' + b, [PY, 'verify.py', page] + args if ok else None, b))
+            if '--no-cache' in sys.argv:
+                s.append(('verify ' + b, [PY, 'verify.py', page] + args if ok else None, b))
+            else:
+                s.append(('verify ' + b, [PY, 'tools/verify_cache.py', b, page] + args if ok else None))
         # the scripted walk (ROADMAP.md stage 0j): real keys held for 20 frames from open ground; the walker must
         # cover 2 m forward, stay up, and leave the console clean
         s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',

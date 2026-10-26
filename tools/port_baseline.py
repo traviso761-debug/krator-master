@@ -4,6 +4,7 @@ can prove it changed nothing.
 
     python3 tools/port_baseline.py --write     # rebuild nothing; hash the pages as they are, write PORT-BASELINE.json
     python3 tools/port_baseline.py --write --prune   # the same, and drop entries for pages not built here
+    python3 tools/port_baseline.py --update biomes/rift/dist/rift.html ...   # rewrite only these pages' entries
     python3 tools/port_baseline.py             # compare the pages with PORT-BASELINE.json, exit 1 on any difference
 
 Rebuild first (`cd <build> && python3 build.py`; every build is deterministic). A page whose
@@ -54,6 +55,19 @@ def sha(path):
 
 
 def main(argv):
+    if '--update' in argv:   # rewrite only the named pages' entries (pages you rebuilt and verified), keep every other
+        names = [a.replace(os.sep, '/') for a in argv[argv.index('--update') + 1:] if not a.startswith('--')]
+        base = json.load(open(OUT))['pages']
+        for n in names:
+            f = os.path.join(ROOT, n)
+            if not os.path.isfile(f):
+                print('no page %s' % n); return 1
+            old = base.get(n, {}).get('bytes')
+            base[n] = {'sha256': sha(f), 'bytes': len(read_lf(f))}
+            print('updated  %s  (%s -> %d bytes)' % (n, old, base[n]['bytes']))
+        json.dump({'what': 'SHA-256 of every built page; tools/port_baseline.py', 'pages': base},
+                  open(OUT, 'w'), indent=1, sort_keys=True)
+        return 0
     now = {p: {'sha256': sha(os.path.join(ROOT, p)), 'bytes': len(read_lf(os.path.join(ROOT, p)))} for p in pages()}
     if '--write' in argv:
         if os.path.isfile(OUT) and '--prune' not in argv:

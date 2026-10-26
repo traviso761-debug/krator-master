@@ -20,6 +20,11 @@ function _probePoints(){
  const bb=new THREE.Box3();
  scene.traverse(o=>{
   if(o.userData&&o.userData.probeSkip)return;
+  // a merged mesh's own sample points, one a piece (userData.probePoints: a flat [x,y,z, ...] in the object's frame;
+  // core/host/95-host-probe.js reads the same): a small piece among a thousand is found by its point
+  const own=o.userData&&o.userData.probePoints;
+  if(own&&own.length){o.updateMatrixWorld();const v=new THREE.Vector3();
+   for(let i=0;i+2<own.length;i+=3){v.set(own[i],own[i+1],own[i+2]).applyMatrix4(o.matrixWorld);pts.push([v.x,v.y,v.z]);}}
   if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
   if(!o.isMesh)return;
   bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;

@@ -13,12 +13,9 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   undercut along a 2 km lip would be a patch kilometres long at half-metre cells, and crude at that grid. It wants a
   finer ground under the falls first (a second, local ground mesh round the horseshoe; the stage's ground hooks would
   take it).
-- [ ] **The probe and the merged erratics.** core/host's probe samples a merged mesh by its box, so the erratics'
-  registered volumes read empty (`registered-volumes-non-empty`); `87-host-erratics.js` gives it a hidden instanced
-  marker an erratic, with no triangles, which it does read (the dam bed's debris does the same: its KNOWN_ISSUES).
-  Upstream fix: the probes take a merged mesh's own sample points (`userData.probePoints`); then drop the markers. It
-  touches core/host's probe, which 24 builds take: every one of their pages rebuilds (CLAUDE.md), most of them LFS pages
-  this checkout has not fetched. Parked until a session can rebuild them all.
+- [x] **The probe and the merged erratics** (closed 2026-10-25). core/host's probe samples a merged mesh by its box; it
+  now also reads a mesh's own sample points (`userData.probePoints`), which `87-host-erratics.js` sets one an erratic on
+  its group, so the hidden marker is gone (`registered-volumes-non-empty` passes, 250 volumes).
 
 ## Closed
 

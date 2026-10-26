@@ -54,13 +54,13 @@ Why it is slow: `tools/harness.py` launches Chromium with `--use-gl=swiftshader`
 whole world on a software rasteriser, while most asserts are about records (placement, overlap, sim stocks, trade
 lines), not pixels.
 
-1. [ ] **Skip an unchanged page.** Builds are deterministic and `port_baseline.py` hashes every page: record
+1. [x] **Skip an unchanged page** (2026-10-25: `tools/verify_cache.py`; the nightly runs its verifies through it, `--no-cache` to force). Builds are deterministic and `port_baseline.py` hashes every page: record
    `{page: hash}` after a passing verify and skip a verify whose page hash still matches.
 2. [ ] **Record checks in node.** The `[G data]` side has no three.js or DOM, so placement, `core/city`, sim and trade
    checks (isle demo's `CITY_JS`, `TRADE_JS`, sim checks) can run in node like the `core/` tests. The browser verify
    keeps what needs a browser: the page loads, nothing throws, shaders compile, a few views render. The same fixtures
    then check the Godot twins.
-3. [ ] **The real GPU locally.** SwiftShader is for the Linux cloud containers. A harness setting (`KRATOR_GL=gpu`:
+3. [x] **The real GPU locally** (2026-10-25: `KRATOR_GL=gpu` in `tools/harness.py`; `python3 tools/harness.py renderer` says what a page got). SwiftShader is for the Linux cloud containers. A harness setting (`KRATOR_GL=gpu`:
    `--use-angle=d3d11` on Windows) for local runs; CI keeps SwiftShader. Run both once to confirm no check disagrees.
 4. [ ] **A records-only page mode** (`?verify=data`): build the records, skip drawing, textures and furnishing. Voth's
    `?lite=1` is a start.
@@ -170,3 +170,23 @@ run high; the shares hold.
 4. Isle demo's sim and trade checks to node (item 2): the largest single verify.
 5. The GPU locally (item 3).
 6. Rebuild Hyperjungle and Rift and fix Girder's render error and nav audit, so the nightly list is green.
+
+## The probe's broad phase (2026-10-25)
+
+`core/host/95-host-probe.js` `regOccupancy` now indexes the registered volumes by their circle on KSPACE and tests a point
+only against the volumes near it (a build whose own `regHas` reaches past the circle passes `regHasWide`). Measured in
+the page under SwiftShader, the broad phase and the old full loop run one after the other on the same scene, and the
+counts compared volume by volume (the branch `claude/biome-rebuild`, the pages rebuilt from its sources):
+
+| Page | Volumes | Full loop | Broad phase | Counts |
+|---|---|---|---|---|
+| rift | 15,933 | 95.9 s | 0.57 s | identical (and the same hash as the committed page's) |
+| throne | 9,233 | 26.3 s | 0.33 s | identical |
+| sedesert | 3,955 | 27.0 s | 0.23 s | identical |
+| swbay | 2,762 | 7.4 s | 0.14 s | identical |
+| hyperjungle | 225 | 0.59 s | 0.07 s | identical |
+| scablands (coulee) | 250 | 0.26 s | 0.09 s | identical |
+
+`node core/host/test-probe.js` proves the same on random registries (huge, NaN and negative radii, edge points, a build's
+own `regHas`). Rift's whole `verify.py --assert` went from 312 s to 238 s with this and the 64 px stage sky in
+`check_profile` (the export profile still passes on every biome verified).

@@ -65,3 +65,6 @@ kits/fauna/three.min.js
 
 # the SpringBoneSimulator3D spike (godot/krator/character/REPORT.md): pieces decoded from the published Cosmetic Lab
 godot/data/spike/
+
+# tools/verify_cache.py: the local record of passing verifies (never committed)
+.verify-pass.json
