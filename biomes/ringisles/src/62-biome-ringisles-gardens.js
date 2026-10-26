@@ -22,7 +22,7 @@ const STANDS={
  'crop-rice':(P,st)=>{const lev=P.level==null?Y(P.x,P.z):P.level,ripe=h3(P.x,P.z,7701)<.35;
   bund(P,-P.w/2,-P.d/2,P.w/2,-P.d/2,.45,.7);bund(P,-P.w/2,P.d/2,P.w/2,P.d/2,.45,.7);bund(P,-P.w/2,-P.d/2,-P.w/2,P.d/2,.45,.7);bund(P,P.w/2,-P.d/2,P.w/2,P.d/2,.45,.7);
   BIO.put('paddywater',[P.x,lev+.22,P.z],qEuler(0,-(P.a||0),0),[P.w-.6,1,P.d-.6],C(pick(PAL.paddyWater)));
-  rows(P,.62,.62,1.1,.06,(x,z)=>{const h=ripe?rr(.65,.9):rr(.35,.6);BIO.put('rice',[x,lev+.12,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.7,h,h*.7],leafCol(ripe?PAL.riceGold:PAL.rice,1.15,.02,.06,.05));st.rice++;});},
+  rows(P,.62,.62,1.1,.06,(x,z)=>{const h=ripe?rr(.65,.9):rr(.35,.6);const it=ripe?'riceripe':'rice';BIO.put(it,[x,lev+.12,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.7,h,h*.7],lc(it,leafCol(ripe?PAL.riceGold:PAL.rice,1.15,.02,.06,.05)));st.rice++;});},
  // taro in a wet bed: heart leaves held up on long stalks
  'crop-taro':(P,st)=>{const lev=P.level==null?Y(P.x,P.z):P.level;BIO.put('bund',[P.x,lev-.2,P.z],qEuler(0,-(P.a||0),0),[P.w,.28,P.d],C(pick(PAL.soil)));
   rows(P,.95,.95,.5,.12,(x,z)=>{const n=ri(3,5),h=rr(.7,1.15);for(let k=0;k<n;k++){const a=k/n*TAU+rr(-.3,.3),hh=h*rr(.75,1.05),tx=x+Math.cos(a)*.18,tz=z+Math.sin(a)*.18;
@@ -47,8 +47,8 @@ const STANDS={
  // sweet potato: ridges covered by its creeping heart-leaved vines
  'crop-sweetpotato':(P,st)=>{const W=frame(P);for(let v=-P.d/2+.6;v<=P.d/2-.6;v+=1.1){const a=W(-P.w/2+.5,v),b=W(P.w/2-.5,v),L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
    BIO.put('bund',[mx,Y(mx,mz)-.12,mz],qEuler(0,-Math.atan2(b[1]-a[1],b[0]-a[0]),0),[L,.3,.55],C(pick(PAL.soil)));}
-  rows(P,.9,1.1,.5,.2,(x,z)=>{const y=Y(x,z)+.18,R=rr(.5,.8);BIO.put('creeper',[x,y,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[R,1,R],leafCol(PAL.sweetpotato,1.1,.02,.06,.05));
-   for(let k=0;k<3;k++){const a=rr(0,TAU),s=rr(.14,.22);BIO.put('heart',[x+Math.cos(a)*.2,y,z+Math.sin(a)*.2],qEuler(-rr(.9,1.3),-a,0),[s,s,1],leafCol(PAL.sweetpotato,1.1,.02,.06,.05));}st.sweetpotato++;});},
+  // the vines over each hill: one tuft of the library's sweet potato vine (2026-10-26; the creeper mat and three heart leaves before it)
+  rows(P,.9,1.1,.5,.2,(x,z)=>{const y=Y(x,z)+.1,R=rr(.5,.8);BIO.put('sweetvine',[x,y,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[R*1.5,R*.75,R*1.5],lc('sweetvine',leafCol(PAL.sweetpotato,1.1,.02,.06,.05)));st.sweetpotato++;});},
  // medicinal herbs: a bed of mixed clumps (lemongrass, ginger, turmeric, basil in flower)
  'crop-herbs':(P,st)=>{const lev=Y(P.x,P.z);BIO.put('bund',[P.x,lev-.22,P.z],qEuler(0,-(P.a||0),0),[P.w,.3,P.d],C(pick(PAL.soil)));
   rows(P,.7,.7,.4,.12,(x,z,a,b)=>{const y=Y(x,z),t=(a*3+b)%4;
@@ -58,7 +58,8 @@ const STANDS={
     if(t===3)BIO.put('halfflower',[x,y+R*.85,z],null,rr(.05,.07),C(pick(PAL.herbBloom)));}st.herbs++;});},
  // greens: rows of leafy rosettes
  'crop-greens':(P,st)=>{const lev=Y(P.x,P.z);BIO.put('bund',[P.x,lev-.22,P.z],qEuler(0,-(P.a||0),0),[P.w,.3,P.d],C(pick(PAL.soil)));
-  rows(P,.45,.6,.3,.04,(x,z)=>{const y=Y(x,z)+.06;for(let k=0;k<5;k++){const a=k/5*TAU+rr(-.2,.2),s=rr(.16,.26);BIO.put('heart',[x,y,z],qEuler(-rr(.6,1.1),-a+Math.PI/2,0),[s,s*1.2,1],leafCol(PAL.greens,1.15,.02,.06,.05));}st.greens++;});},
+  // one rosette a plant (2026-10-26: the library's bok choy and lettuce, a row of each in turn; five heart leaves before)
+  rows(P,.45,.6,.3,.04,(x,z,a,b)=>{const y=Y(x,z),it=b%2?'greensb':'greens',s=rr(.32,.46);BIO.put(it,[x,y,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[s,s*.85,s],lc(it,leafCol(PAL.greens,1.15,.02,.06,.05)));st.greens++;});},
 };
 RINGISLES.STANDS=STANDS;
 RINGISLES.stand=function(key,P,st){key=RINGISLES.GARDEN_ALIAS[key]||key;const f=STANDS[key];if(!f){BIO.err('ringisles: no stand '+key);return null;}st=st||{rice:0,taro:0,trees:0,grass:0,kava:0,yam:0,cane:0,sweetpotato:0,herbs:0,greens:0};

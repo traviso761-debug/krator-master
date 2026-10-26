@@ -15,13 +15,13 @@ RINGISLES.canopyH=function(x,z){return RINGISLES._canopyH?RINGISLES._canopyH(x,z
 // every species the kit places, its own and the borrowed ones, with the tags it places them by (the borrowed: their own
 // kit's tags with this kit's Koppen classes and zone)
 RINGISLES.allSpecies=function(){const L=RINGISLES.SPECIES.map(S=>({key:S.key,name:S.name,kit:'ringisles',tags:S.tags}));
- RINGISLES.BORROW.forEach(Bo=>{const api=RINGISLES.kitOf(Bo),S=api&&api.SPECIES?api.SPECIES.find(s=>s.key===Bo.src):null;
-  const t=Object.assign({},S?S.tags:{},{koppen:Bo.koppen,zone:Bo.zone,src:Bo.kit+':'+Bo.src});if(!t.origin)t.origin=S&&S.alien?'krator':'earth';
-  if(!t.harvest)t.harvest=(api&&api.HARVEST&&api.HARVEST[Bo.src])||{wood:'none',edible:[],medicinal:false,notes:'',fruit:null};
+ RINGISLES.BORROW.forEach(Bo=>{const api=RINGISLES.kitOf(Bo),S=Bo.small?(api&&api.small&&api.small[Bo.small]?{name:Bo.name,tags:Bo.tags||{}}:null):api&&api.SPECIES?api.SPECIES.find(s=>s.key===Bo.src):null;
+  const t=Object.assign({},S?S.tags:{},{koppen:Bo.koppen,zone:Bo.zone,src:Bo.kit+':'+(Bo.src||Bo.small)});if(!t.origin)t.origin=S&&S.alien?'krator':'earth';
+  if(!t.harvest)t.harvest=(api&&api.HARVEST&&api.HARVEST[Bo.src])||(Bo.small&&api&&api.PLANTS&&api.PLANTS[Bo.small]&&api.PLANTS[Bo.small].tags&&api.PLANTS[Bo.small].tags.harvest)||{wood:'none',edible:[],medicinal:false,notes:'',fruit:null};
   if(t.abyssal==null)t.abyssal=false;L.push({key:Bo.key,name:S?S.name:Bo.key,kit:Bo.kit,borrowed:true,present:!!S,tags:t});});
  return L;};
 // a plain string so the host's inspector can name a borrowed tree's kit
-RINGISLES.describeKey=function(key){const S=RINGISLES.byKey[key];if(S)return S.name;const Bo=RINGISLES.borrowOf[key];return Bo?Bo.key+' (the '+Bo.kit+' kit\'s '+Bo.src+')':key;};
+RINGISLES.describeKey=function(key){const S=RINGISLES.byKey[key];if(S)return S.name;const Bo=RINGISLES.borrowOf[key];return Bo?Bo.key+' (the '+Bo.kit+' kit\'s '+(Bo.src||Bo.small)+')':key;};
 // the functions the passes call a million times run in no registry (they put nothing): BIO.kitEnd leaves them unwrapped
 ['zones','classAt','burnAge','burnState','blocked','hadd','kitOf','leafCol','libCol','describeKey','plantOfItem','canopyH','_canopyH','means'].forEach(k=>{if(typeof RINGISLES[k]==='function')RINGISLES[k]._kit='-';});
 BIO.kitEnd(RINGISLES);   // its exports run in its registry; the default kit is current again

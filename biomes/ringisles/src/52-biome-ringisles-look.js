@@ -172,6 +172,12 @@ RINGISLES.MAT={
  mossclump:BIO.leafMat(TX.mat,'mossclump',{aN:true,swayW:'0.0',swayA:0,alphaTest:.3}),
  rice:BIO.leafMat(TX.blades,'rice',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
  cane:BIO.leafMat(TX.blades,'cane',{swayW:'(position.y)',swayA:.08,alphaTest:.4}),
+ /* 2026-10-26: the library's crop cards (card.crop.rice's ripe row, card.crop.greens' bok choy, lettuce and sweet potato vine);
+    without the pack the blades and the heart leaf stand in */
+ riceripe:BIO.leafMat(TX.blades,'riceripe',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
+ greens:BIO.leafMat(TX.heart,'greens',{swayW:'(position.y)',swayA:.04,alphaTest:.4}),
+ greensb:BIO.leafMat(TX.heart,'greensb',{swayW:'(position.y)',swayA:.04,alphaTest:.4}),
+ sweetvine:BIO.leafMat(TX.heart,'sweetvine',{swayW:'(position.y)',swayA:.03,alphaTest:.4}),
  glory:BIO.leafMat(TX.glory,'glory',{swayW:'0.0',swayA:0,alphaTest:.4}),
  half:BIO.leafMat(TX.half,'half',{swayW:'1.0',swayA:.04,alphaTest:.4}),
  solid:BIO.solidMat(null),rock:BIO.solidMat(RINGISLES.ROCKTEX),coral:BIO.solidMat(RINGISLES.CORALTEX),
@@ -182,6 +188,18 @@ M.water.emissive=new T3.Color(0x0a1612);
 // THE LIBRARY: the slots materials.json names take the library's maps (a card cut to its cell); without the pack the
 // procedural ones stay
 RINGISLES.LIB=BIO.libSwap('ringisles',M);
+// THE BANANA'S LEAF (2026-10-26): card.paddle's banana leaves lie diagonally in their cells, base at the lower left; the
+// middle cell is drawn into a tall canvas turned upright (base at the bottom: the frond's v runs base 1 to tip 0, unflipped),
+// as the crater drylands' libCell does, and the paddle material (the banana, the ginger leaves) takes it. 'bananaleaf' is no
+// material slot, so BIO.libSwap leaves it to this
+{const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('ringisles','bananaleaf'):null;
+ if(L){const W=256,H=512,box=[.345,.345,.655,.655],cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const t=new T3.CanvasTexture(cv);t.flipY=false;t.encoding=T3.sRGBEncoding;t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;t.anisotropy=4;
+  const img=new Image();window._texPending=(window._texPending||0)+1;
+  img.onload=()=>{const w=img.width,h=img.height,sw=(box[2]-box[0])*w,sh=(box[3]-box[1])*h,s=1.04*H/Math.hypot(sw,sh),g=cv.getContext('2d');
+   g.translate(W/2,H/2);g.rotate(-Math.PI/4);g.drawImage(img,box[0]*w,box[1]*h,sw,sh,-sw*s/2,-sh*s/2,sw*s,sh*s);t.needsUpdate=true;window._texPending--;};
+  img.onerror=()=>{window._texPending--;BIO.err('ringisles: card.paddle failed to decode');};img.src=L.map;
+  M.paddle.map=t;M.paddle.alphaTest=.4;M.paddle.needsUpdate=true;RINGISLES.LIB.paddle=L.lib;}}
 const LIBWHITE=C(0xf4f2ec);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 RINGISLES.libCol=(slot,c)=>RINGISLES.LIB[slot]?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):c;
@@ -243,6 +261,10 @@ BIO.def('fruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Fruit (pandan ke
 // the gardens
 BIO.def('rice',G.tuft(),M.rice,{label:'Rice'});
 BIO.def('cane',G.tuft(),M.cane,{label:'Sugar cane'});
+BIO.def('riceripe',G.tuft(),M.riceripe,{label:'Rice (ripe)'});
+BIO.def('greens',G.tuft(),M.greens,{label:'Greens (bok choy)'});
+BIO.def('greensb',G.tuft(),M.greensb,{label:'Greens (lettuce)'});
+BIO.def('sweetvine',G.tuft(),M.sweetvine,{label:'Sweet potato vines'});
 BIO.def('bund',G.box(),M.solid,{label:'Paddy bunds and garden beds'});
 BIO.def('paddywater',G.sq(),M.water,{label:'Paddy water'});
 })();

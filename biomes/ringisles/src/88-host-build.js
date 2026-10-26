@@ -7,8 +7,8 @@ window._biome=null;window._geyser=null;
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it; ?nogeyser=1 leaves the vent bare
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
- // the geyser kit's passes run round the core's centre: the vent's, while it builds
- if(!Q.has('nogeyser')){const c0=BIO.host.center;BIO.host.center=[VENT.x,VENT.z];try{window._geyser=GEYSER.build({R:VENT.r*1.6,quality:q});}catch(e){reportErr('geyser: '+e.stack);}finally{BIO.host.center=c0;}}
+ // the geyser kit's passes run round the vent (GEYSER.build's center, 2026-10-26: it puts the host's centre back itself)
+ if(!Q.has('nogeyser')){try{window._geyser=GEYSER.build({R:VENT.r*1.6,quality:q,center:[VENT.x,VENT.z]});}catch(e){reportErr('geyser: '+e.stack);}}
  _mark('geyser');
  if(GEYSER.SHOW){GEYSER.SHOW.U.uSun.value.set(...SUN_POS).normalize();_onLight.push(m=>GEYSER.SHOW.setLight(m==='night'?.25:1));}
  (GEYSER.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.rb*2+1.5,y0:T.y0-3,y1:T.y0+T.H}));

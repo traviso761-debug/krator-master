@@ -196,6 +196,7 @@ RINGISLES.blocked=blocked;RINGISLES.hadd=hadd;
 const newStats=()=>({trunk:0,far:0,clumps:0,blooms:0,fruit:0,heroes:0,fars:0,borrowed:0,byS:SP.map(()=>0),byB:RINGISLES.BORROW.map(()=>0)});
 RINGISLES.kitOf=Bo=>{const R=BIO.kits[Bo.kit];return R&&R.api?R.api:null;};
 function borrowGrow(Bo,x,y,z,lv,k,extra){const api=RINGISLES.kitOf(Bo);if(!api)return null;
+ if(Bo.small){const f=api.small&&api.small[Bo.small];if(!f||lv===0)return null;f(x,y,z,lv);return{x,z,y0:y,H:Bo.H||5,rb:Bo.rb||.3,crownR:2,borrow:Bo.key,small:true};}   /* a kit's small plant: no record of its own, no far form */
  if(Bo._sp==null)Bo._sp=(api.SPECIES||[]).findIndex(S=>S.key===Bo.src);if(Bo._sp<0)return null;
  if(Bo.treeAt){if(!api.treeAt)return null;const T=api.treeAt(Bo.src,x,y,z,{scale:k,seed:ri(0,999999),lv:extra&&extra.oneLevel?lv:null});if(T)T.borrow=Bo.key;return T;}
  if(!api.make||!api.grow)return null;
@@ -278,6 +279,12 @@ RINGISLES.PASSES=[
  // the mangal: the hyper-mangroves standing in the bay's water and on its mud, stilt-wood behind them
  {key:'mangrove',cell:18,accept:Z=>Z.mangal*.75,depth:[-.6,1.1],need:'mangal',opt:{pad:3,patch:.3}},
  {key:'stiltwood',cell:16,accept:Z=>Z.mangal*.3+Z.xa*.04,opt:{pad:2,patch:.5}},
+ // 2026-10-26, after every older pass (they place as before; these fill the gaps): the Rift's acacia among the umbrella
+ // thorns, the she-oak behind the beach, the hyperjungle's understorey palm and screwpine under the forest's canopy
+ {key:'acacia',cell:44,accept:Z=>Z.aw*.2+Z.xv*.16+Z.bsh*.05,opt:{pad:3.5,patch:.55,patchScale:.008}},
+ {key:'sheoak',cell:26,accept:Z=>Z.strand*.22+Z.dune*.3,opt:{pad:2.5,patch:.5}},
+ {key:'junglepalm',cell:11,accept:Z=>Z.xa*.32+Z.af*.28+Z.am*.12,opt:{pad:1.6,patch:.55,patchScale:.016}},
+ {key:'screwpine',cell:14,accept:Z=>Z.xa*.22+Z.af*.18+Z.am*.08+Z.mangal*.08,opt:{pad:1.8,patch:.55,patchScale:.016}},
 ];
 // (the stilt-wood's pass plants on the mangal's landward edge: its mask keeps it out of the water)
 })();

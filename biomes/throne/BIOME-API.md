@@ -187,3 +187,5 @@ the others would reshuffle every other station's trees. Station 5, the cloud for
                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```
 The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`.
+
+`THRONE.small`'s functions are wrapped to the Throne's registry (2026-10-26): a world that calls them puts into the Throne's items.

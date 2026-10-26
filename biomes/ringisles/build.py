@@ -13,8 +13,9 @@ a reef flat and one geyser field.
                     its climate (dryness, the classes as soft weights)
   46 (geyser)       the GEYSER kit's layout, read in place (GEYSER.cluster, GEYSER.lay: the thermal field round the vent)
   47-host-land      HOST: the land with the thermal relief, the water, the fields (cached), BIO.init
-  49a..49e          OTHER KITS read in place, each one block in its own order (BIO.kit .. BIO.kitEnd): the Throne,
-                    swbay, eastabyss, sedesert, geyser. This kit grows their trees by their own make/grow (or treeAt)
+  49a..49h          OTHER KITS read in place, each one block in its own order (BIO.kit .. BIO.kitEnd): the Throne,
+                    swbay, eastabyss, sedesert, geyser, and (2026-10-26) the Rift, nwlowlands and the hyperjungle for a few
+                    species. This kit grows their trees by their own make/grow (or treeAt), their small plants by KIT.small
   50..70            THE KIT: species, trees, floor, gardens, build
   80..98            HOST (sky, ground, build, the sea on core/water, fauna from kits/fauna, take)
   89-atmos/water    CORE: core/atmos and core/water, read in place
@@ -93,11 +94,20 @@ KITS={
  '49d5-sedesert-build.js':'sedesert/src/70-biome-sedesert.js','49d6-sedesert-fauna.js':'sedesert/src/75-biome-sedesert-fauna.js',
  '49e1-geyser-species.js':'geyser/src/50-biome-geyser-species.js','49e2-geyser-trees.js':'geyser/src/55-biome-geyser-trees.js',
  '49e3-geyser-sinter.js':'geyser/src/57-biome-geyser-sinter.js','49e4-geyser-floor.js':'geyser/src/60-biome-geyser-floor.js',
- '49e5-geyser-show.js':'geyser/src/65-biome-geyser-show.js','49e6-geyser-build.js':'geyser/src/70-biome-geyser.js'}
+ '49e5-geyser-show.js':'geyser/src/65-biome-geyser-show.js','49e6-geyser-build.js':'geyser/src/70-biome-geyser.js',
+ # 2026-10-26: the Rift's acacia and termite spires (RIFT.make/grow, RIFT.small), nwlowlands' she-oak (NWLOW.make/grow), the
+ # hyperjungle's understorey palm and screwpine (HYPERJUNGLE.small): their species, trees or floor and build, nothing else
+ '49f1-rift-species.js':'rift/src/50-biome-rift-species.js','49f2-rift-trees.js':'rift/src/55-biome-rift-trees.js',
+ '49f3-rift-floor.js':'rift/src/60-biome-rift-floor.js','49f4-rift-build.js':'rift/src/70-biome-rift.js',
+ '49g1-nwlowlands-species.js':'nwlowlands/src/50-biome-nwlowlands-species.js','49g2-nwlowlands-trees.js':'nwlowlands/src/55-biome-nwlowlands-trees.js',
+ '49g3-nwlowlands-build.js':'nwlowlands/src/70-biome-nwlowlands.js',
+ '49h1-hyperjungle-species.js':'hyperjungle/src/50-biome-hyperjungle-species.js','49h2-hyperjungle-floor.js':'hyperjungle/src/60-biome-hyperjungle-floor.js',
+ '49h3-hyperjungle-build.js':'hyperjungle/src/70-biome-hyperjungle.js'}
 # each kit's last listed fragment must close its registry (a kit that moves BIO.kitEnd to a new fragment would otherwise
 # leave every later kit's items in its registry): the same check openworld/isle-demo/build.py makes
 LAST={'throne':'49a5-throne-build.js','swbay':'49b6-swbay-fauna.js','eastabyss':'49c6-eastabyss-fauna.js',
-      'sedesert':'49d6-sedesert-fauna.js','geyser':'49e6-geyser-build.js'}
+      'sedesert':'49d6-sedesert-fauna.js','geyser':'49e6-geyser-build.js',
+      'rift':'49f4-rift-build.js','nwlowlands':'49g3-nwlowlands-build.js','hyperjungle':'49h3-hyperjungle-build.js'}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for slot,p in KITS.items(): PATH[slot]=os.path.join(ROOT,'biomes',p)
 for k,slot in LAST.items():
@@ -163,11 +173,15 @@ EXCL={'throne':[f for f in _fams('throne') if f not in THRONE_KEEP],
       'swbay':[f for f in _fams('swbay') if DROP(f)],'eastabyss':[f for f in _fams('eastabyss') if DROP(f)],
       'sedesert':[f for f in _fams('sedesert') if DROP(f)],
       # the geyser's own ground layers the thermal paint reads (84-host-ground.js): sinter, clay, mud, mat
-      'geyser':[f for f in _fams('geyser') if f.startswith('ground.') and f not in ('ground.sinter','ground.clay','ground.mud','ground.mat')]}
+      'geyser':[f for f in _fams('geyser') if f.startswith('ground.') and f not in ('ground.sinter','ground.clay','ground.mud','ground.mat')],
+      # the three kits read for a few species (2026-10-26): only the maps those draw
+      'rift':[f for f in _fams('rift') if f not in ('bark2','leaflet','rock')],
+      'nwlowlands':[f for f in _fams('nwlowlands') if f not in ('bk.fibre','drape','wood')],
+      'hyperjungle':[f for f in _fams('hyperjungle') if f not in ('frond','under','limb')]}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the stage (45) reads them
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'ringisles',side=SIDE)}
-for i,k in enumerate(['throne','swbay','eastabyss','sedesert','geyser']):
-    VIRTUAL['44%s-host-matlib-pack-%s.js'%('bcdef'[i],k)]=_mp.fragment(os.path.join(ROOT,'biomes',k),k,exclude=EXCL[k],side=SIDE)
+for i,k in enumerate(['throne','swbay','eastabyss','sedesert','geyser','rift','nwlowlands','hyperjungle']):
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%('bcdefghi'[i],k)]=_mp.fragment(os.path.join(ROOT,'biomes',k),k,exclude=EXCL[k],side=SIDE)
 # THE FAUNA (kits/fauna: one kit for every animal, biomes/README.md): the Ring Sea's and the savanna's animals, placed by
 # the host (89f-host-fauna.js) from the bundle. --no-fauna leaves it out (the host then places none)
 if '--no-fauna' not in sys.argv:

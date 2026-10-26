@@ -127,3 +127,9 @@ part of a building: `dress()` places plants ON geometry the host hands it.
 80+ host (ideal type)            sky with the Outer Wall (NW, far) and the Inner Wall mountains (SE),
                                  one Girder tower, build (+ ?q=), views found by species and grove, probe
 ```
+
+## One tree alone (2026-10-26)
+
+`NWLOW.make(sp,x,y,z) -> T`, `NWLOW.grow(T,lv) -> stats`: one tree alone (biomes/WORLD.md, "trees as variants"): the pass's own
+record, then its habit's builder at lv 2/1 or its far impostor at 0. biomes/ringisles plants the drape she-oak (the strand
+casuarina) with them; the kit's own pass does not call them, so its page draws exactly as before.

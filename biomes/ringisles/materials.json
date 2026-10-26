@@ -1,6 +1,6 @@
 {
  "build": "ringisles",
- "note": "The Ring Sea isles kit's adapter onto the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py biomes/ringisles after any change, then python3 build.py. ground.* are the ground's eleven layers (84-host-ground.js), blended per vertex by the island's fields and the kit's burn mosaic: sand (the beach), wetsand (under the water: the lagoon's floor, ground.lagoon.seagrass), grass (the green savanna and the flush after a fire), cured (the dry season's gold), burn (the black after a fire), steppe (the hot steppe's red soil), salt (the pan's crust), mud (the mangal), litter (the forest floor), reef (ground.reef.flat), soil (the gardens). The kit's own slots (BIO.libSwap, 52-biome-ringisles-look.js): thornspray and trifol (card.acacia, whole sheet, keep 0) the thorn scrub's and the corkwood's foliage; tamfoliage (card.tamarisk, whole sheet, flipped upright) the salt cedar's; seagrass, creeper (cells of card.seagrass, card.creeper.beach); naupaka, grapeleaf, breadleaf, glossy (the middle cell of card.naupaka, card.seagrape, card.breadfruit, card.croptree.glossy, flipped upright: a clump quad draws v up); strap (card.strap.pandan, one leaf flipped onto the frond, as the geyser kit's) the strand pandanus; grass, grassb, bunch, beachgrass (cells of card.grass.dry, keep 0: the burn state's palette tints them); samphire (card.samphire, full colour); saltbush (card.sage); wrack (card.seaweed); branchcoral (a cell of card.reef); fern (card.fern.green); liana (card.vine.hanging.0); epiphyte (card.bromeliad, full colour); mossclump (card.moss); heart (an elephant-ear cell of card.paddle, flipped so its notch is at the stalk: taro, kava, the aroids). Barks: bark0 bark.mesquite (the scrub thorn), bark1 bark.paperbark (the corkwood), bark2 bark.bark015 (the salt cedar), bark3 bark.palm (the strand pandanus), bark4 bark.smooth (the sea grape, the breadfruit); wood (wood.silver) the driftwood; rock (rock.limestone.karst) the stones and rubble; coral (organic.coral.brain). Procedural (no library set yet): the banana's paddle (card.paddle's banana leaves lie diagonally in their cells), the morning glory and naupaka flowers, rice and cane blades.",
+ "note": "The Ring Sea isles kit's adapter onto the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py biomes/ringisles after any change, then python3 build.py. ground.* are the ground's eleven layers (84-host-ground.js), blended per vertex by the island's fields and the kit's burn mosaic: sand (the beach), wetsand (under the water: the lagoon's floor, ground.lagoon.seagrass), grass (the green savanna and the flush after a fire), cured (the dry season's gold), burn (the black after a fire), steppe (the hot steppe's red soil), salt (the pan's crust), mud (the mangal), litter (the forest floor), reef (ground.reef.flat), soil (the gardens). The kit's own slots (BIO.libSwap, 52-biome-ringisles-look.js): thornspray and trifol (card.acacia, whole sheet, keep 0) the thorn scrub's and the corkwood's foliage; tamfoliage (card.tamarisk, whole sheet, flipped upright) the salt cedar's; seagrass, creeper (cells of card.seagrass, card.creeper.beach); naupaka, grapeleaf, breadleaf, glossy (the middle cell of card.naupaka, card.seagrape, card.breadfruit, card.croptree.glossy, flipped upright: a clump quad draws v up); strap (card.strap.pandan, one leaf flipped onto the frond, as the geyser kit's) the strand pandanus; grass, grassb, bunch, beachgrass (cells of card.grass.dry, keep 0: the burn state's palette tints them); samphire (card.samphire, full colour); saltbush (card.sage); wrack (card.seaweed); branchcoral (a cell of card.reef); fern (card.fern.green); liana (card.vine.hanging.0); epiphyte (card.bromeliad, full colour); mossclump (card.moss); heart (an elephant-ear cell of card.paddle, flipped so its notch is at the stalk: taro, kava, the aroids). Barks: bark0 bark.mesquite (the scrub thorn), bark1 bark.paperbark (the corkwood), bark2 bark.bark015 (the salt cedar), bark3 bark.palm (the strand pandanus), bark4 bark.smooth (the sea grape, the breadfruit); wood (wood.silver) the driftwood; rock (rock.limestone.karst) the stones and rubble; coral (organic.coral.brain). 2026-10-26: rice and riceripe (card.crop.rice, the grown and ripe rows' middle cells), cane (card.crop.cane, the middle cell), greens and greensb (card.crop.greens: the bok choy and the frilled lettuce), sweetvine (card.crop.greens, the bottom row's sweet potato vine): full colour, keep 1, the instances near-white (RINGISLES.libCol); bananaleaf (card.paddle whole, 1024 px, keep 0: not a material slot, so BIO.libSwap leaves it; 52-biome-ringisles-look.js cuts the middle cell's banana leaf and turns it upright onto the paddle material, as the crater drylands' libCell does). Procedural (no library set yet): the morning glory and naupaka flowers.",
  "size": 512,
  "families": {
   "thornspray": {
@@ -698,6 +698,134 @@
    "roughLift": 0.3,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "rice": {
+   "lib": "card.crop.rice",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ]
+  },
+  "riceripe": {
+   "lib": "card.crop.rice",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.338,
+    0.672,
+    0.662,
+    0.995
+   ]
+  },
+  "cane": {
+   "lib": "card.crop.cane",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ]
+  },
+  "greens": {
+   "lib": "card.crop.greens",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.005,
+    0.005,
+    0.33,
+    0.33
+   ]
+  },
+  "greensb": {
+   "lib": "card.crop.greens",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.672,
+    0.338,
+    0.995,
+    0.662
+   ]
+  },
+  "sweetvine": {
+   "lib": "card.crop.greens",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.005,
+    0.672,
+    0.33,
+    0.995
+   ]
+  },
+  "bananaleaf": {
+   "lib": "card.paddle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 1024
   }
  }
 }
