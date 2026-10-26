@@ -350,3 +350,29 @@ tinted), `wood.beam`, `bone.antler`, `bone.horn`, `bone.ivory`, `hide.fur.brown`
    mixes, and the pycrete works (section 6) a sawdust store and a moss-drying yard.
 7. **Trade goods in the halls**: plenty, **as war loot**, openly shown as trophies (section 5).
 8. **Textures**: all sixteen delivered and processed the same day (section 8).
+
+## 11. Y5: the shared culture rebuild (the owner, 2026-10-26)
+
+Registering `khaayken` in `core/tags` rebuilds every page, so the owner chose to put every waiting culture into the same
+rebuild (one vocabulary change, one rebuild, one baseline rewrite):
+
+| Culture | What lands | Look (from the lore and the owner) |
+|---|---|---|
+| `khaayken` | a new catalog culture file; registered | section 5: the platform, robes, the lamp and its rack, larch chests, the loom, the drum, the high seat, hangings, soapstone and antler |
+| `tungang` | a new catalog culture file; registered | **post-apocalyptic Soviet** (the owner): the Rift line's union crews a thousand years on (`biomes/riftrim/PLAN.md` section 6): lodge (loj) halls, the Book's lectern, the steward's desk, bunks in galleries, salvaged Ancient plate and pipe, rivets, lamps of glow-cap, red-painted signs worn to rust-pink; things kept by rite without memory of their use |
+| `fellgang` | a new catalog culture file; registered | **a more primitive, militaristic, "punk" version of the Tungang** (the owner): the highland branch on the fells (LORE 6.20): the same salvage gone raw, spikes and bolts, war trophies, bone-and-plate, hide over scrap, painted slogans half-remembered |
+| `talovolci` | a new catalog culture file; registered | **Gaulish** (the owner; LORE 6.21): giant-scale (2.3 to 2.6 m), roundhouse furniture: benches round the hearth, the cauldron and firedogs, wickerwork, checked wool in weld-yellow, woad and madder, the feasting board, torcs and brooches, the spiral on everything |
+| `jimjam` | a new catalog culture file; `NO_CATALOG` lifted | the city's brick, marble and gold (`settlements/jimjam/DESIGN.md`): poor ochre and terracotta, middle brick and marble, rich gold and inlay, the jharokha's carved timber |
+| `dalab` | a new catalog culture file; `NO_CATALOG` lifted | Cahokian monumentality in rammed earth, green-skinned genepriests (`settlements/dalab/DESIGN.md`): peasant wattle and thatch, middle timber, noble grey megalithic stone with relief, The God's light |
+| `pylon`, `talia` | registered (their culture files exist; their records tag unknown today) | as built |
+| `eternian` | already registered; its pieces taken into this kit's `FURN_CULTURES` for the war loot (section 5) | as built |
+| weapon racks | `claude/weapon-racks` (55c2913f7, the arms file: a rack and an armour stand for every culture) merged, with racks for the six new cultures | |
+
+With them, `TODO.md`'s "Ride along with the next all-builds rebuild" items (the re-vendored culture symbols, the probes'
+sample points and broad phase, the camera's pointer-capture guard, the hamlet comment, the door module where it is ready).
+
+**Order**: the six culture files, each built and checked on the catalog page (`kits/catalog/verify.py --assert`) before
+the next; the weapon racks merged; the vocabulary changed (`core/tags/52-core-tags-vocab.js`, `test-tags.js`'s digest)
+with `FURN_CULTURES` in the catalog core; the ride-along items; every build rebuilt and verified; `PORT-BASELINE.json`
+rewritten once for every page that moved; `tools/test_all.py`. Then this kit's own Y5 (the interiors set, the figure
+generator, the loot rule, the 1.15x scale) on its new culture file.
