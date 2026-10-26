@@ -182,6 +182,72 @@ Godot (`biomes/GODOT.md`).
 | `test-basin.js` | `node core/terrain/test-basin.js`, each check with a negative |
 | `41-core-scour.js` | a megaflood's channels (global `KSCOUR`, [G data], needs `KRAND`) along courses in metres with their beds: `locate` (along and across the nearest course), `sample` (`scour` under the flood's surface, the floor in full and the walls fading; streamlined `island`s drawn out along the flow; `bar`s on the margins and the end's fan with giant current `ripple`s; `pothole`s keyed on their place; dry `fall`s found where the bed steepens, their lip a horseshoe bowed upstream, the `pool` basin under each), `land` (butte-and-basin cut in steps of the rock's flows, the falls' basins, potholes, bars heaped with ripples; islands kept), and `strata`/`rock` (flood basalt in 15-50 m flows, each with its red interbed and its colonnade, over sandstone and limestone, under cover). Noise keyed on each course's name, not its place in the list. `potholes(box)` lists the kolks whose centres lie in a box. A course takes a station's scales (`islandL`, `islandW`, `fan`: 2026-10-23, `biomes/scablands`; defaults the world's). `fromRegion` reads `region.json` `palaeo`. For the scablands overlay (`biomes/scablands`: station 1, a coulee and dry falls) |
 | `test-scour.js` | `node core/terrain/test-scour.js`, each check with a negative |
+| `43-core-ground.js` | the ground shader's layers (global `KGROUND`, [G shader]; DETAIL-RESEARCH item 1, 2026-10-26): the material library's ground sets laid over a page's painted ground by the page's own weights, each sampled with Mikkelsen's hex tiling, scaled with distance (its tile doubling at each doubling past 60 m, two scales cross-faded) and blended by height (each layer's luminance about its mean against what is under it). `KGROUND.layer(build, slot, o)` takes a `materials.json` slot through KMAT; `KGROUND.hook(mat, o)` wraps the page's hook. JS twins of the GLSL in `KGROUND.fn`. Below, "The ground, the far field and the horizon" |
+| `test-ground.js` | `node core/terrain/test-ground.js`: the twins (hex weights, the height lerp, the distance level) and the hook's shader edits, each check with a negative |
+| `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
+| `test-farfield.js` | `node core/terrain/test-farfield.js`, each check with a negative |
+| `45-core-horizon.js` | horizon maps (global `KHORIZON`, [G data]; HEIGHT-RESEARCH item 2): `bake` (the horizon's elevation in eight directions over a heightfield, two RGBA8 arrays, and the sky visibility; an optional coarse far grid the rays read past the map; about 1 s at 256 x 256), `at`/`skyAt`/`horizon` (what the shader computes, for tests and placement). Its three.js side is `host/45-core-horizon-shade.js` (`KHORIZON.shade(mat, Hz)`: the sun's direct light cut and the ambient darkened; `uniforms`, `glsl` for a material with its own shading) |
+| `test-horizon.js` | `node core/terrain/test-horizon.js`, each check with a negative |
+| `host/` | the three.js halves of 44 and 45 (`44-core-farfield-draw.js`, `45-core-horizon-shade.js`: named to sort before a page's host fragment of the same number, and merging into the same global as the data half whichever loads first), listed by explicit path in a build.py (below) |
+
+### The ground, the far field and the horizon (2026-10-26: the final rebuild's R2-R4, and KSTACKS' gridded top)
+
+Four opt-in pieces, none of which changes a page that does not ask for it.
+
+**KSTACKS' gridded top** (`37-core-stacks.js`, `KSTACKS.mesh(B, {top: {grid: 5}})`): a top that carries relief of its own (a
+wrapped `KSTACKS.topH`) is drawn as a square grid on world multiples of `grid` metres, clipped to the top's edge ring, the ring being
+the wall's top row (so wall and top share their edge). Cells the ring crosses are the ring clipped to the cell (Sutherland-Hodgman
+with keyed vertices, relinked Weiler-Atherton where the ring enters a cell twice) and ear-clipped; a crossing's height is the ring
+edge's own, so no crack opens at the wall. A bed narrower than `minCells` (3) cells keeps its rings. Without `opt.top` every mesh
+hashes as before (`test-stacks.js` holds the hashes). Cells wholly under the bed above (a cell in from its foot) are left out
+(`cull: false` keeps them): hidden tops cost nothing. Korona's hoar table takes it (`STAGE.stackTop` in its station's `45-host-stage.js`,
+read by `biomes/korona/src/47-host-land.js`).
+
+**Adopting KGROUND** (a biome's ground; the pilots are `biomes/sedesert/src/45-host-stage.js` and `biomes/nhighlands/src/84-host-ground.js`):
+1. `build.py`: add `'43-core-ground.js'` to `CORE_TERRAIN`.
+2. In the ground's `onBeforeCompile`, delete the page's own layer code (its samplers, its anti-tiling function, its mixes) and put the
+   marker `'/*KGROUND*/'` where the layers were mixed (after the paint and before any term that must stay on top, as granite on the steep).
+   Keep the page's varyings and attributes that carry the weights.
+3. After the hook: `KGROUND.hook(MAT, {key: '<page>-ground', layers: [KGROUND.layer('<build>', '<slot>', {w: '<GLSL weight>', amt, gain,
+   tint: 'diffuse'}), ...]})`, with the same weight expression, strength (`amt`: the page's cap) and gain as the page's mix had. A page
+   whose layers were all-or-nothing keeps that (`M && G ? [...] : []`). Without its pack `KGROUND.layer` is null and the ground is its paint.
+4. Options: `blend` (.18; 0 is the plain mix), `hex` (`false` samples once), `far` (`{d: 60, levels: 3}` or `false`), per layer
+   `h: {from: 'lum' | 'a', contrast}` (`'a'` once a pack carries a height channel: `tools/textures/pack.py` does not yet).
+5. Rebuild, verify on the GPU (a shader that fails to compile shows only as a vanished ground: read the console), shots at two
+   distances against the page before.
+Cost: 3 fetches per layer per hex sample, 6 in the cross-fade bands past 60 m; no draw calls, no memory past the sets the page had.
+
+**Adopting KFAR** (a far field round the ground square; the pilots are `biomes/nwlowlands/src/83-host-range.js` and
+`biomes/nhighlands/src/82-host-sky.js`):
+1. `build.py`: `CORE_TERRAIN` gets `'44-core-farfield.js'`, and after the `CORE_TERRAIN` loop
+   `PATH.setdefault('44-core-farfield-draw.js', os.path.join(CORE_T, 'host', '44-core-farfield-draw.js'))`.
+2. `const G = KFAR.grid({lines: KFAR.lines({cell, inner, out, grow}) /* or cell, n */, h: (x, z) => ..., skip: (x0, z0, x1, z1) => ...,
+   color: (x, z, y, q) => [r, g, b], dense, exag, curve, crest})`; then `const m = KFAR.mesh(G, {fogK, name, label}); scene.add(m)` and
+   register it, or `KFAR.geometry(G, {attrs: true})` under the page's own material. `h` is the page's `terrainH` carried past the map (or
+   its own far function, or the scale model's heights); `q.h` is the height before the options, for the colour's snow and tree lines.
+3. Anything drawn beside it at a height (a lake) takes `KFAR.shape(opts, x, z, y)`, so it drops and rises with the land.
+nwlowlands' range draws the lattice it drew by hand; nhighlands' far country is the same with `FARK` empty, and with it (`curve` from the
+square's edge, `crest` k .5 past 9 km, `exag` 1.15 past 12-24 km over the plain's -330 m) is the look change the pilot shows.
+
+**Adopting KHORIZON** (terrain shadows and sky visibility; the pilots are sedesert and nhighlands, both on the ground):
+1. `build.py`: `CORE_TERRAIN` gets `'45-core-horizon.js'`, and `PATH.setdefault('45-core-horizon-shade.js', os.path.join(CORE_T, 'host',
+   '45-core-horizon-shade.js'))`.
+2. Once the ground is built: `const HZ = KHORIZON.bake({box: [x0, z0, x1, z1], n: 256, h: terrainH, far: {h, box, n}})` (the far grid is
+   optional: KFAR's `G.at` reads a lattice for it), then `KHORIZON.shade(MAT_GROUND, HZ)`, and once the biome is baked
+   `KHORIZON.shadeScene(scene, HZ, {filter})` hooks every lit material standing on the land (the flora, the rock; the pilots
+   leave out the far field). Any single material takes `shade`; a foliage hook with its own shading binds `KHORIZON.uniforms(HZ)` and calls `khzShadow(worldPos, sunDir)` and
+   `khzSky(worldPos)` from `KHORIZON.glsl()`.
+3. The sun is the shared sky's `uSunDir` (read when the program is made) or the page's first directional light. With the sun below the
+   horizon (under about -3 degrees) nothing is cut, so the giantshine and the night lights keep their direct light.
+Cost: one bake (about 1 s at 256: `window._horizon.ms` on the pilots), 0.5 MB of textures at 256 (2 MB at 512), two texture reads per
+pixel; no draw calls.
+
+**Godot.** KGROUND: a `ground.gdshader` with the same functions (the godotshaders hex-tiling port is the same algorithm) and the layers as
+uniforms; `KGROUND.fn` holds the JS twins to hold it to. KFAR: the lattice arrays are plain data (export them as a mesh with vertex
+colours), a `MeshInstance3D` with `visibility_range`; the curvature and exaggeration are baked in. KHORIZON: the two RGBA8 arrays as
+`ImageTexture`s (`FORMAT_RGBA8`), the shading as a `.gdshaderinc` in `light()` (scale `ATTENUATION` by `khzShadow`, `AMBIENT_LIGHT` by
+`khzSky`); the bake is [G data] and can run at import from the field. The gridded top: `KSTACKS.export` carries records and the mesh is
+rebuilt from them, so a GDScript twin of `mesh` takes `opt.top` the same way.
 
 `38-core-relief.js`'s provenance is in `TODO.md`; no build uses it yet. It needs nothing at all, so a build lists it in `CORE_TERRAIN` (biomes)
 or as an ordinary fragment, and a Godot port evaluates the same functions at export or ports them line for line.

@@ -260,7 +260,7 @@ One fragment, `#include <atmos_sky>` in three.js and `atmos_sky.gdshaderinc` in 
 6. **The air**: in-scattering and extinction along the view ray (the `air` preset, regraded by the hour's keys), applied
    over everything above, so the giant's lower limb hazes as it does today, and a twilight glow on the sun side.
 7. **Clouds**: the procedural layer, lit by the sun and giantshine, over the air.
-8. **Landmarks**: the plume, a cloud sea.
+8. **Landmarks** (built 2026-10-26: `preset.landmarks`, `ATMOS.skyLandmarks`, at most six): a plume along a curve, an overcast ceiling with a gap (a spread plume's underside), a cloud sea below the horizon, a band on the horizon (a glint, a far lake, a cataract, a cloud belt). Plumes and ceilings draw before the clouds; seas and bands after the ridges, lapping their feet, and the foot's fog spares them. The demo shows samples at `#lm=1` and `#lm=2` (`#ground=0` hides its ground, `#az=`/`#el=` aim it).
 9. **Ridges**, far to near, each hazed by its distance.
 10. The foot: melts into the fog colour below the nearest ridge, as nhighlands' dome does.
 
@@ -364,7 +364,7 @@ show the drift; record it in its `KNOWN_ISSUES.md`).
 | S0 | the model, the presets, the shader and its Godot twin, the tests; a demo page in `core/atmos/demo/` showing the standard preset at any hour and day, with the ring and ridge checks. Its controls: hour, date (in the Jimjam-named months and Jimjam's counts), a site picker (Voth, the hyperjungle, the Throne, the glacier, an Outer Wall crest) so the giant's spread and stars by day can be judged, air pressure, cloud cover, weather; presets for game start at 06:00, a winter midnight under the cluster, a summer night without it, and an eclipse near the equinox | nothing changes on any page; the owner judges the sky itself, the procedural Pleiades night and the giant's phases here, and decides on the nebula texture |
 | S1 | swbay (the template biome; nwbay keeps its own copy of the same file, migrated later) | the simplest dome, a reachable sun. **Done 2026-10-26** on `claude/sky-s1-swbay` (from the biome rebuild's 3c47ae0f7): `biomes/swbay/src/89s-host-sky.js` at Voth's site on the host clock, the cloud shade on its lit materials from the page (core/biome untouched), the water's skylight from the sky's scene; the look differences are in its `KNOWN_ISSUES.md` |
 | S2 | nhighlands | the hardest: the three light modes, the far-country mesh in front, its fog curve; proves the `setLightMode` shim |
-| S2-S4 (done 2026-10-26, `claude/sky-rollout`) | every biome kit on `ATMOS.skyBiome` (`core/atmos/host/89-atmos-i-skybiome.js`): one `89-host-sky.js` per kit with its site, air and the dome's far land as ridges (two lobes and notches where the paint had them); light modes kept on the real hour (`S.modes`); the readers (guilin, korona and its stations, necanyons) on their own sky; every station of the Throne | then (same day) the Throne's weather stations (ashdesert, vents, caldera, glacier, cloudforest: skyBiome `weatherOver`, `weatherLook`) and the tube (skyBiome `cave`) | not moved: dambasins (the Ancient Port kit's sky); hyperjungle's and oidong's old domes stay in `src/` for pinnacle-rock and Longsong, which read them in place; no landmark layer yet (plumes, cloud seas, cataracts, lake glints) |
+| S2-S4 (done 2026-10-26, `claude/sky-rollout`) | every biome kit on `ATMOS.skyBiome` (`core/atmos/host/89-atmos-i-skybiome.js`): one `89-host-sky.js` per kit with its site, air and the dome's far land as ridges (two lobes and notches where the paint had them); light modes kept on the real hour (`S.modes`); the readers (guilin, korona and its stations, necanyons) on their own sky; every station of the Throne | then (same day) the Throne's weather stations (ashdesert, vents, caldera, glacier, cloudforest: skyBiome `weatherOver`, `weatherLook`) and the tube (skyBiome `cave`) | not moved: dambasins (the Ancient Port kit's sky); hyperjungle's and oidong's old domes stay in `src/` for pinnacle-rock and Longsong, which read them in place; the landmark layer (2026-10-26) draws the domes' plumes, the ash ceiling, cloud seas, cataracts and glints; the pages are built with it, their GPU verify folded into the biome rebuild's final rebuild and verify |
 | S3 | the remaining biome kits, in groups by sky family: the painted Walls (sedesert, nsemiarid, ebadlands, eastabyss, crater-drylands), the humid ones (hyperjungle and its readers, swlowlands, nwlowlands, rift, xanadu, oidong and Longsong), the ones with light modes (geyser, ringisles), shighlands (the cloud sea), ehighlands | the readers rebuild with their source |
 | S4 | Throne station 1, then the ten stations | the most landmarks (the mountain, the plume), the unreachable sun, station 1's budget |
 | S5 | the open world (`openworld/isle-demo`) and the PLACED settlements | they take the same preset at their sites |
@@ -454,6 +454,26 @@ are still to do. swbay (S1) hooks its own materials from its host fragment (`ATM
 7. **Order.** It lands with the sky's first biome (S1): the world-anchored field is a change to the sky shader, and the hooks
    need the biome core's material makers, which the biome rebuild owns; the two sessions coordinate that step. Cost: one
    three-octave fbm per ground fragment (per vertex on Lambert), a texture read each.
+
+### 11.2 The star's other planets (the owner, 2026-10-26; not in the sky until the final rebuild)
+
+The giant (with Krator) is one of seven planets of a Sun-like star. They are in the lore (`LORE.md` section 2) and in the
+Krator System page (`gallery/krator-system`: `planets.py` holds the numbers below, the orrery its planets view). They go into
+the skybox with the final rebuild, not before, so that no page is left behind its source: then `S.planets` in
+`89-atmos-e-skymodel.js` takes this table, a Kepler solve places each one on the ecliptic as Krator sees it (the giant's own
+orbit, 1 AU and 365 days, is the reference), and the night pass draws them as stars of their colour and brightness, Rust and
+Cinder as one point. The Godot twin takes the same data.
+
+| Planet | a (AU) | e | Tilt | Radius | Mass | Year | From Krator |
+|---|---|---|---|---|---|---|---|
+| Ash: dark, airless, cratered | 0.32 | 0.08 | 3° | 3,400 km | 0.11 Earths | 66 d | a grey spark in bright twilight, never more than 19° from the sun |
+| Rust: a super-Earth desert, Mars-like | 0.55 | 0.05 | 1.5° | 9,500 km | 3.4 Earths | 149 d | a ruddy evening or morning star, up to 33° out |
+| Cinder: Rust's partner, Earth-sized, grey-red, barren | (with Rust) | | | 6,100 km | 0.9 Earths | 14 d round Rust, 400,000 km apart, face to face | beside Rust, at the limit of the eye |
+| Veil: clouded, a garden world under the deck (Tohul's kind) | 0.763 | 0.02 | 2° | 6,300 km | 0.85 Earths | 243 d (3:2 with the giant) | the brightest star, white, up to 50° out |
+| the giant, with Krator | 1 | 0.01 | 0° | 50,211 km | | 365 d | |
+| Crown: a Jovian giant | 3.4 | 0.05 | 1.2° | 71,000 km | 2.6 Jupiters | 6.3 y | a steady bright yellow star all night at opposition |
+| Frost: a small ice giant, a faint ring | 9.0 | 0.03 | 0.8° | 22,000 km | 11 Earths | 27 y | a faint blue-green star |
+| Wanderer: Mercury-sized, eccentric | 11.8 | 0.5 | 17° | 2,400 km | 0.06 Earths | 40.5 y (2:3 with Frost) | a telescope's |
 
 ## 12. Open decisions for the owner
 

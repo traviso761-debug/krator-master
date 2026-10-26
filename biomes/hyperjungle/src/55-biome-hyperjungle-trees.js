@@ -126,7 +126,7 @@ function buildHero(T,ti,q,st){
  let i0=0;
  while(i0<rings.length-1){let i1=i0+1;while(i1<rings.length-1&&rings[i1].r/rings[i0].r>.78&&rings[i1].r/rings[i0].r<1.25)i1++;
   const rm=(rings[i0].r+rings[i1].r)*.5,seg=rm>2.2?(farHalf?20:28):12;
-  st.trunk+=BIO.lathe(fam,rings.slice(i0,i1+1),seg,Math.max(1,Math.round(TAU*rm/sc0)),vs,
+  st.trunk+=BIO.lathe(fam,rings.slice(i0,i1+1),seg,R=>TAU*R.r/sc0,vs,   /* the repeat per ring (core B4): no seam where sections meet */
    (R,ang)=>R.r*trunkMul(R.yy,ang),
    (R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.50+.50*clamp(lobeSum(ang)*1.4,0,1),f):1;});
   i0=i1;}

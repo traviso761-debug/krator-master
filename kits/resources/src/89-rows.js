@@ -10,5 +10,10 @@ const FAMILIES=[
  {name:'Coal',keys:['node-coal-low','node-coal-medium','node-coal-high']},
  {name:'Sulfur',keys:['node-sulfur-low','node-sulfur-medium','node-sulfur-high']},
  {name:'Saltpeter',keys:['node-saltpeter-low','node-saltpeter-medium','node-saltpeter-high']},
+ {name:'Potash (the Catch)',keys:['node-potash-low','node-potash-medium','node-potash-high']},
+ {name:'Alkali salts (the Catch)',keys:['node-alkali-low','node-alkali-medium','node-alkali-high']},
  {name:'Oil (a derrick works it)',keys:['node-oil-low','node-oil-medium','node-oil-high']}
 ];
+/* the geology bake's evaporite rings (2026-10-26): gypsum at a closed basin's rim, rock salt inside it */
+FAMILIES.push({name:'Gypsum (a salt basin rim)',keys:['node-gypsum-low','node-gypsum-medium','node-gypsum-high']},
+ {name:'Rock salt (halite)',keys:['node-halite-low','node-halite-medium','node-halite-high']});

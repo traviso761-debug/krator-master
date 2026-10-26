@@ -70,8 +70,11 @@ function golden(A) {
     look.push({ hour: h, day: d, weather: w, sunAlt: s.sunAlt, eclipse: s.eclipse, giantLit: s.giantLit, look: L });
   }
   const dates = [[0, 6], [-1, 12], [91, 12], [-200, 3], [365, 0]].map(([d, h]) => ({ day: d, hour: h, date: A.skyDate(d, h) }));
+  const LMI = [{ kind: 'plume', from: [180, 5], via: [175, 12], to: [160, 15], width: [1, 5], alpha: .6, lit: [.9, .88, .85], belly: [.4, .37, .35], drift: .03 },
+    { kind: 'ceiling', el: 6, soft: 10, gap: [225, 53, 26], lit: [.6, .55, .5] }, { kind: 'sea', top: -2, win: [0, 360] }, { kind: 'band', win: [90, 20, 2], el: [-.5, .5], noise: .5 }];
+  const LMO = A.skyLandmarks(LMI);
   const vol = A.skyNoiseVolume(64);
-  return r({ sky: S, preset: P, state, look, dates, stars: S.stars,
+  return r({ sky: S, preset: P, state, look, dates, stars: S.stars, landmarks: { input: LMI, n: LMO.n, kind: Array.from(LMO.kind), v: Array.from(LMO.v) },
     noise: { n: 64, sha1: crypto.createHash('sha1').update(Buffer.from(vol)).digest('hex'), sample: Array.from(vol.slice(0, 64)),
       n8: Array.from(A.skyNoiseVolume(8)) },
     gdshaderinc_sha1: crypto.createHash('sha1').update(gdshaderinc(A)).digest('hex') });
@@ -102,7 +105,7 @@ if (require.main === module) {
   fs.mkdirSync(path.dirname(GOLD), { recursive: true });
   fs.writeFileSync(GOLD, JSON.stringify(golden(A), null, 0) + '\n'); console.log('wrote godot/tests/sky/golden.json');
   fs.mkdirSync(DATA, { recursive: true });
-  fs.writeFileSync(path.join(DATA, 'sky.json'), JSON.stringify({ sky: A.SKY, presets: A.PRESETS.sky, maxRidges: A.SKY_MAX_RIDGES }, null, 1) + '\n');
+  fs.writeFileSync(path.join(DATA, 'sky.json'), JSON.stringify({ sky: A.SKY, presets: A.PRESETS.sky, maxRidges: A.SKY_MAX_RIDGES, maxLandmarks: A.SKY_MAX_LANDMARKS }, null, 1) + '\n');
   fs.writeFileSync(path.join(DATA, 'noise64.bin'), Buffer.from(A.skyNoiseVolume(64)));
   console.log('wrote godot/data/sky/sky.json and noise64.bin');
 }

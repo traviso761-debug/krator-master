@@ -53,6 +53,12 @@ Read before changing anything here. `build.py` prints the open count.
       chooses its own chunk size (`BIO._lodKey` reads `BIO.chunk==null?BIO.LOD.chunk:BIO.chunk` and writes it into the key;
       `_lodEntry` reads C back from the key instead of `BIO.LOD.chunk`), so the floor's many small items bake in 2400 m chunks
       (a quarter of the meshes) while the heroes keep 1200 m.
+      2026-10-26 (core/biome B1/B2 and R6, branch claude/core-kit): the page sets `BIO.LOD.merge`, `minTris` 1500 and `fade` .15
+      (45-host-stage) and the floor and reeds are back at 800 m (one mesh per chunk holds both ranges). GPU, 28 views against
+      the page before: calls -11 to +5 (108 fewer in all), triangles -0.78 to +0.02M. The far trees and the heroes' stand-ins
+      are octahedral impostors (core/biome 34-core-impostor.js, the 14 species on one 2048 px atlas pair, one item): the same
+      calls, triangles -1.69 to -0.87M a view; the bake takes ~7 s after the build. Owner: judge the far band (silhouettes and
+      boles, but crowns darker and thinner than the green blobs were).
 - [x] THE TEMPLE HEIGHT IS A PLACEHOLDER. The brief says the tallest jungle trees top out
       at the height of the Voth temple; the canon figure is not in this kit, so
       `SWBAY_TEMPLE_H=110` (45-host-stage). Set it and every canopy height follows.
@@ -114,6 +120,9 @@ Read before changing anything here. `build.py` prints the open count.
       waterH); the river's surface follows the new bed through RIVER_PTS. Voth and the isle demo read only fragments 50-75, not
       terrainH (45), so this reaches no other build. New preset 'A cataract, close'. Left: the curtains' sides show jagged
       triangles where the curtain is narrower than the ribbon at the lip (core/water `W.curtain`), and the spray is faint at dusk.
+      2026-10-26 (core/water W1): the jagged sides were the river ribbon's sheet down each chute, cut by the banks, showing beside the narrower curtain.
+      The curtains now run 1.2 m past the lip and fade out under the banks (`drawFalls({margin: 1.2})`) and the ribbon gives way down the chutes
+      (`drawFlow({chute: .3})`): clean at 'A cataract, close' (153 calls, 3.93M triangles, unchanged). The dark teeth left are the ground's own triangles.
 - [x] (2026-10-20: the Girder test tower now hands three shells, floor plates 1 / iron .6 / core walls and rubble .4, like the jetty; and the `shellsFor` edge case is not a loss: the core's `BIO.faceSamples` already drops a shell with no accepted face and gives its share to the others, so `shellsFor` is only a redundant local pre-filter.) Was: The Girder tower dressed as one list (`dress()` samples by area within a shell, so
       its big slabs take most of the moss); the jetty hands shells (Done). A shell with no face a
       pass grows on sits that pass out (65-dress `shellsFor`): the core's `BIO.faceSamples` gives

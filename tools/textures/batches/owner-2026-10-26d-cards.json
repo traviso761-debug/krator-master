@@ -1,0 +1,629 @@
+[
+ {
+  "src": "card.begonia.escargot.png",
+  "out": "core/materials/library/card.begonia.escargot",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.begonia.escargot",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.begonia.escargot\"",
+    "reuse": "the southern highlands escargot begonias; any patterned shade-plant leaf",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.cloudberry.png",
+  "out": "core/materials/library/card.cloudberry",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cloudberry",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cloudberry\"",
+    "reuse": "the NW outer wall cloudberry; any low lobed-leaf bog herb (bottom row autumn red)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.edelweiss.png",
+  "out": "core/materials/library/card.edelweiss",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.edelweiss",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.edelweiss\"",
+    "reuse": "the NW outer wall felt star; any edelweiss",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.pele.hair.png",
+  "out": "core/materials/library/card.pele.hair",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.pele.hair",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.pele.hair\"",
+    "reuse": "the Godthrone glass-hair mats; any lava-fountain surroundings",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.grass.thatch.png",
+  "out": "core/materials/library/card.grass.thatch",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.grass.thatch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.grass.thatch\"",
+    "reuse": "the abyssal savannah thatch grass (near-colourless, tinted by the kit); elephant grass, any tall savanna grass",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.fig.png",
+  "out": "core/materials/library/card.fig",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.fig",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.fig\"",
+    "reuse": "the Bowl Mantis fig crown (slot broad); any fig, banyan or laurel-leaved crown",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.cladonia.png",
+  "out": "core/materials/library/card.cladonia",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cladonia",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cladonia\"",
+    "reuse": "the NW outer wall caribou moss tufts; any fruticose lichen cushion",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.birch.dwarf.png",
+  "out": "core/materials/library/card.birch.dwarf",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.birch.dwarf",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.birch.dwarf\"",
+    "reuse": "the NW outer wall snow birch (top row summer, others autumn); any dwarf birch or tundra shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.puya.png",
+  "out": "core/materials/library/card.puya",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.puya",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.puya\"",
+    "reuse": "the W outer wall puya (top rows rosette, bottom row flower spike); any giant terrestrial bromeliad",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.willow.woolly.png",
+  "out": "core/materials/library/card.willow.woolly",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.willow.woolly",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.willow.woolly\"",
+    "reuse": "the NW outer wall woolly willow; any grey-felted willow",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.outlands.scrub.png",
+  "out": "core/materials/library/card.outlands.scrub",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.outlands.scrub",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.outlands.scrub\"",
+    "reuse": "the Outlands sac brush, grey cushion and ember scrub (rows)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.guyedstalk.png",
+  "out": "core/materials/library/card.guyedstalk",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.guyedstalk",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.guyedstalk\"",
+    "reuse": "the Godstep guyed stalk (the Talovolci fibre crop); any tall alien crop",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.cone.spiral.png",
+  "out": "core/materials/library/card.cone.spiral",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cone.spiral",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cone.spiral\"",
+    "reuse": "the southern highlands spiral conifer cones (green resin, brown, open); any conifer cone at hero range",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.broadleaf.cloud.png",
+  "out": "core/materials/library/card.broadleaf.cloud",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.broadleaf.cloud",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.broadleaf.cloud\"",
+    "reuse": "the eastern highlands cloud-forest broadleaf evergreens (laurel, oak); any evergreen leafy spray",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.broadleaf.dry.png",
+  "out": "core/materials/library/card.broadleaf.dry",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.broadleaf.dry",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.broadleaf.dry\"",
+    "reuse": "the hyperjungle monsoon forest in dry-season leaf; the abyssal savanna woodland; any drought-deciduous spray",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.epiphyte.garden.png",
+  "out": "core/materials/library/card.epiphyte.garden",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.epiphyte.garden",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.epiphyte.garden\"",
+    "reuse": "the eastern highlands epiphyte gardens on trunks and limbs; any cloud-forest epiphyte clump",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.osmanthus.png",
+  "out": "core/materials/library/card.osmanthus",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.osmanthus",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.osmanthus\"",
+    "reuse": "Guilin osmanthus; any small-leaved flowering evergreen",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.fogcomber.png",
+  "out": "core/materials/library/card.fogcomber",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 80,
+   "key_hi": 200,
+   "spill": "edge",
+   "choke": 2
+  },
+  "record": {
+   "id": "card.fogcomber",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.fogcomber\"",
+    "reuse": "the Outlands veil-cap thread fringes (cells 1-6) and comb masts (cells 7-9); any hanging beaded curtain",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.outlands.crust.png",
+  "out": "core/materials/library/card.outlands.crust",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.outlands.crust",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.outlands.crust\"",
+    "reuse": "the Outlands needle fur (row 1), crust rosettes and pebble mats (row 2), pebble mat and salt fans (row 3); pasted by the owner in chat, 2026-10-26",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ }
+]

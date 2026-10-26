@@ -197,6 +197,22 @@ GEYSER.cycle=function(g,t){const o=g._c||(g._c={phase:'rest',water:0,steam:0,nex
 // set a geyser off now: its clock moved so its column starts at t (the preplay skipped)
 GEYSER.erupt=function(key,t){const g=R&&R.geysers.find(q=>q.key===key);if(!g||g.kind==='spouter')return false;g.off=t-g.pre+.01;return true;};
 GEYSER.byKey=k=>R&&(R.geysers.find(g=>g.key===k)||R.springs.find(s=>s.key===k));
+// ---------------------------------------------------------------- the hazards (core/hazard, 2026-10-26)
+// A geyser is a heat hazard on the one clock (KTRAPS.cycle): its preplay the warning, its column on, its steam after (a
+// quarter), the rest idle, phased by its own authored offset (the record's cycle: period, warn, on, after, offset = -off).
+// GEYSER.state (KHAZ.STATES) reads the geyser's live times (the page's demo speed, an erupt) on the show's clock; a port
+// without the kit reads the record's cycle with the same maths. A spouter plays always; a spring scalds by its heat; an
+// acid flat corrodes.
+GEYSER.hazard={geyser:g=>g.kind==='spouter'?{kind:'heat',danger:.6,dose:1.5,shape:{type:'cyl',r:Math.max(3,g.sprayR*.5),h:g.H+3}}:
+  {kind:'heat',danger:.9,dose:3,shape:{type:'cyl',r:Math.max(4,g.sprayR*.6),h:g.H+4},cycle:{period:g.period,warn:g.pre,on:g.dur,after:g.steam,afterK:.25,offset:-g.off},
+   stateFn:'GEYSER.state',seed:g.key,tell:{sign:'the preplay: surges a few metres high, closer and closer'}},
+ spring:s=>({kind:'heat',danger:Math.round(Math.min(1,.3+.7*s.temp)*100)/100,dose:1+2*s.temp,shape:{type:'cyl',r:s.r,h:6,y0:2}}),
+ acid:a=>({kind:'acid',danger:.5,falloff:'linear',shape:{type:'cyl',r:a.r,h:8,y0:2}})};
+GEYSER.state=function(rec,h,t){const c=h.cycle,g=GEYSER.byKey(h.seed),T=GEYSER.SHOW&&GEYSER.SHOW.t!=null?GEYSER.SHOW.t:t;
+ const P=g&&g.period?{period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,off:g.off}:{period:c.period,pre:c.warn,dur:c.on,steam:c.after,off:-c.offset};
+ const q=KTRAPS.cycle([['warn',P.pre,0,0],['on',P.dur,1,1],['after',P.steam,c.afterK,c.afterK],['idle',Math.max(0,P.period-P.pre-P.dur-P.steam),0,0]],T,-P.off);
+ const o={state:q.state,k:q.k,on:q.k>0,left:q.left};if(q.state==='warn')o.warn=true;return o;};
+if(typeof KHAZ!=='undefined')KHAZ.STATES['GEYSER.state']=GEYSER.state;
 
 // ---------------------------------------------------------------- a site from a point (the open world; the isles)
 // The scale model marks a geyser field as a point with a radius (DATA.vents, kind 'geyser'): cluster() makes a thermal
@@ -222,5 +238,5 @@ GEYSER.records=function(){if(!R)return null;const rd=v=>Math.round(v*100)/100;
   runoff:R.runoff.map(c=>({src:c.src,T0:c.T0,w0:rd(c.w0),lam:c.lam,pts:c.P.filter((p,i)=>i%4===0||i===c.P.length-1).map(p=>[rd(p[0]),rd(p[1]),rd(p[2])])})),
   terraces:R.terraces.map(t=>({key:t.key,S2:t.S2,lip:t.lip,depth:t.depth,pools:t.seeds.size,temp:t.temp,hTop:rd(t.hTop),hBot:rd(t.hBot)}))};};
 // none of this touches a registry, and terrainH calls relief and at a million times: BIO.kitEnd (70) leaves them unwrapped
-['lay','poolAt','relief','at','waterAt','cycle','erupt','byKey','cluster','records','chW','chT'].forEach(k=>{GEYSER[k]._kit='-';});
+['lay','poolAt','relief','at','waterAt','cycle','erupt','byKey','cluster','records','chW','chT','state'].forEach(k=>{GEYSER[k]._kit='-';});
 })();

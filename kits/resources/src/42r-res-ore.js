@@ -2,7 +2,8 @@
 // ================================================================= RESOURCE NODES: the kinds, and the rule a works takes its product by
 // The owner (2026-10-15): a mine takes its product from a nearby node; the nodes are visible and placeable, in a low, a
 // medium and a high grade each, and the grade sets the job's efficiency (the works' yield a worker-hour). Nodes do not run
-// out (owner, for now). The kinds: the metals (iron, copper, gold, tin, silver), sulfur, saltpeter, rare earth and coal, all dug by a
+// out (owner, for now). The kinds: the metals (iron, copper, gold, tin, silver), sulfur, saltpeter, rare earth, coal, and the Catch's
+// two salts (potash; alkali salts: soda and its kin, borates and lithium folded in: biomes/catch/PLAN.md section 6a), all dug by a
 // MINE; and oil, drawn by a DERRICK (the only one so far is Locus's Geomancer pumpjack, `ind_pumpjack`; the owner: no
 // derrick for other cultures yet). The nodes are world content, not any culture's, so they live in their own kit; a
 // building kit reads this fragment and 44r-res-nodes.js in place (kits/islanders build.py). Plain data and a pure rule (no
@@ -32,10 +33,16 @@ const RES_ORE={
   saltpeter:{item:'saltpeter',name:'saltpeter',cls:'mineral',works:'mine'},
   'rare-earth':{item:'rare_earth_ore',name:'rare earth',cls:'mineral',works:'mine'},
   coal:{item:'coal',name:'coal',cls:'fuel',works:'mine'},
+  potash:{item:'potash',name:'potash',cls:'mineral',works:'mine'},
+  alkali:{item:'alkali_salts',name:'alkali salts',cls:'mineral',works:'mine'},
   oil:{item:'crude_oil',name:'oil',cls:'fuel',works:'derrick'}},
  grades:{low:{yield:.5,size:3.2,rank:0},medium:{yield:1,size:5.2,rank:1},high:{yield:2,size:8,rank:2}},
  works:{mine:{base:.05,radius:400,cap:2000,keys:[]},derrick:{base:.05,radius:400,cap:2000,keys:['ind_pumpjack']}}
 };
+/* the evaporite rings' outer two (2026-10-26, the geology bake: tools/scale-model/geology.py): gypsum at a closed basin's
+   rim, rock salt (halite) inside it; potash and alkali salts are the last-dry centre. Halite gives the same good as a salt
+   pan (RES_FIELD salt): salt. */
+Object.assign(RES_ORE.kinds,{gypsum:{item:'gypsum',name:'gypsum',cls:'mineral',works:'mine'},halite:{item:'salt',name:'rock salt',cls:'mineral',works:'mine'}});
 function resNodeKey(kind,grade){return 'node-'+kind+'-'+grade;}
 function resWorksOf(rec){if(!rec)return null;if(rec.works&&RES_ORE.works[rec.works])return rec.works;const role=rec.tags&&rec.tags.role||rec.role;
  if(role&&RES_ORE.works[role])return role;for(const w in RES_ORE.works)if(RES_ORE.works[w].keys.includes(rec.key))return w;return null;}

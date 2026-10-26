@@ -27,7 +27,7 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
  const WOPT={THREE:T3,scene:null,uniforms:U,fog:scene.fog,wind:[wind[0],wind[1]],mats:new Map(),onMaterial:m=>SH.mats.push(m)},WORLD=650631;
  SH.springs=[];SH.pools=[];
  function disc(S,label){const D=WATER.drawSpring(S,WOPT);D.mesh.userData.inspectLabel=label;scene.add(D.mesh);st.springs++;BIO.tally(D.tris,0,1);return D.mesh;}
- R.springs.forEach(s=>{const S=WATER.spring({key:s.key,name:s.name,x:s.x,z:s.z,r:s.r,level:s.level,temp:s.temp,milky:s.milky,kind:s.kind});SH.springs.push(S);disc(S,s.name);BIO.register({name:s.name,spring:s.key,x:s.x,z:s.z,y:s.level-4,r:s.r*1.4,h:10});});
+ R.springs.forEach(s=>{const S=WATER.spring({key:s.key,name:s.name,x:s.x,z:s.z,r:s.r,level:s.level,temp:s.temp,milky:s.milky,kind:s.kind});SH.springs.push(S);disc(S,s.name);BIO.register({name:s.name,spring:s.key,x:s.x,z:s.z,y:s.level-4,r:s.r*1.4,h:10,tags:{hazard:GEYSER.hazard.spring(s)}});});
  R.geysers.forEach(g=>{if(g.kind!=='cone'){const nm=g.name.replace(/ \(.*/,'')+"'s pool";SH.pools.push(disc(WATER.spring({key:g.key+':pool',name:nm,x:g.x,z:g.z,r:g.pool||2,level:g.level,temp:1,boil:1,steam:0}),nm));}});
  // ---------------------------------------------------------------- the run-off's water
  const RUN_MAT=mk({transparent:true,depthWrite:false,side:T3.DoubleSide,uniforms:{uT:U.uT,uSun:U.uSun,uSky:U.uSky,uLight:U.uLight},
@@ -64,7 +64,7 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
   for(let i=0;i<NR;i++)for(let a=0;a<NA;a++){const A=i*NA+a,B=i*NA+(a+1)%NA,C2=(i+1)*NA+a,D=(i+1)*NA+(a+1)%NA;idx.push(A,C2,B,B,C2,D);}
   const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('aM',new T3.Float32BufferAttribute(aM,3));g.setIndex(idx);
   const m=new T3.Mesh(g,MUD_MAT);m.userData.inspectLabel='A mud pot (it bubbles)';m.frustumCulled=false;scene.add(m);st.pots++;BIO.tally(idx.length/3,0,1);});
- R.acid.forEach(a=>BIO.register({name:a.name,mud:true,x:a.x,z:a.z,y:BIO.terrainH(a.x,a.z)-4,r:a.r,h:14}));
+ R.acid.forEach(a=>BIO.register({name:a.name,mud:true,x:a.x,z:a.z,y:BIO.terrainH(a.x,a.z)-4,r:a.r,h:14,tags:{hazard:GEYSER.hazard.acid(a)}}));
  // ---------------------------------------------------------------- the steam
  // a puff loops up from its vent: aS (phase, rate, size, rise); aC its tint (the Prism's steam takes its colours from under)
  const STEAM_MAT=mk({transparent:true,depthWrite:false,uniforms:{uT:U.uT,uScale:U.uScale,uLight:U.uLight,uWind:U.uWind},
@@ -91,6 +91,10 @@ GEYSER.buildShow=function(opt){const T3=BIO.host.THREE,scene=BIO.host.scene,R=GE
  SH.waters=R.geysers.map((g,gi)=>WATER.geyser({key:g.key,name:g.name,vents:g.vents,top:g.top,top2:g.top2,H:g.H,style:g.kind,period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,
   off:()=>g.off||0,wob:gi*1.7,pool:g.pool,cone:g.cone,mound:g.mound,world:WORLD}));   /* wob: the spouter's wobble phase, as the shader had it */
  SH.geysers=SH.waters.map(S=>{const D=WATER.drawGeyser(S,Object.assign({},WOPT,{scene,gravity:GEYSER.GRAV}));st.drops+=D.count;return D.points;});
+ // the steam over the big columns as a soft volume (WATER.drawPlume, core/water W6, 2026-10-26): one raymarched box each, as thick as the cycle's
+ // steam (the roar after the column), leaning a little downwind; the export's geyser record carries it (Godot: a FogVolume). The spouters keep their puffs.
+ SH.plumes=WATER.drawPlume?SH.waters.filter(S=>S.style!=='spouter'&&S.H>=25).map(S=>WATER.drawPlume(S,Object.assign({},WOPT,{scene,plume:{lean:[.12,-.06],density:.45}})).mesh):[];
+ st.plumes=SH.plumes.length;
  SH.setScale=px=>{U.uScale.value=px;};
  SH.setLight=k=>{U.uLight.value=k;};
  BIO.tick(dt=>{SH.t+=dt;U.uT.value=SH.t;});

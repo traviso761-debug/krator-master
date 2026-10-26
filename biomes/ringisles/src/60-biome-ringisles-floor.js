@@ -17,7 +17,7 @@ const PAL=RINGISLES.PAL,zones=RINGISLES.zones,blocked=RINGISLES.blocked,C=RINGIS
 const {bright,shade,vary,tint,means,leafCol}=RINGISLES;
 const Y=(x,z)=>BIO.terrainH(x,z);
 const lib=k=>!!RINGISLES.LIB[k],lc=(slot,c)=>RINGISLES.libCol(slot,c);
-function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
+function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&(BIO.mask(px,pz)<=0||zones(px,pz).thermal>.5))continue;fn(px,pz,i,a);}}   /* a clump's outliers keep off the vent's field too (2026-10-26) */
 function tuft(item,x,y,z,h,w,col,tl){const t=tl==null?.06:tl;BIO.put(item,[x,y-.05,z],qEuler(rr(-t,t),rr(0,TAU),rr(-t,t)),[w||h*.8,h,w||h*.8],col);}
 function flat(item,x,y,z,R,col){BIO.put(item,[x,y+.03,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[R,1,R],col);}
 const rockTint=set=>tint(vary(pick(set||PAL.stone),.02,.06,.06),means().rock,rr(.5,.75));
@@ -36,6 +36,10 @@ function bunch(x,y,z,lv,dry){const h=rr(.3,.65)*(lv===0?1.5:1);around(x,z,lv===2
 function thornbush(x,y,z,lv,k){const Rs=rr(.5,1.1)*(k||1),hc=vary(pick(PAL.thornbush),.02,.08,.05);
  if(lv>=1)BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[Rs*.6,Rs*.55,Rs*.6],shade(hc,-.45));
  for(let i=0,n=lv===2?ri(2,4):1;i<n;i++)BIO.put('thornspray',[x+rr(-.3,.3)*Rs,y+Rs*rr(.45,.8),z+rr(-.3,.3)*Rs],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[Rs*1.3,Rs*.6,Rs*1.3],bright(hc,1.2),{n:[rr(-.2,.2),1,rr(-.2,.2)]});}
+// the termite spires: the Rift's (RIFT.small.termite, its red laterite cones, 2026-10-26) when that kit is on the page; this
+// kit's own mound where it is not (a world that leaves the Rift out, e.g. the open world's)
+const riftApi=()=>{const R=BIO.kits.rift;return R&&R.api&&R.api.small&&R.api.small.termite?R.api:null;},SPIRE={spires:0};
+function spire(x,y,z,lv,big){const a=riftApi();if(a){a.small.termite(x,y,z,lv,SPIRE);return;}mound(x,y,z,lv,big);}
 function mound(x,y,z,lv,big){const h=(big?rr(2.6,5.5):rr(1.2,3))*(lv===0?1:1);BIO.put('mound',[x,y-.25,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[h*.55,h+.25,h*.55],shade(vary(pick(big?PAL.moundXV:PAL.mound),.02,.06,.05),-.05));}
 function stone(x,y,z,lv,set){around(x,z,lv===2?ri(1,3):1,.4,1.4,(px,pz)=>{const r=rr(.12,.45);BIO.put('stone',[px,Y(px,pz)+r*.15,pz],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*rr(.9,1.4),r*.65,r*rr(.9,1.4)],rockTint(set));});}
 function saltbush(x,y,z,lv){const Rs=rr(.45,.9);for(let i=0,n=lv===2?ri(2,3):1;i<n;i++)BIO.put('saltbush',[x+rr(-.25,.25)*Rs,y+Rs*rr(.35,.6),z+rr(-.25,.25)*Rs],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[Rs*1.3,Rs*.8,Rs*1.3],leafCol(PAL.saltbush,1.15,.01,.04,.04),{n:[0,1,0]});}
@@ -78,14 +82,14 @@ function plantForest(x,y,z,Z,lv,st){const t=rng(),xa=Z.xaShare;
 function plantSavanna(x,y,z,Z,lv,st){const t=rng(),k=1+.55*(Z.xv/(Z.sav||1));
  if(t<.8){const s=savGrass(x,y,z,lv,Z,k);st.grass++;st[s]=(st[s]||0)+1;}
  else if(t<.9){if(Z.burn.black<.5){thornbush(x,y,z,lv,1);st.thornbush++;}}
- else if(t<.935){if(lv>=1&&!blocked(x,z,2)){mound(x,y,z,lv,Z.xv>Z.aw);st.mounds++;}}
+ else if(t<.935){if(lv>=1&&!blocked(x,z,2)){spire(x,y,z,lv,Z.xv>Z.aw);st.mounds++;}}
  else if(t<.97){stone(x,y,z,lv);st.stones++;}}
 function plantSteppe(x,y,z,Z,lv,st){const t=rng(),xs=Z.xs/(Z.step||1);
  if(t<.58){bunch(x,y,z,lv,Z.burn.cured+Z.burn.green*.5>.4);st.bunch++;}
  else if(t<.72){thornbush(x,y,z,lv,.7);st.thornbush++;}
  else if(t<.72+.14*xs){saltbush(x,y,z,lv);st.saltbush++;}
  else if(t<.92){stone(x,y,z,lv,PAL.reefRock);st.stones++;}
- else if(lv>=1&&!blocked(x,z,2)&&rng()<.4){mound(x,y,z,lv,false);st.mounds++;}}
+ else if(lv>=1&&!blocked(x,z,2)&&rng()<.4){spire(x,y,z,lv,false);st.mounds++;}}
 function plantSalt(x,y,z,Z,lv,st){const e=Z.panEdge,mid=Z.pan*(1-e);
  if(rng()<e){samphire(x,y,z,lv,rng()<.4);st.samphire++;if(rng()<.2){saltbush(x,y,z,lv);st.saltbush++;}}
  else if(rng()<mid*.6){crust(x,y,z,lv);st.crust++;}}
@@ -134,7 +138,7 @@ RINGISLES.buildFloor=function(R,q){reseed(600071);q=q==null?1:q;R=R||2000;means(
 RINGISLES.buildDressing=function(q){reseed(610071);q=q==null?1:q;const st={lianas:0,epiphytes:0};
  for(const T of RINGISLES.TREES){if(T.lv==null||T.lv<1||T.H<9)continue;const Z=zones(T.x,T.z),k=Z.xa*1+Z.af*.25;if(k<=.05||rng()>k*q)continue;
   const R=T.crownR||3,top=T.y0+T.H*.82;
-  for(let i=0,n=T.lv===2?ri(2,6):2;i<n;i++){const a=rr(0,TAU),d=R*rr(.3,.85),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,gy=Y(x,z),y=top-rr(0,T.H*.15),L=Math.max(1.5,(y-gy)*rr(.45,.95));
+  for(let i=0,n=T.lv===2?ri(2,6):2;i<n;i++){const a=rr(0,TAU),d=R*rr(.3,.85),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,gy=Y(x,z),y=top-rr(0,T.H*.15),L=Math.max(1.5,(y-gy)*rr(.45,.95));if(zones(x,z).thermal>.5)continue;   /* none over the vent's field (a crown at its edge) */
    BIO.put('liana',[x,y,z],qEuler(0,rr(0,TAU),0),[rr(.5,.9),L,1],lc('liana',leafCol(PAL.liana,1.15,.02,.06,.05)));st.lianas++;}
   for(let i=0,n=T.lv===2?ri(2,5):1;i<n;i++){const y=T.y0+T.H*rr(.35,.75),a=rr(0,TAU),r=(T.rb||.3)*1.1,s=rr(.35,.7);
    BIO.put(rng()<.6?'epiphyte':'mossclump',[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*.8,s],lc('epiphyte',leafCol(PAL.epiphyte,1.15,.03,.08,.05)),{n:[0,1,0]});st.epiphytes++;}}

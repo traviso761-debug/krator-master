@@ -50,6 +50,14 @@ KORONA.TRAPS={
  frosttank:TR({kind:'tank',mouth:.3,preyMax:'small',lure:null,danger:.2}),
  butterwort:TR({kind:'flypaper',mouth:.03,preyMax:'insect',lure:'dew'}),
  numbthorn:TR({kind:'snare',mouth:.1,preyMax:'person',lure:null,danger:.7,cycle:{wait:900000,shut:.4,digest:300000,reopen:60000}})};
+/* THE HAZARDS (core/hazard, 2026-10-26): every trap of danger .3 and over is a hazard record too (57's reg writes
+   tags.hazard beside tags.trap): its kind here, its danger the trap's, its state the trap's own clock (KTRAPS.state on
+   the kit's id, the one its shader hashes) or, for the punji pit, its membrane's (KORONA.pitState); the rest a grab */
+KORONA.HAZARDS={punjipit:{kind:'pit',stateFn:'KORONA.pitState',trigger:{by:'weight',mass:20,reset:480}},numbthorn:{kind:'poison'},
+ bladderpool:{kind:'drown',effect:'hold'},maneater:{kind:'grab'},coiltendril:{kind:'grab'},groundstar:{kind:'grab'},trappad:{kind:'grab'},
+ snareflower:{kind:'grab'},beartrap:{kind:'grab',effect:'bleed'}};
+KORONA.hazardOf=function(key,tr,id){if(!(tr&&tr.danger>=.3))return null;
+ return Object.assign({kind:'grab',danger:tr.danger,stateFn:'KTRAPS.state',seed:id},KORONA.HAZARDS[key]);};
 
 // ---------------------------------------------------------------- the tree-scale species
 const K=(climate,aridity,riparian,koppen,zone)=>Object.assign({},KORONA.TAGS,{climate,aridity,riparian,koppen,zone});
@@ -209,11 +217,16 @@ trapHook(M.hood,KORONA.TRAPS.maneater,'hinge');trapHook(M.tendriltip,KORONA.TRAP
 // KORONA.afterBake sets the orders (88-host-build.js calls it after BIO.bake).
 KORONA.MEMBRANE={whole:720,tear:.6,torn:120,regrow:360};
 const sstep=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x);};
-KORONA.pitState=function(p,t){const c=KORONA.MEMBRANE,L=c.whole+c.tear+c.torn+c.regrow;let u=t+(p.phase||0)*L;u-=Math.floor(u/L)*L;
- if(u<c.whole)return {state:'whole',hang:0,gap:0,scar:1-sstep(0,c.whole*.3,u)};u-=c.whole;
- if(u<c.tear){const k=u/c.tear;return {state:'tearing',hang:k,gap:k,scar:1};}u-=c.tear;
- if(u<c.torn)return {state:'torn',hang:1,gap:1,scar:1};u-=c.torn;
- const q=u/c.regrow;return {state:'regrowing',hang:1-sstep(0,.35,q),gap:1-sstep(.2,1,q),scar:1,progress:q};};
+/* on the one clock (KTRAPS.cycle, core/biome/37-core-traps.js): the same arithmetic as before it, so the pits do not move */
+KORONA.pitState=function(p,t){const c=KORONA.MEMBRANE,L=c.whole+c.tear+c.torn+c.regrow;
+ const C=KTRAPS.cycle([['whole',c.whole,0,0],['tearing',c.tear,0,1],['torn',c.torn,1,1],['regrowing',c.regrow,0,1]],t,(p.phase||0)*L),u=C.u;
+ if(C.state==='whole')return {state:'whole',hang:0,gap:0,scar:1-sstep(0,c.whole*.3,u)};
+ if(C.state==='tearing'){const k=C.k;return {state:'tearing',hang:k,gap:k,scar:1};}
+ if(C.state==='torn')return {state:'torn',hang:1,gap:1,scar:1};
+ const q=C.k;return {state:'regrowing',hang:1-sstep(0,.35,q),gap:1-sstep(.2,1,q),scar:1,progress:q};};
+/* the pit's hazard: always a pit (k 1), hidden while its membrane is whole; and the page's trap speed for the hazards' clock */
+if(typeof KHAZ!=='undefined'){KHAZ.STATES['KORONA.pitState']=function(rec,h,t){const m=rec.tags&&rec.tags.trap&&rec.tags.trap.membrane,s=KORONA.pitState(m||{},t);
+ return {state:s.state,k:1,on:true,hidden:s.state==='whole'};};KHAZ.speed=KORONA.SPEED;}
 KORONA.PIT_GLSL=['float kpitH(float p){p=fract(p*.1031);p*=p+33.33;p*=p+p;return fract(p);}',
  'float kpitN(float x){float i=floor(x),f=fract(x);f=f*f*(3.0-2.0*f);return mix(kpitH(i),kpitH(i+1.0),f);}',
  'vec3 kpitState(float t,vec4 c,float ph){float L=c.x+c.y+c.z+c.w;float u=mod(t+ph*L,L);',

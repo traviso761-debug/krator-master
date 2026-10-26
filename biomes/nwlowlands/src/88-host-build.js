@@ -11,6 +11,7 @@ const BIOME_Q=(()=>{let q=+(window.KRATOR_Q||0);try{q=q||+(new URLSearchParams(l
  try{window._biome=NWLOW.build({R:TERR.R-150,quality:BIOME_Q,avenues:[{path:ROAD,spacing:16,offset:9,species:'ghostgum'}]});}catch(e){reportErr('biome: '+e.stack);}
  if(shells.length){try{NWLOW.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
  const b=BIO.bake();
+ if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer);}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement: the species' views (core/biome 34) */
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:'The northwestern lowlands (ideal type)',x:0,z:0,r:TERR.R,h:420});
 })();

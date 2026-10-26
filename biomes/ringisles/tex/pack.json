@@ -1,6 +1,32 @@
 {
  "build": "ringisles",
  "families": {
+  "bananaleaf": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "bananaleaf.albedo.webp"
+   },
+   "lib": "card.paddle",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 1024,
+   "source": {
+    "albedo": "62b061669651a81fed7368a69ab382e24f2f3b61"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.3807
+   }
+  },
   "bark0": {
    "breakup": null,
    "card": false,
@@ -269,6 +295,38 @@
     "sourceMean": 0.5178
    }
   },
+  "cane": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ],
+   "files": {
+    "map": "cane.albedo.webp"
+   },
+   "lib": "card.crop.cane",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c24064ed055fd0e41aa314225575c1ae0ff609fe"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.49605627003585123,
+    "sourceMean": 0.4961
+   }
+  },
   "coral": {
    "breakup": null,
    "card": false,
@@ -519,6 +577,70 @@
     "keep": 0.0,
     "mean": 0.68,
     "sourceMean": 0.5178
+   }
+  },
+  "greens": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.005,
+    0.005,
+    0.33,
+    0.33
+   ],
+   "files": {
+    "map": "greens.albedo.webp"
+   },
+   "lib": "card.crop.greens",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3f56dfb4f8a58710542d16695787badcb742b25a"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46414038577613376,
+    "sourceMean": 0.4641
+   }
+  },
+  "greensb": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.672,
+    0.338,
+    0.995,
+    0.662
+   ],
+   "files": {
+    "map": "greensb.albedo.webp"
+   },
+   "lib": "card.crop.greens",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3f56dfb4f8a58710542d16695787badcb742b25a"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46414038577613376,
+    "sourceMean": 0.4641
    }
   },
   "ground.burn": {
@@ -1001,6 +1123,70 @@
     "sourceMean": 0.5063
    }
   },
+  "rice": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.338,
+    0.338,
+    0.662,
+    0.662
+   ],
+   "files": {
+    "map": "rice.albedo.webp"
+   },
+   "lib": "card.crop.rice",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0d63c6ad550abdee5148006331f48f49e9004d7a"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5272287148289295,
+    "sourceMean": 0.5272
+   }
+  },
+  "riceripe": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.338,
+    0.672,
+    0.662,
+    0.995
+   ],
+   "files": {
+    "map": "riceripe.albedo.webp"
+   },
+   "lib": "card.crop.rice",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0d63c6ad550abdee5148006331f48f49e9004d7a"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5272287148289295,
+    "sourceMean": 0.5272
+   }
+  },
   "rock": {
    "breakup": null,
    "card": false,
@@ -1149,6 +1335,38 @@
     "keep": 0.0,
     "mean": 0.62,
     "sourceMean": 0.4863
+   }
+  },
+  "sweetvine": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.005,
+    0.672,
+    0.33,
+    0.995
+   ],
+   "files": {
+    "map": "sweetvine.albedo.webp"
+   },
+   "lib": "card.crop.greens",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3f56dfb4f8a58710542d16695787badcb742b25a"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46414038577613376,
+    "sourceMean": 0.4641
    }
   },
   "tamfoliage": {

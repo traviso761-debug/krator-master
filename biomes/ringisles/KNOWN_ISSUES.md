@@ -4,20 +4,34 @@ Open items are `- [ ]`; `build.py` counts them.
 
 ## Shared files this kit wants changed (not changed here: they belong to other kits)
 
-- [ ] **rift and nwlowlands have no `make`/`grow`.** The plan (settlements/isle-demo/PLAN.md, section 2) names the Rift's
+2026-10-26: the four were made upstream, additively (the owner asked for them at the start of the biome rebuild). Each kit's own
+page was built with and without the change from the same tree and compared: the pages differ only by the added lines, and on
+the GPU the default camera's draw calls and triangles and every mesh's instance count and matrices are identical (the one mesh
+that differs, the hyperjungle's and the geyser's walking strider, moves between the two runs).
+
+- [x] **rift and nwlowlands have no `make`/`grow`.** The plan (settlements/isle-demo/PLAN.md, section 2) names the Rift's
   acacia and termite spires and nwlowlands' she-oak (the strand casuarina) as reusable in place; their builders are bound
   in their kits' closures (`B[]` in `55-biome-rift-trees.js`, `55-biome-nwlowlands-trees.js`) with no export, so this kit
   does without them (swbay's umbrella thorn stands for the acacia; this kit's own termite mounds; no she-oak). The fix
   upstream is the Throne's eleven lines: `RIFT.make/grow`, `NWLOW.make/grow` (biomes/WORLD.md, "trees as variants").
-- [ ] **The hyperjungle's understorey palm and screwpine** live inside its floor's closure (`60-biome-hyperjungle-floor.js`)
+  Done 2026-10-26: `RIFT.make/grow` and `RIFT.small.termite` (rift 55 and 60), `NWLOW.make/grow` (nwlowlands 55). build.py reads
+  the two kits' species, trees (and the Rift's floor) and build; this kit plants the Rift's acacia among the umbrella thorns
+  (BORROW `acacia`, scale .8), the drape she-oak behind the beach (`sheoak`, scale .55: 13-19 m), and the Rift's termite
+  spires in place of its own mounds (60's `spire`; the own mound stays as the fallback for a world without the Rift).
+- [x] **The hyperjungle's understorey palm and screwpine** live inside its floor's closure (`60-biome-hyperjungle-floor.js`)
   with no export; the plan names them for the island rainforest. The Throne's arch palm and tree fern and this kit's own
   strand pandanus stand in. An export like `THRONE.small` (`HYPERJUNGLE.small = {palm, screwpine, ...}`) would let any kit
-  plant them.
-- [ ] **`GEYSER.build` has no centre.** Its passes grid round the core's centre (`BIO.center()`); a world with a vent off
+  plant them. Done 2026-10-26: `HYPERJUNGLE.small = {palm, screwpine, treeFern, ginger, aroid, fern, shrub}` (hyperjungle 60,
+  wrapped to its registry); build.py reads its species, floor and build; BORROW `junglepalm` and `screwpine` (a `small` entry:
+  the kit's plant at (x, y, z, lv), a keep-clear record of its own, none past the mid radius) plant them after every older pass
+  in the Af, Am and XA forest.
+- [x] **`GEYSER.build` has no centre.** Its passes grid round the core's centre (`BIO.center()`); a world with a vent off
   its centre must move the host's centre while it builds (`src/88-host-build.js` does). A `center` option on
-  `GEYSER.build` would do it cleanly.
-- [ ] **The Throne's `THRONE.small` functions are not wrapped** to the Throne's registry (BIO.kitWrap wraps only the
-  export's own functions). This kit does not call them, but a kit that does must switch to the Throne's registry itself.
+  `GEYSER.build` would do it cleanly. Done 2026-10-26: `GEYSER.build({center:[x,z]})` (geyser 70) moves the host's centre for its
+  passes and puts it back; `src/88-host-build.js` passes the vent's and no longer moves it itself.
+- [x] **The Throne's `THRONE.small` functions are not wrapped** to the Throne's registry (BIO.kitWrap wraps only the
+  export's own functions). This kit does not call them, but a kit that does must switch to the Throne's registry itself. Done 2026-10-26: throne 60 wraps them
+  (`BIO.kitWrap('throne', THRONE.small)`).
 
 ## Water (core/water)
 
@@ -39,12 +53,18 @@ Open items are `- [ ]`; `build.py` counts them.
   seagrass (middle cell of `card.seagrass`), the beach creeper (a cell of `card.creeper.beach`), naupaka (`card.naupaka`), the sea grape
   (`card.seagrape`), the breadfruit (`card.breadfruit`), the salt cedar (`card.tamarisk`, whole sheet, replaces `card.heath`) and the
   mango, coffee and clove (`card.croptree.glossy`). The sea grape, breadfruit and naupaka cards are full colour (`keep` 1, so the red leaves, the fruit and the white flowers show; `RINGISLES.libCol` keeps a sixth of the species colour); the rest are grey detail maps tinted by the instance colour. One cell fills a clump quad (a clump quad draws v up, so these cells are listed bottom-first to stand upright).
-- [ ] The banana's leaves: procedural. `card.paddle` has banana leaves but they lie diagonally in their cells, and BIO.libSwap
-  cuts a cell without turning it; the crater drylands' `libCell(..., rot)` would turn one upright (code, no new texture).
+- [x] The banana's leaves: procedural. `card.paddle` has banana leaves but they lie diagonally in their cells, and BIO.libSwap
+  cuts a cell without turning it; the crater drylands' `libCell(..., rot)` would turn one upright (code, no new texture). Done 2026-10-26: materials.json
+  `bananaleaf` (card.paddle at 1024 px, keep 0; no material slot, so libSwap leaves it); 52 draws the middle cell's leaf turned
+  upright (-45 degrees) into a 256 x 512 canvas onto the paddle material (the banana and the ginger leaves).
 - [x] The mango's, coffee's and clove's leaves: one procedural glossy-lance card (`glossy`). Wants `card.croptree.glossy`. - 2026-10-20: wired 2026-10-18 (see the tex2 entry above), nothing open.
-- [ ] Greens and sweet potato reuse the elephant-ear cell of `card.paddle` (`heart`) and the creeper's mat: near enough at
-  a field's distance, wrong up close (no prompt yet: the owner's call whether the crops want their own sheet).
-- [ ] Rice and cane blades: procedural (`card.crop`'s leaves arch sideways, not as a standing clump).
+- [x] Greens and sweet potato reuse the elephant-ear cell of `card.paddle` (`heart`) and the creeper's mat: near enough at
+  a field's distance, wrong up close (no prompt yet: the owner's call whether the crops want their own sheet). Done 2026-10-26 with `card.crop.greens`: `greens`
+  (the bok choy cell) and `greensb` (the frilled lettuce) a row of each, one rosette tuft a plant (five heart leaves before);
+  `sweetvine` (the bottom row's sweet potato vine), one tuft over each hill (the creeper mat and three heart leaves before).
+- [x] Rice and cane blades: procedural (`card.crop`'s leaves arch sideways, not as a standing clump). Done 2026-10-26:
+  `rice` and `riceripe` (card.crop.rice: the grown and the ripe row's middle cells; the ripe paddies take their own item),
+  `cane` (card.crop.cane, the middle cell); full colour, keep 1, the instances near-white (`RINGISLES.libCol`).
 
 ## The page
 
@@ -52,12 +72,22 @@ Open items are `- [ ]`; `build.py` counts them.
   and their procedural textures built at load, for the fourteen species borrowed. A world that already carries those kits
   pays nothing more. The sidecar packs are trimmed to what is drawn (build.py `EXCL`), about 22 MB in all (eastabyss's
   is the biggest: its families are not yet trimmed per species).
+  Stays open (2026-10-26): now eight kits. The Rift's, nwlowlands' and the hyperjungle's species (and the Rift's floor) came
+  for the acacia, the termite spires, the she-oak, the palm and the screwpine: the page 2262 -> 2591 KB, the sidecars 23.8 ->
+  26.1 MB (their packs trimmed to the families those draw, build.py `EXCL`; the crop cards add 1.3 MB). Their species files
+  still build every procedural texture of their kits at load; a kit export that builds only what a borrowed species draws
+  (a per-species material list) would be the cure, in each kit.
 - [ ] **The far trees of the borrowed kits** are their own kits' impostors; swbay's are its runtime-LOD lite stand-ins
   (`BIO.lodTick` runs in `99-host-take.js`).
+  Stays open (2026-10-26): by design for now. Each kit's far form is its own (biomes/WORLD.md, "trees as variants": a far
+  impostor is one more level of a species' record); one far scheme for every borrowed species (one bucket, one look) is the
+  open world's and core/biome's to settle, not this kit's. The Rift's acacia and nwlowlands' she-oak add their kits' impostors.
 - [ ] The showcase's climate is synthetic (a dryness from the wind and the mountain): the open world binds the scale
   model's raster instead (`openworld/isle-demo`, the plan's section 2, "Into the world").
+  Stays open (2026-10-26): the open world's (it binds the raster); the showcase keeps its synthetic one.
 - [ ] The sky is the geyser kit's (the Throne to the south-south-west over the sea, the jungle line to the north): close
   enough for an island of the isle demo, which lies on the Ring Sea's west ring; not re-baked for it.
+  Stays open (2026-10-26): left to the shared sky rollout (core/atmos; the item below).
 
 ## Texture prompts
 
@@ -70,6 +100,8 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 2026-10-20: `atmos` is back in the profile: the build lists `89-atmos-8-export.js` (the one shared fragment sedesert took), so the section fills (clock, wind, presets, skylight).
 
 ## Open
+
+- [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the Throne's plume (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
 
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's

@@ -602,7 +602,7 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 ['Cherry bark (banded)','Smooth pale bark','Ribbed stalks','Marble bark (painted)','Whorled bark','Bamboo canes','Fibrous bark'].forEach((lab,i)=>{
  const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L){M.bark[i].map=L.t;if(i===3)OIDONG.MARBLE=L;}
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===5?1.2:i===3?4:3,i===5?4:i===3?6:4]});});
-BIO.bucket('bark7',M.bark[7],{label:'Carved bark (the cloud-pad tree; procedural stand-in)',uvScale:[1.6,2.4]});
+{const L7=libMap('bark.carved','bark7');if(L7)M.bark[7].map=L7.t;BIO.bucket('bark7',M.bark[7],{label:L7?'Carved bark (the cloud-pad tree)':'Carved bark (the cloud-pad tree; procedural stand-in)',uvScale:L7?L7.scale:[1.6,2.4]});}
 {const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
 // the chalice cap's veins and the moss balls' skin (the library's own): the cap tiles round its rim, the moss repeats over the ball
 {const Lc=libMap('organic.cap','cap');if(Lc){Lc.t.wrapS=Lc.t.wrapT=T3.RepeatWrapping;M.capskin.map=Lc.t;}}

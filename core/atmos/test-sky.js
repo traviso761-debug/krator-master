@@ -105,6 +105,10 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  ok('over ten days Voth sees it often, sometimes high, both lit and in Krator\'s shadow',ups>500&&maxAlt>70&&lit>0&&dark>0,ups===0);
  ok('overhead it is 2,200 km off, its ring ~0.3 degrees in radius: just readable',near(minD,2190,60)&&maxR>.27&&maxR<.36,maxR>1);
  const a=A.skyState(voth,7,0).station,b=A.skyState(voth,7.02,0).station;ok('it moves along its velocity',V.dot(V.norm(b.dir.map((v,k)=>v-a.dir[k])),a.vel)>.6,false);}
+{const M=A.skyLandmarks([{kind:'plume',from:[180,5],via:[175,12],to:[160,15],width:[1,5],alpha:.6},{kind:'sea',top:-2,win:[0,360]},{kind:'band',win:[90,20,1],el:[-.5,.5]},{kind:'what'}]),V=A.skyVec;
+ const a=[M.v[0],M.v[1],M.v[2]],q=V.altAz(a);
+ ok('landmarks pack: kinds, the plume foot as a world direction, its widths in radians, the sea all round',M.n===4&&M.kind[0]===0&&M.kind[1]===2&&M.kind[2]===3&&M.kind[3]===-1&&near(q.az,180,1e-6)&&near(q.alt,5,1e-6)&&near(M.v[3],Math.PI/180,1e-7)&&near(M.v[7],5*Math.PI/180,1e-7)&&M.v[20+3]>=3.14,M.kind[0]!==0);
+ ok('at most SKY_MAX_LANDMARKS are kept',A.skyLandmarks(new Array(9).fill({kind:'band'})).n===A.SKY_MAX_LANDMARKS,false);}
 {const s=at(voth,259,9);ok('the chunk is written (the sky shader\'s GLSL)',typeof A.skyGLSL==='function'&&/atmSky\(/.test(A.skyGLSL()),false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

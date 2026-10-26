@@ -231,6 +231,20 @@
    "specular": 0.2,
    "mapOnly": true
   },
+  "bark.carved": {
+   "lib": "bark.carved",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
   "bark.bamboo": {
    "lib": "bark.bamboo.jade",
    "scale": [

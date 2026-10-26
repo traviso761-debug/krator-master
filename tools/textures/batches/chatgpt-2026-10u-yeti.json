@@ -1,0 +1,500 @@
+[
+ {
+  "src": "ice.pycrete.png",
+  "out": "core/materials/library/ice.pycrete",
+  "record": {
+   "id": "ice.pycrete",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id ice.pycrete).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 2)",
+    "reuse": "fresh pycrete (ice + larch sawdust): Yeti domes, tunnel slabs, forts; any fibre-reinforced ice"
+   }
+  },
+  "options": {
+   "band": 0.02,
+   "lift": 0.05,
+   "delight": 0.4,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "ice.pycrete.weathered.png",
+  "out": "core/materials/library/ice.pycrete.weathered",
+  "record": {
+   "id": "ice.pycrete.weathered",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id ice.pycrete.weathered).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 3)",
+    "reuse": "sun-rotted pycrete (summer, slumping forts); candled lake ice, dirty glacier snouts"
+   }
+  },
+  "options": {
+   "band": 0.02,
+   "rough": 0.8,
+   "rough_var": 0.25
+  }
+ },
+ {
+  "src": "masonry.pycrete.course.png",
+  "out": "core/materials/library/masonry.pycrete.course",
+  "record": {
+   "id": "masonry.pycrete.course",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    2,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id masonry.pycrete.course).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 4), cropped to (0, 24, 1254, 951)",
+    "reuse": "pycrete block courses (3 courses per tile): dome spirals, tunnel vaults; any ice- or snow-block masonry"
+   }
+  },
+  "options": {
+   "seam_axes": "x",
+   "band": 0.02,
+   "keep_aspect": true,
+   "lift": 0.05,
+   "rough": 0.45,
+   "rough_var": 0.25
+  }
+ },
+ {
+  "src": "stone.corbel.slab.png",
+  "out": "core/materials/library/stone.corbel.slab",
+  "record": {
+   "id": "stone.corbel.slab",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id stone.corbel.slab).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 5)",
+    "reuse": "dry-laid split-slab walls: Yeti stone domes, tunnel trenches, tombs, byres; clochans, brochs, tholoi, pirka walls"
+   }
+  },
+  "options": {
+   "band": 0.04,
+   "mute": 0.4,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "stone.soapstone.png",
+  "out": "core/materials/library/stone.soapstone",
+  "record": {
+   "id": "stone.soapstone",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id stone.soapstone).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 6)",
+    "reuse": "steatite: lamps, carvings, stove linings (reads as green serpentine marble too)"
+   }
+  },
+  "options": {
+   "band": 0.02,
+   "lift": 0.05,
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "fur.muskox.png",
+  "out": "core/materials/library/fur.muskox",
+  "record": {
+   "id": "fur.muskox",
+   "family": "fur",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id fur.muskox).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 7)",
+    "reuse": "long shaggy pelt: musk-ox robes; yak, highland cattle, any shaggy coat"
+   }
+  },
+  "options": {
+   "band": 0.02,
+   "rough": 0.95,
+   "rough_var": 0.1
+  }
+ },
+ {
+  "src": "hide.gut.png",
+  "out": "core/materials/library/hide.gut",
+  "record": {
+   "id": "hide.gut",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id hide.gut).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 8), cropped to (4, 0, 1251, 1254) and rolled 78 px so the seam falls mid-strip",
+    "reuse": "sewn gut-membrane panes (8 strips per tile; drawn translucent): windows, lantern shades, drum heads"
+   }
+  },
+  "options": {
+   "seam_axes": "y",
+   "band": 0.02,
+   "lift": 0.05,
+   "delight": 0.4,
+   "rough": 0.6,
+   "rough_var": 0.15
+  }
+ },
+ {
+  "src": "fur.caribou.png",
+  "out": "core/materials/library/fur.caribou",
+  "record": {
+   "id": "fur.caribou",
+   "family": "fur",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id fur.caribou).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 9)",
+    "reuse": "caribou winter hide, hair on: robes, saddles; any reindeer, elk or deer hide"
+   }
+  },
+  "options": {
+   "band": 0.02,
+   "rough": 0.9,
+   "rough_var": 0.1
+  }
+ },
+ {
+  "src": "hide.panels.sewn.png",
+  "out": "core/materials/library/hide.panels.sewn",
+  "record": {
+   "id": "hide.panels.sewn",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id hide.panels.sewn).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 10)",
+    "reuse": "sewn smoked hides: the Yeti domes' lining; yaranga, chum and tipi covers"
+   }
+  },
+  "options": {
+   "band": 0.04,
+   "mute": 0.4,
+   "rough": 0.85,
+   "rough_var": 0.15
+  }
+ },
+ {
+  "src": "khaayken-serge-carving.png",
+  "out": "core/materials/patterns/khaayken/serge-carving",
+  "record": {
+   "id": "khaayken/serge-carving",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/serge-carving).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 1)",
+    "reuse": "Sakha serge carving, unrolled: Yeti hitching posts, columns, lintels; any carved northern post"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "x",
+   "keep_aspect": true,
+   "mute": 0.3,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "khaayken-amur-scroll.png",
+  "out": "core/materials/patterns/khaayken/amur-scroll",
+  "record": {
+   "id": "khaayken/amur-scroll",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/amur-scroll).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 11)",
+    "reuse": "Nanai/Ulch hide appliqu\u00e9 scrollwork: borders, bags, chests; any curvilinear spiral ornament"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "none",
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "khaayken-ob-band.png",
+  "out": "core/materials/patterns/khaayken/ob-band",
+  "record": {
+   "id": "khaayken/ob-band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/ob-band).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 12)",
+    "reuse": "Khanty/Mansi cloth-mosaic bands (two colourways stacked): lining belts, chests, bags"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "none",
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "khaayken-beadwork.png",
+  "out": "core/materials/patterns/khaayken/beadwork",
+  "record": {
+   "id": "khaayken/beadwork",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/beadwork).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 13)",
+    "reuse": "Evenki/Sakha beadwork panel (4x4 repeats): rich panels, saddle cloths, the chief's seat"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "none",
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "khaayken-fur-mosaic.png",
+  "out": "core/materials/patterns/khaayken/fur-mosaic",
+  "record": {
+   "id": "khaayken/fur-mosaic",
+   "family": "fur",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/fur-mosaic).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 14)",
+    "reuse": "pieced caribou-fur mosaic: rugs, platform covers, robe edges"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.1,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "khaayken-applique-hanging.png",
+  "out": "core/materials/patterns/khaayken/applique-hanging",
+  "record": {
+   "id": "khaayken/applique-hanging",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/applique-hanging).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 16), cropped to (0, 0, 887, 887)",
+    "reuse": "Baker Lake-style felt appliqu\u00e9 hanging (one period of the delivered 2:1 sheet): hall and song-house walls"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "none",
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "khaayken-engraved-antler.png",
+  "out": "core/materials/patterns/khaayken/engraved-antler",
+  "record": {
+   "id": "khaayken/engraved-antler",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id patterns/khaayken/engraved-antler).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 17)",
+    "reuse": "Chukchi engraved antler frieze: hall panels, chest inlays, platform edges, drum frames"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "none",
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ }
+]

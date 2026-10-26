@@ -43,6 +43,7 @@ BIO.F32=F32;BIO.Store=F32;
 // x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
 const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
  if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
+BIO._newItem=newItem;   /* an empty store (34-core-impostor's capture empties a kit's stores after its scratch tree) */
 // opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
 // (BIO.tagItem, below) would guess wrong
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
@@ -56,7 +57,10 @@ BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();
 function qEuler(rx,ry,rz){const S=BIO._scratch();S.e.set(rx||0,ry||0,rz||0,'YXZ');return new BIO.host.THREE.Quaternion().setFromEuler(S.e);}
 function qFacing(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),v);}
 function qUp(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),v);}
-// put(name, [x,y,z], quat|null, [sx,sy,sz]|s, colour(hex|Color|null), extra{n:[..], c2:hex})
+// put(name, [x,y,z], quat|null, [sx,sy,sz]|s, colour(hex|Color|null), extra{n:[..], c2:hex, label})
+// extra.label (2026-10-26, B5): this instance's own inspector label, where it differs from the item's (two plants that share
+// a geometry and a material are one item, one draw call a chunk, and still named apart). Baked as userData.instLabels
+// {names, idx: a label index per row}; BIO.instLabel(mesh, instanceId) reads it (core/host's inspector does).
 BIO.put=function(name,pos,q,sc,col,extra){
  const it=BIO.items[name];if(!it){BIO.err('BIO.put: no item '+name);return;}
  if(!(isFinite(pos[0])&&isFinite(pos[1])&&isFinite(pos[2]))){BIO.err('BIO.put: NaN position for '+name);return;}
@@ -72,6 +76,9 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
   for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
+ const lb=extra&&extra.label;if(lb!=null&&lb!==def.label||it.l){let li=0;   /* a per-instance label: the first one starts the table */
+  if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
+  if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
@@ -81,8 +88,10 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
 
 // ---------------------------------------------------------------- merged buckets
+BIO.C2_BUCKETS=true;   /* B3: a bucket made with opt.c2 stores BIO.c2 (a builder's current second colour; none: 0,0,0) per vertex, baked as aC2 */
+BIO.c2=null;function _c2now(){if(BIO.c2==null)return[0,0,0];const S=BIO._scratch();if(BIO.c2.isColor)S.c.copy(BIO.c2);else S.c.set(BIO.c2);S.c.convertSRGBToLinear();return[S.c.r,S.c.g,S.c.b];}
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),c2:opt.c2?new F32():null,k:[],tris:0,label:opt.label||fam,
   uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};   /* a library map (BIO.libSwap) tiles at its own size */
  return BIO.buckets[fam];};
 // THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
@@ -118,8 +127,8 @@ function _col3(c){const S=BIO._scratch();if(c==null)return[1,1,1];if(Array.isArr
 BIO.tri=function(fam,a,b,c,col,n){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.tri: no bucket '+fam);return;}
  let nx,ny,nz;if(n){nx=n[0];ny=n[1];nz=n[2];}else{const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
   nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;}
- const cc=_col3(col);
- [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);});
+ const cc=_col3(col),z2=K.c2?_c2now():null;
+ [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);});
  K.k.push(BIO._lodKey(a[0],a[2]));K.tris++;BIO.tally(1,0,0);};
 BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col);};
 // TUBE along pts [{x,y,z,r,col?}], parallel-transport frames, constant texture
@@ -140,7 +149,7 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
    const cx=Math.cos(ang),sx=Math.sin(ang);const nx=N[q].x*cx+Bn[q].x*sx,ny=N[q].y*cx+Bn[q].y*sx,nz=N[q].z*cx+Bn[q].z*sx;
    ring.push({p:[pts[q].x+nx*rad,pts[q].y+ny*rad,pts[q].z+nz*rad],n:[nx,ny,nz],uv:[s/seg*urep,vAcc/(opt.vscale||sc[1])]});}
   rings.push(ring);}
- const pv=(v,c)=>{K.pos.push(v.p[0],v.p[1],v.p[2]);K.nor.push(v.n[0],v.n[1],v.n[2]);K.uv.push(v.uv[0],v.uv[1]);K.col.push(c[0],c[1],c[2]);};
+ const z2=K.c2?_c2now():null,pv=(v,c)=>{K.pos.push(v.p[0],v.p[1],v.p[2]);K.nor.push(v.n[0],v.n[1],v.n[2]);K.uv.push(v.uv[0],v.uv[1]);K.col.push(c[0],c[1],c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  const cc=_col3(col);let tris=0;
  for(let r2=0;r2<n-1;r2++){const c0=pts[r2].col!=null?_col3(pts[r2].col):cc,c1=pts[r2+1].col!=null?_col3(pts[r2+1].col):cc;
   for(let s2=0;s2<seg;s2++){const a0=rings[r2][s2],a1=rings[r2][s2+1],b0=rings[r2+1][s2],b1=rings[r2+1][s2+1];
@@ -149,18 +158,20 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
   for(let s3=0;s3<seg;s3++){if(e[1]>0)BIO.tri(fam,ctr,ri2[s3].p,ri2[s3+1].p,opt.capCol!=null?opt.capCol:col);else BIO.tri(fam,ctr,ri2[s3+1].p,ri2[s3].p,opt.capCol!=null?opt.capCol:col);}});}
  {const kk=BIO._lodKey(pts[0].x,pts[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // LATHE from rings [{x,y,z,yy,col}], radius rad(ring,ang), ambient-occlusion aof(ring,ang);
-// true surface normals so fluting and buttress fins shade
+// true surface normals so fluting and buttress fins shade.
+// rep: the texture's repeats round the bole, a number, or a function of the ring (rep(ring) -> repeats, 2026-10-26: a bole
+// whose sections change girth keeps its texel size), rounded to a whole number (at least 1) so the wrap stays seamless
 BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.lathe: no bucket '+fam);return 0;}
- const n=rings.length,P=[];
+ const n=rings.length,P=[],repOf=typeof rep==='function'?(r=>Math.max(1,Math.round(rep(r)))):null;
  for(let i=0;i<n;i++){const row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,r=rad(rings[i],a);row.push([rings[i].x+Math.cos(a)*r,rings[i].y,rings[i].z+Math.sin(a)*r]);}P.push(row);}
  const V=[];
- for(let i=0;i<n;i++){const vr=[],lc=_col3(rings[i].col);
+ for(let i=0;i<n;i++){const vr=[],lc=_col3(rings[i].col),rp=repOf?repOf(rings[i]):rep;
   for(let s=0;s<=seg;s++){const s0=s%seg,pa=P[i][(s0+1)%seg],pb=P[i][(s0+seg-1)%seg],pu=P[Math.min(n-1,i+1)][s0],pd=P[Math.max(0,i-1)][s0];
    const ax=pa[0]-pb[0],ay=pa[1]-pb[1],az=pa[2]-pb[2],ux=pu[0]-pd[0],uy=pu[1]-pd[1],uz=pu[2]-pd[2];
    let nx=uy*az-uz*ay,ny=uz*ax-ux*az,nz=ux*ay-uy*ax;const nl=Math.hypot(nx,ny,nz)||1;const ao=aof?aof(rings[i],s0/seg*TAU):1;
-   vr.push({p:P[i][s0],n:[nx/nl,ny/nl,nz/nl],u:s/seg*rep,v:rings[i].yy/vs,c:[lc[0]*ao,lc[1]*ao,lc[2]*ao]});}
+   vr.push({p:P[i][s0],n:[nx/nl,ny/nl,nz/nl],u:s/seg*rp,v:rings[i].yy/vs,c:[lc[0]*ao,lc[1]*ao,lc[2]*ao]});}
   V.push(vr);}
- const pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);};
+ const z2=K.c2?_c2now():null,pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  let tris=0;
  for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a0=V[i][s],a1=V[i][s+1],b0=V[i+1][s],b1=V[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);tris+=2;}
  {const kk=BIO._lodKey(rings[0].x,rings[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
@@ -170,9 +181,9 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
  const nrm=(i,j)=>{const a=P[Math.min(nu,i+1)][j],b=P[Math.max(0,i-1)][j],c=P[i][Math.min(nv,j+1)],d=P[i][Math.max(0,j-1)];
   const ux=a[0]-b[0],uy=a[1]-b[1],uz=a[2]-b[2],vx=c[0]-d[0],vy=c[1]-d[1],vz=c[2]-d[2];
   let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;return[nx/l,ny/l,nz/l];};
- const cc=_col3(col),uS=opt.uS||1,vS=opt.vS||1;let tris=0;
+ const cc=_col3(col),uS=opt.uS||1,vS=opt.vS||1,z2=K.c2?_c2now():null;let tris=0;
  const pv=(i,j)=>{const p=P[i][j],n=nrm(i,j);const c=opt.colFn?_col3(opt.colFn(i/nu,j/nv,p)):cc;
-  K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);};
+  K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  {const kk=BIO._lodKey(P[0][0][0],P[0][0][2]);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
@@ -189,43 +200,166 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 // BIO.LOD holds the runtime LOD's settings (chunk, scale) and, CALLED, returns the detail radii
 // (sedesert-1's BIO.LOD(), the same as BIO.radii()): its fragments, and the worlds that vendored
 // them (Shade), run unchanged.
-BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
-BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
- return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
-function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
- const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
+// THE DRAW-CALL OPTIONS (2026-10-26, core changes B1/B2; each off by default, so a page that sets none bakes the same meshes):
+//   BIO.LOD.merge   true: one mesh per chunk (and minRange) whatever the number of ranges in it. The instances (a bucket's
+//                   triangles) are sorted by range, longest first, and lodTick draws the prefix whose range reaches the
+//                   camera (im.count while it renders, a bucket's draw range): the same instances shown as with one mesh
+//                   per range, in fewer calls. Each mesh's userData.lod gains `ranges` [[range, count]...].
+//   BIO.LOD.minTris with merge: an item (or bucket) whose chunk meshes would average fewer triangles is keyed on a coarser
+//                   grid (2, 4 or 8 chunks a side) so its few triangles take fewer calls; its box grows with it, so it is
+//                   drawn a little further out. Stand-ins (minRange) keep their chunk: meant for small floor items, which
+//                   have none (a coarsened hero overlaps its stand-in near the switch; it never leaves a hole).
+//   BIO.chunk       a pass's own chunk size (metres; null: BIO.LOD.chunk), set like BIO.range: hero sub-chunks near
+//                   the camera, or big chunks for a sparse layer. Its keys carry the size.
+//   BIO.LOD.fade    a fraction (say .15): every chunk mesh dithers out over the last `fade` of its range, and a stand-in
+//                   (minRange) dithers in over the same band, so a chunk cross-fades instead of popping. Applied at bake to
+//                   the chunk meshes' materials (BIO.lodFade below) and to every baked mesh sharing them.
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1,merge:false,minTris:0,fade:0});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.lodMeshes=[];
+BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.chunk==null?BIO.LOD.chunk:BIO.chunk;
+ return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0)+(BIO.chunk==null?'':'|'+C);};
+// a key's parts, {cx, cz, range, minRange, C} (C null: the page's BIO.LOD.chunk at bake); cached, a page has few keys
+const _lodParsed=new Map();
+function _lodParse(key){let p=_lodParsed.get(key);if(p)return p;const a=key.split('|'),c=a[0].split(',');
+ p={cx:+c[0],cz:+c[1],range:+a[1],minRange:+a[2],C:a[3]==null?null:+a[3]};_lodParsed.set(key,p);return p;}
+BIO._lodParse=_lodParse;
+// the mesh group a key bakes into: the key itself (merge off), or its chunk and minRange (merge on), coarsened by f (a
+// stand-in's key, minRange > 0, never is: it must switch on where its hero's chunk switches off)
+function _lodGroup(key,f){if(!key||!BIO.LOD.merge)return key||'';const p=_lodParse(key),C=p.C==null?BIO.LOD.chunk:p.C;if(p.minRange>0)f=1;
+ return Math.floor(p.cx/f)+','+Math.floor(p.cz/f)+'|'+p.minRange+'|'+C*f;}
+// the coarsening factor for one item or bucket: its keys `ks` (one per instance or triangle), `w` triangles each. The first
+// of 2, 4, 8 whose meshes average minTris; failing that the one with the fewest meshes, if it has fewer than 1
+function _lodFactor(ks,w){const M=BIO.LOD.minTris;if(!BIO.LOD.merge||!(M>0))return 1;
+ const count=f=>{const S=new Set();let n=0;for(const k of ks)if(k&&_lodParse(k).minRange===0){S.add(_lodGroup(k,f));n++;}return {g:S.size,n};};
+ const c1=count(1);if(!c1.g||c1.n*w/c1.g>=M)return 1;let best=1,bg=c1.g;
+ for(let f=2;f<=8;f*=2){const c=count(f);if(c.n*w/c.g>=M)return f;if(c.g<bg){bg=c.g;best=f;}}
+ return best;}
+// rows (instance or triangle indices) of one mesh group, sorted by range longest first (stable), with the bounds:
+// {rows, ranges, ends (row counts), chunk, x0..z1, minRange}
+function _lodSort(gkey,rows,keys){if(!BIO.LOD.merge||!gkey)return null;
+ const R=new Map();for(const i of rows){const r=_lodParse(keys[i]).range;let L=R.get(r);if(!L){L=[];R.set(r,L);}L.push(i);}
+ const ranges=[...R.keys()].sort((a,b)=>b-a),out=[],ends=[];for(const r of ranges){for(const i of R.get(r))out.push(i);ends.push(out.length);}
+ const a=gkey.split('|'),c=a[0].split(','),C=+a[2],cx=+c[0],cz=+c[1];
+ return {rows:out,ranges,ends,chunk:a[0],x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,minRange:+a[1]};}
+// e: the mesh's box and its ranges, longest first, with the instance (instanced) or index (bucket) count each ends at
+function _lodEntry(mesh,key,y0,y1,g){const T=BIO.host.THREE;let e;
+ if(g)e={mesh,x0:g.x0,z0:g.z0,x1:g.x1,z1:g.z1,y0,y1,range:g.ranges[0],minRange:g.minRange,ranges:g.ranges,ends:g.ends,tris:g.tris,vEnds:g.vEnds||null,chunk:g.chunk};
+ else{const p=key.split('|'),c=p[0].split(','),C=p[3]==null?BIO.LOD.chunk:+p[3],cx=+c[0],cz=+c[1];
+  e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2],ranges:null,chunk:p[0]};}
+ const C=e.x1-e.x0;
  e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
- BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];mesh.userData.lod={chunk:p[0],range:e.range,minRange:e.minRange};return e;}
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=e.chunk;
+ mesh.userData.lod={chunk:e.chunk,range:e.range,minRange:e.minRange};
+ if(e.ranges){mesh.userData.lod.ranges=e.ranges.map((r,i)=>[r,e.ends[i]-(i?e.ends[i-1]:0)]);if(C!==BIO.LOD.chunk)mesh.userData.lod.size=C;
+  if(e.ranges.length>1)_lodPrefix(mesh);}
+ return e;}
+// a mesh holding several ranges draws a prefix: an InstancedMesh its first _lodN instances while it renders (its count stays
+// whole for everything that reads it: the export, core/tags, the probe), a bucket its draw range
+function _lodPrefix(mesh){mesh.userData._lodN=null;if(!mesh.isInstancedMesh)return;
+ const b0=mesh.onBeforeRender,a0=mesh.onAfterRender,rc=mesh.raycast;let full=0;
+ mesh.onBeforeRender=function(){full=this.count;if(this.userData._lodN!=null)this.count=this.userData._lodN;return b0.apply(this,arguments);};
+ mesh.onAfterRender=function(){this.count=full||this.count;return a0.apply(this,arguments);};
+ mesh.raycast=function(){const n=this.count;if(this.userData._lodN!=null)this.count=this.userData._lodN;try{return rc.apply(this,arguments);}finally{this.count=n;}};}
 let _frus=null,_pm=null;
 BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
  _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
- const P=camera.position,s=BIO.LOD.scale;let shown=0,tris=0;
+ const P=camera.position,s=BIO.LOD.scale,F=_lodU.f.value=BIO.LOD.fade>0?Math.min(.9,BIO.LOD.fade):0;_lodU.s.value=s;let shown=0,tris=0;
  for(const e of BIO.lodMeshes){const dx=Math.max(e.x0-P.x,0,P.x-e.x1),dz=Math.max(e.z0-P.z,0,P.z-e.z1),dy=Math.max(e.y0-P.y,0,P.y-e.y1),d=Math.hypot(dx,dy,dz);
-  const v=d<e.range*s&&d>=e.minRange*s&&_frus.intersectsSphere(e.sphere);e.mesh.visible=v;if(v){shown++;tris+=e.mesh.userData.tris||0;}}
+  const m0=e.minRange*s*(F&&e.fade?1-F:1);   /* a cross-faded stand-in shows from the start of the band */
+  const v=d<e.range*s&&d>=m0&&_frus.intersectsSphere(e.sphere);
+  if(v&&e.ranges&&e.ranges.length>1){let k=0;while(k<e.ranges.length&&d<e.ranges[k]*s)k++;   /* longest first: the first k reach */
+   const m=e.mesh;if(m.isInstancedMesh)m.userData._lodN=e.ends[k-1];else m.geometry.setDrawRange(0,e.ends[k-1]);
+   tris+=e.tris[k-1];}
+  else if(v)tris+=e.mesh.userData.tris||0;
+  e.mesh.visible=v;if(v)shown++;}
  BIO.lodShown={meshes:shown,of:BIO.lodMeshes.length,tris};return BIO.lodShown;};
+
+// ---------------------------------------------------------------- the LOD cross-fade (B2, BIO.LOD.fade)
+// BIO.lodFade(material) wraps a material's onBeforeCompile (after the page's own hook, as WATER.wetGround and ATMOS.snowOn
+// do) with the dither below: the vertex shader measures the camera to the mesh's chunk box (the distance lodTick uses),
+// finds the instance's range from its row (gl_InstanceID; a bucket's gl_VertexID) and passes how far it has faded; the
+// fragment discards by an interleaved-gradient dither of the pixel. A hero discards where the dither is under its fade-out,
+// a stand-in where it is over its fade-in: across the band the two fill complementary pixels. The mesh carries its box and
+// ranges as three per-mesh vec4s (one instanced interleaved buffer: the export skips it). A mesh without them (aLodB.w >= 0,
+// which a missing attribute reads) is drawn as before. BIO.LODFADE_GLSL holds the chunks for a material that wants them in
+// its own shader instead. Returns whether the material takes the fade.
+const _lodU={s:{value:1},f:{value:0}};BIO._lodU=_lodU;
+BIO.LODFADE_GLSL={
+ vertexDecl:['attribute vec4 aLodA;','attribute vec4 aLodB;','attribute vec4 aLodC;','uniform float uLodS;','uniform float uLodF;','varying vec2 vLodK;'].join('\n'),
+ vertexMain:['vLodK = vec2(0.0, 1.0);',
+  'if (uLodF > 0.0 && aLodB.w < 0.0) {',
+  ' vec3 _lc = cameraPosition;',
+  ' float _ldx = max(max(aLodA.x - _lc.x, 0.0), _lc.x - aLodA.z), _ldz = max(max(aLodA.y - _lc.z, 0.0), _lc.z - aLodA.w);',
+  ' float _ldy = max(max(aLodB.x - _lc.y, 0.0), _lc.y - aLodB.y), _ld = length(vec3(_ldx, _ldy, _ldz));',
+  '#if __VERSION__ >= 300',
+  '#ifdef USE_INSTANCING',
+  ' float _lid = float(gl_InstanceID);',
+  '#else',
+  ' float _lid = float(gl_VertexID);',
+  '#endif',
+  '#else',
+  ' float _lid = 0.0;',
+  '#endif',
+  ' float _lr = (_lid < aLodC.x ? -aLodB.w : (_lid < aLodC.z ? aLodC.y : aLodC.w)) * uLodS, _lm = aLodB.z * uLodS;',
+  ' vLodK.x = smoothstep(_lr * (1.0 - uLodF), _lr, _ld);',
+  ' if (_lm > 0.0) vLodK.y = smoothstep(_lm * (1.0 - uLodF), _lm, _ld);',
+  '}'].join('\n'),
+ fragmentDecl:'varying vec2 vLodK;',
+ fragmentMain:'{ float _lh = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))); if (_lh < vLodK.x || _lh >= vLodK.y) discard; }'};
+const _MAIN=/void\s+main\s*\(\s*(void)?\s*\)\s*\{/;
+function _lodInject(src,decl,body){const m=src.match(_MAIN);if(!m)return null;const i=m.index,j=i+m[0].length;return src.slice(0,i)+decl+'\n'+src.slice(i,j)+'\n'+body+'\n'+src.slice(j);}
+BIO._lodInject=_lodInject;
+BIO.lodFade=function(m){if(!m||!m.isMaterial)return false;if(m.userData._lodFade)return true;
+ if(m.isRawShaderMaterial||(m.isShaderMaterial&&m.glslVersion)||m.isPointsMaterial||m.isLineBasicMaterial||m.isSpriteMaterial)return false;
+ const P=BIO.host.THREE.Material.prototype,oh=m.onBeforeCompile,ok=m.customProgramCacheKey,G=BIO.LODFADE_GLSL;
+ m.onBeforeCompile=function(sh,r){if(oh&&oh!==P.onBeforeCompile)oh.call(this,sh,r);
+  const v=_lodInject(sh.vertexShader,G.vertexDecl,G.vertexMain),f=_lodInject(sh.fragmentShader,G.fragmentDecl,G.fragmentMain);
+  if(v&&f){sh.vertexShader=v;sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}};
+ m.customProgramCacheKey=function(){return (ok===P.customProgramCacheKey?String(oh):ok.call(this))+'|lodfade';};
+ m.userData._lodFade=true;m.needsUpdate=true;return true;};
+// the per-mesh vec4s: aLodA box x0 z0 x1 z1; aLodB y0 y1 minRange -range0; aLodC end0 range1 end1 range2 (ends in rows:
+// instances, or a bucket's vertices). e null: a mesh sharing a faded material that is not chunked (aLodB.w 1: drawn as before)
+function _lodAttrs(mesh,e,vEnds){const T=BIO.host.THREE,a=new Float32Array(12),big=1e9;
+ if(e){const R=e.ranges||[e.range],E=vEnds||e.ends||[big],r=i=>Math.min(R[Math.min(i,R.length-1)],big);
+  a.set([e.x0,e.z0,e.x1,e.z1, e.y0,e.y1,e.minRange,-r(0), R.length>1?E[0]:big,r(1),R.length>2?E[1]:big,r(2)]);}
+ else a.set([0,0,0,0, 0,0,0,1, 0,0,0,0]);
+ const buf=new T.InstancedInterleavedBuffer(a,12,Math.max(1,mesh.isInstancedMesh?mesh.count:1)),g=mesh.geometry;
+ g.setAttribute('aLodA',new T.InterleavedBufferAttribute(buf,4,0));g.setAttribute('aLodB',new T.InterleavedBufferAttribute(buf,4,4));g.setAttribute('aLodC',new T.InterleavedBufferAttribute(buf,4,8));}
+// at bake, with BIO.LOD.fade: every new chunk mesh's material is wrapped (a mesh with over three ranges, or too many attribute
+// slots for three more, keeps its hard switch), and every baked mesh sharing a wrapped material gets the attributes
+function _lodFadeBake(){if(!(BIO.LOD.fade>0))return;
+ for(const e of BIO.lodMeshes){if(e.fade!=null)continue;const m=e.mesh,M=m.material;
+  const slots=Object.values(m.geometry.attributes).reduce((s,a)=>s+Math.ceil(a.itemSize/4),0)+(m.isInstancedMesh?5:0);
+  e.fade=!Array.isArray(M)&&slots+3<=16&&(!e.ranges||e.ranges.length<=3)&&BIO.lodFade(M);if(e.fade)_lodAttrs(m,e,e.vEnds);}
+ for(const m of BIO.baked)if(m.material&&m.material.userData&&m.material.userData._lodFade&&m.geometry&&!m.geometry.attributes.aLodA)_lodAttrs(m,null);}
+BIO._lodFadeBake=_lodFadeBake;
 
 // ---------------------------------------------------------------- indexed buckets
 // The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
 // grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
 // distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
 // the same triangles in the same order, so the same pixels, in about a third of the memory.
-function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+function indexedGeo(T,P,N,U,C,C2){const n=P.length/3,W=C2?14:11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
  for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
-  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];if(C2){f[o+11]=C2[i*3];f[o+12]=C2[i*3+1];f[o+13]=C2[i*3+2];}}
  let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
  for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
   h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
   while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
   if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
   idx[i]=j;}
- const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3),c2=C2?new Float32Array(m*3):null;
  for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
-  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];if(c2){c2[j*3]=f[o+11];c2[j*3+1]=f[o+12];c2[j*3+2]=f[o+13];}}
  const g=new T.BufferGeometry();
  g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
- g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));if(c2)g.setAttribute('aC2',new T.BufferAttribute(c2,3));
  g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
 BIO.indexedGeo=indexedGeo;
+// indexed geometries (indexedGeo's) one after another in one: vertices appended, indices offset
+function concatGeo(T,gs){let nv=0,ni=0;for(const g of gs){nv+=g.attributes.position.count;ni+=g.index.count;}
+ const A={position:new Float32Array(nv*3),normal:new Float32Array(nv*3),uv:new Float32Array(nv*2),color:new Float32Array(nv*3)};if(gs.length&&gs[0].attributes.aC2)A.aC2=new Float32Array(nv*3);const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
+ let v=0,i=0;for(const g of gs){for(const k in A)A[k].set(g.attributes[k].array,v*g.attributes[k].itemSize);const X=g.index.array;for(let q=0;q<X.length;q++)I[i+q]=X[q]+v;v+=g.attributes.position.count;i+=X.length;}
+ const g=new T.BufferGeometry();for(const k in A)g.setAttribute(k,new T.BufferAttribute(A[k],k==='uv'?2:3));g.setIndex(new T.BufferAttribute(I,1));return g;}
 
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
@@ -236,10 +370,10 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
  if(BIO.host.tags)for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(R.defs[name].set==null&&R.items[name].count)BIO._tagItem(name,R.defs[name],kn);}   // put before core/tags loaded
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
-  // group the instances by lod key (null: the always-drawn mesh)
-  const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
+  // group the instances by lod key (null: the always-drawn mesh; BIO.LOD.merge: by chunk, each group's rows sorted by range)
+  const f=_lodFactor(it.k,def.tris),G=new Map();for(let i=0;i<it.count;i++){const k=_lodGroup(it.k[i],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
   const base=def.n0||0;   // core/tags: the item set's index of this store's first instance (a second bake continues it)
-  for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
+  for(const [key,idx0] of G){const S=_lodSort(key,idx0,it.k),idx=S?S.rows:idx0,n=idx.length,geo=def.geo.clone();
    const mA=new Float32Array(n*16),cA=new Float32Array(n*3),nA=it.n.length?new Float32Array(n*3):null,c2A=it.c2.length?new Float32Array(n*3):null;let y0=1e9,y1=-1e9;
    const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
    if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
@@ -249,28 +383,39 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
    im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
+   if(it.l){const L=new Uint16Array(n),IL=it.l;idx.forEach((i,j)=>{L[j]=IL[i]||0;});im.userData.instLabels={names:def.labs,idx:L};}   /* BIO.put's extra.label, by row */
    if(def.set){   // core/tags: the mesh names its item set, and which of the set's instances it draws (idx null: in order from base)
-    const ident=G.size===1;let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
+    const ident=G.size===1&&idx.every((v,j)=>v===j);let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
     im.userData.krator=def.set.id;im.krator={set:def.set.id,idx:sx,base};def.parts.push({im,idx:sx,base,n});}
-   if(key)_lodEntry(im,key,y0,y1);
+   if(key)_lodEntry(im,key,y0,y1,S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
   def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
-  const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
-  for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
-   const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
-   const g=indexedGeo(T,P,N,U,Cc);
+  const f=_lodFactor(K.k,1),G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=_lodGroup(K.k[t],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
+  for(const [key,tl0] of G){const S=_lodSort(key,tl0,K.k),tl=S?S.rows:tl0,n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9),C2=K.c2?new Float32Array(n*9):null;let y0=1e9,y1=-1e9;
+   const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a,K2=K.c2?K.c2.a:null;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];if(C2)C2[j*9+q]=K2[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
+   let g;
+   if(S&&S.ranges.length>1){   /* one vertex list per range, in order, so a draw range (and gl_VertexID, for the fade) splits them */
+    const parts=[];let t0=0;S.vEnds=[];S.tris=S.ends.slice();
+    for(const t1 of S.ends){parts.push(indexedGeo(T,P.subarray(t0*9,t1*9),N.subarray(t0*9,t1*9),U.subarray(t0*6,t1*6),Cc.subarray(t0*9,t1*9),C2?C2.subarray(t0*9,t1*9):null));t0=t1;}
+    g=concatGeo(T,parts);let v=0;parts.forEach(q=>{v+=q.attributes.position.count;S.vEnds.push(v);});S.ends=S.tris.map(c=>c*3);}
+   else{g=indexedGeo(T,P,N,U,Cc,C2);if(S){S.tris=[n];S.ends=[n*3];S.vEnds=[g.attributes.position.count];}}
    g.computeBoundingSphere();
    const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
-   if(key)_lodEntry(m,key,y0,y1);
+   if(key)_lodEntry(m,key,y0,y1,S);
    scene.add(m);BIO.baked.push(m);calls++;}
-  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}}
+  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}
+ _lodFadeBake();
  BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
+// a baked mesh's label for one instance (its row: a raycast's instanceId): its own (BIO.put's extra.label) or the item's
+BIO.instLabel=function(m,i){const L=m&&m.userData&&m.userData.instLabels;
+ if(L&&i!=null&&i>=0&&i<L.idx.length)return L.names[L.idx[i]];return m&&m.userData?m.userData.inspectLabel||null:null;};
 
 // ---------------------------------------------------------------- dynamic instances (sedesert-1)
 // A biome's moving things (fauna) are InstancedMeshes it updates itself every
 // frame through BIO.tick; the core makes the mesh, charges it, and adds it to
-// the scene at once (it is not a store, so it needs no bake).
+// the scene at once (it is not a store, so it needs no bake). The mesh names the kit current when it is made
+// (userData.kit, which BIO.export({kit}) filters by; B7, 2026-10-26: a kit need not set it itself).
 BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
  const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);im.userData.kit=BIO.kitName||'';

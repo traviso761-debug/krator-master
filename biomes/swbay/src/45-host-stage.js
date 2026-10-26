@@ -114,6 +114,9 @@ BIO.init({tags:'swbay',THREE:THREE,scene:scene,terrainH:terrainH,
  origin:spine,center:CENTER,
  fields:FIELD,eye:()=>[camera.position.x,camera.position.y,camera.position.z],err:reportErr});
 BIO.setSun([-1200,900,-600]);
+// the runtime LOD's draw-call options (core/biome README, "The runtime LOD"; core change B1/B2, 2026-10-26): one mesh per
+// chunk whatever its ranges, small floor layers on coarser chunks, and a dithered cross-fade over the last 15% of each range
+BIO.LOD.merge=true;BIO.LOD.minTris=1500;BIO.LOD.fade=.15;
 // ---------------------------------------------------------------- the ground
 // One mesh. Painted by zone from a coarse cache of the fields (the fields cost
 // fbm calls; the 1536² canvas would otherwise take seconds), with a tiled

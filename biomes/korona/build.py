@@ -73,7 +73,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the tepui's beds, the stacks (core/terrain/37-core-stacks.js)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim and 36-core-walker: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
@@ -107,6 +107,9 @@ for f in CORE_BIOME:
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+# core/hazard (core/hazard/README.md, "Adopting it"): every trap of danger .3 and over is a hazard record (57's reg;
+# KORONA.HAZARDS), the punji pits on KORONA.pitState; 99 hands the overlay to the host (layers: hazards). A src/ copy wins.
+if '20-core-hazard.js' not in PATH: PATH['20-core-hazard.js']=os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js'))
 CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
 for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))

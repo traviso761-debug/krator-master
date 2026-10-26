@@ -114,6 +114,9 @@ BIO.init({tags:'nwlowlands',THREE:THREE,scene:scene,terrainH:terrainH,
  origin:[-2300,-1650,-1000,-350,300,950,1600,2250].map(s=>xzOf(s,0)),center:[0,0],
  fields:FIELD,err:reportErr});
 BIO.setSun([-1200,900,-600]);
+// the runtime LOD's draw-call options (core/biome README, "The runtime LOD"; core change B1/B2, 2026-10-26): one mesh per
+// chunk whatever its ranges, small floor layers on coarser chunks, and a dithered cross-fade over the last 15% of each range
+BIO.LOD.merge=true;BIO.LOD.minTris=1500;BIO.LOD.fade=.15;
 // ---------------------------------------------------------------- the ground
 // One mesh, painted from a coarse cache of the fields (each costs fbm calls),
 // with a tiled grain texture multiplied in. The red soils of the hills are

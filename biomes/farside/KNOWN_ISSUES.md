@@ -21,8 +21,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **The front is compressed**: the real front is 15 km deep (10 to 25 km from the sea); the page draws its transition
   in 3 km so one view shows the kelp, the dead belt and the native forest together.
 - [ ] **Not in the gallery yet**: a new biome goes in when it first reaches `main` (the main session's merge).
-- [ ] **The ground's dither is a copy** (the owner, 2026-10-26: "ground needs dithering"): `47-host-land.js` carries Korona's
-  hex-cell bomb (`GDITHER`, from `biomes/korona/src/47-host-land.js`) whole. Two biomes now have it: it belongs in core (a
-  `core/materials` or `core/biome` GLSL chunk both take). A core change, not this kit's.
+- [x] **The ground's dither is a copy** (the owner, 2026-10-26: "ground needs dithering"): `47-host-land.js` carried Korona's
+  hex-cell bomb (`GDITHER`, from `biomes/korona/src/47-host-land.js`) whole. Two biomes had it: it belonged in core.
+  Fixed 2026-10-26 (core workstream `foliage`, X4): `core/biome/31-core-dither.js` holds it as `BIO.DITHER` (the same text,
+  character for character: `core/biome/test-foliage.js` holds its SHA-1); `GDITHER` is that string and `build.py` lists the
+  fragment. The core ground shader (R4, `core/terrain`) is to take it over.
 - [ ] **The page holds ~15M triangles** on the kelp coast (budget 16M, Korona's): the review's understorey and 3D coral added
   ~4M. The runtime LOD draws 8 to 12M of them at a view. A lighter far band for the floor would bring it down.

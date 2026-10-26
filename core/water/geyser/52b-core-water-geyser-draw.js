@@ -85,4 +85,34 @@
   geo.setAttribute('position',new T.Float32BufferAttribute(D.pos,3));geo.setAttribute('aS',new T.Float32BufferAttribute(D.aS,4));geo.setAttribute('aK',new T.Float32BufferAttribute(D.aK,1));
   const pts=tag(new T.Points(geo,m),S);pts.frustumCulled=false;pts.userData.probeSkip=true;pts.renderOrder=o.renderOrder==null?4:o.renderOrder;if(o.scene)o.scene.add(pts);
   return{points:pts,material:m,count:D.count};};
+
+ // ---- the PLUME (2026-10-26, W6): WATER.drawPlume(S, o) the steam over a geyser as a SOFT VOLUME: one box (WATER.plumeBox) whose fragment marches
+ // the view ray through it (o.steps, 12) summing the density (plmDensity, twin W.plumeDensity) times a value noise drifting up with the steam, as
+ // thick as the cycle's steam now (stm, the geyser's own GLSL: the roar after the column), lit by the daylight (uLight), fogged. Its front faces,
+ // or its back faces while the camera is inside it, so the column is seen from within. S.plume (WATER.geyser({plume})) or o.plume makes the record;
+ // the export carries it (Godot: a FogVolume over its box). o: as drawGeyser's {THREE, scene, uniforms, fog, renderOrder, onMaterial}, plus
+ // {plume (WATER.plumeOf's options), steps, colour [r, g, b], shade [r, g, b]}. One draw call. -> {mesh, material, record}
+ W.plumeGLSL=P=>{const f=glf;return['float plmSm(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}',
+  'float plmDensity(vec3 p,float s){float h=(p.y-'+f(P.y0)+')*'+f(1/P.height)+';if(h<0.0||h>1.0)return 0.0;vec2 c=vec2('+f(P.x)+'+'+f(P.lean[0])+'*(p.y-'+f(P.y0)+'),'+f(P.z)+'+'+f(P.lean[1])+'*(p.y-'+f(P.y0)+'));'+
+   'float r='+f(P.radius)+'*(0.5+h);float d=length(p.xz-c)/r;return '+f(P.density)+'*s*exp(-2.0*d*d)*plmSm(0.0,0.12,h)*(1.0-plmSm(0.55,1.0,h));}',
+  'float plmH(vec3 p){p=fract(p*0.1031);p+=dot(p,p.zyx+31.32);return fract((p.x+p.y)*p.z);}',
+  'float plmNoise(vec3 p){vec3 i=floor(p);vec3 u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(mix(plmH(i),plmH(i+vec3(1.0,0.0,0.0)),u.x),mix(plmH(i+vec3(0.0,1.0,0.0)),plmH(i+vec3(1.0,1.0,0.0)),u.x),u.y),'+
+   'mix(mix(plmH(i+vec3(0.0,0.0,1.0)),plmH(i+vec3(1.0,0.0,1.0)),u.x),mix(plmH(i+vec3(0.0,1.0,1.0)),plmH(i+vec3(1.0,1.0,1.0)),u.x),u.y),u.z);}'].join('\n');};
+ W.drawPlume=(S,o)=>{o=o||{};const T=TH(o),U=W.thermalUniforms(o);if(!S.plume||o.plume)S.plume=W.plumeOf(S,o.plume);const P=S.plume,B=W.plumeBox(P),N=o.steps==null?12:o.steps;
+  const C=o.colour||[.96,.96,.95],D=o.shade||[.6,.62,.64],f=glf,v3=c=>'vec3('+c.map(f).join(',')+')';
+  const m=fogged(T,o,{transparent:true,depthWrite:false,side:T.FrontSide,uniforms:{uT:U.uT,uLight:U.uLight,uWind:U.uWind,uCyc:{value:new T.Vector4(S.period||60,S.pre,S.dur,S.steam)},uOff:{value:0},uKind:{value:S.styleKind},uSeed:{value:S.wob}},
+   vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;','void main(){vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
+   fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec2 uWind;varying vec3 vWP;',W.geyserGLSL(),W.plumeGLSL(P),
+    'void main(){float s=stm(uT);if(s<=0.001)discard;vec3 ro=cameraPosition;vec3 rd=normalize(vWP-ro);vec3 inv=1.0/rd;',
+    ' vec3 t0=(vec3('+f(B[0])+','+f(B[1])+','+f(B[2])+')-ro)*inv;vec3 t1=(vec3('+f(B[3])+','+f(B[4])+','+f(B[5])+')-ro)*inv;vec3 tn3=min(t0,t1);vec3 tf3=max(t0,t1);',
+    ' float tn=max(max(tn3.x,tn3.y),max(tn3.z,0.0));float tf=min(min(tf3.x,tf3.y),tf3.z);if(tf<=tn)discard;float dt=(tf-tn)/'+f(N)+';float acc=0.0;float lit=0.0;',
+    ' for(int i=0;i<'+N+';i++){vec3 p=ro+rd*(tn+(float(i)+0.5)*dt);vec3 q=p*0.11-vec3(uWind.x,1.6,uWind.y)*uT*0.08;float n=plmNoise(q)*0.6+plmNoise(q*2.3+7.1)*0.4;',
+    '  float dd=plmDensity(p,s)*(1.0-'+f(P.noise)+'+'+f(2*P.noise)+'*n)*dt;acc+=dd;lit+=dd*plmSm('+f(P.y0)+','+f(P.y0+P.height)+',p.y);}',
+    ' float a=1.0-exp(-acc*0.22);if(a<0.003)discard;vec3 c=mix('+v3(D)+','+v3(C)+',clamp(0.45+0.55*lit/max(acc,1.0e-4),0.0,1.0));gl_FragColor=vec4(c*mix(0.3,1.0,uLight),a);','#include <fog_fragment>','}'].join('\n')});
+  Object.defineProperty(m.uniforms.uOff,'value',{get:()=>S.offAt(),set:()=>{}});
+  const g=new T.BoxGeometry(B[3]-B[0],B[4]-B[1],B[5]-B[2]);g.translate((B[0]+B[3])/2,(B[1]+B[4])/2,(B[2]+B[5])/2);
+  const mesh=tag(new T.Mesh(g,m),S);mesh.name+=':plume';mesh.userData.probeSkip=true;mesh.userData.lodSkip=true;mesh.raycast=()=>{};mesh.renderOrder=o.renderOrder==null?5:o.renderOrder;
+  // from inside the box its front faces are behind the camera: draw the back faces then
+  mesh.onBeforeRender=(r,sc,cam)=>{const e=cam.matrixWorld.elements,x=e[12],y=e[13],z=e[14],inside=x>B[0]&&x<B[3]&&y>B[1]&&y<B[4]&&z>B[2]&&z<B[5];m.side=inside?T.BackSide:T.FrontSide;};
+  if(o.scene)o.scene.add(mesh);return{mesh,material:m,record:P};};
 })();

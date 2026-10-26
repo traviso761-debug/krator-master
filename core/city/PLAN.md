@@ -139,3 +139,13 @@ cantons not walkable (Arena, Fortress): not this work's. Ys's placement hash (78
 
 The data side stays engine-neutral (`[G data]`): `core/city` becomes the NPC and quest tool and later the player's
 settlement builder, in Godot too (CLAUDE.md).
+
+## Covered ways (2026-10-25)
+
+The owner asked for a `covered` way kind for the Yeti kit's tunnels (kits/yeti/PLAN.md section 3: half-buried passages
+roofed with removable pycrete slabs on stone ribs, joining a town's doors for warm travel in winter). It is
+`36-city-covered.js` (`KCITY.covered(nodes, o)`: the doors in, the ways and junctions out, as plain records keyed by
+stable ids), with its own test, `test-covered.js`. It is a new file no existing build lists, so Voth's and Verge's pages
+and `golden.json` do not move; it touches nothing in the city-layout work's files. When a city plan on core/city wants
+covered ways (the Khaayken capital), its strategy calls it on the plan's doors and gets `cls: 'covered'` ways beside
+its streets; how they share the occupancy grid with the other ways is that work's call, to settle then.

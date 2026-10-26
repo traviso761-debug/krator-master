@@ -164,6 +164,9 @@ const M=NWOW.MAT={
  cushion:new T3.MeshLambertMaterial({color:0xffffff,map:TX.cushion,vertexColors:false}),
  stone:BIO.solidMat(null),solid:BIO.solidMat(null)};
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps (cards: one cell of a sheet)
+/* the season's cell of a two-season card (the pack names one cell per slot: autumn's; spring and summer take the green row) */
+{const Lp=n=>typeof KMAT!=='undefined'&&KMAT.packed?KMAT.packed('nwouterwall',n):null,warm=SEASON_K==='autumn'||SEASON_K==='winter',row=r=>[0.3333,r/3,0.6667,(r+1)/3];
+ const Lb=Lp('birch');if(Lb&&Lb.cell)Lb.cell=row(warm?1:0);const Lc=Lp('cloud');if(Lc&&Lc.cell)Lc.cell=row(warm?2:0);}
 NWOW.LIB=BIO.libSwap('nwouterwall',M);
 // one texture per cell: KMAT.textures hands back ONE texture per library sheet, so libSwap's offset for the last slot of a sheet
 // won on every slot of it (the three crops all drew goldroot's cell; the larch's gold and green one cell). Each card slot with a
@@ -196,8 +199,8 @@ BIO.def('fireweed',G.tuft(),SEASON_K==='autumn'||SEASON_K==='winter'?M.fireweedf
 BIO.def('cotton',G.tuft(),M.cotton,{label:'Cottongrass'});
 BIO.def('snowball',G.tuft(),M.snowball,{label:'Woolly snowball'});
 BIO.def('heath',G.tuft(),M.heath,{label:'Crowberry and heath'});
-BIO.def('cloud',G.pad(),M.cloud,{label:'Cloudberry leaves'});
-BIO.def('deermoss',G.pad(),M.deer,{label:'Caribou moss'});
+BIO.def('cloud',NWOW.LIB.cloud?G.tuft():G.pad(),M.cloud,{label:'Cloudberry leaves'});  /* the library card is a side view: upright */
+BIO.def('deermoss',NWOW.LIB.deer?G.tuft():G.pad(),M.deer,{label:'Caribou moss'});
 BIO.def('edelweiss',BIO.geo.bloom(),M.edel,{label:'Felt star (edelweiss)'});
 BIO.def('cushion',G.mound(),M.cushion,{label:'Moss cushions'});
 BIO.def('cushionbloom',G.pad(),M.cushionbloom,{label:'Moss campion flowers'});

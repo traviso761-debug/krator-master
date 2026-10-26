@@ -260,13 +260,12 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
    'vec3 tl=pow(texture2D(uLLedge,vGWP.xz*'+GLAY.ledgeK.toFixed(4)+').rgb,vec3(2.2))/'+GLAY.ledgeM.toFixed(4)+';'+
    'bc*=mix(tw,tl,smoothstep(0.55,0.85,vSWN.y));}':'')+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
-  // the dunes' fine sand and the playa rim's pale sand over the painted ground, each on two tiles (one turned) so no grid shows
-  (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));'+
-   'vec3 sd=mix(pow(texture2D(uLDune,p*'+GLAY.duneK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLDune,q*'+(GLAY.duneK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
-   'vec3 rm=mix(pow(texture2D(uLRim,p*'+GLAY.rimK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLRim,q*'+(GLAY.rimK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
-   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*sd*1.35,0.75),vLay.x*(1.0-vRock));'+
-   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*rm*1.35,0.8),vLay.y*(1.0-vRock));}':'')+
-  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the cave: occlusion, steepened (ambient is all the light there)
+  // the dunes' fine sand and the playa rim's pale sand over the painted ground: core/terrain's ground shader puts them here
+  // (KGROUND, 43-core-ground.js, 2026-10-26: hex-tiled, scaled with distance, blended by height; the weights and strengths as before)
+  '/*KGROUND*/'+
+  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};
+KGROUND.hook(MAT_GROUND,{key:'sedesert-ground',layers:GLAY?[KGROUND.layer('sedesert','ground.dune',{w:'vLay.x*(1.0-vRock)',amt:.75,gain:1.35,tint:'diffuse'}),
+ KGROUND.layer('sedesert','ground.rim',{w:'vLay.y*(1.0-vRock)',amt:.8,gain:1.35,tint:'diffuse'})]:[]});   // the cave: occlusion, steepened (ambient is all the light there)
 // The layers above, described once for a port (core/export's EXPORT.groundLayers: a material record with hook 'world-uv',
 // its maps by library reference, the crack weight sampled on the tile's grid; Godot multiplies them in ground.gdshader
 // through godot/shaders/lib/world-uv.gdshaderinc). Not described yet: the strata (vRock) and the cave's occlusion.
@@ -328,6 +327,11 @@ const GROUND=(function(){const t0=performance.now(),N=GRID.N,S=GRID.S,cs=GRID.cs
 // the undercut's rock, put back above the cave: the ground's own material, both sides, with the
 // ground's attributes (uv on the painted map, the paint's rock weight, PA: the Abyss wall is painted, not strata; the
 // cave's walls, floor and ceiling (caveK) are bedded rock, 2026-10-25)
+// THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
+// directions over the ground square (256 texels a side, ~29 m), so at a low sun the buttes, the gorge's walls and the Abyss's rim
+// throw their shadows across the desert and the gorge's floor sees less sky; the carve below takes it with the ground's hook
+const GROUND_HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[-GRID.S/2,-GRID.S/2,GRID.S/2,GRID.S/2],n:256,h:terrainH});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
+KHORIZON.shade(MAT_GROUND,GROUND_HZ);
 const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_CARVE.customProgramCacheKey=()=>'sedesert-carve';
 const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{sun:SUNV,gridNormals:true});   /* gridNormals: the normals from the sampled grid, not from terrainBase (core/terrain 36, 2026-10-25) */
  for(const m of M){const g=m.geometry,P=g.attributes.position,Nr=g.attributes.normal,n=P.count,uv=new Float32Array(n*2),rk=new Float32Array(n);

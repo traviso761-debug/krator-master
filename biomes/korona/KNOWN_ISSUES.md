@@ -42,13 +42,12 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   Available (2026-10-25): `core/atmos/fx/89-atmos-fx-snowcover.js` (`ATMOS.snowCover({base,line,frozen})`, `ATMOS.snowOnScene`) could give the hoar table a light permanent hoarfrost above a line; not adopted, since it changes the look the six pages were judged on and the page has no weather yet. Owner's call.
   Stays open (2026-10-26): the host offers an hour slider only when the sky takes an hour, and the sky is the shared sky
   rollout's (not touched here). The hoar table's snow cover (`stations/hoar/89s-host-snow.js`, 2026-10-25) is kept as is.
-- [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). The key is
-  proposed (`core/tags/PROPOSAL.md`, "A hazard key", 2026-10-19); when it lands, the Throne's CO2 hollows and the
-  natives' punji pits take it too.
-  Stays (2026-10-25): the key is only proposed (`core/tags/PROPOSAL.md`), not built in `core/tags`: a core change.
-  Stays open (2026-10-26): still a core change. Proposed: `core/tags/52-core-tags-vocab.js`, `keys`: `hazard: 'object'`
-  ({kind, danger, how}); then `57`'s `reg` writes `tags.hazard={kind:'trap',danger:trap.danger}` beside `tags.trap`, the
-  punji pit adding `open` from `KORONA.pitState` for the game. The kit is ready for it (one line in `reg`).
+- [x] **The hazard key.** Done 2026-10-26 (core/hazard, branch claude/core-hazard): `core/tags` has the `hazard` key and
+  `57`'s `reg` writes `tags.hazard` beside `tags.trap` for every trap of danger .3 and over (`KORONA.hazardOf`,
+  `KORONA.HAZARDS` in `50`): the punji pits as pits on `KORONA.pitState` (now on the one clock, `KTRAPS.cycle`; hidden while
+  the membrane is whole), the man-eaters, coil tendrils, ground stars, bear traps, snare flowers and trap pads as grabs on
+  their trap's clock, the numb thorn as poison, the sucking pools as drowning. Every page's `hazards` layer shows them; the
+  inspector says their state now. The Throne's CO2 hollows took it too (station 8).
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will. Since 2026-10-19 they are `core/water` still
   records like every pool (`89w-host-water.js`); the open world will make them `WATER.open` surfaces on a shore window.
@@ -72,7 +71,7 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   chocolate to black, half-rotted fibrous plant matter and fine root threads, a few blackened sedge blades pressed flat,
   a faint wet sheen in the hollows and two or three small pools of dark tea-coloured water. No living moss, no rust or
   orange, no sticks thicker than a finger. Average brightness about 12 percent."
-- [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
+- [x] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
   through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
   segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
   than a 180,000-vertex ring fan.
@@ -81,6 +80,10 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   `top:{grid:5}` that draws a top with relief as a square grid (5 m) clipped to the top's outline (the outline's ring
   stitched to the grid's edge cells) in place of the 150-ring by 1,200-segment fan, reading the same top function; the
   export's terrain section takes the same grid. The hoar station then passes `top:{grid:5}` in its `45-host-stage.js`.
+  Fixed (2026-10-26, branch claude/core-terrain): `KSTACKS.mesh` opt.top `{grid:5}` (core/terrain/37-core-stacks.js); the hoar station
+  passes `STAGE.stackTop:{grid:5}`, read by `47-host-land.js`. The top is a 5 m grid clipped to the edge ring, watertight with the wall, and
+  the cells hidden under the bed above are left out: the pavement is 272,031 vertices and 513,488 triangles where the rings were 900,750 and
+  1,788,000 (the page 10.11 M triangles at its views, from 11.39 M; 37 draw calls as before). The export reads the same mesh.
 - [x] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
   cycle); a proper Nepenthes lid (a dome with a spur, veined) wants its own geometry when the plant is redone.
   Stays (2026-10-25): a veined dome with a spur is new geometry for when the plant is redone, a design task.
@@ -130,6 +133,8 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   bomb (`47`, `kdither`: each cell of ~2 tiles turns and shifts the tile by its own hash, three corners blended, at the
   map's scale and at a third of it, mixed by a value noise) under a coarse luminance and hue drift (48 m and 140 m), so
   no repeat can line up and the mottle is no longer one flat field; the walls keep their beds level (`kditherW`).
+  (2026-10-26, X4: the dither's GLSL is core now, `core/biome/31-core-dither.js` `BIO.DITHER`, the same text; `47`'s `DITHER`
+  is that string and `build.py` lists the fragment. Farside took the same copy. The core ground shader, R4, is to take it over.)
   **The trenches' two faces were too alike**: the windward face wears sphagnum (a fourth floor layer, `STAGE.layers.d`)
   over litter pulled green (`STAGE.layerMul`, on the library's colour), the lee pale warm scree; the rainforest climbs
   higher and denser (`jungleQ` .9, the lace fans and great sundews biased up). **The stacks all looked alike**: every

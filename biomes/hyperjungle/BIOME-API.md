@@ -105,3 +105,9 @@ To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({
 ## One tree alone (open worlds)
 
 `HYPERJUNGLE.make(sp,x,y,z,sapling) / grow(T,lv)`: one tree alone (an open world's variants): a hypertree at lv 2/1 (its own detail curve) or 0 (the far impostor), or a sapling. Additive: `build()` never calls them, and the kit builds exactly what it built before (checked by `verify.py --baseline`). `openworld/little-demo/src/84-world-nursery.js` is the user.
+
+## The understorey plants (2026-10-26)
+
+`HYPERJUNGLE.small = {palm, screwpine, treeFern, ginger, aroid, fern, shrub}`, each `(x,y,z,lv)`, wrapped to this kit's registry:
+the floor's understorey plants for a world that plants them in place (biomes/ringisles: the palm and the screwpine in the island
+rainforest). The kit's own floor calls the closure's functions, so its page draws exactly as before.

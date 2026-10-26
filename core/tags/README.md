@@ -113,6 +113,8 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `diet` | free (an animal's: `fish`, `grass`...) |
 | `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
+| `trap` | an object: a carnivorous plant's trap record (`core/biome/37-core-traps.js`) |
+| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
 `yuni` with wealth rich, middle, poor; `sahelian` is `yuni` with `style: 'sahelian'`; `iziz-old` is `iziz`;
@@ -134,7 +136,8 @@ and fails when a copy drifts. A new culture in the catalog is a failing test unt
 order, each left out when empty:
 
 1. the name; else the kind or key; else the class
-2. class · culture · types (else kind, when there is a name) · job · state · setting · wealth · Köppen · harvest · lit · in parent
+2. class · culture · types (else kind, when there is a name) · job · state · setting · wealth · Köppen · harvest · lit ·
+   `hazard: <kind> (<effect>), danger d` · in parent
 3. `w × d m` (or `⌀ d m`), `, h m tall` from 2 m up; then the id (`#n` for an instance)
 4. the note
 
@@ -143,6 +146,11 @@ Gatehouse 1
 building · Iziz · military, infrastructure · intact · lit
 12 × 9 m, 14 m tall · bld_00042
 ```
+
+**The hazard's words and overlay** (53, [web], core/hazard loaded): `KTAGS.hazardNow(rec, t, point)` is the state line
+(`hazard now: on · 100% · 40 s to the next · dose 0.85/s here · paths avoid it`), `KTAGS.hazardAt(x, y, z, t)` the same for
+every hazard at a point, and `KTAGS.hazardLayer()` the host layer that draws each hazard's shape tinted by its kind and
+danger (`core/hazard/README.md`, "The overlay and the inspector").
 
 ## The export
 

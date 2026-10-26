@@ -1,6 +1,6 @@
 {
  "build": "nwouterwall",
- "note": "The nwouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's layers (47-host-land.js): ground.steppe (the feather-grass steppe, tinted by season), ground.needles (the larch's litter), ground.gravel (the valley floor, the scree, the beds), ground.turf (ground.turf.polygon: patterned ground and the tundra), ground.cladonia (caribou moss: the taiga's floor), ground.sphagnum (the alases), ground.lichen (ground.lichen.crust: the fellfield), ice.aufeis (the naled sheets), ice.lake (ice.clear: the high lake frozen), rock.tor (rock.granite.tor). The kit's slots (BIO.libSwap, 50-biome-nwow-species.js), one cell of each nine-plant sheet: card.larch (gold, row 3, for autumn; green, row 1), card.pine.b (its radial tuft, tinted: the stone pine's five-needle bunches), card.seabuckthorn (silverthorn), card.beard (the larch's beard lichen), card.stipa (plumegrass), card.grass.dry (steppe grass), card.pasque (the bloom and the seed head), card.fireweed (the spike and the fluff), card.cottongrass, card.snowball, card.heath (crowberry), card.crop.thule (row 1 sweetvetch, row 2 Eskimo potato, row 3 roseroot: drawn sunk, their roots under the ground), surface.cushion; the barks bark.larch, bark.pine.scale and bark.birch (the silverthorn's grey stems). Procedural still (no card: KNOWN_ISSUES.md): the snow birch, the woolly willow, caribou moss tufts, the felt star, the cloudberry. Run python3 tools/textures/pack.py biomes/nwouterwall after any change, then python3 build.py --all.",
+ "note": "The nwouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's layers (47-host-land.js): ground.steppe (the feather-grass steppe, tinted by season), ground.needles (the larch's litter), ground.gravel (the valley floor, the scree, the beds), ground.turf (ground.turf.polygon: patterned ground and the tundra), ground.cladonia (caribou moss: the taiga's floor), ground.sphagnum (the alases), ground.lichen (ground.lichen.crust: the fellfield), ice.aufeis (the naled sheets), ice.lake (ice.clear: the high lake frozen), rock.tor (rock.granite.tor). The kit's slots (BIO.libSwap, 50-biome-nwow-species.js), one cell of each nine-plant sheet: card.larch (gold, row 3, for autumn; green, row 1), card.pine.b (its radial tuft, tinted: the stone pine's five-needle bunches), card.seabuckthorn (silverthorn), card.beard (the larch's beard lichen), card.stipa (plumegrass), card.grass.dry (steppe grass), card.pasque (the bloom and the seed head), card.fireweed (the spike and the fluff), card.cottongrass, card.snowball, card.heath (crowberry), card.crop.thule (row 1 sweetvetch, row 2 Eskimo potato, row 3 roseroot: drawn sunk, their roots under the ground), surface.cushion; the barks bark.larch, bark.pine.scale and bark.birch (the silverthorn's grey stems). Delivered 2026-10-26: birch (card.birch.dwarf, row 2 autumn / row 1 summer by 50-biome-nwow-species.js), willow (card.willow.woolly), cloud (card.cloudberry, row 3 autumn / row 1 summer, now an upright tuft), deer (card.cladonia, an upright tuft), edel (card.edelweiss). Procedural still: the cushion blooms. Run python3 tools/textures/pack.py biomes/nwouterwall after any change, then python3 build.py --all.",
  "size": 512,
  "families": {
   "ground.steppe": {
@@ -461,6 +461,101 @@
     0.6667,
     0.6667,
     1.0
+   ]
+  },
+  "birch": {
+   "lib": "card.birch.dwarf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "willow": {
+   "lib": "card.willow.woolly",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "cloud": {
+   "lib": "card.cloudberry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.6667,
+    0.6667,
+    1.0
+   ]
+  },
+  "deer": {
+   "lib": "card.cladonia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "edel": {
+   "lib": "card.edelweiss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
    ]
   },
   "cushion": {

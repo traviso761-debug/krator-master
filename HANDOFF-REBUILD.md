@@ -136,12 +136,44 @@ proposed the same height fog, two the same wind field):
 | R8 | One wind field: foliage, grass and water chop read ATMOS's travelling gusts | detail 7, weather 5 | `core/biome/30-core-foliage.js` | 1 noise/vertex |
 | R9 | Wetness and puddles in hollows, rain rings on puddles and water | weather 1+2 | `core/water/51-core-water-kinds.js` | shader only, mask <1 MB |
 | R10 | A rain occlusion map (dry under canopies and roofs; snow and drips read it too) | weather 3 | `core/atmos/89-atmos-4-weather.js` | 1 small depth pass every ~20 m |
+| R13 | Leaves attach to branches by the stem (owner, 2026-10-26): cards pivot at their stem anchor (the library card's `anchor`), a `BIO.leafOn`/`leafAlong` helper places them along a twig with phyllotaxy, droop and sunward bias, an opt-in orientation on the clump/crown builders, then each kit opts in during its rebuild | owner | core/biome (the foliage workstream) | 0 draws; placement moves only where a kit opts in |
 | R11 | The hazard key and `KHAZ` queries, the hazard overlay and inspector, one clock for cyclic hazards, navigation costs in the walk export | hazard 1-4 | `core/tags`, new `core/hazard`, `core/walk` | records only |
 | R12 | Geology provinces baked on the scale model, a cell-hashed node field, river-carried placers and ringed salt basins, a polity scarcity ledger | resources 1-4 | `tools/scale-model/geology.py`, `kits/resources` | offline bake |
 
 R1-R3 and R10 land after the shared sky merges (they read its `air` preset and hook the same materials). R4 and R6 are the
 large ones; R6 fits the LOD rework (core change B1). R11 and R12 add data, not looks: no page should change except where a
 kit registers hazards or nodes.
+
+**4b. From main (d72ba6dba, merged as 3c0ddf35a).** `TODO.md`, "Rebuild the old fungoid flora on `BIO.fung`" (the owner,
+2026-10-26): `core/biome/33-core-fungoid.js` (spec in `biomes/outlands/PLAN.md`) is to be written and the old kits' fungoid
+parts (the hyperjungle's `fungi`, the `stalk` in rift and xanadu, and the rest that TODO lists) switched to it in this rebuild.
+The Yeti kit (Y1-Y4) is in; its section 11 ("the shared culture rebuild") waits on two more kits. The kit workstream's
+impostor fragment is `34-core-impostor.js` so as not to clash.
+
+**4c. The order (the owner, 2026-10-26).** First the new core modules and the infrastructure fixes (the seven workstreams,
+merged with their tests and pilots). Then the biome pages one by one, each taking every old and new core module, its unwired
+textures (the pre-wired sets of the fourth drop) and its ride-alongs. **The test bed is `biomes/nhighlands`** (it exercises
+R1-R10, R13, B1-B5, W1/W2/W4, snow, weather, BIO.fung, the Cut's exchanges). After nhighlands is rebuilt:
+1. **An optimization pass on it**: draw calls and triangles per view against its budget (32M held), the floor bands, shader
+   cost of the new chunks on an integrated GPU, page size and texture memory (the packs, the impostor atlases, the horizon maps).
+2. **A Godot spike of it**: export it (`tools/harness.py export`, core/export's profile) and bring it up in the Godot project
+   (`godot/`, 4.7.2; the importers and shaders the port spike has, `GODOT-PLAN.md`), with MultiMesh for the instanced flora,
+   then measure draw calls, GPU time and memory there.
+3. **Assess ways to cut the graphic load, both engines**: merging textures (a texture array or atlas per bucket: the isle
+   demo's M7 texture arrays are prior art, `settlements/isle-demo/PLAN.md`), material merging so more items share a draw,
+   GPU-compressed textures (KTX2/Basis in three.js, VRAM-compressed imports in Godot), mip and size caps per family, HLOD for the
+   far field, and what the octahedral impostors and the LOD rework already bought. Write the findings and a recommendation
+   before the remaining biomes are rebuilt, so they take the chosen scheme.
+Then, in the owner's order (2026-10-26): **the Throne's vents station** (the test bed for hazards, snow and weather: the hazard
+key and overlay, the cyclic vents and pools, ash and snow weather, wet ground and rain occlusion), **then the NW outer wall**
+(cold-climate snow cover, nhighlands read in place, the Yeti capital once `kits/yeti` is in), **then the rift** (the heaviest
+page: 25.7M held, up to 587 calls; a second measurement of the graphic-load scheme chosen in step 3, to confirm or tune its
+gains), **then the rest** of the built biomes. After them, three planned kits are built as the next core tests (the owner,
+2026-10-26): **the SW highlands** (`biomes/swhighlands/PLAN.md`: BIO.fung in earnest, falls on sloped faces, the rain wall, the
+landslide lake, the pillar-rim tableland, R13; it also unblocks the swbay and swlowlands flora exchanges), **then the
+Godthrone** (`biomes/godthrone/PLAN.md`: height fog and sky thinning to the airless rim, lava and vent hazards, the bloodfalls
+and blood river, the megabreccia crest on the core ground shader), **then Godstep valley** (`biomes/godstep/PLAN.md`: the god's
+stair of lava steps, rilles, colonnades, black sand; the case for a core strata/landform module).
 
 **5. The rebuild.** Rebuild every biome and station (`python3 build.py`; Throne and Korona `--station`), verify each with
 `KRATOR_GL=gpu verify.py --assert --all-views` on the one GPU lock, `python3 tools/check_core_use.py --write-baseline` (it should
