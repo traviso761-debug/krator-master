@@ -40,8 +40,8 @@ const FAR=(function(){const R0=2900,R1=60000,NR=56,NA=320,inSq=(x,z)=>Math.abs(x
  /* the page's fog would hide the town whole at 50 km (exp2): a fixed share of the fog's colour, so it reads as a pale shape on the shore */
  mat.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <fog_fragment>','#ifdef USE_FOG\n gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,0.62);\n#endif');};
  mat.customProgramCacheKey=()=>'bowl-mantis';
- const mm=new THREE.Mesh(mg,mat);{const P=mg.attributes.position;for(let v=0;v<P.count;v++){const x=P.getX(v),z=P.getZ(v),g=farH(x,z)-1;P.setY(v,g+(P.getY(v)-g)*MANTIS.loom);}mg.computeVertexNormals();}
+ const mm=new THREE.Mesh(mg,mat);mm.visible=STATION.mantisFar!==false;{const P=mg.attributes.position;for(let v=0;v<P.count;v++){const x=P.getX(v),z=P.getZ(v),g=farH(x,z)-1;P.setY(v,g+(P.getY(v)-g)*MANTIS.loom);}mg.computeVertexNormals();}
  mm.userData.inspectLabel=MANTIS.name;mm.userData.host=true;mm.userData.probeSkip=true;scene.add(mm);
- REGISTER({name:MANTIS.name,x:MANTIS.x,z:MANTIS.z,y:farH(MANTIS.x,MANTIS.z)-5,r:2000,h:60,far:true});
+ if(STATION.mantisFar!==false)REGISTER({name:MANTIS.name,x:MANTIS.x,z:MANTIS.z,y:farH(MANTIS.x,MANTIS.z)-5,r:2000,h:60,far:true});
  return{mesh:m,mantis:mm,farH};})();
 _mark('far');

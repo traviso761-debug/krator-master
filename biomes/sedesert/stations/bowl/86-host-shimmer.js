@@ -35,7 +35,7 @@ const HEAT=(function(){const U={uScreen:{value:null},uDepth:{value:null},uRes:{v
  const byHour=h=>smooth(7.5,11,h)*smooth(19.5,15,h);
  const _v=new THREE.Vector3();
  const H_={
-  strength:1.6,   /* pixels of offset at full heat on the horizon (the owner may want more or less) */
+  strength:1.6*(STATION.heat==null?1:STATION.heat),   /* pixels of offset at full heat on the horizon (the owner may want more or less) */
   k(){const eye=camera.position,g=terrainH(eye.x,eye.z);return H_.strength*byHour(SKY_CLOCK.hour)*smooth(60,8,eye.y-Math.max(g,LAKE.level));},
   /* the renderer's counters are reset once a frame here (not per render call), so the probe sees the sky, the world and the quad together */
   render(dt){U.uT.value+=dt||.016;const k=H_.k();U.uK.value=k;renderer.info.autoReset=false;renderer.info.reset();

@@ -21,30 +21,11 @@
 //   x < -600             THE KALUTS: the old lake bed raised in the west (30 m), cut by the wind into yardangs along it
 //   the south-east       DUNES downwind of the flat (the wind from the north-north-west), the reg's gravel between
 //   beyond               87-host-far.js: the lake to the horizon, the shore east and west, Mantis, the rim far off
-const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
-// the water colour the kit's species read (50-species: the reed accents): the delta's silty green
-var SEDESERT_WATER={hue:.36};
-const ERRS=document.getElementById('errs');
-function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
-window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
-window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
-{const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
-window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
-const TICKS=[];
-function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}
-function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
-
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
-renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
-// THE LIGHT is the shared sky's (89s-host-sky.js sets the sun, the hemisphere, the fog and the exposure by the hour): these are
-// its starting values. The air is 1.83 atm: thick, hazy, white-hot at noon
-const scene=new THREE.Scene();const HAZE=new THREE.Color(0xe0cdb2);scene.fog=new THREE.FogExp2(HAZE.getHex(),.00012);
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,90000);
-const HEMI=new THREE.HemisphereLight(0xd8dce4,0x8a7058,.6);scene.add(HEMI);
-const sun=new THREE.DirectionalLight(0xfff0d8,1.6);sun.position.set(-900,600,700);scene.add(sun);
-const fill=new THREE.DirectionalLight(0xe0d0c0,.2);fill.position.set(900,300,-900);scene.add(fill);
-
+// The station's layout and its hooks for 46-host-land.js (the channels' grid, the bake, the fields' cache and the binding, shared by
+// the Bowl's stations): STATION (its tags, boxes, lattice and LOD), groundH (the ground before the channels), extraH (what stands on
+// it after them: the kaluts), fieldsAt and FNAMES (the fields), SPINE (the LOD spine).
+const STATION={key:'bowl',tags:'sedesert-bowl',seed:2,chanBox:[-1700,-1800,1900,3550],grid:{N:640,M:2,win:{x:[-1150,1400],z:[-1500,3300]}},
+ lod:{hero:520,mid:1150,far:2600,floor:[340,820]},water:[-1700,-1800,1900,3550],sun:[-900,600,700],mantisFar:true,heat:1};
 // ---------------------------------------------------------------- the layout (data)
 const TERR={R:3000};
 const LAKE={level:-990,name:'The Bowl lake (hypersaline; its surface 990 m under the sea)'};
@@ -113,58 +94,16 @@ const CHAN=(function(){const out=[],A=DELTA.apex;
   pts:line(A,e,110,t=>amp[i]*Math.sin(Math.PI*t)+14*Math.sin(t*Math.PI*6+i*1.7)+6*Math.sin(t*Math.PI*15+i))});});
  return out;})();
 // the channels' water: KRELIEF.river on the ground without them, then the apex's level and the lake's
-(function(){const g=(x,z)=>BASIN.land(x,z,baseH(x,z));
+(function(){const g=groundH;
  CHAN.forEach((C,ci)=>{const R=KRELIEF.river(C.pts,g,{depth:-.45,sample:8});   /* the water 0.45 m under the plain it crosses */C.y=R.map(p=>p.y);});
  const yA=CHAN[0].y[CHAN[0].y.length-1];
  CHAN.forEach((C,ci)=>{for(let k=0;k<C.y.length;k++){let y=C.y[k];if(ci)y=Math.min(y,yA);if(k)y=Math.min(y,C.y[k-1]);C.y[k]=Math.max(y,LAKE.level);}
   /* the mouth: down to the lake's level over its last 120 m */
   const n=C.pts.length;for(let k=n-1;k>=0;k--){const z=C.pts[k][1],u=uOf(C.pts[k][0],z);if(u>120)break;C.y[k]=Math.max(LAKE.level,Math.min(C.y[k],LAKE.level+Math.max(0,u)*.004));}});})();
-// the channels stamped into a grid (4 m): for each cell the nearest channel's u (distance over half-width), its water level
-// and half-width, so the ground, the water and the plants read a channel in one lookup
-const CHG=(function(){const c=4,x0=-1700,z0=-1800,x1=1900,z1=3550,nx=Math.ceil((x1-x0)/c)+1,nz=Math.ceil((z1-z0)/c)+1;
- const U=new Float32Array(nx*nz).fill(99),Y=new Float32Array(nx*nz).fill(LAKE.level),HW=new Float32Array(nx*nz).fill(10),ID=new Uint8Array(nx*nz).fill(255);
- CHAN.forEach((C,ci)=>{const hw=C.w/2,P=C.pts;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],ya=C.y[k],yb=C.y[k+1],rr2=hw*3.2;
-  const i0=Math.max(0,Math.floor((Math.min(a[0],b[0])-rr2-x0)/c)),i1=Math.min(nx-1,Math.ceil((Math.max(a[0],b[0])+rr2-x0)/c)),
-   j0=Math.max(0,Math.floor((Math.min(a[1],b[1])-rr2-z0)/c)),j1=Math.min(nz-1,Math.ceil((Math.max(a[1],b[1])+rr2-z0)/c));
-  const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1;
-  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=x0+i*c,z=z0+j*c,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t),u=d/hw,q=j*nx+i;
-   if(u<U[q]){U[q]=u;Y[q]=ya+(yb-ya)*t;HW[q]=hw;ID[q]=ci;}}}});
- const o={x0,z0,c,nx,nz,U,Y,HW,ID};
- // bilinear u and level at a point; out.id the nearest cell's channel (255: none)
- o.at=function(x,z,out){out=out||{};const fx=(x-x0)/c,fz=(z-z0)/c;if(fx<0||fz<0||fx>=nx-1||fz>=nz-1){out.u=99;out.y=LAKE.level;out.hw=10;out.id=255;return out;}
-  const i=Math.floor(fx),j=Math.floor(fz),s=fx-i,t=fz-j,q=j*nx+i,w0=(1-s)*(1-t),w1=s*(1-t),w2=(1-s)*t,w3=s*t;
-  out.u=U[q]*w0+U[q+1]*w1+U[q+nx]*w2+U[q+nx+1]*w3;out.y=Y[q]*w0+Y[q+1]*w1+Y[q+nx]*w2+Y[q+nx+1]*w3;out.hw=HW[q]*w0+HW[q+1]*w1+HW[q+nx]*w2+HW[q+nx+1]*w3;
-  out.id=ID[s<.5?(t<.5?q:q+nx):(t<.5?q+1:q+nx+1)];return out;};
- return o;})();
-const _ch={};
-// ---------------------------------------------------------------- terrain
-// THE GROUND IS A BAKED FIELD (core/terrain/30-core-field.js), as the kit's: terrainH0 paints it once at load, terrainH and
-// everything that roots or draws reads the field, and BIO.export hands it to Godot. The order: the base, the old lake's
-// strandlines (KBASIN.land: monotone in height, so it makes no hollows), the channels cut into it with their levees, the kaluts.
-function terrainH0(x,z){let h=BASIN.land(x,z,baseH(x,z));
- const C=CHG.at(x,z,_ch);
- if(C.u<2.4){const cut=C.u<1?C.y+.12-CHAN[C.id===255?0:C.id].depth*(1-C.u*C.u):C.y+.12+(h-C.y-.12)*smooth(1,1.7,C.u);
-  h=Math.min(h,cut);const lv=C.u-1.55;h+=.38*Math.exp(-lv*lv/.12)*smooth(-60,40,uOf(x,z));}   /* the levees */
- const yk=yardK(x,z,h);if(yk>0)h+=yk*yardAt(x,z);
- return h;}
-// the ground mesh's lattice: 640 cells over the map (10.3 m), each cell in the delta's window split in two (5.2 m) in x and
-// in z, so the distributaries (12-42 m wide) and their levees are resolved
-const GRID={N:640,S:TERR.R*2.2,M:2,win:{x:[-1150,1400],z:[-1500,3300]}};GRID.cs=GRID.S/GRID.N;
-GRID.cells=(lo,hi)=>{let a0=null,a1=null;for(let i=0;i<GRID.N;i++){const a=-GRID.S/2+i*GRID.cs;if(a+GRID.cs>lo&&a<hi){if(a0===null)a0=a;a1=a+GRID.cs;}}return[a0,a1];};
-function waterAt0(x,z){const u=uOf(x,z);if(u<260){const h=terrainH0(x,z);if(h<LAKE.level+.02||u<0)return LAKE.level;}
- const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:-1e9;}
-const TFIELD=(function(){const t0=performance.now(),S=GRID.S;
- const f=KFIELD.bake(terrainH0,[-S/2,-S/2,S/2,S/2],GRID.cs/2,{name:'sedesert-bowl',
-  water:{lake:(x,z)=>uOf(x,z)<260?LAKE.level:NaN,delta:(x,z)=>{const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:NaN;}},
-  waterBox:{lake:[-S/2,-S/2,S/2,600],delta:[CHG.x0,CHG.z0,CHG.x0+CHG.c*(CHG.nx-1),CHG.z0+CHG.c*(CHG.nz-1)]}});
- window._field={step:f.step,nx:f.nx,nz:f.nz,ms:Math.round(performance.now()-t0)};return f;})();
-_mark('field');
-function terrainH(x,z){return TFIELD.h(x,z);}
-const _tm={x:NaN,z:NaN,h:0};
-function placeH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-// the local water: the lake where the ground is under its level near the shore, a channel's surface inside its banks
-function waterH(x,z){const u=uOf(x,z);if(u<0)return LAKE.level;if(u<260&&terrainH(x,z)<LAKE.level+.02)return LAKE.level;
- const C=CHG.at(x,z,_ch);return C.u<1.08?C.y:-1e9;}
+// the ground before the channels: the base and the old lake's strandlines (KBASIN.land: monotone in height, so it makes no hollows)
+function groundH(x,z){return BASIN.land(x,z,baseH(x,z));}
+// what stands on the ground after the channels are cut: the kaluts
+function extraH(x,z,h){const yk=yardK(x,z,h);return yk>0?yk*yardAt(x,z):0;}
 
 // ---------------------------------------------------------------- the fields (cached below; these are the definitions)
 // The kit's (BIOME-API.md: wet, flow, upland, canyon, rim, rock, dune, oasis, slope, abyss; its zones read them: the delta's
@@ -188,29 +127,6 @@ function fieldsAt(x,z,h,slope){const u=uOf(x,z),C=CHG.at(x,z,_ch),pl=platK(x,z),
  return{wet:Math.max(.05,wet),flow:chan*(1-lake),upland:0,canyon:smooth(4,1.3,C.u)*(C.id===255?0:1)*(1-lake),rim:0,rock,dune:dk,oasis:0,slope,abyss:0,
   lake,shore:smooth(80,0,Math.abs(u))*(1-ridge),flat,salt,delta,halo,reg,yard:yd,damp:clamp(damp,0,1),fan:fk,ridge,strand:_bs.strand*(1-reg)*(1-lake),plat:pl};}
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','lake','shore','flat','salt','delta','halo','reg','yard','damp','fan','ridge','strand','plat'];
-const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
- const cs=S/(N-1);
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,k=j*N+i;
-  const hx=a.h[j*N+Math.min(N-1,i+1)]-a.h[j*N+Math.max(0,i-1)],hz=a.h[Math.min(N-1,j+1)*N+i]-a.h[Math.max(0,j-1)*N+i],slope=clamp(Math.hypot(hx,hz)/(2*cs)*1.6,0,1);
-  const F=fieldsAt(x,z,a.h[k],slope);FNAMES.forEach(n=>a[n][k]=F[n]);}
- const L={x:NaN,z:NaN,k:0,fu:0,fv:0};
- const at=(arr,x,z)=>{if(x!==L.x||z!==L.z){const u=clamp((x/S+.5)*(N-1),0,N-1.001),v=clamp((z/S+.5)*(N-1),0,N-1.001),i=Math.floor(u),j=Math.floor(v);L.x=x;L.z=z;L.k=j*N+i;L.fu=u-i;L.fv=v-j;}
-  const k=L.k,fu=L.fu,fv=L.fv;return arr[k]*(1-fu)*(1-fv)+arr[k+1]*fu*(1-fv)+arr[k+N]*(1-fu)*fv+arr[k+N+1]*fu*fv;};
- return{N,S,a,at};})();
-const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));_mark('fields');
-// a channel at a point, for the passes that want it sharper than the 15.7 m field cache: {u, y, hw, id}
-const chanAt=(x,z)=>CHG.at(x,z,{});
-
-// ---------------------------------------------------------------- the host binding
-const OBSTACLES=[];
 // the LOD spine: along the shore and up the delta, the apex, the kaluts and the halo
 const SPINE=[];for(let x=-2600;x<=2600;x+=650)SPINE.push([x,zS(x)+120]);
 CHAN[0].pts.filter((p,k)=>k%40===0).forEach(p=>SPINE.push([p[0],p[1]]));SPINE.push(DELTA.apex,[-1700,600],[-1500,1500],[900,1700],[-300,1800],[1500,2400]);
-BIO.init({tags:'sedesert-bowl',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:TFIELD,placeH:placeH,
- mask:(x,z)=>{const d=placeH(x,z)-waterAt0(x,z);return d<.12?0:d<.5?(d-.12)/.38:1;},
- obstacles:OBSTACLES,ticks:tick,seed:2,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
- lod:{hero:520,mid:1150,far:2600,floor:[340,820]},
- windows:{water:[-1700,-1800,1900,3550]}});   /* the delta and the shore: the water-bound passes look nowhere else */
-BIO.setSun([-900,600,700]);
-_mark('stage');

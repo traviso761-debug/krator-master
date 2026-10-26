@@ -17,9 +17,9 @@ REGISTER({name:'The dunes downwind of the flat',x:1900,z:2300,y:terrainH(1900,23
 const K=hx=>new THREE.Color(hx);
 const PAINT={SALT:K(0xeee8dc),SALT2:K(0xe2d9c8),EFF:K(0xf6f2ea),SODA:K(0xe0c8b0),OCHRE:K(0xc8945a),OCHRE2:K(0xd8a868),BED:K(0xb89a72),
  MUD:K(0x6e6252),SILT:K(0x8e8270),SILT2:K(0xa49478),REED:K(0x6e7048),SAND:K(0xc8ae88),SAND2:K(0xb89c78),GRAV:K(0x9a7660),GRAV2:K(0x86624e),
- DUNE:K(0xdcae7c),DUNE2:K(0xe8c094),YARD:K(0xd8c4a0),STRAND:K(0xcfc0a4)};
+ DUNE:K(0xdcae7c),DUNE2:K(0xe8c094),YARD:K(0xd8c4a0),STRAND:K(0xcfc0a4),GRASS:K(0x8a8a44),GRASS2:K(0x6e7a3a),LITTER:K(0x5a4a34),SOIL:K(0x6a5038)};
 const _t=new THREE.Color();
-function paintAt(c,x,z,at,n,n2){const sa=at('salt'),de=at('delta'),ha=at('halo'),rg=at('reg'),dm=at('damp'),yd=at('yard'),dn=at('dune'),lk=at('lake'),rd=at('ridge'),fa=at('fan'),fl=at('flow');
+function paintAt(c,x,z,at,n,n2){const sa=at('salt'),lu=at('lush'),fo=at('forest'),ga=at('garden'),de=at('delta'),ha=at('halo'),rg=at('reg'),dm=at('damp'),yd=at('yard'),dn=at('dune'),lk=at('lake'),rd=at('ridge'),fa=at('fan'),fl=at('flow');
  c.copy(PAINT.GRAV).lerp(PAINT.GRAV2,clamp(.5+n*1.8,0,1));                                       /* the reg's gravel */
  _t.copy(PAINT.SAND).lerp(PAINT.SAND2,clamp(.5+n*1.6,0,1));c.lerp(_t,clamp(ha+(1-rg),0,1)*.85);       /* the halo's saline sand */
  _t.copy(PAINT.SALT).lerp(PAINT.SALT2,clamp(.5+n*2,0,1)).lerp(PAINT.SODA,smooth(.55,.7,BIO.fn.fbm(x*.0016,z*.0016,8401,2))*.6);c.lerp(_t,sa);   /* the flat */
@@ -28,12 +28,14 @@ function paintAt(c,x,z,at,n,n2){const sa=at('salt'),de=at('delta'),ha=at('halo')
  c.lerp(PAINT.MUD,Math.max(fl*.9,dm*.55));c.lerp(PAINT.EFF,dm*(1-fl)*smooth(.3,.7,sa)*.45);         /* wet silt, the efflorescence round the hollows */
  _t.copy(PAINT.DUNE).lerp(PAINT.DUNE2,clamp(.5+n*1.5,0,1));c.lerp(_t,dn);
  c.lerp(PAINT.YARD,Math.max(yd*.9,at('plat')*(1-dn)*.65));   /* the old lake silt of the kaluts' plateau, buff */
+ /* a green station's (Mantis's pocket): the savanna's grass, the forest's litter, the gardens' dark worked soil (0 on the Bowl) */
+ _t.copy(PAINT.GRASS).lerp(PAINT.GRASS2,clamp(.5+n*1.8,0,1));c.lerp(_t,lu*.85);c.lerp(PAINT.LITTER,fo*.8);c.lerp(PAINT.SOIL,ga*.75);
  _t.copy(PAINT.OCHRE).lerp(PAINT.OCHRE2,clamp(.5+n*1.8,0,1));c.lerp(_t,Math.max(rd,lk*.85));          /* the ochre rim, and the bed under the shallows */
  return c;}
 const paintTex=(W,x0,z0,S)=>BIO.canvasTex(W,W,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const c=new THREE.Color();
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=x0+(x/w)*S,wz=z0+(y/h)*S;
   const n=BIO.fn.fbm(wx*.03,wz*.03,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5);
-  paintAt(c,wx,wz,k=>FC.at(FC.a[k],wx,wz),n,n2);const k=1+n*.1+n2*.05;
+  paintAt(c,wx,wz,k=>FC.a[k]?FC.at(FC.a[k],wx,wz):0,n,n2);const k=1+n*.1+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -92,7 +94,7 @@ const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;MAT_GROUND.
  const X=axis(GRID.win.x[0],GRID.win.x[1]),Z=axis(GRID.win.z[0],GRID.win.z[1]),nx=X.length,nz=Z.length;
  const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),L0=new Float32Array(nx*nz*4),L1=new Float32Array(nx*nz*4),L2=new Float32Array(nx*nz*2);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=X[i],z=Z[j],y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
-  const at=n=>FC.at(FC.a[n],x,z),sa=at('salt'),de=at('delta'),dm=at('damp'),fl=at('flow'),yd=at('yard'),dn=at('dune'),rd=at('ridge'),lk=at('lake'),ha=at('halo'),fa=at('fan'),sl=at('slope');
+  const at=n=>FC.a[n]?FC.at(FC.a[n],x,z):0,sa=at('salt'),de=at('delta'),dm=at('damp'),fl=at('flow'),yd=at('yard'),dn=at('dune'),rd=at('ridge'),lk=at('lake'),ha=at('halo'),fa=at('fan'),sl=at('slope');
   const crust=sa*(1-de*.55)*(1-lk),wetEdge=Math.max(dm*.7,smooth(LAKE.level+.9,LAKE.level+.15,y)*(1-lk));
   L0[k*4]=crust*(1-wetEdge)*.85;                                   /* the white polygons */
   L0[k*4+1]=Math.max(rd,lk*.8)*.9;                                 /* the ochre rim; the bed under the shallows */

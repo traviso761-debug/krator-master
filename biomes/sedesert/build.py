@@ -119,12 +119,25 @@ if '--station' in sys.argv:
     STN_DIR=os.path.join(HERE,'stations',STATION)
     STN=_json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
     OUT=STN['out']
-    for f in STN.get('drop',[]): PATH.pop(f,None)
-    for f in os.listdir(STN_DIR):
-        if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
-    for f in STN.get('core',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core',f))
-    if STN.get('pack'):
-        VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(STN_DIR,STN['pack'])
+    # "base": another station whose files and settings this one starts from (its own files then replace them by name)
+    CHAIN=[]
+    _d,_s=STN_DIR,STN
+    while True:
+        CHAIN.insert(0,(_d,_s))
+        if not _s.get('base'): break
+        _d=os.path.join(HERE,'stations',_s['base']);_s=_json.load(open(os.path.join(_d,'station.json'),encoding='utf-8'))
+    for _d,_s in CHAIN:
+        for f in _s.get('drop',[]): PATH.pop(f,None)
+        for f in os.listdir(_d):
+            if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(_d,f)
+        for f in _s.get('core',[]): PATH[os.path.basename(f)]=os.path.normpath(os.path.join(HERE,'..','..','core',f))
+        # "kits": other kits' fragments read in place, {slot name on this page: path from this folder} (as the Throne's stations)
+        for slot,p in _s.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
+        if _s.get('pack'):
+            VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(_d,_s['pack'])
+        # "packs": other kits' library packs, {pack name: that kit's folder from this one}
+        for name,p in _s.get('packs',{}).items():
+            VIRTUAL['44-host-matlib-pack.js']=VIRTUAL['44-host-matlib-pack.js']+matlib_pack.fragment(os.path.normpath(os.path.join(HERE,p)),name)
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
