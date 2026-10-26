@@ -37,11 +37,14 @@ MARSH_DRAW.mesh.userData.inspectLabel='The marsh pools';
 const RIVER_Y=(x,z)=>Math.max(.1,terrainH(x,z)+.5);
 const riverLine=(x0,x1,dx,zf,off,wf)=>{const P=[],W=[];for(let x=x0;dx>0?x<=x1:x>=x1;x+=dx){const z=zf(x)+off(x);P.push([x,z,RIVER_Y(x,z)]);W.push(wf(x));}return{P,W};};
 const eastW=x=>38+(2*(13-4*smooth(2000,3400,x))-38)*smooth(2000,2400,x);
-const riverFlow=(name,L,speed)=>WATER.flow({name,pts:L.P,width:L.W,speed});
+// rapids (2026-10-26): the east river's own white-water band on its slope, [.05, .3] in place of core/water's preset [.015, .12], so the
+// lower climb (a 5 to 12 % grade) runs streaked and green and only the steep reaches under the shelf (16 to 27 %) break white: the
+// cataracts read where the ground is steepest. The ground has no step, so there is no WATER.fall (fallsOf finds none at .35).
+const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed},rapids?{rapids}:{}));
 const fanE=s=>x=>s*Math.max(0,(1250-x)/430)*(s>0?150:130);
 const fanW=s=>x=>s*Math.max(0,(x+1250)/430)*(s>0?140:120);
 const RIVERS=[
- riverFlow('The east river',riverLine(3500,800,-30,zE,x=>0,eastW),1.1),
+ riverFlow('The east river',riverLine(3500,800,-30,zE,x=>0,eastW),1.1,[.05,.3]),
  riverFlow('The east river, north channel',riverLine(1250,800,-30,zE,fanE(1),x=>30),.7),
  riverFlow('The east river, south channel',riverLine(1250,800,-30,zE,fanE(-1),x=>30),.7),
  riverFlow('The west river',riverLine(-3700,-800,30,zW,x=>0,x=>38),.9),
@@ -49,3 +52,22 @@ const RIVERS=[
  riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>30),.6)];
 const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3});
  D.mesh.userData.inspectLabel=S.name;return D;});
+// the lily pads and the leaf rafts ride the swell (2026-10-26; they sat still at BIO.waterH + .04 to .08 while the water moved a
+// few centimetres): their material lifts each instance by the trochoids' height at its own centre, on the water's one clock
+// (atmWaveT), times aBob, the damping core/water gives the water there (S.damp: calm over a shallow bed, 0 off the lake and the
+// pools' masks, so a pad on a river reach stays put). The GLSL is written from LAKE_WATER.waves (both surfaces take SWELL),
+// the sum WATER.troD makes for its height; the horizontal orbit (a few cm) is left out. The water palm's rhizome and the
+// hyacinths (the shared 'rosette', 'rod' and 'bloom' items) do not bob.
+{const gf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},WV=LAKE_WATER.waves;
+ const BOB='uniform float atmWaveT;attribute float aBob;\nfloat eaBob(vec2 p){float h=0.0;'+WV.map(w=>'h+=sin(6.283185307*(fract(p.x*'+gf(w.tx)+')+fract(p.y*'+gf(w.tz)+')-fract(atmWaveT*'+gf(w.tc)+'))+'+gf(w.ph)+')*'+gf(w.A)+';').join('')+'return h;}\n';
+ const dampAt=(x,z)=>{for(const S of [LAKE_WATER,MARSH_WATER])if(S.contains(x,z))return S.damp?S.damp(x,z,0):1;return 0;};
+ const done=new Set();
+ scene.traverse(o=>{if(!o.isInstancedMesh||(o.name!=='biome:pad'&&o.name!=='biome:floatleaf'))return;
+  const n=o.count,M=o.instanceMatrix.array,b=new Float32Array(n);for(let i=0;i<n;i++)b[i]=dampAt(M[i*16+12],M[i*16+14]);
+  o.geometry.setAttribute('aBob',new THREE.InstancedBufferAttribute(b,1));
+  const m=o.material;if(done.has(m))return;done.add(m);
+  const prev=m.onBeforeCompile,pk=m.customProgramCacheKey.bind(m);
+  m.onBeforeCompile=(sh,r)=>{if(prev)prev(sh,r);ATMOS.waveUniforms(sh.uniforms);
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+BOB)
+    .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{vec4 eaC=modelMatrix*instanceMatrix[3];transformed.y+=eaBob(eaC.xz)*aBob/max(length(instanceMatrix[1].xyz),1.0e-3);}\n#endif');};
+  m.customProgramCacheKey=()=>pk()+'|eabob';m.needsUpdate=true;});}

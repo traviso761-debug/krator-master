@@ -16,13 +16,25 @@ EASTABYSS.TREES=[];
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'arid' species read flatK (dry ground only), 'humid' ones marshK/jungK.
 const Y=(x,z)=>BIO.terrainH(x,z);
+// The bands are data (EASTABYSS.ZONEBANDS, 2026-10-26: they were literals in zones()): each [a, b] is smooth(a, b, field),
+// so a world whose fields are scaled differently retunes the zones by EASTABYSS.setZoneBands({jung:{up0:[.1,.3]}, ...})
+// before build, without editing this fragment. The defaults are the numbers this host was tuned on.
+const ZB=EASTABYSS.ZONEBANDS={
+ jung:{up0:[.05,.20],up1:[.86,.66],wet:[.45,.7]},
+ sav:{up:[.62,.86]},
+ marsh:{up:[.22,.03],wet:[.5,.8],salt:.7},
+ flat:{wet:[.28,.06],salt:[.3,.7],up:[.15,.03]},
+ shore:{h:[1.6,.4],wet:[.6,.85],up:[.1,.02]}};
+EASTABYSS.setZoneBands=function(o){for(const z in o||{}){if(!ZB[z])continue;for(const k in o[z])if(k in ZB[z])ZB[z][k]=o[z][k];}return ZB;};
+const sb=(b,v)=>smooth(b[0],b[1],v);
 function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z)-BIO.waterH(x,z);   // h: the ground against the local water (0 in this host)
+ const J=ZB.jung,V=ZB.sav,M=ZB.marsh,F=ZB.flat,S=ZB.shore;
  return{up,wet,salt,flow,h,
-  jung:smooth(.05,.20,up)*smooth(.86,.66,up)*smooth(.45,.7,wet),
-  sav:smooth(.62,.86,up),
-  marsh:smooth(.22,.03,up)*smooth(.5,.8,wet)*(1-salt*.7),
-  flat:smooth(.28,.06,wet)*smooth(.3,.7,salt)*smooth(.15,.03,up),
-  shore:smooth(1.6,.4,h)*smooth(.6,.85,wet)*smooth(.1,.02,up)};}
+  jung:sb(J.up0,up)*sb(J.up1,up)*sb(J.wet,wet),
+  sav:sb(V.up,up),
+  marsh:sb(M.up,up)*sb(M.wet,wet)*(1-salt*M.salt),
+  flat:sb(F.wet,wet)*sb(F.salt,salt)*sb(F.up,up),
+  shore:sb(S.h,h)*sb(S.wet,wet)*sb(S.up,up)};}
 EASTABYSS.zones=zones;
 
 // ---------------------------------------------------------------- colour
@@ -51,6 +63,15 @@ function treeGrow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.
  const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;
   pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}
+ return pts;}
+// lift a bough's points (from 1 on) to at least `gap` m over the ground, as a smooth envelope: each point takes the largest
+// lift any point needs, less `g` m per metre along the bough between them, so a lifted reach ramps in instead of kinking
+// point by point (2026-10-26; it was a per-point clamp). No draws from the stream.
+function liftBough(pts,gap,g){g=g==null?.35:g;const n=pts.length,need=[],s=[0];
+ for(let i=1;i<n;i++)s.push(s[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y,pts[i].z-pts[i-1].z));
+ let any=false;for(let i=0;i<n;i++){const d=i?Y(pts[i].x,pts[i].z)+gap-pts[i].y:0;need.push(d>0?d:0);if(d>0)any=true;}
+ if(!any)return pts;
+ for(let i=1;i<n;i++){let L=0;for(let j=1;j<n;j++){const v=need[j]-g*Math.abs(s[i]-s[j]);if(v>L)L=v;}pts[i].y+=L;}
  return pts;}
 const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 
@@ -380,7 +401,7 @@ B[18]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3,l
  for(let k=0;k<nB;k++){const u=mix(.22,.34,rng()),a=a0+k/nB*TAU+rr(-.4,.4),el=rr(.25,.6),len=T.crownR*rr(.75,1.05),r0=clamp(rAt(u)*.5,.3,1.0);
   const o={x:tx+Math.cos(a)*rAt(u)*.6,y:T.y0+H*u,z:tz+Math.sin(a)*rAt(u)*.6},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,.14,6,-.35,.12);   // out, up, then sagging
   let ok=true;for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+2,pts[i].r+2)){ok=false;break;}if(!ok)continue;
-  for(let i=1;i<pts.length;i++){const g=Y(pts[i].x,pts[i].z)+1.2;if(pts[i].y<g)pts[i].y=g;}                                            // a bough never dips into the mud
+  liftBough(pts,1.2);                                                                                                       // a bough never dips into the mud, and bends where it is lifted
   st.limb+=BIO.tube(fam,pts,barkCol(S,1),{seg:lv===2?6:4,cap:true});
   for(let i=2;i<=6;i++){spots.push({p:pts[i],s:len*.16,up:i<5});if(i>2){beards.push(pts[i]);if(rng()<.6)beards.push(pts[i]);}}
   if(lv===2)for(let s=2;s<6;s+=2){const p=pts[s],a2=a+rr(-1.2,1.2),el2=rr(.4,1.0),len2=len*rr(.25,.45);
@@ -427,6 +448,16 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
  const KB=T.sp===0?BIO.bucket('fari'):K;let bt=0;
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
   [A,D,E,A,E,Bq].forEach(p=>{KB.pos.push(p[0],p[1],p[2]);KB.nor.push(p[3],.05,p[4]);KB.uv.push(0,0);KB.col.push(bc.r*sh,bc.g*sh,bc.b*sh);});bt+=2;}
+ // ...and so do its forks (2026-10-26; the impostor had only the bole): a square rod from the bole's top up into each crown
+ // blob, 8 triangles a fork, in the same bucket (no call more). Points from the seed, never rng().
+ if(T.sp===0){const fa0=(T.seed%628)/100,FR=T.crownR,w0=Math.max(.5,T.rb*.4);
+  for(let k=0;k<(cheap?2:3);k++){const a=fa0+k/3*TAU,p0=[T.x,top-1,T.z],p1=[T.x+Math.cos(a)*FR*.42,T.y0+T.H*.92+((k*7)%5)-T.H*.03,T.z+Math.sin(a)*FR*.42];
+   let dx=p1[0]-p0[0],dy=p1[1]-p0[1],dz=p1[2]-p0[2];const dl=Math.hypot(dx,dy,dz)||1;dx/=dl;dy/=dl;dz/=dl;
+   let sx=-dz,sz=dx;const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const ux=dy*sz,uy=dz*sx-dx*sz,uz=-dy*sx;
+   const cs=[[1,1],[-1,1],[-1,-1],[1,-1]],cn=(p,w,c)=>[p[0]+(sx*c[0]+ux*c[1])*w,p[1]+uy*c[1]*w,p[2]+(sz*c[0]+uz*c[1])*w];
+   for(let f=0;f<4;f++){const c0=cs[f],c1=cs[(f+1)%4],nx=sx*(c0[0]+c1[0])+ux*(c0[1]+c1[1]),ny=uy*(c0[1]+c1[1]),nz=sz*(c0[0]+c1[0])+uz*(c0[1]+c1[1]),nl=Math.hypot(nx,ny,nz)||1,sh=.75+.25*Math.max(0,ny/nl);
+    const A=cn(p0,w0,c0),Bq=cn(p0,w0,c1),D=cn(p1,w0*.55,c0),E=cn(p1,w0*.55,c1);
+    [A,E,D,A,Bq,E].forEach(p=>{KB.pos.push(p[0],p[1],p[2]);KB.nor.push(nx/nl,ny/nl,nz/nl);KB.uv.push(0,0);KB.col.push(bc.r*sh,bc.g*sh,bc.b*sh);});bt+=2;}}}
  if(KB!==K){KB.tris+=bt;BIO.tally(bt,0,0);st.far+=bt;}else tris+=bt;
  const L=S.leaf.map(h=>bright(h,.85)),R=T.crownR,a0=(T.seed%628)/100;
  if(T.sp===0||T.sp===1){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.5,T.y0+T.H*.92+((k*7)%5),T.z+Math.sin(a)*R*.5,R*.5,T.H*.06,L[(k+fi)%4],L[2],fi+k);}}
@@ -476,6 +507,22 @@ function farHull(K,x,y0,z,H,R,h,a0,n,c){
 // A little under the far canopy's .85: a small hero's foliage reads darker at range (its cards' gaps, self-shade).
 function hullCols(leafHex,barkHex){const lin=c=>c.convertSRGBToLinear(),leaf=lin(bright(C(leafHex),.72)),under=leaf.clone().multiplyScalar(.6);
  return[barkHex==null?under:lin(C(barkHex)).multiplyScalar(.7),under,leaf,leaf.clone().multiplyScalar(1.05)];}
+// an impostor's crown blob as buildFar draws it: [radius, the blob's underside y]
+function farCrown(T){const R=T.crownR,H=T.H,y=T.y0;
+ if(T.sp===0||T.sp===1)return[R*1.0,y+H*.86];if(T.sp===2)return[R*.75,y+H*.72];if(T.sp===6)return[R*.85,y+H*.68];
+ if(T.sp===14)return[R*.6,y+H*.93-R*.5];if(T.sp===17)return[R*.85,y+H*.40];if(T.sp===18)return[R*.9,y+H*.42];return[R*.9,y+H*.85];}
+// mark (T.cut) the far hulls that would stand in another tree: on any tree's bole (its keep-clear disc, grown by half the
+// hull's crown), under an impostor's blob (inside .7 of its radius, the hull's top above the blob's underside), or on a
+// hull kept before it (closer than .6 of their crowns' sum). core/space (KSPACE) holds the trees; returns the count cut.
+function cullHulls(TREES){if(typeof KSPACE==='undefined')return 0;
+ const boles=KSPACE.create({cell:60}),crowns=KSPACE.create({cell:60}),hulls=KSPACE.create({cell:60});let cut=0;
+ TREES.forEach(T=>{if(T.small)return;boles.insert(T,T.x,T.z,T.rb*1.4+1);if(T.lv===0){const c=farCrown(T);crowns.insert({x:T.x,z:T.z,r:c[0]*.7,y:c[1]},T.x,T.z,c[0]*.7);}});
+
+ TREES.forEach(T=>{if(!T.small)return;const hr=T.crownR*.5,top=T.y0+T.H;
+  if(boles.some(T.x,T.z,hr,o=>Math.hypot(T.x-o.x,T.z-o.z)<o.rb*1.4+1+hr)||crowns.some(T.x,T.z,0,c=>top>c.y&&Math.hypot(T.x-c.x,T.z-c.z)<c.r)||
+     hulls.some(T.x,T.z,T.crownR,o=>Math.hypot(T.x-o.x,T.z-o.z)<.6*(T.crownR+o.crownR))){T.cut=true;cut++;return;}
+  hulls.insert(T,T.x,T.z,T.crownR);});
+ return cut;}
 function buildFarSmall(T,st){const S=SP[T.sp],h=FARHAB[T.sp]||[.4,.6,.75,.8,1,0],sd=T.seed;
  const tris=farHull(BIO.bucket('far'),T.x,T.y0,T.z,T.H,T.crownR,h,(sd%628)/100,BIO.lodD(T.x,T.z)>2200?3:5,
   hullCols(S.leaf[sd%S.leaf.length],h[5]?S.bark[sd%S.bark.length]:null));
@@ -505,9 +552,14 @@ EASTABYSS.buildTrees=function(R,q){
  EASTABYSS.PASSES.forEach(P=>{if(!P.stand){pass(P.sp,P.cell,P.accept,P.opt);return;}
   let n=0;BIO.grid(P.cell,0,R,(x,z)=>{const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
    const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
+ // the far hulls keep clear (2026-10-26): they take no keep-clear entry while the passes run (so the near field places as
+ // before), and here, after every pass, a hull that stands on a later tree's bole, under an impostor's crown blob or on
+ // an earlier hull is dropped. No draws from the stream; the trees keep their indices (buildFar's colour reads them).
+ st.hullsCut=cullHulls(TREES);
  // build
- TREES.forEach((T,i)=>{if(T.lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
- return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,knees:st.knees,ropes:st.ropes,lianas:st.lianas,
+ TREES.forEach((T,i)=>{if(T.cut)return;if(T.lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ for(let i=0,j=0;i<=TREES.length;i++){if(i===TREES.length){TREES.length=j;break;}if(!TREES[i].cut)TREES[j++]=TREES[i];}
+ return{trees:TREES.length,heroes:st.heroes,far:st.fars,hullsCut:st.hullsCut,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,knees:st.knees,ropes:st.ropes,lianas:st.lianas,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,farSmall:st.farSmall,small:st.sapTris}};};
 // ---------------------------------------------------------------- the reed beds
 // The mat reed grows in pure beds, not as scattered tufts: a bed is a disc of
@@ -515,9 +567,10 @@ EASTABYSS.buildTrees=function(R,q){
 // jittered ~1.25 m spacing, all of a height. Run after the trees (a bed keeps
 // out of a trunk, not the other way round). Every bed is exported in
 // EASTABYSS.REEDBEDS ({x,z,r,n,depth}) and registered, so a world can put a
-// reed-cutters' camp, a drying rack or a reed-boat slip on the bank of one.
+// reed-cutters' camp, a drying rack or a reed-boat slip on the bank of one. EASTABYSS.build({reedBeds:'none'})
+// registers none (2026-10-26): the near beds were a few hundred volumes, too many for a world that registers its own.
 EASTABYSS.REEDBEDS=[];
-EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
+EASTABYSS.buildReedBeds=function(R,q,reg){reseed(570011);q=q==null?1:q;R=R||3000;reg=reg==null?'each':reg;let regd=0;
  const S=SP.find(s=>s.key==='matreed');if(!S)return{beds:0,stems:0};const BEDS=EASTABYSS.REEDBEDS;BEDS.length=0;let stems=0;
  const spacing=S.bed.spacing,hc=S.leaf;let far=0;
  // past 1.9 km a bed is one far hull (farHull, a low drum in the bed's colour) in the 'far' bucket: sized
@@ -536,9 +589,10 @@ EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
     const h=nH*rr(.9,1.08)*(lv===0?1.35:1),w=h*(lv===2?.42:.6);
     BIO.put('matreed',[x,Math.max(y,wl-.05)-.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[w,h,w],bright(vary(bedCol,.015,.05,.04),1.3));n++;dsum+=Math.max(0,-dy);}
    if(!n)return;stems+=n;const bed={x:cx,z:cz,r:Rb,n:n,depth:dsum/n,h:nH};BEDS.push(bed);
-   if(lv===2&&typeof REGISTER==='function')REGISTER({name:'Mat-reed bed',kind:'stand',label:S.name,x:cx,z:cz,y:-1,r:Rb,h:nH+1});},
+   if(reg==='each'&&lv===2&&typeof REGISTER==='function'){REGISTER({name:'Mat-reed bed',kind:'stand',label:S.name,x:cx,z:cz,y:-1,r:Rb,h:nH+1});regd++;}},
   {patch:.6,patchScale:.012,noMask:true,pad:.5});
- return{beds:BEDS.length,stems:stems,farBeds:far};};
+ // reg 'none': no volume per bed (EASTABYSS.REEDBEDS only, for a world that registers its own structures densely)
+ return{beds:BEDS.length,stems:stems,farBeds:far,bedsRegistered:regd};};
 EASTABYSS._canopyH=function(x,z){let h=0;for(const T of EASTABYSS.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 
 // ---------------------------------------------------------------- the passes (data: species, cell, acceptance from the zones, options)
@@ -557,22 +611,25 @@ EASTABYSS.PASSES=[
  {sp:5,cell:20,accept:(Z)=>(Z.jung+Z.marsh)*(Z.flow*.7+.05)*.8,opt:{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5}},
  // the marsh: knee-trees (the lusher the wetter -- deltas and the west), stilt-woods at the water, palmettos throughout
  {sp:6,cell:52,accept:(Z)=>Z.marsh*smooth(.70,.96,Z.wet)*.56+Z.marsh*Z.flow*.3,opt:{hero:950,mid:1800,far:true,pad:5,patch:.45,patchScale:.006}},
- {sp:7,cell:36,accept:(Z)=>Z.shore*.32+Z.marsh*Z.flow*.22,opt:{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true}},
+ {sp:7,cell:36,accept:(Z)=>Z.shore*.32*(.6+.6*Z.salt)+Z.marsh*Z.flow*.22,opt:{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true}},
  {sp:8,cell:40,accept:(Z)=>Z.marsh*(.2+.25*smooth(.85,.96,Z.wet))+Z.jung*.2*(1-Z.up)+Z.sav*.05+Z.shore*.2,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
  // the savannah: umbrella trees thinning with height; the flats: jade shrubs along the river only
  {sp:9,cell:34,accept:(Z)=>Z.sav*(1-smooth(.75,1,Z.up)*.75)*.8,opt:{hero:1000,mid:1800,far:true,pad:3,patch:.5}},
  {sp:10,cell:13,accept:(Z)=>Z.flat*Z.flow*.85,opt:{hero:1000,mid:1500,far:false,pad:1,lodK:.4,patch:.4}},
  // the new Devonian set: tide lycopsids in the shallows and the deltas, Calamophyton on the arid river banks, Sanfordacaulis where it is wet
- {sp:11,cell:30,accept:(Z)=>Z.shore*.5+Z.marsh*Z.flow*.3,opt:{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true}},
+ {sp:11,cell:30,accept:(Z)=>Z.shore*.5*(.6+.6*Z.salt)+Z.marsh*Z.flow*.3,opt:{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true}},
  {sp:12,cell:14,accept:(Z)=>Z.flat*Z.flow*.75+Z.sav*Z.flow*.5,opt:{hero:1000,mid:1600,far:false,pad:1.5,lodK:.5,patch:.4}},
- {sp:13,cell:30,accept:(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ {sp:13,cell:30,accept:(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15*(1-.7*Z.salt),opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ // the shore species read the salt field (2026-10-26; they read only terrainH and wet): the lake's brackish rim (salt ~.9)
+ // takes the stilt-woods and the tide lycopsids, the fresh banks of the pools and rivers the water palms, Sanfordacaulis
+ // and the cordaites; Z.shore*k*(.6+.6*salt) for the salt-tolerant, Z.shore*k*(1-c*salt) for the fresh
  // the coal-swamp set: seal-trees in the wet marsh and the lower jungle, cordaites at the shore and up the rivers,
  // seed ferns under the canopy, rope araucarias on the upper slope, beard oaks on the marsh hummocks, water palms in the shallows
  {sp:14,cell:36,accept:(Z,x,z)=>Z.marsh*smooth(.75,.95,Z.wet)*.22*(1-hummock(x,z)*.7)+Z.jung*.2*(1-Z.up)+Z.jung*Z.flow*.2+Z.shore*.1,opt:{hero:950,mid:1700,far:true,pad:3,patch:.5,patchScale:.007}},
- {sp:15,cell:42,accept:(Z)=>Z.shore*.32+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006}},
+ {sp:15,cell:42,accept:(Z)=>Z.shore*.32*(1-.35*Z.salt)+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006}},
  {sp:16,cell:26,accept:(Z)=>Z.jung*.42+Z.marsh*.12*smooth(.7,.95,Z.wet)+Z.jung*Z.flow*.2,opt:{hero:850,mid:1400,far:false,pad:2,lodK:.6}},
  {sp:18,cell:62,accept:(Z,x,z)=>Z.marsh*.7*hummock(x,z)+Z.shore*.06*(1-Z.flow)*(1-Z.salt),opt:{hero:950,mid:1700,far:true,pad:7,patch:.45,patchScale:.005}},
- {sp:19,cell:28,accept:(Z)=>Z.shore*.34+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,opt:{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true}},
+ {sp:19,cell:28,accept:(Z)=>Z.shore*.34*(1-.75*Z.salt)+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,opt:{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true}},
 ];
 
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
