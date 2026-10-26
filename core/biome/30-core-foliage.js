@@ -193,7 +193,7 @@ BIO.geo.trunk=function(n){const T=BIO.host.THREE;return new T.CylinderGeometry(.
 //   backlit 0..1, a leaf's thinness: the sun seen through it brightens it (DETAIL-RESEARCH item 6; nearer than ~450 m)
 BIO.foliageHook=function(o){o=o||{};
  return function(sh){const mat=this&&this.isMaterial?this:null;
-  const gs=BIO.GUST,sp=o.spin?(o.spin.value!==undefined?o.spin:BIO.SPIN):null,gt=o.ground?(o.ground===true?{}:o.ground):null,bl=+o.backlit||0;
+  const gs=BIO.GUST,sp=o.spin?(o.spin.value!==undefined?o.spin:BIO.SPIN):null,gt=o.ground?(o.ground===true?{}:o.ground):null,bl=o.backlit==null?0:+o.backlit;
   const a2c=!!(mat&&mat.alphaToCoverage&&mat.userData.a2cCut!=null);
   sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;
   if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);

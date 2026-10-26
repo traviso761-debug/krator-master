@@ -49,7 +49,7 @@ BIO.leafStem=function(src){const D=[.5,.96];if(src==null)return D.slice();
  if(a==='top')return[.5,.04];   /* a hanging card: the subject hangs from the top of its frame */
  return D.slice();};
 // ---------------------------------------------------------------- stem-pivoted geometry
-function card(pos,uv,nor,o,rot){const st=BIO.leafStem(o.stem),w=o.w==null?1:+o.w,h=o.h==null?1:+o.h,bend=+o.bend||0,ns=bend?Math.max(2,o.seg|0||3):1,flip=!!o.flipY;
+function card(pos,uv,nor,o,rot){const st=BIO.leafStem(o.stem),w=o.w==null?1:+o.w,h=o.h==null?1:+o.h,bend=+o.bend||0,ns=bend?Math.max(2,o.seg==null?3:o.seg|0):1,flip=!!o.flipY;
  const ca=Math.cos(rot.fan),sa=Math.sin(rot.fan),cc=Math.cos(rot.cup),sc=Math.sin(rot.cup);
  const P=(x,y)=>{const yy=y,z=bend*h*Math.pow(Math.max(0,yy)/h,2);   /* the curl toward the face, from the stem out */
   const x1=x*ca-yy*sa,y1=x*sa+yy*ca,z1=z;return[x1,y1*cc-z1*sc,y1*sc+z1*cc];};
@@ -67,7 +67,7 @@ const GOLDEN=137.5*Math.PI/180;
 function azimuth(i,o){const ph=o.phyl||'spiral';
  if(ph==='alternate')return i*Math.PI;
  if(ph==='opposite')return Math.floor(i/2)*Math.PI/2+(i%2)*Math.PI;
- if(ph==='whorl'){const m=Math.max(2,o.whorl|0||3);return Math.floor(i/m)*Math.PI/m+(i%m)*2*Math.PI/m;}
+ if(ph==='whorl'){const m=Math.max(2,o.whorl==null?3:o.whorl|0);return Math.floor(i/m)*Math.PI/m+(i%m)*2*Math.PI/m;}
  return i*GOLDEN;}
 BIO.leafOn=function(seg,t,o){o=o||{};const A=v3(seg.a||seg[0]),B=v3(seg.b||seg[1]),i=o.i|0,seed=o.seed==null?1:o.seed,salt=o.salt|0;
  t=Math.min(1,Math.max(0,t==null?1:+t));const d=norm(sub(B,A)),p=add(A,mul(sub(B,A),t));
@@ -86,7 +86,7 @@ BIO.leafOn=function(seg,t,o){o=o||{};const A=v3(seg.a||seg[0]),B=v3(seg.b||seg[1
  const q=o.axis==='x'?quatOf(dir,n,cross(dir,n)):quatOf(cross(dir,n),dir,n);
  return{p,q,dir,n,i};};
 BIO.leafAlong=function(seg,n,o){o=o||{};const out=[],t0=o.t0==null?.15:+o.t0,t1=o.t1==null?1:+o.t1,ph=o.phyl||'spiral';
- const per=ph==='opposite'?2:ph==='whorl'?Math.max(2,o.whorl|0||3):1,nodes=Math.ceil(n/per),i0=o.i0|0;
+ const per=ph==='opposite'?2:ph==='whorl'?Math.max(2,o.whorl==null?3:o.whorl|0):1,nodes=Math.ceil(n/per),i0=o.i0|0;
  for(let k=0;k<n;k++){const node=Math.floor(k/per),t=nodes===1?t1:t0+(t1-t0)*node/(nodes-1);out.push(BIO.leafOn(seg,t,Object.assign({},o,{i:i0+k})));}
  return out;};
 BIO.leafQ=function(r){const T=BIO.host.THREE;return new T.Quaternion(r.q[0],r.q[1],r.q[2],r.q[3]);};
