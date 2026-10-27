@@ -38,6 +38,35 @@ named state functions port with it: `KTRAPS.state` (a trap's four phases on its 
 checks itself against the page: `KHAZ.state` sampled at fixed t for a few records, the way `godot/krator/water.gd` checks
 its probes.
 
+## The 2026-10-26 fields
+
+- `radiant`: a second, wider `Area3D` (the shape grown by `reach`). Its dose follows `KHazard.dose` (heat by distance,
+  `(1 - d/reach)^2`), and the inner Area's harm wins where it is greater.
+- `cycle.base`: `k = base + (1 - base) * k` on the same clock. `monitoring` stays on while `base > 0`.
+- `soak`: the walker's `HazardStatus` keeps the seconds inside per record (`KHAZ.exposure`'s rule: plus dt inside, minus
+  dt x full/out outside) and scales the dose by `from + (1 - from) x min(1, tIn/full)`.
+- `fire` (`stateFn` `KFIRE.run`): the record's `front` (`N, cs, x0, z0`, the cells and their arrivals) is the fire, with no
+  rerun needed. A cell burns from `lit + arrive` for `burn` s, smoulders at `smoulderK` for `smoulder` s, and is then out.
+  The Area3D covers the box. Its state and its radiant heat are read per point from the front, as `KHAZ.state(rec, t, s,
+  x, z)` does. `kfire.gd`'s `run` can make the same front from the history, when the port runs fires itself.
+- `effects` (the made trap): one build-up meter per effect on the walker's `HazardStatus`, each fed by its own dose. A
+  `trigger` is `body_entered` (a `beam`: a thin `Area3D` or a `RayCast3D` along the beam) calling `KHazard.trip`, which
+  keeps the last trip time per record; `resetting` and `disarmed` turn `monitoring` off.
+- `hunter` (a predator's place): an Area3D as any record, plus a link to the fauna it names. The AI of those fauna treats
+  the area as home ground: it waits or patrols there, and walkers who enter get the hunter's attention.
+- `time` (a time field): an Area3D as any record. Each body inside it runs its own clock: its physics step, its
+  AnimationPlayer's `speed_scale` and its particles' `speed_scale` take `KHazard.time_scale(pos, t)`, the product of the
+  fields' log-eased scales. It is not `Engine.time_scale`, which is global.
+- `ambient` (no node): the walker's `HazardStatus` samples the port's own fields (pressure from the atmos port by
+  height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
+  `KHAZ.ambient` does; a row with `times` multiplies its second field's ramp (acid rain: pH x rain from the weather
+  port, 0 under a roof by a ray up). Gear is a guard per kind. Sight (`KHazard.sight`, from the dust and ash loads by
+  `dustSight`, or a visibility field) sets the camera's fog distance and the NPCs' perception range; `KHazard.aim`
+  (the contrast left, by `sightContrast`) scales a to-hit or detection roll, as on the page.
+- `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
+  `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
+  as `KHAZ.tabooOk` does on the page.
+
 ## Navigation: NavigationRegion3D
 
 Each zone of `krator-walk`'s `zones` (or each `registry.hazards` record's `hazard.nav`):

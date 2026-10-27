@@ -114,7 +114,8 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
 | `trap` | an object: a carnivorous plant's trap record (`core/biome/37-core-traps.js`) |
-| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
+| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap time), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
+| `taboo` | an object (2026-10-26, the Outlands' C6): an area a people will not build in, `{of: null (every people) \| [culture...], why, shape}`. A record is of a people by `tags.faction`, else `tags.culture`. Placement asks `KHAZ.forbids` / `KHAZ.tabooOk` (`core/hazard/README.md`, "Adopting it" step 5) |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
 `yuni` with wealth rich, middle, poor; `sahelian` is `yuni` with `style: 'sahelian'`; `iziz-old` is `iziz`;
@@ -137,7 +138,7 @@ order, each left out when empty:
 
 1. the name; else the kind or key; else the class
 2. class · culture · types (else kind, when there is a name) · job · state · setting · wealth · Köppen · harvest · lit ·
-   `hazard: <kind> (<effect>), danger d` · in parent
+   `hazard: <kind> (<effect>), danger d` · `taboo to <peoples>` · in parent
 3. `w × d m` (or `⌀ d m`), `, h m tall` from 2 m up; then the id (`#n` for an instance)
 4. the note
 
@@ -185,3 +186,14 @@ fragment names in `DETERMINISTIC`; a biome kit: `CORE_TAGS`). `godot/tools/expor
 `KTAGS.page` as `tags.json`. Every export node now names its record where one exists: a biome item its set and a uid
 per instance, a bucket the volumes it merges (`BIO.export`), a glTF node its record in its extras and a MultiMesh a
 `krator_records` side table (`godot/tools/spike_export.js`); the Godot importers put them on node metadata.
+
+## Adopting it: the hazard and taboo keys
+
+A page that already takes core/tags has the keys: the vocabulary (52) carries them, and its records may carry them.
+- **A hazard**: `tags: {hazard: {kind}}` on a record (the kinds and what each fills: `VOCAB.hazardKinds`). For the state,
+  the dose, the overlay and the export, take core/hazard (`core/hazard/README.md`, "Adopting it").
+- **A taboo**: `tags: {taboo: {of: null | [culture...], why}}` on the area's record, registered before anything of a people
+  is placed. The label says `taboo to <peoples>`. The placement check is core/hazard's: `KHAZ.tabooOk(culture)` for
+  core/city's `rules.groundOk` or a scatter's `accept`, and `KHAZ.tabooAudit()` in verify.
+- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (c05a017e with
+  lava, fire, luck, trap, time, taboo, the ambient rows, acid rain and the dust storms). Rewrite it with a note of what moved it.

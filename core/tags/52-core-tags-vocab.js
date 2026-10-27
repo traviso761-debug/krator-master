@@ -117,7 +117,10 @@
      // what can hurt a walker (biomes/HAZARD-RESEARCH.md; PROPOSAL.md, "A hazard key"; 2026-10-26): the record core/hazard's
      // KHAZ reads ({kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}); its
      // kind is one of hazardKinds, whose row fills what the record leaves out
-     hazard: 'object' },
+     hazard: 'object',
+     // a place a people will not build in (biomes/outlands/PLAN.md C6, 2026-10-26): {of: null (every people) | [culture...],
+     // why, shape (as a hazard's)}; KHAZ.forbids asks it, core/city's rules.groundOk and a scatter's accept take KHAZ.tabooOk
+     taboo: 'object' },
    // the hazard kinds and their defaults (core/hazard/20-core-hazard.js KHAZ.make fills a record from its row). danger 0..1
    // as the traps use it (.3 hurts, .7 holds a person, 1 kills); dose: effect units a second at the core (a build-up meter
    // fills at it); falloff from the core to the shape's edge; nav in Godot's NavigationRegion3D terms: travel (a cost
@@ -137,12 +140,54 @@
      sink:   { effect: 'hold',      danger: .5, dose: 0,  falloff: 'linear', nav: { travel: 6, enter: 5, avoid: false },  tell: { colour: '#806040', fx: 'bubbles', sound: 'suck' } },
      slip:   { effect: null,        danger: .2, dose: 0,  falloff: 'none',   nav: { travel: 2, enter: 0, avoid: false },  tell: { colour: '#d0e8f0', fx: 'sheen', sound: null } },
      crush:  { effect: 'bleed',     danger: 1,  dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#808080', fx: 'dust', sound: 'creak' } },
-     hunter: { effect: 'bleed',     danger: .9, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c00000', fx: 'ripple', sound: null } }
+     hunter: { effect: 'bleed',     danger: .9, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c00000', fx: 'ripple', sound: null } },
+     // 2026-10-26: the Godthrone's lava (biomes/godthrone/PLAN.md), the live fire (core/biome KFIRE.run) and the Outlands'
+     // luck (biomes/outlands/PLAN.md C6). radiant: heat by distance beyond the shape (reach m, its dose and danger at the
+     // edge, falling to 0); soak: strength by time inside (from at entering, full after `full` s, forgotten over `out` s)
+     lava:   { effect: 'burn',      danger: 1,  dose: 20, falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff5a10', fx: 'glow', sound: 'roar' },    radiant: { reach: 8, dose: 2, danger: .4 } },
+     fire:   { effect: 'burn',      danger: .9, dose: 5,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff9a30', fx: 'flame', sound: 'crackle' }, radiant: { reach: 10, dose: 1, danger: .3 } },
+     luck:   { effect: 'misfortune', danger: .3, dose: .05, falloff: 'none', nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#c8a040', fx: null, sound: null },        soak: { full: 600, from: 0, out: 1200 } },
+     // a made trap (the arcology ruins, later): set off by a trigger, it delivers one effect or several (effects:
+     // [{effect, dose, danger}]: a shock and a paralysis); it resets after trigger.reset s, and can be disarmed
+     // time slowed (or sped up) inside a field (LORE.md 6.15, the History Monks' Procrastinator: its seals hold the Order's
+     // worst things at a ten-thousandth of our time). time.scale: how fast time runs at the core (1e-4 slow, 1 normal, above
+     // 1 fast), easing to 1 at the edge by the falloff (in log scale). The harm is being held: stasis
+     time:   { effect: 'stasis',    danger: .8, dose: 0,  falloff: 'smooth', nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#b080ff', fx: 'stillness', sound: null }, time: { scale: .0001 } },
+     trap:   { effect: 'damage',    danger: .6, dose: 1,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#e0c040', fx: 'spark', sound: 'click' },  trigger: { by: 'step', reset: 30 } }
    },
-   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown'],
+   // the air and the cold everywhere (2026-10-26): not placed records but fields sampled at a point (core/hazard
+   // KHAZ.provide(field, fn), KHAZ.ambient). Each row ramps its effect from `start` (k 0) to `worst` (k 1, the full dose);
+   // pressure in atm (a person tires below .6, the death zone .33, the blood boils at .06: the Godthrone's rim is .07),
+   // temperature in degrees C
+   // rain in mm an hour (core/atmos weather: 0 under a roof), ph the rain's acidity (clean rain 5.6; a region's own)
+   // dust and ash in mg per m3 (a dust storm, an ash storm or ashfall under a plume; clean air under .1, a haboob's wall
+   // thousands), visibility in metres (when a page knows it outright: its fog, its smoke)
+   // alkali: the share (0..1) of the dust that is caustic salt (the Catch's dry soda lake beds; Owens Lake's)
+   ambientFields: ['pressure', 'temperature', 'rain', 'ph', 'dust', 'ash', 'alkali', 'visibility'],
+   // how far one sees in dust and ash together (Chepil and Woodruff, 1957: C = c x V^-p, C mg/m3, V km): KHAZ.sight
+   dustSight: { c: 56, p: 1.25 },
+   // what is left of a target's contrast at a distance in that air (Koschmieder: exp(-3.912 d / V), the visibility V
+   // where it falls to the threshold): KHAZ.seen and KHAZ.aim, a to-hit or spotting factor 1 point-blank, 0 at V
+   sightContrast: { threshold: .02 },
+   // a row with `times` needs both fields: k is the product of the two ramps (acid rain: how acid x how hard it falls)
+   ambientKinds: {
+     // a dust or ash storm: it chokes from 2 mg/m3 (a day of it harms) to 50 (a haboob's body: breathing through cloth)
+     'dust':      { field: 'dust',      start: 2,  worst: 50,  effect: 'suffocate', dose: .3, danger: .4 },
+     // volcanic ash is glass: it harms at half the load and worse (the Throne's ash desert under the plume, an eruption)
+     'ash':       { field: 'ash',       start: 1,  worst: 25,  effect: 'suffocate', dose: .5, danger: .6 },
+     // caustic dust (the Catch's black storms off its dry soda lakes, biomes/catch/PLAN.md): it burns the eyes and the
+     // lungs and etches what lies open; how caustic (the alkali share, .05 to .5) times how thick (1 to 25 mg/m3). It is
+     // dust too: the dust row chokes and sight dims on the same load
+     'caustic-dust': { field: 'alkali', start: .05, worst: .5, times: { field: 'dust', start: 1, worst: 25 }, effect: 'corrode', dose: .4, danger: .5 },
+     'acid-rain': { field: 'ph',        start: 4,  worst: 1,   times: { field: 'rain', start: 0, worst: 10 }, effect: 'corrode', dose: .5, danger: .6 },
+     'thin-air': { field: 'pressure',    start: .6, worst: .06, effect: 'suffocate', dose: 1,  danger: 1 },
+     'cold':     { field: 'temperature', start: 0,  worst: -40, effect: 'freeze',    dose: .5, danger: .7 },
+     'hot':      { field: 'temperature', start: 45, worst: 70,  effect: 'burn',      dose: .5, danger: .6 }
+   },
+   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune', 'shock', 'paralysis', 'damage', 'stasis'],
    hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
    hazardFalloffs: ['none', 'linear', 'smooth'],
-   hazardTriggers: ['step', 'weight', 'near'],
+   hazardTriggers: ['step', 'weight', 'near', 'beam'],
    // the navigation layers a hazard's zone is on (Godot's navigation_layers bits): walk, the one every agent asks for; avoid,
    // the one no agent asks for (an avoid zone's polygons are cut out of the walk layer)
    navLayers: { walk: 1, avoid: 2 },

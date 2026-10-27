@@ -67,7 +67,10 @@ function describe(hit){const p=hit.point,o=hit.object;
   words=PEOPLE_DRAWN.ROLE[Pn.role]+' ('+Pn.id+')\nlife · '+Pn.faction+' · '+Pn.sub+' · '+Pn.job+'\nnow: '+now+'\nthe day: '+Pn.schedule.filter((a,h)=>h%3===0).map((a,k)=>(k*3)+'h '+a).join(', ');}
  if(best&&best.note)words+='\n'+best.note;
  if(tg&&tg.harvest)words+='\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'');
- return words+'\n'+Z.name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ return words+'\n'+Z.name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): the seals' time fields; and how fast time runs here */
+function hazardWords(p){if(typeof KTAGS==='undefined'||!KTAGS.hazardAt)return '';const w=KTAGS.hazardAt(p.x,p.y,p.z),s=KHAZ.timeScale(p.x,p.z,0,p.y);
+ return (w?'\n'+w:'')+(s!==1?'\n'+'time here runs at '+(s<.01?s.toExponential(1):s.toFixed(2))+' of ours':'');}
 let _hostH=null;const KHOST_CLOCK_H=()=>_hostH&&_hostH.clock?_hostH.clock.hour:12;
 
 // ---------------------------------------------------------------- the camera: above the ground, or inside the Vault
@@ -120,7 +123,7 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   hour:h=>LSNIGHT.apply(h),objects:()=>[sky,giant,giantRing]},
  clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);}},
  inspect:describe,stats:()=>'inst '+window._instances+(typeof PEOPLE_DRAWN!=='undefined'?' · people '+PEOPLE_DRAWN.shown:''),
- layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
   'the ground (see the Vault)':{match:o=>!!(o.userData&&(o.userData.ground||o.userData.rockface))},'the far land':{match:o=>!!(o.userData&&o.userData.far)},
   'the people':{match:o=>!!(o.userData&&o.userData.people)},'sky':{objects:()=>[sky,giant,giantRing]}},
  // site: the biome export over the monastery's ground, sampled (45), and the stage (core/biome KSTAGE)
