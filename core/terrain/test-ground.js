@@ -45,4 +45,84 @@ ok('the program key keeps the default\'s source and adds the layers',/kground--2
   ok('hex false samples once',!/kgTri\(st,w/.test(c.split('vec4 kgHex')[1])&&/kgTri\(st,w/.test(G.glsl().split('vec4 kgHex')[1]),false);}
 ok('KGROUND.layer is null without the library',G.layer('nhighlands','ground.mulch')===null,false);
 
+// ---- the defaults are frozen: with no kind asked, the library, the layer code and the hooked shaders are byte for byte
+// what they were before the kinds (2026-10-26, the hashes of 43-core-ground.js at 71bed9f4d)
+const crypto=require('crypto'),sha=x=>crypto.createHash('sha1').update(x).digest('hex').slice(0,16);
+const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'8fadd0c5654d5f33',codePlain:'9ef2c66796916db8',fs:'1ab17892e2ddaf4b',vs:'5fecc5c7883e02f0',key:'|kground-k-2-764'};
+const freeze=(layers)=>{const F1={map:{id:1},k:1/3,w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse',name:'mulch'},F2={map:{id:2},k:1/3.2,w:'vGL.y',amt:.75,name:'meadow',h:{from:'a'},lin:false};
+  const LL=layers||[F1,F2],m={userData:{},customProgramCacheKey:proto.customProgramCacheKey,onBeforeCompile:null};G.hook(m,{layers:LL,key:'k'});const s=fake();m.onBeforeCompile(s);
+  return {glsl:sha(G.glsl()),glslNoHex:sha(G.glsl({hex:false})),code:sha(G.code({},LL)),codePlain:sha(G.code({blend:0,far:false},[LL[0]])),fs:sha(s.fragmentShader),vs:sha(s.vertexShader),key:m.customProgramCacheKey()};};
+{const now=freeze(),diff=Object.keys(FROZEN).filter(k=>now[k]!==FROZEN[k]);
+  const kinded=freeze([{map:{id:1},k:1/3,w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse',name:'mulch'},{kind:'sand',w:'vGL.y',name:'sand'}]);
+  ok('with no kind asked every output is the frozen one ('+(diff.join(', ')||'all 7 equal')+')',diff.length===0,kinded.fs===FROZEN.fs||kinded.code===FROZEN.code);}
+
+// ---- the kinds' twins
+{const hs=new Set();let out=0;for(let i=-15;i<15;i++)for(let j=-15;j<15;j++){const h=F.hash3(i,j,3);if(h.some(v=>v<0||v>=1))out++;hs.add(h.map(v=>v.toFixed(4)).join());}
+  ok('hash3 is in [0,1) and spreads ('+hs.size+' distinct of 900) and repeats',out===0&&hs.size>880&&F.hash3(4,-2,7).join()===F.hash3(4,-2,7).join(),F.hash3(4,-2,7).join()===F.hash3(4,-2,8).join());}
+ok('the kinds\' GLSL holds no sine hash',!/sin\(/.test(G.kindsGlsl())&&!/43758/.test(G.kindsGlsl()),false);
+// F1 against a brute force over 5x5(x5) cells (the shader searches 3x3(x3)); the edge distance 0 where the two nearest tie
+const brute2=(x,y,jit,sd)=>{let b=9;for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const cx=Math.floor(x)+i,cy=Math.floor(y)+j,h=F.hash3(cx,cy,sd),dx=cx+.5+jit*(h[0]-.5)-x,dy=cy+.5+jit*(h[1]-.5)-y;b=Math.min(b,Math.hypot(dx,dy));}return b;};
+const brute3=(x,y,z,jit,sd)=>{let b=9;for(let k=-2;k<=2;k++)for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const cx=Math.floor(x)+i,cy=Math.floor(y)+j,cz=Math.floor(z)+k,h=F.hash3(cx+sd,cy+sd*1.7,cz+sd*2.3);
+  b=Math.min(b,Math.hypot(cx+.5+jit*(h[0]-.5)-x,cy+.5+jit*(h[1]-.5)-y,cz+.5+jit*(h[2]-.5)-z));}return b;};
+{let b2=0,b3=0,neg=0,eNeg=0,idBad=0;for(let q=0;q<1500;q++){const x=(q*.7548777)%41-20,y=(q*.5698403)%37-18,z=(q*.3247)%13-6;
+  const v=F.vor2(x,y,.9,5),w=F.vor3(x,y,z,.9,5);if(Math.abs(v.f1-brute2(x,y,.9,5))>1e-9)b2++;if(Math.abs(w.f1-brute3(x,y,z,.9,5))>1e-9)b3++;
+  if(v.e<-1e-9||w.e<-1e-9)eNeg++;const h=F.hash3(v.id[0],v.id[1],5);if(Math.abs(v.id[0]+.5+.9*(h[0]-.5)-(x+v.rel[0]))>1e-9)idBad++;
+  if(Math.abs(F.vor2(x,y,.9,6).f1-brute2(x,y,.9,5))>1e-9)neg++;}
+  ok('Voronoi: the nearest point is the brute force\'s (2D '+b2+' off, 3D '+b3+' off of 1500), the edge distance >= 0 ('+eNeg+'), the cell and offset name the point ('+idBad+')',
+    b2===0&&b3===0&&eNeg===0&&idBad===0,neg<100);}
+{let worst=0;for(let q=0;q<4000;q++){const x=(q*.61803)%23,y=(q*.41421)%19,v=F.vor2(x,y,.9,2);if(v.e<.002){
+    const d=[];for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const cx=Math.floor(x)+i,cy=Math.floor(y)+j,h=F.hash3(cx,cy,2);d.push(Math.hypot(cx+.5+.9*(h[0]-.5)-x,cy+.5+.9*(h[1]-.5)-y));}
+    d.sort((a,b)=>a-b);worst=Math.max(worst,d[1]-d[0]);}}
+  ok('on an edge (e under .002) the two nearest points are near equidistant (worst gap '+worst.toFixed(4)+')',worst<.005,false);}
+ok('the ripple: 0 in the trough, 1 at the crest, one wavelength a period, the lee steeper than the stoss',
+  F.ripple(0,.8)===0&&Math.abs(F.ripple(.8,.8)-1)<1e-12&&Math.abs(F.ripple(3.37,.8)-F.ripple(.37,.8))<1e-9&&(1-F.ripple(.9,.8))>(1-F.ripple(.7,.8)),
+  Math.abs((1-F.ripple(.6,.5))-(1-F.ripple(.4,.5)))>1e-9);
+{let lo=1,hi=0,jump=0;for(let q=0;q<3000;q++){const x=q*.0137,y=Math.sin(q)*3,v=F.vnoise(x,y,4);lo=Math.min(lo,v);hi=Math.max(hi,v);jump=Math.max(jump,Math.abs(F.vnoise(x+1e-6,y,4)-v));}
+  ok('the value noise is in [0,1] ('+lo.toFixed(3)+'..'+hi.toFixed(3)+') and continuous',lo>=0&&hi<=1&&jump<1e-4&&hi-lo>.5,false);}
+
+// ---- the kinds in the shader
+const kmat=()=>({userData:{},customProgramCacheKey:proto.customProgramCacheKey,onBeforeCompile:null});
+{const KC={kind:'clast',w:'vCrest',name:'breccia',seed:12},KS={kind:'sand',map:{id:7},k:1/2,w:'vSand',name:'black sand',seed:3},KP={kind:'polygon',w:'vPoly',name:'wedges',edgeTint:'vec3(1.3)'};
+  const m=kmat();G.hook(m,{layers:[L1,KC,KS,KP],key:'kinds'});const s=fake();m.onBeforeCompile(s);const fsk=s.fragmentShader;
+  ok('a procedural kind is drawn without a map; only maps get samplers (uKG0 and uKG2 of four layers)',m.userData.kground.join()==='mulch,breccia,black sand,wedges'&&
+    /uniform sampler2D uKG0;uniform sampler2D uKG2;\n/.test(fsk)&&!/uKG1;|uKG3;/.test(fsk)&&s.uniforms.uKG0&&s.uniforms.uKG2&&!s.uniforms.uKG1&&!s.uniforms.uKG3,false);
+  ok('the kinds\' library comes once, after the common one, and only with a kind',fsk.split('vec2 kgVor3(').length===2&&fsk.indexOf('float kgLum')<fsk.indexOf('vec3 kgHash3')&&
+    m.userData.kgroundKinds.join()===',clast,sand,polygon',(()=>{const m2=kmat();G.hook(m2,{layers:[L1]});const s2=fake();m2.onBeforeCompile(s2);return /kgHash3/.test(s2.fragmentShader)||!!m2.userData.kgroundKinds;})());
+  ok('each kind is drawn only where its weight is above 0, in the page\'s order',/kgA0=clamp\(vCrest[^;]*;if\(kgA0>0\.0\)/.test(fsk)&&fsk.indexOf('vCrest')<fsk.indexOf('vSand')&&fsk.indexOf('vSand')<fsk.indexOf('vPoly'),false);
+  const br=t=>{let d=0;for(const c of t){if(c==='{'||c==='(')d++;if(c==='}'||c===')')d--;if(d<0)return false;}return d===0;};
+  const variants=[KC,{...KC,proj:'xz'},{...KC,map:{id:1},proj:'xz'},{...KC,map:{id:1}},{...KC,map:{id:1},palette:G.BRECCIA},{...KC,sub:0,fleck:0},{...KC,colorFn:'myStrata'},
+    KS,{...KS,map:null},{...KS,ripple:0,glint:0},{...KS,h:{from:'a'}},KP,{...KP,map:{id:3}},{...KP,rim:.05}];
+  const bad2=variants.filter(v=>!br(G.code({},[v])));
+  ok('every variant\'s code closes its brackets ('+variants.length+' variants, '+bad2.length+' not)',bad2.length===0&&br(G.kindsGlsl()),br(G.code({},[KC]).slice(0,-1)));}
+{const c=G.code({},[{kind:'clast',w:'1.0'}]),x=G.code({},[{kind:'clast',w:'1.0',proj:'xz'}]),m=G.code({},[{kind:'clast',w:'1.0',map:{id:1}}]);
+  ok('clast: 3D cells by default, plane cells with proj xz; the map read on three planes in 3D, one on the plane',/kgVor3\(kgWP\*kgS,/.test(c)&&!/kgVor2/.test(c)&&/kgVor2\(kgWP\.xz\*kgS,/.test(x)&&!/kgVor3/.test(x)&&
+    (m.match(/KG_GRAD\(uKG0/g)||[]).length===3&&(G.code({},[{kind:'clast',w:'1.0',map:{id:1},proj:'xz'}]).match(/KG_GRAD\(uKG0/g)||[]).length===1,/KG_GRAD/.test(c));
+  ok('clast: the breccia palette without a map (its eight colours, linear), a page\'s colorFn when given',(c.match(/kgQ\.x<0\.\d+\?vec3/g)||[]).length===7&&c.indexOf('vec3('+[0x4a,0x4a,0x4c].map(v=>Math.pow(v/255,2.2).toFixed(4)).join()+')')>=0&&
+    /myStrata\(kgWP\+kgR\*12\.0000,kgQ\.x\)/.test(G.code({},[{kind:'clast',w:'1.0',colorFn:'myStrata'}])),/kgQ\.x<0/.test(m));
+  const c0=G.code({},[{kind:'clast',w:'1.0',sub:0,fleck:0}]);
+  ok('clast: sub 0 and fleck 0 leave out the second generation and the flecks',!/kgS2/.test(c0)&&!/kgFc/.test(c0)&&/kgS2/.test(c)&&/kgFc/.test(c),/kgS2/.test(c0));}
+{const s1=G.code({},[{kind:'sand',w:'1.0'}]),s0=G.code({},[{kind:'sand',w:'1.0',ripple:0,glint:0}]),su=G.code({},[{kind:'sand',w:'1.0',sun:'uSunDir',wind:[0,2]}]);
+  ok('sand: ripples and glints by default, neither at 0; the page\'s sun and wind (normalised) taken',/kgRipple\(kgU/.test(s1)&&/reflect\(/.test(s1)&&!/kgRipple|reflect/.test(s0)&&/normalize\(uSunDir\)/.test(su)&&/kgRd=vec2\(0\.0000,1\.0000\)/.test(su),/reflect/.test(s0));
+  ok('sand: the ripples and glints fade where a pixel covers more than they show (.15-.5 wavelength, .5-1.5 grain)',/smoothstep\(0\.0180,0\.0600,kgFp\)/.test(s1)&&/smoothstep\(0\.0150,0\.0450,kgFp\)/.test(s1),false);}
+{const p=G.code({},[{kind:'polygon',w:'1.0',size:20,width:.05}]),pm=G.code({},[{kind:'polygon',w:'1.0',map:{id:1}}]);
+  ok('polygon: plane cells of its size (the lookup warped), troughs about its width, tinted ground or the map in them',/kgPw=kgWP\.xz\*0\.0500;kgPw\+=0\.1200\*/.test(p)&&/kgWv=0\.0500\*/.test(p)&&/smoothstep\(kgWv-kgFp/.test(p)&&/diffuseColor\.rgb\*\(vec3\(0\.6\)\)/.test(p)&&/kgSample\(uKG0/.test(pm),/kgSample/.test(p));}
+{let threw='';try{G.code({},[{kind:'dunes',w:'1.0'}]);}catch(e){threw=e.message;}
+  ok('an unknown kind is an error that names it ('+threw+')',/dunes/.test(threw),false);}
+ok('a seed is taken below 997 (12 and 1009 the same cells)',G.code({},[{kind:'polygon',w:'1.0',seed:12}])===G.code({},[{kind:'polygon',w:'1.0',seed:1009}])&&G.code({},[{kind:'polygon',w:'1.0',seed:12}])!==G.code({},[{kind:'polygon',w:'1.0',seed:13}]),false);
+
+// ---- the Godot twin's golden (godot/shaders/lib/kground_kinds.gdshaderinc, checked by
+// godot/tests/shaders/kground_kinds_gpu_check.gd): `node core/terrain/test-ground.js --golden` rewrites it. Each row is a
+// Godot expression and the JS twin's value; the Voronoi points are kept off their edges (e > .05), so fp32 picks the same cell
+{const G2=[],fx=v=>(+v).toFixed(4),n=(x)=>{const s=fx(x);return s.indexOf('.')<0?s+'.0':s;};
+  [[3,-7,12.5],[431,-12,5.3]].forEach(p=>{const h=F.hash3(...p);[0,1,2].forEach(c=>G2.push(['kg_hash3(vec3('+p.map(n)+')).'+'xyz'[c],h[c]]));});
+  [[12.37,-4.81,5],[-120.7,33.6,17],[3.6,7.5,2]].forEach(p=>{const v=F.vor2(p[0],p[1],.9,p[2]);if(v.e<.05)throw new Error('golden vor2 point on an edge: '+p);
+    G2.push(['v2f('+n(p[0])+','+n(p[1])+','+n(p[2])+')',v.f1],['v2e('+n(p[0])+','+n(p[1])+','+n(p[2])+')',v.e]);});
+  [[1.3,2.7,-.4,12],[55.1,-3.3,8.8,3],[-6.2,0.4,2.9,7]].forEach(p=>{const v=F.vor3(p[0],p[1],p[2],.9,p[3]);if(v.e<.05)throw new Error('golden vor3 point on an edge: '+p);
+    G2.push(['v3f(vec3('+p.slice(0,3).map(n)+'),'+n(p[3])+')',v.f1],['v3e(vec3('+p.slice(0,3).map(n)+'),'+n(p[3])+')',v.e]);});
+  [[3.21,-7.7,4],[100.3,20.9,2]].forEach(p=>G2.push(['kg_vn(vec2('+n(p[0])+','+n(p[1])+'),'+n(p[2])+')',F.vnoise(...p)]));
+  [[3.37,.8],[.95,.8],[-1.2,.7]].forEach(p=>G2.push(['kg_ripple('+n(p[0])+','+n(p[1])+')',F.ripple(...p)]));
+  const gp=path.join(__dirname,'..','..','godot','tests','shaders','kground_kinds_golden.json'),txt=JSON.stringify({made:'node core/terrain/test-ground.js --golden',rows:G2},null,1)+'\n';
+  if(process.argv.includes('--golden'))fs.writeFileSync(gp,txt);
+  ok('the Godot twin\'s golden is current ('+G2.length+' values; --golden rewrites it)',fs.existsSync(gp)&&fs.readFileSync(gp,'utf8')===txt,false);}
+
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

@@ -182,7 +182,7 @@ Godot (`biomes/GODOT.md`).
 | `test-basin.js` | `node core/terrain/test-basin.js`, each check with a negative |
 | `41-core-scour.js` | a megaflood's channels (global `KSCOUR`, [G data], needs `KRAND`) along courses in metres with their beds: `locate` (along and across the nearest course), `sample` (`scour` under the flood's surface, the floor in full and the walls fading; streamlined `island`s drawn out along the flow; `bar`s on the margins and the end's fan with giant current `ripple`s; `pothole`s keyed on their place; dry `fall`s found where the bed steepens, their lip a horseshoe bowed upstream, the `pool` basin under each), `land` (butte-and-basin cut in steps of the rock's flows, the falls' basins, potholes, bars heaped with ripples; islands kept), and `strata`/`rock` (flood basalt in 15-50 m flows, each with its red interbed and its colonnade, over sandstone and limestone, under cover). Noise keyed on each course's name, not its place in the list. `potholes(box)` lists the kolks whose centres lie in a box. A course takes a station's scales (`islandL`, `islandW`, `fan`: 2026-10-23, `biomes/scablands`; defaults the world's). `fromRegion` reads `region.json` `palaeo`. For the scablands overlay (`biomes/scablands`: station 1, a coulee and dry falls) |
 | `test-scour.js` | `node core/terrain/test-scour.js`, each check with a negative |
-| `43-core-ground.js` | the ground shader's layers (global `KGROUND`, [G shader]; DETAIL-RESEARCH item 1, 2026-10-26): the material library's ground sets laid over a page's painted ground by the page's own weights, each sampled with Mikkelsen's hex tiling, scaled with distance (its tile doubling at each doubling past 60 m, two scales cross-faded) and blended by height (each layer's luminance about its mean against what is under it). `KGROUND.layer(build, slot, o)` takes a `materials.json` slot through KMAT; `KGROUND.hook(mat, o)` wraps the page's hook. JS twins of the GLSL in `KGROUND.fn`. Below, "The ground, the far field and the horizon" |
+| `43-core-ground.js` | the ground shader's layers (global `KGROUND`, [G shader]; DETAIL-RESEARCH item 1, 2026-10-26): the material library's ground sets laid over a page's painted ground by the page's own weights, each sampled with Mikkelsen's hex tiling, scaled with distance (its tile doubling at each doubling past 60 m, two scales cross-faded) and blended by height (each layer's luminance about its mean against what is under it). `KGROUND.layer(build, slot, o)` takes a `materials.json` slot through KMAT; `KGROUND.hook(mat, o)` wraps the page's hook. JS twins of the GLSL in `KGROUND.fn`. Opt-in layer kinds (2026-10-26): `clast` (megabreccia, pavement), `sand` (ripples, glints), `polygon` (sand-wedge polygons, patterned ground); below, "Adopting KGROUND's layer kinds" Below, "The ground, the far field and the horizon" |
 | `test-ground.js` | `node core/terrain/test-ground.js`: the twins (hex weights, the height lerp, the distance level) and the hook's shader edits, each check with a negative |
 | `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
 | `test-farfield.js` | `node core/terrain/test-farfield.js`, each check with a negative |
@@ -217,6 +217,36 @@ read by `biomes/korona/src/47-host-land.js`).
    distances against the page before.
 Cost: 3 fetches per layer per hex sample, 6 in the cross-fade bands past 60 m; no draw calls, no memory past the sets the page had.
 
+**Adopting KGROUND's layer kinds** (2026-10-26, for the planned biomes: the Godthrone, Godstep, the W outer wall, the Outlands). A layer
+with `kind` is drawn by a recipe instead of a map alone; its map is optional (a kind with none is procedural), it is drawn only where
+its weight is above 0, and it blends by height as any layer. A layer without `kind` is drawn as before, and a page that asks for no
+kind gets the same shader byte for byte (`test-ground.js` holds the hashes). The options are listed at the top of `43-core-ground.js`.
+1. Take KGROUND as above (`CORE_TERRAIN`, the marker, `KGROUND.hook`), then add the kind's layer to `layers`, with its weight from the
+   page's varyings and a `seed` (below 997: `KRAND.hash(world, 0, n, salt) % 997`) so two layers of a kind differ:
+   - **`clast`**, the megabreccia crest and slump scarps (`biomes/godthrone/PLAN.md` section 3, `biomes/wouterwall` section 2):
+     `{kind: 'clast', w: 'vCrest', size: 12, seed}` draws blocks of every rock (`KGROUND.BRECCIA`) in a grey matrix with a finer
+     generation of clasts and black and bottle-green glass flecks in it. Its cells are 3D (`proj: 'tri'`), so a scarp is a quilt, not
+     streaks; `proj: 'xz'` is the cheaper plane for flat ground (small and packed, `size: .06, matrix: .1, sub: 0, fleck: 0` with a
+     varnished palette, it is the Outlands' desert pavement). A map (`KGROUND.layer(build, 'rock.megabreccia', {...})`, or any rock)
+     is the blocks' grain, turned and shifted per block; with a `palette` too, the map's light and dark only. The overturned flap:
+     `colorFn: 'myBand'`, a GLSL `vec3 myBand(vec3 centre, float h)` the page declares before `main` (its strata colour at the block's
+     centre, from `35-core-strata.js`), so each block keeps its bed's colour.
+   - **`sand`**, Godstep's black dunes and the Godthrone's bead sand: `KGROUND.layer('godstep', 'ground.sand.black', {kind: 'sand',
+     w: 'vSand', wind: [wx, wz], sun: 'uSunDir', seed})` (the sky's sun uniform when the page binds it; a constant otherwise). Ripples
+     `ripple` m apart across the wind (lit and shaded by the sun, meandering, broken into patches), glints of single grains
+     toward the sun. Both fade out where a pixel covers more than they can show (at 1080p and a 50 degree view the ripples between
+     about 20 and 70 m, the glints between 17 and 50 m).
+   - **`polygon`**, sand-wedge polygons on the airless rim, patterned ground on the plateaus, a mare's pressure plates:
+     `{kind: 'polygon', w: 'vRegolith', size: 15, width: .04, edgeTint: 'vec3(1.25)', seed}` (a pale sand in the wedges), or a map
+     for the troughs' fill (moss in the cracks), `rim` for sorted stones beside them.
+2. Check it in `core/terrain/check-ground-kinds.html` first (`python3 tools/harness.py smoke core/terrain/check-ground-kinds.html`
+   compiles every kind on a Lambert and a Standard ground), then the page's own verify, with shots at 6 m and 40 m.
+Cost (per pixel where the weight is above 0): `clast` 27 cells (3D; 9 on the plane), 27 more where the matrix is, 3 fetches with a
+map in 3D; `sand` the layer's hex sample, 2 value-noise lookups (8 hashes) and 2 hashes for the glint; `polygon` 9 cells and 3 value-noise lookups, a hex
+sample with a map. No draw calls, no textures past the page's own.
+Textures: `rock.megabreccia`, `ground.sand.black`, `ground.beads.orange` and `rock.palagonite` are in the library; the kinds need no
+new set (the polygons' fill and the pavement's stones are tints of the ground under them).
+
 **Adopting KFAR** (a far field round the ground square; the pilots are `biomes/nwlowlands/src/83-host-range.js` and
 `biomes/nhighlands/src/82-host-sky.js`):
 1. `build.py`: `CORE_TERRAIN` gets `'44-core-farfield.js'`, and after the `CORE_TERRAIN` loop
@@ -243,7 +273,11 @@ Cost: one bake (about 1 s at 256: `window._horizon.ms` on the pilots), 0.5 MB of
 pixel; no draw calls.
 
 **Godot.** KGROUND: a `ground.gdshader` with the same functions (the godotshaders hex-tiling port is the same algorithm) and the layers as
-uniforms; `KGROUND.fn` holds the JS twins to hold it to. KFAR: the lattice arrays are plain data (export them as a mesh with vertex
+uniforms; `KGROUND.fn` holds the JS twins to hold it to. The layer kinds' functions are already in Godot:
+`godot/shaders/lib/kground_kinds.gdshaderinc` (`kg_hash3`, `kg_vor2`, `kg_vor3`, `kg_vn`, `kg_ripple` and the kinds' recipes
+`kg_polygon`, `kg_sand_ripple`, `kg_glint`), held to `KGROUND.fn` by `godot/tests/shaders/kground_kinds_gpu_check.gd` (on a renderer,
+not headless) at the values in `kground_kinds_golden.json` (`node core/terrain/test-ground.js --golden`). The clast recipe is
+written inline in the page's GLSL only; it goes into the include with the ground.gdshader port. KFAR: the lattice arrays are plain data (export them as a mesh with vertex
 colours), a `MeshInstance3D` with `visibility_range`; the curvature and exaggeration are baked in. KHORIZON: the two RGBA8 arrays as
 `ImageTexture`s (`FORMAT_RGBA8`), the shading as a `.gdshaderinc` in `light()` (scale `ATTENUATION` by `khzShadow`, `AMBIENT_LIGHT` by
 `khzSky`); the bake is [G data] and can run at import from the field. The gridded top: `KSTACKS.export` carries records and the mesh is
