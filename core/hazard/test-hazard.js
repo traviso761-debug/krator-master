@@ -269,6 +269,15 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  ok('a visibility field wins where it is nearer (fog at 300 m over clean air)',H.sight(5000,0,0,0).range===300&&H.sight(5000,0,0,0).by==='visibility'&&H.sight(-1000,0,0,0).by==='dust',H.sight(5000,0,0,0).by!=='visibility');
  ok('here carries sight',H.here(-1000,0,0,0,G2).sight.by==='dust',false);
  H.provide('dust',null);H.provide('ash',null);H.provide('visibility',null);ok('removed: sight unbounded again',H.sight(-1000,0,0,0).range===Infinity,false);}
+// aim: a to-hit factor from the contrast left at the target's distance
+{ok('seen: 1 point-blank, 0 at and past the range, Koschmieder between (half the range: about .124)',H.seen(0,100)===1&&H.seen(100,100)===0&&H.seen(150,100)===0&&Math.abs(H.seen(50,100)-(Math.exp(-Math.log(50)*.5)-.02)/.98)<1e-12,H.seen(50,100)>.5);
+ ok('seen: clear air never lowers it; it falls as the target goes out',H.seen(1e6,Infinity)===1&&H.seen(10,100)>H.seen(20,100)&&H.seen(20,100)>H.seen(40,100),H.seen(20,100)>H.seen(10,100));
+ H.provide('dust',(x)=>x>500?2000:.05);
+ const clear=H.aim(0,1.5,0,300,1.5,0,0),into=H.aim(0,1.5,0,700,1.5,0,0),inside=H.aim(800,1.5,0,820,1.5,0,0),far=H.aim(800,1.5,0,900,1.5,0,0);
+ ok('aim: across clear air a 300 m shot keeps nearly all of it',clear.k>.99&&clear.d===300,clear.k<.9);
+ ok('aim: a target in the storm is judged by the worst air on the line (57 m sight: 700 m is unseen)',into.k===0&&into.range<65,into.k>0);
+ ok('aim: in the storm, 20 m is a fair shot, 100 m is none',inside.k>.2&&inside.k<.4&&far.k===0,far.k>0);
+ H.provide('dust',null);ok('aim: no fields, k 1',H.aim(0,0,0,5000,0,0,0).k===1,false);}
 // the Catch's black storm off its dry soda lakes: dust that is caustic (an alkali share of .4 over the lake beds, east)
 {H.provide('dust',()=>13);H.provide('alkali',x=>x>0?.4:0);
  const hr=H.here(100,0,0,0,G2),cd=hr.ambient.find(a=>a.kind==='caustic-dust');

@@ -225,6 +225,12 @@ pressure by height, and a temperature field when one exists).
   and what dust and ash together allow (`VOCAB.dustSight`, Chepil and Woodruff 1957: V km = (56 / C)^(1/1.25); 2000
   mg/m3 is about 57 m, 12 is about 6 km, clean air hundreds of km). For a walker's view, an NPC's senses and the port's
   fog. `KHAZ.here(...).sight` gives the same.
+- **`KHAZ.seen(d, range)`** and **`KHAZ.aim(x, y, z, tx, ty, tz, t)`** give what sight leaves of a shot or a spotting.
+  - The factor is the target's contrast left at d metres (Koschmieder: exp(-3.912 d / V), `VOCAB.sightContrast`),
+    rescaled to 1 point-blank and 0 at the sight range.
+  - `aim` judges by the worst sight at the shooter, the line's middle or the target, and returns `{k, d, range}`.
+  - In a haboob's wall (57 m), 20 m keeps about .24 and 100 m nothing; across clear air 300 m keeps nearly all.
+  - Multiply a to-hit chance or a detection roll by k. A game that wants it gentler shapes it there (k^.5, a floor).
 - **`KHAZ.ambient(x, y, z, t, guard)`** returns `[{kind, field, value, k, effect, dose, danger}]`, worst first. `guard`
   is `{kind: 0..1}`, how much a walker's gear keeps out (a mask .5, a suit 1).
 - **`KHAZ.here(x, y, z, t, T, {tIns, guard})`** returns `{records (KHAZ.at), ambient, doses: {effect: summed}}`: what
@@ -237,7 +243,7 @@ pressure by height, and a temperature field when one exists).
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 5337b270
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then c05a017e
 with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

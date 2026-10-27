@@ -61,7 +61,8 @@ its probes.
   height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
   `KHAZ.ambient` does; a row with `times` multiplies its second field's ramp (acid rain: pH x rain from the weather
   port, 0 under a roof by a ray up). Gear is a guard per kind. Sight (`KHazard.sight`, from the dust and ash loads by
-  `dustSight`, or a visibility field) sets the camera's fog distance and the NPCs' perception range.
+  `dustSight`, or a visibility field) sets the camera's fog distance and the NPCs' perception range; `KHazard.aim`
+  (the contrast left, by `sightContrast`) scales a to-hit or detection roll, as on the page.
 - `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
   `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
   as `KHAZ.tabooOk` does on the page.

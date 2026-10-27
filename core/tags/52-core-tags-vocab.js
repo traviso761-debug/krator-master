@@ -166,6 +166,9 @@
    ambientFields: ['pressure', 'temperature', 'rain', 'ph', 'dust', 'ash', 'alkali', 'visibility'],
    // how far one sees in dust and ash together (Chepil and Woodruff, 1957: C = c x V^-p, C mg/m3, V km): KHAZ.sight
    dustSight: { c: 56, p: 1.25 },
+   // what is left of a target's contrast at a distance in that air (Koschmieder: exp(-3.912 d / V), the visibility V
+   // where it falls to the threshold): KHAZ.seen and KHAZ.aim, a to-hit or spotting factor 1 point-blank, 0 at V
+   sightContrast: { threshold: .02 },
    // a row with `times` needs both fields: k is the product of the two ramps (acid rain: how acid x how hard it falls)
    ambientKinds: {
      // a dust or ash storm: it chokes from 2 mg/m3 (a day of it harms) to 50 (a haboob's body: breathing through cloth)
