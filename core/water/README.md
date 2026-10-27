@@ -752,3 +752,25 @@ or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not check
   as the first runs on eastabyss and the Rift jungle did (2026-10-27; their findings are in the session notes, not fixed here).
 - Costs: about `length / step` x 2 x (1 + scan) ground samples a flow, an open surface's box at half its mask cell, 9 x 16 x 16 for a still.
   Seconds for a biome page; run it in a check, not each frame.
+
+## The core pass (2026-10-27: PRACTICE.md section 2, items 2, 4, 5, 8; `test-network.js`, `test-shore.js`, `test-breakup.js`, `test-flow-keep.js`)
+
+All opt-in; `test-gaps.js` loads every new fragment and its default snapshot still passes.
+
+| Item | Call | What |
+|---|---|---|
+| 2, a flow network | `WATER.network({flows: [{flow, parent}], ground, open, reach, mouth: {len}, confluence})` (ext/59), `WATER.drawNetwork(N, {flow, flows, confluence})` (ext/59b) | each flow names the flow it leaves or joins; the network finds each join's kind (a tributary ends on its parent, a distributary starts from it) and its overlap, refuses a child that does not reach its parent, gives a fork's siblings one confluence placed and sized from their overlaps, fades every flow that ends in one of `open` over `len` m (45) round where it enters (its rows refined), and orders each child over its parent. `drawNetwork` draws the flows, the discs and the fades. `WATER.audit`'s overlap rule finds nothing left in the test's river system (295 findings drawn loose) |
+| 4, the shore from the ground | `WATER.maskFromGround({box, cell, level, ground, seed, limit, dilate})` (ext/58) | an open surface's mask flooded over the ground from its seeds (where the ground is under the level, and `limit` allows) and dilated a cell: every mask edge then lies over ground above the level, so the shore is the ground's contour (`WATER.audit`'s open-edge: 516 cut edges for a shape-drawn mask, 0 for this). A `limit` (a river's band left to its ribbon) is the only place a straight edge stays |
+| 5, breakup by default | `WATER.BREAKUP_AUTO = true` before the water is drawn (ext/56) | every open, still, pool, ribbon and confluence drawing made after it takes the breakup (`BREAKUP`, ribbons `BREAKUP_FLOW`; `o.breakup` an object laid over them, `false` to keep one out). The default flip waits for the all-builds rebuild (`TODO.md`) |
+| 8, ribbon rows that follow their effects | `drawFlow({keep, refine: true})`, `W.ribbon(S, {refine: {f, tol, min}})` (22, 51) | rows where `keep` changes (no row's step over about `tol`, .08; never closer than `min`, 2 m), the rest of the line at `step`: a fade resolves without densifying the whole line. The record keeps `{tol, min}` |
+
+**Adopting it** (eastabyss station 1 is the worked page, `src/89w-host-water.js` and `build.py`):
+- `build.py`: list `core/water/ext/59-core-water-network.js` and `59b-core-water-network-draw.js` (with 55 and 55b, which they need; 56 for
+  breakup; 58 for the shore) by path, after the top-level core/water.
+- Replace hand-wired forks, joins and mouth fades with one network: `const NET = WATER.network({flows: [{flow: RIVER}, {flow: CHANNEL, parent: 0}, ...],
+  ground: terrainH, open: [LAKE], confluence: {cell: 2}}); const D = WATER.drawNetwork(NET, {flow: RIVER_DRAW_OPTIONS});` (`D.flows`, `D.confluences`).
+  A flow's `densify` kept only for its fade can go: the mouths refine their own rows.
+- A lake or sea whose mask is drawn from a shape: `mask: WATER.maskFromGround({box, cell, level, ground: terrainH, seed: (x, z) => inside(x, z),
+  limit: (x, z) => !inARiverBand(x, z)})`.
+- A page that wants the breakup everywhere now: `WATER.BREAKUP_AUTO = true;` before its first water drawing (in place of `breakupAll()` and
+  `breakupFlows()` after them).
