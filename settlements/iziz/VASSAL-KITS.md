@@ -8,7 +8,7 @@ so this file holds what all three must agree on, and the governor's palace both 
 Owner's brief (2026-10-17): each city has its own architectural personality, but "Iziz Vernacular buildings should
 not look wrong beside them", and the kits are "set up ahead of time not to clash with the structure of that kit".
 Each city has a governor's palace "massed like the pic 'govpalace' but built in that city's style", with its interior
-planned from the skill's palace notes (`painting-to-3d-world`, section 5h and `references/blueprints.md`).
+planned from the skill's palace notes (`painting-to-3d-world`, section 5h and `references/large-buildings.md`).
 
 ## 1. One engine: the Vernacular's
 
@@ -154,7 +154,7 @@ Decor levels as in the other blueprints: 0 bare, 1 plain, 2 fine, 3 rich, 4 sump
 
 ### 3.4 The forks (settled 2026-10-17: the owner took every recommendation)
 
-The blueprint method asks these before drawing (`references/blueprints.md`, step 4). The first answer of each is the
+The blueprint method asks these before drawing (`references/large-buildings.md`, step 4). The first answer of each is the
 one taken:
 
 1. **The household:** the governor's kin only (recommended: an appointed official with spouse and children), or a
