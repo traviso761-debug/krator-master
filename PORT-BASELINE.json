@@ -192,6 +192,10 @@
    "bytes": 2521611,
    "sha256": "55f32185cff1b986ef4ae8a44f444a4c20272320a391776e65de64f2a284ebbd"
   },
+  "kits/ancients/dist/arcpile.html": {
+   "bytes": 2625616,
+   "sha256": "20f9b2d6f2a67ad1eae5f6843e2927de409cdbfb239a60801d8eadb11ddec165"
+  },
   "kits/ancients/dist/arcube.html": {
    "bytes": 2520564,
    "sha256": "317616aa58abcf42dd0473f60f420a82a5a507f39f606789e075dcad55ec3c53"
@@ -271,6 +275,10 @@
   "kits/ancients/dist/lighthouse.html": {
    "bytes": 2512749,
    "sha256": "a5e46e9c3b0740d48410aaee1bb4598d3420b24cb466aa212695a3c2c1ace25b"
+  },
+  "kits/ancients/dist/lozenge.html": {
+   "bytes": 2591006,
+   "sha256": "92255660146aa8d96928a6aecd7eb1eabecc7d6e794d4395414566a30ae4238d"
   },
   "kits/ancients/dist/monolith.html": {
    "bytes": 2514237,
