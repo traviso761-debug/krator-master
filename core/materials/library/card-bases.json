@@ -1,0 +1,5 @@
+{
+ "_note": "The edge where each plant of a card SHEET attaches (left, top, right, bottom, centre), set by hand from the image: tools/textures/check_cells.py reads it to propose a slot's \"base\" (core/biome turns a frond, ribbon, hang or clump to meet it). A string is every plant of the sheet; a list is one per plant, row by row from the top left. A single-plant card needs no entry: its base is its meta.json processing.options.anchor (cards.py cropped it there).",
+ "card.beard": "top",
+ "card.strap.pandan": "bottom"
+}

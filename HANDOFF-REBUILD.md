@@ -150,18 +150,44 @@ the game's start. Every host that read `SKY.startHour` for its clock now reads `
 Korona and Throne stations, the core sky hosts). **Only nhighlands is rebuilt**; the owner (2026-10-26): change the sources now,
 verify each build when its turn in the rebuild comes. Each build's verify views keep their own day/dawn/night modes.
 
-### Every build in the rebuild: its card cells (the owner, 2026-10-26)
+### Every build in the rebuild: its card cells (the owner, 2026-10-26; corrected 2026-10-27)
 
-The owner caught cut-out cards "loading as a sheet rather than discretely" in many builds. `python3 tools/textures/check_cells.py
-[build ...]` finds each library card's grid from its alpha and checks every card slot in a build's `materials.json`: **WHOLE
-SHEET** (a 3x3 sheet drawn whole on one card: a grid of sprigs), **CELL ON ONE** (a cell cut from a single-plant image: a
-fragment), **CELL OFF GRID**. On 2026-10-26 it found **284 in 31 builds** (223 whole sheets, 50 cells on single plants, 11 off
-grid): the Throne 34, crops 42, Korona 15, necanyons 15, ringisles 14, Longsong 14, eastabyss, nwbay and rift 12 each, and the rest.
-Fix each build as it is rebuilt, by eye: a floor card or a strand gets the sheet's `cell` (`[.34,.34,.66,.66]` is the centre
-plant of a 3x3); a crown clump keeps the whole sheet and takes the cells in its geometry, `BIO.geo.cells(BIO.geo.clump(), {n:3})`
-(three sprigs a card at .6; `about:'origin'` for a stem spray), with `"sheet": "geometry"` on the slot so the check knows; a
-single-plant image loses its cell. nhighlands and the Cut are done. Then `python3 tools/textures/pack.py <build>` and rebuild.
-At close-out, add `check_cells.py --strict` to `tools/test_all.py`.
+The owner caught cut-out cards "loading as a sheet rather than discretely" (2026-10-26), then "these imposters improperly
+split the cutout textures. this seems to keep happening" (2026-10-27: the Rift's station 3, fern fronds floating loose round a
+tree-fern's trunk). **The 2026-10-26 rule here was wrong for fronds and strands, and spread the bug**: it said a single-plant
+image "loses its cell" and is drawn whole. But `BIO.geo.frond` and `BIO.geo.ribbon` draw their texture **once a segment**,
+along v from the stem (frond) or hung end (ribbon) at v 0, and a clump's tripod shows its image upside down. A whole library
+fern on a four-segment frond is four small upside-down ferns end to end: floating fronds. A whole vine on a ribbon is four
+stacked vines; a bush on a clump stands on its head. nhighlands, "done" under the old rule, still has it (fern, lady, beard,
+under).
+
+**The fix (core/biome, 2026-10-27).** A card geometry that holds its plant by one end declares that end
+(`geo.userData.card`: frond, ribbon, hang, clump), and a slot names where its plant attaches in the image: `"base"` (bottom,
+top, left, right, centre), with `"cell"` the plant's **tight alpha box** (not a third of the sheet). `BIO.def` then turns the
+geometry's uv so the two ends meet, and spans the plant once down a frond or ribbon (`20-core-kit.js`, "A LIBRARY CARD ON ITS
+GEOMETRY'S AXES"; `core/biome/test-cards.js`). A slot with no `base` draws exactly as before. A kit's own geometry can declare
+its end too (the Rift's groundsel heads: `G.rosetteUV` with `userData.card = {base: 'left'}`).
+
+**Per build, at its rebuild turn:**
+1. `python3 tools/textures/check_cells.py <build>`: each card slot against the plants in its image (tight boxes, the grid or
+   uneven boxes; bases from the image's `meta.json` anchor, or `core/materials/library/card-bases.json` for a sheet) and the
+   geometry its BIO.def line draws it on. Faults: WHOLE SHEET, CELL CUTS (a fragment of its plant), CELL OFF GRID, LOOSE
+   (margins round a plant held by one end), NO BASE (a frond, ribbon, hang or clump with no base: the floating fronds), BASE
+   WRONG, BASE UNKNOWN (add the sheet's base to card-bases.json, by eye). Each comes with the cut it proposes.
+2. `python3 tools/textures/card_probe.py <build>`: the slot drawn on its geometry as the page draws it (core/biome itself, in
+   node), left as it is, right as proposed. **Look at it**: a sheet whose plants overlap can be read wrong (`--plants card.x`).
+3. `check_cells.py <build> --fix [--slots=a,b]` writes the proposals you accept; a crown's WHOLE SHEET still takes
+   `"sheet": "geometry"` and `BIO.geo.cells(...)` in the code (three sprigs a card at .6; `about:'origin'` for a stem spray).
+4. `python3 tools/textures/pack.py <build>`, rebuild, look at the items in the page; `card_probe.py <build> --before <rev>`
+   shows what changed.
+
+On 2026-10-27 the check found 386 faults in 32 of the 71 materials.json (215 whole sheets, 74 no base, 59 cells cutting their
+plant); 173 of them on core geometry (frond, ribbon, hang, clump) in 16 builds: eastabyss and xanadu 22, swlowlands 20, nwbay
+and nwlowlands 19, swbay 14, hyperjungle 13, ringisles 11, nhighlands 10, necanyons and sedesert 6, abyssal-savannah, guilin
+and k-guilin 3, geyser and oidong 1. Their probe sheets are in the
+session notes (`card-probes/<build>.png`). Builds whose code draws cards without BIO.def (crops, the settlements) show "-" for
+geometry: only their cells are checked. The Rift is fixed (its seven, the understorey clump, the groundsel heads). At
+close-out, add `check_cells.py --strict` to `tools/test_all.py`.
 
 ### Still to write (core) before or during step 1
 

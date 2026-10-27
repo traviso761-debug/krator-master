@@ -95,6 +95,23 @@ not 18. nhighlands' leaf and floor cards were vertex-bound on an integrated GPU,
 stream and tower views (`biomes/nhighlands/PERF.md`). The export writes the index (`42-core-export.js` already handled
 indexed buckets). Test: `test-lod.js`.
 
+## A library card on its geometry's axes (`20-core-kit.js`, `30-core-foliage.js`; opt-in per slot, 2026-10-27)
+
+`BIO.geo.frond` and `BIO.geo.ribbon` draw their texture once a segment, down v from the stem or hung end at v 0; `BIO.geo.hang`
+hangs from v 0; the clump's tripod shows its image upside down (v 0 at each quad's low edge). A library card that is one whole
+plant broke on all of them: the Rift's fern fronds were four small upside-down ferns end to end, floating loose of the stem
+(the owner, "these imposters improperly split the cutout textures"). Each of these geometries now declares where it holds its
+plant, `geo.userData.card = {base, once}` (`once`: the uv that spans the image once down the whole length), and a
+materials.json card slot names where its plant attaches in its image, `"base"` (left, top, right, bottom, centre), with
+`"cell"` the plant's tight box. `BIO.libSwap` puts the base on the material (`userData.libCard`); `BIO.def` gives the item a
+copy of its geometry whose uv is turned so the two ends meet (`BIO.cardTurn`) and spans the plant once. An item defined before
+the swap is fitted by it; a variant pool fits each variant to its own material (`d.raw`, the unfitted geometry). A slot with
+no base, a geometry that declares nothing, or one cut into a sheet's cells (`BIO.geo.cells` clears the declaration) draws as
+before, byte for byte. A kit's own geometry may declare its end the same way (the Rift's groundsel heads on `G.rosetteUV`:
+`{base: 'left'}`). The geometry's uv carry the fit, so the export, Godot and the impostor bake need nothing new.
+`tools/textures/check_cells.py` proposes each slot's cell and base; `tools/textures/card_probe.py` draws the slot on its
+geometry before and after (`HANDOFF-REBUILD.md`, "its card cells"). Test: `test-cards.js`.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the

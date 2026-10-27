@@ -144,7 +144,7 @@ BIO.geo.clump=function(o){if(o&&o.stem&&BIO.geo.spray)return BIO.geo.spray(o);co
   const c=[n[0]*.10,n[1]*.10-.04,n[2]*.10];
   const P=[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]].map(q=>[c[0]+u[0]*q[0]+v[0]*q[1],c[1]+u[1]*q[0]+v[1]*q[1],c[2]+u[2]*q[0]+v[2]*q[1],q[0]+.5,q[1]+.5]);
   [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(n[0],n[1],n[2]);});}
- return BIO.geo._make(pos,nor,uv);};
+ const g=BIO.geo._make(pos,nor,uv);g.userData.card={base:'top'};return g;};   /* v 0 at each quad's low edge: a library plant with a base is turned upright (20-core-kit.js, BIO.def) */
 BIO.geo._make=function(pos,nor,uv,col){const T=BIO.host.THREE,g=new T.BufferGeometry();
  g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nor,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  if(col)g.setAttribute('color',new T.Float32BufferAttribute(col,3));return g;};
@@ -172,27 +172,28 @@ BIO.geo.cells=function(geo,o){o=o||{};const R=o.rects||null,n=o.n==null?3:o.n,pi
    if(ka){const t=(u-.5)*ka;P[i]+=eu[0]*t;P[i+1]+=eu[1]*t;P[i+2]+=eu[2]*t;}
    P[i]=mx+(P[i]-mx)*sc;P[i+1]=my+(P[i+1]-my)*sc;P[i+2]=mz+(P[i+2]-mz)*sc;
    const w=o.flipY?1-U[j+1]:U[j+1],a=x0+iu+u*(cw-2*iu),b=y0+iv+w*(ch-2*iv);U[j]=a;U[j+1]=o.flipY?1-b:b;}}
- g.attributes.position.needsUpdate=true;g.attributes.uv.needsUpdate=true;return g;};
+ g.attributes.position.needsUpdate=true;g.attributes.uv.needsUpdate=true;g.userData.card=null;return g;};   /* its uv are cells of a sheet now: never turned */
 // hanging raceme / strand: two crossed quads, local y 0 (hung) .. -1
 BIO.geo.hang=function(){const pos=[],uv=[],nor=[];
  for(let k=0;k<2;k++){const ca=Math.cos(k*Math.PI/2+.4),sa=Math.sin(k*Math.PI/2+.4);
   const P=[[-.5,0],[.5,0],[.5,-1],[-.5,-1]].map(q=>[ca*q[0],q[1],sa*q[0],q[0]+.5,-q[1]]);
   [0,2,1,0,3,2].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(-sa,0,ca);});}
- return BIO.geo._make(pos,nor,uv);};
+ const g=BIO.geo._make(pos,nor,uv);g.userData.card={base:'top'};return g;};
 // a hanging RIBBON: origin at the top, running down to y=-1 in nseg tapering
 // quads, drifting in z so a curtain of them is not a plank; texture repeats
-// once per segment so a long one reads as a chain of leaves
-BIO.geo.ribbon=function(nseg,taper,drift){const pos=[],uv=[],nor=[];nseg=nseg||4;taper=taper==null?.55:taper;drift=drift==null?.18:drift;
+// once per segment so a long one reads as a chain of leaves (a library plant with a base spans it once: userData.card.once)
+BIO.geo.ribbon=function(nseg,taper,drift){const pos=[],uv=[],nor=[],once=[];nseg=nseg||4;taper=taper==null?.55:taper;drift=drift==null?.18:drift;
  const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.5*lerp(1,taper,t),z=Math.sin(t*3.1)*drift;P.push([-w,-t,z],[w,-t,z]);}
  for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
-  [[a,0,0],[c,0,1],[b,1,0],[b,1,0],[c,0,1],[d,1,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);});}
- return BIO.geo._make(pos,nor,uv);};
-// an arching FROND: pinned at the origin, arching along +x to x=1 and down
-BIO.geo.frond=function(nseg){const pos=[],uv=[],nor=[];nseg=nseg||3;
+  [[a,0,0],[c,0,1],[b,1,0],[b,1,0],[c,0,1],[d,1,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);once.push(q[1],(i+q[2])/nseg);});}
+ const g=BIO.geo._make(pos,nor,uv);g.userData.card={base:'top',once:new Float32Array(once)};return g;};
+// an arching FROND: pinned at the origin, arching along +x to x=1 and down; u across, the texture once a segment down v (a
+// library plant with a base spans the whole frond once from its stem at v 0: userData.card)
+BIO.geo.frond=function(nseg){const pos=[],uv=[],nor=[],once=[];nseg=nseg||3;
  const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.16*Math.sin(t*Math.PI)*.9+.02,y=.32*Math.sin(t*2.2)-.22*t*t;P.push([t,y,-w],[t,y,w]);}
  for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
-  [[a,0,0],[b,1,0],[c,0,1],[b,1,0],[d,1,1],[c,0,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,1,0);});}
- return BIO.geo._make(pos,nor,uv);};
+  [[a,0,0],[b,1,0],[c,0,1],[b,1,0],[d,1,1],[c,0,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,1,0);once.push(q[1],(i+q[2])/nseg);});}
+ const g=BIO.geo._make(pos,nor,uv);g.userData.card={base:'top',once:new Float32Array(once)};return g;};
 // a MOSS MAT: a fan of quads in the xz plane, front face UP (winding matters:
 // the Hexahedron lost 18k of these to a reversed fan). Flip pi about x for a soffit.
 BIO.geo.mat=function(){const pos=[],uv=[],nor=[];const N=7;

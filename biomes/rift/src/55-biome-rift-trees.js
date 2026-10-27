@@ -296,7 +296,8 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hT=H*
  const heads=[[T.x,T.y0+hT,T.z]],n=lv===2?ri(0,2):0,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k*2.3,l=H*rr(.2,.32),e=[T.x+Math.cos(a)*l*.6,T.y0+hT*rr(.5,.8)+l*.75,T.z+Math.sin(a)*l*.6];BIO.beam('rod',[T.x,T.y0+hT*rr(.5,.8),T.z],e,rb*.8,rb*.6,rc);heads.push(e);}
  const hc=vary(pick(S.leaf),.02,.06,.05),R=T.crownR;
- heads.forEach(p=>{BIO.put('rosette',[p[0],p[1]-.1,p[2]],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[R,R*.9,R],bright(vary(hc,.02,.06,.05),1.2));st.rosettes++;
+ const head=BIO.defs.gshead?'gshead':'rosette';   /* the library's strap leaves when the page has them (52-library) */
+ heads.forEach(p=>{BIO.put(head,[p[0],p[1]-.1,p[2]],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[R,R*.9,R],bright(vary(hc,.02,.06,.05),1.2));st.rosettes++;
   if(lv>=1){const m=lv===2?ri(5,8):3;for(let k=0;k<m;k++){const a=rr(0,TAU);BIO.put('ribbon',[p[0]+Math.cos(a)*rb*1.1,p[1]-.3,p[2]+Math.sin(a)*rb*1.1],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(.7,1.2),rr(1.2,2.6),1],bright(vary(0x6a5a3a,.02,.08,.06),1.05));}}
   if(lv===2&&rng()<.3){BIO.put('candle',[p[0],p[1]+R*.5,p[2]],qEuler(0,rr(0,TAU),0),[R*.35,R*1.2,R*.35],bright(C(pick(PAL.accent)).lerp(C(0xffffff),.3),1.15));st.blooms++;}});};
 // 15 the Rift cycad: a squat fibrous trunk, a stiff crown, a cone in the middle
