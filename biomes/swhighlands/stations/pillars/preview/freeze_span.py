@@ -15,9 +15,9 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import harness
 
 REACH = 260
-JS = r"""(o)=>{const T=THREE,out=[];const LY=typeof SPAN_LAYOUT!=='undefined'?SPAN_LAYOUT:null,Q=LY&&LY.pillars?(LY.pillars.find(p=>/watch/i.test(p.id))||LY.pillars[0]):null,W=Q?(()=>{const fl=LY.pillarRim.floor,c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,fl+Q.H);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:0}]};})():null;
+JS = r"""(o)=>{const T=THREE,out=[];const LY=typeof SPAN_LAYOUT!=='undefined'?SPAN_LAYOUT:null,Q=LY&&LY.pillars?(LY.pillars.find(p=>p.site==='watch')||LY.pillars.find(p=>/watch/i.test(p.id))||LY.pillars[0]):null,W=Q?(()=>{if(Q.site){const c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,Q.top);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:(Q.ry||0)-(SPAN_FRAME.ang||0)}]};}const fl=LY.pillarRim.floor,c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,fl+Q.H);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:0}]};})():null;
  if(!W)return{error:'no watch pillar in SPAN_LAYOUT'};const top=W.top,cx=W.x,cz=W.z,ry=(W.beds&&W.beds[0]&&W.beds[0].ry)||0,ca=Math.cos(ry),sa=Math.sin(ry);
- const skip=m=>{const l=(m.userData&&m.userData.inspectLabel)||m.name||'';return (m.userData&&m.userData.ground)||/stand-in|ground|terrain|water|river|lake|sky|distant|far|cloud|ring|giant/i.test(l)||m.userData.farField||(m.material&&m.material.userData&&m.material.userData.farField);};
+ const skip=m=>{const l=(m.userData&&m.userData.inspectLabel)||m.name||'';return (m.userData&&m.userData.ground)||/stand-in|proxies|ground|terrain|water|river|lake|sky|distant|far|cloud|ring|giant/i.test(l)||m.userData.farField||(m.material&&m.material.userData&&m.material.userData.farField);};
  const v=new T.Vector3(),n=new T.Vector3(),M=new T.Matrix4(),N=new T.Matrix3(),IM=new T.Matrix4(),col=new T.Color();
  scene.updateMatrixWorld(true);
  scene.traverse(m=>{if(!m.isMesh||!m.visible||skip(m))return;const g=m.geometry;if(!g||!g.attributes.position)return;
@@ -35,7 +35,7 @@ JS = r"""(o)=>{const T=THREE,out=[];const LY=typeof SPAN_LAYOUT!=='undefined'?SP
     if(vc){c.push(+(C.r*vc.getX(i)).toFixed(3),+(C.g*vc.getY(i)).toFixed(3),+(C.b*vc.getZ(i)).toFixed(3));}}}
    if(p.length)out.push({label:(m.userData&&m.userData.inspectLabel)||m.name||'mesh',color:[+C.r.toFixed(3),+C.g.toFixed(3),+C.b.toFixed(3)],pos:p,nor:q.length?q:null,col:c.length?c:null});}});
  return{watch:{x:cx,z:cz,top,ry},parts:out};}"""
-LIST_JS = r"""(o)=>{const LY=typeof SPAN_LAYOUT!=='undefined'?SPAN_LAYOUT:null,Q=LY&&LY.pillars?(LY.pillars.find(p=>/watch/i.test(p.id))||LY.pillars[0]):null,W=Q?(()=>{const fl=LY.pillarRim.floor,c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,fl+Q.H);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:0}]};})():null;const L=[];if(!W)return'no watch';scene.updateMatrixWorld(true);
+LIST_JS = r"""(o)=>{const LY=typeof SPAN_LAYOUT!=='undefined'?SPAN_LAYOUT:null,Q=LY&&LY.pillars?(LY.pillars.find(p=>p.site==='watch')||LY.pillars.find(p=>/watch/i.test(p.id))||LY.pillars[0]):null,W=Q?(()=>{if(Q.site){const c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,Q.top);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:(Q.ry||0)-(SPAN_FRAME.ang||0)}]};}const fl=LY.pillarRim.floor,c=SPAN.toWorld(SPAN_FRAME,Q.u,Q.v,fl+Q.H);return{id:Q.id,x:c[0],z:c[2],top:c[1],beds:[{ry:0}]};})():null;const L=[];if(!W)return'no watch';scene.updateMatrixWorld(true);
  scene.traverse(m=>{if(!m.isMesh||!m.visible)return;const g=m.geometry;g.computeBoundingSphere();const c=g.boundingSphere.center.clone().applyMatrix4(m.matrixWorld);
   const d=Math.hypot(c.x-W.x,c.z-W.z);if(d<o.reach+g.boundingSphere.radius)L.push([(m.userData&&m.userData.inspectLabel)||m.name||'mesh',m.isInstancedMesh?m.count:1,Math.round(d),Math.round(g.boundingSphere.radius)]);});
  return{watch:[W.id,W.x,W.z,W.top],near:L};}"""
@@ -50,7 +50,7 @@ async def main():
             if not ready:
                 sys.exit('span page did not build: ' + '; '.join(errs[:3]))
             if '--probe' in sys.argv:
-                print(await pg.evaluate("()=>JSON.stringify({P:typeof PILLARS!=='undefined'?PILLARS.length:'undef',ids:typeof PILLARS!=='undefined'?PILLARS.map(B=>B.id).slice(0,8):null,L:typeof L!=='undefined'?Object.keys(L).slice(0,30):'undef',err:(document.getElementById('errs')||{}).textContent})"))
+                print(await pg.evaluate("()=>JSON.stringify({site:SPAN_LAYOUT.site,pillars:(SPAN_LAYOUT.pillars||[]).slice(0,3),rim:SPAN_LAYOUT.pillarRim?Object.keys(SPAN_LAYOUT.pillarRim):null,keys:Object.keys(SPAN_LAYOUT).slice(0,40),F:SPAN_FRAME,err:(document.getElementById('errs')||{}).textContent})"))
                 await br.close(); return
             if '--dbg' in sys.argv:
                 print(await pg.evaluate("([js])=>{try{const f=(0,eval)(js);const r=f({reach:260,below:290});return JSON.stringify(r).slice(0,300);}catch(e){return String(e.stack).slice(0,600);}}", [JS]))
