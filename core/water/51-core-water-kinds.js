@@ -69,23 +69,42 @@
   const org=[0,0,0];if(o.origin){let n=R.count;for(let i=0;i<n;i++){org[0]+=R.pos[i*3]/n;org[2]+=R.pos[i*3+2]/n;}org[0]=Math.round(org[0]);org[2]=Math.round(org[2]);}
   g.setAttribute('position',new T.Float32BufferAttribute(o.origin?R.pos.map((v,i)=>v-org[i%3]):R.pos,3));g.setAttribute('wtrFlow',new T.Float32BufferAttribute(R.flow,2));
   g.setAttribute('wtrSlope',new T.Float32BufferAttribute(R.slope,1));g.setAttribute('wtrBank',new T.Float32BufferAttribute(R.bank,1));
+  // o.endFade (2026-10-26, WATER.join's tributaries): {len, foam} metres, or len: the ribbon's last `len` m fade out and its foam stops
+  // `foam` m (len * 1.6) before its end, so a tributary laid over its river runs into it with no end edge and no bank foam of its own
+  // out on the river. Off (the default): nothing is added, the shader text is as before
+  const EF=o.endFade==null?null:typeof o.endFade==='number'?{len:o.endFade}:Object.assign({},o.endFade),EL=R.along.length?R.along[R.along.length-1]:0;
+  const MO=!!(o.mouths&&o.mouths.length);   /* the mouths: below */
+  if(EF){if(EF.foam==null)EF.foam=EF.len*1.6;g.setAttribute('wtrAlong',new T.Float32BufferAttribute(R.along,1));}
   g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(R.count*3).map((v,i)=>i%3===1?1:0),3));g.setIndex(R.idx);g.computeBoundingSphere();
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
    transparent:o.transparent!==false,depthWrite:o.transparent===false});sky(mat,o);W.biasMaterial(mat,o);
-  const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;';
-  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'');
+  const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;'+(EF?'varying float vWtrE;':'');
+  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'')+(EF?'e'+EF.len+','+EF.foam+','+EL+','+EF.color+','+!!EF.keepFoam+','+EF.flow+','+EF.turn+','+EF.turnK:'')+(o.mouths&&o.mouths.length?'m'+JSON.stringify(o.mouths):'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;')
-    .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;'+(EF?'attribute float wtrAlong;':''))
+    .replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(EF?'vWtrE='+f(EL)+'-wtrAlong;'+(EF.flow?'{float wtrU=1.0-smoothstep(0.0,'+f(EF.turn==null?8:EF.turn)+',vWtrE);vWtrF=mix(vWtrF,vec2('+f(EF.flow[0])+','+f(EF.flow[1])+')*length(vWtrF),wtrU*'+f(EF.turnK==null?1:EF.turnK)+');}':''):''));   /* endFade.flow [x, z] (a unit), endFade.turn (8 m), endFade.turnK (1: how far it turns): the current turns into the main's over the last turn m, its ripples
+    joining the main's; the ripples are advected by phase, so a short or full turn shears them: a long, partial one (30 m, .6) reads best */
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms))
     .replace('#include <color_fragment>','#include <color_fragment>\n'+
      'float wtrP0=fract(atmWaveT*'+f(Q.phases/per)+');float wtrW0=1.0-abs(2.0*wtrP0-1.0);'+
      // the breakup noise rides the current too (the same two phases)
      'float wtrNz=mix(wtrNoise((vWtrW.xz-vWtrF*fract(wtrP0+0.5)*'+f(T2)+')*0.55+7.3),wtrNoise((vWtrW.xz-vWtrF*wtrP0*'+f(T2)+')*0.55),wtrW0);'+
      'float wtrFoamK=wtrFlowFoam(vWtrS,vWtrB)*smoothstep(0.42,0.82,wtrNz+0.15*wtrFlowFoam(vWtrS,vWtrB));'+
-     'diffuseColor.rgb=mix('+lin(T,o.shallow==null?0x6f9a8a:o.shallow)+','+lin(T,o.deep==null?0x1d3f44:o.deep)+',smoothstep(0.3,3.5,vWtrB));'+
+     // o.mouths [[x, z, r], ...] (2026-10-26, a confluence; opt-in): inside a round hole at each (soft from .55 r to r) the water is drawn as
+     // mid-channel: no foam, the deep colour, full alpha (a bank's shallow tint and its fade to the ground under it read as a pale line
+     // across a tributary's mouth). Given to both drawings, the two waters meet as one and the foam borders end on one arc; a fourth
+     // value 0 ([x, z, r, 0], the tributary's own drawing) keeps its ribbon's side fade (no hard edge of it over the main's water)
+     (MO?'float wtrMh=1.0,wtrMa=1.0;'+o.mouths.map(M=>{const d='smoothstep('+f(M[2]*.55)+','+f(M[2])+',length(vWtrW.xz-vec2('+f(M[0])+','+f(M[1])+')))';return 'wtrMh*='+d+';'+(M[3]===0?'':'wtrMa*='+d+';');}).join('')+'wtrFoamK*=wtrMh;float wtrBm=mix(max(vWtrB,3.5),vWtrB,wtrMh),wtrBa=mix(max(vWtrB,3.5),vWtrB,wtrMa);':'')+(EF?'wtrFoamK*=smoothstep('+f(EF.foam)+','+f(EF.foam+Math.max(1,EF.len))+',vWtrE);':'')+
+     'diffuseColor.rgb=mix('+lin(T,o.shallow==null?0x6f9a8a:o.shallow)+','+lin(T,o.deep==null?0x1d3f44:o.deep)+',smoothstep(0.3,3.5,'+(MO?'wtrBm':'vWtrB')+'));'+
      'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.86,0.9,0.9),wtrFoamK);'+
-     (o.transparent!==false?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);':'')+
+     (o.transparent!==false?(MO?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,wtrBm))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,wtrBa);diffuseColor.a=mix(smoothstep('+f(-S.ribbonOpt.margin)+',0.25,wtrBa),diffuseColor.a,wtrMh);'   /* opaque in any mouth's hole but at its own sides: a pool under it (WATER.join pool) does not show through */:'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);'):'')+
+     // endFade.color (the main's water, sRGB): over the stretch that lies on the main (vWtrE under foam) the colour turns to the main's
+     // and the surface covers what is under it (the main's bank foam at the mouth) before it fades out over the last len m
+     (EF&&EF.color!=null?'{float wtrU=1.0-smoothstep('+f(EF.len)+','+f(EF.foam)+',vWtrE);diffuseColor.rgb=mix(diffuseColor.rgb,'+lin(T,EF.color)+',wtrU);'+
+      (o.transparent!==false?'diffuseColor.a=mix(diffuseColor.a,0.97*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB),wtrU);':'')+'}':'')+
+     // endFade.keepFoam: the water fades but its foam stays (the owner's note: the tributary's foam border may lie over the main's foam,
+     // its water may not lie over the main's water); a negative foam keeps the foam to the very end
+     (EF?(o.transparent!==false?'diffuseColor.a*='+(EF.keepFoam?'max(smoothstep(0.0,'+f(EF.len)+',vWtrE),wtrFoamK)':'smoothstep(0.0,'+f(EF.len)+',vWtrE)')+';':'if(vWtrE<'+f(EF.len*.5)+')discard;'):'')+
      // chute (2026-10-26): the ribbon gives way where the line is steeper than this (the falls' curtains draw the water there: fallsOf's steep),
      // so its sheet down a chute, cut by the banks, does not show beside the curtain
      (o.chute!=null?(o.transparent!==false?'diffuseColor.a*=1.0-smoothstep('+f(.85*o.chute)+','+f(o.chute)+',vWtrS);':'if(vWtrS>='+f(o.chute)+')discard;'):''))

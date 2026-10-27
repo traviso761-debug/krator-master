@@ -354,6 +354,15 @@ build must:
 Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
 contract and its tunables are in the header of `36-core-carve.js`.
 
+**A cave mouth in a hillside, and weathered bodies** (2026-10-26, biomes/swhighlands station 1; the owner's notes; opt-in). `KCARVE`
+(36): `face(o)` / `cut(F, x, z, h)` the bite a mouth opens in (a floor, noisy walls by KRAND except on the mouth's side, never more than
+`maxCut` under the natural ground), `site(o)` where along a line the back wall stands `face` m, `fold(h, x, z, {steep})` the recess
+folded into the host's ground steeply enough to lie inside the hood's margin (`minSteep(Q)`: else a trench opens round the hood),
+`keepOut(x, z, pad)` where a host's other carving (a stream's banks) must leave the ground alone, and `mesh(material, {attrs})` (the
+host's uv and zone weights on the patch, so the hood takes the ground's own material and its top is the hill's). `KSTACKS.weather(B, m,
+{ground, amp, grain, pit, round})` (37): the drawn mesh worn natural (an arch's upper corners rounded, two grains of KRAND noise, the
+feet kept on the ground); the record is not changed. Tests: `test-carve.js`, `test-stacks.js` (each with negatives).
+
 ### Strata (`KSTRATA`, 2026-10-26: `STRATA-PLAN.md` S1-S5)
 
 Bedded rock as records, so what a painter, a plant pass, a relief pass or Godot asks of the rock is what the shader draws.

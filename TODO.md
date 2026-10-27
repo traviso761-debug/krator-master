@@ -32,6 +32,10 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
+- **The planetary nebula, smaller and with its white dwarf** (the owner, 2026-10-27; done in the sources on
+  `claude/core-atmos-planned-16a374`): `SKY.cluster.pn` radius 3 to 2 degrees (`core/atmos/sky/89-atmos-e-skymodel.js`) and a
+  blue-white central star a pixel or two wide with a faint glow (`89-atmos-g-sky.js`); the Godot include, `golden.json` and
+  `sky.json` carry it. Every page on the shared sky changes (its night sky only): rebuild them with the rest, no separate pass.
 
 - **Backport the succulent columns' quality pass** (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
   `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
