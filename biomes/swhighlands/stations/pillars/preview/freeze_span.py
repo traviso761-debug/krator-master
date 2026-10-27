@@ -1,4 +1,4 @@
-"""Freeze Span's watch post into a static snapshot for station 4's preview page (python3 freeze_span.py <span.html> [--list]).
+"""Freeze Span's watch post (and, with --massing, its layout's parts as volumes) into a static snapshot for station 4's preview page (python3 freeze_span.py <span.html> [--list]).
 
 Station 4 is the biome only (the owner, 2026-10-27): its page never loads settlements/span. To see how Span sits on the site,
 this tool opens Span's built page headless (a committed one: git show <rev>:settlements/span/dist/*
@@ -50,11 +50,22 @@ async def main():
             if not ready:
                 sys.exit('span page did not build: ' + '; '.join(errs[:3]))
             if '--probe' in sys.argv:
-                print(await pg.evaluate("()=>JSON.stringify({site:SPAN_LAYOUT.site,pillars:(SPAN_LAYOUT.pillars||[]).slice(0,3),rim:SPAN_LAYOUT.pillarRim?Object.keys(SPAN_LAYOUT.pillarRim):null,keys:Object.keys(SPAN_LAYOUT).slice(0,40),F:SPAN_FRAME,err:(document.getElementById('errs')||{}).textContent})"))
+                print(await pg.evaluate("()=>JSON.stringify({site:SPAN_LAYOUT.site,n:SPAN_LAYOUT.parts.length,parts:SPAN_LAYOUT.parts.slice(0,4),kinds:[...new Set(SPAN_LAYOUT.parts.map(p=>p.kind))],levels:SPAN_LAYOUT.levels})"))
                 await br.close(); return
             if '--dbg' in sys.argv:
                 print(await pg.evaluate("([js])=>{try{const f=(0,eval)(js);const r=f({reach:260,below:290});return JSON.stringify(r).slice(0,300);}catch(e){return String(e.stack).slice(0,600);}}", [JS]))
                 await br.close(); return
+            if '--massing' in sys.argv:
+                M = await pg.evaluate("()=>({site:SPAN_LAYOUT.site,levels:SPAN_LAYOUT.levels,parts:SPAN_LAYOUT.parts.map(p=>({id:p.id,name:p.name,kind:p.kind,shape:p.shape,y:p.y||0,h:p.h||6,by:p.by,state:p.state}))})")
+                await br.close()
+                rev = sys.argv[sys.argv.index('--rev') + 1] if '--rev' in sys.argv else ''
+                M.update({'format': 'span-massing-frozen', 'version': 1, 'source': 'settlements/span (SPAN_LAYOUT.parts)', 'rev': rev,
+                          'frozen': datetime.date.today().isoformat(), 'frame': 'Span canyon frame: u out from the cliff (u0 at M), v along the rim, y from the rim'})
+                out = os.path.join(HERE, 'span-massing.frozen.json')
+                with open(out, 'w', encoding='utf-8', newline='\n') as fh:
+                    json.dump(M, fh, separators=(',', ':'))
+                print('wrote', os.path.relpath(out, ROOT).replace(os.sep, '/'), len(M['parts']), 'parts')
+                return
             if '--all' in sys.argv:
                 print(await pg.evaluate("()=>{const o=[],b=new THREE.Box3();scene.updateMatrixWorld(true);scene.traverse(m=>{if(!m.isMesh)return;b.setFromObject(m);const c=b.getCenter(new THREE.Vector3());let p=m,path=[];while(p){path.push(p.name||p.type);p=p.parent;}o.push([(m.userData.inspectLabel||m.name||'mesh').slice(0,40),Math.round(c.x),Math.round(c.y),Math.round(c.z),Math.round(b.max.x-b.min.x),path.slice(1,4).join('<')]);});return JSON.stringify(o);}"))
                 await br.close(); return

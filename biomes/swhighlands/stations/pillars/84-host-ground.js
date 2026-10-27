@@ -49,14 +49,19 @@ function buildGround(){
   far:{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  const glAt=(x,z)=>{const u=(x-TERR.X0)/SX,v=(z-TERR.Z0)/SZ,sl=smooth(.6,1,FC.at(FC.a.slope,x,z));return[zat('floor',u,v)*(1-zat('bank',u,v))*(1-sl),zat('table',u,v)*(1-sl),clamp(zat('block',u,v)+zat('bank',u,v),0,1)*(1-sl),0];};
- /* the mesh 3 m across and 3 m deep in the band by the rim (the field's inset: the eroded slots and the jagged cliff), 6 m deep elsewhere */
- const XS=[],ZS=[];for(let x=TERR.X0;x<=TERR.X1+1e-6;x+=3)XS.push(x);for(let z=TERR.Z0;z<=TERR.Z1+1e-6;){ZS.push(z);z+=(z>=-1020&&z<-60)?3:6;}
- const nx=XS.length-1,nz=ZS.length-1,N=(nx+1)*(nz+1),pos=new Float32Array(N*3),uv=new Float32Array(N*2),gl=new Float32Array(N*4),idx=[];
- for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*(nx+1)+i,x=XS[i],z=ZS[j];pos[k*3]=x;pos[k*3+1]=groundH(x,z);pos[k*3+2]=z;uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;gl.set(glAt(x,z),k*4);}
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;idx.push(a,c,b,b,c,d);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
- g.setIndex(new THREE.Uint32BufferAttribute(idx,1));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The pillar rim (ground)';scene.add(m);
+ /* THREE PIECES of one ground: 3 m in the band by the rim (the field's inset: the eroded slots, the jagged cliff), 6 m north and south
+    of it; they share their boundary rows (every 6 m vertex is one of the band's), the band's extra ones on the seam held to the
+    straight line between their neighbours, so no crack opens */
+ const BZ0=-1020,BZ1=-60;
+ const piece=(x0,x1,dx,z0,z1,dz,seam)=>{const XS=[],ZS=[];for(let x=x0;x<=x1+1e-6;x+=dx)XS.push(x);for(let z=z0;z<=z1+1e-6;z+=dz)ZS.push(z);
+  const nx=XS.length-1,nz=ZS.length-1,N=(nx+1)*(nz+1),pos=new Float32Array(N*3),uv=new Float32Array(N*2),gl=new Float32Array(N*4),idx=[];
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*(nx+1)+i,x=XS[i],z=ZS[j];let y=groundH(x,z);
+   if(seam&&(j===0||j===nz)&&i%2===1)y=(groundH(XS[i-1],z)+groundH(XS[Math.min(nx,i+1)],z))/2;   /* on the seam: the coarse piece's edge */
+   pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;gl.set(glAt(x,z),k*4);}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;idx.push(a,c,b,b,c,d);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
+  g.setIndex(new THREE.Uint32BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The pillar rim (ground)';scene.add(m);return m;};
+ const m=piece(TERR.X0,TERR.X1,3,BZ0,BZ1,3,true);piece(TERR.X0,TERR.X1,6,TERR.Z0,BZ0,6,false);piece(TERR.X0,TERR.X1,6,BZ1,TERR.Z1,6,false);
  {const P=[],U=[],NA=400,ed=[];for(let k=0;k<=NA;k++){const f=k/NA;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<NA;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=groundH(a[0],a[1]),hb=groundH(b[0],b[1]),ua=[(a[0]-TERR.X0)/SX,1-(a[1]-TERR.Z0)/SZ],ub=[(b[0]-TERR.X0)/SX,1-(b[1]-TERR.Z0)/SZ];
    [[a,ha,ua],[b,hb,ub],[b,hb-60,ub],[a,ha,ua],[b,hb-60,ub],[a,ha-60,ua]].forEach(q=>{P.push(q[0][0],q[1],q[0][1]);U.push(q[2][0],q[2][1]);});}

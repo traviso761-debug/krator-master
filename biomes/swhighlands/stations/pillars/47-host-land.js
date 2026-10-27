@@ -12,7 +12,7 @@
 const OBSTACLES=[],FIELD={},SPINE=[[-1200,rimZ(-1200)+200],[-400,rimZ(-400)+150],[900,rimZ(900)+250],[0,640],[-900,rimZ(-900)-300],[800,rimZ(800)-300]];let SITE_HOLD=null;
 BIO.init({tags:'swhighlands-pillars',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:FIELD_BAKED,
  mask:(x,z)=>{if(x<TERR.X0+4||x>TERR.X1-4||z<TERR.Z0+4||z>TERR.Z1-4)return 0;if(SITE_HOLD&&Math.hypot(x-SITE_HOLD.x,z-SITE_HOLD.z)<SITE_HOLD.r)return 0;
-  if(towerTop(x,z,3))return 1;if(nearTower(x,z,2))return 0;const r=streamNear(x,z);if(r&&r.dd<1)return 0;return smooth(1.2,.8,FC.at(FC.a.slope,x,z));},
+  if(towerTop(x,z,3))return 1;if(nearTower(x,z,2))return 0;const r=streamNear(x,z);if(r&&r.dd<1)return 0;if(inReservoir(x,z)&&groundH(x,z)<RESERVOIR.level+.3)return 0;return smooth(1.2,.8,FC.at(FC.a.slope,x,z));},
  obstacles:OBSTACLES,ticks:tick,seed:WORLD,register:REGISTER,origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
 {const Q=new URLSearchParams(location.search);
  BIO.INDEX_ITEMS=Q.get('index')!=='0';
@@ -154,7 +154,11 @@ const SWHI_PILLARS_SITE=(function(){const W=WATCH,b0=W?W.beds[W.beds.length-1]:n
   towers:PILLARS.filter(B=>!B.isArch).map(B=>({id:B.id,x:+B.x.toFixed(2),z:+B.z.toFixed(2),foot:+B.y0.toFixed(2),top:+B.top.toFixed(2),R:+B.R.toFixed(2)})),
   rim:Array.from({length:65},(_,i)=>{const x=TERR.X0+i*(TERR.X1-TERR.X0)/64,z=rimZ(x);return{x,z,top:+tableTop(x,z-20).toFixed(2),floor:+groundH(x,z+30).toFixed(2)};}),
   /* the rim's line every 5 m (its buttresses and alcoves; rim keeps the 50 m points) */
-  rimFine:Array.from({length:641},(_,i)=>{const x=TERR.X0+i*5;return[x,+rimZ(x).toFixed(2)];}),
+  rimFine:Array.from({length:Math.floor((TERR.X1-TERR.X0)/5)+1},(_,i)=>{const x=TERR.X0+i*5;return[x,+rimZ(x).toFixed(2)];}),
+  /* SPAN'S CANYON as this station carves it (45-host-stage.js): its frame (u = u0 at M on the rim, out along n; v along t; y under
+     the table's top) and the reservoir's ellipse in it and its level (m over frame.y0) */
+  canyon:{M:CANYON.M.map(v=>+v.toFixed(2)),n:CANYON.n.map(v=>+v.toFixed(5)),t:CANYON.t.map(v=>+v.toFixed(5)),u0:CANYON.u0,
+   reservoir:Object.assign({},CANYON.lake,{levelY:+RESERVOIR.level.toFixed(2)})},
   /* THE GROUND round the watch pillar and the cliff under it, as drawn (the field's heights, no rock bodies), for a settlement to fit
      its stairs and paths to: a grid of h (m, over frame.y0) from box[0],box[1], step m apart, nx by nz, row by row along x */
   ground:(function(){if(!WATCH)return null;const st=2,x0=Math.round(WATCH.x-220),z0=Math.round(rimZ(WATCH.x)-120),x1=Math.round(WATCH.x+220),z1=Math.round(WATCH.z+120),nx=Math.round((x1-x0)/st)+1,nz=Math.round((z1-z0)/st)+1,h=[];

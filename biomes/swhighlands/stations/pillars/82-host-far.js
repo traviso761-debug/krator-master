@@ -4,16 +4,16 @@
 (function(){const C=THREE.ShaderChunk,dv=/vFogDepth/.test(C.fog_fragment)?'vFogDepth':'fogDepth';
  C.fog_fragment=C.fog_fragment.replace(/float fogFactor = 1\.0 - exp\( - fogDensity[^;]*;/,
   'float fogD='+dv+';fogD=fogD<4000.0?fogD:4000.0+5000.0*(1.0-exp(-(fogD-4000.0)/5000.0));\n\t\tfloat fogFactor = 1.0 - exp( - fogDensity * fogD );');})();
-const FAR=(function(){const RIN=TERR.X1,ROUT=30000,SINK=20;
+const FAR=(function(){const RIN=Math.max(-TERR.X0,TERR.X1,-TERR.Z0,TERR.Z1),ROUT=30000,SINK=20,X0=TERR.X0,X1=TERR.X1,Z0=TERR.Z0,Z1=TERR.Z1;   /* the map is a box, not a square about the origin */
  const farH=(x,z)=>TABLE(x,z)+(z>1600?-.05*(z-1600)*smooth(1600,12000,z):0);
- const GL=KFAR.lines({cell:60,inner:4200,out:ROUT,grow:1.06}),rr2=(ROUT-400)*(ROUT-400);
+ const GL=KFAR.lines({cell:60,inner:RIN+600,out:ROUT,grow:1.06}),rr2=(ROUT-400)*(ROUT-400);
  const FARK={curve:{from:RIN},crest:{k:.4,from:7000,to:14000}};
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
  const C={floor:L([74,104,58]),table:L([150,120,96]),rock:L([170,96,80]),white:L([214,200,186]),far:L([126,142,154])};let last={rock:0};
  const G=KFAR.grid(Object.assign({lines:GL,dense:true,
-  h:(x,z)=>{if(Math.abs(x)<=RIN&&Math.abs(z)<=RIN)return groundH(x,z)-(Math.abs(x)===RIN||Math.abs(z)===RIN?0:SINK);
-   const xb=clamp(x,-RIN,RIN),zb=clamp(z,-RIN,RIN),dO=Math.hypot(x-xb,z-zb);let h=farH(x,z);if(dO<900)h+=(groundH(xb,zb)-farH(xb,zb))*smooth(900,0,dO);return h;},
-  skip:(x0,z0,x1,z1)=>Math.min(x0*x0+z0*z0,x1*x1+z0*z0,x0*x0+z1*z1,x1*x1+z1*z1)>rr2||(x0>-RIN+100&&x1<RIN-100&&z0>-RIN+100&&z1<RIN-100),
+  h:(x,z)=>{if(x>=X0&&x<=X1&&z>=Z0&&z<=Z1)return groundH(x,z)-(x===X0||x===X1||z===Z0||z===Z1?0:SINK);
+   const xb=clamp(x,X0,X1),zb=clamp(z,Z0,Z1),dO=Math.hypot(x-xb,z-zb);let h=farH(x,z);if(dO<900)h+=(groundH(xb,zb)-farH(xb,zb))*smooth(900,0,dO);return h;},
+  skip:(x0,z0,x1,z1)=>Math.min(x0*x0+z0*z0,x1*x1+z0*z0,x0*x0+z1*z1,x1*x1+z1*z1)>rr2||(x0>X0+100&&x1<X1-100&&z0>Z0+100&&z1<Z1-100),
   color:(x,z,y,q)=>{const n1=NZ(x,z,.0031,96,2)+.5,zz=zone(x,z);
    let c=mixC(C.floor,C.table,smooth(.31,.27,zz));c=mixC(c,mixC(C.rock,C.white,clamp(n1*1.4-.2,0,1)),smooth(.5,1,q.slope));c=mixC(c,C.far,.3*smooth(5000,24000,q.r));last={rock:smooth(.6,1,q.slope)};return c;},
   attrs:{aDet:{size:1,fn:()=>1-.4*last.rock},uv:{size:2,fn:(x,z)=>[x/150,z/150]}}},FARK));

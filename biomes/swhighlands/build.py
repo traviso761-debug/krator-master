@@ -136,6 +136,10 @@ if PREVIEW:
         sys.exit('build.py: --preview span needs --station pillars and stations/pillars/preview/span-watch.frozen.json (freeze_span.py)')
     with open(os.path.join(PV, 'span-watch.frozen.json'), encoding='utf-8') as fh:
         VIRTUAL['89x-preview-span-data.js'] = "// FROZEN: Span's watch post, a static snapshot (freeze_span.py); not Span's code\nconst SPAN_FROZEN=" + fh.read().strip() + ";\n"
+    mp = os.path.join(PV, 'span-massing.frozen.json')
+    if os.path.isfile(mp):
+        with open(mp, encoding='utf-8') as fh:
+            VIRTUAL['89x-preview-span-data.js'] += "// FROZEN: Span's layout parts as volumes (freeze_span.py --massing)\nconst SPAN_MASSING=" + fh.read().strip() + ";\n"
     PATH['89y-preview-span.js'] = os.path.join(PV, '89y-preview-span.js')
 for f in VIRTUAL:
     PATH[f] = None

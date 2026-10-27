@@ -17,12 +17,17 @@ const VIEWS={};
  // the cliff: its caprock over the banded, gullied apron (Paria's kind)
  {let best=null;for(let k=0;k<24;k++){const x=-1400+k*120,z=rimZ(x)+APRON*1.6,near=PILLARS.filter(B=>Math.abs(B.x-x)<170&&B.z<z).length;if(!best||near<best.n)best={x,z,n:near};}
   if(best)add('The cliff and its apron',[best.x,G(best.x,best.z)+30,best.z,best.x+60,TOP-CAP*1.4,rimZ(best.x+60)]);}   /* where the fewest towers stand between */
+ // SPAN'S CANYON: from its rim over the Deep Reach, and from the bay up to the reservoir
+ {const P=(u,v)=>[CANYON.M[0]+(u-CANYON.u0)*CANYON.n[0]+v*CANYON.t[0],CANYON.M[1]+(u-CANYON.u0)*CANYON.n[1]+v*CANYON.t[1]];
+  const a=P(500,240),b=P(-200,0);add("Span's canyon",[a[0],tableTop(a[0],a[1])+60,a[1],b[0],tableTop(b[0],b[1])-150,b[1]]);
+  const c=P(-400,-260),d=P(-1600,0);add('The reservoir',[c[0],tableTop(c[0],c[1])+80,c[1],d[0],RESERVOIR.level,d[1]]);}
  // Pan Riba: over its meanders on the floor, looking west along it
  {const p=PAN.pts[Math.floor(PAN.pts.length*.6)],q=PAN.pts[Math.floor(PAN.pts.length*.35)];add('Pan Riba on the floor',[p[0],waterH(p[0],p[1])+28,p[1]+40,q[0],waterH(q[0],q[1])+5,q[1]]);}
  // the floor's flora: cushions and torch spikes in the green between the towers
  {const x=WATCH?WATCH.x+160:200,z=rimZ(x)+BAND*.8;add('The green floor',[x,G(x,z)+2.2,z,x+40,G(x+40,z-30)+1,z-30]);}
  {const x=200,z=rimZ(x)+BAND*1.3;add('Dawn: mist round the towers',[x,G(x,z)+8,z,x-200,190,rimZ(x-200)+120],'dawn');}
  if(typeof SPAN_PREVIEW!=='undefined'&&SPAN_PREVIEW)add('Span on the watch pillar (frozen preview)',SPAN_PREVIEW.view);   /* the preview build only */
+ if(typeof SPAN_MASS!=='undefined'&&SPAN_MASS)add('Span massing in its canyon (frozen preview)',SPAN_MASS.view);
  {const x=WATCH?WATCH.x-120:0,z=WATCH?WATCH.z+110:0;add('Night: the pillar rim',[x,G(x,z)+3,z,WATCH?WATCH.x:0,WATCH?WATCH.top-60:150,WATCH?WATCH.z:0],'night');}})();
 function tagText(t){if(!t)return'';const g=t.tags,h=g.harvest||{};return '\n'+t.cls+'  ·  '+g.climate+' / '+g.aridity+' / '+(g.abyssal?'abyssal':'non-abyssal')+'\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.notes?'\n'+h.notes:'');}
 function describe(h0,hits){hits=hits.filter(h=>h.object.visible);if(!hits.length)return '(nothing)';const p=hits[0].point,o=hits[0].object;

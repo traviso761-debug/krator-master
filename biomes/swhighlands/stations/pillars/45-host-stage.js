@@ -26,7 +26,7 @@ const fill=new THREE.DirectionalLight(0xa8c4d0,.28);fill.position.set(800,400,90
 
 // ---------------------------------------------------------------- the map
 const ALT0=2340,WORLD=8821;
-const TERR={R:1600,X0:-1600,X1:1600,Z0:-1600,Z1:1600};
+const TERR={R:1600,X0:-2400,X1:1600,Z0:-4500,Z1:1600};   /* 4.0 x 6.1 km: the rim and its towers, and north-west up Span's canyon to the reservoir */
 const NZ=(x,z,f,seed,o)=>KRAND.fbm(x*f+.31,.57,z*f-.13,o||3,seed)-.5;
 const TOP=270;   /* the table's top over the floor (m): the towers' height where they stand whole */
 // THE RIM: the line where the table ends (zone .3), wandering east-west; the zone runs 0 (deep in the table) .. .3 (the rim)
@@ -36,7 +36,15 @@ const BAND=430;
 function rimZ(x){return -520+200*Math.sin(x*.0011+.3)+80*NZ(x,0,.0024,81,2)+45*NZ(x,0,.009,88,2)+14*NZ(x,0,.035,89,2);}
 function zone(x,z){const d=z-rimZ(x);return d<0?clamp(.3+d/1800,0,.3):clamp(.3+.6*d/BAND,0,1);}
 const JOINTS=KRELIEF.joints({world:WORLD,angle:.32,sp:[64,130]});
-function tableTop(x,z){return TOP+8*NZ(x,z,.0016,82,2)+2*NZ(x,z,.02,83,2);}
+// SPAN'S CANYON's frame (its section below): here, as the towers' plan keeps out of its mouth
+const CANYON=(function(){const M=[-1750,rimZ(-1750)],P=[260,rimZ(260)],c=[P[0]-M[0],P[1]-M[1]],L=Math.hypot(c[0],c[1]),t=[-c[0]/L,-c[1]/L],n=[t[1],-t[0]];
+ return{M,n:n[1]>0?n:[-n[0],-n[1]],t,u0:1300,lake:{u:-1600,v:-60,au:560,av:690,level:-8}};})();
+function canyonUV(x,z){const C=CANYON,dx=x-C.M[0],dz=z-C.M[1];return[C.u0+dx*C.n[0]+dz*C.n[1],dx*C.t[0]+dz*C.t[1]];}
+// the table's top FALLS toward its edge (the owner, 2026-10-27: "vary the cliff height downward more toward the edge"): by EDGE_DROP(x)
+// metres at the rim (15-120 m, wandering along it), easing in over the last ~650 m of the table and held on past the rim, so the
+// towers beyond, cut from the same beds, stand lower too
+function EDGE_DROP(x){return 15+90*smooth(.32,.72,KRAND.fbm(x*.0011+4,.2,.7,3,104))+20*NZ(x,0,.004,105,2);}
+function tableTop(x,z){const d=z-rimZ(x);return TOP+8*NZ(x,z,.0016,82,2)+2*NZ(x,z,.02,83,2)-EDGE_DROP(x)*smooth(-650,30,d);}
 // THE TOWERS' PLAN (the owner's references, 2026-10-27: Canyon de Chelly's Spider Rock and its fins): a tower in a block of the band
 // by the block's own draw (two in five, fewer toward the band's end), narrowed across its long side to a fin or a spire, a third
 // broken lower; laid out here, before the ground, so the ground can pile its talus round each foot (47-host-land.js makes the bodies
@@ -45,6 +53,7 @@ const WATCH_AT={x:260,z:rimZ(260)+BAND*.42,w:62,l:60};
 const TOWER_PLAN=JOINTS.blocks([TERR.X0+40,TERR.Z0+40,TERR.X1-40,TERR.Z1-40]).map(B=>{const zz=zone(B.cx,B.cz);if(zz<.3||zz>=.9)return null;
  const t=(zz-.3)/.6,s=KRAND.stream(KRAND.hash(WORLD,B.i,B.j,0x91)),stand=s.next()<(1-.75*Math.pow(t,1.5))*.42,gp=.15+.5*t,brk=s.next(),fin=s.range(.3,.62),spire=s.next()<.3;
  if(!stand||Math.hypot(B.cx-WATCH_AT.x,B.cz-WATCH_AT.z)<95)return null;
+ {const uv=canyonUV(B.cx,B.cz);if(Math.abs(uv[1])<200&&uv[0]>-400&&uv[0]<1500)return null;}   /* none in Span's canyon's mouth */
  const long=B.w>B.l,w=B.w*(1-gp)*(long?1:fin)*(spire?.7:1),l=B.l*(1-gp)*(long?fin:1)*(spire?.7:1);if(Math.min(w,l)<12)return null;
  const jt=KRAND.stream(KRAND.hash(WORLD,B.i,B.j,0x94)),jx=jt.range(-.2,.2)*B.w,jz=jt.range(-.2,.2)*B.l,jr=jt.range(-.4,.4);   /* off the grid: each tower its own shift and turn */
  return{id:'pillar:'+B.id,i:B.i,j:B.j,x:B.cx+jx*Math.cos(B.ry)-jz*Math.sin(B.ry),z:B.cz+jx*Math.sin(B.ry)+jz*Math.cos(B.ry),w,l,ry:B.ry+jr,brk:brk<.35?brk/.35*.6*t:0,spire,arch:!spire&&Math.max(w,l)>=44&&s.next()<.14,seed:KRAND.hash(WORLD,B.i,B.j,0x92)};}).filter(Boolean);
@@ -62,7 +71,7 @@ function talusAt(x,z){let h=0;for(const P of TOWER_PLAN.concat([WATCH_AT],FREE_A
 // running down it (ridged KRAND noise along the rim, deepest mid-slope); the beds show on it (84-host-ground.js paints the steep)
 const CAP=85,APRON=270;
 function apronAt(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ(x,0,.003,90,2)),u=clamp(1-d/L,0,1);if(u<=0)return 0;
- const h=(TOP-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
+ const h=Math.max(20,tableTop(x,rimZ(x)-4)-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
 // the floor: low hummocks, the badland apron under the cliff, a talus cone round each tower, falling a little toward Pan Riba
 function floor0(x,z){const d=z-rimZ(x),b=6*NZ(x,z,.0028,84,3)+1.5*NZ(x,z,.015,85,2)-.012*Math.max(0,d-200);return Math.max(b+talusAt(x,z),b+apronAt(x,z));}
 const TABLE0=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.02,slot:{w:2.6,grow:4,depth:0}});
@@ -89,7 +98,34 @@ function slotCut(x,z){const zz=zone(x,z);if(zz>=.3)return 0;const f=zz/.3,wx=x+3
  cut+=2.5*smooth(.18,.32,KRAND.fbm(x*.012,.7,z*.012,2,99)-.5+.25);
  return cut*smooth(.3,.285,zz);}
 // the table, its slots and its cliff: TABLE0 with the station's eroded joints cut in, never under the floor
-function TABLE(x,z){const t=TABLE0(x,z),c=slotCut(x,z);return c>0?Math.max(floor0(x,z)+1,t-c):t;}
+function TABLE1(x,z){const t=TABLE0(x,z),c=slotCut(x,z);return c>0?Math.max(floor0(x,z)+1,t-c):t;}
+
+// ---------------------------------------------------------------- SPAN'S CANYON AND ITS RESERVOIR (the owner, 2026-10-27)
+// The dry canyon Span stands in and the reservoir behind it are this kit's ground (settlements/span PLAN.md: "the ground is not
+// Span's"), carved from the section Span's plan handed the kit (its section 5, "The canyon section to carve"): this station reads
+// nothing of Span; the numbers are the biome's own from here on, and the canyon's frame is published in the site (CANYON) for
+// Span to place itself in. THE FRAME: the canyon leaves the table at M on the rim (x -1750); u runs out from the cliff along n
+// (the rim's chord from M to the rim under the watch pillar, turned a quarter), u = 1300 at M; v runs along t (the chord), y is
+// metres under the table's top. The reach is straight. Upstream of u -1050 the RESERVOIR: Span's weir holds it, the canyon below
+// is dry (no water drawn in it).
+// steps across the reach: [half-width, level] from the rim in (the benches at -40, -85, -130 and the floor), faces ~4 m wide, worn
+function stepsY(av,steps,wob){let y=0;for(const q of steps){const w=q[0]+wob;if(av<w+4)y=lerp(y,q[1],smooth(w+4,w-2,av));}return y;}
+// the canyon's depth under the table's top at (u, v): <= 0, 0 outside it
+function canyonY(u,v,x,z){const av=Math.abs(v),wob=3*NZ(x,z,.02,106,2)+1.5*NZ(x,z,.08,107,1);let y=0;
+ if(u>-300&&u<1500){const fl=u<-180?lerp(-110,-180,(u+300)/120):lerp(-180,-190,clamp((u+180)/1000,0,1));
+  y=Math.min(y,stepsY(av,[[150,0],[128,-40],[105,-85],[85,-130],[70,fl]],wob)*smooth(-300,-285,u));}
+ {const e=Math.pow((u+520)/230,2)+Math.pow(v/160,2),ea=Math.pow((u+520)/185,2)+Math.pow(v/118,2);   /* the bay: its terrace, the Apron, the slot */
+  if(e<1.2){y=Math.min(y,-30*smooth(1.05,.95,e+.04*wob));if(ea<1.1)y=Math.min(y,-45*smooth(1.03,.97,ea));
+   if(u>-760&&u<-280&&av<34){const sf=lerp(-60,-110,clamp((u+750)/460,0,1));y=Math.min(y,lerp(-45,sf,smooth(30,22,av+wob)));}}}
+ if(u>-910&&u<-740)y=Math.min(y,stepsY(av,[[65,-60]],wob));   /* the head, below the Head Fall */
+ if(u>-1060&&u<=-900)y=Math.min(y,stepsY(av,[[55,-9]],wob)*smooth(-1060,-1045,u));   /* the outlet from the reservoir, over Span's weir */
+ {const L=CANYON.lake,e=Math.pow((u-L.u)/L.au,2)+Math.pow((v-L.v)/L.av,2)+.08*NZ(x,z,.003,108,2);if(e<1.05)y=Math.min(y,lerp(0,L.level-1.5,smooth(1.05,.9,e))-16*clamp((.9-e)/.9,0,1));}   /* its shore shelving to 1.5 m under the level, then the bed to 16 m more */
+ return y;}
+function TABLE(x,z){const g=TABLE1(x,z),uv=canyonUV(x,z);if(uv[0]<-2400||uv[0]>1500||Math.abs(uv[1])>800)return g;const y=canyonY(uv[0],uv[1],x,z);
+ if(y>=0)return g;const top=tableTop(x,z);return Math.min(g,top+y);}
+// the reservoir's water: still, at its level under the table's top at its middle
+const RESERVOIR=(function(){const L=CANYON.lake,C=CANYON,cx=C.M[0]+(L.u-C.u0)*C.n[0]+L.v*C.t[0],cz=C.M[1]+(L.u-C.u0)*C.n[1]+L.v*C.t[1],level=tableTop(cx,cz)+L.level;
+ return{x:cx,z:cz,level,poly:Array.from({length:72},(_,k)=>{const a=k/72*TAU,u=L.u+Math.cos(a)*L.au*.98,v=L.v+Math.sin(a)*L.av*.98;return[C.M[0]+(u-C.u0)*C.n[0]+v*C.t[0],C.M[1]+(u-C.u0)*C.n[1]+v*C.t[1]];})};})();
 
 // ---------------------------------------------------------------- Pan Riba (the river across the floor)
 // From the map's west edge to its east, out on the floor beyond the towers, meandering (KRELIEF.meander); its level from
@@ -112,5 +148,7 @@ function groundH0(x,z){const g=TABLE(x,z),r=streamNear(x,z);if(!r)return g;const
 const FIELD_BAKED=(function(){const t0=performance.now();const F=KFIELD.bake(groundH0,[TERR.X0-60,TERR.Z0-60,TERR.X1+60,TERR.Z1+60],6,{name:'swhighlands-pillars',
   insets:[{box:[TERR.X0-60,-1020,TERR.X1+60,-60],step:3,name:'the eroded table edge and the cliff'}]});   /* 3 m: the slots and the jagged rim are finer than the base grid */window._fieldMs=Math.round(performance.now()-t0);return F;})();
 const groundH=FIELD_BAKED.sampler();
-function waterH(x,z){const r=streamNear(x,z);return r&&r.d<r.w+2.5?r.y:-1e9;}
+function inReservoir(x,z){const uv=canyonUV(x,z),L=CANYON.lake;return Math.pow((uv[0]-L.u)/L.au,2)+Math.pow((uv[1]-L.v)/L.av,2)<1;}
+function waterH(x,z){if(inReservoir(x,z)&&groundH(x,z)<RESERVOIR.level)return RESERVOIR.level;const r=streamNear(x,z);return r&&r.d<r.w+2.5?r.y:-1e9;}
+const RESERVOIR_STILL=WATER.still({name:'The reservoir (behind the weir of Span)',level:RESERVOIR.level,gradient:{centre:0x1e4a52,rim:0x3a6a6a,power:1.3},poly:RESERVOIR.poly});
 const FLOWS=[WATER.flow({name:PAN.name,pts:PAN.pts.map((p,i)=>[p[0],p[1],PAN.y[i]]),width:PAN.pts.map((p,i)=>2*(PAN.halfW(i)+2.5)),speed:PAN.pts.map((p,i)=>PAN.speed+3*smooth(.05,.6,PAN.slope[i]))})];
