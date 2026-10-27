@@ -29,19 +29,38 @@ SEA_DRAW.mesh.userData.inspectLabel='The terminal sea';
 // ---- the river: a point on its centreline at a distance d from the shore (walked so its own lakeIn is d)
 function riverPt(d,T){T=T||RIVER.t;const t=T(d);let x=(t+d)*S2,z=(d-t)*S2;for(let k=0;k<6;k++){const e=d-lakeIn(x,z);x+=e*S2;z+=e*S2;}return[x,z];}
 const inPage=p=>Math.abs(p[0])<R2-8&&Math.abs(p[1])<R2-8;
-function reach(d0,d1,T,y0){const P=[];let y=y0==null?1e9:y0;for(let d=d0;d>=d1;d-=12){const p=riverPt(d,T);if(!inPage(p))continue;y=Math.max(0,Math.min(y,terrainH(p[0],p[1])+.6));P.push([p[0],p[1],y]);}   /* never rising, never under the sea's level */return P;}
-const tHi=SCARP.hi[1]+scarpOff(RIVER.t(SCARP.hi[1]))+6,tLo=SCARP.lo[1]+scarpOff(RIVER.t(SCARP.lo[1]))+6;
-const dP=k=>lakeIn(POOLS[k].x,POOLS[k].z);   /* the reaches start at their pools */
-const R1=reach(7000,tHi),R2p=reach(dP(0),tLo,null,POOLS[0].y+.2),R3=reach(dP(1),-30,null,POOLS[1].y+.2);
-const RD=reach(dP(1)-15,-30,DIST.t,POOLS[1].y+.2);
+// a reach: points every 12 m from d0 down to d1 (d falls toward the sea), its level set from DOWNSTREAM: the last point .6 m over its bed,
+// each one upstream the higher of its own bed + .6 and the level below it. So the water never rises and never sinks under the ground (a
+// bench that rises toward its lip holds the river back to the lip's level, a pool), never under the sea's level
+function reach(d0,d1,T){const P=[];for(let d=d0;d>=d1;d-=12){const p=riverPt(d,T);if(inPage(p))P.push([p[0],p[1],0]);}
+ const e=riverPt(d1,T);if(inPage(e)&&P.length&&Math.hypot(e[0]-P[P.length-1][0],e[1]-P[P.length-1][1])>1)P.push([e[0],e[1],0]);   /* it ends exactly at d1 (a lip) */
+ let y=0;for(let i=P.length-1;i>=0;i--){y=Math.max(y,terrainH(P[i][0],P[i][1])+.6,0);P[i][2]=y;}return P;}
+// THE LIPS: where the ground first falls away (a metre of drop or more in a metre), scanning toward the sea from above each cliff. The
+// map's SCARP numbers place the cliffs only roughly (the lower lip they gave was 30 m past the edge, half way down the face)
+function lipD(dFrom,dTo){let p=riverPt(dFrom),h=terrainH(p[0],p[1]);for(let d=dFrom-1;d>=dTo;d--){const q=riverPt(d),g=terrainH(q[0],q[1]);if(h-g>1)return d+1;h=g;}return dTo;}
+const LIP_HI=lipD(SCARP.hi[1]+scarpOff(RIVER.t(SCARP.hi[1]))+60,SCARP.hi[0]),LIP_LO=lipD(SCARP.lo[1]+scarpOff(RIVER.t(SCARP.lo[1]))+60,SCARP.lo[0]);
+// THE TOES: where the face meets the floor below each lip (the ground levels off: under 15 cm a metre); each fall lands there, its pool
+// centred 6 m on (the map's POOLS bowls lie 26 and 37 m further out, past where the water lands)
+function toeD(dLip){let p=riverPt(dLip),h=terrainH(p[0],p[1]),dropped=false;for(let d=dLip-1;d>dLip-300;d--){const q=riverPt(d),g=terrainH(q[0],q[1]);if(h-g>1)dropped=true;else if(dropped&&h-g<.15)return d+1;h=g;}return dLip-30;}
+const TOE=[toeD(LIP_HI),toeD(LIP_LO)],POOL_D=TOE.map(d=>d-6);
+const R1=reach(7000,LIP_HI),R2p=reach(POOL_D[0],LIP_LO),R3=reach(POOL_D[1],-30);
+const RD=reach(POOL_D[1]-15,-30,DIST.t);
+// THE POOLS' WATER: a still disc at each pool, at the level of the reach that leaves it (the ground's, not POOLS[k].y, which stands 4 m
+// over the bench and the lowland), out to the band MAP_WATERH keeps for it (1.4 r); the ground clips its shore
+const POOL_LEVEL=[R2p[0][2],R3[0][2]],POOL_AT=POOL_D.map(d=>riverPt(d)),POOL_R=POOLS.map(P=>P.r*.6);
+const POOL_STILLS=POOL_AT.map((P,k)=>WATER.still({name:k?'The lower plunge pool':'The upper plunge pool',level:POOL_LEVEL[k],
+ poly:Array.from({length:48},(_,i)=>{const a=i/48*TAU;return[P[0]+Math.cos(a)*POOL_R[k],P[1]+Math.sin(a)*POOL_R[k]];}),gradient:{centre:hexL(lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.2))),rim:hexL(lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.5))),power:1.3}}));
 const FLOWS=[['The river (the plain)',R1,33,.7],['The river (the bench)',R2p,30,.9],['The river (the lowland)',R3,40,.5],['The delta channel',RD,16,.4]]
  .filter(f=>f[1].length>2).map(([n,P,w,s])=>WATER.flow({name:n,pts:P,width:w,speed:s}));
 const FLOW_DRAW=FLOWS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.5)),deep:lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.3)),color:0xffffff,
   roughness:.2,metalness:.05,envMapIntensity:.3,step:10,across:4,margin:3,chute:.5,depthBias:2,rain:true,renderOrder:2});D.mesh.userData.inspectLabel=S.name;return D;});
-// ---- the two falls: the lip across the river at each cliff's top, thrown toward the sea onto its pool
-function fallAt(name,dLip,pool,w){const p=riverPt(dLip),q=riverPt(dLip-6),dir=[q[0]-p[0],q[1]-p[1]],L=Math.hypot(dir[0],dir[1])||1;dir[0]/=L;dir[1]/=L;
- const y=terrainH(p[0],p[1])+.4,side=[-dir[1],dir[0]],hw=w*.5;
- return WATER.fall({name,lip:[[p[0]-side[0]*hw,p[1]-side[1]*hw,y],[p[0]+side[0]*hw,p[1]+side[1]*hw,y]],dir,speed:5.5,drop:Math.max(4,y-pool.y)});}   /* 5.5 m/s: the curtain lands ~45 m out under the 158 m fall, clear of the face */
-const FALLS=[fallAt('The upper fall',tHi-6,POOLS[0],26),fallAt('The lower fall',tLo-6,POOLS[1],24)];
-const FALL_DRAW=FALLS.map(F=>{const D=WATER.drawFall(F,{color:lin(0xc8d8d0),opacity:.9,rows:36,cols:6,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
+const POOL_DRAW=POOL_STILLS.map(S=>{const D=WATER.drawStill(S,{color:0xffffff,roughness:.18,metalness:.05,envMapIntensity:.3,rain:true,depthBias:2,renderOrder:2});D.mesh.userData.inspectLabel=S.name;return D;});
+// ---- the two falls: the lip across the river where its reach ends (at the reach's surface: no step between the river and its fall), thrown
+// toward the sea and down its face (WATER.fall face: the ground, .5 m over it; the lower cliff is a 60 degree slope, not a sheer drop) to
+// its pool at the toe; the churn disc sized to the pool (drawFall plungeR)
+function fallAt(name,R,k,w){const p=R[R.length-1],q=R[R.length-2],dir=[p[0]-q[0],p[1]-q[1]],L=Math.hypot(dir[0],dir[1])||1;dir[0]/=L;dir[1]/=L;
+ const y=p[2],side=[-dir[1],dir[0]],hw=w*.5,P=POOL_AT[k];
+ return WATER.fall({name,lip:[[p[0]-side[0]*hw,p[1]-side[1]*hw,y],[p[0]+side[0]*hw,p[1]+side[1]*hw,y]],dir,speed:2.5,drop:Math.max(4,y-POOL_LEVEL[k]),foot:[P[0],P[1],POOL_LEVEL[k]],face:terrainH,faceLift:.5,faceN:40});}
+const FALLS=[fallAt('The upper fall',R1,0,26),fallAt('The lower fall',R2p,1,24)];
+const FALL_DRAW=FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xc8d8d0),opacity:.9,rows:36,cols:6,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3,plungeR:POOL_R[k]*.9,footK:.8});
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=F.name;if(D.plunge){D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='A plunge pool';}return D;});
