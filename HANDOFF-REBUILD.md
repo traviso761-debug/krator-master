@@ -15,7 +15,7 @@ worktree (`biomes/necanyons/dist/*.html`): commit them if its re-verify passed, 
 - `core-seat`: `KSEAT`, the probe sweeps, and core/terrain probe points;
 - `core-biome`: the cliff default, `BIO.grid` cells, the count cap, `BIO.beam` segments with `clumpOn` (crowns at twig tips),
   `BIO.tree` owner scope, and per-plant card records;
-- `core-shader`: `KHOOK` and `KCOLOR`, then `checkPrograms`;
+- `core-shader` (WIP e0a9e7a34 on `claude/core-shader-654624`): `core/shader` (`KHOOK`, `KCOLOR`, tests pass) is adopted in core/atmos (byte-identical on 54 snapshots) and core/terrain 43-45. Left: the lava draw (46), the core/water draw with `checkPrograms` and colour space, `khost.resolve` adding core/shader plus `build.py` lines for 7 non-khost builds, READMEs, a GPU-verified page, core/biome after `core-biome`. **Don't merge it before `khost.resolve` lands: pages then fail with "core/shader is not on this page".** Its scratchpad `snap.js` compares old and new shader text;
 - water (`claude/water-core-pass`, ddd76b906): the flow network, the shore from the ground, ribbon rows and breakup are done and
   tested; eastabyss on the network verified (341d48a55, 26 views). Left: Godot parity (WIP ddd76b906, its Godot test never run), the merge, and necanyons' creek (a fine ground strip, then verify all three pages; handed to the water session).
 
