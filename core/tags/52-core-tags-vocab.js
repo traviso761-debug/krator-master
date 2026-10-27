@@ -153,6 +153,10 @@
      // worst things at a ten-thousandth of our time). time.scale: how fast time runs at the core (1e-4 slow, 1 normal, above
      // 1 fast), easing to 1 at the edge by the falloff (in log scale). The harm is being held: stasis
      time:   { effect: 'stasis',    danger: .8, dose: 0,  falloff: 'smooth', nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#b080ff', fx: 'stillness', sound: null }, time: { scale: .0001 } },
+     // a land mine: a small trigger (shape) and a wider blast (mine.blast m, the dose falling off smoothly), one shot; armed
+     // `arm` s after it is laid, a dud by its own hash at `dud`; hidden until found or exposed; paths avoid it only for
+     // those who know it (its owner and mine.known: KHAZ.knows). KHAZ.deploy lays one, KHAZ.minefield lays a field by cell
+     mine:   { effect: 'damage',    danger: 1,  dose: 40, falloff: 'smooth', nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#d04020', fx: null, sound: 'click' }, trigger: { by: 'step', reset: null }, mine: { blast: 4, arm: 5, dud: 0 } },
      trap:   { effect: 'damage',    danger: .6, dose: 1,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#e0c040', fx: 'spark', sound: 'click' },  trigger: { by: 'step', reset: 30 } }
    },
    // the air and the cold everywhere (2026-10-26): not placed records but fields sampled at a point (core/hazard
@@ -184,7 +188,7 @@
      'cold':     { field: 'temperature', start: 0,  worst: -40, effect: 'freeze',    dose: .5, danger: .7 },
      'hot':      { field: 'temperature', start: 45, worst: 70,  effect: 'burn',      dose: .5, danger: .6 }
    },
-   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune', 'shock', 'paralysis', 'damage', 'stasis'],
+   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune', 'shock', 'paralysis', 'damage', 'stasis', 'emp'],
    hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
    hazardFalloffs: ['none', 'linear', 'smooth'],
    hazardTriggers: ['step', 'weight', 'near', 'beam'],

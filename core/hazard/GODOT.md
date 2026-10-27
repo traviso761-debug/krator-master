@@ -57,6 +57,10 @@ its probes.
 - `time` (a time field): an Area3D as any record. Each body inside it runs its own clock: its physics step, its
   AnimationPlayer's `speed_scale` and its particles' `speed_scale` take `KHazard.time_scale(pos, t)`, the product of the
   fields' log-eased scales. It is not `Engine.time_scale`, which is global.
+- `mine`: an Area3D for the trigger (`body_entered` calls `KHazard.detonate`), and the blast as a sphere query of
+  `mine.blast` m at that moment, each body taking `blast.doses` (a body's `emp` meter only if it is a machine). Spent and
+  dud are the record's runtime state; what it leaves arrives as a new record with `until`. The faction's agents add the
+  mine's zone to their avoid layer when their faction is in `known`.
 - `ambient` (no node): the walker's `HazardStatus` samples the port's own fields (pressure from the atmos port by
   height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
   `KHAZ.ambient` does; a row with `times` multiplies its second field's ramp (acid rain: pH x rain from the weather
