@@ -81,3 +81,31 @@ pit, pavement, rille, colonnade, lava tube, pit chain, lava step, arch, water ga
 The handoff's order holds: the Throne's vents (the hazards test bed), the NW outer wall, the rift (now three stations), then
 every other biome. Where a row is large (the Throne, the hyperjungle, sedesert, ebadlands, necanyons) its terrain and air
 columns are the look changes to judge first; seasons and kin can follow in a second pass without moving placement.
+
+## 5. Core changes since this plan (reconciled 2026-10-27)
+
+These landed on `claude/biome-rebuild` after sections 1 and 2 were written: SW highlands stations 1-6, the Godthrone, the
+Rift as four stations, Span, the card audit, KLAVA and the core water pass. Each module's README has its "Adopting it" lines.
+A biome's turn takes the universal additions, and its row in the table below joins its row in section 2.
+
+**Universal additions** (every biome turn, with section 1):
+
+| Change | What a turn does | Where |
+|---|---|---|
+| **Cards on their geometry** | `check_cells.py --fix` per build: each slot's `cell` (the plant's tight box), `base` (where it attaches: frond, ribbon, hang, rosette) and, for crown clumps, `stems` (each sprig's stem on the twig). Then `card_probe.py` before and after. The owner approved the proposals except xanadu's raceme (keep the old look) and `card.flower.bloom` (its proposal is wrong). Reviewed bases and stems: `core/materials/library/card-bases.json` | `core/biome/README.md` (cards), `HANDOFF-REBUILD.md` "its card cells" |
+| **Hanging cards as one strand** (the project standard) | every beard moss, hanging growth, liana or curtain slot takes a `"base": "top"` and its ribbon `flow`, so the plant spans the strand once instead of square-cut bands. The flip of `BIO.geo.ribbon`'s default is parked for the all-builds rebuild | `core/biome/README.md`; the Rift is the worked case |
+| **Snow that lies** | where a kit has snow, `snowCover` with lee drifts, and `snowOn` now reaches leaf cards | `core/atmos`; SW highlands station 6 (the treeline) |
+| **The night sky's nebula** | nothing to do: it rides along with every page on the shared sky | `TODO.md` ride-alongs |
+| **Span's build lessons** | LFS pointers first, `probePoints` flat, `userData.host` on merged meshes, the 35z fragment key, companion fragments over shared edits | `HANDOFF-REBUILD.md`, "Practical rules" |
+
+**New kinds, by biome** (opt-in; each takes them at its turn where its ground has the feature):
+
+| Module | What | Builds that take it |
+|---|---|---|
+| **Confluences** (`core/water` ext/55 and 55b) | one water surface over a river junction, its shore from the ground, one blended current, foam from the real bank; `WATER.join` for the tributary's line | every kit with joining rivers: swlowlands (the great gorge), nwlowlands, hyperjungle (the várzea), nhighlands, shighlands, xanadu (the sacred river), oidong, k-guilin, riftrim, wouterwall, godstep (its rilles' meeting) |
+| **Tall falls** (`drawFall({plungeR, footK})`) | the splash sized to its pool, a tall curtain visible to its foot; the lip on the ground's edge, the pool carved at the toe | xanadu's cataract (station `descent`), k-guilin, nhighlands' falls, shighlands, riftrim's highland lakes, ringisles' high isle, the Throne's cloud forest |
+| **KLAVA** (`core/terrain/46-core-lava.js`, `LAVA.md`) | Bingham lava flow on the KFIELD lattice: live overflow, or `KLAVA.bake` for frozen flows at build time (40 m cells; levees and channels sculpted from flow ages and edges, as the Godthrone does) | the Throne (vents, kipuka, tube and caldera stations), Godstep (its lava steps and flow fronts: the bake is its ground), the Godthrone (done), `crater-drylands` station `south`'s old flows |
+| **`KSTACKS.contour`** (`37b`, opt-in) | a pillar's profile in and out, joints, a crown and a split | k-guilin's towers, necanyons' fins and benches, korona's tepuis, the Catch's wind-carved beds, riftrim's Ledge cliffs, paintedhighlands' hoodoos, the Outlands' stacks |
+| **KCARVE cave mouths, `KSTACKS.weather`** | cave mouths cut in a face (face, cut, site, fold); weathered stack edges | k-guilin and nwbay (karst caves), necanyons, korona's trenches, riftrim, the Cut's faces |
+
+**The station plans** (`biomes/*/PLAN-STATIONS.md`, both passes) take the same rows as their kit.

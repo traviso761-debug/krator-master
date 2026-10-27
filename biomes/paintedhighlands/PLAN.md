@@ -85,3 +85,12 @@ one greyscale bedded tile tinted by the strata field: cheaper and preferred), an
 - **P3.** The crops and dyes.
 - **P4.** Stations 2 and 3.
 - **P5.** `verify.py --assert`, `PORT.md`, the gallery (a new biome).
+
+## Core changes to take (reconciled 2026-10-27)
+
+Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,
+`KSTACKS.contour`, cave mouths and snow that lies (`BACKPORT.md` section 5, with each module's "Adopting it" lines). Every
+turn takes the universal ones (the card fit by `check_cells.py --fix`, strands with a top base). For this kit:
+
+- `KSTACKS.contour` and `KSTACKS.weather` for the hoodoos and the banded buttes (a profile in and out with the strata's joints).
+- Snow that lies (`snowCover`, lee drifts) on the altiplano's high ground.

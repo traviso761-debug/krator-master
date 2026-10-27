@@ -333,3 +333,11 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 5. ~~The golden bird~~ Earth-like (the owner, 2026-10-26): a great golden raptor.
 6. **Names still open**: the Kingdom's capital, the pass's own name (beyond "the Gate"), the rivers and lakes in Coyote speech.
 7. **Station count**: seven, or fold the Gate into the Tiers' build?
+
+## Core changes to take (reconciled 2026-10-27)
+
+Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,
+`KSTACKS.contour`, cave mouths and snow that lies (`BACKPORT.md` section 5, with each module's "Adopting it" lines). Every
+turn takes the universal ones (the card fit by `check_cells.py --fix`, strands with a top base). For this kit:
+
+- `KSTACKS.contour` for the stacks; **confluences** and **tall falls** where the fog belt's streams meet and drop.

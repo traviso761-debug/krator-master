@@ -424,3 +424,14 @@ section 13 (2026-10-23), with the library sets each rim reuses.
 7. **The three rims' flora** (section 3, proposed 2026-10-23, the owner's "great proposal"): settled that Dalab brought up
    the most useful plants it could; which ones (the W highland's list) is proposed.
 8. ~~The model's polygon~~: split into `rift rim N` and `rift rim S` on the model (the owner, 2026-10-23; done).
+
+## Core changes to take (reconciled 2026-10-27)
+
+Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,
+`KSTACKS.contour`, cave mouths and snow that lies (`BACKPORT.md` section 5, with each module's "Adopting it" lines). Every
+turn takes the universal ones (the card fit by `check_cells.py --fix`, strands with a top base). For this kit:
+
+- **Confluences** and **tall falls** for the highland lakes' outlets and the gorge of 4.22.
+- `KSTACKS.contour` and **KCARVE cave mouths** on Ledge's cliffs and the rims' faces.
+- Snow that lies on the rims' alpine bands.
+- **The Rift's station 3 families are cousins of this kit's species** (the owner chose option A, `biomes/rift/PLAN-STATIONS.md` section 5): when this kit is built, its rim species are written so the Rift's sky-island lineages read as their kin.

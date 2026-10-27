@@ -139,3 +139,13 @@ In the library: `ground.lava.aa`, `ground.lava.crust`, `ground.sand.black`, `gro
 - The flank vent: on the model or not.
 - How old the youngest flow is (a fresh black one is a story; all old ones make the inverted-relief look more likely).
 - The Talovolci's names for the steps.
+
+## Core changes to take (reconciled 2026-10-27)
+
+Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,
+`KSTACKS.contour`, cave mouths and snow that lies (`BACKPORT.md` section 5, with each module's "Adopting it" lines). Every
+turn takes the universal ones (the card fit by `check_cells.py --fix`, strands with a top base). For this kit:
+
+- **KLAVA** (`core/terrain/LAVA.md`): the titanium lava steps and flow fronts as baked flows (`KLAVA.bake`, 40 m cells), levees and central channels sculpted from the flows' ages and edges as the Godthrone does; the Godthrone's vent is the source upstream.
+- **Confluences** where the rilles' channels meet, if water runs in them.
+- `KSTACKS.contour` for the colonnades' columns, if the joints read better than the stack kind's.

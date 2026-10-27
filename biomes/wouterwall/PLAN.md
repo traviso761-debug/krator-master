@@ -164,3 +164,12 @@ with `godthrone`), **sturzstrom rubble** (angular mixed blocks), the dust tower'
 - Whether the slump benches go on the model (a later edit) or stay the kit's own relief.
 - The Hayrant's cave houses, and the Eternal State's hand on the bench.
 - Where the fresh sturzstrom fell, and when (a story site).
+
+## Core changes to take (reconciled 2026-10-27)
+
+Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,
+`KSTACKS.contour`, cave mouths and snow that lies (`BACKPORT.md` section 5, with each module's "Adopting it" lines). Every
+turn takes the universal ones (the card fit by `check_cells.py --fix`, strands with a top base). For this kit:
+
+- **Confluences** (`core/water` ext/55) where the box canyons' streams join, and **tall falls** (`plungeR`, `footK`) over the slump scarps.
+- **KCARVE cave mouths** and `KSTACKS.weather` on the loess and the box canyons' walls; `KSTACKS.contour` for the canyon fins.
