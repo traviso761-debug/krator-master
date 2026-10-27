@@ -139,6 +139,52 @@ The Voth city (`settlements/voth`, `build.py` `fauna_fragment`) takes `['voth', 
 (`targets/voth-city/47-vc-sim-animals.js`), each built fresh while near the camera and played by what it does
 (`56c-vc-citizens-host.js`); `lifeOf(key).schedule` gives their resting hours.
 
+## Fauna by land (H8; `fauna-lands.js`, `fauna-lands-host.js`)
+
+`biomes/hyperjungle/PLAN-LANDS.md` section 11: a biome kit places this kit's animals from its biome tags, with a size
+`scale` per land (the savage hyperjungle's beasts are 1.2 to 1.4 times their ridden size).
+
+**What existed (checked 2026-10-26).**
+- `openworld/little-demo` placed none of this kit's animals: its fauna was each biome kit's own instanced animals (the
+  `75-biome-*-fauna.js` fragments), and the folder is deprecated (2026-10-20; its world fragments moved to the isle demo,
+  which places no kit animals either).
+- `biomes/ringisles` (`src/89f-host-fauna.js`) places the Ring Sea's and swbay's animals by hand: a list of keys, each spot
+  found by tries of a draw-order PRNG (`reseed`, `rr`), none registered in core/tags, no scale.
+- Sedesert's editor (core/host 98, fauna mode) puts one animal where the owner clicks, registered as a `life` record.
+- Nothing read `tags.biomes`, nothing scaled an animal by place, and the Beast Riders' beasts are tagged `domestic`
+  (ridden), so a pass by biome tag alone would leave the savage land's herds out.
+
+**What it is.** `fauna-lands.js` is plain data and pure functions (`[G data]`: no THREE, no DOM; it needs `core/rand`,
+and `core/tags` to register). It is not a `krator-fauna-*.js` file, so the bundle, and every page that takes it, is
+unchanged; a build lists it (and the host file) by path.
+
+```
+FAUNALANDS.LANDS                       { 'hyperjungle.savage': {biome, land, scale:[1.2,1.4], include:[keys], weight:{key:w},
+                                          roles:{grazer, predator, flyer, water}}, ... }   a land's record (add with .land)
+FAUNALANDS.land(id, rec)               add or replace a land
+FAUNALANDS.catalog(entries)            [{key, name, biomes, habitat, locomotion, diet, feeding, domestic, herd, size, sizeRange}]
+                                         from KratorFauna.entry(key) records (or plain objects of that shape)
+FAUNALANDS.roleOf(c)                   'water' | 'flyer' | 'predator' | 'grazer' | null (a catalog row's role)
+FAUNALANDS.groupOf(c)                  [min, max] animals in a group, read from its herd text ('troops of twenty', 'alone')
+FAUNALANDS.pool(catalog, landId)       {grazer:[{key, w}], ...}: the wild animals tagged for the land's biome, plus its
+                                         `include` (domestic or other biomes' animals that are wild here), less `exclude`
+FAUNALANDS.plan(o)                     the placement, as records: o = {world, land, catalog, box:[x0,z0,x1,z1], cell (400 m),
+                                         density {role: groups a cell}, ground(x,z) -> y, where(role, x, z, key) -> bool,
+                                         maxGroup (8)} -> {groups:[...], animals:[...], missing:[keys], land}
+FAUNALANDS.register(T, plan, o)        each group a core/tags `life` record (kind 'herd'), each animal its child (kind: the
+                                         animal's key), BEFORE anything is drawn; returns the plan with ids
+```
+
+Every number comes from `KRAND.hash(world, cell x, cell z, index, salt)`: a cell's groups do not depend on any other
+cell, on the box or on the order of calls, so a streamed world and a single page agree. A group's members stand in a
+square round its centre (no trig: the same bits in Godot, so the same uids). An animal's scale is the land's
+range times its own `data.sizeRange` (when it has one); its record's `size` is its box times that scale.
+`fauna-lands-host.js` (`[web]`) draws a registered plan: `FAUNALANDS.draw(KratorFauna, scene, plan)` builds each animal,
+scales and places it, tags the group with its record's id (`userData.krator`), and returns a tick for `animate`.
+A key the land names that the bundle lacks is listed in `missing`, never thrown.
+
+Test: `node kits/fauna/tests/test-lands.js` (the real catalog, read in a vm with three; each check with a negative).
+
 ## Next
 
 Point the biome kits and the settlements at the bundle in place of their own animal code, one build at a time (each
