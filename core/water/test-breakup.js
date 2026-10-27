@@ -52,4 +52,17 @@ const corr=(fn)=>{const a=[],b=[];for(let x=-200;x<200;x+=.5){a.push(fn(x));b.pu
  ok('...the chunk comes after the clock\'s declaration and before main in both (the clock declared once in each: '+decl(c.fs)+', '+decl(s.fs)+'); first put after <common>, it ran ahead of the clock and the open water failed to compile in the page',
   after(c.fs)&&after(s.fs)&&decl(c.fs)===1&&decl(s.fs)===1,c.fs.indexOf('vec3 wtrBreakup(')<c.fs.search(/#include <atmos_waves>/));
  const before=compiled(D.material).fs;W.breakupOn(D.material,{amp:.2});ok('...once only (a second call changes nothing)',compiled(D.material).fs===before,false);}
+// ---- flows (the owner: a zigzag on eastabyss's stream): a ribbon's four cosines crossing in a herringbone
+{const t=211.7,v=[.7,.25],B=W.BREAKUP_FLOW,G=glslProgram(A.waveGLSL()+'\n'+W.breakupGLSL(B),{atmWaveT:A.waveWrap(t),atmWaveAmp:PW.amp,cameraPosition:[0,0,0]});let e=0;
+ for(let i=0;i<60;i++){const x=-40+80*((i*37)%60)/60,z=-20+40*((i*13)%60)/60,n=W.flowNormal(x,z,v[0],v[1],.02,t);e=Math.max(e,...G.run('wtrBreakupF',n,[x,z],v).map((q,k)=>Math.abs(q-W.breakup(n,x,z,A.waveWrap(t),B,v)[k])));}
+ ok('wtrBreakupF (the shader\'s text) equals WATER.breakup with the current at 60 points on a ribbon ('+e.toExponential(1)+')',e<1e-12,false);
+ const c=Math.hypot(v[0],v[1]),u=[v[0]/c,v[1]/c],across=[-u[1],u[0]],sl=n=>-(n[0]*across[0]+n[2]*across[1])/n[1];
+ const lag=1.55,corrA=fn=>{const a=[],b=[];for(let s=-60;s<60;s+=.25){a.push(fn(s));b.push(fn(s+lag));}const m=q=>q.reduce((p,r)=>p+r,0)/q.length,ma=m(a),mb=m(b);let cc=0,va=0,vb=0;
+  for(let i=0;i<a.length;i++){cc+=(a[i]-ma)*(b[i]-mb);va+=(a[i]-ma)**2;vb+=(b[i]-mb)**2;}return cc/Math.sqrt(va*vb);};
+ const at=s=>[u[0]*s+across[0]*3,u[1]*s+across[1]*3],reg=corrA(s=>{const p=at(s);return sl(W.flowNormal(p[0],p[1],v[0],v[1],.02,t));}),
+  brk=corrA(s=>{const p=at(s);return sl(W.breakup(W.flowNormal(p[0],p[1],v[0],v[1],.02,t),p[0],p[1],A.waveWrap(t),B,v));});
+ ok('the zigzag breaks up: down the current the ripple\'s cross-slope repeats itself '+(100*Math.abs(reg)).toFixed(0)+'% half its wavelength on without the breakup, '+(100*Math.abs(brk)).toFixed(0)+'% with it',Math.abs(brk)<Math.abs(reg)*.6,false);
+ const R=W.flow({name:'stream',pts:[[0,0,1],[60,0,.9]],width:12,speed:.8}),D=W.drawFlow(R,{});const nf=W.breakupFlows();const cf=compiled(D.material);
+ ok('breakupFlows patches the ribbons ('+nf+'): their chop drifts with their own current (wtrBreakupF at vWtrW.xz with vWtrF), after the clock and before main',
+  nf>=1&&cf.fs.includes('wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)')&&cf.fs.indexOf('vec3 wtrBreakupV(')<cf.fs.indexOf('void main('),cf.fs.includes('wtrBreakup(wtrBn,vWtrW.xz)'));}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);
