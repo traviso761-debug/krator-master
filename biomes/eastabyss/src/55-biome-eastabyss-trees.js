@@ -332,10 +332,14 @@ B[14]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3;
    if(ok){st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:7,cap:true});const e=pts[pts.length-1];tops.push({x:e.x,y:e.y,z:e.z,s:.8});}}
   if(!tops.length)tops.push({x:T.x,y:T.y0+H*.9,z:T.z,s:1});}
  const item='strap',hc=C(pick(S.leaf));let spread=T.crownR;
- tops.forEach(tp=>{const R=T.crownR*.55*tp.s,cy=tp.y+R*.6,nC=lv===2?ri(9,12):lv===1?6:3,sz0=rr(5.5,7.5)*tp.s;
-  for(let c=0;c<nC;c++){const a=rr(0,TAU),el=rr(-.3,1.3),d=R*rr(.15,.75),x=tp.x+Math.cos(a)*Math.cos(el)*d,y=cy+Math.sin(el)*d*.8,z=tp.z+Math.sin(a)*Math.cos(el)*d;
-   if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.9,rng()<.85?hc:C(pick(S.leaf)),tp.x,cy,tp.z,R,R);st.clumps++;}
-  if(lv>=1){const n=lv===2?ri(7,10):5,a0=rr(0,TAU);for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2);frondAt('strapfrond',tp.x,tp.y+.3,tp.z,a,R*rr(1.0,1.4),rr(-1.0,-.45),bright(vary(hc,.02,.08,.05),1.4),1.1);}   // the grass skirt hangs
+ /* S.crown (a cousin's habit, BIO.kin: hyperjungle's fire scale-tree): lift (the pompom's centre over the top, x R), n (x the clumps),
+    size (x the clump), el [lo, hi] (their elevations), skirt (x the hanging fronds), clear (false: no clear-space test, the clumps
+    may touch); none set: the seal-tree as it was */
+ const CK=S.crown||{},nz=(v,d)=>v==null?d:v,EL=CK.el||[-.3,1.3];
+ tops.forEach(tp=>{const R=T.crownR*.55*tp.s,cy=tp.y+R*nz(CK.lift,.6),nC=Math.round((lv===2?ri(9,12):lv===1?6:3)*nz(CK.n,1)),sz0=rr(5.5,7.5)*tp.s*nz(CK.size,1);
+  for(let c=0;c<nC;c++){const a=rr(0,TAU),el=rr(EL[0],EL[1]),d=R*rr(.15,.75),x=tp.x+Math.cos(a)*Math.cos(el)*d,y=cy+Math.sin(el)*d*.8,z=tp.z+Math.sin(a)*Math.cos(el)*d;
+   if(CK.clear!==false&&!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.9,rng()<.85?hc:C(pick(S.leaf)),tp.x,cy,tp.z,R,R);st.clumps++;}
+  if(lv>=1){const n=Math.round((lv===2?ri(7,10):5)*nz(CK.skirt,1)),a0=rr(0,TAU);for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2);frondAt('strapfrond',tp.x,tp.y+.3,tp.z,a,R*rr(1.0,1.4),rr(-1.0,-.45),bright(vary(hc,.02,.08,.05),1.4),1.1);}   // the grass skirt hangs
    for(let k=0,m=lv===2?ri(2,4):1;k<m;k++){const a=rr(0,TAU),r=rAt(.88)+.3;BIO.put('pod',[tp.x+Math.cos(a)*r,tp.y-rr(0,2),tp.z+Math.sin(a)*r],qEuler(0,rr(0,TAU),0),rr(2.6,4.2),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}   // the cones
   spread=Math.max(spread,Math.hypot(tp.x-T.x,tp.z-T.z)+R*1.4);});
  T.spread=spread;
