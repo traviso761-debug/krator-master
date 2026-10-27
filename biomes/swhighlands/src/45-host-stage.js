@@ -147,7 +147,8 @@ function streamNear(x,z){let best=null;for(const r of streamsNear(x,z))if(!best|
 // the ground with the channels: a bed under the surface, a low bank, then the valley floor; the ground held under the water's
 // surface out to the ribbon's margin (the field is coarser than the narrow channels)
 function terrainH0(x,z){let h=g1(x,z);
- for(const r of streamsNear(x,z)){const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);
+ for(const r of streamsNear(x,z)){if(r.C.key==='cave'&&(KCARVE.topAt(x,z)!=null||x>BITE.x+BITE.r-2))continue;   /* the cave stream cuts no trench round its mouth: the hood and the hill stay one face (the owner, 2026-10-26) */
+  const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);
   if(r.d<w)h=Math.min(h,r.y-dep*(1-.55*(r.d/w)*(r.d/w))-.15);
   else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<h)h=bank;}
   if(r.d<w+2.5)h=Math.min(h,r.y-.45);}

@@ -60,6 +60,8 @@ const PL=SWHI.PLANTS=[
  {label:'Native moss',name:'Native moss',tags:tag({},{})},
  {label:'Club-moss',name:'Club-moss',tags:tag({riparian:'both'},{})},
  {label:'Ridge turf',name:'Ridge turf',tags:tag({},{})},
+ {label:'Pad sprouts (young lattice oaks)',name:'Pad sprouts (young lattice oaks)',tags:tag({},{})},
+ {label:'Bead cone buttons',name:'Bead cone buttons',tags:tag({},{})},
  {label:'Log crust',name:'Log crust',tags:tag({riparian:'no'},{notes:'the decay layer: teal-and-gold plates and orange shelves on the dead cords'})},
  {label:'Cup-pads',name:'Cup-pads (the lattice oak)',tags:SP[0].tags},
  {label:'Parasol fruit',name:'Parasol fruit (the lattice oak)',tags:SP[0].tags},
@@ -141,7 +143,12 @@ const G=SWHI.GEO={
  // a parasol fruit: a blue dome on a stalk (radius 1, the stalk 1.3)
  parasol:BIO.fung.cap({form:'dome',h:.45,seg:7,rings:2,under:'gills',gillN:6,stem:{h:1.3,r:.1,seg:4},seed:82}),
  // the bead cone's cone: a tall ribbed dome, pores under (radius 1, height 1.5)
- coneCap:BIO.fung.cap({form:'dome',h:1.5,seg:14,rings:5,ribs:7,ribK:.86,under:'pores',lump:.04,seed:83,uv:'planar'}),
+ /* gills under it, not a closed pore plate (the owner, 2026-10-26: the plate read as a lid on a dish) */
+ coneCap:BIO.fung.cap({form:'dome',h:1.5,seg:14,rings:5,ribs:7,ribK:.86,under:'gills',gillN:34,gillD:.4,gillK:.6,lump:.04,seed:83,uv:'planar'}),
+ // THE UNDERSTOREY (the owner, 2026-10-26: the forest wanted one): pad sprouts, a young lattice oak's first cup-pad on its cord, 1-3 m
+ sprout:BIO.fung.cap({form:'funnel',h:.3,seg:9,rings:2,wav:4,wavA:.1,under:'none',stem:{h:4.5,r:.07,r1:.05,seg:4},seed:86,uv:'planar'}),
+ // and the bead cone's button stage, 0.5-1.5 m: a squat cone on a thick foot
+ button:BIO.fung.cap({form:'dome',h:1.2,seg:9,rings:3,ribs:5,under:'gills',gillN:14,stem:{h:.8,r:.35,seg:6},seed:87,uv:'planar'}),
  // its stalk: 1 high, radius .5 at the foot (the instance's scale makes it the species')
  coneStalk:BIO.fung.stalk({r0:.5,r1:.3,bend:.04,ribs:6,ribA:.08,seg:9,rings:5}),
  // strings of gold eggs: hanging card pairs round the cap's rim
@@ -168,6 +175,8 @@ BIO.def('moss',G.moss,M.moss,{label:'Native moss'});
 BIO.def('club',G.club,M.club,{label:'Club-moss'});
 BIO.def('turf',G.turf,M.turf,{label:'Ridge turf'});
 BIO.def('crust',G.shelf,M.crust,{label:'Log crust'});
+BIO.def('sprout',G.sprout,M.pad,{label:'Pad sprouts (young lattice oaks)'});
+BIO.def('button',G.button,M.coneCap,{label:'Bead cone buttons'});
 BIO.def('plate',G.plate,M.crust,{label:'Log crust'});
 SWHI.PICK=(arr,u)=>arr[Math.floor(u*arr.length)%arr.length];
 })();

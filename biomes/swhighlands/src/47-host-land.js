@@ -46,11 +46,12 @@ const BODIES=[];
  // the unweathered body: they differ from the drawn rock by at most ~1.5 m (KNOWN_ISSUES.md)
  function weather(B,m){const o=B.opening,ux=Math.cos(o.ry),uz=Math.sin(o.ry),n=m.pos.length/3,sd=B.seed>>>0;let Lh=0;
   for(let v=0;v<n;v++){const a=Math.abs((m.pos[3*v]-B.x)*ux+(m.pos[3*v+2]-B.z)*uz);if(a>Lh)Lh=a;}
-  const top=B.top,R=Math.min(Lh*.42,Math.max(4,(top-o.y1)*1.25)),cx=Lh-R,cy=top-R;
+  const top=B.top,R=Math.min(Lh*.55,Math.max(6,(top-o.y1)*1.9)),cx=Lh-R,cy=top-R;
   for(let v=0;v<n;v++){let x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2];const dx=x-B.x,dz=z-B.z,a=dx*ux+dz*uz,c=-dx*uz+dz*ux,aa=Math.abs(a);
    if(aa>cx&&y>cy){const d=Math.hypot(aa-cx,y-cy);if(d>R){const k=R/d,na=cx+(aa-cx)*k;y=cy+(y-cy)*k;const a2=Math.sign(a)*na;x=B.x+a2*ux-c*uz;z=B.z+a2*uz+c*ux;}}
-   const foot=smooth(.5,4,y-terrainH(x,z)),A=1.2*foot,f=.2;
-   x+=A*(KRAND.fbm(x*f,y*f,z*f,3,sd)-.5)*2;y+=A*.7*(KRAND.fbm(x*f+7,y*f,z*f,3,sd+1)-.5)*2;z+=A*(KRAND.fbm(x*f,y*f+3,z*f,3,sd+2)-.5)*2;
+   /* two grains: a 8 m lumpiness of 2.2 m (a weathered mass) and a 2 m pitting of .6 m */
+   const foot=smooth(.5,4,y-terrainH(x,z)),A=2.2*foot,a2=.6*foot,f=.12,f2=.5,nz=(k,u,v,w)=>(KRAND.fbm(u,v,w,3,sd+k)-.5)*2;
+   const x0=x,y0=y,z0=z;x+=A*nz(0,x0*f,y0*f,z0*f)+a2*nz(3,x0*f2,y0*f2,z0*f2);y+=A*.7*nz(1,x0*f+7,y0*f,z0*f)+a2*nz(4,x0*f2+7,y0*f2,z0*f2);z+=A*nz(2,x0*f,y0*f+3,z0*f)+a2*nz(5,x0*f2,y0*f2+3,z0*f2);
    m.pos[3*v]=x;m.pos[3*v+1]=y;m.pos[3*v+2]=z;}}
  const pos=[],uv=[],idx=[],occ=[],col=[];
  BODIES.forEach(B=>{const m=KSTACKS.mesh(B,{step:2.5}),o=pos.length/3;weather(B,m);
