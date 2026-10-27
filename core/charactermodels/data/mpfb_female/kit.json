@@ -70295,8 +70295,8 @@
    "jaw": {
     "pivot": [
      0.0,
-     0.02984,
-     -0.04564
+     0.03342,
+     -0.05112
     ],
     "deg": 6.0,
     "period": 5.0,
@@ -70304,7 +70304,15 @@
    },
    "skin_detail": {
     "material": "Mod.head_frog",
-    "repeat": 7.59
+    "repeat": 7.59,
+    "mask": "Mod.head_frog_mask"
+   },
+   "pattern": {
+    "skin2": "#1e2a12",
+    "skin3": "#e2dab0",
+    "kind": "marble",
+    "amount": 0.45,
+    "eye_color": "#d6a22a"
    }
   }
  ],
@@ -76630,10 +76638,14 @@
    "Mod.head_lizard_lids": "skin",
    "Mod.head_lizard_crest": "skin",
    "Mod.head_lizard_crest_neck": "skin",
-   "Mod.head_frog": "skin",
-   "Mod.head_frog_jaw": "skin",
-   "Mod.head_frog_neck": "skin",
-   "Mod.head_frog_lids": "skin"
+   "Mod.head_lizard_eye": "iris",
+   "Mod.head_frog": "pattern",
+   "Mod.head_frog_jaw": "pattern",
+   "Mod.head_frog_neck": "pattern",
+   "Mod.head_frog_lids": "pattern",
+   "Mod.head_frog_eye": "iris",
+   "Mod.head_frog_webs": "pattern",
+   "Mod.head_frog_pads": "pattern"
   },
   "gain": {
    "skin": 1.6561,

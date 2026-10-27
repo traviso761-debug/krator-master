@@ -419,6 +419,14 @@ area you are about to change.
 - **A beast's jaw reached behind its skull** → the skull overhangs the jaw's hinge; behind the mouth's corner round
   the upper head down into the jowls, or its palate stands out as a ledge.
 - **The jaw did not open in a still shot** → it moves after a clip (`afterClip`): play the idle to see `jawOpen`.
+- **A pattern over a beast's head and body did not meet at the neck or at the UV seams** → evaluate one 3D field at
+  rest positions for both: per vertex on the head, baked into the body's UV square texel by texel from each texel's
+  rest position (dilated past the islands). Tint multiplying vertex colours can never make cream from green: carry
+  the pattern's fields and blend the record's colours in the shader.
+- **Godot's marbled frog jaw came out nearly black** → vertex colours reach a custom shader as if sRGB (compatibility
+  renderer): decode them back when they carry data, not colour.
+- **three r128 and data in COLOR_0 / TEXCOORD_1** → set `vertexColors` false and declare `attribute vec4 color;` and
+  `attribute vec2 uv2;` yourself (r128 declares them only for vertex colours and light or AO maps).
 
 ## 10. Godot twin
 

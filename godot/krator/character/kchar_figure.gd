@@ -23,6 +23,9 @@ extends Node3D
 
 const EYE_SHADER := preload("res://krator/character/kchar_eye.gdshader")
 const SKIN_SHADER := preload("res://krator/character/kchar_skin.gdshader")
+const PATTERN_SHADER := preload("res://krator/character/kchar_pattern.gdshader")
+# a frog's pattern kinds (kit item pattern, record pattern; KP_KIND in 50-figure.js)
+const KP_KIND := {"none": 0, "spots": 1, "net": 2, "marble": 3}
 const PUSH_SHADER := preload("res://krator/character/kchar_push.gdshader")
 const FUR_SHADER := preload("res://krator/character/kchar_fur.gdshader")
 
@@ -478,12 +481,15 @@ func apply(rec: Dictionary) -> void:
 			for t in m["crest_neck"]["under"]:
 				if int(t) < hid.size() and hid[int(t)] != 0:
 					crest_out = m["crest_neck"]["material"]
+	var mask_tex: Texture2D = null          # a frog's pattern over the body (kit item skin_detail mask)
 	if not det.is_empty():
 		for mi in want:
 			for s in mi.mesh.get_surface_count():
 				var dm := mi.mesh.surface_get_material(s) as BaseMaterial3D
 				if mi.mesh.surface_get_name(s) == det["material"] and dm != null:
 					det_tex = [dm.albedo_texture, dm.normal_texture]
+				if det.has("mask") and mi.mesh.surface_get_name(s) == det["mask"] and dm != null:
+					mask_tex = dm.albedo_texture
 	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
 	var feet_top := -1000.0
 	var hem := 1000.0
@@ -531,6 +537,10 @@ func apply(rec: Dictionary) -> void:
 					dsm.set_shader_parameter("detail_tex", det_tex[0])
 					dsm.set_shader_parameter("detail_ntex", det_tex[1])
 					dsm.set_shader_parameter("detail_repeat", float(det["repeat"]))
+					if mask_tex != null:
+						dsm.set_shader_parameter("mask_tex", mask_tex)
+						dsm.set_shader_parameter("pattern_on", 1.0)
+						_pattern_set(dsm, rec, gain)
 				# the coat's edge: the hide without a furred mod's (a therian's head carries the fur on: coatShells)
 				var edge := hide
 				var furred := []
@@ -582,7 +592,23 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		var g := float(gain.get("eye", 1.0))
 		sm.set_shader_parameter("tint", Vector3(c.r * g, c.g * g, c.b * g))
 		return sm
+	if role == "pattern":                # a frog's skin (tools/amphibian.py): the record's colours by its pattern
+		var bm := mat as BaseMaterial3D
+		var pm := ShaderMaterial.new()
+		pm.shader = PATTERN_SHADER
+		pm.set_shader_parameter("tex", bm.albedo_texture)
+		if bm.normal_enabled and bm.normal_texture != null:
+			pm.set_shader_parameter("ntex", bm.normal_texture)
+			pm.set_shader_parameter("nscale", bm.normal_scale)
+		pm.set_shader_parameter("rough", bm.roughness)
+		_pattern_set(pm, rec, gain)
+		return pm
 	var m2 := mat.duplicate() as BaseMaterial3D
+	if role == "iris":                   # an animal's eye (amphibian.iris_texture): its texture tinted by the eye colour
+		var pat := _pattern_of(rec)
+		var ec = rec.get("eye_color") if rec.get("eye_color") != null else pat.get("eye_color", "#5a3a22")
+		m2.albedo_color = _lin(ec, 1.0)
+		return m2
 	if part["role"] == "armour" and (part["slot"] == "torso" or part["slot"] == "legs"):
 		var dye0 = rec.get("dye", {}).get(part["slot"])
 		m2.albedo_color = Color(dye0) if dye0 != null else Color.WHITE
@@ -2324,6 +2350,25 @@ void fragment() { discard; }
 		_nothing_mat = ShaderMaterial.new()
 		_nothing_mat.shader = sh
 	return _nothing_mat
+
+
+# a worn mod's skin pattern (kit item pattern: a frog's head), or {}
+func _pattern_of(rec: Dictionary) -> Dictionary:
+	for m in KChar.mods(rec, kit):
+		if m.has("pattern"):
+			return m["pattern"]
+	return {}
+
+
+# a pattern's colours, kind and amount from the record, the kit item's where it names none (patternSet in 50-figure.js)
+func _pattern_set(sm: ShaderMaterial, rec: Dictionary, gain: Dictionary) -> void:
+	var pat := _pattern_of(rec)
+	var g := float(gain.get("skin", 1.0))
+	sm.set_shader_parameter("c1", _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", g))
+	sm.set_shader_parameter("c2", _lin(rec.get("skin2") if rec.get("skin2") != null else pat.get("skin2", "#000000"), g))
+	sm.set_shader_parameter("c3", _lin(rec.get("skin3") if rec.get("skin3") != null else pat.get("skin3", "#ffffff"), g))
+	sm.set_shader_parameter("kind", float(KP_KIND.get(rec.get("pattern") if rec.get("pattern") != null else pat.get("kind", "none"), 0)))
+	sm.set_shader_parameter("amount", float(rec.get("pattern_amount") if rec.get("pattern_amount") != null else pat.get("amount", 0.4)))
 
 
 # the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it (a texel each)

@@ -60,13 +60,24 @@ eyes, was replaced):
 paintings, 2026-10-27), made as the lizard's is, its collar shared (`_head_collar`):
 - Broad, flat and rounded, sitting low with hardly a neck; the mouth a wide line from the blunt snout back under the
   eardrum; the jaw meets the upper lip flush; a full throat's pouch under it (on `face_jaw`, opened as the lizard's).
-- Big eyes standing proud of turrets high on the head: gold, a horizontal pupil, a fine mesh at the pole where the pupil
-  is. A wide lower lid lies down in the turret and rises over the front of the eye to blink (`blink`; it turns 95
+- Big eyes standing proud of turrets high on the head, a little larger than the first cut (`SIZE`, the whole head 1.12
+  times): an iris texture (`iris_texture`: a horizontal pupil, its dark margin, a lighter collarette, radial fibres, a
+  net of veins, a dark band through the pupil, the limbus) that the record's eye colour tints (role `iris`; the
+  lizard's eyes too, with a round pupil). A wide lower lid lies down in the turret and rises over the front of the eye to blink (`blink`; it turns 95
   degrees: a morph moves each point straight, so further and the lid passes through the ball halfway).
 - The eardrums dished in behind the eyes under the dorsolateral folds; small nostrils on top of the snout.
-- Painted: dark blotches over the back, a pale lip stripe, a dark mask from the nostril through the eye to the
-  eardrum, the eardrum dark in a pale ring, the throat and underside paler. Its skin is the library's `skin.smooth`,
-  moist and glossier, which the body wears under it (`skin_detail`).
+- **Its skin in the record's colours, as a poison dart frog's**: `skin` the ground, `skin2` the marks, `skin3` the pale
+  parts (throat, belly, the lip's stripe, the eardrum's ring), `pattern` one of `spots`, `net` (bands), `marble`
+  (blotches) or `none`, `pattern_amount` how much of the skin the marks take; the kit item's `pattern` holds the
+  defaults (and the eye colour). The pattern is three fields over the body at rest (`pattern_fields`: the distance to
+  the nearest of a scatter of points, to the line between the two nearest, a marbling), the same for the head's
+  vertices (COLOR_0, with the pale share; a shade in TEXCOORD_1) and the body's skin, baked into its UV square from
+  each texel's place at rest (`body_mask`, on a primitive with no area), so the marks run on from head to body and
+  across the UV islands' edges. The figures colour both (`patternMat` in `50-figure.js`; `kchar_pattern.gdshader`,
+  `kchar_skin.gdshader`). The Cosmetic Lab's Pattern section sets them, its eye colours an animal's.
+- **Webbed hands**: a thin web between each pair of fingers from the knuckles up to 0.6 of their length at their sides,
+  scalloped deeper between, on the two fingers' joints by where each point lies across (`hand_webs`); a round pad under
+  each fingertip. Its skin is the library's `skin.smooth`, moist and glossier, which the body wears under the head.
 - A test record as the Lizardman is: the Cosmetic Lab's "Frogman" chip (or `?frog`), the Animation Lab's Body mods menu
   ("Frogman (test: head)").
 

@@ -44,7 +44,7 @@
   var LIZARD_START = /[?&#]lizard\b/.test(location.search + location.hash);
   /* the Frogman test record (a frog's head on the body, tools/amphibian.py): frog green, no hair, bare above the
      trousers. ?frog in the page's address starts each body with it */
-  var FROG = { mods:['mod_head_frog'], skin:'#5f8a36', hair:null, beard:null };
+  var FROG = { mods:['mod_head_frog'], skin:'#5f8a36', eye_color:'#d6a22a', hair:null, beard:null };
   function frog(r, kit){
     if(!kit.items.some(function(it){ return it.id === 'mod_head_frog'; })) return r;
     Object.keys(FROG).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(FROG[k])); });
@@ -276,6 +276,9 @@
   var PEOPLE = {}; (D.peoples || []).forEach(function(p){ PEOPLE[p.id] = p; });
   var SKIN_ANY = ['#f3d9c6', '#e2b897', '#c99a74', '#a8764f', '#835735', '#5e3c25', '#3e271a'];
   var EYES_ANY = ['#1e140c', '#3b2414', '#5a3a22', '#7a5a2a', '#4a5a3a', '#4e6a80', '#6a7a86', '#8a3a1c'];
+  // an animal's eyes (a frog's or a lizard's: role 'iris'), and the poison dart frogs' colours for a patterned skin
+  var EYES_BEAST = ['#d6a22a', '#e0c040', '#c8701c', '#b02a1a', '#7a8a2a', '#3a2a1a', '#a0a8a0'];
+  var SKIN_FROG = ['#5f8a36', '#2a7ac8', '#1a4ab0', '#e8c818', '#e06a14', '#c81e1e', '#3aa83a', '#121410'];
   var HAIR_ANY = ['#e6d3a3', '#c9a35a', '#a0703d', '#8e4f2a', '#5a3a22', '#2c2019', '#141110', '#9a9894', '#d8d6d2'];
   function swatches(box, label, id, value, list, set){
     var row = document.createElement('div'); row.className = 'dye swatches';
@@ -405,7 +408,8 @@
       'Pick a people to draw a stranger from its range of skin, hair, ancestry and build (data/peoples.json).';
     ps.appendChild(pn);
     var sk = section(headp, 'Skin tone', '');
-    swatches(sk, 'Skin', 'skin-pick', rec.skin || '#d6ad8f', cur ? [0, 0.25, 0.5, 0.75, 1].map(function(u){ return KCHAR.along(cur.skin, u); }) : SKIN_ANY,
+    var frogSkin = KCHAR.mods(rec, kit).some(function(m){ return m.pattern; });
+    swatches(sk, 'Skin', 'skin-pick', rec.skin || '#d6ad8f', frogSkin ? SKIN_FROG : cur ? [0, 0.25, 0.5, 0.75, 1].map(function(u){ return KCHAR.along(cur.skin, u); }) : SKIN_ANY,
              function(c){ rec.skin = c; apply(); });
     var hs = itemChips(headp, kit, 'hair', 'Hair');
     swatches(hs, 'Colour', 'hair-pick', rec.hair_color || '#4a3424', (cur ? cur.hair : HAIR_ANY).concat(['#9a9894', '#d8d6d2']).filter(function(c, i, a){ return a.indexOf(c) === i; }),
@@ -422,8 +426,28 @@
       cs.appendChild(cn);
     }
     itemChips(headp, kit, 'beard', 'Beard');
+    // a frog's skin (a worn mod with pattern, tools/amphibian.py): the marks' and the pale parts' colours, the kind of
+    // pattern and how much of the skin it takes (record skin2, skin3, pattern, pattern_amount)
+    var pat = null, beast = false;
+    KCHAR.mods(rec, kit).forEach(function(m){ if(m.pattern) pat = m.pattern; if(m.replaces_head) beast = true; });
+    if(pat){
+      var pt = section(headp, 'Pattern', rec.pattern || pat.kind);
+      swatches(pt, 'Marks', 'skin2-pick', rec.skin2 || pat.skin2, SKIN_FROG.concat(['#e2dab0']), function(c){ rec.skin2 = c; apply(); });
+      swatches(pt, 'Pale', 'skin3-pick', rec.skin3 || pat.skin3, ['#e2dab0', '#f0ece0', '#e8d878', '#a8c8e8', '#e8a868'], function(c){ rec.skin3 = c; apply(); });
+      chips(pt, [{ id:'none', name:'None' }, { id:'spots', name:'Spots' }, { id:'net', name:'Net' }, { id:'marble', name:'Marbled' }].map(function(x){
+        return { id:x.id, name:x.name, domId:'chip-pattern-' + x.id };
+      }), rec.pattern || pat.kind, function(id){ rec.pattern = id; apply(); buildPanel(); }, true);
+      var row = document.createElement('div'); row.className = 'sl';
+      row.innerHTML = '<label for="sl-pattern-amount">Amount</label><output for="sl-pattern-amount"></output>' +
+        '<input type="range" id="sl-pattern-amount" min="0" max="1" step="0.01">';
+      var inp = row.querySelector('input'), out = row.querySelector('output');
+      inp.value = rec.pattern_amount != null ? rec.pattern_amount : pat.amount; out.textContent = (+inp.value).toFixed(2);
+      inp.addEventListener('input', function(){ rec.pattern_amount = +inp.value; out.textContent = (+inp.value).toFixed(2); apply(); });
+      pt.appendChild(row);
+    }
     var es = section(headp, 'Eyes', '');
-    swatches(es, 'Eye colour', 'eye-pick', rec.eye_color || '#5a3a22', cur && cur.eyes ? cur.eyes : EYES_ANY, function(c){ rec.eye_color = c; apply(); });
+    swatches(es, 'Eye colour', 'eye-pick', rec.eye_color || (pat && pat.eye_color) || '#5a3a22', beast ? EYES_BEAST : cur && cur.eyes ? cur.eyes : EYES_ANY,
+             function(c){ rec.eye_color = c; apply(); });
   }
 
   function vals(){ return D.bodies[body].kit.style === 'mpfb' ? (rec.morph = rec.morph || {}) : rec.sliders; }

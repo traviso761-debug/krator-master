@@ -429,7 +429,8 @@ the joints until a mod is worn:
   `tools/tail.py`, after every other joint), driven each frame as a spring chain kept out of the legs (`tail` in
   `50-figure.js`, `_tail` in `kchar_figure.gd`); and `mod_head_lizard`, a Komodo dragon's head with an iguana's crest
   (`tools/reptile.py`: signed distance fields meshed as the therian heads are, the library's scales, lower lids that
-  blink), or `mod_head_frog`, a frog's (`tools/amphibian.py`), in place of the human one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
+  blink), or `mod_head_frog`, a frog's (`tools/amphibian.py`; webbed hands; the skin in the record's `skin`, `skin2`,
+  `skin3` by a `pattern`, as a poison dart frog's), in place of the human one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
   `face_jaw` opened now and then (`jaw`, `_jaw`), a collar over the neck seam on the neck's own weights and deltas.
   Marked `test` in the kit: no people draws them. `python3 tools/nonhuman.py` puts them on the bodies from the published
   pieces; a whole rebuild makes them too (`mods.nonhuman`). The Cosmetic Lab's "Lizardman" chip (or `?lizard`) and the

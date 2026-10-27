@@ -211,7 +211,8 @@ def flat(rgb):
 def write_piece(body, out, name, prims):
     """a GLB holding one skinned mesh on the body's skeleton (its nodes and skin, the lower joints with them).
     prims: [{'material': {name, metallic, rough}, 'image': (bytes, mime), 'P','N','UV','J','W','VID','T'}], and
-    optionally 'C' (a vertex colour the material multiplies), 'normal' (a normal map, (bytes, mime)), 'targets'
+    optionally 'C' (a vertex colour the material multiplies, or four numbers a shader reads: the frog's pattern),
+    'UV2' (a second UV, TEXCOORD_1: the frog's shade), 'normal' (a normal map, (bytes, mime)), 'targets'
     ({name: (dP, dN)}: morph targets, the lizard's lids' blink) and 'mesh' (a prim with mesh 1 goes in a second mesh
     on a node of its own: glTF wants every primitive of a mesh to carry the same targets)"""
     g = glbio.GlbWriter()
@@ -254,7 +255,10 @@ def write_piece(body, out, name, prims):
             'WEIGHTS_0': g.acc(W.astype(np.float32), 'VEC4', 34962),
             '_VIDX': g.acc(np.asarray(p['VID'], np.float32).reshape(-1, 1), 'SCALAR', 34962)}
         if p.get('C') is not None:
-            attrs['COLOR_0'] = g.acc(np.asarray(p['C'], np.float32), 'VEC3', 34962)
+            C = np.asarray(p['C'], np.float32)
+            attrs['COLOR_0'] = g.acc(C, 'VEC4' if C.shape[1] == 4 else 'VEC3', 34962)
+        if p.get('UV2') is not None:
+            attrs['TEXCOORD_1'] = g.acc(np.asarray(p['UV2'], np.float32), 'VEC2', 34962)
         pr = {'material': len(g.j['materials']) - 1, 'attributes': attrs,
               'indices': g.acc(np.asarray(p['T'], np.uint32).reshape(-1), 'SCALAR', 34963)}
         if p.get('targets'):
@@ -979,11 +983,13 @@ def lizard_head(body, out, rec, tex, nrm=None):
         V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
         mats = np.where(inside[T].all(1), 'mouth', 'skin')
         RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}})
-    # the eyes, and the lower lids that shut them
-    eV, eN, eC, eT = RP.eyeball(lz, H)
-    for p, c in zip(eV, eC):
-        eye_m.v(p, (0.5, 0.5), [(hj, 1.0)], RP.RIGID)
-        eye_m.C.append(c)
+    # the eyes (an iris texture the eye colour tints, a round pupil: amphibian.iris_texture), and the lower lids that
+    # shut them
+    import amphibian as AM
+    eV, eN, eU, eT = AM.eyeball(lz.eyes, lz.eye_r, H)
+    for p, u in zip(eV, eU):
+        eye_m.v(p, tuple(u), [(hj, 1.0)], RP.RIGID)
+        eye_m.C.append(np.ones(3))
     eye_m.T = eT.tolist()
     lV, lN, lC, lT, ldV, ldN, lU = RP.lids(lz)
     for p, c, u in zip(lV + H, lC, lU):
@@ -1022,7 +1028,7 @@ def lizard_head(body, out, rec, tex, nrm=None):
             (jaw, {'name': 'Mod.head_lizard_jaw', 'rough': 0.62}, tex, nrm, None),
             (collar, {'name': 'Mod.head_lizard_neck', 'rough': 0.65}, tex, nrm, neck_axis),
             (mouth_m, {'name': 'Mod.head_lizard_mouth', 'rough': 0.4}, flat('#8a4a48'), None, None),
-            (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.08}, white, None, None),
+            (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.08}, AM.iris_texture('round'), None, None),
             (dark_m, {'name': 'Mod.head_lizard_dark', 'rough': 0.5}, flat('#120c08'), None, None),
             (tooth_m, {'name': 'Mod.head_lizard_teeth', 'rough': 0.35}, flat('#d8ccb0'), None, None),
             (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.55}, white, None, None),
@@ -1045,8 +1051,12 @@ def lizard_head(body, out, rec, tex, nrm=None):
 def frog_head(body, out, rec, tex, nrm=None):
     """mod_head_frog: a frogman's head in place of the human one (tools/amphibian.py: the upper head rigid on Head, the
     lower jaw and the throat's pouch on face_jaw, which the figure opens about the hinge; bulging eyes behind lower lids
-    that blink; dark nostrils), with the lizard's collar from the neck up into it (_head_collar). tex, nrm: the skin
-    texture and its normal map. Returns the hidden skin and the jaw's extras"""
+    that blink; dark nostrils), with the lizard's collar from the neck up into it (_head_collar). Its skin (the head, the
+    jaw, the collar and the lids: role 'pattern') carries the pattern's fields and the pale share in COLOR_0 and a shade
+    in TEXCOORD_1, which the figures colour from the record (skin, skin2, skin3, pattern, pattern_amount); the eyes an
+    iris texture the eye colour tints (role 'iris'); and a primitive with no area carries the body's pattern (its
+    texture: amphibian.body_mask), which the base skin takes under the head (kit item skin_detail mask). tex, nrm: the
+    skin texture and its normal map. Returns the hidden skin and the jaw's extras"""
     import heads as HD
     import reptile as RP
     import amphibian as AM
@@ -1059,47 +1069,65 @@ def frog_head(body, out, rec, tex, nrm=None):
         m = _Smooth(rec)
         m.C = []
         return m
-    cran, jaw, mouth_m, eye_m, dark_m, lid_m = (smooth() for _ in range(6))
+    cran, jaw, mouth_m, eye_m, dark_m, lid_m, mask_m, web_m, pad_m = (smooth() for _ in range(9))
     for f, is_upper, m, bone in ((fr.upper, True, cran, hj), (fr.lower, False, jaw, jj)):
-        lo, hi = np.array([-0.15, -0.11, -0.14]) * k, np.array([0.15, 0.18, 0.17]) * k
+        lo, hi = np.array([-0.16, -0.12, -0.15]) * k, np.array([0.16, 0.19, 0.18]) * k
         V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
-        C, inside = AM.paint(fr, V, N, is_upper)
-        C, = HD.soften(nb, C)
+        M, S, inside = AM.paint(fr, V, N, is_upper, H)
+        S, = HD.soften(nb, S)
+        C = np.concatenate([M, S[:, None]], 1)            # the pattern, the pale share and the shade, split at the prims
         V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
         mats = np.where(inside[T].all(1), 'mouth', 'skin')
         RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}}, tile=AM.TILE)
-    eV, eN, eC, eT = AM.eyeball(fr, H)
-    for p, c in zip(eV, eC):
-        eye_m.v(p, (0.5, 0.5), [(hj, 1.0)], RP.RIGID)
-        eye_m.C.append(c)
+    eV, eN, eU, eT = AM.eyeball(fr.eyes, fr.eye_r, H)
+    for p, u in zip(eV, eU):
+        eye_m.v(p, tuple(u), [(hj, 1.0)], RP.RIGID)
     eye_m.T = eT.tolist()
     # the frog's ball stands proud of its turret: a wide lid lies down in the turret when open and rises over the
     # front of the eye; it turns no more than 95 degrees (a morph moves each point straight: further, the lid would
     # pass through the ball halfway)
-    lV, lN, lC, lT, ldV, ldN, lU = RP.lids(fr, color=(0.95, 0.95, 0.9), open_deg=-60.0, shut_deg=35.0, span=150.0)
+    lV, lN, lC, lT, ldV, ldN, lU = RP.lids(fr, color=(1.0, 1.0, 1.0), open_deg=-60.0, shut_deg=35.0, span=150.0)
     for p, c, u in zip(lV + H, lC, lU):
         lid_m.v(p, tuple(u / AM.TILE), [(hj, 1.0)], RP.RIGID)
-        lid_m.C.append(c)
+        lid_m.C.append(np.concatenate([AM.pattern_fields(p[None])[0], [0.0, c[0]]]))
     lid_m.T = lT.tolist()
     for c, r in fr.nostrils:
         _ellipsoid(dark_m, H + c, r * 0.9, [(hj, 1.0)], RP.RIGID)
-    dark_m.C = [np.ones(3)] * len(dark_m.P)
     collar, neck_axis, hide = _head_collar(body, rec, k, AM.TILE)
-    spec = [(cran, {'name': 'Mod.head_frog', 'rough': 0.38}, tex, nrm, None),
-            (jaw, {'name': 'Mod.head_frog_jaw', 'rough': 0.38}, tex, nrm, None),
-            (collar, {'name': 'Mod.head_frog_neck', 'rough': 0.4}, tex, nrm, neck_axis),
-            (mouth_m, {'name': 'Mod.head_frog_mouth', 'rough': 0.3}, flat('#b06a68'), None, None),
-            (eye_m, {'name': 'Mod.head_frog_eye', 'rough': 0.06}, flat('#ffffff'), None, None),
-            (dark_m, {'name': 'Mod.head_frog_dark', 'rough': 0.5}, flat('#120c08'), None, None)]
+    CP = np.array(collar.P)
+    CN = (CP - np.array([CP[:, 0].mean(), 0, CP[:, 2].mean()])) * np.array([1, 0, 1])
+    CN /= np.maximum(np.linalg.norm(CN, axis=1, keepdims=True), 1e-9)
+    pale = AM.belly_share(body, CP, CN)                   # the throat's front, as the body's
+    collar.C = [np.concatenate([f, [a, 1.0]]) for f, a in zip(AM.pattern_fields(CP), pale)]
+    # webbed hands and pads under the fingertips, on the fingers' joints, each point's deltas the nearest base vertex's
+    B = body.prims['Human.body']
+    tree = cKDTree(B['POSITION'].astype(float))
+    AM.hand_webs(body, web_m, pad_m, lambda p: ((int(B['VID'][tree.query(p)[1]]), 0.0, 'Head', 0.0, np.zeros(3)), None))
+    # the body's pattern, on a primitive with no area (the figures read its texture; nothing is drawn)
+    for _ in range(3):
+        mask_m.v(H, (0.0, 0.0), [(hj, 1.0)], RP.RIGID)
+    mask_m.T = [[0, 1, 2]]
+    patterned = [(cran, {'name': 'Mod.head_frog', 'rough': 0.38}, tex, nrm, None),
+                 (jaw, {'name': 'Mod.head_frog_jaw', 'rough': 0.38}, tex, nrm, None),
+                 (collar, {'name': 'Mod.head_frog_neck', 'rough': 0.4}, tex, nrm, neck_axis),
+                 (web_m, {'name': 'Mod.head_frog_webs', 'rough': 0.4}, tex, nrm, None),
+                 (pad_m, {'name': 'Mod.head_frog_pads', 'rough': 0.45}, tex, nrm, None)]
     prims = []
-    for m, mat, img, nm, outward in spec:
+    for m, mat, img, nm, outward in patterned:
         p = m.prim(mat, img, outward=outward)
-        p['C'], p['normal'] = np.array(m.C, float), nm
+        C = np.array(m.C, float)
+        p.update({'C': C[:, :4], 'UV2': np.stack([C[:, 4], np.zeros(len(C))], 1), 'normal': nm})
         prims.append(p)
+    prims.append(mouth_m.prim({'name': 'Mod.head_frog_mouth', 'rough': 0.3}, flat('#b06a68')))
+    prims.append(eye_m.prim({'name': 'Mod.head_frog_eye', 'rough': 0.05}, AM.iris_texture('horizontal')))
+    prims.append(dark_m.prim({'name': 'Mod.head_frog_dark', 'rough': 0.5}, flat('#120c08')))
+    prims.append(mask_m.prim({'name': 'Mod.head_frog_mask', 'rough': 1.0}, AM.body_mask(body)))
     lp = lid_m.prim({'name': 'Mod.head_frog_lids', 'rough': 0.35}, tex)
-    lp.update({'C': np.array(lid_m.C, float), 'normal': nrm, 'mesh': 1, 'targets': {'blink': (ldV, ldN)}})
+    C = np.array(lid_m.C, float)
+    lp.update({'C': C[:, :4], 'UV2': np.stack([C[:, 4], np.zeros(len(C))], 1), 'normal': nrm, 'mesh': 1,
+               'targets': {'blink': (ldV, ldN)}})
     write_piece(body, out, 'mod_head_frog', prims + [lp])
-    hinge = np.array([0.0, AM.HINGE[1] * k, AM.HINGE[0] * k])
+    hinge = np.array([0.0, AM.HINGE[1] * k * AM.SIZE, AM.HINGE[0] * k * AM.SIZE])
     return hide, {'pivot': [round(float(x), 5) for x in hinge]}
 
 
@@ -1146,7 +1174,10 @@ TAIL_MOTION = {'stiff': [0.5, 0.32, 0.22, 0.16, 0.12, 0.1, 0.09, 0.08, 0.08], 'g
 JAW_MOTION = {'deg': 6.0, 'period': 5.0, 'hold': 0.35}
 NONHUMAN_ROLES = {'Mod.tail': 'skin', 'Mod.head_lizard': 'skin', 'Mod.head_lizard_jaw': 'skin', 'Mod.head_lizard_neck': 'skin',
                   'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin',
-                  'Mod.head_frog': 'skin', 'Mod.head_frog_jaw': 'skin', 'Mod.head_frog_neck': 'skin', 'Mod.head_frog_lids': 'skin'}
+                  'Mod.head_lizard_eye': 'iris',
+                  'Mod.head_frog': 'pattern', 'Mod.head_frog_jaw': 'pattern', 'Mod.head_frog_neck': 'pattern',
+                  'Mod.head_frog_lids': 'pattern', 'Mod.head_frog_eye': 'iris', 'Mod.head_frog_webs': 'pattern',
+                  'Mod.head_frog_pads': 'pattern'}
 
 
 def nonhuman_joints(body):
@@ -1223,7 +1254,10 @@ def nonhuman(body, pieces, body_name):
         {'id': 'mod_head_frog', 'name': 'Frog head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_frog.glb' % body_name,
          'grants': {'head': 'frog'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
          'hide': bits(hide_f), 'hides': int(len(hide_f)), 'hide_parts': HEAD_PARTS, 'jaw': dict(jaw_f, **JAW_MOTION),
-         'skin_detail': {'material': 'Mod.head_frog', 'repeat': skin_repeat(body, AM.TILE)}}]
+         'skin_detail': {'material': 'Mod.head_frog', 'repeat': skin_repeat(body, AM.TILE), 'mask': 'Mod.head_frog_mask'},
+         # the skin's colours and pattern when the record names none (skin2 the marks', skin3 the pale parts'; kind
+         # none, spots, net or marble; amount 0..1) and the eyes' colour
+         'pattern': {'skin2': '#1e2a12', 'skin3': '#e2dab0', 'kind': 'marble', 'amount': 0.45, 'eye_color': '#d6a22a'}}]
     return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h, 'mod_head_frog': rec_f}, \
         {'root': root, 'b_root': int(B['VID'][kb])}
 

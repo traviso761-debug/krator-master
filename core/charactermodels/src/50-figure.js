@@ -360,6 +360,49 @@ function KCharFigure(body, sliders, load){
     };
   }
 
+  /* a frog's skin in the record's colours (kit item pattern; tools/amphibian.py): kpC1 the skin, kpC2 the marks, kpC3
+     the pale parts; the pattern's fields R (spots), G (a net), B (marbling) and the pale share A per vertex on the head's
+     pieces (COLOR_0, a shade in TEXCOORD_1) or from the body's pattern texture at the skin's own UVs (kpMask); kpKind
+     picks the field (0 none, 1 spots, 2 net, 3 marble), kpAmt how much of the skin the marks take. kpOn 0 leaves the
+     material as it was (the base skin without a frog's head). The twin of kchar_pattern.gdshader and kchar_skin.gdshader */
+  var KP_KIND = { none:0, spots:1, net:2, marble:3 };
+  function patternMat(mat, fromMask){
+    if(mat.userData.kp) return mat.userData.kp;
+    var u = mat.userData.kp = { kpC1:{ value:new THREE.Color() }, kpC2:{ value:new THREE.Color() }, kpC3:{ value:new THREE.Color() },
+                                kpKind:{ value:0 }, kpAmt:{ value:0.4 }, kpOn:{ value:0 }, kpMask:{ value:null } };
+    if(!fromMask) mat.vertexColors = false;      // COLOR_0 is the pattern, not a colour
+    mat.onBeforeCompile = function(sh){
+      Object.keys(u).forEach(function(k){ sh.uniforms[k] = u[k]; });
+      sh.vertexShader = (fromMask ? '' : 'attribute vec4 color;\nattribute vec2 uv2;\n') + 'varying vec4 vKpM;\nvarying float vKpS;\nvarying vec2 vKpUv;\n' +
+        sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n' +
+          (fromMask ? '\tvKpUv = uv; vKpM = vec4(0.0); vKpS = 1.0;' : '\tvKpM = color; vKpS = uv2.x; vKpUv = uv;'));
+      sh.fragmentShader = 'uniform vec3 kpC1;\nuniform vec3 kpC2;\nuniform vec3 kpC3;\nuniform float kpKind;\nuniform float kpAmt;\nuniform float kpOn;\n' +
+        'uniform sampler2D kpMask;\nvarying vec4 vKpM;\nvarying float vKpS;\nvarying vec2 vKpUv;\n' +
+        sh.fragmentShader.replace('#include <color_fragment>', ['#include <color_fragment>',
+          '\tif(kpOn > 0.5){',
+          fromMask ? '\t\tvec4 pm = texture2D(kpMask, vKpUv);' : '\t\tvec4 pm = vKpM;',
+          '\t\tfloat m = 0.0;',
+          '\t\tif(kpKind > 0.5 && kpKind < 1.5) m = 1.0 - smoothstep(0.6 * kpAmt, 0.6 * kpAmt + 0.05, pm.r);',
+          '\t\telse if(kpKind > 1.5 && kpKind < 2.5) m = 1.0 - smoothstep(0.3 * kpAmt, 0.3 * kpAmt + 0.04, pm.g);',
+          '\t\telse if(kpKind > 2.5) m = smoothstep(1.0 - kpAmt - 0.04, 1.0 - kpAmt + 0.04, pm.b);',
+          '\t\tdiffuseColor.rgb *= mix(mix(kpC1, kpC2, m), kpC3, pm.a) * vKpS;',
+          '\t}'].join('\n'));
+    };
+    mat.customProgramCacheKey = function(){ return fromMask ? 'kp-mask' : 'kp-vertex'; };
+    mat.needsUpdate = true;
+    return u;
+  }
+  // the pattern's uniforms from the record, the kit item's defaults where it names none
+  function patternSet(u, rec, pat, gain, mask){
+    u.kpC1.value.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin || 1));
+    u.kpC2.value.copy(tintOf(rec.skin2 || pat.skin2, gain.skin || 1));
+    u.kpC3.value.copy(tintOf(rec.skin3 || pat.skin3, gain.skin || 1));
+    u.kpKind.value = KP_KIND[rec.pattern || pat.kind] || 0;
+    u.kpAmt.value = rec.pattern_amount != null ? rec.pattern_amount : pat.amount;
+    if(mask !== undefined) u.kpMask.value = mask;
+    u.kpOn.value = 1;
+  }
+
   var S = new THREE.Matrix4(), T = new THREE.Matrix4();
   function skinScale(m, pose, d){
     var inv = m.skeleton.boneInverses, ibm = m.userData.ibm;
@@ -565,8 +608,10 @@ function KCharFigure(body, sliders, load){
           var roles = (kit.tint && kit.tint.roles) || {}, gain = (kit.tint && kit.tint.gain) || {};
           // a lizard's head draws the body's skin in its scales (kit item skin_detail: that material's maps, tiled)
           var det = null;
-          var neckCrest = null;
-          if(mpfb) KCHAR.mods(rec, kit).forEach(function(it){ if(it.skin_detail) det = it.skin_detail; if(it.crest_neck) neckCrest = it.crest_neck; });
+          var neckCrest = null, pat = null;
+          if(mpfb) KCHAR.mods(rec, kit).forEach(function(it){ if(it.skin_detail) det = it.skin_detail; if(it.crest_neck) neckCrest = it.crest_neck; if(it.pattern) pat = it.pattern; });
+          // a frog's head's pattern over the body (kit item skin_detail mask: the texture of a primitive with no area)
+          var maskSrc = det && det.mask && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.mask; })[0];
           var detSrc = det && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.material; })[0];
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
@@ -575,13 +620,21 @@ function KCharFigure(body, sliders, load){
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
-              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); skinDetail(m, detSrc ? det : null, detSrc); coatShells(m, rec, gain, hide.base, coatEdge(rec)); }
+              else if(m.userData.srcMaterial === kit.base_material){
+                filterBase(m, hide.base); skinDetail(m, detSrc ? det : null, detSrc); coatShells(m, rec, gain, hide.base, coatEdge(rec));
+                if(pat && maskSrc && maskSrc.material.map) patternSet(patternMat(m.material, true), rec, pat, gain, maskSrc.material.map);
+                else if(m.material.userData.kp) m.material.userData.kp.kpOn.value = 0;
+              }
               else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
               else if(m.userData.srcMaterial === 'Human.nipple') skinDetail(m, detSrc ? det : null, detSrc);    // (the skin has holes under them)
             }
             // a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
             if(neckCrest && m.userData.srcMaterial === neckCrest.material) m.visible = !neckCrest.under.some(function(t){ return hide.base[t]; });
-            if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
+            var kpOn = m.material.userData.kp && m.material.userData.kp.kpOn.value > 0.5;
+            if(role === 'pattern'){ patternSet(patternMat(m.material, false), rec, pat || {}, gain); m.material.color.set('#ffffff'); }
+            else if(role === 'iris') m.material.color.copy(tintOf(rec.eye_color || (pat && pat.eye_color) || DEFAULT_EYE, 1));   // an animal's eye (amphibian.iris_texture)
+            else if(role === 'skin' && kpOn) m.material.color.set('#ffffff');      // the colours are the pattern's
+            else if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
             else if(role === 'coat') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.coat || gain.hair));   // a therian's head (tools/heads.py)
             else if(role === 'eye'){ m.material.color.set('#ffffff'); if(m.material.userData.eyeTint) m.material.userData.eyeTint.value.copy(tintOf(rec.eye_color || DEFAULT_EYE, gain.eye || 1)); }

@@ -228,6 +228,11 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
     ok(KCHAR.replacesHead(rf, k) && pf.indexOf('hair') < 0 && hf['Human.lips'] && fg.jaw && fg.jaw.pivot &&
        fg.skin_detail && fg.skin_detail.material === 'Mod.head_frog' && fg.skin_detail.repeat > 4 && fg.skin_detail.repeat < 12,
        b + ': the frog head replaces the human one, opens its jaw and draws the body\'s skin in its own');
+    var pt = fg.pattern || {}, roles = (k.tint && k.tint.roles) || {};
+    ok(/^#[0-9a-f]{6}$/i.test(pt.skin2) && /^#[0-9a-f]{6}$/i.test(pt.skin3) && /^#[0-9a-f]{6}$/i.test(pt.eye_color) &&
+       ['none', 'spots', 'net', 'marble'].indexOf(pt.kind) >= 0 && pt.amount >= 0 && pt.amount <= 1 && fg.skin_detail.mask === 'Mod.head_frog_mask' &&
+       roles['Mod.head_frog'] === 'pattern' && roles['Mod.head_frog_webs'] === 'pattern' && roles['Mod.head_frog_eye'] === 'iris' && roles['Mod.head_lizard_eye'] === 'iris',
+       b + ': the frog\'s skin takes the record\'s colours by a pattern over head and body, and its eyes (and the lizard\'s) the eye colour');
   }
   var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
   ok(n >= hd.hides, b + ': the lizard head hides the head skin');

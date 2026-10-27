@@ -93,7 +93,7 @@
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
     // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
     if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; }
-    if(r.mods.indexOf('mod_head_frog') >= 0) r.skin = '#5f8a36';      // the Frogman test: a frog's green
+    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; }     // the Frogman test: a frog's green, gold eyes
     r.ancestry = null;
     return r;
   }

@@ -13,7 +13,7 @@ the surface, stray islands dropped, smoothed), on a 3 mm grid:
 Each vertex carries a colour the skin's tint multiplies (paint: the lips' paler scales, a pale ring round each eye, the
 throat lighter, a dark mottle over all) and a UV in metres, each triangle projected on the plane it faces most
 (heads.box_uv), for the scale texture (scale_map: the library's organic.scale, with its normal map). The eyes are
-balls behind round lids, a round black pupil in a dark amber iris; the lower lids rise to shut them (a 'blink' morph
+balls behind round lids, a round pupil in an iris the eye colour tints (amphibian.iris_texture); the lower lids rise to shut them (a 'blink' morph
 target: a monitor shuts its eye from below). The crest: flat blades down the midline from the crown over the nape
 and down the back of the neck, longest at the nape, leaning back (crest), the neck's on the neck's own weights and
 deltas. The teeth (recurved, inside the closed mouth), the dark nostrils, the mouth's inside and the collar from the
@@ -317,31 +317,6 @@ def lids(lz, color=(1.25, 1.14, 0.8), open_deg=-30.0, shut_deg=42.0, span=75.0):
     flip = (fn * N[T].mean(1)).sum(1) < 0
     T[flip] = T[flip][:, ::-1]
     return V, N, C, T, dV, dN, U
-
-
-def eyeball(lz, H):
-    """the eyes: balls with their poles on the gaze, coloured in rings round it: a round black pupil, a dark amber iris
-    deepening outward, a dark rim; (positions, normals, colours, triangles)"""
-    eV, eN, eC, eT = [], [], [], []
-    RI, RJ = 22, 29
-    sm = lambda a, b, x: (lambda t: t * t * (3 - 2 * t))(np.clip((x - a) / (b - a), 0, 1))
-    for e in lz.eyes:
-        g, hh, v = e['axes']
-        th, ph = np.meshgrid(np.linspace(0, np.pi, RI), np.linspace(0, 2 * np.pi, RJ), indexing='ij')
-        d = (np.cos(th)[..., None] * g + np.sin(th)[..., None] * (np.cos(ph)[..., None] * hh + np.sin(ph)[..., None] * v)).reshape(-1, 3)
-        base = sum(len(x) for x in eV)
-        eV.append(H + e['c'] + d * lz.eye_r); eN.append(d)
-        cg = d @ g
-        inner, outer, rim = np.array([0.6, 0.32, 0.1]), np.array([0.3, 0.14, 0.05]), np.array([0.08, 0.05, 0.03])
-        c = inner[None] * sm(0.8, 0.95, cg)[:, None] + outer[None] * (1 - sm(0.8, 0.95, cg))[:, None]
-        c = c * (1 - sm(0.66, 0.6, cg))[:, None] + rim[None] * sm(0.66, 0.6, cg)[:, None]
-        c = c * (1 - sm(0.935, 0.945, cg))[:, None] + 0.012 * sm(0.935, 0.945, cg)[:, None]
-        eC.append(c)
-        for i in range(RI - 1):
-            for j in range(RJ - 1):
-                a0, b0 = base + i * RJ + j, base + (i + 1) * RJ + j
-                eT += [[a0, b0, b0 + 1], [a0, b0 + 1, a0 + 1]]
-    return np.concatenate(eV), np.concatenate(eN), np.concatenate(eC), np.array(eT)
 
 
 def _midline_top(f, z, y0, y1, n=40):
