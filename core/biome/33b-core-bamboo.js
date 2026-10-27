@@ -27,6 +27,12 @@
 //               o.holes [{y, r, a, k}] or a set for B.holeSet: holes as dark plugs (holeK .22) set in to o.holeIn (.82
 //               of the radius), each with a pale stain running down stainL (1.2) internodes (stainK 1.25; coarse: one
 //               vertex a side and a row, the library set bark.bamboo.bored carries the fine stain).
+//               o.taper (0) narrows the culm toward the top (radius x (1 - taper y): a slender cane). o.bend (0) bows it
+//               out along +x by bend times its height at the tip, o.droop (0) lets the top down past o.droopAt (.6) (a
+//               clumping cane bowed over in a plume: k-guilin's phoenix-tail bamboo, bend .25-.5, droop 1.1, taper .45);
+//               o.aspect (1) the height over the diameter the instance will be scaled to, so the rings stay round and
+//               square to the cane once BIO.put scales it. axis(o, t) is the cane's axis point at t, in the unit space.
+//               bend and droop 0: the straight culm, unchanged.
 //               o.sheaths (0): the lowest nodes keep their culm sheaths: a split sleeve up o.sheathL (.7) of the
 //               internode, flaring to o.sheathF (1.12), shaded sheathK (.78) outside and .6 inside.
 //   tiers(o)    {near, mid, far}: near culm(o); mid one side fewer, rows [0,.5], no openings or sheaths; far two sides
@@ -55,6 +61,10 @@
 //               clump (stable when clear() drops another clump), v the variant def to draw (0..variants-1).
 //   groveCells(o) -> [{i, j, x, z, seed, w}]: one candidate a o.cell (180) cell over o.R (or o.box [x0,z0,x1,z1]),
 //               kept where KRAND's draw is under o.weight(x,z) * o.keep (.85); seed = KRAND.hash(o.world, i, j, salt).
+//   clump(o)    -> [{i, p, q, s, az, h, v, bend, u}]: a clumping (sympodial) bamboo's canes from one root mass at o.at,
+//               o.n [6,9] canes within o.r (.5), each o.H (10) x o.hs [.6,1.05] high and o.d (.1) across, bowed out
+//               along its own azimuth az (the line out from the clump's middle, +- o.fan .4 rad: q turns the culm's +x
+//               to it), v the bend variant of o.bends [.25,.375,.5] to def (a culm({bend: bends[v], ...}) each).
 //   sprays(o)   -> [{p, q, s, k, tier, v, range, u}] for one culm: o.culm (a grove's record), o.nodes (its node heights
 //               in metres; else k L), o.from (.42) up, alternate sides by o.step (2.4 rad; PI ranked), o.size
 //               [3.2,4.4], o.lod [[every, scale, r0, r1]] ([[1,1,0,400],[2,1.3,400,1200],[4,1.65,1200,1e9]]), o.cards (3).
@@ -111,7 +121,8 @@ B.culm=function(o){o=o||{};const n=Math.max(1,nz(o.n,24)),seg=nz(o.seg,10),fs=nz
  const rows=[];
  if(even){for(let i=0;i<n;i++)for(const f of fs)rows.push({y:(i+f)/n});rows.push({y:1});for(const r of rows)r.f=(r.y*n)%1;}
  else{for(let i=0;i<n;i++)for(const f of fs)rows.push({y:Y[i]+(Y[i+1]-Y[i])*f,f});rows.push({y:1,f:0});}
- for(const row of rows){const y=row.y,f=row.f,tp=cut?1:1-tip*Math.pow(Math.max(0,(y-tip0)/tipL),tipP),r=(y>=1?R0:rad(f))*tp,k=y>=1?1:shade(f),R=[];
+ const taper=nz(o.taper,0);
+ for(const row of rows){const y=row.y,f=row.f,tp=cut?1:1-tip*Math.pow(Math.max(0,(y-tip0)/tipL),tipP),r0=(y>=1?R0:rad(f))*tp,r=taper?r0*(1-taper*y):r0,k=y>=1?1:shade(f),R=[];
   for(let s=0;s<=seg;s++){const a=s/seg*TAU;R.push({p:[Math.cos(a)*r,y,Math.sin(a)*r],n:[Math.cos(a),0,Math.sin(a)],u:s/seg*uR,v:y*n*vR,c:ops.length>(o.bite?1:0)?k*stain(y,a):k});}ring.push(R);}
  const pv=(q,flip)=>{pos.push(...q.p);nor.push(flip?-q.n[0]:q.n[0],flip?-q.n[1]:q.n[1],flip?-q.n[2]:q.n[2]);uv.push(q.u,q.v);col.push(q.c,q.c,q.c);};
  for(let i=0;i<ring.length-1;i++)for(let s=0;s<seg;s++){const a=ring[i][s],b=ring[i][s+1],c=ring[i+1][s],d=ring[i+1][s+1];
@@ -137,7 +148,24 @@ B.culm=function(o){o=o||{};const n=Math.max(1,nz(o.n,24)),seg=nz(o.seg,10),fs=nz
    return{p:[Math.cos(a)*r,top,Math.sin(a)*r],n:[Math.cos(a),0,Math.sin(a)],u:s/SS*uR,v:top*n*vR,c:out?sK:.6};};
   for(let s=0;s<SS;s++){for(const out of [1,0]){const A=pt(0,s,out),Bq=pt(0,s+1,out),Cq=pt(1,s,out),Dq=pt(1,s+1,out);
    if(out){pv(A);pv(Cq);pv(Dq);pv(A);pv(Dq);pv(Bq);}else{pv(A,1);pv(Dq,1);pv(Cq,1);pv(A,1);pv(Bq,1);pv(Dq,1);}}}}
+ if(nz(o.bend,0)||nz(o.droop,0))arch(pos,nor,o);
  return make(pos,nor,uv,col);};
+
+// ---------------------------------------------------------------- the arch (a clumping cane bowed out and over)
+// The axis in diameter units (x and z as the unit culm, y times o.aspect, the height over the diameter the instance is
+// scaled to): out along +x by bend*aspect*t^2, the top past droopAt let down by droop*aspect*(t - droopAt)^2. A straight
+// culm's vertex (x, t, z) goes to the axis point plus x along the axis's normal in the x-y plane and z along z, so every
+// ring stays round and square to the cane. A normal is turned with its ring and written as the instance's normal matrix
+// wants it (three scales an instance's normals by its own scale): y over the aspect, then made unit.
+const archAx=(o)=>{const b=nz(o.bend,0),dr=nz(o.droop,0),t0=nz(o.droopAt,.6),A=nz(o.aspect,1);
+ return t=>{const u=Math.max(0,t-t0);return{c:[b*A*t*t,A*(t-dr*u*u),0],d:[2*b*A*t,A*(1-2*dr*u),0]};};};
+function arch(pos,nor,o){const ax=archAx(o),A=nz(o.aspect,1);
+ for(let i=0;i<pos.length;i+=3){const x=pos[i],t=pos[i+1],z=pos[i+2],a=ax(t),l=Math.hypot(a.d[0],a.d[1]),T=[a.d[0]/l,a.d[1]/l],N=[T[1],-T[0]];
+  pos[i]=a.c[0]+x*N[0];pos[i+1]=(a.c[1]+x*N[1])/A;pos[i+2]=z;
+  const nx=nor[i],ny=nor[i+1],nz2=nor[i+2],q=[nx*N[0]+ny*T[0],(nx*N[1]+ny*T[1])/A,nz2],ql=Math.hypot(q[0],q[1],q[2])||1;
+  nor[i]=q[0]/ql;nor[i+1]=q[1]/ql;nor[i+2]=q[2]/ql;}}
+// a point on the cane's axis at t (0 foot, 1 tip), in the unit culm's space (BIO.put's scale [d, h, d] takes it to metres)
+B.axis=function(o,t){const a=archAx(o||{})(t),A=nz((o||{}).aspect,1);return[a.c[0],a.c[1]/A,0];};
 
 B.tiers=function(o){o=o||{};const seg=nz(o.seg,10),strip={bite:null,holes:null,sheaths:0};
  return{near:B.culm(o),mid:B.culm(Object.assign({},o,strip,{seg:Math.max(3,nz(o.midSeg,seg-1)),fs:[0,.5]})),far:B.culm(Object.assign({},o,strip,{seg:Math.max(3,nz(o.farSeg,seg-2)),fs:[0]}))};};
@@ -208,6 +236,16 @@ B.grove=function(o){o=o||{};const seed=nz(o.seed,0),at=nz(o.at,[0,0,0]),x=at[0],
   if(H(seed,c,4,0x6A1)<shootF){const sx=cx+1.2,sz=cz-.8,sy=ground?ground(sx,sz):y0,sh=lerp(1,3,H(seed,c,5,0x6A1));
    G.shoots.push({i:G.shoots.length,c,x:sx,y:sy,z:sz,h:sh,p:[sx,sy-.1,sz],q:[0,0,0,1],s:[.35*sh/2,sh,.35*sh/2]});}}
  return G;};
+
+// a clumping bamboo's clump (k-guilin's phoenix-tail): canes from one tight root mass, each bowed out its own way
+B.clump=function(o){o=o||{};const seed=nz(o.seed,0),salt=nz(o.salt,0xC1A),at=nz(o.at,[0,0,0]),n=nz(o.n,[6,9]),R=nz(o.r,.5),hS=nz(o.hs,[.6,1.05]),H0=nz(o.H,10),
+ d=nz(o.d,.1),bends=nz(o.bends,[.25,.375,.5]),fan=nz(o.fan,.4),out=[];
+ const N=Array.isArray(n)?n[0]+Math.floor(H(seed,0,1,salt)*(n[1]-n[0]+1)):n,lean=H(seed,0,2,salt)*TAU;
+ for(let i=0;i<N;i++){const h=k=>H(seed,i,k+2,salt),a=h(1)*TAU,r=R*Math.sqrt(h(2)),x=at[0]+Math.cos(a)*r,z=at[2]+Math.sin(a)*r,y=o.ground?o.ground(x,z):at[1];
+  /* each cane bows out from the clump's middle (its own azimuth, within fan of the line out) */
+  const la=(r>1e-9?a:lean)+(h(3)-.5)*2*fan,hh=H0*rng2(hS,h(4)),v=Math.floor(h(5)*bends.length)%bends.length;
+  out.push({i,p:[x,y-.2,z],q:qLY(0,0,-la),s:[d,hh,d],az:la,h:hh,v,bend:bends[v],u:h(6)});}
+ return out;};
 
 B.sprays=function(o){o=o||{};const C=o.culm,n=C.n,L=nz(C.L,C.h/n),nodes=o.nodes||null,from=nz(o.from,.42),step=nz(o.step,2.4),size=nz(o.size,[3.2,4.4]),
  lod=nz(o.lod,[[1,1,0,B.LOD.near+50],[2,1.3,B.LOD.near+50,B.LOD.mid],[4,1.65,B.LOD.mid,1e9]]),cards=Math.max(1,nz(o.cards,3)),u=nz(C.u,0),

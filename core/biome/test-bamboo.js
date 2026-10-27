@@ -77,6 +77,27 @@ for(const k of Object.keys(PARTS)){const fn=G[k.replace(/(Jit|Holes|Sheaths|Bite
  check('fan: the twigs reach their tips (the same math)',Math.abs(b[3]-tips[2].p[0])<.02);}
 {const b=bounds(G.shoot({}));check('shoot: 1 high, radius about .5, to a point',Math.abs(b[1])<1e-9&&Math.abs(b[4]-1)<1e-9&&b[3]<=.52);}
 
+// ---------------------------------------------------------------- the arched cane (k-guilin's phoenix-tail bamboo)
+{const KG={n:20,seg:6,tip:0,taper:.45,bend:.4,droop:1.1,aspect:100},g=G.culm(KG),s=sound(g,true),b=bounds(g),tip=G.axis(KG,1);
+ check('arched cane: sound (every triangle facing its normals, unit normals)',!s,tris(g)+' triangles'+(s?', '+s:''));
+ check('  bowed out along +x by bend x height (in diameters: bend x aspect), the top let down',Math.abs(tip[0]-.4*100)<1e-9&&tip[1]<1&&b[3]>39&&b[4]<1,'tip '+tip.map(v=>v.toFixed(3)).join(' '));
+ /* scaled as an instance (s = [d, h, d] with h = aspect d), every ring keeps its radius about the axis, square to the cane */
+ const P=g.attributes.position,d=.1,h=10;let worst=0;
+ const rings=G.culm(Object.assign({},KG,{bend:0,droop:0,taper:0,tip:0})).attributes.position;
+ for(let i=0;i<P.count;i++){const ty=rings.getY(i),a=G.axis(KG,ty),r=Math.hypot(rings.getX(i),rings.getZ(i))*(1-.45*ty);
+  const w=[(P.getX(i)-a[0])*d,(P.getY(i)-a[1])*h,(P.getZ(i)-a[2])*d];worst=Math.max(worst,Math.abs(Math.hypot(...w)-r*d));}
+ check('  scaled to [d, aspect d, d], every vertex its ring\'s radius from the axis (round rings)',worst<1e-6,'worst '+worst.toExponential(2)+' m');
+ const st=G.culm({n:20,seg:6,bend:0,droop:0,aspect:100}),pl=G.culm({n:20,seg:6});check('  negative: bend 0 and droop 0 is the straight culm, vertex for vertex',compare(st,pl).same);
+ check('taper: the top narrower than the foot',(()=>{const q=G.culm({n:20,taper:.45,tip:0}).attributes.position;let top=0,ft=0;for(let i=0;i<q.count;i++){const r=Math.hypot(q.getX(i),q.getZ(i));if(q.getY(i)>.999)top=Math.max(top,r);if(q.getY(i)<1e-9)ft=Math.max(ft,r);}return top<ft*.6;})());
+ const t=G.tiers(KG);check('  the tiers keep the arch',Math.abs(bounds(t.far)[3]-b[3])<1);}
+{const rot=(q,v)=>{const V=new T.Vector3(v[0],v[1],v[2]).applyQuaternion(new T.Quaternion(q[0],q[1],q[2],q[3]));return[V.x,V.y,V.z];};
+ const c=G.clump({seed:4,at:[5,1,5],H:12}),c2=G.clump({seed:4,at:[5,1,5],H:12}),c3=G.clump({seed:5,at:[5,1,5],H:12});
+ check('clump: 6-9 canes within the root mass, the same seed the same',c.length>=6&&c.length<=9&&c.every(r=>Math.hypot(r.p[0]-5,r.p[2]-5)<=.5+1e-9)&&JSON.stringify(c)===JSON.stringify(c2));
+ check('  negative: another seed, another clump',JSON.stringify(c)!==JSON.stringify(c3));
+ check('  each cane\'s +x turned to its azimuth (bowing out), its bend one of the variants',c.every(r=>{const x=rot(r.q,[1,0,0]);return Math.abs(x[0]-Math.cos(r.az))<1e-9&&Math.abs(x[2]-Math.sin(r.az))<1e-9&&[.25,.375,.5].includes(r.bend);}));
+ const out=c.filter(r=>{const dx=r.p[0]-5,dz=r.p[2]-5,l=Math.hypot(dx,dz);return l>.05&&(Math.cos(r.az)*dx+Math.sin(r.az)*dz)/l>Math.cos(.4)-1e-9;}).length;
+ check('  canes bow out from the clump (within fan of the line out)',out===c.filter(r=>Math.hypot(r.p[0]-5,r.p[2]-5)>.05).length,out+' of '+c.length);}
+
 // ---------------------------------------------------------------- layouts
 const qlen=q=>Math.hypot(q[0],q[1],q[2],q[3]),rot=(q,v)=>{const V=new T.Vector3(v[0],v[1],v[2]).applyQuaternion(new T.Quaternion(q[0],q[1],q[2],q[3]));return[V.x,V.y,V.z];};
 const ground=(x,z)=>.03*x-.02*z+Math.sin(x*.1)*.5;
