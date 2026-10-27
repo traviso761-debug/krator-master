@@ -24,7 +24,7 @@ const LAKE_BOX=[-1150,-2400,1150,2400],LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn
 // the rivers' plumes (2026-10-27, the owner: the delta rode over the lake): the channels fade out as they reach the lake (RIVER_KEEP below) and
 // their water runs on into it as a tint, strongest at each channel's line and spreading as it fades over ~250 m, so the river's grey-green
 // meets the pink salt water as a plume, not an edge (WATER.open's tint field; the lake's own colour everywhere else)
-const PLUME_HEX=RIVER_COL.clone().lerp(new THREE.Color(0x6a7a72),.5).getHex();
+const PLUME_HEX=lin(RIVER_COL.clone().lerp(new THREE.Color(0x6a7a72),.42)).multiplyScalar(.65).getHex();   /* the ribbons' own linear colour (their shallow and deep), as the lake's shader mixes it */
 const LAKE_TINT={box:LAKE_BOX,cell:8,at:(x,z)=>{if(Math.abs(x)<500)return null;const lk=lakeIn(x,z);if(lk>24)return null;const into=Math.max(0,-lk),rd=riverD(x,z);
  const a=.6*smooth(30+.35*into,6,rd)*smooth(-260,-10,lk)*smooth(24,0,lk);return a<.004?null:{c:PLUME_HEX,a};}};
 const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK,tint:LAKE_TINT});
