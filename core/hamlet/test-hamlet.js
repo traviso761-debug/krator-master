@@ -140,6 +140,21 @@ ok('no dry flat ground in reach: refused; dry ground 320 m off: the village move
 ok('a key the host has no box for is placed as its declared box and marked pending (the ranch\'s Beast Rider rookery); the Islanders\' own sawpit is not',
   V.ranch.records.some(r => r.key === 'br_bldg_rookery_tower' && r.pending) && V.lumber.records.some(r => r.key === 'ie-sawpit' && !r.pending) && V.salt.records.every(r => !r.pending), V.ranch.records.some(r => r.key === 'ie-byre' && !r.pending));
 
+// ---- a mine with no resource takes the nearest node of kits/resources' field (KRES.near), loaded only from here on
+{
+  load('kits/resources/src/42r-res-ore.js'); load('kits/resources/src/45r-res-field.js');
+  const KR = KRES.load(JSON.parse(fs.readFileSync(path.join(ROOT, 'kits', 'resources', 'data', 'geology.json'), 'utf8'))), PM = KR.data().grid.px_m;
+  const node = KR.nodesIn({ x0: 1100 * PM, z0: 660 * PM, x1: 1160 * PM, z1: 720 * PM }).find(n => RES_ORE.kinds[n.kind].works === 'mine');
+  const at = { x: node.x + 150, z: node.z }, near = KR.near(at.x, at.z, node.kind, row.reach.mine)[0];
+  const free = o => H.village(spec('mine', Object.assign({ resource: null, site: at, link: { x: at.x - 500, z: at.z + 200 } }, o)));   /* the default works lane runs away from the node */
+  const m = free({ ore: node.kind }), any = free(), none = free({ kres: { near: () => [] } });
+  const mineAt = v => v.records.filter(r => r.role === 'works').map(r => Math.hypot(r.x - near.x, r.z - near.z));
+  ok('a mine with no resource takes the nearest node in its reach (KRES.near; ' + (m.resource ? m.resource.node + ', ' + m.resource.grade : 'none') + '), its works toward it',
+    !m.error && m.resource && m.resource.node === near.id && any.resource && Math.hypot(any.resource.x - at.x, any.resource.z - at.z) <= near.dist + 1e-9 &&
+    mineAt(m).length > 0 && Math.min(...mineAt(m)) < Math.min(...mineAt(none)),
+    !none.resource && !none.error && !H.village(spec('mine')).resource, m.error || '');
+}
+
 // ---- felling on the world clock (40-hamlet-felling.js): a pure function of the world day
 {
   const S = H.fellSchedule(1000, 100);        /* 100 workers at 0.1 trees a day: 10 a day, the order round in 100 days, under a year */

@@ -13,7 +13,9 @@ rule takes).
 
 **What a host does:** pass `dims(key)` (the kit's boxes, as `core/city`'s `kit.dims`) and `ground.ok(x, z)` (dry, not a
 cliff, not too steep). Register the records in `core/tags` before drawing them. A record marked `pending` is a building
-the kit does not have yet: draw a stand-in at its box.
+the kit does not have yet: draw a stand-in at its box. A mine whose spec has no `resource` takes the nearest node of
+`kits/resources`' field in its reach (`KHAMLET.resourceFor`: `spec.kres`, a loaded `RES_GEO.load(data)`, or the page's
+`KRES`; `spec.ore` names the kind); `out.resource` says which node.
 
 **Read in place, never copied:** `core/rand` (`KRAND`), `core/space` (`KSPACE`), `core/city/33-city-strategies.js`
 (`KCITY.prim`: `frontageRun`, `huntNear`). The resource rules are `kits/resources` (`42r-res-ore.js` for nodes,
