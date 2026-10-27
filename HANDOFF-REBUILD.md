@@ -170,6 +170,14 @@ biome takes (section 1) and a row per biome (section 2: terrain kinds and strata
 life, hazards). Each biome's session takes its row at its turn in the rebuild, checks it against the kit's plan and the scale
 model, puts look changes behind a switch, and verifies once.
 
+### New stations for the old kits, second pass (the owner, 2026-10-26)
+
+Six more kits have a `PLAN-STATIONS.md`, surveyed on the live model (4.23) with `tools/scale-model/survey_biomes.py`:
+nsemiarid, nwlowlands, crater-drylands, xanadu, geyser and ringisles (`biomes/WORLD.md`, "New stations for the old
+kits"). The owner settled two points: **Korona's plume is active** (geyser fields in its trenches: the geyser kit's
+`corona` station; `korona/NOTES.md`), and the cone on **Xanadu's south-eastern wall** holds an ice field (`ice`). Each
+station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
+
 ### Still to write (core) before or during step 1
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`
