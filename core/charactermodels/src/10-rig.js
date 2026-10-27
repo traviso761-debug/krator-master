@@ -17,6 +17,8 @@
    KCHAR.hidden(record, kit) per base region, which triangles the worn armour covers (the renderer leaves them out).
    KCHAR.hiddenParts(record, kit) the base's small parts drawn over the skin (the nipples: 'Human.nipple') that a worn
    item covers whole (kit item hide_parts), as { material name: true }: the renderer leaves them out too.
+   KCHAR.replacesHead(record, kit) a worn mod puts an animal head in place of the human one (kit item replaces_head:
+   tools/mods.py lizard_head): no hair, beard or headgear is drawn, and the mod's hide and hide_parts leave out the head.
    KCHAR.random(seed, sliders, kit) a record drawn from KRAND (core/rand).
 */
 var KCHAR = (function(){
@@ -115,6 +117,9 @@ var KCHAR = (function(){
       seen[it.group] = 1; return true;
     });
   }
+  function replacesHead(rec, kit){
+    return modsOf(rec, kit).some(function(m){ return !!m.replaces_head; });
+  }
   function arms(rec, kit){
     return modsOf(rec, kit).some(function(m){ return m.grants && m.grants.arms >= 4; }) ? 4 : 2;
   }
@@ -140,11 +145,11 @@ var KCHAR = (function(){
       // a four-armed top's lower sleeves are a piece of their own (kit item sleeves2), left off a cybernetic pair
       // (a mod with bare: tools/mods.py split_lower)
       var bare = modsOf(rec, kit).some(function(m){ return m.bare; });
-      // a head mod that covers the hair (a therian's head) leaves out the hair and the beard
-      var headMod = modsOf(rec, kit).some(function(m){ return m.covers_hair; });
+      // an animal head in place of the human one (a mod with replaces_head: tools/mods.py lizard_head) wears no hair,
+      // beard or headgear: they are fitted to the human head it hides
+      var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = mpfbItem(rec, kit, slot);
-        if(it && headMod && (slot === 'hair' || slot === 'beard')) return;
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot);
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
         if(it && it.sleeves2 && !bare) out.push({ key:key(it.sleeves2), mesh:'*', role:'armour', slot:slot });
       });
@@ -179,8 +184,9 @@ var KCHAR = (function(){
     var out = {}, arm = rec.armour || {};
     if(kit.style === 'mpfb'){
       var o = new Uint8Array(kit.base_tris);
+      var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
         var b = unbits(it.hide, kit.base_tris);
         for(var i=0;i<b.length;i++) o[i] |= b[i];
       });
@@ -210,11 +216,12 @@ var KCHAR = (function(){
   function hiddenParts(rec, kit){
     var out = {};
     if(kit.style !== 'mpfb') return out;
+    var beast = replacesHead(rec, kit);
     MPFB_SLOTS.forEach(function(slot){
-      var it = mpfbItem(rec, kit, slot);
+      var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head') ? null : mpfbItem(rec, kit, slot);
       ((it && it.hide_parts) || []).forEach(function(m){ out[m] = true; });
     });
-    // and a mod's (a therian's head hides the brows, lashes, eyes, lips and ears)
+    // and a mod's (an animal head leaves out the lips, ears, brows, lashes and eyes it covers)
     modsOf(rec, kit).forEach(function(it){ (it.hide_parts || []).forEach(function(m){ out[m] = true; }); });
     return out;
   }
@@ -381,7 +388,7 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
            along:along, crowd:crowd, colliders:colliders };
 })();

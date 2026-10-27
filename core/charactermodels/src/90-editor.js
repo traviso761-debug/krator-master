@@ -31,6 +31,17 @@
   start.mpfb_giant = { body:'mpfb_giant', hair:'short04', beard:null, armour:{ torso:'giant_dalab_m_harness4', legs:'voth_m_peasant_maxtlatl', feet:'dalab_m_noble_sandals', head:null },
                        sliders:{}, morph:{ muscle:0.7, weight:0.25 }, ancestry:null, skin:'#6a8a4c', hair_color:'#1a1712', eye_color:'#6e5a2e',
                        people:'giants', mods:['mod_arms_flesh'], dye:{ legs:'#b8443a' } };
+  /* the Lizardman test record (a spike, tools/nonhuman.py; LORE 6.20): a tail and a reptile's head on the body, olive
+     skin and amber eyes, no hair, bare above the trousers so the tail shows. Not a people: no stranger is drawn with
+     it. ?lizard in the page's address starts each body with it; the Body mods section has a chip for it */
+  var LIZARD = { mods:['mod_tail', 'mod_head_lizard'], skin:'#7d8a45', eye_color:'#c89020', hair:null, beard:null };
+  function lizard(r, kit){
+    if(!kit.items.some(function(it){ return it.id === 'mod_head_lizard'; })) return r;
+    Object.keys(LIZARD).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(LIZARD[k])); });
+    r.armour = Object.assign({}, r.armour, { head:null, torso:null });
+    return r;
+  }
+  var LIZARD_START = /[?&#]lizard\b/.test(location.search + location.hash);
   var saved = {};
   function figScale(){ return fig ? fig.scale || 1 : 1; }
 
@@ -118,6 +129,7 @@
     fig = new KCharFigure(D.bodies[b], D.sliders, load);
     scene.add(fig.group);
     rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
+    if(!saved[b] && LIZARD_START) lizard(rec, D.bodies[b].kit);
     Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
     buildPanel();
     view(cam.face);                 // a giant's camera stands further back
@@ -289,10 +301,17 @@
     var on = KCHAR.mods(rec, kit).map(function(m){ return m.id; });
     var s = section(gear, 'Body mods', on.length ? on.length + ' worn' : 'None');
     var grid = document.createElement('div'); grid.className = 'chips tags';
+    if(all.some(function(m){ return m.id === 'mod_head_lizard'; })){
+      var lz = document.createElement('button'); lz.className = 'chip'; lz.id = 'chip-lizardman';
+      lz.innerHTML = '<span>Lizardman <small>test</small></span>';
+      lz.title = 'A tail and a reptile head, olive skin, no hair (a test record, not a people)';
+      lz.addEventListener('click', function(){ lizard(rec, kit); apply(); buildPanel(); });
+      grid.appendChild(lz);
+    }
     all.forEach(function(m){
       var b = document.createElement('button'); b.className = 'chip'; b.id = 'chip-mod-' + m.id;
       b.setAttribute('aria-pressed', on.indexOf(m.id) >= 0);
-      b.innerHTML = '<span>' + m.name + ' <small>' + (m.kind || '') + '</small></span>';
+      b.innerHTML = '<span>' + m.name + ' <small>' + (m.kind || '') + (m.test ? ', test' : '') + '</small></span>';
       b.addEventListener('click', function(){
         var cur = KCHAR.mods(rec, kit);
         rec.mods = on.indexOf(m.id) >= 0 ? cur.filter(function(x){ return x.id !== m.id; }).map(function(x){ return x.id; })

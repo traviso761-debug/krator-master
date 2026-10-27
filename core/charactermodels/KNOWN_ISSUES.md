@@ -12,7 +12,8 @@
 - **Merged garments hide no skin in Godot yet** (the Izani court robe and the grand boubous were merged on 2026-10-20). `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
   items' own blend shapes but does not remake the base's cover regions (`base.gshapes.bin`): in the Godot twin the skin
   under them is still drawn (it is hidden on the page, which reads `hide` from kit.json). The next whole build
-  (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it.
+  (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it, and so does `python3 tools/make_mpfb.py gshapes <body>`
+  (2026-10-23: the Godot shapes of every piece remade from the pieces and kit.json alone).
 - **The Godot twin blends normals linearly.** Its blend shapes carry each target's normals (NORMALIZED mode), so a
   reshaped body's normals turn, but as a weighted sum of the targets' turns, where the page re-sums them from the
   morphed faces: close, not exact, when many targets stack. Its skin is one surface of cover regions (the triangles the
@@ -228,3 +229,15 @@
   follow LORE.md's real-world references.
 - **Ancestry is MakeHuman's three reference sets** (African, Asian, Caucasian). It moves face and build only; the
   skin tone is its own setting, so a people can pair any face with any tone (the Chichani, the Dalabites' green).
+- **The non-human spike's open ends** (`NONHUMAN.md`, 2026-10-23):
+  - *The tail comes through the cloth* of a top, robe or cape over its root (over trousers it leaves by the waistband's
+    back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
+    opening, and the cloth chains do not collide with the tail.
+  - *Its scales are a procedural stand-in* (`mods.scale_texture`) and the body under them is human skin tinted olive:
+    the textures are asked for in `core/materials/PROMPTS-NEEDED.md`, section 21. In Godot the stand-in aliases more.
+  - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
+  - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
+    published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.
+- **The giant's lower arms on the ladder** (`kchar_test.gd`, found 2026-10-23, the first run here with the Godot pieces):
+  "on the ladder the lower arms copy the upper (0.32 rad apart)" fails, on main's own scripts and data as on the spike's
+  branch. Not looked into.

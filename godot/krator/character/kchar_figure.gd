@@ -452,6 +452,16 @@ func apply(rec: Dictionary) -> void:
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (core/charactermodels/tools/mods.py)
+	# a tail and an animal head's jaw (mods with tail, jaw) are driven after each clip (_tail, _jaw)
+	var wt = null
+	_jaw_spec = {}
+	for m in KChar.mods(rec, kit):
+		if m.has("tail"):
+			wt = m
+		if m.has("jaw"):
+			_jaw_spec = m["jaw"]
+	if wt == null or _tl.is_empty() or _tl["spec"] != wt["tail"]:
+		_tail_setup(wt)
 	skeleton.position.y = 0.0
 	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
 	var feet_top := -1000.0
@@ -711,6 +721,10 @@ func _after_clip(dt: float) -> void:
 	_to_face()
 	_stand_up()
 	_cloth_step(dt)
+	if dt > 0.0:
+		_nh_t += dt
+	_tail(dt)
+	_jaw()
 	_leg_caps()
 	_bow_string(dt)
 	_hang()
@@ -2743,6 +2757,176 @@ func _arms2(dt: float) -> void:
 		for c in (h["curls"]["fist"] if h.has("curls") else h["curl"]):
 			var i: int = int(c[0])
 			skeleton.set_bone_pose_rotation(i, skeleton.get_bone_pose_rotation(i) * Quaternion().slerp(Quaternion(c[1], c[2], c[3], c[4]), CLOSE * _low_w))
+
+
+# ---- the tail and an animal head's jaw (the twin of tail() and jaw() in 50-figure.js; core/charactermodels/tools/mods.py) ----
+# The tail's joints (Tail1..., tools/tail.py) are on every skeleton; no clip moves them. Each frame, when a mod with a
+# tail is worn, they run as a spring chain at 60 Hz: each point pulled toward its rest carried by the hips (swayed about
+# the hips' up axis, kit tail.sway) by its stiffness (kit tail.stiff), a little gravity and damping, segment lengths
+# kept, out of the thighs' and shins' capsules by its radius plus pad and above the floor; the joints then turn to the
+# points. A head with a jaw opens it about its hinge (kit jaw.pivot, Head's frame) now and then, as a breath.
+var _tl := {}                            # {spec, ids, x, xp, tw, rest, acc, reset} while a tail is worn
+var _jaw_spec := {}
+var _nh_t := 0.0
+var jaw_open = null                      # 0..1 holds the jaw open (tools, tests)
+
+
+func _tail_setup(it) -> void:
+	if it == null or not it.has("tail"):
+		if not _tl.is_empty():
+			for i in _tl["ids"]:
+				skeleton.set_bone_pose_rotation(i, KChar._q(skel["joints"][i]["r"]))
+		_tl = {}
+		return
+	var ids := []
+	for n in it["tail"]["joints"]:
+		var i := skeleton.find_bone(n)
+		if i < 0:
+			_tl = {}
+			return
+		ids.append(i)
+	_tl = {"spec": it["tail"], "ids": ids, "x": [], "xp": [], "tw": [], "rest": [], "acc": 0.0, "reset": true}
+
+
+func _tail_rest() -> void:
+	var r := []
+	var p := Vector3.ZERO
+	for i in _tl["ids"]:
+		p += skeleton.get_bone_pose_position(i)
+		r.append(p)
+	var last: int = _tl["ids"][-1]
+	var lr := KChar._v(skel["joints"][last]["t"]).length()
+	var k := skeleton.get_bone_pose_position(last).length() / lr if lr > 1e-6 else 1.0
+	r.append(p + KChar._v(_tl["spec"]["tip"]) * k)
+	_tl["rest"] = r
+
+
+func _tail_targets(sway: float) -> Array:
+	var H := _gp(_hips)
+	var sw: Dictionary = _tl["spec"].get("sway", {})
+	var deg: float = float(sw.get("deg", 0.0)) * sway
+	var root: float = float(sw.get("root", 0.0))
+	var R: Array = _tl["rest"]
+	var n := R.size()
+	var out := []
+	for k in n:
+		var a := deg * (root + (1.0 - root) * float(k) / float(n - 1)) * PI / 180.0
+		out.append(H * ((R[k] - R[0]).rotated(Vector3.UP, a) + R[0]))
+	return out
+
+
+func _tail(dt: float) -> void:
+	if _tl.is_empty():
+		return
+	_tail_rest()
+	var spec: Dictionary = _tl["spec"]
+	var per := float(spec.get("sway", {}).get("period", 3.0))
+	var playing := _clip != ""
+	_tl["tw"] = _tail_targets(sin(2.0 * PI * _nh_t / per) if playing else 0.0)
+	var tw: Array = _tl["tw"]
+	var n := tw.size()
+	var rad: Array = spec["radius"]
+	var pad := float(spec.get("pad", 0.0))
+	var floor_y := -skeleton.position.y / size
+	if dt < 0.0 or _tl["reset"] or _tl["x"].size() != n or (_tl["x"][0] - tw[0]).length() > 0.4:
+		_tl["x"] = tw.duplicate()
+		_tl["xp"] = tw.duplicate()
+		_tl["reset"] = false
+		_tl["acc"] = 0.0
+	# the legs' capsules (thighs and shins: not the seat, which the tail's root lies in), in the skeleton's space
+	var W := []
+	for cp in _caps:
+		var nm := skeleton.get_bone_name(cp["a"])
+		if cp.get("pa") != null or not (nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe")):
+			continue
+		var ends := _cap_ends(cp)
+		W.append({"a": ends[0], "b": ends[1], "ra": float(cp.get("ra", cp["r"])), "rb": float(cp.get("rb", cp["r"]))})
+	var L := []
+	for k in range(1, n):
+		L.append((tw[k] - tw[k - 1]).length())
+	var x: Array = _tl["x"]
+	var xp: Array = _tl["xp"]
+	var stiff: Array = spec["stiff"]
+	var grav := float(spec.get("grav", 0.0)) / size
+	var damp := float(spec.get("damp", 0.0))
+	var h := C_STEP
+	_tl["acc"] = minf(float(_tl["acc"]) + dt, 4 * C_STEP) if dt > 0.0 else 0.0
+	while _tl["acc"] >= h:
+		_tl["acc"] -= h
+		x[0] = tw[0]
+		xp[0] = tw[0]
+		for k in range(1, n):
+			var v: Vector3 = x[k] - xp[k]
+			xp[k] = x[k]
+			var q: Vector3 = x[k] + v * (1.0 - damp)
+			q.y -= grav * h * h
+			x[k] = q.lerp(tw[k], 1.0 - pow(1.0 - float(stiff[mini(k, stiff.size() - 1)]), h * 60.0))
+		_tail_constrain(x, W, L, rad, pad, floor_y)
+	if dt < 0.0:
+		_tail_constrain(x, W, L, rad, pad, floor_y)
+	# the joints turn to the points: each segment's rest direction (no sway) onto its direction now
+	var rest := _tail_targets(0.0)
+	var hq := _gp(_hips).basis.get_rotation_quaternion()
+	var prev := hq
+	var ids: Array = _tl["ids"]
+	for k in ids.size():
+		var a: Vector3 = (rest[k + 1] - rest[k]).normalized()
+		var b: Vector3 = (x[k + 1] - x[k]).normalized()
+		var wq := Quaternion(a, b) * hq
+		skeleton.set_bone_pose_rotation(ids[k], prev.inverse() * wq)
+		prev = wq
+
+
+func _tail_constrain(x: Array, W: Array, L: Array, rad: Array, pad: float, floor_y: float) -> void:
+	var n := x.size()
+	for it in 2:
+		for k in range(1, n):
+			var d: Vector3 = x[k] - x[k - 1]
+			if d.length() > 1e-9:
+				x[k] = x[k - 1] + d * (float(L[k - 1]) / d.length())
+			var r := float(rad[mini(k, rad.size() - 1)]) + pad
+			for w in W:
+				var ab: Vector3 = w["b"] - w["a"]
+				var t := clampf((x[k] - w["a"]).dot(ab) / ab.length_squared(), 0.0, 1.0) if ab.length_squared() > 1e-12 else 0.0
+				var c: Vector3 = w["a"] + ab * t
+				var want: float = w["ra"] + (w["rb"] - w["ra"]) * t + r
+				var o: Vector3 = x[k] - c
+				var q := o.length()
+				if q < want:
+					if q < 1e-6:
+						o = Vector3(0, 0, -1)
+						q = 1.0
+					x[k] = c + o * (want / q)
+			var fl := floor_y + float(rad[mini(k, rad.size() - 1)])
+			if x[k].y < fl:
+				x[k].y = fl
+
+
+func tail_state() -> Dictionary:
+	return _tl
+
+
+func _jaw() -> void:
+	var j := skeleton.find_bone("face_jaw")
+	if j < 0:
+		return
+	if _jaw_spec.is_empty():
+		skeleton.set_bone_pose_rotation(j, KChar._q(skel["joints"][j]["r"]))
+		skeleton.set_bone_pose_position(j, morph["t"][j])
+		return
+	var per := float(_jaw_spec.get("period", 5.0))
+	var hold := float(_jaw_spec.get("hold", 0.35))
+	var ph := fmod(_nh_t, per) / per
+	var o := 0.0
+	if jaw_open != null:
+		o = float(jaw_open)
+	elif _clip != "" and ph < hold:
+		o = pow(sin(PI * ph / hold), 2)
+	var q := Quaternion(Vector3.RIGHT, o * float(_jaw_spec.get("deg", 0.0)) * PI / 180.0)
+	skeleton.set_bone_pose_rotation(j, KChar._q(skel["joints"][j]["r"]) * q)
+	# about the hinge: the joint's rest place, moved so the pivot stays put
+	var pv := KChar._v(_jaw_spec["pivot"])
+	skeleton.set_bone_pose_position(j, morph["t"][j] + pv - q * pv)
 
 
 func play(clip: String) -> void:

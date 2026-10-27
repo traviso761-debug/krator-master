@@ -15,7 +15,7 @@ Every vertex carries:
   sliders do not bend the muzzle) and its weights: the Head joint, blending into the Neck at the cut.
 The eyes are their own primitive (amber, a round pupil). The kit item (slot 'mods', group 'head') hides the head's skin
 (every base triangle the Head joint carries), the brows, lashes, eyes, lips and ears (hide_parts), the hair and beard
-(covers_hair), and is 'furred': a coat does not fade out at the neck because of it. Its morph file is the base skin's
+(replaces_head), and is 'furred': a coat does not fade out at the neck because of it. Its morph file is the base skin's
 own entry under the head's material names, so its _VIDX indices move it as the skull moves.
 
     python3 tools/heads.py <body> <base.glb or published base .txt>      # mpfb_male, mpfb_female
@@ -688,7 +688,7 @@ def make(src, out, body, base_tris):
             have.add(M['js']['materials'][pr['material']]['name'])
     entry = {'id': ID, 'name': 'Coyote head', 'slot': 'mods', 'glb': 'pieces/%s/%s.glb' % (body, ID), 'group': 'head',
              'kind': 'therian', 'hide': bits(base_tris, tris), 'hides': int(len(tris)),
-             'hide_parts': [p for p in HIDE_PARTS if p in have], 'covers_hair': True, 'furred': True,
+             'hide_parts': [p for p in HIDE_PARTS if p in have], 'replaces_head': True, 'furred': True,
              'fur': [[-1000.0, 1000.0, 'brush', 0, 0]]}
     print(body, ID, 'head, ears, nose, eyes, lids: %s vertices, %s triangles; hides %d skin triangles' % (
         ' + '.join(str(len(p[0])) for p in prims), ' + '.join(str(len(p[5])) for p in prims), len(tris)))

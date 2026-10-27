@@ -492,6 +492,12 @@ function KCharFigure(body, sliders, load){
           // a mod that grants a second pair of arms (tools/mods.py) brings their skin as a piece; the joints are there
           // on every body, and arms2() drives them only when it is worn
           self.fourArms = kit.style === 'mpfb' && KCHAR.arms(rec, kit) >= 4;
+          // a tail and an animal head's jaw (mods with tail, jaw: tools/mods.py) are driven after each clip (tail, jaw)
+          var worn = kit.style === 'mpfb' ? KCHAR.mods(rec, kit) : [];
+          var wt = worn.filter(function(m){ return m.tail; })[0];
+          if(!TL || !wt || TL.spec !== wt.tail) tailSetup(wt);
+          var wj = worn.filter(function(m){ return m.jaw; })[0];
+          JAW = wj ? wj.jaw : null;
           var hide = KCHAR.hidden(rec, kit), hideParts = KCHAR.hiddenParts(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
@@ -1883,7 +1889,7 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); clothStep(dt); nhT += dt || 0; tail(dt); jaw(); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -1965,6 +1971,123 @@ function KCharFigure(body, sliders, load){
   this.mixer.addEventListener('finished', function(e){
     if(e.action === self.action) self.play(self.looping);
   });
+  /* the tail (a mod with a tail: tools/mods.py tail_piece; its joints Tail1... are on every skeleton, after the others,
+     tools/tail.py). No clip moves it: each frame it runs as a spring chain, one point per joint and one at the tip, at
+     60 Hz. Each point is pulled toward its rest carried by the hips (the joints' rest offsets, so a morphed body's
+     longer tail too), swayed about the hips' up axis (kit tail.sway: degrees at the tip, a share of it at the root,
+     a period), by its stiffness (kit tail.stiff, root to tip: what the pull leaves is the lag behind the hips), with
+     a little gravity and damping; then each segment keeps its length, and each point keeps its radius (kit
+     tail.radius) plus pad out of the thighs' and shins' capsules (the leg colliders bodyFix and the cloth use) and
+     above the floor. The joints then turn to the points (as the cloth chains' bones do). With no clip it rests */
+  var TL = null, tlV = V(), tlV2 = V(), tlQ = Q(), tlQ2 = Q(), tlM = new THREE.Matrix4(), nhT = 0;
+  function tailSetup(it){
+    if(!it || !it.tail){ if(TL) TL.ids.forEach(function(i, k){ bones[i].quaternion.fromArray(J[i].r); }); TL = null; return; }
+    var spec = it.tail, ids = spec.joints.map(function(n){ return byName[n]; });
+    if(ids.some(function(i){ return i === undefined; })){ TL = null; return; }
+    TL = { spec:spec, ids:ids, x:[], xp:[], tw:[], rest:[], acc:0, reset:true };
+  }
+  function tailRest(){
+    // the chain in the hips' frame: each joint's offset from its parent (its rest frame is the hips', turned by none)
+    var r = TL.rest, p = V();
+    TL.ids.forEach(function(i, k){ p.add(bones[i].position); (r[k] = r[k] || V()).copy(p); });
+    var n = TL.ids.length, last = TL.ids[n - 1], lr = V().fromArray(J[last].t).length();
+    (r[n] = r[n] || V()).copy(p).add(V().fromArray(TL.spec.tip).multiplyScalar(lr > 1e-6 ? bones[last].position.length() / lr : 1));
+  }
+  function tailTargets(sway){
+    var hips = bones[byName.Hips], n = TL.rest.length, sw = TL.spec.sway || {}, deg = (sw.deg || 0) * sway;
+    hips.updateMatrixWorld(true);
+    for(var k = 0; k < n; k++){
+      var a = deg * ((sw.root || 0) + (1 - (sw.root || 0)) * k / (n - 1)) * Math.PI / 180;
+      tlV.copy(TL.rest[k]).sub(TL.rest[0]).applyAxisAngle(tlV2.set(0, 1, 0), a).add(TL.rest[0]);
+      (TL.tw[k] = TL.tw[k] || V()).copy(tlV).applyMatrix4(hips.matrixWorld);
+    }
+  }
+  function tail(dt){
+    if(!TL) return;
+    tailRest();
+    var sw = TL.spec.sway || {}, per = sw.period || 3;
+    self.group.updateMatrixWorld(true);
+    tailTargets(self.action ? Math.sin(2 * Math.PI * nhT / per) : 0);
+    var n = TL.tw.length, sc = self.inner.getWorldScale(tlV2).x, rad = TL.spec.radius, pad = TL.spec.pad || 0;
+    var groundW = self.group.getWorldPosition(tlV).y;
+    if(dt === undefined || TL.reset || TL.x.length !== n || TL.x[0].distanceTo(TL.tw[0]) > 0.4 * sc){
+      TL.x = TL.tw.map(function(v){ return v.clone(); }); TL.xp = TL.tw.map(function(v){ return v.clone(); });
+      TL.reset = false; TL.acc = 0;
+    }
+    // the legs' capsules in the world (thighs and shins: not the seat, which the tail's root lies in)
+    var W = caps.filter(function(cp){ return !cp.pa && LEGJ.test(bones[cp.a].name); }).map(function(cp){
+      var A = V(), B = V(); capEnds(cp, A, B);
+      return { a:A, b:B, ra:(cp.ra || cp.r) * sc, rb:(cp.rb || cp.r) * sc };
+    });
+    var len = []; for(var k = 1; k < n; k++) len.push(TL.tw[k].distanceTo(TL.tw[k - 1]));
+    var h = STEP, grav = TL.spec.grav || 0, damp = TL.spec.damp || 0;
+    TL.acc = dt ? Math.min(TL.acc + dt, 4 * STEP) : 0;
+    while(TL.acc >= h){
+      TL.acc -= h;
+      TL.x[0].copy(TL.tw[0]); TL.xp[0].copy(TL.tw[0]);
+      for(k = 1; k < n; k++){
+        var x = TL.x[k], xp = TL.xp[k], st = TL.spec.stiff[Math.min(k, TL.spec.stiff.length - 1)];
+        tlV.subVectors(x, xp);
+        xp.copy(x);
+        x.addScaledVector(tlV, 1 - damp);
+        x.y -= grav * h * h;
+        x.lerp(TL.tw[k], 1 - Math.pow(1 - st, h * 60));
+      }
+      tailConstrain(W, len, sc, rad, pad, groundW);
+    }
+    if(dt === undefined) tailConstrain(W, len, sc, rad, pad, groundW);
+    // the joints turn to the points: each segment's rest direction (no sway) in the world onto its direction now
+    tailTargets(0);
+    var prev = bones[byName.Hips].getWorldQuaternion(tlQ2).clone(), hq = prev.clone();
+    TL.ids.forEach(function(i, k){
+      tlV.subVectors(TL.tw[k + 1], TL.tw[k]).normalize();
+      tlV2.subVectors(TL.x[k + 1], TL.x[k]).normalize();
+      var Wq = Q().setFromUnitVectors(tlV, tlV2).multiply(hq);
+      bones[i].quaternion.copy(prev).invert().multiply(Wq);
+      prev = Wq;
+    });
+  }
+  var tlA = V(), tlB = V(), tlC = V();
+  function tailConstrain(W, len, sc, rad, pad, groundW){
+    var n = TL.x.length;
+    for(var it = 0; it < 2; it++){
+      for(var k = 1; k < n; k++){
+        var x = TL.x[k], up = TL.x[k - 1];
+        tlA.subVectors(x, up); var d = tlA.length();
+        if(d > 1e-9) x.copy(up).addScaledVector(tlA, len[k - 1] / d);
+        var r = (rad[Math.min(k, rad.length - 1)] || 0) * sc + pad * sc;
+        W.forEach(function(w){
+          tlB.subVectors(w.b, w.a); var L2 = tlB.lengthSq(), t = L2 > 1e-12 ? Math.max(0, Math.min(1, tlC.subVectors(x, w.a).dot(tlB) / L2)) : 0;
+          tlC.copy(w.a).addScaledVector(tlB, t);
+          var want = w.ra + (w.rb - w.ra) * t + r; tlA.subVectors(x, tlC); var q = tlA.length();
+          if(q < want){ if(q < 1e-6) tlA.set(0, 0, -1), q = 1; x.copy(tlC).addScaledVector(tlA, want / q); }
+        });
+        var floor = groundW + (rad[Math.min(k, rad.length - 1)] || 0) * sc;
+        if(x.y < floor) x.y = floor;
+      }
+    }
+  }
+  this.tailState = function(){ return TL; };          // verify.py, the labs
+
+  /* the jaw of an animal head (a mod with a jaw: tools/mods.py lizard_head, its lower jaw weighted to face_jaw, which
+     no clip moves): opened about its hinge (kit jaw.pivot, in Head's frame) by up to jaw.deg, for a share (hold) of
+     every period seconds, a breath taken with the mouth a little open; shut otherwise. self.jawOpen (0..1) holds it
+     open instead (the labs) */
+  var JAW = null;
+  this.jawOpen = null;
+  function jaw(){
+    var j = byName.face_jaw; if(j === undefined) return;
+    var b = bones[j];
+    if(!JAW){ if(b.userData.nh){ b.quaternion.fromArray(J[j].r); b.position.fromArray(self.pose.t[j]); b.userData.nh = false; } return; }
+    var ph = (nhT % JAW.period) / JAW.period, o = self.jawOpen != null ? self.jawOpen : (self.action && ph < JAW.hold ? Math.pow(Math.sin(Math.PI * ph / JAW.hold), 2) : 0);
+    tlQ.setFromAxisAngle(tlA.set(1, 0, 0), o * JAW.deg * Math.PI / 180);
+    b.quaternion.fromArray(J[j].r).multiply(tlQ);
+    // about the hinge: the joint's rest place, moved so the pivot stays put
+    tlB.fromArray(JAW.pivot); tlC.copy(tlB).applyQuaternion(tlQ);
+    b.position.fromArray(self.pose.t[j]).add(tlB.sub(tlC));
+    b.userData.nh = true;
+  }
+
   this.play = function(name){
     return ready.then(function(){
       var c = name && self.clips[name];

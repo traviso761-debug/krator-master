@@ -39,6 +39,8 @@ python3 verify.py dist/animation-lab.html --assert
 python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
 python3 tools/lab_shots.py <dir> <spec.json> --page <lab copy> --gpu   # Animation Lab clips per body, side by side (pieces beside the page)
 python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
+python3 tools/nonhuman.py [male female giant]                        # the tail and the lizard head on the bodies as they stand (NONHUMAN.md)
+python3 tools/make_mpfb.py gshapes male                              # the Godot twin's shapes from the pieces alone (no Blender)
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
@@ -422,6 +424,15 @@ the joints until a mod is worn:
   enough to hold the body's own nails inside. They wear with any lower pair (`Four bronze arms` in the Animation Lab).
 - `mod_gills`, rib gills: four slits a side over the ribs (from the lower ribs up toward the armpit), a lip of skin over a dark slit, ray-cast onto the body. The
   Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
+- **Non-human parts** (a spike for the Lizardmen, 2026-10-23; `NONHUMAN.md` has it whole, and what full Lizardmen and
+  therian peoples would need): `mod_tail`, a tail on eight joints every skeleton carries (`Tail1`..`Tail8` under Hips,
+  `tools/tail.py`, after every other joint), driven each frame as a spring chain kept out of the legs (`tail` in
+  `50-figure.js`, `_tail` in `kchar_figure.gd`); and `mod_head_lizard`, a procedural reptile head in place of the human
+  one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
+  `face_jaw` opened now and then (`jaw`, `_jaw`), a collar over the neck seam on the neck's own weights and deltas.
+  Marked `test` in the kit: no people draws them. `python3 tools/nonhuman.py` puts them on the bodies from the published
+  pieces; a whole rebuild makes them too (`mods.nonhuman`). The Cosmetic Lab's "Lizardman" chip (or `?lizard`) and the
+  Animation Lab's Body mods menu put them on.
 
 A mod's vertices name the MakeHuman vertex whose deltas move them (`_VIDX`), so the sliders reshape them with the body;
 the flesh arms and the gills take the skin tint. A mod says what it grants (`grants.arms` 4, `grants.gills`) and its
@@ -686,7 +697,8 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
-| `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills; the non-human tail and head), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/tail.py`, `tools/nonhuman.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
