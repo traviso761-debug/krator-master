@@ -68,6 +68,23 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  ok('the program key follows the page\'s hook and carries each layer',m3.customProgramCacheKey()!==before&&/atmos-cloudshade-0\.4/.test(before)&&/atm-snow/.test(before),m3.customProgramCacheKey()===before);
  const m4=new Material();A.cloudShade(m4,{porosity:1});A.cloudShade(m4,{porosity:1});const s4=compile(m4);
  ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);}
+// the real WATER.wetGround through ATMOS.shaderHook (HANDOFF-REBUILD.md's open request, 2026-10-26): a page hook set after
+// cloudShade and wetGround replaces neither. The negative is the same sequence with shaderHook hidden (wetGround's own
+// accessor, the old way): the page's hook then replaces cloudShade, the bug the request named
+{const WF=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'].map(f=>path.join(D,'..','water',f));
+ if(!A.PRESETS.waves)eval(fs.readFileSync(path.join(D,'89-atmos-a-waves.js'),'utf8'));
+ eval(WF.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.WATER=WATER;');const W=global.WATER;
+ const run=hide=>{const keep=A.shaderHook,m=new Material();A.cloudShade(m,{porosity:1});if(hide)A.shaderHook=undefined;W.wetGround(m,{rain:true});
+  let first=null;m.onBeforeCompile=function(sh){first=!/atmWetHere|wtrWetGround/.test(sh.fragmentShader);sh.fragmentShader+='\nPAGE;';};
+  const sh=compile(m);if(hide)A.shaderHook=keep;return{sh,first,m};};
+ const r=run(false),f=r.sh.fragmentShader;
+ ok('wetGround on shaderHook: a page hook set after cloudShade and wetGround runs first, and both core hooks still run, once each',
+  r.first===true&&/PAGE;/.test(f)&&/atmWetHere/.test(f)&&(f.match(/wtrWetGround\(vWtrW/g)||[]).length===1&&r.m.userData.atmHooks.indexOf('wtr-wet')>=0,run(true).sh.fragmentShader.indexOf('atmWetHere')>=0);
+ ok('...its program key carries cloudShade\'s layer and wetGround\'s options',/atmos-cloudshade-1/.test(r.m.customProgramCacheKey())&&/\|wtr-wet:rain$/.test(r.m.customProgramCacheKey()),false);
+ const m2=new Material();W.wetGround(m2,{rain:true});A.cloudShade(m2,{porosity:1});m2.onBeforeCompile=function(sh){sh.fragmentShader+='\nPAGE;';};const f2=compile(m2).fragmentShader;
+ ok('...and in the other order (cloudShade after wetGround) too',/PAGE;/.test(f2)&&/atmWetHere/.test(f2)&&/wtrWetGround\(vWtrW/.test(f2),false);
+ const m3=new Material();W.wetGround(m3,{rain:true});W.wetGround(m3,{porosity:.5});const f3=compile(m3).fragmentShader;
+ ok('...a second call still fills in options, not a second chunk (idempotent)',(f3.match(/wtrWetGround\(vWtrW/g)||[]).length===1&&/wtrWetDarkL/.test(f3)&&/\|lag:0\.5/.test(m3.customProgramCacheKey()),false);}
 // the height fog's hook replaces the fog chunk (only where the page left it)
 {A.heightFog({mist:{density:.002,y:-100,depth:30}});const m=new Material();A.heightFogOn(m);const sh=compile(m);
  ok('heightFogOn: the fog chunk becomes atmFog under FOG_EXP2, the world position and the eye (from the view matrix: a Lambert fragment has no cameraPosition) reach the fragment',/atmFog\(vAtmFogC/.test(sh.fragmentShader)&&!/atmFog\(cameraPosition/.test(sh.fragmentShader)&&/vAtmFogP=/.test(sh.vertexShader)&&/vAtmFogC=-\(transpose\(mat3\(viewMatrix\)\)/.test(sh.vertexShader)&&sh.uniforms.atmFogH===A.U.fogH,!/atmFog\(/.test(sh.fragmentShader));

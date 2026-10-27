@@ -143,7 +143,7 @@ At close-out, add `check_cells.py --strict` to `tools/test_all.py`.
 - **The workstreams' open requests** (files they did not own):
   - core/export (`07-core-export.js`, `42-core-export.js`): split a record by `userData.lod.ranges` and export `instLabels`
     (kit); a real `hazards` section (hazard). Until then a Godot port draws a merged mesh's near layer to its longest range.
-  - core/water: route `WATER.wetGround` through `ATMOS.shaderHook` (atmos).
+  - core/water: route `WATER.wetGround` through `ATMOS.shaderHook` (atmos). **Done 2026-10-26** (branch `claude/core-seasons-b0917b`; `core/water/README.md`, "Seasonal still water and wetGround on shaderHook").
   - core/biome: per-instance AO/crowding from `KSPACE` counts at placement (foliage, research item 5); `khzShadow` in the
     leaf hooks or keep `KHORIZON.shadeScene` per page (terrain); optionally `ATMOS.windGLSL()` (atmos).
   - `tools/textures/pack.py`: a height channel (the `disp` extras) for KGROUND's `h:{from:'a'}` (terrain).

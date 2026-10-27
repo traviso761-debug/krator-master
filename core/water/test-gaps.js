@@ -267,4 +267,21 @@ W.surfaces.length=0;   // the queries below ask which surface holds a point: non
  const Dn=W.drawFlow(steep,{}),Ds=W.drawFlow(steep,{spray:true}),Dm=W.drawFlow(steep,{spray:{every:20,max:5,lift:2}}),Df=W.drawFlow(flat,{spray:true});
  ok('...drawFlow({spray}) hands them to core/atmos\'s smoke as \'spray\' ('+(Ds.spray&&Ds.spray.smoke.length)+' emitters; options {every, min, max, lift}: '+(Dm.spray&&Dm.spray.smoke.length)+', lift '+(Dm.spray&&(Dm.spray.smoke[0][1]-steep.pts.find(p=>p.x===Dm.spray.smoke[0][0]).y))+'); no spray without the option, none from a flat river',
   Dn.spray===undefined&&Ds.spray&&Ds.spray.smoke.length===b.length&&Ds.spray.smoke.every(p=>p[3]==='spray')&&Dm.spray.smoke.length===5&&Math.abs(Dm.spray.smoke[0][1]-steep.pts.find(p=>p.x===Dm.spray.smoke[0][0]).y-2)<1e-9&&Df.spray===undefined,false);}
+// ---- H7: a still's level from the clock (biomes/hyperjungle/PLAN-LANDS.md section 11: the várzea's high and low water)
+{const plain=W.still({name:'h7 plain',level:3,bounds:[0,0,5,5]}),ex=()=>W.export().surfaces.find(s=>s.name==='h7 plain');
+ ok('H7, neutral: a still without seasonal has no season methods and exports as before (no seasonal, no base)',!plain.seasonal&&!plain.setSeason&&!('seasonal' in ex())&&!('base' in ex())&&plain.heightAt()===3,false);
+ const L=W.still({name:'h7 lake',bounds:[100,100,300,300],seasonal:{low:2,high:6,lagD:60,sharp:2}});
+ ok('...seasonal with no level starts at its low water (base = low), and levelOf maps wet 0..1 onto low..high, clamped',L.level===2&&L.base===2&&L.levelOf(0)===2&&L.levelOf(1)===6&&L.levelOf({wet:.25})===3&&L.levelOf(7)===6&&L.levelOf(-1)===2,L.levelOf(1)===2);
+ L.setSeason(.5);ok('...setSeason moves the live level, and the queries follow it',L.level===4&&L.heightAt()===4&&W.heightAt?Math.abs(W.heightAt(200,200,0)-4)<1e-9:L.heightAt()===4,L.heightAt()===2);
+ const Dl=W.drawStill(L,{});
+ ok('...negative: without core/clock stepSeasons moves nothing and returns false',W.stepSeasons(0,12)===false&&L.level===4&&Dl.mesh.position.y===0);
+ eval(fs.readFileSync(path.join(ROOT,'core/clock/20-core-clock.js'),'utf8'));
+ const wetDay=350+60-259,dryDay=wetDay+182.5;   /* the wet peaks lagD after the southern midsummer (day 350) */
+ const n=W.stepSeasons(wetDay,0);
+ ok('...stepSeasons from the clock: high water lagD days after midsummer, the drawn mesh raised by the rise since it was drawn ('+Dl.mesh.position.y+' m)',n===1&&Math.abs(L.level-6)<1e-9&&Math.abs(Dl.mesh.position.y-2)<1e-9&&plain.level===3,false);
+ const C=KCLOCK.make({day:Math.floor(dryDay),hour:12});W.stepSeasons(C);
+ ok('...and low water half a year on (a KCLOCK clock passed whole)',Math.abs(L.level-2)<1e-9&&Math.abs(Dl.mesh.position.y+2)<1e-9,Math.abs(L.level-6)<1e-9);
+ const e=W.export().surfaces.find(s=>s.name==='h7 lake');
+ ok('...the export carries the seasonal record and the base level (Godot rebuilds the level from them)',e.seasonal&&e.seasonal.low===2&&e.seasonal.high===6&&e.seasonal.lagD===60&&e.base===2,false);
+ W.surfaces.splice(W.surfaces.indexOf(L),1);W.surfaces.splice(W.surfaces.indexOf(plain),1);delete global.KCLOCK;}
 finish();

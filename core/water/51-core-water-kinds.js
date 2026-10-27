@@ -159,7 +159,7 @@
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)).replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrStillN(vWtrW.xz)','vWtrW.xz','vWtrW')+',0.0)).xyz);');
    if(CF)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+CF);};
   const mesh=tag(new T.Mesh(g,mat),S,o);if(o.renderOrder!=null)mesh.renderOrder=o.renderOrder;scene.add(mesh);
-  const D={S,mesh,material:mat};W.drawn.push(D);return D;};
+  const D={S,mesh,material:mat};if(S.seasonal)D.y0=S.level;W.drawn.push(D);return D;};
  // one still-water material for many small pools drawn by a build's own (instanced) meshes: troughs, wallows, basins.
  // Their tops take wtrStillN's ripple (no fountain) and the sky; their sides keep their own normals. Each pool should
  // still be a WATER.still record (the twin). o: {THREE, color, roughness, metalness, envMapIntensity}
@@ -226,9 +226,15 @@
   if(WETS&&WETS.has(mat)){const P=WETS.get(mat);let ch=false;for(const k of Object.keys(o))if(o[k]!=null&&P[k]==null){P[k]=o[k];ch=true;}if(ch)mat.needsUpdate=true;return mat;}
   o=Object.assign({},o);if(WETS)WETS.set(mat,o);
   const S=o.surface||null;let page=mat.onBeforeCompile;const model=()=>o.porosity!=null||!!o.puddles;
-  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain')+
+  const wkey=()=>'|wtr-wet:'+(S?W.hashStr(W.glsl(S)):'rain')+
    (model()?'|lag:'+[o.porosity,o.puddles?W.hashStr(W.puddleGLSL(o.puddles)):'',o.ripples!==false].join()+W.rainKey():'');
-  const wet=function(sh,r){if(page)page.call(this,sh,r);const S2=o.surface||S,M=model(),A=AT();let CH=W.wetChunk(S2,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
+  // THROUGH ATMOS.shaderHook where the page has it (core/atmos/host/89-atmos-h-skyhost.js; 2026-10-26, HANDOFF-REBUILD.md's open
+  // request): the chunk is one layer among cloudShade, heightFog and snowOn, so a page hook assigned after all of them goes to the
+  // innermost layer and replaces none of the core ones (before, a hook set after wetGround replaced whatever core hook wetGround
+  // had captured under it). The shader text is the same either way; the program key is shaderHook's with this call's options after it
+  const Ah=AT(),SH=Ah&&Ah.shaderHook?Ah.shaderHook:null;
+  if(!SH){const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+wkey();}
+  const chunk=function(sh,r){const S2=o.surface||S,M=model(),A=AT();let CH=W.wetChunk(S2,sh.uniforms)+'varying vec3 vWtrW;varying float vWtrNy;';
    if(M){if(!(S2&&S2.shore)){CH+='\nuniform float atmWaveT;';sh.uniforms.atmWaveT=A.U.waveTime;}CH+='\nuniform float wtrLight;';sh.uniforms.wtrLight=A.U.light||{value:1};
     CH+='\n'+W.rainChunk(sh.uniforms)+W.wetLookGLSL()+'\n'+(o.puddles?W.puddleGLSL(o.puddles):'float wtrPuddle(vec2 p,float wet){return 0.0;}')+'\n';
     if(o.puddles)sh.uniforms.wtrHollowT={value:W.hollowTexture(o.puddles,A.T)};}
@@ -249,6 +255,8 @@
     'totalEmissiveRadiance+=wtrPd*min(wtrFr,0.6)*'+f(W.WET.sheen)+'*wtrSkyL;}\n#endif\n}':
     '{vec2 wtrWG=wtrWetGround(vWtrW.xz,vWtrW.y);float wtrW=wtrWetness(wtrWG,vWtrNy);diffuseColor.rgb=wtrWetAlbedo(diffuseColor.rgb,wtrW);\n'+
     '#if defined(STANDARD)\nroughnessFactor=wtrWetRough(roughnessFactor,wtrW,wtrWG.y);\n#endif\n}\n#include <emissivemap_fragment>');};
+  if(SH){SH(mat,'wtr-wet',chunk);const k=mat.customProgramCacheKey;mat.customProgramCacheKey=function(){return k.call(this)+wkey();};return mat;}
+  const wet=function(sh,r){if(page)page.call(this,sh,r);chunk.call(this,sh,r);};
   Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>wet,set:fn=>{page=fn;}});
   mat.needsUpdate=true;return mat;};
 })();

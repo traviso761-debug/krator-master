@@ -464,6 +464,21 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
 panel's rate row) and `simulation/example/`.
 
+**The season (H7, 2026-10-26; `biomes/hyperjungle/PLAN-LANDS.md` section 11).** `KCLOCK.season(day, hour, o)` and
+`C.season(o)` give where the day falls in the sky model's year (`KCLOCK.YEAR` is `ATMOS.SKY`'s `yearD`, `startDay` and
+`solsticeDay`; `test-clock.js` checks they agree): `{yearDay, phase, summer, wet, dry, quarter, name}`. South by default
+(Krator's sites); `latitude > 0` turns the year half round; `lagD` delays the wet behind the sun (a river's flood after
+the rains), `sharp` squares it toward two seasons, `wetIn: 'winter'` is a Mediterranean year. Plain data; the GDScript
+twin is `core/clock/kseason.gd` (vendored to `godot/tests/clock/` by `godot/tools/sync_core.py`; `kseason_test.gd` runs
+`golden-season.json`, which `node core/clock/test-clock.js --write` rewrites). Its takers are the foliage's season blend
+(`core/biome/README.md`, "The season") and a still's seasonal level (`core/water/README.md`, "Seasonal still water").
+
+**Adopting it:** a page with core/clock already has it. Read it where a pass wants the season:
+
+```js
+const S=KHOST.host.clock.season({sharp:2});   // or KCLOCK.season(day, hour, {...}) on a page with its own clock
+```
+
 ## `host/`
 
 The host shell (ROADMAP.md section 10; GODOT-PLAN.md Phase 1), all `[web]`: `90-host-camera.js` (orbit, pan, fly, walk,

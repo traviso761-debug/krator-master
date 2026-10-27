@@ -113,4 +113,34 @@ const SRC=read('30-core-foliage.js');
  check('ditherCell: three corners, weights >= 0 summing to 1',ok&&worst<1e-12,'worst '+worst);
  const c0=B.ditherCell(0,0,1.9);check('ditherCell: on a lattice point one corner takes it all',Math.max(...c0.w)>.999999);
  const a=B.ditherCell(.3,.2,1.9),b=B.ditherCell(.3+1.9,.2,1.9);check('  negative: a point one cell over is in a different cell',a.v[0][0]!==b.v[0][0]||a.v[0][1]!==b.v[0][1]);}
+// ---------------------------------------------------------------- 10. the season (H7): leaf drop and the dry colour
+{const B=load(SRC),T=B.host.THREE,tex=new T.Texture();
+ const pick=s=>s.vertexShader+'\n----\n'+s.fragmentShader;
+ check('  negative: season false or null writes the default shader',sha(pick(compile(B,B.leafMat(tex,'k0',{season:false}))))===FROZEN.leaf0&&sha(pick(compile(B,B.leafMat(tex,'k0',{season:null}))))===FROZEN.leaf0);
+ const s=compile(B,B.leafMat(tex,'dry',{vertexColors:true,ground:true,season:{drop:.8,colour:0xc8a860,k:.9}}));
+ const u=s.uniforms.uSnK.value;
+ check('season: the page-wide uniform is BIO.SEASON itself, the options a vec4 (drop, k, stagger)',s.uniforms.uSeasonDry===B.SEASON&&u.x===.8&&Math.abs(u.y-.9)<1e-12&&u.z===.5&&!!s.uniforms.uSnC);
+ check('season: the instance hash at the root, the unswayed card position, no sine',/vSnH = bioSnHash\(instanceMatrix\[3\]\.xyz\)/.test(s.vertexShader)&&/vSnP = position;/.test(s.vertexShader)&&!/sin\(/.test(B.GLSL_SEASON_HASH));
+ const F=s.fragmentShader,iG=F.indexOf('vFlGT.rgb'),iS=F.indexOf('_snH = vSnH'),iA=F.indexOf('#include <alphatest_fragment>');
+ check('season: the colour gives way to the dry colour, the cards are discarded, after the ground tint and before the alpha test',/_snC \/ max\(vColor/.test(F)&&/discard;/.test(F)&&iG>0&&iS>iG&&iA>iS,[iG,iS,iA].join(' '));
+ const c=compile(B,B.leafMat(tex,'col',{season:{colour:0xc8a860}})),d=compile(B,B.leafMat(tex,'drop',{season:{drop:.5}}));
+ check('season: colour alone discards nothing; drop alone binds no colour',!/discard;/.test(c.fragmentShader)&&/_snC/.test(c.fragmentShader)&&!/_snC/.test(d.fragmentShader)&&!d.uniforms.uSnC&&/discard;/.test(d.fragmentShader));
+ check('  negative: a leaf without the option reads no season',!/uSeasonDry/.test(pick(compile(B,B.leafMat(tex,'plain',{})))));
+ // the shader's own formulas, run in the GLSL interpreter: the share of cards gone and the colour's share
+ const {glslProgram}=require(path.join(D,'..','water','glsl-interp.js'));
+ const fE=(F.match(/float _snF = ([^;]+);/)||[])[1],dE=(F.match(/float _snD = ([^;]+);/)||[])[1];
+ const P=glslProgram(B.GLSL_SEASON_HASH+'\nfloat gone(float uSeasonDry,vec4 uSnK,float _snH){return '+fE+';}\nfloat dryk(float uSeasonDry,vec4 uSnK,float _snH){return '+dE+';}',{});
+ const K=[.8,.9,.5,0],hs=[0,.01,.2,.5,.77,.999];
+ check('season 0: no card gone and the colour untouched, at every hash',hs.every(h=>P.call('gone',0,K,h)===0&&P.call('dryk',0,K,h)===0));
+ const g1=hs.map(h=>P.call('gone',1,[1,1,.5,0],h));
+ check('full dry with drop 1: every instance gone; drop .8: the low hashes gone, the highest kept',g1.every(v=>v===1)&&P.call('gone',1,K,.05)===1&&P.call('gone',1,K,.999)===0,g1.join(','));
+ check('half dry: lower hashes drop first (staggered, monotone)',hs.map(h=>P.call('gone',.5,K,h)).every((v,i,a)=>i===0||v<=a[i-1]));
+ const hv=[];for(let i=0;i<200;i++)hv.push(P.call('bioSnHash',[i*1.7,3.1,-i*.9]));
+ check('the hash is in 0..1 and spread (mean near .5)',hv.every(v=>v>=0&&v<1)&&Math.abs(hv.reduce((a,b)=>a+b,0)/hv.length-.5)<.08);
+ check('setSeason clamps a number and reads a record\'s dry',B.setSeason(1.7)===1&&B.setSeason(-2)===0&&B.setSeason({dry:.25})===.25&&B.SEASON.value===.25);
+ check('  negative: bindSeason without core/clock binds nothing',B.bindSeason({day:0,hour:0})===false);
+ vm.runInContext(fs.readFileSync(path.join(D,'..','clock','20-core-clock.js'),'utf8'),B.__ctx);
+ const C=B.__ctx.KCLOCK.make({hour:12,day:350-259+182});B.__ticks=[];
+ check('bindSeason drives BIO.SEASON from the clock (southern midwinter: full dry)',B.bindSeason(C)===true&&Math.abs(B.SEASON.value-1)<1e-9);
+ C.day=91;C.hour=0;B.__ticks.forEach(f=>f(1/60));check('...and follows it each frame (midsummer: no dry)',Math.abs(B.SEASON.value)<1e-9,B.SEASON.value);}
 console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);
