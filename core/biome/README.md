@@ -82,6 +82,51 @@ Adopting it: list `'33-core-fungoid.js'` after `30-core-foliage.js` in `CORE_BIO
 `rng()` draws), so nothing placed after it moves; a new pass can use the layouts. nhighlands' mushroom and disc stalk are the
 first (2026-10-26: `G.mushroom`, `G.disc` in its `50`); the rest of `TODO.md`'s list follows in the final rebuild.
 
+## Bamboo parts (`33b-core-bamboo.js`, `BIO.bamboo`; opt-in)
+
+The giant-bamboo parts, written once before the kits that need them (`biomes/hyperjungle/PLAN-LANDS.md` section 11, H5,
+step J3): the hyperjungle's howl bamboo, the Cut's hyperbamboo and, later, nwlowlands' sky bamboo. In the style of
+`BIO.fung`: unit geometries for `BIO.def` and plain-record layouts.
+
+- **Geometry** (origin at the foot, +y up, a vertex colour that is a shade): `culm` (a culm 1 high and 1 across: internodes,
+  the node swelling, the dark node ring and the white waxy band; a bite opened to its chambers, rows of borer holes as dark
+  plugs with a pale stain below, the sheaths kept at the lowest nodes; equal internodes, or `jit`/`grade` for culms outside
+  the Cut's warp; `taper`, and `bend`/`droop` with `aspect` for a cane bowed out and over, its rings kept round once the
+  instance is scaled; `axis(o, t)` the cane's axis point), `tiers` (near, mid, far: the Cut's three LOD tiers, ranges in `BIO.bamboo.LOD`), `holeSet` (holes in rows,
+  seeded), `nodeY` (the node heights), `spray` (a hanging leaf spray on a 3x3 sheet cell), `fan` and `fanTips` (a node's twigs,
+  as geometry and as data), `shoot`.
+- **Layout** (records, `KRAND.hash(seed, i, k, salt)`, never draw order): `groveCells` (one candidate grove a cell, seeded by
+  cell), `grove` (clumps of culms, one internode length for the grove, the bases sunk to the grove's levels so the nodes line
+  up, the internode count falling toward the rim, old culms holed or bitten by share, shoots), `clump` (a clumping bamboo's canes
+  from one root mass, each bowed out along its own azimuth, a bend variant each), `sprays` (a culm's leaf sprays
+  by node and LOD tier), `flower` / `flowering(flower, year)` (gregarious flowering: every grove of a cohort flowers in one
+  year a cycle, stands dead, then regrows). `BIO.bamboo.put(name, recs, col, at)` places records (`name` may be a function of
+  the record).
+
+**The Cut's culm is reproduced exactly**: `BIO.bamboo.culm({n, seg, fs, bite, cut})` writes the same vertices, normals, uv and
+colours as the Cut's `G.culm(n, seg, bite, fs, cut)` for all fourteen of its items (three counts by three tiers, the three
+bitten culms, the echo, a cut length): the largest difference in any attribute is 0. The test lifts `G.culm` out of
+`biomes/cut/src/50-biome-cut-species.js` in place. The grove layout follows the Cut's `CUT.plan` groves in shape (clumps,
+the 28/24/20 tiers, the level rule) but not draw for draw: the Cut's warp (lean, stretch, size steps) stays the Cut's, applied
+to the records. nwlowlands' sky bamboo (a plain open cylinder, the belly lathe, the coil) is a `culm` with few sides; its
+grove pass stays its own until its rebuild. Test: `node core/biome/test-bamboo.js`.
+
+Adopting it: list `'33b-core-bamboo.js'` after `30-core-foliage.js` in `CORE_BIOME` (core/rand must be on the page); def
+each variant (`BIO.def('culm24', BIO.bamboo.culm({n: 24, ...}), mat)`, its tiers likewise) and place a grove's records.
+No page takes it yet. Who adopts it, each in its own rebuild:
+
+| Build | Its bamboo | What it takes |
+|---|---|---|
+| `biomes/hyperjungle` (north land) | howl bamboo, 50-70 m, bored | `culm` with `jit`, `holes` (`holeSet`), `sheaths`; `grove` with `align: false`, `holed`; `sprays`; `flowering` |
+| `biomes/cut` | hyperbamboo | `culm` as its `G.culm` (exact), `tiers`, `spray` (its `G.hang`), `grove` (the warp stays the Cut's), `flowering` |
+| `biomes/nwlowlands` | sky bamboo (and its belly and coil canes) | `culm` with few sides for the sky culm; the belly lathe and coil stay its own |
+| `biomes/k-guilin` | phoenix-tail bamboo (*Bambusa multiplex*), 8-15 m clumps arching over the river | `clump`, `culm` with `taper: .45`, `tip: 0`, `bend` in `.25-.5`, `droop: 1.1`, `aspect` (height over diameter, about 100-200), a few bend variants and `tiers` (in place of its per-tree `BIO.tube` and mid `rod`); its `bambooleaf` clumps at `axis(o, t)` up the top third |
+
+k-guilin draws each cane today as a `BIO.tube` on a per-tree path (`55-biome-kguilin-trees.js` `B[0]`: canes out to
+`arch h t^2`, the top past t .6 let down `1.1 h (t - .6)^2`, radius `rb (1 - .45 t)`): `culm({bend, droop: 1.1, droopAt: .6,
+taper: .45})` is that path. Its page will change when it moves (instanced variants in place of a tube per cane, seeded by
+`KRAND`, not `rng()`). `biomes/guilin` (frozen, the Earth reference) has the same phoenix-tail bamboo and stays as it is.
+
 ## Adopting it
 
 The draw-call options, in the host fragment right after `BIO.init(...)` (nwlowlands' and swbay's `45-host-stage.js`):
