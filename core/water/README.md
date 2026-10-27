@@ -1,5 +1,7 @@
 # core/water: one module for every wet surface
 
+`PRACTICE.md` (2026-10-27): the root causes behind most water complaints, the core improvements that would end them, and how to build a biome's water.
+
 Every sea, bay, lake, river, fall, pool and wet street in Krator is meant to come from here: a build names the **kinds** of
 water it has and writes no water shader of its own. The plan, the audit of the thirty-nine builds that draw water and what
 was taken from Halcyon are `core/atmos/WATER.md`; this file is the contract.
@@ -59,6 +61,7 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `test-gaps.js` | | `node core/water/test-gaps.js`: every new option's default is the old output (snapshots of the shaders' text, the meshes, the materials and the export hashed against `test-gaps.golden.json`, taken from the code of 2026-10-20) and each option, with its negative control (the GLSL against the twins for them is at the end of `test-water.js`) |
 | `test-water.js` | | `node core/water/test-water.js`: every check with a negative control; runs the shaders' own GLSL in a small interpreter against the twins |
 | `test-rebuild.js` | | `node core/water/test-rebuild.js`: the final rebuild's items (2026-10-26, "Final rebuild items" below), each against its twin with a negative |
+| `ext/57-core-water-audit.js` | [G data] | `WATER.audit` (the water-ground contract as one check: findings as records), `WATER.auditSummary`, and placement from the ground: `WATER.lipAt`, `toeAt`, `levelFromDownstream` (`fallsOf({ground})` uses them). Opt-in by path; "The water-ground audit" below |
 | `test-kinds-ext.js` | | `node core/water/test-kinds-ext.js`: ext/54 and 54b, each check with a negative, each chunk run as text against its twin; first, that loading them moves no export, preset or shader (`test-gaps.js` also loads them) |
 | `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
 
@@ -694,3 +697,58 @@ that is not sheer use `face: terrainH` (W3) so the curtain follows it; carve the
   `WATER.breakupAll()` after the page's water is drawn (eastabyss's 89w). Not in Godot yet (a `.gdshaderinc` of the same text).
 - A delta's fork is a confluence too: `WATER.confluence({flows: [main, side, side], at, r: 100, cell: 2, ground: terrainH})` over the
   stretch where the side channels still overlap the main ribbon (eastabyss's FORKS).
+
+## The water-ground audit: `WATER.audit` (2026-10-27, ext/57; `node core/water/test-audit.js`)
+
+`PRACTICE.md` section 2, items 1 and 3. Every water complaint of 2026-10-27 (ribbons narrower than their carve, pools over their floor, lips
+13 and 30 m past the cliff edges, reaches sinking under a rising bed, a plunge disc over dry ground) was the water and the ground
+disagreeing, each found by a probe written for that page. `WATER.audit({ground, surfaces})` is those probes as one function; it changes
+nothing it looks at.
+
+| Rule | Fails when | `by` |
+|---|---|---|
+| `flow-rise` | a flow's level rises from one point to the next (over `tol.rise`, 1 mm) | m it rises |
+| `flow-under` | a flow's water is under the ground at its centreline (`tol.under`, 5 cm), sampled every `step` (4 m) | m under |
+| `flow-slab` | the ribbon's outer edge (half width + its drawn margin) stands over `tol.slab` (.3 m) above the ground, no other water there | m over |
+| `flow-pocket` | past that edge the ground stays under the level for `tol.pocket` (1 m) or more, out to `scan` (the width, at least 20 m) | m past the edge |
+| `still-rim` | a still's level is over its rim's ground (`tol.rim`, 5 cm), where no other water lies just outside | m over |
+| `still-floor` | its level is over none of its floor (16 x 16 samples) | m short |
+| `open-edge` | an open surface's mask edge crosses ground under its level (`tol.edge`), and no other surface's water lies there; its bounds' own edge only inside `o.extent` ([x0, z0, x1, z1], the ground the page has: a box ending at the map's edge is no cut) | m under |
+| `fall-lip` | the lip's middle is more than `tol.lip` (1 m) from where the ground first drops along its `dir` (`lipAt`, 40 m either way; `1e9`: no drop) | m off |
+| `fall-lip-y` | the lip is off its flow's surface half a metre upstream (`tol.lipY`, .15 m) | m off |
+| `fall-curtain` | the curtain (`curtainAt`, u .25/.5/.75, 24 rows) is under the ground by more than `tol.curtain` (.5 m) | m under (worst) |
+| `fall-plunge` | the plunge disc's centre or a point at .75 of its radius lies over no water (the radius `drawFall` drew: `D.plungeR`) | m from the centre |
+| `overlap` | two surfaces' water (each holds the point and is over the ground there) in one place | the shallower one's depth |
+
+An overlap is allowed inside a confluence that lists both (`WATER.groups`, ext/55: its disc's weight over 0), where either is fading (a
+`drawFlow({keep})` under 1: with ext/57 loaded `drawFlow` records the function as `S.keepAt`, not exported; `o.keep: {name: fn}` for one not drawn;
+inside a confluence's disc over .5), between surfaces a join names (`o.joins: [['trib', 'river', 'mouth pool'], ...]`, names or records),
+or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not checked for slabs, pockets or depth. Findings are
+`{rule, surface (its name), id, x, z, by, other?}`; `WATER.auditSummary(F)` groups them by rule and surface, worst first, for a log line.
+
+**The placement helpers** (a line is a flow record, `[{x, z, y}]` or `[[x, z, y], ...]` run downstream; `ground` is `(x, z) -> y`):
+- `WATER.lipAt(line, ground, {from, to, step, drop, near, edge})`: the first point where the ground falls more than a metre in a metre
+  (`near`: the start of the drop nearest that many metres), its edge then found to a few mm. `{x, z, y (ground), s, i, dir}` or null.
+- `WATER.toeAt(line, ground, lip, {to, flat, hold})`: below the lip, the first point from which the ground falls under `flat` (.15) m a metre
+  for `hold` (3) m.
+- `WATER.levelFromDownstream(line, ground, {over, end})`: `[[x, z, y], ...]`, each level the higher of ground + `over` (.6) and the level
+  below it (the last: of that and `end`): never rising, never under the ground.
+- `WATER.fallsOf(F, {ground})` (ext/57 wraps 22's; without `ground` it is 22's): each lip at `lipAt` (searched `search`, 20 m, round the steep run) at the line's
+  surface there, each foot at `toeAt`, a line vertex within `snap` (.25 m) taken as either. **Give the line a vertex at the lip and the toe**
+  (the helpers find them first): a line that slopes across the cliff top sinks under it before the edge (`flow-under`), and its lip sits
+  on that slope (`fall-curtain`, `fall-lip-y`).
+
+### Adopting it
+
+- `build.py`: list `core/water/ext/57-core-water-audit.js` by path after the top-level core/water (and after ext/55 if the page has
+  confluences). It adds no shader text and moves no output; at load it only wraps `fallsOf`, `drawFlow` and `drawFall` (`test-gaps.js` loads it). The top-level fragments are untouched, so no other page moves.
+- In the page (or `verify.py`, through `javascript_tool` / the harness's `page.evaluate`), after the water is made and drawn:
+  `const F = WATER.audit({ground: terrainH, joins: [...]}); console.table(WATER.auditSummary(F));`
+  Expose it for the checks (`window._api.waterAudit = () => WATER.audit({ground: terrainH})`) and assert on the rules the page has fixed;
+  the inspector can mark the records' `x, z`.
+- Build new water from the ground: levels by `levelFromDownstream`, falls by `lipAt` / `toeAt` (or `fallsOf({ground})`), pools carved under
+  their level with their rim above it. Then a clean audit is the proof, not a hand probe.
+- A page that only wants to look: the fragment can be evaluated into a built page from the console (it reads only `WATER` and the ground),
+  as the first runs on eastabyss and the Rift jungle did (2026-10-27; their findings are in the session notes, not fixed here).
+- Costs: about `length / step` x 2 x (1 + scan) ground samples a flow, an open surface's box at half its mask cell, 9 x 16 x 16 for a still.
+  Seconds for a biome page; run it in a check, not each frame.
