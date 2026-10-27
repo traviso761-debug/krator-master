@@ -54,7 +54,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # src/ copy with the same name wins; a kit that lists nothing builds as before.
 CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KGROUND: the ground's library layers (src/84-host-ground.js); KHORIZON: its terrain shadows   # KFAR: the far country's lattice (src/82-host-sky.js; core/terrain/README.md, the far field)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','33-core-fungoid.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']

@@ -199,4 +199,6 @@ BIO.init({tags:'nhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wat
 // vertex-bound on an integrated GPU (the optimization pass, 2026-10-26: a quarter of the pixels saved a tenth of the frame)
 BIO.INDEX_ITEMS=new URLSearchParams(location.search).get('index')!=='0';
 BIO.LOD.merge=new URLSearchParams(location.search).get("lodmerge")!=="0";BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&new URLSearchParams(location.search).get("lodfade")!=="0"?.15:0;
+// per-instance range culling for loose instances (core/biome BIO.LOD.cull; GRAPHIC-LOAD.md recommendation 1; ?lodcull=0 to compare)
+BIO.LOD.cull=BIO.LOD.fade>0&&new URLSearchParams(location.search).get('lodcull')!=='0';
 BIO.setSun(SUN_POS);

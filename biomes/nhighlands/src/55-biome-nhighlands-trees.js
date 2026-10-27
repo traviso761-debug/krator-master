@@ -594,10 +594,23 @@ NHL.buildTrees=function(R,q,box,opt){for(const k in FUN)delete FUN[k];
  // runtime LOD: a hero tree is drawn in full while the camera is within NHL.LOD.tree metres of its chunk
  // and as a stand-in impostor past that; a far tree is only ever its impostor. Each tree draws from its own
  // seed, so its form does not change when another tree (or another band's mix) does.
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; GRAPHIC-LOAD.md recommendation 2, the far band's diet, 2026-10-26):
+ // on when the page lists the fragment and NHL.IMPOSTORS is not false. A far tree and a hero's stand-in are one quad showing its
+ // species baked from 8 x 8 directions, in place of the 'nfar' blobs; 31 species on two atlases (a set holds 25), two items.
+ // Each species bakes one of its own heroes (built again in place, its registration muted). Every tree reseeds from its own seed
+ // first, so drawing a quad instead of a blob moves no other tree.
+ const IMPON=NHL.IMPOSTORS==null?typeof BIO.impostor==='function':!!NHL.IMPOSTORS&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const sets=[BIO.impostorSet('nhighlands.treesA',{label:'Far trees'}),BIO.impostorSet('nhighlands.treesB',{label:'Far trees'})];
+  SP.forEach((S,sp)=>{const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;const set=sets[sp<16?0:1];
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('nhighlands.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;try{reseed(T1.seed*7919+17);B[S.habit](Object.assign({},T1),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H,item:sp<16?'impTreesA':'impTreesB'};});
+  sets.forEach((set,k)=>{if(set.recs.length)BIO.impostorItem(k?'impTreesB':'impTreesA',set,{label:'Far trees'});});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut(I.item,I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
  TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const S=SP[T.sp];reseed(T.seed*7919+17);
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;if(!farImp(T))buildFar(T,i,st,false);st.fars++;}
   else{BIO.range=NHL.LOD.tree;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;
-   if(T.H>7){BIO.range=1e9;BIO.minRange=NHL.LOD.tree;buildFar(T,i,st,true);}}
+   if(T.H>7){BIO.range=1e9;BIO.minRange=NHL.LOD.tree;if(!farImp(T))buildFar(T,i,st,true);}}
   st.byS[T.sp]++;});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,colonies:st.colonies,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
