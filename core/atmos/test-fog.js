@@ -5,7 +5,7 @@
 'use strict';
 const fs=require('fs'),path=require('path');global.window=global;
 const D=__dirname,files=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','sky/89-atmos-j-fog.js','host/89-atmos-c-hostbind.js','host/89-atmos-e-weatherhost.js',
- 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','fx/89-atmos-fx-acid.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
+ 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','fx/89-atmos-fx-acid.js','fx/89-atmos-fx-airload.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
 eval(files.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');
 const A=global.ATMOS;let bad=0;const ok=(n,p,neg)=>{const r=p&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+n+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<=(e==null?1e-6:e);
@@ -197,4 +197,41 @@ const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
  ok('acidOn: metal, stone and water each draw their own term on the albedo',/atmAcidAlbedo\(diffuseColor\.rgb,vAtmAcP,atmAcNf,0,/.test(fm)&&/atmAcNf,1,/.test(fsn)&&/atmAcNf,2,/.test(fw),/atmAcNf,0,/.test(fsn));
  const m2=new Material();A.acidOn(m2,{kind:'metal'});A.acidOn(m2,{kind:'metal'});ok('...once each',(compile(m2).fragmentShader.match(/#define ATM_ACID_CHUNK/g)||[]).length===1,false);
  A.W.mode='clear';A.W.rain=0;delete global.KHAZ;}
+// ---------------------------------------------------------------- the air's load (fx/89-atmos-fx-airload.js; core/hazard's dust, ash, alkali, sight)
+{ok('sight through dust is Chepil and Woodruff\'s: 2000 mg/m3 about 57 m, clean air unbounded',near(A.dustSightM(2000),57.2,.2)&&A.dustSightM(0)===Infinity&&A.dustSightM(12)>A.dustSightM(50),near(A.dustSightM(2000),2000,1));
+ const V=57,d2=A.sightFog(V,'exp2'),d1=A.sightFog(V,'exp');
+ ok('the fog that matches a sight leaves 2% at that range (FogExp2 and exponential)',near(Math.exp(-Math.pow(d2*V,2)),.02,1e-12)&&near(Math.exp(-d1*V),.02,1e-12)&&A.sightFog(Infinity)===0,near(Math.exp(-d2*V),.02,1e-6));
+ // a lake bed east (x > 0) and sand west; the record as the host builds it
+ const S={clean:.05,dust:30,dustH:30,stormMg:1500,stormH:800,stormFloor:.35,ashMg:120,ashH:1500,fetch:2000,ground:()=>0,mask:(x,z)=>x>0?1:0,alkali:(x,z)=>x>0?.5:.05,ashAt:null,wind:[-1,0],storm:1,ash:0};
+ const sand=A.airAt(S,-500,0,0,0),bed=A.airAt(S,2500,0,0,0);
+ ok('a black storm loads the air fullest over its own bare ground, a floor of it elsewhere',near(bed.dust,1500.05,1e-9)&&near(A.airAt(Object.assign({},S,{wind:[1,0]}),-500,0,0,0).dust,.05+.35*1500,1e-9),bed.dust<=sand.dust-1);
+ ok('...and carries the lake beds\' dust and its alkali downwind over the sand (the share where it was lifted)',near(sand.dust,1500.05,1e-9)&&near(sand.alkali,.5,1e-12)&&near(A.airAt(Object.assign({},S,{storm:0}),-500,0,0,1).alkali,.05,1e-12),sand.alkali<.1);
+ ok('...thinning with height (a wall some hundreds of metres high)',A.airAt(S,2500,800,0,0).dust<.4*bed.dust&&A.airAt(S,2500,800,0,0).dust>.3*bed.dust,A.airAt(S,2500,800,0,0).dust>=bed.dust);
+ ok('the wind\'s own dust follows the lift; the ash follows W.ash',near(A.airAt(Object.assign({},S,{storm:0}),2500,0,0,1).dust,30.05,1e-9)&&near(A.airAt(Object.assign({},S,{storm:0,ash:.35}),0,0,0,0).ash,42,1e-9),A.airAt(Object.assign({},S,{storm:0}),2500,0,0,0).dust>1);
+ // the host on the stub: the fog becomes the sight's, KHAZ gets the fields, the record carries them
+ const prov={};global.KHAZ={provide:(k,fn)=>{if(fn==null)delete prov[k];else prov[k]=fn;}};
+ const g_=A.h.ground;A.h.ground=()=>0;camera.position.set(2500,2,0);scene.fog.density=.0002;scene.fog.color.setRGB(.5,.5,.5);A.W.ash=0;A.W.mode='clear';const wb=[A.windBase.x,A.windBase.y];A.windBase.set(-.8,0);   /* the wind blows west, off the lake beds */
+ const base=.0002,AL=A.airLoad({storm:2000,mask:(x,z)=>x>0?1:0,alkali:(x,z)=>x>0?.5:.05,ashAt:()=>1});
+ for(let i=0;i<5;i++)A._frame(.1);
+ ok('airLoad: in calm clean air the fog stands as the page and its weather wrote it',near(scene.fog.density,AL.base,1e-15)&&A.sightFog(AL.eye.sight)<AL.base,!near(scene.fog.density,AL.base,1e-15));
+ AL.stormTo=1;for(let i=0;i<400;i++)A._frame(.1);const sgt=AL.eye.sight,amt=1-Math.exp(-Math.pow(scene.fog.density*sgt,2));
+ ok('...in the black storm the fog is the sight: a '+sgt.toFixed(0)+' m sight leaves 2% at '+sgt.toFixed(0)+' m, tinted to the dust',sgt<80&&near(amt,.98,1e-9)&&scene.fog.color.r!==.5,near(scene.fog.density,base,1e-12));
+ const d0=scene.fog.density,c0=scene.fog.color.clone();A.wxFog(scene.fog);A.wxFog(scene.fog);
+ ok('...applied twice in a frame (the sky and the hook) it does not stack',near(scene.fog.density,d0,1e-15)&&scene.fog.color.equals(c0),scene.fog.density>d0);
+ ok('KHAZ gets dust (thinning with height), ash, alkali and visibility',['alkali','ash','dust','visibility'].every(k=>prov[k])&&prov.dust(2500,2,0)>prov.dust(2500,1000,0)&&near(prov.dust(2500,2,0),AL.eye.dust,1e-9)&&near(prov.alkali(-500,2,0),.5,1e-6),!prov.dust);
+ ok('...the visibility field is the page\'s own fog (not the dust\'s: no counting it twice)',prov.visibility(2500,2,0)>10*sgt,prov.visibility(2500,2,0)<=sgt*1.01);
+ AL.stormTo=0;for(let i=0;i<600;i++)A._frame(.1);
+ ok('...and when the storm has passed the fog is the page\'s again (no stacking with the weather binding\'s own law)',near(scene.fog.density,AL.base,1e-15)&&AL.base<.001,scene.fog.density>AL.base*1.01);
+ const wr=A.fx.find(r=>r.type==='weather');ok('the weather record carries the air\'s numbers (and an airload record)',wr&&wr.air&&wr.air.storm===2000&&wr.air.sight&&A.fx.some(r=>r.type==='airload'),!(wr&&wr.air));
+ // against core/hazard itself when it is in the tree (or KRATOR_KHAZ_DIR names a checkout of it): the same sight and dose
+ const kd=process.env.KRATOR_KHAZ_DIR||path.join(D,'..');let real=null;
+ try{const src=n=>fs.readFileSync(path.join(kd,n),'utf8');delete global.KHAZ;global.KTAGS=undefined;
+  eval(src('rand/08-core-rand.js'));eval(src('tags/50-core-tags.js'));eval(src('tags/52-core-tags-vocab.js'));eval(src('biome/37-core-traps.js'));eval(src('hazard/20-core-hazard.js'));
+  real=typeof KHAZ!=='undefined'&&KHAZ.sight&&KHAZ.provide?KHAZ:null;}catch(e){real=null;}
+ if(real){AL.stormTo=1;for(let i=0;i<400;i++)A._frame(.1);for(const k of ['dust','ash','alkali'])real.provide(k,prov[k]);
+  const ks=real.sight(2500,2,0).range,amb=real.ambient(2500,2,0);
+  ok('with core/hazard: KHAZ.sight is the drawn sight ('+ks.toFixed(1)+' m), and the storm chokes and corrodes',near(ks,AL.at(2500,2,0).sight,1e-6)&&amb.some(a=>a.kind==='dust'&&a.k>.9)&&amb.some(a=>a.kind==='caustic-dust'&&a.k>.9),false);
+  AL.stormTo=0;for(let i=0;i<600;i++)A._frame(.1);}
+ else console.log('skip  core/hazard has no sight here (KRATOR_KHAZ_DIR=<core of its branch> to run it)');
+ delete global.KHAZ;A.h.ground=g_;A.windBase.set(wb[0],wb[1]);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

@@ -237,6 +237,15 @@ the etch's base and rate. The Atmos autoload steps the etch with `ATMOS.acidStep
 same lowbias32 cells: pits, streaks, fizz) applied to ALBEDO in the ruin, rock and puddle shaders, times `atm_rain_open`.
 The dose is core/hazard's: the autoload registers the same `rain` and `ph` fields with its KHAZ port.
 
+**The air's load** (`fx/89-atmos-fx-airload.js`). The `airload` record (and the weather record's `air`) carries every
+number of the load (`clean`, `dust`, `dustH`, `storm`, `stormH`, `stormFloor`, `fetch`, `ash`, `ashH`), the dust module's
+`lift` thresholds, the sight law (`sight` {c, p}) and the `contrast`, the fog `shape`, and which fields were given
+(`alkali` and `ashAt` are page maps: the port takes the same region rasters). The Atmos autoload runs `ATMOS.airAt` line for
+line (the lift from its own wind at the point and the dust mask), eases the storm, and sets `Environment.fog_density` to
+`sqrt(-ln contrast) / sight` (or `-ln contrast / sight` for an exponential fog) when that is thicker than the hour's, the
+fog colour lerped toward the dust's by the share it adds. It registers the same `dust`, `ash`, `alkali` and `visibility`
+fields with its KHAZ port, so the dose, the sight and the drawn fog are one number.
+
 ## The rain occlusion map (R10: `fx/89-atmos-fx-raincover.js`)
 
 The `raincover` record carries the size, box, step, lift, depth and the shelter margin. Godot: a
