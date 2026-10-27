@@ -23,14 +23,17 @@ function world(breakIt, noWalks) {
   ctx.LSS.init(clock, breakIt ? { edges: breakIt } : null);
   return { ctx: ctx, clock: clock };
 }
-// a day: stepped a minute at a time from 03:30, sampled every 10 minutes
-function day(W, d0) {
+// a day: stepped a minute at a time from 03:30, sampled every 10 minutes. failCap: a broken input's day stops once that many
+// routes have failed (its check needs only one; the cut graph re-routes 1494 people every minute, 2.6 million fails, four
+// minutes of the run and most of its time on a loaded machine, where the test met test_all's timeout)
+function day(W, d0, failCap) {
   var SIM = W.ctx.SIM, LSS = W.ctx.LSS, C = W.clock;
   if (d0 != null) { C.day = d0; C.hour = 3.5; }
   var f0 = SIM.routeFail.length, M = SIM.minute(), seen = {}, hiddenStill = [], out = 0, moving = 0, stair = 0, acts = {}, inRooms = 0, upstairs = 0, rooms = {}, folk = {}, flights = 0;
   SIM.jump(); M = SIM.minute(); var roles = {};
   for (var m = 0; m < 1440; m++) {
     M++; C.day = Math.floor(M / 1440); C.hour = (M % 1440 + .5) / 60; C.t += 3; SIM.step();
+    if (failCap != null && SIM.routeFail.length - f0 >= failCap) break;
     if (m % 10) continue;
     SIM.all('actor').forEach(function (a) {
       var s = SIM.pose(a, C.t); if (s.hidden) return; out++;
@@ -71,7 +74,7 @@ ok('no one stands still inside a building or the rock', !D.hiddenStill.length, D
 var LSS = W.ctx.LSS, Rm = LSS.rooms || { n: 0, reached: 0 };
 ok('every room of the palaces and the ward in the walk graph, reached from the gate', Rm.n > 600 && Rm.reached === Rm.n && !LSS.patched.length,
   Rm.reached + ' of ' + Rm.n + ' rooms reached; ' + LSS.patched.length + ' cut-off parts joined to their building' + (LSS.patched.length ? ' (' + LSS.patched.slice(0, 4).join('; ') + ')' : ''), false);
-var Wn = world(function (E) { return E.filter(function (e) { return !/^[RDOLWFS]:/.test(e.a) && !/^[RDOLWFS]:/.test(e.b); }); }), Dn = day(Wn);
+var Wn = world(function (E) { return E.filter(function (e) { return !/^[RDOLWFS]:/.test(e.a) && !/^[RDOLWFS]:/.test(e.b); }); }), Dn = day(Wn, null, 1000);
 ok('people walk the rooms and the stairs', D.inRooms > 0 && D.upstairs > 0 && D.rooms > 50 && D.flights > 0,
   D.inRooms + ' walker-samples inside rooms (' + D.rooms + ' rooms walked through), ' + D.upstairs + ' on the upper storeys, ' + D.flights + ' climbing a stair room\'s flight; the graph without its rooms: ' + Dn.inRooms + ', ' + Dn.fails.length + ' routes failed',
   Dn.inRooms > 0 && Dn.rooms > 50 && !Dn.fails.length);
