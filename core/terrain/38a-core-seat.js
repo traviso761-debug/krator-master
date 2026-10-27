@@ -7,7 +7,7 @@
 // ROCKRAY, the method lifted; memory: "check against the drawn mesh").
 //
 // No THREE, no DOM: plain maths on flat arrays, node-tested (test-seat.js), so Godot can port it. Opt-in: a build lists
-// '47-core-seat.js' in CORE_TERRAIN (core/host's 95b-host-seat.js puts the sweeps on the probe). Axes: y up, metres, x east,
+// '38a-core-seat.js' in CORE_TERRAIN (core/host's 95b-host-seat.js puts the sweeps on the probe). Axes: y up, metres, x east,
 // z south. Faces wind CCW seen from OUTSIDE (the drawn convention: back faces culled; KSTACKS.mesh, a PlaneGeometry ground
 // laid flat with rotateX(-PI/2)): "inside" is read from which side of the first face a ray meets.
 //
@@ -173,7 +173,7 @@ function grid(h,box,cell,o){o=o||{};var fn=typeof h==='function'?h:function(x,z)
       var X=x0+(ii+.5)*Math.min(cx,cz),Z=z0+(jj+.5)*Math.min(cx,cz);return visit(Math.floor((X-x0)/cx),Math.floor((Z-z0)/cz));});};
   return S;}
 
-function stacks(list,opt,post){var K=root.KSTACKS;if(!K)throw new Error('47-core-seat: KSEAT.stacks needs core/terrain/37-core-stacks.js');
+function stacks(list,opt,post){var K=root.KSTACKS;if(!K)throw new Error('38a-core-seat: KSEAT.stacks needs core/terrain/37-core-stacks.js');
   var out=[];for(var i=0;i<list.length;i++){var B=list[i],m=K.mesh(B,opt);if(post)post(B,m);
     out.push(tris(m.pos,m.idx,{id:B.id==null?'stack'+i:B.id,cls:'rock'}));}
   return out;}

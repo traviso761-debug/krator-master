@@ -1,5 +1,5 @@
 // node core/host/test-seat-probe.js -- the probe's seat sweeps (95b-host-seat.js on 95-host-probe.js, measuring with
-// core/terrain/47-core-seat.js) on a real three.js scene: a displaced PlaneGeometry ground and a box rock marked
+// core/terrain/38a-core-seat.js) on a real three.js scene: a displaced PlaneGeometry ground and a box rock marked
 // userData.seat, a house (solid), flora cards (instanced, not solid), a door, a stair. Each check with a broken input that
 // must fail. Needs three.min.js (git lfs pull biomes/sedesert/three.min.js); without it the test says SKIP and passes.
 'use strict';
@@ -8,7 +8,7 @@ const T3=['../../biomes/sedesert/three.min.js'].map(q=>path.join(__dirname,q)).f
 if(!T3){console.log('SKIP  no three.min.js (git lfs pull)');process.exit(0);}
 const THREE=require(T3);global.window=global;global.THREE=THREE;
 const load=f=>eval(fs.readFileSync(path.join(__dirname,f),'utf8'));
-load('../rand/08-core-rand.js');load('../space/20-core-space.js');load('../terrain/47-core-seat.js');load('95-host-probe.js');load('95b-host-seat.js');
+load('../rand/08-core-rand.js');load('../space/20-core-space.js');load('../terrain/38a-core-seat.js');load('95-host-probe.js');load('95b-host-seat.js');
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const K=KHOST,S=KSEAT;
 

@@ -1,6 +1,6 @@
 // ================================================================= CORE HOST — the probe's seat sweeps: contact, clearance, doors, stairs
 // [web] core/host/95b-host-seat.js (CORE-IMPROVEMENTS.md items 1 and 20). Opt-in: a build lists it beside 95-host-probe.js
-// (and core/terrain's 47-core-seat.js, which does the measuring), so no page moves until it does. It turns the page's DRAWN
+// (and core/terrain's 38a-core-seat.js, which does the measuring), so no page moves until it does. It turns the page's DRAWN
 // scene into a KSEAT surface and puts the sweeps on the probe, in place of the per-build checks (Yuni's box tests, the
 // catalog's ANCHOR_AUDIT, Ringsea's sails-clear-cabins, Pinnacle Rock's ROCKRAY, the lighthouse's float probe):
 //
@@ -20,7 +20,8 @@
 //   seat  (true or a class: 'ground', 'rock')  a surface things stand on: the contact sweep reads only these. With none set,
 //         the contact sweep reports error 'no seat surfaces' and fails, never passes by seeing nothing
 //   solid (true)  an instanced mesh that blocks a door or a stair (instanced meshes are left out otherwise: flora cards)
-//   door, seatSkip, probeSkip  left out of every sweep (a door's own leaf)
+//   door, seatSkip  left out of every sweep (a door's own leaf); probeSkip leaves a mesh out of the solid set unless it is
+//         marked seat (a ground mesh is usually probeSkip: it is still the ground)
 // Every non-instanced, opaque, visible mesh is solid for the door and stair sweeps. The build's own: take({seat:{records,
 // doors, stairs, surfaces, solid}}) (functions); records default to KHOST.records (93) or KTAGS.page's.
 (function(root){
@@ -29,15 +30,16 @@ const K=root.KHOST=root.KHOST||{};
 if(!K.probeTake)throw new Error('95b-host-seat: load core/host/95-host-probe.js first');
 const take0=K.probeTake;
 K.probeTake=function(H){take0(H);
- const S=root.KSEAT;if(!S)throw new Error('95b-host-seat: load core/terrain/47-core-seat.js (CORE_TERRAIN)');
+ const S=root.KSEAT;if(!S)throw new Error('95b-host-seat: load core/terrain/38a-core-seat.js (CORE_TERRAIN)');
  const o=H.o,THREE=o.THREE||root.THREE,scene=H.scene,SO=o.seat||{},cache={};
  function posOf(a){if(!a.isInterleavedBufferAttribute)return a.array;const n=a.count,p=new Float32Array(n*3);for(let i=0;i<n;i++){p[i*3]=a.getX(i);p[i*3+1]=a.getY(i);p[i*3+2]=a.getZ(i);}return p;}
  function boxArr(b){return [b.min.x,b.min.y,b.min.z,b.max.x,b.max.y,b.max.z];}
- const left=u=>u&&(u.probeSkip||u.seatSkip||u.door);
+ const left=u=>u&&(u.seatSkip||u.door);
  function opaque(ob){const m=Array.isArray(ob.material)?ob.material[0]:ob.material;return !m||!m.transparent;}
- function pick(ob,which){const u=ob.userData||{};if(left(u)||ob.visible===false)return false;
-  if(which==='seat')return !!u.seat;
-  return ob.isInstancedMesh?!!(u.solid||u.seat):opaque(ob);}
+ /* a seat surface counts even when it is left out of the probe's samples (a ground mesh carries probeSkip) */
+ function pick(ob,which){const u=ob.userData||{};if(u.seatSkip||u.door||ob.visible===false)return false;
+  if(u.seat)return true;if(which==='seat'||u.probeSkip)return false;
+  return ob.isInstancedMesh?!!u.solid:opaque(ob);}
  function sceneSurface(oo){oo=oo||{};const which=oo.which||'seat';if(cache[which]&&!oo.fresh)return cache[which];
   const items=[],own=which==='seat'?SO.surfaces:SO.solid,objs=[];
   if(own)own().forEach(ob=>ob.traverse(c=>{if(c.isMesh&&!left(c.userData))objs.push(c);}));

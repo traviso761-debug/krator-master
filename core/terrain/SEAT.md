@@ -1,6 +1,6 @@
 # KSEAT: the surface as drawn
 
-`core/terrain/47-core-seat.js` (`[G data]`, `node core/terrain/test-seat.js`) and its probe half,
+`core/terrain/38a-core-seat.js` (`[G data]`, `node core/terrain/test-seat.js`) and its probe half,
 `core/host/95b-host-seat.js` (`node core/host/test-seat-probe.js`). CORE-IMPROVEMENTS.md items 1, 6 and 20.
 
 **The problem it ends.** A placer reads the surface the code computes (`terrainH`, `KSTACKS.topAt`, `footR`, a record's
@@ -30,7 +30,7 @@ of the first face a ray meets, the way Pinnacle Rock's `ROCKRAY.inRock` does.
 
 A build adopts it at its own turn. Nothing moves until it lists the fragments.
 
-1. **Take the fragments.** Add `'47-core-seat.js'` to `CORE_TERRAIN` (after `36-core-carve.js` and `37-core-stacks.js`,
+1. **Take the fragments.** Add `'38a-core-seat.js'` to `CORE_TERRAIN` (after `36-core-carve.js` and `37-core-stacks.js`,
    which it wraps for their probe points). Then resolve the probe half beside the shell:
    `khost.resolve(PATH, khost.SEAT)`, or add `'95b-host-seat.js'` to the build's host list. It loads after `95-host-probe.js`.
 2. **Place on the drawn surface.** Wherever a placer calls `terrainH(x, z)` (or `KSTACKS.topAt`) for a foot, build the

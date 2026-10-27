@@ -1,4 +1,4 @@
-// node core/terrain/test-seat.js — the drawn surface's contract (47-core-seat.js), each check with a broken input that must
+// node core/terrain/test-seat.js — the drawn surface's contract (38a-core-seat.js), each check with a broken input that must
 // fail: the ground as drawn (not terrainH), a KSTACKS body as drawn, seating on the lowest of a footprint, and the sweeps
 // (contact: ok, floating, buried, inside, off; clearance; doors; stairs), and the drawers' probe points.
 const fs=require('fs'),path=require('path');
@@ -7,7 +7,7 @@ const load=f=>eval(fs.readFileSync(path.join(__dirname,f),'utf8'));
 load('../rand/08-core-rand.js');load('../space/20-core-space.js');load('37-core-stacks.js');load('36-core-carve.js');
 const mesa=KSTACKS.make({id:'m1',kind:'mesa',x:0,z:0,y0:0,seed:41,tiers:[{h:60,r:80,e:1.3,ry:.3}]});
 const hashBefore=KSTACKS.hash(KSTACKS.mesh(mesa,{step:5}));
-load('47-core-seat.js');
+load('38a-core-seat.js');
 const K=KSEAT;
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 
