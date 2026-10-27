@@ -48,11 +48,13 @@ function smallTree(p,h){const S=RIFT.SPECIES[28],rb=h*.04+.25;
  const n=8+Math.floor(rng()*5),R=h*.45,a0=rng()*TAU,c=C(pick(S.leaf));
  for(let i=0;i<n;i++){const a=a0+i/n*TAU+rr(-.2,.2),L=R*rr(.85,1.1);BIO.put('bigfrond',[p[0],p[1]+h,p[2]],qEuler(rr(-.1,.1),-a,rr(-.1,.3)),[L,L,L*1.25],c.clone().multiplyScalar(rr(1.2,1.5)));}}
 // LEDGES: moss on the flat, plants toward the outer edge, lips and curtains off the edge
+/* opt.keep(p) (opt-in, 2026-10-27: the Pile's decks, where the tier above rests on part of every roof): a sample point it refuses
+   gets nothing. Unset: every point, as before */
 RIFT.dressLedges=function(geos,opt){opt=opt||{};
- const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140;
- BIO.upFaces(geos,nM,.6).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
- BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||10));else plant(f.p,rr(1,opt.size||3));});
- BIO.ledgePoints(geos,nE,2.5).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
+ const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140,K=opt.keep?(L=>L.filter(f=>opt.keep(f.p))):(L=>L);
+ K(BIO.upFaces(geos,nM,.6)).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
+ K(BIO.upFaces(geos,nP,.6)).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||10));else plant(f.p,rr(1,opt.size||3));});
+ K(BIO.ledgePoints(geos,nE,2.5)).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
   moss([l.p[0],l.p[1],l.p[2]],[0,1,0],rr(1,2.2));
   if(rng()<.7)curtain(p,l.n[0],l.n[2],rr(4,opt.hang||16),rr(2,5),{flowers:rng()<.4});});};
 // SOFFITS: moss rolled over to face the ground, roots and beards hanging out of it, brackets, curtains where the rim is

@@ -113,7 +113,8 @@ purpose. Take an item out when it is done.
   the fragment built first (the Outlands' phase O3); the kits that read those fragments in place (Korona's stations, the
   Throne's) follow automatically.
   **2026-10-26:** the fragment is written (`core/biome/33-core-fungoid.js`, `test-fungoid.js`, core/biome README "Fungoid parts")
-  and nhighlands' mushroom and disc stalk are on it; the rest of the list is still to switch.
+  and nhighlands' mushroom and disc stalk are on it; the rest of the list is still to switch. **2026-10-27:** nwbay's bracket is
+  on `BIO.fung.bracket` (its page only, `?fung=0` the old dome; `biomes/nwbay/PLAN.md`). **2026-10-27:** swbay's mushroom, parasol, bracket and the cap-tree's `capTop` are on `BIO.fung` (its page only, `?fung=0`; `biomes/swbay/PLAN.md`).
 
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 

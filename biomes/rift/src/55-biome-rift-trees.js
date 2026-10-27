@@ -98,6 +98,13 @@ const reg=(S,T,r)=>{if(typeof REGISTER==='function')REGISTER({name:S.name,kind:'
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,wet} and lv 2 near / 1 mid / 0 far
 const B=[];
 // 0 the frill tree: a tapering ribbed column, a fin on every rib on every row pointing out and up, a splay of long fins and a pale bud at the summit
+/* THE FAMILIES' HABITS (PLAN-STATIONS.md section 4; 2026-10-27): fields a BIO.kin record carries (`habit`) and the builders read, each
+   0 or absent on the sketch's own species, so they draw as before (the same draws, the same shapes):
+     B[0]  finLevel 0..1, finTilt, finK   the fins held level (the comb frill's fog combs, the plate frill's shade plates), and longer
+     B[1]  bellK 0..1, bellTilt           the bell's pleated fans turned toward bellTilt (the mantle palm's hood closing, the open bell flaring)
+     B[30] fused 0..1                     the fins shortened and laid along the barrel: a cushion (the crown barrel, the rim cushion)
+     B[29] podCol [hex], podK             the pods' colours and size (the gold lantern)
+     B[32] straight 0..1                  no lean, a longer clear bole under the crown (the copper pine) */
 B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs;
  const rAt=u=>rb*(1-.55*u)*(1+.5*Math.exp(-u*H/7));
  const rings=[],vs=8;for(let yy=0;yy<H*.90;yy+=vs*.6)rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/24)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(10,1,yy)*.4)});
@@ -109,7 +116,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs;
  /* the rows crowd toward the foot (u by a power) and the low fins are longer than they were: the trunk read bare low down (the owner, 2026-10-27) */
  for(let r=0;r<rows;r++){const u=lerp(.04,.86,Math.pow(r/(rows-1),1.3)),yy=T.y0+H*u,R=rAt(u)*1.08;
   for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=lerp(5.5,8.5,smooth(.05,.6,u))*fk*(.8+.4*fbm(u*9,k*.7,T.seed%97,1))*rr(.9,1.1);
-   BIO.put('frill',[T.x+Math.cos(a)*R,yy,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,lerp(1.05,.85,u)+rr(-.1,.1)),[L,L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),{c2:bright(pick(c2s),1.2),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.fins++;}}
+   BIO.put('frill',[T.x+Math.cos(a)*R,yy,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,mix(lerp(1.05,.85,u),S.finTilt==null?.15:S.finTilt,S.finLevel||0)+rr(-.1,.1)),[L*(S.finK||1),L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),{c2:bright(pick(c2s),1.2),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.fins++;}}
  const top=T.y0+H*.9,n=lv===2?14:8,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.15,.15),L=H*rr(.09,.13)*mix(1.6,1,fk);BIO.put('frill',[T.x+Math.cos(a)*rAt(.9)*.7,top+rr(-1,1),T.z+Math.sin(a)*rAt(.9)*.7],qEuler(rr(-.1,.1),-a,rr(.55,.95)),[L,L,L*.95],bright(vary(hc,.02,.06,.05),1.4),{c2:bright(pick(c2s),1.2),n:[Math.cos(a)*.7,.7,Math.sin(a)*.7]});st.fins++;}
  BIO.put('cone',[T.x,top-.5,T.z],qUp([0,1,0]),[rAt(.9)*2.2,rAt(.9)*3.5,rAt(.9)*2.2],shade(C(pick(PAL.comp)),.2));
@@ -135,7 +142,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3;
  if(!bells.length)bells.push({p:top,r:rAt(.55)*.6});   // hemmed in: a bell on the trunk at least
  const c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05),Rb=rr(3.5,5.5)*(T.crownR/16);let spread=T.crownR*.5;
  bells.forEach(b=>{const n=lv===2?ri(8,11):lv===1?6:4,ao=rr(0,TAU);
-  for(let k=0;k<n;k++){const a=ao+k/n*TAU+rr(-.15,.15),L=Rb*rr(1.05,1.25),tilt=rr(.5,.8);
+  for(let k=0;k<n;k++){const a=ao+k/n*TAU+rr(-.15,.15),L=Rb*rr(1.05,1.25),tilt=mix(rr(.5,.8),S.bellTilt||0,S.bellK||0);
    fanAt(b.p.x+Math.cos(a)*b.r*.8,b.p.y-.2,b.p.z+Math.sin(a)*b.r*.8,a,L,tilt,bright(vary(hc,.02,.06,.05),rr(1.3,1.55)),'pleat',bright(pick(c2s),1.25));st.fans++;}
   if(lv>=1)for(let k=0;k<3;k++){const a=ao+k*2.1;fanAt(b.p.x,b.p.y+.2,b.p.z,a,Rb*.85,rr(.1,.3),bright(shade(hc,.1),1.45),'pleat',bright(pick(c2s),1.25));st.fans++;}
   if(lv===2){for(let k=0,m=ri(2,4);k<m;k++){const a=rr(0,TAU);BIO.put('anemone',[b.p.x+Math.cos(a)*b.r*1.3,b.p.y-rr(.5,1.5),b.p.z+Math.sin(a)*b.r*1.3],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.8,1.4),bright(C(pick(S.flowers?PAL.flowers:PAL.accent)),1.1));st.blooms++;}
@@ -415,7 +422,7 @@ B[29]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),la=rr
  for(let k=0;k<nB;k++){const a=a0+k*GOLD+rr(-.3,.3),R=T.crownR*rr(.6,1),mid=[tx+Math.cos(a)*R*.5,ty+H*.3,tz+Math.sin(a)*R*.5],end=[tx+Math.cos(a)*R,ty+H*.12,tz+Math.sin(a)*R];   // the boughs rise then droop
   BIO.beam('rod',[tx,ty-.2,tz],mid,rb*.5,rb*.3,rc);BIO.beam('rod',mid,end,rb*.3,rb*.1,rc);
   [mid,end,[mix(mid[0],end[0],.5),mix(mid[1],end[1],.5),mix(mid[2],end[2],.5)]].forEach((p,i)=>{clumpAt('leaflet',p[0],p[1]+.3,p[2],rr(1.5,2.6),.55,hc,T.x,cy,T.z,T.crownR,H*.3);st.clumps++;
-   if(lv>=1)for(let f=0,m=lv===2?ri(2,4):1;f<m;f++){BIO.put('pod',[p[0]+rr(-1,1),p[1]-.2,p[2]+rr(-1,1)],qEuler(0,rr(0,TAU),0),rr(1.6,2.6),bright(C(pick(PAL.flowers)),1.25));st.pods++;}});}
+   if(lv>=1)for(let f=0,m=lv===2?ri(2,4):1;f<m;f++){BIO.put('pod',[p[0]+rr(-1,1),p[1]-.2,p[2]+rr(-1,1)],qEuler(0,rr(0,TAU),0),rr(1.6,2.6)*(S.podK||1),bright(C(pick(S.podCol||PAL.flowers)),1.25));st.pods++;}});}
  if(lv===2)reg(S,T,T.crownR);};
 // 30 the barrel frill: a fat, shrub-sized frill tree of the ridgetop, a ribbed barrel with short dense fins and a crown of blooms
 B[30]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs,ph=rr(0,TAU);
@@ -425,8 +432,8 @@ B[30]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs,ph=
  st.trunk+=BIO.lathe('bark4',rings,lv===2?18:12,Math.max(1,Math.round(TAU*rb/2)),2.5,(R,ang)=>R.r*(1+.12*Math.cos(nR*ang+ph)),(R,ang)=>.78+.22*Math.cos(nR*ang+ph));
  const c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05),rows=lv===2?ri(5,7):3,nf=lv===2?nR:Math.ceil(nR/2);
  for(let r=0;r<rows;r++){const u=lerp(.1,.85,r/(rows-1)),yy=T.y0+H*u,R=rAt(u)*1.05,Lp=lerp(1.0,1.7,Math.sin(u*Math.PI))*(H/4);
-  for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=Lp*rr(.85,1.15);
-   BIO.put('frill',[T.x+Math.cos(a)*R,yy,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,lerp(.5,1.0,u)+rr(-.1,.1)),[L,L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),{c2:softC2(bright(pick(c2s),1.1),hc,.4),n:[Math.cos(a)*.8,.6,Math.sin(a)*.8]});st.fins++;}}
+  for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=Lp*rr(.85,1.15)*(1-.6*(S.fused||0));
+   BIO.put('frill',[T.x+Math.cos(a)*R,yy,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,mix(lerp(.5,1.0,u),1.45,.7*(S.fused||0))+rr(-.1,.1)),[L,L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),{c2:softC2(bright(pick(c2s),1.1),hc,.4),n:[Math.cos(a)*.8,.6,Math.sin(a)*.8]});st.fins++;}}
  const top=T.y0+H*.92,fc=bright(C(pick([0xe0c030,0xf0d040,0xb060d0,0xc070e0,0xf08040])),1.2);
  for(let k=0,m=lv===2?ri(5,9):3;k<m;k++){const a=rr(0,TAU),d=rr(0,.5)*rb;BIO.put('urchin',[T.x+Math.cos(a)*d,top+rr(0,.5),T.z+Math.sin(a)*d],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),rr(.35,.6),fc);st.blooms++;}
  if(lv===2)reg(S,T,T.crownR+rb);};
@@ -442,9 +449,9 @@ B[31]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hT=H*
   if(lv===2&&rng()<.5)BIO.put('pod',[p[0],p[1]-.2,p[2]],qEuler(0,rr(0,TAU),0),rr(1.2,2),bright(C(pick(PAL.accent)),1.05));});
  if(lv===2)reg(S,T,T.crownR);};
 // 32 the Rift stone pine: a leaning trunk, a few boughs, a flat umbrella of dark needle clumps (the Mediterranean crest's canon tree)
-B[32]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),la=rr(0,TAU),lk=rr(.02,.14);
- BIO.put('trunk',[T.x,T.y0-.5,T.z],qUp([Math.cos(la)*lk,1,Math.sin(la)*lk]),[rb/.4,H*.6+.5,rb/.4],tint(pick(S.bark),means().bark[1],rr(.85,1)));st.sapTris+=BIO.defs.trunk.tris;
- const tx=T.x+Math.cos(la)*lk*H*.6,tz=T.z+Math.sin(la)*lk*H*.6,ty=T.y0+H*.6,nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU),spots=[],hc=vary(pick(S.leaf),.02,.06,.05);
+B[32]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),la=rr(0,TAU),lk=rr(.02,.14)*(1-(S.straight||0)),bf=mix(.6,.78,S.straight||0);
+ BIO.put('trunk',[T.x,T.y0-.5,T.z],qUp([Math.cos(la)*lk,1,Math.sin(la)*lk]),[rb/.4,H*bf+.5,rb/.4],tint(pick(S.bark),means().bark[1],rr(.85,1)));st.sapTris+=BIO.defs.trunk.tris;
+ const tx=T.x+Math.cos(la)*lk*H*bf,tz=T.z+Math.sin(la)*lk*H*bf,ty=T.y0+H*bf,nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU),spots=[],hc=vary(pick(S.leaf),.02,.06,.05);
  for(let k=0;k<nB;k++){const a=a0+k*GOLD+rr(-.3,.3),R=T.crownR*rr(.5,.95),mid=[tx+Math.cos(a)*R*.45,ty+H*.2,tz+Math.sin(a)*R*.45],end=[tx+Math.cos(a)*R,ty+H*.3+rr(-.04,.04)*H,tz+Math.sin(a)*R];
   BIO.beam('rod',[tx,ty-.2,tz],mid,rb*.5,rb*.3,rc);BIO.beam('rod',mid,end,rb*.3,rb*.12,rc);spots.push(mid,end,end);}
  const cy=T.y0+H*.95,sz0=T.crownR*rr(.4,.55);

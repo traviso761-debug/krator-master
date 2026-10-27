@@ -372,25 +372,31 @@ SWBAY.G=G;
 // grazing angles (the core's irid hook, the hyperjungle's technique)
 
 // ---------------------------------------------------------------- materials
+// THE FINAL REBUILD'S LEAF LOOKS (2026-10-27; core/biome README "Adopting it", nwbay's lines), each on only where the host asks (SWBAY_LOOK,
+// set by swbay's own page, 45-host-stage.js; a world that reads this kit in place, Voth, the isle demo, ringisles, gets none of them): the
+// back-light on the thin broadleaf cards (item 6), the floor cover's root in the ground's colour (R5, with BIO.setGround in the host) and the
+// savannah's dry season (H7): its grass yellows and the umbrella thorns' leaflets thin (by BIO.SEASON; 0, the wet season, draws as before)
+const LK=typeof SWBAY_LOOK!=='undefined'&&SWBAY_LOOK?SWBAY_LOOK:{},BL=o=>LK.backlit?Object.assign(o,{backlit:LK.backlit}):o,
+ GR=o=>LK.ground?Object.assign(o,{ground:{k:.6,gain:LK.ground}}):o,SE=(o,v)=>LK.season?Object.assign(o,{season:v}):o;
 SWBAY.MAT={
  bark:SWBAY.BARKTEX.map(t=>BIO.barkMat(t)),
  cap:BIO.barkMat(SWBAY.CAPTEX),
  gill:BIO.barkMat(SWBAY.GILLTEX),
  wood:BIO.barkMat(SWBAY.WOODTEX),
  rock:BIO.barkMat(SWBAY.ROCKTEX),
- prism:BIO.leafMat(TX.prism,'prism',{aN:true,irid:true,swayW:'1.0',swayA:.14}),
+ prism:BIO.leafMat(TX.prism,'prism',BL({aN:true,irid:true,swayW:'1.0',swayA:.14})),
  needle:BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.10}),
- leaflet:BIO.leafMat(TX.leaflet,'leaflet',{aN:true,swayW:'1.0',swayA:.10}),
- palmate:BIO.leafMat(TX.palmate,'palmate',{aN:true,swayW:'1.0',swayA:.12}),
+ leaflet:BIO.leafMat(TX.leaflet,'leaflet',SE(BL({aN:true,swayW:'1.0',swayA:.10}),{drop:.55,colour:0xa08a48,k:.45})),
+ palmate:BIO.leafMat(TX.palmate,'palmate',BL({aN:true,swayW:'1.0',swayA:.12})),
  puzzle:BIO.leafMat(TX.puzzle,'puzzle',{aN:true,swayW:'1.0',swayA:.05}),
  sword:BIO.leafMat(TX.sword,'sword',{aN:true,swayW:'1.0',swayA:.05,alphaTest:.4}),
- paddle:BIO.leafMat(TX.paddle,'paddle',{swayW:'(position.x)',swayA:.10,alphaTest:.4}),
- bigfrond:BIO.leafMat(TX.bigfrond,'bigfrond',{swayW:'(position.x)',swayA:.09}),
- frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.07}),
+ paddle:BIO.leafMat(TX.paddle,'paddle',BL({swayW:'(position.x)',swayA:.10,alphaTest:.4})),
+ bigfrond:BIO.leafMat(TX.bigfrond,'bigfrond',BL({swayW:'(position.x)',swayA:.09})),
+ frond:BIO.leafMat(TX.frond,'frond',BL({swayW:'(position.x)',swayA:.07})),
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
- clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{swayW:'(position.y)',swayA:.04,alphaTest:.42}),
- under:BIO.leafMat(TX.under,'under',{swayW:'1.0',swayA:.06}),
+ grass:BIO.leafMat(TX.grass,'grass',SE(GR({swayW:'(position.y)',swayA:.12,alphaTest:.4}),{colour:0xc8a860,k:.6,stagger:.6})),
+ clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',GR({swayW:'(position.y)',swayA:.04,alphaTest:.42})),
+ under:BIO.leafMat(TX.under,'under',BL({swayW:'1.0',swayA:.06})),
  beard:BIO.leafMat(TX.beard,'beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  epihang:BIO.leafMat(TX.epihang,'epihang',{swayW:'(-position.y)',swayA:.07,axis:1,alphaTest:.38}),
  hang:BIO.leafMat(TX.under,'hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
@@ -437,14 +443,28 @@ BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('epi',G.rosette(),M.rosette,{label:'Epiphyte rosettes'});
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosette succulents'});
-BIO.def('shroom',G.shroom(),M.shroom,{label:'Mushrooms'});
-BIO.def('parasol',G.parasol(),M.parasol,{label:'Parasol mushrooms'});
+// THE FUNGOID PARTS ON BIO.fung (core/biome 33-core-fungoid.js; TODO.md's fungoid list, the final rebuild 2026-10-27; ?fung=0 for the kit's own
+// shapes): the bay's lineage drawn with the parts the SW highlands' cousins are drawn with, so the two read as one country. On only where the
+// host asks (SWBAY_LOOK.fung); the old geometries stay for a world that reads this kit in place. Each the old one's size and shading
+// (the vertex colour a shade): the mushroom a gilled dome on a stalk (.5 across, .72 to its cap), the parasol a flat gilled disc on a thin
+// stalk (.5 across, .86), the bracket a shelf turned to face out of its wall or log (65, 60), the cap-tree's caps (55)
+const FUNG=SWBAY.FUNG=!!(LK.fung&&BIO.fung);
+BIO.def('shroom',FUNG?BIO.fung.cap({form:'dome',h:.62,seg:7,rings:2,under:'gills',gillN:6,stem:{h:1.42,r:.2,r1:.15,seg:4,k:1.55},seed:91}).scale(.5,.5,.5):G.shroom(),M.shroom,{label:'Mushrooms'});
+BIO.def('parasol',FUNG?BIO.fung.cap({form:'disc',h:.22,seg:9,rings:2,under:'gills',gillN:6,stem:{h:1.74,r:.08,r1:.06,seg:4,k:1.5},seed:92}).scale(.5,.5,.5):G.parasol(),M.parasol,{label:'Parasol mushrooms'});
 BIO.def('cone',G.cone(),M.solid,{label:'Mounds and stubs'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Baobab pods'});
 // rods and small trunks are OPEN cylinders: their ends sit inside joints, crowns and the ground, and the caps were a third of the scene
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,7,1,true),M.solid,{label:'Stems'});
 BIO.def('trunk',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(SWBAY.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(SWBAY.BARKTEX[2]),{label:'Small trunks (pale)'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+BIO.def('fungus',FUNG?BIO.fung.bracket({arc:Math.PI*1.1,seg:7,thick:.34,droop:.16,wav:5,wavA:.04,lump:.08,seed:93}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+// a shelf (BIO.fung.bracket, out along +z) turned to face out of its wall, a little tilt; the draws are the old dome's (the same stream)
+SWBAY.shelfQ=(n,ax,ay,az)=>{const h=Math.hypot(n[0],n[2]);return qEuler(ax*.4,h>.2?Math.atan2(n[0],n[2]):ay,az*.4);};
+SWBAY.shelfS=sb=>FUNG?[sb,sb*.8,sb*.75]:[sb,sb*.4,sb];
+// the cap-tree's caps (55 B[2]): one dome of radius 1 (h .42), gilled underneath, its rim waved, the planar uv repeated 6 times so the cap
+// texture's warts keep their size; on the cap bucket's material. The tiered shelf lower on the stem is the same cap, smaller
+if(FUNG){const g=BIO.fung.cap({form:'dome',h:.42,seg:18,rings:6,wav:7,wavA:.035,lump:.03,under:'gills',gillN:30,gillD:.14,gillK:.5,seed:94,uv:'planar'}),uv=g.attributes.uv;
+ for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-.5)*6+.5,(uv.getY(i)-.5)*6+.5);
+ BIO.def('capf',g,M.cap,{label:'Cap-tree caps'});}
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SWBAY.ROCKTEX),{label:'Boulders (small)'});
 })();

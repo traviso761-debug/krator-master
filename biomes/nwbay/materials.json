@@ -1,6 +1,6 @@
 {
  "build": "nwbay",
- "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales. 2026-10-26: the grey bark canvases (kinds 1-6) are lifted in linear light (50 barkLift) until their mean sits above the brightest channel of the species' tints (they clipped to white before, the ironbark 2.2x over); bark1..6 means are the lifted canvases' measured sRGB luminance.",
+ "note": "The nwbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. rock.wall and rock.top (2026-10-25): the karst stacks drawn as guilin's towers (45-host-stage.js), with guilin's karst limestone and moss at guilin's scales. 2026-10-26: the grey bark canvases (kinds 1-6) are lifted in linear light (50 barkLift) until their mean sits above the brightest channel of the species' tints (they clipped to white before, the ironbark 2.2x over); bark1..6 means are the lifted canvases' measured sRGB luminance. groundLitter, groundSand, groundLava, groundTrav (2026-10-27, the final rebuild): the ground's KGROUND layers by zone (45-host-stage.js), full colour as nhighlands' ground sets.",
  "size": 512,
  "families": {
   "bark0": {
@@ -143,7 +143,30 @@
     "keep": 0.0,
     "mean": 0.687
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.034,
+      0.005,
+      0.968,
+      0.956
+     ],
+     "stem": [
+      0.46,
+      0.04
+     ],
+     "tip": [
+      0.4987,
+      0.9502
+     ],
+     "w": [
+      -0.4073,
+      0.3722
+     ]
+    }
+   ],
+   "rise": -0.5
   },
   "needle": {
    "lib": "card.pine",
@@ -155,7 +178,69 @@
     "keep": 0.0,
     "mean": 0.668
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.04,
+      0.3213
+     ],
+     "tip": [
+      0.2898,
+      0.0752
+     ],
+     "w": [
+      -0.1083,
+      0.1176
+     ]
+    },
+    {
+     "cell": [
+      0.333,
+      0.349,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.585,
+      0.6709
+     ],
+     "tip": [
+      0.4554,
+      0.3648
+     ],
+     "w": [
+      -0.122,
+      0.13
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.6924,
+      0.9424
+     ],
+     "tip": [
+      0.9657,
+      0.7026
+     ],
+     "w": [
+      -0.1129,
+      0.1189
+     ]
+    }
+   ]
   },
   "cneedle": {
    "lib": "card.pine.b",
@@ -167,7 +252,69 @@
     "keep": 0.0,
     "mean": 0.668
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.016,
+      0.032,
+      0.335,
+      0.339
+     ],
+     "stem": [
+      0.025,
+      0.24
+     ],
+     "tip": [
+      0.276,
+      0.0727
+     ],
+     "w": [
+      -0.0844,
+      0.1681
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.329,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.6045,
+      0.6709
+     ],
+     "tip": [
+      0.4365,
+      0.3406
+     ],
+     "w": [
+      -0.1287,
+      0.1265
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.671,
+      0.985,
+      0.978
+     ],
+     "stem": [
+      0.6611,
+      0.9307
+     ],
+     "tip": [
+      0.9611,
+      0.734
+     ],
+     "w": [
+      -0.1169,
+      0.1262
+     ]
+    }
+   ]
   },
   "leaflet": {
    "lib": "card.acacia",
@@ -179,7 +326,69 @@
     "keep": 0.0,
     "mean": 0.678
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.015,
+      0.331,
+      0.339
+     ],
+     "stem": [
+      0.251,
+      0.3369
+     ],
+     "tip": [
+      0.0968,
+      0.0402
+     ],
+     "w": [
+      -0.1383,
+      0.1342
+     ]
+    },
+    {
+     "cell": [
+      0.343,
+      0.345,
+      0.663,
+      0.655
+     ],
+     "stem": [
+      0.5146,
+      0.6514
+     ],
+     "tip": [
+      0.4964,
+      0.3474
+     ],
+     "w": [
+      -0.1354,
+      0.1331
+     ]
+    },
+    {
+     "cell": [
+      0.667,
+      0.661,
+      0.982,
+      0.985
+     ],
+     "stem": [
+      0.7568,
+      0.9795
+     ],
+     "tip": [
+      0.9038,
+      0.6756
+     ],
+     "w": [
+      -0.1326,
+      0.1428
+     ]
+    }
+   ]
   },
   "fernleaf": {
    "lib": "card.fern",
@@ -192,12 +401,29 @@
     "mean": 0.672
    },
    "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "stems": [
+    {
+     "cell": [
+      0.089,
+      0.046,
+      0.911,
+      0.995
+     ],
+     "stem": [
+      0.5139,
+      0.9893
+     ],
+     "tip": [
+      0.5139,
+      0.0479
+     ],
+     "w": [
+      -0.2981,
+      0.2742
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "palmate": {
    "lib": "card.palm",
@@ -210,11 +436,67 @@
     "mean": 0.719
    },
    "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.018,
+      0.337,
+      0.339
+     ],
+     "stem": [
+      0.3271,
+      0.3389
+     ],
+     "tip": [
+      0.1118,
+      0.0997
+     ],
+     "w": [
+      -0.157,
+      0.1668
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.339,
+      0.648,
+      0.659
+     ],
+     "stem": [
+      0.4912,
+      0.6533
+     ],
+     "tip": [
+      0.5015,
+      0.3423
+     ],
+     "w": [
+      -0.1203,
+      0.1188
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.982,
+      0.984
+     ],
+     "stem": [
+      0.667,
+      0.9775
+     ],
+     "tip": [
+      0.9541,
+      0.653
+     ],
+     "w": [
+      -0.0787,
+      0.0844
+     ]
+    }
    ]
   },
   "glossy": {
@@ -295,11 +577,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.024,
+    0.112,
+    0.978,
+    0.993
+   ],
+   "base": "bottom"
   },
   "frond": {
    "lib": "card.fern",
@@ -313,11 +596,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "reed": {
    "lib": "card.reed",
@@ -331,10 +615,10 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.329,
+    0.329,
+    0.667,
+    0.671
    ]
   },
   "matreed": {
@@ -349,10 +633,10 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.329,
+    0.329,
+    0.667,
+    0.671
    ]
   },
   "grass": {
@@ -385,10 +669,10 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.024,
+    0.042,
+    0.976,
+    0.954
    ]
   },
   "under": {
@@ -401,7 +685,30 @@
     "keep": 0.0,
     "mean": 0.693
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.118,
+      0.978,
+      0.997
+     ],
+     "stem": [
+      0.5015,
+      0.9912
+     ],
+     "tip": [
+      0.5015,
+      0.124
+     ],
+     "w": [
+      -0.3853,
+      0.3823
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "beard": {
    "lib": "card.beard",
@@ -419,7 +726,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "top"
   },
   "liana": {
    "lib": "card.vine",
@@ -433,11 +741,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.495,
+    0.001,
+    0.95,
+    0.972
+   ],
+   "base": "top"
   },
   "hang": {
    "lib": "card.vine.hanging.0",
@@ -451,11 +760,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.177,
+    0.005,
+    0.819,
+    0.956
+   ],
+   "base": "top"
   },
   "moss": {
    "lib": "card.moss",
@@ -469,10 +779,10 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.024,
+    0.042,
+    0.976,
+    0.954
    ]
   },
   "lotus": {
@@ -576,7 +886,30 @@
     "mean": 0.693
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "stems": [
+    {
+     "cell": [
+      0.05,
+      0.042,
+      0.952,
+      0.997
+     ],
+     "stem": [
+      0.5396,
+      0.9912
+     ],
+     "tip": [
+      0.5396,
+      0.0479
+     ],
+     "w": [
+      -0.3941,
+      0.3324
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "under2": {
    "lib": "card.jungle.clump.15",
@@ -589,7 +922,30 @@
     "mean": 0.693
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.046,
+      0.905,
+      0.995
+     ],
+     "stem": [
+      0.4687,
+      0.9912
+     ],
+     "tip": [
+      0.4687,
+      0.0518
+     ],
+     "w": [
+      -0.3447,
+      0.3545
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "hang1": {
    "lib": "card.vine.hanging.6",
@@ -603,12 +959,13 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.29,
+    0.003,
+    0.71,
+    0.958
    ],
-   "own": true
+   "own": true,
+   "base": "top"
   },
   "fungus": {
    "lib": "organic.fungus.bracket",
@@ -650,6 +1007,66 @@
    "roughLift": 0.3,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "groundLitter": {
+   "lib": "ground.ground072",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "groundSand": {
+   "lib": "ground.coast_sand_01",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "groundLava": {
+   "lib": "ground.lava.aa",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "groundTrav": {
+   "lib": "ground.travertine.white",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
   }
  }
 }

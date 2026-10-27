@@ -20,6 +20,11 @@ const VIEWS={
  'The cataracts':(function(){const u=1900;return V(u-80,vR(u-80),26,u+260,vR(u+260),4);})(),
  /* one cataract close, from 30 m downstream (2026-10-26, the waterfall risers): the 26th of RIVER_FALLS' 60, its plunge at 774, 187.2, -656 */
  'A cataract, close':[765,190.2,-627,774,187.2,-656],
+ /* the final rebuild (2026-10-27): the first karst spring from 22 m off its pool, toward the river; the lower fishing bridge from downstream */
+ 'A karst spring':(function(){const S=SPRINGS[0];if(!S)return V(1520,vR(1520)+40,8,1520,vR(1520),2);const tx=(BAY.c[0]+(S.u+vR(S.u))*SQ)-S.x,tz=(BAY.c[1]+(vR(S.u)-S.u)*SQ)-S.z,l=Math.hypot(tx,tz),cx=S.x-tx/l*16+tz/l*6,cz=S.z-tz/l*16-tx/l*6;
+  return[cx,terrainH(cx,cz)+9,cz,S.x+tx/l*8,terrainH(S.x,S.z),S.z+tz/l*8];})(),
+ 'A fishing bridge':(function(){const b=KIN_BRIDGES[0];if(!b)return V(MOUTH_U+500,vR(MOUTH_U+500),10,MOUTH_U+520,vR(MOUTH_U+520),3);const mx=(b[0]+b[2])/2,mz=(b[1]+b[3])/2,q=uvXZ(MOUTH_U+470,vR(MOUTH_U+470));
+  return[q[0],terrainH(q[0],q[1])+5,q[1],mx,terrainH(mx,mz)+4,mz];})(),
  'Bay swimmers':(function(){const p=(SWBAY.FAUNA&&SWBAY.FAUNA.pods&&SWBAY.FAUNA.pods[0])||{x:BAY.c[0],z:BAY.c[1],r:100};const cx=p.x+p.r*.9,cz=p.z+p.r*.55;return[cx,16,cz,p.x,0,p.z];})(),
  'The herd':(function(){const h=(SWBAY.FAUNA&&SWBAY.FAUNA.herd)||{x:0,z:0};const cx=h.x-52,cz=h.z+38;return[cx,terrainH(cx,cz)+5,cz,h.x,terrainH(h.x,h.z)+2,h.z];})(),
  'The jungle from above':V(1080,0,160,1500,120,30),
@@ -95,3 +100,6 @@ KHOST.take({build:'swbay',title:'Krator biome — the southwest bay',
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// THE DRY SEASON (core/biome H7, the final rebuild 2026-10-27; ?season=0 off): the monsoon's two seasons on the host's clock, once it has one:
+// the savannah's grass yellows and the umbrella thorns' leaflets thin (50, SWBAY_LOOK.season)
+if(SWBAY_LOOK.season&&BIO.bindSeason)BIO.bindSeason(null,{sharp:2});

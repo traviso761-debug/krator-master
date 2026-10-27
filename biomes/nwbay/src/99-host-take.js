@@ -137,3 +137,5 @@ registry:REG,views:VIEWS,ticks:TICKS,
  api:{get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  extra,
  biome:()=>window._biome}});
+// THE DRY SEASON (core/biome H7, the final rebuild 2026-10-27; ?season=0 off): the monsoon's two seasons on the host's clock, once it has one
+if(NWBAY_LOOK.season&&BIO.bindSeason)BIO.bindSeason(null,{sharp:2});

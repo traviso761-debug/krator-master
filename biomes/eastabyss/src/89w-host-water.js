@@ -31,7 +31,13 @@ function lakeJoined(box,cell){const nx=Math.round((box[2]-box[0])/cell),nz=Math.
    if(c[n])continue;if(wet(X(a),Z(b))){c[n]=1;q.push(n);}}}
  return(x,z)=>{const i=Math.floor((x-box[0])/cell),j=Math.floor((z-box[1])/cell);return i>=0&&j>=0&&i<nx&&j<nz&&c[j*nx+i]===1;};}
 const LAKE_BOX=[-1150,-2600,2500,2600],LAKE_JOIN=lakeJoined(LAKE_BOX,8),LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn(x,z)<24||LAKE_JOIN(x,z));
-const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK});
+// the rivers' plumes (2026-10-27, the owner: the delta rode over the lake): the channels fade out as they reach the lake (RIVER_KEEP below) and
+// their water runs on into it as a tint, strongest at each channel's line and spreading as it fades over ~250 m, so the river's grey-green
+// meets the pink salt water as a plume, not an edge (WATER.open's tint field; the lake's own colour everywhere else)
+const PLUME_HEX=lin(RIVER_COL.clone().lerp(new THREE.Color(0x6a7a72),.42)).multiplyScalar(.65).getHex();   /* the ribbons' own linear colour (their shallow and deep), as the lake's shader mixes it */
+const LAKE_TINT={box:LAKE_BOX,cell:8,at:(x,z)=>{if(Math.abs(x)<500)return null;const lk=lakeIn(x,z);if(lk>24)return null;const into=Math.max(0,-lk),rd=riverD(x,z);
+ const a=.6*smooth(30+.35*into,6,rd)*smooth(-260,-10,lk)*smooth(24,0,lk);return a<.004?null:{c:PLUME_HEX,a};}};
+const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK,tint:LAKE_TINT});
 const LAKE_DRAW=WATER.draw(LAKE_WATER,{surf:false,roughness:.2,metalness:.05,envMapIntensity:.85,renderOrder:1,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.4).lerp(WATER_PALE,.2)),deep:lin(WATER_DEEP)});
 LAKE_DRAW.mesh.userData.inspectLabel='The salt lake';
@@ -50,7 +56,7 @@ const eastW=x=>38+(2*(13-4*smooth(2000,3400,x))-38)*smooth(2000,2400,x);
 // rapids (2026-10-26): the east river's own white-water band on its slope, [.05, .3] in place of core/water's preset [.015, .12], so the
 // lower climb (a 5 to 12 % grade) runs streaked and green and only the steep reaches under the shelf (16 to 27 %) break white: the
 // cataracts read where the ground is steepest. The ground has no step, so there is no WATER.fall (fallsOf finds none at .35).
-const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed},rapids?{rapids}:{}));
+const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed,densify:6},rapids?{rapids}:{}));   /* densify: a row every 6 m, so the fade into the lake (RIVER_KEEP) resolves */
 const fanE=s=>x=>s*Math.max(0,(1250-x)/430)*(s>0?150:130);
 const fanW=s=>x=>s*Math.max(0,(x+1250)/430)*(s>0?140:120);
 const RIVERS=[
@@ -60,7 +66,9 @@ const RIVERS=[
  riverFlow('The west river',riverLine(-3700,-800,30,zW,x=>0,x=>38),.9),
  riverFlow('The west river, north channel',riverLine(-1250,-800,30,zW,fanW(1),x=>30),.6),
  riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>30),.6)];
-const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3});
+// each channel fades out over 45 m as it reaches the lake (drawFlow keep, core/water 2026-10-27): it never rides over the lake's water; LAKE_TINT carries its colour on
+const RIVER_KEEP=(x,z)=>smooth(-30,15,lakeIn(x,z));
+const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{keep:RIVER_KEEP,shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3});
  D.mesh.userData.inspectLabel=S.name;return D;});
 // the lily pads and the leaf rafts ride the swell (2026-10-26): their material lifts each instance by the water's own height at its centre
 // (WATER.rideOn, core/water W5: the vertex chunk WATER.rideGLSL, the same swell as WATER.heightAt: the trochoids through the Newton inverse and

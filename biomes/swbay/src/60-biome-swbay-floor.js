@@ -88,9 +88,9 @@ function log(x,y,z,st,dry){const a=rr(0,TAU),L=rr(16,44),r0=rr(.8,1.8),hx=Math.c
   pts.push({x:px,y:Y(px,pz)+r0*.35,z:pz,r:mix(r0,r0*.5,t),col:tint(pick(PAL.deadwood),means().wood,rr(.7,1)).lerp(C(PAL.moss[i%3]),!dry&&rng()<.4?.5:0)});}
  BIO.tube('wood',pts,pts[0].col,{seg:8,cap:true});st.logs++;
  for(let s=3;s<L-2;s+=rr(3,6)){const t=s/L,i=Math.min(n-2,Math.floor(t*(n-1))),f=t*(n-1)-i,A=pts[i],Bq=pts[i+1],px=mix(A.x,Bq.x,f),pz=mix(A.z,Bq.z,f),py=mix(A.y,Bq.y,f),r=mix(A.r,Bq.r,f);
-  const k=rng();if(dry){if(k<.5){const sb=rr(.3,.8);BIO.put('fungus',[px+hz*r*.9,py+rr(-.2,.3),pz-hx*r*.9],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}continue;}
+  const k=rng();if(dry){if(k<.5){const sb=rr(.3,.8);BIO.put('fungus',[px+hz*r*.9,py+rr(-.2,.3),pz-hx*r*.9],(SWBAY.FUNG?SWBAY.shelfQ([hz,0,-hx],rr(-.3,.3),rr(0,TAU),rr(-.3,.3)):qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3))),SWBAY.shelfS(sb),C(pick(PAL.fungus)));}continue;}
   if(k<.35){BIO.put('mossmat',[px,py+r*.95,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),r*rr(.6,1),leafCol(PAL.moss,.95));st.moss++;}
-  else if(k<.6){const sb=rr(.4,1.1);BIO.put('fungus',[px+hz*r*.9,py+rr(-.2,.4),pz-hx*r*.9],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}
+  else if(k<.6){const sb=rr(.4,1.1);BIO.put('fungus',[px+hz*r*.9,py+rr(-.2,.4),pz-hx*r*.9],(SWBAY.FUNG?SWBAY.shelfQ([hz,0,-hx],rr(-.3,.3),rr(0,TAU),rr(-.3,.3)):qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3))),SWBAY.shelfS(sb),C(pick(PAL.fungus)));}
   else if(k<.8){const h=rr(.3,.8),col=capCol(false);for(let q=0,m=ri(2,4);q<m;q++)BIO.put('shroom',[px+rr(-.4,.4),py+r*.9,pz+rr(-.4,.4)],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[h,h,h],bright(vary(col,.02,.06,.06),1.05));st.shrooms++;}
   else frondCrown(px+rr(-.3,.3),py+r*.9,pz+rr(-.3,.3),rr(1,2),5,.05,.4,leafCol(PAL.fern,1.7));}
  return true;}

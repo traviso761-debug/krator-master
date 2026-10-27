@@ -19,7 +19,7 @@ const PALE_L=lin(WATER_PALE).getHex(),FRESH_L=lin(RIVER_COL).getHex();
 const BAY_WATER=WATER.open({name:'The bay',level:0,swell:[[.05,40,225,0,.035],[.03,16,200,1.3,.025]],field:.1,bounds:WBOX,
  bed:groundH,bedBox:WBOX,bedCell:12,shore:{seeds:{edge:true,depth:2,sides:'es',points:[[BAY.c[0],BAY.c[1]]]}},
  tint:{box:WBOX,cell:12,at:(x,z)=>{const k=waterTintK(x,z);if(k[0]<.01&&k[1]<.01)return null;return k[1]>=k[0]?{c:FRESH_L,a:k[1]}:{c:PALE_L,a:k[0]};}}});
-const BAY_DRAW=WATER.draw(BAY_WATER,{renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,ramp:[1.2,9],pick:true,
+const BAY_DRAW=WATER.draw(BAY_WATER,{rain:true,renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,ramp:[1.2,9],pick:true,
  shallow:lin(WATER_SHALLOW),deep:lin(WATER_DEEP.clone().multiplyScalar(.8))});
 BAY_DRAW.mesh.userData.inspectLabel='The bay';
 // ---- the outer water: the far country's sea, flat, 0.15 m under the bay's, drawn only where the bay's surface is not
@@ -45,15 +45,24 @@ let RIVER_TERRACES=null,RIVER_LOW=null;
   for(let i=1;i<T.length;i++)if(T[i].s0-T[i-1].s1>1.5)T[i].s0=T[i-1].s1+1.5;   // each lower pool runs up to the riser's face (45 RISERS: the channel is drawn down under it), so the fall drops 1.5 m out down a face, not over a slope
   try{RIVER_TERRACES=WATER.terraces({name:'The river (terraced pools)',line,treads:T,speed:1.6,spread:.6,treadSpeed:.25});}catch(e){reportErr('terraces: '+e.message);}}
  if(low.length>2)RIVER_LOW=WATER.flow({name:'The river (the lowland reach)',pts:low.map(q=>[q.x,q.z,q.y]),width:low.map(q=>q.w*2),speed:.8,rapids:[.04,.12]});})();
-const RIVER_DRAW=RIVER_TERRACES?WATER.drawTerraces(RIVER_TERRACES,{pool:{color:lin(POOL_COL),roughness:.08,metalness:.1,envMapIntensity:.35,renderOrder:2,pick:true},
- fall:{color:lin(0xf4f8f6),opacity:.94,cols:6,rowStep:.6,renderOrder:3,pick:true}}):null;
+// THE FINAL REBUILD'S WATER (2026-10-27; core/water W1, W4, R9): every water takes the rain's rings; the falls' curtains run 1.2 m a
+// side past the lip, as wide as the pool's water, and fade at their sides (W1: margin, edge); each terrace pool shades from its deep
+// turquoise middle to the pale cream at its rimstone (W4, Semuc's look; ?poolgrad=0 for the one colour). No spray: this page has no
+// core/atmos particles (ATMOS.smoke), and its 5 m risers need none
+const WQ=new URLSearchParams(location.search),POOL_GRAD=WQ.get('poolgrad')!=='0'?{centre:lin(POOL_COL.clone().lerp(WATER_DEEP,.35)).getHex(),rim:lin(POOL_COL.clone().lerp(POOL_PALE,.7)).getHex(),power:1.3}:null;
+const RIVER_DRAW=RIVER_TERRACES?WATER.drawTerraces(RIVER_TERRACES,{pool:{color:lin(POOL_COL),roughness:.08,metalness:.1,envMapIntensity:.35,renderOrder:2,pick:true,rain:true,gradient:POOL_GRAD},
+ fall:{color:lin(0xf4f8f6),opacity:.94,cols:6,rowStep:.6,renderOrder:3,pick:true,margin:1.2,edge:.6,rain:true}}):null;
 const RIVER_LOW_DRAW=RIVER_LOW?WATER.drawFlow(RIVER_LOW,{shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,
- envMapIntensity:.5,step:10,across:6,margin:1.2,depthBias:2,renderOrder:2,pick:true}):null;
+ envMapIntensity:.5,step:10,across:6,margin:1.2,depthBias:2,renderOrder:2,pick:true,rain:true}):null;
+// WEED (core/water ext/54 W.weed, BACKPORT.md nwbay's row; ?weed=0 off): comb-weed and riverweed down the lowland reach's clear travertine
+// water, denser where it runs. The row's kelp beds in the bay are not drawn: W.weed lays blades down a flow line, and the bay is open
+// water with no line; a bed kind for open water (seagrass, kelp) would be a new core kind
+const RIVER_WEED=RIVER_LOW&&WQ.get('weed')!=='0'&&WATER.weed&&WATER.drawWeed?WATER.drawWeed(WATER.weed(RIVER_LOW,{look:'clear',bed:groundH,seed:8131})):null;
 // ---- the cenotes' pools: pale turquoise under the walls' overhang, deep at the middle (a still with a gradient)
 const CENOTE_POOLS=SINKS.filter(S=>S.kind==='cenote').map(S=>{const poly=[];for(let s=0;s<40;s++){const a=s/40*TAU,r=sinkRad(S,a)*(1+S.bell+.05);poly.push([S.x+Math.cos(a)*r,S.z+Math.sin(a)*r]);}
  const P=WATER.still({name:S.name+' (its pool)',level:.04,poly,gradient:{centre:lin(WATER_DEEP.clone().lerp(WATER_MID,.4)).getHex(),rim:lin(WATER_PALE).getHex(),power:1.4}});
- WATER.drawStill(P,{roughness:.06,metalness:.1,envMapIntensity:.3,renderOrder:1,pick:true});return P;});
+ WATER.drawStill(P,{roughness:.06,metalness:.1,envMapIntensity:.3,renderOrder:1,pick:true,rain:true});return P;});
 // ---- the shelf pools: every rimstone pool a still at its level, all of them one mesh
 const SHELF_STILLS=SHELF_POOLS.map((q,i)=>WATER.still({name:q.name+' '+(i+1),level:q.y,poly:q.pts}));
-const SHELF_DRAW=SHELF_STILLS.length?WATER.drawPools(SHELF_STILLS,{color:lin(POOL_COL.clone().lerp(POOL_PALE,.5)),roughness:.06,metalness:.1,envMapIntensity:.35,renderOrder:1,pick:true,name:'Shelf pools'}):null;
-window._water={bay:!!BAY_DRAW,terraces:RIVER_TERRACES?RIVER_TERRACES.pools.length:0,falls:RIVER_TERRACES?RIVER_TERRACES.falls.length:0,low:!!RIVER_LOW,cenotes:CENOTE_POOLS.length,shelf:SHELF_STILLS.length};
+const SHELF_DRAW=SHELF_STILLS.length?WATER.drawPools(SHELF_STILLS,{color:lin(POOL_COL.clone().lerp(POOL_PALE,.5)),roughness:.06,metalness:.1,envMapIntensity:.35,renderOrder:1,pick:true,rain:true,gradient:POOL_GRAD,name:'Shelf pools'}):null;
+window._water={bay:!!BAY_DRAW,terraces:RIVER_TERRACES?RIVER_TERRACES.pools.length:0,falls:RIVER_TERRACES?RIVER_TERRACES.falls.length:0,low:!!RIVER_LOW,weed:RIVER_WEED?(RIVER_WEED.count||RIVER_WEED.n||true):0,cenotes:CENOTE_POOLS.length,shelf:SHELF_STILLS.length};

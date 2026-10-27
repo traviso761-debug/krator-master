@@ -4,6 +4,13 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The final rebuild's looks (2026-10-27): for the owner's look pass.** `PLAN.md` "Core adoption" lists every module taken and its
+      switch: the SW highlands' and nwbay's cousins in place of a share of the bay's trees (`?kin=0`), the fungoid parts on `BIO.fung`
+      (`?fung=0`), the karst springs and the clear river (`?springs=0`, `?clearwater=0`), the fog belt on the rainforest's slope, the KGROUND
+      layers, the KFAR lattice, the horizon shadows, the dry season, the far impostors at gain 2.2. The springs' pools show the leaf litter of
+      their bowls through the clear water (no spring bed texture: a gravel or tufa bed would read better). The cousins end past
+      `SWBAY.LOD.tree` (the highland species have no far form here), and the floor cousins (glow tubes, triplets, bulb heath, arrowheads,
+      bracts) add ~150 draw calls. Not taken: the log crust and the drip cap (`PLAN.md`, "Dropped").
 - [ ] **The shared sky (SKY-PLAN.md S1, 2026-10-26): the look to judge.** The painted dome, the giant mesh and its RingGeometry
       (`82-host-sky.js`) are gone; `89s-host-sky.js` draws `ATMOS.sky` at Voth's site (the scale model's 446, 690: the bay Voth
       stands on), on the host clock, and drives the sun, the hemisphere, the fog and the exposure; the fill light follows the

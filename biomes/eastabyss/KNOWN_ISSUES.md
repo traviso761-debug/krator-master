@@ -93,7 +93,7 @@ Read before changing anything here. `build.py` prints the open count.
 
 - [ ] **The club-moss carpet reads as striped barrels** (seen at the rebuild's GPU verify, 2026-10-27; older than it): the `clubmoss`
       slot shows the middle of `card.moss`, a solid photo with no cut-out, on the kit's upright tufts. The card check's whole-cushion
-      proposal is no better there, so the cell is kept as it was. Owed: `card.clubmoss` (core/materials/PROMPTS-NEEDED.md section 35).
+      proposal is no better there, so the cell is kept as it was. Owed: `card.clubmoss` (core/materials/PROMPTS-NEEDED.md section 36).
 - [ ] **The rebuild's looks to judge (2026-10-27)**, each behind its switch (NOTES.md, "Core adoption"): the far band's diet and the
       octahedral impostors (`?diet=0`; their gain 3.6 is nhighlands' measure, not this page's: the core's capture is ~4x dark,
       HANDOFF-REBUILD.md), the abyss wall as ground and its canyon beds (`?wall=0`), the fog belt on the shelf foot (`?belt=0`), the

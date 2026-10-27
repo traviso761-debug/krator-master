@@ -13,8 +13,8 @@
    "sha256": "5c923cf3a0c987e944cc7dd4bbb180906af97e447c205031125dc7575dcfcadf"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 8212717,
-   "sha256": "59269fe70f54eba7787be55cf2b81cec705e58a95c813f50be11c019bef3962a"
+   "bytes": 8213756,
+   "sha256": "fdcfc3eab049d4beeeb0815239d4ce75af8b9ea4f8464ebd790c2ab81d086443"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
    "bytes": 4490873,
@@ -32,9 +32,17 @@
    "bytes": 675886,
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
+  "biomes/hyperjungle/dist/hyperjungle-lake.html": {
+   "bytes": 5818133,
+   "sha256": "feaadb26e6077a23dd067bf149c3a636cca3273f4c479c8559510210ff7a1d66"
+  },
+  "biomes/hyperjungle/dist/hyperjungle-savanna.html": {
+   "bytes": 8567045,
+   "sha256": "de2bf53b2dae82bd3f179652226f30eb1a73cab161bdd43adad18a202e3a4548"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 4764402,
-   "sha256": "6bbdf1dacd5cdafdb746fce3c5e1aa1bcc9e17680dfb6a5a17777052e0dacac4"
+   "bytes": 5252393,
+   "sha256": "ac998cd859025638e14f77430ac770186ea7f887b897621cfef79e556b1e41e8"
   },
   "biomes/korona/dist/korona-basin.html": {
    "bytes": 896798,
@@ -105,8 +113,24 @@
    "sha256": "67e2f883923969fd3278dacfd4f36cdf2b64b0524cfff4f728eb13c264ee5b0c"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 6186991,
-   "sha256": "f6baa1c7f303216e12b7dd9b54bc7ca292746f3e173f2fd2183de42b0741021a"
+   "bytes": 8793666,
+   "sha256": "336f1c02329f341f4313d1266dc784ca8120c889ce5e3fedaba786b83a428ff8"
+  },
+  "biomes/swhighlands/dist/swhighlands-pillars-span.html": {
+   "bytes": 6324440,
+   "sha256": "81b5c300e58b3d7c0f8eb0a53b447e7e7599ed5aa2f678f9c47ae09446e21673"
+  },
+  "biomes/swhighlands/dist/swhighlands-pillars.html": {
+   "bytes": 4564550,
+   "sha256": "de36158f3b028b98dab6d0842e0dbaaeffc4712cb045ccf921b41fbe5a392406"
+  },
+  "biomes/swhighlands/dist/swhighlands-treeline.html": {
+   "bytes": 6205983,
+   "sha256": "68d9517142162a3d410472a63b8778800476a9b3c557ffbf82966f771ed57c97"
+  },
+  "biomes/swhighlands/dist/swhighlands.html": {
+   "bytes": 4567412,
+   "sha256": "6472150f4099a62d16806d1413a7b81be4d78f3384c73cfbb9f6475ecdb0f3b2"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
    "bytes": 6604195,
@@ -196,6 +220,10 @@
    "bytes": 2521611,
    "sha256": "55f32185cff1b986ef4ae8a44f444a4c20272320a391776e65de64f2a284ebbd"
   },
+  "kits/ancients/dist/arcpile.html": {
+   "bytes": 2625616,
+   "sha256": "20f9b2d6f2a67ad1eae5f6843e2927de409cdbfb239a60801d8eadb11ddec165"
+  },
   "kits/ancients/dist/arcube.html": {
    "bytes": 2520564,
    "sha256": "317616aa58abcf42dd0473f60f420a82a5a507f39f606789e075dcad55ec3c53"
@@ -275,6 +303,10 @@
   "kits/ancients/dist/lighthouse.html": {
    "bytes": 2512749,
    "sha256": "a5e46e9c3b0740d48410aaee1bb4598d3420b24cb466aa212695a3c2c1ace25b"
+  },
+  "kits/ancients/dist/lozenge.html": {
+   "bytes": 2591006,
+   "sha256": "92255660146aa8d96928a6aecd7eb1eabecc7d6e794d4395414566a30ae4238d"
   },
   "kits/ancients/dist/monolith.html": {
    "bytes": 2514237,

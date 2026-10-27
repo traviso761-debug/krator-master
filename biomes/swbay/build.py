@@ -52,11 +52,11 @@ OUT=sys.argv[1] if len(sys.argv)>1 else "swbay.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KGROUND (the ground's library layers), KFAR (the far country's lattice), KHORIZON (its terrain shadows): the final rebuild, 2026-10-27; 45-host-stage.js, 88-host-build.js
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -64,6 +64,9 @@ CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+# their three.js halves (core/terrain/host), as biomes/nwbay lists them
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -92,6 +95,24 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'swbay',own=True)}
+# THE NEIGHBOURS' COUSINS, read in place (the final rebuild, 2026-10-27; src/87-host-kin.js grows them by BIO.kin): the SW highlands'
+# fungoid lineage come down to the bay (PLAN-FLORA.md: the stilt pod tree, the weeping wisp, the bead cone, the shelf coral, the coral
+# melon, the fishing bridge and the floor's glow tubes, bearded triplets, bulb heath, arrowheads and blue-berry bracts) and nwbay's cinder
+# pine and flame-crown (EXCHANGES.md, nwbay -> swbay). Each kit's fragments slotted after the host stage (45) and before this kit (50),
+# each in its own registry, closed by a one-line kitEnd; its pack carries only the families those builders draw with. Their load-time draws
+# cannot move the bay: 50 reseeds before it paints (reseed(500021)) and every pass reseeds
+import json as _json
+NEIGH={'nwbay':(['50-biome-nwbay-species.js','55-biome-nwbay-trees.js','56-biome-nwbay-variants.js'],'NWBAY',['bark3','bark7','fernleaf','cneedle','bloom','moss']),
+       'swhighlands':(['50-biome-swhighlands-species.js','55-biome-swhighlands-trees.js','57-biome-swhighlands-pillars.js','58-biome-swhighlands-rainwall.js',
+                       '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath','crust','moss','coral'])}
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
+    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    VIRTUAL['47%s-%s-open.js'%(_c,_k)]=chr(10)+"BIO.kit('%s');   // its own registry (nwbay's 50 does not open it: its page's 45 does)"%_k+chr(10)
+    VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+"BIO.kit('%s');BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)"%(_k,_api)+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pj) else []
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=[f for f in _fam if f not in _keep])
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
@@ -104,6 +125,9 @@ PATH['89-atmos-3-particles.js']=os.path.normpath(os.path.join(HERE,'..','..','co
 # core/water (core/water/README.md; 2026-10-20, phase 3): the bay and the outer water as WATER.open, the river a WATER.flow, the cataracts WATER.fall (records in
 # 45-host-stage.js and 89w-host-water.js). Explicit paths: the open-water draw (50) and the flow/fall/still kinds (51) as well as the data.
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+# 54/54b (the final rebuild, 2026-10-27): the looks (the clear river), the karst springs (W.karstSpring), comb-weed; by path, after 22 and 51
+PATH['22b-core-water-kinds-ext.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54-core-water-kinds-ext.js'))
+PATH['51b-core-water-kinds-ext-draw.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54b-core-water-kinds-ext-draw.js'))
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the falls in two draw calls in all (WATER.drawFalls: ext/53 + 53b; 2026-10-25), explicit paths as biomes/nwbay does
@@ -132,7 +156,7 @@ out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f and not f.startswith('53-core-water') and not f.startswith('53b-core-water'):   # core/water/ext says RIVER in its own words
+    if 10<=n<80 and '-host-' not in f and not f.startswith(('53-core-water','53b-core-water','22b-core-water','51b-core-water')) and not re.match(r'47[a-h]',f):   # the neighbours' kits (47*) are their own builds' to lint   # core/water/ext says RIVER in its own words
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

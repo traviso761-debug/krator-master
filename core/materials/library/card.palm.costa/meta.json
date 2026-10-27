@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2000,
+   2000
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.palm.costa",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.palm.costa.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a 3x1 sheet (2000 x 667) padded to a square on magenta so each leaf keeps its aspect: the three leaves are the MIDDLE ROW of a 3 x 3 grid (v 0.333-0.667). Delivered for the prompt card.palm.fan, installed under a new id because card.palm.fan (2026-10-25, a 3 x 3 sheet) is wired in necanyons",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.palm.fan\"",
+  "reuse": "the moriche palm's crown (hyperjungle lake station, base bottom); the abyss's fan palm; any costapalmate palm",
+  "sha1": "aa1f4abdc36512c785e946faad2989ec25c53bc6"
+ }
+}

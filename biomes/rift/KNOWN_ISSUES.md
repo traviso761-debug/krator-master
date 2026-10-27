@@ -46,16 +46,20 @@ Read before changing anything here. `build.py` prints the open count.
       east island at px 448,1237, the page round the ruin (the plateau's scarp and the floor below it are 12-25 km off on the model:
       the far field's, not the page's). y 0 is the model's -507 m, the ruin's plinth at y 300 (-207 m: the shared planting mask takes
       ground under y 0 for the sea). A ridge north-west to south-east through Cube, falling north-east and south-west, two streams
-      in shallow valleys (89w). THE RUIN as massing: the Ancients kit's Arcube in its ruined state, baked by
-      `stations/bake_cube.py` (vertex clustering on an 8 m grid: 263 k triangles in, 114 k out, 1.6 MB) and drawn on the plinth,
-      its flat paving dropped, its upright pieces obstacles, its shell dressed with moss and plants; its colours lifted 1.75 times
-      (they read near black under this page's Lambert). THE FLORA: the east island's forms by `BIO.kin` (open bell, plate frill,
-      rim cushion, copper pine; the old stock as plateau parasol, ribbon fern, gold lantern, vine beard), over the jungle's upper
-      fringe at reduced shares. Held about 25 M (trees 20.0 M, floor 4.9 M; ceiling 40 M), a 31 s build (Arc 140T).
-      Open: the forms beyond colour and size (the open bell's flared pleats, the plate frill's level opaque fins, the copper pine's
-      straight bole, the gold lantern's gold pods, the vine beard's vines) are builder work; the Arcube's dimensions are being
-      reworked from its population (a separate session): re-run `bake_cube.py` when that lands; the survivors in the ruin (the
-      Tungangs' Loj Nahn) are the settlement work's; the 8 m clustering leaves the mass faceted close to.
+      in shallow valleys (89w). THE RUIN is now THE PILE (the owner, 2026-10-27: "the 4th station will now use the Pile rather than
+      arccube, and must be able to cover its lower decks in wild vegetation"): kits/ancients' target arcpile (built on
+      claude/upbeat-yalow-7b38ae, not yet on this branch: `stations/bake_ruin.py --page <its dist/arcpile.html>`), its ruined site
+      baked as massing (vertex clustering on an 8 m grid: 46.6 k triangles, 604 KB) with its roofs (`RUIN_ROOFS`, `overgrow` on the
+      base's), drawn on a 1.4 km plinth. THE DECKS OVERGROWN (87 `plantDecks`): the base's 64 roofs (37-219 m up, ~507,000 m2 open
+      to the sky) painted moss and litter, dressed dense (moss, ledge plants and tree-ferns, curtains off every edge: 65's new opt-in
+      `keep` refuses the parts under the tier above), 2,128 trees and shrubs rooted on them (ribbon fern, gold lantern, vine beard, the
+      jungle's curly shrub, prism bush, croton and lobe tree); the base's walls hung with vines and its undersides with roots and
+      curtains; the crown's farmed roofs left to its people. THE FLORA round it: the east island's forms by `BIO.kin` with their
+      habits (open bell, plate frill, rim cushion, copper pine; plateau parasol, ribbon fern, gold lantern, vine beard), over the
+      jungle's upper fringe. Held about 31 M (trees 23.4 M, dress 3.0 M, floor 4.7 M; ceiling 40 M), an 18 s build (Arc 140T).
+      Open: the walls (37 m storeys) carry less growth than the decks (curtains to ~22 m); the vine beard's vines and the plate
+      frill's broad opaque fin card are builder work; the people in the crown (the Tungangs' Loj Nahn) are the settlement work's;
+      the 8 m clustering leaves the mass faceted close to.
 - [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
       island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,
       the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with
@@ -69,13 +73,15 @@ Read before changing anything here. `build.py` prints the open count.
       the lee's pines are denser and its ground is summer-dry grass and earth (`MAP_PAINT`, a new opt-in station hook in the shared
       paint). The LOD origins sit ahead of the views' cameras (their foregrounds were stand-ins and impostors). Held about 33 M
       (trees 24.7 M, floor 6.2 M, far 1.1 M; ceilings 40 M and 30 M a pass); 76 k trees, 2.35 M instances, a 33 s build on the Arc 140T.
-      Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
-      cushion, the night rosette, the glass pole, fog thread, crest heath) are builder work still to do (the hoodlet is a kin
-      stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
+      The families' forms (2026-10-27, habit fields the builders read, opt-in: 55-trees over B[0]; the sketch's species draw as
+      before): the mantle palm's fans closed up toward a hood (`bellK`, `bellTilt`), the comb frill's fins held level and long
+      (`finLevel`, `finK`: measured 3-10 degrees off level), the crown barrel's fins fused into a cushion (`fused`).
+      Open: the fins' translucent fringe (a new fin material), the night rosette, the glass pole, fog thread and crest heath are
+      builder work still to do (the hoodlet is a kin stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
       downstream in a .9 m channel; white water by slope, no free-falling curtains: the risers are 31-41 degrees), their floors
       painted dark wet stone and moss; the
       ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
-      east islands' records; not yet verified on the GPU.
+      east islands' records. GPU verify OK (Arc 140T): 32.1 M held, its export box in the cloud core.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in

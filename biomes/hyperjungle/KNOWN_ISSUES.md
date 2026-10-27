@@ -4,6 +4,22 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The final rebuild's turn (2026-10-27): looks for the owner's pass.** Station 1 and stations 2 and 3 (PLAN-STATIONS.md,
+      "Core adoption") pass `verify.py --assert --all-views` on the GPU. To judge: the impostors' light (`IMP_GAIN` 1.6 in 88, against
+      the near boles; `?impgain=`), the far canopy's roof past the map (83; `?far=0`), the diet's ranges (`?diet=0`); station 2's
+      grass density and the ember line; station 3's water colours, the stilt roots and the moriche crowns.
+- [ ] **Stand-in textures on the stations** (PROMPTS-NEEDED.md section 37): the sky lily's pads are a vertex-coloured disc
+      (`card.lily.victoria` owed), the moriche crowns the kit's fern fronds (`card.palm.fan` owed), the termite cathedrals vertex
+      colour (`earth.termite`, section 32).
+- [ ] **Core: two more reads of `cameraPosition` in Lambert leaf shaders** (`core/biome/30-core-foliage.js`, the two-sided light's
+      view vector and the back-light's): three r128 uploads it only to Phong, Toon, Standard, shader and env-mapped materials, so both
+      read (0,0,0) on every page. The ground tint's fade had the same fault (every ground-tinted card more than ~700 m from the world's
+      origin dissolved, wherever the camera stood: the savanna station's tall grass was invisible); that one is fixed here (the eye from
+      the view matrix, as the LOD fade's 2026-10-26 fix). The other two shape every page's tuned look, so they wait for the owner.
+- [ ] **Exchanges not wired** (EXCHANGES.md): ringisles' breadfruit (clearings round S's ports: none of these pages has a port or a
+      clearing); crater-drylands' prism fern (hyperjungle N's drier edge, a later turn; it is a floor plant with no make/grow, so it
+      needs its floor builder read in place or a BIO.kin builder of its own).
+
 - [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the volcano's plume (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
 
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
