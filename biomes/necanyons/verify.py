@@ -45,6 +45,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # replaces the list for one run. atmos: core/atmos (the water's clock and sky light); the box holds no creek or rain pool, so
 # its water section is empty (the creek and the pools are core/water records: the page's own check, 'on core/water').
 EXPORT_BOX = [150, 100, 450, 400]
+# the stations (build.py --station <name>): each box over a stretch of its rock and the floor beside it
+STATION_BOX = {}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -135,7 +137,7 @@ async def run(a):
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}" + os.environ.get("VERIFY_QUERY", ""), timeout=LOAD_MS)   # VERIFY_QUERY="?diet=0" compares a switch
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
@@ -184,10 +186,11 @@ async def run(a):
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                box = STATION_BOX.get(os.path.basename(a.html), EXPORT_BOX)
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

@@ -23,6 +23,12 @@ const VIEWS={
  const tw=by('tower0');if(tw)VIEWS['A tower out of the jungle']=[tw.x+260,140,tw.z+200,tw.x,tw.top*.6,tw.z];
  const fig=NECANYONS.nearestTree&&NECANYONS.nearestTree(1,500,0);if(fig)VIEWS['A stack fig on a ledge']=[fig.x+(fig.x-fig.body.x)*.08+6,fig.y0+4,fig.z+(fig.z-fig.body.z)*.08+6,fig.x,fig.y0-6,fig.z];})();
 
+// views on the final rebuild's additions (2026-10-27): the High Cap's spring fall, a karst spring, the arches
+(function(){const W=typeof WORKS!=='undefined'?WORKS:null;
+ if(W&&W.fall){const F=W.fall,P=F.pool,d=F.dir;VIEWS['The High Cap’s spring fall']=[P.x+d[0]*150-d[1]*60,P.level+45,P.z+d[1]*150+d[0]*60,F.lip[0],(F.lip[2]+P.level)/2,F.lip[1]];
+  VIEWS['Where the fall’s stream meets the creek']=(function(){const C=W.chan.pts[W.chan.pts.length-1];return [C[0]-d[0]*25+12,C[2]+9,C[1]-d[1]*25+18,C[0],C[2],C[1]];})();}
+ if(W&&W.springs&&W.springs[0]){const S=W.springs[0];VIEWS['A karst spring under the Bench']=[S.x+S.dir[0]*22+6,S.level+7,S.z+S.dir[1]*22+6,S.x,S.level,S.z];}
+ ROCK.filter(B=>B.kind==='arch').forEach(B=>{const a=(B.opening?B.opening.ry:0)+Math.PI/2;VIEWS[B.name]=[B.x+Math.cos(a)*90,B.y0+25,B.z+Math.sin(a)*90,B.x,B.y0+(B.top-B.y0)*.45,B.z];});})();
 // ---------------------------------------------------------------- the inspector's words: a plant names its species, its
 // harvest (biomes/FRUIT.md) and, on a carnivore, its trap
 function describe(hit){const p=hit.point,o=hit.object;

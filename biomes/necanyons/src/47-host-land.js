@@ -6,19 +6,64 @@
 // the hyperjungle thinned by it), talus:{h:(x,z,fd)=>m, w} (the debris slope round a wall's foot and its width), groundN (the
 // floor mesh's cells a side), wallStep (m: the rock walls' segments)}. Without one, this page's own values.
 const LANDO=typeof LAND==='undefined'?{}:LAND;
+// the final rebuild's terrain and rock (2026-10-27): on this page, and on a world that asks (LAND.rebuild); a world reading the
+// fragment in place without it keeps its land and rock as they were (below: the talus, the water works, the rock's beds and wear)
+const NEWROCK=typeof LAND==='undefined'||!!LANDO.rebuild,RQ=new URLSearchParams(location.search);
 NECANYONS.lay({bodies:ROCK,floor:floorH,R:TERR.R,capY:LANDO.capY==null?330:LANDO.capY,cell:5,seed:7,
  footMax:LANDO.talus?LANDO.talus.w+10:null});   // a wide debris slope needs its foot distance measured that far out
 _mark('layout');
 const _tm={x:NaN,z:NaN,h:0};
 // the TALUS: the floor rises against a wall's foot, the rock's fall and sand banked up (the wall goes down into it)
 const TALW=LANDO.talus?LANDO.talus.w:55;
+const creekBed=z=>floorH(CREEK.x(z),z);   /* the creek's bed (its water: + CREEK.depth) */
+/* the default talus is core/terrain's (KRELIEF.talus, lifted from Korona: the same apron, 18 m high, 55 m out) where the page
+   rebuilds its land; the kit's own copy of it otherwise */
 const talus=LANDO.talus?(x,z)=>{const fd=NECANYONS.footD(x,z);return fd<TALW?LANDO.talus.h(x,z,fd):0;}:
+ NEWROCK&&typeof KRELIEF!=='undefined'&&KRELIEF.talus?KRELIEF.talus({footD:NECANYONS.footD,h:18,reach:55,curve:1.6,rough:.5,scale:.012,seed:44}):
  (x,z)=>{const fd=NECANYONS.footD(x,z);return fd<60?18*Math.pow(smooth(55,0,fd),1.6)*(.75+.5*fbm(x*.012,z*.012,44,2)):0;};
-const groundH=(x,z)=>floorH(x,z)+talus(x,z);
+const ground0=(x,z)=>floorH(x,z)+talus(x,z);
+/* THE WATER WORKS AT THE SEEPS (2026-10-27, the final rebuild; BACKPORT.md's row: karst springs at the seeps, tall falls where the
+   streams drop, a confluence where they meet; ?springs=0 without them). Where the High Cap's spring line comes out of its eastern face
+   nearest the creek, the seep runs as a TALL FALL down the wall (core/water drawFall with plungeR and footK, 89w) on to the talus, into
+   its plunge pool, and on as a stream to the creek, which it joins in a CONFLUENCE (core/water ext/55: one water over the mouth). At the
+   Bench's two wettest seeps on the floor's side the water wells up out of the talus as KARST SPRINGS (ext/54: a blue-green pool, the
+   boil at its vent, a short clear run). The ground is carved under them: bowls under the pools, the stream's channel to the creek,
+   only ever lower (the plants then keep off them: waterH answers them) */
+const WORKS=(function(){if(!NEWROCK||RQ.get('springs')==='0'||!NECANYONS.SEEPS)return null;
+ const out={fall:null,springs:[],chan:null,chans:[]};
+ const outFoot=(S,fd)=>{let x=S.x,z=S.z;for(let k=0;k<400;k++){x+=S.nx;z+=S.nz;if(!NECANYONS.rockAt(x,z)&&NECANYONS.footD(x,z)>=fd)break;}return [x,z];};
+ const rimMin=(x,z,r)=>{let m=1e9;for(let i=0;i<16;i++){const a=i/16*TAU;m=Math.min(m,ground0(x+Math.cos(a)*r,z+Math.sin(a)*r));}return m;};
+ // the fall: the High Cap's (body 1) seep, on its lower tier, nearest the creek
+ const hc=NECANYONS.SEEPS.filter(S=>S.body===1&&S.seep>.12).sort((a,b)=>creekD(a.x,a.z)-creekD(b.x,b.z))[0];
+ if(hc){const F=outFoot(hc,2),P=outFoot(hc,16),r=6.5,lvl=rimMin(P[0],P[1],r)-.15;
+  // the stream: from the pool's outlet straight to the creek's edge, never climbing (each point the lowest ground so far less .25)
+  const cz=P[1],cx=CREEK.x(cz),dx=cx-P[0],dz=cz-P[1],dl=Math.hypot(dx,dz),ux=dx/dl,uz=dz/dl,run=Math.max(10,dl-CREEK.w*.6),pts=[];let yc=lvl;
+  for(let k=0;k<=16;k++){const t=k/16,x=P[0]+ux*(r*.8+t*(run-r*.8)),z=P[1]+uz*(r*.8+t*(run-r*.8));yc=Math.min(yc,ground0(x,z)-.25,k===16?creekBed(z)+CREEK.depth:1e9);pts.push([x,z,yc]);}
+  out.fall={seep:hc,lip:[hc.x,hc.z,hc.y],dir:[hc.nx,hc.nz],foot:[F[0],F[1]],pool:{x:P[0],z:P[1],r,level:lvl},dir2:[ux,uz]};
+  out.chan={pts,w:2.2,depth:.7};out.chans.push(out.chan);}
+ // the springs: the Bench's (body 0) two wettest seeps whose foot is on the floor, 400 m apart
+ const bs=NECANYONS.SEEPS.filter(S=>S.body===0&&S.seep>.3).sort((a,b)=>b.seep-a.seep);
+ for(const S of bs){if(out.springs.length>=2)break;const P=outFoot(S,30);if(creekD(P[0],P[1])<60)continue;
+  if(out.springs.some(q=>Math.hypot(q.x-P[0],q.z-P[1])<400))continue;const r=5,lvl=rimMin(P[0],P[1],r)-.12,line=[];let yc=lvl;
+  /* its run: 40 m out from the wall, a channel a metre and a half wide, never climbing */
+  for(let k=0;k<=10;k++){const t=k/10,x=P[0]+S.nx*(r*.8+t*40),z=P[1]+S.nz*(r*.8+t*40);yc=Math.min(yc,ground0(x,z)-.2);line.push([x,z,yc]);}
+  out.springs.push({x:P[0],z:P[1],r,level:lvl,dir:[S.nx,S.nz],seep:S,line});out.chans.push({pts:line,w:1.4,depth:.45});}
+ return out;})();
+const segD=(x,z,a,b)=>{const ex=b[0]-a[0],ez=b[1]-a[1],l2=ex*ex+ez*ez||1,t=clamp(((x-a[0])*ex+(z-a[1])*ez)/l2,0,1);return [Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t),a[2]+(b[2]-a[2])*t];};
+/* the nearest channel of the works (the fall's stream, the springs' runs): its distance, its water's level there, its half width and depth */
+const chanAt=(x,z)=>{if(!WORKS)return null;let bd=1e9,by=0,bc=null;for(const C of WORKS.chans)for(let i=0;i<C.pts.length-1;i++){const r=segD(x,z,C.pts[i],C.pts[i+1]);if(r[0]-C.w<bd){bd=r[0]-C.w;by=r[1];bc=C;}}
+ return bc?{d:bd+bc.w,y:by,w:bc.w,depth:bc.depth}:null;};
+const groundH=!WORKS?ground0:(x,z)=>{let h=ground0(x,z);
+ const bowl=(P,deep)=>{const d=Math.hypot(x-P.x,z-P.z);if(d<P.r*1.7)h=Math.min(h,mix(P.level-deep,h,smooth(P.r*.8,P.r*1.7,d)));};
+ if(WORKS.fall)bowl(WORKS.fall.pool,1.6);WORKS.springs.forEach(P=>bowl(P,1.2));
+ const c=chanAt(x,z);if(c&&c.d<c.w*2.6)h=Math.min(h,mix(c.y-c.depth,h,smooth(c.w*.6,c.w*2.6,c.d)));
+ return h;};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const t=NECANYONS.top(x,z),h=t>-1e8?t:groundH(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the water: the creek (its bed + depth) and the rain pools on the caps
-const creekBed=z=>floorH(CREEK.x(z),z);
-function waterH(x,z){if(creekD(x,z)<CREEK.w*1.3)return creekBed(z)+CREEK.depth;const p=NECANYONS.potholeAt(x,z);return p?p.y:-1e9;}
+function waterH(x,z){if(creekD(x,z)<CREEK.w*1.3)return creekBed(z)+CREEK.depth;const p=NECANYONS.potholeAt(x,z);if(p)return p.y;
+ if(WORKS){const P=WORKS.fall&&WORKS.fall.pool;if(P&&Math.hypot(x-P.x,z-P.z)<P.r*1.2)return P.level;for(const S of WORKS.springs)if(Math.hypot(x-S.x,z-S.z)<S.r*1.2)return S.level;
+  const c=chanAt(x,z);if(c&&c.d<c.w*1.2)return c.y;}
+ return -1e9;}
 
 // ---------------------------------------------------------------- the fields (biomes/WORLD.md): wet, flow, rock, upland, slope
 // read off the kit's zones (46); the kit reads its own zones directly (NECANYONS.at)
@@ -96,17 +141,67 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
   w[3*i]=smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2));w[3*i+1]=smooth(CREEK.w+16,CREEK.w+2,cd);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
- g.setAttribute('aW',new THREE.BufferAttribute(w,3));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);})();
+ g.setAttribute('aW',new THREE.BufferAttribute(w,3));
+ /* FINE PATCHES UNDER THE WATER WORKS (2026-10-27): the floor's cells are ~16 m, wider than a spring's bowl or the stream's channel, so
+    the cells over each work's box are cut out of the floor and the box drawn again at ~1.5 m from groundH, its edge rows on the coarse
+    floor's own edges (heights interpolated between its vertices: no crack). The coarse mesh is the same without works */
+ const C=S/N,boxes=[];
+ if(WORKS){const pad=(x0,z0,x1,z1)=>{const s=v=>Math.max(0,Math.min(N,v));boxes.push([s(Math.floor((x0+S/2)/C)),s(Math.floor((z0+S/2)/C)),s(Math.ceil((x1+S/2)/C)),s(Math.ceil((z1+S/2)/C))]);};
+  const P=WORKS.fall&&WORKS.fall.pool;if(P)pad(P.x-P.r*2.2,P.z-P.r*2.2,P.x+P.r*2.2,P.z+P.r*2.2);WORKS.springs.forEach(S2=>pad(S2.x-S2.r*2.2,S2.z-S2.r*2.2,S2.x+S2.r*2.2,S2.z+S2.r*2.2));
+  for(const CH of WORKS.chans){const c=CH.pts;for(let i=0;i<c.length-1;i++){const a=c[i],b=c[i+1],r=CH.w*3;pad(Math.min(a[0],b[0])-r,Math.min(a[1],b[1])-r,Math.max(a[0],b[0])+r,Math.max(a[1],b[1])+r);}}
+  /* the stream's edge out into the creek too: the creek's own channel there */
+  const inBox=(ix,iy)=>boxes.some(B=>ix>=B[0]&&ix<B[2]&&iy>=B[1]&&iy<B[3]);
+  if(boxes.length){const I=g.index.array,keep=[];for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){if(inBox(ix,iy))continue;const o=6*(iy*N+ix);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}}
+ g.computeVertexNormals();
+ const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);
+ if(boxes.length){const cov=new Set();boxes.forEach(B=>{for(let iy=B[1];iy<B[3];iy++)for(let ix=B[0];ix<B[2];ix++)cov.add(iy*N+ix);});
+  const vH=(ix,iy)=>p.getY(iy*(N+1)+ix),K=11,pos=[],ww=[],idx=[];   /* K sub-cells a coarse cell: ~1.45 m */
+  cov.forEach(key=>{const iy=key/N|0,ix=key%N,x0=-S/2+ix*C,z0=-S/2+iy*C,o=pos.length/3;
+   const edgeOf=(i,j)=>{const u=i/K,v=j/K;   /* a vertex on the cell's edge shared with a coarse cell takes the coarse edge's line */
+    const nb=(dx,dy)=>!cov.has((iy+dy)*N+(ix+dx))||ix+dx<0||iy+dy<0||ix+dx>=N||iy+dy>=N;
+    if(j===0&&nb(0,-1))return vH(ix,iy)*(1-u)+vH(ix+1,iy)*u;if(j===K&&nb(0,1))return vH(ix,iy+1)*(1-u)+vH(ix+1,iy+1)*u;
+    if(i===0&&nb(-1,0))return vH(ix,iy)*(1-v)+vH(ix,iy+1)*v;if(i===K&&nb(1,0))return vH(ix+1,iy)*(1-v)+vH(ix+1,iy+1)*v;return null;};
+   for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){const x=x0+i/K*C,z=z0+j/K*C,e=edgeOf(i,j);pos.push(x,e==null?groundH(x,z):e,z);
+    const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));}
+   for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));
+  pg.setIndex(idx);pg.computeVertexNormals();const pm=new THREE.Mesh(pg,MAT_GROUND);pm.userData.probeSkip=true;pm.userData.inspectLabel='The canyon floor (by the springs and the stream)';pm.userData.host=true;scene.add(pm);}})();
 
 // ---------------------------------------------------------------- the rock (KSTACKS meshes): three meshes, by material
 // walls of the mesas, buttes and towers (desert varnish), walls of the stacks (cross-bedded), and every top (slickrock).
 // Vertex colours: the beds' banding (brick, salmon, buff) and the notch's shade; a bench's top reddened by its soil.
 const ROCK_GEOS=[];
-(function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top'),Lr=layer('rock.red'),Lb=layer('rock.bed'),Lc=layer('rock.cap');
+/* THE ROCK, REBUILT (2026-10-27, the final rebuild; BACKPORT.md's row: the strata showcase). On this page (a world reading the
+   fragment in place sets LAND, and keeps the rock as it was unless it asks: LAND.rebuild) the drawn rock takes:
+   - THE CANYON'S BEDS (core/terrain KSTRATA, the `canyon` recipe: thick cross-bedded red sands, thin shale and mudstone partings,
+     bleached beds and the odd green reduction band, near level with a slight dip to the north-east), one stack for the map, so a
+     bed runs from mesa to tower to fin; drawn on every wall as a tint about the sand's colour, under the library's grain. ?strata=0
+   - KSTACKS.contour (37b) on the stacks and towers: the spires' and fins' profiles thinning in and out, their vertical joints and
+     a split spire's cleft; on the mesas and buttes only the joints, so their rims (where the hanging gardens and the figs are
+     placed from the records) stay within a few metres of the drawn rock. ?contour=0
+   - KSTACKS.weather on every body: two grains of KRAND noise, the feet kept on the ground. ?weather=0
+   The records (ROCK) keep the unworn bodies: terrainH, the zones and the plants read them as before */
+const ROCK_STRATA=NEWROCK&&RQ.get('strata')!=='0'&&typeof KSTRATA!=='undefined'&&BIO.strata?
+ BIO.strata({recipe:'canyon',seed:4751,range:[-80,600],dip:[.6,-.8,.008],warp:[6,1.8],res:.25,private:true}):null;
+const SAND_LIN=(function(){const c=new THREE.Color(0xb5643a).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
+function rockStrata(m,key){if(!ROCK_STRATA)return m;const prev=m.onBeforeCompile;
+ m.onBeforeCompile=(sh,r)=>{if(prev)prev.call(m,sh,r);ROCK_STRATA.inject(sh);
+  sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+SAND_LIN+',vec3(0.45),vec3(1.7)),0.55);}');};
+ m.customProgramCacheKey=()=>key;return m;}
+const ROCK_CONTOUR=NEWROCK&&RQ.get('contour')!=='0'&&typeof KSTACKS.contour==='function',ROCK_WEATHER=NEWROCK&&RQ.get('weather')!=='0';
+function wearRock(B,m){
+ if(B.kind==='arch'&&KSTACKS.archRound&&ROCK_CONTOUR)KSTACKS.archRound(B,m);   /* the opening bent from its box to an ellipse (37b) */
+ if(ROCK_CONTOUR&&B.kind!=='arch'){
+  if(B.kind==='spire')KSTACKS.contour(B,m,{profile:.14,crown:.22,wander:1.2,joints:[3,6],jointW:[.5,1.4],jointD:[1,3]});
+  else if(B.kind==='fin')KSTACKS.contour(B,m,{profile:.1,crown:.12,wander:.8,joints:[4,7],jointW:[.5,1.2],jointD:[.8,2.2],cleft:false});
+  else if(/^tower/.test(B.id))KSTACKS.contour(B,m,{profile:.07,flare:.08,crown:0,wander:1.5,joints:[6,9],jointW:[1,2.5],jointD:[2.5,6],cleft:false});
+  else if(B.kind==='mesa'||B.kind==='butte')KSTACKS.contour(B,m,{profile:0,flare:0,crown:0,wander:0,joints:[10,16],jointW:[1.2,3],jointD:[2,5],cleft:false});}
+ if(ROCK_WEATHER)KSTACKS.weather(B,m,{ground:groundH,amp:B.kind==='balanced'?.8:1.6,pit:.5});
+ return m;}
+(function(){const SMALL={spire:1,fin:1,balanced:1,arch:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top'),Lr=layer('rock.red'),Lb=layer('rock.bed'),Lc=layer('rock.cap');
  const BAND=[0xa8503a,0xc98468,0xd9b091,0xb4603e].map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(0xc9906e),SOIL=new THREE.Color(0x9c5a40),c=new THREE.Color();
  const acc={wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]},wallR:{pos:[],uv:[],col:[],idx:[]},stackB:{pos:[],uv:[],col:[],idx:[]},topC:{pos:[],uv:[],col:[],idx:[]}};
- ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=KSTACKS.mesh(B,{step:small?2.5:(LANDO.wallStep||6)}),nv=m.part.length;
+ ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=wearRock(B,KSTACKS.mesh(B,{step:small?2.5:(LANDO.wallStep||6)})),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),stack:null,top:new Int32Array(nv).fill(-1)};
   // a third of the bodies take the library's other red sandstones (2026-10-19): the bedded red (rock.sandstone.bedded.red) for a
   // mesa's walls (its courses read as great beds at 20 m), the layered red (rock.sandstone.red) for a spire's or a stack's, and another third the cracked
@@ -127,7 +222,8 @@ const ROCK_GEOS=[];
  const mk=(A,L,label)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.uv,2));
   const cl=new THREE.Float32BufferAttribute(A.col,3);for(let i=0;i<cl.count;i++){c.setRGB(cl.getX(i),cl.getY(i),cl.getZ(i)).convertSRGBToLinear();cl.setXYZ(i,c.r,c.g,c.b);}
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
-  const mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+  let mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+  if(A!==acc.top&&A!==acc.topC)mat=rockStrata(mat,'necanyons-rock-'+label.length);   /* the walls take the beds; the tops are slickrock */
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
  // one anchor per body at its middle (an invisible instance): the rock is three merged meshes, so the probe's samples
  // (a mesh's box centre) would leave each body's registered volume to whatever grows on it
@@ -147,6 +243,25 @@ const WATER_RECS=typeof WATER==='undefined'?null:(function(){
   if(P[0][2]<P[P.length-1][2])P.reverse();creek=WATER.flow({name:CREEK.name,pts:P,width:CREEK.w*2,speed:.6});}
  const pools=NECANYONS.POTHOLES.map((p,i)=>{const poly=[];for(let k=0;k<14;k++){const a=k/14*TAU;poly.push([p.x+Math.cos(a)*p.r,p.z+Math.sin(a)*p.r]);}
   return WATER.still({name:'A rain pool on the slickrock ('+i+')',level:p.y,poly});});
- return {creek,pools};})();
+ /* the water works (WORKS above): the fall's record (its lip on the seep, 'face' the drawn wall's line below it), its plunge pool (a
+    still), its stream (a flow, joined to the creek by WATER.join), and each karst spring (ext/54: a pool and its run) */
+ /* made when 89w draws them: core/water's ext fragments (54, 55) load after this one */
+ const mkWorks=()=>{let works=null;
+ if(WORKS&&WATER.karstSpring){works={springs:[]};const Fw=WORKS.fall;
+  if(Fw){const P=Fw.pool,drop=Fw.lip[2]-P.level;
+   /* the lip 3 m wide across the seep, 1.5 m out from the record's face (the drawn wall is worn up to ~2 m about it); the curtain
+      follows the ground from the wall's foot (face: the talus) and lands in its pool (fit: the arc's speed set by the run) */
+   const lx=Fw.lip[0]+Fw.dir[0]*1.5,lz=Fw.lip[1]+Fw.dir[1]*1.5,px=-Fw.dir[1],pz=Fw.dir[0];
+   works.fall=WATER.fall({name:"The High Cap's spring fall (a seep line under its cap rock)",lip:[[lx-px*1.5,lz-pz*1.5,Fw.lip[2]],[lx+px*1.5,lz+pz*1.5,Fw.lip[2]]],
+    dir:Fw.dir,speed:.9,drop,foot:[P.x,P.z,P.level],fit:true,face:(x,z)=>NECANYONS.rockAt(x,z)?Fw.lip[2]:groundH(x,z)});
+   const poly=[];for(let k=0;k<18;k++){const a=k/18*TAU;poly.push([P.x+Math.cos(a)*P.r,P.z+Math.sin(a)*P.r]);}
+   works.pool=WATER.still({name:"The fall's plunge pool",level:P.level,poly});
+   let pts=WORKS.chan.pts.map(q=>[q[0],q[1],q[2]]);
+   if(creek&&WATER.join){const main=creek.pts.map(q=>[q[0]!=null?q[0]:q.x,q[1]!=null?q[1]:q.z,q[2]!=null?q[2]:q.y]);const J=WATER.join(pts,main,{w:CREEK.w,tuck:1});if(J&&J.pts&&J.pts.length>1)pts=J.pts;}
+   works.stream=WATER.flow({name:"The fall's stream (to the creek)",pts,width:WORKS.chan.w*2,speed:.8});}
+  WORKS.springs.forEach((S,i)=>{const line=S.line.map(q=>[q[0],q[1],q[2]+.05]);
+   works.springs.push(WATER.karstSpring({name:"A karst spring under the Bench's seep line ("+(i+1)+")",at:[S.x,S.z,S.level],r:S.r,dir:S.dir,line,width:2.6,speed:.6,seed:4790+i}));});}
+ return works;};
+ return {creek,pools,works:null,mkWorks};})();
 _mark('meshes');
 
