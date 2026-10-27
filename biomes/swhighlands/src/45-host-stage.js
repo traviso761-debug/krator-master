@@ -130,7 +130,7 @@ const COURSES=(function(){const L=[];
  // A TRIBUTARY MEETS ITS RIVER AS ONE WATER (core/water WATER.join; the owner, 2026-10-26: no channel across the other's water, no
  // bank between them, no tip): its line cut where it comes within .3 of the river's half width of its centreline, its levels raised
  // to the river's there; 89w-host-water.js draws it after the river
- L.forEach(C=>{if(!C.join)return;const M=L[C.join.ci],J=WATER.join(C.pts.map((p,i)=>[p[0],p[1],C.y[i]]),M.pts.map((p,i)=>[p[0],p[1],M.y[i]]),{w:i=>M.halfW(i),tuck:1,tw:C.w[1]+1});   /* tuck 1: it ends at the river's water edge, its foam border over the river's bank foam */
+ L.forEach(C=>{if(!C.join)return;const M=L[C.join.ci],J=WATER.join(C.pts.map((p,i)=>[p[0],p[1],C.y[i]]),M.pts.map((p,i)=>[p[0],p[1],M.y[i]]),{w:i=>M.halfW(i),tuck:1,tw:C.w[1],poolK:1.15});   /* the pool just rounds the corners (larger, it bulged the little stream's banks) */   /* tuck 1: it ends at the river's water edge, its foam border over the river's bank foam */
   C.joined=J;C.pts=J.pts.map(p=>[p[0],p[1]]);C.y=J.pts.map(p=>p[2]);C.slope=C.y.map((y,i)=>i+1<C.y.length?(y-C.y[i+1])/(Math.hypot(C.pts[i+1][0]-C.pts[i][0],C.pts[i+1][1]-C.pts[i][1])||1):0);
   {const sl=C.slope.slice();C.slope=sl.map((v,i)=>{let t=0,n=0;for(let k=-3;k<=3;k++){const j=i+k;if(j>=0&&j<sl.length){t+=sl[j];n++;}}return t/n;});}   /* eased: no step in the ripples' speed */
   C.S=[0];for(let i=1;i<C.pts.length;i++)C.S.push(C.S[i-1]+Math.hypot(C.pts[i][0]-C.pts[i-1][0],C.pts[i][1]-C.pts[i-1][1]));C.LEN=C.S[C.S.length-1];});
