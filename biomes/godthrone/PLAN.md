@@ -290,8 +290,9 @@ field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view o
 shared: the summit's terrain moved into `src/45b-host-model.js` so a station swaps only its ground). Takes, beyond station 1's
 list: `KRELIEF.meander`, `KRELIEF.rille` (the sinuous rille from the main old vent's crater, its walls on the flows),
 `KRELIEF.tube` (the tube's pit chain: 23 collapse pits and 9 skylights on the map), `KRELIEF.volcano` (five old cones),
-`KRELIEF.apply`. Not yet: **the long lobate flows with levees and central channels** wait for core's lava-flow module (asked
-for a build-time "frozen flows" bake; the plain carries low lobes until then); no hazards of its own (the ambient bridge only).
+`KRELIEF.apply`. The flows: **core/terrain KLAVA.bake** (the lava-flow module, merged from `claude/klava`): four eruptions frozen at build time
+(`stations/flank/bake-flows.js`, committed as `flows.json`, re-baked when its inputs change), levees and central channels
+sculpted from their edges. No hazards of its own (the ambient bridge only: 0.39 atm, about -44 C).
 
 ## 10. Open questions
 

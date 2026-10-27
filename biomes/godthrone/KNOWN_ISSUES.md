@@ -26,6 +26,11 @@ Open:
   as the empty pit was near its walls.
 - [ ] `build.py` keys the strata's three.js half `35s-core-strata-shade.js` so it loads after the data half (the core
   README's adoption line is fixed to say so).
-- [ ] **Station 2's lobate flows** (levees, central channels, lobate fronts) wait for core's lava-flow module's frozen-flows bake
-  (asked of the core-lava-flow session, 2026-10-27); the plain carries low lobes until then.
+- [x] **Station 2's lobate flows**: four eruptions frozen by core's lava-flow module (KLAVA.bake, 40 m cells), baked once at
+  build time by `stations/flank/bake-flows.js` (node, ~45 s; re-run only when its inputs' hash changes) into the committed
+  `stations/flank/flows.json`, inlined as FLOWS_DATA; levees and central channels sculpted from each flow's edges (KLAVA freezes a
+  whole column at once, so they do not form in it).
+- [ ] **The flank's flows are thin** (1-6 m, 31% of the map): titanium basalt is very fluid (PLAN.md section 3: "thin flows,
+  long ones, smooth plains"), so they read by their surface (clinker on the levees and older flows, the youngest glassy) and
+  in a low sun more than by relief. Thicker flows want KLAVA's yield strength raised or larger eruptions (a look decision).
 - [ ] **Station 2 has no lithic texture of its own**: it shares station 1's (the black beads, the basalt's grain).

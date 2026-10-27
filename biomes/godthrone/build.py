@@ -65,7 +65,7 @@ FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BR
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in os.listdir(STN_DIR):
-        if f.endswith('.js') or f.endswith('.html'): PATH[f] = os.path.join(STN_DIR, f)
+        if (f.endswith('.js') or f.endswith('.html')) and re.match(r'\d', f): PATH[f] = os.path.join(STN_DIR, f)   # numbered fragments only (a station's bake script is not one)
 
 # core/terrain (core/README.md, "terrain"): the field (KFIELD: the ground baked once), the strata (KSTRATA: the tibasalt
 # recipe on every rock face, the ledge pass), the landforms (KRELIEF: talus at the scarps' feet), the ground shader's layers
@@ -73,6 +73,8 @@ if STATION:
 CORE_TERRAIN = ['30-core-field.js', '35-core-strata.js', '38-core-relief.js', '43-core-ground.js', '44-core-farfield.js', '45-core-horizon.js']
 for f in CORE_TERRAIN:
     PATH.setdefault(f, J('core', 'terrain', f))
+# KLAVA (core/terrain/46-core-lava.js: the flank's frozen flows), keyed to load before the ground model that bakes with it (45b)
+PATH.setdefault('45a-core-lava.js', J('core', 'terrain', '46-core-lava.js'))
 for f in ('44-core-farfield-draw.js', '45-core-horizon-shade.js'):
     PATH.setdefault(f, J('core', 'terrain', 'host', f))
 # the strata's three.js half reads KSTRATA when it loads (it does not merge into a later data half, as 44's and 45's do):
@@ -105,6 +107,24 @@ for f in ('23-mat-record.js', '25-matlib-host.js'):
 sys.path.insert(0, J('tools', 'textures'))
 import matlib_pack
 VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'godthrone'), khost.EDITS_JS: khost.edits_js(HERE, 'godthrone')}
+# A STATION'S BAKES (station.json "bake": {"script", "out", "inputs": [paths from the repo root], "block": [file, begin, end]}): a
+# deterministic node bake (the flank's frozen flows: KLAVA.bake) whose result is committed beside the station and inlined as a
+# generated fragment; re-run only when the hash of its inputs changes (the marked block of the model and the core files it runs)
+if STATION and STN.get('bake'):
+    import hashlib
+    bk = STN['bake']; outp = os.path.join(STN_DIR, bk['out']); hh = hashlib.sha256()
+    for f in bk.get('inputs', []): hh.update(open(J(*f.split('/')), 'rb').read())
+    if bk.get('block'):
+        txt = open(os.path.join(STN_DIR, bk['block'][0]), encoding='utf-8').read()
+        hh.update(txt[txt.index(bk['block'][1]):txt.index(bk['block'][2])].encode('utf-8'))
+    hx = hh.hexdigest()[:16]
+    cur = json.load(open(outp, encoding='utf-8')).get('hash') if os.path.isfile(outp) else None
+    if cur != hx:
+        node = find_node()
+        if not node: sys.exit('build.py: %s is stale (or missing) and there is no node to bake it' % bk['out'])
+        print('baking %s (its inputs changed) ...' % bk['out'])
+        if subprocess.call([node, os.path.join(STN_DIR, bk['script']), outp, hx]) != 0: sys.exit('build.py: the bake failed')
+    VIRTUAL[bk.get('slot', '45a2-host-bake-data.js')] = '/* GENERATED from %s (do not edit) */\nconst %s=%s;\n' % (bk['out'], bk['name'], open(outp, encoding='utf-8').read().strip())
 for f in VIRTUAL: PATH[f] = None
 # core/atmos: its core, presets, the glow layer (the crack's and the throat's glow: ATMOS.buildGlow), particles (the fume), the weather (ash) and its selector, export, the sky's light; bound by
 # 89a-host-atmos.js (ATMOS.bindHost, ATMOS.bindWeather); the shared sky with thin air (89-host-sky.js); the lava surface

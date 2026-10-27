@@ -1,5 +1,23 @@
 {
  "name": "The high flank (station 2): the black lava plain at ~11 km, a sinuous rille, a pit-crater chain over a tube, the old vents' dark rings, frost in the shadows",
  "out": "godthrone-flank.html",
- "water": []
+ "water": [],
+ "bake": {
+  "script": "bake-flows.js",
+  "out": "flows.json",
+  "name": "FLOWS_DATA",
+  "slot": "45a2-host-flows-data.js",
+  "inputs": [
+   "core/rand/08-core-rand.js",
+   "core/terrain/30-core-field.js",
+   "core/terrain/38-core-relief.js",
+   "core/terrain/46-core-lava.js",
+   "biomes/godthrone/stations/flank/bake-flows.js"
+  ],
+  "block": [
+   "45b-host-model.js",
+   "/*FLOWS-INPUT-BEGIN",
+   "/*FLOWS-INPUT-END*/"
+  ]
+ }
 }
