@@ -129,7 +129,15 @@ BIO.impostor=function(key,build,opt){opt=opt||{};
  return rec;};
 // the item a kit puts in place of a far tree (every species of a set: one item)
 BIO.impostorItem=function(name,imp,opt){opt=opt||{};const set=imp&&(imp.set||imp);if(!set||!set.mat){BIO.err('BIO.impostorItem: '+name+': no impostor');return;}
- BIO.def(name,new (T().PlaneGeometry)(2,2),set.mat,{attrs:['aImp'],label:opt.label||imp.label,cls:opt.cls||'flora',kind:opt.kind||null,tags:opt.tags||null});};
+ BIO.def(name,new (T().PlaneGeometry)(2,2),set.mat,{attrs:['aImp'],label:opt.label||imp.label,cls:opt.cls||'flora',kind:opt.kind||null,tags:opt.tags||null});
+ if(opt.reach!=null&&BIO.defs[name])BIO.defs[name].reach=opt.reach;};   /* H6: the quad reaches the crown, its instance sits at the foot */
+// H6 (tall trees): how many screen pixels one texel of a view covers, a tree of bake radius rad at dist metres (o.fov degrees,
+// default 50; o.height the viewport's pixels, default 1080). A view cell spans 2 rad, so a taller tree is softer at one cell.
+IMP.texel=function(rad,cell,dist,o){o=o||{};const fov=o.fov==null?50:o.fov,H=o.height==null?1080:o.height,d=Math.max(1e-3,dist);
+ const pxM=H/(2*d*Math.tan(fov*Math.PI/360));return 2*rad/Math.max(1,cell)*pxM;};
+// the smallest power-of-two cell (16 up to o.max, default 256) whose texel covers at most o.ratio pixels (default 2) at dist
+IMP.cellFor=function(rad,dist,o){o=o||{};const r=o.ratio==null?2:o.ratio,max=o.max==null?256:o.max;let c=16;
+ while(c<max&&IMP.texel(rad,c,dist,o)>r)c*=2;return Math.min(c,max);};
 BIO.impostorPut=function(name,imp,pos,yaw,scale,col){BIO.put(name,pos,BIO.fn.qEuler(0,yaw||0,0),scale==null?1:scale,col==null?null:col,{aImp:[imp.slot,0,0,0]});};
 
 // one kit's stores as meshes in a scratch group (bake's work, for the capture: nothing is charged, tagged or kept)

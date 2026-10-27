@@ -59,6 +59,33 @@ lights (read every frame) and fogged by the scene's fog; 2 triangles a tree. The
 builders after `BIO.bake` (so its random numbers come after every placement), renders it, and leaves no instance, charge,
 registration (the kit mutes its own) or scene object behind.
 
+## Tall trees (H6: 480 m crowns; `biomes/hyperjungle/PLAN-LANDS.md` section 11)
+
+The savage land's crowns reach 480 m, where the hyperjungle kit's ring was sized for 305 m (the mahogany's top). What was
+checked first (2026-10-26), and what each part needs:
+
+| Part | What it does now | A 480 m crown | Change |
+|---|---|---|---|
+| **LOD radii** (`BIO.radii`, `BIO.LOD`, `BIO.range`) | the switch distance is from the camera to a chunk's box. For a bucket (bark) the box is its own triangles' (each one's first vertex); for an **instanced** item (leaf clumps, cards, impostor quads) it is the box of the instances' **origins**, the feet. The frustum test uses a sphere round that box padded 60 m | with the page's 1200 m chunk the sphere (radius about 935 m) still covers a 480 m crown. A pass on smaller chunks (`BIO.chunk`, the hero sub-chunks of 200 to 400 m) gets a sphere of 250 to 500 m: looking up at a crown whose feet are out of the frame, its chunk is culled. The same is already true at 305 m on the smallest chunks | **`BIO.LOD.reach`** and an item's own **`reach`** (below), opt-in |
+| **The far ring** (`HYPERJUNGLE.buildTrees(R, heroR)`: heroes to 1500 m, blob impostors to 3000 m, saplings to heroR+400; camera far 12 km; `FogExp2` .0003) | horizontal distances | unchanged: no distance in the ring depends on height. The kit's 165 m spacing and the blobs' sizes are the kit's (J2, `biomes/hyperjungle/src`) | none in core |
+| **Octahedral impostors** (`34-core-impostor.js`) | the bake fits an orthographic camera to the tree's farthest vertex (`rad`), so any height bakes; the quad is sized by `rad` and the put's scale | the view cell covers `2 rad`: about 430 m for a 305 m tree, about 620 m for a 480 m one. At the same cell the tall tree is 1.45 times softer, or its band must start 1.45 times farther for the same sharpness. A 64 px set cell is about 10 m a texel; at 700 m one screen pixel (1080 px, 50 degrees) is 0.6 m | **`BIO.IMP.texel(rad, cell, dist, o)`** and **`BIO.IMP.cellFor(rad, dist, o)`** to size the cell (or the band's start) for a crown; `BIO.impostorItem(..., {reach})` |
+| **Shadow camera** | no biome host draws shadow maps (the hyperjungle's ground is Lambert, "no shadow maps here"; `core/host` sets none; only the atmos demo and the character labs cast) | nothing to clip | none. A host that turns sun shadows on later fits its orthographic box to the tallest crown plus `reach` |
+| **Probe and verify budgets** (`core/host/95-host-probe.js`) | `regOccupancy` tests each volume's own cylinder (`y-2` to `y+h+5`) | scales with the volume's `h` | none in core. The kit's triangle budget (taller boles, more rings and boughs) and its preset-view check (`HCHK.views`, horizontal rings only: a camera below 480 m can stand inside a crown) are the kit's, set at J2 |
+| **core/lod** (`09-lod.js`) | chunk spheres from the real vertices, an instance's from its base shape times its scale | scales | none (the biome kits do not take it) |
+
+**`reach`** (`20-core-kit.js`, bake): metres an instanced item's drawing reaches above its instances' origins. `BIO.LOD.reach`
+sets it for every instanced item of a page; an item's own (`BIO.defs[name].reach`, or `BIO.impostorItem(name, imp, {reach})`)
+wins. It raises the top of the chunk's box (the LOD distance and the cull sphere both use it). Unset (the default), every
+chunk is exactly as before. A kit with 480 m trees sets its crown items' reach to their tallest top (about 480 times the
+put's scale), not the page's, so floor items keep their tight boxes.
+
+**Sizing an impostor cell.** `BIO.IMP.texel(rad, cell, dist, {fov, height})` is how many screen pixels one texel of a view
+covers at `dist` (fov in degrees, default 50; height the viewport's pixels, default 1080): above 1 the impostor is softer
+than the screen. `BIO.IMP.cellFor(rad, dist, {fov, height, ratio, max})` is the smallest power-of-two cell whose texel
+covers at most `ratio` pixels (default 2) at `dist`, capped at `max` (default 256: a set of nine species at 8 x 8 views and
+256 px is a 6144 px atlas, over most GPUs' limit, so a set of tall species takes fewer slots or a smaller grid). Both are
+plain arithmetic (`node core/biome/test-tall.js`).
+
 ## Welded item geometry (`BIO.INDEX_ITEMS`, opt-in)
 
 `BIO.def` un-indexes every item's geometry (triangle soup). With `BIO.INDEX_ITEMS = true` (set before the kits define their

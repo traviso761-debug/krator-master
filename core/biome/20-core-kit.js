@@ -226,6 +226,9 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 //   BIO.LOD.fade    a fraction (say .15): every chunk mesh dithers out over the last `fade` of its range, and a stand-in
 //                   (minRange) dithers in over the same band, so a chunk cross-fades instead of popping. Applied at bake to
 //                   the chunk meshes' materials (BIO.lodFade below) and to every baked mesh sharing them.
+//   BIO.LOD.reach   (H6, 2026-10-26; unset: as before) metres an instanced item's drawing reaches above its instances'
+//                   origins (a 480 m crown keyed at its foot): it raises the top of the chunk's box, so the LOD distance
+//                   and the cull sphere see the crown. An item's own BIO.defs[name].reach (BIO.impostorItem's opt.reach) wins.
 BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1,merge:false,minTris:0,fade:0,cull:false});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.lodMeshes=[];
 BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.chunk==null?BIO.LOD.chunk:BIO.chunk;
  return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0)+(BIO.chunk==null?'':'|'+C);};
@@ -264,6 +267,8 @@ function _lodEntry(mesh,key,y0,y1,g){const T=BIO.host.THREE;let e;
  if(e.ranges){mesh.userData.lod.ranges=e.ranges.map((r,i)=>[r,e.ends[i]-(i?e.ends[i-1]:0)]);if(C!==BIO.LOD.chunk)mesh.userData.lod.size=C;
   if(e.ranges.length>1)_lodPrefix(mesh);}
  return e;}
+// an instanced item's reach above its origins (BIO.LOD.reach; the item's own wins; unset: 0, the box as before)
+function _lodReach(def){const r=def.reach!=null?def.reach:BIO.LOD.reach;return r==null?0:+r||0;}
 // a mesh holding several ranges draws a prefix: an InstancedMesh its first _lodN instances while it renders (its count stays
 // whole for everything that reads it: the export, core/tags, the probe), a bucket its draw range
 function _lodPrefix(mesh){mesh.userData._lodN=null;if(!mesh.isInstancedMesh)return;
@@ -403,7 +408,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    if(def.set){   // core/tags: the mesh names its item set, and which of the set's instances it draws (idx null: in order from base)
     const ident=G.size===1&&idx.every((v,j)=>v===j);let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
     im.userData.krator=def.set.id;im.krator={set:def.set.id,idx:sx,base};def.parts.push({im,idx:sx,base,n});}
-   if(key){const e=_lodEntry(im,key,y0,y1,S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));if(e&&BIO.LOD.cull)e.loose=idx.every(i=>!it.o[i]);}   /* loose: no tree owns any of its instances (BIO.LOD.cull) */
+   if(key){const e=_lodEntry(im,key,y0,y1+_lodReach(def),S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));if(e&&BIO.LOD.cull)e.loose=idx.every(i=>!it.o[i]);}   /* loose: no tree owns any of its instances (BIO.LOD.cull) */
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
   def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
