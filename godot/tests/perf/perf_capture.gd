@@ -33,6 +33,14 @@ const POSES := [
 # A case's own poses, after POSES: the page's preset views in world coordinates ("abs"), so the table compares with the three.js
 # page's own camera (its verify.py views). nhighlands' wide tile (2.4 km about the stream view): the final rebuild's spike.
 const CASE_POSES := {
+	# the Rift jungle (station 2, biomes/rift/stations/jungle; 2.4 km about the falls and the river mouth: the graphic-load measurement, 2026-10-27)
+	"world-rift-jungle": [
+		{"name": "page: The upper fall", "eye": [-588.7, 150.2, -926.3], "at": [-462.1, 178.9, -816.6], "abs": true},
+		{"name": "page: The river mouth", "eye": [-1432.2, 24.0, -1583.2], "at": [-979.3, 4.3, -1420.1], "abs": true},
+		{"name": "page: Over the scarp", "eye": [-215.4, 448.8, -738.0], "at": [-1918.7, -7.4, -2296.0], "abs": true},
+		{"name": "page: The algal shore", "eye": [-459.1, 4.8, -1731.9], "at": [-1692.8, -0.6, -1268.6], "abs": true},
+		{"name": "page: The river on the plain", "eye": [117.1, 286.4, 56.0], "at": [457.5, 306.9, 631.9], "abs": true},
+	],
 	"world-nhighlands-wide": [
 		{"name": "page: The stream", "eye": [-1701.49, 214.33, -1692.73], "at": [-1622.84, 242.23, -1601.56], "abs": true},
 		{"name": "page: The tower", "eye": [-1229.3, 443.8, -1111.0], "at": [-1141.1, 460.8, -1192.4], "abs": true},

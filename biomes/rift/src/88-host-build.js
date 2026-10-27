@@ -12,7 +12,7 @@ const RIFT_IMPGAIN=3.6;   /* nhighlands' gain to start; measured for this page i
     the rest) */
  const Q=new URLSearchParams(location.search);
  if(Q.get('diet')!=='0'){RIFT.LOD.tree=800;RIFT.LOD.farFloor=1600;}else RIFT.IMPOSTORS=false;
- if(STATION_PAGE.thin)RIFT.thin=STATION_PAGE.thin;if(STATION_PAGE.burnAt)RIFT.burnAt=STATION_PAGE.burnAt;if(STATION_PAGE.wholePage)RIFT.wholePage=true;   /* burnAt: a fire mosaic the floor reads; wholePage: the floor's bands over the whole page */
+ if(STATION_PAGE.thin)RIFT.thin=STATION_PAGE.thin;if(STATION_PAGE.burnAt)RIFT.burnAt=STATION_PAGE.burnAt;if(STATION_PAGE.wholePage)RIFT.wholePage=true;if(STATION_PAGE.heroK)RIFT.heroK=STATION_PAGE.heroK;if(STATION_PAGE.floorK)RIFT.floorK=STATION_PAGE.floorK;   /* burnAt: a fire mosaic the floor reads; wholePage: the floor's bands over the whole page */
    /* a station's density by place and species (44s-host-station.js) */
  try{window._biome=RIFT.build({R:TERR.R-150,quality:1});}catch(e){reportErr('biome: '+e.stack);}
  if(STATION_PAGE.build){try{window._station=STATION_PAGE.build();}catch(e){reportErr('station: '+e.stack);}}   /* a station's own passes, before the bake */

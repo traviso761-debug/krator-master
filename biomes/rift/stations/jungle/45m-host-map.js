@@ -64,8 +64,9 @@ const FIELD_RAW={
  flow:(x,z)=>clamp(Math.max(smooth(70,15,streamD(x,z)),.7*smooth(50,12,distD(x,z))),0,1),
  // a little mist in the lowland under the cliffs and at the falls' spray
  mist:(x,z)=>{const d=lakeIn(x,z);let m=.25*smooth(0,200,d)*smooth(700,450,d);for(const P of POOLS)m=Math.max(m,.6*smooth(220,40,Math.hypot(x-P.x,z-P.z)));return clamp(m,0,1);}};
-// the LOD origins: a 3 x 3 lattice over the page
-const MAP_ORIGIN=[];for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)MAP_ORIGIN.push([i*1800,j*1800]);
+// the LOD origins: five, the centre and four on the diagonals (a 3 x 3 lattice held 46 M triangles; the owner's ceiling here is 40 M):
+// the shore and the falls (north-west), the plain and the tower, the river upstream (south-east)
+const MAP_ORIGIN=[[0,0],[-1500,-1500],[1500,1500],[-1500,1500],[1500,-1500]];
 // the river's and the pools' water for the kit (BIO.init: waterH, and the planting mask MAP_DRY): the surface .6 m over the bed in the
 // channel, the pools' level in their bowls, the sea's 0 elsewhere; nothing roots in the channel, the delta channel or a pool
 function MAP_WATERH(x,z){for(const P of POOLS)if(Math.hypot(x-P.x,z-P.z)<P.r*1.4)return P.y+.2;const d=lakeIn(x,z);

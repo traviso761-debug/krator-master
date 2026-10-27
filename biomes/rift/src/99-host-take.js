@@ -19,8 +19,8 @@ function describe(hit){const p=hit.point,o=hit.object;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:27000000,calls:700,rendered:17000000},   // held in memory (the hero trees' stand-ins included) / calls and triangles drawn at any one camera, with the runtime LOD (KNOWN_ISSUES BUDGET)
- cls:{pass:19000000,host:900000},
+ showcase:{tris:STATION_PAGE.held||27000000,calls:700,rendered:17000000},   /* STATION_PAGE.held: a station's own ceiling (the owner, 2026-10-27: 40 M for the jungle) */   // held in memory (the hero trees' stand-ins included) / calls and triangles drawn at any one camera, with the runtime LOD (KNOWN_ISSUES BUDGET)
+ cls:{pass:STATION_PAGE.passMax||19000000,host:900000},
  type:{'rift/trees':'pass','rift/far':'pass','rift/floor':'pass','rift/dress':'pass','host':'host'},   // rift/far: the impostors and the hero trees' stand-ins
 };
 // ---------------------------------------------------------------- fruit (biomes/FRUIT.md)

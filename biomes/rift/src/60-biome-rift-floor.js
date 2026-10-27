@@ -225,7 +225,7 @@ RIFT.buildFloor=function(R,q){
  /* RIFT.wholePage (a station, one place with its LOD origins on a lattice): the bands over the whole page, not a strip along a spine */
  const WB=RIFT.wholePage?[-R,-R,R,R]:null,bands=[[7,600,0,WB||[-640,-R,640,R]],[14,1500,600,WB||[-1540,-R,1540,R]],[30,1e9,1500,null]],LOD=RIFT.LOD,rng3=[LOD.floor,LOD.midFloor,LOD.farFloor];
  bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
-  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===0?.7:lv===1?.85:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6,box:b[3]});});
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===0?.7:lv===1?.85:1)*(lv<2?(RIFT.floorK||1):1);}   /* RIFT.floorK: a station's density on the mid and far bands (the near band stays full) */,(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6,box:b[3]});});
  // the water: scum mats on the still shallows, reeds standing at the shore
  const wbands=[[7,600,0,WB||[-640,-R,640,R]],[14,1500,600,WB||[-1540,-R,1540,R]]];
  wbands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
