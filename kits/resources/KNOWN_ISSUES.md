@@ -42,4 +42,4 @@
       (biome `gather` tags), beside the rock salt nodes.
 - [ ] **Gypsum and rock salt draw on vertex colours** (2026-10-26): the efflorescence set reads as dark marble on their slabs.
       Owed: a pale bedded gypsum crust with selenite (`ground.gypsum.crust`) and a cut rock-salt face (`rock.halite.cut`);
-      to be added to `core/materials/PROMPTS-NEEDED.md` (not this kit's file: requested).
+      their prompts are in `core/materials/PROMPTS-NEEDED.md`, section 32 (2026-10-26).
