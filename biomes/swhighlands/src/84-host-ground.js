@@ -6,8 +6,8 @@
 // cave shows in the ground's own cliff as in the hood). The base mesh is a 6 m grid; over the gorge and the cave a 2 m inset
 // takes its place (its edge vertices on the base grid's lines, so no crack). KHORIZON shades it and everything on the land.
 // A vertical apron round the map's edge hides the seam with the far country. Host-only.
-let GROUND=null,GROUND_HZ=null,GROUND_INSET=null;
-const GROUND_STEP=6,INSET={x0:744,x1:1236,z0:-1320,z1:-384,step:2};
+let GROUND=null,GROUND_HZ=null,GROUND_INSET=null,GROUND_INSETS=[];
+const GROUND_STEP=6,INSETS=[{x0:744,x1:1236,z0:-1320,z1:-384,step:2,name:'The limestone ridge (the gorge and the cave)'},{x0:396,x1:474,z0:-468,z1:-384,step:2,name:'The mouth of the cave stream'}],INSET=INSETS[0];   /* each on the 6 m grid's lines; 45-host-stage.js bakes the field's insets at the same boxes */
 function buildGround(){
  const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,TW=2048,ZN=256;
  // the zones on a coarse lattice
@@ -43,7 +43,7 @@ function buildGround(){
    // the farm: pasture, hay and arable by enclosure (KRELIEF.fields), the arable mottled tilled and green
    if(fm>0){const F=FARM_FIELDS.at(wx,wz);t.copy(F.kind==='hay'?HAY:F.kind==='arable'?TILL:PAST);if(F.kind==='arable')t.lerp(CROP,smooth(-.05,.2,n2));c.lerp(t,fm);}
    // the banks' gravel, the steep's rock (the shader draws the beds over it)
-   c.lerp(BANK,smooth(.84,.98,fl)*.65);c.lerp(ROCK,smooth(.7,1.1,FC.at(FC.a.slope,wx,wz)));
+   if(!KCARVE.keepOut(wx,wz,4))c.lerp(BANK,smooth(.84,.98,fl)*.65);c.lerp(ROCK,smooth(.7,1.1,FC.at(FC.a.slope,wx,wz)));
    const sh=sat(u,v);c.multiplyScalar(1-.6*sh*(1-fm));
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);g0.imageSmoothingEnabled=true;g0.imageSmoothingQuality='high';g0.drawImage(cv,0,0,W0,H0);});
@@ -55,15 +55,17 @@ function buildGround(){
  // the bald and the pasture, the gravel on the banks, the tilled soil on the arable; hex-tiled, scaled with distance
  const GLY=(function(){const A=KGROUND.layer('swhighlands','ground.moss',{w:'vGL.x',amt:.55,gain:.95,tint:'diffuse'}),Bq=KGROUND.layer('swhighlands','ground.turf',{w:'vGL.y',amt:.55,gain:1.0,tint:'diffuse'});
   return A&&Bq?[A,Bq,KGROUND.layer('swhighlands','ground.gravel',{w:'vGL.z',amt:.75,gain:1.1,tint:'diffuse'}),KGROUND.layer('swhighlands','ground.tilled',{w:'vGL.w',amt:.7,gain:1.1,tint:'diffuse'})]:[];})();
- MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DET};
+ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DET};sh.uniforms.uRG={value:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN};sh.uniforms.uRGs={value:ROCK_LIB?1/(ROCK_LIB.scale||[6,6])[0]:1/6};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aGL;varying vec4 vGL;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGL=aGL;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec4 vGL;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRG;uniform float uRGs;varying vec4 vGL;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
     '{vec3 dt=texture2D(uDetail,vSWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vSWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
     '/*KGROUND*/',
     // the folds' beds on the steep (strataColor is linear, as the paint is once decoded)
     ' float steep=1.0-clamp(normalize(vSWN).y,0.0,1.0);',
-    ' vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.72)*1.25*(0.78+0.3*texture2D(uDetail,vec2(vSWP.x+vSWP.z,vSWP.y*2.0)*0.05).r);',
+    // the rock's grain on three planes (the rock bodies' map): the steep reads as rock, not a smear (the owner, 2026-10-26)
+    ' vec3 rn=abs(normalize(vSWN));rn/=rn.x+rn.y+rn.z;vec3 rt=texture2D(uRG,vSWP.zy*uRGs).rgb*rn.x+texture2D(uRG,vSWP.xz*uRGs).rgb*rn.y+texture2D(uRG,vSWP.xy*uRGs).rgb*rn.z;',
+    ' vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.72)*1.25*clamp(pow(dot(rt,vec3(0.333))/0.47,1.3),0.4,1.7);',
     ' diffuseColor.rgb=mix(diffuseColor.rgb,sc,smoothstep(0.36,0.62,steep)*0.92);}'].join('\n'));};
  KGROUND.hook(MAT,{layers:GLY,key:'swhi-ground'});
  // THE TERRAIN'S HORIZON (KHORIZON): eight directions over the map (256 a side, ~19 m) and, past it, the far country's lattice,
@@ -74,23 +76,23 @@ function buildGround(){
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  // the zone weights per vertex: x the forest's moss, y the turf (crest, bald, pasture and hay), z the banks, w the arable
  const glAt=(x,z)=>{const u=(x-TERR.X0)/SX,v=(z-TERR.Z0)/SZ,fm=zat('farm',u,v);let ar=0;if(fm>0){const F=FARM_FIELDS.at(x,z);ar=F.kind==='arable'?fm:0;}
-  return[zat('forest',u,v)*(1-zat('crest',u,v)*.6),Math.max(zat('crest',u,v)*(1-zat('forest',u,v)*.5),zat('bald',u,v),fm-ar),smooth(.84,.98,zat('flow',u,v)),ar];};
+  return[zat('forest',u,v)*(1-zat('crest',u,v)*.6),Math.max(zat('crest',u,v)*(1-zat('forest',u,v)*.5),zat('bald',u,v),fm-ar),smooth(.84,.98,zat('flow',u,v))*(KCARVE.keepOut(x,z,4)?0:1),ar];};   /* no bank gravel over the cave (its stream runs underground) */
  // a grid mesh over [x0,x1]x[z0,z1] at step; hole: a box whose cells are left out; edge(x,z): the height on the inset's rim
  const grid=(x0,z0,x1,z1,step,hole,hAt)=>{const nx=Math.round((x1-x0)/step),nz=Math.round((z1-z0)/step),N=(nx+1)*(nz+1),pos=new Float32Array(N*3),uv=new Float32Array(N*2),gl=new Float32Array(N*4),idx=[];
   for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*(nx+1)+i,x=x0+i*step,z=z0+j*step;pos[k*3]=x;pos[k*3+1]=hAt(x,z,i,j,nx,nz);pos[k*3+2]=z;
    uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;const w4=glAt(x,z);gl.set(w4,k*4);}
-  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const cx=x0+(i+.5)*step,cz=z0+(j+.5)*step;if(hole&&cx>hole.x0&&cx<hole.x1&&cz>hole.z0&&cz<hole.z1)continue;
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const cx=x0+(i+.5)*step,cz=z0+(j+.5)*step;if(hole&&hole.some(H=>cx>H.x0&&cx<H.x1&&cz>H.z0&&cz<H.z1))continue;
    const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;idx.push(a,c,b,b,c,d);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
   g.setIndex(N>65535?new THREE.Uint32BufferAttribute(idx,1):new THREE.Uint16BufferAttribute(idx,1));g.computeVertexNormals();return g;};
- const g=grid(TERR.X0,TERR.Z0,TERR.X1,TERR.Z1,GROUND_STEP,INSET,(x,z)=>terrainH(x,z));
+ const g=grid(TERR.X0,TERR.Z0,TERR.X1,TERR.Z1,GROUND_STEP,INSETS,(x,z)=>terrainH(x,z));
  const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The ring folds (ground)';scene.add(m);
  // the inset: on its rim the height runs straight between the base grid's vertices, so the two meshes meet exactly
- const S6=GROUND_STEP,gi=grid(INSET.x0,INSET.z0,INSET.x1,INSET.z1,INSET.step,null,(x,z,i,j,nx,nz)=>{
+ const S6=GROUND_STEP;GROUND_INSETS=INSETS.map(IN=>{const gi=grid(IN.x0,IN.z0,IN.x1,IN.z1,IN.step,null,(x,z,i,j,nx,nz)=>{
   const rim=i===0||j===0||i===nx||j===nz;if(!rim)return terrainH(x,z);
-  if(i===0||i===nx){const z0=INSET.z0+Math.floor((z-INSET.z0)/S6+1e-9)*S6,f=(z-z0)/S6;return f<1e-6?terrainH(x,z0):mix(terrainH(x,z0),terrainH(x,z0+S6),f);}
-  const x0=INSET.x0+Math.floor((x-INSET.x0)/S6+1e-9)*S6,f=(x-x0)/S6;return f<1e-6?terrainH(x0,z):mix(terrainH(x0,z),terrainH(x0+S6,z),f);});
- const mi=new THREE.Mesh(gi,MAT);mi.userData.probeSkip=true;mi.userData.inspectLabel='The limestone ridge (the gorge and the cave)';scene.add(mi);GROUND_INSET=mi;
+  if(i===0||i===nx){const z0=IN.z0+Math.floor((z-IN.z0)/S6+1e-9)*S6,f=(z-z0)/S6;return f<1e-6?terrainH(x,z0):mix(terrainH(x,z0),terrainH(x,z0+S6),f);}
+  const x0=IN.x0+Math.floor((x-IN.x0)/S6+1e-9)*S6,f=(x-x0)/S6;return f<1e-6?terrainH(x0,z):mix(terrainH(x0,z),terrainH(x0+S6,z),f);});
+  const mi=new THREE.Mesh(gi,MAT);mi.userData.probeSkip=true;mi.userData.inspectLabel=IN.name;scene.add(mi);return mi;});GROUND_INSET=GROUND_INSETS[0];
  // the apron: a vertical skirt 60 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=400,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);
@@ -98,11 +100,13 @@ function buildGround(){
    [[a,ha,ua],[b,hb,ub],[b,hb-60,ub],[a,ha,ua],[b,hb-60,ub],[a,ha-60,ua]].forEach(q=>{pos.push(q[0][0],q[1],q[0][1]);uvs.push(q[2][0],q[2][1]);});}
   const ag=new THREE.BufferGeometry();ag.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));ag.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));ag.computeVertexNormals();
   const am=new THREE.Mesh(ag,new THREE.MeshLambertMaterial({map:TEX,color:0x8a8a82,side:THREE.DoubleSide}));am.userData.probeSkip=true;scene.add(am);}
- /* THE CAVE'S HOOD ON THE GROUND'S MATERIAL (core/terrain KCARVE: "give the meshes the ground's material"; the owner, 2026-10-26: from
-    above it read as a rock block lying on the hill): its top is the hill's paint and turf, its steep face the beds, one surface */
- if(typeof CAVE_MESHES!=='undefined')CAVE_MESHES.forEach(cm=>{const gg=cm.geometry,P=gg.attributes.position,n=P.count,uvA=new Float32Array(n*2),glA=new Float32Array(n*4);
-  for(let i=0;i<n;i++){const x=P.getX(i),z=P.getZ(i);uvA[i*2]=(x-TERR.X0)/SX;uvA[i*2+1]=1-(z-TERR.Z0)/SZ;glA.set(glAt(x,z),i*4);}
-  gg.setAttribute('uv',new THREE.BufferAttribute(uvA,2));gg.setAttribute('aGL',new THREE.BufferAttribute(glA,4));cm.material=MAT;});
+ /* THE CAVE'S HOOD ON THE GROUND'S MATERIAL (core/terrain KCARVE.mesh attrs; the owner, 2026-10-26: from above it read as a rock block
+    lying on the hill): its top is the hill's paint and turf, its steep face the beds, one surface */
+ {const sd=new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize();
+  try{CAVE_MESHES=KCARVE.mesh(MAT,{sun:[sd.x,sd.y,sd.z],ao:true,cast:'hood',gridNormals:true,
+   attrs:{uv:{size:2,fn:(x,y,z)=>[(x-TERR.X0)/SX,1-(z-TERR.Z0)/SZ]},aGL:{size:4,fn:(x,y,z)=>glAt(x,z)}}});}catch(e){reportErr('cave: '+e.stack);}
+  CAVE_MESHES.forEach(cm=>{cm.userData.host=true;cm.userData.rock=true;cm.userData.inspectLabel='The river cave (its mouth in the limestone ridge)';
+   cm.userData.probePoints=[CAVE.c[0]+CAVE.depth*.4,BITE.floor+CAVE.h*.5,CAVE.c[1]];   /* the probe reads it at the mouth, inside its registered volume */scene.add(cm);});}
  GROUND=m;return m;}
 
 // ---------------------------------------------------------------- the mist

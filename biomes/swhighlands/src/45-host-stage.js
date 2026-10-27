@@ -85,17 +85,14 @@ const GORGE=(function(){const segs=[],falls=[];let prevEnd=null;
  return{segs,falls,end:prevEnd,sink:{x:sk[0],z:sk[1],r:15,level,floor:level-5,name:'The sink'}};})();
 // THE RIVER CAVE: a cliff bitten out of the limestone ridge's west foot (walls ~3:1 round a flat floor at the valley's level),
 // and in its back wall the cave's mouth, a core/terrain carve patch (KCARVE alcove) the cave stream comes out of
-// (the owner, 2026-10-26: it was carved too deep, a pit under a ~100 m wall): the bite now sits at the ridge's foot where its back
-// wall stands about 22 m over the valley floor, and no cut of the bite goes more than 28 m under the natural ground
-const BITE=(function(){const z=-432,r=26;let best=null;for(let x=760;x<=1000;x+=2){const fl=g0(x-60,z)+.5,face=g0(x+r,z)-fl;if(!best||Math.abs(face-22)<Math.abs(best.face-22))best={x,z,r,floor:fl,face};}return best;})();
-function gBite(x,z,h,noCave){const d=Math.hypot(x-BITE.x,z-BITE.z);if(d>BITE.r+260)return h;
- /* the bite's rim wanders (the owner, 2026-10-26: cut landforms want irregular edges): its radius by a KRAND noise round the
-    circle (+-25%), its wall's steepness by another (2.2-4.2) */
- const ca=(x-BITE.x)/(d||1),sa=(z-BITE.z)/(d||1),rn=BITE.r*(1+.5*(KRAND.fbm(ca*2.2+5,.3,sa*2.2+5,3,91)-.5)*(1-smooth(.6,.95,ca))),   /* none at the mouth's wall (east) */kn=3.2*(1+.6*(KRAND.fbm(ca*3.1+2,.7,sa*3.1+2,2,92)-.5));
- const v=Math.max(Math.min(h,BITE.floor+Math.max(0,d-rn)*kn),h-28);if(noCave)return v;
- /* the recess's wall rises at 40:1, inside the hood's rock: KCARVE wants the host's wall blend within its margin less its pad (4 m),
-    or a trench opens round the hood (the owner, 2026-10-26: its top was not connected to the hill) */
- return Math.min(v,BITE.floor+Math.max(0,KCARVE.recessD(x,z))*40);}
+// (the owner, 2026-10-26: carved too deep, a pit under a ~100 m wall; then a trench round the hood): on core/terrain's cave-mouth calls,
+// KCARVE.site (where along the ridge's foot the back wall stands 22 m), KCARVE.face / cut (the bite, never more than 28 m under the
+// natural ground, its rim wandering by KRAND except on the mouth's wall), KCARVE.fold (the recess folded in steeply enough for the
+// hood's margin, KCARVE.minSteep) and KCARVE.keepOut (no channel carved round the mouth)
+const BITE=(function(){const S=KCARVE.site({base:g0,floorAt:(x,z)=>g0(x-60,z)+.5,from:[760,-432],to:[1000,-432],step:2,r:26,face:22});return{x:S.x,z:S.z,r:S.r,floor:S.floorY,face:S.face};})();
+const BITE_FACE=KCARVE.face({c:[BITE.x,BITE.z],r:BITE.r,floorY:BITE.floor,slope:3.2,maxCut:28,open:[1,0],noise:{seed:91}});
+let CAVE_STEEP=40;
+function gBite(x,z,h,noCave){const v=KCARVE.cut(BITE_FACE,x,z,h);return noCave?v:KCARVE.fold(v,x,z,{steep:CAVE_STEEP});}
 function g1raw(x,z){let h=g0(x,z);h=KRELIEF.shape(WIND_GAP,x,z,h);h=KRELIEF.shape(WATER_GAP,x,z,h);
  if(x>700&&x<1300&&z>-1360&&z<-1140)for(const S of GORGE.segs)h=KRELIEF.shape(S,x,z,h);
  const K=GORGE.sink,ds=Math.hypot(x-K.x,z-K.z);if(ds<K.r+40){const kr=K.r*(1+.4*(KRAND.fbm((x-K.x)/(ds||1)*2+3,.5,(z-K.z)/(ds||1)*2+3,2,93)-.5)),q=Math.min(ds,kr)/kr;
@@ -103,6 +100,7 @@ function g1raw(x,z){let h=g0(x,z);h=KRELIEF.shape(WIND_GAP,x,z,h);h=KRELIEF.shap
  return h;}
 const CAVE=KCARVE.add({id:'cave',kind:'alcove',c:[BITE.x+BITE.r-1,BITE.z],n:[-1,0],hw:7,depth:20,h:9,floorY:BITE.floor,
  base:(x,z)=>gBite(x,z,g1raw(x,z),true),margin:6,pad:2,cell:.6,name:'The river cave'});
+CAVE_STEEP=Math.max(40,KCARVE.minSteep(CAVE)*1.2);   /* the fold's rise fits inside the hood's margin */
 function g1(x,z){return gBite(x,z,g1raw(x,z));}
 
 // ---------------------------------------------------------------- the water courses
@@ -119,18 +117,22 @@ const COURSES=(function(){const L=[];
  let jn=rv[0],jd=1e18;rv.forEach(p=>{const d=Math.hypot(p[0]-(BITE.x-300),p[1]-BITE.z);if(d<jd){jd=d;jn=p;}});
  const cv=[[BITE.x+BITE.r+18,BITE.z],[BITE.x+BITE.r+6,BITE.z],[BITE.x+BITE.r-10,BITE.z-1],[BITE.x,BITE.z-3],[BITE.x-60,BITE.z-8]];
  {const a=cv[cv.length-1];for(let t=1;t<=14;t++){const u=t/14;cv.push([lerp(a[0],jn[0],u),lerp(a[1],jn[1],u)+8*Math.sin(u*Math.PI*2)*(1-u)]);}}   /* from one start, the meander dying out before the river */
+ /* two Chaikin passes (ends kept): the line had a kink just outside the mouth, and the current's ripples turned sharply there (the owner) */
+ {let q=cv;for(let it=0;it<2;it++){const o=[q[0]];for(let i=0;i+1<q.length;i++){const a=q[i],b=q[i+1];o.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75]);}o.push(q[q.length-1]);q=o;}cv.length=0;q.forEach(p=>cv.push(p));}
  L.push({key:'cave',name:'The cave stream',pts:cv,w:[2.6,3.4],dep:.6,speed:1.6,join:{ci:0}});   /* it meets the river as one water: WATER.join below */
  const gs=[];for(let k=0;k<GP.length-1;k++){const a=GP[k],b=GP[k+1],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/5);for(let i=0;i<n;i++)gs.push([lerp(a[0],b[0],i/n),lerp(a[1],b[1],i/n)]);}
  gs.push(GP[GP.length-1],[GORGE.sink.x+6,GORGE.sink.z]);
  L.push({key:'gorge',name:'The gorge stream',pts:gs,w:[1.6,2.2],dep:.45,speed:1.8});
  L.forEach(C=>{const lv=KRELIEF.river(C.pts,g1,{depth:C.dep,sample:C.w[1]*2});C.y=lv.map(p=>p.y);C.slope=lv.map(p=>p.slope);
+  if(C.key==='cave'){const sl=C.slope.slice();C.slope=sl.map((v,i)=>{let t=0,n=0;for(let k=-3;k<=3;k++){const j=i+k;if(j>=0&&j<sl.length){t+=sl[j];n++;}}return t/n;});}   /* its current eased too: no step in the ripples' speed at the mouth */
   C.S=[0];for(let i=1;i<C.pts.length;i++)C.S.push(C.S[i-1]+Math.hypot(C.pts[i][0]-C.pts[i-1][0],C.pts[i][1]-C.pts[i-1][1]));
   C.LEN=C.S[C.S.length-1];C.halfW=i=>mix(C.w[0],C.w[1],C.S[i]/C.LEN);});
  // A TRIBUTARY MEETS ITS RIVER AS ONE WATER (core/water WATER.join; the owner, 2026-10-26: no channel across the other's water, no
  // bank between them, no tip): its line cut where it comes within .3 of the river's half width of its centreline, its levels raised
  // to the river's there; 89w-host-water.js draws it after the river
- L.forEach(C=>{if(!C.join)return;const M=L[C.join.ci],J=WATER.join(C.pts.map((p,i)=>[p[0],p[1],C.y[i]]),M.pts.map((p,i)=>[p[0],p[1],M.y[i]]),{w:i=>M.halfW(i),tuck:.3});
+ L.forEach(C=>{if(!C.join)return;const M=L[C.join.ci],J=WATER.join(C.pts.map((p,i)=>[p[0],p[1],C.y[i]]),M.pts.map((p,i)=>[p[0],p[1],M.y[i]]),{w:i=>M.halfW(i),tuck:1,tw:C.w[1]+1});   /* tuck 1: it ends at the river's water edge, its foam border over the river's bank foam */
   C.joined=J;C.pts=J.pts.map(p=>[p[0],p[1]]);C.y=J.pts.map(p=>p[2]);C.slope=C.y.map((y,i)=>i+1<C.y.length?(y-C.y[i+1])/(Math.hypot(C.pts[i+1][0]-C.pts[i][0],C.pts[i+1][1]-C.pts[i][1])||1):0);
+  {const sl=C.slope.slice();C.slope=sl.map((v,i)=>{let t=0,n=0;for(let k=-3;k<=3;k++){const j=i+k;if(j>=0&&j<sl.length){t+=sl[j];n++;}}return t/n;});}   /* eased: no step in the ripples' speed */
   C.S=[0];for(let i=1;i<C.pts.length;i++)C.S.push(C.S[i-1]+Math.hypot(C.pts[i][0]-C.pts[i-1][0],C.pts[i][1]-C.pts[i-1][1]));C.LEN=C.S[C.S.length-1];});
  return L;})();
 const RIVER=COURSES[0],CAVE_STREAM=COURSES[1],GORGE_STREAM=COURSES[2];
@@ -148,22 +150,30 @@ function streamsNear(x,z){SEGIX.query(x,z,0,_sq);const per=[];
 function streamNear(x,z){let best=null;for(const r of streamsNear(x,z))if(!best||r.dd<best.dd)best=r;return best;}
 // the ground with the channels: a bed under the surface, a low bank, then the valley floor; the ground held under the water's
 // surface out to the ribbon's margin (the field is coarser than the narrow channels)
-function terrainH0(x,z){let h=g1(x,z);
- for(const r of streamsNear(x,z)){if(r.C.key==='cave'&&(KCARVE.topAt(x,z)!=null||x>BITE.x+BITE.r-2))continue;   /* the cave stream cuts no trench round its mouth: the hood and the hill stay one face (the owner, 2026-10-26) */
-  const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);
-  if(r.d<w)h=Math.min(h,r.y-dep*(1-.55*(r.d/w)*(r.d/w))-.15);
-  else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<h)h=bank;}
-  if(r.d<w+2.5)h=Math.min(h,r.y-.45);}
+// a polynomial smooth minimum (k: the blend's width in the values' units): where two channels meet, the corner between their banks
+// is a fillet, not a crease (the owner, 2026-10-26: the confluence's edges wanted rounding)
+const smin=(a,b,k)=>{const q=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-q*q*k*.25;};
+function terrainH0(x,z){const g=g1(x,z);let h=null;
+ for(const r of streamsNear(x,z)){if(r.C.key==='cave'&&(KCARVE.keepOut(x,z,2)||x>BITE.x+BITE.r-2))continue;   /* the cave stream cuts no trench round its mouth: the hood and the hill stay one face */
+  const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);let hc=g;
+  if(r.d<w)hc=Math.min(hc,r.y-dep*(1-.55*(r.d/w)*(r.d/w))-.15);
+  else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<hc)hc=bank;}
+  if(r.d<w+2.5)hc=Math.min(hc,r.y-.45);
+  h=h==null?hc:smin(h,hc,1.6);}
+ if(h==null)h=g;
+ /* the mouths' pools (WATER.join pool): the ground under each held under its level, rising beyond its rim, smoothly into the banks */
+ for(const C of COURSES){const P=C.joined&&C.joined.pool;if(!P)continue;const d=Math.hypot(x-P.x,z-P.z);if(d>P.r+12)continue;h=smin(h,P.level-.45+Math.max(0,d-P.r)*.6,1.2);}
  const K=GORGE.sink,ds=Math.hypot(x-K.x,z-K.z);if(ds<K.r+2)h=Math.min(h,K.level-.4-(K.r+2-ds)*.25);
  return h;}
 // THE FIELD (core/terrain KFIELD): the ground baked once (6 m), with a 2 m inset over the gorge and the cave, where the
 // steps, the bridges' rims and the bite's walls are finer than the base grid; everything after this reads the field
 const FIELD_BAKED=(function(){const t0=performance.now();
  const F=KFIELD.bake(terrainH0,[TERR.X0-60,TERR.Z0-60,TERR.X1+60,TERR.Z1+60],6,{name:'swhighlands-s1',
-  insets:[{box:[744,-1320,1236,-384],step:2,name:'the gorge and the cave'}]});window._fieldMs=Math.round(performance.now()-t0);return F;})();
+  insets:[{box:[744,-1320,1236,-384],step:2,name:'the gorge and the cave'},{box:[396,-468,474,-384],step:2,name:'the mouth of the cave stream'}]});window._fieldMs=Math.round(performance.now()-t0);return F;})();
 const terrainH=FIELD_BAKED.sampler();
 // the water surface: the course's level across its channel, the sink's in its bowl, none elsewhere
 function waterH(x,z){const K=GORGE.sink;if(Math.hypot(x-K.x,z-K.z)<K.r+1.5)return K.level;
+ for(const C of COURSES){const P=C.joined&&C.joined.pool;if(P&&Math.hypot(x-P.x,z-P.z)<P.r+1)return P.level;}
  const r=streamNear(x,z);if(r&&r.d<r.w+2.5)return r.y;return -1e9;}
 function slopeAt(x,z){const h=terrainH(x,z),e=3;return Math.hypot(terrainH(x+e,z)-h,terrainH(x,z+e)-h)/e;}
 // core/water records (drawn in 89w-host-water.js): each course a WATER.flow, the gorge's falls WATER.fallsOf's slope breaks
@@ -194,7 +204,8 @@ const FC=(function(){const N=321,SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,K=['h','s
   // at 40 S the shaded slopes face SOUTH (PLAN.md section 2): the ground falls toward +z
   a.north[k]=clamp(-hz/.32,-1,1);
   const R=ridgeAt(x,z);a.crest[k]=smooth(.55,.92,R.f);a.valley[k]=smooth(.25,0,R.f);
-  const r=streamNear(x,z);a.flow[k]=r?smooth(60,4,r.d-r.w):0;
+  /* the bank distance as a smooth minimum over the courses near (8 m): the banks' gravel rounds the corner where two meet */
+  {let dm=null;for(const r of streamsNear(x,z)){if(r.C.key==='cave'&&KCARVE.keepOut(x,z,2))continue;const dd=r.d-r.w;dm=dm==null?dd:smin(dm,dd,8);}a.flow[k]=dm==null?0:smooth(60,4,dm);}
   const n1=NZ(x,z,.0021,88,2),n2=NZ(x,z,.0009,89,2);
   a.cove[k]=clamp(coveK(x,z)*1.4+smooth(.3,.05,R.f)*smooth(.1,.4,R.f)*.3*(R.east?1:.6)*smooth(.15,.45,n1+.5),0,1);
   a.bald[k]=smooth(BALD.r+60,BALD.r*.55,Math.hypot((x-BALD.x)*.8,z-BALD.z))*smooth(.7,.9,R.f);

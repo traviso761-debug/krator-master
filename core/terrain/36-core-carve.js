@@ -50,6 +50,11 @@
 //                         already sampled (central differences of its trilinear field, one cell either side) instead of
 //                         six fresh density samples, four of them calling Q.base: a world whose base is an expensive
 //                         closure saves most of the mesh's time (sedesert). The default path is unchanged
+//   A CAVE MOUTH IN A HILLSIDE (2026-10-26, biomes/swhighlands; opt-in): C.face(o) / C.cut(F,x,z,h) a bite at a slope's foot (a floor,
+//   noisy walls, never deeper than maxCut under the natural ground), C.site(o) where along a line the bite's back wall is `face` m tall,
+//   C.fold(h,x,z,{steep}) the recess folded into the host's ground steeply enough to fit inside the margin (C.minSteep(Q) its bound),
+//   C.keepOut(x,z,pad) where the host's other carving must leave the ground alone, mesh(material, {attrs}) more vertex attributes
+//   (the host's uv and zone weights) so the hood takes the ground's own material
 (function(root){
 const local=(Q,x,z)=>{const dx=x-Q.c[0],dz=z-Q.c[1];return{u:dx*Q.n[1]-dz*Q.n[0],q:-(dx*Q.n[0]+dz*Q.n[1])};};   // u along the wall, q into the rock
 // the built-in shapes
@@ -78,6 +83,7 @@ function makeCarve(){
  const soft=(D,e)=>{const ax=Math.abs(D[1])<.9?[0,1,0]:[1,0,0],u=[D[1]*ax[2]-D[2]*ax[1],D[2]*ax[0]-D[0]*ax[2],D[0]*ax[1]-D[1]*ax[0]],ul=Math.hypot(...u);u[0]/=ul;u[1]/=ul;u[2]/=ul;
   const w=[D[1]*u[2]-D[2]*u[1],D[2]*u[0]-D[0]*u[2],D[0]*u[1]-D[1]*u[0]];return[[0,0],[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[D[0]+(u[0]*a+w[0]*b)*e,D[1]+(u[1]*a+w[1]*b)*e,D[2]+(u[2]*a+w[2]*b)*e]);};
  const unit=v=>{const l=Math.hypot(...v);return[v[0]/l,v[1]/l,v[2]/l];};
+ const sm=(e0,e1,x)=>{const t=Math.max(0,Math.min(1,(x-e0)/(e1-e0)));return t*t*(3-2*t);};
  const C={patches:P,local,planSD,create:makeCarve,
   kind(name,def){if(typeof def.plan!=='function'||typeof def.ceil!=='function')throw new Error('carve kind '+name+': needs plan(L,Q) and ceil(Q,u,q)');KINDS[name]=Object.assign({occ:1},def);return C;},
   add(o){for(const k of ['id','c','n','hw','depth','h','floorY','base'])if(o[k]===undefined)throw new Error('carve.add '+(o.id||'?')+': missing '+k);
@@ -86,6 +92,32 @@ function makeCarve(){
   get(id){return P.find(Q=>Q.id===id)||null;},
   clear(){P.length=0;return C;},
   recessD(x,z){let d=1e9;for(const Q of P){if(!near(Q,x,z,Q.pad+6))continue;d=Math.min(d,planSD(Q,x,z)-Q.pad);}return d;},
+  // ---- a cave mouth in a hillside (2026-10-26, biomes/swhighlands: the owner's notes on its river cave; opt-in, nothing above moves)
+  // fold(h,x,z,o): the host's ground h with every patch's recess folded in: the floor under the hood, rising at o.steep (40:1) from the
+  //   recess's edge. The rise must fit inside the patch's margin less its pad (the rock the hood draws), else a trench opens between the
+  //   hood and the hill: steep >= (base - floorY) / (margin - pad). minSteep(Q) gives that bound over the patch's margin.
+  fold(h,x,z,o){const st=o&&o.steep!=null?o.steep:40;let v=h;for(const Q of P){if(!near(Q,x,z,Q.pad+6))continue;const d=planSD(Q,x,z)-Q.pad;if(d<Q.margin)v=Math.min(v,Q.floorY+Math.max(0,d)*st);}return v;},
+  minSteep(Q,n){n=n||48;let m=0;const g=Q.margin-Q.pad;for(let i=0;i<n;i++)for(const k of [.25,.5,.75]){const a=i/n*Math.PI*2,r=(Q.hw+Q.depth)*1.2;
+   const x=Q.c[0]+Math.cos(a)*r*k,z=Q.c[1]+Math.sin(a)*r*k,d=planSD(Q,x,z)-Q.pad;if(d<=0||d>=g)continue;m=Math.max(m,(Q.base(x,z)-Q.floorY)/g);}return m;},
+  // keepOut(x,z,pad): true within any patch's plan + margin + pad: what a host's other carving (a stream's channel and its banks, a
+  //   road) leaves alone, so it does not trench round the hood
+  keepOut(x,z,pad){pad=pad||0;for(const Q of P){if(!near(Q,x,z,Q.margin+pad+2))continue;if(planSD(Q,x,z)<Q.margin+pad)return true;}return false;},
+  // face(o): the cut that makes the cliff a mouth opens in: a bite out of a slope's foot, a floor at o.floorY round o.c inside radius
+  //   o.r, walls rising at o.slope (3.2:1) out to the natural ground, never more than o.maxCut (28 m) under it (a bite at a hillside's
+  //   foot, not a pit). o.noise {seed, r (.5: the rim's radius +- r/2), k (.6: the slope's +- k/2)} wanders the rim by KRAND (core/rand,
+  //   when on the page), none toward o.open ([nx,nz], the mouth's side: the patch's wall stays where the patch is). -> a record.
+  //   cut(F,x,z,h): the ground h with the face cut. site({base, z | along, from, to, step, r, face, floorAt}) -> the centre along a line
+  //   where the back wall (the side o.open points away from) stands `face` m (22) over the floor: put the mouth where the hill is that tall.
+  face(o){const F={kind:'face',c:[o.c[0],o.c[1]],r:o.r==null?26:o.r,floorY:o.floorY,slope:o.slope==null?3.2:o.slope,maxCut:o.maxCut==null?28:o.maxCut,
+   open:o.open?unit([o.open[0],0,o.open[1]]):null,noise:o.noise||null};return F;},
+  cut(F,x,z,h){const dx=x-F.c[0],dz=z-F.c[1],d=Math.hypot(dx,dz);if(d>F.r+(h-F.floorY)/F.slope+F.r)return h;
+   let r=F.r,k=F.slope;const N=F.noise,KR=root.KRAND;
+   if(N&&KR&&d>1e-6){const ca=dx/d,sa=dz/d,off=F.open?1-sm(.6,.95,ca*F.open[0]+sa*F.open[2]):1,s=N.seed==null?91:N.seed;
+    r*=1+(N.r==null?.5:N.r)*(KR.fbm(ca*2.2+5,.3,sa*2.2+5,3,s)-.5)*off;k*=1+(N.k==null?.6:N.k)*(KR.fbm(ca*3.1+2,.7,sa*3.1+2,2,s+1)-.5);}
+   return Math.max(Math.min(h,F.floorY+Math.max(0,d-r)*k),h-F.maxCut);},
+  site(o){const r=o.r==null?26:o.r,want=o.face==null?22:o.face,st=o.step||2,a=o.from,b=o.to,L=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;let best=null;
+   for(let t=0;t<=L;t+=st){const x=a[0]+ux*t,z=a[1]+uz*t,fl=o.floorAt(x,z),face=o.base(x+ux*r,z+uz*r)-fl;if(!best||Math.abs(face-want)<Math.abs(best.face-want))best={x,z,r,floorY:fl,face};}
+   return best;},
   covered(x,z){let c=null;for(const Q of P){if(!near(Q,x,z,4))continue;const sd=planSD(Q,x,z);if(sd>0)continue;
    const L=local(Q,x,z);if(L.q<0)continue;const y=ceil(Q,L.u,L.q);if(c===null||y<c)c=y;}return c;},
   topAt(x,z){for(const Q of P){if(!near(Q,x,z,Q.margin+2))continue;if(planSD(Q,x,z)<Q.margin)return Q.base(x,z);}return null;},
@@ -159,7 +191,10 @@ function makeCarve(){
     for(let k=Math.max(1,K0);k<Math.min(nz,K1+1);k++)for(let j=0;j<ny;j++)for(let i=Math.max(1,I0);i<Math.min(nx,I1+1);i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j+1,k)]<0;if(s0===s1)continue;quad(V[cid(i-1,j,k-1)],V[cid(i-1,j,k)],V[cid(i,j,k)],V[cid(i,j,k-1)],s0);}
     for(let k=K0;k<Math.min(nz,K1);k++)for(let j=1;j<ny;j++)for(let i=Math.max(1,I0);i<Math.min(nx,I1+1);i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j,k+1)]<0;if(s0===s1)continue;quad(V[cid(i-1,j-1,k)],V[cid(i,j-1,k)],V[cid(i,j,k)],V[cid(i-1,j,k)],s0);}
     const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nrm,3));
-    g.setAttribute('aOcc',new T.Float32BufferAttribute(occ,1));g.setAttribute('aSun',new T.Float32BufferAttribute(sunA,1));g.setIndex(idx);g.computeBoundingSphere();
+    g.setAttribute('aOcc',new T.Float32BufferAttribute(occ,1));g.setAttribute('aSun',new T.Float32BufferAttribute(sunA,1));
+    /* opt.attrs {name: {size, fn(x,y,z) -> [..]}} (2026-10-26): more vertex attributes, so the patch can take the host's ground material
+       (its uv, its zone weights) and join the hill as one surface, as the header advises; none asked, none added */
+    if(opt.attrs)for(const an in opt.attrs){const A=opt.attrs[an],nv=pos.length/3,arr=new Float32Array(nv*A.size);for(let i=0;i<nv;i++){const v=A.fn(pos[3*i],pos[3*i+1],pos[3*i+2]);for(let c=0;c<A.size;c++)arr[i*A.size+c]=v[c];}g.setAttribute(an,new T.Float32BufferAttribute(arr,A.size));}g.setIndex(idx);g.computeBoundingSphere();
     const m=new T.Mesh(g,material);m.name='carve:'+Q.id;m.userData.carve=Q.id;m.userData.inspectLabel=Q.name||Q.id;out.push(m);
     Q.stats={verts:pos.length/3,tris:idx.length/3,ms:Math.round(now()-t0)};}
    return out;}};

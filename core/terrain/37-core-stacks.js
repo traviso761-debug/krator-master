@@ -90,6 +90,8 @@
 //   mesa/butte o.columns {w:[1.2,2.4], d:.35, ent:.35}   columnar jointing on each tier's wall (a flow's front): the bed
 //                              fields cw, cd, cs, prisms in footR, so the mesh, at() and wall() share them; nothing else moves
 //   footR's sq (a superellipse) and a bed's und (its underside drawn whatever stands below) are opt-in fields
+//   KSTACKS.weather(B, m, o)   the drawn mesh worn natural (an arch's upper corners rounded, two grains of KRAND noise, the feet
+//                              kept on o.ground); the record is not changed (2026-10-26, opt-in; biomes/swhighlands)
 //   KSTACKS.export(list) / KSTACKS.load(json)   {format:'krator-stacks', version:1, bodies}
 //   KSTACKS.hash(mesh)         a fingerprint of a mesh's arrays (determinism)
 (function(root){
@@ -586,6 +588,27 @@
   function hash(m){var h=KR.hash(1,m.pos.length,m.idx.length);
     for(var i=0;i<m.pos.length;i+=7)h=KR.hash(h,Math.round(m.pos[i]*1000));for(i=0;i<m.idx.length;i+=11)h=KR.hash(h,m.idx[i]);return h>>>0;}
 
+  // ---------------------------------------------------------------- KSTACKS.weather: a drawn body worn natural (2026-10-26, opt-in)
+  // biomes/swhighlands (the owner: its arch "looks man-made"): weather(B, m, o) moves the vertices of B's mesh m (KSTACKS.mesh) in place
+  // and returns m. An arch's (B.opening) lintel has its two upper outer corners worn round, a radius of o.round (1.9) times the lintel's
+  // thickness (at least 6 m, at most .55 of its half length), in the opening's own frame; then every vertex moves by two grains of
+  // KRAND noise, o.amp (2.2 m) at o.grain (.12 /m) and o.pit (.6 m) at o.pitGrain (.5 /m), the vertical at .7 of the horizontal; at the
+  // feet (within 4 m of o.ground(x, z), when given) nothing moves, so the body still stands on the ground as drawn. Seeded by B.seed
+  // (or o.seed). The RECORD is not changed: at, surface, the feet and the export keep the unweathered body (within ~ amp + pit of the
+  // drawn rock). Without a call nothing moves.
+  function weather(B,m,o){o=o||{};var n=m.pos.length/3,sd=(o.seed==null?B.seed:o.seed)>>>0,P=m.pos;
+    var amp=o.amp==null?2.2:o.amp,gr=o.grain==null?.12:o.grain,pit=o.pit==null?.6:o.pit,pg=o.pitGrain==null?.5:o.pitGrain,G=o.ground||null;
+    var sm=function(a,b,x){var t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);},nz=function(k,u,v,w){return (KR.fbm(u,v,w,3,sd+k)-.5)*2;};
+    var v,x,y,z;
+    if(B.opening&&o.round!==0){var Op=B.opening,ux=Math.cos(Op.ry),uz=Math.sin(Op.ry),Lh=0;
+      for(v=0;v<n;v++){var a0=Math.abs((P[3*v]-B.x)*ux+(P[3*v+2]-B.z)*uz);if(a0>Lh)Lh=a0;}
+      var R=Math.min(Lh*.55,Math.max(6,(B.top-Op.y1)*(o.round==null?1.9:o.round))),cx=Lh-R,cy=B.top-R;
+      for(v=0;v<n;v++){x=P[3*v];y=P[3*v+1];z=P[3*v+2];var dx=x-B.x,dz=z-B.z,a=dx*ux+dz*uz,c=-dx*uz+dz*ux,aa=Math.abs(a);
+        if(aa>cx&&y>cy){var d=Math.hypot(aa-cx,y-cy);if(d>R){var k=R/d,a2=(a<0?-1:1)*(cx+(aa-cx)*k);P[3*v+1]=cy+(y-cy)*k;P[3*v]=B.x+a2*ux-c*uz;P[3*v+2]=B.z+a2*uz+c*ux;}}}}
+    for(v=0;v<n;v++){x=P[3*v];y=P[3*v+1];z=P[3*v+2];var f=G?sm(.5,4,y-G(x,z)):1,A=amp*f,a3=pit*f;
+      P[3*v]=x+A*nz(0,x*gr,y*gr,z*gr)+a3*nz(3,x*pg,y*pg,z*pg);P[3*v+1]=y+.7*(A*nz(1,x*gr+7,y*gr,z*gr)+a3*nz(4,x*pg+7,y*pg,z*pg));P[3*v+2]=z+A*nz(2,x*gr,y*gr+3,z*gr)+a3*nz(5,x*pg,y*pg+3,z*pg);}
+    return m;}
+
   root.KSTACKS={make:make,tower:tower,footR:footR,topH:topH,prof:prof,at:at,surface:surface,wall:wall,topAt:topAt,foot:foot,ledge:ledge,ring:ring,mesh:mesh,row:row,cluster:cluster,
-    mounds:mounds,pillars:pillars,wallY:yAt,kinds:function(){return Object.keys(KINDS);},export:exp,load:load,hash:hash};
+    mounds:mounds,pillars:pillars,wallY:yAt,kinds:function(){return Object.keys(KINDS);},export:exp,load:load,hash:hash,weather:weather};
 })(typeof globalThis!=='undefined'?globalThis:this);

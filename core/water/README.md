@@ -601,6 +601,17 @@ without it the shader text is unchanged) fades the ribbon out over its last `len
 `color` (the main's water, sRGB), turns it to the main's colour and covers the main's bank foam over the stretch between: pass
 `{len: .6 * over, foam: over + 7, color: <main's deep>}` (the owner's look notes on the SW highlands' cave stream, 2026-10-26).
 
+The owner's later notes (same day) settled the look: end the tributary AT the main's water edge (`tuck: 1`), fade its water clear over
+its last few metres while its foam stays (`endFade: {len: 3.5, foam: -100, keepFoam: true}`: a negative `foam` keeps it to the end,
+`keepFoam` keeps the foam opaque as the water fades), and cut both foams round the mouth with `drawFlow(F, {mouths: [[x, z, r], ...]})`
+on BOTH drawings (a round hole in the foam at each, r = the tributary's half width + its margin): the main's bank foam no longer crosses
+the mouth and the two foam borders end on one arc. All opt-in; with none, the shader text is as before (`test-gaps.js` hashes it). With `tw` (the tributary's half width), `WATER.join` also returns
+`pool` {x, z, r (1.6 tw), level}: a round still pool at the mouth, drawn under both ribbons (`WATER.still` + `drawStill`, the main's
+colours), which rounds the two land corners the ribbons' straight edges leave; the host lowers its ground under it. `flowTo` (the main's current at the join, a unit [x, z]) goes to `endFade.flow`, with `turn` (m)
+and `turnK` (0..1): the tributary's current, and the ripples it carries, turn toward the main's over its last `turn` m. The ripples are
+advected by phase, so a short or full turn shears them into streaks: 30 m and .6 read best (the SW highlands). Inside a main's mouth
+hole its water is drawn opaque, so the pool under it does not show through.
+
 Adopting it: make both lines with their levels, `J = WATER.join(tribPts, mainPts, {w})`, then `WATER.flow` on `J.pts`; draw the
 tributary's `drawFlow` with a higher `renderOrder` than the main's (its water lies over the main's bank foam across the mouth). The
 ground is the host's: carve every channel near a point and keep the lowest, not only the nearest one (biomes/swhighlands

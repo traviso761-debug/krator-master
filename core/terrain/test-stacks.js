@@ -383,4 +383,14 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
   const cm=K.mesh(col),bt=col.beds[col.beds.length-1];let ws=0,n=0;for(let a=0;a<6.28;a+=.13){const R=K.footR(bt,a)*(1-bt.ch)*bt.tp*.98,x=bt.cx+bt.tx+Math.cos(a)*R,z=bt.cz+bt.tz+Math.sin(a)*R,y=top1(cm,x,z);if(y==null)continue;n++;ws=Math.max(ws,Math.abs(y-K.topAt([col],x,z)));}
   ok('the drawn top meets the columned wall: rays just inside each column\'s face land on the top ('+n+', within '+ws.toFixed(3)+' m)',n>40&&ws<.8,false);}
 }
+// ---- KSTACKS.weather (2026-10-26, opt-in): an arch's upper corners worn round, the faces moved by noise, the feet left on the ground
+{const flat=(x,z)=>5,A=K.make({id:'aw',kind:'arch',x:0,z:0,span:18,rise:15,H:26,ry:0,seed:41,ground:flat}),m0=K.mesh(A,{step:2.5}),m1=K.mesh(A,{step:2.5});
+ const h0=K.hash(m0);K.weather(A,m1,{ground:flat});
+ const corner=m=>{let best=-1;const Lh=Math.max(...m.pos.filter((v,i)=>i%3===0).map(Math.abs));for(let i=0;i<m.pos.length;i+=3)if(Math.abs(m.pos[i])>Lh*.85&&m.pos[i+1]>A.top-1.5)best=Math.max(best,m.pos[i+1]);return best;};
+ const raw=K.mesh(A,{step:2.5}),rw=K.weather(A,K.mesh(A,{step:2.5}),{ground:flat,amp:0,pit:0});
+ ok('weather: the lintel\'s outer top corners are worn round (no vertex near the corner box\'s top)',corner(rw)<0,corner(raw)<0);
+ let moved=0,feet=0;for(let i=0;i<m0.pos.length;i+=3){const d=Math.hypot(m1.pos[i]-m0.pos[i],m1.pos[i+1]-m0.pos[i+1],m1.pos[i+2]-m0.pos[i+2]);if(d>.2)moved++;if(m0.pos[i+1]<5.4&&d>1e-9)feet++;}
+ ok('weather: the faces move ('+moved+' vertices over 20 cm)',moved>m0.pos.length/3*.5,false);
+ ok('weather: the feet stay on the ground as drawn',feet===0,false);
+ ok('weather: deterministic, and the record is not changed',K.hash(K.weather(A,K.mesh(A,{step:2.5}),{ground:flat}))===K.hash(m1)&&K.hash(K.mesh(A,{step:2.5}))===h0,K.hash(m1)===h0);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

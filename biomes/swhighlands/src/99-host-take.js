@@ -47,7 +47,7 @@ const VIEWS={};
 function tagText(t){if(!t)return'';const g=t.tags,h=g.harvest||{};return '\n'+t.cls+'  ·  '+g.climate+' / '+g.aridity+' / '+(g.abyssal?'abyssal':'non-abyssal')+' / riparian: '+g.riparian+
  '\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.medicinal?' · medicinal':'')+(h.notes?'\n'+h.notes:'');}
 // the bed under a rock or ground hit (KSTRATA: the beds the shader draws)
-function bedText(p,o){if(!o.userData||!(o.userData.rock||o===GROUND||o===GROUND_INSET))return'';try{const s=STRATA.surface(p.x,p.y,p.z,.5);return s?'\nbed: '+s.kind+' ('+s.recipe+', hard '+(+s.hard).toFixed(2)+')':'';}catch(e){return'';}}
+function bedText(p,o){if(!o.userData||!(o.userData.rock||o===GROUND||GROUND_INSETS.indexOf(o)>=0))return'';try{const s=STRATA.surface(p.x,p.y,p.z,.5);return s?'\nbed: '+s.kind+' ('+s.recipe+', hard '+(+s.hard).toFixed(2)+')':'';}catch(e){return'';}}
 function describe(h0,hits){hits=hits.filter(h=>h.object.visible);if(!hits.length)return '(nothing)';const p=hits[0].point,o=hits[0].object;
  let best=null;for(const r of REG){if(r.r>1500)continue;const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,isBole=!o.isInstancedMesh&&o.userData.biome;

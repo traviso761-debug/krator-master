@@ -178,5 +178,11 @@ W.join=(trib,main,o)=>{o=o||{};const tuck=o.tuck==null?.3:o.tuck,lift=o.lift==nu
     drawFlow's endFade, so the tributary fades into the main over them and its own bank foam stops before */
  let over=0;for(let i=1;i<out.length;i++){const qa=near(out[i-1][0],out[i-1][1]),qb=near(out[i][0],out[i][1]),da=qa.d-qa.w,db=qb.d-qb.w,L=Math.hypot(out[i][0]-out[i-1][0],out[i][1]-out[i-1][1]);
   over+=da<0&&db<0?L:da<0?L*da/(da-db):db<0?L*db/(db-da):0;}
- return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,over,order:'after'};};
+ /* pool (with o.tw, the tributary's half width): a round still pool at its end, at the main's level, radius o.poolK (1.6) x tw: drawn
+    UNDER both ribbons it rounds the two land corners their straight edges leave at the mouth; the host lowers its ground under it */
+ const e=out[out.length-1],pool=o.tw==null?null:{x:e[0],z:e[1],r:o.tw*(o.poolK==null?1.6:o.poolK),level:hit.y};
+ /* flowTo: the main's current at the join (a unit [x, z]): drawFlow's endFade.flow turns the tributary's current, and the ripples it
+    carries, into it over its last metres, so the two flows read as joining */
+ const ma=M[hit.k],mb=M[hit.k+1],ml=Math.hypot(mb[0]-ma[0],mb[1]-ma[1])||1,flowTo=[(mb[0]-ma[0])/ml,(mb[1]-ma[1])/ml];
+ return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,over,pool,flowTo,order:'after'};};
 })();
