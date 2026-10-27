@@ -460,6 +460,31 @@ proposal (the whole cushion) is no better on a tuft. Owed: a cut-out sheet of up
 A 3x3 grid sheet of nine separate small club-moss plants, each centred in its own cell with clear space around it, on a flat pure magenta (#FF00FF) background, no shadows on the background. Front view, eye level, each plant standing upright from its base at the bottom of its cell. The plant: a Lycopodium club-moss tuft 20 to 40 cm tall, a few forking upright stems densely clothed in tiny overlapping scale-like needle leaves, like soft green bottle-brushes, some stems ending in a slender pale yellow-green cone; the tufts open and airy, with gaps between the stems so the background shows through; near-colourless pale grey-green so it can be tinted. Even, flat, shadowless studio lighting, high detail, photographic, no text, no border, no watermark.
 ```
 
+## 37. The hyperjungle's lake station: the sky lily and the moriche palm (`biomes/hyperjungle` station 3, the final rebuild, 2026-10-27)
+
+The lake station (`dist/hyperjungle-lake.html`, `stations/lake/87-host-station.js`) draws its two new species with stand-ins: the
+sky lily's pads are a vertex-coloured rimmed disc (green over a red rim, no texture), and the moriche palm's crown is the kit's fern
+fronds (`frond`, `card.fern`), where *Mauritia* has broad costapalmate fans. `card.lily.victoria` is already in PLAN-LANDS.md
+section 10's list; the fan card is new.
+
+#### `card.lily.victoria`
+- Kind: card (a single pad seen from above, cut out on magenta), tintable (keep 0: the station tints it per pad).
+- Used by: the sky lily pads (`skylily`, a new library slot on the station). Reuse: any giant water lily (the Ring Sea's
+  lagoons, swbay's still water).
+
+```
+A single giant water lily pad seen straight from above, perfectly round, about the width of the frame, its rim turned up in a low even wall all the way round with one narrow notch, the upper surface deep green with a fine net of raised veins radiating from the centre and a slight quilting between them, a glimpse of the red-purple underside showing on the inside of the upturned rim, on a flat pure magenta (#FF00FF) background, no shadows on the background, flat even lighting, no water, no reflections, no flowers.
+```
+
+#### `card.palm.fan`
+- Kind: card (a 3x1 sheet of three single fan leaves on their stalks, cut out on magenta), tintable (keep 0).
+- Used by: the moriche palm's crown on the lake station (each leaf on a frond, held by its stalk: `"base": "bottom"`).
+  Reuse: the abyss's fan palm (eastabyss `fan` reads `card.palm` today), any costapalmate palm.
+
+```
+A 3x1 sheet of three separate costapalmate palm leaves, each centred in its own cell with clear space around it, on a flat pure magenta (#FF00FF) background, no shadows on the background. Each leaf seen from the front: a long smooth green leaf stalk entering from the bottom of its cell and running a short way into a large rounded fan blade that is split into many stiff ribbon-like segments radiating outward, the segments' tips drooping and a little ragged, mid green with paler midribs. Flat even lighting, no shading gradient, no other plants, no ground.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

@@ -59,7 +59,7 @@ const HCHK={
   const miss=all.filter(e=>e[1].harvest&&e[1].harvest.edible.length&&!e[1].harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(e[0])<0).map(e=>e[0]);
   const keys=[...new Set(all.map(e=>e[1].harvest&&e[1].harvest.fruit).filter(Boolean))];
   const undrawn=keys.filter(k=>!(N[HYPERJUNGLE.FRUIT_ITEMS[k]]>0));
-  const ok=!untagged.length&&!miss.length&&!undrawn.length&&keys.length>=4&&(N.pandankeys||0)>=20;
+  const ok=!untagged.length&&!miss.length&&!undrawn.length&&keys.length>=4&&(N.pandankeys||0)>=(ST_TAKE&&ST_TAKE.pandanMin!=null?ST_TAKE.pandanMin:20);   /* a station with less jungle has fewer screwpines (its 45: pandanMin) */
   return{ok,detail:(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+
    (undrawn.length?'catalogued but not drawn: '+undrawn.join(', ')+'; ':'')+all.length+' tagged, '+keys.length+' catalog keys ('+keys.join(', ')+'); drawn: '+
    ['pod','capsule','bloom','pandankeys'].map(k=>k+' '+(N[k]||0)).join(', ')};},
@@ -70,7 +70,7 @@ const HCHK={
   return{ok:!bad.length,detail:(bad.length?'in the impostor ring: '+bad.join(', ')+'; ':'')+n+' views; hero disc '+rg.hero+' m, far forest '+rg.far[0]+'-'+rg.far[1]+' m'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,_itemCounts()));
- if(!ST_TAKE||!ST_TAKE.views)add('preset views stand inside the hero disc or outside the far forest',HCHK.views(VIEWS,window._biome&&window._biome.rings));
+ add('preset views stand inside the hero disc or outside the far forest',HCHK.views(VIEWS,window._biome&&window._biome.rings));
  if(ST_TAKE&&ST_TAKE.checks)ST_TAKE.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts();
@@ -78,7 +78,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fruiting species with no catalog fruit',HCHK.fruit(HYPERJUNGLE.SPECIES.map(S=>noFruit(S,'mahogany')),HYPERJUNGLE.PLANTS,N));
  add('screwpines with no pandan-key heads drawn',HCHK.fruit(HYPERJUNGLE.SPECIES,HYPERJUNGLE.PLANTS,Object.assign({},N,{pandankeys:0})));
  if(ST_TAKE&&ST_TAKE.negatives)ST_TAKE.negatives(add);
- if(!ST_TAKE||!ST_TAKE.views)add('a preset view standing in the impostor ring',HCHK.views(Object.assign({},VIEWS,{test:[ (window._biome&&window._biome.rings?window._biome.rings.hero:1500)+120+BIO.center()[0],60,BIO.center()[1],0,0,0]}),window._biome&&window._biome.rings));
+ add('a preset view standing in the impostor ring',HCHK.views(Object.assign({},VIEWS,{test:[ (window._biome&&window._biome.rings?window._biome.rings.hero:1500)+120+BIO.center()[0],60,BIO.center()[1],0,0,0]}),window._biome&&window._biome.rings));
  add('a plant with no harvest tag',HCHK.fruit(HYPERJUNGLE.SPECIES,Object.assign({},HYPERJUNGLE.PLANTS,{test:{name:'test',tags:{},items:[]}}),N));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

@@ -44,7 +44,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # Water joined the profile 2026-10-20 (the brook, WATER.flow; see KNOWN_ISSUES.md).
 EXPORT_BOX = [-150, -300, 150, 0]   # 2026-10-20: moved from [-600,-300,-300,0] so the box holds a stretch of the brook (x = 90 sin(z .0012): -32..0 over this z range), the kit's one core/water surface
 # the stations (build.py --station <name>): each box over a stretch of its water and the forest beside it
-STATION_BOX = {'hyperjungle-lake.html': [-800, -600, -500, -300], 'hyperjungle-savanna.html': [-150, -300, 150, 0]}
+STATION_BOX = {'hyperjungle-lake.html': [-800, -600, -500, -300], 'hyperjungle-savanna.html': [-1150, -50, -850, 250]}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage

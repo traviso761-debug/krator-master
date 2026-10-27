@@ -282,7 +282,11 @@ BIO.foliageHook=function(o){o=o||{};
     '#endif'].concat(gs||gt?gin:[],gt?[
     // the ground's colour at the root; past the band's end all ground, shrunk toward the root, dissolving
     '{ vec3 _gc = texture2D(uGTex, (_gi.xz - uGBox.xy) / (uGBox.zw - uGBox.xy)).rgb;'+(BIO.GROUND.linear?'':' _gc = pow(_gc, vec3(2.2));'),
-    '  float _gf = uGK.w > uGK.z ? smoothstep(uGK.z, uGK.w, distance(_gi, cameraPosition)) : 0.0;',
+    /* the eye from the view matrix (2026-10-27, found on the hyperjungle's savanna station): r128 uploads cameraPosition only to Phong,
+       Toon, Standard, shader and env-mapped materials, so on these Lambert cards it read (0,0,0) and every ground-tinted card more
+       than the fade's end from the world's origin dissolved into the ground, wherever the camera stood (as the LOD fade did, 20) */
+    '  vec3 _geye = -vec3(dot(viewMatrix[0].xyz, viewMatrix[3].xyz), dot(viewMatrix[1].xyz, viewMatrix[3].xyz), dot(viewMatrix[2].xyz, viewMatrix[3].xyz));',
+    '  float _gf = uGK.w > uGK.z ? smoothstep(uGK.z, uGK.w, distance(_gi, _geye)) : 0.0;',
     '  mvPosition.xyz = _gm + (mvPosition.xyz - _gm) * (1.0 - 0.6*_gf);',
     '  vFlGT = vec4(_gc * uGK.y, max(uGK.x * (1.0 - clamp('+(gt.tip||'position.y')+', 0.0, 1.0)), _gf)); vFlGF = _gf; }']:[],[
     'float _wg = '+(o.swayW||'1.0')+';',

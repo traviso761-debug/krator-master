@@ -32,9 +32,17 @@
    "bytes": 675886,
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
+  "biomes/hyperjungle/dist/hyperjungle-lake.html": {
+   "bytes": 5816748,
+   "sha256": "b877279c9b698bcf4ad4474f9ebd1114622efaeeff55d5136c7f7481ab14cfd5"
+  },
+  "biomes/hyperjungle/dist/hyperjungle-savanna.html": {
+   "bytes": 8566050,
+   "sha256": "f0e912eb089d212f8747705ee336b902f092933d0bb5a94e1b9d3ada9456c65a"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 4764402,
-   "sha256": "6bbdf1dacd5cdafdb746fce3c5e1aa1bcc9e17680dfb6a5a17777052e0dacac4"
+   "bytes": 5251662,
+   "sha256": "1485fae27acf526e38bd76e0a41b43de2b327e937fdc3a51de6afff88919c831"
   },
   "biomes/korona/dist/korona-basin.html": {
    "bytes": 896798,

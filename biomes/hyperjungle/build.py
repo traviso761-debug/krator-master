@@ -146,7 +146,7 @@ for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
 # families those builders draw with
 import json as _json
 NEIGH={'lake':{'geyser':(['50-biome-geyser-species.js','55-biome-geyser-trees.js'],'GEYSER',['bark0','strap','rosette'])},
-       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',None)}}.get(STATION,{})
+       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',{'drop':['groundCrack','groundDetail','towerConcrete','towerRust','matreed','reed','samphire','rope','rock','under','under1','under2','under3','hang','hang1','beard','clubmoss','moss','bloom','fungus']})}}.get(STATION,{})
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
@@ -154,7 +154,7 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     if _k=='geyser':   # the geyser kit's namespace is made by its layout fragment (46), which this page does not take
         VIRTUAL['47%s-%s-ns.js'%(_c,_k)]=chr(10)+'var GEYSER={};   // the namespace its own page makes in 46-biome-geyser-layout.js'+chr(10);PATH['47%s-%s-ns.js'%(_c,_k)]=None
     _pj=os.path.join(_d,'tex','pack.json')
-    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if _keep is not None and f not in _keep]
+    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if (f in _keep['drop'] if isinstance(_keep,dict) else _keep is not None and f not in _keep)]   # a list keeps, {'drop': [...]} drops
     VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)
     PATH['44%s-host-matlib-pack-%s.js'%(_c,_k)]=None;PATH['47%s9-%s-end.js'%(_c,_k)]=None
 PATH.pop('82-host-sky.js',None)   # the old dome stays in src/ for the builds that still read it in place; this page draws the shared sky

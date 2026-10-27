@@ -15,7 +15,7 @@
 function stationBuild(){
  if(new URLSearchParams(location.search).get('station')==='0')return null;
  const W=8113,LT=HYPERJUNGLE.LOD.tree,T3=THREE,C=h=>new T3.Color(h),out={stiltkapok:0,moriche:0,skylily:0,floatgrass:0,pandan:0};
- const S=KSPACE.create({cell:60});out.groves=[];(HYPERJUNGLE.TREES||[]).forEach(T=>S.insert(T,T.x,T.z,(T.rb||1)*1.4+3));
+ const S=KSPACE.create({cell:60}),CEN=BIO.center(),nearC=(x,z)=>Math.hypot(x-CEN[0],z-CEN[1])<1500;out.groves=[];   /* a view's subject inside the hero disc */(HYPERJUNGLE.TREES||[]).forEach(T=>S.insert(T,T.x,T.z,(T.rb||1)*1.4+3));
  const free=(x,z,r)=>!S.some(x,z,r,()=>true)&&BIO.clearOf(x,z,r);
  const cells=(cell,salt,fn)=>{const N=Math.ceil(TERR.R/cell);for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(W,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt));
   const x=(i+u(1))*cell,z=(j+u(2))*cell;if(Math.max(Math.abs(x),Math.abs(z))>TERR.R-60)continue;fn(x,z,h,u);}};
@@ -44,7 +44,7 @@ function stationBuild(){
     const R0=REG[REG.length-1];if(R0&&/kapok/i.test(R0.name)){R0.name='Stilt kapok (the várzea)';R0.label='Stilt kapok';}
     // the stilt roots: arching out from 3-9 m up the bole to the mud, the bole's own bark (bucket limb5)
     if(LT){BIO.owner=[x,z];BIO.range=LT;}
-    const n=8+Math.floor(KRAND.unit(KRAND.hash(h,9,0,1))*7),col=C(0x7a5a4c);if(!out.kapokAt)out.kapokAt=[x,z,T.rb];
+    const n=8+Math.floor(KRAND.unit(KRAND.hash(h,9,0,1))*7),col=C(0x7a5a4c);if(!out.kapokAt&&nearC(x,z))out.kapokAt=[x,z,T.rb];
     for(let k=0;k<n;k++){const a=k/n*TAU+(KRAND.unit(KRAND.hash(h,k,1,2))-.5)*.5,yt=y+7+8*KRAND.unit(KRAND.hash(h,k,2,2)),d=9+10*KRAND.unit(KRAND.hash(h,k,3,2)),
       r0=HYPERJUNGLE.trunkR(T,yt)*.98,gx=x+Math.cos(a)*(r0+d),gz=z+Math.sin(a)*(r0+d),gy=terrainH(gx,gz)-.3,pts=[];
      for(let s=0;s<=6;s++){const q=s/6,rr2=r0+d*Math.pow(q,.8),hy=mix(yt,gy,Math.pow(q,1.6))+Math.sin(q*Math.PI)*1.2;pts.push({x:x+Math.cos(a)*rr2,y:hy,z:z+Math.sin(a)*rr2,r:mix(1.1,.4,q)});}
@@ -64,7 +64,7 @@ function stationBuild(){
      for(let b=0,nb=1+Math.floor(v(8)*3);b<nb;b++){const ab=v(9+b)*TAU;BIO.put('pod',[tx+Math.cos(ab)*1.2,ty-1.2,tz+Math.sin(ab)*1.2],qEuler(0,ab,0),2.4+v(12)*1.2,C(0x7a3a22));}
      BIO.owner=null;BIO.range=null;
      S.insert({x,z},x,z,3);made++;}
-    if(made){out.moriche+=made;out.groves.push([cx,cz,gr]);REGISTER({name:'A moriche swamp (aguajal)',kind:'stand',label:'Moriche palm',key:'hyperjungle.moriche',x:cx,z:cz,y:terrainH(cx,cz),r:gr+8,h:52});}});},
+    if(made){out.moriche+=made;if(nearC(cx,cz))out.groves.push([cx,cz,gr]);REGISTER({name:'A moriche swamp (aguajal)',kind:'stand',label:'Moriche palm',key:'hyperjungle.moriche',x:cx,z:cz,y:terrainH(cx,cz),r:gr+8,h:52});}});},
   // ---- SKY LILIES and FLOATING MEADOWS on the lake's edge (open water at low water, .4-3 m deep, within 450 m of the shore)
   floating(){const lr=HYPERJUNGLE.LOD.floor?HYPERJUNGLE.LOD.mid:null;BIO.range=lr||null;
    cells(16,0x6c03,(x,z,h,u)=>{const t=across(x,z),dep=LOW-terrainH(x,z);if(t<0||t>450||dep<.4||dep>3.2)return;

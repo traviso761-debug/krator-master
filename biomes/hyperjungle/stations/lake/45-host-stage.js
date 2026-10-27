@@ -72,7 +72,7 @@ const STATION_FAR={canopy:true,
  h:(x,z)=>{const t=across(x,z);if(t>0)return Math.min(terrainH(x,z),LOW);const S0=TERR.R*1.1,d=Math.max(Math.abs(x),Math.abs(z))-S0;
   return terrainH(x,z)+smooth(0,1200,d)*smooth(-300,-900,t)*(48+12*KN(x,z,.0011,301,3)*2);},   /* the lake on east, flat at low water; the canopy's roof inland */
  label:'The far shore and the lake past the map'};
-const STATION_BUILD={build:{R:TERR.R-150,heroR:1800},region:{name:'The lake and the flooded forest (ideal type)',x:0,z:0,r:TERR.R,h:520}};
+const STATION_BUILD={build:{R:TERR.R-150,heroR:2200},region:{name:'The lake and the flooded forest (ideal type)',x:0,z:0,r:TERR.R,h:520}};
 const STATION_WET=(x,z)=>across(x,z)>-30||brookDist(x,z)<40?0:1;   /* no puddles in the lake or the channels */
 const STATION_SKY={px:676,py:512,label:'the lake'};   /* the lake's western shore on the scale model (approximate: the survey is owed) */
 var HYPERJUNGLE_LOOK={deciduous:[]};   /* the várzea is evergreen (50 reads it) */
@@ -82,7 +82,7 @@ const STATION_TAKE={title:'Krator biome — the hyperjungle: the lake and the fl
   'The várzea':[-640,7,-120,-330,14,-60],
 
   'The lake shore':[shoreX(0)+240,22,80,-300,40,0],
-  'Over the lake':[1900,160,-1100,-300,30,0],
+  'Over the lake':[1400,150,-500,-400,30,0],
   'The confluence':[-860,16,-330,-950,2,-470],
   'Sky lilies':[shoreX(420)+70,6,420,shoreX(420)+140,LOW,470],
 
