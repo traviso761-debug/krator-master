@@ -20,3 +20,10 @@ const WATER_DRAW=(function(){if(typeof ATMOS==='undefined'||!WATER_RECS)return n
   m.userData.probeSkip=true;m.userData.inspectLabel='A rain pool on the slickrock';m.renderOrder=1;scene.add(m);out.pools=m;}
  return out;}catch(e){reportErr('water: '+(e&&e.stack||e));return null;}})();
 _mark('water');
+// HEIGHT FOG (R1, here after 89n: its sky reads the night's hour; core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js, 2026-10-27): the air's fog up to the ground under the
+// eye, thinning above it, so from the Bench's fins and the High Cap the canyons below lie in their haze while the caps stand clear;
+// the morning mist pools along the creek and in the canyon floor's hollows (below 8 m over the floor). Dense air (~1.9 atm), its
+// falloff long over the canyons' 300-450 m of relief. ?hfog=0 to compare
+if(new URLSearchParams(location.search).get('hfog')!=='0'){ATMOS.heightFog({falloff:1/520,sun:.35,sky:.35,mist:{density:.0016,y:-2,depth:12,noise:.7}});ATMOS.heightFogScene(scene);}
+// THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet ground or rings under the crowns and the overhangs
+ATMOS.rainCover({renderer});

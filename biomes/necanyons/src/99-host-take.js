@@ -39,9 +39,9 @@ function describe(hit){const p=hit.point,o=hit.object;
 
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 const BUDGET={
- showcase:{tris:14000000,calls:220},
+ showcase:{tris:14000000,calls:420},  // calls 220 -> 420 (2026-10-27): the runtime LOD draws a mesh per chunk and range for a fraction of the triangles (the hyperjungle 380)
  cls:{pass:6500000,host:1200000},
- type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','host':'host'},
+ type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','necanyons/station':'pass','host':'host'},
 };
 // edible plants the catalog has no piece for (named, not hidden: FRUIT.md); the carnivores a page must draw
 const FRUIT_NOT_DRAWN=['fanpalm','fonio','sunpitcher'];
@@ -107,6 +107,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88): each chunk mesh by its range */
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'necanyons',title:'Krator biome — the north-eastern canyons',
  hint:'The north-eastern canyons: red sandstone benches, caps and stacks out of the hyperjungle; the first carnivorous plants. N for night',

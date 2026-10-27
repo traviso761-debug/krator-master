@@ -76,7 +76,22 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     'vec3 rd=pow(texture2D(uR,p/'+Lr.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lr.lib,0x8a5236)+';',
     'vec3 sd=pow(texture2D(uS,p/'+Ls.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Ls.lib,0xa87a5a)+';',
     'vec3 c=mix(lt*0.42,rd*0.8,vW.x);c=mix(c,sd*0.75,vW.y);diffuseColor.rgb*=c*vW.z;}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'necanyons-ground';}
+ MAT_GROUND.customProgramCacheKey=()=>'necanyons-ground';
+ /* THE FLOOR ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; 2026-10-27, the final rebuild; BACKPORT.md's row, "clast on
+    the scree"): the same three layers at the same strengths (the litter at .42, the talus at .8 by the walls' feet, the creek's sand at
+    .75), hex-tiled and scaled with distance, blended by height so the talus's stones stand through the litter at its edge; and on the
+    talus's steeper, nearer half a CLAST layer: the rock's fall as blocks of the stacks' red sandstone, 0.3-1 m, packed in a matrix of
+    red soil. Only where the page lists KGROUND (a world reading this fragment in place keeps its mix above) and ?kground=0 is not set */
+ if(typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'){
+  const LY=[KGROUND.layer('necanyons','ground.litter',{w:'1.0',tint:'vec3(0.42)',name:'litter'}),
+   KGROUND.layer('necanyons','ground.talus',{w:'vW.x',tint:'vec3(0.8)',name:'talus'}),
+   KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'smoothstep(0.45,0.85,vW.x)',amt:.7,proj:'xz',size:.7,jitter:.9,matrix:.1,sub:.22,fleck:0,
+    matrixColor:0x6b3a26,tint:'vec3(0.85)',seed:KRAND.hash(4747,0,1,7)%997,name:'scree'}),
+   KGROUND.layer('necanyons','ground.sand',{w:'vW.y',tint:'vec3(0.75)',name:'sand'})];
+  if(LY[0]&&LY[1]&&LY[3]){MAT_GROUND.onBeforeCompile=sh=>{
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
+   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg',layers:LY,at:'/*KGROUND*/'});}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);

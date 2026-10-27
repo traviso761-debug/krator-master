@@ -25,6 +25,12 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
 // (TAU, clamp, smooth, fbm, rng... are the core's, made globals by the hyperjungle's 41: biomes/hyperjungle/src)
+// THE GRAPHICS SET (2026-10-27, the final rebuild; core/biome README "Adopting it", the hyperjungle's 45 the worked example): the
+// items' geometry welded and drawn by index (?index=0 the soup); one LOD mesh per chunk, small meshes merged to 1500 triangles, a
+// dithered cross-fade over the last 15% of each range (?lodmerge=0, ?lodfade=0) and the per-instance range cull (?lodcull=0)
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
