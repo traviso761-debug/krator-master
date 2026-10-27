@@ -24,7 +24,7 @@ Done this session (opt-in, tested, in `README.md`): `WATER.confluence` and `fade
 `drawFall({plungeR, footK})`, `WATER.breakupAll` / `breakupFlows` (ext/56), the brine/blood/clear looks, pans and ice
 (ext/54). Still to write:
 
-1. **`WATER.audit({ground, surfaces?})`: the water-ground contract as one check.** Every fault in row 1 and most in
+1. **`WATER.audit({ground, surfaces?})`: the water-ground contract as one check.** *Written 2026-10-27: ext/57, `test-audit.js`, README "The water-ground audit".* Every fault in row 1 and most in
    row 3 was found by a probe written by hand for that page. Make it a core function that a `verify.py` calls, each
    rule with a negative input in its node test:
    - a flow's level never rises downstream; its water never under the ground at the centreline; its ribbon edge no
@@ -41,7 +41,7 @@ Done this session (opt-in, tested, in `README.md`): `WATER.confluence` and `fade
    parent for each tributary or distributary and the open water each ends in, and make every confluence and fork, every
    `keep` fade into a lake with its plume, and the right ribbon order, from the graph. eastabyss's six flows, two forks
    and four mouths would be one call.
-3. **Ground-derived placement helpers.** `WATER.lipAt(line, ground)`, `WATER.toeAt(line, ground, lip)` and
+3. **Ground-derived placement helpers.** *Written 2026-10-27 in ext/57 (`fallsOf({ground})` with it).* `WATER.lipAt(line, ground)`, `WATER.toeAt(line, ground, lip)` and
    `WATER.levelFromDownstream(line, ground, {over})` (each level the higher of bed + over and the level below it: never
    rising, never under the ground) are the three functions the Rift's 89w had to invent. `fallsOf` should take the
    ground and place lips and feet by them.
