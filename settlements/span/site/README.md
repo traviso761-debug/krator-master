@@ -9,7 +9,8 @@ To refresh it after the station changes: open the station's page (`biomes/swhigh
 `site` exporter, or run `window._api.site()` there, and write the JSON here. Then `python3 build.py`, `node test-span.js`,
 `python3 verify.py dist/span.html --assert`, `python3 span_blueprint.py`.
 
-Exported 2026-10-27 from the station's page built at `claude/swhighlands-s1-04f512` 0e8886daa: the table falling toward its edge
+Exported 2026-10-27 from the station's page built at `claude/swhighlands-s1-04f512` c5dadb8c5 (no trench at the cliff's foot; the slots capped at the
+caprock's depth): the table falling toward its edge
 (the watch top 225.5 over y0), Span's canyon and reservoir carved by the station in the frame it publishes (`canyon`: M, n, t, u0,
 which the layout reads instead of computing), 39 towers and 5 arches (Span draws no arches), `rimFine` (5 m) and `ground` (the
 surface as drawn round the watch pillar and its cliff, 2 m, on both sides of the rim: only towers and arches are bodies).

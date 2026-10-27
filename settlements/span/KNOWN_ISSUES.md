@@ -46,8 +46,7 @@
       the record's `ground` field (the table and its cliff as drawn, open slots and all). The drawn table edge stands about 30 m
       in from `rimFine`, so the cliff stair finds the edge in each section (the first 15 m fall under the table 40-80 m in) and
       stands each tread where the drawn face is at its height; head and foot on solid table, slot mouths in the face crossed as
-      spans. The field shows a trench 170-225 m deep along the cliff's foot, inside the apron's lip (about 100 m under the
-      table): the stair crosses it on a level span to the apron; asked of the station whether it is meant. Off the field
+      spans. A trench at the cliff's foot (station 4 had one until c5dadb8c5, a bug, fixed) would be crossed on a level span. Off the field
       `L.apron` still falls linearly. The rim road takes the highest of 40-120 m in from the rim's line. The arches are not
       drawn. The rim patch of the page's ground is meshed at 3 m so the drawn cliff matches the 2 m field the stair fits.
 - [ ] **The frame's M** (where Span's canyon meets the rim, the site's x -1750) was Span's choice; station 4 now carves Span's

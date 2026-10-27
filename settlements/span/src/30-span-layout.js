@@ -289,8 +289,9 @@ L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
   while (y > fl + 1e-6){ var y2 = Math.max(fl, y - 60), from = k % 2 ? vB : vA, to = k % 2 ? vA : vB, lane = k % 2 ? 4 : 1.5;
     for (var j = 0; j <= 60; j++){ var v = from + (to - from) * j / 60, yy = y + (y2 - y) * j / 60; pts.push([r1(at(v, yy, lane)), r1(v), r1(yy)]); }   /* a point every 2 m: the face juts in and out on that scale */
     y = y2; k++; if (y > fl + 1e-6) pts.push([r1(at(to, y, k % 2 ? 4 : 1.5)), to, r1(y)]); }
-  // the foot: a level span from the last tread across the trench at the cliff's foot to the apron's ground (44 m out from the edge)
-  var vE = pts[pts.length - 1][1], eE = best ? edge(vE) : null; if (eE && eE.ap != null) pts.push([r1(eE.u + 44), vE, pts[pts.length - 1][2]]);
+  // the foot: where a trench stands between the face's foot and the apron (more than 5 m under it), a level span across it to the
+  // apron's ground (44 m out from the edge); with none, the last tread is the foot
+  var vE = pts[pts.length - 1][1], eE = best ? edge(vE) : null; if (eE && eE.ap != null && trench(eE, vE) > 5) pts.push([r1(eE.u + 44), vE, pts[pts.length - 1][2]]);
   L.cliffStair = pts;
   L.cliffEdge = best ? { vA: vA, vB: vB, trench: r1(best.worst) } : null;
   // the path down the apron to the watch pillar's foot: six legs zigzagging 50 m either side of the line from the stair's foot,
