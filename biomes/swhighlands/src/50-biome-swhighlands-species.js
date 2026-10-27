@@ -44,7 +44,7 @@ const PAL=SWHI.PAL={
  log:[0x5a5048,0x4e4640],
  whorlBark:[0x6a5e52,0x5e544a,0x74685a],whorl:[0x2e7a74,0x347f78,0x286e6a,0x3a8a80],   // the whorl column: teal bristles
  bottleBark:[0x9a8a72,0x8e7e66,0xa69478],brush:[0x5a8a7e,0x4e8276,0x6a9a88],   // the bottle brush: a pale swollen trunk, blue-green bristles
- glass:[0x8ad0c8,0x9adcd0,0x7ac4be],stone:[0xa8a29a,0x9a948c,0xb4ada4,0xa89c8e]};
+ glass:[0x8ad0c8,0x9adcd0,0x7ac4be],tube:[0x5a9a8a,0xb09a5a,0xa08a50,0x7aa070,0xc0a868,0x8a7a5a],sproutTl:[0x4a8a78,0x5a9a84,0x6a9a6a],stone:[0xa8a29a,0x9a948c,0xb4ada4,0xa89c8e]};
 
 // ---------------------------------------------------------------- the tree species
 // H: height [lo,hi] m; rb: the bole's (or a pillar's) radius; crownR: the crown's (or the cap's) radius
@@ -75,6 +75,7 @@ const PL=SWHI.PLANTS=[
  {label:'Fellfield stones',name:'Fellfield stones (the shattered megabreccia of the crest)',tags:tag({climate:'cold',aridity:'semiarid'},{})},
  {label:'Whorl bristles',name:'Whorl bristles (the whorl column)',tags:tag({climate:'cold'},{})},
  {label:'Bristle crown',name:'Bristle crown (the bottle brush)',tags:tag({climate:'cool',aridity:'semiarid'},{})},
+ {label:'Tube shrub',name:'Tube shrub (a fungoid shrub of open tubes)',tags:tag({climate:'cool',aridity:'semiarid'},{notes:'the understorey of the treeline woods'})},
  {label:'Log crust',name:'Log crust',tags:tag({riparian:'no'},{notes:'the decay layer: teal-and-gold plates and orange shelves on the dead cords'})},
  {label:'Cup-pads',name:'Cup-pads (the lattice oak)',tags:SP[0].tags},
  {label:'Parasol fruit',name:'Parasol fruit (the lattice oak)',tags:SP[0].tags},
@@ -163,7 +164,7 @@ function coralGeo(){const pos=[],nor=[],uv=[],col=[],A=PAL.coralA.map(h=>new T3.
  // a whorl: n spokes of bristle straps radiating from the trunk, drooping a little toward their tips (radius 1, the trunk at 0)
 function whorlGeo(n,droop){const pos=[],uv=[],nor=[];for(let k=0;k<n;k++){const a=k/n*TAU,ca=Math.cos(a),sa=Math.sin(a),w=.4;
   const P=[[0,-w*.4],[1,-w],[1,w],[0,w*.4]].map(q=>{const t=q[0];return[ca*t-sa*q[1],-droop*t*t,sa*t+ca*q[1],q[1]/(2*w)+.5,1-t];});
-  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(ca*.3,.95,sa*.3);});}
+  [0,2,1,0,3,2].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(ca*.3,.95,sa*.3);});}   /* front faces up: snow that lies (core/atmos snowOn) holds on a card's front */
  return BIO.geo._make(pos,nor,uv);}
 // glass leaf: five twisted translucent straps from one foot (1 tall)
 function glassGeo(){const pos=[],uv=[],nor=[];for(let k=0;k<5;k++){const a=k/5*TAU+.4,lean=.25+.1*(k%2),seg=4;
@@ -175,7 +176,9 @@ function glassGeo(){const pos=[],uv=[],nor=[];for(let k=0;k<5;k++){const a=k/5*T
 // a fellfield stone: an icosahedron knocked about by KRAND (radius ~1)
 function stoneGeo(){const g=new T3.IcosahedronGeometry(1,1),P=g.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=.75+.5*KRAND.fbm(x*1.3+5,y*1.3,z*1.3,2,66);P.setXYZ(i,x*k,y*k*.6,z*k);}g.computeVertexNormals();return g;}
 const G=SWHI.GEO={
- whorl:whorlGeo(9,.28),brush:BIO.geo.clump(),glassleaf:glassGeo(),stone:stoneGeo(),
+ whorl:whorlGeo(9,.28),
+ // the treeline's understorey shrub: a clump of open fungoid tubes (BIO.fung.tube), teal to ochre
+ tubeShrub:BIO.fung.tube({n:9,r:.11,hMin:.35,spread:.42,seg:6}),brush:BIO.geo.clump(),glassleaf:glassGeo(),stone:stoneGeo(),
  // a cup-pad: a shallow green funnel, its rim waved (BIO.fung.cap form 'funnel', no underside), planar uv from above
  pad:BIO.fung.cap({form:'funnel',h:.28,seg:12,rings:3,wav:5,wavA:.09,under:'none',seed:81,uv:'planar'}),
  // a parasol fruit: a blue dome on a stalk (radius 1, the stalk 1.3)
@@ -220,5 +223,6 @@ BIO.def('whorl',G.whorl,M.whorl,{label:'Whorl bristles',attrs:['aN']});
 BIO.def('brush',G.brush,M.brush,{label:'Bristle crown',attrs:['aN']});
 BIO.def('glassleaf',G.glassleaf,M.glass,{label:'Glass leaf'});
 BIO.def('stone',G.stone,M.stone,{label:'Fellfield stones'});
+BIO.def('tubeshrub',G.tubeShrub,M.coneCap,{label:'Tube shrub'});
 SWHI.PICK=(arr,u)=>arr[Math.floor(u*arr.length)%arr.length];
 })();

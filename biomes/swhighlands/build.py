@@ -120,6 +120,8 @@ if STATION == 'treeline':
     PATH['47a-ehigh-species.js'] = os.path.join(EH, 'src', '50-biome-ehigh-species.js')
     PATH['47b-ehigh-trees.js'] = os.path.join(EH, 'src', '55-biome-ehigh-trees.js')
     VIRTUAL['44b-host-matlib-pack-ehigh.js'] = matlib_pack.fragment(EH, 'ehigh')
+    # snow that lies while it falls (core/atmos/fx: ATMOS.snowCover, ATMOS.snowOn on every lit material; the owner, 2026-10-27)
+    PATH['89-atmos-fx-snowcover.js'] = core('atmos', 'fx', '89-atmos-fx-snowcover.js')
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos: its core, presets, weather, export, the wave field and the sky's light, bound by 89a-host-atmos.js

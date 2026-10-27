@@ -64,8 +64,11 @@
    sh.uniforms.atmSnowDepth=A.U.snowDepth;sh.uniforms.atmSnowBase=A.U.snowBase;sh.uniforms.atmSnowLine=A.U.snowLine;sh.uniforms.atmSnowLee=A.U.snowLee;sh.uniforms.atmSnowWindDir=A.U.snowWind;
    if(A.rainCoverUniforms&&A.U.rainOcc)A.rainCoverUniforms(sh.uniforms);
    const V='varying vec3 vAtmSnP;varying vec3 vAtmSnN;';
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+V).replace('#include <project_vertex>','#include <project_vertex>\n'+
-    'vec4 atmSnWp=vec4(transformed,1.0);vec3 atmSnN='+(o.aN?'aN':'objectNormal')+';\n#ifdef USE_INSTANCING\natmSnWp=instanceMatrix*atmSnWp;atmSnN=mat3(instanceMatrix)*atmSnN;\n#endif\nvAtmSnP=(modelMatrix*atmSnWp).xyz;vAtmSnN=normalize(mat3(modelMatrix)*atmSnN);');
+   /* the vertex code goes after <project_vertex>; a page hook that replaced that chunk (core/biome's foliage hook does, for the sway:
+      2026-10-27, biomes/swhighlands: no leaf card on any page took the snow) gets it just before <fog_vertex> instead, the same code */
+   const SNV='vec4 atmSnWp=vec4(transformed,1.0);vec3 atmSnN='+(o.aN?'aN':'objectNormal')+';\n#ifdef USE_INSTANCING\natmSnWp=instanceMatrix*atmSnWp;atmSnN=mat3(instanceMatrix)*atmSnN;\n#endif\nvAtmSnP=(modelMatrix*atmSnWp).xyz;vAtmSnN=normalize(mat3(modelMatrix)*atmSnN);';
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+V);
+   sh.vertexShader=sh.vertexShader.indexOf('#include <project_vertex>')>=0?sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+SNV):sh.vertexShader.replace('#include <fog_vertex>',SNV+'\n#include <fog_vertex>');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+V+A.snowGLSL()).replace('#include <emissivemap_fragment>',
     '{vec3 atmSnNf=normalize(vAtmSnN);'+(o.twoSided?'if(!gl_FrontFacing)atmSnNf=-atmSnNf;':'')+'float atmS=atmSnow(vAtmSnP,atmSnNf);diffuseColor.rgb=atmSnowAlbedo(diffuseColor.rgb,atmS,atmSnNf.y);\n'+
     '#if defined(STANDARD)\nroughnessFactor=mix(roughnessFactor,'+f(A.PRESETS.snowcover.roughness)+',atmS);\n#endif\n}\n#include <emissivemap_fragment>');};

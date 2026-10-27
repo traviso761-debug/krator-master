@@ -46,16 +46,22 @@ B.bottle=function(T,st,lv,s){const S=SP[T.sp],full=lv===2,Ht=T.H*s.range(.5,.62)
  if(full)reg({name:S.name,key:'flora.'+S.key,kind:'tree',x:T.x,z:T.z,y:T.y0,r:T.rb*1.8+.6,h:T.H});};
 
 // ---------------------------------------------------------------- the pass
-SWHI.buildTreeline=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,whorls:0,brushes:0,heroes:0,light:0,far:0,glassTowers:0,glassleaf:0,stones:0,moss:0,turf:0,byS:SP.map(()=>0)};
+SWHI.buildTreeline=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,whorls:0,brushes:0,heroes:0,light:0,far:0,glassTowers:0,glassleaf:0,stones:0,moss:0,turf:0,tubes:0,sprouts:0,buttons:0,byS:SP.map(()=>0)};
  const TREES=SWHI.TREES;TREES.length=0;const HOLD=KSPACE.create({cell:12});
  const clearOf=(x,z,r)=>!HOLD.some(x,z,r,o=>Math.hypot(o.x-x,o.z-z)<o.r+r),hold=(x,z,r)=>HOLD.insert({x,z,r},x,z,r);
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<SWHI.LOD.near?2:d<SWHI.LOD.tree?1:0;};
- const mk=(x,y,z,sp,seed,k)=>{const S=SP[sp],s=KRAND.stream(seed);return{x,z,y0:y-.3,sp,seed,H:s.range(S.H[0],S.H[1])*(k==null?1:k),rb:s.range(S.rb[0],S.rb[1])*(k==null?1:Math.sqrt(k)),crownR:s.range(S.crownR[0],S.crownR[1])*(k==null?1:k),lv:lvOf(x,z)};};
+ /* AGE (the owner, 2026-10-27: the woods read samey): each tree's own draw sets its stage, saplings 15%, young 30%, mature 40%, old 15%,
+    scaling its height, girth and crown; k the treeline's krummholz shrink on top */
+ const AGE=[[.15,.22,.4],[.45,.45,.75],[.85,.8,1.05],[1,1.05,1.3]];
+ const mk=(x,y,z,sp,seed,k)=>{const S=SP[sp],s=KRAND.stream(seed),u=s.next(),A=AGE[u<.15?0:u<.45?1:u<.85?2:3],a=A[1]+(A[2]-A[1])*s.next();k=(k==null?1:k)*a;
+  return{x,z,y0:y-.3,sp,seed,age:u<.15?'sapling':u<.45?'young':u<.85?'mature':'old',H:s.range(S.H[0],S.H[1])*k,rb:s.range(S.rb[0],S.rb[1])*Math.sqrt(k),crownR:s.range(S.crownR[0],S.crownR[1])*Math.pow(k,.8),lv:lvOf(x,z)};};
+ /* STANDS: the woods thick in some places, open in others (a KRAND field, 400 m across) */
+ const stand=(x,z)=>.25+.95*smooth(.36,.62,KRAND.fbm(x*.0025+3,.4,z*.0025-7,3,611));
  const k=Math.sqrt(1/q);
  // the bottle brushes first (they hold their sunny spurs), then the whorl columns, shrinking over the treeline's last 150 m
- SWHI.cells(27*k,601,box,(x,z)=>{const Z=SWHI.treeZones(x,z);return Z.bottle*Z.open*.75;},(x,y,z,sd)=>{if(!clearOf(x,z,3.5))return false;
+ SWHI.cells(27*k,601,box,(x,z)=>{const Z=SWHI.treeZones(x,z);return Z.bottle*Z.open*.75*stand(x,z);},(x,y,z,sd)=>{if(!clearOf(x,z,3.5))return false;
   const T=mk(x,y,z,KEY.bottlebrush,sd);TREES.push(T);hold(x,z,T.crownR*.8);return true;});
- SWHI.cells(23*k,602,box,(x,z)=>{const Z=SWHI.treeZones(x,z);return Z.whorl*Z.open*.85;},(x,y,z,sd)=>{if(!clearOf(x,z,2.2))return false;
+ SWHI.cells(23*k,602,box,(x,z)=>{const Z=SWHI.treeZones(x,z);return Z.whorl*Z.open*.85*stand(x+500,z-300);},(x,y,z,sd)=>{if(!clearOf(x,z,2.2))return false;
   const Z=SWHI.treeZones(x,z),T=mk(x,y,z,KEY.whorlcolumn,sd,1-.72*Z.krumm);TREES.push(T);hold(x,z,Math.max(1.2,T.crownR*.55));return true;});
  // the far canopy: octahedral impostors (core/biome 34), one hero of each species baked again in place, its volume muted
  const IMPS=[];
@@ -84,8 +90,16 @@ SWHI.buildTreeline=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,whorls
  pass('glassleaf',3.2,604,L,Z=>Z.glassleaf*Z.open*(.35+.4*Z.fell),(x,y,z,s)=>{const w=s.range(.5,1.1);BIO.put('glassleaf',[x,y-.05,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.8,1.3),w],PICK(PAL.glass,s.next()),{label:'Glass leaf'});});
  pass('moss',3.6,605,L,Z=>Z.whorl*Z.shade*.8*Z.open,(x,y,z,s)=>{const w=s.range(.6,1.2);BIO.put('moss',[x,y-.04,z],QE(0,s.range(0,TAU),0),[w,w*.4,w],PICK(PAL.moss,s.next()),{label:'Native moss'});});
  pass('turf',3.2,606,L,Z=>(Z.sunny*.55+.15)*(1-Z.fell*.7)*Z.open,(x,y,z,s)=>{const w=s.range(.5,.95);BIO.put('turf',[x,y-.04,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.4,.7),w],PICK(PAL.turfDry,s.next()),{label:'Ridge turf'});});
+/* THE UNDERSTOREY (the owner, 2026-10-27: more of it, shrub-like fungoids): tube shrubs in clumps under and between the trees, cup-pad
+    sprouts in the shaded woods, bead-cone buttons in their wettest shade */
+ pass('tubes',5,608,L,Z=>(Z.whorl*.55+Z.bottle*.5)*Z.open,(x,y,z,s)=>{const n=s.int(1,4);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.8),w=s.range(.28,.75);const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+  BIO.put('tubeshrub',[px,Y(px,pz)-.05,pz],QE(s.range(-.12,.12),s.range(0,TAU),s.range(-.12,.12)),[w*1.3,w*s.range(.7,1.3),w*1.3],PICK(PAL.tube,s.next()),{label:'Tube shrub'});}});
+ pass('sprouts',4.5,609,L,Z=>Z.whorl*Z.shade*.6*Z.open,(x,y,z,s)=>{const n=s.int(2,5);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.4),h=s.range(.2,.5),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+  BIO.put('sprout',[px,Y(px,pz)-.05,pz],QE(s.range(-.18,.18),s.range(0,TAU),s.range(-.18,.18)),[h,h,h],PICK(PAL.sproutTl,s.next()),{label:'Pad sprouts (young lattice oaks)'});}});
+ pass('buttons',9,610,L,Z=>Z.whorl*Z.shade*.3*Z.open,(x,y,z,s)=>{const n=s.int(1,3);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1),h=s.range(.3,.7),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+  BIO.put('button',[px,Y(px,pz)-.05,pz],QE(0,s.range(0,TAU),0),[h,h,h],PICK(PAL.coneCap,s.next()),{label:'Bead cone buttons'});}});
  pass('stones',4,607,700,Z=>Z.fell*.5+Z.scree*.3,(x,y,z,s)=>{const w=s.range(.15,.65);BIO.put('stone',[x,y-w*.25,z],QE(s.range(-.3,.3),s.range(0,TAU),s.range(-.3,.3)),[w,w,w],PICK(PAL.stone,s.next()),{label:'Fellfield stones'});});
  BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,light:st.light,far:TREES.length-st.heroes-st.light,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).filter(x=>!/:0$/.test(x)).join(' '),
-  whorls:st.whorls,brushes:st.brushes,glassTowers:st.glassTowers,floor:{glassleaf:st.glassleaf,moss:st.moss,turf:st.turf,stones:st.stones},tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
+  whorls:st.whorls,brushes:st.brushes,glassTowers:st.glassTowers,floor:{glassleaf:st.glassleaf,moss:st.moss,turf:st.turf,stones:st.stones,tubes:st.tubes,sprouts:st.sprouts,buttons:st.buttons},ages:SWHI.TREES.reduce((m,T)=>{m[T.age]=(m[T.age]||0)+1;return m;},{}),tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
 })();
