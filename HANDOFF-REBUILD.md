@@ -214,6 +214,21 @@ station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
 - **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
   in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
   process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.
+- **Span's lessons** (the Span arcology session, 2026-10-27; the full twenty in the side-session notes,
+  `span-build-lessons.md`):
+  - A fresh worktree holds LFS pointers: a page builds black without an error. Pull the build's `tex/` and library sets first,
+    and compare the sidecars' sizes after.
+  - In a worktree `port_baseline.py` reads every pointer page as CHANGED: `--update` only your own pages. `audit_port.py`
+    rewrites ~80 `PORT.md` files: revert the others with `git -c core.autocrlf=false checkout`.
+  - Prefer an opt-in companion fragment to editing a shared core one (`37-core-stacks.js` is in ~13 builds; one added function
+    means rebuilding them all). Example: `KSTACKS.contour` in `core/terrain/37b-core-stacks-contour.js` (pillar profile, joints,
+    crown, split; on `claude/admiring-rhodes-76b8cd`, cd01ba192, unpushed).
+  - core/host: `userData.probePoints` is a flat x,y,z array, and a merged mesh needs `userData.host=true`, or the
+    inspector-volume check fails.
+  - Fragment order: a build that sorts by name loads `host/35-core-strata-shade.js` before `35-core-strata.js` (key it `35z`);
+    a KMAT pack fragment (88x) loads after the host stage, so read `KMAT.packed` lazily in `onBeforeCompile`.
+  - Anything hung on a KSTACKS wall follows the drawn mesh, interpolated between its rows (they stand metres apart); stairs
+    round a tower are an even helix on a smoothed radius, never a square plan's corners.
 - **Stage files by name.** `git add biomes` swept other agents' unfinished work into a merge commit once.
 - **Never kill processes by matching a session id or scratchpad path**: claude.exe carries it. Kill exact PIDs.
 - Agents working in parallel take their own git worktree and branch (`git worktree add ../krator-<x> -b claude/<x>
