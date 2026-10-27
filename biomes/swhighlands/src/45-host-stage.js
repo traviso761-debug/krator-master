@@ -110,13 +110,20 @@ const COURSES=(function(){const L=[];
  let jn=rv[0],jd=1e18;rv.forEach(p=>{const d=Math.hypot(p[0]-(BITE.x-300),p[1]-BITE.z);if(d<jd){jd=d;jn=p;}});
  const cv=[[BITE.x+BITE.r+18,BITE.z],[BITE.x+BITE.r+6,BITE.z],[BITE.x+BITE.r-10,BITE.z-1],[BITE.x,BITE.z-3],[BITE.x-60,BITE.z-8]];
  for(let t=1;t<=14;t++){const u=t/14,a=cv[cv.length-1];cv.push([lerp(a[0],jn[0],u)+8*Math.sin(u*Math.PI*2),lerp(a[1],jn[1],u)]);}
- L.push({key:'cave',name:'The cave stream',pts:cv,w:[2.6,3.4],dep:.6,speed:1.6});
+ // it ends at the river's bank (the owner, 2026-10-26: its ribbon and banks ran on across the river): its points within the river's
+ // channel are dropped, the last one set on the bank line
+ {const rw=L[0].w[1]*.75;   /* the end tucked a little under the river's edge, so the two waters meet (89w draws the river over it) */while(cv.length>2&&Math.hypot(cv[cv.length-1][0]-jn[0],cv[cv.length-1][1]-jn[1])<rw)cv.pop();
+  const a=cv[cv.length-1],d=Math.hypot(a[0]-jn[0],a[1]-jn[1]);cv.push([jn[0]+(a[0]-jn[0])/d*rw,jn[1]+(a[1]-jn[1])/d*rw]);}
+ L.push({key:'cave',name:'The cave stream',pts:cv,w:[2.6,3.4],dep:.6,speed:1.6,join:{ci:0,at:jn}});
  const gs=[];for(let k=0;k<GP.length-1;k++){const a=GP[k],b=GP[k+1],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/5);for(let i=0;i<n;i++)gs.push([lerp(a[0],b[0],i/n),lerp(a[1],b[1],i/n)]);}
  gs.push(GP[GP.length-1],[GORGE.sink.x+6,GORGE.sink.z]);
  L.push({key:'gorge',name:'The gorge stream',pts:gs,w:[1.6,2.2],dep:.45,speed:1.8});
  L.forEach(C=>{const lv=KRELIEF.river(C.pts,g1,{depth:C.dep,sample:C.w[1]*2});C.y=lv.map(p=>p.y);C.slope=lv.map(p=>p.slope);
   C.S=[0];for(let i=1;i<C.pts.length;i++)C.S.push(C.S[i-1]+Math.hypot(C.pts[i][0]-C.pts[i-1][0],C.pts[i][1]-C.pts[i-1][1]));
   C.LEN=C.S[C.S.length-1];C.halfW=i=>mix(C.w[0],C.w[1],C.S[i]/C.LEN);});
+ // a tributary never falls below the river it joins (its surface meets the river's at the bank: max keeps it monotone)
+ L.forEach(C=>{if(!C.join)return;const M=L[C.join.ci];let k=0,bd=1e18;M.pts.forEach((p,i)=>{const d=Math.hypot(p[0]-C.join.at[0],p[1]-C.join.at[1]);if(d<bd){bd=d;k=i;}});
+  const yj=M.y[k];C.y=C.y.map(y=>Math.max(y,yj));});
  return L;})();
 const RIVER=COURSES[0],CAVE_STREAM=COURSES[1],GORGE_STREAM=COURSES[2];
 // the segments in one KSPACE index (core/space): the nearest course to any point, for the channels, the mask and the fields
@@ -124,15 +131,17 @@ const SEGIX=(function(){const S=KSPACE.create({cell:40});COURSES.forEach((C,ci)=
  S.insert({ci,i},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+C.w[1]+40);}});return S;})();
 const _sq=[];
 // nearest water course: {d, C, i, f, y (its surface), w (its half width), s (metres downstream)} within 40 m of its bank, or null
-function streamNear(x,z){SEGIX.query(x,z,0,_sq);let best=null,bd=1e18;
+function streamsNear(x,z){SEGIX.query(x,z,0,_sq);const per=[];
  for(const q of _sq){const C=COURSES[q.ci],a=C.pts[q.i],b=C.pts[q.i+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),px=a[0]+dx*t-x,pz=a[1]+dz*t-z,d2=px*px+pz*pz;
-  const w=C.halfW(q.i),dd=Math.sqrt(d2)-w;if(dd<bd){bd=dd;best={ci:q.ci,i:q.i,f:t,d2};}}
- if(!best)return null;const C=COURSES[best.ci],i=best.i,f=best.f;
- return{C,d:Math.sqrt(best.d2),i,f,y:mix(C.y[i],C.y[i+1],f),w:C.halfW(i),s:mix(C.S[i],C.S[i+1],f),slope:C.slope[i]};}
+  const w=C.halfW(q.i),dd=Math.sqrt(d2)-w,P=per[q.ci];if(!P||dd<P.dd)per[q.ci]={ci:q.ci,i:q.i,f:t,d2,dd};}
+ const out=[];for(const P of per){if(!P)continue;const C=COURSES[P.ci],i=P.i,f=P.f;
+  out.push({C,d:Math.sqrt(P.d2),dd:P.dd,i,f,y:mix(C.y[i],C.y[i+1],f),w:C.halfW(i),s:mix(C.S[i],C.S[i+1],f),slope:C.slope[i]});}
+ return out;}
+function streamNear(x,z){let best=null;for(const r of streamsNear(x,z))if(!best||r.dd<best.dd)best=r;return best;}
 // the ground with the channels: a bed under the surface, a low bank, then the valley floor; the ground held under the water's
 // surface out to the ribbon's margin (the field is coarser than the narrow channels)
-function terrainH0(x,z){let h=g1(x,z);const r=streamNear(x,z);
- if(r){const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);
+function terrainH0(x,z){let h=g1(x,z);
+ for(const r of streamsNear(x,z)){const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);
   if(r.d<w)h=Math.min(h,r.y-dep*(1-.55*(r.d/w)*(r.d/w))-.15);
   else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<h)h=bank;}
   if(r.d<w+2.5)h=Math.min(h,r.y-.45);}
@@ -202,6 +211,8 @@ BIO.init({tags:'swhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wa
   const K=GORGE.sink;if(Math.hypot(x-K.x,z-K.z)<K.r+3)return 0;
   const r=streamNear(x,z);if(r&&r.d<r.w+1.5)return 0;if(r&&r.d<r.w+6&&terrainH(x,z)<r.y+.3)return 0;   // the water and its wet edge
   if(KCARVE.covered(x,z)!=null)return 0;                                                               // nothing roots in the cave
+  if(Math.hypot(x-BITE.x,z-BITE.z)<BITE.r+70&&x<BITE.x+BITE.r)return 0;                                 // the cave's floor and the ground before it stay open
+  if(Math.abs(z-ARCH_Z)<50&&Math.abs(x-ARCH_X)<70)return 0;                                             // the arch's col: bare rock and turf
   return smooth(1.25,.8,FC.at(FC.a.slope,x,z))*(1-FC.at(FC.a.farm,x,z));},                           // the cliffs stay bare; the farm is the Republic's
  obstacles:OBSTACLES,ticks:tick,seed:WORLD,register:REGISTER,
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});

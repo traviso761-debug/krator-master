@@ -12,12 +12,12 @@ SWHI.buildFloor=function(box,q){q=q==null?1:q;const st={moss:0,club:0,turf:0,hea
   return SWHI.cells(cell*k,salt,box,(x,z)=>inR(x,z)?accept(SWHI.zones(x,z),x,z):0,(x,y,z,sd)=>{if(BIO.depth(x,z)>-.15)return false;const s=KRAND.stream(sd);put(x,y,z,s);st[item]++;return true;});};
  const L=SWHI.LOD.floor;
  // the cove's floor: moss everywhere under the oaks, club-moss where it is wettest
- pass('moss',3.2,401,L,Z=>Z.forest*(.3+.7*Z.cove)*(1-.5*Z.crest),(x,y,z,s)=>{const w=s.range(.6,1.3);
+ pass('moss',3.8,401,L,Z=>Z.forest*(.3+.7*Z.cove)*(1-.5*Z.crest),(x,y,z,s)=>{const w=s.range(.6,1.3);
   BIO.put('moss',[x,y-.04,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.3,.5),w],PICK(PAL.moss,s.next()),{label:'Native moss'});});
  pass('club',4.5,402,L,Z=>Z.forest*Z.cove*smooth(.7,.95,Z.wet),(x,y,z,s)=>{const w=s.range(.4,.8);
   BIO.put('club',[x,y-.03,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.7,1.2),w],PICK(PAL.clubmoss,s.next()),{label:'Club-moss'});});
  // the turf: the crests' open ground and the bald
- pass('turf',2.8,403,L,Z=>Z.bald*.85+Z.crest*.35*(1-Z.cove)+Z.forest*.06,(x,y,z,s)=>{const w=s.range(.5,1);
+ pass('turf',3.4,403,L,Z=>Z.bald*.85+Z.crest*.35*(1-Z.cove)+Z.forest*.06,(x,y,z,s)=>{const w=s.range(.5,1);
   BIO.put('turf',[x,y-.04,z],QE(s.range(-.1,.1),s.range(0,TAU),0),[w,w*s.range(.4,.75),w],PICK(PAL.turf,s.next()),{label:'Ridge turf'});});
  // THE BALD: bulb heath in clumps, banded coral among it (a little of each on the other crests)
  pass('heath',3.6,404,700,Z=>Z.bald*.6+Z.crest*.05*(1-Z.forest*.5),(x,y,z,s)=>{const w=s.range(.6,1.3);

@@ -54,7 +54,7 @@ B.lattice=function(T,st,lv,s){const S=SP[T.sp],full=lv===2,n=full?s.int(5,7):4,H
  // the cup-pads and their fruits
  for(const p of pads){const r=T.crownR*s.range(.3,.42)*(full?1:1.2),tilt=s.range(0,.22),ya=s.range(0,TAU);
   BIO.put('cuppad',[p[0],p[1]-.15,p[2]],QE(tilt,ya,0),[r,r*s.range(.8,1.1),r],col(PAL.pad,s.next()));st.pads++;
-  if(full){const nf=s.int(4,8);for(let k=0;k<nf;k++){const a=s.range(0,TAU),d=r*s.range(.1,.55),fs=s.range(.32,.5);
+  if(full&&s.chance(.6)){const nf=s.int(2,4);for(let k=0;k<nf;k++){const a=s.range(0,TAU),d=r*s.range(.1,.55),fs=s.range(.32,.5);
    BIO.put('parasol',[p[0]+Math.cos(a)*d,p[1]+r*.12,p[2]+Math.sin(a)*d],QE(s.range(-.2,.2),s.range(0,TAU),0),fs,col(PAL.parasol,s.next()),{label:'Parasol fruit'});st.fruit++;}}}
  if(full)reg({name:S.name,key:'flora.'+S.key,kind:'tree',x:T.x,z:T.z,y:T.y0,r:T.rb*1.6+1,h:T.H});};
 // THE BEAD CONE: a spongy ribbed stalk, a tall cone of a cap, strings of gold eggs hung round its rim
@@ -102,7 +102,7 @@ SWHI.buildTrees=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,pads:0,fr
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<SWHI.LOD.near?2:d<SWHI.LOD.tree?1:0;};
  const mk=(x,y,z,sp,seed)=>{const S=SP[sp],s=KRAND.stream(seed);return{x,z,y0:y-.3,sp,seed,H:s.range(S.H[0],S.H[1]),rb:s.range(S.rb[0],S.rb[1]),crownR:s.range(S.crownR[0],S.crownR[1]),lv:lvOf(x,z)};};
  // THE PILLAR CAPS first: the bald's own, at its middle, and a few lone caps on the other crests, each holding its clearing
- {const T=mk(BALD_AT[0],Y(BALD_AT[0],BALD_AT[1]),BALD_AT[1],KEY.pillarcap,KRAND.hash(BIO.host.seed,7,7,7));T.H=24;T.crownR=12.5;T.bald=true;TREES.push(T);hold(T.x,T.z,T.crownR*1.6);}
+ {const T=mk(BALD_AT[0],Y(BALD_AT[0],BALD_AT[1]),BALD_AT[1],KEY.pillarcap,KRAND.hash(BIO.host.seed,7,7,7));T.H=24;T.crownR=12.5;T.bald=true;TREES.push(T);hold(T.x,T.z,BALD_R*.72);   /* the bald is the clearing under its cap: no other tree in its middle */}
  cells(420,301,box,(x,z)=>{const Z=SWHI.zones(x,z);return Z.crest>.85&&Z.bald<.1&&Z.farm<.1?.35:0;},(x,y,z,sd)=>{if(!clearOf(x,z,60))return false;
   const T=mk(x,y,z,KEY.pillarcap,sd);TREES.push(T);hold(x,z,T.crownR*1.4);return true;});
  // THE LATTICE OAKS: the coves' closed canopy first (its own cells), then the open flanks, thinner on the crests
@@ -137,7 +137,7 @@ SWHI.buildTrees=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,pads:0,fr
  return{trees:TREES.length,heroes:st.heroes,light:st.light,far:TREES.length-st.heroes-st.light,logs:SWHI.LOGS.length,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
   pads:st.pads,fruit:st.fruit,eggs:st.eggs,crust:st.crust,tris:{trunk:st.trunk,limbs:st.limb,logs:st.logs,far:st.far}};};
 // the bald's pillar cap stands at the bald's middle (the host's BALD), handed in by SWHI.build
-let BALD_AT=[0,0];SWHI.setBald=(x,z)=>{BALD_AT=[x,z];};
+let BALD_AT=[0,0],BALD_R=60;SWHI.setBald=(x,z,r)=>{BALD_AT=[x,z];if(r)BALD_R=r;};
 // approximate canopy top: the tallest crown over the point
 SWHI._canopyH=function(x,z){let h=0;for(const T of SWHI.TREES){if(Math.abs(x-T.x)<20&&Math.abs(z-T.z)<20&&Math.hypot(x-T.x,z-T.z)<Math.max(3,T.crownR))h=Math.max(h,T.y0+T.H);}return h||(BIO.terrainH(x,z)+2);};
 })();

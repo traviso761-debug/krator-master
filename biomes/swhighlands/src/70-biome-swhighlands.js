@@ -1,10 +1,10 @@
 // ================================================================= SW HIGHLANDS — build / tagsOf / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees, fallen wood) and 60 (floor); this file orders them
 // and reports. opt.box: [x0,z0,x1,z1] the window to fill (a tile built alone draws what the full build draws in it);
-// opt.bald: [x,z] the bald's middle, where its pillar cap stands; opt.quality scales the cells' density.
+// opt.bald: [x,z,r] the bald's middle and radius, where its pillar cap stands; opt.quality scales the cells' density.
 SWHI.build=function(opt){opt=opt||{};const q=opt.quality==null?1:opt.quality,box=opt.box||[-2400,-2400,2400,2400];
  const out={quality:q,ms:{}},now=()=>performance.now();let t=now();
- if(opt.bald)SWHI.setBald(opt.bald[0],opt.bald[1]);
+ if(opt.bald)SWHI.setBald(opt.bald[0],opt.bald[1],opt.bald[2]);
  BIO.cur='swhighlands/trees';Object.assign(out,SWHI.buildTrees(box,q));out.ms.trees=Math.round(now()-t);t=now();
  BIO.cur='swhighlands/floor';out.floor=SWHI.buildFloor(box,q);out.ms.floor=Math.round(now()-t);
  BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;return out;};
