@@ -69,8 +69,8 @@ const zoneW=(x,z)=>{const t=across(x,z);return{lake:smooth(-20,40,t),varzea:smoo
 function brookDist(x,z){return Math.min(dl(RIVER.L,x,z).d,dl(CREEK.L,x,z).d);}
 // ---------------------------------------------------------------- the station's hooks into the kit and the shared host
 const STATION_FAR={canopy:true,
- h:(x,z)=>{const t=across(x,z);if(t>0)return Math.min(terrainH(x,z),LOW);const S0=TERR.R*1.1,d=Math.max(Math.abs(x),Math.abs(z))-S0;
-  return terrainH(x,z)+smooth(0,1200,d)*smooth(-300,-900,t)*(48+12*KN(x,z,.0011,301,3)*2);},   /* the lake on east, flat at low water; the canopy's roof inland */
+ h:(x,z)=>{const t=across(x,z);if(t>0)return Math.min(terrainH(x,z),LOW-1.2);const S0=TERR.R*1.1,d=Math.max(Math.abs(x),Math.abs(z))-S0;
+  return terrainH(x,z)+smooth(0,1200,d)*smooth(-300,-900,t)*(48+12*KN(x,z,.0011,301,3)*2);},   /* the lake on east, a flat floor under its low water (the still draws the water over it, so the two never meet); the canopy's roof inland */
  label:'The far shore and the lake past the map'};
 const STATION_BUILD={build:{R:TERR.R-150,heroR:2200},region:{name:'The lake and the flooded forest (ideal type)',x:0,z:0,r:TERR.R,h:520}};
 const STATION_WET=(x,z)=>across(x,z)>-30||brookDist(x,z)<40?0:1;   /* no puddles in the lake or the channels */
@@ -122,7 +122,14 @@ const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{const id=g.createImageData(w,
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=fbm(x/30,y/30,.3,2),n2=fbm(x/5,y/5,7,1),Z=zoneW(wx,wz),gy=groundH(wx,wz);
   let r=30+(n-.5)*22+(n2-.5)*12,gg=42+(n-.5)*30+(n2-.5)*14,b=22+(n-.5)*14;
-  const silt=Z.varzea*smooth(HIGH+.5,HIGH-1,gy);r=lerp(r,92+n2*24,silt);gg=lerp(gg,84+n2*20,silt);b=lerp(b,66+n2*14,silt);   /* the flood's grey-brown mud */
+  /* the flood's floor (the owner, 2026-10-27: "a more mottled green-dark rather than that pure grey-brown"): dark olive mud under a film
+     of algae and moss in patches at two scales, darker in the damp hollows, a paler silt crust in blotches where it dried first */
+  const silt=Z.varzea*smooth(HIGH+.5,HIGH-1,gy),m1=fbm(x/18,y/18,4.1,3),m2=fbm(x/4,y/4,9.3,2),wet=smooth(HIGH-1,LOW+1,gy);
+  let vr=38+(m2-.5)*16,vg=50+(m2-.5)*20,vb=28+(m2-.5)*10;
+  const alg=smooth(.45,.65,m1);vr=lerp(vr,34,alg);vg=lerp(vg,62+(m2-.5)*18,alg);vb=lerp(vb,30,alg);   /* the green film */
+  const dk=smooth(.4,.2,m1)*.6+wet*.25;vr*=1-.35*dk;vg*=1-.3*dk;vb*=1-.3*dk;                        /* the damp hollows */
+  const crust=smooth(.72,.85,fbm(x/40,y/40,13.7,2))*(1-wet);vr=lerp(vr,84,crust*.5);vg=lerp(vg,80,crust*.5);vb=lerp(vb,62,crust*.5);
+  r=lerp(r,vr,silt);gg=lerp(gg,vg,silt);b=lerp(b,vb,silt);
   const sand=Z.lake;r=lerp(r,122+n*30,sand);gg=lerp(gg,108+n*24,sand);b=lerp(b,80,sand);
   const bk=clamp(1-brookDist(wx,wz)/40,0,1);r=lerp(r,104+n2*26,bk);gg=lerp(gg,90+n2*20,bk);b=lerp(b,66,bk);
   d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
@@ -139,5 +146,5 @@ if(GLIB){MAT_GROUND.onBeforeCompile=sh=>{
  const p=g.attributes.position;for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));}
  /* aBk: no litter on the silt, the sand or the channels (the litter layer's weight is 1 - aBk) */
  {const bk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),Z=zoneW(x,z);
-   bk[i]=clamp(Math.max(Z.lake,Z.varzea*smooth(HIGH+.5,HIGH-1,groundH(x,z))*.85,1-brookDist(x,z)/40),0,1);}g.setAttribute('aBk',new THREE.BufferAttribute(bk,1));}
+   bk[i]=clamp(Math.max(Z.lake,Z.varzea*smooth(HIGH+.5,HIGH-1,groundH(x,z))*.45,1-brookDist(x,z)/40),0,1);   /* the library's litter at half strength on the flood's floor: its moss and leaf grain under the paint */}g.setAttribute('aBk',new THREE.BufferAttribute(bk,1));}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The várzea floor and the terrace';scene.add(m);})();
