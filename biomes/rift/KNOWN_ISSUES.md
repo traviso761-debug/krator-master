@@ -46,18 +46,20 @@ Read before changing anything here. `build.py` prints the open count.
       east island at px 448,1237, the page round the ruin (the plateau's scarp and the floor below it are 12-25 km off on the model:
       the far field's, not the page's). y 0 is the model's -507 m, the ruin's plinth at y 300 (-207 m: the shared planting mask takes
       ground under y 0 for the sea). A ridge north-west to south-east through Cube, falling north-east and south-west, two streams
-      in shallow valleys (89w). THE RUIN as massing: the Ancients kit's Arcube in its ruined state, baked by
-      `stations/bake_cube.py` (vertex clustering on an 8 m grid: 263 k triangles in, 114 k out, 1.6 MB) and drawn on the plinth,
-      its flat paving dropped, its upright pieces obstacles, its shell dressed with moss and plants; its colours lifted 1.75 times
-      (they read near black under this page's Lambert). THE FLORA: the east island's forms by `BIO.kin` (open bell, plate frill,
-      rim cushion, copper pine; the old stock as plateau parasol, ribbon fern, gold lantern, vine beard), over the jungle's upper
-      fringe at reduced shares. Held about 25 M (trees 20.0 M, floor 4.9 M; ceiling 40 M), a 31 s build (Arc 140T).
-      The forms (2026-10-27, the builders' habit fields): the open bell's fans flared (`bellK`, `bellTilt`), the plate frill's fins
-      near level (`finLevel`), the rim cushion fused (`fused`), the copper pine straight with a long clear bole (`straight`), the
-      gold lantern's big gold pods (`podCol`, `podK`). GPU verify OK (Arc 140T), its export box on the north-east stream.
-      Open: the vine beard's vines and the plate frill's broad opaque fin card are builder work; the Arcube's dimensions are being
-      reworked from its population (a separate session): re-run `bake_cube.py` when that lands; the survivors in the ruin (the
-      Tungangs' Loj Nahn) are the settlement work's; the 8 m clustering leaves the mass faceted close to.
+      in shallow valleys (89w). THE RUIN is now THE PILE (the owner, 2026-10-27: "the 4th station will now use the Pile rather than
+      arccube, and must be able to cover its lower decks in wild vegetation"): kits/ancients' target arcpile (built on
+      claude/upbeat-yalow-7b38ae, not yet on this branch: `stations/bake_ruin.py --page <its dist/arcpile.html>`), its ruined site
+      baked as massing (vertex clustering on an 8 m grid: 46.6 k triangles, 604 KB) with its roofs (`RUIN_ROOFS`, `overgrow` on the
+      base's), drawn on a 1.4 km plinth. THE DECKS OVERGROWN (87 `plantDecks`): the base's 64 roofs (37-219 m up, ~507,000 m2 open
+      to the sky) painted moss and litter, dressed dense (moss, ledge plants and tree-ferns, curtains off every edge: 65's new opt-in
+      `keep` refuses the parts under the tier above), 2,128 trees and shrubs rooted on them (ribbon fern, gold lantern, vine beard, the
+      jungle's curly shrub, prism bush, croton and lobe tree); the base's walls hung with vines and its undersides with roots and
+      curtains; the crown's farmed roofs left to its people. THE FLORA round it: the east island's forms by `BIO.kin` with their
+      habits (open bell, plate frill, rim cushion, copper pine; plateau parasol, ribbon fern, gold lantern, vine beard), over the
+      jungle's upper fringe. Held about 31 M (trees 23.4 M, dress 3.0 M, floor 4.7 M; ceiling 40 M), an 18 s build (Arc 140T).
+      Open: the walls (37 m storeys) carry less growth than the decks (curtains to ~22 m); the vine beard's vines and the plate
+      frill's broad opaque fin card are builder work; the people in the crown (the Tungangs' Loj Nahn) are the settlement work's;
+      the 8 m clustering leaves the mass faceted close to.
 - [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
       island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,
       the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with

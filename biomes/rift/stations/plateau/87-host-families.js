@@ -54,3 +54,34 @@ function plantFamilies(){if(!FAMILIES)return null;const st={},R=TERR.R-150,HK=RI
    st[F.kin.key]=n;});
   BIO.owner=null;BIO.range=null;BIO.cur=null;return st;}});
  return run.run();}
+// THE PILE'S DECKS, OVERGROWN (the owner, 2026-10-27: "must be able to cover its lower decks in wild vegetation"): the base's roofs
+// (85 DECKS, overgrow: tiers 0-5, 37-219 m over the plinth, ~507,000 m2 of them open sky) as the forest has taken them. Two passes:
+//   the dress   RIFT.dressGeos on the decks as one shell (a quad a roof), dense: moss over the flat, ledge plants and tree-ferns,
+//               curtains of hanging growth off every deck's edge; 65's keep (opt-in) refuses a point under a block of the tier above;
+//               and on the base's walls and undersides (85 RUIN_BASE): vines, and roots and curtains hanging under the decks
+//   the soil    the decks' faces themselves painted moss and litter (85), so the growth stands on green, not on the paving
+//   the trees   a 9 m lattice on every deck (each cell's KRAND hash, reseeded from it): wild growth rooted in the roofs' soil,
+//               the east island's small forms (ribbon fern, gold lantern, vine beard) and the jungle's shrubs (curly shrub, prism
+//               bush, croton, lobe tree), 3 m back from a deck's edge, none under the tier above
+// The crown's roofs are farmed (its people's fields, in the ruin's own page) and get neither.
+const DECK_TREES=[['ribbonfern',.24],['goldlantern',.14],['vinebeard',.14],[5,.16],[6,.14],[18,.1],[2,.08]];
+function plantDecks(){if(typeof DECKS==='undefined')return null;const D=DECKS.filter(d=>d.overgrow);if(!D.length)return null;
+ const pos=[];D.forEach(d=>{const y=d.y+.05;pos.push(d.x0,y,d.z0,d.x0,y,d.z1,d.x1,y,d.z1,d.x0,y,d.z0,d.x1,y,d.z1,d.x1,y,d.z0);});
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
+ const st={trees:0},HK=RIFT.heroK||1;
+ const run=BIO.kitWrap('rift',{run(){
+  BIO.cur='rift/dress';RIFT.dressGeos([g],{seed:4,ledges:{moss:36000,mossR:4.5,plants:20000,size:3.2,treeH:12,edges:7000,hang:26,keep:p=>roofOpen(p[0],p[2],p[1]-.05)}});
+  /* the base's walls and the blocks' undersides over the gaps: vines down the walls, roots and curtains hanging under the decks */
+  if(RUIN_BASE)RIFT.dressGeos([RUIN_BASE],{seed:5,ledges:{moss:1,plants:1,edges:1},walls:{n:3200,hang:22},soffits:{n:1800,mossR:5,hang:24}});
+  BIO.cur='rift/trees';const kin=k=>FAMILIES.find(F=>F.kin.key===k);
+  D.forEach((d,di)=>{const nx=Math.floor((d.x1-d.x0-6)/9),nz=Math.floor((d.z1-d.z0-6)/9);
+   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const h=KRAND.hash(0x7d3c,di,i*131+j),u=k=>KRAND.unit(KRAND.hash(h,k));if(u(3)>.55)continue;
+    const x=d.x0+3+(i+u(1))*9,z=d.z0+3+(j+u(2))*9;if(x>d.x1-3||z>d.z1-3||!roofOpen(x,z,d.y))continue;
+    let r=u(4),pick=DECK_TREES[0][0];for(const [k,w] of DECK_TREES){if(r<w){pick=k;break;}r-=w;}
+    const ld=BIO.lodD(x,z),lv=ld<900*HK?2:ld<2600?1:0;if(lv===0)continue;
+    BIO.fn.reseed(h>>>0);BIO.owner=[x,z];BIO.range=RIFT.LOD.tree;BIO.minRange=0;
+    if(typeof pick==='string'){const F=kin(pick);if(!F)continue;const T=F.kin.make(x,d.y,z);T.lv=lv;F.kin.grow(T,lv);}
+    else{const T=RIFT.make(pick,x,d.y,z);T.lv=lv;RIFT.grow(T,lv);}
+    st.trees++;}});
+  BIO.owner=null;BIO.range=null;BIO.cur=null;return st;}});
+ return run.run();}

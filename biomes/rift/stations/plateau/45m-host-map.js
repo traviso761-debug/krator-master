@@ -5,8 +5,8 @@
 // model's 4 km cells round the site: a broad ridge running north-west to south-east through Cube, falling ~40 m a km north-east
 // (to -600/-750 m 8-12 km off) and ~30 m a km south-west; the plateau's scarp and the hot floor below it are 12-25 km away, so
 // they are the far field's (44f), not the page's. What the page makes of it:
-//   the RUIN     Cube on its plinth at the origin: the ground under its old plaza (2.1 x 2.3 km) levelled to PLINTH.y, and the baked
-//                ruin standing on it (85-host-tower.js, 44c's CUBE_MASS)
+//   the RUIN     Cube, the Pile, on its plinth at the origin: the ground under its old plaza (1.4 km square) levelled to PLINTH.y, and
+//                the baked ruin standing on it (85-host-tower.js, 44c's RUIN_MASS)
 //   the RIDGE    rolling warm-temperate forest, the ridge's crest through the ruin north-west to south-east
 //   the STREAMS  two, each rising a kilometre off the ridge and running down its flank in a shallow valley: one north-east, one
 //                south-west (89w)
@@ -18,7 +18,7 @@ const KF=(x,z,o,s)=>KRAND.fbm(x,0,z,o,s);
 const S2=Math.SQRT1_2;
 const acrossR=(x,z)=>(x-z)*S2;   // across the ridge: + north-east (x east, z south), - south-west
 // the ruin's plinth: the old plaza's box (the bake's ground works, 44c) and how far its edge blends into the ground round it
-const PLINTH={x0:-1080,x1:1120,z0:-1180,z1:1230,blend:320,y:300};
+const PLINTH={x0:-680,x1:700,z0:-690,z1:690,blend:260,y:300};   /* the Pile's ground works (44c: the mass spans -602..617 x -614..611) */
 function plinthK(x,z){const dx=Math.max(PLINTH.x0-x,0,x-PLINTH.x1),dz=Math.max(PLINTH.z0-z,0,z-PLINTH.z1);return smooth(PLINTH.blend,0,Math.hypot(dx,dz));}
 // the ridge: level along its crest, falling 40 m a km north-east and 30 m a km south-west, the falls easing in over the first km
 function baseH(x,z){const a=acrossR(x,z),fall=a>0?.040:.030,d=Math.abs(a);
