@@ -19,6 +19,11 @@ worktree (`biomes/necanyons/dist/*.html`): commit them if its re-verify passed, 
 - water (`claude/water-core-pass`, ddd76b906): the flow network, the shore from the ground, ribbon rows and breakup are done and
   tested; eastabyss on the network verified (341d48a55, 26 views). Left: Godot parity (WIP ddd76b906, its Godot test never run), the merge, and necanyons' creek (a fine ground strip, then verify all three pages; handed to the water session).
 
+**`tools/dep_graph.py` fails here** (a `test_all` step; reported 2026-10-27): `core/atmos/demo/build.py` takes `three.min.js` from
+`kits/ancients` and `kits/ringsea` (move it to a shared place, or allow-list it in `tools/dep_allowlist.json` with a reason), and a
+false positive `kits/ancients -> settlements/span` from a comment in `kits/ancients/build.py` (make the scanner skip comments, or
+allow-list it). The probe-points, probe broad-phase and camera-guard entries in `TODO.md` are done (9e86c8dad): take them out.
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.
