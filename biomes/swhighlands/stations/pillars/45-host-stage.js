@@ -32,7 +32,8 @@ const TOP=270;   /* the table's top over the floor (m): the towers' height where
 // THE RIM: the line where the table ends (zone .3), wandering east-west; the zone runs 0 (deep in the table) .. .3 (the rim)
 // .. .9 (the last towers, BAND m beyond it) .. 1 (the open floor)
 const BAND=430;
-function rimZ(x){return -520+200*Math.sin(x*.0011+.3)+80*NZ(x,0,.0024,81,2);}
+// the line wanders, and the edge is eroded (the owner, 2026-10-27): buttresses and alcoves (45 m), and a jagged fret (14 m)
+function rimZ(x){return -520+200*Math.sin(x*.0011+.3)+80*NZ(x,0,.0024,81,2)+45*NZ(x,0,.009,88,2)+14*NZ(x,0,.035,89,2);}
 function zone(x,z){const d=z-rimZ(x);return d<0?clamp(.3+d/1800,0,.3):clamp(.3+.6*d/BAND,0,1);}
 const JOINTS=KRELIEF.joints({world:WORLD,angle:.32,sp:[64,130]});
 function tableTop(x,z){return TOP+8*NZ(x,z,.0016,82,2)+2*NZ(x,z,.02,83,2);}
@@ -45,13 +46,25 @@ const TOWER_PLAN=JOINTS.blocks([TERR.X0+40,TERR.Z0+40,TERR.X1-40,TERR.Z1-40]).ma
  const t=(zz-.3)/.6,s=KRAND.stream(KRAND.hash(WORLD,B.i,B.j,0x91)),stand=s.next()<(1-.75*Math.pow(t,1.5))*.42,gp=.15+.5*t,brk=s.next(),fin=s.range(.3,.62),spire=s.next()<.3;
  if(!stand||Math.hypot(B.cx-WATCH_AT.x,B.cz-WATCH_AT.z)<95)return null;
  const long=B.w>B.l,w=B.w*(1-gp)*(long?1:fin)*(spire?.7:1),l=B.l*(1-gp)*(long?fin:1)*(spire?.7:1);if(Math.min(w,l)<12)return null;
- return{id:'pillar:'+B.id,i:B.i,j:B.j,x:B.cx,z:B.cz,w,l,ry:B.ry,brk:brk<.35?brk/.35*.6*t:0,spire,seed:KRAND.hash(WORLD,B.i,B.j,0x92)};}).filter(Boolean);
+ return{id:'pillar:'+B.id,i:B.i,j:B.j,x:B.cx,z:B.cz,w,l,ry:B.ry,brk:brk<.35?brk/.35*.6*t:0,spire,arch:!spire&&Math.max(w,l)>=44&&s.next()<.14,seed:KRAND.hash(WORLD,B.i,B.j,0x92)};}).filter(Boolean);
+{let n=0;TOWER_PLAN.forEach(P=>{if(P.arch&&++n>3)P.arch=false;});}   /* a few (the owner): three pierced fins at most */
+// ARCHES AND BRIDGES (the owner, 2026-10-27: "a few real rock bridges and arches"; refs 41-43): fins of the band pierced through (the
+// plan's arch flag: one long fin in seven, three at most), and a free arch standing alone out on the floor and on the apron, Delicate Arch's kind;
+// 47-host-land.js makes them with KSTACKS.make kind 'arch' and wears them (KSTACKS.weather)
+const FREE_ARCHES=[{id:'arch:floor-w',x:-820,d:BAND*1.08,span:34,rise:30,H:46,t:9},{id:'arch:floor-e',x:980,d:BAND*.98,span:44,rise:38,H:58,t:11},
+ {id:'arch:apron',x:-260,d:120,span:28,rise:22,H:36,t:8}].map(A=>Object.assign(A,{z:rimZ(A.x)+A.d,ry:JOINTS.angle+Math.PI/2*(KRAND.unit(KRAND.hash(WORLD,A.x|0,7))<.5?0:1),w:A.span*1.4,l:A.t*2}));
 // the talus round a tower's foot: a cone of fallen blocks and sand, highest at the wall (~16 m), out ~30 m
-function talusAt(x,z){let h=0;for(const P of TOWER_PLAN.concat([WATCH_AT])){const dx=x-P.x,dz=z-P.z;if(Math.abs(dx)>110||Math.abs(dz)>110)continue;
+function talusAt(x,z){let h=0;for(const P of TOWER_PLAN.concat([WATCH_AT],FREE_ARCHES)){const dx=x-P.x,dz=z-P.z;if(Math.abs(dx)>110||Math.abs(dz)>110)continue;
  const r=Math.max(P.w,P.l)*.5,d=Math.hypot(dx,dz)-r*.75;h=Math.max(h,16*Math.exp(-Math.max(0,d)/24)*(1+.25*NZ(x,z,.04,87,2)));}return h;}
-// the floor: low hummocks, a talus apron at the cliff's foot and round each tower, falling a little toward Pan Riba
-function floor0(x,z){const d=z-rimZ(x);return 6*NZ(x,z,.0028,84,3)+1.5*NZ(x,z,.015,85,2)-.012*Math.max(0,d-200)+34*Math.exp(-Math.max(0,d)/38)*smooth(-10,0,d)+talusAt(x,z);}
-const TABLE=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.012,slot:{w:2.2,grow:3.4,depth:.45}});
+// THE CLIFF'S PROFILE (the owner's references, 2026-10-27: Paria's badlands under a caprock): the table's hard cap stands sheer for
+// CAP m, then the soft banded beds below weather back to a concave slope (APRON m out, its length wandering), cut by gullies
+// running down it (ridged KRAND noise along the rim, deepest mid-slope); the beds show on it (84-host-ground.js paints the steep)
+const CAP=85,APRON=270;
+function apronAt(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ(x,0,.003,90,2)),u=clamp(1-d/L,0,1);if(u<=0)return 0;
+ const h=(TOP-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
+// the floor: low hummocks, the badland apron under the cliff, a talus cone round each tower, falling a little toward Pan Riba
+function floor0(x,z){const d=z-rimZ(x),b=6*NZ(x,z,.0028,84,3)+1.5*NZ(x,z,.015,85,2)-.012*Math.max(0,d-200);return Math.max(b+talusAt(x,z),b+apronAt(x,z));}
+const TABLE=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.02,slot:{w:2.6,grow:4,depth:.5}});
 
 // ---------------------------------------------------------------- Pan Riba (the river across the floor)
 // From the map's west edge to its east, out on the floor beyond the towers, meandering (KRELIEF.meander); its level from

@@ -11,6 +11,12 @@ const VIEWS={};
  // a tower's top: the one carrying the most anemone trees, from just over its edge
  {const tops=new Map();SWHI.TREES.forEach(T=>{const t=towerTop(T.x,T.z,0);if(t)tops.set(t.B,(tops.get(t.B)||0)+1);});let best=null,n=0;tops.forEach((v,B)=>{if(v>n&&B!==WATCH){n=v;best=B;}});
   if(best){const r=Math.max(best.beds[0].rx,best.beds[0].rz)+18;add("Anemone trees on a pillar's top",[best.x-r,best.top+12,best.z+r*.3,best.x,best.top+4,best.z]);}}
+ // the arches: the largest free one from the floor, through its opening; a pierced fin from beside it
+ {const A=ARCHES.filter(B=>/floor/.test(B.id)).sort((a,b)=>b.top-a.top)[0];if(A){const ry=A.opening?A.opening.ry:0,d=A.top-A.y0+40,cx=A.x+Math.cos(ry+Math.PI/2)*d,cz=A.z+Math.sin(ry+Math.PI/2)*d;add('A free-standing arch',[cx,G(cx,cz)+2,cz,A.x,A.y0+(A.top-A.y0)*.45,A.z]);}}
+ {const A=ARCHES.find(B=>/pillar/.test(B.id));if(A){const d=(A.top-A.y0)*.9+40,cx=A.x+d*.7,cz=A.z+d*.7;add('A pierced fin',[cx,G(cx,cz)+4,cz,A.x,A.y0+(A.top-A.y0)*.35,A.z]);}}
+ // the cliff: its caprock over the banded, gullied apron (Paria's kind)
+ {let best=null;for(let k=0;k<24;k++){const x=-1400+k*120,z=rimZ(x)+APRON*1.6,near=PILLARS.filter(B=>Math.abs(B.x-x)<170&&B.z<z).length;if(!best||near<best.n)best={x,z,n:near};}
+  if(best)add('The cliff and its apron',[best.x,G(best.x,best.z)+30,best.z,best.x+60,TOP-CAP*1.4,rimZ(best.x+60)]);}   /* where the fewest towers stand between */
  // Pan Riba: over its meanders on the floor, looking west along it
  {const p=PAN.pts[Math.floor(PAN.pts.length*.6)],q=PAN.pts[Math.floor(PAN.pts.length*.35)];add('Pan Riba on the floor',[p[0],waterH(p[0],p[1])+28,p[1]+40,q[0],waterH(q[0],q[1])+5,q[1]]);}
  // the floor's flora: cushions and torch spikes in the green between the towers
@@ -37,14 +43,16 @@ const HCHK={
   const on=trees.filter(T=>Math.hypot(T.x-B.x,T.z-B.z)<h).length;return{ok:!bad&&!on,detail:n-bad+'/'+n+' points of a '+size+' m square at '+(ALT0+B.top).toFixed(0)+' m; '+on+' trees on it'};},
  // every tree standing high stands on a tower's top (none in the air beside one, none on a wall)
  tops(trees){const high=trees.filter(T=>T.y0>groundH(T.x,T.z)+20),off=high.filter(T=>!towerTop(T.x,T.z,0));return{ok:high.length>20&&!off.length,detail:high.length+' trees on the tops of the towers, '+off.length+' off a top'};},
+ // the arches stand: at least three, each with its opening clear (the ground under the lintel's middle lower than the lintel)
+ arches(list){const ok=list.filter(B=>{const o=B.opening;return !!o&&o.y1>o.y0+4;});return{ok:list.length>=3&&ok.length===list.length,detail:list.length+' arches and bridges, '+ok.length+' with an opening'};},
  // the band stands: enough towers, most whole, none over the table's top
- towers(list){const whole=list.filter(B=>B.top-B.y0>TOP*.8),over=list.filter(B=>B.top>tableTop(B.x,B.z)+5);return{ok:list.length>=30&&whole.length>=15&&!over.length,detail:list.length+' towers, '+whole.length+' whole, '+over.length+' standing over the table (a tower is what is left of it)'};}};
+ towers(list){const whole=list.filter(B=>B.top-B.y0>TOP*.8),over=list.filter(B=>B.top>tableTop(B.x,B.z)+5);return{ok:list.length>=25&&whole.length>=15&&!over.length,detail:list.length+' towers, '+whole.length+' whole, '+over.length+' standing over the table (a tower is what is left of it)'};}};
 function hostChecks(){return[Object.assign({name:'the watch pillar: its top flat and held'},HCHK.watch(WATCH,SWHI.TREES,40)),Object.assign({name:'the trees of the towers stand on their tops'},HCHK.tops(SWHI.TREES)),
- Object.assign({name:'the pillar rim stands'},HCHK.towers(PILLARS))];}
+ Object.assign({name:'the pillar rim stands'},HCHK.towers(PILLARS.filter(B=>!B.isArch))),Object.assign({name:'the arches and bridges stand'},HCHK.arches(ARCHES))];}
 function hostNegatives(){const r=(name,c)=>({name,failed:!c.ok,detail:c.detail});const small=PILLARS.filter(B=>B!==WATCH).sort((a,b)=>a.R-b.R)[0];
  return[r('a narrow tower for the watch',HCHK.watch(small,[],40)),
   r('a tree in the air by a tower',HCHK.tops(SWHI.TREES.concat([{x:WATCH?WATCH.x+Math.max(WATCH.beds[0].rx,WATCH.beds[0].rz)+6:0,z:WATCH?WATCH.z:0,y0:(WATCH?WATCH.top:200)-10,H:6}]))),
-  r('no towers',HCHK.towers([]))];}
+  r('no towers',HCHK.towers([])),r('an arch with its opening filled',HCHK.arches(ARCHES.map(B=>Object.assign({},B,{opening:null}))))];}
 function biomeChecks(){const R={},sp=SWHI.SPECIES.filter(S=>S.station==='pillars');
  R.missing=sp.filter(S=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[S.key])).map(S=>S.key);R.bySpecies=sp.map(S=>S.key+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[S.key]).length).join(' ');
  R.treesOnCliffs=SWHI.TREES.filter(T=>T.lv>0&&!towerTop(T.x,T.z,0)&&FC.at(FC.a.slope,T.x,T.z)>1.2).length;R.towers=PILLARS.length;R.pillarTris=window._pillarTris;

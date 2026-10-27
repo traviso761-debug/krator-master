@@ -42,7 +42,7 @@ const ROCK_MAT=(function(){const m=new THREE.MeshLambertMaterial({color:0xffffff
  m.customProgramCacheKey=()=>'swhi-pillar-rock';return m;})();
 
 // ---------------------------------------------------------------- the towers
-const PILLARS=[];let WATCH=null;
+const PILLARS=[],ARCHES=[];let WATCH=null;
 const PILLAR_IX=KSPACE.create({cell:60});
 (function(){const gr=(x,z)=>groundH(x,z);
  // a bed's thickness above y and its hardness (KSTACKS' strata hook): up the column until the bed changes
@@ -54,16 +54,25 @@ const PILLAR_IX=KSPACE.create({cell:60});
   WATCH.name='The watch pillar';WATCH.key='rock.pillar.watch';WATCH.keep=12;PILLARS.push(WATCH);}catch(e){reportErr('watch pillar: '+e.message);}
  // THE BAND'S TOWERS from the plan (45-host-stage.js): fins and spires, their height the table's less a broken one's loss; a spire
  // tapers more (Spider Rock); each made by KSTACKS.make with the strata hook, set on the ground as drawn
+ // an ARCH (KSTACKS.make kind 'arch'): two legs and a lintel, the opening along ry; tried a little larger if the form refuses
+ const arch=(o,quiet)=>{for(let k=0;k<4;k++){try{return KSTACKS.make(Object.assign({kind:'arch',ground:gr,inward:.12},o,{rise:o.rise+k*4,H:o.H+k*5}));}catch(e){if(k===3&&!quiet)reportErr(o.id+': '+e.message);}}return null;};   /* quiet: a fin the form refuses stays a fin */
+ FREE_ARCHES.forEach((A,i)=>{const B=arch({id:A.id,x:A.x,z:A.z,span:A.span,rise:A.rise,H:A.H,t:A.t,leg:A.span*.42,ry:A.ry,seed:KRAND.hash(WORLD,5,i)});
+  if(B){B.name=A.id==='arch:apron'?'A natural bridge on the apron':'A free-standing arch';B.key='rock.arch';B.isArch=true;ARCHES.push(B);PILLARS.push(B);}});
  TOWER_PLAN.forEach(P=>{const r=streamNear(P.x,P.z);if(r&&r.dd<20)return;const g=gr(P.x,P.z),T=tableTop(P.x,P.z),H=(T-g)*(1-P.brk);if(H<4)return;
   const s=KRAND.stream(P.seed);let B=null;
+  // a pierced fin: the fin's long side the arch's span, its opening a third to a half of its height, the lintel to the table's top
+  if(P.arch){const L=Math.max(P.w,P.l),Tt=Math.min(P.w,P.l),ry=P.w>P.l?P.ry:P.ry+Math.PI/2;
+   B=arch({id:P.id,x:P.x,z:P.z,span:L*.55,rise:Math.min(H*.5,L*.9),H,t:Tt,leg:L*.24,ry,seed:P.seed},true);
+   if(B){B.name='A pierced fin (an arch)';B.key='rock.arch';B.isArch=true;ARCHES.push(B);PILLARS.push(B);return;}}
   try{B=KSTACKS.make({kind:'pillar',id:P.id,x:P.x,z:P.z,w:P.w,l:P.l,ry:P.ry,H,sq:P.spire?3:5,taper:P.spire?s.range(.12,.2):s.range(.03,.08),lean:Math.atan(Math.min(P.w,P.l)*.05/H)*(s.next()-.5),ground:gr,seed:P.seed,strata});}catch(e){reportErr(P.id+': '+e.message);return;}
   B.spire=P.spire;B.name=P.spire?'A spire of the pillar rim':P.brk>0?'A broken tower of the pillar rim':'A fin of the pillar rim';B.key='rock.pillar';PILLARS.push(B);});
  PILLARS.forEach(B=>PILLAR_IX.insert(B,B.x,B.z,B.R));
  // THE DRAWN MESH: one for every tower; each contoured, then worn, its feet kept on the ground; the watch pillar's top kept whole
  const pos=[],uv=[],idx=[],occ=[],col=[],part=[];let tris=0;
  PILLARS.forEach(B=>{const m=KSTACKS.mesh(B,{step:3}),o=pos.length/3;
-  if(KSTACKS.contour)KSTACKS.contour(B,m,B===WATCH?{keep:B.keep}:B.spire?{profile:.2,crown:.35}:{});
-  KSTACKS.weather(B,m,{ground:gr,amp:3,grain:.09,pit:1.1,pitGrain:.6});
+  if(B.isArch&&KSTACKS.archRound)KSTACKS.archRound(B,m);   /* the opening bent from its box to an ellipse (core/terrain 37b) */
+  if(KSTACKS.contour&&!B.isArch)KSTACKS.contour(B,m,B===WATCH?{keep:B.keep}:B.spire?{profile:.2,crown:.35}:{});
+  KSTACKS.weather(B,m,B.isArch?{ground:gr,amp:4,grain:.08,pit:1.4,pitGrain:.5,round:2.4}:{ground:gr,amp:3,grain:.09,pit:1.1,pitGrain:.6});
   for(let v=0;v<m.pos.length/3;v++){pos.push(m.pos[3*v],m.pos[3*v+1],m.pos[3*v+2]);uv.push(m.uv[2*v],m.uv[2*v+1]);occ.push(.35+.65*m.occ[v]);col.push(1,1,1);part.push(m.part[v]);}
   for(const i of m.idx)idx.push(o+i);tris+=m.idx.length/3;
   /* not an obstacle: a tower's top carries plants (the mask keeps them off its walls: nearTower) */
@@ -75,7 +84,7 @@ const PILLAR_IX=KSPACE.create({cell:60});
   me.userData.inspectLabel='Pillar sandstone (iron-red and bleached beds, Liesegang bands)';me.userData.probePoints=PILLARS.map(B=>[B.x,(B.y0+B.top)/2,B.z]);scene.add(me);}})();
 // a tower's top under a point: {B, top} or null (the record's; the drawn mesh is contoured inside it, so the flora keeps a margin)
 const _pq=[];
-function towerTop(x,z,shrink){PILLAR_IX.query(x,z,0,_pq);if(!_pq.length)return null;const s=KSTACKS.at(_pq,x,z);if(!s||s.top<s.S.top-1.5)return null;
+function towerTop(x,z,shrink){PILLAR_IX.query(x,z,0,_pq);if(!_pq.length)return null;const T=_pq.filter(B=>!B.isArch);if(!T.length)return null;const s=KSTACKS.at(T,x,z);if(!s||s.top<s.S.top-1.5)return null;
  if(shrink&&s.d>-shrink)return null;return{B:s.S,top:s.top};}
 // near a tower's wall (inside its foot or within m of it, and not on its top): the floor's plants keep off
 function nearTower(x,z,m){PILLAR_IX.query(x,z,0,_pq);for(const B of _pq){const r=Math.max(B.beds[0].rx,B.beds[0].rz)*1.05+m;if(Math.hypot(x-B.x,z-B.z)<r)return B;}return null;}
@@ -92,7 +101,7 @@ const FC=(function(){const N=321,SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,K=['h','s
   const zz=zone(x,z),tt=towerTop(x,z,4),nt=nearTower(x,z,14),r=streamNear(x,z),n1=NZ(x,z,.003,86,2);
   a.slope[k]=tt?0:Math.hypot(hx,hz);a.north[k]=clamp(-hz/.3,-1,1);
   a.top[k]=tt?1:(zz<.29&&a.slope[k]<.5?.08:0);                       /* a tower's top; the table's own top hardly (station 3's ground) */
-  a.floor[k]=tt?0:smooth(.31,.36,zz)*smooth(.7,.35,a.slope[k]);
+  a.floor[k]=tt?0:smooth(.31,.36,zz)*smooth(.7,.35,a.slope[k])*(1-smooth(.02,.15,apronAt(x,z)/(TOP-CAP)));   /* the badland apron is bare */
   {const d=z-rimZ(x);a.block[k]=tt?0:clamp(smooth(70,10,d)*smooth(-5,5,d)+(nt?.8:0),0,1);}   /* the cliff's foot and the towers' */
   a.flow[k]=r?smooth(60,4,r.dd):0;
   a.wet[k]=clamp(.4+.5*a.flow[k]+.15*smooth(30,0,z-rimZ(x))+.12*n1-(tt?.15:0),0,1);
@@ -113,7 +122,8 @@ Object.assign(FIELD,{top:(x,z)=>towerTop(x,z,3)?1:FC.at(FC.a.top,x,z)*(nearTower
 const SWHI_PILLARS_SITE=(function(){const W=WATCH,b0=W?W.beds[W.beds.length-1]:null;
  return{format:'swhighlands-pillars-site',version:1,frame:{x:'east',z:'south',y0:ALT0,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1]},
   watch:W?{id:W.id,x:W.x,z:W.z,foot:W.y0,top:W.top,w:62,l:60,ry:W.beds[0].ry,flat:Math.min(b0.rx,b0.rz)*2,keep:W.keep}:null,
-  towers:PILLARS.map(B=>({id:B.id,x:+B.x.toFixed(2),z:+B.z.toFixed(2),foot:+B.y0.toFixed(2),top:+B.top.toFixed(2),R:+B.R.toFixed(2)})),
+  arches:ARCHES.map(B=>({id:B.id,x:+B.x.toFixed(2),z:+B.z.toFixed(2),foot:+B.y0.toFixed(2),top:+B.top.toFixed(2),R:+B.R.toFixed(2)})),
+  towers:PILLARS.filter(B=>!B.isArch).map(B=>({id:B.id,x:+B.x.toFixed(2),z:+B.z.toFixed(2),foot:+B.y0.toFixed(2),top:+B.top.toFixed(2),R:+B.R.toFixed(2)})),
   rim:Array.from({length:65},(_,i)=>{const x=TERR.X0+i*(TERR.X1-TERR.X0)/64,z=rimZ(x);return{x,z,top:+tableTop(x,z-20).toFixed(2),floor:+groundH(x,z+30).toFixed(2)};}),
   river:{name:PAN.name,pts:PAN.pts.filter((p,i)=>i%4===0).map((p,i)=>[+p[0].toFixed(1),+p[1].toFixed(1)])}};})();
 // the watch top is held for a settlement: no plant on it

@@ -30,6 +30,13 @@ ok('contour keep: the top stays where the record has it',top(kept)<1e-9,top(m1)<
 const deep=K.contour(B,K.mesh(B,{step:2.5}),{jointD:[80,90],wander:0});let under=0;
 for(let i=0;i<m0.pos.length/3;i++)if(rad(m0,i)>1&&rad(deep,i)<rad(m0,i)*.25-1e-3)under++;
 ok('contour: the floor holds under absurd joints',under===0,false);
+// archRound: the opening's upper corners come down into a curve; the lintel's top does not move; a pillar (no opening) is untouched
+{const A=K.make({kind:'arch',id:'a',x:0,z:0,span:30,rise:26,H:44,t:9,ry:0,y0:0,seed:11}),Op=A.opening,ma=K.mesh(A,{step:2}),mr=K.archRound(A,K.mesh(A,{step:2}));
+ const corner=m=>{let best=Infinity;for(let i=0;i<m.pos.length/3;i++){const a=m.pos[3*i]-Op.x,y=m.pos[3*i+1];if(Math.abs(Math.abs(a)-Op.w0/2*.85)<2.5&&y<Op.y1+1&&y>Op.y0+Op.y1*.5){best=Math.min(best,Op.y1-y);}}return best;};
+ let topMoved=0;for(let i=0;i<ma.pos.length/3;i++)if(ma.pos[3*i+1]>A.top-.5&&Math.abs(mr.pos[3*i+1]-ma.pos[3*i+1])>1e-9)topMoved++;
+ ok('archRound: the opening\'s corners come down into a curve ('+(isFinite(corner(mr))?corner(mr).toFixed(1):'-')+' m under the soffit at .85 of the half-width)',corner(mr)>2,corner(ma)>2);
+ ok('archRound: the lintel\'s top does not move',topMoved===0,false);
+ ok('archRound: a body without an opening is untouched',K.hash(K.archRound(B,K.mesh(B,{step:2.5})))===h0,false);}
 let threw=false;try{eval('KSTACKS.contour');delete global.KSTACKS;eval(fs.readFileSync(path.join(__dirname,'37b-core-stacks-contour.js'),'utf8'));}catch(e){threw=true;}
 ok('contour: refuses to load without 37-core-stacks.js',threw,false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

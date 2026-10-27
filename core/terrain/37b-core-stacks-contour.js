@@ -20,6 +20,7 @@
 //     keep (0)                 metres under the top over which every term fades to nothing, and no crown and no cleft:
 //                              the top stays the record's (something stands on it: a post, a deck)
 //     floor (.25)              a vertex is never drawn nearer the axis than this share of its radius
+//   KSTACKS.archRound(B, m, o) an arch's drawn opening bent from its box to an ellipse (o.band .6); below
 (function(root){
   'use strict';
   var KR=root.KRAND,K=root.KSTACKS;
@@ -44,5 +45,18 @@
       if(cleft&&t>cleft.from){var dc=a-cleft.a;dc=Math.atan2(Math.sin(dc),Math.cos(dc));var sc=dc*r/cleft.w;R-=r*.5*sm(cleft.from,cleft.from+.12,t)*Math.exp(-sc*sc);}
       R=Math.max(R,r*fl);P[3*v]=B.x+ox+dx/r*R;P[3*v+2]=B.z+oz+dz/r*R;}
     return m;}
-  K.contour=contour;
+  // KSTACKS.archRound(B, m, o): an arch's drawn opening bent from its box to an ellipse (biomes/swhighlands station 4; the owner,
+  // 2026-10-27: real rock arches, refs Delicate Arch and a natural bridge in forest). In the plane across the opening (a along its
+  // ry, y up), each vertex at normalised (a / half-width, (y - y0) / rise) whose box radius m = max(|a'|, y') is under 1 + band
+  // (.6) is moved along its ray from the opening's foot so its ring of the box lands on the circle of the same radius, fully at
+  // m <= 1 (the opening's edge) and fading to nothing at 1 + band: the soffit's corners come down into a curve, the legs' inner
+  // faces lean in to meet it, the lintel's top and the legs' outsides do not move. Only B.opening's arches; the record is not
+  // changed. Call it before KSTACKS.weather
+  function archRound(B,m,o){o=o||{};var Op=B.opening;if(!Op)return m;var band=num(o.band,.6),ux=Math.cos(Op.ry),uz=Math.sin(Op.ry),hw=Op.w0/2,rise=Op.y1-Op.y0,P=m.pos;
+    if(!(hw>0&&rise>0))return m;
+    for(var v=0;v<P.length/3;v++){var x=P[3*v],y=P[3*v+1],z=P[3*v+2],dx=x-Op.x,dz=z-Op.z,a=dx*ux+dz*uz,c=-dx*uz+dz*ux,an=a/hw,yn=(y-Op.y0)/rise;
+      if(yn<=0)continue;var mm=Math.max(Math.abs(an),yn);if(mm>=1+band)continue;var hy=Math.hypot(an,yn);if(hy<1e-9)continue;
+      var w=1-sm(1,1+band,mm),f=1+(mm/hy-1)*w,a2=an*f*hw,y2=Op.y0+yn*f*rise;P[3*v]=Op.x+a2*ux-c*uz;P[3*v+1]=y2;P[3*v+2]=Op.z+a2*uz+c*ux;}
+    return m;}
+  K.contour=contour;K.archRound=archRound;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -91,7 +91,7 @@ SWHI.buildPillars=function(box,q){q=q==null?1:q;const st=newSt(),TREES=SWHI.TREE
  pass('cushion',8,703,520,Z=>Z.cushion*.3);   /* the painting's mounds: scattered, the turf between */
  pass('torch',4.5,704,L,Z=>Z.torch*.3);
  pass('coral',8,705,L,Z=>Z.coral*.4);
- pass('turf',3,706,L,Z=>Z.turf*.75);
+ pass('turf',3.6,706,L,Z=>Z.turf*.6);   /* the floor's largest count: thinned to keep the pass under its 20 M budget (PERF.md) */
  pass('moss',3.4,707,L,Z=>Z.moss*.7);
  BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,light:st.light,far:TREES.length-st.heroes-st.light,bySpecies:'anemonetree:'+TREES.length,blocks:st.blocks,
