@@ -14,8 +14,13 @@ panels tarnished and overgrown; Dalab's outpost holds the sound parts; **Dalab's
 reached by a stair cut up its side (`refs/01`, `refs/27`). The arcology should be developed **first**, so the SW highlands
 stations (3: the canyon; 4: the pillar rim and the watch post) are designed round it.
 
-**Status: plan and rough floorplan, for the owner's approval.** Nothing is built. The floorplan is
-`span_blueprint.py` -> `floors/` (section 2). The open questions are section 9.
+**The owner, 2026-10-27**: the trimmed size (about 750,000 m² of floor, about 9,000 people at its peak: `AREAS.md`);
+Dalab's own building set (`settlements/dalab`) for everything Dalab builds; **an intact, cleared Ancient tunnel** leads
+from Span down to the basin, a handy way onto the plateau's top that Dalab counts as strategic; so Span is **more than an
+outpost: a Dalab trading post**, where Dalab trades with whoever lives up there (TBD).
+
+**Status: plan and rough floorplan; the layout and size approved (2026-10-27).** Nothing is built. The floorplan is
+`span_blueprint.py` -> `floors/` and `AREAS.md` (section 2). The open questions left are section 9.
 
 ## 0. What the build is
 
@@ -26,7 +31,8 @@ stations (3: the canyon; 4: the pillar rim and the watch post) are designed roun
 | The ground | **not Span's.** The swhighlands kit carves the canyon, makes the lake and the river and dresses the ruin with its flora (section 5 is the hand-over). Span's page reads the station's ground in place, as Pinnacle Rock reads the necanyons kit |
 | The buildings | **`kits/ancients`** (the Ancients building kit): its existing builders where one fits (section 6), and new builders in the kit, one per fragment, for the pieces it lacks (the bench gallery, the rim range, the ring-walled dome, the pad on a drum, the Cross). Span's page takes them by name; nothing is copied into the build |
 | The plan | a layout fragment that **builds nothing** (`references/vertical-settings.md` section 1 of the painting-to-3d-world skill): every part a record keyed by a stable id, its level, footprint, frame and decay state; every later pass reads it. `[G data]`: Godot runs the same records |
-| Dalab's outpost | the rehabilitated parts (the kit's decay 3 `repairPass` on the Ancient fabric) and Dalab's own additions (the Line, the mound, the pens and fields on the Apron, salvage parapets) as records; drawn from Dalab's buildings (`settlements/dalab`, read in place; there is no Dalab culture kit yet: question 6) |
+| Dalab's fort and trading post | the rehabilitated parts (the kit's decay 3 `repairPass` on the Ancient fabric) and Dalab's own buildings and additions as records: **the Dalab building set** (`settlements/dalab`: `dalab_market_large`, `dalab_inn`, `dalab_tavern`, `dalab_warehouse`, `dalab_scribes`, `dalab_bathhouse`, `dalab_hut_c`, `dalab_rowhouse`, `dalab_barracks`, `dalab_healers`, `dalab_watchtower`, `dalab_shrine`, `dalab_mound` and its `dn*` helpers: the Line, parapets, pens), placed through its registry (`VERN.place`, `culture:'dalab'`), its fragments read in place. It runs on the same Ancients core as `kits/ancients`, so one page takes both |
+| The Basin Tunnel | an Ancient road tunnel, **intact and cleared**, from its upper portal in the Upper Bay's left wall (at the Apron's level) down inside the rock to the basin: one broad way with a guideway down its middle (`LORE.md` §4). Span draws the portal, its gate and the first stretch of the bore; the rest is a route record (its lower portal is the basin's build's, section 5) |
 | The watch post | records of Span's, placed on a swhighlands station 4 pillar (`KSTACKS.pillars`): the tower is the kit's, the post and the stair are Span's |
 
 Span is a settlement: it goes in the gallery when it first reaches `main`.
@@ -42,7 +48,7 @@ takes, by name, and for each it does not, why:
 | `core/rand` | `KRAND` | every choice in the layout: each part's decay state, broken pieces, salvage, Dalab's patches by `KRAND.hash(world, part id, index, salt)`; never the kit's global `rng()` for placement (the kit's builders keep their own `reseed` streams inside a building, as every Ancients taker does) |
 | `core/tags` | `50`, `52`, `53` | every part, bridge, pad, dome, gallery, hangar, Dalab's additions and the watch post registered before it is drawn (culture `ancient` or `dalab`, state, level) |
 | `core/space` | `KSPACE` | the parts' overlap check on each level, the keep-clear the biome kit's dressing reads (no tree in a building, on a pad or a bridge deck) |
-| `core/terrain` | the station's ground read in place: `38-core-relief` (`KRELIEF.tableland`/`joints`; the canyon as a `rille` record whose `tops` are Span's bench levels; the Upper Bay as a `pit` with benches), `35-core-strata` (`pillar`: the benches on its hard beds), `36-core-carve` (`KCARVE.face`/`cut`: the hangar mouths and the Under-Wall Portal cut into the walls), `37-core-stacks` (`KSTACKS.pillars`: the watch post's tower) | the canyon the arcology is fitted to |
+| `core/terrain` | the station's ground read in place: `38-core-relief` (`KRELIEF.tableland`/`joints`; the canyon as a `rille` record whose `tops` are Span's bench levels; the Upper Bay as a `pit` with benches), `35-core-strata` (`pillar`: the benches on its hard beds), `36-core-carve` (`KCARVE.face`/`cut`: the hangar mouths and the Basin Tunnel's portal cut into the walls), `37-core-stacks` (`KSTACKS.pillars`: the watch post's tower) | the canyon the arcology is fitted to |
 | `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, polygon tool, marks, minimap, editor, cut-away) | the page shell; the cut-away for the Cross's floors and the wall galleries |
 | `core/walk` | the walk graph | the ways: the roads, the ring road, the bridges, the stairs and lifts between the benches, Dalab's Line and its one gate (vertical-settings section 1: a NAV with level-tagged nodes, asserted connected) |
 | `core/atmos` | the shared sky (`skyBiome` from the station), `bindHost`, the skylight, height fog | the standard skybox, the canyon's mist |
@@ -51,14 +57,16 @@ takes, by name, and for each it does not, why:
 | `core/lod` | `KLOD` | 1.6 km of arcology: far parts as proxies |
 | `core/minimap`, `core/export`, `core/clock` | as Pinnacle Rock | the map, the krator-world container, the day |
 | `core/biome` | read in place through `biomes/swhighlands` | the ruin's flora (drip cap, log crust, anemone trees) is the kit's dress pass on Span's structure records |
+| `core/terrain` `KCAVERN` | `39-core-cavern` | the Basin Tunnel's bore behind its portal, as far as the page walks it (a passage with a `door` opening at the portal) |
+| `settlements/dalab` (the Dalab set) | read in place | everything Dalab builds (section 0) |
 
 Not taken (each one line): `core/mask` (nothing is placed from a canvas); `core/city` (Span is **one pre-planned Ancient
 complex**, no streets or lots: it asks for the `SINGLE_COMPLEX` exemption in `tools/check_core_use.py`, as Longsong has,
-until `core/city` gains a single-complex mode; question 5); `core/hamlet` (proposed for Dalab's outpost, but it has no
-`garrison` focus and no `dalab` culture row: question 5); `core/furnish`, `kits/interiors`, `kits/catalog` (the Cross's rooms
-are a later step, 6 in section 7); `core/simulation`, `core/sched`, `core/charactermodels` (the garrison's life comes after
-the build, as at Pinnacle Rock); `kits/mechs` (the Valley's machines are a later life layer: question 7); `KCAVERN` (the
-hangars are cut mouths with drawn interiors; the Under-Wall Portal's tunnel is not walked in this build).
+until `core/city` gains a single-complex mode; question 5. The trading post on the Apron is a few dozen buildings laid on a
+deck the Ancients built, not a street plan); `core/hamlet` (it has no `trading post` or `garrison` focus and no `dalab`
+culture row: question 5); `core/furnish`, `kits/interiors`, `kits/catalog` (the Cross's rooms are a later step, 6 in section
+7); `core/simulation`, `core/sched`, `core/charactermodels` (the garrison's and the market's life comes after the build, as at
+Pinnacle Rock); `kits/mechs` (the Valley's machines are a later life layer: question 7).
 
 ## 1. The site
 
@@ -89,9 +97,10 @@ where Dalab lives, is drawn to zones. Regenerate with `python3 settlements/span/
 |---|---|
 | `S0.png` | the site (~3.9 x 1.6 km): the lake and its two outlying sites, the weir, the canyon head, the Upper Bay, the Cross, the Deep Reach, the roads |
 | `S1.png` | the rims (y 0): the bay's ring road and its sixteen domes, the Cross's roof road, the rim ranges along the Deep Reach, pads and rim domes, the Middle Bridge |
-| `S2.png` | the walls (benches at y -40, -85, -130) and the Apron (y -45): the gallery buildings on the benches, the derelict craft, the Low Bridge (fallen) and the Pipe Bridge with its hung payloads |
-| `S3.png` | the canyon floor (y -180) and the slot under the bay: the river, six hangars cut into the walls, three tanks, the works, Dalab's Line, the Sluice Stair, the Outfall Gate, the proposed Under-Wall Portal |
-| `S4.png` | the Cross's main floor (y -10), Dalab's outpost, in zones |
+| `S2.png` | the walls (benches at y -40, -85, -130) and the Apron (y -45): the three-storey galleries on the -40 and -85 benches, the -130 service ledges; **the trading post on the Apron** at the Basin Tunnel's portal; the Low Bridge (fallen) and the Pipe Bridge with its hung payloads |
+| `S3.png` | the canyon floor (y -180) and the slot under the bay: the river, seven hangars cut into the walls, three tanks, the works, Dalab's Line, the Sluice Stair, the Outfall Gate |
+| `AREAS.md` | the floor area and the population at the peak, part by part, from the script's `AREA` table: **772,791 m² (8.3 million ft²), about 9,100 people** |
+| `S4.png` | the Cross's main floor (y -10), Dalab's fort, in zones |
 | `section-long.png` | along the canyon (heights x3): lake, weir, Head Fall, the Apron over the slot, the Cross and its sluices, the Deep Reach's tanks and bridges |
 | `section-cross.png` | across the Deep Reach (true scale): the stepped walls, the galleries on the benches, a hangar, Tank 2, the Middle Bridge |
 
@@ -107,25 +116,26 @@ intact. Each part's state is fixed in the layout (the owner's call where it matt
 
 | Part | Where | Size | State |
 |---|---|---|---|
-| **The Lake Quay** | the lake's right shore, u -2300..-1700 | 600 x 130 m strip, slips and sheds in a low wall | 5 worn, overgrown |
+| **The Lake Quay** | the lake's right shore, u -2200..-1800 | 400 x 130 m strip, slips and sheds in a low wall | 5 worn, overgrown |
 | **The Lake Ring** | the left shore, u -1500 | ring wall r 150 m round a sunken court of six domes, a mole into the lake | 1 ruined, drowned on its lake side |
 | **The Weir** | the lake's outlet, u -1050 | 180 m sluice dam holding the lake 8 m up | 5 worn, sound: Pan Riba spills through it |
 | **Head Pad** | the canyon head, u -880 | pad r 32 m on a drum, a walkway to the ring road | 5 worn |
-| **The Upper Bay** | u -750..-290 | the canyon widened (quarried) into an oval 460 x 320 m at the rim; ten terrace domes round its walls (r ~17), six ring-walled domes outside its ring road (r ~28) | 1 ruined, three domes toppled into the bay |
-| **The Apron** | in the bay, y -45 | an oval deck 370 x 236 m over the river's **slot** (50 m wide, its floor y -60 to -110); three derelict craft on it | 1 ruined; Dalab's fields and lizard pens on its upstream half |
-| **The Cross (the Span)** | u -300..-180, v ±230 | the habitable bridge where the north and south highways cross the canyon: 120 m along the canyon, 460 m across, its roof the road (y 0), its body four floors to y -60, keel piers down to the river; gate towers at both abutments | **3 rehabilitated: Dalab's outpost** |
+| **The Upper Bay** | u -750..-290 | the canyon widened (quarried) into an oval 460 x 320 m at the rim; ten terrace domes round its walls (r ~17), six ring-walled domes outside its ring road (r ~28) | 1 ruined, three domes toppled into the bay; three terrace domes **3: the traders' lodgings** |
+| **The Apron** | in the bay, y -45 | an oval deck 370 x 236 m over the river's **slot** (50 m wide, its floor y -60 to -110) | cleared by Dalab: **the trading post** (section 4), one wreck too heavy to strip |
+| **The Basin Tunnel's upper portal** | the bay's left wall at the Apron's level, (-570, -160) | an Ancient road portal (r ~18), the Tunnel Road down a ramp onto the Apron | **intact, cleared**: Dalab's gate and wardens |
+| **The Cross (the Span)** | u -300..-180, v ±230 | the habitable bridge where the north and south highways cross the canyon: 120 m along the canyon, four storeys over the 300 m span (to y -18; its keel and piers to the river below), its roof the road (y 0); gate towers on both abutments | **3 rehabilitated: Dalab's fort** |
 | **The Sluice Stair** | under the Cross | the river steps from y -110 to -180 in four sluices | 1 ruined, still running |
-| **The rim ranges** | both rims of the Deep Reach, v ±152..190 | the white curved band: a continuous range 1 km long each side, two or three storeys over the rim and stepping over the edge | north A (u -180..240) **3: Dalab's Sound Quarter**; north B 1; north C 2 (slumped into the canyon with Rim Pad 3); south A, B 1 |
+| **The rim ranges** | both rims of the Deep Reach, v ±152..190 | the white curved band: a continuous range 1 km long each side, two storeys over the rim and stepping over the edge | north A (u -180..240) **3: Dalab's Sound Quarter**; north B 1; north C 2 (slumped into the canyon with Rim Pad 3); south A, B 1 |
 | **Pads and rim domes** | on the rims | four rim pads (r 28-36), three ring-walled rim domes (r 22-30) | Pad 1 worn (Dalab's drill ground and paddock); Pad 3 toppled into the canyon; the rim dome by the Cross 3 (the genepriests' house) |
-| **The wall galleries** | the benches at y -40, -85, -130, both walls | gallery buildings 22 m deep on each bench, backs cut into the wall, fronts curved white terraces, 1 km long | north -40 (A) 3 (Dalab's stores); the rest 1; south -130's downstream half fallen to the floor |
+| **The wall galleries** | the benches at y -40 and -85, both walls | three-storey gallery buildings 22 m deep, backs cut into the wall, fronts curved white terraces, 1 km long | north -40 (A) 3 (Dalab's stores); the rest 1 |
+| **The service ledges** | the benches at y -130, both walls | conduits and a walkway, not floor | 1; mutant nests; the south ledge's downstream half fallen to the floor |
 | **The Middle Bridge** | u 262, y 0 | a road bridge, 300 m | 1 ruined, passable; Dalab's forward barricade at its north end |
 | **The Low Bridge** | u 482, y -85 | bench to bench | 2 toppled: two stubs, its middle on the floor |
 | **The Pipe Bridge** | u 700, y -40 | three sagging pipes with payloads slung on cables (`kits/ancients` canyon target's `HANG`: pod, prison, drum) | 1 ruined; the drum fallen to the floor, the prison hanging by one cable |
-| **The hangars** | cut into both walls at the floor, under the benches | six, 90 x 42 m mouths | 1 ruined; one flooded, one with a craft inside, one the machines' den |
+| **The hangars** | cut into both walls at the floor, under the benches | seven, 90 x 42 m mouths | 1 ruined; one flooded, one with a craft inside, one (Hangar 6) the machines' den |
 | **The tanks** | standing from the floor | three, r 18-28, rising to y -20, -60, -90 | Tank 1 worn, Tank 2 holed, Tank 3 toppled at its top |
 | **The works** | the floor | the Engine Works, the Foundry, the Yard (derelict craft and machine wrecks) | 1 ruined |
-| **The Outfall Gate** | u 800..830 | the downstream barrage, the river through its sluices | 1 ruined, breached |
-| **The Under-Wall Portal** (proposed) | the right wall at the floor, u 690..760 | a tunnel mouth into the Ancients' route under the Inner Wall to the Valley (`LORE.md` §4: the route "reachable from surface settlements by shafts and side galleries") | half plugged: what the machines come out of (question 3) |
+| **The Outfall Gate** | u 800..830 | the downstream barrage, the river through its sluices | 1 ruined, breached: the machines and mutants come up the canyon through it |
 
 ## 3. Assumptions (the numbers)
 
@@ -136,22 +146,38 @@ intact. Each part's state is fixed in the layout (the owner's call where it matt
 | Benches | y -40, -85, -130; half-widths 128, 105, 85 m | on the `pillar` sandstone's hard beds (5-40 m beds): the walls step back where a hard bed caps a soft one, and every gallery stands on one |
 | Wall faces between benches | near sheer (the station's `rille` face ~80°), no talus where built | the Ancients dressed the walls; a talus only at the floor's edge and below the fallen galleries |
 | The bay | rim oval 460 x 320 m, the Apron at y -45 | the concept's oval bay: the canyon quarried wide; the Apron is a deck, the river under it in a slot |
-| Storey | 4.5 m; gallery buildings 22-26 m tall (five storeys) on 22 m deep benches | the kit's storey; a bench is the gallery's depth |
-| The Cross | 120 x 460 m, four floors to y -60 | the concept's broad band; ~55,000 m² a floor, far more than the garrison needs (section 4) |
+| Storey | 4.5 m; gallery buildings three storeys (~14 m) on 22 m deep benches; rim ranges two | the kit's storey; a bench is the gallery's depth; the owner's trim (2026-10-27) |
+| The Cross | 120 x 300 m over the canyon, four storeys; gate towers on the abutments | the concept's broad band; 36,000 m² a floor |
+| Size at the peak | 772,791 m² of floor, ~9,100 people (`AREAS.md`): homes at 35 m² gross a head, 30-60% of each part's floor | the owner's trim from ~1.34 million m² (15,000-20,000 people): a port and works town of an Ancient arcology's middling size (Arcoindian II: 5,000), not a city the tableland would have to feed |
 | Head Fall | ~50 m (lake y -8 to the canyon head y -60) | the lake on the tableland, the canyon below it |
 | The built reach | u -900..830, ~1.7 km; the whole site with the lake ~3.9 km | the concept |
 
-## 4. Dalab's outpost and the watch post
+## 4. Dalab's fort, its trading post and the watch post
 
-*Proposed* throughout, except what the lore and the brief fix (Dalab holds the sound parts against the Valley's machines and
-mutants; the watch post on a pillar-rim tower with a stair cut up its side).
+*Proposed* throughout, except what the lore and the owner fix (Dalab holds the sound parts against the Valley's machines and
+mutants; an intact, cleared tunnel from the basin, which Dalab counts as strategic; a trading post where Dalab trades with
+the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut up its side).
 
-- **Why Dalab holds Span**: it holds the crossing (the two Ancient highways meet on the Cross, and the rim road runs down the
-  canyon toward the Valley's edge), it watches the Valley from the south (the State watches from the north, `LORE.md` §6.19),
-  it salvages for the God, and (question 3) it plugs the **Under-Wall Portal**, the machines' way up from the Valley.
+- **Why Dalab holds Span**: **the Basin Tunnel** (the owner, 2026-10-27): an Ancient road tunnel, intact and cleared, from
+  the basin up inside the rock to Span's bay: the handy way onto the plateau's top, and so the key to it. Span also holds the
+  crossing (the two Ancient highways meet on the Cross), watches the Valley from the south (the State watches from the north,
+  `LORE.md` §6.19), and salvages for the God.
+- **The Basin Tunnel**: one broad way with a guideway down its middle, as the Ancients built their roads (`LORE.md` §4),
+  lit by Dalab's lamps; wardens' posts and lay-bys along it; a gate at each portal. Its upper portal opens in the Upper Bay's
+  left wall at the Apron's level, a ramp down onto the Apron. A road climbing ~1.2-1.5 km at the Ancients' gentle grade is
+  20-30 km of tunnel (or shorter in spirals inside the rock): Span draws the portal and the first few hundred metres, the
+  rest is a route record. Its lower portal stands at the plateau's foot in the basin (question 3).
+- **The trading post** (on the Apron, S2): where the tunnel's caravans from Dalab meet the plateau's people, who come down
+  the north highway and the bay's ring road (who they are: TBD, question 10). The **market** at its heart; **customs** (the
+  scribes' hall) at the tunnel road (tolls, tallies, the priests' cut); **warehouses**; **two inns** (one for the tunnel's
+  caravans, one for the plateau's traders) and a **tavern**; a **bath house**; the **caravan yard** where lizard trains are
+  made up, with a ramp up to the Cross's stalls; the resident traders' **timber-frame houses** (the trader caste's way,
+  §6.1); a **shrine** facing the lab; fields and lizard pens at the Apron's upstream end; three terrace domes rehabilitated
+  as **lodgings**. All from the Dalab set (section 0). About 500 people: traders and their households, inn and caravan hands,
+  porters, the tunnel's wardens.
 - **The garrison**: about 240: a priest-captain, three genepriests (the clinic; the shelf coral as an ore-finder and the
   fishing bridge's venom, swhighlands section 6), Giant street patrols in threes (§6.1), soldiers and lizard riders, servants
-  and salvagers, rotated from Dalab.
+  and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,100 at its peak.
 - **Where they live**: the **Cross** (S4: gate halls at both abutments, the Spine, mess, kitchen, clinic, lizard stalls with a
   ramp down to the Apron, the water hoist, armoury, ready rooms, the sealed lift head, the gun gallery on the downstream face),
   the **Sound Quarter** (north range A and the north -40 gallery under it: quarters, stores, workshops, roof gardens), the rim
@@ -160,11 +186,12 @@ mutants; the watch post on a pillar-rim tower with a stair cut up its side).
   salvage panels, red marks on what is holy.
 - **The Line**: a salvage wall across the canyon floor under the Cross, one gate kept shut; the Cross's gun gallery above it.
   Everything downstream of the Line (the Deep Reach's floor and lower galleries) is **no man's land**: the machines' den in
-  Hangar 6, mutant nests in the -130 galleries. Dalab patrols the rims and the upper galleries, and the forward barricade on
+  Hangar 6, mutant nests on the -130 service ledges. Dalab patrols the rims and the upper galleries, and the forward barricade on
   the Middle Bridge.
 - **The mound**: an earth mound beside the south highway (S0 10), imitating the domes, facing the lab (south-west); the
   priest-captain communes with the God from it (§6.1: each town's mound faces the lab).
-- **Food**: fields and lizard pens on the Apron's upstream half; supply trains from Dalab by the south highway.
+- **Food**: fields and lizard pens at the Apron's upstream end; the rest up the tunnel from Dalab, and what the plateau
+  sells.
 - **The watch post**: on a pillar-rim tower (250-300 m, swhighlands station 4), downstream of Span, with a line of sight to
   the Valley's approaches and to the Cross's signal mast (or a relay). A walled compound on the flat top (Dalab's grey
   megalithic stone, the nobles' and the army's), a hut or two, a beacon and signal mirrors; 8 to 15 posted; the stair cut up
@@ -187,17 +214,22 @@ mutants; the watch post on a pillar-rim tower with a stair cut up its side).
    | 830 on | the kit's | falls to the plunge fall | natural, meandering |
 
    Suggested in core: the Deep Reach as `KRELIEF.rille` with `tops` = the bench levels and a steep `face`; the bay as
-   `KRELIEF.pit` with `benches`; the hangar mouths and the Portal as `KCARVE.cut` sites (section 2 sheet S3 gives each box).
+   `KRELIEF.pit` with `benches`; the hangar mouths and the Basin Tunnel's portal as `KCARVE.cut` sites (sheets S2 and S3
+   give each box).
 3. **Footprints to keep clear of trees and dressing** (Span's records, by id, published with the layout): every room in
    S0-S3, the roads (the north and south highways at u -240, the rim roads at v ±205, the ring road, the roads to the lake
    sites), the bridges' decks, the pads.
 4. **Anchor points**: the lake's level y -8 and its outlet at u -1050; the canyon head u -900; the bay's oval centre
    (-520, 0); the Cross (u -300..-180); the Deep Reach (u -180..830); the Outfall Gate (u 800..830); the two lake sites
-   (the Quay u -2300..-1700, v 470..600; the Ring at (-1500, -570), r 150); the mound (-300, -430).
+   (the Quay u -2200..-1800, v 470..600; the Ring at (-1500, -570), r 150); the mound (-300, -430); **the Basin Tunnel's
+   upper portal** at (-570, -160), y -45, in the bay's left wall: the tunnel runs away from the canyon inside the rock, so
+   no carve may cross its line (S0: south-west from the portal, falling toward the basin); its lower portal is wherever the
+   basin's foot is, for the basin's session to place (question 3).
 5. **Structures to dress** (the kit's flora on Span's records, a `dress` tag on each): drip cap on piers, posts, the Cross's
    keel and the Pipe Bridge's cables; log crust on everything fallen (Pad 3, the Low Bridge's middle, north range C, the
-   fallen south gallery, the toppled domes); anemone trees on the rim ranges' roofs, the tanks' tops and the ruined galleries'
-   terraces; nothing on Dalab's parts but its gardens.
+   fallen south service ledge, the toppled domes); anemone trees on the rim ranges' roofs, the tanks' tops and the ruined
+   galleries' terraces; nothing on Dalab's parts (the Cross, the Sound Quarter, the trading post on the Apron, the three
+   lodging domes, the tunnel's portal) but its gardens.
 6. **The watch post's tower**: a pillar of station 4 whose top is flat and at least ~40 x 40 m, its side with a ledge line a
    stair can follow, a line of sight to the Valley and to the Cross (or a relay), on Dalab's road (the rim road on, downstream).
    The station picks it; Span places the post and the stair on it.
@@ -222,12 +254,14 @@ rooms fitted to the shell the page draws, later.
 | Tanks | `78-factory-silo.js`, `84-fuel.js` |
 | The works | `88-factory.js`, `8ak-alt-c-works.js` |
 | Dalab's patches | the decay-3 `repairPass` |
+| Dalab's own buildings | not this kit: the Dalab set in `settlements/dalab` (section 0), on the same core |
 | Rooms inside (later) | `8zz-interiors.js` and `kits/ancients-interiors` |
 
 **New builders the kit lacks** (one fragment each, seeds reserved in `DESIGN.md`): the **bench gallery** (a curved terrace
 building along a path, its back to a wall), the **rim range** (the white curved band on a rim, stepping over the edge), the
 **ring-walled dome** (a dome inside a low ring wall, the concept's motif), the **pad on a drum** (a round pad, cantilevered or
-on a stalk), the **Cross** (a habitable bridge building), the **weir and sluices**. Built first on a kit target
+on a stalk), the **Cross** (a habitable bridge building), the **weir and sluices**, the **road tunnel portal** (the Basin Tunnel's,
+intact: one broad way with a guideway). Built first on a kit target
 (`--target span`, every state) before Span's page takes them. They take a ground height from the station (the kit assumes
 y = 0 today: `API.md` "Ground contact"), so each builder is called with its part's base y.
 
@@ -239,8 +273,8 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
 - **SP2.** The new kit builders on a `kits/ancients` target, every state; the existing ones checked against the concept.
 - **SP3.** The page: the station's ground read in place (or core/terrain records standing in until station 3 lands), the
   parts placed from the layout, the walk graph, `core/host` FULL, views; `verify.py --assert`.
-- **SP4.** Dalab's outpost: the rehabilitated parts, the Line, the mound, the Apron's fields and pens; the dress tags the
-  biome kit reads.
+- **SP4.** Dalab's fort and trading post from the Dalab set: the rehabilitated parts, the Line, the mound, the trading post
+  on the Apron, the Basin Tunnel's portal and the first of its bore (`KCAVERN`); the dress tags the biome kit reads.
 - **SP5.** The watch post on station 4's tower (with that station).
 - **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.
 - **SP7.** `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
@@ -253,21 +287,25 @@ the canyon road and from its top looking toward the Valley.
 
 ## 9. Open questions for the owner
 
-1. **The layout**: the reading of the concept (a quarried bay with a deck over the river, the Cross where the highways cross,
-   the Deep Reach below with three bridges), and its size (a ~1.7 km built reach, 300 m rim to rim). *Recommended*: as drawn.
+Settled 2026-10-27: the layout and the trimmed size (the old question 1); the Dalab set for Dalab's buildings (old 6);
+the Basin Tunnel, intact and cleared, in place of the proposed Under-Wall Portal (old 3); a trading post, not only an outpost.
+
+1. *(settled)*
 2. **The depth**: 180 m on the model's bed and three benches, or deeper (250-300 m, four or five benches) as the biome plan's
    "a few hundred metres" allows? *Recommended*: 180 m; deeper only if the station's tableland stands higher.
-3. **The Under-Wall Portal**: is Span a mouth of the Ancients' route under the Inner Wall to the Valley (why the machines
-   come, and why Dalab holds it)? *Proposed*; it touches `LORE.md` §4.
+3. **The Basin Tunnel's lower end**: which basin: Dalab's own, the south-western lowlands (Pan Riba's lower course), as this
+   plan reads it, or another? Where its lower portal stands (at the plateau's foot, ~1.2-1.5 km below), and whether Dalab
+   holds a post there too. *Recommended*: the lowlands, a fortified portal with a small post, placed from the model.
 4. **The name clash**: `kits/ancients`' canyon target is titled "The Span" (pipes with hanging payloads, 2026-09). Take it in
    as Span's Pipe Bridge and retitle the target? *Recommended*.
 5. **Placement on core**: Span is one pre-planned Ancient complex: the `SINGLE_COMPLEX` exemption from `core/city` (as
-   Longsong), with Dalab's additions as records in Span's layout? Or add a `garrison` focus and a `dalab` culture row to
-   `core/hamlet` for the outpost? *Recommended*: the exemption now, `core/hamlet` for Blade and other outposts later.
-6. **Dalab's buildings**: there is no Dalab culture kit (Dalab's buildings live in `settlements/dalab`). Read them in place
-   from there for the Line, the mound and the patches, or start a Dalab kit (a catalog culture)? *Recommended*: read in place
-   now; a kit when a second Dalab outpost (Blade, Ledge) needs them.
+   Longsong), with the trading post's buildings as records in Span's layout? Or add a `trading post` focus and a `dalab`
+   culture row to `core/hamlet`? *Recommended*: the exemption now; `core/hamlet` when Blade and Ledge need the same.
+6. *(settled: the Dalab set)*
 7. **The Valley's machines and mutants**: drawn in this build (wrecks only, or `kits/mechs` walkers in Hangar 6), or left to
    the life layer? *Recommended*: wrecks and signs now, live ones with the life layer.
-8. **The garrison** (about 240) and the watch post (8 to 15), and how much of the Cross Dalab uses.
+8. **The numbers today**: the garrison (about 240), the trading post (about 500), the watch post (8 to 15).
 9. **The watch post's tower**: how far downstream (it must see the Valley and signal the Cross), chosen with station 4.
+10. **Who lives up there** (TBD, the owner): the plateau's people Dalab trades with, and what passes: Dalab's mods, healing
+    and lowland goods up the tunnel; down it, perhaps the plateau's furs, ore (the shelf coral's finds), the fishing bridge's
+    venom and the highlands' plants. Their side of the market (their own stalls or camp on the Apron or the rim) waits on it.

@@ -56,6 +56,9 @@ HEAD = [([(-900, 60), (-750, 70)], GREY, 3), ([(-900, -60), (-750, -70)], GREY, 
 DOWN = [([(820, 150), (1200, 120)], GREY, 3, 'the natural canyon on, to the plunge fall and the pillar rim'), ([(820, -150), (1200, -120)], GREY, 3)]
 BAYRIM = [(oval(*BAY), GREY, 3)]
 RIVER = [([(-1050, 0), (-900, 0), (-750, 0), (-300, 0), (-180, -48), (820, -48), (1200, -40)], BLUE, 4)]
+PURPLE = (120, 60, 150)
+TUNNEL = (-570, -160)                                       # the Basin Tunnel's upper portal: the bay's left wall at the Apron (y -45)
+TUNNEL_LINE = [([TUNNEL, (-700, -420), (-1100, -700), (-1500, -790)], PURPLE, 6, 'the Basin Tunnel (underground, intact, cleared): down to the basin')]
 ROADS = [([(-240, 230), (-240, 800)], BROWN, 7, 'north highway (Ancient, to the tableland)'),
          ([(-240, -230), (-240, -800)], BROWN, 7, 'south highway'),
          ([(-180, 205), (820, 205)], BROWN, 5), ([(-180, -205), (1150, -205)], BROWN, 5, 'the rim road on: Dalab\'s way to the watch post'),
@@ -66,18 +69,19 @@ ROADS = [([(-240, 230), (-240, 800)], BROWN, 7, 'north highway (Ancient, to the 
 FLOORS = []
 SITE = dict(R=1958, rect=(-2650, 1250, -800, 800))
 FLOORS.append(dict(SITE, id='S0', tier=0, title='Sheet S0: Span and its lake (the site, ~3.9 x 1.6 km)',
-  sub='Pan Riba leaves the lake over the Ancients\' weir, falls into the canyon head, runs under the Upper Bay\'s deck and the Cross, and through the Deep Reach, the arcology\'s works down both walls. Two ring-walled outlying sites by the lake. The station session carves the canyon to this plan and turns u onto the river\'s course; the pillar rim and Dalab\'s watch post lie downstream (u > 1200, off the sheet).',
+  sub='Pan Riba leaves the lake over the Ancients\' weir, falls into the canyon head, runs under the Upper Bay\'s deck and the Cross, and through the Deep Reach, the arcology\'s works down both walls. Two ring-walled outlying sites by the lake. The Basin Tunnel, intact and cleared, comes up inside the rock from the basin to the bay: Dalab\'s way onto the plateau, its trading post on the Apron at the tunnel\'s mouth. The station session carves the canyon to this plan and turns u onto the river\'s course; the pillar rim and Dalab\'s watch post lie downstream (u > 1200, off the sheet).',
   axisnote='u downstream along Pan Riba ->   v across (the right bank up); y from the rim. Heights in the key are y.',
   fills=[(LAKE, B.KIND_FILL['water'], 'the lake (y -8, on the tableland; the biome kit makes it)'),
          ([(-180, 150), (820, 150), (820, -150), (-180, -150)], (214, 200, 180), 'the Deep Reach (rim to rim 300 m)')],
-  lines=HEAD + DOWN + BAYRIM + RIVER + ROADS + rims(RIM),
+  lines=HEAD + DOWN + BAYRIM + RIVER + ROADS + rims(RIM) + TUNNEL_LINE,
   rooms=[
-    R(1, 'The Lake Quay', 'ringsite', -2300, -1700, 470, 600, 1, 'outlying site: a long walled strip of slips and sheds by the north shore; worn, overgrown'),
+    R(1, 'The Lake Quay', 'ringsite', -2200, -1800, 470, 600, 1, 'outlying site: a walled strip of slips and sheds by the north shore; worn, overgrown'),
     C(2, 'The Lake Ring', 'ringsite', -1500, -570, 150, 1, 'outlying site: a ring wall round a sunken court of six domes, a mole into the lake; ruined, drowned at one side'),
     R(3, 'The Weir', 'weir', -1070, -1030, -90, 90, 1, 'the Ancients\' sluice dam at the lake\'s outlet; it holds the lake up 8 m; sound'),
     C(4, 'Head Pad', 'pad', -880, 150, 32, 1, 'a landing pad on a drum at the canyon head, a walkway to the bay\'s ring road'),
-    ovalR(5, 'The Upper Bay', 'terrace', BAY[0], BAY[1], BAY[2], BAY[3], 1, 'the canyon widened into an oval bay, domes on its terraces, a deck (the Apron) over the river; ruined'),
-    R(6, 'The Cross (the Span)', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'the great habitable bridge where the highways cross the canyon: Dalab\'s outpost'),
+    ovalR(5, 'The Upper Bay', 'terrace', BAY[0], BAY[1], BAY[2], BAY[3], 1, 'the canyon widened into an oval bay, domes on its terraces, a deck (the Apron) over the river: Dalab\'s trading post (S2)'),
+    R(6, 'The Cross (the Span)', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'the great habitable bridge where the highways cross the canyon: Dalab\'s fort'),
+    C(11, 'The Basin Tunnel\'s upper portal', 'portal', TUNNEL[0], TUNNEL[1], 18, 2, 'in the bay\'s left wall at the Apron\'s level (y -45); the Ancient road tunnel down to the basin, intact, cleared and kept by Dalab'),
     R(7, 'The Deep Reach', 'works', 400, 401, -1, 1, 1, 'the canyon proper: terraces down both walls, hangars and works on the floor; the no man\'s land'),
     C(8, 'Lone dome', 'dome', -1200, 520, 16, 1, 'worn'),
     C(9, 'Lone dome', 'dome', -760, -560, 14, 1, 'toppled'),
@@ -86,8 +90,9 @@ FLOORS.append(dict(SITE, id='S0', tier=0, title='Sheet S0: Span and its lake (th
 
 # ------------------------------------------------------------------------------------------------ S1 the rims (y = 0)
 CORE = dict(R=908, rect=(-950, 850, -500, 500))
-BAYDOMES_IN = [C(20 + i, 'Bay terrace dome', 'dome', BAY[0] + 207 * math.cos(a), 139 * math.sin(a), 17, 1,
-                 'ruined' if i % 3 else 'toppled into the bay') for i, a in enumerate([k * 2 * math.pi / 10 + .31 for k in range(10)])]
+BAYDOMES_IN = [C(20 + i, 'Bay terrace dome', 'outpost' if i in (4, 5, 6) else 'dome', BAY[0] + 207 * math.cos(a), 139 * math.sin(a), 17, 2 if i in (4, 5, 6) else 1,
+                 'rehabilitated: the traders\' lodgings' if i in (4, 5, 6) else ('ruined' if i % 3 else 'toppled into the bay'))
+               for i, a in enumerate([k * 2 * math.pi / 10 + .31 for k in range(10)])]
 BAYDOMES_OUT = [C(30 + i, 'Ring-walled dome', 'dome', BAY[0] + 300 * math.cos(a), 232 * math.sin(a), 28, 1, n)
                 for i, (a, n) in enumerate([(1.15, 'ruined'), (1.75, 'worn, overgrown'), (2.4, 'ruined'), (3.3, 'toppled'), (3.9, 'ruined'), (4.55, 'worn')])]
 FLOORS.append(dict(CORE, id='S1', tier=0, title='Sheet S1: the rims (y = 0)',
@@ -99,8 +104,8 @@ FLOORS.append(dict(CORE, id='S1', tier=0, title='Sheet S1: the rims (y = 0)',
   rooms=BAYDOMES_IN + BAYDOMES_OUT + [
     C(1, 'Head Pad', 'pad', -880, 150, 32, 1, 'worn; the walkway to the ring road stands'),
     C(2, 'Bay Pad', 'pad', -700, -240, 30, 1, 'ruined: a craft wrecked across it'),
-    R(3, 'The Cross: the roof road and the gate towers', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'rehabilitated: Dalab\'s; salvage parapets, the signal mast; rooms below (S4)'),
-    R(4, 'North Range A: the Sound Quarter', 'outpost', -180, 240, 152, 190, 2, 'rehabilitated: Dalab\'s quarters, gardens on the roofs'),
+    R(3, 'The Cross: the roof road and the gate towers', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'rehabilitated: Dalab\'s fort; salvage parapets, the signal mast; four storeys over the canyon (S4), gate towers on the abutments'),
+    R(4, 'North Range A: the Sound Quarter', 'outpost', -180, 240, 152, 190, 2, 'rehabilitated: Dalab\'s quarters, gardens on the roofs; the ranges are two storeys over the rim'),
     R(5, 'North Range B', 'terrace', 240, 520, 152, 190, 1, 'ruined, overgrown (drip cap, log crust)'),
     R(6, 'North Range C', 'fallen', 520, 820, 152, 190, 1, 'toppled: half its length slumped into the canyon with the pad'),
     R(7, 'South Range A', 'terrace', -180, 300, -190, -152, 1, 'ruined; Dalab patrols it'),
@@ -120,24 +125,35 @@ def bench(n, name, side, u0, u1, lvl, kind, note):
     hi, lo = HALF[{B1: RIM, B2: B1, B3: B2}[lvl]], HALF[lvl]
     return R(n, name, kind, u0, u1, lo, hi, 1, note) if side > 0 else R(n, name, kind, u0, u1, -hi, -lo, 1, note)
 
-FLOORS.append(dict(CORE, id='S2', tier=1, title='Sheet S2: the walls (benches at y -40, -85, -130) and the Apron (y -45)',
-  sub='The arcology\'s floors step down both walls on the sandstone\'s hard beds: a gallery building on each bench, its back cut into the rock, its front a white curved terrace. In the bay the Apron, a deck over the river\'s slot, with the derelict craft. Two lower bridges: the Low Bridge (fallen) and the Pipe Bridge with its hanging payloads (kits/ancients\' canyon target).',
+FLOORS.append(dict(CORE, id='S2', tier=1, title='Sheet S2: the walls (benches at y -40, -85, -130) and the Apron (y -45): the trading post',
+  sub='The arcology\'s floors step down both walls on the sandstone\'s hard beds: a three-storey gallery building on the -40 and -85 benches, its back cut into the rock, its front a white curved terrace; the -130 bench a service ledge (conduits, walkways). In the bay the Apron, a deck over the river\'s slot, cleared by Dalab for its trading post: the Basin Tunnel comes out of the bay\'s left wall onto it, the plateau\'s traders come down the ring road into it. Two lower bridges: the Low Bridge (fallen) and the Pipe Bridge with its hanging payloads (kits/ancients\' canyon target).',
   axisnote='u downstream ->   v across   bands: rim to -40, -40 to -85, -85 to -130 (outer to inner)',
   fills=[([(-180, 70), (820, 70), (820, -70), (-180, -70)], (200, 186, 166), 'the floor (y -180) below')],
   lines=HEAD + BAYRIM + rims(RIM) + rims(B1, (150, 150, 150), 2) + rims(B2, (150, 150, 150), 2) + rims(B3, (150, 150, 150), 2) + RIVER[:1],
   rooms=[
-    ovalR(1, 'The Apron', 'terrace', APRON[0], APRON[1], APRON[2], APRON[3], 1, 'y -45: the bay\'s deck over the slot; Dalab\'s fields and lizard pens on its upstream half'),
-    C(2, 'Derelict craft', 'craft', -560, 40, 24, 1, 'a lander, broken-backed'),
-    C(3, 'Derelict craft', 'craft', -470, -50, 18, 1, ''),
-    C(4, 'Derelict craft', 'craft', -620, -40, 14, 1, 'burnt out'),
-    R(5, 'The Cross, floors -10 to -60', 'outpost', CROSS[0], CROSS[1], -150, 150, 2, 'the bridge body over the canyon (S4); its keel piers down to the sluice'),
-    bench(6, 'North gallery, -40 (A)', 1, -180, 240, B1, 'outpost', 'rehabilitated: Dalab\'s stores and workshops'),
-    bench(7, 'North gallery, -40 (B)', 1, 240, 820, B1, 'terrace', 'ruined'),
-    bench(8, 'North gallery, -85', 1, -180, 820, B2, 'terrace', 'ruined; sealed off from Dalab\'s part by a salvage wall at u 0'),
-    bench(9, 'North gallery, -130', 1, -180, 820, B3, 'terrace', 'ruined; mutant nests'),
-    bench(10, 'South gallery, -40', -1, -180, 820, B1, 'terrace', 'ruined'),
-    bench(11, 'South gallery, -85', -1, -180, 820, B2, 'terrace', 'ruined'),
-    bench(12, 'South gallery, -130', -1, -180, 820, B3, 'terrace', 'ruined; its downstream half fallen to the floor'),
+    ovalR(1, 'The Apron', 'terrace', APRON[0], APRON[1], APRON[2], APRON[3], 1, 'y -45: the bay\'s deck over the slot, cleared for the trading post'),
+    C(2, 'Derelict craft', 'craft', -620, 75, 14, 1, 'a lander, broken-backed: the one wreck Dalab left (too heavy to strip)'),
+    C(3, 'The Basin Tunnel\'s upper portal', 'portal', TUNNEL[0], TUNNEL[1], 18, 2, 'in the bay\'s left wall; Dalab\'s gate and wardens'),
+    R(4, 'The Tunnel Road', 'passage', -580, -560, -142, -100, 1, 'the ramp from the portal onto the Apron'),
+    R(5, 'The Cross, floors -10 to -60', 'outpost', CROSS[0], CROSS[1], -150, 150, 2, 'the fort: the bridge body over the canyon, four storeys (S4); its keel piers down to the sluice'),
+    bench(6, 'North gallery, -40 (A)', 1, -180, 240, B1, 'outpost', 'rehabilitated: Dalab\'s stores and workshops; three storeys'),
+    bench(7, 'North gallery, -40 (B)', 1, 240, 820, B1, 'terrace', 'ruined; three storeys'),
+    bench(8, 'North gallery, -85', 1, -180, 820, B2, 'terrace', 'ruined; three storeys; sealed off from Dalab\'s part by a salvage wall at u 0'),
+    bench(9, 'North service ledge, -130', 1, -180, 820, B3, 'passage', 'conduits and a walkway; mutant nests'),
+    bench(10, 'South gallery, -40', -1, -180, 820, B1, 'terrace', 'ruined; three storeys'),
+    bench(11, 'South gallery, -85', -1, -180, 820, B2, 'terrace', 'ruined; three storeys'),
+    bench(12, 'South service ledge, -130', -1, -180, 820, B3, 'passage', 'its downstream half fallen to the floor'),
+    R(19, 'Market (dalab_market_large)', 'outpost', -560, -480, -60, 10, 2, 'the trading post\'s heart: where Dalab trades with the plateau\'s people (who they are: TBD)'),
+    R(20, 'Customs (dalab_scribes)', 'outpost', -545, -521, -100, -80, 2, 'the scribes\' hall at the tunnel road: tolls, tallies, the priests\' cut'),
+    R(21, 'Warehouses (dalab_warehouse)', 'outpost', -470, -410, -90, -50, 1),
+    R(22, 'Inn (dalab_inn)', 'outpost', -640, -608, -80, -50, 1, 'lizard stalls and a lodge: the tunnel\'s caravans'),
+    R(23, 'Inn (dalab_inn)', 'outpost', -460, -428, 20, 50, 1, 'the plateau traders\' inn'),
+    R(24, 'Tavern (dalab_tavern)', 'outpost', -600, -575, 0, 25, 1),
+    R(25, 'Bath house (dalab_bathhouse)', 'outpost', -420, -395, -20, 3, 2),
+    R(26, 'Traders\' houses (dalab_hut_c, dalab_rowhouse)', 'outpost', -660, -620, 10, 60, 1, 'the resident traders: timber frames, as the caste builds'),
+    R(27, 'Fields and lizard pens', 'garden', -700, -662, -40, 40, 0, 'the Apron\'s upstream end'),
+    R(28, 'Caravan yard', 'outpost', -400, -360, -40, 40, 0, 'lizard trains made up and broken; the ramp up to the Cross\'s lizard stalls'),
+    C(29, 'Shrine (dalab_shrine)', 'mound', -500, 75, 8, 2, 'faces the lab'),
     R(13, 'The Low Bridge (north stub)', 'fallen', 475, 490, 40, 105, 1, 'y -85: toppled; its middle lies on the floor'),
     R(14, 'The Low Bridge (south stub)', 'fallen', 475, 490, -105, -30, 1, ''),
     R(15, 'The Pipe Bridge', 'bridge', 690, 712, -128, 128, 1, 'y -40: three sagging pipes, payloads slung under them on cables'),
@@ -148,7 +164,7 @@ FLOORS.append(dict(CORE, id='S2', tier=1, title='Sheet S2: the walls (benches at
 
 # ------------------------------------------------------------------------------------------------ S3 the floor (y -180)
 FLOORS.append(dict(CORE, id='S3', tier=2, title='Sheet S3: the canyon floor (y -180) and the slot under the bay',
-  sub='The river in its channel along the left bank; hangars cut into both walls under the benches; the tanks standing from the floor most of the way to the rim; the works. Dalab\'s Line (a salvage wall and the Cross\'s gun gallery above it) closes the Deep Reach at the Cross; the Outfall Gate at the downstream end. Proposed: the Under-Wall Portal, a side gallery of the Ancients\' route under the Inner Wall to the Valley, which the machines come out of.',
+  sub='The river in its channel along the left bank; hangars cut into both walls under the benches; the tanks standing from the floor most of the way to the rim; the works. Dalab\'s Line (a salvage wall and the Cross\'s gun gallery above it) closes the Deep Reach at the Cross; the Outfall Gate at the downstream end. The machines and mutants come up the canyon from downstream, out of the Valley\'s country; Hangar 6 is their den.',
   axisnote='u downstream ->   v across   y = -180 in the Deep Reach; the slot under the Apron from y -60 to -110',
   fills=[([(-180, 70), (820, 70), (820, -70), (-180, -70)], (200, 186, 166), 'the floor'),
          ([(-900, 25), (-300, 25), (-300, -25), (-900, -25)], (190, 176, 156), 'the slot under the Apron'),
@@ -161,7 +177,7 @@ FLOORS.append(dict(CORE, id='S3', tier=2, title='Sheet S3: the canyon floor (y -
     R(4, 'Hangar 4', 'hangar', 330, 420, -112, -70, 1, 'ruined'),
     R(5, 'Hangar 5', 'hangar', 430, 520, 70, 112, 1, 'ruined'),
     R(6, 'Hangar 6', 'hangar', 580, 670, -112, -70, 1, 'ruined; the machines\' den'),
-    R(7, 'The Under-Wall Portal (proposed)', 'portal', 690, 760, 70, 124, 1, 'a tunnel mouth into the Ancients\' route to the Valley; half plugged'),
+    R(7, 'Hangar 7', 'hangar', 690, 760, 70, 112, 1, 'ruined; collapsed at the back'),
     C(8, 'Tank 1', 'tank', 40, 15, 22, 1, 'rises to y -20; worn'),
     C(9, 'Tank 2 (the great tank)', 'tank', 245, -5, 28, 1, 'rises to y -60; ruined, holed'),
     C(10, 'Tank 3', 'tank', 410, 30, 18, 1, 'rises to y -90; toppled at its top'),
@@ -230,6 +246,8 @@ def long_section():
     blk(-705, -335, -48, -45, (225, 215, 196), None)
     dr.text((X(-700), Y(-48) + 6), 'the Apron (y -45); the river\'s slot under it', font=fs, fill=(0, 0, 0))
     blk(-300, -180, -60, 8, B.KIND_FILL['outpost'], 'the Cross (Dalab), roof road y 0')
+    blk(-590, -550, -45, -33, PURPLE, None)
+    dr.text((X(-700), Y(-60) + 4), 'the Basin Tunnel\'s portal (behind, in the left wall): the trading post on the Apron', font=fs, fill=PURPLE)
     for u in (-290, -250, -210):
         blk(u, u + 8, -110 if u < -250 else -150, -60, (180, 160, 130), None)
     blk(255, 270, -4, 0, (120, 120, 128), 'Middle Bridge')
@@ -288,8 +306,44 @@ def cross_section():
     dr.line([(X(280), Y(-215)), (X(180), Y(-215))], fill=(0, 0, 0), width=3); dr.text((X(280), Y(-215) + 6), '100 m', font=fs, fill=(0, 0, 0))
     return img
 
+# ------------------------------------------------------------------------------------------------ the floor area at its peak
+# (part, footprint m2, storeys, share of the floor that was homes). Owner, 2026-10-27: the trimmed size (~750,000 m2).
+PI = math.pi
+AREA = [
+    ('Wall galleries: -40 and -85 benches, both walls, 1 km x 22 m', 2 * 2 * 1000 * 22, 3, .45),
+    ('Service ledges at -130 (conduits, walkways)', 0, 0, 0),
+    ('Rim ranges: both rims, 1 km x 38 m', 2 * 1000 * 38, 2, .5),
+    ('The Cross over the canyon: 120 x 300 m (the abutments are gate towers)', 120 * 300, 4, .3),
+    ('Bay terrace domes: ten, r 17', 10 * PI * 17 ** 2, 3, .6),
+    ('Ring-walled domes round the bay: six, r 28', 6 * PI * 28 ** 2, 3, .5),
+    ('Rim domes: three', PI * (26 ** 2 + 30 ** 2 + 22 ** 2), 3, .5),
+    ('Hangars (seven, 90 x 42) and the works', 7 * 90 * 42 + 115 * 75 + 90 * 55 + 110 * 65, 1, 0),
+    ('The Lake Quay: 400 x 130 m, half built', 400 * 130 * .5, 2, .4),
+    ('The Lake Ring: six domes, r 20, round a court', 6 * PI * 20 ** 2, 3, .5),
+]
+M2_PER_HEAD = 35       # gross home floor per person (flats with their share of corridors and services)
+
+def areas_md():
+    L = ['# Span: floor area and population at its peak', '',
+         'Generated by `span_blueprint.py` from its `AREA` table (the trimmed size the owner chose, 2026-10-27). Floor area is',
+         'footprint x storeys at the kit\'s 4.5 m storey; the home share is the part of each that was flats; population is home',
+         'floor / %d m2 a head. The Apron (a deck), the tanks, bridges and pads are not floor.' % M2_PER_HEAD, '',
+         '| Part | Footprint m2 | Storeys | Floor m2 | Homes | People |', '|---|---|---|---|---|---|']
+    tf = tp = 0
+    for name, fp, st, sh in AREA:
+        f = fp * st; p = f * sh / M2_PER_HEAD; tf += f; tp += p
+        L.append('| %s | %d | %d | %d | %d%% | %d |' % (name, fp, st, f, sh * 100, p))
+    L.append('| **Total** | | | **%d** (%.1f million ft2) | | **%d** |' % (tf, tf * 10.764 / 1e6, tp))
+    L += ['', 'Today: Dalab\'s fort (~240) and the trading post at the Basin Tunnel\'s mouth (~500: traders, inn and caravan',
+          'hands, porters, the tunnel\'s wardens, families): about 750 people, in the Cross, the Sound Quarter, three bay domes',
+          'and on the Apron (PLAN.md section 4). The rest stands empty.', '']
+    return '\n'.join(L), tf, tp
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    md, tf, tp = areas_md()
+    with open(os.path.join(HERE, 'AREAS.md'), 'w', encoding='utf-8', newline='\n') as fh: fh.write(md)
+    print('floor %d m2, peak population %d' % (tf, tp))
     for F in FLOORS:
         print('drawing', F['id'])
         B.draw_floor(F).save(os.path.join(OUT, F['id'] + '.png'))
