@@ -274,4 +274,113 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
   const O=K.mounds(Object.assign({x0:-90,z0:-90,x1:150,z1:150},L,{world:78}));ok('another world gives other mounds',JSON.stringify(O.map(m=>[m.x,m.z]))!==JSON.stringify(A.map(m=>[m.x,m.z])),false);
   const acc=K.mounds(Object.assign({x0:-90,z0:-90,x1:150,z1:150},L,{accept:(x,z)=>x<0}));ok('accept refuses a place',acc.length>0&&acc.every(m=>m.x<0),false);}
 }
+// ---- the dry and folded country's kinds (2026-10-26: the outlands' C4, the SW highlands' arches and pillar rim, Godstep's colonnades)
+{// every crossing of a vertical line with a mesh (the triangles of the beds keep() accepts), sorted from the top
+ const hits=(m,x,z,keep)=>{const out=[],P=m.pos,I=m.idx;for(let t=0;t<I.length;t+=3){const a=I[t],b=I[t+1],c=I[t+2];if(keep&&!keep(m.bed[a]))continue;
+   const ax=P[3*a],az=P[3*a+2],bx=P[3*b],bz=P[3*b+2],cx=P[3*c],cz=P[3*c+2],d=(bz-cz)*(ax-cx)+(cx-bx)*(az-cz);if(Math.abs(d)<1e-12)continue;
+   const l1=((bz-cz)*(x-cx)+(cx-bx)*(z-cz))/d,l2=((cz-az)*(x-cx)+(ax-cx)*(z-cz))/d,l3=1-l1-l2;if(l1<-1e-7||l2<-1e-7||l3<-1e-7)continue;
+   out.push(l1*P[3*a+1]+l2*P[3*b+1]+l3*P[3*c+1]);}return out.sort((p,q)=>q-p);};
+ const top1=(m,x,z,keep)=>{const h=hits(m,x,z,keep);return h.length?h[0]:null;};
+ // the drawn foot: every bed-k wall vertex on its lowest row, its height against the ground at its x,z
+ const footGap=(m,k,gr)=>{let lo=Infinity,hi=-Infinity,ymin=Infinity;for(let i=0;i<m.part.length;i++)if(m.part[i]===0&&m.bed[i]===k)ymin=Math.min(ymin,m.pos[3*i+1]);
+   let n=0;const B=[];for(let i=0;i<m.part.length;i++){if(m.part[i]!==0||m.bed[i]!==k)continue;B.push(i);}
+   // the foot row: the first seg+1 vertices of the bed's wall grid
+   const first=B[0];let seg=0;while(first+seg+1<m.part.length&&m.bed[first+seg+1]===k&&Math.abs(Math.hypot(m.pos[3*(first+seg+1)],m.pos[3*(first+seg+1)+2])-0)>=0&&seg<4000){seg++;const i=first+seg;if(Math.abs(m.pos[3*i]-m.pos[3*first])<1e-6&&Math.abs(m.pos[3*i+2]-m.pos[3*first+2])<1e-6)break;}
+   for(let s=0;s<=seg;s++){const i=first+s,g=gr(m.pos[3*i],m.pos[3*i+2]),d=m.pos[3*i+1]-g;lo=Math.min(lo,d);hi=Math.max(hi,d);n++;}return {lo,hi,n};};
+ const bumpy=(x,z)=>.08*x-.05*z+1.2*Math.sin(x*.07)*Math.cos(z*.05)+.6*Math.sin(z*.21+1)+20;
+ ok('the new kinds are rows of the kind table',['dome','tor','arch','pillar'].every(k=>K.kinds().includes(k)),!K.kinds().includes('dome'));
+
+ // DOME: an inselberg on bumpy ground
+ {const DO={id:'d1',kind:'dome',x:10,z:-5,H:60,seed:12,ground:bumpy},D=K.make(DO),dm=K.mesh(D),gC=bumpy(10,-5);
+  ok('a dome stands H over the ground at its centre ('+(D.top-gC).toFixed(2)+' m)',Math.abs(D.top-gC-60)<.5,Math.abs(D.top-gC-50)<.5);
+  ok('its sheets narrow upward and pile without gaps',D.beds.every((b,i)=>i===0||(b.rx<=D.beds[i-1].rx+1e-9&&Math.abs(b.y-(D.beds[i-1].y+D.beds[i-1].h))<1e-9)),false);
+  const half=(k)=>{const B=K.make(Object.assign({},DO,{k:k}));const b=B.beds.find(q=>q.y-gC>=30);return b.rx;};
+  ok('k sets the profile: a bornhardt (k 3.5) is broader at half height than a sugarloaf (k 1.4) ('+half(3.5).toFixed(1)+' vs '+half(1.4).toFixed(1)+' m)',half(3.5)>half(1.4)*1.3,half(3.5)<=half(1.4));
+  const fg=footGap(dm,0,bumpy),flat=K.make(Object.assign({},DO,{ground:null,y0:gC})),fgf=footGap(K.mesh(flat),0,bumpy);
+  ok('the drawn foot is on the bumpy ground ('+fg.n+' vertices, '+fg.lo.toFixed(2)+'..'+fg.hi.toFixed(3)+' m); a level foot would float ('+fgf.hi.toFixed(2)+' m)',fg.n>40&&fg.hi<=.001&&fg.lo>-3,fgf.hi<=.001);
+  let ws=0,n=0;for(let x=-70;x<=90;x+=7.3)for(let z=-80;z<=70;z+=6.9){const s=K.surface([D],x,z,null,{drawn:true}),y=top1(dm,x,z);if(!s||y==null)continue;if(s.wall&&(s.b.k===0||s.steep>2))continue;n++;ws=Math.max(ws,Math.abs(s.top-y));}   /* a steep wall: a hair across is a lot of height */
+  ok('surface {drawn} is the drawn dome ('+n+' rays, within '+ws.toFixed(3)+' m): a plant on it stands on the rock',n>100&&ws<.35,false);
+  const P=K.make(Object.assign({},DO,{pagoda:.8}));let led=0,led0=0;for(let x=-60;x<=80;x+=4)for(let z=-70;z<=60;z+=4){if(K.ledge([P],x,z))led++;if(K.ledge([D],x,z))led0++;}
+  ok('a pagoda dome steps in ledges ('+led+' ledge points; the smooth dome '+led0+')',led>40&&led>led0*4,led<=led0);
+  const st=K.make(Object.assign({},DO,{strata:(x,y,z)=>({h:6,hard:Math.floor(y/6)%2})}));
+  ok('the strata hook sets the sheets: 6 m beds, the soft ones notched deeper',st.beds.slice(1,-1).every(b=>Math.abs(b.h-6)<1e-6)&&st.beds[2].nt!==st.beds[3].nt,st.beds.slice(1,-1).every(b=>Math.abs(b.h-6)>1e-6));
+  ok('a dome round-trips through export and load',K.hash(K.mesh(K.load(K.export([D]))[0]))===K.hash(dm),false);
+  ok('the same seed gives the same dome, another seed another',JSON.stringify(K.make(DO))===JSON.stringify(D),JSON.stringify(K.make(Object.assign({},DO,{seed:13})))===JSON.stringify(D));}
+
+ // TOR: a pile of joint blocks
+ {const TO={id:'t1',kind:'tor',x:0,z:0,H:7,seed:21,ground:bumpy,cols:4,logan:true},T=K.make(TO),tm=K.mesh(T);
+  ok('a tor is '+T.cols+' columns of blocks, each column\'s first block a foot',T.cols===4&&T.feet.length===4&&T.feet.every(k=>T.beds[k].gy),false);
+  let lo=Infinity,hi=-Infinity;T.feet.forEach(k=>{const f=footGap(tm,k,bumpy);lo=Math.min(lo,f.lo);hi=Math.max(hi,f.hi);});
+  const fl=K.make(Object.assign({},TO,{ground:null,y0:bumpy(0,0)}));let hf=-Infinity;fl.feet.forEach(k=>{hf=Math.max(hf,footGap(K.mesh(fl),k,bumpy).hi);});
+  ok('every column\'s drawn foot is on the ground ('+lo.toFixed(2)+'..'+hi.toFixed(3)+' m); a level pile would float ('+hf.toFixed(2)+' m)',hi<=.001&&lo>-2,hf<=.001);
+  // each block rests on the one below as drawn: rays down through its foot ring (in from the notch) meet the lower block's top
+  const rest=(B,m)=>{let worst=0,n=0;for(let k=1;k<B.beds.length;k++){const b=B.beds[k],lw=B.beds[k-1];if(lw.col!==b.col)continue;
+     let here=0;for(let a=0;a<6.28;a+=.2)for(const f of [.25,.5,.75,.95]){const R=K.footR(b,a)*(1-b.nt)*f,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R,c=[lw.cx+lw.tx,lw.cz+lw.tz];
+       if(Math.hypot(x-c[0],z-c[1])>K.footR(lw,Math.atan2(z-c[1],x-c[0]))*(1-lw.ch)*lw.tp*.97)continue;   /* over the lower block's top, not its rounded shoulder */
+       const y=top1(m,x,z,q=>q===lw.k);if(y==null)continue;n++;here++;worst=Math.max(worst,b.y-y);}
+     if(!here)worst=Infinity;}return {worst,n};};   /* every block has a seat on the one below */
+  const rs=rest(T,tm),Tl=JSON.parse(JSON.stringify(T));Tl.beds[2].y+=.3;const rl=rest(Tl,K.mesh(Tl));
+  ok('each block sits on the drawn top of the one below ('+rs.n+' rays, the worst gap '+rs.worst.toFixed(3)+' m); a block lifted .3 m is caught ('+rl.worst.toFixed(2)+')',rs.n>30&&rs.worst<.02,rl.worst<.2);
+  const ls=T.beds[T.feet.length>1?T.feet[1]-1:T.beds.length-1];
+  const lb=T.beds[ls.k-1],seat=a=>K.footR(ls,a)*(1-ls.nt)<K.footR(lb,a)*(1-lb.ch)*lb.tp,wide=a=>K.footR(ls,a)>K.footR(lb,a)*(1-lb.ch)*lb.tp;
+  ok('a logan stone: a wide block on a narrow seat inside the top below',ls.nt===.45&&[0,1,2,3,4,5].every(a=>seat(a)&&wide(a)),![0,1,2,3,4,5].every(a=>seat(a)));
+  ok('clitter lies round the foot, on the ground',T.clitter.length>=3&&T.clitter.every(c=>Math.hypot(c.x,c.z)>6.2&&Math.abs(c.y-bumpy(c.x,c.z))<1e-9),false);
+  ok('foot() finds a tor\'s outer columns',T.feet.every(k=>{const b=T.beds[k];return K.foot([T],b.cx,b.cz).d<0;}),false);}
+
+ // ARCH: an opening under a lintel
+ {const flat=(x,z)=>5+.02*x,AO={id:'a1',kind:'arch',x:0,z:0,span:14,rise:11,H:18,ry:.3,seed:31,ground:flat},A=K.make(AO),am=K.mesh(A),O=A.opening,ux=Math.cos(.3),uz=Math.sin(.3);
+  // horizontal rays across the fin (Moller-Trumbore): through the opening they cross no wall; through a leg, its two faces
+  const across=(m,o,d,L)=>{let c=0;const P=m.pos,I=m.idx;for(let t=0;t<I.length;t+=3){const a=3*I[t],b=3*I[t+1],cc=3*I[t+2];
+     const e1=[P[b]-P[a],P[b+1]-P[a+1],P[b+2]-P[a+2]],e2=[P[cc]-P[a],P[cc+1]-P[a+1],P[cc+2]-P[a+2]],p=[d[1]*e2[2]-d[2]*e2[1],d[2]*e2[0]-d[0]*e2[2],d[0]*e2[1]-d[1]*e2[0]],det=e1[0]*p[0]+e1[1]*p[1]+e1[2]*p[2];
+     if(Math.abs(det)<1e-12)continue;const iv=1/det,tv=[o[0]-P[a],o[1]-P[a+1],o[2]-P[a+2]],u=(tv[0]*p[0]+tv[1]*p[1]+tv[2]*p[2])*iv;if(u<0||u>1)continue;
+     const q=[tv[1]*e1[2]-tv[2]*e1[1],tv[2]*e1[0]-tv[0]*e1[2],tv[0]*e1[1]-tv[1]*e1[0]],v=(d[0]*q[0]+d[1]*q[1]+d[2]*q[2])*iv;if(v<0||u+v>1)continue;
+     const tt=(e2[0]*q[0]+e2[1]*q[1]+e2[2]*q[2])*iv;if(tt>0&&tt<L)c++;}return c;};
+  const nx=-uz,nz=ux,T2=A.beds[0].rz*2;let clear=0,n=0;
+  for(let y=O.y0+.4;y<O.y1-.15;y+=1.1){const lv=A.beds.filter(b=>b.col===0).find(b=>y>=b.y&&y<b.y+b.h),half=Math.hypot(lv.cx,lv.cz)-lv.rx-.3;   /* the opening's half-width at y */
+    for(let s=-.9;s<=.9;s+=.3){const px=ux*s*half,pz=uz*s*half;n++;if(across(am,[px-nx*T2*2,y,pz-nz*T2*2],[nx,0,nz],T2*4)===0)clear++;}}
+  const lg=A.beds[0],inLeg=across(am,[lg.cx-nx*T2*2,O.y0+2,lg.cz-nz*T2*2],[nx,0,nz],T2*4);
+  ok('the opening is clear: '+clear+'/'+n+' rays across the fin under the soffit meet no rock; across a leg a ray crosses '+inLeg+' faces',clear===n&&n>40,inLeg<2);
+  const soff=hits(am,0,0).filter(y=>Math.abs(y-O.y1)<.02).length,A2=JSON.parse(JSON.stringify(A));A2.beds.forEach(b=>delete b.und);
+  ok('the lintel\'s soffit is drawn over the opening (a ray up the middle meets it at '+O.y1.toFixed(2)+' m); without und it is not',soff>=1,hits(K.mesh(A2),0,0).filter(y=>Math.abs(y-O.y1)<.02).length>=1);
+  let flo=Infinity,fhi=-Infinity;A.feet.forEach(k=>{const f=footGap(am,k,flat);flo=Math.min(flo,f.lo);fhi=Math.max(fhi,f.hi);});
+  ok('both legs stand on the ground ('+flo.toFixed(2)+'..'+fhi.toFixed(3)+' m) and reach into the lintel',fhi<=.001&&flo>-1&&[0,1].every(c=>{const L=A.beds.filter(b=>b.col===c).pop();return L.y+L.h>O.y1;}),false);
+  const leg=A.beds.filter(b=>b.col===0),inner=b=>Math.hypot(b.cx,b.cz)-b.rx;
+  ok('the legs step in over the opening ('+inner(leg[0]).toFixed(2)+' m from the axis at the foot, '+inner(leg[leg.length-1]).toFixed(2)+' at the crown)',inner(leg[leg.length-1])<inner(leg[0])-1,inner(leg[leg.length-1])>=inner(leg[0]));
+  threw=false;try{K.make(Object.assign({},AO,{H:10}));}catch(e){threw=true;}ok('an arch whose top is under its opening is refused',threw,false);}
+
+ // PILLAR and the PILLAR RIM: towers from the tableland's joints
+ {const P=K.make({id:'p1',kind:'pillar',x:0,z:0,H:260,w:40,l:34,ry:.2,seed:41,ground:bumpy}),pm=K.mesh(P);
+  ok('a pillar stands 260 m over its ground, in beds of 5-40 m',Math.abs(P.top-bumpy(0,0)-260)<1&&P.beds.slice(1,-1).every(b=>b.h>=4.3&&b.h<=40.01),false);
+  const fg=footGap(pm,0,bumpy);ok('its drawn foot is on the ground ('+fg.lo.toFixed(2)+'..'+fg.hi.toFixed(3)+' m)',fg.hi<=.001&&fg.lo>-4,false);
+  const sqr=K.footR(P.beds[3],.2+Math.PI/4)/Math.hypot(P.beds[3].rx,P.beds[3].rz),el=K.footR(Object.assign({},P.beds[3],{sq:0}),.2+Math.PI/4)/Math.hypot(P.beds[3].rx,P.beds[3].rz);
+  ok('a jointed block is squared at its corners (diagonal reach '+sqr.toFixed(2)+' of the corner; an ellipse '+el.toFixed(2)+')',sqr>.82,sqr<=el+.05);
+  const a=K.at([P],P.beds[P.beds.length-1].cx,P.beds[P.beds.length-1].cz);ok('at() over its middle is the flat top',a&&a.b===P.beds[P.beds.length-1],false);
+  global.window=global;eval(fs.readFileSync(path.join(__dirname,'38-core-relief.js'),'utf8'));
+  const J=KRELIEF.joints({world:7,angle:.25,sp:[40,70]}),zone=(x,z)=>clamp01((x-200)/1400),top=900,floor=(x,z)=>.03*x+.02*z;
+  function clamp01(v){return v<0?0:v>1?1:v;}
+  const box={x0:0,z0:0,x1:1600,z1:700},L={id:'rim',joints:J,zone,top,ground:floor,from:.3,to:.9},A=K.pillars(Object.assign({},box,L));
+  ok('the pillar rim stands '+A.length+' towers, every one in the zone\'s band [.3, .9)',A.length>10&&A.every(p=>{const z=zone(p.x,p.z);return z>=.3&&z<.9;}),A.length===0);
+  let ov=0;for(let i=0;i<A.length;i++)for(let j=i+1;j<A.length;j++){const p=A[i],q=A[j],d=Math.hypot(p.x-q.x,p.z-q.z);if(d>200)continue;
+    const ang=Math.atan2(q.z-p.z,q.x-p.x),rp=Math.max(...p.beds.map(b=>K.footR(b,ang)+Math.hypot(b.cx-p.x,b.cz-p.z))),rq=Math.max(...q.beds.map(b=>K.footR(b,ang+Math.PI)+Math.hypot(b.cx-q.x,b.cz-q.z)));if(d<rp+rq)ov++;}
+  ok('no two towers touch: each stands inside its own widened joints ('+ov+' touching)',ov===0,false);
+  const far=A.filter(p=>zone(p.x,p.z)>.7).length/Math.max(1,A.filter(p=>zone(p.x,p.z)>.7||true).length),near=A.filter(p=>zone(p.x,p.z)<.5).length,out=A.filter(p=>zone(p.x,p.z)>=.7).length;
+  ok('they thin toward the floor ('+near+' in the inner third of the band, '+out+' in the outer)',near>out,near<=out);
+  const B2=K.pillars(Object.assign({x0:500,z0:-200,x1:2100,z1:500},L)),ia=new Map(A.map(p=>[p.id,p])),both=B2.filter(p=>ia.has(p.id));
+  ok('two windows give the same towers where they overlap ('+both.length+')',both.length>3&&both.every(p=>JSON.stringify(p)===JSON.stringify(ia.get(p.id))),false);
+  const tbl=KRELIEF.tableland({joints:J,zone,top,floor,z0:.3}),tower=A[0],tb=J.at(tower.x,tower.z);
+  ok('the tableland ends where the towers begin: its cliff at the band\'s edge, the floor under every tower',A.every(p=>Math.abs(tbl(p.x,p.z)-floor(p.x,p.z))<1e-9)&&tbl(300,300)>800,tbl(300,300)<800);
+  ok('a tower\'s block is its joints\' block ('+tower.id+')',tower.id==='rim:'+tb.id,false);}
+
+ // COLONNADES on a flow's front: the columns option of a butte
+ {const BO={id:'c1',kind:'butte',x:0,z:0,y0:0,seed:51,tiers:[{h:40,r:60,e:1.2},{h:25,r:40,e:1.1}]},plain=K.make(BO),col=K.make(Object.assign({},BO,{columns:{w:[1.6,2]}}));
+  const strip=B=>JSON.stringify(B.beds.map(b=>{const c=Object.assign({},b);delete c.cw;delete c.cd;delete c.cs;return c;}));
+  ok('asked for columns, a butte is the same butte with columns on its beds (nothing else moves)',strip(col)===strip(plain)&&col.beds.every(b=>b.cw>0),strip(col)!==strip(plain));
+  const b0=col.beds[0],nc=Math.round(Math.PI*(b0.rx+b0.rz)/b0.cw);let mins=0;const N=nc*12,Rs=[];for(let i=0;i<N;i++)Rs.push(K.footR(b0,i/N*Math.PI*2));
+  for(let i=0;i<N;i++){const p=Rs[(i+N-1)%N],c=Rs[i],q=Rs[(i+1)%N];if(c<p&&c<=q&&Math.max(...[-3,-2,-1,1,2,3].map(o=>Rs[(i+o+N)%N]))-c>b0.cd*.3)mins++;}
+  const pl=plain.beds[0];let pm=0;for(let i=0;i<N;i++){const t=i/N*Math.PI*2,c=K.footR(pl,t);if(c<K.footR(pl,t-.001)&&c<=K.footR(pl,t+.001))pm++;}
+  ok('the wall is a row of prisms: a joint groove every column ('+mins+' grooves for '+nc+' columns)',Math.abs(mins-nc)<=nc*.1,mins<nc*.5);
+  const top=col.beds.filter(b=>b.tier===0).pop();ok('the top of a flow is entablature (narrow, deep), its foot colonnade',top.cw<col.beds[0].cw*.6&&top.cd>col.beds[0].cd,false);
+  const cm=K.mesh(col),bt=col.beds[col.beds.length-1];let ws=0,n=0;for(let a=0;a<6.28;a+=.13){const R=K.footR(bt,a)*(1-bt.ch)*bt.tp*.98,x=bt.cx+bt.tx+Math.cos(a)*R,z=bt.cz+bt.tz+Math.sin(a)*R,y=top1(cm,x,z);if(y==null)continue;n++;ws=Math.max(ws,Math.abs(y-K.topAt([col],x,z)));}
+  ok('the drawn top meets the columned wall: rays just inside each column\'s face land on the top ('+n+', within '+ws.toFixed(3)+' m)',n>40&&ws<.8,false);}
+}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

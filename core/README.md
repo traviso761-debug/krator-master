@@ -174,9 +174,9 @@ Godot (`biomes/GODOT.md`).
 | `kfield.gd`, `kfield_test.gd` | the GDScript twin (`class_name KField`: `from_export`, `h`, `normal`, `water_at`, `water_h`, `cover_at`, insets) and its test on the same golden file; the project's copies are `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.5 and, merged into `full-refactor` (2026-10-12), in 4.7.2 |
 | `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
-| `37-core-stacks.js` | rock standing on a heightfield (global `KSTACKS`, [G data]): mesas, buttes, spires, fins and balanced rocks as piles of beds, from nwbay's karst stacks; one footprint and one top function make the height (`at`, `topAt`, `ledge`, `ring`) and the mesh (`mesh`) agree; layouts `row` (fins on a strike) and `cluster` (a garden), `export`/`load`; a mesa's `weather` (flutes, gullies, each bed's own retreat) and `shoulder` (thin ledges stepping back 30-45 degrees to the top), undersides under any overhang. Used by `biomes/necanyons`; Pinnacle Rock's rock. Since 2026-10-19 (Korona): a layout (`cluster`, `row`) takes optional variety ranges per stack (`taper`, `lean`, `e`, `crown`), `plates` (Roraima's piles of thin beds, `platesShare` of the stacks) and `lift` (a stack on a slope), drawn from a stream of their own so an unasking page does not move; `mesh` reads the top function through the export (a host that wraps `KSTACKS.topH` draws its relief) and takes `topRings` and `segMax` for a top with relief. Since 2026-10-26 (core gap H10, `biomes/hyperjungle/PLAN-LANDS.md` section 11): the kind `mound`, a termite cathedral (fluted clay spires clustered on a skirt whose foot is on the sampled ground, each spire set into the skirt as drawn, a `clay` colour from the ground's) and `mounds` (a savannah's mounds by cell, each from its own cell's hashes); the kinds are one table (`KINDS`), ready for the outlands' C4 `dome` and `tor` |
+| `37-core-stacks.js` | rock standing on a heightfield (global `KSTACKS`, [G data]): mesas, buttes, spires, fins and balanced rocks as piles of beds, from nwbay's karst stacks; one footprint and one top function make the height (`at`, `topAt`, `ledge`, `ring`) and the mesh (`mesh`) agree; layouts `row` (fins on a strike) and `cluster` (a garden), `export`/`load`; a mesa's `weather` (flutes, gullies, each bed's own retreat) and `shoulder` (thin ledges stepping back 30-45 degrees to the top), undersides under any overhang. Used by `biomes/necanyons`; Pinnacle Rock's rock. Since 2026-10-19 (Korona): a layout (`cluster`, `row`) takes optional variety ranges per stack (`taper`, `lean`, `e`, `crown`), `plates` (Roraima's piles of thin beds, `platesShare` of the stacks) and `lift` (a stack on a slope), drawn from a stream of their own so an unasking page does not move; `mesh` reads the top function through the export (a host that wraps `KSTACKS.topH` draws its relief) and takes `topRings` and `segMax` for a top with relief. Since 2026-10-26 (core gap H10, `biomes/hyperjungle/PLAN-LANDS.md` section 11): the kind `mound`, a termite cathedral (fluted clay spires clustered on a skirt whose foot is on the sampled ground, each spire set into the skirt as drawn, a `clay` colour from the ground's) and `mounds` (a savannah's mounds by cell, each from its own cell's hashes); the kinds are one table (`KINDS`). Since 2026-10-26 (the planned biomes' landforms, below): the kinds `dome` (an inselberg's exfoliation sheets, a pagoda's ledges), `tor` (rounded joint blocks in columns), `arch` (corbelled legs under a lintel whose soffit is drawn) and `pillar` (a jointed sandstone tower), the layout `pillars` (the pillar rim, from `KRELIEF.joints`), and a mesa's `columns` option (colonnades: prisms in the one footprint function); every foot set on the ground as drawn |
 | `test-stacks.js` | `node core/terrain/test-stacks.js`, each check with a negative |
-| `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam) |
+| `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam). Since 2026-10-26 (with core/rand): the landform kinds as records, drawn by `shape` and read by `at`: `wadi` (+ fan), `talus`, `pit`, `pavement` + `paintCover`, `stair` (+ `flowAt`), `rille`, `tube`, `columns`, `gap`, `joints` + `tableland`, `meander` |
 | `test-relief.js` | `node core/terrain/test-relief.js`, each check with a negative |
 | `40-core-basin.js` | the old water bodies of a heightfield world (global `KBASIN`, [G data], needs `KRAND`): a lake that stood and is gone, by the ground's height under it and which old lakes covered the point (a member function from the world, `palaeo.png`). `sample` gives the band (the bathtub ring under a dam lake's level, the fast drain to its sill, the slow recession under it with its strandlines, a flood lake's high line), `bed`, `ring`, `shore`, `strand`, `silt`, `salt`, `yard` and the years since the point came out of the water; where a flood lake filled a dam basin the later water decides. `land` puts the strandlines and full levels in as benches (a monotone map of h: no new hollows), the beach ridge under a long-held level, yardangs along the wind in the dry silt. `fromRegion` reads `region.json` `palaeo` (`tools/scale-model/extract_region.py`). For the dam-basin overlay (`biomes/nsemiarid/PLAN.md`) |
 | `test-basin.js` | `node core/terrain/test-basin.js`, each check with a negative |
@@ -248,6 +248,46 @@ colours), a `MeshInstance3D` with `visibility_range`; the curvature and exaggera
 `ImageTexture`s (`FORMAT_RGBA8`), the shading as a `.gdshaderinc` in `light()` (scale `ATTENUATION` by `khzShadow`, `AMBIENT_LIGHT` by
 `khzSky`); the bake is [G data] and can run at import from the field. The gridded top: `KSTACKS.export` carries records and the mesh is
 rebuilt from them, so a GDScript twin of `mesh` takes `opt.top` the same way.
+
+### The landform kinds (2026-10-26: the planned biomes' core gaps)
+
+The planned biomes' landforms that are core, not kit: the outlands' C4 (`biomes/outlands/PLAN.md` section 12), Godstep's
+flows (`biomes/godstep/PLAN.md` section 4), the SW highlands' gaps, arches and pillar rim (`biomes/swhighlands/PLAN.md`
+section 4). Every form is a **record first** (plain data, JSON-safe, every draw `KRAND.hash` of (seed, slot, salt)), then the
+ground it leaves. `KRELIEF` forms are heightfield edits: `KRELIEF.shape(rec, x, z, g)` (the height given the ground `g`),
+`KRELIEF.at(rec, x, z, g)` (the part: floor, bar, bank, fan, face, bench, wall, talus, pool, spoil...), `KRELIEF.apply(ground,
+[recs])` to compose. `KSTACKS` kinds are bodies on the heightfield, each foot set on the ground **as drawn** (sampled round the
+drawn foot, listed in the record's `feet`), checked by rays in `test-stacks.js`. Nothing that existed moves: the new fields
+(`sq`, `cw`, `und`, `ot`, `feet`) are opt-in, and every old mesh hashes as before.
+
+**Adopting it.** List `38-core-relief.js` (and `37-core-stacks.js` for bodies) in the build's `CORE_TERRAIN`, after
+`core/rand`. Make the records once, compose the ground with `KRELIEF.apply`, bake it into `KFIELD` (the forms query a
+polyline grid: call them at bake, not per frame), and export the records beside the field (`KSTACKS.export` for bodies).
+
+| Biome | Kind | For |
+|---|---|---|
+| `outlands` | `KRELIEF.wadi` (+ its `fan`), `KRELIEF.meander` | the Z7 wadis; the fans and bajadas at every wall's foot (Z4-Z5); pools for `WATER` after rain |
+| `outlands` | `KRELIEF.talus` | the aprons against the basin walls and the gem hills' stacks (Korona's `talusH`, lifted; `bodies` takes KSTACKS records) |
+| `outlands` | `KSTACKS` `dome`, `tor` | the inselbergs and the boulder piles of N1-N2 (a tor's `clitter` for the kit's loose rocks) |
+| `outlands` | `KRELIEF.pit` | the gem hills' open-cast workings (S4): benches, spoil heaps, `adits` for `KCARVE` |
+| `outlands` | `KRELIEF.pavement` + `KRELIEF.paintCover` | N2's desert pavement as a class in `KFIELD`'s cover grid |
+| `godstep` | `KRELIEF.stair` (+ `flowAt`) | the steps at 2.7, 2.0, 1.3, 0.6 km: ponded floors, lobate terraced fronts, lava falls (`tongues`), kipukas (`shape` keeps older ground that stands above) |
+| `godstep` | `KRELIEF.rille` (`tops: stair.flowTops`) | the sinuous rilles, their walls a staircase of benches, one per flow |
+| `godstep` | `KRELIEF.tube` | lava tubes and their pit chains; `passage` and `openings` are `KCAVERN.tube`'s and `KCAVERN.opening`'s arguments |
+| `godstep` | `KSTACKS` `columns` option, `KRELIEF.columns` | colonnades and entablature on a hero front or a canyon wall drawn as stacks; a causeway's column tops in plan |
+| `swhighlands` | `KRELIEF.gap` | water gaps and wind gaps through the ring folds' ridges (`KRELIEF.range`); a water gap's `stream` for `WATER.flow` |
+| `swhighlands` | `KSTACKS` `arch` | arches where a hard bed is breached on a ridge (and a sea arch on the fan coast) |
+| `swhighlands` | `KRELIEF.joints`, `KRELIEF.tableland`, `KSTACKS.pillars` / `pillar` | Span's tableland: its slots, its cliff, the pillar rim's 250-300 m towers, all from one joint set and one zone |
+| `swhighlands` | `KSTACKS` `dome` with `pagoda` | the tableland's pagoda and beehive domes |
+
+**Kit work, not core** (read in each plan): the folds' ridges themselves (rows of `KRELIEF.range`), the karst cave through a
+ridge and the chain of natural bridges (`KCAVERN`), the rain wall's scars, the landslide dam and its lake, the fan deltas (a
+wadi's `fan` into the sea), the flysch platforms; Godstep's lava-dammed basins (`KBASIN`), black sand, the falls, the flank
+vent (`KRELIEF.volcano`), the laterite breakaways; the Gate's defile.
+
+**The strata hook.** `dome` and `pillar` take `o.strata(x, y, z) -> {h, hard}` (a bed's thickness from y, its hardness 0..1:
+hard beds proud, soft notched), the shape `core/terrain/STRATA-PLAN.md`'s `S.at` answers; `KRELIEF.flowAt(stair, y)` names a
+flow's colonnade and entablature for a `tibasalt` recipe. Without the hook the beds come from the body's seed.
 
 `38-core-relief.js`'s provenance is in `TODO.md`; no build uses it yet. It needs nothing at all, so a build lists it in `CORE_TERRAIN` (biomes)
 or as an ordinary fragment, and a Godot port evaluates the same functions at export or ports them line for line.

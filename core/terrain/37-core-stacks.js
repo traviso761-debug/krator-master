@@ -75,6 +75,21 @@
 //                              mound with chance p (.3), every draw hashed from (world, cell i, cell j, try) and placed in
 //                              its own cell inset by its girth, so any window over the same world gives the same mounds
 //                              (a mound is in the window when its centre is). H [4,12] m, r (girth) .35-.55 H unless given
+//   THE DRY AND FOLDED COUNTRY'S KINDS (2026-10-26: the outlands' C4, the SW highlands' section 4, Godstep's colonnades),
+//   each foot that meets the ground set on it as DRAWN (gy round the foot, the record's `feet`); see each builder:
+//   KSTACKS.make({kind:'dome', id, x, z, H, r, k, e, ry, pagoda, sheet, strata, ground | y0, seed})   an inselberg: exfoliation
+//                              sheets up a superellipse profile (k), a pagoda's ledges; the strata hook o.strata(x,y,z)
+//   KSTACKS.make({kind:'tor', id, x, z, H, r, cols, block, logan, clitter, ground | y0, seed})   a pile of rounded joint
+//                              blocks in columns (their tops drawn: ot), a logan stone, clitter records round the foot
+//   KSTACKS.make({kind:'arch', id, x, z, span, rise, H, t, leg, inward, ry, ground | y0, seed})   two corbelled legs and a
+//                              lintel whose soffit (und) is drawn over the opening; the record's `opening`
+//   KSTACKS.make({kind:'pillar', id, x, z, H, w, l, ry, sq, taper, lean, bed, strata, ground | y0, seed})   a jointed block
+//                              tower: squared corners (sq), hard beds proud, soft ones notched, a flat top
+//   KSTACKS.pillars({id, joints | blocks, x0, z0, x1, z1, zone, from, to, top, ground, minW, strata, accept})   the pillar
+//                              rim: a tower in each standing block of the zone's band, by hash(world, i, j)
+//   mesa/butte o.columns {w:[1.2,2.4], d:.35, ent:.35}   columnar jointing on each tier's wall (a flow's front): the bed
+//                              fields cw, cd, cs, prisms in footR, so the mesh, at() and wall() share them; nothing else moves
+//   footR's sq (a superellipse) and a bed's und (its underside drawn whatever stands below) are opt-in fields
 //   KSTACKS.export(list) / KSTACKS.load(json)   {format:'krator-stacks', version:1, bodies}
 //   KSTACKS.hash(mesh)         a fingerprint of a mesh's arrays (determinism)
 (function(root){
@@ -90,7 +105,7 @@
   // an ellipse (rx along the strike ry, rz across), its radius moved by two octaves of noise round the angle: coarse lobes
   // (the mesa's alcoves and points) and a fine fret. A bed's own noise seed ns; beds of one tier share it and both octaves (the
 // wall is one wall; the beds show by their partings)
-  function footR(b,ang){var a=ang-b.ry,c=Math.cos(a)/b.rx,s=Math.sin(a)/b.rz,R=1/Math.sqrt(c*c+s*s);
+  function footR(b,ang){var a=ang-b.ry,c=Math.cos(a)/b.rx,s=Math.sin(a)/b.rz,R=b.sq?Math.pow(Math.pow(Math.abs(c),b.sq)+Math.pow(Math.abs(s),b.sq),-1/b.sq):1/Math.sqrt(c*c+s*s);   // sq: a superellipse (a jointed block's squared corners; 2 the ellipse)
     var ca=Math.cos(ang),sa=Math.sin(ang);
     var n=KR.fbm(ca*1.6+40,sa*1.6+40,b.tier*3.1,2,b.ns)-.5,f=KR.fbm(ca*5.5+80,sa*5.5+80,b.tier*.73,1,b.ns+7)-.5;   // the fret shared by a tier's beds too: one face, not a pile of bulges
     R=R*(1+b.lob*2*n+b.lob*.35*f);
@@ -107,6 +122,11 @@
       if(b.fl){var Rf=b.fr||R/22,u2=KR.fbm(ca*Rf+3,sa*Rf+3,b.tier*1.3,2,b.ns+23);rec+=b.fl*(1-Math.pow(Math.abs(2*u2-1),.6));}
       if(b.gu)for(var i=0;i<b.gu.length;i++){var g=b.gu[i],d=Math.atan2(Math.sin(ang-g[0]),Math.cos(ang-g[0]))/g[1];rec+=g[2]*Math.exp(-d*d);}
       R=Math.max(R*.3,R-rec);}
+    // COLUMNS (cw, cd, cs: columnar jointing on a flow's front, Godstep's colonnades, the `columns` option): the wall a row of
+    // prisms cw wide round the bed, each standing back by its own share of cd (hashed by column), its face bowed, a groove at
+    // each joint. One count round the bed (whole, so the prisms close round), so the mesh, at() and wall() share them
+    if(b.cw){var nc=Math.max(6,Math.round(TAU*(b.rx+b.rz)/2/b.cw)),fc=(((ang-b.ry)/TAU*nc)%nc+nc)%nc,ci=Math.floor(fc),cf=fc-ci;
+      R=Math.max(R*.3,R-b.cd*(.25+.75*KR.unit(KR.hash(b.cs,ci,b.tier)))-b.cd*.45*(2*cf-1)*(2*cf-1)-b.cd*.6*(1-sm(0,.1,Math.min(cf,1-cf))));}
     return R;}
   // the bed's top: flat, with a little roughness (rock pans and knobs); the mesh's top vertices are on it exactly
   function topH(b,x,z){return b.y+b.h+(b.rg==null?.7:b.rg)*(KR.fbm(x*.045+b.ns%97,z*.045,b.k,2,b.ns+11)-.5);}   // rg: a mound's beds are smoother
@@ -120,7 +140,7 @@
   // ---------------------------------------------------------------- the bodies
   // THE KIND TABLE: each kind and the builder that makes it. A new kind is a row here and a builder below (the outlands' C4
   // `dome` and `tor`, biomes/outlands/PLAN.md section 12, are to be rows of their own); make() checks the kind against it
-  var KINDS={mesa:'bedded',butte:'bedded',spire:'stack',fin:'stack',balanced:'stack',mound:'mound'};
+  var KINDS={mesa:'bedded',butte:'bedded',spire:'stack',fin:'stack',balanced:'stack',mound:'mound',dome:'dome',tor:'tor',arch:'arch',pillar:'pillar'};
   // tp: the bed's radius at its top over its foot's, tx/tz: its centre's shift up the bed (a stack's taper and lean, run
   // on into the bed above, so a spire is one tapering, leaning column with its partings drawn as lines, not a pile of
   // drums); 1, 0, 0 for a mesa's or a butte's beds (their walls stand straight)
@@ -134,6 +154,7 @@
     if(o.id==null) throw new Error('KSTACKS.make: a body needs an id');
     var seed=(o.seed==null?KR.child(1,String(o.id)):o.seed)>>>0,x=o.x||0,z=o.z||0,y0=o.y0==null?0:o.y0,beds=[];
     if(KINDS[o.kind]==='mound')return mound(o,seed);
+    if(BUILD[KINDS[o.kind]])return BUILD[KINDS[o.kind]](o,seed);
     if(o.kind==='mesa'||o.kind==='butte'){
       var tiers=o.tiers||[{h:o.H==null?120:o.H,r:o.r==null?150:o.r,e:o.e==null?1.3:o.e,ry:o.ry||0}];
       var bl=o.bed||[14,34],lob=o.lobes==null?.16:o.lobes,y=y0,k=0,W=o.weather==null?.6:o.weather;   // weather 0: clean-cut walls
@@ -155,7 +176,8 @@
           for(var q=0;q<ng;q++)G.push([gs.range(0,TAU),gs.range(7,22)/M2,Math.min(gs.range(18,55)*W,M2*.3)]);
           for(var bi=0;bi<beds.length;bi++){var bb=beds[bi];if(bb.tier!==t)continue;var top2=bb.y+bb.h>=y-.01;
             bb.wr=Math.min(W*gs.range(.6,2.6)*(top2?.6:1),M2*.05);bb.wn=KR.hash(seed,t,bb.k,137)>>>0;bb.fl=Math.min(W*6,M2*.04);bb.fr=M2/22;   // one flute scale for the tier: its beds' grooves line up
-            var f=sm(.1,.95,(bb.y+bb.h-t0)/T.h);if(f>.02&&G.length)bb.gu=G.map(function(g){return [g[0],g[1],g[2]*f];});}}}
+            var f=sm(.1,.95,(bb.y+bb.h-t0)/T.h);if(f>.02&&G.length)bb.gu=G.map(function(g){return [g[0],g[1],g[2]*f];});}}
+        if(o.columns)colonnade(beds,t,y-T.h,T.h,seed,o.columns);}
     }else{
       var r=S(KR.hash(seed,0,202)),H=o.H==null?60:o.H,r0=o.r==null?12:o.r,e2=o.kind==='fin'?(o.e==null?4:o.e):(o.e==null?1.15:o.e);
       var ry2=o.ry==null?r.range(0,TAU):o.ry,lean=o.lean==null?r.range(0,.06):o.lean,la=o.kind==='fin'?ry2+(r.chance(.5)?0:Math.PI):r.range(0,TAU);
@@ -243,6 +265,115 @@
         out.push(make({id:(o.id==null?'mound':o.id)+':'+i+','+j+':'+t,kind:'mound',x:x,z:z,H:H,r:rg,seed:KR.hash(w,i,j,t,0x3D2),ground:o.ground,y0:o.y0,soil:o.soil,soilAt:o.soilAt}));}}
     return out;}
 
+  // ---------------------------------------------------------------- the dry and folded country's kinds (2026-10-26)
+  // dome and tor (the outlands' C4: inselbergs and boulder piles on the plains), arch (the SW highlands' ridges, where a
+  // hard bed is breached) and pillar (the pillar rim's free-standing towers, laid out by KSTACKS.pillars). Each foot that
+  // meets the ground is set on it as the mound's skirt is: gy, the ground sampled round the DRAWN foot (both the notched and
+  // the full radius, the lower taken) less a sink, so no foot floats on a slope; the record lists them in `feet`.
+  // THE STRATA HOOK (dome, pillar): o.strata(x, y, z) -> {h (the bed's thickness from y up), hard (0..1)} or null, called
+  // up the body from its foot (core/terrain/STRATA-PLAN.md's S.at answers it); a hard bed stands proud, a soft one is
+  // notched back. Without it the beds are drawn from the body's seed
+  // (each angle's gy the lowest of the ground at both radii and half a step either side, so the foot does not ride over a
+  // dip between two samples)
+  function setFoot(b,gr,sink,top){var c=cAt(b,0),N=Math.max(GYN,Math.min(160,Math.round(TAU*Math.max(b.rx,b.rz)/5))),gy=[],gmax=-Infinity,p0=prof(b,0);
+    for(var i=0;i<N;i++){var g=Infinity;for(var j=-2;j<=2;j++){var a=(i+j/4)/N*TAU,R=footR(b,a);g=Math.min(g,gr(c[0]+Math.cos(a)*R*Math.max(1,p0),c[1]+Math.sin(a)*R*Math.max(1,p0)),gr(c[0]+Math.cos(a)*R*Math.min(1,p0),c[1]+Math.sin(a)*R*Math.min(1,p0)));}
+      if(g>gmax)gmax=g;gy.push(g-sink);}
+    b.gy=gy;b.y=Math.min.apply(null,gy);if(top!=null)b.h=Math.max(top,b.y+.3)-b.y;return gmax;}
+  function bound(beds,x,z){var R=0,top=-Infinity;beds.forEach(function(b){for(var i=0;i<16;i++){var a=i/16*TAU,m=footR(b,a)*Math.max(1,prof(b,0))*Math.max(1,tAt(b,1))+Math.hypot(b.cx-x,b.cz-z)+Math.hypot(b.tx||0,b.tz||0);if(m>R)R=m;}top=Math.max(top,b.y+b.h);});return [R*1.08+.5,top];}
+  // A DOME (an inselberg, a bornhardt; Span's beehives): exfoliation sheets (the beds, sheet:[3,8] m, or the strata hook's)
+  // piled to H over the ground at x,z, the radius r (H*1.4) at the foot closing up a superellipse profile (1-t^k)^(1/k): k
+  // (2..3 drawn) 2 a round dome, higher a steep-sided, flat-topped bornhardt, under 2 a sugarloaf. e (1..1.35), ry; pagoda
+  // (0): each sheet's wall stands steeper and leaves a ledge (Span's pagoda domes). ground: the foot on it (else y0)
+  function dome(o,seed){var x=o.x||0,z=o.z||0,r=S(KR.hash(seed,0,801)),H=o.H==null?60:o.H,R0=o.r==null?H*1.4:o.r,gr=o.ground||null;
+    var eD=r.range(1,1.35),ryD=r.range(0,TAU),kD=r.range(2,3),e=o.e==null?eD:o.e,ry=o.ry==null?ryD:o.ry,k=o.k==null?kD:o.k,pg=o.pagoda==null?0:o.pagoda,sh=o.sheet||[3,8];
+    var gC=gr?gr(x,z):(o.y0==null?0:o.y0),sink=o.sink==null?.1:o.sink,ns=KR.hash(seed,0,9)>>>0,ys=[0],hd=[],yy=0,m=0;
+    function pr(t){return Math.pow(Math.max(0,1-Math.pow(Math.min(1,t),k)),1/k);}
+    while(yy<H-1e-6&&m<60){var q=o.strata?o.strata(x,gC+yy,z):null,th=Math.max(sh[0],H/40),hh=q&&q.h>0?q.h:th+(Math.max(th,sh[1])-th)*KR.unit(KR.hash(seed,m,802));
+      hh=Math.max(hh,H/60);if(H-yy-hh<hh*.4)hh=H-yy;yy=Math.min(H,yy+hh);ys.push(yy);hd.push(q&&q.hard!=null?q.hard:null);m++;}
+    var beds=[],n=ys.length-1;
+    // one outline up the dome (one noise seed, one tier): each sheet's top is the next sheet's foot, so the wall runs on and
+    // its hidden tops are left out (col 0, a column); a pagoda's sheets stand steeper and leave each top a ledge (no col)
+    for(var i=0;i<n;i++){var f0=i?pr(ys[i]/H):1,f1=pr(ys[i+1]/H),hard=hd[i];
+      var b=bed(i,gC+ys[i],ys[i+1]-ys[i],x,z,R0*Math.sqrt(e)*f0,R0/Math.sqrt(e)*f0,ry,i===n-1?.3:.004,hard==null?.008:.01+.05*(1-hard),.06,ns,0);
+      var tpN=Math.max(.12,f1/Math.max(1e-6,f0));b.tp=i===n-1?tpN:pg>0?tpN+(1-tpN)*pg*.6:tpN;b.rg=.25;if(!(pg>0))b.col=0;beds.push(b);}
+    if(gr)setFoot(beds[0],gr,sink,gC+ys[1]);
+    var bb=bound(beds,x,z);return {id:String(o.id),kind:'dome',x:x,z:z,y0:beds[0].y,seed:seed,beds:beds,top:bb[1],R:bb[0],feet:[0],k:k,e:e};}
+  // A TOR (a granite tor, the plains' boulder piles): cols (2..5 drawn) columns of joint blocks, the main one H (6) tall near
+  // the centre, the others round it at .45-.8 of r (H*.9) and .35-.8 of H; a block is block:[1,2.6] m high, a rounded square
+  // (sq 2.6-4, a deep rounded parting, a rounded shoulder), set a little askew on the one below, each narrower or as wide;
+  // the main column's top may be a perched logan stone (a quarter of tors). Each column's foot on the ground (ground) or
+  // y0. clitter: loose blocks round the foot, {x,z,r,y} for the kit to strew (the kit's own rocks)
+  function tor(o,seed){var x=o.x||0,z=o.z||0,r=S(KR.hash(seed,0,811)),H=o.H==null?6:o.H,Rr=o.r==null?H*.9:o.r,gr=o.ground||null,bl=o.block||[1,2.6];
+    var nD=r.int(2,5),ryD=r.range(0,TAU),lgD=r.chance(.25),n=o.cols==null?nD:Math.max(1,Math.round(o.cols)),ry=o.ry==null?ryD:o.ry,lg=o.logan==null?lgD:!!o.logan;
+    var sink=o.sink==null?.12:o.sink,gC=gr?gr(x,z):(o.y0==null?0:o.y0),beds=[],feet=[],cols=0,EMB=.04;
+    for(var c=0;c<n;c++){var q=S(KR.hash(seed,c,812)),main=c===0,ang=q.range(0,TAU),dist=(main?q.range(0,.15):q.range(.45,.8))*Rr,hF=main?1:q.range(.35,.8),w=Rr*(main?q.range(.4,.55):q.range(.25,.4));
+      var cx=x+Math.cos(ang)*dist,cz=z+Math.sin(ang)*dist,yb=gr?gr(cx,cz):gC,top=H*hF,yy=0,kk=0,col=[];
+      while(yy<top-.3&&kk<8){var hb=Math.min(q.range(bl[0],bl[1]),top-yy);if(top-yy-hb<bl[0]*.5)hb=top-yy;
+        var e=q.range(.75,1.35),b=bed(0,yb+yy-(kk?EMB:0),hb+(kk?EMB:0),cx+q.range(-.08,.08)*w,cz+q.range(-.08,.08)*w,w*Math.sqrt(e),w/Math.sqrt(e),ry+q.range(-.12,.12),q.range(.18,.32),q.range(.12,.25),.04,KR.hash(seed,c,kk,813)>>>0,c);
+        b.sq=q.range(2.6,4);b.rg=.04;b.col=c;b.ot=true;b.tp=q.range(.9,1);col.push(b);yy+=hb;kk++;w*=q.range(.78,1);}
+      if(!col.length)continue;
+      if(main&&lg&&col.length>1){var ls=col[col.length-1];ls.nt=.45;ls.rx*=1.15;ls.rz*=1.15;}   // a logan stone: a wide block on a narrow seat
+      if(gr){var b0=col[0],t0=b0.y+b0.h;setFoot(b0,gr,sink,t0);var lift=b0.y+b0.h-t0;if(lift>0)for(var i=1;i<col.length;i++)col[i].y+=lift;}   // a block buried uphill keeps .3 m showing: the pile rides up with it
+      feet.push(beds.length);beds=beds.concat(col);cols++;}
+    beds.forEach(function(b,i){b.k=i;});
+    var cl=S(KR.hash(seed,0,814)),nc=o.clitter==null?cl.int(3,9):o.clitter,clit=[];
+    for(i=0;i<nc;i++){var a=cl.range(0,TAU),d=Rr*cl.range(1.1,2.2),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;clit.push({x:px,z:pz,r:H/6*cl.range(.2,.6),y:gr?gr(px,pz):gC});}
+    var bb=bound(beds,x,z);return {id:String(o.id),kind:'tor',x:x,z:z,y0:Math.min.apply(null,feet.map(function(k){return beds[k].y;})),seed:seed,beds:beds,top:bb[1],R:bb[0],cols:cols,feet:feet,clitter:clit};}
+  // AN ARCH (where a hard bed is breached on a ridge; the SW highlands' folds): two legs and a lintel, the fin striking ry.
+  // span (12: the opening's width at its foot), rise (span*.8: its height), H (rise*1.6: the lintel's top), t (the fin's
+  // thickness: .3-.45 of the span), leg (each leg's length along the strike: .5-.7 of the span), inward (.12-.22: each leg's
+  // beds step in over the opening, corbelled, so it closes toward the crown to span*(1-2*inward)). Each leg's foot on the
+  // ground at its own place; the lintel is one bed over both legs, its soffit (und) drawn over the opening. The record:
+  // cols 3 (the legs 0 and 1, the lintel 2), feet, opening {x, z, y0 (the ground at x,z), y1 (the soffit), w0, w1, ry}
+  function arch(o,seed){var x=o.x||0,z=o.z||0,r=S(KR.hash(seed,0,821)),gr=o.ground||null,span=o.span==null?12:o.span,rise=o.rise==null?span*.8:o.rise,H=o.H==null?rise*1.6:o.H;
+    var tD=r.range(.3,.45),ryD=r.range(0,TAU),inD=r.range(.12,.22),lwD=r.range(.5,.7),t=o.t==null?span*tD:o.t,ry=o.ry==null?ryD:o.ry,inw=o.inward==null?inD:o.inward,lw=o.leg==null?span*lwD:o.leg;
+    if(!(H>rise+.5))throw new Error('KSTACKS.make arch: H must stand over the rise');
+    var sink=o.sink==null?.12:o.sink,ux=Math.cos(ry),uz=Math.sin(ry),gC=gr?gr(x,z):(o.y0==null?0:o.y0),yO=gC+rise,beds=[],feet=[],ns=KR.hash(seed,0,9)>>>0;
+    for(var c=0;c<2;c++){var sg=c?1:-1,q=S(KR.hash(seed,c,822)),lx=x+ux*sg*(span/2+lw/2),lz=z+uz*sg*(span/2+lw/2),gb=gr?gr(lx,lz):gC;
+      if(!(yO-gb>1))throw new Error('KSTACKS.make arch: leg '+c+' stands on ground within a metre of the opening\'s top');
+      var nb=Math.max(2,Math.round((yO-gb)/q.range(2,4))),hb=(yO+.15-gb)/nb;feet.push(beds.length);
+      for(var i=0;i<nb;i++){var ex=inw*span*Math.pow((i+1)/nb,2),b=bed(0,gb+i*hb,hb,lx-ux*sg*ex/2,lz-uz*sg*ex/2,(lw+ex)/2,t/2,ry+q.range(-.02,.02),i===nb-1?0:q.range(.01,.03),q.range(.01,.04),.04,ns,c);
+        b.sq=3;b.col=c;b.rg=.05;beds.push(b);}
+      if(gr)setFoot(beds[feet[c]],gr,sink,gb+hb);}
+    var L=bed(0,yO,gC+H-yO,x,z,span/2+lw+.3,t/2*.95,ry,.1,0,.05,ns,2);L.sq=3;L.col=2;L.rg=.08;L.und=true;beds.push(L);
+    beds.forEach(function(b,i){b.k=i;});
+    var bb=bound(beds,x,z);return {id:String(o.id),kind:'arch',x:x,z:z,y0:Math.min(beds[feet[0]].y,beds[feet[1]].y),seed:seed,beds:beds,top:bb[1],R:bb[0],cols:3,feet:feet,
+      opening:{x:x,z:z,y0:gC,y1:yO,w0:span,w1:span*(1-2*inw),ry:ry}};}
+  // A PILLAR (the pillar rim's towers, `pillar` sandstone): a jointed block w by l (40) standing H (250) over the ground,
+  // a rounded square (sq 3..5) on the joints' strike ry, walls nearly sheer (taper .04-.12, lean up to .02 rad), beds
+  // bed:[5,40] m (or the strata hook's): a soft bed notched back, a hard one proud (each bed's own width, so the partings
+  // step), the top flat with a rounded rim. Its foot on the ground (ground) or y0
+  function pillar(o,seed){var x=o.x||0,z=o.z||0,r=S(KR.hash(seed,0,831)),H=o.H==null?250:o.H,W=o.w==null?40:o.w,Lr=o.l==null?W:o.l,gr=o.ground||null,bl=o.bed||[5,40];
+    var sqD=r.range(3,5),tpD=r.range(.04,.12),lnD=r.range(0,.02),la=r.range(0,TAU),sq=o.sq==null?sqD:o.sq,taper=o.taper==null?tpD:o.taper,ry=o.ry==null?0:o.ry,lean=o.lean==null?lnD:o.lean;
+    var gC=gr?gr(x,z):(o.y0==null?0:o.y0),sink=o.sink==null?.2:o.sink,ns=KR.hash(seed,0,9)>>>0,beds=[],yy=0,m=0;
+    while(yy<H-1e-6&&m<60){var q=o.strata?o.strata(x,gC+yy,z):null,hh=q&&q.h>0?q.h:bl[0]+(bl[1]-bl[0])*KR.unit(KR.hash(seed,m,832)),hard=q&&q.hard!=null?q.hard:KR.unit(KR.hash(seed,m,833));
+      hh=Math.max(hh,H/60);if(H-yy-hh<hh*.4)hh=H-yy;var f=(1-taper*yy/H)*(1-.03*(1-hard)),off=Math.tan(lean)*yy,M=Math.max(W,Lr)/2;
+      var b=bed(m,gC+yy,hh,x+Math.cos(la)*off,z+Math.sin(la)*off,W/2*f,Lr/2*f,ry,0,(.4+2*(1-hard))/M,.035,ns,0);b.sq=sq;beds.push(b);yy+=hh;m++;}
+    for(var i=0;i<beds.length;i++){var b0=beds[i],b1=beds[i+1];if(b1){b0.tp=b1.rx/b0.rx;b0.tx=b1.cx-b0.cx;b0.tz=b1.cz-b0.cz;}else{b0.tp=o.crown==null?.97:o.crown;b0.ch=1.5/Math.max(W,Lr)*2;}}
+    beds.forEach(function(b){b.tp=Math.min(b.tp,1);});   // a proud bed's foot over the soft one below: its underside drawn, not a wall leaning out
+    if(gr)setFoot(beds[0],gr,sink,beds[0].y+beds[0].h);
+    var bb=bound(beds,x,z);return {id:String(o.id),kind:'pillar',x:x,z:z,y0:beds[0].y,seed:seed,beds:beds,top:bb[1],R:bb[0],feet:[0]};}
+  var BUILD={dome:dome,tor:tor,arch:arch,pillar:pillar};
+  // THE PILLAR RIM's layout: KSTACKS.pillars({id, blocks | joints (KRELIEF.joints: its blocks in the box), x0, z0, x1, z1,
+  // zone(x,z), from (.3: KRELIEF.tableland's z0, where the table ends), to (.9: past it the floor), top (y or fn: the
+  // table's top), ground, minW (8), strata, accept}): a block whose centre's zone is in [from, to) stands as a tower, by a
+  // chance falling toward `to` (1 - .75 t^1.5), shrunk inside its joints by the widened joint (.15 + .5 t of its width),
+  // a third of them broken lower (by up to .6 t of their height), each from hash(world, i, j): the same tower in every window
+  function pillars(o){if(!o||!(o.blocks||o.joints)||!o.zone||o.top==null)throw new Error('KSTACKS.pillars: blocks or joints, zone and top are needed');
+    var BL=o.blocks||o.joints.blocks([o.x0,o.z0,o.x1,o.z1]),fr=o.from==null?.3:o.from,to=o.to==null?.9:o.to,w=(o.world==null?(o.joints?o.joints.world:0):o.world)>>>0,mw=o.minW==null?8:o.minW,out=[];
+    BL.forEach(function(B){var zz=o.zone(B.cx,B.cz);if(zz<fr||zz>=to)return;var t=(zz-fr)/(to-fr),s=S(KR.hash(w,B.i,B.j,0x91)),stand=s.chance(1-.75*Math.pow(t,1.5)),gp=.15+.5*t,brk=s.next(),ln=s.next();
+      if(!stand)return;var ww=B.w*(1-gp),ll=B.l*(1-gp);if(Math.min(ww,ll)<mw)return;
+      var g=o.ground?o.ground(B.cx,B.cz):(o.y0==null?0:o.y0),T=typeof o.top==='function'?o.top(B.cx,B.cz):o.top,H=(T-g)*(brk<.35?1-brk/.35*.6*t:1);if(H<4)return;
+      if(o.accept&&!o.accept(B.cx,B.cz,B))return;
+      out.push(make({id:(o.id==null?'pillar':o.id)+':'+B.id,kind:'pillar',x:B.cx,z:B.cz,w:ww,l:ll,ry:B.ry,H:H,lean:Math.atan(Math.min(ww,ll)*gp*.25/H)*ln,ground:o.ground,y0:g,seed:KR.hash(w,B.i,B.j,0x92),strata:o.strata}));});
+    return out;}
+  // the `columns` option of a mesa or butte (a flow's front: Godstep): each tier is a flow, its lower beds the colonnade
+  // (columns w:[1.2,2.4] m, one width a tier, standing back by up to d (.35 m)), the beds over ent (.35) of the tier the
+  // entablature (narrow hackly columns, .45 of the width, twice as deep). Drawn from hash(seed, tier): the body's own
+  // draws are not touched, so a mesa asked without columns is the mesa it was
+  function colonnade(beds,t,t0,Th,seed,CO){var cwr=CO.w||[1.2,2.4],ent=CO.ent==null?.35:CO.ent,cd=CO.d==null?.35:CO.d,cw=cwr[0]+(cwr[1]-cwr[0])*KR.unit(KR.hash(seed,t,151));
+    for(var i=0;i<beds.length;i++){var b=beds[i];if(b.tier!==t)continue;var up=(b.y+b.h/2-t0)/Th>1-ent;b.cw=up?cw*.45:cw;b.cd=up?cd*1.6:cd;b.cs=KR.hash(seed,t,up?153:152)>>>0;}}
+
   // ---------------------------------------------------------------- queries
   function inBed(b,x,z,shrink){var dx=x-b.cx,dz=z-b.cz,dist=Math.hypot(dx,dz),R=footR(b,Math.atan2(dz,dx))*shrink;return dist-R;}
   // the same at the bed's top (its taper and lean): where its top surface is
@@ -276,7 +407,9 @@
   function topAt(list,x,z){var a=at(list,x,z);return a?a.top:-Infinity;}
   function foot(list,x,z){var best=null;
     for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R+400||Math.abs(z-B.z)>B.R+400)continue;
-      var b0=B.beds[0],d=inBed(b0,x,z,b0.nt<0?1-b0.nt:1);if(!best||d<best.d)best={S:B,d:d};}   // a mound's skirt: its flared foot
+      var b0=B.beds[0],d=inBed(b0,x,z,b0.nt<0?1-b0.nt:1);
+      if(B.feet)for(var f=0;f<B.feet.length;f++){var bf=B.beds[B.feet[f]];d=Math.min(d,inBed(bf,x,z,bf.nt<0?1-bf.nt:1));}   // a tor's or an arch's columns each stand on the ground
+      if(!best||d<best.d)best={S:B,d:d};}   // a mound's skirt: its flared foot
     return best;}
   // on a ledge: on bed k's top and outside the foot of bed k+1 (its notch counted), w the distance in from the ledge's lip.
   // A mound's beds stand by column: what stands on its skirt is every column's first bed, on a spire's bed the next of
@@ -380,6 +513,7 @@
       if(Q.length===3)tri(Q[0],Q[1],Q[2]);}
     for(var k=0;k<B.beds.length;k++){var b=B.beds[k],per=TAU*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(SMAX,Math.round(per/step)));
       if(b.fn)seg=Math.max(seg,Math.min(SMAX,b.fn*(opt.perFlute==null?6:opt.perFlute)));               // a fluted bed: its grooves drawn
+      if(b.cw)seg=Math.max(seg,Math.min(opt.colMax||2400,Math.max(6,Math.round(TAU*(b.rx+b.rz)/2/b.cw))*(opt.perColumn==null?4:opt.perColumn)));   // a colonnade: its prisms drawn
       var ang=function(s){return -s/seg*TAU;};                                        // clockwise from above
       var arc=[0];for(var s=1;s<=seg;s++){var a0=ang(s-1),a1=ang(s),r0=footR(b,a0),r1=footR(b,a1);arc.push(arc[s-1]+Math.hypot(Math.cos(a1)*r1-Math.cos(a0)*r0,Math.sin(a1)*r1-Math.sin(a0)*r0));}
       // a mound's bed (col set): its wall is straight up but where the flare (nt < 0) and the chamfer bend it, so rows only there
@@ -392,7 +526,7 @@
       // opt.top.minCells cells across its narrowest radius) a square grid clipped to the same edge ring (gridTop)
       var GT=opt.top&&opt.top.grid>0?opt.top.grid:0,MC=opt.top&&opt.top.minCells!=null?opt.top.minCells:3;
       var nx=b.col==null?null:B.beds[k+1];
-      if(nx&&b.col>=0&&nx.col===b.col){}                                              // a mound's spire bed under the next: its top is inside the column
+      if(nx&&b.col>=0&&nx.col===b.col&&!b.ot){}                                            // a mound's spire bed under the next: its top is inside the column
       else if(GT&&Math.min(b.rx,b.rz)*(1-b.ch)*t1*(1-b.lob)>GT*MC)gridTop(b,k,seg,ang,c1,t1,GT,k+1<B.beds.length&&opt.top.cull!==false?B.beds[k+1]:null);
       else{var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
         grid(tops,seg,1,k,false);}
@@ -401,7 +535,8 @@
       if(below&&b.col!=null&&below.col!==b.col)below=null;                            // a mound's spire stands set into the skirt
       // (any overhang at all: a weathered bed standing proud of the one under it leaves a slit to the sky otherwise)
       if(below)for(s=0;s<seg&&!over;s++){var aa=ang(s);if(footR(b,aa)*(1-b.nt)>footR(below,aa)*(1-below.ch)*tAt(below,1)+.05)over=true;}
-      if(over){var und=[1,.6,.25].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.nt)*rho,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,b.y,z,x,z,.35];};});
+      if(b.und)over=true;                                                             // an arch's lintel: its soffit over the opening
+      if(over){var und=(b.und?[1,.75,.5,.25,0]:[1,.6,.25]).map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.nt)*rho,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,b.y,z,x,z,.35];};});
         grid(und,seg,2,k,true);}
     }
     return {pos:new Float32Array(pos),uv:new Float32Array(uv),idx:new Uint32Array(idx),part:new Uint8Array(part),bed:new Uint8Array(bedA),occ:new Float32Array(occ)};}
@@ -452,5 +587,5 @@
     for(var i=0;i<m.pos.length;i+=7)h=KR.hash(h,Math.round(m.pos[i]*1000));for(i=0;i<m.idx.length;i+=11)h=KR.hash(h,m.idx[i]);return h>>>0;}
 
   root.KSTACKS={make:make,tower:tower,footR:footR,topH:topH,prof:prof,at:at,surface:surface,wall:wall,topAt:topAt,foot:foot,ledge:ledge,ring:ring,mesh:mesh,row:row,cluster:cluster,
-    mounds:mounds,wallY:yAt,kinds:function(){return Object.keys(KINDS);},export:exp,load:load,hash:hash};
+    mounds:mounds,pillars:pillars,wallY:yAt,kinds:function(){return Object.keys(KINDS);},export:exp,load:load,hash:hash};
 })(typeof globalThis!=='undefined'?globalThis:this);
