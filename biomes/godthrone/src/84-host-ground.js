@@ -84,9 +84,9 @@ function buildGround(){
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
   g.setAttribute('aGL',new THREE.BufferAttribute(aGL,3));g.setAttribute('aGM',new THREE.BufferAttribute(aGM,4));g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx),1));
   g.computeVertexNormals();g.computeBoundingSphere();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel=label;scene.add(m);GROUND_MESHES.push(m);return m;};
- const I=INSET,ib=I?[Math.round((I.box[0]-TERR.X0)/FIELD_STEP),Math.round((I.box[1]-TERR.Z0)/FIELD_STEP),Math.round((I.box[2]-TERR.X0)/FIELD_STEP),Math.round((I.box[3]-TERR.Z0)/FIELD_STEP)]:null;
- const m=mkMesh(GROUND_F,ib?(i,j)=>i>=ib[0]&&i<ib[2]&&j>=ib[1]&&j<ib[3]:null,'The summit (ground)');
- if(I)mkMesh(I.field,null,'The summit vent\'s cone (ground)');
+ const ibs=INSETS.map(I=>[Math.round((I.box[0]-TERR.X0)/FIELD_STEP),Math.round((I.box[1]-TERR.Z0)/FIELD_STEP),Math.round((I.box[2]-TERR.X0)/FIELD_STEP),Math.round((I.box[3]-TERR.Z0)/FIELD_STEP)]);
+ const m=mkMesh(GROUND_F,ibs.length?(i,j)=>ibs.some(ib=>i>=ib[0]&&i<ib[2]&&j>=ib[1]&&j<ib[3]):null,'The summit (ground)');
+ INSETS.forEach(I=>mkMesh(I.field,null,I.name==='vent'?'The summit vent\'s cone (ground)':'A scarp of the caldera wall (ground, 2 m)'));
  // ---- the apron: a vertical skirt 160 m deep round the map's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=GROUND_F.nx-1,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);

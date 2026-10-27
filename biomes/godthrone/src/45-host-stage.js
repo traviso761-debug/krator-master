@@ -157,15 +157,17 @@ function bakeGrid(x0,z0,st,nx,nz,edge){const B=new Float32Array(nx*nz);
   const gx=(at(i+1,j)-at(i-1,j))/(2*st),gz=(at(i,j+1)-at(i,j-1))/(2*st);
   H[j*nx+i]=STRATA.ledge(x,z,B[j*nx+i],Math.hypot(gx,gz),{k:.55,bench:2});}
  return H;}
-// THE VENT'S INSET: the cone, its crater and its throat at 2.5 m (the base lattice's 10 m cannot draw a 24 m shaft); the box
-// on the base lattice's lines, its border on the base field (KFIELD insets; 84-host-ground.js draws it as its own mesh and
-// leaves the base mesh's cells under it out)
-const INSET=STN.inset?(function(){const st=2.5,r=230,sn=v=>Math.round(v/FIELD_STEP)*FIELD_STEP,x0=sn(VENT.x-r),z0=sn(VENT.z-r),x1=sn(VENT.x+r),z1=sn(VENT.z+r);
- return{st,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/st)+1,nz:Math.round((z1-z0)/st)+1};})():null;
+// THE INSETS: where the base lattice is too coarse, a finer field over a box (STN.insets: [{x, z, r, st, name}]): the vent's
+// cone, its crater and its throat at 2.5 m (the base lattice's 10 m cannot draw a 24 m shaft); on the wall's page the scarps
+// its close views stand under at 2 m (the flows' ledges show). Each box on the base lattice's lines, its border on the base
+// field (KFIELD insets; 84-host-ground.js draws each as its own mesh and leaves the base mesh's cells under it out)
+const INSETS=(STN.insets?STN.insets():[]).map(o=>{const sn=v=>Math.round(v/FIELD_STEP)*FIELD_STEP,x0=sn(o.x-o.r),z0=sn(o.z-o.r),x1=sn(o.x+o.r),z1=sn(o.z+o.r);
+ return{st:o.st,name:o.name,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/o.st)+1,nz:Math.round((z1-z0)/o.st)+1};});
+const INSET=STN.vent?INSETS[0]||null:null;   // the vent's (the lava lake re-bakes it, 89c)
 const GROUND_F=(function(){const t0=performance.now(),st=FIELD_STEP,nx=Math.round((TERR.X1-TERR.X0)/st)+1,nz=Math.round((TERR.Z1-TERR.Z0)/st)+1;
  const F=KFIELD.create({x0:TERR.X0,z0:TERR.Z0,step:st,nx,nz,heights:bakeGrid(TERR.X0,TERR.Z0,st,nx,nz,null),name:'godthrone-'+STN.key});
- const I=INSET;if(I){const G=KFIELD.create({x0:I.box[0],z0:I.box[1],step:I.st,nx:I.nx,nz:I.nz,heights:bakeGrid(I.box[0],I.box[1],I.st,I.nx,I.nz,(x,z)=>F.h(x,z)),name:'godthrone-vent'});
-  F.addInset(G);I.field=G;}
+ INSETS.forEach(I=>{const G=KFIELD.create({x0:I.box[0],z0:I.box[1],step:I.st,nx:I.nx,nz:I.nz,heights:bakeGrid(I.box[0],I.box[1],I.st,I.nx,I.nz,(x,z)=>F.h(x,z)),name:'godthrone-'+I.name});
+  F.addInset(G);I.field=G;});
  window._fieldMs=Math.round(performance.now()-t0);return F;})();
 const inMap=(x,z)=>x>=TERR.X0&&x<=TERR.X1&&z>=TERR.Z0&&z<=TERR.Z1;
 function terrainH(x,z){return inMap(x,z)?GROUND_F.h(x,z):baseH(x,z);}

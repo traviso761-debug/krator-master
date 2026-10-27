@@ -49,6 +49,15 @@ const VIEWS={};
   {const c=P(-3600,-1800);add('Overview',[c[0],G(c[0],c[1])+2200,c[1],P(1800,0)[0],23000,P(1800,0)[1]]);}
  }
 })();
+// THE SERIOUS ERUPTION's views (89c): each sets the time-lapse to its day (lake); every other view turns the scenario off
+if(LAKE){const E=LAKE.E,V=VENT,P=PIT,G=(x,z)=>terrainH(x,z),xz=(s,t)=>xzOf(s,t);
+ let dd=null;for(let d=0;d<=E.days;d+=.05)if(LAKE.at(d).drowned){dd=d;break;}LAKE.drownDay=dd;
+ const rimC=xz(P.s-P.rimR-120,P.t+400),lk=d=>LAKE.at(d).L;
+ VIEWS['The eruption, day 1']={v:[rimC[0],G(rimC[0],rimC[1])+60,rimC[1],V.x,lk(1)+60,V.z],mode:'day',lake:1};
+ if(dd!=null){const d=Math.min(E.days,dd+2);VIEWS['The lava lake, the vent drowned']={v:[rimC[0],G(rimC[0],rimC[1])+60,rimC[1],V.x,lk(d),V.z],mode:'day',lake:d};}
+ VIEWS['Night, the lava lake']={v:[rimC[0],G(rimC[0],rimC[1])+120,rimC[1],V.x,lk(E.days*.4),V.z],mode:'night',lake:E.days*.4};
+ const cl=xz(P.s+300,P.t-500);VIEWS['On the lake\'s crust']={v:[cl[0],lk(E.days+10)+12,cl[1],V.x,lk(E.days+10),V.z],mode:'day',lake:E.days+10};
+ VIEWS['The frozen lake']={v:[rimC[0],G(rimC[0],rimC[1])+80,rimC[1],V.x,E.Lmax,V.z],mode:'day',lake:E.days+E.crustDays+1};}
 // ---------------------------------------------------------------- the inspector's words
 // an item names itself (its label, its class: glass or rock); the ground names its class and the rock's bed; every hit adds
 // the hazards there (core/hazard) and the air (pressure, temperature, the ash's sight)
@@ -90,7 +99,7 @@ const HCHK={
  rock(samples){const bad=samples.filter(s=>s.recipe!=='tibasalt'||s.kind==='palagonite');const kinds={};samples.forEach(s=>kinds[s.kind]=(kinds[s.kind]||0)+1);
   return{ok:!bad.length&&kinds.flow>0&&(kinds.bead||0)+(kinds.beadblack||0)>0,detail:samples.length+' wall samples: '+JSON.stringify(kinds)+(bad.length?'; '+bad.length+' wrong':'')};},
  // the hazards: the throat burns, the crater's gas, the rampart's heat; on the floor far from the vent only the ambient
- hazards(atLava,atFloor){const ok=!!(atLava&&atLava.doses&&atLava.doses.burn>0&&atFloor&&(!atFloor.records||!atFloor.records.length)&&atFloor.ambient&&atFloor.ambient.some(a=>a.kind==='thin-air'));
+ hazards(atLava,atFloor){const ok=!!(atLava&&atLava.doses&&atLava.doses.burn>0&&atFloor&&!(atFloor.records||[]).some(r=>r.k>0)&&atFloor.ambient&&atFloor.ambient.some(a=>a.kind==='thin-air'));
   return{ok,detail:'at the lava: '+JSON.stringify(atLava&&atLava.doses)+'; on the floor: '+(atFloor&&atFloor.records?atFloor.records.length:'?')+' records, ambient '+(atFloor&&atFloor.ambient?atFloor.ambient.map(a=>a.kind+' '+a.k.toFixed(2)).join(', '):'none')}}};
 // the fountain: one clock for what burns and what is drawn (the record's cycle, KHAZ; the page's phase, KTRAPS on the same segments)
 HCHK.fountain=function(on,idle,pOn,pIdle){const b=h=>h&&h.doses&&h.doses.burn>0;const ok=b(on)&&!b(idle)&&pOn==='on'&&pIdle==='idle';
@@ -112,7 +121,24 @@ function hostChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),hs
  const pf=xzOf(PIT.s+1100,PIT.t+500);if(STN.vent)add('the hazards',HCHK.hazards(hazAt(VENT.x,VENT.z,VENT.lavaY+.5),hazAt(pf[0],pf[1],terrainH(pf[0],pf[1])+1.6)));
  add('the fountain: intermittent, one clock',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.idle),VENTS.phase(FT.on).state,VENTS.phase(FT.idle).state));
  {const B=window._biome||{},ok=STN.vent?B.talus>500&&B.hair>50&&B.bombs>200:B.talus>2000&&B.stones>1000;add('counts: talus '+B.talus+', bombs '+B.bombs+', hair '+B.hair+', stones '+B.stones,{ok,detail:JSON.stringify(B)});}
+ if(LAKE){add('the lava lake: its level from its volume',HCHK.lake(lakeSamples(),LAKE.E));add('the lava lake: its hazard and its frozen floor',HCHK.lakePage(lakePage()));}
  return R;}
+// THE LAVA LAKE (89c): the level never falls while it fills and never passes the pit's lip; the volume under it is the volume
+// poured (1%); the vent drowns. The page: molten where the lake is, nothing before it; the frozen floor at the level, the ground
+// restored after (the field read back exactly)
+HCHK.lake=function(S,E){let mono=true,cons=0,over=0;for(let i=1;i<S.length;i++)if(S[i].L<S[i-1].L-1e-6)mono=false;
+ S.forEach(s=>{if(s.V>1e6)cons=Math.max(cons,Math.abs(LAKE.V(s.L)-s.V)/s.V);if(s.L>E.Lmax+1e-6)over++;});
+ const top=S[S.length-1],ok=mono&&cons<.01&&!over&&top.L>E.Lmax-30&&LAKE.drownDay!=null;
+ return{ok,detail:(mono?'rising':'FALLS')+'; volume error '+(cons*100).toFixed(2)+'%; '+over+' levels over the lip; full at '+top.L.toFixed(0)+' m (lip '+E.lip.toFixed(0)+', '+(E.Vmax/1e9).toFixed(1)+' km3 in '+E.days.toFixed(0)+' days at '+E.Q0+' m3/s falling); the vent drowned on day '+(LAKE.drownDay==null?'never':LAKE.drownDay.toFixed(1))};};
+HCHK.lakePage=function(r){const ok=r.burnMid>0&&r.burnBefore===0&&Math.abs(r.frozen-r.Lf)<6&&r.restored===0;
+ return{ok,detail:'burn on the lake mid-eruption '+r.burnMid+', before it '+r.burnBefore+'; the frozen floor '+r.frozen.toFixed(1)+' m at a level of '+r.Lf.toFixed(1)+'; '+r.restored+' heights off after the restore'};};
+const lakeSamples=()=>{const o=[];for(let d=0;d<=LAKE.E.days;d+=LAKE.E.days/200)o.push(LAKE.at(d));return o;};
+const lakePage=()=>{const was=LAKE.day,E=LAKE.E,p=xzOf(PIT.s+500,PIT.t-400),h0=Float32Array.from(GROUND_F.heights);
+ LAKE.set(E.days*.4);const s=LAKE.state,a=KHAZ.here(p[0],s.L+1,p[1],0),burnMid=(a.doses&&a.doses.burn)||0;
+ LAKE.set(null);const b=KHAZ.here(p[0],LAKE.at(E.days*.4).L+1,p[1],0),burnBefore=(b.doses&&b.doses.burn)||0;
+ const Lf=LAKE.at(E.days+E.crustDays+1).L;LAKE.set(E.days+E.crustDays+1);const frozen=terrainH(p[0],p[1]);
+ LAKE.set(null);let restored=0;for(let k=0;k<h0.length;k++)if(GROUND_F.heights[k]!==h0[k])restored++;
+ LAKE.set(was);return{burnMid,burnBefore,frozen,Lf,restored};};
 function hostNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail}),hs=heightsNow();
  add('the pit as deep as the floor (a flat caldera)',HCHK.heights(hs[0],hs[2],hs[2]));
  add('the halo all black',HCHK.halo(.1,.1));
@@ -121,13 +147,15 @@ function hostNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detai
  add('the wall turned to palagonite',HCHK.rock(wallSamples().map(s=>Object.assign({},s,{kind:'palagonite'}))));
  add('no lava in the throat',HCHK.hazards({doses:{}},hazAt(...xzOf(PIT.s+1100,PIT.t+500),22000)));
  add('the fountain always on (no cycle)',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.on),'on','on'));
+ if(LAKE){const S=lakeSamples();add('the lake over the pit\'s lip',HCHK.lake(S.map((s,i)=>i===S.length-1?Object.assign({},s,{L:LAKE.E.lip+5}):s),LAKE.E));
+  add('the lake\'s floor left re-baked after the restore',HCHK.lakePage(Object.assign(lakePage(),{restored:12})));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');
 KHOST.take({build:'godthrone',title:STN.title,hint:STN.hint,
  scene,camera,renderer,ground:terrainH,clear:1.6,minR:2,maxR:60000,registry:REG,views:HOST_VIEWS,ticks:TICKS,
- onView:k=>{lightMode(VIEWS[k].mode);if(VIEWS[k].erupt)VENTS.nextFountain();},controls:LCTL,
+ onView:k=>{lightMode(VIEWS[k].mode);if(VIEWS[k].erupt)VENTS.nextFountain();if(LAKE){LAKE.set(VIEWS[k].lake==null?null:VIEWS[k].lake);if(LAKE.ui)LAKE.ui.sync();}},controls:LCTL,
  keys:{n:()=>lightMode((typeof LIGHT_MODE!=='undefined'&&LIGHT_MODE==='night')?'day':'night')},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
@@ -143,3 +171,22 @@ KHOST.take({build:'godthrone',title:STN.title,hint:STN.hint,
   get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome}});
 // the Weather selector in the host's panel (ATMOS.bindWeather finds KHOST.ui once it exists)
+// THE TIME-LAPSE of a serious eruption (89c): a button that starts and stops the scenario, a slider over its days (the eruption,
+// the crust closing, the frozen lake), play; the line under it says the day, the rate, the level and the state
+if(LAKE)(function(){const E=LAKE.E,total=E.days+E.crustDays+3,ui=KHOST.ui||document.getElementById('ui');if(!ui)return;
+ const box=document.createElement('div');box.style.cssText='margin:6px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center';
+ const on=document.createElement('button');on.textContent='Serious eruption';on.title='A flood-basalt eruption fills the pit with a lava lake ('+(E.Vmax/1e9).toFixed(1)+' km3 in '+E.days.toFixed(0)+' days); no overflow';
+ const play=document.createElement('button');play.textContent='Play';
+ const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=1000;sl.value=0;sl.style.width='160px';
+ const out=document.createElement('div');out.style.cssText='flex-basis:100%;font:12px ui-monospace,monospace;opacity:.9';
+ box.append(on,play,sl,out);ui.appendChild(box);
+ let playing=false;
+ const show=()=>{const s=LAKE.state;on.classList.toggle('on',LAKE.day!=null);play.textContent=playing?'Pause':'Play';
+  out.textContent=s?('day '+s.day.toFixed(1)+' · '+s.phase+' · '+Math.round(s.Q).toLocaleString()+' m3/s · level '+s.L.toFixed(0)+' m ('+(s.L-E.L0).toFixed(0)+' m deep)'+(s.drowned?' · the vent drowned':'')+' · crust '+Math.round(s.crust*100)+'%'):'the vent as it is (fuming, fountaining now and then)';};
+ const go=d=>{LAKE.set(d);if(d!=null)sl.value=Math.round(d/total*1000);show();};
+ LAKE.ui={sync:()=>{if(LAKE.day!=null)sl.value=Math.round(LAKE.day/total*1000);else playing=false;show();}};
+ on.onclick=()=>{if(LAKE.day==null)go(0);else{playing=false;go(null);}};
+ sl.oninput=()=>go(sl.value/1000*total);
+ play.onclick=()=>{if(LAKE.day==null)go(0);playing=!playing;show();};
+ KHOST.on(dt=>{if(!playing||LAKE.day==null)return;const d=LAKE.day+(dt||0)*total/45;if(d>=total){playing=false;go(total);}else go(d);},'view');   /* the whole time-lapse in 45 s */
+ show();})();

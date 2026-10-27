@@ -295,10 +295,15 @@ field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view o
     vent, the wall 23 km off in the far country) and station 1b the caldera wall (`dist/godthrone-wall.html`, `build.py
     --station wall`: the terraces, the floor at their foot, the rim and the portal; the vent's fume and fountain 23 km off),
     on one frame with 4.23's distances (the pit 9.2 km from the caldera's centre).
-  - **The wall's terraces** (answered: keep them). Whether 4.24 should carry scarps on the raster stays open.
+  - **The wall's terraces** (answered: keep them, and the next scale-model edit, 4.24, carries them on the raster).
   - **The sealed portal** (answered: fine as it is): a placeholder on the wall station's rim.
   - **The vent** (answered: intermittently active): it fumes and every 10 minutes of the page's clock fountains for 2,
     the record's cycle (core/hazard) driving what is drawn; the period is a page's compression, not a geological one.
   - **The temperature** (answered: as built), **the frost on the faces turned south and the halo's bands** (answered: as built).
   - Still open: `rock.basalt.titanium` (optional; `core/materials/PROMPTS-NEEDED.md` 20); the portal's place in the
     Pluton settlement plan.
+- **A serious eruption** (the owner, 2026-10-27; built on the vent's page, `89c-host-lake.js`): a flood-basalt eruption
+  (20,000 m3/s falling as Kilauea's 2020 one did) fills the pit with a lava lake, 13.7 km3 in 32 days, to 15 m under its lowest
+  lip; the vent drowns in hours; the crust closes over 30 days; the frozen lake re-bakes the pit's floor. A time-lapse
+  (Serious eruption, Play, a slider) and five views. **Overflow** onto the caldera's floor is a lava-flow module for core,
+  asked of the main session as its own session.

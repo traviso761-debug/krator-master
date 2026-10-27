@@ -61,7 +61,8 @@ const VENTS=(function(){const V=VENT,K=KRAND,u=(a,b)=>K.unit(K.hash(WORLD,a,b,0x
  // the cycle's segments, as KHAZ builds them (core/hazard 20, cycleState), so the page draws the state the hazard doses by
  const idle=C.period-C.warn-2*C.ramp-C.on-C.after,SEGS=[['warn',C.warn,0,0],['rising',C.ramp,0,1],['on',C.on,1,1],['falling',C.ramp,1,0],['after',C.after,C.afterK,C.afterK],['idle',idle,0,0]];
  const phase=t=>KTRAPS.cycle(SEGS,t,C.offset);
- tick(()=>{const q=phase(ATMOS.clock.t),k=q?q.k:0;const s=FU.uK.value+(k-FU.uK.value)*.08;FU.uK.value=s;   /* eased, so the column builds and dies */
+ /* VENTS.lakeK (89c, a serious eruption's time-lapse): when set it overrides the cycle (1: fountaining without pause, 0: drowned or over) */
+ tick(()=>{const q=phase(ATMOS.clock.t),k=VENTS&&VENTS.lakeK!=null?VENTS.lakeK:(q?q.k:0);const s=FU.uK.value+(k-FU.uK.value)*.08;FU.uK.value=s;   /* eased, so the column builds and dies */
   if(LAVA&&LAVA.uniforms.uErupt)LAVA.uniforms.uErupt.value=Math.max(s,q&&q.state==='warn'?.3:0);});
  // ---- the crack's glow at night, every 9 m along it (off where it runs into a cone: the cones climbed over it)
  if(STN.vent){for(let uu=FISS.a+30;uu<=FISS.b-30;uu+=9){const p=fissPt(uu),F=fissAt(p[0],p[1]);if(coneAt(p[0],p[1]).k>.2||F.crack<.5)continue;
