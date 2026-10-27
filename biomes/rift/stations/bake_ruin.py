@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Bake the ruined Arcube (kits/ancients, target arcube: its decayed site) into station 4's massing data fragment
-(PLAN-STATIONS.md, station 4: the owner, 2026-10-27, "there is an existing arccube model ... for now it's good for massing").
+"""Bake an Ancients ruin (kits/ancients: a target's decayed site) into station 4's massing data fragment (PLAN-STATIONS.md,
+station 4). The owner, 2026-10-27: first the Arcube ("good for massing"), then THE PILE (target arcpile, the Rift's ruin in place of
+the Arcube, built on claude/upbeat-yalow-7b38ae), "and must be able to cover its lower decks in wild vegetation".
 
-    python3 kits/ancients/build.py --target arcube        (or git lfs pull its dist/arcube.html)
-    python3 biomes/rift/stations/bake_cube.py [--probe] [--cell 4]
+    python3 kits/ancients/build.py --target arcpile
+    python3 biomes/rift/stations/bake_ruin.py [--page kits/ancients/dist/arcpile.html] [--site 1500] [--probe] [--cell 8]
 
-It opens kits/ancients/dist/arcube.html headless (tools/harness.py's launcher), takes every mesh of the RUINED site (the target
-builds the intact cube at x -2,600 and the ruin at +2,600: 89z-rows.js) but its ground, in world space with each surface's
-colour (material colour x instance colour x vertex colour), and decimates it by clustering vertices on a `cell`-metre grid (the
+It opens the page headless (tools/harness.py's launcher), takes every mesh of the RUINED site (a target builds its intact site at
+x -s and the ruin at +s: its 89z-rows.js; the Pile's s is 1,500, the Arcube's 2,600) but its ground, in world space with each
+surface's colour (material colour x instance colour x vertex colour), and decimates it by clustering vertices on a `cell`-metre grid (the
 mean position and colour of each cell's vertices; triangles that collapse are dropped). The result, centred on the ruin's axis,
-is written to stations/plateau/44c-host-cube-data.js as CUBE_MASS = {cell, lo, hi, n, i16, pos, col, idx}: positions as 16-bit
+is written to stations/plateau/44c-host-ruin-data.js as RUIN_MASS = {cell, lo, hi, n, i16, pos, col, idx}: positions as 16-bit
 steps over the box lo..hi, colours 8-bit, indices 16- or 32-bit, each base64. Deterministic: the target's build is, and the clustering is a pure function of it.
+When the page publishes its ruin's roofs (the Pile: AP_SITE[1].roofs, `overgrow` on the base's, left bare for the Rift's flora), they
+are written beside it as RUIN_ROOFS = [[x0, x1, z0, z1, y, overgrow], ...], in the same frame (all of them: the station needs the
+blocks of the tier above to know which part of a roof is open sky).
 --probe prints the site's meshes (name, kind, triangles, bounds) and writes nothing.
 """
 import argparse, asyncio, base64, json, os, sys
@@ -20,8 +24,7 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import harness   # noqa: E402
 
-PAGE = os.path.join(ROOT, 'kits', 'ancients', 'dist', 'arcube.html')
-SITE = [2600, 0, 1750]   # the ruined site's axis (x, z) and the half-size of the box taken round it
+PAGE = os.path.join(ROOT, 'kits', 'ancients', 'dist', 'arcpile.html')
 
 # every visible mesh whose world box lies in the site's box and is under `span` metres across (the ground's planes and
 # paint discs are wider), its triangles in world space, each vertex's colour; then the vertex clustering
@@ -59,15 +62,21 @@ async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--probe', action='store_true'); ap.add_argument('--cell', type=float, default=8)
     ap.add_argument('--span', type=float, default=2600)
+    ap.add_argument('--page', default=PAGE); ap.add_argument('--site', type=float, default=1500)
+    ap.add_argument('--half', type=float, default=1100, help="the half-size of the box taken round the ruin's axis")
     a = ap.parse_args()
+    SITE = [a.site, 0, a.half]
+    page = os.path.abspath(a.page)
     from playwright.async_api import async_playwright
     async with async_playwright() as p:
         b = await harness.launch_chromium(p)
-        with harness.serve(os.path.dirname(PAGE)) as port:
-            pg, errs, ready = await harness.open_page(b, PAGE, port, size='960x600')
+        with harness.serve(os.path.dirname(page)) as port:
+            pg, errs, ready = await harness.open_page(b, page, port, size='960x600')
             if not ready:
-                sys.exit('arcube.html never ready: %s' % errs[:3])
+                sys.exit('%s never ready: %s' % (page, errs[:3]))
             r = await pg.evaluate(TAKE_JS, [SITE, a.span, a.cell, a.probe])
+            roofs = await pg.evaluate("()=>typeof AP_SITE!=='undefined'&&AP_SITE[1]&&AP_SITE[1].roofs?"
+                                      "AP_SITE[1].roofs.map(r=>[r.rect[0],r.rect[1],r.rect[2],r.rect[3],r.y,r.overgrow?1:0]):null")
         await b.close()
     if a.probe:
         print(json.dumps(r, indent=1))
@@ -80,15 +89,20 @@ async def main():
     col = np.clip(np.round(np.array(r['col']).reshape(-1, 3) * 255), 0, 255).astype('u1')
     idx = np.array(r['idx'], dtype='<u2' if r['nv'] < 65536 else '<u4')   # 16-bit indices when the vertices allow
     b64 = lambda arr: base64.b64encode(arr.tobytes()).decode('ascii')
-    out = os.path.join(HERE, 'plateau', '44c-host-cube-data.js')
+    out = os.path.join(HERE, 'plateau', '44c-host-ruin-data.js')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, 'w', encoding='utf-8', newline='\n') as f:
-        f.write('// ================================================================= HOST — the ruined Arcube\'s massing (station 4), BAKED\n')
-        f.write('// Written by biomes/rift/stations/bake_cube.py from kits/ancients/dist/arcube.html (the target\'s ruined site), its\n')
+        f.write('// ================================================================= HOST — the ruin\'s massing (station 4), BAKED\n')
+        f.write('// Written by biomes/rift/stations/bake_ruin.py from kits/ancients/dist/%s (the target\'s ruined site at x %g), its\n'
+                % (os.path.basename(page), a.site))
         f.write('// vertices clustered on a %g m grid: %d triangles in, %d out, %d vertices. Do not edit: re-run the bake.\n' % (a.cell, r['tin'], r['tout'], r['nv']))
-        f.write('const CUBE_MASS={cell:%g,lo:%s,hi:%s,n:%d,i16:%s,pos:"%s",col:"%s",idx:"%s"};\n' % (
+        f.write('const RUIN_MASS={cell:%g,lo:%s,hi:%s,n:%d,i16:%s,pos:"%s",col:"%s",idx:"%s"};\n' % (
             a.cell, json.dumps([round(v, 3) for v in lo]), json.dumps([round(v, 3) for v in hi]), r['nv'],
             'true' if idx.dtype.itemsize == 2 else 'false', b64(q), b64(col), b64(idx)))
+        f.write('// every standing roof (the page\'s AP_SITE[1].roofs): [x0, x1, z0, z1, y, overgrow] in the ruin\'s frame; overgrow 1 on the\n')
+        f.write('// base\'s (left bare for the Rift\'s flora), 0 on the crown\'s (farmed); a block of the tier above rests on part of each\n')
+        f.write('const RUIN_ROOFS=%s;\n' % json.dumps([[round(v, 2) for v in q_[:5]] + [q_[5]] for q_ in roofs] if roofs else []))
+    print('roofs: %d (overgrow %d)' % (len(roofs) if roofs else 0, sum(q_[5] for q_ in roofs) if roofs else 0))
     print('wrote %s: %d triangles in (%d meshes), %d out, %d vertices, %.0f KB' % (os.path.relpath(out, ROOT), r['tin'], r['meshes'], r['tout'], r['nv'], os.path.getsize(out) / 1024))
 
 
