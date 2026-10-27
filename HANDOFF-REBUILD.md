@@ -60,6 +60,21 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
 6. **Close out:** `tools/check_core_use.py --write-baseline` (it shrinks), `tools/port_baseline.py --update` for checked pages
    only, `tools/test_all.py`, the gallery republish (ask the owner: it is a wider change).
 
+**How step 3 runs** (the owner, 2026-10-27, relayed by the card-audit session):
+- **Each biome's full rebuild turn is its own session, at most TWO at a time**, so the one GPU is not burdened more than it is.
+- **Wait to start them until SW highlands station 4 and the Godthrone are merged into `claude/biome-rebuild`**, so their
+  innovations go in too (and KLAVA, `claude/klava`, if it is merged by then).
+- **A full turn:**
+  - every new shader, plant and core module, by each module's "Adopting it" lines;
+  - the biome's `BACKPORT.md` row and its `PLAN-STATIONS.md` stations;
+  - its unwired textures, ride-alongs and exchanges;
+  - its card slots by `check_cells.py --fix` (except xanadu's raceme and `card.flower.bloom`: "its card cells" below);
+  - then `verify.py --assert --all-views` on the GPU and a merge into `claude/biome-rebuild`.
+- **The 16 builds with card faults on core geometry** (the card audit, 2026-10-27): eastabyss, xanadu, swlowlands, nwbay,
+  nwlowlands, swbay, hyperjungle, ringisles, nhighlands, sedesert, necanyons, abyssal-savannah, guilin, k-guilin, geyser, oidong.
+  No slot is applied and no page is rebuilt yet. guilin is frozen as an Earth reference: ask the owner whether its cards are
+  fixed anyway.
+
 ### Progress on step 1 (2026-10-26, the session that picked this up)
 
 - **`BIO.fung` is written**: `core/biome/33-core-fungoid.js` (nine parts and four layouts), `test-fungoid.js`, core/biome
