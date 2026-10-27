@@ -48,7 +48,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   // the valley floor: jungle litter south of the crest, dry grass north of it
   t.copy(LIT).lerp(LIT2,clamp(.5+n*1.8,0,1)).lerp(LMOSS,smooth(.3,.7,n3+wet*.3)*.75).lerp(LGREEN,smooth(.25,.6,n3+.2*n)*.35);   /* greener litter (the owner, 2026-10-27: too uniformly black); the moss layer goes over it (aLay.z) */
   c.copy(SAV).lerp(SAV2,clamp(.5+n*1.7,0,1)).lerp(SAVG,smooth(.45,.7,fbm(x/60,y/60,7,2))*.55).lerp(EARTH,smooth(.62,.78,fbm(x/40,y/40,8,2))*.5);
-  c.lerp(t,south*floor);
+  c.lerp(t,south*Math.max(floor,smooth(.3,.6,mist)));   /* the cloud's ground is the litter too (station 3's face sits above the valley floor) */
   // the ridge: rock where it is steep, humus under the cloud forest, pale stony scrub on the peak
   t.copy(ROCK).lerp(ROCK2,clamp(.5+n*2.0,0,1)).lerp(ROCK3,smooth(.4,.6,fbm(x/12,y/70,9,2)));   // strata run with x
   const cloud=mist,peak=smooth(.55,.75,up)*(1-mist);
@@ -106,7 +106,7 @@ MAT_GROUND.onBeforeCompile=sh=>{if(STRATA)STRATA.inject(sh);sh.uniforms.uDetail=
   lay[i*3]=ck[i]*smooth(160,20,FC.at(FC.a.lk,x,z))*smooth(-30,0,FC.at(FC.a.lk,x,z));lay[i*3+1]=smooth(.4,.8,FC.at(FC.a.flow,x,z))*(1-FC.at(FC.a.south,x,z));
   /* the moss: the jungle's floor (the lake side, the valley floor, damp), in patches 60-200 m across, none on the shore's crust, the
      river beds, the cliffs or the ridge's peak */
-  const sth=FC.at(FC.a.south,x,z),wet=FC.at(FC.a.wet,x,z),flr=smooth(.30,.10,FC.at(FC.a.up,x,z)),patch=smooth(.38,.62,fbm(x*.006+11,z*.006-3,231,3));
+  const sth=FC.at(FC.a.south,x,z),wet=FC.at(FC.a.wet,x,z),flr=Math.max(smooth(.30,.10,FC.at(FC.a.up,x,z)),smooth(.3,.6,FC.at(FC.a.mist,x,z))),patch=smooth(.38,.62,fbm(x*.006+11,z*.006-3,231,3));
   lay[i*3+2]=sth*flr*smooth(.5,.8,wet)*(.35+.6*patch)*(1-ck[i])*(1-smooth(.3,.7,FC.at(FC.a.flow,x,z)))*smooth(1.0,.6,FC.at(FC.a.slope,x,z))*smooth(10,60,FC.at(FC.a.lk,x,z));}
  g.setAttribute('aLay',new THREE.BufferAttribute(lay,3));
  {const rk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);rk[i]=smooth(.55,1.05,FC.at(FC.a.slope,x,z))*smooth(.06,.16,FC.at(FC.a.up,x,z));}g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));}   /* the paint's rockK per vertex: where the strata show */

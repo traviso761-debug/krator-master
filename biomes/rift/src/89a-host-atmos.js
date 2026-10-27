@@ -21,7 +21,7 @@ ATMOS.bindWeather({climate:{wet:true},sun,hemi:scene.children.find(o=>o.isHemisp
 // the eye and thins above it (the crest and the mesas stand clear of the trough's haze; the trough's air is thick, 1.9 bar); the dawn mist
 // pools over the algal lake, the shore and the streams' mouths (below 25 m: the trough floor is at 0-10 m), and a broken band of cloud hangs
 // on the ridge's south face at the cloud forest's benches (210-320 m: the cloud forest's own mist field, made visible)
-ATMOS.heightFog({falloff:1/700,sun:.35,sky:.35,mist:{density:.0008,y:25,depth:22,noise:.7},band:{density:.0010,y:[210,320],cover:.32,noise:1}});
+ATMOS.heightFog(STATION_PAGE.fog||{falloff:1/700,sun:.35,sky:.35,mist:{density:.0008,y:25,depth:22,noise:.7},band:{density:.0010,y:[210,320],cover:.32,noise:1}});   /* STATION_PAGE.fog: a station's own (its cloud band at its height) */
 ATMOS.heightFogScene(scene);
 // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or puddles under the jungle's and the cloud forest's crowns
 ATMOS.rainCover({renderer});

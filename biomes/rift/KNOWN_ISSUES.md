@@ -36,6 +36,15 @@ Read before changing anything here. `build.py` prints the open count.
       and some want a look (the jungle's crowns hide much at 40 m); the falls throw at 5.5 m/s to clear their faces (steep cliffs,
       25 m of run for 160 m); the delta channel is one; the old page (`dist/rift.html`, still built by plain `build.py`) retires when
       the gallery switches to the stations (the owner's call on the publish).
+- [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
+      island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,
+      the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with
+      the island's colours and sizes (`87-host-families.js`: mantle palm, drip lobe; comb frill; crown barrel; table pine, blade fan),
+      planted by band; the sketch's species they replace, and the savannah's and the rims', thinned out (`STATION_PAGE.thin`); the
+      old stock (cloud parasol, beard tree, tree-fern, lantern tree) under them. Held 33.2 M (ceiling 40 M), 188 calls at the default view.
+      Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
+      cushion, the night rosette, the glass pole, fog thread, crest heath, hoodlet) are builder work still to do; no water yet (the
+      ravines' streams wait for core/water's cataract fixes); the west and east islands' records; not yet verified on the GPU.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
