@@ -1,50 +1,81 @@
 #!/usr/bin/env python3
-"""Span, the ruined Ancient arcology in Pan Riba's canyon (SW highlands): the rough floorplan. Sheets come from
-settlements/voth/palace/blueprint.py (the shared generator: its circles, fills and lines are this plan's additions).
+"""Span, the ruined Ancient arcology in Pan Riba's canyon (SW highlands): the floorplan sheets and AREAS.md.
 
-A ROUGH plan for the owner's approval (PLAN.md), at the scale of districts and buildings, not rooms (the Cross, sheet
-S4, is the one building drawn to rooms, because Dalab lives in it). Every number here is an assumption for the station
-session and the first build to settle; the list is PLAN.md section 3.
+Everything drawn comes from the layout (src/30-span-layout.js, the one source; its rules src/31-span-rules.js), read
+through `node layout_dump.js`: a part is on a sheet when its `sheets` names it. The sheets are made on the shared
+generator settlements/voth/palace/blueprint.py (its circles, fills and lines are this plan's additions). Only the
+drawing is here: change a part in the layout, never in this file.
 
-Frame: u runs DOWNSTREAM along the canyon's axis (the lake upstream at u < -1000, drawn left; the Deep Reach at u > 0),
-v across (v > 0 the right bank looking downstream, drawn up), y from the tableland's rim (y = 0, ~2,600 m; the canyon
-floor at the Deep Reach y = -180, Pan Riba's bed ~2,416 m on scale model 4.22). Metres. The station session turns the
-frame onto the canyon it carves: u follows the river.
+Frame (PLAN.md section 1): u runs DOWNSTREAM along the canyon's axis (the lake upstream, drawn left), v across (v > 0 the
+right bank looking downstream, drawn up), y up from the tableland's rim (y 0, ~2,600 m assumed). Metres.
 
-    python3 span_blueprint.py        # writes floors/*.png next to this file
+    python3 span_blueprint.py        # writes floors/*.png and AREAS.md next to this file (needs node)
 """
-import math, os, sys
+import json, math, os, subprocess, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'voth', 'palace'))
 import blueprint as B
-from blueprint import R, C
+from blueprint import R
 from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'floors')
+DUMP = json.loads(subprocess.run(['node', os.path.join(HERE, 'layout_dump.js')], capture_output=True, text=True, check=True, encoding='utf-8').stdout)
+L, AREA = DUMP['layout'], DUMP['area']
+BAD = [c for c in DUMP['checks'] if not c['pass']]
+if BAD:
+    sys.exit('the layout fails its checks (node settlements/span/test-span.js):\n  ' + '\n  '.join(c['name'] + ': ' + c['detail'] for c in BAD))
+PARTS = {p['id']: p for p in L['parts']}
+WAYS = {w['id']: w for w in L['ways']}
+HALF = {int(k): v for k, v in L['half'].items()}
+LV = L['levels']
+REACH = L['reach']
+BAYC, BAYRIM, APRON, RING = L['bay']['c'], L['bay']['rim'], L['bay']['apron'], L['bay']['ring']
+LAKE_Y = -8
 
 B.KIND_FILL.update({'water': (170, 214, 240), 'pad': (196, 200, 214), 'dome': (252, 252, 246), 'ringsite': (232, 236, 228),
                     'tank': (214, 214, 206), 'hangar': (150, 146, 140), 'works': (200, 194, 182), 'terrace': (244, 242, 234),
-                    'bridge': (120, 120, 128), 'fallen': (178, 120, 104), 'outpost': (226, 178, 120), 'portal': (40, 40, 40),
-                    'mound': (186, 150, 96), 'craft': (184, 196, 206), 'weir': (140, 160, 170), 'line': (160, 60, 40)})
+                    'bridge': (120, 120, 128), 'fallen': (178, 120, 104), 'outpost': (226, 178, 120), 'portal': (120, 60, 150),
+                    'mound': (186, 150, 96), 'craft': (184, 196, 206), 'weir': (140, 160, 170), 'line': (160, 60, 40), 'ledge': (226, 222, 214)})
+FILL_OF = {'ringsite': 'ringsite', 'weir': 'weir', 'dome': 'dome', 'mound': 'mound', 'pad': 'pad', 'bay': 'terrace', 'deck': 'terrace', 'craft': 'craft',
+           'portal': 'portal', 'ramp': 'passage', 'dalab': 'outpost', 'cross': 'outpost', 'gate': 'outpost', 'range': 'terrace', 'bridge': 'bridge',
+           'gallery': 'terrace', 'ledge': 'ledge', 'payload': 'craft', 'hangar': 'hangar', 'tank': 'tank', 'works': 'works', 'fallen': 'fallen', 'wall': 'line'}
+STATE_WORD = {'intact': 'intact', 'ruined': 'ruined', 'toppled': 'toppled', 'rehab': 'rehabilitated', 'worn': 'worn'}
 
-# ------------------------------------------------------------------------------------------------ the shape (the data)
-RIM, B1, B2, B3, FLOOR = 0, -40, -85, -130, -180          # the Deep Reach's levels: rim, three benches, the floor
-HALF = {RIM: 150, B1: 128, B2: 105, B3: 85, FLOOR: 70}   # the half-width at each level (rim to rim 300 m, floor 140 m)
-REACH = (-180, 820)                                        # the built Deep Reach along u
-CROSS = (-300, -180, -230, 230)                            # the Cross: the habitable bridge, the Span proper
-BAY = (-520, 0, 230, 160)                                  # the Upper Bay: centre u, v and the rim's semi-axes
-APRON = (-520, 0, 185, 118)                                # its deck at y = -45 over the inner slot
-LAKE_Y = -8
+def room(n, p):
+    """a layout part as a blueprint room: its fill says what it is (Dalab's, held, fallen), its note its state and id"""
+    s = p['shape']
+    if p.get('in') and p['kind'] not in ('dalab', 'craft'):
+        kind = p['kind']                                     # a zone of the Cross: the generator's own room kinds
+    elif p['by'] == 'dalab' and p['kind'] == 'wall':
+        kind = 'line'
+    elif p['by'] == 'dalab' or (p.get('held') and p['kind'] in ('cross', 'gate', 'range', 'gallery', 'dome', 'deck', 'dalab')):
+        kind = 'mound' if p['kind'] == 'mound' else 'outpost'
+    elif p['state'] == 'toppled' and p['kind'] not in ('tank',):
+        kind = 'fallen'
+    else:
+        kind = FILL_OF.get(p['kind'], 'terrace')
+    word = STATE_WORD[p['state']] + (', held by Dalab' if p.get('held') and p['by'] != 'dalab' else '') + (', Dalab\'s' if p['by'] == 'dalab' else '')
+    extra = []
+    if p['st']: extra.append('%d storeys' % p['st'])
+    if p['y']: extra.append('y %g' % p['y'])
+    note = '%s [%s; %s]%s' % (word, p['id'], ', '.join(extra) if extra else 'y 0', (' ' + p['note']) if p.get('note') else '')
+    decor = 2 if p.get('held') else (0 if p['state'] == 'toppled' else 1)
+    if s[0] == 'box':
+        r = R(n, p['name'], kind, s[1], s[2], s[3], s[4], decor, note)
+    else:
+        a, b = (s[3], s[3]) if s[0] == 'circ' else (s[3], s[4])
+        r = R(n, p['name'], kind, s[1] - a, s[1] + a, s[2] - b, s[2] + b, decor, note); r['circ'] = True
+    return r
 
-def oval(cu, cv, a, b, n=48, t0=0.0, t1=2 * math.pi):
-    return [(cu + a * math.cos(t0 + (t1 - t0) * i / n), cv + b * math.sin(t0 + (t1 - t0) * i / n)) for i in range(n + 1)]
+def sheet_rooms(sid):
+    return [room(i + 1, p) for i, p in enumerate([p for p in L['parts'] if sid in p.get('sheets', [])])]
 
-def ovalR(n, name, kind, cu, cv, a, b, decor, note=''):
-    d = R(n, name, kind, cu - a, cu + a, cv - b, cv + b, decor, note); d['circ'] = True; return d
+def oval(cu, cv, a, b, n=48):
+    return [(cu + a * math.cos(2 * math.pi * i / n), cv + b * math.sin(2 * math.pi * i / n)) for i in range(n + 1)]
 
 LAKE = [(-2560, -120), (-2480, -360), (-2200, -430), (-1900, -380), (-1600, -300), (-1300, -200), (-1100, -90), (-1050, 0),
         (-1100, 120), (-1350, 240), (-1700, 330), (-2050, 400), (-2350, 330), (-2540, 160)]
-GREY, RED, BLUE, GREEN, BROWN = (90, 90, 90), (170, 40, 30), (40, 110, 200), (40, 130, 60), (130, 90, 50)
+GREY, BLUE, BROWN, PURPLE = (90, 90, 90), (40, 110, 200), (130, 90, 50), (120, 60, 150)
 
 def rims(level, col=GREY, w=3, label=None):
     h = HALF[level]
@@ -52,222 +83,96 @@ def rims(level, col=GREY, w=3, label=None):
     if label: out[0] = out[0] + (label,)
     return out
 
-HEAD = [([(-900, 60), (-750, 70)], GREY, 3), ([(-900, -60), (-750, -70)], GREY, 3)]   # the canyon head, the natural canyon
-DOWN = [([(820, 150), (1200, 120)], GREY, 3, 'the natural canyon on, to the plunge fall and the pillar rim'), ([(820, -150), (1200, -120)], GREY, 3)]
-BAYRIM = [(oval(*BAY), GREY, 3)]
-RIVER = [([(-1050, 0), (-900, 0), (-750, 0), (-300, 0), (-180, -48), (820, -48), (1200, -40)], BLUE, 4)]
-PURPLE = (120, 60, 150)
-TUNNEL = (-570, -160)                                       # the Basin Tunnel's upper portal: the bay's left wall at the Apron (y -45)
-TUNNEL_LINE = [([TUNNEL, (-700, -420), (-1100, -700), (-1500, -790)], PURPLE, 6, 'the Basin Tunnel (underground, intact, cleared): down to the basin')]
-ROADS = [([(-240, 230), (-240, 800)], BROWN, 7, 'north highway (Ancient, to the tableland)'),
-         ([(-240, -230), (-240, -800)], BROWN, 7, 'south highway'),
-         ([(-180, 205), (820, 205)], BROWN, 5), ([(-180, -205), (1150, -205)], BROWN, 5, 'the rim road on: Dalab\'s way to the watch post'),
-         ([(-760, 175), (-1700, 470)], BROWN, 5, 'to the Lake Quay'), ([(-760, -175), (-1380, -460)], BROWN, 5),
-         ([(-240, 800), (300, 800)], BROWN, 4), ([(-240, -800), (-800, -800)], BROWN, 4)]
+def way(wid, col, width, label=True):
+    w = WAYS[wid]
+    q = ([(x[0], x[1]) for x in w['pts']], col, width)
+    return q + (w['note'],) if label and w.get('note') else q
 
-# ------------------------------------------------------------------------------------------------ S0 the site
+CH = L['canyon']
+HEAD = [([tuple(CH['head'][0]), tuple(CH['head'][1])], GREY, 3), ([(CH['head'][0][0], -CH['head'][0][1]), (CH['head'][1][0], -CH['head'][1][1])], GREY, 3)]
+DOWN = [([tuple(CH['down'][0]), tuple(CH['down'][1])], GREY, 3, 'the natural canyon on, to the plunge fall and the pillar rim'),
+        ([(CH['down'][0][0], -CH['down'][0][1]), (CH['down'][1][0], -CH['down'][1][1])], GREY, 3)]
+BAYLINE = [(oval(BAYC[0], BAYC[1], BAYRIM[0], BAYRIM[1]), GREY, 3)]
+RIVER = [way('river', BLUE, 4, False)]
+ROADS = [way(w['id'], BROWN, 7 if w['w'] >= 12 else 5) for w in L['ways'] if w['kind'] == 'road' and w['id'] != 'ring_road']
+RINGROAD = [way('ring_road', BROWN, 6, False)]
+TUNNELS = [way('basin_tunnel', PURPLE, 6), way('valley_tunnel', PURPLE, 6)]
+REACH_FILL = [(REACH[0], 150), (REACH[1], 150), (REACH[1], -150), (REACH[0], -150)]
+FLOOR_FILL = [(REACH[0], HALF[-180]), (REACH[1], HALF[-180]), (REACH[1], -HALF[-180]), (REACH[0], -HALF[-180])]
+
+# ------------------------------------------------------------------------------------------------ the sheets
 FLOORS = []
 SITE = dict(R=1958, rect=(-2650, 1250, -800, 800))
-FLOORS.append(dict(SITE, id='S0', tier=0, title='Sheet S0: Span and its lake (the site, ~3.9 x 1.6 km)',
-  sub='Pan Riba leaves the lake over the Ancients\' weir, falls into the canyon head, runs under the Upper Bay\'s deck and the Cross, and through the Deep Reach, the arcology\'s works down both walls. Two ring-walled outlying sites by the lake. The Basin Tunnel, intact and cleared, comes up inside the rock from the basin to the bay: Dalab\'s way onto the plateau, its trading post on the Apron at the tunnel\'s mouth. The station session carves the canyon to this plan and turns u onto the river\'s course; the pillar rim and Dalab\'s watch post lie downstream (u > 1200, off the sheet).',
-  axisnote='u downstream along Pan Riba ->   v across (the right bank up); y from the rim. Heights in the key are y.',
-  fills=[(LAKE, B.KIND_FILL['water'], 'the lake (y -8, on the tableland; the biome kit makes it)'),
-         ([(-180, 150), (820, 150), (820, -150), (-180, -150)], (214, 200, 180), 'the Deep Reach (rim to rim 300 m)')],
-  lines=HEAD + DOWN + BAYRIM + RIVER + ROADS + rims(RIM) + TUNNEL_LINE,
-  rooms=[
-    R(1, 'The Lake Quay', 'ringsite', -2200, -1800, 470, 600, 1, 'outlying site: a walled strip of slips and sheds by the north shore; worn, overgrown'),
-    C(2, 'The Lake Ring', 'ringsite', -1500, -570, 150, 1, 'outlying site: a ring wall round a sunken court of six domes, a mole into the lake; ruined, drowned at one side'),
-    R(3, 'The Weir', 'weir', -1070, -1030, -90, 90, 1, 'the Ancients\' sluice dam at the lake\'s outlet; it holds the lake up 8 m; sound'),
-    C(4, 'Head Pad', 'pad', -880, 150, 32, 1, 'a landing pad on a drum at the canyon head, a walkway to the bay\'s ring road'),
-    ovalR(5, 'The Upper Bay', 'terrace', BAY[0], BAY[1], BAY[2], BAY[3], 1, 'the canyon widened into an oval bay, domes on its terraces, a deck (the Apron) over the river: Dalab\'s trading post (S2)'),
-    R(6, 'The Cross (the Span)', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'the great habitable bridge where the highways cross the canyon: Dalab\'s fort'),
-    C(11, 'The Basin Tunnel\'s upper portal', 'portal', TUNNEL[0], TUNNEL[1], 18, 2, 'in the bay\'s left wall at the Apron\'s level (y -45); the Ancient road tunnel down to the basin, intact, cleared and kept by Dalab'),
-    R(7, 'The Deep Reach', 'works', 400, 401, -1, 1, 1, 'the canyon proper: terraces down both walls, hangars and works on the floor; the no man\'s land'),
-    C(8, 'Lone dome', 'dome', -1200, 520, 16, 1, 'worn'),
-    C(9, 'Lone dome', 'dome', -760, -560, 14, 1, 'toppled'),
-    C(10, 'Dalab\'s mound', 'mound', -300, -430, 40, 2, 'an earth mound imitating the domes, facing the lab (south-west); the outpost\'s priest communes here'),
-  ]))
-
-# ------------------------------------------------------------------------------------------------ S1 the rims (y = 0)
 CORE = dict(R=908, rect=(-950, 850, -500, 500))
-BAYDOMES_IN = [C(20 + i, 'Bay terrace dome', 'outpost' if i in (4, 5, 6) else 'dome', BAY[0] + 207 * math.cos(a), 139 * math.sin(a), 17, 2 if i in (4, 5, 6) else 1,
-                 'rehabilitated: the traders\' lodgings' if i in (4, 5, 6) else ('ruined' if i % 3 else 'toppled into the bay'))
-               for i, a in enumerate([k * 2 * math.pi / 10 + .31 for k in range(10)])]
-BAYDOMES_OUT = [C(30 + i, 'Ring-walled dome', 'dome', BAY[0] + 300 * math.cos(a), 232 * math.sin(a), 28, 1, n)
-                for i, (a, n) in enumerate([(1.15, 'ruined'), (1.75, 'worn, overgrown'), (2.4, 'ruined'), (3.3, 'toppled'), (3.9, 'ruined'), (4.55, 'worn')])]
-FLOORS.append(dict(CORE, id='S1', tier=0, title='Sheet S1: the rims (y = 0)',
-  sub='The ring road round the Upper Bay with its domes inside and out; the Cross\'s roof where the two highways cross; the rim ranges (the white curved band) along both rims of the Deep Reach, ring-walled domes and round pads on them; the Middle Bridge. Dalab holds the Cross and the north range\'s first 420 m (the Sound Quarter).',
+FLOORS.append(dict(SITE, id='S0', tier=0, title='Sheet S0: Span and its lake (the site, ~3.9 x 1.6 km)',
+  sub='Pan Riba leaves the lake over the Ancients\' weir, falls into the canyon head, runs under the Upper Bay\'s deck and the Cross, and through the Deep Reach, the arcology\'s works down both walls. Two outlying sites by the lake. Two Ancient road tunnels: the Basin Tunnel, intact and cleared, comes up inside the rock from the south-western lowlands to the bay (Dalab\'s way onto the plateau, its trading post on the Apron at the mouth); the Valley Tunnel, held by no one, opens on the Deep Reach\'s floor. The pillar rim and Dalab\'s watch post lie downstream (u > 1200).',
+  axisnote='u downstream along Pan Riba ->   v across (the right bank up); y from the rim. [id] is the layout record.',
+  fills=[(LAKE, B.KIND_FILL['water'], 'the lake (y -8, on the tableland; the biome kit makes it)'),
+         (REACH_FILL, (214, 200, 180), 'the Deep Reach (rim to rim 300 m)')],
+  lines=HEAD + DOWN + BAYLINE + RIVER + ROADS + RINGROAD + rims(0) + TUNNELS,
+  rooms=sheet_rooms('S0')))
+FLOORS.append(dict(CORE, id='S1', tier=0, title='Sheet S1: the rims (y = 0) and the bay\'s terraces (y -30)',
+  sub='The ring road round the Upper Bay with its terrace domes inside (three of them Dalab\'s lodgings) and its ring-walled domes outside; the Cross\'s roof and gate towers where the two highways cross; the two-storey rim ranges (the white curved band) along both rims of the Deep Reach, ring-walled domes and round pads on them; the Middle Bridge. Dalab holds the Cross, its towers, the Sound Quarter, the genepriests\' dome and Pad 1.',
   axisnote='u downstream ->   v across (the right bank up)   y = 0, the rim',
-  fills=[([(-180, 150), (820, 150), (820, -150), (-180, -150)], (214, 200, 180), 'open: the Deep Reach below'),
-         (oval(*APRON), (225, 215, 196), 'the Apron (y -45) below')],
-  lines=HEAD + BAYRIM + [(oval(BAY[0], 0, 262, 192), BROWN, 6, 'the bay\'s ring road')] + ROADS + rims(RIM),
-  rooms=BAYDOMES_IN + BAYDOMES_OUT + [
-    C(1, 'Head Pad', 'pad', -880, 150, 32, 1, 'worn; the walkway to the ring road stands'),
-    C(2, 'Bay Pad', 'pad', -700, -240, 30, 1, 'ruined: a craft wrecked across it'),
-    R(3, 'The Cross: the roof road and the gate towers', 'outpost', CROSS[0], CROSS[1], CROSS[2], CROSS[3], 2, 'rehabilitated: Dalab\'s fort; salvage parapets, the signal mast; four storeys over the canyon (S4), gate towers on the abutments'),
-    R(4, 'North Range A: the Sound Quarter', 'outpost', -180, 240, 152, 190, 2, 'rehabilitated: Dalab\'s quarters, gardens on the roofs; the ranges are two storeys over the rim'),
-    R(5, 'North Range B', 'terrace', 240, 520, 152, 190, 1, 'ruined, overgrown (drip cap, log crust)'),
-    R(6, 'North Range C', 'fallen', 520, 820, 152, 190, 1, 'toppled: half its length slumped into the canyon with the pad'),
-    R(7, 'South Range A', 'terrace', -180, 300, -190, -152, 1, 'ruined; Dalab patrols it'),
-    R(8, 'South Range B', 'terrace', 300, 820, -190, -152, 1, 'ruined'),
-    C(9, 'Rim Pad 1', 'pad', 120, 255, 32, 1, 'worn: Dalab\'s landing ground (no craft fly: a drill ground and lizard paddock)'),
-    C(10, 'Rim Pad 2', 'pad', 300, -250, 36, 1, 'ruined'),
-    C(11, 'Rim Pad 3', 'fallen', 560, 240, 28, 1, 'toppled into the canyon (its wreck on S3)'),
-    C(12, 'Rim Pad 4', 'pad', 760, -240, 28, 1, 'ruined'),
-    C(13, 'Rim dome', 'dome', 20, 245, 26, 2, 'rehabilitated: the genepriests\' house'),
-    C(14, 'Rim dome', 'dome', 380, -245, 30, 1, 'ruined'),
-    C(15, 'Rim dome', 'dome', 650, 250, 22, 1, 'worn'),
-    R(16, 'The Middle Bridge', 'bridge', 255, 270, -150, 150, 1, 'a road bridge at the rim; ruined but passable; Dalab\'s forward barricade at its north end'),
-  ]))
-
-# ------------------------------------------------------------------------------------------------ S2 the walls (y -40 to -130) and the Apron
-def bench(n, name, side, u0, u1, lvl, kind, note):
-    hi, lo = HALF[{B1: RIM, B2: B1, B3: B2}[lvl]], HALF[lvl]
-    return R(n, name, kind, u0, u1, lo, hi, 1, note) if side > 0 else R(n, name, kind, u0, u1, -hi, -lo, 1, note)
-
+  fills=[(REACH_FILL, (214, 200, 180), 'open: the Deep Reach below'), (oval(BAYC[0], BAYC[1], APRON[0], APRON[1]), (225, 215, 196), 'the Apron (y -45) below')],
+  lines=HEAD + BAYLINE + RINGROAD + ROADS + rims(0),
+  rooms=sheet_rooms('S1')))
 FLOORS.append(dict(CORE, id='S2', tier=1, title='Sheet S2: the walls (benches at y -40, -85, -130) and the Apron (y -45): the trading post',
-  sub='The arcology\'s floors step down both walls on the sandstone\'s hard beds: a three-storey gallery building on the -40 and -85 benches, its back cut into the rock, its front a white curved terrace; the -130 bench a service ledge (conduits, walkways). In the bay the Apron, a deck over the river\'s slot, cleared by Dalab for its trading post: the Basin Tunnel comes out of the bay\'s left wall onto it, the plateau\'s traders come down the ring road into it. Two lower bridges: the Low Bridge (fallen) and the Pipe Bridge with its hanging payloads (kits/ancients\' canyon target).',
+  sub='The arcology\'s floors step down both walls on the sandstone\'s hard beds: a three-storey gallery on the -40 and -85 benches, its back cut into the rock; the -130 bench a service ledge. In the bay the Apron, a deck over the river\'s slot, cleared by Dalab for its trading post: the Basin Tunnel comes out of the bay\'s left wall onto it, the plateau\'s traders come down the ring road into it. Two lower bridges: the Low Bridge (fallen) and the Pipe Bridge with its hung payloads (kits/ancients\' canyon target).',
   axisnote='u downstream ->   v across   bands: rim to -40, -40 to -85, -85 to -130 (outer to inner)',
-  fills=[([(-180, 70), (820, 70), (820, -70), (-180, -70)], (200, 186, 166), 'the floor (y -180) below')],
-  lines=HEAD + BAYRIM + rims(RIM) + rims(B1, (150, 150, 150), 2) + rims(B2, (150, 150, 150), 2) + rims(B3, (150, 150, 150), 2) + RIVER[:1],
-  rooms=[
-    ovalR(1, 'The Apron', 'terrace', APRON[0], APRON[1], APRON[2], APRON[3], 1, 'y -45: the bay\'s deck over the slot, cleared for the trading post'),
-    C(2, 'Derelict craft', 'craft', -620, 75, 14, 1, 'a lander, broken-backed: the one wreck Dalab left (too heavy to strip)'),
-    C(3, 'The Basin Tunnel\'s upper portal', 'portal', TUNNEL[0], TUNNEL[1], 18, 2, 'in the bay\'s left wall; Dalab\'s gate and wardens'),
-    R(4, 'The Tunnel Road', 'passage', -580, -560, -142, -100, 1, 'the ramp from the portal onto the Apron'),
-    R(5, 'The Cross, floors -10 to -60', 'outpost', CROSS[0], CROSS[1], -150, 150, 2, 'the fort: the bridge body over the canyon, four storeys (S4); its keel piers down to the sluice'),
-    bench(6, 'North gallery, -40 (A)', 1, -180, 240, B1, 'outpost', 'rehabilitated: Dalab\'s stores and workshops; three storeys'),
-    bench(7, 'North gallery, -40 (B)', 1, 240, 820, B1, 'terrace', 'ruined; three storeys'),
-    bench(8, 'North gallery, -85', 1, -180, 820, B2, 'terrace', 'ruined; three storeys; sealed off from Dalab\'s part by a salvage wall at u 0'),
-    bench(9, 'North service ledge, -130', 1, -180, 820, B3, 'passage', 'conduits and a walkway; mutant nests'),
-    bench(10, 'South gallery, -40', -1, -180, 820, B1, 'terrace', 'ruined; three storeys'),
-    bench(11, 'South gallery, -85', -1, -180, 820, B2, 'terrace', 'ruined; three storeys'),
-    bench(12, 'South service ledge, -130', -1, -180, 820, B3, 'passage', 'its downstream half fallen to the floor'),
-    R(19, 'Market (dalab_market_large)', 'outpost', -560, -480, -60, 10, 2, 'the trading post\'s heart: where Dalab trades with the plateau\'s people (who they are: TBD)'),
-    R(20, 'Customs (dalab_scribes)', 'outpost', -545, -521, -100, -80, 2, 'the scribes\' hall at the tunnel road: tolls, tallies, the priests\' cut'),
-    R(21, 'Warehouses (dalab_warehouse)', 'outpost', -470, -410, -90, -50, 1),
-    R(22, 'Inn (dalab_inn)', 'outpost', -640, -608, -80, -50, 1, 'lizard stalls and a lodge: the tunnel\'s caravans'),
-    R(23, 'Inn (dalab_inn)', 'outpost', -460, -428, 20, 50, 1, 'the plateau traders\' inn'),
-    R(24, 'Tavern (dalab_tavern)', 'outpost', -600, -575, 0, 25, 1),
-    R(25, 'Bath house (dalab_bathhouse)', 'outpost', -420, -395, -20, 3, 2),
-    R(26, 'Traders\' houses (dalab_hut_c, dalab_rowhouse)', 'outpost', -660, -620, 10, 60, 1, 'the resident traders: timber frames, as the caste builds'),
-    R(27, 'Fields and lizard pens', 'garden', -700, -662, -40, 40, 0, 'the Apron\'s upstream end'),
-    R(28, 'Caravan yard', 'outpost', -400, -360, -40, 40, 0, 'lizard trains made up and broken; the ramp up to the Cross\'s lizard stalls'),
-    C(29, 'Shrine (dalab_shrine)', 'mound', -500, 75, 8, 2, 'faces the lab'),
-    R(13, 'The Low Bridge (north stub)', 'fallen', 475, 490, 40, 105, 1, 'y -85: toppled; its middle lies on the floor'),
-    R(14, 'The Low Bridge (south stub)', 'fallen', 475, 490, -105, -30, 1, ''),
-    R(15, 'The Pipe Bridge', 'bridge', 690, 712, -128, 128, 1, 'y -40: three sagging pipes, payloads slung under them on cables'),
-    C(16, 'Hung pod', 'craft', 701, 70, 9, 1, 'drops to y -70'),
-    C(17, 'Hung prison', 'craft', 701, 5, 13, 1, 'drops to y -75; one cable parted'),
-    C(18, 'Hung drum', 'craft', 701, -65, 10, 1, 'fallen to the floor (S3)'),
-  ]))
-
-# ------------------------------------------------------------------------------------------------ S3 the floor (y -180)
+  fills=[(FLOOR_FILL, (200, 186, 166), 'the floor (y -180) below')],
+  lines=HEAD + BAYLINE + rims(0) + rims(-40, (150, 150, 150), 2) + rims(-85, (150, 150, 150), 2) + rims(-130, (150, 150, 150), 2) + RIVER + [way('basin_tunnel', PURPLE, 6)],
+  rooms=sheet_rooms('S2')))
 FLOORS.append(dict(CORE, id='S3', tier=2, title='Sheet S3: the canyon floor (y -180) and the slot under the bay',
-  sub='The river in its channel along the left bank; hangars cut into both walls under the benches; the tanks standing from the floor most of the way to the rim; the works. Dalab\'s Line (a salvage wall and the Cross\'s gun gallery above it) closes the Deep Reach at the Cross; the Outfall Gate at the downstream end. The machines and mutants come up the canyon from downstream, out of the Valley\'s country; Hangar 6 is their den.',
+  sub='The river in its channel along the left bank; six hangars cut into the walls under the benches; the Valley Tunnel\'s portal in the right wall, the machines\' and mutants\' way up; the tanks standing from the floor most of the way to the rim; the works. Dalab\'s Line (a salvage wall, the Cross\'s gun gallery above it) closes the Deep Reach at the Cross; the breached Outfall Gate at the downstream end.',
   axisnote='u downstream ->   v across   y = -180 in the Deep Reach; the slot under the Apron from y -60 to -110',
-  fills=[([(-180, 70), (820, 70), (820, -70), (-180, -70)], (200, 186, 166), 'the floor'),
-         ([(-900, 25), (-300, 25), (-300, -25), (-900, -25)], (190, 176, 156), 'the slot under the Apron'),
-         ([(-180, -40), (820, -40), (820, -58), (-180, -58)], B.KIND_FILL['water'])],
-  lines=HEAD + BAYRIM + rims(B3, (150, 150, 150), 2) + rims(FLOOR, GREY, 3) + RIVER,
-  rooms=[
-    R(1, 'Hangar 1', 'hangar', -150, -60, 70, 112, 1, 'ruined; a sealed hangar Dalab keeps its lizards out of'),
-    R(2, 'Hangar 2', 'hangar', 0, 90, -112, -70, 1, 'ruined; flooded at the back'),
-    R(3, 'Hangar 3', 'hangar', 150, 240, 70, 112, 1, 'ruined; a craft inside'),
-    R(4, 'Hangar 4', 'hangar', 330, 420, -112, -70, 1, 'ruined'),
-    R(5, 'Hangar 5', 'hangar', 430, 520, 70, 112, 1, 'ruined'),
-    R(6, 'Hangar 6', 'hangar', 580, 670, -112, -70, 1, 'ruined; the machines\' den'),
-    R(7, 'Hangar 7', 'hangar', 690, 760, 70, 112, 1, 'ruined; collapsed at the back'),
-    C(8, 'Tank 1', 'tank', 40, 15, 22, 1, 'rises to y -20; worn'),
-    C(9, 'Tank 2 (the great tank)', 'tank', 245, -5, 28, 1, 'rises to y -60; ruined, holed'),
-    C(10, 'Tank 3', 'tank', 410, 30, 18, 1, 'rises to y -90; toppled at its top'),
-    R(11, 'The Engine Works', 'works', 90, 205, -30, 45, 1, 'ruined'),
-    R(12, 'The Foundry', 'works', 290, 380, 0, 55, 1, 'ruined'),
-    R(13, 'The Yard', 'works', 530, 640, -30, 35, 1, 'derelict craft and machine wrecks'),
-    R(14, 'The Low Bridge\'s middle', 'fallen', 462, 502, -25, 35, 1, 'fallen from y -85'),
-    C(15, 'Rim Pad 3\'s wreck', 'fallen', 585, 55, 14, 1, 'fallen from the north rim'),
-    R(16, 'Dalab\'s Line', 'line', -190, -176, -70, 70, 2, 'a salvage wall across the floor under the Cross\'s gun gallery; one gate, kept shut'),
-    R(17, 'The Outfall Gate', 'weir', 800, 830, -70, 70, 1, 'the downstream barrage; the river leaves through its sluices; breached'),
-    R(18, 'The Sluice Stair', 'weir', -300, -180, -25, 25, 1, 'under the Cross: the river steps down from y -110 to -180 in four sluices'),
-    C(19, 'Wrecked craft', 'craft', -100, -5, 16, 1, 'inside the Line: Dalab strips it'),
-  ]))
-
-# ------------------------------------------------------------------------------------------------ S4 the Cross, main floor (y -10)
-CR = dict(R=268, rect=(-330, -150, -260, 260))
-FLOORS.append(dict(CR, id='S4', tier=0, title='Sheet S4: the Cross, the outpost\'s main floor (y -10): zones',
-  sub='Dalab\'s outpost lives in the Cross: the bridge building over the canyon where the two highways meet, its gates at both abutments, its upstream face toward the bay (safe), its downstream face the Line toward the Deep Reach (the gun gallery). These are ZONES, not rooms: one floor of the Cross is ~55,000 m2, far more than a garrison of ~240 (proposed) can fill, so Dalab lives in partitioned corners of each zone and the rest stands empty, sealed or stripped. Rooms are cut later (blueprint step 6). Floors -20 to -60 below: cisterns, stores, sealed Ancient halls; the roof is the road.',
+  fills=[(FLOOR_FILL, (200, 186, 166), 'the floor'), ([(-900, 25), (-300, 25), (-300, -25), (-900, -25)], (190, 176, 156), 'the slot under the Apron'),
+         ([(REACH[0], -40), (REACH[1], -40), (REACH[1], -58), (REACH[0], -58)], B.KIND_FILL['water'])],
+  lines=HEAD + BAYLINE + rims(-130, (150, 150, 150), 2) + rims(-180, GREY, 3) + RIVER + [way('valley_tunnel', PURPLE, 6)],
+  rooms=sheet_rooms('S3')))
+FLOORS.append(dict(R=268, rect=(-330, -150, -260, 260), id='S4', tier=0, title='Sheet S4: the Cross, the fort\'s main floor (y -10) and its gate towers: zones',
+  sub='Dalab\'s fort is the Cross: the bridge building over the canyon where the two highways meet, its gate towers on both abutments, its upstream face toward the bay and the trading post (the lizard stalls\' ramp down to the caravan yard), its downstream face the Line toward the Deep Reach (the gun gallery). These are ZONES, not rooms: a floor of the Cross is 36,000 m2, more than a garrison of ~240 can fill, so Dalab lives in partitioned corners and the rest stands empty or sealed. Rooms are cut later (blueprints.md step 6).',
   axisnote='u downstream ->   v across (the right bank up)   the canyon under v -150..150',
-  lines=[([(-330, 150), (-150, 150)], GREY, 2, 'north rim'), ([(-330, -150), (-150, -150)], GREY, 2, 'south rim')],
-  rooms=[
-    R(1, 'North Gate Hall', 'entrance', -300, -180, 190, 230, 2, 'the north highway\'s gate; salvage doors'),
-    R(2, 'South Gate Hall', 'entrance', -300, -180, -230, -190, 2, 'the south highway\'s gate'),
-    R(3, 'The Spine', 'passage', -250, -230, -190, 190, 1, 'the corridor end to end'),
-    R(4, 'Captain\'s Hall', 'office', -300, -250, 150, 190, 2, 'on the north abutment'),
-    R(5, 'Signal Room', 'beacon', -230, -180, 150, 190, 1, 'mirrors and the beacon: the watch post answers'),
-    R(6, 'Barracks', 'barracks', -300, -250, -190, -150, 1, 'on the south abutment'),
-    R(7, 'Stores', 'store', -230, -180, -190, -150, 0),
-    R(8, 'Mess Hall', 'servants_hall', -300, -250, -150, -80, 1),
-    R(9, 'Kitchen', 'kitchen', -300, -250, -80, -50, 1),
-    R(10, 'Clinic (the genepriests\')', 'infirmary', -300, -250, -50, 0, 2, 'mods and mending'),
-    R(11, 'Lizard Stalls', 'workshop', -300, -250, 0, 80, 0, 'the Dalab lizards; a ramp to the Apron'),
-    R(12, 'Water Hoist', 'cistern', -300, -250, 80, 150, 0, 'draws from the river under the bay'),
-    R(13, 'Armoury', 'armoury', -230, -195, -150, -90, 1),
-    R(14, 'Ready Room (south)', 'guard', -230, -195, -90, -20, 1),
-    R(15, 'The Lift Head (sealed)', 'stair', -230, -195, -20, 20, 0, 'the Ancients\' hoist to the floor, welded shut'),
-    R(16, 'Ready Room (north)', 'guard', -230, -195, 20, 90, 1),
-    R(17, 'Powder and Salvage', 'store', -230, -195, 90, 150, 0),
-    R(18, 'Gun Gallery (the Line\'s upper face)', 'guard', -195, -180, -150, 150, 1, 'loopholes over the Deep Reach; salvaged Ancient guns where they still work'),
-  ]))
+  lines=[([(-330, 150), (-150, 150)], GREY, 2, 'right-bank rim'), ([(-330, -150), (-150, -150)], GREY, 2, 'left-bank rim')],
+  rooms=sheet_rooms('S4')))
 
 # ------------------------------------------------------------------------------------------------ the sections
+def parts_of(kind):
+    return [p for p in L['parts'] if p['kind'] == kind]
+
+def u_span(p):
+    s = p['shape']
+    return (s[1], s[2]) if s[0] == 'box' else (s[1] - s[3], s[1] + s[3])
+
 def long_section():
     f_t = B.font(36, True); f = B.font(19); fs = B.font(16)
     W, H = 2600, 1100; img = Image.new('RGB', (W, H), (255, 255, 255)); dr = ImageDraw.Draw(img)
     dr.text((30, 16), 'Section along the canyon (u, at v = 0): the lake, the bay, the Cross, the Deep Reach (heights x3)', font=f_t, fill=(20, 20, 20))
-    dr.text((30, 62), 'y = 0 is the rim (~2,600 m, assumed); the Deep Reach floor y -180 (Pan Riba\'s bed ~2,416 m on the model). The far walls are drawn faint behind.', font=f, fill=(70, 70, 70))
+    dr.text((30, 62), 'y = 0 is the rim (~2,600 m, assumed); the Deep Reach floor y -180 (Pan Riba\'s bed ~2,416 m on the model). Parts off the axis are drawn where they stand along it.', font=f, fill=(70, 70, 70))
     sx = 0.6; sy = 3 * sx; ox = 30 + 2650 * sx; top = 300
     X = lambda u: ox + u * sx
     Y = lambda y: top - y * sy
-    # the ground at v = 0: tableland, lake, weir, head fall, slot under the bay, sluice stair, the floor
     g = [(-2650, 0), (-2560, 0), (-2550, -30), (-1100, -30), (-1070, 0), (-1030, 0), (-900, -8), (-900, -60), (-300, -110), (-180, -180), (820, -190), (830, -195), (1250, -205)]
     dr.polygon([(X(u), Y(y)) for u, y in g] + [(X(1250), Y(-260)), (X(-2650), Y(-260))], fill=(222, 200, 176), outline=(120, 100, 80))
     dr.polygon([(X(u), Y(y)) for u, y in [(-2550, LAKE_Y), (-1070, LAKE_Y), (-1070, -30), (-2550, -30)]], fill=B.KIND_FILL['water'])
     dr.line([(X(-2550), Y(LAKE_Y)), (X(-1070), Y(LAKE_Y))], fill=BLUE, width=3); dr.text((X(-2000), Y(LAKE_Y) + 8), 'the lake (the biome kit\'s)', font=fs, fill=BLUE)
     dr.text((X(-890), Y(-40)), 'Head Fall (~50 m)', font=fs, fill=(0, 0, 0))
-    for u, y, t in [(-1070, 0, 'the Weir'), (-300, -110, 'the Sluice Stair'), (820, -190, 'the Outfall Gate')]:
-        dr.text((X(u) + 4, Y(y) - 22), t, font=fs, fill=(0, 0, 0))
-    # the far wall (rim at 0) behind the canyon
     dr.line([(X(-900), Y(0)), (X(1250), Y(0))], fill=(190, 190, 190), width=2)
-    for y in (B1, B2, B3):
-        dr.line([(X(-180), Y(y)), (X(820), Y(y))], fill=(214, 214, 214), width=1); dr.text((X(830), Y(y) - 9), 'bench %d' % y, font=fs, fill=(150, 150, 150))
-    def blk(u0, u1, y0, y1, col, name, out=(30, 30, 30)):
-        dr.rectangle([X(u0), Y(y1), X(u1), Y(y0)], fill=col, outline=out, width=2)
-        if name: dr.text((X(u0) + 3, Y(y1) - 20), name, font=fs, fill=(0, 0, 0))
-    blk(-705, -335, -48, -45, (225, 215, 196), None)
-    dr.text((X(-700), Y(-48) + 6), 'the Apron (y -45); the river\'s slot under it', font=fs, fill=(0, 0, 0))
-    blk(-300, -180, -60, 8, B.KIND_FILL['outpost'], 'the Cross (Dalab), roof road y 0')
-    blk(-590, -550, -45, -33, PURPLE, None)
-    dr.text((X(-700), Y(-60) + 4), 'the Basin Tunnel\'s portal (behind, in the left wall): the trading post on the Apron', font=fs, fill=PURPLE)
-    for u in (-290, -250, -210):
-        blk(u, u + 8, -110 if u < -250 else -150, -60, (180, 160, 130), None)
-    blk(255, 270, -4, 0, (120, 120, 128), 'Middle Bridge')
-    blk(475, 490, -88, -85, B.KIND_FILL['fallen'], 'Low Bridge (fallen)')
-    blk(690, 712, -42, -38, (120, 120, 128), 'Pipe Bridge')
-    for v, d in [(701, -75), (690, -70)]:
-        dr.line([(X(v), Y(-40)), (X(v), Y(d))], fill=(60, 60, 60), width=2)
-    blk(694, 708, -75, -62, B.KIND_FILL['craft'], None)
-    for u, r, ytop, name in [(40, 22, -20, 'Tank 1'), (245, 28, -60, 'Tank 2'), (410, 18, -90, 'Tank 3')]:
-        blk(u - r, u + r, -184, ytop, B.KIND_FILL['tank'], name)
-    blk(90, 205, -184, -165, B.KIND_FILL['works'], None); blk(530, 640, -186, -175, B.KIND_FILL['works'], 'the Yard')
-    blk(-190, -176, -182, -160, B.KIND_FILL['line'], 'the Line')
-    for u, r in [(-560, 24), (-470, 18)]:
-        dr.ellipse([X(u - r), Y(-45 + 10), X(u + r), Y(-45)], fill=B.KIND_FILL['craft'], outline=(30, 30, 30))
-    for u in (-880,):
-        blk(u - 32, u + 32, 6, 9, B.KIND_FILL['pad'], 'Head Pad'); blk(u - 6, u + 6, 0, 6, (200, 200, 200), None)
-    for u0, u1, name, col in [(-2300, -1700, 'the Lake Quay (behind, v +500)', B.KIND_FILL['ringsite']), (-1650, -1350, 'the Lake Ring (behind, v -570)', B.KIND_FILL['ringsite'])]:
-        blk(u0, u1, 0, 7, col, name)
+    for y in (-40, -85, -130):
+        dr.line([(X(REACH[0]), Y(y)), (X(REACH[1]), Y(y))], fill=(214, 214, 214), width=1); dr.text((X(REACH[1] + 10), Y(y) - 9), 'bench %d' % y, font=fs, fill=(150, 150, 150))
+    def blk(u0, u1, y0, y1, col, name, dy=-20):
+        dr.rectangle([X(u0), Y(y1), X(u1), Y(y0)], fill=col, outline=(30, 30, 30), width=2)
+        if name: dr.text((X(u0) + 3, Y(y1) + dy), name, font=fs, fill=(0, 0, 0))
+    def at(pid, name=None, col=None, dy=-20):
+        p = PARTS[pid]; u0, u1 = u_span(p)
+        blk(u0, u1, p['y'], p['y'] + max(p['h'], 2), col or B.KIND_FILL.get(room(0, p)['kind'], (220, 220, 220)), p['name'] if name is None else name, dy)
+    at('weir'); at('apron', 'the Apron (y -45); the river\'s slot under it', dy=8); at('cross', 'the Cross (Dalab\'s fort), roof road y 0')
+    at('basin_portal', None, PURPLE, dy=-40); at('sluice', None, (180, 160, 130), dy=8)
+    for pid in ('middle_bridge', 'lowb_n', 'pipe_bridge', 'hang_prison', 'tank_1', 'tank_2', 'tank_3', 'engine_works', 'yard', 'line', 'outfall'):
+        at(pid, PARTS[pid]['name'] if pid not in ('engine_works',) else None)
+    at('valley_portal', 'the Valley Tunnel\'s portal (right wall)', PURPLE, dy=8)
+    at('head_pad'); at('lake_quay', 'the Lake Quay (behind)'); at('lake_ring', 'the Lake Ring (behind)', dy=-40)
     dr.text((X(900), Y(-205) + 10), 'on to the plunge fall and the pillar rim (station 4)', font=fs, fill=(0, 0, 0))
-    # scale
     dr.line([(X(-2600), Y(-240)), (X(-2100), Y(-240))], fill=(0, 0, 0), width=3); dr.text((X(-2600), Y(-240) + 6), '500 m (heights x3)', font=fs, fill=(0, 0, 0))
     return img
 
@@ -275,12 +180,17 @@ def cross_section():
     f_t = B.font(36, True); f = B.font(19); fs = B.font(16)
     W, H = 2000, 1000; img = Image.new('RGB', (W, H), (255, 255, 255)); dr = ImageDraw.Draw(img)
     dr.text((30, 16), 'Section across the Deep Reach (v, at u = 245, through Tank 2 and the Middle Bridge; true scale)', font=f_t, fill=(20, 20, 20))
-    dr.text((30, 62), 'The walls step back on the pillar sandstone\'s hard beds; each bench carries a gallery building cut into the wall behind it. What the station session carves.', font=f, fill=(70, 70, 70))
-    s = 3.4; ox = W / 2; top = 230
+    dr.text((30, 62), 'The walls step back on the pillar sandstone\'s hard beds: a three-storey gallery on the -40 and -85 benches, a service ledge at -130. What the station session carves.', font=f, fill=(70, 70, 70))
+    s = 3.4; ox = W / 2; top = 230; FL = LV['floor']
     X = lambda v: ox - v * s            # the right bank (v > 0) on the LEFT, as seen looking downstream
     Y = lambda y: top - y * s
-    prof = [(320, 0), (150, 0), (150, B1), (128, B1), (128, B2), (105, B2), (105, B3), (85, B3), (85, FLOOR + 20), (70, FLOOR), (-70, FLOOR), (-85, FLOOR + 20),
-            (-85, B3), (-105, B3), (-105, B2), (-128, B2), (-128, B1), (-150, B1), (-150, 0), (-320, 0)]
+    steps = [(0, -40), (-40, -85), (-85, -130), (-130, None)]
+    prof = [(320, 0)]
+    for y0, y1 in steps:
+        prof.append((HALF[y0], y0))
+        prof.append((HALF[y0], y1 if y1 is not None else FL + 20))
+    prof += [(HALF[-130], FL + 20), (HALF[-180], FL)]
+    prof = prof + [(-v, y) for v, y in reversed(prof)]
     dr.polygon([(X(v), Y(y)) for v, y in prof] + [(X(-320), Y(-230)), (X(320), Y(-230))], fill=(222, 200, 176), outline=(120, 100, 80))
     for k, y in enumerate(range(-20, -230, -22)):
         dr.line([(X(320), Y(y)), (X(-320), Y(y))], fill=(206, 150, 130) if k % 2 else (236, 226, 214), width=1)
@@ -288,64 +198,54 @@ def cross_section():
     def blk(v0, v1, y0, y1, col, name, dy=-20):
         dr.rectangle([X(v1), Y(y1), X(v0), Y(y0)], fill=col, outline=(30, 30, 30), width=2)
         if name: dr.text((X(v1) + 3, Y(y1) + dy), name, font=fs, fill=(0, 0, 0))
-    for sg in (1, -1):
-        blk(*(sorted([sg * 152, sg * 190])), 0, 24, B.KIND_FILL['outpost'] if sg > 0 else B.KIND_FILL['terrace'], 'rim range' if sg > 0 else 'rim range')
-        for lv, hi, lo, h in [(B1, 150, 128, 26), (B2, 128, 105, 26), (B3, 105, 85, 26)]:
-            a, b = sorted([sg * lo, sg * (hi + 6)])
-            blk(a, b, lv, lv + h, B.KIND_FILL['terrace'], None)
-        a, b = sorted([sg * 70, sg * 112])
-        if sg < 0: blk(a, b, FLOOR, FLOOR + 22, B.KIND_FILL['hangar'], 'hangar (in the wall)', dy=4)
-    blk(-150, 150, -4, 0, (120, 120, 128), 'the Middle Bridge (y 0)')
-    blk(-33, 23, FLOOR, -60, B.KIND_FILL['tank'], 'Tank 2')
-    dr.rectangle([X(-40), Y(FLOOR + 3), X(-58), Y(FLOOR)], fill=B.KIND_FILL['water']); dr.text((X(-40) + 4, Y(FLOOR) + 6), 'Pan Riba', font=fs, fill=BLUE)
+    u = 245
+    for p in L['parts']:
+        sp = p['shape']
+        if sp[0] != 'box' or not (sp[1] <= u <= sp[2]) or p['kind'] not in ('range', 'gallery', 'ledge', 'hangar', 'bridge'): continue
+        col = B.KIND_FILL['outpost'] if p.get('held') else B.KIND_FILL.get(FILL_OF.get(p['kind']), (240, 240, 240))
+        blk(sp[3], sp[4], p['y'], p['y'] + max(p['h'], 2), col, p['name'] if p['kind'] in ('range', 'bridge', 'hangar') else None, dy=4 if p['kind'] == 'hangar' else -20)
+    t2 = PARTS['tank_2']['shape']
+    blk(t2[2] - t2[3], t2[2] + t2[3], FL, FL + PARTS['tank_2']['h'], B.KIND_FILL['tank'], 'Tank 2')
+    dr.rectangle([X(-40), Y(FL + 3), X(-58), Y(FL)], fill=B.KIND_FILL['water']); dr.text((X(-40) + 4, Y(FL) + 6), 'Pan Riba', font=fs, fill=BLUE)
     for v, t in [(150, 'right-bank rim (v +150)'), (-150, 'left-bank rim (v -150)')]:
         dr.text((X(v) - 80, Y(0) - 50), t, font=fs, fill=(0, 0, 0))
-    for y in (B1, B2, B3, FLOOR):
+    for y in (-40, -85, -130, FL):
         dr.text((X(-320) - 70, Y(y) - 9), 'y %d' % y, font=fs, fill=(90, 90, 90))
-    dr.text((X(130) - 40, Y(-40) + 6), 'galleries on the benches: -40, -85, -130', font=fs, fill=(0, 0, 0))
     dr.line([(X(280), Y(-215)), (X(180), Y(-215))], fill=(0, 0, 0), width=3); dr.text((X(280), Y(-215) + 6), '100 m', font=fs, fill=(0, 0, 0))
     return img
 
-# ------------------------------------------------------------------------------------------------ the floor area at its peak
-# (part, footprint m2, storeys, share of the floor that was homes). Owner, 2026-10-27: the trimmed size (~750,000 m2).
-PI = math.pi
-AREA = [
-    ('Wall galleries: -40 and -85 benches, both walls, 1 km x 22 m', 2 * 2 * 1000 * 22, 3, .45),
-    ('Service ledges at -130 (conduits, walkways)', 0, 0, 0),
-    ('Rim ranges: both rims, 1 km x 38 m', 2 * 1000 * 38, 2, .5),
-    ('The Cross over the canyon: 120 x 300 m (the abutments are gate towers)', 120 * 300, 4, .3),
-    ('Bay terrace domes: ten, r 17', 10 * PI * 17 ** 2, 3, .6),
-    ('Ring-walled domes round the bay: six, r 28', 6 * PI * 28 ** 2, 3, .5),
-    ('Rim domes: three', PI * (26 ** 2 + 30 ** 2 + 22 ** 2), 3, .5),
-    ('Hangars (seven, 90 x 42) and the works', 7 * 90 * 42 + 115 * 75 + 90 * 55 + 110 * 65, 1, 0),
-    ('The Lake Quay: 400 x 130 m, half built', 400 * 130 * .5, 2, .4),
-    ('The Lake Ring: six domes, r 20, round a court', 6 * PI * 20 ** 2, 3, .5),
-]
-M2_PER_HEAD = 35       # gross home floor per person (flats with their share of corridors and services)
+# ------------------------------------------------------------------------------------------------ AREAS.md, from the layout's SPAN.area
+GROUPS = [('gal_', 'Wall galleries on the -40 and -85 benches, both walls'), ('rng_', 'Rim ranges along both rims'), ('cross', 'The Cross over the canyon'),
+          ('gate_', 'The gate towers on the abutments'), ('bay_dome_', 'Bay terrace domes'), ('ring_dome_', 'Ring-walled domes round the bay'),
+          ('rdome_', 'Rim domes'), ('dome_lone_', 'Lone domes on the tableland'), ('hangar_', 'Hangars cut into the walls'),
+          ('engine_works', 'The works'), ('foundry', 'The works'), ('yard', 'The works'), ('lake_quay', 'The Lake Quay'), ('lake_ring', 'The Lake Ring')]
 
 def areas_md():
-    L = ['# Span: floor area and population at its peak', '',
-         'Generated by `span_blueprint.py` from its `AREA` table (the trimmed size the owner chose, 2026-10-27). Floor area is',
-         'footprint x storeys at the kit\'s 4.5 m storey; the home share is the part of each that was flats; population is home',
-         'floor / %d m2 a head. The Apron (a deck), the tanks, bridges and pads are not floor.' % M2_PER_HEAD, '',
-         '| Part | Footprint m2 | Storeys | Floor m2 | Homes | People |', '|---|---|---|---|---|---|']
-    tf = tp = 0
-    for name, fp, st, sh in AREA:
-        f = fp * st; p = f * sh / M2_PER_HEAD; tf += f; tp += p
-        L.append('| %s | %d | %d | %d | %d%% | %d |' % (name, fp, st, f, sh * 100, p))
-    L.append('| **Total** | | | **%d** (%.1f million ft2) | | **%d** |' % (tf, tf * 10.764 / 1e6, tp))
-    L += ['', 'Today: Dalab\'s fort (~240) and the trading post at the Basin Tunnel\'s mouth (~500: traders, inn and caravan',
-          'hands, porters, the tunnel\'s wardens, families): about 750 people, in the Cross, the Sound Quarter, three bay domes',
-          'and on the Apron (PLAN.md section 4). The rest stands empty.', '']
-    return '\n'.join(L), tf, tp
+    rows = {}
+    for r in AREA['rows']:
+        name = next((g[1] for g in GROUPS if r['id'].startswith(g[0])), r['name'])
+        a = rows.setdefault(name, dict(fp=0, floor=0, people=0, ids=[], st=set()))
+        a['fp'] += r['footprint']; a['floor'] += r['floor']; a['people'] += r['people']; a['ids'].append(r['id']); a['st'].add(r['st'])
+    out = ['# Span: floor area and population at its peak', '',
+           'Generated by `span_blueprint.py` from the layout (`src/30-span-layout.js`, `SPAN.area` in `src/31-span-rules.js`): floor is',
+           'footprint x share built x storeys (the kit\'s 4.5 m storey); people are each part\'s home floor / %d m2 a head. The Apron (a' % L['m2PerHead'],
+           'deck), the -130 service ledges, the tanks, bridges, pads and the zones inside the Cross (counted in the Cross) are not floor.',
+           'The owner chose the trimmed size on 2026-10-27; `test-span.js` holds the total between 700,000 and 850,000 m2.', '',
+           '| Part | Records | Footprint m2 | Storeys | Floor m2 | People |', '|---|---|---|---|---|---|']
+    for name, a in rows.items():
+        out.append('| %s | %d | %d | %s | %d | %d |' % (name, len(a['ids']), round(a['fp']), '/'.join(str(x) for x in sorted(a['st'])), round(a['floor']), round(a['people'])))
+    out.append('| **Total** | | | | **%d** (%.1f million ft2) | **%d** |' % (round(AREA['floor']), AREA['floor'] * 10.764 / 1e6, round(AREA['people'])))
+    out += ['', 'Today: Dalab\'s fort (~240) and the trading post at the Basin Tunnel\'s mouth (~500: traders, inn and caravan',
+            'hands, porters, the tunnel\'s wardens, families): about 750 people, in the Cross, the Sound Quarter, three bay domes',
+            'and on the Apron (PLAN.md section 4). The rest stands empty.', '']
+    return '\n'.join(out)
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    md, tf, tp = areas_md()
-    with open(os.path.join(HERE, 'AREAS.md'), 'w', encoding='utf-8', newline='\n') as fh: fh.write(md)
-    print('floor %d m2, peak population %d' % (tf, tp))
+    with open(os.path.join(HERE, 'AREAS.md'), 'w', encoding='utf-8', newline='\n') as fh: fh.write(areas_md())
+    print('floor %d m2, peak population %d' % (AREA['floor'], AREA['people']))
     for F in FLOORS:
-        print('drawing', F['id'])
+        print('drawing', F['id'], len(F['rooms']), 'parts')
         B.draw_floor(F).save(os.path.join(OUT, F['id'] + '.png'))
     long_section().save(os.path.join(OUT, 'section-long.png'))
     cross_section().save(os.path.join(OUT, 'section-cross.png'))

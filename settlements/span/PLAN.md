@@ -17,10 +17,13 @@ stations (3: the canyon; 4: the pillar rim and the watch post) are designed roun
 **The owner, 2026-10-27**: the trimmed size (about 750,000 m² of floor, about 9,000 people at its peak: `AREAS.md`);
 Dalab's own building set (`settlements/dalab`) for everything Dalab builds; **an intact, cleared Ancient tunnel** leads
 from Span down to the basin, a handy way onto the plateau's top that Dalab counts as strategic; so Span is **more than an
-outpost: a Dalab trading post**, where Dalab trades with whoever lives up there (TBD).
+outpost: a Dalab trading post**, where Dalab trades with whoever lives up there (TBD). The tunnel leads down to **the
+south-western lowlands**, Dalab's basin; and **a second Ancient tunnel leads to the Valley** (the owner, 2026-10-27).
 
-**Status: plan and rough floorplan; the layout and size approved (2026-10-27).** Nothing is built. The floorplan is
-`span_blueprint.py` -> `floors/` and `AREAS.md` (section 2). The open questions left are section 9.
+**Status: SP1 done (2026-10-27): the layout is data** (`src/30-span-layout.js`, its rules `src/31-span-rules.js`, `[G data]`),
+checked by `node settlements/span/test-span.js` (42 checks, every rule with a negative); the sheets and `AREAS.md` are
+drawn from it (`python3 span_blueprint.py`, through `layout_dump.js`). Nothing is drawn in 3D yet. The open questions left
+are section 9.
 
 ## 0. What the build is
 
@@ -47,10 +50,10 @@ takes, by name, and for each it does not, why:
 |---|---|---|
 | `core/rand` | `KRAND` | every choice in the layout: each part's decay state, broken pieces, salvage, Dalab's patches by `KRAND.hash(world, part id, index, salt)`; never the kit's global `rng()` for placement (the kit's builders keep their own `reseed` streams inside a building, as every Ancients taker does) |
 | `core/tags` | `50`, `52`, `53` | every part, bridge, pad, dome, gallery, hangar, Dalab's additions and the watch post registered before it is drawn (culture `ancient` or `dalab`, state, level) |
-| `core/space` | `KSPACE` | the parts' overlap check on each level, the keep-clear the biome kit's dressing reads (no tree in a building, on a pad or a bridge deck) |
+| `core/space` | `KSPACE` | the parts' overlap check on each level and the roads' clearance (`SPAN.checks`), the keep-clear the biome kit's dressing reads (no tree in a building, on a pad or a bridge deck) |
 | `core/terrain` | the station's ground read in place: `38-core-relief` (`KRELIEF.tableland`/`joints`; the canyon as a `rille` record whose `tops` are Span's bench levels; the Upper Bay as a `pit` with benches), `35-core-strata` (`pillar`: the benches on its hard beds), `36-core-carve` (`KCARVE.face`/`cut`: the hangar mouths and the Basin Tunnel's portal cut into the walls), `37-core-stacks` (`KSTACKS.pillars`: the watch post's tower) | the canyon the arcology is fitted to |
 | `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, polygon tool, marks, minimap, editor, cut-away) | the page shell; the cut-away for the Cross's floors and the wall galleries |
-| `core/walk` | the walk graph | the ways: the roads, the ring road, the bridges, the stairs and lifts between the benches, Dalab's Line and its one gate (vertical-settings section 1: a NAV with level-tagged nodes, asserted connected) |
+| `core/walk` | `KWALK` floors and blocks (SP3) | where a walker stands, registered as the page draws; the layout's own `links` are the coarse graph between places (every walkable part reached from the Basin Tunnel and the north highway, every way out of Dalab's hold through a named gate, the Line shut), checked in `test-span.js` |
 | `core/atmos` | the shared sky (`skyBiome` from the station), `bindHost`, the skylight, height fog | the standard skybox, the canyon's mist |
 | `core/water` | read from the station: still (the lake), flow (Pan Riba), fall (the Head Fall, the sluices) | Span adds the weir, the Sluice Stair and the Outfall Gate as structures; the water on them is `core/water`'s |
 | `core/materials` | `record` (`KMAT`), `materials.json`, `tools/textures/pack.py` | the Ancients' white panel, tarnish, rust and concrete sets (as `kits/ancients/materials.json`), the sandstone from the station |
@@ -99,7 +102,7 @@ where Dalab lives, is drawn to zones. Regenerate with `python3 settlements/span/
 | `S1.png` | the rims (y 0): the bay's ring road and its sixteen domes, the Cross's roof road, the rim ranges along the Deep Reach, pads and rim domes, the Middle Bridge |
 | `S2.png` | the walls (benches at y -40, -85, -130) and the Apron (y -45): the three-storey galleries on the -40 and -85 benches, the -130 service ledges; **the trading post on the Apron** at the Basin Tunnel's portal; the Low Bridge (fallen) and the Pipe Bridge with its hung payloads |
 | `S3.png` | the canyon floor (y -180) and the slot under the bay: the river, seven hangars cut into the walls, three tanks, the works, Dalab's Line, the Sluice Stair, the Outfall Gate |
-| `AREAS.md` | the floor area and the population at the peak, part by part, from the script's `AREA` table: **772,791 m² (8.3 million ft²), about 9,100 people** |
+| `AREAS.md` | the floor area and the population at the peak, part by part, from the layout (`SPAN.area`): **815,895 m² (8.8 million ft²), about 9,200 people** (the hand estimate was 772,791; the layout counts the gate towers, 38,400 m², and the galleries' true depths) |
 | `S4.png` | the Cross's main floor (y -10), Dalab's fort, in zones |
 | `section-long.png` | along the canyon (heights x3): lake, weir, Head Fall, the Apron over the slot, the Cross and its sluices, the Deep Reach's tanks and bridges |
 | `section-cross.png` | across the Deep Reach (true scale): the stepped walls, the galleries on the benches, a hangar, Tank 2, the Middle Bridge |
@@ -136,6 +139,7 @@ intact. Each part's state is fixed in the layout (the owner's call where it matt
 | **The tanks** | standing from the floor | three, r 18-28, rising to y -20, -60, -90 | Tank 1 worn, Tank 2 holed, Tank 3 toppled at its top |
 | **The works** | the floor | the Engine Works, the Foundry, the Yard (derelict craft and machine wrecks) | 1 ruined |
 | **The Outfall Gate** | u 800..830 | the downstream barrage, the river through its sluices | 1 ruined, breached: the machines and mutants come up the canyon through it |
+| **The Valley Tunnel's portal** | the right wall on the floor, u 690..760 | an Ancient road portal; its bore runs toward the Valley of the Ancients | 1 ruined: not cleared, held by no one; the machines' way up |
 
 ## 3. Assumptions (the numbers)
 
@@ -148,7 +152,7 @@ intact. Each part's state is fixed in the layout (the owner's call where it matt
 | The bay | rim oval 460 x 320 m, the Apron at y -45 | the concept's oval bay: the canyon quarried wide; the Apron is a deck, the river under it in a slot |
 | Storey | 4.5 m; gallery buildings three storeys (~14 m) on 22 m deep benches; rim ranges two | the kit's storey; a bench is the gallery's depth; the owner's trim (2026-10-27) |
 | The Cross | 120 x 300 m over the canyon, four storeys; gate towers on the abutments | the concept's broad band; 36,000 m² a floor |
-| Size at the peak | 772,791 m² of floor, ~9,100 people (`AREAS.md`): homes at 35 m² gross a head, 30-60% of each part's floor | the owner's trim from ~1.34 million m² (15,000-20,000 people): a port and works town of an Ancient arcology's middling size (Arcoindian II: 5,000), not a city the tableland would have to feed |
+| Size at the peak | 815,895 m² of floor, ~9,200 people (`AREAS.md`, from the layout; `test-span.js` holds it between 700,000 and 850,000): homes at 35 m² gross a head, 30-60% of each part's floor | the owner's trim from ~1.34 million m² (15,000-20,000 people): a port and works town of an Ancient arcology's middling size (Arcoindian II: 5,000), not a city the tableland would have to feed |
 | Head Fall | ~50 m (lake y -8 to the canyon head y -60) | the lake on the tableland, the canyon below it |
 | The built reach | u -900..830, ~1.7 km; the whole site with the lake ~3.9 km | the concept |
 
@@ -166,7 +170,12 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
   lit by Dalab's lamps; wardens' posts and lay-bys along it; a gate at each portal. Its upper portal opens in the Upper Bay's
   left wall at the Apron's level, a ramp down onto the Apron. A road climbing ~1.2-1.5 km at the Ancients' gentle grade is
   20-30 km of tunnel (or shorter in spirals inside the rock): Span draws the portal and the first few hundred metres, the
-  rest is a route record. Its lower portal stands at the plateau's foot in the basin (question 3).
+  rest is a route record. Its lower portal stands at the plateau's foot in **the south-western lowlands** (the owner,
+  2026-10-27), placed from the model with that region.
+- **The Valley Tunnel** (the owner, 2026-10-27: a second Ancient road tunnel, to the Valley of the Ancients): its portal
+  in the right wall on the Deep Reach's floor (u 690..760), beyond the Line: **not cleared, held by no one**. The machines
+  and mutants come up it, and up the canyon through the breached Outfall Gate; it is why the Line faces the Deep Reach.
+  Its far end and its state inside are question 3.
 - **The trading post** (on the Apron, S2): where the tunnel's caravans from Dalab meet the plateau's people, who come down
   the north highway and the bay's ring road (who they are: TBD, question 10). The **market** at its heart; **customs** (the
   scribes' hall) at the tunnel road (tolls, tallies, the priests' cut); **warehouses**; **two inns** (one for the tunnel's
@@ -177,7 +186,7 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
   porters, the tunnel's wardens.
 - **The garrison**: about 240: a priest-captain, three genepriests (the clinic; the shelf coral as an ore-finder and the
   fishing bridge's venom, swhighlands section 6), Giant street patrols in threes (§6.1), soldiers and lizard riders, servants
-  and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,100 at its peak.
+  and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,200 at its peak.
 - **Where they live**: the **Cross** (S4: gate halls at both abutments, the Spine, mess, kitchen, clinic, lizard stalls with a
   ramp down to the Apron, the water hoist, armoury, ready rooms, the sealed lift head, the gun gallery on the downstream face),
   the **Sound Quarter** (north range A and the north -40 gallery under it: quarters, stores, workshops, roof gardens), the rim
@@ -224,7 +233,9 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
    (the Quay u -2200..-1800, v 470..600; the Ring at (-1500, -570), r 150); the mound (-300, -430); **the Basin Tunnel's
    upper portal** at (-570, -160), y -45, in the bay's left wall: the tunnel runs away from the canyon inside the rock, so
    no carve may cross its line (S0: south-west from the portal, falling toward the basin); its lower portal is wherever the
-   basin's foot is, for the basin's session to place (question 3).
+   basin's foot in the south-western lowlands, for the lowlands' session to place; **the Valley Tunnel's portal** on the
+   floor's right wall (690..760 x 70..124, y -180), its bore running away from the canyon on the right bank toward the
+   Valley: keep carves off both tunnels' lines (`ways` in the layout).
 5. **Structures to dress** (the kit's flora on Span's records, a `dress` tag on each): drip cap on piers, posts, the Cross's
    keel and the Pipe Bridge's cables; log crust on everything fallen (Pad 3, the Low Bridge's middle, north range C, the
    fallen south service ledge, the toppled domes); anemone trees on the rim ranges' roofs, the tanks' tops and the ruined
@@ -268,8 +279,11 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
 ## 7. Order of work
 
 - **SP0.** This plan and the rough floorplan; the owner's answers (section 9). The hand-over to the swhighlands session.
-- **SP1.** The layout as data: the records of `span_blueprint.py` moved into one source (`[G data]` fragment) the sheets
-  and the page both read; a node test of its invariants (section 6), each with a negative; `KSPACE`, `KRAND`, `core/tags`.
+- **SP1.** *(done 2026-10-27)* The layout as data: `src/30-span-layout.js` (106 parts, 13 ways, the links; `[G data]`),
+  its rules `src/31-span-rules.js` (`SPAN.checks`, the walk graph, `SPAN.area`, the decay seeds by `KRAND.child`, the frame,
+  `core/tags` records), `test-span.js` (every rule with a negative; seeds, frame, tags, `AREAS.md`), `layout_dump.js` for the
+  sheets. The checks caught, on the first run, two overlaps on the Apron and the floor, a ring dome over the canyon head
+  and roads through three domes: all moved.
 - **SP2.** The new kit builders on a `kits/ancients` target, every state; the existing ones checked against the concept.
 - **SP3.** The page: the station's ground read in place (or core/terrain records standing in until station 3 lands), the
   parts placed from the layout, the walk graph, `core/host` FULL, views; `verify.py --assert`.
@@ -288,14 +302,15 @@ the canyon road and from its top looking toward the Valley.
 ## 9. Open questions for the owner
 
 Settled 2026-10-27: the layout and the trimmed size (the old question 1); the Dalab set for Dalab's buildings (old 6);
-the Basin Tunnel, intact and cleared, in place of the proposed Under-Wall Portal (old 3); a trading post, not only an outpost.
+the Basin Tunnel, intact and cleared, down to the south-western lowlands, and a second tunnel to the Valley, in place of
+the proposed Under-Wall Portal (old 3); a trading post, not only an outpost.
 
 1. *(settled)*
 2. **The depth**: 180 m on the model's bed and three benches, or deeper (250-300 m, four or five benches) as the biome plan's
    "a few hundred metres" allows? *Recommended*: 180 m; deeper only if the station's tableland stands higher.
-3. **The Basin Tunnel's lower end**: which basin: Dalab's own, the south-western lowlands (Pan Riba's lower course), as this
-   plan reads it, or another? Where its lower portal stands (at the plateau's foot, ~1.2-1.5 km below), and whether Dalab
-   holds a post there too. *Recommended*: the lowlands, a fortified portal with a small post, placed from the model.
+3. **The Valley Tunnel**: open all the way (the machines' road) or blocked partway (they come over it or round it)? Does
+   Dalab mean to clear it, or keep it shut behind the Line? And the Basin Tunnel's lower portal: a fortified portal with a
+   small post (*recommended*), placed from the model with the lowlands.
 4. **The name clash**: `kits/ancients`' canyon target is titled "The Span" (pipes with hanging payloads, 2026-09). Take it in
    as Span's Pipe Bridge and retitle the target? *Recommended*.
 5. **Placement on core**: Span is one pre-planned Ancient complex: the `SINGLE_COMPLEX` exemption from `core/city` (as
