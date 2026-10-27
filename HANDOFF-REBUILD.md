@@ -78,7 +78,7 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   other"). Read-in-place and kin sources, from the builds' `build.py` and the plans:
   - hyperjungle vends to geyser, guilin, k-guilin, necanyons and ringisles, and takes cousins from eastabyss;
   - eastabyss vends to abyssal-savannah, ringisles and the hyperjungle;
-  - nwbay vends to swbay and k-guilin, and swbay to oidong, ringisles and k-guilin;
+  - swbay vends to nwbay (nwbay is its fork), oidong, ringisles and k-guilin, and nwbay to k-guilin (`EXCHANGES.md`'s correction);
   - sedesert vends to ringisles and the Catch, necanyons to guilin, guilin to k-guilin, and geyser to ringisles;
   - xanadu and oidong share five species, and the two lowlands exchange flora: each of those pairs runs together.
 
@@ -105,7 +105,7 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
   gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).
-  Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges, being written 2026-10-27).
+  Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges: its index lists the sections naming each kit).
 
   A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
   them as they are.
