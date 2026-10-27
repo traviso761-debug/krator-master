@@ -873,6 +873,19 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   peasants' creole they grew up with, with an **enthusiastic, even desperate adoption of Talovolci words** (*Wi Vrivolci, no
   Labgedoi!*, "we are Free Folk, not Dalab's Giants!").
 
+
+### 6.22 The Frogmen (the south-western highlands)
+
+[the owner, 2026-10-27]
+
+- **Where.** The **south-western highlands**.
+- **Character.** Known for an **enthusiastic yet disorganized martial character**.
+- **Politics.** At present **vassals or clients of Dalab** (§6.1), but that could change.
+- **Look** (the character kit's test head, `core/charactermodels` `mod_head_frog`, `NONHUMAN.md`): a frog's broad, flat
+  head on a human body; big eyes on the top of the head, gold by default; webbed hands with pads at the fingertips.
+  Their skin is green, brown, red-brown or cream, often marked in a poison dart frog's spots, bands or marbling (marks
+  may be black), with a pale throat and belly.
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.

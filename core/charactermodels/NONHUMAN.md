@@ -57,7 +57,7 @@ eyes, was replaced):
   breath with the mouth a little open (`jaw` / `_jaw`; kit item `jaw`). `fig.jawOpen` (`jaw_open` in Godot) holds it.
 
 **A frog's head** (`tools/mods.py frog_head`, `tools/amphibian.py`, kit item `mod_head_frog`; the owner's reference
-paintings, 2026-10-27), made as the lizard's is, its collar shared (`_head_collar`):
+paintings, 2026-10-27) for the Frogmen of the south-western highlands, Dalab's martial clients (LORE 6.22),, made as the lizard's is, its collar shared (`_head_collar`):
 - Broad, flat and rounded, sitting low with hardly a neck; the mouth a wide line from the blunt snout back under the
   eardrum; the jaw meets the upper lip flush; a full throat's pouch under it (on `face_jaw`, opened as the lizard's).
 - Big eyes standing proud of turrets high on the head, a little larger than the first cut (`SIZE`, the whole head 1.12
