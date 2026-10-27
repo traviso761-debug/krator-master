@@ -61,6 +61,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.lerp(BED,smooth(0,-30,lk));
   // the streams and the wash
   c.lerp(SILT,smooth(.5,.9,flow)*south*.7);c.lerp(GRAVEL,smooth(.4,.8,flow)*(1-south)*.8);
+  if(typeof MAP_PAINT==='function')MAP_PAINT(c,wx,wz,rockK);   /* a station's own ground colour over the zones' (it gets the paint's rock weight); unset: as before */
   const k=1+n*.10+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});

@@ -34,10 +34,13 @@ function terrainH(x,z){
  for(let k=0;k<RAVINES.length;k++){const d=Math.abs(z-ravineZ(k,x)),dep=(10+50*face*smooth(100,2200,crestX(z)-x));h-=dep*smooth(40+30*face,3,d);}
  return h;}
 function slopeAt(x,z){const h=terrainH(x,z),e=3;return Math.hypot(terrainH(x+e,z)-h,terrainH(x,z+e)-h)/e;}
-function southK(x,z){return .6*smooth(400,-200,x-crestX(z));}           // the face's litter (the jungle palette, greener), the lee's dry ground
-// the cloud: thickest in band B on the face, thinner in band A, none on the crest above it on clear days or in the lee
+function southK(x,z){return .95*smooth(400,-200,x-crestX(z));}          // the face's litter (the jungle palette, greener), the lee's dry ground
+// the cloud: thickest in band B on the face, thinner in band A, none on the crest above it on clear days or in the lee. Band A is
+// the cloud's base (the lifting air reaches its dew point there: section 4), so the cloud reaches down to ~1 km at a half weight:
+// the floor zones read band A as cloud forest (ferns, moss, the old stock under the mantle palms) and the paint lays litter and
+// humus there, where at .45 from 1.35 km up band A fell through every zone to the valley's savannah gold (the quality pass, 2026-10-27)
 function cloudK(x,z){const y=terrainH(x,z),a=ABS(y),west=smooth(300,-400,x-crestX(z));
- return clamp(west*(.45*smooth(1050,1350,a)+.5*smooth(1450,1600,a))*smooth(1980,1880,a),0,1);}
+ return clamp(west*(.55*smooth(950,1120,a)+.4*smooth(1420,1580,a))*smooth(1980,1880,a),0,1);}
 const FIELD_RAW={
  wet:(x,z)=>{const w=smooth(500,-500,x-crestX(z));return clamp(.28+.6*w+.1*(KF(x*.0012,z*.0012,2,311)-.5)+.12*smooth(60,8,streamD(x,z)),0,1);},
  salt:(x,z)=>0,
@@ -45,5 +48,13 @@ const FIELD_RAW={
  upland:(x,z)=>clamp(.3+.55*smooth(1000,2060,ABS(baseH(x,z)))+.15*smooth(.7,1.2,slopeAt(x,z)),0,1),
  flow:(x,z)=>clamp(smooth(30,6,streamD(x,z)),0,1),
  mist:(x,z)=>cloudK(x,z)};
-// the LOD origins: five, as station 2 (the held budget): the face's middle, the summit, the lee, and north and south down the face
-const MAP_ORIGIN=[[-700,0],[900,0],[2300,0],[-1400,-2000],[-1400,2000]];
+// the lee's ground (MAP_PAINT, read by the paint in 45s): summer-dry grass, gold and olive, with bare red-brown earth between the
+// scrub, where the zones' paint gave the crest's pale stone all down the dry back (the quality pass, 2026-10-27). Not on rock
+const LEE_PAL=[new THREE.Color(0xa8944e),new THREE.Color(0x857c44),new THREE.Color(0x7a5c3e),new THREE.Color(0x6c7040)];
+function MAP_PAINT(c,x,z,rockK){const lee=smooth(150,600,x-crestX(z))*(1-rockK);if(lee<=0)return;
+ const g=KF(x*.004,z*.004,3,321),e=KF(x*.011,z*.011,2,323),t=LEE_PAL[0].clone().lerp(LEE_PAL[1],smooth(.35,.65,g));
+ t.lerp(LEE_PAL[2],smooth(.58,.75,e)*.6).lerp(LEE_PAL[3],smooth(.6,.8,g)*.5);c.lerp(t,lee*.85);}
+// the LOD origins: five, as station 2 (the held budget), each a little ahead of a view's camera (44s), so what a view sees near is
+// drawn whole: the cloud foot, in the cloud, up the ravine, the crest (and the summit by it), over the lee. On a lattice over the
+// face they left every view's foreground to the stand-ins and impostors (the quality pass, 2026-10-27)
+const MAP_ORIGIN=[[-2400,375],[-750,-325],[-1600,-490],[1250,350],[1900,-560]];

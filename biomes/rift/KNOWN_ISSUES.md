@@ -41,10 +41,19 @@ Read before changing anything here. `build.py` prints the open count.
       the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with
       the island's colours and sizes (`87-host-families.js`: mantle palm, drip lobe; comb frill; crown barrel; table pine, blade fan),
       planted by band; the sketch's species they replace, and the savannah's and the rims', thinned out (`STATION_PAGE.thin`); the
-      old stock (cloud parasol, beard tree, tree-fern, lantern tree) under them. Held 33.2 M (ceiling 40 M), 188 calls at the default view.
+      old stock (cloud parasol, beard tree, tree-fern, lantern tree) under them.
+      The quality and diversity pass (2026-10-27): band A (the cloud foot) fell through every zone, so it drew the valley's savannah
+      gold and no understory; the cloud's base now reaches it (`cloudK`), so it is cloud forest, litter and moss, the old stock at a .3
+      share under the mantle palms. The floor's own species are off the island (trumpet, pagoda, curly shrub, prism bush, thornwhip),
+      the giant groundsel at .4, the lantern tree at .6. The hoodlet (a kin of the cloud bell palm) stands in the face's gullies;
+      the lee's pines are denser and its ground is summer-dry grass and earth (`MAP_PAINT`, a new opt-in station hook in the shared
+      paint). The LOD origins sit ahead of the views' cameras (their foregrounds were stand-ins and impostors). Held about 33 M
+      (trees 24.7 M, floor 6.2 M, far 1.1 M; ceilings 40 M and 30 M a pass); 76 k trees, 2.35 M instances, a 33 s build on the Arc 140T.
       Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
-      cushion, the night rosette, the glass pole, fog thread, crest heath, hoodlet) are builder work still to do; no water yet (the
-      ravines' streams wait for core/water's cataract fixes); the west and east islands' records; not yet verified on the GPU.
+      cushion, the night rosette, the glass pole, fog thread, crest heath) are builder work still to do (the hoodlet is a kin
+      stand-in); no water yet (the ravines' streams wait for core/water's cataract fixes), so the ravine beds read as bare silt; the
+      ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
+      east islands' records; not yet verified on the GPU.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
