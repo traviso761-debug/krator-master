@@ -30,7 +30,7 @@ const same = (a, b) => a.length === b.length && a.every((v, i) => Math.abs(v - b
   const { BIO, card } = page({ fern: { lib: 'card.fern', cell: [.1, .05, .9, .99], base: 'bottom' }, plain: { lib: 'card.fern' } });
   const M = { fern: card(), plain: card() };
   BIO.libSwap('k', M);
-  ok('libSwap records a slot\'s base on its material', M.fern.userData.libCard && M.fern.userData.libCard.base === 'bottom' && !M.plain.userData.libCard);
+  ok('libSwap records a slot\'s base on its material', M.fern.userData.libCard && M.fern.userData.libCard.base === 'bottom' && !M.plain.userData.libCard.base);
   const raw = BIO.geo.frond(4), before = uvs(raw);
   BIO.def('fern', raw, M.fern); BIO.def('plain', BIO.geo.frond(4), M.plain);
   const P = BIO.defs.fern.geo.attributes.position.array, U = BIO.defs.fern.geo.attributes.uv.array;
