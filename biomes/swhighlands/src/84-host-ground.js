@@ -98,6 +98,11 @@ function buildGround(){
    [[a,ha,ua],[b,hb,ub],[b,hb-60,ub],[a,ha,ua],[b,hb-60,ub],[a,ha-60,ua]].forEach(q=>{pos.push(q[0][0],q[1],q[0][1]);uvs.push(q[2][0],q[2][1]);});}
   const ag=new THREE.BufferGeometry();ag.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));ag.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));ag.computeVertexNormals();
   const am=new THREE.Mesh(ag,new THREE.MeshLambertMaterial({map:TEX,color:0x8a8a82,side:THREE.DoubleSide}));am.userData.probeSkip=true;scene.add(am);}
+ /* THE CAVE'S HOOD ON THE GROUND'S MATERIAL (core/terrain KCARVE: "give the meshes the ground's material"; the owner, 2026-10-26: from
+    above it read as a rock block lying on the hill): its top is the hill's paint and turf, its steep face the beds, one surface */
+ if(typeof CAVE_MESHES!=='undefined')CAVE_MESHES.forEach(cm=>{const gg=cm.geometry,P=gg.attributes.position,n=P.count,uvA=new Float32Array(n*2),glA=new Float32Array(n*4);
+  for(let i=0;i<n;i++){const x=P.getX(i),z=P.getZ(i);uvA[i*2]=(x-TERR.X0)/SX;uvA[i*2+1]=1-(z-TERR.Z0)/SZ;glA.set(glAt(x,z),i*4);}
+  gg.setAttribute('uv',new THREE.BufferAttribute(uvA,2));gg.setAttribute('aGL',new THREE.BufferAttribute(glA,4));cm.material=MAT;});
  GROUND=m;return m;}
 
 // ---------------------------------------------------------------- the mist

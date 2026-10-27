@@ -38,4 +38,7 @@ From `PLAN.md` section 10 and what station 1 met:
   vertex-coloured, no map.
 - [ ] **The arch's form** is core's `KSTACKS` arch (corbelled legs under a lintel) weathered by this kit; a softer, eroded arch form
   (an ellipse opening, a sagging lintel) would be a core option.
+- [ ] **The cave's mouth, close up**: the hood is on the ground's material and its top runs into the hill, but the 2 m field still
+  softens the bite's walls by up to ~2 m round the hood's rim (a finer inset there, or the bite's walls as a KSTACKS face, would
+  sharpen it), and the ground's paint smears on the bite's steep walls (a top-down paint; the beds draw over it but faintly).
 - [ ] Stations 2-5 are not built.

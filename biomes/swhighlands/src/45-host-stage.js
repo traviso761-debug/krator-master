@@ -93,7 +93,9 @@ function gBite(x,z,h,noCave){const d=Math.hypot(x-BITE.x,z-BITE.z);if(d>BITE.r+2
     circle (+-25%), its wall's steepness by another (2.2-4.2) */
  const ca=(x-BITE.x)/(d||1),sa=(z-BITE.z)/(d||1),rn=BITE.r*(1+.5*(KRAND.fbm(ca*2.2+5,.3,sa*2.2+5,3,91)-.5)*(1-smooth(.6,.95,ca))),   /* none at the mouth's wall (east) */kn=3.2*(1+.6*(KRAND.fbm(ca*3.1+2,.7,sa*3.1+2,2,92)-.5));
  const v=Math.max(Math.min(h,BITE.floor+Math.max(0,d-rn)*kn),h-28);if(noCave)return v;
- return Math.min(v,BITE.floor+Math.max(0,KCARVE.recessD(x,z))*kn);}
+ /* the recess's wall rises at 40:1, inside the hood's rock: KCARVE wants the host's wall blend within its margin less its pad (4 m),
+    or a trench opens round the hood (the owner, 2026-10-26: its top was not connected to the hill) */
+ return Math.min(v,BITE.floor+Math.max(0,KCARVE.recessD(x,z))*40);}
 function g1raw(x,z){let h=g0(x,z);h=KRELIEF.shape(WIND_GAP,x,z,h);h=KRELIEF.shape(WATER_GAP,x,z,h);
  if(x>700&&x<1300&&z>-1360&&z<-1140)for(const S of GORGE.segs)h=KRELIEF.shape(S,x,z,h);
  const K=GORGE.sink,ds=Math.hypot(x-K.x,z-K.z);if(ds<K.r+40){const kr=K.r*(1+.4*(KRAND.fbm((x-K.x)/(ds||1)*2+3,.5,(z-K.z)/(ds||1)*2+3,2,93)-.5)),q=Math.min(ds,kr)/kr;
