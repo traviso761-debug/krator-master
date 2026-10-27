@@ -593,6 +593,19 @@
    "roughLift": 0.35,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "broadcloud": {
+   "lib": "card.broadleaf.cloud",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "sheet": "geometry"
   }
  }
 }

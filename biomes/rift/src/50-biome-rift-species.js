@@ -164,6 +164,7 @@ RIFT.SPECIES=[
   tags:{climate:'temperate',aridity:'humid',abyssal:true,riparian:'both'}},
  /*26*/{key:'cloudparasol',name:'Cloud parasol',H:[14,26],rb:[.7,1.2],crownR:[9,14],barkK:2,bark:[0x7a7a6e,0x6e6e62,0x86867a],
   leaf:[0x6ab058,0x7ac060,0x4aa898,0x8ad068,0x5ab8a8],irid:'LG',boughs:[5,7],flowers:true,
+  leafItem:'broadcloud',
   tags:{climate:'temperate',aridity:'humid',abyssal:true,riparian:'both'}},
  /*27*/{key:'beardtree',name:'Beard tree',H:[8,16],rb:[.6,1.1],crownR:[5,9],barkK:3,bark:[0x4a4438,0x3e3a30,0x565044],
   leaf:[0x5a9a48,0x6aaa50,0x4a8a40,0x7aba58,0x4aa090],irid:null,boughs:[3,5],
@@ -600,6 +601,7 @@ RIFT.MAT={
  pad:BIO.leafMat(null,'pad',{swayW:'1.0',swayA:.02,alphaTest:0,vertexColors:true}),
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  broad:BIO.leafMat(TX.broad,'broad',{aN:true,irid:true,swayW:'1.0',swayA:.12}),
+ broadcloud:BIO.leafMat(TX.broad,'broadcloud',{aN:true,irid:true,swayW:'1.0',swayA:.12}),   /* the cloud parasol's own leaf (card.broadleaf.cloud: evergreen sprays, 2026-10-27) */
  prismfrond:BIO.leafMat(TX.bigfrond,'prismfrond',{aN:true,irid:true,swayW:'(position.x)',swayA:.08}),
  croton:BIO.leafMat(TX.croton,'croton',{aN:true,irid:true,swayW:'1.0',swayA:.08}),
  tongue:BIO.leafMat(TX.tongue,'tongue',{aN:true,irid:true,swayW:'(position.y)',swayA:.03,alphaTest:.4}),
@@ -645,6 +647,7 @@ BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Fern fronds'});
 BIO.def('fan',G.fan(),M.fan,{label:'Fan fronds'});
 BIO.def('vain',G.fan(),M.fan,{label:'Vain fronds'});
 BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN','aC2'],label:'Parasol tree canopy'});
+BIO.def('broadcloud',SHEET(BIO.geo.clump(),'broadcloud'),M.broadcloud,{attrs:['aN','aC2'],label:'Cloud parasol canopy'});   /* a 3x3 sheet of sprays: a sprig a quad */
 BIO.def('prismfrond',BIO.geo.frond(4),M.prismfrond,{attrs:['aN','aC2'],label:'Prism fern fronds'});
 /* the croton's card (card.leaf.redvein) is three different leaves 3 across at uneven widths (the owner, 2026-10-27: every card drew all
    three stuck together): one leaf a quad, each quad its own leaf's box and proportions (core BIO.geo.cells rects); the boxes measured from the alpha */
@@ -661,9 +664,11 @@ BIO.def('samphire',G.tuft(),M.samphire,{label:'Glasswort'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass tufts'});
 BIO.def('clubmoss',G.tuft(),M.clubmoss,{attrs:['aN','aC2'],label:'Scale-moss'});
 BIO.def('ucard',BIO.geo.clump(),M.under,{label:'Understorey foliage'});
-BIO.def('beard',BIO.geo.ribbon(4,.6,.12),M.beard,{label:'Beard moss'});
-BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
-BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Lianas and strands'});
+/* the hanging cards take the ribbon's `flow` (the project standard, the owner 2026-10-27: the texture once down the whole hank, no
+   stacked square-cut bands; core/biome 30-core-foliage.js) */
+BIO.def('beard',BIO.geo.ribbon(5,.6,.12,true),M.beard,{label:'Beard moss'});
+BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18,true),M.hang,{label:'Hanging growth'});
+BIO.def('strand',BIO.geo.ribbon(2,.4,.05,true),M.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});

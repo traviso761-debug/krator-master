@@ -86,6 +86,15 @@ covers at most `ratio` pixels (default 2) at `dist`, capped at `max` (default 25
 256 px is a 6144 px atlas, over most GPUs' limit, so a set of tall species takes fewer slots or a smaller grid). Both are
 plain arithmetic (`node core/biome/test-tall.js`).
 
+## Hanging cards: one strand, not stacked (`BIO.geo.ribbon(..., flow)`; the project standard, the owner 2026-10-27)
+
+`BIO.geo.ribbon(nseg, taper, drift)` runs the texture's v from 0 to 1 down **each** of its segments, so a beard-moss or hanging
+card shows its picture nseg times stacked: square-cut bands, like shingles. Pass `flow` (a fourth argument, `true`) and v runs
+once from the top to the tip: one continuous strand, the same positions and triangles. **Every new hanging card takes `flow`**
+(beard moss, hanging growth, lianas, curtains). The default stays as it was until the next all-builds rebuild flips it
+(`TODO.md`, "Ride along"); the Rift's stations take it now (`biomes/rift/src/50-biome-rift-species.js`). A longer hank is a
+longer put (the instance's y scale), not a repeated texture: a card cut to one cell of a sheet cannot wrap. Test: `test-foliage.js`.
+
 ## Welded item geometry (`BIO.INDEX_ITEMS`, opt-in)
 
 `BIO.def` un-indexes every item's geometry (triangle soup). With `BIO.INDEX_ITEMS = true` (set before the kits define their

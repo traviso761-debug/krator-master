@@ -182,10 +182,13 @@ BIO.geo.hang=function(){const pos=[],uv=[],nor=[];
 // a hanging RIBBON: origin at the top, running down to y=-1 in nseg tapering
 // quads, drifting in z so a curtain of them is not a plank; texture repeats
 // once per segment so a long one reads as a chain of leaves
-BIO.geo.ribbon=function(nseg,taper,drift){const pos=[],uv=[],nor=[];nseg=nseg||4;taper=taper==null?.55:taper;drift=drift==null?.18:drift;
+// THE PROJECT STANDARD FOR HANGING CARDS (the owner, 2026-10-27) is `flow`: the card's texture laid once down the whole length
+// (v from 0 at the top to 1 at the tip), one continuous strand. Without it v runs 0 to 1 down EACH segment, so the picture is
+// stacked nseg times, square-cut bands like shingles. Opt-in until the next all-builds rebuild flips the default (TODO.md)
+BIO.geo.ribbon=function(nseg,taper,drift,flow){const pos=[],uv=[],nor=[];nseg=nseg||4;taper=taper==null?.55:taper;drift=drift==null?.18:drift;
  const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.5*lerp(1,taper,t),z=Math.sin(t*3.1)*drift;P.push([-w,-t,z],[w,-t,z]);}
- for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
-  [[a,0,0],[c,0,1],[b,1,0],[b,1,0],[c,0,1],[d,1,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);});}
+ for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3],v0=flow?i/nseg:0,v1=flow?(i+1)/nseg:1;
+  [[a,0,v0],[c,0,v1],[b,1,v0],[b,1,v0],[c,0,v1],[d,1,v1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);});}
  return BIO.geo._make(pos,nor,uv);};
 // an arching FROND: pinned at the origin, arching along +x to x=1 and down
 BIO.geo.frond=function(nseg){const pos=[],uv=[],nor=[];nseg=nseg||3;

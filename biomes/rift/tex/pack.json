@@ -289,6 +289,32 @@
     "sourceMean": 0.3268
    }
   },
+  "broadcloud": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "broadcloud.albedo.webp"
+   },
+   "lib": "card.broadleaf.cloud",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0bdb2cdfb60754dfa244d752677b6ca04df22577"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.3678
+   }
+  },
   "candle": {
    "breakup": null,
    "card": true,

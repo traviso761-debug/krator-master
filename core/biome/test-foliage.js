@@ -143,4 +143,18 @@ const SRC=read('30-core-foliage.js');
  const C=B.__ctx.KCLOCK.make({hour:12,day:350-259+182});B.__ticks=[];
  check('bindSeason drives BIO.SEASON from the clock (southern midwinter: full dry)',B.bindSeason(C)===true&&Math.abs(B.SEASON.value-1)<1e-9);
  C.day=91;C.hour=0;B.__ticks.forEach(f=>f(1/60));check('...and follows it each frame (midsummer: no dry)',Math.abs(B.SEASON.value)<1e-9,B.SEASON.value);}
+// the ribbon's `flow` (the hanging-card standard, 2026-10-27): the texture once down the whole length; the default unchanged
+{const B=load(SRC),vs=g=>{const a=g.attributes.uv,o=[];for(let i=0;i<a.count;i++)o.push(+a.getY(i).toFixed(6));return o;};
+ const old=BIO_RIBBON_OLD(B),def=B.geo.ribbon(4,.6,.12),fl=B.geo.ribbon(4,.6,.12,true);
+ check('ribbon: the default writes the same uvs and positions as before',vs(def).join()===vs(old).join()&&def.attributes.position.array.join()===old.attributes.position.array.join());
+ const v=vs(fl),p=fl.attributes.position;let mono=true;for(let i=0;i<p.count;i++)if(Math.abs(v[i]+p.getY(i))>1e-5)mono=false;
+ check('ribbon flow: v runs 0 at the top to 1 at the tip, once (v = -y down the card)',mono&&Math.min(...v)===0&&Math.max(...v)===1);
+ check('  negative: the default stacks the picture (v back to 0 below the top)',vs(def).some((x,i)=>x===0&&def.attributes.position.getY(i)<-.2));
+ check('ribbon flow: same positions as the default',fl.attributes.position.array.join()===def.attributes.position.array.join());}
+// the ribbon as it was before `flow` (30-core-foliage.js at 426056f24), for the frozen-default check above
+function BIO_RIBBON_OLD(B){const pos=[],uv=[],nor=[],nseg=4,taper=.6,drift=.12,lerp=(a,b,t)=>a+(b-a)*t;
+ const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.5*lerp(1,taper,t),z=Math.sin(t*3.1)*drift;P.push([-w,-t,z],[w,-t,z]);}
+ for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
+  [[a,0,0],[c,0,1],[b,1,0],[b,1,0],[c,0,1],[d,1,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);});}
+ return B.geo._make(pos,nor,uv);}
 console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);

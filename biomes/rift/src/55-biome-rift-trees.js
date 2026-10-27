@@ -335,8 +335,8 @@ B[17]=B[22]=function(T,st,lv){const S=SP[T.sp],fam='bark'+S.barkK,H=T.H,rb=T.rb,
  spots.forEach(s=>{const cnt=Math.floor(nC)+(rng()<nC-Math.floor(nC)?1:0);
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d;let y=s.p.y+rr(-.2,.9)*s.s*.6;
    if(dome){const q=Math.hypot(x-T.x,z-T.z)/T.crownR;y+=H*.16*Math.max(0,1-q*q);}   // the dome: clumps lifted toward the middle
-   if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt('broad',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),dome?.55:.42,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,rng()<.75?C(pick(c2s)):null);st.clumps++;mine++;}});
- if(!mine){clumpAt('broad',T.x,T.y0+hT+2,T.z,sz0,dome?.55:.42,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,C(pick(c2s)));st.clumps++;}
+   if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt(S.leafItem||'broad',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),dome?.55:.42,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,rng()<.75?C(pick(c2s)):null);st.clumps++;mine++;}});
+ if(!mine){clumpAt(S.leafItem||'broad',T.x,T.y0+hT+2,T.z,sz0,dome?.55:.42,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,C(pick(c2s)));st.clumps++;}
  if(lv===2){anemonesOn(T.x,T.z,T.y0,hT*.7,rAt,ri(3,6),S.flowers?PAL.flowers:PAL.comp,st);for(let i=0,n=ri(2,5);i<n;i++){const a=rr(0,TAU),yy=rr(1,9),R=rAt(yy/H)+.15;BIO.put('mossmat',[T.x+Math.cos(a)*R,T.y0+yy,T.z+Math.sin(a)*R],qUp([Math.cos(a),rr(-.1,.3),Math.sin(a)]),rr(1,2.2),bright(vary(pick(PAL.moss),.03,.1,.06),.95));st.moss++;}}
  T.spread=spread;reg(S,T);};
 // 18 the Rift croton: a dark little stem under a rounded head of broad veined leaves, green and yellow-green with the veins and the undersides lit magenta and purple
