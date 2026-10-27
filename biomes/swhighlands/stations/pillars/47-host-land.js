@@ -12,7 +12,7 @@
 const OBSTACLES=[],FIELD={},SPINE=[[-1200,rimZ(-1200)+200],[-400,rimZ(-400)+150],[900,rimZ(900)+250],[0,640],[-900,rimZ(-900)-300],[800,rimZ(800)-300]];let SITE_HOLD=null;
 BIO.init({tags:'swhighlands-pillars',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:FIELD_BAKED,
  mask:(x,z)=>{if(x<TERR.X0+4||x>TERR.X1-4||z<TERR.Z0+4||z>TERR.Z1-4)return 0;if(SITE_HOLD&&Math.hypot(x-SITE_HOLD.x,z-SITE_HOLD.z)<SITE_HOLD.r)return 0;
-  if(towerTop(x,z,3))return 1;if(nearTower(x,z,2))return 0;const r=streamNear(x,z);if(r&&r.dd<1)return 0;if(inReservoir(x,z)&&groundH(x,z)<RESERVOIR.level+.3)return 0;return smooth(1.2,.8,FC.at(FC.a.slope,x,z));},
+  if(towerTop(x,z,3))return 1;if(nearTower(x,z,2))return 0;const r=streamNear(x,z);if(r&&r.dd<1)return 0;if(inReservoir(x,z)&&groundH(x,z)<RESERVOIR.level+.3)return 0;{const wd=wadiNear(x,z);if(wd&&wd.dd<1)return 0;}return smooth(1.2,.8,FC.at(FC.a.slope,x,z));},
  obstacles:OBSTACLES,ticks:tick,seed:WORLD,register:REGISTER,origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
 {const Q=new URLSearchParams(location.search);
  BIO.INDEX_ITEMS=Q.get('index')!=='0';
@@ -122,16 +122,16 @@ function slopeAt(x,z){const h=groundH(x,z),e=3;return Math.hypot(groundH(x+e,z)-
 
 // ---------------------------------------------------------------- the climate fields (10 m lattice)
 const FC=(function(){const N=321,SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,K=['h','slope','top','floor','block','wet','mist','flow','north'],a={};
- K.forEach(k=>a[k]=new Float32Array(N*N));const st=SX/(N-1);
- for(let j=0;j<N;j++)for(let i=0;i<N;i++)a.h[j*N+i]=groundH(TERR.X0+i*st,TERR.Z0+j*st);
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const k=j*N+i,x=TERR.X0+i*st,z=TERR.Z0+j*st,h=a.h[k];
-  const hx=(a.h[j*N+Math.min(N-1,i+1)]-a.h[j*N+Math.max(0,i-1)])/(2*st),hz=(a.h[Math.min(N-1,j+1)*N+i]-a.h[Math.max(0,j-1)*N+i])/(2*st);
+ K.forEach(k=>a[k]=new Float32Array(N*N));const stx=SX/(N-1),stz=SZ/(N-1);   /* each axis its own spacing: the map is not square (a shared one stretched every field along z) */
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++)a.h[j*N+i]=groundH(TERR.X0+i*stx,TERR.Z0+j*stz);
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const k=j*N+i,x=TERR.X0+i*stx,z=TERR.Z0+j*stz,h=a.h[k];
+  const hx=(a.h[j*N+Math.min(N-1,i+1)]-a.h[j*N+Math.max(0,i-1)])/(2*stx),hz=(a.h[Math.min(N-1,j+1)*N+i]-a.h[Math.max(0,j-1)*N+i])/(2*stz);
   const zz=zone(x,z),tt=towerTop(x,z,4),nt=nearTower(x,z,14),r=streamNear(x,z),n1=NZ(x,z,.003,86,2);
   a.slope[k]=tt?0:Math.hypot(hx,hz);a.north[k]=clamp(-hz/.3,-1,1);
   a.top[k]=tt?1:(zz<.29&&a.slope[k]<.5?.08:0);                       /* a tower's top; the table's own top hardly (station 3's ground) */
-  a.floor[k]=tt?0:smooth(.31,.36,zz)*smooth(.7,.35,a.slope[k])*(1-smooth(.02,.15,apronAt(x,z)/(TOP-CAP)));   /* the badland apron is bare */
+  a.floor[k]=tt?0:smooth(.31,.36,zz)*smooth(.7,.35,a.slope[k])*(1-smooth(.15,.45,apronU(x,z)));   /* the badland apron is bare, its lower slope grassed */
   {const d=z-rimZ(x);a.block[k]=tt?0:clamp(smooth(70,10,d)*smooth(-5,5,d)+(nt?.8:0),0,1);}   /* the cliff's foot and the towers' */
-  a.flow[k]=r?smooth(60,4,r.dd):0;
+  {const wd=wadiNear(x,z);a.flow[k]=Math.max(r?smooth(60,4,r.dd):0,wd?.85*smooth(26,2,wd.dd):0);}   /* the river's banks and the dry riverbed's cobbles */
   a.wet[k]=clamp(.4+.5*a.flow[k]+.15*smooth(30,0,z-rimZ(x))+.12*n1-(tt?.15:0),0,1);
   a.mist[k]=clamp(smooth(150,260,h+(tt?tt.top-h:0))*.5+.15*n1,0,1);}
  const at=(arr,x,z)=>{const u=clamp((x-TERR.X0)/SX*(N-1),0,N-1.001),v=clamp((z-TERR.Z0)/SZ*(N-1),0,N-1.001),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j;

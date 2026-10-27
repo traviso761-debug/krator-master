@@ -9,7 +9,7 @@ function buildGround(){
  const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,TW=2048,ZN=256;
  const ZK=['floor','table','block','bank'],ZL={};ZK.forEach(k=>ZL[k]=new Float32Array(ZN*ZN));
  for(let j=0;j<ZN;j++)for(let i=0;i<ZN;i++){const x=TERR.X0+(i+.5)/ZN*SX,z=TERR.Z0+(j+.5)/ZN*SZ,zz=zone(x,z),sl=FC.at(FC.a.slope,x,z);
-  const ap=smooth(.02,.15,apronAt(x,z)/(TOP-CAP));ZL.floor[j*ZN+i]=smooth(.31,.36,zz)*(1-ap);   /* the badland apron is bare */ZL.table[j*ZN+i]=smooth(.3,.27,zz);ZL.block[j*ZN+i]=FC.at(FC.a.block,x,z)*smooth(.31,.33,zz);ZL.bank[j*ZN+i]=smooth(.5,.9,FC.at(FC.a.flow,x,z));}
+  const ap=smooth(.15,.45,apronU(x,z));ZL.floor[j*ZN+i]=smooth(.31,.36,zz)*(1-ap);   /* the badland apron is bare */ZL.table[j*ZN+i]=smooth(.3,.27,zz);ZL.block[j*ZN+i]=FC.at(FC.a.block,x,z)*smooth(.31,.33,zz);ZL.bank[j*ZN+i]=smooth(.5,.9,FC.at(FC.a.flow,x,z));}
  const zat=(k,u,v)=>{const A=ZL[k],fu=clamp(u*ZN-.5,0,ZN-1.001),fv=clamp(v*ZN-.5,0,ZN-1.001),i=Math.floor(fu),j=Math.floor(fv),a=fu-i,b=fv-j;return A[j*ZN+i]*(1-a)*(1-b)+A[j*ZN+i+1]*a*(1-b)+A[(j+1)*ZN+i]*(1-a)*b+A[(j+1)*ZN+i+1]*a*b;};
  const SN=TW/4,SH=new Float32Array(SN*SN),sd=[-SUN_POS[0],-SUN_POS[2]],sl=Math.hypot(sd[0],sd[1]);sd[0]/=sl;sd[1]/=sl;
  for(const T of SWHI.TREES){if(T.H<4)continue;const R=T.crownR*.9,off=Math.min(T.H*.25,8),cx=T.x+sd[0]*off,cz=T.z+sd[1]*off,k=.45;

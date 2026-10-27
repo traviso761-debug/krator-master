@@ -21,6 +21,8 @@ const VIEWS={};
  {const P=(u,v)=>[CANYON.M[0]+(u-CANYON.u0)*CANYON.n[0]+v*CANYON.t[0],CANYON.M[1]+(u-CANYON.u0)*CANYON.n[1]+v*CANYON.t[1]];
   const a=P(500,240),b=P(-200,0);add("Span's canyon",[a[0],tableTop(a[0],a[1])+60,a[1],b[0],tableTop(b[0],b[1])-150,b[1]]);
   const c=P(-400,-260),d=P(-1600,0);add('The reservoir',[c[0],tableTop(c[0],c[1])+80,c[1],d[0],RESERVOIR.level,d[1]]);}
+ // the dried riverbed: from over the canyon's mouth, down it across the floor
+ {const P=WADI.pts,a=P[Math.floor(P.length*.08)],b=P[Math.floor(P.length*.6)];add('The dried riverbed',[a.x-60,a.y+70,a.z-40,b.x,b.y,b.z]);}
  // Pan Riba: over its meanders on the floor, looking west along it
  {const p=PAN.pts[Math.floor(PAN.pts.length*.6)],q=PAN.pts[Math.floor(PAN.pts.length*.35)];add('Pan Riba on the floor',[p[0],waterH(p[0],p[1])+28,p[1]+40,q[0],waterH(q[0],q[1])+5,q[1]]);}
  // the floor's flora: cushions and torch spikes in the green between the towers

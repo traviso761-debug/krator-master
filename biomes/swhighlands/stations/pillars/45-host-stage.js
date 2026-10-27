@@ -72,6 +72,9 @@ function talusAt(x,z){let h=0;for(const P of TOWER_PLAN.concat([WATCH_AT],FREE_A
 const CAP=85,APRON=270;
 function apronAt(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ(x,0,.003,90,2)),u=clamp(1-d/L,0,1);if(u<=0)return 0;
  const h=Math.max(20,tableTop(x,rimZ(x)-4)-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
+// how far down the apron a point is (1 at the cliff's foot, 0 at the apron's toe, 0 off it): the paint and the flora read this, not the
+// gullied height (the owner, 2026-10-27: the gullies painted long red and green streaks out across the floor)
+function apronU(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ(x,0,.003,90,2));return clamp(1-d/L,0,1);}
 // the floor: low hummocks, the badland apron under the cliff, a talus cone round each tower, falling a little toward Pan Riba
 function floor0(x,z){const d=z-rimZ(x),b=6*NZ(x,z,.0028,84,3)+1.5*NZ(x,z,.015,85,2)-.012*Math.max(0,d-200);return Math.max(b+talusAt(x,z),b+apronAt(x,z));}
 const TABLE0=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.02,slot:{w:2.6,grow:4,depth:0}});
@@ -117,6 +120,7 @@ function canyonY(u,v,x,z){const av=Math.abs(v),wob=3*NZ(x,z,.02,106,2)+1.5*NZ(x,
  {const e=Math.pow((u+520)/230,2)+Math.pow(v/160,2),ea=Math.pow((u+520)/185,2)+Math.pow(v/118,2);   /* the bay: its terrace, the Apron, the slot */
   if(e<1.2){y=Math.min(y,-30*smooth(1.05,.95,e+.04*wob));if(ea<1.1)y=Math.min(y,-45*smooth(1.03,.97,ea));
    if(u>-760&&u<-280&&av<34){const sf=lerp(-60,-110,clamp((u+750)/460,0,1));y=Math.min(y,lerp(-45,sf,smooth(30,22,av+wob)));}}}
+ if(u>-750&&u<1500&&y<-55){const dv=Math.abs(v+49+4*NZ(x,z,.006,109,2));if(dv<10)y-=2.6*(1-Math.pow(dv/10,2));}   /* the dry river's bed down the canyon floor (Span's plan: v -58..-40), its cobbles bare since the weir holds the water */
  if(u>-910&&u<-740)y=Math.min(y,stepsY(av,[[65,-60]],wob));   /* the head, below the Head Fall */
  if(u>-1060&&u<=-900)y=Math.min(y,stepsY(av,[[55,-9]],wob)*smooth(-1060,-1045,u));   /* the outlet from the reservoir, over Span's weir */
  {const L=CANYON.lake,e=Math.pow((u-L.u)/L.au,2)+Math.pow((v-L.v)/L.av,2)+.08*NZ(x,z,.003,108,2);if(e<1.05)y=Math.min(y,lerp(0,L.level-1.5,smooth(1.05,.9,e))-16*clamp((.9-e)/.9,0,1));}   /* its shore shelving to 1.5 m under the level, then the bed to 16 m more */
@@ -141,7 +145,17 @@ function streamNear(x,z){SEGIX.query(x,z,0,_sq);let best=null;
  for(const q of _sq){const a=PAN.pts[q.i],b=PAN.pts[q.i+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),px=a[0]+dx*t-x,pz=a[1]+dz*t-z,d=Math.hypot(px,pz);
   if(!best||d-PAN.halfW(q.i)<best.dd)best={C:PAN,i:q.i,f:t,d,dd:d-PAN.halfW(q.i),w:PAN.halfW(q.i),y:mix(PAN.y[q.i],PAN.y[q.i+1],t)};}
  return best;}
-function groundH0(x,z){const g=TABLE(x,z),r=streamNear(x,z);if(!r)return g;const w=r.w,t=Math.max(0,r.d-w);let h=g;
+// THE DRIED RIVERBED (the owner, 2026-10-27: "a dried riverbed coming out of Span"): Pan Riba's old course from the canyon's mouth
+// down over the apron and across the floor to the river, a braided cobble wadi (core/terrain KRELIEF.wadi), dry since Span's weir
+// took the water; it meets the living river where it runs now
+const WADI=(function(){const C=CANYON,a=[C.M[0]+C.n[0]*50-C.t[0]*49,C.M[1]+C.n[1]*50-C.t[1]*49];let e=PAN.pts[0],best=1e9;
+ PAN.pts.forEach(p=>{const d=Math.abs(p[0]-(a[0]+260));if(d<best){best=d;e=p;}});
+ const pts=KRELIEF.meander(a,[e[0],e[1]-6],{amp:60,wave:420,seed:WORLD+11});
+ return KRELIEF.wadi({pts,ground:(x,z)=>TABLE(x,z),w:9,bank:2.2,bankW:4,braids:2,fan:false,seed:WORLD+12});})();
+const WADI_IX=(function(){const S=KSPACE.create({cell:40}),P=WADI.pts;for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.insert({i},(a.x+b.x)/2,(a.z+b.z)/2,Math.hypot(b.x-a.x,b.z-a.z)/2+40);}return S;})();
+const _wq=[];
+function wadiNear(x,z){WADI_IX.query(x,z,0,_wq);let best=null;const P=WADI.pts;for(const q of _wq){const a=P[q.i],b=P[q.i+1],dx=b.x-a.x,dz=b.z-a.z,l2=dx*dx+dz*dz||1,t=clamp(((x-a.x)*dx+(z-a.z)*dz)/l2,0,1),d=Math.hypot(a.x+dx*t-x,a.z+dz*t-z),w=a.w+(b.w-a.w)*t;if(!best||d-w<best.dd)best={d,dd:d-w,w};}return best;}
+function groundH0(x,z){const g=KRELIEF.shape(WADI,x,z,TABLE(x,z)),r=streamNear(x,z);if(!r)return g;const w=r.w,t=Math.max(0,r.d-w);let h=g;
  if(r.d<w)h=Math.min(h,r.y-r.C.dep*(1-.55*(r.d/w)*(r.d/w))-.15);else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<h)h=bank;}
  if(r.d<w+2.5)h=Math.min(h,r.y-.45);return h;}
 // THE FIELD (core/terrain KFIELD): the ground baked once (6 m); the towers are rock bodies over it (47-host-land.js), not ground
