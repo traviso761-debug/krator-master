@@ -1,5 +1,8 @@
 # hyperjungle: more stations (plan, 2026-10-23)
 
+**Superseded (2026-10-26) by `PLAN-LANDS.md`**: the old `hyperjungle` polygon is gone (hyperjungle S, savage
+hyperjungle, hyperjungle N), and the savanna rims each get their own palette. Kept for the survey below.
+
 The kit draws the closed abyssal jungle. Two pieces of its country are not drawn: the **savanna edge**, which the owner's
 new polygons mark (2026-10-23: `e savannah rim` and `se savannah rim`, "the transition zone from inner crater rainforest
 to tropical savannah", and the north strip `hyperjungle`), and **the lake** 4.21 settled in it. Two stations; the page
