@@ -29,6 +29,7 @@ import {mkRng} from '../core/rng.js';
 import {ramaShape} from './shape.js';
 import {buildInterior} from './interior.js';
 import {makeEvents} from './events.js';
+import {makeSound} from './sound.js';
 
 export function model(api){
   const {THREE,C,scene,camera,renderer,animHooks,fold}=api;
@@ -122,7 +123,10 @@ export function model(api){
     piece(SPIN,'The south face','The stern, where the drive is. The novel never shows it from outside; the boss on the axis over the Big Horn and the six over the Little Horns are this model\'s guess at the drive seen from behind.',parts);}
 
   // ---------- the inside ----------
-  const IN=buildInterior(api,{SPIN,cut,S,LS,onEnter:on=>{SEC.visible=!on&&cutOn;}});
+  let snd=null;
+  const IN=buildInterior(api,{SPIN,cut,S,LS,onEnter:on=>{SEC.visible=!on&&cutOn;},onStrike:()=>{if(snd)snd.thunder(Math.random()*0.6);}});
+  snd=makeSound({LS,IN});
+  animHooks.push(now=>snd.update(now));
   // what you can click on inside, when the cutaway opens it: invisible shapes over the landmarks
   {const ghost=new THREE.MeshBasicMaterial({visible:false,clippingPlanes:[cut]});
     ghost.side=THREE.DoubleSide;     // the far half is seen from inside once the near half is cut away
@@ -220,7 +224,7 @@ export function model(api){
   animHooks.push(now=>{SPIN.rotation.y=spinAt(now);});
 
   // ---------- the events ----------
-  const EV=makeEvents(api,{G,SPIN,S,LS,IN,setCut:on=>setCut(on),cutOn:()=>cutOn,spinAt,pick});
+  const EV=makeEvents(api,{G,SPIN,S,LS,IN,setCut:on=>setCut(on),cutOn:()=>cutOn,spinAt,pick,snd});
 
   const ship={radius:K.radius||27000,group:G,pick,minD:K.minD||300,
     adaptiveNear:false,
@@ -231,9 +235,11 @@ export function model(api){
     hud:now=>'spin '+Math.round(spinAt(now)/Math.PI*180)+'° · one turn in 4 min · '+(LS.sun>0.5?'lit inside':'dark inside')+(LS.ice>0.5?' · the Sea frozen':' · the Sea thawed')+EV.hudTail(),
     buttons:{'Cutaway':()=>{if(IN.active())IN.exit();setCut(!cutOn);},
       'Inside':()=>{if(IN.active())IN.exit();else{setCut(false);IN.enter('hub');}},
-      'Events':()=>EV.toggle()}};
+      'Events':()=>EV.toggle(),
+      'Sound':()=>snd.toggle()}};
   // #inside=<place> opens there; #event=<id> plays one; #cutaway opens the section
   {const q=/(^|&)inside(=([a-z]+))?(&|$)/.exec(H0);if(q)setTimeout(()=>{setCut(false);IN.enter(q[3]||'hub');},0);}
+  if(/(^|&)sound(&|$)/.test(H0))snd.toggle();
   {const q=/(^|&)event=([a-z]+)/.exec(H0);if(q)setTimeout(()=>EV.play(q[2]),600);}
   setCut(cutOn);
   return ship;

@@ -1842,11 +1842,18 @@ under `rama`; `src/rama/shape.js` turns them into the one profile and ground fun
   or the wheel raise you, and high enough you float at the axis. Close to, the plains and New York's streets carry
   a detail texture in their light map; the buildings have windowless Raman facades, the Sea ripples (or shows its
   cracked ice), light stands up off each sun into the haze, and between scenes spiders range round Camp Alpha and
-  crabs work the Southern Plain. "Fly the axis" is a two-minute flight from the hub to the horns.
-- **Events** plays the novel as ten scenes with captions: the rendezvous and docking, the dark and the flares, the
-  Dawn, the thaw and the storm, the Dragonfly and the lightning, the crab biot and the jump, the wave, the spiders,
-  the Hermian missile, the departure. `#event=<id>` plays one (`rendezvous`, `dark`, `dawn`, `thaw`, `lightning`,
-  `crab`, `wave`, `spiders`, `missile`, `departure`); `#inside=<place>` and `#cutaway` open there.
+  crabs work the Southern Plain. "Fly the axis" is a two-minute flight from the hub to the horns. At London's
+  northern edge stands the hall of holograms (`#inside=hall`): rows of pillars of light, each with an image of a
+  Raman thing turning in it, and at the end, on a dais, the uniform for a body with three arms and three legs.
+- **Events** plays the novel as twelve scenes with captions: the rendezvous and docking, the dark and the flares,
+  the Dawn, the thaw and the storm, the Dragonfly and the lightning, the crab biot and the jump, the wave, the
+  sharks taking a broken biot apart, the spiders and the one Laura Ernst dissects, the hall of holograms, the
+  Hermian missile, the departure. `#event=<id>` plays one (`rendezvous`, `dark`, `dawn`, `thaw`, `lightning`,
+  `crab`, `wave`, `sharks`, `spiders`, `london`, `missile`, `departure`; and `flyby`, a minute's flight round the
+  outside); `#inside=<place>` and `#cutaway` open there.
+- **Sound** (`src/rama/sound.js`), all synthesised: silence outside, in vacuum; inside, wind that rises with the
+  storm, thunder at the horns, the Sea's rumble in the wave, and a low hum while the suns are lit (an invention:
+  the novel gives the valleys no sound). Off until the button is pressed; `#sound` turns it on at the first click.
 
 What the novel leaves open and this model chooses: the hull's thickness (2 km, from 20 km outside and a 16 km
 plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
@@ -2371,7 +2378,7 @@ src/
   minastirith/ main.js landmarks.js life.js war.js events.js decals.js shadow.js   Minas Tirith: the Tower, the Hall, the Court, the Gate, the rock, the banners; war and peace; what happens in the siege; what it has left; the Ephel Duath and the Darkness
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
-  rama/     main.js shape.js rama.js interior.js events.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the bowls and the horns, the walker; the ten scenes
+  rama/     main.js shape.js rama.js interior.js events.js sound.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the hall of holograms, the bowls and the horns, the walker; the twelve scenes and the flyby; the sound
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates

@@ -450,7 +450,7 @@ export function buildInterior(api,O){
   glow.scale.setScalar(9000);glow.position.copy(hornTips[0]).add(new THREE.Vector3(0,-2500,0));IN.add(glow);
   let nextBolt=0,boltOff=0;
   const _o=new THREE.Object3D(),_p=new THREE.Vector3(),_q=new THREE.Vector3(),_d=new THREE.Vector3(),_n1=new THREE.Vector3(),_n2=new THREE.Vector3();
-  function strike(now){const R=Math.random;let k=0;
+  function strike(now){const R=Math.random;let k=0;if(O.onStrike)O.onStrike();
     for(let b=0;b<BOLTS;b++){
       // from the Big Horn's tip to a Little Horn's, or between two Little Horns, or down a buttress
       const i=1+Math.floor(R()*6),j=R()<0.6?0:1+((i)%6);const A=hornTips[j],B=hornTips[i];
@@ -501,6 +501,73 @@ export function buildInterior(api,O){
   const eyeR=()=>S.ground(W.y,W.a)-W.h;
   const walker=createCylinderWalker(THREE,{axis:new THREE.Vector3(0,1,0),along:'y',
     at:(y,a)=>{const r=Math.max(25,S.ground(y,a)-W.h);return new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r);}});
+  // ================= London's hall of holograms =================
+  // The last expedition's find: Norton had a laser cut a way into one of London's buildings, and inside, in rows
+  // of transparent pillars, were images of things - tools, containers, instruments no one could name - and among
+  // them a uniform cut for a body with three arms and three legs. This hall stands at London's northern edge, the
+  // side toward Camp Alpha. Its local frame: x round the drum, y up, z along the axis (+z south, toward London).
+  // The hall's walls take Rama's light like everything else; the holograms make their own.
+  const HALL={a:CITIES[0].a,y:CITIES[0].y+1150,w:30,l:70,h:9};
+  {const solid=(parts,shade)=>{const pos=[],cl=[],n=new THREE.Vector3(),v=new THREE.Vector3(),c=new THREE.Color();
+      for(const [geo,M,col] of parts){const g=(geo.index?geo.toNonIndexed():geo.clone()).applyMatrix4(M);g.computeVertexNormals();const P=g.attributes.position,N=g.attributes.normal;
+        for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);n.fromBufferAttribute(N,i);const k=shade?shade(n):1;c.set(col).multiplyScalar(k);pos.push(v.x,v.y,v.z);cl.push(c.r,c.g,c.b);}g.dispose();}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));g.computeBoundingSphere();return g;};
+    const T=(x,y,z,ry,s)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(0,ry||0,0)),new THREE.Vector3(s||1,s||1,s||1));
+    const TR=(x,y,z,rx,ry,rz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx||0,ry||0,rz||0)),new THREE.Vector3(1,1,1));
+    const lit=n=>0.55+0.3*Math.max(0,n.y)+0.15*Math.abs(n.x)-0.2*Math.max(0,-n.y);
+    const hall=new THREE.Group();hall.applyMatrix4(placeOn(HALL.a,HALL.y,S.RI,0));IN.add(hall);
+    const {w,l,h}=HALL,X=w/2,Z=l/2,parts=[],wall='#c8c8c4',floor='#5a5c60',trim='#9a9c9e';
+    // walls, roof and floor; the north wall has the hole the laser cut, three metres by four
+    parts.push([new THREE.BoxGeometry(w,0.3,l),T(0,0.15,0),floor],[new THREE.BoxGeometry(w+1,1,l+1),T(0,h+0.5,0),wall]);
+    for(const sd of [-1,1])parts.push([new THREE.BoxGeometry(1,h,l),T(sd*(X+0.5),h/2,0),wall]);
+    parts.push([new THREE.BoxGeometry(w+2,h,1),T(0,h/2,Z+0.5),wall]);
+    parts.push([new THREE.BoxGeometry(X-1.5+1,h,1),T(-(1.5+(X-1.5+1)/2),h/2,-Z-0.5),wall],[new THREE.BoxGeometry(X-1.5+1,h,1),T(1.5+(X-1.5+1)/2,h/2,-Z-0.5),wall],
+      [new THREE.BoxGeometry(3,h-4,1),T(0,4+(h-4)/2,-Z-0.5),wall]);
+    // the plug the laser cut out, lying where it fell, and the scorch round the hole
+    parts.push([new THREE.BoxGeometry(3,0.95,4),TR(0.6,0.5,-Z-4,0,0.2,0),'#b8b8b2'],[new THREE.BoxGeometry(3.6,0.08,0.3),T(0,4.1,-Z-1.05),'#2a2622'],
+      [new THREE.BoxGeometry(0.3,4,0.08),T(-1.6,2,-Z-1.05),'#2a2622'],[new THREE.BoxGeometry(0.3,4,0.08),T(1.6,2,-Z-1.05),'#2a2622']);
+    // inside: a band of trim at head height, and the plinths in four rows with an aisle down the middle
+    for(const sd of [-1,1])parts.push([new THREE.BoxGeometry(0.2,0.4,l-1),T(sd*(X-0.1),3.2,0),trim]);
+    const COLS=[-10.5,-4.5,4.5,10.5],ROWS=[];for(let z=-27;z<=24;z+=6.4)ROWS.push(z);
+    for(const x of COLS)for(const z of ROWS)parts.push([new THREE.CylinderGeometry(1.1,1.2,0.6,12),T(x,0.6,z),'#3a3c40']);
+    parts.push([new THREE.CylinderGeometry(2.4,2.6,0.9,24),T(0,0.75,Z-4),'#3a3c40']);         // the dais at the end
+    const shell=new THREE.Mesh(solid(parts,lit),vM(THREE.DoubleSide));shell.frustumCulled=false;hall.add(shell);
+    // the pillars of light the images stand in: one sheet of glass each, additive, faintly blue
+    const glass=[];for(const x of COLS)for(const z of ROWS)glass.push([new THREE.CylinderGeometry(1,1,3.2,16,1,true),T(x,2.5,z),'#3a6a88']);
+    glass.push([new THREE.CylinderGeometry(2.2,2.2,5,24,1,true),T(0,3.7,Z-4),'#3a6a88']);
+    const glassMat=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,clippingPlanes:[cut],fog:false});
+    const gm=new THREE.Mesh(solid(glass,n=>0.5+0.5*Math.abs(n.x)),glassMat);gm.frustumCulled=false;gm.renderOrder=4;hall.add(gm);
+    // the images: each its own small thing, turning slowly in its pillar, drawn in its own light
+    const holoMat=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:0.88,side:THREE.DoubleSide,clippingPlanes:[cut],fog:false});
+    const R=mkRng(1311),holos=[],tint=['#cfe8ff','#ffe8c8','#d8ffe8','#f0d8ff','#ffffff'];
+    const kinds=[
+      c=>[[new THREE.CylinderGeometry(0.06,0.06,1.4,6),T(0,0,0),c],[new THREE.BoxGeometry(0.5,0.18,0.12),T(0,0.7,0),c]],                     // a tool with a cross-head
+      c=>[[new THREE.CylinderGeometry(0.06,0.06,1.2,6),T(0,0,0),c],[new THREE.ConeGeometry(0.2,0.4,3),TR(0,0.75,0,0,0,0),c],[new THREE.TorusGeometry(0.18,0.04,6,12),TR(0,-0.4,0,Math.PI/2,0,0),c]],
+      c=>[[new THREE.CylinderGeometry(0.35,0.4,0.7,3),T(0,0,0),c],[new THREE.CylinderGeometry(0.2,0.2,0.15,3),T(0,0.42,0),c]],               // a three-sided canister
+      c=>[[new THREE.BoxGeometry(0.8,0.5,0.5),T(0,0,0),c],[new THREE.BoxGeometry(0.84,0.08,0.54),T(0,0.29,0),c],[new THREE.BoxGeometry(0.2,0.12,0.06),T(0,0.1,0.28),c]],
+      c=>[[new THREE.TorusGeometry(0.4,0.05,6,24),T(0,0,0),c],[new THREE.TorusGeometry(0.4,0.05,6,24),TR(0,0,0,0,Math.PI/3,0),c],[new THREE.TorusGeometry(0.4,0.05,6,24),TR(0,0,0,0,2*Math.PI/3,0),c],[new THREE.SphereGeometry(0.1,8,6),T(0,0,0),c]],
+      c=>[[new THREE.CylinderGeometry(0.05,0.05,0.9,6),TR(0,0,0,0,0,0.5),c],[new THREE.CylinderGeometry(0.05,0.05,0.9,6),TR(0,0,0,0,0,-0.5),c],[new THREE.CylinderGeometry(0.05,0.05,0.9,6),TR(0,0,0,0.5,0,0),c],[new THREE.SphereGeometry(0.14,8,6),T(0,0.4,0),c]],
+      c=>[[new THREE.SphereGeometry(0.3,12,8),T(0,0,0),c],[new THREE.CylinderGeometry(0.1,0.12,0.5,8),T(0,-0.4,0),c],[new THREE.CylinderGeometry(0.03,0.03,0.6,4),TR(0.3,0.2,0,0,0,-0.8),c]],
+      c=>[[new THREE.BoxGeometry(0.12,1.1,0.12),T(0,0,0),c],[new THREE.BoxGeometry(0.6,0.1,0.1),T(0,0.35,0),c],[new THREE.BoxGeometry(0.6,0.1,0.1),T(0,-0.35,0),c],[new THREE.BoxGeometry(0.1,0.3,0.3),T(0.3,0.35,0),c],[new THREE.BoxGeometry(0.1,0.3,0.3),T(-0.3,-0.35,0),c]],
+    ];
+    const holo=(parts,x,y,z,spin)=>{const m=new THREE.Mesh(solid(parts,n=>0.6+0.4*Math.max(0,n.y)+0.2*Math.abs(n.z)),holoMat);m.position.set(x,y,z);m.userData.spin=spin;m.frustumCulled=false;m.renderOrder=5;hall.add(m);holos.push(m);return m;};
+    for(const x of COLS)for(const z of ROWS){const c=tint[Math.floor(R()*tint.length)];holo(kinds[Math.floor(R()*kinds.length)](c),x,2.5,z,(R()<0.5?-1:1)*(0.15+R()*0.2));}
+    // the uniform, on the dais: a harness for a body with three arms and three legs, round a short trunk -
+    // straps, pockets, the sleeves a third of the way round from each other, the legs between them
+    {const c='#e8f0ff',dk='#9ab8d8',u=[];u.push([new THREE.CylinderGeometry(0.45,0.5,1.1,9),T(0,0,0),c],[new THREE.CylinderGeometry(0.47,0.47,0.12,9),T(0,0.25,0),dk],[new THREE.CylinderGeometry(0.52,0.52,0.12,9),T(0,-0.45,0),dk]);
+      for(let k=0;k<3;k++){const a=k*TAU/3,b=a+TAU/6,ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b);
+        u.push([new THREE.CylinderGeometry(0.13,0.16,1.1,8),new THREE.Matrix4().compose(new THREE.Vector3(ca*0.75,0.35,sa*0.75),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(ca,0.35,sa).normalize()),new THREE.Vector3(1,1,1)),c]);
+        u.push([new THREE.CylinderGeometry(0.11,0.13,0.25,8),new THREE.Matrix4().compose(new THREE.Vector3(ca*1.28,0.53,sa*1.28),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(ca,0.35,sa).normalize()),new THREE.Vector3(1,1,1)),dk]);
+        u.push([new THREE.CylinderGeometry(0.17,0.14,1.3,8),new THREE.Matrix4().compose(new THREE.Vector3(cb*0.35,-1.15,sb*0.35),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(-cb*0.25,1,-sb*0.25).normalize()),new THREE.Vector3(1,1,1)),c]);
+        u.push([new THREE.BoxGeometry(0.22,0.26,0.1),new THREE.Matrix4().compose(new THREE.Vector3(Math.cos(a+TAU/12)*0.5,-0.1,Math.sin(a+TAU/12)*0.5),new THREE.Quaternion().setFromEuler(new THREE.Euler(0,-(a+TAU/12)+Math.PI/2,0)),new THREE.Vector3(1,1,1)),dk]);}
+      HALL.uniform=holo(u,0,3.6,Z-4,0.12);HALL.uniform.scale.setScalar(1.15);}
+    // a glow at each pillar's foot, so the floor round it is lit
+    for(const x of COLS)for(const z of ROWS){const g=new THREE.Sprite(new THREE.SpriteMaterial({map:soft,color:0x5a8ab0,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));g.position.set(x,1.2,z);g.scale.setScalar(4.5);hall.add(g);}
+    animHooks.push(now=>{if(!IN.visible)return;const t=now/1000;for(const m of holos)m.rotation.y=t*m.userData.spin;
+      holoMat.opacity=0.8+0.08*Math.sin(t*7.3)+0.04*Math.sin(t*23.1);glassMat.opacity=0.42+0.06*Math.sin(t*1.7);});
+    hall.traverse(o=>{o.userData.noWire=true;});      // built after the interior was marked, so marked here
+    HALL.group=hall;}
+
   const PLACES={
     hub:{label:'The hub, at the head of Alpha',y:S.HUBY-260,a:S.STAIRS[0].a,r:240,yaw:Math.PI,pitch:-0.08},
     stairs:{label:'Halfway down Alpha stairway',y:S.yN(4400)-60,a:S.STAIRS[0].a,h:1.7,yaw:Math.PI,pitch:-0.05},
@@ -513,6 +580,7 @@ export function buildInterior(api,O){
     south:{label:'The Southern Plain',y:-12500,a:S.VAL_S[0]+0.5,h:1.7,yaw:Math.PI,pitch:0.04},
     horns:{label:'Before the Big Horn',y:-13500,a:0.3,r:2600,yaw:Math.PI,pitch:-0.05},
     axis:{label:'The axis, over the Sea',y:0,a:S.NYA,r:80,yaw:Math.PI,pitch:-0.2},
+    hall:{label:'London: the hall of holograms',y:HALL.y+HALL.l/2-6,a:HALL.a,h:1.7,yaw:Math.PI,pitch:0.02},
     tour:{label:'Fly the axis, hub to horns (two minutes)',y:S.HUBY-400,a:S.STAIRS[0].a,r:600,yaw:Math.PI,pitch:-0.15},
   };
   const el=renderer.domElement;
@@ -558,7 +626,7 @@ export function buildInterior(api,O){
     const lights=LS.sun>0.5?'the suns are lit':LS.flare>0.1?'flarelight':'dark';
     return where+(W.h<4?'standing':Math.round(W.h)+' m up')+' · '+(r/1000).toFixed(2)+' km from the axis · '+g.toFixed(2)+' g · '+lights+(LS.ice>0.5?' · the Sea is ice':'');};
 
-  return {group:IN,W,PLACES,valleys,hornTips,CITIES,
+  return {group:IN,W,PLACES,valleys,hornTips,CITIES,HALL,
     active:()=>W.on,enter,exit,camFrame,hud,where:()=>W.where,
     showFromOutside:on=>{showOutside=on;if(!W.on)IN.visible=on;},
     follow:fn=>{W.follow=fn;},setWave,fireFlare,strike,placeOn,orient,Batch,vM,lampMat,soft};
