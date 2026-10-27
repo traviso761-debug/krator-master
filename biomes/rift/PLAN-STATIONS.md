@@ -330,7 +330,7 @@ litter sets (station 1).
 
 ## 8. The order of work
 
-- **S0.** Done: the owner's answers (2026-10-27). Left: the prompts (section 7) into `PROMPTS-NEEDED.md`; section 10's two questions.
+- **S0.** Done: the owner's answers (2026-10-27). Left: the prompts (section 7) into `PROMPTS-NEEDED.md`; section 10's gallery question.
 - **S1.** The station frame: `build.py --station`, the shared kit and per-station hosts (`stations/<name>/`), the fields bound
   from the model's ground at each pixel (`air` and `island` added), the readers' API kept (`RIFT.make/grow`, indices).
 - **S2.** **Station 2, the rift jungle** first: the old page's content is mostly the jungle's, so it carries the graphic-load
@@ -369,9 +369,16 @@ their harvest tags). `tools/perf_views.py` (on this branch) is the measuring too
 | The abyssal-savannah cousins | **taken** on station 1 |
 | The feral three | **agreed** as placed (maw trumpet and thornwhip in the jungle, blade pear on the savannah) |
 
+| Cube's ruin on station 4 | **the existing Arccube model** (`kits/ancients/targets/arcube`, its ruined state: the south face fallen in, a pier down, the heliport tower fallen onto the plain) **for massing**; it will want changes later. **Hardy survivors live in it**: the Tungangs' Loj Nahn (`LORE.md` §6.1, §6.20; `biomes/riftrim/PLAN.md` section 6) |
+
+**Station 4 and Loj Nahn** (*proposed* from the lore, the owner 2026-10-27): about a thousand Tungangs sealed into **Arccube's upper
+levels** for five centuries, farming its **upper terraces** (crops for 1.65 atm Cfa from `kits/crops`), lowering stealthy parties
+at night for wood; the Lizardmen round the foot attack any they meet but have never pressed further. On the page: the arcology
+massed from the Arccube target, the plateau's growth dressing its lower, abandoned levels and its fallen pieces (`RIFT.dress`
+on its shells, as the Girder tower on the old page), green terraces and a few lamps high up at night, rope ways down the
+broken south face, and nothing lower down that says who they are (the loj is known to no one outside it; the inspector
+names the terraces, not the people). The exchange stays the author's secret: nothing on the page says it.
+
 Still open:
 
-1. **Cube's ruin on station 4**: drawn as a standing ruin from an existing kit (the Ancients kit's arcology pieces, as Girder's
-   tower dresses the old page) with the plateau's growth on it, or left as a footprint until its settlement plan? And whether
-   anyone lives in it (the Lizardmen of Sauropolis, 60 km on, or Dalab's field stations as on the rim).
-2. **The gallery**: four new station pages replace one; publish each as it lands, or the set when station 4 is done?
+1. **The gallery**: four new station pages replace one; publish each as it lands, or the set when station 4 is done?
