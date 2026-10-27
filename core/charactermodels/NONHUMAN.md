@@ -25,17 +25,29 @@ was built, how it was checked, and what full Lizardmen and therian peoples would
 - Over trousers it comes out through the waistband's back; through a shirt, a robe or a cape it comes through the cloth
   (KNOWN_ISSUES.md).
 
-**An animal head** (`tools/mods.py lizard_head`, kit item `mod_head_lizard`), a procedural reptile snout:
-- The cranium and upper jaw lofted from a profile (`SNOUT`: per station along the head, half width, top, mouth line,
-  jaw bottom; scaled to each body's head), rigid on Head; the lower jaw on `face_jaw`; eyes with a slit pupil under brow
-  ridges, nostrils, a crest of low spines, teeth inside the closed mouth, a dark mouth.
+**An animal head** (`tools/mods.py lizard_head`, `tools/reptile.py`, kit item `mod_head_lizard`): a Komodo dragon's
+head with an iguana's crest (the owner's photographs, 2026-10-27; its first form, a lofted snout with slit-pupilled
+eyes, was replaced):
+- Two signed distance fields meshed as the therian heads are (`tools/heads.py`: surface nets on a 3 mm grid, projected,
+  smoothed). The upper head, rigid on Head: a loft (`UPPER`: per station half width, top and mouth line, scaled to each
+  body's head) with the temples swelling behind the eyes, brow ridges hooding them, the nostrils' bosses near the tip,
+  the skull carried back over the jaw's hinge and down the nape. The lower jaw on `face_jaw`: a loft (`LOWER`) a
+  little narrower, so the upper lip's scales overhang it, heavy jowls, the throat in loose folds.
+- Painted per vertex (the skin tint multiplies it): a dark mottle, paler lip scales, a pale ring round each eye, a
+  lighter throat. The skin is the library's `organic.scale` (its albedo made near-colourless, and its normal map), on
+  the tail too; without the images checked out, the procedural stand-in (`scale_texture`).
+- Eyes: a round black pupil in a dark amber iris. **Lower lids** rise to shut them: a `blink` morph target on the
+  piece's second mesh, which the figures' blinks drive (as the coyote's upper lids).
+- The crest: flat blades down the midline from the crown over the nape and down the back of the neck (`crest`,
+  `blade`), short on the crown, tallest on the neck, standing up and back; the neck's on the nearest base vertex's
+  weights and deltas. Teeth inside the closed mouth, seen when it opens.
 - It replaces the human head: the item's `hide` is the base skin weighted at least half to Head (the human head's
   skin, as a worn item hides skin), its `hide_parts` the lips, ears, brows, lashes and eyes, and `replaces_head` drops
   hair, beard and headgear (`KCHAR.replacesHead`, `KChar.replaces_head`).
 - A collar from the neck, below the edge of the hidden skin, up into the head covers the seam. Its vertices take the
   nearest neck vertex's weights and morph deltas, fading to the head's above that edge, so it follows the neck under
   every slider. The head's rigid parts move with the Head joint's morph delta (the face sliders do nothing to it).
-- **The jaw** (no clip moves it either): opened about its hinge by up to 9 degrees for a third of every 5 seconds, a
+- **The jaw** (no clip moves it either): opened about its hinge by up to 6 degrees for a third of every 5 seconds, a
   breath with the mouth a little open (`jaw` / `_jaw`; kit item `jaw`). `fig.jawOpen` (`jaw_open` in Godot) holds it.
 
 **Making them.** `python3 tools/nonhuman.py` puts both on the bodies as they stand, from the published pieces, with no

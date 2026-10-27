@@ -410,6 +410,15 @@ area you are about to change.
 - **Lower sleeves on cybernetic arms** look wrong → leave them off; sleeve pieces keep only their own vertices.
 - **Four-armed tops built before the lower ranges existed had no lower vertices** → regenerate after changing the rig.
 - **Giant roots and ledges** → shrink-wrap to the body, hang at rest, blend by distance from the open edge.
+- **An animal head's face parts showed on the woman** (dark slashes through the lizard's snout) → her brows and lashes
+  are `eyebrow002`, `eyelashes02`, the man's `001`, `01`: hide both variants (or what the base GLB carries).
+- **A blink target on one primitive broke the piece** → glTF wants every primitive of a mesh to carry the same targets:
+  put the lids on a second mesh node of the same skin (`write_piece` prim `mesh: 1`, as `heads.py` does).
+- **A lofted animal head looked like a helmet** → model it as signed distance fields (`heads.py`, `reptile.py`):
+  temples, brows, jowls and nostrils blend in, and a grid bound that clips the field leaves a hole (check open edges).
+- **A beast's jaw reached behind its skull** → the skull overhangs the jaw's hinge; behind the mouth's corner round
+  the upper head down into the jowls, or its palate stands out as a ledge.
+- **The jaw did not open in a still shot** → it moves after a clip (`afterClip`): play the idle to see `jawOpen`.
 
 ## 10. Godot twin
 

@@ -233,8 +233,11 @@
   - *The tail comes through the cloth* of a top, robe or cape over its root (over trousers it leaves by the waistband's
     back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
     opening, and the cloth chains do not collide with the tail.
-  - *Its scales are a procedural stand-in* (`mods.scale_texture`) and the body under them is human skin tinted olive:
-    the textures are asked for in `core/materials/PROMPTS-NEEDED.md`, section 21. In Godot the stand-in aliases more.
+  - *Its scales are the library's `organic.scale`*, a snake's flank, on the head and the tail, and the body under them
+    is human skin tinted olive: the Lizardmen's own textures are asked for in `core/materials/PROMPTS-NEEDED.md`,
+    section 21. Under the head's colour the collar's lower edge shows as a line against the body's skin.
+  - *The lizard head's crest runs down the neck's skin*: a high collar or a hood would come through it.
+  - *The lizard head's lip* overhangs at the corner of the mouth as a thin tab seen from the front.
   - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
   - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
     published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.
