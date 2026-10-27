@@ -617,3 +617,62 @@ tributary's `drawFlow` with a higher `renderOrder` than the main's (its water li
 ground is the host's: carve every channel near a point and keep the lowest, not only the nearest one (biomes/swhighlands
 `45-host-stage.js` `terrainH0`), so no bank of one stands in the other's water. Nothing else in core/water changes: no existing call
 or output moves (`test-water.js`, `test-gaps.js`, `test-kinds-ext.js`, `test-rebuild.js` pass unchanged). Used by: biomes/swhighlands.
+
+## Confluences (2026-10-27: ext/55 and 55b; `node core/water/test-confluence.js`)
+
+The owner's ask (the SW highlands' cave stream into the fold river): a tributary and its river read as one water, with rounded banks
+where they meet, no foam or pale line across the mouth, and ripples that flow into one another instead of shearing. Two ribbons cannot
+do this. Each `drawFlow` is a strip with straight edges, foam by its own bank distance and ripples advected along its own current.
+`WATER.join`'s cut and the strip patches (the pool under the mouth, the end fade, the foam holes) got close but no further.
+
+A **confluence** is one surface over a disc round the mouth, a grid whose vertices carry what a ribbon's vertices carry (level, current,
+slope, bank distance). It is drawn with `drawFlow`'s own text, so it is the same water:
+
+- **The shore is the ground's, rounded.** The water is the vertices flooded from the channels where the ground lies under the blended
+  level, inside the channels' smooth union (`round` m, half the narrowest flow's width: the corners between them filleted). A hollow cut
+  off from them stays dry, and a level that stands over a low valley floor (the SW highlands' river does, 1.5 m on its east side) stays
+  in its channels. The bank distance is the exact distance to that shore (`W.edt`): where the ground rises the corners are its
+  contours, elsewhere the union's fillets.
+- **One current.** Each flow's current is weighted by its distance past its channel (`reach`, half the flow's half width), then blurred
+  over the water (`blur`, 4 m). The tributary's current turns into the river's (6.5 degrees a metre in the test), and the ripples, advected
+  per vertex by `wtrFlowN` as on a ribbon, stretch at most 0.8 m a metre over a ripple phase. Unblurred: 55 degrees and 4 m. Checked in the SW highlands page (the cave stream into the fold river, 2026-10-27): rounded corners, no line
+  across the mouth, foam only along the real banks, no seam where the disc meets the ribbons.
+- **Foam from the real bank.** It comes from `wtrFlowFoam` on that distance: none across the mouth (the bank is 5 m off there), the usual
+  edge foam on every real shore, plus a faint churn where the currents meet at an angle (`meet`, .12: at .35 it read as foam blotches over the mouth).
+- **Seamless at its rim.** Over the outer `feather` every value runs to what the nearest ribbon has there, and its alpha with it, while
+  `fadeRibbons` fades both ribbons out inside the disc: the two cross-fade on the same numbers (the level within 2e-5 m at the rim).
+
+| Call | What |
+|---|---|
+| `WATER.confluence({name, flows, at, r, feather, cell, ground, reach, blur, sharp, meet, margin, round})` | `flows`: the WATER.flow records that meet (the river first; two or more); `at`: the mouth [x, z]; `r`: the disc's radius (1.25 x the widest flow's width); `feather` (.4 r); `cell` (1 m); `ground` (x, z) -> y (required: the page's terrain). Returns C (in `WATER.groups`): `C.at(x, z)` -> {y, vx, vz, slope, bank, fade, meet} as the mesh interpolates, `C.fadeAt`, `C.heightAt`, `C.flowAt`, `C.contains`, `C.mesh()`, `C.export()` (the grid, rounded to 1e-4) |
+| `WATER.drawConfluence(C, o)` | one mesh (only the quads with water and weight); `o` is `drawFlow`'s colour options: pass the river's, so it is the river's water |
+| `WATER.fadeRibbons(C, [drawFlow drawings])` | each ribbon's alpha times 1 - C.fadeAt (an opaque ribbon discards under half); only the materials passed change |
+
+**Adopting it** (biomes/swhighlands station 1 is the worked case: `src/89w-host-water.js`, build.py's ext list):
+
+- `build.py`: `core/water/ext/55-core-water-confluence.js` and `55b-core-water-confluence-draw.js` by path, after the top-level core/water.
+- Make the tributary's line meet the river (`WATER.join`, or end it at the river's water edge), and carve the ground under both, joining
+  the channels with a smooth minimum so the corners are round in the ground itself. The confluence's shore is the ground's.
+- Draw the ribbons as before (no end fades, holes or pools at the mouth), then
+  `const CF=WATER.confluence({name, flows:[RIVER, STREAM], at:streamEnd, ground:terrainH});`
+  `WATER.drawConfluence(CF, RIVER_DRAW_OPTIONS); WATER.fadeRibbons(CF, [RIVER_DRAW, STREAM_DRAW]);`
+- Costs one mesh (a 25 m disc at 1 m: about 3,000 triangles) and a bake of a few milliseconds per flow segment near the mouth.
+  Nothing else moves: `test-gaps.js` loads the fragments, and the export of a scene made before they load is unchanged.
+
+**Godot.** `KWater.confluence_at(record, x, z, key)` and `confluence_ribbon_fade` read the export's group record
+(`godot/tests/water/confluence_test.gd`, golden `node godot/tools/water_confluence_golden.js`). `water_import.gd` does not draw it yet:
+a port builds the grid mesh from the record's arrays (n x n, the triangles split as `C.mesh()` splits them) with the ribbon shader's
+varyings, and fades its ribbons by `confluence_ribbon_fade`.
+
+## Tall falls: `drawFall({plungeR, footK})` (2026-10-27, the Rift jungle; `node core/water/test-falls-opt.js`)
+
+Two options for falls down high cliffs, both opt-in (without them the shader text is the old one: `test-gaps.js`):
+- `plungeR` (m): the churn disc's radius, its alpha faded over the outer quarter. The default disc is 2.4 x max(lip width, 5% of the drop)
+  (62 m under a 26 m lip) and lies flat at the foot's level, so wherever the ground is lower it shows as a white sheet or rings over dry
+  ground. Size it to the pool it lands in, and draw the pool itself as a `WATER.still` (the disc is only the churn).
+- `footK` (0..1): the curtain's alpha held toward its foot (white water arriving at the pool) instead of thinning to 0.6 of itself over the
+  lower half; a 160 m curtain read as stopping half way down its cliff. The Rift takes .8.
+
+Placing a fall (what the Rift's faults came from, not core's): put the lip where the ground falls away (the first metre of drop in a
+metre), at the river's surface there, so there is no step between the river and its curtain; land it at the toe (`foot`), and on a face
+that is not sheer use `face: terrainH` (W3) so the curtain follows it; carve the pool at the toe, not further out.
