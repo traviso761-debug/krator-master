@@ -76,6 +76,25 @@ the same bumps, and a seed gives other lobes. The test runs the same seed twice 
   `o.nav` sets the record's navigation costs; a sim's box is wide, so a page may not want KHAZ's `avoid` over all of it.
 - `sim.export()`: `krator-lava`, version 1. `h`, `T` and `dep` are Float32 base64 (KFIELD's), for Godot or a save.
 
+## Frozen flows at build time (`KLAVA.bake`)
+
+For a page whose ground is old lava, such as the Godthrone's high flank (station 2). The eruptions run one after another
+over a height function; each runs until all of it has frozen. Once its vent is off and nothing moves faster than `vStop`
+(5 mm/s), what is left freezes in place with `sim.freeze()`: the yield has already set the shape.
+
+```js
+const B = KLAVA.bake({h: (x, z) => y, box: [x0, z0, x1, z1], cell: 40, seed: WORLD, dtMin: 120, dtMax: 120,
+  eruptions: [{x, z, r: 40, Q: 200, duration: 86400, T: 1420}, ...]});
+// B.dh: Float32Array of metres to add, B.age: Uint8Array (0 none, k+1 the last eruption that froze there), B.nx, B.nz, x0, z0, cell
+```
+
+The cost is the cells with lava times the steps. On a 10 km square sloping 6.5%, three eruptions of 17 Mm3 each take
+2.7 s on 40 m cells and 15 s on 20 m cells (node, this machine, 2026-10-27, a fixed 120 s step). The adaptive step on
+10 m cells ran past 10 minutes. So bake at 20-40 m and add the fine detail on top. What it makes: lobate flows stacked
+in order, thicker where the slope eases, stopped at the yield thickness. What it does not make: **levees and central
+channels**. The whole column freezes at once (MAGFLOW's rule), so no crust forms at the margins while the middle keeps
+moving. A levee needs a margin that freezes first; that is a follow-up to the model.
+
 ## Adopting it
 
 A build opts in by explicit path; it is not pooled. Nothing changes on a page that does not list it.

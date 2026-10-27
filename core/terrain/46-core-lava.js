@@ -25,7 +25,8 @@
 //   sim.pond({inside(x,z) | cells:[k...], level: m | fn(t, out), T, name})   cells held at max(0, level - z), T: a lake;
 //                 out (m3, the net volume that left them) is its ledger: fn(t, out) is how a page's lake level follows it
 //   sim.step(dt)         one step of dt s;  sim.run(seconds) -> {steps, t}: steps of dtNext (the front's CFL) to it
-//   sim.dtNext           cfl * step / the fastest mean velocity of the last step, in [dtMin, dtMax]
+//   sim.dtNext           cfl * step / the fastest mean velocity of the last step, in [dtMin, dtMax]; sim.umax that velocity (m/s)
+//   sim.freeze()         freezes all the lava (not a pond's) where it lies: a bake's end, a scenario cut short
 //   sim.cs               the cell size (m: the field's step times stride); sim.x0, z0, nx, nz the lattice
 //   sim.z, h, T, dep, vx, vz (Float64Array: ground with deposits, thickness, temperature, frozen thickness, velocity)
 //   sim.frozeAt          Float64Array: sim.t when the cell last froze (NaN never)
@@ -150,10 +151,11 @@ function create(o){
     if(hc>hmin)mol++;if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;}
    for(const V of vents)for(const k of V.cells){const i=k%nx,j=(k-i)/nx;if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;}
    bi0=a0;bj0=b0;bi1=a1;bj1=b1;sim.molten=mol;
-   const dn=umax>0?cfl*step/umax:dtMax;sim.dtNext=dn<dtMin?dtMin:dn>dtMax?dtMax:dn;
+   sim.umax=umax;const dn=umax>0?cfl*step/umax:dtMax;sim.dtNext=dn<dtMin?dtMin:dn>dtMax?dtMax:dn;
    sim.t=t+dt;sim.steps++;return dt;},
   run(seconds){const end=sim.t+seconds;let n=0;
    while(sim.t<end-1e-9){const dt=Math.min(sim.dtNext,end-sim.t);sim.step(dt);n++;}return {steps:n,t:sim.t};},
+  freeze(){let n=0;for(let k=0;k<N;k++){if(pondOf[k]>=0||!(h[k]>0))continue;z[k]+=h[k];dep[k]+=h[k];h[k]=0;vx[k]=vz[k]=0;frozeAt[k]=sim.t;n++;}sim.molten=0;return n;},
   box:()=>[bi0,bj0,bi1,bj1],
   at(x,zz,o2){o2=o2||{};let i=Math.round((x-x0)/step),j=Math.round((zz-z0)/step);i=i<0?0:i>nx-1?nx-1:i;j=j<0?0:j>nz-1?nz-1:j;
    const k=j*nx+i;o2.k=k;o2.h=h[k];o2.T=T[k];o2.z=z[k];o2.dep=dep[k];o2.surf=z[k]+h[k];o2.molten=h[k]>hmin&&T[k]>R.Tsol;
@@ -206,7 +208,31 @@ function bind(rec,sim){const key=typeof rec==='string'||typeof rec==='number'?re
  if(root.KHAZ&&root.KHAZ.STATES)root.KHAZ.STATES['KLAVA.flow']=flowState;
  BOUND[key]=sim;return sim;}
 
-const KLAVA={version:1,RHEO,rheo,flux,create,bind,flowState,SIGMA,G:G0,DI,DJ,WEIGHTS:{face:WO,corner:WD},CAPS:{face:KO,corner:KD}};
+// ---- frozen flows at build time (Godthrone station 2's lava plain): eruptions one after another over a height function, each
+// run until all of it has frozen; what comes back is the ground they added and which eruption laid each cell's top
+//   KLAVA.bake({h: (x,z)=>y, box: [x0,z0,x1,z1], cell: m, eruptions: [{x, z, r, Q: m3/s | fn(t), duration: s, T}], seed,
+//               rough, rheo, edge, hmin, dtMin, dtMax, cfl, maxSeconds: per eruption (2e6), vStop: .005 m/s})
+//     once an eruption's vent is off and nothing moves faster than vStop, what is left freezes in place (sim.freeze: the yield
+//     has set the shape; cooling the rest would only cost steps). Its cost is the cells with lava times the steps: a fixed
+//     long step (dtMin = dtMax = 120 s) on 20-40 m cells is the budget a page can spend at load (LAVA.md)
+//     -> {dh: Float32Array (m added), age: Uint8Array (0 none, k+1 the last eruption that froze there), nx, nz, x0, z0, cell,
+//         eruptions: [{volume, frozen, lost, steps, seconds, done}], ms}
+//   t in Q(t) runs from each eruption's own start. Deterministic: the roughness is KRAND.hash on the lattice, seeded by seed
+function bake(o){const t0=Date.now(),b=o.box,c=o.cell;if(!b||!(c>0)||typeof o.h!=='function')throw new Error('KLAVA.bake: h, box and cell');
+ const nx=Math.floor((b[2]-b[0])/c+1e-9)+1,nz=Math.floor((b[3]-b[1])/c+1e-9)+1,H=new Float32Array(nx*nz);
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)H[j*nx+i]=o.h(b[0]+i*c,b[1]+j*c);
+ const s=create({x0:b[0],z0:b[1],step:c,nx,nz,heights:H,seed:o.seed,rough:o.rough==null?.3:o.rough,rheo:o.rheo,edge:o.edge,hmin:o.hmin,dtMax:o.dtMax==null?120:o.dtMax,cfl:o.cfl==null?2:o.cfl,dtMin:o.dtMin==null?2:o.dtMin});
+ const age=new Uint8Array(s.N),prev=new Float64Array(s.N),out=[],maxS=o.maxSeconds==null?2e6:o.maxSeconds;
+ (o.eruptions||[]).forEach((e,n)=>{const start=s.t,dur=e.duration==null?86400:e.duration,m0=s.mass(),st0=s.steps;
+  const V=s.vent({x:e.x,z:e.z,r:e.r==null?c:e.r,T:e.T,name:'eruption '+n,Q:t=>{const u=t-start;return u<0||u>dur?0:typeof e.Q==='function'?e.Q(u):e.Q;}});
+  const vStop=o.vStop==null?.005:o.vStop;let quench=false;
+  while(s.t-start<maxS){s.run(3600);if(vStop>0&&s.t-start>dur&&s.umax<vStop){s.freeze();quench=true;}if(s.t-start>dur&&s.molten===0){let any=false;for(let k=0;k<s.N;k++)if(s.h[k]>0){any=true;break;}if(!any)break;}}
+  V.Q=0;const m=s.mass();
+  for(let k=0;k<s.N;k++){if(s.dep[k]>prev[k]+1e-6)age[k]=Math.min(255,n+1);prev[k]=s.dep[k];}
+  out.push({volume:V.poured,frozen:m.frozen-m0.frozen,lost:m.lost-m0.lost,steps:s.steps-st0,seconds:s.t-start,done:s.molten===0,quenched:quench});});
+ return {dh:Float32Array.from(s.dep),age,nx,nz,x0:b[0],z0:b[1],cell:c,eruptions:out,ms:Date.now()-t0};}
+
+const KLAVA={version:1,RHEO,rheo,flux,create,bake,bind,flowState,SIGMA,G:G0,DI,DJ,WEIGHTS:{face:WO,corner:WD},CAPS:{face:KO,corner:KD}};
 root.KLAVA=Object.assign(root.KLAVA||{},KLAVA);   /* the three.js halves (host/46-core-lava-gpu.js, -draw.js) merge into the same global, whichever loads first */
 if(typeof module!=='undefined'&&module.exports)module.exports=KLAVA;
 })(typeof window!=='undefined'?window:globalThis);
