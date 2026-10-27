@@ -43,6 +43,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # (add sim to see a stub fail).
 EXPORT_BOX = [380, -320, 680, -20]   # the cove's east edge and the fold river (2026-10-26)
 EXPORT_BOX_TREELINE = [-700, -250, -400, 50]   # station 6: the woods on the lower ramp
+EXPORT_BOX_PILLARS = [-500, -1100, -200, -800]   # station 4: a stretch of the table with its anemone trees and slots (no water in it; the watch pillar is held bare)
 EXPORT_PROFILE_TREELINE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']   # no water drawn there
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
@@ -110,7 +111,12 @@ if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, d
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
 
 // 6. THE BIOME'S OWN INVARIANTS (src/99-host-take.js or stations/<name>/99-host-take.js, biomeChecks)
-if(window._biome&&window._biome.station==='treeline'){ const B=A.biomeChecks();
+if(window._biome&&window._biome.station==='pillars'){ const B=A.biomeChecks();
+  R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
+  R.push({name:'nothing-on-the-cliffs', ok:B.treesOnCliffs===0, detail:B.treesOnCliffs+' hero trees on ground steeper than 1.2 (off the tops of the towers)'});
+  R.push({name:'the-towers-and-the-floor-drawn', ok:B.towers>=30&&B.floor.cushion>1000&&B.floor.torch>1000&&B.floor.beadcoral>200&&B.floor.turf>5000,
+          detail:B.towers+' towers ('+B.pillarTris+' rock triangles), floor '+JSON.stringify(B.floor)}); }
+else if(window._biome&&window._biome.station==='treeline'){ const B=A.biomeChecks();
   R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
   R.push({name:'nothing-on-the-cliffs-or-snow', ok:B.treesOnCliffs===0&&B.treesOnSnow===0, detail:B.treesOnCliffs+' hero trees on ground steeper than 1.2, '+B.treesOnSnow+' trees on snow'});
   R.push({name:'the-floor-and-the-glass-towers-drawn', ok:B.floor.glassleaf>500&&B.floor.stones>500&&B.floor.whorls>1000&&B.floor.brush>200&&B.glassTowers>10,
@@ -200,12 +206,14 @@ async def run(a):
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
                 tl = 'treeline' in os.path.basename(a.html)
-                if tl and not a.profile:
+                pl = 'pillars' in os.path.basename(a.html)
+                if (tl or pl) and not a.profile:
                     prof = EXPORT_PROFILE_TREELINE
-                pok, lines = await check_profile(pg, EXPORT_BOX_TREELINE if tl else EXPORT_BOX, prof)
+                box = EXPORT_BOX_TREELINE if tl else EXPORT_BOX_PILLARS if pl else EXPORT_BOX
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % (EXPORT_BOX_TREELINE if tl else EXPORT_BOX))
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

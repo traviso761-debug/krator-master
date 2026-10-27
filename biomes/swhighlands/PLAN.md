@@ -59,6 +59,14 @@ wet ground and puddles only (no running water: the owner's brief). It adds `biom
 its one-plant API `EHIGH.make`/`grow`) and KGROUND's `clast` layer kind for the fellfield. Strata: formations `ringfold` under
 `megabreccia` (`crest`).
 
+**The pillar rim** (station 4, 2026-10-27) takes the same modules (`--station pillars`), with core/terrain's `KRELIEF.joints` and
+`KRELIEF.tableland` (the table, its slots and its cliff in one height function), `KSTACKS.pillars` (the towers from the same joints
+and zone), the opt-in companion `37b-core-stacks-contour.js` (`KSTACKS.contour`: listed for this station only, so no other page
+moves) and `KSTACKS.weather`; KSTRATA's `pillar` recipe laid level; `core/water` for Pan Riba (`WATER.flow` on `KRELIEF.meander`).
+**It is the biome only** (the owner, 2026-10-27: Span the asset, Span the settlement and station 4 the biome strictly apart): it
+reads nothing of `settlements/span` and draws nothing of it. What a settlement may build on it publishes as plain data
+(`SWHI_PILLARS_SITE`, the page's `site` exporter: BIOME-API.md "Station 4's site"); it holds the watch pillar's top bare for one.
+
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26)
 
 93,816 km² (px 236-414 by 528-756), inside the Inner Crater polygon.
@@ -216,6 +224,18 @@ Unused for now: the mossy arch tree and the thorny log with blue eggs (`refs/08`
   into **flysch platforms**: ribs of hard rock running out to sea, mossed and weeded between the tides (`refs/32`).
 - **The crest**: cirques and fellfield, read from `riftrim` or `nhighlands`.
 
+**The owner's rock references (2026-10-27, pasted into the session; not yet saved under `refs/`: drop them in as 41-47):**
+41 a natural bridge in forest (Kentucky's): a thick lintel with blocks and a soffit undercut, legs of varnished sandstone,
+moss and rhododendron to the rock; 42 Delicate Arch: a free-standing arch on a slickrock bench, its legs pinched at the waist;
+43 a thin span over a desert of fins (Valley of Fire): cross-bedded, honeycombed rock; 44 a gorge in banded iron (Karijini):
+stepped ledges in thin red beds, a stair of falls into a green pool, spinifex on the rim; 45 and 46 Canyon de Chelly: a green
+floor with a braided stream and cottonwoods between sheer varnished walls, a fin standing free, Spider Rock's twin spire;
+47 a hoodoo (Bisti's): a soft column carved into flutes and windows under a hard caprock.
+Where they go: 41-43 station 1's arch and bridges (thinner, pinched legs; an undercut soffit; the `KSTACKS.arch` form wants a
+softer eroded shape, LESSONS.md "Suggestions for core" 9); 44 station 2 and 3's gorges and slot canyons; 45-46 station 4 (done
+2026-10-27: fins and spires, talus at their feet, desert varnish, the bands softened toward one orange-red); 47 station 3's
+tableland hoodoos (a caprock form for `KSTACKS`, owed).
+
 The fields and seeds are deterministic from the terrain (`KRAND` by cell), as every kit's.
 
 ## 5. Where the native forest meets Earth's
@@ -253,8 +273,11 @@ scarp's foot.
 3. **Span's tableland** (`-span`, ~2.5-3 km): slot canyons, a hanging swamp with cell lamps, wing reeds and bulb
    trumpets, beehive domes, torch spikes, the twin falls at the rim; **Span's canyon** with the arcology's ruin down its
    walls and across it, the lake upstream.
-4. **The pillar rim** (`-pillars`, the tableland's south-west edge): the painting: red and white towers in mist, anemone
-   trees on their tops, the green floor and Pan Riba's meanders; Dalab's watch post on one tower's top.
+4. **The pillar rim** (`-pillars`, the tableland's south-west edge, ~2.3-2.6 km): the painting: red and white towers in mist,
+   anemone trees on their tops, the green floor and Pan Riba's meanders. Built 2026-10-27 (`stations/pillars/`): a 3.2 km map,
+   the table's top 270 m over the floor, its cliff wandering east-west, 40 towers in a 430 m band beyond it (the joints 64-130 m
+   apart, two blocks in five standing), the watch pillar (62 x 60 m, made whole, its top flat and held for a settlement's post:
+   Dalab's, placed by `settlements/span` from the station's published site, never by the station).
 6. **The treeline** (`-treeline`, ~3.4-4.9 km, Dsb and Dsc; the owner, 2026-10-27: a station with no running water, the native
    forest in its second climate): the upper ramp's dry-summer woods under the crest. Bottle brushes on the sunny (north-facing)
    spurs, whorl columns in the shaded (south-facing) hollows and up to the treeline at ~4.3 km, glass leaf among the last trees and
