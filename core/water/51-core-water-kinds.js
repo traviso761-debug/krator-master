@@ -117,22 +117,27 @@
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(M.nrm,3));g.setAttribute('wtrUF',new T.Float32BufferAttribute(M.uv,2));g.setIndex(M.idx);g.computeBoundingSphere();
   /* o.lipK (opt-in, default none: the old curtain): the curtain's base alpha at the lip, thinning to the old 0.45 a third of the way
      down. Seen from above, a curtain only 45% opaque at its lip read as bare ground (nhighlands, the owner's look pass, 2026-10-26: .85) */
-  const col=o.color==null?0xb8d4d6:o.color,op=o.opacity==null?.92:o.opacity,lipK=o.lipK==null?null:o.lipK;
+  const col=o.color==null?0xb8d4d6:o.color,op=o.opacity==null?.92:o.opacity,lipK=o.lipK==null?null:o.lipK,footK=o.footK==null?null:o.footK;
   const mat=new T.MeshStandardMaterial({color:col,roughness:.42,metalness:0,transparent:true,depthWrite:false,side:T.DoubleSide});sky(mat,o);W.biasMaterial(mat,o);
-  const CH='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec2 vWtrUF;';const SD=S.curtainOpt.margin==null&&S.curtainOpt.edge==null?'':W.sideGLSL(S.curtainOpt,f(S.lipW));mat.customProgramCacheKey=()=>'wtr-fall:'+W.hashStr(CH+op+SD+(lipK==null?'':'|lip'+lipK));
+  const CH='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec2 vWtrUF;';const SD=S.curtainOpt.margin==null&&S.curtainOpt.edge==null?'':W.sideGLSL(S.curtainOpt,f(S.lipW));mat.customProgramCacheKey=()=>'wtr-fall:'+W.hashStr(CH+op+SD+(lipK==null?'':'|lip'+lipK)+(footK==null?'':'|foot'+footK));
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrUF;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrUF=wtrUF;');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+CH).replace('#include <color_fragment>','#include <color_fragment>\n'+
     'float wtrSt=wtrStreak(vWtrUF.x,vWtrUF.y);float wtrFm=wtrFallFoam(vWtrUF.y,wtrSt);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.95,0.97,0.97),wtrFm);'+
-    'diffuseColor.a='+f(op)+'*'+(lipK==null?'(0.45':'min(1.0,mix('+f(lipK)+',0.45,smoothstep(0.0,0.35,vWtrUF.y))')+'+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));');};
+    'diffuseColor.a='+f(op)+'*'+(lipK==null?'(0.45':'min(1.0,mix('+f(lipK)+',0.45,smoothstep(0.0,0.35,vWtrUF.y))')+'+0.55*smoothstep(0.25,0.8,wtrSt))*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+
+    /* footK (opt-in, 2026-10-27, the Rift's 160 m falls): the curtain's alpha toward its foot, the white water arriving at its pool,
+       instead of thinning to 0.6 of itself (a tall curtain read as stopping half way down its cliff) */
+    (footK==null?'*mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y));':';diffuseColor.a=max(diffuseColor.a,'+f(op)+'*'+f(footK)+'*smoothstep(0.3,1.0,vWtrUF.y)*'+W.sideGLSL(S.curtainOpt,f(S.lipW))+');'));};
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?3:o.renderOrder;scene.add(mesh);
   const D={S,mesh,material:mat,curtain:M};
   // the plunge pool: a disc of churned white water at the foot, its rings running out
-  if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
-   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S));
+  /* plungeR (opt-in, 2026-10-27, the Rift's falls): the churn disc's radius in m (default 2.4 x the plunge's own radius, as before), its alpha
+     faded to nothing over its outer quarter, so a disc sized to the pool it lands in (a WATER.still) never shows as a flat sheet past the pool */
+  if(o.plunge!==false){const P=W.plunge(S),r=o.plungeR==null?P.r*2.4:o.plungeR,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
+   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);const RF=o.plungeR==null?'':'diffuseColor.a*=1.0-smoothstep('+f(.75*r)+','+f(r)+',length(vWtrW.xz-vec2('+f(P.x)+','+f(P.z)+')));';pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S)+RF);
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);const C2='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec3 vWtrW;';
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);');};
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF);};
    D.plunge=tag(new T.Mesh(pg,pm),S,o);D.plunge.name+=':plunge';D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
    if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const sd=W.sprayByDrop(o);
     D.spray=A.smoke(sd?W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)).map(p=>[p[0],p[1],p[2],'spray']):[[P.x,y+1,P.z,'spray'],[P.x+P.r*.5,y+1,P.z,'spray'],[P.x-P.r*.5,y+1,P.z-P.r*.4,'spray']]);}}
