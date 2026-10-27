@@ -69,16 +69,16 @@
    "sha256": "faf48500933c917f9585903b980cda6b1bbfa53e30cf68dbda0f2308271ed6a3"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
-   "bytes": 1469313,
-   "sha256": "8e1cc6d41c85f7718cbd4049aba223a325cdb20c95baca0299a8ab2537f59687"
+   "bytes": 1485627,
+   "sha256": "a7eb0b11ade62bb1be49f803daa85d95ac0d592fab5d7bc494408728dcc31cf9"
   },
   "biomes/necanyons/dist/necanyons-savanna.html": {
-   "bytes": 1472323,
-   "sha256": "630d597fe1f1bcd78dbcdc8b6d11dde720ecbcfb6153b5e8a7b5583666fd656d"
+   "bytes": 1488637,
+   "sha256": "d01fef14582c8fa55f2ec332aba4510b85f5ca4ecc38968769ca3dd87bfd2fbc"
   },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 1468672,
-   "sha256": "84a87b6e56401da6644854bcbda733253e247bdc5aa67af07cee71043bdefc5a"
+   "bytes": 1484972,
+   "sha256": "0d8579e99d91ff071005dcea33bf0637ca58f4455fa7e42ff286ed2390c660fd"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 6308440,
