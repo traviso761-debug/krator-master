@@ -579,6 +579,20 @@
    "roughLift": 0.35,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
   }
  }
 }

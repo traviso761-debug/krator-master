@@ -106,8 +106,9 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,nR=S.ribs;
  st.trunk+=BIO.lathe('barkF',rings,T.young?18:lv===2?30:18,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.10*Math.cos(nR*ang+ph)),(R,ang)=>.78+.22*Math.cos(nR*ang+ph));
  const c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05),fk=Math.min(1,H/100)*(S.key==='cloudfrill'?1.6:1);   // fin length follows the tree: a sapling's fins are a metre
  const rows=lv===2?Math.max(3,Math.round(H/5.2)):Math.max(2,Math.round(H/10)),nf=lv===2?nR:nR/2;
- for(let r=0;r<rows;r++){const u=lerp(.06,.86,r/(rows-1)),yy=T.y0+H*u,R=rAt(u)*1.08;
-  for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=lerp(3.5,8.5,smooth(.05,.7,u))*fk*(.8+.4*fbm(u*9,k*.7,T.seed%97,1))*rr(.9,1.1);
+ /* the rows crowd toward the foot (u by a power) and the low fins are longer than they were: the trunk read bare low down (the owner, 2026-10-27) */
+ for(let r=0;r<rows;r++){const u=lerp(.04,.86,Math.pow(r/(rows-1),1.3)),yy=T.y0+H*u,R=rAt(u)*1.08;
+  for(let k=0;k<nf;k++){const a=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=lerp(5.5,8.5,smooth(.05,.6,u))*fk*(.8+.4*fbm(u*9,k*.7,T.seed%97,1))*rr(.9,1.1);
    BIO.put('frill',[T.x+Math.cos(a)*R,yy,T.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,lerp(1.05,.85,u)+rr(-.1,.1)),[L,L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),{c2:bright(pick(c2s),1.2),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.fins++;}}
  const top=T.y0+H*.9,n=lv===2?14:8,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.15,.15),L=H*rr(.09,.13)*mix(1.6,1,fk);BIO.put('frill',[T.x+Math.cos(a)*rAt(.9)*.7,top+rr(-1,1),T.z+Math.sin(a)*rAt(.9)*.7],qEuler(rr(-.1,.1),-a,rr(.55,.95)),[L,L,L*.95],bright(vary(hc,.02,.06,.05),1.4),{c2:bright(pick(c2s),1.2),n:[Math.cos(a)*.7,.7,Math.sin(a)*.7]});st.fins++;}
@@ -186,11 +187,12 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3;
  st.trunk+=BIO.lathe('bark1',rings,lv===2?9:7,Math.max(1,Math.round(TAU*rb/3)),vs,(R,ang)=>R.r,null);
  const nT=lv===2?ri(S.tiers[0],S.tiers[1]):ri(4,6),a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.08,.05),rc=rodCol(S,T.seed),c2=C(pick(PAL.irid.YG));
  let spread=0;
- for(let t=0;t<nT;t++){const u=lerp(.28,.96,(t+.5)/nT),Rt=T.crownR*lerp(1,.25,Math.pow((t+.5)/nT,1.3))*rr(.85,1.1),y=T.y0+H*u,nB=lv===2?ri(4,6):4,ab=a0+t*.7;
+ for(let t=0;t<nT;t++){const u=lerp(.28,.96,(t+.5)/nT),Rt=T.crownR*lerp(1,.25,Math.pow((t+.5)/nT,1.3))*rr(.85,1.1),y=T.y0+H*u,nB=lv===2?ri(6,9):5,ab=a0+t*.7;   /* 6-9 boughs a whorl (4-6 read as bare rods: the owner, 2026-10-27) */
   for(let k=0;k<nB;k++){const a=ab+k/nB*TAU+rr(-.2,.2),ex=T.x+Math.cos(a)*Rt,ez=T.z+Math.sin(a)*Rt,ey=y+Rt*.12*rr(.5,1.2);
    if(!clear3(ex,ey,ez,2,2))continue;
    BIO.beam('rod',[T.x,y,T.z],[ex,ey,ez],rAt(u)*.35,.06,rc);
-   const n=lv===2?2:1;for(let c=0;c<n;c++){const f=c?.55:1,sz=Rt*rr(.28,.4);clumpAt('rope',T.x+(ex-T.x)*f,y+(ey-y)*f+sz*.1,T.z+(ez-T.z)*f,sz,.32,hc,T.x,y,T.z,Rt,Rt*.5,rng()<.3?c2:null);st.clumps++;}}
+   /* three clumps a bough, bigger: the whorls read as bare rods with tufts at their tips (the owner, 2026-10-27) */
+   const n=lv===2?3:2;for(let c=0;c<n;c++){const f=[1,.68,.38][c],sz=Rt*rr(.48,.62)*(c?.85:1);clumpAt('rope',T.x+(ex-T.x)*f,y+(ey-y)*f+sz*.1,T.z+(ez-T.z)*f,sz,.3,hc,T.x,y,T.z,Rt,Rt*.5,rng()<.3?c2:null);st.clumps++;}}
   spread=Math.max(spread,Rt*1.1);}
  clumpAt('rope',T.x,T.y0+H*.99,T.z,T.crownR*.25,.5,hc,T.x,T.y0+H*.95,T.z,4,3,null);st.clumps++;
  T.spread=spread;reg(S,T);};

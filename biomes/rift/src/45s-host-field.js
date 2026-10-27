@@ -35,7 +35,7 @@ const LAKECOL=new THREE.Color().setHSL(RIFT_LAKE.hue,.7,.45);
 
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
  const c=new THREE.Color(),t=new THREE.Color();
- const LIT=new THREE.Color(0x3e3040),LIT2=new THREE.Color(0x30263a),LMOSS=new THREE.Color(0x4e6030),
+ const LIT=new THREE.Color(0x3e3040),LIT2=new THREE.Color(0x30263a),LMOSS=new THREE.Color(0x4e6030),LGREEN=new THREE.Color(0x5a7a36),
   CRUST=new THREE.Color(0xe6e0b8),ALGA=new THREE.Color(0xb4b048),MUD=new THREE.Color(0x5e5a3c),BED=new THREE.Color(0x7a7448),
   SAV=new THREE.Color(0xc0a458),SAV2=new THREE.Color(0xa08c48),SAVG=new THREE.Color(0x7c8a40),EARTH=new THREE.Color(0x8a5a3a),
   ROCK=new THREE.Color(0x8a7c68),ROCK2=new THREE.Color(0x6a6052),ROCK3=new THREE.Color(0xa09480),HUMUS=new THREE.Color(0x2c3826),PEAK=new THREE.Color(0xa89c80),PEAKG=new THREE.Color(0x6a7a48),
@@ -46,7 +46,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   const salt=FC.at(FC.a.salt,wx,wz),wet=FC.at(FC.a.wet,wx,wz),up=FC.at(FC.a.up,wx,wz),mist=FC.at(FC.a.mist,wx,wz),flow=FC.at(FC.a.flow,wx,wz),lk=FC.at(FC.a.lk,wx,wz),sl=FC.at(FC.a.slope,wx,wz),south=FC.at(FC.a.south,wx,wz);
   const floor=smooth(.30,.10,up);
   // the valley floor: jungle litter south of the crest, dry grass north of it
-  t.copy(LIT).lerp(LIT2,clamp(.5+n*1.8,0,1)).lerp(LMOSS,smooth(.3,.7,n3+wet*.3)*.5);
+  t.copy(LIT).lerp(LIT2,clamp(.5+n*1.8,0,1)).lerp(LMOSS,smooth(.3,.7,n3+wet*.3)*.75).lerp(LGREEN,smooth(.25,.6,n3+.2*n)*.35);   /* greener litter (the owner, 2026-10-27: too uniformly black); the moss layer goes over it (aLay.z) */
   c.copy(SAV).lerp(SAV2,clamp(.5+n*1.7,0,1)).lerp(SAVG,smooth(.45,.7,fbm(x/60,y/60,7,2))*.55).lerp(EARTH,smooth(.62,.78,fbm(x/40,y/40,8,2))*.5);
   c.lerp(t,south*floor);
   // the ridge: rock where it is steep, humus under the cloud forest, pale stony scrub on the peak
@@ -79,28 +79,36 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 // wash, over the painted ground by weight per vertex (aLay). Without the pack (?mat=proc, or an open world) the ground is
 // exactly the painted one.
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('rift',n);
- const a=P('ground.salt'),b=P('ground.wash');if(!a||!b)return null;const T=x=>KMAT.textures(x,{aniso:8}).map;
- return{salt:T(a),saltK:1/a.scale[0],wash:T(b),washK:1/b.scale[0]};})();
+ const a=P('ground.salt'),b=P('ground.wash'),m=P('ground.moss');if(!a||!b)return null;const T=x=>KMAT.textures(x,{aniso:8}).map;
+ /* moss (ground.moss002, 2026-10-27, the owner: the jungle's floor read uniformly black): green understory over the jungle's litter, in patches */
+ return{salt:T(a),saltK:1/a.scale[0],wash:T(b),washK:1/b.scale[0],moss:m?T(m):null,mossK:m?1/m.scale[0]:1};})();
 /* THE RIFT'S BEDS ON THE RIDGE'S FACES (core/terrain strata: KSTRATA's `rift` recipe, STRATA-PLAN.md section 3: basement, fan gravels,
    red sandstones, lake marls with stromatolite and gypsum, basalt and ash): the shader draws the bed at each point of a cliff face by its
    world height, where the paint had a noise of three rock greys (aRock: the paint's own rock weight, so only the faces it showed as rock).
    ?strata=0 for the paint alone */
 const STRATA=typeof KSTRATA!=='undefined'&&KSTRATA.shade&&new URLSearchParams(location.search).get('strata')!=='0'?BIO.strata({recipe:'rift',seed:1137,range:[-80,720],dip:[.8,.6,.01],warp:[7,2],private:true}):null;
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{if(STRATA)STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};if(GLAY){sh.uniforms.uLSalt={value:GLAY.salt};sh.uniforms.uLWash={value:GLAY.wash};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;attribute vec2 aLay;varying vec2 vLay;attribute float aRock;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vRock=aRock;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying vec2 vLay;varying float vRock;'+(GLAY?'uniform sampler2D uLSalt,uLWash;':''))
+MAT_GROUND.onBeforeCompile=sh=>{if(STRATA)STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};if(GLAY){sh.uniforms.uLSalt={value:GLAY.salt};sh.uniforms.uLWash={value:GLAY.wash};if(GLAY.moss)sh.uniforms.uLMoss={value:GLAY.moss};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;attribute vec3 aLay;varying vec3 vLay;attribute float aRock;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vRock=aRock;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying vec3 vLay;varying float vRock;'+(GLAY?'uniform sampler2D uLSalt,uLWash;'+(GLAY.moss?'uniform sampler2D uLMoss;':''):''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+(STRATA?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN)*(0.85+0.3*dt.r),vRock*0.9);':'')+'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);'+
   // the shore's pale sand and the wash's tan sand over the painted ground (a custom sampler is not decoded from sRGB:
   // pow 2.2 by hand), each on two tiles, one turned, blended by a slow wave so the repeat shows no grid
   (GLAY?'{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));'+
    'vec3 ts=mix(pow(texture2D(uLSalt,p*'+GLAY.saltK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLSalt,q*'+(GLAY.saltK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
    'vec3 tw=mix(pow(texture2D(uLWash,p*'+GLAY.washK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLWash,q*'+(GLAY.washK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
-   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vLay.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tw*1.3,0.8),vLay.y);}':'')+'}');};
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vLay.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tw*1.3,0.8),vLay.y);'+
+   // the moss: its own colour (darkened a little under the canopy), over the litter by aLay.z
+   (GLAY.moss?'vec3 tm=mix(pow(texture2D(uLMoss,p*'+GLAY.mossK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uLMoss,q*'+(GLAY.mossK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
+    'diffuseColor.rgb=mix(diffuseColor.rgb,tm*0.62*(0.85+0.3*dt.r),vLay.z);':'')+'}':'')+'}');};
 (function(){const N=460,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,ck=new Float32Array(p.count),lay=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,x,z));
-  lay[i*2]=ck[i]*smooth(160,20,FC.at(FC.a.lk,x,z))*smooth(-30,0,FC.at(FC.a.lk,x,z));lay[i*2+1]=smooth(.4,.8,FC.at(FC.a.flow,x,z))*(1-FC.at(FC.a.south,x,z));}
- g.setAttribute('aLay',new THREE.BufferAttribute(lay,2));
+ const p=g.attributes.position,ck=new Float32Array(p.count),lay=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,x,z));
+  lay[i*3]=ck[i]*smooth(160,20,FC.at(FC.a.lk,x,z))*smooth(-30,0,FC.at(FC.a.lk,x,z));lay[i*3+1]=smooth(.4,.8,FC.at(FC.a.flow,x,z))*(1-FC.at(FC.a.south,x,z));
+  /* the moss: the jungle's floor (the lake side, the valley floor, damp), in patches 60-200 m across, none on the shore's crust, the
+     river beds, the cliffs or the ridge's peak */
+  const sth=FC.at(FC.a.south,x,z),wet=FC.at(FC.a.wet,x,z),flr=smooth(.30,.10,FC.at(FC.a.up,x,z)),patch=smooth(.38,.62,fbm(x*.006+11,z*.006-3,231,3));
+  lay[i*3+2]=sth*flr*smooth(.5,.8,wet)*(.35+.6*patch)*(1-ck[i])*(1-smooth(.3,.7,FC.at(FC.a.flow,x,z)))*smooth(1.0,.6,FC.at(FC.a.slope,x,z))*smooth(10,60,FC.at(FC.a.lk,x,z));}
+ g.setAttribute('aLay',new THREE.BufferAttribute(lay,3));
  {const rk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);rk[i]=smooth(.55,1.05,FC.at(FC.a.slope,x,z))*smooth(.06,.16,FC.at(FC.a.up,x,z));}g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));}   /* the paint's rockK per vertex: where the strata show */
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Rift floor';scene.add(m);})();
