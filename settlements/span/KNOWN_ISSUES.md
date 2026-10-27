@@ -11,13 +11,18 @@
 - [x] ~~Dalab's buildings are boxes~~: SP4 (2026-10-27) places the Dalab set's own buildings (settlements/dalab, read in
       place) through `VERN.place`: the market, customs, two warehouses, two inns, the tavern, the bath house, the traders'
       houses and row, two orchards, the caravan yard, the shrine, the mound and the watch tower at the Middle Bridge.
-- [ ] **The Line has no Dalab def**: it is still a salvage wall drawn from the kit's items (plates and concrete blocks).
-      A `dalab_line` (a salvage wall with a gate, on the Dalab set's helpers) belongs in `settlements/dalab`'s set.
+- [x] ~~The Line has no Dalab def~~: it is the Post-Apoc kit's `barricade` (2026-10-27), kept shut; Dalab's gates and banners are
+      the Dalab set's `dalab_gate` and `dalab_banners`.
+- [ ] **No Dalab culture pack for the Post-Apoc kit's sockets**: the barricade's gate, the arena and the highlanders' houses fly
+      the kit's generic marks; Dalab's red on them waits on a `dalab` pack in `core/sockets/80-cultures.js`, which reaches eight
+      builds (its `mkCulture` draws from the shared stream at load): parked in `TODO.md` for the next all-builds rebuild. The
+      highlanders' own pack waits on who they are.
+- [ ] **The page now carries the Post-Apoc kit, the catalog's furniture and the interiors core** (closures, ~0.9 MB) and draws
+      ~1.36 M triangles at the arena: core/lod is still to come.
 - [ ] **No garden trees or plants in the Dalab buildings**: the set asks the page for them (`dnTree`, `dnPlant`), and this
       page answers nothing (`src/69f-host-dalab.js`) until the SW highlands kit's flora is on it; the orchards stand empty.
-- [ ] **Dalab's patches on the held Ancient parts** are the kit's generic decay-3 `repairPass` (corrugate, timber, tarp);
-      no red banners, lamps or Dalab-built gates on the Cross and the Sound Quarter yet (the set's `dnBanner` and `dnGate`
-      need a def to run in).
+- [ ] **Dalab's patches on the held Ancient parts** are the kit's generic decay-3 `repairPass` (corrugate, timber, tarp), with
+      Dalab's gates and banners now set at the openings and on the roofs; no lamps yet (no night on this page).
 - [ ] The Dalab set runs on its own copies of Iziz's Vernacular helpers (`69b`, `69c`), which drift from `settlements/iziz`;
       Span reads Dalab's, as the set is tested against them. Its `vWorldUV` replaces core/materials' opt-in one on this page
       (no fragment here calls the latter's third argument).

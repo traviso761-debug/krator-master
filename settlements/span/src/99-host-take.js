@@ -15,6 +15,10 @@ const VIEWS={
  'The Valley Tunnel':[725,-171,18,725,-174,88],
  'The weir and the lake':[-930,24,120,-1140,-6,0],
  'The lake sites':[-1500,160,180,-1900,0,300],
+ 'The arena and the highlanders\' quarter':[-320,95,215,-136,0,372],
+ 'Into the arena':[-92,24,352,-92,2,410],
+ 'The north gate of the Cross':[-200,8,300,-240,6,232],
+ 'Dalab\'s Line from the floor':[-60,-172,-55,-174,-170,0],
 };
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 // the page's checks for verify.py --assert: the layout's rules (31-span-rules.js), every part placed, every record a
@@ -22,10 +26,13 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 function spanChecks(){const L=SPAN_LAYOUT,R=[];
  SPAN.checks(L).forEach(c=>R.push({name:'layout: '+c.name,ok:c.pass,detail:c.detail.trim()}));
  R.push({name:'every part placed',ok:SP.missing.length===0&&SP.placed.length>=L.parts.length,detail:SP.placed.length+' placed of '+L.parts.length+(SP.missing.length?'; no builder for '+SP.missing.join(', '):'')+' ('+SP.ms+' ms)'});
- // every Dalab building is a def of the Dalab set, and its record's footprint is the def's own (w by d, within a metre)
- const keyed=SPAN_LAYOUT.parts.filter(p=>p.by==='dalab'&&p.kind!=='wall'),badD=keyed.filter(p=>{const q=SP.dalab.find(x=>x.id===p.id);
-  return !q||Math.abs(q.w-q.def[0])>1||Math.abs(q.d-q.def[1])>1;}).map(p=>{const q=SP.dalab.find(x=>x.id===p.id);return p.id+(q?' '+q.w+'x'+q.d+' vs '+q.def.join('x'):' (no def '+p.key+')');});
- R.push({name:'every Dalab building is a Dalab set def at its own footprint',ok:keyed.length>0&&!badD.length,detail:SP.dalab.length+' placed through VERN.place'+(badD.length?'; '+badD.join(', '):'')});
+ // every building of another kit (the Dalab set's, the Post-Apoc kit's) is a def of that kit at the record's footprint: the
+ // def's w by d (a barricade's L), within a metre, either way round (a quarter-turned part swaps them)
+ const keyed=SPAN_LAYOUT.parts.filter(p=>p.key&&(p.by!=='ancient'||p.key.indexOf('pa:')===0)),badD=keyed.filter(p=>{const q=SP.own.find(x=>x.id===p.id);
+  if(!q||!q.def)return true;const a=[q.w,q.d].sort((x,y)=>x-y),b=q.def.slice().sort((x,y)=>x-y);return Math.abs(a[0]-b[0])>1||Math.abs(a[1]-b[1])>1;})
+  .map(p=>{const q=SP.own.find(x=>x.id===p.id);return p.id+(q&&q.def?' '+q.w+'x'+q.d+' vs '+q.def.join('x'):' (no def '+p.key+')');});
+ R.push({name:'every building of another kit is a def of that kit at the record\'s footprint',ok:keyed.length>0&&!badD.length,
+  detail:SP.own.filter(r=>r.kit==='dalab').length+' through the Dalab set, '+SP.own.filter(r=>r.kit==='post-apoc').length+' through the Post-Apoc kit'+(badD.length?'; '+badD.join(', '):'')});
  const A=SP.tags.audit();R.push({name:'tags: known vocabulary, a culture each',ok:A.unknown===0&&!A.missingCulture,detail:A.records+' records, unknown '+A.unknown+', missing culture '+A.missingCulture});
  return R;}
 function spanNegatives(){const L=JSON.parse(JSON.stringify(SPAN_LAYOUT)),R=[];
@@ -34,7 +41,7 @@ function spanNegatives(){const L=JSON.parse(JSON.stringify(SPAN_LAYOUT)),R=[];
  R.push({name:'the Tunnel Road removed fails the walk check',ok:!SPAN.checks(M).find(c=>/walkable part is reached/.test(c.name)).pass});
  return R;}
 KHOST.take({build:'span',title:'Span',
- hint:'Span: the ruined Ancient arcology in Pan Riba\'s canyon, Dalab\'s fort and trading post (settlements/span/PLAN.md). The ground is a stand-in, the layout\'s own section, until the SW highlands station carves the canyon. Dalab\'s buildings are the Dalab set\'s (settlements/dalab, read in place).',
+ hint:'Span: the ruined Ancient arcology in Pan Riba\'s canyon, Dalab\'s fort, trading post and arena, where the SW highlanders\' strongest meets Dalab\'s champions each year (settlements/span/PLAN.md). The ground is a stand-in, the layout\'s own section, until the SW highlands station carves the canyon. Dalab\'s buildings are the Dalab set\'s; the arena, the Line and the highlanders\' quarter the Post-Apoc kit\'s.',
  scene,camera,renderer,ground:(x,z)=>SPAN.groundAt(SPAN_LAYOUT,x,z),clear:1.6,minR:2,maxR:9000,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  records:()=>SP.tags.query({}),

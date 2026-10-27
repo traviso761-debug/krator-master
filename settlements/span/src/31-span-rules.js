@@ -154,7 +154,8 @@ function tags(L, F, T){
   var out = [];
   L.parts.forEach(function(p){
     var s = p.shape, cu = s[0] === 'box' ? (s[1] + s[2]) / 2 : s[1], cv = s[0] === 'box' ? (s[3] + s[4]) / 2 : s[2], at = toWorld(F, cu, cv, p.y);
-    var tg = { culture: p.by === 'dalab' ? 'dalab' : 'ancient', state: p.state === 'worn' ? 'ruined' : p.state, part: p.kind };
+    var tg = { culture: p.by === 'dalab' ? 'dalab' : p.by === 'highland' ? 'post-apoc' : 'ancient', state: p.state === 'worn' ? 'ruined' : p.state, part: p.kind };
+    if (p.by === 'highland') tg.role = 'sw-highlanders';
     if (p.state === 'worn') tg.finish = 'worn';
     if (p.types) tg.types = p.types;
     if (p.held) tg.role = 'dalab-held';
@@ -174,13 +175,13 @@ function checks(L){
   var seen = {}, dup = [];
   L.parts.concat(L.ways).forEach(function(x){ if (seen[x.id]) dup.push(x.id); seen[x.id] = 1; if (typeof x.id !== 'string' || !/^[a-z][a-z0-9_]*$/.test(x.id)) dup.push('bad id ' + x.id); });
   ok('every part and way has a unique, stable id', dup);
-  ok('every part\'s state is the kit\'s (' + STATES.join(', ') + ') and its maker ancient or dalab',
-    L.parts.filter(function(p){ return STATES.indexOf(p.state) < 0 || (p.by !== 'ancient' && p.by !== 'dalab'); }).map(function(p){ return p.id + ':' + p.state + '/' + p.by; }));
+  ok('every part\'s state is the kit\'s (' + STATES.join(', ') + ') and its maker ancient, dalab or highland',
+    L.parts.filter(function(p){ return STATES.indexOf(p.state) < 0 || (p.by !== 'ancient' && p.by !== 'dalab' && p.by !== 'highland'); }).map(function(p){ return p.id + ':' + p.state + '/' + p.by; }));
   // containment
   ok('every part with a parent lies inside it', L.parts.filter(function(p){ return p.in && (!ids[p.in] || !inside(p.shape, ids[p.in].shape)); }).map(function(p){ return p.id + ' in ' + p.in; }));
   // disjoint on each level: siblings (same parent) whose height bands meet must not overlap; core/space finds the candidates
   var S = R.KSPACE.create({ cell: 50 }), bad = [];
-  L.parts.forEach(function(p){ if (p.kind === 'bay') return; var b = bbox(p.shape); S.insert(p, (b[0] + b[1]) / 2, (b[2] + b[3]) / 2, Math.max(b[1] - b[0], b[3] - b[2]) / 2); });
+  L.parts.forEach(function(p){ if (p.kind === 'bay' || p.kind === 'enclosure') return; var b = bbox(p.shape); S.insert(p, (b[0] + b[1]) / 2, (b[2] + b[3]) / 2, Math.max(b[1] - b[0], b[3] - b[2]) / 2); });
   L.parts.forEach(function(p){
     if (p.kind === 'bay') return; var b = bbox(p.shape), cu = (b[0] + b[1]) / 2, cv = (b[2] + b[3]) / 2, r = Math.max(b[1] - b[0], b[3] - b[2]) / 2;
     S.query(cu, cv, r, []).forEach(function(q){

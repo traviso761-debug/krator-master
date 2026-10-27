@@ -89,7 +89,7 @@ P('bay_pad', 'Bay Pad', 'pad', C(-700, -240, 30), { h: 8, state: 'ruined', key: 
 // ---------------------------------------------------------------- the Apron: Dalab's trading post (sheet S2)
 P('apron', 'The Apron', 'deck', O(-520, 0, 185, 118), { y: -45, h: 2, state: 'rehab', held: true, key: 'anc_apron', types: ['plaza'], dress: false, sheets: S2, note: 'the bay\'s deck over the river\'s slot, cleared by Dalab for the trading post' });
 P('apron_wreck', 'Derelict craft', 'craft', C(-560, 80, 14), { y: -45, h: 9, state: 'ruined', in: 'apron', held: true, walk: false, dress: false, key: 'anc_craft', sheets: S2, note: 'a lander, broken-backed: the one wreck Dalab left (too heavy to strip)' });
-P('basin_portal', 'The Basin Tunnel\'s upper portal', 'portal', C(-570, -160, 18), { y: -45, h: 14, state: 'intact', held: true, key: 'anc_tunnel_portal', types: ['infrastructure', 'military'], sheets: ['S0', 'S2'], note: 'in the bay\'s left wall: the Ancient road tunnel down to the basin, intact, cleared; Dalab\'s gate and wardens' });
+P('basin_portal', 'The Basin Tunnel\'s upper portal', 'portal', C(-570, -164, 12), { y: -45, h: 14, state: 'intact', held: true, key: 'anc_tunnel_portal', types: ['infrastructure', 'military'], sheets: ['S0', 'S2'], note: 'in the bay\'s left wall: the Ancient road tunnel down to the basin, intact, cleared; Dalab\'s gate and wardens' });
 P('tunnel_road', 'The Tunnel Road', 'ramp', B(-580, -560, -142, -116), { y: -45, h: 1, state: 'intact', held: true, key: 'anc_ramp', types: ['infrastructure'], sheets: S2, note: 'the ramp from the portal down onto the Apron' });
 function T(id, name, key, b, o){ o.in = 'apron'; o.y = -45; o.by = 'dalab'; o.state = 'intact'; o.key = key; o.sheets = S2; o.dress = false; return P(id, name, 'dalab', b, o); }
 // each a building of the Dalab set (settlements/dalab, read in place) at its own footprint (its def's w by d), its front
@@ -187,14 +187,54 @@ F('lowb_mid', 'The Low Bridge\'s middle', 'fallen', B(462, 502, -25, 35), { h: 5
 F('pad_3_wreck', 'Rim Pad 3\'s wreck', 'fallen', C(585, 55, 14), { h: 6, state: 'toppled', key: 'anc_pad_drum', walk: false });
 F('hang_drum', 'Hung drum (fallen)', 'payload', C(701, -55, 10), { h: 12, state: 'toppled', key: 'anc_hang_drum', walk: false, sheets: ['S2', 'S3'], note: 'fallen from the Pipe Bridge into the river' });
 F('floor_wreck', 'Wrecked craft', 'craft', C(-100, -5, 16), { h: 10, state: 'ruined', key: 'anc_craft', walk: false, note: 'just beyond the Line, stripped under the gun gallery\'s cover' });
-F('line', 'Dalab\'s Line', 'wall', B(-180, -166, -70, 70), { h: 8, by: 'dalab', state: 'intact', key: 'dalab_line', types: ['military'], note: 'a salvage wall across the floor under the gun gallery; one gate, kept shut' });
+F('line', 'Dalab\'s Line', 'wall', B(-178, -170, -70, 70), { h: 11, by: 'dalab', state: 'intact', key: 'pa:barricade', ry: Math.PI / 2, args: { L: 140, v: 1 }, types: ['military'], note: 'a salvage wall across the floor under the gun gallery; one gate, kept shut' });
 F('outfall', 'The Outfall Gate', 'weir', B(800, 830, -70, 70), { y: -190, h: 30, state: 'ruined', key: 'anc_weir', types: ['infrastructure'], note: 'the downstream barrage; breached' });
 F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70, state: 'ruined', key: 'anc_sluice', types: ['infrastructure'], walk: false, note: 'under the Cross: the river steps from y -110 to -180 in four sluices' });
 
+// ---------------------------------------------------------------- Dalab's marks: its gates in the openings it keeps, its banners on what it holds
+// (the Dalab set's dalab_gate and dalab_banners, 2026-10-27). `ry` turns a part's front (+z): 0 faces +v, PI faces -v, PI/2 faces +u
+function D(id, name, key, shape, o){ o.by = 'dalab'; o.state = 'intact'; o.key = key; o.dress = false; o.types = o.types || (key === 'dalab_gate' ? ['military'] : ['religious']); return P(id, name, 'dalab', shape, o); }
+D('gate_cross_n', 'The north gate of the Cross', 'dalab_gate', B(-254, -226, 230, 236), { h: 14, ry: 0, sheets: S1, note: 'on the north highway at the north gate tower' });
+D('gate_cross_s', 'The south gate of the Cross', 'dalab_gate', B(-254, -226, -236, -230), { h: 14, ry: Math.PI, sheets: S1, note: 'on the south highway at the south gate tower' });
+D('gate_tunnel', 'The tunnel gate', 'dalab_gate', B(-584, -556, -151, -145), { y: -46, h: 14, ry: Math.PI, sheets: S2, note: 'in the cutting before the Basin Tunnel: Dalab\'s wardens' });
+D('gate_quarter', 'The quarter gate', 'dalab_gate', B(-176, -170, 191, 219), { h: 14, ry: Math.PI / 2, sheets: S1, note: 'on the rim road where it leaves the north gate tower' });
+D('ban_cross_1', 'Banners of Dalab', 'dalab_banners', B(-299, -297, -70, -60), { in: 'cross', h: 8, ry: -Math.PI / 2, sheets: S1, note: 'on the roof of the Cross, facing the bay' });
+D('ban_cross_2', 'Banners of Dalab', 'dalab_banners', B(-299, -297, 60, 70), { in: 'cross', h: 8, ry: -Math.PI / 2, sheets: S1 });
+D('ban_quarter_1', 'Banners of Dalab', 'dalab_banners', B(-60, -50, 153, 155), { in: 'rng_n_a', h: 8, ry: Math.PI, sheets: S1, note: 'on the roof of the Sound Quarter, facing the canyon' });
+D('ban_quarter_2', 'Banners of Dalab', 'dalab_banners', B(140, 150, 153, 155), { in: 'rng_n_a', h: 8, ry: Math.PI, sheets: S1 });
+D('ban_pad_1', 'Banners of Dalab', 'dalab_banners', B(115, 125, 240, 242), { in: 'pad_1', h: 8, ry: Math.PI, sheets: S1 });
+
+// ---------------------------------------------------------------- the ARENA and the HIGHLANDERS' QUARTER (the owner, 2026-10-27)
+// Span is not only a market: the SW highlanders come to test their strongest warrior against Dalab's enhanced champions in
+// ritual combat, year after year, and Dalab holds their loyalty as long as it wins (PLAN.md section 4, LORE.md 6.1). The arena
+// (the Post-Apoc kit's Thunderdome, kits/post-apoc 56-arena.js) and the highlanders' quarter round it (the kit's salvage houses:
+// their own people's marks wait on who they are, the kit's generic dress until then) stand together on the tableland just
+// outside the Cross's north gate, inside a PALISADE (the kit's `palisade`) whose gate, in the south wall's west end, opens
+// toward that gate, the nearest way into Span. Dalab runs the arena (held); a lane runs from the palisade's gate north, then
+// east along the quarter's street to the arena's entrance. Compact (the owner, 2026-10-27): 180 x 160 m inside the stakes.
+P('palisade', 'The highlanders\' palisade', 'enclosure', B(-226, -46, 290, 450), { h: 0, by: 'highland', state: 'intact', key: 'pa:palisade', ry: Math.PI,
+  args: { w: 180, d: 160, gate: 12, gateAt: 64, h: 3.4 }, types: ['infrastructure'], dress: false, sheets: ['S0', 'S1'],
+  note: 'timber stakes round the quarter and the arena; its gate toward the north gate of the Cross' });
+P('arena', 'The arena', 'arena', B(-120, -64, 380, 436), { h: 20, by: 'dalab', state: 'intact', key: 'pa:arena', ry: Math.PI, types: ['civic'], dress: false, sheets: ['S0', 'S1'],
+  note: 'the ritual combat: the highlanders\' strongest against Dalab\'s enhanced champions, once a year' });
+D('ban_arena_1', 'Banners of Dalab', 'dalab_banners', B(-114, -104, 376, 378), { h: 8, ry: Math.PI, sheets: S1, note: 'at the arena\'s entrance' });
+D('ban_arena_2', 'Banners of Dalab', 'dalab_banners', B(-80, -70, 376, 378), { h: 8, ry: Math.PI, sheets: S1 });
+function H(id, key, shape, ry, types){ return P(id, 'Highlanders\' house', 'house', shape, { h: 10, by: 'highland', state: 'intact', key: 'pa:' + key, ry: ry, types: types || ['dwelling-single'], dress: false, sheets: S1 }); }
+// the street's south side, its fronts to the street (+v): the big houses, and a row of small ones behind them
+H('hl_9', 'lg-twinsilo', B(-190, -159, 348, 366), 0, ['dwelling-multi']); H('hl_4', 'lg-stack', B(-155, -133, 348, 366), 0, ['dwelling-multi']);
+H('hl_11', 'lg-bulkhead', B(-129, -103, 338, 366), 0, ['dwelling-multi']); H('hl_6', 'lg-tanktower', B(-99, -81, 350, 366), 0, ['dwelling-multi']);
+H('hl_5', 'dw-bus', B(-77, -63, 357, 366), 0);
+H('hl_1', 'dw-silo', B(-190, -179, 330, 340), 0); H('hl_2', 'dw-box', B(-175, -161, 332, 340), 0); H('hl_3', 'dw-tire', B(-155, -144, 329, 340), 0);
+H('hl_7', 'dw-tank', B(-95, -84, 331, 340), 0); H('hl_8', 'dw-bottle', B(-78, -66, 330, 340), 0);
+// the street's north side, west of the arena, their fronts to the street (-v)
+H('hl_10', 'dw-stilt', B(-190, -181, 378, 389), Math.PI); H('hl_12', 'dw-silo', B(-175, -164, 378, 388), Math.PI); H('hl_13', 'dw-box', B(-158, -144, 378, 386), Math.PI);
+
 // ---------------------------------------------------------------- the ways
-W('hw_north', 'road', [[-240, 230, 0], [-240, 800, 0], [300, 800, 0]], { w: 12, note: 'the north highway (Ancient): to the tableland and the plateau\'s people' });
-W('hw_south', 'road', [[-240, -230, 0], [-240, -800, 0], [-800, -800, 0]], { w: 12, note: 'the south highway' });
-W('rim_n', 'road', [[-180, 205, 0], [820, 205, 0]], { w: 10 });
+W('hw_north', 'road', [[-240, 236, 0], [-240, 800, 0], [300, 800, 0]], { w: 12, note: 'the north highway (Ancient): to the tableland and the plateau\'s people' });
+W('quarter_lane', 'road', [[-200, 290, 0], [-200, 372, 0], [-56, 372, 0]], { w: 8, note: 'the street of the quarter: from the palisade gate north, then east to the arena' });
+W('palisade_way', 'road', [[-200, 286, 0], [-234, 252, 0]], { w: 8, note: 'from the palisade gate to the north highway, by the north gate of the Cross' });
+W('hw_south', 'road', [[-240, -236, 0], [-240, -800, 0], [-800, -800, 0]], { w: 12, note: 'the south highway' });
+W('rim_n', 'road', [[-170, 205, 0], [820, 205, 0]], { w: 10 });
 W('rim_s', 'road', [[-180, -205, 0], [1150, -205, 0]], { w: 10, note: 'on downstream: Dalab\'s way to the watch post' });
 W('ring_road', 'road', (function(){ var p = []; for (var i = 0; i <= 48; i++){ var a = i * 2 * Math.PI / 48; p.push([Math.round((-520 + 262 * Math.cos(a)) * 10) / 10, Math.round(192 * Math.sin(a) * 10) / 10, 0]); } return p; })(), { w: 10, closed: true, note: 'round the bay' });
 W('lake_road_n', 'road', [[-762, 73, 0], [-1000, 95, 0], [-1700, 470, 0]], { w: 8, note: 'to the Lake Quay, round the canyon head' });
@@ -206,15 +246,20 @@ W('basin_tunnel', 'tunnel', [[-570, -160, -45], [-700, -420, -60], [-1100, -700,
 W('valley_tunnel', 'tunnel', [[725, 124, -180], [800, 500, -200], [900, 800, -220]], { w: 14, note: 'to the Valley of the Ancients: not cleared, held by no one (PLAN.md section 4)' });
 
 // ---------------------------------------------------------------- the links (who can walk where); a part with `in` joins its parent
-K('basin_tunnel', 'basin_portal'); K('basin_portal', 'tunnel_road'); K('tunnel_road', 'apron');
+K('basin_tunnel', 'basin_portal'); K('basin_portal', 'gate_tunnel'); K('gate_tunnel', 'tunnel_road'); K('tunnel_road', 'apron');
 K('apron', 'ring_road', { gate: 'the bay stair', state: 'open', kind: 'stair' });
 K('caravan_yard', 'cz_stalls', { kind: 'ramp' });
 K('cross', 'gate_n'); K('cross', 'gate_s');
-K('gate_n', 'hw_north', { gate: 'the north gate', state: 'open' }); K('gate_s', 'hw_south', { gate: 'the south gate', state: 'open' });
+K('gate_n', 'gate_cross_n'); K('gate_cross_n', 'hw_north', { gate: 'the north gate', state: 'open' });
+K('gate_s', 'gate_cross_s'); K('gate_cross_s', 'hw_south', { gate: 'the south gate', state: 'open' });
 K('cross', 'ring_road', { gate: 'the bay gate', state: 'open' });
-K('gate_n', 'rim_n', { gate: 'the quarter gate', state: 'open' }); K('gate_s', 'rim_s', { gate: 'the rim gate', state: 'open' });
+K('gate_n', 'gate_quarter'); K('gate_quarter', 'rim_n', { gate: 'the quarter gate', state: 'open' }); K('gate_s', 'rim_s', { gate: 'the rim gate', state: 'open' });
 K('mound', 'hw_south', { gate: 'the mound way', state: 'open' });
 K('watch_bridge', 'rim_n', { gate: 'the tower door', state: 'open' });
+K('hw_north', 'palisade_way'); K('palisade_way', 'palisade', { gate: 'the palisade gate', state: 'open' }); K('palisade', 'quarter_lane');
+K('quarter_lane', 'arena', { gate: 'the arena gate', state: 'open' });
+['ban_arena_1', 'ban_arena_2'].forEach(function(b){ K('quarter_lane', b, { gate: 'the arena forecourt', state: 'open' }); });
+for (var hh = 1; hh <= 13; hh++) K('quarter_lane', 'hl_' + hh);
 K('cross', 'line', { kind: 'stair' }); K('line', 'floor_road', { gate: 'the Line\'s gate', state: 'closed' });
 K('gate_n', 'rng_n_a'); K('rng_n_a', 'gal_n40a', { kind: 'stair' }); K('rng_n_a', 'rdome_1'); K('rng_n_a', 'pad_1');
 K('gal_n40a', 'gal_n85', { gate: 'the salvage wall', state: 'closed' });

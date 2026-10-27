@@ -24,4 +24,5 @@ const VIEWS={
  'Palace mound':RV(16,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[16]+62,0,14,ROWZ[16]+10],'Palace mound — top':[-9,17+1.7,ROWZ[16]+13,0,17+5,ROWZ[16]-7],'Palace mound — back gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x-10,14,ROWZ[16]-60,SITES.find(s=>s.key==='dalab_palace_mound').x,12,ROWZ[16]-20],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[16]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[16]-4],
  "High Priest's mound":RV(17,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[17]+22,0,20+5,ROWZ[17]-6],
  'Night — noble houses':RV(2,70,36,6,21.5),'Night — temple (eye level)':EYE('dalab_temple',26,7,22),'Night — Halls of Reformation':RV(14,190,110,12,22.5),'Night — palace mound':RV(16,150,70,14,22),'Night — peasant huts':EYE('dalab_hut_a',14,5,21),'Dusk — mound':RV(15,120,60,12,18.4),
+ 'Marks of a hold — gate and banners':RV(18,60,22,6)
 };

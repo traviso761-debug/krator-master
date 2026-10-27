@@ -28,6 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/48-industry.js` | 21.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-farm.js` | 26.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/52-defence.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/53-barricade.js` | 1.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the barricade (the compound's wall runs and gate laid straight) and the palisade |
 | `src/54-compound.js` | 29.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 37 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-arena.js` | 17.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-dock.js` | 17.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 |  |

@@ -43,7 +43,7 @@ pieces (`kits/catalog`, the `pa_*` pieces harvested from this kit) placed as dat
 | Shops (5) | `shop-food` `shop-armor` `shop-weapon` `shop-tinker` `shop-general` |
 | Industry and power | `smithy` `gen-wind` `gen-fuel` `warehouse` |
 | Farm | `farm` `farmhouse` `granary` |
-| Defence and justice | `watchtower` `cages` |
+| Defence and justice | `watchtower` `cages` `barricade` (a straight salvage line with the compound's gate tower: `o.L` its length, `o.v` 1 shut; 2026-10-27, Dalab's Line at `settlements/span`) `palisade` (a timber stockade round a camp, its gate in the front side: `o.w` `o.d` `o.gate` `o.gateAt`; the highlanders' quarter at Span) |
 | Set pieces | `compound` (walled, accepts >= 3 buildings through slots) `arena` (Thunderdome) `dock` |
 
 Reusing a building elsewhere: `place(key, x, z, ry, {v: variant})` inside any world that carries `30-geo.js`, `20-tex.js`, `22-mat.js`, `32-cores.js`, `34-adds.js`,

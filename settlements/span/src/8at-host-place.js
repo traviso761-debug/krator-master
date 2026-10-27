@@ -86,23 +86,31 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
   ramp(p){const s=p.shape;box('spRoad',s[1],s[2],s[3],s[4],p.y,p.y+.4);placed.push(p.id);},
   bay(p){placed.push(p.id);},   /* the bay is the ground's (SPAN.groundAt) */
  };
- // DALAB'S OWN (SP4): a part whose key is a Dalab set def (settlements/dalab, read in place) goes through its registry,
- // VERN.place, at the part's footprint centre on its base (a part on the Apron stands on the deck's top), its front (+z)
- // toward the Apron's long axis (v 0), a variant by the part's own seed; the Line has no def yet and is drawn from the
- // kit's items (KNOWN_ISSUES.md)
- const DALAB_PLACED=[];
- function dalabStandIn(p){const s=p.shape,b=SPAN.bbox(s),y0=p.in?SPAN.byId(L)[p.in].y+SPAN.byId(L)[p.in].h:p.y,h=Math.max(2,p.h);
-  if(p.key&&typeof VERN!=='undefined'&&VERN.defs[p.key]){const cu=(b[0]+b[1])/2,cv=(b[2]+b[3])/2,w=W(cu,cv,0),ry=(cv>0?Math.PI:0)-F.ang;
-   TSTAT.cur=p.kind+'/'+p.id;const G=VERN.place(scene,p.key,w[0],w[2],ry,{y:y0,v:KRAND.hash(seedOf(p),7)%3});
-   if(G)DALAB_PLACED.push({id:p.id,key:p.key,w:b[1]-b[0],d:b[3]-b[2],def:[VERN.defs[p.key].w,VERN.defs[p.key].d]});else missing.push(p.id);
-   placed.push(p.id);return;}
-  if(p.kind==='wall'){for(let v=b[2];v<b[3];v+=6)box(KRAND.unit(KRAND.hash(seedOf(p),v|0))<.5?'plateR':'boxCR',b[0],b[1],v,v+5.6,y0,y0+h*(.75+.25*KRAND.unit(KRAND.hash(seedOf(p),v|0,2))));}
-  else box('boxC',b[0],b[1],b[2],b[3],y0,y0+h,new THREE.Color(0xc9a27a));
-  placed.push(p.id);}
+ // OTHER PEOPLE'S BUILDINGS, each through its own kit at the part's footprint centre on its base (a part with a parent stands
+ // on the parent's top), turned by the part's `ry` (by default its front toward the Apron's long axis), a variant by its seed:
+ //  - a key of the Dalab set (settlements/dalab, read in place): VERN.place, its registry (the trading post, the mound, the
+ //    watch tower, Dalab's gates and banners)
+ //  - a 'pa:' key: the Post-Apoc kit (kits/post-apoc, the closure KratorPostApoc), all in one build at the end (the arena, the
+ //    highlanders' houses, the barricade that is Dalab's Line), its own furniture from the catalog
+ // Each placement keeps the record's footprint and the def's for the page's check (99-host-take.js).
+ const OWN_PLACED=[],PA_SITES=[];
+ function ownPlace(p){const s=p.shape,b=SPAN.bbox(s),par=p.in?SPAN.byId(L)[p.in]:null,y0=par?par.y+par.h:p.y;
+  const cu=(b[0]+b[1])/2,cv=(b[2]+b[3])/2,w=W(cu,cv,0),ry=(p.ry!=null?p.ry:(cv>0?Math.PI:0))-F.ang,v=KRAND.hash(seedOf(p),7)%3,args=p.args||{};
+  const rec={id:p.id,key:p.key,w:b[1]-b[0],d:b[3]-b[2],ry:p.ry||0,args:args};
+  if(p.key.indexOf('pa:')===0){PA_SITES.push({key:p.key.slice(3),x:w[0],z:w[2],ry:ry,o:Object.assign({v:v,y:y0},args)});rec.kit='post-apoc';OWN_PLACED.push(rec);placed.push(p.id);return;}
+  if(typeof VERN!=='undefined'&&VERN.defs[p.key]){TSTAT.cur=p.kind+'/'+p.id;const G=VERN.place(scene,p.key,w[0],w[2],ry,Object.assign({y:y0,v:v},args));
+   if(G){rec.kit='dalab';rec.def=[VERN.defs[p.key].w,VERN.defs[p.key].d];OWN_PLACED.push(rec);}else missing.push(p.id);placed.push(p.id);return;}
+  missing.push(p.id);}
  const t0=performance.now();
- L.parts.forEach(p=>{if(p.by==='dalab'){dalabStandIn(p);return;}
+ L.parts.forEach(p=>{if(p.key&&(p.by!=='ancient'||p.key.indexOf('pa:')===0)){ownPlace(p);return;}
   if(p.in&&p.kind!=='craft'){placed.push(p.id);return;}   /* the Cross's zones: rooms are SP6 */
   const f=BUILD[p.kind];if(!f){missing.push(p.id);return;}
   try{f(p);}catch(e){reportErr(p.id+': '+(e.stack||e));}});
  TSTAT.cur=null;kbake(scene);
- return {placed,missing,dalab:DALAB_PLACED,ms:Math.round(performance.now()-t0),tags:T};})();
+ // the Post-Apoc kit's buildings in one build (generic marks: the highlanders' own wait on who they are). Its furniture pass
+ // makes its own core/tags registry as KTAGS.page: the page's is put back after it
+ let PA=null;if(PA_SITES.length&&typeof KratorPostApoc!=='undefined'){const keep=KTAGS.page;KratorPostApoc.setError(reportErr);
+  try{PA=KratorPostApoc.build(PA_SITES,{culture:'generic'});scene.add(PA);}catch(e){reportErr('post-apoc: '+(e.stack||e));}
+  KTAGS.page=keep;
+  for(const r of OWN_PLACED)if(r.kit==='post-apoc'){const d=KratorPostApoc.declOf(r.key.slice(3),r.args);r.def=[r.args.L!=null?r.args.L:r.args.w!=null?r.args.w:d.w,r.args.d!=null?r.args.d:d.d];}}
+ return {placed,missing,own:OWN_PLACED,pa:PA,ms:Math.round(performance.now()-t0),tags:T};})();

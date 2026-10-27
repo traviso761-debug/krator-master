@@ -184,6 +184,22 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
   §6.1); a **shrine** facing the lab; fields and lizard pens at the Apron's upstream end; three terrace domes rehabilitated
   as **lodgings**. All from the Dalab set (section 0). About 500 people: traders and their households, inn and caravan hands,
   porters, the tunnel's wardens.
+- **The arena and the ritual combat** (the owner, 2026-10-27): Span is not only a market town. The SW highlanders come to test
+  their strength against Dalab's finest enhanced warriors: once a year their strongest meets Dalab's champion in ritual combat.
+  **As long as Dalab wins, year after year, Dalab has their loyalty; should it lose, the consequences might not be pretty.**
+  The arena is the Post-Apoc kit's Thunderdome (`kits/post-apoc` 56-arena.js); Dalab runs it (held, its banners at the gate).
+  Round it **the highlanders' quarter**: thirteen of the Post-Apoc kit's salvage houses for the fighters, their followers and the
+  traders who stay (the people's own marks wait on who they are: the kit's generic dress until then). Arena and quarter stand
+  together, compact (180 x 160 m), inside a **palisade** (the kit's `palisade`) on the tableland just outside the Cross's north
+  gate, its gate in the south wall's west end opening toward that gate, the nearest way into Span (the owner, 2026-10-27); a
+  street runs from the palisade's gate north, then east to the arena's entrance. *Proposed*: the
+  champions are the genepriests' best work (cold- and strength-modded Giants among them); the night before the fight the market
+  is at its fullest; a loss would mean the tribute, the loyalty and perhaps the tunnel's mouth are in play.
+- **Dalab's marks** (2026-10-27): Dalab's own **gates** (the Dalab set's `dalab_gate`: battered rammed-earth pylons with the holy
+  red band, timber leaves, banner poles) in the openings it keeps (the Cross's north and south gates, the tunnel's cutting, the
+  quarter gate on the rim road), its **banners** (`dalab_banners`) on what it holds (the Cross's roof, the Sound Quarter, Pad 1,
+  the arena's gate); **the Line** is a salvage barricade (the Post-Apoc kit's `barricade`: container walls, tyre walls, sheet
+  metal, a container gate tower, kept shut) across the floor under the gun gallery.
 - **The garrison**: about 240: a priest-captain, three genepriests (the clinic; the shelf coral as an ore-finder and the
   fishing bridge's venom, swhighlands section 6), Giant street patrols in threes (§6.1), soldiers and lizard riders, servants
   and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,200 at its peak.
@@ -334,7 +350,9 @@ the proposed Under-Wall Portal (old 3); a trading post, not only an outpost.
 7. **The Valley's machines and mutants**: drawn in this build (wrecks only, or `kits/mechs` walkers in Hangar 6), or left to
    the life layer? *Recommended*: wrecks and signs now, live ones with the life layer.
 8. **The numbers today**: the garrison (about 240), the trading post (about 500), the watch post (8 to 15).
-9. **The watch post's tower**: how far downstream (it must see the Valley and signal the Cross), chosen with station 4.
-10. **Who lives up there** (TBD, the owner): the plateau's people Dalab trades with, and what passes: Dalab's mods, healing
+9. **The ritual combat**: how often (yearly, the owner), who fights (one champion each, or a team), to the death or to yielding,
+   what Dalab gains each win (tribute, recruits, the right to the road) and what a loss would cost.
+10. **Who lives up there** (TBD, the owner; they are the SW highlanders who fight in the arena, 2026-10-27): the plateau's people Dalab trades with, and what passes: Dalab's mods, healing
     and lowland goods up the tunnel; down it, perhaps the plateau's furs, ore (the shelf coral's finds), the fishing bridge's
-    venom and the highlands' plants. Their side of the market (their own stalls or camp on the Apron or the rim) waits on it.
+    venom and the highlands' plants. Their side of the market waits on it, and their marks (a culture pack) on their quarter.
+11. **The watch post's tower**: how far downstream (it must see the Valley and signal the Cross), chosen with station 4.

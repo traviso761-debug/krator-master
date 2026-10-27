@@ -83,9 +83,22 @@ PATH['8as0-span-parts.js'] = os.path.join(ANC, 'targets', 'span', '8as0-span-par
 # Span registers the layout's records), its biome (86-bio-*: Span's flora is the SW highlands kit's).
 DALAB = os.path.join(ROOT, 'settlements', 'dalab')
 DALAB_SET = ['69b-vern-mat.js', '69c-vern-helpers.js', '69d-dalab-mat.js', '69e-dalab-helpers.js', '70-dalab-dwellings.js',
-             '71-dalab-trade.js', '71c-dalab-town.js', '72-dalab-civic.js', '73-dalab-sacred.js', '88y-dalab-matlib.js']
+             '71-dalab-trade.js', '71c-dalab-town.js', '72-dalab-civic.js', '72b-dalab-marks.js', '73-dalab-sacred.js', '88y-dalab-matlib.js']
 for f in DALAB_SET:
     PATH[f] = os.path.join(DALAB, 'src', f)
+# THE POST-APOC KIT (kits/post-apoc), as one closure (apoc_bundle.py: its own MAT, TEX and stream never meet the page's): the
+# arena, the highlanders' salvage houses and the barricade (Dalab's Line) with the compound's wall pieces it is built from. Its
+# furniture glue needs the catalog's furniture and the interiors core as globals (kits/catalog/furniture_bundle.py,
+# kits/interiors/kit_bundle.py) and core/walk (KWALK); settlements/screamers is the worked example. Generated, never in src/.
+for d in (('kits', 'catalog'), ('kits', 'interiors'), ('kits', 'post-apoc')):
+    sys.path.insert(0, os.path.join(ROOT, *d))
+import furniture_bundle, kit_bundle, apoc_bundle
+FURN_CULTURES = ['post-apoc', 'scrap', 'generic']
+APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '53-barricade.js', '54-compound.js', '56-arena.js']
+CORE_WALK = ['20-core-walk.js']
+PATH['20-core-walk.js'] = core('walk', '20-core-walk.js')
+BUNDLES = {'70d-furniture-bundle.js': lambda: furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['post-apoc']),
+           '70e-apoc-bundle.js': lambda: apoc_bundle.bundle(APOC_DEFS)}
 # build-time renames where two sets read in place declare the same name (the files on disk are untouched)
 SUBST = {'88y-dalab-matlib.js': [(r'\bMATLIB_BOUND\b', 'MATLIB_BOUND_DALAB')]}
 
@@ -120,6 +133,7 @@ SIDE = {}
 VIRTUAL = {'88x-matlib-pack.js': matlib_pack.fragment(ANC, 'ancients', side=SIDE),
            '88x-matlib-pack-dalab.js': matlib_pack.fragment(DALAB, 'dalab', side=SIDE),
            khost.EDITS_JS: khost.edits_js(HERE, 'span')}
+VIRTUAL.update({f: fn() for f, fn in BUNDLES.items()})
 for f in VIRTUAL:
     PATH[f] = None
 
@@ -136,7 +150,7 @@ for f in frags:
     for rx, rep in SUBST.get(f, []):
         s = re.sub(rx, rep, s)
     code = re.sub(r'^\s*(//[^\n]*\n|/\*.*?\*/\s*)*', '', s, flags=re.S)
-    if f.endswith('.js') and not re.match(r'[;(]*\s*\(?\s*(function|\(\)\s*=>)', code):   # a fragment that is one closure declares nothing shared
+    if f.endswith('.js') and f not in BUNDLES and not re.match(r'[;(]*\s*\(?\s*(function|\(\)\s*=>)', code):   # a fragment that is one closure declares nothing shared
         for m in DECL.finditer(s):
             n = m.group(1) or m.group(2)
             if n in seen and seen[n] != f:
