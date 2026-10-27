@@ -5,8 +5,9 @@
 **State:** `claude/biome-rebuild` (worktree `C:/Users/travi/Documents/krator-biome-rebuild`, unpushed). origin/main is merged in
 (ebfc29d9e; `LORE.md`'s sky rows kept from this branch: check them against main's). **Pairs 1-3 are merged** (eastabyss, nwbay,
 swbay, hyperjungle, sedesert, necanyons), as are the Rift, the SW highlands, the Godthrone, KLAVA, the card fit and the foliage
-guards (c63eacb4c), the water audit (ac251a770) and `CORE-IMPROVEMENTS.md`. necanyons left uncommitted rebuilt pages in this
-worktree (`biomes/necanyons/dist/*.html`): commit them if its re-verify passed, or rebuild.
+guards (c63eacb4c), the water audit (ac251a770) and `CORE-IMPROVEMENTS.md`. necanyons finished (b792fcba6, 3dac639b8: the owner's notes, the foliage guards, all three pages pass). **The hyperjungle's
+own items float under the attach audit** (bloom, ucard, ribbon, clump0-2: up to 7.9% of cards on necanyons' pages, capped there by
+`guards.maxShare` in KNOWN_ISSUES): fix the hyperjungle's crown placement, then lower those caps.
 
 **The core pass was stopped mid-way.** Each session committed its work to its own branch (`git branch --list 'claude/core-*'
 'claude/water-core-pass'`); none is merged unless its report says so. Read each session's last report, then finish and merge each:
