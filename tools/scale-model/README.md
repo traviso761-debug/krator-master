@@ -490,3 +490,11 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
     round Hub 01's high valley (px ~960-1140 by 950-1180; `biomes/catch/PLAN.md` section 6c).
   Done on the model 2026-10-23: **Ledge** moved to the great lake's north cliff (px 165,1000; with 4.22); **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
   (px 528,687); **Stair** moved to the springs' hollow in the Catch's interior hills (px 834,1112), the Hill arcology's site. **`rift rim`** split into **`rift rim N`** (the old record, renamed and trimmed to the w rift highland's border) and **`rift rim S`** (`rmvriftrims01`, with the west bend south of the highland).
+
+## Owed in the next model edit (4.24)
+
+- **The Godthrone caldera wall's terraces** (the owner, 2026-10-27): six collapse terraces, scarps 300-640 m at 55-66°,
+  back-tilted benches, the rim at 25,000 m, as the station pages draw them (`biomes/godthrone/src/45-host-stage.js`,
+  `TER_MAIN` and `wallAt`, on branch `claude/godthrone-s1-d6f503` until merged).
+- **Vents in Korona** (the owner, 2026-10-26: the plume is active): along its trenches and moat, for the geyser kit's
+  `corona` field (`biomes/geyser/PLAN-STATIONS.md`, station 4; `biomes/korona/NOTES.md`).
