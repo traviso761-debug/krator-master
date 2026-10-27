@@ -154,7 +154,7 @@ func step(dt: float) -> float:
 	for P in ponds:
 		var lv: float = P["level"].call(t, P["out"]) if P["level"] is Callable else float(P["level"])
 		for k in P["cells"]:
-			var d: float = lv - z[k]
+			var d: float = lv - z[k] - rough[k]
 			h[k] = d if d > 0.0 else 0.0
 			T[k] = P["T"]
 	var i0: int = maxi(0, _b[0] - 1)
