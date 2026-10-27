@@ -125,6 +125,7 @@ if(STN.summit) add('the caldera\'s heights (4.23)',HCHK.heights(hs[0],hs[1],hs[2
  {const B=window._biome||{},ok=STN.vent?B.talus>500&&B.hair>50&&B.bombs>200:STN.summit?B.talus>2000&&B.stones>1000:B.talus>150&&B.stones>1000;add('counts: talus '+B.talus+', bombs '+B.bombs+', hair '+B.hair+', stones '+B.stones,{ok,detail:JSON.stringify(B)});}
  if(!STN.summit)flankChecks().forEach(c=>R.push(c));
  if(LAKE){add('the lava lake: its level from its volume',HCHK.lake(lakeSamples(),LAKE.E));add('the lava lake: its hazard and its frozen floor',HCHK.lakePage(lakePage()));}
+ if(OVF)OVF.verdict(OVF.run()).forEach(c=>add(c.name,c));   /* the lake's overflow (89d, ?overflow only) */
  return R;}
 // THE LAVA LAKE (89c): the level never falls while it fills and never passes the pit's lip; the volume under it is the volume
 // poured (1%); the vent drowns. The page: molten where the lake is, nothing before it; the frozen floor at the level, the ground
@@ -136,12 +137,13 @@ HCHK.lake=function(S,E){let mono=true,cons=0,over=0;for(let i=1;i<S.length;i++)i
 HCHK.lakePage=function(r){const ok=r.burnMid>0&&r.burnBefore===0&&Math.abs(r.frozen-r.Lf)<6&&r.restored===0;
  return{ok,detail:'burn on the lake mid-eruption '+r.burnMid+', before it '+r.burnBefore+'; the frozen floor '+r.frozen.toFixed(1)+' m at a level of '+r.Lf.toFixed(1)+'; '+r.restored+' heights off after the restore'};};
 const lakeSamples=()=>{const o=[];for(let d=0;d<=LAKE.E.days;d+=LAKE.E.days/200)o.push(LAKE.at(d));return o;};
-const lakePage=()=>{const was=LAKE.day,E=LAKE.E,p=xzOf(PIT.s+500,PIT.t-400),h0=Float32Array.from(GROUND_F.heights);
+const lakePage=()=>{const ov=OVF&&OVF.active;if(OVF)OVF.active=false;   /* 89c's own lake, without 89d's overflow */
+ const was=LAKE.day,E=LAKE.E,p=xzOf(PIT.s+500,PIT.t-400),h0=Float32Array.from(GROUND_F.heights);
  LAKE.set(E.days*.4);const s=LAKE.state,a=KHAZ.here(p[0],s.L+1,p[1],0),burnMid=(a.doses&&a.doses.burn)||0;
  LAKE.set(null);const b=KHAZ.here(p[0],LAKE.at(E.days*.4).L+1,p[1],0),burnBefore=(b.doses&&b.doses.burn)||0;
  const Lf=LAKE.at(E.days+E.crustDays+1).L;LAKE.set(E.days+E.crustDays+1);const frozen=terrainH(p[0],p[1]);
  LAKE.set(null);let restored=0;for(let k=0;k<h0.length;k++)if(GROUND_F.heights[k]!==h0[k])restored++;
- LAKE.set(was);return{burnMid,burnBefore,frozen,Lf,restored};};
+ LAKE.set(was);if(OVF)OVF.active=ov;return{burnMid,burnBefore,frozen,Lf,restored};};
 function hostNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail}),hs=STN.summit?heightsNow():null;
 if(STN.summit){ add('the pit as deep as the floor (a flat caldera)',HCHK.heights(hs[0],hs[2],hs[2]));
  add('the halo all black',HCHK.halo(.1,.1));
@@ -152,6 +154,8 @@ if(STN.summit){ add('the pit as deep as the floor (a flat caldera)',HCHK.heights
  add('the fountain always on (no cycle)',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.on),'on','on'));
  if(LAKE){const S=lakeSamples();add('the lake over the pit\'s lip',HCHK.lake(S.map((s,i)=>i===S.length-1?Object.assign({},s,{L:LAKE.E.lip+5}):s),LAKE.E));
   add('the lake\'s floor left re-baked after the restore',HCHK.lakePage(Object.assign(lakePage(),{restored:12})));}}
+ if(OVF){const r=OVF.run(),neg=(n,o)=>{const v=OVF.verdict(Object.assign({},r,o))[n];add(v.name+' (broken)',v);};
+  neg(2,{cos:-1,farShare:.5});neg(1,{mass:Object.assign({},r.mass,{error:r.mass.erupted*.01})});neg(3,{raised:0});neg(4,{mid:Object.assign({},r.mid,{farBurn:5})});neg(5,{gpu:{mass:1.1,dh:1,dT:0,molten:[0,0]}});neg(6,{off:12});neg(0,{out:0});}
  if(!STN.summit)flankNegatives().forEach(c=>R.push(c));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
@@ -184,9 +188,10 @@ if(LAKE)(function(){const E=LAKE.E,total=E.days+E.crustDays+3,ui=KHOST.ui||docum
  const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=1000;sl.value=0;sl.style.width='160px';
  const out=document.createElement('div');out.style.cssText='flex-basis:100%;font:12px ui-monospace,monospace;opacity:.9';
  box.append(on,play,sl,out);ui.appendChild(box);
+ if(OVF){OVF.ui(box,d=>go(d));KHOST.on(OVF.tick,'view');}   /* the overflow's checkbox (89d, ?overflow only) */
  let playing=false;
  const show=()=>{const s=LAKE.state;on.classList.toggle('on',LAKE.day!=null);play.textContent=playing?'Pause':'Play';
-  out.textContent=s?('day '+s.day.toFixed(1)+' · '+s.phase+' · '+Math.round(s.Q).toLocaleString()+' m3/s · level '+s.L.toFixed(0)+' m ('+(s.L-E.L0).toFixed(0)+' m deep)'+(s.drowned?' · the vent drowned':'')+' · crust '+Math.round(s.crust*100)+'%'):'the vent as it is (fuming, fountaining now and then)';};
+  out.textContent=s?('day '+s.day.toFixed(1)+' · '+s.phase+' · '+Math.round(s.Q).toLocaleString()+' m3/s · level '+s.L.toFixed(0)+' m ('+(s.L-E.L0).toFixed(0)+' m deep)'+(s.drowned?' · the vent drowned':'')+' · crust '+Math.round(s.crust*100)+'%'+(OVF&&OVF.active&&s.poured!=null?OVF.words(s):'')):'the vent as it is (fuming, fountaining now and then)';};
  const go=d=>{LAKE.set(d);if(d!=null)sl.value=Math.round(d/total*1000);show();};
  LAKE.ui={sync:()=>{if(LAKE.day!=null)sl.value=Math.round(LAKE.day/total*1000);else playing=false;show();}};
  on.onclick=()=>{if(LAKE.day==null)go(0);else{playing=false;go(null);}};

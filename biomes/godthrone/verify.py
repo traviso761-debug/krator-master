@@ -135,7 +135,7 @@ async def run(a):
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}" + (("?" + a.query) if getattr(a, "query", "") else ""), timeout=LOAD_MS)
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
@@ -294,5 +294,6 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--query", default="", help="the page's query string, e.g. overflow (the lake's overflow, 89d)")
     ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))

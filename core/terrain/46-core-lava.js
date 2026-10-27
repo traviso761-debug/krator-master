@@ -22,7 +22,7 @@
 //                 edge: 'drain' | 'wall', cfl: .5, dtMax: 60, dtMin: .05})  -> a sim on the field's lattice points in box
 //                 (every stride-th; the ground read with f.h, so insets count)
 //   sim.vent({x, z, r, Q: m3/s | fn(t), T, name})   a source: Q dt spread evenly over the cells within r (the nearest if none)
-//   sim.pond({inside(x,z) | cells:[k...], level: m | fn(t, out), T, name})   cells held at max(0, level - z), T: a lake;
+//   sim.pond({inside(x,z) | cells:[k...], level: m | fn(t, out), T, name})   cells held at max(0, level - z - rough), T: a lake;
 //                 out (m3, the net volume that left them) is its ledger: fn(t, out) is how a page's lake level follows it
 //   sim.step(dt)         one step of dt s;  sim.run(seconds) -> {steps, t}: steps of dtNext (the front's CFL) to it
 //   sim.dtNext           cfl * step / the fastest mean velocity of the last step, in [dtMin, dtMax]; sim.umax that velocity (m/s)
@@ -110,7 +110,7 @@ function create(o){
    const t=sim.t;
    // the ponds first: their cells at the level, at their temperature
    for(const P of ponds){const Lv=typeof P.level==='function'?P.level(t,P.out):P.level;P.L=Lv;
-    for(const k of P.cells){const d=Lv-z[k];h[k]=d>0?d:0;T[k]=P.T;}}
+    for(const k of P.cells){const d=Lv-z[k]-rough[k];h[k]=d>0?d:0;T[k]=P.T;}}   /* to the level over the rough ground: a flat surface, no flux inside */
    const i0=Math.max(0,bi0-1),j0=Math.max(0,bj0-1),i1=Math.min(nx-1,bi1+1),j1=Math.min(nz-1,bj1+1);
    if(i1<i0){sim.t+=dt;sim.steps++;return dt;}
    let umax=0;

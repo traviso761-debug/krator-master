@@ -94,6 +94,10 @@ for f in ('07-core-export.js', '09-core-export-adapters.js'):
 CORE_SPACE = ['20-core-space.js']
 for f in CORE_SPACE:
     PATH.setdefault(f, J('core', 'space', f))
+# core/terrain's KLAVA (core/terrain/LAVA.md, "Adopting it"): the lake's overflow on the vent's page, behind its ?overflow
+# (89d-host-overflow.js); the surface and the GPU stepper (checked against the CPU by the page's verify) by explicit path
+PATH.setdefault('46s-core-lava-draw.js', J('core', 'terrain', 'host', '46-core-lava-draw.js'))
+PATH.setdefault('46t-core-lava-gpu.js', J('core', 'terrain', 'host', '46-core-lava-gpu.js'))
 # core/hazard (core/hazard/README.md, "Adopting it"): the lava, the vents, the hot ground, the ambient bridge; its clock
 PATH.setdefault('20-core-hazard.js', J('core', 'hazard', '20-core-hazard.js'))
 PATH.setdefault('37-core-traps.js', J('core', 'biome', '37-core-traps.js'))

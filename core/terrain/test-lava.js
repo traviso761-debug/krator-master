@@ -92,6 +92,12 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
  ok('the pond\'s ledger is the erupted volume (mass to 1e-9)',Math.abs(m.error)<1e-9*m.erupted&&Math.abs(m.pondOut-P.out)<1e-6,false);
  ok('the spill runs down the notch side, not the far side',s.at(600+400,600).h>s.at(600-400,600).h,false);}
 
+// ---- 7b. a deep pond over rough ground is still: its surface is flat, nothing moves inside it
+{const F=plane(41,41,40,(x,z)=>-900+.1*Math.hypot(x-800,z-800)),s=K.create({field:F,seed:3,rough:.5});
+ s.pond({inside:(x,z)=>Math.hypot(x-800,z-800)<600,level:-850});s.step(10);
+ const s0=K.create({field:F,seed:3,rough:0});s0.pond({inside:(x,z)=>Math.hypot(x-800,z-800)<600,level:-850});s0.step(10);
+ ok('a 50 m deep pond on 0.5 m of roughness: no flow inside it (umax < 1e-6 m/s)',s.umax<1e-6&&s0.umax<1e-6,false);}
+
 // ---- 8. the hazard: a bound sim answers KHAZ's state function by point
 {global.KHAZ={STATES:{}};const {s}=mk(7);s.run(1800);const rec={id:'lava1'};K.bind(rec,s);
  const hz=s.hazard(),f=KHAZ.STATES['KLAVA.flow'];
