@@ -137,7 +137,13 @@ func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 	var gE1 := Vector3(giant_dir.z, 0.0, -giant_dir.x).normalized()
 	var gUp := giant_dir.cross(gE1)
 	var ta: float = G["axisTiltDeg"] * D
-	var giant_axis := (gUp * cos(ta) + gE1 * sin(ta)).normalized()
+	# the giant's spin axis: 'equator' (the default, 2026-10-26) is Krator's pole taken square to the line of sight, so the ring
+	# plane is Krator's equatorial plane and the sun lights the giant along its rings; 'sky' is the old canon, axisTiltDeg from up
+	var giant_axis: Vector3
+	if G.get("axis", "equator") == "sky":
+		giant_axis = (gUp * cos(ta) + gE1 * sin(ta)).normalized()
+	else:
+		giant_axis = (pole - giant_dir * pole.dot(giant_dir)).normalized()
 	# the moons: Krator and each moon in the giant's equatorial plane (km), laid on the sky's ring line
 	var K := _krator_at(lst, Hg)
 	var sunE := _eq(ra, dec)
