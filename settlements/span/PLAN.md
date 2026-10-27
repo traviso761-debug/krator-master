@@ -330,7 +330,7 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   north end. The held Ancient parts carry the kit's decay-3 patches. Left: the Line (no Dalab def), banners and gates, the
   orchards' trees (the flora is the biome kit's): `KNOWN_ISSUES.md`.
 - **SP5.** *(done 2026-10-27, on stand-in pillars)* The watch post on a pillar-rim tower: the stand-in rim and pillars (core/terrain
-  KSTACKS 'pillar' bodies, their beds KSTRATA's 'pillar' recipe, contoured and weathered on the page; the library's grain from
+  KSTACKS 'pillar' bodies, their beds KSTRATA's 'pillar' recipe, contoured (KSTACKS.contour, core/terrain 37b) and weathered; the library's grain from
   `materials.json`), the post from the Dalab set, the cliff stair and the watch stair fitted to the drawn rock (Pinnacle Rock's
   rule), and the mission inside the palisade. Station 4's `KSTACKS.pillars` field replaces the stand-in: `KNOWN_ISSUES.md`.
 - **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.

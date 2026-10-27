@@ -109,34 +109,17 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
  // THE PILLAR RIM (SP5, a stand-in for SW highlands station 4): the layout's pillars (L.pillars) as core/terrain KSTACKS
  // 'pillar' bodies on the rim's floor, their beds core/terrain KSTRATA's 'pillar' recipe (red and white sandstones in turn,
  // thin soft partings), laid level, so the notches the beds weather to, their hardness and the colours the shader paints are
- // one column; the drawn mesh worn by KSTACKS.weather (the top kept flat under whatever stands on it). The station's
+ // one column; the drawn mesh contoured by KSTACKS.contour and worn by KSTACKS.weather (the top kept flat under whatever stands on it). The station's
  // KSTACKS.pillars field replaces them, and the watch pillar is its body under the post (PLAN.md SP5)
  const PILLARS=[],PDRAWN={};if(L.pillars&&typeof KSTACKS!=='undefined'&&typeof KSTRATA!=='undefined'){const pos=[],col=[],idx=[],fl=L.pillarRim.floor;
   const ST=SPAN_ROCK.ST;
   // a bed's thickness above y and its hardness, for KSTACKS' pillar (o.strata): up the column until the bed changes
-  // THE CONTOUR (the owner, 2026-10-27, with Spider Rock, Adrspach and Cao Grande for reference: "thinning in and out along the
-  // sides and real contour"): the drawn mesh moved about the body's axis, every vertex by a function of its angle and height,
-  // so walls, notches and tops move together: a profile wandering in and out (KRAND fbm up the height, a flared foot, a
-  // crown drawn in), the axis wandering a metre or two, vertical joints cut in as grooves that open and close up the face,
-  // and on a pillar nothing stands on, a cleft down from the crown (a split spire). Under a held top (the watch post) every
-  // term fades to nothing over the top 12 m, so the top is the record's. A page pass until KSTACKS has one (KNOWN_ISSUES.md)
-  const sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
-  function contour(B,m,held){const sd=B.seed>>>0,H=B.top-B.y0,u=k=>KRAND.unit(KRAND.hash(sd,k,77)),nz=(k,t)=>(KRAND.fbm(t,k*1.7,.5,3,sd+k)-.5)*2;
-   const J=[],nj=5+(KRAND.hash(sd,0,78)%4);for(let j=0;j<nj;j++)J.push({a:u(10+j)*TAU,w:.8+1.4*u(20+j),d:4+5*u(30+j),k:40+j});
-   const cleft=held?null:{a:u(5)*TAU,w:1.5+1.5*u(6),from:.35+.25*u(7)};
-   for(let v=0;v<m.pos.length/3;v++){const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],t=(y-B.y0)/H,keep=held?1-sm(H-12,H-3,y-B.y0):1;
-    const ox=1.8*nz(1,t*2.2)*keep,oz=1.8*nz(2,t*2.2)*keep,dx=x-B.x,dz=z-B.z,r=Math.hypot(dx,dz);if(r<1e-6)continue;const a=Math.atan2(dz,dx);
-    let p=1+.16*nz(3,t*2.8)+.12*(1-sm(0,.14,t));if(!held)p*=1-.28*sm(.78,1,t);
-    let R=r*(1+(p-1)*keep);
-    for(const g of J){let d=a-g.a;d=Math.atan2(Math.sin(d),Math.cos(d));const s=d*r/g.w;R-=g.d*(.55+.45*nz(g.k,t*4))*Math.exp(-s*s)*keep;}
-    if(cleft&&t>cleft.from){let d=a-cleft.a;d=Math.atan2(Math.sin(d),Math.cos(d));const s=d*r/cleft.w;R-=r*.5*sm(cleft.from,cleft.from+.12,t)*Math.exp(-s*s);}
-    R=Math.max(R,r*.25);m.pos[3*v]=B.x+ox+dx/r*R;m.pos[3*v+2]=B.z+oz+dz/r*R;}}
   const strata=(x,y,z)=>{const a=ST.at(x,y,z),b=a.bed,f=a.formation;let h=.25;while(h<60){const q=ST.at(x,y+h,z);if(q.bed!==b||q.formation!==f)break;h+=.25;}return {h:h,hard:a.hard};};
   L.pillars.forEach((q,i)=>{const c=W(q.u,q.v,0),hs=KRAND.hash(2820,9,i),held=L.parts.some(p=>p.on===q.id);let B=null;
    try{B=KSTACKS.make({kind:'pillar',id:q.id,x:c[0],z:c[2],H:q.H,w:q.w,l:held?q.w:q.w*(.8+.3*KRAND.unit(KRAND.hash(hs,1))),ry:held?0:KRAND.unit(KRAND.hash(hs,2))*PI,
     sq:6,taper:held?.03:.03+.06*KRAND.unit(KRAND.hash(hs,3)),lean:0,y0:fl,seed:hs,strata:strata});}catch(e){reportErr(q.id+': '+(e.stack||e));return;}
    PILLARS.push(B);const m=KSTACKS.mesh(B,{step:2.5}),y0=m.pos.slice(),o=pos.length/3;
-   contour(B,m,held);
+   KSTACKS.contour(B,m,held?{keep:12}:{});   /* core/terrain 37b: a profile in and out, joints, a split crown (the owner's references: Spider Rock, Adrspach, Cao Grande); a held top kept */
    KSTACKS.weather(B,m,{ground:()=>fl,amp:3,grain:.09,pit:1.1,pitGrain:.6});
    if(held)for(let v=0;v<m.part.length;v++)if(m.part[v]!==0&&y0[3*v+1]>B.top-2)m.pos[3*v+1]=y0[3*v+1];   /* the top under the post stays where the post stands */
    for(let v=0;v<m.pos.length/3;v++){const s=.5+.5*m.occ[v];pos.push(m.pos[3*v],m.pos[3*v+1],m.pos[3*v+2]);col.push(s,s,s);}

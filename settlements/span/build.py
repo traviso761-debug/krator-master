@@ -97,8 +97,9 @@ FURN_CULTURES = ['post-apoc', 'scrap', 'generic']
 APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '53-barricade.js', '54-compound.js', '56-arena.js']
 CORE_WALK = ['20-core-walk.js']
 # core/terrain: KSTACKS, the stand-in pillars of the pillar rim (SP5) until SW highlands station 4's carve replaces them
-CORE_TERRAIN = ['35-core-strata.js', '35z-core-strata-shade.js', '37-core-stacks.js']
+CORE_TERRAIN = ['35-core-strata.js', '35z-core-strata-shade.js', '37-core-stacks.js', '37b-core-stacks-contour.js']
 PATH['37-core-stacks.js'] = core('terrain', '37-core-stacks.js')
+PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
 # core/terrain strata: the pillars' beds (the 'pillar' recipe) as data and shader; the shade half keyed 35z so it sorts after the data
 PATH['35-core-strata.js'] = core('terrain', '35-core-strata.js')
 PATH['35z-core-strata-shade.js'] = core('terrain', 'host', '35-core-strata-shade.js')
