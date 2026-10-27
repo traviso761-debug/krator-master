@@ -84,8 +84,9 @@ const w = E.world({ box: BOX });
 ok(w.format === 'krator-world' && w.version === 1 && w.build === 'test' && w.box.join() === BOX.join(), 'format, version, build (core/tags\' page) and box');
 ok(['units', 'up', 'x', 'z', 'handed', 'matrix', 'instances', 'winding', 'uv', 'colours', 'typed', 'ids', 'box'].every(k => w.convention[k] != null),
   'the convention states units, axes, handedness, the matrix layout, winding, uv, colour spaces, typed arrays, ids and the box rule');
-ok(E.SECTIONS.every(s => s in w && w.sections[s]), 'every section has a key and a status');
-const st = s => w.sections[s].status;
+ok(E.SECTIONS.every(s => E.OPTIONAL[s] || (s in w && w.sections[s])) && !('hazards' in w) && !('hazards' in w.sections),
+  'every section has a key and a status; an optional one (hazards) none when it does not fill');
+const st = s => w.sections[s] ? w.sections[s].status : 'absent';
 ok(['items', 'buckets', 'materials', 'textures', 'registry', 'terrain'].every(s => st(s) === 'ok') && st('stage') === 'none' && st('atmos') === 'empty',
   'sections filled: ' + E.SECTIONS.map(s => s + ' ' + st(s)).join(', '));
 ok(['fixtures', 'interiors', 'furniture', 'sim', 'city'].every(s => st(s) === 'stub' && w[s] === null && E.CONTRACTS[s].indexOf('STUB') === 0),
@@ -316,7 +317,7 @@ const SM = un(shear.items[0].matrices); SM[4] += 0.5; shear.items[0].matrices = 
 ok(E.glb(shear).stats.trsMaxError > 0.1, 'negative: a sheared matrix shows as a TRS error (' + E.glb(shear).stats.trsMaxError.toFixed(2) + ')');
 ok(E.check(G.json).ok, 'the JSON half still passes the joins (materials, sets, bucket records)');
 
-// ---- the hazards (core/hazard): the registry carries KHAZ.export, cropped to the tile; none without core/hazard ----
+// ---- the hazards (core/hazard): their own section (KHAZ.export) cropped to the tile, absent when the tile holds none ----
 { const hz = (withHaz) => { const c = { console, Math }; c.globalThis = c; vm.createContext(c);
     ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js'].concat(withHaz ? ['core/biome/37-core-traps.js', 'core/hazard/20-core-hazard.js'] : [])
       .concat(EXP).forEach(f => vm.runInContext(read(f) + (f.endsWith('07-core-export.js') ? '\nthis.EXPORT=EXPORT;' : ''), c, { filename: f }));
@@ -325,12 +326,66 @@ ok(E.check(G.json).ok, 'the JSON half still passes the joins (materials, sets, b
     T.add({ 'class': 'feature', kind: 'hollow', name: 'CO2 hollow', at: [500, 0, 500], r: 30, h: 8, tags: { hazard: { kind: 'gas' } } });
     T.add({ 'class': 'feature', kind: 'rock', name: 'A rock', at: [12, 0, 12], r: 1 });
     return c.EXPORT; };
-  const EH = hz(true), all = EH.world({ sections: ['registry'] }), tile = EH.world({ box: [0, 0, 100, 100], sections: ['registry'] });
-  ok(all.registry.hazards && all.registry.hazards.format === 'krator-hazard' && all.registry.hazards.records.length === 2 &&
-    all.registry.hazards.records[0].hazard.nav.avoid && all.registry.hazards.records[1].hazard.effect === 'suffocate',
-    'the registry carries the hazards, filled from their kinds');
-  ok(tile.registry.hazards.records.length === 1 && tile.registry.hazards.records[0].shape.type === 'cyl', 'a tile crops the hazards by their at (1 of 2)');
-  ok(!hz(false).world({ sections: ['registry'] }).registry.hazards, 'negative: without core/hazard the registry has no hazards'); }
+  const EH = hz(true), all = EH.world({ sections: ['registry', 'hazards'] }), tile = EH.world({ box: [0, 0, 100, 100], sections: ['registry', 'hazards'] });
+  ok(all.hazards && all.hazards.format === 'krator-hazard' && all.hazards.records.length === 2 && all.sections.hazards.status === 'ok' &&
+    all.hazards.records[0].hazard.nav.avoid && all.hazards.records[1].hazard.effect === 'suffocate' && all.stats.hazards === 2,
+    'the hazards section carries KHAZ.export, filled from the kinds (stats.hazards ' + all.stats.hazards + ')');
+  ok(!all.registry.hazards, 'the registry no longer carries them (they moved to their own section)');
+  ok(tile.hazards.records.length === 1 && tile.hazards.records[0].shape.type === 'cyl', 'a tile crops the hazards by their at (1 of 2)');
+  const ck = EH.check(tile);
+  ok(ck.ok && ck.joins.hazards === 1 && ck.joins.hazardsResolved === 1, 'check: each hazard resolves in the registry (' + ck.joins.hazardsResolved + ' of ' + ck.joins.hazards + ')');
+  const bad = JSON.parse(JSON.stringify(tile)); bad.hazards.records[0].id = 'feature_99999';
+  ok(!EH.check(bad).ok, 'negative: a hazard naming no registry record fails the check');
+  const none = EH.world({ box: [200, 200, 300, 300], sections: ['registry', 'hazards'] });
+  ok(!('hazards' in none) && !('hazards' in none.sections) && none.stats.hazards == null && !('hazards' in EH.check(none).joins),
+    'negative: a tile with no hazard has no hazards key, no section entry, no stat, no join (the container is what it was)');
+  const off = hz(false).world({ sections: ['registry'] });
+  ok(!('hazards' in off) && !off.registry.hazards, 'negative: without core/hazard there is no hazards section'); }
+
+// ---- a merged LOD page (BIO.LOD.merge, fade, cull) splits by range; per-instance labels travel as a table and an index ----
+{ const lodPage = (LOD) => { const c = { console, Math, THREE, Buffer, btoa: s => Buffer.from(s, 'binary').toString('base64') }; c.globalThis = c; vm.createContext(c);
+    ['core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js', 'core/biome/35-core-anim.js', 'core/biome/42-core-export.js'].concat(EXP)
+      .forEach(f => vm.runInContext(read(f) + (f.endsWith('10-core-head.js') ? '\nthis.BIO=BIO;' : '') + (f.endsWith('07-core-export.js') ? '\nthis.EXPORT=EXPORT;' : ''), c, { filename: f }));
+    const B = c.BIO; B.init({ THREE, scene: new THREE.Scene(), seed: 3, err: () => {}, terrainH: () => 0, waterH: () => -1 }); Object.assign(B.LOD, LOD);
+    const m = new THREE.MeshLambertMaterial();
+    B.def('leaf', new THREE.PlaneGeometry(2, 2), m, { label: 'Leaves' }); B.def('tuft', new THREE.PlaneGeometry(.5, .5), m, { label: 'Grass' }); B.bucket('bark', new THREE.MeshLambertMaterial());
+    let n = 0;
+    for (let x = 0; x < 1200; x += 150) for (let z = 0; z < 1200; z += 150) {
+      const r = (n++ % 3) === 0 ? 800 : 1200; B.owner = [x, z]; B.range = r;
+      for (let k = 0; k < 3; k++) B.put('leaf', [x + k, 10 + k, z], null, 1, 0x88aa66, k === 1 ? { label: 'Blossom' } : null);
+      B.tube('bark', [{ x, y: 0, z, r: .5 }, { x, y: 10, z, r: .3 }], 0x664422, { seg: 6 });
+      B.owner = null; B.range = r === 800 ? 300 : 500; B.put('tuft', [x + 20, 0, z + 20], null, 1, 0x99bb55); }
+    B.range = null; B.bake(); return c; };
+  const P = lodPage({ merge: true, fade: .15, cull: true }), W = P.EXPORT.world({ sections: ['items', 'buckets', 'materials', 'textures'] });
+  const leafM = P.BIO.baked.find(m => m.name === 'biome:leaf'), leafR = W.items.filter(r => r.name === 'leaf');
+  ok(leafM.userData.lod.ranges.length === 2 && leafR.length === 2 && leafR.every(r => !r.lod.ranges) &&
+    leafR.map(r => r.lod.range).join() === '1200,800' && leafR.map(r => r.id).join() === 'leaf@0,0:1200,leaf@0,0:800',
+    'split: a merged chunk mesh of two ranges exports two records, one range each (' + leafR.map(r => r.id + ' ' + r.count).join(', ') + ')');
+  { const rows = leafM.userData.lod.ranges; let right = leafR[0].count === rows[0][1] && leafR[1].count === rows[1][1];
+    const A = leafM.instanceMatrix.array, R0 = P.EXPORT.unpack(leafR[0].matrices), R1 = P.EXPORT.unpack(leafR[1].matrices);
+    for (let j = 0; j < leafR[1].count; j++) if (R1[j * 16 + 12] !== A[(rows[0][1] + j) * 16 + 12]) right = false;
+    for (let j = 0; j < leafR[0].count; j++) if (R0[j * 16 + 14] !== A[j * 16 + 14]) right = false;
+    ok(right, 'split: each record holds its range\'s rows, in the mesh\'s order (the 800 m rows after the 1200 m ones)'); }
+  ok(leafR.every(r => r.lod.fade === .15 && !r.lod.loose), 'split: each carries the fade band; the leaves a tree owns are not loose');
+  const tuftR = W.items.filter(r => r.name === 'tuft');
+  ok(tuftR.length === 2 && tuftR.every(r => r.lod.loose === true && r.lod.fade === .15), 'loose: the tufts no tree owns are marked loose (BIO.LOD.cull)');
+  const barkM = P.BIO.baked.find(m => m.name === 'biome:bark'), barkR = W.buckets.filter(b => b.name === 'bark');
+  ok(barkR.length === 2 && barkR.map(b => b.lod.range).join() === '1200,800' && barkR.reduce((s, b) => s + b.triangles, 0) === barkM.geometry.index.count / 3 &&
+    barkR.every(b => b.triangles * 3 === barkM.userData.lod.ranges.find(q => q[0] === b.lod.range)[1]),
+    'split: the bark bucket too, by its index ranges (' + barkR.map(b => b.id + ' ' + b.triangles).join(', ') + ')');
+  { let right = true; for (const r of leafR) { const L = P.EXPORT.unpack(r.labels.index), M = P.EXPORT.unpack(r.matrices);
+      if (r.labels.names.join() !== 'Leaves,Blossom' || L.length !== r.count) right = false;
+      for (let j = 0; j < r.count; j++) if (r.labels.names[L[j]] !== (Math.abs(M[j * 16 + 13] - 11) < .01 ? 'Blossom' : 'Leaves')) right = false; }
+    ok(right && leafR[0].labels.index.type === 'Uint16Array', 'labels: each record carries the table and a row index that reads every row\'s own label'); }
+  ok(tuftR.every(r => !r.labels), 'labels: an item that gives none carries none (the negative)');
+  ok(P.EXPORT.check(W).ok, 'the split world passes the joins');
+  const G = P.EXPORT.glb(W);
+  ok(G.json.items.find(r => r.name === 'leaf').labels && G.stats.instances === W.stats.instances, 'the glb keeps the labels in the JSON half');
+  const Q = lodPage({}), WQ = Q.EXPORT.world({ sections: ['items', 'buckets', 'materials', 'textures'] });
+  ok(WQ.items.every(r => r.id.indexOf(':') < 0 && r.lod && r.lod.ranges == null && r.lod.fade == null && r.lod.loose == null) &&
+    WQ.buckets.every(b => b.id.indexOf(':') < 0 && b.lod.fade == null), 'negative: an unmerged page splits nothing and writes no fade or loose');
+  const C = lodPage({ merge: true, fade: .15 }), WC = C.EXPORT.world({ sections: ['items'] });
+  ok(WC.items.filter(r => r.name === 'tuft').every(r => !r.lod.loose), 'negative: cull off, nothing is loose'); }
 
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

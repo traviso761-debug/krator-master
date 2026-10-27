@@ -20,7 +20,7 @@ What else it touches (all in this workstream, 2026-10-26):
 - **core/biome** `37-core-traps.js`: `KTRAPS.cycle(segs, t, off)`, the one clock every repeating thing runs on
   (`KTRAPS.state` is on it, bit for bit the old arithmetic: `test-traps.js` compares a million and a half samples).
 - **core/walk** `20-core-walk.js`: `KWALK.zone(o)` and `export().zones` (the hazards' navigation zones, from `KHAZ.zones`).
-- **core/export** `09-core-export-adapters.js`: the registry section carries `hazards` (`KHAZ.export`, cropped to the tile).
+- **core/export** `09-core-export-adapters.js`: the `hazards` section (`KHAZ.export`, cropped to the tile; absent when the tile holds none). It rode in the registry as `registry.hazards` until 2026-10-26.
 - **core/host** `93-host-inspect.js`: `KHOST.hazardNote(w, point)` adds the state line to the inspector's words (a separate
   function at the end of the file; the record-driven inspector only: the biome pages, which do not take 93, add
   `KTAGS.hazardAt` to their own `describe`).
@@ -62,7 +62,7 @@ A numeric default is `x == null ? d : x` (a danger or dose of 0 is kept).
   record of a registry, an item set's instances each (cached until the registry or a set's count changes).
 - `KHAZ.zones(T)`: `{id, kind, shape (world), travel, enter, avoid, layer}` each; `KWALK.export()` lists them under `zones`.
 - `KHAZ.export(T, inBox)`: `krator-hazard`, version 1: the kinds table, the layers, and each record filled with its world
-  shape. The registry section of core/export carries it as `registry.hazards`.
+  shape. core/export carries it as its `hazards` section.
 
 ## Lava, vents, fire, luck and taboo (2026-10-26)
 
@@ -246,4 +246,4 @@ pressure by height, and a temperature field when one exists).
 `node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then c05a017e
 with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
-`node core/export/test-export.js` (the registry's hazards).
+`node core/export/test-export.js` (the registry's hazards, and the hazards section).

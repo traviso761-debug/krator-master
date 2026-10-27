@@ -1,13 +1,15 @@
 # core/hazard in Godot (4.7.2)
 
 What the port does with the hazard records (`README.md` here; `GODOT-PLAN.md` Phase 2, the registry; `biomes/HAZARD-RESEARCH.md`).
-Nothing here is built yet: this is the mapping the importer and the autoload follow.
+Built so far (2026-10-26): the export's own `hazards` section and the importer's Area3Ds (`KratorWorld.hazards`,
+`godot/krator/world_import.gd`; `godot/tests/export/lod_test.gd`). Not yet: `KHazard`, navigation, status, the overlay.
 
 ## The data
 
 The records arrive twice, and agree: in the registry (`krator-tags`, each record's `tags.hazard` as the kit gave it) and
-in `registry.hazards` (`krator-hazard`, version 1: every hazard record filled from its kind's row, its shape in world
-metres, the kinds table and the navigation layers). The importer reads `registry.hazards`; the tags stay the metadata.
+in core/export's `hazards` section (`krator-hazard`, version 1: every hazard record filled from its kind's row, its shape
+in world metres, the kinds table and the navigation layers; present only when the tile holds one; it was
+`registry.hazards` until 2026-10-26). The importer reads the `hazards` section; the tags stay the metadata.
 The walk export (`krator-walk`) lists the same records' navigation under `zones`.
 
 ## One node per record: Area3D

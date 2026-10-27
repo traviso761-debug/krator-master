@@ -10,6 +10,7 @@ render_mode cull_disabled, diffuse_lambert, specular_disabled, skip_vertex_trans
 #include "res://shaders/atmos.gdshaderinc"
 #include "res://shaders/kcolour.gdshaderinc"
 #include "res://shaders/lib/foliage.gdshaderinc"
+#include "res://shaders/lib/lod.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform bool has_tex = true;
@@ -29,6 +30,7 @@ uniform float back_light = 0.30;
 varying vec3 v_wp;
 varying vec3 v_c2;
 varying float v_depth;
+varying float v_lod;
 
 void vertex() {
 	// MODEL_MATRIX already holds the instance's transform for a MultiMesh
@@ -44,12 +46,19 @@ void vertex() {
 		n = fol_card_normal(mat3(MODEL_MATRIX) * NORMAL);
 	}
 	v_c2 = vec3(COLOR.a, INSTANCE_CUSTOM.z, INSTANCE_CUSTOM.w);
+	v_lod = klod(MODEL_MATRIX[3].xyz, CAMERA_POSITION_WORLD, INSTANCE_ID);
+	if (v_lod > 1.5) {
+		wp = MODEL_MATRIX[3].xyz;   // past its range: every vertex at the origin, nothing rasterized (lib/lod.gdshaderinc)
+	}
 	VERTEX = (VIEW_MATRIX * vec4(wp, 1.0)).xyz;
 	NORMAL = normalize((VIEW_MATRIX * vec4(n, 0.0)).xyz);
 	v_depth = -VERTEX.z;
 }
 
 void fragment() {
+	if (klod_drop(v_lod, FRAGCOORD.xy)) {
+		discard;
+	}
 	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec4 tx = has_tex ? texture(albedo_tex, vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y)) : vec4(1.0);
 	vec3 c = COLOR.rgb * colour;

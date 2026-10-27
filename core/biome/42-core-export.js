@@ -29,7 +29,10 @@
 //  - motion:    a moving item's (BIO.dynamic) baked track, which Godot replays on its clock (BIO.motionBake below;
 //               biomes/GODOT.md, "Motion"). opt.motion:false leaves it out; {hz, loop, fade, t0} override the defaults.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
-//               which a Godot importer turns into visibility_range_begin / _end.
+//               which a Godot importer turns into visibility_range_begin / _end. A merged chunk mesh (BIO.LOD.merge) is
+//               written as one record per range (id '...@<chunk>:<range>'), with lod.fade and lod.loose where the mesh
+//               takes BIO.LOD.fade or BIO.LOD.cull (core/export/README.md, "LOD").
+//  - labels:    an item with per-instance labels (BIO.put's extra.label) carries {names, index (a row's entry)}.
 //  - ids:       on a page with core/tags (BIO.init({tags}), 2026-10-12): an item names its item set (record, recordClass,
 //               recordKey) and carries a side table aligned with its matrices: records (each instance's uid, 8 hex
 //               digits) and recordIndex (its index in the set: its id is '<record>#<index>'); a bucket lists the
@@ -97,7 +100,7 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
  const out={items:[],buckets:[],materials:[],textures:[],ground:null,stats:null,tags:null};
  const movers=[];   // the moving items (BIO.dynamic): their motion is baked after the loop (BIO.motionBake, below)
  const mats=new Map(),texs=new Map(),LIB=opt.libRef?libIndex():null,seenId=new Map();
- const idOf=(kind,kit,name,lod)=>{const id=(kit?kit+'/':'')+name+(lod&&lod.chunk!=null?'@'+lod.chunk:'');const n=(seenId.get(kind+id)||0)+1;seenId.set(kind+id,n);return n>1?id+'~'+n:id;};
+ const idOf=(kind,kit,name,lod,sfx)=>{const id=(kit?kit+'/':'')+name+(lod&&lod.chunk!=null?'@'+lod.chunk:'')+(sfx||'');const n=(seenId.get(kind+id)||0)+1;seenId.set(kind+id,n);return n>1?id+'~'+n:id;};
  // core/tags (BIO.init({tags})): ids on what the export carries (biomes/GODOT.md, "Records")
  const TR=BIO.tagReg?BIO.tagReg():null,vols=TR&&opt.records!==false?volumeIndex(TR):null,recs={items:0,instances:0,buckets:0,bucketRecords:0};
  // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
@@ -124,16 +127,32 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
+ const LM=new Map();(BIO.lodMeshes||[]).forEach(e=>LM.set(e.mesh,e));
  for(const m of BIO.baked){const kit=m.userData.kit||'';if(opt.kit!=null&&kit!==opt.kit)continue;
   const base={name:m.name.replace(/^biome:/,''),kit,label:m.userData.inspectLabel||'',material:matId(m.material),lod:m.userData.lod||null};
-  if(m.isInstancedMesh){const n=m.count,M=m.instanceMatrix.array,C=m.instanceColor?m.instanceColor.array:null,g=m.geometry;
-   const extra={};for(const k in g.attributes){const a=g.attributes[k];if(a.isInstancedBufferAttribute)extra[k]={size:a.itemSize,a:a.array};}
+  const PL=lodParts(base.lod,LM.get(m));
+  if(m.isInstancedMesh){const n=m.count,M=m.instanceMatrix.array;
    const keep=[];for(let i=0;i<n;i++)if(inBox(M[i*16+12],M[i*16+14]))keep.push(i);if(!keep.length)continue;
+   // a merged chunk mesh (BIO.LOD.merge: rows sorted by range, longest first, lod.ranges [[range, rows]...]) becomes one
+   // record per range, each with its own lod.range, so a reader that knows only lod.range draws each row to its own range
+   let r0=0;for(const p of PL){const rows=p.rows==null?keep:keep.filter(i=>i>=r0&&i<r0+p.rows);r0+=p.rows||0;if(rows.length)instRec(m,rows,Object.assign({},base,{lod:p.lod}),p.sfx);}}
+  else if(m.isMesh&&m.geometry.index){const I0=m.geometry.index.array;let t0=0;
+   for(const p of PL){const I=p.rows==null?I0:I0.subarray(t0,t0+p.rows);if(p.rows!=null)t0+=p.rows;if(I.length)bucketRec(m,I,Object.assign({},base,{lod:p.lod}),p.sfx);}}}
+ // one baked mesh's parts: [{lod, rows (instances, or a bucket's indices; null: all), sfx (the id's suffix)}]. A mesh of
+ // one range is one part with its lod as it was. lod.loose (BIO.LOD.cull: no tree owns a row, so each instance is drawn
+ // to its own range from its own origin, not from the chunk box) and lod.fade (BIO.LOD.fade's band, a fraction of the
+ // range) are written for the meshes that take them
+ function lodParts(L,e){const x=o=>{if(e&&e.fade)o.fade=Math.min(.9,BIO.LOD.fade);if(e&&e.loose&&!(o.minRange>0))o.loose=true;return o;};
+  if(!L)return [{lod:null,rows:null,sfx:''}];
+  if(!(L.ranges&&L.ranges.length>1))return [{lod:x(Object.assign({},L)),rows:null,sfx:''}];
+  return L.ranges.map(([r,c])=>{const o={chunk:L.chunk,range:r,minRange:L.minRange};if(L.size!=null)o.size=L.size;return {lod:x(o),rows:c,sfx:':'+r};});}
+ function instRec(m,keep,base,sfx){const kit=base.kit,C=m.instanceColor?m.instanceColor.array:null,g=m.geometry,M=m.instanceMatrix.array;
+   const extra={};for(const k in g.attributes){const a=g.attributes[k];if(a.isInstancedBufferAttribute)extra[k]={size:a.itemSize,a:a.array};}
    const mA=new Float32Array(keep.length*16),cA=C?new Float32Array(keep.length*3):null,xA={};
    for(const k in extra)xA[k]=new Float32Array(keep.length*extra[k].size);
    keep.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=M[i*16+q];if(cA)for(let q=0;q<3;q++)cA[j*3+q]=C[i*3+q];
     for(const k in extra){const s=extra[k].size;for(let q=0;q<s;q++)xA[k][j*s+q]=extra[k].a[i*s+q];}});
-   const rec=Object.assign(opt.ids?{id:idOf('i',kit,base.name,base.lod)}:{},base,{count:keep.length,dynamic:m.instanceMatrix.usage===BIO.host.THREE.DynamicDrawUsage,
+   const rec=Object.assign(opt.ids?{id:idOf('i',kit,base.name,base.lod,sfx)}:{},base,{count:keep.length,dynamic:m.instanceMatrix.usage===BIO.host.THREE.DynamicDrawUsage,
     geometry:geoRec(g),matrices:pack(mA),colours:cA?pack(cA):null,extras:{}});
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    // core/tags (a page with BIO.init({tags})): the item set this mesh draws, and per instance, aligned with the
@@ -144,16 +163,18 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
     rec.record=RS.set;rec.recordClass=RS.record['class'];rec.recordKey=RS.record.key;   // a uid recomputes from these two and the matrix
     rec.records=u;rec.recordIndex=pack(ix);recs.instances+=keep.length;recs.items++;}
    if(rec.dynamic&&opt.motion!==false)movers.push({m,keep,rec});
+   // per-instance labels (BIO.put's extra.label: userData.instLabels {names, idx by row}): the table once, an index a row
+   const IL=m.userData.instLabels;if(IL&&IL.names&&IL.idx){const L=new Uint16Array(keep.length);keep.forEach((i,j)=>{L[j]=IL.idx[i]||0;});rec.labels={names:IL.names.slice(),index:pack(L)};}
    out.items.push(rec);}
-  else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
+ function bucketRec(m,I,base,sfx){const kit=base.kit,g=m.geometry,P=g.attributes.position.array;let idx=I;
    const own=(box&&opt.cut!=='triangle')||vols?pieceOwner(P,I):null;
    if(box){const k=[];   // a whole piece goes to the tile holding its foot
     for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
      const keep=opt.cut!=='triangle'?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
      if(keep)k.push(I[t],I[t+1],I[t+2]);}
-    if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
+    if(!k.length)return;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list (BIO.export): an importer drops the unused ones
-   const brec=Object.assign(opt.ids?{id:idOf('b',kit,base.name,base.lod)}:{},base,{triangles:idx.length/3,geometry:geo});
+   const brec=Object.assign(opt.ids?{id:idOf('b',kit,base.name,base.lod,sfx)}:{},base,{triangles:idx.length/3,geometry:geo});
    // core/tags: the records this bucket merges. Each piece (a bole, a limb, a log) belongs to the smallest registered
    // volume (a tree, a log, a herd: BIO.record) that holds its foot; records lists their uids once each, recordIds their
    // ids, pieces how many pieces the bucket holds and how many of them lie in no volume (boulders, ground cover)
@@ -167,7 +188,7 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
     for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)A[k]=[a.array,a.itemSize];}
     const c=EXPORT.compact(A,idx),cg={};for(const k in c.arrays)cg[k]=pack(c.arrays[k]);cg.index=pack(c.index);
     brec.geometry=cg;brec.compacted={vertices:c.vertices,dropped:c.dropped};}
-   out.buckets.push(brec);}}
+   out.buckets.push(brec);}
  // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
  // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
  if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,

@@ -37,17 +37,21 @@
 var EXPORT = (function(root){
 'use strict';
 const FORMAT = 'krator-world', VERSION = 1;
-const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'terrain', 'stage', 'atmos', 'water',
+const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'hazards', 'terrain', 'stage', 'atmos', 'water',
                   'fixtures', 'interiors', 'furniture', 'sim', 'city'];
 const LIST = { items: 1, buckets: 1, materials: 1, textures: 1 };
 // sections no module fills yet: their contract is written (README.md, "Stubs") so the first contributor has a shape to meet
 const STUB = { fixtures: 1, interiors: 1, furniture: 1, sim: 1, city: 1 };
+// sections a container carries only when they fill (or fail): a page without them exports what it exported before they
+// existed, key for key (hazards, 2026-10-26)
+const OPTIONAL = { hazards: 1 };
 const CONTRACTS = {
  items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex, motion (the baked track of a moving item: biomes/GODOT.md, "Motion"; world.glb carries it in the node extras.krator_motion)}',
  buckets: 'merged meshes: {id, name, kit, label, material, lod, triangles, geometry (compacted to the tile), records, recordIds, pieces}',
  materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway); hook names the Godot library shader(s), joined by + (godot/README.md, "The shader library"); a ground\'s layers (EXPORT.groundLayers: hook world-uv, role ground, layers {terms [{maps [{map, scale, offset}], gain, amount, weight}]}, weights {x0, z0, step, nx, nz, names, values})',
  textures: '{id, from: "png" | "library" | "none", png?, lib?, pack?, family?, slot?, wrap, repeat, offset, flipY, size?}: a library map by reference (the build\'s pack, tex/pack.json), never as pixels',
  registry: 'core/tags: {format: "krator-tags", build, records} cropped to the tile: every record an item or bucket names, every record placed in the box, and their parents',
+ hazards: 'OPTIONAL (absent when the tile holds none). KHAZ.export (core/hazard, core/hazard/GODOT.md): {format: "krator-hazard", version, convention, kinds (the kinds table), layers (the navigation layers), records: [{id (a registry record, or <set>#<index>), uid, at, ry, hazard (tags.hazard filled from its kind), shape (world metres: type cyl | sphere | box | poly, r, h, w, d, pts, y0, y1)}]} cropped to the tile by at',
  terrain: '{format: "krator-terrain", source: "field" | "sampled", field (krator-field, core/terrain), grid {x0, z0, step, nx, nz, heights, water}, probes}',
  stage: 'KSTAGE.capture (core/biome/44-core-stage.js): the page\'s light, fog, tonemapping, sky panorama and ground look',
  atmos: 'ATMOS.export() (core/atmos, krator-atmos): presets, clock, wind, lamps, glows, props; colours sRGB',
@@ -115,7 +119,7 @@ function world(opt){
   memo(key, f){ if(!memo.has(key)) memo.set(key, f()); return memo.get(key); } };
  const fail = (s, by, e) => out.errors.push({ section: s, by, error: String(e && e.message || e) });
  for(const s of SECTIONS){
-  if(want.indexOf(s) < 0){ out.sections[s] = { status: 'skipped', by: [] }; continue; }
+  if(want.indexOf(s) < 0){ if(OPTIONAL[s]) delete out[s]; else out.sections[s] = { status: 'skipped', by: [] }; continue; }
   const L = reg[s].slice(), st = { status: 'ok', by: [] };
   let nerr = 0;
   for(const c of L){
@@ -140,6 +144,7 @@ function world(opt){
   if(nerr) st.errors = nerr;
   const got = LIST[s] ? out[s].length > 0 : out[s] != null;
   st.status = !L.length ? (STUB[s] ? 'stub' : 'none') : got ? 'ok' : nerr ? 'error' : 'empty';
+  if(OPTIONAL[s] && !got && !nerr){ delete out[s]; continue; }
   out.sections[s] = st;
  }
  out.stats = stats(out);
@@ -149,6 +154,7 @@ function world(opt){
 function stats(w){
  const s = { items: w.items.length, instances: 0, buckets: w.buckets.length, triangles: 0, materials: w.materials.length,
   textures: w.textures.length, records: w.registry && w.registry.records ? w.registry.records.length : 0, errors: w.errors.length };
+ if(w.hazards && w.hazards.records) s.hazards = w.hazards.records.length;
  w.items.forEach(r => { s.instances += r.count | 0; });
  w.buckets.forEach(r => { s.triangles += r.triangles | 0; });
  return s;
@@ -295,6 +301,15 @@ function check(w, opt){
    if(!r) bad('bucket ' + b.id + ' names record ' + id + ', which the registry does not hold');
    else if(r.uid !== b.records[i]) bad('bucket ' + b.id + ': record ' + id + ' has uid ' + r.uid + ', the bucket says ' + b.records[i]);
    else J.bucketRecordsResolved++; });
+ }
+ if(w.hazards){   // each hazard names a registry record (an item set's instance by <set>#<index>) and has a shape
+  J.hazards = 0; J.hazardsResolved = 0;
+  if(!Array.isArray(w.hazards.records)) bad('hazards without records');
+  else for(const h of w.hazards.records){ J.hazards++;
+   if(!h || !h.shape || !h.hazard || !Array.isArray(h.at)) bad('hazard ' + (h && h.id) + ' lacks its shape, hazard or at');
+   if(!R) continue;
+   const r = R.get(h.id) || R.get(String(h.id).split('#')[0]);
+   if(!r) bad('hazard ' + h.id + ' names a record the registry does not hold'); else J.hazardsResolved++; }
  }
  if(w.registry && !R) bad('registry without records');
  if(R) for(const r of R.values()) if(r.parent != null && !R.has(r.parent)) bad('registry record ' + r.id + ': its parent ' + r.parent + ' is not in the registry');
@@ -451,7 +466,7 @@ function glb(w){
  return { json, glb: out, stats: { bytes: total, nodes: J.nodes.length, meshes: J.meshes.length, instances: instanced, trsMaxError: trsErr } };
 }
 
-const api = { FORMAT, VERSION, SECTIONS, CONTRACTS, CONVENTION, register, contributors, world, check, glb, compact, pack, unpack, terrain };
+const api = { FORMAT, VERSION, SECTIONS, OPTIONAL, CONTRACTS, CONVENTION, register, contributors, world, check, glb, compact, pack, unpack, terrain };
 // modules that load before this file queue their contributors: (root.EXPORT_QUEUE = root.EXPORT_QUEUE || []).push([section, fn, opt])
 const Q = root.EXPORT_QUEUE;
 if(Array.isArray(Q)) Q.splice(0).forEach(a => register(a[0], a[1], a[2]));

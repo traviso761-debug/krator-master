@@ -87,18 +87,31 @@ static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:
 	return out
 
 
-# VRAM compression of a loaded map (the final rebuild's graphic-load assessment, 2026-10-26): KRATOR_VRAM=s3tc (BC1/BC3 by
-# etcpak), bptc (BC7) or astc; unset, the map stays RGBA8 as before. An editor import does this ahead of time; at load it costs
-# CPU time, which the perf capture's import time shows.
-static func vram(img: Image) -> void:
-	var m := OS.get_environment("KRATOR_VRAM")
-	if m == "":
+# VRAM compression of a loaded map (GRAPHIC-LOAD.md, recommendation 4): on by default since 2026-10-26, BC7 (BPTC) on a
+# desktop GPU that has it, ASTC on mobile; KRATOR_VRAM=none keeps RGBA8 (the behaviour before), =s3tc (BC1/BC3), =bptc or
+# =astc picks one. At load, not as an import preset: the maps are read at run time from an export's tex/ (webp and png
+# through Image.load_*_from_buffer), never imported as resources, so a preset would not reach them. A renderer that reports
+# no such format (the headless dummy) keeps RGBA8. role: albedo (sRGB), normal (two channels) or data (roughness, linear)
+static func vram(img: Image, role := "albedo") -> void:
+	var m := vram_mode()
+	if m == "none":
 		return
 	var mode := Image.COMPRESS_S3TC if m == "s3tc" else (Image.COMPRESS_BPTC if m == "bptc" else Image.COMPRESS_ASTC)
-	img.compress(mode, Image.COMPRESS_SOURCE_SRGB)
+	var src := Image.COMPRESS_SOURCE_NORMAL if role == "normal" else (Image.COMPRESS_SOURCE_GENERIC if role == "data" else Image.COMPRESS_SOURCE_SRGB)
+	img.compress(mode, src)
 
 
-static func _tex(path: String, cache: Dictionary) -> Texture2D:
+# the compression in force: KRATOR_VRAM when set, else bptc on desktop and astc on mobile where the GPU has it, else none
+static func vram_mode() -> String:
+	var m := OS.get_environment("KRATOR_VRAM")
+	if m != "":
+		return m if m in ["none", "s3tc", "bptc", "astc"] else "none"
+	if OS.has_feature("mobile"):
+		return "astc" if RenderingServer.has_os_feature("astc") else "none"
+	return "bptc" if RenderingServer.has_os_feature("bptc") else "none"
+
+
+static func _tex(path: String, cache: Dictionary, role := "albedo") -> Texture2D:
 	if cache.has(path):
 		return cache[path]
 	var img := Image.new()
@@ -107,7 +120,7 @@ static func _tex(path: String, cache: Dictionary) -> Texture2D:
 	var t: Texture2D = null
 	if err == OK:
 		img.generate_mipmaps()
-		vram(img)
+		vram(img, role)
 		t = ImageTexture.create_from_image(img)
 	cache[path] = t
 	return t
@@ -121,10 +134,10 @@ static func _material(F: Dictionary, old: Material, tex_dir: String, cache: Dict
 		sm.set_shader_parameter("albedo_tex", _tex(tex_dir + "/" + files["map"], cache))
 	sm.set_shader_parameter("has_normal", files.has("normalMap"))
 	if files.has("normalMap"):
-		sm.set_shader_parameter("normal_tex", _tex(tex_dir + "/" + files["normalMap"], cache))
+		sm.set_shader_parameter("normal_tex", _tex(tex_dir + "/" + files["normalMap"], cache, "normal"))
 	sm.set_shader_parameter("has_rough", files.has("roughnessMap"))
 	if files.has("roughnessMap"):
-		sm.set_shader_parameter("rough_tex", _tex(tex_dir + "/" + files["roughnessMap"], cache))
+		sm.set_shader_parameter("rough_tex", _tex(tex_dir + "/" + files["roughnessMap"], cache, "data"))
 	sm.set_shader_parameter("normal_scale", float(F.get("normalScale", 1.0)))
 	sm.set_shader_parameter("metal", float(F.get("metal", 0.0)))
 	sm.set_shader_parameter("specular_k", float(F.get("specular", 0.5)))
