@@ -59,12 +59,23 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "necanyons.html"
+# THE STATIONS (PLAN-STATIONS.md, 2026-10-27, the final rebuild): `python3 build.py --station <name>` builds
+# dist/necanyons-<name>.html from src/ with the station's own fragments (stations/<name>/*) in place of src/'s of the same
+# name: `benches` (station 2, the high benches) and `savanna` (station 3, the savanna floor toward Korona)
+_args=[a for a in sys.argv[1:] if not a.startswith('--') or a=='--station']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('necanyons-%s.html'%STATION if STATION else 'necanyons.html')
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the mesas, buttes, spires and fins (core/terrain/37-core-stacks.js)
+# 2026-10-27, the final rebuild: KSTRATA (the canyon's beds on the walls, 35 + its shader 35z), KSTACKS.contour (37b: the fins'
+# and towers' profiles and joints), KRELIEF (38: the talus, the wadis, the pavement), KGROUND (43: the floor's layers and the
+# scree's clasts), KFAR (44: the far canyon country, src/83-host-far.js), KHORIZON (45: its shadows)
+CORE_TERRAIN+=['35-core-strata.js','37b-core-stacks-contour.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 44: KSTAGE, the export's light, air and sky
+# 33 BIO.fung (the fungoid parts), 34 the octahedral impostors (2026-10-27)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 44: KSTAGE, the export's light, air and sky
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -77,8 +88,16 @@ KITS={'41-hyperjungle-globals.js':'src/41-hyperjungle-globals.js','48a-hj-specie
       '48d-hj-floor.js':'src/60-biome-hyperjungle-floor.js','48e-hj-dress.js':'src/65-biome-hyperjungle-dress.js',
       '48f-hj-build.js':'src/70-biome-hyperjungle.js','82-host-sky.js':'src/82-host-sky.js'}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+PATH.setdefault('35z-core-strata-shade.js',os.path.join(CORE_T,'host','35-core-strata-shade.js'))   # after 35 (Span's lesson: keyed 35z)
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for slot,p in KITS.items(): PATH[slot]=os.path.join(HJ,p)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
@@ -99,6 +118,10 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+# the planned biomes' water kinds (ext/54: the seep dams and karst springs at the seeps) and the confluences (ext/55: where the side
+# canyon's stream meets the creek), by path (2026-10-27, the final rebuild; BACKPORT.md's row)
+for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js']:
+    PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 4, 9: the weather and its selector (2026-10-26)
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
@@ -119,8 +142,12 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']:
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-j-heightfog.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+# height fog (R1: the sky's chunk and its host, above), the rain occlusion map (R10) and the branched lightning (2026-10-27, the final rebuild)
+PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
 PATH.pop('82-host-sky.js',None)   # the hyperjungle's old dome (still mapped in by KITS above): this page draws the shared sky
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -153,7 +180,7 @@ for f in frags:
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
-if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'necanyons.tex.js')
+if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,OUT[:-5]+'.tex.js')
 open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)

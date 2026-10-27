@@ -25,6 +25,12 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 {const _ce=console.error;console.error=function(...a){try{const m=String(a[0]||'');if(/shader error|WebGLProgram/.test(m))reportErr('shader: '+(m.match(/ERROR:[^\n]*/)||[m.slice(0,200)])[0]);}catch(e){}return _ce.apply(console,a);};}
 window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
 // (TAU, clamp, smooth, fbm, rng... are the core's, made globals by the hyperjungle's 41: biomes/hyperjungle/src)
+// THE GRAPHICS SET (2026-10-27, the final rebuild; core/biome README "Adopting it", the hyperjungle's 45 the worked example): the
+// items' geometry welded and drawn by index (?index=0 the soup); one LOD mesh per chunk, small meshes merged to 1500 triangles, a
+// dithered cross-fade over the last 15% of each range (?lodmerge=0, ?lodfade=0) and the per-instance range cull (?lodcull=0)
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
@@ -78,4 +84,15 @@ const ROCK=(function(){const K=KSTACKS,L=[];
  const hc=L[1],onCap=(x,z,pad)=>{const a=K.at([hc],x,z);return a&&a.b.tier===1&&a.d<-pad;};
  K.cluster({id:'caphoodoo',seed:1303,c:[hc.beds[hc.beds.length-1].cx,hc.beds[hc.beds.length-1].cz],rad:110,n:7,H:[16,36],r:[3.5,7],gap:8,kinds:{spire:.7,balanced:.3},
   ground:(x,z)=>K.topAt([hc],x,z),accept:(x,z,r)=>onCap(x,z,r+10)}).forEach(B=>add(B,'A hoodoo on the High Cap'));
+ // ARCHES (2026-10-27, the final rebuild; BACKPORT.md's row; ?arches=0 without them): a free-standing arch in the Bench's garden and a
+ // natural bridge among the floor's stacks by the creek (KSTACKS.make kind 'arch': two corbelled legs and a lintel; Delicate Arch and
+ // Rainbow Bridge for scale), each tried at a few spots from KRAND.hash, and a little larger if the form refuses
+ if(new URLSearchParams(location.search).get('arches')!=='0'){
+  const tryArch=(id,seed,cands,o,name)=>{for(let i=0;i<cands.length;i++){const c=cands[i];if(!c.ok(c.x,c.z))continue;
+    for(let k=0;k<3;k++){try{const B=K.make(Object.assign({kind:'arch',id,x:c.x,z:c.z,seed:KRAND.hash(seed,i,k),ground:c.ground,inward:.12},o,{rise:o.rise+k*3,H:o.H+k*4}));add(B,name);return B;}catch(e){}}}return null;};
+  const ring=(c0,r0,n,salt)=>{const out=[];for(let i=0;i<n;i++){const a=KRAND.unit(KRAND.hash(salt,i,1))*TAU,r=r0*Math.sqrt(KRAND.unit(KRAND.hash(salt,i,2)));out.push([c0[0]+Math.cos(a)*r,c0[1]+Math.sin(a)*r]);}return out;};
+  tryArch('bencharch',1401,ring([260,-60],150,12,1401).map(p=>({x:p[0],z:p[1],ground:(x,z)=>benchTop(x,z),
+    ok:(x,z)=>!!onBench(x,z,45)&&capFoot(x,z)>60&&L.every(B=>B===bench||Math.hypot(B.x-x,B.z-z)>B.R+30)})),{span:26,rise:18,H:30,t:6,leg:11,ry:.9},'A free-standing arch on the Bench');
+  tryArch('floorarch',1402,ring([-40,220],700,48,1402).map(p=>({x:p[0],z:p[1],ground:(x,z)=>floorH(x,z)-1,
+    ok:(x,z)=>clear(x,z,30,25)&&L.every(B=>Math.hypot(B.x-x,B.z-z)>B.R+30)})),{span:38,rise:28,H:46,t:8,leg:16,ry:-.4},'A natural bridge among the stacks');}
  return L;})();
