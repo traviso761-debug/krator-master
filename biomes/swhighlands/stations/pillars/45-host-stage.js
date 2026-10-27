@@ -70,7 +70,7 @@ function talusAt(x,z){let h=0;for(const P of TOWER_PLAN.concat([WATCH_AT],FREE_A
 // CAP m, then the soft banded beds below weather back to a concave slope (APRON m out, its length wandering), cut by gullies
 // running down it (ridged KRAND noise along the rim, deepest mid-slope); the beds show on it (84-host-ground.js paints the steep)
 const CAP=85,APRON=270;
-function apronAt(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ(x,0,.003,90,2)),u=clamp(1-d/L,0,1);if(u<=0)return 0;
+function apronAt(x,z){const d=Math.max(0,z-rimZ(x));   /* under the cliff too: the apron at its full height right to the foot of the caprock (Span found a trench there) */const L=APRON*(1+.25*NZ(x,0,.003,90,2)),u=clamp(1-d/L,0,1);if(u<=0)return 0;
  const h=Math.max(20,tableTop(x,rimZ(x)-4)-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
 // how far down the apron a point is (1 at the cliff's foot, 0 at the apron's toe, 0 off it): the paint and the flora read this, not the
 // gullied height (the owner, 2026-10-27: the gullies painted long red and green streaks out across the floor)

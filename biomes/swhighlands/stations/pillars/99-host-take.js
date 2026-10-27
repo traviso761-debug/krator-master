@@ -57,8 +57,8 @@ const HCHK={
  drawn(trees){const ray=new THREE.Raycaster(),rock=[];scene.traverse(o=>{if(o.userData&&o.userData.rock)rock.push(o);});const on=trees.filter(T=>T.y0>groundH(T.x,T.z)+20);let off=0;
   on.forEach(T=>{ray.set(new THREE.Vector3(T.x,T.y0+40,T.z),new THREE.Vector3(0,-1,0));const h=ray.intersectObjects(rock)[0];if(!h||Math.abs(h.point.y-(T.y0+.2))>1)off++;});
   return{ok:on.length>20&&!off,detail:on.length+' trees on the towers, '+off+' more than a metre off the drawn rock'};},
- // the band stands: enough towers, most whole, none over the table's top
- towers(list){const whole=list.filter(B=>B.top-B.y0>TOP*.8),over=list.filter(B=>B.top>tableTop(B.x,B.z)+5);return{ok:list.length>=25&&whole.length>=15&&!over.length,detail:list.length+' towers, '+whole.length+' whole, '+over.length+' standing over the table (a tower is what is left of it)'};}};
+ // the band stands: enough towers, many whole (their tops at the table's), none over the table's top
+ towers(list){const whole=list.filter(B=>B.top>tableTop(B.x,B.z)-6),over=list.filter(B=>B.top>tableTop(B.x,B.z)+5);return{ok:list.length>=25&&whole.length>=15&&!over.length,detail:list.length+' towers, '+whole.length+' whole, '+over.length+' standing over the table (a tower is what is left of it)'};}};
 function hostChecks(){return[Object.assign({name:'the watch pillar: its top flat and held'},HCHK.watch(WATCH,SWHI.TREES,40)),Object.assign({name:'the trees of the towers stand on their tops'},HCHK.tops(SWHI.TREES)),
  Object.assign({name:'the pillar rim stands'},HCHK.towers(PILLARS.filter(B=>!B.isArch))),Object.assign({name:'the arches and bridges stand'},HCHK.arches(ARCHES)),Object.assign({name:'the trees of the towers on the drawn rock'},HCHK.drawn(SWHI.TREES))];}
 function hostNegatives(){const r=(name,c)=>({name,failed:!c.ok,detail:c.detail});const small=PILLARS.filter(B=>B!==WATCH).sort((a,b)=>a.R-b.R)[0];
