@@ -369,6 +369,34 @@
     "sourceMean": 0.3812
    }
   },
+  "pad": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pad.albedo.webp"
+   },
+   "lib": "organic.funnel.trumpet",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb6bff632e269ce9c2118065dab0d36e2dc8a28b",
+    "normal": "d845968e4e909cc64d580e7cac2fd71e7fa910ce",
+    "roughness": "1ea9a1810ee94c0ebdb0f54e79f55c36be523a5a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.8,
+    "sourceMean": 0.4963
+   }
+  },
   "rockDetail": {
    "breakup": null,
    "card": false,

@@ -596,6 +596,11 @@ one water: cut where it first comes within `tuck` (.3) of the main's half width 
 of its centreline, the last point on that line along its own heading, every level raised to the main's surface there + `lift`
 (.03 m; a max with a constant, so it still never climbs), and `order: 'after'`.
 
+`J.over` is the metres of the tributary's line that lie over the main's water. `drawFlow(F, {endFade: {len, foam, color}})` (51, opt-in;
+without it the shader text is unchanged) fades the ribbon out over its last `len` m, stops its foam `foam` m before its end and, with
+`color` (the main's water, sRGB), turns it to the main's colour and covers the main's bank foam over the stretch between: pass
+`{len: .6 * over, foam: over + 7, color: <main's deep>}` (the owner's look notes on the SW highlands' cave stream, 2026-10-26).
+
 Adopting it: make both lines with their levels, `J = WATER.join(tribPts, mainPts, {w})`, then `WATER.flow` on `J.pts`; draw the
 tributary's `drawFlow` with a higher `renderOrder` than the main's (its water lies over the main's bank foam across the mouth). The
 ground is the host's: carve every channel near a point and keep the lowest, not only the nearest one (biomes/swhighlands

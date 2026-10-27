@@ -76,6 +76,9 @@ const TX=SWHI.TX={
  cord:barkTex(51,(x,y)=>Math.abs(((x+y*.6)/16)%1-.5)*2-.5+(kn(x/9,y/9,52)-.5)),
  // the pillars' and the cone's flesh: soft pores
  flesh:barkTex(53,(x,y)=>(kn(x/5,y/5,54,2)-.5)*1.4),
+ // the cup-pads' upper skin: veins radiating from the cup's centre over a cellular partner layer (planar uv: the centre at .5, .5)
+ pad:BIO.canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,dx=x/w-.5,dy=y/h-.5,a=Math.atan2(dy,dx),r=Math.hypot(dx,dy);
+  const vein=Math.pow(Math.abs(Math.cos(a*9+r*6)),18),cell=KRAND.fbm(x/4,.3,y/4,2,58);const v=165+cell*70-vein*55-r*40;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}g.putImageData(id,0,0);}),
  // the floor's cards, drawn grey (the instance tints them)
  moss:BIO.alphaTex(128,(g,S)=>{for(let i=0;i<220;i++){const x=KRAND.h3(i,1,0,61)*S,y=S*.35+KRAND.h3(i,2,0,61)*S*.65,r=2+KRAND.h3(i,3,0,61)*5;g.fillStyle=BIO.tex.grey(150+KRAND.h3(i,4,0,61)*90);g.beginPath();g.arc(x,y,r,0,TAU);g.fill();}},[90,110,70]),
  club:BIO.alphaTex(128,(g,S)=>{for(let i=0;i<26;i++){const x=S*(.1+.8*KRAND.h3(i,1,0,62)),hh=S*(.4+.5*KRAND.h3(i,2,0,62));g.strokeStyle=BIO.tex.grey(140+KRAND.h3(i,3,0,62)*80);g.lineWidth=3;g.beginPath();g.moveTo(x,S);g.lineTo(x+(KRAND.h3(i,4,0,62)-.5)*20,S-hh);g.stroke();}},[70,100,70]),
@@ -89,12 +92,14 @@ const TX=SWHI.TX={
 // replace the procedural ones slot by slot (BIO.libSwap; materials.json)
 SWHI.FLOOR_GROUND={k:.75,gain:.45,fade:[360,450]};
 const M=SWHI.MAT={
- pad:BIO.leafMat(null,'sw-pad',{vertexColors:true,alphaTest:0,swayW:'(position.y)',swayA:.02,backlit:.15}),
+ // the fleshy bodies (pads, caps) are OPAQUE, on the bark-type material: on the foliage hook (a cut-out card's) the bead cone's cap
+ // let what stood behind it show through its lower band (the owner, 2026-10-26)
+ pad:BIO.barkMat(TX.pad),
  parasol:BIO.leafMat(null,'sw-parasol',{vertexColors:true,alphaTest:0,swayW:'0.0',swayA:0}),
- coneCap:BIO.leafMat(TX.flesh,'sw-conecap',{vertexColors:true,alphaTest:0,swayW:'0.0',swayA:0}),
+ coneCap:BIO.barkMat(TX.flesh),
  coneStalk:BIO.barkMat(TX.flesh),
  eggs:BIO.leafMat(TX.eggs,'sw-eggs',{swayW:'(-position.y)',swayA:.05,axis:1,alphaTest:.4}),
- cap:BIO.leafMat(null,'sw-cap',{vertexColors:true,alphaTest:0,swayW:'0.0',swayA:0}),
+ cap:BIO.barkMat(TX.flesh),
  bulbFruit:BIO.leafMat(null,'sw-bulb',{vertexColors:true,alphaTest:0,swayW:'(-position.y)',swayA:.03}),
  heath:BIO.leafMat(TX.heath,'sw-heath',{ground:SWHI.FLOOR_GROUND,swayW:'(position.y)',swayA:.02,alphaTest:.4}),
  coral:BIO.barkMat(TX.flesh),

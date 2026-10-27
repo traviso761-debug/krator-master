@@ -174,5 +174,9 @@ W.join=(trib,main,o)=>{o=o||{};const tuck=o.tuck==null?.3:o.tuck,lift=o.lift==nu
   const e=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];out=T.slice(0,cut).concat([e]);hit=near(e[0],e[1]);}
  else{out=T.slice();hit=near(out[out.length-1][0],out[out.length-1][1]);}
  const y0=hit.y+lift;out=out.map(p=>[p[0],p[1],Math.max(p[2],y0)]);
- return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,order:'after'};};
+ /* over: the metres of its line that lie over the main's water (from where it first comes within w of the centreline to its end):
+    drawFlow's endFade, so the tributary fades into the main over them and its own bank foam stops before */
+ let over=0;for(let i=1;i<out.length;i++){const qa=near(out[i-1][0],out[i-1][1]),qb=near(out[i][0],out[i][1]),da=qa.d-qa.w,db=qb.d-qb.w,L=Math.hypot(out[i][0]-out[i-1][0],out[i][1]-out[i-1][1]);
+  over+=da<0&&db<0?L:da<0?L*da/(da-db):db<0?L*db/(db-da):0;}
+ return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,over,order:'after'};};
 })();

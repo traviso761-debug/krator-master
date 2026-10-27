@@ -11,7 +11,8 @@
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 const FLOW_DRAWS=FLOWS.map((F,k)=>{const C=COURSES[k],steep=C.key==='gorge';
  const D=WATER.drawFlow(F,{rapids:steep?[.15,.9]:[.02,.14],shallow:lin(steep?0x6e8078:0x6a9a86),deep:lin(steep?0x2e4a44:0x1e4a42),color:0xffffff,roughness:.2,metalness:.05,
-  envMapIntensity:.35,step:steep?4:10,across:steep?3:6,margin:1.2,chute:steep?.6:.5,rain:true,renderOrder:C.joined&&C.joined.order==='after'?3:2});   /* WATER.join: a tributary after the river, its water over the river's bank foam at the mouth */
+  envMapIntensity:.35,step:steep?4:10,across:steep?3:6,margin:1.2,chute:steep?.6:.5,rain:true,endFade:C.joined&&C.joined.over>0?{len:Math.max(2,C.joined.over*.6),foam:C.joined.over+7,color:0x1e4a42}:null,   /* WATER.join's over: it fades into the river, its foam stopping before the river's bank */
+  renderOrder:C.joined&&C.joined.order==='after'?3:2});   /* WATER.join: a tributary after the river, its water over the river's bank foam at the mouth */
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=C.name;return D;});
 const FALL_DRAWS=GORGE_FALLS.map(F=>{const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:24,cols:5,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel='The gorge\'s falls (through the natural bridges)';D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='A plunge pool';return D;});

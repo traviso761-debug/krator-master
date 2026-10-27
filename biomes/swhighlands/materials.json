@@ -1,26 +1,272 @@
 {
  "build": "swhighlands",
- "note": "The SW highlands kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). Keys are the kit's MAT slots (50-biome-swhighlands-species.js: BIO.libSwap names a table entry by its key) and the host's slots (rockDetail in 47-host-land.js, wallStone in 82-host-far.js, the ground's KGROUND layers in 84-host-ground.js). Run python3 tools/textures/pack.py biomes/swhighlands after any change, then python3 build.py, and tools/textures/check_cells.py on this file. Grey detail maps (keep 0) are coloured by the species' instance and vertex colours; the bulb heath's card keeps its own colours (its flowers). Slots not listed stay procedural: the cup-pads, parasol fruits and bulb fruits are vertex-coloured fleshy bodies with no map (no set is owed: they read at a few metres as colour and shading). The turf card and the crest's ground layer are stand-ins: card.moss tinted pale and ground.grass_ground (an Earth grass) until a native turf set exists (core/materials/PROMPTS-NEEDED.md section 22).",
+ "note": "The SW highlands kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). Keys are the kit's MAT slots (50-biome-swhighlands-species.js: BIO.libSwap names a table entry by its key) and the host's slots (rockDetail in 47-host-land.js, wallStone in 82-host-far.js, the ground's KGROUND layers in 84-host-ground.js). Run python3 tools/textures/pack.py biomes/swhighlands after any change, then python3 build.py, and tools/textures/check_cells.py on this file. Grey detail maps (keep 0) are coloured by the species' instance and vertex colours; the bulb heath's card keeps its own colours (its flowers). The cup-pads take organic.funnel.trumpet as a grey detail map, mapped from above (the owner, 2026-10-26: they wanted texture). Slots not listed stay procedural: the parasol fruits and bulb fruits are vertex-coloured fleshy bodies with no map (no set is owed: they read at a few metres as colour and shading). The turf card and the crest's ground layer are stand-ins: card.moss tinted pale and ground.grass_ground (an Earth grass) until a native turf set exists (core/materials/PROMPTS-NEEDED.md section 22).",
  "size": 512,
  "families": {
-  "swcord": {"lib": "bark.cord.braided", "scale": [1.5, 2.0], "tint": {"keep": 0.0, "mean": 0.55}, "mapOnly": true, "roughLift": 0.3},
-  "swlog": {"lib": "bark.cord.braided", "scale": [1.5, 2.0], "tint": {"keep": 0.0, "mean": 0.5}, "mapOnly": true, "roughLift": 0.3},
-  "swpillar": {"lib": "organic.fungus.stalk", "scale": [2.0, 3.0], "tint": {"keep": 0.0, "mean": 0.8}, "mapOnly": true, "roughLift": 0.3},
-  "coneCap": {"lib": "organic.cap.porous", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.85}, "mapOnly": true},
-  "coneStalk": {"lib": "organic.cap.porous", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.88}, "mapOnly": true},
-  "cap": {"lib": "organic.cap.violet", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.82}, "mapOnly": true},
-  "coral": {"lib": "skin.alien.banded", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.85}, "mapOnly": true},
-  "crust": {"lib": "organic.lichen.plates", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.8}, "mapOnly": true},
-  "eggs": {"lib": "card.beads.bell", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.85}, "size": 512},
-  "heath": {"lib": "card.bulbheath", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "moss": {"lib": "card.moss", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.674}, "size": 512},
-  "club": {"lib": "card.clubmoss", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "turf": {"lib": "card.moss", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.72}, "size": 512},
-  "rockDetail": {"lib": "rock.limestone.karst", "scale": [6, 6], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
-  "wallStone": {"lib": "rock.old_stone_wall", "scale": [1.5, 1.5], "tint": {"keep": 1.0, "mean": null}, "mapOnly": true, "roughLift": 0.3},
-  "ground.moss": {"lib": "ground.moss002", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.turf": {"lib": "ground.grass_ground", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.gravel": {"lib": "ground.gravel042", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.tilled": {"lib": "ground.tilled", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+  "swcord": {
+   "lib": "bark.cord.braided",
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "swlog": {
+   "lib": "bark.cord.braided",
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "swpillar": {
+   "lib": "organic.fungus.stalk",
+   "scale": [
+    2.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "pad": {
+   "lib": "organic.funnel.trumpet",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "mapOnly": true
+  },
+  "coneCap": {
+   "lib": "organic.cap.porous",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true
+  },
+  "coneStalk": {
+   "lib": "organic.cap.porous",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.88
+   },
+   "mapOnly": true
+  },
+  "cap": {
+   "lib": "organic.cap.violet",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.82
+   },
+   "mapOnly": true
+  },
+  "coral": {
+   "lib": "skin.alien.banded",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true
+  },
+  "crust": {
+   "lib": "organic.lichen.plates",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "mapOnly": true
+  },
+  "eggs": {
+   "lib": "card.beads.bell",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "size": 512
+  },
+  "heath": {
+   "lib": "card.bulbheath",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.674
+   },
+   "size": 512
+  },
+  "club": {
+   "lib": "card.clubmoss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "turf": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512
+  },
+  "rockDetail": {
+   "lib": "rock.limestone.karst",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.47
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "wallStone": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.turf": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.tilled": {
+   "lib": "ground.tilled",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  }
  }
 }

@@ -85,18 +85,21 @@ const GORGE=(function(){const segs=[],falls=[];let prevEnd=null;
  return{segs,falls,end:prevEnd,sink:{x:sk[0],z:sk[1],r:15,level,floor:level-5,name:'The sink'}};})();
 // THE RIVER CAVE: a cliff bitten out of the limestone ridge's west foot (walls ~3:1 round a flat floor at the valley's level),
 // and in its back wall the cave's mouth, a core/terrain carve patch (KCARVE alcove) the cave stream comes out of
-const BITE={x:858,z:-432,r:46};BITE.floor=g0(BITE.x-80,BITE.z)+.5;
+// (the owner, 2026-10-26: it was carved too deep, a pit under a ~100 m wall): the bite now sits at the ridge's foot where its back
+// wall stands about 22 m over the valley floor, and no cut of the bite goes more than 28 m under the natural ground
+const BITE=(function(){const z=-432,r=26;let best=null;for(let x=760;x<=1000;x+=2){const fl=g0(x-60,z)+.5,face=g0(x+r,z)-fl;if(!best||Math.abs(face-22)<Math.abs(best.face-22))best={x,z,r,floor:fl,face};}return best;})();
 function gBite(x,z,h,noCave){const d=Math.hypot(x-BITE.x,z-BITE.z);if(d>BITE.r+260)return h;
  /* the bite's rim wanders (the owner, 2026-10-26: cut landforms want irregular edges): its radius by a KRAND noise round the
     circle (+-25%), its wall's steepness by another (2.2-4.2) */
- const ca=(x-BITE.x)/(d||1),sa=(z-BITE.z)/(d||1),rn=BITE.r*(1+.5*(KRAND.fbm(ca*2.2+5,.3,sa*2.2+5,3,91)-.5)),kn=3.2*(1+.6*(KRAND.fbm(ca*3.1+2,.7,sa*3.1+2,2,92)-.5));
- const dw=noCave?d-rn:Math.min(d-rn,KCARVE.recessD(x,z));return Math.min(h,BITE.floor+Math.max(0,dw)*kn);}
+ const ca=(x-BITE.x)/(d||1),sa=(z-BITE.z)/(d||1),rn=BITE.r*(1+.5*(KRAND.fbm(ca*2.2+5,.3,sa*2.2+5,3,91)-.5)*(1-smooth(.6,.95,ca))),   /* none at the mouth's wall (east) */kn=3.2*(1+.6*(KRAND.fbm(ca*3.1+2,.7,sa*3.1+2,2,92)-.5));
+ const v=Math.max(Math.min(h,BITE.floor+Math.max(0,d-rn)*kn),h-28);if(noCave)return v;
+ return Math.min(v,BITE.floor+Math.max(0,KCARVE.recessD(x,z))*kn);}
 function g1raw(x,z){let h=g0(x,z);h=KRELIEF.shape(WIND_GAP,x,z,h);h=KRELIEF.shape(WATER_GAP,x,z,h);
  if(x>700&&x<1300&&z>-1360&&z<-1140)for(const S of GORGE.segs)h=KRELIEF.shape(S,x,z,h);
  const K=GORGE.sink,ds=Math.hypot(x-K.x,z-K.z);if(ds<K.r+40){const kr=K.r*(1+.4*(KRAND.fbm((x-K.x)/(ds||1)*2+3,.5,(z-K.z)/(ds||1)*2+3,2,93)-.5)),q=Math.min(ds,kr)/kr;
   const b=ds<kr?K.floor+5*q*q:K.level+(ds-kr)*1.1;if(b<h)h=b;}
  return h;}
-const CAVE=KCARVE.add({id:'cave',kind:'alcove',c:[BITE.x+BITE.r-1,BITE.z],n:[-1,0],hw:12,depth:34,h:14,floorY:BITE.floor,
+const CAVE=KCARVE.add({id:'cave',kind:'alcove',c:[BITE.x+BITE.r-1,BITE.z],n:[-1,0],hw:7,depth:20,h:9,floorY:BITE.floor,
  base:(x,z)=>gBite(x,z,g1raw(x,z),true),margin:6,pad:2,cell:.6,name:'The river cave'});
 function g1(x,z){return gBite(x,z,g1raw(x,z));}
 

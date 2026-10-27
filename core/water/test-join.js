@@ -28,6 +28,8 @@ const short=trib.filter(p=>p[0]>40);const J3=W.join(short,main,{w:8});
 ok(J3.cut===0&&J3.pts.length===short.length,'a line that never reaches the channel keeps every point');
 // a width function
 const J4=W.join(trib,main,{w:i=>4+i*0,tuck:.5});ok(Math.abs(near(J4.pts[J4.pts.length-1])-2)<.05,'w as a function of the main\'s vertex');
+ok(Math.abs(J.over-(1-.3)*8)<.3,'over: '+J.over.toFixed(2)+' m of it lie over the main water (want 5.6)');
+ok(J3.over===0,'negative: a line that never reaches the channel lies over none of it');
 // determinism: the same input gives the same output
 ok(JSON.stringify(W.join(trib,main,{w:8}))===JSON.stringify(J),'deterministic');
 console.log(fails?'\nFAILED: '+fails:'\nOK');process.exit(fails?1:0);
