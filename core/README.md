@@ -172,9 +172,9 @@ Godot (`biomes/GODOT.md`).
 | `30-core-field.js` | the terrain field (global `KFIELD`, [G data]: no THREE, no DOM): a world's `terrainH` baked once onto a Float32 heightmap in metres, with finer insets, named water surfaces and an optional land-cover byte grid; `h(x,z)` is bilinear sampling, `export()` the `krator-field` file Godot reads. Below |
 | `test-field.js`, `golden-field.json` | `node core/terrain/test-field.js` (each check with a negative; `--write` rewrites the golden file): the contract, and the golden vectors `kfield.gd` is held to |
 | `kfield.gd`, `kfield_test.gd` | the GDScript twin (`class_name KField`: `from_export`, `h`, `normal`, `water_at`, `water_h`, `cover_at`, insets) and its test on the same golden file; the project's copies are `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.5 and, merged into `full-refactor` (2026-10-12), in 4.7.2 |
-| `35-core-strata.js` | bedded rock as data (global `KSTRATA`, [G data], needs `KRAND`; `core/terrain/STRATA-PLAN.md` S1-S3, the first cut of S4): formations stacked bottom to top, each a recipe's beds drawn by `KRAND.hash` (seed, formation, bed); a closed-form warp (value noise on a 64 x 64 lattice table the shader reads as a texture), dip, folds and faults give the stratigraphic height, so `at(x, y, z)` names the bed, its kind, colour and hardness on the CPU where the GPU draws it; `megabreccia` is blocks, not beds; alterations under a height line; `terrace` (benches at each bed's top and foot by hardness); `legacy` is today's column bit for bit. Recipes `canyon`, `outland`, `tibasalt`, `tibasalt-ponded`, `megabreccia` (`crest`), `pillar`, `ringfold`, `loess`. Below, "Strata" |
+| `35-core-strata.js` | bedded rock as data (global `KSTRATA`, [G data], needs `KRAND`; `core/terrain/STRATA-PLAN.md` S1-S5): formations stacked bottom to top, each a recipe's beds drawn by `KRAND.hash`; a closed-form warp, dip, folds, faults and a lateral change give the stratigraphic height, so `at` / `surface` name the bed, its kind, colour, hardness, the downslope wash and the cover's colour on the CPU where the GPU draws them; `megabreccia` is blocks, not beds; alterations under height lines; the ledge pass (`ledge`, `ledgeField`); `bake`, the bytes the shaders read; `legacy` is today's column bit for bit. Recipes `canyon`, `badland`, `danxia`, `rift`, `tepui`, `outland`, `tibasalt`, `tibasalt-ponded`, `megabreccia` (`crest`), `pillar`, `ringfold`, `loess`. Below, "Strata" |
 | `test-strata.js`, `golden-strata.json` | `node core/terrain/test-strata.js` (each check with a negative; `--write` rewrites the golden file) |
-| `kstrata.gd`, `kstrata_test.gd` | the GDScript twin (`class_name KStrata`: `from_export`, `yy`, `at`, `terrace`; the noise lattice from `krand.gd`) and its test on the golden file; copies in `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.7.2 |
+| `kstrata.gd`, `kstrata_test.gd` | the GDScript twin (`class_name KStrata`: `from_export`, `yy`, `at`, `surface`, `ledge`, `terrace`, `bake`, `params`, `apply`; the noise lattice from `krand.gd`) and its test on the golden file (the points, and the baked bytes by sha256); the shader is `godot/shaders/lib/strata.gdshaderinc`, its GPU check `godot/tests/terrain/kstrata_gpu_check.gd`; copies in `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.7.2 |
 | `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
 | `37-core-stacks.js` | rock standing on a heightfield (global `KSTACKS`, [G data]): mesas, buttes, spires, fins and balanced rocks as piles of beds, from nwbay's karst stacks; one footprint and one top function make the height (`at`, `topAt`, `ledge`, `ring`) and the mesh (`mesh`) agree; layouts `row` (fins on a strike) and `cluster` (a garden), `export`/`load`; a mesa's `weather` (flutes, gullies, each bed's own retreat) and `shoulder` (thin ledges stepping back 30-45 degrees to the top), undersides under any overhang. Used by `biomes/necanyons`; Pinnacle Rock's rock. Since 2026-10-19 (Korona): a layout (`cluster`, `row`) takes optional variety ranges per stack (`taper`, `lean`, `e`, `crown`), `plates` (Roraima's piles of thin beds, `platesShare` of the stacks) and `lift` (a stack on a slope), drawn from a stream of their own so an unasking page does not move; `mesh` reads the top function through the export (a host that wraps `KSTACKS.topH` draws its relief) and takes `topRings` and `segMax` for a top with relief. Since 2026-10-26 (core gap H10, `biomes/hyperjungle/PLAN-LANDS.md` section 11): the kind `mound`, a termite cathedral (fluted clay spires clustered on a skirt whose foot is on the sampled ground, each spire set into the skirt as drawn, a `clay` colour from the ground's) and `mounds` (a savannah's mounds by cell, each from its own cell's hashes); the kinds are one table (`KINDS`), ready for the outlands' C4 `dome` and `tor` |
@@ -280,43 +280,64 @@ build must:
 Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
 contract and its tunables are in the header of `36-core-carve.js`.
 
-### Strata (`KSTRATA`, 2026-10-26: `STRATA-PLAN.md` S1, the recipes the planned biomes name, S3's folds and faults)
+### Strata (`KSTRATA`, 2026-10-26: `STRATA-PLAN.md` S1-S5)
 
 Bedded rock as records, so what a painter, a plant pass, a relief pass or Godot asks of the rock is what the shader draws.
-Two files and a twin: `35-core-strata.js` (the data, [G data]: no THREE, no DOM, no sin), `host/35-core-strata-shade.js` (the
-shader, [G shader]) and `kstrata.gd`. **Nothing takes it yet**: sedesert, ebadlands and Shade keep their own `35-core-strata.js`, and
-every page builds as before.
+The data (`35-core-strata.js`, [G data]: no THREE, no DOM, no sin), the three.js shader (`host/35-core-strata-shade.js`, [G shader]),
+the GDScript twin (`kstrata.gd`) and the Godot shader (`godot/shaders/lib/strata.gdshaderinc`). **Nothing takes it yet**: sedesert,
+ebadlands and Shade keep their own `35-core-strata.js`, and every page builds as before.
 
 ```
 const S = KSTRATA.create({seed, formations: [{recipe: 'megabreccia', top: 3000}, {recipe: 'loess'}], range: [0, 4200],
   dip: [.6, .8, .012], warp: [9, 2.2], fold: {dir: [0, 1], wl: 15000, amp: 600, sharp: .5},
-  faults: [{a: [x, z], b: [x, z], throw: 40, w: 3, taper: 200}], alter: [{kinds: ['bead'], to: 'palagonite', below: 8500, band: 400}]});
-S.at(x, y, z)          // {formation, recipe, bed, kind, colour [r,g,b] sRGB, hard, f, edge, cell, altered}
-S.hardnessAt(x, y, z); S.terrace(x, z, h, .6); S.colorAt(yy); S.export()  /* KSTRATA.load(json); KStrata.from_export in Godot */
+  faults: [{a: [x, z], b: [x, z], throw: 40, w: 3, taper: 200}], alter: [{kinds: ['bead'], to: 'palagonite', below: 8500, band: 400}],
+  lateral: {recipe: 'danxia', dir: [1, 0], at: [x, z], d0: -500, d1: 500, tongue: 6}, wash: {m: 2.5}, regolith: .8, dust: 0xc9a27e});
+S.at(x, y, z)          // {formation, recipe, bed, kind, colour [r,g,b] sRGB, hard, f, edge, cell, altered, side}
+S.surface(x, y, z, ny) // at() with the wash (a gentle slope shows the bed m higher), plus cover: the loose cover's colour
+S.ledge(x, z, h, slope); KSTRATA.ledgeField(S, terrainH)   // the ledge pass; S.terrace(x, z, h) is its gentler first cut
+S.hardnessAt(x, y, z); S.colorAt(yy); S.export()  /* KSTRATA.load(json); KStrata.from_export in Godot */
 const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({recipe | formations, ...}); M.inject(shader), strataColor(wp, wn)
 ```
 
 - **Formations over beds.** Each formation is one recipe's column over its own thickness (no 120-180 m repeat unless it asks for
-  `repeat`); a `suite` recipe (`outland`) splits its formation by shares. Bed `i` of a formation is drawn from `KRAND.hash(seed, salt, i, k)`,
-  so a thicker formation keeps the beds under it. `flip` reads a formation top-down (the Godthrone's overturned flap).
-- **The warp is closed-form**: two value-noise terms on a 64 x 64 table of `KRAND.hash` bytes, read by the shader as an RGBA8 texture at
-  texel centres, by JS and by GDScript as k/255; with the dip, the fold (a quartic profile, round to chevron by `sharp`) and the faults it
-  gives the stratigraphic height `yy`. Checked on the GPU (2026-10-26, WebGL2 in the app's browser): with `#define KSTRATA_RAW` the
-  shader's bed colour equals `S.at`'s at every sampled pixel off the bed edges (within 1/255) for canyon, outland with a fault, tibasalt across its
-  alteration line, ringfold folded and megabreccia under loess. WebGL2 reads the table with `texelFetch`; WebGL1 samples texel centres.
+  `repeat`); a `suite` recipe (`outland`, `rift`) splits its formation by shares. Bed `i` of a formation is drawn from
+  `KRAND.hash(seed, salt, i, k)`, so a thicker formation keeps the beds under it. `flip` reads a formation top-down (the Godthrone's
+  overturned flap). Rules per recipe: `between` kinds never follow each other, `alternate` swaps two kinds in turn, `noRepeat` never
+  lays a kind on itself (badland's and danxia's contrast).
+- **The warp is closed-form**: two value-noise terms on a 64 x 64 table of `KRAND.hash` bytes, read by the shaders as an RGBA8 texture
+  (`texelFetch`; WebGL1 samples texel centres), by JS and by GDScript as k/255; with the dip, the fold (a quartic profile, round to
+  chevron by `sharp`) and the faults it gives the stratigraphic height `yy`.
+- **Lateral change** (`lateral`): a second stack with the same structure takes over from `d0` to `d1` metres along `dir`; between them
+  its beds tongue in by `tongue` metres of `yy`, so the two interfinger rather than meet on a line. `at` reports `side`.
 - **Blocks.** A recipe with `blocks` (`megabreccia`) has no beds: a 27-cell jittered lattice of blocks (60 m, a `fine` block a breccia of
-  7.5 m blocks), each a clast kind by weight, banded by its own tilted bedding, in a grey matrix flecked with impact glass.
-- **Alteration.** Under a world height (wandering by `band`) named kinds turn into another (the bead beds to palagonite under the
-  Godthrone's dry-cold line by default; a page passes Godstep's laterite).
-- **Hardness** per kind (0 clay .. 1 quartzite) for ledges: `terrace` is S4's first cut, a monotone map of h (no new hollows) easing
-  the foot and top of each bed into a bench by k times its hardness. The relief pass proper (slopes steepened in hard beds) is still S4.
-- **The shader** keeps today's API. `BIO.strata(opt)` with no recipe is today's shader character for character (its column from
-  `KSTRATA`'s `legacy`, which `test-strata.js` holds bed for bed to sedesert's fragment); with a recipe it is the core path: the column
-  baked to RGBA8 data textures (colour and cross-bedding; place in the bed, varnish, hardness, flags; the altered colour), the warp in
-  GLSL. Effects by recipe `fx`: cross-bedding, varnish, opal-shell iridescence, Liesegang bands, colonnade joints, impact-glass flecks.
-  One blocks formation and one alteration line per shader.
-- **Not yet** (S3-S6): lateral change, downslope wash and regolith from the bed; the relief pass; the `badland`, `danxia`, `rift` and
-  `tepui` recipes (their builds' turn); the Godot shader include (the twin gives the bed; the GLSL is not yet ported).
+  7.5 m blocks), each a clast kind by weight, banded by its own tilted bedding, in a grey matrix flecked with impact glass. A stack may
+  hold several blocks formations (the shader takes four).
+- **Alteration.** Under a world height (wandering by `band`) named kinds turn into another, first match first (the bead beds to
+  palagonite under the Godthrone's dry-cold line by default; Godstep passes laterite as well). The shader takes four.
+- **The surface.** `wash`: on gentle slopes (the normal's y from .55 to .9) the colour comes from the bed `m` metres higher, so each band
+  bleeds down the slope below it (badland's default 2.5 m). `regolith`: the dust and loose cover take the bed's own colour (badland's
+  popcorn clay .85; 0 is the plain dust). Both are in the shader and in `S.surface`.
+- **Ledges** (S4). `S.ledge(x, z, h, slope, {k, bench, e, anchor, s0, s1})`: where rock shows (|grad h| from `s0` .45 to `s1` .9) each bed is
+  remapped so hard beds stand steep and soft ones ease (by `k`, .5), with a bench (`bench` 1.5 m, floor `e`) in a soft bed over a hard one;
+  beds are taken in packets of `anchor` (30) m whose tops keep their height, so the land does not drift. A monotone map of h at (x, z)
+  (no new hollows), except where a lateral change interfingers. `KSTRATA.ledgeField(S, h, {step})` wraps a height function, the slope
+  by central differences. Bake it into the heightfield (KFIELD) and Godot has the same ground. At close range the shader draws a shadow
+  line under each hard bed's lip.
+- **The bake** (`KSTRATA.bake(S, {res})`): the bytes the shaders read (the column of each half at `res` m a texel, the alterations, the
+  blocks formations' clasts), plain data so `KStrata.bake` gives Godot the same bytes; `KSTRATA.params` the uniforms as numbers.
+- **The shaders.** `BIO.strata(opt)` with no recipe is today's shader character for character (its column from `KSTRATA`'s `legacy`,
+  which `test-strata.js` holds bed for bed to sedesert's fragment); with a recipe it is the core path. Effects by recipe `fx`:
+  cross-bedding, varnish (tepui's in black-green, `fx.varnishCol`), opal-shell iridescence, Liesegang bands, colonnade joints,
+  impact-glass flecks, the ledge line, the cap, dust and cover. In Godot: `#include "res://shaders/lib/strata.gdshaderinc"`,
+  `KStrata.from_export(json).apply(material, .25, {cap, foot})`, then `ks_strata_color(world_pos, world_normal)` into ALBEDO
+  (`ks_strata_raw` for the bed's own colour). An alteration of a blocks formation's clasts is the CPU's only.
+- **Checked on GPUs** (2026-10-26): with `#define KSTRATA_RAW` (three.js, WebGL2 in the app's browser) and `ks_strata_raw` (Godot 4.7.2,
+  Forward+ on the RTX 5060: `godot --path godot --script res://tests/terrain/kstrata_gpu_check.gd`, which needs a window), the bed
+  colour equals `S.surface`'s at every sampled pixel off the bed edges (within 1/255) on ten stacks: canyon, legacy, outland with a
+  fault, tibasalt across its alteration line, ringfold folded, megabreccia under loess, two blocks formations with two alterations,
+  lateral changes (into blocks too), tepui, and badland's wash on flat ground.
+- **Not yet**: a loess (or any formation) whose base varies from place to place; the alteration of block clasts on the GPU;
+  `tools/harness.py smoke` crashed every page on this machine (a bare three.js page too), so the browser checks ran in the app's browser.
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
 1. `build.py`: `CORE_TERRAIN` gets `'35-core-strata.js'` (core/rand on the page first), and after the `CORE_TERRAIN` loop
@@ -324,17 +345,21 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
    `src/35-core-strata.js` (sedesert, ebadlands) deletes it: the same name in `src/` wins over the core file.
 2. Build the stack once from the recipe the plan names (below), then `BIO.strata({strata: S, cap, foot, dust})` (or `KSTRATA.shade(S, o)`)
    and `S.inject(shader)` in the rock's `onBeforeCompile`, `strataColor(vSWP, vSWN)` where the colour is mixed, as today.
-3. Plants and painters ask `S.at(x, y, z)` (the bed's kind under a plant; `S.at(...).colour` for a far painter); a relief pass may take
-   `S.terrace`. `BIO.export` carries `S.export()` for Godot.
+3. The ground: `terrainH = KSTRATA.ledgeField(S, terrainH0)` before the field is baked, where the plan wants ledges.
+4. Plants and painters ask `S.surface(x, y, z, ny)` (the bed's kind under a plant, `colour` and `cover` for a far painter).
+   `BIO.export` carries `S.export()` for Godot, which fills its material with `KStrata.apply`.
 
 | Biome (plan) | Recipe | How |
 |---|---|---|
-| `outlands` (PLAN.md section 5, C3) | `outland` | one formation per basin wall (red beds, tuffs, red vesicular basalt cap; copper green and turquoise bands, white altered zones); the gem hills and Trickster's wall the same stack; plants by `S.at` |
-| `godthrone` (section 3, G2) | `tibasalt`; `megabreccia` at the airless rim's crest (`flip` on the formation over it for the overturned flap) | the caldera, escarpments, rilles and pits; the alteration's `below` is the dry-cold line (8,500 m by default: set it from the kit's field) |
-| `godstep` (section 2, D2) | `tibasalt` on the slopes, `tibasalt-ponded` on each step (colonnades) | `alter: [{kinds: '*', to: 'laterite', below, band}]` at the wet low end, with the palagonite entry kept if wanted |
+| `outlands` (PLAN.md section 5, C3) | `outland` | one formation per basin wall (red beds, tuffs, red vesicular basalt cap; copper green and turquoise bands, white altered zones); the gem hills and Trickster's wall the same stack; plants by `S.surface` |
+| `godthrone` (section 3, G2) | `tibasalt`; `megabreccia` at the airless rim's crest (`flip` on the formation over it for the overturned flap) | the caldera, escarpments, rilles and pits; the alteration's `below` is the dry-cold line (8,500 m by default: set it from the kit's field); the ledge pass on the escarpments (each flow a ledge, the bead beds recessed) |
+| `godstep` (section 2, D2) | `tibasalt` on the slopes, `tibasalt-ponded` on each step (colonnades) | `alter: [{kinds: ['bead'], to: 'palagonite', below, band}, {kinds: '*', to: 'laterite', below, band}]`; the ledge pass for the trap staircase |
 | `hyperjungle` drylands edge (PLAN-LANDS.md section 11) | `tibasalt` | a thin formation at the southern edge, read from the Godthrone's |
-| `swhighlands` (section 2, H2) | `pillar` (Span's tableland, the pillar rim), `ringfold` (the ring folds: pass `fold` with `dir` along the crest, wl 10-20 km), `crest` (= `megabreccia`) | three stacks, or one with formations by height; the folds' chevrons are `sharp` near 1 |
-| `wouterwall` (section 2, W2) | `megabreccia` under `loess` | formations `[{recipe: 'megabreccia', top: L}, {recipe: 'loess'}]`, L the loess's base on the lower bench (a level; a varying base is open) |
+| `swhighlands` (section 2, H2) | `pillar` (Span's tableland, the pillar rim), `ringfold` (the ring folds: pass `fold` with `dir` along the crest, wl 10-20 km), `crest` (= `megabreccia`) | one stack with formations by height, or `lateral` from the folds into the tableland; the folds' chevrons are `sharp` near 1 |
+| `wouterwall` (section 2, W2) | `megabreccia` under `loess` | formations `[{recipe: 'megabreccia', top: L}, {recipe: 'loess'}]`, L the loess's base on the lower bench (a level) |
+| `ebadlands`, the painted highlands (STRATA-PLAN section 7) | `badland`, `danxia` | the wash and the clay's own cover are badland's defaults; danxia's fins with `fold` |
+| `riftrim`, `rift` | `rift` | the trough's walls and the rim; the caves are cut in its gypsum and limestone (soft and hard in `S.at`) |
+| `korona`, `necanyons` | `tepui` | the tepuis, the hoar table, the caps (`cap` for the pale crowns) |
 
 ### The field (`KFIELD`, 2026-10-08)
 
