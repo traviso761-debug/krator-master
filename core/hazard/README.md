@@ -153,6 +153,10 @@ A build opts in by explicit path (it is not pooled): three lines in `build.py`, 
      - A pass on core/space: test each candidate with the predicate before `S.insert`.
      - Verify: `KHAZ.tabooAudit()` is empty.
      - A walker: `KHAZ.exposure().step(...)` each frame for the luck's growth.
+   - **A predator's place**: `tags: {hazard: KHAZ.PREDATOR.lair(r, {fauna: key})}` (or `ambushPool`, `stalkerSand`) on
+     the place's record, beside the animal's own record.
+   - **Thin air and cold**: the page's field owner calls `KHAZ.provide('pressure', fn)` and
+     `KHAZ.provide('temperature', fn)`. The walker asks `KHAZ.here(x, y, z, t)`.
 
 It moves nothing drawn: the records gain a tag, the page gains a button. Proof on the pilots (2026-10-26, GPU, same view
 before and after): Korona's hollow, the Throne's vent country and the geyser basin keep their draw calls, triangles,
@@ -163,18 +167,48 @@ clock; the man-eaters, coil tendrils, ground stars, bear traps, snare flowers, t
 poison; the sucking pools as drowning), the Throne's vent country (station 8: the hot pools, mud pots, CO2 hollows, the
 acid marsh as a polygon, the open cracks as falls, the fumaroles), the geyser basin (every geyser on its real clock, the
 springs, the acid flats).
+2026-10-26: the Throne's mat (the slime mould, `THRONE.PLANTS.mat`: a soak acid on every instance, every station that
+places it), the ash desert's CO2 hollow (station 7, now `"hazard": true`), the Catch's Stalkers' sand (a
+`KHAZ.PREDATOR.stalkerSand` round the pair; `biomes/catch/build.py` takes core/hazard and the clock). None is rebuilt
+yet: each page moves at its own turn in the biome rebuild.
 
-## Fauna (not here yet)
+## Fauna: the places predators hold
 
-The `hunter` kind is in the vocabulary but nothing registers it. The plan (HAZARD-RESEARCH.md item 11, 2026-10-26 note):
-a **place** a predator holds (a lair, a nest's defended ring, an ambush pool, stalker sand) is a KHAZ record of kind
-`hunter`, static, with its tell, which paths avoid. The **moving animal** is not a hazard record: its threat goes on its
-fauna record and the AI (a zone that followed an animal each frame would fight the navigation bake).
+A **place** a predator holds is a KHAZ record of kind `hunter`. It is static, has its tell, and paths avoid it. It is
+bound to the fauna that hunt there by key: `hunter: {fauna: [key...], count, note}` (HAZARD-RESEARCH.md item 11).
+`KHAZ.PREDATOR` makes them:
+- `lair(r, o)`: a den or nest; bones and spoor.
+- `ambushPool(r, o)`: water something waits under, reaching 3 m down; bleed and drown.
+- `stalkerSand(pts, r, o)`: buried waiting; the sand moves with no wind.
+`o.fauna` is the keys, and any other field overrides. They do no dose of their own: the harm is the animal's.
+
+The **moving animal** is not a hazard record. Its threat goes on its fauna record and its AI (a zone that followed an
+animal each frame would fight the navigation bake). First on a page: the Catch's Stalkers' sand (below).
+
+## The air and the cold: the ambient bridge
+
+Thin air and cold everywhere are fields, not placed shapes. They vary with height, place and time, and Godot samples them
+each tick rather than in an Area. KHAZ turns their values into doses; another module owns the values (core/atmos for
+pressure by height, and a temperature field when one exists).
+- **`KHAZ.provide(field, fn(x, y, z, t))`** registers a field: `'pressure'` (atm) or `'temperature'` (degrees C),
+  `VOCAB.ambientFields`. `null` removes it. A page with none has no ambient hits.
+- **`VOCAB.ambientKinds`**: each row ramps its effect linearly from `start` (k 0) to `worst` (k 1, the full dose).
+  - `thin-air`: suffocate, from .6 atm (a person tires) to .06 atm (the blood boils; the Godthrone's rim is .07).
+  - `cold`: freeze, from 0 to -40 C.
+  - `hot`: burn, from 45 to 70 C.
+- **`KHAZ.ambient(x, y, z, t, guard)`** returns `[{kind, field, value, k, effect, dose, danger}]`, worst first. `guard`
+  is `{kind: 0..1}`, how much a walker's gear keeps out (a mask .5, a suit 1).
+- **`KHAZ.here(x, y, z, t, T, {tIns, guard})`** returns `{records (KHAZ.at), ambient, doses: {effect: summed}}`: what
+  hurts here, in one call.
+- **Export**: a page that provides a field gains `ambient: {fields, kinds}`, the thresholds the port applies to its own
+  fields.
+- **Local cases stay records**: a CO2 hollow, a cold sink, a sealed airless chamber are `gas` or `cold` records with a
+  shape.
 
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 858cfe5c
-with lava, fire, luck, trap and the taboo key). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then e5d9d25f
+with lava, fire, luck, trap, the taboo key and the ambient rows). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

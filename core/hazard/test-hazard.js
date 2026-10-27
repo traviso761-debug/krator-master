@@ -204,6 +204,52 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  ok('negative: trip refuses a hazard without a trigger',throws(()=>H.trip(pool,0)),throws(()=>H.trip(blade,0)));
  ok('export: the trap carries its effects and trigger',(()=>{const r=H.export(TP).records[0].hazard;return r.effects.length===2&&r.trigger.reset===30;})(),false);}
 
+// the ambient bridge: stub fields (pressure halving every 5 km, 15 C at sea level falling 6.5 C a km, a hot spring box)
+{const AK=V.ambientKinds;
+ ok('every ambient row names a field, an effect, a ramp and a danger',Object.keys(AK).every(k=>{const r=AK[k];return V.ambientFields.indexOf(r.field)>=0&&V.hazardEffects.indexOf(r.effect)>=0&&r.start!==r.worst&&r.dose>0&&r.danger>=0&&r.danger<=1;}),Object.keys(AK).length<3);
+ ok('no field provided: no ambient hits, and no ambient key in the export',H.provided().length===0&&H.ambient(0,30000,0,0).length===0&&!('ambient' in H.export(T)),H.ambient(0,30000,0,0).length);
+ ok('provide refuses an unknown field and what is not a function',throws(()=>H.provide('humidity',()=>0))&&throws(()=>H.provide('pressure',3)),throws(()=>H.provide('pressure',null)));
+ H.provide('pressure',(x,y)=>Math.pow(.5,y/5000));
+ H.provide('temperature',(x,y,z,t)=>x>1000&&x<1010?60:15-6.5*y/1000-(t>=43200?10:0));
+ const at0=H.ambient(0,0,0,0);
+ ok('sea level by day: nothing',at0.length===0,at0.length>0);
+ const a4=H.ambient(0,4000,0,0),thin4=a4.find(a=>a.kind==='thin-air');
+ ok('4 km: the air begins to thin (k small); -11 C is a little cold',thin4&&thin4.k>0&&thin4.k<.1&&Math.abs(a4.find(a=>a.kind==='cold').k-11/40)<1e-9,!thin4);
+ const a22=H.ambient(0,22000,0,0),th=a22.find(a=>a.kind==='thin-air'),cd=a22.find(a=>a.kind==='cold');
+ ok('22 km (the Godthrone\'s caldera floor): the air is all but gone, the cold at its worst, thin air first',th.k===1&&th.dose===1&&cd.k===1&&a22[0].kind==='thin-air'&&Math.abs(th.value-Math.pow(.5,4.4))<1e-12,th.k<1);
+ ok('the ramp is linear between start and worst (cold at -20 C is half)',Math.abs(H.ambient(0,(15+20)/6.5*1000,0,0).find(a=>a.kind==='cold').k-.5)<1e-9,false);
+ ok('time moves it: night makes 1 km cold',H.ambient(0,2000,0,50000).some(a=>a.kind==='cold')&&!H.ambient(0,2000,0,0).some(a=>a.kind==='cold'),H.ambient(0,2000,0,0).some(a=>a.kind==='cold'));
+ ok('hot: above 45 C, rising (60 C is .6)',Math.abs(H.ambient(1005,0,0,0).find(a=>a.kind==='hot').k-.6)<1e-9&&!H.ambient(0,0,0,0).some(a=>a.kind==='hot'),H.ambient(0,0,0,0).some(a=>a.kind==='hot'));
+ ok('guard: a mask halves thin air, a suit keeps all of it out, cold untouched',H.ambient(0,22000,0,0,{'thin-air':.5}).find(a=>a.kind==='thin-air').dose===.5&&H.ambient(0,22000,0,0,{'thin-air':1}).find(a=>a.kind==='thin-air').dose===0&&H.ambient(0,22000,0,0,{'thin-air':1}).find(a=>a.kind==='cold').dose===.5,false);
+ H.provide('temperature',()=>NaN);
+ ok('a field that gives no number is skipped',!H.ambient(0,22000,0,0).some(a=>a.field==='temperature')&&H.ambient(0,22000,0,0).some(a=>a.field==='pressure'),H.ambient(0,22000,0,0).some(a=>a.field==='temperature'));
+ H.provide('temperature',(x,y)=>15-6.5*y/1000);
+ const hr=H.here(0,8,0,0,G2);
+ ok('here: the records and the ambient together, each effect summed',hr.records.length===1&&hr.records[0].radiant&&Math.abs(hr.doses.burn-hr.records[0].dose)<1e-12&&hr.ambient.length===0,hr.ambient.length>0);
+ const hr2=H.here(0,22000,0,0,G2);
+ ok('here: high up, suffocate and freeze, no records',hr2.records.length===0&&hr2.doses.suffocate===1&&hr2.doses.freeze===.5,hr2.records.length>0);
+ const ex=H.export(T);
+ ok('export: the ambient rows and the fields provided',ex.ambient&&ex.ambient.fields.join()==='pressure,temperature'&&ex.ambient.kinds['thin-air'].worst===.06,!ex.ambient);
+ H.provide('pressure',null);H.provide('temperature',null);
+ ok('provide(field, null) removes it',H.provided().length===0&&!('ambient' in H.export(T)),H.provided().length>0);}
+
+// the places predators hold: hunter records bound to their fauna
+{const P=H.PREDATOR,TP=KT.create({build:'predator-test'});
+ const lair=TP.add({'class':'feature',kind:'lair',at:[0,0,0],tags:{hazard:P.lair(8,{fauna:'savannah-stalker'})}});
+ const pool2=TP.add({'class':'feature',kind:'pool',at:[50,0,0],tags:{hazard:P.ambushPool(6,{fauna:['acid-pool-eel'],count:2})}});
+ const sand=TP.add({'class':'feature',kind:'sand',at:[0,0,100],tags:{hazard:P.stalkerSand(null,40,{fauna:['mech.st_harpooner','mech.st_blade'],danger:.95})}});
+ const hl=H.of(lair),hp=H.of(pool2),hs=H.of(sand);
+ ok('predator places are hunters bound to their fauna by key',hl.kind==='hunter'&&hl.hunter.fauna[0]==='savannah-stalker'&&hp.hunter.count===2&&hs.hunter.fauna.length===2&&hl.nav.avoid&&hs.danger===.95,hl.hunter==null);
+ ok('they do no dose of their own (the animal does)',H.dose(lair,0,0,0)===0&&H.doses(pool2,50,0,0).drown===0&&H.at(0,100,0,null,TP)[0].id===sand.id,H.dose(lair,0,0,0)>0);
+ ok('an ambush pool reaches under the water; the sand is a circle of r 40',H.inside(pool2,50,0,-2)>=0&&H.inside(pool2,50,0,-4)<0&&H.inside(sand,0,139,1)>=0&&H.inside(sand,0,141,1)<0,H.inside(pool2,50,0,-4)>=0);
+ ok('negative: fauna must be keys',throws(()=>H.make({kind:'hunter',hunter:{fauna:'x'}}))&&throws(()=>H.make({kind:'hunter',hunter:{fauna:[3]}})),throws(()=>H.make({kind:'hunter',hunter:{fauna:['x']}})));
+ ok('an older hunter record fills as before: no hunter key',!('hunter' in H.make({kind:'hunter'})),false);
+ ok('export: the place and its fauna',H.export(TP).records.find(r=>r.id===sand.id).hazard.hunter.fauna[1]==='mech.st_blade',false);}
+// the Throne's mat (biomes/throne/src/50-biome-throne-species.js): its record is a valid soak hazard
+{const src=fs.readFileSync(C('../biomes/throne/src/50-biome-throne-species.js'),'utf8'),m=src.match(/THRONE\.PLANTS\.mat\.tags\.hazard=(\{[^;]*\});/);
+ const mh=m&&H.make(Function('return '+m[1])());
+ ok('the Throne\'s mat: a slow acid that grows over half an hour, crossed at a cost',mh&&mh.effect==='corrode'&&mh.soak.full===1800&&!mh.nav.avoid&&mh.nav.travel===2,!m);}
+
 // taboo: the area a people will not build in
 ok('core/tags takes a taboo object',KT.norm({taboo:{of:null}}).problems.length===0,KT.norm({taboo:'cursed'}).problems.length===0);
 ok('taboo: checked and filled',H.taboo(ring).of===null&&H.taboo(ring).why==='the trickster\'s house'&&H.taboo(ring2).of[0]==='coyote-peak',H.taboo(pool)!==null);

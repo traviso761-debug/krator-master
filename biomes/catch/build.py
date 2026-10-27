@@ -73,7 +73,10 @@ STATIONS = ['oasis', 'lake', 'fan']
 # core/terrain: KSTACKS (the lake-bed mesas), KBASIN (the old lake's strandlines, silt, salt and the wind's yardangs)
 CORE_TERRAIN = ['37-core-stacks.js', '40-core-basin.js']
 # core/biome (core/README.md): one copy for every kit
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js']
+CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '37-core-traps.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js']
+# core/hazard (core/hazard/README.md, "Adopting it"; 2026-10-26): the Stalkers' sand is a hunter hazard (KHAZ.PREDATOR); it
+# runs on the one clock (37-core-traps.js KTRAPS.cycle, above)
+CORE_HAZARD = ['20-core-hazard.js']
 CORE_SPACE = ['20-core-space.js']
 # core/rand and core/tags: with BIO.init({tags}) every item set, instance and registered volume is a core/tags record
 CORE_TAGS = {'08-core-rand.js': 'rand', '50-core-tags.js': 'tags', '52-core-tags-vocab.js': 'tags', '53-core-tags-host.js': 'tags'}
@@ -112,6 +115,8 @@ def build(station=None):
         PATH.setdefault(f, CORE('export', f))
     for f in CORE_SPACE:
         PATH.setdefault(f, CORE('space', f))
+    for f in CORE_HAZARD:
+        PATH.setdefault(f, CORE('hazard', f))
     for f in CORE_WATER:
         PATH.setdefault(f, CORE('water', f))
     for f in CORE_ATMOS:

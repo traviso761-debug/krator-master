@@ -151,6 +151,16 @@
      // [{effect, dose, danger}]: a shock and a paralysis); it resets after trigger.reset s, and can be disarmed
      trap:   { effect: 'damage',    danger: .6, dose: 1,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#e0c040', fx: 'spark', sound: 'click' },  trigger: { by: 'step', reset: 30 } }
    },
+   // the air and the cold everywhere (2026-10-26): not placed records but fields sampled at a point (core/hazard
+   // KHAZ.provide(field, fn), KHAZ.ambient). Each row ramps its effect from `start` (k 0) to `worst` (k 1, the full dose);
+   // pressure in atm (a person tires below .6, the death zone .33, the blood boils at .06: the Godthrone's rim is .07),
+   // temperature in degrees C
+   ambientFields: ['pressure', 'temperature'],
+   ambientKinds: {
+     'thin-air': { field: 'pressure',    start: .6, worst: .06, effect: 'suffocate', dose: 1,  danger: 1 },
+     'cold':     { field: 'temperature', start: 0,  worst: -40, effect: 'freeze',    dose: .5, danger: .7 },
+     'hot':      { field: 'temperature', start: 45, worst: 70,  effect: 'burn',      dose: .5, danger: .6 }
+   },
    hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune', 'shock', 'paralysis', 'damage'],
    hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
    hazardFalloffs: ['none', 'linear', 'smooth'],

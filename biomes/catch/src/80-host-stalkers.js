@@ -13,4 +13,10 @@ const STALKERS=[];
   const g=KratorMechs.build(s.kind,{seed:KRAND.hash(STAGE.seed,7700,k)});g.updateMatrixWorld(true);box.setFromObject(g);box.getSize(sz);
   g.rotation.set(s.pitch==null?.55:s.pitch,s.yaw||0,0,'YXZ');g.position.set(s.x,0,s.z);g.updateMatrixWorld(true);box.setFromObject(g);
   g.position.y=y0-(box.max.y-box.min.y)*s.bury-box.min.y;
-  g.traverse(o=>{o.userData.host=true;o.userData.inspectLabel=e.name+' (a Stalker)';});scene.add(g);STALKERS.push({group:g,rec,s});});})();
+  g.traverse(o=>{o.userData.host=true;o.userData.inspectLabel=e.name+' (a Stalker)';});scene.add(g);STALKERS.push({group:g,rec,s});});
+ /* THE HAZARD (core/hazard, 2026-10-26): the sand they lie under, one hunter record round the pair (KHAZ.PREDATOR.stalkerSand,
+    bound to their keys): paths keep out of it, and the inspector says why. The Stalkers' own records stay what they were */
+ if(STALKERS.length&&typeof KHAZ!=='undefined'){let cx=0,cz=0;STALKERS.forEach(t=>{cx+=t.s.x;cz+=t.s.z;});cx/=STALKERS.length;cz/=STALKERS.length;
+  let r=0;STALKERS.forEach(t=>{r=Math.max(r,Math.hypot(t.s.x-cx,t.s.z-cz));});r+=25;
+  REGISTER({name:'The Stalkers\' sand (something lies under it, waiting)',kind:'sand',x:cx,y:terrainH(cx,cz)-3,z:cz,r,h:10,
+   tags:{hazard:KHAZ.PREDATOR.stalkerSand(null,r,{fauna:STALKERS.map(t=>'mech.'+t.s.kind)})}});}})();

@@ -264,6 +264,11 @@ THRONE.PLANTS={
  redcoral:PK('Red coral-fern','temperate','subhumid','both',['BSk'],'native','seam',['feather'],HV('none',[],false,'Branching red sprays among the moss domes.')),
  snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','feather'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
 };
+/* THE MAT IS A HAZARD (core/hazard, 2026-10-26): a slime mould that digests what sleeps on it, so it corrodes slowly and the
+   longer one stays the worse (a soak: nothing at first, full after half an hour, forgotten over ten minutes off it); paths
+   cross it at a cost. Every mat instance carries it (the set's tags); a page without core/hazard keeps it as a tag only */
+THRONE.PLANTS.mat.tags.hazard={kind:'acid',danger:.5,dose:.3,shape:{type:'cyl',h:1.5},soak:{full:1800,from:0,out:600},
+ nav:{travel:2,enter:0,avoid:false},tell:{fx:null,sound:null,sign:'it digests what sleeps on it'}};
 THRONE.plantOfItem=item=>{for(const k in THRONE.PLANTS)if(THRONE.PLANTS[k].items.indexOf(item)>=0)return THRONE.PLANTS[k];return null;};
 
 // ---------------------------------------------------------------- leaf textures

@@ -16,7 +16,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':''):'')+
   '\nwater table '+F('wet').toFixed(2)+' · sand '+F('sand').toFixed(2)+' · salt '+Math.max(F('salt'),F('crust'),F('soda')).toFixed(2)+
-  '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): the Stalkers' sand; its kind, danger and state now */
+function hazardWords(p){const w=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';return w?'\n'+w:'';}
 
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 const BUDGET={showcase:{tris:9000000,calls:500},cls:{pass:7000000,host:2500000},
@@ -80,7 +82,7 @@ KHOST.take({build:'catch',title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:groundAll,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:STAGE.hour==null?9:STAGE.hour},draw:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances+'  air '+STORM.mode,controls:[STORM_CONTROL],
- layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'rock and Stalkers':{match:o=>!!(o.userData&&o.userData.host&&!o.userData.probeSkip)},'sky':{objects:()=>[SKY.mesh]}},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora':{match:o=>!!(o.userData&&o.userData.biome)},'rock and Stalkers':{match:o=>!!(o.userData&&o.userData.host&&!o.userData.probeSkip)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

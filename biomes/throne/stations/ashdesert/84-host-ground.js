@@ -65,6 +65,10 @@ const GROUND=(function(){const N=760,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The ash desert under the plume';scene.add(m);return m;})();
-REGISTER({name:HOLLOW.name,x:HOLLOW.x,z:HOLLOW.z,y:terrainH(HOLLOW.x,HOLLOW.z)-3,r:HOLLOW.r*1.3,h:HOLLOW.depth+8,hollow:true});
+/* THE HAZARD (core/hazard, 2026-10-26): the hollow's CO2 kills (the vents station's hollows' record: paths never go down
+   into it); its shape is the gas's, the basin up to its rim, not the record's wider footprint. The mat on its floor is a
+   hazard of its own (50: THRONE.PLANTS.mat) */
+REGISTER({name:HOLLOW.name,x:HOLLOW.x,z:HOLLOW.z,y:terrainH(HOLLOW.x,HOLLOW.z)-3,r:HOLLOW.r*1.3,h:HOLLOW.depth+8,hollow:true,
+ tags:{hazard:{kind:'gas',danger:1,dose:1,falloff:'none',shape:{type:'cyl',r:HOLLOW.r,h:HOLLOW.depth+3,y0:0},tell:{sign:'bones on the rim'}}}});
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 _mark('ground');

@@ -52,6 +52,11 @@ its probes.
 - `effects` (the made trap): one build-up meter per effect on the walker's `HazardStatus`, each fed by its own dose. A
   `trigger` is `body_entered` (a `beam`: a thin `Area3D` or a `RayCast3D` along the beam) calling `KHazard.trip`, which
   keeps the last trip time per record; `resetting` and `disarmed` turn `monitoring` off.
+- `hunter` (a predator's place): an Area3D as any record, plus a link to the fauna it names. The AI of those fauna treats
+  the area as home ground: it waits or patrols there, and walkers who enter get the hunter's attention.
+- `ambient` (no node): the walker's `HazardStatus` samples the port's own fields (pressure from the atmos port by
+  height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
+  `KHAZ.ambient` does. Gear is a guard per kind.
 - `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
   `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
   as `KHAZ.tabooOk` does on the page.

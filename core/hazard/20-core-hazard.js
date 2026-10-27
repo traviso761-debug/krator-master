@@ -32,6 +32,9 @@
 //            KHAZ.doses gives each. The trap kind's row gives a trigger (step, reset 30 s); KHAZ.trip(rec, t) sets it
 //            off (state 'resetting', k 0, for reset s), KHAZ.disarm(rec) / rearm(rec)
 //
+//   ambient  not a record: KHAZ.provide('pressure' | 'temperature', fn(x, y, z, t)) and KHAZ.ambient(x, y, z, t, guard)
+//            ramp VOCAB.ambientKinds (thin-air, cold, hot) from start to worst; KHAZ.here sums them with the records
+//
 //   tags.taboo = {of: null (every people) | [culture...], why, shape}: an area a people will not build in (Outlands C6)
 //
 //   KHAZ.make(h)                 a checked, filled hazard (throws on an unknown kind, effect, shape, falloff or trigger)
@@ -54,6 +57,8 @@
 //   KHAZ.exposure(T)             {step(x, z, t, dt, y) -> KHAZ.at with each soak's time inside, tIn(id), reset()}: a walker's
 //   KHAZ.bindFire(rec, run)      binds a KFIRE.run to a fire record (null unbinds); KHAZ.fireHazard(run, o) -> {at, hazard}
 //   KHAZ.GROUND                  the Godthrone's: lavaFlow(pts, o), lavaLake(r, o), gasVent(r, o), hotGround(pts, r, o)
+//   KHAZ.PREDATOR                the places predators hold (kind hunter, hunter: {fauna: [key...]}): lair(r, o),
+//                                ambushPool(r, o), stalkerSand(pts, r, o); o.fauna the keys of what hunts there
 //   KHAZ.taboo(rec)              rec.tags.taboo checked ({of, why, shape}); KHAZ.taboos(T) every live taboo record
 //   KHAZ.forbids(x, z, who, T)   the taboos barring who (a culture, or a record) at a point; KHAZ.tabooOk(who, T) -> fn(o)
 //                                false where one does (a point, a disc, core/city's footprint); KHAZ.tabooAudit(T) the
@@ -114,6 +119,9 @@
       out.effects=h.effects.map(function(e){if(!e||!has(V.hazardEffects,e.effect))throw new Error('KHAZ.make: unknown effect '+(e&&e.effect));
         var o={effect:e.effect,dose:num(d(e.dose,out.dose),'effects dose'),danger:num(d(e.danger,danger),'effects danger')};
         if(o.danger<0||o.danger>1)throw new Error('KHAZ.make: an effect\'s danger is 0..1');return o;});}
+    if(h.hunter!=null){var hu=h.hunter;if(hu.fauna!=null&&!(Array.isArray(hu.fauna)&&hu.fauna.every(function(k){return typeof k==='string';})))
+        throw new Error('KHAZ.make: hunter.fauna is a list of fauna keys');
+      out.hunter={fauna:hu.fauna==null?[]:hu.fauna.slice(),count:d(hu.count,null),note:d(hu.note,null)};}
     if(h.fire!=null){var f=h.fire;out.fire={lit:num(d(f.lit,0),'fire lit'),burn:num(d(f.burn,30),'fire burn'),smoulder:num(d(f.smoulder,400),'fire smoulder'),
       smoulderK:d(f.smoulderK,.3)};if(f.x!=null){out.fire.x=num(f.x,'fire x');out.fire.z=num(f.z,'fire z');}if(f.wind)out.fire.wind=f.wind.slice();}
     return out;
@@ -277,12 +285,36 @@
       recs.push(o);});
     var out={format:'krator-hazard',version:1,convention:{units:'m, s, kg',up:'+y',x:'east',z:'south',clock:'KTRAPS.cycle; phase KTRAPS.phase(seed or id)'},
       kinds:V.hazardKinds,layers:V.navLayers,records:recs};
+    // the ambient rows, only on a page that provides a field (the port samples its own fields with the same thresholds)
+    if(provided().length)out.ambient={fields:provided(),kinds:V.ambientKinds};
     // the taboo areas, only on a page that has any (an older page's export is unchanged)
     var A=taboos(T).filter(function(r){return !inBox||inBox(r.at[0],r.at[2]);});
     if(A.length)out.areas=A.map(function(r){var tb=tabooOf(r),s=fill(tb.shape,r),w={type:s.type,at:r.at.slice(),ry:r.ry||0};
       ['r','h','w','d','y0','y1'].forEach(function(k){if(s[k]!=null)w[k]=s[k];});if(s.pts)w.pts=s.pts.map(function(p){return p.slice();});
       return {id:r.id,uid:r.uid,at:r.at.slice(),ry:r.ry||0,taboo:{of:tb.of,why:tb.why},shape:w};});
     return out;}
+
+  // ---- the ambient bridge: the air and the cold everywhere, from fields another module owns (core/atmos: pressure by
+  //   height; a temperature field). KHAZ.provide('pressure', (x, y, z, t) -> atm) registers one by name (null removes);
+  //   a page with none gets no ambient hits. Each VOCAB.ambientKinds row ramps its effect from start to worst
+  var FIELDS={};
+  function provide(field,fn){need();if(!has(V.ambientFields,field))throw new Error('KHAZ.provide: unknown field '+field+' (VOCAB.ambientFields)');
+    if(fn==null){delete FIELDS[field];return;}if(typeof fn!=='function')throw new Error('KHAZ.provide: a field is a function (x, y, z, t)');FIELDS[field]=fn;}
+  function provided(){return Object.keys(FIELDS).sort();}
+  function rampK(row,v){var span=row.start-row.worst;if(!span)return 0;
+    return Math.max(0,Math.min(1,(row.start-v)/span));}
+  // [{kind, field, value, k, effect, dose, danger}] where a field is past its row's start, the worst (danger x k) first.
+  // guard {kind: 0..1}: how much of it a walker's gear keeps out (a mask, furs: .5 halves the dose; 1 keeps all of it out)
+  function ambient(x,y,z,t,guard){need();var out=[],K=V.ambientKinds,vals={};
+    for(var name in K){var row=K[name],f=FIELDS[row.field];if(!f)continue;
+      var v=row.field in vals?vals[row.field]:(vals[row.field]=f(x,y,z,t));if(typeof v!=='number'||!isFinite(v))continue;
+      var k=rampK(row,v);if(!(k>0))continue;var g=guard&&guard[name]!=null?Math.max(0,Math.min(1,guard[name])):0;
+      out.push({kind:name,field:row.field,value:v,k:k,effect:row.effect,dose:row.dose*k*(1-g),danger:row.danger});}
+    out.sort(function(a,b){return b.danger*b.k-a.danger*a.k||(a.kind<b.kind?-1:1);});return out;}
+  // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, and every effect's dose summed
+  function here(x,y,z,t,T,o){o=o||{};var R=at(x,z,t,y,T,o.tIns),A=ambient(x,y,z,t,o.guard),D={};
+    R.forEach(function(r){var ds=r.radiant?{burn:r.dose}:doses(r.rec,x,z,t,y,o.tIns&&o.tIns[r.id]);for(var e in ds)D[e]=(D[e]||0)+ds[e];});
+    A.forEach(function(a){D[a.effect]=(D[a.effect]||0)+a.dose;});return {records:R,ambient:A,doses:D};}
 
   // ---- exposure: how long a walker has stood in each soak hazard (the luck that grows the longer one stays)
   //   const E=KHAZ.exposure(T); E.step(x, z, t, dt, y) -> KHAZ.at's hits with each soak's time counted; E.tIn(id); E.reset()
@@ -311,6 +343,21 @@
       cycle:{period:120,warn:3,ramp:4,on:15,after:10,afterK:.5,base:.3}},o);},
     // hot ground: a steaming crust over heat, burns slowly, walkable at a cost
     hotGround:function(pts,r,o){return over({kind:'heat',danger:.35,dose:.4,falloff:'linear',shape:area(pts,r,2),nav:{travel:3,enter:5,avoid:false}},o);}};
+
+  // ---- the places predators hold (biomes/HAZARD-RESEARCH.md item 11): kind hunter, bound to the fauna that hunt there by
+  //   key (hunter: {fauna: [key...], count, note}). The place is the hazard; the animal is its fauna record and its AI.
+  //   No dose: the harm is the animal's. o: the record's other fields override these; o.fauna the keys
+  function hunterOf(h,o){o=o||{};var f=o.fauna;if(f!==undefined){h.hunter={fauna:typeof f==='string'?[f]:f,count:o.count,note:o.note};}
+    for(var k in o)if(k!=='fauna'&&k!=='count'&&k!=='note')h[k]=o[k];return h;}
+  var PREDATOR={
+    // a den or a nest: bones and spoor round it; paths keep clear
+    lair:function(r,o){return hunterOf({kind:'hunter',danger:.9,shape:{type:'cyl',r:r,h:6},tell:{fx:'bones',sound:'growl',sign:'bones and spoor'}},o);},
+    // water something waits under: still, with a ripple now and then; it drowns what it takes
+    ambushPool:function(r,o){return hunterOf({kind:'hunter',danger:.9,shape:{type:'cyl',r:r,h:4,y0:-3},
+      effects:[{effect:'bleed',dose:0},{effect:'drown',dose:0}],tell:{fx:'ripple',sound:null,sign:'nothing drinks here'}},o);},
+    // ground where something lies buried, waiting (the Catch's Stalkers): a polygon, or a circle r
+    stalkerSand:function(pts,r,o){return hunterOf({kind:'hunter',danger:1,shape:area(pts,r,4),
+      tell:{fx:'ripple',sound:null,sign:'the sand moves where there is no wind'}},o);}};
 
   // ---- taboo areas (biomes/outlands/PLAN.md C6): tags.taboo = {of: null | [culture...], why, shape}. A record of a people
   //   the area names (tags.culture, or tags.faction) is not placed inside it; a record of no people is (a plant, a rock)
@@ -346,7 +393,7 @@
       var F=forbids(r.at[0],r.at[2],r,T);if(F.length)out.push({id:r.id,taboo:F[0].id,who:whoOf(r)});}return out;}
 
   var KHAZ={make:make,of:of,shape:shape,inside:inside,beyond:beyond,state:state,dose:dose,list:list,at:at,zones:zones,export:exp,
-    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,
+    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
     taboo:tabooOf,taboos:taboos,forbids:forbids,tabooOk:tabooOk,tabooAudit:tabooAudit};
   root.KHAZ=KHAZ;
 })(typeof globalThis!=='undefined'?globalThis:this);
