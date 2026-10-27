@@ -43,8 +43,9 @@ station as one plain record, `SWHI_PILLARS_SITE` on its page (also the page's `s
 | `format`, `version` | `'swhighlands-pillars-site'`, 1 |
 | `frame` | `{x: 'east', z: 'south', y0}` (the map's y 0 in metres above the sea) and `box` |
 | `watch` | the watch pillar: `id, x, z, foot, top, w, l, ry, flat` (the side of the flat square on its top, m), `keep` (the metres under the top its drawn mesh keeps whole). Its top is held bare (no plant within 30 m of its middle) |
-| `towers` | every tower: `id, x, z, foot, top, R` |
-| `rim` | the cliff's line, 65 points west to east: `x, z, top` (the table's), `floor` (under the cliff) |
+| `arches` | every arch and natural bridge (added 2026-10-27, still version 1: a new field, nothing changed): `id, x, z, foot, top, R` |
+| `towers` | every tower (not the arches): `id, x, z, foot, top, R` |
+| `rim` | the cliff's line, 65 points west to east: `x, z, top` (the table's), `floor` (30 m out from the rim: since 2026-10-27 on the badland apron under the 85 m caprock, not the open floor) |
 | `river` | Pan Riba's line (`name`, `pts`) |
 
 A settlement reads it and places itself (its post, its stairs fitted to the drawn mesh); the station never moves for one. A change
