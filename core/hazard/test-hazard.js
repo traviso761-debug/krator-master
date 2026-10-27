@@ -249,6 +249,25 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  H.provide('rain',()=>NaN);ok('rain that gives no number is skipped',!ar(-2000,0),!!ar(-2000,0));
  H.provide('rain',null);H.provide('ph',null);ok('removed: none',H.provided().length===0,false);}
 
+// time: the Procrastinator's seals (a ten-thousandth of our time), a monk's quickening (x4), a wheel switched by a cycle
+{const TT=KT.create({build:'time-test'});
+ const seal=TT.add({'class':'feature',kind:'seal',name:'The first seal',at:[0,0,0],r:4,h:6,tags:{hazard:{kind:'time',falloff:'none'}}});
+ const hall=TT.add({'class':'feature',kind:'hall',name:'The hall\'s slowing',at:[0,0,0],r:20,h:30,tags:{hazard:{kind:'time',time:{scale:.1},falloff:'linear',danger:.2,nav:{avoid:false}}}});
+ const quick=TT.add({'class':'feature',kind:'quickening',at:[100,0,0],r:5,h:3,tags:{hazard:{kind:'time',time:{scale:4},danger:0,nav:{avoid:false}}}});
+ const wheel=TT.add({'class':'feature',kind:'wheel',at:[200,0,0],r:5,h:6,tags:{hazard:{kind:'time',falloff:'none',cycle:{period:100,on:50}}}});
+ const hs=H.of(seal);
+ ok('time: its row slows to a ten-thousandth, stasis, avoided',hs.time.scale===1e-4&&hs.effect==='stasis'&&hs.nav.avoid&&hs.dose===0,hs.time==null);
+ ok('an older kind gets no time key; a scale of 0 or below is refused',!('time' in H.make({kind:'acid'}))&&throws(()=>H.make({kind:'time',time:{scale:0}}))&&throws(()=>H.make({kind:'time',time:{scale:-2}})),throws(()=>H.make({kind:'time',time:{scale:2}})));
+ ok('one record: the whole scale inside (falloff none), 1 outside',Math.abs(H.time(seal,1,1,0)-1e-4)<1e-15&&H.time(seal,10,0,0)===1,H.time(seal,10,0,0)!==1);
+ ok('linear falloff in log scale: halfway out of a tenth is about a third (10^-.5)',Math.abs(H.time(hall,10,0,0)-Math.pow(10,-.5))<1e-9&&Math.abs(H.time(hall,0,0,0)-.1)<1e-12&&Math.abs(H.time(hall,19.999,0,0)-1)<1e-3,false);
+ ok('fields multiply: inside the seal within the hall, a hundred-thousandth',Math.abs(H.timeScale(0,0,0,null,TT)-1e-5)<1e-17&&Math.abs(H.timeScale(10,0,0,null,TT)-Math.pow(10,-.5))<1e-9,H.timeScale(10,0,0,null,TT)===1);
+ ok('time sped up: a quickening runs 4x at its core, less toward its edge (smooth)',Math.abs(H.timeScale(100,0,0,null,TT)-4)<1e-12&&H.timeScale(103,0,0,null,TT)>1&&H.timeScale(103,0,0,null,TT)<4,H.timeScale(100,0,0,null,TT)<=1);
+ {let lo=1,hi=0;for(let t=0;t<200;t+=.5){const s=H.timeScale(200,0,t,null,TT);lo=Math.min(lo,s);hi=Math.max(hi,s);}
+  ok('a field on a cycle: still while on, normal while off',Math.abs(lo-1e-4)<1e-12&&hi===1,hi<1);}
+ ok('here reports time; 1 where no field is',Math.abs(H.here(0,0,0,0,TT).time-1e-5)<1e-17&&H.here(500,0,500,0,TT).time===1,H.here(500,0,500,0,TT).time!==1);
+ ok('a band: above the seal\'s height, time runs',H.time(seal,0,0,0,10)===1&&H.time(seal,0,0,0,3)<1,H.time(seal,0,0,0,10)<1);
+ ok('export: the field carries its scale',H.export(TT).records.find(r=>r.id===seal.id).hazard.time.scale===1e-4,false);}
+
 // the places predators hold: hunter records bound to their fauna
 {const P=H.PREDATOR,TP=KT.create({build:'predator-test'});
  const lair=TP.add({'class':'feature',kind:'lair',at:[0,0,0],tags:{hazard:P.lair(8,{fauna:'savannah-stalker'})}});

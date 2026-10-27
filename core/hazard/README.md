@@ -29,7 +29,7 @@ What else it touches (all in this workstream, 2026-10-26):
 
 ```
 tags.hazard = {
-  kind     heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap (VOCAB.hazardKinds: its row fills the rest)
+  kind     heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap time (VOCAB.hazardKinds: its row fills the rest)
   effect   burn freeze suffocate poison corrode bleed hold drown | null
   danger   0..1 (.3 hurts, .7 holds a person, 1 kills)          dose   effect units a second at the core
   shape    {type: sphere|cyl|box|poly, r, h, w, d, pts [[dx, dz]...], y0, y1, edge}, metres from the record's at (box and
@@ -75,6 +75,7 @@ or its kind has it, so every older record fills, states, doses and exports exact
 | `lava` | burn | danger 1, dose 20, avoid; `radiant` 8 m (dose 2, danger .4) | flows, lakes, the summit vent's fountain |
 | `fire` | burn | danger .9, dose 5, avoid; `radiant` 10 m (dose 1, danger .3) | a live fire on `KFIRE.run` |
 | `trap` | damage | danger .6, dose 1, walkable; `trigger` step, reset 30 s | a made trap (the arcology ruins, later): plates, beams, blades, stun fields |
+| `time` | stasis | danger .8, no dose, avoid; `time.scale` 1e-4 | time slowed or sped up: the History Monks' Procrastinator and its seals (LORE.md 6.15) |
 | `luck` | misfortune | danger .3, dose .05, walkable; `soak` (full 600 s, from 0, out 1200 s) | Trickster's House's keep-out ring |
 
 The Throne's kinds stay what they were: gas vents are `gas`, hot ground is `heat`.
@@ -99,6 +100,13 @@ The Throne's kinds stay what they were: gas vents are `gas`, hot ground is `heat
   apply now); then it is `resetting` (k 0) for `reset` s. `KHAZ.disarm(rec)` (state `disarmed`) and `KHAZ.rearm(rec)`.
   Trips and disarming are page state by record id, not stored in the record. A hidden trap is `tell: {fx: null, sound:
   null}` with a `sign` for whoever finds it. A pulsing field (a shock floor) is a `cycle`.
+- **Time** (`kind: 'time'`, `time: {scale}`): time runs at `scale` at the core and eases to 1 at the edge by the
+  falloff, in log scale (a ten-thousandth, a hundredth, a tenth, 1), times its k now. Below 1 is slowed: the
+  Procrastinator's seals at 1e-4. Above 1 is sped up: a monk's quickening. A cycle switches it.
+  - `KHAZ.time(rec, x, z, t, y)` gives one record's scale; `KHAZ.timeScale(x, z, t, y, T)` multiplies every field at a
+    point; `KHAZ.here(...).time` gives the same.
+  - The host applies it to what stands there: a walker's dt, an animation's speed, a particle's age, an NPC's schedule
+    clock. The harm is being held (`stasis`, no dose), and paths avoid it by default.
 - **`KHAZ.GROUND`**: the Godthrone's records, as a kit writes them: `lavaFlow(pts, o)`, `lavaLake(r, o)`, `gasVent(r, o)`,
   `hotGround(pts, r, o)` (`pts` a polygon in metres from the record's `at`, else a circle; `o` overrides any field).
 - **`tags.taboo = {of, why, shape}`**: an area a people will not build in. `of` null bars every people, else the listed
@@ -155,6 +163,8 @@ A build opts in by explicit path (it is not pooled): three lines in `build.py`, 
      - A walker: `KHAZ.exposure().step(...)` each frame for the luck's growth.
    - **A predator's place**: `tags: {hazard: KHAZ.PREDATOR.lair(r, {fauna: key})}` (or `ambushPool`, `stalkerSand`) on
      the place's record, beside the animal's own record.
+   - **A time field** (the Procrastinator's seals, a monk's quickening): `tags: {hazard: {kind: 'time', time: {scale},
+     shape}}`, and the host multiplies each thing's dt by `KHAZ.timeScale(x, z, t, y)` where it stands.
    - **Thin air and cold**: the page's field owner calls `KHAZ.provide('pressure', fn)` and
      `KHAZ.provide('temperature', fn)`. The walker asks `KHAZ.here(x, y, z, t)`.
    - **Acid rain**: `KHAZ.provide('rain', fn)` from the page's weather (0 under cover), and `KHAZ.provide('ph', fn)` from
@@ -214,7 +224,7 @@ pressure by height, and a temperature field when one exists).
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 9584dd11
-with lava, fire, luck, trap, the taboo key, the ambient rows and acid rain). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 202f9e43
+with lava, fire, luck, trap, time, the taboo key, the ambient rows and acid rain). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

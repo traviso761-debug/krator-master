@@ -32,6 +32,8 @@
 //            KHAZ.doses gives each. The trap kind's row gives a trigger (step, reset 30 s); KHAZ.trip(rec, t) sets it
 //            off (state 'resetting', k 0, for reset s), KHAZ.disarm(rec) / rearm(rec)
 //
+//   time     {scale}: time runs at scale at the core (1e-4 the Procrastinator's seals; above 1 sped up), easing to 1 at
+//            the edge; KHAZ.time(rec, x, z, t, y) one record's, KHAZ.timeScale(x, z, t, y, T) every field's product
 //   ambient  not a record: KHAZ.provide('pressure' | 'temperature', fn(x, y, z, t)) and KHAZ.ambient(x, y, z, t, guard)
 //            ramp VOCAB.ambientKinds (thin-air, cold, hot) from start to worst; KHAZ.here sums them with the records
 //
@@ -119,6 +121,9 @@
       out.effects=h.effects.map(function(e){if(!e||!has(V.hazardEffects,e.effect))throw new Error('KHAZ.make: unknown effect '+(e&&e.effect));
         var o={effect:e.effect,dose:num(d(e.dose,out.dose),'effects dose'),danger:num(d(e.danger,danger),'effects danger')};
         if(o.danger<0||o.danger>1)throw new Error('KHAZ.make: an effect\'s danger is 0..1');return o;});}
+    var tm=h.time===undefined?K.time:h.time;
+    if(tm!=null){var kt=K.time||{},sc=num(d(tm.scale,kt.scale),'time scale');if(!(sc>0))throw new Error('KHAZ.make: time scale must be above 0');
+      out.time={scale:sc};}
     if(h.hunter!=null){var hu=h.hunter;if(hu.fauna!=null&&!(Array.isArray(hu.fauna)&&hu.fauna.every(function(k){return typeof k==='string';})))
         throw new Error('KHAZ.make: hunter.fauna is a list of fauna keys');
       out.hunter={fauna:hu.fauna==null?[]:hu.fauna.slice(),count:d(hu.count,null),note:d(hu.note,null)};}
@@ -315,10 +320,19 @@
       var o={kind:name,field:row.field,value:v,k:k,effect:row.effect,dose:row.dose*k*(1-g),danger:row.danger};
       if(row.times){o.times=row.times.field;o.value2=v2;}out.push(o);}
     out.sort(function(a,b){return b.danger*b.k-a.danger*a.k||(a.kind<b.kind?-1:1);});return out;}
-  // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, and every effect's dose summed
+  // ---- time: how fast time runs at a point (1 normal, 1e-4 near still, above 1 fast). One record's: its scale at the
+  //   core, eased to 1 at the edge by the falloff in log scale (a ten-thousandth, a hundredth, a tenth, 1) and by its k now
+  //   (a field that pulses or is switched off); 1 outside it. A host scales what lives in it: dt x scale for a walker's
+  //   step, an animation's speed, a particle's age. Several fields multiply
+  function timeOf(rec,x,z,t,y){var h=of(rec);if(!h||!h.time)return 1;var f=inside(rec,x,z,y);if(f<0)return 1;
+    var k=state(rec,t,null,x,z).k;return Math.exp(Math.log(h.time.scale)*fall(h.falloff,f)*k);}
+  function timeScale(x,z,t,y,T){var L=list(T),s=1;
+    for(var i=0;i<L.length;i++){var r=L[i],h=of(r);if(!h.time)continue;var R=reach(r);if(Math.abs(x-r.at[0])>R||Math.abs(z-r.at[2])>R)continue;
+      s*=timeOf(r,x,z,t,y);}return s;}
+  // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, every effect's dose summed, and time's scale
   function here(x,y,z,t,T,o){o=o||{};var R=at(x,z,t,y,T,o.tIns),A=ambient(x,y,z,t,o.guard),D={};
     R.forEach(function(r){var ds=r.radiant?{burn:r.dose}:doses(r.rec,x,z,t,y,o.tIns&&o.tIns[r.id]);for(var e in ds)D[e]=(D[e]||0)+ds[e];});
-    A.forEach(function(a){D[a.effect]=(D[a.effect]||0)+a.dose;});return {records:R,ambient:A,doses:D};}
+    A.forEach(function(a){D[a.effect]=(D[a.effect]||0)+a.dose;});return {records:R,ambient:A,doses:D,time:timeScale(x,z,t,y,T)};}
 
   // ---- exposure: how long a walker has stood in each soak hazard (the luck that grows the longer one stays)
   //   const E=KHAZ.exposure(T); E.step(x, z, t, dt, y) -> KHAZ.at's hits with each soak's time counted; E.tIn(id); E.reset()
@@ -397,7 +411,7 @@
       var F=forbids(r.at[0],r.at[2],r,T);if(F.length)out.push({id:r.id,taboo:F[0].id,who:whoOf(r)});}return out;}
 
   var KHAZ={make:make,of:of,shape:shape,inside:inside,beyond:beyond,state:state,dose:dose,list:list,at:at,zones:zones,export:exp,
-    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
+    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,time:timeOf,timeScale:timeScale,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
     taboo:tabooOf,taboos:taboos,forbids:forbids,tabooOk:tabooOk,tabooAudit:tabooAudit};
   root.KHAZ=KHAZ;
 })(typeof globalThis!=='undefined'?globalThis:this);

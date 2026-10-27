@@ -54,6 +54,9 @@ its probes.
   keeps the last trip time per record; `resetting` and `disarmed` turn `monitoring` off.
 - `hunter` (a predator's place): an Area3D as any record, plus a link to the fauna it names. The AI of those fauna treats
   the area as home ground: it waits or patrols there, and walkers who enter get the hunter's attention.
+- `time` (a time field): an Area3D as any record. Each body inside it runs its own clock: its physics step, its
+  AnimationPlayer's `speed_scale` and its particles' `speed_scale` take `KHazard.time_scale(pos, t)`, the product of the
+  fields' log-eased scales. It is not `Engine.time_scale`, which is global.
 - `ambient` (no node): the walker's `HazardStatus` samples the port's own fields (pressure from the atmos port by
   height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
   `KHAZ.ambient` does; a row with `times` multiplies its second field's ramp (acid rain: pH x rain from the weather
