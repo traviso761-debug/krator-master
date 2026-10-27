@@ -74,6 +74,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
+| `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
@@ -1816,6 +1817,39 @@ dwarf, so the light on the hull is warm. The page also takes a closer
 minimum distance than the ships (`minD`) and moves its near plane out with the camera distance, so the
 panelling does not fight itself in the depth buffer from twenty kilometres off.
 
+### `/rama`: Rama
+
+Fan work, after Arthur C. Clarke's *Rendezvous with Rama* (1973). Nothing from any edition, cover, film design or
+game is used; every shape is this project's own geometry (`src/rama/`), built to the numbers the novel gives. It
+runs on the starship page (`src/starship/page.js`) as Babylon 5 does, with a logarithmic depth buffer (`logDepth`),
+because it is fifty kilometres long and you can stand on its floor. Its numbers are in `data/cities/rama.json`
+under `rama`; `src/rama/shape.js` turns them into the one profile and ground function everything else reads.
+
+**Fifty kilometres long and twenty across, turning once every four minutes,** lying along x with the north pole
+(the hub, the bow) at +x. Outside it is what the novel says it is: a dull grey cylinder, nearly featureless.
+
+- **The hull:** quiet plating, girth bands over the shores, three seams down the length. The north face carries the
+  hub and its three airlocks; the south face's bosses over the horns are this model's guess.
+- **Cutaway** opens the **cross-section**: a plane through the axis cuts away the near half, and since Rama is a
+  solid of revolution the cut face is the same profile whichever way it faces, so it is drawn once, hatched, and
+  turned with the plane. Labels name the hub, the bowls, the plains, the valleys, both cliffs, the Sea, New York
+  and the horns.
+- **Inside** (the panel lists eleven places): the Northern Plain with its six cities (London, Paris, Peking,
+  Tokyo, Rome, Moscow) in threes, its roads and Camp Alpha; the six Straight Valleys, which are the suns; the
+  Cylindrical Sea, with its 50 m northern and 500 m southern cliffs; New York, three identical sectors of towers;
+  the patchwork Southern Plain; the Northern Bowl's terraces and the stairways Alpha, Beta and Gamma; the Big Horn
+  and the six Little Horns on their flying buttresses. One walker covers all of it (`src/core/cylinder.js`): Q and E
+  or the wheel raise you, and high enough you float at the axis. Close to, the plains carry a detail texture in
+  their light map.
+- **Events** plays the novel as ten scenes with captions: the rendezvous and docking, the dark and the flares, the
+  Dawn, the thaw and the storm, the Dragonfly and the lightning, the crab biot and the jump, the wave, the spiders,
+  the Hermian missile, the departure. `#event=<id>` plays one (`rendezvous`, `dark`, `dawn`, `thaw`, `lightning`,
+  `crab`, `wave`, `spiders`, `missile`, `departure`); `#inside=<place>` and `#cutaway` open there.
+
+What the novel leaves open and this model chooses: the hull's thickness (2 km, from 20 km outside and a 16 km
+plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
+and the outside faces beyond the hub.
+
 ### `/homeworld`: Homeworld, the Kharak system
 
 Fan work. Homeworld belongs to its makers (Relic Entertainment, and now Gearbox); nothing from the game, its
@@ -2335,6 +2369,7 @@ src/
   minastirith/ main.js landmarks.js life.js war.js events.js decals.js shadow.js   Minas Tirith: the Tower, the Hall, the Court, the Gate, the rock, the banners; war and peace; what happens in the siege; what it has left; the Ephel Duath and the Darkness
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
+  rama/     main.js shape.js rama.js interior.js events.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the bowls and the horns, the walker; the ten scenes
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
