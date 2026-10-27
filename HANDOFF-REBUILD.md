@@ -334,6 +334,13 @@ station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
     a KMAT pack fragment (88x) loads after the host stage, so read `KMAT.packed` lazily in `onBeforeCompile`.
   - Anything hung on a KSTACKS wall follows the drawn mesh, interpolated between its rows (they stand metres apart); stairs
     round a tower are an even helix on a smoothed radius, never a square plan's corners.
+- **From the hyperjungle's turn (2026-10-27, 13d147109):**
+  - a narrow channel on a coarse ground mesh draws in slivers: make the mesh cells finer than the channel (its 34 m brook took
+    ~21 m cells) and cut the drawn ground to the bed inside the channel's plant-free strip;
+  - a still over near-flat ground flickers with the camera (depth ties): give the water `depthBias` (`[-1.5,-6]` there) and sit
+    the far field's floor under the low-water level;
+  - eastabyss's seal-tree builder (B[14] in `src/55`) has an opt-in `S.crown`; abyssal-savannah reads that builder in place, so
+    its turn (pair 8) rebuilds on it.
 - **Stage files by name.** `git add biomes` swept other agents' unfinished work into a merge commit once.
 - **Never kill processes by matching a session id or scratchpad path**: claude.exe carries it. Kill exact PIDs.
 - Agents working in parallel take their own git worktree and branch (`git worktree add ../krator-<x> -b claude/<x>
