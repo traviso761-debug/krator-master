@@ -82,16 +82,28 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   - sedesert vends to ringisles and the Catch, necanyons to guilin, guilin to k-guilin, and geyser to ringisles;
   - xanadu and oidong share five species, and the two lowlands exchange flora: each of those pairs runs together.
 
+  **Every biome, not only the 16** (the owner approved, 2026-10-27): the 13 kits without core-geometry card faults still take a full
+  turn (catch, crater-drylands, cut, dambasins, ebadlands, ehighlands, farside, korona, nsemiarid, nwouterwall, scablands,
+  shighlands, throne). The Rift, the SW highlands and the Godthrone are already rebuilt on the current core. The Bowl, Mantis
+  and the steppe go with sedesert's turn.
+
   | Pair | Builds | Why here |
   |---|---|---|
-  | 1 | eastabyss, nwbay | pure vendors: the hyperjungle's cousins; swbay's and k-guilin's source |
-  | 2 | hyperjungle, swbay | the largest vendor, after its cousins' source; swbay after nwbay |
-  | 3 | sedesert, necanyons | ringisles' and the Catch's source; necanyons after the hyperjungle, before guilin |
-  | 4 | xanadu, oidong | their five shared species, together; oidong after swbay |
-  | 5 | swlowlands, nwlowlands | their flora exchanges, together |
-  | 6 | geyser, nhighlands | geyser after the hyperjungle, before ringisles; nhighlands (the test bed) takes its cards and the newer modules |
-  | 7 | ringisles, abyssal-savannah | after all five of ringisles' sources; the savannah after eastabyss |
-  | 8 | k-guilin (and guilin, if the owner wants its cards fixed) | last: it reads six kits |
+  | 1 | eastabyss, nwbay | pure vendors |
+  | 2 | hyperjungle, swbay | the largest vendor; swbay after nwbay |
+  | 3 | sedesert (the Bowl, Mantis, the steppe), necanyons | the Catch's and ringisles' source; necanyons before guilin |
+  | 4 | swlowlands, nwlowlands | their exchanges together; nwlowlands vends to the Cut and Farside |
+  | 5 | throne, ebadlands | the Throne vends to ringisles and the Godthrone; ebadlands borders sedesert and the Bowl |
+  | 6 | xanadu, oidong | their five shared species together |
+  | 7 | geyser, nhighlands | geyser before ringisles |
+  | 8 | ringisles, abyssal-savannah | after all their sources |
+  | 9 | korona, nsemiarid (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
+  | 10 | cut, farside | both read nwlowlands |
+  | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
+  | 12 | crater-drylands, shighlands | after the hyperjungle, swbay and the SW highlands |
+  | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
+
+  Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges, being written 2026-10-27).
 
   A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
   them as they are.
