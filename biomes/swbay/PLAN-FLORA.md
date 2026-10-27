@@ -4,7 +4,7 @@ The south-western highlands (`biomes/swhighlands/PLAN.md`) are the bay's fungoid
 of that new flora belongs down here too (the owner, 2026-10-26): the same life at the bottom of its range, so the bay
 and the highlands read as one country.
 
-**Status: plan, awaiting the owner.** Waits on the highlands kit's species (its H3-H4): the bay **reads them in place by
+**Status: built 2026-10-27 (the final rebuild's turn; `PLAN.md` "Core adoption", `src/87-host-kin.js`): every species below but the log crust and the drip cap, each by `BIO.kin` from `biomes/swhighlands` read in place, in place of a share of the bay's own trees; `?kin=0` for the bay without them.** The plan as written: Waits on the highlands kit's species (its H3-H4): the bay **reads them in place by
 key** from `biomes/swhighlands`, as `nwouterwall` reads `nhighlands`, and copies nothing.
 
 ## What comes down, and where

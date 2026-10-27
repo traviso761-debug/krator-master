@@ -153,8 +153,8 @@ B.fishbridge=function(T,st,lv,s){const S=SP[T.sp],full=lv===2,x2=T.x2==null?T.x+
   if(full&&k%2===0){const p=pt(P,.55);BIO.put('redcrown',[p.x,p.y,p.z],QE(Math.PI,s.range(0,TAU),0),[.5,.6,.5],PICK(TINT,s.next()),{label:'Fishing vines'});}}
  if(full)reg({name:S.name,key:'flora.'+S.key,kind:'tree',x:(T.x+x2)/2,z:(T.z+z2)/2,y:Math.min(T.y0,y2),r:span/2+3,h:T.H+span*.12+2});};
 
-// ---------------------------------------------------------------- the floor's puts
-const FLOOR={
+// ---------------------------------------------------------------- the floor's puts (SWHI.FLOOR_RAINWALL: a kin's page grows them too, swbay's 87)
+const FLOOR=SWHI.FLOOR_RAINWALL={
  glow:(x,y,z,s)=>{const n=s.int(1,3);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.2),h=s.range(.5,1.2),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=Y(px,pz)-.03,q=QE(s.range(-.1,.1),s.range(0,TAU),s.range(-.1,.1));
   BIO.put('glowtubes',[px,py,pz],q,[h,h,h],PICK(TINT,s.next()),{label:'Glow tubes'});BIO.put('glowtips',[px,py,pz],q,[h,h,h],0xffffff,{label:'Glow tubes'});}return n;},
  triplets:(x,y,z,s)=>{const h=s.range(.8,1.5);BIO.put('triplets',[x,y-.03,z],QE(0,s.range(0,TAU),0),[h,h*s.range(.85,1.15),h],PICK(TINT,s.next()),{label:'Bearded triplets'});return 1;},

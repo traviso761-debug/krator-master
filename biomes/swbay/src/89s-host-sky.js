@@ -29,7 +29,15 @@ ATMOS.bindWeather({climate:{wet:true},sun,hemi:HEMI,grounds:[MAT_GROUND]});
 // HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the bay's thick air is the page's fog at the
 // ground under the eye, thinning above it (the canopy's crowns and the highlands stand out of the haze); at dawn a mist pools over
 // the bay and the lowland jungle (below 22 m) and a broken band of cloud hangs over the rainforest's rise
-ATMOS.heightFog({falloff:1/700,sun:.4,sky:.3,mist:{density:.0016,y:22,depth:28,noise:.65},band:{density:.0012,y:[430,560],cover:.32,noise:1}});
-ATMOS.heightFogScene(scene);
+// THE RAINFOREST'S FOG BELT (core/atmos ATMOS.fogBelt; BACKPORT.md swbay's row; the final rebuild, 2026-10-27; ?fogbelt=0 without it): the
+// cloud the sea wind lifts against the rise lies on the rainforest's slope between 60 and 190 m, hugging the ground (40 m deep), thicker on
+// the faces turned to the sea (the bay opens to the SW, the wind off it), thinning where the savannah climbs out of it; the rain and the
+// weather's fog thicken it. ?hfog=0 for the plain fog (no height fog, no belt)
+{const q=new URLSearchParams(location.search);
+ if(q.get('hfog')!=='0'){
+  ATMOS.heightFog({falloff:1/700,sun:.4,sky:.3,mist:{density:.0016,y:22,depth:28,noise:.65},band:{density:.0012,y:[430,560],cover:.32,noise:1}});
+  if(q.get('fogbelt')!=='0'&&ATMOS.fogBelt)SWBAY.FOGBELT=ATMOS.fogBelt({y0:60,y1:190,windward:[-.71,.71],density:.0014,depth:40,lee:.35,rise:.5,
+   centre:CENTER,radius:3600,res:128,steps:6});
+  ATMOS.heightFogScene(scene);}}
 // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain and no wet ground under the canopy
 ATMOS.rainCover({renderer});

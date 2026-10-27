@@ -179,6 +179,9 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
  st.trunk+=BIO.lathe('bark5',rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.04*Math.sin(4*ang+ph)+.02*Math.sin(9*ang+R.yy*.2)),null);
  // the cap: a dome from the rim (u .78, curled a little under) to the crown, lighter toward the top
  const cap=(y0,R,rim,seg,col)=>{const cr=[],n=lv===2?9:6;
+  /* on BIO.fung (SWBAY.FUNG, the final rebuild 2026-10-27; ?fung=0 the lathe below): one gilled dome from the rim up, turned by the cap's
+     own phase; no draw, as the lathe draws none */
+  if(SWBAY.FUNG){BIO.put('capf',[T.x,y0-rim*.35,T.z],qEuler(0,ph,0),[R,R*1.05,R],col);st.cap+=BIO.defs.capf.tris;return y0+R*.42;}
   cr.push({x:T.x,y:y0-rim*.35,z:T.z,r:R*.94,yy:0,col:shade(col,-.12)});
   for(let i=0;i<=n;i++){const t=i/n,r=R*Math.sqrt(Math.max(0,1-t*t))*(1+.02*Math.sin(t*7+ti)),y=y0+R*.42*t*(1+.15*(1-t));
    cr.push({x:T.x,y:y,z:T.z,r:i===n?.05:r,yy:t*R*.6+rim,col:col.clone().lerp(C(PAL.capWart[0]),t*.18)});}
@@ -519,5 +522,13 @@ SWBAY.treeAt=function(key,x,y,z,opt){opt=opt||{};const sp=SP.findIndex(S=>S.key=
   else if(lv<2){BIO.range=null;BIO.minRange=0;buildFar(T,fi,st,lv===0);}}
  finally{host.terrainH=keepH;BIO.owner=null;BIO.range=null;BIO.minRange=0;if(SWBAY.onFlora)SWBAY.onFlora(T,1);}
  return T;};
+// ONE TREE BY KEY, FOR A KIN (core/biome BIO.kin, BIO.kitBuilder; the final rebuild, 2026-10-27: swbay vends to the crater drylands, the SW
+// lowlands and the southern highlands, EXCHANGES.md): SWBAY.make(sp, x, y, z, o) is the pass's record (its numbers from the page's stream:
+// the kin reseeds first, as with nwbay's), SWBAY.grow(T, lv) builds it (lv 2 the hero, 1 the light hero, 0 the far blob); the same builders,
+// so a cousin is the bay's own tree with the kin's record. o: {wet, sav}. Nothing here runs unless a page asks
+SWBAY.make=function(sp,x,y,z,o){o=o||{};const S=SP[sp];
+ return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:o.wet==null?.6:o.wet,sav:o.sav==null?0:o.sav};};
+SWBAY.grow=function(T,lv){const st={trunk:0,limb:0,cap:0,far:0,lite:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ means();T.lv=lv;if(lv===0)buildFar(T,T.seed%7,st);else B[T.sp](T,st,lv);return st;};
 SWBAY._canopyH=function(x,z){let h=0;for(const T of SWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();
