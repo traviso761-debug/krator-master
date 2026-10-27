@@ -42,6 +42,20 @@ Read before changing anything here. `build.py` prints the open count.
       (at the fork, where its ribbon crosses the river's channel); each pool's rim open only where the river runs in and out.
       GPU verify OK at 35.7 M held (ceiling 40 M), 197 calls (Arc 140T); the old page (`dist/rift.html`, still built by plain `build.py`) retires when
       the gallery switches to the stations (the owner's call on the publish).
+- [ ] **Station 4, Cube's plateau** (`python3 build.py --station plateau`, `dist/rift-plateau.html`; 2026-10-27, a first cut): the
+      east island at px 448,1237, the page round the ruin (the plateau's scarp and the floor below it are 12-25 km off on the model:
+      the far field's, not the page's). y 0 is the model's -507 m, the ruin's plinth at y 300 (-207 m: the shared planting mask takes
+      ground under y 0 for the sea). A ridge north-west to south-east through Cube, falling north-east and south-west, two streams
+      in shallow valleys (89w). THE RUIN as massing: the Ancients kit's Arcube in its ruined state, baked by
+      `stations/bake_cube.py` (vertex clustering on an 8 m grid: 263 k triangles in, 114 k out, 1.6 MB) and drawn on the plinth,
+      its flat paving dropped, its upright pieces obstacles, its shell dressed with moss and plants; its colours lifted 1.75 times
+      (they read near black under this page's Lambert). THE FLORA: the east island's forms by `BIO.kin` (open bell, plate frill,
+      rim cushion, copper pine; the old stock as plateau parasol, ribbon fern, gold lantern, vine beard), over the jungle's upper
+      fringe at reduced shares. Held about 25 M (trees 20.0 M, floor 4.9 M; ceiling 40 M), a 31 s build (Arc 140T).
+      Open: the forms beyond colour and size (the open bell's flared pleats, the plate frill's level opaque fins, the copper pine's
+      straight bole, the gold lantern's gold pods, the vine beard's vines) are builder work; the Arcube's dimensions are being
+      reworked from its population (a separate session): re-run `bake_cube.py` when that lands; the survivors in the ruin (the
+      Tungangs' Loj Nahn) are the settlement work's; the 8 m clustering leaves the mass faceted close to.
 - [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
       island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,
       the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with
