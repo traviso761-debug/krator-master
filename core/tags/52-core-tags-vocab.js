@@ -117,7 +117,10 @@
      // what can hurt a walker (biomes/HAZARD-RESEARCH.md; PROPOSAL.md, "A hazard key"; 2026-10-26): the record core/hazard's
      // KHAZ reads ({kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}); its
      // kind is one of hazardKinds, whose row fills what the record leaves out
-     hazard: 'object' },
+     hazard: 'object',
+     // a place a people will not build in (biomes/outlands/PLAN.md C6, 2026-10-26): {of: null (every people) | [culture...],
+     // why, shape (as a hazard's)}; KHAZ.forbids asks it, core/city's rules.groundOk and a scatter's accept take KHAZ.tabooOk
+     taboo: 'object' },
    // the hazard kinds and their defaults (core/hazard/20-core-hazard.js KHAZ.make fills a record from its row). danger 0..1
    // as the traps use it (.3 hurts, .7 holds a person, 1 kills); dose: effect units a second at the core (a build-up meter
    // fills at it); falloff from the core to the shape's edge; nav in Godot's NavigationRegion3D terms: travel (a cost
@@ -137,9 +140,15 @@
      sink:   { effect: 'hold',      danger: .5, dose: 0,  falloff: 'linear', nav: { travel: 6, enter: 5, avoid: false },  tell: { colour: '#806040', fx: 'bubbles', sound: 'suck' } },
      slip:   { effect: null,        danger: .2, dose: 0,  falloff: 'none',   nav: { travel: 2, enter: 0, avoid: false },  tell: { colour: '#d0e8f0', fx: 'sheen', sound: null } },
      crush:  { effect: 'bleed',     danger: 1,  dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#808080', fx: 'dust', sound: 'creak' } },
-     hunter: { effect: 'bleed',     danger: .9, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c00000', fx: 'ripple', sound: null } }
+     hunter: { effect: 'bleed',     danger: .9, dose: 0,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#c00000', fx: 'ripple', sound: null } },
+     // 2026-10-26: the Godthrone's lava (biomes/godthrone/PLAN.md), the live fire (core/biome KFIRE.run) and the Outlands'
+     // luck (biomes/outlands/PLAN.md C6). radiant: heat by distance beyond the shape (reach m, its dose and danger at the
+     // edge, falling to 0); soak: strength by time inside (from at entering, full after `full` s, forgotten over `out` s)
+     lava:   { effect: 'burn',      danger: 1,  dose: 20, falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff5a10', fx: 'glow', sound: 'roar' },    radiant: { reach: 8, dose: 2, danger: .4 } },
+     fire:   { effect: 'burn',      danger: .9, dose: 5,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff9a30', fx: 'flame', sound: 'crackle' }, radiant: { reach: 10, dose: 1, danger: .3 } },
+     luck:   { effect: 'misfortune', danger: .3, dose: .05, falloff: 'none', nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#c8a040', fx: null, sound: null },        soak: { full: 600, from: 0, out: 1200 } }
    },
-   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown'],
+   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune'],
    hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
    hazardFalloffs: ['none', 'linear', 'smooth'],
    hazardTriggers: ['step', 'weight', 'near'],

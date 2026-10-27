@@ -38,6 +38,21 @@ named state functions port with it: `KTRAPS.state` (a trap's four phases on its 
 checks itself against the page: `KHAZ.state` sampled at fixed t for a few records, the way `godot/krator/water.gd` checks
 its probes.
 
+## The 2026-10-26 fields
+
+- `radiant`: a second, wider `Area3D` (the shape grown by `reach`). Its dose follows `KHazard.dose` (heat by distance,
+  `(1 - d/reach)^2`), and the inner Area's harm wins where it is greater.
+- `cycle.base`: `k = base + (1 - base) * k` on the same clock. `monitoring` stays on while `base > 0`.
+- `soak`: the walker's `HazardStatus` keeps the seconds inside per record (`KHAZ.exposure`'s rule: plus dt inside, minus
+  dt x full/out outside) and scales the dose by `from + (1 - from) x min(1, tIn/full)`.
+- `fire` (`stateFn` `KFIRE.run`): the record's `front` (`N, cs, x0, z0`, the cells and their arrivals) is the fire, with no
+  rerun needed. A cell burns from `lit + arrive` for `burn` s, smoulders at `smoulderK` for `smoulder` s, and is then out.
+  The Area3D covers the box. Its state and its radiant heat are read per point from the front, as `KHAZ.state(rec, t, s,
+  x, z)` does. `kfire.gd`'s `run` can make the same front from the history, when the port runs fires itself.
+- `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
+  `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
+  as `KHAZ.tabooOk` does on the page.
+
 ## Navigation: NavigationRegion3D
 
 Each zone of `krator-walk`'s `zones` (or each `registry.hazards` record's `hazard.nav`):

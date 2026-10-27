@@ -7,7 +7,7 @@
 // The parts, in a fixed order, each left out when it has no value:
 //   line 1  the name; else the kind or key; else the class
 //   line 2  class, culture (its display name), types (else kind, when the name is not already it), job, state,
-//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'hazard: <kind> (<effect>), danger d', 'in <parent>'
+//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'hazard: <kind> (<effect>), danger d', 'taboo to <peoples>', 'in <parent>'
 //   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
 //   line 4  the note
 (function(){
@@ -43,6 +43,7 @@
    }
    if (t.lit) p.push('lit');
    if (t.hazard && t.hazard.kind) p.push(hazardWords(t.hazard));
+   if (t.taboo && typeof t.taboo === 'object') p.push('taboo to ' + (t.taboo.of && t.taboo.of.length ? t.taboo.of.join(', ') : 'every people'));
    if (rec.parent) p.push('in ' + rec.parent);
    var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
    if (rec.size) {
@@ -68,7 +69,7 @@
    var Z = zroot(); if (!Z || !rec || !rec.tags || !rec.tags.hazard) return '';
    try {
      t = t == null ? now() : t;
-     var s = Z.state(rec, t), h = Z.of(rec);
+     var s = Z.state(rec, t, null, p ? p.x : null, p ? p.z : null), h = Z.of(rec);
      var line = 'hazard now: ' + s.state + (s.hidden ? ' (hidden)' : '') + (s.warn ? ' (warning)' : '') + ' · ' + Math.round(s.k * 100) + '%';
      if (s.left != null && isFinite(s.left)) line += ' · ' + (s.left < 90 ? s.left.toFixed(0) + ' s' : (s.left / 60).toFixed(0) + ' min') + ' to the next';
      if (p && h.dose > 0) line += ' · dose ' + Z.dose(rec, p.x, p.z, t, p.y).toFixed(2) + '/s here';

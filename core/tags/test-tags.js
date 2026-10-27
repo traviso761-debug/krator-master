@@ -152,6 +152,14 @@ ok(K.norm({ hazard: { kind: 'acid' } }).problems.length === 0 && K.norm({ hazard
   hz.tags.hazard = { kind: 'fall', danger: 0 };
   ok(K.label(hz).split('\n')[1] === 'feature · pool · hazard: fall, danger 0', 'label: no effect, and a danger of 0 is said');
   ok(K.label(bench).indexOf('hazard') < 0, 'negative: no hazard, no hazard words'); }
+// the Godthrone's lava, the live fire and the Outlands' luck and taboo (2026-10-26, core/hazard)
+ok(V.hazardKinds.lava.radiant.reach === 8 && V.hazardKinds.fire.radiant && V.hazardKinds.luck.soak.full === 600 && V.hazardEffects.indexOf('misfortune') >= 0 && !V.hazardKinds.acid.radiant, 'the new hazard kinds; an old one gains nothing');
+ok(V.keys.taboo === 'object' && K.norm({ taboo: { of: null } }).problems.length === 0 && K.norm({ taboo: 'cursed' }).problems.length === 1, 'the taboo key (negative: a taboo that is not an object is a problem)');
+{ const tb = { id: 'feat_r', 'class': 'feature', kind: 'ring', name: 'Ring', at: [0, 0, 0], r: 100, tags: { hazard: { kind: 'luck' }, taboo: { of: null } } };
+  const l2 = () => K.label(tb).split('\n')[1];
+  ok(l2() === 'feature · ring · hazard: luck (misfortune), danger 0.3 · taboo to every people', 'label: luck and a taboo (' + l2() + ')');
+  tb.tags.taboo.of = ['coyote-peak'];
+  ok(/taboo to coyote-peak$/.test(l2()) && K.label(bench).indexOf('taboo') < 0, 'label: a taboo of one people; negative: none on a bench'); }
 ok(K.label(Object.assign({}, deer, { note: 'shy' })).split('\n')[3] === 'shy', 'label: a note is appended');
 
 // ---- the flora and fauna vocabulary (the biome kits, 2026-10-12) ----
@@ -212,7 +220,7 @@ const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 24, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = '5ee8e4c7';   // 2026-10-26: the hazard key (VOCAB.keys.hazard, hazardKinds, hazardEffects, hazardShapes, hazardFalloffs, hazardTriggers, navLayers; core/hazard); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
+const DIGEST = '4935dd5d';   // 2026-10-26: the hazard kinds lava, fire and luck (radiant, soak), the effect misfortune and the taboo key (core/hazard: the Godthrone, the live fire, the Outlands' C6); before it 5ee8e4c7, 2026-10-26: the hazard key (VOCAB.keys.hazard, hazardKinds, hazardEffects, hazardShapes, hazardFalloffs, hazardTriggers, navLayers; core/hazard); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);
