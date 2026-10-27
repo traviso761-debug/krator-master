@@ -122,6 +122,10 @@ if STATION == 'treeline':
     VIRTUAL['44b-host-matlib-pack-ehigh.js'] = matlib_pack.fragment(EH, 'ehigh')
     # snow that lies while it falls (core/atmos/fx: ATMOS.snowCover, ATMOS.snowOn on every lit material; the owner, 2026-10-27)
     PATH['89-atmos-fx-snowcover.js'] = core('atmos', 'fx', '89-atmos-fx-snowcover.js')
+# THE PILLAR RIM contours its towers with core/terrain's opt-in companion (KSTACKS.contour: the profile thinning in and out, joints,
+# a split crown), listed here only, so no other station's page moves
+if STATION == 'pillars':
+    PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos: its core, presets, weather, export, the wave field and the sky's light, bound by 89a-host-atmos.js

@@ -33,6 +33,23 @@ Station 4 (the pillar rim, `57-biome-swhighlands-pillars.js`) reads its own (its
 
 `SWHI.zones(x, z)` combines them (`forest`, `cove`, `crest`, `valley`, `bald`, `farm`, ...).
 
+## Station 4's site (for a settlement; plain data)
+
+Station 4 (the pillar rim) is the biome only: it reads nothing of any settlement. What one may build on it is published by the
+station as one plain record, `SWHI_PILLARS_SITE` on its page (also the page's `site` exporter and `window._api.site()`):
+
+| Field | What |
+|---|---|
+| `format`, `version` | `'swhighlands-pillars-site'`, 1 |
+| `frame` | `{x: 'east', z: 'south', y0}` (the map's y 0 in metres above the sea) and `box` |
+| `watch` | the watch pillar: `id, x, z, foot, top, w, l, ry, flat` (the side of the flat square on its top, m), `keep` (the metres under the top its drawn mesh keeps whole). Its top is held bare (no plant within 30 m of its middle) |
+| `towers` | every tower: `id, x, z, foot, top, R` |
+| `rim` | the cliff's line, 65 points west to east: `x, z, top` (the table's), `floor` (under the cliff) |
+| `river` | Pan Riba's line (`name`, `pts`) |
+
+A settlement reads it and places itself (its post, its stairs fitted to the drawn mesh); the station never moves for one. A change
+to the record is a change to this table.
+
 ## Calls
 
 - `SWHI.build({box, quality, bald: [x, z, r]})` -> counts. The trees (by `KRAND` cell, `SWHI.cells`), the fallen cords, the floor.

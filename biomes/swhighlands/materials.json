@@ -387,6 +387,32 @@
    },
    "roughLift": 0.3,
    "mapOnly": true
+  },
+  "pillarRock": {
+   "lib": "rock.sandstone.liesegang",
+   "scale": [
+    10,
+    10
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.47
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "pillarTop": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.47
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
   }
  }
 }

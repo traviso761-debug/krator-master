@@ -61,3 +61,17 @@ Preview: station 1's page with `?sheet=rainwall`, `?sheet=tableland` or `?sheet=
 winding is now front-up and outward. Not yet: the swlowlands species read in place (tier cedar, flayed madrone on the tableland,
 ember manzanita on the scarp: the stations' build.py will carry their fragments), the rain wall's drowned trees (the stage's
 work), the hanging swamps' dark hooked pitcher, the passes on real stages, their budgets, impostor gains and library textures.
+
+## Station 4, the pillar rim (2026-10-27)
+
+Built on `--station pillars` (`stations/pillars/`): the table (`KRELIEF.tableland` on `KRELIEF.joints`), its cliff, 40 towers
+(`KSTACKS.pillars` from the same joints and zone, thinned by each block's own draw to two in five; each contoured by
+`KSTACKS.contour` and worn by `KSTACKS.weather`), the watch pillar made whole and held bare, the green floor and Pan Riba
+(`KRELIEF.meander`, `WATER.flow`), the flora of `57`. The towers are rock bodies over the ground, not ground: the kit's plants stand
+on `terrainH`, which answers a tower's top where there is one (`towerTop`), and the mask keeps them off the walls (`nearTower`);
+the towers are not obstacles (an obstacle blocks its whole top). Strictly apart from Span (the owner): the station publishes
+`SWHI_PILLARS_SITE` (BIOME-API.md) and reads nothing of `settlements/span`; `core/terrain/37b-core-stacks-contour.js` came from the
+Span session's branch as a core file only (its commit's `core/` part).
+Not yet: PERF.md's measure on the Intel GPU, the impostor gain on this page (station 1's 1.6 is used), the Liesegang bands as
+diagonals in the beds (the library's liesegang grain carries them for now), talus blocks at the towers' feet, mist that lies only
+round the tops (the height fog's band is level).

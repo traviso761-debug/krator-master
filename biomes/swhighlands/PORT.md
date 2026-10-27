@@ -37,4 +37,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 Station 6 (the treeline) overlays `stations/treeline/*.js` on `src/` (`build.py --station treeline`): its host fragments have the same roles and tags as `src/`'s of the same name (45 [web], 47 [draw], 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w empty); `47c-host-ehigh-end.js` [web] closes the eastern highlands' kit read in place.
 
+Station 4 (the pillar rim) overlays `stations/pillars/*.js` the same way (`build.py --station pillars`): 45 [web], 47 [draw] (the towers' meshes; its `SWHI_PILLARS_SITE` record is plain data), 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w [web].
+
 (none yet: the split lists and the overrides go here)
