@@ -108,6 +108,23 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
   read as bare ground from above). Round 2 on nhighlands also: the ground grid's vertices snapped onto the stream's and the tarn's
   edges (`84-host-ground.js`: the sawtooth shoreline), smooth-shaded and textured lantern pods and bell-bulbs.
 
+### The core module sessions (started 2026-10-26, after merging `claude/hyperjungle-lands`)
+
+The owner asked for the hyperjungle lands plan's core gaps (`biomes/hyperjungle/PLAN-LANDS.md` section 11, H1-H10) and the other
+core work this rebuild needs to be written in parallel, one session per group, each on its own branch cut from
+`claude/biome-rebuild` (merged back here when each reports): **H1+H2** reach and kin (`core-reach-kin`), **H3+H4** fire and the
+lean toward the giant (`core-fire-lean`), **H5** bamboo (`core-bamboo`; the owner: **k-guilin takes a bamboo variant too**), **H7**
+seasons and `wetGround` on `ATMOS.shaderHook` (`core-seasons`), **H6+H8** 480 m trees and fauna by land (`core-tall-fauna`),
+**H10** termite mounds (`core-mounds`), **the export split by `lod.ranges` with Godot's per-instance cull and VRAM compression**
+(`export-godot-cull`), and **the known failures and small requests** (`rebuild-fixes`). H9 (sound) is "later" in the plan.
+**The owner (2026-10-26): no exhaustive verifies of every build a core change reaches**: each build is rebuilt and verified once,
+one by one, when all the core modules are in.
+
+**The scale model** (the owner, 2026-10-26): the crater drylands are two biome polygons, **`crater drylands N`**
+(`rmuqlfgh1u6d8`) and **`crater drylands S`** (`rmuqlgonah5tp`), the same ids the Cut's exchanges (north only) and the
+hyperjungle lands plan's southern patch already use. `tools/scale-model/extract_region.py` `KITS` and `biomes/WORLD.md` take the
+names at the crater drylands' rebuild.
+
 ### Step 3 (2026-10-26): the graphic-load assessment is written
 
 `GRAPHIC-LOAD.md`. The scheme it recommends, in order: welding (done) and **per-instance range culling** in core/biome's LOD fade
