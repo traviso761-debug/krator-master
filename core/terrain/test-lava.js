@@ -104,6 +104,15 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
 {const {s}=mk(7);s.run(600);const e=s.export(),h=KFIELD.unb64(e.h,Float32Array);
  ok('export: krator-lava with h, T, dep as Float32 base64',e.format==='krator-lava'&&h.length===s.N&&Math.abs(h[40*81+40]-s.h[40*81+40])<1e-4,false);}
 
+// ---- bake: eruptions one after another, frozen; the ground they added and which laid each cell's top
+{const o={h:(x,z)=>-.065*z,box:[0,0,1980,1980],cell:20,seed:4,dtMin:60,dtMax:60,eruptions:[{x:700,z:300,r:20,Q:40,duration:6*3600},{x:1100,z:300,r:20,Q:40,duration:6*3600}]};
+ const a=KLAVA.bake(o),b=KLAVA.bake(o),c=KLAVA.bake(Object.assign({},o,{seed:5}));let V=0,same=true,diff=false,ages=new Set();
+ for(let k=0;k<a.dh.length;k++){V+=a.dh[k]*400;if(a.dh[k]!==b.dh[k]||a.age[k]!==b.age[k])same=false;if(a.dh[k]!==c.dh[k])diff=true;if(a.age[k])ages.add(a.age[k]);}
+ const er=a.eruptions.reduce((s,e)=>s+e.volume-e.lost,0);
+ ok('bake: all frozen, the ground added is the volume erupted less what left (Float32: 1e-5)',a.eruptions.every(e=>e.done)&&Math.abs(V-er)<1e-5*er,V===0);
+ ok('bake: both eruptions named in age; the same seed the same bits, another seed other lobes',ages.has(1)&&ages.has(2)&&same&&diff,!diff);
+ console.log('      (bake: '+a.ms+' ms, '+a.eruptions.map(e=>e.steps+' steps'+(e.quenched?' quenched':'')).join(', ')+')');}
+
 // ---- the three.js halves parse (they run only on a page: core/terrain/host/46-core-lava-gpu.js, -draw.js)
 for(const f of ['46-core-lava-gpu.js','46-core-lava-draw.js']){let e=null;try{new Function(fs.readFileSync(path.join(__dirname,'host',f),'utf8'));}catch(x){e=x;}
  ok('host/'+f+' parses',!e,false);if(e)console.log('      '+e.message);}
