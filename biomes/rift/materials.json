@@ -549,7 +549,8 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "ground.salt": {
    "lib": "ground.ground093c",

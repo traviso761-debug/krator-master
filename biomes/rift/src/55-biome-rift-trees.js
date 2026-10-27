@@ -607,7 +607,7 @@ RIFT.buildTrees=function(R,q){
  // one species pass: a jittered grid over the whole disc, the zone weight
  // as acceptance; the hero radius says where it becomes an impostor / stops
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;
-  BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
+  BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z)*(RIFT.thin?RIFT.thin(x,z,sp):1);if(a<=0)return 0;   /* RIFT.thin: a station's density by place and species (unset: as before) */
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
    (x,y,z,d)=>{if(y-BIO.waterH(x,z)<.3)return;
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
@@ -621,7 +621,7 @@ RIFT.buildTrees=function(R,q){
   return n;}
  // the jungle: frill trees over everything, bell palms and lobe trees in stands, pagoda trees, trumpet trees
  pass(0,120,(Z)=>Z.jung*.7,{hero:950,mid:1700,far:true,pad:10,patch:.3});
- (function(){let n=0;BIO.grid(52,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.72*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+ (function(){let n=0;BIO.grid(52,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.72*q*(RIFT.thin?RIFT.thin(x,z,1):1);},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
    const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<900?2:(ld<1600?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
  pass(4,60,(Z)=>Z.jung*.28+Z.cloud*.8,{hero:1000,mid:1800,far:true,pad:5,patch:.5});
  pass(3,40,(Z)=>Z.jung*.30+Z.cloud*.10+Z.shore*.12,{hero:900,mid:1500,far:true,pad:2.5,lodK:.5});

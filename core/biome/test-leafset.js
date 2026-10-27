@@ -32,7 +32,18 @@ check('  negative: an anchor that only says where the subject sits (center) does
  check('cells: each quad shrinks to .6 about its own centre',Math.abs(span(P,0,1)/span(Pt,0,1)-.6)<1e-6);
  const s=B.geo.cells(B.geo.spray({stem:[.5,.96]}),{n:3,about:'origin'}),Ps=s.attributes.position,So=B.geo.spray({stem:[.5,.96]}).attributes.position;
  check('cells about the origin: a spray stays held at its stem (scaled about it)',Math.abs(Ps.getY(0)-So.getY(0)*.6)<1e-6);
- const w=B.geo.clump().attributes.uv;check('  negative: a plain clump maps the whole sheet on every quad',Math.abs(w.getX(0)-0)<1e-6||Math.abs(w.getX(0)-1)<1e-6);}
+ const w=B.geo.clump().attributes.uv;check('  negative: a plain clump maps the whole sheet on every quad',Math.abs(w.getX(0)-0)<1e-6||Math.abs(w.getX(0)-1)<1e-6);
+ /* rects: uneven boxes (a 3-across leaf sheet), each quad inside its own box, narrowed to the box's width over height */
+ const RB=[[.02,.19,.35,.81],[.35,.19,.6,.81],[.6,.19,.98,.81]],gr=B.geo.cells(B.geo.clump(),{rects:RB}),Ur=gr.attributes.uv,Pr=gr.attributes.position;
+ const boxR=q=>{let a=1e9,b=-1e9,c=1e9,d=-1e9;for(let v=0;v<6;v++){const k=q*6+v;a=Math.min(a,Ur.getX(k));b=Math.max(b,Ur.getX(k));c=Math.min(c,Ur.getY(k));d=Math.max(d,Ur.getY(k));}return[a,b,c,d];};
+ const inR=(b,r)=>b[0]>=r[0]-1e-9&&b[1]<=r[2]+1e-9&&b[2]>=r[1]-1e-9&&b[3]<=r[3]+1e-9;
+ check('cells rects: each quad takes its own box of an uneven sheet, inside it',[0,1,2].every(q=>inR(boxR(q),RB[q])),JSON.stringify([0,1,2].map(q=>boxR(q).map(x=>+x.toFixed(3)))));
+ /* a quad's edge along its own u (two corners on one v) and along its own v (two corners on one u), read from the source clump's uv */
+ const Ut=Pt&&t.attributes.uv,edge=(G,q,along)=>{const p=k=>[G.getX(q*6+k),G.getY(q*6+k),G.getZ(q*6+k)],uu=k=>Ut.getX(q*6+k),vv=k=>Ut.getY(q*6+k);let m=0;
+  for(let a=0;a<6;a++)for(let b=0;b<6;b++){const same=along==='u'?Math.abs(vv(a)-vv(b))<1e-9:Math.abs(uu(a)-uu(b))<1e-9;if(!same)continue;const A=p(a),C=p(b);m=Math.max(m,Math.hypot(A[0]-C[0],A[1]-C[1],A[2]-C[2]));}return m;};
+ const wid=(G,q)=>edge(G,q,'u'),hgt=(G,q)=>edge(G,q,'v');
+ check('cells rects: a quad takes its box\'s proportions (width over height)',Math.abs(wid(Pr,1)/hgt(Pr,1)-(RB[1][2]-RB[1][0])/(RB[1][3]-RB[1][1])*wid(Pt,1)/hgt(Pt,1))<.02,(wid(Pr,1)/hgt(Pr,1)).toFixed(3));
+ const gn=B.geo.cells(B.geo.clump(),{rects:RB,aspect:false});check('  negative: aspect false leaves the quad square',Math.abs(wid(gn.attributes.position,1)/hgt(gn.attributes.position,1)-wid(Pt,1)/hgt(Pt,1))<1e-6);}
 // ---------------------------------------------------------------- placement
 const seg={a:[0,10,0],b:[4,11,0]},d=[4/Math.hypot(4,1),1/Math.hypot(4,1),0];
 {const r=B.leafOn(seg,.5,{seed:7,i:3,droop:0,pitch:0,roll:0});

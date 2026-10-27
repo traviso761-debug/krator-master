@@ -646,7 +646,10 @@ BIO.def('fan',G.fan(),M.fan,{label:'Fan fronds'});
 BIO.def('vain',G.fan(),M.fan,{label:'Vain fronds'});
 BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN','aC2'],label:'Parasol tree canopy'});
 BIO.def('prismfrond',BIO.geo.frond(4),M.prismfrond,{attrs:['aN','aC2'],label:'Prism fern fronds'});
-BIO.def('croton',BIO.geo.clump(),M.croton,{attrs:['aN','aC2'],label:'Croton leaves'});
+/* the croton's card (card.leaf.redvein) is three different leaves 3 across at uneven widths (the owner, 2026-10-27: every card drew all
+   three stuck together): one leaf a quad, each quad its own leaf's box and proportions (core BIO.geo.cells rects); the boxes measured from the alpha */
+const CROTON_LEAVES=[[.019,.192,.351,.808],[.352,.190,.595,.813],[.596,.187,.975,.810]];
+BIO.def('croton',RIFT.LIB.croton&&BIO.geo.cells?BIO.geo.cells(BIO.geo.clump(),{rects:CROTON_LEAVES,scale:.9}):BIO.geo.clump(),M.croton,{attrs:['aN','aC2'],label:'Croton leaves'});
 BIO.def('tongue',G.tuft(),M.tongue,{attrs:['aN','aC2'],label:'Tongue succulents'});
 BIO.def('zebra',G.rosetteUV(),M.zebra,{label:'Zebra bromeliads'});
 BIO.def('pinecone',G.pinecone(),M.pinecone,{attrs:['aN','aC2'],label:'Pinecone succulents'});

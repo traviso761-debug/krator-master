@@ -165,7 +165,10 @@ function plantShore(x,y,z,Z,lv,st){const t=rng(),damp=smooth(.3,.8,Z.wet);
  else if(t<.92){if(rng()<.5){saltgrass(x,y,z,lv);st.tufts++;}else return;}
  else{boulder(x,y,z,lv,PAL.saltrock,st,false);}}
 function plantSav(x,y,z,Z,lv,st){const t=rng(),pk=purpleK(x,z),vk=vainK(x,z);
- if(t<.24){savgrass(x,y,z,lv);st.tufts++;if(lv===2&&rng()<.4)savgrass(x+rr(-1.5,1.5),y,z+rr(-1.5,1.5),lv);}
+ /* RIFT.burnAt(x,z): years since a fire (a station's burn mosaic; unset, the old page: never burnt). A fresh burn (0) keeps only
+    what fire leaves (the heath's roots, the rosettes, the termite spires, the rocks); a young one (1-3) grows its grass green */
+ const age=RIFT.burnAt?RIFT.burnAt(x,z):9;if(age<=0&&t<.62)return;
+ if(t<.24){if(age<=3)savgrass(x,y,z,lv,PAL.savgreen);else savgrass(x,y,z,lv);st.tufts++;if(lv===2&&rng()<.4)savgrass(x+rr(-1.5,1.5),y,z+rr(-1.5,1.5),lv);}
  else if(t<.34){savgrass(x,y,z,lv,PAL.savgreen);st.tufts++;}
  else if(t<.34+.15*vk+.02){vain(x,y,z,lv);st.vain++;if(lv===2&&vk>.5)vain(x+rr(-2.5,2.5),y,z+rr(-2.5,2.5),1);}
  else if(t<.46+.12*pk+.02){purpleFan(x,y,z,lv);st.purple++;if(lv===2&&pk>.5)purpleFan(x+rr(-2.5,2.5),y,z+rr(-2.5,2.5),1);}
@@ -219,11 +222,12 @@ RIFT.buildFloor=function(R,q){
   [plantJungle,plantShore,plantSav,plantCloud,plantPeak,plantSlope][Math.min(k,5)](x,y,z,Z,lv,st);}
  // three bands along the LOD spine (which runs north-south here); the runtime LOD draws each only within its
  // range of the camera (RIFT.LOD: the near band's plants are under a pixel past it, the ground's paint carries on)
- const bands=[[7,600,0,[-640,-R,640,R]],[14,1500,600,[-1540,-R,1540,R]],[30,1e9,1500,null]],LOD=RIFT.LOD,rng3=[LOD.floor,LOD.midFloor,LOD.farFloor];
+ /* RIFT.wholePage (a station, one place with its LOD origins on a lattice): the bands over the whole page, not a strip along a spine */
+ const WB=RIFT.wholePage?[-R,-R,R,R]:null,bands=[[7,600,0,WB||[-640,-R,640,R]],[14,1500,600,WB||[-1540,-R,1540,R]],[30,1e9,1500,null]],LOD=RIFT.LOD,rng3=[LOD.floor,LOD.midFloor,LOD.farFloor];
  bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===0?.7:lv===1?.85:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6,box:b[3]});});
  // the water: scum mats on the still shallows, reeds standing at the shore
- const wbands=[[7,600,0,[-640,-R,640,R]],[14,1500,600,[-1540,-R,1540,R]]];
+ const wbands=[[7,600,0,WB||[-640,-R,640,R]],[14,1500,600,WB||[-1540,-R,1540,R]]];
  wbands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.35||h<-2.4)return 0;   // h: the ground against the local water
     const Z=zones(x,z);const still=1-Z.flow;return .6*q*still*smooth(.02,-.15,h)*smooth(-2.4,-.9,h)*(.5+.5*smooth(.45,.65,fbm(x*.004+1,z*.004-2,808,2)))+.25*q*smooth(-.9,-.1,h)*Z.shore;},
@@ -235,7 +239,7 @@ RIFT.buildFloor=function(R,q){
  // (past their range from the camera, BIO.minRange), so the floor thins with distance instead of stopping at a chunk's
  // edge. Planted last, so every draw from the PRNG before it is as it was.
  BIO.range=LOD.farFloor;
- BIO.grid(30,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=1500)return 0;return .82*q*.7;},(x,y,z,d)=>{BIO.minRange=BIO.lodD(x,z)<600?LOD.floor:LOD.midFloor;plant(x,y,z,0);},{patch:.75,patchScale:.014,pad:.6,box:[-1540,-R,1540,R]});
+ BIO.grid(30,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=1500)return 0;return .82*q*.7;},(x,y,z,d)=>{BIO.minRange=BIO.lodD(x,z)<600?LOD.floor:LOD.midFloor;plant(x,y,z,0);},{patch:.75,patchScale:.014,pad:.6,box:WB||[-1540,-R,1540,R]});
  BIO.range=null;BIO.minRange=0;
  return{under:st};};
 // the small plants a world may plant in place (2026-10-26, biomes/ringisles: the termite spires on its savanna): (x, y, z, lv, st),
