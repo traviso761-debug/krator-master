@@ -25,6 +25,11 @@ own items float under the attach audit** (bloom, ucard, ribbon, clump0-2: up to 
 false positive `kits/ancients -> settlements/span` from a comment in `kits/ancients/build.py` (make the scanner skip comments, or
 allow-list it). The probe-points, probe broad-phase and camera-guard entries in `TODO.md` are done (9e86c8dad): take them out.
 
+**Merge origin/main again** for `MODULARITY-PLAN.md`'s "Status 2026-10-27" (a67c26b4c). In stage 2, add Iziz's
+`settlements/iziz/src/81-sky.js` (16 kits vendor it) to `SKY-PLAN.md` section 9: each kit binds `ATMOS.skyBiome` from one host
+fragment and drops the copy. Check that the Iziz palace's own camera guard (`95q-palace-cutlabels.js`) came out. The plan's shared
+building engine is now named `core/engine`, not `core/kit`.
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.
