@@ -128,11 +128,13 @@
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?3:o.renderOrder;scene.add(mesh);
   const D={S,mesh,material:mat,curtain:M};
   // the plunge pool: a disc of churned white water at the foot, its rings running out
-  if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
-   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S));
+  /* plungeR (opt-in, 2026-10-27, the Rift's falls): the churn disc's radius in m (default 2.4 x the plunge's own radius, as before), its alpha
+     faded to nothing over its outer quarter, so a disc sized to the pool it lands in (a WATER.still) never shows as a flat sheet past the pool */
+  if(o.plunge!==false){const P=W.plunge(S),r=o.plungeR==null?P.r*2.4:o.plungeR,y=o.plungeY==null?P.y+.06:o.plungeY,pg=new T.CircleGeometry(r,48);pg.rotateX(-Math.PI/2);pg.translate(P.x,y,P.z);
+   const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);const RF=o.plungeR==null?'':'diffuseColor.a*=1.0-smoothstep('+f(.75*r)+','+f(r)+',length(vWtrW.xz-vec2('+f(P.x)+','+f(P.z)+')));';pm.customProgramCacheKey=()=>'wtr-plunge:'+W.hashStr(W.fallGLSL(S)+RF);
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);const C2='#include <atmos_waves>\n'+W.fallGLSL(S)+'\nvarying vec3 vWtrW;';
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);');};
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlunge(vWtrW.xz);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF);};
    D.plunge=tag(new T.Mesh(pg,pm),S,o);D.plunge.name+=':plunge';D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
    if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const sd=W.sprayByDrop(o);
     D.spray=A.smoke(sd?W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)).map(p=>[p[0],p[1],p[2],'spray']):[[P.x,y+1,P.z,'spray'],[P.x+P.r*.5,y+1,P.z,'spray'],[P.x-P.r*.5,y+1,P.z-P.r*.4,'spray']]);}}
