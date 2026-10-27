@@ -70,7 +70,10 @@ the same bumps, and a seed gives other lobes. The test runs the same seed twice 
   point of the field and of its insets. Call it again later and it adds only what froze since. `{all: true}` writes every deposit again, for a page that put its
   field back first; `each(g, k)` names each point raised, so the page can move that vertex of its ground mesh.
 - `sim.hazard(o)` and `KLAVA.bind(rec, sim)`: a `kind: 'lava'` record over the sim's box with `stateFn: 'KLAVA.flow'`.
-  At a point it is molten (k 1), a fresh crust frozen within `o.hot` seconds of sim time (k .25), or clear.
+  At a point it is molten (k 1), a fresh crust frozen within `o.hot` seconds of sim time (k .25), or clear. KHAZ hands a
+  state function the core/tags record, so a page whose REGISTER does not give it back binds by a key instead:
+  `sim.hazard({key: 'overflow'})` puts the key in the hazard's `seed`, and `KLAVA.bind('overflow', sim)` binds it.
+  `o.nav` sets the record's navigation costs; a sim's box is wide, so a page may not want KHAZ's `avoid` over all of it.
 - `sim.export()`: `krator-lava`, version 1. `h`, `T` and `dep` are Float32 base64 (KFIELD's), for Godot or a save.
 
 ## Adopting it
@@ -98,7 +101,7 @@ A build opts in by explicit path; it is not pooled. Nothing changes on a page th
    ```
 3. Register the hazard before the flow is drawn:
    `const hz = S.hazard(); REGISTER({x: hz.at[0], y: hz.at[1], z: hz.at[2], kind: 'hazard', tags: {hazard: hz.hazard}})`,
-   then `KLAVA.bind(rec, S)`. The page needs core/hazard (core/hazard/README.md, "Adopting it").
+   then `KLAVA.bind(rec, S)` (or `S.hazard({key})` and `KLAVA.bind(key, S)`). The page needs core/hazard (core/hazard/README.md, "Adopting it").
 4. Run it on the page's clock or a time-lapse: `S.run(seconds)`. Draw it with `const M = KLAVA.surface(S, {crust, sun})`,
    `scene.add(M)`, and `M.update()` after a run. Write the frozen flow back as ground with `S.writeBack(GROUND_F)`, then
    move the ground mesh's vertices with `writeBack`'s `each`: the page owns its mesh. A time-lapse that goes back keeps

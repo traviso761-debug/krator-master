@@ -97,7 +97,8 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
  const hz=s.hazard(),f=KHAZ.STATES['KLAVA.flow'];
  ok('bind registers KHAZ.STATES[\'KLAVA.flow\']; the record is kind lava with a box over the sim',typeof f==='function'&&hz.hazard.kind==='lava'&&hz.hazard.shape.type==='box'&&hz.hazard.stateFn==='KLAVA.flow',false);
  ok('molten at the vent (k 1), clear far off (k 0)',f(rec,hz.hazard,0,1,1000,1000).k===1&&f(rec,hz.hazard,0,1,20,20).k===0,f(rec,hz.hazard,0,1,20,20).k===1);
- K.bind(rec,null);ok('unbound: nothing',f(rec,hz.hazard,0,1,1000,1000).k===0,false);}
+ K.bind(rec,null);ok('unbound: nothing',f(rec,hz.hazard,0,1,1000,1000).k===0,false);
+ const hk=s.hazard({key:'flow-a'});K.bind('flow-a',s);ok('bound by a key (in the hazard seed): any record carrying it answers',hk.hazard.seed==='flow-a'&&f({id:'other'},hk.hazard,0,1,1000,1000).k===1,f({id:'other'},hz.hazard,0,1,1000,1000).k===1);K.bind('flow-a',null);}
 
 // ---- 9. the export
 {const {s}=mk(7);s.run(600);const e=s.export(),h=KFIELD.unb64(e.h,Float32Array);
