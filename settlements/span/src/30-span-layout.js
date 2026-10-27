@@ -213,9 +213,13 @@ F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70
   var at = function(x, k){ if (x <= R[0].x) return R[0][k]; for (var i = 1; i < R.length; i++) if (x <= R[i].x){ var f = (x - R[i - 1].x) / (R[i].x - R[i - 1].x); return R[i - 1][k] + (R[i][k] - R[i - 1][k]) * f; } return R[R.length - 1][k]; };
   var M = [-1750, at(-1750, 'z')], R0 = [Wt.x, at(Wt.x, 'z')], c = [R0[0] - M[0], R0[1] - M[1]], cl = Math.hypot(c[0], c[1]);
   var t = [-c[0] / cl, -c[1] / cl], n = [t[1], -t[0]], T = at(Wt.x, 'top');
-  L.site = { from: SITE.format + ' v' + SITE.version, M: [M[0], r1(M[1])], n: n, t: t, u0: 1300, T: r1(T), y0: SITE.frame.y0, rot: Math.atan2(t[0], n[0]) };
+  L.site = { from: SITE.format + ' v' + SITE.version, M: M, n: n, t: t, u0: 1300, T: r1(T), y0: SITE.frame.y0, rot: Math.atan2(t[0], n[0]) };
   var uv = function(x, z){ var dx = x - M[0], dz = z - M[1]; return [r1(1300 + n[0] * dx + n[1] * dz), r1(t[0] * dx + t[1] * dz)]; };
   L.rim = R.map(function(p){ var q = uv(p.x, p.z); return { u: q[0], v: q[1], top: r1(p.top - T), floor: r1(p.floor - T) }; });
+  // the record's finer fields where it has them: the rim's line every 5 m (rimFine, [u, v] west to east), and the ground as
+  // drawn round the watch pillar and its cliff (ground: the site's own grid and heights over its y0; SPAN.siteGround samples it)
+  if (SITE.rimFine) L.rimFine = SITE.rimFine.map(function(p){ return uv(p[0], p[1]); });
+  if (SITE.ground) L.ground = SITE.ground;
   L.pillars = SITE.towers.map(function(q){ var p = uv(q.x, q.z), w = q.id === Wt.id;
     var o = { id: 'st4_' + q.id.replace(/[^\w]/g, '_'), site: q.id, name: w ? 'The watch pillar' : 'A tower of the pillar rim', u: p[0], v: p[1], foot: r1(q.foot - T), top: r1(q.top - T), R: q.R };
     if (w){ o.w = Wt.w; o.l = Wt.l; o.ry = Wt.ry + L.site.rot; o.flat = r1(Wt.flat); o.keep = Wt.keep; }
@@ -223,16 +227,30 @@ F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70
 (function(){
 // the rim's u at a v (L.rim is ordered west to east: v falling), and its record (SPAN.rimAt, 31-span-rules.js, is the same)
 function rimAt(v){ var R = L.rim; if (v >= R[0].v) return R[0]; for (var i = 1; i < R.length; i++) if (v >= R[i].v){ var f = (v - R[i - 1].v) / (R[i].v - R[i - 1].v), a = R[i - 1], b = R[i];
-  return { u: a.u + (b.u - a.u) * f, v: v, top: a.top + (b.top - a.top) * f, floor: a.floor + (b.floor - a.floor) * f }; } return R[R.length - 1]; }
+  return fineU({ u: a.u + (b.u - a.u) * f, v: v, top: a.top + (b.top - a.top) * f, floor: a.floor + (b.floor - a.floor) * f }); } return R[R.length - 1]; }
+// the rim's u from rimFine where the record has it (the 5 m line: the drawn cliff's buttresses and alcoves)
+function fineU(r){ var F = L.rimFine; if (!F) return r;
+  for (var i = 1; i < F.length; i++) if (r.v >= F[i][1] && r.v <= F[i - 1][1]){ var f = (r.v - F[i - 1][1]) / ((F[i][1] - F[i - 1][1]) || 1); r.u = F[i - 1][0] + (F[i][0] - F[i - 1][0]) * f; break; }
+  return r; }
+// the ground as drawn (the record's ground field) at (u, v), bilinear, in Span's y; null off the field (SPAN.siteGround is the same)
+function gH(u, v){ var G = L.ground, S = L.site; if (!G) return null;
+  var x = S.M[0] + S.n[0] * (u - S.u0) + S.t[0] * v, z = S.M[1] + S.n[1] * (u - S.u0) + S.t[1] * v, fx = (x - G.box[0]) / G.step, fz = (z - G.box[1]) / G.step;
+  if (fx < 0 || fz < 0 || fx > G.nx - 1 || fz > G.nz - 1) return null;
+  var i = Math.min(G.nx - 2, Math.floor(fx)), j = Math.min(G.nz - 2, Math.floor(fz)), a = fx - i, b = fz - j, h = G.h, k = j * G.nx + i;
+  return (h[k] * (1 - a) + h[k + 1] * a) * (1 - b) + (h[k + G.nx] * (1 - a) + h[k + G.nx + 1] * a) * b - S.T; }
 var PW = L.pillars[0], r1 = function(x){ return Math.round(x * 10) / 10; };
 // the stair round the watch pillar's faces: its centre line .8 m out from the record's width (its inner edge on the rock),
 // rising .55 a metre run, ending on the +v face's middle at the top, where the post's gate is; built backwards from there
-(function(){ var Pw = PW, s = Math.max(Pw.w, Pw.l) / 2 + .8, top = Pw.top, run = (Pw.top - Pw.foot) / .55, k = .55;
+// The foot is the drawn ground where the line comes down (the record's ground field: a second pass from the first pass's foot)
+(function(){ var Pw = PW, s = Math.max(Pw.w, Pw.l) / 2 + .8, top = Pw.top, k = .55;
   var cs = [[Pw.u + s, Pw.v + s], [Pw.u + s, Pw.v - s], [Pw.u - s, Pw.v - s], [Pw.u - s, Pw.v + s]];
-  var pts = [[Pw.u, r1(Pw.v + s), top]], left = run, at = [Pw.u, Pw.v + s], y = top, i = 0;
-  while (left > 1e-6){ var c = cs[i % 4], d = Math.hypot(c[0] - at[0], c[1] - at[1]);
-    if (d >= left){ var t = left / d; at = [at[0] + (c[0] - at[0]) * t, at[1] + (c[1] - at[1]) * t]; y -= left * k; pts.push([r1(at[0]), r1(at[1]), r1(y)]); break; }
-    y -= d * k; at = c; left -= d; pts.push([r1(c[0]), r1(c[1]), r1(y)]); i++; }
+  function line(foot){ var pts = [[Pw.u, r1(Pw.v + s), top]], left = (top - foot) / k, at = [Pw.u, Pw.v + s], y = top, i = 0;
+    while (left > 1e-6){ var c = cs[i % 4], d = Math.hypot(c[0] - at[0], c[1] - at[1]);
+      if (d >= left){ var t = left / d; at = [at[0] + (c[0] - at[0]) * t, at[1] + (c[1] - at[1]) * t]; y -= left * k; pts.push([r1(at[0]), r1(at[1]), r1(y)]); break; }
+      y -= d * k; at = c; left -= d; pts.push([r1(c[0]), r1(c[1]), r1(y)]); i++; }
+    return pts; }
+  var pts = line(Pw.foot), e = pts[pts.length - 1], g = gH(e[0], e[1]);
+  if (g != null && Math.abs(g - Pw.foot) > .2) pts = line(g);
   pts.unshift([Pw.u, r1(Pw.v + 18.6), top]);   /* the head: a landing in from the edge to the post's gate (its front wall 18 m out) */
   L.watchStair = pts.reverse(); })();
 // THE APRON (station 4's record since 2026-10-27): the cliff is a caprock over a badland apron; the record's rim floor is the
@@ -242,7 +260,10 @@ var PW = L.pillars[0], r1 = function(x){ return Math.round(x * 10) / 10; };
 L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
 // the cliff stair: flights of 60 m drop over 120 m along the cliff's foot of the rim road (west of the watch pillar, toward
 // Span), on two lanes 1.5 and 4 m out from the record's rim line, a landing between, down to the apron at the caprock's foot
-(function(){ var vA = r1(PW.v + 160), vB = r1(PW.v + 40), fl = r1(rimAt(PW.v + 100).floor), pts = [[r1(rimAt(vA).u - 2), vA, 0]], y = 0, k = 0;
+// With the record's ground field, the last flight ends on the drawn ground at the caprock's foot (the field leaves the caprock
+// out, so the head stays on the table's record height, 0)
+(function(){ var vA = r1(PW.v + 160), vB = r1(PW.v + 40), gv = function(u, v, d){ var g = gH(u, v); return g == null ? d : g; };
+  var y = 0, fl = r1(gv(rimAt(vB).u + 6, vB, rimAt(PW.v + 100).floor)), pts = [[r1(rimAt(vA).u - 2), vA, y]], k = 0;
   while (y > fl + 1e-6){ var y2 = Math.max(fl, y - 60), from = k % 2 ? vB : vA, to = k % 2 ? vA : vB, lane = k % 2 ? 4 : 1.5;
     for (var j = 0; j <= 12; j++){ var v = from + (to - from) * j / 12; pts.push([r1(rimAt(v).u + lane), r1(v), r1(y + (y2 - y) * j / 12)]); }
     y = y2; k++; if (y > fl + 1e-6) pts.push([r1(rimAt(to).u + (k % 2 ? 4 : 1.5)), to, r1(y)]); }
@@ -250,7 +271,8 @@ L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
   // the path down the apron to the watch pillar's foot: six legs zigzagging 50 m either side of the line from the stair's foot,
   // each point on the apron's ground (a gullied badland: the drawn ground is the station's)
   var s = pts[pts.length - 1], e = L.watchStair[0], path = [s.slice()];
-  var gy = function(u, v){ var rm = rimAt(v), ap = L.apron, d = u - rm.u; return d <= ap.d ? rm.floor : d >= ap.end ? ap.open : rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); };   /* SPAN.groundAt's apron */
+  var gy = function(u, v){ var g = gH(u, v); if (g != null) return g;   /* the drawn ground; off the field, SPAN.groundAt's apron */
+    var rm = rimAt(v), ap = L.apron, d = u - rm.u; return d <= ap.d ? rm.floor : d >= ap.end ? ap.open : rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); };
   for (var q = 1; q < 6; q++){ var f = q / 6, pu = s[0] + (e[0] - s[0]) * f, pv = s[1] + (e[1] - s[1]) * f + (q % 2 ? 50 : -50); path.push([r1(pu), r1(pv), r1(gy(pu, pv))]); }
   path.push([e[0], e[1], e[2]]); L.apronPath = path;
   // the rim road on from Span: along the table 40 m in from the rim's line, every 100 m, to the head of the cliff stair
