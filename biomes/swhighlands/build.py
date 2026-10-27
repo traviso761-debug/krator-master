@@ -52,8 +52,12 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 # STATIONS (PLAN.md section 7): `--station <name>` overlays stations/<name>/*.js on src/ (a fragment of the same name wins, a
 # name 'drop:<file>' in stations/<name>/DROP drops one) and writes dist/swhighlands-<name>.html; no flag: station 1, the ring folds
 STATION = next((sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == '--station' and i + 1 < len(sys.argv)), None)
-OUT = next((a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith('--') and sys.argv[i - 1] != '--station'),
-           'swhighlands-%s.html' % STATION if STATION else 'swhighlands.html')
+# PREVIEWS (station 4 only so far): `--preview span` adds a FROZEN snapshot of Span's watch post (stations/pillars/preview/:
+# span-watch.frozen.json, written by freeze_span.py from a committed Span page) placed on the watch pillar from the station's
+# own site record, and writes dist/swhighlands-pillars-span.html. The station's own page is untouched: it never carries Span
+PREVIEW = next((sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == '--preview' and i + 1 < len(sys.argv)), None)
+OUT = next((a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith('--') and sys.argv[i - 1] not in ('--station', '--preview')),
+           ('swhighlands-%s-%s.html' % (STATION, PREVIEW) if PREVIEW else 'swhighlands-%s.html' % STATION) if STATION else 'swhighlands.html')
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 core = lambda *p: os.path.normpath(os.path.join(ROOT, 'core', *p))
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
@@ -126,6 +130,13 @@ if STATION == 'treeline':
 # a split crown), listed here only, so no other station's page moves
 if STATION == 'pillars':
     PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
+if PREVIEW:
+    PV = os.path.join(HERE, 'stations', STATION or '', 'preview')
+    if STATION != 'pillars' or PREVIEW != 'span' or not os.path.isfile(os.path.join(PV, 'span-watch.frozen.json')):
+        sys.exit('build.py: --preview span needs --station pillars and stations/pillars/preview/span-watch.frozen.json (freeze_span.py)')
+    with open(os.path.join(PV, 'span-watch.frozen.json'), encoding='utf-8') as fh:
+        VIRTUAL['89x-preview-span-data.js'] = "// FROZEN: Span's watch post, a static snapshot (freeze_span.py); not Span's code\nconst SPAN_FROZEN=" + fh.read().strip() + ";\n"
+    PATH['89y-preview-span.js'] = os.path.join(PV, '89y-preview-span.js')
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos: its core, presets, weather, export, the wave field and the sky's light, bound by 89a-host-atmos.js

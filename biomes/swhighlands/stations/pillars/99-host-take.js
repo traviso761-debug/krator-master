@@ -22,6 +22,7 @@ const VIEWS={};
  // the floor's flora: cushions and torch spikes in the green between the towers
  {const x=WATCH?WATCH.x+160:200,z=rimZ(x)+BAND*.8;add('The green floor',[x,G(x,z)+2.2,z,x+40,G(x+40,z-30)+1,z-30]);}
  {const x=200,z=rimZ(x)+BAND*1.3;add('Dawn: mist round the towers',[x,G(x,z)+8,z,x-200,190,rimZ(x-200)+120],'dawn');}
+ if(typeof SPAN_PREVIEW!=='undefined'&&SPAN_PREVIEW)add('Span on the watch pillar (frozen preview)',SPAN_PREVIEW.view);   /* the preview build only */
  {const x=WATCH?WATCH.x-120:0,z=WATCH?WATCH.z+110:0;add('Night: the pillar rim',[x,G(x,z)+3,z,WATCH?WATCH.x:0,WATCH?WATCH.top-60:150,WATCH?WATCH.z:0],'night');}})();
 function tagText(t){if(!t)return'';const g=t.tags,h=g.harvest||{};return '\n'+t.cls+'  ·  '+g.climate+' / '+g.aridity+' / '+(g.abyssal?'abyssal':'non-abyssal')+'\nharvest: wood '+h.wood+(h.edible&&h.edible.length?' · edible: '+h.edible.join(', '):' · not edible')+(h.notes?'\n'+h.notes:'');}
 function describe(h0,hits){hits=hits.filter(h=>h.object.visible);if(!hits.length)return '(nothing)';const p=hits[0].point,o=hits[0].object;
