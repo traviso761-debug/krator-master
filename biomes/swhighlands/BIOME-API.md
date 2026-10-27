@@ -46,6 +46,8 @@ station as one plain record, `SWHI_PILLARS_SITE` on its page (also the page's `s
 | `arches` | every arch and natural bridge (added 2026-10-27, still version 1: a new field, nothing changed): `id, x, z, foot, top, R` |
 | `towers` | every tower (not the arches): `id, x, z, foot, top, R` |
 | `rim` | the cliff's line, 65 points west to east: `x, z, top` (the table's), `floor` (30 m out from the rim: since 2026-10-27 on the badland apron under the 85 m caprock, not the open floor) |
+| `rimFine` | the rim's line every 5 m, `[x, z]` (its buttresses and alcoves; added 2026-10-27, version 1 kept) |
+| `ground` | the ground as drawn round the watch pillar and the cliff under it: `{box: [x0, z0, x1, z1], step (2 m), nx, nz, h}` (heights over `frame.y0`, row by row along x; the field's ground without the rock bodies). Fit stairs and paths to it, not to `rim` (added 2026-10-27, version 1 kept) |
 | `river` | Pan Riba's line (`name`, `pts`) |
 
 A settlement reads it and places itself (its post, its stairs fitted to the drawn mesh); the station never moves for one. A change

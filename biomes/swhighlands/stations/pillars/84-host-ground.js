@@ -49,8 +49,10 @@ function buildGround(){
   far:{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  const glAt=(x,z)=>{const u=(x-TERR.X0)/SX,v=(z-TERR.Z0)/SZ,sl=smooth(.6,1,FC.at(FC.a.slope,x,z));return[zat('floor',u,v)*(1-zat('bank',u,v))*(1-sl),zat('table',u,v)*(1-sl),clamp(zat('block',u,v)+zat('bank',u,v),0,1)*(1-sl),0];};
- const nx=Math.round(SX/6),nz=nx,N=(nx+1)*(nz+1),pos=new Float32Array(N*3),uv=new Float32Array(N*2),gl=new Float32Array(N*4),idx=[];
- for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*(nx+1)+i,x=TERR.X0+i*6,z=TERR.Z0+j*6;pos[k*3]=x;pos[k*3+1]=groundH(x,z);pos[k*3+2]=z;uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;gl.set(glAt(x,z),k*4);}
+ /* the mesh 3 m across and 3 m deep in the band by the rim (the field's inset: the eroded slots and the jagged cliff), 6 m deep elsewhere */
+ const XS=[],ZS=[];for(let x=TERR.X0;x<=TERR.X1+1e-6;x+=3)XS.push(x);for(let z=TERR.Z0;z<=TERR.Z1+1e-6;){ZS.push(z);z+=(z>=-1020&&z<-60)?3:6;}
+ const nx=XS.length-1,nz=ZS.length-1,N=(nx+1)*(nz+1),pos=new Float32Array(N*3),uv=new Float32Array(N*2),gl=new Float32Array(N*4),idx=[];
+ for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*(nx+1)+i,x=XS[i],z=ZS[j];pos[k*3]=x;pos[k*3+1]=groundH(x,z);pos[k*3+2]=z;uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;gl.set(glAt(x,z),k*4);}
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
  g.setIndex(new THREE.Uint32BufferAttribute(idx,1));g.computeVertexNormals();

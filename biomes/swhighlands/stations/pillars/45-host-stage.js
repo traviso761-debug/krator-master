@@ -77,10 +77,14 @@ function slotCut(x,z){const zz=zone(x,z);if(zz>=.3)return 0;const f=zz/.3,wx=x+3
  [a.du,a.dv].forEach((d,s)=>{const along=AL[s]/42,seg=Math.floor(along),t=along-seg;   /* a joint opens in stretches of ~42 m, each by its own draw */
   const r=KRAND.unit(KRAND.hash(WORLD,s,K[s],seg,0x5107)),op=r<.1+.72*Math.pow(f,1.6);
   const pinch=op?Math.sin(Math.PI*clamp(t*1.1-.05,0,1))*.7+.3:1;   /* an open stretch pinches toward its ends: the slots wander in and out */
-  const w=(op?1.5+7*Math.pow(f,1.4)*pinch:.45)*(.5+KRAND.fbm(x*.03,s,z*.03,2,94+s));const dp=op?H*(.1+.6*f)*(.5+KRAND.fbm(x*.01,s+3,z*.01,2,96))*pinch:.5;
-  if(d<w)cut=Math.max(cut,dp*(1-Math.pow(d/w,3)));else if(op)cut=Math.max(cut,5*pinch*Math.pow(1-clamp((d-w)/(10+8*f),0,1),2));});
+  if(!op)return;   /* a closed joint leaves nothing (the owner: its grooves drew a grid) */
+  const w=(1.5+7*Math.pow(f,1.4)*pinch)*(.5+KRAND.fbm(x*.03,s,z*.03,2,94+s)),dp=H*(.1+.6*f)*(.5+KRAND.fbm(x*.01,s+3,z*.01,2,96))*pinch;
+  const dd=Math.max(0,d+w*.7*NZ(x,z,.045,100+s,2)+2.5*NZ(x,z,.12,102+s,1));   /* ragged walls: the distance itself eroded */
+  if(dd<w)cut=Math.max(cut,dp*(1-Math.pow(dd/w,3)));else cut=Math.max(cut,5*pinch*Math.pow(1-clamp((dd-w)/(10+8*f),0,1),2));});
  // the blocks stepped: each block's top its own height (a broken table, not one plate), the step softened at its edges
- const bu=KRAND.unit(KRAND.hash(WORLD,a.i,a.j,0x5108)),step=bu<.35?H*.09*(1-bu/.35)*(.4+.6*f):0;cut=Math.max(cut,step*smooth(0,9,a.d));
+ // the table stepped in irregular tiers (not by block: their rectangles showed): a KRAND field's contours are the steps' edges,
+ // two tiers down, each edge a short steep scarp
+ {const n=KRAND.fbm(x*.0042+11,.4,z*.0042-7,3,101)+.12*NZ(x,z,.03,103,2);cut=Math.max(cut,H*(.05*smooth(.5,.53,n)+.05*smooth(.6,.63,n))*(.4+.6*f));}
  // pans: shallow hollows weathered in the tops (refs: the slickrock's potholes and pans)
  cut+=2.5*smooth(.18,.32,KRAND.fbm(x*.012,.7,z*.012,2,99)-.5+.25);
  return cut*smooth(.3,.285,zz);}
@@ -105,7 +109,8 @@ function groundH0(x,z){const g=TABLE(x,z),r=streamNear(x,z);if(!r)return g;const
  if(r.d<w)h=Math.min(h,r.y-r.C.dep*(1-.55*(r.d/w)*(r.d/w))-.15);else{const bank=r.y+.35+t*.22+Math.max(0,t-5)*.9;if(bank<h)h=bank;}
  if(r.d<w+2.5)h=Math.min(h,r.y-.45);return h;}
 // THE FIELD (core/terrain KFIELD): the ground baked once (6 m); the towers are rock bodies over it (47-host-land.js), not ground
-const FIELD_BAKED=(function(){const t0=performance.now();const F=KFIELD.bake(groundH0,[TERR.X0-60,TERR.Z0-60,TERR.X1+60,TERR.Z1+60],6,{name:'swhighlands-pillars'});window._fieldMs=Math.round(performance.now()-t0);return F;})();
+const FIELD_BAKED=(function(){const t0=performance.now();const F=KFIELD.bake(groundH0,[TERR.X0-60,TERR.Z0-60,TERR.X1+60,TERR.Z1+60],6,{name:'swhighlands-pillars',
+  insets:[{box:[TERR.X0-60,-1020,TERR.X1+60,-60],step:3,name:'the eroded table edge and the cliff'}]});   /* 3 m: the slots and the jagged rim are finer than the base grid */window._fieldMs=Math.round(performance.now()-t0);return F;})();
 const groundH=FIELD_BAKED.sampler();
 function waterH(x,z){const r=streamNear(x,z);return r&&r.d<r.w+2.5?r.y:-1e9;}
 const FLOWS=[WATER.flow({name:PAN.name,pts:PAN.pts.map((p,i)=>[p[0],p[1],PAN.y[i]]),width:PAN.pts.map((p,i)=>2*(PAN.halfW(i)+2.5)),speed:PAN.pts.map((p,i)=>PAN.speed+3*smooth(.05,.6,PAN.slope[i]))})];
