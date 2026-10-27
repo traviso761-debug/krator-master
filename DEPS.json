@@ -25,6 +25,7 @@
   "kits/ringsea -> settlements/reedlake",
   "kits/scyvoi -> settlements/iziz",
   "kits/talia -> settlements/iziz",
+  "kits/yeti -> settlements/iziz",
   "kits/zeijani -> settlements/iziz"
  ],
  "edges": {
@@ -536,6 +537,22 @@
    "settlements/iziz"
   ],
   "kits/talia": [
+   "settlements/iziz"
+  ],
+  "kits/yeti": [
+   "core/atmos",
+   "core/city",
+   "core/clock",
+   "core/furnish",
+   "core/host",
+   "core/materials",
+   "core/rand",
+   "core/tags",
+   "core/walk",
+   "kits/catalog",
+   "kits/eternian",
+   "kits/islanders",
+   "kits/scyvoi",
    "settlements/iziz"
   ],
   "kits/zeijani": [
