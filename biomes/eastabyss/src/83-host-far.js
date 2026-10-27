@@ -41,9 +41,11 @@ const FAR=(function(){
    '{float steep=1.0-clamp(normalize(vSWN).y,0.0,1.0);vec3 sc=strataColor(vSWP,vSWN);',
    ' diffuseColor.rgb=mix(diffuseColor.rgb,sc,smoothstep(0.30,0.55,steep)*0.95);}'].join('\n'));};
  mat.customProgramCacheKey=()=>'eastabyss-far';
- const mesh=new THREE.Mesh(geo,mat);mesh.userData.probeSkip=true;mesh.userData.farField=true;mesh.frustumCulled=false;
+ const mesh=new THREE.Mesh(geo,mat);mesh.userData.host=true;mesh.userData.farField=true;mesh.frustumCulled=false;
+ /* the probe's points on the wall (its registered volume reads them; a flat x,y,z list): the face's middle, every 400 m along z */
+ if(WALL){const pp=[];for(let z=-800;z<=800;z+=400){const x=toe(z)+600;pp.push(x,farH(x,z),z);}mesh.userData.probePoints=pp;}
  mesh.userData.inspectLabel='The abyss wall (the shelf, ~1.9 km over the basin) and the basin floor beyond the map';scene.add(mesh);
- if(WALL)REGISTER({name:'The abyss wall',key:'landform.abysswall',kind:'landform',x:toe(0)+600,z:0,y:0,r:900,h:WALLH+80});
+ if(WALL)REGISTER({name:'The abyss wall',key:'landform.abysswall',kind:'landform',x:toe(0)+600,z:0,y:0,r:1000,h:WALLH+80});
  return{mesh,mat,G,H:farH,toe,STRATA,tris:G.count.tris};})();
 // THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON): eight directions over the painted square (256 a side, ~29 m)
 // and, past it, the far field, so the wall's shadow reaches across the shelf foot and the jungle strip when the sun is low in the

@@ -53,9 +53,10 @@ function describe(hit){const p=hit.point,o=hit.object;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:11000000,calls:130},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES)
+ showcase:{tris:11000000,calls:260},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES). Calls 130 -> 260 (2026-10-27): the runtime LOD draws
+                                       // a mesh per chunk and range (189 at the default camera) for a third of the triangles (3.8M drawn, was ~11M); nhighlands runs 164-293
  cls:{pass:8200000,host:900000},
- type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','abyss/fauna':'pass','host':'host'},
+ type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','abyss/fauna':'pass','abyss/kin':'pass','host':'host'},
 };
 // species that yield something edible the kit does not draw as a catalog fruit (pith, palm heart, leaves...): named, not hidden
 const FRUIT_NOT_DRAWN=['treefern','fanpalm','jade','araucaria','matreed'];

@@ -128,10 +128,16 @@ The kit's turn in the all-biomes rebuild (HANDOFF-REBUILD.md, pair 1 with nwbay)
 - **Ground**: the detail and crack layers on KGROUND (`?kground=0` the page's own mix); **the abyss wall** (83: KFAR far field, the
   wall 5.6 km east of the lake up ~1.9 km, its faces in KSTRATA's `canyon` beds, sedesert's recipe across the same cliff;
   `?wall=0` brings back the sky's painted shelf); KHORIZON shadows over the square with the far field past it (`?hz=0`).
-- **Cards**: `check_cells.py --fix` (20 slots: cells, frond and ribbon bases, crown stems); `bloom` (card.flower.bloom) left as the
+- **Cards**: `check_cells.py --fix` (18 slots: cells, frond and ribbon bases, crown stems); `clubmoss` and `moss` (the kit's own
+  geometry, outside the approval: the cushion read worse on a tuft; `card.clubmoss` owed) and `bloom` (card.flower.bloom) left as the
   owner said. The hanging slots (beard, hang, hang1) take `"base": "top"`: the ribbon's `once` uv spans the plant down the strand.
 - **Shared parts**: the bracket fungus on `BIO.fung.bracket`, turned to its face (65).
 - **Kin source**: every species but the mat reed resolves by key (`BIO.kitBuilder`), checked by the probe ("a BIO.kin source").
   Keys and indices unchanged (SPECIES 0-20).
 - **Station 2, the winding lakes**: `python3 build.py --station lakes` (stations/lakes: map 45, water 89w, sky 89 at px 1041,493,
   views 99, no tower).
+- **Neighbour exchanges** (EXCHANGES.md): as receiver, two cousins by `BIO.kin`, their kits read in place (build.py `NEIGH`, only the
+  families their builders draw with), grown by `src/87-host-kin.js` on a KRAND lattice after the kit's build: `abysscottonwood`
+  (ebadlands.cottonwood x1.35 tall, bole x1.5) on the dry river reaches, `abyssbottle` (sedesert.bottle, the Bowl's baobab habit) on
+  the salt steppe and the shelf foot (`?kin=0`). As vendor, `araucaria` (to ebadlands) and `jade` (to sedesert) keep their keys and
+  indices (17, 10).

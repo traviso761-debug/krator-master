@@ -8,9 +8,13 @@
    "bytes": 989760,
    "sha256": "bd205bb7742ba1a693cc28be7087744b6847ec105ab052012373fe82637a23a8"
   },
+  "biomes/eastabyss/dist/eastabyss-lakes.html": {
+   "bytes": 8206309,
+   "sha256": "5c923cf3a0c987e944cc7dd4bbb180906af97e447c205031125dc7575dcfcadf"
+  },
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 6807183,
-   "sha256": "5fb62bc0cf26b995968b692b480e96101b620088fd5775d373efd545e3431544"
+   "bytes": 8212717,
+   "sha256": "59269fe70f54eba7787be55cf2b81cec705e58a95c813f50be11c019bef3962a"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
    "bytes": 4490873,

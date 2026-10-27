@@ -323,10 +323,10 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.024,
-    0.042,
-    0.976,
-    0.954
+    0.34,
+    0.34,
+    0.66,
+    0.66
    ],
    "files": {
     "map": "clubmoss.albedo.webp"
@@ -845,10 +845,10 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.024,
-    0.042,
-    0.976,
-    0.954
+    0.34,
+    0.34,
+    0.66,
+    0.66
    ],
    "files": {
     "map": "moss.albedo.webp"

@@ -50,7 +50,10 @@ const fill=new THREE.DirectionalLight(0xaecfc4,.30);fill.position.set(800,400,90
 // then the abyssal desert on the sills (~70 m over the water, 2.5-3.5 km back) with pale flats where an old arm of the lake dried.
 // The kit reads only the four fields and terrainH, as at station 1: the gradient is the fields'. Noise from core/rand.
 const TERR={R:3400};
-const STATION_FAR={wall:false,lake:true};   /* 83-host-far.js: no abyss wall here (the nearest is 25 km off), the lake on in the far field */
+const STATION_FAR={wall:false,lake:true};
+// the budget: the spine runs down the lake through the jungle on both shores, so the heroes' radii are held to .45 of station 1's
+// (the trees pass built 15.1 M triangles at 1: over its 8.2 M ceiling); read by 55 when it builds
+var EASTABYSS_HEROK=.45;   /* 83-host-far.js: no abyss wall here (the nearest is 25 km off), the lake on in the far field */
 const KN=(x,z,f,s,o)=>KRAND.fbm(x*f,.5,z*f,o||3,s)-.5;
 const xc=z=>520*Math.sin(z*.00105+.4)+210*Math.sin(z*.0027+1.3);                 // the lake's centreline
 const hw=z=>420+170*Math.sin(z*.0019+2)+60*Math.sin(z*.0051);                     // its half width

@@ -184,7 +184,7 @@ async def run(a):
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                box = STATION_BOX.get(os.path.basename(args.html), EXPORT_BOX) if hasattr(args, 'html') else EXPORT_BOX
+                box = STATION_BOX.get(os.path.basename(a.html), EXPORT_BOX)
                 pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)

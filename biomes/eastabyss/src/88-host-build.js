@@ -13,6 +13,7 @@ const IMP_GAIN=3.6;   /* nhighlands' measure; this page's own is set at its look
  if(new URLSearchParams(location.search).get('diet')!=='0')Object.assign(EASTABYSS.LOD,{tree:900,floor:650,mid:1300,far:1100});else EASTABYSS.IMPOSTORS=false;
  try{window._biome=EASTABYSS.build({R:TERR.R-150,quality:+(new URLSearchParams(location.search).get('q')||1)});}catch(e){reportErr('biome: '+e.stack);}
  if(shells.length){try{EASTABYSS.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
+ try{window._kin=growKin();}catch(e){reportErr('kin: '+e.stack);}   /* the neighbours' cousins (87-host-kin.js, EXCHANGES.md) */
  const b=BIO.bake();
  /* the impostors' light matched to the near crowns (the bake is ~4x dark until the core fix owed in HANDOFF-REBUILD.md); ?impgain= ?impwrap= */
  if(BIO.impostorLook){const q=new URLSearchParams(location.search);BIO.impostorLook({gain:+(q.get('impgain')||IMP_GAIN),wrap:+(q.get('impwrap')||1)});}

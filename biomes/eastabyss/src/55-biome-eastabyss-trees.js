@@ -15,6 +15,10 @@ EASTABYSS.TREES=[];
 // sets them before build (88-host-build.js: the far band's diet); tree: a hero's range, then its stand-in; floor, mid, far: the
 // floor's three bands; water: the lily and shallows bands
 EASTABYSS.LOD={tree:null,floor:null,mid:null,far:null};
+// HEROK scales every pass's hero and mid radii from the spine (1: as tuned at station 1). A page whose spine runs through its densest
+// stands (station 2's runs down the lake, its jungle on both shores) holds its budget with a smaller one; it only picks the builder
+// (hero, mid, impostor), never where a tree stands, so the kit's stream places the same trees
+EASTABYSS.HEROK=EASTABYSS.HEROK!=null?EASTABYSS.HEROK:typeof EASTABYSS_HEROK!=='undefined'?EASTABYSS_HEROK:1;   /* a host sets EASTABYSS_HEROK before the kit loads */
 const PASSOF=sp=>(EASTABYSS.PASSES||[]).find(P=>P.sp===sp||(P.stand&&P.sp.indexOf(sp)>=0));
 
 // ---------------------------------------------------------------- zones from the fields
@@ -549,14 +553,14 @@ EASTABYSS.buildTrees=function(R,q){
    (x,y,z,d)=>{const S=SP[sp],w=BIO.waterH(x,z),dy=y-w;if(!opt.inWater&&dy<.3)return;if(opt.inWater&&(dy<-1.6||dy>1.2))return;   // heights against the local water (BIO.waterH; 0 in this host)
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,w-.2)-.5;
-    const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
+    const ld=BIO.lodD(x,z),HK=EASTABYSS.HEROK;T.lv=ld<opt.hero*HK?2:(ld<opt.mid*HK?1:0);
     if(T.lv===0&&!opt.far){T.small=true;TREES.push(T);n++;return;}
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
   return n;}
  // the passes, in order, from the data table below (EASTABYSS.PASSES); the canopy stands are the one pass with its own body
  EASTABYSS.PASSES.forEach(P=>{if(!P.stand){pass(P.sp,P.cell,P.accept,P.opt);return;}
   let n=0;BIO.grid(P.cell,0,R,(x,z)=>{const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
-   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
+   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z),HK=EASTABYSS.HEROK;T.lv=ld<1000*HK?2:(ld<1800*HK?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
  // the far hulls keep clear (2026-10-26): they take no keep-clear entry while the passes run (so the near field places as
  // before), and here, after every pass, a hull that stands on a later tree's bole, under an impostor's crown blob or on
  // an earlier hull is dropped. No draws from the stream; the trees keep their indices (buildFar's colour reads them).

@@ -432,6 +432,22 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A face of bedded rock salt cut flat by hand picks, seen straight on: coarse interlocking halite crystals, translucent milky white with faint grey and very pale pink bands running level across the face in beds a hand thick, the crystals' cubic cleavage showing as small square steps and facets, shallow parallel pick marks crossing the bands at a slant, a few thin seams of grey clay between beds, a little white salt dust in the marks. No tools, no blocks, no joints between blocks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1 metre.
 ```
 
+## 35. The abyss's club-moss carpet (`biomes/eastabyss`, the final rebuild, 2026-10-27)
+
+The coal-swamp jungle's floor (`clubmoss` slot, drawn on the kit's upright tufts) shows the middle cell of `card.moss`, a solid moss
+photo with no cut-out, so every tuft is a striped opaque cylinder ("barrels" over the marsh and the jungle floor). The card check's
+proposal (the whole cushion) is no better on a tuft. Owed: a cut-out sheet of upright club-moss sprigs.
+
+#### `card.clubmoss`
+- Kind: card (a nine-cell sheet of single plants on magenta, `tools/textures/cards.py`), tintable (keep 0: the kit's three
+  carpet colours tint it).
+- Used by: eastabyss's club-moss carpet (`clubmoss`); the abyssal-savannah and the hyperjungle read the same slot in place.
+  Reuse: any lycopod or horsetail ground cover (the Rift's jungle floor, swamp margins).
+
+```
+A 3x3 grid sheet of nine separate small club-moss plants, each centred in its own cell with clear space around it, on a flat pure magenta (#FF00FF) background, no shadows on the background. Front view, eye level, each plant standing upright from its base at the bottom of its cell. The plant: a Lycopodium club-moss tuft 20 to 40 cm tall, a few forking upright stems densely clothed in tiny overlapping scale-like needle leaves, like soft green bottle-brushes, some stems ending in a slender pale yellow-green cone; the tufts open and airy, with gaps between the stems so the background shows through; near-colourless pale grey-green so it can be tinted. Even, flat, shadowless studio lighting, high detail, photographic, no text, no border, no watermark.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

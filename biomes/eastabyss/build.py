@@ -105,6 +105,20 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'eastabyss',own=True)}
+# THE NEIGHBOURS' COUSINS, read in place (EXCHANGES.md, 2026-10-27: eastabyss as receiver; src/87-host-kin.js grows them by BIO.kin):
+# ebadlands' Fremont cottonwood (on the abyss's dry river reaches) and sedesert's bottle tree (on the salt steppe and the shelf foot).
+# Each kit's species and tree builders, slotted after the host stage (45) and before this kit (50), each in its own registry,
+# closed by a one-line kitEnd; its pack carries only the families those two builders draw with (the page stays under its cap)
+import json as _json
+NEIGH={'ebadlands':(['50-biome-ebadlands-species.js','55-biome-ebadlands-trees.js'],'EBADLANDS',['bark.aspen','leaf.round','wood.silver']),
+       'sedesert':(['50-biome-sedesert-species.js','55-biome-sedesert-trees.js'],'SEDESERT',['bark2','strap','wood'])}
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
+    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if f not in _keep]
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
