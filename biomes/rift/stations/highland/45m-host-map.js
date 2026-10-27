@@ -22,16 +22,30 @@ const RAVINES=[[-2100,.0011,1.2,70],[-650,.0013,3.9,95],[700,.0010,2.1,80],[2000
 function ravineZ(k,x){const g=RAVINES[k];return g[0]+g[3]*2*Math.sin(x*g[1]+g[2])+60*(KF(x*.002,k*7.3,2,305)-.5);}
 function ravineD(x,z){let d=1e9;for(let k=0;k<RAVINES.length;k++)d=Math.min(d,Math.abs(z-ravineZ(k,x)));return d;}
 function streamD(x,z){return x<crestX(z)-150?ravineD(x,z):1e9;}   // the ravines carry the face's streams
-function lakeIn(x,z){return 1e4;}                                    // no lake on the island
+function lakeIn(x,z){return 1e4;}
+// nothing roots in a stream (BIO.init's planting mask: 45s)
+function MAP_DRY(x,z){return smooth(3,7,streamD(x,z));}                                    // no lake on the island
 function baseH(x,z){const cx=crestX(z),s=x-cx,top=crestH(z);
  if(s<0){let f=1-Math.exp(s/1900);                                      // the west face: 0 at the crest, toward 1 down the face
   f=f-.045*Math.sin(f*Math.PI*2*3);                                      // three treads: the benches of the cloud forest
   return top-960*f;}
  return top-520*Math.pow(smooth(0,2600,s),.9);}                        // the lee
-function terrainH(x,z){
+function terrainH0(x,z){
  let h=baseH(x,z)+14*(KF(x*.0035,z*.0035,3,307)-.5)+4*(KF(x*.018,z*.018,2,309)-.5);
  const face=smooth(-120,-600,x-crestX(z));                             // ravines only on the face
  for(let k=0;k<RAVINES.length;k++){const d=Math.abs(z-ravineZ(k,x)),dep=(10+50*face*smooth(100,2200,crestX(z)-x));h-=dep*smooth(40+30*face,3,d);}
+ return h;}
+// THE STREAMS' BEDS (2026-10-27): each ravine's floor along its centre never rises downstream (the lowest of the carved floor anywhere
+// upstream: the face's noise rolls ~7 m, and a stream that never rises would pond behind each roll and spill its banks), and a
+// channel .9 m deep and ~7 m wide in it, so the stream's 5 m ribbon (89w) has its edges in the banks. Tabled every 4 m of x, from
+// the ravine's head (150 m down from the crest: where streamD starts) to past the page's west edge
+const RBEDS=RAVINES.map((g,k)=>{let x0=crestX(g[0])-150;for(let i=0;i<4;i++)x0=crestX(ravineZ(k,x0))-150;
+ const st=4,n=Math.ceil((x0+TERR.R*1.15)/st)+1,v=new Float32Array(n);
+ for(let i=0;i<n;i++){const x=x0-i*st;v[i]=terrainH0(x,ravineZ(k,x));if(i)v[i]=Math.min(v[i],v[i-1]);}return{x0,st,n,v};});
+function ravineBed(k,x){const B=RBEDS[k],f=clamp((B.x0-x)/B.st,0,B.n-1.001),i=Math.floor(f);return mix(B.v[i],B.v[i+1],f-i);}
+function terrainH(x,z){let h=terrainH0(x,z);
+ for(let k=0;k<RAVINES.length;k++){const B=RBEDS[k];if(x>B.x0)continue;const d=Math.abs(z-ravineZ(k,x));if(d>9)continue;
+  h=mix(h,Math.min(h,ravineBed(k,x)),smooth(9,3,d))-.9*smooth(3.5,0,d);}
  return h;}
 function slopeAt(x,z){const h=terrainH(x,z),e=3;return Math.hypot(terrainH(x+e,z)-h,terrainH(x,z+e)-h)/e;}
 function southK(x,z){return .95*smooth(400,-200,x-crestX(z));}          // the face's litter (the jungle palette, greener), the lee's dry ground
@@ -51,7 +65,11 @@ const FIELD_RAW={
 // the lee's ground (MAP_PAINT, read by the paint in 45s): summer-dry grass, gold and olive, with bare red-brown earth between the
 // scrub, where the zones' paint gave the crest's pale stone all down the dry back (the quality pass, 2026-10-27). Not on rock
 const LEE_PAL=[new THREE.Color(0xa8944e),new THREE.Color(0x857c44),new THREE.Color(0x7a5c3e),new THREE.Color(0x6c7040)];
-function MAP_PAINT(c,x,z,rockK){const lee=smooth(150,600,x-crestX(z))*(1-rockK);if(lee<=0)return;
+// and the ravines' floors on the face: dark wet stone and moss along the streams, where the zones' paint gave the valley's pale silt
+const BED_PAL=[new THREE.Color(0x3e4436),new THREE.Color(0x4c5a3a),new THREE.Color(0x585a4e)];
+function MAP_PAINT(c,x,z,rockK){const bed=smooth(26,5,streamD(x,z));
+ if(bed>0){const n=KF(x*.05,z*.05,2,325),t=BED_PAL[0].clone().lerp(BED_PAL[1],smooth(.4,.7,n)).lerp(BED_PAL[2],smooth(.7,.85,n)*.6);c.lerp(t,bed*.85);}
+ const lee=smooth(150,600,x-crestX(z))*(1-rockK);if(lee<=0)return;
  const g=KF(x*.004,z*.004,3,321),e=KF(x*.011,z*.011,2,323),t=LEE_PAL[0].clone().lerp(LEE_PAL[1],smooth(.35,.65,g));
  t.lerp(LEE_PAL[2],smooth(.58,.75,e)*.6).lerp(LEE_PAL[3],smooth(.6,.8,g)*.5);c.lerp(t,lee*.85);}
 // the LOD origins: five, as station 2 (the held budget), each a little ahead of a view's camera (44s), so what a view sees near is

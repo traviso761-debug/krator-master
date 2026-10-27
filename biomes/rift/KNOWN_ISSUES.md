@@ -57,7 +57,9 @@ Read before changing anything here. `build.py` prints the open count.
       (trees 24.7 M, floor 6.2 M, far 1.1 M; ceilings 40 M and 30 M a pass); 76 k trees, 2.35 M instances, a 33 s build on the Arc 140T.
       Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
       cushion, the night rosette, the glass pole, fog thread, crest heath) are builder work still to do (the hoodlet is a kin
-      stand-in); no water yet (the ravines' streams wait for core/water's cataract fixes), so the ravine beds read as bare silt; the
+      stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
+      downstream in a .9 m channel; white water by slope, no free-falling curtains: the risers are 31-41 degrees), their floors
+      painted dark wet stone and moss; the
       ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
       east islands' records; not yet verified on the GPU.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
