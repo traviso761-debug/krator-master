@@ -235,13 +235,24 @@ var PW = L.pillars[0], r1 = function(x){ return Math.round(x * 10) / 10; };
     y -= d * k; at = c; left -= d; pts.push([r1(c[0]), r1(c[1]), r1(y)]); i++; }
   pts.unshift([Pw.u, r1(Pw.v + 18.6), top]);   /* the head: a landing in from the edge to the post's gate (its front wall 18 m out) */
   L.watchStair = pts.reverse(); })();
+// THE APRON (station 4's record since 2026-10-27): the cliff is a caprock over a badland apron; the record's rim floor is the
+// apron 30 m out, and the open floor is where the towers stand (the watch pillar's foot). L.apron: the ground falls from the
+// rim's floor at d (30 m out) to the open floor at the watch pillar's skirt (its distance out from the rim, less its R),
+// linearly, read from the record alone (SPAN.groundAt)
+L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
 // the cliff stair: flights of 60 m drop over 120 m along the cliff's foot of the rim road (west of the watch pillar, toward
-// Span), on two lanes 1.5 and 4 m out from the record's rim line, a landing between, down to the floor
+// Span), on two lanes 1.5 and 4 m out from the record's rim line, a landing between, down to the apron at the caprock's foot
 (function(){ var vA = r1(PW.v + 160), vB = r1(PW.v + 40), fl = r1(rimAt(PW.v + 100).floor), pts = [[r1(rimAt(vA).u - 2), vA, 0]], y = 0, k = 0;
   while (y > fl + 1e-6){ var y2 = Math.max(fl, y - 60), from = k % 2 ? vB : vA, to = k % 2 ? vA : vB, lane = k % 2 ? 4 : 1.5;
     for (var j = 0; j <= 12; j++){ var v = from + (to - from) * j / 12; pts.push([r1(rimAt(v).u + lane), r1(v), r1(y + (y2 - y) * j / 12)]); }
     y = y2; k++; if (y > fl + 1e-6) pts.push([r1(rimAt(to).u + (k % 2 ? 4 : 1.5)), to, r1(y)]); }
   L.cliffStair = pts;
+  // the path down the apron to the watch pillar's foot: six legs zigzagging 50 m either side of the line from the stair's foot,
+  // each point on the apron's ground (a gullied badland: the drawn ground is the station's)
+  var s = pts[pts.length - 1], e = L.watchStair[0], path = [s.slice()];
+  var gy = function(u, v){ var rm = rimAt(v), ap = L.apron, d = u - rm.u; return d <= ap.d ? rm.floor : d >= ap.end ? ap.open : rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); };   /* SPAN.groundAt's apron */
+  for (var q = 1; q < 6; q++){ var f = q / 6, pu = s[0] + (e[0] - s[0]) * f, pv = s[1] + (e[1] - s[1]) * f + (q % 2 ? 50 : -50); path.push([r1(pu), r1(pv), r1(gy(pu, pv))]); }
+  path.push([e[0], e[1], e[2]]); L.apronPath = path;
   // the rim road on from Span: along the table 40 m in from the rim's line, every 100 m, to the head of the cliff stair
   var road = [[-180, -205, 0], [1150, -205, 0]];
   for (var v = -300; v > vA + 50; v -= 100) road.push([r1(rimAt(v).u - 40), v, 0]);
@@ -302,8 +313,8 @@ H('hl_10', 'dw-stilt', B(-190, -181, 378, 389), Math.PI); H('hl_12', 'dw-silo', 
 W('hw_north', 'road', [[-240, 236, 0], [-240, 800, 0], [300, 800, 0]], { w: 12, note: 'the north highway (Ancient): to the tableland and the plateau\'s people' });
 W('quarter_lane', 'road', [[-200, 290, 0], [-200, 372, 0], [-56, 372, 0]], { w: 8, note: 'the street of the quarter: from the palisade gate north, then east to the arena' });
 W('mission_walk', 'walk', [[-178, 376, 0], [-178, 398, 0]], { w: 4, note: 'from the street to the mission temple\'s door' });
-W('cliff_stair', 'stair', L.cliffStair, { w: 2.4, held: true, note: 'cut down the cliff in switchbacks, from the rim road to the floor of the pillar rim' });
-W('pillar_path', 'walk', [L.cliffStair[L.cliffStair.length - 1].slice(), [L.watchStair[0][0], L.watchStair[0][1], L.watchStair[0][2]]], { w: 3, held: true, note: 'across the floor to the watch pillar\'s foot' });
+W('cliff_stair', 'stair', L.cliffStair, { w: 2.4, held: true, note: 'cut down the caprock in switchbacks, from the rim road to the apron at its foot' });
+W('pillar_path', 'walk', L.apronPath, { w: 3, held: true, note: 'down the badland apron to the foot of the watch pillar' });
 W('watch_stair', 'stair', L.watchStair, { w: 1.6, held: true, note: 'cut up the watch pillar\'s faces, round and round, to the post\'s gate' });
 W('palisade_way', 'road', [[-200, 286, 0], [-234, 252, 0]], { w: 8, note: 'from the palisade gate to the north highway, by the north gate of the Cross' });
 W('hw_south', 'road', [[-240, -236, 0], [-240, -800, 0], [-800, -800, 0]], { w: 12, note: 'the south highway' });

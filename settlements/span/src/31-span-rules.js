@@ -105,7 +105,8 @@ function rimAt(L, v){ var R = L.rim; if (v >= R[0].v) return R[0];
 function groundAt(L, u, v){
   var i, c, a = Math.abs(v), hd = L.canyon.head, bay = L.bay;
   for (i = 0; i < L.cuts.length; i++){ c = L.cuts[i].box; if (u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3]) return L.cuts[i].y; }
-  if (L.rim && L.rim.length){ var rm = rimAt(L, v); if (u >= rm.u) return rm.floor; }   /* past station 4's rim (its site record, mapped): the floor under the cliff */
+  if (L.rim && L.rim.length){ var rm = rimAt(L, v), ap = L.apron, d = u - rm.u;   /* past station 4's rim (its site record, mapped): the apron, then the open floor */
+    if (d >= 0){ if (!ap || d <= ap.d) return rm.floor; if (d >= ap.end) return ap.open; return rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); } }
   if (inPoly(L.lake.pts, u, v)) return Math.max(L.lake.bed, L.lake.level - .25 * polyDist(L.lake.pts, u, v));
   if (u >= -1050 && u < hd[0][0]) return a < 15 ? L.lake.level : 0;
   if (u >= hd[0][0] && u <= hd[1][0]){ var w = hd[0][1] + (hd[1][1] - hd[0][1]) * (u - hd[0][0]) / (hd[1][0] - hd[0][0]); if (a < w) return -60; }
