@@ -32,6 +32,10 @@ const VIEWS={};
   if(v){add('In the cove',v);add('Night: the cove',v,'night');}}
  add('A lattice oak',specimen('latticeoak',34,4,.6));
  add('Bead cones',specimen('beadcone',14,2,.6));
+ /* ?sheet=pillars: station 4's flora laid out on the bald (57-biome-swhighlands-pillars.js), the row of anemone trees and the beds before it */
+ {const S=window._biome&&window._biome.sheet;if(S){const T0=S.trees[0],T5=S.trees[S.trees.length-1],mx=(T0.x+T5.x)/2,mz=(T0.z+T5.z)/2;
+  add('Station 4 flora: the anemone trees',[mx,G(mx,mz-34)+5,mz-34,mx,G(mx,mz)+5,mz]);
+  const b=S.beds,c=b.torch;add('Station 4 flora: the floor',[c[0],G(c[0],c[1]-20)+4.5,c[1]-20,c[0],G(c[0],c[1])+.4,c[1]]);}}
  // the river cave: on the valley floor in front of the bite, the chevron cliff over the mouth
  add('The river cave',[BITE.x-150,Math.max(G(BITE.x-150,BITE.z+20),BITE.floor)+16,BITE.z+20,BITE.x+BITE.r,BITE.floor+22,BITE.z]);
  // the gorge: from beside the sink, up the gorge through the three bridges

@@ -34,3 +34,13 @@ shrinking to krummholz over its last 150 m); bottle brushes on the north-facing 
 and in the cirque's shade; the crest's megabreccia from ~4.6 km.
 
 Lessons for future builds and suggestions for core: `LESSONS.md`.
+
+## Station 4, the pillar rim: its flora (2026-10-27)
+
+The flora only, ahead of the station's stage (which waits for Span's arcology): `src/57-biome-swhighlands-pillars.js` and the
+species file's station-4 rows. The anemone tree (refs/03, right: stone-clasping roots, a stocky S-curved pored trunk, a plume of
+teal tentacles; a boulder at its foot when it grows on a fallen block), cushion sponges (the painting's dark green mounds), torch
+spikes (refs/03), bead coral (refs/20 D), rim turf and moss. Placement reads the fields `top`, `floor`, `block`, `wet`
+(BIOME-API.md), which station 4's stage will bake. Preview: station 1's page with `?sheet=pillars` (the views "Station 4 flora: the
+anemone trees" and "... the floor"), every stage of the tree and a bed of each floor plant on the bald. Not yet: the pass run on a
+real stage, its triangle budget, impostor gain, textures from the library (the bodies are procedural flesh grain and vertex colour).

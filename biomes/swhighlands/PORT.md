@@ -17,6 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47-host-land.js` | 6.3 | [draw] | 6 | 1 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | the rock bodies (KSTACKS records, drawn) and the strata shader on the rock; the records cross over through KSTACKS.export |
 | `src/50-biome-swhighlands-species.js` | 14.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: species and plant data (tags, palettes) beside the kit's items and materials |
 | `src/55-biome-swhighlands-trees.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split: placement by KRAND cell (records: SWHI.TREES, SWHI.LOGS) then the builders draw them in the same pass |
+| `src/57-biome-swhighlands-pillars.js` | 11.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 4's flora: placement by KRAND cell then the builders draw (split: records SWHI.TREES); the preview sheet |
 | `src/56-biome-swhighlands-treeline.js` | 10.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 6: placement by KRAND cell then the builders draw (split: records SWHI.TREES, SWHI.TREELINE.glass) |
 | `src/60-biome-swhighlands-floor.js` | 2.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: places (KRAND cells) and draws (BIO.put) in one pass |
 | `src/70-biome-swhighlands.js` | 1.5 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the biome's public surface: orders the passes (timed with performance.now: split: data inside host code), tags of a hit |

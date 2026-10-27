@@ -8,7 +8,8 @@ const SWHI_IMP_GAIN=1.6;   /* the impostors' gain, measured on this page (PERF.m
  // where the time goes (ms): 'pre' is everything before this fragment (the field's bake, the fields, the rock, the far country)
  const PH=window._phases={pre:Math.round(t0),field:window._fieldMs},lap=k=>{const t=performance.now();PH[k]=Math.round(t-tp);tp=t;};
  const Q=new URLSearchParams(location.search),qp=+(Q.get('q')||1);   /* ?q=.4 for a quick look */
- try{window._biome=SWHI.build({quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],bald:[BALD.x,BALD.z,BALD.r]});}catch(e){reportErr('biome: '+e.stack);}
+ try{window._biome=SWHI.build({quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],bald:[BALD.x,BALD.z,BALD.r],
+  sheet:Q.get('sheet')==='pillars'?[BALD.x+30,BALD.z-40,0]:null});   /* ?sheet=pillars: station 4's flora laid out on the bald (a preview, 57) */}catch(e){reportErr('biome: '+e.stack);}
  lap('biome');if(window._biome&&window._biome.ms)Object.assign(PH,window._biome.ms);
  const b=BIO.bake();lap('bake');
  /* the impostors' light matched to the near crowns (core/biome's bake comes out darker than the drawn crowns: HANDOFF-REBUILD.md,
