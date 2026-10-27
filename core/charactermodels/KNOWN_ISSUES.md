@@ -12,7 +12,8 @@
 - **Merged garments hide no skin in Godot yet** (the Izani court robe and the grand boubous were merged on 2026-10-20). `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
   items' own blend shapes but does not remake the base's cover regions (`base.gshapes.bin`): in the Godot twin the skin
   under them is still drawn (it is hidden on the page, which reads `hide` from kit.json). The next whole build
-  (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it.
+  (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it, and so does `python3 tools/make_mpfb.py gshapes <body>`
+  (2026-10-23: the Godot shapes of every piece remade from the pieces and kit.json alone).
 - **The Godot twin blends normals linearly.** Its blend shapes carry each target's normals (NORMALIZED mode), so a
   reshaped body's normals turn, but as a weighted sum of the targets' turns, where the page re-sums them from the
   morphed faces: close, not exact, when many targets stack. Its skin is one surface of cover regions (the triangles the
@@ -137,6 +138,38 @@
   and the gele are rigid; the grand boubou is one stiff sheet over the arms (it swings at the hem but has no folds and
   does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
   held overhead.
+- **Fur is shells, not strands** (2026-10-26; README, "Fur"). Seen edge-on it has a soft, spiky silhouette; seen
+  face-on it is a speckle of strand ends with no lighting of its own (it is lit as the cloth under it), and strands do
+  not move apart in a bend or sway. Fur under another item is trimmed only for trousers (between the boots' top and the
+  top's hem); a fur trim under a part of its own garment (the gown's cape edge under the lace collar) can show through
+  it. The rows of the garments built before `make_garments.py` wrote them were derived from the published pieces
+  (`tools/fur.py`): rebuilding those garments rewrites them from the source (a few texels apart at a band's edge). The
+  Godot twin's legs band takes the unmorphed rest heights (CUSTOM1), the page the morphed ones: a few cm apart at the
+  slider ends. The crowd's baked looks leave the shells out.
+- **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt, the brush and the short coat read as fur; body hair
+  (tuned once: combed flat, inked toward the skin) reads as hair from a few metres and as streaks close up. The Coyote
+  Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
+  face has a human face's shape, the eyes and mouth bare by ellipses (until the coyote head, below).
+- **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head, two quality passes
+  against the owner's photographs. It blinks (upper lids only; the lower lids are carved, still). Its jaw does not open
+  and its ears do not turn: nothing drives the face joints yet (no clip has a face track), so a jaw or ear joint would
+  sit still; that wants the activities' clips (README, "A core module: where it goes next"). The eyes do not turn either.
+  The colours are vertex colours, so the pattern's edges are soft; the fur's box projection meets itself at 45-degree
+  seams (strands that run on 3D position would need the rest position in Godot's vertex shader); the ears are furred only
+  at the base. It takes the skull's morphs by nearest vertex, so a child's or an old body's head is the man's head
+  moved, a little large on the short ones. Headgear made for a human head floats on it (no people draws one on it yet).
+  In this checkout it was made by `tools/heads.py` from the published base: the Godot twin has no slider shapes for it
+  and its skin regions do not yet hide the human head under it, until `make_mpfb.py` next runs (which makes it with the
+  other mods); its look and its blink were checked in Godot on the bare piece.
+  The digitigrade legs are not built. A MakeHuman UV seam shows in motion as a darker
+  line across the chest under a full coat (the strands run on the UV map and break at the seam). The bare face is an ellipse sized from the
+  head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the
+  temples. The ears (their own primitive) stay bare. A UV seam shows as a faint line in a short coat (round the
+  areola). A coat stops at what the clothes hide; a library item with no delete group hides nothing, so a coat comes
+  through it (the polo, the fisherman's sweater). The Godot twin takes its rings through vertices merged by position
+  (the page through MakeHuman's source vertices) and reads its cover from a texture by VERTEX_ID; its figure test
+  could not run here (no pieces), only a test sphere. No people draws a coat yet: the Khaayken's people entry and their
+  1.15 scale are for Y5 (`kits/yeti/PLAN.md`).
 - **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
   and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
   close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the
@@ -196,3 +229,25 @@
   follow LORE.md's real-world references.
 - **Ancestry is MakeHuman's three reference sets** (African, Asian, Caucasian). It moves face and build only; the
   skin tone is its own setting, so a people can pair any face with any tone (the Chichani, the Dalabites' green).
+- **The non-human spike's open ends** (`NONHUMAN.md`, 2026-10-23):
+  - *The tail comes through the cloth* of a top, robe or cape over its root (over trousers it leaves by the waistband's
+    back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
+    opening, and the cloth chains do not collide with the tail.
+  - *Its scales are the library's `organic.scale`*, a snake's flank, on the head, the tail and (under the lizard's head,
+    kit item `skin_detail`) the body: the Lizardmen's own textures are asked for in `core/materials/PROMPTS-NEEDED.md`,
+    section 21. On the body they are tiled over MakeHuman's UVs, whose islands differ in scale by about twice either
+    way: from behind, the neck and shoulders show patches of larger and smaller scales meeting at the islands' edges.
+    A body made for the Lizardmen would want its own UVs (or the scales projected in the skin's rest space).
+  - *The frog's feet are the human ones*: the hands are webbed with pads, the toes (one joint for all five) are not.
+    In the A-pose the fingers lie close, so the webs show little until a hand spreads.
+  - *Godot reads the frog's pattern from its vertex colours as if they were sRGB*: `kchar_pattern.gdshader` decodes
+    them (found on the compatibility renderer; the Forward+ renderer, untried here, may not need it: check a marbled
+    frog's jaw against its body there).
+  - *The neck's crest goes as one*: under any worn item that covers the skin at its roots (most tops do: their hide
+    runs up the back of the neck) the whole neck's crest is left out and the head's stays (`crest_neck`).
+  - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
+  - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
+    published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.
+- **The giant's lower arms on the ladder** (`kchar_test.gd`, found 2026-10-23, the first run here with the Godot pieces):
+  "on the ladder the lower arms copy the upper (0.32 rad apart)" fails, on main's own scripts and data as on the spike's
+  branch. Not looked into.

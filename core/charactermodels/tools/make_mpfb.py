@@ -28,6 +28,7 @@ import giant
 import layers
 import glbio
 import mods
+import tail
 import make_pieces as mp
 
 HERE = mp.HERE
@@ -1024,6 +1025,77 @@ def pack_morphs(entries, npz):
     return b''.join(out)
 
 
+def unpack_morphs(buf):
+    """KMR1 (pack_morphs) read back: [(material names, used, {target: (indices, deltas n x 3 in metres)})]"""
+    o, out = 4, []
+    n = struct.unpack_from('<H', buf, o)[0]; o += 2
+    for _ in range(n):
+        nl = struct.unpack_from('<H', buf, o)[0]; o += 2
+        mats = buf[o:o + nl].decode().split('\n'); o += nl
+        nu = struct.unpack_from('<I', buf, o)[0]; o += 4
+        used = np.frombuffer(buf, np.uint32, nu, o).astype(int); o += 4 * nu
+        nt = struct.unpack_from('<H', buf, o)[0]; o += 2
+        tg = {}
+        for _ in range(nt):
+            t, c = struct.unpack_from('<HI', buf, o); o += 6
+            if c & 0x80000000:
+                idx, c = used, nu
+            else:
+                idx = np.frombuffer(buf, np.uint32, c, o).astype(int); o += 4 * c
+            tg[t] = (idx, np.frombuffer(buf, np.int16, 3 * c, o).reshape(-1, 3).astype(float) * UNIT); o += 6 * c
+        out.append((mats, used, tg))
+    return out
+
+
+def dense_morphs(entry, n_targets):
+    """one unpack_morphs entry as targets x (largest index + 1) x 3"""
+    mats, used, tg = entry
+    D = np.zeros((n_targets, int(used.max()) + 1, 3))
+    for t, (idx, d) in tg.items():
+        D[t, idx] = d
+    return D
+
+
+def refresh_gshapes(body):
+    """python3 tools/make_mpfb.py gshapes <male|female|giant>: the Godot twin's shapes (<piece>.gshapes.bin) from the
+    pieces alone (each GLB and its KMR1 deltas, as the published lab has them), with no Blender and no export: the
+    deltas are the KMR1's (0.1 mm, those under 0.2 mm left out, as packed), the skin's regions from kit.json's hides"""
+    name = 'mpfb_' + body
+    pieces = os.path.join(HERE, 'pieces', name)
+    kit = json.load(open(os.path.join(HERE, 'data', name, 'kit.json'), encoding='utf-8'))
+    T = len(kit['morph']['targets'])
+    items = kit['items']
+    for f in sorted(os.listdir(pieces)):
+        if not f.endswith('.morph.bin'):
+            continue
+        glb = os.path.join(pieces, f[:-10] + '.glb')
+        if not os.path.exists(glb):
+            continue
+        ents = unpack_morphs(open(os.path.join(pieces, f), 'rb').read())
+        j, _ = glbio.read_glb(open(glb, 'rb').read())
+        npz = {}
+        for nd in j['nodes']:
+            if 'mesh' in nd:
+                mats = [j['materials'][p['material']]['name'] for p in j['meshes'][nd['mesh']]['primitives'] if 'material' in p]
+                e = next((x for x in ents if x[0] == mats), None)
+                if e is not None:
+                    npz['d_' + nd['name']] = dense_morphs(e, T)
+        key = lambda n: n if 'd_' + n in npz else None
+        if f == 'base.morph.bin':
+            mat, BP, BT = body_primitive(glb)
+            hid = [i for i, e in enumerate(items) if 'hide' in e]
+            H = np.zeros((len(BT), len(hid)), bool)
+            for k, i in enumerate(hid):
+                H[:, k] = np.unpackbits(np.frombuffer(base64.b64decode(items[i]['hide']), np.uint8), bitorder='little')[:len(BT)].astype(bool)
+            rows, tri_mask = np.unique(H, axis=0, return_inverse=True)
+            cover = [[hid[k] for k in np.nonzero(r)[0]] for r in rows]
+            out = godot_shapes(glb, key, npz, tri_mask.reshape(-1), mat, cover)
+        else:
+            out = godot_shapes(glb, key, npz)
+        open(glb[:-4] + '.gshapes.bin', 'wb').write(out)
+    print(name, 'Godot shapes written beside', len([f for f in os.listdir(pieces) if f.endswith('.gshapes.bin')]), 'pieces')
+
+
 def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None, cover=None):
     """GSH1: what the Godot twin (godot/krator/character/kchar_figure.gd) needs to make a piece's blend shapes without
     looping over deltas in GDScript. Per mesh (keyed by its first material), the targets that move it and per surface
@@ -1105,15 +1177,16 @@ def godot_shapes(path, key, npz, tri_mask=None, skin_mat=None, cover=None):
 
 
 class NpzAlias:
-    """morphs.npz with some keys standing for others (a mod's deltas are the base's)"""
-    def __init__(self, npz, alias):
-        self.npz, self.alias = npz, alias
+    """morphs.npz with some keys standing for others (a mod's deltas are the base's) and some made here (extra: the
+    non-human pieces', from their recipes, mods.Recipe)"""
+    def __init__(self, npz, alias, extra=None):
+        self.npz, self.alias, self.extra = npz, alias, extra if extra is not None else {}
 
     def __getitem__(self, k):
-        return self.npz[self.alias.get(k, k)]
+        return self.extra[k] if k in self.extra else self.npz[self.alias.get(k, k)]
 
     def __contains__(self, k):
-        return self.alias.get(k, k) in self.npz.files
+        return k in self.extra or self.alias.get(k, k) in self.npz.files
 
 
 def morph_kit(npz, J):
@@ -1301,7 +1374,15 @@ def main():
         man['items'] = [it for it in man['items'] if giant.wears(it['id'])]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     # the mods (mods.py: a second pair of arms, flesh or cybernetic; rib gills), worn like items in slot 'mods'
-    mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
+    # and the non-human ones (a spike: a tail, a lizard's head; mods.nonhuman), whose deltas come from their recipes
+    nh = {}
+    mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name, nh)
+    if not merge and not big:
+        # the therian heads (tools/heads.py): a body mod made from the base, its morphs and Godot shapes packed here by _VIDX
+        import heads
+        he, hr = heads.make(os.path.join(pieces, 'base.glb'), pieces, name, int(len(BT)))
+        mod_items.append(he)
+        mod_roles.update(hr)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
@@ -1335,6 +1416,8 @@ def main():
             print('%-8s %s: %d vertices pinned to the hips' % (name, it['id'], mods.pin_hips(os.path.join(pieces, it['id'] + '.glb'), cl['spec']['hips'])))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
+        if cl and cl['spec'].get('fur'):
+            entry['fur'] = cl['spec']['fur']          # its fur rows (make_garments.py fur_of): the figure's fur shells
         if culture_of(it['id']):
             entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
         if big and it['slot'] not in ('hair', 'beard'):
@@ -1394,7 +1477,11 @@ def main():
     morph = {}
     if os.path.exists(npz_path):
         # a mod's vertices name the MakeHuman vertex whose deltas move them: their deltas are the base's
-        npz = NpzAlias(np.load(npz_path), {'d_' + m['id']: 'd_base' for m in mod_items})
+        npz = NpzAlias(np.load(npz_path), {'d_' + m['id']: 'd_base' for m in mod_items if m['id'] not in nh.get('recipes', {})})
+        bones = [glbio.short(str(b)) for b in npz['bones']]
+        d_joint = lambda n: npz['d_joints'][:, bones.index(n)]
+        for mid, rec in nh.get('recipes', {}).items():
+            npz.extra['d_' + mid] = rec.deltas(npz['d_base'], d_joint, d_joint('Hips')[:, 1] / c.jpos[c.J['Hips']][1])
         always = man.get('always', [])
         ents = mesh_entries(os.path.join(pieces, 'base.glb'), lambda n: 'base' if n == 'Human' else
                             '_always%d' % always.index(n) if n in always else None)
@@ -1430,10 +1517,17 @@ def main():
     else:
         clips = mp.write_anims(os.path.join(pieces, 'anims.glb'), c)
     names, parents, jnodes, W = mp.skeleton_nodes(c, {f[0]: c.jpos[c.J['Head']] for f in mp.FACE})
+    joints = [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']} for i, n in enumerate(jnodes)]
+    if nh.get('tail'):
+        # the tail's joints (tools/tail.py), after every other joint: no index moves
+        hips = W[[n['name'] for n in jnodes].index('Hips')]
+        joints += tail.skeleton_joints(len(joints), [n['name'] for n in jnodes].index('Hips'), nh['tail']['root'], hips[1, 3], hips)
     if morph:
-        morph = morph_kit(npz, {n['name']: i for i, n in enumerate(jnodes)})
-    json.dump({'joints': [{'name': n['name'], 'parent': parents[i], 't': n['translation'], 'r': n['rotation']}
-                          for i, n in enumerate(jnodes)], 'clips': clips,
+        morph = morph_kit(npz, {n['name']: i for i, n in enumerate(joints)})
+        if nh.get('tail'):
+            mods.tail_rows(morph, [n['name'] for n in joints], c.jpos[c.J['Hips']][1], nh['tail']['root'], nh['tail']['b_root'],
+                           npz['d_base'], d_joint)
+    json.dump({'joints': joints, 'clips': clips,
                'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)}),
                'colliders': colliders(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'),
                                       npz if morph else None),
@@ -1442,6 +1536,9 @@ def main():
     kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
            'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
            'tint': {'roles': roles, 'gain': {k: round(1 / srgb_lin(v), 4) for k, v in TINT_MEAN.items()}}}
+    if not big:
+        import heads
+        kit['tint']['gain']['coat'] = round(kit['tint']['gain']['hair'] / heads.SHADE, 4)
     if big:
         kit.update(giant.kit_extra())
     json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
@@ -1451,5 +1548,7 @@ def main():
 if __name__ == '__main__':
     if sys.argv[1] == 'hides':
         refresh_hides(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'gshapes':
+        refresh_gshapes(sys.argv[2])
     else:
         main()

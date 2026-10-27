@@ -53,6 +53,9 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 	var id = rec.get(slot) if slot == "hair" or slot == "beard" else rec.get("armour", {}).get(slot)
 	if id == null:
 		return null
+	# an animal head in place of the human one wears no hair, beard or headgear (KCHAR.replacesHead)
+	if (slot == "hair" or slot == "beard" or slot == "head") and replaces_head(rec, kit):
+		return null
 	for it in kit["items"]:
 		if it["id"] == id and it["slot"] == slot and fits(it, rec, kit):
 			return it
@@ -70,6 +73,14 @@ static func mods(rec: Dictionary, kit: Dictionary) -> Array:
 				seen[it.get("group")] = true
 				out.append(it)
 	return out
+
+
+# a worn mod puts an animal head in place of the human one (kit item replaces_head: tools/mods.py lizard_head)
+static func replaces_head(rec: Dictionary, kit: Dictionary) -> bool:
+	for m in mods(rec, kit):
+		if m.get("replaces_head", false):
+			return true
+	return false
 
 
 static func arms(rec: Dictionary, kit: Dictionary) -> int:
@@ -140,6 +151,10 @@ static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
 		if it != null:
 			for m in it.get("hide_parts", []):
 				out[m] = true
+	# and a mod's (an animal head leaves out the lips, ears, brows, lashes and eyes it covers)
+	for it in mods(rec, kit):
+		for m in it.get("hide_parts", []):
+			out[m] = true
 	return out
 
 
@@ -329,6 +344,8 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 	rec["hair_color"] = hair
 	var eyes: Array = P.get("eyes", ["#3b2414", "#5a3a22", "#6e5a2e", "#4a5a3a", "#4e6a80"])
 	rec["eye_color"] = eyes[int(floor(r.next() * eyes.size()))]
+	if P.get("coat") != null:            # a furred people's coat (as KCHAR.stranger)
+		rec["coat"] = P["coat"]
 	rec["people"] = P.get("id")
 	return rec
 

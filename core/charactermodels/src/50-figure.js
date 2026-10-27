@@ -88,6 +88,7 @@ function KCharFigure(body, sliders, load){
         geo.setAttribute('skinIndex', new THREE.BufferAttribute(arr, 4));
       }
       var m = new THREE.SkinnedMesh(geo, s.material.clone());
+      if(s.morphTargetDictionary) m.morphTargetDictionary = Object.assign({}, s.morphTargetDictionary);   // its own targets by name (a lid's blink)
       if(m.material.alphaTest > 0) m.material.onBeforeCompile = opaqueCutout;
       if(kit.tint && kit.tint.roles[s.material.name] === 'eye') irisTint(m.material);
       m.name = id; m.frustumCulled = false; m.castShadow = true;
@@ -99,6 +100,7 @@ function KCharFigure(body, sliders, load){
         var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
         m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, !!it0.loose, slot0 === 'legs');
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
+      if(part.role === 'armour' || part.role === 'mod') furShells(m, itemByKey[part.key]);
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -111,6 +113,241 @@ function KCharFigure(body, sliders, load){
     sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', '#include <alphatest_fragment>\n\tdiffuseColor.a = 1.0;');
   }
 
+  /* ---- fur (data/fur.json; kit items' fur, make_garments.py fur_of, tools/fur.py) ----
+     a garment's fur rows ([v0, v1, kind, mu, mv]: rows of its texture, the kind, the metres a unit of u and of v spans)
+     drawn as shells: fur.layers copies of the triangles in those rows, children of the garment so they show and hide
+     with it, sharing its attributes (the morphs, summed on the CPU, carry over) and its skeleton. Layer k of n stands
+     k/n of the pile out along the skinned normal, after the push, its tips combed down (comb * pile * t^2), and keeps
+     only the texels a strand passes through: strands on a grid of 'strand' metres in u and v (a whole number across u,
+     so a tube's seam meets itself), each jittered in its cell, of its own length (clump), tapering to its tip. The
+     roots are shaded (shade), the tips lit (tip) and each strand a little lighter or darker (vary); the colour is the
+     garment's own (its texture, its dye). Godot: kchar_fur.gdshader, kchar_figure.gd _fur */
+  // the way the tips lean: down (garments, coats); back along a head (a therian's: its fur lies from the nose to the
+  // nape; combed down it stood up on the crown)
+  var COMB_DOWN = new THREE.Vector3(0, -1, 0), COMB_BACK = new THREE.Vector3(0, -0.45, -0.9).normalize();
+  var FUR_GLSL = 'vec3 kfHash(vec3 p){ p = fract(p * vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yxz + 33.33); return fract((p.xxy + p.yxx) * p.zyx); }\n';
+  function furShells(m, it){
+    var F = KCharFigure.fur, rows = it && it.fur;
+    if(!F || !rows || !rows.length) return;
+    var scale = F.items && F.items[it.id] && F.items[it.id].pile != null ? F.items[it.id].pile : 1;
+    if(!(scale > 0)) return;
+    var n = F.layers == null ? 12 : F.layers, uv = m.geometry.attributes.uv, i0 = m.userData.index0;
+    if(!uv || !i0) return;
+    // a piece that carries its own cover and metres per UV (TEXCOORD_1: a therian's head, tools/heads.py) runs as a coat
+    // does, its strands on its UV scaled per vertex; rows only pick the triangles
+    var piece = m.geometry.attributes.uv2 ? 'uv2' : false;
+    var byKind = {}, band = m.userData.furBand = { value:new THREE.Vector2(-1e3, 1e3) };
+    rows.forEach(function(r){ if(F.kinds[r[2]]) (byKind[r[2]] = byKind[r[2]] || []).push(r); });
+    Object.keys(byKind).forEach(function(kind){
+      var K = F.kinds[kind], rs = byKind[kind].slice(0, 4), pile = K.pile * scale, idx = [], nk = piece && K.layers ? K.layers : n;
+      // the triangles with a corner in the rows (a band's edge is cut in the shader)
+      for(var t=0;t<i0.length;t+=3){
+        for(var c=0;c<3;c++){
+          var v = uv.getY(i0[t + c]);
+          if(rs.some(function(r){ return v >= r[0] - 0.002 && v <= r[1] + 0.002; })){ idx.push(i0[t], i0[t+1], i0[t+2]); break; }
+        }
+      }
+      if(!idx.length) return;
+      var geo = new THREE.BufferGeometry();
+      Object.keys(m.geometry.attributes).forEach(function(a){ geo.setAttribute(a, m.geometry.attributes[a]); });
+      geo.setIndex(idx);
+      // the garment's own shader changes (pushOut, opaqueCutout) carry over, keyed by its program
+      var own = m.material.hasOwnProperty('onBeforeCompile'), key0 = own && m.material.customProgramCacheKey ? m.material.customProgramCacheKey() : 'own';
+      var R = [0, 1, 2, 3].map(function(k){ var r = rs[k] || [2, 2, 0, 0]; return new THREE.Vector4(r[0], r[1], r[3], r[4]); });
+      for(var k=1;k<=nk;k++){
+        var tk = k / nk, mat = new THREE.MeshStandardMaterial({ map:m.material.map, roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true,
+                                                                 vertexColors:!!m.material.vertexColors });
+        if(!m.material.map) mat.defines = { USE_UV:'' };
+        mat.color = m.material.color;       // the same Color: apply()'s dye and tint reach the shells
+        mat.onBeforeCompile = furShader(own ? m.material.onBeforeCompile : null, {
+          kfH:{ value:pile * tk }, kfC:{ value:(K.comb || 0) * pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:R },
+          kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
+          kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:band, kfU0:{ value:k === 1 && K.undercoat ? 1 : 0 },
+          kfDir:{ value:piece ? COMB_BACK : COMB_DOWN } }, piece);
+        mat.customProgramCacheKey = own ? function(){ return 'kchar-fur-' + key0 + (piece || ''); } : function(){ return 'kchar-fur' + (piece || ''); };
+        var s = new THREE.SkinnedMesh(geo, mat);
+        s.name = m.name + '|fur:' + kind + ':' + k; s.frustumCulled = false; s.castShadow = false;
+        s.bind(m.skeleton, new THREE.Matrix4());
+        s.userData.fur = true;
+        m.add(s);
+      }
+    });
+  }
+  // body: 'coat', a coat's shells (coatShells): each vertex's cover (furK, under 1 thins the strands) and the metres one
+  // unit of its UV spans (furM) are attributes, and the strands run on the body's UV map scaled by them, rather than in
+  // rows; 'uv2', a piece's own (a therian's head): its second UV the fur's density and its length (of the pile), its
+  // strands' UV in metres (tools/heads.py)
+  function furShader(prev, U, body){
+    return function(sh, r){
+      if(prev) prev(sh, r);              // the push (pushOut) first: the fur stands on the cloth where it is pushed to
+      Object.keys(U).forEach(function(k){ sh.uniforms[k] = U[k]; });
+      // (kfF: a legs item's fur fades out below the top of the boots over it and above the hem of the top over it, kfK:
+      // tucked in, it came out through the boots' shafts, and through a deel's skirt in a stride. position is the rest,
+      // after the morphs, as the boots' top and the hem are)
+      sh.vertexShader = 'uniform float kfH;\nuniform float kfC;\nuniform vec2 kfF;\nuniform vec3 kfDir;\nvarying float kfK;\n' +
+        (body === 'uv2' ? 'attribute vec2 uv2;\nvarying float kfM;\n' : body ? 'attribute float furK;\nattribute float furM;\nvarying float kfM;\n' : '') + sh.vertexShader.replace('#include <project_vertex>',
+        'vec3 kfN = normalize(objectNormal), kfD = kfDir;\n\tkfD -= kfN * dot(kfD, kfN);\n\tfloat kfLn = 1.0;\n' +
+        (body === 'uv2' ? '\tkfK = uv2.x; kfLn = uv2.y; kfM = 1.0;\n' : body ? '\tkfK = furK; kfM = furM;\n' : '\tkfK = smoothstep(kfF.x, kfF.x + 0.03, position.y) * (1.0 - smoothstep(kfF.y - 0.03, kfF.y, position.y));\n') +
+        '\ttransformed += (kfN * kfH + kfD * kfC) * (' + (body === 'uv2' ? 'kfLn' : 'kfK') + ');\n#include <project_vertex>');
+      sh.fragmentShader = 'varying float kfK;\nuniform float kfT;\nuniform vec4 kfR[4];\nuniform float kfS;\nuniform float kfW;\nuniform float kfL;\nuniform float kfSh;\nuniform float kfTp;\nuniform float kfV;\n' +
+        (body ? 'varying float kfM;\nuniform float kfU0;\n' : '') + FUR_GLSL + sh.fragmentShader.replace('#include <map_fragment>',
+        (body ? 'if(kfK < 0.05) discard;\n\tfloat kfU = 1e6;\n\tvec4 kfR0 = vec4(0.0);\n\tvec2 kfG = vUv * kfM / kfS' :
+        'vec4 kfR0 = vec4(0.0); bool kfIn = false;\n' +
+        '\tfor(int i = 0; i < 4; i++){ if(!kfIn && vUv.y >= kfR[i].x && vUv.y <= kfR[i].y){ kfIn = true; kfR0 = kfR[i]; } }\n' +
+        '\tif(!kfIn || kfK < 0.05) discard;\n' +
+        '\tfloat kfU = max(1.0, floor(kfR0.z / kfS + 0.5));\n' +
+        '\tvec2 kfG = vec2(vUv.x * kfU, vUv.y * kfR0.w / kfS)') + ', kfC0 = floor(kfG), kfFr = fract(kfG);\n' +
+        '\tfloat kfD0 = 1e9, kfLen = 1.0, kfTone = 1.0, kfP = 0.0;\n' +
+        '\tfor(int j = -1; j <= 1; j++) for(int i = -1; i <= 1; i++){\n' +
+        '\t\tvec2 o = vec2(float(i), float(j)), cc = kfC0 + o; cc.x = mod(cc.x, kfU);\n' +
+        '\t\tvec3 h = kfHash(vec3(cc, kfR0.x * 1024.0));\n' +
+        '\t\tfloat d = length(o + 0.15 + 0.7 * h.xy - kfFr);\n' +
+        '\t\tif(d < kfD0){ kfD0 = d; kfLen = 1.0 - kfL * h.z; kfTone = 1.0 + kfV * (fract(h.z * 7.13) - 0.5); kfP = fract(h.x * 5.37 + h.y * 3.11); }\n\t}\n' +
+        // (a cover under 1 keeps that share of the strands)
+        (body ? '\tif(!(kfU0 > 0.5 && kfK > 0.6) && (kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen) || kfP > kfK)) discard;\n' :
+        '\tif(kfT > kfLen || kfD0 > 0.5 * kfW * (1.0 - kfT / kfLen)) discard;\n') +
+        '#include <map_fragment>\n\tdiffuseColor.rgb *= mix(kfSh, kfTp, kfT) * kfTone;');
+    };
+  }
+
+  /* ---- coats: a furred body (data/fur.json coats, a record's coat) ----
+     the skin's fur, as shells of the base's skin primitive (furShader body). Each vertex's cover is its joints' covers
+     summed by its skin weights (the joint's name without its side; 'fingers' for any finger, '*' for the rest), less
+     the parts left bare, found in the rest pose: the face (an ellipse on the head's front; or in it only the eyes and
+     the mouth, for a furred face), the palms (the hands'
+     undersides, the A-pose's palms face down) and the soles. The shells take the skin the clothes leave (filterBase)
+     and fade in over COAT_FADE rings of it from what is hidden, so the pile stops short of a garment's edge. The
+     colour is the hair's; where the cover is dense a kind with undercoat has its first layer whole ( the skin between the strands
+     made the pelt read as speckle) and the coat hides the skin's parts it lists (hide_parts: the nipples showed through).
+     A UV seam splits vertices; the rings run through the source vertices so it does not show */
+  // the eyes and the mouth on the face's ellipse (x, y of a centre, its half-width and half-height, in the ellipse's units)
+  var EYE = [0.42, 0.48, 0.3, 0.22], MOUTH = [0, -0.3, 0.4, 0.2];
+  var COAT_FADE = 3, FINGER = /^Hand(Index|Middle|Pinky|Ring|Thumb)/;
+  function coverOf(coat, j){
+    var n = J[j] ? J[j].name.replace(/^(Left|Right)2?/, '') : '', c = coat.cover || {};
+    if(c[n] != null) return c[n];
+    if(FINGER.test(n) && c.fingers != null) return c.fingers;
+    return c['*'] == null ? 1 : c['*'];
+  }
+  function smooth(a, b, x){ var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+  function coatBuild(m, id, coat, K){
+    var g = m.geometry, M = m.userData.morph, P = M ? M.pos0 : g.attributes.position.array;
+    var Nn = M && M.nrm0 ? M.nrm0 : g.attributes.normal.array, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+    var uv = g.attributes.uv, n = P.length / 3, C = new Float32Array(n), hw = new Float32Array(n), aw = new Float32Array(n), fw = new Float32Array(n);
+    var bare = {}; (coat.bare || []).forEach(function(b){ bare[b] = true; });
+    var y0 = Infinity, y1 = -Infinity, x0 = Infinity, x1 = -Infinity, zs = 0, zn = 0;
+    for(var i=0;i<n;i++){
+      for(var k=0;k<4;k++){
+        var j = si.getComponent ? si.getComponent(i, k) : si.array[4 * i + k], w = sw.array[4 * i + k];
+        if(!w) continue;
+        C[i] += w * coverOf(coat, j);
+        var nm = J[j] ? J[j].name.replace(/^(Left|Right)2?/, '') : '';
+        if(nm === 'Head') hw[i] += w;
+        else if(nm === 'Hand' || FINGER.test(nm)) aw[i] += w;
+        else if(nm === 'Foot' || nm === 'ToeBase') fw[i] += w;
+      }
+      if(hw[i] > 0.5){ y0 = Math.min(y0, P[3*i+1]); y1 = Math.max(y1, P[3*i+1]); x0 = Math.min(x0, P[3*i]); x1 = Math.max(x1, P[3*i]); zs += P[3*i+2]; zn++; }
+    }
+    // the face: an ellipse on the head's front, from the chin to the brow and three fifths of the head's width
+    // (by the normal alone the eye sockets and the sides of the nose kept fur, and it hung over the eyes)
+    var zc = zn ? zs / zn : 0, xc = (x0 + x1) / 2, hh = Math.max(y1 - y0, 1e-6), fy = y0 + 0.37 * hh, ay = 0.37 * hh, ax = 0.3 * (x1 - x0);
+    for(i=0;i<n;i++){
+      var ny = Nn[3*i+1], f = 0;
+      if(hw[i] > 0 && P[3*i+2] > zc){
+        var ex = (P[3*i] - xc) / ax, ey = (P[3*i+1] - fy) / ay;
+        if(bare.face) f = Math.max(f, hw[i] * (1 - smooth(0.85, 1.15, Math.sqrt(ex * ex + ey * ey))));
+        // a furred face's eyes and mouth (a coyote's): small ellipses in the face's own measure
+        if(bare.eyes) f = Math.max(f, hw[i] * (1 - smooth(0.8, 1.2, Math.min(Math.hypot((ex - EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]),
+                                                                             Math.hypot((ex + EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3])))));
+        if(bare.mouth) f = Math.max(f, hw[i] * (1 - smooth(0.8, 1.2, Math.hypot((ex - MOUTH[0]) / MOUTH[2], (ey - MOUTH[1]) / MOUTH[3]))));
+      }
+      if(bare.palms) f = Math.max(f, aw[i] * smooth(0.1, 0.45, -ny));
+      if(bare.soles) f = Math.max(f, fw[i] * smooth(0.3, 0.6, -ny));
+      C[i] = Math.min(1, Math.max(0, C[i] * (1 - f)));
+    }
+    // the metres one unit of UV spans at each vertex: its triangles' edges in metres over their length in UV
+    var i0 = m.userData.index0, mm = new Float32Array(n), mc = new Float32Array(n), U = uv.array;
+    for(var t=0;t<i0.length;t+=3){
+      var l3 = 0, l2 = 0;
+      for(k=0;k<3;k++){
+        var a = i0[t + k], b = i0[t + (k + 1) % 3];
+        l3 += Math.hypot(P[3*a] - P[3*b], P[3*a+1] - P[3*b+1], P[3*a+2] - P[3*b+2]);
+        l2 += Math.hypot(U[2*a] - U[2*b], U[2*a+1] - U[2*b+1]);
+      }
+      if(l2 > 1e-9) for(k=0;k<3;k++){ mm[i0[t + k]] += l3 / l2; mc[i0[t + k]]++; }
+    }
+    for(i=0;i<n;i++) mm[i] = mc[i] ? mm[i] / mc[i] : 1;
+    // the source vertices' neighbours, for the rings
+    var src = M ? M.src : null, ns = M ? M.nsrc : n, nb = [];
+    for(i=0;i<ns;i++) nb.push([]);
+    for(t=0;t<i0.length;t+=3) for(k=0;k<3;k++){
+      var p = src ? src[i0[t + k]] : i0[t + k], q = src ? src[i0[t + (k + 1) % 3]] : i0[t + (k + 1) % 3];
+      if(nb[p].indexOf(q) < 0){ nb[p].push(q); nb[q].push(p); }
+    }
+    var geo = new THREE.BufferGeometry();
+    Object.keys(g.attributes).forEach(function(a){ geo.setAttribute(a, g.attributes[a]); });
+    geo.setAttribute('furK', new THREE.BufferAttribute(new Float32Array(n), 1));
+    geo.setAttribute('furM', new THREE.BufferAttribute(mm, 1));
+    var F = KCharFigure.fur, layers = K.layers || F.layers || 12, group = new THREE.Group(), color = new THREE.Color();
+    for(var L=1;L<=layers;L++){
+      var tk = L / layers, mat = new THREE.MeshStandardMaterial({ roughness:1, metalness:0, side:THREE.DoubleSide, skinning:true });
+      mat.color = color; mat.defines = { USE_UV:'' };
+      mat.onBeforeCompile = furShader(null, {
+        kfH:{ value:K.pile * tk }, kfC:{ value:(K.comb || 0) * K.pile * tk * tk }, kfT:{ value:tk }, kfR:{ value:[0, 1, 2, 3].map(function(){ return new THREE.Vector4(); }) },
+        kfS:{ value:K.strand }, kfW:{ value:K.thick }, kfL:{ value:K.clump || 0 }, kfSh:{ value:K.shade == null ? 1 : K.shade },
+        kfTp:{ value:K.tip == null ? 1 : K.tip }, kfV:{ value:K.vary || 0 }, kfF:{ value:new THREE.Vector2() }, kfU0:{ value:L === 1 && K.undercoat ? 1 : 0 },
+        kfDir:{ value:COMB_DOWN } }, 'coat');
+      mat.customProgramCacheKey = function(){ return 'kchar-coat'; };
+      var s = new THREE.SkinnedMesh(geo, mat);
+      s.name = m.name + '|coat:' + id + ':' + L; s.frustumCulled = false; s.castShadow = false;
+      s.bind(m.skeleton, new THREE.Matrix4());
+      s.userData.fur = true;
+      group.add(s);
+    }
+    m.add(group);
+    return { id:id, C:C, src:src, nb:nb, ns:ns, geo:geo, group:group, color:color };
+  }
+  function coatEdge(rec){
+    var furred = KCHAR.mods(rec, kit).filter(function(x){ return x.furred; }).map(function(x){ return x.id; });
+    if(!furred.length) return null;
+    return KCHAR.hidden(Object.assign({}, rec, { mods:(rec.mods || []).filter(function(id){ return furred.indexOf(id) < 0; }) }), kit).base;
+  }
+  function coatHides(rec){
+    var F = KCharFigure.fur, c = F && F.coats && rec.coat ? F.coats[rec.coat] : null, out = {};
+    ((c && c.hide_parts) || []).forEach(function(p){ out[p] = true; });
+    return out;
+  }
+  function coatShells(m, rec, gain, hide, edge){
+    var F = KCharFigure.fur, coat = F && F.coats && rec.coat ? F.coats[rec.coat] : null, S = m.userData.coat;
+    var K = coat && F.kinds[coat.kind];
+    if(S && (!K || S.id !== rec.coat)){ m.remove(S.group); S = m.userData.coat = null; }
+    if(!K) return;
+    if(!S) S = m.userData.coat = coatBuild(m, rec.coat, coat, K);
+    // the rings from the hidden skin: 0 on a hidden triangle's corners, counting out through what shows
+    var i0 = m.userData.index0, d = new Float32Array(S.ns).fill(Infinity), front = [], k, t;
+    var sv = function(v){ return S.src ? S.src[v] : v; };
+    // (edge: the hide without a furred mod's, whose head carries the fur on: no bare ring at the neck)
+    edge = edge || hide;
+    if(edge) for(t=0;t<i0.length/3;t++) if(edge[t]) for(k=0;k<3;k++){ var v = sv(i0[3*t+k]); if(d[v]) { d[v] = 0; front.push(v); } }
+    for(var r=1;r<=COAT_FADE && front.length;r++){
+      var next = [];
+      front.forEach(function(v){ S.nb[v].forEach(function(q){ if(d[q] > r){ d[q] = r; next.push(q); } }); });
+      front = next;
+    }
+    var A = S.geo.attributes.furK, n = S.C.length, idx = [];
+    for(var i=0;i<n;i++) A.array[i] = S.C[i] * Math.min(1, d[sv(i)] / COAT_FADE);
+    A.needsUpdate = true;
+    for(t=0;t<i0.length/3;t++){
+      if(hide && hide[t]) continue;
+      if(A.array[i0[3*t]] > 0 || A.array[i0[3*t+1]] > 0 || A.array[i0[3*t+2]] > 0) idx.push(i0[3*t], i0[3*t+1], i0[3*t+2]);
+    }
+    S.geo.setIndex(idx);
+    // the hair's colour, or (ink under 1) that far from the skin's toward it
+    var ink = K.ink == null ? 1 : K.ink;
+    S.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair || 1));
+    if(ink < 1) S.color.lerp(tintOf(rec.skin || DEFAULT_SKIN, gain.skin || 1).clone(), 1 - ink);
+  }
+
   /* the eyes: make_mpfb.py greys the irises and puts their mask in the texture's alpha; the eye colour multiplies in
      by that mask, so the whites stay white */
   function irisTint(mat){
@@ -121,6 +358,66 @@ function KCharFigure(body, sliders, load){
         '#ifdef USE_MAP\n\tvec4 texelColor = mapTexelToLinear( texture2D( map, vUv ) );\n' +
         '\tdiffuseColor.rgb *= texelColor.rgb * mix( vec3( 1.0 ), eyeTint, texelColor.a );\n#endif');
     };
+  }
+
+  /* a frog's skin in the record's colours (kit item pattern; tools/amphibian.py): kpC1 the skin, kpC2 the marks, kpC3
+     the pale parts; the pattern's fields R (spots), G (a net), B (marbling) and the pale share A per vertex on the head's
+     pieces (COLOR_0, a shade in TEXCOORD_1) or from the body's pattern texture at the skin's own UVs (kpMask); kpKind
+     picks the field (0 none, 1 spots, 2 net, 3 marble), kpAmt how much of the skin the marks take. kpOn 0 leaves the
+     material as it was (the base skin without a frog's head). The twin of kchar_pattern.gdshader and kchar_skin.gdshader */
+  var KP_KIND = { none:0, spots:1, net:2, marble:3 };
+  function patternMat(mat, fromMask){
+    if(mat.userData.kp) return mat.userData.kp;
+    var u = mat.userData.kp = { kpC1:{ value:new THREE.Color() }, kpC2:{ value:new THREE.Color() }, kpC3:{ value:new THREE.Color() },
+                                kpKind:{ value:0 }, kpAmt:{ value:0.4 }, kpOn:{ value:0 }, kpMask:{ value:null } };
+    if(!fromMask) mat.vertexColors = false;      // COLOR_0 is the pattern, not a colour
+    mat.onBeforeCompile = function(sh){
+      Object.keys(u).forEach(function(k){ sh.uniforms[k] = u[k]; });
+      sh.vertexShader = (fromMask ? '' : 'attribute vec4 color;\nattribute vec2 uv2;\n') + 'varying vec4 vKpM;\nvarying float vKpS;\nvarying vec2 vKpUv;\n' +
+        sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n' +
+          (fromMask ? '\tvKpUv = uv; vKpM = vec4(0.0); vKpS = 1.0;' : '\tvKpM = color; vKpS = uv2.x; vKpUv = uv;'));
+      sh.fragmentShader = 'uniform vec3 kpC1;\nuniform vec3 kpC2;\nuniform vec3 kpC3;\nuniform float kpKind;\nuniform float kpAmt;\nuniform float kpOn;\n' +
+        'uniform sampler2D kpMask;\nvarying vec4 vKpM;\nvarying float vKpS;\nvarying vec2 vKpUv;\n' +
+        sh.fragmentShader.replace('#include <color_fragment>', ['#include <color_fragment>',
+          '\tif(kpOn > 0.5){',
+          fromMask ? '\t\tvec4 pm = texture2D(kpMask, vKpUv);' : '\t\tvec4 pm = vKpM;',
+          '\t\tfloat m = 0.0;',
+          '\t\tif(kpKind > 0.5 && kpKind < 1.5) m = 1.0 - smoothstep(0.6 * kpAmt, 0.6 * kpAmt + 0.05, pm.r);',
+          '\t\telse if(kpKind > 1.5 && kpKind < 2.5) m = 1.0 - smoothstep(0.3 * kpAmt, 0.3 * kpAmt + 0.04, pm.g);',
+          '\t\telse if(kpKind > 2.5) m = smoothstep(1.0 - kpAmt - 0.04, 1.0 - kpAmt + 0.04, pm.b);',
+          '\t\tdiffuseColor.rgb *= mix(mix(kpC1, kpC2, m), kpC3, pm.a) * vKpS;',
+          '\t}'].join('\n'));
+    };
+    mat.customProgramCacheKey = function(){ return fromMask ? 'kp-mask' : 'kp-vertex'; };
+    mat.needsUpdate = true;
+    return u;
+  }
+  // a colour held to a palette (kit item pattern palette: the frogmen's greens, browns, red-browns and creams, black
+  // marks): the nearest of its entries, or the colour itself where there is none
+  var snapA = new THREE.Color(), snapB = new THREE.Color();
+  function snap(hex, list){
+    if(!list || !list.length || !hex) return hex;
+    snapA.set(hex);
+    var best = list[0], bd = 1e9;
+    list.forEach(function(c){ snapB.set(c); var d = Math.pow(snapA.r - snapB.r, 2) + Math.pow(snapA.g - snapB.g, 2) + Math.pow(snapA.b - snapB.b, 2); if(d < bd){ bd = d; best = c; } });
+    return best;
+  }
+  // the record's skin colours under a patterned head: its own where it names them, the kit item's defaults otherwise,
+  // each held to the item's palette
+  function patternColours(rec, pat){
+    var pal = pat.palette || {};
+    return { skin:snap(rec.skin || DEFAULT_SKIN, pal.skin), skin2:snap(rec.skin2 || pat.skin2, pal.skin2), skin3:snap(rec.skin3 || pat.skin3, pal.skin3) };
+  }
+  // the pattern's uniforms from the record, the kit item's defaults where it names none
+  function patternSet(u, rec, pat, gain, mask){
+    var pc = patternColours(rec, pat);
+    u.kpC1.value.copy(tintOf(pc.skin, gain.skin || 1));
+    u.kpC2.value.copy(tintOf(pc.skin2, gain.skin || 1));
+    u.kpC3.value.copy(tintOf(pc.skin3, gain.skin || 1));
+    u.kpKind.value = KP_KIND[rec.pattern || pat.kind] || 0;
+    u.kpAmt.value = rec.pattern_amount != null ? rec.pattern_amount : pat.amount;
+    if(mask !== undefined) u.kpMask.value = mask;
+    u.kpOn.value = 1;
   }
 
   var S = new THREE.Matrix4(), T = new THREE.Matrix4();
@@ -211,12 +508,37 @@ function KCharFigure(body, sliders, load){
     }
     g.computeBoundingSphere();
   }
+  function highest(m){
+    var P = m.geometry.attributes.position.array, y = -Infinity;
+    for(var i=1;i<P.length;i+=3) if(P[i] > y) y = P[i];
+    return y;
+  }
   function lowest(m){
     var P = m.geometry.attributes.position.array, y = Infinity;
     for(var i=1;i<P.length;i+=3) if(P[i] < y) y = P[i];
     return y;
   }
   var tint = new THREE.Color(), DEFAULT_SKIN = '#d6ad8f', DEFAULT_HAIR = '#4a3424', DEFAULT_EYE = '#5a3a22';
+  /* the body's skin in a lizard head's scales (kit item skin_detail: the head's map and normal map, repeated across the
+     skin's UVs so the scales are the head's size), or back in its own maps */
+  function skinDetail(m, det, src){
+    var mt = m.material, u = m.userData;
+    if(!('ownMap' in u)){ u.ownMap = mt.map; u.ownNormal = mt.normalMap; }
+    var map = u.ownMap, nrm = u.ownNormal;
+    if(det){
+      var key = (src.material.map ? src.material.map.uuid : '') + det.repeat;
+      if(u.detailKey !== key){
+        u.detail = [src.material.map, src.material.normalMap].map(function(t){
+          if(!t) return null;
+          var c = t.clone(); c.wrapS = c.wrapT = THREE.RepeatWrapping; c.repeat.set(det.repeat, det.repeat); c.needsUpdate = true;
+          return c;
+        });
+        u.detailKey = key;
+      }
+      map = u.detail[0] || map; nrm = u.detail[1];
+    }
+    if(mt.map !== map || mt.normalMap !== nrm){ mt.map = map; mt.normalMap = nrm; mt.needsUpdate = true; }
+  }
   function tintOf(hexc, gain){ return tint.set(hexc).convertSRGBToLinear().multiplyScalar(gain); }
 
   /* leave out the triangles of a base region that `hide` (0/1 per triangle) marks */
@@ -250,6 +572,12 @@ function KCharFigure(body, sliders, load){
           // a mod that grants a second pair of arms (tools/mods.py) brings their skin as a piece; the joints are there
           // on every body, and arms2() drives them only when it is worn
           self.fourArms = kit.style === 'mpfb' && KCHAR.arms(rec, kit) >= 4;
+          // a tail and an animal head's jaw (mods with tail, jaw: tools/mods.py) are driven after each clip (tail, jaw)
+          var worn = kit.style === 'mpfb' ? KCHAR.mods(rec, kit) : [];
+          var wt = worn.filter(function(m){ return m.tail; })[0];
+          if(!TL || !wt || TL.spec !== wt.tail) tailSetup(wt);
+          var wj = worn.filter(function(m){ return m.jaw; })[0];
+          JAW = wj ? wj.jaw : null;
           var hide = KCHAR.hidden(rec, kit), hideParts = KCHAR.hiddenParts(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
@@ -282,12 +610,26 @@ function KCharFigure(body, sliders, load){
               p.stature = top - lowest(want[base]);
             }
           }
+          // a legs item's fur lies between the top of the boots and the lowest hem of the top (furShells kfF)
+          var feetTop = -1e3, hem = 1e3;
+          Object.keys(want).forEach(function(k){ var pt = want[k].userData.part; if(pt.role !== 'armour') return;
+            if(pt.slot === 'feet') feetTop = Math.max(feetTop, highest(want[k]));
+            else if(pt.slot === 'torso') hem = Math.min(hem, lowest(want[k])); });
+          Object.keys(want).forEach(function(k){ var u = want[k].userData.furBand, legs = want[k].userData.part.slot === 'legs';
+            if(u) u.value.set(legs ? feetTop : -1e3, legs ? hem : 1e3); });
           self.morphDelta = mj ? mj.d : null;
           bones.forEach(function(b, i){ if(b !== self.hips) b.position.fromArray(p.t[i]); });
           self.inner.scale.setScalar(p.root * SCALE);
           self.inner.position.y = (p.ground || 0) * SCALE;
           if(p.stature) p.stature *= SCALE;
           var roles = (kit.tint && kit.tint.roles) || {}, gain = (kit.tint && kit.tint.gain) || {};
+          // a lizard's head draws the body's skin in its scales (kit item skin_detail: that material's maps, tiled)
+          var det = null;
+          var neckCrest = null, pat = null;
+          if(mpfb) KCHAR.mods(rec, kit).forEach(function(it){ if(it.skin_detail) det = it.skin_detail; if(it.crest_neck) neckCrest = it.crest_neck; if(it.pattern) pat = it.pattern; });
+          // a frog's head's pattern over the body (kit item skin_detail mask: the texture of a primitive with no area)
+          var maskSrc = det && det.mask && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.mask; })[0];
+          var detSrc = det && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.material; })[0];
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
             skinScale(m, p, mj && mj.d);
@@ -295,11 +637,23 @@ function KCharFigure(body, sliders, load){
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
-              else if(m.userData.srcMaterial === kit.base_material) filterBase(m, hide.base);
-              else if(hideParts[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts)
+              else if(m.userData.srcMaterial === kit.base_material){
+                filterBase(m, hide.base); skinDetail(m, detSrc ? det : null, detSrc); coatShells(m, rec, gain, hide.base, coatEdge(rec));
+                if(pat && maskSrc && maskSrc.material.map) patternSet(patternMat(m.material, true), rec, pat, gain, maskSrc.material.map);
+                else if(m.material.userData.kp) m.material.userData.kp.kpOn.value = 0;
+              }
+              else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
+              else if(m.userData.srcMaterial === 'Human.nipple') skinDetail(m, detSrc ? det : null, detSrc);    // (the skin has holes under them)
             }
-            if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
+            // a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
+            if(neckCrest && m.userData.srcMaterial === neckCrest.material) m.visible = !neckCrest.under.some(function(t){ return hide.base[t]; });
+            var kpOn = m.material.userData.kp && m.material.userData.kp.kpOn.value > 0.5;
+            if(role === 'pattern'){ patternSet(patternMat(m.material, false), rec, pat || {}, gain); m.material.color.set('#ffffff'); }
+            else if(role === 'iris') m.material.color.copy(tintOf(rec.eye_color || (pat && pat.eye_color) || DEFAULT_EYE, 1));   // an animal's eye (amphibian.iris_texture)
+            else if(role === 'skin' && kpOn) m.material.color.set('#ffffff');      // the colours are the pattern's
+            else if(role === 'skin') m.material.color.copy(tintOf(pat ? patternColours(rec, pat).skin : rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
+            else if(role === 'coat') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.coat || gain.hair));   // a therian's head (tools/heads.py)
             else if(role === 'eye'){ m.material.color.set('#ffffff'); if(m.material.userData.eyeTint) m.material.userData.eyeTint.value.copy(tintOf(rec.eye_color || DEFAULT_EYE, gain.eye || 1)); }
             else {
               var dye = rec.dye && (part.role === 'armour' ? rec.dye[part.slot] : (part.role === 'hair' || part.role === 'beard') ? rec.dye.hair : null);
@@ -1633,7 +1987,7 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); clothStep(dt); nhT += dt || 0; tail(dt); jaw(); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -1715,6 +2069,123 @@ function KCharFigure(body, sliders, load){
   this.mixer.addEventListener('finished', function(e){
     if(e.action === self.action) self.play(self.looping);
   });
+  /* the tail (a mod with a tail: tools/mods.py tail_piece; its joints Tail1... are on every skeleton, after the others,
+     tools/tail.py). No clip moves it: each frame it runs as a spring chain, one point per joint and one at the tip, at
+     60 Hz. Each point is pulled toward its rest carried by the hips (the joints' rest offsets, so a morphed body's
+     longer tail too), swayed about the hips' up axis (kit tail.sway: degrees at the tip, a share of it at the root,
+     a period), by its stiffness (kit tail.stiff, root to tip: what the pull leaves is the lag behind the hips), with
+     a little gravity and damping; then each segment keeps its length, and each point keeps its radius (kit
+     tail.radius) plus pad out of the thighs' and shins' capsules (the leg colliders bodyFix and the cloth use) and
+     above the floor. The joints then turn to the points (as the cloth chains' bones do). With no clip it rests */
+  var TL = null, tlV = V(), tlV2 = V(), tlQ = Q(), tlQ2 = Q(), tlM = new THREE.Matrix4(), nhT = 0;
+  function tailSetup(it){
+    if(!it || !it.tail){ if(TL) TL.ids.forEach(function(i, k){ bones[i].quaternion.fromArray(J[i].r); }); TL = null; return; }
+    var spec = it.tail, ids = spec.joints.map(function(n){ return byName[n]; });
+    if(ids.some(function(i){ return i === undefined; })){ TL = null; return; }
+    TL = { spec:spec, ids:ids, x:[], xp:[], tw:[], rest:[], acc:0, reset:true };
+  }
+  function tailRest(){
+    // the chain in the hips' frame: each joint's offset from its parent (its rest frame is the hips', turned by none)
+    var r = TL.rest, p = V();
+    TL.ids.forEach(function(i, k){ p.add(bones[i].position); (r[k] = r[k] || V()).copy(p); });
+    var n = TL.ids.length, last = TL.ids[n - 1], lr = V().fromArray(J[last].t).length();
+    (r[n] = r[n] || V()).copy(p).add(V().fromArray(TL.spec.tip).multiplyScalar(lr > 1e-6 ? bones[last].position.length() / lr : 1));
+  }
+  function tailTargets(sway){
+    var hips = bones[byName.Hips], n = TL.rest.length, sw = TL.spec.sway || {}, deg = (sw.deg || 0) * sway;
+    hips.updateMatrixWorld(true);
+    for(var k = 0; k < n; k++){
+      var a = deg * ((sw.root || 0) + (1 - (sw.root || 0)) * k / (n - 1)) * Math.PI / 180;
+      tlV.copy(TL.rest[k]).sub(TL.rest[0]).applyAxisAngle(tlV2.set(0, 1, 0), a).add(TL.rest[0]);
+      (TL.tw[k] = TL.tw[k] || V()).copy(tlV).applyMatrix4(hips.matrixWorld);
+    }
+  }
+  function tail(dt){
+    if(!TL) return;
+    tailRest();
+    var sw = TL.spec.sway || {}, per = sw.period || 3;
+    self.group.updateMatrixWorld(true);
+    tailTargets(self.action ? Math.sin(2 * Math.PI * nhT / per) : 0);
+    var n = TL.tw.length, sc = self.inner.getWorldScale(tlV2).x, rad = TL.spec.radius, pad = TL.spec.pad || 0;
+    var groundW = self.group.getWorldPosition(tlV).y;
+    if(dt === undefined || TL.reset || TL.x.length !== n || TL.x[0].distanceTo(TL.tw[0]) > 0.4 * sc){
+      TL.x = TL.tw.map(function(v){ return v.clone(); }); TL.xp = TL.tw.map(function(v){ return v.clone(); });
+      TL.reset = false; TL.acc = 0;
+    }
+    // the legs' capsules in the world (thighs and shins: not the seat, which the tail's root lies in)
+    var W = caps.filter(function(cp){ return !cp.pa && LEGJ.test(bones[cp.a].name); }).map(function(cp){
+      var A = V(), B = V(); capEnds(cp, A, B);
+      return { a:A, b:B, ra:(cp.ra || cp.r) * sc, rb:(cp.rb || cp.r) * sc };
+    });
+    var len = []; for(var k = 1; k < n; k++) len.push(TL.tw[k].distanceTo(TL.tw[k - 1]));
+    var h = STEP, grav = TL.spec.grav || 0, damp = TL.spec.damp || 0;
+    TL.acc = dt ? Math.min(TL.acc + dt, 4 * STEP) : 0;
+    while(TL.acc >= h){
+      TL.acc -= h;
+      TL.x[0].copy(TL.tw[0]); TL.xp[0].copy(TL.tw[0]);
+      for(k = 1; k < n; k++){
+        var x = TL.x[k], xp = TL.xp[k], st = TL.spec.stiff[Math.min(k, TL.spec.stiff.length - 1)];
+        tlV.subVectors(x, xp);
+        xp.copy(x);
+        x.addScaledVector(tlV, 1 - damp);
+        x.y -= grav * h * h;
+        x.lerp(TL.tw[k], 1 - Math.pow(1 - st, h * 60));
+      }
+      tailConstrain(W, len, sc, rad, pad, groundW);
+    }
+    if(dt === undefined) tailConstrain(W, len, sc, rad, pad, groundW);
+    // the joints turn to the points: each segment's rest direction (no sway) in the world onto its direction now
+    tailTargets(0);
+    var prev = bones[byName.Hips].getWorldQuaternion(tlQ2).clone(), hq = prev.clone();
+    TL.ids.forEach(function(i, k){
+      tlV.subVectors(TL.tw[k + 1], TL.tw[k]).normalize();
+      tlV2.subVectors(TL.x[k + 1], TL.x[k]).normalize();
+      var Wq = Q().setFromUnitVectors(tlV, tlV2).multiply(hq);
+      bones[i].quaternion.copy(prev).invert().multiply(Wq);
+      prev = Wq;
+    });
+  }
+  var tlA = V(), tlB = V(), tlC = V();
+  function tailConstrain(W, len, sc, rad, pad, groundW){
+    var n = TL.x.length;
+    for(var it = 0; it < 2; it++){
+      for(var k = 1; k < n; k++){
+        var x = TL.x[k], up = TL.x[k - 1];
+        tlA.subVectors(x, up); var d = tlA.length();
+        if(d > 1e-9) x.copy(up).addScaledVector(tlA, len[k - 1] / d);
+        var r = (rad[Math.min(k, rad.length - 1)] || 0) * sc + pad * sc;
+        W.forEach(function(w){
+          tlB.subVectors(w.b, w.a); var L2 = tlB.lengthSq(), t = L2 > 1e-12 ? Math.max(0, Math.min(1, tlC.subVectors(x, w.a).dot(tlB) / L2)) : 0;
+          tlC.copy(w.a).addScaledVector(tlB, t);
+          var want = w.ra + (w.rb - w.ra) * t + r; tlA.subVectors(x, tlC); var q = tlA.length();
+          if(q < want){ if(q < 1e-6) tlA.set(0, 0, -1), q = 1; x.copy(tlC).addScaledVector(tlA, want / q); }
+        });
+        var floor = groundW + (rad[Math.min(k, rad.length - 1)] || 0) * sc;
+        if(x.y < floor) x.y = floor;
+      }
+    }
+  }
+  this.tailState = function(){ return TL; };          // verify.py, the labs
+
+  /* the jaw of an animal head (a mod with a jaw: tools/mods.py lizard_head, its lower jaw weighted to face_jaw, which
+     no clip moves): opened about its hinge (kit jaw.pivot, in Head's frame) by up to jaw.deg, for a share (hold) of
+     every period seconds, a breath taken with the mouth a little open; shut otherwise. self.jawOpen (0..1) holds it
+     open instead (the labs) */
+  var JAW = null;
+  this.jawOpen = null;
+  function jaw(){
+    var j = byName.face_jaw; if(j === undefined) return;
+    var b = bones[j];
+    if(!JAW){ if(b.userData.nh){ b.quaternion.fromArray(J[j].r); b.position.fromArray(self.pose.t[j]); b.userData.nh = false; } return; }
+    var ph = (nhT % JAW.period) / JAW.period, o = self.jawOpen != null ? self.jawOpen : (self.action && ph < JAW.hold ? Math.pow(Math.sin(Math.PI * ph / JAW.hold), 2) : 0);
+    tlQ.setFromAxisAngle(tlA.set(1, 0, 0), o * JAW.deg * Math.PI / 180);
+    b.quaternion.fromArray(J[j].r).multiply(tlQ);
+    // about the hinge: the joint's rest place, moved so the pivot stays put
+    tlB.fromArray(JAW.pivot); tlC.copy(tlB).applyQuaternion(tlQ);
+    b.position.fromArray(self.pose.t[j]).add(tlB.sub(tlC));
+    b.userData.nh = true;
+  }
+
   this.play = function(name){
     return ready.then(function(){
       var c = name && self.clips[name];
@@ -1753,7 +2224,24 @@ function KCharFigure(body, sliders, load){
      scrubbed clip, a held pose) kept last frame's turned bone and the passes turned it again, frame after frame */
   var clipQ = J.map(function(j){ return Q().fromArray(j.r); });
 
+  /* ---- blinks: a piece with a 'blink' morph target (a therian's lids, tools/heads.py) shuts it every few seconds,
+     a fifth of a second each (shut in 70 ms, held 30, open in 80), at intervals from the figure's own count (the same
+     every run). blink() starts one now; blinkHold (0 to 1) holds the lids there (a still shot) ---- */
+  var blinkAt = 2.0, blinkN = 0, blinkT = 0;
+  function blinkWeight(t){ return t < 0.07 ? t / 0.07 : t < 0.1 ? 1 : t < 0.18 ? 1 - (t - 0.1) / 0.08 : 0; }
+  function blinks(dt){
+    blinkT += dt;
+    if(blinkT > blinkAt + 0.18){ blinkN++; blinkAt = blinkT + 2.5 + 3.5 * ((blinkN * 0.6180339887) % 1); }
+    var b = self.blinkHold != null ? self.blinkHold : blinkT >= blinkAt ? blinkWeight(blinkT - blinkAt) : 0;
+    Object.keys(live).forEach(function(k){
+      var m = live[k], d = m.morphTargetDictionary;
+      if(d && d.blink !== undefined && m.visible) m.morphTargetInfluences[d.blink] = b;
+    });
+  }
+  this.blink = function(){ blinkAt = blinkT; };
+
   this.update = function(dt){
+    blinks(dt);
     if(!self.action) return;
     for(var i = 0; i < bones.length; i++) bones[i].quaternion.copy(clipQ[i]);
     // the morph and lift below are added to the hips once, not once a frame: hipsTrack starts them from the rest

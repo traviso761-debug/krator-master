@@ -159,7 +159,7 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   ok(['Left2Shoulder', 'Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Right2HandThumb3'].every(function(n){ return J[n] !== undefined; }) &&
      gs.joints[J.Left2Arm].parent === J.Left2Shoulder && gs.joints[J.Left2Shoulder].parent === J.Spine2, 'giant: the lower pair hangs from Spine2');
   ok(gk.scale > 1.5 && gk.anims === 'mpfb_male' && gs.hands.L2 && gs.hands.R2, 'giant: scale, the man\'s clips, lower grips');
-  var mods = gk.items.filter(function(it){ return it.slot === 'mods'; }).map(function(it){ return it.id; }).sort();
+  var mods = gk.items.filter(function(it){ return it.slot === 'mods' && !it.test; }).map(function(it){ return it.id; }).sort();
   ok(JSON.stringify(mods) === '["mod_arms_cyber","mod_arms_cyber_up","mod_arms_flesh","mod_arms_loader","mod_arms_loader_up","mod_arms_surgical","mod_arms_surgical_up","mod_gills"]', 'mods: ' + mods);
   var rec = KCHAR.blank(gk), shirt = { id:'x', slot:'torso' }, shirt4 = { id:'y', slot:'torso', arms:4 };
   ok(KCHAR.arms(rec, gk) === 2 && KCHAR.fits(shirt, rec, gk) && !KCHAR.fits(shirt4, rec, gk), 'mods: no mod, two arms, two-armed tops');
@@ -198,6 +198,51 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   ok(fit && seen['giants.temple.giant_dalab_m_harness4'] && seen['free_giants.warrior.giant_free_m_jerkin4'] &&
      seen['free_giants.clan.giant_free_m_tunic'] && seen['free_giants.chief.giant_free_m_chief4'], 'giant: strangers wear tops that fit (' + Object.keys(seen).length + ' kinds)');
 })();
+
+// ---- the non-human parts (a spike: tools/nonhuman.py, kit items marked test): a tail on joints every skeleton has, an
+// animal head that leaves out the human head and what is fitted to it; no people draws them
+['mpfb_male', 'mpfb_female', 'mpfb_giant'].forEach(function(b){
+  var f = path.join(HERE, 'data', b, 'kit.json');
+  if(!fs.existsSync(f)) return;
+  var k = JSON.parse(fs.readFileSync(f)), sk = JSON.parse(fs.readFileSync(path.join(HERE, 'data', b, 'skeleton.json')));
+  var tl = k.items.filter(function(it){ return it.id === 'mod_tail'; })[0], hd = k.items.filter(function(it){ return it.id === 'mod_head_lizard'; })[0];
+  if(!tl && !hd) return;
+  var J = {}; sk.joints.forEach(function(j, i){ J[j.name] = i; });
+  ok(tl && tl.tail.joints.every(function(n, i){ return J[n] !== undefined && sk.joints[J[n]].parent === (i ? J[tl.tail.joints[i - 1]] : J.Hips); }) &&
+     J.Tail1 > J.face_cheek_R, b + ': the tail joints hang from the hips, after every other joint');
+  var w = KCHAR.morphWeights({ morph:{ height:1 } }, k), mj = KCHAR.morphJoints(sk, k, w);
+  ok(mj.d[J.Tail1][1] > 0.02 && mj.d[J.Tail8][1] > mj.d[J.Tail1][1] * 0.3, b + ': the tail moves and grows with the height');
+  var r = KCHAR.blank(k); r.hair = 'short02'; r.armour.head = (k.items.filter(function(it){ return it.slot === 'head'; })[0] || {}).id || null;
+  var before = KCHAR.parts(r, k).map(function(p){ return p.slot; });
+  r.mods = ['mod_tail', 'mod_head_lizard'];
+  var after = KCHAR.parts(r, k).map(function(p){ return p.slot; }), hp = KCHAR.hiddenParts(r, k);
+  ok(KCHAR.replacesHead(r, k) && after.indexOf('hair') < 0 && after.indexOf('beard') < 0 && after.indexOf('head') < 0 &&
+     after.filter(function(s){ return s === 'mods'; }).length === 2 && hp['Human.lips'] && hp['Human.low-poly'] && !hp['Human.nipple'] &&
+     (before.indexOf('head') >= 0 || !r.armour.head), b +': the lizard head leaves out hair, beard, headgear, and the face parts');
+  ok(hd.skin_detail && hd.skin_detail.material === 'Mod.head_lizard' && hd.skin_detail.repeat > 5 && hd.skin_detail.repeat < 15,
+     b + ': the lizard head draws the body\'s skin in its scales, about the head\'s size');
+  var fg = k.items.filter(function(it){ return it.id === 'mod_head_frog'; })[0];
+  if(fg){
+    var rf = KCHAR.blank(k); rf.hair = 'short02'; rf.mods = ['mod_head_frog'];
+    var pf = KCHAR.parts(rf, k).map(function(p){ return p.slot; }), hf = KCHAR.hiddenParts(rf, k);
+    ok(KCHAR.replacesHead(rf, k) && pf.indexOf('hair') < 0 && hf['Human.lips'] && fg.jaw && fg.jaw.pivot &&
+       fg.skin_detail && fg.skin_detail.material === 'Mod.head_frog' && fg.skin_detail.repeat > 4 && fg.skin_detail.repeat < 12,
+       b + ': the frog head replaces the human one, opens its jaw and draws the body\'s skin in its own');
+    var pt = fg.pattern || {}, roles = (k.tint && k.tint.roles) || {};
+    ok(/^#[0-9a-f]{6}$/i.test(pt.skin2) && /^#[0-9a-f]{6}$/i.test(pt.skin3) && /^#[0-9a-f]{6}$/i.test(pt.eye_color) &&
+       ['none', 'spots', 'net', 'marble'].indexOf(pt.kind) >= 0 && pt.amount >= 0 && pt.amount <= 1 && fg.skin_detail.mask === 'Mod.head_frog_mask' &&
+       roles['Mod.head_frog'] === 'pattern' && roles['Mod.head_frog_webs'] === 'pattern' && roles['Mod.head_frog_eye'] === 'iris' && roles['Mod.head_lizard_eye'] === 'iris',
+       b + ': the frog\'s skin takes the record\'s colours by a pattern over head and body, and its eyes (and the lizard\'s) the eye colour');
+    var pal = pt.palette || {};
+    ok(pal.skin && pal.skin2 && pal.skin3 && pal.skin.indexOf('#5f8a36') >= 0 && pal.skin2.indexOf(pt.skin2) >= 0 && pal.skin3.indexOf(pt.skin3) >= 0 &&
+       pal.skin2.indexOf('#121410') >= 0 && pal.skin.indexOf('#121410') < 0,
+       b + ': the frog\'s skin keeps to its palette (greens, browns, red-browns, creams; the marks black too)');
+  }
+  var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
+  ok(n >= hd.hides, b + ': the lizard head hides the head skin');
+  ok(peoples.every(function(P){ for(var s = 1; s <= 20; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_tail' || m === 'mod_head_lizard'; })) return false; } return true; }),
+     b + ': no people draws a tail or a lizard head');
+});
 
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');
 process.exit(fails ? 1 : 0);

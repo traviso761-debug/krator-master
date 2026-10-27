@@ -91,6 +91,9 @@
     // the cast's own mods, or what the Mods menu puts on everyone (a top made for two arms comes off a four-armed body)
     var pick = $('mods-pick') && $('mods-pick').value;
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
+    // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
+    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; }
+    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; }     // the Frogman test: a frog's green, gold eyes
     r.ancestry = null;
     return r;
   }
@@ -102,6 +105,7 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};

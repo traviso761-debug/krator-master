@@ -163,6 +163,23 @@ class Body:
     def P(self, n):
         return self.bind[self.jidx[n]][:3, 3]
 
+    def add(self, rows):
+        """joints the base's skin lacks (the tail's, face_jaw), in memory, for the pieces that weight them: rows of
+        (name, parent name, world bind 4 x 4), each after its parent; the base's own file is left as it is"""
+        nodes = self.j['nodes']
+        for name, parent, B in rows:
+            if name in self.jidx:
+                continue
+            pk = self.jidx[parent]
+            L = np.linalg.inv(self.bind[pk]) @ B
+            nodes.append({'name': name, 'translation': [float(x) for x in L[:3, 3]], 'rotation': [float(x) for x in _quat(L[:3, :3])]})
+            nodes[self.skin['joints'][pk]].setdefault('children', []).append(len(nodes) - 1)
+            self.skin['joints'] = self.skin['joints'] + [len(nodes) - 1]
+            self.names.append(name)
+            self.jidx[name] = len(self.names) - 1
+            self.bind = np.concatenate([self.bind, np.asarray(B, float)[None]])
+            self.ibm = np.concatenate([self.ibm, np.linalg.inv(np.asarray(B, float))[None]])
+
     def texture(self, mname, px):
         """the colour texture of a base material, as JPEG bytes at most px wide (None if it has none)"""
         t = self.prims[mname]['mat'].get('pbrMetallicRoughness', {}).get('baseColorTexture')
@@ -193,7 +210,11 @@ def flat(rgb):
 
 def write_piece(body, out, name, prims):
     """a GLB holding one skinned mesh on the body's skeleton (its nodes and skin, the lower joints with them).
-    prims: [{'material': {name, metallic, rough}, 'image': (bytes, mime), 'P','N','UV','J','W','VID','T'}]"""
+    prims: [{'material': {name, metallic, rough}, 'image': (bytes, mime), 'P','N','UV','J','W','VID','T'}], and
+    optionally 'C' (a vertex colour the material multiplies, or four numbers a shader reads: the frog's pattern),
+    'UV2' (a second UV, TEXCOORD_1: the frog's shade), 'normal' (a normal map, (bytes, mime)), 'targets'
+    ({name: (dP, dN)}: morph targets, the lizard's lids' blink) and 'mesh' (a prim with mesh 1 goes in a second mesh
+    on a node of its own: glTF wants every primitive of a mesh to carry the same targets)"""
     g = glbio.GlbWriter()
     nodes = copy.deepcopy(body.j['nodes'])
     for n in nodes:
@@ -208,28 +229,50 @@ def write_piece(body, out, name, prims):
     g.j['skins'] = [skin]
     g.j['samplers'] = [{}]
     g.j['images'], g.j['textures'], g.j['materials'] = [], [], []
-    out_prims = []
+    meshes = {}
+
+    def tex(img):
+        data, mime = img
+        g.j['images'].append({'bufferView': g.view(data), 'mimeType': mime})
+        g.j['textures'].append({'source': len(g.j['images']) - 1, 'sampler': 0})
+        return len(g.j['textures']) - 1
     for p in prims:
         m = p['material']
         mat = {'name': m['name'], 'pbrMetallicRoughness': {'metallicFactor': m.get('metallic', 0.0),
                                                            'roughnessFactor': m.get('rough', 0.8)}}
         if p.get('image'):
-            data, mime = p['image']
-            g.j['images'].append({'bufferView': g.view(data), 'mimeType': mime})
-            g.j['textures'].append({'source': len(g.j['images']) - 1, 'sampler': 0})
-            mat['pbrMetallicRoughness']['baseColorTexture'] = {'index': len(g.j['textures']) - 1}
+            mat['pbrMetallicRoughness']['baseColorTexture'] = {'index': tex(p['image'])}
+        if p.get('normal'):
+            mat['normalTexture'] = {'index': tex(p['normal'])}
         g.j['materials'].append(mat)
         W = np.asarray(p['W'], float)
         W = W / np.maximum(W.sum(1, keepdims=True), 1e-9)
-        out_prims.append({'material': len(g.j['materials']) - 1, 'attributes': {
+        attrs = {
             'POSITION': g.acc(np.asarray(p['P'], np.float32), 'VEC3', 34962, minmax=True),
             'NORMAL': g.acc(np.asarray(p['N'], np.float32), 'VEC3', 34962),
             'TEXCOORD_0': g.acc(np.asarray(p['UV'], np.float32), 'VEC2', 34962),
             'JOINTS_0': g.acc(np.asarray(p['J'], np.uint16), 'VEC4', 34962),
             'WEIGHTS_0': g.acc(W.astype(np.float32), 'VEC4', 34962),
-            '_VIDX': g.acc(np.asarray(p['VID'], np.float32).reshape(-1, 1), 'SCALAR', 34962)},
-            'indices': g.acc(np.asarray(p['T'], np.uint32).reshape(-1), 'SCALAR', 34963)})
-    g.j['meshes'] = [{'name': name, 'primitives': out_prims}]
+            '_VIDX': g.acc(np.asarray(p['VID'], np.float32).reshape(-1, 1), 'SCALAR', 34962)}
+        if p.get('C') is not None:
+            C = np.asarray(p['C'], np.float32)
+            attrs['COLOR_0'] = g.acc(C, 'VEC4' if C.shape[1] == 4 else 'VEC3', 34962)
+        if p.get('UV2') is not None:
+            attrs['TEXCOORD_1'] = g.acc(np.asarray(p['UV2'], np.float32), 'VEC2', 34962)
+        pr = {'material': len(g.j['materials']) - 1, 'attributes': attrs,
+              'indices': g.acc(np.asarray(p['T'], np.uint32).reshape(-1), 'SCALAR', 34963)}
+        if p.get('targets'):
+            pr['targets'] = [{'POSITION': g.acc(np.asarray(dp, np.float32), 'VEC3', 34962, minmax=True),
+                              'NORMAL': g.acc(np.asarray(dn, np.float32), 'VEC3', 34962)} for dp, dn in p['targets'].values()]
+        me = meshes.setdefault(p.get('mesh', 0), {'name': name if not p.get('mesh') else '%s_%d' % (name, p['mesh']), 'primitives': []})
+        me['primitives'].append(pr)
+        if p.get('targets'):
+            me['weights'] = [0.0] * len(p['targets'])
+            me['extras'] = {'targetNames': list(p['targets'])}
+    g.j['meshes'] = [meshes[k] for k in sorted(meshes)]
+    for k in sorted(meshes)[1:]:
+        g.j['nodes'].append({'name': meshes[k]['name'], 'mesh': k, 'skin': 0})
+        g.j['scenes'][g.j['scene']]['nodes'].append(len(g.j['nodes']) - 1)
     open(out, 'wb').write(g.bytes())
 
 
@@ -516,8 +559,8 @@ def cyber_arms(body, out, mid='mod_arms_cyber', replace=False):
     return hide
 
 
-def _ray_hits(o, d, P, T):
-    """the farthest hit along ray o + t d (t > 0) on triangles T of P: (point, triangle) or None"""
+def _ray_hits(o, d, P, T, nearest=False):
+    """the farthest (or nearest) hit along ray o + t d (t > 0) on triangles T of P: (point, triangle) or None"""
     a, b, c = P[T[:, 0]], P[T[:, 1]], P[T[:, 2]]
     e1, e2 = b - a, c - a
     h = np.cross(d, e2)
@@ -532,7 +575,7 @@ def _ray_hits(o, d, P, T):
     hit = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t > 0)
     if not hit.any():
         return None
-    k = np.nonzero(hit)[0][np.argmax(t[hit])]
+    k = np.nonzero(hit)[0][np.argmin(t[hit]) if nearest else np.argmax(t[hit])]
     return o + t[k] * d, k
 
 
@@ -616,6 +659,634 @@ def gills(body, out):
         out_prims.append({'material': mat, 'image': img, 'P': Pp, 'N': N, 'UV': np.array(dst['UV']), 'J': np.array(dst['J']),
                           'W': np.array(dst['W']), 'VID': np.array(dst['VID']), 'T': Tt})
     write_piece(body, out, 'mod_gills', out_prims)
+
+
+"""Non-human parts (a spike for the Lizardmen, LORE 6.20; tools/nonhuman.py puts them on the published pieces): a tail
+on the tail joints every skeleton carries (tools/tail.py), and an animal head in place of the human one. Their
+vertices do not copy MakeHuman vertices, so each has a _VIDX of its own (numbered from 0; a UV seam's two copies share
+one) and a recipe for its morph deltas (Recipe below): the tail moves with the skin over the sacrum and grows with the
+legs; the head's rigid parts move with the Head joint; its collar takes the nearest neck vertex's deltas, fading to
+the head's above the seam. scale_texture() is a stand-in for the scale textures still to be asked for (KNOWN_ISSUES)."""
+
+
+class Recipe:
+    """per synthetic vertex (its _VIDX), how its morph deltas are made from the base's (deltas(), tools/nonhuman.py
+    and make_mpfb.py): d = (1 - f) d_base[b] + f d_joint[j] + g s (p - o), s the hip joint's height change over its
+    height (the tail grows with the legs)"""
+    def __init__(self):
+        self.b, self.f, self.j, self.g, self.p, self.o = [], [], [], [], [], []
+
+    def add(self, b, f, j, g, p, o):
+        self.b.append(int(b)); self.f.append(float(f)); self.j.append(j or ''); self.g.append(float(g))
+        self.p.append(np.asarray(p, float)); self.o.append(np.asarray(o, float))
+        return len(self.b) - 1
+
+    def deltas(self, d_base, d_joint, s):
+        """targets x vertices x 3: d_base targets x base vertices x 3 (by Blender index), d_joint(name) targets x 3,
+        s targets"""
+        T = d_base.shape[0]
+        b = np.maximum(np.array(self.b), 0)
+        f = np.array(self.f)[None, :, None]
+        D = (1 - f) * d_base[:, b, :]
+        for jn in sorted(set(self.j) - {''}):
+            m = np.array([x == jn for x in self.j])
+            D[:, m, :] += f[:, m, :] * d_joint(jn)[:, None, :]
+        g = np.array(self.g)
+        if g.any():
+            D += g[None, :, None] * np.asarray(s, float)[:, None, None] * (np.array(self.p) - np.array(self.o))[None]
+        return D.astype(np.float32) if T else D
+
+
+class _Smooth:
+    """a smooth surface for the non-human parts: vertices with a recipe each, quads between them; normals summed"""
+    def __init__(self, rec):
+        self.rec, self.P, self.UV, self.J, self.W, self.VID, self.T = rec, [], [], [], [], [], []
+
+    def v(self, p, uv, jw, recipe, vid=None):
+        """a vertex: jw [(joint index, weight)...], recipe (b, f, j, g, o) or vid (a seam's copy of that vertex)"""
+        if vid is None:
+            vid = self.rec.add(recipe[0], recipe[1], recipe[2], recipe[3], p, recipe[4])
+        jw = sorted(jw, key=lambda x: -x[1])[:4]
+        jw += [(0, 0.0)] * (4 - len(jw))
+        self.P.append(np.asarray(p, float)); self.UV.append(uv)
+        self.J.append([q for q, _ in jw]); self.W.append([x for _, x in jw]); self.VID.append(vid)
+        return len(self.P) - 1
+
+    def grid(self, rows, closed=True, flip=False):
+        """quads between rows of vertex indices (each row a ring round, its last a seam copy of its first)"""
+        for r in range(len(rows) - 1):
+            a, b = rows[r], rows[r + 1]
+            for k in range(len(a) - 1):
+                q = [a[k], a[k + 1], b[k + 1], b[k]]
+                if flip:
+                    q = q[::-1]
+                self.T += [[q[0], q[1], q[2]], [q[0], q[2], q[3]]]
+
+    def fan(self, ring, centre, flip=False):
+        for k in range(len(ring) - 1):
+            t = [centre, ring[k + 1], ring[k]]
+            self.T.append(t[::-1] if flip else t)
+
+    def prim(self, material, image, outward=None):
+        P, T = np.array(self.P), np.array(self.T, int)
+        fn = np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]])
+        if outward is not None:
+            # wound away from the given centre(s) (per triangle), whichever way the builder went round
+            flip = (fn * (P[T].mean(1) - outward(P[T].mean(1)))).sum(1) < 0
+            T[flip] = T[flip][:, ::-1]
+            fn[flip] = -fn[flip]
+        vid = np.array(self.VID)
+        acc = np.zeros((vid.max() + 1, 3))
+        for k in range(3):
+            np.add.at(acc, vid[T[:, k]], fn)
+        N = acc[vid]
+        N /= np.maximum(np.linalg.norm(N, axis=1, keepdims=True), 1e-12)
+        return {'material': material, 'image': image, 'P': P, 'N': N, 'UV': np.array(self.UV, float),
+                'J': np.array(self.J), 'W': np.array(self.W, float), 'VID': vid, 'T': T}
+
+
+def scale_texture(mean_rgb, px=512, seed=7):
+    """a stand-in for a reptile's skin (KNOWN_ISSUES: the owner is asked for real ones): rows of overlapping rounded
+    scales, darker at their edges, as a neutral grey whose mean is the body texture's (the skin tint multiplies it in
+    as it does the skin's), PNG. Tiles in u and v; u = 0.5 is the belly (a little lighter)"""
+    rs = np.random.RandomState(seed)
+    y, x = np.mgrid[0:px, 0:px] / px
+    rows, cols = 16, 16
+    v = y * rows
+    row = np.floor(v)
+    u = x * cols + 0.5 * (row % 2)
+    du = (u % 1) - 0.5
+    dv = (v % 1)
+    d = np.sqrt(du * du * 1.4 + (dv - 0.15) ** 2)        # each scale's round top edge, the next row's tucked under it
+    edge = np.clip((d - 0.38) / 0.18, 0, 1)
+    jit = rs.uniform(-0.035, 0.035, (rows + 1, cols + 2))
+    shade = jit[row.astype(int) % rows, np.floor(u).astype(int) % (cols + 1)]
+    lum = 1.0 + shade - 0.17 * edge ** 1.5 + 0.05 * (1 - dv)
+    belly = np.exp(-((x - 0.5) / 0.16) ** 2)
+    lum = lum * (1 + 0.12 * belly)
+    lum = lum / lum.mean()
+    img = np.clip(np.asarray(mean_rgb, float)[None, None, :] * lum[:, :, None], 0, 255).astype(np.uint8)
+    bio = io.BytesIO()
+    Image.fromarray(img, 'RGB').save(bio, 'PNG')
+    return bio.getvalue(), 'image/png'
+
+
+def texture_mean(body):
+    data, _ = body.texture('Human.body', 256)
+    return np.asarray(Image.open(io.BytesIO(data)).convert('RGB'), float).reshape(-1, 3).mean(0)
+
+
+TAIL_RING = 16         # vertices round the tail
+TAIL_PER = 4           # rings per segment
+TAIL_SINK = 0.05       # the tail starts this far before its root joint, inside the body
+TAIL_HIPS = 0.09       # its root takes the hips' weights, fading to the tail's over this length
+
+
+def tail_piece(body, out, rec, tex, nrm=None):
+    """mod_tail: a tapering tube along the tail joints (body has them: nonhuman_joints), its root sunk in the lower back;
+    each ring weighted to the two tail joints it lies between, the root's first TAIL_HIPS to the hips too. Its morph
+    recipe: the skin over the sacrum's deltas, scaled about the root with the legs (Recipe g)"""
+    import tail as TL
+    hips_y = body.P('Hips')[1]
+    names = TL.names()
+    P = np.array([body.P(n) for n in names])
+    seg = list(np.linalg.norm(np.diff(np.vstack([P, P[-1:]]), axis=0), axis=1)[:-1])
+    tip = P[-1] + TL.direction(TL.N - 1) * TL.lengths(hips_y)[-1]
+    pts = np.vstack([P, tip])
+    root = P[0]
+    B = body.prims['Human.body']
+    _, kb = cKDTree(B['POSITION'].astype(float)).query(root - np.array([0, 0, TL.ROOT_IN]))
+    b_root = int(B['VID'][kb])
+    hip = body.jidx['Hips']
+    # stations along the chain (arc length s), from TAIL_SINK before the root to the tip
+    L = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(pts, axis=0), axis=1))])
+    st = [-TAIL_SINK, -TAIL_SINK / 2] + [L[k] + (L[k + 1] - L[k]) * q / TAIL_PER for k in range(TL.N) for q in range(TAIL_PER)] + [L[-1] - 0.004]
+    m = _Smooth(rec)
+    rings = []
+    for s in st:
+        k = int(np.clip(np.searchsorted(L, s, side='right') - 1, 0, TL.N - 1))
+        a = (s - L[k]) / (L[k + 1] - L[k])
+        c = pts[k] + (pts[k + 1] - pts[k]) * a if s >= 0 else pts[0] + TL.direction(0) * s
+        dirv = pts[k + 1] - pts[k]
+        if 0.25 < a < 0.75 or s < 0:
+            dirv = dirv / np.linalg.norm(dirv)
+        else:                                     # near a joint: the mean of the two segments' directions, so rings do not cross
+            kk = k if a >= 0.75 else k - 1
+            d1 = pts[kk + 1] - pts[kk] if kk >= 0 else pts[1] - pts[0]
+            d2 = pts[min(kk + 2, TL.N)] - pts[kk + 1] if kk + 1 < TL.N else d1
+            dirv = d1 / np.linalg.norm(d1) + d2 / np.linalg.norm(d2)
+            dirv = dirv / np.linalg.norm(dirv)
+        side = np.array([1.0, 0, 0])
+        up = np.cross(dirv, side)
+        if up[1] < 0:
+            up = -up
+        r = TL.radius(np.clip(s / L[-1], 0, 1), hips_y) * (1.08 if s < 0 else 1.0)
+        # weights: the joint at the segment's start and the next, linear along it; the root's first stretch the hips' too
+        if s < 0:
+            jw = [(hip, 0.6), (body.jidx[names[0]], 0.4)]
+        else:
+            j0 = body.jidx[names[k]]
+            j1 = body.jidx[names[min(k + 1, TL.N - 1)]]
+            jw = [(j0, 1 - 0.5 * a), (j1, 0.5 * a)] if k + 1 < TL.N else [(j0, 1.0)]
+            if s < TAIL_HIPS:
+                h = 0.6 * (1 - s / TAIL_HIPS)
+                jw = [(q, w * (1 - h)) for q, w in jw] + [(hip, h)]
+        ring, first = [], None
+        for i in range(TAIL_RING + 1):
+            th = 2 * math.pi * i / TAIL_RING
+            p = c + r * (math.sin(th) * side + TL.TALL * math.cos(th) * up)    # th 0 the top, pi the belly
+            uv = (i / TAIL_RING, s / (2 * math.pi * TL.R0 * hips_y / TL.HIPS_REF))
+            vi = m.v(p, uv, jw, (b_root, 0.0, '', 1.0, root), vid=None if i < TAIL_RING else m.VID[first])
+            if i == 0:
+                first = vi
+            ring.append(vi)
+        rings.append(ring)
+    m.grid(rings)
+    tipv = m.v(tip, (0.5, L[-1] / (2 * math.pi * TL.R0)), [(body.jidx[names[-1]], 1.0)], (b_root, 0.0, '', 1.0, root))
+    m.fan(rings[-1], tipv)
+    m.fan(rings[0], m.v(pts[0] + TL.direction(0) * -TAIL_SINK, (0.5, 0), [(hip, 0.6), (body.jidx[names[0]], 0.4)],
+                        (b_root, 0.0, '', 1.0, root)), flip=True)
+    axis = lambda q: _nearest_on(pts, q)
+    write_piece(body, out, 'mod_tail', [dict(m.prim({'name': 'Mod.tail', 'rough': 0.55}, tex, outward=axis), normal=nrm)])
+    Rh = body.bind[hip][:3, :3] / np.linalg.norm(body.bind[hip][:3, :3], axis=0)
+    return {'joints': names, 'tip': [round(float(x), 5) for x in Rh.T @ (tip - P[-1])],     # in the hips' frame, as the joints' offsets
+            'radius': [round(float(TL.radius(L[k] / L[-1], hips_y)), 4) for k in range(TL.N + 1)]}
+
+
+def _nearest_on(pts, q):
+    """per point of q, the nearest point on the polyline pts"""
+    q = np.atleast_2d(q)
+    best, out = np.full(len(q), np.inf), np.zeros_like(q)
+    for a, b in zip(pts[:-1], pts[1:]):
+        ab = b - a
+        t = np.clip(((q - a) @ ab) / max(ab @ ab, 1e-12), 0, 1)
+        c = a + t[:, None] * ab
+        d = np.linalg.norm(q - c, axis=1)
+        m = d < best
+        best[m], out[m] = d[m], c[m]
+    return out
+
+
+# the reptile head's profile, in metres on the man's head (scaled to the body's: head_scale), in the Head joint's frame
+# at bind (x the figure's left, y up, z forward): per station along z, the cranium's half width, its top, the mouth
+# line and the jaw's bottom. The snout runs ~10 cm past the human nose; the back of the skull covers the nape
+HEAD_RING = 24
+# drawn over the skin: left out under it (the man's brows and lashes are 001 and 01, the woman's 002 and 02: hers showed
+# through the snout)
+HEAD_PARTS = ['Human.lips', 'Human.ears', 'Human.eyebrow001', 'Human.eyebrow002', 'Human.eyelashes01', 'Human.eyelashes02',
+              'Human.low-poly']
+
+
+def head_skin(body):
+    """the base skin's triangles that are head (every vertex weighted at least half to Head): what the head replaces"""
+    B = body.prims['Human.body']
+    w = np.where(B['J'] == body.jidx['Head'], B['W'], 0).sum(1)
+    return np.nonzero((w[B['T']] >= 0.5).all(1))[0]
+
+
+def head_scale(body):
+    """the body's head against the man's (its width and its face's reach)"""
+    B = body.prims['Human.body']
+    w = np.where(B['J'] == body.jidx['Head'], B['W'], 0).sum(1)
+    Q = B['POSITION'][w >= 0.5].astype(float) - body.P('Head')
+    return 0.5 * ((Q[:, 0].max() - Q[:, 0].min()) / 0.161 + Q[:, 2].max() / 0.153)
+
+
+def _head_collar(body, rec, k, tile):
+    """an animal head's collar (lizard_head, frog_head): from the neck, below the edge of the skin the head hides
+    (head_skin), up into the head; its vertices on the nearest neck vertex's weights and deltas, fading to the head's
+    above that edge, so it follows the neck under every slider; UV in metres (tile a repeat). Returns the surface, its
+    axis (for winding) and the hidden triangles"""
+    H = body.P('Head')
+    hj = body.jidx['Head']
+    B = body.prims['Human.body']
+    BP = B['POSITION'].astype(float)
+    hide = head_skin(body)
+    shown = np.ones(len(B['T']), bool)
+    shown[hide] = False
+    edge = np.intersect1d(np.unique(B['T'][hide]), np.unique(B['T'][shown]))
+    E = BP[edge]
+    cx, cz = E[:, 0].mean(), E[:, 2].mean()
+    ang_e = np.arctan2(E[:, 0] - cx, E[:, 2] - cz)
+    order = np.argsort(ang_e)
+    ang_e, ye = ang_e[order], E[order, 1]
+    edge_y = lambda a: float(np.interp(a, np.concatenate([ang_e - 2 * np.pi, ang_e, ang_e + 2 * np.pi]), np.concatenate([ye, ye, ye])))
+    neck_tris = np.nonzero(shown & (BP[B['T']][:, :, 1].min(1) > H[1] - 0.2 * k))[0]
+    TT = B['T'][neck_tris]
+    tree = cKDTree(BP)
+    collar = _Smooth(rec)
+    collar.C = []
+    y_low = H[1] - 0.095 * k
+    rows = []
+    K = 7
+    for q in range(K + 1):
+        ring, first = [], None
+        for i in range(HEAD_RING + 1):
+            th = 2 * math.pi * i / HEAD_RING
+            a = math.atan2(math.sin(th), math.cos(th))
+            y_top = edge_y(a) + 0.012 * k
+            u = q / K
+            y = y_low + (y_top - y_low) * u
+            d = np.array([math.sin(th), 0.0, math.cos(th)])
+            h = _ray_hits(np.array([cx, y, cz]), d, BP, TT, nearest=True)
+            if h is None:                         # above the shown skin: the last ring's reach, drawn in
+                h = (prev[i] if q else np.array([cx, y, cz]) + d * 0.05, None)
+            p = h[0] + d * 0.0035
+            if q == K:
+                p = np.array([cx, y, cz]) + (p - np.array([cx, y, cz])) * 0.55 + np.array([0, 0.02 * k, 0])
+            _, nb = tree.query(p)
+            fa = np.clip((y - (edge_y(a) - 0.02 * k)) / (0.03 * k), 0, 1)
+            if q == K:
+                fa = 1.0
+            jw = [(int(jx), float(wx) * (1 - fa)) for jx, wx in zip(B['J'][nb], B['W'][nb]) if wx > 0] + [(hj, fa)]
+            uv = (th * math.hypot(p[0] - cx, p[2] - cz) / tile, (y - y_low) / tile)     # in metres round and up, as the head's
+            if i < HEAD_RING:
+                vi = collar.v(p, uv, jw, (int(B['VID'][nb]), fa, 'Head', 0.0, np.zeros(3)))
+            else:
+                vi = collar.v(p, uv, jw, None, vid=collar.VID[first])
+            collar.C.append(np.ones(3))
+            if i == 0:
+                first = vi
+            ring.append(vi)
+        prev = [collar.P[x] for x in ring]
+        rows.append(ring)
+    collar.grid(rows)
+    neck_axis = lambda q: np.stack([np.full(len(q), cx), q[:, 1], np.full(len(q), cz)], 1)
+    return collar, neck_axis, hide
+
+
+def lizard_head(body, out, rec, tex, nrm=None):
+    """mod_head_lizard: a Komodo dragon's head with an iguana's crest in place of the human one (tools/reptile.py: the
+    upper head rigid on Head, the lower jaw on face_jaw, which the figure opens about the hinge; eyes behind lower lids
+    that blink, teeth, nostrils, the crest down the nape and the neck), and a collar from the neck, below the edge of
+    the skin it hides (head_skin), up into the head, on the neck's own weights and deltas (the nearest base vertex's),
+    fading to the head's above that edge. tex, nrm: the scale texture and its normal map. Returns the kit entry's
+    extras"""
+    import heads as HD
+    import reptile as RP
+    k = head_scale(body)
+    H = body.P('Head')
+    hj, jj = body.jidx['Head'], body.jidx['face_jaw']
+    lz = RP.Lizard(k)
+    B = body.prims['Human.body']
+
+    def smooth():
+        m = _Smooth(rec)
+        m.C = []
+        return m
+    cran, jaw, mouth_m, eye_m, dark_m, tooth_m, crest_m, crest_n, lid_m = (smooth() for _ in range(9))
+    for f, is_upper, m, bone in ((lz.upper, True, cran, hj), (lz.lower, False, jaw, jj)):
+        lo, hi = np.array([-0.13, -0.1, -0.15]) * k, np.array([0.13, 0.21, 0.29]) * k
+        V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
+        C, inside = RP.paint(lz, V, N, is_upper)
+        C, = HD.soften(nb, C)
+        V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
+        mats = np.where(inside[T].all(1), 'mouth', 'skin')
+        RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}})
+    # the eyes (an iris texture the eye colour tints, a round pupil: amphibian.iris_texture), and the lower lids that
+    # shut them
+    import amphibian as AM
+    eV, eN, eU, eT = AM.eyeball(lz.eyes, lz.eye_r, H)
+    for p, u in zip(eV, eU):
+        eye_m.v(p, tuple(u), [(hj, 1.0)], RP.RIGID)
+        eye_m.C.append(np.ones(3))
+    eye_m.T = eT.tolist()
+    lV, lN, lC, lT, ldV, ldN, lU = RP.lids(lz)
+    for p, c, u in zip(lV + H, lC, lU):
+        lid_m.v(p, tuple(u / RP.TILE), [(hj, 1.0)], RP.RIGID)
+        lid_m.C.append(c)
+    lid_m.T = lT.tolist()
+    for sx in (1, -1):
+        # the nostril, dark in the pit of its boss
+        c, r = lz.nostrils[0 if sx < 0 else 1]
+        _ellipsoid(dark_m, H + c - np.array([sx * 0.0015 * k, 0, 0]), r * 1.1, [(hj, 1.0)], RP.RIGID)
+        # recurved teeth along both jaws inside the closed mouth (seen when it opens)
+        for z in np.arange(0.0, 0.235, 0.013) * k:
+            wl = RP._lerp(RP.LOWER, 1, z / k) * k
+            my = RP._lerp(RP.UPPER, 3, z / k) * k
+            _cone(tooth_m, H + np.array([sx * wl * 0.82, my + 0.001 * k, z]), np.array([0, -1.0, 0.25]), 0.0022 * k, 0.0065 * k, [(hj, 1.0)], RP.RIGID)
+            ly = RP._lerp(RP.LOWER, 2, z / k) * k
+            _cone(tooth_m, H + np.array([sx * wl * 0.74, ly - 0.001 * k, z + 0.006 * k]), np.array([0, 1.0, 0.25]), 0.0018 * k, 0.005 * k, [(jj, 1.0)], RP.RIGID)
+    for mm in (dark_m, tooth_m):
+        mm.C = [np.ones(3)] * len(mm.P)
+    collar, neck_axis, hide = _head_collar(body, rec, k, RP.TILE)
+    # the crest: blades down the midline, the head's rigid, the neck's on the nearest base vertex and a material of
+    # their own, which the figures leave out when a worn item covers the skin under their roots (under)
+    spines = RP.crest(lz, body, H, hide)
+    under = set()
+    for p, up, back, h, nb in spines:
+        if nb is None:
+            m, jw, recipe = crest_m, [(hj, 1.0)], RP.RIGID
+        else:
+            m = crest_n
+            jw = [(int(jx), float(wx)) for jx, wx in zip(B['J'][nb], B['W'][nb]) if wx > 0]
+            recipe = (int(B['VID'][nb]), 0.0, 'Head', 0.0, np.zeros(3))
+            under.update(int(t) for t in np.nonzero((B['T'] == nb).any(1))[0])
+        RP.blade(m, m.C, H + p, up, back, h, min(0.45 * h + 0.004 * k, 0.019 * k), 0.0032 * k, jw, recipe)
+    white = flat('#ffffff')
+    spec = [(cran, {'name': 'Mod.head_lizard', 'rough': 0.62}, tex, nrm, None),
+            (jaw, {'name': 'Mod.head_lizard_jaw', 'rough': 0.62}, tex, nrm, None),
+            (collar, {'name': 'Mod.head_lizard_neck', 'rough': 0.65}, tex, nrm, neck_axis),
+            (mouth_m, {'name': 'Mod.head_lizard_mouth', 'rough': 0.4}, flat('#8a4a48'), None, None),
+            (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.08}, AM.iris_texture('round'), None, None),
+            (dark_m, {'name': 'Mod.head_lizard_dark', 'rough': 0.5}, flat('#120c08'), None, None),
+            (tooth_m, {'name': 'Mod.head_lizard_teeth', 'rough': 0.35}, flat('#d8ccb0'), None, None),
+            (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.55}, white, None, None),
+            (crest_n, {'name': 'Mod.head_lizard_crest_neck', 'rough': 0.55}, white, None, None)]
+    prims = []
+    for m, mat, img, nm, outward in spec:
+        if not len(m.T):
+            continue
+        p = m.prim(mat, img, outward=outward)
+        p['C'], p['normal'] = np.array(m.C, float), nm
+        prims.append(p)
+    lp = lid_m.prim({'name': 'Mod.head_lizard_lids', 'rough': 0.6}, tex)
+    lp.update({'C': np.array(lid_m.C, float), 'normal': nrm, 'mesh': 1, 'targets': {'blink': (ldV, ldN)}})
+    write_piece(body, out, 'mod_head_lizard', prims + [lp])
+    hinge = np.array([0.0, RP.HINGE[1] * k, RP.HINGE[0] * k])
+    return hide, {'pivot': [round(float(x), 5) for x in hinge]}, sorted(under)
+
+
+
+def frog_head(body, out, rec, tex, nrm=None):
+    """mod_head_frog: a frogman's head in place of the human one (tools/amphibian.py: the upper head rigid on Head, the
+    lower jaw and the throat's pouch on face_jaw, which the figure opens about the hinge; bulging eyes behind lower lids
+    that blink; dark nostrils), with the lizard's collar from the neck up into it (_head_collar). Its skin (the head, the
+    jaw, the collar and the lids: role 'pattern') carries the pattern's fields and the pale share in COLOR_0 and a shade
+    in TEXCOORD_1, which the figures colour from the record (skin, skin2, skin3, pattern, pattern_amount); the eyes an
+    iris texture the eye colour tints (role 'iris'); and a primitive with no area carries the body's pattern (its
+    texture: amphibian.body_mask), which the base skin takes under the head (kit item skin_detail mask). tex, nrm: the
+    skin texture and its normal map. Returns the hidden skin and the jaw's extras"""
+    import heads as HD
+    import reptile as RP
+    import amphibian as AM
+    k = head_scale(body)
+    H = body.P('Head')
+    hj, jj = body.jidx['Head'], body.jidx['face_jaw']
+    fr = AM.Frog(k)
+
+    def smooth():
+        m = _Smooth(rec)
+        m.C = []
+        return m
+    cran, jaw, mouth_m, eye_m, dark_m, lid_m, mask_m, web_m, pad_m = (smooth() for _ in range(9))
+    for f, is_upper, m, bone in ((fr.upper, True, cran, hj), (fr.lower, False, jaw, jj)):
+        lo, hi = np.array([-0.16, -0.12, -0.15]) * k, np.array([0.16, 0.19, 0.18]) * k
+        V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
+        M, S, inside = AM.paint(fr, V, N, is_upper, H)
+        S, = HD.soften(nb, S)
+        C = np.concatenate([M, S[:, None]], 1)            # the pattern, the pale share and the shade, split at the prims
+        V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
+        mats = np.where(inside[T].all(1), 'mouth', 'skin')
+        RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}}, tile=AM.TILE)
+    eV, eN, eU, eT = AM.eyeball(fr.eyes, fr.eye_r, H)
+    for p, u in zip(eV, eU):
+        eye_m.v(p, tuple(u), [(hj, 1.0)], RP.RIGID)
+    eye_m.T = eT.tolist()
+    # the frog's ball stands proud of its turret: a wide lid lies down in the turret when open and rises over the
+    # front of the eye; it turns no more than 95 degrees (a morph moves each point straight: further, the lid would
+    # pass through the ball halfway)
+    lV, lN, lC, lT, ldV, ldN, lU = RP.lids(fr, color=(1.0, 1.0, 1.0), open_deg=-60.0, shut_deg=35.0, span=150.0)
+    for p, c, u in zip(lV + H, lC, lU):
+        lid_m.v(p, tuple(u / AM.TILE), [(hj, 1.0)], RP.RIGID)
+        lid_m.C.append(np.concatenate([AM.pattern_fields(p[None])[0], [0.0, c[0]]]))
+    lid_m.T = lT.tolist()
+    for c, r in fr.nostrils:
+        _ellipsoid(dark_m, H + c, r * 0.9, [(hj, 1.0)], RP.RIGID)
+    collar, neck_axis, hide = _head_collar(body, rec, k, AM.TILE)
+    CP = np.array(collar.P)
+    CN = (CP - np.array([CP[:, 0].mean(), 0, CP[:, 2].mean()])) * np.array([1, 0, 1])
+    CN /= np.maximum(np.linalg.norm(CN, axis=1, keepdims=True), 1e-9)
+    pale = AM.belly_share(body, CP, CN)                   # the throat's front, as the body's
+    collar.C = [np.concatenate([f, [a, 1.0]]) for f, a in zip(AM.pattern_fields(CP), pale)]
+    # webbed hands and pads under the fingertips, on the fingers' joints, each point's deltas the nearest base vertex's
+    B = body.prims['Human.body']
+    tree = cKDTree(B['POSITION'].astype(float))
+    AM.hand_webs(body, web_m, pad_m, lambda p: ((int(B['VID'][tree.query(p)[1]]), 0.0, 'Head', 0.0, np.zeros(3)), None))
+    # the body's pattern, on a primitive with no area (the figures read its texture; nothing is drawn)
+    for _ in range(3):
+        mask_m.v(H, (0.0, 0.0), [(hj, 1.0)], RP.RIGID)
+    mask_m.T = [[0, 1, 2]]
+    patterned = [(cran, {'name': 'Mod.head_frog', 'rough': 0.38}, tex, nrm, None),
+                 (jaw, {'name': 'Mod.head_frog_jaw', 'rough': 0.38}, tex, nrm, None),
+                 (collar, {'name': 'Mod.head_frog_neck', 'rough': 0.4}, tex, nrm, neck_axis),
+                 (web_m, {'name': 'Mod.head_frog_webs', 'rough': 0.4}, tex, nrm, None),
+                 (pad_m, {'name': 'Mod.head_frog_pads', 'rough': 0.45}, tex, nrm, None)]
+    prims = []
+    for m, mat, img, nm, outward in patterned:
+        p = m.prim(mat, img, outward=outward)
+        C = np.array(m.C, float)
+        p.update({'C': C[:, :4], 'UV2': np.stack([C[:, 4], np.zeros(len(C))], 1), 'normal': nm})
+        prims.append(p)
+    prims.append(mouth_m.prim({'name': 'Mod.head_frog_mouth', 'rough': 0.3}, flat('#b06a68')))
+    prims.append(eye_m.prim({'name': 'Mod.head_frog_eye', 'rough': 0.05}, AM.iris_texture('horizontal')))
+    prims.append(dark_m.prim({'name': 'Mod.head_frog_dark', 'rough': 0.5}, flat('#120c08')))
+    prims.append(mask_m.prim({'name': 'Mod.head_frog_mask', 'rough': 1.0}, AM.body_mask(body)))
+    lp = lid_m.prim({'name': 'Mod.head_frog_lids', 'rough': 0.35}, tex)
+    C = np.array(lid_m.C, float)
+    lp.update({'C': C[:, :4], 'UV2': np.stack([C[:, 4], np.zeros(len(C))], 1), 'normal': nrm, 'mesh': 1,
+               'targets': {'blink': (ldV, ldN)}})
+    write_piece(body, out, 'mod_head_frog', prims + [lp])
+    hinge = np.array([0.0, AM.HINGE[1] * k * AM.SIZE, AM.HINGE[0] * k * AM.SIZE])
+    return hide, {'pivot': [round(float(x), 5) for x in hinge]}
+
+
+def _ellipsoid(m, c, r, jw, recipe, n=12, mm=8):
+    """a smooth ellipsoid of radii r at c"""
+    rows = []
+    for i in range(mm + 1):
+        ph = math.pi * i / mm
+        ring, first = [], None
+        for kq in range(n + 1):
+            th = 2 * math.pi * kq / n
+            p = np.asarray(c, float) + np.array([r[0] * math.sin(ph) * math.cos(th), r[1] * math.cos(ph), r[2] * math.sin(ph) * math.sin(th)])
+            vi = m.v(p, (kq / n, i / mm), jw, recipe, vid=None if kq < n else m.VID[first])
+            if kq == 0:
+                first = vi
+            ring.append(vi)
+        rows.append(ring)
+    m.grid(rows)                                  # outward as built (round from +x toward +z, top to bottom)
+
+
+def _cone(m, base, d, r, h, jw, recipe, n=6):
+    d = np.asarray(d, float) / np.linalg.norm(d)
+    u = np.cross(d, [1.0, 0, 0] if abs(d[0]) < 0.9 else [0, 0, 1.0])
+    u /= np.linalg.norm(u)
+    w = np.cross(d, u)
+    tip = m.v(np.asarray(base) + d * h, (0.5, 1.0), jw, recipe)
+    ring = []
+    for kq in range(n):
+        th = 2 * math.pi * kq / n
+        ring.append(m.v(np.asarray(base) + r * (math.cos(th) * u + math.sin(th) * w) - d * r, (kq / n, 0.0), jw, recipe))
+    for kq in range(n):
+        a, b = ring[kq], ring[(kq + 1) % n]
+        m.T.append([a, b, tip])
+
+
+# the tail's motion in the figure (50-figure.js tail, kchar_figure.gd _tail): a spring chain on its joints. stiff: per
+# point, root to tip, how far toward its rest (carried by the hips) it is pulled each 1/60 s; grav: m/s^2 down;
+# damp: of its speed each step; sway: degrees each side at the tip (the root a share, root), a period in seconds;
+# what the stiffness leaves is the lag. pad: kept this far out of the legs' capsules, beyond the tail's own radius
+TAIL_MOTION = {'stiff': [0.5, 0.32, 0.22, 0.16, 0.12, 0.1, 0.09, 0.08, 0.08], 'grav': 3.0, 'damp': 0.06,
+               'sway': {'deg': 9.0, 'root': 0.15, 'period': 3.2}, 'pad': 0.01}
+# the jaw (50-figure.js jaw, kchar_figure.gd _jaw): face_jaw turned open about the hinge (pivot, Head's frame) by up
+# to deg, for a share (hold) of every period seconds: a breath with the mouth a little open
+JAW_MOTION = {'deg': 6.0, 'period': 5.0, 'hold': 0.35}
+# the frogmen's skin colours (owner, 2026-10-27): greens, browns, red-browns and creams for the ground and the pale
+# parts; the marks may be black too. The Cosmetic Lab offers only these (kit item pattern palette)
+_GREENS = ['#2e4a1c', '#3e5a22', '#4a6a2e', '#5f8a36', '#7a9a3a', '#93ac5a']
+_BROWNS = ['#3a2a1c', '#5a4028', '#7a5634', '#9a7448']
+_RED_BROWNS = ['#5a2618', '#7a3a22', '#9a4a2a', '#a8603a']
+_CREAMS = ['#c8b88a', '#d8c890', '#e2dab0', '#efe6c8']
+FROG_PALETTE = {'skin': _GREENS + _BROWNS + _RED_BROWNS + _CREAMS,
+                'skin2': ['#121410', '#1e2a12'] + _GREENS[:3] + _BROWNS[:3] + _RED_BROWNS[:3],
+                'skin3': _CREAMS + ['#b8c890']}
+NONHUMAN_ROLES = {'Mod.tail': 'skin', 'Mod.head_lizard': 'skin', 'Mod.head_lizard_jaw': 'skin', 'Mod.head_lizard_neck': 'skin',
+                  'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin',
+                  'Mod.head_lizard_eye': 'iris',
+                  'Mod.head_frog': 'pattern', 'Mod.head_frog_jaw': 'pattern', 'Mod.head_frog_neck': 'pattern',
+                  'Mod.head_frog_lids': 'pattern', 'Mod.head_frog_eye': 'iris', 'Mod.head_frog_webs': 'pattern',
+                  'Mod.head_frog_pads': 'pattern'}
+
+
+def nonhuman_joints(body):
+    """the joints the non-human pieces weight and the base lacks, as Body.add rows (name, parent, world bind): the
+    tail's (tools/tail.py: its rest frame the hips', so each joint's bind is the hips' turn at its place) and face_jaw
+    (make_pieces.skeleton_nodes puts the face joints at the head joint, turned as it is). Returns them and the tail's
+    root"""
+    import tail as TL
+    B = body.prims['Human.body']
+    hips = body.bind[body.jidx['Hips']]
+    root = TL.root_at(B['POSITION'].astype(float), B['T'], hips[:3, 3])
+    P, _ = TL.chain(root, hips[1, 3])
+    rows = []
+    for k, p in enumerate(P):
+        M = hips.copy()
+        M[:3, 3] = p
+        rows.append((TL.names()[k], 'Hips' if k == 0 else TL.names()[k - 1], M))
+    rows.append(('face_jaw', 'Head', body.bind[body.jidx['Head']].copy()))
+    return rows, root
+
+
+def skin_repeat(body, tile=None):
+    """how many times the head's scale texture repeats across the base skin's UV square for its scales to be the head's
+    size (tile, by default reptile.TILE; one UV unit is about two metres of skin, area-weighted: MakeHuman's islands differ by about
+    twice either way, which the busy scales hide). The figures draw the body's skin with it under a lizard's head
+    (kit item skin_detail)"""
+    import reptile as RP
+    S = body.prims['Human.body']
+    P, U, T = S['POSITION'].astype(float), S['TEXCOORD_0'].astype(float), S['T']
+    a3 = np.linalg.norm(np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]]), axis=1) / 2
+    e, f = U[T[:, 1]] - U[T[:, 0]], U[T[:, 2]] - U[T[:, 0]]
+    a2 = np.abs(e[:, 0] * f[:, 1] - e[:, 1] * f[:, 0]) / 2
+    ok = a2 > 1e-12
+    mpu = float((np.sqrt(a3[ok] / a2[ok]) * a3[ok]).sum() / a3[ok].sum())
+    return round(mpu / (tile or RP.TILE), 2)
+
+
+def nonhuman(body, pieces, body_name):
+    """the non-human pieces (a spike: tail_piece, lizard_head, frog_head) beside the others, their kit entries (marked test: no
+    people draws them), tint roles and morph recipes ({id: Recipe}), and the tail's root (tail_rows). body gets the
+    joints they weight (nonhuman_joints); build the other mods first"""
+    import os
+    import tail as TL
+    rows, root = nonhuman_joints(body)
+    body.add(rows)
+    import reptile as RP
+    sm = RP.scale_map(texture_mean(body))           # the library's scales, or the stand-in without git lfs
+    tex, nrm = sm if sm else (scale_texture(texture_mean(body)), None)
+    rec_t, rec_h = Recipe(), Recipe()
+    info = tail_piece(body, os.path.join(pieces, 'mod_tail.glb'), rec_t, tex, nrm)
+    hide, jaw, under = lizard_head(body, os.path.join(pieces, 'mod_head_lizard.glb'), rec_h, tex, nrm)
+    import amphibian as AM
+    fm = RP.scale_map(texture_mean(body), library=AM.LIBRARY)      # the frog's moist skin (skin.smooth)
+    ftex, fnrm = fm if fm else (tex, nrm)
+    rec_f = Recipe()
+    hide_f, jaw_f = frog_head(body, os.path.join(pieces, 'mod_head_frog.glb'), rec_f, ftex, fnrm)
+    n = len(body.prims['Human.body']['T'])
+
+    def bits(tris):
+        a = np.zeros((n + 7) // 8 * 8, np.uint8)
+        a[tris] = 1
+        return base64.b64encode(np.packbits(a, bitorder='little').tobytes()).decode()
+    B = body.prims['Human.body']
+    _, kb = cKDTree(B['POSITION'].astype(float)).query(root - np.array([0, 0, TL.ROOT_IN]))
+    entries = [
+        {'id': 'mod_tail', 'name': 'Tail (reptile)', 'slot': 'mods', 'glb': 'pieces/%s/mod_tail.glb' % body_name,
+         'grants': {'tail': True}, 'group': 'tail', 'kind': 'genetic', 'test': True, 'tail': dict(info, **TAIL_MOTION)},
+        {'id': 'mod_head_lizard', 'name': 'Lizard head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_lizard.glb' % body_name,
+         'grants': {'head': 'lizard'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
+         'hide': bits(hide), 'hides': int(len(hide)),
+         'hide_parts': HEAD_PARTS, 'jaw': dict(jaw, **JAW_MOTION),
+         'skin_detail': {'material': 'Mod.head_lizard', 'repeat': skin_repeat(body)},
+         'crest_neck': {'material': 'Mod.head_lizard_crest_neck', 'under': under}},
+        {'id': 'mod_head_frog', 'name': 'Frog head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_frog.glb' % body_name,
+         'grants': {'head': 'frog'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
+         'hide': bits(hide_f), 'hides': int(len(hide_f)), 'hide_parts': HEAD_PARTS, 'jaw': dict(jaw_f, **JAW_MOTION),
+         'skin_detail': {'material': 'Mod.head_frog', 'repeat': skin_repeat(body, AM.TILE), 'mask': 'Mod.head_frog_mask'},
+         # the skin's colours and pattern when the record names none (skin2 the marks', skin3 the pale parts'; kind
+         # none, spots, net or marble; amount 0..1) and the eyes' colour
+         'pattern': {'skin2': '#1e2a12', 'skin3': '#e2dab0', 'kind': 'marble', 'amount': 0.45, 'eye_color': '#d6a22a',
+                     'palette': FROG_PALETTE}}]
+    return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h, 'mod_head_frog': rec_f}, \
+        {'root': root, 'b_root': int(B['VID'][kb])}
+
+
+def tail_rows(morph, names, hips_y, root, b_root, d_base, d_joint):
+    """the tail joints' morph rows into kit.json morph (morph_joints, and out of follow): each moves with the skin over
+    the sacrum (base vertex b_root) and scales about the root with the hip joint's height (as the piece's vertices)"""
+    import tail as TL
+    s = d_joint('Hips')[:, 1] / hips_y
+    P, _ = TL.chain(root, hips_y)
+    Dt = TL.joint_deltas(P, root, d_base[:, b_root], s)
+    idx = [names.index(n) for n in TL.names()]
+    mj = morph['morph_joints']
+    for t in range(Dt.shape[0]):
+        add = [[idx[k]] + [round(float(x), 5) for x in Dt[t, k]] for k in range(len(idx)) if np.abs(Dt[t, k]).max() > 1e-4]
+        if add:
+            mj.setdefault(str(t), []).extend(add)
+    morph['morph_joints'] = {k: mj[k] for k in sorted(mj, key=int)}
+    morph['follow'] = [i for i in morph['follow'] if i not in idx]
 
 
 # the mods every body gets: id -> (name, what it grants, its group (one of a group at a time), its kind, builder,
@@ -824,8 +1495,9 @@ def split_lower(item_path, sleeve_path, ranges):
     return moved
 
 
-def make_all(base_path, pieces, body_name):
-    """every mod's piece beside the base; their kit entries and tint roles"""
+def make_all(base_path, pieces, body_name, extra=None):
+    """every mod's piece beside the base; their kit entries and tint roles. extra (a dict) gets the non-human
+    pieces' recipes and the tail's root (nonhuman), which make_mpfb.py turns into their deltas"""
     body = Body(base_path)
     entries, roles = [], {}
     import os
@@ -847,4 +1519,9 @@ def make_all(base_path, pieces, body_name):
         if kind == 'cybernetic' and grants.get('arms'):
             entries[-1]['bare'] = True        # a top's lower sleeves are left off it (split_lower, KCHAR.parts)
         roles.update(rl)
+    nh, nr, recipes, tl = nonhuman(body, pieces, body_name)
+    entries += nh
+    roles.update(nr)
+    if extra is not None:
+        extra.update({'recipes': recipes, 'tail': tl})
     return entries, roles

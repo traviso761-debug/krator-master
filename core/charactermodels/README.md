@@ -39,6 +39,8 @@ python3 verify.py dist/animation-lab.html --assert
 python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
 python3 tools/lab_shots.py <dir> <spec.json> --page <lab copy> --gpu   # Animation Lab clips per body, side by side (pieces beside the page)
 python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
+python3 tools/nonhuman.py [male female giant]                        # the tail and the lizard head on the bodies as they stand (NONHUMAN.md)
+python3 tools/make_mpfb.py gshapes male                              # the Godot twin's shapes from the pieces alone (no Blender)
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
@@ -245,6 +247,57 @@ buckskin, fur, felt, nacre, the metals; a plain weave otherwise) or `P(fabric=)`
 Named per garment: plaited straw for the petasos and the Fulani cone, astrakhan for both papakhas, brass braid for the
 Hall's festive epaulettes and the Free Giants' torc, glass beads for the Dalab bead cap and the Beast Riders' bead
 belt (and the `beads` motif), oiled cloth for the Izani rain hood.
+**Fur.** A garment's fur (the parts whose fabric is `fur.*`, but a sole; and a `feather` or `solid` band in the fur
+colours, a cape's edge) stands off the cloth as shells. `make_garments.py` `fur_of` writes its rows of the texture into
+the `.cloth.json` (`[v0, v1, kind, mu, mv]`: glTF v, the kind from the fabric, the metres a unit of u and of v spans),
+`make_mpfb.py` carries them into the kit item's `fur`, and `tools/fur.py` derived them from the published pieces for the
+garments built before (2026-10-26: the ushankas, the papakhas, the Beast Riders' hat, horned cap, pauldron, boot cuffs and
+riding trousers, the festive cap's band and the gown's cape edge). The figure (`50-figure.js` `furShells`; Godot
+`kchar_fur.gdshader` chained by `_fur`) draws `layers` copies of the fur rows' triangles, each a little further out along
+the skinned normal after the push, combed down, keeping only the texels a strand passes through; they share the
+garment's attributes and skeleton, so the morphs, the clips, the push and the dye carry over. A legs item's fur lies
+between the top of the boots and the lowest hem of the top (tucked in, it came out through the shafts and a deel's
+skirt). The look per kind (`short`, `astrakhan`: pile, strand spacing and width, comb, clump, root shade, tip, vary) and a
+per-item pile factor (0: none) are `data/fur.json`; the crowd's baked looks leave the shells out.
+**Therian heads** (2026-10-26; `tools/heads.py`): a body mod (slot `mods`, group `head`) that replaces the MakeHuman head
+with an animal's, so far the **coyote head** the Coyote Men's strangers wear (`data/peoples.json` mods). It is made without
+Blender from the body's own base: a signed distance field (cranium, a nape into the neck, muzzle, jaw, cheeks, ears
+cupped forward and out, a plug into the neck, almond lid openings) placed from the base's head at rest, meshed by surface
+nets on a 4 mm grid, stray specks dropped. Its look follows the owner's coyote photographs (2026-10-26): vertex colours
+that the kit's `coat` tint (the hair colour over the head's base shade) multiplies, with cream lips, chin, throat and
+cheeks, a reddish muzzle top and ear backs, a grizzled buff-grey crown with a darker streak, dark-rimmed and dark-tipped
+ears with white fluff at the base of the hollow, dark lids and a tear line; its fur's density and length in the second
+UV (sleek on the muzzle and face, a ruff on the cheeks and neck), its strands' UV a box projection in metres (wrapped
+round the muzzle, the UV had a pole at the back of the skull and the fur fanned from a whorl), combed back along the head
+(`furShells` `uv2` and `COMB_BACK`, Godot `_fur` mode 2 and `kfDir`). The eyes are their own primitive, behind the lids,
+turned a little out, the iris drawn in rings round the gaze (a round pupil, gold to amber, a dark limbal ring, a dark
+sclera); the nose pad is its own primitive on a 1.2 mm grid (a flat front, comma nostrils, the philtrum), glossy and
+untinted; the ears are their own on a 1.8 mm grid (furred only where they meet the head: on a thin ear the shells' layers
+stepped). The cheekbones are a ridge under each eye back toward the ear, the sides of the skull a little wider (after
+the photographs). **It blinks**: an upper lid per eye, a band of sphere round the eyeball hidden in the head when open,
+with a glTF morph target `blink` that turns it down to the lower lid; the figure shuts it every few seconds for a fifth
+of a second (`blinks` in 50-figure.js: GPU morph target over the CPU morphs; `fig.blink()` starts one, `fig.blinkHold`
+holds it; Godot `_blinks`, the shape carried through `_build` after the morphs' shapes). Each vertex takes the morphs of the nearest skull vertex (`_VIDX`; not the face's, so
+the face sliders leave the muzzle alone), weighted to the Head and into the Neck at the cut. The item hides the head's
+skin, the brows, lashes, eyes, lips and ears (`hide_parts`, which `KCHAR.hiddenParts` now takes from mods too), the hair
+and beard (`covers_hair` on a mod), and is `furred`, so a coat runs on up the neck under it. `make_mpfb.py` makes it with
+the other mods (its morphs, the Godot shapes and the skin regions from the export); `python3 tools/heads.py <body> <base>`
+makes it alone (the morph file the base skin's own entry under the head's materials, the Godot shapes empty).
+
+**Coats** (2026-10-26): a furred body, a record's `coat` (an id in `data/fur.json` `coats`; a record without one has
+no `coat` field). Four so far: a shaggy pelt (the Khaayken; 5 cm), a coyote's brush (the Coyote Men; 2 cm, agouti, its
+face furred but for the eyes and mouth), a short coat (sleek, an animal's) and body hair (sparse, on the chest, arms and
+legs, its colour taken partway from the skin's toward the hair's: `ink`). A people with a `coat` in `data/peoples.json`
+gives it to every stranger (`KCHAR.stranger`, no draw of its own): the **Khaayken** and the **Coyote Men** (the owner,
+2026-10-26: both furred), drawn on the human body until the Khaayken's 1.15 scale (Y5) and the Coyote Men's coyote head and
+digitigrade legs (a body of their own) are built. Each vertex of the
+skin's own primitive gets a cover, its joints' covers (`cover`, by joint name without its side; `fingers`, `*`) summed
+by its skin weights, less the parts left bare (`bare`), found in the rest pose: the face (an ellipse on the head's front,
+chin to brow; or within it only the eyes and the mouth, for a furred face), the palms (the hands' undersides) and the soles. The shells (`50-figure.js` `coatShells`, Godot
+`_coat`) take the skin that the clothes leave and fade in over three rings from what is hidden, so a coat stops short of
+every garment's edge; their strands run on the skin's UV map scaled to metres per vertex, in the hair's colour; a kind
+with `undercoat` has its first layer whole where the cover is dense, and a coat hides the skin parts it lists
+(`hide_parts`: the nipples). The Cosmetic Lab's Head page has a Coat picker.
 The cross-stitch, Saxon rosette, bogolan and feather motifs take their stitches from the pattern sheets
 (`SHEETS`), recoloured in each garment's own two colours. The sets and their sources: `prompt-clothes.md`.
 Each garment is built on the body from lofted parts: rings cast out from an axis (the spine, an arm through its
@@ -371,6 +424,17 @@ the joints until a mod is worn:
   enough to hold the body's own nails inside. They wear with any lower pair (`Four bronze arms` in the Animation Lab).
 - `mod_gills`, rib gills: four slits a side over the ribs (from the lower ribs up toward the armpit), a lip of skin over a dark slit, ray-cast onto the body. The
   Hykkousoi have them (`peoples.json` `mods`: all their strangers); anyone else can wear them.
+- **Non-human parts** (a spike for the Lizardmen, 2026-10-23; `NONHUMAN.md` has it whole, and what full Lizardmen and
+  therian peoples would need): `mod_tail`, a tail on eight joints every skeleton carries (`Tail1`..`Tail8` under Hips,
+  `tools/tail.py`, after every other joint), driven each frame as a spring chain kept out of the legs (`tail` in
+  `50-figure.js`, `_tail` in `kchar_figure.gd`); and `mod_head_lizard`, a Komodo dragon's head with an iguana's crest
+  (`tools/reptile.py`: signed distance fields meshed as the therian heads are, the library's scales, lower lids that
+  blink), or `mod_head_frog`, a frog's (`tools/amphibian.py`; webbed hands; the skin in the record's `skin`, `skin2`,
+  `skin3` by a `pattern`, as a poison dart frog's), in place of the human one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
+  `face_jaw` opened now and then (`jaw`, `_jaw`), a collar over the neck seam on the neck's own weights and deltas.
+  Marked `test` in the kit: no people draws them. `python3 tools/nonhuman.py` puts them on the bodies from the published
+  pieces; a whole rebuild makes them too (`mods.nonhuman`). The Cosmetic Lab's "Lizardman" chip (or `?lizard`) and the
+  Animation Lab's Body mods menu put them on.
 
 A mod's vertices name the MakeHuman vertex whose deltas move them (`_VIDX`), so the sliders reshape them with the body;
 the flesh arms and the gills take the skin tint. A mod says what it grants (`grants.arms` 4, `grants.gills`) and its
@@ -628,13 +692,15 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
 | `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
+| `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |
 | `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
 | `data/mpfb_<body>/` | `kit.json` (items, hide bitsets, morph sliders and joint deltas, tint) and `skeleton.json` (made by `make_mpfb.py`) | [G data] |
 | `pieces/mpfb_<body>/` | `base.glb`, one GLB per item, `anims.glb`, and a `.morph.bin` per GLB (gitignored: rebuilt from the Blender export) | |
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
-| `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills; the non-human tail and head), the lower-arm joints every body has, four-armed garments' weights | |
+| `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |

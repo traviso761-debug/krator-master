@@ -1,0 +1,22 @@
+{
+ "note": "Fur drawn as shells over a garment's fur rows (kit items' fur: [v0, v1, kind, mu, mv], make_garments.py fur_of, tools/fur.py). layers: shells over the cloth. Per kind: pile (metres from the cloth to the tips), strand (metres between strands), thick (a strand's width at its root, of the space between strands), comb (how far the tips lean down, of the pile), clump (how much strands' lengths vary), shade (the colour at the roots, of the cloth's: the tips take 1), tip (the colour at the tips), vary (how much lighter or darker one strand is than the next). items: per kit item id, pile (a factor on its kind's pile; 0: no fur). coats: a furred body (a record's coat, by id): its kind, its cover per joint (the joint's name without Left/Right/Left2/Right2; 'fingers' for every finger joint, '*' for the rest; summed by the skin's weights, under 1 thins the strands) and the parts left bare ('face', 'eyes', 'mouth', 'palms', 'soles'; eyes and mouth for a furred face), and the skin's parts it hides (hide_parts: the nipples); the colour is the hair's (a kind's ink, under 1, takes it that far from the skin's toward the hair's: sparse hair darkens the skin rather than drawing on it), and a kind with undercoat has its first layer whole where the cover is dense. A kind may set its own layers.",
+ "layers": 14,
+ "kinds": {
+  "short": {"pile": 0.022, "strand": 0.0024, "thick": 0.85, "comb": 0.8, "clump": 0.5, "shade": 0.45, "tip": 1.2, "vary": 0.35},
+  "astrakhan": {"pile": 0.006, "strand": 0.004, "thick": 1.0, "comb": 0.1, "clump": 0.3, "shade": 0.55, "tip": 1.1, "vary": 0.25},
+  "pelt": {"pile": 0.05, "strand": 0.004, "thick": 1.0, "comb": 1.3, "clump": 0.5, "shade": 0.5, "tip": 1.1, "vary": 0.25, "layers": 24, "undercoat": true},
+  "plush": {"pile": 0.012, "strand": 0.0022, "thick": 0.95, "comb": 0.8, "clump": 0.35, "shade": 0.55, "tip": 1.08, "vary": 0.2, "undercoat": true},
+  "hirsute": {"pile": 0.006, "strand": 0.003, "thick": 0.4, "comb": 1.8, "clump": 0.4, "shade": 1.0, "tip": 1.0, "vary": 0.25, "layers": 22, "ink": 0.7},
+  "brush": {"pile": 0.022, "strand": 0.0028, "thick": 0.95, "comb": 1.0, "clump": 0.5, "shade": 0.45, "tip": 1.25, "vary": 0.5, "layers": 18, "undercoat": true}
+ },
+ "items": {
+  "beast_m_trade_trousers": {"pile": 0.6},
+  "beast_f_trade_trousers": {"pile": 0.6}
+ },
+ "coats": {
+  "pelt": {"name": "Shaggy pelt", "kind": "pelt", "cover": {"*": 1, "Hand": 0.7, "fingers": 0.25, "Foot": 0.8, "ToeBase": 0.4}, "bare": ["face", "palms", "soles"], "hide_parts": ["Human.nipple"]},
+  "plush": {"name": "Short coat", "kind": "plush", "cover": {"*": 1, "fingers": 0.5}, "bare": ["face", "palms", "soles"], "hide_parts": ["Human.nipple"]},
+  "hirsute": {"name": "Body hair", "kind": "hirsute", "cover": {"*": 0, "Spine2": 0.7, "Spine1": 0.35, "Arm": 0.5, "ForeArm": 0.8, "UpLeg": 0.6, "Leg": 0.9, "Hand": 0.25}, "bare": ["palms", "soles"]},
+  "coyote": {"name": "Coyote brush", "kind": "brush", "cover": {"*": 1, "fingers": 0.4}, "bare": ["eyes", "mouth", "palms", "soles"], "hide_parts": ["Human.nipple"]}
+ }
+}

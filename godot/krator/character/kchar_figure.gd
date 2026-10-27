@@ -23,7 +23,11 @@ extends Node3D
 
 const EYE_SHADER := preload("res://krator/character/kchar_eye.gdshader")
 const SKIN_SHADER := preload("res://krator/character/kchar_skin.gdshader")
+const PATTERN_SHADER := preload("res://krator/character/kchar_pattern.gdshader")
+# a frog's pattern kinds (kit item pattern, record pattern; KP_KIND in 50-figure.js)
+const KP_KIND := {"none": 0, "spots": 1, "net": 2, "marble": 3}
 const PUSH_SHADER := preload("res://krator/character/kchar_push.gdshader")
+const FUR_SHADER := preload("res://krator/character/kchar_fur.gdshader")
 
 static var _cache := {}                  # piece path -> Array of built meshes (see _build)
 
@@ -92,6 +96,8 @@ func load_body(data_dir: String, body_id: String) -> void:
 			clip_data[c["key"]] = c
 		var fcs: Dictionary = cj.get("faces", {})
 		faces = fcs.get(kit.get("body", ""), fcs.get("mpfb_male", {}))
+	if FileAccess.file_exists(dir + "/fur.json"):
+		fur = JSON.parse_string(FileAccess.get_file_as_string(dir + "/fur.json"))
 	if FileAccess.file_exists(dir + "/posture.json"):
 		var pj: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/posture.json"))
 		var pb: Dictionary = pj["bodies"]
@@ -162,9 +168,20 @@ static func _build(glb: String) -> Array:
 		mesh.blend_shape_mode = Mesh.BLEND_SHAPE_MODE_NORMALIZED if whole else Mesh.BLEND_SHAPE_MODE_RELATIVE
 		for t in shapes:
 			mesh.add_blend_shape("t%d" % t)
+		# a shape the piece itself carries (a therian's lids: 'blink', tools/heads.py), after the morphs' (_blinks)
+		var blink := -1
+		var am := src as ArrayMesh
+		if am != null:
+			for i in am.get_blend_shape_count():
+				if am.get_blend_shape_name(i) == "blink":
+					blink = i
+		if blink >= 0:
+			mesh.add_blend_shape("blink")
 		var regions := []                 # per surface: whether it is the joined skin (hidden by region)
 		var joined := {}
 		var verts0 = null                 # the first surface's positions and shapes (the cloth chains' rest)
+		var y_lo := INF
+		var y_hi := -INF
 		var offs0 := []
 		for s in src.get_surface_count():
 			var arrays := src.surface_get_arrays(s)
@@ -213,10 +230,41 @@ static func _build(glb: String) -> Array:
 				var flags := 0
 				if arr[Mesh.ARRAY_BONES] != null and arr[Mesh.ARRAY_BONES].size() == arr[Mesh.ARRAY_VERTEX].size() * 8:
 					flags |= Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+				# each vertex's rest height (CUSTOM1), and the piece's lowest and highest: the fur shells' band (_fur)
+				var pv: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+				var ys := PackedFloat32Array()
+				ys.resize(pv.size())
+				for q in pv.size():
+					ys[q] = pv[q].y
+					y_lo = minf(y_lo, pv[q].y)
+					y_hi = maxf(y_hi, pv[q].y)
+				arr[Mesh.ARRAY_CUSTOM1] = ys
+				flags |= Mesh.ARRAY_CUSTOM_R_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT
 				if verts0 == null:
 					verts0 = arr[Mesh.ARRAY_VERTEX]
 					for sh in bs:
 						offs0.append(sh[Mesh.ARRAY_VERTEX])
+				if blink >= 0:
+					var sb: Array = src.surface_get_blend_shape_arrays(s)[blink]
+					var dv: PackedVector3Array = sb[Mesh.ARRAY_VERTEX]
+					var v0: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+					if am.blend_shape_mode == Mesh.BLEND_SHAPE_MODE_NORMALIZED:
+						dv = dv.duplicate()
+						for q in dv.size():
+							dv[q] -= v0[q]
+					var shb := []
+					shb.resize(Mesh.ARRAY_MAX)
+					if whole:
+						var wv := v0.duplicate()
+						for q in wv.size():
+							wv[q] += dv[q]
+						shb[Mesh.ARRAY_VERTEX] = wv
+					else:
+						shb[Mesh.ARRAY_VERTEX] = dv
+					shb[Mesh.ARRAY_NORMAL] = arr[Mesh.ARRAY_NORMAL]
+					if arr[Mesh.ARRAY_TANGENT] != null:
+						shb[Mesh.ARRAY_TANGENT] = arr[Mesh.ARRAY_TANGENT]
+					bs.append(shb)
 				mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, bs, {}, flags)
 				if mat:
 					mesh.surface_set_material(mesh.get_surface_count() - 1, mat)
@@ -244,7 +292,8 @@ static func _build(glb: String) -> Array:
 			if sf.get("region") != null:
 				ground = H.get("ground")
 		built.append({"mesh": mesh, "skin": skin, "shapes": shapes, "regions": regions, "ground": ground, "verts0": verts0, "offs0": offs0,
-			"whole": whole, "cover": H.get("cover", [])})
+			"whole": whole, "cover": H.get("cover", []), "y_lo": y_lo, "y_hi": y_hi, "joined": joined.get("arr"),
+			"blink": shapes.size() if blink >= 0 else -1})
 	scene.free()
 	_cache[glb] = built
 	return built
@@ -406,7 +455,50 @@ func apply(rec: Dictionary) -> void:
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (core/charactermodels/tools/mods.py)
+	# a tail and an animal head's jaw (mods with tail, jaw) are driven after each clip (_tail, _jaw)
+	var wt = null
+	_jaw_spec = {}
+	for m in KChar.mods(rec, kit):
+		if m.has("tail"):
+			wt = m
+		if m.has("jaw"):
+			_jaw_spec = m["jaw"]
+	if wt == null or _tl.is_empty() or _tl["spec"] != wt["tail"]:
+		_tail_setup(wt)
 	skeleton.position.y = 0.0
+	# a lizard's head draws the body's skin in its scales (kit item skin_detail: that material's maps, tiled; the twin
+	# of skinDetail in 50-figure.js)
+	var det := {}
+	for m in KChar.mods(rec, kit):
+		if m.has("skin_detail"):
+			det = m["skin_detail"]
+	var det_tex := []
+	# a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
+	var crest_out := ""
+	for m in KChar.mods(rec, kit):
+		if m.has("crest_neck"):
+			var hid := KChar.hidden(rec, kit)
+			for t in m["crest_neck"]["under"]:
+				if int(t) < hid.size() and hid[int(t)] != 0:
+					crest_out = m["crest_neck"]["material"]
+	var mask_tex: Texture2D = null          # a frog's pattern over the body (kit item skin_detail mask)
+	if not det.is_empty():
+		for mi in want:
+			for s in mi.mesh.get_surface_count():
+				var dm := mi.mesh.surface_get_material(s) as BaseMaterial3D
+				if mi.mesh.surface_get_name(s) == det["material"] and dm != null:
+					det_tex = [dm.albedo_texture, dm.normal_texture]
+				if det.has("mask") and mi.mesh.surface_get_name(s) == det["mask"] and dm != null:
+					mask_tex = dm.albedo_texture
+	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
+	var feet_top := -1000.0
+	var hem := 1000.0
+	for mi in want:
+		var pt: Dictionary = mi.get_meta("part")
+		if pt["role"] == "armour" and pt["slot"] == "feet":
+			feet_top = maxf(feet_top, float(mi.get_meta("built")["y_hi"]))
+		elif pt["role"] == "armour" and pt["slot"] == "torso":
+			hem = minf(hem, float(mi.get_meta("built")["y_lo"]))
 	for mi in want:
 		var b: Dictionary = mi.get_meta("built")
 		var shapes: PackedInt32Array = b["shapes"]
@@ -421,8 +513,17 @@ func apply(rec: Dictionary) -> void:
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
-			if part["role"] == "base" and hide_parts.has(mi.mesh.surface_get_name(s)):
-				m = _nothing()          # the nipples under a top (kit hide_parts)
+			if part["role"] == "base" and (hide_parts.has(mi.mesh.surface_get_name(s)) or _coat_hides(rec).has(mi.mesh.surface_get_name(s))):
+				m = _nothing()          # the nipples under a top (kit hide_parts) or a coat
+			elif crest_out != "" and mi.mesh.surface_get_name(s) == crest_out:
+				m = _nothing()
+			elif part["role"] == "base" and mi.mesh.surface_get_name(s) == "Human.nipple" and not det_tex.is_empty():
+				# in a lizard's scales as the skin round them is (the skin has holes under them)
+				var nm := m as BaseMaterial3D
+				nm.albedo_texture = det_tex[0]
+				nm.normal_enabled = det_tex[1] != null
+				nm.normal_texture = det_tex[1]
+				nm.uv1_scale = Vector3(float(det["repeat"]), float(det["repeat"]), 1.0)
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -431,6 +532,33 @@ func apply(rec: Dictionary) -> void:
 						if worn.has(int(i)):
 							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
+				if not det_tex.is_empty():
+					var dsm := m as ShaderMaterial
+					dsm.set_shader_parameter("detail_tex", det_tex[0])
+					dsm.set_shader_parameter("detail_ntex", det_tex[1])
+					dsm.set_shader_parameter("detail_repeat", float(det["repeat"]))
+					if mask_tex != null:
+						dsm.set_shader_parameter("mask_tex", mask_tex)
+						dsm.set_shader_parameter("pattern_on", 1.0)
+						_pattern_set(dsm, rec, gain)
+				# the coat's edge: the hide without a furred mod's (a therian's head carries the fur on: coatShells)
+				var edge := hide
+				var furred := []
+				for x in KChar.mods(rec, kit):
+					if x.get("furred", false):
+						furred.append(items.find(x))
+				if not furred.is_empty():
+					edge = Image.create(nreg, 1, false, Image.FORMAT_R8)
+					for r in b["cover"].size():
+						for i in b["cover"][r]:
+							if worn.has(int(i)) and not furred.has(int(i)):
+								edge.set_pixel(r, 0, Color(1, 0, 0))
+				_coat(m, b, mi, rec, gain, hide, edge)
+			if part["role"] == "armour" or part["role"] == "mod":
+				var legs: bool = part["slot"] == "legs"
+				var fmt: int = mi.mesh.surface_get_format(s)
+				_fur(m, _item_of(part), Vector2(feet_top if legs else -1000.0, hem if legs else 1000.0),
+					(fmt & Mesh.ARRAY_FORMAT_TEX_UV2) != 0, (fmt & Mesh.ARRAY_FORMAT_COLOR) != 0)
 			mi.set_surface_override_material(s, m)
 		if b["ground"] != null:
 			var G: Dictionary = b["ground"]
@@ -464,7 +592,23 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		var g := float(gain.get("eye", 1.0))
 		sm.set_shader_parameter("tint", Vector3(c.r * g, c.g * g, c.b * g))
 		return sm
+	if role == "pattern":                # a frog's skin (tools/amphibian.py): the record's colours by its pattern
+		var bm := mat as BaseMaterial3D
+		var pm := ShaderMaterial.new()
+		pm.shader = PATTERN_SHADER
+		pm.set_shader_parameter("tex", bm.albedo_texture)
+		if bm.normal_enabled and bm.normal_texture != null:
+			pm.set_shader_parameter("ntex", bm.normal_texture)
+			pm.set_shader_parameter("nscale", bm.normal_scale)
+		pm.set_shader_parameter("rough", bm.roughness)
+		_pattern_set(pm, rec, gain)
+		return pm
 	var m2 := mat.duplicate() as BaseMaterial3D
+	if role == "iris":                   # an animal's eye (amphibian.iris_texture): its texture tinted by the eye colour
+		var pat := _pattern_of(rec)
+		var ec = rec.get("eye_color") if rec.get("eye_color") != null else pat.get("eye_color", "#5a3a22")
+		m2.albedo_color = _lin(ec, 1.0)
+		return m2
 	if part["role"] == "armour" and (part["slot"] == "torso" or part["slot"] == "legs"):
 		var dye0 = rec.get("dye", {}).get(part["slot"])
 		m2.albedo_color = Color(dye0) if dye0 != null else Color.WHITE
@@ -472,9 +616,12 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 	if part["role"] == "armour" and part["slot"] == "feet":
 		return _garment(m2, part, rec)                  # boots: the squeeze under a long robe, no push
 	if role == "skin":
-		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
+		var sk = _pattern_colours(rec)["skin"] if not _pattern_of(rec).is_empty() else (rec.get("skin") if rec.get("skin") != null else "#d6ad8f")
+		m2.albedo_color = _lin(sk, float(gain.get("skin", 1.0)))
 	elif role == "hair":
 		m2.albedo_color = _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("hair", 1.0)))
+	elif role == "coat":                 # a therian's head (tools/heads.py): its shades times the coat's colour
+		m2.albedo_color = _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("coat", gain.get("hair", 1.0))))
 	else:
 		var dye = rec.get("dye", {}).get(part["slot"]) if part["role"] == "armour" else null
 		m2.albedo_color = Color(dye) if dye != null else Color.WHITE
@@ -636,6 +783,10 @@ func _after_clip(dt: float) -> void:
 	_to_face()
 	_stand_up()
 	_cloth_step(dt)
+	if dt > 0.0:
+		_nh_t += dt
+	_tail(dt)
+	_jaw()
 	_leg_caps()
 	_bow_string(dt)
 	_hang()
@@ -1900,6 +2051,292 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	return pm
 
 
+# ---- fur (data/fur.json; kit items' fur: the twin of furShells in 50-figure.js) ----
+# a garment's fur rows drawn as shells: fur.layers ShaderMaterials (kchar_fur.gdshader) chained after its material
+# (next_pass), layer k of n standing k/n of the pile out; each takes the garment's look and, on a pushed garment, its
+# push (the capsules each frame with the push materials). band: the rest heights a legs item's fur lies between
+var fur := {}
+
+
+# uv2: the piece carries its own fur cover and metres per UV in UV2 (a therian's head: the shells run as a coat's,
+# kchar_fur.gdshader mode 2); colored: it has vertex colours, which the shells take
+func _fur(m: Material, it: Dictionary, band: Vector2, uv2 := false, colored := false) -> void:
+	var rows: Array = it.get("fur", [])
+	if fur.is_empty() or rows.is_empty() or m == null:
+		return
+	var scale := float(fur.get("items", {}).get(it["id"], {}).get("pile", 1.0))
+	if scale <= 0.0:
+		return
+	var n0 := int(fur.get("layers", 12))
+	var kinds: Dictionary = fur["kinds"]
+	var by_kind := {}
+	for r in rows:
+		if kinds.has(r[2]):
+			if not by_kind.has(r[2]):
+				by_kind[r[2]] = []
+			by_kind[r[2]].append(r)
+	var pushed := m is ShaderMaterial and (m as ShaderMaterial).shader == PUSH_SHADER
+	var last := m
+	for kind in by_kind:
+		var K: Dictionary = kinds[kind]
+		var rs: Array = by_kind[kind].slice(0, 4)
+		var pile := float(K["pile"]) * scale
+		var n := int(K.get("layers", n0)) if uv2 else n0
+		var R := []
+		for k in 4:
+			R.append(Vector4(rs[k][0], rs[k][1], rs[k][3], rs[k][4]) if k < rs.size() else Vector4(2, 2, 0, 0))
+		for k in range(1, n + 1):
+			var t := float(k) / n
+			var fm := ShaderMaterial.new()
+			fm.shader = FUR_SHADER
+			if pushed:
+				for p in ["tex", "albedo", "kcL", "kcP", "kcT", "kcS", "kcSH"]:
+					fm.set_shader_parameter(p, m.get_shader_parameter(p))
+				_push_mats.append(fm)
+			elif m is BaseMaterial3D:
+				fm.set_shader_parameter("tex", (m as BaseMaterial3D).albedo_texture)
+				fm.set_shader_parameter("albedo", (m as BaseMaterial3D).albedo_color)
+			fm.set_shader_parameter("kfH", pile * t)
+			fm.set_shader_parameter("kfC", float(K.get("comb", 0.0)) * pile * t * t)
+			fm.set_shader_parameter("kfT", t)
+			fm.set_shader_parameter("kfR", R)
+			fm.set_shader_parameter("kfS", float(K["strand"]))
+			fm.set_shader_parameter("kfW", float(K["thick"]))
+			fm.set_shader_parameter("kfL", float(K.get("clump", 0.0)))
+			fm.set_shader_parameter("kfSh", float(K.get("shade", 1.0)))
+			fm.set_shader_parameter("kfTp", float(K.get("tip", 1.0)))
+			fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
+			fm.set_shader_parameter("kfF", band)
+			fm.set_shader_parameter("mode", 2 if uv2 else 0)
+			fm.set_shader_parameter("kfDir", Vector3(0.0, -0.45, -0.9).normalized() if uv2 else Vector3(0.0, -1.0, 0.0))   # back along a head (furShells COMB_BACK)
+			fm.set_shader_parameter("use_color", colored)
+			fm.set_shader_parameter("kfU0", 1.0 if uv2 and k == 1 and K.get("undercoat", false) else 0.0)
+			last.next_pass = fm
+			last = fm
+
+
+# ---- coats: a furred body (data/fur.json coats, a record's coat: the twin of coatShells in 50-figure.js) ----
+# the joined skin's fur: each vertex's cover (its joints' covers summed by its weights, less the face, palms and soles in
+# the rest pose) faded in over COAT_FADE rings from a hidden region, and the metres one unit of UV spans there, written
+# to a texture (RG, a texel per vertex, read by VERTEX_ID) that kchar_fur.gdshader's body mode reads; the shells chained
+# after the skin's material. A UV seam's halves (and a region border's) are one vertex for the rings (by position)
+const COAT_FADE := 3
+const EYE := [0.42, 0.48, 0.3, 0.22]       # the eyes and the mouth on the face's ellipse (coatBuild)
+const MOUTH := [0.0, -0.3, 0.4, 0.2]
+
+
+func _coat_hides(rec: Dictionary) -> Dictionary:
+	var out := {}
+	var c = fur.get("coats", {}).get(rec.get("coat") if rec.get("coat") != null else "", null)
+	if c != null:
+		for p in c.get("hide_parts", []):
+			out[p] = true
+	return out
+
+
+static func _side_less(n: String) -> String:
+	for p in ["Left2", "Right2", "Left", "Right"]:
+		if n.begins_with(p):
+			return n.substr(p.length())
+	return n
+
+
+func _cover_of(coat: Dictionary, n: String) -> float:
+	var c: Dictionary = coat.get("cover", {})
+	if c.has(n):
+		return float(c[n])
+	for f in ["HandIndex", "HandMiddle", "HandPinky", "HandRing", "HandThumb"]:
+		if n.begins_with(f) and c.has("fingers"):
+			return float(c["fingers"])
+	return float(c.get("*", 1.0))
+
+
+func _smooth(a: float, b: float, x: float) -> float:
+	var t := clampf((x - a) / (b - a), 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
+
+
+# the coat's cover, the metres per UV and the rings' graph, once per built skin and coat
+func _coat_static(b: Dictionary, mi: MeshInstance3D, id: String, coat: Dictionary) -> Dictionary:
+	var cache: Dictionary = b.get_or_add("coats", {})
+	if cache.has(id):
+		return cache[id]
+	var A: Array = b["joined"]
+	var P: PackedVector3Array = A[Mesh.ARRAY_VERTEX]
+	var N: PackedVector3Array = A[Mesh.ARRAY_NORMAL]
+	var U: PackedVector2Array = A[Mesh.ARRAY_TEX_UV]
+	var BI: PackedInt32Array = A[Mesh.ARRAY_BONES]
+	var BW: PackedFloat32Array = A[Mesh.ARRAY_WEIGHTS]
+	var IX: PackedInt32Array = A[Mesh.ARRAY_INDEX]
+	var n := P.size()
+	var per := BI.size() / n
+	var names := []
+	for k in mi.skin.get_bind_count():
+		names.append(_side_less(mi.skin.get_bind_name(k)))
+	var bare := {}
+	for x in coat.get("bare", []):
+		bare[x] = true
+	var C := PackedFloat32Array()
+	C.resize(n)
+	var hw := PackedFloat32Array()
+	hw.resize(n)
+	var aw := PackedFloat32Array()
+	aw.resize(n)
+	var fw := PackedFloat32Array()
+	fw.resize(n)
+	var y0 := INF
+	var y1 := -INF
+	var x0 := INF
+	var x1 := -INF
+	var zs := 0.0
+	var zn := 0
+	for i in n:
+		for k in per:
+			var w := BW[i * per + k]
+			if w <= 0.0:
+				continue
+			var nm: String = names[BI[i * per + k]] if BI[i * per + k] < names.size() else ""
+			C[i] += w * _cover_of(coat, nm)
+			if nm == "Head":
+				hw[i] += w
+			elif nm == "Hand" or (nm.begins_with("Hand") and nm != "Hand"):
+				aw[i] += w
+			elif nm == "Foot" or nm == "ToeBase":
+				fw[i] += w
+		if hw[i] > 0.5:
+			y0 = minf(y0, P[i].y)
+			y1 = maxf(y1, P[i].y)
+			x0 = minf(x0, P[i].x)
+			x1 = maxf(x1, P[i].x)
+			zs += P[i].z
+			zn += 1
+	# the face: an ellipse on the head's front (coatBuild)
+	var zc := zs / zn if zn > 0 else 0.0
+	var xc := (x0 + x1) * 0.5
+	var hh := maxf(y1 - y0, 1e-6)
+	var fy := y0 + 0.37 * hh
+	var ay := 0.37 * hh
+	var ax := 0.3 * (x1 - x0)
+	for i in n:
+		var f := 0.0
+		if hw[i] > 0.0 and P[i].z > zc:
+			var ex := (P[i].x - xc) / ax
+			var ey := (P[i].y - fy) / ay
+			if bare.has("face"):
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.85, 1.15, sqrt(ex * ex + ey * ey))))
+			if bare.has("eyes"):           # a furred face's eyes and mouth (coatBuild EYE, MOUTH)
+				var e := minf(Vector2((ex - EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]).length(), Vector2((ex + EYE[0]) / EYE[2], (ey - EYE[1]) / EYE[3]).length())
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.8, 1.2, e)))
+			if bare.has("mouth"):
+				f = maxf(f, hw[i] * (1.0 - _smooth(0.8, 1.2, Vector2((ex - MOUTH[0]) / MOUTH[2], (ey - MOUTH[1]) / MOUTH[3]).length())))
+		if bare.has("palms"):
+			f = maxf(f, aw[i] * _smooth(0.1, 0.45, -N[i].y))
+		if bare.has("soles"):
+			f = maxf(f, fw[i] * _smooth(0.3, 0.6, -N[i].y))
+		C[i] = clampf(C[i] * (1.0 - f), 0.0, 1.0)
+	var M := PackedFloat32Array()
+	M.resize(n)
+	var mc := PackedInt32Array()
+	mc.resize(n)
+	for t in range(0, IX.size(), 3):
+		var l3 := 0.0
+		var l2 := 0.0
+		for k in 3:
+			var a := IX[t + k]
+			var c := IX[t + (k + 1) % 3]
+			l3 += P[a].distance_to(P[c])
+			l2 += U[a].distance_to(U[c])
+		if l2 > 1e-9:
+			for k in 3:
+				M[IX[t + k]] += l3 / l2
+				mc[IX[t + k]] += 1
+	for i in n:
+		M[i] = M[i] / mc[i] if mc[i] > 0 else 1.0
+	var key := {}
+	var src := PackedInt32Array()
+	src.resize(n)
+	for i in n:
+		var q := Vector3i(roundi(P[i].x * 1e5), roundi(P[i].y * 1e5), roundi(P[i].z * 1e5))
+		if not key.has(q):
+			key[q] = key.size()
+		src[i] = key[q]
+	var nb := []
+	for i in key.size():
+		nb.append({})
+	for t in range(0, IX.size(), 3):
+		for k in 3:
+			var p := src[IX[t + k]]
+			var q := src[IX[t + (k + 1) % 3]]
+			nb[p][q] = true
+			nb[q][p] = true
+	var out := {"C": C, "M": M, "src": src, "nb": nb, "ns": key.size()}
+	cache[id] = out
+	return out
+
+
+func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain: Dictionary, hide: Image, edge: Image = null) -> void:
+	var coats: Dictionary = fur.get("coats", {})
+	var id = rec.get("coat")
+	if id == null or not coats.has(id) or b.get("joined") == null:
+		return
+	var coat: Dictionary = coats[id]
+	var K: Dictionary = fur["kinds"].get(coat.get("kind", ""), {})
+	if K.is_empty():
+		return
+	var S := _coat_static(b, mi, id, coat)
+	var A: Array = b["joined"]
+	var R: PackedFloat32Array = A[Mesh.ARRAY_CUSTOM0]
+	var n: int = S["C"].size()
+	var src: PackedInt32Array = S["src"]
+	var d := PackedFloat32Array()
+	d.resize(S["ns"])
+	d.fill(INF)
+	var front := []
+	for i in n:
+		if (edge if edge != null else hide).get_pixel(int(R[i * 4] + 0.5), 0).r > 0.5 and d[src[i]] > 0.0:
+			d[src[i]] = 0.0
+			front.append(src[i])
+	for r in range(1, COAT_FADE + 1):
+		var next := []
+		for v in front:
+			for q in S["nb"][v]:
+				if d[q] > r:
+					d[q] = r
+					next.append(q)
+		front = next
+	var W := 1024
+	var img := Image.create(W, (n + W - 1) / W, false, Image.FORMAT_RGF)
+	for i in n:
+		img.set_pixel(i % W, i / W, Color(S["C"][i] * minf(1.0, d[src[i]] / COAT_FADE), S["M"][i], 0.0))
+	var tex := ImageTexture.create_from_image(img)
+	var layers := int(K.get("layers", fur.get("layers", 12)))
+	var pile := float(K["pile"])
+	var col := _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("hair", 1.0)))
+	var last := m
+	while last.next_pass != null:
+		last = last.next_pass
+	for k in range(1, layers + 1):
+		var t := float(k) / layers
+		var fm := ShaderMaterial.new()
+		fm.shader = FUR_SHADER
+		fm.set_shader_parameter("mode", 1)
+		fm.set_shader_parameter("fur_tex", tex)
+		fm.set_shader_parameter("fur_w", W)
+		fm.set_shader_parameter("albedo", col)
+		fm.set_shader_parameter("kfU0", 1.0 if k == 1 and K.get("undercoat", false) else 0.0)
+		fm.set_shader_parameter("kfH", pile * t)
+		fm.set_shader_parameter("kfC", float(K.get("comb", 0.0)) * pile * t * t)
+		fm.set_shader_parameter("kfT", t)
+		fm.set_shader_parameter("kfS", float(K["strand"]))
+		fm.set_shader_parameter("kfW", float(K["thick"]))
+		fm.set_shader_parameter("kfL", float(K.get("clump", 0.0)))
+		fm.set_shader_parameter("kfSh", float(K.get("shade", 1.0)))
+		fm.set_shader_parameter("kfTp", float(K.get("tip", 1.0)))
+		fm.set_shader_parameter("kfV", float(K.get("vary", 0.0)))
+		last.next_pass = fm
+		last = fm
+
+
 # a surface left out: a part of the base drawn over the skin that a worn item covers (KChar.hidden_parts)
 static var _nothing_mat: ShaderMaterial = null
 
@@ -1914,6 +2351,53 @@ void fragment() { discard; }
 		_nothing_mat = ShaderMaterial.new()
 		_nothing_mat.shader = sh
 	return _nothing_mat
+
+
+# a worn mod's skin pattern (kit item pattern: a frog's head), or {}
+func _pattern_of(rec: Dictionary) -> Dictionary:
+	for m in KChar.mods(rec, kit):
+		if m.has("pattern"):
+			return m["pattern"]
+	return {}
+
+
+# a colour held to a palette (kit item pattern palette): the nearest of its entries, or the colour itself (snap in
+# 50-figure.js)
+static func _snap(hex: String, list: Array) -> String:
+	if list.is_empty():
+		return hex
+	var a := Color(hex)
+	var best: String = list[0]
+	var bd := 1e9
+	for c in list:
+		var b := Color(c)
+		var d := (a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b)
+		if d < bd:
+			bd = d
+			best = c
+	return best
+
+
+# the record's skin colours under a patterned head, the kit item's where it names none, held to its palette
+# (patternColours in 50-figure.js)
+func _pattern_colours(rec: Dictionary) -> Dictionary:
+	var pat := _pattern_of(rec)
+	var pal: Dictionary = pat.get("palette", {})
+	return {"skin": _snap(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", pal.get("skin", [])),
+		"skin2": _snap(rec.get("skin2") if rec.get("skin2") != null else pat.get("skin2", "#000000"), pal.get("skin2", [])),
+		"skin3": _snap(rec.get("skin3") if rec.get("skin3") != null else pat.get("skin3", "#ffffff"), pal.get("skin3", []))}
+
+
+# a pattern's colours, kind and amount from the record, the kit item's where it names none (patternSet in 50-figure.js)
+func _pattern_set(sm: ShaderMaterial, rec: Dictionary, gain: Dictionary) -> void:
+	var pat := _pattern_of(rec)
+	var pc := _pattern_colours(rec)
+	var g := float(gain.get("skin", 1.0))
+	sm.set_shader_parameter("c1", _lin(pc["skin"], g))
+	sm.set_shader_parameter("c2", _lin(pc["skin2"], g))
+	sm.set_shader_parameter("c3", _lin(pc["skin3"], g))
+	sm.set_shader_parameter("kind", float(KP_KIND.get(rec.get("pattern") if rec.get("pattern") != null else pat.get("kind", "none"), 0)))
+	sm.set_shader_parameter("amount", float(rec.get("pattern_amount") if rec.get("pattern_amount") != null else pat.get("amount", 0.4)))
 
 
 # the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it (a texel each)
@@ -2384,6 +2868,176 @@ func _arms2(dt: float) -> void:
 			skeleton.set_bone_pose_rotation(i, skeleton.get_bone_pose_rotation(i) * Quaternion().slerp(Quaternion(c[1], c[2], c[3], c[4]), CLOSE * _low_w))
 
 
+# ---- the tail and an animal head's jaw (the twin of tail() and jaw() in 50-figure.js; core/charactermodels/tools/mods.py) ----
+# The tail's joints (Tail1..., tools/tail.py) are on every skeleton; no clip moves them. Each frame, when a mod with a
+# tail is worn, they run as a spring chain at 60 Hz: each point pulled toward its rest carried by the hips (swayed about
+# the hips' up axis, kit tail.sway) by its stiffness (kit tail.stiff), a little gravity and damping, segment lengths
+# kept, out of the thighs' and shins' capsules by its radius plus pad and above the floor; the joints then turn to the
+# points. A head with a jaw opens it about its hinge (kit jaw.pivot, Head's frame) now and then, as a breath.
+var _tl := {}                            # {spec, ids, x, xp, tw, rest, acc, reset} while a tail is worn
+var _jaw_spec := {}
+var _nh_t := 0.0
+var jaw_open = null                      # 0..1 holds the jaw open (tools, tests)
+
+
+func _tail_setup(it) -> void:
+	if it == null or not it.has("tail"):
+		if not _tl.is_empty():
+			for i in _tl["ids"]:
+				skeleton.set_bone_pose_rotation(i, KChar._q(skel["joints"][i]["r"]))
+		_tl = {}
+		return
+	var ids := []
+	for n in it["tail"]["joints"]:
+		var i := skeleton.find_bone(n)
+		if i < 0:
+			_tl = {}
+			return
+		ids.append(i)
+	_tl = {"spec": it["tail"], "ids": ids, "x": [], "xp": [], "tw": [], "rest": [], "acc": 0.0, "reset": true}
+
+
+func _tail_rest() -> void:
+	var r := []
+	var p := Vector3.ZERO
+	for i in _tl["ids"]:
+		p += skeleton.get_bone_pose_position(i)
+		r.append(p)
+	var last: int = _tl["ids"][-1]
+	var lr := KChar._v(skel["joints"][last]["t"]).length()
+	var k := skeleton.get_bone_pose_position(last).length() / lr if lr > 1e-6 else 1.0
+	r.append(p + KChar._v(_tl["spec"]["tip"]) * k)
+	_tl["rest"] = r
+
+
+func _tail_targets(sway: float) -> Array:
+	var H := _gp(_hips)
+	var sw: Dictionary = _tl["spec"].get("sway", {})
+	var deg: float = float(sw.get("deg", 0.0)) * sway
+	var root: float = float(sw.get("root", 0.0))
+	var R: Array = _tl["rest"]
+	var n := R.size()
+	var out := []
+	for k in n:
+		var a := deg * (root + (1.0 - root) * float(k) / float(n - 1)) * PI / 180.0
+		out.append(H * ((R[k] - R[0]).rotated(Vector3.UP, a) + R[0]))
+	return out
+
+
+func _tail(dt: float) -> void:
+	if _tl.is_empty():
+		return
+	_tail_rest()
+	var spec: Dictionary = _tl["spec"]
+	var per := float(spec.get("sway", {}).get("period", 3.0))
+	var playing := _clip != ""
+	_tl["tw"] = _tail_targets(sin(2.0 * PI * _nh_t / per) if playing else 0.0)
+	var tw: Array = _tl["tw"]
+	var n := tw.size()
+	var rad: Array = spec["radius"]
+	var pad := float(spec.get("pad", 0.0))
+	var floor_y := -skeleton.position.y / size
+	if dt < 0.0 or _tl["reset"] or _tl["x"].size() != n or (_tl["x"][0] - tw[0]).length() > 0.4:
+		_tl["x"] = tw.duplicate()
+		_tl["xp"] = tw.duplicate()
+		_tl["reset"] = false
+		_tl["acc"] = 0.0
+	# the legs' capsules (thighs and shins: not the seat, which the tail's root lies in), in the skeleton's space
+	var W := []
+	for cp in _caps:
+		var nm := skeleton.get_bone_name(cp["a"])
+		if cp.get("pa") != null or not (nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe")):
+			continue
+		var ends := _cap_ends(cp)
+		W.append({"a": ends[0], "b": ends[1], "ra": float(cp.get("ra", cp["r"])), "rb": float(cp.get("rb", cp["r"]))})
+	var L := []
+	for k in range(1, n):
+		L.append((tw[k] - tw[k - 1]).length())
+	var x: Array = _tl["x"]
+	var xp: Array = _tl["xp"]
+	var stiff: Array = spec["stiff"]
+	var grav := float(spec.get("grav", 0.0)) / size
+	var damp := float(spec.get("damp", 0.0))
+	var h := C_STEP
+	_tl["acc"] = minf(float(_tl["acc"]) + dt, 4 * C_STEP) if dt > 0.0 else 0.0
+	while _tl["acc"] >= h:
+		_tl["acc"] -= h
+		x[0] = tw[0]
+		xp[0] = tw[0]
+		for k in range(1, n):
+			var v: Vector3 = x[k] - xp[k]
+			xp[k] = x[k]
+			var q: Vector3 = x[k] + v * (1.0 - damp)
+			q.y -= grav * h * h
+			x[k] = q.lerp(tw[k], 1.0 - pow(1.0 - float(stiff[mini(k, stiff.size() - 1)]), h * 60.0))
+		_tail_constrain(x, W, L, rad, pad, floor_y)
+	if dt < 0.0:
+		_tail_constrain(x, W, L, rad, pad, floor_y)
+	# the joints turn to the points: each segment's rest direction (no sway) onto its direction now
+	var rest := _tail_targets(0.0)
+	var hq := _gp(_hips).basis.get_rotation_quaternion()
+	var prev := hq
+	var ids: Array = _tl["ids"]
+	for k in ids.size():
+		var a: Vector3 = (rest[k + 1] - rest[k]).normalized()
+		var b: Vector3 = (x[k + 1] - x[k]).normalized()
+		var wq := Quaternion(a, b) * hq
+		skeleton.set_bone_pose_rotation(ids[k], prev.inverse() * wq)
+		prev = wq
+
+
+func _tail_constrain(x: Array, W: Array, L: Array, rad: Array, pad: float, floor_y: float) -> void:
+	var n := x.size()
+	for it in 2:
+		for k in range(1, n):
+			var d: Vector3 = x[k] - x[k - 1]
+			if d.length() > 1e-9:
+				x[k] = x[k - 1] + d * (float(L[k - 1]) / d.length())
+			var r := float(rad[mini(k, rad.size() - 1)]) + pad
+			for w in W:
+				var ab: Vector3 = w["b"] - w["a"]
+				var t := clampf((x[k] - w["a"]).dot(ab) / ab.length_squared(), 0.0, 1.0) if ab.length_squared() > 1e-12 else 0.0
+				var c: Vector3 = w["a"] + ab * t
+				var want: float = w["ra"] + (w["rb"] - w["ra"]) * t + r
+				var o: Vector3 = x[k] - c
+				var q := o.length()
+				if q < want:
+					if q < 1e-6:
+						o = Vector3(0, 0, -1)
+						q = 1.0
+					x[k] = c + o * (want / q)
+			var fl := floor_y + float(rad[mini(k, rad.size() - 1)])
+			if x[k].y < fl:
+				x[k].y = fl
+
+
+func tail_state() -> Dictionary:
+	return _tl
+
+
+func _jaw() -> void:
+	var j := skeleton.find_bone("face_jaw")
+	if j < 0:
+		return
+	if _jaw_spec.is_empty():
+		skeleton.set_bone_pose_rotation(j, KChar._q(skel["joints"][j]["r"]))
+		skeleton.set_bone_pose_position(j, morph["t"][j])
+		return
+	var per := float(_jaw_spec.get("period", 5.0))
+	var hold := float(_jaw_spec.get("hold", 0.35))
+	var ph := fmod(_nh_t, per) / per
+	var o := 0.0
+	if jaw_open != null:
+		o = float(jaw_open)
+	elif _clip != "" and ph < hold:
+		o = pow(sin(PI * ph / hold), 2)
+	var q := Quaternion(Vector3.RIGHT, o * float(_jaw_spec.get("deg", 0.0)) * PI / 180.0)
+	skeleton.set_bone_pose_rotation(j, KChar._q(skel["joints"][j]["r"]) * q)
+	# about the hinge: the joint's rest place, moved so the pivot stays put
+	var pv := KChar._v(_jaw_spec["pivot"])
+	skeleton.set_bone_pose_position(j, morph["t"][j] + pv - q * pv)
+
+
 func play(clip: String) -> void:
 	_two_y = 0
 	_pose_from = _pose_change() if _clip != "" else posture_clips.get(clip, {})
@@ -2405,7 +3059,39 @@ func play(clip: String) -> void:
 	player.play(clip, 0.25)
 
 
+# ---- blinks (the twin of blinks in 50-figure.js): a piece's 'blink' shape shut every few seconds, a fifth of a second
+# each, at intervals from the figure's own count; blink() starts one now, blink_hold (0 to 1) holds the lids there
+var _blink_at := 2.0
+var _blink_n := 0
+var _blink_t := 0.0
+var blink_hold = null
+
+
+func blink() -> void:
+	_blink_at = _blink_t
+
+
+func _blinks(dt: float) -> void:
+	_blink_t += dt
+	if _blink_t > _blink_at + 0.18:
+		_blink_n += 1
+		_blink_at = _blink_t + 2.5 + 3.5 * fmod(_blink_n * 0.6180339887, 1.0)
+	var t := _blink_t - _blink_at
+	var b := 0.0
+	if blink_hold != null:
+		b = float(blink_hold)
+	elif t >= 0.0:
+		b = t / 0.07 if t < 0.07 else (1.0 if t < 0.1 else (1.0 - (t - 0.1) / 0.08 if t < 0.18 else 0.0))
+	for id in _live:
+		var mi: MeshInstance3D = _live[id]
+		if mi.visible and mi.has_meta("built"):
+			var k := int(mi.get_meta("built").get("blink", -1))
+			if k >= 0:
+				mi.set_blend_shape_value(k, b)
+
+
 func _process(dt: float) -> void:
+	_blinks(dt)
 	if _clip == "":
 		return
 	# the hips start from the base body's rest (a clip without a hips position track leaves them there), so the

@@ -3,9 +3,10 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 73 prompts.** (The Yeti kit's first sixteen, added and delivered 2026-10-25, are logged in `PLAN.md`; its drift snow, section 19, is owed; its three dome caps were delivered 2026-10-25 and 26.) Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. Added 2026-10-26: 24 more for the kits planned that day (sections 15-18: the
-Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley), **73 in all** with the Yeti kit's
-drift snow (section 19). A short list at the end names gaps that have no prompt yet.
+**Count: 78 prompts.** (The Yeti kit's first sixteen, added and delivered 2026-10-25, are logged in `PLAN.md`; its drift snow, section 19, is owed; its three dome caps were delivered 2026-10-25 and 26.) Owed before 2026-10-23: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`) and 4 optional (the Beast Riders' `foliage.thorn.cut`; necanyons' `card.palm.fan`, `card.flametip`, `card.treelily`; each has a library fallback in use). Added 2026-10-23: 1 optional for the Stalkers (`metal.enamel.scoured`, section 7) and 41 for the kits planned that day (sections 8-14: the NW outer wall, the painted highlands, the Cut, the Bowl, the Catch, the rift rim, Farside), each needed before its kit's build. Added 2026-10-26: 24 more for the kits planned that day (sections 15-18: the
+Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley), 73 with the Yeti kit's
+drift snow (section 19); and 5 for the Lizardmen's skin and eyes (section 21, the non-human spike,
+2026-10-23): **78 in all**. A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -841,6 +842,48 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Alien water plants with no leaves and no flowers. Sprites 1-2: long flat bright green ribbons (#3a9a4a) streaming sideways as if in a current. Sprites 3-4: a cluster of hanging bell-shaped translucent teal bladders (#4a9a98) on short pale stalks. Sprites 5-6: a trailing veil of dark green and deep blue-grey strands (#2a4a2a, #2a3a4a) hanging straight down. Sprites 7-9: a bell-shaped cluster of upright grey tubes (#7a8080) whose open tips glow soft blue-green (#6ae0c8). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
 ```
 
+## 21. Lizardmen skin (`core/charactermodels`, the non-human spike, 2026-10-23)
+
+The spike (`core/charactermodels/NONHUMAN.md`) draws the Lizardmen's tail and head with a procedural stand-in
+(`tools/mods.py scale_texture`) and leaves the body's human skin, tinted olive. A real people needs these: the three
+surfaces go on as tiling detail maps over the neutral skin (the skin tint still colours them), the eyes as the eye
+mesh's texture (its alpha is the iris mask, as the human eyes'). Needed before the Lizardmen are a people.
+
+#### `skin.reptile.scales`
+- Kind: surface, tintable. Used by: the Lizardmen's bodies, tails and heads (the main skin). Reuse: any reptile, the
+  fauna kits' lizards, a scaled therian.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Living reptile skin seen close, the hide of a large lizard's flank: small rounded overlapping scales in loose diagonal rows, each scale gently domed with a slightly darker narrow seam between them, scales a little larger and flatter in places and finer in others, a few faint creases where the skin folds, a soft dry matte sheen. No pattern of spots or bands, no colour blotches. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.25 metres.
+```
+
+#### `skin.reptile.scutes`
+- Kind: surface, tintable. Used by: the Lizardmen's throats, bellies and the underside of the tail. Reuse: crocodilians,
+  turtles' plastrons, a beaked therian's legs.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The belly hide of a large reptile: broad smooth rectangular scutes in straight rows, each a little wider than long, separated by narrow soft grooves, faint fine wrinkles across each scute, smoother and slightly glossier than the flank's scales. No colour markings. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.3 metres.
+```
+
+#### `skin.reptile.plates`
+- Kind: surface, tintable. Used by: the Lizardmen's skulls and snouts (the head's larger plates). Reuse: armoured reptiles, horned beasts' brows.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The top of a reptile's head: irregular flat polygonal plates of hard skin, three to six sided, of mixed sizes from small to large, fitted together like crazy paving with narrow deep seams, each plate faintly pitted and slightly raised at its middle, dry and matte. No colour markings. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.2 metres.
+```
+
+#### `eye.reptile.slit` (1024 px, full colour, not tiling)
+- Kind: an eye's iris, front-on. Used by: the Lizardmen's eyes (every caste but the Interpreters). Reuse: any reptile or a cat-eyed therian.
+
+```
+A single reptile eye seen straight on, filling a square 1024x1024 frame, flat even lighting, no reflections, no highlights, no eyelids, no skin around it: a round amber-gold iris with fine radial fibres and a darker rim, a narrow vertical black slit pupil in the middle, the iris edge exactly touching the frame's edges, the four corners plain white. No text, no border.
+```
+
+#### `eye.reptile.spiral` (1024 px, full colour, not tiling)
+- Kind: an eye's iris, front-on. Used by: the Interpreters (LORE 6.20: spiral pupils mark the highest caste).
+
+```
+A single reptile eye seen straight on, filling a square 1024x1024 frame, flat even lighting, no reflections, no highlights, no eyelids, no skin around it: a round pale gold iris with fine radial fibres and a darker rim, the pupil a black squared spiral (a single line wound inward in right angles, like the Shang leiwen meander) filling the middle third of the iris, the iris edge exactly touching the frame's edges, the four corners plain white. No text, no border.
 ## Gaps with no prompt yet
 
 Owed, but a prompt needs work first; listed so they are not lost.
@@ -854,6 +897,8 @@ Owed, but a prompt needs work first; listed so they are not lost.
   undyed weave (the weaver's and tailor's lengths are the tarp tinted; `vCloth` is the striped awning map), still water for
   the mill race and the moat landings (tinted glass today), and a world-UV rough rock for the mine's and quarry's crags (the
   shared `rubble` item stretches). Each needs a read of the drawing first: which items carry it, and at what tile.
+- **Korona's therian tribes' skins** (`core/charactermodels/NONHUMAN.md`): fur (short, tintable), feathers, beak keratin and
+  throat-sac skin, once LORE 6.18 names the tribes and what each is like; written then, one set per kind of hide.
 - **The Yeti kit's lintel band** (`kits/yeti/PLAN.md` section 2): the clan's name in the Khaayken cut script on a
   stone lintel. Needs the script chart from `lore/tongues-of-krator.html` first, so the letters are the real ones.
 - **The Throne's drawn details** (`PLAN.md`, The Throne): the mat's veins, the star aloe's star, the trumpet tree's
