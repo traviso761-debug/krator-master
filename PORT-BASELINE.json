@@ -704,6 +704,10 @@
    "bytes": 5082008,
    "sha256": "04ac55071bdd961bee721ba0a66c9a9bde527481ae1a56d25f638eaf1a9e4ba3"
   },
+  "settlements/span/dist/span.html": {
+   "bytes": 569056,
+   "sha256": "dacf56cc73de076facbb5531f804ac5246a04fb26eee23688ad4213e9120e5fd"
+  },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
    "sha256": "a4daa0698fb4a550c3cd4491ee9ac7ff1a9df9109b111a4bea16ba5332be658d"

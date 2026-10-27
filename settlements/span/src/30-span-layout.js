@@ -28,6 +28,12 @@ var L = {
   reach: [-180, 820],
   bay: { c: [-520, 0], rim: [230, 160], apron: [185, 118], ring: [262, 192] },
   canyon: { head: [[-900, 60], [-750, 70]], down: [[820, 150], [1200, 120]], headFall: -900, floorEnd: -190 },
+  // the lake on the tableland (the biome kit makes it; here its bed for the stand-in ground) and the cuttings the portals
+  // need through the bench and the talus (SPAN.groundAt reads them; the station carves them with KCARVE)
+  lake: { level: -8, bed: -30, pts: [[-2560, -120], [-2480, -360], [-2200, -430], [-1900, -380], [-1600, -300], [-1300, -200], [-1100, -90],
+    [-1050, 0], [-1100, 120], [-1350, 240], [-1700, 330], [-2050, 400], [-2350, 330], [-2540, 160]] },
+  cuts: [{ id: 'basin_cut', box: [-588, -552, -172, -110], y: -46, note: 'the cutting of the Tunnel Road through the bay terrace to the portal (its face at v -170)' },
+         { id: 'valley_cut', box: [700, 750, 66, 88], y: -180, note: 'the notch in the talus before the portal of the Valley Tunnel (its face at v 88)' }],
   storey: 4.5, m2PerHead: 35,
   parts: [], ways: [], links: []
 };
@@ -160,7 +166,7 @@ P('hang_prison', 'Hung prison', 'payload', C(701, 5, 13), { y: -75, h: 26, state
 function F(id, name, kind, shape, o){ o.y = o.y == null ? -180 : o.y; o.sheets = o.sheets || S3; return P(id, name, kind, shape, o); }
 [[-150, -60, 1, 'ruined', 'a sealed hangar'], [0, 90, -1, 'ruined', 'flooded at the back'], [150, 240, 1, 'ruined', 'a craft inside'],
  [330, 420, -1, 'ruined', ''], [430, 520, 1, 'ruined', ''], [580, 670, -1, 'ruined', 'the machines\' den']].forEach(function(q, i){
-  F('hangar_' + (i + 1), 'Hangar ' + (i + 1), 'hangar', q[2] > 0 ? B(q[0], q[1], 70, 112) : B(q[0], q[1], -112, -70),
+  F('hangar_' + (i + 1), 'Hangar ' + (i + 1), 'hangar', q[2] > 0 ? B(q[0], q[1], 70, 104) : B(q[0], q[1], -104, -70),
     { h: 22, st: 1, state: q[3], key: 'anc_wall_hangar', types: ['industry'], note: q[4] });
 });
 F('valley_portal', 'The Valley Tunnel\'s portal', 'portal', B(690, 760, 70, 124), { h: 14, state: 'ruined', key: 'anc_tunnel_portal', types: ['infrastructure'], sheets: ['S0', 'S3'], note: 'a second Ancient road tunnel, to the Valley of the Ancients: not cleared, held by no one; the machines and mutants come up it' });
@@ -216,6 +222,10 @@ K('rng_s_a', 'gal_s40', { kind: 'stair' }); K('gal_s40', 'gal_s85', { kind: 'sta
 K('gal_n40b', 'pipe_bridge'); K('pipe_bridge', 'gal_s40');
 ['hangar_1', 'hangar_2', 'hangar_3', 'hangar_4', 'hangar_5', 'hangar_6', 'valley_portal', 'tank_1', 'tank_2', 'tank_3', 'engine_works', 'foundry', 'yard', 'outfall'].forEach(function(p){ K('floor_road', p); });
 K('valley_portal', 'valley_tunnel');
+
+// every hangar is cut into its wall to the floor (the station's KCARVE.cut; here the ground's notch the hangar fills)
+L.parts.filter(function(p){ return p.kind === 'hangar'; }).forEach(function(p){ var s = p.shape;
+  L.cuts.push({ id: 'cut_' + p.id, box: [s[1], s[2], s[3], s[4]], y: L.levels.floor, note: 'the cut ' + p.id + ' fills, up to the bench' }); });
 
 var R = typeof globalThis !== 'undefined' ? globalThis : root;
 R.SPAN_LAYOUT = L;

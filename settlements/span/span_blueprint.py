@@ -30,7 +30,7 @@ HALF = {int(k): v for k, v in L['half'].items()}
 LV = L['levels']
 REACH = L['reach']
 BAYC, BAYRIM, APRON, RING = L['bay']['c'], L['bay']['rim'], L['bay']['apron'], L['bay']['ring']
-LAKE_Y = -8
+LAKE_Y = L['lake']['level']
 
 B.KIND_FILL.update({'water': (170, 214, 240), 'pad': (196, 200, 214), 'dome': (252, 252, 246), 'ringsite': (232, 236, 228),
                     'tank': (214, 214, 206), 'hangar': (150, 146, 140), 'works': (200, 194, 182), 'terrace': (244, 242, 234),
@@ -73,8 +73,7 @@ def sheet_rooms(sid):
 def oval(cu, cv, a, b, n=48):
     return [(cu + a * math.cos(2 * math.pi * i / n), cv + b * math.sin(2 * math.pi * i / n)) for i in range(n + 1)]
 
-LAKE = [(-2560, -120), (-2480, -360), (-2200, -430), (-1900, -380), (-1600, -300), (-1300, -200), (-1100, -90), (-1050, 0),
-        (-1100, 120), (-1350, 240), (-1700, 330), (-2050, 400), (-2350, 330), (-2540, 160)]
+LAKE = [tuple(q) for q in L['lake']['pts']]
 GREY, BLUE, BROWN, PURPLE = (90, 90, 90), (40, 110, 200), (130, 90, 50), (120, 60, 150)
 
 def rims(level, col=GREY, w=3, label=None):

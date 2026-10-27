@@ -290,8 +290,13 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   Each takes `(scene, gx, gz, d, o)` with `o` the layout record's size, base `y` and turn `ry`; decisions by `KRAND`,
   records in core/tags. `verify.py --assert` passes (428 k triangles for all forty). Their gaps: `kits/ancients/KNOWN_ISSUES.md`,
   "Span's pieces". The existing builders (hangars, tanks, works, the Pipe Bridge's `63-canyon.js`) are checked in SP3.
-- **SP3.** The page: the station's ground read in place (or core/terrain records standing in until station 3 lands), the
-  parts placed from the layout, the walk graph, `core/host` FULL, views; `verify.py --assert`.
+- **SP3.** *(done 2026-10-27)* The page: `build.py` -> `dist/span.html`, the Ancients kit's runtime and Span's pieces read in
+  place, core/rand, core/space, core/tags, core/atmos (the shared sky at px 282, 680), core/host FULL; every part of the
+  layout drawn at its place and state (`src/8at-host-place.js`); the ground a stand-in, `SPAN.groundAt` (the layout's own
+  section, which the station carves). `verify.py --assert` passes (the layout's rules, every part placed, the tags, NaN, the
+  inspector's volumes, two negatives). New in the layout on the way: the ground-contact rule (every part that stands on rock
+  stands on `SPAN.groundAt`), the portals' and hangars' cuts, the lake's outline; the hangars cut back to the -130 bench
+  (they ran under the -85 gallery). Gaps: `KNOWN_ISSUES.md`.
 - **SP4.** Dalab's fort and trading post from the Dalab set: the rehabilitated parts, the Line, the mound, the trading post
   on the Apron, the Basin Tunnel's portal and the first of its bore (`KCAVERN`); the dress tags the biome kit reads.
 - **SP5.** The watch post on station 4's tower (with that station).

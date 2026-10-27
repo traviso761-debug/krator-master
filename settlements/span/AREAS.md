@@ -17,9 +17,9 @@ The owner chose the trimmed size on 2026-10-27; `test-span.js` holds the total b
 | Rim ranges along both rims | 5 | 76000 | 2 | 152000 | 2171 |
 | Rim domes | 3 | 6472 | 3 | 19415 | 277 |
 | Wall galleries on the -40 and -85 benches, both walls | 5 | 90000 | 3 | 270000 | 3471 |
-| Hangars cut into the walls | 6 | 22680 | 1 | 22680 | 0 |
+| Hangars cut into the walls | 6 | 18360 | 1 | 18360 | 0 |
 | The works | 3 | 20725 | 1 | 20725 | 0 |
-| **Total** | | | | **815895** (8.8 million ft2) | **9208** |
+| **Total** | | | | **811575** (8.7 million ft2) | **9208** |
 
 Today: Dalab's fort (~240) and the trading post at the Basin Tunnel's mouth (~500: traders, inn and caravan
 hands, porters, the tunnel's wardens, families): about 750 people, in the Cross, the Sound Quarter, three bay domes

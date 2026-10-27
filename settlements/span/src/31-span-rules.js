@@ -76,6 +76,42 @@ function canyonAt(L, u, v){
   return false;
 }
 
+// ---------------------------------------------------------------- the ground the layout needs (the stand-in, and the station's spec)
+// SPAN.groundAt(L, u, v): the height the arcology stands on, from the layout's section alone: the tableland at y 0, the lake's
+// bed, the outlet over the weir, the canyon head, the Upper Bay (its terrace at y -30, the Apron's rock at -46, the river's
+// slot), the reach under the Cross, the Deep Reach stepped on its benches (L.half), the canyon on downstream, and the
+// portals' cuttings (L.cuts). It is what the swhighlands station carves (PLAN.md section 5); until then the page draws it.
+function inPoly(P, u, v){ var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++){ var a = P[i], b = P[j];
+  if ((a[1] > v) !== (b[1] > v) && u < (b[0] - a[0]) * (v - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
+function polyDist(P, u, v){ var d = Infinity; for (var i = 0, j = P.length - 1; i < P.length; j = i++){ var a = P[j], b = P[i], dx = b[0] - a[0], dy = b[1] - a[1],
+  t = Math.max(0, Math.min(1, ((u - a[0]) * dx + (v - a[1]) * dy) / (dx * dx + dy * dy))); d = Math.min(d, Math.hypot(a[0] + t * dx - u, a[1] + t * dy - v)); } return d; }
+function floorAt(L, u){ var r = L.reach;
+  if (u <= r[1] - 40) return L.levels.floor;
+  if (u <= r[1] - 20) return L.levels.floor + (L.canyon.floorEnd - L.levels.floor) * (u - (r[1] - 40)) / 20;
+  if (u <= r[1] + 10) return L.canyon.floorEnd;
+  return L.canyon.floorEnd - 15 * Math.min(1, (u - r[1] - 10) / 420); }
+function sectionAt(L, a, fy, k){ var H = L.half; k = k == null ? 1 : k;
+  if (a < H['-180'] * k) return fy;
+  if (a < H['-130'] * k) return Math.min(fy + 20 * (a - H['-180'] * k) / ((H['-130'] - H['-180']) * k), L.levels.b3);
+  if (a < H['-85'] * k) return L.levels.b3;
+  if (a < H['-40'] * k) return L.levels.b2;
+  if (a < H['0'] * k) return L.levels.b1;
+  return 0; }
+function groundAt(L, u, v){
+  var i, c, a = Math.abs(v), hd = L.canyon.head, bay = L.bay;
+  for (i = 0; i < L.cuts.length; i++){ c = L.cuts[i].box; if (u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3]) return L.cuts[i].y; }
+  if (inPoly(L.lake.pts, u, v)) return Math.max(L.lake.bed, L.lake.level - .25 * polyDist(L.lake.pts, u, v));
+  if (u >= -1050 && u < hd[0][0]) return a < 15 ? L.lake.level : 0;
+  if (u >= hd[0][0] && u <= hd[1][0]){ var w = hd[0][1] + (hd[1][1] - hd[0][1]) * (u - hd[0][0]) / (hd[1][0] - hd[0][0]); if (a < w) return -60; }
+  if (inShape(['oval', bay.c[0], bay.c[1], bay.rim[0], bay.rim[1]], u, v)){
+    if (inShape(['oval', bay.c[0], bay.c[1], bay.apron[0], bay.apron[1]], u, v)) return a < 25 ? -60 - 50 * Math.max(0, Math.min(1, (u + 750) / 450)) : -46;
+    return L.levels.bayTerrace; }
+  if (u >= -300 && u < L.reach[0] && a < L.half['0']){ var fy = -110 - 70 * (u + 300) / 120;
+    return a < L.half['-180'] ? fy : sectionAt(L, a, Math.max(fy, L.levels.b3), 1); }
+  if (u >= L.reach[0] && u <= L.reach[1] + 10) return sectionAt(L, a, floorAt(L, u), 1);
+  if (u > L.reach[1] + 10){ var k = 1 - .2 * Math.min(1, (u - L.reach[1]) / 380); return sectionAt(L, a, floorAt(L, u), k); }
+  return 0; }
+
 // ---------------------------------------------------------------- the walk graph
 function graph(L, opt){
   opt = opt || {}; var adj = {}, edges = [], ids = byId(L);
@@ -227,6 +263,14 @@ function checks(L){
     if (b === 'floor_road'){ if (leak.indexOf(a) < 0) leak.push(a + ' -> floor'); return; }
     if (!inHold[b] && isHeld(ids[b])){ inHold[b] = 1; q.push(b); } }); }
   ok('with its gates shut, nothing in the hold opens onto the floor (the Line holds)', leak);
+  // the ground: a part that stands on rock stands on SPAN.groundAt at its base (spans, hangs, wrecks, cuts and weirs aside)
+  var SKIPG = { bridge: 1, payload: 1, craft: 1, fallen: 1, cross: 1, gate: 1, portal: 1, hangar: 1, weir: 1, ramp: 1, bay: 1, deck: 1 };
+  ok('every part that stands on rock stands on the ground the layout gives (within 1.5 m)', L.parts.filter(function(p){
+    if (p.in || SKIPG[p.kind] || p.state === 'toppled' && p.kind !== 'range') return false;
+    var b = bbox(p.shape), pts = [];
+    [.15, .5, .85].forEach(function(fu){ [.15, .5, .85].forEach(function(fv){ var u = b[0] + fu * (b[1] - b[0]), v = b[2] + fv * (b[3] - b[2]); if (inShape(p.shape, u, v)) pts.push([u, v]); }); });
+    return pts.some(function(q){ return Math.abs(groundAt(L, q[0], q[1]) - p.y) > 1.5; });
+  }).map(function(p){ var b = bbox(p.shape); return p.id + ' (y ' + p.y + ', ground ' + groundAt(L, (b[0] + b[1]) / 2, (b[2] + b[3]) / 2).toFixed(1) + ')'; }));
   // the size the owner chose (2026-10-27)
   var A = area(L);
   ok('the floor at the peak is the trimmed size (700,000-850,000 m2) and its people 8,000-10,500',
@@ -236,5 +280,5 @@ function checks(L){
 }
 
 R.SPAN = { STATES: STATES, byId: byId, bbox: bbox, inShape: inShape, outline: outline, inside: inside, overlap: overlap, canyonAt: canyonAt,
-  graph: graph, reach: reach, area: area, seed: seed, draw: draw, toWorld: toWorld, fromWorld: fromWorld, tags: tags, checks: checks };
+  groundAt: groundAt, floorAt: floorAt, inPoly: inPoly, graph: graph, reach: reach, area: area, seed: seed, draw: draw, toWorld: toWorld, fromWorld: fromWorld, tags: tags, checks: checks };
 })(this);
