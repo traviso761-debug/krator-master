@@ -81,15 +81,23 @@ const HCHK={
  fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),n=P.filter(p=>/:pod$/.test(p[3])).length;
   return{ok:!miss.length&&!untagged.length&&n>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' pod instances drawn; catalog keys: '+EASTABYSS.FRUIT_KEYS.join(', ')};}};
+// kin: this kit is the BIO.kin source of the hyperjungle's cousins (PLAN-LANDS.md: firescale, monsooncycad, dambotail), so every
+// species but the reed beds resolves to its builder by key (BIO.kitBuilder), and BIO.kin makes a cousin's record (nothing is grown)
+HCHK.kin=function(keys){const bad=keys.filter(k=>{const b=BIO.kitBuilder('eastabyss',k);return !b||typeof b.make!=='function'||typeof b.grow!=='function';});
+ const K=bad.length?null:BIO.kin('eastabyss.sigillaria',{key:'kincheck',name:'Kin check',scale:.8});
+ return{ok:!bad.length&&!!K&&K.record.tags.kin==='eastabyss.sigillaria'&&K.record.key==='kincheck',detail:(bad.length?'no builder: '+bad.join(', '):'every key resolves')+(K?'; BIO.kin record '+K.key:'')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(EASTABYSS.SPECIES,P));
+ add('a BIO.kin source: every species by key',HCHK.kin(EASTABYSS.SPECIES.filter(S=>S.key!=='matreed').map(S=>S.key)));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  add('a fruiting species with no catalog fruit',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='seedfern'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
  add('a species with no harvest tag',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='skyscale'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
  add('no fruit drawn',HCHK.fruit(EASTABYSS.SPECIES,P.filter(p=>!/:pod$/.test(p[3]))));
+ add('a kin key the kit does not have',HCHK.kin(['sigillaria','nosuchtree']));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88): each chunk mesh by its range */
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'eastabyss',title:'Krator biome — the eastern abyss',
  hint:'The eastern abyss: salt flats, salt marsh, abyssal jungle (ideal type)',
@@ -102,3 +110,6 @@ KHOST.take({build:'eastabyss',title:'Krator biome — the eastern abyss',
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// THE SEASON (core/clock, BIO.bindSeason; 2026-10-27, BACKPORT.md's row): the savannah's grass and umbrella-trees follow the
+// clock's dry season (the materials that read it: 50, SEAS; ?season=0 draws them as before). The abyss's rains follow the sun.
+if(new URLSearchParams(location.search).get('season')!=='0'&&BIO.bindSeason)BIO.bindSeason(null,{sharp:1.5});

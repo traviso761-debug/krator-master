@@ -97,6 +97,12 @@ BIO.init({tags:'eastabyss',THREE:THREE,scene:scene,terrainH:terrainH,
  fields:FIELD,err:reportErr,
  register:REGISTER,eye:()=>[camera.position.x,camera.position.y,camera.position.z]});   // the fauna (75) registers its flocks and reads the viewer
 BIO.setSun([-1200,900,-600]);
+// THE GRAPHICS SET (2026-10-27, the final rebuild; core/biome README "Adopting it", nhighlands the worked example): the items'
+// geometry welded and drawn by index (?index=0 the soup); one LOD mesh per chunk, small meshes merged to 1500 triangles, a dithered
+// cross-fade over the last 15% of each range (?lodmerge=0, ?lodfade=0) and the per-instance range cull (?lodcull=0)
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 // ---------------------------------------------------------------- the ground
 // One mesh. Painted by zone from a coarse cache of the fields (the fields cost
 // fbm calls; the 1536² canvas would otherwise take seconds), with a tiled
@@ -137,11 +143,19 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  const P=[];for(let i=0;i<16;i++)P.push([rng()*w,rng()*h]);
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
+const GLIB=(function(){if(typeof KGROUND==='undefined'||new URLSearchParams(location.search).get('kground')==='0')return null;
+ const D=KGROUND.layer('eastabyss','groundDetail',{w:'1.0',amt:.85,gain:1.12,tint:'diffuseColor.rgb',lin:false}),K=KGROUND.layer('eastabyss','groundCrack',{w:'vCrack',amt:1,gain:1,tint:'diffuseColor.rgb',lin:false});
+ return D&&K?[D,K]:null;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+  .replace('#include <map_fragment>',GLIB?'#include <map_fragment>\n/*KGROUND*/':'#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+// THE GROUND'S LAYERS ON core/terrain's ground shader (KGROUND, 43-core-ground.js; 2026-10-27, the final rebuild): the library's
+// grain (groundDetail) and the salt pan's cracks (groundCrack, weighted per vertex by the salt field) hex-tiled, scaled with
+// distance and blended by height, multiplied over the paint with the strengths the page's own mix had (tint: the paint under
+// it). Without the pack (or with ?kground=0) the page's own mix above, as before
+if(typeof KGROUND!=="undefined")KGROUND.hook(MAT_GROUND,{key:'eastabyss-ground',layers:GLIB||[]});
 (function(){const N=400,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,ck=new Float32Array(p.count);for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));ck[i]=smooth(.3,.8,FC.at(FC.a.salt,p.getX(i),p.getZ(i)));}
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));

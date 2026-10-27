@@ -40,6 +40,8 @@ Read before changing anything here. `build.py` prints the open count.
       blobs and the small species' hulls up close, crude. A world with a free camera
       wants the runtime LOD (`BIO.range`, core) instead.
       2026-10-26 Stays open: needs the runtime LOD in core (`BIO.range`: per-frame swap of hero/far by camera distance), not a kit change.
+      2026-10-27: the page is on the runtime LOD (a hero is drawn within 900 m of the camera, its impostor past that), but which trees
+      have a hero is still the spine's choice: a camera in the far ring sees octahedral impostors up close (better than the blobs, still flat).
 - [x] The far hulls take no keep-clear entry (so the near field places exactly as before
       them): a hull can stand inside a canopy impostor or another species' hull. Invisible
       at range; seen only from a camera inside the far ring.
@@ -55,9 +57,10 @@ Read before changing anything here. `build.py` prints the open count.
       fixed ellipse (they never land or take off). Past 1.5 km (flocks), 3 km (skeins) or 900 m
       (lizards) from `BIO.eye()` a group keeps its last pose. In this host's pink lake (hue 0) the
       flamingos read poorly against the water.
-- [ ] `BIO.dynamic` (core) sets no `userData.kit`; 75 sets it on its own meshes so `BIO.export({kit})`
+- [x] `BIO.dynamic` (core) sets no `userData.kit`; 75 sets it on its own meshes so `BIO.export({kit})`
       keeps them.
       2026-10-26 Stays open (core): `BIO.dynamic` should set `userData.kit=BIO.kitName` on the meshes it makes (core/biome/20-core-kit.js, where it names `biome:`+name), so 75 can drop its own assignment.
+      2026-10-27: core does now; 75's own assignment is gone (the rebuild's ride-along).
 - [x] The mat-reed beds are registered per bed (a few hundred volumes); a world that
       registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
       2026-10-26: `EASTABYSS.build({reedBeds:'none'})` registers none (REEDBEDS only); the default `'each'` is as before; `bedsRegistered` in the build result (70, 55, BIOME-API.md).
@@ -72,9 +75,10 @@ Read before changing anything here. `build.py` prints the open count.
       its marsh east shore; a world with a fresh lake will not notice.
       2026-10-26: the shore species read the salt field (55 PASSES): stilt-woods and tide lycopsids `*(.6+.6*salt)`, water palms `*(1-.75*salt)`, Sanfordacaulis `*(1-.7*salt)`, cordaites `*(1-.35*salt)`. Most shore is fresh pool/river bank, so the shallows thinned: stilt-woods 1109 to 773, tide lycopsids 2678 to 1895, water palms 2075 to 1680 (owner to judge the density).
 
-- [ ] The shelf overlay dome (82-host-sky) is a second 4096x2048 canvas: ~16 MB of texture
+- [x] The shelf overlay dome (82-host-sky) is a second 4096x2048 canvas: ~16 MB of texture
       for the wall alone. A world that already draws its horizon as geometry does not need it.
       2026-10-26 Stays open: the shared sky rollout.
+      2026-10-27: gone with the shared sky; the shelf wall is ground now (83-host-far.js, KFAR and KSTRATA).
 - [x] The sky scale-tree's impostor shimmers on its bole only (the hero's forks shimmer
       too and have no impostor), and seen from outside the ring the far canopy's blobs
       hide most of that bole. Only six sky scale-trees stand in the ring at q=1 (the jungle
@@ -86,6 +90,12 @@ Read before changing anything here. `build.py` prints the open count.
       `fruit tagged, catalogued and drawn` check (with three negatives) holds it. Edible parts with no catalog piece are named in
       the tags (tree-fern pith, palmetto heart, pickled jade leaves, araucaria seeds, mat-reed shoots). Worlds that read this kit
       in place (`settlements/locus`, `mungo`, `verge`) need a rebuild to pick the tags up.
+
+- [ ] **The rebuild's looks to judge (2026-10-27)**, each behind its switch (NOTES.md, "Core adoption"): the far band's diet and the
+      octahedral impostors (`?diet=0`; their gain 3.6 is nhighlands' measure, not this page's: the core's capture is ~4x dark,
+      HANDOFF-REBUILD.md), the abyss wall as ground and its canyon beds (`?wall=0`), the fog belt on the shelf foot (`?belt=0`), the
+      ground tint, back-light and season (`?groundtint=0`, `?backlit=0`, `?season=0`), KGROUND (`?kground=0`), the bracket fungus's
+      shape, and station 2 (the winding lakes, whose site is approximate: PLAN-STATIONS.md).
 
 ## Done
 

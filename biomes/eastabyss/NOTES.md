@@ -111,3 +111,27 @@ Fauna against this contract; a reed-cutters' camp on a `REEDBEDS` bank (Ancients
 Girder kit); the abyssal savannah proper (the slope's top is only sketched
 here), Yuni Valley, highlands, arctic; drop an Ancients kit megastructure into the marsh
 through `dress()`.
+
+## Core adoption (the final rebuild, 2026-10-27)
+The kit's turn in the all-biomes rebuild (HANDOFF-REBUILD.md, pair 1 with nwbay). Each look change has a switch for the owner.
+- **Graphics** (GRAPHIC-LOAD.md, nhighlands the worked example): `BIO.INDEX_ITEMS` (`?index=0`); the LOD merge, `minTris` 1500,
+  the cross-fade and the per-instance cull (`?lodmerge=0`, `?lodfade=0`, `?lodcull=0`, 45); **the runtime LOD** (`EASTABYSS.LOD`,
+  set in 88; `?diet=0` is the spine-only page): a hero drawn within 900 m of the camera, then its stand-in; the floor's bands to
+  650 / 1300 / 1100 m, the near reed beds to 1300 m; **octahedral impostors** (core/biome 34, one set `eastabyss.trees`, item
+  `impTrees`) for every far tree and every hero's stand-in over 7 m, in place of the blobs and hulls (which stay for `?diet=0`);
+  `BIO.impostorLook` gain 3.6, wrap 1 (`?impgain=`, `?impwrap=`; nhighlands' measure: this page's own is for the look pass).
+- **Foliage**: one wind field and alpha-to-coverage (89a); the back-light .35 on the broadleaf crowns (`?backlit=0`); the floor
+  cover's root colour from the ground's paint (R5, `?groundtint=0`); the dry season on the savannah's grass and umbrella-trees
+  (core/clock, `BIO.bindSeason` in 99; `?season=0`).
+- **Air**: height fog with the dawn mist over the lake and the marsh; **the fog belt** on the shelf foot (70-200 m, the lake's wet
+  air lifted up the slope; `?belt=0`); rain cover; the branched lightning; wet ground and puddles (`WATER.hollows`).
+- **Ground**: the detail and crack layers on KGROUND (`?kground=0` the page's own mix); **the abyss wall** (83: KFAR far field, the
+  wall 5.6 km east of the lake up ~1.9 km, its faces in KSTRATA's `canyon` beds, sedesert's recipe across the same cliff;
+  `?wall=0` brings back the sky's painted shelf); KHORIZON shadows over the square with the far field past it (`?hz=0`).
+- **Cards**: `check_cells.py --fix` (20 slots: cells, frond and ribbon bases, crown stems); `bloom` (card.flower.bloom) left as the
+  owner said. The hanging slots (beard, hang, hang1) take `"base": "top"`: the ribbon's `once` uv spans the plant down the strand.
+- **Shared parts**: the bracket fungus on `BIO.fung.bracket`, turned to its face (65).
+- **Kin source**: every species but the mat reed resolves by key (`BIO.kitBuilder`), checked by the probe ("a BIO.kin source").
+  Keys and indices unchanged (SPECIES 0-20).
+- **Station 2, the winding lakes**: `python3 build.py --station lakes` (stations/lakes: map 45, water 89w, sky 89 at px 1041,493,
+  views 99, no tower).
