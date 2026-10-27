@@ -22,14 +22,14 @@
  // the gust at its pole) and rippling; the top stays on its crossbar. One material for every banner.
  const flagGeo=()=>A.geo('flag')||(A.geoPut('flag',new A.T.BoxGeometry(1,1,1,1,12,6)));
  const flagMat=()=>A.mat('flag',()=>{const m=new A.T.MeshStandardMaterial({color:0xffffff,roughness:.95,metalness:0});
-  m.onBeforeCompile=sh=>{sh.uniforms.time=A.U.time;sh.uniforms.wind=A.U.wind;sh.uniforms.gustAmp=A.U.gustAmp;
-   sh.vertexShader='uniform float time;uniform vec2 wind;uniform float gustAmp;\n'+A.GLSL_WIND+'\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+  return A.KH().add(m,'atmos-flag',sh=>{sh.uniforms.time=A.U.time;sh.uniforms.wind=A.U.wind;sh.uniforms.gustAmp=A.U.gustAmp;
+   sh.vertexShader='uniform float time;uniform vec2 wind;uniform float gustAmp;\n'+A.GLSL_WIND+'\n'+A.KH().rep(sh.vertexShader,'#include <begin_vertex>',`#include <begin_vertex>
    #ifdef USE_INSTANCING
    vec3 fN=normalize((instanceMatrix*vec4(1.0,0.0,0.0,0.0)).xyz);vec3 fP=(instanceMatrix*vec4(0.0,0.0,0.0,1.0)).xyz;float fS=max(length(instanceMatrix[0].xyz),1e-3);
    vec2 fw=atmWind(time,fP.xz,wind,gustAmp);float hf=clamp(0.5-position.y,0.0,1.0);float sway=clamp(dot(fw,fN.xz)*0.55,-1.7,1.7);
    float rip=sin(time*(2.2+0.5*length(fw))+position.z*4.5+position.y*6.0+fP.x*0.37)*(0.12+0.1*length(fw));
    transformed.x+=hf*sqrt(hf)*(sway+rip)/fS;
-   #endif`);};m.customProgramCacheKey=()=>'atmos-flag';return m;});
+   #endif`);});});
  // a banner: an 11 m pole, a cloth flag hung square across the bearing `ry` (radians, x toward z: the flag faces along it), a cap
  A.banner=(x,z,ry,hex,o)=>{o=o||{};const y=A.ground(x,z)-.2,h=o.h||11;A.set('bannerPole','post',wood());A.set('bannerFlag',flagGeo(),flagMat());A.set('bannerCap','box',A.lam(0xc8a868,.8));
   A.rec('banner',{at:[x,y,z],bearing:ry,h,color:typeof hex==='number'?'#'+new A.T.Color(hex).getHexString():hex,cloth:[2.2,h*.6],note:'cloth hangs from a crossbar; it swings downwind and ripples (flag shader)'});

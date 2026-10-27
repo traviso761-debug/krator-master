@@ -14,10 +14,10 @@
 // Environment's (core/terrain/README.md, "Godot").
 (function(root){
   var K=root.KFAR||(root.KFAR={});   /* the data half may load after this one (the build sorts by name): it merges into the same object */
-  function fogThin(m,k,key){var prev=m.onBeforeCompile;
-    m.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);sh.uniforms.uFogK={value:k};
-      sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uFogK;').replace('#include <fog_vertex>','#include <fog_vertex>\n#ifdef USE_FOG\nfogDepth*=uFogK;\n#endif');};
-    var own=key||('kfar-fog-'+k);m.customProgramCacheKey=function(){return own;};return m;}
+  function fogThin(m,k,key){var K=root.KHOOK;if(!K)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');
+    /* a KHOOK layer (core/shader): after the material's own hook; a missing anchor throws */
+    return K.add(m,'kfar-fog',function(sh){sh.uniforms.uFogK={value:k};
+      sh.vertexShader=K.rep(K.rep(sh.vertexShader,'#include <common>','#include <common>\nuniform float uFogK;'),'#include <fog_vertex>','#include <fog_vertex>\n#ifdef USE_FOG\nfogDepth*=uFogK;\n#endif');},{key:key||('kfar-fog-'+k)});}
   function geometry(g,o){o=o||{};var T=root.THREE,geo=new T.BufferGeometry();
     geo.setAttribute('position',new T.BufferAttribute(g.pos,3));geo.setAttribute('color',new T.BufferAttribute(g.col,3));
     if(o.attrs)Object.keys(g.attrs).forEach(function(n){var a=g.attrs[n],sz=a.length/(g.pos.length/3);geo.setAttribute(n,new T.BufferAttribute(a,sz));});

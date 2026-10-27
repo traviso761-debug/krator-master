@@ -15,7 +15,7 @@
 // tools/textures/pack.py); a page without its pack gets no layer, and its ground is its paint alone, as before.
 //
 //   KGROUND.layer(build, slot, o)  {map, k (1 / the slot's scale), ...o} from the page's pack, or null
-//   KGROUND.hook(mat, o)  wraps mat.onBeforeCompile (the page's hook first) and adds the layers where the page's fragment
+//   KGROUND.hook(mat, o)  a KHOOK layer 'kground' (core/shader: after the page's hook) that adds the layers where the page's fragment
 //        shader has the marker o.at ('/*KGROUND*/'; without it, just after #include <map_fragment>). o:
 //        layers [{map, k, w (a GLSL float: the layer's weight, 0..1, from the page's varyings), amt (1: its most),
 //                 gain (1), tint (a GLSL vec3: 'diffuse' is the material colour; default vec3(1.0)), lin (true: the map
@@ -224,17 +224,17 @@
     s.push('}');return s.join('\n');}
   function hook(mat,o){o=o||{};var LY=(o.layers||[]).filter(function(L){return L&&(L.map||L.kind!=null);});if(!mat)return mat;
     mat.userData.kground=LY.map(function(L){return L.name||'layer';});if(!LY.length)return mat;
-    var T=root.THREE,prev=mat.onBeforeCompile,at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),lib=glsl(o)+(kinds?kindsGlsl():''),body=code(o,LY);
+    var K=kh(),at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),lib=glsl(o)+(kinds?kindsGlsl():''),body=code(o,LY);
     if(kinds)mat.userData.kgroundKinds=LY.map(function(L){return L.kind||null;});
-    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);if(/varying vec3 kgWP;/.test(sh.vertexShader))return;LY.forEach(function(L,i){if(L.map)sh.uniforms['uKG'+i]={value:L.map};});
+    /* a KHOOK layer (core/shader): after the page's own hook and the layers before it, keyed by its layers; a missing anchor throws */
+    return K.add(mat,'kground',function(sh,r){if(/varying vec3 kgWP;/.test(sh.vertexShader))return;LY.forEach(function(L,i){if(L.map)sh.uniforms['uKG'+i]={value:L.map};});
       var wp='vec4 kgW4=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkgW4=instanceMatrix*kgW4;\n#endif\nkgWP=(modelMatrix*kgW4).xyz;\n';
-      sh.vertexShader='varying vec3 kgWP;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp);
+      sh.vertexShader='varying vec3 kgWP;\n'+K.inject(sh.vertexShader,{at:'project_vertex',after:wp,fallback:{at:'fog_vertex',before:wp}},'kground');
       var dec='varying vec3 kgWP;\n'+LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join('')+'\n'+lib;
-      var fs=sh.fragmentShader.replace('void main() {',dec+'void main() {');
-      fs=fs.indexOf(at)>=0?fs.replace(at,body):fs.replace('#include <map_fragment>','#include <map_fragment>\n'+body);
-      sh.fragmentShader=fs;};
-    var own=mat.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?mat.customProgramCacheKey:null,src=prev?prev.toString():'',key='|kground-'+(o.key||'')+'-'+LY.length+'-'+body.length;
-    mat.customProgramCacheKey=function(){return (own?own.call(this):src)+key;};mat.needsUpdate=true;return mat;}
+      var fs=K.rep(sh.fragmentShader,'void main() {',dec+'void main() {','kground');
+      fs=fs.indexOf(at)>=0?fs.replace(at,body):K.rep(fs,'#include <map_fragment>','#include <map_fragment>\n'+body,'kground');
+      sh.fragmentShader=fs;},{key:'kground-'+(o.key||'')+'-'+LY.length+'-'+body.length});}
+  function kh(){var K=root.KHOOK;if(!K)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');return K;}
   root.KGROUND={layer:layer,hook:hook,glsl:glsl,code:code,kindsGlsl:kindsGlsl,KINDS:Object.keys(KINDS),BRECCIA:BRECCIA,
     fn:{hash:hash,tri:tri,heightLerp:heightLerp,lod:lod,hash3:hash3,vor2:vor2,vor3:vor3,vnoise:vnoise,ripple:ripple}};
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -22,7 +22,7 @@
 //   ATMOS.acidRain(o) -> S              the host: o {ph (number or fn(x, z), default 4), mmh (mm/h at W.rain 1, default 20),
 //                                       cover (x, y, z) -> 0..1, etch (the base, 0..1), rate (etch a second at k 1, default
 //                                       1/600), fields (default true: provide 'rain' and 'ph' to KHAZ)}. After ATMOS.weather.
-//   ATMOS.acidOn(material, {kind})      kind 'metal' | 'stone' | 'water' (through ATMOS.shaderHook)
+//   ATMOS.acidOn(material, {kind})      kind 'metal' | 'stone' | 'water' (a KHOOK layer)
 // Without ATMOS.acidRain the rain, the weather record and every material are what they were. Textures: procedural until
 // `metal.etched` and `stone.acidstreak` arrive (core/materials/PROMPTS-NEEDED.md, section 33).
 // Godot: GODOT.md, "Acid rain".
@@ -52,11 +52,11 @@
  const KIND={metal:0,stone:1,water:2};
  A.acidOn=(mat,o)=>{o=o||{};const kind=KIND[o.kind]==null?1:KIND[o.kind];
   A.U.acid=A.U.acid||{value:new A.T.Vector4()};
-  return A.shaderHook(mat,'atm-acid-'+kind,function(sh){sh.uniforms.atmAcid=A.U.acid;const cov=!!(A.rainCoverUniforms&&A.U.rainOcc);if(cov)A.rainCoverUniforms(sh.uniforms);
+  const K=A.KH();return K.add(mat,'atm-acid-'+kind,function(sh){sh.uniforms.atmAcid=A.U.acid;const cov=!!(A.rainCoverUniforms&&A.U.rainOcc);if(cov)A.rainCoverUniforms(sh.uniforms);
    const V='varying vec3 vAtmAcP;varying vec3 vAtmAcN;';
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+V).replace('#include <project_vertex>','#include <project_vertex>\n'+
-    'vec4 atmAcWp=vec4(transformed,1.0);vec3 atmAcN=objectNormal;\n#ifdef USE_INSTANCING\natmAcWp=instanceMatrix*atmAcWp;atmAcN=mat3(instanceMatrix)*atmAcN;\n#endif\nvAtmAcP=(modelMatrix*atmAcWp).xyz;vAtmAcN=normalize(mat3(modelMatrix)*atmAcN);');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+V+(cov?A.rainCoverGLSL()+'\n':'')+A.acidGLSL()).replace('#include <emissivemap_fragment>',
+   const AV='vec4 atmAcWp=vec4(transformed,1.0);vec3 atmAcN=objectNormal;\n#ifdef USE_INSTANCING\natmAcWp=instanceMatrix*atmAcWp;atmAcN=mat3(instanceMatrix)*atmAcN;\n#endif\nvAtmAcP=(modelMatrix*atmAcWp).xyz;vAtmAcN=normalize(mat3(modelMatrix)*atmAcN);';
+   sh.vertexShader=K.inject(K.rep(sh.vertexShader,'#include <common>','#include <common>\n'+V),{at:'project_vertex',after:AV,fallback:{at:'fog_vertex',before:AV}});   /* a leaf card's sway replaced <project_vertex>: before <fog_vertex> */
+   sh.fragmentShader=A.repLit(this)(K.rep(sh.fragmentShader,'#include <common>','#include <common>\n'+V+(cov?A.rainCoverGLSL()+'\n':'')+A.acidGLSL()),'#include <emissivemap_fragment>',
     '{vec3 atmAcNf=normalize(vAtmAcN);float atmAcO='+(cov?'atmRainOpen(vAtmAcP)':'1.0')+';diffuseColor.rgb=atmAcidAlbedo(diffuseColor.rgb,vAtmAcP,atmAcNf,'+kind+',atmAcO);'+
     (kind===0?'\n#if defined(STANDARD)\nroughnessFactor=mix(roughnessFactor,0.85,atmAcid.x*0.6);\n#endif\n':'')+'}\n#include <emissivemap_fragment>');});};
  A.acidRain=function(o){o=o||{};const T=A.T,U=A.U,h=A.h||{},cam=h.camera,P=A.PRESETS.acid,W=A.W;if(!W)A.err('acidRain: call ATMOS.weather first');

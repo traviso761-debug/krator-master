@@ -20,7 +20,7 @@
 // colour and its density at the ground) and with cloudShade, snowOn and wetGround in any order (ATMOS.shaderHook). Opt-in: a
 // page lists sky/89-atmos-j-fog.js and this file and calls it (or passes heightFog: to ATMOS.skyBiome).
 (function(){const A=ATMOS;
- const lin=(c,out)=>out.setRGB(c.r,c.g,c.b).convertSRGBToLinear();
+ const lin=(c,out)=>A.KC().lin([c.r,c.g,c.b],out);   /* the sky's colour uniforms hold DISPLAY colours (a Color would be read as linear) */
  A.heightFog=function(o){o=o||{};const T=A.T,U=A.U,h=A.h||{},M=o.mist||{},B=o.band||{};
   U.fogH=U.fogH||{value:new T.Vector4()};U.fogMist=U.fogMist||{value:new T.Vector4()};U.fogBand=U.fogBand||{value:new T.Vector4()};U.fogX=U.fogX||{value:new T.Vector4()};
   U.fogSunDir=U.fogSunDir||{value:new T.Vector3(0,1,0)};U.fogSunC=U.fogSunC||{value:new T.Color(1,1,1)};U.fogZen=U.fogZen||{value:new T.Color(.5,.6,.7)};U.fogDrift=U.fogDrift||{value:new T.Vector2()};
@@ -45,15 +45,15 @@
    note:'fog = 1 - exp(-(air^shape + mist + band)); air = scene fog density * the pool integral of exp(-falloff (y - ref)); the mist pools below mist.y at dawn; the band is a slab of cloud (sky/89-atmos-j-fog.js)'});
   return F;};
  A.heightFogOn=function(mat){if(!mat||!A.U||!A.U.fogH)return mat;
-  return A.shaderHook(mat,'atmos-heightfog',function(sh){const U=A.U;
+  const K=A.KH();return A.shaderHook(mat,'atmos-heightfog',function(sh){const U=A.U;
    if(sh.fragmentShader.indexOf('#include <fog_fragment>')<0)return;   /* the page's own fog (a far-land fade) stands */
    sh.uniforms.atmFogH=U.fogH;sh.uniforms.atmFogMist=U.fogMist;sh.uniforms.atmFogBand=U.fogBand;sh.uniforms.atmFogX=U.fogX;
    sh.uniforms.atmFogSunDir=U.fogSunDir;sh.uniforms.atmFogSunC=U.fogSunC;sh.uniforms.atmFogZen=U.fogZen;sh.uniforms.atmFogDrift=U.fogDrift;
    if(A.fogBeltOn){sh.uniforms.atmFogBelt=U.fogBelt;sh.uniforms.atmFogBeltK=U.fogBeltK;sh.uniforms.atmFogBeltE=U.fogBeltE;sh.uniforms.atmFogBeltT=U.fogBeltT;}
    /* the eye from the view matrix, in the vertex shader: three r128 sets the fragment's cameraPosition only for Phong, Standard,
       Toon, ShaderMaterial or an envMap, so a Lambert ground read (0,0,0) there (the first pilot run's dawn white-out) */
-   sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+sh.vertexShader.replace('#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');
-   sh.fragmentShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+A.fogGLSL()+'\n'+sh.fragmentShader.replace('#include <fog_fragment>',
+   sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+K.rep(sh.vertexShader,'#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');
+   sh.fragmentShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+A.fogGLSL()+'\n'+K.rep(sh.fragmentShader,'#include <fog_fragment>',
     '#ifdef USE_FOG\n#ifdef FOG_EXP2\n{vec3 atmFd=vAtmFogP-vAtmFogC;float atmFL=length(atmFd);vec4 atmFz=atmFog(vAtmFogC,atmFd/max(atmFL,1e-4),atmFL,fogColor,fogDensity);gl_FragColor.rgb=mix(gl_FragColor.rgb,atmFz.rgb,atmFz.a);}\n#else\n#include <fog_fragment>\n#endif\n#endif');});};
  // ATMOS.fogBelt(o) -> B   the fog belt (C1, biomes/outlands/PLAN.md 12; sky/89-atmos-j-fog.js has the model): a cloud band on
  // the slope between o.y0 and o.y1, thicker on faces turned to the wind (o.windward [x, z]: where the wind comes from; default

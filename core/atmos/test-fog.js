@@ -4,7 +4,7 @@
 // and its thunder (WEATHER item 8). Each check has a negative that must fail. No browser: a three.js stub stands in.
 'use strict';
 const fs=require('fs'),path=require('path');global.window=global;
-const D=__dirname,files=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','sky/89-atmos-j-fog.js','host/89-atmos-c-hostbind.js','host/89-atmos-e-weatherhost.js',
+const D=__dirname,files=['../shader/06-core-khook.js','../shader/06b-core-kcolor.js','89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','sky/89-atmos-j-fog.js','host/89-atmos-c-hostbind.js','host/89-atmos-e-weatherhost.js',
  'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','fx/89-atmos-fx-acid.js','fx/89-atmos-fx-airload.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
 eval(files.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');
 const A=global.ATMOS;let bad=0;const ok=(n,p,neg)=>{const r=p&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+n+(neg?' (its negative passed)':''));};

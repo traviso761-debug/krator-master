@@ -58,25 +58,20 @@
   A.rec('snowcover',{preset:'snowcover',base:o.base||0,line:o.line||null,frozen:!!o.frozen,lee:o.lee||0,note:'depth = snowStep(depth, W.snow, dt, hour): builds while it snows, melts while it does not'});
   return S;};
  // THE LOOK on a material
- // (through ATMOS.shaderHook when the page has it, host/89-atmos-h-skyhost.js: any order with cloudShade, wetGround, heightFog)
- A.snowOn=(mat,o)=>{o=o||{};let page=mat.onBeforeCompile;
-  const snow=function(sh,r){if(page)page.call(this,sh,r);
+ // (a KHOOK layer, core/shader/06-core-khook.js: any order with cloudShade, wetGround, heightFog and the page's own hook)
+ A.snowOn=(mat,o)=>{o=o||{};const K=A.KH();
+  const snow=function(sh,r){
    sh.uniforms.atmSnowDepth=A.U.snowDepth;sh.uniforms.atmSnowBase=A.U.snowBase;sh.uniforms.atmSnowLine=A.U.snowLine;sh.uniforms.atmSnowLee=A.U.snowLee;sh.uniforms.atmSnowWindDir=A.U.snowWind;
    if(A.rainCoverUniforms&&A.U.rainOcc)A.rainCoverUniforms(sh.uniforms);
    const V='varying vec3 vAtmSnP;varying vec3 vAtmSnN;';
    /* the vertex code goes after <project_vertex>; a page hook that replaced that chunk (core/biome's foliage hook does, for the sway:
       2026-10-27, biomes/swhighlands: no leaf card on any page took the snow) gets it just before <fog_vertex> instead, the same code */
    const SNV='vec4 atmSnWp=vec4(transformed,1.0);vec3 atmSnN='+(o.aN?'aN':'objectNormal')+';\n#ifdef USE_INSTANCING\natmSnWp=instanceMatrix*atmSnWp;atmSnN=mat3(instanceMatrix)*atmSnN;\n#endif\nvAtmSnP=(modelMatrix*atmSnWp).xyz;vAtmSnN=normalize(mat3(modelMatrix)*atmSnN);';
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+V);
-   sh.vertexShader=sh.vertexShader.indexOf('#include <project_vertex>')>=0?sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+SNV):sh.vertexShader.replace('#include <fog_vertex>',SNV+'\n#include <fog_vertex>');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+V+A.snowGLSL()).replace('#include <emissivemap_fragment>',
+   sh.vertexShader=K.inject(K.rep(sh.vertexShader,'#include <common>','#include <common>\n'+V),{at:'project_vertex',after:SNV,fallback:{at:'fog_vertex',before:SNV}});
+   sh.fragmentShader=A.repLit(this)(K.rep(sh.fragmentShader,'#include <common>','#include <common>\n'+V+A.snowGLSL()),'#include <emissivemap_fragment>',
     '{vec3 atmSnNf=normalize(vAtmSnN);'+(o.twoSided?'if(!gl_FrontFacing)atmSnNf=-atmSnNf;':'')+'float atmS=atmSnow(vAtmSnP,atmSnNf);diffuseColor.rgb=atmSnowAlbedo(diffuseColor.rgb,atmS,atmSnNf.y);\n'+
     '#if defined(STANDARD)\nroughnessFactor=mix(roughnessFactor,'+f(A.PRESETS.snowcover.roughness)+',atmS);\n#endif\n}\n#include <emissivemap_fragment>');};
-  const key='atm-snow'+(o.aN?'-aN':'');
-  if(A.shaderHook){page=null;return A.shaderHook(mat,key,snow);}
-  const pk=mat.customProgramCacheKey?mat.customProgramCacheKey.bind(mat):()=>page?page.toString():'';mat.customProgramCacheKey=()=>pk()+'|'+key;
-  Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:()=>snow,set:fn=>{page=fn;}});
-  mat.needsUpdate=true;return mat;};
+  return K.add(mat,'atm-snow'+(o.aN?'-aN':''),snow);};
  // every lit material of a scene at once (ground, rock, bark, leaves), each material once: not ShaderMaterials, nor water
  // ('water:' meshes), sprites, points, lines, additive or very transparent ones, nor what carries userData.noSnow
  A.snowOnScene=(scene,o)=>{o=o||{};const done=new Set();let n=0;
