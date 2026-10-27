@@ -12,6 +12,9 @@
 const SP=SEDESERT.SPECIES,PAL=SEDESERT.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=SEDESERT.C;
 SEDESERT.TREES=[];
+// the runtime LOD's ranges (metres from the camera to a chunk's box; set by a host before build, the final rebuild 2026-10-27): tree (heroes,
+// then their stand-ins), floor/mid/far (the floor's three bands). All null: the spine's static LOD alone, as before (every reader's default)
+SEDESERT.LOD={tree:null,floor:null,mid:null,far:null};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
@@ -336,7 +339,27 @@ SEDESERT.buildTrees=function(R,q){
   return n;}
  SEDESERT.PASSES.forEach(pass);
  // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // RUNTIME LOD AND OCTAHEDRAL IMPOSTORS (2026-10-27, the final rebuild; GRAPHIC-LOAD.md recommendations 1 and 2, eastabyss's lines). With
+ // SEDESERT.LOD.tree set (the host's 88; ?diet=0 leaves it null) a hero (lv 2 or 1 by the spine, as before) is drawn in full while the
+ // camera is within LOD.tree metres of its chunk, and as a stand-in past that; a far tree (lv 0) is only ever its stand-in. The stand-in
+ // is one quad of its species baked from 8 x 8 directions (core/biome 34, one set, one item) where the page lists the fragment and
+ // SEDESERT.IMPOSTORS is not false; else the blob as before. The twist-candles keep their spires (they stand in the water). The bake
+ // builds one hero of each species again at BIO.bakeImpostors (after every placement, its own seed); here nothing draws from the stream
+ // but the heroes, in the same order, so every tree keeps its form. A reader that sets no LOD.tree (the Catch, Korona, ringisles) draws as before.
+ const LT=SEDESERT.LOD.tree,IMPON=!!LT&&SEDESERT.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('sedesert.trees',{label:'Far trees'});
+  SP.forEach((S,sp)=>{if(!B[sp]||!S.far||S.far.spires)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('sedesert.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1,{lv:2}),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach((T,i)=>{
+  if(T.lv===0){if(!farImp(T))buildFar(T,i,st);st.fars++;}
+  else{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}B[T.sp](T,st,T.lv);st.heroes++;
+   if(LT&&T.H>5&&SP[T.sp].far&&(!SP[T.sp].farIf||SP[T.sp].farIf(T))){BIO.range=1e9;BIO.minRange=LT;if(!farImp(T))buildFar(T,i,st);}
+   BIO.owner=null;BIO.range=null;BIO.minRange=0;}
+  st.byS[T.sp]++;});
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,columns:st.cols,spikes:st.spikes,candles:st.candles,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 SEDESERT._canopyH=function(x,z){let h=0;for(const T of SEDESERT.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||6;};

@@ -77,7 +77,8 @@ const TOWNREC=(function(){const R=KRAND,h=(i,k)=>R.unit(R.hash(1810,i,k));const 
 const inRect=(g,x,z,pad)=>{const c=Math.cos(g.rot),s=Math.sin(g.rot),dx=x-g.x,dz=z-g.z,a=dx*c+dz*s,b=-dx*s+dz*c;return Math.abs(a)<g.w/2+(pad||0)&&Math.abs(b)<g.d/2+(pad||0);};
 const gardenK=(x,z)=>{for(const g of TOWNREC.gardens)if(inRect(g,x,z,4))return 1;return 0;};
 const STATION={key:'mantis',tags:'sedesert-mantis',seed:3,chanBox:[-3300,-3300,3300,3300],grid:{N:640,M:2,win:{x:[-2400,2300],z:[-2100,2300]}},   /* the streams' window split in two (5.2 m) */
- lod:{hero:560,mid:1250,far:2700,floor:[360,860]},water:[-3300,-3300,3300,3300],sun:[-900,600,700],mantisFar:false,heat:.45,hour:16.8,
+ lod:{hero:560,mid:1250,far:2700,floor:[360,860]},water:[-3300,-3300,3300,3300],sun:[-900,600,700],mantisFar:false,pan:false,   /* no salt pan on the green shore (89w) */
+ heat:.45,hour:16.8,
  air:{humidity:.62,turbidity:1.3,dustK:.3},clouds:{cover:.32,cumulus:.8},riverTint:0x5a7a6a,
  pools:SPRINGS.map(P=>({x:P.x,z:P.z,r:P.r,level:P.level,name:P.name})),
  pool:(x,z)=>{for(const P of SPRINGS)if(Math.hypot(x-P.x,z-P.z)<P.r*1.25)return P.level;return -1e9;},

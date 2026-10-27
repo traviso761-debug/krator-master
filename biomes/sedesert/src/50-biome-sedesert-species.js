@@ -393,12 +393,16 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Scrub foliage'});
 BIO.def('paddle',BIO.geo.clump(),M.paddle,{attrs:['aN'],label:'Prickly-pear pads'});
 BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Palm fronds'});
 BIO.def('bristle',BIO.geo.frond(3),M.bristle,{label:'Boojum twigs'});
-BIO.def('needle',G.tuft(),M.needle,{label:'Spinifex'});
+/* SHEETS CUT BY THE GEOMETRY (the card fit, 2026-10-27; materials.json "sheet": "geometry"): a library sheet of several plants drawn whole on a
+   card shows them as a boxed grid (the owner caught the spinifex); each quad takes one plant's box (BIO.geo.cells, rects measured by
+   tools/textures/check_cells.py --plants). Without the pack the kit's own procedural maps are single plants and stay whole */
+const SHEETG=(slot,geo,o)=>SEDESERT.LIB&&SEDESERT.LIB[slot]?BIO.geo.cells(geo,o):geo;
+BIO.def('needle',SHEETG('needle',G.tuft(),{rects:[[.341,.024,.671,.339],[.333,.349,.671,.671],[.331,.661,.667,.974]],scale:1}),M.needle,{label:'Spinifex'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Dry grass'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
 BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',SHEETG('bloom',BIO.geo.bloom(),{rects:[[.02,.02,.49,.33],[.51,.34,.98,.66],[.02,.67,.49,.98],[.51,.02,.98,.33],[.02,.34,.49,.66],[.51,.67,.98,.98]],pick:[0,1],scale:1}),M.bloom,{label:'Blooms'});   /* two of the six flowers a bloom (the sheet's rows touch: its boxes set by eye) */
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
 BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});

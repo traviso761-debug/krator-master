@@ -28,24 +28,21 @@ const MB={
  saltbush:BIO.leafMat(TX.small,'bowl-saltbush',{aN:true,swayW:'1.0',swayA:.05}),
  tamarisk:BIO.leafMat(TX.feather,'bowl-tamarisk',{aN:true,swayW:'1.0',swayA:.12}),
  glasswort:BIO.leafMat(TX.needle,'bowl-glasswort',{swayW:'(position.y)',swayA:.02,alphaTest:.4}),
+ saxtwig:BIO.leafMat(TX.needle,'bowl-saxtwig',{swayW:'(position.y)',swayA:.02,alphaTest:.4}),   /* the saxaul's twigs: glasswort's card held by its sprigs' stems on the clump (its own slot, the card fit 2026-10-27) */
  saltreed:BIO.leafMat(TX.reed,'bowl-saltreed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
  rankgrass:BIO.leafMat(TX.grass,'bowl-rankgrass',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
- brinelamp:BIO.leafMat(TX.aloe,'bowl-brinelamp',{swayW:'(position.y)',swayA:.01,alphaTest:.4}),
  flowers:BIO.leafMat(TX.plume,'bowl-flowers',{swayW:'1.0',swayA:.05,alphaTest:.4}),
  saxbark:BIO.barkMat(SEDESERT.BARKTEX[3]),
 };
 SEDESERT.BOWL_LIB=BIO.libSwap('bowl',MB);
-// the brine lamp's crystals catch the low sun: a little emissive lift on its card so a stand glitters at dusk
-MB.brinelamp.emissive=new T3.Color(0x221e18);
 BIO.bucket('saxbark',MB.saxbark,{label:'Saxaul and tamarisk wood',uvScale:[2,3]});
 BIO.def('saltbush',BIO.geo.clump(),MB.saltbush,{attrs:['aN'],label:'Saltbush'});
 BIO.def('tamarisk',BIO.geo.clump(),MB.tamarisk,{attrs:['aN'],label:'Tamarisk foliage'});
-BIO.def('saxtwig',BIO.geo.clump(),MB.glasswort,{attrs:['aN'],label:'Saxaul twigs'});
+BIO.def('saxtwig',BIO.geo.clump(),MB.saxtwig,{attrs:['aN'],label:'Saxaul twigs'});
 BIO.def('glasswort',G.tuft(),MB.glasswort,{label:'Glasswort'});
 BIO.def('saltreed',G.tuft(),MB.saltreed,{label:'Salt reed'});
 BIO.def('rankgrass',G.tuft(),MB.rankgrass,{label:'Rank grass'});
-BIO.def('brinelamp',G.tuft(),MB.brinelamp,{label:'Brine lamp'});
-BIO.def('flowers',G.tuft(),MB.flowers,{label:'Delta blooms'});
+BIO.def('flowers',SEDESERT.BOWL_LIB&&SEDESERT.BOWL_LIB.flowers?BIO.geo.cells(G.tuft(),{rects:[[.015,.001,.316,.327],[.386,.335,.607,.665],[.013,.688,.321,.995]],scale:1}):G.tuft(),MB.flowers,{label:'Delta blooms'});   /* three of the sheet's nine highland flowers a tuft, one a quad (the card fit: "sheet": "geometry") */
 BIO.def('saltlump',new T3.IcosahedronGeometry(1,0),BIO.solidMat(null,0xffffff),{label:'Salt crust'});
 // ---------------------------------------------------------------- the plants, tagged (the inspector names them; biomes/FRUIT.md)
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
@@ -57,7 +54,7 @@ Object.assign(SEDESERT.PLANTS,{
  tamarisk:PK('Tamarisk','arid','both',['tamarisk'],HV('timber, fuel',['manna (the scale insects\' sweet secretion on the twigs)'],false,'Salt crystals on the leaves; the manna is a sweetener.')),
  saltreed:PK('Salt reed','humid','yes',['saltreed'],HV('thatch, mats',[],false,'Phragmites in brackish water.')),
  rankgrass:PK('Rank grass','semiarid','both',['rankgrass'],HV('thatch',['seed (ground)'],false,'Blue-grey tussocks on the delta\'s silt.')),
- brinelamp:PK('Brine lamp','arid','no',['brinelamp'],HV('none',[],true,'The crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness. A stand glitters at low sun.')),
+ brinelamp:SEDESERT.BRINELAMP.plant,   /* the one builder's record (65-biome-sedesert-brinelamp.js) */
  deltabloom:PK('Delta blooms','semiarid','yes',['flowers'],HV('none',['nectar'],false,'')),
 });
 // ---------------------------------------------------------------- the builders
@@ -97,8 +94,8 @@ function saltreed(x,y,z,lv,st){const h=rr(1.6,3.2)*(lv===0?1.4:1);
  for(let i=0,n=lv===2?ri(3,6):lv===1?2:1;i<n;i++){const a=rr(0,TAU),d=i?rr(.5,2):0;tuftAt('saltreed',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.75,1.1),h*rr(.7,1),leafCol(PB.saltreed,1.25,.03));}st.reeds++;}
 function rankgrass(x,y,z,lv,st){const h=rr(.6,1.2)*(lv===0?1.5:1);
  for(let i=0,n=lv===2?ri(2,4):1;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.4):0;tuftAt('rankgrass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.25,leafCol(PB.rankgrass,1.25,.03));}st.grass++;}
-function brinelamp(x,y,z,lv,st){const n=lv===2?ri(2,5):lv===1?2:1;
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.6,2.2):0,h=rr(.45,.9)*(lv===0?1.4:1);tuftAt('brinelamp',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*1.15,h,0xffffff);}st.brinelamps++;}
+// the brine lamp: its own fragment (65-biome-sedesert-brinelamp.js), the one builder the Catch reads too
+const brinelamp=(x,y,z,lv,st)=>SEDESERT.BRINELAMP.put(x,y,z,lv,st);
 function blooms(x,y,z,lv,st){for(let i=0,n=lv===2?ri(2,5):1;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.6):0,h=rr(.35,.7);tuftAt('flowers',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h,0xffffff);}st.blooms++;}
 // a tuft that tests the mask itself (a cluster round an accepted point spills into the water otherwise)
 function tuftAt(item,x,y,z,h,w,col){if(BIO.mask(x,z)<=0)return;tuft(item,x,BIO.terrainH(x,z),z,h,w,col);}

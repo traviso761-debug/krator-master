@@ -58,14 +58,14 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
  return o;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb4aca4});
 MAT_GROUND.extensions={derivatives:true};
-MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uBowlNoise={value:TEX_NOISE};
+MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uKgSun={value:KG_SUN};sh.uniforms.uBowlNoise={value:TEX_NOISE};
  const gl2=renderer.capabilities.isWebGL2;
  const GX=GLAY?['lush','forest'].filter(k=>GLAY[k]):[];
  if(GLAY)GL_FULL.concat(GL_TINT,GX).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
  const W={salt:'vL0.x',ochre:'vL0.y',soda:'vL0.z',efflor:'vL0.w',dune:'vL1.x',yard:'vL1.y',playa:'vL1.z',reedbed:'vL1.w',popcorn:'vL2.x'};
- let decl='uniform sampler2D uDetail,uBowlNoise;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;'+
+ let decl='uniform sampler2D uDetail,uBowlNoise;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;uniform vec3 uKgSun;'+
   /* THE TILE VARIATION: each layer is sampled twice at offsets that change patch by patch (a 48 m noise picks which), blended
      across the patches' edges, so no repeat lines up (Quilez's texture variation). The offsets are golden-ratio steps, the
      gradients the plain uv's (textureGrad, WebGL2), so the mip level does not jump at a patch's edge */
@@ -88,11 +88,20 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX
   if(GLAY.lush)body+=lay('lush')+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.1,bowlW(vL2.z,dw));';
   body+='diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.35);';}
  else body+='diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.8);';
- body+='diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN)*(0.88+0.24*dt.r),vL2.y);'+
+ body+='diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN)*(0.88+0.24*dt.r),vL2.y);/*KGROUND*/'+
   /* a screen dither of a quarter step of 8 bits, so the long smooth gradients of the flat and the haze do not band */
   'diffuseColor.rgb+=(texture2D(uBowlNoise,gl_FragCoord.xy/256.0).b-0.5)/400.0;}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);};
 MAT_GROUND.customProgramCacheKey=()=>'bowl-ground3'+(GLAY?'-lib'+(GLAY.lush?'g':''):'');
+// THE LAYER KINDS (core/terrain 43, KGROUND; the final rebuild 2026-10-27, BACKPORT.md sedesert's row), procedural over the layers above, no
+// sampler of their own: the salt crust's PRESSURE POLYGONS (?polygon=0), metres-wide cells whose edges buckle up into pale ridges over buff
+// troughs, on the white crust (vL0.x) only, the library's crust texture the fine cracks inside them; the dunes' SAND (?sand=0), the wind's
+// ripples lit by the sun and the glints of single grains over the dune layer (vL1.x), across the wind that built them (WIND)
+const KG_SUN=new THREE.Vector3(...(STATION.sun||[-600,900,-400])).normalize();TICKS.push(()=>KG_SUN.copy(sun.position).normalize());
+{const q=new URLSearchParams(location.search),poly=q.get('polygon')!=='0',sand=q.get('sand')!=='0',wl=Math.hypot(WIND[0],WIND[1])||1;
+ KGROUND.hook(MAT_GROUND,{key:'bowl-ground-k'+(poly?'p':'')+(sand?'s':''),blend:0,far:false,layers:[
+  poly?{kind:'polygon',name:'salt pressure polygons',w:'vL0.x*1.15',amt:.9,size:7,width:.03,warp:.08,jitter:.8,vary:.06,edgeTint:'vec3(0.8,0.76,0.7)',rim:.05,rimTint:'vec3(1.1)',seed:301}:null,
+  sand?{kind:'sand',name:'dune sand',w:'vL1.x*1.1',amt:1,color:0xffffff,tint:'diffuseColor.rgb',ripple:.12,wind:[WIND[0]/wl,WIND[1]/wl],sun:'uKgSun',seed:302}:null]});}
 const GROUND=(function(){const N=GRID.N,S=GRID.S,cs=GRID.cs,M=GRID.M;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const axis=(lo,hi)=>{const o=[];for(let i=0;i<=N;i++){const a=-S/2+i*cs;o.push(a);if(i<N&&a+cs>lo&&a<hi)for(let k=1;k<M;k++)o.push(a+cs*k/M);}return o;};
  const X=axis(GRID.win.x[0],GRID.win.x[1]),Z=axis(GRID.win.z[0],GRID.win.z[1]),nx=X.length,nz=Z.length;

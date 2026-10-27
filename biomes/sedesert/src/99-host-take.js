@@ -80,9 +80,9 @@ function describe(hit){const p=hit.point,o=hit.object;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:12800000,calls:120},   // measured at q=1 on this 6.8 km map (baseline.json), not a target (KNOWN_ISSUES)
+ showcase:{tris:12800000,calls:320},   // measured at q=1 on this 6.8 km map (baseline.json), not a target (KNOWN_ISSUES). Calls 120 -> 320 (2026-10-27): the runtime LOD draws a mesh per chunk and range (~220-280 at the default camera) for under half the triangles (5.7M drawn, was 12.6M)
  cls:{pass:7000000,host:900000},
- type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+ type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','desert/kin':'pass','host':'host'},
 };
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
 // the cataract leaves from rock, its curtain clear of the rock; the cave open under its cap; nothing grows
@@ -184,6 +184,7 @@ const SD_WORLD={
  remove(h){const i=SD_STROKES.indexOf(h);if(i>=0){SD_STROKES.splice(i,1);KTAGS.page.remove(h.id);sdReplay();return;}
   const L=SD_LIVE[h.id];if(L){scene.remove(L.g);delete SD_LIVE[h.id];}KTAGS.page.remove(h.id);}};
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88; the final rebuild): each chunk mesh by its range */
 KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  hint:"The eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
@@ -191,6 +192,7 @@ KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
   if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ controls:[AIR_CONTROL],   /* the air: calm or a dust storm (89x-host-air.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

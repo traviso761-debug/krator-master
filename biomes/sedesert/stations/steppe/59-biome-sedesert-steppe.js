@@ -40,9 +40,14 @@ NEW.forEach(S=>{SP.push(S);SEDESERT.byKey[S.key]=S;});
 TL.B[sp('thorn')]=function(T,st,lv){TL.forkTree(T,st,lv,{fam:'bark3',item:'feather',boleU:.34,el0:.68,spread:.78,rise:.0,curve:.02,wig:.06,tuftK:.36,flat:.3,nC:3,nTop:ri(2,3),fill:.9,flute:.03,lean:.05});};
 TL.B[sp('myrrh')]=function(T,st,lv){TL.forkTree(T,st,lv,{fam:'bark2',item:'small',boleU:.04,el0:.92,spread:.7,rise:.06,curve:.1,wig:.16,tuftK:.32,flat:.7,nC:1,nTop:ri(5,8),flute:.03});};
 // ---------------------------------------------------------------- materials and items of the small plants and the aliens
+// THE SEASON (core/biome H7, BIO.SEASON; the final rebuild 2026-10-27, BACKPORT.md sedesert's row: seasons on the steppe; ?season=0 off): the
+// bunchgrass and the needle grass green after the rains and go to straw as the dry season runs (each tuft by its own hash, so a slope
+// turns patchily); the clock drives it (99-host-take.js, BIO.bindSeason), ?dry=0..1 holds it for a look. A page reading this file without
+// setting the season sees BIO.SEASON at 0: the green it drew before
+const STEPPE_SEASON=SEDESERT.STEPPE_SEASON=typeof location==='undefined'||new URLSearchParams(location.search).get('season')!=='0';
 const MS={
- bunch:BIO.leafMat(TX.grass,'steppe-bunch',{swayW:'(position.y)',swayA:.14,alphaTest:.4}),
- stipa:BIO.leafMat(TX.grass,'steppe-stipa',{swayW:'(position.y)',swayA:.18,alphaTest:.4}),
+ bunch:BIO.leafMat(TX.grass,'steppe-bunch',Object.assign({swayW:'(position.y)',swayA:.14,alphaTest:.4},STEPPE_SEASON?{season:{colour:0xc8a868,k:.85,stagger:.5}}:{})),
+ stipa:BIO.leafMat(TX.grass,'steppe-stipa',Object.assign({swayW:'(position.y)',swayA:.18,alphaTest:.4},STEPPE_SEASON?{season:{colour:0xd8c08a,k:.9,stagger:.4}}:{})),
  vcol:BIO.leafMat(null,'steppe-vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  fairy:BIO.leafMat(BIO.alphaTex(128,(g,S)=>{for(let i=0;i<900;i++){const a=rr(0,TAU),r=S*.5*Math.sqrt(rng());if(r>S*(.42+.06*Math.sin(a*5)))continue;
   g.fillStyle=BIO.tex.grey(lerp(170,235,rng()));g.beginPath();g.arc(S/2+Math.cos(a)*r,S/2+Math.sin(a)*r,rr(2,5),0,TAU);g.fill();}},[200,200,200]),'steppe-fairy',{swayW:'0.0',swayA:0,alphaTest:.35}),

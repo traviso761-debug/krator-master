@@ -4,6 +4,25 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+### The final rebuild's turn (2026-10-27, `PLAN-STATIONS.md` "Core adoption")
+- [ ] **The looks to judge** (each behind its switch): the impostors' gain (2.6, `?impgain=`; the core bake is ~4x dark), the pavement's
+  stones (`?pave=0`), the dune ripples (`?sand=0`), the Bowl's pressure polygons (`?polygon=0`) and shore pan (`?pan=0`), the height fog
+  (`?hfog=0`), the haboob (`?storm=1`), the far country's colours (`?far=0`), the talus and the wadi (`?landforms=0`), the steppe's dry
+  season (`?dry=1`).
+- [ ] **No wet ground on the stations**: the Bowl's ground shader (Mantis and the steppe take it) holds 15 of a fragment shader's 16 texture
+  units; the wet ground's puddle mask and rain map push it over and the ground does not compile (`89x-host-air.js` skips it unless
+  `STATION.wet`). Moving the Bowl's layers onto KGROUND (or an atlas) would free the units.
+- [ ] **`src/35-core-strata.js` stays** for the builds that read it in place (ringisles, verge, shade, isle-demo, little-demo); this kit's own
+  pages take core/terrain's KSTRATA (`build.py`). Delete it when those builds take the core's.
+- [ ] **The Bowl's lake keeps its own bands**: it is recorded as brine (`WATER.withLook`) for the export, but the brine look's stock ramp (a
+  red-brown deep) is not drawn; the station's teal-and-ochre bands are. The pan draws flat colour (no library texture, core/water's own gap).
+- [ ] **The station floors keep the spine's static LOD**: the Bowl's halo floor (66) and the steppe's and Mantis's floors set no `BIO.range`;
+  only the kit's trees and the main page's floor are on the runtime LOD.
+- [ ] **Exchanges owed to later turns** (`EXCHANGES.md`): ebadlands' juniper (main) and cottonwood (Bowl), ehighlands' tola (main) and
+  thorn cushion (Bowl), Korona's wall fern (main), the Catch's poplar and broom (Bowl), and the Catch's side of the brine lamp: its floor
+  puts `SEDESERT.BRINELAMP.put(...)` from `stations/bowl/65-biome-sedesert-brinelamp.js` (read in place with the 'bowl' pack's `brinelamp`
+  slot) in place of its own `brinelamp0..3`. Each is wired at its vendor's (or the Catch's) turn.
+
 ### The steppe fringe (station 3, `stations/steppe/`, 2026-10-26)
 - [ ] **The site is provisional** (px ~800,690): the steppe has not been placed on the scale model; check it when the model is surveyed.
 - [x] (2026-10-26) **The sun-dials turn only while frames run**: a hidden tab's page does not tick. The check now poses every dial

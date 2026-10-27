@@ -182,6 +182,15 @@ a fragment shader has 16 texture units (the ground's layers, the strata, the noi
 two injected chunks must have one type (`uNoise` was the strata's); a host's `BIO.put` after a kit's `BIO.kitEnd` finds none of the
 kit's items (put through a kit function: `SEDESERT.bed`); a channel narrower than two of the ground field's steps sits under its bed.
 
+## The final rebuild's turn (2026-10-27, pair 3)
+Every page and station on the shared core (`PLAN-STATIONS.md`, "Core adoption"). Lessons: a page whose LOD passes set `BIO.range` needs
+`BIO.lodTick` on its view hook or every chunk mesh draws at once (750 calls, 12.6M triangles on the main page until `99-host-take.js` hooked it;
+with it 220-280 calls and 4.7-5.7M); `BIO.kin` is core/biome 32, which a page that reads a neighbour must list; a talus on a heightfield mesa
+is the higher of the mesa and the floor-without-the-mesa plus the apron, never the apron added on top (it lifts the mesa's own top); a
+KGROUND kind with no map and `tint:'diffuseColor.rgb'` shades the page's own colour (the Bowl's dunes take ripples over their layers with no
+new sampler); the Bowl's ground is at 15 of 16 texture units, so anything that adds a map to it (the wet ground) breaks the compile; a
+`clast` pavement wants a wide matrix (.24) in the sand's colour, or it reads as crazy paving.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

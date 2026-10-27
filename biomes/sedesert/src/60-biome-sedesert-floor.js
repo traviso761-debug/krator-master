@@ -158,15 +158,21 @@ SEDESERT.buildFloor=function(R,q){
   plantMix(P[k],x,y,z,Z,lv,st);}
  // three bands along the LOD spine (the core's floor radii); each band's window is the spine's reach
  const L=BIO.LOD(),bands=[[9,L.floor[0],0],[18,L.floor[1],L.floor[0]],[36,1e9,L.floor[1]]];
- bands.forEach((b,bi)=>{const lv=2-bi;
+ // the runtime LOD (2026-10-27; SEDESERT.LOD, set by the host: null keeps the spine's static bands only): each band is drawn while the
+ // camera is within its range of a chunk (the near band's detail near, the far band's sparse cover out to LOD.far)
+ const LF=SEDESERT.LOD||{},BR=[LF.floor,LF.mid,LF.far];
+ bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=BR[bi]||null;
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .62*q*(lv===0?.5:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.7,patchScale:.014,pad:.8,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // the water's edge: reeds standing in the shallows of the river and the pond (the host's water window)
+ BIO.range=LF.mid||null;
  BIO.grid(9,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.mid)return 0;const Z=zones(x,z);return .4*q*(Z.bank+Z.oasis)*smooth(1.0,.3,BIO.depth(x,z));},
   (x,y,z,d)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1;reed(x,Math.max(y,BIO.waterH(x,z)-.5),z,lv,rng()<.35);st.reeds++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,1.0],pad:1,box:BIO.window('water')});
- // hoodoos in the badlands
+ // hoodoos in the badlands (rock: no runtime range, they stand out to the spine's far radius as before)
+ BIO.range=null;
  BIO.grid(55,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.far)return 0;const Z=zones(x,z);return Z.bad*.5*q;},(x,y,z,d)=>{if(blocked(x,z,3))return;const lv=BIO.lodD(x,z)<L.hero*1.1?2:1;
   for(let i=0,n=ri(1,3);i<n;i++){const hx=x+rr(-14,14),hz=z+rr(-14,14);if(okGround(hx,hz,2))hoodoo(hx,Y(hx,hz),hz,lv,st);}},{patch:.3,pad:3});
  // fallen mesquites on the canyon floor
+ BIO.range=LF.mid||null;
  BIO.grid(70,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return Z.rip*.7*q;},(x,y,z,d)=>{for(let t=0;t<4;t++)if(log(x+rr(-16,16),y,z+rr(-16,16),st))break;},{patch:0,pad:2});
- return{under:st};};
+ BIO.range=null;return{under:st};};
 })();

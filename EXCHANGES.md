@@ -730,3 +730,15 @@ which the caravans use.
 | catch→Bowl | `broom` | Dune shrub (sand juzgun) | people (fruit in fodder) and wind | read in place | the Bowl's `reg` sand sheets and dune fields | *Calligonum* is a sand-desert shrub; the Bowl's reg has dunes and no broom |
 | Bowl→catch | `saxaul` (Bowl) | Saxaul | people (firewood that seeds) and wind | read in place, sparser | the Catch's BWk floor round the oases and channels | saxaul with tugai is the Taklamakan's pairing, and the Catch is that desert |
 | (note) | `brinelamp` | Brine lamp | | one builder, read by the other | | the two kits draw the same Krator species twice; one should read the other's builder |
+
+**sedesert's turn (pair 3, 2026-10-27).** The brine lamp's one builder is the Bowl's, now its own fragment
+(`biomes/sedesert/stations/bowl/65-biome-sedesert-brinelamp.js`: `SEDESERT.BRINELAMP.put(x, y, z, lv, st)`, the library's
+`card.brinelamp` from the 'bowl' pack's `brinelamp` slot, the crystals' emissive glitter). It needs only the sedesert kit's 50 and 60,
+which the Catch already reads; the Catch's turn lists the fragment and the pack slot and puts its stands through it in place of its
+own `brinelamp0..3` (`biomes/sedesert/KNOWN_ISSUES.md`). The rest of this pair (poplar, broom, saxaul) is the Catch's turn too.
+
+**sedesert as receiver, the same turn.** Taken: eastabyss's `jade` (main), read in place, swapped from "floors below -1,000 m" (the main page
+has none) to the Abyss floor under the cataract (-650 to -720 m, the kit's own abyssal ground; `src/87-host-kin.js`). Left for the vendors'
+turns (later pairs): ebadlands' `juniper` (main) and `cottonwood` (Bowl), ehighlands' `tola` (main) and `thorn` (Bowl), Korona's
+`wallfern` (main), the Catch's `poplar` and `broom` (Bowl). No sedesert species key or index changed: `bottle` (3) and `mesquite` (6),
+`palm` (7) and the Bowl's `saxaul`, `tamarisk`, `brinelamp` as they were.

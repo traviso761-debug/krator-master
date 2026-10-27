@@ -99,13 +99,34 @@ const _tm={x:NaN,z:NaN,h:0};
 function placeH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the ground without the carve patch's recess (the patch's own rock top)
 function terrainBase(x,z){return terrainH0(x,z,false);}
-function terrainH0(x,z,carved){
- const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u);
+// the plateau before the canyon, the Abyss and the landforms: the land the wadi's bed is levelled on
+function plateauH(x,z){
+ const u=Math.abs(z-zR(x))/Wc(x),wall=wallK(u);
  const und=(fbm(x*.0006+3,z*.0006-1,17,3)-.5)*9+(fbm(x*.004,z*.004,29,2)-.5)*1.6;
  let h=trend(x)+mtnH(x,z)+mesaH(x,z)+und*(1-wall);
  const bad=badK(x,z);if(bad>0){const t=fbm(x*.0035,z*.0035,62,2);h+=bad*(14*Math.floor(t*6)/6+6*(t-.5));}
  const dn=duneK(x,z);if(dn>0)h+=dn*(7*(.5+.5*Math.sin(z*.021+x*.004+3*fbm(x*.0012,z*.0012,71,2)))+4*(fbm(x*.003,z*.003,72,2)-.5));
  const dp=pondD(x,z);if(dp<160)h-=12*smooth(125,35,dp);
+ return h;}
+// THE LANDFORMS (core/terrain 38, KRELIEF; the final rebuild 2026-10-27, BACKPORT.md sedesert's row; ?landforms=0 the ground before): TALUS
+// banked against every mesa's and the butte's foot (the walls' fall, a fifth of the wall's height reaching out half of it), and A WADI, a dry
+// braided river off the southern scrub that runs north 1.5 km to the canyon and leaves its cut bed hanging over the rim (a dry fall onto the
+// first bench): cobble floor, gravel bars between its channels, cut banks on the outsides of its bends, a pool or two after rain. Records
+// first (KRAND-hashed by slot), composed on the plateau, then baked into the field with the rest
+const LANDF=(function(){if(new URLSearchParams(location.search).get('landforms')==='0'||typeof KRELIEF==='undefined')return null;
+ const TAL=MESAS.map((M,i)=>({M,f:KRELIEF.talus({h:M[3]*.2,reach:Math.max(40,M[3]*.55),rough:.6,scale:.02,seed:4401+i,
+  footD:(x,z)=>{const dx=x-M[0],dz=z-M[1],a=Math.atan2(dz,dx),e=M[2]*(1+.07*Math.sin(3*a+i)+.045*Math.sin(7*a+2*i)+.03*Math.sin(13*a));return Math.hypot(dx,dz)-e;}})}));
+ const a=[-350,1650],bx=-560,b=[bx,zR(bx)+Wc(bx)*1.05];
+ const WADI=KRELIEF.wadi({pts:KRELIEF.meander(a,b,{amp:70,wave:420,seed:4411}),ground:plateauH,w:9,bank:2.2,bankW:4,braids:2.2,pools:.35,fan:false,seed:4412});
+ /* the apron on the floor as it would be without the mesa (the plateau less mesaH), the wall going down into it: the higher of the two */
+ return{talus:TAL,wadi:WADI,apply(x,z,h){let t=0;for(const T of TAL){const dx=x-T.M[0],dz=z-T.M[1];if(dx*dx+dz*dz<Math.pow(T.M[2]*1.4+T.M[3],2))t=Math.max(t,T.f(x,z));}
+  if(t>0)h=Math.max(h,h-mesaH(x,z)+t);
+  return KRELIEF.shape(WADI,x,z,h);},at:(x,z,h)=>KRELIEF.at(WADI,x,z,h)};})();
+// the wadi's box (its line, padded by its reach): the paint asks KRELIEF.at only inside it
+const WADI_BOX=LANDF?(()=>{const P=LANDF.wadi.pts,r=LANDF.wadi.reach+4;return[Math.min(...P.map(p=>p.x))-r,Math.min(...P.map(p=>p.z))-r,Math.max(...P.map(p=>p.x))+r,Math.max(...P.map(p=>p.z))+r];})():null;
+function terrainH0(x,z,carved){
+ const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u);
+ let h=plateauH(x,z);if(LANDF)h=LANDF.apply(x,z,h);
  if(u<1.6){h+=3*smooth(.92,1.1,u)*smooth(1.5,1.15,u);                                   // the rim's lip
   h=mix(h,floorC(x)+(fbm(x*.02,z*.02,88,2)-.5)*.6,wall)-2.6*smooth(16,5,dC)*wall;}      // the flat floor, the channel
  const ab=abyssK(x,z);if(ab>0){const hp=h;h=mix(h,-720+(fbm(x*.002,z*.002,91,2)-.5)*40,Math.pow(ab,.9));   // the Abyss
@@ -188,6 +209,12 @@ const OBSTACLES=[];
 // the LOD spine: a row of origins along the river, plus the pond and the butte's foot
 TOWER.z=zR(TOWER.x)-Wc(TOWER.x)*2.1;
 const SPINE=[];for(let x=-3000;x<=3200;x+=700)SPINE.push([x,zR(x)]);SPINE.push([POND.x,POND.z],[BUTTE.x-300,BUTTE.z-500],[TOWER.x,TOWER.z]);
+// THE GRAPHICS SET (the final rebuild, 2026-10-27; GRAPHIC-LOAD.md, nhighlands' and eastabyss's lines): every item's geometry welded to an
+// index (BIO.INDEX_ITEMS; ?index=0 for the soup), each chunk's LOD bands merged with a dithered cross-fade (?lodmerge=0, ?lodfade=0) and
+// loose instances culled past their own range (?lodcull=0). INDEX_ITEMS is read as the kit defines its items (50): it is set here, before it
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.init({tags:'sedesert',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:TFIELD,placeH:placeH,
  mask:(x,z)=>{if(BIO.carve.topAt(x,z)!==null)return 0;const d=placeH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},   // the core's default (nothing rooted under the local water), and nothing in the carve patch
  obstacles:OBSTACLES,ticks:tick,seed:11,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
@@ -217,6 +244,8 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.lerp(PLAYA,smooth(.55,.95,oa)*smooth(.5,.2,flow)*.55);c.lerp(DAMP,smooth(.75,1,oa)*flow*.6);              // the pond's playa rim, its damp margin
   t.copy(CLIFF).lerp(CLIFF2,clamp(.5+n*1.5,0,1)).lerp(BANDS[Math.abs(Math.floor(hh/26))%BANDS.length],.45);c.lerp(t,ab*.9);   // the Abyss wall: coarse strata, 26 m
   c.lerp(BANDS[Math.abs(Math.floor(hh/40+1))%BANDS.length],smooth(.03,.15,up)*smooth(.3,.62,sl)*.35);                    // the mountain ramps: faint 40 m ledges
+  if(WADI_BOX&&wx>WADI_BOX[0]&&wx<WADI_BOX[2]&&wz>WADI_BOX[1]&&wz<WADI_BOX[3]){const a=LANDF.at(wx,wz,hh);   // the wadi: its cobble floor, paler gravel bars, the cut banks' fresh red
+   if(a)c.lerp(a.part==='bank'?RED2:GRAVEL,a.part==='bank'?.3:a.part==='bar'?.85:a.part==='pool'?.5:.65);}
   const k=1+n*.10+n2*.05;
   d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -248,10 +277,10 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
 const GROUND_TRI='vec3 triDetail(sampler2D t,vec3 p,vec3 n,float s,float o){vec3 w=pow(abs(normalize(n)),vec3(4.0));w/=w.x+w.y+w.z;'+
  'return texture2D(t,p.zy*s+o).rgb*w.x+texture2D(t,p.xz*s+o).rgb*w.y+texture2D(t,p.xy*s+o).rgb*w.z;}\n';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
-MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
+MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uKgSun={value:KG_SUN};sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  if(GLAY){sh.uniforms.uLDune={value:GLAY.dune};sh.uniforms.uLRim={value:GLAY.rim};sh.uniforms.uLWall={value:GLAY.wall};sh.uniforms.uLLedge={value:GLAY.ledge};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;attribute vec2 aLay;varying vec2 vLay;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;varying vec2 vLay;\n'+GROUND_TRI+(GLAY?'uniform sampler2D uLDune,uLRim,uLWall,uLLedge;':'')).replace('getShadowMask();','getShadowMask()*vSun;')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;attribute vec2 aLay;varying vec2 vLay;attribute float aPave;varying float vPave;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvLay=aLay;vPave=aPave;vOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;varying vec2 vLay;varying float vPave;uniform vec3 uKgSun;\n'+GROUND_TRI+(GLAY?'uniform sampler2D uLDune,uLRim,uLWall,uLLedge;':'')).replace('getShadowMask();','getShadowMask()*vSun;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=triDetail(uDetail,vGWP,vSWN,0.165,0.0);vec3 dt2=triDetail(uDetail,vGWP,vSWN,0.021,0.37);vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   // the strata's relief from the library (a custom sampler is not decoded from sRGB: pow 2.2 by hand): the steep faces
@@ -264,8 +293,17 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
   // (KGROUND, 43-core-ground.js, 2026-10-26: hex-tiled, scaled with distance, blended by height; the weights and strengths as before)
   '/*KGROUND*/'+
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};
-KGROUND.hook(MAT_GROUND,{key:'sedesert-ground',layers:GLAY?[KGROUND.layer('sedesert','ground.dune',{w:'vLay.x*(1.0-vRock)',amt:.75,gain:1.35,tint:'diffuse'}),
- KGROUND.layer('sedesert','ground.rim',{w:'vLay.y*(1.0-vRock)',amt:.8,gain:1.35,tint:'diffuse'})]:[]});   // the cave: occlusion, steepened (ambient is all the light there)
+// THE LAYER KINDS (core/terrain 43, the final rebuild 2026-10-27; BACKPORT.md sedesert's row): the dunes' sand takes the wind's ripples, lit by the
+// sun, and the glints of single grains (?sand=0: the plain library layer), across the wind that built the dunes (their crests run along
+// z*.021+x*.004); the red desert's PAVEMENT (?pave=0: the paint's darker patches alone) is a mosaic of varnished stones packed in the sand
+// where the paint lays its pavement (aPave), the Outlands' recipe: small, packed, no sub-clasts or glass, a desert-varnish palette
+const KG_SUN=new THREE.Vector3(-1000,1150,-560).normalize();TICKS.push(()=>KG_SUN.copy(sun.position).normalize());
+const KG_Q=new URLSearchParams(location.search),KG_SAND=KG_Q.get('sand')!=='0',KG_PAVE=KG_Q.get('pave')!=='0';
+KGROUND.hook(MAT_GROUND,{key:'sedesert-ground'+(KG_SAND?'s':'')+(KG_PAVE?'p':''),layers:GLAY?[KGROUND.layer('sedesert','ground.dune',Object.assign({w:'vLay.x*(1.0-vRock)',amt:.75,gain:1.35,tint:'diffuse'},
+   KG_SAND?{kind:'sand',wind:[.187,.982],ripple:.11,sun:'uKgSun',seed:211}:{})),
+ KGROUND.layer('sedesert','ground.rim',{w:'vLay.y*(1.0-vRock)',amt:.8,gain:1.35,tint:'diffuse'}),
+ KG_PAVE?{kind:'clast',w:'vPave*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb07a54,sub:0,fleck:0,jitter:.95,vary:.3,
+  palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:212}:null]:[]});   // the cave: occlusion, steepened (ambient is all the light there)
 // The layers above, described once for a port (core/export's EXPORT.groundLayers: a material record with hook 'world-uv',
 // its maps by library reference, the crack weight sampled on the tile's grid; Godot multiplies them in ground.gdshader
 // through godot/shaders/lib/world-uv.gdshaderinc). Not described yet: the strata (vRock) and the cave's occlusion.
@@ -290,13 +328,15 @@ GRID.level=(i,j)=>{const cs=GRID.cs,ax=-GRID.S/2+i*cs,az=-GRID.S/2+j*cs,W=GRID.w
 const GROUND=(function(){const t0=performance.now(),N=GRID.N,S=GRID.S,cs=GRID.cs,U=24,ROW=N*U+1;
  const LV=new Uint8Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++)LV[j*N+i]=GRID.level(i,j);
  const lv=(i,j)=>i<0||j<0||i>=N||j>=N?0:LV[j*N+i];
- const ids=new Map(),pos=[],uv=[],ck=[],rk=[],oc=[],sn=[],lay=[],idx=[],cellT=new Uint32Array(N*N+1);
+ const ids=new Map(),pos=[],uv=[],ck=[],rk=[],oc=[],sn=[],lay=[],pv=[],idx=[],cellT=new Uint32Array(N*N+1);
  // a vertex on the 1/24-cell lattice (I along x, K along z), made once
  const V=(I,K)=>{const key=K*ROW+I;let v=ids.get(key);if(v!==undefined)return v;v=pos.length/3;ids.set(key,v);
   const x=-S/2+Math.floor(I/U)*cs+cs*(I%U)/U,z=-S/2+Math.floor(K/U)*cs+cs*(K%U)/U,y=terrainH(x,z);
   pos.push(x,y,z);uv.push(x/S+.5,.5-z/S);ck.push(PA('crack',x,z));rk.push(PA('strata',x,z));   // mud cracks and fine strata are fields (fieldsAt)
   oc.push(BIO.carve.floorOcc(x,z));sn.push(BIO.carve.floorSun(x,y,z,SUNV));
-  const dn=PA('dune',x,z);lay.push(dn,smooth(.55,.95,PA('oasis',x,z))*smooth(.5,.2,PA('flow',x,z))*(1-dn));return v;};
+  const dn=PA('dune',x,z);lay.push(dn,smooth(.55,.95,PA('oasis',x,z))*smooth(.5,.2,PA('flow',x,z))*(1-dn));
+  /* the pavement where the paint lays it (the paint's own fbm on its pixel lattice), on the flat open desert only */
+  const px=(x/S+.5)*1536,pz=(z/S+.5)*1536;pv.push(smooth(.56,.7,fbm(px/90+5,pz/90-2,.7,2))*(1-dn)*smooth(.35,.15,PA('wet',x,z))*smooth(.3,.12,PA('slope',x,z))*(1-smooth(.1,.4,PA('canyon',x,z)))*(1-smooth(.05,.3,PA('mtn',x,z)))*(1-PA('abyss',x,z)));return v;};
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){cellT[j*N+i]=idx.length/3;const L=lv(i,j),st=U/L;
   // each edge's level: the finer of this cell's and its neighbour's (west x=i, south z=j+1, east x=i+1, north z=j)
   const eW=Math.max(L,lv(i-1,j)),eS=Math.max(L,lv(i,j+1)),eE=Math.max(L,lv(i+1,j)),eN=Math.max(L,lv(i,j-1));
@@ -313,7 +353,7 @@ const GROUND=(function(){const t0=performance.now(),N=GRID.N,S=GRID.S,cs=GRID.cs
  cellT[N*N]=idx.length/3;
  const F=a=>new Float32Array(a),n=pos.length/3,g=new THREE.BufferGeometry();
  g.setAttribute('position',new THREE.BufferAttribute(F(pos),3));g.setAttribute('uv',new THREE.BufferAttribute(F(uv),2));
- g.setAttribute('aCrack',new THREE.BufferAttribute(F(ck),1));g.setAttribute('aRock',new THREE.BufferAttribute(F(rk),1));g.setAttribute('aOcc',new THREE.BufferAttribute(F(oc),1));g.setAttribute('aSun',new THREE.BufferAttribute(F(sn),1));g.setAttribute('aLay',new THREE.BufferAttribute(F(lay),2));
+ g.setAttribute('aCrack',new THREE.BufferAttribute(F(ck),1));g.setAttribute('aRock',new THREE.BufferAttribute(F(rk),1));g.setAttribute('aOcc',new THREE.BufferAttribute(F(oc),1));g.setAttribute('aSun',new THREE.BufferAttribute(F(sn),1));g.setAttribute('aLay',new THREE.BufferAttribute(F(lay),2));g.setAttribute('aPave',new THREE.BufferAttribute(F(pv),1));
  g.setIndex(new THREE.BufferAttribute(n>65535?new Uint32Array(idx):new Uint16Array(idx),1));g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);
  // the drawn height: the triangles of the cell under (x,z), by barycentric test (NaN off the map)
@@ -330,7 +370,26 @@ const GROUND=(function(){const t0=performance.now(),N=GRID.N,S=GRID.S,cs=GRID.cs
 // THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
 // directions over the ground square (256 texels a side, ~29 m), so at a low sun the buttes, the gorge's walls and the Abyss's rim
 // throw their shadows across the desert and the gorge's floor sees less sky; the carve below takes it with the ground's hook
-const GROUND_HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[-GRID.S/2,-GRID.S/2,GRID.S/2,GRID.S/2],n:256,h:terrainH});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
+// THE FAR COUNTRY (core/terrain 44, KFAR; the final rebuild 2026-10-27, the universal set; ?far=0 for none): the ground's own closure carried
+// past the painted square to 14.5 km, so the Inner Wall's ramp runs on into the west, the trackless dunes north and south, and the Abyss's
+// floor 720 m down in the east, in the paint's colours read from afar (bluer and paler with distance); the square's edge sinks 20 m under the
+// ground mesh so the two never fight. The shared sky's ridges stay behind it (the Wall's ranges, the Abyss's far side)
+const FAR=(function(){if(new URLSearchParams(location.search).get('far')==='0'||typeof KFAR==='undefined')return null;
+ const S0=GRID.S/2,L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+ const C={red:L([168,90,66]),red2:L([136,72,52]),sand:L([220,160,112]),mtn:L([122,106,94]),bad:L([184,104,63]),cliff:L([90,58,48]),floor:L([150,104,80]),far:L([168,160,158])};
+ const G=KFAR.grid({lines:KFAR.lines({cell:80,inner:S0+20,out:14500,grow:1.03}),dense:true,
+  h:(x,z)=>Math.abs(x)<S0&&Math.abs(z)<S0?terrainH(x,z)-20:terrainH0(x,z,false),
+  skip:(x0,z0,x1,z1)=>x0>-S0+100&&x1<S0-100&&z0>-S0+100&&z1<S0-100,   /* none under the painted ground */
+  color:(x,z,y,q)=>{const n=fbm(x*.0021,z*.0021,301,2)-.5;let c=mixC(C.red,C.red2,clamp(.5+n*1.8,0,1));
+   c=mixC(c,C.bad,badK(x,z)*.6);c=mixC(c,C.sand,duneK(x,z));c=mixC(c,C.mtn,smooth(.08,.5,clamp(mtnH(x,z)/900,0,1))*.9);
+   const ab=abyssK(x,z);c=mixC(c,C.cliff,ab*smooth(-80,-500,y)*smooth(-700,-600,y));c=mixC(c,C.floor,smooth(-640,-700,y)*ab);
+   return mixC(c,C.far,.25*smooth(5000,13000,q.r));}});
+ const mat=new THREE.MeshLambertMaterial({vertexColors:true});mat.userData.farField=true;mat.customProgramCacheKey=()=>'sedesert-far';
+ const mesh=new THREE.Mesh(KFAR.geometry(G),mat);mesh.userData.host=true;mesh.userData.farField=true;mesh.userData.probeSkip=true;mesh.frustumCulled=false;
+ mesh.userData.inspectLabel='The far country (the Inner Wall\'s ramp, the dunes, the Abyss floor beyond the map)';scene.add(mesh);
+ return{mesh,mat,G,tris:G.count.tris};})();
+const GROUND_HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[-GRID.S/2,-GRID.S/2,GRID.S/2,GRID.S/2],n:256,h:terrainH,
+  far:FAR?{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}:undefined});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
 KHORIZON.shade(MAT_GROUND,GROUND_HZ);
 const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_CARVE.customProgramCacheKey=()=>'sedesert-carve';
 const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{sun:SUNV,gridNormals:true});   /* gridNormals: the normals from the sampled grid, not from terrainBase (core/terrain 36, 2026-10-25) */

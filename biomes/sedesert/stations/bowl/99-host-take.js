@@ -30,11 +30,13 @@ const VIEWS={
 };
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88; the final rebuild): each chunk mesh by its range */
 KHOST.take({build:'sedesert-bowl',title:'Krator biome — the Bowl (the eastern desert, station 2)',
  hint:'The Bowl: the south shore of the abyssal salt lake at the Bowl river 2\'s delta, 990 m under the sea (1.83 atm): the banded shallows, the ochre rim, the salt flat, the delta, the halophytes, the kaluts',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:SKY_HOUR0},draw:(s,c,dt)=>HEAT.render(dt),   /* the heat pass: the shared sky, the world, the shimmer (86) */
  clampCam(cp){const g=Math.max(terrainH(cp.x,cp.z),LAKE.level)+1.6;if(cp.y<g)cp.y=g;},
+ controls:[AIR_CONTROL],   /* the air: calm or a dust storm (89x-host-air.js) */
  inspect:describe,stats:()=>'inst '+window._instances+(HEAT.active?'\nheat '+HEAT.U.uK.value.toFixed(2):''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'far country':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

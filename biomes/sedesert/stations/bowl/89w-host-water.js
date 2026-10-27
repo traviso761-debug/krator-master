@@ -41,6 +41,27 @@ LAKE_WATER=WATER.open({name:'The Bowl lake',level:LAKE.level,swell:[[.012,26,160
 LAKE_DRAW=WATER.draw(LAKE_WATER,{transparent:true,renderOrder:1,roughness:.1,metalness:.05,envMapIntensity:.55,surf:false,ramp:[.3,5],
  shallow:lin(0x8ac4bc),deep:lin(0x2a8a8e)});
 LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
+// THE BRINE (core/water ext/54, the final rebuild 2026-10-27; BACKPORT.md sedesert's row): the lake is recorded as a brine for the export and
+// Godot (WATER.withLook: its ramp, clarity and roughness as data); the page keeps drawing its own banded shallows (the brine's stock ramp is a
+// red-brown deep, not the Bowl's teal: the bands are this lake's look)
+if(WATER.withLook)WATER.withLook(LAKE_WATER,'brine');
+// THE SHORE PAN (WATER.pan, ext/54/54b; ?pan=0 none): the salt crust on the strip the lake last left, up to two decimetres over the water:
+// white polygons of 3 m with buff cracks; when it rains the cracks darken and the cells flood one by one to a film of brine (W.wet). The
+// record is core/water's (the export carries it); it is DRAWN ON THE GROUND (the pan's own GLSL, WATER.panGLSL, in the Bowl's ground shader,
+// weighted by the ground's height over the lake), not as drawPan's flat sheet: a sheet over a shore that rises 0.6 m in 90 m fought the
+// ground along the whole waterline (the owner, 2026-10-27). Procedural: no sampler (the ground is at 15 of 16)
+var SHORE_PAN=null;
+if(!STATION.noLake&&WATER.pan&&WATER.panGLSL&&STATION.pan!==false&&new URLSearchParams(location.search).get('pan')!=='0'){
+ const lv=LAKE.level+.18,poly=[];for(let x=LAKE_BOX[0];x<=LAKE_BOX[2];x+=60)poly.push([x,zS(x)+2]);
+ for(let x=LAKE_BOX[2];x>=LAKE_BOX[0];x-=60)poly.push([x,zS(x)+260]);
+ const P=WATER.pan({name:'The shore pan (salt crust)',poly,level:lv,cell:3,colours:{salt:'#f0ebe2',crack:'#bca88c',damp:.7,brine:'#7ab8ae'}});
+ const U={uPanWet:{value:P.wetNow()}};TICKS.push(()=>{U.uPanWet.value=P.wetNow();});
+ const prev=MAT_GROUND.onBeforeCompile,pk=MAT_GROUND.customProgramCacheKey.bind(MAT_GROUND),CH=WATER.panGLSL(P);
+ MAT_GROUND.onBeforeCompile=function(sh,r){prev.call(this,sh,r);Object.assign(sh.uniforms,U);
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uPanWet;\n'+CH)
+   .replace('#include <color_fragment>','#include <color_fragment>\n{float pw=smoothstep('+(lv+.02).toFixed(3)+','+(lv-.1).toFixed(3)+',vGWP.y)*smoothstep('+(LAKE.level-.04).toFixed(3)+','+(LAKE.level+.03).toFixed(3)+',vGWP.y);'+
+    'if(pw>0.0){vec4 pn=wtrPan(vGWP.xz,uPanWet);diffuseColor.rgb=mix(diffuseColor.rgb,pn.rgb,pw*0.85);}}');};
+ MAT_GROUND.customProgramCacheKey=()=>pk()+'-pan';MAT_GROUND.needsUpdate=true;SHORE_PAN=P;}
 // the far lake: flat, a decimetre under the station's, only where the shore formula says water and off the station's box
 var FAR_BOX=[-60000,-60000,60000,60000];
 FAR_LAKE=WATER.open({name:'The Bowl lake (far)',level:LAKE.level-.1,swell:[],field:.02,bounds:FAR_BOX,
