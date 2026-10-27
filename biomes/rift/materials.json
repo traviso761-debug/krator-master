@@ -104,7 +104,8 @@
     "keep": 0.0,
     "mean": 0.669
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "needle": {
    "lib": "card.pine",
@@ -116,7 +117,8 @@
     "keep": 0.0,
     "mean": 0.636
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "dragon": {
    "lib": "card.sword",
@@ -146,7 +148,8 @@
     "keep": 0.0,
     "mean": 0.676
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "bigfrond": {
    "lib": "card.treefern",
@@ -160,11 +163,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.024,
+    0.112,
+    0.978,
+    0.993
+   ],
+   "base": "bottom"
   },
   "cycfrond": {
    "lib": "card.fern",
@@ -178,11 +182,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "frond": {
    "lib": "card.fern",
@@ -196,11 +201,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "fan": {
    "lib": "card.palm",
@@ -250,10 +256,10 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.329,
+    0.329,
+    0.667,
+    0.671
    ]
   },
   "samphire": {
@@ -302,13 +308,7 @@
     "keep": 0.0,
     "mean": 0.65
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "under": {
    "lib": "card.jungle.clump.0",
@@ -320,7 +320,8 @@
     "keep": 0.0,
     "mean": 0.694
    },
-   "size": 512
+   "size": 512,
+   "base": "bottom"
   },
   "beard": {
    "lib": "card.beard",
@@ -338,7 +339,8 @@
     0.34,
     0.66,
     0.66
-   ]
+   ],
+   "base": "top"
   },
   "hang": {
    "lib": "card.vine.hanging.0",
@@ -352,11 +354,12 @@
    },
    "size": 512,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.177,
+    0.005,
+    0.819,
+    0.956
+   ],
+   "base": "top"
   },
   "moss": {
    "lib": "card.moss",
@@ -368,13 +371,7 @@
     "keep": 0.0,
     "mean": 0.647
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "broad": {
    "lib": "card.broadleaf",
@@ -400,7 +397,13 @@
    },
    "metal": 0,
    "normalScale": 1.0,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.03,
+    0.028,
+    0.505,
+    0.95
+   ]
   },
   "groundDetail": {
    "lib": "ground.gravelly_sand",
@@ -533,13 +536,14 @@
     "mean": 0.694
    },
    "size": 512,
+   "own": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.22,
+    0.003,
+    0.778,
+    0.958
    ],
-   "own": true
+   "base": "top"
   },
   "fungus": {
    "lib": "organic.fungus.bracket",
@@ -567,7 +571,8 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "croton": {
    "lib": "card.leaf.redvein",
@@ -581,7 +586,8 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "ground.salt": {
    "lib": "ground.ground093c",
@@ -610,6 +616,53 @@
    "roughLift": 0.35,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "broadcloud": {
+   "lib": "card.broadleaf.cloud",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "sheet": "geometry"
+  },
+  "gshead": {
+   "lib": "card.strap.pandan",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "size": 512,
+   "own": true,
+   "cell": [
+    0.421,
+    0.335,
+    0.501,
+    0.667
+   ],
+   "base": "bottom"
   }
  }
 }

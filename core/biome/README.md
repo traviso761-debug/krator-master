@@ -97,6 +97,10 @@ indexed buckets). Test: `test-lod.js`.
 
 ## A library card on its geometry's axes (`20-core-kit.js`, `30-core-foliage.js`; opt-in per slot, 2026-10-27)
 
+**The project standard for hanging cards** (the owner, 2026-10-27, on the Rift's beard moss: "make it the project standard"): a
+hanging card (beard moss, hanging growth, lianas, curtains) is one continuous strand, its library plant spanning the whole
+ribbon once from its `"base": "top"`, never the picture stacked once a segment in square-cut bands. Give every hanging slot a base.
+
 `BIO.geo.frond` and `BIO.geo.ribbon` draw their texture once a segment, down v from the stem or hung end at v 0; `BIO.geo.hang`
 hangs from v 0; the clump's tripod shows its image upside down (v 0 at each quad's low edge). A library card that is one whole
 plant broke on all of them: the Rift's fern fronds were four small upside-down ferns end to end, floating loose of the stem

@@ -44,6 +44,12 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # Water joined the profile 2026-10-20 (the lake and the streams, core/water; see KNOWN_ISSUES.md).
 EXPORT_BOX = [760, 1700, 1060, 2000]   # 2026-10-20: moved to the east stream's mouth on the algal lake so the box holds core/water's surfaces (the lake, the stream); was [300, 0, 600, 300]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
+# the stations (PLAN-STATIONS.md): each page's own box and profile, by its file name (dist/rift-<station>.html)
+STATION_EXPORT = {
+    'rift-jungle.html': ([-1250, -1600, -950, -1300], EXPORT_PROFILE),   # the river's mouth on the sea: the jungle's trees, the sea and the river
+    'rift-savannah.html': ([-300, 900, 0, 1200], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the densest 300 m cell of big heroes (44 trees, 2026-10-27); no standing water (89w)
+    'rift-highland.html': ([-900, -480, -600, -180], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the face in the cloud core ('In the cloud'); no water until the ravines' streams (KNOWN_ISSUES)
+}
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -188,11 +194,12 @@ async def run(a):
                              "   OVER" if v["over"] else ""))
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                box, prof0 = STATION_EXPORT.get(name, (EXPORT_BOX, EXPORT_PROFILE))
+                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else prof0
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

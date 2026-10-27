@@ -4,9 +4,69 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
-- [ ] **The Rift is to be rebuilt as three stations** (the owner, 2026-10-27): the savannah, the jungle and the cloud forest on its
-      sky islands. `PLAN-STATIONS.md` is the plan, waiting for the owner's answers; the single-page rebuild is parked on
-      `claude/rift-single-page-experiment` (unmerged). Until the stations land, the items below are the old page's.
+- [ ] **The Rift is to be rebuilt as four stations** (the owner, 2026-10-27): the savannah, the jungle, the cloud forest on its
+      sky islands and Cube's plateau. `PLAN-STATIONS.md` is the plan, answered by the owner (the gallery question left); the single-page rebuild is parked on
+      `claude/rift-single-page-experiment` (its parts now taken into the stations). Until the stations land, the items below are the old page's.
+
+- [ ] **Station 1, the savannah** (`python3 build.py --station savannah`, `dist/rift-savannah.html`; 2026-10-27, a first cut): the model's
+      px 369,1166, the apron and the plain, tors, washes, a dry salt pan; the apron thinned (`STATION_PAGE.thin`); the abyssal savannah's
+      thatch grass, ember lilies and burn mosaic read in place (`stations/savannah/read.json`, `87-host-cousins.js`).
+      2026-10-27, the known issues of the first cut, done: **the burns in the ground paint** (`burnGround`: the paint's canvas,
+      painted over after the abyssal savannah's fragments load, char on a fresh burn and the green flush on a young one, smoothed,
+      never read back) and **in the Rift's own floor** (`RIFT.burnAt`: its savannah grass gone on a fresh burn, green on a young one);
+      **the floor's near and mid bands over the whole page** (`RIFT.wholePage`: they were boxed to the old page's spine, so most of the
+      station had only the far band); **the far country drawn from the model** (`89f-host-far.js` on core/terrain's KFAR, the heights
+      baked by `stations/bake_far.py`: the central island rising +3.5 km 26 km west, the terminal sea north-east as flat water, to
+      50 km). The rough edges, 2026-10-27, done: **the island's shape** (ridged spurs and gullies between the model's cells, deeper with
+      height, none on the floor, and KFAR's crest pass); **the sky at the seam** (a gully running off the page looked up under the far
+      field: the seam now takes the lowest ground along the edge, so every cut opens onto far ground); **the far country's colour** (the
+      shared sky's fog colours a pixel with the sky toward it over its own distance, which KFAR.fogThin cannot thin: it turned the
+      island the gold of the horizon haze; the far field now carries its haze in its vertex colours, fog off); **sharper burns** (a 9 m
+      burn grid). `verify.py --assert --all-views` passes on the GPU (Intel Arc 140T; its own export box, the densest cell of trees;
+      the blade pear's pads named as food not drawn as fruit): 10 views, 10-237 calls, 0.5-6.9 M triangles drawn, 22.3 M held.
+      Still open: the far field ignores the weather's fog (it stays clear in a fog or a storm) until the shared fog can be thinned
+      per material; the ground paint is 4.6 m a pixel, so a burn's edge is a few metres soft.
+- [ ] **Station 2, the jungle** (`python3 build.py --station jungle`, `dist/rift-jungle.html`; 2026-10-27, a first cut): the model's
+      px 418,1251, the Lizardmen river 3's mouth on the terminal sea (y 0 at the sea's -2,600 m): the shallow yellow sea, a coastal
+      lowland, a two-step escarpment (the `rift` strata on its faces), the jungle plain rising toward Cube's plateau; the river across
+      the plain, over the cliffs in two falls (158 m and 87 m, into plunge pools), across the lowland with a delta channel
+      (`stations/jungle/89w-host-water.js`); the old page's Girder tower on the plain; the far country from the model (`89f-host-far.js`,
+      now shared in src/). New shared hooks: `MAP_WATERH` and `MAP_DRY` (a map's own water level and dry-ground mask: nothing
+      roots in the river or the pools, the kit's shore logic sees the river's level). Open: the views are worked out from the map
+      and some want a look (the jungle's crowns hide much at 40 m); the delta channel is one;
+      The falls (2026-10-27, with the water session's core/water fixes, branch claude/rift-falls-water merged): each lip at its cliff's
+      edge (found from the ground), the curtain down the face (154 m and 90 m) into a pool at the cliff's toe, a basin carved under its
+      water (45m POOLS); the river in a channel with banks (its ribbon's edges buried, where the old carve left them floating as slabs),
+      its bed never rising toward the sea (it cuts down through the plain's rolls instead of damming a pool behind each); the delta on
+      the river's bed. Measured: of the ribbon's edge points, plain 0 / 988 over the ground, bench 1 / 38, lowland 5 / 96, delta 14 / 76
+      (at the fork, where its ribbon crosses the river's channel); each pool's rim open only where the river runs in and out.
+      GPU verify OK at 35.7 M held (ceiling 40 M), 197 calls (Arc 140T); the old page (`dist/rift.html`, still built by plain `build.py`) retires when
+      the gallery switches to the stations (the owner's call on the publish).
+- [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
+      island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,
+      the dry lee; the cloud as the height fog's band at 1.42-1.95 km; the families as `BIO.kin` cousins of the sketch's species with
+      the island's colours and sizes (`87-host-families.js`: mantle palm, drip lobe; comb frill; crown barrel; table pine, blade fan),
+      planted by band; the sketch's species they replace, and the savannah's and the rims', thinned out (`STATION_PAGE.thin`); the
+      old stock (cloud parasol, beard tree, tree-fern, lantern tree) under them.
+      The quality and diversity pass (2026-10-27): band A (the cloud foot) fell through every zone, so it drew the valley's savannah
+      gold and no understory; the cloud's base now reaches it (`cloudK`), so it is cloud forest, litter and moss, the old stock at a .3
+      share under the mantle palms. The floor's own species are off the island (trumpet, pagoda, curly shrub, prism bush, thornwhip),
+      the giant groundsel at .4, the lantern tree at .6. The hoodlet (a kin of the cloud bell palm) stands in the face's gullies;
+      the lee's pines are denser and its ground is summer-dry grass and earth (`MAP_PAINT`, a new opt-in station hook in the shared
+      paint). The LOD origins sit ahead of the views' cameras (their foregrounds were stand-ins and impostors). Held about 33 M
+      (trees 24.7 M, floor 6.2 M, far 1.1 M; ceilings 40 M and 30 M a pass); 76 k trees, 2.35 M instances, a 33 s build on the Arc 140T.
+      Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
+      cushion, the night rosette, the glass pole, fog thread, crest heath) are builder work still to do (the hoodlet is a kin
+      stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
+      downstream in a .9 m channel; white water by slope, no free-falling curtains: the risers are 31-41 degrees), their floors
+      painted dark wet stone and moss; the
+      ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
+      east islands' records; not yet verified on the GPU.
+- [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
+      different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
+      grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
+      `test-leafset.js`); `check_cells.py` reads uneven sheets too. With every library card pulled, it finds one more uneven sheet
+      drawn whole: `card.frond.coconut` in the Throne and the crops kit (theirs to fix at their turn).
 
 - [ ] **The sky's landmarks (SKY-PLAN.md 4, layer 8; 2026-10-26).** The shared sky now draws the far salt lakes east and west (preset.landmarks in 89-host-sky.js), where the notes above say they were not drawn. Built but not yet verified on the GPU page by page: that is folded into the biome rebuild's final rebuild and verify.
 
@@ -43,9 +103,14 @@ Read before changing anything here. `build.py` prints the open count.
       Stays open 2026-10-26: a core change. The chunking and the range test are core/biome's (BIO.LOD, BIO._lodKey, BIO.lodTick); a finer
       hero chunk only for the near range (say 400 m sub-chunks merged into the 1.2 km chunk past it) or a dithered cross-fade over the last
       15% of the range in the shared leaf and bark shaders would answer both halves; neither belongs in the kit.
-- [ ] The highlands (cloud forest, ridgetop) are planted from this kit's fields and could still
+      2026-10-27: answered on every page by the core's graphic-load scheme, now taken (45s: `BIO.LOD.merge`, `minTris`, the dithered
+      cross-fade `BIO.LOD.fade` .15 (no pop at the switch) and the per-instance cull `BIO.LOD.cull` (an instance stops at its own
+      range, not its chunk's)); the stations' LOD origins are a lattice, not a spine. To close when station 1's GPU numbers are in PERF.md.
+- [x] The highlands (cloud forest, ridgetop) are planted from this kit's fields and could still
       become their own kit; the ridgetop has four species of its own and a garrigue floor.
       Stays open 2026-10-26: a design call for the owner (a new kit), not a defect of this page.
+      2026-10-27, decided (the owner): the rims are `biomes/riftrim`'s; the Rift's highlands are its sky islands, station 3 below
+      riftrim's bands, with families that are riftrim's cousins (`PLAN-STATIONS.md` sections 4 and 5).
 - [ ] The zone weights (RIFT.zones) are thresholds on the five fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
       Stays open 2026-10-26: a note for a host with other fields, not a defect here; retuning the bands would move every tree on this page.
@@ -53,6 +118,8 @@ Read before changing anything here. `build.py` prints the open count.
       painted on the sky; a world that already draws its horizon as geometry does not
       need the overlay dome (a second 4096x2048 canvas, ~16 MB of texture).
       Stays open 2026-10-26: the sky fragments are being moved to core/atmos (the shared sky rollout); left alone.
+      2026-10-27: the painted dome is gone (the shared sky); the stations draw their own far country from the scale model
+      (KFAR, station 1 first). The old page keeps the sky's ridges until it retires with station 2.
 - [ ] The streams have no cataracts and do not climb the ridge: they rise at its south
       foot. The savannah's dry wash is a shallow gravel bed with no bank flora of its own.
       Stays open 2026-10-25: a design task (the ground has no drop for a WATER.fall; none invented).
@@ -86,6 +153,9 @@ Read before changing anything here. `build.py` prints the open count.
       less (IRID_LITE .25 against IRID_FAR .4); the far trees keep their look. The shift is small (about 1.6% of the From afar shot's pixels
       moved, a little less blue). Stays open: the faceting. 80-triangle blobs for the 38,611 stand-ins would add ~2.3-2.8M HELD triangles,
       over the 27M ceiling (25.7M now); a cheaper round blob (or a normal-bent 20-triangle one) is the next try.
+      2026-10-27: the tall species' far trees and stand-ins are octahedral impostors now (core/biome 34: one quad each, baked from the
+      tree), not blobs; the small species keep their 20-triangle blobs. Open for the owner's eye: the impostors' light
+      (`BIO.impostorLook` gain 3.6, nhighlands' value, not yet measured on this kit; `?impgain=` to try others).
 - [x] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list. 2026-10-20: the host tower hands three shells ({geos, share}: floor plates 1, iron .6, core walls and rubble .4), so the plates no longer take the moss; one test tower is all the host builds (Girder itself is not changed).
 - [ ] No fauna yet.
 - [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), done 2026-10-06: every species carries a harvest tag

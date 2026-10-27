@@ -70,3 +70,5 @@ godot/data/spike/
 .verify-pass.json
 # nhighlands' wide spike tile (290 MB: biomes/nhighlands/PERF.md has the command that writes it)
 godot/data/world-nhighlands-wide/
+# the Rift jungle tile (biomes/rift/PERF.md: regenerate with tools/harness.py export)
+godot/data/world-rift-jungle/

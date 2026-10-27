@@ -137,6 +137,13 @@ decides the detail by distance from the spine (`lv`), and now the camera decides
   version, and the one pip installs will not find it on its own.
 - (inherited) Every bole lathe ends in a dome ring; bark colours are written a stop dark;
   a painted sky dome cannot stand in front of real geometry (the wall is painted twice).
+- A library card on a frond, ribbon or clump needs its slot's `cell` (the plant's tight box) and `base` (2026-10-27): the
+  frond and ribbon draw their texture once a segment and the clump upside down, so the library fern was four small
+  upside-down ferns end to end down every frond ("fern fronds floating loose round a trunk"), each vine four stacked vines,
+  the understorey bush on its head. core/biome now turns and spans a slot with a base; `tools/textures/check_cells.py
+  biomes/rift` and `card_probe.py biomes/rift` check it. The pale flat stars of station 3 were the giant groundsel's head
+  (B[14]: `G.rosette`, untextured by design, scaled to the 2-3 m crown): with the pack it is now `gshead`, the library's
+  pandan strap leaves on `G.rosetteUV` (52-library; procedural page unchanged).
 
 ## Next
 Fauna against this contract; the highlands as their own kit (cloud forest species, the

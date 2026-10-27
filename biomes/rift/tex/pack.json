@@ -174,6 +174,7 @@
    }
   },
   "beard": {
+   "base": "top",
    "breakup": null,
    "card": true,
    "cell": [
@@ -206,13 +207,14 @@
    }
   },
   "bigfrond": {
+   "base": "bottom",
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.024,
+    0.112,
+    0.978,
+    0.993
    ],
    "files": {
     "map": "bigfrond.albedo.webp"
@@ -240,6 +242,12 @@
   "bloom": {
    "breakup": null,
    "card": true,
+   "cell": [
+    0.03,
+    0.028,
+    0.505,
+    0.95
+   ],
    "files": {
     "map": "bloom.albedo.webp"
    },
@@ -289,6 +297,32 @@
     "sourceMean": 0.3268
    }
   },
+  "broadcloud": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "broadcloud.albedo.webp"
+   },
+   "lib": "card.broadleaf.cloud",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0bdb2cdfb60754dfa244d752677b6ca04df22577"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.3678
+   }
+  },
   "candle": {
    "breakup": null,
    "card": true,
@@ -324,12 +358,6 @@
   "clubmoss": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "clubmoss.albedo.webp"
    },
@@ -380,13 +408,14 @@
    }
   },
   "cycfrond": {
+   "base": "bottom",
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.089,
+    0.046,
+    0.911,
+    0.995
    ],
    "files": {
     "map": "cycfrond.albedo.webp"
@@ -508,13 +537,14 @@
    }
   },
   "frond": {
+   "base": "bottom",
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.089,
+    0.046,
+    0.911,
+    0.995
    ],
    "files": {
     "map": "frond.albedo.webp"
@@ -598,6 +628,34 @@
     "keep": 0.0,
     "mean": 0.688,
     "sourceMean": 0.5178
+   }
+  },
+  "ground.moss": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.moss.albedo.webp"
+   },
+   "lib": "ground.moss002",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "57b330b007e924316c17969a72280e2019e7c974",
+    "normal": "e3270d69eeffde5b7733d148b5a67c49a6469cb1",
+    "roughness": "c33e7b0ea414d71af876f760b48448a72f935e3d"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3530806867442411,
+    "sourceMean": 0.3531
    }
   },
   "ground.salt": {
@@ -712,14 +770,49 @@
     "sourceMean": 0.453
    }
   },
-  "hang": {
+  "gshead": {
+   "base": "bottom",
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.421,
+    0.335,
+    0.501,
+    0.667
+   ],
+   "files": {
+    "map": "gshead.albedo.webp"
+   },
+   "lib": "card.strap.pandan",
+   "metal": 0,
+   "normalScale": 1.0,
+   "own": true,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9fc848c211a459db3a3fb27aaaf327ab4bc7e346"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.66,
+    "sourceMean": 0.4869
+   }
+  },
+  "hang": {
+   "base": "top",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.177,
+    0.005,
+    0.819,
+    0.956
    ],
    "files": {
     "map": "hang.albedo.webp"
@@ -745,13 +838,14 @@
    }
   },
   "hang1": {
+   "base": "top",
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.22,
+    0.003,
+    0.778,
+    0.958
    ],
    "files": {
     "map": "hang1.albedo.webp"
@@ -832,12 +926,6 @@
   "moss": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "moss.albedo.webp"
    },
@@ -891,10 +979,10 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.329,
+    0.329,
+    0.667,
+    0.671
    ],
    "files": {
     "map": "reed.albedo.webp"
@@ -1100,6 +1188,7 @@
    }
   },
   "under": {
+   "base": "bottom",
    "breakup": null,
    "card": true,
    "files": {

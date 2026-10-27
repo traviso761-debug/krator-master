@@ -92,6 +92,38 @@ func _initialize() -> void:
 	var far := KratorWorld.lod_shown(leaf, Vector3(5000, 0, 5000))
 	ok(int(far[rows[0]["id"]]) == 0 and int(far[rows[1]["id"]]) == 0, "negative: 5 km out, the leaf node draws no row")
 	ok(KratorWorld._lod_uniforms(MeshInstance3D.new(), {"chunk": "0,0", "range": 1e9, "minRange": 1200.0}) == false, "negative: a stand-in (minRange > 0) keeps its node range alone")
+	# 3b. the rows submitted (krator/lod_prefix.gd): at every camera the leaf node's visible prefix is exactly the rows the rule keeps;
+	# the loose tufts are not in its list (the shader measures them per instance)
+	var P := w.get_node_or_null("LodPrefix") as KLodPrefix
+	var pbad := []
+	var in_list := {}
+	if P:
+		for n in P.nodes:
+			in_list[n[0]] = n
+	if P and in_list.has(leaf):
+		var ln: Array = in_list[leaf]
+		for c in X["cameras"]:
+			var cam := Vector3(float(c["cam"][0]), float(c["cam"][1]), float(c["cam"][2]))
+			var kept := 0
+			for v in KratorWorld.lod_shown(leaf, cam).values():
+				kept += int(v)
+			var pre := KLodPrefix.prefix(ln[3], ln[4], ln[5], KLodPrefix.box_distance(ln[1], ln[2], cam))
+			if pre != kept:
+				pbad.append("%s: prefix %d, the rule %d" % [cam, pre, kept])
+	ok(P != null and in_list.has(leaf) and not in_list.has(tuft) and pbad.is_empty() and int(lr.get("prefix_nodes", -1)) == P.nodes.size(),
+		"the submitted prefix is the rows the rule keeps, at 5 cameras (%s)" % ("; ".join(PackedStringArray(pbad)) if pbad.size() else "the leaf node listed, the tufts not"))
+	if P and in_list.has(leaf):
+		var ln2: Array = in_list[leaf]
+		var rev := Vector4(ln2[3].y, ln2[3].x, ln2[3].z, ln2[3].w)   # the ranges shortest first: not a prefix
+		var wrong := 0
+		for c in X["cameras"]:
+			var cam2 := Vector3(float(c["cam"][0]), float(c["cam"][1]), float(c["cam"][2]))
+			var kept2 := 0
+			for v in KratorWorld.lod_shown(leaf, cam2).values():
+				kept2 += int(v)
+			if KLodPrefix.prefix(rev, ln2[4], ln2[5], KLodPrefix.box_distance(ln2[1], ln2[2], cam2)) != kept2:
+				wrong += 1
+		ok(wrong > 0, "negative: ranges taken shortest first disagree with the rule (%d of 5 cameras)" % wrong)
 	var bb := 0
 	for b in bnodes:
 		var by: Vector4 = b.get_instance_shader_parameter("lod_y")

@@ -105,6 +105,21 @@
       "autoPort": false
     },
     {
+      "name": "rift",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8861",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "biomes/rift/dist"
+      ],
+      "port": 8861,
+      "autoPort": false
+    },
+    {
       "name": "swbay",
       "runtimeExecutable": "python",
       "runtimeArgs": [

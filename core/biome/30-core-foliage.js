@@ -170,12 +170,23 @@ BIO.geo._make=function(pos,nor,uv,col){const T=BIO.host.THREE,g=new T.BufferGeom
 // their stem). The material keeps the whole sheet (no texture cell): the owner, 2026-10-26, saw crown cards drawing all nine
 // sprigs of a sheet as a grid; one cell a card made each sprig three times too large, three cells at .6 keeps the card's cover.
 // The uv is the unflipped library convention (v down the sheet, as BIO.libSwap's cells); o.flipY for a CanvasTexture.
-BIO.geo.cells=function(geo,o){o=o||{};const n=o.n==null?3:o.n,pick=o.pick||[0,Math.floor(n*n/2),n*n-1],sc=o.scale==null?.6:o.scale,ins=o.inset==null?.01:o.inset,
- g=geo.index?geo.toNonIndexed():geo,P=g.attributes.position.array,U=g.attributes.uv.array,nq=Math.floor(P.length/18);
+// o.rects (2026-10-27, opt-in): the cells as boxes of the sheet, [[u0, v0, u1, v1], ...] in the same convention (v down), for a
+// sheet whose plants are not on an even grid (the Rift's croton: three leaves 3 across at uneven widths); o.pick then indexes
+// the boxes (default each in turn). With rects, o.aspect (default true) narrows or widens each quad across its own u to its box's
+// width over height, so a tall leaf is not stretched square. Without rects, everything is as before.
+BIO.geo.cells=function(geo,o){o=o||{};const R=o.rects||null,n=o.n==null?3:o.n,pick=o.pick||(R?R.map((r,i)=>i):[0,Math.floor(n*n/2),n*n-1]),sc=o.scale==null?.6:o.scale,ins=o.inset==null?.01:o.inset,
+ g=geo.index?geo.toNonIndexed():geo,P=g.attributes.position.array,U=g.attributes.uv.array,nq=Math.floor(P.length/18),asp=R&&o.aspect!==false;
  for(let q=0;q<nq;q++){const c=pick[q%pick.length],cx=c%n,cy=Math.floor(c/n),o0=q*18;let mx=0,my=0,mz=0;
+  const r=R?R[c]:null,x0=r?r[0]:cx/n,y0=r?r[1]:cy/n,cw=r?r[2]-r[0]:1/n,ch=r?r[3]-r[1]:1/n,iu=r?ins*cw*n:ins,iv=r?ins*ch*n:ins;
   if(o.about!=='origin'){for(let v=0;v<6;v++){mx+=P[o0+v*3];my+=P[o0+v*3+1];mz+=P[o0+v*3+2];}mx/=6;my/=6;mz/=6;}
-  for(let v=0;v<6;v++){const i=o0+v*3,j=q*12+v*2;P[i]=mx+(P[i]-mx)*sc;P[i+1]=my+(P[i+1]-my)*sc;P[i+2]=mz+(P[i+2]-mz)*sc;
-   const u=U[j],w=o.flipY?1-U[j+1]:U[j+1],a=cx/n+ins+u*(1/n-2*ins),b=cy/n+ins+w*(1/n-2*ins);U[j]=a;U[j+1]=o.flipY?1-b:b;}}
+  /* the quad's own u axis (position per unit u), from two of its corners on one v: to set its width to the box's aspect */
+  let eu=null;if(asp){for(let a=0;a<6&&!eu;a++)for(let b=0;b<6;b++){const du=U[q*12+b*2]-U[q*12+a*2];if(Math.abs(U[q*12+b*2+1]-U[q*12+a*2+1])<1e-9&&Math.abs(du)>1e-6){
+   eu=[(P[o0+b*3]-P[o0+a*3])/du,(P[o0+b*3+1]-P[o0+a*3+1])/du,(P[o0+b*3+2]-P[o0+a*3+2])/du];break;}}}
+  const ka=asp&&eu?cw/ch-1:0;
+  for(let v=0;v<6;v++){const i=o0+v*3,j=q*12+v*2,u=U[j];
+   if(ka){const t=(u-.5)*ka;P[i]+=eu[0]*t;P[i+1]+=eu[1]*t;P[i+2]+=eu[2]*t;}
+   P[i]=mx+(P[i]-mx)*sc;P[i+1]=my+(P[i+1]-my)*sc;P[i+2]=mz+(P[i+2]-mz)*sc;
+   const w=o.flipY?1-U[j+1]:U[j+1],a=x0+iu+u*(cw-2*iu),b=y0+iv+w*(ch-2*iv);U[j]=a;U[j+1]=o.flipY?1-b:b;}}
  g.attributes.position.needsUpdate=true;g.attributes.uv.needsUpdate=true;
  g.userData.card=g.userData.card&&g.userData.card.kind==='clump'?{kind:'clump'}:null;return g;};   /* its uv are cells of a sheet now: never turned (a clump's slot may still hold its sprigs by their stems) */
 // hanging raceme / strand: two crossed quads, local y 0 (hung) .. -1

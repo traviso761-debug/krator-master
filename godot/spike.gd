@@ -132,7 +132,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "world-nhighlands", "world-nhighlands-wide":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
+		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "world-nhighlands", "world-nhighlands-wide", "world-rift-jungle":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
 			var wv := KratorWorld.build(dir + "world.json")
 			world.add_child(wv)
 			report = wv.get_meta("report")

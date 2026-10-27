@@ -11,7 +11,7 @@ function hostTowerLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib
 // and hands the geometries over; the biome samples their faces itself.
 // Host-only. No plant is placed in this file.
 function buildTestTower(){
- const TX=-620,TZ=1120,HALF=24,N=30,FH=5,SLAB=1,COLS=[-HALF+1.6,-8,8,HALF-1.6];
+ const TX=STATION_PAGE.tower?STATION_PAGE.tower[0]:-620,TZ=STATION_PAGE.tower?STATION_PAGE.tower[1]:1120,HALF=24,N=30,FH=5,SLAB=1,COLS=[-HALF+1.6,-8,8,HALF-1.6];
  const y0=terrainH(TX,TZ);
  const conc=[],rust=[],wall=[];
  const box=(list,x,y,z,w,h,d,rot)=>{const g=new THREE.BoxGeometry(w,h,d);if(rot){g.rotateX(rot[0]||0);g.rotateY(rot[1]||0);g.rotateZ(rot[2]||0);}g.translate(x,y+h/2,z);list.push(g);};

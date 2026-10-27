@@ -139,6 +139,10 @@ static func build(path: String) -> Node3D:
 		if it["dynamic"] and str((mrec.get("options") if mrec.get("options") is Dictionary else {}).get("mode", "orbit")) == "walk":
 			report["gaps"]["fauna walk"] = "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping"
 	report["lod_rows"] = _lod_rows(items, d["items"])
+	# the rows past their range are not submitted at all (krator/lod_prefix.gd: each row-culled node's visible_instance_count, every
+	# frame); KRATOR_ROWPREFIX=0 for the shader's cull alone (an A/B)
+	if OS.get_environment("KRATOR_ROWPREFIX") != "0":
+		report["lod_rows"]["prefix_nodes"] = KLodPrefix.attach(root, items).nodes.size()
 	var buckets := Node3D.new()
 	buckets.name = "Buckets"
 	root.add_child(buckets)

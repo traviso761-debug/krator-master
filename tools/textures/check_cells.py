@@ -111,6 +111,17 @@ def grid(lib):
         if nc != nr:
             k = max(nc, nr)
             g.append(([(i / k, (i + 1) / k) for i in range(k)], [(i / k, (i + 1) / k) for i in range(k)]))
+
+        def uneven(cover):
+            """the plants along an axis when they are not on an even grid (2026-10-27: the Rift's croton sheet, three leaves 3
+            across at uneven widths, passed as one plant): runs of cover separated by near-empty bands (under 15% of the mean, at
+            least 4 samples wide), each run at least 15% of the axis; read only where the even grid saw one plant"""
+            mean = sum(cover) / len(cover) or 1
+            rs = [r for r in runs([c > .15 * mean for c in cover], 4) if r[1] - r[0] >= .15 * n]
+            return [(a / n, b / n) for a, b in rs]
+        uc, ur = (uneven(col), uneven(row)) if nc == 1 and nr == 1 else ([], [])
+        if len(uc) > 1 or len(ur) > 1:
+            g.append((uc or [(0, 1)], ur or [(0, 1)]))
     except Exception:
         g = None
     _cache[lib] = g
