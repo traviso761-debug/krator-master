@@ -10,7 +10,7 @@ const rd=f=>fs.readFileSync(f,'utf8');
 const W_DIR=FROM||path.join(ROOT,'core/water');
 const files=[path.join(ROOT,'core/atmos/89-atmos-0-core.js'),path.join(ROOT,'core/atmos/89-atmos-0p-presets.js'),path.join(ROOT,'core/atmos/89-atmos-a-waves.js'),
  ...['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'].map(f=>path.join(W_DIR,f))];
-const EXT=FROM?[]:['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-shore.js'].map(f=>path.join(ROOT,'core/water/ext',f)).filter(f=>fs.existsSync(f));
+const EXT=FROM?[]:['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-shore.js','59-core-water-network.js','59b-core-water-network-draw.js'].map(f=>path.join(ROOT,'core/water/ext',f)).filter(f=>fs.existsSync(f));
 global.window=global;
 eval(files.concat(EXT).map(rd).join('\n')+';global.ATMOS=ATMOS;global.WATER=WATER;');
 const A=ATMOS,W=WATER;
