@@ -156,18 +156,95 @@ ok('load refuses what is not a krator-strata record',throws(()=>K.load({format:'
  ok('shade: the GLSL keeps today\'s entry points (strataColor, the varyings) and the raw switch',/vec3 strataColor\(vec3 wp,vec3 wn\)/.test(M.parsFragment)&&/KSTRATA_RAW/.test(M.parsFragment)&&M.parsVertex==='varying vec3 vSWP;varying vec3 vSWN;',
    /uSCol/.test(M.parsFragment));}
 
+// ---- STRATA-PLAN section 2's other four recipes
+const noRep=S=>S.formations.every(f=>(f.beds||[]).every((b,i,B)=>i===0||b[2]!==B[i-1][2]));
+ok('badland and danxia never lay a kind on itself (noRepeat)',noRep(big('badland'))&&noRep(big('danxia')),noRep(big('canyon')));
+const Bd=big('badland');
+ok('badland: thin soft clays in many colours, the rare teal',(()=>{const ks=new Set(Bd.beds.map(b=>b.kind));const th=Bd.beds.reduce((a,b)=>a+b.th,0)/Bd.beds.length;
+  return ks.size>=9&&ks.has('teal')&&th<2&&Bd.kinds.every(k=>k.hard<=.3);})(),Bd.kinds.some(k=>k.hard>.5));
+const Rf=K.create({seed:4,recipe:'rift',range:[0,2000]});
+ok('rift: basement at the foot, then fan, red beds, lake (gypsum and salt soft, stromatolites hard), volcanics on top',
+  Rf.formations.map(f=>f.recipe.slice(5)).join()==='basement,fan,redbeds,lake,volcanic'&&Rf.kinds.find(k=>k.kind==='gypsum').hard<.15&&
+  Rf.kinds.find(k=>k.kind==='salt').hard<.15&&Rf.kinds.find(k=>k.kind==='stromatolite').hard>.7,Rf.formations[0].recipe==='rift-volcanic');
+const Tp=big('tepui');
+ok('tepui: thick hard grey, black and rust beds with black-green streaks (fx.varnishCol)',Tp.kinds.filter(k=>k.kind!=='parting').every(k=>k.hard>=.9&&k.varnish===1)&&
+  K.recipe('tepui').fx.varnishCol[1]>K.recipe('tepui').fx.varnishCol[0],Tp.kinds.some(k=>k.kind==='parting'&&k.hard>.5));
+
+// ---- lateral change
+const Lc=K.create(Object.assign({seed:9,recipe:'canyon',range:[0,600],lateral:{recipe:'danxia',dir:[1,0],at:[0,0],d0:-50,d1:50}},{dip:[0,0,0]}));
+const sides=(x)=>{const s=new Set();for(let y=10;y<590;y+=.7)s.add(Lc.at(x,y,3).side);return [...s].sort().join();};
+ok('lateral: the first stack before d0, the second past d1, both tonguing between',sides(-80)==='0'&&sides(80)==='1'&&sides(0)==='0,1',sides(-80)==='0,1');
+ok('lateral: the beds interfinger (at one place the side changes up the column, not once)',(()=>{let n=0,l=-1;for(let y=10;y<590;y+=.5){const s=Lc.at(10,y,3).side;if(l>=0&&s!==l)n++;l=s;}return n>4;})(),
+  (()=>{let n=0,l=-1;for(let y=10;y<590;y+=.5){const s=Lc.at(-80,y,3).side;if(l>=0&&s!==l)n++;l=s;}return n>4;})());
+const Ls=K.create({seed:9,recipe:'canyon',range:[0,600],lateral:{recipe:'canyon',dir:[1,0],d0:-50,d1:50}});
+ok('lateral: the second stack draws its own beds (the same recipe is not the same column)',Ls.lateral.beds[0].th!==Ls.beds[0].th,Ls.beds[0].th!==Ls.beds[0].th);
+ok('lateral: d1 must pass d0',throws(()=>K.create({lateral:{recipe:'loess',dir:[1,0],d0:5,d1:5}})),throws(()=>K.create({lateral:{recipe:'loess',dir:[1,0],d0:5,d1:6}})));
+
+// ---- the surface: wash and cover
+const Ws=K.create({seed:9,recipe:'badland',range:[0,400]});
+ok('wash: a steep face shows its own bed, a flat one the bed wash.m higher (badland: 2.5 m)',Ws.wash.m===2.5&&
+  JSON.stringify(Ws.surface(5,100,5,0).colour)===JSON.stringify(Ws.at(5,100,5).colour)&&JSON.stringify(Ws.surface(5,100,5,1).colour)===JSON.stringify(Ws.at(5,102.5,5).colour),
+  JSON.stringify(Ws.surface(5,100,5,1).colour)===JSON.stringify(Ws.at(5,100,5).colour)&&Ws.at(5,100,5).bed!==Ws.at(5,102.5,5).bed);
+ok('wash: off for recipes without it, and wash:false turns it off',K.create({recipe:'canyon'}).wash===null&&K.create({recipe:'badland',wash:false}).wash===null,Ws.wash===null);
+const Cv=K.create({seed:9,recipe:'canyon',range:[0,400],regolith:1}),C0=K.create({seed:9,recipe:'canyon',range:[0,400]});
+ok('cover: regolith 0 is the dust, 1 the bed\'s own colour lightened',(()=>{const a=C0.surface(1,50,1,1),b=Cv.surface(1,50,1,1);
+  return a.cover.every((v,i)=>Math.abs(v-C0.dust[i])<1e-12)&&b.cover.every((v,i)=>Math.abs(v-(b.colour[i]*.85+.12))<1e-12);})(),
+  (()=>{const a=C0.surface(1,50,1,1);return a.cover.every((v,i)=>Math.abs(v-(a.colour[i]*.85+.12))<1e-12);})());
+ok('cover: badland\'s popcorn clay takes its clay\'s colour by default',Ws.regolith>.8,C0.regolith>0);
+
+// ---- the ledge pass
+const Lg=K.create(Object.assign({seed:5,recipe:'canyon',range:[0,600]},FLAT));
+let lmono=true,lmov=0;for(let h=1;h<599;h+=.05){const a=Lg.ledge(3,4,h,1),b=Lg.ledge(3,4,h+.05,1);if(b<a-1e-12)lmono=false;lmov=Math.max(lmov,Math.abs(a-h));}
+ok('ledge: a monotone map of h where rock shows, moving the ground metres',lmono&&lmov>1,lmov===0);
+ok('ledge: nothing where the slope is under s0 (soil, not rock), all of it past s1',Lg.ledge(3,4,123.4,.3)===123.4&&Lg.ledge(3,4,123.4,.9)===Lg.ledge(3,4,123.4,2),Lg.ledge(3,4,123.4,.3)===Lg.ledge(3,4,123.4,1));
+const rise=b=>(Lg.ledge(0,0,b.y0+b.th-1e-9,1)-Lg.ledge(0,0,b.y0+1e-9,1))/b.th;
+const hb=Lg.beds.slice(0,40).filter(b=>Lg.kinds[b.kid].hard>=.75),sb=Lg.beds.slice(0,40).filter(b=>Lg.kinds[b.kid].hard<=.35);
+ok('ledge: hard beds stand steeper than soft ones',hb.reduce((a,b)=>a+rise(b),0)/hb.length>1.2*sb.reduce((a,b)=>a+rise(b),0)/sb.length,
+  hb.reduce((a,b)=>a+rise(b),0)/hb.length<sb.reduce((a,b)=>a+rise(b),0)/sb.length);
+ok('ledge: a bench in a soft bed over a hard one (its first metre rises little)',(()=>{const i=Lg.beds.findIndex((b,i)=>i>0&&Lg.kinds[b.kid].hard<.4&&Lg.kinds[Lg.beds[i-1].kid].hard>=.75&&b.th>1.5),b=Lg.beds[i];
+  return (Lg.ledge(0,0,b.y0+.3,1)-Lg.ledge(0,0,b.y0+1e-9,1))/.3<.6;})(),false);
+ok('ledge: packets keep their tops, so the land does not drift (the formation top stays put)',Math.abs(Lg.ledge(0,0,599.999999,1)-599.999999)<1e-6&&Math.abs(Lg.ledge(0,0,1e-7,1))<1e-6,
+  Math.abs(Lg.ledge(0,0,300,1)-300)<1e-9);
+const hf=(x,z)=>.8*x+100,LF=K.ledgeField(Lg,hf);
+ok('ledgeField takes the slope from the height function',Math.abs(LF(50,0)-Lg.ledge(50,0,hf(50,0),.8))<1e-9&&LF(50,0)!==hf(50,0),LF(50,0)===hf(50,0));
+ok('ledge: blocks are left alone',(()=>{const M=K.create({seed:2,formations:[{recipe:'megabreccia',base:-1e3,top:1e3}]});return M.ledge(1,2,50,1)===50;})(),false);
+
+// ---- the bake: the bytes a shader reads
+const Bk=K.create({seed:12,formations:[{recipe:'megabreccia',base:-100,top:100},{recipe:'tibasalt',top:300},{recipe:'megabreccia',top:400}],
+  alter:[{kinds:['bead'],to:'palagonite',below:250,band:5},{kinds:['flow'],to:'laterite',below:150,band:5}],
+  lateral:{formations:[{recipe:'megabreccia',base:-100,top:200},{recipe:'loess',top:400}],dir:[1,0],d0:0,d1:10}});
+const BB=K.bake(Bk);
+ok('bake: both halves\' columns, the alterations in slots, one blocks row per blocks formation',BB.NA===2000&&BB.NB===2000&&BB.H===Math.ceil(4000/256)&&BB.nslots===2&&
+  BB.nblocks===3&&BB.alt.length===BB.W*BB.H*4*2&&BB.btab.length===36*3*4&&BB.blocks[0].nest>=0,BB.nblocks===2);
+ok('bake: a blocks texel names its formation (0, 1 in the stack; 2 in the lateral one)',(()=>{const t=y=>Math.floor((y-BB.yA)/BB.res)*4,tb=y=>(BB.NA+Math.floor((y-BB.yB)/BB.res))*4;
+  return BB.bed[t(0)+3]===255&&BB.bed[t(0)]===0&&BB.bed[t(350)]===1&&BB.bed[tb(0)]===2&&BB.bed[t(200)+3]!==255;})(),BB.bed[0]===1);
+ok('bake: slot 0 marks the bead beds, slot 1 the flows, never both',(()=>{let a=0,b=0,both=0;for(let i=0;i<BB.NA;i++){const s0=BB.alt[i*4+3],s1=BB.alt[(BB.W*BB.H+i)*4+3];
+  if(s0)a++;if(s1)b++;if(s0&&s1)both++;}return a>0&&b>0&&both===0;})(),false);
+ok('bake: more than four alterations throws',throws(()=>K.bake(K.create({recipe:'tibasalt',range:[0,100],alter:[1,2,3,4,5].map(i=>({kinds:'*',to:'laterite',below:i}))}))),
+  throws(()=>K.bake(K.create({recipe:'tibasalt',range:[0,100],alter:[1,2].map(i=>({kinds:'*',to:'laterite',below:i}))}))));
+
 // ---- golden vectors (kstrata.gd is held to these)
+const crypto=require('crypto'),sha=a=>crypto.createHash('sha256').update(Buffer.from(a.buffer,a.byteOffset,a.byteLength)).digest('hex');
 const cases=[
   {name:'canyon',opt:{seed:4711,recipe:'canyon',range:[0,400]}},
   {name:'outland',opt:{seed:31,formations:[{recipe:'outland',base:-200,top:900},{recipe:'tibasalt',th:500,flip:true}],fold:{dir:[1,.3],wl:2400,amp:60,sharp:.4},faults:[{a:[-100,-300],b:[200,400],throw:-25,w:3,taper:80}]}},
   {name:'tibasalt',opt:{seed:12,formations:[{recipe:'tibasalt',base:7500,top:9500}]}},
   {name:'wouterwall',opt:{seed:21,formations:[{recipe:'megabreccia',base:-1e4,top:300},{recipe:'loess',top:500}],range:[0,500]}},
   {name:'ringfold',opt:{seed:8,recipe:'ringfold',range:[-800,800],fold:{dir:[0,1],wl:1500,amp:300,sharp:.6,at:[40,0],phase:.1}}},
-  {name:'legacy',opt:{seed:4711,legacy:{columnM:180}}}];
+  {name:'legacy',opt:{seed:4711,legacy:{columnM:180}}},
+  {name:'badland',opt:{seed:5,recipe:'badland',range:[-260,300],dip:[1,0,.05]}},
+  {name:'lateral',opt:{seed:6,recipe:'pillar',range:[-260,400],lateral:{formations:[{recipe:'megabreccia',base:-300,top:0},{recipe:'danxia',top:400}],dir:[1,.2],at:[-100,0],d0:-150,d1:150,tongue:4}}},
+  {name:'multi',opt:{seed:7,formations:[{recipe:'megabreccia',base:-300,top:-100},{recipe:'tibasalt',top:150},{recipe:'megabreccia',top:220},{recipe:'rift',top:900}],
+    alter:[{kinds:['bead','beadblack'],to:'palagonite',below:100,band:12},{kinds:['flow'],to:'laterite',below:0,band:12}]}},
+  {name:'tepui',opt:{seed:8,recipe:'tepui',range:[-260,400],regolith:.5,dust:0xb09070}}];
 const golden=()=>({cases:cases.map(c=>{const S=K.create(c.opt),G=[];
-  for(let k=0;k<120;k++){const p=[-650+k*11.37,(c.name==='tibasalt'?7400:-250)+((k*41)%120)*(c.name==='tibasalt'?17.3:9.71),-500+((k*67)%120)*8.53],a=S.at(...p);
-    G.push({p,yy:a.yy,formation:a.formation,bed:a.bed,kid:a.kid,colour:a.colour,hard:a.hard,f:a.f,edge:a.edge,altered:a.altered,cell:a.cell,terrace:S.terrace(p[0],p[2],p[1])});}
-  return {name:c.name,strata:S.export(),points:G};})});
+  for(let k=0;k<60;k++){const p=[-650+k*22.74,(c.name==="tibasalt"?7400:-250)+((k*41)%60)*(c.name==="tibasalt"?34.6:19.42),-500+((k*67)%60)*17.06],a=S.at(...p);
+    const ny=(k%5)/4,sl=(k%7)*.2,sf=S.surface(p[0],p[1],p[2],ny);
+    G.push({p,yy:a.yy,formation:a.formation,bed:a.bed,kid:a.kid,colour:a.colour,hard:a.hard,f:a.f,edge:a.edge,altered:a.altered,cell:a.cell,side:a.side,
+      terrace:S.terrace(p[0],p[2],p[1]),ny,surface:sf.colour,cover:sf.cover,skid:sf.kid,slope:sl,ledge:S.ledge(p[0],p[2],p[1],sl)});}
+  const B=K.bake(S,{res:.5}),P=K.params?K.params(S,B,{}):null;
+  return {name:c.name,strata:S.export(),points:G,bake:{res:B.res,W:B.W,H:B.H,NA:B.NA,NB:B.NB,yA:B.yA,yB:B.yB,nslots:B.nslots,nblocks:B.nblocks,
+    slots:B.slots,blocks:B.blocks,fx:B.fx,varnishCol:B.varnishCol,params:P,col:sha(B.col),bed:sha(B.bed),alt:sha(B.alt),btab:sha(B.btab)}};})});
 if(process.argv.includes('--write')){fs.writeFileSync(GOLD,JSON.stringify(golden())+'\n');console.log('wrote '+GOLD);}
 if(fs.existsSync(GOLD)){const g=JSON.parse(fs.readFileSync(GOLD,'utf8')),now=JSON.parse(JSON.stringify(golden()));
   ok('the golden file is what this module gives now',JSON.stringify(g)===JSON.stringify(now),JSON.stringify(g.cases[0].points[0])===JSON.stringify(now.cases[0].points[1]));
