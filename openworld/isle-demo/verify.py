@@ -13,6 +13,9 @@ highway, no town tile). The isle's own checks:
   - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
   - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
     every record's tags known (the negative drops the salt village).
+  - the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the four villages declared with their towns, run two
+    days: staffed, making their goods, every load landed in its town or on the road, each fed by its town (negatives: no
+    ore made, timber lost on the road, meals without food);
   - the camps (core/camp, 48k/88k-world-camps.js): the Raptor band in the east jungle pitched whole, 40 to 70 people, no
     two boxes within 2 m, every box on good ground and inside the hedge, the flora kept off it, every tag known (the
     negatives: two tents moved together; the keep-clear hook without the camp's).
@@ -95,6 +98,16 @@ TOWNS_JS = r"""(neg)=>{const R=[],T=window._isleTowns,W=ISLE_TOWNS_W;
 # in the town's frame, as godot/data/world-isle-kautoa is cut (settlements/isle-demo/verify.py keeps it as a report)
 EXPORT_BOX = [320, 780, 820, 1220]
 EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'buckets', 'textures', 'fixtures', 'stage', 'interiors?', 'furniture?']
+
+
+# the hamlets in the sim (47h): the villages this map lays out, declared with their towns (48t), run two days; the checks
+# of settlements/isle-demo 47h (ISLE.hamletChecks) and their negatives
+HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
+ const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
+ const negs=[];let B=cp(b);B.villages['hamlet-mine'].goods.ore.made=a.villages['hamlet-mine'].goods.ore.made;negs.push(Object.assign({neg:'unmade'},pick(ISLE.hamletChecks(a,B),/makes its goods/)));
+ B=cp(b);B.villages['hamlet-lumber'].landed.timber=(B.villages['hamlet-lumber'].landed.timber||0)-15;negs.push(Object.assign({neg:'lost'},pick(ISLE.hamletChecks(a,B),/landed in its town/)));
+ B=cp(b);B.villages['hamlet-salt'].meals.none+=3;negs.push(Object.assign({neg:'unfed'},pick(ISLE.hamletChecks(a,B),/fed by its town/)));
+ return{checks:ISLE.hamletChecks(a,b),negs};})()"""
 
 
 async def run(a):
@@ -185,6 +198,16 @@ async def run(a):
                     rn = await pg.evaluate('_isleLife.checks.%s(%s)' % (key, neg))
                     print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (%s) : ' % key + rn['detail'])
                     if rn['ok']: fails.append('negative ' + key)
+                # the hamlets in the sim (settlements/isle-demo 47h, core/hamlet H5): the villages laid out on this map run
+                # two days with their towns (last: the sim leaves the world's clock behind)
+                print('--- the hamlets in the sim (H5) ---')
+                hs = await pg.evaluate(HAMLETS_SIM_JS)
+                for r in hs['checks']:
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                    if not r['ok']: fails.append(r['name'])
+                for r in hs['negs']:
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + r['neg'] + ') : ' + r['detail'])
+                    if r['ok']: fails.append('negative hamlets ' + r['neg'])
             for v in [int(t) for t in a.views.split(',') if t.strip()]:
                 await pg.evaluate('_api.go(%d)' % v)
                 s = await pg.evaluate('_api.settle(240000)')

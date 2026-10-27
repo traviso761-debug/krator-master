@@ -45,6 +45,13 @@ north (`core/hamlet/PLAN.md` section 4).
 - **The world clock:** `core/clock`, the 72-minute day, as every settlement runs (`HOST.clock`; `?hour=`, `?day=`,
   `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
 - **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
+- **In the sim (2026-10-26, core/hamlet H5):** `48t-world-towns.js` makes the villages once (`ISLE_HAMLETS.made`, which 88h
+  draws) and declares them with the towns (settlements/isle-demo `47h-isle-hamlets.js`): each its town's settlement at the
+  abstract level, its works producers, its goods carted to its town and its town's food carted back.
+  `ISLE_TOWNS_W.stats.hamlets` is the report; `verify.py` runs them two days on this map (staffed, making, loads landed,
+  fed; with negatives).
+- **The lanes and greens are wound to face up** (2026-10-26): facing down they were culled, so no village showed its
+  lanes or its green (Longsong's square, the same fault). Their colours are converted to linear, as the page's others.
 
 ## The towns (M7, 2026-10-20)
 

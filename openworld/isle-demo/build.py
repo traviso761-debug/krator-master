@@ -74,7 +74,7 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
 ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',
                 '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
-                '46-isle-stocks.js', '47-isle-trade.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+                '46-isle-stocks.js', '47-isle-trade.js', '47h-isle-hamlets.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util

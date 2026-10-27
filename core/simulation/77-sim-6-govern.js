@@ -4,7 +4,8 @@
 // nothing here runs until an economy's config names a rule; an economy without one keeps its books exactly as before.
 //
 //   SIM.economy({ ...,
-//     govern: { every, cover, ti, alpha, min, max, smooth?, window?, minBy?:{good: floor}, buys?:{good: a day}, least?:{good: n} },
+//     govern: { every, cover, ti, alpha, min, max, smooth?, window?, minBy?:{good: floor}, buys?:{good: a day}, least?:{good: n},
+//               exported? (false: its own exports are not demand), pool?:[settlements] (their stock counts in its supply line) },
 //     spoil:  { good: share of its stock that rots a night },
 //     keep:   { by (the preserving good: 'salt'), goods:[the goods it keeps], share (of what would rot), per (servings a unit keeps) },
 //     season: { by (the seasoning good: 'salt'), mult (a meal's quality while the town holds it), least? (1) } }, {settlement})
@@ -71,7 +72,7 @@
     if(memo[g] != null) return memo[g]; memo[g] = 0;
     var s = E.settlement, G = E.govern.cfg, r = rate(E, g, minute, ['used', 'short', 'exported']), want = 0;
     carriedTo(s, g).forEach(function(o){ var q = rate(SIM.econ(o), g, minute, ['used', 'short']); want += q.used + (q.used>0 ? Math.min(q.short, q.used) : q.short); });
-    var dem = r.used + r.short + Math.max(r.exported, want + ((G.buys||{})[g]||0));
+    var dem = r.used + r.short + Math.max(G.exported===false ? 0 : r.exported, want + ((G.buys||{})[g]||0));   /* `exported` false: a village that ships all it makes to its town does not count its own shipping as demand */
     var made = {}; Object.keys(E.recipes).forEach(function(id){ E.recipes[id].out.forEach(function(o){ made[o] = 1; }); });
     Object.keys(E.inputs||{}).forEach(function(o){ var q = E.inputs[o]; if(!q || !q[g] || !made[o]) return;
       dem += (demand(E, o, minute, memo) - rate(E, o, minute, ['made']).made) * q[g]; });
@@ -95,6 +96,7 @@
       var dm = ((E.made[g]||0) - st.last) * 1440 / G.every; st.last = E.made[g]||0;
       st.made += a*(dm - st.made); st.k += a*(k0 - st.k);
       var use = demand(E, g, minute, memo), pos = position(E, g), cap = st.k>0 ? st.made/st.k : 0;
+      (G.pool||[]).forEach(function(o){ var Eo = SIM.econ(o); if(Eo && Eo!==E) pos += position(Eo, g); });   /* `pool`: the towns it works for, their stock its own */
       var target = Math.max(G.cover*use, (G.least||{})[g]||0), out = use + G.alpha*(target - pos)/G.ti;   /* `least`: a shelf stock kept with no demand */
       var lo = G.minBy && G.minBy[g]!=null ? G.minBy[g] : G.min, m = cap>0 ? out/cap : out>0 ? G.max : lo; want[g] = Math.max(lo, Math.min(G.max, m));   /* never made yet: the most only if it is wanted */
       wanted[g] = out>0; floor[g] = lo;

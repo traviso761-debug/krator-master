@@ -247,3 +247,19 @@
 - [x] **The second morning's buying wave** (gone since 2026-10-26: the stores open with 1 to 3.5 days). Every house opened with 1.5 to 3 days of food, so on day 2 most of them bought at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.
+
+## The hamlets in the sim (core/hamlet H5, 2026-10-26)
+
+- [ ] **The villages are declared only where a page hands them in** (47h): the open world's page from the map, the node
+      test (`tests/test-isle-hamlets.js`) on stand-in ground at the survey points (every place dry; the layout differs
+      from the map's, the economy is the same). The city page and its week test run without them, so their towns'
+      economies are as before.
+- [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
+      open world draws the buildings (88h) but no villagers.
+- [ ] **The production and the map run apart:** the lumber village's felling (88h, on the world clock) is not its sim's
+      timber, and the mine's node and the salt field are not drawn down. PLAN.md section 5's resource records are next.
+- [ ] **Iron goes abroad:** Valapo smelts the mine's ore (two ore and one charcoal an iron) and the Hykkousoi buy it; Kautoa
+      does not yet work it into tools (the stone tools stay; iron tools are owed, PLAN.md 9b).
+- [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
+- [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
+      so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).

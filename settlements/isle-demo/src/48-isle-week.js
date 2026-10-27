@@ -143,13 +143,15 @@ ISLE.weekChecks = function (w1, w2, o) {
   var late = [], wide = [], drift = [], nSw = 0;
   var BU = ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.buyers, lumpy = {};
   if (BU) BU.ships.forEach(function (sh) { Object.keys(sh.buys).forEach(function (g) { lumpy[g] = 1; }); });
+  if (ISLE.SIM.hamlets) ISLE.SIM.hamlets.villages.forEach(function (X) { X.makes.forEach(function (g) { lumpy[X.parent + ':' + g] = 1; }); });   /* in their town, the villages' goods come by the road a cart's load at a time (47h) */
+  var DTL = ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.diet; if (DTL) Object.keys(DTL).forEach(function (s) { Object.keys(DTL[s]).forEach(function (g) { lumpy[s + ':' + g] = 1; }); });   /* in the town that eats it, an imported food lands by the lakatoi in lumps */
   weeks.forEach(function (W) { var D = [W.a].concat(W.days || []);
     for (var i = 1; i < D.length; i++) { var day = Math.round(D[i].minute / 1440); if (day <= 2) continue;
       Object.keys(D[i].towns).forEach(function (s) { var A = D[i - 1].towns[s].goods, B = D[i].towns[s].goods;
         Object.keys(B).forEach(function (g) { var x = (B[g].short || 0) - (A[g] ? A[g].short || 0 : 0); if (x > 0) late.push(W.watched + ' watched, day ' + day + ', ' + s + ' ' + g + ' ' + x); }); }); }
     var F = D.filter(function (x) { return Math.round(x.minute / 1440) >= 2; }); if (F.length < 3) return;
     Object.keys(F[0].towns).forEach(function (s) {
-      Object.keys(F[0].towns[s].goods).forEach(function (g) { var m = 0, d = 0; if (lumpy[g]) return;
+      Object.keys(F[0].towns[s].goods).forEach(function (g) { var m = 0, d = 0; if (lumpy[g] || lumpy[s + ':' + g]) return;
         F.forEach(function (x, j) { m += x.towns[s].goods[g].total; if (j) d += Math.abs(x.towns[s].goods[g].total - F[j - 1].towns[s].goods[g].total); });
         m /= F.length; d /= F.length - 1; if (m < swMin) return; nSw++;
         if (d > sw * m) wide.push(W.watched + ' watched, ' + s + ' ' + g + ' ' + Math.round(100 * d / m) + '% of ' + Math.round(m)); });

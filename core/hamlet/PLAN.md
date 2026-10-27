@@ -240,7 +240,9 @@ demo's plan (section 9).
 - A village is far from the camera nearly always, so it runs at **the abstract level**: books and carts tick, nobody
   is posed. That makes it a cheap, early case for the abstract-level week test.
 - Felling, mining and salt-raking write to the resource's record: a stand's deltas, and a node's or field's worked
-  share, so the books and the map agree.
+  share, so the books and the map agree. (Not yet: the sim's production and the felling clock run apart.)
+- **Built (2026-10-26):** settlements/isle-demo `47h-isle-hamlets.js`. A village works to its town's need: its governor counts
+  its town's stock with its own and not its own shipping as demand (core/simulation's `govern.pool`, `govern.exported`).
 
 ## 6. Order of work
 
@@ -251,7 +253,7 @@ demo's plan (section 9).
 | H2 | **The village generator** (`core/hamlet`, `[G data]`): spec to census, siting, green, lanes, houses, works and stores, on `KCITY.prim`, `KSPACE`, `KRAND`, `core/tags` | `node core/hamlet/test-hamlet.js`: every village has its required buildings; population ≤ 500 and staffed (every job a worker, every household a house); no overlap; deterministic (same spec, same hash); refuses a cliff site; each with a negative |
 | H3 | **The Islanders' missing buildings** (section 3), after the owner's textures | islanders `verify.py --assert`; a sheet shot per new building |
 | H4 | **The four isle villages** placed on the open world from their specs, with their resources; timber regrowth as deltas | the isle world's checks in the browser pane; a felled tree is a stump, then a sapling, then whole after the tunable |
-| H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books | a load traced from a village's warehouse to its town's; the abstract-level week balances for each village |
+| H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books. **Done 2026-10-26** (settlements/isle-demo `47h-isle-hamlets.js`: each village its town's settlement at the abstract level, its works producers, its people dealt, two carted roads (its goods out, its town's foods in); the towns put the goods to use: salt, Kautoa's tannery on the ranch's hides, its dockyard and building on the timber, Valapo's smithies smelting the mine's ore with the lumber village's charcoal, the iron sold to the Hykkousoi) | `tests/test-isle-hamlets.js` (stand-in ground) and openworld/isle-demo `verify.py` (the villages on the map): staffed, making, every load landed or on the road and booked imported, each village fed; each with a negative; the towns' two-week checks hold with them |
 | H6 | **Fishing and farming villages** round Kautoa from spec rows | the same tests; the farm ring's crops match `CROPS.at` at each site |
 
 ## 7. Questions for the owner

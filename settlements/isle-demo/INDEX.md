@@ -29,6 +29,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-isle-sim-checks.js` | 11 | 7f. THE SIM'S CHECKS, PER TOWN (P7b) (1) |
 | `46-isle-stocks.js` | 2 | 7g. THE STOCKS ID MAP (P7b) (1) |
 | `47-isle-trade.js` | 13 | 7h. THE CANOE LINE BETWEEN THE TOWNS (P7c) (1) |
+| `47h-isle-hamlets.js` | 17 | 7h2. THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26) (1) |
 | `48-isle-week.js` | 19 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 2 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
 | `50-isle-export.js` | 10 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |

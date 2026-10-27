@@ -272,7 +272,7 @@ ISLE.TUNE.sim = {
       ships: [
         { id: 'voth', name: 'Voth traders', vessel: 'vothDhow', every: 3, phase: 0, calls: ['kautoa'], buys: { clove: 600, cacao: 400 } },
         { id: 'izani', name: 'Izani merchants', vessel: 'izizDhoni', every: 4, phase: 1, calls: ['kautoa'], buys: { cacao: 600, clove: 300 } },
-        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200 } },
+        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200, iron: 300 } },
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
         { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
       ] },
@@ -286,5 +286,42 @@ ISLE.TUNE.sim = {
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]
+  },
+  /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
+     records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
+     always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
+     its towns' economies as they were.
+       kinds       a record's key -> [the place's kind, {its activities}] (a works' WORK slots are its culture row's jobs;
+                   a house's beds its households times the row's household)
+       producers   a works' kind -> its recipe (out, rate a worker-hour, cap), as the towns' (44)
+       carts       a village's carts; startDays of the parent's foods in its warehouse, `startLots` of its own goods
+       road        the carts between a village and its town: a convoy at `kmh` over the straight line times `detour`, a
+                   stay of `mins`; `cap` a load. Two routes a village: OUT, all it makes but its own use (`keep` 0, the want
+                   unbounded: the village works for its town); IN, the parent's foods it eats (its want, `want` days)
+       town        what the villages' goods feed in their towns: new `inputs` (the tannery's leather from hides, the
+                   dockyard's wooden tools from timber, the smithies' iron from ore and charcoal), `recipes` for a kind's
+                   places that have none (Valapo's smithies, idle till now, smelt iron), `uses` a person a day drawn hourly (Kautoa builds with timber),
+                   `expect` a day on the lakatoi (the charcoal Valapo's smelting wants before any has come) */
+  hamlets: {
+    kinds: {
+      house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
+      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
+      'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
+      warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
+    },
+    producers: {
+      saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
+      sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
+      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
+    },
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
+    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
+    carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
+    road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
+    town: {
+      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100 } },
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { out: ['iron'], rate: 0.5, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
+    },
+    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 } }
   }
 };
