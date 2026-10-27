@@ -70,5 +70,9 @@ const MAP_ORIGIN=[];for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)MAP_ORIGIN.push(
 // channel, the pools' level in their bowls, the sea's 0 elsewhere; nothing roots in the channel, the delta channel or a pool
 function MAP_WATERH(x,z){for(const P of POOLS)if(Math.hypot(x-P.x,z-P.z)<P.r*1.4)return P.y+.2;const d=lakeIn(x,z);
  if(d>0&&streamD(x,z)<RIVER.w(d)*.5+30)return Math.max(0,baseH(x,z)-RIVER.depth(d)-(d>900?3:0)+.6);if(d>0&&distD(x,z)<30)return Math.max(0,baseH(x,z)-.5);return 0;}
-function MAP_DRY(x,z){const d=lakeIn(x,z);if(d<0)return 1;let k=smooth(RIVER.w(d)*.5+1,RIVER.w(d)*.5+7,streamD(x,z))*smooth(8,14,distD(x,z));
- for(const P of POOLS)k*=smooth(P.r*1.1,P.r*1.5,Math.hypot(x-P.x,z-P.z));return k;}
+function MAP_DRY(x,z){const d=lakeIn(x,z);if(d<0)return 1;
+ /* where a fall comes down the cliffs (the scarp's bands plus 70 m below each) the keep-out widens to 30 m past the river's banks: the
+    curtain and its spray stand clear of trunks (the owner, 2026-10-27: a frill tree stood in the upper fall) */
+ const o=scarpOff(along(x,z)),fall=Math.max(smooth(SCARP.hi[0]+o-90,SCARP.hi[0]+o-60,d)*smooth(SCARP.hi[1]+o+20,SCARP.hi[1]+o,d),smooth(SCARP.lo[0]+o-90,SCARP.lo[0]+o-60,d)*smooth(SCARP.lo[1]+o+20,SCARP.lo[1]+o,d));
+ const hw=RIVER.w(d)*.5+30*fall;let k=smooth(hw+1,hw+7,streamD(x,z))*smooth(8,14,distD(x,z));
+ for(const P of POOLS)k*=smooth(P.r*1.4,P.r*2,Math.hypot(x-P.x,z-P.z));return k;}
