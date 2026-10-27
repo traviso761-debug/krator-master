@@ -95,6 +95,33 @@ not 18. nhighlands' leaf and floor cards were vertex-bound on an integrated GPU,
 stream and tower views (`biomes/nhighlands/PERF.md`). The export writes the index (`42-core-export.js` already handled
 indexed buckets). Test: `test-lod.js`.
 
+## A library card on its geometry's axes (`20-core-kit.js`, `30-core-foliage.js`; opt-in per slot, 2026-10-27)
+
+`BIO.geo.frond` and `BIO.geo.ribbon` draw their texture once a segment, down v from the stem or hung end at v 0; `BIO.geo.hang`
+hangs from v 0; the clump's tripod shows its image upside down (v 0 at each quad's low edge). A library card that is one whole
+plant broke on all of them: the Rift's fern fronds were four small upside-down ferns end to end, floating loose of the stem
+(the owner, "these imposters improperly split the cutout textures"). Each of these geometries now declares where it holds its
+plant, `geo.userData.card = {base, once}` (`once`: the uv that spans the image once down the whole length), and a
+materials.json card slot names where its plant attaches in its image, `"base"` (left, top, right, bottom, centre), with
+`"cell"` the plant's tight box. `BIO.libSwap` puts the base on the material (`userData.libCard`); `BIO.def` gives the item a
+copy of its geometry whose uv is turned so the two ends meet (`BIO.cardTurn`) and spans the plant once. An item defined before
+the swap is fitted by it; a variant pool fits each variant to its own material (`d.raw`, the unfitted geometry). A slot with
+no base, a geometry that declares nothing, or one cut into a sheet's cells (`BIO.geo.cells` clears the declaration) draws as
+before, byte for byte. A kit's own geometry may declare its end the same way (the Rift's groundsel heads on `G.rosetteUV`:
+`{base: 'left'}`). The geometry's uv carry the fit, so the export, Godot and the impostor bake need nothing new.
+`tools/textures/check_cells.py` proposes each slot's cell and base; `tools/textures/card_probe.py` draws the slot on its
+geometry before and after (`HANDOFF-REBUILD.md`, "its card cells"). Test: `test-cards.js`.
+
+**A crown's sprigs held by their stems** (the owner, 2026-10-27: "the stem on the leaf card does not orient properly to the 3d
+stem model"). A clump's slot may carry `"stems"`: up to three sprigs, each `{cell, stem, tip, w, back}` (its box in the
+sheet, its stem point and tip in the image, its half-widths about the stem-tip line, how far the card reaches behind a stem
+set inside a rosette), and `"rise"` (radians above level the sprigs leave the twig at, default .65; negative for a weeping
+spray, about 1.2 for one bush standing on its trunk). `BIO.def` then draws the clump as `BIO.geo.stemClump`: three cards whose
+stems sit at the clump's origin, the twig the kit puts it on, each running out along its sprig's own long axis, cut to the
+sprig's oriented box clipped to its cell (2 to 6 triangles a card, against 2). The texture is the whole sheet. A clump cut
+into cells by `BIO.geo.cells` takes stems too. `check_cells.py` measures the stems (the thin, woody end far from the
+sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.json` holds the hand ones.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the

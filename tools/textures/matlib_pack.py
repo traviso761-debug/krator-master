@@ -43,6 +43,11 @@ def _families(build_dir, exclude, own=False):
              'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
         if e.get('cell'):
             f['cell'] = e['cell']
+        if e.get('base'):
+            f['base'] = e['base']
+        for k in ('stems', 'rise'):
+            if e.get(k) is not None:
+                f[k] = e[k]
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(tex, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))

@@ -16,7 +16,7 @@ BIO.variantPool=function(base,mats,salt){
  if(typeof KRAND==='undefined'||!mats||!mats.length)return[];
  const names=[base];
  mats.forEach((m,i)=>{const n=base+(i+1);
-  BIO.def(n,d.geo,m,{label:d.label,attrs:d.attrs,cls:d.cls,kind:d.kind||base,tags:d.tags});names.push(n);});
+  BIO.def(n,d.raw||d.geo,m,{label:d.label,attrs:d.attrs,cls:d.cls,kind:d.kind||base,tags:d.tags});names.push(n);});
  if(!BIO._pools){BIO._pools={};const put=BIO.put;
   BIO.put=function(name,pos,q,sc,col,extra){const v=BIO._pools[name];
    if(v&&pos)name=v.names[KRAND.hash(v.salt,Math.floor(pos[0]*2),Math.floor(pos[1]*2),Math.floor(pos[2]*2))%v.names.length];
