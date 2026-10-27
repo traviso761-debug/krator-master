@@ -41,3 +41,23 @@ impostors cover about a tenth of the pixels the heroes do (they read thinner, as
 **Where the cost is.** The views are vertex-bound like nhighlands': the lattice oaks' cords (tubes in the `swcord` bucket) and the
 floor's cards. The levers not taken yet: the oaks' light form (lv 1, 450-800 m) could drop to impostors from 600 m; the parasol
 fruit (58 k instances) could stop at 250 m; the moss and turf bands could end at 300 m.
+
+## Station 6, the treeline (2026-10-27)
+
+**GPU: the integrated Intel Arc 140T**, the app's built-in browser, a 1177 x 1026 canvas, other sessions running. The same GPU timer
+query around the host loop's scene render, ~2.5 s at each view after a 0.9 s settle: the **minimum** and the **median** of the frames.
+
+| View | GPU ms min | median | Calls | Triangles | Frames |
+|---|---|---|---|---|---|
+| Overview up the ramp | 18.1 | 35.0 | 37 | 3.08 M | 27 |
+| A whorl column | 8.1 | 8.6 | 31 | 3.04 M | 35 |
+| Bottle brushes on a sunny spur | 6.5 | 6.8 | 23 | 2.32 M | 37 |
+| The treeline | 16.6 | 35.5 | 33 | 6.22 M | 28 |
+| Glass towers on the scree | 12.4 | 29.6 | 16 | 5.50 M | 27 |
+| The cirque | 18.5 | 52.3 | 31 | 8.41 M | 23 |
+| Dawn over the woods | 11.3 | 25.1 | 33 | 3.37 M | 31 |
+| Night: the treeline | 20.7 | 38.3 | 43 | 9.25 M | 16 |
+
+Held: ~14 M scene triangles, 515 k instances (most of them the floor: 139 k turf, 95 k glass leaf, 65 k stones, 52 k moss). The
+cirque and the night view are the heaviest (the fellfield's stones and glass leaf to 700 m). The impostor gain is station 1's (1.6),
+not measured here.

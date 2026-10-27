@@ -24,3 +24,11 @@ The first of the planned biomes on the final rebuild's core: started from `biome
   foliage hook); the river cave moved to the ridge's foot (a ~22 m face; no bite cut deeper than 28 m under the natural ground; a
   smaller mouth): it had been a pit under a ~100 m wall. The owner's reference photos match `refs/26`, `28`/`29` and `31`.
 - **Measured**: `PERF.md` (before these late notes; the cave and the pads change the counts little).
+
+## Station 6, the treeline (2026-10-27)
+
+On the owner's word (a station with no running water, the native forest in its second climate; PLAN.md section 7). Built from the
+same `build.py --station treeline`: `stations/treeline/` overlays the host fragments, the kit's `56-biome-swhighlands-treeline.js`
+holds its passes, the eastern highlands' kit is read in place for the glass tower. The treeline stands at 4.3 km (the whorl columns
+shrinking to krummholz over its last 150 m); bottle brushes on the north-facing (sunny) spurs; snow on the shaded slopes from ~4.6 km
+and in the cirque's shade; the crest's megabreccia from ~4.6 km.

@@ -41,4 +41,7 @@ From `PLAN.md` section 10 and what station 1 met:
 - [ ] **The cave's mouth, close up**: the hood is on the ground's material and its top runs into the hill, but the 2 m field still
   softens the bite's walls by up to ~2 m round the hood's rim (a finer inset there, or the bite's walls as a KSTACKS face, would
   sharpen it), and the ground's paint smears on the bite's steep walls (a top-down paint; the beds draw over it but faintly).
-- [ ] Stations 2-5 are not built.
+- [ ] **Station 6, the treeline** (2026-10-27): a first pass for the owner's look. The cirque is the kit's own bowl on the field (no
+  core cirque form); the snow is paint only (no snow cover module); the fellfield's clast layer and the stones want a look pass;
+  the impostor gain is station 1's, not measured here; the glass tower is ehighlands' (its own look and draws, read in place).
+- [ ] Stations 2-5 are not built. Station 4 (the pillar rim) waits for the Span arcology's hand-over (its own session).
