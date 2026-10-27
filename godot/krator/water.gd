@@ -1347,3 +1347,30 @@ static func blood_colour(fresh: PackedFloat64Array, red: PackedFloat64Array, age
 static func weed_sway(x: float, z: float, t: float, u: float, sway: float, per: float) -> float:
 	var n := maxf(1.0, roundf(per / 4.5))
 	return sway * u * u * sin(6.283185307 * (t * (n / per)) + x * 0.37 + z * 0.23)
+
+
+# ================================================================ 2026-10-27: confluences (core/water/ext/55, test-confluence.js)
+# A confluence's grid from the export's group record ({kind: 'confluence', n, x0, z0, cell, y, vx, vz, slope, bank, fade, meetV}): a value at
+# (x, z) interpolated as its mesh's triangles interpolate (C.at): quad (i, j) split (i, j)-(i, j+1)-(i+1, j) and (i+1, j)-(i, j+1)-(i+1, j+1).
+# key: "y", "vx", "vz", "slope", "bank", "fade" or "meetV". The export rounds the values to 1e-4.
+static func confluence_at(C: Dictionary, x: float, z: float, key: String) -> float:
+	var n: int = int(C["n"])
+	var cell := float(C["cell"])
+	var fx := clampf((x - float(C["x0"])) / cell, 0.0, n - 1 - 1e-9)
+	var fz := clampf((z - float(C["z0"])) / cell, 0.0, n - 1 - 1e-9)
+	var i := int(floor(fx))
+	var j := int(floor(fz))
+	var u := fx - i
+	var v := fz - j
+	var A: Array = C[key]
+	var a := float(A[j * n + i])
+	var b := float(A[(j + 1) * n + i])
+	var c := float(A[j * n + i + 1])
+	var d := float(A[(j + 1) * n + i + 1])
+	return a + (c - a) * u + (b - a) * v if u + v <= 1.0 else d + (b - d) * (1.0 - u) + (c - d) * (1.0 - v)
+
+
+# the ribbons' weight outside a confluence's disc (1 - C.fadeAt): 0 inside, 1 past its rim
+static func confluence_ribbon_fade(C: Dictionary, x: float, z: float) -> float:
+	var at: Array = C["at"]
+	return _ss(float(C["r"]) - float(C["feather"]), float(C["r"]), sqrt((x - float(at[0])) * (x - float(at[0])) + (z - float(at[1])) * (z - float(at[1]))))
