@@ -544,9 +544,12 @@ through `TARGET_CORE`, and by `settlements/locus` and `settlements/mungo` (their
 |---|---|
 | `25-core-mask.js` | [G data] `KMASK.canvas`, `hash`, `ops`, `export`; the rasteriser (`disc`, `ring`, `polyline`, `polygons`, `rect`) |
 | `26-core-mask-xform.js` | [G data] `KMASK.xform(cv)`: save/restore, translate/scale/rotate, full ellipses, applied before KMASK sees a point (the ops stay plain numbers, so `kmask.gd` is unchanged); non-portable calls throw |
+| `27-core-mask-distance.js` | [G data] `KMASK.distance(mask)`: the exact Euclidean distance transform of a region raster, in integers (squared pixels), and `KMASK.distanceHash`; a species' reach reads it (`core/biome` `BIO.reachW`). Opt-in: a build lists it after `25-core-mask.js` |
 | `test-mask.js` | `node core/mask/test-mask.js` (`--write` rewrites `golden.json`) |
+| `test-mask-distance.js` | `node core/mask/test-mask-distance.js`: exact against a brute force, the negatives, `golden-distance.json` (`--write`) |
 | `test-mask-xform.js` | `node core/mask/test-mask-xform.js`: world-space calls give the same bytes and ops as the shapes in pixels; the negatives throw |
 | `kmask.gd`, `kmask_test.gd`, `golden.json` | the GDScript twin, replaying the ops to the same bytes (passing in Godot 4.5); copied to `godot/tests/mask/` |
+| `kmask_distance_test.gd`, `golden-distance.json` | `KMask.distance` in Godot: the golden's squared distances (hash) and samples (their IEEE bytes) match; passing in Godot 4.7.2 |
 
 ## Planned: a material registry
 

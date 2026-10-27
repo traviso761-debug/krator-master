@@ -186,6 +186,39 @@ The impostors, three lines and the kit's own call sites (swbay is the worked exa
   opts: grid, cell, radius, centre}); a `far.gdshader` on a MultiMesh does the same hemi-octahedral decode and three-view
   blend (SIsilicon's Octahedral Impostors addon uses the same layout). The bake is browser-side; a port reads its atlases.
 
+## Reach and kin (PLAN-LANDS.md H1, H2; `40-core-place.js`, `20-core-kit.js`, `32-core-variants.js`; opt-in)
+
+**Reach.** A species carried out of its home polygon by long diffusion carries `reach: {from, km, falloff}`.
+`BIO.reachW(reach, x, z)` is 1 inside `from`, falling to 0 at `km` kilometres from it: `'smooth'` (the default, 1 minus
+smoothstep), `'linear'`, `'square'` or a function of t = d / km. The distance (metres) is the host's:
+`BIO.host.distance = {from: (x, z) -> m}` or one `(from, x, z) -> m`; `BIO.reachField(F, {x0, z0, m})` makes that lookup
+from a core/mask `KMASK.distance` field (`core/mask/README.md`, "The distance transform"). A host that cannot say (no
+`distance`, an unknown `from`, a null) gives weight 0: a reach species does not grow where the distance is unknown.
+`BIO.grid(..., {reach})` multiplies its accept by the weight before the mask (a species record holding `.reach` works
+too). The cells it zeroes draw nothing more, and a grid without it draws exactly as before (`test-reach.js`).
+
+**Kin.** `BIO.kin('eastabyss.sigillaria', delta)` is a cousin of another kit's species, grown by that kit's own builder.
+`BIO.kitBuilder(kit, key)` is the lookup: the source kit's `SPECIES` entry and its `make(sp, x, y, z)` and `grow(T, lv)`,
+which every tree kit already exports (or the kit's own `api.builders[key] = {make, grow}`). The source kit's fragments
+must be on the page; its `build` is never called, so the source pages do not change. The delta: `key`, `name`; `scale`
+(a number or `{H, rb, crownR}`) multiplies the size ranges; `habit`, `colour` and `pheno` merge into the record (the
+builder's own fields, its colour arrays, phenology data for the seasons); `tags` merge, and `tags.kin` is the source; any
+other field (a `reach`) is set. While `K.make` and `K.grow` run, the source's `SPECIES` entry is the kin's record (put back
+after, even on a throw), so what the builder reads there is the kin's; the geometry goes into the source kit's registry.
+What a builder does not read from its record (a habit coded by species index, a palette cached at load) stays the
+source's: check the builder before relying on a field. `test-kin.js`.
+
+### Adopting it
+
+- Reach: list `27-core-mask-distance.js` (core/mask) in the build; in the host, build each home polygon's field and set
+  `BIO.host.distance` (`core/mask/README.md`, "Adopting it"); in the kit's pass for a borrowed species, pass
+  `{reach: S.reach}` to `BIO.grid`, or multiply its accept by `BIO.reachW(S.reach, x, z)` where the pass has its own.
+  The open world reads `dist.png` (`tools/scale-model/extract_region.py`) for the same field.
+- Kin: list the source kit's fragments before the kin's kit (as abyssal-savannah lists eastabyss's), then in the kin's
+  species file `const SEAL = BIO.kin('eastabyss.sigillaria', {...})`, add `SEAL.record` to the kit's `SPECIES` (core/tags
+  reads its tags), and in its pass `const T = SEAL.make(x, y, z); SEAL.grow(T, lv)`. Reseed first for a repeatable tree,
+  as with the source's own `make`.
+
 ---
 
 <!-- the foliage workstream (2026-10-26) wrote its own README on its branch; merged below as written -->
