@@ -28,6 +28,9 @@
 //   soak     {full, from, out}: strength by time inside, from (at entering) to 1 after full s, forgotten over out s (luck)
 //   fire     {lit, burn, smoulder, smoulderK, x, z, wind}: a live fire on stateFn 'KFIRE.run' (KHAZ.bindFire binds its run)
 //   cycle.base  0..1: the k the cycle never drops below (a lava lake that overturns, a vent that fumes between puffs)
+//   effects  [{effect, dose, danger}]: a hazard that delivers several (the made `trap`: a shock and a paralysis);
+//            KHAZ.doses gives each. The trap kind's row gives a trigger (step, reset 30 s); KHAZ.trip(rec, t) sets it
+//            off (state 'resetting', k 0, for reset s), KHAZ.disarm(rec) / rearm(rec)
 //
 //   tags.taboo = {of: null (every people) | [culture...], why, shape}: an area a people will not build in (Outlands C6)
 //
@@ -79,8 +82,9 @@
     var shape=null;
     if(h.shape!=null){if(!has(V.hazardShapes,h.shape.type))throw new Error('KHAZ.make: unknown shape '+h.shape.type);
       shape=copy(h.shape);if(shape.type==='poly'&&!(shape.pts&&shape.pts.length>=3))throw new Error('KHAZ.make: a poly shape needs 3 or more pts');}
-    var trigger=null;
-    if(h.trigger!=null){if(!has(V.hazardTriggers,h.trigger.by))throw new Error('KHAZ.make: unknown trigger '+h.trigger.by);trigger=copy(h.trigger);}
+    var trigger=null,tg=h.trigger===undefined&&K.trigger?K.trigger:h.trigger;
+    if(tg!=null){if(!has(V.hazardTriggers,tg.by))throw new Error('KHAZ.make: unknown trigger '+tg.by);trigger=copy(tg);
+      if(K.trigger&&h.trigger&&trigger.reset==null)trigger.reset=K.trigger.reset;}
     var cycle=null;
     if(h.cycle!=null){var c=h.cycle;cycle={period:num(c.period,'cycle period'),warn:d(c.warn,0),ramp:d(c.ramp,0),on:num(c.on,'cycle on'),
       after:d(c.after,0),afterK:d(c.afterK,.3),offset:c.offset==null?null:num(c.offset,'cycle offset')};
@@ -106,6 +110,10 @@
       out:num(d(sk.out,d(ks.out,d(sk.full,ks.full))),'soak out')};
       if(!(out.soak.full>0)||!(out.soak.out>0))throw new Error('KHAZ.make: soak full and out must be above 0');
       if(out.soak.from<0||out.soak.from>1)throw new Error('KHAZ.make: soak from is 0..1');}
+    if(h.effects!=null){if(!Array.isArray(h.effects)||!h.effects.length)throw new Error('KHAZ.make: effects is a list of {effect, dose, danger}');
+      out.effects=h.effects.map(function(e){if(!e||!has(V.hazardEffects,e.effect))throw new Error('KHAZ.make: unknown effect '+(e&&e.effect));
+        var o={effect:e.effect,dose:num(d(e.dose,out.dose),'effects dose'),danger:num(d(e.danger,danger),'effects danger')};
+        if(o.danger<0||o.danger>1)throw new Error('KHAZ.make: an effect\'s danger is 0..1');return o;});}
     if(h.fire!=null){var f=h.fire;out.fire={lit:num(d(f.lit,0),'fire lit'),burn:num(d(f.burn,30),'fire burn'),smoulder:num(d(f.smoulder,400),'fire smoulder'),
       smoulderK:d(f.smoulderK,.3)};if(f.x!=null){out.fire.x=num(f.x,'fire x');out.fire.z=num(f.z,'fire z');}if(f.wind)out.fire.wind=f.wind.slice();}
     return out;
@@ -195,7 +203,18 @@
     var k=c.base?c.base+(1-c.base)*q.k:q.k;
     var o={state:q.state,k:k,on:k>0,left:q.left};if(q.state==='warn')o.warn=true;return o;}
   // x, z: the point, for a hazard whose state differs across it (a live fire); the others ignore it
+  // a triggered hazard's page state, by record id: when it last went off, and whether it is disarmed (not in the record:
+  // what a walker did to it)
+  var TRIPS={},DISARMED={};
+  // set it off at t: true when it was armed (it fires: its doses apply now), false while it resets or once disarmed
+  function trip(rec,t){var h=of(rec);if(!h||!h.trigger)throw new Error('KHAZ.trip: a hazard with a trigger');
+    var s=state(rec,t);if(s.state==='resetting'||s.state==='disarmed')return false;TRIPS[rec.id]=t;return true;}
+  function disarm(rec,on){if(on===false)delete DISARMED[rec.id];else DISARMED[rec.id]=true;}
+  function rearm(rec){delete TRIPS[rec.id];delete DISARMED[rec.id];}
   function state(rec,t,speed,x,z){need();var h=of(rec);if(!h)return null;speed=speed==null?KHAZ.speed:speed;
+    if(DISARMED[rec.id])return {state:'disarmed',k:0,on:false};
+    if(h.trigger&&TRIPS[rec.id]!=null){var u=t-TRIPS[rec.id],rs=d(h.trigger.reset,0);
+      if(u>=0&&u<rs)return {state:'resetting',k:0,on:false,left:rs-u};}
     if(h.stateFn){var f=STATES[h.stateFn];if(!f)throw new Error('KHAZ.state: no state function '+h.stateFn+' (a kit adds it to KHAZ.STATES)');return f(rec,h,t,speed,x,z);}
     if(h.cycle)return cycleState(h,rec.id,t,speed);
     return {state:'steady',k:1,on:true};}
@@ -217,6 +236,13 @@
     if(rd>dd)return {dose:rd,danger:h.radiant.danger,state:{state:'radiant',k:rk,on:true},radiant:true};
     return {dose:dd,danger:h.danger,state:s};}
   function dose(rec,x,z,t,y,tIn){var h=of(rec);if(!h)return 0;var o=hit(rec,h,x,z,t,y,tIn);return o?o.dose:0;}
+  // every effect's dose at a point now, {effect: dose}: a hazard with `effects` gives each its own (scaled as the dose is),
+  // any other its one effect; radiant heat is burn. {} where it does not reach
+  function doses(rec,x,z,t,y,tIn){var h=of(rec);if(!h)return {};var o=hit(rec,h,x,z,t,y,tIn),out={};if(!o)return out;
+    if(o.radiant){out.burn=o.dose;return out;}
+    if(h.effects){var sc=inside(rec,x,z,y),m=fall(h.falloff,sc)*o.state.k*soakK(h,tIn);
+      h.effects.forEach(function(e){out[e.effect]=(out[e.effect]||0)+e.dose*m;});return out;}
+    out[h.effect==null?'none':h.effect]=o.dose;return out;}
 
   // ---- the records: live, carrying a hazard; an item set's instances each (built on demand by the registry)
   function reg(T){need();T=T||KT.page;if(!T)throw new Error('KHAZ: no registry (pass one, or a page\'s KTAGS.page)');return T;}
@@ -320,7 +346,7 @@
       var F=forbids(r.at[0],r.at[2],r,T);if(F.length)out.push({id:r.id,taboo:F[0].id,who:whoOf(r)});}return out;}
 
   var KHAZ={make:make,of:of,shape:shape,inside:inside,beyond:beyond,state:state,dose:dose,list:list,at:at,zones:zones,export:exp,
-    STATES:STATES,speed:1,fall:fall,soakK:soakK,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,
+    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,
     taboo:tabooOf,taboos:taboos,forbids:forbids,tabooOk:tabooOk,tabooAudit:tabooAudit};
   root.KHAZ=KHAZ;
 })(typeof globalThis!=='undefined'?globalThis:this);

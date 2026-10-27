@@ -49,6 +49,9 @@ its probes.
   rerun needed. A cell burns from `lit + arrive` for `burn` s, smoulders at `smoulderK` for `smoulder` s, and is then out.
   The Area3D covers the box. Its state and its radiant heat are read per point from the front, as `KHAZ.state(rec, t, s,
   x, z)` does. `kfire.gd`'s `run` can make the same front from the history, when the port runs fires itself.
+- `effects` (the made trap): one build-up meter per effect on the walker's `HazardStatus`, each fed by its own dose. A
+  `trigger` is `body_entered` (a `beam`: a thin `Area3D` or a `RayCast3D` along the beam) calling `KHazard.trip`, which
+  keeps the last trip time per record; `resetting` and `disarmed` turn `monitoring` off.
 - `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
   `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
   as `KHAZ.tabooOk` does on the page.

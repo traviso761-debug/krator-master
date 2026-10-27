@@ -29,7 +29,7 @@ What else it touches (all in this workstream, 2026-10-26):
 
 ```
 tags.hazard = {
-  kind     heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck (VOCAB.hazardKinds: its row fills the rest)
+  kind     heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap (VOCAB.hazardKinds: its row fills the rest)
   effect   burn freeze suffocate poison corrode bleed hold drown | null
   danger   0..1 (.3 hurts, .7 holds a person, 1 kills)          dose   effect units a second at the core
   shape    {type: sphere|cyl|box|poly, r, h, w, d, pts [[dx, dz]...], y0, y1, edge}, metres from the record's at (box and
@@ -74,6 +74,7 @@ or its kind has it, so every older record fills, states, doses and exports exact
 |---|---|---|---|
 | `lava` | burn | danger 1, dose 20, avoid; `radiant` 8 m (dose 2, danger .4) | flows, lakes, the summit vent's fountain |
 | `fire` | burn | danger .9, dose 5, avoid; `radiant` 10 m (dose 1, danger .3) | a live fire on `KFIRE.run` |
+| `trap` | damage | danger .6, dose 1, walkable; `trigger` step, reset 30 s | a made trap (the arcology ruins, later): plates, beams, blades, stun fields |
 | `luck` | misfortune | danger .3, dose .05, walkable; `soak` (full 600 s, from 0, out 1200 s) | Trickster's House's keep-out ring |
 
 The Throne's kinds stay what they were: gas vents are `gas`, hot ground is `heat`.
@@ -91,6 +92,13 @@ The Throne's kinds stay what they were: gas vents are `gas`, hot ground is `heat
   arrival), then `smouldering` (k `smoulderK` .3, `smoulder` 400 s), then `burnt`. With no point, the worst state anywhere
   on it now. Its radiant heat comes from the nearest burning cell. `KHAZ.state(rec, t, speed, x, z)` takes the point (the
   other kinds ignore it). Unbound, it is `unlit` and harms nothing.
+- **The made trap** (`kind: 'trap'`, planned for the arcology ruins): `effects: [{effect, dose, danger}]` delivers
+  several at once (effects now include `shock`, `paralysis`, `damage`), each scaled as the dose is. `KHAZ.doses(rec, x, z,
+  t, y, tIn)` returns `{effect: dose}` (any hazard: its one effect; radiant heat is `burn`). The row gives a trigger
+  (`step`, reset 30 s; triggers now include `beam`). `KHAZ.trip(rec, t)` sets it off: true when it was armed (its doses
+  apply now); then it is `resetting` (k 0) for `reset` s. `KHAZ.disarm(rec)` (state `disarmed`) and `KHAZ.rearm(rec)`.
+  Trips and disarming are page state by record id, not stored in the record. A hidden trap is `tell: {fx: null, sound:
+  null}` with a `sign` for whoever finds it. A pulsing field (a shock floor) is a `cycle`.
 - **`KHAZ.GROUND`**: the Godthrone's records, as a kit writes them: `lavaFlow(pts, o)`, `lavaLake(r, o)`, `gasVent(r, o)`,
   `hotGround(pts, r, o)` (`pts` a polygon in metres from the record's `at`, else a circle; `o` overrides any field).
 - **`tags.taboo = {of, why, shape}`**: an area a people will not build in. `of` null bars every people, else the listed
@@ -166,7 +174,7 @@ fauna record and the AI (a zone that followed an animal each frame would fight t
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 4935dd5d
-with lava, fire, luck and the taboo key). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 858cfe5c
+with lava, fire, luck, trap and the taboo key). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

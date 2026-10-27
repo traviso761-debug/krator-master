@@ -114,7 +114,7 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
 | `trap` | an object: a carnivorous plant's trap record (`core/biome/37-core-traps.js`) |
-| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
+| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
 | `taboo` | an object (2026-10-26, the Outlands' C6): an area a people will not build in, `{of: null (every people) \| [culture...], why, shape}`. A record is of a people by `tags.faction`, else `tags.culture`. Placement asks `KHAZ.forbids` / `KHAZ.tabooOk` (`core/hazard/README.md`, "Adopting it" step 5) |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
@@ -195,5 +195,5 @@ A page that already takes core/tags has the keys: the vocabulary (52) carries th
 - **A taboo**: `tags: {taboo: {of: null | [culture...], why}}` on the area's record, registered before anything of a people
   is placed. The label says `taboo to <peoples>`. The placement check is core/hazard's: `KHAZ.tabooOk(culture)` for
   core/city's `rules.groundOk` or a scatter's `accept`, and `KHAZ.tabooAudit()` in verify.
-- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (4935dd5d with
-  lava, fire, luck and taboo). Rewrite it with a note of what moved it.
+- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (858cfe5c with
+  lava, fire, luck, trap and taboo). Rewrite it with a note of what moved it.

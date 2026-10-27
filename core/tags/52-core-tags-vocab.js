@@ -146,12 +146,15 @@
      // edge, falling to 0); soak: strength by time inside (from at entering, full after `full` s, forgotten over `out` s)
      lava:   { effect: 'burn',      danger: 1,  dose: 20, falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff5a10', fx: 'glow', sound: 'roar' },    radiant: { reach: 8, dose: 2, danger: .4 } },
      fire:   { effect: 'burn',      danger: .9, dose: 5,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: true },   tell: { colour: '#ff9a30', fx: 'flame', sound: 'crackle' }, radiant: { reach: 10, dose: 1, danger: .3 } },
-     luck:   { effect: 'misfortune', danger: .3, dose: .05, falloff: 'none', nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#c8a040', fx: null, sound: null },        soak: { full: 600, from: 0, out: 1200 } }
+     luck:   { effect: 'misfortune', danger: .3, dose: .05, falloff: 'none', nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#c8a040', fx: null, sound: null },        soak: { full: 600, from: 0, out: 1200 } },
+     // a made trap (the arcology ruins, later): set off by a trigger, it delivers one effect or several (effects:
+     // [{effect, dose, danger}]: a shock and a paralysis); it resets after trigger.reset s, and can be disarmed
+     trap:   { effect: 'damage',    danger: .6, dose: 1,  falloff: 'none',   nav: { travel: 1, enter: 0, avoid: false },  tell: { colour: '#e0c040', fx: 'spark', sound: 'click' },  trigger: { by: 'step', reset: 30 } }
    },
-   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune'],
+   hazardEffects: ['burn', 'freeze', 'suffocate', 'poison', 'corrode', 'bleed', 'hold', 'drown', 'misfortune', 'shock', 'paralysis', 'damage'],
    hazardShapes: ['sphere', 'cyl', 'box', 'poly'],
    hazardFalloffs: ['none', 'linear', 'smooth'],
-   hazardTriggers: ['step', 'weight', 'near'],
+   hazardTriggers: ['step', 'weight', 'near', 'beam'],
    // the navigation layers a hazard's zone is on (Godot's navigation_layers bits): walk, the one every agent asks for; avoid,
    // the one no agent asks for (an avoid zone's polygons are cut out of the walk layer)
    navLayers: { walk: 1, avoid: 2 },

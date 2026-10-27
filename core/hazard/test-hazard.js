@@ -189,6 +189,21 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  for(let i=0;i<100;i++)E.step(0,0,i,1);for(let i=0;i<100;i++)E.step(1000,0,i,1);
  ok('exposure: 100 s inside, 100 s out leaves 50',E.tIn(ring.id)===50,E.tIn(ring.id)===0);}
 
+// the made trap: a trigger, one effect or several, a reset, disarming
+{const TP=KT.create({build:'trap-test'});
+ const plate=TP.add({'class':'feature',kind:'plate',name:'A shock plate',at:[0,0,0],r:1,h:1,tags:{hazard:{kind:'trap',effects:[{effect:'shock',dose:3,danger:.5},{effect:'paralysis',dose:1,danger:.8}]}}});
+ const blade=TP.add({'class':'feature',kind:'blade',name:'A blade',at:[10,0,0],r:1,h:2,tags:{hazard:{kind:'trap',trigger:{by:'beam'}}}});
+ const h=H.of(plate);
+ ok('trap: its row gives damage, a step trigger with a 30 s reset',H.of(blade).effect==='damage'&&h.trigger.by==='step'&&h.trigger.reset===30&&H.of(blade).trigger.by==='beam'&&H.of(blade).trigger.reset===30,h.trigger==null);
+ ok('negative: an older kind gets no trigger and no effects key',H.make({kind:'pit'}).trigger===null&&!('effects' in H.make({kind:'pit'})),H.make({kind:'pit'}).trigger!=null);
+ ok('trap: several effects, each its dose at the core',(()=>{const D=H.doses(plate,0,0,0);return D.shock===3&&D.paralysis===1&&Object.keys(D).length===2;})(),Object.keys(H.doses(plate,5,0,0)).length>0);
+ ok('doses: one effect for any other hazard; radiant heat is burn',H.doses(blade,10,0,0).damage===1&&H.doses(pool,10,0,0).corrode===1&&H.doses(flow,0,8,0).burn>0,H.doses(pool,10,0,0).burn);
+ ok('a bad effects list is refused',throws(()=>H.make({kind:'trap',effects:[]}))&&throws(()=>H.make({kind:'trap',effects:[{effect:'tickle'}]}))&&throws(()=>H.make({kind:'trap',effects:[{effect:'shock',danger:3}]})),throws(()=>H.make({kind:'trap',effects:[{effect:'shock'}]})));
+ ok('trip: fires when armed, then resets for 30 s (k 0), then is armed again',H.trip(plate,100)===true&&H.state(plate,110).state==='resetting'&&H.state(plate,110).k===0&&H.trip(plate,110)===false&&H.dose(plate,0,0,110)===0&&H.state(plate,131).k===1&&H.trip(plate,131)===true,H.trip(plate,140));
+ ok('disarm: off for good, rearm brings it back',(H.disarm(plate),H.state(plate,500).state==='disarmed'&&H.trip(plate,500)===false&&Object.keys(H.doses(plate,0,0,500)).every(k=>H.doses(plate,0,0,500)[k]===0))&&(H.rearm(plate),H.state(plate,500).k===1),H.state(plate,500).state==='disarmed');
+ ok('negative: trip refuses a hazard without a trigger',throws(()=>H.trip(pool,0)),throws(()=>H.trip(blade,0)));
+ ok('export: the trap carries its effects and trigger',(()=>{const r=H.export(TP).records[0].hazard;return r.effects.length===2&&r.trigger.reset===30;})(),false);}
+
 // taboo: the area a people will not build in
 ok('core/tags takes a taboo object',KT.norm({taboo:{of:null}}).problems.length===0,KT.norm({taboo:'cursed'}).problems.length===0);
 ok('taboo: checked and filled',H.taboo(ring).of===null&&H.taboo(ring).why==='the trickster\'s house'&&H.taboo(ring2).of[0]==='coyote-peak',H.taboo(pool)!==null);
