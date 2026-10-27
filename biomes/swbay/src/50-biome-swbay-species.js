@@ -461,10 +461,11 @@ BIO.def('fungus',FUNG?BIO.fung.bracket({arc:Math.PI*1.1,seg:7,thick:.34,droop:.1
 // a shelf (BIO.fung.bracket, out along +z) turned to face out of its wall, a little tilt; the draws are the old dome's (the same stream)
 SWBAY.shelfQ=(n,ax,ay,az)=>{const h=Math.hypot(n[0],n[2]);return qEuler(ax*.4,h>.2?Math.atan2(n[0],n[2]):ay,az*.4);};
 SWBAY.shelfS=sb=>FUNG?[sb,sb*.8,sb*.75]:[sb,sb*.4,sb];
-// the cap-tree's caps (55 B[2]): one dome of radius 1 (h .42), gilled underneath, its rim waved, the planar uv repeated 6 times so the cap
-// texture's warts keep their size; on the cap bucket's material. The tiered shelf lower on the stem is the same cap, smaller
-if(FUNG){const g=BIO.fung.cap({form:'dome',h:.42,seg:18,rings:6,wav:7,wavA:.035,lump:.03,under:'gills',gillN:30,gillD:.14,gillK:.5,seed:94,uv:'planar'}),uv=g.attributes.uv;
- for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-.5)*6+.5,(uv.getY(i)-.5)*6+.5);
+// the cap-tree's caps (55 B[2]): one dome of radius 1 (h .42), gilled underneath, its rim waved; on the cap bucket's material. The uv wraps
+// round the cap (u) and runs rim to crown (v), repeated as the old lathe repeated it on a cap of the mean radius (21 m: 11 round, 1.6 up),
+// so the texture's whorls lie round the dome; a planar uv laid them out as a grid (the owner, 2026-10-27). The tiered shelf is the same cap
+if(FUNG){const g=BIO.fung.cap({form:'dome',h:.42,seg:18,rings:6,wav:7,wavA:.035,lump:.03,under:'gills',gillN:30,gillD:.14,gillK:.5,seed:94}),uv=g.attributes.uv;
+ for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*11,uv.getY(i)*1.6);
  BIO.def('capf',g,M.cap,{label:'Cap-tree caps'});}
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SWBAY.ROCKTEX),{label:'Boulders (small)'});
 })();
