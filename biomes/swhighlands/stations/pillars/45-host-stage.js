@@ -46,7 +46,8 @@ const TOWER_PLAN=JOINTS.blocks([TERR.X0+40,TERR.Z0+40,TERR.X1-40,TERR.Z1-40]).ma
  const t=(zz-.3)/.6,s=KRAND.stream(KRAND.hash(WORLD,B.i,B.j,0x91)),stand=s.next()<(1-.75*Math.pow(t,1.5))*.42,gp=.15+.5*t,brk=s.next(),fin=s.range(.3,.62),spire=s.next()<.3;
  if(!stand||Math.hypot(B.cx-WATCH_AT.x,B.cz-WATCH_AT.z)<95)return null;
  const long=B.w>B.l,w=B.w*(1-gp)*(long?1:fin)*(spire?.7:1),l=B.l*(1-gp)*(long?fin:1)*(spire?.7:1);if(Math.min(w,l)<12)return null;
- return{id:'pillar:'+B.id,i:B.i,j:B.j,x:B.cx,z:B.cz,w,l,ry:B.ry,brk:brk<.35?brk/.35*.6*t:0,spire,arch:!spire&&Math.max(w,l)>=44&&s.next()<.14,seed:KRAND.hash(WORLD,B.i,B.j,0x92)};}).filter(Boolean);
+ const jt=KRAND.stream(KRAND.hash(WORLD,B.i,B.j,0x94)),jx=jt.range(-.2,.2)*B.w,jz=jt.range(-.2,.2)*B.l,jr=jt.range(-.4,.4);   /* off the grid: each tower its own shift and turn */
+ return{id:'pillar:'+B.id,i:B.i,j:B.j,x:B.cx+jx*Math.cos(B.ry)-jz*Math.sin(B.ry),z:B.cz+jx*Math.sin(B.ry)+jz*Math.cos(B.ry),w,l,ry:B.ry+jr,brk:brk<.35?brk/.35*.6*t:0,spire,arch:!spire&&Math.max(w,l)>=44&&s.next()<.14,seed:KRAND.hash(WORLD,B.i,B.j,0x92)};}).filter(Boolean);
 {let n=0;TOWER_PLAN.forEach(P=>{if(P.arch&&++n>3)P.arch=false;});}   /* a few (the owner): three pierced fins at most */
 // ARCHES AND BRIDGES (the owner, 2026-10-27: "a few real rock bridges and arches"; refs 41-43): fins of the band pierced through (the
 // plan's arch flag: one long fin in seven, three at most), and a free arch standing alone out on the floor and on the apron, Delicate Arch's kind;
@@ -64,7 +65,27 @@ function apronAt(x,z){const d=z-rimZ(x);if(d<=0)return 0;const L=APRON*(1+.25*NZ
  const h=(TOP-CAP)*Math.pow(u,1.8),rill=1-Math.abs(2*KRAND.fbm(x*.045+d*.004,.3,d*.002,2,91)-1);return Math.max(0,h-9*Math.pow(rill,3)*Math.sin(Math.PI*u));}
 // the floor: low hummocks, the badland apron under the cliff, a talus cone round each tower, falling a little toward Pan Riba
 function floor0(x,z){const d=z-rimZ(x),b=6*NZ(x,z,.0028,84,3)+1.5*NZ(x,z,.015,85,2)-.012*Math.max(0,d-200);return Math.max(b+talusAt(x,z),b+apronAt(x,z));}
-const TABLE=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.02,slot:{w:2.6,grow:4,depth:.5}});
+const TABLE0=KRELIEF.tableland({joints:JOINTS,zone,top:tableTop,floor:floor0,z0:.3,edge:.02,slot:{w:2.6,grow:4,depth:0}});
+// THE JOINTS ERODED (the owner, 2026-10-27: the table read as a grid): KRELIEF.tableland's slots open every joint alike, so here
+// they are the station's own. The joints are found through a warp (they wander ~20 m), and each stretch of a joint between two
+// crossings opens by its own draw (KRAND: set, joint, stretch), rarely deep in the table and mostly by the rim; an open one's
+// width and depth wander along it, and the blocks' tops wear down round toward their open sides (the beehive and pagoda tops of
+// refs/21); a closed joint leaves only a faint groove. Nothing is cut past the rim (the cliff and the floor are TABLE0's)
+function slotCut(x,z){const zz=zone(x,z);if(zz>=.3)return 0;const f=zz/.3,wx=x+34*NZ(x,z,.003,92,2)+9*NZ(x,z,.012,97,2),wz=z+34*NZ(x,z,.003,93,2)+9*NZ(x,z,.012,98,2),a=JOINTS.at(wx,wz),H=TOP-floor0(x,z);
+ const ang=JOINTS.angle,ca=Math.cos(ang),sa=Math.sin(ang),u=wx*ca+wz*sa,v=-wx*sa+wz*ca,K=[Math.round(u/97),Math.round(v/97)],AL=[v,u];
+ let cut=0;
+ [a.du,a.dv].forEach((d,s)=>{const along=AL[s]/42,seg=Math.floor(along),t=along-seg;   /* a joint opens in stretches of ~42 m, each by its own draw */
+  const r=KRAND.unit(KRAND.hash(WORLD,s,K[s],seg,0x5107)),op=r<.1+.72*Math.pow(f,1.6);
+  const pinch=op?Math.sin(Math.PI*clamp(t*1.1-.05,0,1))*.7+.3:1;   /* an open stretch pinches toward its ends: the slots wander in and out */
+  const w=(op?1.5+7*Math.pow(f,1.4)*pinch:.45)*(.5+KRAND.fbm(x*.03,s,z*.03,2,94+s));const dp=op?H*(.1+.6*f)*(.5+KRAND.fbm(x*.01,s+3,z*.01,2,96))*pinch:.5;
+  if(d<w)cut=Math.max(cut,dp*(1-Math.pow(d/w,3)));else if(op)cut=Math.max(cut,5*pinch*Math.pow(1-clamp((d-w)/(10+8*f),0,1),2));});
+ // the blocks stepped: each block's top its own height (a broken table, not one plate), the step softened at its edges
+ const bu=KRAND.unit(KRAND.hash(WORLD,a.i,a.j,0x5108)),step=bu<.35?H*.09*(1-bu/.35)*(.4+.6*f):0;cut=Math.max(cut,step*smooth(0,9,a.d));
+ // pans: shallow hollows weathered in the tops (refs: the slickrock's potholes and pans)
+ cut+=2.5*smooth(.18,.32,KRAND.fbm(x*.012,.7,z*.012,2,99)-.5+.25);
+ return cut*smooth(.3,.285,zz);}
+// the table, its slots and its cliff: TABLE0 with the station's eroded joints cut in, never under the floor
+function TABLE(x,z){const t=TABLE0(x,z),c=slotCut(x,z);return c>0?Math.max(floor0(x,z)+1,t-c):t;}
 
 // ---------------------------------------------------------------- Pan Riba (the river across the floor)
 // From the map's west edge to its east, out on the floor beyond the towers, meandering (KRELIEF.meander); its level from
