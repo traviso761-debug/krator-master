@@ -61,6 +61,13 @@
 //   KHAZ.GROUND                  the Godthrone's: lavaFlow(pts, o), lavaLake(r, o), gasVent(r, o), hotGround(pts, r, o)
 //   KHAZ.PREDATOR                the places predators hold (kind hunter, hunter: {fauna: [key...]}): lair(r, o),
 //                                ambushPool(r, o), stalkerSand(pts, r, o); o.fauna the keys of what hunts there
+//   KHAZ.deploy(T, o)            lay a mine at t (o: at, t, by {id, faction}...): a record added; KHAZ.clearMine(T, rec)
+//   KHAZ.minefield(o)            a field by cell (KRAND.hash): plain mine records to register; age makes duds and exposed
+//   KHAZ.blast(rec, x, z, y)     a mine's blast at a point {dose, danger, f}; KHAZ.inBlast(rec, t, T) the armed mines it
+//                                sets off; KHAZ.find(rec) unhides one; KHAZ.knows(rec, who) its owner, mine.known, found
+//   KHAZ.detonate(T, rec, t)     trip it: {fired, left (what it leaves, gone after its life: until), chain}
+//   KHAZ.MINES                   loads (o.load of deploy and minefield): frag, incendiary, cryo, emp, stun, gas
+//   until    (any hazard) the t it is gone at: state 'gone', k 0 (what a mine leaves)
 //   KHAZ.taboo(rec)              rec.tags.taboo checked ({of, why, shape}); KHAZ.taboos(T) every live taboo record
 //   KHAZ.forbids(x, z, who, T)   the taboos barring who (a culture, or a record) at a point; KHAZ.tabooOk(who, T) -> fn(o)
 //                                false where one does (a point, a disc, core/city's footprint); KHAZ.tabooAudit(T) the
@@ -124,6 +131,15 @@
     var tm=h.time===undefined?K.time:h.time;
     if(tm!=null){var kt=K.time||{},sc=num(d(tm.scale,kt.scale),'time scale');if(!(sc>0))throw new Error('KHAZ.make: time scale must be above 0');
       out.time={scale:sc};}
+    var mn=h.mine===undefined?K.mine:h.mine;
+    if(mn!=null){var km=K.mine||{};out.mine={blast:num(d(mn.blast,d(km.blast,4)),'mine blast'),arm:num(d(mn.arm,d(km.arm,0)),'mine arm'),
+        dud:num(d(mn.dud,d(km.dud,0)),'mine dud'),laid:mn.laid==null?null:num(mn.laid,'mine laid'),owner:d(mn.owner,null),
+        known:mn.known==null?[]:mn.known.slice(),exposed:!!mn.exposed};
+      if(!(out.mine.blast>0))throw new Error('KHAZ.make: a mine\'s blast must be above 0');
+      if(out.mine.dud<0||out.mine.dud>1)throw new Error('KHAZ.make: a mine\'s dud chance is 0..1');
+      if(!out.mine.known.every(function(k){return typeof k==='string';}))throw new Error('KHAZ.make: mine.known is a list of factions');
+      if(mn.leaves!=null){var lv=copy(mn.leaves),life=num(d(lv.life,30),'mine leaves life');delete lv.life;make(lv);out.mine.leaves=lv;out.mine.life=life;}}
+    if(h.until!=null)out.until=num(h.until,'until');
     if(h.hunter!=null){var hu=h.hunter;if(hu.fauna!=null&&!(Array.isArray(hu.fauna)&&hu.fauna.every(function(k){return typeof k==='string';})))
         throw new Error('KHAZ.make: hunter.fauna is a list of fauna keys');
       out.hunter={fauna:hu.fauna==null?[]:hu.fauna.slice(),count:d(hu.count,null),note:d(hu.note,null)};}
@@ -218,14 +234,26 @@
   // x, z: the point, for a hazard whose state differs across it (a live fire); the others ignore it
   // a triggered hazard's page state, by record id: when it last went off, and whether it is disarmed (not in the record:
   // what a walker did to it)
-  var TRIPS={},DISARMED={};
-  // set it off at t: true when it was armed (it fires: its doses apply now), false while it resets or once disarmed
+  var TRIPS={},DISARMED={},SPENT={},DUDS={},FOUND={};
+  // set it off at t: true when it was armed (it fires: its doses apply now), false while it resets or once disarmed. A
+  // mine fires once (then spent), and a dud (by its own hash, at mine.dud) does not fire: it is found dead
   function trip(rec,t){var h=of(rec);if(!h||!h.trigger)throw new Error('KHAZ.trip: a hazard with a trigger');
-    var s=state(rec,t);if(s.state==='resetting'||s.state==='disarmed')return false;TRIPS[rec.id]=t;return true;}
+    var s=state(rec,t);if(s.state==='resetting'||s.state==='disarmed'||s.state==='spent'||s.state==='dud'||s.state==='arming')return false;
+    if(h.mine){if(isDud(rec,h)){DUDS[rec.id]=true;FOUND[rec.id]=true;return false;}SPENT[rec.id]=true;}
+    TRIPS[rec.id]=t;return true;}
   function disarm(rec,on){if(on===false)delete DISARMED[rec.id];else DISARMED[rec.id]=true;}
-  function rearm(rec){delete TRIPS[rec.id];delete DISARMED[rec.id];}
+  function rearm(rec){delete TRIPS[rec.id];delete DISARMED[rec.id];delete SPENT[rec.id];delete DUDS[rec.id];}
+  // a mine's dud: fixed by its seed (or id), not by when it is stepped on
+  function isDud(rec,h){if(!(h.mine.dud>0))return false;var R=root.KRAND;
+    return R.unit(R.hash(R.child(0x4d494e,String(h.seed!=null?h.seed:rec.id)),7))<h.mine.dud;}
   function state(rec,t,speed,x,z){need();var h=of(rec);if(!h)return null;speed=speed==null?KHAZ.speed:speed;
     if(DISARMED[rec.id])return {state:'disarmed',k:0,on:false};
+    if(h.until!=null&&t>=h.until)return {state:'gone',k:0,on:false};
+    if(h.mine){var M=h.mine,hid=!(FOUND[rec.id]||M.exposed);
+      if(SPENT[rec.id])return {state:'spent',k:0,on:false};
+      if(DUDS[rec.id])return {state:'dud',k:0,on:false};
+      if(M.laid!=null&&t<M.laid+M.arm)return {state:'arming',k:0,on:false,left:M.laid+M.arm-t,hidden:hid};
+      return {state:'armed',k:1,on:true,hidden:hid};}
     if(h.trigger&&TRIPS[rec.id]!=null){var u=t-TRIPS[rec.id],rs=d(h.trigger.reset,0);
       if(u>=0&&u<rs)return {state:'resetting',k:0,on:false,left:rs-u};}
     if(h.stateFn){var f=STATES[h.stateFn];if(!f)throw new Error('KHAZ.state: no state function '+h.stateFn+' (a kit adds it to KHAZ.STATES)');return f(rec,h,t,speed,x,z);}
@@ -245,7 +273,7 @@
   // heat beyond the harm, when it is the greater). tIn: the seconds the walker has been inside (a soak's strength)
   function hit(rec,h,x,z,t,y,tIn){var f=inside(rec,x,z,y),rk=radiantK(rec,h,x,z,t,y),rd=h.radiant?h.radiant.dose*rk:0;
     if(f<0){if(!(rd>0))return null;return {dose:rd,danger:h.radiant.danger,state:{state:'radiant',k:rk,on:true},radiant:true};}
-    var s=state(rec,t,null,x,z),dd=h.dose*fall(h.falloff,f)*s.k*soakK(h,tIn);
+    var s=state(rec,t,null,x,z),dd=h.mine?0:h.dose*fall(h.falloff,f)*s.k*soakK(h,tIn);   /* a mine harms by its blast (KHAZ.blast), once tripped */
     if(rd>dd)return {dose:rd,danger:h.radiant.danger,state:{state:'radiant',k:rk,on:true},radiant:true};
     return {dose:dd,danger:h.danger,state:s};}
   function dose(rec,x,z,t,y,tIn){var h=of(rec);if(!h)return 0;var o=hit(rec,h,x,z,t,y,tIn);return o?o.dose:0;}
@@ -279,8 +307,10 @@
     out.sort(function(a,b){return b.danger*b.state.k-a.danger*a.state.k||(a.id<b.id?-1:a.id>b.id?1:0);});return out;}
   function worldShape(r){var s=shape(r),o={type:s.type,at:r.at.slice(),ry:r.ry||0};
     ['r','h','w','d','y0','y1','edge'].forEach(function(k){if(s[k]!=null)o[k]=s[k];});if(s.pts)o.pts=s.pts.map(function(p){return p.slice();});return o;}
+  // a mine's zone carries who knows it (its owner and mine.known): only their agents path round it
   function zones(T){return list(T).map(function(r){var h=of(r);
-    return {id:r.id,kind:h.kind,shape:worldShape(r),travel:h.nav.travel,enter:h.nav.enter,avoid:h.nav.avoid,layer:h.nav.layer};});}
+    var z={id:r.id,kind:h.kind,shape:worldShape(r),travel:h.nav.travel,enter:h.nav.enter,avoid:h.nav.avoid,layer:h.nav.layer};
+    if(h.mine)z.known=(h.mine.owner!=null?[h.mine.owner]:[]).concat(h.mine.known);return z;});}
   function exp(T,inBox){T=reg(T);var recs=[];
     list(T).forEach(function(r){if(inBox&&!inBox(r.at[0],r.at[2]))return;
       var o={id:r.id,uid:r.uid,at:r.at.slice(),ry:r.ry||0,hazard:copy(of(r)),shape:worldShape(r)},run=o.hazard.fire&&RUNS[r.id];
@@ -393,6 +423,67 @@
     stalkerSand:function(pts,r,o){return hunterOf({kind:'hunter',danger:1,shape:area(pts,r,4),
       tell:{fx:'ripple',sound:null,sign:'the sand moves where there is no wind'}},o);}};
 
+  // ---- land mines: laid by a player or an NPC (KHAZ.deploy), or a field in the world (KHAZ.minefield: the Valley of the
+  //   Ancients, a war's border). The record's shape is the trigger; the harm is the blast when it is tripped
+  // what a mine carries (o.load: a name in KHAZ.MINES, or an object of the same shape): its effects, blast and what it
+  //   leaves. EMP harms machines (mechs, robots, energy cells) and no one else: its own danger is a person's, low
+  var MINES={
+    frag:{effects:[{effect:'damage',dose:40},{effect:'bleed',dose:10}],blast:5},
+    incendiary:{effects:[{effect:'burn',dose:25}],blast:4,leaves:{kind:'heat',danger:.7,dose:3,shape:{type:'cyl',r:4,h:2},radiant:{reach:4,dose:1},life:30}},
+    cryo:{effects:[{effect:'freeze',dose:15},{effect:'paralysis',dose:2}],blast:5,leaves:{kind:'slip',danger:.3,shape:{type:'cyl',r:5,h:.5},life:120}},
+    emp:{effects:[{effect:'emp',dose:100,danger:.9}],danger:.1,blast:8},
+    stun:{effects:[{effect:'shock',dose:10},{effect:'paralysis',dose:8}],danger:.5,blast:4},
+    gas:{effects:[{effect:'suffocate',dose:5}],blast:3,leaves:{kind:'gas',danger:.8,dose:1,shape:{type:'sphere',r:6},life:60}}};
+  function loadInto(hz,load){if(load==null)return;var L=typeof load==='string'?MINES[load]:load;if(!L)throw new Error('KHAZ: unknown mine load '+load);
+    if(L.effects)hz.effects=copy(L.effects);if(L.danger!=null)hz.danger=L.danger;if(L.dose!=null)hz.dose=L.dose;
+    if(L.blast!=null)hz.mine.blast=L.blast;if(L.leaves)hz.mine.leaves=copy(L.leaves);if(L.arm!=null)hz.mine.arm=L.arm;}
+  // the blast at a point: {dose, danger, f, doses: {effect: dose}} (f 0 at the mine .. 1 at the blast's edge), null outside it
+  function blast(rec,x,z,y){var h=of(rec);if(!h||!h.mine)return null;var dx=x-rec.at[0],dz=z-rec.at[2],dy=y==null?0:y-rec.at[1],
+    q=Math.sqrt(dx*dx+dy*dy+dz*dz),f=q/h.mine.blast;if(f>=1)return null;var m=fall(h.falloff,f),D={};
+    if(h.effects)h.effects.forEach(function(e){D[e.effect]=(D[e.effect]||0)+e.dose*m;});else D[h.effect==null?'none':h.effect]=h.dose*m;
+    return {dose:h.dose*m,danger:h.danger,f:f,doses:D};}
+  // set a mine off at t: {fired, left (the hazard it leaves: burning ground, ice, a cloud; registered at the mine, gone
+  // after its life), chain (the armed mines its blast reaches)}. A dud or a spent mine: {fired: false}
+  function detonate(T,rec,t){T=reg(T);var h=of(rec);if(!h||!h.mine)throw new Error('KHAZ.detonate: a mine');
+    if(!trip(rec,t))return {fired:false,left:null,chain:[]};var left=null;
+    if(h.mine.leaves){var lv=copy(h.mine.leaves);lv.until=t+h.mine.life;
+      left=T.add({'class':'feature',kind:'mine-left',name:'Where '+(rec.name||'a mine')+' went off',at:rec.at.slice(),r:1,h:1,tags:{hazard:lv}});}
+    return {fired:true,left:left,chain:inBlast(rec,t,T)};}
+  // the armed mines another's blast reaches (a chain: the host trips them next)
+  function inBlast(rec,t,T){var h=of(rec);if(!h||!h.mine)return [];return list(T).filter(function(r){if(r===rec||r.id===rec.id)return false;
+    var g=of(r);return g.mine&&state(r,t).state==='armed'&&Math.hypot(r.at[0]-rec.at[0],r.at[2]-rec.at[2])<h.mine.blast;});}
+  // found: a walker saw it, probed it or swept it; it is no longer hidden (an exposed mine never was)
+  function find(rec){FOUND[rec.id]=true;}
+  // who knows where it is: its owner, the factions in mine.known, and anyone once it is found or exposed
+  function knows(rec,who){var h=of(rec);if(!h||!h.mine)return false;var M=h.mine;if(FOUND[rec.id]||M.exposed)return true;
+    var c=typeof who==='string'?who:who&&(who.id!=null&&who.id===M.owner?M.owner:whoOf(who));
+    return c!=null&&(c===M.owner||M.known.indexOf(c)>=0);}
+  // lay one at t: o {at: [x, y, z], t, by: {id, faction}, blast, arm, dud, trigger, danger, dose, name, seed}; returns the record
+  function deploy(T,o){T=reg(T);if(!o||!o.at)throw new Error('KHAZ.deploy: a mine needs at');var by=o.by||{};
+    var hz={kind:'mine',mine:{laid:d(o.t,0),owner:d(by.id,null),known:by.faction!=null?[by.faction]:[],blast:o.blast,arm:o.arm,dud:o.dud}};
+    loadInto(hz,o.load);['trigger','danger','dose','seed','effects'].forEach(function(k){if(o[k]!=null)hz[k]=o[k];});make(hz);
+    return T.add({'class':'prop',kind:'mine',name:o.name||'A mine (laid)',at:o.at.slice(),r:d(o.r,.3),h:.3,tags:{hazard:hz}});}
+  // take one away (lifted, swept, or gone off and cleared): the record removed and its state forgotten
+  function clearMine(T,rec){T=reg(T);delete TRIPS[rec.id];delete SPENT[rec.id];delete DUDS[rec.id];delete FOUND[rec.id];delete DISARMED[rec.id];return T.remove(rec.id);}
+  // a field in the world, by cell: each cell of `cell` m draws its mines from KRAND.hash(seed, i, j, k), never from draw
+  // order, so a tile of it is the same however the world is cut. o: {world (seed), id (the field's name), pts [[x, z]...]
+  // (world) | box [x0, z0, x1, z1], cell (10), per (mines a cell, 0.5: its fraction a chance), ground(x, z) -> y,
+  // age (years: duds 0.4% a year to 60%; exposed .5% a year to 30%), dud, exposed, known, owner, blast, trigger}
+  //   -> plain records for T.add / a host's REGISTER, in cell order
+  function minefield(o){need();var R=root.KRAND,seed=R.child(d(o.world,0)>>>0,'minefield:'+d(o.id,'')),cs=d(o.cell,10),per=d(o.per,.5);
+    var B=o.box||(function(){var b=[Infinity,Infinity,-Infinity,-Infinity];o.pts.forEach(function(p){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[1]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[1]);});return b;})();
+    if(!o.box&&!(o.pts&&o.pts.length>=3))throw new Error('KHAZ.minefield: pts (3 or more) or box');
+    var age=d(o.age,0),dud=d(o.dud,Math.min(.6,.004*age)),exp=d(o.exposed,Math.min(.3,.005*age)),out=[];
+    for(var j=Math.floor(B[1]/cs);j<=Math.floor(B[3]/cs);j++)for(var i=Math.floor(B[0]/cs);i<=Math.floor(B[2]/cs);i++){
+      var n=Math.floor(per)+(R.unit(R.hash(seed,i,j,0,1))<per-Math.floor(per)?1:0);
+      for(var k=0;k<n;k++){var x=(i+R.unit(R.hash(seed,i,j,k+1,2)))*cs,z=(j+R.unit(R.hash(seed,i,j,k+1,3)))*cs;
+        if(o.box?(x<B[0]||x>B[2]||z<B[1]||z>B[3]):!inPoly(o.pts,x,z))continue;
+        var sd=d(o.id,'field')+':'+i+':'+j+':'+k;
+        var hz={kind:'mine',seed:sd,mine:{dud:dud,exposed:R.unit(R.hash(seed,i,j,k+1,4))<exp,known:o.known||[],owner:d(o.owner,null),blast:o.blast}};
+        loadInto(hz,o.load);if(o.trigger)hz.trigger=o.trigger;
+        out.push({'class':'prop',kind:'mine',key:'mine_'+sd,name:o.name||'A mine',at:[x,o.ground?o.ground(x,z):0,z],r:.3,h:.3,tags:{hazard:hz}});}}
+    return out;}
+
   // ---- taboo areas (biomes/outlands/PLAN.md C6): tags.taboo = {of: null | [culture...], why, shape}. A record of a people
   //   the area names (tags.culture, or tags.faction) is not placed inside it; a record of no people is (a plant, a rock)
   function tabooOf(rec){need();var tb=rec&&rec.tags&&rec.tags.taboo;if(!tb)return null;
@@ -427,7 +518,7 @@
       var F=forbids(r.at[0],r.at[2],r,T);if(F.length)out.push({id:r.id,taboo:F[0].id,who:whoOf(r)});}return out;}
 
   var KHAZ={make:make,of:of,shape:shape,inside:inside,beyond:beyond,state:state,dose:dose,list:list,at:at,zones:zones,export:exp,
-    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,sight:sight,seen:seen,aim:aim,time:timeOf,timeScale:timeScale,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
+    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,sight:sight,seen:seen,aim:aim,time:timeOf,timeScale:timeScale,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,blast:blast,detonate:detonate,MINES:null,inBlast:inBlast,find:find,knows:knows,deploy:deploy,clearMine:clearMine,minefield:minefield,
     taboo:tabooOf,taboos:taboos,forbids:forbids,tabooOk:tabooOk,tabooAudit:tabooAudit};
-  root.KHAZ=KHAZ;
+  KHAZ.MINES=MINES;root.KHAZ=KHAZ;
 })(typeof globalThis!=='undefined'?globalThis:this);

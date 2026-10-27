@@ -306,6 +306,48 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  ok('a band: above the seal\'s height, time runs',H.time(seal,0,0,0,10)===1&&H.time(seal,0,0,0,3)<1,H.time(seal,0,0,0,10)<1);
  ok('export: the field carries its scale',H.export(TT).records.find(r=>r.id===seal.id).hazard.time.scale===1e-4,false);}
 
+// land mines: laid by a walker or placed as a field; one shot, a blast, duds, hidden until found, known to their owners
+{const TM=KT.create({build:'mine-test'});
+ const m=H.deploy(TM,{at:[0,0,0],t:100,by:{id:'npc_7',faction:'izani'}});
+ const hm=H.of(m);
+ ok('deploy: a mine record with its row\'s blast 4, arm 5, its owner and faction',m.kind==='mine'&&hm.mine.blast===4&&hm.mine.arm===5&&hm.mine.owner==='npc_7'&&hm.mine.known[0]==='izani'&&hm.trigger.by==='step',!hm.mine);
+ ok('arming: for 5 s after it is laid it does nothing',H.state(m,102).state==='arming'&&H.trip(m,102)===false&&H.state(m,106).state==='armed',H.state(m,102).state==='armed');
+ ok('stepping on it doses nothing by itself; it is hidden',H.dose(m,0,0,106)===0&&H.state(m,106).hidden===true,H.dose(m,0,0,106)>0);
+ ok('knows: its owner and faction; not a stranger',H.knows(m,'izani')&&H.knows(m,{id:'npc_7'})&&!H.knows(m,'coyote-peak')&&!H.knows(m,{tags:{culture:'voth'}}),H.knows(m,'voth'));
+ const zm=H.zones(TM).find(z=>z.id===m.id);
+ ok('its zone says who knows it (only their agents path round it)',zm.known.join()==='npc_7,izani'&&!zm.avoid,zm.avoid);
+ ok('blast: 40 at the mine, falling to 0 at 4 m, none past',H.blast(m,0,0,0).dose===40&&H.blast(m,2,0,0).dose===20&&H.blast(m,4,0,0)===null,H.blast(m,5,0,0)!==null);
+ const m2=H.deploy(TM,{at:[3,0,0],t:0}),m3=H.deploy(TM,{at:[30,0,0],t:0});
+ const r=H.detonate(TM,m,110);
+ ok('detonate: it fires once and is spent; the mine 3 m off is in its chain, the one 30 m off is not',r.fired&&H.state(m,111).state==='spent'&&r.chain.length===1&&r.chain[0].id===m2.id&&!H.detonate(TM,m,112).fired,!r.fired);
+ H.find(m3);ok('find: a found mine is not hidden, and anyone knows it',H.state(m3,10).hidden===false&&H.knows(m3,'voth'),H.state(m3,10).hidden);
+ ok('clearMine: removed from the registry and the hazard list',(H.clearMine(TM,m3),!H.list(TM).some(r=>r.id===m3.id)),H.list(TM).some(r=>r.id===m3.id));
+ ok('a bad mine is refused',throws(()=>H.make({kind:'mine',mine:{blast:0}}))&&throws(()=>H.make({kind:'mine',mine:{dud:2}}))&&throws(()=>H.deploy(TM,{})),throws(()=>H.make({kind:'mine'})));
+ // the loads
+ const L=n=>H.deploy(TM,{at:[100*(Object.keys(H.MINES).indexOf(n)+1),0,500],t:0,load:n});
+ const emp=L('emp'),inc=L('incendiary'),cryo=L('cryo'),stun=L('stun'),frag=L('frag'),gas=L('gas');
+ const B=(r,d)=>H.blast(r,r.at[0]+d,r.at[2],0);
+ ok('loads: frag damages and bleeds, EMP only machines (8 m), stun shocks and paralyses, cryo freezes',B(frag,0).doses.damage===40&&B(frag,0).doses.bleed===10&&B(emp,0).doses.emp===100&&Object.keys(B(emp,0).doses).length===1&&H.of(emp).danger===.1&&H.of(emp).mine.blast===8&&B(stun,0).doses.paralysis===8&&B(cryo,0).doses.freeze===15,B(emp,0).doses.damage);
+ ok('negative: an unknown load is refused',throws(()=>H.deploy(TM,{at:[0,0,0],load:'nuke'})),false);
+ const ri=H.detonate(TM,inc,10),lv=ri.left;
+ ok('an incendiary leaves burning ground, hot for 30 s then gone',lv&&H.of(lv).kind==='heat'&&H.dose(lv,inc.at[0],inc.at[2],20)>0&&H.state(lv,41).state==='gone'&&H.dose(lv,inc.at[0],inc.at[2],41)===0,!lv);
+ const rc=H.detonate(TM,cryo,10),rg=H.detonate(TM,gas,10);
+ ok('cryo leaves ice (slip, 2 min); gas a cloud (1 min); frag and EMP leave nothing',H.of(rc.left).kind==='slip'&&H.of(rc.left).until===130&&H.of(rg.left).kind==='gas'&&H.detonate(TM,frag,10).left===null&&H.detonate(TM,emp,10).left===null,rc.left===null);
+ ok('until: a hazard that has none never goes',H.state(pool,1e9).state!=='gone',false);
+ ok('a laid load exports its effects and what it leaves',(()=>{const x=H.export(TM).records.find(q=>q.id===inc.id).hazard;return x.effects[0].effect==='burn'&&x.mine.leaves.kind==='heat'&&x.mine.life===30;})(),false);
+ // a field in the world: the Valley of the Ancients' (old: duds and exposed by age)
+ const F=o=>H.minefield(Object.assign({world:7,id:'valley-a',box:[0,0,200,100],cell:10,per:.5,age:150},o||{}));
+ const A=F(),A2=F(),half=F({box:[0,0,100,100]});
+ ok('minefield: about per x cells (200 cells at .5: 70..130), each inside the box, one for one the same twice',A.length>70&&A.length<130&&A.every(r=>r.at[0]>=0&&r.at[0]<=200&&r.at[2]>=0&&r.at[2]<=100)&&JSON.stringify(A)===JSON.stringify(A2),A.length===0);
+ ok('minefield: a cut tile of it holds the same mines there (by cell, not by draw order)',half.every(r=>A.some(q=>q.at[0]===r.at[0]&&q.at[2]===r.at[2]))&&half.length===A.filter(q=>q.at[0]<=100).length,false);
+ ok('minefield: another field\'s id lays others',F({id:'valley-b'}).some((r,i)=>!A[i]||r.at[0]!==A[i].at[0]),false);
+ const reg=A.map(r=>TM.add(r)),hz=reg.map(r=>H.of(r));
+ const duds=reg.filter((r,i)=>!H.trip(r,1e6)&&H.state(r,1e6).state==='dud').length,exposed=hz.filter(h=>h.mine.exposed).length;
+ ok('an old field (150 years): duds near 60% (by each mine\'s own hash), some exposed (up to 30%)',hz[0].mine.dud===.6&&duds>reg.length*.35&&duds<reg.length*.85&&exposed>0&&exposed<reg.length*.6,duds===0);
+ ok('a new field has no duds and none exposed',F({age:0}).every(r=>!r.tags.hazard.mine.dud&&!r.tags.hazard.mine.exposed),false);
+ ok('minefield with a load and a polygon',(()=>{const P=H.minefield({world:1,id:'p',pts:[[0,0],[50,0],[0,50]],cell:5,per:1,load:'stun'});return P.length>20&&P.every(r=>r.at[0]+r.at[2]<=50&&r.tags.hazard.effects[0].effect==='shock');})(),false);
+ ok('negative: a field needs pts or a box',throws(()=>H.minefield({world:1})),false);}
+
 // the places predators hold: hunter records bound to their fauna
 {const P=H.PREDATOR,TP=KT.create({build:'predator-test'});
  const lair=TP.add({'class':'feature',kind:'lair',at:[0,0,0],tags:{hazard:P.lair(8,{fauna:'savannah-stalker'})}});
