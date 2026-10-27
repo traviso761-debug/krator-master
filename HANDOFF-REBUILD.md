@@ -117,6 +117,17 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   tablelands (`biomes/wouterwall/PLAN.md` section 7, a new kit: `dist/wouterwall.html`), then **the SW highlands' remaining
   stations**: 2, the rain wall and the landslide lake (`-rainwall`); 3, Span's tableland and canyon (`-span`, with `settlements/span`);
   5, the fan coast (`-fancoast`). Stations 1, 4 and 6 are built; the flora for 2, 3 and 5 is in (7ee5bc4ca).
+  **Textures delivered 2026-10-27 (9b621bc70), to wire.** Turns still to come take them in their turn. These went to turns
+  already done, so each gets a repack follow-up after pair 3, one at a time on the GPU:
+  - eastabyss: `card.clubmoss.sprig` in its `clubmoss` slot (the id `card.clubmoss` was taken), and optionally `card.palm.costa`
+    for `fan`;
+  - the hyperjungle's lake station: `card.lily.victoria` (the `skylily` slot) and `card.palm.costa` (the moriche; three leaves in
+    the middle row of a 3x3 frame, v .333-.667);
+  - swhighlands: `ground.turf.native` and `card.turf.native`;
+  - the Godthrone: `rock.basalt.titanium`.
+  nhighlands takes `card.cornlily` in its own turn (pair 7). The other sets are not biome turns: the Lizardmen skins and eyes, the
+  resource nodes' gypsum and halite, acid rain's etched metal and stone, the Lozenge's terrace field, the Stalkers' scoured
+  enamel, and `KSTACKS` mound's termite earth.
   Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges: its index lists the sections naming each kit).
 
   A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
