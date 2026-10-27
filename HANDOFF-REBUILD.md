@@ -74,6 +74,27 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   nwlowlands, swbay, hyperjungle, ringisles, nhighlands, sedesert, necanyons, abyssal-savannah, guilin, k-guilin, geyser, oidong.
   No slot is applied and no page is rebuilt yet. guilin is frozen as an Earth reference: ask the owner whether its cards are
   fixed anyway.
+- **The order: vendors first** (the owner, 2026-10-27: "starting with biomes that need to vend plants or cousins to each
+  other"). Read-in-place and kin sources, from the builds' `build.py` and the plans:
+  - hyperjungle vends to geyser, guilin, k-guilin, necanyons and ringisles, and takes cousins from eastabyss;
+  - eastabyss vends to abyssal-savannah, ringisles and the hyperjungle;
+  - nwbay vends to swbay and k-guilin, and swbay to oidong, ringisles and k-guilin;
+  - sedesert vends to ringisles and the Catch, necanyons to guilin, guilin to k-guilin, and geyser to ringisles;
+  - xanadu and oidong share five species, and the two lowlands exchange flora: each of those pairs runs together.
+
+  | Pair | Builds | Why here |
+  |---|---|---|
+  | 1 | eastabyss, nwbay | pure vendors: the hyperjungle's cousins; swbay's and k-guilin's source |
+  | 2 | hyperjungle, swbay | the largest vendor, after its cousins' source; swbay after nwbay |
+  | 3 | sedesert, necanyons | ringisles' and the Catch's source; necanyons after the hyperjungle, before guilin |
+  | 4 | xanadu, oidong | their five shared species, together; oidong after swbay |
+  | 5 | swlowlands, nwlowlands | their flora exchanges, together |
+  | 6 | geyser, nhighlands | geyser after the hyperjungle, before ringisles; nhighlands (the test bed) takes its cards and the newer modules |
+  | 7 | ringisles, abyssal-savannah | after all five of ringisles' sources; the savannah after eastabyss |
+  | 8 | k-guilin (and guilin, if the owner wants its cards fixed) | last: it reads six kits |
+
+  A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
+  them as they are.
 
 ### Progress on step 1 (2026-10-26, the session that picked this up)
 
