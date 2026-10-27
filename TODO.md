@@ -26,14 +26,6 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **Hanging cards as one strand: flip `BIO.geo.ribbon`'s default to `flow`** (the owner, 2026-10-27: "make it the project
-  standard"; `core/biome/README.md`, "Hanging cards"). Today v restarts down each segment, so beard moss and hanging growth show
-  their picture stacked in square-cut bands; `flow` lays it once down the card. Make `flow` the default in
-  `core/biome/30-core-foliage.js` (and change `test-foliage.js`'s frozen-default check to the new default), then drop the Rift's
-  explicit `true`s. It moves every page whose kit calls the ribbon: the biomes eastabyss, ebadlands, hyperjungle, nhighlands,
-  nsemiarid, nwbay, nwlowlands, oidong, ringisles, sedesert (and its mantis station), swbay, swlowlands, xanadu; the vendored
-  copies in kits/ancients (hyperjungle, eastabyss), settlements dalab, iziz (city), screamers, shade, xanadu and ys (re-vendor).
-  Look at one hanging card per kit after: a card painted as a short repeating tile would now stretch.
 - **Backport the succulent columns' quality pass** (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
   `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
   `G.column` 80 triangles, `G.columnLo` 36), `columnTree` seats every column on its arm (spots three to a segment along each arm,

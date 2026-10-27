@@ -86,15 +86,6 @@ covers at most `ratio` pixels (default 2) at `dist`, capped at `max` (default 25
 256 px is a 6144 px atlas, over most GPUs' limit, so a set of tall species takes fewer slots or a smaller grid). Both are
 plain arithmetic (`node core/biome/test-tall.js`).
 
-## Hanging cards: one strand, not stacked (`BIO.geo.ribbon(..., flow)`; the project standard, the owner 2026-10-27)
-
-`BIO.geo.ribbon(nseg, taper, drift)` runs the texture's v from 0 to 1 down **each** of its segments, so a beard-moss or hanging
-card shows its picture nseg times stacked: square-cut bands, like shingles. Pass `flow` (a fourth argument, `true`) and v runs
-once from the top to the tip: one continuous strand, the same positions and triangles. **Every new hanging card takes `flow`**
-(beard moss, hanging growth, lianas, curtains). The default stays as it was until the next all-builds rebuild flips it
-(`TODO.md`, "Ride along"); the Rift's stations take it now (`biomes/rift/src/50-biome-rift-species.js`). A longer hank is a
-longer put (the instance's y scale), not a repeated texture: a card cut to one cell of a sheet cannot wrap. Test: `test-foliage.js`.
-
 ## Welded item geometry (`BIO.INDEX_ITEMS`, opt-in)
 
 `BIO.def` un-indexes every item's geometry (triangle soup). With `BIO.INDEX_ITEMS = true` (set before the kits define their
@@ -103,6 +94,27 @@ by index. The same triangles in the same order, so the same pixels; a 6-triangle
 not 18. nhighlands' leaf and floor cards were vertex-bound on an integrated GPU, and welding saved 17-18% of the frame on its
 stream and tower views (`biomes/nhighlands/PERF.md`). The export writes the index (`42-core-export.js` already handled
 indexed buckets). Test: `test-lod.js`.
+
+## A library card on its geometry's axes (`20-core-kit.js`, `30-core-foliage.js`; opt-in per slot, 2026-10-27)
+
+**The project standard for hanging cards** (the owner, 2026-10-27, on the Rift's beard moss: "make it the project standard"): a
+hanging card (beard moss, hanging growth, lianas, curtains) is one continuous strand, its library plant spanning the whole
+ribbon once from its `"base": "top"`, never the picture stacked once a segment in square-cut bands. Give every hanging slot a base.
+
+`BIO.geo.frond` and `BIO.geo.ribbon` draw their texture once a segment, down v from the stem or hung end at v 0; `BIO.geo.hang`
+hangs from v 0; the clump's tripod shows its image upside down (v 0 at each quad's low edge). A library card that is one whole
+plant broke on all of them: the Rift's fern fronds were four small upside-down ferns end to end, floating loose of the stem
+(the owner, "these imposters improperly split the cutout textures"). Each of these geometries now declares where it holds its
+plant, `geo.userData.card = {base, once}` (`once`: the uv that spans the image once down the whole length), and a
+materials.json card slot names where its plant attaches in its image, `"base"` (left, top, right, bottom, centre), with
+`"cell"` the plant's tight box. `BIO.libSwap` puts the base on the material (`userData.libCard`); `BIO.def` gives the item a
+copy of its geometry whose uv is turned so the two ends meet (`BIO.cardTurn`) and spans the plant once. An item defined before
+the swap is fitted by it; a variant pool fits each variant to its own material (`d.raw`, the unfitted geometry). A slot with
+no base, a geometry that declares nothing, or one cut into a sheet's cells (`BIO.geo.cells` clears the declaration) draws as
+before, byte for byte. A kit's own geometry may declare its end the same way (the Rift's groundsel heads on `G.rosetteUV`:
+`{base: 'left'}`). The geometry's uv carry the fit, so the export, Godot and the impostor bake need nothing new.
+`tools/textures/check_cells.py` proposes each slot's cell and base; `tools/textures/card_probe.py` draws the slot on its
+geometry before and after (`HANDOFF-REBUILD.md`, "its card cells"). Test: `test-cards.js`.
 
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 

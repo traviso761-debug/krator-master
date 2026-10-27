@@ -664,11 +664,12 @@ BIO.def('samphire',G.tuft(),M.samphire,{label:'Glasswort'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass tufts'});
 BIO.def('clubmoss',G.tuft(),M.clubmoss,{attrs:['aN','aC2'],label:'Scale-moss'});
 BIO.def('ucard',BIO.geo.clump(),M.under,{label:'Understorey foliage'});
-/* the hanging cards take the ribbon's `flow` (the project standard, the owner 2026-10-27: the texture once down the whole hank, no
-   stacked square-cut bands; core/biome 30-core-foliage.js) */
-BIO.def('beard',BIO.geo.ribbon(5,.6,.12,true),M.beard,{label:'Beard moss'});
-BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18,true),M.hang,{label:'Hanging growth'});
-BIO.def('strand',BIO.geo.ribbon(2,.4,.05,true),M.hang,{label:'Lianas and strands'});
+/* the hanging cards span their library plant once down the whole hank, from its base at the top (materials.json "base": the project
+   standard, the owner 2026-10-27: no stacked square-cut bands; core/biome BIO.def turns a card to its base). Beard moss on five
+   segments, so a hank sways in a curve */
+BIO.def('beard',BIO.geo.ribbon(5,.6,.12),M.beard,{label:'Beard moss'});
+BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
+BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});

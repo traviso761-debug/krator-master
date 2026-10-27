@@ -31,6 +31,9 @@ Processing, per family:
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
   cell     `"cell": [x0, y0, x1, y1]` (fractions from the sheet's top left): the host shows one cell of a card sheet (a
            single plant from a nine-plant sheet); passed through to the pack entry
+  base     `"base": "bottom"` (top, left, right, centre): the edge of the cell (or the whole image) where its plant attaches;
+           core/biome's BIO.def turns a geometry that holds a plant by one end (frond, ribbon, hang, clump) so its own end
+           meets it, and spans the plant once down a frond or ribbon. tools/textures/check_cells.py proposes cell and base
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
@@ -176,6 +179,8 @@ def process(fam, cfg, size):
         entry['own'] = True
     if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
         entry['cell'] = cfg['cell']
+    if cfg.get('base'):   # the edge of the cell its plant attaches at: core/biome turns a frond, strand or clump to meet it
+        entry['base'] = cfg['base']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name
@@ -205,7 +210,7 @@ def main(argv):
         allfiles.update(files)
     pj = json.dumps(pack, indent=1, sort_keys=True) + '\n'
     if a.check:
-        old = open(os.path.join(tdir, 'pack.json')).read() if os.path.isfile(os.path.join(tdir, 'pack.json')) else ''
+        old = open(os.path.join(tdir, 'pack.json'), encoding='utf-8').read() if os.path.isfile(os.path.join(tdir, 'pack.json')) else ''
         strip = lambda s: {f: {k: v for k, v in e.items()} for f, e in json.loads(s)['families'].items()} if s else {}
         same = strip(old) == strip(pj)
         print('tex/ matches materials.json' if same else 'tex/ is stale: rerun tools/textures/pack.py ' + a.build)
@@ -216,7 +221,8 @@ def main(argv):
             os.remove(os.path.join(tdir, f))
     for name, data in allfiles.items():
         open(os.path.join(tdir, name), 'wb').write(data)
-    open(os.path.join(tdir, 'pack.json'), 'w').write(pj)
+    with open(os.path.join(tdir, 'pack.json'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write(pj)
     kb = sum(len(d) for d in allfiles.values()) / 1024
     print('packed %d families into %s (%d files, %.0f KB)' % (len(pack['families']), os.path.relpath(tdir, ROOT), len(allfiles), kb))
     return 0
