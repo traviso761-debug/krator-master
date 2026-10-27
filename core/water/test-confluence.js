@@ -57,8 +57,15 @@ const ribbonBank=(x,z)=>Math.max(own(river,x,z).bank,own(stream,x,z).bank);
 
 // ================================================================ 1. the shore is the ground's
 {let agree=0,tot=0;for(let j=0;j<C.n;j++)for(let i=0;i<C.n;i++){const id=j*C.n+i,x=C.x0+i*C.cell,z=C.z0+j*C.cell;if(C.fade[id]<1)continue;const lvl=C.y[id],gw=ground(x,z)<lvl-.05,gd=ground(x,z)>lvl+.05;
-  if(!gw&&!gd)continue;if(Math.hypot(x-PIT[0],z-PIT[1])<4)continue;tot++;if((C.bank[id]>0)===gw)agree++;}
- ok('inside the disc the water is where the ground lies under the level and the land where it rises over it: '+agree+' of '+tot+' vertices (the shore is the ground\'s, not the strips\')',agree===tot&&tot>1000,false);}
+  if(!gw&&!gd)continue;if(Math.hypot(x-PIT[0],z-PIT[1])<4)continue;tot++;if((C.bank[id]>0)===(gw&&C.union[id]>0))agree++;}
+ ok('inside the disc the water is where the ground lies under the level, inside the channels\' rounded union: '+agree+' of '+tot+' vertices (land wherever the ground rises over it)',agree===tot&&tot>1000,false);}
+{/* the SW highlands' case: the river's level stands over a low valley floor on one side (the ground 1.5 m under it out past the disc) */
+ const low=(x,z)=>x>-HW-1&&Math.abs(z)>HT+1?Math.min(ground(x,z),yR(z)-1.5):ground(x,z),CL=W.confluence({name:'low floor',flows:[river,stream],at:[HW,0],r:30,ground:low});W.groups.pop();
+ let out=0,inn=0;for(let j=0;j<CL.n;j++)for(let i=0;i<CL.n;i++){const id=j*CL.n+i;if(CL.fade[id]<1)continue;const x=CL.x0+i*CL.cell,z=CL.z0+j*CL.cell;if(CL.bank[id]>0){inn++;if(ribbonBank(x,z)<-HT)out++;}}
+ const c2=CL.at(HW+HOLD+1/Math.SQRT2,HT+HOLD+1/Math.SQRT2).bank;
+ ok('over a valley floor lower than the water the water stays in its channels (no vertex more than a stream\'s half width past both ribbons: '+out+' of '+inn+'), its corner filleted (1 m out on the diagonal of the ribbons\' corner: bank '+c2.toFixed(2)+' m)',out===0&&inn>500&&c2>0,false);
+ const CG=W.confluence({name:'ground only',flows:[river,stream],at:[HW,0],r:30,ground:low,round:1e-3});W.groups.pop();const c3=CG.at(HW+HOLD+1/Math.SQRT2,HT+HOLD+1/Math.SQRT2).bank;
+ ok('...negative: with a near-zero fillet that corner is land ('+c3.toFixed(2)+' m): the union\'s fillet rounds it, not the ground',c3<0,false);}
 {const pw=C.at(PIT[0],PIT[1]);ok('a hollow under the level but cut off from the channels stays dry (bank '+pw.bank.toFixed(2)+' m at its middle, its ground '+(ground(PIT[0],PIT[1])-pw.y).toFixed(2)+' m under the level)',pw.bank<0&&ground(PIT[0],PIT[1])<pw.y,false);}
 // the corners: down the diagonal out of the corner the two straight banks make (x = 8 + 3.4 + ..., z = 3.4 + ...)
 const corner=k=>{const x=HW+k/Math.SQRT2,z=HT+k/Math.SQRT2;return{c:C.at(x,z).bank,r:ribbonBank(x,z)};};
