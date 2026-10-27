@@ -66,6 +66,12 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  ok('a page hook set after cloudShade and snowOn runs first, and both core hooks still run',first===true&&/PAGE;/.test(s3.fragmentShader)&&/atmSnow/.test(s3.fragmentShader)&&/atmWetHere/.test(s3.fragmentShader),first===false);
  const before=m3.customProgramCacheKey();m3.onBeforeCompile=function(sh){sh.fragmentShader+='\nOTHER;';};
  ok('the program key follows the page\'s hook and carries each layer',m3.customProgramCacheKey()!==before&&/atmos-cloudshade-0\.4/.test(before)&&/atm-snow/.test(before),m3.customProgramCacheKey()===before);
+ // snowOn on a material whose page hook REPLACES <project_vertex> (core/biome's foliage hook: its sway), 2026-10-27: the snow's
+ // vertex code still lands (before <fog_vertex>); a plain material keeps it after <project_vertex> as before
+ {const m5=new Material();m5.onBeforeCompile=function(sh){sh.vertexShader=sh.vertexShader.replace('#include <project_vertex>','SWAY;');};A.snowOn(m5,{aN:true});const s5=compile(m5);
+  const m6=new Material();A.snowOn(m6,{});const s6=compile(m6);
+  ok('snowOn under a hook that replaced <project_vertex> still sets its varyings (a leaf card takes the snow)',/vAtmSnP=/.test(s5.vertexShader)&&s5.vertexShader.indexOf('vAtmSnP=')<s5.vertexShader.indexOf('#include <fog_vertex>')&&/atmSnN=aN/.test(s5.vertexShader),!/vAtmSnP=/.test(s5.vertexShader));
+  ok('...and on a plain material it stays right after <project_vertex>',s6.vertexShader.indexOf('#include <project_vertex>\nvec4 atmSnWp')>=0,false);}
  const m4=new Material();A.cloudShade(m4,{porosity:1});A.cloudShade(m4,{porosity:1});const s4=compile(m4);
  ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);}
 // the real WATER.wetGround through ATMOS.shaderHook (HANDOFF-REBUILD.md's open request, 2026-10-26): a page hook set after

@@ -11,7 +11,8 @@ the landslide lake, the sandstone tableland at Span, its pillar rim (the paintin
 Ring Sea's level has not changed, so **no raised reef terraces**. The flora is alien and fungoid, the native highland
 counterpart of the bay; the references are in `refs/`. Some of it is backfilled into the bay (`biomes/swbay/PLAN-FLORA.md`).
 
-**Status: plan, awaiting the owner.** Nothing built.
+**Status: station 1 built (2026-10-26, branch `claude/swhighlands-s1-04f512`)** on the owner's go-ahead for station 1; the plan's
+open questions stay open (section 10, and the station's own in `KNOWN_ISSUES.md`). Stations 2-5 are not built.
 
 ## 0. What the kit is
 
@@ -26,6 +27,37 @@ counterpart of the bay; the references are in `refs/`. Some of it is backfilled 
 | Out of scope | Span's ruin and Dalab's outpost (a settlement plan); the Iron Republic's farms (the Republic's builds); the scarp's foot and the coast below it (the Vothic coast's kit, an ecotone) |
 
 It is a new biome, so it goes in the gallery when it first reaches `main`.
+
+## Core adoption (written before the first fragment, 2026-10-26)
+
+Started from `biomes/nhighlands` (the final rebuild's worked example of the full adoption) and `biomes/abyssal-savannah` (the
+newest station-1 kit). The modules station 1 takes, by name, and for each it does not, why:
+
+| Module | Takes | For |
+|---|---|---|
+| `core/biome` | `10-core-head`, `20-core-kit` (`BIO.INDEX_ITEMS`, `BIO.LOD.merge`/`minTris`/`fade`/`cull`), `30-core-foliage` (ground tint, A2C, back-light, the one wind), `31b-core-leafset`, `33-core-fungoid` (`BIO.fung`: every cap, stalk, pod and tube), `34-core-impostor` (the far trees past 800 m, `BIO.impostorLook` measured), `40-core-place`, `42`/`43-core-export(-host)`, `44-core-stage` | the kit: every species on the core's builders and items |
+| `core/rand` | `KRAND` | every field, every placement cell (`KRAND.hash(world, ix, iz, salt)`), every noise; nothing from `BIO.fn`'s sin hash or its stream |
+| `core/tags` | `50`, `52`, `53` | every item set, instance and volume a record (`BIO.init({tags})`) |
+| `core/space` | `KSPACE` | the keep-clear between trees and the nearest-segment index of the water courses |
+| `core/terrain` | `35-core-strata` + host shade (`ringfold`, the folds folded along the crest, `sharp` .85 for the chevron), `36-core-carve` (the river cave's mouth), `37-core-stacks` (`arch` on the ridge, the three natural bridges over the gorge), `38-core-relief` (`range` for the ridges, `gap` for the water gap and the wind gap under the arch, `river` for the levels, `fields` for the farm), `43-core-ground` (`KGROUND` library layers), `44-core-farfield` + draw (`KFAR`), `45-core-horizon` + shade (`KHORIZON`) | the ground, the rock, the far country, the terrain's shadows |
+| `core/atmos` | the core, presets, export, waves, skylight, `bindHost`, the shared sky (`skyBiome`), `bindWeather`, height fog, rain cover | the sky, the light, the fog in the folds, the weather |
+| `core/water` | flow, shore, fall, still, draw, kinds | the river through the gap, the cave stream, the gorge stream and its falls, the sink pool; wet ground and puddles (`WATER.hollows`) |
+| `core/host` | `FULL` (camera, loop, clock, panel, probe, inspector, marks, pictures, minimap, editor) | the page shell |
+| `core/materials` | `record` (`KMAT`) and the generated pack (`materials.json`, `tools/textures/pack.py`) | every library set (section 8) |
+| `core/export` | `07`, `09` | the krator-world container |
+
+Not taken: `core/mask` (nothing is placed from a canvas; every placement reads the fields and `KRAND`), `core/city`, `core/hamlet`,
+`core/simulation`, `core/furnish` (no settlement here: the Republic's farm is its builds', section 0), `core/lod` (the biome core's
+runtime LOD covers it), `KCAVERN` (the cave is a mouth only at station 1: the passage through the ridge is not walked, so a
+carve patch is enough; `KNOWN_ISSUES.md`), `33b-core-bamboo`, `38-core-fire`, `39-core-lean`, `core/hazard` (nothing at
+station 1 burns, leans or harms), the season (`BIO.SEASON`: one season shown; a later pass). `kits/crops`: the farm is drawn
+as fields and walls only, its crops left to the Republic's builds (section 0, and an open question).
+
+**The treeline station** (station 6, 2026-10-27) takes the same modules (it is built from the same `build.py` with `--station
+treeline`), less `36-core-carve` and `37-core-stacks` in use (no cave, no bodies; the fragments stay listed), and `core/water` for
+wet ground and puddles only (no running water: the owner's brief). It adds `biomes/ehighlands` read in place (the glass tower, by
+its one-plant API `EHIGH.make`/`grow`) and KGROUND's `clast` layer kind for the fellfield. Strata: formations `ringfold` under
+`megabreccia` (`crest`).
 
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26)
 
@@ -223,6 +255,13 @@ scarp's foot.
    walls and across it, the lake upstream.
 4. **The pillar rim** (`-pillars`, the tableland's south-west edge): the painting: red and white towers in mist, anemone
    trees on their tops, the green floor and Pan Riba's meanders; Dalab's watch post on one tower's top.
+6. **The treeline** (`-treeline`, ~3.4-4.9 km, Dsb and Dsc; the owner, 2026-10-27: a station with no running water, the native
+   forest in its second climate): the upper ramp's dry-summer woods under the crest. Bottle brushes on the sunny (north-facing)
+   spurs, whorl columns in the shaded (south-facing) hollows and up to the treeline at ~4.3 km, glass leaf among the last trees and
+   on the open ground above, the fellfield of the crest's shattered `crest` rock (megabreccia) toward a cirque's headwall at ~4.9 km,
+   with glass towers (`biomes/ehighlands`, read in place) on its scree. Snow lies in the cirque's shade. Puddles after rain only.
+   Station 1's rules carry over (KRAND by cell, KFIELD ground, impostors past 800 m); the cirque is the kit's own bowl on the field
+   (no core cirque form yet).
 5. **The fan coast** (`-coast`, optional, the ecotone): the dry scarp with the star-fruit caudex, arrowheads and coral
    melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore.
 

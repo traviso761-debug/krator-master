@@ -27,6 +27,23 @@ if(T3){const THREE=require(T3);global.performance=global.performance||{now:Date.
  const G=C.mesh(null,{THREE,sun:[0,1,1.2],gridNormals:true})[0].geometry,na=g.attributes.normal.array,nb=G.attributes.normal.array,pa=g.attributes.position.array,pb=G.attributes.position.array;
  let same=pa.length===pb.length&&G.index.count===g.index.count,dot=0;for(let i=0;same&&i<pa.length;i++)if(pa[i]!==pb[i])same=false;
  for(let i=0;same&&i<na.length;i+=3)dot+=na[i]*nb[i]+na[i+1]*nb[i+1]+na[i+2]*nb[i+2];dot/=na.length/3;
- ok('gridNormals: the same mesh, normals near the sampled ones (mean cos '+dot.toFixed(3)+')',same&&dot>.95,-dot>.95);}
+ ok('gridNormals: the same mesh, normals near the sampled ones (mean cos '+dot.toFixed(3)+')',same&&dot>.95,-dot>.95);
+ // attrs (opt-in, 2026-10-26): the host's attributes on the patch's vertices (negative: none asked, none added)
+ const U=C.mesh(null,{THREE,attrs:{uv:{size:2,fn:(x,y,z)=>[x,z]}}})[0].geometry;ok('attrs: a uv from the vertex x and z',U.attributes.uv&&U.attributes.uv.array[0]===U.attributes.position.array[0]&&U.attributes.uv.array[1]===U.attributes.position.array[2],!!g.attributes.uv);}
 else console.log('skip  mesh (no three.min.js found)');
+// ---- a cave mouth in a hillside (fold, minSteep, keepOut, face, cut, site; 2026-10-26)
+{const H=KCARVE.create(),hill=(x,z)=>FLOOR+Math.max(0,-z)*.6;            // a slope rising north at .6
+ const F=H.face({c:[0,0],r:20,floorY:FLOOR,slope:3,maxCut:12,open:[0,-1]});
+ ok('face: the floor inside its radius',H.cut(F,0,-5,hill(0,-5))===FLOOR,H.cut(F,0,-5,hill(0,-5))>FLOOR+1);
+ ok('face: never more than maxCut under the natural ground',H.cut(F,0,-60,hill(0,-60))>=hill(0,-60)-12-1e-9,hill(0,-60)-FLOOR<=12);
+ ok('face: far off, the ground is untouched',H.cut(F,0,-400,hill(0,-400))===hill(0,-400),false);
+ const S=H.site({base:hill,floorAt:()=>FLOOR,from:[0,40],to:[0,-200],r:20,face:22});
+ ok('site: the back wall stands about 22 m',Math.abs(S.face-22)<1.3,Math.abs(hill(0,-20)-FLOOR-22)<1.3);
+ const Q2=H.add({id:'m',c:[0,-30],n:[0,1],hw:6,depth:14,h:8,floorY:FLOOR,base:hill,margin:6,pad:2});
+ const st=H.minSteep(Q2);ok('minSteep: the rise the margin needs ('+st.toFixed(1)+':1)',st>2&&st<80,false);
+ const g=(x,z,k)=>H.fold(hill(x,z),x,z,{steep:k});
+ let gapK=0,gap3=0;for(let x=-14;x<=14;x+=.5)for(let z=-50;z<=-25;z+=.5){const d=H.recessD(x,z);if(d<=.5||d>=Q2.margin-Q2.pad)continue;if(hill(x,z)-g(x,z,Math.max(st,40))>1e-6&&d>(hill(x,z)-FLOOR)/Math.max(st,40)+1e-6)gapK++;if(hill(x,z)-g(x,z,3)>.5)gap3++;}
+ ok('fold at minSteep: back on the natural ground within the margin (no trench round the hood)',gapK===0,gap3===0);
+ ok('fold: the floor under the hood',g(0,-35,40)===FLOOR,false);
+ ok('keepOut: inside the plan and margin, not far off',H.keepOut(0,-35)&&!H.keepOut(0,40),H.keepOut(60,40));}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
