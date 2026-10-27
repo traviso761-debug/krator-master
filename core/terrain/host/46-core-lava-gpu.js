@@ -64,7 +64,7 @@
   // the update: what it keeps and takes (heat mixed by volume), the vents, cooling and freezing (the CPU's passes 2 to 4)
   const updM=new T.ShaderMaterial({uniforms:U,vertexShader:VS,fragmentShader:C+'\nuniform sampler2D uO1,uO2;uniform vec4 uVent[4];uniform float uVentT[4];uniform float uRa,uCa;\n'+
    'float outOf(ivec2 k,int n){vec4 a=n<4?texelFetch(uO1,k,0):texelFetch(uO2,k,0);int m=n&3;return m==0?a.x:m==1?a.y:m==2?a.z:a.w;}\n'+
-   'void main(){ivec2 c=ivec2(gl_FragCoord.xy);vec4 s=cellS(c);float A=uCs*uCs,so=0.0;bool pond=texelFetch(uP,c,0).g>0.5;',
+   ['void main(){ivec2 c=ivec2(gl_FragCoord.xy);vec4 s=cellS(c);float A=uCs*uCs,so=0.0;bool pond=texelFetch(uP,c,0).g>0.5;',
    ' for(int n=0;n<8;n++)so+=outOf(c,n);float V=s.g*A-so,E=s.b*V;',
    ' for(int n=0;n<8;n++){ivec2 k=c+ivec2(DI[n],DJ[n]);if(!inGrid(k))continue;float v=outOf(k,n^1);if(v==0.0)continue;V+=v;E+=v*cellS(k).b;}',
    ' V=max(V,0.0);float h=V/A,T=V>0.0?E/V:s.b,z=s.r,dep=s.a;',

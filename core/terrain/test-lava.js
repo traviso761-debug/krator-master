@@ -104,6 +104,10 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
 {const {s}=mk(7);s.run(600);const e=s.export(),h=KFIELD.unb64(e.h,Float32Array);
  ok('export: krator-lava with h, T, dep as Float32 base64',e.format==='krator-lava'&&h.length===s.N&&Math.abs(h[40*81+40]-s.h[40*81+40])<1e-4,false);}
 
+// ---- the three.js halves parse (they run only on a page: core/terrain/host/46-core-lava-gpu.js, -draw.js)
+for(const f of ['46-core-lava-gpu.js','46-core-lava-draw.js']){let e=null;try{new Function(fs.readFileSync(path.join(__dirname,'host',f),'utf8'));}catch(x){e=x;}
+ ok('host/'+f+' parses',!e,false);if(e)console.log('      '+e.message);}
+
 // ---- the golden file: a small run klava.gd repeats (core/terrain/klava_test.gd)
 {const {F,s}=mk(7);s.run(2*3600);const m=s.mass(),pick=[0,40*81+40,40*81+44,44*81+40,36*81+36,40*81+52];
  const G={format:'krator-lava-golden',version:1,case:'cone 81x81 step 25, slope .12 from (1000,1000) at 3000 m; rough .4 seed 7; vent r 30 Q 300(1-t/4h); run 2 h, dtMax 30',
