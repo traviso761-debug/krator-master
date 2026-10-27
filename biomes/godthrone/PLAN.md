@@ -283,6 +283,17 @@ Throne's station mechanism for the later pages. What the build takes, and why no
 **Graphics from day one** (`GRAPHIC-LOAD.md`): welded items, the LOD merge, fade and per-instance cull are on; the far
 field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view on the Intel GPU in `PERF.md`.
 
+### Station 2, the high flank (built 2026-10-27): core adoption
+
+`dist/godthrone-flank.html`, `build.py --station flank`: the south-east flank at 4.22's flank vent (px 716, 1128, 11,080 m;
+0.39 atm, about -44 C), its own frame and ground model (`stations/flank/45b-host-model.js`; the kit's other fragments are
+shared: the summit's terrain moved into `src/45b-host-model.js` so a station swaps only its ground). Takes, beyond station 1's
+list: `KRELIEF.meander`, `KRELIEF.rille` (the sinuous rille from the main old vent's crater, its walls on the flows),
+`KRELIEF.tube` (the tube's pit chain: 23 collapse pits and 9 skylights on the map), `KRELIEF.volcano` (five old cones),
+`KRELIEF.apply`. The flows: **core/terrain KLAVA.bake** (the lava-flow module, merged from `claude/klava`): four eruptions frozen at build time
+(`stations/flank/bake-flows.js`, committed as `flows.json`, re-baked when its inputs change), levees and central channels
+sculpted from their edges. No hazards of its own (the ambient bridge only: 0.39 atm, about -44 C).
+
 ## 10. Open questions
 
 - The caldera's exact size and depth, and whether the summit vent is active now (fountaining every few years) or only
@@ -305,5 +316,7 @@ field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view o
 - **A serious eruption** (the owner, 2026-10-27; built on the vent's page, `89c-host-lake.js`): a flood-basalt eruption
   (20,000 m3/s falling as Kilauea's 2020 one did) fills the pit with a lava lake, 13.7 km3 in 32 days, to 15 m under its lowest
   lip; the vent drowns in hours; the crust closes over 30 days; the frozen lake re-bakes the pit's floor. A time-lapse
-  (Serious eruption, Play, a slider) and five views. **Overflow** onto the caldera's floor is a lava-flow module for core,
-  asked of the main session as its own session.
+  (Serious eruption, Play, a slider) and five views. **Overflow** (step 5, 2026-10-27): core/terrain's KLAVA, a Bingham lava
+  flow (`core/terrain/LAVA.md`), wired opt-in behind the page's `?overflow` (`89d-host-overflow.js`): the lake a held pond
+  whose level follows its volume less what has spilled, 0.25 km3 over the lowest lip, the frozen flow written into the field;
+  an `overflow` checkbox beside the time-lapse turns it back to the lake alone. `verify.py --query overflow --assert` checks it.

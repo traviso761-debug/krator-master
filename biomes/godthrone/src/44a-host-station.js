@@ -9,5 +9,5 @@
 //   spine()            the LOD spine (the views' places), read once the frame is made
 const STN={key:'vent',title:'Krator Godthrone: the summit vent',
  hint:'The Godthrone\'s summit vent (station 1): the nested pit 900 m deep in the caldera\'s floor at 22 km, a tenth of an atmosphere; the fissure vent fuming and, now and then, fountaining; the orange and black glass halo; the caldera\'s terraced wall 23 km off. N for night',
- centre:[-15590,15240],R:4800,step:10,vent:true,insets:()=>[{x:VENT.x,z:VENT.z,r:230,st:2.5,name:'vent'}],portal:false,site:{px:577.85,py:932.59},
+ centre:[-15590,15240],R:4800,step:10,vent:true,summit:true,insets:()=>[{x:VENT.x,z:VENT.z,r:230,st:2.5,name:'vent'}],portal:false,site:{px:577.85,py:932.59},
  spine:()=>[[VENT.x,VENT.z],xzOf(PIT.s+PIT.rimR,PIT.t),xzOf(PIT.s,PIT.t+PIT.rimR),xzOf(PIT.s-PIT.rimR,PIT.t),xzOf(PIT.s,PIT.t-PIT.rimR)]};

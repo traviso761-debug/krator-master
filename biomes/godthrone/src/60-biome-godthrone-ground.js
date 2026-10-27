@@ -16,7 +16,7 @@ GODT.buildGround=function(R,q,box){const K=KRAND,F=BIO.host.fields,H=BIO.host.te
  const inBox=(x,z)=>x>box[0]+3&&x<box[2]-3&&z>box[1]+3&&z<box[3]-3&&BIO.mask(x,z)>0;
  // ---- talus: up to 3 candidates a 24 m cell, kept by the apron's weight; size by a power law (blocks to 9 m)
  cells(24,0x7A15,(i,j,x0,z0,h)=>{for(let k=0;k<3;k++){const hk=K.hash(h,k),x=x0+24*u(hk,1),z=z0+24*u(hk,2);if(!inBox(x,z))continue;
-   const w=F.talus(x,z)*(1-F.face(x,z)),r=u(hk,3);if(r>w*.9*q)continue;
+   const fc=F.face(x,z),w=F.talus(x,z)*(1-fc),r=u(hk,3);if(fc>.45||r>w*.9*q)continue;
    const s=.5*Math.pow(1-u(hk,4)*.985,-.62),big=s>2.2;BIO.range=big?3200:1100;
    const y=H(x,z),c=u(hk,6)<.12?pick(P.oxid,hk):u(hk,7)<.3?pick(P.rubble,hk):pick(P.basalt,hk);
    BIO.put('boulder',[x,y+s*.22,z],qEuler((u(hk,8)-.5)*.6,u(hk,9)*TAU,(u(hk,10)-.5)*.6),[s*mix(.8,1.3,u(hk,11)),s*mix(.6,1,u(hk,12)),s*mix(.8,1.3,u(hk,13))],c);

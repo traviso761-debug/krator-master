@@ -15,7 +15,7 @@
 // THE CYCLE (seconds of ATMOS.clock): a warning (the fume thickens), the rise, the fountain, its fall, the spatter still
 // raining (after), then quiet. The offset makes a page open quiet, the first fountain three minutes in
 const VENT_CYCLE={period:600,warn:20,ramp:15,on:120,after:60,afterK:.2,offset:420};
-const VENTS=(function(){const V=VENT,K=KRAND,u=(a,b)=>K.unit(K.hash(WORLD,a,b,0xF0E)),C=VENT_CYCLE;
+const VENTS=STN.summit===false?null:(function(){   /* the summit's pages only (the flank's page is 300 km off) */const V=VENT,K=KRAND,u=(a,b)=>K.unit(K.hash(WORLD,a,b,0xF0E)),C=VENT_CYCLE;
  // ---- the records (the fountain's on every station: it is the world's; the rest where the vent is drawn)
  const fountain={name:'The summit vent\'s fountain (intermittent: lava flung hundreds of metres up)',x:V.x,z:V.z,y:V.lavaY-2,r:140,h:600,kind:'hazard',far:!STN.vent,   /* far: on the wall's page it stands 23 km off (the probe's occupancy skips it) */
   tags:{hazard:KHAZ.GROUND.lavaLake(140,{shape:{type:'cyl',r:140,h:600,y0:0},radiant:{reach:220,dose:6,danger:.8},cycle:Object.assign({},C)})}};
@@ -69,11 +69,6 @@ const VENTS=(function(){const V=VENT,K=KRAND,u=(a,b)=>K.unit(K.hash(WORLD,a,b,0x
    ATMOS.glowAdd(p[0],terrainH(p[0],p[1])+2.5,p[1],[1,.38,.1],11+4*u(Math.round(uu),3),-1,30);glows++;}
   ATMOS.glowAdd(V.x,V.lavaY+4,V.z,[1,.45,.12],46,0,30);}   /* the throat lights its crater's walls, day and night */
  ATMOS.finish();
- // ---- the air and the cold (core/hazard's ambient bridge): the sky's pressure by height; the temperature, the summit's held
- // mean (4.23: about -75 C above 17 km; the ground's is the sun's, not the air's: PLAN.md section 1) swinging with the sun
- if(ATMOS.provideAir)ATMOS.provideAir(SKY.preset||SKY.P||{air:{pressure:1.6,thin:{y0:0,scale:8000}}});
- else KHAZ.provide('pressure',(x,y,z)=>AIR.at(y));
- KHAZ.provide('temperature',(x,y,z)=>{const s=SKY.state&&SKY.state.sunDir,e=s?(s.y==null?s[1]:s.y):0;return -75+22*clamp(e*2.2,-1,1);});
  // jump the clock to the next fountain (the Fountain button and view): the module clock moves, so the hazard and the page agree
  const nextFountain=()=>{const t=ATMOS.clock.t,L=C.period,lead=C.warn+C.ramp+8,u0=t+C.offset,u1=Math.ceil((u0-lead)/L)*L+lead;ATMOS.clock.t=t+(u1-u0);};
  return{fountain,throat,crater,ramp,fum,lava,LAVA,fume,fountain3,FU,phase,nextFountain,glows,emitters:em.length};})();

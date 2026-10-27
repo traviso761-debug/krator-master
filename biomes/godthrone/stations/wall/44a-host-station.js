@@ -5,7 +5,7 @@
 // for the scarps.
 const STN={key:'wall',title:'Krator Godthrone: the caldera wall',
  hint:'The Godthrone\'s caldera wall (station 1b): 3 km of titanium-basalt flows in six collapse terraces, the caldera\'s floor at 22 km at its foot, the rim at 25 km and the Ancients\' sealed portal on it; the summit vent fuming 23 km off. N for night',
- centre:[0,0],R:4800,step:8,vent:false,
+ centre:[0,0],R:4800,step:8,vent:false,summit:true,
  /* the scarps the close views stand under, at 2 m: the first foot of scarp 2 on the line t=600 and a bench of scarp 3's on
     t=-1400 (99-host-take.js finds its views by the same search), each box 520 m square */
  insets:()=>{const o=[],find=(t,ok)=>{for(let s=1000;s<4200;s+=10){const p=xzOf(s,t),w=wallAt(p[0],p[1],{});if(ok(w))return p;}return null;};

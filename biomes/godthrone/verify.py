@@ -41,7 +41,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # over EXPORT_BOX (a 300 m cell by the vent: its cones, bombs, spatter and hair). No water (station 1 has none: PLAN.md 9a)
 # and no buckets (the kit places only instanced items).
 EXPORT_BOX = [-15740, 15090, -15440, 15390]          # godthrone.html: the vent's 300 m cell
-EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980]}   # the wall's foot: its talus and stones
+EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980], 'godthrone-flank.html': [-1500, -600, -1200, -300]}   # the flank: by the old vent   # the wall's foot: its talus and stones
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -135,7 +135,7 @@ async def run(a):
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}" + (("?" + a.query) if getattr(a, "query", "") else ""), timeout=LOAD_MS)
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
@@ -294,5 +294,6 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--query", default="", help="the page's query string, e.g. overflow (the lake's overflow, 89d)")
     ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))
