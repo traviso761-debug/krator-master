@@ -47,6 +47,9 @@ const ATMOS={};
  A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
  // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
  A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+ // core/hazard's ambient bridge: register a field (KHAZ.provide(field, fn(x, y, z, t))) when the page has a KHAZ that takes
+ // it (an older KHAZ, or one whose vocabulary lacks the field, throws: then nothing). true if registered
+ A.khaz=(field,fn)=>{if(typeof KHAZ==='undefined'||!KHAZ||typeof KHAZ.provide!=='function')return false;try{KHAZ.provide(field,fn);return true;}catch(e){return false;}};
  // WINDWARD: how steeply the ground at (x,z) rises INTO the wind (m a metre, + on a face turned to it, - in the lee), from a
  // ground(x,z) function, the direction the wind comes from (dir [x,z]) and a baseline (reach, m: the face, not the bumps).
  // Pure: the fog belt and the rain wall read it, and their Godot twins read the same two ground samples

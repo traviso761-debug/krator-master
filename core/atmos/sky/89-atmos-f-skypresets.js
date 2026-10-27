@@ -52,7 +52,7 @@
  A.airPressureAt=(P,y)=>{const a=P.air,t=a.thin;if(!t||y==null)return a.pressure;return a.pressure*Math.exp(-(y-(t.y0==null?0:t.y0))/(t.scale==null?8000:t.scale));};
  // core/hazard's ambient bridge (its README, "the ambient bridge"): the pressure field its thin-air row doses by. A page calls
  // it (the Godthrone); guarded, false without KHAZ
- A.provideAir=P=>{if(typeof KHAZ==='undefined')return false;KHAZ.provide('pressure',(x,y,z)=>A.airPressureAt(P,y));return true;};
+ A.provideAir=P=>A.khaz?A.khaz('pressure',(x,y,z)=>A.airPressureAt(P,y)):false;
  // weather: {cover (0..1 extra cloud), grey (0..1 overcast), fog (0..1)}; the weather module's W maps onto it
  // y: the eye's height (the sky host passes the camera's); read only with air.thin
  A.skyLook=function(P,s,w,y){w=w||{};const p=A.airPressureAt(P,y),L=keyAt(P.keys,s.sunAlt);

@@ -241,6 +241,32 @@ field where one stands) and `KHAZ.provide('ph', ...)`; the weather record gains 
 bridge with `ATMOS.provideAir(SKY.preset)`. There is no temperature field yet. The etched textures are procedural until
 `metal.etched` and `stone.acidstreak` arrive (`core/materials/PROMPTS-NEEDED.md` section 33).
 
+**The air's load: dust, ash, caustic alkali and sight** (core/hazard's ambient bridge; the Catch's black storms, the
+Throne's ash, every page with the dust module): `fx/89-atmos-fx-airload.js`, after `ATMOS.dust` and `ATMOS.weather` /
+`bindWeather`. It puts what the weather lifts into mg/m3 at any point and time, and drives the page's fog from the same
+numbers, so the sight core/hazard reports is what the page shows (a 57 m sight leaves 2% of the far contrast at 57 m):
+
+```js
+const AIR=ATMOS.airLoad({                          /* every field optional; the numbers are PRESETS.airload's */
+ alkali:(x,z)=>F('soda')>.5||F('crust')>.5?.45:.05, /* the Catch: the share of caustic salt where the dust is lifted */
+ ashAt:(x,z)=>PLUME.under(x,z)});                   /* the Throne: how much of the ash falls here (default 1) */
+AIR.stormTo=1;                                      /* a black storm (the page's spring, or its UI); eases in over ~15 s */
+```
+
+- **dust**: clean air (.05) + the wind's own dust (the dust module's lift and mask x 30 mg/m3, thinning over 30 m up) + the
+  storm (1500 mg/m3 at full over its bare ground, 35% of that elsewhere, carried from `fetch` m upwind, thinning over 800 m).
+- **ash**: the weather's `W.ash` (ashfall .35, the ash storm 1) x 120 mg/m3 x `ashAt`, thinning over 1.5 km.
+- **alkali**: the share where each part of the load was lifted: the storm brings the lake beds' share downwind over the sand.
+- **sight**: Chepil and Woodruff's law, as KHAZ's (`VOCAB.dustSight` when core/tags is on the page). The fog becomes the
+  density that matches it when that is thicker than the page's own, tinted toward the dust (or the ash), and goes back to the
+  page's own after the storm. It composes with the shared sky (through `ATMOS.wxFog`) and with the weather binding's own
+  fog law (neither stacks on the other); a sky given its own `o.weather` should call `AIR.applyFog(scene.fog)` after
+  it writes the fog.
+- **The fields** (when the page has core/hazard): `dust`, `ash` (with an ash weather or `ashAt`), `alkali` (with `alkali`)
+  and `visibility` (only what the page's fog allows: its density, the height fog's falloff and mist, the fog belt: not the
+  dust's, which KHAZ already counts). The cloud deck gives none yet. The weather record gains `air`, with an `airload`
+  record. Thin air's pressure goes to the same bridge with `ATMOS.provideAir(SKY.preset)`.
+
 **For the other workstreams.** core/water's `WATER.wetGround` should hook through `ATMOS.shaderHook` when present (today a
 page hook set after it replaces a core hook layered under it) and (done on the water side, 2026-10-26) multiplies its wetness, puddles and rain rings by `atmRainOpen(worldPos)`
 when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms(sh.uniforms)`). `ATMOS.bindWeather`'s `o.wet` is passed

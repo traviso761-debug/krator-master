@@ -74,7 +74,7 @@
    if(dt>0)A.acidStep(S,S.ph,r,dt);S.fizz=A.ss(5,2,S.ph)*Math.min(1,r/10);
    U.acid.value.set(S.etch,S.fizz,t,0);U.acidC.value.setRGB(...A.acidTint(S.ph));};
   S.step(0,12,0);A.hook(S.step);
-  if(o.fields!==false&&typeof KHAZ!=='undefined'){KHAZ.provide('rain',(x,y,z)=>rainAt(x,y,z));KHAZ.provide('ph',(x,y,z)=>phAt(x,z));S.provided=true;}
+  if(o.fields!==false)S.provided=A.khaz('rain',(x,y,z)=>rainAt(x,y,z))&A.khaz('ph',(x,y,z)=>phAt(x,z))?true:false;
   const wr=A.fx.find(r=>r.type==='weather');if(wr)wr.acid={ph:typeof o.ph==='function'?'field':ph0,mmh};
   A.rec('acidrain',{ph:typeof o.ph==='function'?'field':ph0,clean:P.clean,mmh,tint:P.tint,tintAt:P.tintAt,etch:S.etch,rate:S.rate,fields:!!S.provided,
    note:'k = ramp(ph 4 -> 1) x ramp(rain mm/h 0 -> 10) (core/hazard acid-rain); etch += rate k dt, never falls; rain tint = mix(rain colour, tint, smoothstep(clean, tintAt, ph)); fizz = smoothstep(5, 2, ph) x min(1, mm/h / 10) (fx/89-atmos-fx-acid.js)'});
