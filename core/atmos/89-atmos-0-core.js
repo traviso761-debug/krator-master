@@ -47,6 +47,11 @@ const ATMOS={};
  A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
  // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
  A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+ // WINDWARD: how steeply the ground at (x,z) rises INTO the wind (m a metre, + on a face turned to it, - in the lee), from a
+ // ground(x,z) function, the direction the wind comes from (dir [x,z]) and a baseline (reach, m: the face, not the bumps).
+ // Pure: the fog belt and the rain wall read it, and their Godot twins read the same two ground samples
+ A.windwardAt=(ground,x,z,dir,reach)=>{const l=Math.hypot(dir[0],dir[1])||1,ux=dir[0]/l,uz=dir[1]/l,r=reach==null?250:reach;
+  return(ground(x-ux*r,z-uz*r)-ground(x+ux*r,z+uz*r))/(2*r);};
  A.night=h=>{const C=A.PRESETS.clock;return Math.min(1,Math.max(0,1-A.ss(C.dawn[0],C.dawn[1],h)+A.ss(C.dusk[0],C.dusk[1],h)));};
  A.litAt=(h,on,off)=>{const hh=h<12?h+24:h,r=A.PRESETS.clock.ramp;return A.ss(on,on+r,hh)*(1-A.ss(off-r,off,hh));};
  // GUSTS: a gust factor in -1..1 at time t and place (x,z). Gust fronts travel downwind (wind.frontSpeed m/s), so

@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 7 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26). Plus 1 for the termite cathedrals (section 32, `earth.termite`, core gap H10).
+**Count: 7 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26). Plus 1 for the termite cathedrals (section 32, `earth.termite`, core gap H10). Plus 2 for acid rain's etched metal and stone (section 33, `core/atmos`, the Valley of the Ancients).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -349,6 +349,30 @@ erosion but not the mound's knobbly built-up pellets or its tunnel mouths.
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The hard sun-baked outer wall of a giant termite mound seen close: fine clay built up from countless tiny rounded pellets cemented together, a knobbly crust with shallow vertical rain runnels and soft eroded ridges running one way down the surface, a few small round tunnel mouths and pinholes (2 to 10 mm) with darker hollows, patches of fresh smoother repair clay slightly paler than the weathered crust, a few fine drying cracks, a little loose grit in the hollows. No grass, no insects, no stones, no colour blotches. Matte, dry. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.5 metres.
+```
+
+## 33. Acid rain's etched surfaces (`core/atmos` `fx/89-atmos-fx-acid.js`, the Valley of the Ancients, planned, 2026-10-26)
+
+The acid rain's look (`ATMOS.acidOn`, kinds `metal` and `stone`) is **procedural until these land, said so**: pits and a
+tarnish on metal, a bleached crust and pale streaks on stone, drawn from a hash in the shader. When the sets land, `acidOn` is to blend
+toward them at the etch's weight (a detail map; not written yet). Both tintable, so one set serves any metal or rock.
+
+#### `metal.etched`
+- Kind: surface, tintable (near-colourless), 2048 px square, one tile 0.5 m.
+- Used by: acid-rain etching on metal (the Valley's ruins, machines, fittings). Reuse: any old corroded metal, a wreck's
+  hull, pickled or acid-cleaned steel.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Sheet metal eaten by years of acid rain: a dull matte surface densely pitted with small round and irregular corrosion pits (0.5 to 6 mm), some merged into shallow craters with rough grainy floors, fine etched grain and faint flow marks where acid ran down one way, thin crusty salt deposits ringing a few pits, patches of smoother less-attacked metal between. No rivets, no seams, no paint, no rust flakes, no colour blotches. Matte, dry. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.5 metres.
+```
+
+#### `stone.acidstreak`
+- Kind: surface, tintable (near-colourless), 2048 px square, one tile 1 m; vertical (up is the top of the image).
+- Used by: acid-rain etching on steep stone and masonry (the Valley's walls and cliffs). Reuse: limestone or marble under
+  long weathering, a karst wall's solution runnels.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A vertical stone face dissolved by acid rain: a bleached, chalky crust over finer grained rock, long narrow solution runnels and pale streaks running straight down the face from top to bottom, sugary etched grain where the surface has been eaten, small sharp pits, thin flaking skins lifting at a few edges, slightly darker unweathered rock in the hollows between runnels. No moss, no lichen, no cracks across the streaks, no colour blotches. Matte, dry. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 1 metre.
 ```
 
 ## Gaps with no prompt yet

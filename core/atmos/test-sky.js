@@ -119,4 +119,20 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  const [eq,dec]=out('equator'),[sky]=out('sky');
  ok('the sun lights the giant along its rings: '+eq.toFixed(1)+' degrees out of the ring plane at most (its declination reaches '+dec.toFixed(1)+')',eq<=dec+S.giant.ringOpenDeg+S.giant.libration.incDeg+1,sky<=dec+S.giant.ringOpenDeg+S.giant.libration.incDeg+1);}
 
+// ---- thin air (biomes/godthrone/PLAN.md 2): the sky as a function of the eye's height, opt-in by preset.air.thin
+{const P0=A.skyPreset('standard'),PT=A.skyPreset('standard',{air:{thin:{y0:0}}}),s=at(voth,259,12),w={};
+ ok('without air.thin the look ignores the eye\'s height (every page as it was)',JSON.stringify(A.skyLook(P0,s,w))===JSON.stringify(A.skyLook(P0,s,w,20000))&&JSON.stringify(A.skyLook(P0,s,w))===JSON.stringify(A.skyLook(P0,s,w,undefined)),
+  JSON.stringify(A.skyLook(P0,s,w))===JSON.stringify(A.skyLook(PT,s,w,20000)));
+ ok('the pressure follows the model\'s law: 1.6 atm at sea level, 0.52 at 9 km, 0.07 at the 25 km rim',near(A.airPressureAt(PT,0),1.6,1e-12)&&near(A.airPressureAt(PT,9000),.52,.06)&&near(A.airPressureAt(PT,25000),.07,.005)&&A.airPressureAt(P0,25000)===1.6,
+  near(A.airPressureAt(PT,25000),1.6,.01));
+ const lum=c=>.3*c[0]+.55*c[1]+.15*c[2],strip=L=>{const o=Object.assign({},L);delete o.p;return JSON.stringify(o);},lo=A.skyLook(PT,s,w,0),hi=A.skyLook(PT,s,w,25000),mid=A.skyLook(PT,s,w,9000);
+ ok('at sea level the thin-air preset looks as the standard does',strip(lo)===JSON.stringify(A.skyLook(P0,s,w)),strip(hi)===JSON.stringify(A.skyLook(P0,s,w)));
+ ok('at the rim the zenith is near black ('+lum(hi.zen).toFixed(3)+' against '+lum(lo.zen).toFixed(3)+') and the bright stars show by day',lum(hi.zen)<.3*lum(lo.zen)&&hi.dayStars>.9&&lo.dayStars===0,lum(hi.zen)>=lum(lo.zen));
+ ok('...the fog falls to nothing, the sky fill goes (hard shadows), the sun whitens and strengthens',hi.fogD<.01*lo.fogD&&hi.hemiI<.35*lo.hemiI&&Math.min(...hi.sunC)>Math.min(...lo.sunC)&&hi.sunI>lo.sunI&&hi.hazeFloor<lo.hazeFloor,hi.fogD>=lo.fogD);
+ let mono=true,prev=1e9;for(let y=0;y<=25000;y+=2500){const L=A.skyLook(PT,s,w,y),z=lum(L.zen);if(z>prev+1e-12||!(L.fogD>=0))mono=false;prev=z;}
+ ok('...darkening steadily with height, never brighter higher up',mono&&mid.dayStars<hi.dayStars,false);
+ const PL=A.skyPreset('standard',{air:{thin:{y0:-9000}}});ok('y0 moves the law to the page\'s datum (y0 -9000: the eye at 0 stands at 9 km)',near(A.airPressureAt(PL,0),A.airPressureAt(PT,9000),1e-12),near(A.airPressureAt(PL,0),1.6,1e-6));}
+
+{const PT=A.skyPreset('standard',{air:{thin:{y0:0}}}),prov={};const none=A.provideAir(PT);global.KHAZ={provide:(k,fn)=>{prov[k]=fn;}};const got=A.provideAir(PT);delete global.KHAZ;
+ ok('provideAir hands core/hazard the pressure by height (0.07 atm at the rim), and does nothing without KHAZ',none===false&&got===true&&near(prov.pressure(0,25000,0),A.airPressureAt(PT,25000),1e-12)&&prov.pressure(0,25000,0)<.08,!prov.pressure);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
