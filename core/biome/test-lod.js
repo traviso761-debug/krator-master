@@ -181,4 +181,14 @@ function lathe(rep) { const P = page(), { BIO } = P; BIO.bucket('b', new THREE.M
   g3.setAttribute('color', new THREE.BufferAttribute(col, 3)); B.def('distinct', g3, m, { label: 'd', indexed: true });
   ok(!B.defs.distinct.geo.index, 'negative: vertices that differ in any attribute are not welded'); }
 
+// ---------------------------------------------------------------- BIO.LOD.cull: per-instance ranges for loose items (2026-10-26)
+{ const P = page({ LOD: { merge: true, fade: .15, cull: true } }), B = P.BIO; build(P);
+  const tuft = B.lodMeshes.filter(e => e.mesh.name === 'biome:tuft'), leaf = B.lodMeshes.filter(e => e.mesh.name === 'biome:leaf');
+  const z = e => e.mesh.geometry.attributes.aLodB && e.mesh.geometry.attributes.aLodB.getZ(0);
+  ok(tuft.length && tuft.every(e => e.loose && z(e) === -1), 'cull: the floor tufts (no tree owns them) are loose, their minRange slot -1');
+  ok(leaf.length && leaf.every(e => !e.loose && z(e) === 0), '  negative: the leaves a tree owns (BIO.owner set) are not: they switch with their tree');
+  const Q = page({ LOD: { merge: true, fade: .15 } }), C = Q.BIO; build(Q);
+  ok(C.lodMeshes.filter(e => e.mesh.name === 'biome:tuft').every(e => !e.loose && e.mesh.geometry.attributes.aLodB.getZ(0) === 0), 'cull off (the default): nothing is loose');
+  const g = B.LODFADE_GLSL.vertexMain; ok(/instanceMatrix \* vec4\(0\.0, 0\.0, 0\.0, 1\.0\)/.test(g) && /_lcull = 1\.0/.test(g), 'the fade chunk measures a loose instance by its own origin and marks it culled past its range'); }
+
 console.log(fails ? fails + ' FAILED' : 'all passed'); process.exit(fails ? 1 : 0);

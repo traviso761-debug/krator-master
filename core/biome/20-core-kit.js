@@ -41,7 +41,7 @@ Object.defineProperty(F32.prototype,'n',{get:function(){return this.length;}});
 F32.prototype.data=function(){return this.a.slice(0,this.length);};   // a copy: the store can be dropped after bake
 BIO.F32=F32;BIO.Store=F32;
 // x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
-const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
+const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],o:[],count:0};   /* o: 1 where a tree (BIO.owner) owns the instance */
  if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
 BIO._newItem=newItem;   /* an empty store (34-core-impostor's capture empties a kit's stores after its scratch tree) */
 // opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
@@ -91,7 +91,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
  const lb=extra&&extra.label;if(lb!=null&&lb!==def.label||it.l){let li=0;   /* a per-instance label: the first one starts the table */
   if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
   if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
- it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?1:0);it.count++;BIO.tally(def.tris,1,0);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
 BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
@@ -226,7 +226,7 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 //   BIO.LOD.fade    a fraction (say .15): every chunk mesh dithers out over the last `fade` of its range, and a stand-in
 //                   (minRange) dithers in over the same band, so a chunk cross-fades instead of popping. Applied at bake to
 //                   the chunk meshes' materials (BIO.lodFade below) and to every baked mesh sharing them.
-BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1,merge:false,minTris:0,fade:0});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.lodMeshes=[];
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1,merge:false,minTris:0,fade:0,cull:false});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.lodMeshes=[];
 BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.chunk==null?BIO.LOD.chunk:BIO.chunk;
  return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0)+(BIO.chunk==null?'':'|'+C);};
 // a key's parts, {cx, cz, range, minRange, C} (C null: the page's BIO.LOD.chunk at bake); cached, a page has few keys
@@ -297,7 +297,7 @@ BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frust
 const _lodU={s:{value:1},f:{value:0}};BIO._lodU=_lodU;
 BIO.LODFADE_GLSL={
  vertexDecl:['attribute vec4 aLodA;','attribute vec4 aLodB;','attribute vec4 aLodC;','uniform float uLodS;','uniform float uLodF;','varying vec2 vLodK;'].join('\n'),
- vertexMain:['vLodK = vec2(0.0, 1.0);',
+ vertexMain:['vLodK = vec2(0.0, 1.0);','float _lcull = 0.0;',
   'if (uLodF > 0.0 && aLodB.w < 0.0) {',
   ' vec3 _lc = -vec3(dot(viewMatrix[0].xyz, viewMatrix[3].xyz), dot(viewMatrix[1].xyz, viewMatrix[3].xyz), dot(viewMatrix[2].xyz, viewMatrix[3].xyz));',   /* the eye from the view matrix: r128 uploads cameraPosition only to Phong, Toon, Standard, shader and env-mapped materials, so a Lambert leaf read (0,0,0) and every chunk 1.3 km from the origin faded out (nhighlands, 2026-10-26) */
   ' float _ldx = max(max(aLodA.x - _lc.x, 0.0), _lc.x - aLodA.z), _ldz = max(max(aLodA.y - _lc.z, 0.0), _lc.z - aLodA.w);',
@@ -312,6 +312,10 @@ BIO.LODFADE_GLSL={
   ' float _lid = 0.0;',
   '#endif',
   ' float _lr = (_lid < aLodC.x ? -aLodB.w : (_lid < aLodC.z ? aLodC.y : aLodC.w)) * uLodS, _lm = aLodB.z * uLodS;',
+  /* a loose mesh (aLodB.z -1: BIO.LOD.cull) fades each instance by its own distance and drops it past its range */
+  '#ifdef USE_INSTANCING',
+  ' if (aLodB.z < -0.5) { _ld = length((modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz - _lc); if (_ld > _lr) _lcull = 1.0; }',
+  '#endif',
   ' vLodK.x = smoothstep(_lr * (1.0 - uLodF), _lr, _ld);',
   ' if (_lm > 0.0) vLodK.y = smoothstep(_lm * (1.0 - uLodF), _lm, _ld);',
   '}'].join('\n'),
@@ -325,14 +329,14 @@ BIO.lodFade=function(m){if(!m||!m.isMaterial)return false;if(m.userData._lodFade
  const P=BIO.host.THREE.Material.prototype,oh=m.onBeforeCompile,ok=m.customProgramCacheKey,G=BIO.LODFADE_GLSL;
  m.onBeforeCompile=function(sh,r){if(oh&&oh!==P.onBeforeCompile)oh.call(this,sh,r);
   const v=_lodInject(sh.vertexShader,G.vertexDecl,G.vertexMain),f=_lodInject(sh.fragmentShader,G.fragmentDecl,G.fragmentMain);
-  if(v&&f){sh.vertexShader=v;sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}};
+  if(v&&f){sh.vertexShader=v.replace('#include <fog_vertex>','#include <fog_vertex>\nif (_lcull > 0.5) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);');sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}};   /* the culled instance's vertices meet off the clip volume: never rasterized */
  m.customProgramCacheKey=function(){return (ok===P.customProgramCacheKey?String(oh):ok.call(this))+'|lodfade';};
  m.userData._lodFade=true;m.needsUpdate=true;return true;};
 // the per-mesh vec4s: aLodA box x0 z0 x1 z1; aLodB y0 y1 minRange -range0; aLodC end0 range1 end1 range2 (ends in rows:
 // instances, or a bucket's vertices). e null: a mesh sharing a faded material that is not chunked (aLodB.w 1: drawn as before)
 function _lodAttrs(mesh,e,vEnds){const T=BIO.host.THREE,a=new Float32Array(12),big=1e9;
  if(e){const R=e.ranges||[e.range],E=vEnds||e.ends||[big],r=i=>Math.min(R[Math.min(i,R.length-1)],big);
-  a.set([e.x0,e.z0,e.x1,e.z1, e.y0,e.y1,e.minRange,-r(0), R.length>1?E[0]:big,r(1),R.length>2?E[1]:big,r(2)]);}
+  a.set([e.x0,e.z0,e.x1,e.z1, e.y0,e.y1,e.loose&&!(e.minRange>0)?-1:e.minRange,-r(0), R.length>1?E[0]:big,r(1),R.length>2?E[1]:big,r(2)]);}
  else a.set([0,0,0,0, 0,0,0,1, 0,0,0,0]);
  const buf=new T.InstancedInterleavedBuffer(a,12,Math.max(1,mesh.isInstancedMesh?mesh.count:1)),g=mesh.geometry;
  g.setAttribute('aLodA',new T.InterleavedBufferAttribute(buf,4,0));g.setAttribute('aLodB',new T.InterleavedBufferAttribute(buf,4,4));g.setAttribute('aLodC',new T.InterleavedBufferAttribute(buf,4,8));}
@@ -399,7 +403,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    if(def.set){   // core/tags: the mesh names its item set, and which of the set's instances it draws (idx null: in order from base)
     const ident=G.size===1&&idx.every((v,j)=>v===j);let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
     im.userData.krator=def.set.id;im.krator={set:def.set.id,idx:sx,base};def.parts.push({im,idx:sx,base,n});}
-   if(key)_lodEntry(im,key,y0,y1,S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));
+   if(key){const e=_lodEntry(im,key,y0,y1,S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));if(e&&BIO.LOD.cull)e.loose=idx.every(i=>!it.o[i]);}   /* loose: no tree owns any of its instances (BIO.LOD.cull) */
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
   def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
