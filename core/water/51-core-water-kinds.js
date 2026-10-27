@@ -110,6 +110,14 @@
      (o.chute!=null?(o.transparent!==false?'diffuseColor.a*=1.0-smoothstep('+f(.85*o.chute)+','+f(o.chute)+',vWtrS);':'if(vWtrS>='+f(o.chute)+')discard;'):''))
     .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.8,wtrFoamK);')
     .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4('+W.rainN(o,'wtrFlowN(vWtrW.xz,vWtrF,vWtrS)','vWtrW.xz','vWtrW')+',0.0)).xyz);');};
+  /* o.keep (2026-10-27, eastabyss's delta; opt-in): (x, z) -> 0..1, sampled at each ribbon vertex, the ribbon's alpha times it (an opaque
+     ribbon discards under half): a channel fades out where other water already lies (a lake, a marsh pool), so it never rides over it.
+     Without it nothing is added; the record notes keep: true (a port samples the host's own function) */
+  if(o.keep){const K=new Float32Array(R.count);for(let i=0;i<R.count;i++){const v=+o.keep(R.pos[i*3],R.pos[i*3+2]);K[i]=v<0?0:v>1?1:v;}g.setAttribute('wtrKeep',new T.Float32BufferAttribute(K,1));S.ribbonOpt.keep=true;
+   const ob=mat.onBeforeCompile,ok=mat.customProgramCacheKey,KL=o.transparent!==false?'diffuseColor.a*=vWtrK;':'if(vWtrK<0.5)discard;';
+   mat.onBeforeCompile=(sh,r)=>{ob.call(mat,sh,r);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float wtrKeep;varying float vWtrK;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrK=wtrKeep;');
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vWtrK;').replace('#include <roughnessmap_fragment>',KL+'\n#include <roughnessmap_fragment>');};
+   mat.customProgramCacheKey=()=>ok.call(mat)+'|keep:'+KL;}
   const mesh=tag(new T.Mesh(g,mat),S,o);mesh.renderOrder=o.renderOrder==null?1:o.renderOrder;mesh.position.set(org[0],0,org[2]);scene.add(mesh);
   const D={S,mesh,material:mat,ribbon:R};W.drawn.push(D);
   // spray at the steep reaches (the rapids' mist): core/atmos's 'spray' particles where the page has them

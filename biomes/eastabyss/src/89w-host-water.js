@@ -20,14 +20,30 @@ const maskOf=(box,cell,f)=>{const nx=Math.round((box[2]-box[0])/cell),nz=Math.ro
 // rim and a marsh's pools, and the bed was clamped at 1.4 m deep to hide it. Now the bed is the ground's own and the lap is off; the ground itself and BIO.waterH are untouched.
 const SWELL=[[.05,22,35,0,.03],[.03,13,-50,1.3,.03],[.012,6,80,2.2,.02]];
 // the salt lake: the lake's ellipse a=850 m, b=1900 m, its edge wobbling by up to 16%
-const LAKE_BOX=[-1150,-2400,1150,2400],LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn(x,z)<24);
-const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK});
+// THE POOLS THE SHORE CUTS INTO ARE THE LAKE'S (the owner, 2026-10-27: "algae color doesn't extend to pools that intersect
+// shoreline"): every cell under the water level joined to the lake (4-neighbour flood from lakeIn < 0, at 8 m) goes to the lake's
+// surface and its tint, and out of the marsh pools'; the rivers' channels (riverD < 40 m) are not followed upstream
+function lakeJoined(box,cell){const nx=Math.round((box[2]-box[0])/cell),nz=Math.round((box[3]-box[1])/cell),c=new Uint8Array(nx*nz),q=[];
+ const X=i=>box[0]+(i+.5)*cell,Z=j=>box[1]+(j+.5)*cell,wet=(x,z)=>terrainH(x,z)<BIO.waterH(x,z)-.02&&riverD(x,z)>=40;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)if(lakeIn(X(i),Z(j))<0){c[j*nx+i]=1;q.push(j*nx+i);}
+ while(q.length){const k=q.pop(),i=k%nx,j=(k-i)/nx;
+  for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const a=i+di,b=j+dj;if(a<0||b<0||a>=nx||b>=nz)continue;const n=b*nx+a;
+   if(c[n])continue;if(wet(X(a),Z(b))){c[n]=1;q.push(n);}}}
+ return(x,z)=>{const i=Math.floor((x-box[0])/cell),j=Math.floor((z-box[1])/cell);return i>=0&&j>=0&&i<nx&&j<nz&&c[j*nx+i]===1;};}
+const LAKE_BOX=[-1150,-2600,2500,2600],LAKE_JOIN=lakeJoined(LAKE_BOX,8),LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn(x,z)<24||LAKE_JOIN(x,z));
+// the rivers' plumes (2026-10-27, the owner: the delta rode over the lake): the channels fade out as they reach the lake (RIVER_KEEP below) and
+// their water runs on into it as a tint, strongest at each channel's line and spreading as it fades over ~250 m, so the river's grey-green
+// meets the pink salt water as a plume, not an edge (WATER.open's tint field; the lake's own colour everywhere else)
+const PLUME_HEX=lin(RIVER_COL.clone().lerp(new THREE.Color(0x6a7a72),.42)).multiplyScalar(.65).getHex();   /* the ribbons' own linear colour (their shallow and deep), as the lake's shader mixes it */
+const LAKE_TINT={box:LAKE_BOX,cell:8,at:(x,z)=>{if(Math.abs(x)<500)return null;const lk=lakeIn(x,z);if(lk>24)return null;const into=Math.max(0,-lk),rd=riverD(x,z);
+ const a=.6*smooth(30+.35*into,6,rd)*smooth(-260,-10,lk)*smooth(24,0,lk);return a<.004?null:{c:PLUME_HEX,a};}};
+const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK,tint:LAKE_TINT});
 const LAKE_DRAW=WATER.draw(LAKE_WATER,{surf:false,roughness:.2,metalness:.05,envMapIntensity:.85,renderOrder:1,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.4).lerp(WATER_PALE,.2)),deep:lin(WATER_DEEP)});
 LAKE_DRAW.mesh.userData.inspectLabel='The salt lake';
 // the marsh pools: the marsh zone (east of the lake, up to where the slope begins), wherever the ground is under the level
 const MUD=new THREE.Color(0x6a6a58),RIVER_GREY=new THREE.Color(0x6a7a72);
-const MARSH_BOX=[-250,-3740,2500,3740],MARSH_MASK=maskOf(MARSH_BOX,10,(x,z)=>{const W=zoneW(x,z);return Math.max(W.marshW,W.marshE)>.02&&W.lk>=24;});
+const MARSH_BOX=[-250,-3740,2500,3740],MARSH_MASK=maskOf(MARSH_BOX,10,(x,z)=>{const W=zoneW(x,z);return Math.max(W.marshW,W.marshE)>.02&&W.lk>=24&&!LAKE_JOIN(x,z)&&riverD(x,z)>20;});   /* the rivers' carved beds are the ribbons', not marsh water */
 const MARSH_WATER=WATER.open({name:'The marsh pools',level:0,swell:SWELL,field:0,bounds:MARSH_BOX,bed:terrainH,bedCell:10,mask:MARSH_MASK});
 const MARSH_DRAW=WATER.draw(MARSH_WATER,{surf:false,roughness:.2,metalness:.03,envMapIntensity:.3,renderOrder:1,   /* tints as tuned on a real GPU against the old shader (2026-10-20): the lit surface shows a tint far brighter than the old one did */
  shallow:lin(POOL_COL.clone().lerp(MUD,.5)).multiplyScalar(.6),deep:lin(POOL_COL.clone().lerp(MUD,.4)).multiplyScalar(.4)});
@@ -36,22 +52,35 @@ MARSH_DRAW.mesh.userData.inspectLabel='The marsh pools';
 // side channels that fan out over the last 430 m (riverD's own offsets). y: a hand above the level in the basin, the old ribbon's bed+.5 on the slope.
 const RIVER_Y=(x,z)=>Math.max(.1,terrainH(x,z)+.5);
 const riverLine=(x0,x1,dx,zf,off,wf)=>{const P=[],W=[];for(let x=x0;dx>0?x<=x1:x>=x1;x+=dx){const z=zf(x)+off(x);P.push([x,z,RIVER_Y(x,z)]);W.push(wf(x));}return{P,W};};
-const eastW=x=>38+(2*(13-4*smooth(2000,3400,x))-38)*smooth(2000,2400,x);
+// BASIN_W (2026-10-27, the owner: a straight shoreline break at the mouths): the basin's channels as wide as their carve, which takes the ground under the
+// level out to ~22 m from each centreline (terrainH: smooth(30, 9, riverD)); at 30-38 m the lake's mask flooded the flanks beside the ribbons up to its
+// straight cell edge, 24 m inland of the shore. 40 m and the ribbons' 3 m margin cover the carve; the lake's edge lies under the river
+const BASIN_W=40;
+const eastW=x=>BASIN_W+(2*(13-4*smooth(2000,3400,x))-BASIN_W)*smooth(2000,2400,x);
 // rapids (2026-10-26): the east river's own white-water band on its slope, [.05, .3] in place of core/water's preset [.015, .12], so the
 // lower climb (a 5 to 12 % grade) runs streaked and green and only the steep reaches under the shelf (16 to 27 %) break white: the
 // cataracts read where the ground is steepest. The ground has no step, so there is no WATER.fall (fallsOf finds none at .35).
-const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed},rapids?{rapids}:{}));
+const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed,densify:6},rapids?{rapids}:{}));   /* densify: a row every 6 m, so the fade into the lake (RIVER_KEEP) resolves */
 const fanE=s=>x=>s*Math.max(0,(1250-x)/430)*(s>0?150:130);
 const fanW=s=>x=>s*Math.max(0,(x+1250)/430)*(s>0?140:120);
 const RIVERS=[
  riverFlow('The east river',riverLine(3500,800,-30,zE,x=>0,eastW),1.1,[.05,.3]),
- riverFlow('The east river, north channel',riverLine(1250,800,-30,zE,fanE(1),x=>30),.7),
- riverFlow('The east river, south channel',riverLine(1250,800,-30,zE,fanE(-1),x=>30),.7),
- riverFlow('The west river',riverLine(-3700,-800,30,zW,x=>0,x=>38),.9),
- riverFlow('The west river, north channel',riverLine(-1250,-800,30,zW,fanW(1),x=>30),.6),
- riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>30),.6)];
-const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3});
+ riverFlow('The east river, north channel',riverLine(1250,800,-30,zE,fanE(1),x=>BASIN_W),.7),
+ riverFlow('The east river, south channel',riverLine(1250,800,-30,zE,fanE(-1),x=>BASIN_W),.7),
+ riverFlow('The west river',riverLine(-3700,-800,30,zW,x=>0,x=>BASIN_W),.9),
+ riverFlow('The west river, north channel',riverLine(-1250,-800,30,zW,fanW(1),x=>BASIN_W),.6),
+ riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>BASIN_W),.6)];
+// each channel fades out over 45 m as it reaches the lake (drawFlow keep, core/water 2026-10-27): it never rides over the lake's water; LAKE_TINT carries its colour on
+const RIVER_KEEP=(x,z)=>smooth(-30,15,lakeIn(x,z));
+const RIVER_OPT={keep:RIVER_KEEP,shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3};
+const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,RIVER_OPT);
  D.mesh.userData.inspectLabel=S.name;return D;});
+// THE FORKS (core/water/ext WATER.confluence, 2026-10-27; the owner: foam and side fades inside the channels where they leave the river): over the
+// ~110 m where each delta's side channels still overlap the main ribbon, one surface instead of three: its shore the carved ground's (riverD's
+// union of the channels), one current blended from the three, foam only at real banks; the three ribbons fade out inside its disc
+const FORKS=[{name:'The east delta\'s fork',at:[1205,zE(1205)],flows:[0,1,2]},{name:'The west delta\'s fork',at:[-1205,zW(-1205)],flows:[3,4,5]}];
+const FORK_DRAW=FORKS.map(Fk=>{const CF=WATER.confluence({name:Fk.name,flows:Fk.flows.map(i=>RIVERS[i]),at:Fk.at,r:100,cell:2,ground:terrainH});
+ const D=WATER.drawConfluence(CF,RIVER_OPT);WATER.fadeRibbons(CF,Fk.flows.map(i=>RIVER_DRAW[i]));D.mesh.userData.inspectLabel=Fk.name;return D;});
 // the lily pads and the leaf rafts ride the swell (2026-10-26): their material lifts each instance by the water's own height at its centre
 // (WATER.rideOn, core/water W5: the vertex chunk WATER.rideGLSL, the same swell as WATER.heightAt: the trochoids through the Newton inverse and
 // the lake bed's damping, on the water's one clock), times aBob: 1 on the lake (its bed's damping is in the chunk), the marsh's own damping in
@@ -64,3 +93,6 @@ const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.
   const n=o.count,M=o.instanceMatrix.array,b=new Float32Array(n);for(let i=0;i<n;i++)b[i]=dampAt(M[i*16+12],M[i*16+14]);
   o.geometry.setAttribute('aBob',new THREE.InstancedBufferAttribute(b,1));
   const m=o.material;if(done.has(m))return;done.add(m);WATER.rideOn(m,LAKE_WATER,{weight:'aBob'});});}
+// natural ripples (core/water/ext/56, 2026-10-27; the owner: the standing water shaded in a regular grid): the lake's and the marsh pools' normals broken up,
+// the swell's stripes in patches and a drifting chop over them (the rivers keep their own ripples, advected along the current)
+WATER.breakupAll();
