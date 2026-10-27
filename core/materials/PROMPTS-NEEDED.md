@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 12 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+**Count: 13 prompts** (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -430,6 +430,20 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A face of bedded rock salt cut flat by hand picks, seen straight on: coarse interlocking halite crystals, translucent milky white with faint grey and very pale pink bands running level across the face in beds a hand thick, the crystals' cubic cleavage showing as small square steps and facets, shallow parallel pick marks crossing the bands at a slant, a few thin seams of grey clay between beds, a little white salt dust in the marks. No tools, no blocks, no joints between blocks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1 metre.
+```
+
+## 35. The Lozenge's terraced fields (`kits/ancients`, target `lozenge`, 2026-10-27)
+
+The Lozenge (the Arccube at a quarter height) has its upper faces in flights of farm terraces (`targets/lozenge/89d6-lozenge-faces.js`, THE TERRACES). The
+treads are `MAT.acSoil`, the concrete map tinted to earth, under coloured instanced crop beds. Lands as a family in
+`kits/ancients/materials.json` bound onto `MAT.acSoil` (keep 0: the beds carry the crop colours).
+
+#### `ground.terrace.field`
+- Kind: surface, tintable (`MAT.acSoil`'s earth, `0x6e5536`; the ruin's `0x4a4a2a`).
+- Used by: the Lozenge's terrace treads, intact and overgrown; the Pile's crop beds (`targets/arcpile`) could take it too. Reuse: any terraced field or allotment ground (hill farms, Hook's town gardens, the isle demo's fields).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Tilled farm soil on a level terrace, seen from above: dark crumbly loam in straight shallow furrows running across the frame, a little straw and crop stubble lying in the furrows, small clods and a few pale pebbles, faint damp patches where the soil is darker, low sprouting seedlings in a few of the rows. No stone walls, no paths, no footprints, no water. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 4 metres.
 ```
 
 ## Gaps with no prompt yet

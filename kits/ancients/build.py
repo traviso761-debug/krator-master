@@ -111,7 +111,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -168,6 +168,8 @@ TARGET_OUT = {
     'hill': 'hill.html',                     # the sinuous hill arcology
     'arcoindian2': 'arcoindian2.html',       # the half-cave
     'arcube': 'arcube.html',                 # the 1 km cube on its diagonal
+    'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
+    'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -219,6 +221,7 @@ DETERMINISTIC = {
     '8ar0-sanctum-plan.js',                                                     # targets/sanctum: KRAND-hashed records, no rng()
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
+    '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -228,6 +231,7 @@ CONTINUES = {
     '89b1-arcoindian-cut.js': '89b-arcoindian.js', '89b2-arcoindian-plinth.js': '89b-arcoindian.js',
     '89c1-arcoindian2-lens.js': '89c-arcoindian2.js', '89c2-arcoindian2-stalk.js': '89c-arcoindian2.js',
     '89d1-arcube-faces.js': '89d-arcube.js', '89d2-arcube-elevation.js': '89d-arcube.js', '89d3-arcube-ruin.js': '89d-arcube.js',
+    '89d6-lozenge-faces.js': '89d5-lozenge.js', '89d7-lozenge-elevation.js': '89d5-lozenge.js', '89d8-lozenge-ruin.js': '89d5-lozenge.js',
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the

@@ -170,6 +170,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `arcbeam` | `89z-rows.js`, `91z-views.js` | 9 |
 | `arcoindian` | `89z-rows.js`, `91z-views.js` | 11 |
 | `arcoindian2` | `89z-rows.js`, `91z-views.js` | 12 |
+| `arcpile` | `89z-rows.js`, `8at0-arcpile-plan.js`, `8at1-arcpile-draw.js`, `91z-views.js` (the Pile, a stack of blocks: NOTES.md, plan/) | 34 |
 | `arcube` | `89z-rows.js`, `91z-views.js` | 10 |
 | `blades` | `89z-rows.js`, `91z-views.js` | 7 |
 | `canyon` | `89z-rows.js`, `91z-views.js` | 1 |
@@ -186,6 +187,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `interiors` | `89z-rows.js`, `91z-views.js` | 3 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
+| `lozenge` | `89z-rows.js`, `89d5-lozenge.js` (+ parts `89d6`-`89d8`), `91z-views.js` (the Arccube at a quarter height: NOTES.md, plan/) | 105 |
 | `kept` | `89z-rows.js`, `8aq5-kept-pass.js`, `91z-views.js` | 6 |
 | `kit` | `89z-rows.js`, `91z-views.js` | 25 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
