@@ -13,6 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/44a-host-station.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station: the square a page draws and what it builds (stations/wall/ has the wall's) |
 | `src/45-host-stage.js` | 23.2 | [web] | 6 | 0 | 3 | 1 | 2 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-biome-godthrone-species.js` | 4.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/60-biome-godthrone-ground.js` | 4.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |

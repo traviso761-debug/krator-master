@@ -1,22 +1,23 @@
 # godthrone: known issues
 
-- [ ] **The station is compressed** (an ideal type, as every station is): on 4.23 the summit vent's pit lies ~27 km from the
-  main caldera wall, and the Ancients' tunnels from Pluton would reach the rim on the south-west, across the caldera from
-  the vent. The page puts the pit, ~1 km of floor, the wall and the portal in one 9.6 km map, the wall north-east of the
-  vent (its true bearing). The owner's call (PLAN.md section 10).
-- [ ] **The 4.23 wall is a smooth 9 km ramp on the raster** (2 km a pixel cannot draw a scarp); the page draws the scarps it
-  stands for: six collapse terraces of 300-640 m, each lip wandering, each height swinging +-30% along the wall, the rim
-  kept at 25,000 m.
-- [ ] **The vent is fuming, not fountaining.** Whether it is active (fountaining every few years) is open (PLAN.md section 10);
-  the lava material has `erupt` and the weather has the ash modes, but no fountain is drawn.
+Closed 2026-10-27 (the owner's answers to station 1, `PLAN.md` section 10):
+- [x] **The station was compressed**: now two pages on one frame at 4.23's distances: the summit vent (`godthrone.html`) and
+  the caldera wall (`godthrone-wall.html`, `build.py --station wall`).
+- [x] **The vent only fumed**: it fountains every 10 minutes of the page's clock for 2 (`89b-host-vent.js` `VENT_CYCLE`), the
+  fountain's hazard record and the drawing on one cycle; the Fountain button and the fountain views jump the clock to it.
+- [x] **The bead horizons aliased away past ~300 m**: past 150-600 m from the eye a face shows the column's colour averaged
+  over 6 m, its contrast raised (`84-host-ground.js` BAND), read at KSTRATA's stratigraphic height.
+- [x] **The map's edge showed from the rim**: within 700 m of the square's edge the flat ground eases into the far country's
+  own colours, and the far country no longer tints the benches its own way.
+- [x] **The ground was 10 m a cell on the wall**: the wall's page bakes its field at 8 m (the vent's page keeps 10 m and its
+  2.5 m inset at the cone). PERF.md has the cost.
+- [x] **The temperature field**: the held mean swinging with the sun stays (the owner: as built).
+
+Open:
 - [ ] **The titanium basalt's grain is a stand-in**: `rock.basalt.flowbanded` grey under KSTRATA's colours (PLAN.md section 8
   allows a tint; `core/materials/PROMPTS-NEEDED.md` section 20 has an optional prompt for its own set).
-- [ ] **The bead horizons alias away past ~300 m**: the tibasalt beds are 0.1-15 m, so at a distance the walls read black;
-  the far country draws the column's colour averaged over 40 m.
-- [ ] **The ground is 10 m a cell** (2.5 m at the vent's cone, an inset): close to a scarp its faces are facets.
-- [ ] **The temperature field is a stand-in**: the 4.23 mean (-75 C) swinging +-22 C with the sun's height, until core/atmos has
-  a temperature field (core/hazard's ambient bridge reads it).
-- [ ] **The map's edge shows from the rim**: the field's ground (its library layers) and the far country's vertex colours
-  differ in grain, so the 9.6 km square reads against the caldera floor beyond it from high up (the colours are matched in mean).
-- [ ] `build.py` keys the strata's three.js half `35s-core-strata-shade.js` so it loads after the data half (found here: the
-  core README's adoption line sorted it first; the line is fixed).
+- [ ] **The 4.23 raster draws the wall as a smooth 9 km ramp**; the pages draw the scarps it stands for (the owner keeps the
+  terraces). Whether 4.24 carries scarps on the raster is open.
+- [ ] **Close to a scarp its faces are still facets** at 8 m; an inset per hero face would be the next step.
+- [ ] `build.py` keys the strata's three.js half `35s-core-strata-shade.js` so it loads after the data half (the core
+  README's adoption line is fixed to say so).

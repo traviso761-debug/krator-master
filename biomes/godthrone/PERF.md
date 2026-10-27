@@ -30,6 +30,37 @@ the times swing 25-50%, so each figure is the **minimum over two runs of 16 fram
 
 (The night view was moved higher after these runs, to see into the crater; its numbers are from the lower camera.)
 
+## After the split (2026-10-27): two pages
+
+The owner split station 1 into the summit vent (`godthrone.html`, field 10 m with the 2.5 m inset at the cone) and the caldera
+wall (`godthrone-wall.html`, field 8 m). Measured the same way, but **with other sessions loading the same GPU** (two runs each;
+the minimum of both, sync ms): the numbers are an upper bound, roughly 1.5-2x the quiet machine's above.
+
+| Page / view | Calls | Triangles | Sync ms (min) |
+|---|---:|---:|---:|
+| vent: The summit vent | 35 | 2.87 M | 35.8 |
+| vent: The fountain | 29 | 2.29 M | 25.4 |
+| vent: The throat | 24 | 2.72 M | 13.4 |
+| vent: The pit from its rim | 30 | 2.35 M | 37.6 |
+| vent: The wall from the pit | 19 | 2.22 M | 17.7 |
+| vent: The halo | 35 | 2.80 M | 23.4 |
+| vent: Pele's hair | 22 | 2.72 M | 12.5 |
+| vent: Night, the vent | 27 | 2.82 M | 19.6 |
+| vent: Night, the fountain | 30 | 2.36 M | 26.2 |
+| vent: Overview | 19 | 2.07 M | 64.4 |
+| vent: The black sky | 17 | 2.12 M | 12.0 |
+| wall: The caldera wall | 28 | 3.34 M | 22.0 |
+| wall: The terraces | 22 | 3.39 M | 20.3 |
+| wall: A scarp close | 25 | 3.39 M | 27.1 |
+| wall: The sealed portal | 19 | 3.21 M | 18.5 |
+| wall: From the rim | 19 | 3.23 M | 33.2 |
+| wall: From the rim, fountaining | 20 | 3.40 M | 39.3 |
+| wall: Dawn, the wall | 24 | 3.16 M | 31.6 |
+| wall: Overview | 15 | 3.03 M | 47.4 |
+
+The wall's 8 m field is 2.9 M triangles of ground (1.44 x the 10 m one's); the fountain adds 2,200 additive sprites (one call).
+To re-measure on a quiet GPU: `KRATOR_GL=gpu python3 perf.py dist/godthrone.html` and `dist/godthrone-wall.html`.
+
 ## Where the frame goes
 
 - **The ground is most of it.** The field's mesh is 961 x 961 vertices (10 m) less the inset's hole, 1.84 M triangles, plus

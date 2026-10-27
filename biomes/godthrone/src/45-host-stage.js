@@ -1,4 +1,4 @@
-// ================================================================= HOST — stage (station 1: the summit vent)
+// ================================================================= HOST — stage (the summit: every station's frame and ground)
 // The ideal-type host for THE GODTHRONE's summit (PLAN.md sections 1-4, station 1): renderer, the caldera as DATA (its
 // floor, its terraced wall, the nested pit, the vent), the rock as KSTRATA's tibasalt, the ground baked once into KFIELD,
 // the fields the kit asks for (the glass halo, its orange share, the scarps' talus, the hollows), BIO.init. The biome
@@ -8,14 +8,16 @@
 // 900 m deeper, the rim at 25,000 m), so the thin-air sky (89-host-sky.js), the strata's alteration line and the hazards'
 // pressure read the page's y as they are.
 //
-// THE MAP (x east, z south; a 9.6 km square, origin mid-map). One axis does the work: s runs NORTH-EAST, from the caldera's
-// centre (31 km south-west, off the map) out toward its rim; t runs across it (south-east). On 4.23 the summit vent sits on
-// the nested pit's floor 7 km east and 6 km north of the caldera's centre, and the nearest stretch of the main wall stands
-// north-east of it; the map is that line, COMPRESSED (an ideal type, as every station's: PLAN.md section 10's questions):
-//   THE PIT        a collapse pit 900 m deep (4.23's PIT_DEPTH), its floor a frozen lava lake ~1.75 km across, its wall
+// ONE FRAME FOR EVERY STATION (the owner, 2026-10-26: the summit is two pages): x east, z south, origin on the main wall's
+// foot north-east of the vent. One axis does the work: s runs NORTH-EAST from the caldera's centre (31 km south-west) out
+// toward its rim; t runs across it (south-east). The geography is 4.23's: the vent sits on the nested pit's floor 9.2 km
+// from the caldera's centre, ~23 km from the nearest stretch of the main wall, which stands north-east of it. Each station
+// draws a 9.6 km square of it (STN, 44a-host-station.js: the summit vent, src/; the caldera wall, stations/wall/), and the
+// rest of the caldera is the far country (82-host-sky.js), the same closure seen from far off:
+//   THE PIT        a collapse pit 900 m deep (4.23's PIT_DEPTH), its floor a frozen lava lake ~3.5 km across, its wall
 //                  three scarps of stacked flows with two benches between them
 //   THE VENT       on the pit's floor: a fissure 1.1 km long, the spatter rampart either side of its crack, a cinder-and-spatter
-//                  cone over the vent (fuming; a lava throat in its crater) and two smaller cones along the fissure
+//                  cone over the vent (a lava throat in its crater; fuming, and fountaining now and then: 89b) and two cones more
 //   THE FLOOR      the caldera's floor at ~22 km, a lava plain with low wrinkle ridges, mantled by the glass halo
 //   THE WALL       the main caldera wall, ~3 km of stacked titanium-basalt flows in six collapse terraces (a scarp and a
 //                  back-tilted bench each, talus at every scarp's foot), its rim at 25,000 m, the outer flank beyond
@@ -43,7 +45,7 @@ const SUN_POS=[1100,1500,700];   // a starting sun; the shared sky moves it to t
 const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(SUN_POS[0],SUN_POS[1],SUN_POS[2]);scene.add(sun);
 
 // ---------------------------------------------------------------- the frame
-const TERR={R:4800,X0:-4800,X1:4800,Z0:-4800,Z1:4800};
+const TERR=(function(){const R=STN.R,c=STN.centre;return{R,cx:c[0],cz:c[1],X0:c[0]-R,X1:c[0]+R,Z0:c[1]-R,Z1:c[1]+R};})();   // the station's square (STN)
 const SQ=Math.SQRT1_2;
 const sOf=(x,z)=>(x-z)*SQ, tOf=(x,z)=>(x+z)*SQ, xzOf=(s,t)=>[(s+t)*SQ,(t-s)*SQ];
 // THE CALDERA: its centre on the axis, 31 km south-west; the main wall's foot ~31.9 km from it (4.23: the rim at 36 +- 3.5 km,
@@ -56,7 +58,7 @@ const TER_MAIN=(function(){const S=[{h:430,ang:63},{h:360,ang:58},{h:560,ang:66}
  const need=CALD.rimY-CALD.yFoot+B.reduce((a,b)=>a+b.tilt,0),k=need/S.reduce((a,s)=>a+s.h,0);S.forEach(s=>{s.h*=k;s.run=s.h/Math.tan(s.ang*Math.PI/180);});
  return{S,B,rise:CALD.rimY-CALD.yFoot};})();
 // THE PIT: centred on the summit vent, 900 m deep (4.23), its wall three scarps from its floor (radius PIT.floorR) out
-const PIT=(function(){const s=-3000,t=-250,p=xzOf(s,t);const S=[{h:340,ang:60},{h:260,ang:56},{h:330,ang:62}],B=[{w:210,tilt:10},{w:170,tilt:8}];
+const PIT=(function(){const s=CALD.sC+9200,t=-250,p=xzOf(s,t);   /* 9.2 km from the caldera's centre (4.23: 7 km east, 6 km north) */const S=[{h:340,ang:60},{h:260,ang:56},{h:330,ang:62}],B=[{w:210,tilt:10},{w:170,tilt:8}];
  const need=900+B.reduce((a,b)=>a+b.tilt,0),k=need/S.reduce((a,q)=>a+q.h,0);S.forEach(q=>{q.h*=k;q.run=q.h/Math.tan(q.ang*Math.PI/180);});
  const rim=1750+S.reduce((a,q)=>a+q.run,0)+B.reduce((a,b)=>a+b.w,0);
  return{s,t,x:p[0],z:p[1],floorR:1750,depth:900,S,B,rise:900,rimR:rim,name:'The nested pit (900 m deep; its floor a frozen lava lake)'};})();
@@ -144,7 +146,7 @@ function baseH(x,z){const W=wallAt(x,z,_w),n=TER_MAIN.S.length;let wy=W.y;
   y-=(fl-CALD.yFoot)*.6*smooth(0,-150,P.d);   /* the pit's floor is a frozen lava lake: flatter than the plain above */
   if(P.d<0){const F=fissAt(x,z),C=coneAt(x,z);y+=Math.max(F.h,C.h)-30*C.throat;}}   /* the throat: a shaft 30 m down in the crater's floor */
  return y;}
-const FIELD_STEP=10;
+const FIELD_STEP=STN.step;   // the field's lattice: the ground mesh's vertices (84-host-ground.js)
 // the ground on a lattice: baseH at every point, then the ledge pass on the lattice's own gradient. edge(x,z): a height for
 // the lattice's border (an inset takes the base field's there, so its seam with the base mesh is watertight)
 function bakeGrid(x0,z0,st,nx,nz,edge){const B=new Float32Array(nx*nz);
@@ -158,12 +160,12 @@ function bakeGrid(x0,z0,st,nx,nz,edge){const B=new Float32Array(nx*nz);
 // THE VENT'S INSET: the cone, its crater and its throat at 2.5 m (the base lattice's 10 m cannot draw a 24 m shaft); the box
 // on the base lattice's lines, its border on the base field (KFIELD insets; 84-host-ground.js draws it as its own mesh and
 // leaves the base mesh's cells under it out)
-const INSET=(function(){const st=2.5,r=230,sn=v=>Math.round(v/FIELD_STEP)*FIELD_STEP,x0=sn(VENT.x-r),z0=sn(VENT.z-r),x1=sn(VENT.x+r),z1=sn(VENT.z+r);
- return{st,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/st)+1,nz:Math.round((z1-z0)/st)+1};})();
+const INSET=STN.inset?(function(){const st=2.5,r=230,sn=v=>Math.round(v/FIELD_STEP)*FIELD_STEP,x0=sn(VENT.x-r),z0=sn(VENT.z-r),x1=sn(VENT.x+r),z1=sn(VENT.z+r);
+ return{st,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/st)+1,nz:Math.round((z1-z0)/st)+1};})():null;
 const GROUND_F=(function(){const t0=performance.now(),st=FIELD_STEP,nx=Math.round((TERR.X1-TERR.X0)/st)+1,nz=Math.round((TERR.Z1-TERR.Z0)/st)+1;
- const F=KFIELD.create({x0:TERR.X0,z0:TERR.Z0,step:st,nx,nz,heights:bakeGrid(TERR.X0,TERR.Z0,st,nx,nz,null),name:'godthrone-summit'});
- const I=INSET,G=KFIELD.create({x0:I.box[0],z0:I.box[1],step:I.st,nx:I.nx,nz:I.nz,heights:bakeGrid(I.box[0],I.box[1],I.st,I.nx,I.nz,(x,z)=>F.h(x,z)),name:'godthrone-vent'});
- F.addInset(G);I.field=G;
+ const F=KFIELD.create({x0:TERR.X0,z0:TERR.Z0,step:st,nx,nz,heights:bakeGrid(TERR.X0,TERR.Z0,st,nx,nz,null),name:'godthrone-'+STN.key});
+ const I=INSET;if(I){const G=KFIELD.create({x0:I.box[0],z0:I.box[1],step:I.st,nx:I.nx,nz:I.nz,heights:bakeGrid(I.box[0],I.box[1],I.st,I.nx,I.nz,(x,z)=>F.h(x,z)),name:'godthrone-vent'});
+  F.addInset(G);I.field=G;}
  window._fieldMs=Math.round(performance.now()-t0);return F;})();
 const inMap=(x,z)=>x>=TERR.X0&&x<=TERR.X1&&z>=TERR.Z0&&z<=TERR.Z1;
 function terrainH(x,z){return inMap(x,z)?GROUND_F.h(x,z):baseH(x,z);}
@@ -211,7 +213,7 @@ const AIR={p0:1.6,scale:8000,at:y=>1.6*Math.exp(-y/8000)};
 
 // ---------------------------------------------------------------- the portal (PLAN.md section 6)
 // The Ancients' tunnels from Pluton come out on the caldera's rim: a sealed portal, its face turned into the caldera. Its
-// place on the rim is the settlement plan's (section 10); here it stands on this stretch of the rim, as a record first
+// place on the rim stays as built (the owner, 2026-10-26): on the wall station's stretch of the rim, as a record first
 const PORTAL=(function(){const t=1350,ds0=Math.sqrt(Math.pow(CALD.foot+TER_MAIN.S.reduce((a,q)=>a+q.run,0)+TER_MAIN.B.reduce((a,b)=>a+b.w,0),2)-t*t);
  /* the crest along the radial line through t: the highest ground within 300 m of the rim's nominal place, then 14 m out onto it */
  let best=-1e9,bs=0;for(let k=-60;k<=60;k++){const s=CALD.sC+ds0+k*5,p=xzOf(s,t),y=terrainH(p[0],p[1]);if(y>best){best=y;bs=s;}}
@@ -220,14 +222,14 @@ const PORTAL=(function(){const t=1350,ds0=Math.sqrt(Math.pow(CALD.foot+TER_MAIN.
   tags:{culture:'ancient',type:['infrastructure'],sealed:true,placeholder:'the Pluton settlement plan dresses it'}};})();
 
 // ---------------------------------------------------------------- the host binding
-const OBSTACLES=[{x:PORTAL.x,z:PORTAL.z,r:24}];
-// the LOD spine: the vent, the pit's rim, the floor, the wall's benches and the portal (the views' places)
-const SPINE=[[VENT.x,VENT.z],xzOf(PIT.s+PIT.rimR,PIT.t),xzOf(PIT.s,PIT.t+PIT.rimR),xzOf(0,0),xzOf(1500,0),xzOf(2800,-900),[PORTAL.x,PORTAL.z]].map(p=>[Math.round(p[0]),Math.round(p[1])]);
+const OBSTACLES=STN.portal?[{x:PORTAL.x,z:PORTAL.z,r:24}]:[];
+// the LOD spine: the station's views' places (STN.spine, [x, z])
+const SPINE=STN.spine().map(p=>[Math.round(p[0]),Math.round(p[1])]);
 BIO.init({tags:'godthrone',THREE:THREE,scene:scene,terrainH:terrainH,field:GROUND_F,placeH:baseH,waterH:()=>-1e9,
  mask:(x,z)=>{if(!inMap(x,z)||x<TERR.X0+4||x>TERR.X1-4||z<TERR.Z0+4||z>TERR.Z1-4)return 0;
   if(Math.hypot(x-VENT.x,z-VENT.z)<VENT.throat*1.3)return 0;return 1;},
  obstacles:OBSTACLES,ticks:tick,seed:WORLD,register:REGISTER,
- origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
+ origin:SPINE,center:[TERR.cx,TERR.cz],fields:FIELD,err:reportErr});
 // GRAPHICS FROM DAY ONE (GRAPHIC-LOAD.md): the items welded and drawn by index; one LOD mesh per chunk, rows sorted by range,
 // small meshes merged up to 1500 triangles; a dithered cross-fade over the last 15% of each range; every instance culled at
 // its own range. ?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 to compare (PERF.md)

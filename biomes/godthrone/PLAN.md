@@ -210,8 +210,10 @@ from the halos' edges by parties who climb on bottled air or Ancient breathing g
 
 ## 7. Stations
 
-1. **The summit vent** (`dist/godthrone.html`, ~22-25 km, after 4.23): the caldera's floor and terraced walls, the
-   vent fuming, the orange and black halo, the sky nearly black overhead. The sealed portal on the rim.
+1. **The summit vent** (`dist/godthrone.html`, ~21-22 km, after 4.23; built 2026-10-26): the nested pit, the vent fuming
+   and fountaining now and then, the orange and black halo, the sky nearly black overhead, the caldera's wall 23 km off.
+   **1b. The caldera wall** (`dist/godthrone-wall.html`, 22-25 km; the owner split station 1 in two, 2026-10-27): the six
+   collapse terraces, the floor at their foot, the rim and the sealed portal on it.
 2. **The high flank** (`-flank`, ~11-13 km, 0.4-0.33 atm): a black lava plain with levees, a sinuous rille and a
    pit-crater chain, old vents' dark rings, frost in the shadows.
 3. **The orange belt** (`-orange`, ~7.5-8.5 km): the dry-cold line, black flows going ochre downslope, palagonite
@@ -288,17 +290,15 @@ field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view o
 - Whether the airless band is drawn as this kit everywhere, or each wall kit draws it from this kit's fragments (the
   same ground either way; the difference is who owns the pages).
 - The Talovolci's relation to the mountain, and who gathers the orange glass.
-- **Met building station 1** (2026-10-26; each built from the proposal as written, nothing settled):
-  - The station is **compressed** (an ideal type): on 4.23 the pit is ~27 km from the main wall; the page puts pit, floor,
-    wall and rim in one 9.6 km map, the wall north-east of the vent (its true bearing). Keep it, or draw the pit and the
-    wall as two stations?
-  - **The caldera wall's profile**: 4.23's raster draws a smooth 9 km ramp; the page draws six collapse terraces (scarps of
-    300-640 m at 55-66 degrees, back-tilted benches, talus). Is that the wall the owner sees? Should 4.24 carry scarps?
-  - **The sealed portal**: where on the rim (the tunnels come from Pluton, south-west, across the caldera from the vent),
-    and its look (a placeholder: plinth, two pylons, lintel, seal, in the Ancients' white render).
-  - **The vent fuming**: the page draws fume, a hot crack and a lava throat, no fountain (the first question above).
-  - **The summit's temperature**: the page holds 4.23's mean (-75 C) swinging +-22 C with the sun for core/hazard's cold;
-    is the ground's day high (Mars: +20 C) wanted instead?
-  - **Hoarfrost on the faces turned south**: at this site the noon sun stands north, so the shaded faces face south.
-  - **The halo's bands**: orange near the vent (to ~1.5 km) and in rings to ~5 km, black beyond; widths are a guess.
-  - **An optional texture**: `rock.basalt.titanium` (the ilmenite sheen in the map; `core/materials/PROMPTS-NEEDED.md` 20).
+- **Met building station 1** (2026-10-26), **and the owner's answers** (2026-10-27):
+  - **Two pages, not one compressed one** (answered): station 1 is the summit vent (`dist/godthrone.html`: the pit and its
+    vent, the wall 23 km off in the far country) and station 1b the caldera wall (`dist/godthrone-wall.html`, `build.py
+    --station wall`: the terraces, the floor at their foot, the rim and the portal; the vent's fume and fountain 23 km off),
+    on one frame with 4.23's distances (the pit 9.2 km from the caldera's centre).
+  - **The wall's terraces** (answered: keep them). Whether 4.24 should carry scarps on the raster stays open.
+  - **The sealed portal** (answered: fine as it is): a placeholder on the wall station's rim.
+  - **The vent** (answered: intermittently active): it fumes and every 10 minutes of the page's clock fountains for 2,
+    the record's cycle (core/hazard) driving what is drawn; the period is a page's compression, not a geological one.
+  - **The temperature** (answered: as built), **the frost on the faces turned south and the halo's bands** (answered: as built).
+  - Still open: `rock.basalt.titanium` (optional; `core/materials/PROMPTS-NEEDED.md` 20); the portal's place in the
+    Pluton settlement plan.
