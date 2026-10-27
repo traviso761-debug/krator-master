@@ -77,6 +77,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `host/94-host-marks.js` | 12.0 | [web] | 7 | 2 | 10 | 8 | 0 | 3 | 0 | 0 | 1 | 3 | 2 | marks (P): host shell; the marks file is plain data |
 | `host/94-host-polytool.js` | 5.7 | [web] | 6 | 0 | 5 | 5 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `host/95-host-probe.js` | 4.2 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `host/95b-host-seat.js` | 7.2 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the probe's seat sweeps (contact, clear, doors, stairs) over the drawn scene, opt-in; the measuring is KSEAT (terrain/47) |
 | `host/96-host-pictures.js` | 6.1 | [web] | 4 | 2 | 7 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the picture menu, drawn off screen: host shell |
 | `host/97-host-minimap.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the minimap panel from the records (KMAP.mount, the M key): host shell |
 | `host/98-host-edit.js` | 19.9 | [web] | 6 | 0 | 5 | 10 | 2 | 5 | 0 | 0 | 1 | 5 | 1 | edit modes: host shell; every edit a core/edits op (the log is [G data]) |
@@ -137,6 +138,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/44-core-farfield.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KFAR: the far-field lattice as arrays (grid lines, heights, colours, curvature, exaggeration, crests); a MeshInstance3D in Godot |
 | `terrain/45-core-horizon.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KHORIZON: the horizon maps baked from a heightfield (two RGBA8 arrays, sky visibility); ImageTextures in Godot |
 | `terrain/46-core-lava.js` | 17.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KLAVA: the Bingham lava flow (MAGFLOW family) on the KFIELD lattice, vents, ponds, cooling, freezing into new ground; klava.gd twin (golden-lava.json), passing in 4.7.2 |
+| `terrain/47-core-seat.js` | 28.6 | [G data] | 1 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | KSEAT: the surface as drawn (triangles, a drawn grid, KSTACKS bodies), seat, contact, clearance, door and stair sweeps as plain functions on flat arrays and records; test-seat.js. The drawers' probe points wrap KSTACKS.mesh and KCARVE.mesh when loaded |
 | `terrain/host/35-core-strata-shade.js` | 20.6 | [G shader] | 1 | 1 | 1 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | opt-in (subfolder): BIO.strata (today's shader kept, and the core path), KSTRATA.shade: the bake as RGBA8 data textures, strataColor in GLSL; Godot's is godot/shaders/lib/strata.gdshaderinc |
 | `terrain/host/44-core-farfield-draw.js` | 2.7 | [G shader] | 1 | 0 | 0 | 0 | 0 | 2 | 4 | 0 | 0 | 0 | 0 | opt-in (subfolder): KFAR.mesh, geometry, fogThin, the three.js draw of the lattice |
 | `terrain/host/45-core-horizon-shade.js` | 5.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | opt-in (subfolder): KHORIZON.shade, the GLSL that cuts the sun and the ambient; a .gdshaderinc in light() |

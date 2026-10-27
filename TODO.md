@@ -26,6 +26,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **Close a ringed KSTACKS top at its centre** (2026-10-27, found by `KSEAT`, `core/terrain/SEAT.md`): `KSTACKS.mesh`'s
+  top rings stop at `.08` of the radius (`rhos` in `core/terrain/37-core-stacks.js`), so every ringed top has an open
+  hole at its centre (about 13 m across on a 160 m mesa) that shows the ground under the body from above. Add a centre fan
+  on `topH`; it moves every page that draws a ringed top (about 13 builds), then drop the pinned check in `test-seat.js`.
 - **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the
