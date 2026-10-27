@@ -17,7 +17,8 @@ PAIRS += [(f"core/biome/{f}", f"godot/tests/fire/{f}") for f in ("kfire.gd", "kf
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
 PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json",
-                                                                           "kstrata.gd", "kstrata_test.gd", "golden-strata.json")]
+                                                                           "kstrata.gd", "kstrata_test.gd", "golden-strata.json",
+                                                                           "klava.gd", "klava_test.gd", "golden-lava.json")]   # KLava: 46-core-lava.js
 # kits/resources' node field (KResField), its test and vectors, the geology it reads, and krand.gd beside it (it preloads it)
 PAIRS += [(f"kits/resources/godot/{f}", f"godot/tests/resources/{f}") for f in ("kres_field.gd", "kres_field_test.gd", "golden-field.json")]
 PAIRS += [("kits/resources/data/geology.json", "godot/tests/resources/geology.json"), ("core/rand/krand.gd", "godot/tests/resources/krand.gd")]
