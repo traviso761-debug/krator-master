@@ -10,6 +10,8 @@
 //   WATER.drawPools(list, o)   the still pools of `list` as ONE mesh (their polygons' triangles, each at its own level) with drawStill's ripple and sky,
 //        each pool's own gradient (2026-10-26; o.gradient gives one to the pools without); no fountain (those pools keep drawStill). o: {color,
 //        roughness, metalness, envMapIntensity, opacity, renderOrder, depthBias, depthWrite, pick, name, gradient, tint, rain}. -> {mesh, material, list}
+//   (2026-10-27, opt-in) drawFalls takes plungeR (each plunge disc's radius in m, or a function (S, P) -> m; default 2.4 x W.plunge's r)
+//        and plungeFade (with plungeR: the share of the radius where the disc starts to fade out, .75): a stepped river's discs inside its banks
 //   (2026-10-26) drawFalls also takes margin and edge (the curtains' sides, W.curtain) and spray: 'drop' (WATER.fallSpray); see 51's header
 //   WATER.drawTerraces(T, o)   a stepped river (WATER.terraces) in about four calls: its pools one mesh, its falls two. o: {pool: {...}, fall: {...}}
 //        over the options both take. -> {pools, falls}
@@ -47,11 +49,16 @@
   const D={mesh,material:mat,falls:list,merged:M};
   if(o.plunge!==false&&M.plunge.count){const P=M.plunge,pg=new T.BufferGeometry();pg.setAttribute('position',new T.Float32BufferAttribute(P.pos,3));
    pg.setAttribute('wtrPC',new T.Float32BufferAttribute(P.pc,3));pg.setIndex(P.idx);pg.computeBoundingSphere();
+   /* the discs face up (2026-10-27): without a normal the Standard material lit them with (0,0,0) and the churn drew dark grey, not foam */
+   {const nr=new Float32Array(P.pos.length);for(let i=1;i<nr.length;i+=3)nr[i]=1;pg.setAttribute('normal',new T.Float32BufferAttribute(nr,3));}
+   /* o.plungeR (53's mergedFalls) and o.plungeFade (2026-10-27, opt-in): each disc fades out from plungeFade of its radius (.75 as drawFall's) to its rim */
+   const PR=P.pr?(o.plungeFade==null?.75:o.plungeFade):null;if(PR!=null)pg.setAttribute('wtrPR',new T.Float32BufferAttribute(P.pr,1));
+   const RF=PR==null?'':'diffuseColor.a*=1.0-smoothstep('+f(PR)+'*vWtrPR,vWtrPR,length(vWtrW.xz-vWtrPC.xy));';
    const pm=new T.MeshStandardMaterial({color:0xeef4f4,roughness:.6,metalness:0,transparent:true,depthWrite:false});W.biasMaterial(pm,o);
-   const C2='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec3 vWtrW;varying vec3 vWtrPC;';pm.customProgramCacheKey=()=>'wtr-plunges:'+W.hashStr(C2);
+   const C2='#include <atmos_waves>\n'+W.fallGLSLMerged()+'\nvarying vec3 vWtrW;varying vec3 vWtrPC;'+(RF?'varying float vWtrPR;':'');pm.customProgramCacheKey=()=>'wtr-plunges:'+W.hashStr(C2+RF);
    pm.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2+'\nattribute vec3 wtrPC;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;vWtrPC=wtrPC;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlungeA(vWtrW.xz,vWtrPC);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);');};
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+C2+'\nattribute vec3 wtrPC;'+(RF?'attribute float wtrPR;':'')).replace('#include <begin_vertex>','#include <begin_vertex>\nvWtrW=(modelMatrix*vec4(position,1.0)).xyz;vWtrPC=wtrPC;'+(RF?'vWtrPR=wtrPR;':''));
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+C2).replace('#include <color_fragment>','#include <color_fragment>\nvec2 wtrPl=wtrPlungeA(vWtrW.xz,vWtrPC);diffuseColor.a*=clamp(wtrPl.x*1.15,0.0,0.95);'+RF);};
    D.plunge=tag(new T.Mesh(pg,pm),name+':plunge',ids,o);D.plunge.renderOrder=mesh.renderOrder;scene.add(D.plunge);
    if(o.spray!==false&&A.smoke&&A.PRESETS.smoke&&A.PRESETS.smoke.spray){const pts=[],sd=W.sprayByDrop(o);for(const S of list){const Pl=W.plunge(S),y=(o.plungeY==null?Pl.y+.06:o.plungeY)+1;
      if(sd){for(const p of W.fallSpray(S,Object.assign({plungeY:o.plungeY},sd)))pts.push([p[0],p[1],p[2],'spray']);continue;}

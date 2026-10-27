@@ -20,10 +20,12 @@ Taken, each with its switch for the owner's look pass (`?x=0` turns it off):
 | `BIO.fung.bracket` for the bracket fungus (TODO.md's fungoid list), turned to face its wall | `50`, `65` | `?fung=0` |
 | KSTRATA: a `nwbay-karst` recipe (thick grey limestone beds, marl partings, iron bands) on the stacks' and the sinkholes' walls | `45` | `?strata=0` |
 | `KSTACKS.weather` on the drawn stacks | `45` | `?weather=0` |
-| KGROUND: four library layers by zone (mulch, beach sand, aa lava, white travertine; `materials.json` groundLitter, groundSand, groundLava, groundTrav) | `45` | `?kground=0` |
+| KGROUND: four library layers by zone (mulch, beach sand, black cinder grit on the black beach and thinly on the old lava, white travertine; `materials.json` groundLitter, groundSand, groundLava (`ground.cinder`), groundTrav) | `45` | `?kground=0` |
+| The lava tongues are OLD flows (the owner, 2026-10-27: too far from the volcano for fresh rock): the paint a dark weathered soil under the mulch, the boulders weathered grey-brown basalt, and an understory pass of its own (shrubs, frond shrubs, young splay trees, ferns, grass; drawn last on its own seed, so nothing before it moves). The old pass's cinder cushions are smooth domes up close: a later pass could give them a leaf card | `45`, `60` | `NWBAY.LAVA_UNDER=false` (no understory) |
+| The columnar basalt's edge (the owner, 2026-10-27): over the outer half of the headland the columns step down to stubs, thin out and lean; the rim weathers paler and mossy; fallen pieces lie past it; paler weathered caps. The page's random draws are kept | `45` | `?basaltedge=0` |
 | KFAR: the far country on the lattice (50 m cells to 3.5 km, 6% wider to 13 km, curvature, crest pass) | `45` | `?kfar=0` |
 | KHORIZON: terrain shadows over the map and the far lattice | `88` | `?horizon=0` |
-| Water: rain rings on every water, curtain margins and side fades (W1), per-pool gradients on the terrace and shelf pools (W4), comb-weed in the lowland reach (`ext/54` `W.weed`, look `clear`) | `89w-host-water.js` | `?poolgrad=0`, `?weed=0` |
+| Water: the falls' plunge discs inside the pools' banks, fading out over 70 % of their radius (core/water ext 53/53b `plungeR`, `plungeFade`, new and opt-in; the owner, 2026-10-27), and lit (a core fix: the merged discs had no normals and drew dark grey); rain rings on every water, curtain margins and side fades (W1), per-pool gradients on the terrace and shelf pools (W4), comb-weed in the lowland reach (`ext/54` `W.weed`, look `clear`) | `89w-host-water.js` | `?poolgrad=0`, `?weed=0` |
 | Card fit: `check_cells.py --fix` (19 slots: bases, tight cells, crown stems; hanging cards one strand, base top) | `materials.json`, `tex/pack.json` | none (approved by the owner) |
 
 Dropped, and why:

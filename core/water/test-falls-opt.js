@@ -1,6 +1,6 @@
 // node core/water/test-falls-opt.js — drawFall's options for tall falls (2026-10-27, the Rift jungle's 160 m and 87 m cliffs): plungeR (the churn
 // disc sized to the pool it lands in, its rim faded) and footK (the curtain's alpha held toward its foot instead of thinning). Each against the
-// shader's own text in glsl-interp.js, with negatives; without them the text is the old one (test-gaps.js holds the default's hash).
+// shader's own text in glsl-interp.js, with negatives; and the merged falls' plungeR (ext/53, nwbay's terraces); without them the text is the old one (test-gaps.js holds the default's hash).
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');
@@ -38,4 +38,11 @@ const mk=()=>W.fall({name:'cliff',lip:[[0,0,160],[0,26,160]],dir:[1,0],speed:2.5
  ok('footK: the curtain holds its alpha toward the foot (at f .9, a thin streak: '+alpha(c1.fs,.9,.2).toFixed(2)+'; without it '+alpha(c0.fs,.9,.2).toFixed(2)+')',alpha(c1.fs,.9,.2)>alpha(c0.fs,.9,.2)*2&&alpha(c1.fs,.9,.2)>.6,false);
  ok('...at the lip it changes nothing (f 0: '+alpha(c1.fs,0,.2).toFixed(3)+' and '+alpha(c0.fs,0,.2).toFixed(3)+'); its program is keyed apart',Math.abs(alpha(c1.fs,0,.2)-alpha(c0.fs,0,.2))<1e-12&&c1.key!==c0.key,!c0.fs.includes('mix(1.0,0.6,smoothstep(0.55,1.0,vWtrUF.y))'));}
 
+// ---- the merged falls' plungeR and plungeFade (ext/53 mergedFalls, 53b drawFalls; 2026-10-27, nwbay's terraces): the data side, then the shader
+eval(['core/water/ext/53-core-water-terraces.js'].map(f=>fs.readFileSync(path.join(ROOT,f),'utf8')).join('\n'));
+{const step=()=>W.fall({name:'step',lip:[[0,-8,10],[0,8,10]],dir:[1,0],speed:1.6,drop:5}),S=step(),P=W.plunge(S);
+ const M0=W.mergedFalls([S],{}),M1=W.mergedFalls([step()],{plungeR:(T,Q)=>T.lipW*.55}),M2=W.mergedFalls([step()],{plungeR:4});
+ const rim=M=>Math.hypot(M.plunge.pos[3]-M.plunge.pos[0],M.plunge.pos[5]-M.plunge.pos[2]);
+ ok('mergedFalls plungeR: a function sizes the disc to the pool ('+rim(M1).toFixed(2)+' m = .55 x the 16 m lip, not '+rim(M0).toFixed(1)+' m), a number is metres ('+rim(M2).toFixed(2)+')',
+  Math.abs(rim(M1)-S.lipW*.55)<1e-9&&Math.abs(rim(M2)-4)<1e-9&&Math.abs(rim(M0)-P.r*2.4)<1e-9&&M1.plunge.pr&&M1.plunge.pr.length===M1.plunge.count,!!M0.plunge.pr);}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);
