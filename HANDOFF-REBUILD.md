@@ -110,8 +110,8 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
 
 ### Owed in core: the impostor bake is ~4x too dark (found on nhighlands, 2026-10-26)
 
-Measured on nhighlands' lowlands view without fog: the hero leaf cards average (59, 48, 64), the octahedral impostors (59, 48, 64
-needed) only (5, 11, 2) as baked; the colour atlas itself averages (7, 11, 4). The capture (`core/biome/34-core-impostor.js`, `capture`)
+Measured on nhighlands' lowlands view without fog: the hero leaf cards average (59, 48, 64), the octahedral impostors
+only (5, 11, 2) as baked; the colour atlas itself averages (7, 11, 4). The capture (`core/biome/34-core-impostor.js`, `capture`)
 renders the crowns under a flat white ambient without the kit's leaf shader hooks (ground tint, back-light, the cards' own lift), so
 the baked albedo is far below what the page draws. nhighlands compensates with `BIO.impostorLook({gain:3.6, wrap:1})` (new: a page-wide
 gain and light wrap on every impostor, defaults 1 and 0 = unchanged). **The proper fix** is a capture that renders the albedo through
