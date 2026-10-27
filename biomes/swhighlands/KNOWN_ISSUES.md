@@ -34,8 +34,8 @@ From `PLAN.md` section 10 and what station 1 met:
 - [ ] **The impostor gain** is this page's (`SWHI_IMP_GAIN` 1.6 in 88-host-build.js, measured: PERF.md) until core's capture renders the
   albedo through the kit's own materials (HANDOFF-REBUILD.md, "Owed in core").
 - [ ] **Stand-ins**: the ridge turf card is `card.moss` tinted pale and the crest's ground layer is `ground.grass_ground` (an Earth grass)
-  until a native turf set exists (`core/materials/PROMPTS-NEEDED.md` section 22). The cup-pads, parasol fruits and bulb fruits are
-  vertex-coloured, no map.
+  until a native turf set exists (`core/materials/PROMPTS-NEEDED.md` section 22). The parasol fruits and bulb fruits are
+  vertex-coloured, no map (the cup-pads take `organic.funnel.trumpet`).
 - [ ] **The arch's form** is core's `KSTACKS` arch (corbelled legs under a lintel) weathered by this kit; a softer, eroded arch form
   (an ellipse opening, a sagging lintel) would be a core option.
 - [ ] **The cave's mouth, close up**: the hood is on the ground's material and its top runs into the hill, but the 2 m field still
