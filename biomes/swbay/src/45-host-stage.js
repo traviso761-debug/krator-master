@@ -80,8 +80,18 @@ function riseAt(x,z){const d=bayIn(x,z),u=uvOf(x,z)[0];
  const dd=d+90*(fbm(x*.0012+4,z*.0012-2,43,2)-.5);
  return 24*smooth(140,700,dd)+96*smooth(620,1400,dd)+130*smooth(1250,2500,dd)+70*smooth(1400,4200,u)
   +(60*(fbm(x*.0021,z*.0021,44,3)-.5)+14*(fbm(x*.0068,z*.0068,45,2)-.5))*smooth(350,900,dd);}
+// THE KARST SPRINGS (BACKPORT.md swbay's row; the final rebuild, 2026-10-27; ?springs=0 without them): three blue-green pools welling up on
+// the rainforest's slope beside the river, each in a bowl the ground keeps for it (terrainH below), each sending a gin-clear run down to the
+// river (core/water ext/54 W.karstSpring: 89w-host-water.js draws them). Placed by the river's own line (u along the bay's diagonal, 64 m
+// off the line, alternate banks), so they follow the river wherever 45 puts it
+const SPRINGS=new URLSearchParams(location.search).get('springs')==='0'?[]:[[1520,1],[1890,-1],[2270,1]].map(q=>{const u=q[0],v=vR(u)+q[1]*64;
+ return{u,v,side:q[1],x:BAY.c[0]+(u+v)*SQ,z:BAY.c[1]+(v-u)*SQ,r:6,y0:null};});
 // ---------------------------------------------------------------- terrain
-function terrainH(x,z){
+function terrainH(x,z){let h=terrainH0(x,z);
+ for(const S of SPRINGS){const d=Math.hypot(x-S.x,z-S.z);if(d>S.r*1.6)continue;if(S.y0==null)S.y0=terrainH0(S.x,S.z);
+  h=Math.min(h,mix(S.y0-1.5,h,smooth(S.r*.85,S.r*1.6,d)));}   /* the spring's bowl: only ever lower, 1.5 m under its vent's ground at the middle */
+ return h;}
+function terrainH0(x,z){
  const lk=bayIn(x,z),rd=riverD(x,z),rise=riseAt(x,z);
  const sw=fbm(x*.0008+3,z*.0008-1,17,3)-.5,ro=fbm(x*.0045-2,z*.0045+5,29,2)-.5;
  let h=1.9+sw*2.4+ro*1.1;
@@ -109,14 +119,24 @@ const OBSTACLES=[];
 // with two points out along the shore so the jungle ring keeps its detail
 const spine=[[650,0],[1200,0],[1750,0],[2350,0],[3000,0],[3700,0],[1150,-620]].map(P=>[BAY.c[0]+(P[0]+P[1])*SQ,BAY.c[1]+(P[1]-P[0])*SQ]);
 BIO.init({tags:'swbay',THREE:THREE,scene:scene,terrainH:terrainH,
- mask:(x,z)=>{const h=terrainH(x,z),m=h<.12?0:h<.6?(h-.12)/.48:1;return m*smooth(7,15,riverD(x,z));},   // nothing rooted under water, nor in the river's channel up the slope
+ mask:(x,z)=>{const h=terrainH(x,z),m=h<.12?0:h<.6?(h-.12)/.48:1;let k=m*smooth(7,15,riverD(x,z));
+  for(const S of SPRINGS)if(Math.hypot(x-S.x,z-S.z)<S.r*1.5)k=0;return k;},   // nothing rooted under water, nor in the river's channel up the slope, nor in a spring's pool
  obstacles:OBSTACLES,ticks:tick,seed:11,
  origin:spine,center:CENTER,
  fields:FIELD,eye:()=>[camera.position.x,camera.position.y,camera.position.z],err:reportErr});
 BIO.setSun([-1200,900,-600]);
 // the runtime LOD's draw-call options (core/biome README, "The runtime LOD"; core change B1/B2, 2026-10-26): one mesh per
 // chunk whatever its ranges, small floor layers on coarser chunks, and a dithered cross-fade over the last 15% of each range
-BIO.LOD.merge=true;BIO.LOD.minTris=1500;BIO.LOD.fade=.15;
+// THE GRAPHICS SET (the final rebuild, 2026-10-27; nhighlands' and nwbay's lines, GRAPHIC-LOAD.md): the items' geometry welded and drawn by
+// index (BIO.INDEX_ITEMS; ?index=0 for the soup), the merge and the cross-fade as before (?lodmerge=0, ?lodfade=0), and loose instances
+// culled past their own range (?lodcull=0). INDEX_ITEMS is read as the kits define their items (47, 50): it is set here, before them
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';
+ // the looks the kit takes on this page only (50-biome-swbay-species.js and 65, SWBAY_LOOK; a world that reads the kit in place, Voth, the
+ // isle demo, ringisles, gets none of them): the broadleaf back-light (?backlit=0), the floor cover's root in the ground's colour (?rootcol=0;
+ // gain: the ground's tint .6 times its detail's mean .9), the savannah's dry season (?season=0), the fungoid parts on BIO.fung (?fung=0)
+ window.SWBAY_LOOK={backlit:q.get('backlit')==='0'?0:.35,ground:q.get('rootcol')==='0'?0:.54,season:q.get('season')!=='0',fung:q.get('fung')!=='0'};}
 // ---------------------------------------------------------------- the ground
 // One mesh. Painted by zone from a coarse cache of the fields (the fields cost
 // fbm calls; the 1536² canvas would otherwise take seconds), with a tiled
@@ -155,9 +175,24 @@ const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h)
  g.putImageData(id,0,0);});
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);}');};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}');};
+// THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND, 43-core-ground.js; the final rebuild, 2026-10-27, nwbay's lines; ?kground=0 for the paint
+// and its grain alone): four of the library's ground sets laid over the paint by zone, hex-tiled, scaled with distance and blended by height:
+// leaf mulch on the jungle's and the rainforest's floor (ground.ground072), beach sand on the shore and the river's banks (ground.coast_sand_01),
+// the savannah's bare earth between its grass (ground.dirt) and the volcano's ash toward the NE (ground.ash). The zone weights are a vertex
+// attribute of every ground mesh (aGL: litter, sand, savannah earth, ash), from the same field cache the paint reads
+const GL_ON=new URLSearchParams(location.search).get('kground')!=='0'&&typeof KGROUND!=='undefined';
+function glWeights(x,z){const up=FC.at(FC.a.up,x,z),lk=FC.at(FC.a.lk,x,z),rd=FC.at(FC.a.rd,x,z),uu=FC.at(FC.a.u,x,z);
+ const sand=Math.max(smooth(90,6,lk)*smooth(-60,-10,lk),smooth(60,14,rd)*.6*(1-smooth(.2,.4,up))),ash=smooth(1800,4200,uu)*smooth(.5,.8,up)*.9;
+ const sav=smooth(.40,.62,up)*(1-ash)*(1-sand),litter=(1-smooth(.4,.62,up))*(1-sand)*smooth(-4,8,lk);
+ return[litter,sand,sav,ash];}
+function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32Array(p.count*4);
+ for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));return g;}
+if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('swbay',slot,{w,amt,gain,tint:'diffuse'});
+ const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.7,1.15),L('groundSav','vGL.z',.55,1.1),L('groundAsh','vGL.w',.7,1.1)];
+ KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'swbay-ground'});}
 // THE RIVER STRIP (2026-10-26, the waterfall risers): the 13.75 m cells chord over a cataract's 1.5 m riser, so the channel is drawn again
 // as a fine strip along the river's line (u from the delta's head to the highlands, 36 m either side; rows every 8 m on the treads and
 // every 0.5 m where the bed steps, columns 4 m apart within 16 m of the line, 5 m beyond), 5 cm over terrainH. Under it the coarse mesh's vertices
@@ -170,7 +205,7 @@ const uvXZ=(u,v)=>[BAY.c[0]+(u+v)*SQ,BAY.c[1]+(v-u)*SQ];
   const P=uvOf(x,z);if(P[0]>STRIP.low[0]&&P[0]<STRIP.low[1]&&Math.abs(P[1]-vR(P[0]))<STRIP.lowR){
    for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)y=Math.min(y,terrainH(x+a*cell*.5,z+b*cell*.5));}
   p.setY(i,y);}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip
  const T=[];for(let t=-STRIP.W;t<-16;t+=5)T.push(t);for(let t=-16;t<=16;t+=4)T.push(t);for(let t=21;t<=STRIP.W;t+=5)T.push(t);
  const probe=[-16,-8,0,8,16],hAt=(u,t)=>{const q=uvXZ(u,vR(u)+t);return terrainH(q[0],q[1]);};
@@ -181,7 +216,7 @@ const uvXZ=(u,v)=>[BAY.c[0]+(u+v)*SQ,BAY.c[1]+(v-u)*SQ];
  rows.forEach((u,j)=>{const v0=vR(u);T.forEach((t,k)=>{const q=uvXZ(u,v0+t),o=j*nc+k;pos[o*3]=q[0];pos[o*3+1]=terrainH(q[0],q[1])+.05;pos[o*3+2]=q[1];uv[o*2]=(q[0]-x0)/S;uv[o*2+1]=(z1-q[1])/S;});});
  const idx=[];for(let j=0;j+1<rows.length;j++)for(let k=0;k+1<nc;k++){const a=j*nc+k,b=a+1,c=a+nc,d=c+1;idx.push(a,b,c,b,d,c);}   /* counter-clockwise from above: the normals face up */
  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- sg.setIndex(idx);sg.computeVertexNormals();
+ sg.setIndex(idx);sg.computeVertexNormals();addGL(sg);
  const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The river banks';scene.add(sm);STRIP.rows=rows.length;STRIP.tris=idx.length/3;})();
 
 // ---------------------------------------------------------------- the water
@@ -236,18 +271,31 @@ function farH(x,z){
  h+=560*smooth(6300,8300,rd)*(.55+.45*fbm(ra*4+3,rd*.0007,303,3));                    // the crater rim
  const u=uvOf(x,z)[0],v=uvOf(x,z)[1];h-=34*smooth(-1300,-2500,u)*smooth(2600,1100,Math.abs(v));   // the water the bay opens into
  return h;}
-(function(){const S=18000,N=260,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
+(function(){const S=18000,N=260,c=new THREE.Color(),t=new THREE.Color();
  const NEAR=TERR.R*1.1,SAV=new THREE.Color(0x8e7a4c),ASH=new THREE.Color(0x5a5452),LAVA=new THREE.Color(0x36302e),CAP=new THREE.Color(0xc8c0b4),RIM=new THREE.Color(0x707a7a),BED=new THREE.Color(0x6a7a70);
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
+ // the height and the colour at a far-country point (as before 2026-10-27, now functions both drawings call)
+ const farY=(x,z)=>{const dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
   let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz)),cs=S/N;let lo=terrainH(x,z);   /* the lowest ground across this vertex's cell (2026-10-25): a 69 m cell interpolated over the river's channel stood a metre or two above its water and hid it */
-   for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)lo=Math.min(lo,terrainH(x+a*cs*.5,z+b*cs*.5));y=lo-2*e;}else y=farH(x,z);p.setY(i,y);
-  const d=Math.hypot(x-VOLC.c[0],z-VOLC.c[1]),up=clamp(y/VOLC.H,0,1),n=fbm(x*.0012,z*.0012,305,2)-.5;
+   for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)lo=Math.min(lo,terrainH(x+a*cs*.5,z+b*cs*.5));y=lo-2*e;}else y=farH(x,z);return y;};
+ const farCol=(x,z,y)=>{const d=Math.hypot(x-VOLC.c[0],z-VOLC.c[1]),up=clamp(y/VOLC.H,0,1),n=fbm(x*.0012,z*.0012,305,2)-.5;
   const ang=Math.atan2(z-VOLC.c[1],x-VOLC.c[0]),flow=smooth(.56,.7,fbm(ang*5+2,d*.0016,306,2))*smooth(.1,.3,up)*smooth(.9,.6,up);   // lava flows: dark tongues down from the notch
   c.copy(SAV).lerp(ASH,smooth(.03,.25,up)+smooth(2400,1400,d)*.5).lerp(LAVA,clamp(.35+n*1.4,0,1)*smooth(.2,.6,up)).lerp(CAP,smooth(.72,.9,up)*.85).lerp(new THREE.Color(0x241c1a),flow*.9);
   c.lerp(RIM,smooth(6200,7600,Math.hypot(x-CENTER[0],z-CENTER[1])));c.lerp(BED,smooth(2,-12,y));
-  c.multiplyScalar(1+n*.12).convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();
+  c.multiplyScalar(1+n*.12).convertSRGBToLinear();return c;};
+ // THE LATTICE ON KFAR (core/terrain/44-core-farfield.js; the final rebuild, 2026-10-27, nwbay's lines; ?kfar=0 for the old 18 km plane of
+ // 69 m cells): 50 m cells out to 3.5 km round the map's centre (the map's square inside it left out: the ground draws there), then each 6%
+ // wider to 13 km, the planet's curvature past the map and a crest pass that keeps the volcano's ridges and the crater rim sharp on the
+ // coarse cells; the same heights and colours
+ let g;if(new URLSearchParams(location.search).get('kfar')!=='0'&&typeof KFAR!=='undefined'){
+  const HS=NEAR-60,X0=CENTER[0]-HS,X1=CENTER[0]+HS,Z0=CENTER[1]-HS,Z1=CENTER[1]+HS,RO=12600;
+  const G=KFAR.grid({lines:KFAR.lines({cell:50,inner:3500,out:13000,grow:1.06}),dense:true,centre:CENTER,h:farY,
+   skip:(x0,z0,x1,z1)=>(x0>=X0&&x1<=X1&&z0>=Z0&&z1<=Z1)||Math.min(Math.hypot(x0-CENTER[0],z0-CENTER[1]),Math.hypot(x1-CENTER[0],z0-CENTER[1]),Math.hypot(x0-CENTER[0],z1-CENTER[1]),Math.hypot(x1-CENTER[0],z1-CENTER[1]))>RO,
+   color:(x,z,y,q)=>{const k=farCol(x,z,q.h);return[k.r,k.g,k.b];},curve:{from:TERR.R*1.2},crest:{k:.5,from:4000,to:9000}});
+  g=KFAR.geometry(G);window.SWBAY_FAR_G=G;}
+ else{g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
+  const p=g.attributes.position,col=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=farY(x,z);p.setY(i,y);const k=farCol(x,z,y);col[i*3]=k.r;col[i*3+1]=k.g;col[i*3+2]=k.b;}
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();}
  const fm=new THREE.MeshLambertMaterial({vertexColors:true,color:0xa8a49c});
  fm.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');

@@ -136,5 +136,12 @@ SWHI.FL={mk,AGE,AGES,QE,curve,reg,
    for(let j=0;j<b[2];j++){const s=KRAND.stream(KRAND.hash(BIO.host.seed>>>0,i,j,0x5EA,o.salt||0)),r=s.range(0,b[3]||4.5),t=s.range(0,TAU),x=c[0]+Math.cos(t)*r,z=c[1]+Math.sin(t)*r;out.st[b[0]]=(out.st[b[0]]||0)+(b[1](x,Y(x,z),z,s)||0);}});
   return out;}};
 SWHI.SHEETS={pillars:SWHI.pillarsSheet};
+// ONE TREE BY KEY, for a kin (core/biome BIO.kin, BIO.kitBuilder: SWHI.make(sp, x, y, z, seed) and SWHI.grow(T, lv); 2026-10-27, the bay's cousins,
+// biomes/swbay 87-host-kin.js): the record as the stations make it (SWHI.FL.mk: its age from its own draw; the seed a hash of the place when none
+// is given), grown by its habit's builder (lv 2 the hero, 1 the light form; 0 draws the light form too: no far form here, the stations' far
+// trees are impostors). Its own stream (the seed's), never the page's. A fishing bridge reads T.x2, T.z2 (its far bank) when the kin sets them
+SWHI.make=function(sp,x,y,z,seed){return SWHI.FL.mk(x,y,z,sp,seed==null?KRAND.hash(Math.round(x*10),Math.round(z*10),sp,0x5EED):seed,()=>2);};
+SWHI.grow=function(T,lv){const st={trunk:0,limb:0,root:0,tent:0,caps:0,strands:0,epi:0,blocks:0,heroes:0,light:0,far:0};
+ SWHI.BUILD[SWHI.SPECIES[T.sp].habit](T,st,lv===2?2:1,KRAND.stream(T.seed^0x5157));return st;};
 SWHI.FLOOR_PILLARS=FLOOR;   /* the torch spikes, bead coral and cushions grow on Span's tableland too (59) */
 })();
