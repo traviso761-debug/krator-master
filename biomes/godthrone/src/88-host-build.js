@@ -15,5 +15,5 @@ window._biome=null;
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}
  lap('ground');
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
- REGISTER({name:'The Godthrone\'s summit: '+(STN.key==='vent'?'the nested pit and the summit vent':'the caldera wall and its rim'),x:TERR.cx,z:TERR.cz,y:20900,r:TERR.R*1.42,h:4300});
+ REGISTER({name:STN.title.replace('Krator ','')+' (the station)',x:TERR.cx,z:TERR.cz,...(()=>{const m=GROUND_F.stats();return{y:m.min-100,h:m.max-m.min+300};})(),r:TERR.R*1.42});
 })();

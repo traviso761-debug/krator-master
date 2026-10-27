@@ -283,6 +283,16 @@ Throne's station mechanism for the later pages. What the build takes, and why no
 **Graphics from day one** (`GRAPHIC-LOAD.md`): welded items, the LOD merge, fade and per-instance cull are on; the far
 field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view on the Intel GPU in `PERF.md`.
 
+### Station 2, the high flank (built 2026-10-27): core adoption
+
+`dist/godthrone-flank.html`, `build.py --station flank`: the south-east flank at 4.22's flank vent (px 716, 1128, 11,080 m;
+0.39 atm, about -44 C), its own frame and ground model (`stations/flank/45b-host-model.js`; the kit's other fragments are
+shared: the summit's terrain moved into `src/45b-host-model.js` so a station swaps only its ground). Takes, beyond station 1's
+list: `KRELIEF.meander`, `KRELIEF.rille` (the sinuous rille from the main old vent's crater, its walls on the flows),
+`KRELIEF.tube` (the tube's pit chain: 23 collapse pits and 9 skylights on the map), `KRELIEF.volcano` (five old cones),
+`KRELIEF.apply`. Not yet: **the long lobate flows with levees and central channels** wait for core's lava-flow module (asked
+for a build-time "frozen flows" bake; the plain carries low lobes until then); no hazards of its own (the ambient bridge only).
+
 ## 10. Open questions
 
 - The caldera's exact size and depth, and whether the summit vent is active now (fountaining every few years) or only

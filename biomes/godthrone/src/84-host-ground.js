@@ -100,5 +100,5 @@ function buildGround(){
   far:{h:(x,z)=>{const v=FAR.at(x,z);return v===v?v:baseH(x,z);},box:[TERR.cx-30000,TERR.cz-30000,TERR.cx+30000,TERR.cz+30000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
  KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:o=>!o.userData.farField});
- REGISTER({name:'The summit caldera\'s floor, the pit and the wall (ground)',x:TERR.cx,z:TERR.cz,y:21000,r:TERR.R*1.42,h:4100,ground:true});
+ REGISTER({name:STN.title.replace('Krator Godthrone: ','The ground of ')+' (the field as drawn)',x:TERR.cx,z:TERR.cz,y:GROUND_F.stats().min-50,r:TERR.R*1.42,h:GROUND_F.max-GROUND_F.min+100,ground:true});
  GROUND=m;return m;}

@@ -28,7 +28,7 @@ const FAR=(function(){
  function G0n(x,z){const e=40;return (baseH(x,z+e)-baseH(x,z-e))/(2*e)*-1;}   // >0: the ground falls southward (it faces south: the shaded side at this site)
  const mesh=KFAR.mesh(G,{name:'far:caldera',label:'The caldera and the upper shield (far country)'});
  mesh.position.set(CX,0,CZ);mesh.updateMatrixWorld(true);mesh.frustumCulled=false;mesh.userData.probeSkip=true;mesh.userData.farField=true;scene.add(mesh);
- REGISTER({name:'The summit caldera, its far wall and the upper shield (the far country)',x:0,z:0,y:20500,r:ROUT,h:5000,far:true});
+ REGISTER({name:STN.summit?'The summit caldera, its far wall and the upper shield (the far country)':'The Godthrone\'s shield round the station (the far country)',x:CX,z:CZ,y:baseH(CX,CZ)-6000,r:ROUT,h:12000,far:true});
  /* at(x, z): the lattice's height at a point of the summit's frame (KHORIZON's far grid reads it) */
  return{mesh,G,FARK,C,at:(x,z)=>G.at(x-CX,z-CZ),tris:G.count?G.count.tris:0};})();
 

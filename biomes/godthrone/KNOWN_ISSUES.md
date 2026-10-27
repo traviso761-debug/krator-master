@@ -26,3 +26,6 @@ Open:
   as the empty pit was near its walls.
 - [ ] `build.py` keys the strata's three.js half `35s-core-strata-shade.js` so it loads after the data half (the core
   README's adoption line is fixed to say so).
+- [ ] **Station 2's lobate flows** (levees, central channels, lobate fronts) wait for core's lava-flow module's frozen-flows bake
+  (asked of the core-lava-flow session, 2026-10-27); the plain carries low lobes until then.
+- [ ] **Station 2 has no lithic texture of its own**: it shares station 1's (the black beads, the basalt's grain).

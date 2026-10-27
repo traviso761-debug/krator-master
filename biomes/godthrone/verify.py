@@ -41,7 +41,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # over EXPORT_BOX (a 300 m cell by the vent: its cones, bombs, spatter and hair). No water (station 1 has none: PLAN.md 9a)
 # and no buckets (the kit places only instanced items).
 EXPORT_BOX = [-15740, 15090, -15440, 15390]          # godthrone.html: the vent's 300 m cell
-EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980]}   # the wall's foot: its talus and stones
+EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980], 'godthrone-flank.html': [-1500, -600, -1200, -300]}   # the flank: by the old vent   # the wall's foot: its talus and stones
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
