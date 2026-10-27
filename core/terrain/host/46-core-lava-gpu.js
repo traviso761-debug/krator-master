@@ -29,7 +29,7 @@
   'bool inGrid(ivec2 c){return c.x>=0&&c.y>=0&&c.x<uN.x&&c.y<uN.y;}',
   /* the cell's (z, h, T, dep) with its pond (P.g = pond index + 1) held at the level; P.r its roughness */
   'vec4 cellS(ivec2 c){vec4 s=texelFetch(uS,c,0);int p=int(texelFetch(uP,c,0).g+0.5)-1;',
-  ' if(p>=0){float L=p==0?uPondL[0]:p==1?uPondL[1]:p==2?uPondL[2]:uPondL[3];s.g=max(L-s.r,0.0);s.b=p==0?uPondT[0]:p==1?uPondT[1]:p==2?uPondT[2]:uPondT[3];}return s;}',
+  ' if(p>=0){float L=p==0?uPondL[0]:p==1?uPondL[1]:p==2?uPondL[2]:uPondL[3];s.g=max(L-s.r-texelFetch(uP,c,0).r,0.0);s.b=p==0?uPondT[0]:p==1?uPondT[1]:p==2?uPondT[2]:uPondT[3];}return s;}',
   'vec2 rheo(float T){float le='+(vft?GL(e[0])+'+'+GL(e[1])+'/max(1.0,T-'+GL(e[2])+')':GL(e[0])+'+'+GL(e[1])+'*T')+';',
   ' return vec2(max('+GL(R.etaMin==null?1:R.etaMin)+',exp2(le*3.321928094887362)),exp2(('+GL(R.yld[0])+'+'+GL(R.yld[1])+'*T)*3.321928094887362));}',
   'float flux(float he,float dH,float d,float w,float eta,float Sy){if(!(he>0.0)||!(dH>0.0))return 0.0;',
