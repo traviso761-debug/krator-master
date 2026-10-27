@@ -6,6 +6,7 @@
   "solsticeDay": 350,
   "startDay": 259,
   "startHour": 6,
+  "viewHour": 11,
   "frame": {
    "mPerPx": 2000,
    "refPx": [
@@ -19,6 +20,7 @@
   "giant": {
    "diaDeg": 30,
    "decDeg": 0,
+   "axis": "equator",
    "axisTiltDeg": 23,
    "spinH": 10,
    "ringIn": 1.3,
