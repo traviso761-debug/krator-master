@@ -37,6 +37,11 @@ Processing, per family:
   own      `"own": true` marks a family only the kit's own page uses (the variants of a card, a surface a kit-only fragment
            swaps in): tools/textures/matlib_pack.py leaves it out of the pack a host that vendors the kit inlines, unless the
            kit's own build.py asks for it (`fragment(HERE, key, own=True)`), so that host's page keeps its bytes.
+  height   `"height": true` packs the set's height map (its source's `disp` extra, saved in the set as height.png, or the
+           file meta.json 'maps.heightMap' names) into the colour map's ALPHA: an RGBA WebP whose alpha is the height about
+           its mean (0.5, the 1st to 99th percentile spanning one unit, clamped to 0.02..1, as KGROUND's luminance height
+           is). core/terrain's KGROUND reads it with a layer's `h: {from: 'a'}`; the pack entry says `"height": true`.
+           A set without a height map is packed as before, with a note, and the entry has no `height` (keep `h` on lum).
 Requires numpy and Pillow.
 """
 import argparse, base64, hashlib, io, json, os, sys
@@ -123,8 +128,17 @@ def process(fam, cfg, size):
         grey = grey * (c / max(float(c @ np.array([0.2126, 0.7152, 0.0722])), 1e-4))
     col = a * k[..., None] / m * target
     rgb = grey * (1 - keep) + col * keep
+    ph = path('heightMap', 'height.png')
+    height = bool(cfg.get('height')) and not card and os.path.isfile(ph)
+    if cfg.get('height') and not height:
+        print('note: %s asks for a height channel but %s has no height map (%s); packed without one' % (fam, lib, os.path.basename(ph)))
     if card:
         out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+    elif height:          # the height in the colour map's alpha, for KGROUND's h: {from: 'a'}
+        hm = load(ph, size, 'L')
+        lo, hi = np.percentile(hm, [1, 99])
+        h = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
+        out['map'] = webp(np.concatenate([rgb, h[..., None]], -1), 82, 'RGBA')
     else:
         out['map'] = webp(rgb, 82, 'RGB')
     # normal
@@ -152,9 +166,12 @@ def process(fam, cfg, size):
         'tint': dict({'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
                      **({'colour': t['colour']} if t.get('colour') else {})),
         'roughLift': cfg.get('roughLift', 0.0),
-        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
+        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) + ((('height', ph),) if height else ())
+                   if os.path.isfile(f)},
         'files': {},
     }
+    if height:
+        entry['height'] = True
     if cfg.get('own'):    # the kit's own page only: matlib_pack leaves it out of a host's copy of the pack (see `own` above)
         entry['own'] = True
     if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left

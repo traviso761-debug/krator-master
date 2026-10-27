@@ -848,6 +848,7 @@ and Voth's export case (none yet; Phase 7) must carry it, or Godot's walker and 
 | `core/sockets/37` | [G data] | socket declarations and packs as data |
 | `core/sockets/38, 80` | [draw] | symbols and signs bake to PNG |
 | `core/terrain/36-core-carve.js` | [G data] | export floors and blockers; first Godot order item |
+| `core/hazard/` | [G data] | hazard records (`registry.hazards`, `krator-hazard`) to one `Area3D` per record and a `KHazard` autoload: the mapping is `core/hazard/GODOT.md` |
 | `kits/interiors/` core | [G data] | already pure; add the export; port the planner later if rooms are to be generated in Godot |
 | `kits/interiors/` demo, views | [web] | host shell |
 | `kits/catalog/` entries | [G data] | export entries; the `mk*` geometry kit is [draw] and exports as meshes |

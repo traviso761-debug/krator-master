@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 7 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26). Plus 1 for the termite cathedrals (section 32, `earth.termite`, core gap H10). Plus 2 for acid rain's etched metal and stone (section 33, `core/atmos`, the Valley of the Ancients).
+**Count: 12 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -373,6 +373,28 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A vertical stone face dissolved by acid rain: a bleached, chalky crust over finer grained rock, long narrow solution runnels and pale streaks running straight down the face from top to bottom, sugary etched grain where the surface has been eaten, small sharp pits, thin flaking skins lifting at a few edges, slightly darker unweathered rock in the hollows between runnels. No moss, no lichen, no cracks across the streaks, no colour blotches. Matte, dry. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 1 metre.
+
+## 34. The evaporite nodes (`kits/resources`, 2026-10-26)
+
+The gypsum and rock-salt nodes (`node-gypsum-*`, `node-halite-*`: `44r-res-nodes.js`, `RES_EVLOOK`, `resEvap`) draw on
+vertex colours; the efflorescence set reads as dark marble on their slabs (`kits/resources/KNOWN_ISSUES.md`). Each lands as
+a family in `kits/resources/materials.json` (grey detail, `keep` 0: the kind's colour stays `RES_EVLOOK`'s) and goes on the
+slabs in `resEvap`.
+
+#### `ground.gypsum.crust`
+- Kind: surface, tintable (`RES_EVLOOK.gypsum`'s pale cream).
+- Used by: the gypsum nodes' crust and slabs, at a closed basin's rim. Reuse: any desert gypsum flat or playa rim (the Bowl, the Catch, the salt lakes east of Verge).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A pale bedded gypsum crust at the dry rim of a desert salt basin, seen from above: thin flaky layers of chalky off-white gypsum lifting at their edges into low curled plates, a fine powdery sugary grain between them, scattered small clusters of clear selenite blades (flat glassy crystals a few centimetres long, lying at all angles, catching no light), a few hairline cracks in loose polygons, a faint dusting of fine tan sand in the hollows. No pebbles, no plants, no footprints. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1.5 metres.
+```
+
+#### `rock.halite.cut`
+- Kind: surface, tintable (`RES_EVLOOK.halite`'s white to faint pink).
+- Used by: the rock-salt nodes' cut pit walls and stacked blocks. Reuse: any salt mine face or salt-block wall (a rock-salt hall, salt traders' stacks).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A face of bedded rock salt cut flat by hand picks, seen straight on: coarse interlocking halite crystals, translucent milky white with faint grey and very pale pink bands running level across the face in beds a hand thick, the crystals' cubic cleavage showing as small square steps and facets, shallow parallel pick marks crossing the bands at a slant, a few thin seams of grey clay between beds, a little white salt dust in the marks. No tools, no blocks, no joints between blocks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1 metre.
 ```
 
 ## Gaps with no prompt yet

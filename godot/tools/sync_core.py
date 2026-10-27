@@ -18,6 +18,9 @@ PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
 PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json",
                                                                            "kstrata.gd", "kstrata_test.gd", "golden-strata.json")]
+# kits/resources' node field (KResField), its test and vectors, the geology it reads, and krand.gd beside it (it preloads it)
+PAIRS += [(f"kits/resources/godot/{f}", f"godot/tests/resources/{f}") for f in ("kres_field.gd", "kres_field_test.gd", "golden-field.json")]
+PAIRS += [("kits/resources/data/geology.json", "godot/tests/resources/geology.json"), ("core/rand/krand.gd", "godot/tests/resources/krand.gd")]
 # core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.

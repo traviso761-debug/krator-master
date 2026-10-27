@@ -48,7 +48,10 @@
   const rt=new T.WebGLRenderTarget(size,size,{depthTexture:dt,depthBuffer:true,stencilBuffer:false});rt.texture.generateMipmaps=false;
   A.U.rainOcc={value:dt};A.U.rainOccBox.value.set(0,0,box,0);A.U.rainOccCam.value.set(0,.1,lift+depth,P.margin);
   const cam=new T.OrthographicCamera(-box/2,box/2,box/2,-box/2,.1,lift+depth);cam.up.set(0,0,-1);
-  const over=new T.MeshBasicMaterial({colorWrite:false,side:T.DoubleSide});
+  /* two override materials, drawn in two passes: three r128 keeps an override material's program when the next object is an
+     InstancedMesh without instanceColor (its needsProgramChange does not compare instancingColor), so after one coloured
+     instanced mesh the program asks for an instanceColor that is null and the pass throws (swbay's biome:beard, 2026-10-26) */
+  const over=new T.MeshBasicMaterial({colorWrite:false,side:T.DoubleSide}),overC=over.clone();
   const R={target:rt,camera:cam,stats:{renders:0,hidden:0},cx:null,cz:null,last:-1e9};
   /* a geometry carrying a null attribute (a slot a kit cleared) cannot be uploaded: three throws on it when this view's frustum takes in an object the page's own never draws */
   const badAttr=g=>{for(const k in g.attributes)if(!g.attributes[k])return true;return false;};
@@ -57,13 +60,15 @@
    const m=ob.material;if(m&&!Array.isArray(m)&&(m.isShaderMaterial||m.transparent&&m.opacity<.5))return true;return o.skip?!!o.skip(ob):false;};
   R.render=function(){const scene=A.h.scene,c=A.h.camera.position,s=step/4,cx=Math.round(c.x/s)*s,cz=Math.round(c.z/s)*s,top=c.y+lift;
    cam.position.set(cx,top,cz);cam.lookAt(cx,top-1,cz);cam.updateMatrixWorld();
-   const hid=[];scene.traverse(ob=>{if(ob.visible&&skip(ob)){ob.visible=false;hid.push(ob);}});
+   const hid=[],col=[],plain=[];scene.traverse(ob=>{if(!ob.visible)return;if(skip(ob)){ob.visible=false;hid.push(ob);}else if(ob.isInstancedMesh&&ob.instanceColor)col.push(ob);else if(ob.isMesh)plain.push(ob);});
    const ov=scene.overrideMaterial,bg=scene.background,fogS=scene.fog,prevT=r.getRenderTarget(),ac=r.autoClear,info=r.info.autoReset,calls=r.info.render.calls,tris=r.info.render.triangles;
+   const show=(L,v)=>{for(const ob of L)ob.visible=v;};
    let ok=true;scene.overrideMaterial=over;scene.background=null;scene.fog=null;r.info.autoReset=false;
-   try{r.setRenderTarget(rt);r.autoClear=true;r.clear(true,true,false);r.render(scene,cam);}
+   try{r.setRenderTarget(rt);r.autoClear=false;r.clear(true,true,false);show(col,false);r.render(scene,cam);show(col,true);
+    if(col.length){show(plain,false);scene.overrideMaterial=overC;r.render(scene,cam);show(plain,true);}}
    catch(e){ok=false;R.fails=(R.fails||0)+1;R.error=(e&&e.message)||String(e);R.retry=A.clock.t+2;if(R.fails>=5){R.failed=R.error;A.err('rainCover: the depth pass failed five times ('+R.failed+'): the map is off');}}
    finally{r.setRenderTarget(prevT);r.autoClear=ac;scene.overrideMaterial=ov;scene.background=bg;scene.fog=fogS;r.info.render.calls=calls;r.info.render.triangles=tris;r.info.autoReset=info;
-    for(const ob of hid)ob.visible=true;}
+    show(col,true);show(plain,true);for(const ob of hid)ob.visible=true;}
    if(!ok){A.U.rainOccBox.value.w=0;return;}   /* a page whose scene the pass cannot draw keeps the rain everywhere, as before */
    A.U.rainOccBox.value.set(cx,cz,box,1);A.U.rainOccCam.value.set(top,.1,lift+depth,P.margin);R.cx=cx;R.cz=cz;R.last=A.clock.t;R.stats.renders++;R.stats.hidden=hid.length;};
   /* a pass that throws (a page still filling a geometry in its first frames: swbay) is tried again 2 s on, five times */

@@ -1,6 +1,8 @@
 # The GDScript twin of the node field against the JS (kits/resources/tests/test-res.js writes golden-field.json).
 # In a Godot 4 project folder holding krand.gd (core/rand), kres_field.gd, this file, golden-field.json and geology.json
-# (kits/resources/data):  godot --headless --path <project> --script res://kres_field_test.gd    exits 0 when all match
+# (kits/resources/data):  godot --headless --path <project> --script res://kres_field_test.gd    exits 0 when all match.
+# godot/tools/sync_core.py copies the five into godot/tests/resources/:
+#   godot --headless --path godot --script res://tests/resources/kres_field_test.gd
 extends SceneTree
 
 const KResField := preload("kres_field.gd")
@@ -9,8 +11,9 @@ const KResField := preload("kres_field.gd")
 func _initialize() -> void:
 	var fails := 0
 	var F := KResField.new()
-	F.load_json("res://geology.json")
-	var g: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://golden-field.json"))
+	var here: String = get_script().resource_path.get_base_dir()
+	F.load_json(here.path_join("geology.json"))
+	var g: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(here.path_join("golden-field.json")))
 	var t: Array = g.tile
 	var got := F.nodes_in(float(t[0]), float(t[1]), float(t[2]), float(t[3]))
 	var want: Array = g.nodes

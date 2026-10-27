@@ -10,7 +10,11 @@
           (what the works take: a node's point or a field's nearest point; workers its capacity, resFieldWorkers),
           popMax (default and ceiling 500), dims(key) -> {w, d, h} (the kit's boxes; the row's pending boxes answer
           for keys the kit lacks), ground {ok(x, z) -> bool} (dry, not a cliff, not too steep; default everywhere),
-          siteReach (m to look for dry flat ground round site when site itself is not: default 600)}
+          siteReach (m to look for dry flat ground round site when site itself is not: default 600),
+          ore (a mine's node kind, kits/resources' RES_ORE.kinds: default any kind a mine works), kres (a loaded node field,
+          RES_GEO.load(data): default globalThis.KRES), kresOpts (its nodesIn options: ground, owner, deltas)}
+   A mine with no resource takes the nearest node in its reach of the site (KHAMLET.resourceFor: KRES.near, a tie the
+   higher grade, then the id); out.resource says which. Without a field, or with no node in reach, it is placed as before.
 
    The parts are kept apart for the other small settlements to come (a nomad camp swaps layout and siting):
      KHAMLET.census(spec, row)      what it needs and how many people staff it
@@ -109,11 +113,29 @@ KHAMLET.siteFor = function (spec) {
   return hit ? {x: hit[0], z: hit[1]} : null;
 };
 
+/* ---------------------------------------------------------------- the resource, when the spec names none */
+/* a mine's node from kits/resources' field (KRES.near round the site, within the row's mine reach): {x, z, node, kind,
+   grade} or null. Only a mine reads nodes; the field kinds (salt pans, pasture, fish) come from the host's fields. */
+KHAMLET.resourceFor = function (spec, row) {
+  if (spec.resource != null || spec.focus !== 'mine' || !spec.site) return null;
+  var R = spec.kres || globalThis.KRES;
+  if (!R || typeof R.near !== 'function' || (R.data && !R.data())) return null;
+  var O = globalThis.RES_ORE, kinds = spec.ore ? [spec.ore] : O ? Object.keys(O.kinds).filter(function (k) { return O.kinds[k].works === 'mine'; }) : [];
+  var reach = row.reach.mine, rank = function (g) { return O && O.grades[g] ? O.grades[g].rank : 0; }, best = null;
+  kinds.forEach(function (k) {
+    var n = R.near(spec.site.x, spec.site.z, k, reach, spec.kresOpts)[0];
+    if (n && (!best || n.dist < best.dist || (n.dist === best.dist && (rank(n.grade) > rank(best.grade) || (rank(n.grade) === rank(best.grade) && n.id < best.id))))) best = n;
+  });
+  return best ? {x: best.x, z: best.z, node: best.id, kind: best.kind, grade: best.grade} : null;
+};
+
 /* ---------------------------------------------------------------- the village */
 KHAMLET.village = function (spec) {
   var row = KHAMLET.row(spec.culture);
   if (!row) return {id: spec.id, error: 'no culture ' + spec.culture};
   if (KHAMLET.FOCI.indexOf(spec.focus) < 0) return {id: spec.id, error: 'no focus ' + spec.focus};
+  var found = KHAMLET.resourceFor(spec, row);
+  if (found) spec = Object.assign({}, spec, {resource: found});
   var T = KHAMLET.TUNE, K = KRAND, idh = KHAMLET.idHash(spec.id), seed = K.hash(K.child(spec.world >>> 0, 'hamlet'), idh);
   var stream = function (salt, i) { return K.stream(K.hash(seed, salt, i || 0)); };
   var C = KHAMLET.census(spec, row), P = KHAMLET.program(C, row, stream(1));
@@ -271,6 +293,7 @@ KHAMLET.village = function (spec) {
   var out = {id: spec.id, culture: row.kit, focus: spec.focus, site: site, frame: {u: [ux, uz], v: [vx, vz]},
              green: {x: site.x, z: site.z, w: T.green[1], d: T.green[0], ry: Math.atan2(ux, uz)},
              census: C, records: records.filter(Boolean), lanes: lanes};
+  if (found) out.resource = found;
   if (fail.length) out.error = 'could not place: ' + fail.join(', ');
   return out;
 };
