@@ -45,7 +45,7 @@ const STATION_BUILD={region:{name:'The high benches (necanyons station 2)',x:0,z
 // ---------------------------------------------------------------- the canyon floor
 const TERR={R:1600};
 // THE CREEK: a deeper canyon's stream down the middle, north-west to south-east
-const CREEK={x:z=>-80+180*Math.sin(z*.0018+1.1)+50*Math.sin(z*.0049+.3),w:9,depth:.7,name:'The canyon stream (between the benches)'};
+const CREEK={x:z=>-260+180*Math.sin(z*.0018+1.1)+50*Math.sin(z*.0049+.3),w:9,depth:.7,name:'The canyon stream (between the benches)'};
 const creekD=(x,z)=>Math.abs(x-CREEK.x(z));
 function floorBase(x,z){return 18*(fbm(x*.0008+5.1,z*.0008-2.7,19,3)-.5)*2+5*(fbm(x*.004-4,z*.004+7,31,2)-.5)*2-.005*z;}
 function floorH(x,z){const b=floorBase(x,z),d=creekD(x,z),cut=smooth(CREEK.w+26,CREEK.w*.4,d);return b-5*cut;}
@@ -60,7 +60,7 @@ const ROCK=(function(){const K=KSTACKS,L=[];
  mesa('highcap',2102,-760,-520,[{h:250,r:300,e:1.2,ry:-.4},{h:220,r:230,e:1.15,dx:-20,dz:10}],'The great table (a tepui: quartzite over the canyon\'s red beds)',{wallLib:'rock.tepui'});
  mesa('tepui1',2103,-900,640,[{h:230,r:220,e:1.3,ry:.9},{h:170,r:170,e:1.2}],'A tepui table',{wallLib:'rock.tepui'});
  mesa('tepui2',2104,260,-980,[{h:260,r:240,e:1.25,ry:.2},{h:160,r:180,e:1.1,dx:30,dz:-20}],'A tepui table',{wallLib:'rock.tepui'});
- [[1150,-560,210,240],[-200,1050,180,260],[1180,900,200,200]].forEach((t,i)=>mesa('bench'+(i+1),2110+i,t[0],t[1],[{h:t[2],r:t[3],e:1.4,ry:i*.9}],'A bench'));
+ [[1150,-560,210,240],[150,1120,180,260],[1180,900,200,200]].forEach((t,i)=>mesa('bench'+(i+1),2110+i,t[0],t[1],[{h:t[2],r:t[3],e:1.4,ry:i*.9}],'A bench'));
  [[-1250,-60,300,70],[480,-420,280,60],[-420,180,260,55]].forEach((t,i)=>mesa('tower'+i,2120+i,t[0],t[1],[{h:t[2],r:t[3],e:1.15+.1*(i%2),ry:i*.7}],'A sandstone tower'));
  const big=L.slice();
  const clear=(x,z,r,pad)=>{for(const B of big){const f=K.foot([B],x,z);if(f&&f.d<r+pad)return false;}return creekD(x,z)>r+60&&Math.hypot(x,z)<TERR.R*.86;};
