@@ -351,3 +351,80 @@ not the dry) and the Godot leaf shader's twin (a global `season_dry`, the same h
 - Dither: `ground.gdshader` writes the same `kh2`/`kbomb`/`kdither` functions; `BIO.ditherCell` is the check.
 - Leafset: the placement is plain maths on KRAND (krand.gd has the same hash): the quaternion is the instance basis.
 - The cross-fade hook: Godot's visibility ranges fade alpha only, so the port needs the same dither discard in its shaders.
+
+---
+
+## Fire: `KFIRE` (`38-core-fire.js`; hyperjungle PLAN-LANDS.md section 11, H3; opt-in)
+
+crater-drylands' fire history (`CRATERDRY.fireHistory`, `fireRun`, `ageAt`, `frontAt`: `biomes/crater-drylands/src/52-biome-craterdry-fire.js`)
+lifted into core for every savannah's burn mosaic (the cycad flush and the ember spikes key on burn age). `[G data]`: no BIO, THREE or
+DOM; the host hands it its ground (`height(x,z)`) and its burnability (`burn(x,z)`). The API is in the fragment's header.
+
+**crater-drylands' output must match KFIRE's.** The spread, the fuel curve, the ignition search, the live fire and the lookups are the
+kit's arithmetic, operation for operation: from the same ground, burnability and fires, `KFIRE.history` gives the kit's `last`, `id`,
+`front`, `base` and `H` grids bit for bit, and `KFIRE.run` the kit's `arrive` and `order`. `node core/biome/test-fire.js` proves it
+against the kit's own function, loaded in place (its negatives: a reversed wind and one fire 30% larger are seen). A change to either
+side that breaks the match fails that test; change both, or neither.
+
+Two inputs differ from the kit on purpose, and a host chooses them:
+
+- **The old fires.** The kit lights its older fires from BIO's PRNG in draw order (`reseed(seed)`, `rr`, `rng`); KFIRE lights fire
+  `k` from `KRAND.hash(seed, k, try, salt)`, so fire `k` is asked at the same point whatever else was drawn. Same counts and ranges
+  (7 to 45 years ago, 5 to 11% of the map, veer within 0.35 rad), different places.
+- **The noise.** The kit's patchiness and edge warp are BIO's sin-based `fbm`, which GDScript cannot reproduce. KFIRE's defaults are
+  on `KRAND.fbm` (`KFIRE.patch(seed)`, `warp: 'krand'`); a host can pass its own (`burn`, `warp: fn`).
+
+### Adopting it
+
+1. `build.py`: add `'38-core-fire.js'` to `CORE_BIOME` (after `'10-core-head.js'`; it needs core/rand, which every biome build takes).
+2. The host, once its terrain and fields are bound, before the floor pass reads burn age:
+
+```js
+const FIRE=KFIRE.history({R:TERR.R,cell:20,seed:520031,wind:FIRE_WIND,fires:FIRES,old:9,
+  height:BIO.terrainH,burn:KFIRE.burnFromFields(BIO.field,BIO.depth,KFIRE.patch(521))});
+// then KFIRE.ageAt(x,z) / FIRE.ageAt, KFIRE.stages(age), FIRE.frontAt, KFIRE.run(FIRE,{x,z}) for a live fire
+```
+
+**crater-drylands, at its rebuild:** to keep its page, pass the kit's own inputs: `burn` from its formula with its BIO `fbm` patch,
+`warp` its BIO `fbm` warp, and its fires as it lit them (`old:0` and the list; `test-fire.js` builds exactly these). To move to the
+portable defaults (what Godot can reproduce), drop those three and the page changes once: a rebuild with a screenshot set.
+
+### Godot
+
+`core/biome/kfire.gd` is the twin (`kfire_test.gd`, on `golden-fire.json`, which `node core/biome/test-fire.js --write` rewrites and a
+plain run checks is current). `python3 godot/tools/sync_core.py` vendors the three into `godot/tests/fire/`; `tools/test_all.py
+--nightly` runs `res://tests/fire/kfire_test.gd`. The grids match the page **bit for bit** on Godot 4.7.2 (every cell of a 61 x 61
+case with seven fires and a live fire). What it takes: float32 grids and heap keys where the JS has Float32Array, `floor(x + 0.5)` for
+`Math.round` (GDScript's `round` differs on negative halves), and V8's `Math.hypot` written out (it is not `sqrt(x*x + z*z)`: for the
+default wind the two differ in the last bit). `exp`, `pow`, `sin` and `cos` are the platform's and agreed on this case. Godot's JSON
+parser can lose a double's last bits, so the test compares grids by sha256 and scalars within 1e-12.
+
+A page's own `Math.hypot`, `exp` and `pow` are V8's in Chrome; another browser engine could differ in a last bit (as for any
+`Math.exp` in a placement).
+
+## Lean toward the giant (`39-core-lean.js`; hyperjungle PLAN-LANDS.md section 11, H4; opt-in)
+
+`BIO.GIANT` (the ground vector toward the gas giant, x east and z south), `BIO.GIANT_AZ`, `BIO.GIANT_YAW`, `BIO.setGiant(az)`,
+`BIO.giantFromSky(dir)`, and `BIO.leanTo(dir, k, {jit, u, toward})`, `BIO.leanQ(k, o)`, `BIO.leanOf(dir)`: what ehighlands does
+today as `EHIGH.GIANT`, `EHIGH.setGiant` and `EHIGH.toward`, for the e and se rims' cousins, the leaning ferns and the cloud avocado's
+one-sided epiphytes. Plain arithmetic on arrays. `leanTo(null, k, {jit, u})` is `EHIGH.toward(k, jit)` bit for bit when `u` is the
+number its `rr` drew (`node core/biome/test-lean.js` runs ehighlands' lines, read in place, beside it). A new kit takes `u` from
+`KRAND.unit(KRAND.hash(...))` of the plant's cell and index, never from a draw.
+
+**The sky disagrees with the canon 66.** The shared sky (`core/atmos/sky/89-atmos-e-skymodel.js`, `ATMOS.skyState(site,h,d).giantDir`)
+places the giant per site. At ehighlands' site (px 839, py 542) it stands at **azimuth 59.6** (57.5 to 61.7 over a day's
+libration), **altitude ~34**, not 66 and 25 (the LORE figure, which is Voth's: the sky gives Voth 67.4 and 24.7). So ehighlands'
+plants lean about 6 degrees east of the giant its own sky draws. Neither side is changed here; `test-lean.js` prints the numbers
+(and fails if they part by more than 10 degrees). The owner's call: keep the canon 66 for every eastern kit, or bind each kit to its
+sky with `BIO.giantFromSky(SKY.state.giantDir)` (or the day's mean), which moves ehighlands' plants once.
+
+### Adopting it
+
+1. `build.py`: add `'39-core-lean.js'` to `CORE_BIOME` (after `'10-core-head.js'`; it needs `BIO`).
+2. At placement: `const up = BIO.leanTo(null, tilt, {jit: .25, u: KRAND.unit(KRAND.hash(seed, ix, iz, i))})` for a stem's axis,
+   `BIO.leanQ(tilt, o)` for an instance's quaternion, `BIO.GIANT_YAW + jitter` to turn a geometry's +x (a cushion's steep side) to it.
+3. A site whose giant should be its sky's: `BIO.giantFromSky(dir)` before the placement pass (it sets `GIANT`, `GIANT_AZ`, `GIANT_YAW`).
+
+**ehighlands, at its rebuild:** replace `EHIGH.setGiant(GIANT_AZ)` with `BIO.setGiant(GIANT_AZ)` and `EHIGH.GIANT` / `GIANT_YAW` /
+`toward(a, jit)` with `BIO.GIANT` / `BIO.GIANT_YAW` / `BIO.leanTo(null, a, {jit, u: rng()})`: the same numbers in the same draw order,
+so its page holds. (Its `rr(-j, j)` is one `rng()` draw, which `u` stands in for.)

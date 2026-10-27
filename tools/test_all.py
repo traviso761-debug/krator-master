@@ -32,7 +32,7 @@ NIGHTLY_VERIFY = [
     ('settlements/verge', 'dist/verge.html', ['--assert']),
     ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors) since 2026-10-18
 ]
-GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/tags/ktags_test.gd',
+GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/mask/kmask_distance_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd', 'res://tests/isle/isle_books_test.gd', 'res://tests/export/isle_test.gd', ('res://tests/export/isle_test.gd', '--case=world-isle-valapo', '--town=valapo'),
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd',
