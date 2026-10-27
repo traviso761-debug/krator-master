@@ -14,7 +14,8 @@ PAIRS += [(f"core/tags/{f}", f"godot/tests/tags/{f}") for f in ("ktags.gd", "kta
 PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kmask_test.gd", "golden.json")]
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
-PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json")]
+PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json",
+                                                                           "kstrata.gd", "kstrata_test.gd", "golden-strata.json")]
 # core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.

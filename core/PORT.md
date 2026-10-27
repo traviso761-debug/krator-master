@@ -123,6 +123,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `tags/53-core-tags-host.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the inspector's label text; the inspector hook goes to core/host (Phase 1) |
 | `terrain/30-core-field.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/31-core-field-brush.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the field's ground brushes (raise, lower, flatten, smooth), snapshot and replay: plain data on KFIELD's heights; a GDScript twin to come |
+| `terrain/35-core-strata.js` | 26.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KSTRATA: formations and beds as records (recipes canyon, outland, tibasalt, megabreccia, pillar, ringfold, loess), the closed-form warp, folds, faults, alteration, terrace; kstrata.gd twin (golden-strata.json) |
 | `terrain/36-core-carve.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | split: a timing helper reads performance.now (line 103); floors and blockers export (Godot order 1) |
 | `terrain/37-core-stacks.js` | 22.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/38-core-relief.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -133,6 +134,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/43-core-ground.js` | 10.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | KGROUND: the ground layers (hex tiling, distance scale, height blend) as a GLSL hook; becomes ground.gdshader, its JS twins in KGROUND.fn |
 | `terrain/44-core-farfield.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KFAR: the far-field lattice as arrays (grid lines, heights, colours, curvature, exaggeration, crests); a MeshInstance3D in Godot |
 | `terrain/45-core-horizon.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KHORIZON: the horizon maps baked from a heightfield (two RGBA8 arrays, sky visibility); ImageTextures in Godot |
+| `terrain/host/35-core-strata-shade.js` | 19.3 | [G shader] | 1 | 1 | 1 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | opt-in (subfolder): BIO.strata (today's shader kept, and the core path), KSTRATA.shade: the column as RGBA8 data textures, strataColor in GLSL; a .gdshaderinc in Godot (STRATA-PLAN S5) |
 | `terrain/host/44-core-farfield-draw.js` | 2.7 | [G shader] | 1 | 0 | 0 | 0 | 0 | 2 | 4 | 0 | 0 | 0 | 0 | opt-in (subfolder): KFAR.mesh, geometry, fogThin, the three.js draw of the lattice |
 | `terrain/host/45-core-horizon-shade.js` | 5.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | opt-in (subfolder): KHORIZON.shade, the GLSL that cuts the sun and the ambient; a .gdshaderinc in light() |
 | `walk/20-core-walk.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |

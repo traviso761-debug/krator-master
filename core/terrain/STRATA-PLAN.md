@@ -5,7 +5,11 @@ into a rock model that the painted highlands, the eastern badlands, the south-ea
 later layered country share. Owner (2026-10-23): improve the strata the badlands and the desert already have, and add a
 tepui recipe.
 
-**Status: plan, awaiting the owner.**
+**Status (2026-10-26):** S1's module is written (`35-core-strata.js`, `host/35-core-strata-shade.js`, `kstrata.gd`;
+`core/README.md`, "Strata"), with S3's folds and faults, the first cut of S4 (`terrace`) and the recipes the planned biomes name
+(`outland`, `tibasalt`, `tibasalt-ponded`, `megabreccia`/`crest`, `pillar`, `ringfold`, `loess`). No build is on it yet: moving
+sedesert, ebadlands, Shade and the readers onto the core path is each build's turn in the rebuild (its pixels kept by `BIO.strata`'s
+legacy path). Still to do: S2's `badland`, `danxia`, `rift`, `tepui`; lateral change, wash, regolith; S4's relief pass; S5's Godot shader.
 
 ## 0. What there is today
 
