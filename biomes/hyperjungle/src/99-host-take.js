@@ -18,6 +18,7 @@ const VIEWS=ST_TAKE&&ST_TAKE.views?ST_TAKE.views:{
 };
 // views on the newer species and the fauna, found from the built forest: the
 // hero of that species nearest the origin, seen from 2.4 crown radii away
+if(ST_TAKE&&ST_TAKE.more)ST_TAKE.more(VIEWS);   /* a station's views on what it grew */
 if(!ST_TAKE||!ST_TAKE.views)(function(){const TR=HYPERJUNGLE.TREES||[];
  const nearest=sp=>{let b=null;for(const T of TR){if(!T.hero||T.sp!==sp)continue;if(!b||Math.hypot(T.x,T.z)<Math.hypot(b.x,b.z))b=T;}return b;};
  const add=(name,T,k,hK)=>{if(!T)return;const d=T.crownR*k,a=Math.atan2(-T.z,-T.x)+.5;VIEWS[name]=[T.x+Math.cos(a)*d,T.y0+T.H*hK,T.z+Math.sin(a)*d,T.x,T.y0+T.H*.72,T.z];};

@@ -27,7 +27,7 @@ HYPERJUNGLE.LOD=HYPERJUNGLE.LOD||{tree:null,sap:null,floor:null,mid:null,far:nul
 function trunkR(T,y){const yy=Math.max(0,y-T.y0),u=clamp(yy/T.H,0,1);let r;
  if(T.sp===3)r=u<.55?1+.25*Math.sin(u/.55*Math.PI):mix(1,.12,Math.pow((u-.55)/.45,.9));
  else r=u<.62?1-.42*u:mix(.74,.07,smooth(.62,1,u));
- return T.rb*r*(1+.80*Math.exp(-yy/15));}
+ return T.rb*r*(1+.80*(T.butK==null?1:T.butK)*Math.exp(-yy/15));}   /* T.butK: a habit's buttress scale (the lake station's stilt kapok, .12; null: 1) */
 HYPERJUNGLE.trunkR=trunkR;
 
 // ---------------------------------------------------------------- colour
@@ -117,7 +117,7 @@ function buildHero(T,ti,q,st){
  for(k=0;k<nl;k++)lobes.push({a:la+k/nl*TAU+rr(-.22,.22),amp:rr(.55,1.2),p:Hb.butP*rr(.8,1.3)});
  const ph1=rr(0,TAU),ph2=rr(0,TAU),leanA=rr(0,TAU),leanK=sp===3?0:rr(2,5);
  function lobeSum(ang){let sm=0;for(let j=0;j<lobes.length;j++){const c=Math.cos(ang-lobes[j].a);if(c>0)sm+=lobes[j].amp*Math.pow(c,lobes[j].p);}return sm;}
- function butF(yy){return yy<27?Hb.butA*Math.exp(-yy/Hb.butH)*clamp((27-yy)/11,0,1):0;}
+ function butF(yy){return yy<27?Hb.butA*(T.butK==null?1:T.butK)*Math.exp(-yy/Hb.butH)*clamp((27-yy)/11,0,1):0;}
  function trunkMul(yy,ang){let m=1+.010*Math.sin(3*ang+yy*.045+ph1)+.007*Math.sin(7*ang-yy*.10+ph2);if(yy<27)m+=butF(yy)*lobeSum(ang);return m;}
  function trunkPt(yy){const u=yy/T.H;let r=trunkR(T,T.y0+yy),off=0;
   if(sp!==3){r*=1-.72*smooth(.93,.985,u);off=leanK*Math.pow(clamp((u-.88)/.105,0,1),2);}
@@ -342,6 +342,7 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
    if(rec)IMPS[sp]={rec,H:T1.H};});
   if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far hypertrees'});}
  const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ HYPERJUNGLE._farImp=farImp;   /* a station's own heroes take the same stand-ins (HYPERJUNGLE.placeHero) */
  heroes.forEach((T,ti)=>{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}buildHero(T,ti,q,st);
   if(LT){BIO.range=1e9;BIO.minRange=LT;if(!farImp(T))buildFar(T,ti,st);}BIO.owner=null;BIO.range=null;BIO.minRange=0;});
  fars.forEach((T,fi)=>{if(!farImp(T))buildFar(T,fi,st);});
@@ -369,5 +370,12 @@ HYPERJUNGLE.make=function(sp,x,y,z,sapling){if(sapling){const H=20+40*Math.pow(r
 HYPERJUNGLE.grow=function(T,lv){tints();
  const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
  T.lv=lv;if(T.sapling)buildSapling(T,T.seed%3,1,st);else if(lv===0)buildFar(T,T.seed%7,st);else buildHero(T,T.seed%97,1,st);return st;};
+// placeHero(T, lv): a station's hero (a record from make, its stream reseeded by the caller) grown as the pass grows its own, with
+// the runtime LOD: drawn within LOD.tree of the camera, then the species' impostor (or the blob crowns) past it. Without LOD.tree
+// (?diet=0, or a world reading the kit in place) it is grow(T, lv) alone. Returns grow's stats
+HYPERJUNGLE.placeHero=function(T,lv){const LT=HYPERJUNGLE.LOD.tree;if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}
+ let st;try{st=HYPERJUNGLE.grow(T,lv==null?2:lv);
+  if(LT){BIO.range=1e9;BIO.minRange=LT;if(!(HYPERJUNGLE._farImp&&HYPERJUNGLE._farImp(T)))buildFar(T,T.seed%7,st);}}
+ finally{BIO.owner=null;BIO.range=null;BIO.minRange=0;}return st;};
 HYPERJUNGLE._canopyH=function(x,z){let h=0;for(const T of HYPERJUNGLE.TREES){if(Math.hypot(x-T.x,z-T.z)<200)h=Math.max(h,T.y0+T.H);}return h||60;};
 })();

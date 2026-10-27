@@ -228,11 +228,14 @@ HYPERJUNGLE.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w
 // The rebuild's foliage options (2026-10-27; core/biome README, the foliage workstream): BL the back-light on the broadleaf crowns
 // and the understorey's broad cards (not on fronds, moss or strands); GT the floor cover's root colour from the ground's paint (R5:
 // the host's BIO.setGround; faded out over 500-700 m, the floor's near range); FUNG the brackets and caps on core/biome's fungoid
-// parts (BIO.fung, 33). Each has its switch, read here: ?backlit=0, ?groundtint=0, ?fung=0, or HYPERJUNGLE.LOOK = {backlit: false,
+// parts (BIO.fung, 33). Each has its switch, read here: ?backlit=0, ?groundtint=0, ?fung=0, or HYPERJUNGLE_LOOK = {backlit: false,
 // ...} set before this loads (a world that reads the kit in place and wants the old look; a reader without BIO.fung gets the old
 // half sphere whatever it asks)
-const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,LK=HYPERJUNGLE.LOOK||{},off=k=>LK[k]===false||(LQ&&LQ.get(k)==='0');
+const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,LK=HYPERJUNGLE.LOOK||(typeof HYPERJUNGLE_LOOK!=='undefined'?HYPERJUNGLE_LOOK:{}),off=k=>LK[k]===false||(LQ&&LQ.get(k)==='0');
 const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[500,700]};
+// DECIDUOUS: the species whose crowns drop in the dry season where a station says the forest is monsoon forest (HYPERJUNGLE.LOOK =
+// {deciduous: [3, 5]}, the baobab and the kapok, which drop on Earth too); the closed jungle (station 1) is XA, no dry season: none
+const DEC=off('season')?[]:(LK.deciduous||[]);
 HYPERJUNGLE.FUNG=!off('fung')&&!!(BIO.fung&&BIO.fung.bracket);
 HYPERJUNGLE.LOOKS={backlit:BL,ground:GT};   /* 52's library cards take the same options */
 HYPERJUNGLE.MAT={
@@ -240,7 +243,7 @@ HYPERJUNGLE.MAT={
  limb:BIO.barkMat(HYPERJUNGLE.LIMBTEX),
  wood:BIO.barkMat(HYPERJUNGLE.WOODTEX),
  rock:BIO.barkMat(HYPERJUNGLE.ROCKTEX),
- leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20,backlit:BL})),
+ leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20,backlit:BL,season:DEC.indexOf(i)>=0?{drop:.8,colour:0x9a7a48,k:.5}:undefined})),
  raceme:BIO.leafMat(HYPERJUNGLE.FLOWERTEX,'raceme',{aN:true,swayW:'(-position.y)',swayA:.9,alphaTest:.4}),
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.5,alphaTest:0,vertexColors:true}),
  under:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'under',{swayW:'1.0',swayA:.06,backlit:BL,ground:GT}),

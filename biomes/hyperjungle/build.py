@@ -151,6 +151,8 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
     VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    if _k=='geyser':   # the geyser kit's namespace is made by its layout fragment (46), which this page does not take
+        VIRTUAL['47%s-%s-ns.js'%(_c,_k)]=chr(10)+'var GEYSER={};   // the namespace its own page makes in 46-biome-geyser-layout.js'+chr(10);PATH['47%s-%s-ns.js'%(_c,_k)]=None
     _pj=os.path.join(_d,'tex','pack.json')
     _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if _keep is not None and f not in _keep]
     VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)

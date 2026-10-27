@@ -385,5 +385,5 @@ HYPERJUNGLE.buildFloor=function(R,q){
   lianas:st.lianas,moss:st.moss,brackets:st.brackets,tufts:st.tufts,treeferns:st.treeferns,screwpines:st.screwpines,gingers:st.gingers,epiphytes:st.epiphytes},tris:tt};};
 // the understorey plants a world may plant in place (2026-10-26, biomes/ringisles: the island rainforest's palm and screwpine):
 // (x, y, z, lv), wrapped to this kit's registry (BIO.kitEnd wraps only the export's own functions); the kit's own pass calls them unwrapped
-HYPERJUNGLE.small=BIO.kitWrap('hyperjungle',{palm,screwpine,treeFern,ginger,aroid,fern,shrub});
+HYPERJUNGLE.small=BIO.kitWrap('hyperjungle',{palm,screwpine,treeFern,ginger,aroid,fern,shrub,frondCrown,tuft});   /* frondCrown, tuft: the lake station's moriche crowns and floating meadows (2026-10-27) */
 })();
