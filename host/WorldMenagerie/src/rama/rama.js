@@ -71,7 +71,8 @@ export function model(api){
     for(let i=0;i<n;i++)for(let j=0;j<n;j++){g.fillStyle=['#8a8884','#83817d','#8e8c87','#7e7c78'][Math.floor(R0()*4)];g.fillRect(i*cw+1,j*cw+1,cw-2,cw-2);}
     for(let k=0;k<2500;k++){g.fillStyle='rgba(40,38,34,0.5)';g.beginPath();g.arc(R0()*W,R0()*H,0.6+R0()*R0()*3,0,TAU);g.fill();}});
   const Ph=(o)=>new THREE.MeshPhongMaterial(Object.assign({color:0xffffff,specular:0x1c1c1a,shininess:6,clippingPlanes:[cut],side:THREE.DoubleSide},o||{}));
-  const m={plate:Ph({map:plateT,color:0xb8b6b0}),face:Ph({map:faceT,color:0xb8b6b0}),hull:Ph({color:0x8b8a86,flatShading:true}),dark:Ph({color:0x55534f,flatShading:true}),
+  // the plating is its own bump map: seams sunk, pits sunk, so a low Sun picks the plates out
+  const m={plate:Ph({map:plateT,bumpMap:plateT,bumpScale:1.2,color:0xb8b6b0,specular:0x2c2b28,shininess:12}),face:Ph({map:faceT,bumpMap:faceT,bumpScale:1.2,color:0xb8b6b0}),hull:Ph({color:0x8b8a86,flatShading:true}),dark:Ph({color:0x55534f,flatShading:true}),
     rib:Ph({color:0x9a9893,flatShading:true}),hatch:Ph({color:0x2c2e32,flatShading:true})};
   const lathe=(prof,seg,mat)=>{const pts=prof.map(([r,y])=>new THREE.Vector2(Math.max(0.01,r),y));if(pts[pts.length-1].y<pts[0].y)pts.reverse();return new THREE.Mesh(new THREE.LatheGeometry(pts,seg),mat);};
   const RIM=700;

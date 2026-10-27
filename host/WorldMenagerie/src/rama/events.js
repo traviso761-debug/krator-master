@@ -243,6 +243,15 @@ export function makeEvents(api,O){
   function waveAt(a,y,t){if(t<6)return 0.6*Math.sin(y*0.02+t*1.3);const tt=t-6,v=600,L=2*S.SH;
     let d=L-tt*v;const back=d<0;if(back)d=-d;const pos=S.SH-d;           // the front's y: north shore down to the south, then back
     const A=(back?22:40)*Math.exp(-tt/30),w=back?520:420;return A*Math.exp(-(((y-pos)/w)**2))+0.8*Math.sin(y*0.02+t*1.3)+0.5*Math.sin(a*900+t);}
+  // Between the scenes Rama is not empty: three spiders range round Camp Alpha, two crabs work the Southern Plain
+  // near where the Dragonfly fell, and Resolution swings at her mooring under the northern cliff. Each goes a
+  // slow loop of its own; the heading is the way it is going.
+  function wander(o,a0,y0,R,ra,ry,sp,ph,t){const f=t*sp+ph,a=a0+Math.sin(f)*ra/R+Math.sin(f*2.3)*ra*0.3/R,y=y0+Math.cos(f*0.8)*ry+Math.sin(f*1.7)*ry*0.25;
+    const da=(Math.cos(f)*ra/R+Math.cos(f*2.3)*2.3*ra*0.3/R)*R,dy=-Math.sin(f*0.8)*0.8*ry+Math.cos(f*1.7)*1.7*ry*0.25;IN.orient(o,a,y,R,Math.atan2(da,dy));o.visible=true;}
+  function idle(now){const t=now/1000;
+    for(let i=0;i<3;i++)wander(spiders[i],S.STAIRS[0].a,S.PE-450,S.RI,160+i*60,220,0.05+i*0.013,i*2.1,t);
+    for(let i=0;i<2;i++)wander(crabs[i],SITE.a,SITE.y+200,S.RS,120,260,0.02+i*0.008,i*3,t);
+    IN.orient(raft,S.NYA+0.02+0.0006*Math.sin(t*0.05),S.SH-140+6*Math.sin(t*0.07),S.SEA-0.4*Math.sin(t*0.8),0.15*Math.sin(t*0.05));}
   // the missile comes in from sunward, out of the glare, and stops 6 km off the hub
   function missileWay(){const SL=(api.C.space&&api.C.space.starLight)||{},a=SL.az===undefined?-0.55:SL.az,e=SL.el===undefined?0.22:SL.el;
     const dir=new THREE.Vector3(Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e));
@@ -254,7 +263,7 @@ export function makeEvents(api,O){
   const byId=Object.fromEntries(EVS.map(e=>[e.id,e]));
   function stop(){if(!cur)return;if(cur.end)cur.end();IN.follow(null);cur=null;cap.style.display='none';rest();}
   function play(id,chain){stop();const e=byId[id];if(!e)return;if(!chain)queue=[];cur=e;t0=lastNow;e.t=0;if(e.reset)e.reset();rest();e.start();shown='';mark();}
-  animHooks.push(now=>{lastNow=now;if(!cur)return;const t=(now-t0)/1000;cur.t=t;cur.tick(t,now);
+  animHooks.push(now=>{lastNow=now;if(!cur){idle(now);return;}const t=(now-t0)/1000;cur.t=t;cur.tick(t,now);
     let c='';for(const [at,text] of cur.caps)if(t>=at)c=text;if(t>cur.dur-1.2)c='';
     if(c!==shown){shown=c;cap.textContent=c;cap.style.display=c?'block':'none';}
     if(t>cur.dur){const next=queue.shift();if(next)play(next,true);else{stop();mark();}}});

@@ -1839,8 +1839,10 @@ under `rama`; `src/rama/shape.js` turns them into the one profile and ground fun
   Cylindrical Sea, with its 50 m northern and 500 m southern cliffs; New York, three identical sectors of towers;
   the patchwork Southern Plain; the Northern Bowl's terraces and the stairways Alpha, Beta and Gamma; the Big Horn
   and the six Little Horns on their flying buttresses. One walker covers all of it (`src/core/cylinder.js`): Q and E
-  or the wheel raise you, and high enough you float at the axis. Close to, the plains carry a detail texture in
-  their light map.
+  or the wheel raise you, and high enough you float at the axis. Close to, the plains and New York's streets carry
+  a detail texture in their light map; the buildings have windowless Raman facades, the Sea ripples (or shows its
+  cracked ice), light stands up off each sun into the haze, and between scenes spiders range round Camp Alpha and
+  crabs work the Southern Plain. "Fly the axis" is a two-minute flight from the hub to the horns.
 - **Events** plays the novel as ten scenes with captions: the rendezvous and docking, the dark and the flares, the
   Dawn, the thaw and the storm, the Dragonfly and the lightning, the crab biot and the jump, the wave, the spiders,
   the Hermian missile, the departure. `#event=<id>` plays one (`rendezvous`, `dark`, `dawn`, `thaw`, `lightning`,

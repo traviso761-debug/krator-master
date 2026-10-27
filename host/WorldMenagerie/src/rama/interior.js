@@ -42,10 +42,35 @@ export function buildInterior(api,O){
     for(let y=0;y<256;y+=64)for(let x=0;x<=256;x+=(y/64)%2?64:128){g.beginPath();g.moveTo(x,y);g.lineTo(x,y+64);g.stroke();}
     const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;})();
   const plainM=map=>tM(map,{lightMap:detailT,lightMapIntensity:1.16});
+  const greyTex=(w,h,paint,rep)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');paint(g,w,h);
+    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;};
+  // Raman walls: no windows and no doors, only panels - seams up them every few metres, a band across every
+  // storey's height, the odd recessed panel. It multiplies the baked colour, so it is greys a little under white.
+  const facadeT=greyTex(128,128,(g,W,H)=>{const R=mkRng(808);g.fillStyle='rgb(236,236,236)';g.fillRect(0,0,W,H);
+    for(let x=0;x<W;x+=32)for(let y=0;y<H;y+=64){const v=222+Math.floor(R()*30);g.fillStyle='rgb('+v+','+v+','+v+')';g.fillRect(x+2,y+3,28,58);
+      if(R()<0.2){g.fillStyle='rgb(196,196,196)';g.fillRect(x+8,y+14,16,36);}}
+    g.fillStyle='rgb(168,168,168)';for(let x=0;x<W;x+=32)g.fillRect(x,0,2,H);for(let y=0;y<H;y+=64)g.fillRect(0,y,W,3);
+    g.fillStyle='rgb(250,250,250)';for(let y=0;y<H;y+=64)g.fillRect(0,y+3,W,1);});
+  // New York's towers: taller, so ribs - close vertical fins the height of the tower, and a dark band every
+  // so often. The towers' tops are the same texture seen flat, which reads as roof plating.
+  const towerT=greyTex(128,128,(g,W,H)=>{g.fillStyle='rgb(228,230,232)';g.fillRect(0,0,W,H);
+    for(let x=0;x<W;x+=16){g.fillStyle='rgb(160,164,168)';g.fillRect(x,0,3,H);g.fillStyle='rgb(252,252,252)';g.fillRect(x+3,0,2,H);}
+    g.fillStyle='rgba(90,94,100,0.55)';g.fillRect(0,56,W,10);g.fillStyle='rgba(255,255,255,0.4)';g.fillRect(0,66,W,2);});
+  // The Sea's surface, in its light map as the plains' detail is: ripples, drawn out round the world by the wind,
+  // and drifting; and the ice that was there first, white with dark cracks.
+  const rippleT=greyTex(256,256,(g,W,H)=>{const R=mkRng(919);g.fillStyle='rgb(214,214,214)';g.fillRect(0,0,W,H);
+    for(let k=0;k<700;k++){const x=R()*W,y=R()*H,l=6+R()*26,v=R()<0.5?255:150;g.fillStyle='rgba('+v+','+v+','+v+',0.35)';
+      for(const dx of [-W,0,W])for(const dy of [-H,0,H]){g.beginPath();g.ellipse(x+dx,y+dy,l,1.2+R()*1.5,0,0,Math.PI*2);g.fill();}}});
+  const iceT=greyTex(256,256,(g,W,H)=>{const R=mkRng(920);g.fillStyle='rgb(240,240,240)';g.fillRect(0,0,W,H);
+    for(let k=0;k<160;k++){const v=200+Math.floor(R()*50);g.fillStyle='rgba('+v+','+v+','+v+',0.6)';g.beginPath();g.arc(R()*W,R()*H,4+R()*20,0,Math.PI*2);g.fill();}
+    g.strokeStyle='rgba(110,118,124,0.8)';g.lineWidth=1.2;for(let k=0;k<40;k++){let x=R()*W,y=R()*H;g.beginPath();g.moveTo(x,y);for(let q=0;q<8;q++){x+=(R()-0.5)*50;y+=(R()-0.5)*50;g.lineTo(x,y);}g.stroke();}});
   // the suns and the crew's lamps are not lit by anything: they are the light
   const sunMat=new THREE.MeshBasicMaterial({color:0xfffaf0,side:THREE.DoubleSide,clippingPlanes:[cut],fog:true});
   const glareMat=new THREE.MeshBasicMaterial({color:0xfff2d8,transparent:true,opacity:0.2,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,clippingPlanes:[cut],fog:true});
   const lampMat=new THREE.MeshBasicMaterial({color:0xffe6b0,clippingPlanes:[cut],fog:true});
+  const beamMat=new THREE.MeshBasicMaterial({map:(()=>{const c=document.createElement('canvas');c.width=128;c.height=4;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,128,0);
+      gr.addColorStop(0,'rgb(255,244,214)');gr.addColorStop(0.08,'rgb(150,140,120)');gr.addColorStop(0.4,'rgb(40,36,30)');gr.addColorStop(1,'rgb(0,0,0)');g.fillStyle=gr;g.fillRect(0,0,128,4);return new THREE.CanvasTexture(c);})(),
+    transparent:true,opacity:0.3,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,clippingPlanes:[cut],fog:true});
 
   // ---------- building blocks ----------
   // A surface of the drum seen from inside: angles[] round, ys[] along, its radius rf(a,y) and its colour
@@ -85,14 +110,20 @@ export function buildInterior(api,O){
 
   // A batch of solid things merged into one mesh, each shaded once by how far its face turns to the axis
   // (where the light comes from, across the drum) - flat-shaded, because Raman buildings are all planes.
-  function Batch(){const pos=[],cl=[];const v=new THREE.Vector3(),n=new THREE.Vector3(),nm=new THREE.Matrix3(),inw=new THREE.Vector3(),c=new THREE.Color();
+  // Each vertex also gets texture coordinates in its part's own metres (over UVS): a wall's run along it and its
+  // height, a roof's plan. So one facade texture tiles at the same size on a hut and on a tower.
+  const UVS=12;
+  function Batch(){const pos=[],cl=[],uvs=[];const v=new THREE.Vector3(),n=new THREE.Vector3(),nm=new THREE.Matrix3(),inw=new THREE.Vector3(),c=new THREE.Color(),lp=new THREE.Vector3(),ln=new THREE.Vector3();
     return {add(geo,M,colour,amb){const g=geo.index?geo.toNonIndexed():geo.clone();g.computeVertexNormals();nm.getNormalMatrix(M);
         const p=g.attributes.position,nn=g.attributes.normal,A=amb===undefined?0.5:amb;
-        for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(M);n.fromBufferAttribute(nn,i).applyMatrix3(nm).normalize();
+        for(let i=0;i<p.count;i++){lp.fromBufferAttribute(p,i);ln.fromBufferAttribute(nn,i);
+          if(Math.abs(ln.y)>0.7)uvs.push(lp.x/UVS,lp.z/UVS);else uvs.push((Math.abs(ln.x)>Math.abs(ln.z)?lp.z:lp.x)/UVS,lp.y/UVS);
+          v.copy(lp).applyMatrix4(M);n.copy(ln).applyMatrix3(nm).normalize();
           inw.set(-v.x,0,-v.z).normalize();const k=A+(1-A)*Math.max(0,n.dot(inw))+0.12*Math.max(0,n.y)-0.08*Math.max(0,-n.y);
           c.copy(colour).multiplyScalar(Math.max(0.2,k));pos.push(v.x,v.y,v.z);cl.push(c.r,c.g,c.b);}
         g.dispose();},
       mesh(mat){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cl,3));
+        g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
         g.computeBoundingSphere();const m=new THREE.Mesh(g,mat||vM(THREE.FrontSide));m.frustumCulled=false;return m;},
       get count(){return pos.length/3;}};}
   // a rod between two points in the drum frame
@@ -110,6 +141,10 @@ export function buildInterior(api,O){
   const texOf=c=>{const t=new THREE.CanvasTexture(c);t.flipY=false;t.anisotropy=8;t.minFilter=THREE.LinearMipmapLinearFilter;return t;};
   const hw=S.VW/2, wallA=(R)=>(hw+6)/R;
 
+  function litEdges(g,W,H){for(const [x0,dir] of [[0,1],[W,-1]]){
+      let gr=g.createLinearGradient(x0,0,x0+dir*260,0);gr.addColorStop(0,'rgba(255,238,196,0.34)');gr.addColorStop(0.3,'rgba(255,232,186,0.11)');gr.addColorStop(1,'rgba(255,232,186,0)');
+      g.fillStyle=gr;g.fillRect(Math.min(x0,x0+dir*260),0,260,H);
+      gr=g.createLinearGradient(x0,0,x0+dir*7,0);gr.addColorStop(0,'rgba(40,34,28,0.6)');gr.addColorStop(1,'rgba(40,34,28,0)');g.fillStyle=gr;g.fillRect(Math.min(x0,x0+dir*7),0,7,H);}}
   // the six cities of the Northern Plain, two to a sector, and what each is built of
   const CITIES=[
     {name:'London',sector:0,a:S.STAIRS[0].a+0.11,y:14200,r:900,style:'blocks',info:'Named by the explorers, like the rest: low windowless blocks in a rough grid, set down in threes. The last expedition cut its way into one of London\'s buildings with a laser and found it full of holograms, among them a uniform for something with three arms and three legs.'},
@@ -140,8 +175,8 @@ export function buildInterior(api,O){
     g.strokeStyle='rgba(48,44,38,0.45)';g.lineWidth=1;
     for(let y=S.SH;y<S.PE;y+=500){g.beginPath();g.moveTo(0,Y(y));g.lineTo(NW,Y(y));g.stroke();}
     for(let a=a0;a<a1;a+=500/S.RI){g.beginPath();g.moveTo(X(a),0);g.lineTo(X(a),NH);g.stroke();}
-    // darker shoulders along the valleys, where the ground is scorched by the light beside it
-    for(const [x0,dir] of [[0,1],[NW,-1]]){const gr=g.createLinearGradient(x0,0,x0+dir*40,0);gr.addColorStop(0,'rgba(40,36,30,0.5)');gr.addColorStop(1,'rgba(40,36,30,0)');g.fillStyle=gr;g.fillRect(Math.min(x0,x0+dir*40),0,40,NH);}
+    // the valleys' edges: a scorched lip, then the ground beside a sun lit warm and bright for a kilometre or two
+    litEdges(g,NW,NH);
     // the cities' grounds and the roads
     const st=S.STAIRS[i],cs=CITIES.filter(q=>q.sector===i).sort((p,q)=>q.y-p.y);
     for(const q of cs){g.fillStyle='#a49c8a';g.beginPath();g.ellipse(X(q.a),Y(q.y),q.r/S.RI/(a1-a0)*NW,q.r/(S.PE-S.SH)*NH,0,0,TAU);g.fill();
@@ -171,6 +206,7 @@ export function buildInterior(api,O){
       else if(t<0.78){g.fillStyle=cB;g.beginPath();g.moveTo(x+cell/2,y+6);g.lineTo(x+cell-6,y+cell-6);g.lineTo(x+6,y+cell-6);g.closePath();g.fill();}}
     // the joints between the squares, dark
     g.strokeStyle='rgba(30,26,22,0.6)';g.lineWidth=1.5;for(let k=0;k<=SW;k+=cell){g.beginPath();g.moveTo(k,0);g.lineTo(k,SHh);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(SW,k);g.stroke();}
+    litEdges(g,SW,SHh);
     // and by the cliff, a strip of lighter ground where the flower grew
     const yc=(-S.SH-300-(-S.PE))/(S.PE-S.SH)*SHh;g.fillStyle='rgba(190,180,150,0.5)';g.fillRect(0,yc-10,SW,30);
     return c;}
@@ -217,7 +253,7 @@ export function buildInterior(api,O){
       const lamps=new Batch();for(let k=0;k<6;k++)lamps.add(new THREE.SphereGeometry(0.6,8,6),placeOn(st.a+((k%3)-1)*12/S.RI,S.PE-110-Math.floor(k/3)*40,S.RI-6,0),col('#ffe8b0'),1);
       lamps.add(new THREE.SphereGeometry(1.1,8,6),placeOn(st.a+18/S.RI,S.PE-140,S.RI-22.5,0),col('#fff0c8'),1);
       IN.add(lamps.mesh(lampMat));}
-    IN.add(city.mesh());}
+    IN.add(city.mesh(vM(THREE.FrontSide,{map:facadeT})));}
 
   // ================= the Straight Valleys: the suns =================
   // A trench 300 m wide and 60 m deep the length of each plain, with the light in its floor. Three to a plain,
@@ -234,6 +270,12 @@ export function buildInterior(api,O){
       // the glare above it: a wider sheet, faint and additive, which is most of what makes a strip of light
       // read as a sun rather than as a white stripe
       const gl=drumSurface(range(c-(hw*2.2)/R,c+(hw*2.2)/R,6),range(y0,y1,4),()=>R-25,null,glareMat);gl.material=glareMat;gl.renderOrder=2;IN.add(gl);
+      // and the light standing up off it into the haze: a sheet from the valley floor toward the axis, bright at
+      // the foot and gone by a kilometre and a half up. From the plain beside it, it is the sun's glow in the air.
+      {const pos=[],uv=[],idx=[],ys=range(y0,y1,6);ys.forEach((y,j)=>{for(const [k,r] of [[0,R+S.VD-2],[1,R-1500]]){pos.push(Math.cos(c)*r,y,Math.sin(c)*r);uv.push(k,j);}});
+        for(let j=0;j<ys.length-1;j++){const q=j*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeBoundingSphere();
+        const b=new THREE.Mesh(g,beamMat);b.frustumCulled=false;b.renderOrder=3;IN.add(b);}
       valleys.push({c,R,y0,y1,north,sun});};
     for(const c of S.VAL_N)one(c,S.RI,S.SH+150,S.PE-100,true);
     for(const c of S.VAL_S)one(c,S.RS,-S.PE+100,-S.SH-150,false);
@@ -266,9 +308,11 @@ export function buildInterior(api,O){
   // when Rama arrives, a dark green-blue soup when the Sun has thawed it. Its rows are 100 m apart so a wave
   // can run along it; `wave(t)` moves the surface.
   const seaAng=range(0,TAU,720),seaY=range(-S.SH,S.SH,100);
-  const seaMat=vM(THREE.DoubleSide);
+  const seaMat=vM(THREE.DoubleSide,{lightMap:rippleT,lightMapIntensity:1.08});
   const sea=drumSurface(seaAng,seaY,()=>S.SEA,(a,y,c)=>{const h=hash3(Math.floor(a*300),Math.floor(y/60),5);c.setRGB(0.9+0.1*h,0.92+0.08*h,0.95+0.05*h);},seaMat,(a,y)=>!S.inNY(a,y));
   IN.add(sea);
+  {const uv2=[];for(const y of seaY)for(const a of seaAng)uv2.push(a*S.SEA/90,y/40);sea.geometry.setAttribute('uv2',new THREE.Float32BufferAttribute(uv2,2));}
+  animHooks.push(now=>{if(!IN.visible)return;seaMat.lightMap=LS.ice>0.5?iceT:rippleT;rippleT.offset.set(now*0.000012,now*0.000004);});
   const seaPos=sea.geometry.attributes.position,seaCol=sea.geometry.attributes.color,seaCol0=seaCol.array.slice();
   let waveWas=false;
   // fn(a,y) -> metres the surface stands up toward the axis, or null to lay it flat. Nothing in here is lit by
@@ -287,9 +331,10 @@ export function buildInterior(api,O){
   // thing about New York anyone noticed.
   const NY=new Batch();
   {const a0=S.NYA-S.NYARC/S.SEA,a1=S.NYA+S.NYARC/S.SEA;
-    IN.add(drumSurface(range(a0,a1,400),range(-S.NYW,S.NYW,120),()=>S.SEA-25,(a,y,c)=>{const du=S.nyDu(a);
+    const nyG=drumSurface(range(a0,a1,400),range(-S.NYW,S.NYW,120),()=>S.SEA-25,(a,y,c)=>{const du=S.nyDu(a);
         const street=(Math.abs(((du%140)+140)%140-70)>62)||(Math.abs(((y%140)+140)%140-70)>62);c.set(street?'#8e9298':'#a7aaae');
-        if(Math.abs(Math.abs(du)-S.NYARC/3)<30)c.set('#6e7278');},vM(),(a,y)=>S.inNY(a,y)));
+        if(Math.abs(Math.abs(du)-S.NYARC/3)<30)c.set('#6e7278');},vM(THREE.DoubleSide,{lightMap:detailT,lightMapIntensity:1.12}),(a,y)=>S.inNY(a,y));
+    {const uv2=[];for(const y of range(-S.NYW,S.NYW,120))for(const a of range(a0,a1,400))uv2.push(a*S.SEA/24,y/24);nyG.geometry.setAttribute('uv2',new THREE.Float32BufferAttribute(uv2,2));IN.add(nyG);}
     // the wall round it, standing out of the Sea
     {const pts=[];for(let k=0;k<=360;k++){const t=k/360*TAU,core=S.NYARC-S.NYW;let du,dy;
         const per=2*core*2+TAU*S.NYW,s=t/TAU*per;
@@ -314,7 +359,7 @@ export function buildInterior(api,O){
         else{NY.add(new THREE.CylinderGeometry(3,3,h,6).translate(0,h/2,0),M,c,0.45);NY.add(new THREE.SphereGeometry(w*0.5,14,10).translate(0,h+w*0.4,0),M,c,0.45);}}
       // each sector's centrepiece: three great towers in a triangle
       for(let j=0;j<3;j++){const ang=j*TAU/3,a=S.NYA+(duC+Math.cos(ang)*120)/S.SEA,y=Math.sin(ang)*120;NY.add(new THREE.CylinderGeometry(26,40,480,3).translate(0,240,0),placeOn(a,y,S.SEA-25,-ang),silver[2],0.45);}}
-    IN.add(NY.mesh());}
+    IN.add(NY.mesh(vM(THREE.FrontSide,{map:towerT})));}
 
   // ================= the Northern Bowl, the hub and the stairways =================
   // The bowl from the plain to the hub, drawn as a drum surface whose radius falls to nothing: lighter rings at
@@ -441,7 +486,7 @@ export function buildInterior(api,O){
     // the valleys come on one by one in the Dawn: LS.sunEach, if set, gives each its own level
     if(LS.sunEach){for(let i=0;i<valleys.length;i++){const v=valleys[i];if(!v.own){v.own=sunMat.clone();v.sun.material=v.own;}v.own.color.copy(sunOff).lerp(sunOn,LS.sunEach[i]);}}
     else for(const v of valleys)if(v.own){v.sun.material=sunMat;v.own.dispose();v.own=null;}
-    glareMat.opacity=0.2*LS.sun;
+    glareMat.opacity=0.2*LS.sun;beamMat.opacity=0.22*Math.min(1,LS.sun);
     cloudMat.opacity=0.5*LS.cloud;cloudMat.color.setScalar(0.25+0.75*Math.min(1,L));
     fogCol.copy(dark).lerp(haze,Math.min(1,LS.sun)).lerp(tmp.set(0xc8d8ff),Math.min(0.5,(LS.flash||0)*0.5));
     if(W.on&&scene.fog){scene.fog.color.copy(fogCol);renderer.setClearColor(fogCol);scene.fog.density=0.000032+0.00002*LS.cloud;}});
@@ -461,13 +506,14 @@ export function buildInterior(api,O){
     stairs:{label:'Halfway down Alpha stairway',y:S.yN(4400)-60,a:S.STAIRS[0].a,h:1.7,yaw:Math.PI,pitch:-0.05},
     camp:{label:'Camp Alpha, under the stairway',y:S.PE-260,a:S.STAIRS[0].a-0.0012,h:1.7,yaw:0.25,pitch:0.32},
     london:{label:'The road into London',y:14200+1300,a:S.STAIRS[0].a+0.11,h:1.7,yaw:Math.PI,pitch:0.03},
-    valley:{label:'The rim of a Straight Valley',y:12000,a:S.VAL_N[1]+(S.VW/2+14)/S.RI,h:1.7,yaw:-Math.PI/2,pitch:-0.25},
+    valley:{label:'The rim of a Straight Valley',y:12000,a:S.VAL_N[1]+(S.VW/2+90)/S.RI,h:1.7,yaw:-Math.PI/2-0.5,pitch:-0.06},
     shore:{label:'The northern shore, facing New York',y:S.SH+40,a:S.NYA+0.07,h:1.7,yaw:Math.PI,pitch:0.02},
     newyork:{label:'The streets of New York',y:-210,a:S.NYA+0.004,h:1.7,yaw:Math.PI/2,pitch:0.12},
     cliff:{label:'The top of the southern cliff',y:-S.SH-30,a:S.NYA+0.55,h:1.7,yaw:0,pitch:-0.12},
     south:{label:'The Southern Plain',y:-12500,a:S.VAL_S[0]+0.5,h:1.7,yaw:Math.PI,pitch:0.04},
     horns:{label:'Before the Big Horn',y:-13500,a:0.3,r:2600,yaw:Math.PI,pitch:-0.05},
     axis:{label:'The axis, over the Sea',y:0,a:S.NYA,r:80,yaw:Math.PI,pitch:-0.2},
+    tour:{label:'Fly the axis, hub to horns (two minutes)',y:S.HUBY-400,a:S.STAIRS[0].a,r:600,yaw:Math.PI,pitch:-0.15},
   };
   const el=renderer.domElement;
   trackPointers(el,{drag:(dx,dy)=>{if(W.on&&!W.follow)walker.look(W,dx,dy,0.004,1.5);},
@@ -483,7 +529,12 @@ export function buildInterior(api,O){
   tip.textContent='Drag to look. W A S D to walk, Q and E (or the wheel) to sink and rise: rise far enough and you float at the axis. Shift to hurry. Esc goes back outside.';panel.appendChild(tip);
   document.body.appendChild(panel);
   function place(P){W.follow=null;W.y=P.y;W.a=P.a;W.yaw=P.yaw||0;W.pitch=P.pitch||0;W.h=P.r!==undefined?S.ground(P.y,P.a)-P.r:(P.h||1.7);}
-  function go(where){W.where=PLACES[where]?where:'hub';place(PLACES[W.where]);for(const [k,b] of Object.entries(PB))b.style.borderColor=k===W.where?'#e8c98a':'#5a5446';}
+  // The tour: from the hub down the axis, the whole length of the world to the horns, turning slowly to look
+  // at the plains on either side - the flight Jimmy Pak made, without the lightning.
+  function tour(){let t0=null;W.follow=(now,W)=>{if(t0===null)t0=now;const t=(now-t0)/1000,u=Math.min(1,t/120),e=u*u*(3-2*u);
+      W.y=S.HUBY-400+(-15200-(S.HUBY-400))*e;W.a=S.STAIRS[0].a+t*0.012;W.h=S.ground(W.y,W.a)-(600+1700*Math.sin(u*Math.PI));
+      W.yaw=Math.PI+0.55*Math.sin(t*0.06);W.pitch=-0.12-0.3*Math.max(0,Math.sin(t*0.045));if(u>=1)W.follow=null;};}
+  function go(where){W.where=PLACES[where]?where:'hub';place(PLACES[W.where]);if(W.where==='tour')tour();for(const [k,b] of Object.entries(PB))b.style.borderColor=k===W.where?'#e8c98a':'#5a5446';}
   const saved={near:0,far:0,fov:0};let fog0=null,bg0=0,showOutside=false,last=0;
   function enter(where){if(!W.on){W.on=true;IN.visible=true;saved.near=camera.near;saved.far=camera.far;saved.fov=camera.fov;fog0=scene.fog;bg0=renderer.getClearColor(new THREE.Color()).getHex();
       camera.near=0.4;camera.far=160000;camera.fov=68;camera.updateProjectionMatrix();cut.set(new THREE.Vector3(0,1,0),1e9);panel.style.display='flex';
