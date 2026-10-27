@@ -58,6 +58,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 14 | 210 | 28 | 0 | 14 | 58 | 109 | 2 | biome | yes | yes |
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 143 | 13 | 18 | 16 | 32 | 63 | 2 | biome | yes | yes |
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 17 | 166 | 38 | 35 | 14 | 35 | 44 | 2 | biome, atmos | yes | yes |
+| [`biomes/godthrone`](biomes/godthrone/PORT.md) | 14 | 72 | 1 | 0 | 5 | 36 | 29 | 3 | biome, atmos | yes | yes |
 | [`biomes/guilin`](biomes/guilin/PORT.md) | 13 | 112 | 40 | 0 | 0 | 12 | 60 | 3 | biome, atmos | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 152 | 3 | 0 | 12 | 16 | 120 | 6 | biome | yes | yes |
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |

@@ -415,7 +415,8 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
 1. `build.py`: `CORE_TERRAIN` gets `'35-core-strata.js'` (core/rand on the page first), and after the `CORE_TERRAIN` loop
-   `PATH.setdefault('35-core-strata-shade.js', os.path.join(CORE_T, 'host', '35-core-strata-shade.js'))`. A build that has its own
+   `PATH.setdefault('35s-core-strata-shade.js', os.path.join(CORE_T, 'host', '35-core-strata-shade.js'))` (keyed `35s`: the shade reads
+   `KSTRATA` when it loads and does not merge into a later data half, so it must sort after `35-core-strata.js`; found by the Godthrone, 2026-10-26). A build that has its own
    `src/35-core-strata.js` (sedesert, ebadlands) deletes it: the same name in `src/` wins over the core file.
 2. Build the stack once from the recipe the plan names (below), then `BIO.strata({strata: S, cap, foot, dust})` (or `KSTRATA.shade(S, o)`)
    and `S.inject(shader)` in the rock's `onBeforeCompile`, `strataColor(vSWP, vSWN)` where the colour is mixed, as today.

@@ -1,0 +1,319 @@
+{
+ "build": "godthrone",
+ "families": {
+  "beadsBlack": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "beadsBlack.albedo.webp"
+   },
+   "lib": "ground.sand.black",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e278f53d123a1aa0061a9f9bc8216bc22d8028d8",
+    "normal": "a2d1e4d1f8ed83593793aaa52a36ab393d9202d1",
+    "roughness": "33dceea7705bfde3d665bf28f9df5908f615de9e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.20892572071449428,
+    "sourceMean": 0.2089
+   }
+  },
+  "beadsOrange": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "beadsOrange.albedo.webp"
+   },
+   "lib": "ground.beads.orange",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "162bf2cb1d79ab489479fdb9dad16ce29e39ec21",
+    "normal": "8472e1a91ada2489d6a139465d90eb8f700a2303",
+    "roughness": "087a9fba25e793e72b501208f7324808b74cfc07"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3488018134981043,
+    "sourceMean": 0.3488
+   }
+  },
+  "bomb": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bomb.albedo.webp"
+   },
+   "lib": "ground.lava.crust",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "96a82a9e8ee7943140cf2564abf5906e95a2a30d",
+    "normal": "fc0d682e6250d0517399b6bc69481a10da2532e8",
+    "roughness": "e604a06edcea7c51963ea3db12ae822ce573c4d4"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.2517
+   }
+  },
+  "glass": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "glass.albedo.webp"
+   },
+   "lib": "ground.obsidian",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0dde1718fdca13ca1c461de8444e53bf60e73cff",
+    "normal": "065401072178d0af20032fe3c8c1aae3c36a62e1",
+    "roughness": "6e6a66275979a8c61f87fbbc41b59878068bdcb5"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.20155459481931198,
+    "sourceMean": 0.2016
+   }
+  },
+  "groundDetail": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "groundDetail.albedo.webp"
+   },
+   "lib": "ground.cinder",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    5,
+    5
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "ac79748740c9e67eebd3c27f6fd2759540e4195c",
+    "normal": "61c19098086d74b383506b84cf162310a8555672",
+    "roughness": "0ef07445150d4489988033f27b321ebd378ff62e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.2,
+    "keep": 0.0,
+    "mean": 0.9,
+    "sourceMean": 0.2659
+   }
+  },
+  "hair": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "files": {
+    "map": "hair.albedo.webp"
+   },
+   "lib": "card.pele.hair",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ae39dcad6447bda17eb53dbd68baf43cf47c878a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4246283145336365,
+    "sourceMean": 0.4246
+   }
+  },
+  "lavaCrust": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "lavaCrust.albedo.webp"
+   },
+   "lib": "ground.lava.crust",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    6,
+    6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "96a82a9e8ee7943140cf2564abf5906e95a2a30d",
+    "normal": "fc0d682e6250d0517399b6bc69481a10da2532e8",
+    "roughness": "e604a06edcea7c51963ea3db12ae822ce573c4d4"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.25171481145222985,
+    "sourceMean": 0.2517
+   }
+  },
+  "portal": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "portal.albedo.webp"
+   },
+   "lib": "concrete.ancient",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fff71497f561d8f7a3804e407e8c8e47f1008423",
+    "normal": "d5730d5c2c700bf1251b34271385cbc3345eaff4",
+    "roughness": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6171084436005236,
+    "sourceMean": 0.6171
+   }
+  },
+  "rock": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.albedo.webp"
+   },
+   "lib": "rock.basalt.flowbanded",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0a89d71c639786469e2cd45adb3b40f3c92dc346",
+    "normal": "26b4f4b9c8865c8a14907fb5deb58b345a167b65",
+    "roughness": "163b7729aee5c2e46451790293d443b306013faa"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.3316
+   }
+  },
+  "rockFace": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rockFace.albedo.webp"
+   },
+   "lib": "rock.basalt.flowbanded",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    8,
+    8
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0a89d71c639786469e2cd45adb3b40f3c92dc346",
+    "normal": "26b4f4b9c8865c8a14907fb5deb58b345a167b65",
+    "roughness": "163b7729aee5c2e46451790293d443b306013faa"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.15,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.3316
+   }
+  },
+  "spatter": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "spatter.albedo.webp"
+   },
+   "lib": "ground.scoria",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3b29778b9d033baf91923890b45b43029a079316",
+    "normal": "1fa2269bbb3487946f8a8ccf42b77a50d72bce1b",
+    "roughness": "b146ad975ae28be4d25aca97a759093721569584"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3329115700635723,
+    "sourceMean": 0.3329
+   }
+  }
+ },
+ "size": 512,
+ "what": "generated by tools/textures/pack.py from materials.json; do not edit"
+}

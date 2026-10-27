@@ -222,6 +222,21 @@ The titanium shield volcano, its glass halo, the orange belt, the bloodfalls and
 `stone.pumice`, `ice.glacier`, `ice.clear`, `ground.snow011`, `ground.travertine.white` (under the rust terraces' tint).
 Needed before the kit's G1.
 
+**Station 1 built (2026-10-26):** the plan's own sets are all in the library now (`ground.beads.orange`, `rock.palagonite`,
+`card.pele.hair`, `rock.megabreccia`, `rock.tafoni`, `ice.debris`, `ice.rust`, `ground.rust.terrace`, `ground.riverweed.red`);
+the page wires `ground.beads.orange`, `ground.sand.black`, `ground.obsidian`, `ground.scoria`, `ground.cinder`,
+`ground.lava.crust`, `card.pele.hair` and `concrete.ancient` (`biomes/godthrone/materials.json`). **One stand-in**: the
+titanium basalt's grain is `rock.basalt.flowbanded` grey under KSTRATA's colours (the plan allows a tint). Optional, if the
+owner wants the ilmenite sheen in the map rather than in the material:
+
+#### `rock.basalt.titanium` (optional)
+- Kind: tiling rock surface, full colour (keep 1), ~2 m a tile; albedo, normal, roughness.
+- Used by: the Godthrone's caldera walls and talus (stations 1, 4), Godstep's flows. Reuse: any fresh black basalt face.
+
+```
+A seamless tileable photographic texture of a fresh titanium-rich basalt rock face, seen straight on, about 2 metres across: dense jet-black fine-grained lava (#1c1b1e, #24232a) with a faint steel-blue metallic glint of tiny ilmenite crystals scattered evenly through it, thin horizontal flow banding, a few small round vesicles, fracture planes with sharp conchoidal edges, and here and there a thin layer of glassy orange-and-black beads (#c8641e, #161515) wedged between two flows. No weathering crust, no lichen, no rust, no varnish (it never sees water). Flat even overcast lighting, no cast shadows, no perspective, no vignette, no text. Full colour: not tinted.
+```
+
 ## 21. The W outer wall (`biomes/wouterwall`, planned 2026-10-26)
 
 The loess bench, the slump scarps and the sturzstroms (`biomes/wouterwall/PLAN.md` section 8). Reused: `ground.steppe`,

@@ -16,7 +16,9 @@ Owner's brief (2026-10-26):
 - **The bloodfalls**: an arctic highland in the Godthrone's ice belt where iron-rich rock meets glacial meltwater, and
   the blood river that flows down from it (section 4; the candidate is Qol Ḍrāi).
 
-**Status: plan, awaiting the owner.** Nothing built.
+**Status (2026-10-26): station 1 (the summit vent) built** on `claude/biome-rebuild`'s core, from this plan's proposals as
+written (the owner asked for it: section 9a has the core adoption, `PERF.md` the measurements, `KNOWN_ISSUES.md` what is
+left). Stations 2-6 and the rest of the plan still await the owner; the questions met on the way are added to section 10.
 
 ## 0. What the kit is
 
@@ -251,6 +253,34 @@ and rift kits too); **titanium basalt** (black with an ilmenite sheen, or a tint
 - **G5.** Stations 2-6; the endoliths, crusts and iron-eaters; the bloodfalls' seep, stained ice and rust terraces.
 - **G6.** `verify.py --assert`, `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
 
+## 9a. Core adoption (written before the first fragment, 2026-10-26; station 1)
+
+The owner asked for station 1 (the summit vent) to be built; it was built from this plan's proposals as written, on
+`claude/biome-rebuild`'s core. `build.py` starts from `biomes/nhighlands` (the worked example of a full adoption), with the
+Throne's station mechanism for the later pages. What the build takes, and why not the rest:
+
+| Module | Taken | How |
+|---|---|---|
+| `core/biome` | yes | `10`, `20` (`BIO.INDEX_ITEMS` welded items, `BIO.LOD.merge` + `minTris` + `fade` + per-instance `cull`), `30`, `40`, `42`/`43` (export), `44` (stage). The kit `GODT` on the `BIOME-API.md` contract; its items are the ground's loose stuff (spatter bombs, talus blocks, stones, Pele's hair mats), classed `feature` (glass and rock, not flora) |
+| `core/rand` | yes | every draw `KRAND.hash` of (world, cell, index, salt); the terrain's noise `KRAND.fbm` (no `BIO.fn.fbm`, no `Math.sin` hash) |
+| `core/tags` | yes | `BIO.init({tags:'godthrone'})`; every item set and registered volume a record before it is drawn; hazards and the portal tagged |
+| `core/host` | yes | `khost.FULL` (camera, loop, panel, probe, inspector, marks, pictures, minimap, editor); `99-host-take.js` hands it the page |
+| `core/atmos` | yes | the shared sky with **thin air** (`air.thin`, the plan's section 2: the fog falls to nothing, the zenith nearly black, stars by day), `bindHost`, `bindWeather` (`climate.ash`: ashfall and the ash storm), the air's load (`fx/airload`: the ash's mg/m3 and sight, the fog from it), branched lightning (`fx/lightning`: the ash storm's), the vent's fume on `ATMOS.smoke` (a `fume` kind added to the page's preset), the lava throat on `fx/lava` (`ATMOS.lavaMaterial`), `ATMOS.provideAir` (pressure into core/hazard) |
+| `core/hazard` | yes | `KHAZ.GROUND.lavaLake` (the vent's throat), `gasVent` (the vent and the fissure's fumaroles), `hotGround` (the spatter rampart); the ambient bridge's `pressure` (from the sky) and `temperature` (the kit's field: the held mean, -75 C); the hazards layer and inspector line |
+| `core/terrain` | yes | `KSTRATA` with the **`tibasalt`** recipe on every rock face (the alteration's `below` at the dry-cold line, 8,500 m: nothing here is below it), `KSTRATA.ledgeField` (the ledge pass on the walls: each flow a ledge, the bead beds recessed), `KRELIEF.talus` (aprons at the foot of every scarp), `KFIELD` (the ground baked once; the page and the export read it), `KGROUND` with the layer kinds `sand` (the orange and the black bead sand, ripples and glints) and the library's layers, `KHORIZON` (the caldera wall's shadows), `KFAR` (the caldera and the upper shield to 90 km, with the planet's curvature) |
+| `core/materials` | yes | `materials.json` + `tools/textures/pack.py`: `ground.beads.orange`, `ground.sand.black`, `card.pele.hair`, `rock.basalt.flowbanded` (tinted near-black: the titanium basalt, a stand-in tint as section 8 allows), `ground.scoria`, `ground.obsidian`, `ground.lava.crust`; `check_cells.py` clean |
+| `core/space` | yes | `KSPACE`, the biome core's keep-clear and scatter index |
+| `core/export` | yes | `07`, `09`; the export profile under `verify.py --assert` |
+| `core/water` | per station | `build.py` takes core/water by station (station.json `"water"`); **station 1 lists none**: at 22-25 km and 0.07-0.11 atm there is no liquid water (the plan's section 2; the frost is the ground shader's). The bloodfalls station takes the falls, the brine and the stained ice |
+| `core/biome` impostors (`34`) | no | nothing tall stands at the summit (GRAPHIC-LOAD.md: impostors where anything tall stands) |
+| `core/atmos` height fog, rain cover, rain wall, fog belt, acid | no | thin air: the fog falls to nothing and no rain falls (section 2) |
+| `KSTACKS`, `KRELIEF.stair/rille/tube/pit` | no (station 1) | no stacks, rilles or tubes at the summit; the high flank's station (2) takes `rille` and `tube` (the pit chain) |
+| `core/city`, `hamlet`, `simulation`, `furnish` | no | no one lives here (section 6) |
+| `core/charactermodels`, `kits/fauna` | no | no animals (section 5) |
+
+**Graphics from day one** (`GRAPHIC-LOAD.md`): welded items, the LOD merge, fade and per-instance cull are on; the far
+field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view on the Intel GPU in `PERF.md`.
+
 ## 10. Open questions
 
 - The caldera's exact size and depth, and whether the summit vent is active now (fountaining every few years) or only
@@ -258,3 +288,17 @@ and rift kits too); **titanium basalt** (black with an ilmenite sheen, or a tint
 - Whether the airless band is drawn as this kit everywhere, or each wall kit draws it from this kit's fragments (the
   same ground either way; the difference is who owns the pages).
 - The Talovolci's relation to the mountain, and who gathers the orange glass.
+- **Met building station 1** (2026-10-26; each built from the proposal as written, nothing settled):
+  - The station is **compressed** (an ideal type): on 4.23 the pit is ~27 km from the main wall; the page puts pit, floor,
+    wall and rim in one 9.6 km map, the wall north-east of the vent (its true bearing). Keep it, or draw the pit and the
+    wall as two stations?
+  - **The caldera wall's profile**: 4.23's raster draws a smooth 9 km ramp; the page draws six collapse terraces (scarps of
+    300-640 m at 55-66 degrees, back-tilted benches, talus). Is that the wall the owner sees? Should 4.24 carry scarps?
+  - **The sealed portal**: where on the rim (the tunnels come from Pluton, south-west, across the caldera from the vent),
+    and its look (a placeholder: plinth, two pylons, lintel, seal, in the Ancients' white render).
+  - **The vent fuming**: the page draws fume, a hot crack and a lava throat, no fountain (the first question above).
+  - **The summit's temperature**: the page holds 4.23's mean (-75 C) swinging +-22 C with the sun for core/hazard's cold;
+    is the ground's day high (Mars: +20 C) wanted instead?
+  - **Hoarfrost on the faces turned south**: at this site the noon sun stands north, so the shaded faces face south.
+  - **The halo's bands**: orange near the vent (to ~1.5 km) and in rings to ~5 km, black beyond; widths are a guess.
+  - **An optional texture**: `rock.basalt.titanium` (the ilmenite sheen in the map; `core/materials/PROMPTS-NEEDED.md` 20).
