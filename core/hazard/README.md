@@ -157,6 +157,8 @@ A build opts in by explicit path (it is not pooled): three lines in `build.py`, 
      the place's record, beside the animal's own record.
    - **Thin air and cold**: the page's field owner calls `KHAZ.provide('pressure', fn)` and
      `KHAZ.provide('temperature', fn)`. The walker asks `KHAZ.here(x, y, z, t)`.
+   - **Acid rain**: `KHAZ.provide('rain', fn)` from the page's weather (0 under cover), and `KHAZ.provide('ph', fn)` from
+     the region's map (the Valley's acid, clean elsewhere).
 
 It moves nothing drawn: the records gain a tag, the page gains a button. Proof on the pilots (2026-10-26, GPU, same view
 before and after): Korona's hollow, the Throne's vent country and the geyser basin keep their draw calls, triangles,
@@ -196,6 +198,10 @@ pressure by height, and a temperature field when one exists).
   - `thin-air`: suffocate, from .6 atm (a person tires) to .06 atm (the blood boils; the Godthrone's rim is .07).
   - `cold`: freeze, from 0 to -40 C.
   - `hot`: burn, from 45 to 70 C.
+  - `acid-rain`: corrode, for the Valley of the Ancients (planned). It takes two fields, `ph` (the rain's acidity: clean
+    rain is 5.6) from 4 down to 1, times `rain` (mm an hour) from 0 to 10. A row's `times: {field, start, worst}`
+    multiplies a second ramp into k; without both fields, nothing. A storm that moves is a `rain` field of t; a roof is
+    rain 0 there, or a guard of 1.
 - **`KHAZ.ambient(x, y, z, t, guard)`** returns `[{kind, field, value, k, effect, dose, danger}]`, worst first. `guard`
   is `{kind: 0..1}`, how much a walker's gear keeps out (a mask .5, a suit 1).
 - **`KHAZ.here(x, y, z, t, T, {tIns, guard})`** returns `{records (KHAZ.at), ambient, doses: {effect: summed}}`: what
@@ -208,7 +214,7 @@ pressure by height, and a temperature field when one exists).
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then e5d9d25f
-with lava, fire, luck, trap, the taboo key and the ambient rows). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 9584dd11
+with lava, fire, luck, trap, the taboo key, the ambient rows and acid rain). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

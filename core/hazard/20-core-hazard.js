@@ -306,10 +306,14 @@
   // [{kind, field, value, k, effect, dose, danger}] where a field is past its row's start, the worst (danger x k) first.
   // guard {kind: 0..1}: how much of it a walker's gear keeps out (a mask, furs: .5 halves the dose; 1 keeps all of it out)
   function ambient(x,y,z,t,guard){need();var out=[],K=V.ambientKinds,vals={};
-    for(var name in K){var row=K[name],f=FIELDS[row.field];if(!f)continue;
-      var v=row.field in vals?vals[row.field]:(vals[row.field]=f(x,y,z,t));if(typeof v!=='number'||!isFinite(v))continue;
-      var k=rampK(row,v);if(!(k>0))continue;var g=guard&&guard[name]!=null?Math.max(0,Math.min(1,guard[name])):0;
-      out.push({kind:name,field:row.field,value:v,k:k,effect:row.effect,dose:row.dose*k*(1-g),danger:row.danger});}
+    function val(fd){var fn=FIELDS[fd];if(!fn)return NaN;if(!(fd in vals))vals[fd]=fn(x,y,z,t);return vals[fd];}
+    for(var name in K){var row=K[name];if(!FIELDS[row.field]||(row.times&&!FIELDS[row.times.field]))continue;
+      var v=val(row.field);if(typeof v!=='number'||!isFinite(v))continue;
+      var k=rampK(row,v),v2=null;
+      if(row.times&&k>0){v2=val(row.times.field);if(typeof v2!=='number'||!isFinite(v2))continue;k*=rampK(row.times,v2);}
+      if(!(k>0))continue;var g=guard&&guard[name]!=null?Math.max(0,Math.min(1,guard[name])):0;
+      var o={kind:name,field:row.field,value:v,k:k,effect:row.effect,dose:row.dose*k*(1-g),danger:row.danger};
+      if(row.times){o.times=row.times.field;o.value2=v2;}out.push(o);}
     out.sort(function(a,b){return b.danger*b.k-a.danger*a.k||(a.kind<b.kind?-1:1);});return out;}
   // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, and every effect's dose summed
   function here(x,y,z,t,T,o){o=o||{};var R=at(x,z,t,y,T,o.tIns),A=ambient(x,y,z,t,o.guard),D={};

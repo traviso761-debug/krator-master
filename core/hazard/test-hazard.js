@@ -233,6 +233,22 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  H.provide('pressure',null);H.provide('temperature',null);
  ok('provide(field, null) removes it',H.provided().length===0&&!('ambient' in H.export(T)),H.provided().length>0);}
 
+// acid rain (the Valley of the Ancients, planned): how acid x how hard it falls; stub weather, a storm moving east at
+// 5 m/s (10 mm/h at its core, 300 m across), the valley's rain at pH 2 west of x = 0 and clean (5.6) east of it
+{const rain=(x,y,z,t)=>{const c=-2000+5*t,dd=Math.abs(x-c);return dd<300?10*(1-dd/300):0;};
+ H.provide('ph',(x)=>x<0?2:5.6);
+ const ar=(x,t,g)=>H.ambient(x,0,0,t,g).find(a=>a.kind==='acid-rain');
+ ok('acid rain needs both fields: pH alone is nothing',!ar(-2000,0),!!ar(-2000,0));
+ H.provide('rain',rain);
+ const a=ar(-2000,0);
+ ok('acid rain: pH 2 under the storm\'s core (k 2/3 x 1), its dose and its fields',a&&Math.abs(a.k-2/3)<1e-9&&Math.abs(a.dose-.5*2/3)<1e-9&&a.effect==='corrode'&&a.value===2&&a.value2===10&&a.times==='rain',!a);
+ ok('half the rain, half the harm; none outside the storm',Math.abs(ar(-2150,0).k-1/3)<1e-9&&!ar(-1500,0),!!ar(-1500,0));
+ ok('the storm moves: 400 s later it is 2 km east, over clean rain there is none',ar(-2000,0)&&!ar(-2000,400)&&!ar(0+10,400),!!ar(-2000,400));
+ ok('a roof or a cloak is a guard',ar(-2000,0,{'acid-rain':1}).dose===0&&ar(-2000,0,{'acid-rain':.5}).dose===a.dose/2,false);
+ ok('here sums it as corrode',Math.abs(H.here(-2000,0,0,0,G2).doses.corrode-a.dose)<1e-12,false);
+ H.provide('rain',()=>NaN);ok('rain that gives no number is skipped',!ar(-2000,0),!!ar(-2000,0));
+ H.provide('rain',null);H.provide('ph',null);ok('removed: none',H.provided().length===0,false);}
+
 // the places predators hold: hunter records bound to their fauna
 {const P=H.PREDATOR,TP=KT.create({build:'predator-test'});
  const lair=TP.add({'class':'feature',kind:'lair',at:[0,0,0],tags:{hazard:P.lair(8,{fauna:'savannah-stalker'})}});

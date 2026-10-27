@@ -56,7 +56,8 @@ its probes.
   the area as home ground: it waits or patrols there, and walkers who enter get the hunter's attention.
 - `ambient` (no node): the walker's `HazardStatus` samples the port's own fields (pressure from the atmos port by
   height, temperature) each tick and applies the export's `ambient.kinds` ramps (start to worst, linear), as
-  `KHAZ.ambient` does. Gear is a guard per kind.
+  `KHAZ.ambient` does; a row with `times` multiplies its second field's ramp (acid rain: pH x rain from the weather
+  port, 0 under a roof by a ray up). Gear is a guard per kind.
 - `areas` (taboo): no node. They are placement data. Godot's settlement builder and NPC placement ask
   `KHazard.forbids(x, z, who)` (the area's shape, its `of` cultures; a record is of a people by faction, else culture),
   as `KHAZ.tabooOk` does on the page.
