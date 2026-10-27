@@ -87,14 +87,14 @@ SWHI.buildTreeline=function(box,q){q=q==null?1:q;const st={trunk:0,limb:0,whorls
  // THE FLOOR: glass leaf, moss under the whorls, the dry turf on the sunny ground, the fellfield's stones (to 420 m; the stones to 700)
  const pass=(item,cell,salt,R,accept,put)=>{BIO.range=R;BIO.minRange=0;SWHI.cells(cell*k,salt,box,(x,z)=>BIO.lodD(x,z)<R?accept(SWHI.treeZones(x,z)):0,(x,y,z,sd)=>{if(!clearOf(x,z,.3))return false;put(x,y,z,KRAND.stream(sd));st[item]++;return true;});};
  const L=SWHI.LOD.floor;
- pass('glassleaf',3.2,604,L,Z=>Z.glassleaf*Z.open*(.35+.4*Z.fell),(x,y,z,s)=>{const w=s.range(.5,1.1);BIO.put('glassleaf',[x,y-.05,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.8,1.3),w],PICK(PAL.glass,s.next()),{label:'Glass leaf'});});
+ pass('glassleaf',4,604,L,Z=>Z.glassleaf*Z.open*(.35+.4*Z.fell),(x,y,z,s)=>{const w=s.range(.5,1.1);BIO.put('glassleaf',[x,y-.05,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.8,1.3),w],PICK(PAL.glass,s.next()),{label:'Glass leaf'});});
  pass('moss',3.6,605,L,Z=>Z.whorl*Z.shade*.8*Z.open,(x,y,z,s)=>{const w=s.range(.6,1.2);BIO.put('moss',[x,y-.04,z],QE(0,s.range(0,TAU),0),[w,w*.4,w],PICK(PAL.moss,s.next()),{label:'Native moss'});});
  pass('turf',3.2,606,L,Z=>(Z.sunny*.55+.15)*(1-Z.fell*.7)*Z.open,(x,y,z,s)=>{const w=s.range(.5,.95);BIO.put('turf',[x,y-.04,z],QE(0,s.range(0,TAU),0),[w,w*s.range(.4,.7),w],PICK(PAL.turfDry,s.next()),{label:'Ridge turf'});});
 /* THE UNDERSTOREY (the owner, 2026-10-27: more of it, shrub-like fungoids): tube shrubs in clumps under and between the trees, cup-pad
     sprouts in the shaded woods, bead-cone buttons in their wettest shade */
- pass('tubes',5,608,L,Z=>(Z.whorl*.55+Z.bottle*.5)*Z.open,(x,y,z,s)=>{const n=s.int(1,4);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.8),w=s.range(.28,.75);const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+ pass('tubes',6,608,280,Z=>(Z.whorl*.55+Z.bottle*.5)*Z.open,(x,y,z,s)=>{const n=s.int(1,4);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.8),w=s.range(.28,.75);const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
   BIO.put('tubeshrub',[px,Y(px,pz)-.05,pz],QE(s.range(-.12,.12),s.range(0,TAU),s.range(-.12,.12)),[w*1.3,w*s.range(.7,1.3),w*1.3],PICK(PAL.tube,s.next()),{label:'Tube shrub'});}});
- pass('sprouts',4.5,609,L,Z=>Z.whorl*Z.shade*.6*Z.open,(x,y,z,s)=>{const n=s.int(2,5);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.4),h=s.range(.2,.5),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+ pass('sprouts',6,609,300,Z=>Z.whorl*Z.shade*.6*Z.open,(x,y,z,s)=>{const n=s.int(2,5);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1.4),h=s.range(.2,.5),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
   BIO.put('sprout',[px,Y(px,pz)-.05,pz],QE(s.range(-.18,.18),s.range(0,TAU),s.range(-.18,.18)),[h,h,h],PICK(PAL.sproutTl,s.next()),{label:'Pad sprouts (young lattice oaks)'});}});
  pass('buttons',9,610,L,Z=>Z.whorl*Z.shade*.3*Z.open,(x,y,z,s)=>{const n=s.int(1,3);for(let j=0;j<n;j++){const a=s.range(0,TAU),d=s.range(0,1),h=s.range(.3,.7),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
   BIO.put('button',[px,Y(px,pz)-.05,pz],QE(0,s.range(0,TAU),0),[h,h,h],PICK(PAL.coneCap,s.next()),{label:'Bead cone buttons'});}});

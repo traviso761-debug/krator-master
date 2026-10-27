@@ -174,11 +174,11 @@ function glassGeo(){const pos=[],uv=[],nor=[];for(let k=0;k<5;k++){const a=k/5*T
    [[A,0],[B,1],[C,2],[A,0],[C,2],[D,3]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(U[q[1]][0],U[q[1]][1]);nor.push(Math.cos(a),.5,Math.sin(a));});}}
  return BIO.geo._make(pos,nor,uv);}
 // a fellfield stone: an icosahedron knocked about by KRAND (radius ~1)
-function stoneGeo(){const g=new T3.IcosahedronGeometry(1,1),P=g.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=.75+.5*KRAND.fbm(x*1.3+5,y*1.3,z*1.3,2,66);P.setXYZ(i,x*k,y*k*.6,z*k);}g.computeVertexNormals();return g;}
+function stoneGeo(){const g=new T3.IcosahedronGeometry(1,0),P=g.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=.75+.5*KRAND.fbm(x*1.3+5,y*1.3,z*1.3,2,66);P.setXYZ(i,x*k,y*k*.6,z*k);}g.computeVertexNormals();return g;}
 const G=SWHI.GEO={
  whorl:whorlGeo(9,.28),
  // the treeline's understorey shrub: a clump of open fungoid tubes (BIO.fung.tube), teal to ochre
- tubeShrub:BIO.fung.tube({n:9,r:.11,hMin:.35,spread:.42,seg:6}),brush:BIO.geo.clump(),glassleaf:glassGeo(),stone:stoneGeo(),
+ tubeShrub:BIO.fung.tube({n:4,r:.15,hMin:.4,spread:.38,seg:3}),brush:BIO.geo.clump(),glassleaf:glassGeo(),stone:stoneGeo(),
  // a cup-pad: a shallow green funnel, its rim waved (BIO.fung.cap form 'funnel', no underside), planar uv from above
  pad:BIO.fung.cap({form:'funnel',h:.28,seg:12,rings:3,wav:5,wavA:.09,under:'none',seed:81,uv:'planar'}),
  // a parasol fruit: a blue dome on a stalk (radius 1, the stalk 1.3)
