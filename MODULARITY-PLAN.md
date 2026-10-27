@@ -104,6 +104,7 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 | 0 graph check | none | none | none |
 | 1 sky | ~14 kits + iziz | low (one file, pure) | all builds that draw a sky |
 | 2 kit engine | 8 to 10 kits | medium (forks have drifted) | those kits and what bundles them |
+| 2b core/door | Iziz, Pylon, Talia, Verge, isle demo, the building kits | medium (new module) | those builds |
 | 3 catalog / Voth | catalog, Voth, 30 dependents | medium | catalog dependents |
 | 4 settlement chains | ~10 settlements | highest (Ancients chain) | the chain |
 | 5 backwards edges | 6 builds | low | those builds |
@@ -111,6 +112,57 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 
 Run steps 1 to 3 on one branch with one all-builds rebuild (CLAUDE.md "Rebuild what a shared change reaches") and
 `python3 tools/port_baseline.py` after each; step 4 waits for the Ancients re-vendor chain to be quiet.
+
+## Ride-alongs (parked work that lands with these steps)
+
+Found 2026-10-26 in `TODO.md`, ROADMAP.md stage 3 and GODOT-PLAN.md's hot-spot table. Do each in the step named,
+rebuild once, rewrite the baseline once; then take the item out of `TODO.md` in the same commit.
+
+**With step 1 (the sky, and the all-builds rebuild it brings).** `TODO.md`, "Ride along with the next all-builds rebuild":
+- The probes read a merged mesh's own sample points (`userData.probePoints`) in `core/host/95-host-probe.js` and
+  `settlements/port/src/91-probe.js`; the dam bed's flotsam and the scablands' erratics drop their hidden marker meshes.
+- A broad phase for the probe's `regOccupancy` on `core/space` (KSPACE), same file; counts unchanged on Rift,
+  Hyperjungle, Sedesert, Iziz, Girder and Yuni, wall times before and after in `EFFICIENCY.md`.
+- Guard the camera's pointer capture in `core/host/90-host-camera.js`; take out the Iziz palace page's own guard
+  (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`).
+- The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy
+  `kits/catalog/krator-symbols.js` goes (the TODO asked for a re-vendor; reading in place removes the vendored file).
+- `core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).
+- ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the same change as step 1.
+
+**Step 2b (new): `core/door`, opening doors as a core module, beside `core/walk`.** `TODO.md`, "Opening doors as a
+core module", "Real doors and glass across the kits", and "Doors that open" (Viewers):
+- Lift `IZDOOR` (`settlements/iziz/src/69e5-iziz-openings.js`) and `95j-iziz-doors.js` into `core/door`: leaves as
+  plain records keyed by stable ids (hinge, width, swing, state, locked), `open` / `close` / `toggle` / `nearest` as
+  plain functions, walk blocks in `KWALK`, the drawing and the key on the host side, so it runs in Godot.
+- Verge (`izv_files`) and the isle demo (`bundles.py` `izv_files`) take `core/door` instead of Iziz's 69e5, which
+  removes those settlement -> Iziz edges and makes their doors open.
+- Pylon's `pylDoorway` and Talia's arches hang a leaf in it; the other building kits (Ancients, Islanders, Lizardmen,
+  the nomads, Scyvoi, Zeijani, Eternian) draw doors and glass through it, not through 69e5's wrappers.
+
+**With step 2 (`core/kit`).**
+- One walk mode and one set of controls in every viewer (`TODO.md`, Viewers): the engine takes `core/host` and
+  `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` is the reference for the controls).
+  GODOT-PLAN.md counts `camera.js` copied in 16 builds, `probe.js` in 15, `stats.js` in 10.
+- Interiors in every building kit that has them, with a cut-away (`TODO.md`, Viewers): done once in `core/kit`
+  through `kits/interiors` and `core/furnish`, not once per kit.
+
+**With step 3 (catalog / Voth).** The symbols item above if step 1 has not taken it.
+
+**With step 4 (the settlement chains).**
+- `useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js` (Jimjam's open item) before the chain stops
+  vendoring.
+- Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).
+- The open baseline rewrite from the Ancients re-vendor session (Iziz's `iziz.html`, Xanadu's `xanadu.html` and
+  `erewhon.html`, Reed Lake's two pages), once, here.
+- Settlements that vendor a biome read it by path: Dalab (swlowlands), Shade (sedesert), and Iziz's and Ys's old
+  hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
+
+**With step 5 (backwards edges).** Nothing parked beyond the plan's own list.
+
+**Not ride-alongs.** The fungoid flora on `BIO.fung` waits for the final biome rebuild (owner, 2026-10-26); the
+normal-map re-pack moves only six baselines on purpose; flame and heat haze and the water audit are features, not
+dependency moves.
 
 ## Not decided (owner)
 
