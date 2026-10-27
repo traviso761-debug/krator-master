@@ -55,3 +55,6 @@ const RIVERS=[],RIVER_DRAW=[];   /* no rivers at this station: the lake fills fr
   const n=o.count,M=o.instanceMatrix.array,b=new Float32Array(n);for(let i=0;i<n;i++)b[i]=dampAt(M[i*16+12],M[i*16+14]);
   o.geometry.setAttribute('aBob',new THREE.InstancedBufferAttribute(b,1));
   const m=o.material;if(done.has(m))return;done.add(m);WATER.rideOn(m,LAKE_WATER,{weight:'aBob'});});}
+// natural ripples (core/water/ext/56, 2026-10-27, as station 1): the lake's and the marsh pools' normals broken up, the swell's stripes
+// in patches and a drifting chop over them
+WATER.breakupAll();
