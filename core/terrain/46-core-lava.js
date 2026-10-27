@@ -11,7 +11,7 @@
 //              stable at any dt) and a cell never sends more than it holds
 //   2. gather  each cell takes what its neighbours sent, its heat mixed by volume (two passes over buffers: no order)
 //   3. sources vents add Q(t) dt at their temperature; ponds hold their cells at a level (a lake that spills over its lip)
-//   4. cooling radiation from the hot fraction of the top, T' = T / cbrt(1 + 3 eps f sigma T^3 dt / (rho c h)) (MAGFLOW's
+//   4. cooling radiation from the hot fraction of the top, T' = T / (1 + 3 eps f sigma T^3 dt / (rho c h))^(1/3) (MAGFLOW's
 //              closed form), then conduction into the ground (implicit); at the solidus the column freezes: its h joins
 //              the ground (z, dep) and stops being lava
 // The face weights (2/3 a face, sqrt2/6 a corner) make a uniform sheet's flux per unit width Jeffreys' in any direction to
@@ -92,7 +92,7 @@ function create(o){
  const grow=k=>{const i=k%nx,j=(k-i)/nx;if(i<bi0)bi0=i;if(i>bi1)bi1=i;if(j<bj0)bj0=j;if(j>bj1)bj1=j;};
  const cellOf=(x,zz)=>{let i=Math.round((x-x0)/step),j=Math.round((zz-z0)/step);if(i<0||j<0||i>nx-1||j>nz-1)return -1;return j*nx+i;};
  const RH={};
- const sim={x0,z0,cs:step,nx,nz,N,stride:S,rheo:R,z,h,T,dep,vx,vz,frozeAt,rough,t:0,steps:0,dtNext:dtMax,molten:0,vents,ponds,
+ const sim={x0,z0,cs:step,nx,nz,N,stride:S,rheo:R,hmin,edge,pondOf,z,h,T,dep,vx,vz,frozeAt,rough,t:0,steps:0,dtNext:dtMax,molten:0,vents,ponds,
   heat:k=>{const v=(T[k]-R.Tsol)/(R.Tvent-R.Tsol);return h[k]>0?(v<0?0:v>1?1:v):0;},
   vent(v){const r=v.r||0,ks=[];
    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const dx=x0+i*step-v.x,dz=z0+j*step-v.z;if(dx*dx+dz*dz<=r*r)ks.push(j*nx+i);}
@@ -142,7 +142,7 @@ function create(o){
    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const c=j*nx+i;
     if(pondOf[c]>=0){if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;continue;}
     const hc=h[c];if(!(hc>0)){vx[c]=vz[c]=0;continue;}
-    let Tc=T[c];Tc=Tc/Math.cbrt(1+ra*Tc*Tc*Tc/hc);Tc=(Tc+ca/hc*R.Tground)/(1+ca/hc);T[c]=Tc;
+    let Tc=T[c];Tc=Tc/Math.pow(1+ra*Tc*Tc*Tc/hc,1/3);Tc=(Tc+ca/hc*R.Tground)/(1+ca/hc);T[c]=Tc;
     if(Tc<=R.Tsol){z[c]+=hc;dep[c]+=hc;h[c]=0;vx[c]=vz[c]=0;frozeAt[c]=t+dt;continue;}
     if(hc>hmin)mol++;if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;}
    for(const V of vents)for(const k of V.cells){const i=k%nx,j=(k-i)/nx;if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;}
@@ -198,6 +198,6 @@ function bind(rec,sim){if(!rec||rec.id==null)throw new Error('KLAVA.bind: a reco
  BOUND[rec.id]=sim;return sim;}
 
 const KLAVA={version:1,RHEO,rheo,flux,create,bind,flowState,SIGMA,G:G0,DI,DJ,WEIGHTS:{face:WO,corner:WD},CAPS:{face:KO,corner:KD}};
-root.KLAVA=KLAVA;
+root.KLAVA=Object.assign(root.KLAVA||{},KLAVA);   /* the three.js halves (host/46-core-lava-gpu.js, -draw.js) merge into the same global, whichever loads first */
 if(typeof module!=='undefined'&&module.exports)module.exports=KLAVA;
 })(typeof window!=='undefined'?window:globalThis);

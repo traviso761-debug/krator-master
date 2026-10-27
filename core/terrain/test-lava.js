@@ -102,9 +102,9 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
  ok('export: krator-lava with h, T, dep as Float32 base64',e.format==='krator-lava'&&h.length===s.N&&Math.abs(h[40*81+40]-s.h[40*81+40])<1e-4,false);}
 
 // ---- the golden file: a small run klava.gd repeats (core/terrain/klava_test.gd)
-{const {s}=mk(7);s.run(2*3600);const m=s.mass(),pick=[0,40*81+40,40*81+44,44*81+40,36*81+36,40*81+52];
+{const {F,s}=mk(7);s.run(2*3600);const m=s.mass(),pick=[0,40*81+40,40*81+44,44*81+40,36*81+36,40*81+52];
  const G={format:'krator-lava-golden',version:1,case:'cone 81x81 step 25, slope .12 from (1000,1000) at 3000 m; rough .4 seed 7; vent r 30 Q 300(1-t/4h); run 2 h, dtMax 30',
-  steps:s.steps,t:s.t,mass:{erupted:m.erupted,molten:m.molten,frozen:m.frozen,lost:m.lost},
+  heights:KFIELD.b64(F.heights),nx:F.nx,nz:F.nz,x0:F.x0,z0:F.z0,step:F.step,steps:s.steps,t:s.t,mass:{erupted:m.erupted,molten:m.molten,frozen:m.frozen,lost:m.lost},
   cells:pick.map(k=>({k,h:s.h[k],T:s.T[k],dep:s.dep[k]})),sumH:s.h.reduce((a,b)=>a+b,0)};
  const gp=path.join(__dirname,'golden-lava.json');
  if(process.argv.includes('--write')){fs.writeFileSync(gp,JSON.stringify(G,null,1)+'\n',{encoding:'utf8'});console.log('wrote '+gp);}
