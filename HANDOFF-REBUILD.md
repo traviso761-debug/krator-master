@@ -296,6 +296,37 @@ kits"). The owner settled two points: **Korona's plume is active** (geyser field
 `corona` station; `korona/NOTES.md`), and the cone on **Xanadu's south-eastern wall** holds an ice field (`ice`). Each
 station is built at its kit's turn in the rebuild, with its `BACKPORT.md` row.
 
+### Every build in the rebuild: the foliage guards (the owner, 2026-10-27)
+
+Cut-out cards drawn wrong, foliage floating and branches without leaves kept coming back build after build, each fixed
+locally and repeated in the next. Three guards now catch them in every page, and every verify that runs `hostChecks` runs
+them (`core/host/95-host-probe.js` appends them; `core/biome/test-guards.js`):
+1. **The card guard** (`20-core-kit.js`, `BIO.def`): the core refuses, through the error panel, a sheet of plants drawn whole
+   (no cell, no stems, no cut by `BIO.geo.cells`, `"sheet": "geometry"` or the kit's own uv), a library plant on a frond,
+   ribbon or hang with no `base`, and a crown on the clump with neither `stems` nor `base`. It knows what each image is from
+   the pack (`plants`, `anchor`: `tools/textures/pack.py` writes them now), so a build is checked from its first re-pack.
+2. **The attachment audit** (`BIO.attachAudit`, host check "foliage held by its structure"): every leaf and hanging card more
+   than 2 m above the build's ground (and not reaching down to it) must start within a quarter of its size (a centred tripod:
+   six tenths) plus half a metre of bark, a rod, rock, a wall or water. Over 1% floating fails, naming the items and the
+   worst places. Negative controls: every card lifted 6 m must fail.
+3. **One LOD key per tree** (host check "a tree's cards switch with their structure"): a held card must share its
+   structure's chunk and never reach further than it. And the core now gives every chunk mesh the height range of all the
+   meshes in its chunk (`_lodShareBox`; `BIO.LOD.ownBox` for the old per-mesh box), so a tree's bark and leaves switch at one
+   distance and are culled together.
+
+**Calibration** (necanyons, rebuilt with the guards on 2026-10-27, not committed): the card guard found the two whole bloom
+sheets (`bloom`, `wort`); the audit found **2,863 of 8,448 cards floating (34%)**, among them 1,496 of 1,585 flametip sprigs.
+Its crowns were given stems at its turn, but `crown()` still puts each clump at a point in the crown's volume, not at a twig
+tip, so the stems start in the air (one sprig 8 m above its tree, in a probe view). The LOD check passes (2 of 5,585).
+**Expect most biomes to fail the audit at first**: it measures what the owner has been seeing.
+
+**At each build's turn, when a guard fails:** fix the placement, not the threshold: put each clump, sprig, frond and flower at
+a recorded branch point or twig tip (`crownOn`, `BIO.leafOn`, a leader under any crown top), give the card slots their cell,
+base or stems (`check_cells.py`), and keep leaves on the same LOD key and range as their boughs (set `BIO.owner` to the tree's
+foot for every part of a tree). An item that floats by design (rafts on water, seed fluff) is defined with `{free: true}`. A
+build that cannot fix it all in its turn sets `KHOST.take({guards: {maxShare: <its share now>}})` with a `KNOWN_ISSUES.md`
+entry, so the share can only fall. The practices behind this are in the painting-to-3d-world skill, `foliage-kit.md` §15.
+
 ### Still to write (core) before or during step 1
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`

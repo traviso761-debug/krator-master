@@ -184,6 +184,17 @@ def process(fam, cfg, size):
     for k in ('stems', 'rise'):   # a crown's sprigs held by their stems (core/biome BIO.geo.stemClump)
         if cfg.get(k) is not None:
             entry[k] = cfg[k]
+    if card:   # what the image is (core/biome's card guard reads it): how many plants, where cards.py anchored a lone one
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import check_cells
+        ps = check_cells.plants(cfg['lib'])
+        if ps is not None:
+            entry['plants'] = len(ps)
+        anchor = check_cells.meta_anchor(cfg['lib'])
+        if anchor:
+            entry['anchor'] = anchor
+        if cfg.get('sheet'):
+            entry['sheet'] = cfg['sheet']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name

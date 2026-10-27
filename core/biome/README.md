@@ -126,6 +126,25 @@ sprig's oriented box clipped to its cell (2 to 6 triangles a card, against 2). T
 into cells by `BIO.geo.cells` takes stems too. `check_cells.py` measures the stems (the thin, woody end far from the
 sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.json` holds the hand ones.
 
+## The foliage guards (`20-core-kit.js`, `core/host/95-host-probe.js`; on by default, 2026-10-27)
+
+- **The card guard.** `BIO.def` (and `BIO.libSwap`, for items defined before it) reports through `BIO.err` a library card it
+  cannot draw right: a sheet drawn whole (no cell, stems, `BIO.geo.cells`, `"sheet": "geometry"` or a uv cut by the kit's own
+  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`.
+  `BIO.cardFaults` lists them. It reads `plants` and `anchor` from the pack entry (`tools/textures/pack.py`): a pack written
+  before them is never refused.
+- **One box a chunk.** At bake every chunk mesh takes the height range (so the distance and the cull sphere) of every mesh
+  sharing its square and minRange: a tree's bark, rods and cards switch at one distance. `BIO.LOD.ownBox = true`: as before.
+- **The attachment audit.** `BIO.attachAudit({ground})` reads the baked scene: each leaf or hang card above the ground
+  (sampled, 20,000 at most) against the nearest structure (instanced non-card items along their long axes; every other mesh's
+  triangle edges, on KSPACE near the samples): floating, in another chunk, or reaching past its structure's range. An item
+  defined with `{free: true}` is skipped.
+- **The checks.** `BIO.guardChecks(o)` and `BIO.guardNegatives(o)` (each with controls that must fail: a made-up fern with no
+  base, every card lifted 6 m, every card reaching four times its range) are appended by the host probe to every build's
+  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, pad, max}})` turns them off or
+  tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
+  Test: `test-guards.js`.
+
 ## Fungoid parts (`33-core-fungoid.js`, `BIO.fung`; opt-in)
 
 One copy of the fleshy-body parts the fungoid lineage is drawn with (`biomes/outlands/PLAN.md` section 12, C2), in place of the
