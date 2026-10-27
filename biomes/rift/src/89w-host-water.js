@@ -28,7 +28,7 @@ const LAKE_TINT={box:LAKE_BOX,cell:12,at:(x,z)=>{const d=Math.max(0,-terrainH(x,
  const a=pale+fresh;if(a<.004)return null;TC.copy(PALE_L).lerp(FRESH_L,fresh/a);return{c:hexL(TC),a:Math.min(1,a)};}};
 const LAKE_WATER=WATER.open({name:'The algal lake',level:0,swell:[[.05,22,35,0,.03],[.03,13,-50,1.3,.03],[.012,6,80,2.2,.02]],field:0,
  bounds:LAKE_BOX,bed:terrainH,bedCell:LAKE_MC,mask:LAKE_MASK,tint:LAKE_TINT});
-const LAKE_DRAW=WATER.draw(LAKE_WATER,{surf:false,ramp:[.5,8.5],roughness:.2,metalness:.05,envMapIntensity:.85,renderOrder:1,
+const LAKE_DRAW=WATER.draw(LAKE_WATER,{surf:false,ramp:[.5,8.5],roughness:.2,metalness:.05,envMapIntensity:.85,renderOrder:1,rain:true,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.4).lerp(WATER_PALE,.2)),deep:lin(WATER_DEEP)});
 LAKE_DRAW.mesh.userData.inspectLabel='The algal lake';
 // surf: false (core/water, 2026-10-21): WATER.draw laps a surf of white bands wherever the bed is under 1.4 m, right for a sea's beach and wrong for a still lake's
@@ -53,7 +53,9 @@ const STREAMS=[['The east stream',xsE],['The west stream',xsW]].map(([n,f])=>WAT
 const SPRINGS=[['The east spring',xsE],['The west spring',xsW]].map(([n,xs],k)=>{const zh=HEAD(xs),zl=Math.floor((zh+TERR.R*1.1)/GCELL)*GCELL-TERR.R*1.1,x=xs(zl),
   dx=(xs(zl+2)-xs(zl-2))/4,L=Math.hypot(dx,1),d=[dx/L,1/L],ly=terrainH(x,zl)+.2,fy=STREAMS[k].pts[0].y;
  return WATER.fall({name:n,lip:[[x-d[1]*4,zl+d[0]*4,ly],[x+d[1]*4,zl-d[0]*4,ly]],dir:d,speed:3.5,drop:ly-fy});});
-const SPRING_DRAW=SPRINGS.map(F=>{const D=WATER.drawFall(F,{color:lin(new THREE.Color(0xc8d8d0)),opacity:.9,rows:30,cols:4,spray:false,envMapIntensity:.25,renderOrder:3});
+/* W1/W2 (2026-10-27, the final rebuild): the curtains' sides tucked 1.2 m into the rock (margin), solid at the lip (lipK .85: from above
+   at 45% it read as bare ground), spray scaled to the drop; rain rings on every water (rain: true, on the lake and streams too) */
+const SPRING_DRAW=SPRINGS.map(F=>{const D=WATER.drawFall(F,{color:lin(new THREE.Color(0xc8d8d0)),opacity:.9,rows:30,cols:4,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=F.name;if(D.plunge){D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='A plunge pool';}return D;});
-const STREAM_DRAW=STREAMS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(STREAM_PALE,.5)),deep:lin(RIVER_COL.clone().lerp(STREAM_PALE,.3)),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:12,across:4,margin:3,depthBias:2});
+const STREAM_DRAW=STREAMS.map(S=>{const D=WATER.drawFlow(S,{shallow:lin(RIVER_COL.clone().lerp(STREAM_PALE,.5)),deep:lin(RIVER_COL.clone().lerp(STREAM_PALE,.3)),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:12,across:4,margin:3,depthBias:2,rain:true});
  D.mesh.userData.inspectLabel=S.name;return D;});

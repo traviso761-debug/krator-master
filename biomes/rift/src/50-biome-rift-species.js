@@ -186,6 +186,17 @@ RIFT.SPECIES=[
  /*33*/{key:'silverscrub',name:'Silver scrub',H:[.8,2],rb:[.08,.15],crownR:[.8,1.8],barkK:1,bark:[0x6a6a5a],
   leaf:[0xa8b8a0,0x98a890,0xb8c8b0,0x8a9a88],irid:null,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ // THE FERAL THREE (the owner, 2026-10-27: "flora inspiration can also pull from xanadu but it must become an angrier, more feral version"):
+ // Xanadu's lotus trumpet, serpent stalk and prickly pear, gone wild in the trough. Placed by passes after every other, so nothing above moves.
+ /*34*/{key:'mawtrumpet',name:'Maw trumpet',H:[16,30],rb:[1.3,2.1],crownR:[8,13],barkK:4,bark:[0x4a2228,0x3e1c22,0x582a2e],
+  leaf:[0x8a1e2c,0x9a2a34,0x7a1828,0xa83440],irid:null,ribs:14,
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ /*35*/{key:'thornwhip',name:'Thornwhip',H:[5,11],rb:[.10,.18],crownR:[1.4,2.6],barkK:3,bark:[0x1e1a1e,0x261e24,0x2e2228],
+  leaf:[0xb01a24,0xc8282e,0x901428,0xd83a2a],irid:null,
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ /*36*/{key:'bladepear',name:'Blade pear',H:[2,4.5],rb:[.2,.35],crownR:[1.4,2.8],barkK:4,bark:[0x5a7040,0x4e6438,0x667a48],
+  leaf:[0x6a8040,0x7a8c48,0x5a7038],irid:null,
+  tags:{climate:'tropic',aridity:'semiarid',abyssal:true,riparian:'no'}},
 ];
 
 // ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
@@ -228,6 +239,9 @@ RIFT.HARVEST={
  fantree:HV('none',[],false,''),
  stonepine:HV('timber, fuel',['pine nuts'],false,'Nuts from the cones (a catalog piece, not drawn on the stage).','generic_fruit_parasol_pine'),
  silverscrub:HV('fuel',[],true,'A bitter aromatic tea.'),
+ mawtrumpet:HV('none',[],false,'The cups hold rain and drown what climbs in to drink; the rim teeth and the claws hook back, so nothing climbs out.'),
+ thornwhip:HV('none',[],true,'The thorns numb where they sting; healers milk the red heads for a salve, gloved.'),
+ bladepear:HV('none',['pads (spines burnt off)'],false,'The pads are eaten once the hooked spines are singed away; the spines come out of skin only one way.'),
 };
 RIFT.SPECIES.forEach(S=>{S.tags.harvest=RIFT.HARVEST[S.key]||HV('none');});
 // the small plants that bear catalog fruit (the floor places them; `items` names the instanced items that draw them)
@@ -607,14 +621,17 @@ BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('far',RIFT.farMat(),{label:'Far trees (impostors)'});   // iridescent: see RIFT.farMat
 
 // ---------------------------------------------------------------- instanced items
+/* the crown sheets (3x3 sprigs: lobeleaf, spray, needle, leaflet) drawn a sprig a quad, three cells a card at .75 (core BIO.geo.cells; the owner,
+   2026-10-26: whole sheets read as a grid; materials.json marks them "sheet": "geometry"); the procedural page keeps the whole card */
+const SHEET=(g,k)=>RIFT.LIB[k]&&BIO.geo.cells?BIO.geo.cells(g,{n:3,scale:.75}):g;
 BIO.def('frill',RIFT.LIB.frill?G.finquad():BIO.geo.frond(3),M.frill,{attrs:['aN','aC2'],label:'Frill tree fins'});
 BIO.def('pleat',G.fan(),M.pleat,{attrs:['aN','aC2'],label:'Bell palm fans'});
-BIO.def('lobeleaf',BIO.geo.clump(),M.lobeleaf,{attrs:['aN','aC2'],label:'Lobe tree pads'});
-BIO.def('spray',BIO.geo.clump(),M.spray,{attrs:['aN','aC2'],label:'Prism bush sprays'});
+BIO.def('lobeleaf',SHEET(BIO.geo.clump(),'lobeleaf'),M.lobeleaf,{attrs:['aN','aC2'],label:'Lobe tree pads'});
+BIO.def('spray',SHEET(BIO.geo.clump(),'spray'),M.spray,{attrs:['aN','aC2'],label:'Prism bush sprays'});
 BIO.def('rope',BIO.geo.clump(),M.rope,{attrs:['aN','aC2'],label:'Rope foliage (monkey-puzzle, pagoda tree)'});
-BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
+BIO.def('needle',SHEET(BIO.geo.clump(),'needle'),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('dragon',BIO.geo.clump(),M.dragon,{attrs:['aN'],label:'Dragon tree heads'});
-BIO.def('leaflet',BIO.geo.clump(),M.leaflet,{attrs:['aN'],label:'Acacia and baobab foliage'});
+BIO.def('leaflet',SHEET(BIO.geo.clump(),'leaflet'),M.leaflet,{attrs:['aN'],label:'Acacia and baobab foliage'});
 BIO.def('brain',G.brain(),M.brain,{label:'Brain-coral domes'});
 BIO.def('curl',G.curl(),M.curl,{attrs:['aN','aC2'],label:'Curl succulents'});
 BIO.def('irosette',G.rosette(),M.irosette,{attrs:['aN','aC2'],label:'Iridescent rosettes'});
@@ -654,6 +671,14 @@ BIO.def('pad',G.pad(),M.pad,{label:'Scum mats'});
 BIO.def('cone',G.cone(),M.solid,{label:'Buds, cones and spires'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Hanging pods'});
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems'});   // open-ended: a beam's ends are inside a bole or a clump (12 tris, not 28)
+/* the anemone stalk's segments on the core's fungoid stalk (core/biome 33, BIO.fung; HANDOFF-REBUILD.md: the rift's `stalk`): one instance a
+   segment of the sinuous stalk (unit: radius 1 at the foot, .86 at the top, 1 high), bark3's map; ?fung=0 keeps the old bucket tubes */
+RIFT.FUNG=!!BIO.fung&&!(typeof location!=='undefined'&&new URLSearchParams(location.search).get('fung')==='0');
+if(RIFT.FUNG)BIO.def('astalk',BIO.fung.stalk({r0:1,r1:.86,seg:5,rings:1}),BIO.solidMat(RIFT.BARKTEX[3]),{label:'Anemone stalks'});
+/* the feral species' parts: a hooked claw (a stalk tapering to a point and bowed: the thorns, rim teeth and spines, BIO.fung.stalk; a cone
+   without it) and the blade pear's pad (a flattened ball in the cactus skin) */
+BIO.def('claw',BIO.fung?BIO.fung.stalk({r0:.5,r1:.03,bend:.45,seg:4,rings:3}):new T3.ConeGeometry(.5,1,4,1).translate(0,.5,0),BIO.solidMat(null),{label:'Hooked thorns'});
+BIO.def('bpad',new T3.SphereGeometry(1,9,6),BIO.solidMat(RIFT.BARKTEX[4]),{label:'Blade pear pads'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[2]),{label:'Small trunks (pale)'});
 BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});

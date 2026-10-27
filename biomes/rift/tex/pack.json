@@ -208,12 +208,6 @@
   "bigfrond": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "bigfrond.albedo.webp"
    },
@@ -240,6 +234,12 @@
   "bloom": {
    "breakup": null,
    "card": true,
+   "cell": [
+    0.0,
+    0.0,
+    0.5,
+    0.5
+   ],
    "files": {
     "map": "bloom.albedo.webp"
    },
@@ -324,12 +324,6 @@
   "clubmoss": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "clubmoss.albedo.webp"
    },
@@ -382,12 +376,6 @@
   "cycfrond": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "cycfrond.albedo.webp"
    },
@@ -510,12 +498,6 @@
   "frond": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "frond.albedo.webp"
    },
@@ -715,12 +697,6 @@
   "hang": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "hang.albedo.webp"
    },
@@ -747,12 +723,6 @@
   "hang1": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "hang1.albedo.webp"
    },
@@ -832,12 +802,6 @@
   "moss": {
    "breakup": null,
    "card": true,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "files": {
     "map": "moss.albedo.webp"
    },

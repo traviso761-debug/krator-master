@@ -104,7 +104,8 @@
     "keep": 0.0,
     "mean": 0.669
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "needle": {
    "lib": "card.pine",
@@ -116,7 +117,8 @@
     "keep": 0.0,
     "mean": 0.636
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "dragon": {
    "lib": "card.sword",
@@ -146,7 +148,8 @@
     "keep": 0.0,
     "mean": 0.676
    },
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "bigfrond": {
    "lib": "card.treefern",
@@ -158,13 +161,7 @@
     "keep": 0.0,
     "mean": 0.649
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "cycfrond": {
    "lib": "card.fern",
@@ -176,13 +173,7 @@
     "keep": 0.0,
     "mean": 0.669
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "frond": {
    "lib": "card.fern",
@@ -194,13 +185,7 @@
     "keep": 0.0,
     "mean": 0.64
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "fan": {
    "lib": "card.palm",
@@ -302,13 +287,7 @@
     "keep": 0.0,
     "mean": 0.65
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "under": {
    "lib": "card.jungle.clump.0",
@@ -350,13 +329,7 @@
     "keep": 0.0,
     "mean": 0.694
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "moss": {
    "lib": "card.moss",
@@ -368,13 +341,7 @@
     "keep": 0.0,
     "mean": 0.647
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "broad": {
    "lib": "card.broadleaf",
@@ -400,7 +367,13 @@
    },
    "metal": 0,
    "normalScale": 1.0,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.0,
+    0.0,
+    0.5,
+    0.5
+   ]
   },
   "groundDetail": {
    "lib": "ground.gravelly_sand",
@@ -533,12 +506,6 @@
     "mean": 0.694
    },
    "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ],
    "own": true
   },
   "fungus": {
@@ -567,7 +534,8 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "sheet": "geometry"
   },
   "croton": {
    "lib": "card.leaf.redvein",
