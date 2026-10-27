@@ -48,6 +48,7 @@ EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terr
 STATION_EXPORT = {
     'rift-jungle.html': ([-1250, -1600, -950, -1300], EXPORT_PROFILE),   # the river's mouth on the sea: the jungle's trees, the sea and the river
     'rift-savannah.html': ([-300, 900, 0, 1200], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the densest 300 m cell of big heroes (44 trees, 2026-10-27); no standing water (89w)
+    'rift-plateau.html': ([1260, -1320, 1560, -1020], EXPORT_PROFILE),   # the north-east stream's valley in the east island's forest
     'rift-highland.html': ([-900, -480, -600, -180], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the face in the cloud core ('In the cloud'); no water until the ravines' streams (KNOWN_ISSUES)
 }
 
