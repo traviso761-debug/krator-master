@@ -676,3 +676,21 @@ Two options for falls down high cliffs, both opt-in (without them the shader tex
 Placing a fall (what the Rift's faults came from, not core's): put the lip where the ground falls away (the first metre of drop in a
 metre), at the river's surface there, so there is no step between the river and its curtain; land it at the toe (`foot`), and on a face
 that is not sheer use `face: terrainH` (W3) so the curtain follows it; carve the pool at the toe, not further out.
+
+## Channels into other water, and natural ripples (2026-10-27, eastabyss; `test-flow-keep.js`, `test-breakup.js`)
+
+- `drawFlow({keep: (x, z) => 0..1})` (51, opt-in): the ribbon's alpha times the host's function, sampled at each ribbon vertex (an opaque
+  ribbon discards under half). A channel fades out where other water already lies, so it never rides over a lake or a pool: eastabyss passes
+  `smooth(-30, 15, lakeIn)` and densifies its lines to 6 m (`WATER.flow({densify: 6})`) so the fade resolves. The record notes `keep: true`;
+  a port samples the host's own function. Two things the host must do with it: keep the open water's mask out of the channels' beds (the
+  marsh filled every carved bed under the ribbons), and make each ribbon as wide as its carve (a 30 m ribbon over a carve under the level
+  out to 22 m left the lake's mask flooding the flanks up to its straight cell edge).
+- `ext/56-core-water-breakup.js` (opt-in by path): `WATER.breakupOn(material, B)` / `WATER.breakupAll(B)` give open and still water a
+  natural surface. A lake with only its trochoids, or a pool with still water's three cosines, glints in a regular grid; the breakup
+  scales the surface's own slope by a slow noise envelope (`env`, `envSize`: the stripes come and go in patches) and adds two drifting
+  octaves of value-noise chop (`amp`, `size`, `drift`, two cross-faded phases with whole cycles per wave period: no seam). Shading only:
+  heights and twins unchanged; twin `WATER.breakup(n, x, z, t, B)`. The chunk goes in just before `main` (the open water's clock comes in
+  after `<common>`; ahead of it the compile fails, silently). Adopting: list `core/water/ext/56-core-water-breakup.js` in build.py and call
+  `WATER.breakupAll()` after the page's water is drawn (eastabyss's 89w). Not in Godot yet (a `.gdshaderinc` of the same text).
+- A delta's fork is a confluence too: `WATER.confluence({flows: [main, side, side], at, r: 100, cell: 2, ground: terrainH})` over the
+  stretch where the side channels still overlap the main ribbon (eastabyss's FORKS).
