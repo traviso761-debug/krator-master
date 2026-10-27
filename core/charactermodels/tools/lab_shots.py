@@ -12,6 +12,7 @@
 #   at      a joint's name to look at (the hands in a close-up) instead of the figure's middle
 #   wide    the share of the stage's width kept per body (0.5 by default)
 #   pre     JavaScript run before stepping, with L the lab (window._lab)
+#   mods    the Body mods menu's value for every figure ('' as cast; 'mod_tail,mod_head_lizard' the Lizardman test)
 # The page's clock is paused and each figure stepped here: its clip set 1 s before t and run to it at 30 Hz (by its own
 # cadence), so the cloth lands the same every run.
 import asyncio, base64, functools, http.server, io, json, os, socketserver, sys, threading
@@ -19,7 +20,8 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 import verify
 
-STEP = '''async (s)=>{ var L = window._lab, c = L.cam;
+STEP = '''async (s)=>{ var L = window._lab, c = L.cam, mp = document.getElementById('mods-pick');
+  if(s.mods != null && mp.value !== s.mods){ mp.value = s.mods; mp.dispatchEvent(new Event('change')); await new Promise(function(r){ setTimeout(r, 2500); }); }
   var w = document.querySelector('[data-who="' + (s.who || 'all') + '"]'); if(w.getAttribute('aria-pressed') !== 'true') w.click();
   L.figs.forEach(function(f, i){ f.group.visible = (s.who || 'all') === 'g' ? i >= 6 : i < 6; f.group.position.z = 0; });
   await L.play(s.clip);

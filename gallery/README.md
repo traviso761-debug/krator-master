@@ -5,6 +5,14 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 It is shared as anyone-with-the-link.
 
 **Deprecated entry:** the Little Demo (`openworld/little-demo`) is deprecated (October 2026; its `DEPRECATED.md`). `build_gallery.py` labels it so; the published gallery is not republished for that, so the live page keeps the old label until the next publish.
+## The Krator System in the top list (2026-10-26)
+
+The owner (2026-10-26): the Krator System, the giant, its seven moons, Krator and the broken station with their astronomy and a 3D
+orrery, is in every part's top list beside the scale model and the tongues (a reference page, not a world: no card). Its own
+artifact, https://claude.ai/artifact/5zNpcvRQR1h8Ax7yaTeB49 (private until shared from its Share menu); its source is
+`gallery/krator-system/` (`python3 build.py` writes `dist/krator-system.html`). `index.template.html` has the button; every
+part's live index was edited in place the same day, no page changed (the biome pages wait for the biome rebuild's final pass).
+
 ## Cards for builds in their own artifacts (2026-10-20)
 
 The owner (2026-10-20): a build published as its own artifact gets a card in the parts like any other, under its letter in

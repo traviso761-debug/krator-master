@@ -91,6 +91,8 @@
     // the cast's own mods, or what the Mods menu puts on everyone (a top made for two arms comes off a four-armed body)
     var pick = $('mods-pick') && $('mods-pick').value;
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
+    // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
+    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; }
     r.ancestry = null;
     return r;
   }

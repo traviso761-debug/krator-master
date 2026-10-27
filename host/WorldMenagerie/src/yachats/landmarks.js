@@ -6,9 +6,10 @@
 //   visitorcenter the Cape Perpetua Visitor Center: timber and glass under a long low roof, its windows on the sea
 //   logchurch     the Little Log Church (1927): log walls, a steep shingled roof, a small belfry over the door
 //   cleftlight    the Cleft of the Rock Light (1976): a square white tower with a lantern, a keeper's house beside
-//   blowhole      Thor's Well, the Spouting Horn and Devil's Churn: the black basalt shelf round each, its hole or
-//                 slot dark in it (the water in them is src/yachats/coast.js's)
-//   bridge        the Yachats River bridge on the 101: concrete piers in the river and the parapets of the deck
+//   blowhole      Thor's Well, the Spouting Horn and Devil's Churn: the Forest Service's sign above each (the rock
+//                 and the water are src/yachats/rocks.js's, from the lidar)
+//   bridge        the 101's bridges (the Yachats River, Cook's Chasm, Cummins Creek) on OpenStreetMap's own bridge
+//                 ways: girders, piers and abutments under the engine's deck, and the railing of each one's day
 //
 // Map data (c) OpenStreetMap contributors, ODbL. The geometry here is this project's own.
 import {landkit} from '../core/landkit.js';
@@ -68,23 +69,57 @@ export function landmarks(api){
     return M.finish(L,x,g0,z,turn(L.face==null?270:L.face),[lamp]);},
 
   // ================================================================ Thor's Well, the Spouting Horn, Devil's Churn
-  // The shelf is dark basalt laid as a few slabs round the hole, its top just above the tide; the hole itself is a
-  // black ring (the well), a dark crack (the horn) or a long slot running in from the sea (the churn).
-  blowhole(L,x,z){const g0=Math.max(0.4,gh(x,z)),M=Model(),k=L.kind||'well';
-    if(k==='churn'){for(const s of [-1,1])for(let u=-30;u<=18;u+=6)M.box(u%12?'basalt':'basaltDark',s*(4+Math.abs(u)*0.03),-3,u,4,3.6+((u+30)/48)*2,6.2);
-      M.box('basaltWet',0,-6,-6,6,1,48);
-      return M.finish(L,x,Math.max(0.6,g0),z,turn(L.face==null?280:L.face));}
-    for(let i=0;i<9;i++){const a=i/9*6.28,r=k==='well'?6:5;M.box(i%3?'basalt':'basaltDark',Math.cos(a)*r,-2,Math.sin(a)*r,5,2.4+(i%2)*0.4,4,-a);}
-    if(k==='well')M.put('basaltWet',new THREE.CylinderGeometry(2.8,2.2,2.6,16,1,true),0,-2.2,0);
-    else M.box('basaltWet',0,-2,0,1.2,2.6,6);
-    return M.finish(L,x,g0,z,turn(L.face==null?280:L.face));},
+  // The rock and the water are rocks.js's, from the lidar; here only the Forest Service's sign on the trail above
+  // each (a brown routed board on two posts), so the landmark has something to click.
+  blowhole(L,x,z){const M=Model(),k=L.kind||'well',[sx,sz]=L.sign?P(L.sign):[x+14,z-6],g0=gh(sx,sz);
+    for(const s of [-1,1])M.box('timber',s*0.55,0,0,0.14,1.5,0.14);M.box('cedar',0,0.9,0,1.5,0.62,0.08);M.box('white',0,1.12,0.05,1.1,0.05,0.01);
+    return M.finish(L,sx,g0,sz,turn(L.face==null?280:L.face));},
 
-  // ================================================================ the Yachats River bridge
-  bridge(L,x,z){const M=Model(),N=L.span||76,a=[x,z];
-    const [ex,ez]=P([44.30783,-124.09971]),[wx,wz]=P([44.30737,-124.10031]),deck=Math.max(gh(ex,ez),gh(wx,wz),6)+0.4;
-    for(const u of [-N/4,0,N/4])M.box('concreteDark',u,-6,0,1.6,deck+5.2,7);   // the piers, down into the river
-    for(const s of [-1,1]){M.box('concrete',0,deck,s*5.2,N,1.1,0.4);for(let u=-N/2+2;u<N/2;u+=2.4)M.box('concreteDark',u,deck+0.2,s*5.2+s*0.05,1.2,0.6,0.42);}
-    M.box('concreteDark',0,deck-1.4,0,N,1.4,10);
-    return M.finish(L,(ex+wx)/2,0,(ez+wz)/2,Math.atan2(-(ez-wz),ex-wx));},
+  // ================================================================ the highway's bridges
+  // Each sits on OpenStreetMap's own bridge ways (the engine has drawn their deck at its heights, ROADS[].ys): under
+  // the deck the girders, the piers down to the bed and an abutment at each end; along its edges the railing of its
+  // day. L.style: 'odot' (the Yachats River, 1977: a concrete parapet with a steel rail over it), 'mccullough'
+  // (Cummins Creek, 1931: Conde McCullough's balustrade of round-arched openings, a pylon at each corner), 'modern'
+  // (Cook's Chasm, 2003: a plain sloped concrete barrier). L.spans: how many spans (the piers between).
+  bridge(L,x,z){const M=Model(),ROADS=api.ROADS||[],style=L.style||'odot',spans=L.spans||1;
+    // the bridge ways near the landmark, joined end to end into one line with its deck heights
+    const near=ROADS.filter(r=>r.deck>0&&r.c!=='trail'&&r.pts.some(q=>Math.hypot(q[0]-x,q[1]-z)<(L.reach||70)));
+    if(!near.length)return M.finish(L,x,gh(x,z),z,0);
+    let line=near[0].pts.map((q,i)=>[q[0],q[1],near[0].ys[i]]),rest=near.slice(1);
+    for(let guard=0;rest.length&&guard<8;guard++)for(let k=0;k<rest.length;k++){const r=rest[k],pts=r.pts.map((q,i)=>[q[0],q[1],r.ys[i]]),A=line[0],B=line[line.length-1],a=pts[0],b=pts[pts.length-1],d=(u,v)=>Math.hypot(u[0]-v[0],u[1]-v[1]);
+      if(d(B,a)<2)line=line.concat(pts.slice(1));else if(d(B,b)<2)line=line.concat(pts.reverse().slice(1));else if(d(A,b)<2)line=pts.concat(line.slice(1));else if(d(A,a)<2)line=pts.reverse().concat(line.slice(1));else continue;
+      rest.splice(k,1);break;}
+    const w=(near[0].w||14)+1,cum=[0];for(let i=1;i<line.length;i++)cum.push(cum[i-1]+Math.hypot(line[i][0]-line[i-1][0],line[i][1]-line[i-1][1]));const LEN=cum[cum.length-1];
+    const at=s=>{let i=1;while(i<cum.length-1&&cum[i]<s)i++;const t=(s-cum[i-1])/Math.max(1e-6,cum[i]-cum[i-1]),a=line[i-1],b=line[i];return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,Math.atan2(b[1]-a[1],b[0]-a[0])];};
+    const x0=line[0][0],z0=line[0][1],y0=0,loc=(px,pz)=>[px-x0,pz-z0];   // local frame: the first point, unrotated
+    const put=(k,geo,px,py,pz,ang)=>{const [lx,lz]=loc(px,pz);M.put(k,geo.rotateY(-ang),lx,py,lz);};
+    const bed=(px,pz)=>Math.min(gh(px,pz),api.inWater&&api.inWater(px,pz)?-1.5:gh(px,pz));
+    // the girders and the soffit, in 2 m pieces so they follow the deck's camber
+    for(let s=0;s<LEN;s+=2){const [px,pz,py,ang]=at(s+1),dk=py-1.6;
+      put('concreteDark',new THREE.BoxGeometry(2.05,0.35,w-1).translate(0,-0.175,0),px,dk,pz,ang);
+      for(const o of [-w*0.33,0,w*0.33])put('concreteDark',new THREE.BoxGeometry(2.05,style==='mccullough'?1.1:1.4,0.55).translate(0,-0.35-(style==='mccullough'?0.55:0.7),o),px,dk,pz,ang);}
+    // the piers (wall piers with rounded ends, as the river's current wants) and the abutments
+    for(let k=1;k<spans;k++){const [px,pz,py,ang]=at(LEN*k/spans),top=py-1.6-(style==='mccullough'?1.45:1.75),foot=bed(px,pz)-1;
+      put('concrete',new THREE.BoxGeometry(1.3,top-foot,w*0.7).translate(0,(top-foot)/2,0),px,foot,pz,ang);
+      for(const o of [-1,1])put('concrete',new THREE.CylinderGeometry(0.65,0.65,top-foot,10).translate(0,(top-foot)/2,o*w*0.35),px,foot,pz,ang);
+      put('concrete',new THREE.BoxGeometry(1.8,0.6,w-0.6).translate(0,-0.3,0),px,top+0.6,pz,ang);}
+    for(const s of [0.6,LEN-0.6]){const [px,pz,py,ang]=at(s),foot=Math.min(py-6,bed(px,pz)-1);put('concrete',new THREE.BoxGeometry(1.6,py-1.6-foot,w+1.2).translate(0,(py-1.6-foot)/2,0),px,foot,pz,ang);}
+    // the railings, both sides
+    for(const sd of [-1,1]){
+      if(style==='mccullough'){// the balustrade: a curb, round-arched openings between slim posts, a moulded cap
+        for(let s=0.4;s<LEN-0.3;s+=0.9){const [px,pz,py,ang]=at(s),ox=-Math.sin(ang)*sd*(w/2-0.15),oz=Math.cos(ang)*sd*(w/2-0.15);
+          put('white',new THREE.BoxGeometry(0.9,0.25,0.3).translate(0,0.125,0),px+ox,py,pz+oz,ang);
+          put('white',new THREE.BoxGeometry(0.16,0.75,0.24).translate(-0.37,0.62,0),px+ox,py,pz+oz,ang);
+          put('white',new THREE.TorusGeometry(0.36,0.06,4,10,Math.PI).translate(0,0.95,0),px+ox,py,pz+oz,ang);
+          put('white',new THREE.BoxGeometry(0.92,0.14,0.36).translate(0,1.12,0),px+ox,py,pz+oz,ang);}
+        for(const s of [0.3,LEN-0.3]){const [px,pz,py,ang]=at(s),ox=-Math.sin(ang)*sd*(w/2+0.2),oz=Math.cos(ang)*sd*(w/2+0.2);   // the pylons
+          put('white',new THREE.BoxGeometry(1.0,2.6,1.0).translate(0,1.3,0),px+ox,py,pz+oz,ang);put('white',new THREE.BoxGeometry(1.2,0.25,1.2).translate(0,2.7,0),px+ox,py,pz+oz,ang);
+          put('white',new THREE.ConeGeometry(0.5,0.9,4).rotateY(Math.PI/4).translate(0,3.25,0),px+ox,py,pz+oz,ang);}}
+      else for(let s=0;s<LEN;s+=2){const [px,pz,py,ang]=at(s+1),ox=-Math.sin(ang)*sd*(w/2-0.25),oz=Math.cos(ang)*sd*(w/2-0.25);
+        if(style==='modern')put('concrete',new THREE.BoxGeometry(2.02,0.82,0.5).translate(0,0.41,0),px+ox,py,pz+oz,ang);   // the sloped barrier, read as a block
+        else{put('concrete',new THREE.BoxGeometry(2.02,0.7,0.35).translate(0,0.35,0),px+ox,py,pz+oz,ang);                    // the parapet
+          put('rail',new THREE.BoxGeometry(2.02,0.1,0.12).translate(0,1.05,0),px+ox,py,pz+oz,ang);                           // the steel rail over it
+          if(((s/2)|0)%1===0)put('rail',new THREE.BoxGeometry(0.1,0.35,0.1).translate(0,0.87,0),px+ox,py,pz+oz,ang);}}}
+    return M.finish(L,x0,y0,z0,0);},
   };
 }

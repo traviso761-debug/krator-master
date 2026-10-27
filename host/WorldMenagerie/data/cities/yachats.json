@@ -14,7 +14,7 @@
   -124.068
  ],
  "osm": "data/cities/yachats-osm.json",
- "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles.",
+ "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: USGS 3D Elevation Program (lidar).",
  "fetch": {
   "bbox": [
    44.26,
@@ -41,8 +41,53 @@
  },
  "terrain": {
   "zoom": 15,
+  "source": "3dep",
+  "res": 5,
+  "patches": [
+   {
+    "name": "churn",
+    "at": [
+     44.2842,
+     -124.111
+    ],
+    "r": 110,
+    "slot": {
+     "near": [
+      44.2842,
+      -124.1102
+     ],
+     "r": 90
+    }
+   },
+   {
+    "name": "cooks",
+    "at": [
+     44.2781,
+     -124.1131
+    ],
+    "r": 140,
+    "slot": {
+     "near": [
+      44.27748,
+      -124.11282
+     ],
+     "r": 30
+    }
+   }
+  ],
+  "cutWater": {
+   "river": 14,
+   "depth": 0.8,
+   "_": "lidar records the river surface a metre or two over the sea: the river and the ponds are cut under the water level"
+  },
   "step": 10,
   "datum": 0,
+  "coast": {
+   "shore": 0.5,
+   "slope": 0.04,
+   "maxH": 0.6,
+   "_": "the coastline decides what is sea; the USGS survey reads its sea as the surface, so only what it puts at the water is sunk (tools/build-osm-city.py coast_cut)"
+  },
   "_": "the terrace, the river's valley and Cape Perpetua's headland; the open sea is the datum (tools/build-osm-city.py)"
  },
  "seaLevelWater": true,
@@ -73,12 +118,12 @@
  "lakeColour": "#2a5466",
  "lakeSheen": "#6a8a98",
  "defaultHeights": {
-  "_": "the village: one- and two-storey houses with gables, motels and inns of two and three",
-  "yes": 6,
-  "house": 6.5,
-  "detached": 6.5,
-  "semidetached_house": 6.5,
-  "residential": 7,
+  "_": "the village: houses of a storey and a half under steep gables, motels and inns of two and three",
+  "yes": 5.4,
+  "house": 5.6,
+  "detached": 5.6,
+  "semidetached_house": 5.8,
+  "residential": 6.2,
   "apartments": 9,
   "commercial": 6,
   "retail": 5.5,
@@ -86,15 +131,16 @@
   "motel": 7,
   "church": 9,
   "school": 7,
-  "garage": 3.2,
-  "garages": 3.2,
-  "shed": 2.8,
+  "garage": 3.0,
+  "garages": 3.0,
+  "shed": 2.6,
   "roof": 4,
   "civic": 7,
   "public": 7,
   "fire_station": 7,
   "water_tank": 8,
-  "library": 6
+  "library": 6,
+  "carport": 2.6
  },
  "heightSpread": 0.15,
  "facade": {
@@ -104,26 +150,58 @@
  },
  "facadeStyles": [
   {
+   "tex": "shingle",
+   "when": {
+    "types": [
+     "house",
+     "detached",
+     "semidetached_house",
+     "residential",
+     "yes",
+     "hotel",
+     "motel",
+     "apartments",
+     "commercial",
+     "retail"
+    ],
+    "maxH": 14,
+    "share": 0.6
+   },
+   "bay": 3.2,
+   "floor": 3.0,
+   "low": true,
+   "colours": [
+    "#a8a49a",
+    "#9a968c",
+    "#8c8a84",
+    "#b4aea2",
+    "#8a6a4a",
+    "#7a5e44",
+    "#9a7a58",
+    "#a08a6c"
+   ],
+   "_": "cedar shakes: most gone silver in the salt air, some kept brown with oil"
+  },
+  {
    "tex": "clapboard",
    "when": {
     "maxH": 14,
-    "share": 0.9
+    "share": 1
    },
    "bay": 3.4,
-   "floor": 3.1,
+   "floor": 3.0,
    "low": true,
    "colours": [
     "#c8c0ac",
-    "#a8a294",
-    "#8a9290",
-    "#b8b0a0",
+    "#8a9a8c",
     "#6a7a78",
     "#d8d0bc",
     "#9aa4a0",
-    "#7a6a5a",
-    "#c8b898"
+    "#5a6a72",
+    "#b8b0a0",
+    "#7a8a7a"
    ],
-   "_": "cedar shingle gone silver in the salt air, and painted siding in the greys, sage and sand the coast wears"
+   "_": "painted siding in the greys, sage, slate and sand the coast wears"
   }
  ],
  "palette": {
@@ -316,7 +394,7 @@
  "flight": true,
  "dress": {
   "porches": {
-   "share": 0.5,
+   "share": 0.25,
    "types": [
     "house",
     "detached",
@@ -331,7 +409,13 @@
      44.337,
      -124.094
     ]
-   ]
+   ],
+   "pedestal": "#6a5644",
+   "post": "#e8e6df",
+   "trim": "#e8e6df",
+   "deckColour": "#7a6650",
+   "roof": "#4a4c4e",
+   "gable": 0.3
   },
   "awnings": {
    "share": 0.3,
@@ -357,7 +441,7 @@
    ]
   },
   "far": 600,
-  "_": "src/core/dress.js: porches and decks on the houses; awnings on the shops along the highway"
+  "_": "src/core/dress.js: wood decks with a little roof on some of the houses (not Portland's craftsman porches); awnings on the shops along the highway"
  },
  "streetlife": {
   "seed": 1880,
@@ -602,8 +686,31 @@
     44.30763,
     -124.10003
    ],
-   "face": 30,
-   "info": "The Oregon Coast Highway crosses the Yachats River at the head of its little estuary, where the smelt and the salmon come in. Yachats is said to come from the Siletz word for the dark water at the foot of the mountain."
+   "info": "The Oregon Coast Highway crosses the Yachats River at the head of its little estuary on a three-span concrete girder bridge of 1977, 223 feet long, where the smelt and the salmon come in. Yachats is said to come from the Siletz for the dark water at the foot of the mountain.",
+   "style": "odot",
+   "spans": 3
+  },
+  {
+   "name": "Cook's Chasm Bridge",
+   "model": "bridge",
+   "at": [
+    44.27757,
+    -124.11211
+   ],
+   "style": "modern",
+   "spans": 1,
+   "info": "The highway crosses the head of Cook's Chasm on a bridge of 2003, 159 feet long; under it the Spouting Horn goes off with the incoming waves."
+  },
+  {
+   "name": "Cummins Creek Bridge",
+   "model": "bridge",
+   "at": [
+    44.26567,
+    -124.10693
+   ],
+   "style": "mccullough",
+   "spans": 3,
+   "info": "One of Conde McCullough's coast bridges, 1931: a concrete deck girder 185 feet long over Cummins Creek, with his balustrade of round-arched openings and a pylon at each corner. The creek comes down out of the Cummins Creek Wilderness, one of the last old-growth Sitka spruce valleys on the coast."
   }
  ],
  "views": {
@@ -645,26 +752,26 @@
   ],
   "The 804 Trail": [
    [
-    44.318,
-    -124.107,
-    16
+    44.3165,
+    -124.1095,
+    38
    ],
    [
     44.325,
-    -124.104,
-    6
+    -124.105,
+    8
    ]
   ],
   "The Little Log Church": [
    [
-    44.311,
-    -124.1065,
-    30
+    44.3109,
+    -124.1069,
+    26
    ],
    [
     44.31156,
     -124.10582,
-    18
+    16
    ]
   ],
   "Cape Perpetua from the north": [
@@ -681,14 +788,14 @@
   ],
   "The view from the West Shelter": [
    [
-    44.287,
-    -124.1096,
-    262
+    44.2868,
+    -124.1103,
+    280
    ],
    [
     44.305,
-    -124.118,
-    10
+    -124.12,
+    0
    ]
   ],
   "Devil's Churn": [
@@ -804,5 +911,10 @@
   "reserve": 0,
   "_": "no engine woodland: the forest is coast.js's, grown round the camera, and the reserves here are mostly sea"
  },
- "skipAreas": "Marine|Siuslaw National Forest|Cummins Creek Wilderness"
+ "skipAreas": "Marine|Siuslaw National Forest|Cummins Creek Wilderness",
+ "bridgeDeck": 9,
+ "bridgeHeights": {
+  "_": "the trails' footbridges sit on their ground; the highway's decks over the water are level with the banks (bridgeDeck)",
+  "Trail|Stone Bridge": 1
+ }
 }

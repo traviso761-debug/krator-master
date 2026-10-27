@@ -5,6 +5,8 @@
 # --giant: four giants instead (core/charactermodels/tools/giant.py, mods.py): a temple guard of Dalab in the god's harness,
 # a spear above and a shield below, walking; one with cybernetic arms, idle; a four-armed Free Giant warrior with a
 # sword and a shield, walking; a Free Giant chief in his sagum and torc
+# --lizard: the Lizardman test (core/charactermodels/tools/nonhuman.py): a man and a woman, short and tall, with the tail
+# and the reptile head, in the idle, a walk and a crouch, seen from behind a shoulder so the tails show
 extends SceneTree
 
 const DIR := "res://data/characters"
@@ -12,6 +14,7 @@ var frames := 0
 var out := "user://kchar_shot.png"
 var face := false
 var giant := false
+var lizard := false
 var walkers: Array[KCharFigure] = []
 
 
@@ -23,6 +26,8 @@ func _init() -> void:
 			face = true
 		if a == "--giant":
 			giant = true
+		if a == "--lizard":
+			lizard = true
 	var peoples := {}
 	for p in JSON.parse_string(FileAccess.get_file_as_string(DIR + "/peoples.json"))["peoples"]:
 		peoples[p["id"]] = p
@@ -30,6 +35,9 @@ func _init() -> void:
 		["mpfb_female", "yuni", 6], ["mpfb_male", "hykkousoi", 7]]
 	if giant:
 		_giants(peoples)
+		return
+	if lizard:
+		_lizards()
 		return
 	for i in cast.size():
 		var fig := KCharFigure.new()
@@ -69,11 +77,31 @@ func _giants(peoples: Dictionary) -> void:
 	_stage(Vector3(0.6, 2.2, 15.5), Vector3(0, 1.9, 0))
 
 
+func _lizards() -> void:
+	# [body, height, clip]
+	var plan := [["mpfb_male", -0.8, "idle"], ["mpfb_female", 0.0, "walk"], ["mpfb_male", 0.75, "ual_crouch"], ["mpfb_female", 0.75, "walk"]]
+	for i in plan.size():
+		var fig := KCharFigure.new()
+		fig.load_body(DIR, plan[i][0])
+		fig.position = Vector3((i - 1.5) * 1.3, 0, 0)
+		root.add_child(fig)
+		var rec := KChar.blank(fig.kit)
+		rec["armour"]["legs"] = "cortu_cargo_pants"
+		rec["morph"] = {"height": plan[i][1]}
+		rec["mods"] = ["mod_tail", "mod_head_lizard"]
+		rec["skin"] = "#7d8a45"
+		rec["eye_color"] = "#c89020"
+		fig.apply(rec)
+		fig.play(plan[i][2])
+		walkers.append(fig)
+	_stage(Vector3(-4.2, 1.6, -5.2), Vector3(0, 0.85, 0))
+
+
 func _stage(eye: Vector3, at: Vector3) -> void:
 	var cam := Camera3D.new()
 	cam.fov = 30
 	root.add_child(cam)
-	if giant:
+	if giant or lizard:
 		cam.look_at_from_position(eye, at)
 	elif face:
 		cam.look_at_from_position(Vector3(0, 1.62, 2.4), Vector3(0, 1.58, 0))
