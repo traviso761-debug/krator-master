@@ -1144,3 +1144,27 @@ Scene triangles (budget classes `hostSky` 100 k and `hostMid` 50 k, added by the
 dark drum (`.97 rD`) once the glass is gone, so at decay 1-3 they floated in a ring off the face. They stand on the drum
 now (`.97 rD + .1`). Found when Ys made the Bole a host; every page rebuilt (the source is in all of them), `alt-towers`
 and the kit sheet pass `--assert`.
+
+## Span's pieces (2026-10-27, `--target span`)
+`targets/span/8as0-span-parts.js`: seven builders for Span, the ruined arcology in Pan Riba's canyon
+(`settlements/span/PLAN.md`, SP2), on a target of their own so no other page changes: the **bench gallery**
+(`buildSpanGallery`: storeys stepping back up a canyon bench, white bullnosed slabs, ribbon windows, its back to the
+wall), the **rim range** (`buildSpanRange`: two storeys on the rim, a great rounded nose, two storeys hung on the face
+below), the **ring-walled dome** (`buildSpanDome`), the **pad on a drum** (`buildSpanPad`), **the Cross**
+(`buildSpanCross`: the habitable bridge, four storeys under the road, the belly, keel piers, gate towers with an arch over
+the highway), the **weir** and its **sluice stair** (`buildSpanWeir`, `steps`), and the **road tunnel portal**
+(`buildSpanPortal`: one broad way with a guideway down its middle, under a white hood). The terraced storeys of the
+gallery, the range, the Cross's faces and its towers are one routine (`spanBand`) laid in each piece's frame.
+
+What is new for the kit: every piece takes a record (`o`: size, storeys, base height `y`, turn `ry`) besides
+`(scene, gx, gz, d)`, so a settlement places it from its layout; it draws in its own frame turned by `ry`, the instances
+following it (`useGroupXF`, and for a sub-band a matrix composed from the site group); its own decisions (which bay
+breaks, which gate hangs, where a fallen piece lies) are `KRAND` hashes of the piece's seed and the bay's index, not
+`rng()`, so a run breaks the same way however long it is; it registers in core/tags before drawing (`TAGS_TARGETS`).
+The decor helpers it calls (moss, vines, rubble) still draw from the reseeded stream, as everywhere in the kit.
+Every state shows: intact, ruined, toppled, rehabilitated (the scene's `repairPass`), worn (`wornPass`). 428 k scene
+triangles for all forty; the Cross is the heaviest at 52 k. `verify.py --assert` passes; the stand-in rock (`spanRock`)
+is the showcase's, the canyon is the biome kit's. Seeds 12300-12379.
+
+Found on the way: in a fresh worktree `tex/` holds LFS pointers and the library-bound white renders BLACK with a clean
+error panel (rust is procedural, so the ruins looked right): `git lfs pull --include="kits/ancients/tex/*"` first.

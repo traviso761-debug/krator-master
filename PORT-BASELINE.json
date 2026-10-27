@@ -308,6 +308,10 @@
    "bytes": 2511557,
    "sha256": "ba1e9823f4d96fb50feb4a3563e3e456e79764f7499afa539abfc6df9595a06b"
   },
+  "kits/ancients/dist/span.html": {
+   "bytes": 2594876,
+   "sha256": "499f4228a05cf8cb9a9debc57d762a0e12f65f753c23aba061143b8eceb97944"
+  },
   "kits/ancients/dist/spire.html": {
    "bytes": 2513570,
    "sha256": "60d68259e17ccb9d1f69f7dcd463a76faa9fe2f87ee861aafc81918badecd173"

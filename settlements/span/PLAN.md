@@ -268,7 +268,7 @@ rooms fitted to the shell the page draws, later.
 | Dalab's own buildings | not this kit: the Dalab set in `settlements/dalab` (section 0), on the same core |
 | Rooms inside (later) | `8zz-interiors.js` and `kits/ancients-interiors` |
 
-**New builders the kit lacks** (one fragment each, seeds reserved in `DESIGN.md`): the **bench gallery** (a curved terrace
+**New builders** (SP2, done: `kits/ancients/targets/span/8as0-span-parts.js`, seeds 12300-12379 in `DESIGN.md`): the **bench gallery** (a curved terrace
 building along a path, its back to a wall), the **rim range** (the white curved band on a rim, stepping over the edge), the
 **ring-walled dome** (a dome inside a low ring wall, the concept's motif), the **pad on a drum** (a round pad, cantilevered or
 on a stalk), the **Cross** (a habitable bridge building), the **weir and sluices**, the **road tunnel portal** (the Basin Tunnel's,
@@ -284,7 +284,12 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   `core/tags` records), `test-span.js` (every rule with a negative; seeds, frame, tags, `AREAS.md`), `layout_dump.js` for the
   sheets. The checks caught, on the first run, two overlaps on the Apron and the floor, a ring dome over the canyon head
   and roads through three domes: all moved.
-- **SP2.** The new kit builders on a `kits/ancients` target, every state; the existing ones checked against the concept.
+- **SP2.** *(done 2026-10-27)* The new kit builders on `kits/ancients`' `span` target (`targets/span/8as0-span-parts.js`,
+  `dist/span.html`), every state (intact, ruined, toppled, rehabilitated, worn): `buildSpanGallery`, `buildSpanRange`,
+  `buildSpanDome`, `buildSpanPad`, `buildSpanCross`, `buildSpanWeir` (and the sluice stair, `steps`), `buildSpanPortal`.
+  Each takes `(scene, gx, gz, d, o)` with `o` the layout record's size, base `y` and turn `ry`; decisions by `KRAND`,
+  records in core/tags. `verify.py --assert` passes (428 k triangles for all forty). Their gaps: `kits/ancients/KNOWN_ISSUES.md`,
+  "Span's pieces". The existing builders (hangars, tanks, works, the Pipe Bridge's `63-canyon.js`) are checked in SP3.
 - **SP3.** The page: the station's ground read in place (or core/terrain records standing in until station 3 lands), the
   parts placed from the layout, the walk graph, `core/host` FULL, views; `verify.py --assert`.
 - **SP4.** Dalab's fort and trading post from the Dalab set: the rehabilitated parts, the Line, the mound, the trading post
