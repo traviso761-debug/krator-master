@@ -46,14 +46,18 @@ const HCHK={
  tops(trees){const high=trees.filter(T=>T.y0>groundH(T.x,T.z)+20),off=high.filter(T=>!towerTop(T.x,T.z,0));return{ok:high.length>20&&!off.length,detail:high.length+' trees on the tops of the towers, '+off.length+' off a top'};},
  // the arches stand: at least three, each with its opening clear (the ground under the lintel's middle lower than the lintel)
  arches(list){const ok=list.filter(B=>{const o=B.opening;return !!o&&o.y1>o.y0+4;});return{ok:list.length>=3&&ok.length===list.length,detail:list.length+' arches and bridges, '+ok.length+' with an opening'};},
+ // the trees on the towers stand on the rock AS DRAWN: a ray down at each one meets the drawn rock within a metre of its foot
+ drawn(trees){const ray=new THREE.Raycaster(),rock=[];scene.traverse(o=>{if(o.userData&&o.userData.rock)rock.push(o);});const on=trees.filter(T=>T.y0>groundH(T.x,T.z)+20);let off=0;
+  on.forEach(T=>{ray.set(new THREE.Vector3(T.x,T.y0+40,T.z),new THREE.Vector3(0,-1,0));const h=ray.intersectObjects(rock)[0];if(!h||Math.abs(h.point.y-(T.y0+.2))>1)off++;});
+  return{ok:on.length>20&&!off,detail:on.length+' trees on the towers, '+off+' more than a metre off the drawn rock'};},
  // the band stands: enough towers, most whole, none over the table's top
  towers(list){const whole=list.filter(B=>B.top-B.y0>TOP*.8),over=list.filter(B=>B.top>tableTop(B.x,B.z)+5);return{ok:list.length>=25&&whole.length>=15&&!over.length,detail:list.length+' towers, '+whole.length+' whole, '+over.length+' standing over the table (a tower is what is left of it)'};}};
 function hostChecks(){return[Object.assign({name:'the watch pillar: its top flat and held'},HCHK.watch(WATCH,SWHI.TREES,40)),Object.assign({name:'the trees of the towers stand on their tops'},HCHK.tops(SWHI.TREES)),
- Object.assign({name:'the pillar rim stands'},HCHK.towers(PILLARS.filter(B=>!B.isArch))),Object.assign({name:'the arches and bridges stand'},HCHK.arches(ARCHES))];}
+ Object.assign({name:'the pillar rim stands'},HCHK.towers(PILLARS.filter(B=>!B.isArch))),Object.assign({name:'the arches and bridges stand'},HCHK.arches(ARCHES)),Object.assign({name:'the trees of the towers on the drawn rock'},HCHK.drawn(SWHI.TREES))];}
 function hostNegatives(){const r=(name,c)=>({name,failed:!c.ok,detail:c.detail});const small=PILLARS.filter(B=>B!==WATCH).sort((a,b)=>a.R-b.R)[0];
  return[r('a narrow tower for the watch',HCHK.watch(small,[],40)),
   r('a tree in the air by a tower',HCHK.tops(SWHI.TREES.concat([{x:WATCH?WATCH.x+Math.max(WATCH.beds[0].rx,WATCH.beds[0].rz)+6:0,z:WATCH?WATCH.z:0,y0:(WATCH?WATCH.top:200)-10,H:6}]))),
-  r('no towers',HCHK.towers([])),r('an arch with its opening filled',HCHK.arches(ARCHES.map(B=>Object.assign({},B,{opening:null}))))];}
+  r('no towers',HCHK.towers([])),r('an arch with its opening filled',HCHK.arches(ARCHES.map(B=>Object.assign({},B,{opening:null})))),r('a tree raised off its tower',HCHK.drawn(SWHI.TREES.map((T,i)=>i?T:Object.assign({},T)).concat(SWHI.TREES.filter(T=>towerTop(T.x,T.z,0)).slice(0,1).map(T=>Object.assign({},T,{y0:T.y0+4})))))];}
 function biomeChecks(){const R={},sp=SWHI.SPECIES.filter(S=>S.station==='pillars');
  R.missing=sp.filter(S=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[S.key])).map(S=>S.key);R.bySpecies=sp.map(S=>S.key+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[S.key]).length).join(' ');
  R.treesOnCliffs=SWHI.TREES.filter(T=>T.lv>0&&!towerTop(T.x,T.z,0)&&FC.at(FC.a.slope,T.x,T.z)>1.2).length;R.towers=PILLARS.length;R.pillarTris=window._pillarTris;

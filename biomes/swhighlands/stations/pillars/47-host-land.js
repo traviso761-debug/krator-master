@@ -42,6 +42,28 @@ const ROCK_MAT=(function(){const m=new THREE.MeshLambertMaterial({color:0xffffff
  m.customProgramCacheKey=()=>'swhi-pillar-rock';return m;})();
 
 // ---------------------------------------------------------------- the towers
+// THE TOP AS DRAWN (the owner, 2026-10-27: trees floated over the towers' edges): the record's top is the uncontoured body's, but the
+// drawn mesh is drawn in at the crown, grooved by joints, split, and worn up and down by a metre or two. So each tower's top faces
+// (KSTACKS.mesh part 1, after the contour and the weathering) are rasterised into a 1 m grid of heights, the highest face over each
+// cell, and a cell counts only if its neighbours within a metre are rock too: the trees stand where the rock is, at its height
+function topGrid(m){const P=m.pos,I=m.idx,pt=m.part;let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;const T=[],Wl=[];
+ for(let t=0;t<I.length;t+=3){const a=I[t],b=I[t+1],c=I[t+2];const top=pt[a]===1&&pt[b]===1&&pt[c]===1;(top?T:Wl).push(a,b,c);
+  for(const v of [a,b,c]){x0=Math.min(x0,P[3*v]);x1=Math.max(x1,P[3*v]);z0=Math.min(z0,P[3*v+2]);z1=Math.max(z1,P[3*v+2]);}}
+ if(!T.length)return null;const st=1,nx=Math.ceil((x1-x0)/st)+1,nz=Math.ceil((z1-z0)/st)+1,h=new Float32Array(nx*nz).fill(NaN),hw=new Float32Array(nx*nz).fill(-Infinity);
+ /* the walls' highest point over each cell: a ledge under an overhanging wall above it is no top (the contour swells the walls out) */
+ for(let t=0;t<Wl.length;t+=3){let i0=1e9,i1=-1e9,j0=1e9,j1=-1e9,ym=-Infinity;for(let e=0;e<3;e++){const v=Wl[t+e],i=(P[3*v]-x0)/st,j=(P[3*v+2]-z0)/st;i0=Math.min(i0,i);i1=Math.max(i1,i);j0=Math.min(j0,j);j1=Math.max(j1,j);ym=Math.max(ym,P[3*v+1]);}
+  for(let j=Math.max(0,Math.floor(j0));j<=Math.min(nz-1,Math.ceil(j1));j++)for(let i=Math.max(0,Math.floor(i0));i<=Math.min(nx-1,Math.ceil(i1));i++){const k=j*nx+i;if(ym>hw[k])hw[k]=ym;}}
+ for(let t=0;t<T.length;t+=3){const A=T[t],Bv=T[t+1],C=T[t+2],ax=P[3*A],az=P[3*A+2],bx=P[3*Bv],bz=P[3*Bv+2],cx=P[3*C],cz=P[3*C+2],det=(bz-cz)*(ax-cx)+(cx-bx)*(az-cz);if(Math.abs(det)<1e-9)continue;
+  const i0=Math.max(0,Math.floor((Math.min(ax,bx,cx)-x0)/st)),i1=Math.min(nx-1,Math.ceil((Math.max(ax,bx,cx)-x0)/st)),j0=Math.max(0,Math.floor((Math.min(az,bz,cz)-z0)/st)),j1=Math.min(nz-1,Math.ceil((Math.max(az,bz,cz)-z0)/st));
+  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=x0+i*st,z=z0+j*st,l1=((bz-cz)*(x-cx)+(cx-bx)*(z-cz))/det,l2=((cz-az)*(x-cx)+(ax-cx)*(z-cz))/det,l3=1-l1-l2;
+   if(l1<-1e-6||l2<-1e-6||l3<-1e-6)continue;const y=l1*P[3*A+1]+l2*P[3*Bv+1]+l3*P[3*C+1],k=j*nx+i;if(!(h[k]>=y))h[k]=y;}}
+ for(let k=0;k<h.length;k++)if(h[k]===h[k]&&hw[k]>h[k]+.6)h[k]=NaN;   /* a wall rises over it: a ledge, not the top */
+ return{x0,z0,st,nx,nz,h};}
+// the drawn top's height at a point, or NaN; m: metres of rock the point must have round it (1 m always)
+function drawnTop(G,x,z,m){if(!G)return NaN;const r=Math.max(1,Math.round(m||1)),i=Math.round((x-G.x0)/G.st),j=Math.round((z-G.z0)/G.st);
+ if(i<r||j<r||i>=G.nx-r||j>=G.nz-r)return NaN;let y=G.h[j*G.nx+i];if(y!==y)return NaN;
+ for(let dj=-r;dj<=r;dj+=r)for(let di=-r;di<=r;di+=r){const q=G.h[(j+dj)*G.nx+i+di];if(q!==q||Math.abs(q-y)>1)return NaN;}   /* rock all round, and no step (a groove's lip) */
+ return y;}
 const PILLARS=[],ARCHES=[];let WATCH=null;
 const PILLAR_IX=KSPACE.create({cell:60});
 (function(){const gr=(x,z)=>groundH(x,z);
@@ -73,6 +95,7 @@ const PILLAR_IX=KSPACE.create({cell:60});
   if(B.isArch&&KSTACKS.archRound)KSTACKS.archRound(B,m);   /* the opening bent from its box to an ellipse (core/terrain 37b) */
   if(KSTACKS.contour&&!B.isArch)KSTACKS.contour(B,m,B===WATCH?{keep:B.keep}:B.spire?{profile:.2,crown:.35}:{});
   KSTACKS.weather(B,m,B.isArch?{ground:gr,amp:4,grain:.08,pit:1.4,pitGrain:.5,round:2.4}:{ground:gr,amp:3,grain:.09,pit:1.1,pitGrain:.6});
+  if(!B.isArch)B.topGrid=topGrid(m);   /* the top AS DRAWN: what the trees stand on */
   for(let v=0;v<m.pos.length/3;v++){pos.push(m.pos[3*v],m.pos[3*v+1],m.pos[3*v+2]);uv.push(m.uv[2*v],m.uv[2*v+1]);occ.push(.35+.65*m.occ[v]);col.push(1,1,1);part.push(m.part[v]);}
   for(const i of m.idx)idx.push(o+i);tris+=m.idx.length/3;
   /* not an obstacle: a tower's top carries plants (the mask keeps them off its walls: nearTower) */
@@ -84,8 +107,13 @@ const PILLAR_IX=KSPACE.create({cell:60});
   me.userData.inspectLabel='Pillar sandstone (iron-red and bleached beds, Liesegang bands)';me.userData.probePoints=PILLARS.map(B=>[B.x,(B.y0+B.top)/2,B.z]);scene.add(me);}})();
 // a tower's top under a point: {B, top} or null (the record's; the drawn mesh is contoured inside it, so the flora keeps a margin)
 const _pq=[];
-function towerTop(x,z,shrink){PILLAR_IX.query(x,z,0,_pq);if(!_pq.length)return null;const T=_pq.filter(B=>!B.isArch);if(!T.length)return null;const s=KSTACKS.at(T,x,z);if(!s||s.top<s.S.top-1.5)return null;
- if(shrink&&s.d>-shrink)return null;return{B:s.S,top:s.top};}
+function towerTop(x,z,shrink){PILLAR_IX.query(x,z,0,_pq);if(!_pq.length)return null;let best=null,over=-Infinity;
+ for(const B of _pq)if(B.isArch&&Math.hypot(x-B.x,z-B.z)<B.R)return null;   /* nothing under an arch's legs or lintel */
+ for(const B of _pq){if(B.isArch)continue;let y=NaN;
+  if(B.topGrid){y=drawnTop(B.topGrid,x,z,shrink);const g=B.topGrid,i=Math.round((x-g.x0)/g.st),j=Math.round((z-g.z0)/g.st);if(i>=0&&j>=0&&i<g.nx&&j<g.nz){const q=g.h[j*g.nx+i];if(q===q)over=Math.max(over,q);}}   /* the drawn top where it is baked */
+  else{const s=KSTACKS.at([B],x,z);if(s&&s.top>=B.top-1.5&&!(shrink&&s.d>-shrink))y=s.top;}   /* before the mesh: the record */
+  if(y===y&&(!best||y>best.top))best={B,top:y};}
+ return best&&best.top>=over-.01?best:null;}   /* the highest rock over the point; none where a neighbour's top overhangs it */
 // near a tower's wall (inside its foot or within m of it, and not on its top): the floor's plants keep off
 function nearTower(x,z,m){PILLAR_IX.query(x,z,0,_pq);for(const B of _pq){const r=Math.max(B.beds[0].rx,B.beds[0].rz)*1.05+m;if(Math.hypot(x-B.x,z-B.z)<r)return B;}return null;}
 // THE SURFACE the kit stands its plants on: a tower's top where there is one, else the ground
