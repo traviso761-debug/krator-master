@@ -163,6 +163,13 @@ plant of a 3x3); a crown clump keeps the whole sheet and takes the cells in its 
 single-plant image loses its cell. nhighlands and the Cut are done. Then `python3 tools/textures/pack.py <build>` and rebuild.
 At close-out, add `check_cells.py --strict` to `tools/test_all.py`.
 
+### Backporting the new modules to the existing biomes (the owner, 2026-10-26)
+
+**`BACKPORT.md`** maps the new core modules and shaders onto every existing biome and station: the universal set every rebuilt
+biome takes (section 1) and a row per biome (section 2: terrain kinds and strata, ground shader kinds, air, water extensions,
+life, hazards). Each biome's session takes its row at its turn in the rebuild, checks it against the kit's plan and the scale
+model, puts look changes behind a switch, and verifies once.
+
 ### Still to write (core) before or during step 1
 
 - ~~**`BIO.fung`**~~ written (above); the old kits' fungoid parts switch as each is rebuilt (hyperjungle's `fungi`, the `stalk`
