@@ -5,8 +5,29 @@ burn mosaic. The owner split the model's region into **crater drylands N** (`rmu
 to tell them apart. Each holds ground the kit does not draw. The page as built stays station 1. Stations follow the
 Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan, awaiting the owner.** Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
+**Status: plan; the split into N and S settled by the owner (2026-10-27).** Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
 5.3 (the swap); this plan adds the ground under it and two stations in N.
+
+## The formal split: two lands, N and S (the owner, 2026-10-27)
+
+"We can formally split crater drylands into N and S for this rebuild." The kit stays **one folder and one engine**: one species
+registry and one `build.py`, as the working rules ask, rather than a copied kit. Inside it the two polygons are **two lands**, each
+with its own pages, stations, fields, exchanges and checks.
+
+| | **Crater drylands N** (`rmuqlfgh1u6d8`) | **Crater drylands S** (`rmuqlgonah5tp`) |
+|---|---|---|
+| Ground | 54,672 km², the floor at -605 m median, 1.72 atm, +29 °C, BSh with an Aw belt and a salt floor | 8,408 km², a 2 km climb from -650 to 1,400 m, +22 °C median, BSh to a cool kiln, Af galleries |
+| Pages | `dist/crater-drylands-n.html` (the page as built, renamed: station 1), `--station edge`, `--station salt` | `dist/crater-drylands-s.html` (`--station south`: the climb and PLAN-LANDS 5.3's swap) |
+| Its own | the burn mosaic as built; the Aw savannah edge toward SW Bay; the salt floor by the Steampits | the cooler kiln's scrub (lower, greyer); the black mallee on old flows; Godstep's reach; the se rim's reach |
+| Borders (within 15 km) | the Cut, hyperjungle, k-guilin, nhighlands, nwbay, swbay, the SW highlands, Korona | shighlands, swbay, the se savannah rim, the hyperjungle (7 km); Godstep at 21 km |
+| Species | the kit's species as they are | the same keys where the plant is the same; S's own forms as cousins (`BIO.kin('crater-drylands.<key>', {...})`), named in S's species list |
+
+Readers name the land: a page that reads the kit in place passes the land (`land: 'n'` or `'s'`) so it gets that land's
+fields and forms. `EXCHANGES.md` assigns each pair to the land on the border. `crater-drylands-s` takes the scale model's S polygon
+for its field and hazards, not the N page's ideal map.
+
+The old page name, `dist/crater-drylands.html`, is kept as a copy of N until its readers (the gallery, any open-world page) point at
+`-n`; then it retires.
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `tools/scale-model/survey_biomes.py`)
 

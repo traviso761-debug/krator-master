@@ -13,6 +13,18 @@ as they are. A pair whose vendor turns later is wired when the later of the two 
 checks it against the kit's plan and the ground, may swap it for a better fit from the same vendor, and says so in its report.
 No kit calls `BIO.kin` or `reach` yet, so every cousin here is new work.
 
+**The owner's rulings (2026-10-27), over every row below:**
+- **Farside gives, never takes:** nothing goes from Farside to its neighbours (its rows out are dropped); Farside may take from them.
+- **No nsemiarid ↔ nwlowlands pairing** (the tumbler and the rest dropped).
+- **Lowland styles hold for everything that comes in, plants and fauna alike:** into nwlowlands, tall, lank and blue; into swlowlands,
+  wide, branching and red. Every row into either is a cousin in that style; one read "in place" becomes a cousin.
+- **shighlands has visible spiralage:** every species that comes into it is a cousin with a visible spiral (phyllotaxis, a twist in
+  crown, fronds or trunk).
+- **The crater drylands are two lands, N and S** (the owner, 2026-10-27; `biomes/crater-drylands/PLAN-STATIONS.md`): each pair names
+  the land on its border. S also takes `biomes/hyperjungle/PLAN-LANDS.md` 5.3's swap (the se rim, Godstep).
+- **No dragon tree to swlowlands.**
+- **No swap needed for nwbay ↔ hyperjungle:** the existing ironbark stands; the cliff fig row is dropped.
+
 **Corrections found on the way:**
 - **swbay vends to nwbay, not the reverse.** nwbay is a fork of swbay, with eight species marked `source:'swbay'`. k-guilin still
   reads nwbay.
@@ -30,29 +42,29 @@ where in the receiver, why it fits.
 | Kit | Pairs |
 |---|---|
 | catch | catch ↔ godthrone; catch ↔ sedesert (the Bowl and main) |
-| crater-drylands | crater-drylands ↔ cut; crater-drylands ↔ k-guilin; crater-drylands ↔ nhighlands; crater-drylands ↔ nwbay; crater-drylands ↔ swbay; crater-drylands ↔ swhighlands; crater-drylands ↔ hyperjungle; crater-drylands ↔ shighlands; crater-drylands ↔ korona |
-| cut | crater-drylands ↔ cut; cut ↔ nhighlands |
+| crater-drylands | crater drylands N ↔ cut; crater drylands N ↔ k-guilin; crater drylands N ↔ nhighlands; crater drylands N ↔ nwbay; crater drylands N and S ↔ swbay (both border SW Bay); crater drylands N ↔ swhighlands; crater drylands N and S ↔ hyperjungle (N touches it; S lies 7 km off and takes PLAN-LANDS 5.3's swap); crater drylands S ↔ shighlands; crater drylands N ↔ korona |
+| cut | crater drylands N ↔ cut; cut ↔ nhighlands |
 | eastabyss | eastabyss ↔ ebadlands; eastabyss ↔ sedesert (main) |
 | ebadlands | eastabyss ↔ ebadlands; ebadlands ↔ korona; ebadlands ↔ sedesert (the Bowl and main) |
 | ehighlands | ehighlands ↔ sedesert (the Bowl, main, steppe) |
-| farside | farside ↔ nwouterwall (bordering station: **yeti**); farside ↔ nwlowlands |
+| farside | farside ↔ nwouterwall (bordering station: **yeti**; Farside takes only); farside ↔ nwlowlands (Farside takes only) |
 | geyser | geyser ↔ hyperjungle |
 | godthrone | catch ↔ godthrone; godthrone ↔ shighlands; godthrone ↔ xanadu |
-| hyperjungle | crater-drylands ↔ hyperjungle; geyser ↔ hyperjungle; hyperjungle ↔ ringisles; hyperjungle ↔ nwbay |
-| k-guilin | crater-drylands ↔ k-guilin; k-guilin ↔ nwbay; k-guilin ↔ nhighlands |
-| korona | ebadlands ↔ korona; korona ↔ nhighlands; korona ↔ nsemiarid; korona ↔ nwouterwall; crater-drylands ↔ korona; korona ↔ sedesert (main) |
-| nhighlands | crater-drylands ↔ nhighlands; cut ↔ nhighlands; nhighlands ↔ nsemiarid; nhighlands ↔ nwlowlands; nhighlands ↔ nwouterwall (added by the coordinator; the polygons are 44 km apart, on the boreal edge); nhighlands ↔ swhighlands; nhighlands ↔ swlowlands; k-guilin ↔ nhighlands; korona ↔ nhighlands |
-| nsemiarid | nhighlands ↔ nsemiarid; nsemiarid ↔ nwlowlands; nsemiarid ↔ nwouterwall (bordering station: **taiga**, nearest of the two; the plan's crossing station is the planned **wallfoot**); korona ↔ nsemiarid |
-| nwbay | crater-drylands ↔ nwbay; k-guilin ↔ nwbay; nwbay ↔ swbay; hyperjungle ↔ nwbay |
-| nwlowlands | nhighlands ↔ nwlowlands; nsemiarid ↔ nwlowlands; nwlowlands ↔ nwouterwall (bordering station: **taiga** of the two; station 1 is nearer still); nwlowlands ↔ swlowlands; farside ↔ nwlowlands |
-| nwouterwall | farside ↔ nwouterwall (bordering station: **yeti**); nhighlands ↔ nwouterwall (added by the coordinator; the polygons are 44 km apart, on the boreal edge); nsemiarid ↔ nwouterwall (bordering station: **taiga**, nearest of the two; the plan's crossing station is the planned **wallfoot**); nwlowlands ↔ nwouterwall (bordering station: **taiga** of the two; station 1 is nearer still); korona ↔ nwouterwall |
+| hyperjungle | crater drylands N and S ↔ hyperjungle (N touches it; S lies 7 km off and takes PLAN-LANDS 5.3's swap); geyser ↔ hyperjungle; hyperjungle ↔ ringisles; hyperjungle ↔ nwbay |
+| k-guilin | crater drylands N ↔ k-guilin; k-guilin ↔ nwbay; k-guilin ↔ nhighlands |
+| korona | ebadlands ↔ korona; korona ↔ nhighlands; korona ↔ nsemiarid; korona ↔ nwouterwall; crater drylands N ↔ korona; korona ↔ sedesert (main) |
+| nhighlands | crater drylands N ↔ nhighlands; cut ↔ nhighlands; nhighlands ↔ nsemiarid; nhighlands ↔ nwlowlands; nhighlands ↔ nwouterwall (added by the coordinator; the polygons are 44 km apart, on the boreal edge); nhighlands ↔ swhighlands; nhighlands ↔ swlowlands; k-guilin ↔ nhighlands; korona ↔ nhighlands |
+| nsemiarid | nhighlands ↔ nsemiarid; nsemiarid ↔ nwlowlands (skipped: the owner, 2026-10-27); nsemiarid ↔ nwouterwall (bordering station: **taiga**, nearest of the two; the plan's crossing station is the planned **wallfoot**); korona ↔ nsemiarid |
+| nwbay | crater drylands N ↔ nwbay; k-guilin ↔ nwbay; nwbay ↔ swbay; hyperjungle ↔ nwbay |
+| nwlowlands | nhighlands ↔ nwlowlands; nsemiarid ↔ nwlowlands (skipped: the owner, 2026-10-27); nwlowlands ↔ nwouterwall (bordering station: **taiga** of the two; station 1 is nearer still); nwlowlands ↔ swlowlands; farside ↔ nwlowlands (Farside takes only) |
+| nwouterwall | farside ↔ nwouterwall (bordering station: **yeti**; Farside takes only); nhighlands ↔ nwouterwall (added by the coordinator; the polygons are 44 km apart, on the boreal edge); nsemiarid ↔ nwouterwall (bordering station: **taiga**, nearest of the two; the plan's crossing station is the planned **wallfoot**); nwlowlands ↔ nwouterwall (bordering station: **taiga** of the two; station 1 is nearer still); korona ↔ nwouterwall |
 | oidong | oidong ↔ xanadu |
 | rift | rift ↔ xanadu |
 | ringisles | hyperjungle ↔ ringisles; ringisles ↔ throne |
 | sedesert | eastabyss ↔ sedesert (main); ebadlands ↔ sedesert (the Bowl and main); ehighlands ↔ sedesert (the Bowl, main, steppe); korona ↔ sedesert (main); catch ↔ sedesert (the Bowl and main) |
-| shighlands | crater-drylands ↔ shighlands; godthrone ↔ shighlands; shighlands ↔ swbay; shighlands ↔ swlowlands |
-| swbay | crater-drylands ↔ swbay; nwbay ↔ swbay; swbay ↔ swhighlands; swbay ↔ swlowlands; shighlands ↔ swbay; swbay ↔ throne |
-| swhighlands | crater-drylands ↔ swhighlands; nhighlands ↔ swhighlands; swbay ↔ swhighlands; swhighlands ↔ swlowlands |
+| shighlands | crater drylands S ↔ shighlands; godthrone ↔ shighlands; shighlands ↔ swbay; shighlands ↔ swlowlands |
+| swbay | crater drylands N and S ↔ swbay (both border SW Bay); nwbay ↔ swbay; swbay ↔ swhighlands; swbay ↔ swlowlands; shighlands ↔ swbay; swbay ↔ throne |
+| swhighlands | crater drylands N ↔ swhighlands; nhighlands ↔ swhighlands; swbay ↔ swhighlands; swhighlands ↔ swlowlands |
 | swlowlands | nhighlands ↔ swlowlands; nwlowlands ↔ swlowlands; swhighlands ↔ swlowlands; swbay ↔ swlowlands; shighlands ↔ swlowlands |
 | throne | ringisles ↔ throne; swbay ↔ throne |
 | xanadu | oidong ↔ xanadu; rift ↔ xanadu; godthrone ↔ xanadu |
@@ -90,7 +102,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 ---
 
-### crater-drylands ↔ cut
+### crater drylands N ↔ cut
 
 - **crater-drylands → cut: exists (plan).** `cut/PLAN.md` section 12 has exchanges 1 and 2: the tree aloe (`treealoe`) and
   the parasol pine (`parasolpine`). `cut/KNOWN_ISSUES.md:39` says they are not built yet.
@@ -98,7 +110,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
   (`measuremelon`), into the northern region only. Not built: "The crater drylands' two (3, 4) are still to do".
 - No proposals needed.
 
-### crater-drylands ↔ k-guilin
+### crater drylands N ↔ k-guilin
 
 - **Existing exchanges: none either way.** `k-guilin/PLAN.md:25` and `NOTES.md:13` only say the two touch, on k-guilin's
   north-west upland edge toward the Scyvoi's drylands, around px 410.
@@ -112,7 +124,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 | k-guilin → crater | `banyan` | Banyan | birds (figs) | cousin: smaller (8-14 m), few aerial roots, dusty leaf | `seep` (the oases), the Aw belt (station 3 `edge`) | tagged tropic with Aw; a fig follows water in a dry country |
 | k-guilin → crater | `silvergrass` (plant) | Chinese silvergrass | wind | read in place | `bloom` and `regrow` on the Aw edge (station 3) | *Miscanthus* is the first colonist of burns; fits the crater's fire mosaic |
 
-### crater-drylands ↔ nhighlands
+### crater drylands N ↔ nhighlands
 
 - **Existing exchanges: none.** `nhighlands/PLAN-STATIONS.md:26` only says that "crater-drylands has a fire model to read"
   (a model, not a species).
@@ -126,7 +138,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 | nhighlands → crater | `gnarloak` | Gnarled oak | animals (acorns) | cousin: a scrub oak (3-6 m), resprouting after fire, small hard leaves | `kop` (rock) on the northern rim toward the highlands | the old-wood oak of the boulder fields, dried to the drylands' scrub oak |
 | nhighlands → crater | `brookwillow` | Brook willow | water (streams off the wall), wind | cousin: grey, narrow leaves, 3-6 m | `seep` and `wash` on the northern rim | desert oases carry willows; the streams come off the highlands |
 
-### crater-drylands ↔ nwbay
+### crater drylands N ↔ nwbay
 
 - **Existing exchanges: none.** `nwbay/NOTES.md` borrows only from swbay, swlowlands, eastabyss and xanadu.
 - **Shared ground:** nwbay has BSh at (444,444): 6.9% of it, at -984 m and 596 mm. The crater is BSh too, at a similar
@@ -139,7 +151,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 | nwbay → crater | `flamecrown` | Flame-crown | people (nwbay's farm and street tree) | read in place | `seep` and the farms of the Aw belt (station 3 `edge`) | a planted shade tree goes wherever the farms do |
 | nwbay → crater | `cinderpine` | Cinder pine | wind (seed) | cousin: upright and unsheared (no salt wind inland), the black bark kept | `kop` on the basalt by the Steampits (station 4 `salt`) | a lava pine on the crater's own volcanic ground |
 
-### crater-drylands ↔ swbay
+### crater drylands N and S ↔ swbay (both border SW Bay)
 
 - **swbay → crater: exists (plan).** `crater-drylands/PLAN-STATIONS.md:47`: station 3's umbrella trees are "SW Bay's
   parasol savannah ... its trees as kin, `BIO.kin`". No species is named yet. Its savannah's species are `puzzle`,
@@ -151,7 +163,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 | crater → swbay | `treealoe` | Tree aloe | wind, birds | read in place | `sav`, on the lava boulder outcrops | an Aw/BSh rock succulent; the savannah is Aw (957 mm) on rubble |
 | crater → swbay | `ghostgum` | Ghost gum | water | read in place | `sav`, along the river's banks | riparian, Aw-tagged; the gallery tree of a savannah's watercourses |
 
-### crater-drylands ↔ swhighlands
+### crater drylands N ↔ swhighlands
 
 - **Existing exchanges: none.** `swhighlands/PLAN.md:98` only names the crater drylands as a neighbour.
 - **Shared ground:** swhighlands' dry east scarp and its fan deltas are station 5, `-coast`, in the rain shadow
@@ -172,7 +184,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
   (slots `48e`-`48h`). Exchanges 5 and 6 (`rowan`, `greattrumpet`) are planned in `cut/PLAN.md` section 12.
 - No proposals needed.
 
-### farside ↔ nwouterwall (bordering station: **yeti**)
+### farside ↔ nwouterwall (bordering station: **yeti**; Farside takes only)
 
 - **Existing exchanges: none.** Neither kit names the other.
 - **Shared ground:** Farside's upper belt nearest the yeti station is Dfc at 4.3-5.3 km (1,540 mm) and ET at 5.4-6.6 km
@@ -181,7 +193,6 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| farside → nwouterwall (to **yeti**) | `fogsponge` | Fog sponge | people (bath sponges and stuffing are its trade use) | cousin: a third of the size, grey-ochre and felted (the fur theme), freeze-tolerant | yeti valley: larch boles by the frozen lake, where the lake fog lies | **the nearest plausible.** Fog sponge is Farside's one cloud-forest plant, and it lives on bark rather than in salt spray |
 | nwouterwall (from **yeti**) → farside | `woolwillow` (plant) | Woolly willow | wind (catkin down), water | cousin: larger, greener leaves, less felt (wetter air) | Farside's Dfc/ET belt above the fog belt, on stream banks. No station covers it yet; station 4, the fog belt at Yith, is Cfa | a tundra willow climbs every wet cold slope |
 | nwouterwall (from **yeti**) → farside | `deerlichen` (plant) | Caribou moss | wind (fragments), caribou | read in place | the same belt, on the open ET ground | reindeer lichen needs only cold, open ground |
 
@@ -220,8 +231,8 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 |---|---|---|---|---|---|---|
 | nwlowlands → nhighlands | `glowwillow` | Glow-willow | wind (willow fluff) | cousin: smaller (10-16 m), a dimmer glow, a narrower crown | `riparian` in the temperate band | riparian; a willow climbs the streams |
 | nwlowlands → nhighlands | `towerash` | Tower ash | wind | cousin: shorter (50-70 m), a darker crown | `temperate`, the wet ravines | nwlowlands' `gully` tree; nhighlands' giants run to similar heights |
-| nhighlands → nwlowlands | `greyalder` | Grey alder | water (seed downstream) | read in place | `rip` | a riparian alder carried down the rivers off the wall |
-| nhighlands → nwlowlands | `foglaurel` | Fog laurel | birds | cousin in the lowland theme: taller, lanky, clean bole, blue-grey bark | `sub` and `gully` | the laurisilva of the misty mid band reaches the lowland's moist Cfa |
+| nhighlands → nwlowlands | `greyalder` | Grey alder | water (seed downstream) | cousin in the lowland theme: tall, lank, blue (bark and crown blue-grey) | `rip` | a riparian alder carried down the rivers off the wall |
+| nhighlands → nwlowlands | `foglaurel` | Fog laurel | birds | cousin in the lowland theme: tall, lank, blue (bark and crown blue-grey); a clean bole | `sub` and `gully` | the laurisilva of the misty mid band reaches the lowland's moist Cfa |
 
 ### nhighlands ↔ nwouterwall (added by the coordinator; the polygons are 44 km apart, on the boreal edge)
 
@@ -254,20 +265,16 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| nhighlands → swlowlands | `mossmaple` | Moss maple | wind (samaras) | cousin in the lowland theme: wide and branching, red-brown bark | `sub` and `rip` | a temperate riparian maple on the lowland's Cfa |
-| nhighlands → swlowlands | `gnarloak` | Gnarled oak | animals (acorns) | read in place | `med`: the upland boulder ground with the tier cedars | already gnarled and wide; Csa uplands hold oaks |
+| nhighlands → swlowlands | `mossmaple` | Moss maple | wind (samaras) | cousin in the lowland theme: wide, branching, red (red-brown bark, red flush) | `sub` and `rip` | a temperate riparian maple on the lowland's Cfa |
+| nhighlands → swlowlands | `gnarloak` | Gnarled oak | animals (acorns) | cousin in the lowland theme: wide, branching, red | `med`: the upland boulder ground with the tier cedars | already gnarled and wide; Csa uplands hold oaks |
 
-### nsemiarid ↔ nwlowlands
+### nsemiarid ↔ nwlowlands (skipped: the owner, 2026-10-27)
 
 - **Existing exchanges: none.** `nsemiarid/PLAN.md` section 8 gives nwlowlands only the overlays' fields (`rock`, `bed`,
   `silt`), not species.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| nsemiarid → nwlowlands | `tumbler` (plant) | Tumbler | wind (it rolls) | read in place | `med`, the dry hills nearest the steppe | the steppe's travellers roll over the border; the kit's rule is "everything here travels" |
-| nsemiarid → nwlowlands | `plane` | Spring plane | water, wind | cousin in the lowland theme: tall, lanky, pale blue-grey bark | `rip` and the springs in `med` | tagged with Csa and Cfa, riparian `'yes'`; nwlowlands is mostly Csa and Cfa |
-| nwlowlands → nsemiarid | `sheoak` | Drape she-oak | wind (winged seed) | read in place | `med` (Csa) | a dry-hill tree of nwlowlands' `med`, the same Csa |
-| nwlowlands → nsemiarid | `paperbark` | Pale paperbark | water | cousin: smaller (8-14 m), salt-tolerant | `tugai` and `rip`, the lake margins (Aw/Af) | *Melaleuca* takes brackish margins; nsemiarid's lake margins are tropical |
 
 ### nsemiarid ↔ nwouterwall (bordering station: **taiga**, nearest of the two; the plan's crossing station is the planned **wallfoot**)
 
@@ -311,10 +318,10 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| nwlowlands → swlowlands | `banksia` | Candle banksia | fire and wind (serotinous cones), birds | read in place | `med`, with the ember manzanita and the pompom cycads | the same Csa chaparral on both sides |
-| nwlowlands → swlowlands | `paperbark` | Pale paperbark | water | cousin in the lowland theme: wide, low-branching, red-flaked bark | `swamp` margins | a swamp *Melaleuca* fits the bayou's edge |
-| swlowlands → nwlowlands | `sycamore` | Ghost sycamore | water | read in place | `rip` | white bark fits nwlowlands' white-to-blue-grey theme |
-| swlowlands → nwlowlands | `cypress` | Knee-cypress | water | cousin in the lowland theme: tall and narrow (as the pond cypress), blue-grey foliage | `shore` and its wet low ground | a swamp conifer for nwlowlands' lake shore |
+| nwlowlands → swlowlands | `banksia` | Candle banksia | fire and wind (serotinous cones), birds | cousin in the lowland theme: wide, branching, red (the candles red) | `med`, with the ember manzanita and the pompom cycads | the same Csa chaparral on both sides |
+| nwlowlands → swlowlands | `paperbark` | Pale paperbark | water | cousin in the lowland theme: wide, branching, red, red-flaked bark | `swamp` margins | a swamp *Melaleuca* fits the bayou's edge |
+| swlowlands → nwlowlands | `sycamore` | Ghost sycamore | water | cousin in the lowland theme: tall, lank, blue (bark and crown blue-grey) | `rip` | white bark fits nwlowlands' white-to-blue-grey theme |
+| swlowlands → nwlowlands | `cypress` | Knee-cypress | water | cousin in the lowland theme: tall, lank, blue (bark and crown blue-grey), as the pond cypress | `shore` and its wet low ground | a swamp conifer for nwlowlands' lake shore |
 
 ### swbay ↔ swhighlands
 
@@ -333,7 +340,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
   from `latticeoak`, `coralmelon`, and bead coral.
 - No proposals needed.
 
-### farside ↔ nwlowlands
+### farside ↔ nwlowlands (Farside takes only)
 
 - **nwlowlands → farside: exists (built).** `farside/build.py:96-98` reads nwlowlands' `50`, `55`, `60` and `70` in place;
   it is the native forest at the front and in the fog belt.
@@ -344,8 +351,6 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| farside → nwlowlands | `fogsponge` | Fog sponge | people (traded sponges), wind (spores) | cousin: paler, smaller, a freshwater-fog form | `rain` and `sub`, on boles where the mist lies | the one Farside species of the native wet forest (`cloud`, temperate), and it grows on nwlowlands' own trees there |
-| farside → nwlowlands | `wineweed` | Wine weed | people | cousin: a dwarf film on wet bark and rock; this is the **nearest plausible** | `shore`, by the spray of the falls and rapids | Farside's front-zone weed already hangs on nwlowlands' trees; without salt it only persists in constant spray |
 
 ### swbay ↔ swlowlands
 
@@ -354,8 +359,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| swbay → swlowlands | `dragon` | Dragon tree | birds (berries) | read in place | `med`: the dry hills | a dry-country tree on Csa hills, as on Socotra and the Canaries |
-| swbay → swlowlands | `puzzle` | Umbrella monkey puzzle | animals (big seeds) | cousin in the lowland theme: wider, flat-topped, red-barked | `med` and `sub`, at the warm end | the savannah's umbrella tree in a red, wide habit |
+| swbay → swlowlands | `puzzle` | Umbrella monkey puzzle | animals (big seeds) | cousin in the lowland theme: wide, branching, red, flat-topped | `med` and `sub`, at the warm end | the savannah's umbrella tree in a red, wide habit |
 | swlowlands → swbay | `mangrove` | Lantern mangrove | water (floating propagules along the coast) | cousin: recoloured to the bay's hue, as nwbay did | `shore` and the delta's shallows | swbay's shore has no mangrove; the coast is continuous |
 | swlowlands → swbay | `coastoak` | Coast oak | animals (acorns) | read in place | `sav`'s Csa edge | swbay holds 10k km² of Csa, swlowlands' own class |
 
@@ -425,7 +429,7 @@ on a floor at 400-1,000 m (BWk, 16 mm). **Neither side has a plant that lives on
 | godthrone→catch | *no key yet* (planned in `godthrone/PLAN.md` §5) | black and orange lichen crusts | wind (spores) | cousin, when GODT builds it | the lee of boulders on the Catch's high walls, in its ET band (30,572 km², 5,135 m) | the only life the Godthrone plans below the dry-cold line; the Catch's ET band is the one piece of its ground as cold as the Godthrone's foot. **Stand-in: there is no species in the source.** |
 | catch→godthrone | `brinelamp` | Brine lamp | birds (the waders on brine) | cousin: a dwarf, ground-hugging rosette whose crystal crust is thicker | the shore of the Godthrone's closed saline lake (6,419 m, ET/EF; PLAN.md §1) | **a stretch:** this lake is not on the shared border. Brine and salt are the only thing the two kits share. Nothing from the Catch's floor survives at 9 km |
 
-### crater-drylands ↔ hyperjungle
+### crater drylands N and S ↔ hyperjungle (N touches it; S lies 7 km off and takes PLAN-LANDS 5.3's swap)
 
 **Existing exchanges.**
 - **hyperjungle→crater-drylands: yes, a cousin.** The `prismmallee` is "a much smaller relative of the hyperjungle's
@@ -437,14 +441,14 @@ on a floor at 400-1,000 m (BWk, 16 mm). **Neither side has a plant that lives on
 |---|---|---|---|---|---|---|
 | crater-drylands→hyperjungle | `irisfern` | Prism fern | wind (spores) | cousin: larger fronds in the 1.9 atm air, a deeper green with the iridescence kept | `hyperjungle N`'s drier XA edge where it meets the XV/Aw savannah (1,035 mm) | the drylands' one subhumid plant, so it suits the wettest ground of its own kit; the prism iridescence echoes the prism gum it descends from |
 
-### crater-drylands ↔ shighlands
+### crater drylands S ↔ shighlands
 
 **Existing exchanges: none either way.** `crater-drylands/NOTES.md:7` names the southern highlands only as a boundary,
 and `shighlands/BIOME-API.md:3` names crater-drylands only as a code pattern.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| crater-drylands→shighlands | `protea` | Crater protea | birds (sugarbirds at the flowers) | cousin: smaller, leathery leaves, frost-hardy | shighlands' Csb/Cfb lower slopes, 1-2.4 km (Csb 3,428 km², about 500 mm) | proteas are montane fynbos shrubs, so the fire-adapted drylands plant goes up into the winter-rain belt |
+| crater-drylands→shighlands | `protea` | Crater protea | birds (sugarbirds at the flowers) | cousin: smaller, leathery leaves, frost-hardy; with visible spiralage (shighlands' rule: a spiral phyllotaxis or twist in its crown, fronds or trunk) | shighlands' Csb/Cfb lower slopes, 1-2.4 km (Csb 3,428 km², about 500 mm) | proteas are montane fynbos shrubs, so the fire-adapted drylands plant goes up into the winter-rain belt |
 | shighlands→crater-drylands | `albuca` | Corkscrew albuca | wind and water (seed down the slopes) | cousin: smaller, flowers after a burn | the drylands' rocky slopes and kopjes at the highlands' foot, inside the fire mosaic | the highlands' semiarid bulb; bulbs resprout after fire, as the drylands' own fire lily does |
 
 ### eastabyss ↔ ebadlands
@@ -635,7 +639,7 @@ at about 6.1 km.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| swbay→shighlands | `cherry` | Ash cherry | birds (fruit) | cousin: smaller, with a later flush | shighlands' Cfa/Cfb foot, 1-2 km | the bay's one "mild" species, already suited to cooler ground |
+| swbay→shighlands | `cherry` | Ash cherry | birds (fruit) | cousin: smaller, with a later flush; with visible spiralage (shighlands' rule: a spiral phyllotaxis or twist in its crown, fronds or trunk) | shighlands' Cfa/Cfb foot, 1-2 km | the bay's one "mild" species, already suited to cooler ground |
 | shighlands→swbay | `ginger` | Spiral ginger | water (rhizome pieces down the streams) | cousin: larger in the dense air, a looser spiral | swbay's wet understorey at the foot of the highlands' scarp | a montane humid herb; streams carry it down to wetter, warmer ground |
 
 ### shighlands ↔ swlowlands
@@ -644,10 +648,10 @@ at about 6.1 km.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| swlowlands→shighlands | `madrone` | Flayed madrone | birds (berries) | read in place | shighlands' Csb/Csa slopes, 1-2.9 km | a temperate subhumid tree of summer-dry slopes; *Arbutus* climbs into montane Csb |
-| shighlands→swlowlands | `crozier` | Crozier tree fern | wind (spores) | cousin: straighter fronds with the spiral relaxed | swlowlands' humid ravines (the eyed beech and magnolia woods) | a montane humid fern; its spores travel far, down into wet temperate forest |
+| swlowlands→shighlands | `madrone` | Flayed madrone | birds (berries) | cousin; with visible spiralage (shighlands' rule: a spiral phyllotaxis or twist in its crown, fronds or trunk); the flayed bark kept | shighlands' Csb/Csa slopes, 1-2.9 km | a temperate subhumid tree of summer-dry slopes; *Arbutus* climbs into montane Csb |
+| shighlands→swlowlands | `crozier` | Crozier tree fern | wind (spores) | cousin in the lowland theme: wide, branching, red; the fronds keep their spiral | swlowlands' humid ravines (the eyed beech and magnolia woods) | a montane humid fern; its spores travel far, down into wet temperate forest |
 
-### crater-drylands ↔ korona
+### crater drylands N ↔ korona
 
 **Existing exchanges: none either way.** `korona/NOTES.md:127,164` records the border (south-west, about 197 m, dry,
 gradual) and the Bitir Gulusu wadi that runs to the drylands. `crater-drylands/PLAN-STATIONS.md:6` names Korona only for
@@ -668,7 +672,6 @@ its pattern.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
-| nwbay→hyperjungle | `clifffig` | Cliff fig | birds and bats (figs) | read in place | the hyperjungle's karst walls and gorge sides (the karst dress pass, which nwbay already shares: `nwbay/src/65-biome-nwbay-dress.js:3`) | a tropic humid rock fig, carried by fruit-eaters; the same karst on both sides |
 
 ### korona ↔ sedesert (main)
 

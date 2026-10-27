@@ -100,7 +100,7 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   | 9 | korona, nsemiarid (the scablands and dam-basin overlays with it) | they border each other and the NW outer wall |
   | 10 | cut, farside | both read nwlowlands |
   | 11 | nwouterwall, catch | the wall after its neighbours; the Catch after sedesert |
-  | 12 | crater-drylands, shighlands | after the hyperjungle, swbay and the SW highlands |
+  | 12 | crater-drylands (both lands, N and S: one session, one kit folder), shighlands | after the hyperjungle, swbay and the SW highlands; the split into N and S is in its `PLAN-STATIONS.md` |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
 
   **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
@@ -108,6 +108,15 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   **After the pairs and the gallery** (the owner, 2026-10-27: "build station 1 of godstep, station 2 of ehighlands, then station 2
   of nhighlands"): in that order, each as its own session. ehighlands' and nhighlands' turns (pairs 13 and 7) build their station 2
   (their `PLAN-STATIONS.md`) as part of the turn; if one did not, it is built here.
+  Then (the owner, 2026-10-27: "add hyperjungle N and E savannah rim to queue"): **hyperjungle N** (`biomes/hyperjungle/PLAN-LANDS.md`
+  section 3 and station 3, `-north`: Screamer wood, the howl bamboo, watchers, bone giants) and **the e savannah rim** (section 5.1:
+  `biomes/savannarim`, a new kit on the savannah base of section 4, station 2 `-east` near Fridon). The rim is built after hyperjungle
+  N, as two sessions at most at once. The hyperjungle's turn in pair 2 rebuilds its built page and its `PLAN-STATIONS.md` stations,
+  not the lands plan: the savage land, the rims and the rest of PLAN-LANDS stay for later turns the owner names.
+  Then (the owner, 2026-10-27: "after these, w outer wall 1, then finish sw highlands"): **the W outer wall's station 1**, the loess
+  tablelands (`biomes/wouterwall/PLAN.md` section 7, a new kit: `dist/wouterwall.html`), then **the SW highlands' remaining
+  stations**: 2, the rain wall and the landslide lake (`-rainwall`); 3, Span's tableland and canyon (`-span`, with `settlements/span`);
+  5, the fan coast (`-fancoast`). Stations 1, 4 and 6 are built; the flora for 2, 3 and 5 is in (7ee5bc4ca).
   Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges: its index lists the sections naming each kit).
 
   A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
