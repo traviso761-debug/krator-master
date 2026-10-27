@@ -71,10 +71,23 @@ CORE_MATERIALS = ['20-textures.js', '22-materials.js', '68-mat-v5.js']
 for f in KIT_RUNTIME + CORE_MATERIALS:
     p = os.path.join(ANC, 'src', f)
     PATH[f] = p if os.path.isfile(p) else core('materials', f)
-PATH['69a-world-uv.js'] = core('materials', 'opt', '69a-world-uv.js')
+# (not core/materials/opt/69a-world-uv.js: the Dalab set's 69b-vern-mat.js declares its own vWorldUV, the one the set is
+# tested with, and none of the kit's fragments here calls it)
 for f in ('23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js'):
     PATH[f] = core('materials', 'record', f)
 PATH['8as0-span-parts.js'] = os.path.join(ANC, 'targets', 'span', '8as0-span-parts.js')
+
+# THE DALAB SET, read in place (settlements/dalab/src; SP4): the Vernacular helpers it runs on (its own copies, which it is
+# tested against), its items and helpers, the dwellings, trade, town types, civic and sacred buildings, and its binding of
+# its library pack. Not taken: the ranch (74), the trades table (77), its light (94: no night here yet), its tags (91t:
+# Span registers the layout's records), its biome (86-bio-*: Span's flora is the SW highlands kit's).
+DALAB = os.path.join(ROOT, 'settlements', 'dalab')
+DALAB_SET = ['69b-vern-mat.js', '69c-vern-helpers.js', '69d-dalab-mat.js', '69e-dalab-helpers.js', '70-dalab-dwellings.js',
+             '71-dalab-trade.js', '71c-dalab-town.js', '72-dalab-civic.js', '73-dalab-sacred.js', '88y-dalab-matlib.js']
+for f in DALAB_SET:
+    PATH[f] = os.path.join(DALAB, 'src', f)
+# build-time renames where two sets read in place declare the same name (the files on disk are untouched)
+SUBST = {'88y-dalab-matlib.js': [(r'\bMATLIB_BOUND\b', 'MATLIB_BOUND_DALAB')]}
 
 # core/rand, core/tags (core/space comes with the host's FULL list)
 CORE_RAND = ['08-core-rand.js']
@@ -104,7 +117,9 @@ if own:
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack
 SIDE = {}
-VIRTUAL = {'88x-matlib-pack.js': matlib_pack.fragment(ANC, 'ancients', side=SIDE), khost.EDITS_JS: khost.edits_js(HERE, 'span')}
+VIRTUAL = {'88x-matlib-pack.js': matlib_pack.fragment(ANC, 'ancients', side=SIDE),
+           '88x-matlib-pack-dalab.js': matlib_pack.fragment(DALAB, 'dalab', side=SIDE),
+           khost.EDITS_JS: khost.edits_js(HERE, 'span')}
 for f in VIRTUAL:
     PATH[f] = None
 
@@ -113,10 +128,24 @@ if missing:
     sys.exit('missing fragments: ' + ', '.join('%s (%s)' % (f, PATH[f]) for f in missing))
 frags = sorted(PATH)
 out = []
+# one shared scope: a name two fragments both declare at column 0 is a clash (a function silently replaces the other)
+DECL = re.compile(r'^(?:function\s+([A-Za-z_$][\w$]*)\s*\(|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=)', re.M)
+seen, clash = {}, []
 for f in frags:
     s = VIRTUAL[f] if PATH[f] is None else open(PATH[f], encoding='utf-8').read()
+    for rx, rep in SUBST.get(f, []):
+        s = re.sub(rx, rep, s)
+    code = re.sub(r'^\s*(//[^\n]*\n|/\*.*?\*/\s*)*', '', s, flags=re.S)
+    if f.endswith('.js') and not re.match(r'[;(]*\s*\(?\s*(function|\(\)\s*=>)', code):   # a fragment that is one closure declares nothing shared
+        for m in DECL.finditer(s):
+            n = m.group(1) or m.group(2)
+            if n in seen and seen[n] != f:
+                clash.append('%s (%s, %s)' % (n, seen[n], f))
+            seen.setdefault(n, f)
     out.append('\n// ==================== %s\n' % f if f.endswith('.js') else '')
     out.append(s)
+if clash:
+    sys.exit('top-level names declared twice: ' + '; '.join(clash))
 os.makedirs(DIST, exist_ok=True)
 html = ''.join(out)
 html = matlib_pack.write_sidecar(SIDE, html, DIST, 'span.tex.js')

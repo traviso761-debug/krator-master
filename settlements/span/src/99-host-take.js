@@ -22,6 +22,10 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 function spanChecks(){const L=SPAN_LAYOUT,R=[];
  SPAN.checks(L).forEach(c=>R.push({name:'layout: '+c.name,ok:c.pass,detail:c.detail.trim()}));
  R.push({name:'every part placed',ok:SP.missing.length===0&&SP.placed.length>=L.parts.length,detail:SP.placed.length+' placed of '+L.parts.length+(SP.missing.length?'; no builder for '+SP.missing.join(', '):'')+' ('+SP.ms+' ms)'});
+ // every Dalab building is a def of the Dalab set, and its record's footprint is the def's own (w by d, within a metre)
+ const keyed=SPAN_LAYOUT.parts.filter(p=>p.by==='dalab'&&p.kind!=='wall'),badD=keyed.filter(p=>{const q=SP.dalab.find(x=>x.id===p.id);
+  return !q||Math.abs(q.w-q.def[0])>1||Math.abs(q.d-q.def[1])>1;}).map(p=>{const q=SP.dalab.find(x=>x.id===p.id);return p.id+(q?' '+q.w+'x'+q.d+' vs '+q.def.join('x'):' (no def '+p.key+')');});
+ R.push({name:'every Dalab building is a Dalab set def at its own footprint',ok:keyed.length>0&&!badD.length,detail:SP.dalab.length+' placed through VERN.place'+(badD.length?'; '+badD.join(', '):'')});
  const A=SP.tags.audit();R.push({name:'tags: known vocabulary, a culture each',ok:A.unknown===0&&!A.missingCulture,detail:A.records+' records, unknown '+A.unknown+', missing culture '+A.missingCulture});
  return R;}
 function spanNegatives(){const L=JSON.parse(JSON.stringify(SPAN_LAYOUT)),R=[];
@@ -30,7 +34,7 @@ function spanNegatives(){const L=JSON.parse(JSON.stringify(SPAN_LAYOUT)),R=[];
  R.push({name:'the Tunnel Road removed fails the walk check',ok:!SPAN.checks(M).find(c=>/walkable part is reached/.test(c.name)).pass});
  return R;}
 KHOST.take({build:'span',title:'Span',
- hint:'Span: the ruined Ancient arcology in Pan Riba\'s canyon, Dalab\'s fort and trading post (settlements/span/PLAN.md). The ground is a stand-in, the layout\'s own section, until the SW highlands station carves the canyon; Dalab\'s buildings are boxes until SP4.',
+ hint:'Span: the ruined Ancient arcology in Pan Riba\'s canyon, Dalab\'s fort and trading post (settlements/span/PLAN.md). The ground is a stand-in, the layout\'s own section, until the SW highlands station carves the canyon. Dalab\'s buildings are the Dalab set\'s (settlements/dalab, read in place).',
  scene,camera,renderer,ground:(x,z)=>SPAN.groundAt(SPAN_LAYOUT,x,z),clear:1.6,minR:2,maxR:9000,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  records:()=>SP.tags.query({}),

@@ -28,6 +28,9 @@ function spanU(sd,a,b,c){return KRAND.unit(KRAND.hash(sd>>>0,a|0,b|0,c|0));}
 function spanBreak(d){return d===0?0:(d===2?.22:.16)*HOLES;}
 function spanStateName(d){return d===0?'intact':d===2?'toppled':d===3?'rehab':'ruined';}
 
+// A SUB-FRAME (the Cross's faces and towers) is set by saving KXF, putting the sub-group's matrix in the site group's frame
+// in it, and restoring it: never through useGroupXF / endGroupXF, which a page may have turned into a stack (Dalab's
+// 69c-vern-helpers.js composes nested groups), so a hand-set frame between them would leak.
 // ---- the frame: G at the site, P at the base turned by ry; kit instances follow P -----------------------------------
 function spanFrame(scene,gx,gz,o){const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const P=new THREE.Group();P.position.set(0,o.y||0,0);P.rotation.y=o.ry||0;G.add(P);
@@ -222,11 +225,11 @@ function buildSpanCross(scene,gx,gz,d,o){reseed(SPAN_SEED.cross+d);o=o||{};
  const levels=[];for(let k=0;k<st;k++)levels.push({y:-BH+k*sh,h:sh,zb:-1,zf:2.2+k*1.2});
  [[-1,'up'],[1,'down']].forEach(([s,nm])=>{
   const P2=new THREE.Group();P2.position.set(s*W/2,0,s>0?S/2:-S/2);P2.rotation.y=s>0?Math.PI/2:-Math.PI/2;F.P.add(P2);
-  endGroupXF();F.G.updateMatrixWorld(true);
+  const keep=KXF;F.G.updateMatrixWorld(true);
   const m=new THREE.Matrix4().copy(F.G.matrixWorld).invert().multiply(P2.matrixWorld),q=new THREE.Quaternion();m.decompose(new THREE.Vector3(),q,new THREE.Vector3());
   KXF={m:m,q:q};
   spanBand(KRAND.hash(sd,s+3),S,8,levels,d,{gap:gap?(s>0?[S/2-gap[1],S/2-gap[0]]:[gap[0]+S/2,gap[1]+S/2]):null,back:false});
-  useGroupXF(F.P);});
+  KXF=keep;});
  // the deck (the road) with its guideway, parapets; the soffit and the keel piers; the ends against the abutments
  const SH=[],DK=[],nz=Math.round(S/10);
  for(let i=0;i<nz;i++){const z0=-S/2+i*S/nz,zc=z0+S/(2*nz);if(inGap(zc))continue;
@@ -247,12 +250,12 @@ function buildSpanCross(scene,gx,gz,d,o){reseed(SPAN_SEED.cross+d);o=o||{};
  [-1,1].forEach(s=>{const zc=s*(S/2+GT/2);
   [-1,1].forEach(t=>{const xc=t*(W/4+5),gl=[{y:0,h:sh,zb:-GT/2,zf:GT/2},{y:sh,h:sh,zb:-GT/2+2,zf:GT/2-2}];
    const P3=new THREE.Group();P3.position.set(xc-(W/2-10)/2,0,zc);F.P.add(P3);
-   endGroupXF();F.G.updateMatrixWorld(true);
+   const keep=KXF;F.G.updateMatrixWorld(true);
    const m=new THREE.Matrix4().copy(F.G.matrixWorld).invert().multiply(P3.matrixWorld),q=new THREE.Quaternion();m.decompose(new THREE.Vector3(),q,new THREE.Vector3());
    KXF={m:m,q:q};
    // the tower is a short band along x (its depth along z): turn the levels so its front faces the road end
    spanBand(KRAND.hash(sd,s+11,t+21),W/2-10,8,gl.map(l=>({y:l.y,h:l.h,zb:-l.zf,zf:l.zf})),d,{back:true});
-   useGroupXF(F.P);});
+   KXF=keep;});
   kput(d>0?'archR':'arch',[0,0,zc],null,[1.3,.55,1],null);});
  [-1,1].forEach(s=>kput(PLATE(d),[0,-BH/2,s*(S/2-.3)],null,[W,BH,.6],null));
  if(gap){spanDebris(sd,-W/2,W/2,-BH-KL,gap[0]-10,(gap[1]-gap[0])+20,140,d);}

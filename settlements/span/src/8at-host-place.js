@@ -86,11 +86,17 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
   ramp(p){const s=p.shape;box('spRoad',s[1],s[2],s[3],s[4],p.y,p.y+.4);placed.push(p.id);},
   bay(p){placed.push(p.id);},   /* the bay is the ground's (SPAN.groundAt) */
  };
- // Dalab's own (SP4 takes the Dalab set: settlements/dalab's registry, read in place): boxes at their footprints till then
+ // DALAB'S OWN (SP4): a part whose key is a Dalab set def (settlements/dalab, read in place) goes through its registry,
+ // VERN.place, at the part's footprint centre on its base (a part on the Apron stands on the deck's top), its front (+z)
+ // toward the Apron's long axis (v 0), a variant by the part's own seed; the Line has no def yet and is drawn from the
+ // kit's items (KNOWN_ISSUES.md)
+ const DALAB_PLACED=[];
  function dalabStandIn(p){const s=p.shape,b=SPAN.bbox(s),y0=p.in?SPAN.byId(L)[p.in].y+SPAN.byId(L)[p.in].h:p.y,h=Math.max(2,p.h);
-  if(p.kind==='mound'){const w=W(s[1],s[2],y0),G=new THREE.Group();G.position.set(w[0],w[1],w[2]);scene.add(G);
-   mesh(new THREE.CylinderGeometry(s[3]*.45,s[3],h,32,1).translate(0,h/2,0),MAT.mud||MAT.rock,G);}
-  else if(p.kind==='wall'){for(let v=b[2];v<b[3];v+=6)box(KRAND.unit(KRAND.hash(seedOf(p),v|0))<.5?'plateR':'boxCR',b[0],b[1],v,v+5.6,y0,y0+h*(.75+.25*KRAND.unit(KRAND.hash(seedOf(p),v|0,2))));}
+  if(p.key&&typeof VERN!=='undefined'&&VERN.defs[p.key]){const cu=(b[0]+b[1])/2,cv=(b[2]+b[3])/2,w=W(cu,cv,0),ry=(cv>0?Math.PI:0)-F.ang;
+   TSTAT.cur=p.kind+'/'+p.id;const G=VERN.place(scene,p.key,w[0],w[2],ry,{y:y0,v:KRAND.hash(seedOf(p),7)%3});
+   if(G)DALAB_PLACED.push({id:p.id,key:p.key,w:b[1]-b[0],d:b[3]-b[2],def:[VERN.defs[p.key].w,VERN.defs[p.key].d]});else missing.push(p.id);
+   placed.push(p.id);return;}
+  if(p.kind==='wall'){for(let v=b[2];v<b[3];v+=6)box(KRAND.unit(KRAND.hash(seedOf(p),v|0))<.5?'plateR':'boxCR',b[0],b[1],v,v+5.6,y0,y0+h*(.75+.25*KRAND.unit(KRAND.hash(seedOf(p),v|0,2))));}
   else box('boxC',b[0],b[1],b[2],b[3],y0,y0+h,new THREE.Color(0xc9a27a));
   placed.push(p.id);}
  const t0=performance.now();
@@ -99,4 +105,4 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
   const f=BUILD[p.kind];if(!f){missing.push(p.id);return;}
   try{f(p);}catch(e){reportErr(p.id+': '+(e.stack||e));}});
  TSTAT.cur=null;kbake(scene);
- return {placed,missing,ms:Math.round(performance.now()-t0),tags:T};})();
+ return {placed,missing,dalab:DALAB_PLACED,ms:Math.round(performance.now()-t0),tags:T};})();

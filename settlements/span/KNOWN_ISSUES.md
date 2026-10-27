@@ -8,8 +8,19 @@
       `KCARVE` for the cuts) when that lands: PLAN.md section 5.
 - [ ] **No water**: the lake is a dry bed, the river, the falls and the sluices carry nothing. The water is the biome kit's
       (core/water); the page takes it with the station.
-- [ ] **Dalab's buildings are boxes** (the trading post, the Line, the mound, the shrine): SP4 takes the Dalab set
-      (`settlements/dalab`, read in place).
+- [x] ~~Dalab's buildings are boxes~~: SP4 (2026-10-27) places the Dalab set's own buildings (settlements/dalab, read in
+      place) through `VERN.place`: the market, customs, two warehouses, two inns, the tavern, the bath house, the traders'
+      houses and row, two orchards, the caravan yard, the shrine, the mound and the watch tower at the Middle Bridge.
+- [ ] **The Line has no Dalab def**: it is still a salvage wall drawn from the kit's items (plates and concrete blocks).
+      A `dalab_line` (a salvage wall with a gate, on the Dalab set's helpers) belongs in `settlements/dalab`'s set.
+- [ ] **No garden trees or plants in the Dalab buildings**: the set asks the page for them (`dnTree`, `dnPlant`), and this
+      page answers nothing (`src/69f-host-dalab.js`) until the SW highlands kit's flora is on it; the orchards stand empty.
+- [ ] **Dalab's patches on the held Ancient parts** are the kit's generic decay-3 `repairPass` (corrugate, timber, tarp);
+      no red banners, lamps or Dalab-built gates on the Cross and the Sound Quarter yet (the set's `dnBanner` and `dnGate`
+      need a def to run in).
+- [ ] The Dalab set runs on its own copies of Iziz's Vernacular helpers (`69b`, `69c`), which drift from `settlements/iziz`;
+      Span reads Dalab's, as the set is tested against them. Its `vWorldUV` replaces core/materials' opt-in one on this page
+      (no fragment here calls the latter's third argument).
 - [ ] **Stand-ins drawn by the page** where no builder exists yet: the hangars' fronts (a concrete fill to the bench, a door,
       two piers), the tanks (a lathe and hoops), the works (boxes), the bridges (a deck and two girders), the Pipe Bridge
       (sagging pipes and a ball per payload, until `kits/ancients` 63-canyon's `HANG` is read in), the wrecks and the service

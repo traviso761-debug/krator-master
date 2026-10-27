@@ -16,6 +16,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/30-span-layout.js` | 26.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the layout: every part, way, link and cut by id (the one source) |
 | `src/31-span-rules.js` | 21.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 3.8 | [web] | 10 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69f-host-dalab.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Dalab set's garden trees and plants: none on this page yet |
 | `src/89z-host-sky.js` | 0.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8at-host-place.js` | 9.6 | [draw] | 12 | 0 | 0 | 0 | 2 | 21 | 0 | 0 | 0 | 0 | 0 | the layout's parts to the builders: no position decided here (the layout's) |
 | `src/99-host-take.js` | 3.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -23,4 +24,4 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-Read in place, not tagged here: the Ancients kit's runtime and Span's pieces (`kits/ancients/PORT.md`), core/rand, core/space, core/tags, core/atmos, core/host. The pieces cross to Godot as meshes ([draw]); the layout and its rules ([G data]) port as they are, with `SPAN.groundAt` the section the station carves.
+Read in place, not tagged here: the Ancients kit's runtime and Span's pieces (`kits/ancients/PORT.md`), the Dalab set (`settlements/dalab/PORT.md`), core/rand, core/space, core/tags, core/atmos, core/host. The pieces cross to Godot as meshes ([draw]); the layout and its rules ([G data]) port as they are, with `SPAN.groundAt` the section the station carves.

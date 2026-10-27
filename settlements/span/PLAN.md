@@ -297,8 +297,12 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   inspector's volumes, two negatives). New in the layout on the way: the ground-contact rule (every part that stands on rock
   stands on `SPAN.groundAt`), the portals' and hangars' cuts, the lake's outline; the hangars cut back to the -130 bench
   (they ran under the -85 gallery). Gaps: `KNOWN_ISSUES.md`.
-- **SP4.** Dalab's fort and trading post from the Dalab set: the rehabilitated parts, the Line, the mound, the trading post
-  on the Apron, the Basin Tunnel's portal and the first of its bore (`KCAVERN`); the dress tags the biome kit reads.
+- **SP4.** *(done 2026-10-27, but the Line and the banners)* Dalab's fort and trading post from the Dalab set
+  (`settlements/dalab/src`, read in place: the Vernacular helpers, items, dwellings, trade, town types, civic, sacred, its
+  library pack in a second sidecar), placed through `VERN.place` at each record's footprint, which is the def's own (a page
+  check): the trading post on the Apron building by building, the mound (76 x 90), a watch tower at the Middle Bridge's
+  north end. The held Ancient parts carry the kit's decay-3 patches. Left: the Line (no Dalab def), banners and gates, the
+  orchards' trees (the flora is the biome kit's): `KNOWN_ISSUES.md`.
 - **SP5.** The watch post on station 4's tower (with that station).
 - **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.
 - **SP7.** `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.

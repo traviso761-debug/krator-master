@@ -309,8 +309,8 @@
    "sha256": "ba1e9823f4d96fb50feb4a3563e3e456e79764f7499afa539abfc6df9595a06b"
   },
   "kits/ancients/dist/span.html": {
-   "bytes": 2594876,
-   "sha256": "499f4228a05cf8cb9a9debc57d762a0e12f65f753c23aba061143b8eceb97944"
+   "bytes": 2595202,
+   "sha256": "ba50fb5d75558869aa1b587c6d5b3ea3312de91f738f5f20f9a06c44223e48be"
   },
   "kits/ancients/dist/spire.html": {
    "bytes": 2513570,
@@ -705,8 +705,8 @@
    "sha256": "04ac55071bdd961bee721ba0a66c9a9bde527481ae1a56d25f638eaf1a9e4ba3"
   },
   "settlements/span/dist/span.html": {
-   "bytes": 569056,
-   "sha256": "dacf56cc73de076facbb5531f804ac5246a04fb26eee23688ad4213e9120e5fd"
+   "bytes": 750043,
+   "sha256": "8b22ad361877f968039e391d4290bd9e0dfe0d8fdb88b489d8bd29e89a1ce67f"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,

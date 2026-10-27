@@ -64,7 +64,7 @@ P('lake_ring', 'The Lake Ring', 'ringsite', C(-1500, -570, 150), { h: 14, st: 3,
 P('weir', 'The Weir', 'weir', B(-1070, -1030, -90, 90), { y: -8, h: 10, state: 'worn', key: 'anc_weir', walk: false, types: ['infrastructure'], sheets: S0, note: 'the sluice dam at the lake\'s outlet: holds the lake 8 m up; Pan Riba spills through it' });
 P('dome_lone_1', 'Lone dome', 'dome', C(-1200, 520, 16), { h: 14, st: 3, home: .5, state: 'worn', key: 'anc_ring_dome', sheets: S0 });
 P('dome_lone_2', 'Lone dome', 'dome', C(-760, -560, 14), { h: 6, state: 'toppled', key: 'anc_ring_dome', walk: false, sheets: S0 });
-P('mound', 'Dalab\'s mound', 'mound', C(-300, -430, 40), { h: 16, by: 'dalab', state: 'intact', key: 'dalab_mound', types: ['religious'], sheets: S0, note: 'an earth mound imitating the domes, facing the lab (south-west): the priest-captain communes here' });
+P('mound', 'Dalab\'s mound', 'mound', B(-338, -262, -475, -385), { h: 28, by: 'dalab', state: 'intact', key: 'dalab_mound', types: ['religious'], sheets: S0, note: 'an earth mound imitating the domes, facing the lab (south-west): the priest-captain communes here' });
 
 // ---------------------------------------------------------------- the canyon head and the Upper Bay
 P('head_pad', 'Head Pad', 'pad', C(-880, 150, 32), { h: 9, state: 'worn', key: 'anc_pad_drum', types: ['infrastructure'], sheets: ['S0', 'S1'], note: 'a landing pad on a drum at the canyon head; a walkway to the ring road' });
@@ -88,21 +88,27 @@ P('bay_pad', 'Bay Pad', 'pad', C(-700, -240, 30), { h: 8, state: 'ruined', key: 
 
 // ---------------------------------------------------------------- the Apron: Dalab's trading post (sheet S2)
 P('apron', 'The Apron', 'deck', O(-520, 0, 185, 118), { y: -45, h: 2, state: 'rehab', held: true, key: 'anc_apron', types: ['plaza'], dress: false, sheets: S2, note: 'the bay\'s deck over the river\'s slot, cleared by Dalab for the trading post' });
-P('apron_wreck', 'Derelict craft', 'craft', C(-620, 75, 14), { y: -45, h: 9, state: 'ruined', in: 'apron', held: true, walk: false, dress: false, key: 'anc_craft', sheets: S2, note: 'a lander, broken-backed: the one wreck Dalab left (too heavy to strip)' });
+P('apron_wreck', 'Derelict craft', 'craft', C(-560, 80, 14), { y: -45, h: 9, state: 'ruined', in: 'apron', held: true, walk: false, dress: false, key: 'anc_craft', sheets: S2, note: 'a lander, broken-backed: the one wreck Dalab left (too heavy to strip)' });
 P('basin_portal', 'The Basin Tunnel\'s upper portal', 'portal', C(-570, -160, 18), { y: -45, h: 14, state: 'intact', held: true, key: 'anc_tunnel_portal', types: ['infrastructure', 'military'], sheets: ['S0', 'S2'], note: 'in the bay\'s left wall: the Ancient road tunnel down to the basin, intact, cleared; Dalab\'s gate and wardens' });
 P('tunnel_road', 'The Tunnel Road', 'ramp', B(-580, -560, -142, -116), { y: -45, h: 1, state: 'intact', held: true, key: 'anc_ramp', types: ['infrastructure'], sheets: S2, note: 'the ramp from the portal down onto the Apron' });
 function T(id, name, key, b, o){ o.in = 'apron'; o.y = -45; o.by = 'dalab'; o.state = 'intact'; o.key = key; o.sheets = S2; o.dress = false; return P(id, name, 'dalab', b, o); }
-T('market', 'Market', 'dalab_market_large', B(-560, -480, -60, 10), { h: 8, types: ['market'], note: 'the trading post\'s heart: where Dalab trades with the plateau\'s people (who they are: TBD)' });
-T('customs', 'Customs', 'dalab_scribes', B(-545, -521, -100, -80), { h: 9, types: ['civic'], note: 'the scribes\' hall at the tunnel road: tolls, tallies, the priests\' cut' });
-T('warehouses', 'Warehouses', 'dalab_warehouse', B(-470, -410, -90, -50), { h: 9, types: ['industry'] });
+// each a building of the Dalab set (settlements/dalab, read in place) at its own footprint (its def's w by d), its front
+// toward the Apron's long axis; SP4 (2026-10-27)
+T('market', 'Market', 'dalab_market_large', B(-552, -488, -57, 7), { h: 8, types: ['market'], note: 'the trading post\'s heart: where Dalab trades with the plateau\'s people (who they are: TBD)' });
+T('customs', 'Customs', 'dalab_scribes', B(-557, -533, -100, -80), { h: 9, types: ['civic'], note: 'the scribes\' hall at the tunnel road: tolls, tallies, the priests\' cut' });
+T('warehouse_1', 'Warehouse', 'dalab_warehouse', B(-484, -456, -85, -65), { h: 9, types: ['industry'] });
+T('warehouse_2', 'Warehouse', 'dalab_warehouse', B(-454, -426, -85, -65), { h: 9, types: ['industry'] });
 T('inn_tunnel', 'Inn of the tunnel', 'dalab_inn', B(-640, -608, -80, -50), { h: 10, types: ['inn'], note: 'lizard stalls and a lodge: the tunnel\'s caravans' });
 T('inn_plateau', 'Inn of the plateau', 'dalab_inn', B(-460, -428, 20, 50), { h: 10, types: ['inn'], note: 'the plateau traders\' inn' });
-T('tavern', 'Tavern', 'dalab_tavern', B(-600, -575, 0, 25), { h: 7, types: ['tavern'] });
-T('bathhouse', 'Bath house', 'dalab_bathhouse', B(-445, -420, -20, 3), { h: 8, types: ['civic'] });
-T('traders', 'Traders\' houses', 'dalab_hut_c', B(-660, -620, 10, 60), { h: 7, types: ['dwelling-multi'], note: 'the resident traders: timber frames, as the caste builds (with dalab_rowhouse)' });
-T('fields', 'Fields and lizard pens', 'dalab_orchard', B(-690, -662, -35, 35), { h: 2, types: ['farm'], note: 'the Apron\'s upstream end' });
-T('caravan_yard', 'Caravan yard', 'dalab_yard', B(-400, -360, -40, 40), { h: 3, types: ['market'], note: 'lizard trains made up and broken; a ramp up to the Cross\'s lizard stalls' });
-T('shrine', 'Shrine', 'dalab_shrine', C(-500, 75, 8), { h: 6, types: ['religious'], note: 'faces the lab' });
+T('tavern', 'Tavern', 'dalab_tavern', B(-609, -583, 2, 28), { h: 14, types: ['tavern'] });
+T('bathhouse', 'Bath house', 'dalab_bathhouse', B(-444.5, -419.5, -23.5, -.5), { h: 8, types: ['civic'] });
+T('trader_house_1', 'Trader\'s house', 'dalab_hut_c', B(-656, -644, 19, 31), { h: 7, types: ['dwelling-single'], note: 'the trader caste builds in timber frames' });
+T('trader_house_2', 'Trader\'s house', 'dalab_hut_c', B(-656, -644, 39, 51), { h: 7, types: ['dwelling-single'] });
+T('trader_row', 'Traders\' terrace row', 'dalab_rowhouse', B(-638, -618, 55, 69), { h: 7, types: ['dwelling-multi'] });
+T('orchard_1', 'Orchard plot', 'dalab_orchard', B(-686, -664, -25, -3), { h: 5, types: ['farm'], note: 'the Apron\'s upstream end' });
+T('orchard_2', 'Orchard plot', 'dalab_orchard', B(-686, -664, -1, 21), { h: 5, types: ['farm'] });
+T('caravan_yard', 'Caravan yard', 'dalab_market_small', B(-394, -366, -14, 14), { h: 6, types: ['market'], note: 'lizard trains made up and broken; a ramp up to the Cross\'s lizard stalls' });
+T('shrine', 'Shrine', 'dalab_shrine', B(-504, -496, 71, 79), { h: 6, types: ['religious'], note: 'faces the lab' });
 
 // ---------------------------------------------------------------- the Cross: Dalab's fort (sheets S0-S2, S4)
 P('cross', 'The Cross (the Span)', 'cross', B(-300, -180, -150, 150), { y: -18, h: 18, st: 4, home: .3, state: 'rehab', held: true, key: 'anc_cross', types: ['military'], sheets: ['S0', 'S1', 'S2'], note: 'the habitable bridge where the highways cross the canyon: four storeys over the 300 m span, its roof the road (y 0), keel piers down to the river: Dalab\'s fort' });
@@ -141,6 +147,7 @@ P('pad_4', 'Rim Pad 4', 'pad', C(760, -240, 28), { h: 8, state: 'ruined', key: '
 P('rdome_1', 'Rim dome: the genepriests\' house', 'dome', C(20, 245, 26), { h: 20, st: 3, home: .5, state: 'rehab', held: true, key: 'anc_ring_dome', types: ['civic'], sheets: S1 });
 P('rdome_2', 'Rim dome', 'dome', C(380, -245, 30), { h: 22, st: 3, home: .5, state: 'ruined', key: 'anc_ring_dome', sheets: S1 });
 P('rdome_3', 'Rim dome', 'dome', C(650, 250, 22), { h: 18, st: 3, home: .5, state: 'worn', key: 'anc_ring_dome', sheets: S1 });
+P('watch_bridge', 'Watch tower at the Middle Bridge', 'dalab', B(276, 288, 222, 234), { h: 17, by: 'dalab', state: 'intact', key: 'dalab_watchtower', types: ['military'], sheets: S1, note: 'the forward post at the north end of the bridge' });
 P('middle_bridge', 'The Middle Bridge', 'bridge', B(255, 270, -150, 150), { y: -4, h: 4, state: 'ruined', key: 'anc_road_bridge', types: ['infrastructure'], sheets: S1, note: 'a road bridge at the rim; Dalab\'s forward barricade at its north end' });
 
 // ---------------------------------------------------------------- the walls (sheet S2): galleries on the benches, the service ledges, two bridges
@@ -207,6 +214,7 @@ K('gate_n', 'hw_north', { gate: 'the north gate', state: 'open' }); K('gate_s', 
 K('cross', 'ring_road', { gate: 'the bay gate', state: 'open' });
 K('gate_n', 'rim_n', { gate: 'the quarter gate', state: 'open' }); K('gate_s', 'rim_s', { gate: 'the rim gate', state: 'open' });
 K('mound', 'hw_south', { gate: 'the mound way', state: 'open' });
+K('watch_bridge', 'rim_n', { gate: 'the tower door', state: 'open' });
 K('cross', 'line', { kind: 'stair' }); K('line', 'floor_road', { gate: 'the Line\'s gate', state: 'closed' });
 K('gate_n', 'rng_n_a'); K('rng_n_a', 'gal_n40a', { kind: 'stair' }); K('rng_n_a', 'rdome_1'); K('rng_n_a', 'pad_1');
 K('gal_n40a', 'gal_n85', { gate: 'the salvage wall', state: 'closed' });
