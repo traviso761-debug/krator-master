@@ -14,7 +14,8 @@ const FIELD={wet:(x,z)=>FC.at(FC.a.wet,x,z),salt:(x,z)=>FC.at(FC.a.salt,x,z),upl
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
 BIO.init({tags:'rift',THREE:THREE,scene:scene,terrainH:terrainH,
- mask:(x,z)=>{const h=terrainH(x,z);if(h<.12)return 0;const w=h<.6?(h-.12)/.48:1;return w*smooth(1.6,.85,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff
+ mask:(x,z)=>{const h=terrainH(x,z);if(h<.12)return 0;const w=h<.6?(h-.12)/.48:1;return w*smooth(1.6,.85,FC.at(FC.a.slope,x,z))*(typeof MAP_DRY==='function'?MAP_DRY(x,z):1);},   // nothing rooted under water or on a cliff (MAP_DRY: a station's rivers and pools above the sea's level)
+ waterH:typeof MAP_WATERH==='function'?MAP_WATERH:undefined,   /* a station's water level where it is not the sea's 0 (its river, its pools): the kit's shore logic reads it */
  obstacles:OBSTACLES,ticks:tick,seed:11,
  // the LOD spine: a row of origins along x=0 from the savannah over the ridge to the shore
  origin:MAP_ORIGIN,center:[0,0],

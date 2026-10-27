@@ -1,4 +1,6 @@
-// ================================================================= HOST — station 1's far country: the scale model round it (core/terrain KFAR)
+// ================================================================= HOST — a station's far country: the scale model round it (core/terrain KFAR)
+// Shared by the stations (2026-10-27): a page with a baked FAR_MODEL (stations/<name>/44f-host-far-data.js) draws it; the old page has
+// none and draws nothing. STATION_PAGE.farPal overrides the palette's entries by name (sRGB 0-255 triples). Station 1's description:
 // Beyond the ground square, out to 50 km, the model's own heights (44f-host-far-data.js, baked by stations/bake_far.py): the central
 // island rising 3.6 km 24 km to the west with its cloud cap's green, the floor's gold savannah, and the terminal sea 6-8 km to the
 // north-east as flat water at its level. The model's 4 km cells are joined by Catmull-Rom (no facets on the island's flanks), with a
@@ -21,8 +23,9 @@ const FAR=(function(){if(typeof KFAR==='undefined'||!KFAR.grid||typeof FAR_MODEL
   return b+(120*(KF(x*.0006,z*.0006,3,71)-.5)+40*(KF(x*.003,z*.003,2,72)-.5))*(.4+.6*k)
    +relief*(420*(ridged(x+3e4,z,.0008,74)-.62)+160*(ridged(x,z+3e4,.002,75)-.62));};
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
- const C={sav:L([192,164,88]),sav2:L([164,140,72]),aw:L([128,128,70]),csa:L([104,112,62]),cloud:L([58,92,58]),rock:L([128,116,100]),
+ let C={sav:L([192,164,88]),sav2:L([164,140,72]),aw:L([128,128,70]),csa:L([104,112,62]),cloud:L([58,92,58]),rock:L([128,116,100]),
   sea:L([150,146,60]),shore:L([220,214,180]),far:L([176,182,178])};   /* far: the 1.94 atm haze, a pale grey-gold */
+ if(STATION_PAGE.farPal)for(const k in STATION_PAGE.farPal)C[k]=L(STATION_PAGE.farPal[k]);
  /* the seam: the lowest ground within 150 m along the page's edge, so a gully or a wash that runs off the page opens onto far ground
     below its own floor (the lattice's 250 m cells spanned a gully's mouth at rim height, and the eye looking up it saw the far
     field's underside: sky) */

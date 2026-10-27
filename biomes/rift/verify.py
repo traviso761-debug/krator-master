@@ -46,6 +46,7 @@ EXPORT_BOX = [760, 1700, 1060, 2000]   # 2026-10-20: moved to the east stream's 
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 # the stations (PLAN-STATIONS.md): each page's own box and profile, by its file name (dist/rift-<station>.html)
 STATION_EXPORT = {
+    'rift-jungle.html': ([-1250, -1600, -950, -1300], EXPORT_PROFILE),   # the river's mouth on the sea: the jungle's trees, the sea and the river
     'rift-savannah.html': ([-300, 900, 0, 1200], ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']),   # the densest 300 m cell of big heroes (44 trees, 2026-10-27); no standing water (89w)
 }
 

@@ -26,6 +26,16 @@ Read before changing anything here. `build.py` prints the open count.
       the blade pear's pads named as food not drawn as fruit): 10 views, 10-237 calls, 0.5-6.9 M triangles drawn, 22.3 M held.
       Still open: the far field ignores the weather's fog (it stays clear in a fog or a storm) until the shared fog can be thinned
       per material; the ground paint is 4.6 m a pixel, so a burn's edge is a few metres soft.
+- [ ] **Station 2, the jungle** (`python3 build.py --station jungle`, `dist/rift-jungle.html`; 2026-10-27, a first cut): the model's
+      px 418,1251, the Lizardmen river 3's mouth on the terminal sea (y 0 at the sea's -2,600 m): the shallow yellow sea, a coastal
+      lowland, a two-step escarpment (the `rift` strata on its faces), the jungle plain rising toward Cube's plateau; the river across
+      the plain, over the cliffs in two falls (158 m and 87 m, into plunge pools), across the lowland with a delta channel
+      (`stations/jungle/89w-host-water.js`); the old page's Girder tower on the plain; the far country from the model (`89f-host-far.js`,
+      now shared in src/). New shared hooks: `MAP_WATERH` and `MAP_DRY` (a map's own water level and dry-ground mask: nothing
+      roots in the river or the pools, the kit's shore logic sees the river's level). Open: the views are worked out from the map
+      and some want a look (the jungle's crowns hide much at 40 m); the falls throw at 5.5 m/s to clear their faces (steep cliffs,
+      25 m of run for 160 m); the delta channel is one; the old page (`dist/rift.html`, still built by plain `build.py`) retires when
+      the gallery switches to the stations (the owner's call on the publish).
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
