@@ -558,3 +558,31 @@ the bloodfall's stain and the seep dam's `groundAt`/`seepAt` (their records are 
 **Open.** The pan and the ice draw flat colour: no normal map or library texture yet (`ground.salt`, `ice.lake.saltrim` are in the Outlands' owed list).
 `core/export`'s tiler gives pans and ice no extent (they go into every tile) and no probes: adding them touches every page that takes core/export, so it
 waits for the all-builds rebuild. Brine and blood are colours, not a density or salinity anyone floats in.
+
+## Seasonal still water and wetGround on shaderHook (H7 and the open request, 2026-10-26)
+
+**Seasonal still water** (`biomes/hyperjungle/PLAN-LANDS.md` section 11: the várzea's high and low water).
+`WATER.still({..., seasonal: {low, high, lagD, sharp, latitude, wetIn}})`: the level is `low + (high - low) * wet`, `wet`
+from core/clock's season (`KCLOCK.season` with the record's own options). `S.levelOf(s)` and `S.setSeason(s)` take a
+season record or a wet number 0..1; `S.base` is the level it was made at (`o.level`, or `low` without one), and the
+queries (`heightAt`, `contains`) read the live level. `WATER.stepSeasons(clock)` or `(day, hour)` moves every seasonal
+still and raises each drawn one's mesh by the change since `drawStill` (`D.y0`); it returns false without core/clock.
+The export carries `seasonal` and `base`. A still without the option is what it was (`test-gaps.js`, "H7").
+
+**Adopting it** (the lake station, PLAN-LANDS J8): core/clock on the page, the lake's record
+
+```js
+const LAKE=WATER.still({name:'varzea',poly:LAKE_POLY,seasonal:{low:LOW,high:LOW+8,lagD:60,sharp:1.5}});
+```
+
+and once a frame, after the clock steps: `WATER.stepSeasons(KHOST.host.clock);`. Draw the ground to the high water's
+line (the forest stands in it half the year). Godot: `water_import.gd` does not read `seasonal` yet (the twin is
+`kseason.gd` and one line of arithmetic).
+
+**wetGround on `ATMOS.shaderHook`.** Where the page has core/atmos's sky host (`ATMOS.shaderHook`), `WATER.wetGround`
+adds its chunk as one layer (key `wtr-wet`) instead of its own accessor, so a page hook assigned after cloudShade,
+heightFog, snowOn and wetGround goes to the innermost layer and replaces none of them (before, a page hook set after
+wetGround replaced the core hook wetGround had captured under it). The shader text is the same; the program key is
+shaderHook's with wetGround's options after it. Pages without the sky host keep the accessor. `core/atmos/test-fog.js`
+checks both orders, with the old path as the negative. Nothing to adopt: it takes effect at the next rebuild of a page
+that has both.

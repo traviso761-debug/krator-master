@@ -306,6 +306,37 @@ carry them (`|gust`, `|fade`, `|a2c`, `|c2`), so no program is shared across a s
    coordinates, v down). A frond (`BIO.geo.frond`, already pinned at its origin, blade along +x) takes `axis:'x'`.
    nhighlands' pilot is `NHL.LEAFSET` (`50` and `55` `clumpAt`; `?leafset=0` for the old look).
 
+## The season (H7, 2026-10-26; `biomes/hyperjungle/PLAN-LANDS.md` section 11)
+
+Dry-season leaf drop and the grass's colour shift, on core/clock's season (`core/README.md`, "`clock/`"). One page-wide
+uniform, `BIO.SEASON.value` (0..1, how far into the dry season), beside the wind's; a leaf material reads it only when
+its options carry `season`:
+
+- `season: {drop, colour, k, stagger}` on `BIO.leafMat`: `drop` (0..1) is the share of cards gone at full dry, an
+  instance at a time by the hash of its root (the lowest hashes first) and then stippled away in 12 cm cells of the
+  unswayed card, so a crown thins rather than pops; `colour` (hex) is what the instance and vertex colours give way to
+  (`k`, 1, how far at full dry; a material with no colours takes it as a multiplier); `stagger` (.5) spreads each
+  instance's dryness about the page's, so a stand turns patchily. The hash is Dave Hoskins' (`BIO.GLSL_SEASON_HASH`),
+  no sine. It sits after the ground tint and before the alpha test.
+- `BIO.setSeason(x)`: a number or a season record (`{dry}`). `BIO.bindSeason(clock, o)`: every frame from a KCLOCK clock
+  (default `KHOST.host.clock`), `o` being `KCLOCK.season`'s options; false without core/clock.
+
+With no `season` option the shaders are the frozen defaults (`test-foliage.js` section 1); at `BIO.SEASON` 0 a season
+material draws what it would without (both terms are exactly x1; section 10 runs the shader's own formulas in
+`core/water/glsl-interp.js`).
+
+**Adopting it** (savannarim, rust miombo, the monsoon kapok; PLAN-LANDS J4): core/clock on the page, then in the host
+fragment after the host is bound:
+
+```js
+BIO.bindSeason(null,{sharp:2});   // the monsoon: two seasons, the rains in the southern summer
+```
+
+and on the materials that turn: the grasses `season:{colour:0xc8a860,k:.85}`, a deciduous crown (`monsoonrag`, the
+kapok) `season:{drop:.9,colour:0x9a7040,k:.5}`, the bolster `season:{colour:0xd86a20}`. A material's options are in
+`m.userData.bio.opts`, so the export carries them. Not done yet: the copper flush (a colour at the start of the rains,
+not the dry) and the Godot leaf shader's twin (a global `season_dry`, the same hash and the same two terms).
+
 ## Godot
 
 - R8: `leaf.gdshader` reads the same global uniforms as core/atmos (`atm_wind`, `atm_gust_amp`, `atm_time`) and the same

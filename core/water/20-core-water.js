@@ -241,7 +241,23 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   // out as the drawing mixes it, t = (distance / radius)^power clamped to 0..1 (S.gradientT, the shader's wtrStillT); null without one
   S.gradient=o.gradient?W.gradientOf(S,o.gradient):null;
   S.gradientT=(x,z)=>{const g=S.gradient;return g?Math.pow(cl(Math.hypot(x-g.at[0],z-g.at[1])/g.radius,0,1),g.power):0;};
-  S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];return add(S);};
+  S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];
+  // SEASONAL (H7, biomes/hyperjungle/PLAN-LANDS.md section 11: the várzea's high and low water): seasonal {low, high, and
+  // KCLOCK.season's options: lagD, sharp, latitude, wetIn} makes the level low + (high - low) * wet. S.levelOf(s) and
+  // S.setSeason(s) take a season record ({wet}) or a wet number 0..1; W.stepSeasons moves them all from the clock. S.base is
+  // the level it was made at (o.level, or low without one). Without the option the still is what it always was
+  if(o.seasonal){const Q=S.seasonal=Object.assign({},o.seasonal);Q.low=Q.low==null?(S.level==null?0:S.level):+Q.low;Q.high=Q.high==null?Q.low:+Q.high;
+   if(S.level==null)S.level=Q.low;S.base=S.level;
+   S.levelOf=s=>{const w=s!=null&&typeof s==='object'?s.wet:s;return Q.low+(Q.high-Q.low)*cl(+w||0,0,1);};
+   S.setSeason=s=>{S.level=S.levelOf(s);return S.level;};}
+  return add(S);};
+ // W.stepSeasons(clock) or (day, hour): every seasonal still to its level on core/clock's season, and each drawn one's mesh
+ // raised to it (D.y0, the level it was drawn at). Returns how many it moved, or false without core/clock (KCLOCK.season)
+ W.stepSeasons=(day,hour)=>{if(day!=null&&typeof day==='object'){hour=day.hour;day=day.day;}
+  let K=null;try{K=typeof KCLOCK!=='undefined'&&KCLOCK.season?KCLOCK:null;}catch(e){K=null;}if(!K)return false;let n=0;
+  for(const S of W.surfaces)if(S.kind==='still'&&S.seasonal){S.setSeason(K.season(day,hour,S.seasonal));n++;}
+  for(const D of W.drawn||[])if(D.S&&D.S.seasonal&&D.mesh&&D.y0!=null)D.mesh.position.y=D.S.level-D.y0;
+  return n;};
  // WET (Phase 4): how wet the ground is, 0..1: the weather's W.wet (core/atmos 4-weather) when a build has it
  W.wet=()=>{const A=AT();return A&&A.W?A.W.wet||0:0;};
 
@@ -273,6 +289,6 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    S.tint?{tint:{x0:S.tint.x0,z0:S.tint.z0,cell:S.tint.cell,nx:S.tint.nx,nz:S.tint.nz}}:{},S.drawOpt?{draw:S.drawOpt}:{});
   else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{},S.rapids?{rapids:S.rapids}:{});
   else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{},S.face?{face:S.face}:{});
-  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{});
+  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{},S.seasonal?{seasonal:S.seasonal,base:S.base}:{});
   else if(S.kind==='shore')Object.assign(o,{of:S.of.id,band:S.band});return o;})},W.groups.length?{groups:W.groups.map(g=>g.export())}:{});
  return W;})();

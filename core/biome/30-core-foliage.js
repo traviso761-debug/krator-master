@@ -46,6 +46,22 @@ BIO.bindAtmosWind=function(o){o=o||{};
 // round its own up axis, by BIO.SPIN.value radians (the host integrates the wind into it) at a speed and phase per
 // instance (x0.8..1.2). o.spin may be a uniform {value} of the host's own instead of true.
 BIO.SPIN={value:0};
+// THE SEASON (H7; biomes/hyperjungle/PLAN-LANDS.md section 11): BIO.SEASON.value, 0..1, how far into the dry season the page
+// stands (core/clock's KCLOCK.season(...).dry). BIO.setSeason(x) takes a number or a season record ({dry}); BIO.bindSeason(clock,
+// o) sets it every frame from a KCLOCK clock (default KHOST.host.clock), o being KCLOCK.season's options ({latitude, lagD,
+// sharp, wetIn}); it returns false without core/clock or a clock. Only a leafMat with o.season reads it (below); at 0 it draws
+// exactly what it would without. Godot: the same uniform as a global (leaf.gdshader takes it when the kits adopt it).
+BIO.SEASON={value:0};
+BIO.setSeason=function(s){const d=s!=null&&typeof s==='object'?s.dry:s;BIO.SEASON.value=Math.min(1,Math.max(0,+d||0));return BIO.SEASON.value;};
+BIO.bindSeason=function(clock,o){const K=typeof KHOST!=='undefined'&&KHOST&&KHOST.host?KHOST.host.clock:null,C=clock||K;
+ if(typeof KCLOCK==='undefined'||!KCLOCK||!KCLOCK.season||!C){if(BIO.err)BIO.err('BIO.bindSeason: needs core/clock and a clock');return false;}
+ const f=()=>BIO.setSeason(KCLOCK.season(C.day,C.hour,o));f();if(BIO.host)BIO.host.ticks(f);return true;};
+// the per-material options (o.season): drop 0..1 (the share of cards gone at the height of the dry; 0 none), colour (hex: what
+// the instance and vertex colours give way to as it dries; null none), k 0..1 (how far they go at full dry; 1), stagger 0..1
+// (how far each instance's dryness is spread about the page's, by its hash, so a stand turns patchily; .5)
+BIO._seasonOpt=function(s){s=s===true?{}:s;return{drop:s.drop==null?0:+s.drop,colour:s.colour==null?null:s.colour,k:s.k==null?1:+s.k,stagger:s.stagger==null?.5:+s.stagger};};
+// a per-instance hash in GLSL (Dave Hoskins' hash13, no sine: the same on every GPU)
+BIO.GLSL_SEASON_HASH='float bioSnHash(vec3 p){vec3 q=fract(p*0.1031);q+=dot(q,q.zyx+31.32);return fract((q.x+q.y)*q.z);}';
 // ALPHA-TO-COVERAGE (R7; DETAIL-RESEARCH item 4): BIO.setA2C(renderer) after the kits are built (their libSwap sets the
 // alpha tests) and before the first frame. With MSAA on a WebGL2 context, every textured leafMat with an alpha test draws
 // its cut-out edge by coverage (the alpha sharpened to a pixel's width about the old cut-off, a 0.02 test kept for the
@@ -205,9 +221,12 @@ BIO.geo.trunk=function(n){const T=BIO.host.THREE;return new T.CylinderGeometry(.
 //   spin    true or a uniform {value}: turn about the instance origin (BIO.SPIN, above)
 //   ground  {k, gain, tip, fade}: the floor cover's root takes the ground's colour (BIO.setGround, above)
 //   backlit 0..1, a leaf's thinness: the sun seen through it brightens it (DETAIL-RESEARCH item 6; nearer than ~450 m)
+//   season  true or {drop, colour, k, stagger}: the dry season (BIO.SEASON, above) thins the cards, an instance at a time by
+//           its hash and then stippled away, and turns the instance colour toward the dry colour (a grass's straw)
 BIO.foliageHook=function(o){o=o||{};
  return function(sh){const mat=this&&this.isMaterial?this:null;
   const gs=BIO.GUST,sp=o.spin?(o.spin.value!==undefined?o.spin:BIO.SPIN):null,gt=o.ground?(o.ground===true?{}:o.ground):null,bl=o.backlit==null?0:+o.backlit;
+  const sn=o.season?BIO._seasonOpt(o.season):null;
   const a2c=!!(mat&&mat.alphaToCoverage&&mat.userData.a2cCut!=null);
   sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;
   if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);
@@ -287,6 +306,21 @@ BIO.foliageHook=function(o){o=o||{};
   if(gt)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',['#include <color_fragment>','#ifdef USE_COLOR',
    ' diffuseColor.rgb *= mix(vec3(1.0), vFlGT.rgb / max(vColor, vec3(0.004)), vFlGT.a);','#else',' diffuseColor.rgb *= mix(vec3(1.0), vFlGT.rgb, vFlGT.a);','#endif',
    ' diffuseColor.a *= 1.0 - vFlGF;'].join('\n'));
+  // THE SEASON: the instance's hash (its root; a merged bucket's, its 3 m cell) staggers its dryness about the page's. The
+  // colour gives way to the dry colour (vColor replaced, or a multiplier without colours); the cards go when the page's dry
+  // passes the hash (instance by instance, the lowest first), stippled in 12 cm cells of the unswayed card so they thin, not
+  // pop. After the ground tint and before the alpha test; at BIO.SEASON 0 both terms are exactly x1 and keep
+  if(sn){const T=BIO.host.THREE,c=sn.colour!=null?new T.Color(sn.colour).convertSRGBToLinear():null;
+   sh.uniforms.uSeasonDry=BIO.SEASON;sh.uniforms.uSnK={value:new T.Vector4(sn.drop,c?sn.k:0,sn.stagger,0)};if(c)sh.uniforms.uSnC={value:new T.Vector3(c.r,c.g,c.b)};
+   const dec='uniform float uSeasonDry;\nuniform vec4 uSnK;\nvarying vec3 vSnP;\nvarying float vSnH;\n'+BIO.GLSL_SEASON_HASH+'\n';
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+dec)
+    .replace('vFlWP = (modelMatrix * mvPosition).xyz;',['vFlWP = (modelMatrix * mvPosition).xyz;','vSnP = position;','#ifdef USE_INSTANCING','  vSnH = bioSnHash(instanceMatrix[3].xyz);','#else','  vSnH = -1.0;','#endif'].join('\n'));
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+dec+(c?'uniform vec3 uSnC;\n':''))
+    .replace('#include <alphamap_fragment>',['{ float _snH = vSnH < 0.0 ? bioSnHash(floor(vSnP / 3.0)) : vSnH;'].concat(c?[
+     '  float _snD = clamp(uSeasonDry * (1.0 + uSnK.z * (2.0*_snH - 1.0)), 0.0, 1.0) * uSnK.y;','  vec3 _snC = uSnC * (0.88 + 0.24*_snH);','#ifdef USE_COLOR',
+     '  diffuseColor.rgb *= mix(vec3(1.0), _snC / max(vColor, vec3(0.004)), _snD);','#else','  diffuseColor.rgb *= mix(vec3(1.0), _snC, _snD);','#endif']:[],sn.drop>0?[
+     '  float _snF = clamp((uSeasonDry * uSnK.x * 1.15 - _snH) / 0.15, 0.0, 1.0);',
+     '  if (_snF > 0.0 && bioSnHash(floor(vSnP * 8.0) + _snH * 17.0) < _snF) discard;']:[],['}','#include <alphamap_fragment>']).join('\n'));}
   // ALPHA-TO-COVERAGE: the alpha sharpened to one pixel's width about the old cut-off (the coverage mask does the rest)
   if(a2c)sh.fragmentShader=sh.fragmentShader.replace('#include <alphatest_fragment>',
    'diffuseColor.a = clamp((diffuseColor.a - uA2Cut) / max(fwidth(diffuseColor.a), 0.0001) + 0.5, 0.0, 1.0);\n#include <alphatest_fragment>');
