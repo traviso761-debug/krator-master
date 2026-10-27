@@ -67,10 +67,40 @@ function weldGeo(g){const T=BIO.host.THREE,names=Object.keys(g.attributes),n=g.a
   out.setAttribute(names[q],new T.BufferAttribute(arr,s,a.normalized));});
  out.setIndex(new T.BufferAttribute(keep.length>65535?idx:new Uint16Array(idx),1));return out;}
 BIO.weldGeo=weldGeo;
+// A LIBRARY CARD ON ITS GEOMETRY'S AXES (2026-10-27; the owner: "these imposters improperly split the cutout textures. this
+// seems to keep happening": a frond strip draws its texture once a segment, so the Rift's library fern, a whole frond standing
+// in its image, was drawn three or four times end to end down each frond and upside down, small ferns floating loose of any
+// stem). A card geometry that holds its plant by one end says which edge of its uv that is (unflipped: v down the image),
+// geo.userData.card = {base, once}: base 'top' (v 0: BIO.geo.frond, ribbon, hang, and the clump's tripod, whose quads show the
+// image upside down), 'left', 'right', 'bottom'; once (frond, ribbon) the uv that spans the image once down the whole length
+// instead of a copy a segment. A library slot that
+// names the edge its plant attaches at in its image (materials.json "base", with "cell" the plant's tight box; both proposed by
+// tools/textures/check_cells.py) gets the geometry's uv turned so the two edges meet, and spans once. No "base", or a geometry
+// that declares nothing: the geometry is drawn as given, as before.
+const CARD_EDGES=['left','top','right','bottom'];
+BIO.cardTurn=function(geoBase,imgBase){const a=CARD_EDGES.indexOf(geoBase),b=CARD_EDGES.indexOf(imgBase);return a<0||b<0?0:(b-a+4)%4;};
+// A CROWN'S SPRIGS HELD BY THEIR STEMS (2026-10-27, the owner: "the stem on the leaf card does not orient properly to the 3d
+// stem model. Fix the axis and attachment point of each stem, attach it to the 3d stem, and orient leaves away by long axis").
+// A slot's "stems" ([{cell, stem, tip, w}], up to three: the sprig's box in the sheet, its stem point and tip in the image, its
+// half-widths either side of the stem-tip line, back how far the card reaches behind a stem set inside the sprig (a rosette's
+// centre), all image fractions with v down; tools/textures/check_cells.py measures them)
+// turns BIO.geo.clump's tripod of centred quads into three cards that each start at the clump's origin (the twig the kit
+// puts it on) with their sprig's stem, run out and up (o.rise, .65 rad above level, round the clump at the tripod's three
+// azimuths) along the sprig's own long axis, and are cut to the sprig's box (its oriented box clipped to its cell, so no
+// neighbour of the sheet shows): 2 to 6 triangles a card. The texture is the whole sheet (no texture cell). The geometry is
+// BIO.geo.stemClump (30-core-foliage.js).
+function cardFit(raw,mat,indexed){const cb=raw.userData&&raw.userData.card,lc=mat&&mat.userData&&mat.userData.libCard;
+ if(cb&&cb.kind==='clump'&&lc&&lc.stems&&lc.stems.length){const g=BIO.geo.stemClump(lc.stems,{rise:lc.rise});return {geo:indexed?weldGeo(g):g,fit:true};}
+ let g=raw;if(cb&&lc&&lc.base){g=raw.clone();const U=g.attributes.uv,A=U.array,k=BIO.cardTurn(cb.base,lc.base);
+  if(cb.once&&cb.once.length===A.length)A.set(cb.once);
+  for(let i=0;i<A.length;i+=2){let u=A[i],v=A[i+1];for(let r=0;r<k;r++){const t=u;u=1-v;v=t;}A[i]=u;A[i+1]=v;}   /* a quarter turn: left -> top -> right -> bottom */
+  U.needsUpdate=true;}
+ return {geo:indexed?weldGeo(g):g,fit:g!==raw};}
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
- const g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,g=(opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed)?weldGeo(g0):g0;
- BIO.defs[name]={geo:g,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
+ const cb=geo.userData&&geo.userData.card,g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,ix=opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed;
+ if(cb)g0.userData.card=cb;const F=cardFit(g0,mat,ix);
+ BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
@@ -130,12 +160,15 @@ BIO.libSwap=function(kit,MAT){const out={};
      one's cell (found by biomes/nwouterwall, 2026-10-26); the clone shares the image, given to it when the sheet decodes */
   if(card&&L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});}
   if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
-   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+   if(L.base||L.stems)m.userData.libCard={base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};}   /* the edge its plant attaches at: BIO.def turns a geometry that holds the plant by one end */
   else m.userData.libScale=L.scale;
   m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
  for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
   else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
   else one(v,k);}
+ /* an item defined before the swap takes its card's base now */
+ for(const n in BIO.defs){const d=BIO.defs[n];if(d.raw&&!d.fit){const F=cardFit(d.raw,d.mat,d.indexed);if(F.fit){d.geo=F.geo;d.fit=true;}}}
  return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to

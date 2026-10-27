@@ -1,0 +1,314 @@
+{
+ "_note": "The edge where each plant of a card SHEET attaches (left, top, right, bottom, centre), set by hand from the image: tools/textures/check_cells.py reads it to propose a slot's \"base\" (core/biome turns a frond, ribbon, hang or clump to meet it). A string is every plant of the sheet; a list is one per plant, row by row from the top left. A single-plant card needs no entry: its base is its meta.json processing.options.anchor (cards.py cropped it there). An object entry may also give \"single\" (one plant the cut misread as several), \"upright\" (each plant stands on its base: stem at the foot, axis straight up), \"rise\" (radians a crown sprig leaves its twig at) and \"stems\" ([{cell or plant, stem, tip}] by hand).",
+ "card.beard": "top",
+ "card.strap.pandan": "bottom",
+ "card.blossom": {
+  "base": "top",
+  "stems": [
+   {
+    "cell": [
+     0.0,
+     0.0,
+     0.33,
+     0.33
+    ],
+    "stem": [
+     0.02,
+     0.06
+    ],
+    "tip": [
+     0.32,
+     0.31
+    ]
+   },
+   {
+    "cell": [
+     0.34,
+     0.33,
+     0.66,
+     0.63
+    ],
+    "stem": [
+     0.35,
+     0.6
+    ],
+    "tip": [
+     0.62,
+     0.34
+    ]
+   },
+   {
+    "cell": [
+     0.67,
+     0.33,
+     1.0,
+     0.63
+    ],
+    "stem": [
+     0.98,
+     0.6
+    ],
+    "tip": [
+     0.68,
+     0.34
+    ]
+   }
+  ]
+ },
+ "card.tamarisk": {
+  "base": "top",
+  "rise": -0.55,
+  "stems": [
+   {
+    "cell": [
+     0.0,
+     0.0,
+     0.33,
+     0.33
+    ],
+    "stem": [
+     0.07,
+     0.02
+    ],
+    "tip": [
+     0.2,
+     0.32
+    ]
+   },
+   {
+    "cell": [
+     0.34,
+     0.33,
+     0.66,
+     0.66
+    ],
+    "stem": [
+     0.5,
+     0.34
+    ],
+    "tip": [
+     0.5,
+     0.65
+    ]
+   },
+   {
+    "cell": [
+     0.67,
+     0.66,
+     1.0,
+     1.0
+    ],
+    "stem": [
+     0.75,
+     0.67
+    ],
+    "tip": [
+     0.85,
+     0.97
+    ]
+   }
+  ]
+ },
+ "card.vine": {
+  "base": "top",
+  "rise": -1.1,
+  "stems": [
+   {
+    "cell": [
+     0.04,
+     0.0,
+     0.33,
+     1.0
+    ],
+    "stem": [
+     0.15,
+     0.01
+    ],
+    "tip": [
+     0.15,
+     0.98
+    ]
+   },
+   {
+    "cell": [
+     0.36,
+     0.0,
+     0.64,
+     1.0
+    ],
+    "stem": [
+     0.5,
+     0.01
+    ],
+    "tip": [
+     0.5,
+     0.98
+    ]
+   },
+   {
+    "cell": [
+     0.67,
+     0.0,
+     0.96,
+     1.0
+    ],
+    "stem": [
+     0.8,
+     0.01
+    ],
+    "tip": [
+     0.8,
+     0.98
+    ]
+   }
+  ]
+ },
+ "card.jungle.clump.17": {
+  "base": "bottom",
+  "single": true,
+  "rise": 1.2,
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.55,
+     0.985
+    ],
+    "tip": [
+     0.5,
+     0.08
+    ]
+   }
+  ]
+ },
+ "card.croptree.glossy": {
+  "base": "bottom",
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.165,
+     0.33
+    ],
+    "tip": [
+     0.165,
+     0.02
+    ]
+   },
+   {
+    "plant": 4,
+    "stem": [
+     0.5,
+     0.665
+    ],
+    "tip": [
+     0.5,
+     0.35
+    ]
+   },
+   {
+    "plant": 8,
+    "stem": [
+     0.835,
+     0.995
+    ],
+    "tip": [
+     0.835,
+     0.68
+    ]
+   }
+  ]
+ },
+ "card.breadfruit": {
+  "base": "centre",
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.156,
+     0.2
+    ],
+    "tip": [
+     0.156,
+     0.33
+    ]
+   },
+   {
+    "plant": 4,
+    "stem": [
+     0.5,
+     0.5
+    ],
+    "tip": [
+     0.5,
+     0.66
+    ]
+   },
+   {
+    "plant": 8,
+    "stem": [
+     0.84,
+     0.84
+    ],
+    "tip": [
+     0.84,
+     0.99
+    ]
+   }
+  ]
+ },
+ "card.pine.b": {
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.025,
+     0.24
+    ],
+    "tip": [
+     0.31,
+     0.05
+    ]
+   },
+   {
+    "plant": 4
+   },
+   {
+    "plant": 8
+   }
+  ]
+ },
+ "card.sword": "centre",
+ "card.palm": "bottom",
+ "card.reef": "bottom",
+ "card.spruce": "top",
+ "card.pods": "top",
+ "card.beads.bell": "top",
+ "card.moss.carnivorous": "top",
+ "card.weeper": "top",
+ "card.heath": {
+  "base": "bottom",
+  "upright": true
+ },
+ "card.saltbush": {
+  "base": "bottom",
+  "upright": true
+ },
+ "card.prismgum": {
+  "base": "top",
+  "rise": -0.5,
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.46,
+     0.04
+    ],
+    "tip": [
+     0.5,
+     0.98
+    ]
+   }
+  ]
+ }
+}
