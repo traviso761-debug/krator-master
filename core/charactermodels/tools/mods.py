@@ -908,7 +908,7 @@ def lizard_head(body, out, rec, tex, nrm=None):
         m = _Smooth(rec)
         m.C = []
         return m
-    cran, jaw, mouth_m, eye_m, dark_m, tooth_m, crest_m, lid_m = (smooth() for _ in range(8))
+    cran, jaw, mouth_m, eye_m, dark_m, tooth_m, crest_m, crest_n, lid_m = (smooth() for _ in range(9))
     for f, is_upper, m, bone in ((lz.upper, True, cran, hj), (lz.lower, False, jaw, jj)):
         lo, hi = np.array([-0.13, -0.1, -0.15]) * k, np.array([0.13, 0.21, 0.29]) * k
         V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
@@ -992,15 +992,19 @@ def lizard_head(body, out, rec, tex, nrm=None):
         rows.append(ring)
     collar.grid(rows)
     neck_axis = lambda q: np.stack([np.full(len(q), cx), q[:, 1], np.full(len(q), cz)], 1)
-    # the crest: blades down the midline, the head's rigid, the neck's on the nearest base vertex
+    # the crest: blades down the midline, the head's rigid, the neck's on the nearest base vertex and a material of
+    # their own, which the figures leave out when a worn item covers the skin under their roots (under)
     spines = RP.crest(lz, body, H, hide)
+    under = set()
     for p, up, back, h, nb in spines:
         if nb is None:
-            jw, recipe = [(hj, 1.0)], RP.RIGID
+            m, jw, recipe = crest_m, [(hj, 1.0)], RP.RIGID
         else:
+            m = crest_n
             jw = [(int(jx), float(wx)) for jx, wx in zip(B['J'][nb], B['W'][nb]) if wx > 0]
             recipe = (int(B['VID'][nb]), 0.0, 'Head', 0.0, np.zeros(3))
-        RP.blade(crest_m, crest_m.C, H + p, up, back, h, min(0.45 * h + 0.004 * k, 0.019 * k), 0.0032 * k, jw, recipe)
+            under.update(int(t) for t in np.nonzero((B['T'] == nb).any(1))[0])
+        RP.blade(m, m.C, H + p, up, back, h, min(0.45 * h + 0.004 * k, 0.019 * k), 0.0032 * k, jw, recipe)
     white = flat('#ffffff')
     spec = [(cran, {'name': 'Mod.head_lizard', 'rough': 0.62}, tex, nrm, None),
             (jaw, {'name': 'Mod.head_lizard_jaw', 'rough': 0.62}, tex, nrm, None),
@@ -1009,7 +1013,8 @@ def lizard_head(body, out, rec, tex, nrm=None):
             (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.08}, white, None, None),
             (dark_m, {'name': 'Mod.head_lizard_dark', 'rough': 0.5}, flat('#120c08'), None, None),
             (tooth_m, {'name': 'Mod.head_lizard_teeth', 'rough': 0.35}, flat('#d8ccb0'), None, None),
-            (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.55}, white, None, None)]
+            (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.55}, white, None, None),
+            (crest_n, {'name': 'Mod.head_lizard_crest_neck', 'rough': 0.55}, white, None, None)]
     prims = []
     for m, mat, img, nm, outward in spec:
         if not len(m.T):
@@ -1021,7 +1026,7 @@ def lizard_head(body, out, rec, tex, nrm=None):
     lp.update({'C': np.array(lid_m.C, float), 'normal': nrm, 'mesh': 1, 'targets': {'blink': (ldV, ldN)}})
     write_piece(body, out, 'mod_head_lizard', prims + [lp])
     hinge = np.array([0.0, RP.HINGE[1] * k, RP.HINGE[0] * k])
-    return hide, {'pivot': [round(float(x), 5) for x in hinge]}
+    return hide, {'pivot': [round(float(x), 5) for x in hinge]}, sorted(under)
 
 
 def _ellipsoid(m, c, r, jw, recipe, n=12, mm=8):
@@ -1066,7 +1071,7 @@ TAIL_MOTION = {'stiff': [0.5, 0.32, 0.22, 0.16, 0.12, 0.1, 0.09, 0.08, 0.08], 'g
 # to deg, for a share (hold) of every period seconds: a breath with the mouth a little open
 JAW_MOTION = {'deg': 6.0, 'period': 5.0, 'hold': 0.35}
 NONHUMAN_ROLES = {'Mod.tail': 'skin', 'Mod.head_lizard': 'skin', 'Mod.head_lizard_jaw': 'skin', 'Mod.head_lizard_neck': 'skin',
-                  'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin'}
+                  'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin'}
 
 
 def nonhuman_joints(body):
@@ -1088,6 +1093,22 @@ def nonhuman_joints(body):
     return rows, root
 
 
+def skin_repeat(body):
+    """how many times the head's scale texture repeats across the base skin's UV square for its scales to be the head's
+    size (reptile.TILE; one UV unit is about two metres of skin, area-weighted: MakeHuman's islands differ by about
+    twice either way, which the busy scales hide). The figures draw the body's skin with it under a lizard's head
+    (kit item skin_detail)"""
+    import reptile as RP
+    S = body.prims['Human.body']
+    P, U, T = S['POSITION'].astype(float), S['TEXCOORD_0'].astype(float), S['T']
+    a3 = np.linalg.norm(np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]]), axis=1) / 2
+    e, f = U[T[:, 1]] - U[T[:, 0]], U[T[:, 2]] - U[T[:, 0]]
+    a2 = np.abs(e[:, 0] * f[:, 1] - e[:, 1] * f[:, 0]) / 2
+    ok = a2 > 1e-12
+    mpu = float((np.sqrt(a3[ok] / a2[ok]) * a3[ok]).sum() / a3[ok].sum())
+    return round(mpu / RP.TILE, 2)
+
+
 def nonhuman(body, pieces, body_name):
     """the non-human pieces (a spike: tail_piece, lizard_head) beside the others, their kit entries (marked test: no
     people draws them), tint roles and morph recipes ({id: Recipe}), and the tail's root (tail_rows). body gets the
@@ -1101,7 +1122,7 @@ def nonhuman(body, pieces, body_name):
     tex, nrm = sm if sm else (scale_texture(texture_mean(body)), None)
     rec_t, rec_h = Recipe(), Recipe()
     info = tail_piece(body, os.path.join(pieces, 'mod_tail.glb'), rec_t, tex, nrm)
-    hide, jaw = lizard_head(body, os.path.join(pieces, 'mod_head_lizard.glb'), rec_h, tex, nrm)
+    hide, jaw, under = lizard_head(body, os.path.join(pieces, 'mod_head_lizard.glb'), rec_h, tex, nrm)
     n = len(body.prims['Human.body']['T'])
     a = np.zeros((n + 7) // 8 * 8, np.uint8)
     a[hide] = 1
@@ -1113,7 +1134,9 @@ def nonhuman(body, pieces, body_name):
         {'id': 'mod_head_lizard', 'name': 'Lizard head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_lizard.glb' % body_name,
          'grants': {'head': 'lizard'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
          'hide': base64.b64encode(np.packbits(a, bitorder='little').tobytes()).decode(), 'hides': int(len(hide)),
-         'hide_parts': HEAD_PARTS, 'jaw': dict(jaw, **JAW_MOTION)}]
+         'hide_parts': HEAD_PARTS, 'jaw': dict(jaw, **JAW_MOTION),
+         'skin_detail': {'material': 'Mod.head_lizard', 'repeat': skin_repeat(body)},
+         'crest_neck': {'material': 'Mod.head_lizard_crest_neck', 'under': under}}]
     return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h}, {'root': root, 'b_root': int(B['VID'][kb])}
 
 

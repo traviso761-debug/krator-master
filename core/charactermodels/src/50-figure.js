@@ -459,6 +459,26 @@ function KCharFigure(body, sliders, load){
     return y;
   }
   var tint = new THREE.Color(), DEFAULT_SKIN = '#d6ad8f', DEFAULT_HAIR = '#4a3424', DEFAULT_EYE = '#5a3a22';
+  /* the body's skin in a lizard head's scales (kit item skin_detail: the head's map and normal map, repeated across the
+     skin's UVs so the scales are the head's size), or back in its own maps */
+  function skinDetail(m, det, src){
+    var mt = m.material, u = m.userData;
+    if(!('ownMap' in u)){ u.ownMap = mt.map; u.ownNormal = mt.normalMap; }
+    var map = u.ownMap, nrm = u.ownNormal;
+    if(det){
+      var key = (src.material.map ? src.material.map.uuid : '') + det.repeat;
+      if(u.detailKey !== key){
+        u.detail = [src.material.map, src.material.normalMap].map(function(t){
+          if(!t) return null;
+          var c = t.clone(); c.wrapS = c.wrapT = THREE.RepeatWrapping; c.repeat.set(det.repeat, det.repeat); c.needsUpdate = true;
+          return c;
+        });
+        u.detailKey = key;
+      }
+      map = u.detail[0] || map; nrm = u.detail[1];
+    }
+    if(mt.map !== map || mt.normalMap !== nrm){ mt.map = map; mt.normalMap = nrm; mt.needsUpdate = true; }
+  }
   function tintOf(hexc, gain){ return tint.set(hexc).convertSRGBToLinear().multiplyScalar(gain); }
 
   /* leave out the triangles of a base region that `hide` (0/1 per triangle) marks */
@@ -543,6 +563,11 @@ function KCharFigure(body, sliders, load){
           self.inner.position.y = (p.ground || 0) * SCALE;
           if(p.stature) p.stature *= SCALE;
           var roles = (kit.tint && kit.tint.roles) || {}, gain = (kit.tint && kit.tint.gain) || {};
+          // a lizard's head draws the body's skin in its scales (kit item skin_detail: that material's maps, tiled)
+          var det = null;
+          var neckCrest = null;
+          if(mpfb) KCHAR.mods(rec, kit).forEach(function(it){ if(it.skin_detail) det = it.skin_detail; if(it.crest_neck) neckCrest = it.crest_neck; });
+          var detSrc = det && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.material; })[0];
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
             skinScale(m, p, mj && mj.d);
@@ -550,9 +575,12 @@ function KCharFigure(body, sliders, load){
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
-              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); coatShells(m, rec, gain, hide.base, coatEdge(rec)); }
+              else if(m.userData.srcMaterial === kit.base_material){ filterBase(m, hide.base); skinDetail(m, detSrc ? det : null, detSrc); coatShells(m, rec, gain, hide.base, coatEdge(rec)); }
               else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
+              else if(m.userData.srcMaterial === 'Human.nipple') skinDetail(m, detSrc ? det : null, detSrc);    // (the skin has holes under them)
             }
+            // a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
+            if(neckCrest && m.userData.srcMaterial === neckCrest.material) m.visible = !neckCrest.under.some(function(t){ return hide.base[t]; });
             if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
             else if(role === 'coat') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.coat || gain.hair));   // a therian's head (tools/heads.py)

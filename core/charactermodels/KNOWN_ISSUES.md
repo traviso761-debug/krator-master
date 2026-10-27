@@ -233,11 +233,13 @@
   - *The tail comes through the cloth* of a top, robe or cape over its root (over trousers it leaves by the waistband's
     back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
     opening, and the cloth chains do not collide with the tail.
-  - *Its scales are the library's `organic.scale`*, a snake's flank, on the head and the tail, and the body under them
-    is human skin tinted olive: the Lizardmen's own textures are asked for in `core/materials/PROMPTS-NEEDED.md`,
-    section 21. Under the head's colour the collar's lower edge shows as a line against the body's skin.
-  - *The lizard head's crest runs down the neck's skin*: a high collar or a hood would come through it.
-  - *The lizard head's lip* overhangs at the corner of the mouth as a thin tab seen from the front.
+  - *Its scales are the library's `organic.scale`*, a snake's flank, on the head, the tail and (under the lizard's head,
+    kit item `skin_detail`) the body: the Lizardmen's own textures are asked for in `core/materials/PROMPTS-NEEDED.md`,
+    section 21. On the body they are tiled over MakeHuman's UVs, whose islands differ in scale by about twice either
+    way: from behind, the neck and shoulders show patches of larger and smaller scales meeting at the islands' edges.
+    A body made for the Lizardmen would want its own UVs (or the scales projected in the skin's rest space).
+  - *The neck's crest goes as one*: under any worn item that covers the skin at its roots (most tops do: their hide
+    runs up the back of the neck) the whole neck's crest is left out and the head's stays (`crest_neck`).
   - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
   - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
     published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.

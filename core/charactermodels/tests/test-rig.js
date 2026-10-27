@@ -218,7 +218,9 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   var after = KCHAR.parts(r, k).map(function(p){ return p.slot; }), hp = KCHAR.hiddenParts(r, k);
   ok(KCHAR.replacesHead(r, k) && after.indexOf('hair') < 0 && after.indexOf('beard') < 0 && after.indexOf('head') < 0 &&
      after.filter(function(s){ return s === 'mods'; }).length === 2 && hp['Human.lips'] && hp['Human.low-poly'] && !hp['Human.nipple'] &&
-     (before.indexOf('head') >= 0 || !r.armour.head), b +': the lizard head leaves out hair, beard, headgear and the face parts');
+     (before.indexOf('head') >= 0 || !r.armour.head), b +': the lizard head leaves out hair, beard, headgear, and the face parts');
+  ok(hd.skin_detail && hd.skin_detail.material === 'Mod.head_lizard' && hd.skin_detail.repeat > 5 && hd.skin_detail.repeat < 15,
+     b + ': the lizard head draws the body\'s skin in its scales, about the head\'s size');
   var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
   ok(n >= hd.hides, b + ': the lizard head hides the head skin');
   ok(peoples.every(function(P){ for(var s = 1; s <= 20; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_tail' || m === 'mod_head_lizard'; })) return false; } return true; }),

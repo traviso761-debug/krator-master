@@ -70234,6 +70234,39 @@
     "deg": 6.0,
     "period": 5.0,
     "hold": 0.35
+   },
+   "skin_detail": {
+    "material": "Mod.head_lizard",
+    "repeat": 9.49
+   },
+   "crest_neck": {
+    "material": "Mod.head_lizard_crest_neck",
+    "under": [
+     888,
+     889,
+     895,
+     1216,
+     1224,
+     1225,
+     2088,
+     2089,
+     2120,
+     2121,
+     2122,
+     2123,
+     2204,
+     2205,
+     2232,
+     2233,
+     2294,
+     2295,
+     2298,
+     2299,
+     2314,
+     2315,
+     6370,
+     6371
+    ]
    }
   }
  ],
@@ -76557,7 +76590,8 @@
    "Mod.head_lizard_jaw": "skin",
    "Mod.head_lizard_neck": "skin",
    "Mod.head_lizard_lids": "skin",
-   "Mod.head_lizard_crest": "skin"
+   "Mod.head_lizard_crest": "skin",
+   "Mod.head_lizard_crest_neck": "skin"
   },
   "gain": {
    "skin": 1.6561,

@@ -35,12 +35,18 @@ eyes, was replaced):
   little narrower, so the upper lip's scales overhang it, heavy jowls, the throat in loose folds.
 - Painted per vertex (the skin tint multiplies it): a dark mottle, paler lip scales, a pale ring round each eye, a
   lighter throat. The skin is the library's `organic.scale` (its albedo made near-colourless, and its normal map), on
-  the tail too; without the images checked out, the procedural stand-in (`scale_texture`).
+  the tail too; without the images checked out, the procedural stand-in (`scale_texture`). The body's skin and the
+  nipples (the skin has holes under them) wear the same scales under the head: kit item `skin_detail`, the head's maps
+  repeated across the skin's UVs to the head's scale size (`skin_repeat`; `skinDetail` in `50-figure.js`, the skin
+  shader's `detail_repeat` in Godot), so the collar meets scales, not human skin.
+- Both lips tuck in toward the mouth's line, and near it the jaw is never wider than nine tenths of the upper lip: the
+  lip overhangs, and no ledge stands out at the corner.
 - Eyes: a round black pupil in a dark amber iris. **Lower lids** rise to shut them: a `blink` morph target on the
   piece's second mesh, which the figures' blinks drive (as the coyote's upper lids).
 - The crest: flat blades down the midline from the crown over the nape and down the back of the neck (`crest`,
   `blade`), short on the crown, tallest on the neck, standing up and back; the neck's on the nearest base vertex's
-  weights and deltas. Teeth inside the closed mouth, seen when it opens.
+  weights and deltas, on a material of their own (kit item `crest_neck`: the skin triangles under their roots), left
+  out under a worn item that covers that skin. Teeth inside the closed mouth, seen when it opens.
 - It replaces the human head: the item's `hide` is the base skin weighted at least half to Head (the human head's
   skin, as a worn item hides skin), its `hide_parts` the lips, ears, brows, lashes and eyes, and `replaces_head` drops
   hair, beard and headgear (`KCHAR.replacesHead`, `KChar.replaces_head`).

@@ -463,6 +463,27 @@ func apply(rec: Dictionary) -> void:
 	if wt == null or _tl.is_empty() or _tl["spec"] != wt["tail"]:
 		_tail_setup(wt)
 	skeleton.position.y = 0.0
+	# a lizard's head draws the body's skin in its scales (kit item skin_detail: that material's maps, tiled; the twin
+	# of skinDetail in 50-figure.js)
+	var det := {}
+	for m in KChar.mods(rec, kit):
+		if m.has("skin_detail"):
+			det = m["skin_detail"]
+	var det_tex := []
+	# a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
+	var crest_out := ""
+	for m in KChar.mods(rec, kit):
+		if m.has("crest_neck"):
+			var hid := KChar.hidden(rec, kit)
+			for t in m["crest_neck"]["under"]:
+				if int(t) < hid.size() and hid[int(t)] != 0:
+					crest_out = m["crest_neck"]["material"]
+	if not det.is_empty():
+		for mi in want:
+			for s in mi.mesh.get_surface_count():
+				var dm := mi.mesh.surface_get_material(s) as BaseMaterial3D
+				if mi.mesh.surface_get_name(s) == det["material"] and dm != null:
+					det_tex = [dm.albedo_texture, dm.normal_texture]
 	# a legs item's fur lies between the top of the boots and the lowest hem of the top (_fur)
 	var feet_top := -1000.0
 	var hem := 1000.0
@@ -488,6 +509,15 @@ func apply(rec: Dictionary) -> void:
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
 			if part["role"] == "base" and (hide_parts.has(mi.mesh.surface_get_name(s)) or _coat_hides(rec).has(mi.mesh.surface_get_name(s))):
 				m = _nothing()          # the nipples under a top (kit hide_parts) or a coat
+			elif crest_out != "" and mi.mesh.surface_get_name(s) == crest_out:
+				m = _nothing()
+			elif part["role"] == "base" and mi.mesh.surface_get_name(s) == "Human.nipple" and not det_tex.is_empty():
+				# in a lizard's scales as the skin round them is (the skin has holes under them)
+				var nm := m as BaseMaterial3D
+				nm.albedo_texture = det_tex[0]
+				nm.normal_enabled = det_tex[1] != null
+				nm.normal_texture = det_tex[1]
+				nm.uv1_scale = Vector3(float(det["repeat"]), float(det["repeat"]), 1.0)
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -496,6 +526,11 @@ func apply(rec: Dictionary) -> void:
 						if worn.has(int(i)):
 							hide.set_pixel(r, 0, Color(1, 0, 0))
 				m = _skin_mat(m as BaseMaterial3D, hide)
+				if not det_tex.is_empty():
+					var dsm := m as ShaderMaterial
+					dsm.set_shader_parameter("detail_tex", det_tex[0])
+					dsm.set_shader_parameter("detail_ntex", det_tex[1])
+					dsm.set_shader_parameter("detail_repeat", float(det["repeat"]))
 				# the coat's edge: the hide without a furred mod's (a therian's head carries the fur on: coatShells)
 				var edge := hide
 				var furred := []

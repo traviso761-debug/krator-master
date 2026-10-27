@@ -91,6 +91,11 @@ def _loft(P, table, upper, k):
         under = y <= cy
         h = np.where(under, a - b, 0.006 * k)
         n = np.where(under, 2.3, 2.0)
+    # both lips tuck in toward the mouth's line (widest there, the upper lip stood out over the jaw as a shelf, a tab
+    # at the corner): the section narrows over the last third of its height above (below) the line
+    sm = lambda t: (lambda u: u * u * (3 - 2 * u))(np.clip(t, 0, 1))
+    away = (y - cy) if upper else (cy - y)
+    w = w * np.where(away > 0, 0.86 + 0.14 * sm(away / (0.35 * np.abs(a - b) + 1e-9)), 0.86)
     r = ((np.abs(x) / w) ** n + (np.abs(y - cy) / h) ** n) ** (1.0 / n)
     d = (r - 1.0) * np.minimum(w, h)
     d = HD.smax(d, table[0, 0] * k - z, 0.012 * k)
@@ -146,9 +151,15 @@ class Lizard:
     def lower(self, P):
         k = self.k
         d = _loft(P, LOWER, False, k)
+        line = _lerp(LOWER, 2, P[:, 2] / k) * k
         for c, r in self.jowls:
-            d = HD.smin(d, HD.ellipsoid(P, c, r), 0.028 * k)
+            # kept under the mouth's line: blended into the jaw's top they spread it into a ledge wider than the upper
+            # lip (a tab at the corner)
+            d = HD.smin(d, HD.smax(HD.ellipsoid(P, c, r), P[:, 1] - (line - 0.012 * k), 0.008 * k), 0.028 * k)
         d = HD.smin(d, HD.round_cone(P, *self.throat), 0.03 * k)
+        # near the mouth's line no wider than the upper lip over it (the lip overhangs the jaw), widening below
+        lim = 0.9 * _lerp(UPPER, 1, P[:, 2] / k) * k + 0.5 * np.maximum(line - 0.01 * k - P[:, 1], 0)
+        d = HD.smax(d, np.abs(P[:, 0]) - lim, 0.004 * k)
         # the throat's loose folds: shallow grooves across it, running back and down
         y, z = P[:, 1], P[:, 2]
         under = np.clip((-0.01 * k - y) / (0.02 * k), 0, 1) * np.clip((0.09 * k - z) / (0.04 * k), 0, 1)
@@ -383,10 +394,13 @@ def crest(lz, body, H, hide):
     path = [(p, None) for p in pts if p[2] < 0.025 * k] + neck
     P = np.array([p for p, _ in path])
     arc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
-    rows = []
+    rows, last = [], -1
     for s_ in np.arange(0.0, arc[-1], 0.0135 * k):
         i = int(np.searchsorted(arc, s_))
         i = min(max(i, 1), len(P) - 1)
+        if i == last:                  # a long step (the nape onto the neck's skin): one spine there, not several stacked
+            continue
+        last = i
         p, nb = path[i]
         along = P[min(i + 1, len(P) - 1)] - P[i - 1]
         along /= np.linalg.norm(along)
