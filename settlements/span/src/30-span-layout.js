@@ -191,6 +191,37 @@ F('line', 'Dalab\'s Line', 'wall', B(-178, -170, -70, 70), { h: 11, by: 'dalab',
 F('outfall', 'The Outfall Gate', 'weir', B(800, 830, -70, 70), { y: -190, h: 30, state: 'ruined', key: 'anc_weir', types: ['infrastructure'], note: 'the downstream barrage; breached' });
 F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70, state: 'ruined', key: 'anc_sluice', types: ['infrastructure'], walk: false, note: 'under the Cross: the river steps from y -110 to -180 in four sluices' });
 
+// ---------------------------------------------------------------- THE PILLAR RIM and DALAB'S WATCH POST (SP5, 2026-10-27)
+// A stand-in for SW highlands station 4 (the pillar rim, refs/01) until it lands: downstream the tableland ends in a cliff at
+// u 1300 (L.pillarRim; SPAN.groundAt drops to its floor, y -260: Pan Riba's plunge fall where the canyon meets it), and pillar
+// towers stand off it (L.pillars: core/terrain KSTACKS 'pillar' records the page makes; the station's KSTACKS.pillars replaces
+// them). On the greatest, Dalab's WATCH POST (refs/27): a stone-walled post on the flat top (the Dalab set's dalab_post, its
+// watch tower and a hut inside), reached by a stair cut round the pillar's faces from its foot to the post's gate, and from the
+// rim road by a switchback stair down the cliff and a path across the floor. It must see the Valley's approaches and the
+// Cross's signal mast: SPAN.checks holds the line of sight to the Cross clear.
+L.pillarRim = { u: 1300, floor: -260 };
+L.pillars = [
+  { id: 'pillar_watch', name: 'The watch pillar', u: 1470, v: -300, w: 48, H: 272 },
+  { id: 'pillar_2', name: 'Pillar', u: 1420, v: -110, w: 30, H: 230 },
+  { id: 'pillar_3', name: 'Pillar', u: 1610, v: -430, w: 36, H: 255 },
+  { id: 'pillar_4', name: 'Pillar', u: 1380, v: -520, w: 26, H: 190 },
+  { id: 'pillar_5', name: 'Pillar', u: 1560, v: -150, w: 40, H: 260 }];
+// the stair round the watch pillar's faces: its centre line .8 m out from the faces (its inner edge on the rock), rising .55 a metre run, ending on the +v
+// face's middle at the top, where the post's gate is; built backwards from there down to the foot (no randomness)
+(function(){ var Pw = L.pillars[0], s = Pw.w / 2 + .8, top = L.pillarRim.floor + Pw.H, run = Pw.H / .55, k = .55;
+  var cs = [[Pw.u + s, Pw.v + s], [Pw.u + s, Pw.v - s], [Pw.u - s, Pw.v - s], [Pw.u - s, Pw.v + s]];
+  var pts = [[Pw.u, Pw.v + s, top]], left = run, at = [Pw.u, Pw.v + s], y = top, i = 0;
+  while (left > 1e-6){ var c = cs[i % 4], d = Math.hypot(c[0] - at[0], c[1] - at[1]);
+    if (d >= left){ var t = left / d; at = [at[0] + (c[0] - at[0]) * t, at[1] + (c[1] - at[1]) * t]; y -= left * k; pts.push([Math.round(at[0] * 10) / 10, Math.round(at[1] * 10) / 10, Math.round(y * 10) / 10]); break; }
+    y -= d * k; at = c; left -= d; pts.push([c[0], c[1], Math.round(y * 10) / 10]); i++; }
+  pts.unshift([Pw.u, Pw.v + 18.6, top]);   /* the head: a landing in from the edge to the post's gate (its front wall 18 m out) */
+  L.watchStair = pts.reverse(); })();
+P('watch_post', 'Dalab\'s watch post', 'dalab', B(1452, 1488, -318, -282), { y: 12, h: 0, by: 'dalab', state: 'intact', key: 'dalab_post', ry: 0, on: 'pillar_watch',
+  types: ['military'], dress: false, sheets: S0, note: 'on the watch pillar\'s top: the Valley watched, the Cross signalled' });
+P('watch_post_tower', 'Watch tower', 'dalab', B(1474, 1486, -314, -302), { in: 'watch_post', h: 17, by: 'dalab', state: 'intact', key: 'dalab_watchtower', ry: 0, types: ['military'], dress: false, sheets: S0 });
+P('watch_post_hut', 'The watch\'s hut', 'dalab', B(1455, 1465, -314, -304), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_hut_a', ry: 0, types: ['military'], dress: false, sheets: S0 });
+P('watch_post_banners', 'Banners of Dalab', 'dalab', B(1460, 1470, -294, -292), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_banners', ry: 0, types: ['religious'], dress: false, sheets: S0 });
+
 // ---------------------------------------------------------------- Dalab's marks: its gates in the openings it keeps, its banners on what it holds
 // (the Dalab set's dalab_gate and dalab_banners, 2026-10-27). `ry` turns a part's front (+z): 0 faces +v, PI faces -v, PI/2 faces +u
 function D(id, name, key, shape, o){ o.by = 'dalab'; o.state = 'intact'; o.key = key; o.dress = false; o.types = o.types || (key === 'dalab_gate' ? ['military'] : ['religious']); return P(id, name, 'dalab', shape, o); }
@@ -226,16 +257,28 @@ H('hl_11', 'lg-bulkhead', B(-129, -103, 338, 366), 0, ['dwelling-multi']); H('hl
 H('hl_5', 'dw-bus', B(-77, -63, 357, 366), 0);
 H('hl_1', 'dw-silo', B(-190, -179, 330, 340), 0); H('hl_2', 'dw-box', B(-175, -161, 332, 340), 0); H('hl_3', 'dw-tire', B(-155, -144, 329, 340), 0);
 H('hl_7', 'dw-tank', B(-95, -84, 331, 340), 0); H('hl_8', 'dw-bottle', B(-78, -66, 330, 340), 0);
+// THE MISSION (the owner, 2026-10-27): Dalab's temple in the quarter, where the priests try to bring the highlanders to the God
+// and where Dalabites at Span worship; the priest's house beside it, a wayside shrine just inside the palisade's gate to meet
+// whoever comes in. The Dalab set's own (dalab_temple, dalab_priest_house, dalab_shrine), held by Dalab
+D('mission_temple', 'The mission temple', 'dalab_temple', B(-192, -166, 400, 430), { h: 14, ry: Math.PI, types: ['religious', 'civic'], sheets: S1,
+  note: 'the God\'s word for the highlanders; the Dalabites\' own worship at Span' });
+D('mission_house', 'The mission priest\'s house', 'dalab_priest_house', B(-160, -146, 400, 414), { h: 8, ry: Math.PI, types: ['religious'], sheets: S1 });
+D('mission_shrine', 'Wayside shrine', 'dalab_shrine', B(-216, -208, 300, 308), { h: 5, ry: Math.PI / 2, types: ['religious'], sheets: S1, note: 'inside the palisade gate: the first thing a newcomer passes' });
 // the street's north side, west of the arena, their fronts to the street (-v)
 H('hl_10', 'dw-stilt', B(-190, -181, 378, 389), Math.PI); H('hl_12', 'dw-silo', B(-175, -164, 378, 388), Math.PI); H('hl_13', 'dw-box', B(-158, -144, 378, 386), Math.PI);
 
 // ---------------------------------------------------------------- the ways
 W('hw_north', 'road', [[-240, 236, 0], [-240, 800, 0], [300, 800, 0]], { w: 12, note: 'the north highway (Ancient): to the tableland and the plateau\'s people' });
 W('quarter_lane', 'road', [[-200, 290, 0], [-200, 372, 0], [-56, 372, 0]], { w: 8, note: 'the street of the quarter: from the palisade gate north, then east to the arena' });
+W('mission_walk', 'walk', [[-178, 376, 0], [-178, 398, 0]], { w: 4, note: 'from the street to the mission temple\'s door' });
+W('cliff_stair', 'stair', [[1298, -360, 0], [1301.5, -360, 0], [1301.5, -240, -60], [1304, -240, -60], [1304, -360, -120], [1301.5, -360, -120], [1301.5, -240, -180], [1304, -240, -180], [1304, -340, -230], [1301.5, -340, -230], [1301.5, -300, -260]],
+  { w: 2.4, held: true, note: 'cut down the cliff in switchbacks, from the rim road to the floor of the pillar rim' });
+W('pillar_path', 'walk', [[1302, -300, -260], [L.watchStair[0][0], L.watchStair[0][1], -260]], { w: 3, held: true, note: 'across the floor to the watch pillar\'s foot' });
+W('watch_stair', 'stair', L.watchStair, { w: 1.6, held: true, note: 'cut up the watch pillar\'s faces, round and round, to the post\'s gate' });
 W('palisade_way', 'road', [[-200, 286, 0], [-234, 252, 0]], { w: 8, note: 'from the palisade gate to the north highway, by the north gate of the Cross' });
 W('hw_south', 'road', [[-240, -236, 0], [-240, -800, 0], [-800, -800, 0]], { w: 12, note: 'the south highway' });
 W('rim_n', 'road', [[-170, 205, 0], [820, 205, 0]], { w: 10 });
-W('rim_s', 'road', [[-180, -205, 0], [1150, -205, 0]], { w: 10, note: 'on downstream: Dalab\'s way to the watch post' });
+W('rim_s', 'road', [[-180, -205, 0], [1150, -205, 0], [1296, -360, 0]], { w: 10, note: 'on downstream: Dalab\'s way to the watch post' });
 W('ring_road', 'road', (function(){ var p = []; for (var i = 0; i <= 48; i++){ var a = i * 2 * Math.PI / 48; p.push([Math.round((-520 + 262 * Math.cos(a)) * 10) / 10, Math.round(192 * Math.sin(a) * 10) / 10, 0]); } return p; })(), { w: 10, closed: true, note: 'round the bay' });
 W('lake_road_n', 'road', [[-762, 73, 0], [-1000, 95, 0], [-1700, 470, 0]], { w: 8, note: 'to the Lake Quay, round the canyon head' });
 W('lake_road_s', 'road', [[-761, -76, 0], [-1380, -460, 0]], { w: 8, note: 'to the Lake Ring' });
@@ -258,6 +301,10 @@ K('mound', 'hw_south', { gate: 'the mound way', state: 'open' });
 K('watch_bridge', 'rim_n', { gate: 'the tower door', state: 'open' });
 K('hw_north', 'palisade_way'); K('palisade_way', 'palisade', { gate: 'the palisade gate', state: 'open' }); K('palisade', 'quarter_lane');
 K('quarter_lane', 'arena', { gate: 'the arena gate', state: 'open' });
+K('quarter_lane', 'mission_walk'); K('mission_walk', 'mission_temple', { gate: 'the temple door', state: 'open' });
+K('mission_walk', 'mission_house', { gate: 'the priest\'s door', state: 'open' }); K('quarter_lane', 'mission_shrine', { gate: 'the shrine', state: 'open' });
+K('rim_s', 'cliff_stair', { gate: 'the head of the cliff stair', state: 'open' }); K('cliff_stair', 'pillar_path'); K('pillar_path', 'watch_stair');
+K('watch_stair', 'watch_post');
 ['ban_arena_1', 'ban_arena_2'].forEach(function(b){ K('quarter_lane', b, { gate: 'the arena forecourt', state: 'open' }); });
 for (var hh = 1; hh <= 13; hh++) K('quarter_lane', 'hl_' + hh);
 K('cross', 'line', { kind: 'stair' }); K('line', 'floor_road', { gate: 'the Line\'s gate', state: 'closed' });

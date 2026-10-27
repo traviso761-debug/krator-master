@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 159 (22%) | 40 (5%) | 10 (1%) | 30 (4%) | 496 (68%) |
+| KB | 159 (22%) | 40 (5%) | 10 (1%) | 30 (4%) | 501 (68%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -26,7 +26,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/69b-vern-mat.js` | 14.1 | [G shader] | 26 | 8 | 0 | 0 | 0 | 25 | 2 | 0 | 0 | 0 | 0 |  |
 | `src/69c-vern-helpers.js` | 19.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69d-dalab-mat.js` | 24.2 | [draw] | 34 | 12 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69e-dalab-helpers.js` | 26.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69e-dalab-helpers.js` | 26.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-dalab-dwellings.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-hl-tex.js` | 26.8 | [draw] | 0 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/71-dalab-trade.js` | 18.4 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/71c-dalab-town.js` | 17.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/72-dalab-civic.js` | 20.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/72-hl-helpers.js` | 14.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/72b-dalab-marks.js` | 4.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the gate and the banners of a hold |
+| `src/72b-dalab-marks.js` | 4.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the gate and the banners of a hold |
 | `src/73-dalab-sacred.js` | 20.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/73-hl-carve.js` | 29.8 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/74-dalab-ranch.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -57,11 +57,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88y-dalab-matlib.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 3.4 | [web] | 14 | 1 | 1 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 2.9 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/91t-dalab-tags.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Dalab's spellings mapped onto the vocabulary (2026-10-15) |
+| `src/91t-dalab-tags.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Dalab's spellings mapped onto the vocabulary (2026-10-15) |
 | `src/92-camera.js` | 1.2 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView, Labels (vendored from Iziz, 2026-10-15) |
 | `src/93-labels.js` | 4.0 | [G shader] | 6 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/94-dalab-light.js` | 4.6 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
-| `src/99-start.js` | 2.0 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views (the hour by onView), ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
+| `src/99-start.js` | 2.2 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views (the hour by onView), ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/63-anc-dalab.js` | 11.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/84-city-geo.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -74,7 +74,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/91z-views.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/93-city-ui.js` | 2.0 | [web] | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/95-city-life.js` | 8.6 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | split: data candidate that also draws |
-| `targets/set/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/set/89z-rows.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/set/91z-views.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes

@@ -30,3 +30,21 @@ function buildDalabBanners(G,o){reseed(8571+(o.v|0));const n=o.n==null?3:o.n,red
 
 dDef({key:'dalab_gate',name:'Gate of the hold',family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:false},w:28,d:6,h:14,build:buildDalabGate});
 dDef({key:'dalab_banners',name:'Banners of Dalab',family:'sacred',tags:{type:['religious'],wealth:'civic',lit:false},w:10,d:2,h:8,build:buildDalabBanners});
+
+// THE WATCH POST: a compound wall in the nobles' grey stone on a high, narrow place (a pillar's top: settlements/span's watch
+// pillar; LORE.md 6.1), its gate a stone trilithon in the front (+z) wall with the holy red band; inside, a beacon pyre on a
+// stone platform, a signal mirror on its post, a stele. The watch tower and the hut stand inside it as their own defs.
+// o.W, o.D: the wall's square (34 x 34).
+function buildDalabPost(G,o){reseed(8581+(o.v|0));const W=o.W==null?34:o.W,D=o.D==null?34:o.D,st=dCol(DPAL.stone),red=dCol(DPAL.red),wood=dCol(DPAL.woodGrey);
+ vnReg('Watch post',0,0,Math.hypot(W,D)/2,6,{part:'wall'});
+ dnEarthWall(0,0,0,W,D,0,3.2,5,{c:dCol(DPAL.stoneWarm),item:'vStone',capItem:'vStone',capC:st,stoneGate:true});   /* dressed stone, a grey coping */
+ vB('dEarth',0,2.4,D/2+.62,6.4,.5,.06,0,red);
+ // the beacon: a stone platform, a stack of split wood and an iron basket over it
+ vB('vStone',-W/2+7,0,D/2-9,5,1.1,5,0,st);
+ for(let k=0;k<4;k++)vB('vWood',-W/2+7,1.1+k*.32,D/2-9,3.2-k*.5,.3,3.2-k*.5,k*.4,wood);
+ vPst('vPost',-W/2+7,2.4,D/2-9,.55,.9,vC(0x3a3532));
+ // the signal mirror: a post, a yoke, a disc of Ancient plate turned to the Cross
+ vPst('vPostB',W/2-6,0,D/2-6,.14,3.4,wood);vB('vWood',W/2-6,3.3,D/2-6,1.4,.12,.12,0,wood);
+ kput('vPlateW',[W/2-6,3.9,D/2-6],qEuler(.25,.6,0),[1.3,1.3,.06],null);
+ dnStele(0,0,D/2-4,0,2.8,st);}
+dDef({key:'dalab_post',name:'Watch post',family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:false},w:36,d:36,h:8,build:buildDalabPost});

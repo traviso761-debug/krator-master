@@ -19,6 +19,11 @@ const VIEWS={
  'Into the arena':[-92,24,352,-92,2,410],
  'The north gate of the Cross':[-200,8,300,-240,6,232],
  'Dalab\'s Line from the floor':[-60,-172,-55,-174,-170,0],
+ 'The watch pillar from the rim':[1236,46,-196,1470,-110,-300],
+ 'The pillar rim from its floor':[1780,-215,-660,1480,-110,-300],
+ 'Dalab\'s watch post':[1426,40,-250,1470,14,-300],
+ 'The cliff stair':[1372,-150,-292,1302,-130,-300],
+ 'The mission temple':[-178,12,368,-179,6,415],
 };
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 // the page's checks for verify.py --assert: the layout's rules (31-span-rules.js), every part placed, every record a
@@ -33,6 +38,13 @@ function spanChecks(){const L=SPAN_LAYOUT,R=[];
   .map(p=>{const q=SP.own.find(x=>x.id===p.id);return p.id+(q&&q.def?' '+q.w+'x'+q.d+' vs '+q.def.join('x'):' (no def '+p.key+')');});
  R.push({name:'every building of another kit is a def of that kit at the record\'s footprint',ok:keyed.length>0&&!badD.length,
   detail:SP.own.filter(r=>r.kit==='dalab').length+' through the Dalab set, '+SP.own.filter(r=>r.kit==='post-apoc').length+' through the Post-Apoc kit'+(badD.length?'; '+badD.join(', '):'')});
+ // the pillar rim (SP5): every part on a pillar stands on the drawn body's top (KSTACKS.topAt at its centre, within 1.5 m),
+ // and every stair way is drawn
+ const onP=SPAN_LAYOUT.parts.filter(p=>p.on),badP=onP.filter(p=>{const B=SP.pillars.find(b=>b.id===p.on),b=SPAN.bbox(p.shape),c=SPAN.toWorld(SPAN_FRAME,(b[0]+b[1])/2,(b[2]+b[3])/2,0);
+  return !B||!(Math.abs(KSTACKS.topAt([B],c[0],c[2])-p.y)<=1.5);}).map(p=>p.id);
+ const st=SPAN_LAYOUT.ways.filter(w=>w.kind==='stair');
+ R.push({name:'every part on a pillar stands on its drawn top; every stair is drawn',ok:onP.length>0&&!badP.length&&st.every(w=>SP.steps[w.id]>0),
+  detail:SP.pillars.length+' pillars; '+onP.length+' on them'+(badP.length?', off the top: '+badP.join(', '):'')+'; '+st.map(w=>w.id+' '+(SP.steps[w.id]||0)+' steps').join(', ')});
  const A=SP.tags.audit();R.push({name:'tags: known vocabulary, a culture each',ok:A.unknown===0&&!A.missingCulture,detail:A.records+' records, unknown '+A.unknown+', missing culture '+A.missingCulture});
  return R;}
 function spanNegatives(){const L=JSON.parse(JSON.stringify(SPAN_LAYOUT)),R=[];

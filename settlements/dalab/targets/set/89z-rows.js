@@ -20,7 +20,7 @@ const ROWDEF=[
  ['dalab_mound'],
  ['dalab_palace_mound'],
  ['dalab_high_mound'],
- ['dalab_gate','dalab_banners'],   // the marks of a hold (2026-10-27, settlements/span): after the last row, so no site moves
+ ['dalab_gate','dalab_banners','dalab_post'],   // the marks of a hold (2026-10-27, settlements/span): after the last row, so no site moves
 ];
 const ROWZ=[0,40,90,150,210,270,330,390,450,530,610,690,770,890,1070,1250,1430,1670,1850];
 const SITES=[];

@@ -200,6 +200,16 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
   quarter gate on the rim road), its **banners** (`dalab_banners`) on what it holds (the Cross's roof, the Sound Quarter, Pad 1,
   the arena's gate); **the Line** is a salvage barricade (the Post-Apoc kit's `barricade`: container walls, tyre walls, sheet
   metal, a container gate tower, kept shut) across the floor under the gun gallery.
+- **The mission** (the owner, 2026-10-27): inside the palisade, by the arena, a **temple** where Dalab's priests try to
+  proselytize the highlanders and where the Dalabits at Span worship (the Dalab set's `dalab_temple`), the priests' house beside
+  it (`dalab_priest_house`) and a wayside shrine on the quarter's street (`dalab_shrine`). *Proposed*: the mission is how Dalab
+  means to keep the highlanders' loyalty when the champion's arm no longer can.
+- **The watch post** (SP5, 2026-10-27): Dalab's post on **the watch pillar** of the pillar rim downstream (L.pillars: a stand-in
+  rim, a cliff at u 1300 down to its floor at y -260 and five pillars, until SW highlands station 4 lands): a stone-walled
+  compound (the Dalab set's `dalab_post`: beacon pyre, signal mirror toward the Cross, stele) round a watch tower and a hut,
+  on the 272 m pillar's top. It is reached by **the cliff stair** cut down the rim's cliff in switchbacks from the rim road,
+  a path across the floor, and **the watch stair** cut round the pillar's faces to the post's gate (the layout's line is a
+  square round the pillar, its spec; the page draws an even helix fitted to the drawn rock).
 - **The garrison**: about 240: a priest-captain, three genepriests (the clinic; the shelf coral as an ore-finder and the
   fishing bridge's venom, swhighlands section 6), Giant street patrols in threes (§6.1), soldiers and lizard riders, servants
   and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,200 at its peak.
@@ -319,7 +329,10 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   check): the trading post on the Apron building by building, the mound (76 x 90), a watch tower at the Middle Bridge's
   north end. The held Ancient parts carry the kit's decay-3 patches. Left: the Line (no Dalab def), banners and gates, the
   orchards' trees (the flora is the biome kit's): `KNOWN_ISSUES.md`.
-- **SP5.** The watch post on station 4's tower (with that station).
+- **SP5.** *(done 2026-10-27, on stand-in pillars)* The watch post on a pillar-rim tower: the stand-in rim and pillars (core/terrain
+  KSTACKS 'pillar' bodies, their beds KSTRATA's 'pillar' recipe, contoured and weathered on the page; the library's grain from
+  `materials.json`), the post from the Dalab set, the cliff stair and the watch stair fitted to the drawn rock (Pinnacle Rock's
+  rule), and the mission inside the palisade. Station 4's `KSTACKS.pillars` field replaces the stand-in: `KNOWN_ISSUES.md`.
 - **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.
 - **SP7.** `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
 

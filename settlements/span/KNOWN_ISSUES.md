@@ -36,3 +36,14 @@
       overview), walks on the ground only (no KWALK floors on the galleries or the Cross), exports nothing, and has no
       night state (`NIGHT` stays false). PLAN.md section 7.
 - [ ] The Cross's zones (S4) are records only: no rooms are drawn until SP6.
+- [ ] **The pillar rim is a stand-in** (SP5) until SW highlands station 4 lands: the rim's cliff is the stand-in ground's sheer
+      wall at u 1300 (one plane, banded by the strata shader), and the five pillars are the page's own KSTACKS bodies. The
+      contour (a wandering profile, joints, a split crown) is a page pass on the drawn mesh (`8at-host-place.js` `contour`),
+      like `KSTACKS.weather`: KSTACKS' records keep the uncontoured body, so `KSTACKS.at` and `topAt` answer for the record
+      (the post's top is kept whole, so its check holds). Lift it into KSTACKS as an opt-in (a pillar `contour` option or a
+      weather term) when the station needs it. The beds still read as rounded cushions at the partings (the recipe's soft
+      partings notched by `pillar`).
+- [ ] **The watch stair is drawn as a helix fitted to the drawn rock**, not on the layout's square line: `SPAN.checks` reads the
+      line, the page the drawn treads. The cliff stair is drawn on its line against the stand-in cliff. Neither is walkable
+      (no KWALK floors on this page yet).
+- [ ] The post's top is the record's flat top inside a weathered rim (the restored vertices stand a little proud of it).

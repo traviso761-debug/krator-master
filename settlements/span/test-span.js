@@ -41,6 +41,8 @@ const NEG = [
   ['every way out of Dalab\'s hold', M => { M.links.push(['cross', 'rim_n', {}]); }],
   ['with its gates shut', M => { M.links.find(k => k[0] === 'line' && k[1] === 'floor_road')[2].state = 'open'; }],
   ['every part that stands on rock', M => { part(M, 'pad_1').y = 10; }],
+  ['every part on a pillar', M => { part(M, 'watch_post').shape = ['box', 1400, 1436, -318, -282]; }],
+  ['the watch post sees', M => { part(M, 'watch_post').y = -250; }],
   ['the floor at the peak', M => { M.parts.filter(p => /^gal_/.test(p.id)).forEach(p => { p.st = 6; }); }],
 ];
 NEG.forEach(([prefix, breakIt]) => {

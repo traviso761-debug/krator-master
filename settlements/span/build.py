@@ -96,6 +96,12 @@ import furniture_bundle, kit_bundle, apoc_bundle
 FURN_CULTURES = ['post-apoc', 'scrap', 'generic']
 APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '53-barricade.js', '54-compound.js', '56-arena.js']
 CORE_WALK = ['20-core-walk.js']
+# core/terrain: KSTACKS, the stand-in pillars of the pillar rim (SP5) until SW highlands station 4's carve replaces them
+CORE_TERRAIN = ['35-core-strata.js', '35z-core-strata-shade.js', '37-core-stacks.js']
+PATH['37-core-stacks.js'] = core('terrain', '37-core-stacks.js')
+# core/terrain strata: the pillars' beds (the 'pillar' recipe) as data and shader; the shade half keyed 35z so it sorts after the data
+PATH['35-core-strata.js'] = core('terrain', '35-core-strata.js')
+PATH['35z-core-strata-shade.js'] = core('terrain', 'host', '35-core-strata-shade.js')
 PATH['20-core-walk.js'] = core('walk', '20-core-walk.js')
 BUNDLES = {'70d-furniture-bundle.js': lambda: furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['post-apoc']),
            '70e-apoc-bundle.js': lambda: apoc_bundle.bundle(APOC_DEFS)}
@@ -132,6 +138,7 @@ import matlib_pack
 SIDE = {}
 VIRTUAL = {'88x-matlib-pack.js': matlib_pack.fragment(ANC, 'ancients', side=SIDE),
            '88x-matlib-pack-dalab.js': matlib_pack.fragment(DALAB, 'dalab', side=SIDE),
+           '88x-matlib-pack-span.js': matlib_pack.fragment(HERE, 'span', side=SIDE),
            khost.EDITS_JS: khost.edits_js(HERE, 'span')}
 VIRTUAL.update({f: fn() for f, fn in BUNDLES.items()})
 for f in VIRTUAL:

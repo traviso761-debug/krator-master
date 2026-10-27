@@ -37,7 +37,7 @@ function inShape(s, u, v, pad){
 }
 // points round a shape's outline (and its centre): what containment and the sampled tests read
 function outline(s, n){
-  n = n || 32; var out = [], i, t;
+  n = n == null ? 32 : n; var out = [], i, t;
   if (s[0] === 'box'){
     for (i = 0; i < n; i++){ t = i / n * 4; var k = Math.floor(t), f = t - k;
       out.push(k === 0 ? [s[1] + f * (s[2] - s[1]), s[3]] : k === 1 ? [s[2], s[3] + f * (s[4] - s[3])] : k === 2 ? [s[2] - f * (s[2] - s[1]), s[4]] : [s[1], s[4] - f * (s[4] - s[3])]); }
@@ -100,6 +100,7 @@ function sectionAt(L, a, fy, k){ var H = L.half; k = k == null ? 1 : k;
 function groundAt(L, u, v){
   var i, c, a = Math.abs(v), hd = L.canyon.head, bay = L.bay;
   for (i = 0; i < L.cuts.length; i++){ c = L.cuts[i].box; if (u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3]) return L.cuts[i].y; }
+  if (L.pillarRim && u >= L.pillarRim.u) return L.pillarRim.floor;   /* past the pillar rim's cliff: its floor */
   if (inPoly(L.lake.pts, u, v)) return Math.max(L.lake.bed, L.lake.level - .25 * polyDist(L.lake.pts, u, v));
   if (u >= -1050 && u < hd[0][0]) return a < 15 ? L.lake.level : 0;
   if (u >= hd[0][0] && u <= hd[1][0]){ var w = hd[0][1] + (hd[1][1] - hd[0][1]) * (u - hd[0][0]) / (hd[1][0] - hd[0][0]); if (a < w) return -60; }
@@ -267,11 +268,22 @@ function checks(L){
   // the ground: a part that stands on rock stands on SPAN.groundAt at its base (spans, hangs, wrecks, cuts and weirs aside)
   var SKIPG = { bridge: 1, payload: 1, craft: 1, fallen: 1, cross: 1, gate: 1, portal: 1, hangar: 1, weir: 1, ramp: 1, bay: 1, deck: 1 };
   ok('every part that stands on rock stands on the ground the layout gives (within 1.5 m)', L.parts.filter(function(p){
-    if (p.in || SKIPG[p.kind] || p.state === 'toppled' && p.kind !== 'range') return false;
+    if (p.in || p.on || SKIPG[p.kind] || p.state === 'toppled' && p.kind !== 'range') return false;
     var b = bbox(p.shape), pts = [];
     [.15, .5, .85].forEach(function(fu){ [.15, .5, .85].forEach(function(fv){ var u = b[0] + fu * (b[1] - b[0]), v = b[2] + fv * (b[3] - b[2]); if (inShape(p.shape, u, v)) pts.push([u, v]); }); });
     return pts.some(function(q){ return Math.abs(groundAt(L, q[0], q[1]) - p.y) > 1.5; });
   }).map(function(p){ var b = bbox(p.shape); return p.id + ' (y ' + p.y + ', ground ' + groundAt(L, (b[0] + b[1]) / 2, (b[2] + b[3]) / 2).toFixed(1) + ')'; }));
+  // the pillars: a part on a pillar stands on its top (the record's y is the pillar's floor plus its height) inside its edge (1 m)
+  var PIL = {}; (L.pillars || []).forEach(function(q){ PIL[q.id] = q; });
+  ok('every part on a pillar stands on its top, inside its edge', L.parts.filter(function(p){ if (!p.on) return false; var q = PIL[p.on]; if (!q) return true;
+    var b = bbox(p.shape), hw = q.w / 2 - 1;
+    return Math.abs(p.y - (L.pillarRim.floor + q.H)) > .5 || b[0] < q.u - hw || b[1] > q.u + hw || b[2] < q.v - hw || b[3] > q.v + hw; }).map(function(p){ return p.id; }));
+  // the watch post sees the Cross: the line from its tower's top (17 m over the post) to the Cross's signal room clears the ground
+  var wp = ids.watch_post, blocked = [];
+  if (wp){ var a0 = [(wp.shape[1] + wp.shape[2]) / 2, (wp.shape[3] + wp.shape[4]) / 2, wp.y + 17], a1 = [-205, 170, 8];
+    for (var si = 1; si < 400; si++){ var tt = si / 400, uu = a0[0] + (a1[0] - a0[0]) * tt, vv = a0[1] + (a1[1] - a0[1]) * tt, yy = a0[2] + (a1[2] - a0[2]) * tt;
+      if (groundAt(L, uu, vv) > yy - .5){ blocked.push('ground at (' + Math.round(uu) + ', ' + Math.round(vv) + ')'); break; } } }
+  ok('the watch post sees the Cross\'s signal room over the ground', wp ? blocked : ['no watch_post']);
   // the size the owner chose (2026-10-27)
   var A = area(L);
   ok('the floor at the peak is the trimmed size (700,000-850,000 m2) and its people 8,000-10,500',
