@@ -75,6 +75,10 @@ paintings, 2026-10-27), made as the lizard's is, its collar shared (`_head_colla
   each texel's place at rest (`body_mask`, on a primitive with no area), so the marks run on from head to body and
   across the UV islands' edges. The figures colour both (`patternMat` in `50-figure.js`; `kchar_pattern.gdshader`,
   `kchar_skin.gdshader`). The Cosmetic Lab's Pattern section sets them, its eye colours an animal's.
+- **Its colours keep to a palette** (owner, 2026-10-27; `mods.FROG_PALETTE`, kit item `pattern` `palette`): greens,
+  browns, red-browns and creams for the skin and the pale parts, and those or black for the marks. The Cosmetic Lab
+  offers only these (no free colour), and both figures hold any other colour a record carries to the nearest of them
+  (`snap`, `patternColours`; `_snap`, `_pattern_colours` in Godot).
 - **Webbed hands**: a thin web between each pair of fingers from the knuckles up to 0.6 of their length at their sides,
   scalloped deeper between, on the two fingers' joints by where each point lies across (`hand_webs`); a round pad under
   each fingertip. Its skin is the library's `skin.smooth`, moist and glossier, which the body wears under the head.

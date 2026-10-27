@@ -616,7 +616,8 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 	if part["role"] == "armour" and part["slot"] == "feet":
 		return _garment(m2, part, rec)                  # boots: the squeeze under a long robe, no push
 	if role == "skin":
-		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
+		var sk = _pattern_colours(rec)["skin"] if not _pattern_of(rec).is_empty() else (rec.get("skin") if rec.get("skin") != null else "#d6ad8f")
+		m2.albedo_color = _lin(sk, float(gain.get("skin", 1.0)))
 	elif role == "hair":
 		m2.albedo_color = _lin(rec.get("hair_color") if rec.get("hair_color") != null else "#4a3424", float(gain.get("hair", 1.0)))
 	elif role == "coat":                 # a therian's head (tools/heads.py): its shades times the coat's colour
@@ -2360,13 +2361,41 @@ func _pattern_of(rec: Dictionary) -> Dictionary:
 	return {}
 
 
+# a colour held to a palette (kit item pattern palette): the nearest of its entries, or the colour itself (snap in
+# 50-figure.js)
+static func _snap(hex: String, list: Array) -> String:
+	if list.is_empty():
+		return hex
+	var a := Color(hex)
+	var best: String = list[0]
+	var bd := 1e9
+	for c in list:
+		var b := Color(c)
+		var d := (a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b)
+		if d < bd:
+			bd = d
+			best = c
+	return best
+
+
+# the record's skin colours under a patterned head, the kit item's where it names none, held to its palette
+# (patternColours in 50-figure.js)
+func _pattern_colours(rec: Dictionary) -> Dictionary:
+	var pat := _pattern_of(rec)
+	var pal: Dictionary = pat.get("palette", {})
+	return {"skin": _snap(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", pal.get("skin", [])),
+		"skin2": _snap(rec.get("skin2") if rec.get("skin2") != null else pat.get("skin2", "#000000"), pal.get("skin2", [])),
+		"skin3": _snap(rec.get("skin3") if rec.get("skin3") != null else pat.get("skin3", "#ffffff"), pal.get("skin3", []))}
+
+
 # a pattern's colours, kind and amount from the record, the kit item's where it names none (patternSet in 50-figure.js)
 func _pattern_set(sm: ShaderMaterial, rec: Dictionary, gain: Dictionary) -> void:
 	var pat := _pattern_of(rec)
+	var pc := _pattern_colours(rec)
 	var g := float(gain.get("skin", 1.0))
-	sm.set_shader_parameter("c1", _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", g))
-	sm.set_shader_parameter("c2", _lin(rec.get("skin2") if rec.get("skin2") != null else pat.get("skin2", "#000000"), g))
-	sm.set_shader_parameter("c3", _lin(rec.get("skin3") if rec.get("skin3") != null else pat.get("skin3", "#ffffff"), g))
+	sm.set_shader_parameter("c1", _lin(pc["skin"], g))
+	sm.set_shader_parameter("c2", _lin(pc["skin2"], g))
+	sm.set_shader_parameter("c3", _lin(pc["skin3"], g))
 	sm.set_shader_parameter("kind", float(KP_KIND.get(rec.get("pattern") if rec.get("pattern") != null else pat.get("kind", "none"), 0)))
 	sm.set_shader_parameter("amount", float(rec.get("pattern_amount") if rec.get("pattern_amount") != null else pat.get("amount", 0.4)))
 

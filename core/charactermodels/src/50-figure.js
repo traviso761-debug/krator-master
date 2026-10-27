@@ -392,11 +392,28 @@ function KCharFigure(body, sliders, load){
     mat.needsUpdate = true;
     return u;
   }
+  // a colour held to a palette (kit item pattern palette: the frogmen's greens, browns, red-browns and creams, black
+  // marks): the nearest of its entries, or the colour itself where there is none
+  var snapA = new THREE.Color(), snapB = new THREE.Color();
+  function snap(hex, list){
+    if(!list || !list.length || !hex) return hex;
+    snapA.set(hex);
+    var best = list[0], bd = 1e9;
+    list.forEach(function(c){ snapB.set(c); var d = Math.pow(snapA.r - snapB.r, 2) + Math.pow(snapA.g - snapB.g, 2) + Math.pow(snapA.b - snapB.b, 2); if(d < bd){ bd = d; best = c; } });
+    return best;
+  }
+  // the record's skin colours under a patterned head: its own where it names them, the kit item's defaults otherwise,
+  // each held to the item's palette
+  function patternColours(rec, pat){
+    var pal = pat.palette || {};
+    return { skin:snap(rec.skin || DEFAULT_SKIN, pal.skin), skin2:snap(rec.skin2 || pat.skin2, pal.skin2), skin3:snap(rec.skin3 || pat.skin3, pal.skin3) };
+  }
   // the pattern's uniforms from the record, the kit item's defaults where it names none
   function patternSet(u, rec, pat, gain, mask){
-    u.kpC1.value.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin || 1));
-    u.kpC2.value.copy(tintOf(rec.skin2 || pat.skin2, gain.skin || 1));
-    u.kpC3.value.copy(tintOf(rec.skin3 || pat.skin3, gain.skin || 1));
+    var pc = patternColours(rec, pat);
+    u.kpC1.value.copy(tintOf(pc.skin, gain.skin || 1));
+    u.kpC2.value.copy(tintOf(pc.skin2, gain.skin || 1));
+    u.kpC3.value.copy(tintOf(pc.skin3, gain.skin || 1));
     u.kpKind.value = KP_KIND[rec.pattern || pat.kind] || 0;
     u.kpAmt.value = rec.pattern_amount != null ? rec.pattern_amount : pat.amount;
     if(mask !== undefined) u.kpMask.value = mask;
@@ -634,7 +651,7 @@ function KCharFigure(body, sliders, load){
             if(role === 'pattern'){ patternSet(patternMat(m.material, false), rec, pat || {}, gain); m.material.color.set('#ffffff'); }
             else if(role === 'iris') m.material.color.copy(tintOf(rec.eye_color || (pat && pat.eye_color) || DEFAULT_EYE, 1));   // an animal's eye (amphibian.iris_texture)
             else if(role === 'skin' && kpOn) m.material.color.set('#ffffff');      // the colours are the pattern's
-            else if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
+            else if(role === 'skin') m.material.color.copy(tintOf(pat ? patternColours(rec, pat).skin : rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
             else if(role === 'coat') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.coat || gain.hair));   // a therian's head (tools/heads.py)
             else if(role === 'eye'){ m.material.color.set('#ffffff'); if(m.material.userData.eyeTint) m.material.userData.eyeTint.value.copy(tintOf(rec.eye_color || DEFAULT_EYE, gain.eye || 1)); }

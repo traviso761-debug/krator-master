@@ -233,6 +233,10 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
        ['none', 'spots', 'net', 'marble'].indexOf(pt.kind) >= 0 && pt.amount >= 0 && pt.amount <= 1 && fg.skin_detail.mask === 'Mod.head_frog_mask' &&
        roles['Mod.head_frog'] === 'pattern' && roles['Mod.head_frog_webs'] === 'pattern' && roles['Mod.head_frog_eye'] === 'iris' && roles['Mod.head_lizard_eye'] === 'iris',
        b + ': the frog\'s skin takes the record\'s colours by a pattern over head and body, and its eyes (and the lizard\'s) the eye colour');
+    var pal = pt.palette || {};
+    ok(pal.skin && pal.skin2 && pal.skin3 && pal.skin.indexOf('#5f8a36') >= 0 && pal.skin2.indexOf(pt.skin2) >= 0 && pal.skin3.indexOf(pt.skin3) >= 0 &&
+       pal.skin2.indexOf('#121410') >= 0 && pal.skin.indexOf('#121410') < 0,
+       b + ': the frog\'s skin keeps to its palette (greens, browns, red-browns, creams; the marks black too)');
   }
   var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
   ok(n >= hd.hides, b + ': the lizard head hides the head skin');

@@ -1172,6 +1172,15 @@ TAIL_MOTION = {'stiff': [0.5, 0.32, 0.22, 0.16, 0.12, 0.1, 0.09, 0.08, 0.08], 'g
 # the jaw (50-figure.js jaw, kchar_figure.gd _jaw): face_jaw turned open about the hinge (pivot, Head's frame) by up
 # to deg, for a share (hold) of every period seconds: a breath with the mouth a little open
 JAW_MOTION = {'deg': 6.0, 'period': 5.0, 'hold': 0.35}
+# the frogmen's skin colours (owner, 2026-10-27): greens, browns, red-browns and creams for the ground and the pale
+# parts; the marks may be black too. The Cosmetic Lab offers only these (kit item pattern palette)
+_GREENS = ['#2e4a1c', '#3e5a22', '#4a6a2e', '#5f8a36', '#7a9a3a', '#93ac5a']
+_BROWNS = ['#3a2a1c', '#5a4028', '#7a5634', '#9a7448']
+_RED_BROWNS = ['#5a2618', '#7a3a22', '#9a4a2a', '#a8603a']
+_CREAMS = ['#c8b88a', '#d8c890', '#e2dab0', '#efe6c8']
+FROG_PALETTE = {'skin': _GREENS + _BROWNS + _RED_BROWNS + _CREAMS,
+                'skin2': ['#121410', '#1e2a12'] + _GREENS[:3] + _BROWNS[:3] + _RED_BROWNS[:3],
+                'skin3': _CREAMS + ['#b8c890']}
 NONHUMAN_ROLES = {'Mod.tail': 'skin', 'Mod.head_lizard': 'skin', 'Mod.head_lizard_jaw': 'skin', 'Mod.head_lizard_neck': 'skin',
                   'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin',
                   'Mod.head_lizard_eye': 'iris',
@@ -1257,7 +1266,8 @@ def nonhuman(body, pieces, body_name):
          'skin_detail': {'material': 'Mod.head_frog', 'repeat': skin_repeat(body, AM.TILE), 'mask': 'Mod.head_frog_mask'},
          # the skin's colours and pattern when the record names none (skin2 the marks', skin3 the pale parts'; kind
          # none, spots, net or marble; amount 0..1) and the eyes' colour
-         'pattern': {'skin2': '#1e2a12', 'skin3': '#e2dab0', 'kind': 'marble', 'amount': 0.45, 'eye_color': '#d6a22a'}}]
+         'pattern': {'skin2': '#1e2a12', 'skin3': '#e2dab0', 'kind': 'marble', 'amount': 0.45, 'eye_color': '#d6a22a',
+                     'palette': FROG_PALETTE}}]
     return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h, 'mod_head_frog': rec_f}, \
         {'root': root, 'b_root': int(B['VID'][kb])}
 
