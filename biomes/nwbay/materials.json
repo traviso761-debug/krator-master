@@ -1039,7 +1039,7 @@
    "own": true
   },
   "groundLava": {
-   "lib": "ground.lava.aa",
+   "lib": "ground.cinder",
    "scale": [
     4.0,
     4.0

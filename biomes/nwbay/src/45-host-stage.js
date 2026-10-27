@@ -303,7 +303,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
  const c=new THREE.Color(),t=new THREE.Color();
  const SAND=new THREE.Color(0xe4dcc4),LIT=new THREE.Color(0x3a2a20),LITR=new THREE.Color(0x4e3226),RAIN=new THREE.Color(0x4a3a26),RAIN2=new THREE.Color(0x5a4a30),
   SAV=new THREE.Color(0x9a8450),SAV2=new THREE.Color(0x7a7048),SAVG=new THREE.Color(0x5e6e3a),SILT=new THREE.Color(0x9a8c74),DELTA=new THREE.Color(0x574836),BED=new THREE.Color(0x8a7a66),
-  LAVAC=new THREE.Color(0x2a2624),RUST=new THREE.Color(0x5a3a2a),BLACK=new THREE.Color(0x1c1a18),BAS=new THREE.Color(0x30303a),CRUST=new THREE.Color(0xe6dcc4),POOL=new THREE.Color(0xd4e6dc),RISER=new THREE.Color(0xf2ead8),SCREE=new THREE.Color(0xa8a090),LAG=new THREE.Color(0xd8d4c0),TSG=new THREE.Color(0x8e8a80),TSG2=new THREE.Color(0x6e6a62),RIMS=new THREE.Color(0x5a5448);
+  LAVAC=new THREE.Color(0x3b3129),RUST=new THREE.Color(0x5a3a2a),BLACK=new THREE.Color(0x1c1a18),BAS=new THREE.Color(0x30303a),CRUST=new THREE.Color(0xe6dcc4),POOL=new THREE.Color(0xd4e6dc),RISER=new THREE.Color(0xf2ead8),SCREE=new THREE.Color(0xa8a090),LAG=new THREE.Color(0xd8d4c0),TSG=new THREE.Color(0x8e8a80),TSG2=new THREE.Color(0x6e6a62),RIMS=new THREE.Color(0x5a5448);
  const sandT=SAND.clone().lerp(BAYCOL,.05);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=CENTER[0]+(x/w-.5)*S,wz=CENTER[1]+(y/h-.5)*S;
   const n=fbm(x/26,y/26,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5);
@@ -324,7 +324,9 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.lerp(CRUST,sh*.9);                                                          // the shelf-pool mounds
   c.lerp(BED,smooth(0,-30,lk));
   // the igneous shore: black lava with rust mottling, black sand on the beach under it, basalt
-  c.lerp(LAVAC,lv*.92);c.lerp(RUST,lv*smooth(.52,.66,fbm(x/14,y/14,8,2))*.55);
+  /* the lava tongues are OLD flows, weathered to a dark soil under the scrub (the owner, 2026-10-27: the bay is too far from the volcano
+     for fresh lava rock); it was black (0x2a2624, .92) with rust mottling (.55) */
+  c.lerp(LAVAC,lv*.78);c.lerp(RUST,lv*smooth(.52,.66,fbm(x/14,y/14,8,2))*.28);
   c.lerp(BLACK,smooth(90,24,lk)*smooth(-20,10,lk)*smooth(.08,.35,lv));
   c.lerp(BAS,bk);
   c.lerp(SCREE,smooth(14,1,kd)*smooth(-6,-1,kd)*.8);                            // scree at a stack's foot
@@ -345,20 +347,22 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}');};
 // THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND, 43-core-ground.js; the final rebuild, 2026-10-27; ?kground=0 for the paint and its
 // grain alone): four of the library's ground sets laid over the paint by zone, hex-tiled, scaled with distance and blended by height:
-// leaf mulch on the jungle's and the rainforest's floor (ground.ground072, nhighlands' mulch), beach sand on the shore, the aa lava (ground.lava.aa: ground.lava.crust glows like a live flow)
-// on the lava tongues and the basalt, the white travertine on the terrace reach's banks and the shelf pools. The zone weights are a
-// vertex attribute of every ground mesh (aGL: litter, sand, lava, travertine), from the same field cache the paint reads
+// leaf mulch on the jungle's and the rainforest's floor (ground.ground072, nhighlands' mulch) and over the old lava tongues' weathered
+// soil, beach sand on the shore, black cinder grit (ground.cinder) on the black beach under the tongues and thinly on the tongues and the
+// basalt (old flows, not fresh rock: the owner, 2026-10-27), the white travertine on the terrace reach's banks and the shelf pools. The
+// zone weights are a vertex attribute of every ground mesh (aGL: litter, sand, cinder, travertine), from the field cache the paint reads
 const GL_ON=new URLSearchParams(location.search).get('kground')!=='0'&&typeof KGROUND!=='undefined';
 function glWeights(x,z){const up=FC.at(FC.a.up,x,z),lk=FC.at(FC.a.lk,x,z),rd=FC.at(FC.a.rd,x,z),rise=FC.at(FC.a.rise,x,z),lv=FC.at(FC.a.lv,x,z),bk=FC.at(FC.a.bk,x,z),
   sh=FC.at(FC.a.sh,x,z),ts=FC.at(FC.a.ts,x,z),kd=FC.at(FC.a.kd,x,z),chanW=1-.45*smooth(400,1400,lk),onSlope=smooth(8,20,rise);
- const lava=clamp(Math.max(lv*.95,bk*.8),0,1),trav=clamp(Math.max(sh*.9,smooth(44*chanW,18*chanW,rd)*onSlope*.85),0,1)*(1-lava);
+ const black=smooth(90,24,lk)*smooth(-20,10,lk)*smooth(.08,.35,lv),lava=clamp(Math.max(black*.9,lv*.3,bk*.45),0,1);
+ const trav=clamp(Math.max(sh*.9,smooth(44*chanW,18*chanW,rd)*onSlope*.85),0,1)*(1-lava);
  const sand=smooth(90,6,lk)*smooth(-60,-10,lk)*(1-lava)*(1-trav),bare=Math.max(ts,smooth(14,1,kd)*smooth(-6,-1,kd));
- const litter=(1-smooth(.4,.62,up))*(1-sand)*(1-lava)*(1-trav)*(1-bare)*smooth(-4,8,lk);
+ const litter=(1-smooth(.4,.62,up))*(1-sand)*(1-black)*(1-bk)*(1-trav)*(1-bare)*smooth(-4,8,lk);
  return[litter,sand,lava,trav];}
 function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32Array(p.count*4);
  for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));return g;}
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint:'diffuse'});
- const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.7,1.15),L('groundLava','vGL.z',.75,1.1),L('groundTrav','vGL.w',.7,1.1)];
+ const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.6,1.0),L('groundLava','vGL.z',.7,1.0),L('groundTrav','vGL.w',.7,1.1)];
  KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'nwbay-ground'});}
 // THE RISERS AS DROPS (2026-10-25): the river's treads and risers worked out here exactly as 89w-host-water.js hands them to
 // WATER.terraces (the samples every 5 m, a tread a run of non-ramp samples on one step, kept when 4 m or longer, a step that
@@ -650,20 +654,43 @@ const RIVER_SM=[],SHELF_POOLS=[];   // the terraced river's samples, the shelf p
 })();
 
 // ---------------------------------------------------------------- the columnar basalt
-// A headland of hexagonal columns on a hex grid, their tops stepping with a
-// noise field (the Causeway): one InstancedMesh, dark grey, charged to the host.
-(function(){const B=BASALT,c=XZ(B.u,B.v),pitch=2.3,R=Math.max(B.ru,B.rv)*1.2,list=[];
+// A headland of hexagonal columns on a hex grid, their tops stepping with a noise field (the Causeway): one InstancedMesh, charged to
+// the host. THE EDGE (the owner, 2026-10-27: "a more natural fade into the surrounding terrain"): toward the rim of the outcrop the
+// columns stand lower, down to stubs a hand high, many are gone, the rest lean a little and weather paler and mossy; a few broken
+// pieces lie fallen in the grass past the rim. Each column's top is a paler weathered cap (vertex colour). The page's random stream is
+// drawn exactly as before (two draws a column, two for its colour), so nothing placed after it moves; the new choices are KRAND's.
+// ?basaltedge=0 draws the old outcrop.
+(function(){const B=BASALT,c=XZ(B.u,B.v),pitch=2.3,R=Math.max(B.ru,B.rv)*1.2,list=[],EDGE=new URLSearchParams(location.search).get('basaltedge')!=='0';
+ const U=(i,j,k)=>KRAND.unit(KRAND.hash(8301,i+4096,j+4096,k));
  const nI=Math.ceil(R/pitch),nJ=Math.ceil(R/(pitch*.866));
- for(let j=-nJ;j<=nJ;j++)for(let i=-nI;i<=nI;i++){const x=c[0]+(i+(j&1?.5:0))*pitch,z=c[1]+j*pitch*.866,k=basaltK(x,z);if(k<.45)continue;
-  const g=groundH(x,z);if(g<-1.5)continue;const h=1.0+6.5*smooth(.3,.72,fbm(x*.022,z*.022,74,2))*k+rr(-.25,.25)+smooth(-1,1,g)*0;list.push([x,g-1.5,z,h+1.5]);}
+ for(let j=-nJ;j<=nJ;j++)for(let i=-nI;i<=nI;i++){const x=c[0]+(i+(j&1?.5:0))*pitch,z=c[1]+j*pitch*.866,k=basaltK(x,z);
+  if(k<.45){   /* past the rim: a fallen piece now and then, lying in the grass, half sunk */
+   if(EDGE&&k>.12&&U(i,j,1)<.22*smooth(.12,.45,k)){const g=groundH(x,z);if(g>.2){const L=1.2+2.2*U(i,j,2);list.push({x,z,y:g-.55,h:L,fall:true,a:U(i,j,3)*TAU,e:0,i,j});}}
+   continue;}
+  const g=groundH(x,z);if(g<-1.5)continue;const n=smooth(.3,.72,fbm(x*.022,z*.022,74,2)),h=1.0+6.5*n*k+rr(-.25,.25)+smooth(-1,1,g)*0;
+  if(!EDGE){list.push({x,z,y:g-1.5,h:h+1.5,e:1,i,j});continue;}
+  /* e: 0 at the rim, 1 at the heart: the height above the ground falls to a stub, and the rim thins. Over the outer half of the
+     headland's radius (basaltK rises 0 to 1 within a few metres: on it alone the outcrop ended in a wall), ragged by a noise */
+  const e=smooth(.97,.42,ellK(B,x,z)*(1+.12*(fbm(x*.03,z*.03,75,2)-.5)*2))*smooth(.45,.7,k),top=.18+(h-.18)*Math.pow(e,1.3)+.25*(U(i,j,4)-.5)*(1-e);
+  list.push({x,z,y:g-1.5,h:Math.max(.12,top)+1.5,e,i,j,gone:U(i,j,5)<.55*Math.pow(1-e,1.6)});}
  if(!list.length)return;
  const geo=new THREE.CylinderGeometry(1.22,1.22,1,6,1,false).translate(0,.5,0);
- const mat=new THREE.MeshLambertMaterial({color:0xffffff});
- const im=new THREE.InstancedMesh(geo,mat,list.length),M=new THREE.Matrix4(),P=new THREE.Vector3(),Q=new THREE.Quaternion(),Sc=new THREE.Vector3(),col=new Float32Array(list.length*3),cc=new THREE.Color();
- list.forEach((L,i)=>{P.set(L[0],L[1],L[2]);Q.setFromAxisAngle(new THREE.Vector3(0,1,0),rr(-.06,.06));Sc.set(1,L[3],1);M.compose(P,Q,Sc);im.setMatrixAt(i,M);
-  cc.set(0x3a3a40).offsetHSL(rr(-.02,.02),0,rr(-.05,.06)).convertSRGBToLinear();col[i*3]=cc.r;col[i*3+1]=cc.g;col[i*3+2]=cc.b;});
+ {const P=geo.attributes.position,C=new Float32Array(P.count*3);for(let v=0;v<P.count;v++){const t=P.getY(v)>.99?1.22:1;C[v*3]=C[v*3+1]=C[v*3+2]=t;}geo.setAttribute('color',new THREE.BufferAttribute(C,3));}
+ const mat=new THREE.MeshLambertMaterial({color:0xffffff,vertexColors:EDGE});
+ const keep=list.filter(L=>!L.gone),im=new THREE.InstancedMesh(geo,mat,keep.length),M=new THREE.Matrix4(),P=new THREE.Vector3(),Q=new THREE.Quaternion(),Q2=new THREE.Quaternion(),Sc=new THREE.Vector3(),col=new Float32Array(keep.length*3),cc=new THREE.Color();
+ const WEATHER=new THREE.Color(0x5e5a52),MOSS=new THREE.Color(0x4a5634),Y=new THREE.Vector3(0,1,0),AX=new THREE.Vector3();let n=0;
+ list.forEach(L=>{let yaw=0,hsl=[0,0];if(!L.fall){yaw=rr(-.06,.06);hsl=[rr(-.02,.02),rr(-.05,.06)];}   /* the old stream: every standing column draws its four */
+  if(L.gone)return;
+  Q.setFromAxisAngle(Y,L.fall?L.a:yaw);
+  if(L.fall){AX.set(Math.cos(L.a),0,Math.sin(L.a));Q2.setFromAxisAngle(AX,Math.PI/2-.08);Q.premultiply(Q2);P.set(L.x,L.y+1.0,L.z);Sc.set(.92,L.h,.92);}
+  else{if(EDGE&&L.e<1){const t=(1-L.e)*.11*U(L.i,L.j,6),a=U(L.i,L.j,7)*TAU;AX.set(Math.cos(a),0,Math.sin(a));Q2.setFromAxisAngle(AX,t);Q.premultiply(Q2);}
+   P.set(L.x,L.y,L.z);Sc.set(1,L.h,1);}
+  M.compose(P,Q,Sc);im.setMatrixAt(n,M);
+  cc.set(0x3a3a40).offsetHSL(hsl[0],0,hsl[1]);
+  if(EDGE){const w=L.fall?.75:(1-L.e)*.6;cc.lerp(WEATHER,w);if(U(L.i,L.j,8)<.35+.4*(1-L.e))cc.lerp(MOSS,(L.fall?.5:.45*(1-L.e))*U(L.i,L.j,9));}
+  cc.convertSRGBToLinear();col[n*3]=cc.r;col[n*3+1]=cc.g;col[n*3+2]=cc.b;n++;});
  im.instanceColor=new THREE.InstancedBufferAttribute(col,3);im.userData.inspectLabel='Columnar basalt';im.userData.host=true;scene.add(im);   // not probeSkip: the columns are what fills the headland's registered volume
- window._basaltColumns=list.length;
+ window._basaltColumns=keep.length;
  REGISTER({name:'The basalt headland (columnar)',x:c[0],z:c[1],y:0,r:R,h:16});})();
 
 // ---------------------------------------------------------------- the far country

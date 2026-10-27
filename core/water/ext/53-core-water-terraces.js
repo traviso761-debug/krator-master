@@ -75,8 +75,10 @@
   for(const S of list){const M=W.curtain(S,{rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols,margin:o.margin}),base=cp.count,lw=S.lipW*Q.streak.across;
    for(let i=0;i<M.pos.length;i++){cp.pos.push(M.pos[i]);cp.nrm.push(M.nrm[i]);}for(let i=0;i<M.uv.length;i++)cp.uv.push(M.uv[i]);
    for(let i=0;i<M.count;i++)cp.fp.push(lw,S.tFall);for(const k of M.idx)cp.idx.push(base+k);cp.count+=M.count;
-   if(o.plunge!==false){const P=W.plunge(S),r=P.r*2.4,y=o.plungeY==null?P.y+.06:o.plungeY,b0=pl.count;
-    pl.pos.push(P.x,y,P.z);pl.pc.push(P.x,P.z,P.r);for(let k=0;k<segs;k++){const a=k/segs*Math.PI*2;pl.pos.push(P.x+Math.cos(a)*r,y,P.z+Math.sin(a)*r);pl.pc.push(P.x,P.z,P.r);}
+   /* o.plungeR (opt-in, 2026-10-27, nwbay's terraces: the 2.4 x disc ran over the banks): the disc's radius in m, or a function (S, P) -> m;
+      with it each vertex also carries the radius (pl.pr), for the merged draw's edge fade (53b, o.plungeFade) */
+   if(o.plunge!==false){const P=W.plunge(S),r=o.plungeR==null?P.r*2.4:typeof o.plungeR==='function'?o.plungeR(S,P):o.plungeR,y=o.plungeY==null?P.y+.06:o.plungeY,b0=pl.count;
+    pl.pos.push(P.x,y,P.z);pl.pc.push(P.x,P.z,P.r);if(o.plungeR!=null){pl.pr=pl.pr||[];pl.pr.push(r);}for(let k=0;k<segs;k++){const a=k/segs*Math.PI*2;pl.pos.push(P.x+Math.cos(a)*r,y,P.z+Math.sin(a)*r);pl.pc.push(P.x,P.z,P.r);if(o.plungeR!=null)pl.pr.push(r);}
     for(let k=0;k<segs;k++)pl.idx.push(b0,b0+1+(k+1)%segs,b0+1+k);pl.count+=segs+1;pl.r.push(r);}}
   return{curtain:cp,plunge:pl};};
 })();
