@@ -37,6 +37,10 @@ def R(n, name, kind, u0, u1, v0, v1, decor, note=''):
 def box(n, name, kind, b, decor, note=''):
     return R(n, name, kind, b[0], b[1], b[2], b[3], decor, note)
 
+def C(n, name, kind, u, v, r, decor, note=''):
+    """a round room (a dome, a pad, a tank): drawn as a circle; its box is the circle's"""
+    d = R(n, name, kind, u - r, u + r, v - r, v + r, decor, note); d['circ'] = True; return d
+
 # ------------------------------------------------------------------------------------------------ the floors
 FLOORS = []
 
@@ -834,7 +838,7 @@ def draw_floor(F):
     tmp = Image.new('RGB', (10, 10)); dt = ImageDraw.Draw(tmp)
     entries = []
     for r in F['rooms']:
-        a = (r['u1'] - r['u0']) * (r['v1'] - r['v0'])
+        a = (r['u1'] - r['u0']) * (r['v1'] - r['v0']) * (math.pi / 4 if r.get('circ') else 1)
         head = '%d. %s' % (r['n'], r['name'])
         tail = ' (%s; %s; %d m2)' % (r['kind'].replace('_', ' '), DECOR_NAME[r['decor']], a) if r['kind'] not in ('void', 'gallery_void') else ''
         note = ('  ' + r['note']) if r['note'] else ''
@@ -871,13 +875,18 @@ def draw_floor(F):
     for q in F.get('outlines', []):
         dr.rectangle([X(q[0]), Y(q[3]), X(q[1]), Y(q[2])], outline=(110, 110, 110), width=2)
         if len(q) > 4: dr.text((X(q[0]) + 4, Y(q[3]) + 2), q[4], font=f_rn, fill=(110, 110, 110))
+    # opt-in (Span, 2026-10-27): filled polygons under the rooms (water, a canyon's floor): (pts, fill[, label])
+    for q in F.get('fills', []):
+        dr.polygon([(X(u), Y(v)) for u, v in q[0]], fill=q[1], outline=(120, 120, 120))
+        if len(q) > 2: dr.text((X(q[0][0][0]) + 6, Y(q[0][0][1]) + 4), q[2], font=f_rn, fill=(60, 60, 60))
     # the north arrow / axis note
     dr.text((X(-ext) + 6, Y(ext) + 6), F.get('axisnote', 'u (main axis) ->   the entrance side at the left; v across, up on the sheet'), font=f_rn, fill=(90, 90, 90))
     for r in F['rooms']:
         if r['kind'] == 'garden' and r['u1'] - r['u0'] > 2 * Rr * 0.9: continue
         x0, x1, y0, y1 = X(r['u0']), X(r['u1']), Y(r['v1']), Y(r['v0'])
         fill = KIND_FILL.get(r['kind'], DECOR_FILL[r['decor']])
-        dr.rectangle([x0, y0, x1, y1], fill=fill, outline=(40, 40, 40), width=2 if r['decor'] >= 3 else 1)
+        if r.get('circ'): dr.ellipse([x0, y0, x1, y1], fill=fill, outline=(40, 40, 40), width=2 if r['decor'] >= 3 else 1)
+        else: dr.rectangle([x0, y0, x1, y1], fill=fill, outline=(40, 40, 40), width=2 if r['decor'] >= 3 else 1)
         if r['kind'] in ('void', 'gallery_void'):
             for k in range(int(x0), int(x1), 14): dr.line([(k, y1), (min(k + (y1 - y0), x1), max(y0, y1 - (x1 - k)))], fill=(200, 200, 200), width=1)
         if r['kind'] == 'stair':
@@ -896,6 +905,10 @@ def draw_floor(F):
                     dr.text((x0 + w / 2 - tw2 / 2, y0 + h / 2 + 10 + 16 * i), ln, font=f_rn, fill=(40, 40, 40))
         elif w > 14 and h > 14:
             dr.text((x0 + 2, y0 + 1), lbl, font=f_rn, fill=(0, 0, 0))
+    # opt-in (Span): polylines over the rooms (rims, benches, roads, a river): (pts, colour, width[, label])
+    for q in F.get('lines', []):
+        dr.line([(X(u), Y(v)) for u, v in q[0]], fill=q[1], width=q[2])
+        if len(q) > 3: dr.text((X(q[0][-1][0]) + 6, Y(q[0][-1][1]) - 18), q[3], font=f_rn, fill=q[1])
     for (u, v) in F.get('pillars', []):
         dr.ellipse([X(u) - 5, Y(v) - 5, X(u) + 5, Y(v) + 5], fill=(60, 60, 60))
     if F.get('octagon'):

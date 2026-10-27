@@ -111,7 +111,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -195,6 +195,7 @@ TARGET_OUT = {
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
     'podium': 'podium.html',                   # the spiral arcology (the Sanctum until 2026-10-22: targets/podium)
     'sanctum': 'sanctum.html',                 # the Eternal State's capital arcology: podium, stalk and hexagonal solid
+    'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
 }
 

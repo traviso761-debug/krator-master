@@ -1,0 +1,33 @@
+{
+ "build": "span",
+ "note": "Span's own adapter onto the material library (core/materials/PLAN.md), for the page's own surfaces; the Ancients' and the Dalab set's pieces take their kits' packs (kits/ancients/materials.json, settlements/dalab/materials.json). Grey detail maps (keep 0): the colour is core/terrain KSTRATA's pillar recipe (the red and bleached beds), the map the grain. pillarWall: the stand-in pillars' faces (cross-bedded sandstone); pillarTop: their tops (cracked slickrock). Run python3 tools/textures/pack.py settlements/span after any change, then python3 build.py.",
+ "size": 1024,
+ "families": {
+  "pillarWall": {
+   "lib": "rock.sandstone.navajo",
+   "scale": [
+    10,
+    10
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.47
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "pillarTop": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.47
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  }
+ }
+}

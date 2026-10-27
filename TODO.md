@@ -26,6 +26,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
+  in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
+  `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the
+  shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
+  ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
+  for the Line and the arena (`src/8at-host-place.js`).
 - **The planetary nebula, smaller and with its white dwarf** (the owner, 2026-10-27; done in the sources on
   `claude/core-atmos-planned-16a374`): `SKY.cluster.pn` radius 3 to 2 degrees (`core/atmos/sky/89-atmos-e-skymodel.js`) and a
   blue-white central star a pixel or two wide with a faint glow (`89-atmos-g-sky.js`); the Godot include, `golden.json` and

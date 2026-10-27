@@ -308,6 +308,10 @@
    "bytes": 2511557,
    "sha256": "ba1e9823f4d96fb50feb4a3563e3e456e79764f7499afa539abfc6df9595a06b"
   },
+  "kits/ancients/dist/span.html": {
+   "bytes": 2595202,
+   "sha256": "ba50fb5d75558869aa1b587c6d5b3ea3312de91f738f5f20f9a06c44223e48be"
+  },
   "kits/ancients/dist/spire.html": {
    "bytes": 2513570,
    "sha256": "60d68259e17ccb9d1f69f7dcd463a76faa9fe2f87ee861aafc81918badecd173"
@@ -397,8 +401,8 @@
    "sha256": "2f08a8e654a65332a73c134e90a25916a58bffc1aa908a3b94ee0d7b01db3d11"
   },
   "kits/post-apoc/dist/post-apoc.html": {
-   "bytes": 8001255,
-   "sha256": "13dffde24c922805b701d1b21c90b26b65ed29eb282957e5247a46df1b4b1609"
+   "bytes": 8027185,
+   "sha256": "124967751f4020755c7d741ec52cc61ea4e63781f3ce65f9afd897c69de8956d"
   },
   "kits/pylon/dist/pylon.html": {
    "bytes": 2509992,
@@ -445,12 +449,12 @@
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
   "settlements/dalab/dist/dalab-set.html": {
-   "bytes": 6573669,
-   "sha256": "9f9f43d96c94005e830678426fd1201ba04396b15e80df75d21df0a115e46af7"
+   "bytes": 6603017,
+   "sha256": "728ddd8a8b8afb4ff307654bababe77d340f80271bd2db11eaab5fec954645eb"
   },
   "settlements/dalab/dist/dalab.html": {
-   "bytes": 6662984,
-   "sha256": "0a082444a29e6789dbec370ad234e2079d8ded1826e3139011eff421122eeae3"
+   "bytes": 6697602,
+   "sha256": "0e76ea1494937e483169b7dfe6b1b13a96d1dfc4cf401d1c2736559aa5f9b5e6"
   },
   "settlements/dhelv/dist/dhelv.html": {
    "bytes": 2281255,
@@ -699,6 +703,10 @@
   "settlements/shade/dist/shade.html": {
    "bytes": 5082008,
    "sha256": "04ac55071bdd961bee721ba0a66c9a9bde527481ae1a56d25f638eaf1a9e4ba3"
+  },
+  "settlements/span/dist/span.html": {
+   "bytes": 1841561,
+   "sha256": "2ba92967bb228ac64d8240342e0a7d5b428fab69d0435ecba3c9d171ebc2b152"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,

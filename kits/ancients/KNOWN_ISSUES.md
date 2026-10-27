@@ -1010,3 +1010,16 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
   `90-scene.js`), the dome is drawn after the ground with no depth write, and the far plane is 12 km, so a wide shot shows
   a black band past 9 km. `coDraw` patches it for its own page; the shared fix (`max(h,0.)`, `sky.renderOrder=-1`)
   would move every page's hash.
+
+## Span's pieces (`--target span`)
+
+- [ ] The pieces stand on stand-in rock (`spanRock`): their fit to the real canyon (benches, rims, the Cross's abutments)
+      is settlements/span's SP3, on the biome kit's carve.
+- [ ] Bands are straight: Span's galleries follow a straight Deep Reach, but a curved run (a bowed plan) is not drawn yet.
+- [ ] No interiors behind the ribbon windows (a dark void box behind a broken pane); the Cross's rooms are
+      settlements/span's SP6 on `kits/ancients-interiors`.
+- [ ] The Cross's keel piers are plain boxes and its belly a single lens; the concept's hangars-and-works floor below
+      is the floor's pieces (hangars, tanks, works) still to draw from existing builders.
+- [ ] The portal's hood is broken by hash in a ruin; a toppled mouth is a rubble mound, with no collapsed lining slabs.
+- [ ] Dalab's own additions (the Line, salvage parapets, gates in the portal) are not here: they are the Dalab set's, in
+      settlements/span (SP4). The rehabilitated state is the kit's generic `repairPass`.
