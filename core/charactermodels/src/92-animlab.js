@@ -104,6 +104,7 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.postureClipFrames = (D.posture && D.posture.clipFrames) || {};
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
@@ -319,7 +320,7 @@
     function status(t){ $('pose-status').textContent = t; }
     function clean(p){
       // the frame is posture.json's (the figures take it when they are made): carried through so a copy is whole
-      var out = { frame:(D.posture && D.posture.frame) || 'figure', bodies:{}, clips:{} };
+      var out = { frame:(D.posture && D.posture.frame) || 'figure', clipFrames:(D.posture && D.posture.clipFrames) || {}, bodies:{}, clips:{} };
       // a pasted 'bodies' object alone (the panel's old copy) keeps the clips as they are
       var bodies = p && p.bodies ? p.bodies : p, clips = p && p.bodies ? (p.clips || {}) : POSE.clips;
       POSE_BODIES.forEach(function(b){

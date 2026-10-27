@@ -607,12 +607,14 @@ numbers are in `data/posture.json`, which both runtimes read:
   man's chin, sprint and crouch hunch him, so they take less neck or less chest); blended by the playing clips' weights
   through a cross-fade on the page, eased over the same 0.25 s in Godot. Kept under the body whose values a body takes
   (the giant's under `mpfb_male`). Live copy: `fig.postureClips`.
-- `frame`: `self` (since 2026-10-26) pitches each spine joint about its own side axis as the clip has turned it from
+- `frame` (the default) and `clipFrames` (per clip): `self` pitches each spine joint about its own side axis as the clip has turned it from
   rest, so a joint the clip twists about its length bends along its own facing. `joint` took the parent's axis: it
   fixed the man's ribs kinking sideways in twisted idles (5, 13, 14) under `figure`, the figure's own axis, but in a
   sword's wind-up a mid-back twist of 15 degrees turned part of the man's 40 degree bend into a sideways roll and the
-  spine went crooked (Sword combo at 1.39 s, Sword heavy). `self` keeps the idles' fix. On an upright torso all three
-  agree. The shoulders' drop and draw-back stay in the figure's frame.
+  spine went crooked (Sword combo at 1.39 s, Sword heavy). `self` keeps the idles' fix and leaves the neck and head on the parent's axis. The owner tuned every clip on
+  `joint` (2026-10-26), so it is the default and only the two crooked sword clips take `self` (`clipFrames`); in a
+  twisted torso the two give a different chest, so a clip moved from one to the other wants retuning. On an
+  upright torso all three agree. The Posture panel's Copy JSON carries `clipFrames` through. The shoulders' drop and draw-back stay in the figure's frame.
 
 **The Animation Lab's Posture panel** (under the review marks) sets them by hand: a slider per joint for the body
 chosen, every figure of that body changing at once. **Every clip** edits `bodies`; **This clip** edits the clip playing:

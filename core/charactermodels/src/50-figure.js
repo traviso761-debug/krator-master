@@ -1591,7 +1591,9 @@ function KCharFigure(body, sliders, load){
   // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
   // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
   // cross-fade carries it over too
-  var PC = KCharFigure.postureClips || {}, CLIPP = {}, PF = KCharFigure.postureFrame || 'figure';
+  var PC = KCharFigure.postureClips || {}, CLIPP = {}, PF0 = KCharFigure.postureFrame || 'figure', PF = PF0;
+  // data/posture.json clipFrames: a clip's own frame (the sword clips that went crooked under 'joint' take 'self')
+  var PCF = KCharFigure.postureClipFrames || {};
   Object.keys(PC).forEach(function(c){ var o = PC[c][PB]; if(o) CLIPP[c] = Object.assign({}, o); });
   var pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()], pS = {};
   // per joint, the inverse of its parent's rest orientation in the figure (the rest locals down from the hips)
@@ -1643,6 +1645,7 @@ function KCharFigure(body, sliders, load){
     unshift();
     if(!self.action && !force) return;   // the rest pose (the A-pose clothes are fitted in) stays as it is
     var P = postureNow(force);           // forced (the chains' rest): the body's angles alone
+    PF = (!force && self.action && PCF[self.action.getClip().name]) || PF0;
     self.group.getWorldQuaternion(pG);
     // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
     // spear aims where the clip aims it
@@ -1672,15 +1675,16 @@ function KCharFigure(body, sliders, load){
     }
     PJ.forEach(function(n){
       var b = byName[n] !== undefined && bones[byName[n]], a = P[n]; if(!b || !a) return;
-      if(PF === 'self'){
-        // the joint's own side axis as the clip has turned it from rest: a joint the clip twists about its length
+      if(PF === 'self' && n.indexOf('Spine') === 0){
+        // the spine joint's own side axis as the clip has turned it from rest: a joint the clip twists about its length
         // bends forward along its own facing, so the bend gains no sideways roll (the parent's axis, 'joint', turned
         // a mid-back twist of 15 degrees into a sideways crook in a sword's wind-up)
         b.getWorldQuaternion(qB);
         pAx.set(1, 0, 0).applyQuaternion(pRi[byName[n]]).applyQuaternion(qB);
-      } else if(PF === 'joint'){
+      } else if(PF === 'joint' || PF === 'self'){
         // the side axis as the clip has turned the parent joint from its rest: a twisted or leaning torso bends
-        // forward along its own facing, not about the figure's
+        // forward along its own facing, not about the figure's (with 'self', the neck and head: the owner tuned
+        // them on this axis, and the crook was only ever the spine's)
         b.parent.getWorldQuaternion(qB);
         pAx.set(1, 0, 0).applyQuaternion(pR[byName[n]]).applyQuaternion(qB);
       } else pAx.set(1, 0, 0).applyQuaternion(pG);
@@ -1693,8 +1697,7 @@ function KCharFigure(body, sliders, load){
     [['nTurn', 0, 1, 0, 1], ['nSide', 0, 0, 1, -1]].forEach(function(r){
       var a = P[r[0]]; if(!nk || !a) return;
       pAx.set(r[1], r[2], r[3]);
-      if(PF === 'self'){ nk.getWorldQuaternion(qB); pAx.applyQuaternion(pRi[byName.Neck]).applyQuaternion(qB); }
-      else if(PF === 'joint'){ nk.parent.getWorldQuaternion(qB); pAx.applyQuaternion(pR[byName.Neck]).applyQuaternion(qB); }
+      if(PF === 'joint' || PF === 'self'){ nk.parent.getWorldQuaternion(qB); pAx.applyQuaternion(pR[byName.Neck]).applyQuaternion(qB); }
       else pAx.applyQuaternion(pG);
       turnWorld(nk, pQ.setFromAxisAngle(pAx, r[4] * a * Math.PI / 180));
     });
@@ -1975,4 +1978,5 @@ KCharFigure.clipData = {};   // data/clips.json clips by key: hold, two_hands, f
 KCharFigure.faces = {};      // data/clips.json faces: per body, the face's points (the page fills it)
 KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)
 KCharFigure.postureClips = {};   // data/posture.json clips: per clip, per body, degrees added (the page fills it)
-KCharFigure.postureFrame = 'figure';   // data/posture.json frame: 'self' pitches about each joint's own side axis, 'joint' its parent's
+KCharFigure.postureFrame = 'figure';
+KCharFigure.postureClipFrames = {};   // data/posture.json clipFrames: per clip, the frame it takes instead   // data/posture.json frame: 'self' pitches about each joint's own side axis, 'joint' its parent's
