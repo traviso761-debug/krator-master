@@ -35,7 +35,7 @@ import argparse, asyncio, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 import harness
-THREE = os.path.join(HERE, '..', '..', 'kits', 'ancients', 'three.min.js')
+from harness import verify_page, Abort
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except Exception:
@@ -95,97 +95,85 @@ EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'b
 
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
-    fails = []
     os.makedirs(a.out, exist_ok=True)
-    with harness.serve(folder) as port:
-        async with async_playwright() as p:
-            b = await harness.launch_chromium(p)
-            W, H = [int(t) for t in a.size.split('x')]
-            pg = await b.new_page(viewport={'width': W, 'height': H})
-            pg.set_default_timeout(900000)
-            errs = []
-            pg.on('pageerror', lambda e: errs.append(str(e)))
-            if os.path.exists(THREE):
-                await pg.route('**/three.min.js', lambda r: asyncio.ensure_future(r.fulfill(path=THREE, content_type='application/javascript')))
-            await pg.goto('http://127.0.0.1:%d/%s' % (port, name))
-            await pg.wait_for_function("(typeof CAM==='object'&&CAM&&window._api)||(document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=600000)
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            if panel:
-                print('ERROR PANEL:', panel[:1500]); await b.close(); print('\nFAILED: error panel'); return 1
-            if a.list:
-                print('\n'.join(await pg.evaluate('_api.views()'))); await b.close(); return 0
-            print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
-            if a.assert_:
-                has = await pg.evaluate(HAS)
-                print('--- the world\'s checks (src/world/91-world-probe.js) ---')
-                for r in await pg.evaluate('_api.hostChecks()'):
-                    need = APPLIES.get(r['name'])
-                    if need and not has[need]:
-                        print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']: fails.append(r['name'])
-                print('--- the isle\'s checks ---')
-                for r in await pg.evaluate(ISLE, None):
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']: fails.append(r['name'])
-                print('--- negative controls (each must fail) ---')
-                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
-                                ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
-                    r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
-                    print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
-                    if r['ok']: fails.append('negative ' + neg)
-                print('--- the towns (M7) ---')
-                for r in await pg.evaluate(TOWNS_JS, None):
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']: fails.append(r['name'])
-                for neg, nm in (('plan', 'the towns planned here, as the city page plans them'), ('ground', "the world's land is each town's ground"),
-                                ('clear', "the flora and floor keep off the towns' lots")):
-                    r = [x for x in await pg.evaluate(TOWNS_JS, neg) if x['name'] == nm][0]
-                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
-                    if r['ok']: fails.append('negative ' + neg)
-                # the export: the camera over the box first, so the stage reads the terrain there
-                await pg.evaluate("(()=>{const F=ISLE.cur.G.frame;CAM.setView(F.x+570-450,F.z+1000-550,260,0,-.3);CAM.lookAt(F.x+570,WORLD.H(F.x+570,F.z+1000),F.z+1000);})()")
-                await pg.evaluate('_api.settle(240000)')
-                pok, lines = await harness.check_profile(pg, EXPORT_BOX, EXPORT_PROFILE)
-                print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : %s, box %s, %s' % (await pg.evaluate('ISLE.cur.town'), EXPORT_BOX, ', '.join(EXPORT_PROFILE)))
-                for ln in lines: print('        ' + ln)
-                if not pok: fails.append('export-profile')
-                # the towns' HLOD (88t): the camera's rings rebuilt and every piece baked first
-                await pg.evaluate("(()=>{let last=-1,same=0,n=0;while(same<4&&n<4000){for(const f of HOST.TICKS)f(.016,performance.now()/1000);n++;const b=_isleTowns.hlod.bakes;if(b===last)same++;else same=0;last=b;}})()")
-                r = await pg.evaluate('_isleTowns.hlodCheck()')
-                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'the towns drawn once each, full, baked or massing : ' + r['detail'])
-                if not r['ok']: fails.append('hlod')
-                rn = await pg.evaluate('_isleTowns.hlodCheck({twice:true})')
-                print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (hlod) : ' + rn['detail'])
-                if rn['ok']: fails.append('negative hlod')
-                # the towns lived in (88c): the sim caught up first, the citizens chosen round the camera set above
-                print('--- the towns lived in (M7) ---')
-                await pg.evaluate('_isleLife.follow(Infinity)')
-                for key, nm, neg in (('route', "the canoe line's sea route is on water", '{straight:true}'),
-                                     ('canoes', 'each carrier drawn at its berth or on its route', '{shift:true}'),
-                                     ('citizens', 'the citizens drawn where the sim poses them', '{shift:true}'),
-                                     ('clock', "the towns follow the world's clock", '{off:true}')):
-                    r = await pg.evaluate('_isleLife.checks.%s()' % key)
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + nm + ' : ' + r['detail'])
-                    if not r['ok']: fails.append(nm)
-                    rn = await pg.evaluate('_isleLife.checks.%s(%s)' % (key, neg))
-                    print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (%s) : ' % key + rn['detail'])
-                    if rn['ok']: fails.append('negative ' + key)
-            for v in [int(t) for t in a.views.split(',') if t.strip()]:
-                await pg.evaluate('_api.go(%d)' % v)
-                s = await pg.evaluate('_api.settle(240000)')
-                out = os.path.join(a.out, 'view%02d.png' % v)
-                await pg.screenshot(path=out)
-                print('view %d: %s  settle %s' % (v, out, s.get('ms') if isinstance(s, dict) else s))
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            if panel: print('ERROR PANEL (after):', panel[:1500]); fails.append('error panel')
-            if errs: print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
-            await b.close()
-    print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
-    return 1 if fails else 0
-
+    async with verify_page(a.html, here=HERE, size=a.size, settle_ms=0,
+                           ready_js="typeof CAM==='object'&&CAM&&window._api") as V:
+        pg, errs, fails = V.page, V.errs, V.fails
+        pg.set_default_timeout(900000)
+        if not V.ready:
+            print('timed out waiting for the page to build'); fails.append('build timeout')
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        if panel:
+            print('ERROR PANEL:', panel[:1500]); fails.append('error panel'); raise Abort(1)
+        if a.list:
+            print('\n'.join(await pg.evaluate('_api.views()'))); raise Abort(0)
+        print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
+        if a.assert_:
+            has = await pg.evaluate(HAS)
+            print('--- the world\'s checks (src/world/91-world-probe.js) ---')
+            for r in await pg.evaluate('_api.hostChecks()'):
+                need = APPLIES.get(r['name'])
+                if need and not has[need]:
+                    print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']: fails.append(r['name'])
+            print('--- the isle\'s checks ---')
+            for r in await pg.evaluate(ISLE, None):
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']: fails.append(r['name'])
+            print('--- negative controls (each must fail) ---')
+            for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
+                            ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
+                r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
+                if r['ok']: fails.append('negative ' + neg)
+            print('--- the towns (M7) ---')
+            for r in await pg.evaluate(TOWNS_JS, None):
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']: fails.append(r['name'])
+            for neg, nm in (('plan', 'the towns planned here, as the city page plans them'), ('ground', "the world's land is each town's ground"),
+                            ('clear', "the flora and floor keep off the towns' lots")):
+                r = [x for x in await pg.evaluate(TOWNS_JS, neg) if x['name'] == nm][0]
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
+                if r['ok']: fails.append('negative ' + neg)
+            # the export: the camera over the box first, so the stage reads the terrain there
+            await pg.evaluate("(()=>{const F=ISLE.cur.G.frame;CAM.setView(F.x+570-450,F.z+1000-550,260,0,-.3);CAM.lookAt(F.x+570,WORLD.H(F.x+570,F.z+1000),F.z+1000);})()")
+            await pg.evaluate('_api.settle(240000)')
+            pok, lines = await harness.check_profile(pg, EXPORT_BOX, EXPORT_PROFILE)
+            print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : %s, box %s, %s' % (await pg.evaluate('ISLE.cur.town'), EXPORT_BOX, ', '.join(EXPORT_PROFILE)))
+            for ln in lines: print('        ' + ln)
+            if not pok: fails.append('export-profile')
+            # the towns' HLOD (88t): the camera's rings rebuilt and every piece baked first
+            await pg.evaluate("(()=>{let last=-1,same=0,n=0;while(same<4&&n<4000){for(const f of HOST.TICKS)f(.016,performance.now()/1000);n++;const b=_isleTowns.hlod.bakes;if(b===last)same++;else same=0;last=b;}})()")
+            r = await pg.evaluate('_isleTowns.hlodCheck()')
+            print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'the towns drawn once each, full, baked or massing : ' + r['detail'])
+            if not r['ok']: fails.append('hlod')
+            rn = await pg.evaluate('_isleTowns.hlodCheck({twice:true})')
+            print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (hlod) : ' + rn['detail'])
+            if rn['ok']: fails.append('negative hlod')
+            # the towns lived in (88c): the sim caught up first, the citizens chosen round the camera set above
+            print('--- the towns lived in (M7) ---')
+            await pg.evaluate('_isleLife.follow(Infinity)')
+            for key, nm, neg in (('route', "the canoe line's sea route is on water", '{straight:true}'),
+                                 ('canoes', 'each carrier drawn at its berth or on its route', '{shift:true}'),
+                                 ('citizens', 'the citizens drawn where the sim poses them', '{shift:true}'),
+                                 ('clock', "the towns follow the world's clock", '{off:true}')):
+                r = await pg.evaluate('_isleLife.checks.%s()' % key)
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + nm + ' : ' + r['detail'])
+                if not r['ok']: fails.append(nm)
+                rn = await pg.evaluate('_isleLife.checks.%s(%s)' % (key, neg))
+                print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (%s) : ' % key + rn['detail'])
+                if rn['ok']: fails.append('negative ' + key)
+        for v in [int(t) for t in a.views.split(',') if t.strip()]:
+            await pg.evaluate('_api.go(%d)' % v)
+            s = await pg.evaluate('_api.settle(240000)')
+            out = os.path.join(a.out, 'view%02d.png' % v)
+            await V.shot(out, view='view%02d' % v)
+            print('view %d: %s  settle %s' % (v, out, s.get('ms') if isinstance(s, dict) else s))
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        if panel: print('ERROR PANEL (after):', panel[:1500]); fails.append('error panel')
+        if errs: print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
+    return V.exit()
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
