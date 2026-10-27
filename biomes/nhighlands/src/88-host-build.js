@@ -24,6 +24,8 @@ window._biome=null;window._dress=null;
  try{window._cut=buildCutNatives(rocks);}catch(e){reportErr('cut natives: '+e.stack);}   /* the Cut's lichen and reeds (87-host-cut.js) */
  lap('dress');
  const b=BIO.bake();lap('bake');
+ /* the impostors' light matched to the near crowns (the owner's look pass: the far canopy read darker); ?impgain= ?impwrap= to tune */
+ if(BIO.impostorLook){const q=new URLSearchParams(location.search);BIO.impostorLook({gain:+(q.get('impgain')||3.6),wrap:+(q.get('impwrap')||1)});   /* measured: the bake comes out ~4x darker than the drawn crowns (HANDOFF: a core fix owed); 3.6 and full wrap match their mean colour */}
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}lap('impostors');   /* the species' views (core/biome 34), after every placement; it waits for the library maps (up to 180 s: 30 ran out on a loaded machine) */
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}
  if(GROUND&&GROUND.material&&GROUND.material.map)BIO.setGround(GROUND.material.map,[TERR.X0,TERR.Z1,TERR.X1,TERR.Z0]);   /* R5: the floor cover's root colour (the paint's v runs z1..z0) */

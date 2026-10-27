@@ -108,6 +108,16 @@ red-stem fan (`organic.pleat.skin`). **Shared changes, reaching every page that 
   read as bare ground from above). Round 2 on nhighlands also: the ground grid's vertices snapped onto the stream's and the tarn's
   edges (`84-host-ground.js`: the sawtooth shoreline), smooth-shaded and textured lantern pods and bell-bulbs.
 
+### Owed in core: the impostor bake is ~4x too dark (found on nhighlands, 2026-10-26)
+
+Measured on nhighlands' lowlands view without fog: the hero leaf cards average (59, 48, 64), the octahedral impostors (59, 48, 64
+needed) only (5, 11, 2) as baked; the colour atlas itself averages (7, 11, 4). The capture (`core/biome/34-core-impostor.js`, `capture`)
+renders the crowns under a flat white ambient without the kit's leaf shader hooks (ground tint, back-light, the cards' own lift), so
+the baked albedo is far below what the page draws. nhighlands compensates with `BIO.impostorLook({gain:3.6, wrap:1})` (new: a page-wide
+gain and light wrap on every impostor, defaults 1 and 0 = unchanged). **The proper fix** is a capture that renders the albedo through
+the kit's own materials (or applies their hooks), so every biome's impostors match without a per-page gain; then nhighlands' gain
+goes back toward 1. swbay (the other adopter) has the same darkness.
+
 ### The core module sessions (started 2026-10-26, after merging `claude/hyperjungle-lands`)
 
 The owner asked for the hyperjungle lands plan's core gaps (`biomes/hyperjungle/PLAN-LANDS.md` section 11, H1-H10) and the other

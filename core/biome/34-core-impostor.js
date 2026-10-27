@@ -78,7 +78,7 @@ const VERT=['uniform float uN;','uniform float uK;','uniform vec4 uRS[25];','att
  ' vec4 mvPosition=viewMatrix*vec4(P,1.0);gl_Position=projectionMatrix*mvPosition;',
  ' #include <fog_vertex>',
  '}'].join('\n');
-const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform vec3 uSun;','uniform vec3 uSunCol;','uniform vec3 uAmb;','uniform vec3 uSky;','uniform vec3 uGround;',
+const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform float uImpGain;','uniform float uImpWrap;','uniform vec3 uSun;','uniform vec3 uSunCol;','uniform vec3 uAmb;','uniform vec3 uSky;','uniform vec3 uGround;',
  'varying vec4 vF0;','varying vec4 vF1;','varying vec4 vF2;','varying vec3 vW;','varying vec3 vR0;','varying vec3 vR1;','varying vec3 vR2;','varying vec3 vTint;',
  '#include <fog_pars_fragment>',
  'void impTap(vec4 F,float w,inout vec3 c,inout vec3 n,inout float a){if(w<=0.0||abs(F.z)>1.0||abs(F.w)>1.0)return;vec4 C=texture2D(uAtlas,F.xy),N=texture2D(uNorm,F.xy);',
@@ -86,8 +86,8 @@ const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform vec3
  'void main(){vec3 c=vec3(0.0),n=vec3(0.0);float a=0.0;impTap(vF0,vW.x,c,n,a);impTap(vF1,vW.y,c,n,a);impTap(vF2,vW.z,c,n,a);',
  ' float W=vW.x+vW.y+vW.z;if(a<0.35*W)discard;c/=max(a,1e-4);',
  ' vec3 nl=normalize(n+vec3(0.0,1e-4,0.0)),nw=normalize(vR0*nl.x+vR1*nl.y+vR2*nl.z);',
- ' vec3 L=uAmb+mix(uGround,uSky,nw.y*0.5+0.5)+uSunCol*max(dot(nw,uSun),0.0);',
- ' gl_FragColor=vec4(c*vTint*L,1.0);',
+ ' vec3 L=uAmb+mix(uGround,uSky,nw.y*0.5+0.5)+uSunCol*max((dot(nw,uSun)+uImpWrap)/(1.0+uImpWrap),0.0);',
+ ' gl_FragColor=vec4(c*vTint*L*uImpGain,1.0);',
  ' #include <tonemapping_fragment>',
  ' #include <encodings_fragment>',
  ' #include <fog_fragment>',
@@ -95,7 +95,11 @@ const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform vec3
 IMP.GLSL={fn:GLSL_FN,vertex:VERT,fragment:FRAG};
 
 // the scene's lights, as the impostors' uniforms (refreshed every frame by a tick, once any impostor exists)
-const LU={uSun:{value:null},uSunCol:{value:null},uAmb:{value:null},uSky:{value:null},uGround:{value:null}};
+const LU={uSun:{value:null},uSunCol:{value:null},uAmb:{value:null},uSky:{value:null},uGround:{value:null},uImpGain:{value:1},uImpWrap:{value:0}};
+// BIO.impostorLook({gain, wrap}): every impostor's light, page-wide. wrap (0) lets the sun reach the crown's far side as a leaf shader's
+// soft light does (0.5: half way round), gain (1) scales the result. The defaults are the plain Lambert term the impostors always had;
+// nhighlands (the owner's look pass, 2026-10-26) matched its near crowns with a wrap and a gain (the far canopy read darker than the trees)
+BIO.impostorLook=function(o){o=o||{};if(o.gain!=null)LU.uImpGain.value=+o.gain;if(o.wrap!=null)LU.uImpWrap.value=+o.wrap;return{gain:LU.uImpGain.value,wrap:LU.uImpWrap.value};};
 function readLights(){const TH=T(),sc=BIO.host.scene;if(!LU.uSun.value){LU.uSun.value=new TH.Vector3(0,1,0);LU.uSunCol.value=new TH.Color(0);LU.uAmb.value=new TH.Color(0);LU.uSky.value=new TH.Color(0);LU.uGround.value=new TH.Color(0);}
  if(!sc)return;let sun=null;const amb=LU.uAmb.value.setRGB(0,0,0),sky=LU.uSky.value.setRGB(0,0,0),gr=LU.uGround.value.setRGB(0,0,0);
  sc.traverseVisible(o=>{if(!o.isLight)return;
