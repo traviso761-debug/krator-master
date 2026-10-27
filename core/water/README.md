@@ -1,5 +1,7 @@
 # core/water: one module for every wet surface
 
+`PRACTICE.md` (2026-10-27): the root causes behind most water complaints, the core improvements that would end them, and how to build a biome's water.
+
 Every sea, bay, lake, river, fall, pool and wet street in Krator is meant to come from here: a build names the **kinds** of
 water it has and writes no water shader of its own. The plan, the audit of the thirty-nine builds that draw water and what
 was taken from Halcyon are `core/atmos/WATER.md`; this file is the contract.
