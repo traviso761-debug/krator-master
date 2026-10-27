@@ -44,7 +44,14 @@ const PAL=SWHI.PAL={
  log:[0x5a5048,0x4e4640],
  whorlBark:[0x6a5e52,0x5e544a,0x74685a],whorl:[0x2e7a74,0x347f78,0x286e6a,0x3a8a80],   // the whorl column: teal bristles
  bottleBark:[0x9a8a72,0x8e7e66,0xa69478],brush:[0x5a8a7e,0x4e8276,0x6a9a88],   // the bottle brush: a pale swollen trunk, blue-green bristles
- glass:[0x8ad0c8,0x9adcd0,0x7ac4be],tube:[0x5a9a8a,0xb09a5a,0xa08a50,0x7aa070,0xc0a868,0x8a7a5a],sproutTl:[0x4a8a78,0x5a9a84,0x6a9a6a],stone:[0xa8a29a,0x9a948c,0xb4ada4,0xa89c8e]};
+ glass:[0x8ad0c8,0x9adcd0,0x7ac4be],tube:[0x5a9a8a,0xb09a5a,0xa08a50,0x7aa070,0xc0a868,0x8a7a5a],sproutTl:[0x4a8a78,0x5a9a84,0x6a9a6a],stone:[0xa8a29a,0x9a948c,0xb4ada4,0xa89c8e],
+ /* THE PILLAR RIM (station 4, refs/01, refs/03, refs/20 D) */
+ anemBark:[0x2e6a44,0x34744a,0x285e3e,0x3a7a50],anemRoot:[0x3a4a30,0x34422c,0x40503a],   /* the anemone tree: a green pored trunk, dark roots */
+ anemTent:[0x2ab8b0,0x34c4bc,0x22a4a0,0x3ad0c4],anemTentB:[0x167c78,0x1a8a84],        /* its tentacles: teal, banded darker */
+ torch:[0xd8401e,0xe04a22,0xc83818,0xe85a28],torchLeaf:[0x3a8a32,0x46963a,0x327a2c],   /* the torch spike: red spikes over a green rosette */
+ bcSphere:[0x3a4a36,0x34422e],bcArm:[0xb02a5a,0xc0346a,0xa0244e],bcBead:[0xf0e6d4,0xe8dcc8],bcLeaf:[0x7a8a3a,0x8a7a34],   /* the bead coral */
+ cushion:[0x2e5a2a,0x285226,0x346230,0x2a5a36,0x3a6a2e],                                /* the cushion sponge: the painting's dark green mounds */
+ rimTurf:[0x6aa040,0x78ac46,0x5e9438,0x86b44e],rimMoss:[0x4e8030,0x5a8c36]};
 
 // ---------------------------------------------------------------- the tree species
 // H: height [lo,hi] m; rb: the bole's (or a pillar's) radius; crownR: the crown's (or the cap's) radius
@@ -59,7 +66,10 @@ const SP=SWHI.SPECIES=[
  {key:'whorlcolumn',name:'Whorl column',habit:'whorl',station:'treeline',H:[10,26],rb:[.3,.6],crownR:[2.4,4.2],
   tags:tag({climate:'cold',aridity:'subhumid',riparian:'no'},{wood:'timber',notes:'the native stand-in for a conifer: stacked whorls of teal bristles; holds the treeline at ~4.3 km'})},
  {key:'bottlebrush',name:'Bottle brush',habit:'bottle',station:'treeline',H:[5,11],rb:[.6,1.3],crownR:[2,3.6],
-  tags:tag({climate:'cool',aridity:'semiarid',riparian:'no'},{wood:'fuel',edible:['trunk water (cut)'],notes:'a swollen water-storing trunk under a blue-green bristle crown, on the dry-summer sunny spurs'})}];
+  tags:tag({climate:'cool',aridity:'semiarid',riparian:'no'},{wood:'fuel',edible:['trunk water (cut)'],notes:'a swollen water-storing trunk under a blue-green bristle crown, on the dry-summer sunny spurs'})},
+ // THE PILLAR RIM (station 4, the tableland's south-west edge): refs/03 (right)
+ {key:'anemonetree',name:'Anemone tree',habit:'anemone',station:'pillars',H:[5,13],rb:[.35,.75],crownR:[3.2,5.6],
+  tags:tag({climate:'cool',riparian:'no'},{wood:'none',notes:'stone-clasping roots and a crown of teal tentacles: the tufts on the pillars\' tops in refs/01; on fallen blocks below'})}];
 SP.forEach(S=>{if(!S.station)S.station='folds';});
 SWHI.KEY={};SP.forEach((S,i)=>SWHI.KEY[S.key]=i);
 // the floor and the small plants: label (the item's inspector label), name, tags
@@ -76,6 +86,10 @@ const PL=SWHI.PLANTS=[
  {label:'Whorl bristles',name:'Whorl bristles (the whorl column)',tags:tag({climate:'cold'},{})},
  {label:'Bristle crown',name:'Bristle crown (the bottle brush)',tags:tag({climate:'cool',aridity:'semiarid'},{})},
  {label:'Tube shrub',name:'Tube shrub (a fungoid shrub of open tubes)',tags:tag({climate:'cool',aridity:'semiarid'},{notes:'the understorey of the treeline woods'})},
+ {label:'Torch spike',name:'Torch spike',tags:tag({climate:'cool',aridity:'subhumid'},{notes:'red flower spikes over a rosette of strap leaves: the tableland\'s spring colour'})},
+ {label:'Bead coral',name:'Bead coral',tags:tag({climate:'cool',aridity:'subhumid'},{notes:'magenta branching arms beaded white over a dark central sphere (refs/20 D)'})},
+ {label:'Cushion sponge',name:'Cushion sponge',tags:tag({riparian:'both'},{notes:'dark green lumpy mounds of a spongy fungoid with its green partner: the shrubs of refs/01'})},
+ {label:'Rim turf',name:'Rim turf (the green floor between the pillars)',tags:tag({},{})},
  {label:'Log crust',name:'Log crust',tags:tag({riparian:'no'},{notes:'the decay layer: teal-and-gold plates and orange shelves on the dead cords'})},
  {label:'Cup-pads',name:'Cup-pads (the lattice oak)',tags:SP[0].tags},
  {label:'Parasol fruit',name:'Parasol fruit (the lattice oak)',tags:SP[0].tags},
@@ -130,16 +144,19 @@ const M=SWHI.MAT={
  whorl:BIO.leafMat(TX.bristle,'sw-whorl',{aN:true,swayW:'1.0',swayA:.06,alphaTest:.4}),
  brush:BIO.leafMat(TX.bristle,'sw-brush',{aN:true,swayW:'1.0',swayA:.08,alphaTest:.4,backlit:.25}),
  glass:BIO.leafMat(TX.glass,'sw-glass',{ground:SWHI.FLOOR_GROUND,swayW:'(position.y)',swayA:.05,alphaTest:.35,backlit:.7}),
- stone:BIO.solidMat(null,0xffffff)};
+ stone:BIO.solidMat(null,0xffffff),
+ /* the pillar rim's floor bodies (station 4): their parts' colours are the vertices', the flesh grain over them */
+ rimBody:BIO.barkMat(TX.flesh),cushion:BIO.barkMat(TX.flesh)};
 SWHI.LIB=BIO.libSwap('swhighlands',M);
 // the buckets (merged per chunk): the lattice oak's cords, the pillar cap's pillars, the cove's fallen cords
-SWHI.BKMAT={swcord:BIO.barkMat(TX.cord),swpillar:BIO.barkMat(TX.flesh),swlog:BIO.barkMat(TX.cord),swwhorl:BIO.barkMat(TX.cord),swbottle:BIO.barkMat(TX.flesh)};
+SWHI.BKMAT={swcord:BIO.barkMat(TX.cord),swpillar:BIO.barkMat(TX.flesh),swlog:BIO.barkMat(TX.cord),swwhorl:BIO.barkMat(TX.cord),swbottle:BIO.barkMat(TX.flesh),swanemone:BIO.barkMat(TX.flesh)};
 Object.assign(SWHI.LIB,BIO.libSwap('swhighlands',SWHI.BKMAT));
 BIO.bucket('swcord',SWHI.BKMAT.swcord,{label:'Lattice oak (braided cords)',uvScale:[1.5,2]});
 BIO.bucket('swpillar',SWHI.BKMAT.swpillar,{label:'Pillar cap (pillars)',uvScale:[2,3]});
 BIO.bucket('swlog',SWHI.BKMAT.swlog,{label:'Fallen cords (a dead lattice oak)',uvScale:[1.5,2]});
 BIO.bucket('swwhorl',SWHI.BKMAT.swwhorl,{label:'Whorl column (trunk)',uvScale:[1.5,2]});
 BIO.bucket('swbottle',SWHI.BKMAT.swbottle,{label:'Bottle brush (its swollen trunk)',uvScale:[2,2.5]});
+BIO.bucket('swanemone',SWHI.BKMAT.swanemone,{label:'Anemone tree (trunk, roots, tentacles)',uvScale:[1,1.5]});
 
 // ---------------------------------------------------------------- geometries local to this kit
 // crossed upright cards (n of them round the axis), the foot at y 0, the top at y 1; v 0 at the top (a card's sheet runs down)
@@ -175,6 +192,50 @@ function glassGeo(){const pos=[],uv=[],nor=[];for(let k=0;k<5;k++){const a=k/5*T
  return BIO.geo._make(pos,nor,uv);}
 // a fellfield stone: an icosahedron knocked about by KRAND (radius ~1)
 function stoneGeo(){const g=new T3.IcosahedronGeometry(1,0),P=g.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=.75+.5*KRAND.fbm(x*1.3+5,y*1.3,z*1.3,2,66);P.setXYZ(i,x*k,y*k*.6,z*k);}g.computeVertexNormals();return g;}
+// THE PILLAR RIM'S FLOOR (station 4): vertex-coloured bodies, the parts' colours baked in (linear), the instance only tinting them
+const lin3=h=>{const c=new T3.Color(h);return[Math.pow(c.r,2.2),Math.pow(c.g,2.2),Math.pow(c.b,2.2)];};
+const VA=()=>({pos:[],nor:[],uv:[],col:[]});
+const VG=A=>{const g=BIO.geo._make(A.pos,A.nor,A.uv);g.setAttribute('color',new T3.Float32BufferAttribute(A.col,3));return g;};
+// a tapering tube from p0 to p1 (seg sides), one colour, or a colour by the height along it (cf(t))
+function armInto(A,p0,p1,r0,r1,seg,cf){const d=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]],L=Math.hypot(d[0],d[1],d[2]),t=[d[0]/L,d[1]/L,d[2]/L],up=Math.abs(t[1])>.9?[1,0,0]:[0,1,0];
+ const u=[t[1]*up[2]-t[2]*up[1],t[2]*up[0]-t[0]*up[2],t[0]*up[1]-t[1]*up[0]],ul=Math.hypot(u[0],u[1],u[2]);u[0]/=ul;u[1]/=ul;u[2]/=ul;
+ const v=[t[1]*u[2]-t[2]*u[1],t[2]*u[0]-t[0]*u[2],t[0]*u[1]-t[1]*u[0]];
+ const at=(e,a)=>{const p=e?p1:p0,r=e?r1:r0,c=Math.cos(a),s2=Math.sin(a),n=[u[0]*c+v[0]*s2,u[1]*c+v[1]*s2,u[2]*c+v[2]*s2];return{p:[p[0]+n[0]*r,p[1]+n[1]*r,p[2]+n[2]*r],n,e,c:typeof cf==='function'?cf(e):cf};};
+ for(let s=0;s<seg;s++){const a0=s/seg*TAU,a1=(s+1)/seg*TAU,q=[at(0,a0),at(0,a1),at(1,a1),at(1,a0)];
+  [0,1,2,0,2,3].forEach(i=>{const Q=q[i];A.pos.push(Q.p[0],Q.p[1],Q.p[2]);A.nor.push(Q.n[0],Q.n[1],Q.n[2]);A.uv.push((s+(i===1||i===2?1:0))/seg,Q.e);A.col.push(Q.c[0],Q.c[1],Q.c[2]);});}}
+// a lumpy blob from an icosahedron (detail 0 or 1): centre c, radius r, squashed by sy; its normals the sphere's (smooth); cf(y01) its colour
+function blobInto(A,c,r,sy,detail,lump,seed,cf){const g=new T3.IcosahedronGeometry(1,detail),P=g.attributes.position;
+ for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=1+lump*(KRAND.fbm(x*1.7+seed,y*1.7,z*1.7,2,seed)-.5)*2,yy=Math.max(y,-.35);
+  A.pos.push(c[0]+x*r*k,c[1]+yy*r*k*sy,c[2]+z*r*k);A.nor.push(x,y/Math.max(.3,sy),z);A.uv.push(.5+Math.atan2(z,x)/TAU,.5+y*.5);const C=cf((y+1)/2);A.col.push(C[0],C[1],C[2]);}
+ g.dispose();}
+// a strap leaf from the foot outward and up, bent down at its tip: n segments, its width tapering to a point; one colour, lighter at the tip
+function leafInto(A,a,len,w,rise,c0,c1){const ca=Math.cos(a),sa=Math.sin(a),n=3,P=[];
+ for(let i=0;i<=n;i++){const t=i/n,r=len*t,y=rise*Math.sin(t*Math.PI*.8);P.push([ca*r,y,sa*r,w*(1-t*.85)]);}
+ for(let i=0;i<n;i++){const p=P[i],q=P[i+1],L=[[p[0]-sa*p[3],p[1],p[2]+ca*p[3]],[p[0]+sa*p[3],p[1],p[2]-ca*p[3]],[q[0]+sa*q[3],q[1],q[2]-ca*q[3]],[q[0]-sa*q[3],q[1],q[2]+ca*q[3]]];
+  const C=[c0,c0,c1,c1].map((c,k)=>k<2?lerpC(c0,c1,i/n):lerpC(c0,c1,(i+1)/n));
+  [0,2,1,0,3,2].forEach(k=>{A.pos.push(L[k][0],L[k][1],L[k][2]);A.nor.push(ca*.3,.95,sa*.3);A.uv.push(k===1||k===2?1:0,k>1?(i+1)/n:i/n);A.col.push(C[k][0],C[k][1],C[k][2]);});}}
+const lerpC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+// THE TORCH SPIKE (refs/03, top middle): a rosette of strap leaves, two or three red beaded spikes on green stalks (1 tall)
+function torchGeo(){const A=VA(),L0=lin3(PAL.torchLeaf[0]),L1=lin3(PAL.torchLeaf[1]),R0=lin3(PAL.torch[0]),R1=lin3(PAL.torch[3]);
+ for(let k=0;k<8;k++){const a=k/8*TAU+KRAND.unit(KRAND.hash(91,k))*.5;leafInto(A,a,.32+.14*KRAND.unit(KRAND.hash(91,k,1)),.05,.22+.12*KRAND.unit(KRAND.hash(91,k,2)),L0,L1);}
+ for(let k=0;k<3;k++){const a=k/3*TAU+.4,l=.04+.05*k,b=[Math.cos(a)*l,0,Math.sin(a)*l],top=.42+.12*k,tp=[b[0]*2.2,top,b[2]*2.2];
+  armInto(A,b,tp,.022,.018,4,L0);
+  for(let j=0;j<6;j++){const t0=j/6,t1=(j+1)/6,r=.07*Math.sin(Math.PI*(.25+.7*(j+.5)/6));   /* the spike: beaded rings, swelling then narrowing to its tip */
+   armInto(A,[tp[0],top+.42*t0,tp[2]],[tp[0],top+.42*t1,tp[2]],r*1.05,r*.8,6,j%2?R0:R1);}}
+ return VG(A);}
+// THE BEAD CORAL (refs/20 D): a dark sphere in a skirt of olive leaves, magenta arms forking over it, each tip a white bead (1 tall)
+function beadCoralGeo(){const A=VA(),S0=lin3(PAL.bcSphere[0]),S1=lin3(PAL.bcSphere[1]),M=lin3(PAL.bcArm[0]),Bd=lin3(PAL.bcBead[0]),Lf0=lin3(PAL.bcLeaf[0]),Lf1=lin3(0xc8a83a);
+ for(let k=0;k<7;k++)leafInto(A,k/7*TAU+.2,.48,.1,.06,Lf0,Lf1);
+ blobInto(A,[0,.3,0],.3,1,1,.06,93,y=>lerpC(S1,S0,y));
+ const bead=p=>blobInto(A,p,.045,1,0,0,94,()=>Bd);
+ for(let k=0;k<7;k++){const a=k/7*TAU+KRAND.unit(KRAND.hash(92,k))*.5,f=.6+.4*KRAND.unit(KRAND.hash(92,k,1));
+  const p0=[Math.cos(a)*.18,.42,Math.sin(a)*.18],p1=[Math.cos(a)*.42*f,.62+.18*f,Math.sin(a)*.42*f];armInto(A,p0,p1,.026,.02,4,M);
+  for(let j=0;j<2;j++){const b=a+(j?.55:-.55),p2=[p1[0]+Math.cos(b)*.2,p1[1]+.16,p1[2]+Math.sin(b)*.2];armInto(A,p1,p2,.02,.014,4,M);
+   for(let m=0;m<2;m++){const c=b+(m?.5:-.5),p3=[p2[0]+Math.cos(c)*.1,p2[1]+.06+.06*m,p2[2]+Math.sin(c)*.1];armInto(A,p2,p3,.014,.011,3,M);bead(p3);}}}
+ return VG(A);}
+// THE CUSHION SPONGE (the dark green mounds of refs/01): a lumpy dome, darker at its foot, its top lit by the partner's green (1 across)
+function cushionGeo(){const A=VA(),C0=lin3(0x1c3a1a),C1=lin3(0x5a8a3e);blobInto(A,[0,.2,0],.5,.95,1,.26,95,y=>lerpC(C0,C1,Math.pow(y,1.4)));return VG(A);}
+SWHI.GB={lin3,VA,VG,armInto,blobInto,leafInto,lerpC};   /* the vertex-coloured body helpers, for the other stations' fragments (57-59) */
 const G=SWHI.GEO={
  whorl:whorlGeo(9,.28),
  // the treeline's understorey shrub: a clump of open fungoid tubes (BIO.fung.tube), teal to ochre
@@ -202,7 +263,8 @@ const G=SWHI.GEO={
  coral:coralGeo(),
  // the log crust: a shelf on the wood and a lobed plate lying on it
  shelf:BIO.fung.bracket({arc:Math.PI*.9,seg:7,thick:.3,droop:.12,wav:3,wavA:.08,seed:85}),
- plate:BIO.fung.crust({lobes:6,lobeA:.3,seg:14,rings:2})};
+ plate:BIO.fung.crust({lobes:6,lobeA:.3,seg:14,rings:2}),
+ torch:torchGeo(),beadcoral:beadCoralGeo(),cushion:cushionGeo()};
 BIO.def('cuppad',G.pad,M.pad,{label:'Cup-pads'});
 BIO.def('parasol',G.parasol,M.parasol,{label:'Parasol fruit'});
 BIO.def('conecap',G.coneCap,M.coneCap,{label:'Bead cone'});
@@ -224,5 +286,8 @@ BIO.def('brush',G.brush,M.brush,{label:'Bristle crown',attrs:['aN']});
 BIO.def('glassleaf',G.glassleaf,M.glass,{label:'Glass leaf'});
 BIO.def('stone',G.stone,M.stone,{label:'Fellfield stones'});
 BIO.def('tubeshrub',G.tubeShrub,M.coneCap,{label:'Tube shrub'});
+BIO.def('torch',G.torch,M.rimBody,{label:'Torch spike'});
+BIO.def('beadcoral',G.beadcoral,M.rimBody,{label:'Bead coral'});
+BIO.def('cushion',G.cushion,M.cushion,{label:'Cushion sponge'});
 SWHI.PICK=(arr,u)=>arr[Math.floor(u*arr.length)%arr.length];
 })();

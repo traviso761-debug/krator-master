@@ -32,6 +32,10 @@ const VIEWS={};
   if(v){add('In the cove',v);add('Night: the cove',v,'night');}}
  add('A lattice oak',specimen('latticeoak',34,4,.6));
  add('Bead cones',specimen('beadcone',14,2,.6));
+ /* ?sheet=<station>: a station's flora laid out on the bald (57-59, SWHI.SHEETS), its row of trees and the beds before it */
+ {const S=window._biome&&window._biome.sheet;if(S&&S.trees.length){const T0=S.trees[0],T5=S.trees[S.trees.length-1],mx=(T0.x+T5.x)/2,mz=(T0.z+T5.z)/2;
+  const d=Math.max(34,Math.hypot(T5.x-T0.x,T5.z-T0.z)*.55),hh=Math.max(5,Math.max(...S.trees.map(T=>T.H))*.4);add('Flora sheet ('+S.name+'): the trees',[mx,G(mx,mz-d)+hh,mz-d,mx,G(mx,mz)+hh,mz]);
+  const b=S.beds,ks=Object.keys(b),c=b[ks[Math.min(1,ks.length-1)]];if(c)add('Flora sheet ('+S.name+'): the floor',[c[0],G(c[0],c[1]-20)+4.5,c[1]-20,c[0],G(c[0],c[1])+.4,c[1]]);}}
  // the river cave: on the valley floor in front of the bite, the chevron cliff over the mouth
  add('The river cave',[BITE.x-150,Math.max(G(BITE.x-150,BITE.z+20),BITE.floor)+16,BITE.z+20,BITE.x+BITE.r,BITE.floor+22,BITE.z]);
  // the gorge: from beside the sink, up the gorge through the three bridges
