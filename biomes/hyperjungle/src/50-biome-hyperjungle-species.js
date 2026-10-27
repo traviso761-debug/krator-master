@@ -225,19 +225,29 @@ HYPERJUNGLE.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w
 
 // ---------------------------------------------------------------- materials
 // Bark buckets (merged, vertex-coloured) and foliage items (instanced).
+// The rebuild's foliage options (2026-10-27; core/biome README, the foliage workstream): BL the back-light on the broadleaf crowns
+// and the understorey's broad cards (not on fronds, moss or strands); GT the floor cover's root colour from the ground's paint (R5:
+// the host's BIO.setGround; faded out over 500-700 m, the floor's near range); FUNG the brackets and caps on core/biome's fungoid
+// parts (BIO.fung, 33). Each has its switch, read here: ?backlit=0, ?groundtint=0, ?fung=0, or HYPERJUNGLE.LOOK = {backlit: false,
+// ...} set before this loads (a world that reads the kit in place and wants the old look; a reader without BIO.fung gets the old
+// half sphere whatever it asks)
+const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,LK=HYPERJUNGLE.LOOK||{},off=k=>LK[k]===false||(LQ&&LQ.get(k)==='0');
+const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[500,700]};
+HYPERJUNGLE.FUNG=!off('fung')&&!!(BIO.fung&&BIO.fung.bracket);
+HYPERJUNGLE.LOOKS={backlit:BL,ground:GT};   /* 52's library cards take the same options */
 HYPERJUNGLE.MAT={
  bark:HYPERJUNGLE.BARKTEX.map(t=>BIO.barkMat(t)),         // bark[sp], one per species
  limb:BIO.barkMat(HYPERJUNGLE.LIMBTEX),
  wood:BIO.barkMat(HYPERJUNGLE.WOODTEX),
  rock:BIO.barkMat(HYPERJUNGLE.ROCKTEX),
- leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20})),
+ leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20,backlit:BL})),
  raceme:BIO.leafMat(HYPERJUNGLE.FLOWERTEX,'raceme',{aN:true,swayW:'(-position.y)',swayA:.9,alphaTest:.4}),
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.5,alphaTest:0,vertexColors:true}),
- under:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'under',{swayW:'1.0',swayA:.06}),
+ under:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'under',{swayW:'1.0',swayA:.06,backlit:BL,ground:GT}),
  frond:BIO.leafMat(HYPERJUNGLE.FRONDTEX,'frond',{swayW:'(position.x)',swayA:.075}),
  hang:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
  bract:BIO.leafMat(HYPERJUNGLE.BRACTTEX,'bract',{swayW:'(-position.y)',swayA:.09,axis:1,alphaTest:.4}),
- moss:BIO.leafMat(HYPERJUNGLE.MOSSTEX,'moss',{swayW:'1.0',swayA:.012,alphaTest:.3}),
+ moss:BIO.leafMat(HYPERJUNGLE.MOSSTEX,'moss',{swayW:'1.0',swayA:.012,alphaTest:.3,ground:GT}),
  bloom:BIO.leafMat(null,'bloom',{swayW:'1.0',swayA:.05,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
@@ -249,10 +259,16 @@ HYPERJUNGLE.MAT={
 // pack (the open world) keeps the procedural maps. Cards are DataTexture-like (flipY false), as BIO.alphaTex makes them.
 HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('hyperjungle',n):null;
 {const P=HYPERJUNGLE.LIBP,M=HYPERJUNGLE.MAT;
- const card=n=>{const L=P(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;t.generateMipmaps=true;
-  t.minFilter=BIO.host.THREE.LinearMipmapLinearFilter;t.magFilter=BIO.host.THREE.LinearFilter;return t;};
- M.leaf.forEach((m,i)=>{const t=card('leaf'+i);if(t){m.map=t;m.alphaTest=.4;m.needsUpdate=true;}});
- for(const k of ['raceme','under','hang','frond','moss','bract']){const t=card(k);if(t){M[k].map=t;M[k].alphaTest=.4;M[k].needsUpdate=true;}}
+ /* a card slot's cell (one plant of a sheet, or a plant's tight box) and base (where it attaches: BIO.def turns the geometry that
+    holds it by one end to meet it) as BIO.libSwap applies them (core/biome 20; check_cells.py --fix wrote them, 2026-10-27):
+    this kit binds its own cards here, so it applies them itself. A slot with neither draws as before */
+ const card=(n,m)=>{const L=P(n);if(!L)return null;let t=KMAT.textures(L,{aniso:4,flipY:false}).map;
+  if(L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});
+   const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}
+  if(m&&(L.base||L.stems))m.userData.libCard={base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};
+  t.generateMipmaps=true;t.minFilter=BIO.host.THREE.LinearMipmapLinearFilter;t.magFilter=BIO.host.THREE.LinearFilter;return t;};
+ M.leaf.forEach((m,i)=>{const t=card('leaf'+i,m);if(t){m.map=t;m.alphaTest=.4;m.needsUpdate=true;}});
+ for(const k of ['raceme','under','hang','frond','moss','bract']){const t=card(k,M[k]);if(t){M[k].map=t;M[k].alphaTest=.4;M[k].needsUpdate=true;}}
  HYPERJUNGLE.LIBSCALE={};
  M.bark.forEach((m,i)=>{const L=P('bark'+i);if(L){m.map=KMAT.textures(L,{aniso:8}).map;m.needsUpdate=true;HYPERJUNGLE.LIBSCALE['bark'+i]=L.scale;}});
  {const L=P('rock');if(L){M.rock.map=KMAT.textures(L,{aniso:8}).map;M.rock.needsUpdate=true;HYPERJUNGLE.LIBSCALE.rock=L.scale;}}
@@ -291,7 +307,12 @@ BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUN
 /* a young hypertree's trunk wears its species' bole bark (the library's when bound), as the heroes' limbs do: on the shared
    limb map a young ghostwood or baobab grew a red-brown trunk. 'trunk' stays for the floor's palms, tree ferns and sub-canopy trees */
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.def('saptrunk'+i,BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.bark[i].map),{label:'Young '+S.name.toLowerCase()+' trunk'}));
-BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
+// the bracket fungus on core/biome's fungoid parts (BIO.fung.bracket, 2026-10-27; TODO.md "Rebuild the old fungoid flora"): a shelf
+// from the wall at z 0 out along +z, its lip waved and drooping, where the kit drew a half sphere (60 and 65 turn it to the face);
+// the floor's mushroom caps (60 fungi) a gilled dome, 'fungcap', where the giant's cap was the same half sphere and the small ones
+// a lathe each. ?fung=0 (or no BIO.fung) draws both as before
+BIO.def('fungus',HYPERJUNGLE.FUNG?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.32,droop:.18,wav:3,wavA:.07,lump:.08,seed:5113}):new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
+if(HYPERJUNGLE.FUNG)BIO.def('fungcap',BIO.fung.cap({form:'dome',h:.75,seg:10,rings:3,wav:5,wavA:.05,lump:.06,under:'gills',seed:5114}),HYPERJUNGLE.MAT.solid,{label:'Mushrooms'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
 // the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a
 // short stalk, local y 0 (hung) .. -1.15. Vertex-coloured in linear (the instance colour only shades it): each key's tip

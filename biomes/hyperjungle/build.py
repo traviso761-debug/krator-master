@@ -49,22 +49,43 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 else 'hyperjungle.html'
+# THE STATIONS (PLAN-STATIONS.md, 2026-10-27, the final rebuild): `python3 build.py --station <name>` builds
+# dist/hyperjungle-<name>.html from src/ with the station's own fragments (stations/<name>/*) in place of src/'s of the same
+# name: `savanna` (station 2, the savanna edge) and `lake` (station 3, the lake and the flooded forest)
+_args=[a for a in sys.argv[1:] if a!='--no-checks']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('hyperjungle-%s.html'%STATION if STATION else 'hyperjungle.html')
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]
+# 2026-10-27, the final rebuild: KGROUND (the ground's layers), KFAR (the forest's far country: src/83-host-far.js), KHORIZON
+# (its shadows); the savanna station adds KSTACKS (the termite cathedrals, STATION_CORE below)
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+# 33 BIO.fung (the brackets and caps), 34 the octahedral impostors, 38 KFIRE (the savanna's burn mosaic) (2026-10-27)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','38-core-fire.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+# what a station takes beyond the page's core (by path from the repo root, keyed by the fragment name it loads under)
+STATION_CORE={'savanna':{'37-core-stacks.js':'core/terrain/37-core-stacks.js'},
+              'lake':{'55-core-water-confluence.js':'core/water/ext/55-core-water-confluence.js','55b-core-water-confluence-draw.js':'core/water/ext/55b-core-water-confluence-draw.js'}}
+for f,p in STATION_CORE.get(STATION,{}).items():
+    PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..',p)))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -112,8 +133,28 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+# height fog (R1: the sky's chunk and its host, above), the rain occlusion map (R10) and the branched lightning (2026-10-27, the final rebuild)
+PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+# THE NEIGHBOURS, read in place (EXCHANGES.md, 2026-10-27: the hyperjungle as receiver; each station's 87-host-kin.js grows them):
+# the lake station takes geyser's stilt pandan (its species and tree builders); the savanna station takes eastabyss's sigillaria
+# and cycad as cousins (PLAN-LANDS.md 5.1's fire scale-tree and monsoon cycad). Each kit's two fragments slotted after the host
+# stage (45) and before this kit (50), each in its own registry, closed by a one-line kitEnd; its pack carries only the
+# families those builders draw with
+import json as _json
+NEIGH={'lake':{'geyser':(['50-biome-geyser-species.js','55-biome-geyser-trees.js'],'GEYSER',['bark0','strap','rosette'])},
+       'savanna':{'eastabyss':(['50-biome-eastabyss-species.js','55-biome-eastabyss-trees.js'],'EASTABYSS',None)}}.get(STATION,{})
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
+    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if _keep is not None and f not in _keep]
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)
+    PATH['44%s-host-matlib-pack-%s.js'%(_c,_k)]=None;PATH['47%s9-%s-end.js'%(_c,_k)]=None
 PATH.pop('82-host-sky.js',None)   # the old dome stays in src/ for the builds that still read it in place; this page draws the shared sky
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

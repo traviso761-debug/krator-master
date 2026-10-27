@@ -134,7 +134,7 @@ async def run(a):
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}" + os.environ.get("VERIFY_QUERY", ""), timeout=LOAD_MS)   # VERIFY_QUERY="?diet=0" compares a switch
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"

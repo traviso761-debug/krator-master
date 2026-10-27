@@ -16,6 +16,10 @@
 (function(){
 const SP=HYPERJUNGLE.SPECIES,PAL=HYPERJUNGLE.PAL,GOLD=2.399963,NSP=SP.length;
 HYPERJUNGLE.TREES=[];HYPERJUNGLE.SAPLINGS=[];
+// the runtime LOD's radii (metres from the camera to a chunk; null: the spine's static LOD only, as before 2026-10-27). The host sets
+// them before build (88-host-build.js: the far band's diet): tree a hero's range (and its bole dress, 60), then its stand-in; sap the
+// young trees'; floor, mid, far the floor's three rings (60)
+HYPERJUNGLE.LOD=HYPERJUNGLE.LOD||{tree:null,sap:null,floor:null,mid:null,far:null};
 
 // ---------------------------------------------------------------- trunk profile
 // Girder's trunkR: bole radius of tree T at world height y. The baobab is a
@@ -322,9 +326,26 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
   if(!BIO.clearOf(x,z,cr+4))return;
   SAPS.push({x:x,z:z,y0:y-1,H:H,sp:sp,cr:cr,ring:d>=heroR});},{patch:.5,pad:6});
  // build
- heroes.forEach((T,ti)=>buildHero(T,ti,q,st));
- fars.forEach((T,fi)=>buildFar(T,fi,st));
- SAPS.forEach((Sd,si)=>buildSapling(Sd,si,q,st));
+ // RUNTIME LOD AND OCTAHEDRAL IMPOSTORS (2026-10-27, the final rebuild; GRAPHIC-LOAD.md recommendations 1 and 2, nhighlands and
+ // eastabyss the worked examples). With HYPERJUNGLE.LOD.tree set (88-host-build.js; ?diet=0 leaves it null) a hero is drawn in full
+ // while the camera is within LOD.tree metres of its chunk, and as its stand-in past that; a far tree is only ever its stand-in. The
+ // stand-in is one quad of its species baked from 8 x 8 directions (core/biome 34, one set, one item) where the page lists the
+ // fragment and HYPERJUNGLE.IMPOSTORS is not false; else the blob crowns as before. The bake builds one hero of each species again at
+ // BIO.bakeImpostors (after every placement, its own seed); here nothing draws from the stream but the heroes, the far blobs and the
+ // saplings, in the same order, so every tree keeps its form.
+ const LD=HYPERJUNGLE.LOD,LT=LD.tree,IMPON=HYPERJUNGLE.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('hyperjungle.trees',{label:'Far hypertrees'});const c=BIO.center();
+  SP.forEach((S,sp)=>{let T0=null;for(const T of heroes)if(T.sp===sp&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=Object.assign({},st);
+   const rec=BIO.impostor('hyperjungle.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;
+     try{reseed(T1.seed*7919+17);buildHero(Object.assign({},T1),0,1,st1);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' hypertree (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far hypertrees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ heroes.forEach((T,ti)=>{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}buildHero(T,ti,q,st);
+  if(LT){BIO.range=1e9;BIO.minRange=LT;if(!farImp(T))buildFar(T,ti,st);}BIO.owner=null;BIO.range=null;BIO.minRange=0;});
+ fars.forEach((T,fi)=>{if(!farImp(T))buildFar(T,fi,st);});
+ BIO.range=LD.sap||null;SAPS.forEach((Sd,si)=>buildSapling(Sd,si,q,st));BIO.range=null;
  // the inspector's names for what the register leaves out: the young trees and the far hypertrees (BIO.nameAt)
  if(BIO.nameSet){BIO.nameSet('hyperjungle.saplings',SAPS.map(Sd=>({name:'Young '+SP[Sd.sp].name.toLowerCase()+' (immature hypertree)',sp:Sd.sp,x:Sd.x,z:Sd.z,y:Sd.y0,r:Sd.cr,h:Sd.H})));
   BIO.nameSet('hyperjungle.far',fars.map(T=>({name:SP[T.sp].name+' hypertree (far)',sp:T.sp,x:T.x,z:T.z,y:T.y0,r:T.crownR||T.rb*4,h:T.H})));}

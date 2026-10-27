@@ -41,6 +41,12 @@ BIO.init({tags:'hyperjungle',THREE:THREE,scene:scene,terrainH:terrainH,
  waterH:(x,z)=>{const cx=90*Math.sin(z*.0012);return Math.abs(x-cx)<9?terrainH(cx,z)+.35:-1e9;},
  obstacles:OBSTACLES,ticks:tick,seed:7,origin:[0,0],err:reportErr});
 BIO.setSun([-1200,900,-600]);
+// THE GRAPHICS SET (2026-10-27, the final rebuild; core/biome README "Adopting it", nhighlands and eastabyss the worked examples):
+// the items' geometry welded and drawn by index (?index=0 the soup); one LOD mesh per chunk, small meshes merged to 1500 triangles,
+// a dithered cross-fade over the last 15% of each range (?lodmerge=0, ?lodfade=0) and the per-instance range cull (?lodcull=0)
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 // the ground as one mesh, painted dark litter with the brook bed lighter
 const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
@@ -55,7 +61,16 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x8c8c86});
    anti-tiled (two scales, one turned) and darkened to the closed canopy's gloom; without the pack the ground is the painted one */
 const GLIT=(function(){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('hyperjungle','ground.litter'):null;if(!L)return null;
  const t=KMAT.textures(L,{aniso:8}).map;t.wrapS=t.wrapT=THREE.RepeatWrapping;return{map:t,k:1/L.scale[0]};})();
-if(GLIT)MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGLit={value:GLIT.map};
+/* THE LITTER ON core/terrain's ground shader (KGROUND, 43-core-ground.js; 2026-10-27, the final rebuild): the same layer at the same
+   strength (60% toward the paint times the litter at .55, none on the brook's silt), hex-tiled and scaled with distance where the page
+   mixed two turned scales by a sine mask. ?kground=0 (or no pack) keeps the page's own mix below */
+const GLIB=(function(){if(typeof KGROUND==='undefined'||new URLSearchParams(location.search).get('kground')==='0')return null;
+ const L=KGROUND.layer('hyperjungle','ground.litter',{w:'(1.0-vBk)',amt:.6,gain:.55,tint:'diffuse'});return L?[L]:null;})();
+if(GLIB){MAT_GROUND.onBeforeCompile=sh=>{
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aBk;varying float vBk;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvBk=aBk;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vBk;');};
+ KGROUND.hook(MAT_GROUND,{key:'hyperjungle-ground',layers:GLIB});}
+else if(GLIT)MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGLit={value:GLIT.map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aBk;varying float vBk;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vBk=aBk;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uGLit;varying vec3 vGWP;varying float vBk;').replace('#include <map_fragment>','#include <map_fragment>\n{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));'+
   'vec3 tl=mix(pow(texture2D(uGLit,p*'+GLIT.k.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGLit,q*'+(GLIT.k*.53).toFixed(4)+'+vec2(0.37,0.21)).rgb,vec3(2.2)),m);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tl*0.55,0.6*(1.0-vBk));}');};
