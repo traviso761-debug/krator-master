@@ -20,14 +20,24 @@ const maskOf=(box,cell,f)=>{const nx=Math.round((box[2]-box[0])/cell),nz=Math.ro
 // rim and a marsh's pools, and the bed was clamped at 1.4 m deep to hide it. Now the bed is the ground's own and the lap is off; the ground itself and BIO.waterH are untouched.
 const SWELL=[[.05,22,35,0,.03],[.03,13,-50,1.3,.03],[.012,6,80,2.2,.02]];
 // the salt lake: the lake's ellipse a=850 m, b=1900 m, its edge wobbling by up to 16%
-const LAKE_BOX=[-1150,-2400,1150,2400],LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn(x,z)<24);
+// THE POOLS THE SHORE CUTS INTO ARE THE LAKE'S (the owner, 2026-10-27: "algae color doesn't extend to pools that intersect
+// shoreline"): every cell under the water level joined to the lake (4-neighbour flood from lakeIn < 0, at 8 m) goes to the lake's
+// surface and its tint, and out of the marsh pools'; the rivers' channels (riverD < 40 m) are not followed upstream
+function lakeJoined(box,cell){const nx=Math.round((box[2]-box[0])/cell),nz=Math.round((box[3]-box[1])/cell),c=new Uint8Array(nx*nz),q=[];
+ const X=i=>box[0]+(i+.5)*cell,Z=j=>box[1]+(j+.5)*cell,wet=(x,z)=>terrainH(x,z)<BIO.waterH(x,z)-.02&&riverD(x,z)>=40;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)if(lakeIn(X(i),Z(j))<0){c[j*nx+i]=1;q.push(j*nx+i);}
+ while(q.length){const k=q.pop(),i=k%nx,j=(k-i)/nx;
+  for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const a=i+di,b=j+dj;if(a<0||b<0||a>=nx||b>=nz)continue;const n=b*nx+a;
+   if(c[n])continue;if(wet(X(a),Z(b))){c[n]=1;q.push(n);}}}
+ return(x,z)=>{const i=Math.floor((x-box[0])/cell),j=Math.floor((z-box[1])/cell);return i>=0&&j>=0&&i<nx&&j<nz&&c[j*nx+i]===1;};}
+const LAKE_BOX=[-1150,-2600,2500,2600],LAKE_JOIN=lakeJoined(LAKE_BOX,8),LAKE_MASK=maskOf(LAKE_BOX,8,(x,z)=>lakeIn(x,z)<24||LAKE_JOIN(x,z));
 const LAKE_WATER=WATER.open({name:'The salt lake',level:0,swell:SWELL,field:0,bounds:LAKE_BOX,bed:terrainH,bedCell:8,mask:LAKE_MASK});
 const LAKE_DRAW=WATER.draw(LAKE_WATER,{surf:false,roughness:.2,metalness:.05,envMapIntensity:.85,renderOrder:1,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.4).lerp(WATER_PALE,.2)),deep:lin(WATER_DEEP)});
 LAKE_DRAW.mesh.userData.inspectLabel='The salt lake';
 // the marsh pools: the marsh zone (east of the lake, up to where the slope begins), wherever the ground is under the level
 const MUD=new THREE.Color(0x6a6a58),RIVER_GREY=new THREE.Color(0x6a7a72);
-const MARSH_BOX=[-250,-3740,2500,3740],MARSH_MASK=maskOf(MARSH_BOX,10,(x,z)=>{const W=zoneW(x,z);return Math.max(W.marshW,W.marshE)>.02&&W.lk>=24;});
+const MARSH_BOX=[-250,-3740,2500,3740],MARSH_MASK=maskOf(MARSH_BOX,10,(x,z)=>{const W=zoneW(x,z);return Math.max(W.marshW,W.marshE)>.02&&W.lk>=24&&!LAKE_JOIN(x,z)&&riverD(x,z)>20;});   /* the rivers' carved beds are the ribbons', not marsh water */
 const MARSH_WATER=WATER.open({name:'The marsh pools',level:0,swell:SWELL,field:0,bounds:MARSH_BOX,bed:terrainH,bedCell:10,mask:MARSH_MASK});
 const MARSH_DRAW=WATER.draw(MARSH_WATER,{surf:false,roughness:.2,metalness:.03,envMapIntensity:.3,renderOrder:1,   /* tints as tuned on a real GPU against the old shader (2026-10-20): the lit surface shows a tint far brighter than the old one did */
  shallow:lin(POOL_COL.clone().lerp(MUD,.5)).multiplyScalar(.6),deep:lin(POOL_COL.clone().lerp(MUD,.4)).multiplyScalar(.4)});
