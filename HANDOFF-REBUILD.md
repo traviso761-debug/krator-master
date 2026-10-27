@@ -60,6 +60,19 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
 6. **Close out:** `tools/check_core_use.py --write-baseline` (it shrinks), `tools/port_baseline.py --update` for checked pages
    only, `tools/test_all.py`, the gallery republish (ask the owner: it is a wider change).
 
+**Paused after pair 3 for a core pass** (the owner, 2026-10-27: "pause pair 4 and implement core fixes"; "then wait for the
+cutout session's foliage changes, then rebuild the core modules thoroughly"). Pairs 1-3 are merged. Before pair 4:
+1. **Wait for the card audit's foliage changes** (`claude/eloquent-swartz-7f7b41`: its five root causes of floating foliage,
+   missing branches and badly cut cards) to merge here.
+2. **Then the core pass**, from three sources:
+   - `CORE-IMPROVEMENTS.md` (the recurring-issues audit: 21 classes, its "Order of work" steps 1 and 2);
+   - `core/water/PRACTICE.md` (the water audit; `WATER.audit` and ground placement are already in, ac251a770; still to do: the
+     flow network, the shore from the ground, breakup by default, program checks, colour space, ribbon resolution, Godot parity);
+   - the card audit's foliage core changes, if any are left after its merge.
+   It runs as sessions split by files, each merging here with its tests.
+3. **Then pair 4 resumes** (swlowlands, nwlowlands), with every turn after it on the new core. The turns already done (pairs 1-3,
+   the Rift, SW highlands, the Godthrone, nhighlands) pick the core pass up at their next rebuild: the all-builds rebuild at close-out.
+
 **How step 3 runs** (the owner, 2026-10-27, relayed by the card-audit session):
 - **Each biome's full rebuild turn is its own session, at most TWO at a time**, so the one GPU is not burdened more than it is.
 - **Wait to start them until SW highlands station 4 and the Godthrone are merged into `claude/biome-rebuild`**, so their
