@@ -8,7 +8,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **The looks to judge** (each behind its switch): the impostors' gain (2.6, `?impgain=`; the core bake is ~4x dark), the pavement's
   stones (`?pave=0`), the dune ripples (`?sand=0`), the Bowl's pressure polygons (`?polygon=0`) and shore pan (`?pan=0`), the height fog
   (`?hfog=0`), the haboob (`?storm=1`), the far country's colours (`?far=0`), the talus and the wadi (`?landforms=0`), the steppe's dry
-  season (`?dry=1`).
+  season (`?dry=1`), the delta's apex (`?apex=0`), the Bowl's tile breakup and soda patches (`?tiles=0`).
 - [ ] **No wet ground on the stations**: the Bowl's ground shader (Mantis and the steppe take it) holds 15 of a fragment shader's 16 texture
   units; the wet ground's puddle mask and rain map push it over and the ground does not compile (`89x-host-air.js` skips it unless
   `STATION.wet`). Moving the Bowl's layers onto KGROUND (or an atlas) would free the units.

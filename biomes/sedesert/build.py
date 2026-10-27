@@ -95,6 +95,9 @@ for f in CORE_WATER:
 # 54/54b (the final rebuild, 2026-10-27): the looks (the Bowl's brine) and the pan (its shore's salt crust); by path, after 22 and 51
 PATH['22b-core-water-kinds-ext.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54-core-water-kinds-ext.js'))
 PATH['51b-core-water-kinds-ext-draw.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54b-core-water-kinds-ext-draw.js'))
+# 55/55b the Bowl delta's apex as one water (WATER.confluence), 56 the ribbons' ripple breakup (WATER.breakupFlows); after the top-level core/water
+for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js']:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 # core/hazard (KHAZ; the final rebuild 2026-10-27): the dust storm's fields (dust, alkali, visibility: 89x-host-air.js) reach the walker through it
 PATH.setdefault('20-core-hazard.js',os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js')))
 PATH.setdefault('37-core-traps.js',os.path.normpath(os.path.join(HERE,'..','..','core','biome','37-core-traps.js')))   # KTRAPS.cycle, the one clock core/hazard's export reads

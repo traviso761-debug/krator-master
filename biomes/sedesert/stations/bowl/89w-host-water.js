@@ -56,12 +56,12 @@ if(!STATION.noLake&&WATER.pan&&WATER.panGLSL&&STATION.pan!==false&&new URLSearch
  for(let x=LAKE_BOX[2];x>=LAKE_BOX[0];x-=60)poly.push([x,zS(x)+260]);
  const P=WATER.pan({name:'The shore pan (salt crust)',poly,level:lv,cell:3,colours:{salt:'#f0ebe2',crack:'#bca88c',damp:.7,brine:'#7ab8ae'}});
  const U={uPanWet:{value:P.wetNow()}};TICKS.push(()=>{U.uPanWet.value=P.wetNow();});
- const prev=MAT_GROUND.onBeforeCompile,pk=MAT_GROUND.customProgramCacheKey.bind(MAT_GROUND),CH=WATER.panGLSL(P);
- MAT_GROUND.onBeforeCompile=function(sh,r){prev.call(this,sh,r);Object.assign(sh.uniforms,U);
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uPanWet;\n'+CH)
-   .replace('#include <color_fragment>','#include <color_fragment>\n{float pw=smoothstep('+(lv+.02).toFixed(3)+','+(lv-.1).toFixed(3)+',vGWP.y)*smoothstep('+(LAKE.level-.04).toFixed(3)+','+(LAKE.level+.03).toFixed(3)+',vGWP.y);'+
-    'if(pw>0.0){vec4 pn=wtrPan(vGWP.xz,uPanWet);diffuseColor.rgb=mix(diffuseColor.rgb,pn.rgb,pw*0.85);}}');};
- MAT_GROUND.customProgramCacheKey=()=>pk()+'-pan';MAT_GROUND.needsUpdate=true;SHORE_PAN=P;}
+ /* the ground's own hook (84-host-ground.js) reads this when the shader is first made, after every fragment has run: the shared sky's cloud
+    shading owns MAT_GROUND.onBeforeCompile by then (an accessor), so a hook chained on here would call itself */
+ BOWL_PAN={U,CH:WATER.panGLSL(P),
+  mix:'{float pw=smoothstep('+(lv+.02).toFixed(3)+','+(lv-.1).toFixed(3)+',vGWP.y)*smoothstep('+(LAKE.level-.04).toFixed(3)+','+(LAKE.level+.03).toFixed(3)+',vGWP.y);'+
+   'if(pw>0.0){vec4 pn=wtrPan(vGWP.xz,uPanWet);diffuseColor.rgb=mix(diffuseColor.rgb,pn.rgb,pw*0.85);}}'};
+ SHORE_PAN=P;}
 // the far lake: flat, a decimetre under the station's, only where the shore formula says water and off the station's box
 var FAR_BOX=[-60000,-60000,60000,60000];
 FAR_LAKE=WATER.open({name:'The Bowl lake (far)',level:LAKE.level-.1,swell:[],field:.02,bounds:FAR_BOX,
@@ -74,10 +74,23 @@ FAR_LAKE_DRAW.mesh.userData.inspectLabel=LAKE.name;
 }
 // THE DELTA: each channel's line to its mouth on the shore (the plume carries its colour out into the lake), the main river faster
 // each line ends at its mouth on the shore (MOUTHS): the lake and its plume take the water from there
+const DELTA_OPT={shallow:lin(0x6e6a44),deep:lin(0x3a4632),color:0xffffff,roughness:.2,metalness:.02,envMapIntensity:.22,step:6,margin:1.5};
 const DELTA_FLOWS=STATION.dryChannels?[]:CHAN.map((C,ci)=>{const P=[],end=MOUTHS[ci]?MOUTHS[ci].k:C.pts.length-1;for(let k=0;k<=end;k++){const p=C.pts[k];P.push([p[0],p[1],C.y[k]]);}
  const S=WATER.flow({name:C.name,pts:P,width:C.w,speed:ci?.55+C.w*.012:1.1,rapids:[.03,.08]});   /* a delta has no white water */
- const D=WATER.drawFlow(S,{shallow:lin(0x6e6a44),deep:lin(0x3a4632),color:0xffffff,roughness:.2,metalness:.02,envMapIntensity:.22,step:6,across:ci?4:6,margin:1.5});
+ const D=WATER.drawFlow(S,Object.assign({},DELTA_OPT,{across:ci?4:6}));
  D.mesh.userData.inspectLabel=C.name;C.flow=S;C.draw=D;return S;});
+// THE APEX (core/water ext/55 WATER.confluence, the final rebuild 2026-10-27; the owner: the river's ribbon stopped short of the distributaries
+// and their ribbons lay over each other where they leave the apex together). A delta's apex is a confluence in reverse (the water session;
+// eastabyss's forks): one surface over the ~100 m where the five leave the river, its shore the carved ground's inside the channels' smooth
+// union, one blended current and level, foam only at real banks; the six ribbons fade out inside its disc and meet it at its rim. The Bowl's
+// own delta only (Mantis's springs and the steppe's dry wadi have no fork); ?apex=0 the ribbons alone
+var APEX=null;
+if(STATION.key==='bowl'&&WATER.confluence&&DELTA_FLOWS.length>1&&new URLSearchParams(location.search).get('apex')!=='0'){
+ const A=DELTA.apex,at=[A[0],A[1]-48];   /* the middle of the overlap: the apex moved ~0.4 r down the delta, toward the lake */
+ const CF=WATER.confluence({name:"The delta's apex",flows:DELTA_FLOWS,at,r:120,cell:2,ground:terrainH});
+ APEX=WATER.drawConfluence(CF,Object.assign({},DELTA_OPT,{across:6}));WATER.fadeRibbons(CF,CHAN.map(C=>C.draw).filter(Boolean));APEX.mesh.userData.inspectLabel="The delta's apex";}
+// the ribbons' ripples broken into patches and carried on each one's own current (core/water ext/56; the owner's zigzag on eastabyss's stream)
+if(WATER.breakupFlows&&new URLSearchParams(location.search).get('breakup')!=='0')WATER.breakupFlows();
 // A station's spring pools (STATION.pools: [{x, z, r, level, name}]): still water, a disc each, the springs' clear teal
 const POOLS=(STATION.pools||[]).map(P=>{const poly=[];for(let k=0;k<24;k++){const a=k/24*TAU,r=P.r*(1+.12*Math.sin(3*a+P.x*.01)+.06*Math.sin(5*a));poly.push([P.x+Math.cos(a)*r,P.z+Math.sin(a)*r]);}
  const S=WATER.still({name:P.name,level:P.level,poly}),D=WATER.drawStill(S,{color:lin(0x3a8a86),roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1});

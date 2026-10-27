@@ -56,6 +56,7 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
  /* a green station's two layers (Mantis's pack, 'mantis'): the savanna's grass (full colour) and the forest floor (multiplied) */
  for(const k of ['lush','forest']){const P=(STATION.layerPack&&KMAT.packed(STATION.layerPack,'ground.'+k))||KMAT.packed('mantis','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0],m:Math.pow(P.tint&&P.tint.mean!=null?P.tint.mean:.78,2.2)};}
  return o;})();
+const TILES=new URLSearchParams(location.search).get('tiles')!=='0';   /* the layers' tile breakup (bowlTex, below) */
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb4aca4});
 MAT_GROUND.extensions={derivatives:true};
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uKgSun={value:KG_SUN};sh.uniforms.uBowlNoise={value:TEX_NOISE};
@@ -69,10 +70,16 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX
   /* THE TILE VARIATION: each layer is sampled twice at offsets that change patch by patch (a 48 m noise picks which), blended
      across the patches' edges, so no repeat lines up (Quilez's texture variation). The offsets are golden-ratio steps, the
      gradients the plain uv's (textureGrad, WebGL2), so the mip level does not jump at a patch's edge */
-  'vec3 bowlTex(sampler2D s,vec2 uv,vec2 w){float n=texture2D(uBowlNoise,w*0.0047).r*7.0,i=floor(n),f=fract(n);'+
+  /* (the final rebuild, 2026-10-27; the owner: the salt flat's crust read as a grid of one tile; ?tiles=0 the old two copies) each patch's copy is
+     TURNED as well as shifted (a golden-angle step), the patches are a third the size, and a third copy at 0.37 the scale, turned 0.6 rad, takes
+     a quarter of the colour, so no repeat lines up in rows or columns */
+  'vec3 bowlTex(sampler2D s,vec2 uv,vec2 w){float n=texture2D(uBowlNoise,w*'+(TILES?'0.0125':'0.0047')+').r*7.0,i=floor(n),f=fract(n);'+
   'vec2 oa=fract(i*vec2(0.7548777,0.5698403)),ob=fract((i+1.0)*vec2(0.7548777,0.5698403));'+
-  (gl2?'vec2 dx=dFdx(uv),dy=dFdy(uv);vec3 a=textureGrad(s,uv+oa,dx,dy).rgb,b=textureGrad(s,uv+ob,dx,dy).rgb;':'vec3 a=texture2D(s,uv+oa).rgb,b=texture2D(s,uv+ob).rgb;')+
-  'return mix(a,b,smoothstep(0.2,0.8,f-0.1*dot(a-b,vec3(1.0))));}'+
+  (TILES?'float ra=i*2.39996,rb=ra+2.39996;mat2 Ra=mat2(cos(ra),-sin(ra),sin(ra),cos(ra)),Rb=mat2(cos(rb),-sin(rb),sin(rb),cos(rb));const mat2 R3=mat2(0.8253,-0.5646,0.5646,0.8253);':'mat2 Ra=mat2(1.0),Rb=mat2(1.0);')+
+  (gl2?'vec2 dx=dFdx(uv),dy=dFdy(uv);vec3 a=textureGrad(s,Ra*uv+oa,Ra*dx,Ra*dy).rgb,b=textureGrad(s,Rb*uv+ob,Rb*dx,Rb*dy).rgb;':'vec3 a=texture2D(s,Ra*uv+oa).rgb,b=texture2D(s,Rb*uv+ob).rgb;')+
+  'vec3 c=mix(a,b,smoothstep(0.2,0.8,f-0.1*dot(a-b,vec3(1.0))));'+
+  (TILES?(gl2?'c=mix(c,textureGrad(s,R3*uv*0.37+0.31,R3*dx*0.37,R3*dy*0.37).rgb,0.25);':'c=mix(c,texture2D(s,R3*uv*0.37+0.31).rgb,0.25);'):'')+
+  'return c;}'+
   /* THE WEIGHTS' DITHER: a blend weight w moves by up to 0.45 with a 9 m and a 2 m noise where it is mid-way, and not at all at 0 or 1,
      so an edge between two surfaces is ragged patches, not a cross-fade */
   'float bowlW(float w,float d){return smoothstep(0.0,1.0,clamp(w+d*4.0*w*(1.0-w),0.0,1.0));}',
@@ -83,7 +90,11 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX
   body+='vec3 L;';
   const lay=k=>'L=pow(bowlTex(uG_'+k+',p*'+GLAY[k].k.toFixed(4)+',p),vec3(2.2));';
   body+=GL_TINT.map(k=>lay(k)+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*L/'+GLAY[k].m.toFixed(4)+',bowlW('+W[k]+',dw));').join('');
-  body+=GL_FULL.map(k=>lay(k)+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.18,bowlW('+W[k]+',dw));').join('');
+  /* the salt's second texture (?tiles=0 none): the soda crust's curled plates blended through it in broad soft patches (a 60 m and a 20 m
+     noise), up to half, so the flat is not one crust from shore to halo */
+  const SALT2=TILES&&GLAY.soda&&GL_FULL.indexOf('salt')>=0?'{float sp=smoothstep(0.45,0.75,texture2D(uBowlNoise,p*0.0045+0.17).r*0.7+texture2D(uBowlNoise,p*0.017+0.53).g*0.3);'+
+   'L=mix(L,pow(bowlTex(uG_soda,p*'+GLAY.soda.k.toFixed(4)+'*0.8,p+37.0),vec3(2.2)),sp*0.5);}':'';
+  body+=GL_FULL.map(k=>lay(k)+(k==='salt'?SALT2:'')+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.18,bowlW('+W[k]+',dw));').join('');
   if(GLAY.forest)body+=lay('forest')+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*L/'+GLAY.forest.m.toFixed(4)+',bowlW(vL2.w,dw));';
   if(GLAY.lush)body+=lay('lush')+'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.1,bowlW(vL2.z,dw));';
   body+='diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.35);';}
@@ -91,7 +102,11 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX
  body+='diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN)*(0.88+0.24*dt.r),vL2.y);/*KGROUND*/'+
   /* a screen dither of a quarter step of 8 bits, so the long smooth gradients of the flat and the haze do not band */
   'diffuseColor.rgb+=(texture2D(uBowlNoise,gl_FragCoord.xy/256.0).b-0.5)/400.0;}';
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);};
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);
+ /* the shore pan's crust (89w-host-water.js sets BOWL_PAN before the first frame: core/water's pan GLSL, by the ground's height over the lake) */
+ if(BOWL_PAN){Object.assign(sh.uniforms,BOWL_PAN.U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uPanWet;\n'+BOWL_PAN.CH)
+  .replace('#include <color_fragment>','#include <color_fragment>\n'+BOWL_PAN.mix);}};
+var BOWL_PAN=null;   /* the shore pan's drawing on this ground (89w) */
 MAT_GROUND.customProgramCacheKey=()=>'bowl-ground3'+(GLAY?'-lib'+(GLAY.lush?'g':''):'');
 // THE LAYER KINDS (core/terrain 43, KGROUND; the final rebuild 2026-10-27, BACKPORT.md sedesert's row), procedural over the layers above, no
 // sampler of their own: the salt crust's PRESSURE POLYGONS (?polygon=0), metres-wide cells whose edges buckle up into pale ridges over buff

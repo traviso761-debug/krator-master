@@ -32,3 +32,5 @@ POND_DRAW.mesh.userData.inspectLabel='The pond';
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26; here, after ATMOS.init): dry: the south-east desert, rain rare; the haze goes
 // the colour of dust and the ground never wets. // It starts clear, so the page looks as it did; the Weather selector in the panel picks the rest.
 ATMOS.bindWeather({climate:{dry:true},sun,hemi:scene.children.find(o=>o.isHemisphereLight),grounds:[MAT_GROUND]});
+// the river's ripples broken into patches and carried on its own current (core/water ext/56, WATER.breakupFlows; the owner's zigzag on eastabyss's stream); ?breakup=0
+if(WATER.breakupFlows&&new URLSearchParams(location.search).get('breakup')!=='0')WATER.breakupFlows();

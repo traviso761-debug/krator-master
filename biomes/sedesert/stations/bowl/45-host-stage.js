@@ -88,17 +88,17 @@ const yardK=(x,z,h)=>{const pk=platK(x,z);if(pk<=.25)return 0;BASIN.sample(x,z,h
 const CHAN=(function(){const out=[],A=DELTA.apex;
  const line=(p0,p1,n,off)=>{const dx=p1[0]-p0[0],dz=p1[1]-p0[1],L=Math.hypot(dx,dz),px=-dz/L,pz=dx/L,P=[];
   for(let k=0;k<=n;k++){const t=k/n,o=off(t);P.push([p0[0]+dx*t+px*o,p0[1]+dz*t+pz*o]);}return P;};
- out.push({key:'main',name:'The Bowl river 2 (78 m3/s, from the south)',w:42,depth:1.6,pts:line([560,3260],A,160,t=>(70*Math.sin(t*Math.PI*3.2+.5)+22*Math.sin(t*Math.PI*9.4))*(1-.4*t))});
+ out.push({key:'main',name:'The Bowl river 2 (78 m3/s, from the south)',w:42,depth:1.6,pts:line([560,3260],A,160,t=>(70*Math.sin(t*Math.PI*3.2+.5)+22*Math.sin(t*Math.PI*9.4))*(1-.4*t)*smooth(1,.88,t))});   /* its meander held to 0 at its end: the line ends ON the apex (it stopped 50 m west of it, and the delta's water with it: 2026-10-27) */
  const ends=[-720,-300,160,560,980],amp=[-150,-70,10,70,150],   /* bowed outward, a fan: no two within 100 m past the apex */
   w=[14,20,28,18,12];
  ends.forEach((ex,i)=>{const e=[ex,zS(ex)-140];out.push({key:'d'+i,name:'A distributary of the delta',w:w[i],depth:.55+w[i]*.03,
-  pts:line(A,e,110,t=>amp[i]*Math.sin(Math.PI*t)+14*Math.sin(t*Math.PI*6+i*1.7)+6*Math.sin(t*Math.PI*15+i))});});
+  pts:line(A,e,110,t=>amp[i]*Math.sin(Math.PI*t)+(14*Math.sin(t*Math.PI*6+i*1.7)+6*Math.sin(t*Math.PI*15+i))*smooth(0,.08,t))});});   /* the wiggle from 0 at the apex: every distributary starts on it */
  return out;})();
 // the channels' water: KRELIEF.river on the ground without them, then the apex's level and the lake's
 (function(){const g=groundH;
  CHAN.forEach((C,ci)=>{const R=KRELIEF.river(C.pts,g,{depth:-.45,sample:8});   /* the water 0.45 m under the plain it crosses */C.y=R.map(p=>p.y);});
  const yA=CHAN[0].y[CHAN[0].y.length-1];
- CHAN.forEach((C,ci)=>{for(let k=0;k<C.y.length;k++){let y=C.y[k];if(ci)y=Math.min(y,yA);if(k)y=Math.min(y,C.y[k-1]);C.y[k]=Math.max(y,LAKE.level);}
+ CHAN.forEach((C,ci)=>{for(let k=0;k<C.y.length;k++){let y=C.y[k];if(ci)y=k?Math.min(y,yA):yA;   /* a distributary starts at the river's last level (the apex's confluence blends them: a step would show at its rim) */if(k)y=Math.min(y,C.y[k-1]);C.y[k]=Math.max(y,LAKE.level);}
   /* the mouth: down to the lake's level over its last 120 m */
   const n=C.pts.length;for(let k=n-1;k>=0;k--){const z=C.pts[k][1],u=uOf(C.pts[k][0],z);if(u>120)break;C.y[k]=Math.max(LAKE.level,Math.min(C.y[k],LAKE.level+Math.max(0,u)*.004));}});})();
 // the ground before the channels: the base and the old lake's strandlines (KBASIN.land: monotone in height, so it makes no hollows)
