@@ -88,7 +88,11 @@ because their conditions are rare, and Krator has the conditions.
   (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
 
 New stations for the old kits (2026-10-23): each kit's `PLAN-STATIONS.md` (nhighlands, shighlands, sedesert, oidong, hyperjungle,
-ebadlands, eastabyss, swlowlands, necanyons, ehighlands).
+ebadlands, eastabyss, swlowlands, necanyons, ehighlands). A second pass (2026-10-26, surveyed with
+`tools/scale-model/survey_biomes.py`): nsemiarid (the high country), nwlowlands (the tropical lake margins),
+crater-drylands (the south, the savannah edge, the salt floor), xanadu (the cloud slopes, the high ranges, the descent),
+geyser (the high desert, the mountain forest, Korona's corona field, the ice field on Xanadu's wall) and ringisles (the high
+isle). The e and se savannah rims are `biomes/hyperjungle/PLAN-LANDS.md`'s.
 
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.

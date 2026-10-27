@@ -223,6 +223,14 @@ are not the empty ones the whistles cross.
 - **The crest road:** a ring crest at 4,000 m where the wind is the climate (yardangs, snow wool, krummholz of the
   northern highlands' wind spruce in the gullies), the Hum's road-marks between tables, the Painted Men's trails across.
 
+## The plume is active (the owner, 2026-10-26)
+
+"Sure, it's still active. Better watch your step in Korona." The corona's mantle plume still heats it, so Korona has
+geyser fields, hot springs and fumaroles along its ring faults: in the trenches and the moat, where the faults reach
+deepest and the basins give water. The scale model has no vent in Korona yet (a 4.24 item). The field is the geyser kit's
+station `corona` (`biomes/geyser/PLAN-STATIONS.md`, station 4), read in place by a Korona station that needs it; the
+hazards (thin crust over boiling water, hot ground, gas in the hollows) go on `KHAZ`.
+
 ## Building it
 
 **Built 2026-10-19 (the owner's overnight brief): six stations.** `src/` is station 1, the tepui (`dist/korona.html`);
