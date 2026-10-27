@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 0,
+   "key": "#ff00ff",
+   "key_hi": 70,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "line",
+   "subject": "#8a9a5a"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.clubmoss.sprig",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.clubmoss.sprig.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet. Delivered for the prompt card.clubmoss, installed under a new id because card.clubmoss (2026-10-14, full colour, nodding clubmoss) is wired in geyser and swhighlands. Keyed onto a line (spill line, subject #8a9a5a, the stems' median colour): the generator blended the hair-thin needles with the magenta, so unmix and spill all left them mauve",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.clubmoss\"",
+  "reuse": "eastabyss's club-moss carpet (clubmoss slot; the abyssal-savannah and the hyperjungle read it in place); any lycopod or horsetail ground cover",
+  "sha1": "38fb88f6038c90654b2b4343bdc9482d24b81cab"
+ }
+}

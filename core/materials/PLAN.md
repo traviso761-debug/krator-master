@@ -1838,6 +1838,28 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-10-27 and processed: every prompt still owed (pasted, 20 images, 1254 px WebP)
+
+Batches `tools/textures/batches/owner-2026-10-27.json` (12 surfaces, `process.py`) and `owner-2026-10-27-cards.json` (5 cut-out sheets on
+magenta and the 2 eyes, `cards.py`, anchor none). All in the library, **none wired** (the builds are mid-rebuild; wire each on its build's turn).
+- Surfaces, full colour: `rock.basalt.titanium` (2 m; jet-black flow-banded basalt with orange bead seams), `ground.turf.native` (2 m; grey-green
+  succulent filament mat over peat).
+- Surfaces, tintable: `skin.reptile.scales` (0.25 m), `skin.reptile.scutes` (0.3 m), `skin.reptile.plates` (0.2 m; the plates came rounded,
+  pebble-like, more than three-to-six sided), `metal.etched` (0.5 m, metal 0.6), `rock.halite.cut` (1 m, `mute` 0.3: its faint pink bands kept),
+  `stone.acidstreak` (1 m; vertical, up is the top), `ground.terrace.field` (4 m; furrows run left to right), `ground.gypsum.crust` (1.5 m; the
+  first of two takes: curled plates, polygon cracks, selenite in small clusters; the second had more, evenly strewn blades and fainter cracks,
+  left out), `metal.enamel.scoured` (0.5 m), `earth.termite` (0.5 m; vertical runnels, pellet crust, tunnel mouths).
+- Cards: `card.turf.native` (tintable; spill all), `card.cornlily` (full colour; spill none for the maroon seed heads), `card.lily.victoria`
+  (tintable; one pad filling the frame; spill none keeps the red rim). **Two under new ids**, because the prompt's id was already a wired set:
+  `card.clubmoss.sprig` (prompt `card.clubmoss`, tintable; `card.clubmoss` is the 2026-10-14 nodding clubmoss in geyser and swhighlands; keyed
+  onto a line, subject `#8a9a5a`: the needles are generator-blended with the magenta, so unmix and spill all left them mauve; a few pink specks
+  remain at needle tips) and `card.palm.costa` (prompt `card.palm.fan`, tintable; `card.palm.fan` is the 2026-10-25 3 x 3 sheet in necanyons).
+  The palm sheet came 3 x 1 (2000 x 667) and was padded to a square on magenta so each leaf keeps its aspect: the leaves are the middle row of a
+  3 x 3 grid (v 0.333-0.667).
+- Eyes, not tiling, full colour: `eye.reptile.slit`, `eye.reptile.spiral` (1024 px), through `cards.py` with the white corners keyed out
+  (key `#ffffff`, no crop), so the alpha is the iris mask.
+- Owed after it: nothing with a prompt (the gaps with no prompt yet stay listed in `PROMPTS-NEEDED.md`).
+
 #### Delivered 2026-10-26, later: `rock.cut.polished` (pasted in the Cut's build session, 1254 px)
 
 - Batch `owner-2026-10-26-cut.json`: `rock.cut.polished` (full colour, 2 m, roughness 0.35; bedded rock sawn smooth, two pebble-and-shell beds, quartz veins). For `biomes/cut`'s cut faces (station 3); reuse: any sawn or polished bedded rock.

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.312,
+    1.127
+   ],
+   "seam_before": [
+    1.447,
+    1.179
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "skin.reptile.plates",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   0.2,
+   0.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "skin.reptile.plates.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "the plates came rounded (pebble-like) more than three-to-six sided",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"skin.reptile.plates\"",
+  "reuse": "the Lizardmen's skulls and snouts (the head's larger plates); armoured reptiles, horned beasts' brows",
+  "sha1": "fb56d99cd78b5139d1f712712cd8ad57feaf991f"
+ }
+}

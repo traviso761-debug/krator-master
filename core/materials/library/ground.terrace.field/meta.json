@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.155,
+    1.23
+   ],
+   "seam_before": [
+    1.479,
+    0.974
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.terrace.field",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground.terrace.field.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "furrows run across the frame (left to right)",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.terrace.field\"",
+  "reuse": "the Lozenge's terrace treads (kits/ancients, MAT.acSoil), the Pile's crop beds; any terraced field or allotment ground",
+  "sha1": "475155cc5ca343a68240ef4129a36483dc74532a"
+ }
+}
