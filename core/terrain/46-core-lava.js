@@ -41,7 +41,8 @@
 //   sim.snapshot() / sim.restore(s)   the state (a time-lapse that goes back)
 //   sim.hazard(o) -> {at, hazard}: a KHAZ record's tags.hazard over the sim's box, stateFn 'KLAVA.flow'; KLAVA.bind(rec, sim)
 //                        binds the sim (a page's state, as KHAZ.bindFire's run): molten k 1, a fresh crust (frozen within
-//                        o.hot s of sim time, a day by default) k .25, else 0
+//                        o.hot s of sim time, a day by default) k .25, else 0. o.key: bind by a key instead of the tags
+//                        record's id (KLAVA.bind(key, sim); it rides in the hazard's seed); o.nav: the record's nav costs
 //   sim.export()         {format:'krator-lava', version:1, x0, z0, step, nx, nz, t, rheo, h, T, dep (base64 Float32)}
 //   KLAVA.flux(he, dH, d, w, eta, Sy, rhog)   the pair's flux (m3/s); KLAVA.rheo(R, T) -> {eta, Sy}; KLAVA.RHEO
 (function(root){
@@ -181,8 +182,9 @@ function create(o){
    Object.assign(L,s.L);vents.forEach((V,i)=>V.poured=s.vents[i]);ponds.forEach((P,i)=>P.out=s.ponds[i]);[bi0,bj0,bi1,bj1]=s.box;vx.fill(0);vz.fill(0);return sim;},
   hazard(o2){o2=o2||{};let mn=Infinity,mx=-Infinity;for(let k=0;k<N;k++){if(z[k]<mn)mn=z[k];if(z[k]>mx)mx=z[k];}
    const w=(nx-1)*step,dd=(nz-1)*step;
-   return {at:[x0+w/2,mn-5,z0+dd/2],hazard:{kind:'lava',stateFn:'KLAVA.flow',falloff:'none',hot:o2.hot==null?86400:o2.hot,
-    shape:{type:'box',w:w+step,d:dd+step,h:mx-mn+(o2.h==null?60:o2.h),y0:0}}};},
+   const hz={kind:'lava',stateFn:'KLAVA.flow',falloff:'none',hot:o2.hot==null?86400:o2.hot,
+    shape:{type:'box',w:w+step,d:dd+step,h:mx-mn+(o2.h==null?60:o2.h),y0:0}};
+   if(o2.key!=null)hz.seed=o2.key;if(o2.nav)hz.nav=o2.nav;return {at:[x0+w/2,mn-5,z0+dd/2],hazard:hz};},
   export(){const K=KB();if(!K)throw new Error('KLAVA.export needs KFIELD (its base64)');
    return {format:'krator-lava',version:1,convention:'cell (i,j) at x0 + i*step, z0 + j*step; arrays row j then column i; T kelvin',
     x0,z0,step,nx,nz,t:sim.t,rheo:R,h:K.b64(Float32Array.from(h)),T:K.b64(Float32Array.from(T)),dep:K.b64(Float32Array.from(dep))};}};
@@ -192,17 +194,17 @@ function create(o){
 // ---- the hazard: a sim is page state, so it is bound to its record (KHAZ.bindFire's way), and its state function goes
 // into KHAZ.STATES the first time one is bound
 const BOUND={};
-function flowState(rec,hz,t,speed,x,zz){const s=BOUND[rec.id];if(!s)return {state:'none',k:0,on:false};
+function flowState(rec,hz,t,speed,x,zz){const s=(hz.seed!=null&&BOUND[hz.seed])||BOUND[rec.id];if(!s)return {state:'none',k:0,on:false};
  if(x!=null&&zz!=null){const c=s.at(x,zz);
   if(c.pond||c.molten)return {state:'molten',k:1,on:true};
   if(c.dep>0&&s.t-c.frozeAt<(hz.hot==null?86400:hz.hot))return {state:'crust',k:.25,on:true};
   return {state:c.dep>0?'frozen':'clear',k:0,on:false};}
  return s.molten>0||s.ponds.length?{state:'molten',k:1,on:true}:{state:'frozen',k:0,on:false};}
-function bind(rec,sim){if(!rec||rec.id==null)throw new Error('KLAVA.bind: a record with an id');
- if(sim==null){delete BOUND[rec.id];return null;}
+function bind(rec,sim){const key=typeof rec==='string'||typeof rec==='number'?rec:rec&&rec.id;if(key==null)throw new Error('KLAVA.bind: a record with an id, or a key');
+ if(sim==null){delete BOUND[key];return null;}
  if(typeof sim.at!=='function'||!sim.h)throw new Error('KLAVA.bind: a KLAVA sim');
  if(root.KHAZ&&root.KHAZ.STATES)root.KHAZ.STATES['KLAVA.flow']=flowState;
- BOUND[rec.id]=sim;return sim;}
+ BOUND[key]=sim;return sim;}
 
 const KLAVA={version:1,RHEO,rheo,flux,create,bind,flowState,SIGMA,G:G0,DI,DJ,WEIGHTS:{face:WO,corner:WD},CAPS:{face:KO,corner:KD}};
 root.KLAVA=Object.assign(root.KLAVA||{},KLAVA);   /* the three.js halves (host/46-core-lava-gpu.js, -draw.js) merge into the same global, whichever loads first */
