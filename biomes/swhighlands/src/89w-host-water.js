@@ -21,7 +21,7 @@ const FLOW_DRAWS=FLOWS.map((F,k)=>{const C=COURSES[k],steep=C.key==='gorge';
 const CONFLUENCES=COURSES.filter(C=>C.joined).map(C=>{const k=COURSES.indexOf(C),m=C.join.ci,p=C.pts[C.pts.length-1];
  const CF=WATER.confluence({name:'The mouth of '+C.name.toLowerCase(),flows:[FLOWS[m],FLOWS[k]],at:[p[0],p[1]],ground:terrainH,cell:1});
  const D=WATER.drawConfluence(CF,Object.assign(RIBBON_OPT(false),{renderOrder:2}));WATER.fadeRibbons(CF,[FLOW_DRAWS[m],FLOW_DRAWS[k]]);
- D.mesh.userData.inspectLabel=C.name+' (its mouth)';return D;});
+ D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel=C.name+' (its mouth)';return D;});
 const FALL_DRAWS=GORGE_FALLS.map(F=>{const D=WATER.drawFall(F,{color:lin(0xc8d4d4),opacity:.9,rows:24,cols:5,margin:1.2,lipK:.85,spray:'drop',rain:true,envMapIntensity:.25,renderOrder:3});
  D.mesh.userData.probeSkip=true;D.mesh.userData.inspectLabel='The gorge\'s falls (through the natural bridges)';D.plunge.userData.probeSkip=true;D.plunge.userData.inspectLabel='A plunge pool';return D;});
 const SINK_DRAW=WATER.drawStill(SINK_STILL,{color:lin(0x1e3a36),roughness:.14,metalness:0,envMapIntensity:.12,rain:true,renderOrder:1});
