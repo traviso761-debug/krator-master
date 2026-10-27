@@ -122,6 +122,7 @@ function hostChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),hs
  add('the fountain: intermittent, one clock',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.idle),VENTS.phase(FT.on).state,VENTS.phase(FT.idle).state));
  {const B=window._biome||{},ok=STN.vent?B.talus>500&&B.hair>50&&B.bombs>200:B.talus>2000&&B.stones>1000;add('counts: talus '+B.talus+', bombs '+B.bombs+', hair '+B.hair+', stones '+B.stones,{ok,detail:JSON.stringify(B)});}
  if(LAKE){add('the lava lake: its level from its volume',HCHK.lake(lakeSamples(),LAKE.E));add('the lava lake: its hazard and its frozen floor',HCHK.lakePage(lakePage()));}
+ if(OVF)OVF.verdict(OVF.run()).forEach(c=>add(c.name,c));   /* the lake's overflow (89d, ?overflow only) */
  return R;}
 // THE LAVA LAKE (89c): the level never falls while it fills and never passes the pit's lip; the volume under it is the volume
 // poured (1%); the vent drowns. The page: molten where the lake is, nothing before it; the frozen floor at the level, the ground
@@ -149,6 +150,8 @@ function hostNegatives(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detai
  add('the fountain always on (no cycle)',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.on),'on','on'));
  if(LAKE){const S=lakeSamples();add('the lake over the pit\'s lip',HCHK.lake(S.map((s,i)=>i===S.length-1?Object.assign({},s,{L:LAKE.E.lip+5}):s),LAKE.E));
   add('the lake\'s floor left re-baked after the restore',HCHK.lakePage(Object.assign(lakePage(),{restored:12})));}
+ if(OVF){const r=OVF.run(),neg=(n,o)=>{const v=OVF.verdict(Object.assign({},r,o))[n];add(v.name+' (broken)',v);};
+  neg(2,{cos:-1,farShare:.5});neg(1,{mass:Object.assign({},r.mass,{error:r.mass.erupted*.01})});neg(3,{raised:0});neg(4,{mid:Object.assign({},r.mid,{farBurn:5})});neg(5,{gpu:{mass:1.1,dh:1,dT:0,molten:[0,0]}});neg(6,{off:12});}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
@@ -180,9 +183,10 @@ if(LAKE)(function(){const E=LAKE.E,total=E.days+E.crustDays+3,ui=KHOST.ui||docum
  const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=1000;sl.value=0;sl.style.width='160px';
  const out=document.createElement('div');out.style.cssText='flex-basis:100%;font:12px ui-monospace,monospace;opacity:.9';
  box.append(on,play,sl,out);ui.appendChild(box);
+ if(OVF)OVF.ui(box,d=>go(d));   /* the overflow's checkbox (89d, ?overflow only) */
  let playing=false;
  const show=()=>{const s=LAKE.state;on.classList.toggle('on',LAKE.day!=null);play.textContent=playing?'Pause':'Play';
-  out.textContent=s?('day '+s.day.toFixed(1)+' · '+s.phase+' · '+Math.round(s.Q).toLocaleString()+' m3/s · level '+s.L.toFixed(0)+' m ('+(s.L-E.L0).toFixed(0)+' m deep)'+(s.drowned?' · the vent drowned':'')+' · crust '+Math.round(s.crust*100)+'%'):'the vent as it is (fuming, fountaining now and then)';};
+  out.textContent=s?('day '+s.day.toFixed(1)+' · '+s.phase+' · '+Math.round(s.Q).toLocaleString()+' m3/s · level '+s.L.toFixed(0)+' m ('+(s.L-E.L0).toFixed(0)+' m deep)'+(s.drowned?' · the vent drowned':'')+' · crust '+Math.round(s.crust*100)+'%'+(OVF&&OVF.active&&s.poured!=null?OVF.words(s):'')):'the vent as it is (fuming, fountaining now and then)';};
  const go=d=>{LAKE.set(d);if(d!=null)sl.value=Math.round(d/total*1000);show();};
  LAKE.ui={sync:()=>{if(LAKE.day!=null)sl.value=Math.round(LAKE.day/total*1000);else playing=false;show();}};
  on.onclick=()=>{if(LAKE.day==null)go(0);else{playing=false;go(null);}};

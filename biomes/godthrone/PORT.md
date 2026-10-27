@@ -26,6 +26,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89a-host-atmos.js` | 1.5 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's binding of core/atmos (bindHost, bindWeather, airLoad): host code, not data |
 | `src/89b-host-vent.js` | 4.9 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89c-host-lake.js` | 7.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the lake's model (V(L), Q(t), at(day)) is data; the surface, the hazard's state and the re-bake are the page's |
+| `src/89d-host-overflow.js` | 13.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the lake's overflow on core/terrain KLAVA (?overflow): the pond's hypsometry and the scaled eruption are data; the sim is KLAVA (klava.gd); the mesh edits and the checkbox are the page's |
 | `src/99-host-take.js` | 13.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

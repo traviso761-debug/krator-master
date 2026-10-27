@@ -305,5 +305,7 @@ field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view o
 - **A serious eruption** (the owner, 2026-10-27; built on the vent's page, `89c-host-lake.js`): a flood-basalt eruption
   (20,000 m3/s falling as Kilauea's 2020 one did) fills the pit with a lava lake, 13.7 km3 in 32 days, to 15 m under its lowest
   lip; the vent drowns in hours; the crust closes over 30 days; the frozen lake re-bakes the pit's floor. A time-lapse
-  (Serious eruption, Play, a slider) and five views. **Overflow** onto the caldera's floor is a lava-flow module for core,
-  asked of the main session as its own session.
+  (Serious eruption, Play, a slider) and five views. **Overflow** (step 5, 2026-10-27): core/terrain's KLAVA, a Bingham lava
+  flow (`core/terrain/LAVA.md`), wired opt-in behind the page's `?overflow` (`89d-host-overflow.js`): the lake a held pond
+  whose level follows its volume less what has spilled, 0.25 km3 over the lowest lip, the frozen flow written into the field;
+  an `overflow` checkbox beside the time-lapse turns it back to the lake alone. `verify.py --query overflow --assert` checks it.
