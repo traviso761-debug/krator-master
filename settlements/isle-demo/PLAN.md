@@ -687,8 +687,8 @@ holds the ships to buying at least three quarters of the cloves and cacao made (
 **The economy governed (owner, 2026-10-19).** The hand-set food factors gave way to a production governor and
 spoilage, after a forked session's research (an economy needs sinks for its sources and a negative feedback on
 production; spoilage bounds what gets through; an order-up-to rule must count its supply line, Sterman's Beer Game, and
-its demand-averaging, stock-adjustment and delivery times should be of comparable size, Towill's IOBPCS). `49` runs both
-as the page's step hooks: hourly, each producer's rate is its full rate times (demand + alpha (target - supply line) /
+its demand-averaging, stock-adjustment and delivery times should be of comparable size, Towill's IOBPCS). `49` ran both
+as the page's step hooks (core/simulation's `77-sim-6-govern.js` since 2026-10-26, the same books): hourly, each producer's rate is its full rate times (demand + alpha (target - supply line) /
 Ti) over what the town makes at full, clamped to 0.3-1.5, with the target three days of demand (averaged over three
 whole days: the households restock on a three-day round, and a one-day window swung every producer between its floor and
 its ceiling), Ti a day and a half and alpha 0.3 (compared at 0.3, 0.5 and 1.0); at midnight the perishables lose their share of each warehouse's and

@@ -1,4 +1,4 @@
-# core/hamlet: small settlements (villages now, nomad camps later)
+# core/hamlet: small settlements (villages; nomad camps are `core/camp`)
 
 `PLAN.md` holds the plan (H0-H6) and the owner's answers. Everything here is `[G data]`: no three.js, no DOM; Godot runs
 the same rules. Test: `node core/hamlet/test-hamlet.js` (each check has a negative; `--list` prints any wood phrase no

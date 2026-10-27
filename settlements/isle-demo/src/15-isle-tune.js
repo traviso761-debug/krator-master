@@ -120,7 +120,9 @@ ISLE.TUNE.sim = {
      wells, taverns for drink or chairs to relax in: drink comes with meals, rest, company (kava, coconuts) and a water
      gourd at work; relax with rest and company; contemplation at the temples, shrines and squares (WORSHIP) and a little
      at school. Material rises slowly and falls with what is bought (`items`' `material`) and by `items.lack` a day for a
-     set of clothes short, rising at half Voth's pace (modest wants; the treats below fill it), not at all in the children.
+     set of clothes short, rising at half Voth's pace (modest wants; the treats below fill it), not at all in the children;
+     it opens spread from 0 to the treat's `at` (2026-10-26: a town that has been living, so the treats are bought at a
+     steady rate from the first day, not in one wave when every meter reaches `at` together).
      In the hours the schedule gives to one of `free`, a person does what its meters ask among
      them, at an open place within reach. Happiness, its band's efficiency at work, loyalty: as Voth's */
   needs: {
@@ -139,7 +141,7 @@ ISLE.TUNE.sim = {
     free: ['SOCIALIZE', 'REST', 'IDLE', 'WORSHIP'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
     bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
     loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
-    pain: 1.5, init: { material: [5, 30], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }
+    pain: 1.5, init: { material: [0, 55], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }
   },
   items: {
     /* every food on the isles; a town sells and stores only those it makes (44: ISLE.simFoods) */
@@ -197,14 +199,14 @@ ISLE.TUNE.sim = {
       shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
       weaver: ['shirt', 'wrap', 'mat', 'sarong', 'sun hat', 'net'], workshop: ['sandal', 'stone tool', 'necklace'], smithy: ['cuirass'], potter: ['pot', 'cookpot', 'lamp'], tavern: ['kava bowl'],
       dockyard: ['wood tool', 'club'], fishdock: ['net'], healer: ['poultice'] },
-    meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
+    meals: 2, perMeal: 2, low: 1, days: 3, stagger: 0.5, mins: 15, cool: 120, storeDays: [1, 3.5], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
       'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats'],
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 }, nets: { cotton: 2 } },
-    every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40 },
+    every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40, urgent: 1 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
     minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
@@ -215,10 +217,12 @@ ISLE.TUNE.sim = {
        good (demand, plus `alpha` of the gap to `cover` days of it, closed over `ti` days) over what it makes at full,
        clamped to [min, max], looked at every `every` minutes, its estimates smoothed over `smooth` days, its demand over the
        last `window` whole days (the households' three-day restocking round); `minBy` a lower floor for a good whose makers
-       far outstrip its trade (the weavers' mats, the taverns' kava, the pots). A producer kind
-       with `alternate` makes one of its lists place by place in turn (the weavers: cloth, then garments), so each good is
-       governed on its own */
-    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 } },
+       far outstrip its trade (the weavers' mats, the taverns' kava, the pots). A maker of several goods (the weavers, the
+       potters) makes whichever is furthest below its target, its unmet draws counted as use (`useShort`, 2026-10-26: a
+       good its buyers could not get is still made); `least` the shelf stock of the treats and the gear a town keeps with
+       no demand (a town at the abstract level buys none: watched again, its people find them) */
+    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1, hats: 0.02, nets: 0.02 },
+      least: { kava: 300, mats: 200, lamps: 400, hats: 200, jewellery: 50, pots: 300, garments: 300, sandals: 200, tools: 60, woodtools: 60, nets: 10, poultices: 50 } },
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
@@ -230,8 +234,8 @@ ISLE.TUNE.sim = {
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
-      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments'], ['cloth'], ['mats'], ['cloth'], ['hats'], ['garments'], ['nets']], rate: 2, cap: 600 },
-      potter: { alternate: [['pots'], ['lamps']], rate: 0.2, cap: 400 }, tavern: { out: ['kava'], rate: 1.5, cap: 600 },
+      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth', 'garments', 'mats', 'hats', 'nets'], rate: 2, cap: 600 },
+      potter: { out: ['pots', 'lamps'], rate: 0.2, cap: 400 }, tavern: { out: ['kava'], rate: 1.5, cap: 600 },
       dockyard: { out: ['woodtools'], rate: 0.1, cap: 400 }, healer: { out: ['poultices'], rate: 0.25, cap: 200 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.4, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
       /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's
@@ -246,7 +250,7 @@ ISLE.TUNE.sim = {
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 3, startLots: { cloth: 40, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 200, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200 },
+    startDays: 3, startLots: { cloth: 1000, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 400, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200 },
     /* salt (owner, 2026-10-19): a preserver, so `keep` of the fish and the meat that would spoil in a night is salted
        instead where the town's warehouses hold salt, a salt for `per` servings kept; and an improver of meals: while a
        town holds salt its people season their food (`uses`), and a meal at home counts `season` times its foods' quality */
@@ -268,16 +272,56 @@ ISLE.TUNE.sim = {
       ships: [
         { id: 'voth', name: 'Voth traders', vessel: 'vothDhow', every: 3, phase: 0, calls: ['kautoa'], buys: { clove: 600, cacao: 400 } },
         { id: 'izani', name: 'Izani merchants', vessel: 'izizDhoni', every: 4, phase: 1, calls: ['kautoa'], buys: { cacao: 600, clove: 300 } },
-        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200 } },
+        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200, iron: 300 } },
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
         { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
       ] },
-    uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
+    uses: { valapo: { salt: 0.02, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
+    /* the other town's foods a town eats (2026-10-26), servings a person a day: on its shelves and in its meals at that
+       share of its diet (44, core's SIM.itemsDiet), the canoe line bringing what is eaten (Kautoa's rice in Valapo) */
+    diet: { valapo: { rice: 0.05 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
         goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery', 'woodtools'], valapo: ['sugar', 'garments', 'nets'] } },
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]
+  },
+  /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
+     records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
+     always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
+     its towns' economies as they were.
+       kinds       a record's key -> [the place's kind, {its activities}] (a works' WORK slots are its culture row's jobs;
+                   a house's beds its households times the row's household)
+       producers   a works' kind -> its recipe (out, rate a worker-hour, cap), as the towns' (44)
+       carts       a village's carts; startDays of the parent's foods in its warehouse, `startLots` of its own goods
+       road        the carts between a village and its town: a convoy at `kmh` over the straight line times `detour`, a
+                   stay of `mins`; `cap` a load. Two routes a village: OUT, all it makes but its own use (`keep` 0, the want
+                   unbounded: the village works for its town); IN, the parent's foods it eats (its want, `want` days)
+       town        what the villages' goods feed in their towns: new `inputs` (the tannery's leather from hides, the
+                   dockyard's wooden tools from timber, the smithies' iron from ore and charcoal), `recipes` for a kind's
+                   places that have none (Valapo's smithies, idle till now, smelt iron), `uses` a person a day drawn hourly (Kautoa builds with timber),
+                   `expect` a day on the lakatoi (the charcoal Valapo's smelting wants before any has come) */
+  hamlets: {
+    kinds: {
+      house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
+      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
+      'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
+      warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
+    },
+    producers: {
+      saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
+      sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
+      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
+    },
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
+    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
+    carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
+    road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
+    town: {
+      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100 } },
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { out: ['iron'], rate: 0.5, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
+    },
+    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 } }
   }
 };
