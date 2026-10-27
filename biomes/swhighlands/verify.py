@@ -43,7 +43,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # (add sim to see a stub fail).
 EXPORT_BOX = [380, -320, 680, -20]   # the cove's east edge and the fold river (2026-10-26)
 EXPORT_BOX_TREELINE = [-700, -250, -400, 50]   # station 6: the woods on the lower ramp
-EXPORT_BOX_PILLARS = [100, -420, 400, -120]   # station 4: the watch pillar and its neighbours (no water in it)
+EXPORT_BOX_PILLARS = [-500, -1100, -200, -800]   # station 4: a stretch of the table with its anemone trees and slots (no water in it; the watch pillar is held bare)
 EXPORT_PROFILE_TREELINE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']   # no water drawn there
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 

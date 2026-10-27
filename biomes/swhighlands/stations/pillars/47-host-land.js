@@ -104,7 +104,7 @@ const PILLAR_IX=KSPACE.create({cell:60});
  if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('aOcc',new THREE.Float32BufferAttribute(occ,1));g.setAttribute('aPart',new THREE.Float32BufferAttribute(part,1));
   g.setIndex(new THREE.Uint32BufferAttribute(idx,1));g.computeVertexNormals();const me=new THREE.Mesh(g,ROCK_MAT);me.userData.host=true;me.userData.rock=true;
-  me.userData.inspectLabel='Pillar sandstone (iron-red and bleached beds, Liesegang bands)';me.userData.probePoints=PILLARS.map(B=>[B.x,(B.y0+B.top)/2,B.z]);scene.add(me);}})();
+  me.userData.inspectLabel='Pillar sandstone (iron-red and bleached beds, Liesegang bands)';me.userData.probePoints=[].concat(...PILLARS.map(B=>[B.x,(B.y0+B.top)/2,B.z]));   /* one flat list (core/host 95 reads x,y,z,x,y,z...) */scene.add(me);}})();
 // a tower's top under a point: {B, top} or null (the record's; the drawn mesh is contoured inside it, so the flora keeps a margin)
 const _pq=[];
 function towerTop(x,z,shrink){PILLAR_IX.query(x,z,0,_pq);if(!_pq.length)return null;let best=null,over=-Infinity;
