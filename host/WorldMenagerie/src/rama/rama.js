@@ -229,6 +229,9 @@ export function model(api){
   const ship={radius:K.radius||27000,group:G,pick,minD:K.minD||300,
     adaptiveNear:false,
     ownsInput:()=>IN.active(),
+    // a viewpoint is outside: picking one stops a scene and leaves the interior
+    onView:()=>{EV.halt();if(IN.active())IN.exit();
+      if(/(^|&)event=/.test(location.hash.slice(1)))history.replaceState(null,'','#'+location.hash.slice(1).split('&').filter(k=>!/^event=/.test(k)).join('&'));},
     camFrame:now=>IN.camFrame(now)||EV.camFrame(now),
     hashExtra:()=>(IN.active()&&IN.where()!=='event'?'&inside='+IN.where():'')+(cutOn&&!IN.active()?'&cutaway':''),
     hudOnly:now=>IN.active()?IN.hud(now)+EV.hudTail():null,

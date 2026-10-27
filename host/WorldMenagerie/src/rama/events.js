@@ -330,10 +330,11 @@ export function makeEvents(api,O){
   mkB('Play the story','All '+STORY.length+' scenes, in order (about eight minutes).',()=>{queue=STORY.map(e=>e.id);play(queue.shift(),true);panel.style.display='none';});
   STORY.forEach((e,i)=>{BT[e.id]=mkB((i+1)+'. '+e.name,e.blurb,()=>{play(e.id);panel.style.display='none';});});
   for(const e of EVS.filter(e=>e.tour))BT[e.id]=mkB(e.name,e.blurb,()=>{play(e.id);panel.style.display='none';});
-  mkB('Stop','Back to Rama as it was explored: lit, the Sea thawed.',()=>{queue=[];stop();state({});G.position.set(0,0,0);E.y=DOCK;E.docked=true;mark();});
+  function halt(){queue=[];stop();state({});G.position.set(0,0,0);E.y=DOCK;E.docked=true;mark();}
+  mkB('Stop','Back to Rama as it was explored: lit, the Sea thawed.',halt);
   function mark(){for(const [k,b] of Object.entries(BT))b.style.borderColor=cur&&cur.id===k?'#e8c98a':'#5a5446';}
 
-  return {play,stop,toggle:()=>{panel.style.display=panel.style.display==='flex'?'none':'flex';},
+  return {play,stop,halt:()=>{if(cur)halt();},toggle:()=>{panel.style.display=panel.style.display==='flex'?'none':'flex';},
     camFrame:()=>false,
     hudTail:()=>cur?' · '+cur.name+' '+Math.floor(cur.t)+'/'+cur.dur+' s':''};
 }
