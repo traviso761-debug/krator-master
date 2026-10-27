@@ -96,3 +96,5 @@ const FORK_DRAW=FORKS.map(Fk=>{const CF=WATER.confluence({name:Fk.name,flows:Fk.
 // natural ripples (core/water/ext/56, 2026-10-27; the owner: the standing water shaded in a regular grid): the lake's and the marsh pools' normals broken up,
 // the swell's stripes in patches and a drifting chop over them (the rivers keep their own ripples, advected along the current)
 WATER.breakupAll();
+// and the rivers (2026-10-27, the owner: a zigzag on the stream): their four crossing cosines dimmed to patches, a chop carried along each ribbon's own current
+WATER.breakupFlows();
