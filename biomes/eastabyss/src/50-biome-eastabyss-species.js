@@ -428,6 +428,12 @@ G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);retu
 EASTABYSS.G=G;
 
 // ---------------------------------------------------------------- materials
+// The rebuild's foliage options (2026-10-27; core/biome README, the foliage workstream): BL the back-light on the thin broadleaf
+// crowns (not on fronds, needles or moss); GT the floor cover's root colour from the ground's paint (R5: the host's BIO.setGround;
+// faded out over 450-650 m, the floor's near range), SEAS the dry season on the savannah's grass and umbrella-trees (core/clock,
+// the host's BIO.bindSeason). Each has its switch, read here: ?backlit=0, ?groundtint=0, ?season=0 (EASTABYSS.LOOK for a world).
+const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,LK=EASTABYSS.LOOK||{},off=k=>LK[k]===false||(LQ&&LQ.get(k)==='0');
+const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[450,650]},SEAS=!off('season');
 EASTABYSS.MAT={
  bark:EASTABYSS.BARKTEX.map(t=>BIO.barkMat(t)),
  wood:BIO.barkMat(EASTABYSS.WOODTEX),
@@ -437,25 +443,25 @@ EASTABYSS.MAT={
  blade:BIO.leafMat(TX.blade,'blade',{aN:true,swayW:'1.0',swayA:.14}),
  seedfrond:BIO.leafMat(TX.seedfrond,'seedfrond',{swayW:'(position.x)',swayA:.08}),
  palmfrond:BIO.leafMat(TX.palmfrond,'palmfrond',{swayW:'(position.x)',swayA:.10}),
- oak:BIO.leafMat(TX.oak,'oak',{aN:true,swayW:'1.0',swayA:.08}),
+ oak:BIO.leafMat(TX.oak,'oak',{aN:true,swayW:'1.0',swayA:.08,backlit:BL}),
  floatleaf:BIO.leafMat(null,'floatleaf',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
  matreed:BIO.leafMat(TX.matreed,'matreed',{swayW:'(position.y*position.y)',swayA:.10,alphaTest:.4}),
  calam:BIO.leafMat(TX.calam,'calam',{swayW:'(position.x)',swayA:.05}),
  sanford:BIO.leafMat(TX.sanford,'sanford',{aN:true,swayW:'1.0',swayA:.07,alphaTest:.38}),
  strap:BIO.leafMat(TX.strap,'strap',{aN:true,swayW:'1.0',swayA:.16}),
- broad:BIO.leafMat(TX.broad,'broad',{aN:true,swayW:'1.0',swayA:.14}),
- feather:BIO.leafMat(TX.feather,'feather',{aN:true,swayW:'1.0',swayA:.12}),
- round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.10}),
- leaflet:BIO.leafMat(TX.leaflet,'leaflet',{aN:true,swayW:'1.0',swayA:.10}),
+ broad:BIO.leafMat(TX.broad,'broad',{aN:true,swayW:'1.0',swayA:.14,backlit:BL}),
+ feather:BIO.leafMat(TX.feather,'feather',{aN:true,swayW:'1.0',swayA:.12,backlit:BL}),
+ round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.10,backlit:BL}),
+ leaflet:BIO.leafMat(TX.leaflet,'leaflet',{aN:true,swayW:'1.0',swayA:.10,backlit:BL,season:SEAS&&{drop:.45,colour:0x9a8448,k:.45}}),   /* the umbrella-trees on the shelf foot: the savannah's one deciduous crown */
  paddle:BIO.leafMat(TX.paddle,'paddle',{aN:true,swayW:'1.0',swayA:.03}),
  bigfrond:BIO.leafMat(TX.bigfrond,'bigfrond',{swayW:'(position.x)',swayA:.09}),
  cycfrond:BIO.leafMat(TX.cycfrond,'cycfrond',{swayW:'(position.x)',swayA:.035}),
  frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.07}),
  fan:BIO.leafMat(TX.fan,'fan',{swayW:'(position.y)',swayA:.08,alphaTest:.45}),
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
- samphire:BIO.leafMat(TX.samphire,'samphire',{swayW:'(position.y)',swayA:.03,alphaTest:.42}),
- grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
- clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{swayW:'(position.y)',swayA:.04,alphaTest:.42}),
+ samphire:BIO.leafMat(TX.samphire,'samphire',{swayW:'(position.y)',swayA:.03,alphaTest:.42,ground:GT}),
+ grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4,ground:GT,season:SEAS&&{colour:0xc4a862,k:.8}}),   /* the savannah and the flats' grass bleach in the dry season */
+ clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{swayW:'(position.y)',swayA:.04,alphaTest:.42,ground:GT}),
  under:BIO.leafMat(TX.under,'under',{swayW:'1.0',swayA:.06}),
  beard:BIO.leafMat(TX.beard,'beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  hang:BIO.leafMat(TX.under,'hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
@@ -520,6 +526,8 @@ BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Hanging pods'});
 BIO.def('rod',BIO.geo.rod(7),M.solid,{label:'Stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(EASTABYSS.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(EASTABYSS.BARKTEX[2]),{label:'Small trunks (pale)'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+// the bracket fungus on core/biome's fungoid parts (BIO.fung.bracket, 2026-10-27; TODO.md "Rebuild the old fungoid flora"): a
+// shelf from the wall at z 0 out along +z, its lip waved and drooping, where the kit drew a half sphere (65 turns it to the face)
+BIO.def('fungus',BIO.fung&&BIO.fung.bracket?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.32,droop:.18,wav:3,wavA:.07,lump:.08,seed:5101}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(EASTABYSS.ROCKTEX),{label:'Boulders (small)'});
 })();

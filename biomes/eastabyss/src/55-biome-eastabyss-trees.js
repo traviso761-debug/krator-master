@@ -11,6 +11,15 @@
 const SP=EASTABYSS.SPECIES,PAL=EASTABYSS.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 EASTABYSS.TREES=[];
+// the runtime LOD's radii (metres from the camera to a chunk; null: the spine's static LOD only, as before 2026-10-27). The host
+// sets them before build (88-host-build.js: the far band's diet); tree: a hero's range, then its stand-in; floor, mid, far: the
+// floor's three bands; water: the lily and shallows bands
+EASTABYSS.LOD={tree:null,floor:null,mid:null,far:null};
+// HEROK scales every pass's hero and mid radii from the spine (1: as tuned at station 1). A page whose spine runs through its densest
+// stands (station 2's runs down the lake, its jungle on both shores) holds its budget with a smaller one; it only picks the builder
+// (hero, mid, impostor), never where a tree stands, so the kit's stream places the same trees
+EASTABYSS.HEROK=EASTABYSS.HEROK!=null?EASTABYSS.HEROK:typeof EASTABYSS_HEROK!=='undefined'?EASTABYSS_HEROK:1;   /* a host sets EASTABYSS_HEROK before the kit loads */
+const PASSOF=sp=>(EASTABYSS.PASSES||[]).find(P=>P.sp===sp||(P.stand&&P.sp.indexOf(sp)>=0));
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
@@ -458,7 +467,7 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
    for(let f=0;f<4;f++){const c0=cs[f],c1=cs[(f+1)%4],nx=sx*(c0[0]+c1[0])+ux*(c0[1]+c1[1]),ny=uy*(c0[1]+c1[1]),nz=sz*(c0[0]+c1[0])+uz*(c0[1]+c1[1]),nl=Math.hypot(nx,ny,nz)||1,sh=.75+.25*Math.max(0,ny/nl);
     const A=cn(p0,w0,c0),Bq=cn(p0,w0,c1),D=cn(p1,w0*.55,c0),E=cn(p1,w0*.55,c1);
     [A,E,D,A,Bq,E].forEach(p=>{KB.pos.push(p[0],p[1],p[2]);KB.nor.push(nx/nl,ny/nl,nz/nl);KB.uv.push(0,0);KB.col.push(bc.r*sh,bc.g*sh,bc.b*sh);});bt+=2;}}}
- if(KB!==K){KB.tris+=bt;BIO.tally(bt,0,0);st.far+=bt;}else tris+=bt;
+ if(KB!==K){{const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<bt;i++)KB.k.push(kk);}KB.tris+=bt;BIO.tally(bt,0,0);st.far+=bt;}else tris+=bt;   /* LOD keys, a triangle each (null without BIO.range) */
  const L=S.leaf.map(h=>bright(h,.85)),R=T.crownR,a0=(T.seed%628)/100;
  if(T.sp===0||T.sp===1){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.5,T.y0+T.H*.92+((k*7)%5),T.z+Math.sin(a)*R*.5,R*.5,T.H*.06,L[(k+fi)%4],L[2],fi+k);}}
  else if(T.sp===2){blob(T.x,T.y0+T.H*.86,T.z,R*.75,T.H*.14,L[fi%4],L[2],fi);if(!cheap)blob(T.x+Math.cos(a0)*R*.4,T.y0+T.H*.78,T.z+Math.sin(a0)*R*.4,R*.5,T.H*.1,L[1],L[3],fi+3);}
@@ -467,7 +476,7 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
  else if(T.sp===17){blob(T.x,T.y0+T.H*.62,T.z,R*.85,T.H*.22,L[fi%4],L[2],fi);if(!cheap)blob(T.x,T.y0+T.H*.9,T.z,R*.45,T.H*.1,L[1],L[3],fi+2);}   // a cone
  else if(T.sp===18){blob(T.x,T.y0+T.H*.7,T.z,R*.9,T.H*.28,L[fi%4],L[2],fi);}                                 // low and wide
  else{blob(T.x,T.y0+T.H*.94,T.z,R*.9,T.H*.09,L[fi%4],L[2],fi);}
- K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+ {const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);}K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 
 // the SMALL species far off (swlowlands' buildFarSmall, shaped per habit): one hull of
 // 4*n triangles -- a foot, a ring of n, a second ring of n turned half a step, a crown
@@ -502,7 +511,7 @@ function farHull(K,x,y0,z,H,R,h,a0,n,c){
   V(A[k],-.3,c[1]);V(Bv[k],.4,c[2]);V(A[k1],-.3,c[1]);                                 // A..B: the crown's underside
   V(Bv[k],.4,c[2]);V(Bv[k1],.4,c[2]);V(A[k1],-.3,c[1]);
   V(Bv[k],.4,c[2]);V(P1,1,c[3]);V(Bv[k1],.4,c[2]);}                                    // B..crown point: the lit top
- const tris=4*n;K.tris+=tris;BIO.tally(tris,0,0);return tris;}
+ const tris=4*n;{const kk=BIO._lodKey(x,z);for(let i=0;i<tris;i++)K.k.push(kk);}K.tris+=tris;BIO.tally(tris,0,0);return tris;}   /* its LOD key a triangle (null without BIO.range), as the core's own pushes */
 // the hull's colours from one leaf and one bark colour (sRGB in; no bark: the skirt is the underside's).
 // A little under the far canopy's .85: a small hero's foliage reads darker at range (its cards' gaps, self-shade).
 function hullCols(leafHex,barkHex){const lin=c=>c.convertSRGBToLinear(),leaf=lin(bright(C(leafHex),.72)),under=leaf.clone().multiplyScalar(.6);
@@ -544,20 +553,40 @@ EASTABYSS.buildTrees=function(R,q){
    (x,y,z,d)=>{const S=SP[sp],w=BIO.waterH(x,z),dy=y-w;if(!opt.inWater&&dy<.3)return;if(opt.inWater&&(dy<-1.6||dy>1.2))return;   // heights against the local water (BIO.waterH; 0 in this host)
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,w-.2)-.5;
-    const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
+    const ld=BIO.lodD(x,z),HK=EASTABYSS.HEROK;T.lv=ld<opt.hero*HK?2:(ld<opt.mid*HK?1:0);
     if(T.lv===0&&!opt.far){T.small=true;TREES.push(T);n++;return;}
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
   return n;}
  // the passes, in order, from the data table below (EASTABYSS.PASSES); the canopy stands are the one pass with its own body
  EASTABYSS.PASSES.forEach(P=>{if(!P.stand){pass(P.sp,P.cell,P.accept,P.opt);return;}
   let n=0;BIO.grid(P.cell,0,R,(x,z)=>{const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
-   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
+   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z),HK=EASTABYSS.HEROK;T.lv=ld<1000*HK?2:(ld<1800*HK?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
  // the far hulls keep clear (2026-10-26): they take no keep-clear entry while the passes run (so the near field places as
  // before), and here, after every pass, a hull that stands on a later tree's bole, under an impostor's crown blob or on
  // an earlier hull is dropped. No draws from the stream; the trees keep their indices (buildFar's colour reads them).
  st.hullsCut=cullHulls(TREES);
  // build
- TREES.forEach((T,i)=>{if(T.cut)return;if(T.lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // RUNTIME LOD AND OCTAHEDRAL IMPOSTORS (2026-10-27, the final rebuild; GRAPHIC-LOAD.md recommendations 1 and 2, nhighlands the
+ // worked example). With EASTABYSS.LOD.tree set (88-host-build.js; ?diet=0 leaves it null) a hero (lv 2 or 1 by the spine, as
+ // before) is drawn in full while the camera is within LOD.tree metres of its chunk, and as a stand-in past that; a far tree (lv 0)
+ // is only ever its stand-in. The stand-in is one quad of its species baked from 8 x 8 directions (core/biome 34, one set, one
+ // item) where the page lists the fragment and EASTABYSS.IMPOSTORS is not false; else the blob or hull as before. The bake builds
+ // one hero of each species again at BIO.bakeImpostors (after every placement, its own seed); here nothing draws from the stream
+ // but the heroes, in the same order, so every tree keeps its form.
+ const LT=EASTABYSS.LOD.tree,IMPON=EASTABYSS.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('eastabyss.trees',{label:'Far trees'});
+  SP.forEach((S,sp)=>{if(!B[sp])return;const T0=TREES.find(T=>T.sp===sp&&!T.cut&&T.lv===2)||TREES.find(T=>T.sp===sp&&!T.cut);if(!T0)return;
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('eastabyss.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1,{lv:2}),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach((T,i)=>{if(T.cut)return;
+  if(T.lv===0){if(!farImp(T)){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);}st.fars++;}
+  else{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}B[T.sp](T,st,T.lv);st.heroes++;
+   if(LT&&T.H>7){BIO.range=1e9;BIO.minRange=LT;if(!farImp(T)){const P=PASSOF(T.sp);if(P&&P.opt.far)buildFar(T,i,st);else buildFarSmall(T,st);}}
+   BIO.owner=null;BIO.range=null;BIO.minRange=0;}
+  st.byS[T.sp]++;});
  for(let i=0,j=0;i<=TREES.length;i++){if(i===TREES.length){TREES.length=j;break;}if(!TREES[i].cut)TREES[j++]=TREES[i];}
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,hullsCut:st.hullsCut,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,knees:st.knees,ropes:st.ropes,lianas:st.lianas,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,farSmall:st.farSmall,small:st.sapTris}};};
@@ -580,7 +609,8 @@ EASTABYSS.buildReedBeds=function(R,q,reg){reseed(570011);q=q==null?1:q;R=R||3000
   farHull(BIO.bucket('far'),cx,Math.max(cy,wl-.05)-.05,cz,nH,Rb,[.5,1,.92,.9,1,0],h3(cx,cz,1)*TAU,BIO.lodD(cx,cz)>2200?3:5,hullCols(hc[i],null));far++;};
  BIO.grid(64,0,R,(x,z)=>{const Z=zones(x,z),h=Z.h;if(h<-1.4||h>1.0)return 0;
    const still=1-Z.flow*.6;return (Z.shore*.55*still+Z.marsh*smooth(.8,.97,Z.wet)*.16*still+Z.marsh*Z.flow*.28+.25*smooth(.3,-.4,h)*smooth(-1.4,-.8,h)*Z.wet)*q;},
-  (cx,cy,cz)=>{if(BIO.lodD(cx,cz)>1900){farBed(cx,cy,cz);return;}
+  (cx,cy,cz)=>{BIO.range=null;if(BIO.lodD(cx,cz)>1900){farBed(cx,cy,cz);return;}
+   BIO.owner=[cx,cz];BIO.range=EASTABYSS.LOD.mid||null;   /* the runtime LOD: a near bed is drawn within LOD.mid of the camera (null: always, as before) */
    const ld=BIO.lodD(cx,cz),lv=ld<950?2:(ld<1600?1:0),Rb=rr(S.bed.R[0],S.bed.R[1])*(lv===0?.8:1),sp=spacing*(lv===2?1:lv===1?1.7:2.6);
    const nH=rr(S.H[0],S.H[1]),bedCol=vary(pick(hc),.02,.06,.04);let n=0,dsum=0;
    const N=Math.ceil(Rb*2/sp);
@@ -591,6 +621,7 @@ EASTABYSS.buildReedBeds=function(R,q,reg){reseed(570011);q=q==null?1:q;R=R||3000
    if(!n)return;stems+=n;const bed={x:cx,z:cz,r:Rb,n:n,depth:dsum/n,h:nH};BEDS.push(bed);
    if(reg==='each'&&lv===2&&typeof REGISTER==='function'){REGISTER({name:'Mat-reed bed',kind:'stand',label:S.name,x:cx,z:cz,y:-1,r:Rb,h:nH+1});regd++;}},
   {patch:.6,patchScale:.012,noMask:true,pad:.5});
+ BIO.owner=null;BIO.range=null;
  // reg 'none': no volume per bed (EASTABYSS.REEDBEDS only, for a world that registers its own structures densely)
  return{beds:BEDS.length,stems:stems,farBeds:far,bedsRegistered:regd};};
 EASTABYSS._canopyH=function(x,z){let h=0;for(const T of EASTABYSS.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};

@@ -44,6 +44,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # Water joined the profile 2026-10-20 (the salt lake, the marsh pools and the rivers, core/water; see KNOWN_ISSUES.md).
 EXPORT_BOX = [1180, -100, 1480, 200]   # 2026-10-20: moved to the marsh so the box holds core/water's surfaces (the marsh pools, the east river); was [2100, -300, 2400, 0]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
+# station 2 (the winding lakes, build.py --station lakes): its box on the east shore at z 0, the lake and the shallows' reed beds
+STATION_BOX = {'eastabyss-lakes.html': [880, -150, 1180, 150]}
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -182,10 +184,11 @@ async def run(a):
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                box = STATION_BOX.get(os.path.basename(a.html), EXPORT_BOX)
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

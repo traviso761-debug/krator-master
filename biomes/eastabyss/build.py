@@ -48,22 +48,35 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 else "eastabyss.html"
+# THE STATIONS (PLAN-STATIONS.md, 2026-10-27): `python3 build.py --station <name>` builds dist/eastabyss-<name>.html from src/ with the
+# station's own fragments (stations/<name>/*) in place of src/'s of the same name (its map 45, water 89w, sky 89, views 99, tower 85)
+_args=[a for a in sys.argv[1:] if a!='--no-checks']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('eastabyss-%s.html'%STATION if STATION else 'eastabyss.html')
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]
+CORE_TERRAIN=['35-core-strata.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # 2026-10-27, the final rebuild: KSTRATA (the abyss wall's beds), KGROUND (the ground's layers), KFAR (the far country and the wall: src/83-host-far.js), KHORIZON (its shadows)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 33 BIO.fung (the bracket fungus), 34 the octahedral impostors (2026-10-27)
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+PATH.setdefault('35s-core-strata-shade.js',os.path.join(CORE_T,'host','35-core-strata-shade.js'))   # keyed 35s: it reads KSTRATA when it loads
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -92,6 +105,20 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'eastabyss',own=True)}
+# THE NEIGHBOURS' COUSINS, read in place (EXCHANGES.md, 2026-10-27: eastabyss as receiver; src/87-host-kin.js grows them by BIO.kin):
+# ebadlands' Fremont cottonwood (on the abyss's dry river reaches) and sedesert's bottle tree (on the salt steppe and the shelf foot).
+# Each kit's species and tree builders, slotted after the host stage (45) and before this kit (50), each in its own registry,
+# closed by a one-line kitEnd; its pack carries only the families those two builders draw with (the page stays under its cap)
+import json as _json
+NEIGH={'ebadlands':(['50-biome-ebadlands-species.js','55-biome-ebadlands-trees.js'],'EBADLANDS',['bark.aspen','leaf.round','wood.silver']),
+       'sedesert':(['50-biome-sedesert-species.js','55-biome-sedesert-trees.js'],'SEDESERT',['bark2','strap','wood'])}
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
+    _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
+    VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if f not in _keep]
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=_ex)
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
@@ -111,8 +138,12 @@ for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+# height fog (R1: the sky's chunk and its host, above), the rain occlusion map (R10) and the branched lightning (2026-10-27, the final rebuild)
+PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
