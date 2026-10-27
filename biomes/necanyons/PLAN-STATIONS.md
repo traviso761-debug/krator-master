@@ -3,7 +3,10 @@
 The owner (2026-10-23): the `ne rim` polygon (renamed from `ne canyon`) is this kit's ground, **a transition zone to
 Korona that may need several stations**. The page as built (Pinnacle Rock's canyon country) stays station 1.
 
-**Status: plan, awaiting the owner.**
+**Status: stations 2 and 3 built (2026-10-27, the final rebuild's turn).** `python3 build.py --station benches` (station 2,
+`dist/necanyons-benches.html`) and `--station savanna` (station 3, `dist/necanyons-savanna.html`): each its own `stations/<name>/`
+fragments (45 the map and options, 87 its passes; station 3's 89x its salt pans) over src/. Sites approximate (px 742,302 and
+748,268): the live model was not surveyed (C0 is owed). Both `verify.py --assert --all-views` on the GPU.
 
 ## The ground (surveyed 2026-10-23)
 

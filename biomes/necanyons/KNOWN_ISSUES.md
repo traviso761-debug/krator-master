@@ -59,3 +59,20 @@
       with the canopy lines (ridges). NIGHT (89n) keeps its hooks and the skylight key; the sky drives the lights, fog and
       exposure over it each frame. Draw calls at the default camera (verify.py --assert, GPU): 90 before, 89 after.
 
+## The final rebuild's turn (2026-10-27)
+
+- [ ] **Pinnacle Rock reads 46, 47, 50, 55, 57, 60, 70 and 89n in place; its page is not rebuilt here.** Every change this turn made to
+      those fragments is gated off for it (LAND defined without `rebuild`: no new talus, water works, strata, contour or wear; the
+      card fit, the runtime LOD and the impostors are null without the host's settings), but its page text moves with theirs: rebuild
+      and verify it at its own turn. The card fit (`materials.json`) reaches it, as its pack is this kit's.
+- [ ] **Cave mouths not taken.** KCARVE cuts a heightfield; these walls are KSTACKS meshes. An alcove under a seep line (the hanging
+      gardens of Zion) wants a KSTACKS notch kind or a mesh cut: a core task.
+- [ ] **No seep dam.** `WATER.seepDam` is a landslide-dammed lake; no canyon here has a slide. A candidate for a later station.
+- [ ] **Looks for the owner:** the far mesas (KFAR) read pale through the height fog from 'From afar'; the crown clumps on their
+      sprigs' stems (flametip, ember plum) read sparser than the old tripod; the fall is a thin seep curtain (`width` 3 m); the floor
+      cells round the water works are drawn at ~1.5 m (fine patches), the rest at 16 m.
+- [ ] **Station 3's carnivores are station 1's sizes**: "growing larger toward Korona" is not drawn (a scale option on 57's passes).
+
+Switches: `?diet=0 ?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0 ?kground=0 ?far=0 ?hz=0 ?hfog=0 ?strata=0 ?contour=0 ?weather=0
+?springs=0 ?confluence=0 ?arches=0 ?impgain= ?impwrap=`.
+

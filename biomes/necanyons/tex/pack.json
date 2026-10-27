@@ -474,6 +474,34 @@
     "sourceMean": 0.6262
    }
   },
+  "ground.savanna": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.savanna.albedo.webp"
+   },
+   "lib": "ground.savanna.litter",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "094587e4913979dbf2ca4f94109dee709cb05c20",
+    "normal": "05c679bd515f4382f425dff65dae65c02a5b655f",
+    "roughness": "348de4c7e582d1b71d48275bc4fa787104ce42fe"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46283342190312404,
+    "sourceMean": 0.4628
+   }
+  },
   "ground.talus": {
    "breakup": null,
    "card": false,
@@ -844,6 +872,36 @@
     "keep": 1.0,
     "mean": 0.5098811298175887,
     "sourceMean": 0.5099
+   }
+  },
+  "rock.tepui": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.tepui.albedo.webp",
+    "normalMap": "rock.tepui.normal.webp",
+    "roughnessMap": "rock.tepui.rough.webp"
+   },
+   "lib": "rock.quartzite.tepui",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.25,
+   "scale": [
+    16.0,
+    16.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0d8fdd17fbec1a2a27d83bbaae54243c5bf579dc",
+    "normal": "6991004e832281f1af68aec80e4f4c66ed1312c3",
+    "roughness": "c8af35aad65af32239b79fd0548be719641c52ea"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3419205134522681,
+    "sourceMean": 0.3419
    }
   },
   "rock.top": {

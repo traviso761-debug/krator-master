@@ -1,7 +1,10 @@
 // ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
 // The camera, the frame loop, the panel and window._api are core/host's (core/host/README.md): this fragment only says
 // what this page has.
-const VIEWS={
+// A station (stations/<name>/45: STATION_TAKE) gives its own views, title, hint and checks, and names the plants its ground does not
+// grow (absent: a station without caps has no yellow tubes); the kit's views are station 1's
+const ST_TAKE=typeof STATION_TAKE!=='undefined'?STATION_TAKE:null,ABSENT=ST_TAKE&&ST_TAKE.absent||[];
+const VIEWS=ST_TAKE&&ST_TAKE.views?ST_TAKE.views:{
  'The canyons':[1650,560,1500,150,180,-150],
  'From afar':[-2600,420,2300,0,200,0],
  'Krator rising':[-500,180,700,1900,900,-2100],
@@ -23,6 +26,7 @@ const VIEWS={
  const tw=by('tower0');if(tw)VIEWS['A tower out of the jungle']=[tw.x+260,140,tw.z+200,tw.x,tw.top*.6,tw.z];
  const fig=NECANYONS.nearestTree&&NECANYONS.nearestTree(1,500,0);if(fig)VIEWS['A stack fig on a ledge']=[fig.x+(fig.x-fig.body.x)*.08+6,fig.y0+4,fig.z+(fig.z-fig.body.z)*.08+6,fig.x,fig.y0-6,fig.z];})();
 
+if(ST_TAKE&&ST_TAKE.more)ST_TAKE.more(VIEWS);   /* a station's views on what it grew */
 // views on the final rebuild's additions (2026-10-27): the High Cap's spring fall, a karst spring, the arches
 (function(){const W=typeof WORKS!=='undefined'?WORKS:null;
  if(W&&W.fall){const F=W.fall,P=F.pool,d=F.dir;VIEWS['The High Cap’s spring fall']=[P.x+d[0]*150-d[1]*60,P.level+45,P.z+d[1]*150+d[0]*60,F.lip[0],(F.lip[2]+P.level)/2,F.lip[1]];
@@ -67,9 +71,9 @@ const HCHK={
   return{ok,detail:'fruit stackfig ('+(N.fig||0)+' figs), staple fonio ('+(N.fonio||0)+' tufts), medicinal rimdew ('+((N.sundewR||0)+(N.sundewF||0)+(N.sundewB||0))+')'};},
  // the carnivores: each has a trap record in the vocabulary, none can hold a person, each is drawn, and most are registered
  carnivores(PL,N,TRP){const keys=Object.keys(PL).filter(k=>PL[k].tags.trap),bad=[],undrawn=[];
-  keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind]||KTRAPS.catches(t,'person').caught||t.danger!==0)bad.push(k);if(!PL[k].items.some(i=>N[i]>0))undrawn.push(k);});
+  keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind]||KTRAPS.catches(t,'person').caught||t.danger!==0)bad.push(k);if(!PL[k].items.some(i=>N[i]>0)&&ABSENT.indexOf(k)<0)undrawn.push(k);});
   const reg=[...new Set(TRP.map(t=>t.key))];
-  return{ok:keys.length>=7&&!bad.length&&!undrawn.length&&reg.length>=6,detail:keys.length+' carnivores'+(bad.length?'; a trap that could hold a person or is not in the vocabulary: '+bad.join(', '):'')+
+  return{ok:keys.length>=7&&!bad.length&&!undrawn.length&&reg.length>=6-ABSENT.length,detail:keys.length+' carnivores'+(bad.length?'; a trap that could hold a person or is not in the vocabulary: '+bad.join(', '):'')+
    (undrawn.length?'; not drawn: '+undrawn.join(', '):'')+'; registered with their traps: '+reg.join(', ')+' ('+TRP.length+' patches)'};},
  // the cliff rule: no tree roots on a rim or under a wall; a tree on the rock stands on the rock's drawn top
  cliffs(TREES){let rim=0,off=0,worst=0;TREES.forEach(T=>{const Z=NECANYONS.at(T.x,T.z);if(Z.zone==='rim'||Z.zone==='wall')rim++;
@@ -96,6 +100,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N
  add('carnivores: trap records, harmless to a person, drawn, registered',HCHK.carnivores(NECANYONS.PLANTS,N,NECANYONS.TRAPPED||[]));
  add('no tree on a rim; feet on the rock',HCHK.cliffs(NECANYONS.TREES));
  add('the clapjaws\' lobes hinge',HCHK.snaps());
+ if(ST_TAKE&&ST_TAKE.checks)ST_TAKE.checks(add);
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts(),PL=NECANYONS.PLANTS;
  add('the creek lifted off its bed',HCHK.water(Object.assign({},WATER_RECS,{creek:Object.assign({},WATER_RECS.creek,{pts:WATER_RECS.creek.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+1}):p)})}),WATER_DRAW));
@@ -115,8 +120,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 window._registered=REG.length;
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88): each chunk mesh by its range */
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'necanyons',title:'Krator biome — the north-eastern canyons',
- hint:'The north-eastern canyons: red sandstone benches, caps and stacks out of the hyperjungle; the first carnivorous plants. N for night',
+KHOST.take({build:'necanyons',title:ST_TAKE&&ST_TAKE.title||'Krator biome — the north-eastern canyons',
+ hint:ST_TAKE&&ST_TAKE.hint||'The north-eastern canyons: red sandstone benches, caps and stacks out of the hyperjungle; the first carnivorous plants. N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (89n-host-night.js); N flips noon and midnight
  sky:{hour:h=>NIGHT.hour(h)},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */

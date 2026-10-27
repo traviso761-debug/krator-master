@@ -19,12 +19,15 @@ const FAR=(function(){
    const q=Math.hypot(u,v)/B.r;if(q<1.25){const k=smooth(1.18,.92,q+.08*nz(x,z,.006,B.r|0,2));if(k*B.h>h){h=k*B.h;top=k;}}}return {h,top};};
  const north=z=>smooth(-1500,-9000,z);   /* toward Korona: the canopy lower and paler */
  const roof=(x,z)=>{if(SF.canopy===false)return 0;const d=Math.max(Math.abs(x),Math.abs(z))-S0;return smooth(0,900,d)*(46+12*nz(x,z,.0011,311,3)*2)*(1-.55*north(z));};
- const farH=SF.h||((x,z)=>{const m=mesaH(x,z),g=terrainH(Math.max(-S0,Math.min(S0,x)),Math.max(-S0,Math.min(S0,z)));return g+Math.max(roof(x,z),m.h);});
+ /* a station's ring ridge (station 3: Korona's ring on the northern horizon): an arc of hills round c at radius r, w wide, h high */
+ const RG=SF.ring||null,ringH=(x,z)=>{if(!RG)return 0;const d=Math.abs(Math.hypot(x-RG.c[0],z-RG.c[1])-RG.r);return d<RG.w?RG.h*Math.pow(Math.cos(d/RG.w*Math.PI/2),1.6)*(.75+.5*(nz(x,z,.0008,321,3)+.5)):0;};
+ const farH=SF.h||((x,z)=>{const m=mesaH(x,z),g=terrainH(Math.max(-S0,Math.min(S0,x)),Math.max(-S0,Math.min(S0,z)));return g+Math.max(roof(x,z),m.h,ringH(x,z));});
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
  const C={floor:L([52,48,34]),dark:L([36,58,36]),mid:L([56,82,46]),dry:L([104,104,64]),wall:L([150,74,48]),top:L([176,132,98]),far:L([70,84,80])};
  const colr=SF.color||((x,z,y,q)=>{const r=smooth(0,900,Math.max(Math.abs(x),Math.abs(z))-S0),n1=nz(x,z,.0024,312,2)+.5;
   let c=mixC(C.dark,C.mid,n1);c=mixC(c,C.dry,north(z)*.7);c=mixC(C.floor,c,r);
   const m=mesaH(x,z);if(m.h>roof(x,z)+4)c=mixC(C.wall,C.top,smooth(.7,.98,m.top));
+  const rh=ringH(x,z);if(rh>Math.max(m.h,roof(x,z))+4)c=mixC(C.dry,C.dark,smooth(.2,.8,rh/(RG.h||1)));   /* the ring's slopes: savanna below, forest on the crest */
   return mixC(c,C.far,.45*smooth(4500,13000,q.r));});
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
   h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;return farH(x,z);},

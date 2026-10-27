@@ -34,7 +34,10 @@ const WORKS=(function(){if(!NEWROCK||RQ.get('springs')==='0'||!NECANYONS.SEEPS)r
  const outFoot=(S,fd)=>{let x=S.x,z=S.z;for(let k=0;k<400;k++){x+=S.nx;z+=S.nz;if(!NECANYONS.rockAt(x,z)&&NECANYONS.footD(x,z)>=fd)break;}return [x,z];};
  const rimMin=(x,z,r)=>{let m=1e9;for(let i=0;i<16;i++){const a=i/16*TAU;m=Math.min(m,ground0(x+Math.cos(a)*r,z+Math.sin(a)*r));}return m;};
  // the fall: the High Cap's (body 1) seep, on its lower tier, nearest the creek
- const hc=NECANYONS.SEEPS.filter(S=>S.body===1&&S.seep>.12).sort((a,b)=>creekD(a.x,a.z)-creekD(b.x,b.z))[0];
+ /* which bodies carry them: station 1's High Cap and Bench; a station names its own (LAND.works {fall, springs}: body ids) or none (false) */
+ const WB=LANDO.works===false?null:Object.assign({fall:'highcap',springs:'bench'},LANDO.works||{}),bix=id=>ROCK.findIndex(B=>B.id===id);if(!WB)return null;
+ const fB=bix(WB.fall),sB=bix(WB.springs);
+ const hc=NECANYONS.SEEPS.filter(S=>S.body===fB&&S.seep>.12).sort((a,b)=>creekD(a.x,a.z)-creekD(b.x,b.z))[0];
  if(hc){const F=outFoot(hc,2),P=outFoot(hc,16),r=6.5,lvl=rimMin(P[0],P[1],r)-.15;
   // the stream: from the pool's outlet straight to the creek's edge, never climbing (each point the lowest ground so far less .25)
   const cz=P[1],cx=CREEK.x(cz),dx=cx-P[0],dz=cz-P[1],dl=Math.hypot(dx,dz),ux=dx/dl,uz=dz/dl,run=Math.max(10,dl-CREEK.w*.6),pts=[];let yc=lvl;
@@ -42,7 +45,7 @@ const WORKS=(function(){if(!NEWROCK||RQ.get('springs')==='0'||!NECANYONS.SEEPS)r
   out.fall={seep:hc,lip:[hc.x,hc.z,hc.y],dir:[hc.nx,hc.nz],foot:[F[0],F[1]],pool:{x:P[0],z:P[1],r,level:lvl},dir2:[ux,uz]};
   out.chan={pts,w:2.2,depth:.7};out.chans.push(out.chan);}
  // the springs: the Bench's (body 0) two wettest seeps whose foot is on the floor, 400 m apart
- const bs=NECANYONS.SEEPS.filter(S=>S.body===0&&S.seep>.3).sort((a,b)=>b.seep-a.seep);
+ const bs=NECANYONS.SEEPS.filter(S=>S.body===sB&&S.seep>.3).sort((a,b)=>b.seep-a.seep);
  for(const S of bs){if(out.springs.length>=2)break;const P=outFoot(S,30);if(creekD(P[0],P[1])<60)continue;
   if(out.springs.some(q=>Math.hypot(q.x-P[0],q.z-P[1])<400))continue;const r=5,lvl=rimMin(P[0],P[1],r)-.12,line=[];let yc=lvl;
   /* its run: 40 m out from the wall, a channel a metre and a half wide, never climbing */
@@ -92,7 +95,7 @@ BIO.setSun(SUN_POS);
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
 const LIB=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
- ['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap'].forEach(k=>{const P=KMAT.packed('necanyons',k);
+ ['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap','rock.tepui'].forEach(k=>{const P=KMAT.packed('necanyons',k);
   if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,S)=>BIO.canvasTex(S||256,S||256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=clamp(fn(x,y,w,h),0,255);d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}g.putImageData(id,0,0);},true);
@@ -106,7 +109,7 @@ const PROC={
 // the scale (m per tile) and the map of a layer; a library map carries its own colour, a procedural one is grey and tinted
 const layer=k=>LIB[k]?{map:LIB[k].map,normalMap:LIB[k].normalMap||null,roughnessMap:LIB[k].roughnessMap||null,s:LIB[k].scale,lib:true}:
  {map:PROC[k],normalMap:null,roughnessMap:null,s:{'ground.litter':3,'ground.talus':2.6,'ground.sand':2,'rock.wall':20,'rock.stack':12,'rock.top':4,'rock.red':14,'rock.bed':10,'rock.cap':4}[k],lib:false};
-['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap'].forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
+['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap','rock.tepui'].forEach(k=>{if(!LIB[k]&&!PROC[k])return;const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
 
 // ---------------------------------------------------------------- the floor (one mesh: litter, talus at the walls' feet, sand by the creek)
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
@@ -128,20 +131,27 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     talus's steeper, nearer half a CLAST layer: the rock's fall as blocks of the stacks' red sandstone, 0.3-1 m, packed in a matrix of
     red soil. Only where the page lists KGROUND (a world reading this fragment in place keeps its mix above) and ?kground=0 is not set */
  if(typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'){
-  const LY=[KGROUND.layer('necanyons','ground.litter',{w:'1.0',tint:'vec3(0.42)',name:'litter'}),
+  /* a station's floor (LAND.ground): its base layer (the savanna's red soil for the litter) and a DESERT PAVEMENT, small clasts packed
+     where its field (KRELIEF.pavement, by vertex: aP) says the wind has taken the fines */
+  const GO=LANDO.ground||{},PAVE=typeof GO.pave==='function';
+  const LY=[KGROUND.layer('necanyons',GO.base||'ground.litter',{w:'1.0',tint:GO.baseTint||'vec3(0.42)',name:'base'}),
    KGROUND.layer('necanyons','ground.talus',{w:'vW.x',tint:'vec3(0.8)',name:'talus'}),
    KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'smoothstep(0.45,0.85,vW.x)',amt:.7,proj:'xz',size:.7,jitter:.9,matrix:.1,sub:.22,fleck:0,
     matrixColor:0x6b3a26,tint:'vec3(0.85)',seed:KRAND.hash(4747,0,1,7)%997,name:'scree'}),
-   KGROUND.layer('necanyons','ground.sand',{w:'vW.y',tint:'vec3(0.75)',name:'sand'})];
+   KGROUND.layer('necanyons','ground.sand',{w:'vW.y',tint:'vec3(0.75)',name:'sand'}),
+   PAVE?KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'vP',amt:.85,proj:'xz',size:.14,jitter:.9,matrix:.14,sub:0,fleck:0,matrixColor:GO.paveMatrix||0x9a6a4a,
+    tint:'vec3(0.7)',seed:KRAND.hash(4747,0,2,7)%997,name:'pavement'}):null];
   if(LY[0]&&LY[1]&&LY[3]){MAT_GROUND.onBeforeCompile=sh=>{
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;');
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;'+(PAVE?'attribute float aP;varying float vP;':'')).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;'+(PAVE?'vP=aP;':''));
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;'+(PAVE?'varying float vP;':'')).replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
    KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg',layers:LY,at:'/*KGROUND*/'});}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
   w[3*i]=smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2));w[3*i+1]=smooth(CREEK.w+16,CREEK.w+2,cd);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
  g.setAttribute('aW',new THREE.BufferAttribute(w,3));
+ const paveF=LANDO.ground&&typeof LANDO.ground.pave==='function'?LANDO.ground.pave:null;
+ if(paveF){const ap=new Float32Array(p.count);for(let i=0;i<p.count;i++)ap[i]=paveF(p.getX(i),p.getZ(i));g.setAttribute('aP',new THREE.BufferAttribute(ap,1));}
  /* FINE PATCHES UNDER THE WATER WORKS (2026-10-27): the floor's cells are ~16 m, wider than a spring's bowl or the stream's channel, so
     the cells over each work's box are cut out of the floor and the box drawn again at ~1.5 m from groundH, its edge rows on the coarse
     floor's own edges (heights interpolated between its vertices: no crack). The coarse mesh is the same without works */
@@ -155,16 +165,16 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
  g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);
  if(boxes.length){const cov=new Set();boxes.forEach(B=>{for(let iy=B[1];iy<B[3];iy++)for(let ix=B[0];ix<B[2];ix++)cov.add(iy*N+ix);});
-  const vH=(ix,iy)=>p.getY(iy*(N+1)+ix),K=11,pos=[],ww=[],idx=[];   /* K sub-cells a coarse cell: ~1.45 m */
+  const vH=(ix,iy)=>p.getY(iy*(N+1)+ix),K=11,pos=[],ww=[],idx=[],pp=[];   /* K sub-cells a coarse cell: ~1.45 m */
   cov.forEach(key=>{const iy=key/N|0,ix=key%N,x0=-S/2+ix*C,z0=-S/2+iy*C,o=pos.length/3;
    const edgeOf=(i,j)=>{const u=i/K,v=j/K;   /* a vertex on the cell's edge shared with a coarse cell takes the coarse edge's line */
     const nb=(dx,dy)=>!cov.has((iy+dy)*N+(ix+dx))||ix+dx<0||iy+dy<0||ix+dx>=N||iy+dy>=N;
     if(j===0&&nb(0,-1))return vH(ix,iy)*(1-u)+vH(ix+1,iy)*u;if(j===K&&nb(0,1))return vH(ix,iy+1)*(1-u)+vH(ix+1,iy+1)*u;
     if(i===0&&nb(-1,0))return vH(ix,iy)*(1-v)+vH(ix,iy+1)*v;if(i===K&&nb(1,0))return vH(ix+1,iy)*(1-v)+vH(ix+1,iy+1)*v;return null;};
    for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){const x=x0+i/K*C,z=z0+j/K*C,e=edgeOf(i,j);pos.push(x,e==null?groundH(x,z):e,z);
-    const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));}
+    const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));if(paveF)pp.push(paveF(x,z));}
    for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
-  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));if(paveF)pg.setAttribute('aP',new THREE.Float32BufferAttribute(pp,1));
   pg.setIndex(idx);pg.computeVertexNormals();const pm=new THREE.Mesh(pg,MAT_GROUND);pm.userData.probeSkip=true;pm.userData.inspectLabel='The canyon floor (by the springs and the stream)';pm.userData.host=true;scene.add(pm);}})();
 
 // ---------------------------------------------------------------- the rock (KSTACKS meshes): three meshes, by material
@@ -182,8 +192,8 @@ const ROCK_GEOS=[];
    - KSTACKS.weather on every body: two grains of KRAND noise, the feet kept on the ground. ?weather=0
    The records (ROCK) keep the unworn bodies: terrainH, the zones and the plants read them as before */
 const ROCK_STRATA=NEWROCK&&RQ.get('strata')!=='0'&&typeof KSTRATA!=='undefined'&&BIO.strata?
- BIO.strata({recipe:'canyon',seed:4751,range:[-80,600],dip:[.6,-.8,.008],warp:[6,1.8],res:.25,private:true}):null;
-const SAND_LIN=(function(){const c=new THREE.Color(0xb5643a).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
+ BIO.strata(Object.assign({recipe:'canyon',seed:4751,range:[-80,600],dip:[.6,-.8,.008],warp:[6,1.8],res:.25,private:true},LANDO.strata||{})):null;   /* a station's own recipe (LAND.strata) */
+const SAND_LIN=(function(){const c=new THREE.Color(LANDO.strataMean||0xb5643a).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
 function rockStrata(m,key){if(!ROCK_STRATA)return m;const prev=m.onBeforeCompile;
  m.onBeforeCompile=(sh,r)=>{if(prev)prev.call(m,sh,r);ROCK_STRATA.inject(sh);
   sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+SAND_LIN+',vec3(0.45),vec3(1.7)),0.55);}');};
@@ -200,15 +210,16 @@ function wearRock(B,m){
  return m;}
 (function(){const SMALL={spire:1,fin:1,balanced:1,arch:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top'),Lr=layer('rock.red'),Lb=layer('rock.bed'),Lc=layer('rock.cap');
  const BAND=[0xa8503a,0xc98468,0xd9b091,0xb4603e].map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(0xc9906e),SOIL=new THREE.Color(0x9c5a40),c=new THREE.Color();
- const acc={wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]},wallR:{pos:[],uv:[],col:[],idx:[]},stackB:{pos:[],uv:[],col:[],idx:[]},topC:{pos:[],uv:[],col:[],idx:[]}};
+ const acc={wallT:{pos:[],uv:[],col:[],idx:[]},wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]},wallR:{pos:[],uv:[],col:[],idx:[]},stackB:{pos:[],uv:[],col:[],idx:[]},topC:{pos:[],uv:[],col:[],idx:[]}};
  ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=wearRock(B,KSTACKS.mesh(B,{step:small?2.5:(LANDO.wallStep||6)})),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),stack:null,top:new Int32Array(nv).fill(-1)};
   // a third of the bodies take the library's other red sandstones (2026-10-19): the bedded red (rock.sandstone.bedded.red) for a
   // mesa's walls (its courses read as great beds at 20 m), the layered red (rock.sandstone.red) for a spire's or a stack's, and another third the cracked
   // sandstone (rock.sandstone_cracks) for a mesa's top; the rest keep the varnish, the Navajo and the slickrock
   const hv=KRAND.hash(B.seed,6151)%3;
-  const wk=small?(hv===0&&LIB['rock.red']?'stackB':'stack'):(hv===0&&LIB['rock.bed']?'wallR':'wall'),tk=!small&&hv===1&&LIB['rock.cap']?'topC':'top',
-   Lw2=wk==='stack'?Lk:wk==='stackB'?Lr:wk==='wallR'?Lb:Lw,Lt2=tk==='topC'?Lc:Lt;
+  /* a record may name its own wall set (B.wallLib: station 2's tepui tables, 'rock.tepui', the quartzite) */
+  const wk=B.wallLib==='rock.tepui'&&LIB['rock.tepui']?'wallT':small?(hv===0&&LIB['rock.red']?'stackB':'stack'):(hv===0&&LIB['rock.bed']?'wallR':'wall'),tk=!small&&hv===1&&LIB['rock.cap']?'topC':'top',
+   Lw2=wk==='wallT'?layer('rock.tepui'):wk==='stack'?Lk:wk==='stackB'?Lr:wk==='wallR'?Lb:Lw,Lt2=tk==='topC'?Lc:Lt;
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],isTop=part===1,key=isTop?tk:wk,A=acc[key],R=isTop?remap.top:remap.wall;
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
      A.pos.push(x,y,z);
@@ -230,6 +241,7 @@ function wearRock(B,m){
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
   ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
  const mkIf=(A,L,label)=>{if(A.idx.length)mk(A,L,label);};
+ if(acc.wallT.idx.length)mk(acc.wallT,layer('rock.tepui'),'Quartzite (a tepui table\'s wall: grey and black, streaked with algae)');
  mkIf(acc.wallR,Lb,'Bedded red sandstone (a mesa wall, in courses)');mkIf(acc.stackB,Lr,'Layered red sandstone (a stack)');mkIf(acc.topC,Lc,'Cracked sandstone (a mesa top)');
  mk(acc.wall,Lw,'Red sandstone (a mesa\'s wall, streaked with desert varnish)');mk(acc.stack,Lk,'Red sandstone (a stack, cross-bedded)');mk(acc.top,Lt,'Slickrock (a top: bare sandstone, black crust, lichen)');})();
 
