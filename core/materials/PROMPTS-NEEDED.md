@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 7 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+**Count: 7 prompts** (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26). Plus 1 for the termite cathedrals (section 32, `earth.termite`, core gap H10).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -335,6 +335,22 @@ A single reptile eye seen straight on, filling a square 1024x1024 frame, flat ev
 
 ```
 A single reptile eye seen straight on, filling a square 1024x1024 frame, flat even lighting, no reflections, no highlights, no eyelids, no skin around it: a round pale gold iris with fine radial fibres and a darker rim, the pupil a black squared spiral (a single line wound inward in right angles, like the Shang leiwen meander) filling the middle third of the iris, the iris edge exactly touching the frame's edges, the four corners plain white. No text, no border.
+## 32. Termite cathedrals (`core/terrain` `KSTACKS` kind `mound`, core gap H10, 2026-10-26)
+
+`biomes/hyperjungle/PLAN-LANDS.md` sections 4 and 10: the fluted clay mounds of every savannah (savannarim first, step
+J4). The mound's record carries its clay colour (`clay`, from the ground), so the set is tintable. **Reuse until it
+lands, said so:** `earth.banco.eroded` (rain-worn mud wall) tinted by the record's `clay` is the stand-in; it has the
+erosion but not the mound's knobbly built-up pellets or its tunnel mouths.
+
+#### `earth.termite`
+- Kind: surface, tintable (near-colourless), 2048 px square, one tile 0.5 m.
+- Used by: every savannah's termite cathedrals (`KSTACKS` `mound`: the spires and the skirt). Reuse: any built-mud
+  surface of an animal (mud-dauber nests, swallow nests), a sun-baked earthen wall's crust.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The hard sun-baked outer wall of a giant termite mound seen close: fine clay built up from countless tiny rounded pellets cemented together, a knobbly crust with shallow vertical rain runnels and soft eroded ridges running one way down the surface, a few small round tunnel mouths and pinholes (2 to 10 mm) with darker hollows, patches of fresh smoother repair clay slightly paler than the weathered crust, a few fine drying cracks, a little loose grit in the hollows. No grass, no insects, no stones, no colour blotches. Matte, dry. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only. One tile covers 0.5 metres.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

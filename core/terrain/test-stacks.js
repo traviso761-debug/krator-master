@@ -198,4 +198,80 @@ threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export 
    if(!pD||!pL||!pD.wall||!pL.wall||pD.b!==b||pL.b!==b)continue;n++;eD=Math.max(eD,Math.abs(pD.top-w.y));eL=Math.max(eL,Math.abs(pL.top-w.y));}}
  ok('KSTACKS.surface {drawn}: on the drawn wall within '+eD.toFixed(3)+' m ('+n+' points; the straight wall is off by '+eL.toFixed(2)+' m)',n>20&&eD<.05&&eL>eD,eL<.05);
  ok('without o.drawn surface is as before',JSON.stringify(K.surface([T],30,0))===JSON.stringify(K.surface([T],30,0,null,null)),false);}
+// ---- the mound (2026-10-26, core gap H10): a termite cathedral, fluted clay spires on a skirt, on a sloping ground
+{const gr=(x,z)=>.12*x+.4*Math.sin(z*.3)+10,MO={id:'mo',kind:'mound',x:3,z:4,H:8,seed:5,ground:gr},M=K.make(MO);
+ // a vertical ray down through a mesh (the triangles of the beds keep() accepts): the highest crossing, or null
+ const ray=(m,x,z,keep)=>{let best=null;const P=m.pos,I=m.idx;for(let t=0;t<I.length;t+=3){const a=I[t],b=I[t+1],c=I[t+2];if(keep&&!keep(m.bed[a]))continue;
+   const ax=P[3*a],az=P[3*a+2],bx=P[3*b],bz=P[3*b+2],cx=P[3*c],cz=P[3*c+2],d=(bz-cz)*(ax-cx)+(cx-bx)*(az-cz);if(Math.abs(d)<1e-12)continue;
+   const l1=((bz-cz)*(x-cx)+(cx-bx)*(z-cz))/d,l2=((cz-az)*(x-cx)+(ax-cx)*(z-cz))/d,l3=1-l1-l2;if(l1<-1e-7||l2<-1e-7||l3<-1e-7)continue;
+   const y=l1*P[3*a+1]+l2*P[3*b+1]+l3*P[3*c+1];if(best==null||y>best)best=y;}return best;};
+ const mm=K.mesh(M),sk=M.beds[0];
+ ok('a mound is a kind in the table, beside the others',K.kinds().includes('mound')&&K.kinds().includes('mesa'),!K.kinds().includes('mound'));
+ ok('it is a skirt (col -1) and its spires\' columns ('+M.cols+')',sk.col===-1&&M.beds.slice(1).every(b=>b.col>=0)&&M.cols>=1&&new Set(M.beds.slice(1).map(b=>b.col)).size===M.cols,false);
+ ok('the same seed gives the same mound, another seed another',JSON.stringify(K.make(MO))===JSON.stringify(M),JSON.stringify(K.make(Object.assign({},MO,{seed:6})))===JSON.stringify(M));
+ threw=false;try{K.make({kind:'mound'});}catch(e){threw=true;}ok('a mound without an id is refused',threw,false);
+ ok('H is the main spire\'s top over the ground at its centre ('+M.top.toFixed(2)+' against '+(gr(3,4)+8).toFixed(2)+')',Math.abs(M.top-(gr(3,4)+8))<.05,Math.abs(K.make(Object.assign({},MO,{H:5})).top-(gr(3,4)+8))<.05);
+ {const T=K.make({id:'t',kind:'mound',x:0,z:0,H:15,r:6,seed:5,y0:0}),s=K.make({id:'t',kind:'mound',x:0,z:0,H:3,r:1.2,seed:5,y0:0});
+  const girth=B=>{let m=0;for(let a=0;a<6.28;a+=.1)m=Math.max(m,K.footR(B.beds[0],a)*K.prof(B.beds[0],0));return m;};
+  ok('height and girth are parameters: a 15 m cathedral on a 6 m skirt, a 3 m mound on a 1.2 m one ('+girth(T).toFixed(2)+', '+girth(s).toFixed(2)+' m)',Math.abs(T.top-15)<.05&&Math.abs(s.top-3)<.05&&girth(T)>5.4&&girth(T)<7.5&&girth(s)>1&&girth(s)<1.5,girth(T)<girth(s));}
+ // the flutes: the main spire's outline has as many buttresses as M.flutes; without flutes it is smooth
+ // (a buttress: the outline's highest point within half a flute either side, standing a third of the flute's depth proud;
+ // the grooves wander, so two may merge)
+ const bumps=(b,fn)=>{const N=720,R=[];for(let i=0;i<N;i++)R.push(K.footR(b,i/N*2*Math.PI));const w=Math.round(N/fn/2);let n=0;
+   for(let i=0;i<N;i++){let mx=true,lo=Infinity;for(let k=-w;k<=w;k++){const v=R[(i+k+N)%N];if(k&&v>R[i])mx=false;lo=Math.min(lo,v);}if(mx&&R[i]-lo>.16*R[i]*.3)n++;}return n;};
+ {const M0=K.make(Object.assign({},MO,{flutes:0})),nb=bumps(M.beds[1],M.flutes),n0=bumps(M0.beds[1],M.flutes);
+  ok('the spires are fluted: '+nb+' buttresses round the main spire for '+M.flutes+' flutes; none without ('+n0+')',nb>=M.flutes*.65&&nb<=M.flutes&&n0===0,n0>=M.flutes*.65);
+  ok('a column\'s beds share their flutes (the grooves line up)',M.beds.filter(b=>b.col===0).every(b=>b.fn===M.flutes&&b.fp===M.beds[1].fp),false);}
+ // the skirt sits on the sampled ground: its drawn foot ring is at the ground less the sink, and the ground nowhere pokes
+ // through the drawn skirt
+ {let fw=0,poke=0,n=0;for(let i=0;i<mm.part.length;i++){if(mm.bed[i]!==0||mm.part[i]!==0)continue;const x=mm.pos[3*i],y=mm.pos[3*i+1],z=mm.pos[3*i+2];
+    const a=Math.atan2(z-sk.cz,x-sk.cx),rf=Math.hypot(x-sk.cx,z-sk.cz),R0=K.footR(sk,a)*K.prof(sk,0);if(Math.abs(rf-R0)>1e-6)continue;n++;fw=Math.max(fw,Math.abs(y-(gr(x,z)-.06)));}
+  for(let a=0;a<6.28;a+=.05)for(const f of [.5,.75,.9]){   /* the last few centimetres of the toe are the sink: buried */const R0=K.footR(sk,a)*K.prof(sk,0)*f,x=sk.cx+Math.cos(a)*R0,z=sk.cz+Math.sin(a)*R0,y=ray(mm,x,z);if(y==null||y<gr(x,z)-.01)poke++;}
+  const F=K.mesh(K.make(Object.assign({},MO,{ground:null,y0:gr(3,4)}))),Fs=K.make(Object.assign({},MO,{ground:null,y0:gr(3,4)})).beds[0];let fl=0;
+  for(let a=0;a<6.28;a+=.05){const R0=K.footR(Fs,a)*K.prof(Fs,0)*.97,x=Fs.cx+Math.cos(a)*R0,z=Fs.cz+Math.sin(a)*R0,y=ray(F,x,z);if(y==null||y<gr(x,z)-.01||y>gr(x,z)+.4)fl++;}
+  ok('the skirt\'s drawn foot is on the sampled ground ('+n+' foot vertices within '+fw.toFixed(3)+' m of ground less the sink), the ground nowhere through it ('+poke+')',n>40&&fw<.05&&poke===0,false);
+  ok('a mound on a flat foot (no ground) on the same slope would be caught ('+fl+' foot rays off the ground)',true,fl===0);}
+ // every spire is set into the skirt AS DRAWN: rays down at each column's foot ring meet the skirt's triangles above the
+ // spire's foot, and not far above
+ {let worst=-1e9,deep=0,miss=0,n=0;const embeds=[];for(let c=0;c<M.cols;c++){const b0=M.beds.find(b=>b.col===c);
+   for(let i=0;i<mm.part.length;i++){if(mm.bed[i]!==b0.k||mm.part[i]!==0)continue;const x=mm.pos[3*i],y=mm.pos[3*i+1],z=mm.pos[3*i+2];if(Math.abs(y-b0.y)>1e-4)continue;
+    const ea=Math.atan2(z-sk.cz,x-sk.cx);if(Math.hypot(x-sk.cx,z-sk.cz)<K.footR(sk,ea)*sk.tp*(1-sk.ch)*.1)continue;   /* a top's rings stop at 8% of its radius: that hole is under the main spire */
+    const s=ray(mm,x,z,k=>k===0);n++;if(s==null){miss++;continue;}worst=Math.max(worst,y-s);deep=Math.max(deep,s-y);}}
+  ok('each spire\'s foot is set into the drawn skirt ('+n+' rays: none misses ('+miss+'), the foot at most '+worst.toFixed(3)+' m from the skirt, buried at most '+deep.toFixed(2)+' m)',n>50&&miss===0&&worst<=0&&deep<.25*(sk.h),false);
+  const L=JSON.parse(JSON.stringify(M));L.beds.filter(b=>b.col===1).forEach(b=>b.y+=.4);const lm=K.mesh(L);let up=0;
+  const b1=L.beds.find(b=>b.col===1);for(let i=0;i<lm.part.length;i++){if(lm.bed[i]!==b1.k||lm.part[i]!==0||Math.abs(lm.pos[3*i+1]-b1.y)>1e-4)continue;const s=ray(lm,lm.pos[3*i],lm.pos[3*i+2],k=>k===0);if(s!=null&&lm.pos[3*i+1]>s)up++;}
+  ok('a spire lifted 0.4 m off the skirt would be caught',true,up===0);}
+ // KSTACKS.surface {drawn} agrees with the drawn mesh (rays) over the whole mound; the skirt's wall follows its ground foot
+ {let ws=0,n=0,wl=0;for(let x=-3;x<=9;x+=.37)for(let z=-2;z<=10;z+=.41){const s=K.surface([M],x,z,null,{drawn:true}),y=ray(mm,x,z);if(!s||y==null)continue;
+    if(s.wall&&s.b.col>=0)continue;   // a spire's steep wall: a hair across is a lot of height; checked on wall() below
+    n++;ws=Math.max(ws,Math.abs(s.top-y));}
+  const M2=JSON.parse(JSON.stringify(M));delete M2.beds[0].gy;for(let x=-3;x<=9;x+=.37)for(let z=-2;z<=10;z+=.41){const s=K.surface([M2],x,z,null,{drawn:true}),y=ray(mm,x,z);if(s&&y!=null&&!(s.wall&&s.b.col>=0))wl=Math.max(wl,Math.abs(s.top-y));}
+  ok('surface {drawn} is the drawn skirt and tops ('+n+' rays, within '+ws.toFixed(3)+' m; a level foot instead would be off by '+wl.toFixed(2)+' m)',n>150&&ws<.08&&wl>.3,wl<.08);   /* .08: the flutes' chords on the skirt's slope */
+  let eD=0,m2=0;M.beds.forEach(b=>{if(b.col<0)return;for(let a=0;a<6.28;a+=.5)for(const u of [.25,.5,.75]){const w=K.wall(M,b,a,u),p=K.surface([M],w.x,w.z,null,{drawn:true});if(!p||p.b.col!==b.col||!p.wall)continue;m2++;eD=Math.max(eD,p.top-w.y);}});
+  ok('on a spire\'s wall surface {drawn} is at the wall or above it (a fused neighbour) ('+m2+' points, '+eD.toFixed(3)+' m)',m2>40&&eD>-.02,false);}
+ // the field and the mesh: every drawn top vertex is on topH; at() over the main spire's tip is the tip
+ {let w=0,n=0;for(let i=0;i<mm.part.length;i++){if(mm.part[i]!==1)continue;n++;w=Math.max(w,Math.abs(mm.pos[3*i+1]-K.topH(M.beds[mm.bed[i]],mm.pos[3*i],mm.pos[3*i+2])));}
+  const tip=M.beds.filter(b=>b.col===0).pop(),t=K.at([M],tip.cx+tip.tx,tip.cz+tip.tz);
+  ok('the mound\'s drawn tops lie on topH ('+n+' vertices, '+w.toExponential(1)+'); at() over the tip is the tip',n>50&&w<1e-4&&t&&t.b===tip,t&&t.b.col===-1);
+  let hidden=0;M.beds.forEach(b=>{if(b.col>=0&&M.beds[b.k+1]&&M.beds[b.k+1].col===b.col)for(let i=0;i<mm.part.length;i++)if(mm.part[i]===1&&mm.bed[i]===b.k)hidden++;});
+  ok('a spire bed\'s top inside its column is left out of the mesh',hidden===0,false);}
+ // a ledge on the skirt's top between the spires; none on a spire; the foot reaches the flared skirt
+ {let led=null;for(let a=0;a<6.28&&!led;a+=.1){const R=K.footR(sk,a)*sk.tp*(1-sk.ch)*.95,x=sk.cx+Math.cos(a)*R,z=sk.cz+Math.sin(a)*R,l=K.ledge([M],x,z);if(l&&l.b===sk)led=l;}
+  const tip=M.beds.filter(b=>b.col===0).pop(),mid=M.beds.filter(b=>b.col===0)[2];
+  ok('the skirt\'s top between the spires is a ledge; a spire\'s top under the next bed is not',!!led&&K.ledge([M],mid.cx+mid.tx,mid.cz+mid.tz)===null&&K.ledge([M],tip.cx+tip.tx,tip.cz+tip.tz)===null,false);
+  const fa=K.foot([M],sk.cx+K.footR(sk,0)*1.1,sk.cz);ok('foot() reaches the flared skirt',fa&&fa.d<0,false);}
+ // the clay: the ground's colour, reddened; two soils, two clays
+ {const grey=K.make(Object.assign({},MO,{soil:[.45,.42,.38]})),red=K.make(Object.assign({},MO,{soil:[.62,.3,.18]})),at=K.make(Object.assign({},MO,{soilAt:(x,z)=>[.45,.42,.38]}));
+  const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+  ok('the clay is taken from the ground: nearer its own soil than the other, redder than a grey soil, soilAt as soil',dist(grey.clay,[.45,.42,.38])<dist(grey.clay,[.62,.3,.18])&&grey.clay[0]-grey.clay[2]>.07+.06&&JSON.stringify(at.clay)===JSON.stringify(grey.clay),dist(grey.clay,red.clay)<.05);}
+ ok('a mound round-trips through export and load',JSON.stringify(K.load(K.export([M]))[0])===JSON.stringify(M)&&K.hash(K.mesh(K.load(K.export([M]))[0]))===K.hash(mm),false);
+ // the layout by cell: two windows over one world agree where they overlap; no two mounds overlap; another world, others
+ {const L={id:'sav',world:77,cell:30,ground:gr,H:[4,12]},A=K.mounds(Object.assign({x0:-90,z0:-90,x1:150,z1:150},L)),Bw=K.mounds(Object.assign({x0:30,z0:-30,x1:270,z1:210},L));
+  const ia=new Map(A.map(m=>[m.id,m])),both=Bw.filter(m=>ia.has(m.id)),inA=m=>m.x>=-90&&m.x<150&&m.z>=-90&&m.z<150;
+  ok('two windows give the same mounds where they overlap ('+both.length+' shared, every one identical and none missing)',both.length>3&&both.every(m=>JSON.stringify(m)===JSON.stringify(ia.get(m.id)))&&Bw.filter(inA).length===both.length,false);
+  let ov=0;const all=A.concat(Bw.filter(m=>!ia.has(m.id)));for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++)if(Math.hypot(all[i].x-all[j].x,all[i].z-all[j].z)<all[i].beds[0].rx*1.25+all[j].beds[0].rx*1.25)ov++;
+  ok('no two mounds overlap ('+all.length+' mounds, '+ov+' overlaps) and the share of cells is p ('+(A.length/64).toFixed(2)+')',ov===0&&A.length/64>.15&&A.length/64<.45,false);
+  const O=K.mounds(Object.assign({x0:-90,z0:-90,x1:150,z1:150},L,{world:78}));ok('another world gives other mounds',JSON.stringify(O.map(m=>[m.x,m.z]))!==JSON.stringify(A.map(m=>[m.x,m.z])),false);
+  const acc=K.mounds(Object.assign({x0:-90,z0:-90,x1:150,z1:150},L,{accept:(x,z)=>x<0}));ok('accept refuses a place',acc.length>0&&acc.every(m=>m.x<0),false);}
+}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
