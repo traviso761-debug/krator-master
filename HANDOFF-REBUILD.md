@@ -178,6 +178,10 @@ its end too (the Rift's groundsel heads: `G.rosetteUV` with `userData.card = {ba
    replacing the centred tripod and the `"sheet": "geometry"` cells for crowns). Each comes with the cut it proposes.
 2. `python3 tools/textures/card_probe.py <build>`: the slot drawn on its geometry as the page draws it (core/biome itself, in
    node), left as it is, right as proposed. **Look at it**: a sheet whose plants overlap can be read wrong (`--plants card.x`).
+   **Approved by the owner (2026-10-27), for every build's turn:** apply `check_cells.py`'s proposals on core geometry
+   (frond, ribbon, hang, clump: the crown stems from the 3D renders, the fronds, strands and bushes), with two exceptions:
+   **xanadu's `raceme` stays as it is** (the old look is better) and **`card.flower.bloom`'s proposals are wrong** (its rows
+   touch; leave the cell). The bases and stems the owner saw are in `core/materials/library/card-bases.json`.
 3. `check_cells.py <build> --fix [--slots=a,b]` writes the proposals you accept; a crown's WHOLE SHEET still takes
    `"sheet": "geometry"` and `BIO.geo.cells(...)` in the code (three sprigs a card at .6; `about:'origin'` for a stem spray).
 4. `python3 tools/textures/pack.py <build>`, rebuild, look at the items in the page; `card_probe.py <build> --before <rev>`
