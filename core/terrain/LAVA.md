@@ -67,7 +67,8 @@ the same bumps, and a seed gives other lobes. The test runs the same seed twice 
   is `1 - heat`.
 - `sim.front()`: the molten cells beside cells without molten lava, as a walker's or an NPC's keep-out line.
 - `sim.writeBack(field)`: the frozen flow as new ground. It adds the deposits not yet written, bilinear onto every lattice
-  point of the field and of its insets. Call it again later and it adds only what froze since.
+  point of the field and of its insets. Call it again later and it adds only what froze since. `{all: true}` writes every deposit again, for a page that put its
+  field back first; `each(g, k)` names each point raised, so the page can move that vertex of its ground mesh.
 - `sim.hazard(o)` and `KLAVA.bind(rec, sim)`: a `kind: 'lava'` record over the sim's box with `stateFn: 'KLAVA.flow'`.
   At a point it is molten (k 1), a fresh crust frozen within `o.hot` seconds of sim time (k .25), or clear.
 - `sim.export()`: `krator-lava`, version 1. `h`, `T` and `dep` are Float32 base64 (KFIELD's), for Godot or a save.
@@ -100,8 +101,8 @@ A build opts in by explicit path; it is not pooled. Nothing changes on a page th
    then `KLAVA.bind(rec, S)`. The page needs core/hazard (core/hazard/README.md, "Adopting it").
 4. Run it on the page's clock or a time-lapse: `S.run(seconds)`. Draw it with `const M = KLAVA.surface(S, {crust, sun})`,
    `scene.add(M)`, and `M.update()` after a run. Write the frozen flow back as ground with `S.writeBack(GROUND_F)`, then
-   re-set the ground mesh's vertices from the field: the page owns its mesh. A time-lapse that goes back keeps
-   `S.snapshot()`s and `restore`s them. The page restores its own field heights, because `writeBack` only adds.
+   move the ground mesh's vertices with `writeBack`'s `each`: the page owns its mesh. A time-lapse that goes back keeps
+   `S.snapshot()`s and `restore`s them, puts its own field heights back, and calls `writeBack(F, {all: true})`.
 5. For real time over a big lattice, use `const G = KLAVA.gpu(renderer, S)` and `G.step(dt)` each frame at a fixed `dt`.
    `G.texture` holds the state; `G.pull()` reads it back for the hazard and the surface. Check the GPU once in the page's
    verify: `KLAVA.gpuCheck(renderer, mk, 200, 5)` gives the worst differences against the CPU.

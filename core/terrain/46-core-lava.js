@@ -34,8 +34,10 @@
 //   sim.mass()           {erupted, molten, frozen, lost, pondOut, error}: erupted = molten + frozen + lost to rounding
 //   sim.box()            the cells with lava or a source (i0, j0, i1, j1) and sim.molten (how many hold moving lava)
 //   sim.front()          the molten cells beside a cell without: [[x, z], ...] (a walker's, an NPC's keep-out line)
-//   sim.writeBack(f)     adds the deposits not yet written to a KFIELD's heights (each of its lattice points and its insets',
-//                        bilinear from the sim's cells): the solidified flow as new ground. Returns the points raised
+//   sim.writeBack(f, o)  adds the deposits not yet written to a KFIELD's heights (each of its lattice points and its insets',
+//                        bilinear from the sim's cells): the solidified flow as new ground. Returns the points raised. o.all: every
+//                        deposit (a page that put its field back first); o.each(g, k): called for each point raised (g the
+//                        field or the inset, k its index), so the page can move its ground mesh's vertex
 //   sim.snapshot() / sim.restore(s)   the state (a time-lapse that goes back)
 //   sim.hazard(o) -> {at, hazard}: a KHAZ record's tags.hazard over the sim's box, stateFn 'KLAVA.flow'; KLAVA.bind(rec, sim)
 //                        binds the sim (a page's state, as KHAZ.bindFire's run): molten k 1, a fresh crust (frozen within
@@ -162,11 +164,16 @@ function create(o){
    for(let j=Math.max(0,bj0);j<=Math.min(nz-1,bj1);j++)for(let i=Math.max(0,bi0);i<=Math.min(nx-1,bi1);i++){const c=j*nx+i;if(!mo(c)||pondOf[c]>=0)continue;
     for(let n=0;n<4;n++){const ii=i+DI[n],jj=j+DJ[n];if(ii<0||jj<0||ii>=nx||jj>=nz||!mo(jj*nx+ii)){o2.push([x0+i*step,z0+j*step]);break;}}}
    return o2;},
-  writeBack(f){let n=0;const d=new Float64Array(N);let any=false;for(let k=0;k<N;k++){d[k]=dep[k]-wrote[k];if(d[k]!==0)any=true;wrote[k]=dep[k];}
-   if(!any)return 0;
-   const add=g=>{const H=g.heights;for(let j=0;j<g.nz;j++){const v=(g.z0+j*g.step-z0)/step;if(v<0||v>nz-1)continue;
-     for(let i=0;i<g.nx;i++){const u=(g.x0+i*g.step-x0)/step;if(u<0||u>nx-1)continue;
-      const y=KB().bilinear(d,nx,nz,u,v);if(y!==0){H[j*g.nx+i]+=y;n++;}}}};
+  writeBack(f,o2){o2=o2||{};let n=0;const d=new Float64Array(N);let a0=nx,b0=nz,a1=-1,b1=-1;
+   for(let k=0;k<N;k++){d[k]=o2.all?dep[k]:dep[k]-wrote[k];wrote[k]=dep[k];if(d[k]!==0){const i=k%nx,j=(k-i)/nx;if(i<a0)a0=i;if(i>a1)a1=i;if(j<b0)b0=j;if(j>b1)b1=j;}}
+   if(a1<0)return 0;
+   /* only the lattice points over the changed cells (one cell round them): the bilinear is 0 beyond */
+   const X0=x0+(a0-1)*step,X1=x0+(a1+1)*step,Z0=z0+(b0-1)*step,Z1=z0+(b1+1)*step;
+   const add=g=>{const H=g.heights,jl=Math.max(0,Math.floor((Z0-g.z0)/g.step)),jh=Math.min(g.nz-1,Math.ceil((Z1-g.z0)/g.step)),
+     il=Math.max(0,Math.floor((X0-g.x0)/g.step)),ih=Math.min(g.nx-1,Math.ceil((X1-g.x0)/g.step));
+    for(let j=jl;j<=jh;j++){const v=(g.z0+j*g.step-z0)/step;if(v<0||v>nz-1)continue;
+     for(let i=il;i<=ih;i++){const u=(g.x0+i*g.step-x0)/step;if(u<0||u>nx-1)continue;
+      const y=KB().bilinear(d,nx,nz,u,v);if(y!==0){const k=j*g.nx+i;H[k]+=y;n++;if(o2.each)o2.each(g,k);}}}};
    add(f);(f.insets||[]).forEach(add);if(f.stats)f.stats();return n;},
   snapshot:()=>({t:sim.t,steps:sim.steps,dtNext:sim.dtNext,z:z.slice(),h:h.slice(),T:T.slice(),dep:dep.slice(),frozeAt:frozeAt.slice(),wrote:wrote.slice(),
    L:Object.assign({},L),vents:vents.map(V=>V.poured),ponds:ponds.map(P=>P.out),box:[bi0,bj0,bi1,bj1]}),

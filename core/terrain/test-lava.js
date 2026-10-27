@@ -63,6 +63,8 @@ const mk=(seed)=>{const F=cone(),s=K.create({field:F,seed,rough:.4,dtMax:30});s.
  const before=Float32Array.from(F.heights),n1=s.writeBack(F),n2=s.writeBack(F);let er=0;
  for(let k=0;k<s.N;k++)er=Math.max(er,Math.abs(F.heights[k]-before[k]-s.dep[k]));
  ok('writeBack lifts the field by the deposits (once: a second call adds nothing)',n1>0&&n2===0&&er<1e-3,n1===0);
+ {F.heights.set(before);let seen=0;const n3=s.writeBack(F,{all:true,each:(g,k)=>{if(g===F)seen++;}});let e3=0;for(let k=0;k<s.N;k++)e3=Math.max(e3,Math.abs(F.heights[k]-before[k]-s.dep[k]));
+  ok('writeBack all: a page that put its field back gets every deposit again, each point named once',n3===n1&&seen===n1&&e3<1e-3,n3===0);}
  ok('KFIELD reads the new ground',Math.abs(F.h(1000,1000)-(before[40*81+40]+s.dep[40*81+40]))<1e-3,false);
  console.log('      (erupted '+(m2.erupted/1e6).toFixed(3)+' Mm3, lost off the edge '+(m2.lost/1e6).toFixed(3)+' Mm3, deposit up to '+Math.max(...s.dep).toFixed(2)+' m)');}
 
