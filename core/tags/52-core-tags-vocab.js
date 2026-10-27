@@ -160,9 +160,22 @@
    // pressure in atm (a person tires below .6, the death zone .33, the blood boils at .06: the Godthrone's rim is .07),
    // temperature in degrees C
    // rain in mm an hour (core/atmos weather: 0 under a roof), ph the rain's acidity (clean rain 5.6; a region's own)
-   ambientFields: ['pressure', 'temperature', 'rain', 'ph'],
+   // dust and ash in mg per m3 (a dust storm, an ash storm or ashfall under a plume; clean air under .1, a haboob's wall
+   // thousands), visibility in metres (when a page knows it outright: its fog, its smoke)
+   // alkali: the share (0..1) of the dust that is caustic salt (the Catch's dry soda lake beds; Owens Lake's)
+   ambientFields: ['pressure', 'temperature', 'rain', 'ph', 'dust', 'ash', 'alkali', 'visibility'],
+   // how far one sees in dust and ash together (Chepil and Woodruff, 1957: C = c x V^-p, C mg/m3, V km): KHAZ.sight
+   dustSight: { c: 56, p: 1.25 },
    // a row with `times` needs both fields: k is the product of the two ramps (acid rain: how acid x how hard it falls)
    ambientKinds: {
+     // a dust or ash storm: it chokes from 2 mg/m3 (a day of it harms) to 50 (a haboob's body: breathing through cloth)
+     'dust':      { field: 'dust',      start: 2,  worst: 50,  effect: 'suffocate', dose: .3, danger: .4 },
+     // volcanic ash is glass: it harms at half the load and worse (the Throne's ash desert under the plume, an eruption)
+     'ash':       { field: 'ash',       start: 1,  worst: 25,  effect: 'suffocate', dose: .5, danger: .6 },
+     // caustic dust (the Catch's black storms off its dry soda lakes, biomes/catch/PLAN.md): it burns the eyes and the
+     // lungs and etches what lies open; how caustic (the alkali share, .05 to .5) times how thick (1 to 25 mg/m3). It is
+     // dust too: the dust row chokes and sight dims on the same load
+     'caustic-dust': { field: 'alkali', start: .05, worst: .5, times: { field: 'dust', start: 1, worst: 25 }, effect: 'corrode', dose: .4, danger: .5 },
      'acid-rain': { field: 'ph',        start: 4,  worst: 1,   times: { field: 'rain', start: 0, worst: 10 }, effect: 'corrode', dose: .5, danger: .6 },
      'thin-air': { field: 'pressure',    start: .6, worst: .06, effect: 'suffocate', dose: 1,  danger: 1 },
      'cold':     { field: 'temperature', start: 0,  worst: -40, effect: 'freeze',    dose: .5, danger: .7 },

@@ -195,5 +195,5 @@ A page that already takes core/tags has the keys: the vocabulary (52) carries th
 - **A taboo**: `tags: {taboo: {of: null | [culture...], why}}` on the area's record, registered before anything of a people
   is placed. The label says `taboo to <peoples>`. The placement check is core/hazard's: `KHAZ.tabooOk(culture)` for
   core/city's `rules.groundOk` or a scatter's `accept`, and `KHAZ.tabooAudit()` in verify.
-- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (202f9e43 with
-  lava, fire, luck, trap, time, taboo, the ambient rows and acid rain). Rewrite it with a note of what moved it.
+- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (5337b270 with
+  lava, fire, luck, trap, time, taboo, the ambient rows, acid rain and the dust storms). Rewrite it with a note of what moved it.

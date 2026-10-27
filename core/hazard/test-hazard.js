@@ -249,6 +249,35 @@ const ring2=O.add({'class':'feature',kind:'ring',name:'A Peak shrine',at:[500,0,
  H.provide('rain',()=>NaN);ok('rain that gives no number is skipped',!ar(-2000,0),!!ar(-2000,0));
  H.provide('rain',null);H.provide('ph',null);ok('removed: none',H.provided().length===0,false);}
 
+// dust and ash storms: breathing (a dose) and sight (a range); a stub haboob, a wall 2 km wide moving at 15 m/s, and ash
+// falling under a plume west of x = -5000
+{const dust=(x,y,z,t)=>{const c=-1000+15*t,dd=Math.abs(x-c);return dd<1000?2000*(1-dd/1000)+.05:.05;},ash=(x)=>x<-5000?12:0;
+ ok('no dust or visibility field: sight is unbounded',H.sight(0,0,0,0).range===Infinity&&H.sight(0,0,0,0).by===null,isFinite(H.sight(0,0,0,0).range));
+ H.provide('dust',dust);
+ const s0=H.sight(-1000,0,0,0),dd0=H.ambient(-1000,0,0,0).find(a=>a.kind==='dust');
+ ok('in the haboob\'s wall (2000 mg/m3): sight about 57 m, choking at its worst',Math.abs(s0.range-1000*Math.pow(56/2000.05,.8))<1e-9&&s0.range>50&&s0.range<65&&s0.by==='dust'&&dd0.k===1&&dd0.dose===.3,s0.range>100);
+ const s1=H.sight(5000,0,0,0);
+ ok('clean air (.05 mg/m3): sight about 270 km, and no dose',s1.range>200000&&!H.ambient(5000,0,0,0).some(a=>a.kind==='dust'),s1.range<1000);
+ ok('the storm moves on: 200 s later the same point is clear',H.sight(-1000,0,0,200).range>200000,H.sight(-1000,0,0,200).range<1000);
+ ok('dust ramps from 2 to 50 mg/m3 (26 is half)',(()=>{H.provide('dust',()=>26);const a=H.ambient(0,0,0,0).find(a=>a.kind==='dust');H.provide('dust',dust);return Math.abs(a.k-.5)<1e-9;})(),false);
+ ok('a mask is a guard on dust',H.ambient(-1000,0,0,0,{dust:.8}).find(a=>a.kind==='dust').dose<.061,false);
+ H.provide('ash',ash);
+ const a6=H.ambient(-6000,0,0,0).find(a=>a.kind==='ash'),s6=H.sight(-6000,0,0,0);
+ ok('ashfall (12 mg/m3): harms at half dust\'s load (k 11/24), dims sight to some 6 km, named by the larger load',Math.abs(a6.k-11/24)<1e-9&&a6.danger===.6&&s6.by==='ash'&&Math.abs(s6.range-1000*Math.pow(56/12.05,.8))<1e-9,s6.by==='dust');
+ ok('negative: the same 12 mg/m3 of dust does not reach dust\'s ramp half so far (k 10/48)',(()=>{H.provide('dust',()=>12);const a=H.ambient(0,0,0,0).find(a=>a.kind==='dust');H.provide('dust',dust);return Math.abs(a.k-10/48)<1e-9;})(),false);
+ H.provide('visibility',(x)=>x>4000?300:Infinity);
+ ok('a visibility field wins where it is nearer (fog at 300 m over clean air)',H.sight(5000,0,0,0).range===300&&H.sight(5000,0,0,0).by==='visibility'&&H.sight(-1000,0,0,0).by==='dust',H.sight(5000,0,0,0).by!=='visibility');
+ ok('here carries sight',H.here(-1000,0,0,0,G2).sight.by==='dust',false);
+ H.provide('dust',null);H.provide('ash',null);H.provide('visibility',null);ok('removed: sight unbounded again',H.sight(-1000,0,0,0).range===Infinity,false);}
+// the Catch's black storm off its dry soda lakes: dust that is caustic (an alkali share of .4 over the lake beds, east)
+{H.provide('dust',()=>13);H.provide('alkali',x=>x>0?.4:0);
+ const hr=H.here(100,0,0,0,G2),cd=hr.ambient.find(a=>a.kind==='caustic-dust');
+ ok('caustic dust: how caustic (.4: k 7/9) x how thick (13 mg/m3: k 1/2), corroding; the same storm chokes and dims sight',
+   cd&&Math.abs(cd.k-(.35/.45)*.5)<1e-9&&cd.effect==='corrode'&&cd.value===.4&&cd.value2===13&&hr.doses.corrode>0&&hr.doses.suffocate>0&&hr.sight.by==='dust',!cd);
+ ok('negative: the same storm off plain sand (alkali 0) chokes but does not burn',!H.here(-100,0,0,0,G2).ambient.some(a=>a.kind==='caustic-dust')&&H.here(-100,0,0,0,G2).doses.suffocate>0,H.here(-100,0,0,0,G2).doses.corrode>0);
+ H.provide('dust',null);ok('negative: alkali with no dust in the air burns nothing',!H.ambient(100,0,0,0).some(a=>a.kind==='caustic-dust'),false);
+ H.provide('alkali',null);}
+
 // time: the Procrastinator's seals (a ten-thousandth of our time), a monk's quickening (x4), a wheel switched by a cycle
 {const TT=KT.create({build:'time-test'});
  const seal=TT.add({'class':'feature',kind:'seal',name:'The first seal',at:[0,0,0],r:4,h:6,tags:{hazard:{kind:'time',falloff:'none'}}});

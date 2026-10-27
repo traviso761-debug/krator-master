@@ -167,6 +167,9 @@ A build opts in by explicit path (it is not pooled): three lines in `build.py`, 
      shape}}`, and the host multiplies each thing's dt by `KHAZ.timeScale(x, z, t, y)` where it stands.
    - **Thin air and cold**: the page's field owner calls `KHAZ.provide('pressure', fn)` and
      `KHAZ.provide('temperature', fn)`. The walker asks `KHAZ.here(x, y, z, t)`.
+   - **Dust, ash and caustic storms**: the page's weather provides `dust` and `ash` (mg/m3) and, where the ground is
+     a dry soda lake, `alkali`. A page that knows its fog or smoke outright provides `visibility` (m). The walker and the
+     NPCs read `KHAZ.here(...).doses` and `.sight`.
    - **Acid rain**: `KHAZ.provide('rain', fn)` from the page's weather (0 under cover), and `KHAZ.provide('ph', fn)` from
      the region's map (the Valley's acid, clean elsewhere).
 
@@ -212,6 +215,16 @@ pressure by height, and a temperature field when one exists).
     rain is 5.6) from 4 down to 1, times `rain` (mm an hour) from 0 to 10. A row's `times: {field, start, worst}`
     multiplies a second ramp into k; without both fields, nothing. A storm that moves is a `rain` field of t; a roof is
     rain 0 there, or a guard of 1.
+  - `dust`: suffocate, from 2 to 50 mg/m3 (a dust storm; a haboob's wall is thousands).
+  - `ash`: suffocate, from 1 to 25 mg/m3. Volcanic ash is glass, so it harms at half dust's load: the Throne's ashfall
+    under the plume, an eruption.
+  - `caustic-dust`: corrode, for the Catch's black storms off its dry soda lakes. `alkali` (the share of the dust that
+    is caustic salt, .05 to .5) times `dust` (1 to 25 mg/m3). The same storm also chokes (the dust row) and blinds
+    (sight), and it etches what lies open: a cargo system takes its corrode dose.
+- **`KHAZ.sight(x, y, z, t)`** returns `{range (m), by}`: how far one sees. It is the nearer of the `visibility` field
+  and what dust and ash together allow (`VOCAB.dustSight`, Chepil and Woodruff 1957: V km = (56 / C)^(1/1.25); 2000
+  mg/m3 is about 57 m, 12 is about 6 km, clean air hundreds of km). For a walker's view, an NPC's senses and the port's
+  fog. `KHAZ.here(...).sight` gives the same.
 - **`KHAZ.ambient(x, y, z, t, guard)`** returns `[{kind, field, value, k, effect, dose, danger}]`, worst first. `guard`
   is `{kind: 0..1}`, how much a walker's gear keeps out (a mask .5, a suit 1).
 - **`KHAZ.here(x, y, z, t, T, {tIns, guard})`** returns `{records (KHAZ.at), ambient, doses: {effect: summed}}`: what
@@ -224,7 +237,7 @@ pressure by height, and a temperature field when one exists).
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
-`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 202f9e43
-with lava, fire, luck, trap, time, the taboo key, the ambient rows and acid rain). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
+`node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then 5337b270
+with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),
 `node core/export/test-export.js` (the registry's hazards).

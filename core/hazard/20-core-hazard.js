@@ -329,10 +329,18 @@
   function timeScale(x,z,t,y,T){var L=list(T),s=1;
     for(var i=0;i<L.length;i++){var r=L[i],h=of(r);if(!h.time)continue;var R=reach(r);if(Math.abs(x-r.at[0])>R||Math.abs(z-r.at[2])>R)continue;
       s*=timeOf(r,x,z,t,y);}return s;}
-  // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, every effect's dose summed, and time's scale
+  // ---- sight: how far one sees at a point (m), for a walker's view, an NPC's senses, the port's fog. The nearer of the
+  //   'visibility' field and what the dust and ash together allow (VOCAB.dustSight: V km = (c / C)^(1/p), C their sum);
+  //   Infinity with none. {range, by: 'visibility' | 'dust' | 'ash' | null (the larger load names it)}
+  function sight(x,y,z,t){need();var best=Infinity,by=null,f=FIELDS.visibility;
+    if(f){var v=f(x,y,z,t);if(typeof v==='number'&&isFinite(v)&&v>=0&&v<best){best=v;by='visibility';}}
+    var load=function(n){var g=FIELDS[n];if(!g)return 0;var c=g(x,y,z,t);return typeof c==='number'&&isFinite(c)&&c>0?c:0;},cd=load('dust'),ca=load('ash'),C=cd+ca,S=V.dustSight;
+    if(C>0){var m=1000*Math.pow(S.c/C,1/S.p);if(m<best){best=m;by=ca>cd?'ash':'dust';}}
+    return {range:best,by:by};}
+  // what hurts here: the placed hazards (KHAZ.at) and the ambient ones, every effect's dose summed, time's scale and sight
   function here(x,y,z,t,T,o){o=o||{};var R=at(x,z,t,y,T,o.tIns),A=ambient(x,y,z,t,o.guard),D={};
     R.forEach(function(r){var ds=r.radiant?{burn:r.dose}:doses(r.rec,x,z,t,y,o.tIns&&o.tIns[r.id]);for(var e in ds)D[e]=(D[e]||0)+ds[e];});
-    A.forEach(function(a){D[a.effect]=(D[a.effect]||0)+a.dose;});return {records:R,ambient:A,doses:D,time:timeScale(x,z,t,y,T)};}
+    A.forEach(function(a){D[a.effect]=(D[a.effect]||0)+a.dose;});return {records:R,ambient:A,doses:D,time:timeScale(x,z,t,y,T),sight:sight(x,y,z,t)};}
 
   // ---- exposure: how long a walker has stood in each soak hazard (the luck that grows the longer one stays)
   //   const E=KHAZ.exposure(T); E.step(x, z, t, dt, y) -> KHAZ.at's hits with each soak's time counted; E.tIn(id); E.reset()
@@ -411,7 +419,7 @@
       var F=forbids(r.at[0],r.at[2],r,T);if(F.length)out.push({id:r.id,taboo:F[0].id,who:whoOf(r)});}return out;}
 
   var KHAZ={make:make,of:of,shape:shape,inside:inside,beyond:beyond,state:state,dose:dose,list:list,at:at,zones:zones,export:exp,
-    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,time:timeOf,timeScale:timeScale,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
+    STATES:STATES,speed:1,fall:fall,soakK:soakK,doses:doses,provide:provide,provided:provided,ambient:ambient,here:here,sight:sight,time:timeOf,timeScale:timeScale,trip:trip,disarm:disarm,rearm:rearm,exposure:exposure,bindFire:bindFire,fireHazard:fireHazard,GROUND:GROUND,PREDATOR:PREDATOR,
     taboo:tabooOf,taboos:taboos,forbids:forbids,tabooOk:tabooOk,tabooAudit:tabooAudit};
   root.KHAZ=KHAZ;
 })(typeof globalThis!=='undefined'?globalThis:this);
