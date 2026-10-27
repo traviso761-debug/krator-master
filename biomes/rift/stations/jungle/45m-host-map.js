@@ -29,7 +29,7 @@ const RIVER={t:d=>{const g=smooth(380,620,d)*smooth(980,760,d);return 120+(1-g)*
 function riverT(d){return RIVER.t(d);}
 function streamD(x,z){const d=lakeIn(x,z);if(d<-40)return 1e9;return Math.abs(along(x,z)-RIVER.t(d));}
 // a distributary across the lowland (the delta's second mouth), branching at the lower fall's pool
-const DIST={t:d=>RIVER.t(d)-220*smooth(470,60,d)-60*Math.sin(d*.009)};
+const DIST={t:d=>RIVER.t(d)-(220*smooth(470,60,d)+60*Math.sin(d*.009))*smooth(470,400,d)};   /* it leaves the river at d 470, not 53 m off it */
 function distD(x,z){const d=lakeIn(x,z);if(d<-40||d>470)return 1e9;return Math.abs(along(x,z)-DIST.t(d));}
 // the ground before the water's cuts: sea bed, lowland, the two cliffs and the bench, the plain rising south-east
 function baseH(x,z){const t=along(x,z),d=lakeIn(x,z),o=scarpOff(t);
@@ -43,17 +43,45 @@ function terrainH(x,z){
  let h=baseH(x,z)+3*(KF(x*.006,z*.006,3,207)-.5)+1.2*(KF(x*.03,z*.03,2,209)-.5);
  const d=lakeIn(x,z);
  // the river's channel: a meandering bed on the plain and the lowland, a slot through the cliffs (its falls are the cliffs' height)
- const sd=streamD(x,z),w=RIVER.w(d)*.5,dep=RIVER.depth(d);
- if(sd<w+40){const bed=baseH(x,z)-dep-(d>900?3:0);h=mix(h,Math.min(h,bed),smooth(w+40,w-2,sd));}
- const dd=distD(x,z);if(dd<40)h=mix(h,Math.min(h,baseH(x,z)-1.1),smooth(36,10,dd));
- // the plunge pools under the two falls: bowls in the bench and the lowland
- for(const P of POOLS){const r=Math.hypot(x-P.x,z-P.z);if(r<P.r*1.8)h=mix(h,Math.min(h,P.y-4),smooth(P.r*1.8,P.r*.6,r));}
+ /* THE BANKS (2026-10-27; the water session's finding: the old blend held the flat bed out to 40 m past the banks, so the water's
+    straight edges floated .6 m over it, slabs): the bed only well inside the water's ribbon, the ground rising through the water's
+    surface just inside its edge (at w the bank is ~.65 of the depth up), and a low levee where the ground's noise dips under the
+    water line, so the ribbon's edge is always buried in the bank. Not at the mouth (the sea) or in a pool (its rim is the pool's) */
+ const sd=streamD(x,z),w=RIVER.w(d)*.5,dep=RIVER.depth(d),dd=distD(x,z);   /* neither channel's levee crosses the other (where they part) */
+ if(sd<w+16){const bed=riverBed(d);h=mix(h,Math.min(h,bed),smooth(w+4,w-6,sd));
+  h=Math.max(h,mix(h,bed+1.2,smooth(w-3,w+1,sd)*smooth(w+16,w+7,sd)*smooth(20,70,d)*smooth(6,12,dd)*poolFree(x,z)));}
+ if(dd<20){const bed=riverBed(d);   /* the river's bed: on the lowland it is a function of d alone, so it fits the delta's line too, and the two
+   channels' water meets level where they part */
+ h=mix(h,Math.min(h,bed),smooth(12,3,dd));
+  h=Math.max(h,mix(h,bed+1.1,smooth(5,8.5,dd)*smooth(18,11,dd)*smooth(20,70,d)*smooth(w+2,w+10,sd)*poolFree(x,z)));}
+ // the plunge pools under the two falls: a bowl 3.5 m under each pool's water, full to .25 r, its side rising through the water inside the
+ // still's disc (.6 r) and a rim above the water out to 1.2 r, but open where the river runs in and out
+ for(const P of POOLS){const r=Math.hypot(x-P.x,z-P.z);if(r<P.r*1.3){h=mix(h,Math.min(h,P.y-3.5),smooth(P.r*.7,P.r*.25,r));
+  h=Math.max(h,mix(h,P.y+.6,smooth(P.r*.5,P.r*.62,r)*smooth(P.r*1.3,P.r*.95,r)*smooth(w-2,w+6,sd)*smooth(5,10,dd)));}}
  return h;}
-// the two plunge pools (89w's falls land in them): at the foot of each cliff on the river's line
-const POOLS=(function(){const P=[];for(const [d0,r] of [[SCARP.hi[0],40],[SCARP.lo[0],48]]){const dd=d0+scarpOff(RIVER.t(d0))-28,t=RIVER.t(dd),x=(t+dd)*S2,z=(dd-t)*S2;   /* at each cliff's foot where the river meets it (the cliffs wander: scarpOff) */
-  /* shoreD varies along t: walk the point so its own lakeIn is dd */
-  let px=x,pz=z;for(let k=0;k<6;k++){const e=dd-lakeIn(px,pz);px+=e*S2;pz+=e*S2;}
-  P.push({x:px,z:pz,r,y:baseH(px,pz)});}return P;})();
+// THE RIVER'S BED never rises toward the sea: at each d the lowest of the raw bed (the ground on the centreline, less the channel's
+// depth) anywhere upstream. The plain's ground rolls 20 m up and down along the river, and 89w's reaches never rise downstream, so a
+// bed that followed it dammed a pool behind every rise, wider than its banks (edges up to 3 m over the ground); now the channel cuts
+// down through each rise, a little gorge. Tabled every 4 m along the centreline, read linearly
+const RBED=(function(){const d0=-40,st=4,n=Math.ceil((7200-d0)/st)+1,v=new Float32Array(n);
+ for(let i=0;i<n;i++){const d=d0+i*st,p=riverAt(d);v[i]=baseH(p[0],p[1])-RIVER.depth(d)-3*smooth(850,1100,d);}
+ for(let i=n-2;i>=0;i--)v[i]=Math.min(v[i],v[i+1]);return{d0,st,n,v};})();
+function riverBed(d){const f=clamp((d-RBED.d0)/RBED.st,0,RBED.n-1.001),i=Math.floor(f);return mix(RBED.v[i],RBED.v[i+1],f-i);}
+function poolFree(x,z){let k=1;for(const P of POOLS)k*=smooth(P.r*.8,P.r*1.3,Math.hypot(x-P.x,z-P.z));return k;}
+// the two plunge pools (89w's falls land in them): at the TOE of each cliff on the river's line, where the face meets the floor below it,
+// found from the ground (baseH) as 89w finds the lips: scanning toward the sea, the first metre-per-metre drop, then the first level
+// metre after it; the pool's centre 6 m on. Its y is the water's level there (what the reach leaving it holds, below);
+// its bowl is carved below that. Before, they stood 26-37 m past the toes and 4 m over the floor (the water session, 2026-10-27)
+function riverAt(d){const t=RIVER.t(d);let x=(t+d)*S2,z=(d-t)*S2;for(let k=0;k<6;k++){const e=d-lakeIn(x,z);x+=e*S2;z+=e*S2;}return[x,z];}
+const POOLS=(function(){const P=[];
+ for(const [hi,r] of [[SCARP.hi,40],[SCARP.lo,48]]){const d0=hi[1]+scarpOff(RIVER.t(hi[1]))+60;let p=riverAt(d0),h=baseH(p[0],p[1]),dropped=false,toe=hi[0]-30;
+  for(let d=d0-1;d>d0-400;d--){const q=riverAt(d),g=baseH(q[0],q[1]);if(h-g>1)dropped=true;else if(dropped&&h-g<.15){toe=d+1;break;}h=g;}
+  /* its level: the highest the reach below can hold it (89w levels each reach from downstream, never rising): the channel's bed + .6
+     down to the next lip or the sea; the channel shoals from 2.5 m to 1.2 m at d 500, so the lowland holds the lower pool up */
+  const dp=toe-6,c=riverAt(dp);let y=-1e9,hp=baseH(c[0],c[1]);
+  for(let d=dp;d>-30;d-=2){const q=riverAt(d),g=baseH(q[0],q[1]);if(hp-g>2)break;y=Math.max(y,riverBed(d)+.6);hp=g;}
+  P.push({x:c[0],z:c[1],r,d:dp,toe,y});}
+ return P;})();
 function slopeAt(x,z){const h=terrainH(x,z),e=3;return Math.hypot(terrainH(x+e,z)-h,terrainH(x,z+e)-h)/e;}
 function southK(x,z){return 1;}   // all of it on the jungle side: the ground painter's litter palette
 const FIELD_RAW={
@@ -69,11 +97,11 @@ const FIELD_RAW={
 const MAP_ORIGIN=[[0,0],[-1500,-1500],[1500,1500],[-1500,1500],[1500,-1500]];
 // the river's and the pools' water for the kit (BIO.init: waterH, and the planting mask MAP_DRY): the surface .6 m over the bed in the
 // channel, the pools' level in their bowls, the sea's 0 elsewhere; nothing roots in the channel, the delta channel or a pool
-function MAP_WATERH(x,z){for(const P of POOLS)if(Math.hypot(x-P.x,z-P.z)<P.r*1.4)return P.y+.2;const d=lakeIn(x,z);
- if(d>0&&streamD(x,z)<RIVER.w(d)*.5+30)return Math.max(0,baseH(x,z)-RIVER.depth(d)-(d>900?3:0)+.6);if(d>0&&distD(x,z)<30)return Math.max(0,baseH(x,z)-.5);return 0;}
+function MAP_WATERH(x,z){for(const P of POOLS)if(Math.hypot(x-P.x,z-P.z)<P.r*.62)return P.y;const d=lakeIn(x,z);
+ if(d>0&&streamD(x,z)<RIVER.w(d)*.5+30)return Math.max(0,riverBed(d)+.6);if(d>0&&distD(x,z)<30)return Math.max(0,riverBed(d)+.6);return 0;}
 function MAP_DRY(x,z){const d=lakeIn(x,z);if(d<0)return 1;
  /* where a fall comes down the cliffs (the scarp's bands plus 70 m below each) the keep-out widens to 30 m past the river's banks: the
     curtain and its spray stand clear of trunks (the owner, 2026-10-27: a frill tree stood in the upper fall) */
  const o=scarpOff(along(x,z)),fall=Math.max(smooth(SCARP.hi[0]+o-90,SCARP.hi[0]+o-60,d)*smooth(SCARP.hi[1]+o+20,SCARP.hi[1]+o,d),smooth(SCARP.lo[0]+o-90,SCARP.lo[0]+o-60,d)*smooth(SCARP.lo[1]+o+20,SCARP.lo[1]+o,d));
  const hw=RIVER.w(d)*.5+30*fall;let k=smooth(hw+1,hw+7,streamD(x,z))*smooth(8,14,distD(x,z));
- for(const P of POOLS)k*=smooth(P.r*1.4,P.r*2,Math.hypot(x-P.x,z-P.z));return k;}
+ for(const P of POOLS)k*=smooth(P.r*.75,P.r*1.2,Math.hypot(x-P.x,z-P.z));return k;}

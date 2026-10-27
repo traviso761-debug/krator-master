@@ -14,14 +14,15 @@ const STATION_PAGE={name:'jungle',title:'Krator biome — the Rift: the jungle (
  get views(){
   const at=(d,t,up)=>{const i=d+shoreD(t),x=(i+t)*S2,z=(i-t)*S2;return[x,terrainH(x,z)+up,z];},
   rv=(d,up,side)=>at(d,RIVER.t(d)+(side||0),up),
-  fv=(k,far)=>{const F=FALLS[k],P=POOLS[k],L=F.lip,mx=(L[0][0]+L[1][0])/2,mz=(L[0][1]+L[1][1])/2,ly=L[0][2],dx=P.x-mx,dz=P.z-mz,dl=Math.hypot(dx,dz)||1,o=(F.drop||ly-P.y)*far;
+  /* out from the pool toward the sea (-S2,-S2: the pools sit at the toes now, a few metres from the lips, so lip-to-pool no longer gives a direction) */
+  fv=(k,far)=>{const F=FALLS[k],P=POOLS[k],L=F.lip,mx=(L[0][0]+L[1][0])/2,mz=(L[0][1]+L[1][1])/2,ly=L[0][2],dx=-S2,dz=-S2,dl=1,o=(F.drop||ly-P.y)*far;
    return[P.x+dx/dl*o*.7-dz/dl*o*.25,P.y+F.drop*.35,P.z+dz/dl*o*.7+dx/dl*o*.25,mx,ly-F.drop*.45,mz];},V=(c,t)=>[c[0],c[1],c[2],t[0],t[1],t[2]],T=this.tower;
   return{
   'The algal shore':V(at(70,900,3),at(-150,-300,0)),
   'The river mouth':[...at(-280,RIVER.t(0)-160,0).map((v,i)=>i===1?24:v),...rv(60,4)],   /* from out on the sea, looking back at the mouth */
   /* the falls: from out over each fall's pool, toward the sea's side, looking up at the middle of its curtain */
-  'The upper fall':fv(0,1),
-  'The lower fall':fv(1,1.3),
+  'The upper fall':fv(0,1.7),
+  'The lower fall':fv(1,1.8),
   'Over the scarp':V(rv(1050,190,140),at(-1200,RIVER.t(0),0)),
   'Under the frill trees':V(at(2400,-900,4),at(2600,-600,40)),
   'The river on the plain':V(rv(2000,7,80),rv(2700,4)),

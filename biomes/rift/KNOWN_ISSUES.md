@@ -33,8 +33,14 @@ Read before changing anything here. `build.py` prints the open count.
       (`stations/jungle/89w-host-water.js`); the old page's Girder tower on the plain; the far country from the model (`89f-host-far.js`,
       now shared in src/). New shared hooks: `MAP_WATERH` and `MAP_DRY` (a map's own water level and dry-ground mask: nothing
       roots in the river or the pools, the kit's shore logic sees the river's level). Open: the views are worked out from the map
-      and some want a look (the jungle's crowns hide much at 40 m); the falls throw at 5.5 m/s to clear their faces (steep cliffs,
-      25 m of run for 160 m); the delta channel is one; the old page (`dist/rift.html`, still built by plain `build.py`) retires when
+      and some want a look (the jungle's crowns hide much at 40 m); the delta channel is one;
+      The falls (2026-10-27, with the water session's core/water fixes, branch claude/rift-falls-water merged): each lip at its cliff's
+      edge (found from the ground), the curtain down the face (154 m and 90 m) into a pool at the cliff's toe, a basin carved under its
+      water (45m POOLS); the river in a channel with banks (its ribbon's edges buried, where the old carve left them floating as slabs),
+      its bed never rising toward the sea (it cuts down through the plain's rolls instead of damming a pool behind each); the delta on
+      the river's bed. Measured: of the ribbon's edge points, plain 0 / 988 over the ground, bench 1 / 38, lowland 5 / 96, delta 14 / 76
+      (at the fork, where its ribbon crosses the river's channel); each pool's rim open only where the river runs in and out.
+      GPU verify OK at 35.7 M held (ceiling 40 M), 197 calls (Arc 140T); the old page (`dist/rift.html`, still built by plain `build.py`) retires when
       the gallery switches to the stations (the owner's call on the publish).
 - [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
       island at px 356,1164 (y 0 at 1,000 m): the wet west face benched in three treads and cut by four ravines, the crest at 2,057 m,

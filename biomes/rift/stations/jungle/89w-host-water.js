@@ -39,15 +39,14 @@ function reach(d0,d1,T){const P=[];for(let d=d0;d>=d1;d-=12){const p=riverPt(d,T
 // map's SCARP numbers place the cliffs only roughly (the lower lip they gave was 30 m past the edge, half way down the face)
 function lipD(dFrom,dTo){let p=riverPt(dFrom),h=terrainH(p[0],p[1]);for(let d=dFrom-1;d>=dTo;d--){const q=riverPt(d),g=terrainH(q[0],q[1]);if(h-g>1)return d+1;h=g;}return dTo;}
 const LIP_HI=lipD(SCARP.hi[1]+scarpOff(RIVER.t(SCARP.hi[1]))+60,SCARP.hi[0]),LIP_LO=lipD(SCARP.lo[1]+scarpOff(RIVER.t(SCARP.lo[1]))+60,SCARP.lo[0]);
-// THE TOES: where the face meets the floor below each lip (the ground levels off: under 15 cm a metre); each fall lands there, its pool
-// centred 6 m on (the map's POOLS bowls lie 26 and 37 m further out, past where the water lands)
-function toeD(dLip){let p=riverPt(dLip),h=terrainH(p[0],p[1]),dropped=false;for(let d=dLip-1;d>dLip-300;d--){const q=riverPt(d),g=terrainH(q[0],q[1]);if(h-g>1)dropped=true;else if(dropped&&h-g<.15)return d+1;h=g;}return dLip-30;}
-const TOE=[toeD(LIP_HI),toeD(LIP_LO)],POOL_D=TOE.map(d=>d-6);
+// THE POOLS: at the toes of the cliffs, from the map (45m POOLS: found from the ground, each a basin carved under its water), each
+// fall landing in its pool's centre
+const POOL_D=POOLS.map(P=>P.d);
 const R1=reach(7000,LIP_HI),R2p=reach(POOL_D[0],LIP_LO),R3=reach(POOL_D[1],-30);
-const RD=reach(POOL_D[1]-15,-30,DIST.t);
-// THE POOLS' WATER: a still disc at each pool, at the level of the reach that leaves it (the ground's, not POOLS[k].y, which stands 4 m
-// over the bench and the lowland), out to the band MAP_WATERH keeps for it (1.4 r); the ground clips its shore
-const POOL_LEVEL=[R2p[0][2],R3[0][2]],POOL_AT=POOL_D.map(d=>riverPt(d)),POOL_R=POOLS.map(P=>P.r*.6);
+const RD=reach(470,-30,DIST.t);   /* from where it leaves the river (45m DIST): above that it is the river */
+// THE POOLS' WATER: a still disc at each pool, at the level of the reach that leaves it (the map's POOLS[k].y, or higher where the reach
+// below holds the water back), out to .6 r, where the basin's side has risen through the water (45m terrainH): its edge is in the bank
+const POOL_LEVEL=[R2p[0][2],R3[0][2]],POOL_AT=POOLS.map(P=>[P.x,P.z]),POOL_R=POOLS.map(P=>P.r*.6);
 const POOL_STILLS=POOL_AT.map((P,k)=>WATER.still({name:k?'The lower plunge pool':'The upper plunge pool',level:POOL_LEVEL[k],
  poly:Array.from({length:48},(_,i)=>{const a=i/48*TAU;return[P[0]+Math.cos(a)*POOL_R[k],P[1]+Math.sin(a)*POOL_R[k]];}),gradient:{centre:hexL(lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.2))),rim:hexL(lin(RIVER_COL.clone().lerp(STREAM_PALE_C,.5))),power:1.3}}));
 const FLOWS=[['The river (the plain)',R1,33,.7],['The river (the bench)',R2p,30,.9],['The river (the lowland)',R3,40,.5],['The delta channel',RD,16,.4]]
