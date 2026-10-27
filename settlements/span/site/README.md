@@ -9,4 +9,7 @@ To refresh it after the station changes: open the station's page (`biomes/swhigh
 `site` exporter, or run `window._api.site()` there, and write the JSON here. Then `python3 build.py`, `node test-span.js`,
 `python3 verify.py dist/span.html --assert`, `python3 span_blueprint.py`.
 
-Exported 2026-10-27 from the station at `claude/swhighlands-s1-04f512` e9798bb63.
+Exported 2026-10-27 from the station's page built at `claude/swhighlands-s1-04f512` c12906df8: the eroded cliff (a caprock over a
+badland apron), 32 towers and 5 arches (Span does not draw the arches), and the two finer fields Span fits its ways to: `rimFine`
+(the rim's line every 5 m) and `ground` (the ground as drawn round the watch pillar and its cliff, 2 m, without the rock bodies:
+the caprock is one, so Span reads it past the rim's line only).

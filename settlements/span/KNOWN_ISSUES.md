@@ -42,6 +42,11 @@
       `keep: 12` on the watch pillar) and on its own ground. A world that draws both must re-fit the watch stair (and the cliff
       stair's lanes) to the station's drawn mesh, Pinnacle Rock's rule: on the proxy the treads sit .6 m out from a plain
       wall, where the station's joints and swells move its face by metres.
+- [ ] **The apron and the cliff** (station 4's eroded cliff): the rim's line is the record's 5 m `rimFine` and, past it, the ground
+      is the record's `ground` field (the drawn ground round the watch pillar and its cliff, bilinear), so the cliff stair's
+      lanes, its foot, the apron path and the watch stair's foot sit on the station's ground. Off that field (the rest of the rim)
+      `L.apron` still falls linearly from the rim's floor to the open floor. The caprock's face under the rim's line is drawn
+      sheer here; the station's face may lean or hold alcoves the 5 m line does not show. The arches are not drawn.
 - [ ] **The frame's M** (where Span's canyon meets the rim, the site's x -1750, off station 4's map) is a choice; the scale
       model (or station 3, where Pan Riba leaves the tableland) settles it, and the watch post moves along with the frame.
 - [ ] **The watch stair is drawn as a helix fitted to the drawn proxy**, not on the layout's square line: `SPAN.checks` reads the

@@ -91,7 +91,7 @@ Deep Reach floor at y = -180 ≈ 2,420 m, on the model's bed; the lake 8 m under
 ## 2. The rough floorplan (sheets in `floors/`)
 
 Made on the shared blueprint generator (`settlements/voth/palace/blueprint.py`, the method of
-`references/blueprints.md` in the painting-to-3d-world skill: one sheet per level, numbered parts with a key, a section with
+`references/large-buildings.md` (formerly `blueprints.md`) in the painting-to-3d-world skill: one sheet per level, numbered parts with a key, a section with
 heights exaggerated, the assumptions written down). This plan added circles, filled polygons and polylines to the generator
 (opt-in keys; the four existing blueprints draw as before). It is at the scale of **districts and buildings**; only the Cross,
 where Dalab lives, is drawn to zones. Regenerate with `python3 settlements/span/span_blueprint.py`.
@@ -277,7 +277,7 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
 
 ## 6. How it is built (the kit and the method)
 
-**From the skill doc** (painting-to-3d-world: `references/blueprints.md`, `references/vertical-settings.md`, sections 5h, 5j,
+**From the skill doc** (painting-to-3d-world: `references/large-buildings.md`, `references/vertical-settings.md`, sections 5h, 5j,
 5o, 5s): the programme and the rough plan first, approved before any data; a **layout fragment that builds nothing**, with
 explicit levels and the walk graph, asserted in node before the browser (parts disjoint per level, every gallery on its bench,
 every bridge's ends on its rims or benches, every pad on a rim, every level reached from the roads, each check with a
@@ -338,7 +338,7 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   (`L.site`); the post from the Dalab set, the rim road, the cliff stair and the watch stair from the record's rim line and the
   pillar, and the mission inside the palisade. The page draws the record's towers as plain proxies (core/terrain KSTACKS with
   KSTRATA's `pillar` beds) for the post and stairs to stand on: `KNOWN_ISSUES.md`.
-- **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.
+- **SP6.** The Cross's rooms (a blueprint per floor: `large-buildings.md` Part 1, step 6), `kits/interiors`; the life layer after.
 - **SP7.** `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
 
 ## 8. Views for the verify

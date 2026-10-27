@@ -26,7 +26,7 @@ const VIEWS={
  VIEWS['The watch pillar from the rim']=[r.u-60,46,q.v+150,q.u,-110,q.v];
  VIEWS['The pillar rim from its floor']=[q.u+300,q.foot+50,q.v+360,q.u,-110,q.v];
  VIEWS["Dalab's watch post"]=[q.u-44,q.top+40,q.v+50,q.u,q.top+2,q.v];
- VIEWS['The cliff stair']=[c.u+70,-150,q.v+100,c.u+2,-130,q.v+100];})();
+ VIEWS['The cliff stair']=[c.u+130,-30,q.v+60,c.u+2,-70,q.v+100];})();
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 // the page's checks for verify.py --assert: the layout's rules (31-span-rules.js), every part placed, every record a
 // known word, every inspector volume over something drawn; each with a negative that must fail
