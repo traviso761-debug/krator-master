@@ -19,7 +19,7 @@
 //
 //   WATER.confluence({name, flows, at [x, z], r, feather, cell, ground, reach, blur, sharp, meet, margin}) -> C (a group in WATER.groups)
 //        flows   the WATER.flow records that meet (any number, two or more); at: the mouth (the tributary's end); r (m, the disc's radius:
-//        2.5 x the widest flow's width), feather (m, .4 r); cell (m, 1); ground (x, z) -> y (the page's terrain, required); reach (m; each flow's half
+//        1.25 x the widest flow's width), feather (m, .4 r); cell (m, 1); ground (x, z) -> y (the page's terrain, required); reach (m; each flow's half
 //        width / 2): how far past its channel a flow's current still counts; blur (m, 4); sharp (6): how sharply the rim keeps to the nearest
 //        ribbon; meet (.35): the foam where the currents meet (the drawing's share); margin (m): the ribbons' (PRESETS.flow.margin)
 //   C.at(x, z) -> {y, vx, vz, slope, bank, fade, meet} interpolated as the mesh's triangles interpolate (twin of the drawing's varyings)
@@ -35,7 +35,7 @@
    for(let j=0;j<n;j++)for(let i=0;i<n;i++){let s=0,c=0;for(let k=-rad;k<=rad;k++){const q=i+k;if(q<0||q>=n)continue;const id=j*n+q;if(wet[id]){s+=A[id];c++;}}T[j*n+i]=c?s/c:A[j*n+i];Wt[j*n+i]=c;}
    for(let j=0;j<n;j++)for(let i=0;i<n;i++){const id=j*n+i;if(!wet[id])continue;let s=0,c=0;for(let k=-rad;k<=rad;k++){const q=j+k;if(q<0||q>=n)continue;const iq=q*n+i;if(Wt[iq]>0){s+=T[iq];c++;}}if(c)A[id]=s/c;}}};
  W.confluence=o=>{const F=o.flows;if(!F||F.length<2)throw new Error('WATER.confluence: two flows or more');if(typeof o.ground!=='function')throw new Error('WATER.confluence: ground (x, z) -> y');
-  const wmax=Math.max(...F.map(S=>Math.max(...S.pts.map(p=>p.w)))),r=o.r==null?2.5*wmax:o.r,fe=o.feather==null?.4*r:o.feather,cell=o.cell==null?1:o.cell,
+  const wmax=Math.max(...F.map(S=>Math.max(...S.pts.map(p=>p.w)))),r=o.r==null?1.25*wmax:o.r,fe=o.feather==null?.4*r:o.feather,cell=o.cell==null?1:o.cell,
    reach=o.reach==null?null:o.reach,blur=o.blur==null?4:o.blur,sharp=o.sharp==null?6:o.sharp,meetK=o.meet==null?.35:o.meet,mg=o.margin==null?W.PRESETS.flow.margin:o.margin,
    at=[o.at[0],o.at[1]],n=Math.ceil(2*r/cell)+1,x0=at[0]-(n-1)*cell/2,z0=at[1]-(n-1)*cell/2,N=n*n;
   const C={kind:'confluence',name:o.name||'confluence',flows:F,mouth:at,r,feather:fe,cell,n,x0,z0,reach,blur,sharp,meet:meetK,margin:mg};
