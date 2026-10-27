@@ -106,7 +106,8 @@ vec3 atmSkyDeep(vec3 e,out float lanes){float cc=dot(e,uCluster);
   dc=mix(dc,vec3(0.35,0.62,1.0),clamp(blueLit*0.35,0.0,0.85));
   float L=0.20+0.10*lit;neb=(dc*den*L*0.62+mix(dc,vec3(1.0),0.4)*fl*L*0.24)*(1.0-0.8*lanes)*uNightK.y;}
  {float pa=length(e-uPN.xyz)/uPN.w;if(pa<1.6){float rag=atmSkyNoise(e*90.0,66u);float sh=exp(-pow((pa-1.0+0.12*rag)/0.22,2.0)),inn=exp(-pow(pa/0.75,2.0));
-  neb+=(vec3(0.20,0.90,0.72)*inn*0.24+vec3(1.0,0.28,0.34)*sh*0.30)*(0.75+0.25*rag)*uNightK.y;}}
+  neb+=(vec3(0.20,0.90,0.72)*inn*0.24+vec3(1.0,0.28,0.34)*sh*0.30)*(0.75+0.25*rag)*uNightK.y;
+  float wd=length(e-uPN.xyz)/max(uPixAng,1e-6);neb+=vec3(0.80,0.88,1.0)*(exp(-wd*wd*0.5)*0.9+exp(-pa*pa/0.004)*0.12)*uNightK.x;}}
  vec3 field=atmSkyField(e,520.0,0.07+0.25*near,1u)*(0.6+0.5*near)+atmSkyField(e,140.0,0.10+0.30*near,9u)*(0.9+0.8*near);
  field*=mix(vec3(1.0),vec3(1.0,0.90,0.76),near)*uNightK.x;
  float gb=exp(-pow(e.x,2.0)/0.018)*(1.0-near)*(0.5+0.5*atmSkyFbm(e*7.0,3,80u))*uNightK.z;

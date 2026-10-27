@@ -63,8 +63,8 @@
   // the southern winter nights (the owner, 2026-10-25)
   // An OLD cluster, M67's kind (the owner, 2026-10-25: old enough for complex life, colour welcome): its brightest members
   // golden and orange giants, a few white stars and blue stragglers; the dust it drifts through lit in their colours; one
-  // planetary nebula (pn: RA, dec, radius in degrees), a dying member's shell
-  cluster:{ra:270, dec:-30, core:25, reach:60, dust:100, pn:[255,-36,3.0]},
+  // planetary nebula (pn: RA, dec, radius in degrees), a dying member's shell (2 degrees: the owner, 2026-10-27, from 3)
+  cluster:{ra:270, dec:-30, core:25, reach:60, dust:100, pn:[255,-36,2.0]},
   // Jimjam's calendar for display (3.1): Earth's months, Jimjam-ized; Jimjam's weekdays and number words (LORE 6.14)
   months:['Janavari','Pepravari','Mārccu','Ēpral','Mē','Jūn','Julai','Ākasṭu','Ceppaṭampar','Akṭōpar','Navampar','Ṭicampar'],
   monthDays:[31,28,31,30,31,30,31,31,30,31,30,31],
