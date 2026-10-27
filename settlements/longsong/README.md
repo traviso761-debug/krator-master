@@ -109,7 +109,11 @@ lamps in the windows; `89x`).
   integrated"): core/walk (the stair walked), core/atmos's weather (auto: the dawn fog and the evening shower; the
   selector beside the clock), hearth smoke, fireflies and culling (`89z`), core/biome's walker (the herds walk their
   pastures, `85`) and its stage (KSTAGE: the export's light and sky), core/lod (the finished scene chunked and banded: `l` toggles it), core/sched (the
-  Procrastinator's burn as a timeline, `66`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
+  Procrastinator's burn as a timeline, `66`), core/hazard (2026-10-26, the Procrastinator's time fields, `66`: each
+  closed seal's niche a `time` field at `P.slow` (1e-4), and the hall's slowing at each seal's bars (a quarter of our
+  time, ours again 8 m out; the keepers at the wheel are clear of it). The sealed figures and the dust run at
+  `KHAZ.timeScale` where they stand; LS-008's open seal is at our time. The `hazards` layer shows the fields, and the
+  inspector says how fast time runs at the point, `99`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
   banners and scroll-and-wheel emblems on the Great Gate, the Lower Gate and the Order's works; Xanadu's rose and lotus
   on the valley's lay buildings, their awnings and trade signs), core/hamlet (the valley's three lay villages outside
   the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`, on

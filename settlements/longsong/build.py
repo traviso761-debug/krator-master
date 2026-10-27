@@ -75,7 +75,7 @@ OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 CORE_TERRAIN = ['38-core-relief.js']   # KRELIEF: the noise the open world's fields take
 CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js',
-              '36-core-walker.js', '44-core-stage.js']   # 36: the herds walk (BIO.walker); 44: KSTAGE, the export's light, air and sky
+              '36-core-walker.js', '44-core-stage.js', '37-core-traps.js']   # 37: KTRAPS.cycle, the clock core/hazard runs on   # 36: the herds walk (BIO.walker); 44: KSTAGE, the export's light, air and sky
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'terrain', f))
@@ -114,6 +114,9 @@ PATH.setdefault('20-core-walk.js', os.path.join(ROOT, 'core', 'walk', '20-core-w
 # core/sched (KSCHED): motion as pure functions of time (the Procrastinator's glyph pulse, 66); core/lod: the finished
 # scene's level of detail (97 takes the scene over before 99; window.LOD_OPTIONS from 89z)
 PATH.setdefault('20-core-sched.js', os.path.join(ROOT, 'core', 'sched', '20-core-sched.js'))
+# core/hazard (KHAZ; core/hazard/README.md, "Adopting it"; 2026-10-26): the Procrastinator's time fields (66), the
+# figures and the dust at KHAZ.timeScale where they stand, the 'hazards' layer and the inspector's words (99)
+PATH.setdefault('20-core-hazard.js', os.path.join(ROOT, 'core', 'hazard', '20-core-hazard.js'))
 # core/hamlet (KHAMLET, read in place) and the one core/city fragment it takes (33: KCITY.prim, standalone): the valley's
 # lay villages outside the wall (40h lays them out, 85h draws them)
 for f in ('10-hamlet-wood.js', '12-hamlet-gather.js', '20-hamlet-cultures.js', '30-hamlet-village.js', '40-hamlet-felling.js'):
