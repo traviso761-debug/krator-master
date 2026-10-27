@@ -10,6 +10,7 @@ global.window = global;
 load('core/rand/08-core-rand.js');
 load('core/space/20-core-space.js');
 load('core/tags/50-core-tags.js'); load('core/tags/52-core-tags-vocab.js'); load('core/tags/53-core-tags-host.js');
+global.SPAN_SITE = JSON.parse(fs.readFileSync(path.join(__dirname, 'site', 'swhighlands-pillars-site.json'), 'utf8'));   /* station 4's site record (build.py hands it in as 29a) */
 load('settlements/span/src/30-span-layout.js');
 load('settlements/span/src/31-span-rules.js');
 const L = SPAN_LAYOUT;
@@ -41,7 +42,7 @@ const NEG = [
   ['every way out of Dalab\'s hold', M => { M.links.push(['cross', 'rim_n', {}]); }],
   ['with its gates shut', M => { M.links.find(k => k[0] === 'line' && k[1] === 'floor_road')[2].state = 'open'; }],
   ['every part that stands on rock', M => { part(M, 'pad_1').y = 10; }],
-  ['every part on a pillar', M => { part(M, 'watch_post').shape = ['box', 1400, 1436, -318, -282]; }],
+  ['every part on a pillar', M => { const s = part(M, 'watch_post').shape; s[1] += 20; s[2] += 20; }],
   ['the watch post sees', M => { part(M, 'watch_post').y = -250; }],
   ['the floor at the peak', M => { M.parts.filter(p => /^gal_/.test(p.id)).forEach(p => { p.st = 6; }); }],
 ];
@@ -51,6 +52,16 @@ NEG.forEach(([prefix, breakIt]) => {
   ok('negative: ' + prefix + '... fails when broken', !!r && !r.pass, r ? r.detail.trim() : 'no such check');
 });
 ok('every check has a negative', C.every(c => NEG.some(n => c.name.startsWith(n[0]))), C.filter(c => !NEG.some(n => c.name.startsWith(n[0]))).map(c => c.name).join('; '));
+
+// ---- the site record: another format or version stops the layout (it must fail loudly, not misplace the post)
+const src = fs.readFileSync(path.join(ROOT, 'settlements/span/src/30-span-layout.js'), 'utf8'), keep = global.SPAN_SITE;
+const loadsWith = rec => { global.SPAN_SITE = rec; try { vm.runInNewContext(src, { SPAN_SITE: rec, Math, JSON, Error }); return true; } catch (e) { return false; } };
+ok("the layout reads station 4's site record (swhighlands-pillars-site v1)", loadsWith(keep));
+ok('negative: a site record of another version stops the layout', !loadsWith(Object.assign({}, keep, { version: 2 })));
+ok('negative: no site record stops the layout', !loadsWith(null));
+global.SPAN_SITE = keep;
+ok("the watch post stands on the site's watch pillar (its x, z and top, mapped)", (() => { const q = L.pillars[0], p = part(L, 'watch_post'), b = SPAN.bbox(p.shape);
+  return q.site === keep.watch.id && Math.abs((b[0] + b[1]) / 2 - q.u) < .5 && Math.abs((b[2] + b[3]) / 2 - q.v) < .5 && Math.abs(p.y - (keep.watch.top - L.site.T)) < .1; })());
 
 // ---- decay draws: the part's own seed (KRAND.child), not a stream's position
 const cross = part(L, 'cross'), pad1 = part(L, 'pad_1');

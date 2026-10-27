@@ -204,12 +204,16 @@ the plateau's people, TBD; the watch post on a pillar-rim tower with a stair cut
   proselytize the highlanders and where the Dalabits at Span worship (the Dalab set's `dalab_temple`), the priests' house beside
   it (`dalab_priest_house`) and a wayside shrine on the quarter's street (`dalab_shrine`). *Proposed*: the mission is how Dalab
   means to keep the highlanders' loyalty when the champion's arm no longer can.
-- **The watch post** (SP5, 2026-10-27): Dalab's post on **the watch pillar** of the pillar rim downstream (L.pillars: a stand-in
-  rim, a cliff at u 1300 down to its floor at y -260 and five pillars, until SW highlands station 4 lands): a stone-walled
-  compound (the Dalab set's `dalab_post`: beacon pyre, signal mirror toward the Cross, stele) round a watch tower and a hut,
-  on the 272 m pillar's top. It is reached by **the cliff stair** cut down the rim's cliff in switchbacks from the rim road,
-  a path across the floor, and **the watch stair** cut round the pillar's faces to the post's gate (the layout's line is a
-  square round the pillar, its spec; the page draws an even helix fitted to the drawn rock).
+- **The watch post** (SP5, 2026-10-27; on station 4's site the same day): Dalab's post on **the watch pillar** of SW highlands
+  station 4, the pillar rim. Span reads only the station's published site record (`biomes/swhighlands/BIOME-API.md`, "Station 4's
+  site"), vendored as `site/swhighlands-pillars-site.json`; the station draws the rock and never moves for Span. Pan Riba runs
+  along that rim on the floor; it leaves the tableland upstream, off the station's map, and there Span's canyon meets the rim
+  (the frame's M: the rim's line run on west to the site's x -1750, a choice the scale model settles). The post is a
+  stone-walled compound (the Dalab set's `dalab_post`: beacon pyre, signal mirror toward the Cross, stele) round a watch tower and
+  a hut, on the 265 m pillar's flat top (59 m held bare by the station), about 2 km along the rim from the canyon. It is reached
+  by the rim road along the table, **the cliff stair** cut down the cliff in switchbacks 1.5 and 4 m out from the record's rim
+  line, a path across the floor, and **the watch stair** cut round the pillar's faces to the post's gate (the layout's line is a
+  square on the record's width; the page draws an even helix fitted to the rock as drawn).
 - **The garrison**: about 240: a priest-captain, three genepriests (the clinic; the shelf coral as an ore-finder and the
   fishing bridge's venom, swhighlands section 6), Giant street patrols in threes (§6.1), soldiers and lizard riders, servants
   and salvagers, rotated from Dalab. **About 750 people in all**, against the arcology's ~9,200 at its peak.
@@ -329,10 +333,11 @@ y = 0 today: `API.md` "Ground contact"), so each builder is called with its part
   check): the trading post on the Apron building by building, the mound (76 x 90), a watch tower at the Middle Bridge's
   north end. The held Ancient parts carry the kit's decay-3 patches. Left: the Line (no Dalab def), banners and gates, the
   orchards' trees (the flora is the biome kit's): `KNOWN_ISSUES.md`.
-- **SP5.** *(done 2026-10-27, on stand-in pillars)* The watch post on a pillar-rim tower: the stand-in rim and pillars (core/terrain
-  KSTACKS 'pillar' bodies, their beds KSTRATA's 'pillar' recipe, contoured (KSTACKS.contour, core/terrain 37b) and weathered; the library's grain from
-  `materials.json`), the post from the Dalab set, the cliff stair and the watch stair fitted to the drawn rock (Pinnacle Rock's
-  rule), and the mission inside the palisade. Station 4's `KSTACKS.pillars` field replaces the stand-in: `KNOWN_ISSUES.md`.
+- **SP5.** *(done 2026-10-27, on station 4's site)* The watch post on the pillar rim's watch pillar, from SW highlands station
+  4's published site record (`site/`, its format and version checked: another stops the layout), mapped into Span's frame
+  (`L.site`); the post from the Dalab set, the rim road, the cliff stair and the watch stair from the record's rim line and the
+  pillar, and the mission inside the palisade. The page draws the record's towers as plain proxies (core/terrain KSTACKS with
+  KSTRATA's `pillar` beds) for the post and stairs to stand on: `KNOWN_ISSUES.md`.
 - **SP6.** The Cross's rooms (a blueprint per floor: `blueprints.md` step 6), `kits/interiors`; the life layer after.
 - **SP7.** `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
 

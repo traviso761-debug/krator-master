@@ -191,36 +191,67 @@ F('line', 'Dalab\'s Line', 'wall', B(-178, -170, -70, 70), { h: 11, by: 'dalab',
 F('outfall', 'The Outfall Gate', 'weir', B(800, 830, -70, 70), { y: -190, h: 30, state: 'ruined', key: 'anc_weir', types: ['infrastructure'], note: 'the downstream barrage; breached' });
 F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70, state: 'ruined', key: 'anc_sluice', types: ['infrastructure'], walk: false, note: 'under the Cross: the river steps from y -110 to -180 in four sluices' });
 
-// ---------------------------------------------------------------- THE PILLAR RIM and DALAB'S WATCH POST (SP5, 2026-10-27)
-// A stand-in for SW highlands station 4 (the pillar rim, refs/01) until it lands: downstream the tableland ends in a cliff at
-// u 1300 (L.pillarRim; SPAN.groundAt drops to its floor, y -260: Pan Riba's plunge fall where the canyon meets it), and pillar
-// towers stand off it (L.pillars: core/terrain KSTACKS 'pillar' records the page makes; the station's KSTACKS.pillars replaces
-// them). On the greatest, Dalab's WATCH POST (refs/27): a stone-walled post on the flat top (the Dalab set's dalab_post, its
-// watch tower and a hut inside), reached by a stair cut round the pillar's faces from its foot to the post's gate, and from the
-// rim road by a switchback stair down the cliff and a path across the floor. It must see the Valley's approaches and the
-// Cross's signal mast: SPAN.checks holds the line of sight to the Cross clear.
-L.pillarRim = { u: 1300, floor: -260 };
-L.pillars = [
-  { id: 'pillar_watch', name: 'The watch pillar', u: 1470, v: -300, w: 48, H: 272 },
-  { id: 'pillar_2', name: 'Pillar', u: 1420, v: -110, w: 30, H: 230 },
-  { id: 'pillar_3', name: 'Pillar', u: 1610, v: -430, w: 36, H: 255 },
-  { id: 'pillar_4', name: 'Pillar', u: 1380, v: -520, w: 26, H: 190 },
-  { id: 'pillar_5', name: 'Pillar', u: 1560, v: -150, w: 40, H: 260 }];
-// the stair round the watch pillar's faces: its centre line .8 m out from the faces (its inner edge on the rock), rising .55 a metre run, ending on the +v
-// face's middle at the top, where the post's gate is; built backwards from there down to the foot (no randomness)
-(function(){ var Pw = L.pillars[0], s = Pw.w / 2 + .8, top = L.pillarRim.floor + Pw.H, run = Pw.H / .55, k = .55;
+// ---------------------------------------------------------------- THE PILLAR RIM and DALAB'S WATCH POST (SP5; on station 4's site, 2026-10-27)
+// The rock is SW highlands station 4's (biomes/swhighlands, the pillar rim; the owner, 2026-10-27: Span the settlement and the
+// station the biome strictly apart). Span reads only the station's published site record (BIOME-API.md "Station 4's site"),
+// vendored as site/swhighlands-pillars-site.json (the build hands it in as SPAN_SITE, fragment 29a), and places its post and
+// stairs from it. A record of another format or version stops the layout here, rather than misplacing the post.
+// THE FRAME (L.site): one rigid turn and shift from the site's (x east, z south, y over its y0) to Span's (u, v, y from the rim).
+// Pan Riba runs along station 4's rim, down on the floor; it falls off the tableland upstream, off the station's map, and there
+// Span's canyon meets the rim: at M, the rim's line run on west to the site's x -1750 (a choice: the scale model settles it).
+// u runs out from the cliff (the chord from M to the rim under the watch pillar, turned a quarter), v along the rim (0 at M,
+// east negative), y from the table's top at the watch (T). L.rim and L.pillars are the record's, mapped.
+// On the watch pillar, Dalab's WATCH POST (refs/27): a stone-walled post on the flat top (the Dalab set's dalab_post, its
+// watch tower and a hut inside), reached from the rim road by a switchback stair down the cliff, a path across the floor and a
+// stair cut round the pillar's faces to the post's gate. The stairs here are lines on the record (the rim's line, the pillar's
+// width); the page fits the watch stair to the rock as drawn. It must see the Cross's signal room: SPAN.checks holds the line.
+(function(){ var SITE = typeof SPAN_SITE !== 'undefined' ? SPAN_SITE : null;
+  if (!SITE || SITE.format !== 'swhighlands-pillars-site' || SITE.version !== 1)
+    throw new Error('Span: SPAN_SITE is not a swhighlands-pillars-site v1 record (settlements/span/site; BIOME-API.md "Station 4\'s site")');
+  var R = SITE.rim, Wt = SITE.watch, r1 = function(x){ return Math.round(x * 10) / 10; };
+  // a rim field at the site's x, linear between the record's points, the ends held
+  var at = function(x, k){ if (x <= R[0].x) return R[0][k]; for (var i = 1; i < R.length; i++) if (x <= R[i].x){ var f = (x - R[i - 1].x) / (R[i].x - R[i - 1].x); return R[i - 1][k] + (R[i][k] - R[i - 1][k]) * f; } return R[R.length - 1][k]; };
+  var M = [-1750, at(-1750, 'z')], R0 = [Wt.x, at(Wt.x, 'z')], c = [R0[0] - M[0], R0[1] - M[1]], cl = Math.hypot(c[0], c[1]);
+  var t = [-c[0] / cl, -c[1] / cl], n = [t[1], -t[0]], T = at(Wt.x, 'top');
+  L.site = { from: SITE.format + ' v' + SITE.version, M: [M[0], r1(M[1])], n: n, t: t, u0: 1300, T: r1(T), y0: SITE.frame.y0, rot: Math.atan2(t[0], n[0]) };
+  var uv = function(x, z){ var dx = x - M[0], dz = z - M[1]; return [r1(1300 + n[0] * dx + n[1] * dz), r1(t[0] * dx + t[1] * dz)]; };
+  L.rim = R.map(function(p){ var q = uv(p.x, p.z); return { u: q[0], v: q[1], top: r1(p.top - T), floor: r1(p.floor - T) }; });
+  L.pillars = SITE.towers.map(function(q){ var p = uv(q.x, q.z), w = q.id === Wt.id;
+    var o = { id: 'st4_' + q.id.replace(/[^\w]/g, '_'), site: q.id, name: w ? 'The watch pillar' : 'A tower of the pillar rim', u: p[0], v: p[1], foot: r1(q.foot - T), top: r1(q.top - T), R: q.R };
+    if (w){ o.w = Wt.w; o.l = Wt.l; o.ry = Wt.ry + L.site.rot; o.flat = r1(Wt.flat); o.keep = Wt.keep; }
+    return o; }).sort(function(a, b){ return (b.site === Wt.id) - (a.site === Wt.id); });   /* the watch pillar first */ })();
+(function(){
+// the rim's u at a v (L.rim is ordered west to east: v falling), and its record (SPAN.rimAt, 31-span-rules.js, is the same)
+function rimAt(v){ var R = L.rim; if (v >= R[0].v) return R[0]; for (var i = 1; i < R.length; i++) if (v >= R[i].v){ var f = (v - R[i - 1].v) / (R[i].v - R[i - 1].v), a = R[i - 1], b = R[i];
+  return { u: a.u + (b.u - a.u) * f, v: v, top: a.top + (b.top - a.top) * f, floor: a.floor + (b.floor - a.floor) * f }; } return R[R.length - 1]; }
+var PW = L.pillars[0], r1 = function(x){ return Math.round(x * 10) / 10; };
+// the stair round the watch pillar's faces: its centre line .8 m out from the record's width (its inner edge on the rock),
+// rising .55 a metre run, ending on the +v face's middle at the top, where the post's gate is; built backwards from there
+(function(){ var Pw = PW, s = Math.max(Pw.w, Pw.l) / 2 + .8, top = Pw.top, run = (Pw.top - Pw.foot) / .55, k = .55;
   var cs = [[Pw.u + s, Pw.v + s], [Pw.u + s, Pw.v - s], [Pw.u - s, Pw.v - s], [Pw.u - s, Pw.v + s]];
-  var pts = [[Pw.u, Pw.v + s, top]], left = run, at = [Pw.u, Pw.v + s], y = top, i = 0;
+  var pts = [[Pw.u, r1(Pw.v + s), top]], left = run, at = [Pw.u, Pw.v + s], y = top, i = 0;
   while (left > 1e-6){ var c = cs[i % 4], d = Math.hypot(c[0] - at[0], c[1] - at[1]);
-    if (d >= left){ var t = left / d; at = [at[0] + (c[0] - at[0]) * t, at[1] + (c[1] - at[1]) * t]; y -= left * k; pts.push([Math.round(at[0] * 10) / 10, Math.round(at[1] * 10) / 10, Math.round(y * 10) / 10]); break; }
-    y -= d * k; at = c; left -= d; pts.push([c[0], c[1], Math.round(y * 10) / 10]); i++; }
-  pts.unshift([Pw.u, Pw.v + 18.6, top]);   /* the head: a landing in from the edge to the post's gate (its front wall 18 m out) */
+    if (d >= left){ var t = left / d; at = [at[0] + (c[0] - at[0]) * t, at[1] + (c[1] - at[1]) * t]; y -= left * k; pts.push([r1(at[0]), r1(at[1]), r1(y)]); break; }
+    y -= d * k; at = c; left -= d; pts.push([r1(c[0]), r1(c[1]), r1(y)]); i++; }
+  pts.unshift([Pw.u, r1(Pw.v + 18.6), top]);   /* the head: a landing in from the edge to the post's gate (its front wall 18 m out) */
   L.watchStair = pts.reverse(); })();
-P('watch_post', 'Dalab\'s watch post', 'dalab', B(1452, 1488, -318, -282), { y: 12, h: 0, by: 'dalab', state: 'intact', key: 'dalab_post', ry: 0, on: 'pillar_watch',
-  types: ['military'], dress: false, sheets: S0, note: 'on the watch pillar\'s top: the Valley watched, the Cross signalled' });
-P('watch_post_tower', 'Watch tower', 'dalab', B(1474, 1486, -314, -302), { in: 'watch_post', h: 17, by: 'dalab', state: 'intact', key: 'dalab_watchtower', ry: 0, types: ['military'], dress: false, sheets: S0 });
-P('watch_post_hut', 'The watch\'s hut', 'dalab', B(1455, 1465, -314, -304), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_hut_a', ry: 0, types: ['military'], dress: false, sheets: S0 });
-P('watch_post_banners', 'Banners of Dalab', 'dalab', B(1460, 1470, -294, -292), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_banners', ry: 0, types: ['religious'], dress: false, sheets: S0 });
+// the cliff stair: flights of 60 m drop over 120 m along the cliff's foot of the rim road (west of the watch pillar, toward
+// Span), on two lanes 1.5 and 4 m out from the record's rim line, a landing between, down to the floor
+(function(){ var vA = r1(PW.v + 160), vB = r1(PW.v + 40), fl = r1(rimAt(PW.v + 100).floor), pts = [[r1(rimAt(vA).u - 2), vA, 0]], y = 0, k = 0;
+  while (y > fl + 1e-6){ var y2 = Math.max(fl, y - 60), from = k % 2 ? vB : vA, to = k % 2 ? vA : vB, lane = k % 2 ? 4 : 1.5;
+    for (var j = 0; j <= 12; j++){ var v = from + (to - from) * j / 12; pts.push([r1(rimAt(v).u + lane), r1(v), r1(y + (y2 - y) * j / 12)]); }
+    y = y2; k++; if (y > fl + 1e-6) pts.push([r1(rimAt(to).u + (k % 2 ? 4 : 1.5)), to, r1(y)]); }
+  L.cliffStair = pts;
+  // the rim road on from Span: along the table 40 m in from the rim's line, every 100 m, to the head of the cliff stair
+  var road = [[-180, -205, 0], [1150, -205, 0]];
+  for (var v = -300; v > vA + 50; v -= 100) road.push([r1(rimAt(v).u - 40), v, 0]);
+  road.push([r1(rimAt(vA).u - 8), vA, 0]); L.rimRoad = road; })();
+P('watch_post', 'Dalab\'s watch post', 'dalab', B(PW.u - 18, PW.u + 18, PW.v - 18, PW.v + 18), { y: PW.top, h: 0, by: 'dalab', state: 'intact', key: 'dalab_post', ry: 0, on: PW.id,
+  types: ['military'], dress: false, sheets: S0, note: 'on the watch pillar\'s top (station 4\'s site): the Valley watched, the Cross signalled' });
+P('watch_post_tower', 'Watch tower', 'dalab', B(PW.u + 4, PW.u + 16, PW.v - 14, PW.v - 2), { in: 'watch_post', h: 17, by: 'dalab', state: 'intact', key: 'dalab_watchtower', ry: 0, types: ['military'], dress: false, sheets: S0 });
+P('watch_post_hut', 'The watch\'s hut', 'dalab', B(PW.u - 15, PW.u - 5, PW.v - 14, PW.v - 4), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_hut_a', ry: 0, types: ['military'], dress: false, sheets: S0 });
+P('watch_post_banners', 'Banners of Dalab', 'dalab', B(PW.u - 10, PW.u, PW.v + 6, PW.v + 8), { in: 'watch_post', h: 8, by: 'dalab', state: 'intact', key: 'dalab_banners', ry: 0, types: ['religious'], dress: false, sheets: S0 });
+})();
 
 // ---------------------------------------------------------------- Dalab's marks: its gates in the openings it keeps, its banners on what it holds
 // (the Dalab set's dalab_gate and dalab_banners, 2026-10-27). `ry` turns a part's front (+z): 0 faces +v, PI faces -v, PI/2 faces +u
@@ -271,14 +302,13 @@ H('hl_10', 'dw-stilt', B(-190, -181, 378, 389), Math.PI); H('hl_12', 'dw-silo', 
 W('hw_north', 'road', [[-240, 236, 0], [-240, 800, 0], [300, 800, 0]], { w: 12, note: 'the north highway (Ancient): to the tableland and the plateau\'s people' });
 W('quarter_lane', 'road', [[-200, 290, 0], [-200, 372, 0], [-56, 372, 0]], { w: 8, note: 'the street of the quarter: from the palisade gate north, then east to the arena' });
 W('mission_walk', 'walk', [[-178, 376, 0], [-178, 398, 0]], { w: 4, note: 'from the street to the mission temple\'s door' });
-W('cliff_stair', 'stair', [[1298, -360, 0], [1301.5, -360, 0], [1301.5, -240, -60], [1304, -240, -60], [1304, -360, -120], [1301.5, -360, -120], [1301.5, -240, -180], [1304, -240, -180], [1304, -340, -230], [1301.5, -340, -230], [1301.5, -300, -260]],
-  { w: 2.4, held: true, note: 'cut down the cliff in switchbacks, from the rim road to the floor of the pillar rim' });
-W('pillar_path', 'walk', [[1302, -300, -260], [L.watchStair[0][0], L.watchStair[0][1], -260]], { w: 3, held: true, note: 'across the floor to the watch pillar\'s foot' });
+W('cliff_stair', 'stair', L.cliffStair, { w: 2.4, held: true, note: 'cut down the cliff in switchbacks, from the rim road to the floor of the pillar rim' });
+W('pillar_path', 'walk', [L.cliffStair[L.cliffStair.length - 1].slice(), [L.watchStair[0][0], L.watchStair[0][1], L.watchStair[0][2]]], { w: 3, held: true, note: 'across the floor to the watch pillar\'s foot' });
 W('watch_stair', 'stair', L.watchStair, { w: 1.6, held: true, note: 'cut up the watch pillar\'s faces, round and round, to the post\'s gate' });
 W('palisade_way', 'road', [[-200, 286, 0], [-234, 252, 0]], { w: 8, note: 'from the palisade gate to the north highway, by the north gate of the Cross' });
 W('hw_south', 'road', [[-240, -236, 0], [-240, -800, 0], [-800, -800, 0]], { w: 12, note: 'the south highway' });
 W('rim_n', 'road', [[-170, 205, 0], [820, 205, 0]], { w: 10 });
-W('rim_s', 'road', [[-180, -205, 0], [1150, -205, 0], [1296, -360, 0]], { w: 10, note: 'on downstream: Dalab\'s way to the watch post' });
+W('rim_s', 'road', L.rimRoad, { w: 10, note: 'on downstream: Dalab\'s way to the watch post' });
 W('ring_road', 'road', (function(){ var p = []; for (var i = 0; i <= 48; i++){ var a = i * 2 * Math.PI / 48; p.push([Math.round((-520 + 262 * Math.cos(a)) * 10) / 10, Math.round(192 * Math.sin(a) * 10) / 10, 0]); } return p; })(), { w: 10, closed: true, note: 'round the bay' });
 W('lake_road_n', 'road', [[-762, 73, 0], [-1000, 95, 0], [-1700, 470, 0]], { w: 8, note: 'to the Lake Quay, round the canyon head' });
 W('lake_road_s', 'road', [[-761, -76, 0], [-1380, -460, 0]], { w: 8, note: 'to the Lake Ring' });

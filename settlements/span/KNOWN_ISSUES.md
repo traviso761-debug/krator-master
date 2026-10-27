@@ -36,13 +36,14 @@
       overview), walks on the ground only (no KWALK floors on the galleries or the Cross), exports nothing, and has no
       night state (`NIGHT` stays false). PLAN.md section 7.
 - [ ] The Cross's zones (S4) are records only: no rooms are drawn until SP6.
-- [ ] **The pillar rim is a stand-in** (SP5) until SW highlands station 4 lands: the rim's cliff is the stand-in ground's sheer
-      wall at u 1300 (one plane, banded by the strata shader), and the five pillars are the page's own KSTACKS bodies. The
-      contour (a wandering profile, joints, a split crown) is core/terrain's `KSTACKS.contour` (37b, opt-in) on the drawn mesh,
-      like `KSTACKS.weather`: the records keep the uncontoured body, so `KSTACKS.at` and `topAt` answer for the record (the
-      post's top is kept whole, `keep: 12`, so its check holds). The beds still read as rounded cushions at the partings (the recipe's soft
-      partings notched by `pillar`).
-- [ ] **The watch stair is drawn as a helix fitted to the drawn rock**, not on the layout's square line: `SPAN.checks` reads the
-      line, the page the drawn treads. The cliff stair is drawn on its line against the stand-in cliff. Neither is walkable
-      (no KWALK floors on this page yet).
-- [ ] The post's top is the record's flat top inside a weathered rim (the restored vertices stand a little proud of it).
+- [ ] **The pillar rim on Span's page is proxies of station 4's site record** (SP5): the station's towers (`L.pillars`) drawn as
+      plain KSTACKS bodies at each record's place, foot and top, and the stand-in ground's cliff along the record's rim line
+      (a sheer step between 50 m record points, linear). The rock as drawn is the station's: contoured (`KSTACKS.contour`,
+      `keep: 12` on the watch pillar) and on its own ground. A world that draws both must re-fit the watch stair (and the cliff
+      stair's lanes) to the station's drawn mesh, Pinnacle Rock's rule: on the proxy the treads sit .6 m out from a plain
+      wall, where the station's joints and swells move its face by metres.
+- [ ] **The frame's M** (where Span's canyon meets the rim, the site's x -1750, off station 4's map) is a choice; the scale
+      model (or station 3, where Pan Riba leaves the tableland) settles it, and the watch post moves along with the frame.
+- [ ] **The watch stair is drawn as a helix fitted to the drawn proxy**, not on the layout's square line: `SPAN.checks` reads the
+      line, the page the drawn treads. Neither stair is walkable (no KWALK floors on this page yet). The head's landing runs
+      out over the top's chamfered edge.

@@ -23,7 +23,7 @@
 
     python3 build.py              # writes dist/span.html and dist/span.tex.ancients.js (the kit's textures)
 """
-import os, re, subprocess, sys
+import json, os, re, subprocess, sys
 
 _cp = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'tools', 'check_port.py')
 if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
@@ -96,10 +96,9 @@ import furniture_bundle, kit_bundle, apoc_bundle
 FURN_CULTURES = ['post-apoc', 'scrap', 'generic']
 APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '53-barricade.js', '54-compound.js', '56-arena.js']
 CORE_WALK = ['20-core-walk.js']
-# core/terrain: KSTACKS, the stand-in pillars of the pillar rim (SP5) until SW highlands station 4's carve replaces them
-CORE_TERRAIN = ['35-core-strata.js', '35z-core-strata-shade.js', '37-core-stacks.js', '37b-core-stacks-contour.js']
+# core/terrain: KSTACKS, the proxies of SW highlands station 4's towers (from its site record) the post and its stairs stand on
+CORE_TERRAIN = ['35-core-strata.js', '35z-core-strata-shade.js', '37-core-stacks.js']
 PATH['37-core-stacks.js'] = core('terrain', '37-core-stacks.js')
-PATH['37b-core-stacks-contour.js'] = core('terrain', '37b-core-stacks-contour.js')
 # core/terrain strata: the pillars' beds (the 'pillar' recipe) as data and shader; the shade half keyed 35z so it sorts after the data
 PATH['35-core-strata.js'] = core('terrain', '35-core-strata.js')
 PATH['35z-core-strata-shade.js'] = core('terrain', 'host', '35-core-strata-shade.js')
@@ -133,6 +132,15 @@ own = khost.resolve(PATH, CORE_HOST)
 if own:
     print('NOTE: a local copy overrides core/host: ' + ', '.join(own))
 
+# SW highlands station 4's site record (biomes/swhighlands BIOME-API.md "Station 4's site"), vendored in site/: the one thing
+# Span reads of the station. The layout checks its format and version; a fresh export from the station's page replaces the file
+def site_fragment():
+    with open(os.path.join(HERE, 'site', 'swhighlands-pillars-site.json'), encoding='utf-8') as fh:
+        rec = json.load(fh)
+    return ('/* SW highlands station 4 site record (settlements/span/site/swhighlands-pillars-site.json; generated). Do not edit. */' + chr(10)
+            + 'var SPAN_SITE = ' + json.dumps(rec, separators=(',', ':')) + ';' + chr(10))
+
+
 # the kit's material library pack (kits/ancients/materials.json -> tex/), written beside the page as a sidecar
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack
@@ -140,6 +148,7 @@ SIDE = {}
 VIRTUAL = {'88x-matlib-pack.js': matlib_pack.fragment(ANC, 'ancients', side=SIDE),
            '88x-matlib-pack-dalab.js': matlib_pack.fragment(DALAB, 'dalab', side=SIDE),
            '88x-matlib-pack-span.js': matlib_pack.fragment(HERE, 'span', side=SIDE),
+           '29a-span-site.js': site_fragment(),
            khost.EDITS_JS: khost.edits_js(HERE, 'span')}
 VIRTUAL.update({f: fn() for f, fn in BUNDLES.items()})
 for f in VIRTUAL:

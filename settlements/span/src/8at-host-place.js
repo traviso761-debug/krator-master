@@ -106,29 +106,27 @@ const SP=(function(){const L=SPAN_LAYOUT,F=SPAN_FRAME,T=KTAGS.create({build:'spa
   if(p.in&&p.kind!=='craft'){placed.push(p.id);return;}   /* the Cross's zones: rooms are SP6 */
   const f=BUILD[p.kind];if(!f){missing.push(p.id);return;}
   try{f(p);}catch(e){reportErr(p.id+': '+(e.stack||e));}});
- // THE PILLAR RIM (SP5, a stand-in for SW highlands station 4): the layout's pillars (L.pillars) as core/terrain KSTACKS
- // 'pillar' bodies on the rim's floor, their beds core/terrain KSTRATA's 'pillar' recipe (red and white sandstones in turn,
- // thin soft partings), laid level, so the notches the beds weather to, their hardness and the colours the shader paints are
- // one column; the drawn mesh contoured by KSTACKS.contour and worn by KSTACKS.weather (the top kept flat under whatever stands on it). The station's
- // KSTACKS.pillars field replaces them, and the watch pillar is its body under the post (PLAN.md SP5)
- const PILLARS=[],PDRAWN={};if(L.pillars&&typeof KSTACKS!=='undefined'&&typeof KSTRATA!=='undefined'){const pos=[],col=[],idx=[],fl=L.pillarRim.floor;
+ // THE PILLAR RIM (SP5): SW highlands station 4's towers, from its site record only (L.pillars, mapped: 30-span-layout.js),
+ // drawn here as PROXIES so the post and its stairs have rock under them on Span's own page: core/terrain KSTACKS 'pillar'
+ // bodies at each record's place, foot and top (the watch pillar its w x l and turn; a tower 1.4 R wide), their beds core/terrain
+ // KSTRATA's 'pillar' recipe, uncontoured and unweathered. The rock as it is drawn is the station's (KSTACKS.contour with
+ // keep 12 on the watch pillar); a world that draws both re-fits the watch stair to the station's mesh (KNOWN_ISSUES.md).
+ // Only the towers on the page's ground (u to 1800, v from -2400) are drawn
+ const PILLARS=[],PDRAWN={};if(L.pillars&&typeof KSTACKS!=='undefined'&&typeof KSTRATA!=='undefined'){const pos=[],col=[],idx=[];
   const ST=SPAN_ROCK.ST;
   // a bed's thickness above y and its hardness, for KSTACKS' pillar (o.strata): up the column until the bed changes
   const strata=(x,y,z)=>{const a=ST.at(x,y,z),b=a.bed,f=a.formation;let h=.25;while(h<60){const q=ST.at(x,y+h,z);if(q.bed!==b||q.formation!==f)break;h+=.25;}return {h:h,hard:a.hard};};
-  L.pillars.forEach((q,i)=>{const c=W(q.u,q.v,0),hs=KRAND.hash(2820,9,i),held=L.parts.some(p=>p.on===q.id);let B=null;
-   try{B=KSTACKS.make({kind:'pillar',id:q.id,x:c[0],z:c[2],H:q.H,w:q.w,l:held?q.w:q.w*(.8+.3*KRAND.unit(KRAND.hash(hs,1))),ry:held?0:KRAND.unit(KRAND.hash(hs,2))*PI,
-    sq:6,taper:held?.03:.03+.06*KRAND.unit(KRAND.hash(hs,3)),lean:0,y0:fl,seed:hs,strata:strata});}catch(e){reportErr(q.id+': '+(e.stack||e));return;}
-   PILLARS.push(B);const m=KSTACKS.mesh(B,{step:2.5}),y0=m.pos.slice(),o=pos.length/3;
-   KSTACKS.contour(B,m,held?{keep:12}:{});   /* core/terrain 37b: a profile in and out, joints, a split crown (the owner's references: Spider Rock, Adrspach, Cao Grande); a held top kept */
-   KSTACKS.weather(B,m,{ground:()=>fl,amp:3,grain:.09,pit:1.1,pitGrain:.6});
-   if(held)for(let v=0;v<m.part.length;v++)if(m.part[v]!==0&&y0[3*v+1]>B.top-2)m.pos[3*v+1]=y0[3*v+1];   /* the top under the post stays where the post stands */
+  L.pillars.filter(q=>q.u<=1800&&q.v>=-2400).forEach((q,i)=>{const c=W(q.u,q.v,0),wd=q.w||1.4*q.R;let B=null;
+   try{B=KSTACKS.make({kind:'pillar',id:q.id,x:c[0],z:c[2],H:q.top-q.foot,w:wd,l:q.l||wd,ry:q.ry||0,sq:6,taper:q.flat?1-q.flat/Math.min(q.w,q.l):.05,lean:0,y0:q.foot,
+    seed:KRAND.hash(2820,9,i),strata:strata});}catch(e){reportErr(q.id+': '+(e.stack||e));return;}
+   PILLARS.push(B);const m=KSTACKS.mesh(B,{step:2.5}),o=pos.length/3;
    for(let v=0;v<m.pos.length/3;v++){const s=.5+.5*m.occ[v];pos.push(m.pos[3*v],m.pos[3*v+1],m.pos[3*v+2]);col.push(s,s,s);}
    for(const k of m.idx)idx.push(o+k);PDRAWN[q.id]={B,m};
-   REGISTER({name:q.name+' ('+Math.round(q.H)+' m)',x:c[0],z:c[2],y:B.y0,r:Math.min(B.R,30),h:B.top-B.y0});placed.push(q.id);});
+   REGISTER({name:q.name+' (station 4: '+q.site+', '+Math.round(q.top-q.foot)+' m; a proxy)',x:c[0],z:c[2],y:B.y0,r:Math.min(B.R,30),h:B.top-B.y0});placed.push(q.id);});
   const mat=SPAN_ROCK.mat(false);   /* the strata's colour, the library's grain: 45-host-stage.js */
   if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
    g.setIndex(idx);g.computeVertexNormals();const me=new THREE.Mesh(g,mat);
-   me.userData.host=true;me.userData.inspectLabel='Pillar sandstone, red and white beds (a stand-in for the pillar rim: SW highlands station 4)';
+   me.userData.host=true;me.userData.inspectLabel='The pillar rim: proxies of the towers in SW highlands station 4 site record (the station draws the rock)';
    me.userData.probePoints=[].concat(...PILLARS.map(B=>[B.x,(B.y0+B.top)/2,B.z]));   /* flat x,y,z: one sample a body */scene.add(me);}}
  // THE REACH OF A DRAWN PILLAR (Pinnacle Rock's rule: what hangs on a wall follows the wall AS DRAWN, settlements/pinnacle-rock
  // src/43-pr-roosts.js): the weathered mesh's wall vertices binned by angle round the body's middle and by metre of height, each

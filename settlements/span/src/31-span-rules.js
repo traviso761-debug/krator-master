@@ -97,10 +97,15 @@ function sectionAt(L, a, fy, k){ var H = L.half; k = k == null ? 1 : k;
   if (a < H['-40'] * k) return L.levels.b2;
   if (a < H['0'] * k) return L.levels.b1;
   return 0; }
+// the rim's line at a v (L.rim: station 4's site record mapped into Span's frame, west to east, v falling), the ends held
+function rimAt(L, v){ var R = L.rim; if (v >= R[0].v) return R[0];
+  for (var i = 1; i < R.length; i++) if (v >= R[i].v){ var f = (v - R[i - 1].v) / (R[i].v - R[i - 1].v), a = R[i - 1], b = R[i];
+    return { u: a.u + (b.u - a.u) * f, v: v, top: a.top + (b.top - a.top) * f, floor: a.floor + (b.floor - a.floor) * f }; }
+  return R[R.length - 1]; }
 function groundAt(L, u, v){
   var i, c, a = Math.abs(v), hd = L.canyon.head, bay = L.bay;
   for (i = 0; i < L.cuts.length; i++){ c = L.cuts[i].box; if (u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3]) return L.cuts[i].y; }
-  if (L.pillarRim && u >= L.pillarRim.u) return L.pillarRim.floor;   /* past the pillar rim's cliff: its floor */
+  if (L.rim && L.rim.length){ var rm = rimAt(L, v); if (u >= rm.u) return rm.floor; }   /* past station 4's rim (its site record, mapped): the floor under the cliff */
   if (inPoly(L.lake.pts, u, v)) return Math.max(L.lake.bed, L.lake.level - .25 * polyDist(L.lake.pts, u, v));
   if (u >= -1050 && u < hd[0][0]) return a < 15 ? L.lake.level : 0;
   if (u >= hd[0][0] && u <= hd[1][0]){ var w = hd[0][1] + (hd[1][1] - hd[0][1]) * (u - hd[0][0]) / (hd[1][0] - hd[0][0]); if (a < w) return -60; }
@@ -273,11 +278,12 @@ function checks(L){
     [.15, .5, .85].forEach(function(fu){ [.15, .5, .85].forEach(function(fv){ var u = b[0] + fu * (b[1] - b[0]), v = b[2] + fv * (b[3] - b[2]); if (inShape(p.shape, u, v)) pts.push([u, v]); }); });
     return pts.some(function(q){ return Math.abs(groundAt(L, q[0], q[1]) - p.y) > 1.5; });
   }).map(function(p){ var b = bbox(p.shape); return p.id + ' (y ' + p.y + ', ground ' + groundAt(L, (b[0] + b[1]) / 2, (b[2] + b[3]) / 2).toFixed(1) + ')'; }));
-  // the pillars: a part on a pillar stands on its top (the record's y is the pillar's floor plus its height) inside its edge (1 m)
+  // the pillars (station 4's towers): a part on one stands at its top and inside the flat square the site holds on it: every
+  // corner within half its side less a metre of the middle (whatever the square's turn)
   var PIL = {}; (L.pillars || []).forEach(function(q){ PIL[q.id] = q; });
-  ok('every part on a pillar stands on its top, inside its edge', L.parts.filter(function(p){ if (!p.on) return false; var q = PIL[p.on]; if (!q) return true;
-    var b = bbox(p.shape), hw = q.w / 2 - 1;
-    return Math.abs(p.y - (L.pillarRim.floor + q.H)) > .5 || b[0] < q.u - hw || b[1] > q.u + hw || b[2] < q.v - hw || b[3] > q.v + hw; }).map(function(p){ return p.id; }));
+  ok('every part on a pillar stands on its top, inside its edge', L.parts.filter(function(p){ if (!p.on) return false; var q = PIL[p.on]; if (!q || !q.flat) return true;
+    var b = bbox(p.shape), hw = q.flat / 2 - 1;
+    return Math.abs(p.y - q.top) > .5 || [[b[0], b[2]], [b[0], b[3]], [b[1], b[2]], [b[1], b[3]]].some(function(c){ return Math.hypot(c[0] - q.u, c[1] - q.v) > hw; }); }).map(function(p){ return p.id; }));
   // the watch post sees the Cross: the line from its tower's top (17 m over the post) to the Cross's signal room clears the ground
   var wp = ids.watch_post, blocked = [];
   if (wp){ var a0 = [(wp.shape[1] + wp.shape[2]) / 2, (wp.shape[3] + wp.shape[4]) / 2, wp.y + 17], a1 = [-205, 170, 8];
@@ -292,6 +298,6 @@ function checks(L){
   return out;
 }
 
-R.SPAN = { STATES: STATES, byId: byId, bbox: bbox, inShape: inShape, outline: outline, inside: inside, overlap: overlap, canyonAt: canyonAt,
+R.SPAN = { STATES: STATES, rimAt: rimAt, byId: byId, bbox: bbox, inShape: inShape, outline: outline, inside: inside, overlap: overlap, canyonAt: canyonAt,
   groundAt: groundAt, floorAt: floorAt, inPoly: inPoly, graph: graph, reach: reach, area: area, seed: seed, draw: draw, toWorld: toWorld, fromWorld: fromWorld, tags: tags, checks: checks };
 })(this);

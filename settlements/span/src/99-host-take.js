@@ -19,12 +19,14 @@ const VIEWS={
  'Into the arena':[-92,24,352,-92,2,410],
  'The north gate of the Cross':[-200,8,300,-240,6,232],
  'Dalab\'s Line from the floor':[-60,-172,-55,-174,-170,0],
- 'The watch pillar from the rim':[1236,46,-196,1470,-110,-300],
- 'The pillar rim from its floor':[1780,-215,-660,1480,-110,-300],
- 'Dalab\'s watch post':[1426,40,-250,1470,14,-300],
- 'The cliff stair':[1372,-150,-292,1302,-130,-300],
  'The mission temple':[-178,12,368,-179,6,415],
 };
+// the pillar rim's views from station 4's site record as mapped (the watch pillar, the rim's line under it)
+(function(){const L=SPAN_LAYOUT,q=L.pillars[0],r=SPAN.rimAt(L,q.v),c=SPAN.rimAt(L,q.v+100);
+ VIEWS['The watch pillar from the rim']=[r.u-60,46,q.v+150,q.u,-110,q.v];
+ VIEWS['The pillar rim from its floor']=[q.u+300,q.foot+50,q.v+360,q.u,-110,q.v];
+ VIEWS["Dalab's watch post"]=[q.u-44,q.top+40,q.v+50,q.u,q.top+2,q.v];
+ VIEWS['The cliff stair']=[c.u+70,-150,q.v+100,c.u+2,-130,q.v+100];})();
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 // the page's checks for verify.py --assert: the layout's rules (31-span-rules.js), every part placed, every record a
 // known word, every inspector volume over something drawn; each with a negative that must fail
