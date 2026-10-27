@@ -66,9 +66,9 @@ def strip(kit, skel):
         mj[t] = [r for r in mj[t] if r[0] not in gone]
         if not mj[t]:
             del mj[t]
-    kit['items'] = [it for it in kit['items'] if it['id'] not in ('mod_tail', 'mod_head_lizard')]
+    kit['items'] = [it for it in kit['items'] if it['id'] not in ('mod_tail', 'mod_head_lizard', 'mod_head_frog')]
     for m in list(kit['tint']['roles']):
-        if m.startswith('Mod.tail') or m.startswith('Mod.head_lizard'):
+        if m.startswith('Mod.tail') or m.startswith('Mod.head_lizard') or m.startswith('Mod.head_frog'):
             del kit['tint']['roles'][m]
 
 

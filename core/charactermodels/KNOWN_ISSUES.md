@@ -238,6 +238,10 @@
     section 21. On the body they are tiled over MakeHuman's UVs, whose islands differ in scale by about twice either
     way: from behind, the neck and shoulders show patches of larger and smaller scales meeting at the islands' edges.
     A body made for the Lizardmen would want its own UVs (or the scales projected in the skin's rest space).
+  - *The frog's pale throat and lip stripe only lighten the green*: its colours multiply the skin tint, so a throat
+    can be a paler green but never cream (a second, pale tint the head blends to would need a shader in both runtimes).
+  - *The frog's hands and feet are the human ones* (no webbing, no toe pads), and its head may be a little small for the
+    shoulders beside the references.
   - *The neck's crest goes as one*: under any worn item that covers the skin at its roots (most tops do: their hide
     runs up the back of the neck) the whole neck's crest is left out and the head's stays (`crest_neck`).
   - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).

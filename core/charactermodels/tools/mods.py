@@ -888,6 +888,69 @@ def head_scale(body):
     return 0.5 * ((Q[:, 0].max() - Q[:, 0].min()) / 0.161 + Q[:, 2].max() / 0.153)
 
 
+def _head_collar(body, rec, k, tile):
+    """an animal head's collar (lizard_head, frog_head): from the neck, below the edge of the skin the head hides
+    (head_skin), up into the head; its vertices on the nearest neck vertex's weights and deltas, fading to the head's
+    above that edge, so it follows the neck under every slider; UV in metres (tile a repeat). Returns the surface, its
+    axis (for winding) and the hidden triangles"""
+    H = body.P('Head')
+    hj = body.jidx['Head']
+    B = body.prims['Human.body']
+    BP = B['POSITION'].astype(float)
+    hide = head_skin(body)
+    shown = np.ones(len(B['T']), bool)
+    shown[hide] = False
+    edge = np.intersect1d(np.unique(B['T'][hide]), np.unique(B['T'][shown]))
+    E = BP[edge]
+    cx, cz = E[:, 0].mean(), E[:, 2].mean()
+    ang_e = np.arctan2(E[:, 0] - cx, E[:, 2] - cz)
+    order = np.argsort(ang_e)
+    ang_e, ye = ang_e[order], E[order, 1]
+    edge_y = lambda a: float(np.interp(a, np.concatenate([ang_e - 2 * np.pi, ang_e, ang_e + 2 * np.pi]), np.concatenate([ye, ye, ye])))
+    neck_tris = np.nonzero(shown & (BP[B['T']][:, :, 1].min(1) > H[1] - 0.2 * k))[0]
+    TT = B['T'][neck_tris]
+    tree = cKDTree(BP)
+    collar = _Smooth(rec)
+    collar.C = []
+    y_low = H[1] - 0.095 * k
+    rows = []
+    K = 7
+    for q in range(K + 1):
+        ring, first = [], None
+        for i in range(HEAD_RING + 1):
+            th = 2 * math.pi * i / HEAD_RING
+            a = math.atan2(math.sin(th), math.cos(th))
+            y_top = edge_y(a) + 0.012 * k
+            u = q / K
+            y = y_low + (y_top - y_low) * u
+            d = np.array([math.sin(th), 0.0, math.cos(th)])
+            h = _ray_hits(np.array([cx, y, cz]), d, BP, TT, nearest=True)
+            if h is None:                         # above the shown skin: the last ring's reach, drawn in
+                h = (prev[i] if q else np.array([cx, y, cz]) + d * 0.05, None)
+            p = h[0] + d * 0.0035
+            if q == K:
+                p = np.array([cx, y, cz]) + (p - np.array([cx, y, cz])) * 0.55 + np.array([0, 0.02 * k, 0])
+            _, nb = tree.query(p)
+            fa = np.clip((y - (edge_y(a) - 0.02 * k)) / (0.03 * k), 0, 1)
+            if q == K:
+                fa = 1.0
+            jw = [(int(jx), float(wx) * (1 - fa)) for jx, wx in zip(B['J'][nb], B['W'][nb]) if wx > 0] + [(hj, fa)]
+            uv = (th * math.hypot(p[0] - cx, p[2] - cz) / tile, (y - y_low) / tile)     # in metres round and up, as the head's
+            if i < HEAD_RING:
+                vi = collar.v(p, uv, jw, (int(B['VID'][nb]), fa, 'Head', 0.0, np.zeros(3)))
+            else:
+                vi = collar.v(p, uv, jw, None, vid=collar.VID[first])
+            collar.C.append(np.ones(3))
+            if i == 0:
+                first = vi
+            ring.append(vi)
+        prev = [collar.P[x] for x in ring]
+        rows.append(ring)
+    collar.grid(rows)
+    neck_axis = lambda q: np.stack([np.full(len(q), cx), q[:, 1], np.full(len(q), cz)], 1)
+    return collar, neck_axis, hide
+
+
 def lizard_head(body, out, rec, tex, nrm=None):
     """mod_head_lizard: a Komodo dragon's head with an iguana's crest in place of the human one (tools/reptile.py: the
     upper head rigid on Head, the lower jaw on face_jaw, which the figure opens about the hinge; eyes behind lower lids
@@ -902,7 +965,6 @@ def lizard_head(body, out, rec, tex, nrm=None):
     hj, jj = body.jidx['Head'], body.jidx['face_jaw']
     lz = RP.Lizard(k)
     B = body.prims['Human.body']
-    BP = B['POSITION'].astype(float)
 
     def smooth():
         m = _Smooth(rec)
@@ -941,57 +1003,7 @@ def lizard_head(body, out, rec, tex, nrm=None):
             _cone(tooth_m, H + np.array([sx * wl * 0.74, ly - 0.001 * k, z + 0.006 * k]), np.array([0, 1.0, 0.25]), 0.0018 * k, 0.005 * k, [(jj, 1.0)], RP.RIGID)
     for mm in (dark_m, tooth_m):
         mm.C = [np.ones(3)] * len(mm.P)
-    # the collar: from the neck, below the edge of the hidden skin, up into the head
-    hide = head_skin(body)
-    shown = np.ones(len(B['T']), bool)
-    shown[hide] = False
-    edge = np.intersect1d(np.unique(B['T'][hide]), np.unique(B['T'][shown]))
-    E = BP[edge]
-    cx, cz = E[:, 0].mean(), E[:, 2].mean()
-    ang_e = np.arctan2(E[:, 0] - cx, E[:, 2] - cz)
-    order = np.argsort(ang_e)
-    ang_e, ye = ang_e[order], E[order, 1]
-    edge_y = lambda a: float(np.interp(a, np.concatenate([ang_e - 2 * np.pi, ang_e, ang_e + 2 * np.pi]), np.concatenate([ye, ye, ye])))
-    neck_tris = np.nonzero(shown & (BP[B['T']][:, :, 1].min(1) > H[1] - 0.2 * k))[0]
-    TT = B['T'][neck_tris]
-    tree = cKDTree(BP)
-    collar = smooth()
-    y_low = H[1] - 0.095 * k
-    rows = []
-    K = 7
-    for q in range(K + 1):
-        ring, first = [], None
-        for i in range(HEAD_RING + 1):
-            th = 2 * math.pi * i / HEAD_RING
-            a = math.atan2(math.sin(th), math.cos(th))
-            y_top = edge_y(a) + 0.012 * k
-            u = q / K
-            y = y_low + (y_top - y_low) * u
-            d = np.array([math.sin(th), 0.0, math.cos(th)])
-            h = _ray_hits(np.array([cx, y, cz]), d, BP, TT, nearest=True)
-            if h is None:                         # above the shown skin: the last ring's reach, drawn in
-                h = (prev[i] if q else np.array([cx, y, cz]) + d * 0.05, None)
-            p = h[0] + d * 0.0035
-            if q == K:
-                p = np.array([cx, y, cz]) + (p - np.array([cx, y, cz])) * 0.55 + np.array([0, 0.02 * k, 0])
-            _, nb = tree.query(p)
-            fa = np.clip((y - (edge_y(a) - 0.02 * k)) / (0.03 * k), 0, 1)
-            if q == K:
-                fa = 1.0
-            jw = [(int(jx), float(wx) * (1 - fa)) for jx, wx in zip(B['J'][nb], B['W'][nb]) if wx > 0] + [(hj, fa)]
-            uv = (th * math.hypot(p[0] - cx, p[2] - cz) / RP.TILE, (y - y_low) / RP.TILE)     # in metres round and up, as the head's
-            if i < HEAD_RING:
-                vi = collar.v(p, uv, jw, (int(B['VID'][nb]), fa, 'Head', 0.0, np.zeros(3)))
-            else:
-                vi = collar.v(p, uv, jw, None, vid=collar.VID[first])
-            collar.C.append(np.ones(3))
-            if i == 0:
-                first = vi
-            ring.append(vi)
-        prev = [collar.P[x] for x in ring]
-        rows.append(ring)
-    collar.grid(rows)
-    neck_axis = lambda q: np.stack([np.full(len(q), cx), q[:, 1], np.full(len(q), cz)], 1)
+    collar, neck_axis, hide = _head_collar(body, rec, k, RP.TILE)
     # the crest: blades down the midline, the head's rigid, the neck's on the nearest base vertex and a material of
     # their own, which the figures leave out when a worn item covers the skin under their roots (under)
     spines = RP.crest(lz, body, H, hide)
@@ -1027,6 +1039,68 @@ def lizard_head(body, out, rec, tex, nrm=None):
     write_piece(body, out, 'mod_head_lizard', prims + [lp])
     hinge = np.array([0.0, RP.HINGE[1] * k, RP.HINGE[0] * k])
     return hide, {'pivot': [round(float(x), 5) for x in hinge]}, sorted(under)
+
+
+
+def frog_head(body, out, rec, tex, nrm=None):
+    """mod_head_frog: a frogman's head in place of the human one (tools/amphibian.py: the upper head rigid on Head, the
+    lower jaw and the throat's pouch on face_jaw, which the figure opens about the hinge; bulging eyes behind lower lids
+    that blink; dark nostrils), with the lizard's collar from the neck up into it (_head_collar). tex, nrm: the skin
+    texture and its normal map. Returns the hidden skin and the jaw's extras"""
+    import heads as HD
+    import reptile as RP
+    import amphibian as AM
+    k = head_scale(body)
+    H = body.P('Head')
+    hj, jj = body.jidx['Head'], body.jidx['face_jaw']
+    fr = AM.Frog(k)
+
+    def smooth():
+        m = _Smooth(rec)
+        m.C = []
+        return m
+    cran, jaw, mouth_m, eye_m, dark_m, lid_m = (smooth() for _ in range(6))
+    for f, is_upper, m, bone in ((fr.upper, True, cran, hj), (fr.lower, False, jaw, jj)):
+        lo, hi = np.array([-0.15, -0.11, -0.14]) * k, np.array([0.15, 0.18, 0.17]) * k
+        V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
+        C, inside = AM.paint(fr, V, N, is_upper)
+        C, = HD.soften(nb, C)
+        V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
+        mats = np.where(inside[T].all(1), 'mouth', 'skin')
+        RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}}, tile=AM.TILE)
+    eV, eN, eC, eT = AM.eyeball(fr, H)
+    for p, c in zip(eV, eC):
+        eye_m.v(p, (0.5, 0.5), [(hj, 1.0)], RP.RIGID)
+        eye_m.C.append(c)
+    eye_m.T = eT.tolist()
+    # the frog's ball stands proud of its turret: a wide lid lies down in the turret when open and rises over the
+    # front of the eye; it turns no more than 95 degrees (a morph moves each point straight: further, the lid would
+    # pass through the ball halfway)
+    lV, lN, lC, lT, ldV, ldN, lU = RP.lids(fr, color=(0.95, 0.95, 0.9), open_deg=-60.0, shut_deg=35.0, span=150.0)
+    for p, c, u in zip(lV + H, lC, lU):
+        lid_m.v(p, tuple(u / AM.TILE), [(hj, 1.0)], RP.RIGID)
+        lid_m.C.append(c)
+    lid_m.T = lT.tolist()
+    for c, r in fr.nostrils:
+        _ellipsoid(dark_m, H + c, r * 0.9, [(hj, 1.0)], RP.RIGID)
+    dark_m.C = [np.ones(3)] * len(dark_m.P)
+    collar, neck_axis, hide = _head_collar(body, rec, k, AM.TILE)
+    spec = [(cran, {'name': 'Mod.head_frog', 'rough': 0.38}, tex, nrm, None),
+            (jaw, {'name': 'Mod.head_frog_jaw', 'rough': 0.38}, tex, nrm, None),
+            (collar, {'name': 'Mod.head_frog_neck', 'rough': 0.4}, tex, nrm, neck_axis),
+            (mouth_m, {'name': 'Mod.head_frog_mouth', 'rough': 0.3}, flat('#b06a68'), None, None),
+            (eye_m, {'name': 'Mod.head_frog_eye', 'rough': 0.06}, flat('#ffffff'), None, None),
+            (dark_m, {'name': 'Mod.head_frog_dark', 'rough': 0.5}, flat('#120c08'), None, None)]
+    prims = []
+    for m, mat, img, nm, outward in spec:
+        p = m.prim(mat, img, outward=outward)
+        p['C'], p['normal'] = np.array(m.C, float), nm
+        prims.append(p)
+    lp = lid_m.prim({'name': 'Mod.head_frog_lids', 'rough': 0.35}, tex)
+    lp.update({'C': np.array(lid_m.C, float), 'normal': nrm, 'mesh': 1, 'targets': {'blink': (ldV, ldN)}})
+    write_piece(body, out, 'mod_head_frog', prims + [lp])
+    hinge = np.array([0.0, AM.HINGE[1] * k, AM.HINGE[0] * k])
+    return hide, {'pivot': [round(float(x), 5) for x in hinge]}
 
 
 def _ellipsoid(m, c, r, jw, recipe, n=12, mm=8):
@@ -1071,7 +1145,8 @@ TAIL_MOTION = {'stiff': [0.5, 0.32, 0.22, 0.16, 0.12, 0.1, 0.09, 0.08, 0.08], 'g
 # to deg, for a share (hold) of every period seconds: a breath with the mouth a little open
 JAW_MOTION = {'deg': 6.0, 'period': 5.0, 'hold': 0.35}
 NONHUMAN_ROLES = {'Mod.tail': 'skin', 'Mod.head_lizard': 'skin', 'Mod.head_lizard_jaw': 'skin', 'Mod.head_lizard_neck': 'skin',
-                  'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin'}
+                  'Mod.head_lizard_lids': 'skin', 'Mod.head_lizard_crest': 'skin', 'Mod.head_lizard_crest_neck': 'skin',
+                  'Mod.head_frog': 'skin', 'Mod.head_frog_jaw': 'skin', 'Mod.head_frog_neck': 'skin', 'Mod.head_frog_lids': 'skin'}
 
 
 def nonhuman_joints(body):
@@ -1093,9 +1168,9 @@ def nonhuman_joints(body):
     return rows, root
 
 
-def skin_repeat(body):
+def skin_repeat(body, tile=None):
     """how many times the head's scale texture repeats across the base skin's UV square for its scales to be the head's
-    size (reptile.TILE; one UV unit is about two metres of skin, area-weighted: MakeHuman's islands differ by about
+    size (tile, by default reptile.TILE; one UV unit is about two metres of skin, area-weighted: MakeHuman's islands differ by about
     twice either way, which the busy scales hide). The figures draw the body's skin with it under a lizard's head
     (kit item skin_detail)"""
     import reptile as RP
@@ -1106,11 +1181,11 @@ def skin_repeat(body):
     a2 = np.abs(e[:, 0] * f[:, 1] - e[:, 1] * f[:, 0]) / 2
     ok = a2 > 1e-12
     mpu = float((np.sqrt(a3[ok] / a2[ok]) * a3[ok]).sum() / a3[ok].sum())
-    return round(mpu / RP.TILE, 2)
+    return round(mpu / (tile or RP.TILE), 2)
 
 
 def nonhuman(body, pieces, body_name):
-    """the non-human pieces (a spike: tail_piece, lizard_head) beside the others, their kit entries (marked test: no
+    """the non-human pieces (a spike: tail_piece, lizard_head, frog_head) beside the others, their kit entries (marked test: no
     people draws them), tint roles and morph recipes ({id: Recipe}), and the tail's root (tail_rows). body gets the
     joints they weight (nonhuman_joints); build the other mods first"""
     import os
@@ -1123,9 +1198,17 @@ def nonhuman(body, pieces, body_name):
     rec_t, rec_h = Recipe(), Recipe()
     info = tail_piece(body, os.path.join(pieces, 'mod_tail.glb'), rec_t, tex, nrm)
     hide, jaw, under = lizard_head(body, os.path.join(pieces, 'mod_head_lizard.glb'), rec_h, tex, nrm)
+    import amphibian as AM
+    fm = RP.scale_map(texture_mean(body), library=AM.LIBRARY)      # the frog's moist skin (skin.smooth)
+    ftex, fnrm = fm if fm else (tex, nrm)
+    rec_f = Recipe()
+    hide_f, jaw_f = frog_head(body, os.path.join(pieces, 'mod_head_frog.glb'), rec_f, ftex, fnrm)
     n = len(body.prims['Human.body']['T'])
-    a = np.zeros((n + 7) // 8 * 8, np.uint8)
-    a[hide] = 1
+
+    def bits(tris):
+        a = np.zeros((n + 7) // 8 * 8, np.uint8)
+        a[tris] = 1
+        return base64.b64encode(np.packbits(a, bitorder='little').tobytes()).decode()
     B = body.prims['Human.body']
     _, kb = cKDTree(B['POSITION'].astype(float)).query(root - np.array([0, 0, TL.ROOT_IN]))
     entries = [
@@ -1133,11 +1216,16 @@ def nonhuman(body, pieces, body_name):
          'grants': {'tail': True}, 'group': 'tail', 'kind': 'genetic', 'test': True, 'tail': dict(info, **TAIL_MOTION)},
         {'id': 'mod_head_lizard', 'name': 'Lizard head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_lizard.glb' % body_name,
          'grants': {'head': 'lizard'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
-         'hide': base64.b64encode(np.packbits(a, bitorder='little').tobytes()).decode(), 'hides': int(len(hide)),
+         'hide': bits(hide), 'hides': int(len(hide)),
          'hide_parts': HEAD_PARTS, 'jaw': dict(jaw, **JAW_MOTION),
          'skin_detail': {'material': 'Mod.head_lizard', 'repeat': skin_repeat(body)},
-         'crest_neck': {'material': 'Mod.head_lizard_crest_neck', 'under': under}}]
-    return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h}, {'root': root, 'b_root': int(B['VID'][kb])}
+         'crest_neck': {'material': 'Mod.head_lizard_crest_neck', 'under': under}},
+        {'id': 'mod_head_frog', 'name': 'Frog head', 'slot': 'mods', 'glb': 'pieces/%s/mod_head_frog.glb' % body_name,
+         'grants': {'head': 'frog'}, 'group': 'head', 'kind': 'genetic', 'test': True, 'replaces_head': True,
+         'hide': bits(hide_f), 'hides': int(len(hide_f)), 'hide_parts': HEAD_PARTS, 'jaw': dict(jaw_f, **JAW_MOTION),
+         'skin_detail': {'material': 'Mod.head_frog', 'repeat': skin_repeat(body, AM.TILE)}}]
+    return entries, dict(NONHUMAN_ROLES), {'mod_tail': rec_t, 'mod_head_lizard': rec_h, 'mod_head_frog': rec_f}, \
+        {'root': root, 'b_root': int(B['VID'][kb])}
 
 
 def tail_rows(morph, names, hips_y, root, b_root, d_base, d_joint):

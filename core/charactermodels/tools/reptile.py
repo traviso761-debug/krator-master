@@ -73,9 +73,9 @@ def _lerp(table, col, z):
     return np.interp(z, table[:, 0], table[:, col])
 
 
-def _loft(P, table, upper, k):
-    """a loft's field: per station an ellipse-like section (flat-topped over the mouth's line, a superellipse), capped
-    at both ends"""
+def _loft(P, table, upper, k, palate=PALATE, rictus=RICTUS, n_top=2.6):
+    """a loft's field: per station an ellipse-like section (flat-topped over the mouth's line, a superellipse of n_top),
+    capped at both ends. palate, rictus: as PALATE, RICTUS (the frog's are its own: tools/amphibian.py)"""
     x, y, z = P[:, 0], P[:, 1], P[:, 2]
     zk = z / k
     w, a, b = _lerp(table, 1, zk) * k, _lerp(table, 2, zk) * k, _lerp(table, 3, zk) * k
@@ -84,8 +84,8 @@ def _loft(P, table, upper, k):
         over = y >= cy
         # behind the mouth's corner the upper head rounds down into the jowls (a shallow palate there stood out of them
         # as a ledge)
-        h = np.where(over, a - b, (PALATE + 0.03 * np.clip((RICTUS - zk) / 0.04, 0, 1)) * k)
-        n = np.where(over, 2.6, 2.0)
+        h = np.where(over, a - b, (palate + 0.03 * np.clip((rictus - zk) / 0.04, 0, 1)) * k)
+        n = np.where(over, n_top, 2.0)
     else:
         cy = a
         under = y <= cy
@@ -241,11 +241,11 @@ def paint(lz, V, N, upper):
     return np.clip(col, 0, 1.4), mouth
 
 
-def scale_map(mean_rgb, px=512):
-    """the library's organic.scale as the head's and the tail's skin: its albedo made near-colourless (its light and
-    dark kept, its mean the body texture's, so the skin tint colours it as it does the skin) and its normal map; None
-    when the library's images are not checked out (git lfs)"""
-    a, n = os.path.join(LIBRARY, 'albedo.jpg'), os.path.join(LIBRARY, 'normal.jpg')
+def scale_map(mean_rgb, px=512, library=LIBRARY):
+    """the library's organic.scale (or another set: the frog's skin.smooth) as the head's and the tail's skin: its
+    albedo made near-colourless (its light and dark kept, its mean the body texture's, so the skin tint colours it as
+    it does the skin) and its normal map; None when the library's images are not checked out (git lfs)"""
+    a, n = os.path.join(library, 'albedo.jpg'), os.path.join(library, 'normal.jpg')
     try:
         im = Image.open(a).convert('L').resize((px, px), Image.LANCZOS)
         nm = Image.open(n).convert('RGB').resize((px, px), Image.LANCZOS)
@@ -262,7 +262,7 @@ def scale_map(mean_rgb, px=512):
     return out
 
 
-def surface(m, V, T, U, C, jw, mats, vid_of):
+def surface(m, V, T, U, C, jw, mats, vid_of, tile=TILE):
     """a meshed field into the _Smooth surfaces m[material] (vertex colours in m[material].C); a vertex split by the UV's
     charts or a material's edge keeps one _VIDX (vid_of: per source vertex, filled as they are made)"""
     for mat in np.unique(mats):
@@ -274,7 +274,7 @@ def surface(m, V, T, U, C, jw, mats, vid_of):
                 if a not in idx:
                     src = vid_of['src'][a]
                     known = vid_of['vid'].get(src)
-                    idx[a] = sm.v(V[a], tuple(U[a] / TILE), jw, RIGID, vid=known)
+                    idx[a] = sm.v(V[a], tuple(U[a] / tile), jw, RIGID, vid=known)
                     if known is None:
                         vid_of['vid'][src] = sm.VID[idx[a]]
                     sm.C.append(C[a])
@@ -282,15 +282,15 @@ def surface(m, V, T, U, C, jw, mats, vid_of):
             sm.T.append(tri)
 
 
-def lids(lz):
+def lids(lz, color=(1.25, 1.14, 0.8), open_deg=-30.0, shut_deg=42.0, span=75.0):
     """the lower lids: for each eye a band of a sphere a little larger than the eyeball, from the opening's lower edge
     down into the head (hidden there, open); the 'blink' morph turns it up over the eye to the upper edge. Pale
     scales, the edge dark"""
     V, N, C, T, dV, dN, U = [], [], [], [], [], [], []
     rl = lz.eye_r * 1.12
-    open_, shut = np.radians(-30.0), np.radians(42.0)
+    open_, shut = np.radians(open_deg), np.radians(shut_deg)
     A = np.radians(np.linspace(-80.0, 80.0, 21))
-    F = np.radians(np.linspace(0.0, 75.0, 10))
+    F = np.radians(np.linspace(0.0, span, max(10, int(span / 7.5))))
     for e in lz.eyes:
         g, hh, v = e['axes']
         base = sum(len(x) for x in V)
@@ -302,7 +302,7 @@ def lids(lz):
         d0, d1 = at(open_ - ff), at(shut - ff)
         V.append(e['c'] + d0 * rl); N.append(d0)
         dV.append((d1 - d0) * rl); dN.append(d1 - d0)
-        c = np.tile([1.25, 1.14, 0.8], (len(d0), 1))
+        c = np.tile(color, (len(d0), 1))
         c[ff.ravel() < np.radians(10.0)] = 0.25
         C.append(c)
         U.append(np.stack([aa.ravel() * rl, ff.ravel() * rl], 1))

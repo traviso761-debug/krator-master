@@ -42,6 +42,16 @@
     return r;
   }
   var LIZARD_START = /[?&#]lizard\b/.test(location.search + location.hash);
+  /* the Frogman test record (a frog's head on the body, tools/amphibian.py): frog green, no hair, bare above the
+     trousers. ?frog in the page's address starts each body with it */
+  var FROG = { mods:['mod_head_frog'], skin:'#5f8a36', hair:null, beard:null };
+  function frog(r, kit){
+    if(!kit.items.some(function(it){ return it.id === 'mod_head_frog'; })) return r;
+    Object.keys(FROG).forEach(function(k){ r[k] = JSON.parse(JSON.stringify(FROG[k])); });
+    r.armour = Object.assign({}, r.armour, { head:null, torso:null });
+    return r;
+  }
+  var FROG_START = /[?&#]frog\b/.test(location.search + location.hash);
   var saved = {};
   function figScale(){ return fig ? fig.scale || 1 : 1; }
 
@@ -130,6 +140,7 @@
     scene.add(fig.group);
     rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
     if(!saved[b] && LIZARD_START) lizard(rec, D.bodies[b].kit);
+    if(!saved[b] && FROG_START) frog(rec, D.bodies[b].kit);
     Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
     buildPanel();
     view(cam.face);                 // a giant's camera stands further back
@@ -307,6 +318,13 @@
       lz.title = 'A tail and a reptile head, olive skin, no hair (a test record, not a people)';
       lz.addEventListener('click', function(){ lizard(rec, kit); apply(); buildPanel(); });
       grid.appendChild(lz);
+    }
+    if(all.some(function(m){ return m.id === 'mod_head_frog'; })){
+      var fg = document.createElement('button'); fg.className = 'chip'; fg.id = 'chip-frogman';
+      fg.innerHTML = '<span>Frogman <small>test</small></span>';
+      fg.title = 'A frog\'s head, green skin, no hair (a test record, not a people)';
+      fg.addEventListener('click', function(){ frog(rec, kit); apply(); buildPanel(); });
+      grid.appendChild(fg);
     }
     all.forEach(function(m){
       var b = document.createElement('button'); b.className = 'chip'; b.id = 'chip-mod-' + m.id;

@@ -56,6 +56,20 @@ eyes, was replaced):
 - **The jaw** (no clip moves it either): opened about its hinge by up to 6 degrees for a third of every 5 seconds, a
   breath with the mouth a little open (`jaw` / `_jaw`; kit item `jaw`). `fig.jawOpen` (`jaw_open` in Godot) holds it.
 
+**A frog's head** (`tools/mods.py frog_head`, `tools/amphibian.py`, kit item `mod_head_frog`; the owner's reference
+paintings, 2026-10-27), made as the lizard's is, its collar shared (`_head_collar`):
+- Broad, flat and rounded, sitting low with hardly a neck; the mouth a wide line from the blunt snout back under the
+  eardrum; the jaw meets the upper lip flush; a full throat's pouch under it (on `face_jaw`, opened as the lizard's).
+- Big eyes standing proud of turrets high on the head: gold, a horizontal pupil, a fine mesh at the pole where the pupil
+  is. A wide lower lid lies down in the turret and rises over the front of the eye to blink (`blink`; it turns 95
+  degrees: a morph moves each point straight, so further and the lid passes through the ball halfway).
+- The eardrums dished in behind the eyes under the dorsolateral folds; small nostrils on top of the snout.
+- Painted: dark blotches over the back, a pale lip stripe, a dark mask from the nostril through the eye to the
+  eardrum, the eardrum dark in a pale ring, the throat and underside paler. Its skin is the library's `skin.smooth`,
+  moist and glossier, which the body wears under it (`skin_detail`).
+- A test record as the Lizardman is: the Cosmetic Lab's "Frogman" chip (or `?frog`), the Animation Lab's Body mods menu
+  ("Frogman (test: head)").
+
 **Making them.** `python3 tools/nonhuman.py` puts both on the bodies as they stand, from the published pieces, with no
 Blender (they are made from the base GLB; their deltas from `base.morph.bin` and kit.json's joint rows). A whole rebuild
 (`make_mpfb.py`) makes the same pieces from Blender's export (`mods.make_all` -> `mods.nonhuman`; the deltas from

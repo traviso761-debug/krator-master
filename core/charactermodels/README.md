@@ -429,7 +429,7 @@ the joints until a mod is worn:
   `tools/tail.py`, after every other joint), driven each frame as a spring chain kept out of the legs (`tail` in
   `50-figure.js`, `_tail` in `kchar_figure.gd`); and `mod_head_lizard`, a Komodo dragon's head with an iguana's crest
   (`tools/reptile.py`: signed distance fields meshed as the therian heads are, the library's scales, lower lids that
-  blink) in place of the human one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
+  blink), or `mod_head_frog`, a frog's (`tools/amphibian.py`), in place of the human one (it hides the head's skin, the face's parts, hair, beard and headgear: kit item `replaces_head`), its jaw on
   `face_jaw` opened now and then (`jaw`, `_jaw`), a collar over the neck seam on the neck's own weights and deltas.
   Marked `test` in the kit: no people draws them. `python3 tools/nonhuman.py` puts them on the bodies from the published
   pieces; a whole rebuild makes them too (`mods.nonhuman`). The Cosmetic Lab's "Lizardman" chip (or `?lizard`) and the
@@ -699,7 +699,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/mpfb_build.py`, `tools/make_mpfb.py` | the two halves of the pipeline | |
 | `tools/giant.py` | the Giants: scale, cadence and what they wear (`make_mpfb.py giant`) | |
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills; the non-human tail and head), the lower-arm joints every body has, four-armed garments' weights | |
-| `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
+| `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
