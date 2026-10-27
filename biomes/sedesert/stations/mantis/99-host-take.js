@@ -28,11 +28,13 @@ const FOREST={figv:4,incense:20,cucumber:5,pom:10,sterc:8};
 function forestCheck(SP,TR){const n={};TR.forEach(T=>{const k=SP[T.sp].key;n[k]=(n[k]||0)+1;});const low=Object.keys(FOREST).filter(k=>!((n[k]||0)>=FOREST[k])),untagged=Object.keys(FOREST).filter(k=>!(SEDESERT.byKey[k]&&SEDESERT.byKey[k].tags.harvest));
  return{ok:!low.length&&!untagged.length,detail:Object.keys(FOREST).map(k=>k+' '+(n[k]||0)).join(', ')+(low.length?'; TOO FEW: '+low.join(', '):'')+(untagged.length?'; untagged: '+untagged.join(', '):'')};}
 KHOST.on(skyView,'view');
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88; the final rebuild): each chunk mesh by its range */
 KHOST.take({build:'sedesert-mantis',title:'Krator biome — Mantis\'s pocket (the eastern desert, station 2b)',
  hint:'Mantis\'s green pocket on the Bowl\'s south-west shore: a Socotran monsoon forest (great figs, frankincense, cucumber trees, dragon\'s blood groves) round the springs, savanna, the edge of the oasis town',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:SKY_HOUR0},draw:(s,c,dt)=>HEAT.render(dt),
  clampCam(cp){const g=Math.max(terrainH(cp.x,cp.z),LAKE.level)+1.6;if(cp.y<g)cp.y=g;},
+ controls:[AIR_CONTROL],   /* the air: calm or a dust storm (89x-host-air.js) */
  inspect:describe,stats:()=>'inst '+window._instances+(HEAT.active?'\nheat '+HEAT.U.uK.value.toFixed(2):''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'town and far country':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

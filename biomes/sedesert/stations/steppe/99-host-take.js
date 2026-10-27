@@ -37,11 +37,13 @@ function dialCheck(M){if(!M)return{ok:false,detail:'no sun-dials'};if(SEDESERT.S
  return{ok:deg<30,detail:'mean '+deg.toFixed(1)+' degrees between a disc\'s face and the sun ('+n+' dials)'};}
 const dialMesh=()=>scene.getObjectByName('biome:dialdisc');
 KHOST.on(skyView,'view');
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88; the final rebuild): each chunk mesh by its range */
 KHOST.take({build:'sedesert-steppe',title:'Krator biome — the steppe fringe (the eastern desert, station 3)',
  hint:'The steppe fringe: bunchgrass, umbrella thorns and steppe dragons, kopjes with balanced tors and honeycomb faces, fairy circles, a seasonal pan; old twoleafs, rock figs, pebble plants; sun-dials, whistle reeds, drift lanterns',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:SKY_HOUR0},draw:(s,c,dt)=>HEAT.render(dt),
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.6;if(cp.y<g)cp.y=g;},
+ controls:[AIR_CONTROL],   /* the air: calm or a dust storm (89x-host-air.js) */
  inspect:describe,stats:()=>'inst '+window._instances+(HEAT.active?'\nheat '+HEAT.U.uK.value.toFixed(2):''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'rock and far country':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
@@ -55,3 +57,5 @@ KHOST.take({build:'sedesert-steppe',title:'Krator biome — the steppe fringe (t
    BIO.SUN.value.copy(keep);return S.y<.1?{ok:false,detail:'the sun is down'}:r;})())}]),
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// the steppe's season on the host's clock (59: the grasses' dry-season colour; two seasons, the rains in the southern summer), or held by ?dry=
+{const q=new URLSearchParams(location.search);if(SEDESERT.STEPPE_SEASON){if(q.has('dry'))BIO.setSeason(+q.get('dry'));else BIO.bindSeason(null,{sharp:2});}}

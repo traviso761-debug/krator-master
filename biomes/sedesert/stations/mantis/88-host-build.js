@@ -35,6 +35,9 @@ const TOWN_MESH=(function(){const pos=[],nor=[],col=[],c=new THREE.Color();
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  const fauna=(kind,x,z)=>kind!=='deer'&&FIELD.lake(x,z)<.1&&FIELD.garden(x,z)<.5;
+ /* THE FAR BAND'S DIET (GRAPHIC-LOAD.md; the final rebuild, 2026-10-27; ?diet=0 the spine's static LOD alone): heroes within 800 m, octahedral
+    impostors past that and for every far tree, the kit's floor bands to 600/1200/1000 m (the station's own floor keeps its spine bands) */
+ if(new URLSearchParams(location.search).get('diet')!=='0')Object.assign(SEDESERT.LOD,{tree:800,floor:600,mid:1200,far:1000});else SEDESERT.IMPOSTORS=false;
  try{window._biome=SEDESERT.build({R:TERR.R-150,quality:q,fauna});}catch(e){reportErr('biome: '+e.stack);}
  _mark('biome');
  // the gardens' own trees and beds, on the kit's stream (reseeded per garden by its index, so one garden is the same alone)
@@ -50,6 +53,9 @@ const TOWN_MESH=(function(){const pos=[],nor=[],col=[],c=new THREE.Color();
      SEDESERT.bed(p[0],y,p[1],melon);st.beds++;}}}
   BIO.cur=null;window._gardens=st;}catch(e){reportErr('gardens: '+e.stack);}
  const b=BIO.bake();
+ /* the impostors' light matched to the near crowns (the bake is ~4x dark: HANDOFF-REBUILD.md); ?impgain= ?impwrap= */
+ if(BIO.impostorLook){const q=new URLSearchParams(location.search);BIO.impostorLook({gain:+(q.get('impgain')||2.6),wrap:+(q.get('impwrap')||1)});}
+ if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:'Mantis\'s green pocket: the Socotran monsoon forest on the Bowl\'s south-west shore (the eastern desert, station 2b)',x:0,z:0,y:LAKE.level-8,r:TERR.R,h:400});
  _mark('bake');

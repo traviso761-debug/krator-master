@@ -336,7 +336,11 @@ def lib_branch(rest):
 def geometry(build_dir):
     """{material key: set of geometry kinds} from the build's BIO.def lines; 'other' for a kit's own geometry"""
     kinds = {}
-    for f in sorted(glob.glob(os.path.join(build_dir, 'src', '*.js'))):
+    # a station's fragments sit in its own folder (biomes/<kit>/stations/<name>/NN-*.js), beside its materials.json; a build with
+    # a src/ is read from there alone (its root holds three.min.js and the generated .syntax.js)
+    src = os.path.join(build_dir, 'src')
+    frags = glob.glob(os.path.join(src, '*.js')) if os.path.isdir(src) else [f for f in glob.glob(os.path.join(build_dir, '*.js')) if re.match(r'\d', os.path.basename(f))]
+    for f in sorted(frags):
         with open(f, encoding='utf-8', errors='replace') as fh:
             for line in fh:
                 for m in re.finditer(r"BIO\.def\(\s*['\"][^'\"]+['\"]\s*,(.*?)(?=BIO\.def\(|$)", line):

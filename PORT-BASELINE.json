@@ -112,9 +112,21 @@
    "bytes": 6091636,
    "sha256": "834728e99ab725b2a5d4dcfa8ecf8fe1de4d3a06faa7a649213e78faaab009e5"
   },
+  "biomes/sedesert/dist/sedesert-bowl.html": {
+   "bytes": 8223489,
+   "sha256": "43a40296bc67b18c8d0f61340726060071709554cf98452bd30ae6055f588d86"
+  },
+  "biomes/sedesert/dist/sedesert-mantis.html": {
+   "bytes": 9053310,
+   "sha256": "be28b04b1dca48ed24a9a63e491f74b85061f3fdb4674aea400397cc1d37d330"
+  },
+  "biomes/sedesert/dist/sedesert-steppe.html": {
+   "bytes": 10178826,
+   "sha256": "51e3ded021b2e703df8fcfc9cec11f15004052011f29d1bd452754201d8891a2"
+  },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 4780240,
-   "sha256": "08091e86c81a30b1df13d9d155c22e11032b51b788e9f3725b5636002c83d3ee"
+   "bytes": 6008838,
+   "sha256": "e8eb5c002faded9781fbc9e952b2d16e01ca5e0a2a533c7d8f1315fe62a3bafc"
   },
   "biomes/shighlands/dist/shighlands.html": {
    "bytes": 1988354,

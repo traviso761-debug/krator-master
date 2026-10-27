@@ -13,12 +13,13 @@
   "ground.reedbed": {"lib": "ground.reedbed", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.3, "mapOnly": true},
   "ground.popcorn": {"lib": "ground.clay.popcorn", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.3, "mapOnly": true},
   "saxbark": {"lib": "bark.saxaul", "scale": [2, 3], "tint": {"keep": 0.0, "mean": 0.5}, "roughLift": 0.3, "mapOnly": true},
-  "saltbush": {"lib": "card.saltbush", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "saltbush": {"lib": "card.saltbush", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "size": 512, "stems": [{"cell": [0.015, 0.046, 0.325, 0.314], "stem": [0.1722, 0.3076], "tip": [0.1722, 0.0518], "w": [-0.1282, 0.1276]}, {"cell": [0.343, 0.368, 0.659, 0.64], "stem": [0.4639, 0.6338], "tip": [0.4639, 0.3682], "w": [-0.0918, 0.1699]}, {"cell": [0.667, 0.681, 0.984, 0.958], "stem": [0.836, 0.9521], "tip": [0.836, 0.6807], "w": [-0.1377, 0.1181]}]},
   "brinelamp": {"lib": "card.brinelamp", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "tamarisk": {"lib": "card.tamarisk", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.66}, "size": 512},
+  "tamarisk": {"lib": "card.tamarisk", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.66}, "size": 512, "stems": [{"cell": [0.0, 0.0, 0.33, 0.33], "stem": [0.07, 0.02], "tip": [0.2136, 0.3514], "w": [-0.1304, 0.0705]}, {"cell": [0.34, 0.33, 0.66, 0.66], "stem": [0.5, 0.34], "tip": [0.5, 0.6592], "w": [-0.1182, 0.1299]}, {"cell": [0.67, 0.66, 1.0, 1.0], "stem": [0.75, 0.67], "tip": [0.8558, 0.9875], "w": [-0.1365, 0.0834]}], "rise": -0.55},
   "glasswort": {"lib": "card.samphire", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.72}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "saltreed": {"lib": "card.reed", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.69}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "saxtwig": {"lib": "card.samphire", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.72}, "size": 512, "stems": [{"cell": [0.089, 0.015, 0.286, 0.337], "stem": [0.1631, 0.0205], "tip": [0.198, 0.3293], "w": [-0.0851, 0.0805]}, {"cell": [0.376, 0.354, 0.614, 0.657], "stem": [0.3857, 0.3623], "tip": [0.5678, 0.6144], "w": [-0.1209, 0.0821]}, {"cell": [0.702, 0.663, 0.952, 0.985], "stem": [0.8232, 0.9795], "tip": [0.8289, 0.6706], "w": [-0.101, 0.1026]}]},
+  "saltreed": {"lib": "card.reed", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.69}, "size": 512, "cell": [0.329, 0.329, 0.667, 0.671]},
   "rankgrass": {"lib": "card.rankgrass", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "size": 512, "cell": [0.34, 0.34, 0.66, 0.66]},
-  "flowers": {"lib": "card.flower.bloom.highland", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "size": 512}
+  "flowers": {"lib": "card.flower.bloom.highland", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "size": 512, "sheet": "geometry"}
  }
 }

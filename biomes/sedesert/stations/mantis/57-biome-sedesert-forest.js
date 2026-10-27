@@ -78,8 +78,12 @@ B[sp('cucumber')]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,trH=H*.62,rin
  st.trunk+=BIO.lathe('bark2',rings,lv===2?10:7,Math.max(1,Math.round(TAU*rb/3)),5,(R,ang)=>R.r*(1+.03*Math.sin(5*ang)),null);
  const top={x:T.x,y:T.y0+trH,z:T.z},n=lv===2?ri(3,6):3;
  for(let k=0;k<n;k++){const a=k/n*TAU+rr(-.3,.3),el=rr(.5,1.1),len=H*rr(.22,.38),pts=TL.treeGrow(top,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,rb*.28,rb*.12,3,.05,.08);
-  st.limb+=BIO.tube('bark2',pts,TL.barkCol(S,k),{seg:5,cap:true});const e=pts[pts.length-1];
-  TL.clumpAt('broad',e.x,e.y+.3,e.z,T.crownR*rr(.45,.65),.6,C(pick(S.leaf)),T.x,T.y0+H*.9,T.z,T.crownR,H*.25);st.clumps++;
+  /* the leaves on the limb (the card fit, 2026-10-27: the fig card is held by its sprigs' stems, which start at the clump's origin): the tuft
+     seated on the tip itself, not 0.3 m over it, the limb tapering into it, and a second tuft two thirds along a hero's limb (the owner saw
+     capped stubs under floating crowns). The second tuft draws from the stream, so the pocket's later placements move a little */
+  pts[pts.length-1].r=rb*.05;st.limb+=BIO.tube('bark2',pts,TL.barkCol(S,k),{seg:5,cap:true});const e=pts[pts.length-1];
+  const cs=T.crownR*rr(.45,.65),lc=C(pick(S.leaf));TL.clumpAt('broad',e.x,e.y,e.z,cs,.6,lc,T.x,T.y0+H*.9,T.z,T.crownR,H*.25);st.clumps++;
+  if(lv===2){const m=pts[Math.max(1,Math.round((pts.length-1)*.66))];TL.clumpAt('broad',m.x,m.y,m.z,cs*.7,.6,lc,T.x,T.y0+H*.9,T.z,T.crownR,H*.25);st.clumps++;}
   if(lv===2&&rng()<.6)BIO.put('plume',[e.x,e.y+T.crownR*.4,e.z],qEuler(0,rr(0,TAU),0),T.crownR*rr(.25,.4),bright(vary(0xf0d040,.02,.08,.05),1.2),{n:[0,1,0]});}
  TL.regTree(T,S,T.crownR+1,H+1);};
 })();

@@ -67,6 +67,11 @@ const chanAt=(x,z)=>CHG.at(x,z,{});
 
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
+// THE GRAPHICS SET (the final rebuild, 2026-10-27; GRAPHIC-LOAD.md, the kit's page's lines): items welded to an index (?index=0), each chunk's
+// LOD bands merged with a dithered cross-fade (?lodmerge=0, ?lodfade=0), loose instances culled past their range (?lodcull=0); before the kit defines its items
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.init({tags:STATION.tags,THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,field:TFIELD,placeH:placeH,
  mask:(x,z)=>{const d=placeH(x,z)-waterAt0(x,z);return d<.12?0:d<.5?(d-.12)/.38:1;},
  obstacles:OBSTACLES,ticks:tick,seed:STATION.seed,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
