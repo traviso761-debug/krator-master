@@ -53,6 +53,12 @@ carve patch is enough; `KNOWN_ISSUES.md`), `33b-core-bamboo`, `38-core-fire`, `3
 station 1 burns, leans or harms), the season (`BIO.SEASON`: one season shown; a later pass). `kits/crops`: the farm is drawn
 as fields and walls only, its crops left to the Republic's builds (section 0, and an open question).
 
+**The treeline station** (station 6, 2026-10-27) takes the same modules (it is built from the same `build.py` with `--station
+treeline`), less `36-core-carve` and `37-core-stacks` in use (no cave, no bodies; the fragments stay listed), and `core/water` for
+wet ground and puddles only (no running water: the owner's brief). It adds `biomes/ehighlands` read in place (the glass tower, by
+its one-plant API `EHIGH.make`/`grow`) and KGROUND's `clast` layer kind for the fellfield. Strata: formations `ringfold` under
+`megabreccia` (`crest`).
+
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26)
 
 93,816 km² (px 236-414 by 528-756), inside the Inner Crater polygon.
@@ -249,6 +255,13 @@ scarp's foot.
    walls and across it, the lake upstream.
 4. **The pillar rim** (`-pillars`, the tableland's south-west edge): the painting: red and white towers in mist, anemone
    trees on their tops, the green floor and Pan Riba's meanders; Dalab's watch post on one tower's top.
+6. **The treeline** (`-treeline`, ~3.4-4.9 km, Dsb and Dsc; the owner, 2026-10-27: a station with no running water, the native
+   forest in its second climate): the upper ramp's dry-summer woods under the crest. Bottle brushes on the sunny (north-facing)
+   spurs, whorl columns in the shaded (south-facing) hollows and up to the treeline at ~4.3 km, glass leaf among the last trees and
+   on the open ground above, the fellfield of the crest's shattered `crest` rock (megabreccia) toward a cirque's headwall at ~4.9 km,
+   with glass towers (`biomes/ehighlands`, read in place) on its scree. Snow lies in the cirque's shade. Puddles after rain only.
+   Station 1's rules carry over (KRAND by cell, KFIELD ground, impostors past 800 m); the cirque is the kit's own bowl on the field
+   (no core cirque form yet).
 5. **The fan coast** (`-coast`, optional, the ecotone): the dry scarp with the star-fruit caudex, arrowheads and coral
    melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore.
 

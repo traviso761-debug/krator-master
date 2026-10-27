@@ -89,8 +89,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fall with no bridge',HCHK.bridges(GORGE.falls,BODIES.filter(B=>B.fall!==GORGE.falls[1])));
  return R;}
 function biomeChecks(){const R={};
- R.missing=SWHI.SPECIES.filter((S,i)=>!SWHI.TREES.some(T=>T.sp===i)).map(S=>S.key);
- R.bySpecies=SWHI.SPECIES.map((S,i)=>S.key+':'+SWHI.TREES.filter(T=>T.sp===i).length).join(' ');
+ /* this station's species (station 1: the ring folds) */
+ R.missing=SWHI.SPECIES.filter((S,i)=>S.station==='folds'&&!SWHI.TREES.some(T=>T.sp===i)).map(S=>S.key);
+ R.bySpecies=SWHI.SPECIES.filter(S=>S.station==='folds').map(S=>S.key+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[S.key]).length).join(' ');
  R.treesInWater=SWHI.TREES.filter(T=>BIO.depth(T.x,T.z)>.05).length;
  const FLOOR=['moss','club','turf','bheath','bcoral'];let wet=0,n=0;FLOOR.forEach(it=>itemPositions(it,7).forEach(p=>{n++;if(BIO.depth(p[0],p[2])>.35)wet++;}));R.floorInWater={wet,of:n};
  R.treesOnCliffs=SWHI.TREES.filter(T=>T.lv>0&&T.sp!==SWHI.KEY.pillarcap&&FC.at(FC.a.slope,T.x,T.z)>1.2).length;

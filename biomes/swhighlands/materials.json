@@ -1,6 +1,6 @@
 {
  "build": "swhighlands",
- "note": "The SW highlands kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). Keys are the kit's MAT slots (50-biome-swhighlands-species.js: BIO.libSwap names a table entry by its key) and the host's slots (rockDetail in 47-host-land.js, wallStone in 82-host-far.js, the ground's KGROUND layers in 84-host-ground.js). Run python3 tools/textures/pack.py biomes/swhighlands after any change, then python3 build.py, and tools/textures/check_cells.py on this file. Grey detail maps (keep 0) are coloured by the species' instance and vertex colours; the bulb heath's card keeps its own colours (its flowers). The cup-pads take organic.funnel.trumpet as a grey detail map, mapped from above (the owner, 2026-10-26: they wanted texture). Slots not listed stay procedural: the parasol fruits and bulb fruits are vertex-coloured fleshy bodies with no map (no set is owed: they read at a few metres as colour and shading). The turf card and the crest's ground layer are stand-ins: card.moss tinted pale and ground.grass_ground (an Earth grass) until a native turf set exists (core/materials/PROMPTS-NEEDED.md section 22).",
+ "note": "The SW highlands kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). Keys are the kit's MAT slots (50-biome-swhighlands-species.js: BIO.libSwap names a table entry by its key) and the host's slots (rockDetail in 47-host-land.js, wallStone in 82-host-far.js, the ground's KGROUND layers in 84-host-ground.js). Run python3 tools/textures/pack.py biomes/swhighlands after any change, then python3 build.py, and tools/textures/check_cells.py on this file. Grey detail maps (keep 0) are coloured by the species' instance and vertex colours; the bulb heath's card keeps its own colours (its flowers). The cup-pads take organic.funnel.trumpet as a grey detail map, mapped from above (the owner, 2026-10-26: they wanted texture). Slots not listed stay procedural: the parasol fruits and bulb fruits are vertex-coloured fleshy bodies with no map (no set is owed: they read at a few metres as colour and shading). The turf card and the crest's ground layer are stand-ins: card.moss tinted pale and ground.grass_ground (an Earth grass) until a native turf set exists (core/materials/PROMPTS-NEEDED.md section 22). Station 6, the treeline (2026-10-27): whorl and brush take card.frond.needle (one strip of its sheet), glass the middle of card.fin.glass, the trunks bark.whorled and bark.boojum (as the plan's section 8 reuse list names), the fellfield's stones rock.granite.tor, its ground layer KGROUND's clast kind over rock.megabreccia, the sunny spurs ground.steppe.",
  "size": 512,
  "families": {
   "swcord": {
@@ -266,6 +266,126 @@
    },
    "roughLift": 0.35,
    "specular": 0.25,
+   "mapOnly": true
+  },
+  "whorl": {
+   "lib": "card.frond.needle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.0,
+    0.0,
+    0.3333,
+    1.0
+   ]
+  },
+  "brush": {
+   "lib": "card.frond.needle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.0,
+    0.0,
+    0.3333,
+    1.0
+   ]
+  },
+  "glass": {
+   "lib": "card.fin.glass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "swwhorl": {
+   "lib": "bark.whorled",
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "swbottle": {
+   "lib": "bark.boojum",
+   "scale": [
+    2.0,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "stone": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.fell": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
    "mapOnly": true
   }
  }

@@ -49,10 +49,28 @@ def find_node():
 
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
-OUT = next((a for a in sys.argv[1:] if not a.startswith('--')), 'swhighlands.html')
+# STATIONS (PLAN.md section 7): `--station <name>` overlays stations/<name>/*.js on src/ (a fragment of the same name wins, a
+# name 'drop:<file>' in stations/<name>/DROP drops one) and writes dist/swhighlands-<name>.html; no flag: station 1, the ring folds
+STATION = next((sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == '--station' and i + 1 < len(sys.argv)), None)
+OUT = next((a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith('--') and sys.argv[i - 1] != '--station'),
+           'swhighlands-%s.html' % STATION if STATION else 'swhighlands.html')
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 core = lambda *p: os.path.normpath(os.path.join(ROOT, 'core', *p))
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    SD = os.path.join(HERE, 'stations', STATION)
+    if not os.path.isdir(SD):
+        sys.exit('build.py: no station ' + STATION)
+    for f in os.listdir(SD):
+        if f.endswith(('.js', '.html')):
+            PATH[f] = os.path.join(SD, f)
+    dp = os.path.join(SD, 'DROP')
+    if os.path.isfile(dp):
+        with open(dp, encoding='utf-8') as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if ln and not ln.startswith('#'):
+                    PATH.pop(ln, None)
 # core/terrain (core/README.md "terrain"): the field (KFIELD: the ground baked once, the heightfield the page and Godot read), strata (the ringfold recipe, KSTRATA, and its three.js shader), carve (the cave's mouth),
 # stacks (the arch, the natural bridges), relief (ranges, gaps, the river's levels, the farm's fields), the ground's library layers
 # (KGROUND), the far field (KFAR) and the terrain's shadows (KHORIZON). A src/ copy with the same name wins.
@@ -94,6 +112,14 @@ for f in ('23-mat-record.js', '25-matlib-host.js'):
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack
 VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'swhighlands'), khost.EDITS_JS: khost.edits_js(HERE, 'swhighlands')}
+# THE TREELINE reads the eastern highlands' kit in place (PLAN.md section 3: the glass tower is ehighlands' own, not a new species):
+# its species and its trees (EHIGH.make / grow, one plant alone), slotted after the host stage and before this kit, its registry
+# closed by stations/treeline/47c-host-ehigh-end.js; its pack's slots go with it
+if STATION == 'treeline':
+    EH = os.path.normpath(os.path.join(HERE, '..', 'ehighlands'))
+    PATH['47a-ehigh-species.js'] = os.path.join(EH, 'src', '50-biome-ehigh-species.js')
+    PATH['47b-ehigh-trees.js'] = os.path.join(EH, 'src', '55-biome-ehigh-trees.js')
+    VIRTUAL['44b-host-matlib-pack-ehigh.js'] = matlib_pack.fragment(EH, 'ehigh')
 for f in VIRTUAL:
     PATH[f] = None
 # core/atmos: its core, presets, weather, export, the wave field and the sky's light, bound by 89a-host-atmos.js

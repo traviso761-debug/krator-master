@@ -42,6 +42,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # A section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one run
 # (add sim to see a stub fail).
 EXPORT_BOX = [380, -320, 680, -20]   # the cove's east edge and the fold river (2026-10-26)
+EXPORT_BOX_TREELINE = [-700, -250, -400, 50]   # station 6: the woods on the lower ramp
+EXPORT_PROFILE_TREELINE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']   # no water drawn there
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -107,8 +109,13 @@ if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, d
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
 
-// 6. THE BIOME'S OWN INVARIANTS (src/99-host-take.js, biomeChecks)
-{ const B=A.biomeChecks();
+// 6. THE BIOME'S OWN INVARIANTS (src/99-host-take.js or stations/<name>/99-host-take.js, biomeChecks)
+if(window._biome&&window._biome.station==='treeline'){ const B=A.biomeChecks();
+  R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
+  R.push({name:'nothing-on-the-cliffs-or-snow', ok:B.treesOnCliffs===0&&B.treesOnSnow===0, detail:B.treesOnCliffs+' hero trees on ground steeper than 1.2, '+B.treesOnSnow+' trees on snow'});
+  R.push({name:'the-floor-and-the-glass-towers-drawn', ok:B.floor.glassleaf>500&&B.floor.stones>500&&B.floor.whorls>1000&&B.floor.brush>200&&B.glassTowers>10,
+          detail:JSON.stringify(B.floor)+' glass towers '+B.glassTowers}); }
+else { const B=A.biomeChecks();
   R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});
   R.push({name:'nothing-rooted-in-the-water', ok:B.treesInWater===0&&B.floorInWater.wet<=Math.max(2,B.floorInWater.of*.001),
           detail:B.treesInWater+' trees, '+B.floorInWater.wet+' of '+B.floorInWater.of+' sampled floor plants under more than .35 m of water'});
@@ -192,10 +199,13 @@ async def run(a):
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                tl = 'treeline' in os.path.basename(a.html)
+                if tl and not a.profile:
+                    prof = EXPORT_PROFILE_TREELINE
+                pok, lines = await check_profile(pg, EXPORT_BOX_TREELINE if tl else EXPORT_BOX, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % (EXPORT_BOX_TREELINE if tl else EXPORT_BOX))
                 if not pok:
                     fails.append("assert export-profile")
 
