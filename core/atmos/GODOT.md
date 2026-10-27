@@ -230,6 +230,13 @@ iz, k, 0x7261)`, which `core/rand/krand.gd` reproduces), turned to the eye about
 same lowbias32 columns in `fragment()`. Inside, the Atmos autoload raises `W.rain` to the eased field under the eye after its
 weather step, as the JS hook does, so the rain particles, the wetness and the grey sky follow.
 
+**Acid rain** (`fx/89-atmos-fx-acid.js`). The `acidrain` record (and the weather record's `acid`) carries the pH (a number,
+or `field` when the page gives a function: the port takes the same region map), `mmh`, the tint and the pH it is full at,
+the etch's base and rate. The Atmos autoload steps the etch with `ATMOS.acidStep`'s line and sets a global `vec4 atm_acid`
+(etch, fizz, time, 0) and the rain particles' colour from `acidTint`; `atmos_acid.gdshaderinc` is `ATMOS.acidGLSL()` (the
+same lowbias32 cells: pits, streaks, fizz) applied to ALBEDO in the ruin, rock and puddle shaders, times `atm_rain_open`.
+The dose is core/hazard's: the autoload registers the same `rain` and `ph` fields with its KHAZ port.
+
 ## The rain occlusion map (R10: `fx/89-atmos-fx-raincover.js`)
 
 The `raincover` record carries the size, box, step, lift, depth and the shelter margin. Godot: a

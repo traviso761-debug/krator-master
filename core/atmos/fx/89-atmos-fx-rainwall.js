@@ -58,7 +58,7 @@
      float edge=smoothstep(0.0,0.3,vUv.x)*(1.0-smoothstep(0.7,1.0,vUv.x)),vert=smoothstep(0.0,0.06,vUv.y)*(1.0-smoothstep(0.75,1.0,vUv.y));
      float a=vA*rwK*edge*vert*(0.6+0.4*st);if(a<0.004)discard;gl_FragColor=vec4(vec3(${R.colour.map(F).join(',')})*(0.4+0.6*light)*(0.8+0.2*vUv.y),a*${F(R.alpha)});}`});
   R.mesh=cells.length?A.sprites('rainwall',{ipos:[3,pos],pp:[4,pp]},m,3):null;
-  R.at=(x,z)=>A.rainWallAt(R,x,z,A.ground);R.here=0;
+  R.at=(x,z)=>A.rainWallAt(R,x,z,A.ground);R.here=0;A.rainwall=R;
   // inside: the field under the eye lifts the weather's rain (after the weather's own step: the hooks run in order)
   A.hook((t,hr,dt)=>{const W=A.W;R.k.value=R.off?0:1;if(R.mesh)R.mesh.visible=!R.off;if(!W||!cam)return;
    const g=R.off?0:R.inside*R.at(cam.position.x,cam.position.z);R.here+=(g-R.here)*Math.min(1,dt*.5);if(R.here>W.rain)W.rain=R.here;});

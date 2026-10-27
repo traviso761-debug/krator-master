@@ -5,7 +5,7 @@
 'use strict';
 const fs=require('fs'),path=require('path');global.window=global;
 const D=__dirname,files=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','sky/89-atmos-j-fog.js','host/89-atmos-c-hostbind.js','host/89-atmos-e-weatherhost.js',
- 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
+ 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','fx/89-atmos-fx-acid.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
 eval(files.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');
 const A=global.ATMOS;let bad=0;const ok=(n,p,neg)=>{const r=p&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+n+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<=(e==null?1e-6:e);
@@ -159,4 +159,25 @@ const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
  ok('...and R.off leaves the weather alone',A.W.rain<.05&&H.mesh.visible===false,A.W.rain>.05);
  ok('its curtain shader has no sin hash',!/sin\(/.test(H.mesh.material.fragmentShader+H.mesh.material.vertexShader),/sin\(/.test(H.mesh.material.fragmentShader));
  A.h.ground=g_;camera.position.set(cp[0],cp[1],cp[2]);}
+// ---------------------------------------------------------------- acid rain (fx/89-atmos-fx-acid.js; core/hazard's acid-rain row)
+{ok('the acid ramp is core/hazard\'s: none in clean rain or with no rain, full at pH 1 in 10 mm/h, half at pH 2.5 in 10',A.acidK(5.6,20)===0&&A.acidK(2,0)===0&&A.acidK(1,10)===1&&near(A.acidK(2.5,10),.5,1e-12)&&near(A.acidK(1,5),.5,1e-12),A.acidK(5.6,20)>0);
+ const rc=A.PRESETS.rain.color,t2=A.acidTint(2);
+ ok('clean rain keeps its colour; acid rain turns a sickly yellow-green',A.acidTint(5.6).every((v,i)=>near(v,rc[i],1e-12))&&t2[1]>t2[2]+.3&&A.acidTint(null).every((v,i)=>near(v,rc[i],1e-12)),near(t2[2],rc[2],1e-3));
+ const S={etch:.2};A.acidStep(S,2,10,60);const e1=S.etch;A.acidStep(S,5.6,10,600);A.acidStep(S,2,0,600);
+ ok('the etch grows while acid rain falls and never falls back',e1>.2&&near(S.etch,e1,1e-12)&&A.acidStep({etch:.99},1,10,1e4).etch===1,e1<=.2);
+ const g=A.acidGLSL();ok('the acid chunk: guarded, pits, streaks, fizz, no sin hash',/#ifndef ATM_ACID_CHUNK/.test(g)&&/atmAcidPits/.test(g)&&/atmAcidStreak/.test(g)&&/atmAcidFizz/.test(g)&&!/sin\(/.test(g),/sin\(/.test(g));
+ // the host on the stub: the streaks' colour becomes a uniform, the fields reach KHAZ, the records carry the acidity
+ const prov={};global.KHAZ={provide:(k,fn)=>{prov[k]=fn;}};const fs0=A.rainMat.fragmentShader;
+ A.W.mode='storm';A.W.rain=1;camera.position.set(0,10,0);
+ const AS=A.acidRain({ph:(x,z)=>x<0?2:5.6,cover:(x,y,z)=>y<5?1:0});
+ ok('acidRain: the rain streaks read the tint uniform (their old literal gone)',/uniform vec3 atmAcidC/.test(A.rainMat.fragmentShader)&&A.rainMat.fragmentShader.indexOf('vec3('+A.PRESETS.rain.color.map(A.glf).join(',')+')')<0&&A.rainMat.uniforms.atmAcidC===A.U.acidC,A.rainMat.fragmentShader===fs0);
+ ok('...KHAZ gets rain (mm/h, 0 under cover) and pH (the Valley\'s acid in the west, clean in the east)',near(prov.rain(-50,10,0),20,1e-9)&&prov.rain(-50,2,0)===0&&prov.ph(-50,10,0)===2&&prov.ph(50,10,0)===5.6,!prov.rain);
+ const wr=A.fx.find(r=>r.type==='weather');ok('...the weather record carries the acidity, and an acidrain record',wr&&wr.acid&&wr.acid.ph==='field'&&A.fx.some(r=>r.type==='acidrain'&&r.fields===true),!(wr&&wr.acid));
+ camera.position.set(-50,10,0);const e0=A.acid.etch;for(let i=0;i<50;i++)A._frame(.1);const eW=A.acid.etch,fW=A.acid.fizz;
+ camera.position.set(50,10,0);for(let i=0;i<50;i++)A._frame(.1);
+ ok('in the acid west the eye\'s etch grows and the water fizzes; in the clean east the fizz stops and the etch holds',eW>e0&&fW>.5&&A.acid.fizz===0&&near(A.acid.etch,eW,1e-12),eW<=e0);
+ const mk=k=>{const m=new Material();A.acidOn(m,{kind:k});return compile(m).fragmentShader;},fm=mk('metal'),fsn=mk('stone'),fw=mk('water');
+ ok('acidOn: metal, stone and water each draw their own term on the albedo',/atmAcidAlbedo\(diffuseColor\.rgb,vAtmAcP,atmAcNf,0,/.test(fm)&&/atmAcNf,1,/.test(fsn)&&/atmAcNf,2,/.test(fw),/atmAcNf,0,/.test(fsn));
+ const m2=new Material();A.acidOn(m2,{kind:'metal'});A.acidOn(m2,{kind:'metal'});ok('...once each',(compile(m2).fragmentShader.match(/#define ATM_ACID_CHUNK/g)||[]).length===1,false);
+ A.W.mode='clear';A.W.rain=0;delete global.KHAZ;}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

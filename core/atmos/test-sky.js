@@ -133,4 +133,6 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  ok('...darkening steadily with height, never brighter higher up',mono&&mid.dayStars<hi.dayStars,false);
  const PL=A.skyPreset('standard',{air:{thin:{y0:-9000}}});ok('y0 moves the law to the page\'s datum (y0 -9000: the eye at 0 stands at 9 km)',near(A.airPressureAt(PL,0),A.airPressureAt(PT,9000),1e-12),near(A.airPressureAt(PL,0),1.6,1e-6));}
 
+{const PT=A.skyPreset('standard',{air:{thin:{y0:0}}}),prov={};const none=A.provideAir(PT);global.KHAZ={provide:(k,fn)=>{prov[k]=fn;}};const got=A.provideAir(PT);delete global.KHAZ;
+ ok('provideAir hands core/hazard the pressure by height (0.07 atm at the rim), and does nothing without KHAZ',none===false&&got===true&&near(prov.pressure(0,25000,0),A.airPressureAt(PT,25000),1e-12)&&prov.pressure(0,25000,0)<.08,!prov.pressure);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

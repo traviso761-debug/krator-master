@@ -225,6 +225,22 @@ const WALL=ATMOS.rainWall({y0:1700,y1:2600,windward:[-1,0],   /* the band of gro
 
 The rain wall's cloud is a fog belt over the same band: the station takes both.
 
+**Acid rain** (the Valley of the Ancients, planned; core/hazard's `acid-rain` row; the pH values are placeholders for the
+owner): `fx/89-atmos-fx-acid.js`, after the weather (and after `rainCover`, so nothing sheltered etches or fizzes):
+
+```js
+ATMOS.acidRain({ph:(x,z)=>VALLEY.has(x,z)?2.5:5.6,   /* a number or a field; clean rain is 5.6 */
+ cover:(x,y,z)=>ROOF.over(x,y,z)?1:0});             /* the page's own shelter test, for the hazard's rain field */
+ATMOS.acidOn(MAT_RUIN_METAL,{kind:'metal'});ATMOS.acidOn(MAT_ROCK,{kind:'stone'});ATMOS.acidOn(MAT_PUDDLE,{kind:'water'});
+```
+
+The weather's streaks turn a sickly yellow-green as the pH falls; `metal` pits and tarnishes and `stone` bleaches and
+streaks as the etch at the eye grows (a base from the pH, plus what each storm adds; it never falls back); `water` fizzes
+while it rains. With core/hazard on the page it provides `KHAZ.provide('rain', ...)` (mm/h, 0 under `cover`, the rain wall's
+field where one stands) and `KHAZ.provide('ph', ...)`; the weather record gains `acid`. Thin air's pressure goes to the same
+bridge with `ATMOS.provideAir(SKY.preset)`. There is no temperature field yet. The etched textures are procedural until
+`metal.etched` and `stone.acidstreak` arrive (`core/materials/PROMPTS-NEEDED.md` section 33).
+
 **For the other workstreams.** core/water's `WATER.wetGround` should hook through `ATMOS.shaderHook` when present (today a
 page hook set after it replaces a core hook layered under it) and (done on the water side, 2026-10-26) multiplies its wetness, puddles and rain rings by `atmRainOpen(worldPos)`
 when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms(sh.uniforms)`). `ATMOS.bindWeather`'s `o.wet` is passed
