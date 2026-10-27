@@ -141,6 +141,9 @@ PATH['89-atmos-fx-raincover.js'] = core('atmos', 'fx', '89-atmos-fx-raincover.js
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 for f in CORE_WATER:
     PATH.setdefault(f, core('water', f))
+# core/water/ext: the cave stream's mouth on the river as one water (WATER.confluence: the ground's shore, one current)
+for f in ['55-core-water-confluence.js', '55b-core-water-confluence-draw.js']:
+    PATH[f] = core('water', 'ext', f)
 miss = [f for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js') if f not in PATH]
 if miss:
     print('NO BIOME CORE: ' + ', '.join(miss)); sys.exit(1)
