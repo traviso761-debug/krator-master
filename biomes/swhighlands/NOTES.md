@@ -44,3 +44,20 @@ spikes (refs/03), bead coral (refs/20 D), rim turf and moss. Placement reads the
 (BIOME-API.md), which station 4's stage will bake. Preview: station 1's page with `?sheet=pillars` (the views "Station 4 flora: the
 anemone trees" and "... the floor"), every stage of the tree and a bed of each floor plant on the bald. Not yet: the pass run on a
 real stage, its triangle budget, impostor gain, textures from the library (the bodies are procedural flesh grain and vertex colour).
+
+## Stations 2, 3 and 5: their flora (2026-10-27)
+
+The flora only, ahead of the stages, as for station 4 (`58`, `59`, `59c`; the shared helpers `SWHI.GB` in 50 and `SWHI.FL` in 57):
+- **Station 2, the rain wall** (`58`): stilt pod trees (refs/02), shelf coral (07), weeping wisps (08, with blue-berry bracts and
+  drop-fruit on their boles, refs/19), the fishing bridge (13, placed from the host's stream crossings), glow tubes (19, their tips
+  lit), bearded triplets (20 B), moss.
+- **Station 3, Span's tableland** (`59`): cell lamps (18, their offspring spheres round them), wing reeds (03), bulb trumpets
+  (20 E), drip caps (19, an item for the dress pass on posts and ruins), with station 4's torch spikes, bead coral, cushions and
+  anemone trees on the domes.
+- **Station 5, the fan coast** (`59c`): star-fruit caudex (06) and coral melons (20 A) as its small trees, arrowheads (20 C), frill
+  tubes and trumpet slugs (03), flame pods (19).
+Preview: station 1's page with `?sheet=rainwall`, `?sheet=tableland` or `?sheet=coast`. Fixed on the way: the leaf helper
+(`leafInto`) and the lathe wound their faces down and in, so a double-sided material lit their back faces black from above: their
+winding is now front-up and outward. Not yet: the swlowlands species read in place (tier cedar, flayed madrone on the tableland,
+ember manzanita on the scarp: the stations' build.py will carry their fragments), the rain wall's drowned trees (the stage's
+work), the hanging swamps' dark hooked pitcher, the passes on real stages, their budgets, impostor gains and library textures.

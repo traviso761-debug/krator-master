@@ -29,6 +29,9 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `50-biome-swhighlands-species.js` | 15 | palettes (26); the tree species (46); textures (procedural; the library replaces them: (69); materials (86); geometries local to this kit (113) |
 | `56-biome-swhighlands-treeline.js` | 12 | station 6: zones; the whorl column and bottle brush builders; the pass (trees by age and stand, impostors, glass towers read in place, the floor) |
 | `57-biome-swhighlands-pillars.js` | 11 | station 4's flora: zones; the anemone tree builder; the floor's puts; the pass (trees, impostors, floor); the preview sheet (`SWHI.pillarsSheet`) |
+| `58-biome-swhighlands-rainwall.js` | 25 | station 2's flora: species; materials and buckets; geometries (spore pod, glow tubes, triplets, bract, drop-fruit, red crown); builders (stilt pod, shelf coral, weeping wisp, fishing bridge); floor; pass; sheet |
+| `59-biome-swhighlands-tableland.js` | 11 | station 3's flora: cell lamp, wing reed, bulb trumpets, drip cap; pass (anemone trees on the domes, 57's floor plants); sheet |
+| `59c-biome-swhighlands-coast.js` | 15 | station 5's flora: species (star-fruit caudex, coral melon) and their builders; arrowheads, frill tubes, trumpet slug, flame pods; pass; sheet |
 | `55-biome-swhighlands-trees.js` | 14 | zones from the fields (14); the trees' keep-clear (core/space) (20); the builders (27); placement by cell (core/rand) (89); the pass (99) |
 | `60-biome-swhighlands-floor.js` | 3 |  |
 | `70-biome-swhighlands.js` | 2 |  |

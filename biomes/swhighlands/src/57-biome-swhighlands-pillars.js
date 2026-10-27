@@ -108,4 +108,33 @@ SWHI.pillarsSheet=function(x0,z0,a){a=a==null?0:a;const ca=Math.cos(a),sa=Math.s
  ['cushion','torch','coral','turf','moss'].forEach((item,i)=>{const c=P(i*12+2,-14),n=item==='turf'||item==='moss'?22:item==='coral'?6:9;out.beds[item]=c;
   for(let j=0;j<n;j++){const s=KRAND.stream(KRAND.hash(BIO.host.seed>>>0,i,j,0x5E8)),r=s.range(0,4.5),b=s.range(0,TAU),x=c[0]+Math.cos(b)*r,z=c[1]+Math.sin(b)*r;st[item]+=FLOOR[item](x,Y(x,z),z,s);}});
  out.st=st;return out;};
+
+// ---------------------------------------------------------------- shared by the other stations' flora (58, 59, 59c)
+// SWHI.FL.mk: a tree record (its stage from its own draw, or the one given); SWHI.FL.draw: the heroes, the light forms and the far
+// impostors of every species in TREES (one hero of each baked in place); SWHI.FL.lay: a preview sheet's row of trees and its beds
+SWHI.FL={mk,AGE,AGES,QE,curve,reg,
+ lvOf:(x,z)=>{const d=BIO.lodD(x,z);return d<SWHI.LOD.near?2:d<SWHI.LOD.tree?1:0;},
+ draw(TREES,st,setKey,itemKey,heroOf){const IMPS=[];
+  if(typeof BIO.impostor==='function'){const set=BIO.impostorSet('swhighlands.'+setKey,{label:'Far trees'});
+   [...new Set(TREES.map(T=>T.sp))].forEach(sp=>{const S=SP[sp],T0=(heroOf&&heroOf(sp))||TREES.find(T=>T.sp===sp&&T.lv===2&&T.age==='mature')||TREES.find(T=>T.sp===sp);if(!T0)return;const T1=Object.assign({},T0);
+    const rec=BIO.impostor('swhighlands.'+S.key,()=>{SWHI._muteT=true;try{B[S.habit](Object.assign({},T1),Object.assign({},st),2,KRAND.stream(T1.seed^0x5157));}finally{SWHI._muteT=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+    if(rec)IMPS[sp]={rec,H:T1.H};});
+   if(set.recs.length)BIO.impostorItem(itemKey,set,{label:'Far trees'});}
+  const farImp=T=>{const I=IMPS[T.sp];if(!I)return;BIO.impostorPut(itemKey,I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far=(st.far||0)+2;};
+  TREES.forEach(T=>{BIO.owner=[T.x,T.z];const s=KRAND.stream(T.seed^0x5157);
+   if(T.lv===0){BIO.range=null;BIO.minRange=0;farImp(T);}
+   else{BIO.range=SWHI.LOD.tree;BIO.minRange=0;B[SP[T.sp].habit](T,st,T.lv,s);if(T.lv===2)st.heroes=(st.heroes||0)+1;else st.light=(st.light||0)+1;BIO.range=1e9;BIO.minRange=SWHI.LOD.tree;farImp(T);}});
+  BIO.owner=null;BIO.range=null;BIO.minRange=0;},
+ /* trees: [[speciesKey, stage 0-3, (T) => extra fields], ...] spaced gap m along the heading; beds: [[label, put(x, y, z, stream) -> count, n, r], ...]
+    bedGap m apart, 14 m before the row */
+ lay(x0,z0,a,o){a=a==null?0:a;const ca=Math.cos(a),sa=Math.sin(a),P=(u,v)=>[x0+ca*u-sa*v,z0+sa*u+ca*v],out={trees:[],beds:{},st:{}},gap=o.gap||11,bg=o.bedGap||12;
+  BIO.range=null;BIO.minRange=0;
+  (o.trees||[]).forEach((q,i)=>{const p=P(i*gap,0),T=mk(p[0],Y(p[0],p[1]),p[1],KEY[q[0]],KRAND.hash(BIO.host.seed>>>0,i,0x5E9,o.salt||0),()=>2,q[1]);
+   if(q[2])Object.assign(T,q[2](T,P,i*gap));BIO.owner=[T.x,T.z];B[SP[T.sp].habit](T,out.st,2,KRAND.stream(T.seed^0x5157));out.trees.push(T);});
+  BIO.owner=null;
+  (o.beds||[]).forEach((b,i)=>{const c=P(i*bg+2,-14);out.beds[b[0]]=c;
+   for(let j=0;j<b[2];j++){const s=KRAND.stream(KRAND.hash(BIO.host.seed>>>0,i,j,0x5EA,o.salt||0)),r=s.range(0,b[3]||4.5),t=s.range(0,TAU),x=c[0]+Math.cos(t)*r,z=c[1]+Math.sin(t)*r;out.st[b[0]]=(out.st[b[0]]||0)+(b[1](x,Y(x,z),z,s)||0);}});
+  return out;}};
+SWHI.SHEETS={pillars:SWHI.pillarsSheet};
+SWHI.FLOOR_PILLARS=FLOOR;   /* the torch spikes, bead coral and cushions grow on Span's tableland too (59) */
 })();

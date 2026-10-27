@@ -213,7 +213,7 @@ function leafInto(A,a,len,w,rise,c0,c1){const ca=Math.cos(a),sa=Math.sin(a),n=3,
  for(let i=0;i<=n;i++){const t=i/n,r=len*t,y=rise*Math.sin(t*Math.PI*.8);P.push([ca*r,y,sa*r,w*(1-t*.85)]);}
  for(let i=0;i<n;i++){const p=P[i],q=P[i+1],L=[[p[0]-sa*p[3],p[1],p[2]+ca*p[3]],[p[0]+sa*p[3],p[1],p[2]-ca*p[3]],[q[0]+sa*q[3],q[1],q[2]-ca*q[3]],[q[0]-sa*q[3],q[1],q[2]+ca*q[3]]];
   const C=[c0,c0,c1,c1].map((c,k)=>k<2?lerpC(c0,c1,i/n):lerpC(c0,c1,(i+1)/n));
-  [0,1,2,0,2,3].forEach(k=>{A.pos.push(L[k][0],L[k][1],L[k][2]);A.nor.push(ca*.3,.95,sa*.3);A.uv.push(k===1||k===2?1:0,k>1?(i+1)/n:i/n);A.col.push(C[k][0],C[k][1],C[k][2]);});}}
+  [0,2,1,0,3,2].forEach(k=>{A.pos.push(L[k][0],L[k][1],L[k][2]);A.nor.push(ca*.3,.95,sa*.3);A.uv.push(k===1||k===2?1:0,k>1?(i+1)/n:i/n);A.col.push(C[k][0],C[k][1],C[k][2]);});}}
 const lerpC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
 // THE TORCH SPIKE (refs/03, top middle): a rosette of strap leaves, two or three red beaded spikes on green stalks (1 tall)
 function torchGeo(){const A=VA(),L0=lin3(PAL.torchLeaf[0]),L1=lin3(PAL.torchLeaf[1]),R0=lin3(PAL.torch[0]),R1=lin3(PAL.torch[3]);
@@ -235,6 +235,7 @@ function beadCoralGeo(){const A=VA(),S0=lin3(PAL.bcSphere[0]),S1=lin3(PAL.bcSphe
  return VG(A);}
 // THE CUSHION SPONGE (the dark green mounds of refs/01): a lumpy dome, darker at its foot, its top lit by the partner's green (1 across)
 function cushionGeo(){const A=VA(),C0=lin3(0x1c3a1a),C1=lin3(0x5a8a3e);blobInto(A,[0,.2,0],.5,.95,1,.26,95,y=>lerpC(C0,C1,Math.pow(y,1.4)));return VG(A);}
+SWHI.GB={lin3,VA,VG,armInto,blobInto,leafInto,lerpC};   /* the vertex-coloured body helpers, for the other stations' fragments (57-59) */
 const G=SWHI.GEO={
  whorl:whorlGeo(9,.28),
  // the treeline's understorey shrub: a clump of open fungoid tubes (BIO.fung.tube), teal to ochre

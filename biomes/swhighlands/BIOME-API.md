@@ -23,7 +23,13 @@ Station 4 (the pillar rim, `57-biome-swhighlands-pillars.js`) reads its own (its
 | `block` | by a fallen block | the floor's anemone trees, clasping a boulder (`T.block`, its radius) |
 | `wet` | by Pan Riba and its seeps | moss in, torch spikes and bead coral out |
 
-`SWHI.pillarZones(x, z)` combines them.
+`SWHI.pillarZones(x, z)` combines them. The other stations' fields (their stages owe them too):
+
+| Station | Fields | Combined by |
+|---|---|---|
+| 2, the rain wall (`58`) | `rain` (its forest), `scar` (the landslide's fresh ground), `boulder` (by a fresh boulder), `wet`, `slope`; `opt.bridges` [[x, z, x2, z2], ...] the stream crossings, each a fishing bridge | `SWHI.rainZones` |
+| 3, Span's tableland (`59`) | `table` (the open tableland), `swamp` (a hanging swamp's ledge), `pool` (its seep pools), `dome` (a beehive dome's top), `wet`, `slope` | `SWHI.tableZones` |
+| 5, the fan coast (`59c`) | `scarp` (the dry scarp, its ledges), `fan` (a fan delta's gravel), `wadi`, `shore`, `slope` | `SWHI.coastZones` |
 
 `SWHI.zones(x, z)` combines them (`forest`, `cove`, `crest`, `valley`, `bald`, `farm`, ...).
 
@@ -37,9 +43,11 @@ Station 4 (the pillar rim, `57-biome-swhighlands-pillars.js`) reads its own (its
   draws one (a world placing its own: give it `KRAND.stream(T.seed ^ 0x5157)`).
 - `SWHI.LOD` `{tree: 800, near: 450, floor: 420}`: heroes in full to `near`, a lighter form to `tree`, octahedral impostors beyond
   (and for every hero past its range); the floor to `floor`, the bald's plants to 700 m.
+- `SWHI.build({station: 'rainwall' | 'tableland' | 'coast'})`: stations 2, 3 and 5's flora (`SWHI.buildRainwall(box, q, bridges)`,
+  `buildTableland`, `buildCoast`), each with its own far impostors (`impRainwall`, `impTableland`, `impCoast`).
 - `SWHI.build({station: 'pillars'})`: station 4's flora (`SWHI.buildPillars(box, q)`): anemone trees on the tops and the fallen
   blocks (impostors `impPillars` past 800 m), cushion sponges, torch spikes, bead coral, rim turf, moss.
   `SWHI.build({sheet: [x, z, heading]})` lays the station's flora out in a row on any page's ground after its own (a preview:
-  `SWHI.pillarsSheet`); station 1's page does it with `?sheet=pillars` (views "Station 4 flora: ...").
+  `SWHI.SHEETS[name]`); station 1's page does it with `?sheet=pillars|rainwall|tableland|coast` (views "Flora sheet (name): ...").
 - `SWHI.canopyH(x, z)`: the tallest crown over a point.
 - `SWHI.MAT`, `SWHI.BKMAT`: the materials, with the library maps swapped in by slot (`materials.json`).
