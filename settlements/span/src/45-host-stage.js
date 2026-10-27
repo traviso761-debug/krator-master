@@ -58,8 +58,9 @@ const SPAN_GROUND=(function(){const L=SPAN_LAYOUT;
   return {P,I,n:nu*nv};}
  const rows=[];Object.keys(L.half).forEach(k=>{const h=L.half[k];[h,-h].forEach(b=>{rows.push(b-.02,b+.02);});});
  L.cuts.forEach(c=>{[c.box[2],c.box[3]].forEach(b=>{rows.push(b-.02,b+.02);});});
- // the canyon (as before) and, along the rim to the watch pillar and past it, a second patch on the same rules
- const A=patch(-2700,1800,-850,850,6,8,rows),Bp=patch(900,1800,-2400,-850,6,8,null),NV=A.n+Bp.n,P=new Float32Array(NV*3),C=new Float32Array(NV*3);
+ // the canyon (as before) and, along the rim to the watch pillar and past it, a second patch on the same rules at 3 m (station
+ // 4's ground field is 2 m: the stairs are fitted to it, so the cliff drawn here must be near as fine)
+ const A=patch(-2700,1800,-850,850,6,8,rows),Bp=patch(900,1800,-2400,-850,3,3,null),NV=A.n+Bp.n,P=new Float32Array(NV*3),C=new Float32Array(NV*3);
  P.set(A.P,0);P.set(Bp.P,A.n*3);const I=A.I.concat(Bp.I.map(i=>i+A.n));
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setIndex(I);g.computeVertexNormals();
  // the colours: the tableland's turf, the pillar sandstone's red and bleached beds on the faces (a bed every ~14 m,

@@ -107,7 +107,7 @@ function fineU(L, r){ var F = L.rimFine; if (!F) return r;
   for (var i = 1; i < F.length; i++) if (r.v >= F[i][1] && r.v <= F[i - 1][1]){ var f = (r.v - F[i - 1][1]) / ((F[i][1] - F[i - 1][1]) || 1); r.u = F[i - 1][0] + (F[i][0] - F[i - 1][0]) * f; break; }
   return r; }
 // the ground as drawn round the watch pillar and its cliff (the record's ground field, the site's grid) at (u, v), bilinear, in
-// Span's y; null off the field. The field leaves the rock bodies out, the caprock among them: read it past the rim's line only
+// Span's y; null off the field. It is the surface as drawn on both sides of the rim (only the towers and arches are bodies)
 function siteGround(L, u, v){ var G = L.ground, S = L.site; if (!G || !S) return null;
   var x = S.M[0] + S.n[0] * (u - S.u0) + S.t[0] * v, z = S.M[1] + S.n[1] * (u - S.u0) + S.t[1] * v, fx = (x - G.box[0]) / G.step, fz = (z - G.box[1]) / G.step;
   if (fx < 0 || fz < 0 || fx > G.nx - 1 || fz > G.nz - 1) return null;
@@ -116,9 +116,9 @@ function siteGround(L, u, v){ var G = L.ground, S = L.site; if (!G || !S) return
 function groundAt(L, u, v){
   var i, c, a = Math.abs(v), hd = L.canyon.head, bay = L.bay;
   for (i = 0; i < L.cuts.length; i++){ c = L.cuts[i].box; if (u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3]) return L.cuts[i].y; }
+  var sg = siteGround(L, u, v); if (sg != null) return sg;   /* station 4's ground as drawn, on both sides of the rim (the table and its cliff are ground there; only towers and arches are bodies) */
   if (L.rim && L.rim.length){ var rm = rimAt(L, v), ap = L.apron, d = u - rm.u;   /* past station 4's rim (its site record, mapped): the apron, then the open floor */
-    if (d >= 0){ var sg = siteGround(L, u, v); if (sg != null) return sg;   /* station 4's ground as drawn (past the rim only: the caprock is a rock body, not in the field) */
-      if (!ap || d <= ap.d) return rm.floor; if (d >= ap.end) return ap.open; return rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); } }
+    if (d >= 0){ if (!ap || d <= ap.d) return rm.floor; if (d >= ap.end) return ap.open; return rm.floor + (ap.open - rm.floor) * (d - ap.d) / (ap.end - ap.d); } }
   if (inPoly(L.lake.pts, u, v)) return Math.max(L.lake.bed, L.lake.level - .25 * polyDist(L.lake.pts, u, v));
   if (u >= -1050 && u < hd[0][0]) return a < 15 ? L.lake.level : 0;
   if (u >= hd[0][0] && u <= hd[1][0]){ var w = hd[0][1] + (hd[1][1] - hd[0][1]) * (u - hd[0][0]) / (hd[1][0] - hd[0][0]); if (a < w) return -60; }

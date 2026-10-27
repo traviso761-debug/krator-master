@@ -42,13 +42,15 @@
       `keep: 12` on the watch pillar) and on its own ground. A world that draws both must re-fit the watch stair (and the cliff
       stair's lanes) to the station's drawn mesh, Pinnacle Rock's rule: on the proxy the treads sit .6 m out from a plain
       wall, where the station's joints and swells move its face by metres.
-- [ ] **The apron and the cliff** (station 4's eroded cliff): the rim's line is the record's 5 m `rimFine` and, past it, the ground
-      is the record's `ground` field (the drawn ground round the watch pillar and its cliff, bilinear), so the cliff stair's
-      lanes, its foot, the apron path and the watch stair's foot sit on the station's ground. Off that field (the rest of the rim)
-      `L.apron` still falls linearly from the rim's floor to the open floor. The caprock's face under the rim's line is drawn
-      sheer here; the station's face may lean or hold alcoves the 5 m line does not show. The arches are not drawn.
-- [ ] **The frame's M** (where Span's canyon meets the rim, the site's x -1750, off station 4's map) is a choice; the scale
-      model (or station 3, where Pan Riba leaves the tableland) settles it, and the watch post moves along with the frame.
+- [ ] **The cliff and the apron** (station 4): the frame is the record's `canyon`; past and behind the rim's line the ground is
+      the record's `ground` field (the table and its cliff as drawn, open slots and all). The drawn table edge stands about 30 m
+      in from `rimFine`, so the cliff stair finds the edge in each section (the first 15 m fall under the table 40-80 m in) and
+      stands each tread where the drawn face is at its height; head and foot on solid table, slot mouths in the face crossed as
+      spans. A trench at the cliff's foot (station 4 had one until c5dadb8c5, a bug, fixed) would be crossed on a level span. Off the field
+      `L.apron` still falls linearly. The rim road takes the highest of 40-120 m in from the rim's line. The arches are not
+      drawn. The rim patch of the page's ground is meshed at 3 m so the drawn cliff matches the 2 m field the stair fits.
+- [ ] **The frame's M** (where Span's canyon meets the rim, the site's x -1750) was Span's choice; station 4 now carves Span's
+      canyon there and publishes the frame (`canyon`), so a change to it is the station's, and the watch post moves with it.
 - [ ] **The watch stair is drawn as a helix fitted to the drawn proxy**, not on the layout's square line: `SPAN.checks` reads the
       line, the page the drawn treads. Neither stair is walkable (no KWALK floors on this page yet). The head's landing runs
       out over the top's chamfered edge.
