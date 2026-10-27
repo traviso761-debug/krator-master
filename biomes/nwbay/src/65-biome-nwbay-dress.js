@@ -41,7 +41,9 @@ function roots(p,len,w){const q=qEuler(0,rng()*TAU,0),c=rcol();
 // BRACKET FUNGUS on the side of something
 function bracket(p,n,s){for(let b=0,nb=2+Math.floor(rng()*3);b<nb;b++){const sb=s*rr(.4,1);
  BIO.put('fungus',[p[0]+n[0]*.2+rr(-.6,.6)*s*(1-Math.abs(n[0])),p[1]+rr(0,2.2)*s,p[2]+n[2]*.2+rr(-.6,.6)*s*(1-Math.abs(n[2]))],
-  qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
+  NWBAY.FUNG_SHELF?shelfQ(n,rr(-.3,.3),rng()*TAU,rr(-.3,.3)):qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),NWBAY.FUNG_SHELF?[sb,sb*.8,sb*.75]:[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
+// a shelf (BIO.fung.bracket, out along +z) turned to face out of its wall, a little tilt; the draws are the old dome's (the same stream)
+function shelfQ(n,ax,ay,az){const h=Math.hypot(n[0],n[2]);return qEuler(ax*.4,h>.2?Math.atan2(n[0],n[2]):ay,az*.4);}
 // a PLANT on a ledge: fern rosette, tuft or small bush
 function plant(p,s){const k=rng();const y=p[1];
  if(k<.30){const n=1+Math.floor(rng()*3);for(let i=0;i<n;i++){const r=s*rr(.35,.7);BIO.put('epi',[p[0]+rr(-.5,.5)*s,y,p[2]+rr(-.5,.5)*s],qUp([rr(-.2,.2),1,rr(-.2,.2)]),[r,r*.8,r],epiCol());}

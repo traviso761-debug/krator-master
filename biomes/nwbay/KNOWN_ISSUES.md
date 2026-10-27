@@ -4,6 +4,11 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The final rebuild's looks (2026-10-27): for the owner's look pass.** `PLAN.md` "Core adoption" lists every module taken and its
+      switch: the far impostors (gain 2.2: at nhighlands' 3.6 the far avenue baobabs' trunks baked out white while the crowns read
+      right; one gain cannot fit bark and leaves until the core's bake is fixed), the sea fog belt, the limestone's beds, the KGROUND
+      layers, the KFAR lattice, the horizon shadows, the dry season, the bracket shelves. The heroes still have no runtime range
+      (`?herorange=800` to compare: it multiplies the variant items' draw calls by the chunks).
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. The NW bay keeps swbay's choice: the standard blue sky with

@@ -105,11 +105,32 @@ NWBAY.plantTrees=function(TREES,st){
  // each species' variants: wet at the quantiles of where the pass put it
  const wets=SP.map(()=>[]);TREES.forEach(T=>{if(T.lv>0)wets[T.sp].push(T.wet==null?.7:T.wet);});
  const wetV=wets.map(L=>{L.sort((a,b)=>a-b);const out=[];for(let v=0;v<V;v++)out.push(L.length?L[Math.min(L.length-1,Math.floor((v+.5)/V*L.length))]:.7);return out;});
- const order=[];TREES.forEach((T,i)=>{if(T.lv===0){NWBAY._buildFar(T,i,st);st.fars++;}else order.push(T);st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; the final rebuild's far band, GRAPHIC-LOAD.md recommendation 2): on only
+ // when the host asks (NWBAY.IMPOSTORS true: nwbay's page, ?diet=0 off; a world that reads this kit in place, k-guilin, keeps the
+ // blobs until it asks). A far tree is one quad showing its species baked from 8 x 8 directions in place of the blob; with
+ // NWBAY.LOD.tree a hero is drawn within that range of its chunk and its impostor stands in past it. Each species bakes one of its
+ // own heroes, built again in place at bake time from its own seed (its registration muted; a cliff fig without its root curtains,
+ // which hang 40-130 m down its rim). The flame-crown's flush draws are made as the blob made them, so no later tree moves.
+ const IMPON=NWBAY.IMPOSTORS===true&&typeof BIO.impostor==='function',IMPS=[],TREEK=IMPON&&NWBAY.LOD&&NWBAY.LOD.tree?NWBAY.LOD.tree:null;
+ if(IMPON){const set=BIO.impostorSet('nwbay.trees',{label:'Far trees'});
+  SP.forEach((S,sp)=>{const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+   const T1=Object.assign({},T0);if(S.key==='clifffig')T1.nursery=true;
+   const rec=BIO.impostor('nwbay.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;
+     try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1),newSt(),2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=(T,far)=>{const I=IMPS[T.sp];if(!I)return false;
+  if(far&&T.sp===9){if(!T.bloomK)T.bloomK=rr(.15,.7);if(!T.flameA)T.flameA=rr(0,TAU);}   /* the draws buildFar made */
+  BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ const order=[];TREES.forEach((T,i)=>{if(T.lv===0){BIO.owner=[T.x,T.z];if(!farImp(T,true))NWBAY._buildFar(T,i,st);st.fars++;}else order.push(T);st.byS[T.sp]++;});
+ BIO.owner=null;
  order.forEach(T=>{const S=SP[T.sp];let best=0,bs=1e9;
   for(let v=0;v<V;v++){const H=mix(S.H[0],S.H[1],(v+.5)/V),sc=Math.abs(Math.log(T.H/H))*2.2+Math.abs((T.wet==null?.7:T.wet)-wetV[T.sp][v])+.45*h3(T.seed,v,31);if(sc<bs){bs=sc;best=v;}}
   const P=protoFor(T.sp,best,T.lv,wetV[T.sp][best]);
   // the height stays near the tree's own: within 15 % of the variant's, never past the species' band
-  T.H=clamp(T.H,P.H*.85,Math.min(P.H*1.15,S.H[1]));stamp(P,T,st);st.heroes++;});
+  T.H=clamp(T.H,P.H*.85,Math.min(P.H*1.15,S.H[1]));
+  if(TREEK){BIO.owner=[T.x,T.z];BIO.range=TREEK;BIO.minRange=0;}
+  stamp(P,T,st);st.heroes++;
+  if(TREEK){BIO.range=1e9;BIO.minRange=TREEK;if(T.H>7)farImp(T);BIO.owner=null;BIO.range=null;BIO.minRange=0;}});
  st.protos=PROTO.size;};
 })();
