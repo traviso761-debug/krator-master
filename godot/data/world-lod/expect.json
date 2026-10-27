@@ -1,0 +1,363 @@
+{
+ "cameras": [
+  {
+   "cam": [
+    0,
+    1.7,
+    0
+   ],
+   "rows": {
+    "lod/leaf@0,0:1200": 126,
+    "lod/leaf@0,0:800": 66,
+    "lod/tuft@0,0:500": 8,
+    "lod/tuft@0,0:300": 2,
+    "lod/bark@0,0:1200": 1,
+    "lod/bark@0,0:800": 1
+   }
+  },
+  {
+   "cam": [
+    600,
+    40,
+    600
+   ],
+   "rows": {
+    "lod/leaf@0,0:1200": 126,
+    "lod/leaf@0,0:800": 66,
+    "lod/tuft@0,0:500": 22,
+    "lod/tuft@0,0:300": 3,
+    "lod/bark@0,0:1200": 1,
+    "lod/bark@0,0:800": 1
+   }
+  },
+  {
+   "cam": [
+    -700,
+    100,
+    600
+   ],
+   "rows": {
+    "lod/leaf@0,0:1200": 126,
+    "lod/leaf@0,0:800": 66,
+    "lod/tuft@0,0:500": 0,
+    "lod/tuft@0,0:300": 0,
+    "lod/bark@0,0:1200": 1,
+    "lod/bark@0,0:800": 1
+   }
+  },
+  {
+   "cam": [
+    2000,
+    300,
+    2000
+   ],
+   "rows": {
+    "lod/leaf@0,0:1200": 126,
+    "lod/leaf@0,0:800": 0,
+    "lod/tuft@0,0:500": 0,
+    "lod/tuft@0,0:300": 0,
+    "lod/bark@0,0:1200": 1,
+    "lod/bark@0,0:800": 0
+   }
+  },
+  {
+   "cam": [
+    1300,
+    30,
+    -100
+   ],
+   "rows": {
+    "lod/leaf@0,0:1200": 126,
+    "lod/leaf@0,0:800": 66,
+    "lod/tuft@0,0:500": 3,
+    "lod/tuft@0,0:300": 0,
+    "lod/bark@0,0:1200": 1,
+    "lod/bark@0,0:800": 1
+   }
+  }
+ ],
+ "labels": {
+  "lod/leaf@0,0:1200": [
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves"
+  ],
+  "lod/leaf@0,0:800": [
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves",
+   "Leaves",
+   "Blossom",
+   "Leaves"
+  ]
+ },
+ "items": [
+  {
+   "id": "lod/leaf@0,0:1200",
+   "count": 126,
+   "lod": {
+    "chunk": "0,0",
+    "range": 1200,
+    "minRange": 0,
+    "fade": 0.15
+   }
+  },
+  {
+   "id": "lod/leaf@0,0:800",
+   "count": 66,
+   "lod": {
+    "chunk": "0,0",
+    "range": 800,
+    "minRange": 0,
+    "fade": 0.15
+   }
+  },
+  {
+   "id": "lod/tuft@0,0:500",
+   "count": 42,
+   "lod": {
+    "chunk": "0,0",
+    "range": 500,
+    "minRange": 0,
+    "fade": 0.15,
+    "loose": true
+   }
+  },
+  {
+   "id": "lod/tuft@0,0:300",
+   "count": 22,
+   "lod": {
+    "chunk": "0,0",
+    "range": 300,
+    "minRange": 0,
+    "fade": 0.15,
+    "loose": true
+   }
+  }
+ ],
+ "buckets": [
+  {
+   "id": "lod/bark@0,0:1200",
+   "triangles": 504,
+   "lod": {
+    "chunk": "0,0",
+    "range": 1200,
+    "minRange": 0,
+    "fade": 0.15
+   }
+  },
+  {
+   "id": "lod/bark@0,0:800",
+   "triangles": 264,
+   "lod": {
+    "chunk": "0,0",
+    "range": 800,
+    "minRange": 0,
+    "fade": 0.15
+   }
+  }
+ ],
+ "hazards": [
+  {
+   "id": "feat_00000",
+   "type": "cyl",
+   "at": [
+    300,
+    0,
+    300
+   ]
+  },
+  {
+   "id": "feat_00001",
+   "type": "cyl",
+   "at": [
+    700,
+    2,
+    500
+   ]
+  }
+ ]
+}

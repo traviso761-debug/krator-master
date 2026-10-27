@@ -92,7 +92,8 @@ static func build(path: String) -> Node3D:
 		return root
 
 	var ids := {"items": 0, "items_with_record": 0, "instances": 0, "instances_with_uid": 0, "sets_resolved": 0,
-		"buckets": 0, "buckets_with_records": 0, "bucket_records": 0, "bucket_records_resolved": 0, "materials_resolved": 0, "materials_missing": 0}
+		"buckets": 0, "buckets_with_records": 0, "bucket_records": 0, "bucket_records_resolved": 0, "materials_resolved": 0, "materials_missing": 0,
+		"items_with_labels": 0}
 	var items := Node3D.new()
 	items.name = "Items"
 	root.add_child(items)
@@ -115,6 +116,12 @@ static func build(path: String) -> Node3D:
 		_lod(node, it, report)
 		node.set_meta("krator", {"id": it["id"], "kit": it["kit"], "name": it["name"], "label": it["label"],
 			"material": it["material"], "dynamic": it["dynamic"], "count": n})
+		# the records whose rows the node draws (one, until _lod_rows merges a chunk's ranges into one node)
+		node.set_meta("krator_rows", [{"item": k, "id": it["id"], "from": 0, "count": n,
+			"range": float(it["lod"]["range"]) if it.get("lod") is Dictionary else -1.0}])
+		if it.get("labels") is Dictionary:   # per-instance labels (BIO.put's extra.label): the table, and a row index into it
+			node.set_meta("krator_labels", {"names": PackedStringArray(it["labels"]["names"]), "index": KData.ints(it["labels"]["index"])})
+			ids["items_with_labels"] += 1
 		ids["items"] += 1
 		ids["instances"] += n
 		if it.get("records") is Array and (it["records"] as Array).size() == n:
@@ -131,6 +138,7 @@ static func build(path: String) -> Node3D:
 		var mrec: Dictionary = mats.get(it["material"], {})
 		if it["dynamic"] and str((mrec.get("options") if mrec.get("options") is Dictionary else {}).get("mode", "orbit")) == "walk":
 			report["gaps"]["fauna walk"] = "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping"
+	report["lod_rows"] = _lod_rows(items, d["items"])
 	var buckets := Node3D.new()
 	buckets.name = "Buckets"
 	root.add_child(buckets)
@@ -147,6 +155,10 @@ static func build(path: String) -> Node3D:
 		buckets.add_child(node)
 		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false)
 		_lod(node, b, report)
+		if b.get("lod") is Dictionary and _lod_shader(node):
+			node.set_meta("krator_rows", [{"item": k, "id": b["id"], "from": 0, "count": 1, "range": float(b["lod"]["range"])}])
+			if _lod_uniforms(node, b["lod"]):
+				report["lod_rows"]["buckets"] += 1
 		node.set_meta("krator", {"id": b["id"], "kit": b["kit"], "name": b["name"], "label": b["label"], "material": b["material"]})
 		ids["buckets"] += 1
 		if b.get("records") is Array:
@@ -220,6 +232,13 @@ static func build(path: String) -> Node3D:
 		var a: Node3D = load("res://krator/atmos_import.gd").build_from(d["atmos"], path + "#atmos")
 		root.add_child(a)
 		report["atmos"] = a.get_meta("report")
+	if d.get("hazards") is Dictionary and d["hazards"].get("format") == "krator-hazard":
+		var hz := hazards(d["hazards"], by_id)
+		root.add_child(hz)
+		report["hazards"] = hz.get_meta("report")
+		if int(report["hazards"]["unresolved"]) > 0:
+			report["gaps"]["hazard records"] = "%d hazards name no registry record" % report["hazards"]["unresolved"]
+		report["gaps"]["hazard state"] = "the hazards are Area3Ds with their records (core/hazard/GODOT.md); KHazard (state, dose, the walker's status) and the overlay are not ported yet"
 	if d.get("stage") is Dictionary:
 		root.set_meta("stage", d["stage"])
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
@@ -227,7 +246,7 @@ static func build(path: String) -> Node3D:
 		report["records"] = records(root, d, by_id)
 	var meta := {}
 	for k in d:
-		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
+		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
@@ -564,8 +583,9 @@ static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D
 	var err := img.load_webp_from_buffer(bytes) if str(file).ends_with(".webp") else img.load_png_from_buffer(bytes)
 	if err != OK:
 		return null
+	var role := "normal" if t.get("slot") == "normalMap" else ("data" if t.get("slot") == "roughnessMap" else "albedo")
 	img.generate_mipmaps()
-	KratorKmat.vram(img)
+	KratorKmat.vram(img, role)
 	return ImageTexture.create_from_image(img)
 
 
@@ -576,7 +596,8 @@ static func _lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) ->
 	if lod == null:
 		return
 	var c: PackedStringArray = str(lod["chunk"]).split(",")
-	var o := Vector3((float(c[0]) + 0.5) * CHUNK, 0.0, (float(c[1]) + 0.5) * CHUNK)
+	var C := _chunk_size(lod)
+	var o := Vector3((float(c[0]) + 0.5) * C, 0.0, (float(c[1]) + 0.5) * C)
 	if gi is MultiMeshInstance3D:
 		var mm: MultiMesh = (gi as MultiMeshInstance3D).multimesh
 		var buf := mm.buffer   # through the buffer: headless, get_instance_transform answers the identity
@@ -599,4 +620,275 @@ static func _lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) ->
 			out.surface_set_material(s, src.surface_get_material(s))
 		(gi as MeshInstance3D).mesh = out
 	gi.position = o
-	KratorBiome._apply_lod(gi, rec, report, KratorBiome.CHUNK * 0.7071)   # a whole chunk at its centre
+	KratorBiome._apply_lod(gi, rec, report, C * 0.7071)   # a whole chunk at its centre
+
+
+# THE HAZARDS (core/export's hazards section, krator-hazard; core/hazard/GODOT.md, "One node per record"): an Area3D a
+# record, at its `at` turned by `ry` about +Y, its shape in the record's local metres (cyl, sphere, box, poly as a
+# CollisionPolygon3D extruded over y0..y1), monitoring on and monitorable off, meta krator_hazard (the record: its filled
+# hazard, shape and uid) and krator_record (its registry record, when the registry holds it). The node "Hazards" carries the
+# kinds table and the navigation layers. Public so a test can build one from a section alone.
+static func hazards(hz: Dictionary, by_id: Dictionary) -> Node3D:
+	var root := Node3D.new()
+	root.name = "Hazards"
+	root.set_meta("kinds", hz.get("kinds", {}))
+	root.set_meta("layers", hz.get("layers", {}))
+	var rep := {"records": 0, "shapes": {}, "unresolved": 0, "bad": []}
+	for h in hz.get("records", []):
+		var s: Dictionary = h.get("shape", {})
+		var at: Array = h.get("at", [0, 0, 0])
+		var a := Area3D.new()
+		a.name = "hazard_%d" % int(rep["records"])
+		a.position = Vector3(float(at[0]), float(at[1]), float(at[2]))
+		a.rotation.y = float(h.get("ry", 0.0))
+		a.monitoring = true
+		a.monitorable = false
+		var t := str(s.get("type", ""))
+		var hh := float(s["h"]) if s.get("h") != null else 2.0
+		var y0 := float(s["y0"]) if s.get("y0") != null else 0.0
+		var y1 := float(s["y1"]) if s.get("y1") != null else hh
+		var cs := CollisionShape3D.new()
+		match t:
+			"cyl":
+				var c := CylinderShape3D.new()
+				c.radius = float(s.get("r", 1.0))
+				c.height = y1 - y0
+				cs.shape = c
+				cs.position.y = (y0 + y1) * 0.5
+			"sphere":
+				var q := SphereShape3D.new()
+				q.radius = float(s.get("r", 1.0))
+				cs.shape = q
+				cs.position.y = y0
+			"box":
+				var b := BoxShape3D.new()
+				b.size = Vector3(float(s.get("w", 2.0)), y1 - y0, float(s.get("d", 2.0)))
+				cs.shape = b
+				cs.position.y = (y0 + y1) * 0.5
+			"poly":
+				cs.free()
+				cs = null
+				var p := CollisionPolygon3D.new()   # its plane is local XY, extruded along z: turned so x, y read the record's dx, dz
+				var pts := PackedVector2Array()
+				for v in s.get("pts", []):
+					pts.append(Vector2(float(v[0]), float(v[1])))
+				p.polygon = pts
+				p.depth = y1 - y0
+				p.rotation.x = PI * 0.5
+				p.position.y = (y0 + y1) * 0.5
+				a.add_child(p)
+			_:
+				cs.free()
+				cs = null
+				(rep["bad"] as Array).append(str(h.get("id")))
+		if cs != null:
+			a.add_child(cs)
+		rep["shapes"][t] = int(rep["shapes"].get(t, 0)) + 1
+		a.set_meta("krator_hazard", h)
+		var rid := str(h.get("id"))
+		var r = by_id.get(rid, by_id.get(rid.split("#")[0]))
+		if r != null:
+			a.set_meta("krator_record", r)
+		else:
+			rep["unresolved"] += 1
+		root.add_child(a)
+		rep["records"] += 1
+	root.set_meta("report", rep)
+	return root
+
+
+# a chunk's size: the page's BIO.LOD.chunk, or a coarsened item's own (BIO.LOD.minTris: lod.size, its key in those units)
+static func _chunk_size(lod: Dictionary) -> float:
+	return float(lod["size"]) if lod.get("size") != null else CHUNK
+
+
+# whether a node draws on a shader that takes the per-row LOD (shaders/lib/lod.gdshaderinc: the leaf and bark shaders)
+static func _lod_shader(gi: GeometryInstance3D) -> bool:
+	var sm := gi.material_override as ShaderMaterial
+	return sm != null and (sm.shader == KratorBiome.FOLIAGE or sm.shader == KratorBiome.BARK)
+
+
+# THE ROWS' OWN RANGES (GRAPHIC-LOAD.md, recommendation 3). core/export splits a merged chunk mesh (BIO.LOD.merge) into one
+# record per range; here the records of one chunk mesh (kit, name, material, chunk, minRange, loose) are merged back into
+# one node, rows longest range first, up to four ranges a node, and the leaf and bark shaders cull each row at its own
+# range: from the chunk box, as three's lodTick switches a chunk, or from the instance's own origin when no tree owns any of
+# its rows (lod.loose, BIO.LOD.cull), dithering out over lod.fade (lib/lod.gdshaderinc). The node's own visibility range
+# stays as a coarse cull at the longest range widened by the chunk's half-diagonal; the shader has emptied the node by
+# then, so it no longer fades. Returns {nodes, merged (records folded into another's node), rows (item nodes the shader
+# culls by row), loose (of them, measured per instance), buckets (bucket nodes culled at their box)}
+static func _lod_rows(items: Node3D, recs: Array) -> Dictionary:
+	var groups := {}
+	var order := []
+	for n in items.get_children():
+		var mmi := n as MultiMeshInstance3D
+		var it: Dictionary = recs[int(n.get_meta("krator_rows")[0]["item"])]
+		var lod = it.get("lod")
+		if not (lod is Dictionary) or not _lod_shader(mmi) or bool(it["dynamic"]) or mmi.has_meta("krator_owners") or mmi.has_meta("krator_ap0"):
+			continue
+		var mm := mmi.multimesh
+		var key := "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % [it["kit"], it["name"], it["material"], lod["chunk"], _chunk_size(lod), lod["minRange"],
+			lod.get("loose", false), lod.get("fade", 0.0), mm.use_colors, mm.use_custom_data]
+		if not groups.has(key):
+			groups[key] = []
+			order.append(key)
+		groups[key].append(mmi)
+	var out := {"nodes": 0, "merged": 0, "rows": 0, "loose": 0, "buckets": 0}
+	for key in order:
+		var g: Array = groups[key]
+		g.sort_custom(func(a, b): return float(a.get_meta("krator_rows")[0]["range"]) > float(b.get_meta("krator_rows")[0]["range"]))
+		var i := 0
+		while i < g.size():
+			var part := g.slice(i, i + 4)
+			i += 4
+			var node: MultiMeshInstance3D = part[0] if part.size() == 1 else _merge_rows(part)
+			out["merged"] += part.size() - 1
+			var lod: Dictionary = recs[int(node.get_meta("krator_rows")[0]["item"])]["lod"]
+			if _lod_uniforms(node, lod):
+				out["rows"] += 1
+				if lod.get("loose", false):
+					out["loose"] += 1
+	out["nodes"] = items.get_child_count()
+	return out
+
+
+# one node from several of one chunk's records (sorted longest range first): the buffers end to end, the side tables too
+static func _merge_rows(part: Array) -> MultiMeshInstance3D:
+	var first: MultiMeshInstance3D = part[0]
+	var mm0 := first.multimesh
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = mm0.use_colors
+	mm.use_custom_data = mm0.use_custom_data
+	mm.mesh = mm0.mesh
+	var buf := PackedFloat32Array()
+	var rows := []
+	var uids := PackedStringArray()
+	var index := PackedInt32Array()
+	var names := PackedStringArray()
+	var lab := PackedInt32Array()
+	var with_uids := true
+	var with_labels := false
+	for n in part:
+		with_labels = with_labels or n.has_meta("krator_labels")
+		with_uids = with_uids and n.has_meta("krator_records")
+	var total := 0
+	for n in part:
+		var m: MultiMesh = n.multimesh
+		buf.append_array(m.buffer)
+		var r: Dictionary = (n.get_meta("krator_rows")[0] as Dictionary).duplicate()
+		r["from"] = total
+		rows.append(r)
+		if with_uids:
+			uids.append_array(n.get_meta("krator_records"))
+			index.append_array(n.get_meta("krator_index", PackedInt32Array()))
+		if with_labels:   # one table for the node: each record's names joined in, its rows renumbered
+			var L: Dictionary = n.get_meta("krator_labels", {"names": PackedStringArray([str(n.get_meta("krator")["label"])]), "index": PackedInt32Array()})
+			var LI: PackedInt32Array = L["index"]
+			var remap := PackedInt32Array()
+			for nm in L["names"]:
+				var j := names.find(nm)
+				if j < 0:
+					j = names.size()
+					names.append(nm)
+				remap.append(j)
+			for q in m.instance_count:
+				lab.append(remap[LI[q]] if q < LI.size() else remap[0])
+		total += m.instance_count
+	mm.instance_count = total
+	mm.buffer = buf
+	first.multimesh = mm
+	first.set_meta("krator_rows", rows)
+	first.set_meta("krator_instances", total)
+	var meta: Dictionary = first.get_meta("krator")
+	meta["count"] = total
+	meta["ids"] = rows.map(func(r): return r["id"])
+	first.set_meta("krator", meta)
+	if with_uids:
+		first.set_meta("krator_records", uids)
+		first.set_meta("krator_index", index)
+	if with_labels:
+		first.set_meta("krator_labels", {"names": names, "index": lab})
+	for n in part.slice(1):
+		n.get_parent().remove_child(n)
+		n.free()
+	return first
+
+
+# the CPU twin of lib/lod.gdshaderinc's klod: from a camera at cam, how many of the node's rows are drawn (not collapsed),
+# by record id ({id: rows}; a bucket counts 1 when drawn). A node without the uniforms draws every row
+static func lod_shown(gi: GeometryInstance3D, cam: Vector3) -> Dictionary:
+	var rows: Array = gi.get_meta("krator_rows", [])
+	var out := {}
+	var ly = gi.get_instance_shader_parameter("lod_y")
+	var mode := 0.0 if ly == null else (ly as Vector4).w
+	var bx: Vector4 = gi.get_instance_shader_parameter("lod_box") if mode > 0.5 else Vector4.ZERO
+	var r: Vector4 = gi.get_instance_shader_parameter("lod_r") if mode > 0.5 else Vector4.ONE * 1e9
+	var e: Vector4 = gi.get_instance_shader_parameter("lod_e") if mode > 0.5 else Vector4.ONE * 1e9
+	var q := Vector3.ZERO
+	if mode > 0.5:
+		q = Vector3(max(max(bx.x - cam.x, 0.0), cam.x - bx.z), max(max((ly as Vector4).x - cam.y, 0.0), cam.y - (ly as Vector4).y), max(max(bx.y - cam.z, 0.0), cam.z - bx.w))
+	var buf := PackedFloat32Array()
+	var stride := 0
+	var n := 1
+	if gi is MultiMeshInstance3D:
+		var mm: MultiMesh = (gi as MultiMeshInstance3D).multimesh
+		buf = mm.buffer
+		stride = 12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0)
+		n = mm.instance_count
+	for row in rows:
+		out[row["id"]] = 0
+	for j in n:
+		var k := 0
+		while k + 1 < rows.size() and j >= int(rows[k + 1]["from"]):
+			k += 1
+		var shown := true
+		if mode > 0.5:
+			var f := float(j)
+			var rr := r.x if f < e.x else (r.y if f < e.y else (r.z if f < e.z else r.w))
+			var d := q.length()
+			if mode > 1.5:
+				d = (gi.position + Vector3(buf[j * stride + 3], buf[j * stride + 7], buf[j * stride + 11]) - cam).length()
+			shown = d <= rr
+		if shown:
+			out[rows[k]["id"]] += 1
+	return out
+
+
+# the shader's instance uniforms for one chunk node (lib/lod.gdshaderinc); a stand-in (minRange > 0) keeps the node's own
+# range alone, as before. Returns whether the node now culls by row
+static func _lod_uniforms(gi: GeometryInstance3D, lod: Dictionary) -> bool:
+	if float(lod["minRange"]) > 0.0:
+		return false
+	var C := _chunk_size(lod)
+	var c: PackedStringArray = str(lod["chunk"]).split(",")
+	var x0 := float(c[0]) * C
+	var z0 := float(c[1]) * C
+	var rows: Array = gi.get_meta("krator_rows")
+	var y0 := INF
+	var y1 := -INF
+	if gi is MultiMeshInstance3D:
+		var mm: MultiMesh = (gi as MultiMeshInstance3D).multimesh
+		var buf := mm.buffer
+		var stride := 12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0)
+		for i in mm.instance_count:
+			y0 = min(y0, buf[i * stride + 7])
+			y1 = max(y1, buf[i * stride + 7])
+	else:
+		var bb := (gi as MeshInstance3D).mesh.get_aabb()
+		y0 = bb.position.y
+		y1 = bb.end.y
+	y0 += gi.position.y
+	y1 += gi.position.y
+	var r := [1e9, 1e9, 1e9, 1e9]
+	var e := [1e9, 1e9, 1e9, 1e9]
+	for i in rows.size():
+		r[i] = float(rows[i]["range"])
+		if i + 1 < rows.size():
+			e[i] = float(rows[i + 1]["from"])
+	gi.set_instance_shader_parameter("lod_box", Vector4(x0, z0, x0 + C, z0 + C))
+	gi.set_instance_shader_parameter("lod_y", Vector4(y0, y1, float(lod.get("fade", 0.0)), 2.0 if lod.get("loose", false) else 1.0))
+	gi.set_instance_shader_parameter("lod_r", Vector4(r[0], r[1], r[2], r[3]))
+	gi.set_instance_shader_parameter("lod_e", Vector4(e[0], e[1], e[2], e[3]))
+	gi.visibility_range_end = r[0] + C * 0.7071
+	gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+	return true
