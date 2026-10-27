@@ -16,6 +16,7 @@ const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
 // move, so the biome never draws from the host's generator.
 let _bseed=1234567;
 function reseed(s){_bseed=s>>>0;}
+function rngState(){return _bseed>>>0;}   /* the stream's state, so a pass that reseeds (BIO.grid's cell form) can put it back */
 function rng(){_bseed|=0;_bseed=_bseed+0x6D2B79F5|0;let t=Math.imul(_bseed^_bseed>>>15,1|_bseed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function ri(a,b){return a+Math.floor(rng()*(b-a+1));}
@@ -102,7 +103,11 @@ BIO.init=function(h){
   stat:h.stat||null,
   // tags (2026-10-12): a core/tags registry (KTAGS.create), or a build name for the core to make one at first use (and
   // make KTAGS.page): every item set, instance and registered volume the kits place becomes a record (20-core-kit.js)
-  tags:h.tags||null};
+  tags:h.tags||null,
+  // the cliff gate (40-core-place.js, CORE-IMPROVEMENTS item 7): cliffGate true gates the numeric BIO.grid and BIO.scatter
+  // too (the cell form always is); slope(x,z) -> rise over run and cliff(x,z) -> 0..1, a host's own, where it has them
+  cliffGate:!!h.cliffGate,slope:h.slope||null,cliff:h.cliff||null};
+ if(h.capThrow!=null)BIO.CAP_THROW=!!h.capThrow;if(h.capErr!=null)BIO.CAP_ERR=!!h.capErr;   /* the instance cap (20-core-kit.js): throw, or BIO.err, at the first item over it */
  reseed(BIO.host.seed*7919+11);
  return BIO;};
 BIO.setScene=function(s){BIO.host.scene=s;};
@@ -153,5 +158,5 @@ BIO.tally=function(tris,inst,meshes){const k=BIO.cur||'biome';
  if(BIO.host&&BIO.host.stat)BIO.host.stat(k,tris||0,inst||0);};
 BIO.totals=function(){let tris=0,inst=0,meshes=0;for(const k in BIO.stats){tris+=BIO.stats[k].tris;inst+=BIO.stats[k].inst;meshes+=BIO.stats[k].meshes;}return{tris,inst,meshes};};
 
-BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm};
+BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rngState,rng,rr,ri,pick,h3,vnoise,fbm};
 })();

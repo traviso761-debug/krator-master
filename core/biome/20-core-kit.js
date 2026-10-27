@@ -96,11 +96,28 @@ function cardFit(raw,mat,indexed){const cb=raw.userData&&raw.userData.card,lc=ma
   for(let i=0;i<A.length;i+=2){let u=A[i],v=A[i+1];for(let r=0;r<k;r++){const t=u;u=1-v;v=t;}A[i]=u;A[i+1]=v;}   /* a quarter turn: left -> top -> right -> bottom */
   U.needsUpdate=true;}
  return {geo:indexed?weldGeo(g):g,fit:g!==raw};}
+// THE INSTANCE CAP (CORE-IMPROVEMENTS 3c, 2026-10-27): an item put more than BIO.CAP times (250k, counted across bakes) is a
+// pass planned by density and never counted (Korona's 918,541 cobra lilies from an undefined bias). The first put over it
+// says so once, naming the item, the pass (BIO.cur) and the way out, and the item still draws, so a page's look never
+// changes: a console warning by default (nhighlands' needles, 632k, and fronds, 595k, are over it, and a page waits for its
+// own turn), BIO.err with BIO.CAP_ERR (verify's console check then fails), a throw with BIO.CAP_THROW (or BIO.init({capThrow:
+// true}); a session writing a new pass sets it). An item
+// that means to be that many says so: BIO.def(name, geo, mat, {cap: N or Infinity, capWhy: 'why'}); a cap with no capWhy is
+// reported too. BIO.capReport() -> [{kit, item, count, cap, pass, why}], every item over its cap (verify reads it).
+BIO.CAP=250000;BIO.CAP_THROW=false;BIO.CAP_ERR=false;BIO._capOver=[];
+BIO.capReport=function(){return BIO._capOver.map(e=>Object.assign({},e,{count:e.def.nPut,def:undefined}));};
+function capHit(name,def){const cap=def.cap!=null?def.cap:BIO.CAP;def.capHit=true;
+ const e={kit:BIO.kitName||'',item:name,count:def.nPut,cap,pass:BIO.cur||null,why:def.capWhy||null,def};BIO._capOver.push(e);
+ const msg='BIO.put: '+name+(e.kit?' (kit '+e.kit+')':'')+' passed its instance cap of '+cap+' in pass '+(e.pass||'?')+
+  ': count the pass, coarsen its cell, or BIO.def(..., {cap, capWhy}) if it is meant';
+ if(BIO.CAP_THROW)throw new Error(msg);if(BIO.CAP_ERR)BIO.err(msg);else console.warn(msg);}
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
+ if(opt.cap!=null&&!opt.capWhy)BIO.err('BIO.def: '+name+' sets cap '+opt.cap+' with no capWhy');
  const cb=geo.userData&&geo.userData.card,g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,ix=opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed;
  if(cb)g0.userData.card=cb;const F=cardFit(g0,mat,ix);
- BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
+ BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,
+  cap:opt.cap==null?null:opt.cap,capWhy:opt.capWhy||null,cliff:!!opt.cliff,nPut:0};   /* cliff: the item grows on faces (BIO.cliffCheck, 40-core-place.js) */
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
@@ -131,6 +148,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
   if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?1:0);it.count++;BIO.tally(def.tris,1,0);
+ if(++def.nPut>(def.cap!=null?def.cap:BIO.CAP)&&!def.capHit)capHit(name,def);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
 BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
@@ -425,6 +443,20 @@ function concatGeo(T,gs){let nv=0,ni=0;for(const g of gs){nv+=g.attributes.posit
  const g=new T.BufferGeometry();for(const k in A)g.setAttribute(k,new T.BufferAttribute(A[k],k==='uv'?2:3));g.setIndex(new T.BufferAttribute(I,1));return g;}
 
 // ---------------------------------------------------------------- bake
+// PROBE POINTS (CORE-IMPROVEMENTS item 6, 2026-10-27): the probe samples a merged mesh at its box centre, so a tree, a log or a
+// boulder registered as a volume and drawn into a bucket read empty, and kits added invisible discs and hand-made points.
+// Every baked bucket mesh now carries userData.probePoints, a flat Float32Array [x, y, z ...] (world space: the mesh is
+// unmoved), one point for each BIO.PROBE_CELL-metre cell its triangles' centroids fall in, and userData.probeDrawer
+// ('BIO.bucket:kit|family') for the failure message; core/host's probe adds them (95-host-probe.js). Instanced items need
+// none: the probe reads every instance. BIO.PROBE_CELL 0 turns it off. Nothing drawn changes.
+BIO.PROBE_CELL=2;
+function _probePts(P,n,c){const S=new Set(),out=[],O=65536;let last=-1;
+ for(let t=0;t<n;t++){const o=t*9,x=(P[o]+P[o+3]+P[o+6])/3,y=(P[o+1]+P[o+4]+P[o+7])/3,z=(P[o+2]+P[o+5]+P[o+8])/3;
+  const ix=Math.floor(x/c)+O,iy=Math.floor(y/c)+O,iz=Math.floor(z/c)+O;
+  if(ix<0||iy<0||iz<0||ix>=2*O||iy>=2*O||iz>=2*O){out.push(x,y,z);continue;}   /* off the key's range (over 130 km out at 2 m): kept */
+  const k=(ix*131072+iy)*131072+iz;if(k===last||S.has(k))continue;last=k;S.add(k);out.push(x,y,z);}
+ return new Float32Array(out);}
+BIO._probePts=_probePts;
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
@@ -465,6 +497,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    else{g=indexedGeo(T,P,N,U,Cc,C2);if(S){S.tris=[n];S.ends=[n*3];S.vEnds=[g.attributes.position.count];}}
    g.computeBoundingSphere();
    const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
+   if(BIO.PROBE_CELL>0){m.userData.probePoints=_probePts(P,n,BIO.PROBE_CELL);m.userData.probeDrawer='BIO.bucket:'+(kn?kn+'|':'')+fam;}
    if(key)_lodEntry(m,key,y0,y1,S);
    scene.add(m);BIO.baked.push(m);calls++;}
   K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}

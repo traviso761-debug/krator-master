@@ -8,10 +8,44 @@
 // fbm is bell-shaped (mean .5, sd ~.11): splitting its raw value n ways gave
 // 1/27/53/20 % for four species. The value is stretched through the middle of
 // the bell first so the n bands come out roughly even.
-(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rngState,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 BIO.standAt=function(x,z,n,scale,seed){scale=scale==null?.0017:scale;const f=fbm(x*scale+31,z*scale-19,seed==null?9483:seed,2);
  const u=smooth(.30,.70,f);return clamp(Math.floor(u*n),0,n-1);};
 BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.floor(rng()*n):BIO.standAt(x,z,n,scale,seed);};
+
+// THE CLIFF GATE (CORE-IMPROVEMENTS item 7; the owner's standing rule, 2026-10-05: no trees on cliffs). Nothing roots on a
+// sheer or layered rock face unless it belongs there. cliff(x, z) is 0 on soil and gentle ground and 1 on a steep face that
+// shows rock: smooth(slope) * smooth(rock), slope the ground's rise over run (BIO.placeH by central differences over BIO.CLIFF.e
+// metres, or the host's own slope(x, z)) and rock the host's 'rock' field (a host with none: slope alone). A host with its own
+// rule hands cliff(x, z) -> 0..1 in. BIO.cliffW = 1 - cliff, and 0 from cliff >= .99, so a full face never takes a root.
+// The grid applies it to every pass: always in the cell form; in the numeric form when the page asks (BIO.init({cliffGate:
+// true})) or the pass does (opt.cliff 'gate'). opt.cliff true: the pass grows ON faces, never gated. No random draws.
+BIO.CLIFF={slope:[1,1.5],rock:[.3,.6],e:2,full:.99};
+BIO.slopeAt=function(x,z){const h=BIO.host;if(h&&h.slope)return h.slope(x,z);const e=BIO.CLIFF.e;
+ return Math.hypot(BIO.placeH(x+e,z)-BIO.placeH(x-e,z),BIO.placeH(x,z+e)-BIO.placeH(x,z-e))/(2*e);};
+BIO.cliff=function(x,z){const h=BIO.host;if(h&&h.cliff)return clamp(h.cliff(x,z),0,1);const C=BIO.CLIFF;
+ const s=smooth(C.slope[0],C.slope[1],BIO.slopeAt(x,z));if(s<=0)return 0;
+ return s*(BIO.hasField('rock')?smooth(C.rock[0],C.rock[1],BIO.field('rock',x,z)):1);};
+BIO.cliffW=function(x,z){const c=BIO.cliff(x,z);return c>=BIO.CLIFF.full?0:1-c;};
+function cliffOld(opt){return opt.cliff!==true&&(opt.cliff==='gate'||!!(BIO.host&&BIO.host.cliffGate));}
+// THE CHECK (verify's side): every instanced item ROOTED on the ground (its origin within `near` metres of terrainH) that
+// stands where cliff >= BIO.CLIFF.full, unless the item belongs on faces (BIO.def opt.cliff, or BIO.cliffItem(names)).
+// opt.points: the kit's own records too ([{x, z, label}], e.g. its trees), opt.near (1.5 m). With a negative control: a
+// rooted point on the steepest face the check finds (a scan of the centre's disc, opt.R, default the far LOD radius) must
+// fail, or the check says it cannot see a cliff. {ok, bad: [{kit, item, n, at}], checked, control: {at, flagged}|null}
+BIO.cliffItem=function(names,kit){const R=BIO.kits[kit==null?BIO.kitName||'':kit];if(!R)return;
+ (Array.isArray(names)?names:[names]).forEach(n=>{if(R.defs[n])R.defs[n].cliff=true;else BIO.err('BIO.cliffItem: no item '+n);});};
+BIO.cliffCheck=function(opt){opt=opt||{};const near=opt.near==null?1.5:opt.near,full=BIO.CLIFF.full,bad=new Map();let checked=0;
+ const on=(x,y,z)=>Math.abs(y-BIO.terrainH(x,z))<=near&&BIO.cliff(x,z)>=full;
+ const hit=(kit,item,x,y,z)=>{const k=kit+'|'+item;let b=bad.get(k);if(!b){b={kit,item,n:0,at:[x,y,z]};bad.set(k,b);}b.n++;};
+ for(const m of BIO.baked){if(!m.isInstancedMesh||!m.name||m.name.indexOf('biome:')!==0)continue;
+  const kit=m.userData.kit||'',item=m.name.slice(6),R=BIO.kits[kit],def=R&&R.defs[item];if(!def||def.cliff)continue;
+  const A=m.instanceMatrix.array;for(let i=0;i<m.count;i++){const x=A[i*16+12],y=A[i*16+13],z=A[i*16+14];checked++;if(on(x,y,z))hit(kit,item,x,y,z);}}
+ for(const p of opt.points||[]){checked++;const y=p.y==null?BIO.terrainH(p.x,p.z):p.y;if(on(p.x,y,p.z))hit('points',p.label||'point',p.x,y,p.z);}
+ let control=null;const o=BIO.center(),R=opt.R||BIO.radii().far,st=opt.step||Math.max(8,R/150);let best=0,bx=0,bz=0;
+ for(let z=o[1]-R;z<=o[1]+R;z+=st)for(let x=o[0]-R;x<=o[0]+R;x+=st){const c=BIO.cliff(x,z);if(c>best){best=c;bx=x;bz=z;}}
+ if(best>=full)control={at:[bx,BIO.terrainH(bx,bz),bz],flagged:on(bx,BIO.terrainH(bx,bz),bz)};
+ const L=[...bad.values()];return {ok:!L.length&&(!control||control.flagged),bad:L,checked,control};};
 
 // A JITTERED GRID over a disc [rIn,rOut] round the origin: one candidate per
 // cell, jittered, tested against the host mask, an fbm patch mask (the floor
@@ -19,7 +53,45 @@ BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.f
 // rejection-sampling luck, and the count is predictable from the cell size.
 // opt.depth: [lo,hi] of BIO.depth (ground under the local water) a cell must lie in
 // (sedesert-1, additive): a pass that plants IN the water asks for its window.
-BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),N=Math.ceil(rOut*2/cell);let n=0;const D=opt.depth;
+// THE CELL FORM (CORE-IMPROVEMENTS item 13, 2026-10-27): BIO.grid(salt, cell, accept, fn, opt), a string first. Each cell is
+// seeded from a hash of (the world's seed, the kit, salt, the cell's ix and iz, the candidate's index): the cell's jitter and
+// its accept draw come from that seed, and rng() is reseeded from it before fn runs, so fn's own draws (rr, pick) are the
+// cell's too. The page's stream is put back when the grid returns: adding, dropping or reordering a pass moves nothing in
+// any other pass, and a box (a tile) built alone draws what it draws in the full build. The lattice is the world's
+// (ix = floor(x / cell)), not the disc's. Its patch field is KRAND.fbm (portable), not the sin-based fbm.
+//   opt.box [x0,z0,x1,z1], or opt.rOut (and opt.rIn, opt.center) for a disc: where it looks (one is needed)
+//   opt.n   candidates per cell (default 1), each its own seed;  opt.depth, reach, patch, patchScale, pad, noMask as below
+//   opt.cliff  true: the pass grows ON faces (lichens, cliff plants, hanging vines), no cliff gate. Unset: gated (BIO.cliffW)
+//   accept(x, z, d) -> 0..1 as below; fn(x, y, z, seed, d): seed is the candidate's u32 (KRAND.stream(seed) for a stream
+//   of its own). Returns the count placed.
+// The numeric form below is the old stream-ordered grid, kept unchanged for the pages not yet rebuilt.
+function gridCells(salt,cell,accept,fn,opt){opt=opt||{};
+ if(typeof KRAND==='undefined')throw new Error('BIO.grid(\''+salt+'\', ...): the cell form needs core/rand (08-core-rand.js) on the page');
+ if(!(cell>0))throw new Error('BIO.grid(\''+salt+'\', ...): cell must be a positive number of metres');
+ const o=opt.center||BIO.center(),rIn=opt.rIn||0,rOut=opt.rOut,B0=opt.box;
+ if(!B0&&!(rOut>0))throw new Error('BIO.grid(\''+salt+'\', ...): give opt.box or opt.rOut');
+ const B=B0||[o[0]-rOut,o[1]-rOut,o[0]+rOut,o[1]+rOut],disc=rOut>0,D=opt.depth,per=opt.n==null?1:opt.n;
+ const W=BIO.host?BIO.host.seed>>>0:1,root=KRAND.child(KRAND.child(W,'bio:'+(BIO.kitName||'')),String(salt)),pseed=KRAND.child(W,'bio.patch');
+ const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale||.016,gate=opt.cliff!==true;
+ const ix0=Math.floor(B[0]/cell),ix1=Math.floor(B[2]/cell),iz0=Math.floor(B[1]/cell),iz1=Math.floor(B[3]/cell);
+ const saved=rngState();let n=0;
+ try{for(let iz=iz0;iz<=iz1;iz++)for(let ix=ix0;ix<=ix1;ix++)for(let k=0;k<per;k++){
+  const seed=KRAND.hash(root,ix,iz,k),s=KRAND.stream(seed),x=(ix+s.next())*cell,z=(iz+s.next())*cell,u=s.next();
+  if(x<B[0]||z<B[1]||x>B[2]||z>B[3])continue;
+  const d=Math.hypot(x-o[0],z-o[1]);if(disc&&(d<rIn||d>rOut))continue;
+  let a=accept?accept(x,z,d):1;if(a<=0)continue;
+  if(opt.reach){a*=BIO.reachW(opt.reach,x,z);if(a<=0)continue;}
+  if(gate){a*=BIO.cliffW(x,z);if(a<=0)continue;}
+  if(D){const dep=BIO.depth(x,z);if(dep<D[0]||dep>D[1])continue;}
+  const m=opt.noMask?1:BIO.mask(x,z);if(m<=0)continue;
+  const patch=pk>0?(1-pk*.5)+pk*KRAND.fbm(x*ps+7,z*ps-3,0,2,pseed):1;
+  if(u>a*m*clamp(patch,0,1.15))continue;
+  if(!BIO.clearOf(x,z,opt.pad||0))continue;
+  reseed(s.u32());fn(x,BIO.terrainH(x,z),z,seed,d);n++;}}
+ finally{reseed(saved);}
+ return n;}
+BIO.grid=function(cell,rIn,rOut,accept,fn,opt){if(typeof cell==='string')return gridCells(cell,rIn,rOut,accept,fn);
+ opt=opt||{};const o=opt.center||BIO.center(),N=Math.ceil(rOut*2/cell);let n=0;const D=opt.depth;const gate=cliffOld(opt);
  const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale||.016;
  const B=opt.box;   // optional [x0,z0,x1,z1] window (a zone strip); cells outside it cost nothing
  let ix0=0,ix1=N-1,iz0=0,iz1=N-1;
@@ -33,6 +105,7 @@ BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||B
   // Same result as testing it last: a zero never passed the u test anyway.
   let a=accept?accept(x,z,d):1;if(a<=0)continue;
   if(opt.reach){a*=BIO.reachW(opt.reach,x,z);if(a<=0)continue;}
+  if(gate){a*=BIO.cliffW(x,z);if(a<=0)continue;}
   if(D){const dep=BIO.depth(x,z);if(dep<D[0]||dep>D[1])continue;}
   const m=opt.noMask?1:BIO.mask(x,z);if(m<=0)continue;
   const patch=pk>0?(1-pk*.5)+pk*fbm(x*ps+7,z*ps-3,9484,2):1;
@@ -64,11 +137,11 @@ BIO.reachField=function(F,frame){const x0=frame.x0==null?0:frame.x0,z0=frame.z0=
 // annulus, biased outward by `pow` (>1 pushes the crowd out). With core/space on the page the spacing test reads the
 // accepted points through a KSPACE grid of cell minD (it was a scan of all of them: O(n^2)); the candidates come back
 // in the order they were accepted, so the same points pass and the same draws are made.
-BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[];let tries=0;
+BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[],gate=cliffOld(opt);let tries=0;
  const S=typeof KSPACE!=='undefined'&&typeof minD==='number'&&minD>0&&isFinite(minD)?KSPACE.create({cell:minD}):null,near=[];
  while(P.length<n&&tries++<n*40){const a=rng()*TAU,u=Math.pow(rng(),opt.pow||1);
   const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u)),x=o[0]+Math.cos(a)*r,z=o[1]+Math.sin(a)*r;
-  if(rng()>BIO.mask(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
+  if(rng()>BIO.mask(x,z))continue;if(gate&&rng()>BIO.cliffW(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
   let ok=true;for(const q of S?S.query(x,z,minD,near):P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
   if(!ok)continue;const p=[x,z];P.push(p);if(S)S.insert(p,x,z,0);fn(x,BIO.terrainH(x,z),z,r);}
  return P;};
