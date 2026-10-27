@@ -52,8 +52,10 @@ Read before changing anything here. `build.py` prints the open count.
       (they read near black under this page's Lambert). THE FLORA: the east island's forms by `BIO.kin` (open bell, plate frill,
       rim cushion, copper pine; the old stock as plateau parasol, ribbon fern, gold lantern, vine beard), over the jungle's upper
       fringe at reduced shares. Held about 25 M (trees 20.0 M, floor 4.9 M; ceiling 40 M), a 31 s build (Arc 140T).
-      Open: the forms beyond colour and size (the open bell's flared pleats, the plate frill's level opaque fins, the copper pine's
-      straight bole, the gold lantern's gold pods, the vine beard's vines) are builder work; the Arcube's dimensions are being
+      The forms (2026-10-27, the builders' habit fields): the open bell's fans flared (`bellK`, `bellTilt`), the plate frill's fins
+      near level (`finLevel`), the rim cushion fused (`fused`), the copper pine straight with a long clear bole (`straight`), the
+      gold lantern's big gold pods (`podCol`, `podK`). GPU verify OK (Arc 140T), its export box on the north-east stream.
+      Open: the vine beard's vines and the plate frill's broad opaque fin card are builder work; the Arcube's dimensions are being
       reworked from its population (a separate session): re-run `bake_cube.py` when that lands; the survivors in the ruin (the
       Tungangs' Loj Nahn) are the settlement work's; the 8 m clustering leaves the mass faceted close to.
 - [ ] **Station 3, the cloud forest** (`python3 build.py --station highland`, `dist/rift-highland.html`; 2026-10-27, a first cut): the central
@@ -69,13 +71,15 @@ Read before changing anything here. `build.py` prints the open count.
       the lee's pines are denser and its ground is summer-dry grass and earth (`MAP_PAINT`, a new opt-in station hook in the shared
       paint). The LOD origins sit ahead of the views' cameras (their foregrounds were stand-ins and impostors). Held about 33 M
       (trees 24.7 M, floor 6.2 M, far 1.1 M; ceilings 40 M and 30 M a pass); 76 k trees, 2.35 M instances, a 33 s build on the Arc 140T.
-      Open: the families' own forms (the mantle palm's hoods, the comb frill's level translucent fins, the crown barrel's fused
-      cushion, the night rosette, the glass pole, fog thread, crest heath) are builder work still to do (the hoodlet is a kin
-      stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
+      The families' forms (2026-10-27, habit fields the builders read, opt-in: 55-trees over B[0]; the sketch's species draw as
+      before): the mantle palm's fans closed up toward a hood (`bellK`, `bellTilt`), the comb frill's fins held level and long
+      (`finLevel`, `finK`: measured 3-10 degrees off level), the crown barrel's fins fused into a cushion (`fused`).
+      Open: the fins' translucent fringe (a new fin material), the night rosette, the glass pole, fog thread and crest heath are
+      builder work still to do (the hoodlet is a kin stand-in); the ravines carry streams (89w: a WATER.flow line each, ~950 m down the face, on a bed that never rises
       downstream in a .9 m channel; white water by slope, no free-falling curtains: the risers are 31-41 degrees), their floors
       painted dark wet stone and moss; the
       ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
-      east islands' records; not yet verified on the GPU.
+      east islands' records. GPU verify OK (Arc 140T): 32.1 M held, its export box in the cloud core.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in

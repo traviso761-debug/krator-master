@@ -12,24 +12,25 @@
 //   ribbon fern     <- cloud tree-fern (rift.cloudfern)   a slender trunk, fronds long and drooping
 //   gold lantern    <- lantern tree (rift.lanterntree)    big gold pods (their colour is the builder's still: a pod field owed)
 //   vine beard      <- beard tree (rift.beardtree)        its beard turned to hanging vines (the colour; the vines are builder work)
-// The forms the plan gives beyond colour and size (the open bell's flared pleats, the plate frill's level fins, the copper pine's
-// straight bole) are builder work still to come. Every tree is placed from its lattice cell's KRAND hash and reseeded from it, after
+// Beyond colour and size, the builders' habit fields (55-trees, over B[0]): the open bell's fans flared (bellK, bellTilt), the plate
+// frill's fins held near level (finLevel), the rim cushion fused (fused), the copper pine straight with a long clear bole (straight),
+// the gold lantern's big gold pods (podCol, podK). Still to come: the vine beard's vines, the plate frill's broad opaque fin card. Every tree is placed from its lattice cell's KRAND hash and reseeded from it, after
 // the Rift's own passes (which draw only the jungle's upper fringe here: STATION_PAGE.thin).
 const FAMILIES=(function(){if(typeof BIO==='undefined'||!BIO.kin)return null;const K=(ref,d)=>BIO.kin(ref,d);
  return[
- {band:'forest',cell:40,p:.5,kin:K('rift.cloudbell',{key:'openbell',name:'Open bell',scale:{H:1.6,rb:1.5,crownR:1.4},
+ {band:'forest',cell:40,p:.5,kin:K('rift.cloudbell',{key:'openbell',name:'Open bell',scale:{H:1.6,rb:1.5,crownR:1.4},habit:{bellK:.6,bellTilt:1.2},
    colour:{leaf:[0xc8c87a,0xb8bc6c,0xd4d088,0xa8b060],bark:[0xa29a84,0x948c78,0xb0a890]}})},
- {band:'forest',cell:48,p:.42,kin:K('rift.cloudfrill',{key:'platefrill',name:'Plate frill',scale:{H:1,rb:1.2,crownR:1.3},
+ {band:'forest',cell:48,p:.42,kin:K('rift.cloudfrill',{key:'platefrill',name:'Plate frill',scale:{H:1,rb:1.2,crownR:1.3},habit:{finLevel:.9,finTilt:.2,finK:1.1},
    colour:{leaf:[0x4e8a80,0x5a9488,0x8a7048,0x46807a],bark:[0x7a6448,0x6e5a40,0x86704e]}})},
- {band:'plinth',cell:22,p:.3,kin:K('rift.barrelfrill',{key:'rimcushion',name:'Rim cushion',scale:{H:.3,rb:.55,crownR:.45},
+ {band:'plinth',cell:22,p:.3,kin:K('rift.barrelfrill',{key:'rimcushion',name:'Rim cushion',scale:{H:.3,rb:.55,crownR:.45},habit:{fused:1},
    colour:{leaf:[0x6a3a78,0x5a3068,0x7a4888,0x4e2a5a],bark:[0x3a2a40,0x302236]}})},
- {band:'sw',cell:40,p:.42,kin:K('rift.stonepine',{key:'copperpine',name:'Copper pine',scale:{H:1.6,rb:1.1,crownR:.75},
+ {band:'sw',cell:40,p:.42,kin:K('rift.stonepine',{key:'copperpine',name:'Copper pine',scale:{H:1.6,rb:1.1,crownR:.75},habit:{straight:1},
    colour:{leaf:[0x4e6440,0x46583a,0x587048],bark:[0xa0603a,0x8e5432,0xb06c42]}})},
  {band:'forest',cell:46,p:.34,kin:K('rift.cloudparasol',{key:'plateauparasol',name:'Plateau parasol',scale:{H:1.55,rb:1.5,crownR:1.5},
    colour:{leaf:[0x3e8a80,0x48948a,0x34807a,0x52a096],bark:[0x6a6a5c,0x5e5e52]}})},
  {band:'valley',cell:16,p:.4,kin:K('rift.cloudfern',{key:'ribbonfern',name:'Ribbon fern',scale:{H:1.15,rb:.7,crownR:1.2},
    colour:{leaf:[0x5a8a40,0x4e7e38,0x689848],bark:[0x4a3e30,0x403428]}})},
- {band:'forest',cell:28,p:.3,kin:K('rift.lanterntree',{key:'goldlantern',name:'Gold lantern',scale:{H:1.25,rb:1.2,crownR:1.2},
+ {band:'forest',cell:28,p:.3,kin:K('rift.lanterntree',{key:'goldlantern',name:'Gold lantern',scale:{H:1.25,rb:1.2,crownR:1.2},habit:{podCol:[0xf0c030,0xe8b020,0xf8d050],podK:1.5},
    colour:{leaf:[0x7aa848,0x6a9a40,0x88b454],bark:[0x7a6a50,0x6e5e46]}})},
  {band:'valley',cell:30,p:.3,kin:K('rift.beardtree',{key:'vinebeard',name:'Vine beard',scale:{H:1.3,rb:1.2,crownR:1.2},
    colour:{leaf:[0x4e7a3a,0x426e32,0x5a8644],bark:[0x4a4438,0x3e3a30]}})}].filter(F=>F.kin);})();
