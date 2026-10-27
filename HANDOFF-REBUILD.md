@@ -103,6 +103,8 @@ sections 2, 4a, 4b and 4c), `CLAUDE.md` and `README.md`.
   | 12 | crater-drylands, shighlands | after the hyperjungle, swbay and the SW highlands |
   | 13 | ehighlands, k-guilin (and guilin, if the owner wants its cards fixed) | k-guilin reads six kits |
 
+  **Run them through without stopping** (the owner, 2026-10-27): "once done with each rebuild, proceed to next, then republish
+  gallery". Start each pair when the one before merges; after the last, republish the gallery (`gallery/README.md`).
   Each turn also takes its rows of `EXCHANGES.md` (neighbour species exchanges, being written 2026-10-27).
 
   A vendor's session states in its merge which of its species changed (keys, indices kept), so the readers' sessions take
