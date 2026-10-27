@@ -29,6 +29,11 @@ What it writes (every raster cropped to the region's box plus a margin):
               A pixel no overlay covers takes the nearest overlay's index (pixel distance); a pixel of the bounding
               polygon itself is 'inside' in region.json's mask (mask.png: 255 inside, 0 outside). The regions in
               OVERLAYS and the owner's tool polygons ('Region 65') are not biomes and stay out of it
+  dist.png    each biome's distance field (a species' reach, biomes/hyperjungle/PLAN-LANDS.md H1): the squared distance in
+              map pixels from each pixel's centre to the nearest pixel of that biome's drawn polygon, 24 bits in R,G,B
+              (R high), exact (the Euclidean distance transform; core/mask's KMASK.distance gives the same integers). The
+              biomes are bands stacked down the image, band k = region.json "biomes"[k] (its 'dist_band'), each the box's
+              size. The polygon is drawn DIST_PAD pixels past the box, so a distance up to DIST_PAD is exact
   overlay.png the OVERLAYS (biomes/nsemiarid/PLAN.md, section 3: layers that own no ground and lie over any biome),
               full resolution: bit k set where region.json "overlays"[k]'s polygon is drawn. Only when one is in the box
   palaeo.png  the old water bodies (DATA.palaeolakes, and the flood lake the dams' breach filled), on the height grid:
@@ -72,6 +77,7 @@ TOOL_REGION = ('region ',)   # the owner's tool polygons ('Region 65': edit_rive
 RING_M = 30.0        # m: the bathtub ring under a dam lake's full level, its yearly drawdown (the owner, 2026-10-20)
 PALAEO_PAD = 2       # height cells round an old lake's bed in palaeo.png
 DAM_R = 5            # height cells: a dam's body, for the lake held behind it (as edit_dams.py stands it)
+DIST_PAD = 128       # map pixels (256 km) past the box that dist.png's polygons are drawn in: every reach is shorter
 
 
 def load_page(path):
@@ -114,6 +120,22 @@ def poly_area(pts):
         a, b = pts[i], pts[(i + 1) % len(pts)]
         s += a[0] * b[1] - b[0] * a[1]
     return abs(s) / 2
+
+
+def dist2(mask):
+    """the squared distance in pixels from each pixel's centre to the nearest True pixel's (0 on one), int64; -1 when none.
+    Exact: the transform's nearest pixel gives the integer di^2 + dj^2, as KMASK.distance's d2 (core/mask)"""
+    if not mask.any():
+        return np.full(mask.shape, -1, np.int64)
+    _, (iy, ix) = ndimage.distance_transform_edt(~mask, return_indices=True)
+    Y, X = np.indices(mask.shape)
+    return (iy - Y).astype(np.int64) ** 2 + (ix - X).astype(np.int64) ** 2
+
+
+def save24(path, v):
+    q = np.clip(v, 0, (1 << 24) - 1).astype(np.uint32)
+    rgb = np.stack([(q >> 16) & 255, (q >> 8) & 255, q & 255], -1).astype(np.uint8)
+    Image.fromarray(rgb, 'RGB').save(path, optimize=True)
 
 
 def save16(path, v, lo, hi, flag):
@@ -401,6 +423,16 @@ def main():
         b['px_in_region'] = int(((bmap == b['id']) & inside).sum())
     save8(os.path.join(out, 'biome.png'), bmap)
 
+    # ---- each biome's distance field (dist.png): its drawn polygon in a box DIST_PAD past this one, so a polygon that
+    # runs out of the box still measures from where it is
+    P = DIST_PAD
+    dist = np.zeros((H * len(over), W), np.int64)
+    for k, r in enumerate(over):
+        dist[k * H:(k + 1) * H] = dist2(poly_mask(r['points'], x0 - P, y0 - P, W + 2 * P, H + 2 * P))[P:P + H, P:P + W]
+        biomes[k]['dist_band'] = k
+    if over:
+        save24(os.path.join(out, 'dist.png'), dist)
+
     # ---- the overlays: drawn polygons, one bit each (no nearest-fill: an overlay is only where it is drawn)
     overlays = []
     omap = np.zeros((H, W), np.uint8)
@@ -597,6 +629,9 @@ def main():
         'rain': {'scale_mm': 4000 / 255}, 'temp': {'offset': -90},
         'pressure': {'atm0': 1.6, 'scale_m': 8000},
         'classes': classes, 'biomes': biomes, 'biome_fill_px': filled,
+        'dist': {'file': 'dist.png', 'bands': len(over), 'band_px': [W, H], 'encoding': 'R<<16 | G<<8 | B',
+                 'value': 'squared distance in map pixels to the biome\'s drawn polygon (pixel centres; 0 inside)',
+                 'pad_px': DIST_PAD, 'note': 'exact up to pad_px; metres = sqrt(value) * m_per_px (core/mask KMASK.distance)'},
         'drainage': {'min_accum': CHANNEL_MIN, 'lines': lines},
         'rivers': rivers, 'valleys': valleys,
         'water': {'spilled_cells': spilled, 'note': 'lake levels above their lowest shore cell were lowered to it'},

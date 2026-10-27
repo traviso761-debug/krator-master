@@ -173,3 +173,107 @@ static func hash(b: PackedByteArray) -> String:
 
 static func at(b: PackedByteArray, w: int, i: int, j: int, ch: int) -> int:
 	return b[(j * w + i) * 4 + ch]
+
+
+# ---- the distance transform: the twin of 27-core-mask-distance.js (Meijster et al.), integers only. bytes is RGBA
+# (stride 4) or one byte a pixel (stride 1); a pixel is inside when bytes[o * stride + channel] >= threshold.
+# Returns the squared distances in pixels, row by row (0 inside; every value -1 when nothing is inside).
+static func _fdiv(a: int, b: int) -> int:   # floor(a / b), b > 0, as the JS file's fdiv
+	var r := a % b
+	var q := (a - r) / b
+	return q - 1 if r != 0 and a < 0 else q
+
+
+static func distance(bytes: PackedByteArray, w: int, h: int, stride: int = 4, channel: int = 0, threshold: int = 128) -> PackedInt32Array:
+	var n := w * h
+	var inf := w + h
+	var g := PackedInt32Array()
+	g.resize(n)
+	var d2 := PackedInt32Array()
+	d2.resize(n)
+	var any := false
+	for i in w:
+		for j in h:
+			var o := j * w + i
+			if bytes[o * stride + channel] >= threshold:
+				g[o] = 0
+				any = true
+			else:
+				g[o] = mini(g[o - w] + 1, inf) if j > 0 else inf
+		for j in range(h - 2, -1, -1):
+			var o := j * w + i
+			if g[o + w] < g[o]:
+				g[o] = g[o + w] + 1
+	if not any:
+		d2.fill(-1)
+		return d2
+	var s := PackedInt32Array()
+	s.resize(w)
+	var t := PackedInt32Array()
+	t.resize(w)
+	for j in h:
+		var row := j * w
+		var q := 0
+		s[0] = 0
+		t[0] = 0
+		for u in range(1, w):
+			var gu: int = g[row + u]
+			var gu2 := gu * gu
+			while q >= 0:
+				var sq: int = s[q]
+				var gs: int = g[row + sq]
+				var a: int = t[q] - sq
+				var c: int = t[q] - u
+				if a * a + gs * gs > c * c + gu2:
+					q -= 1
+				else:
+					break
+			if q < 0:
+				q = 0
+				s[0] = u
+			else:
+				var si: int = s[q]
+				var gi: int = g[row + si]
+				var sep := 1 + _fdiv(u * u - si * si + gu2 - gi * gi, 2 * (u - si))
+				if sep < w:
+					q += 1
+					s[q] = u
+					t[q] = sep
+		for u in range(w - 1, -1, -1):
+			var su: int = s[q]
+			var gq: int = g[row + su]
+			var dx := u - su
+			d2[row + u] = dx * dx + gq * gq
+			if u == t[q]:
+				q -= 1
+	return d2
+
+
+# bilinear between pixel centres (pixel i's centre is x = i + .5), clamped to the edge: KMASK.distance(...).sample
+static func distance_sample(d2: PackedInt32Array, w: int, h: int, x: float, y: float) -> float:
+	if d2.size() > 0 and d2[0] < 0:
+		return INF
+	var fx := clampf(x - 0.5, 0.0, w - 1.0)
+	var fy := clampf(y - 0.5, 0.0, h - 1.0)
+	var ia := int(floor(fx))
+	var ja := int(floor(fy))
+	var ib := ia + 1 if ia + 1 < w else ia
+	var jb := ja + 1 if ja + 1 < h else ja
+	var tx := fx - ia
+	var ty := fy - ja
+	var v00 := sqrt(float(d2[ja * w + ia]))
+	var v10 := sqrt(float(d2[ja * w + ib]))
+	var v01 := sqrt(float(d2[jb * w + ia]))
+	var v11 := sqrt(float(d2[jb * w + ib]))
+	var top := v00 + (v10 - v00) * tx
+	var bot := v01 + (v11 - v01) * tx
+	return top + (bot - top) * ty
+
+
+static func distance_hash(d2: PackedInt32Array) -> String:   # KMASK.distanceHash: FNV-1a of the little-endian int32 bytes
+	var hh := 2166136261
+	for v in d2:
+		var uv := v & 0xFFFFFFFF
+		for b in 4:
+			hh = ((hh ^ ((uv >> (8 * b)) & 255)) * 16777619) & 0xFFFFFFFF
+	return "%08x" % hh

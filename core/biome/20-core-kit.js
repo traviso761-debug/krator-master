@@ -27,6 +27,15 @@ BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];i
   const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
  return api;};
 BIO.kitEnd=function(api){const name=BIO.kitName;if(api){BIO.kitWrap(name,api);BIO.kits[name].api=api;}BIO.kit('');return api;};   // api: what core/tags reads the kit's TAGS, species and plants from
+// ONE SPECIES' BUILDER BY KEY (PLAN-LANDS.md H2, a lookup only): a loaded kit's species record and its builder, without
+// building the kit. The kits already export make(sp, x, y, z) (the pass's own tree record) and grow(T, lv) (that one tree
+// into the kit's buckets) beside SPECIES; a kit may instead name its own per key as api.builders[key] = {make, grow}.
+// Both run in the source kit's registry (kitWrap). null when the kit is not on the page or has no such species or builder.
+BIO.kitBuilder=function(kit,key){const R=BIO.kits[kit],api=R&&R.api;if(!api)return null;
+ const own=api.builders&&api.builders[key],SP=api.SPECIES,sp=SP&&SP.findIndex?SP.findIndex(S=>S&&S.key===key):-1;
+ if(own&&typeof own.make==='function'&&typeof own.grow==='function')return{kit,key,api,sp,species:sp>=0?SP[sp]:own.species||null,make:own.make,grow:own.grow,own:true};
+ if(sp<0||typeof api.make!=='function'||typeof api.grow!=='function')return null;
+ return{kit,key,api,sp,species:SP[sp],make:function(){return api.make.apply(api,[sp].concat([].slice.call(arguments)));},grow:function(T,lv){return api.grow(T,lv);},own:false};};
 // a material cache key in the current kit's name ('' adds nothing)
 BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
 BIO.kit('');

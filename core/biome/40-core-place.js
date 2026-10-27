@@ -31,7 +31,8 @@ BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||B
   // accept first (sedesert-1): a zero there (out of the zone, out of the LOD band) costs
   // nothing more, and the host mask (terrain calls) is only paid for the rest.
   // Same result as testing it last: a zero never passed the u test anyway.
-  const a=accept?accept(x,z,d):1;if(a<=0)continue;
+  let a=accept?accept(x,z,d):1;if(a<=0)continue;
+  if(opt.reach){a*=BIO.reachW(opt.reach,x,z);if(a<=0)continue;}
   if(D){const dep=BIO.depth(x,z);if(dep<D[0]||dep>D[1])continue;}
   const m=opt.noMask?1:BIO.mask(x,z);if(m<=0)continue;
   const patch=pk>0?(1-pk*.5)+pk*fbm(x*ps+7,z*ps-3,9484,2):1;
@@ -39,6 +40,26 @@ BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||B
   if(!BIO.clearOf(x,z,opt.pad||0))continue;
   fn(x,BIO.terrainH(x,z),z,d);n++;}
  return n;};
+// REACH (PLAN-LANDS.md H1, biomes/hyperjungle): a species carried out of its home polygon by long diffusion, tens of km
+// where an ecotone is a few hundred metres. reach = {from, km, falloff} (or a species record holding one as .reach):
+// 1 inside the polygon `from`, falling to 0 at km kilometres from it. The distance comes from the host:
+//   BIO.host.distance(from, x, z) -> metres, or BIO.host.distance = {from: (x, z) -> metres}; none known -> weight 0
+// BIO.reachField(F, frame) turns a core/mask KMASK.distance field into that (x, z) -> metres lookup, frame
+// {x0, z0, m}: pixel (i, j) covers x in [x0 + i m, x0 + (i + 1) m), the same frame the open world reads dist.png in.
+// falloff: 'smooth' (the default, 1 - smoothstep), 'linear', 'square' ((1 - t)^2), or a function t -> weight on t in [0, 1].
+// Only +, -, * and comparisons on the distance, so a page and Godot agree. BIO.grid takes it as opt.reach (a factor on
+// accept, before the mask: a cell it zeroes draws nothing more, and a pass without it draws exactly as before).
+BIO.reachDist=function(from,x,z){const D=BIO.host&&BIO.host.distance;if(!D)return null;
+ const v=typeof D==='function'?D(from,x,z):(typeof D[from]==='function'?D[from](x,z):null);return v==null||v!==v?null:v;};
+BIO.reachW=function(r,x,z){r=r&&r.reach&&!r.from?r.reach:r;if(!r||r.from==null)return 0;
+ const km=r.km==null?0:r.km,dm=BIO.reachDist(r.from,x,z);if(dm==null)return 0;if(dm<=0)return 1;if(!(km>0))return 0;
+ const t=dm/(km*1000);if(t>=1)return 0;const f=r.falloff==null?'smooth':r.falloff;
+ if(typeof f==='function')return clamp(f(t),0,1);
+ if(f==='linear')return 1-t;if(f==='square')return (1-t)*(1-t);
+ if(f==='smooth')return 1-t*t*(3-2*t);
+ BIO.err('BIO.reachW: no falloff '+f);return 0;};
+BIO.reachField=function(F,frame){const x0=frame.x0==null?0:frame.x0,z0=frame.z0==null?0:frame.z0,m=frame.m==null?1:frame.m;
+ return (x,z)=>{const v=F.sample((x-x0)/m,(z-z0)/m);return v===Infinity?null:v*m;};};
 // POISSON-ish scatter of n points with a minimum spacing, area-uniform in the
 // annulus, biased outward by `pow` (>1 pushes the crowd out). With core/space on the page the spacing test reads the
 // accepted points through a KSPACE grid of cell minD (it was a scan of all of them: O(n^2)); the candidates come back
