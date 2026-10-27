@@ -241,6 +241,26 @@ glow tubes), `card.fungus.drip` (the drip cap), `card.beads.bell` (the bead cone
 `rock.limestone.karst`, `rock.sandstone.navajo`, `ground.moss001`-`003`, `ground.sphagnum` (the hanging swamps); the glass
 tower is `biomes/ehighlands`' own. Needed before the kit's H1.
 
+Station 1 was built 2026-10-26 on the delivered sets (`biomes/swhighlands/materials.json`). Still owed, both stand-ins today
+(`card.moss` tinted pale and `ground.grass_ground`, an Earth grass):
+
+#### `card.turf.native`
+- Kind: card (a nine-cell sheet of single tufts on magenta, `tools/textures/cards.py`), tintable (keep 0: the instance tints it).
+- Used by: the SW highlands' ridge turf (`turf` slot) on the fold crests and the bald. Reuse: any native (non-Earth) short ground
+  cover on Krator's wet uplands; the bay's grassy shelves.
+
+```
+A 3x3 grid sheet of nine separate small ground-cover tufts, each centred in its own cell with clear space around it, on a flat pure magenta (#FF00FF) background, no shadows on the background. Front view, eye level, each tuft standing upright from its base at the bottom of its cell. The plant: an alien short turf that is not grass: dense clumps of soft, finger-thick succulent filaments 10 to 25 cm tall, rounded at their tips, some ending in tiny pale bead-like nodules, in soft grey-green with a faint blue cast, lighter at the tips; a few tufts sparser and leaning. Even, flat, shadowless studio lighting, high detail, photographic, no text, no border, no watermark.
+```
+
+#### `ground.turf.native`
+- Kind: surface, keep 1 (its own colour), a KGROUND ground layer (`ground.turf` slot in `biomes/swhighlands/materials.json`).
+- Used by: the fold crests' and the bald's ground under the turf cards. Reuse: the SW highlands' other stations' open ground.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The ground of an alien upland meadow seen from above: a close mat of short, soft, rounded succulent filaments in grey-green with a faint blue cast, packed like a cushion, small pale bead-like nodules scattered through it, patches of dark brown peaty soil showing between the clumps, a few tiny pink and orange flower buds. Scale: the frame is 2 metres across.
+```
+
 ## 23. Godstep valley (`biomes/godstep`, planned 2026-10-26)
 
 The titanium lava staircase (`biomes/godstep/PLAN.md` section 7). Reused: `ground.lava.aa`, `ground.lava.crust`,

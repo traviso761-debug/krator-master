@@ -151,4 +151,28 @@
   for(const r of Q.ripple){const a=r[2]*Math.PI/180,k=TAU/r[1],c=Math.cos(TAU*(fr(x*Math.cos(a)/r[1])+fr(z*Math.sin(a)/r[1])-fr(t*r[3]/per)))*r[0];sx+=c*Math.cos(a);sz+=c*Math.sin(a);void k;}
   if(S.fountain){const F=Q.fountain,dx=x-S.fountain[0],dz=z-S.fountain[1],r=Math.hypot(dx,dz);if(r>1e-6){const c=Math.cos(TAU*(fr(r/F.ring)-fr(t*F.cycles/per)))*.06*Math.exp(-r/F.r);sx+=c*dx/r;sz+=c*dz/r;}}
   const l=Math.hypot(sx,1,sz);return[-sx/l,1/l,-sz/l];};
+// CONFLUENCE (2026-10-26, biomes/swhighlands; the owner: a tributary must not cross the river it joins, nor stop short of it at a
+// bank): WATER.join(trib, main, o) makes a tributary's line meet a main channel as one water. trib and main are lines run downstream,
+// [[x,z,y],...] (or KRELIEF.river's [{x,z,y}]); o.w the main's half width (m, or (i) => m at its vertex i: 8); o.tuck (.3) how far in
+// toward the main's centreline the tributary ends, as a fraction of that half width; o.lift (.03 m) how far over the main's surface
+// its end lies. The tributary is cut where it first comes within tuck * w of the main's centreline (the point on that line found
+// along its own segment, so it ends on its own heading), and every level is raised to at least the main's surface there + lift (a
+// max with a constant: it still never climbs). Returns {pts, at: [x, z] (the main's point at the join), k (its segment), y (its
+// level there), cut (the tributary's points dropped), order: 'after'}: DRAW THE TRIBUTARY AFTER THE MAIN (a higher renderOrder):
+// across the mouth its surface lies over the main's bank foam, so the two read as one water. The ground under both is the host's
+// (carve every channel near a point and keep the lowest: no bank of one stands in the other's water). Plain data; nothing else moves.
+W.join=(trib,main,o)=>{o=o||{};const tuck=o.tuck==null?.3:o.tuck,lift=o.lift==null?.03:o.lift,wf=typeof o.w==='function'?o.w:(()=>o.w==null?8:o.w);
+ const P=a=>Array.isArray(a)?[a[0],a[1],a[2]]:[a.x,a.z,a.y];const T=trib.map(P),M=main.map(P);
+ if(T.length<2||M.length<2)throw new Error('WATER.join: each line needs two points');
+ const near=(x,z)=>{let bd=1e18,bk=0,bt=0;for(let k=0;k<M.length-1;k++){const a=M[k],b=M[k+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=cl(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),
+   px=a[0]+dx*t-x,pz=a[1]+dz*t-z,d2=px*px+pz*pz;if(d2<bd){bd=d2;bk=k;bt=t;}}const a=M[bk],b=M[bk+1];
+  return{d:Math.sqrt(bd),k:bk,x:a[0]+(b[0]-a[0])*bt,z:a[1]+(b[1]-a[1])*bt,y:a[2]+(b[2]-a[2])*bt,w:wf(bk)+(wf(bk+1)-wf(bk))*bt};};
+ let cut=T.length,hit=null,prev=near(T[0][0],T[0][1]);
+ for(let i=1;i<T.length;i++){const q=near(T[i][0],T[i][1]),lim=tuck*q.w;if(q.d<lim){cut=i;hit=q;break;}prev=q;}
+ let out;const found=!!hit;
+ if(found){const a=T[cut-1],b=T[cut],da=prev.d-tuck*prev.w,db=hit.d-tuck*hit.w,f=da<=0?0:cl(da/(da-db),0,1);
+  const e=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];out=T.slice(0,cut).concat([e]);hit=near(e[0],e[1]);}
+ else{out=T.slice();hit=near(out[out.length-1][0],out[out.length-1][1]);}
+ const y0=hit.y+lift;out=out.map(p=>[p[0],p[1],Math.max(p[2],y0)]);
+ return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,order:'after'};};
 })();

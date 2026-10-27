@@ -24,7 +24,7 @@ const ROCK_MAT=(function(){const m=new THREE.MeshLambertMaterial({color:0xffffff
    .replace('#include <map_fragment>',['#include <map_fragment>',
     '{vec3 n=abs(normalize(vSWN));n/=n.x+n.y+n.z;',
     ' vec3 t=texture2D(uRG,vSWP.zy*uRGs).rgb*n.x+texture2D(uRG,vSWP.xz*uRGs).rgb*n.y+texture2D(uRG,vSWP.xy*uRGs).rgb*n.z;',
-    ' float l=dot(t,vec3(0.333));vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.72)*1.3;diffuseColor.rgb*=sc*clamp(pow(l/0.47,1.4),0.35,1.8)*(0.45+0.55*vOcc);}'].join('\n'))
+    ' float l=dot(t,vec3(0.333));vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.5)*1.3;diffuseColor.rgb*=sc*clamp(pow(l/0.47,1.4),0.35,1.8)*(0.45+0.55*vOcc);}'].join('\n'))
    .replace('#include <lights_lambert_vertex>','#include <lights_lambert_vertex>');};
  m.customProgramCacheKey=()=>'swhi-rock';return m;})();
 // every rock body: KSTACKS records, one mesh for all (walls, tops and the lintels' soffits)
@@ -40,15 +40,29 @@ const BODIES=[];
   const rise=Math.max(12,F.top-terrainH(x,z)+7),half=5+rise/Math.tan(52*Math.PI/180),span=1.13*half;
   const B=mk({kind:'arch',id:'bridge'+(i+1),x,z,span,rise,H:rise+8,leg:span*.5,t:14,inward:.1,ry:Math.atan2(ux,-uz),ground:gr,seed:KRAND.hash(WORLD,2,i)},4);
   if(B){B.name=['The upper bridge','The middle bridge','The lower bridge'][i]||('Natural bridge '+(i+1));B.key='rock.bridge';B.fall=F;BODIES.push(B);}});
+ // WEATHERING (the owner, 2026-10-26: the arch read as man-made): on the drawn mesh only, the lintel's two upper outer corners
+ // worn round (a radius of about the lintel's thickness, in the opening's own frame), then every vertex moved by a KRAND noise
+ // of 1.2 m at a 5 m grain (none at the feet, which stay on the ground as drawn). The records (KSTACKS.at, the obstacles) keep
+ // the unweathered body: they differ from the drawn rock by at most ~1.5 m (KNOWN_ISSUES.md)
+ function weather(B,m){const o=B.opening,ux=Math.cos(o.ry),uz=Math.sin(o.ry),n=m.pos.length/3,sd=B.seed>>>0;let Lh=0;
+  for(let v=0;v<n;v++){const a=Math.abs((m.pos[3*v]-B.x)*ux+(m.pos[3*v+2]-B.z)*uz);if(a>Lh)Lh=a;}
+  const top=B.top,R=Math.min(Lh*.42,Math.max(4,(top-o.y1)*1.25)),cx=Lh-R,cy=top-R;
+  for(let v=0;v<n;v++){let x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2];const dx=x-B.x,dz=z-B.z,a=dx*ux+dz*uz,c=-dx*uz+dz*ux,aa=Math.abs(a);
+   if(aa>cx&&y>cy){const d=Math.hypot(aa-cx,y-cy);if(d>R){const k=R/d,na=cx+(aa-cx)*k;y=cy+(y-cy)*k;const a2=Math.sign(a)*na;x=B.x+a2*ux-c*uz;z=B.z+a2*uz+c*ux;}}
+   const foot=smooth(.5,4,y-terrainH(x,z)),A=1.2*foot,f=.2;
+   x+=A*(KRAND.fbm(x*f,y*f,z*f,3,sd)-.5)*2;y+=A*.7*(KRAND.fbm(x*f+7,y*f,z*f,3,sd+1)-.5)*2;z+=A*(KRAND.fbm(x*f,y*f+3,z*f,3,sd+2)-.5)*2;
+   m.pos[3*v]=x;m.pos[3*v+1]=y;m.pos[3*v+2]=z;}}
  const pos=[],uv=[],idx=[],occ=[],col=[];
- BODIES.forEach(B=>{const m=KSTACKS.mesh(B,{step:2.5}),o=pos.length/3;
+ BODIES.forEach(B=>{const m=KSTACKS.mesh(B,{step:2.5}),o=pos.length/3;weather(B,m);
   for(let v=0;v<m.pos.length/3;v++){pos.push(m.pos[3*v],m.pos[3*v+1],m.pos[3*v+2]);uv.push(m.uv[2*v],m.uv[2*v+1]);occ.push(.35+.65*m.occ[v]);col.push(1,1,1);}
   for(const i of m.idx)idx.push(o+i);
   OBSTACLES.push({x:B.x,z:B.z,r:Math.min(B.R,30)+2});
   REGISTER({name:B.name,key:B.key,kind:'rock',x:B.x,z:B.z,y:B.y0,r:Math.min(B.R,30),h:B.top-B.y0});});
  if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
   g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('aOcc',new THREE.Float32BufferAttribute(occ,1));g.setAttribute('aSun',new THREE.Float32BufferAttribute(occ.map(()=>1),1));
-  g.setIndex(idx);g.computeVertexNormals();const me=new THREE.Mesh(g,ROCK_MAT);me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel='Folded sandstone and limestone (the ring folds\' beds)';scene.add(me);}})();
+  g.setIndex(idx);g.computeVertexNormals();const me=new THREE.Mesh(g,ROCK_MAT);me.userData.host=true;me.userData.rock=true;me.userData.inspectLabel='Folded sandstone and limestone (the ring folds\' beds)';
+  me.userData.probePoints=[].concat(...BODIES.map(B=>[B.x,(B.y0+B.top)/2,B.z]));   /* one sample a body: the probe reads a merged mesh by its points (core/host 95) */
+  scene.add(me);}})();
 // the cave's hood: the carve patch meshed back over the mouth (surface nets), in the same rock and beds
 const CAVE_MESHES=(function(){const sd=new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize();let out=[];
  try{out=KCARVE.mesh(ROCK_MAT,{sun:[sd.x,sd.y,sd.z],ao:true,cast:'hood',gridNormals:true});}catch(e){reportErr('cave: '+e.stack);}

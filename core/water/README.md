@@ -586,3 +586,18 @@ wetGround replaced the core hook wetGround had captured under it). The shader te
 shaderHook's with wetGround's options after it. Pages without the sky host keep the accessor. `core/atmos/test-fog.js`
 checks both orders, with the old path as the negative. Nothing to adopt: it takes effect at the next rebuild of a page
 that has both.
+
+## Confluences: `WATER.join` (2026-10-26, biomes/swhighlands; `node core/water/test-join.js`)
+
+The owner's note on the SW highlands' cave stream: a tributary drawn to the river's centreline ran its ribbon and banks across the
+river and left a pointed tip; stopped at the bank, a strip of bank and the river's bank foam stood between the two waters.
+`WATER.join(trib, main, {w, tuck, lift})` (22-core-water-flow.js, plain data) returns the tributary's line made to meet the main as
+one water: cut where it first comes within `tuck` (.3) of the main's half width `w` (a number, or `(i) => m` by the main's vertex)
+of its centreline, the last point on that line along its own heading, every level raised to the main's surface there + `lift`
+(.03 m; a max with a constant, so it still never climbs), and `order: 'after'`.
+
+Adopting it: make both lines with their levels, `J = WATER.join(tribPts, mainPts, {w})`, then `WATER.flow` on `J.pts`; draw the
+tributary's `drawFlow` with a higher `renderOrder` than the main's (its water lies over the main's bank foam across the mouth). The
+ground is the host's: carve every channel near a point and keep the lowest, not only the nearest one (biomes/swhighlands
+`45-host-stage.js` `terrainH0`), so no bank of one stands in the other's water. Nothing else in core/water changes: no existing call
+or output moves (`test-water.js`, `test-gaps.js`, `test-kinds-ext.js`, `test-rebuild.js` pass unchanged). Used by: biomes/swhighlands.
