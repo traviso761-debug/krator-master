@@ -7,7 +7,8 @@
 //
 //   const M = KLAVA.surface(sim, o)  -> THREE.Mesh (added to nothing: the page adds it and registers it)
 //      o: {name, crust: a texture (the library's lava crust for the grain), sun: [x, y, z], lift (m over the ground: .05),
-//          scale (1: the plates' size, times this), crack (1), heat (1: times the glow), preset ('lava'), night: {value}}
+//          scale (1: the plates' size, times this), crack (1), heat (1: times the glow), preset ('lava'), night: {value},
+//          ponds: false (leave a pond's cells undrawn: the page draws its lake itself)}
 //   M.update()   rewrites the vertices from the sim (call it after the sim steps; a few times a second is plenty)
 //   M.userData.lava  the sim
 // Godot: an ArrayMesh rewritten from the same arrays (or a vertex shader reading KLAVA.gpu's texture), the lava
@@ -46,8 +47,9 @@
    mat.onBeforeCompile=sh=>{sh.vertexShader='attribute float aShow;varying float vShow;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvShow=aShow;');
     sh.fragmentShader='varying float vShow;\n'+sh.fragmentShader.replace('void main() {','void main() {\nif(vShow<0.5)discard;');};}
   const M=new T.Mesh(g,mat);M.name=o.name||'lava flow';M.frustumCulled=false;M.userData.lava=sim;M.userData.inspectLabel=M.name;
-  M.update=function(){const hm=sim.hmin,cs=g.attributes.color;let wx=0,wz=0,wv=0;
-   for(let k=0;k<N;k++){const hh=sim.h[k],on=hh>hm;show[k]=on?1:0;pos[k*3+1]=on?sim.z[k]+hh+lift:sim.z[k]-1.5;const e=sim.heat(k);heat[k]=e;
+  const noPond=o.ponds===false;
+  M.update=function(){const hm=sim.hmin,cs=g.attributes.color,po=sim.pondOf;let wx=0,wz=0,wv=0;
+   for(let k=0;k<N;k++){const hh=sim.h[k],on=hh>hm&&!(noPond&&po[k]>=0);show[k]=on?1:0;pos[k*3+1]=on?sim.z[k]+hh+lift:sim.z[k]-1.5;const e=sim.heat(k);heat[k]=e;
     if(on){wx+=sim.vx[k]*hh;wz+=sim.vz[k]*hh;wv+=hh;}
     if(cs){const c=cs.array;c[k*3]=.08+.92*e;c[k*3+1]=.05+.5*e*e;c[k*3+2]=.04+.1*e*e*e;}}
    flow.set(wv>0?wx/wv:0,wv>0?wz/wv:0);

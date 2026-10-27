@@ -196,10 +196,10 @@ function create(o){
 const BOUND={};
 function flowState(rec,hz,t,speed,x,zz){const s=(hz.seed!=null&&BOUND[hz.seed])||BOUND[rec.id];if(!s)return {state:'none',k:0,on:false};
  if(x!=null&&zz!=null){const c=s.at(x,zz);
-  if(c.pond||c.molten)return {state:'molten',k:1,on:true};
+  if((c.pond&&c.h>0)||c.molten)return {state:'molten',k:1,on:true};
   if(c.dep>0&&s.t-c.frozeAt<(hz.hot==null?86400:hz.hot))return {state:'crust',k:.25,on:true};
   return {state:c.dep>0?'frozen':'clear',k:0,on:false};}
- return s.molten>0||s.ponds.length?{state:'molten',k:1,on:true}:{state:'frozen',k:0,on:false};}
+ return s.molten>0?{state:'molten',k:1,on:true}:{state:'frozen',k:0,on:false};}
 function bind(rec,sim){const key=typeof rec==='string'||typeof rec==='number'?rec:rec&&rec.id;if(key==null)throw new Error('KLAVA.bind: a record with an id, or a key');
  if(sim==null){delete BOUND[key];return null;}
  if(typeof sim.at!=='function'||!sim.h)throw new Error('KLAVA.bind: a KLAVA sim');
