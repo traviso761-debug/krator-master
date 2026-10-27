@@ -213,8 +213,11 @@ F('sluice', 'The Sluice Stair', 'weir', B(-300, -180, -25, 25), { y: -180, h: 70
   var at = function(x, k){ if (x <= R[0].x) return R[0][k]; for (var i = 1; i < R.length; i++) if (x <= R[i].x){ var f = (x - R[i - 1].x) / (R[i].x - R[i - 1].x); return R[i - 1][k] + (R[i][k] - R[i - 1][k]) * f; } return R[R.length - 1][k]; };
   var M = [-1750, at(-1750, 'z')], R0 = [Wt.x, at(Wt.x, 'z')], c = [R0[0] - M[0], R0[1] - M[1]], cl = Math.hypot(c[0], c[1]);
   var t = [-c[0] / cl, -c[1] / cl], n = [t[1], -t[0]], T = at(Wt.x, 'top');
-  L.site = { from: SITE.format + ' v' + SITE.version, M: M, n: n, t: t, u0: 1300, T: r1(T), y0: SITE.frame.y0, rot: Math.atan2(t[0], n[0]) };
-  var uv = function(x, z){ var dx = x - M[0], dz = z - M[1]; return [r1(1300 + n[0] * dx + n[1] * dz), r1(t[0] * dx + t[1] * dz)]; };
+  // the station publishes the frame it carves Span's canyon in (canyon: M, n, t, u0, built by the rule above): read it, so the
+  // two cannot drift; the rule stands for a record without it
+  var U0 = 1300, C = SITE.canyon; if (C){ M = C.M.slice(); n = C.n.slice(); t = C.t.slice(); U0 = C.u0; }
+  L.site = { from: SITE.format + ' v' + SITE.version, M: M, n: n, t: t, u0: U0, T: r1(T), y0: SITE.frame.y0, rot: Math.atan2(t[0], n[0]), canyon: !!C };
+  var uv = function(x, z){ var dx = x - M[0], dz = z - M[1]; return [r1(U0 + n[0] * dx + n[1] * dz), r1(t[0] * dx + t[1] * dz)]; };
   L.rim = R.map(function(p){ var q = uv(p.x, p.z); return { u: q[0], v: q[1], top: r1(p.top - T), floor: r1(p.floor - T) }; });
   // the record's finer fields where it has them: the rim's line every 5 m (rimFine, [u, v] west to east), and the ground as
   // drawn round the watch pillar and its cliff (ground: the site's own grid and heights over its y0; SPAN.siteGround samples it)
@@ -258,16 +261,38 @@ var PW = L.pillars[0], r1 = function(x){ return Math.round(x * 10) / 10; };
 // rim's floor at d (30 m out) to the open floor at the watch pillar's skirt (its distance out from the rim, less its R),
 // linearly, read from the record alone (SPAN.groundAt)
 L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
-// the cliff stair: flights of 60 m drop over 120 m along the cliff's foot of the rim road (west of the watch pillar, toward
-// Span), on two lanes 1.5 and 4 m out from the record's rim line, a landing between, down to the apron at the caprock's foot
-// With the record's ground field, the last flight ends on the drawn ground at the caprock's foot (the field leaves the caprock
-// out, so the head stays on the table's record height, 0)
-(function(){ var vA = r1(PW.v + 160), vB = r1(PW.v + 40), gv = function(u, v, d){ var g = gH(u, v); return g == null ? d : g; };
-  var y = 0, fl = r1(gv(rimAt(vB).u + 6, vB, rimAt(PW.v + 100).floor)), pts = [[r1(rimAt(vA).u - 2), vA, y]], k = 0;
+// the cliff stair: flights of 60 m drop over 120 m along the cliff (west of the watch pillar, toward Span), on two lanes 1.5 and
+// 4 m out from the cliff's face, a landing between, from the table's edge down to the apron at the cliff's foot. With the
+// record's ground field the cliff is the station's as drawn (the table and its cliff are ground there, open slots and all):
+// its edge in each section is where the ground first falls 15 m under the table 40-80 m in from the rim's line (the drawn edge
+// stands back of that line, its shoulders worn), and each tread stands where the face is at the tread's height. The stair's
+// 120 m stretch is the nearest to its first place (within 200 m) whose head and foot stand on solid table (no open slot there:
+// a flight crosses a slot's mouth in the face as a span) and whose trench at the cliff's foot is no deeper than 150 m under
+// the apron (44 m out from the edge); a level span crosses that trench at the foot. Without the field, the lanes stand on the record's rim line
+(function(){ var gv = function(u, v, d){ var g = gH(u, v); return g == null ? d : g; };
+  function edge(v){ var b = rimAt(v).u, tl = -Infinity, u, g;
+    for (u = b - 80; u <= b - 40; u += 2){ g = gH(u, v); if (g != null && g > tl) tl = g; }
+    if (tl === -Infinity) return null;
+    for (u = b - 60; u <= b + 20; u += 1){ g = gH(u, v); if (g != null && g < tl - 15) return { u: u - 1, top: gv(u - 1, v, tl), ap: gv(u + 44, v, null) }; }
+    return null; }
+  function face(v, y, e){ for (var u = e.u; u <= e.u + 60; u += .5){ var g = gH(u, v); if (g != null && g <= y) return u; } return e.u + 60; }
+  function trench(e, v){ if (!e || e.ap == null) return Infinity; var lo = Infinity; for (var u = e.u; u <= e.u + 45; u += 1){ var g = gH(u, v); if (g == null) return Infinity; lo = Math.min(lo, g); } return e.ap - lo; }
+  var best = null;
+  if (L.ground) for (var off = -200; off <= 200; off += 10){ var a0 = PW.v + 160 + off, b0 = PW.v + 40 + off, worst = 0;
+    var ha = edge(a0), hb = edge(b0); if (!ha || !hb || ha.top < -40 || hb.top < -40) continue;   /* the head and the foot on solid table */
+    for (var vv = b0; vv <= a0 + 1e-6; vv += 5){ var ev = edge(vv); if (!ev) continue; worst = Math.max(worst, trench(ev, vv)); }
+    var sc = -Math.abs(off) - (worst > 150 ? 1e4 : 0); if (worst < Infinity && (!best || sc > best.sc)) best = { a: a0, b: b0, sc: sc, worst: worst }; }
+  var vA = r1(best ? best.a : PW.v + 160), vB = r1(best ? best.b : PW.v + 40), eA = best ? edge(vA) : null, eB = best ? edge(vB) : null;
+  var at = function(v, y, lane){ var e = best ? edge(v) : null; return e ? face(v, y, e) + lane : rimAt(v).u + lane; };
+  var y = r1(eA ? eA.top : 0), fl = r1(eB && eB.ap != null ? Math.max(eB.ap, eA && eA.ap != null ? eA.ap : -Infinity) : gv(rimAt(vB).u + 6, vB, rimAt(PW.v + 100).floor));
+  var pts = [[r1(eA ? eA.u - 3 : rimAt(vA).u - 2), vA, y]], k = 0;
   while (y > fl + 1e-6){ var y2 = Math.max(fl, y - 60), from = k % 2 ? vB : vA, to = k % 2 ? vA : vB, lane = k % 2 ? 4 : 1.5;
-    for (var j = 0; j <= 12; j++){ var v = from + (to - from) * j / 12; pts.push([r1(rimAt(v).u + lane), r1(v), r1(y + (y2 - y) * j / 12)]); }
-    y = y2; k++; if (y > fl + 1e-6) pts.push([r1(rimAt(to).u + (k % 2 ? 4 : 1.5)), to, r1(y)]); }
+    for (var j = 0; j <= 60; j++){ var v = from + (to - from) * j / 60, yy = y + (y2 - y) * j / 60; pts.push([r1(at(v, yy, lane)), r1(v), r1(yy)]); }   /* a point every 2 m: the face juts in and out on that scale */
+    y = y2; k++; if (y > fl + 1e-6) pts.push([r1(at(to, y, k % 2 ? 4 : 1.5)), to, r1(y)]); }
+  // the foot: a level span from the last tread across the trench at the cliff's foot to the apron's ground (44 m out from the edge)
+  var vE = pts[pts.length - 1][1], eE = best ? edge(vE) : null; if (eE && eE.ap != null) pts.push([r1(eE.u + 44), vE, pts[pts.length - 1][2]]);
   L.cliffStair = pts;
+  L.cliffEdge = best ? { vA: vA, vB: vB, trench: r1(best.worst) } : null;
   // the path down the apron to the watch pillar's foot: six legs zigzagging 50 m either side of the line from the stair's foot,
   // each point on the apron's ground (a gullied badland: the drawn ground is the station's)
   var s = pts[pts.length - 1], e = L.watchStair[0], path = [s.slice()];
@@ -277,8 +302,11 @@ L.apron = { d: 30, end: r1(PW.u - rimAt(PW.v).u - PW.R), open: PW.foot };
   path.push([e[0], e[1], e[2]]); L.apronPath = path;
   // the rim road on from Span: along the table 40 m in from the rim's line, every 100 m, to the head of the cliff stair
   var road = [[-180, -205, 0], [1150, -205, 0]];
-  for (var v = -300; v > vA + 50; v -= 100) road.push([r1(rimAt(v).u - 40), v, 0]);
-  road.push([r1(rimAt(vA).u - 8), vA, 0]); L.rimRoad = road; })();
+  // on the station's ground, each point the highest of 40 to 120 m in from the rim's line (off an open slot), at its height
+  for (var v = -300; v > vA + 50; v -= 100){ var bu = rimAt(v).u - 40, by = gv(bu, v, 0);
+    for (var dd = 60; dd <= 120; dd += 20){ var gu = rimAt(v).u - dd, gg = gH(gu, v); if (gg != null && gg > by + .5){ bu = gu; by = gg; } }
+    road.push([r1(bu), v, r1(by)]); }
+  var hd = L.cliffStair[0]; road.push([r1(hd[0] - 8), vA, r1(gv(hd[0] - 8, vA, hd[2]))]); L.rimRoad = road; })();   /* to the stair's head, on the table as drawn */
 P('watch_post', 'Dalab\'s watch post', 'dalab', B(PW.u - 18, PW.u + 18, PW.v - 18, PW.v + 18), { y: PW.top, h: 0, by: 'dalab', state: 'intact', key: 'dalab_post', ry: 0, on: PW.id,
   types: ['military'], dress: false, sheets: S0, note: 'on the watch pillar\'s top (station 4\'s site): the Valley watched, the Cross signalled' });
 P('watch_post_tower', 'Watch tower', 'dalab', B(PW.u + 4, PW.u + 16, PW.v - 14, PW.v - 2), { in: 'watch_post', h: 17, by: 'dalab', state: 'intact', key: 'dalab_watchtower', ry: 0, types: ['military'], dress: false, sheets: S0 });
