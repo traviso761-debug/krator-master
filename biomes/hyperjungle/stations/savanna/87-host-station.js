@@ -45,7 +45,12 @@ function stationBuild(){
  catch(e){reportErr('station parasol: '+e.stack);}
  // ---- THE COUSINS (BIO.kin, PLAN-LANDS.md 5.1): the fire scale-tree and the monsoon cycad
  try{if(BIO.kin){
-  const FS=BIO.kin('eastabyss.sigillaria',{key:'firescale',name:'Fire scale-tree',scale:{H:1.4,rb:1.3,crownR:1.2},tags:{koppen:['Aw','Am'],fire:'resister'}});
+  /* the fire scale-tree's crown (the source builder's habit, S.crown): the pompom seated on the pole's top (lift .1, the clumps from
+     below its rim to over it), twice the clumps, a third bigger, touching (no clear-space test: the seal-tree's left most of a big
+     crown out and the rest hung over the top), half as many again hanging grass-leaves; 2026-10-27, the owner: "barely any foliage
+     up top and it floats" */
+  const FS=BIO.kin('eastabyss.sigillaria',{key:'firescale',name:'Fire scale-tree',scale:{H:1.4,rb:1.3,crownR:1.2},tags:{koppen:['Aw','Am'],fire:'resister'},
+   habit:{crown:{lift:.1,n:2.2,size:1.3,el:[-.75,1.1],clear:false,skirt:1.6}}});
   const MC=BIO.kin('eastabyss.cycad',{key:'monsooncycad',name:'Monsoon cycad',scale:1.3,tags:{koppen:['Aw','Am'],fire:'resprouter'}});
   out.kin=[FS.record,MC.record];
   cells(130,0x5c30,(x,z,h,u)=>{const Wz=zoneW(x,z),a=burnAge(x,z);if(Wz.sav<.85||Wz.gallery>.2||a<3||u(3)>.38)return;if(!free(x,z,5))return;

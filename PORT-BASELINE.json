@@ -9,12 +9,12 @@
    "sha256": "bd205bb7742ba1a693cc28be7087744b6847ec105ab052012373fe82637a23a8"
   },
   "biomes/eastabyss/dist/eastabyss-lakes.html": {
-   "bytes": 8206309,
-   "sha256": "5c923cf3a0c987e944cc7dd4bbb180906af97e447c205031125dc7575dcfcadf"
+   "bytes": 8232496,
+   "sha256": "6501ffe45e83e3163f813802415bed17daeb1c37e47be1c5585ce3905481bcc7"
   },
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 8212717,
-   "sha256": "59269fe70f54eba7787be55cf2b81cec705e58a95c813f50be11c019bef3962a"
+   "bytes": 8241620,
+   "sha256": "60fb66389776276cf19bff53382a61aa51e2c6cc7ff49cd3c1c8369082e616ad"
   },
   "biomes/ebadlands/dist/ebadlands.html": {
    "bytes": 4490873,
@@ -33,16 +33,16 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
-   "bytes": 5816748,
-   "sha256": "b877279c9b698bcf4ad4474f9ebd1114622efaeeff55d5136c7f7481ab14cfd5"
+   "bytes": 5818133,
+   "sha256": "feaadb26e6077a23dd067bf149c3a636cca3273f4c479c8559510210ff7a1d66"
   },
   "biomes/hyperjungle/dist/hyperjungle-savanna.html": {
-   "bytes": 8566050,
-   "sha256": "f0e912eb089d212f8747705ee336b902f092933d0bb5a94e1b9d3ada9456c65a"
+   "bytes": 8567045,
+   "sha256": "de2bf53b2dae82bd3f179652226f30eb1a73cab161bdd43adad18a202e3a4548"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 5251662,
-   "sha256": "1485fae27acf526e38bd76e0a41b43de2b327e937fdc3a51de6afff88919c831"
+   "bytes": 5252393,
+   "sha256": "ac998cd859025638e14f77430ac770186ea7f887b897621cfef79e556b1e41e8"
   },
   "biomes/korona/dist/korona-basin.html": {
    "bytes": 896798,
@@ -68,9 +68,17 @@
    "bytes": 778558,
    "sha256": "faf48500933c917f9585903b980cda6b1bbfa53e30cf68dbda0f2308271ed6a3"
   },
+  "biomes/necanyons/dist/necanyons-benches.html": {
+   "bytes": 1467947,
+   "sha256": "c7090cc4fe0c72a648ba15c14909bfefce8bddce945ffcce41198b2b2defcf45"
+  },
+  "biomes/necanyons/dist/necanyons-savanna.html": {
+   "bytes": 1470842,
+   "sha256": "0640621b862ffbe5ed1da07784f5ba4f896f7983b05a23ae2ca2f1c6eb93f51e"
+  },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 813465,
-   "sha256": "7e1b56a832df8d6cfb961a493bd6f6ca7ba3ad5883b3b50522700d47c55f81a4"
+   "bytes": 1467306,
+   "sha256": "185315e143428713aa04092d26beff21d0f23e38d721c4b596ad29c511944f9b"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 6308440,
@@ -113,8 +121,8 @@
    "sha256": "67e2f883923969fd3278dacfd4f36cdf2b64b0524cfff4f728eb13c264ee5b0c"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 8793666,
-   "sha256": "336f1c02329f341f4313d1266dc784ca8120c889ce5e3fedaba786b83a428ff8"
+   "bytes": 8793797,
+   "sha256": "e2dd674ec19cb95ced50fdbb2133470c92260969c11a3d6192182deab7a29ed3"
   },
   "biomes/swhighlands/dist/swhighlands-pillars-span.html": {
    "bytes": 6324440,

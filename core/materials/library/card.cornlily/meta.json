@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 40,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "none"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.cornlily",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.cornlily.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell; rows: flowering, two leafy without flowers, two late-summer yellowing with seed heads",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cornlily\"",
+  "reuse": "nhighlands 2's corn lilies; any wet mountain meadow's tall herbs (Veratrum)",
+  "sha1": "06030df1506129c6b5511293af10b57ab3b8e75b"
+ }
+}

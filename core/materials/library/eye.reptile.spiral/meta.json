@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ffffff",
+   "key_hi": 90,
+   "key_lo": 25,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "none"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "eye.reptile.spiral",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "eye.reptile.spiral.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "not tiling: an iris disc touching the frame's edges. Through cards.py with the white corners keyed out (key #ffffff, no crop), so the alpha is the iris mask the eye mesh wants; full colour",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"eye.reptile.spiral\"",
+  "reuse": "the Interpreters' eyes (LORE 6.20: spiral pupils mark the highest caste)",
+  "sha1": "995552a9441840aacb1584a3cf50f3feabfa3b9f"
+ }
+}

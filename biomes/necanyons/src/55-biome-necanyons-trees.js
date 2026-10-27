@@ -11,6 +11,10 @@
 const SP=NECANYONS.SPECIES,PAL=NECANYONS.PAL,T3=BIO.host.THREE,C=NECANYONS.C,GOLD=2.399963,SEED=0x0E7C;
 const {bright,vary}=BIO.col;
 NECANYONS.TREES=[];NECANYONS.qEuler=qEuler;
+// the runtime LOD's radii (metres from the camera to a chunk; null: the spine's static LOD only, as before 2026-10-27). The host sets
+// them before build (88-host-build.js: the far band's diet): tree a hero's range, then its octahedral stand-in (core/biome 34, where
+// the page lists it and NECANYONS.IMPOSTORS is not false; else the blob crowns); a world reading the kit in place sets nothing
+NECANYONS.LOD=NECANYONS.LOD||{tree:null,floor:null,carn:null};
 
 // ---------------------------------------------------------------- the placement grid
 // place(cell, salt, accept(x,z,Z)->0..1, fn(x,y,z,Z,ix,iz), {box, R, lodMax}): one candidate per cell, jittered; the cell's
@@ -28,7 +32,8 @@ NECANYONS.place=function(cell,salt,accept,fn,opt){opt=opt||{};const R=opt.R==nul
 const SPACE=KSPACE.create({cell:24});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad);
 NECANYONS.blocked=blocked;
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});
+let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing */
+const regTree=(T,S,r,h)=>{if(!BAKING)BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});};
 const leafCol=(set,k)=>bright(vary(pick(set),.04,.12,.07),k==null?1.25:k);NECANYONS.leafCol=leafCol;
 const lc=(slot,set,k)=>NECANYONS.libCol(slot,leafCol(set,k));
 function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
@@ -155,7 +160,23 @@ NECANYONS.buildTrees=function(R,q){q=q==null?1:q;R=R||1500;
    const ld=BIO.lodD(x,z);T.lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
    TREES.push(T);SPACE.insert({x,z,r:(P.sp===0?3:P.sp===1?T.crownR*.6:T.rb*2)+.5},x,z,T.crownR+2);},{R});});
  // each tree drawn from its own stream (its seed), so its shape does not depend on the trees before it
- TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // RUNTIME LOD AND OCTAHEDRAL IMPOSTORS (2026-10-27, the final rebuild; GRAPHIC-LOAD.md 1 and 2, the hyperjungle's 55 the worked
+ // example). With LOD.tree set a near or mid tree is drawn in full while the camera is within LOD.tree of its chunk and as its
+ // species' impostor past that; a far tree is only ever its impostor. The bake builds the hero nearest the middle of each species
+ // again at BIO.bakeImpostors (after every placement), where it stands, so a fig's roots meet its wall. No LOD.tree: as before
+ const LT=NECANYONS.LOD.tree,IMPON=!!LT&&NECANYONS.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('necanyons.trees',{label:'Far canyon trees'}),c=BIO.center();
+  SP.forEach((S,sp)=>{let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=newStats();
+   const rec=BIO.impostor('necanyons.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far canyon trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach(T=>{reseed(T.seed);
+  if(T.lv===0){if(!farImp(T))buildFar(T,st);st.fars++;}
+  else{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}B[T.sp](T,st,T.lv);st.heroes++;
+   if(LT){BIO.range=1e9;BIO.minRange=LT;reseed(T.seed+1);if(!farImp(T))buildFar(T,st);}BIO.owner=null;BIO.range=null;BIO.minRange=0;}
+  st.byS[T.sp]++;});
  NECANYONS.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),leaves:st.leaves,clumps:st.clumps,fruit:st.fruit,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};

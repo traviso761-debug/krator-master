@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.196,
+    1.255
+   ],
+   "seam_before": [
+    1.757,
+    2.269
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "skin.reptile.scales",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   0.25,
+   0.25
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "skin.reptile.scales.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"skin.reptile.scales\"",
+  "reuse": "the Lizardmen's bodies, tails and heads (the main skin); any reptile, the fauna kits' lizards, a scaled therian",
+  "sha1": "f5594eb3d236b7a74b05bb60c29a81d9f340486d"
+ }
+}

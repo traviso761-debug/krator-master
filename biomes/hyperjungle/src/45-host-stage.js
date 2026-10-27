@@ -74,8 +74,14 @@ else if(GLIT)MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGLit={value:GLIT.map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aBk;varying float vBk;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vBk=aBk;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uGLit;varying vec3 vGWP;varying float vBk;').replace('#include <map_fragment>','#include <map_fragment>\n{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));'+
   'vec3 tl=mix(pow(texture2D(uGLit,p*'+GLIT.k.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGLit,q*'+(GLIT.k*.53).toFixed(4)+'+vec2(0.37,0.21)).rgb,vec3(2.2)),m);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tl*0.55,0.6*(1.0-vBk));}');};
-(function(){const N=180,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position;for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));}
+/* THE DRAWN GROUND (2026-10-27, the owner: the brook showed only in broken slivers): 420 cells a side (~21 m; was 180, 44 m, coarser
+   than the brook's 34 m trench, so the ground's triangles spanned it and lay over the water except where a vertex fell in the bed).
+   Inside the brook's bare strip (26 m: the mask keeps every plant out of it) the drawn ground is cut down to the bed, under the water
+   at the centre and back up to the bank by the strip's edge, so the water shows its whole length; terrainH itself is unchanged */
+const brookBed=z=>{const cx=90*Math.sin(z*.0012);return terrainH(cx,z);};
+const groundY=(x,z)=>{const h=terrainH(x,z),d=brookDist(x,z);return d<26?Math.min(h,brookBed(z)-.25+2.6*smooth(9,26,d)):h;};
+(function(){const N=420,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
+ const p=g.attributes.position;for(let i=0;i<p.count;i++){p.setY(i,groundY(p.getX(i),p.getZ(i)));}
  {const bk=new Float32Array(p.count);for(let i=0;i<p.count;i++)bk[i]=clamp(1-brookDist(p.getX(i),p.getZ(i))/28,0,1);g.setAttribute('aBk',new THREE.BufferAttribute(bk,1));}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Forest floor';scene.add(m);
  // the brook water is core/water's (BROOK below, drawn in 89w-host-water.js)

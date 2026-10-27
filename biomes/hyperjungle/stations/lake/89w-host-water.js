@@ -12,7 +12,11 @@ const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // the lake: east of the várzea's back edge out past the far field's lake (KFAR draws it flat at low water beyond the square)
 const LAKE_POLY=[[-2100,-14000],[14000,-14000],[14000,14000],[-2100,14000]];
 const LAKE=window._lake=WATER.still({name:'The lake (the várzea\'s flood)',poly:LAKE_POLY,seasonal:{low:LOW,high:HIGH,lagD:60,sharp:1.5}});
-const LAKE_DRAW=WATER.drawStill(LAKE,{color:lin(0x2e3a26).getHex(),roughness:.08,metalness:.1,envMapIntensity:.6});   /* the material takes the colour as linear: a white-water lake's olive-tan, dark under the sky's sheen */
+/* depthBias [-1.5,-6] pushes the water a hair behind the ground: the várzea's floor rises 0.4% from the shore, so wherever the waterline
+   lies (it moves 8 m up the slope through the year) ground and water were within the depth buffer's step over a band tens of metres
+   wide, and they traded places with the camera's angle (the owner, 2026-10-27: "fluctuates depending on camera angle"). The ground wins
+   a tie now: the shore holds still */
+const LAKE_DRAW=WATER.drawStill(LAKE,{color:lin(0x2e3a26).getHex(),roughness:.08,metalness:.1,envMapIntensity:.6,depthBias:[-1.5,-6]});   /* the material takes the colour as linear: a white-water lake's olive-tan, dark under the sky's sheen */
 LAKE_DRAW.mesh.userData.probeSkip=true;LAKE_DRAW.mesh.userData.inspectLabel='The lake (its level follows the season: low '+LOW+' m, high '+HIGH+' m)';
 // the channels, their levels from the foot up (45: lvl), a point every 40 m
 const flowOf=(R,name,speed)=>{const P=[];for(let s=0;s<=R.L.len;s+=40){const t=s/R.L.len,i=Math.min(R.L.pts.length-1,Math.round(t*(R.L.pts.length-1)));

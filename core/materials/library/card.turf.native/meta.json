@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.turf.native",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.turf.native.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.turf.native\"",
+  "reuse": "the SW highlands' ridge turf (turf slot) on the fold crests and the bald; any native short ground cover on Krator's wet uplands",
+  "sha1": "4fbff8270dd5e06c23db9cabb2eb6332f32e1398"
+ }
+}

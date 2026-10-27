@@ -51,7 +51,8 @@ let RIVER_TERRACES=null,RIVER_LOW=null;
 // core/atmos particles (ATMOS.smoke), and its 5 m risers need none
 const WQ=new URLSearchParams(location.search),POOL_GRAD=WQ.get('poolgrad')!=='0'?{centre:lin(POOL_COL.clone().lerp(WATER_DEEP,.35)).getHex(),rim:lin(POOL_COL.clone().lerp(POOL_PALE,.7)).getHex(),power:1.3}:null;
 const RIVER_DRAW=RIVER_TERRACES?WATER.drawTerraces(RIVER_TERRACES,{pool:{color:lin(POOL_COL),roughness:.08,metalness:.1,envMapIntensity:.35,renderOrder:2,pick:true,rain:true,gradient:POOL_GRAD},
- fall:{color:lin(0xf4f8f6),opacity:.94,cols:6,rowStep:.6,renderOrder:3,pick:true,margin:1.2,edge:.6,rain:true}}):null;
+ fall:{color:lin(0xf4f8f6),opacity:.94,cols:6,rowStep:.6,renderOrder:3,pick:true,margin:1.2,edge:.6,rain:true,
+  plungeR:S=>S.lipW*.55,plungeFade:.3}}):null;   /* the churn rings inside the pool's banks (the core's 2.4 x the lip ran over them: the owner, 2026-10-27), fading out over 70 % of the disc */
 const RIVER_LOW_DRAW=RIVER_LOW?WATER.drawFlow(RIVER_LOW,{shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,
  envMapIntensity:.5,step:10,across:6,margin:1.2,depthBias:2,renderOrder:2,pick:true,rain:true}):null;
 // WEED (core/water ext/54 W.weed, BACKPORT.md nwbay's row; ?weed=0 off): comb-weed and riverweed down the lowland reach's clear travertine
