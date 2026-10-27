@@ -1,5 +1,28 @@
 # Handoff: the all-builds rebuild
 
+## NEXT SESSION, START HERE (written 2026-10-27, usage ran out)
+
+**State:** `claude/biome-rebuild` (worktree `C:/Users/travi/Documents/krator-biome-rebuild`, unpushed). origin/main is merged in
+(ebfc29d9e; `LORE.md`'s sky rows kept from this branch: check them against main's). **Pairs 1-3 are merged** (eastabyss, nwbay,
+swbay, hyperjungle, sedesert, necanyons), as are the Rift, the SW highlands, the Godthrone, KLAVA, the card fit and the foliage
+guards (c63eacb4c), the water audit (ac251a770) and `CORE-IMPROVEMENTS.md`. necanyons left uncommitted rebuilt pages in this
+worktree (`biomes/necanyons/dist/*.html`): commit them if its re-verify passed, or rebuild.
+
+**The core pass was stopped mid-way.** Each session committed its work to its own branch (`git branch --list 'claude/core-*'
+'claude/water-core-pass'`); none is merged unless its report says so. Read each session's last report, then finish and merge each:
+- `core-tools`: tool checks and lints, `CORE-IMPROVEMENTS` step 1, plus `check_cells --strict` in `test_all`;
+- `core-verify`: `harness.verify_page` with universal asserts, the GPU lock in the harness, the item sheet, the winding sweep;
+- `core-seat`: `KSEAT`, the probe sweeps, and core/terrain probe points;
+- `core-biome`: the cliff default, `BIO.grid` cells, the count cap, `BIO.beam` segments with `clumpOn` (crowns at twig tips),
+  `BIO.tree` owner scope, and per-plant card records;
+- `core-shader`: `KHOOK` and `KCOLOR`, then `checkPrograms`;
+- water (`claude/water-core-pass`, ddd76b906): the flow network, the shore from the ground, ribbon rows and breakup are done and
+  tested; the eastabyss check on the GPU and Godot parity are left.
+
+**Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
+"After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
+only from the owner's own message: the app refuses starts from session reports.
+
 ## START HERE: the final rebuild (handoff of 2026-10-26)
 
 **For the session that runs the final rebuild.** Everything below this section is the earlier plan and its record; this
