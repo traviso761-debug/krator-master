@@ -1205,3 +1205,145 @@ func kind_uniforms() -> Dictionary:
 			"wk_fountain": Vector4(float(fountain[0]), float(fountain[1]), 1.0, 0.0) if fountain is Array else Vector4.ZERO,
 			"wk_fountain_k": Vector4(1.0 / float(F["ring"]), float(F["cycles"]) / period, 1.0 / float(F["r"]), 0.0)}
 	return u
+
+
+# ================================================================ 2026-10-26: the planned biomes' water (core/water/ext/54, test-kinds-ext.js)
+# Static twins of the data parts, read from the export's records (a pan or ice surface record, a look's stops, a bloodfall group); the
+# placements (drifts, icicles, weed, hummocks, springs, snags) come in the records as they are. Colours are display 0..1, as the page's.
+static func rgb_of(h) -> PackedFloat64Array:
+	var n: int = ("%s" % h).trim_prefix("#").hex_to_int() if h is String else int(h)
+	return PackedFloat64Array([((n >> 16) & 255) / 255.0, ((n >> 8) & 255) / 255.0, (n & 255) / 255.0])
+
+
+static func _mix3(a: PackedFloat64Array, b: PackedFloat64Array, t: float) -> PackedFloat64Array:
+	return PackedFloat64Array([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t])
+
+
+# a look's ramp (WATER.rampAt): stops [[t, '#hex'], ...], t 0 deep .. 1 the rim
+static func look_ramp(stops: Array, t: float) -> PackedFloat64Array:
+	t = clampf(t, 0.0, 1.0)
+	if t <= float(stops[0][0]):
+		return rgb_of(stops[0][1])
+	for i in stops.size() - 1:
+		if t <= float(stops[i + 1][0]):
+			return _mix3(rgb_of(stops[i][1]), rgb_of(stops[i + 1][1]), (t - float(stops[i][0])) / maxf(1e-9, float(stops[i + 1][0]) - float(stops[i][0])))
+	return rgb_of(stops[stops.size() - 1][1])
+
+
+# polygon cells (WATER.cellsAt): [f1, f2, ix, iz] in cell units; the crack (WATER.crackOf)
+static func cells_at(x: float, z: float, cell: float, jit: float) -> PackedFloat64Array:
+	var qx := x / cell
+	var qz := z / cell
+	var ix := floorf(qx)
+	var iz := floorf(qz)
+	var f1 := 9.0
+	var f2 := 9.0
+	var a := 0.0
+	var b := 0.0
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var cx := ix + dx
+			var cz := iz + dy
+			var px := cx + 0.5 + jit * (hash2(cx, cz) - 0.5)
+			var pz := cz + 0.5 + jit * (hash2(cx + 19.1, cz + 7.3) - 0.5)
+			var d := sqrt((qx - px) * (qx - px) + (qz - pz) * (qz - pz))
+			if d < f1:
+				f2 = f1
+				f1 = d
+				a = cx
+				b = cz
+			elif d < f2:
+				f2 = d
+	return PackedFloat64Array([f1, f2, a, b])
+
+
+static func crack_of(c: PackedFloat64Array, width: float) -> float:
+	return 1.0 - _ss(0.0, width, c[1] - c[0])
+
+
+# a salt pan (WATER.panAt) from its export record: [r, g, b, film, crack, low]
+static func pan_at(P: Dictionary, x: float, z: float, wet: float) -> PackedFloat64Array:
+	var C := cells_at(x, z, float(P["cell"]), float(P["jitter"]))
+	var c := crack_of(C, float(P["crack"]))
+	var low := hash2(C[2] + 3.1, C[3] + 11.7)
+	var w := clampf(wet, 0.0, 1.0)
+	var film := maxf(c * _ss(0.0, 0.3, w), _ss(low, low + 0.12, w * float(P["flood"])))
+	var damp := _ss(0.0, 0.5, w)
+	var K: Dictionary = P["colours"]
+	var col := _mix3(rgb_of(K["salt"]), rgb_of(K["crack"]), c)
+	var dk := float(K["damp"])
+	col = _mix3(col, PackedFloat64Array([col[0] * dk, col[1] * dk, col[2] * dk]), damp)
+	col = _mix3(col, PackedFloat64Array(P["brine"]), film * 0.9)
+	return PackedFloat64Array([col[0], col[1], col[2], film, c, low])
+
+
+# ice (WATER.driftShape, the drift's depth; I.driftAt; I.rimAt; WATER.iceColour) from its export record
+static func drift_shape(d: Dictionary, x: float, z: float) -> float:
+	var c := cos(float(d["yaw"]))
+	var s := sin(float(d["yaw"]))
+	var ex := x - float(d["x"])
+	var ez := z - float(d["z"])
+	var u := ex * c + ez * s
+	var v := -ex * s + ez * c
+	var hl: float = float(d["len"]) * float(d["lee"]) if u > 0.0 else float(d["len"]) * (1.0 - float(d["lee"]))
+	var q := (u / hl) * (u / hl) + (v * 2.0 / float(d["wid"])) * (v * 2.0 / float(d["wid"]))
+	return float(d["depth"]) * (1.0 - q) * (1.0 - q) if q < 1.0 else 0.0
+
+
+static func ice_drift_at(I: Dictionary, x: float, z: float) -> float:
+	var h := 0.0
+	for d in I["drifts"]:
+		h = maxf(h, drift_shape(d, x, z))
+	return h
+
+
+static func _poly_edge(P: Array, x: float, z: float) -> float:
+	var d := 1e18
+	var inside := false
+	var j := P.size() - 1
+	for i in P.size():
+		var ax := float(P[j][0])
+		var az := float(P[j][1])
+		var ex := float(P[i][0]) - ax
+		var ez := float(P[i][1]) - az
+		var u := clampf(((x - ax) * ex + (z - az) * ez) / maxf(ex * ex + ez * ez, 1e-12), 0.0, 1.0)
+		d = minf(d, sqrt((x - ax - ex * u) * (x - ax - ex * u) + (z - az - ez * u) * (z - az - ez * u)))
+		if (float(P[i][1]) > z) != (float(P[j][1]) > z) and x < (float(P[j][0]) - float(P[i][0])) * (z - float(P[i][1])) / (float(P[j][1]) - float(P[i][1])) + float(P[i][0]):
+			inside = not inside
+		j = i
+	return d if inside else -d
+
+
+static func ice_rim_at(I: Dictionary, x: float, z: float) -> float:
+	var R: Dictionary = I["rim"]
+	return 1.0 - _ss(0.0, float(R["width"]), _poly_edge(I["poly"], x, z)) if R["salt"] else 0.0
+
+
+static func ice_colour(I: Dictionary, crack: float, rim: float, drift: float) -> PackedFloat64Array:
+	var K: Dictionary = I["colours"]
+	var col := _mix3(rgb_of(K["ice"]), rgb_of(K["crack"]), crack * 0.8)
+	if I["rim"]["salt"]:
+		col = _mix3(col, rgb_of(K["salt"]), rim)
+	return _mix3(col, rgb_of(K["snow"]), _ss(0.0, 0.25, drift))
+
+
+# the exact colour at (x, z) (I.colourAt: the drift normalised by the deepest)
+static func ice_colour_at(I: Dictionary, x: float, z: float) -> PackedFloat64Array:
+	var Kc: Dictionary = I["cracks"]
+	var md := float(I["maxDrift"])
+	return ice_colour(I, crack_of(cells_at(x, z, float(Kc["cell"]), float(Kc["jitter"])), float(Kc["width"])), ice_rim_at(I, x, z), ice_drift_at(I, x, z) / md if md > 0.0 else 0.0)
+
+
+# blood water: the share rusted after `age` s in the air (WATER.rustAt); a blood fall's colour at fall fraction f (B.colourAt)
+static func rust_at(age: float, tau: float) -> float:
+	return 1.0 - exp(-maxf(0.0, age) / tau)
+
+
+static func blood_colour(fresh: PackedFloat64Array, red: PackedFloat64Array, age0: float, tau: float, t_fall: float, f: float) -> PackedFloat64Array:
+	return _mix3(fresh, red, rust_at(age0 + f * t_fall, tau))
+
+
+# a weed blade's sway (WATER.weedSway): t the module clock wrapped
+static func weed_sway(x: float, z: float, t: float, u: float, sway: float, per: float) -> float:
+	var n := maxf(1.0, roundf(per / 4.5))
+	return sway * u * u * sin(6.283185307 * (t * (n / per)) + x * 0.37 + z * 0.23)
