@@ -23,8 +23,12 @@ Open:
 - [x] **The lava lake does not overflow** (by default it still stops 15 m under the lip): opened with `?overflow`, the vent's
   page runs the lake's overflow on core/terrain's KLAVA (`89d-host-overflow.js`, `core/terrain/LAVA.md`; 2026-10-27): the
   eruption scaled so 0.25 km3 pours over the lowest lip, the flow on 80 m cells, frozen into the field and the ground mesh.
-- [ ] **The overflow's flow is on 80 m cells** (the sim's cost: the cells with lava times the steps): its edges are coarse
-  beside the 10 m ground, and the crest cells by the lip take both the frozen lake's re-bake and the flow's deposit (a few
+- [ ] **The overflow dams itself**: of the 250 Mm3 that more than fills the pit, about 37 Mm3 pours through the 80 m notch
+  before the flow's own frozen front raises it; the lake then freezes about 10 m over the lip. Physical (lakes build their
+  rims), but a bigger flow would need a wider notch or a margin-first freezing model (`core/terrain/LAVA.md`, Known limits).
+  The whole scenario costs about 25 s of compute, spread over the time-lapse's frames (`computing…` on its line).
+- [ ] **The overflow's flow is on 80 m cells** (the sim's cost: the cells with lava times the steps): its edges are stepped
+  beside the 10 m ground, both the glowing surface and the glassy deposit's paint, and the crest cells by the lip take both the frozen lake's re-bake and the flow's deposit (a few
   metres of bump at the lip). The hazard record covers the sim's box with `avoid: false` (a static nav zone cannot follow a
   moving front; Godot's port rebuilds zones from `front()`).
 - [ ] **The lake's re-baked floor keeps the old terrain shadows** (KHORIZON is baked once at load): the frozen lake is shaded
