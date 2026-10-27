@@ -34,10 +34,10 @@ function plantCousins(){if(typeof ABSAV==='undefined'||!ABSAV.burn)return null;
  return run.run();}
 // ---------------------------------------------------------------- the burns in the ground's paint
 // The ground (45s) is painted before the abyssal savannah's fragments load, so its burns are added here, at build time: the paint's
-// canvas, sampled on a 384 x 384 grid of burn ages (18 m, under the 480 m patches), darkened toward char on a fresh burn and
+// canvas, sampled on a 768 x 768 grid of burn ages (9 m: a burn's edge is a few metres soft, not 18), darkened toward char on a fresh burn and
 // tinted toward the green flush on a young one, on the savannah's grass only (not the tors, the washes' beds or the pan).
 function burnGround(){if(typeof ABSAV==='undefined'||!ABSAV.burn||!TEX_GROUND||!TEX_GROUND.image)return 0;
- const cv=TEX_GROUND.image,g=cv.getContext('2d'),w=cv.width,h=cv.height,S=TERR.R*2.2,N=384;   /* painted over by translucent cells: the paint is never read back */
+ const cv=TEX_GROUND.image,g=cv.getContext('2d'),w=cv.width,h=cv.height,S=TERR.R*2.2,N=768;   /* painted over by translucent cells: the paint is never read back */
  const age=new Int8Array(N*N),k=new Float32Array(N*N);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,Z=RIFT.zones(x,z);
   k[j*N+i]=Z.sav*(1-Z.shore)*(1-smooth(30,8,streamD(x,z)))*smooth(20,90,lakeIn(x,z));age[j*N+i]=k[j*N+i]>.05?ABSAV.burn(x,z):12;}

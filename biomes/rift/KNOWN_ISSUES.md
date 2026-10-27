@@ -17,9 +17,15 @@ Read before changing anything here. `build.py` prints the open count.
       **the floor's near and mid bands over the whole page** (`RIFT.wholePage`: they were boxed to the old page's spine, so most of the
       station had only the far band); **the far country drawn from the model** (`89f-host-far.js` on core/terrain's KFAR, the heights
       baked by `stations/bake_far.py`: the central island rising +3.5 km 26 km west, the terminal sea north-east as flat water, to
-      50 km, its fog thinned to .08 so the island stands out of the 1.94 atm haze). Still open: the island reads as a broad slope
-      at the model's 4 km cells (its gullies and the cloud cap's edge are not there); the seam where the far country meets the
-      ground square shows a sliver of sky at the main wash's mouth; the ground paint is 4.6 m a pixel, so a burn's edge is soft.
+      50 km). The rough edges, 2026-10-27, done: **the island's shape** (ridged spurs and gullies between the model's cells, deeper with
+      height, none on the floor, and KFAR's crest pass); **the sky at the seam** (a gully running off the page looked up under the far
+      field: the seam now takes the lowest ground along the edge, so every cut opens onto far ground); **the far country's colour** (the
+      shared sky's fog colours a pixel with the sky toward it over its own distance, which KFAR.fogThin cannot thin: it turned the
+      island the gold of the horizon haze; the far field now carries its haze in its vertex colours, fog off); **sharper burns** (a 9 m
+      burn grid). `verify.py --assert --all-views` passes on the GPU (Intel Arc 140T; its own export box, the densest cell of trees;
+      the blade pear's pads named as food not drawn as fruit): 10 views, 10-237 calls, 0.5-6.9 M triangles drawn, 22.3 M held.
+      Still open: the far field ignores the weather's fog (it stays clear in a fog or a storm) until the shared fog can be thinned
+      per material; the ground paint is 4.6 m a pixel, so a burn's edge is a few metres soft.
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
