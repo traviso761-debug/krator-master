@@ -209,6 +209,27 @@ it; the mist and the band are `atmos_fog.gdshaderinc` (the same three closed-for
 one under the mist level (density from the dawn curve), one slab for the band. The dawn curve and the drift (the wind at the
 eye times the gust factor) are the autoload's, as `F.step` is.
 
+**The fog belt** (C1, `ATMOS.fogBelt`). The `fogbelt` record carries the band (`y0`, `y1`, `edge`), `depth`, `density`,
+`noise`, `steps`, `windward`, `lee`, `slope`, `rise`, `reach`, the `extent` and `res` of its field, and the weather share.
+The field is rebuilt from the Godot ground (`ATMOS.fogBeltMake`'s loop in GDScript: two ground samples `reach` metres either
+side along the wind for the windward rise, then k) into an `Image.FORMAT_RGBAH` texture (R ground - y0, G k), given to the
+fog include as a global `sampler2D atm_fog_belt_tex` with `atm_fog_belt` (density, y0, y1, edge), `atm_fog_belt_k` (1/depth,
+noise, steps, res) and `atm_fog_belt_e` (x0, z0, 1/width, 1/depth); `atm_fog_belt_depth(ro, rd, L)` is `atmFogBeltDepth`
+line for line (`textureLod`, the same texel-centre mapping), added to the band's optical depth. Placement in GDScript reads
+the same field (`fogBeltCover`), not the texture.
+
+**Thin air** (`preset.air.thin`). `krator/sky.gd` passes the camera's height to its `sky_look` port as the fourth argument
+and applies the same lines: the pressure by `air_pressure_at`, then (only with `thin`) `hemiI`, `sunC`, `sunI`, `hazeFloor`
+and `fogD`. In the Environment that is `ambient_light_energy` (the sky fill, hence the hard shadows), the sun light's colour
+and energy, and `fog_density`. No shader change: the sky shader reads only the look.
+
+**The rain wall** (`fx/89-atmos-fx-rainwall.js`). The `rainwall` record carries the band, the windward direction, `lee`,
+`slope`, `reach`, `rain`, the curtains' `extent`, `cell`, `min`, `top`, `alpha`, `colour`, `inside` and `seed`. The curtains
+are a `MultiMesh` of quads, one per cell `ATMOS.rainWallCells` keeps (the cell's jitter and phase from `KRAND.hash(seed, ix,
+iz, k, 0x7261)`, which `core/rand/krand.gd` reproduces), turned to the eye about the vertical in `vertex()`, the streaks the
+same lowbias32 columns in `fragment()`. Inside, the Atmos autoload raises `W.rain` to the eased field under the eye after its
+weather step, as the JS hook does, so the rain particles, the wetness and the grey sky follow.
+
 ## The rain occlusion map (R10: `fx/89-atmos-fx-raincover.js`)
 
 The `raincover` record carries the size, box, step, lift, depth and the shelter margin. Godot: a

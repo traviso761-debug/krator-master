@@ -168,6 +168,63 @@ fog by at most 3/255 on every pixel (0 pixels past 3), the same calls and triang
 although every mesh renders alone into the same target; the module retries five times and then turns the map off (the
 rain falls everywhere, as before). On nhighlands and the glacier the map works (164k pixels of the trumpet colony stay dry).
 
+### Adopting it: the planned biomes' sky and air (2026-10-26)
+
+Three opt-in features for the planned biomes (`HANDOFF-REBUILD.md`, the core tests after the rebuild). A page that does not
+ask for them is unchanged: the fog chunk's text is the same without a belt, the sky's look ignores the eye's height without
+`air.thin`, and the rain wall is a new file. `node core/atmos/test-fog.js` and `test-sky.js` hold them, each check with a
+negative.
+
+**The fog belt** (the Outlands' C1, `biomes/outlands/PLAN.md` section 12): cloud lying on the slope between two heights,
+thicker on faces turned to the wind, thinning where the ground rises up through it, clinging to the ground over `depth`
+metres. It is a fourth layer of the height fog (`sky/89-atmos-j-fog.js`, drawn with the band's colour), read from a ground
+field the host builds once (`res` x `res` over `extent`, half precision: the GPU's RGBA16F texture) and marched in `steps`
+samples inside the band. Take the height fog's files (above), then, **before** `heightFogScene`:
+
+```js
+const BELT=ATMOS.fogBelt({y0:3500,y1:4400,             /* the band, m (the Fog Rim: ~3.5-4.4 km) */
+ windward:[-1,0],                                      /* where the wind comes from; default: against the page's wind */
+ density:.004,depth:150,lee:.25,rise:.5,               /* 1/m at full; hug depth (m); the lee's share; the thinning toward the top */
+ centre:[0,0],radius:6000,res:128,steps:8});           /* or extent:[x0,z0,x1,z1]; the field covers the view */
+ATMOS.heightFogScene(scene);
+// placement (the veil caps): BELT.cover(x,z) 0..1 at the ground, BELT.at(x,y,z) the density; static, never the weather's
+```
+
+It makes the height fog first when the page has none (`heightFog:` its options). The rain and the weather's fog thicken it
+(`weather`, default .5 each); `ATMOS.fog.off` turns it off with the rest. The pure side (`ATMOS.fogBeltMake(o, ground)`,
+`fogBeltAt`, `fogBeltCover`, `fogBeltDepth`, `fogAt` with `belt:`) is engine-free, for a kit's own placement pass. Cost: up to
+`steps` texture reads a fragment, only on rays that cross the band.
+
+**Thin air** (the Godthrone, `biomes/godthrone/PLAN.md` section 2): the pressure falls with the eye's height,
+`p = air.pressure * exp(-(y - y0) / scale)` (the model's law, scale 8 km: 1.6 atm at sea level, 0.52 at 9 km, 0.07 at the
+25 km rim). The sky's look already reads the pressure (a darker zenith, the bright stars by day below ~0.6 atm); with
+`air.thin` the sky fill also falls away (hard, dark shadows), the sun whitens and strengthens, the haze floor goes and the
+fog falls to nothing. One preset field, no new file (`sky/89-atmos-f-skypresets.js`; the sky host passes the camera's height):
+
+```js
+ATMOS.skyBiome({...,preset:{air:{pressure:1.6,thin:{y0:0,scale:8000}}}});   /* y0: the page height where air.pressure holds */
+ATMOS.airPressureAt(SKY.preset, y)                                           /* the pressure anywhere (a kit's own checks) */
+```
+
+A page whose y is not sea level sets `y0` to the page height of sea level (or of the height where `pressure` holds). A station
+page is where the thin end is tuned (the plan's G4).
+
+**The rain wall** (the SW highlands, `biomes/swhighlands/PLAN.md`: 2,600-4,000 mm at ~2 km on the windward ramp):
+orographic rain, a field on the ground, not a weather mode: rain where the ground lies in the band, on faces turned to the
+wind (`ATMOS.rainWallAt`). Inside it the weather's own rain falls (it lifts `W.rain`, so the streaks, the wet ground, the grey
+sky and the rain cover all follow); seen from outside it is curtains of grey falling streaks standing on the ground up into
+the cloud, one per cell of the field, seeded by `KRAND.hash` of the cell. Build: list `fx/89-atmos-fx-rainwall.js` (station.json
+`"fx/89-atmos-fx-rainwall.js"`) and core/rand (`08-core-rand.js`, which every biome page has); then, after `ATMOS.weather` /
+`bindWeather`:
+
+```js
+const WALL=ATMOS.rainWall({y0:1700,y1:2600,windward:[-1,0],   /* the band of ground it rains on; where the wind comes from */
+ centre:[0,0],radius:5000,cell:260,top:3000});                /* the curtains' area, cell size and tops (the cloud base) */
+// WALL.at(x,z) 0..1: the field, for the kit's scars, wet ground and plants; WALL.off = true hides it
+```
+
+The rain wall's cloud is a fog belt over the same band: the station takes both.
+
 **For the other workstreams.** core/water's `WATER.wetGround` should hook through `ATMOS.shaderHook` when present (today a
 page hook set after it replaces a core hook layered under it) and (done on the water side, 2026-10-26) multiplies its wetness, puddles and rain rings by `atmRainOpen(worldPos)`
 when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms(sh.uniforms)`). `ATMOS.bindWeather`'s `o.wet` is passed

@@ -49,11 +49,31 @@
    if(sh.fragmentShader.indexOf('#include <fog_fragment>')<0)return;   /* the page's own fog (a far-land fade) stands */
    sh.uniforms.atmFogH=U.fogH;sh.uniforms.atmFogMist=U.fogMist;sh.uniforms.atmFogBand=U.fogBand;sh.uniforms.atmFogX=U.fogX;
    sh.uniforms.atmFogSunDir=U.fogSunDir;sh.uniforms.atmFogSunC=U.fogSunC;sh.uniforms.atmFogZen=U.fogZen;sh.uniforms.atmFogDrift=U.fogDrift;
+   if(A.fogBeltOn){sh.uniforms.atmFogBelt=U.fogBelt;sh.uniforms.atmFogBeltK=U.fogBeltK;sh.uniforms.atmFogBeltE=U.fogBeltE;sh.uniforms.atmFogBeltT=U.fogBeltT;}
    /* the eye from the view matrix, in the vertex shader: three r128 sets the fragment's cameraPosition only for Phong, Standard,
       Toon, ShaderMaterial or an envMap, so a Lambert ground read (0,0,0) there (the first pilot run's dawn white-out) */
    sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+sh.vertexShader.replace('#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');
    sh.fragmentShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+A.fogGLSL()+'\n'+sh.fragmentShader.replace('#include <fog_fragment>',
     '#ifdef USE_FOG\n#ifdef FOG_EXP2\n{vec3 atmFd=vAtmFogP-vAtmFogC;float atmFL=length(atmFd);vec4 atmFz=atmFog(vAtmFogC,atmFd/max(atmFL,1e-4),atmFL,fogColor,fogDensity);gl_FragColor.rgb=mix(gl_FragColor.rgb,atmFz.rgb,atmFz.a);}\n#else\n#include <fog_fragment>\n#endif\n#endif');});};
+ // ATMOS.fogBelt(o) -> B   the fog belt (C1, biomes/outlands/PLAN.md 12; sky/89-atmos-j-fog.js has the model): a cloud band on
+ // the slope between o.y0 and o.y1, thicker on faces turned to the wind (o.windward [x, z]: where the wind comes from; default
+ // against the page's wind), thinning where the ground rises through it, clinging to the ground over o.depth metres. Its
+ // field is built once from the page's ground over o.extent [x0, z0, x1, z1] (default 6 km round the camera) at o.res. Call
+ // it BEFORE heightFogScene / heightFogOn (the chunk takes the belt's lines when a material compiles); it makes the height
+ // fog first if the page has none (o.heightFog: its options). The rain and the weather's fog thicken it (o.weather, default
+ // .5 each); B.at(x, y, z) and B.cover(x, z) are the twin for a kit's placement (the veil caps), never the weather's.
+ A.fogBelt=function(o){o=o||{};const T=A.T,U=A.U,h=A.h||{},cam=h.camera;if(!A.fog)A.heightFog(o.heightFog||{});
+  const w=A.windBase||(U.wind?U.wind.value:null),c=o.centre||(cam?[cam.position.x,cam.position.z]:[0,0]),r=o.radius==null?6000:o.radius;
+  const B=A.fogBeltMake(Object.assign({windward:w?[-w.x,-w.y]:[-1,0],extent:[c[0]-r,c[1]-r,c[0]+r,c[1]+r]},o),A.ground),e=B.extent,n=B.field.n;
+  const tex=new T.DataTexture(B.field.half,n,n,T.RGBAFormat,T.HalfFloatType);tex.minFilter=tex.magFilter=T.LinearFilter;tex.wrapS=tex.wrapT=T.ClampToEdgeWrapping;tex.generateMipmaps=false;tex.needsUpdate=true;
+  U.fogBelt={value:new T.Vector4()};U.fogBeltK={value:new T.Vector4().set(1/B.depth,B.noise,B.steps,n)};U.fogBeltE={value:new T.Vector4().set(e[0],e[1],1/(e[2]-e[0]),1/(e[3]-e[1]))};U.fogBeltT={value:tex};
+  A.fogBeltOn=true;const wx=o.weather==null?.5:o.weather;
+  B.live=B.density;B.step=()=>{const W=A.W||{};B.live=A.fog.off?0:B.density*(1+wx*(W.rain||0)+wx*(W.fog||0));U.fogBelt.value.set(B.live,B.y0,B.y1,B.edge);};
+  B.step();A.hook(B.step);A.fog.belt=B;
+  B.at=(x,y,z)=>A.fogBeltAt(B,x,y,z);B.cover=(x,z)=>A.fogBeltCover(B,x,z);B.texture=tex;
+  A.rec('fogbelt',{y0:B.y0,y1:B.y1,edge:B.edge,depth:B.depth,density:B.density,noise:B.noise,steps:B.steps,windward:B.windward,lee:B.lee,slope:B.slope,rise:B.rise,reach:B.reach,
+   extent:B.extent,res:n,weather:wx,note:'belt density = density * band(y0..y1, edge) * k(x,z) * exp(-(y - ground)/depth); k = (lee + (1-lee) smoothstep(0, slope, windward rise)) (1 - rise smoothstep(y0, y1, ground)); the field is rebuilt from the ground (sky/89-atmos-j-fog.js)'});
+  return B;};
  A.heightFogScene=function(scene,o){o=o||{};const seen=new Set();let n=0;scene.traverse(ob=>{if(!ob.isMesh||!ob.material||ob.userData.noHeightFog||(ob.name&&ob.name.indexOf('water:')===0))return;
   for(const m of(Array.isArray(ob.material)?ob.material:[ob.material])){if(seen.has(m)||!m.fog||m.userData.noHeightFog)continue;seen.add(m);
    if(!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial||(o.basic&&m.isMeshBasicMaterial)))continue;A.heightFogOn(m);n++;}});return n;};

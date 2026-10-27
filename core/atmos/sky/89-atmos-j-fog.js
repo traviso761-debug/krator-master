@@ -11,12 +11,15 @@
 //   THE MIST    a pool in low ground: full density below a level (o.mist.y, metres), thinning above it over o.mist.depth;
 //               its density follows the hour (dawn) and the weather's fog, in patches that drift with the wind and the gusts
 //   THE BAND    a layer of cloud at mid-height (o.band.y [bottom, top]), broken by the same drifting noise (o.band.cover)
+//   THE BELT    (opt-in, ATMOS.fogBelt: the Outlands' C1) cloud lying on the slope between two heights, thicker on faces
+//               turned to the wind, read from a ground field and marched in a few steps (below, "THE BELT"); drawn as band
 // Each layer's optical depth is exact for its profile (no ray marching): ~20 operations a fragment, one hash noise per
 // layer, no textures. The noise is an integer hash (never sin), so every engine draws the same patches.
 //   ATMOS.fogGLSL()         the chunk: uniforms atmFogH, atmFogMist, atmFogBand, atmFogSunDir, atmFogSunC, atmFogZen,
 //                           atmFogDrift, atmFogShape and vec4 atmFog(ro, rd, L, fogColour, fogDensity) -> (colour, amount)
 //   ATMOS.fogAt(ro, P, F)   the JS twin (tests, a host's own checks): F = {density, colour, falloff, ref, shape, mist:{density,
-//                           y, depth, noise}, band:{density, y0, y1, cover}, drift, sunDir, sunC, zen, sun, sky, compress}
+//                           y, depth, noise}, band:{density, y0, y1, cover}, belt (ATMOS.fogBeltMake), drift, sunDir, sunC,
+//                           zen, sun, sky, compress}
 //                           -> {amount, colour}
 //   ATMOS.fogLayer / fogPool / fogSlab   the three optical-depth integrals, pure (test-sky.js holds the GLSL to them)
 // Godot: Environment.fog_height / fog_height_density / fog_sun_scatter / fog_aerial_perspective for the air; the mist and the
@@ -45,14 +48,55 @@
   const tA=F.density*A.fogPool(F.falloff||0,F.ref==null?-1e9:F.ref,ro[1],rd[1],L)*s,oA=F.shape==='exp'?tA:tA*tA;
   let tM=0;if(M.density>0){tM=M.density*A.fogPool(1/Math.max(1,M.depth||40),M.y||0,ro[1],rd[1],L);const n=A.fogNoise((P[0]+dr[0])/A.FOG_CELL[0],(P[2]+dr[1])/A.FOG_CELL[0]);tM*=1+(M.noise||0)*(1.6*n-1);}
   let tB=0;if(B.density>0){const q=A.fogSlab(B.y0,B.y1,ro[1],rd[1],L);if(q[0]>0){const x=ro[0]+rd[0]*q[1],z=ro[2]+rd[2]*q[1],n=A.fogNoise((x+dr[0])/A.FOG_CELL[1],(z+dr[1])/A.FOG_CELL[1]),c=B.cover==null?.5:B.cover,k=B.noise==null?1:B.noise;tB=B.density*q[0]*ss(1-c-.15,1-c+.15,.5+(n-.5)*k);}}
+  if(F.belt)tB+=A.fogBeltDepth(F.belt,ro,rd,L,dr);   /* the belt is cloud: the band's colour */
   const amount=1-Math.exp(-(oA+tM+tB));
   const up=ss(0,.6,rd[1])*(F.sky||0),sd=F.sunDir||[0,1,0],mie=Math.min(1,(F.sun||0)*Math.pow(Math.max(0,rd[0]*sd[0]+rd[1]*sd[1]+rd[2]*sd[2]),8)*ss(-.05,.05,sd[1]));
   const fc=F.colour||[.5,.5,.5],z=F.zen||fc,sc=F.sunC||[1,1,1];
   const cA=fc.map((v,i)=>{const a=v+(z[i]-v)*up;return a+(sc[i]-a)*mie;}),cM=fc.slice(),cB=fc.map((v,i)=>v+(sc[i]*.9-v)*.35);
   const w=oA+tM+tB||1,colour=[0,1,2].map(i=>(cA[i]*oA+cM[i]*tM+cB[i]*tB)/w);
   return{amount,colour};};
+ // ---- THE BELT (C1 of biomes/outlands/PLAN.md 12, approved 2026-10-26): a cloud band lying ON the slope between two heights,
+ // where wind forced up a face condenses (Socotra's and the Canaries' fog belts). Its density at a point:
+ //   density * band(y) * k(x,z) * exp(-(y - ground) / depth)
+ //   band     1 inside y0..y1, eased over `edge` metres at both ends
+ //   k        the face: lee + (1 - lee) * smoothstep(0, slope, windward) (thicker on a face turned to the wind), times
+ //            1 - rise * smoothstep(y0, y1, ground) (thinning where the ground rises up through it toward the top)
+ //   hug      the cloud clings to the ground and thins over `depth` metres above it (no cloud out over the open valley)
+ // The ground and k come from a FIELD: a res x res grid over `extent` [x0, z0, x1, z1], built once from the page's ground
+ // and stored at half precision (the GPU's RGBA16F texture: R ground - y0, G k), so the twin reads what the shader reads.
+ // Along a view ray the belt is marched in `steps` samples inside the slab (ATMOS.fogSlab), its patches the mist's noise.
+ //   ATMOS.fogBeltMake(o, ground) -> B   the record with its defaults and its field (pure)
+ //   ATMOS.fogBeltAt(B, x, y, z)        the density at a point (1/m), no patches: what a kit places by (veil caps)
+ //   ATMOS.fogBeltCover(B, x, z)        0..1: the belt at 2 m over the ground, over its density (the fog field)
+ //   ATMOS.fogBeltDepth(B, ro, rd, L, drift)   the optical depth along a ray: the twin of the chunk's atmFogBeltDepth
+ // Off unless a page calls ATMOS.fogBelt (host/89-atmos-j-heightfog.js): without it the chunk's text is what it was.
+ const f32=new Float32Array(1),u32=new Uint32Array(f32.buffer);
+ A.toHalf=v=>{f32[0]=v;const x=u32[0],s=(x>>>16)&0x8000,e=((x>>>23)&0xff)-112,m=x&0x7fffff;
+  if(e<=0){if(e<-10)return s;const q=(m|0x800000)>>>(1-e);return s|((q+0x1000)>>>13);}
+  if(e>=31)return s|0x7c00;return(s|(e<<10)|(m>>>13))+((m>>>12)&1);};
+ A.fromHalf=h=>{const s=h&0x8000?-1:1,e=(h>>>10)&31,m=h&1023;return e===0?s*m*Math.pow(2,-24):e===31?(m?NaN:s*Infinity):s*(1+m/1024)*Math.pow(2,e-15);};
+ const halfQ=v=>A.fromHalf(A.toHalf(v));
+ A.fogBeltMake=(o,ground)=>{o=o||{};const y0=o.y0==null?3500:o.y0,y1=o.y1==null?4400:o.y1,n=Math.max(2,o.res==null?128:o.res),e=o.extent||[-6000,-6000,6000,6000];
+  const B={y0,y1,edge:Math.max(1,o.edge==null?(y1-y0)*.2:o.edge),depth:Math.max(1,o.depth==null?150:o.depth),density:o.density==null?.004:o.density,
+   noise:o.noise==null?.4:o.noise,steps:Math.max(1,Math.min(16,o.steps==null?8:o.steps)),windward:o.windward||[-1,0],lee:o.lee==null?.25:o.lee,
+   slope:o.slope==null?.35:o.slope,rise:o.rise==null?.5:o.rise,reach:o.reach==null?250:o.reach,extent:e,res:n};
+  const G=new Float32Array(n*n),K=new Float32Array(n*n),H=new Uint16Array(n*n*4);
+  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=e[0]+(e[2]-e[0])*ix/(n-1),z=e[1]+(e[3]-e[1])*iz/(n-1),g=ground(x,z),i=iz*n+ix;
+   const k=(B.lee+(1-B.lee)*A.ss(0,B.slope,A.windwardAt(ground,x,z,B.windward,B.reach)))*(1-B.rise*A.ss(y0,y1,g));
+   H[i*4]=A.toHalf(g-y0);H[i*4+1]=A.toHalf(k);H[i*4+3]=15360;G[i]=A.fromHalf(H[i*4]);K[i]=A.fromHalf(H[i*4+1]);}
+  B.field={n,g:G,k:K,half:H};return B;};
+ // the field at (x,z), bilinear between the grid's nodes (the texture's LINEAR filter, its texel centres on the nodes)
+ A.fogBeltField=(B,x,z)=>{const e=B.extent,F=B.field,n=F.n,fx=Math.min(n-1,Math.max(0,(x-e[0])/(e[2]-e[0])*(n-1))),fz=Math.min(n-1,Math.max(0,(z-e[1])/(e[3]-e[1])*(n-1)));
+  const ix=Math.min(n-2,Math.floor(fx)),iz=Math.min(n-2,Math.floor(fz)),u=fx-ix,v=fz-iz,i=iz*n+ix,l=(a)=>(a[i]*(1-u)+a[i+1]*u)*(1-v)+(a[i+n]*(1-u)+a[i+n+1]*u)*v;
+  return[l(F.g)+B.y0,l(F.k)];};
+ A.fogBeltAt=(B,x,y,z)=>{const q=A.fogBeltField(B,x,z);return B.density*A.ss(B.y0,B.y0+B.edge,y)*(1-A.ss(B.y1-B.edge,B.y1,y))*q[1]*Math.exp(-Math.max(0,y-q[0])/B.depth);};
+ A.fogBeltCover=(B,x,z)=>B.density>0?A.fogBeltAt(B,x,A.fogBeltField(B,x,z)[0]+2,z)/B.density:0;
+ A.fogBeltDepth=(B,ro,rd,L,drift)=>{if(!(B.density>0))return 0;const q=A.fogSlab(B.y0,B.y1,ro[1],rd[1],L);if(!(q[0]>0))return 0;
+  const st=q[0]/B.steps,lo=q[1]-.5*q[0],dr=drift||[0,0];let s=0;
+  for(let i=0;i<B.steps;i++){const t=lo+st*(i+.5);s+=A.fogBeltAt(B,ro[0]+rd[0]*t,ro[1]+rd[1]*t,ro[2]+rd[2]*t);}
+  const n=A.fogNoise((ro[0]+rd[0]*q[1]+dr[0])/A.FOG_CELL[0],(ro[2]+rd[2]*q[1]+dr[1])/A.FOG_CELL[0]);return s*st*(1+B.noise*(1.6*n-1));};
  const f=v=>A.glf(v);
- A.fogGLSL=()=>['#ifndef ATM_FOG_CHUNK','#define ATM_FOG_CHUNK',
+ A.fogGLSL=()=>{const G=['#ifndef ATM_FOG_CHUNK','#define ATM_FOG_CHUNK',
   'uniform vec4 atmFogH;uniform vec4 atmFogMist;uniform vec4 atmFogBand;uniform vec4 atmFogX;uniform vec3 atmFogSunDir;uniform vec3 atmFogSunC;uniform vec3 atmFogZen;uniform vec2 atmFogDrift;',
   /* atmFogH: falloff, ref, sun, sky; atmFogMist: density, level, 1/depth, noise; atmFogBand: density, bottom, top, cover; atmFogX: shape (1 exp2, 0 exp), compress start, compress scale, band noise */
   'float atmFogLayer(float b,float y0,float roy,float rdy,float L){float k=b*rdy*L;float e0=exp(-max(-30.0,b*(roy-y0)));if(abs(k)<1e-4)return e0*L*(1.0-0.5*k);',
@@ -74,5 +118,16 @@
   ' float up=smoothstep(0.0,0.6,rd.y)*atmFogH.w;float mie=clamp(atmFogH.z*pow(max(dot(rd,atmFogSunDir),0.0),8.0)*smoothstep(-0.05,0.05,atmFogSunDir.y),0.0,1.0);',
   ' vec3 cA=mix(mix(fc,atmFogZen,up),atmFogSunC,mie);vec3 cM=fc;vec3 cB=mix(fc,atmFogSunC*0.9,0.35);',
   ' float w=oA+tM+tB;w=w>0.0?w:1.0;return vec4((cA*oA+cM*tM+cB*tB)/w,amount);}',
-  '#endif'].join('\n');
+  '#endif'];
+  // the belt, only on a page that made one (ATMOS.fogBelt): every other page compiles the chunk it compiled before
+  if(A.fogBeltOn){G.splice(G.findIndex(l=>l.indexOf('float atmFogNoise(')===0)+1,0,
+   'uniform vec4 atmFogBelt;uniform vec4 atmFogBeltK;uniform vec4 atmFogBeltE;uniform sampler2D atmFogBeltT;',
+   /* atmFogBelt: density, y0, y1, edge; atmFogBeltK: 1/depth, noise, steps, res; atmFogBeltE: x0, z0, 1/(x1-x0), 1/(z1-z0); atmFogBeltT: R ground - y0, G k */
+   'float atmFogBeltAt(vec3 p){vec2 uv=(clamp((p.xz-atmFogBeltE.xy)*atmFogBeltE.zw,0.0,1.0)*(atmFogBeltK.w-1.0)+0.5)/atmFogBeltK.w;vec2 gk=textureLod(atmFogBeltT,uv,0.0).rg;',
+   ' return smoothstep(atmFogBelt.y,atmFogBelt.y+atmFogBelt.w,p.y)*(1.0-smoothstep(atmFogBelt.z-atmFogBelt.w,atmFogBelt.z,p.y))*gk.y*exp(-max(0.0,p.y-gk.x-atmFogBelt.y)*atmFogBeltK.x);}',
+   'float atmFogBeltDepth(vec3 ro,vec3 rd,float L){if(atmFogBelt.x<=0.0)return 0.0;vec2 q=atmFogSlab(atmFogBelt.y,atmFogBelt.z,ro.y,rd.y,L);if(q.x<=0.0)return 0.0;',
+   ' float st=q.x/atmFogBeltK.z,lo=q.y-0.5*q.x,s=0.0;for(int i=0;i<16;i++){if(float(i)>=atmFogBeltK.z)break;s+=atmFogBeltAt(ro+rd*(lo+st*(float(i)+0.5)));}',
+   ' float n=atmFogNoise((ro.xz+rd.xz*q.y+atmFogDrift)/'+f(A.FOG_CELL[0])+');return atmFogBelt.x*s*st*(1.0+atmFogBeltK.y*(1.6*n-1.0));}');
+   G.splice(G.findIndex(l=>l.indexOf(' float amount=1.0-exp(')===0),0,' tB+=atmFogBeltDepth(ro,rd,L);');}
+  return G.join('\n');};
 })();

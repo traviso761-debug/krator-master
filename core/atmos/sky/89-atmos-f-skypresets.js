@@ -4,8 +4,10 @@
 // THE COLOUR SCRIPT (keys) is indexed by the SUN'S ALTITUDE, not the hour, so dawn follows the season and the
 // latitude by itself. Colours are display-space [r,g,b] 0..1, like every ATMOS preset; lights are three's legacy units.
 //   ATMOS.skyPreset(base, over)   a deep copy of PRESETS.sky[base] with `over` merged in (arrays replaced whole)
-//   ATMOS.skyLook(preset, state, weather)   the colour script at the state's sun, adjusted for the air's pressure,
-//                                 the eclipse and the weather: the lights, fog, exposure and the shader's sky colours
+//   ATMOS.skyLook(preset, state, weather, eyeY)   the colour script at the state's sun, adjusted for the air's pressure,
+//                                 the eclipse and the weather: the lights, fog, exposure and the shader's sky colours;
+//                                 eyeY only with preset.air.thin (thin air: the pressure falls with the eye's height)
+//   ATMOS.airPressureAt(preset, y)   the air's pressure at height y (atm): preset.air.pressure unless air.thin
 // Godot: the same keys feed Environment (tonemap_exposure, fog, ambient) and the two DirectionalLight3Ds.
 (function(){const A=ATMOS;
  // key: alt (sun altitude, degrees), zen/hor (sky at the zenith and the horizon), sunHor (the horizon toward the sun),
@@ -41,8 +43,16 @@
   let i=0;while(keys[i+1].alt<alt)i++;const a=keys[i],b=keys[i+1],t0=(alt-a.alt)/(b.alt-a.alt),t=t0*t0*(3-2*t0),o={alt};
   for(const k in a)if(k!=='alt')o[k]=Array.isArray(a[k])?mix(a[k],b[k],t):a[k]+(b[k]-a[k])*t;return o;};
  A.skyKeyAt=keyAt;
+ // THIN AIR (biomes/godthrone/PLAN.md 2; opt-in): preset.air.thin = {y0, scale} makes the pressure a function of the eye's
+ // height, the model's law p = air.pressure * exp(-(y - y0) / scale) (scale default 8000 m: 1.6 atm at sea level, 0.52 at
+ // 9 km, 0.07 at the 25 km rim; y0 is the page height where air.pressure holds, default 0). Through the look below it darkens
+ // the zenith toward black and lets the bright stars through by day; on top of that, only with air.thin, the sky fill falls
+ // away (hemiI: hard, dark shadows), the sun whitens and strengthens, the haze floor goes and the fog falls to nothing.
+ // Without air.thin the look is what it was, at every height.
+ A.airPressureAt=(P,y)=>{const a=P.air,t=a.thin;if(!t||y==null)return a.pressure;return a.pressure*Math.exp(-(y-(t.y0==null?0:t.y0))/(t.scale==null?8000:t.scale));};
  // weather: {cover (0..1 extra cloud), grey (0..1 overcast), fog (0..1)}; the weather module's W maps onto it
- A.skyLook=function(P,s,w){w=w||{};const p=P.air.pressure,L=keyAt(P.keys,s.sunAlt);
+ // y: the eye's height (the sky host passes the camera's); read only with air.thin
+ A.skyLook=function(P,s,w,y){w=w||{};const p=A.airPressureAt(P,y),L=keyAt(P.keys,s.sunAlt);
   // the eclipse: daylight drops to a deep twilight round the giant's ringed rim (21-sky.js: dusk, not night)
   if(s.eclipse>0){const E=keyAt(P.keys,-6),e=s.eclipse*.88;for(const k in E)if(k!=='alt'&&k!=='exp')L[k]=Array.isArray(L[k])?mix(L[k],E[k],e):L[k]+(E[k]-L[k])*e;L.sunI*=1-s.eclipse;}
   // the air: thick air whitens the horizon and milks the zenith; thin air darkens the zenith toward black
@@ -59,5 +69,6 @@
   // giantshine: the giant's lit fraction, by night and in an eclipse
   const G=P.giant;L.shineC=G.shine;L.shineI=G.shineI*s.giantLit*Math.max(L.night,s.eclipse*.6)*(1-.7*g);
   L.fogC=mix(L.hor,L.sunHor,.18);L.fogD=P.fogDensity*L.fog*(p/1.6)*(1+6*(w.fog||0));L.cover=cl(P.clouds.cover+(w.cover||0),0,1);
+  if(P.air.thin){L.p=p;L.hemiI*=1-.75*thin;L.sunC=mix(L.sunC,[1,1,1],.6*thin);L.sunI*=1+.25*thin;L.hazeFloor*=1-thin;L.fogD*=1-thin*thin;}
   return L;};
 })();

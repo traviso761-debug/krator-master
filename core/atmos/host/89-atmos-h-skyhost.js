@@ -58,7 +58,7 @@
   S.setSite=s=>{P.site=s;S.update(0);};
   const v=(u,a)=>u.value.set(a[0],a[1],a[2]),c=(u,a)=>u.value.setRGB(a[0],a[1],a[2]);
   S.update=function(dt){
-   const st=S.state=A.skyState(site(),clock.hour,clock.day),W=o.weather?o.weather():(A.wxLook?A.wxLook():null),L=S.look=A.skyLook(P,st,W);
+   const st=S.state=A.skyState(site(),clock.hour,clock.day),W=o.weather?o.weather():(A.wxLook?A.wxLook():null),L=S.look=A.skyLook(P,st,W,cam.position.y);
    v(U.uSunDir,st.sunDir);v(U.uGiantDir,st.giantDir);v(U.uPole,st.giantAxis);v(U.uRingN,A.skyRingNormal(st));v(U.uCluster,[0,1,2].map(i=>0));
    const E=st.eq;U.uEq.value.set(E[0][0],E[1][0],E[2][0],E[0][1],E[1][1],E[2][1],E[0][2],E[1][2],E[2][2]);   // W^T: world -> inertial
    const cl=SKY.cluster,D=Math.PI/180;U.uCluster.value.set(Math.cos(cl.dec*D)*Math.cos(cl.ra*D),Math.cos(cl.dec*D)*Math.sin(cl.ra*D),Math.sin(cl.dec*D));
@@ -88,7 +88,7 @@
   S.render=function(){S.renderSky();const ac=r.autoClear;r.autoClear=false;r.clearDepth();r.render(scene,cam);r.autoClear=ac;};
   // the reflections: ATMOS.skylight captures the sky scene (about the origin) whenever the hour moves or the key does
   if(o.skylight)S.skylight=A.skylight({renderer:r,sky:sscene,scene,ground:()=>new T.Color(...(S.look?S.look.hemiG:[.2,.2,.2])).convertSRGBToLinear(),
-   key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.pressure].join()});
+   key:()=>[clock.day,Math.round(clock.hour*4),S.look&&S.look.cover.toFixed(2),P.site.px,P.site.py,P.air.thin&&S.look?S.look.p.toFixed(2):P.air.pressure].join()});
   // the moon maps: one atlas image, a 2:1 row a moon in SKY.moons order (o.moonAtlas: a URL); procedural until it loads
   if(o.moonAtlas)new T.TextureLoader().load(o.moonAtlas,t=>{t.wrapS=T.RepeatWrapping;t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=4;U.uMoonMaps.value=t;U.uMoonMapOn.value=1;});
   A.skyUniforms=U;

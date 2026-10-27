@@ -5,7 +5,7 @@
 'use strict';
 const fs=require('fs'),path=require('path');global.window=global;
 const D=__dirname,files=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','sky/89-atmos-j-fog.js','host/89-atmos-c-hostbind.js','host/89-atmos-e-weatherhost.js',
- 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js'].map(f=>path.join(D,f));
+ 'host/89-atmos-h-skyhost.js','host/89-atmos-j-heightfog.js','fx/89-atmos-fx-raincover.js','fx/89-atmos-fx-snowcover.js','fx/89-atmos-fx-lightning.js','fx/89-atmos-fx-rainwall.js','../rand/08-core-rand.js'].map(f=>path.join(D,f));
 eval(files.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');
 const A=global.ATMOS;let bad=0;const ok=(n,p,neg)=>{const r=p&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+n+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<=(e==null?1e-6:e);
@@ -107,4 +107,56 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  const main=a.filter(s=>s.level===0),last=main[main.length-1];ok('its main channel runs from the cloud to the ground in 2^depth segments, and it forks',main.length===64&&near(main[0].a[1],500)&&near(last.b[1],0)&&a.some(s=>s.level>0),a.every(s=>s.level===0));
  let conn=true;for(let i=1;i<main.length;i++)if(main[i].a!==main[i-1].b)conn=false;ok('...unbroken',conn,false);
  ok('thunder follows at the speed of sound',near(A.thunderDelay(1029),3,1e-9),near(A.thunderDelay(1029),1029/300,1e-9));}
+// ---------------------------------------------------------------- C1 (biomes/outlands/PLAN.md 12): the fog belt
+// a face rising into a west wind (the wind comes from -x) and the same face in the lee (rising away from it)
+const rampW=(x,z)=>3000+.4*x,rampL=(x,z)=>3000-.4*x;
+{const o={y0:3500,y1:4400,windward:[-1,0],extent:[-8000,-2000,8000,2000],res:129,noise:0},B=A.fogBeltMake(o,rampW),BL=A.fogBeltMake(o,rampL);
+ ok('the windward rise: + on a face turned to the wind, - in its lee',near(A.windwardAt(rampW,0,0,[-1,0]),.4,1e-9)&&near(A.windwardAt(rampL,0,0,[-1,0]),-.4,1e-9),A.windwardAt(rampW,0,0,[1,0])>0);
+ const cw=A.fogBeltCover(B,2000,0),cl=A.fogBeltCover(BL,-2000,0);
+ ok('the belt is thicker on the face turned to the wind than on the same height in the lee ('+cw.toFixed(3)+' vs '+cl.toFixed(3)+')',cw>2.5*cl&&cl>0,cw<=cl);
+ ok('...and none where the ground lies below the band or above it',A.fogBeltCover(B,0,0)===0&&A.fogBeltCover(B,5000,0)===0&&cw>0,A.fogBeltCover(B,2000,0)===0);
+ const g=rampW(2000,0),a0=A.fogBeltAt(B,2000,g+2,0),a1=A.fogBeltAt(B,2000,g+150,0),a2=A.fogBeltAt(B,2000,g+400,0);
+ ok('it hugs the slope: thickest at the ground, thinning over its depth above it',a0>a1&&a1>a2&&near(a1/a0,Math.exp(-148/150),.02),a2>=a0);
+ ok('it thins where the ground rises through it toward its top',A.fogBeltCover(B,2875,0)<.75*A.fogBeltCover(B,2000,0),A.fogBeltCover(B,2875,0)>=A.fogBeltCover(B,2000,0));
+ ok('the field holds the ground at half precision (within 0.5 m in the band) and its nodes are the GPU\'s halves',Math.abs(A.fogBeltField(B,2000,0)[0]-g)<.5&&B.field.g[0]===A.fromHalf(A.toHalf(B.field.g[0]))&&near(A.fromHalf(A.toHalf(1/3)),1/3,3e-4),Math.abs(A.fogBeltField(B,2000,0)[0]-g)>=.5);
+ // the march against a fine numeric sum along a ray up the face
+ const ro=[1500,rampW(1500,0)+2,0],P=[2500,rampW(2500,0)+2,0],L=Math.hypot(P[0]-ro[0],P[1]-ro[1]),rd=[(P[0]-ro[0])/L,(P[1]-ro[1])/L,0];
+ let ref=0;const N=20000;for(let i=0;i<N;i++){const t=L*(i+.5)/N;ref+=A.fogBeltAt(B,ro[0]+rd[0]*t,ro[1]+rd[1]*t,0)*L/N;}
+ const d16=A.fogBeltDepth(Object.assign({},B,{steps:16}),ro,rd,L),d8=A.fogBeltDepth(B,ro,rd,L);
+ ok('its optical depth along a ray is the march of its density (16 steps within 3%, the default 8 within 15%)',Math.abs(d16-ref)/ref<.03&&Math.abs(d8-ref)/ref<.15,Math.abs(A.fogBeltDepth(Object.assign({},B,{steps:1}),ro,rd,L)-ref)/ref<1e-3);
+ const F={density:.0002,colour:[.6,.65,.7],falloff:1/900,ref:ro[1],shape:'exp2'},Fb=Object.assign({},F,{belt:B});
+ ok('in the twin (fogAt) a view up the face into the belt is clouded, a view above the band is not touched',A.fogAt(ro,P,Fb).amount>A.fogAt(ro,P,F).amount+.3&&A.fogAt([0,6000,0],[3000,6000,0],Fb).amount===A.fogAt([0,6000,0],[3000,6000,0],F).amount,A.fogAt(ro,P,Fb).amount<=A.fogAt(ro,P,F).amount);
+ // the chunk: the same text as before on every page without a belt
+ A.fogBeltOn=false;const g0=A.fogGLSL();A.fogBeltOn=true;const g1=A.fogGLSL();A.fogBeltOn=false;
+ ok('the chunk without a belt is the chunk it was (no belt lines); with one it marches the belt into the band\'s term, no sin hash',g0===A.fogGLSL()&&!/atmFogBelt/.test(g0)&&/float atmFogBeltDepth\(/.test(g1)&&g1.indexOf(' tB+=atmFogBeltDepth(ro,rd,L);')<g1.indexOf(' float amount=1.0-exp(')&&g1.indexOf(' tB+=atmFogBeltDepth')>0&&!/sin\(/.test(g1),/atmFogBelt/.test(g0));
+ // the host: its uniforms, its record, the hook binds them
+ Object.assign(T,{DataTexture:class{constructor(d,w,h,f,t){this.image={data:d,width:w,height:h};this.format=f;this.type=t;}},RGBAFormat:1023,HalfFloatType:1016,LinearFilter:1006,ClampToEdgeWrapping:1001});
+ const g_=A.h.ground;A.h.ground=rampW;const HB=A.fogBelt({y0:3500,y1:4400,windward:[-1,0],centre:[0,0],radius:4000,res:64});
+ const m=new Material();A.heightFogOn(m);const sh=compile(m);
+ ok('ATMOS.fogBelt: its texture is the field\'s halves, its density follows the weather, a record, the height fog\'s hook binds it',HB.texture.image.data===HB.field.half&&HB.texture.type===T.HalfFloatType&&A.U.fogBelt.value.x>=HB.density&&A.U.fogBeltK.value.w===64&&sh.uniforms.atmFogBeltT===A.U.fogBeltT&&/atmFogBeltDepth/.test(sh.fragmentShader)&&A.fx.some(r=>r.type==='fogbelt'&&r.y0===3500),!sh.uniforms.atmFogBeltT);
+ ok('...and B.at / B.cover are the twin on the page\'s ground',near(HB.cover(2000,0),A.fogBeltCover(HB,2000,0),1e-12)&&HB.cover(2000,0)>0&&HB.cover(-3000,0)===0,HB.cover(2000,0)===0);
+ A.fog.off=true;A._frame(.1);ok('...and the A/B switch (A.fog.off) turns it off',A.U.fogBelt.value.x===0,A.U.fogBelt.value.x>0);A.fog.off=false;
+ A.fogBeltOn=false;A.h.ground=g_;}
+
+// ---------------------------------------------------------------- the SW highlands' rain wall (fx/89-atmos-fx-rainwall.js)
+const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
+{const R=A.rainWallMake({y0:1700,y1:2600,windward:[-1,0]});
+ ok('the rain wall rains on the windward face in its band, little in the lee',A.rainWallAt(R,2500,0,rw)>.95&&near(A.rainWallAt(R,-2500,0,rl),R.lee,1e-9),A.rainWallAt(R,2500,0,rw)<=A.rainWallAt(R,-2500,0,rl));
+ ok('...and none below its band or above it',A.rainWallAt(R,0,0,rw)===0&&A.rainWallAt(R,7000,0,rw)===0,A.rainWallAt(R,2500,0,rw)===0);
+ Object.assign(R,{extent:[-1000,-1000,6000,1000],cell:250,min:.2,top:3000,max:700});
+ const c1=A.rainWallCells(R,rw,7),c2=A.rainWallCells(R,rw,7),c3=A.rainWallCells(R,rw,8);
+ ok('its curtains stand only where it rains, the same for a seed, others for another',c1.length>10&&c1.every(q=>q.k>=.2&&q.top===3000)&&JSON.stringify(c1)===JSON.stringify(c2)&&JSON.stringify(c1)!==JSON.stringify(c3),JSON.stringify(c1)===JSON.stringify(c3));
+ const sub=A.rainWallCells(Object.assign({},R,{extent:[2000,-1000,4000,1000]}),rw,7),key=q=>q.x.toFixed(6)+','+q.z.toFixed(6);
+ ok('...seeded by world cell, not by draw order: a smaller extent draws the same curtains there',sub.length>0&&sub.every(q=>c1.some(p=>key(p)===key(q))),!sub.length);
+ // the host: the field under the eye lifts the weather's rain, and lets it go when the eye leaves
+ Object.assign(T,{InstancedBufferGeometry:BG,Float32BufferAttribute:class{constructor(a,n){this.array=a;this.itemSize=n;}},InstancedBufferAttribute:class{constructor(a,n){this.array=a;this.itemSize=n;}}});
+ const g_=A.h.ground,cp=camera.position.clone?null:[camera.position.x,camera.position.y,camera.position.z];A.h.ground=rw;A.W.mode='clear';A.W.rain=0;
+ camera.position.set(2500,rw(2500,0)+2,0);const H=A.rainWall({y0:1700,y1:2600,windward:[-1,0],centre:[2500,0],radius:2000,seed:7});
+ for(let i=0;i<300;i++)A._frame(.1);const inside=A.W.rain;
+ camera.position.set(-3000,rw(-3000,0)+2,0);for(let i=0;i<300;i++)A._frame(.1);const out=A.W.rain;
+ ok('ATMOS.rainWall: it rains on you inside the wall (W.rain '+inside.toFixed(2)+'), not once you walk out ('+out.toFixed(2)+'), and hangs curtains with a record',inside>.6&&out<.05&&H.cells.length>5&&!!H.mesh&&A.fx.some(r=>r.type==='rainwall'&&r.curtains===H.cells.length),inside<.05);
+ H.off=true;camera.position.set(2500,rw(2500,0)+2,0);for(let i=0;i<300;i++)A._frame(.1);
+ ok('...and R.off leaves the weather alone',A.W.rain<.05&&H.mesh.visible===false,A.W.rain>.05);
+ ok('its curtain shader has no sin hash',!/sin\(/.test(H.mesh.material.fragmentShader+H.mesh.material.vertexShader),/sin\(/.test(H.mesh.material.fragmentShader));
+ A.h.ground=g_;camera.position.set(cp[0],cp[1],cp[2]);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
