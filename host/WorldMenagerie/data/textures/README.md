@@ -25,5 +25,6 @@ Copied from Krator's material library (`core/materials/library/` in krator-maste
 | `plaster.webp` | `plaster` | ChatGPT image generation, Oct 2026 |
 | `rooftile.webp` | `roof.tile` | ChatGPT image generation, Oct 2026 |
 | `cobbles.webp` | `paving.cobblestone_01` | https://polyhaven.com/a/cobblestone_01 |
+| `lamina.webp` | `metal.corrugated.rusty` | ChatGPT image generation, Oct 2026 |
 
 The Poly Haven and ambientCG sets are CC0. The ChatGPT-generated and owner-generated sets are the owner's.

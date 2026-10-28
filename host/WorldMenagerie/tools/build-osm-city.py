@@ -316,6 +316,37 @@ def water_cut(t, water, waterways, wc):
     print(f"terrain.cutWater: {int(m.sum())} cells under the mapped water cut to {lim / 10} m")
 
 
+def lake_bed(t, water, lc):
+    """terrain.lakeBed: the elevation tiles carry a lake as a flat sheet at its surface, so the ground meets the water
+    plane all over it and shows through. Inside the named water areas (their islands left alone) the ground is cut to
+    `shore` metres under the surface at the edge, deepening by `slope` a metre out, to `depth` (Atitlán)."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    from scipy import ndimage
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    H = np.array(t["h"], dtype=np.int32).reshape(nz, nx)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    names = set(lc.get("names") or [])
+    ring = lambda o: [(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]
+    m = np.zeros(nx * nz, bool)
+    for w in water:
+        if w.get("n") not in names:
+            continue
+        inside = MPath(ring(w["o"])).contains_points(pts)
+        for hole in w.get("i") or []:
+            inside &= ~MPath(ring(hole)).contains_points(pts)
+        m |= inside
+    M = m.reshape(nz, nx)
+    dist = ndimage.distance_transform_edt(M) * step
+    shore, slope, depth = float(lc.get("shore", 1.0)), float(lc.get("slope", 0.15)), float(lc.get("depth", 30))
+    cut = np.minimum(depth, shore + slope * np.maximum(0, dist - step * 0.5))
+    H = np.where(M, np.minimum(H, (-cut * 10).astype(np.int32)), H)
+    t["h"] = [int(v) for v in H.ravel()]
+    print(f"terrain.lakeBed: {int(M.sum())} cells under {', '.join(sorted(names))}, to {float(cut[M].max()) if M.any() else 0:.0f} m")
+
+
 def water_reaches(t, water, rc):
     """terrain.reaches: a mountain river through a city is not one level. Each mapped water area named in `names`
     is cut across its long axis into reaches `length` metres long, each drawn level at the lowest ground along it
@@ -777,6 +808,8 @@ def main():
         water_cut(t, polys["water"], out.get("waterways") or [], CITY["terrain"]["cutWater"])
     if t and (CITY.get("terrain") or {}).get("reaches"):
         water_reaches(t, polys["water"], CITY["terrain"]["reaches"])
+    if t and (CITY.get("terrain") or {}).get("lakeBed"):
+        lake_bed(t, polys["water"], CITY["terrain"]["lakeBed"])
     if t:
         out["terrain"] = t
         lo, hi = min(t["h"]) / 10, max(t["h"]) / 10

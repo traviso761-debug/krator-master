@@ -475,6 +475,30 @@ played as events.
   ash falling, every window, lamp and the Eternal Flame out; told without anyone shown hurt), a Ramadan iftar cannon at sunset, the pigeons of Baščaršija, and a
   ride up Trebević.
 
+**Lake Atitlán** (`atitlan.html`, `src/atitlan/`, `data/cities/atitlan.json`). The whole lake in the Guatemalan
+highlands, about 18 by 12 km of water, from OpenStreetMap (the Geofabrik extract; 26,278 buildings) on its real ground
+at 30 m. The datum is the lake (1556 m: `terrain.datum`, since the land falls away south to the Pacific), and the
+builder's new `terrain.lakeBed` cuts the ground inside the named water down from the shore at a slope, so the lake has
+a bed and a shore.
+- **Towns**: Panajachel, Sololá, Santiago Atitlán, San Pedro, San Juan, San Pablo, San Marcos, Tzununá, Jaibalito, Santa
+  Cruz, the Palopós, San Lucas, San Andrés, San Jorge and Santa Clara, each a district, an infill zone and a casas zone
+  (Antigua's `infill.js`, `casas.js` and `fincas.js`, imported). Painted block in turquoise, pink, lime and yellow, half
+  under lámina (`lamina.webp`), half flat and waiting for a floor: `obragris.js` puts rebar, tinacos and washing lines
+  on the flat roofs. Window bars from Sarajevo's `blocks.js` (grilles only); the street dogs from its `dogs.js`.
+- **Santa Catarina Palopó** (`painted.js`): its houses painted in four huipil patterns drawn on canvases.
+- **Landmarks**: ten colonial churches on Antigua's `iglesia`, each turned to its mapped face (San Andrés's a ruin),
+  Sololá's Torre Centroamericana (`landmarks.js`), and cards for the volcanoes, the Cerro de Oro, the Rostro Maya,
+  Maximón and Calle Santander. The docks are the map's own piers.
+- **The land** (`cover.js`): the map leaves the caldera walls bare, so the ground is repainted from height, slope and
+  noise as pine-oak forest, milpa plots, coffee, cliff, scrub and Atitlán's bare cone, and pines and broadleaves are
+  planted a tile at a time near the camera. Past the map, `atitlan-far.json` (100 km at 500 m) through Sarajevo's
+  `backdrop.js`.
+- **The lake** (`lake.js`): lanchas in five liveries on eleven routes found through the water between the docks, with
+  wakes and a dwell at each dock; cayucos; tul reeds in the shallows; the drowned trees and roofs of the shore the
+  lake has risen over since 2009; the Xocomil's whitecaps.
+- **Events** (`events.js`): mist at dawn, a ride on a lancha from Panajachel to Santiago, the Xocomil coming up, a
+  procession over alfombras in Santiago, cohetes over the patron saints' churches, and sunset behind San Pedro.
+
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
 the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts

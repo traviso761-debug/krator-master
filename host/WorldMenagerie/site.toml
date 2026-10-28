@@ -304,6 +304,14 @@ scene = true
 blurb = "Baščaršija's minarets in the valley of the Miljacka, the cable car up Trebević, and the city's history as events."
 
 [[route]]
+path = "/atitlan"         # a real place: the whole of Lake Atitlán from OpenStreetMap on its real ground, the lake's life as events (src/atitlan/)
+aliases = ["/atitlan.html", "/lakeatitlan", "/atitlán"]
+file = "atitlan.html"
+title = "Lake Atitlán: massing model"
+scene = true
+blurb = "The drowned caldera under its three volcanoes: the lake towns, the lanchas between the docks, the Xocomil, and Santiago's procession."
+
+[[route]]
 path = "/olympic"         # a real place: the whole Olympic Peninsula on the real ground, from OpenStreetMap (src/olympic/, tools/make-olympic.py)
 aliases = ["/olympic.html", "/olympics", "/olympicnationalpark", "/peninsula"]
 file = "olympic.html"
