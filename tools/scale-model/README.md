@@ -414,6 +414,59 @@ Left for later: the Lake of Shim's to-do (it waits on the Shim build), the Ancie
 regions that hold the edited places (`settlements/pinnacle-rock/region/`, the Cut, the Catch), and refreshing
 `openworld/little-demo/source/`.
 
+## 4.24: `edit_424.py` (Oct 2026) — Region 99 (Loom-Chasms) & Siphon Pits
+
+`python tools/scale-model/edit_424.py` rebuilds both southeastern biome polygons from a blank slate inside their
+respective rims while preserving exact C1 continuity along each polygon boundary (`max_boundary_delta_m = 0.0 m`):
+
+### Part I — Region 99 (`rmvraoas90co7`): The Loom-Chasms & Weavers' Cradle
+
+Replaces the old 4.23 symmetric ring-crater and 778-cell circular lake (24,334 height cells / ~389,000 km²) with the
+asymmetric tectonic rift province of **The Loom-Chasms & Weavers' Cradle**:
+
+1. **Harmonic Rim Continuity & Scalloped Amphitheater Walls**: Solves the Dirichlet Laplace surface inside Region 99 from
+   the exterior boundary heights (`+7,168 m` to `+13,462 m`) and domain-warps the inward distance field so mountain spurs
+   and glacial valleys continue organically into the basin with zero polygonal cliff artifacts.
+2. **Western Arable Piedmont (*Weavers' Cradle*)**: A curved crescent alluvial loess apron (`+2,050` to `+2,920 m`,
+   `1.10–1.23 atm`) along the western/northwestern inner wall, watered by orographic spillover and snowmelt (`440–620 mm/yr`,
+   class `Dfb`, 12,351 map px).
+3. **The Fluted Monocline (*The Weave-Step*)**: Three stepped structural basalt terraces descending from `+2,060 m` to
+   `+1,520 m` across cold semiarid steppe (`BSk`, 11,276 map px), notched by box-canyon chutes.
+4. **The Loom-Chasms Tectonic Lattice**: A flat-topped horst plateau (*Shuttle Mesas*, `+1,380` to `+1,760 m`, `BWk`/`BSk`)
+   dissected by 10 braided NNE–SSW extensional rift chasms (*The Warp Chasms*) and 7 acute-angle (`31°–36°`) conjugate
+   splay canyons (*The Weft Canyons*) dropping `1,000–1,250 m` to chasm floors at `+250` to `+480 m` (`1.51–1.56 atm`,
+   weathered over 4,235 cells with `smodel.terrain.weather`, mean cut 49 m, p99 182 m, max 527 m). Lapse-warmed chasm
+   trenches form `BWk` (25,296 map px) and `BSh` (4,762 map px) microclimates.
+5. **Mount Caelum Resurgent Massif**: Rises at `px [1350, 836]` from the central chasm nexus to `+4,596.7 m` (`Dsc`/`ET`/`EF`
+   alpine cap), incised with radial barrancas and topped by a fumarole vent in `DATA.vents`.
+6. **Terminal Rift Sink (*Lake Nim & The White Loom*)**: Drains the old 4.23 ring lake and establishes **Lake Nim** at
+   `px [1418, 848]` (`level +240.0 m`, bed min `+217.7 m`, 33 height cells / `528 km²`, class `WS`) ringed by the halite
+   playa flats of **The White Loom** (`zone = 5` salt basin).
+
+### Part II — Siphon Pits (`rmvra9zogfm9t`): The Siphon Pits & Ostrukh Terraces
+
+Replaces the old 4.23 flat 1,700 m marsh basin and 181-cell central lake (11,033 height cells / ~176,528 km²) with the
+two-tiered volcano-tectonic province of **The Siphon Pits & Ostrukh Terraces** (`siphon-pits-plan.md`):
+
+1. **NW Arable Half-Graben (*The Ostrukh Terraces*, Station 1)**: A down-dropped tectonic half-graben (`X_px 1184–1305`,
+   `Y_px 1057–1180`) stepping down from the Stalker Range rim into 4 fertile loess agricultural terraces at `+1,855` to
+   `+2,460 m` (`1.26–1.36 atm`, `Dfb` warm-summer continental highland, 7,373 map px, `420–560 mm/yr` rain + foehn
+   warming), pooling into **Lake Ostrukh** at `px [1252, 1134]` (`level +1,850.0 m`, bed min `+1,833.8 m`, 14 height
+   cells / `224 km²`).
+2. **Central Dividing Fault Escarpment & *The Scarp Pass* (Station 2)**: A 2,100 m stepped columnar-basalt fault wall
+   (`Dsc`, 1,809 map px; `BSk` toe/pass, 202 map px) separating the NW half-graben from the high SE plateau, notched at
+   `px [1288, 1128]` by the S-curved structural gorge of **The Scarp Pass** and dissected by `smodel.terrain.weather`
+   (mean cut 30–39 m, p99 188–201 m over 1,307 cells).
+3. **SE High Basalt Plateau & Coalescing Maar-Diatreme Siphon Pit Swarm (Stations 3 & 4)**: A freezing flood-basalt
+   shield plateau raised to `+4,280` to `+4,740 m` (`ET` alpine tundra, 25,604 map px; `EF` ice rim, 4,749 map px;
+   `145–215 mm/yr`) perforated by **36 multi-scale coalescing phreatomagmatic maar-calderas and collapse pits** organized
+   into 5 volcanic clusters. Where adjacent compound maars intersect, their shared ring-fault septa form razor-sharp
+   basalt ridges (**The Arête Way**, Station 4, `+4,450–4,680 m`), while their sheer columnar-basalt walls plunge
+   `1,800–2,200 m` to sunken geothermal pit floors at `+2,210` to `+2,495 m` (Station 3, `Cfb` 3,030 map px & `Cfa` 573
+   map px thermal-inversion oases with `+7.5 °C` geothermal boost, `540–680 mm/yr` steam-condensation rainfall, 40 height
+   cells / `640 km²` of boiling turquoise crater lakes, and 4 flagship diatreme vents in `DATA.vents`). All 63 river
+   courses across both regions updated (`0` climbing courses).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

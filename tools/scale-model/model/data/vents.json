@@ -51,7 +51,6 @@
 {"px": [623, 641], "floor": -806.763905201821, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [625, 645], "floor": -640.3745029701273, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [597, 643], "floor": -1036.5283942186425, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
-{"px": [1352, 836], "floor": 4580.0, "scale": 0.4, "radius": 4.5},
 {"px": [455, 491], "floor": -798.0746891633447, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [533, 575], "floor": -567.751484055247, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [565, 403], "floor": -421.5829825979015, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
@@ -77,5 +76,10 @@
 {"px": [477, 597], "floor": -1150.9044785229266, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [439, 447], "floor": -949.8012512397956, "scale": 0.1, "radius": 0.9, "kind": "geyser"},
 {"px": [577.85, 932.59], "floor": 21194.3, "scale": 0.6, "radius": 5.5},
-{"px": [620.8, 815.17], "floor": 4972.8, "scale": 0.18, "radius": 1.8}
+{"px": [620.8, 815.17], "floor": 4972.8, "scale": 0.18, "radius": 1.8},
+{"px": [1350.0, 836.0], "floor": 4596.7, "scale": 0.28, "radius": 2.8, "kind": "geyser"},
+{"px": [1412.0, 1222.0], "floor": 2207.6, "scale": 0.28, "radius": 2.8, "kind": "geyser"},
+{"px": [1396.0, 1209.0], "floor": 2269.4, "scale": 0.24, "radius": 2.4, "kind": "geyser"},
+{"px": [1346.0, 1246.0], "floor": 2251.0, "scale": 0.25, "radius": 2.5, "kind": "geyser"},
+{"px": [1440.0, 1152.0], "floor": 2277.5, "scale": 0.24, "radius": 2.4, "kind": "geyser"}
 ]
