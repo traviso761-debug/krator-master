@@ -168,3 +168,121 @@ def lake_rain(rain0, wet0, wet, zr, sig=6.0, bg_sig=15.0):
     med = np.maximum.accumulate(np.array(med))
     med = med / med[0]
     return bg * np.interp(fr, cent, med), [[round(c, 3), round(float(m), 2)] for c, m in zip(cent, med)]
+
+
+def extend_latitude_temps_and_wind(D_old, E_old, En_exp, whas0, wlev0, whas2, wlev2, dy_h, dx_h, dy_f, dx_f):
+    """Synthesize baseline temperature rasters (`tm`, `th`, `tl`, `tw`, `tc` on the expanded full grid) and wind (`wd`
+    on the expanded height grid) when the map canvas is extended northward (`dy_f` px toward the equator) and westward
+    (`dx_f` px into the Steaming Sea / storm track).
+
+    - Fits the planet's latitudinal sea-level datum temperature and seasonal amplitude from the existing map (`D_old`),
+      extrapolates northward (`y < dy_f`, ~ +4.2 C warmer at the new northern edge, with reduced seasonal swing closer
+      to the equator) and westward (`x < dx_f`, marine moderation over the ocean and Arch).
+    - Preserves untouched interior cells of the original map verbatim, and applies `-6.5 C/km` lapse where existing
+      heights changed.
+    """
+    VH, VW = En_exp.shape
+    OH0, OW0 = D_old['fullH'], D_old['fullW']
+    OH, OW = OH0 + dy_f, OW0 + dx_f
+    zoom = (OH / VH, OW / VW)
+
+    surf_exp = np.where(whas2, np.fmax(En_exp, np.nan_to_num(wlev2, nan=-1e9)), En_exp)
+    Sf = nd.zoom(surf_exp, zoom, order=1)[:OH, :OW]
+    Ef = nd.zoom(En_exp, zoom, order=1)[:OH, :OW]
+    wet2F = nd.zoom(whas2.astype(np.uint8), zoom, order=0)[:OH, :OW].astype(bool)
+
+    # Distance to water (km) for coastal/marine thermal moderation in the new territory
+    d_sea_px = nd.distance_transform_edt(~wet2F)
+    marine_mod = np.exp(-d_sea_px / 38.0)  # 1.0 on water, decays over ~75 km inland
+
+    # Fit sea-level equivalent temperatures along the northern & western margins of D_old
+    zoom0 = (OH0 / E_old.shape[0], OW0 / E_old.shape[1])
+    surf0 = np.where(whas0, np.fmax(E_old, np.nan_to_num(wlev0, nan=-1e9)), E_old)
+    S0f = nd.zoom(surf0, zoom0, order=1)[:OH0, :OW0]
+
+    Yf, Xf = np.indices((OH, OW), dtype=np.float32)
+    # Normalized latitude coordinate: y_old = 0 was ~30 S, y_old = 1393 was ~58 S; y_new = 0 is ~23.4 S
+    # Equatorward warming: +0.0095 C per full-res px northward from y = dy_f (+3.1 C at y=0),
+    # plus tropical/subtropical low-elevation warmth in the Ria Valley & Steaming Sea
+    lat_shift_px = (dy_f - Yf)  # positive in the northern extension (y < dy_f), negative southward
+
+    # Base sea-level mean temperature field across the expanded canvas:
+    # At y = dy_f (old top edge), sea-level T_mean is ~22.5 C in the west (ocean) and ~20.5 C in the east;
+    # At y = 0 (new northern edge, ~23.4 S), sea-level T_mean reaches ~25.5 C;
+    # At y = OH (southern edge, ~58 S), sea-level T_mean is ~13.5 C.
+    tm_sl = 21.8 + 0.0082 * lat_shift_px - 0.0014 * (Xf - dx_f) + 1.4 * marine_mod
+    # Seasonal half-swing (TW - TM and TM - TC): smaller near the equator and over the ocean, larger inland & poleward
+    seas_amp = np.clip((4.8 - 0.0028 * lat_shift_px) * (1.0 - 0.48 * marine_mod) + 1.8, 1.8, 13.5)
+    # Diurnal / extreme half-swing (TH - TW and TC - TL)
+    diurn_amp = np.clip(6.2 * (1.0 - 0.42 * marine_mod) + 2.2, 2.2, 11.0)
+
+    # Effective lapse rate (-6.2 C/km up to 9 km)
+    lapse_drop = LAPSE_C_PER_KM * (Sf / 1000.0)
+    tm_syn = tm_sl - lapse_drop
+    tw_syn = tm_syn + seas_amp
+    tc_syn = tm_syn - seas_amp
+    th_syn = tw_syn + diurn_amp
+    tl_syn = tc_syn - diurn_amp
+
+    syn_map = {'tm': tm_syn, 'tw': tw_syn, 'tc': tc_syn, 'th': th_syn, 'tl': tl_syn}
+
+    # Build padded old surface height to seamlessly blend along the red boundary line
+    S0_pad = np.pad(S0f, ((dy_f, 0), (dx_f, 0)), mode='edge')
+    DS_old = Sf - S0_pad
+
+    out_temps = {}
+    for k in TEMPS:
+        v0 = raster(D_old, k, 'L').astype(float) - 90.0
+        # Pad v0 into the new canvas using edge values as a starting reference, then blend with latitudinal model
+        v0_pad = np.pad(v0, ((dy_f, 0), (dx_f, 0)), mode='edge')
+        ok0 = v0_pad > -89.0
+        # Lapsed edge continuation from old boundary + latitudinal equatorward shift
+        d_lat_from_edge = np.maximum(0.0, dy_f - Yf)
+        equator_boost = 0.0085 * d_lat_from_edge
+        if k == 'tc' or k == 'tl':
+            equator_boost = 0.0110 * d_lat_from_edge  # winters warm fastest toward the equator!
+        elif k == 'tw' or k == 'th':
+            equator_boost = 0.0065 * d_lat_from_edge
+
+        v_edge_lapsed = v0_pad - LAPSE_C_PER_KM * (DS_old / 1000.0) + equator_boost
+        v_new_combined = np.where(ok0, 0.55 * v_edge_lapsed + 0.45 * syn_map[k], syn_map[k])
+
+        # Inside the original box [dy_f:, dx_f:], apply exact C.lapse where heights changed, keep untouched exact!
+        v_old_lapsed = np.where((v0 > -89.0) & (np.abs(DS_old[dy_f:, dx_f:]) > 1.0),
+                                np.round(v0 - LAPSE_C_PER_KM * DS_old[dy_f:, dx_f:] / 1000.0), v0)
+
+        v_full = np.round(v_new_combined)
+        v_full[dy_f:, dx_f:] = v_old_lapsed
+
+        # Airless above 9,000 m on newly created mountains (byte 0 -> -90 C)
+        in_new = np.ones((OH, OW), dtype=bool)
+        in_new[dy_f:, dx_f:] = False
+        v_full = np.where(in_new & (Ef > 9000.0), -90.0, v_full)
+
+        out_temps[k] = np.clip(v_full, -90.0, 165.0)
+
+    # Also extend `wd.png` (wind on the height grid: R=power, G=speed, B=airless)
+    wd0 = raster(D_old, 'wd', 'RGB')
+    wd_pad = np.pad(wd0, ((dy_h, 0), (dx_h, 0), (0, 0)), mode='edge')
+    gy_h, gx_h = np.gradient(nd.gaussian_filter(En_exp, 1.5), 4000.0)
+    slope_nw = (gx_h + gy_h) / np.sqrt(2.0)
+    elev_factor = np.clip((En_exp + 500.0) / 4500.0, 0.25, 1.85)
+    sea_fetch = nd.gaussian_filter(whas2.astype(float), 6.0)
+    v_syn = np.clip(6.8 * elev_factor + 3.4 * sea_fetch + 18.0 * np.maximum(0.0, slope_nw), 1.8, 24.0)
+    g_syn = np.clip(np.round(v_syn / D_old.get('wdvmax', 25.0) * 255.0), 0, 255).astype(np.uint8)
+    p_syn = np.clip((v_syn / 11.5) ** 3 * 650.0 * np.exp(-np.maximum(0.0, En_exp) / 8000.0), 10.0, 2950.0)
+    r_syn = np.clip(np.round((p_syn / D_old.get('wdmax', 3000.0)) ** (1.0 / D_old.get('wdgam', 2.2)) * 255.0), 0, 255).astype(np.uint8)
+    b_syn = np.where(En_exp > 9000.0, 255, 0).astype(np.uint8)
+    wd_syn = np.stack([r_syn, g_syn, b_syn], axis=-1)
+
+    # Smooth transition across the old boundary for wd
+    in_old_h = np.zeros((VH, VW), dtype=bool)
+    in_old_h[dy_h:, dx_h:] = True
+    dist_into_old_h = nd.distance_transform_edt(in_old_h)
+    w_wd_old = np.clip((dist_into_old_h - 1.0) / 8.0, 0.0, 1.0)[..., None]
+    wd_new = np.clip(np.round(wd_syn * (1.0 - w_wd_old) + wd_pad * w_wd_old), 0, 255).astype(np.uint8)
+    wd_new[dy_h + 8:, dx_h + 8:] = wd0[8:, 8:]
+    wd_new[..., 2] = np.where(En_exp > 9000.0, 255, wd_new[..., 2])
+
+    return out_temps, wd_new
+

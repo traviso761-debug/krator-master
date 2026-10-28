@@ -164,7 +164,7 @@
   window.__settReady=true;
   renderSett(); drawSettlements();
   bSettImport.onclick=importCityRegions;
-  document.getElementById('bSettCopy').onclick=async()=>{ const j=JSON.stringify([...settlements.values()].sort((a,b)=>a.name.localeCompare(b.name)),null,1); try{ await navigator.clipboard.writeText(j); settStatus.textContent='copied '+settlements.size+' settlements as JSON'; }catch(e){ settStatus.textContent='clipboard blocked — settlements are in the shared store'; } };
+  document.getElementById('bSettCopy').onclick=()=>copyJSONWithFallback(JSON.stringify([...settlements.values()].sort((a,b)=>a.name.localeCompare(b.name)),null,1), 'settlements.json', m=>{ settStatus.textContent=m; }, settlements.size+' settlements');
   bSett.onclick=()=>{ settGroup.visible=!settGroup.visible; settLabelGroup.visible=settGroup.visible; bSett.setAttribute('aria-pressed',settGroup.visible);
     settPanel.hidden=!settGroup.visible; };
   bSettAdd.onclick=()=>{ placing=!placing; bSettAdd.setAttribute('aria-pressed',placing);
