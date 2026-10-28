@@ -1,208 +1,349 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Krator Scale Model 4.24</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>scale model 4.24 · Krator Scale Model</title>
 <style>
 :root{
-  --ink:#0d1210; --panel:#151c18; --line:#2a3630; --text:#e6e1d3; --mute:#9aa79e;
-  --copper:#c9803c; --sea:#4f7fb8; --basin:#c7d64c; --high:#3f7d42; --snow:#e8ecef;
-  --font-d:"Fraunces",Georgia,serif; --font-b:"IBM Plex Sans",system-ui,sans-serif; --font-m:"IBM Plex Mono",ui-monospace,monospace;
+  --bg:#0e1117; --ink:#0e1117; --panel:#161b26; --line:#283044; --border:#283044;
+  --text:#e2ddcf; --mute:#8e96a8; --copper:#d97736; --cyan:#46b5a8; --amber:#e8b045; --highlight:#38bdf8;
+  --sea:#4f7fb8; --basin:#c7d64c; --high:#3f7d42; --snow:#e8ecef;
+  --font-d:"Fraunces",Georgia,serif; --font-b:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif; --font-m:ui-monospace,"IBM Plex Mono",monospace;
 }
-html,body{height:100%;margin:0}
-body{background:var(--ink);color:var(--text);font-family:var(--font-b);font-size:14px;overflow:hidden}
+[hidden]:not([hidden=until-found i]){display:none!important}
+html,body{height:100%;margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:13px;overflow:hidden;user-select:none}
 #stage{position:fixed;inset:0}
 canvas{display:block;width:100%;height:100%}
-#panel{position:fixed;left:16px;top:calc(16px + env(safe-area-inset-top,0px));width:280px;max-width:calc(100vw - 32px);
-  background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);
-  padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px}
-h1{font:500 26px/1.05 var(--font-d);margin:0;letter-spacing:-.01em;text-wrap:balance}
-h1 small{display:block;font:400 12px/1.4 var(--font-b);color:var(--mute);margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
-.read{font:500 13px/1.5 var(--font-m);display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.read span:nth-child(odd){color:var(--mute)}
-.read b{font-weight:500;color:var(--copper)}
-.legend{display:grid;grid-template-columns:14px 1fr;gap:5px 10px;font-size:12px;color:var(--mute);align-items:center}
-.legend i{display:block;height:12px;border:1px solid rgba(0,0,0,.4)}
-label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--mute);gap:10px}
-input[type=range]{width:140px;accent-color:var(--copper)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-button{font:500 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 10px;cursor:pointer}
-button[aria-pressed=true]{background:var(--copper);border-color:var(--copper);color:#1a1008}
-button:focus-visible,input:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
-#hint{position:fixed;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font:400 11px var(--font-m);color:var(--mute);text-align:right}
-#panel{max-height:calc(100vh - 48px);overflow-y:auto}
-.sec{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
-.sec h2{font:500 11px var(--font-b);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0}
-#regions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow-y:auto}
-#rTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line)}
-#rTabs button{border:0;border-right:1px solid var(--line);padding:6px 4px;font-size:11px;letter-spacing:.02em}
-#rTabs button:last-child{border-right:0}
-#rTabs button[aria-selected=true]{background:rgba(255,255,255,.08);color:var(--text);box-shadow:inset 0 -2px 0 var(--copper)}
-#rTabs button[aria-selected=false]{color:var(--mute)}
-#rTabs b{font:400 10px var(--font-m);color:var(--mute);margin-left:4px}
-.kindrow{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mute)}
-.kindrow .seg{display:flex;flex:1}
-.kindrow .seg button{flex:1;padding:4px 6px;font-size:11px;margin-left:-1px}
-.layers{display:flex;gap:0}
-.layers button{margin-left:-1px}
-#regions li{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;padding:4px 6px;cursor:pointer;border:1px solid transparent}
-#regions li:hover,#regions li[aria-selected=true]{border-color:var(--line);background:rgba(255,255,255,.03)}
-#regions li i{width:12px;height:12px;display:block;border:1px solid rgba(0,0,0,.5)}
-#regions li .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#regions li .ar{font:400 11px var(--font-m);color:var(--mute)}
-#regions:empty::after{content:"none yet — draw one";font-size:12px;color:var(--mute);padding:2px 6px}
-#edit{display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center}
-#edit input[type=text]{grid-column:1/-1;font:400 13px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 8px}
-#edit textarea{grid-column:1/-1;font:400 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 8px;resize:vertical;min-height:38px}
-.sw{display:flex;gap:4px;grid-column:1/-1;flex-wrap:wrap}
-.sw button{width:20px;height:20px;padding:0;border:1px solid rgba(0,0,0,.5)}
-.sw button[aria-pressed=true]{outline:2px solid var(--text);outline-offset:1px}
-.status{font:400 11px var(--font-m);color:var(--mute);min-height:14px}
-#drawbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top,0px));background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--copper);padding:8px 12px;display:flex;gap:8px;align-items:center;font-size:12px}
-#drawbar[hidden]{display:none}
-#measbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top,0px));background:color-mix(in srgb,var(--panel) 94%,transparent);border:1px solid var(--copper);padding:10px 12px;display:flex;flex-direction:column;gap:6px;width:300px;max-width:calc(100vw - 32px)}
-#measbar[hidden]{display:none}
-#measbar .mtop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-#mTotal{font:500 22px/1 var(--font-m);color:var(--copper);font-variant-numeric:tabular-nums}
-#mDetail{font:400 11px/1.45 var(--font-m);color:var(--mute);font-variant-numeric:tabular-nums}
-#mProf{width:100%;height:58px;display:block;border-top:1px solid var(--line)}
-body.measuring #stage{cursor:crosshair}
-body.drawing #stage{cursor:crosshair}
-#climLegend{display:flex;flex-direction:column;gap:6px}
-.clist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:1px;font-size:11px;color:var(--mute)}
-.clist li{display:grid;grid-template-columns:10px auto 1fr;gap:6px;align-items:center;white-space:nowrap;overflow:hidden}
-.clist li i{width:10px;height:10px;display:block;border:1px solid rgba(0,0,0,.5)}
-.clist li b{font:500 11px var(--font-m);color:var(--text)}
-.clist li span{overflow:hidden;text-overflow:ellipsis}
-#tempLegend{display:flex;flex-direction:column;gap:5px}
-#tempLegend .bar{height:10px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#2b1a5e 0%,#2a4a9e 17%,#3a8fd0 35%,#7fd4e0 48%,#b9e8b0 57%,#e8e07a 65%,#f0a94a 74%,#e2612e 83%,#b81f1f 91%,#6e0c1c 100%)}
-#tempLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
-#tempLegend select{font:500 12px var(--font-b);color:var(--text);background:var(--panel);border:1px solid var(--line);padding:4px 6px}
-#rainLegend{display:flex;flex-direction:column;gap:4px}
-#windLegend{display:flex;flex-direction:column;gap:4px}
-#windLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
-/* an author display: rule beats the UA stylesheet's [hidden]{display:none}, so the rain
-   and temp legends were showing on every layer. Restore the attribute's meaning. */
-#rainLegend[hidden],#tempLegend[hidden],#climLegend[hidden],#windLegend[hidden]{display:none}
-#settPanel[hidden]{display:none}
-#settPanel ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:210px;overflow:auto}
-#settPanel li{display:grid;grid-template-columns:22px 1fr 112px 20px;gap:6px;align-items:center}
-#settPanel li[aria-selected="true"] .snm{border-color:var(--text)}
-#settPanel .sic{width:20px;height:20px;background-size:contain;background-repeat:no-repeat;background-position:center}
-#settPanel .snm{font:500 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:3px 5px;min-width:0}
-#settPanel .sty{font:400 11px var(--font-m);color:var(--text);background:var(--panel);border:1px solid var(--line);padding:3px 4px}
-#settPanel .sdel{border:0;background:transparent;color:var(--mute);cursor:pointer;font-size:15px;line-height:1;padding:0}
-#settPanel .sdel:hover{color:#d05b33}
-#settKey{display:grid;grid-template-columns:repeat(2,auto);gap:3px 10px;margin-top:8px;font:400 10px var(--font-m);color:var(--mute)}
-#settKey span{display:flex;align-items:center;gap:5px}
-#settKey i{width:15px;height:15px;background-size:contain;background-repeat:no-repeat;display:inline-block}
-#windLegend .bar{height:10px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#f7f0df 0%,#f2dba6 12%,#e9bc6b 25%,#d9942f 44%,#b96c16 62%,#8d4a10 81%,#5a2a0b 100%)}
-#rainLegend .bar{height:10px;background:linear-gradient(90deg,#d6b278 0%,#decd96 6%,#bed296 15%,#78beaa 25%,#3c96aa 40%,#1e5fa0 60%,#14286e 100%);border:1px solid rgba(0,0,0,.4)}
-#rainLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
-#toggle{display:none}
-@media (max-width:560px){
-  #panel{width:auto;right:16px;padding:12px 14px}
-  #panel.collapsed > :not(h1):not(#toggle){display:none}
-  #toggle{display:inline-block;align-self:flex-start}
-  h1{font-size:20px}
-  #hint{display:none}
-  #drawbar{left:16px;right:16px;transform:none;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
-  #measbar{left:16px;right:16px;width:auto;transform:none;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+body.measuring #stage,body.drawing #stage{cursor:crosshair}
+
+/* ---- Top Bar ---- */
+#topBar{
+  position:fixed;top:0;left:0;right:0;height:44px;z-index:40;
+  background:rgba(22,27,38,.94);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:5px;padding:0 10px;
+  overflow-x:auto;white-space:nowrap;scrollbar-width:none;
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+#topBar::-webkit-scrollbar,#footerHUD::-webkit-scrollbar{display:none}
+.title-group{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.05em;color:#ecdcb4;text-transform:uppercase;flex-shrink:0}
+.title-group small{font-weight:500;font-size:10px;color:var(--copper);text-transform:none;letter-spacing:.02em}
+.coord-reader{
+  display:flex;align-items:center;gap:6px;background:#0b0d12;padding:3px 8px;
+  border-radius:4px;border:1px solid var(--border);font-family:var(--font-m);font-size:10.5px;flex-shrink:0;
+}
+.coord-reader b{color:var(--highlight);font-weight:600}
+.copy-btn{border:0;background:rgba(255,255,255,.08);color:var(--text);padding:2px 6px;font-size:10px;border-radius:3px;cursor:pointer;font-family:var(--font-b)}
+.copy-btn:hover{background:var(--copper);color:#fff}
+
+.btn-cluster{display:flex;align-items:center;gap:1px;background:#0b0d12;padding:2px;border-radius:4px;border:1px solid var(--border);flex-shrink:0}
+.btn-cluster button,.layers button{
+  border:0;background:transparent;color:var(--mute);padding:4px 6px;font-size:10.5px;font-family:var(--font-b);
+  cursor:pointer;border-radius:3px;transition:all .15s;
+}
+.btn-cluster button:hover,.layers button:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.btn-cluster button[aria-pressed=true],.layers button[aria-pressed=true],.btn-cluster button.on{
+  background:var(--copper);color:#fff;font-weight:600;
+}
+.layers{display:inline-flex;gap:2px}
+.vex-wrap{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--mute);padding:0 6px;font-family:var(--font-m)}
+.vex-wrap input[type=range]{width:72px;accent-color:var(--copper);cursor:pointer;margin:0}
+
+/* ---- Bottom Telemetry HUD ---- */
+#footerHUD{
+  position:fixed;bottom:0;left:0;right:0;height:32px;z-index:40;
+  background:rgba(22,27,38,.95);backdrop-filter:blur(8px);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 14px;
+  font-family:var(--font-m);font-size:11px;color:var(--mute);overflow-x:auto;white-space:nowrap;
+}
+#footerHUD .hud-item{display:inline-flex;align-items:center;gap:5px}
+#footerHUD b,#footerHUD .probe-val{color:#8bd5ca;font-weight:600}
+#footerHUD #rElev{color:var(--amber)}
+#footerHUD #rClim,#footerHUD #rRiver{color:var(--text);font-weight:500}
+
+/* ---- Right Tabbed Sidebar (#panel) ---- */
+#panel{
+  position:fixed;top:52px;right:12px;width:324px;max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 94px);z-index:40;
+  background:rgba(22,27,38,.95);backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:6px;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#panel.collapsed-sidebar #sidebarBody{display:none}
+#sidebarHeader{padding:10px;border-bottom:1px solid var(--border);background:rgba(14,17,23,.65);display:flex;flex-direction:column;gap:7px}
+.sidebar-top-row{display:flex;align-items:center;justify-content:space-between}
+.sidebar-top-row h2{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#ecdcb4;font-weight:700}
+#toggle{border:1px solid var(--border);background:#0b0d12;color:var(--mute);padding:2px 7px;font-size:10px;border-radius:3px;cursor:pointer}
+#toggle:hover{color:var(--text);border-color:var(--copper)}
+
+.unified-tabs{display:grid;grid-template-columns:1fr auto;gap:4px;align-items:stretch}
+#rTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#0b0d12;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+#rTabs button,#bSettTab{
+  border:0;background:transparent;color:var(--mute);padding:6px 4px;font-size:10.5px;cursor:pointer;
+  transition:all .15s;text-align:center;font-family:var(--font-b);
+}
+#rTabs button:hover,#bSettTab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+#rTabs button[aria-selected=true],#bSettTab[aria-selected=true]{
+  background:rgba(217,119,54,.25);color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--copper);
+}
+#rTabs b,#bSettTab b{font:400 9.5px var(--font-m);color:var(--mute);margin-left:3px}
+#bSettTab{background:#0b0d12;border:1px solid var(--border);border-radius:4px;padding:6px 8px}
+
+#rSearch{
+  width:100%;box-sizing:border-box;background:#0b0d12;border:1px solid var(--border);
+  border-radius:4px;padding:6px 8px;font-size:11px;color:#fff;outline:none;font-family:var(--font-b);
+}
+#rSearch:focus{border-color:var(--copper)}
+
+.filter-pills{display:flex;gap:4px;flex-wrap:wrap;padding-bottom:2px}
+.pill-btn{border:1px solid var(--border);background:#0b0d12;color:var(--mute);font-size:10px;padding:2px 7px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.pill-btn.active{background:var(--copper);color:#fff;font-weight:600;border-color:var(--copper)}
+
+#sidebarBody{display:flex;flex-direction:column;flex:1;overflow-y:auto;padding:8px 10px;gap:8px}
+.sec{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row button{
+  flex:1;font:500 11px var(--font-b);color:var(--text);background:#0b0d12;
+  border:1px solid var(--border);border-radius:4px;padding:5px 8px;cursor:pointer;transition:all .15s;
+}
+.row button:hover{border-color:var(--copper);background:rgba(217,119,54,.15)}
+.row button[aria-pressed=true]{background:var(--copper);border-color:var(--copper);color:#fff;font-weight:600}
+
+#regions,#settList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow-y:auto}
+#regions li{
+  display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;
+  padding:5px 7px;border-radius:4px;cursor:pointer;border:1px solid transparent;transition:background .1s;
+}
+#regions li:hover{background:rgba(255,255,255,.06)}
+#regions li[aria-selected=true]{background:rgba(217,119,54,.25);border-color:var(--copper)}
+#regions li i{width:11px;height:11px;border-radius:2px;display:block;border:1px solid rgba(0,0,0,.5)}
+#regions li .nm{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#regions li .ar{font:400 10.5px var(--font-m);color:var(--mute)}
+#regions:empty::after{content:"No matching regions";font-size:11px;color:var(--mute);padding:4px 6px}
+
+#edit{
+  display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center;
+  padding:8px;margin-top:4px;background:rgba(11,13,18,.85);border:1px solid var(--border);border-radius:5px;
+}
+#edit input[type=text]{grid-column:1/-1;font:500 12px var(--font-b);color:#fff;background:#0b0d12;border:1px solid var(--border);border-radius:3px;padding:5px 7px}
+#edit textarea{grid-column:1/-1;font:400 11.5px var(--font-b);color:var(--text);background:#0b0d12;border:1px solid var(--border);border-radius:3px;padding:5px 7px;resize:vertical;min-height:38px}
+.sw{display:flex;gap:4px;grid-column:1/-1;flex-wrap:wrap}
+.sw button{width:18px;height:18px;padding:0;border-radius:3px;border:1px solid rgba(0,0,0,.5);cursor:pointer}
+.sw button[aria-pressed=true]{outline:2px solid #fff;outline-offset:1px}
+.kindrow{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mute)}
+.kindrow .seg{display:flex;flex:1;gap:2px;background:#0b0d12;padding:2px;border-radius:4px;border:1px solid var(--border)}
+.kindrow .seg button{flex:1;padding:3px 5px;font-size:10.5px;border:0;background:transparent;color:var(--mute);border-radius:2px;cursor:pointer}
+.kindrow .seg button[aria-pressed=true]{background:var(--copper);color:#fff;font-weight:600}
+.status{font:400 10.5px var(--font-m);color:var(--mute);min-height:14px}
+
+#settPanel li{display:grid;grid-template-columns:20px 1fr 104px 20px;gap:5px;align-items:center;padding:2px 0}
+#settPanel li[aria-selected="true"] .snm{border-color:var(--copper);background:rgba(217,119,54,.15)}
+#settPanel .sic{width:18px;height:18px;background-size:contain;background-repeat:no-repeat;background-position:center;cursor:pointer}
+#settPanel .snm{font:500 11.5px var(--font-b);color:var(--text);background:#0b0d12;border:1px solid var(--border);border-radius:3px;padding:3px 5px;min-width:0}
+#settPanel .sty{font:400 10.5px var(--font-m);color:var(--text);background:#0b0d12;border:1px solid var(--border);border-radius:3px;padding:3px 4px}
+#settPanel .sdel{border:0;background:transparent;color:var(--mute);cursor:pointer;font-size:14px;line-height:1;padding:0}
+#settPanel .sdel:hover{color:#ef4444}
+#settKey{display:grid;grid-template-columns:repeat(2,auto);gap:3px 8px;margin-top:4px;padding-top:6px;border-top:1px solid var(--border);font:400 10px var(--font-m);color:var(--mute)}
+#settKey span{display:flex;align-items:center;gap:5px}
+#settKey i{width:14px;height:14px;background-size:contain;background-repeat:no-repeat;display:inline-block}
+
+/* ---- Floating Legend & Climate Key Drawer (#climateKeyDrawer) ---- */
+#climateKeyDrawer{
+  position:fixed;bottom:40px;left:12px;width:340px;max-width:calc(100vw - 24px);max-height:calc(100vh - 100px);
+  z-index:45;background:rgba(22,27,38,.96);backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#climateKeyDrawer[hidden]{display:none!important}
+#keyHeader{
+  padding:8px 12px;border-bottom:1px solid var(--border);background:rgba(14,17,23,.75);
+  display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:700;color:#ecdcb4;text-transform:uppercase;letter-spacing:.05em;
+}
+#keyBody{padding:10px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.legend{display:grid;grid-template-columns:14px 1fr;gap:4px 8px;font-size:11px;color:var(--mute);align-items:center}
+.legend i{display:block;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.5)}
+#climLegend,#tempLegend,#rainLegend,#windLegend{display:flex;flex-direction:column;gap:5px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+#rainLegend[hidden],#tempLegend[hidden],#climLegend[hidden],#windLegend[hidden]{display:none!important}
+.clist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--mute);max-height:220px;overflow-y:auto}
+.clist li{display:grid;grid-template-columns:12px 34px 1fr;gap:6px;align-items:center;padding:2px 4px;border-radius:3px;white-space:nowrap;overflow:hidden}
+.clist li:hover{background:rgba(255,255,255,.06)}
+.clist li i{width:12px;height:12px;border-radius:2px;display:block;border:1px solid rgba(0,0,0,.5)}
+.clist li b{font:600 11px var(--font-m);color:#fff}
+.clist li span{overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+#tempLegend .bar{height:10px;border-radius:2px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#2b1a5e 0%,#2a4a9e 17%,#3a8fd0 35%,#7fd4e0 48%,#b9e8b0 57%,#e8e07a 65%,#f0a94a 74%,#e2612e 83%,#b81f1f 91%,#6e0c1c 100%)}
+#windLegend .bar{height:10px;border-radius:2px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#f7f0df 0%,#f2dba6 12%,#e9bc6b 25%,#d9942f 44%,#b96c16 62%,#8d4a10 81%,#5a2a0b 100%)}
+#rainLegend .bar{height:10px;border-radius:2px;background:linear-gradient(90deg,#d6b278 0%,#decd96 6%,#bed296 15%,#78beaa 25%,#3c96aa 40%,#1e5fa0 60%,#14286e 100%);border:1px solid rgba(0,0,0,.4)}
+.ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
+#tempLegend label{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--mute)}
+#tempLegend select{font:500 11px var(--font-b);color:var(--text);background:#0b0d12;border:1px solid var(--border);border-radius:3px;padding:3px 6px}
+
+/* ---- Floating Draw & Measure Bars ---- */
+#drawbar,#measbar{
+  position:fixed;left:50%;transform:translateX(-50%);top:54px;z-index:45;
+  background:rgba(22,27,38,.96);backdrop-filter:blur(8px);border:1px solid var(--copper);border-radius:6px;
+  padding:8px 12px;box-shadow:0 8px 24px rgba(0,0,0,.6);
+}
+#drawbar{display:flex;gap:8px;align-items:center;font-size:12px}
+#drawbar button,#measbar button{border:1px solid var(--border);background:#0b0d12;color:var(--text);padding:4px 9px;border-radius:4px;font-size:11px;cursor:pointer}
+#drawbar button[aria-pressed=true]{background:var(--copper);border-color:var(--copper);color:#fff;font-weight:600}
+#measbar{display:flex;flex-direction:column;gap:6px;width:320px;max-width:calc(100vw - 32px)}
+#measbar .mtop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#mTotal{font:600 20px/1 var(--font-m);color:var(--copper);font-variant-numeric:tabular-nums}
+#mDetail{font:400 11px/1.4 var(--font-m);color:var(--mute);font-variant-numeric:tabular-nums}
+#mProf{width:100%;height:58px;display:block;border-top:1px solid var(--border)}
+#hint{
+  position:fixed;right:14px;bottom:38px;z-index:35;
+  background:rgba(14,17,23,.78);backdrop-filter:blur(4px);border:1px solid var(--border);border-radius:4px;
+  padding:3px 8px;font:400 10.5px var(--font-m);color:var(--mute);pointer-events:none;
+}
 </style>
+</head><body>
 
 <div id="stage"></div>
-<aside id="panel" class="collapsed">
-  <h1>Krator <small>scale model 4.24 · 2 km/px · 3,098 × 2,786 km</small></h1>
-  <button id="toggle" aria-expanded="false">Legend &amp; controls</button>
-  <div class="read" aria-live="polite">
-    <span>elev</span><span><b id="rElev">—</b></span>
-<span>pos</span><span><b id="rCoord">—</b></span>
-    <span>zone</span><span id="rZone">—</span>
-    <span>air</span><span id="rAir">—</span>
-    <span>rain</span><span id="rRain">—</span>
-    <span>clim</span><span id="rClim">—</span>
-    <span>temp</span><span id="rTemp">—</span>
-    <span>wind</span><span id="rWind">—</span>
-    <span>river</span><span id="rRiver">—</span>
+
+<!-- Top Navigation & Mode Bar -->
+<header id="topBar">
+  <div class="title-group" title="Krator Scale Model 4.24 · 2 km/px · 3,098 × 2,786 km">
+    <span>Krator 4.24</span>
+    <small>2 km/px</small>
   </div>
-  <div class="legend">
-    <i style="background:#7a4a24"></i><span>salt basins &nbsp;−2.5 to −1.2 km</span>
-    <i style="background:#4f7fb8"></i><span>ring sea −1.5 km (1.9 atm) · outer lakes 0</span>
-    <i style="background:#5c9ea8"></i><span>highland lakes &nbsp;~1.75 km</span>
-    <i style="background:#c7d64c"></i><span>basin floor &nbsp;0.1–1.4 km</span>
-    <i style="background:#3f7d42"></i><span>highland shelf &nbsp;3–4.6 km</span>
-    <i style="background:#b9bfc4"></i><span>arctic &nbsp;5.6–7.6 km</span>
-    <i style="background:#f2f2f2"></i><span>outer rim &nbsp;8–27 km (airless)</span>
-    <i style="background:#c9803c"></i><span>the Volcano &nbsp;10.9 km rim · lava floor 10.25 km</span>
-    <i style="background:#2f8f6f"></i><span>southern rift &nbsp;ranges 8–17 km · rift floor to −3.5 km · three terminal seas · Cleft Lake 1.75 atm · 48–57°S</span>
-    <i style="background:#8c8683"></i><span>the Godsgate &nbsp;6.0 km pass · 0.75 atm</span>
+
+  <div class="coord-reader" title="Live Map & World Coordinates">
+    <span>pos: <b id="rCoord">774,696 px · 1548 km, 1392 km</b></span>
+    <button class="copy-btn" id="btnCopyCoords" title="Copy coordinate string">Copy</button>
   </div>
-  <div id="rainLegend" hidden>
-    <div class="bar"></div>
-    <div class="ticks"><span>0</span><span>1000</span><span>2000</span><span>3000</span><span>4000 mm/yr</span></div>
-    <div class="status">NW wind · moisture from lakes, sea and air over the rim · wrung out on rising ground</div>
+
+  <div class="btn-cluster" role="group" aria-label="Map Modes">
+    <button id="bSat" aria-pressed="true" title="Planetary Satellite Imagery">Satellite</button>
+    <button id="bTex" aria-pressed="false" title="Shaded Relief">Relief</button>
+    <button id="bZone" aria-pressed="false" title="Hypsometric & Elevation Zones">Zones</button>
+    <button id="bRain" aria-pressed="false" title="Annual Precipitation">Rain</button>
+    <button id="bClim" aria-pressed="false" title="38-Class Köppen + Krator Climate">Climate</button>
+    <button id="bTemp" aria-pressed="false" title="Surface Air Temperature">Temp</button>
+    <button id="bWind" aria-pressed="false" title="Wind Power Density">Wind</button>
   </div>
-  <div id="tempLegend" hidden>
-    <label>reading <select id="tempMode">
-      <option value="mean">annual average</option>
-      <option value="hi">annual high (hottest afternoon)</option>
-      <option value="lo">annual low (coldest night)</option>
-    </select></label>
-    <div class="bar"></div>
-    <div class="ticks"><span>−60</span><span>−25</span><span>0</span><span>+25</span><span>+55 °C</span></div>
-    <div class="status" id="tempNote">airless rim has no air temperature — shown as bare relief</div>
+
+  <div class="btn-cluster" role="group" aria-label="Overlays & Tools">
+    <span class="layers" role="group" aria-label="Region layers">
+      <button id="bRegPol" aria-pressed="true" title="Toggle Political Regions">Political</button>
+      <button id="bRegGeo" aria-pressed="false" title="Toggle Geographic Regions">Geographic</button>
+      <button id="bRegBio" aria-pressed="false" title="Toggle Biome Regions">Biomes</button>
+      <button id="bRivers" aria-pressed="true" title="Toggle River Names & Networks">Rivers</button>
+    </span>
+    <button id="bSett" aria-pressed="false" title="Toggle Settlements Layer & Inspector">Settlements</button>
+    <button id="bWater" aria-pressed="true" title="Toggle 3D Water Surface">Water</button>
+    <button id="bTop" aria-pressed="false" title="Toggle Top-Down Orthographic-Style View">Top-Down</button>
+    <button id="bMeasure" aria-pressed="false" title="Measure Route & Elevation Profile (M)">Measure</button>
+    <button id="bKeyDrawerBtn" aria-pressed="false" title="Toggle Map Legends & Climate Key">Key</button>
+    <label class="vex-wrap" title="Vertical Exaggeration"><span>V.Ex</span><input id="vex" type="range" min="1" max="12" step="0.5" value="5"></label>
   </div>
-  <div id="windLegend" hidden>
-    <div class="bar"></div>
-    <div class="ticks"><span>0</span><span>400</span><span>700</span><span>1200</span><span>1600+ W/m²</span></div>
-    <div class="status">annual mean wind power density · NW westerlies accelerated by foehn descent, gaps and exposure · dense lowland air is worth more than fast thin air (P = ½ρv³) · airless rim shown as bare relief</div>
+</header>
+
+<!-- Floating Legend & Climate Key Drawer -->
+<aside id="climateKeyDrawer" hidden>
+  <div id="keyHeader">
+    <span>Map Legend &amp; Climate Key</span>
+    <button id="bKeyClose" class="copy-btn" title="Close Legend">✕</button>
   </div>
-  <div id="climLegend" hidden>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span style="font-weight:600;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--mute)">Climate Classes</span>
-      <button id="bClimToggle" style="padding:2px 8px;font-size:10px" aria-expanded="true">Collapse Key</button>
+  <div id="keyBody">
+    <div id="rainLegend" hidden>
+      <div style="font-weight:600;font-size:11px;color:var(--text)">Annual Precipitation (mm/yr)</div>
+      <div class="bar"></div>
+      <div class="ticks"><span>0</span><span>1000</span><span>2000</span><span>3000</span><span>4000 mm/yr</span></div>
+      <div class="status">NW wind · moisture from lakes, sea and air over the rim · wrung out on rising ground</div>
     </div>
-    <ul class="clist" id="climList"></ul>
-    <div class="status">Köppen + Krator classes · X = abyssal (&gt;1.9 atm) · H = hyperalpine (&lt;0.6 atm) · ~40°S, NW westerlies, Earth-like seasons</div>
-  </div>
-  <label>vertical exaggeration <input id="vex" type="range" min="1" max="12" step="0.5" value="5"></label>
-  <div class="row">
-    <button id="bSat" aria-pressed="true">satellite</button>
-    <button id="bTex" aria-pressed="false">relief</button>
-    <button id="bZone" aria-pressed="false">zones</button>
-    <button id="bRain" aria-pressed="false">rain</button>
-    <button id="bClim" aria-pressed="false">climate</button>
-    <button id="bTemp" aria-pressed="false">temp</button>
-    <button id="bWind" aria-pressed="false">wind</button>
-    <button id="bWater" aria-pressed="true">water</button>
-    <button id="bTop" aria-pressed="false">top-down</button>
-    <button id="bSett" aria-pressed="false">settlements</button>
-    <span class="layers" role="group" aria-label="Region layers"><button id="bRegPol" aria-pressed="true" title="Political regions">political</button><button id="bRegGeo" aria-pressed="false" title="Geographic regions">geographic</button><button id="bRegBio" aria-pressed="false" title="Biome regions">biomes</button><button id="bRivers" aria-pressed="true" title="Toggle River Names & Networks">rivers</button></span>
-    <button id="bMeasure" aria-pressed="false" title="Measure distance (M)">measure</button>
-  </div>
-  <div class="sec" id="settPanel" hidden>
-    <h2>Settlements</h2>
-    <div class="row"><button id="bSettAdd" aria-pressed="false">Add settlement</button><button id="bSettImport">Import (city) regions</button><button id="bSettCopy">Copy JSON</button></div>
-    <ul id="settList"></ul>
-    <div class="status" id="settStatus">—</div>
-    <div id="settKey"></div>
-  </div>
-  <div class="sec">
-    <h2>Regions</h2>
-    <div id="rTabs" role="tablist" aria-label="Region list"></div>
-    <div class="row"><button id="bDraw">Draw region</button><button id="bCopy">Copy JSON</button></div>
-    <ul id="regions"></ul>
-    <div id="edit" hidden>
-      <input id="eName" type="text" placeholder="Region name" maxlength="60">
-      <div class="sw" id="eSw"></div>
-      <div class="kindrow"><span>Layer</span><div class="seg" id="eKind" role="group" aria-label="Move to layer"></div></div>
-      <textarea id="eNotes" placeholder="Notes — polity, biome, who lives here…"></textarea>
-      <span class="status" id="eArea"></span>
-      <div class="row"><button id="eVerts" aria-pressed="false">Move points</button><button id="eDel">Delete</button></div>
+    <div id="tempLegend" hidden>
+      <label>Reading <select id="tempMode">
+        <option value="mean">annual average</option>
+        <option value="hi">annual high (hottest afternoon)</option>
+        <option value="lo">annual low (coldest night)</option>
+      </select></label>
+      <div class="bar"></div>
+      <div class="ticks"><span>−60</span><span>−25</span><span>0</span><span>+25</span><span>+55 °C</span></div>
+      <div class="status" id="tempNote">airless rim has no air temperature — shown as bare relief</div>
     </div>
-    <span class="status" id="dbStatus">connecting to shared store…</span>
+    <div id="windLegend" hidden>
+      <div style="font-weight:600;font-size:11px;color:var(--text)">Wind Power Density (W/m²)</div>
+      <div class="bar"></div>
+      <div class="ticks"><span>0</span><span>400</span><span>700</span><span>1200</span><span>1600+ W/m²</span></div>
+      <div class="status">annual mean wind power density · NW westerlies accelerated by foehn descent, gaps and exposure (P = ½ρv³)</div>
+    </div>
+    <div id="climLegend" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-weight:600;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)">38 Köppen + Krator Classes</span>
+        <button id="bClimToggle" class="copy-btn" aria-expanded="true">Collapse Key</button>
+      </div>
+      <ul class="clist" id="climList"></ul>
+      <div class="status">X = abyssal (&gt;1.9 atm) · H = hyperalpine (&lt;0.6 atm) · ~40°S, NW westerlies</div>
+    </div>
+    <div>
+      <div style="font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);margin-bottom:6px">Hypsometric &amp; Structural Zones</div>
+      <div class="legend">
+        <i style="background:#7a4a24"></i><span>salt basins &nbsp;−2.5 to −1.2 km</span>
+        <i style="background:#4f7fb8"></i><span>ring sea −1.5 km (1.9 atm) · outer lakes 0</span>
+        <i style="background:#5c9ea8"></i><span>highland lakes &nbsp;~1.75 km</span>
+        <i style="background:#c7d64c"></i><span>basin floor &nbsp;0.1–1.4 km</span>
+        <i style="background:#3f7d42"></i><span>highland shelf &nbsp;3–4.6 km</span>
+        <i style="background:#b9bfc4"></i><span>arctic &nbsp;5.6–7.6 km</span>
+        <i style="background:#f2f2f2"></i><span>outer rim &nbsp;8–27 km (airless)</span>
+        <i style="background:#c9803c"></i><span>the Volcano &nbsp;10.9 km rim · lava floor 10.25 km</span>
+        <i style="background:#2f8f6f"></i><span>southern rift &nbsp;ranges 8–17 km · floor to −3.5 km</span>
+        <i style="background:#8c8683"></i><span>the Godsgate &nbsp;6.0 km pass · 0.75 atm</span>
+      </div>
+    </div>
   </div>
 </aside>
+
+<!-- Right Tabbed Sidebar (#panel) -->
+<aside id="panel">
+  <div id="sidebarHeader">
+    <div class="sidebar-top-row">
+      <h2>Atlas Inspector</h2>
+      <button id="toggle" aria-expanded="true" title="Collapse or Expand Sidebar">Hide</button>
+    </div>
+    <div class="unified-tabs">
+      <div id="rTabs" role="tablist" aria-label="Region list"></div>
+      <button id="bSettTab" type="button" aria-selected="false" title="View & Edit 112 Canonical Settlements">Sett<b id="settCountBadge">112</b></button>
+    </div>
+    <input type="text" id="rSearch" placeholder="Filter regions or settlements...">
+    <div class="filter-pills" id="settPills" hidden>
+      <button class="pill-btn active" data-type="all">All</button>
+      <button class="pill-btn" data-type="city">City</button>
+      <button class="pill-btn" data-type="village">Village</button>
+      <button class="pill-btn" data-type="arcology">Arcology</button>
+      <button class="pill-btn" data-type="ruined arcology">Ruined Arc</button>
+      <button class="pill-btn" data-type="ruin">Ruin</button>
+      <button class="pill-btn" data-type="outpost">Outpost</button>
+      <button class="pill-btn" data-type="cavern">Cavern</button>
+    </div>
+  </div>
+
+  <div id="sidebarBody">
+    <div class="sec" id="regSec">
+      <div class="row"><button id="bDraw">Draw region</button><button id="bCopy">Copy JSON</button></div>
+      <ul id="regions"></ul>
+      <div id="edit" hidden>
+        <input id="eName" type="text" placeholder="Region name" maxlength="60">
+        <div class="sw" id="eSw"></div>
+        <div class="kindrow"><span>Layer</span><div class="seg" id="eKind" role="group" aria-label="Move to layer"></div></div>
+        <textarea id="eNotes" placeholder="Notes — polity, biome, who lives here…"></textarea>
+        <span class="status" id="eArea"></span>
+        <div class="row">
+          <button id="bFocusRegion" type="button" title="Center camera on this region">Focus</button>
+          <button id="eVerts" aria-pressed="false">Move points</button>
+          <button id="eDel">Delete</button>
+        </div>
+      </div>
+      <span class="status" id="dbStatus">connecting to shared store…</span>
+    </div>
+
+    <div class="sec" id="settPanel" hidden>
+      <div class="row"><button id="bSettAdd" aria-pressed="false">Add settlement</button><button id="bSettImport">Import (city)</button><button id="bSettCopy">Copy JSON</button></div>
+      <ul id="settList"></ul>
+      <div class="status" id="settStatus">—</div>
+      <div id="settKey"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- Floating Draw & Measure Bars -->
 <div id="drawbar" hidden>
   <span id="drawMsg">Click the terrain to add points</span>
   <button id="dUndo">Undo point</button>
@@ -214,7 +355,20 @@ body.drawing #stage{cursor:crosshair}
   <canvas id="mProf" width="552" height="116" aria-label="Elevation profile of the measured route"></canvas>
   <div class="row"><button id="mUndo">Undo point</button><button id="mClear">Clear</button><button id="mDone">Done</button></div>
 </div>
+
 <div id="hint">drag · orbit &nbsp;|&nbsp; wheel · zoom &nbsp;|&nbsp; right-drag · pan &nbsp;|&nbsp; WASD · fly (Q/E height, arrows orbit, Shift fast) &nbsp;|&nbsp; hover · read &nbsp;|&nbsp; M · measure</div>
+
+<!-- Bottom Telemetry HUD -->
+<footer id="footerHUD" aria-live="polite">
+  <div class="hud-item"><span>Elev:</span><b id="rElev">—</b></div>
+  <div class="hud-item"><span>Zone:</span><b id="rZone">—</b></div>
+  <div class="hud-item"><span>Air:</span><b id="rAir">—</b></div>
+  <div class="hud-item"><span>Clim:</span><b id="rClim">—</b></div>
+  <div class="hud-item"><span>Rain:</span><b id="rRain">—</b></div>
+  <div class="hud-item"><span>Temp:</span><b id="rTemp">—</b></div>
+  <div class="hud-item"><span>Wind:</span><b id="rWind">—</b></div>
+  <div class="hud-item"><span>River:</span><b id="rRiver">—</b></div>
+</footer>
 
 <script>
 /* three.min.js r128 inlined for CSP/offline compatibility */
@@ -1106,7 +1260,17 @@ function pixels(img){const c=document.createElement('canvas');c.width=img.width;
   const bTex=document.getElementById('bTex'), bZone=document.getElementById('bZone'), bRain=document.getElementById('bRain'), rainLegend=document.getElementById('rainLegend'), bClim=document.getElementById('bClim'), climLegend=document.getElementById('climLegend'), bSat=document.getElementById('bSat'), bWater=document.getElementById('bWater'), bTop=document.getElementById('bTop');
   const bWind=document.getElementById('bWind'), windLegend=document.getElementById('windLegend'), rWind=document.getElementById('rWind');
   const bTemp=document.getElementById('bTemp'), tempLegend=document.getElementById('tempLegend'), tempMode=document.getElementById('tempMode');
-  function setMap(t){ mat.map=t; mat.needsUpdate=true; bTex.setAttribute('aria-pressed',t===tex); bZone.setAttribute('aria-pressed',t===ztex); bRain.setAttribute('aria-pressed',t===rtex); rainLegend.hidden=t!==rtex; bClim.setAttribute('aria-pressed',t===ctex); climLegend.hidden=t!==ctex; bTemp.setAttribute('aria-pressed',t===ttex); tempLegend.hidden=t!==ttex; bWind.setAttribute('aria-pressed',t===wdtex); windLegend.hidden=t!==wdtex; bSat.setAttribute('aria-pressed',t===stex); wmat.opacity=t===stex?0.22:0.6; }
+  const keyDrawer=document.getElementById('climateKeyDrawer'), bKeyDrawerBtn=document.getElementById('bKeyDrawerBtn'), bKeyClose=document.getElementById('bKeyClose');
+  let keyPinned=false;
+  function updateDrawerVis(t){
+    const hasModeLegend=(t===rtex||t===ctex||t===ttex||t===wdtex||t===ztex);
+    const open=keyPinned||hasModeLegend;
+    if(keyDrawer) keyDrawer.hidden=!open;
+    if(bKeyDrawerBtn) bKeyDrawerBtn.setAttribute('aria-pressed',open);
+  }
+  if(bKeyDrawerBtn) bKeyDrawerBtn.onclick=()=>{ keyPinned=!keyDrawer.hidden?false:true; keyDrawer.hidden=!keyPinned; bKeyDrawerBtn.setAttribute('aria-pressed',!keyDrawer.hidden); };
+  if(bKeyClose) bKeyClose.onclick=()=>{ keyPinned=false; keyDrawer.hidden=true; if(bKeyDrawerBtn) bKeyDrawerBtn.setAttribute('aria-pressed',false); };
+  function setMap(t){ mat.map=t; mat.needsUpdate=true; bTex.setAttribute('aria-pressed',t===tex); bZone.setAttribute('aria-pressed',t===ztex); bRain.setAttribute('aria-pressed',t===rtex); rainLegend.hidden=t!==rtex; bClim.setAttribute('aria-pressed',t===ctex); climLegend.hidden=t!==ctex; bTemp.setAttribute('aria-pressed',t===ttex); tempLegend.hidden=t!==ttex; bWind.setAttribute('aria-pressed',t===wdtex); windLegend.hidden=t!==wdtex; bSat.setAttribute('aria-pressed',t===stex); wmat.opacity=t===stex?0.22:0.6; updateDrawerVis(t); }
   bTemp.onclick=()=>setMap(mat.map===ttex?tex:ttex);
   bWind.onclick=()=>setMap(mat.map===wdtex?tex:wdtex);
   tempMode.onchange=()=>{ buildTemp(tempMode.value); if(mat.map!==ttex) setMap(ttex); };
@@ -1128,7 +1292,87 @@ function pixels(img){const c=document.createElement('canvas');c.width=img.width;
   bWater.onclick=()=>{const on=bWater.getAttribute('aria-pressed')!=='true'; bWater.setAttribute('aria-pressed',on); waterMesh.visible=on;};
   bTop.onclick=()=>{topdown=!topdown; bTop.setAttribute('aria-pressed',topdown); updateCam();};
   const panel=document.getElementById('panel'), tog=document.getElementById('toggle');
-  tog.onclick=()=>{const c=panel.classList.toggle('collapsed'); tog.setAttribute('aria-expanded',!c);};
+  tog.onclick=()=>{const c=panel.classList.toggle('collapsed-sidebar'); tog.setAttribute('aria-expanded',!c); tog.textContent=c?'Show':'Hide';};
+
+  // Copy coordinates button
+  const btnCopyCoords=document.getElementById('btnCopyCoords');
+  if(btnCopyCoords){
+    btnCopyCoords.onclick=()=>{
+      const txt=document.getElementById('rCoord')?.textContent||'';
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).catch(()=>{});
+      btnCopyCoords.textContent='Copied!';
+      setTimeout(()=>{btnCopyCoords.textContent='Copy';},1000);
+    };
+  }
+
+  // Focus & Zoom camera onto selected region
+  const bFocusRegion=document.getElementById('bFocusRegion');
+  if(bFocusRegion){
+    bFocusRegion.onclick=()=>{
+      if(!sel||!sel.points||!sel.points.length) return;
+      const c=centroid(sel.points);
+      const wp=mapToWorld(c);
+      target.set(wp.x, 0, wp.z);
+      dist=Math.max(350, Math.min(1800, Math.sqrt(polyAreaKm2(sel.points))*2.2));
+      updateCam();
+    };
+  }
+
+  // Unified tabs: switch between Regions (Pol/Geo/Bio) and Settlements (Sett)
+  const regSec=document.getElementById('regSec'), bSettTab=document.getElementById('bSettTab'), settPills=document.getElementById('settPills'), rSearch=document.getElementById('rSearch');
+  let activeSettType='all';
+  function applySearchAndFilters(){
+    const q=(rSearch?.value||'').trim().toLowerCase();
+    // Filter regions list
+    document.querySelectorAll('#regions li').forEach(li=>{
+      const nm=(li.querySelector('.nm')?.textContent||'').toLowerCase();
+      li.style.display=(!q||nm.includes(q))?'':'none';
+    });
+    // Filter settlements list
+    document.querySelectorAll('#settList li').forEach(li=>{
+      const nm=(li.querySelector('.snm')?.value||'').toLowerCase();
+      const ty=(li.querySelector('.sty')?.value||'').toLowerCase();
+      const matchQ=!q||nm.includes(q)||ty.includes(q);
+      const matchT=activeSettType==='all'||ty===activeSettType;
+      li.style.display=(matchQ&&matchT)?'':'none';
+    });
+    const badge=document.getElementById('settCountBadge');
+    if(badge) badge.textContent=settlements.size;
+  }
+  if(rSearch) rSearch.addEventListener('input', applySearchAndFilters);
+  if(settPills){
+    settPills.querySelectorAll('.pill-btn').forEach(btn=>{
+      btn.onclick=()=>{
+        settPills.querySelectorAll('.pill-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        activeSettType=btn.dataset.type||'all';
+        applySearchAndFilters();
+      };
+    });
+  }
+  function showSettTab(on){
+    if(regSec) regSec.hidden=on;
+    if(settPanel) settPanel.hidden=!on;
+    if(settPills) settPills.hidden=!on;
+    if(bSettTab) bSettTab.setAttribute('aria-selected', on);
+    if(on){
+      document.querySelectorAll('#rTabs button').forEach(b=>b.setAttribute('aria-selected', false));
+      if(bSett.getAttribute('aria-pressed')!=='true') bSett.click();
+    }
+    applySearchAndFilters();
+  }
+  if(bSettTab){
+    bSettTab.onclick=()=>showSettTab(true);
+  }
+  const origRenderTabs=renderTabs;
+  document.getElementById('rTabs').addEventListener('click', ()=>{
+    if(regSec && regSec.hidden) showSettTab(false);
+    setTimeout(applySearchAndFilters, 0);
+  });
+  bSett.addEventListener('click', ()=>{
+    const on=bSett.getAttribute('aria-pressed')==='true';
+    showSettTab(on);
+  });
 
   setMap(stex);
   function updateReadoutUV(u,v){
