@@ -2615,6 +2615,65 @@
    "attribution": "\"Wilson's Snipe winnowing (Yellowstone)\" by NPS/Jennifer Jerrett, https://www.nps.gov/yell/learn/photosmultimedia/sounds-wilsonssnip.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
   },
   {
+   "id": "oga-insect-or-alien-scream",
+   "title": "Insect or alien scream",
+   "creator": "qubodup",
+   "source": "https://opengameart.org/content/insect-or-alien-scream",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/ (stated on the item page)",
+   "category": "raw",
+   "tags": [
+    "alien",
+    "giant-insect",
+    "insect",
+    "scream"
+   ],
+   "notes": "chittering insectoid scream; already alien",
+   "duration": 5,
+   "file": "library/oga-insect-or-alien-scream.flac",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Insect or alien scream\" by qubodup, https://opengameart.org/content/insect-or-alien-scream, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "oga-peacock-scream",
+   "title": "Peacock scream",
+   "creator": "popthebubbles4",
+   "source": "https://opengameart.org/content/peacock-scream",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/ (stated on the item page)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "scream"
+   ],
+   "notes": "piercing peacock scream; a jungle shriek",
+   "duration": 5,
+   "file": "library/oga-peacock-scream.flac",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Peacock scream\" by popthebubbles4, https://opengameart.org/content/peacock-scream, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "oga-tiny-vicious-creature",
+   "title": "Tiny vicious creature",
+   "creator": "Darsycho",
+   "source": "https://opengameart.org/content/tiny-vicious-creature",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/ (stated on the item page)",
+   "category": "raw",
+   "tags": [
+    "creature",
+    "growl"
+   ],
+   "notes": "small snarling creature; pitch down for something larger",
+   "duration": 5,
+   "file": "library/oga-tiny-vicious-creature.ogg",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Tiny vicious creature\" by Darsycho, https://opengameart.org/content/tiny-vicious-creature, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "sonniss-biohazard-creature",
    "legacy": "sonniss-biohazard-creature",
    "title": "Biohazard Creature Organic Texture 041",
@@ -2954,6 +3013,25 @@
    "attribution": "\"Strange Whistling Wind Moan (Argentina)\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2020-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
   },
   {
+   "id": "soundopedia-parrot-chirping",
+   "title": "Parrot chirping on rooftop",
+   "creator": "Soundopedia",
+   "source": "https://soundopedia.com/sounds/parrot-chirping-on-rooftop",
+   "license": "rf-soundopedia",
+   "licenseText": "Soundopedia: License: Free (site terms: commercial use allowed, no redistribution)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "parrot"
+   ],
+   "notes": "lively parrot chirps and whistles",
+   "duration": 19.25,
+   "file": "library/soundopedia-parrot-chirping.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Parrot chirping on rooftop\" by Soundopedia, https://soundopedia.com/sounds/parrot-chirping-on-rooftop, Soundopedia license (free for commercial use, no re-sharing; recordings owned by Soundopedia) (https://soundopedia.com/)"
+  },
+  {
    "id": "wmc-bat-feeding-buzz",
    "legacy": "wmc-bat-feeding-buzz",
    "title": "Bat feeding buzz, slowed to 1/10 speed (Pennsylvania)",
@@ -2992,6 +3070,27 @@
    "share": true,
    "status": "candidate",
    "attribution": "\"Cicada orni singing (Herault, France)\" by DavidDelon, https://commons.wikimedia.org/wiki/File:Cicada_orni.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
+  },
+  {
+   "id": "wmc-cicadas-in-greece",
+   "title": "Cicadas in Greece",
+   "creator": "Channel R",
+   "source": "https://commons.wikimedia.org/wiki/File:Cicadas_in_Greece.ogg",
+   "license": "pd-author",
+   "licenseText": "Public domain (own work, released by the author: Wikimedia Commons)",
+   "category": "amb.element",
+   "tags": [
+    "cicada",
+    "day",
+    "insect",
+    "mediterranean"
+   ],
+   "notes": "Mediterranean cicada chorus",
+   "duration": 27.84,
+   "file": "library/wmc-cicadas-in-greece.ogg",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Cicadas in Greece\" by Channel R, https://commons.wikimedia.org/wiki/File:Cicadas_in_Greece.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
   },
   {
    "id": "wmc-finnish-bush-crickets",
@@ -3053,6 +3152,25 @@
    "share": true,
    "status": "candidate",
    "attribution": "\"Chorus cicada distress buzz held in hand (New Zealand)\" by Richard001, https://commons.wikimedia.org/wiki/File:New_Zealand_Cicada_held_in_hand-audio.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
+  },
+  {
+   "id": "wmc-yannick-dauby-bats-echolocation",
+   "title": "Bats echolocation",
+   "creator": "Yannick Dauby",
+   "source": "https://commons.wikimedia.org/wiki/File:Yannick_Dauby_-_Bats_echolocation_(CC_by).ogg",
+   "license": "cc-by-2.5",
+   "licenseText": "CC BY 2.5",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "echolocation"
+   ],
+   "notes": "bat echolocation, audible; good for a swarm",
+   "duration": 55.41,
+   "file": "library/wmc-yannick-dauby-bats-echolocation.ogg",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bats echolocation\" by Yannick Dauby, https://commons.wikimedia.org/wiki/File:Yannick_Dauby_-_Bats_echolocation_(CC_by).ogg, CC BY 2.5 (https://creativecommons.org/licenses/by/2.5/)"
   }
  ]
 }

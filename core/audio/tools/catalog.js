@@ -59,6 +59,8 @@ function board() {
     const { title, creator } = splitTitle(m.title || id);
     rejected.push({ id, title, creator, source: m.page || '', license: 'unverified', licenseText: m.license || '', why: m.why || K.license('unverified').why, file: 'sound-board/held/' + m.file });
   }
+  /* Clips that came in through intake live in library/: keep them, the board knows nothing of them. */
+  if (fs.existsSync(CLIPS)) read(CLIPS).clips.filter(c => String(c.file).startsWith('library/') && !clips.some(x => x.id === c.id)).forEach(c => clips.push(c));
   clips.sort((a, b) => a.id < b.id ? -1 : 1); rejected.sort((a, b) => a.id < b.id ? -1 : 1);
   write(CLIPS, { _doc: 'The clip catalogue (core/audio/PLAN.md section 3). Built by tools/catalog.js; new clips come in through intake.', clips });
   write(path.join(DATA, 'rejected.json'), { _doc: 'Clips kept out of the game by the license policy, with the reason. Never use these.', clips: rejected });
