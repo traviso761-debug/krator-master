@@ -1,0 +1,35 @@
+{
+  "name": "Mount Caelum Caldera (station 4): the central low-angle shield dome, steaming geothermal vents, the colossal ancient Parent Loom colony anchoring regional tension spans, high thin-air summit overlooking the white Lake Nim playa",
+  "out": "loom-caelum.html",
+  "site": {
+    "name": "caelum",
+    "title": "Mount Caelum Caldera & Lake Nim Overlook",
+    "px": 1355,
+    "py": 840,
+    "base": 4650.0,
+    "playa_level": 480.0,
+    "atm": 0.89,
+    "mean": -13.5,
+    "rain": 210,
+    "cls": "ET",
+    "lat": -27.4
+  },
+  "water": [
+    {
+      "kind": "vent",
+      "name": "Caelum Fumaroles",
+      "px": 1355,
+      "py": 840,
+      "temp_c": 115.0
+    },
+    {
+      "kind": "playa",
+      "name": "Lake Nim",
+      "px": 1420,
+      "py": 850,
+      "level_m": 480.0,
+      "area_km2": 45.0,
+      "hypersaline": true
+    }
+  ]
+}

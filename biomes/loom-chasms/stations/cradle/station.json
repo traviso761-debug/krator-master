@@ -1,0 +1,29 @@
+{
+  "name": "Weavers' Cradle (station 1): the fertile western arable piedmont, glacial meltwater rivers from Stalker canyons, loess crop terraces, domestic ghaunt-ox teams, turf-roofed stone longhouses",
+  "out": "loom-cradle.html",
+  "site": {
+    "name": "cradle",
+    "title": "Weavers' Cradle",
+    "px": 1215,
+    "py": 845,
+    "base": 2180.0,
+    "atm": 1.23,
+    "mean": 5.5,
+    "rain": 380,
+    "cls": "Dfb",
+    "lat": -27.1
+  },
+  "water": [
+    {
+      "kind": "flow",
+      "name": "Stalker Melt Torrents",
+      "q_m3s": 45.0,
+      "temp_c": 3.5
+    }
+  ],
+  "crops": [
+    "cold_rye",
+    "mountain_flax",
+    "lichen_spelt"
+  ]
+}

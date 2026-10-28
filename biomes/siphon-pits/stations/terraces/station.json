@@ -1,0 +1,28 @@
+{
+ "name": "Ostrukh Terraces (station 1): the cold arable piedmont, glacial meltwater braided streams from the Stalker wall, loess crop terraces, domestic Ghaunt-Ox herds, turf-roofed stone farmsteads",
+ "out": "siphon-terraces.html",
+ "site": {
+  "name": "terraces",
+  "title": "Ostrukh Terraces",
+  "px": 1225,
+  "py": 1088,
+  "base": 2150.0,
+  "atm": 1.31,
+  "mean": 4.2,
+  "rain": 340,
+  "cls": "Dfb",
+  "lat": -28.2
+ },
+ "water": [
+  {
+   "kind": "flow",
+   "name": "Meltwater Run",
+   "width": 6.0,
+   "depth": 0.8
+  }
+ ],
+ "crops": {
+  "zone": "terrace",
+  "species": ["barley", "frostwheat", "tuber"]
+ }
+}
