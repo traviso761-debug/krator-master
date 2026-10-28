@@ -427,11 +427,20 @@ played as events.
   capacity.
 - **The river** falls about twenty metres through the city over weirs, so it is not one sheet: `terrain.reaches` (a
   setting of `tools/build-osm-city.py`) cuts the named water areas into reaches along the river, each level just under
-  the lowest ground along it and never below the one downstream, and cuts the ground under each.
+  the lowest ground along it and never below the one downstream, and cuts the ground under each; `bank: 0` keeps the
+  cut inside the mapped water, so the streets keep their level to the edge. `src/sarajevo/river.js` draws the
+  Austrian channel on the same polygons: dressed stone walls from the water up to the street, a pale coping, a strip of
+  quay and the iron railing, and a sheet of white water at every weir. `bridgeFromBanks` (an engine setting) keeps a
+  deck over the water at the level of the streets at its ends, not of the riverbed under it.
 - **Landmarks** (`src/sarajevo/landmarks.js`): the Sebilj; Gazi Husrev-beg's, the Emperor's and Ferhadija mosques
   (portico of small domes, lead dome on its drum, pencil minaret, şadırvan); the Sahat-kula; the City Hall in Wittek's
   striped pseudo-Moorish, from its mapped outline; the Latin Bridge's four arches with the eyes in its piers; the
-  Cathedral of the Sacred Heart; the Yellow Bastion and its cannon; the Avaz Twist Tower; the Holiday Inn in mustard
+  Cathedral of the Sacred Heart (its tower clocks, lancets, the rose's tracery and John Paul II in the square); the
+  Yellow Bastion and its cannon; the UNIS towers, Momo and Uzeir (dark glass and metal bands, the fins on the cut
+  corners, the plant floors); the Avaz Twist Tower (a textured curtain wall turning 75 degrees, lit floor by floor at
+  night, the silver bands, the 35th floor's glass deck, the paper's name under the open crown, the mast, and the
+  paper's own glass house at its foot; a map on a landmark material is kept through the merge, `landkit` `setMat`);
+  the Holiday Inn in mustard
   and brown; the Eternal Flame; the Trebević cable car with its gondolas running; the 1984 bobsleigh track with its
   banking and graffiti (kept clear of the woodland by `treeKeepOut`); the Koševo stadium and its cauldron. More
   places are cards only (Schiller's corner, Markale, the Inat House, Morića Han, the churches and the synagogue).
@@ -449,10 +458,20 @@ played as events.
   streets; the Meeting of Cultures line across Ferhadija.
 - **Trees and facades**: Trebević's beech, spruce and black pine, lindens and planes on the streets, plum trees in the
   yards (`treeSpecies`); glass on the towers, balconies on the socialist blocks of Marijin Dvor and Koševo, ribbon
-  windows on the offices (`facadeStyles`).
+  windows on the offices (`facadeStyles`). Walls take the library's stucco and plaster, roofs its clay tile, and the
+  pedestrian lanes cobbles (`surfaces`, `paving.map`).
+- **The concrete and the bars** (`src/sarajevo/blocks.js`, `C.blocks`): the socialist blocks of Grbavica, Marijin
+  Dvor, Koševo and Skenderija (Yugoslav modernism, not Soviet: the grammar is shared, the architects were not) get a
+  loggia slab and a painted parapet at every floor on their long faces, the stair core proud of one end, the machine
+  room and aerials on the roof; and iron grilles on the ground-floor windows of houses and blocks outside the centre's
+  shop streets, more to the yard than to the street. Built in 400 m tiles as the camera nears.
+- **Street dogs** (`src/sarajevo/dogs.js`, `C.dogs`): 170, tan, black, brown and white, asleep on the pavements and in
+  the parks or trotting their stretch of lane in twos and threes; only the ones near the camera move.
 - **Events** (`src/sarajevo/events.js`), with captions: 28 June 1914 (the motorcade on the Appel Quay, the bomb at the
   Ćumurija bridge, the wrong turn at the Latin Bridge and Princip outside Schiller's), the 1984 Olympics opening at
-  Koševo, a bob down the track, the night of 25 August 1992 when the National Library burned (the city blacked out,
+  Koševo (twelve thousand in the stands doing the wave, the teams' parade behind their boards and flags, the
+  Olympic flag raised, the torch run round the track and up the stair to the cauldron, doves and fireworks), a bob
+  down the track, the night of 25 August 1992 when the National Library burned (the city blacked out,
   ash falling, every window, lamp and the Eternal Flame out; told without anyone shown hurt), a Ramadan iftar cannon at sunset, the pigeons of Baščaršija, and a
   ride up Trebević.
 

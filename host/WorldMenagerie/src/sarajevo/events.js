@@ -18,7 +18,7 @@
 //   pigeons    the pigeons of Baščaršija go up from round the Sebilj, circle, and come down again
 //   cablecar   a ride up Trebević in a gondola, from Bistrik to Vidikovac
 import { createHappenings } from '../core/happenings.js';
-import { mkRng } from '../core/rng.js';
+import { mkRng, hash3 } from '../core/rng.js';
 
 export function events(api){
   const {THREE,C,scene,camera,groundH,P,animHooks}=api;const K=C.sarajevoEvents||{};
@@ -116,34 +116,128 @@ export function events(api){
       if(t>96){scene.remove(grp);hideCap();carPose=null;return false;}return true;});}
 
   // ================================================================ 8 February 1984
-  function olympics(){const cd=api.ctx.cauldron;if(!cd)return;setH(15.2);
-    const g=cd.g,world=new THREE.Vector3(cd.x,cd.y,cd.z);g.updateMatrixWorld(true);g.localToWorld(world);const base=new THREE.Vector3(0,0,0);g.localToWorld(base);
-    const grp=tag(new THREE.Group());scene.add(grp);
-    // the torchbearer: from the far end of the field to the foot of the tower, then up its steps
-    const runner=person(0xf2f2f2,null,null);runner.scale.setScalar(1.6);const torch=glow(0xffb040,3);torch.position.set(0.3,3.2,0);runner.add(torch);grp.add(runner);tag(runner);
-    const fire=new THREE.Group();for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.ConeGeometry(1.6-i*0.4,4.5-i,10).translate(0,(4.5-i)/2,0),new THREE.MeshBasicMaterial({color:[0xff7a20,0xffb040,0xfff0a0][i],transparent:true,opacity:0.85,depthWrite:false}));fire.add(f);}
-    fire.add(glow(0xffa040,22));fire.position.copy(world);fire.visible=false;grp.add(fire);
-    const start=base.clone().add(new THREE.Vector3().subVectors(base,world).setY(0).multiplyScalar(0.9));start.y=groundH(start.x,start.z)+0.2;
-    const foot=world.clone();foot.y=groundH(foot.x,foot.z)+0.2;
-    // fireworks: bursts of points over the stadium
-    const bursts=[];const fw=()=>{const n=140,pos=new Float32Array(n*3),vel=[];const c=new THREE.Color().setHSL(R(),0.8,0.6),o=base.clone().add(new THREE.Vector3((R()-0.5)*160,90+R()*90,(R()-0.5)*160));
-      for(let i=0;i<n;i++){const v=new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize().multiplyScalar(18+R()*10);vel.push(v);pos.set([o.x,o.y,o.z],i*3);}
-      const ge=new THREE.BufferGeometry();ge.setAttribute('position',new THREE.BufferAttribute(pos,3));const m=new THREE.PointsMaterial({color:c,size:3,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
-      const p=new THREE.Points(ge,m);p.frustumCulled=false;grp.add(p);bursts.push({p,vel,o,a:0});};
+  // Built in the stadium's own frame (a group inside the landmark's: x along its long axis, the cauldron's tower at
+  // +x) and thrown away after. The crowd is one instanced mesh, and its wave runs in the vertex shader; the performers,
+  // the teams, their flags and placards are a few instanced meshes moved each frame; nothing else is drawn per person.
+  const OLY_TEAMS=[   // the parade: Greece first, the hosts last; [name, coat, flag bands, how many walk]
+    ['Greece',0x2a5aa8,[0x2a5aa8,0xf2f2f2,0x2a5aa8],4],['Andorra',0x2a3a8a,[0x2a3a8a,0xe8c838,0xc8302a],2],['Argentina',0x8ab8e0,[0x8ab8e0,0xf2f2f2,0x8ab8e0],3],
+    ['Australia',0x2a7a3a,[0x1a2a6a,0xc8302a,0xf2f2f2],4],['Austria',0xc8302a,[0xc8302a,0xf2f2f2,0xc8302a],10],['Belgium',0x1a1a1a,[0x1a1a1a,0xe8c838,0xc8302a],3],
+    ['Bolivia',0x2a7a3a,[0xc8302a,0xe8c838,0x2a7a3a],2],['Bulgaria',0x2a7a3a,[0xf2f2f2,0x2a7a3a,0xc8302a],5],['Canada',0xc8302a,[0xc8302a,0xf2f2f2,0xc8302a],9],
+    ['Chile',0x1a2a6a,[0xf2f2f2,0xf2f2f2,0xc8302a],2],['China',0xc8302a,[0xc8302a,0xc8302a,0xe8c838],4],['Chinese Taipei',0x1a2a6a,[0x1a2a6a,0xc8302a,0xc8302a],3],
+    ['Costa Rica',0x1a2a6a,[0x1a2a6a,0xc8302a,0x1a2a6a],2],['Cyprus',0xf2f2f2,[0xf2f2f2,0xd88a2a,0xf2f2f2],2],['Czechoslovakia',0x1a3a7a,[0xf2f2f2,0xc8302a,0x1a3a7a],8],
+    ['Denmark',0xc8302a,[0xc8302a,0xf2f2f2,0xc8302a],3],['Egypt',0x1a1a1a,[0xc8302a,0xf2f2f2,0x1a1a1a],2],['Finland',0xf2f2f2,[0xf2f2f2,0x1a3a8a,0xf2f2f2],8],
+    ['France',0x1a3a8a,[0x1a3a8a,0xf2f2f2,0xc8302a],8],['East Germany',0x2a3a6a,[0x1a1a1a,0xc8302a,0xe8c838],9],['West Germany',0xf2f2f2,[0x1a1a1a,0xc8302a,0xe8c838],9],
+    ['Great Britain',0x1a2a6a,[0x1a2a6a,0xc8302a,0x1a2a6a],7],['Hungary',0x2a7a3a,[0xc8302a,0xf2f2f2,0x2a7a3a],4],['Iceland',0x1a3a8a,[0x1a3a8a,0xc8302a,0x1a3a8a],2],
+    ['India',0xd88a2a,[0xd88a2a,0xf2f2f2,0x2a7a3a],2],['Italy',0x1a4aa8,[0x2a7a3a,0xf2f2f2,0xc8302a],9],['Japan',0xc8302a,[0xf2f2f2,0xc8302a,0xf2f2f2],7],
+    ['South Korea',0xf2f2f2,[0xf2f2f2,0xc8302a,0xf2f2f2],3],['North Korea',0x1a3a8a,[0x1a3a8a,0xc8302a,0x1a3a8a],2],['Lebanon',0xc8302a,[0xc8302a,0x2a7a3a,0xc8302a],2],
+    ['Liechtenstein',0x1a2a8a,[0x1a2a8a,0xc8302a,0xc8302a],3],['Luxembourg',0x4a9ad8,[0xc8302a,0xf2f2f2,0x4a9ad8],2],['Mexico',0x2a7a3a,[0x2a7a3a,0xf2f2f2,0xc8302a],2],
+    ['Monaco',0xc8302a,[0xc8302a,0xf2f2f2,0xf2f2f2],2],['Mongolia',0xc8302a,[0xc8302a,0x1a3a8a,0xc8302a],2],['Netherlands',0xd8702a,[0xc8302a,0xf2f2f2,0x1a3a8a],4],
+    ['New Zealand',0x1a1a1a,[0x1a2a6a,0x1a2a6a,0xc8302a],2],['Norway',0xc8302a,[0xc8302a,0x1a2a6a,0xc8302a],8],['Poland',0xc8302a,[0xf2f2f2,0xf2f2f2,0xc8302a],5],
+    ['Puerto Rico',0x1a3a8a,[0xc8302a,0xf2f2f2,0x1a3a8a],2],['Romania',0x1a3a8a,[0x1a3a8a,0xe8c838,0xc8302a],4],['San Marino',0x8ab8e0,[0xf2f2f2,0xf2f2f2,0x8ab8e0],2],
+    ['Senegal',0x2a7a3a,[0x2a7a3a,0xe8c838,0xc8302a],2],['Soviet Union',0xc8302a,[0xc8302a,0xc8302a,0xe8c838],11],['Spain',0xc8302a,[0xc8302a,0xe8c838,0xc8302a],4],
+    ['Sweden',0x1a4a9a,[0x1a4a9a,0xe8c838,0x1a4a9a],8],['Switzerland',0xc8302a,[0xc8302a,0xf2f2f2,0xc8302a],9],['Turkey',0xc8302a,[0xc8302a,0xf2f2f2,0xc8302a],2],
+    ['United States',0x1a2a6a,[0xc8302a,0xf2f2f2,0x1a2a6a],11],['Yugoslavia',0x1a3a8a,[0x1a3a8a,0xf2f2f2,0xc8302a],14]];
+  function olympics(){const cd=api.ctx.cauldron;if(!cd)return;setH(14.6);
+    const g=cd.g,A=cd.A||120,BB=cd.B||103,ROWS=cd.rows||14;g.updateMatrixWorld(true);
+    const st=tag(new THREE.Group());st.name='ceremony';g.add(st);
+    const W=(x,y,z)=>new THREE.Vector3(x,y,z).applyMatrix4(g.matrixWorld);
+    const RX=A*0.62*1.065,RZ=BB*0.55*1.065,PER=Math.PI*(3*(RX+RZ)-Math.sqrt((3*RX+RZ)*(RX+3*RZ)));
+    const trk=a=>[Math.cos(a)*RX,Math.sin(a)*RZ];
+    const o=new THREE.Object3D(),cl=new THREE.Color();
+    const merge=gs=>{const pos=[];for(const q of gs){const a=q.toNonIndexed().attributes.position.array;for(let i=0;i<a.length;i++)pos.push(a[i]);}
+      const ge=new THREE.BufferGeometry();ge.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));ge.computeVertexNormals();return ge;};
+    const IM=(geo,n,col)=>{const m=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({color:col===undefined?0xffffff:col}),n);m.frustumCulled=false;m.userData.noFingerprint=true;st.add(m);return m;};
+    // a standing figure, its feet at 0: a coat, a head, a hat
+    const BODY=merge([new THREE.CylinderGeometry(0.2,0.28,1.35,6).translate(0,0.68,0),new THREE.CylinderGeometry(0.13,0.13,0.3,6).translate(0,1.5,0)]),HAT=new THREE.CylinderGeometry(0.15,0.15,0.12,6).translate(0,1.69,0);
+    // ---- the crowd: fifty thousand in the stands, in winter coats; a wave goes round them now and then
+    const seats=[];for(let r=0;r<ROWS;r++){const f=0.74+r*0.018+0.009,h=0.5+r*0.62,a=A*f,b=BB*f,per=Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b))),n=Math.floor(per/0.62);
+      for(let i=0;i<n;i++){const th=(i+(r%2)*0.5)/n*Math.PI*2;if(Math.abs(Math.atan2(Math.sin(th),Math.cos(th)))<0.1)continue;seats.push([Math.cos(th)*a,h,Math.sin(th)*b]);}}
+    const fanGeo=merge([new THREE.BoxGeometry(0.46,0.62,0.36).translate(0,0.31,0),new THREE.BoxGeometry(0.22,0.24,0.22).translate(0,0.76,0)]);
+    const U={uT:{value:0},uW:{value:0}},fanM=new THREE.MeshLambertMaterial({color:0xffffff});
+    fanM.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.vertexShader='uniform float uT;\nuniform float uW;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+      '#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float wa=atan(instanceMatrix[3][2],instanceMatrix[3][0]);transformed.y+=uW*0.55*pow(max(0.0,sin(wa-uT*1.4)),10.0)*step(0.3,transformed.y+0.31);}\n#endif');};
+    const fans=new THREE.InstancedMesh(fanGeo,fanM,seats.length);fans.frustumCulled=false;fans.userData.noFingerprint=true;st.add(fans);
+    const COATS=[0x2a2a30,0x3a3530,0x4a4038,0x24283a,0x5a2a24,0x6a6a6a,0x2a3a5a,0x4a3a2a,0x8a2a22,0x2a4a3a,0xd8d0c0,0xc83a2a,0x2a5aa8,0xe8c040];
+    seats.forEach(([x,y,z],i)=>{o.position.set(x,y,z);o.rotation.set(0,Math.atan2(-x,-z),0);o.scale.setScalar(1);o.updateMatrix();fans.setMatrixAt(i,o.matrix);
+      const k=hash3(x,z,7);fans.setColorAt(i,cl.setHex(COATS[Math.floor(k*(k<0.8?10:14))]));});
+    fans.instanceColor.needsUpdate=true;
+    // ---- the five rings, in performers on the field; they run off as the parade comes in
+    const RC=[[0x1a6ac8,-21,-5],[0x1a1a1a,0,-5],[0xd8302a,21,-5],[0xe8b818,-10.5,5],[0x2a9a4a,10.5,5]],PER_RING=36,ring=IM(BODY,RC.length*PER_RING),ringP=[];
+    RC.forEach(([c,cx,cz],k)=>{for(let i=0;i<PER_RING;i++){const a=i/PER_RING*Math.PI*2,x=cx+Math.cos(a)*9,z=cz+Math.sin(a)*9,id=k*PER_RING+i;ringP.push([x,z,(i/PER_RING-0.5)*RX*1.6,-RZ*0.98]);ring.setColorAt(id,cl.setHex(c));}});
+    ring.instanceColor.needsUpdate=true;
+    // ---- the teams: a placard, the flag, the athletes three abreast behind it
+    const T0=10,SPD=11,GAP=7/SPD,STOP=PER*0.7,cols=7,people=[],flags=[],boards=[];
+    OLY_TEAMS.forEach(([name,coat,flag,n],k)=>{const row=Math.floor(k/cols),col=k%cols,sx=-55+col*(95/(cols-1)),sz=-34+row*(68/(Math.ceil(OLY_TEAMS.length/cols)-1));
+      people.push({k,slot:[sx,sz-2.2],off:0,lat:0,coat:0xf2f2f2,hat:0x2a2a2a,board:true});
+      people.push({k,slot:[sx,sz-1],off:1.3,lat:0,coat,hat:coat,flag});
+      for(let i=0;i<n;i++){const r=Math.floor(i/3),c=i%3-1;people.push({k,slot:[sx+c*1.1,sz+0.4+r*1.3],off:2.8+r*1.3,lat:c*1.1,coat:hash3(k,i,3)<0.7?coat:0xf2f2f2,hat:hash3(k,i,4)<0.5?coat:0xf2f2f2});}});
+    const bodies=IM(BODY,people.length),hats=IM(HAT,people.length),poles=IM(new THREE.BoxGeometry(0.05,2.6,0.05).translate(0,1.3,0),people.length,0x8a8478),
+      BAND=new THREE.PlaneGeometry(1.2,0.27),bands=IM(BAND,OLY_TEAMS.length*3),board=IM(new THREE.BoxGeometry(0.9,0.5,0.04),OLY_TEAMS.length,0xf2f2f2);
+    bands.material.side=THREE.DoubleSide;
+    people.forEach((p,i)=>{bodies.setColorAt(i,cl.setHex(p.coat));hats.setColorAt(i,cl.setHex(p.hat));});bodies.instanceColor.needsUpdate=hats.instanceColor.needsUpdate=true;
+    OLY_TEAMS.forEach(([,,flag],k)=>{for(let b=0;b<3;b++)bands.setColorAt(k*3+b,cl.setHex(flag[b]));});bands.instanceColor.needsUpdate=true;
+    // ---- the Olympic flag, on its mast at the west end
+    const fc=document.createElement('canvas');fc.width=240;fc.height=160;{const c=fc.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,240,160);c.lineWidth=7;
+      [['#1a6ac8',62,66],['#111',120,66],['#d8302a',178,66],['#e8b818',91,96],['#2a9a4a',149,96]].forEach(([s,x,y])=>{c.strokeStyle=s;c.beginPath();c.arc(x,y,26,0,Math.PI*2);c.stroke();});}
+    const MX=-RX-5,MZ=-RZ*0.35,mast=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.16,20,8).translate(0,10,0),M(0xd8d8d8));mast.position.set(MX,0,MZ);st.add(mast);
+    const oflag=new THREE.Mesh(new THREE.PlaneGeometry(4.5,3),new THREE.MeshLambertMaterial({map:new THREE.CanvasTexture(fc),side:THREE.DoubleSide}));oflag.position.set(MX,2,MZ+2.3);oflag.rotation.y=Math.PI/2;st.add(oflag);
+    // ---- the staircase up to the cauldron, the torchbearers, the fire
+    const CX=cd.x,TOP=cd.y-1.6,S0=RX+3,stair=new THREE.Group();st.add(stair);
+    for(let i=0;i<26;i++){const f=i/25;stair.add(at(new THREE.Mesh(B(1.0,0.4,3.2),M(0xe8e4dc)),S0+(CX-1.6-S0)*f,f*TOP+0.2,0));}
+    const runner=person(0xf2f2f2,null,null);runner.scale.setScalar(1.25);const torch=glow(0xffb040,2.6);torch.position.set(0.32,2.0,0);runner.add(torch);runner.visible=false;st.add(runner);
+    const fire=new THREE.Group();for(let i=0;i<3;i++)fire.add(new THREE.Mesh(new THREE.ConeGeometry(1.6-i*0.4,4.5-i,10).translate(0,(4.5-i)/2,0),new THREE.MeshBasicMaterial({color:[0xff7a20,0xffb040,0xfff0a0][i],transparent:true,opacity:0.85,depthWrite:false})));
+    fire.add(glow(0xffa040,22));fire.position.set(cd.x,cd.y,cd.z);fire.visible=false;st.add(fire);
+    // ---- the doves and the fireworks, in the world's frame
+    const grp=tag(new THREE.Group());scene.add(grp);const base=W(0,0,0),cw=W(cd.x,cd.y,cd.z);
+    const ND=300,dp=new Float32Array(ND*3),dv=[];for(let i=0;i<ND;i++){dp.set([base.x,base.y-50,base.z],i*3);dv.push(new THREE.Vector3((R()-0.5)*8,4+R()*6,(R()-0.5)*8));}
+    const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));const doves=new THREE.Points(dg,new THREE.PointsMaterial({color:0xffffff,size:0.9}));doves.frustumCulled=false;doves.visible=false;grp.add(doves);
+    const bursts=[];const fw=()=>{const n=140,pos=new Float32Array(n*3),vel=[];const c=new THREE.Color().setHSL(R(),0.8,0.6),oo=base.clone().add(new THREE.Vector3((R()-0.5)*160,90+R()*90,(R()-0.5)*160));
+      for(let i=0;i<n;i++){vel.push(new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize().multiplyScalar(18+R()*10));pos.set([oo.x,oo.y,oo.z],i*3);}
+      const ge=new THREE.BufferGeometry();ge.setAttribute('position',new THREE.BufferAttribute(pos,3));const p=new THREE.Points(ge,new THREE.PointsMaterial({color:c,size:3,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));p.frustumCulled=false;grp.add(p);bursts.push({p,vel,o:oo,a:0});};
+    // the timeline, in seconds of the scene
+    const TF=78,TR=86,TS=110,TL=118;
+    const CAP=captions([[0,10,'Koševo, Wednesday 8 February 1984, in the afternoon. The XIV Winter Olympic Games open: the first held in a socialist country. Fifty thousand in the stands; the performers make the rings on the field.'],
+      [10,30,'The parade of nations: Greece first, as always. Forty-nine countries sent athletes, more than to any Winter Games before.'],
+      [30,52,'Each team behind its name and its flag, round the track and onto the field. The United States and the Soviet Union, both Germanys, and teams of one or two from Senegal, Egypt and Monaco.'],
+      [52,TF,'Last, the hosts: Yugoslavia. The crowd stands. President Mika Špiljak declares the Games open.'],
+      [TF,TR,'The Olympic flag is raised, and the Olympic oath is taken by the skier Bojan Križaj.'],
+      [TR,TS-6,'The torch has come from Olympia, carried through Yugoslavia. It comes into the stadium.'],
+      [TS-6,TL,'The figure skater Sanda Dubravčić takes it up the long stairway to the cauldron, and lights it. The doves go up.'],
+      [TL,TL+30,'Sarajevo\'s Games: Torvill and Dean\'s Bolero at Zetra, Jure Franko\'s silver on Bjelašnica, Vučko the wolf. Eight years later the stadium\'s training pitches were a cemetery.']]);
+    notice('8 February 1984','the XIV Winter Olympics open at Koševo: the parade of nations, the torch up to the cauldron, the doves and the fireworks.',
+      ()=>{const c=W(-A*0.84,32,BB*0.64),t=W(A*0.12,4,0);return [c.x,c.y,c.z,t.x,t.y,t.z];},null);
     let t=0,lit=false,next=0;
-    const CAP=captions([[0,10,'Koševo, Wednesday 8 February 1984. The XIV Winter Olympic Games open: the first held in a socialist country, in a city most of the world had to find on a map.'],
-      [10,22,'Fifty thousand in the stadium. The torch has come from Olympia, and through every republic of Yugoslavia.'],
-      [22,32,'The figure skater Sanda Dubravčić carries it up the steps to the cauldron, and lights it.'],
-      [32,48,'Sarajevo\'s Games: Torvill and Dean\'s Bolero at Zetra, Jure Franko\'s silver on Bjelašnica, the mascot Vučko the wolf. Eight years later the stadium\'s training pitches were a cemetery.']]);
-    notice('8 February 1984','the XIV Winter Olympics open at Koševo: the torch comes in, the cauldron is lit, and the fireworks go up.',()=>[base.x+160,base.y+70,base.z+110,world.x,world.y-6,world.z],null);
-    run((now,dt)=>{t+=dt;CAP(t);
-      if(t<14){runner.position.lerpVectors(start,foot,t/14);runner.lookAt(foot.x,runner.position.y,foot.z);}
-      else if(t<24){runner.position.lerpVectors(foot,world.clone().setY(world.y-1),(t-14)/10);}
-      else if(!lit){lit=true;fire.visible=true;}
-      if(lit){fire.children.forEach((f,i)=>{if(f.isMesh)f.scale.set(1+0.1*Math.sin(t*9+i),0.85+0.25*Math.abs(Math.sin(t*6.3+i*2)),1);});if(t>next&&t<46){next=t+0.5+R()*0.8;fw();}}
+    run((now,dt)=>{t+=dt;CAP(t);U.uT.value=t;U.uW.value=(t>48&&t<76)||(t>TL&&t<TL+20)?1:0;
+      // the rings, then off to the side
+      const off=Math.max(0,Math.min(1,(t-7)/6));ringP.forEach(([x,z,ex,ez],i)=>{const ox=x+(ex-x)*off,oz=z+(ez-z)*off,gone=t>13.5;
+        o.position.set(ox,gone?-50:0.1+(off>0&&off<1?Math.abs(Math.sin(t*12+i))*0.12:0),oz);o.rotation.set(0,off>0?Math.atan2(ex-x,ez-z):Math.atan2(-x,-z),0);o.scale.setScalar(1);o.updateMatrix();ring.setMatrixAt(i,o.matrix);});
+      ring.instanceMatrix.needsUpdate=true;
+      // the parade
+      const sOf=k=>Math.max(-1,(t-T0-k*GAP)*SPD);
+      let fi=0;people.forEach((p,i)=>{const s=sOf(p.k);let x,z,ry,y=0.05;
+        if(s<0){y=-50;x=z=ry=0;}
+        else{const sp=Math.min(STOP,s-p.off),a=Math.PI+Math.max(0,sp)/PER*Math.PI*2,[tx,tz]=trk(a),dx=-Math.sin(a)*RX,dz=Math.cos(a)*RZ,L=Math.hypot(dx,dz),nx=dz/L,nz=-dx/L;
+          x=tx+nx*p.lat;z=tz+nz*p.lat;ry=Math.atan2(dx,dz);if(s-p.off<0)y=-50;
+          const f=Math.max(0,Math.min(1,(s-STOP-p.off)/(SPD*4)));if(f>0){x+=(p.slot[0]-x)*f;z+=(p.slot[1]-z)*f;if(f>=1)ry=Math.PI/2;}
+          if(f<1&&y>0)y+=Math.abs(Math.sin(t*9+i))*0.1;}
+        o.position.set(x,y,z);o.rotation.set(0,ry,0);o.scale.setScalar(1);o.updateMatrix();bodies.setMatrixAt(i,o.matrix);hats.setMatrixAt(i,o.matrix);
+        poles.setMatrixAt(i,(p.flag||p.board)&&y>-1?(o.position.y=y,o.updateMatrix(),o.matrix):(o.position.y=-50,o.updateMatrix(),o.matrix));
+        if(p.board){o.position.set(x,y+2.6,z);o.updateMatrix();board.setMatrixAt(p.k,o.matrix);}
+        if(p.flag){for(let b=0;b<3;b++){o.position.set(x+Math.sin(ry+Math.PI/2)*0.62,y+2.45-b*0.27+Math.sin(t*5+p.k+b)*0.02,z+Math.cos(ry+Math.PI/2)*0.62);o.rotation.set(0,ry+Math.PI/2+Math.sin(t*4+p.k)*0.15,0);o.updateMatrix();bands.setMatrixAt(p.k*3+b,o.matrix);}fi++;}});
+      bodies.instanceMatrix.needsUpdate=hats.instanceMatrix.needsUpdate=poles.instanceMatrix.needsUpdate=bands.instanceMatrix.needsUpdate=board.instanceMatrix.needsUpdate=true;
+      // the flag goes up
+      oflag.position.y=2+Math.max(0,Math.min(1,(t-TF)/7))*15.5;oflag.rotation.z=Math.sin(t*3)*0.04;
+      // the torch: in at the west end, half a lap, then up the stairs
+      if(t>TR&&!lit){runner.visible=true;const a=t<TS-6?Math.PI-(t-TR)/(TS-6-TR)*Math.PI:0;
+        if(t<TS-6){const [x,z]=trk(a);runner.position.set(x,0.05+Math.abs(Math.sin(t*14))*0.12,z);runner.rotation.y=Math.atan2(Math.sin(a)*RX,-Math.cos(a)*RZ);}
+        else{const f=Math.min(1,(t-(TS-6))/(TL-(TS-6)));runner.position.set(S0+(CX-1.6-S0)*f,0.4+f*TOP+Math.abs(Math.sin(t*12))*0.1,0);runner.rotation.y=Math.PI/2;}}
+      if(t>=TL&&!lit){lit=true;fire.visible=true;doves.visible=true;}
+      if(lit){fire.children.forEach((f,i)=>{if(f.isMesh)f.scale.set(1+0.1*Math.sin(t*9+i),0.85+0.25*Math.abs(Math.sin(t*6.3+i*2)),1);});
+        const p=dg.attributes.position,a=t-TL;for(let i=0;i<ND;i++){const v=dv[i];p.setXYZ(i,cw.x-6+v.x*a*1.4+Math.sin(a*3+i)*0.6,base.y+2+v.y*a,cw.z+v.z*a*1.4);}p.needsUpdate=true;if(a>16)doves.visible=false;
+        if(t>next&&t<TL+26){next=t+0.45+R()*0.7;fw();}}
       for(let i=bursts.length-1;i>=0;i--){const b=bursts[i];b.a+=dt;const pos=b.p.geometry.attributes.position;for(let k=0;k<b.vel.length;k++){const v=b.vel[k];pos.setXYZ(k,b.o.x+v.x*b.a,b.o.y+v.y*b.a-4.9*b.a*b.a,b.o.z+v.z*b.a);}pos.needsUpdate=true;b.p.material.opacity=Math.max(0,1-b.a/2.4);
         if(b.a>2.4){grp.remove(b.p);bursts.splice(i,1);}}
-      if(t>60){scene.remove(grp);hideCap();return false;}return true;});}
+      if(t>TL+32){g.remove(st);scene.remove(grp);hideCap();return false;}return true;});}
 
   // ================================================================ the bobsleigh
   function bobsleigh(){const rows=api.ctx.bobLine;if(!rows||rows.length<10)return;setH(13);

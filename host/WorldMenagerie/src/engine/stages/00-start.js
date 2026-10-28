@@ -182,7 +182,7 @@ function surface(mat,mode,names){if(!SURF)return mat;const use=(names||[]).map(n
     :mode==='ground'?'float g=smoothstep(0.005,0.05,vColor.g-max(vColor.r,vColor.b)),t=(1.0-g)*smoothstep(0.05,0.14,vColor.r-vColor.b);vec3 d='+P(0)+'*g+'+P(1)+'*t+'+P(2)+'*(1.0-g-t);'
     :mode==='wall'?'float red=smoothstep(0.06,0.16,vColor.r-vColor.b);vec3 d=mix('+(use.length>1?P(1):P(0))+','+P(0)+',red);'+
       (mat.map?'d=mix(vec3(1.0),d,smoothstep(0.55,0.78,max(texelColor.r,max(texelColor.g,texelColor.b))));':'')   // between the windows only
-    :'float pit=1.0-smoothstep(0.93,0.985,abs(n.y));vec3 d=mix('+P(0)+','+P(1)+',pit);';
+    :'float pit=1.0-smoothstep(0.93,0.985,abs(n.y));vec3 d=mix('+P(0)+','+P(1)+',pit);d=mix(vec3(1.0),d,smoothstep(0.12,0.3,abs(n.y)));';   // not on a gable's upright face: projected from above it only smears
   mat.onBeforeCompile=(sh,r)=>{if(prev)prev(sh,r);Object.assign(sh.uniforms,U);
     // the distance to the eye from the view-space position: three sets cameraPosition only for Phong, standard and
     // shader materials, so on a Lambert one it is the origin and a fade by it fades everything but the map's middle

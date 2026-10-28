@@ -67,10 +67,11 @@
     "Miljacka"
    ],
    "length": 110,
-   "below": 0.6,
-   "depth": 1.2,
+   "below": 2.0,
+   "depth": 7.0,
    "flows": "west",
-   "_": "the Miljacka falls about twenty metres through the city, over weirs: tools/build-osm-city.py water_reaches"
+   "_": "the Miljacka falls about twenty metres through the city over weirs, in a stone channel three or four metres deep the elevation tiles cannot see: tools/build-osm-city.py water_reaches; src/sarajevo/river.js draws the walls",
+   "bank": 0
   }
  },
  "defaultView": "Baščaršija from the air",
@@ -177,8 +178,9 @@
    "alley"
   ],
   "plazas": true,
-  "metres": 1.2,
-  "_": "Baščaršija's lanes are cobbled with river stones"
+  "metres": 2.2,
+  "map": "cobbles.webp",
+  "_": "Baščaršija's lanes and the centre's squares are paved with river stones (paving.map: data/textures/cobbles.webp)"
  },
  "laneMarkings": {
   "classes": [
@@ -193,9 +195,9 @@
  "roadColours": {
   "residential": "#77767a",
   "unclassified": "#77767a",
-  "living_street": "#8a8680",
-  "pedestrian": "#a8a092",
-  "alley": "#8a857c",
+  "living_street": "#e8dece",
+  "pedestrian": "#f2e8d8",
+  "alley": "#e2d8c8",
   "primary": "#3e3f42",
   "secondary": "#404144",
   "tertiary": "#444548",
@@ -206,13 +208,13 @@
   "grass": "#5a7a3e",
   "garden": "#4c6e36",
   "recreation_ground": "#5a7a3e",
-  "residential": "#8a857a",
+  "residential": "#77825a",
   "commercial": "#8a857a",
   "plaza": "#a8a092",
   "cemetery": "#6a7a50",
   "scrub": "#62692f"
  },
- "_areaColours": "the mezarje, the Muslim graveyards with their white nišan stones, are everywhere on the hills; the land use calls them cemetery",
+ "_areaColours": "the mezarje, the Muslim graveyards with their white nišan stones, are everywhere on the hills; the land use calls them cemetery; the mahalas' residential land is mostly yards and gardens, so it is drawn green-brown, not paved",
  "namedService": "pedestrian",
  "namedServiceMatch": "^(Ulica|Čikma|Sokak|Mala) ",
  "pitchAll": {
@@ -238,12 +240,12 @@
  "roofPitch": 0.5,
  "roofRise": 4.0,
  "roofColours": [
-  "#a8503a",
-  "#b45a40",
-  "#9a4834",
-  "#b8664a",
-  "#a65842",
-  "#8e4a38"
+  "#b8603f",
+  "#c26a48",
+  "#a8543a",
+  "#c4744e",
+  "#b2623f",
+  "#9e5238"
  ],
  "flatRoofColours": [
   "#7a7c80",
@@ -729,10 +731,37 @@
     "UNITIC"
    ],
    "at": [
-    43.85689,
-    18.40577
+    43.85735,
+    18.405556
    ],
-   "info": "The twin towers of Marijin Dvor, 1986, nicknamed Momo and Uzeir after a comic pair of Sarajevo stories: burned out in 1992, rebuilt after the war."
+   "info": "The twin towers of Marijin Dvor, 1986, built for the Yugoslav company UNIS; Sarajevans named them Momo and Uzeir after a comic pair of the city's stories, a Serb and a Bosniak who are best friends. Shelled and burned out in 1992, their black shells stood through the siege; they were reclad and reopened in 2007.",
+   "model": "unis",
+   "side": 19,
+   "floors": 26,
+   "face": 0,
+   "clear": [
+    18,
+    30
+   ]
+  },
+  {
+   "name": "Uzeir",
+   "aka": [
+    "the second UNIS tower"
+   ],
+   "at": [
+    43.856886,
+    18.405771
+   ],
+   "model": "unis",
+   "side": 19,
+   "floors": 26,
+   "face": 0,
+   "clear": [
+    18,
+    30
+   ],
+   "info": "The second of the twin UNIS towers: Uzeir to its neighbour's Momo."
   },
   {
    "name": "The Parliament",
@@ -1573,26 +1602,26 @@
   ],
   "The Sebilj and Pigeon Square": [
    [
-    43.85948,
-    18.43085,
-    23.4
+    43.85938,
+    18.43105,
+    24.4
    ],
    [
     43.85972,
     18.43122,
-    19.2
+    20.4
    ]
   ],
   "Gazi Husrev-beg's courtyard": [
    [
-    43.85905,
-    18.42825,
-    22.3
+    43.858464,
+    18.429001,
+    30.3
    ],
    [
     43.859142,
     18.429001,
-    29.3
+    25.3
    ]
   ],
   "The Latin Bridge": [
@@ -1657,14 +1686,14 @@
   ],
   "The Avaz Twist Tower": [
    [
-    43.8583,
-    18.3993,
-    26.6
+    43.8592,
+    18.4,
+    22.8
    ],
    [
     43.860897,
     18.401995,
-    97.9
+    77.9
    ]
   ],
   "Up the cable car": [
@@ -1749,6 +1778,90 @@
     43.861364,
     18.435492,
     49.4
+   ]
+  ],
+  "Baščaršija's lanes": [
+   [
+    43.85955,
+    18.43065,
+    32.8
+   ],
+   [
+    43.85985,
+    18.4316,
+    19.7
+   ]
+  ],
+  "The Austro-Hungarian centre": [
+   [
+    43.8577,
+    18.4215,
+    41.7
+   ],
+   [
+    43.8588,
+    18.425,
+    26.8
+   ]
+  ],
+  "A mahala": [
+   [
+    43.863,
+    18.433,
+    65.8
+   ],
+   [
+    43.8645,
+    18.4315,
+    53.4
+   ]
+  ],
+  "Grbavica's blocks": [
+   [
+    43.852631,
+    18.400474,
+    -1.8
+   ],
+   [
+    43.852948,
+    18.401229,
+    15.0
+   ]
+  ],
+  "The UNIS towers": [
+   [
+    43.859,
+    18.402,
+    44.2
+   ],
+   [
+    43.85712,
+    18.40566,
+    53.9
+   ]
+  ],
+  "The Cathedral": [
+   [
+    43.85902,
+    18.425482,
+    22.8
+   ],
+   [
+    43.859427,
+    18.425363,
+    33.5
+   ]
+  ],
+  "The City Hall": [
+   [
+    43.858013,
+    18.433868,
+    25.1
+   ],
+   [
+    43.859118,
+    18.433314,
+    25.7
    ]
   ]
  },
@@ -1916,13 +2029,79 @@
  },
  "dress": {
   "cornice": {
-   "share": 0.35,
+   "share": 0.45,
    "minH": 10,
    "maxH": 30,
    "depth": 0.6
   },
+  "string": {
+   "share": 0.5,
+   "minH": 9,
+   "maxH": 30,
+   "at": 4.2,
+   "where": [
+    [
+     43.853,
+     18.4,
+     43.8612,
+     18.4285
+    ]
+   ]
+  },
+  "dormers": {
+   "share": 0.35,
+   "minH": 12,
+   "maxH": 28,
+   "where": [
+    [
+     43.855,
+     18.41,
+     43.8605,
+     18.4285
+    ]
+   ],
+   "roof": "#a8503a",
+   "every": 6
+  },
+  "awnings": {
+   "share": 0.35,
+   "maxH": 12,
+   "colours": [
+    "#8a2a22",
+    "#2f5a3a",
+    "#c8a040",
+    "#3a4a7a",
+    "#e8e0d0"
+   ],
+   "where": [
+    [
+     43.8578,
+     18.425,
+     43.8612,
+     18.4335
+    ]
+   ]
+  },
+  "laundry": {
+   "share": 0.08,
+   "maxH": 14,
+   "where": [
+    [
+     43.858,
+     18.428,
+     43.87,
+     18.452
+    ],
+    [
+     43.833,
+     18.42,
+     43.856,
+     18.45
+    ]
+   ]
+  },
   "far": 650,
-  "_": "src/core/dress.js: cornices on the Austro-Hungarian blocks"
+  "_": "src/core/dress.js: cornices and string courses on the Austro-Hungarian blocks, dormers in their roofs, awnings in Baščaršija, washing hung across the mahalas' lanes"
  },
  "mosques": {
   "seed": 1461,
@@ -2392,7 +2571,8 @@
    "weight": {
     "street": 0,
     "park": 10,
-    "wood": 46
+    "wood": 46,
+    "yard": 0
    }
   },
   {
@@ -2411,7 +2591,8 @@
    "weight": {
     "street": 0,
     "park": 4,
-    "wood": 24
+    "wood": 24,
+    "yard": 0
    }
   },
   {
@@ -2429,7 +2610,8 @@
    "weight": {
     "street": 0,
     "park": 6,
-    "wood": 14
+    "wood": 14,
+    "yard": 0
    }
   },
   {
@@ -2447,7 +2629,8 @@
    "weight": {
     "street": 4,
     "park": 10,
-    "wood": 12
+    "wood": 12,
+    "yard": 0
    }
   },
   {
@@ -2466,7 +2649,8 @@
    "weight": {
     "street": 30,
     "park": 22,
-    "wood": 0
+    "wood": 0,
+    "yard": 8
    }
   },
   {
@@ -2484,7 +2668,8 @@
    "weight": {
     "street": 16,
     "park": 10,
-    "wood": 0
+    "wood": 0,
+    "yard": 0
    }
   },
   {
@@ -2502,7 +2687,8 @@
    "weight": {
     "street": 6,
     "park": 14,
-    "wood": 0
+    "wood": 0,
+    "yard": 40
    }
   },
   {
@@ -2520,7 +2706,8 @@
    "weight": {
     "street": 4,
     "park": 8,
-    "wood": 4
+    "wood": 4,
+    "yard": 6
    }
   },
   {
@@ -2538,7 +2725,27 @@
    "weight": {
     "street": 0,
     "park": 6,
-    "wood": 0
+    "wood": 0,
+    "yard": 4
+   }
+  },
+  {
+   "name": "walnut",
+   "shape": "oak",
+   "bark": "#5a4a3c",
+   "height": [
+    9,
+    15
+   ],
+   "colours": [
+    "#4e7034",
+    "#56783a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 0,
+    "yard": 20
    }
   }
  ],
@@ -2575,17 +2782,23 @@
       18.4,
       43.877,
       18.42
+     ],
+     [
+      43.848,
+      18.392,
+      43.8545,
+      18.413
      ]
     ]
    },
    "bay": 3.4,
    "floor": 2.9,
    "colours": [
-    "#e2ddd0",
-    "#d8d2c2",
-    "#c8c4b8",
-    "#e8c890",
-    "#c8a070"
+    "#bab6ae",
+    "#a8a49c",
+    "#c4beb2",
+    "#9a968e",
+    "#b0a898"
    ]
   },
   {
@@ -2625,9 +2838,71 @@
    },
    "bay": 3.4,
    "floor": 3.0
+  },
+  {
+   "tex": "arched",
+   "when": {
+    "types": [
+     "yes",
+     "apartments",
+     "residential",
+     "commercial",
+     "retail",
+     "office",
+     "hotel",
+     "public",
+     "civic",
+     "government"
+    ],
+    "minH": 10,
+    "maxH": 30,
+    "share": 0.8,
+    "where": [
+     [
+      43.855,
+      18.41,
+      43.8605,
+      18.4285
+     ]
+    ]
+   },
+   "bay": 3.6,
+   "floor": 3.8,
+   "colours": [
+    "#e8dcc4",
+    "#e2d2b0",
+    "#ecdcc0",
+    "#d8c8a8",
+    "#e6d0b8",
+    "#dcd4c4",
+    "#e4c8a8"
+   ]
+  },
+  {
+   "tex": "timber",
+   "when": {
+    "maxH": 11,
+    "share": 0.75,
+    "where": [
+     [
+      43.8578,
+      18.4285,
+      43.8612,
+      18.4335
+     ]
+    ]
+   },
+   "bay": 3.0,
+   "floor": 3.0,
+   "low": true,
+   "colours": [
+    "#f0ebe0",
+    "#ece6da",
+    "#e8e0d0"
+   ]
   }
  ],
- "_facadeStyles": "the glass towers; the socialist blocks of Marijin Dvor and Koševo, balconies in their panels; offices with ribbon windows",
+ "_facadeStyles": "the glass towers; the socialist blocks of Marijin Dvor and Koševo; offices with ribbon windows; the Austro-Hungarian centre's round-headed windows in their surrounds, string courses at every floor; Baščaršija's timber-framed shops and houses, whitewashed between dark beams",
  "roofFill": 0.7,
  "backdrop": {
   "file": "data/cities/sarajevo-far.json",
@@ -2635,5 +2910,288 @@
   "datum": 536.9,
   "_": "src/sarajevo/backdrop.js: Igman, Bjelašnica, Trebević, Jahorina and the northern hills past the map's edge"
  },
- "farLevel": -1.5
+ "farLevel": -1.5,
+ "surfaces": {
+  "_": "the engine's real surfaces (00-start: surface()): Krator's material library (data/textures/README.md), the colours staying the map's",
+  "dir": "data/textures/",
+  "sets": {
+   "brick": {
+    "map": "brick.webp",
+    "mean": [
+     0.6084,
+     0.6084,
+     0.6083
+    ],
+    "metres": 1.1,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "concrete": {
+    "map": "concrete.webp",
+    "mean": [
+     0.4171,
+     0.3877,
+     0.3446
+    ],
+    "metres": 4.0,
+    "keep": 0.2,
+    "strength": 0.7
+   },
+   "sidewalk": {
+    "map": "sidewalk.webp",
+    "mean": [
+     0.6411,
+     0.6411,
+     0.6362
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.8
+   },
+   "asphalt": {
+    "map": "asphalt.webp",
+    "mean": [
+     0.3694,
+     0.3503,
+     0.3276
+    ],
+    "metres": 5.0,
+    "keep": 0.2,
+    "strength": 0.45
+   },
+   "grass": {
+    "map": "grass.webp",
+    "mean": [
+     0.5926,
+     0.5151,
+     0.349
+    ],
+    "metres": 3.0,
+    "keep": 0.6,
+    "strength": 1.0
+   },
+   "dirt": {
+    "map": "dirt.webp",
+    "mean": [
+     0.3879,
+     0.3216,
+     0.243
+    ],
+    "metres": 4.0,
+    "keep": 0.4,
+    "strength": 0.9
+   },
+   "gravel": {
+    "map": "gravel.webp",
+    "mean": [
+     0.507,
+     0.4788,
+     0.4252
+    ],
+    "metres": 1.6,
+    "keep": 0.3,
+    "strength": 0.8
+   },
+   "stucco": {
+    "map": "stucco.webp",
+    "mean": [
+     0.6824,
+     0.6784,
+     0.6667
+    ],
+    "metres": 2.6,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "plaster": {
+    "map": "plaster.webp",
+    "mean": [
+     0.6627,
+     0.6627,
+     0.6627
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.9
+   },
+   "rooftile": {
+    "map": "rooftile.webp",
+    "mean": [
+     0.5333,
+     0.5333,
+     0.5333
+    ],
+    "metres": 1.6,
+    "keep": 0,
+    "strength": 0.95
+   }
+  },
+  "fade": [
+   150,
+   800
+  ],
+  "ground": {
+   "green": "grass",
+   "tan": "dirt",
+   "grey": "concrete"
+  },
+  "streets": "asphalt",
+  "sidewalks": "sidewalk",
+  "walls": {
+   "red": "brick",
+   "other": "plaster"
+  },
+  "towers": "concrete",
+  "styles": {
+   "1": "concrete",
+   "2": "concrete",
+   "4": "stucco",
+   "5": "plaster"
+  },
+  "roofs": {
+   "flat": "gravel",
+   "pitched": "rooftile"
+  }
+ },
+ "yardTrees": {
+  "types": [
+   "house",
+   "detached",
+   "yes",
+   "residential"
+  ],
+  "share": 0.45,
+  "per": [
+   1,
+   2
+  ],
+  "reach": [
+   3,
+   8
+  ],
+  "maxArea": 260,
+  "where": [
+   [
+    43.833,
+    18.392,
+    43.877,
+    18.452
+   ]
+  ],
+  "_": "a plum or a walnut in the yard of the mahalas' houses"
+ },
+ "blocks": {
+  "types": [
+   "apartments",
+   "residential",
+   "yes",
+   "office",
+   "commercial",
+   "public"
+  ],
+  "minH": 16,
+  "share": 0.85,
+  "floor": 2.9,
+  "near": 700,
+  "where": [
+   [
+    43.853,
+    18.392,
+    43.862,
+    18.41
+   ],
+   [
+    43.848,
+    18.392,
+    43.8545,
+    18.413
+   ],
+   [
+    43.862,
+    18.4,
+    43.877,
+    18.42
+   ],
+   [
+    43.8545,
+    18.41,
+    43.857,
+    18.418
+   ]
+  ],
+  "parapets": [
+   "#b8b2a6",
+   "#c8a070",
+   "#a8603a",
+   "#d8c890",
+   "#8a8a86",
+   "#b07850",
+   "#9aa4a8",
+   "#a8a29a"
+  ],
+  "slab": "#bdb7aa",
+  "core": "#8e8a82",
+  "grilles": {
+   "types": [
+    "house",
+    "detached",
+    "yes",
+    "residential",
+    "apartments",
+    "terrace"
+   ],
+   "share": 0.42,
+   "street": 0.25,
+   "maxH": 40,
+   "where": [
+    [
+     43.833,
+     18.392,
+     43.877,
+     18.452
+    ]
+   ],
+   "skip": [
+    [
+     43.855,
+     18.41,
+     43.8612,
+     18.4335
+    ]
+   ]
+  },
+  "_": "src/sarajevo/blocks.js: Grbavica, Marijin Dvor and Koševo's blocks with their loggias, stair cores and roof boxes; iron grilles on the ground-floor windows, away from the centre's shop streets"
+ },
+ "river": {
+  "name": "Miljacka",
+  "back": [
+   4,
+   8,
+   12
+  ],
+  "minWall": 0.6,
+  "maxWall": 9,
+  "quay": 3,
+  "wall": "#c4bba8",
+  "coping": "#ddd6c6",
+  "quayColour": "#b8b2a6",
+  "rail": "#2e3a3a",
+  "_": "src/sarajevo/river.js: the channel's stone walls, coping, quay and railings, and the weirs between the reaches"
+ },
+ "dogs": {
+  "count": 170,
+  "seed": 2003,
+  "box": [
+   43.845,
+   18.395,
+   43.87,
+   18.445
+  ],
+  "asleep": 0.45,
+  "packs": 0.35,
+  "parks": 0.3,
+  "near": 450,
+  "_": "src/sarajevo/dogs.js: the street dogs, asleep on the pavements and in the parks, trotting the lanes in twos and threes"
+ },
+ "bridgeFromBanks": true
 }

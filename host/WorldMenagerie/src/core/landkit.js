@@ -137,5 +137,7 @@ export function landkit(api,extraCOL={}){
     const out=[];for(let k=0;k<n;k++){const p0=at(k/n*L),p1=at((k+1)/n*L),pm=at((k+0.5)/n*L),tx=p1[0]-p0[0],tz=p1[1]-p0[1],tl=Math.hypot(tx,tz);
       let nx=tz/tl,nz=-tx/tl;if(nx*pm[0]/(a*a)+nz*pm[1]/(b*b)<0){nx=-nx;nz=-nz;}out.push({p0,p1,pm,n:[nx,nz],w:tl,ry:Math.atan2(nx,nz)});}return out;}
 
-  return {Model,mat,turn,COL,archPanel,ellipseBays,crossing,DETAIL};
+  // a city's own material for a key the kit's plain colours cannot make (a textured skin, a sign)
+  const setMat=(k,m)=>{MATS[k]=m;};
+  return {Model,mat,setMat,turn,COL,archPanel,ellipseBays,crossing,DETAIL};
 }

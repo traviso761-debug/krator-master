@@ -11,6 +11,9 @@ import {mosques} from './mosques.js';
 import {mezarje} from './mezarje.js';
 import {streets} from './streets.js';
 import {backdrop} from './backdrop.js';
+import {blocks} from './blocks.js';
+import {river} from './river.js';
+import {dogs} from './dogs.js';
 import {events} from './events.js';
 import {dress} from '../core/dress.js';
 import {navmap} from '../core/navmap.js';
@@ -31,7 +34,7 @@ configureLoading({
     'Ćevapi in a somun, with onion and kajmak: Baščaršija\'s ćevabdžinicas grill them all day.',
   ],
   prefix:'raising Sarajevo… ',labels:{'map-data':'reading the mahalas',ground:'raising Trebević',buildings:'building the houses',details:'laying the river stones',landmarks:'raising the minarets',el:'',traffic:'running the trams',ui:'lighting the lamps'}});
-const ctx=window._iz={defaultCity:'sarajevo',models:[landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'mosques',fn:mosques},{name:'mezarje',fn:mezarje},{name:'streets',fn:streets},{name:'dress',fn:dress},{name:'streetlife',fn:streetlife},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
+const ctx=window._iz={defaultCity:'sarajevo',models:[landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'mosques',fn:mosques},{name:'mezarje',fn:mezarje},{name:'blocks',fn:blocks},{name:'river',fn:river},{name:'dogs',fn:dogs},{name:'streets',fn:streets},{name:'dress',fn:dress},{name:'streetlife',fn:streetlife},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
 // with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
 if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 // each extra timed: its build time in the details (extraMs), so a slow load says which stage it is

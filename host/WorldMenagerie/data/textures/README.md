@@ -21,5 +21,9 @@ Copied from Krator's material library (`core/materials/library/` in krator-maste
 | `gravel.webp` | `ground.gravel019` | https://ambientcg.com/view?id=Gravel019 |
 | `pavers.webp` | `paving.red_brick` | https://polyhaven.com/a/red_brick |
 | `foliage.webp` | (drawn for the Menagerie) | small leaves in clusters with gaps, tileable, with alpha (drawn once with PIL, 2026-10-20) |
+| `stucco.webp` | `plaster.white_stucco_02` | https://polyhaven.com/a/white_stucco_02 |
+| `plaster.webp` | `plaster` | ChatGPT image generation, Oct 2026 |
+| `rooftile.webp` | `roof.tile` | ChatGPT image generation, Oct 2026 |
+| `cobbles.webp` | `paving.cobblestone_01` | https://polyhaven.com/a/cobblestone_01 |
 
 The Poly Haven and ambientCG sets are CC0. The ChatGPT-generated and owner-generated sets are the owner's.

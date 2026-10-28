@@ -32,17 +32,34 @@ import {mkRng} from '../core/rng.js';
 
 export function landmarks(api){
   const {THREE,animHooks,gh,nightF}=api;
-  const {Model,mat,turn,archPanel,crossing}=landkit(api,{kamen:0xd9d2c2,kamenDark:0xb5ad9c,lead:0x7a8286,leadDark:0x5f6669,copper:0x5e9a82,
+  const {Model,mat,setMat,turn,archPanel,crossing}=landkit(api,{kamen:0xd9d2c2,kamenDark:0xb5ad9c,lead:0x7a8286,leadDark:0x5f6669,copper:0x5e9a82,
     wood:0x6e4a2c,woodDark:0x4a3020,lattice:0x3a2a1c,whitewash:0xece8de,tile:0xa8543a,ochre:0xd8a868,stripeRed:0xa8473a,stucco:0xd9c29a,
-    gothic:0xd6c8a6,gothicDark:0xae9f80,roofSlate:0x5a5e66,bastion:0xd8b878,bastionDark:0xb89a5c,glass:0x4a6a7c,glassPale:0x8aa8b8,slab:0xc8ccd0,
+    gothic:0xd6c8a6,gothicDark:0xae9f80,roofSlate:0x5a5e66,bastion:0xd8b878,bastionDark:0xb89a5c,glass:0x4a6a7c,glassPale:0x8aa8b8,unisGlass:0x26323c,unisBand:0x8a9096,slab:0xc8ccd0,
     mustard:0xd8a830,brown:0x6a4a32,concrete:0xa8a49c,concreteDark:0x86827a,iron:0x2a2a2c,steel:0x9aa0a6,cabin:0xd83a2a,track:0xc85a2a,
     grass:0x5a7a3e,g1:0xd84a8a,g2:0x3a8ad8,g3:0xe8c838,g4:0x3ac87a,g5:0xe86a2a,g6:0xf2f2f2,flame:0xffb040,dark:0x2a231e,gold:0xcaa13c});
   const V3=THREE.Vector3,Q=new THREE.Quaternion(),E=new THREE.Euler(),UP=new V3(0,0,1);
+  // the curtain wall's skin (a 12 m by 8 floor tile: mullions, spandrels, the panes' tints) and its night light, and
+  // the Avaz sign; materials the kit's plain colours cannot be
+  {const cell=(lit)=>{const cv=document.createElement('canvas');cv.width=256;cv.height=256;const c=cv.getContext('2d'),R=mkRng(lit?7:6);
+      for(let j=0;j<8;j++)for(let i=0;i<8;i++){const k=R();if(lit){c.fillStyle=k<0.42?`rgb(${230+R()*25|0},${200+R()*35|0},${140+R()*50|0})`:'#000';}
+        else c.fillStyle=`rgb(${48+k*26|0},${92+k*30|0},${104+k*30|0})`;c.fillRect(i*32,j*32,32,32);}
+      c.fillStyle=lit?'#000':'#a8b6bc';for(let j=0;j<8;j++)c.fillRect(0,j*32+26,256,6);for(let i=0;i<=8;i++)c.fillRect(i*32-1,0,2,256);
+      const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4;return t;};
+    const g=new THREE.MeshPhongMaterial({color:0xffffff,map:cell(false),emissive:0xffffff,emissiveMap:cell(true),emissiveIntensity:0,specular:0x8aa0aa,shininess:60});
+    animHooks.push(()=>{const h=api.hour?api.hour():12,w=api.windowF?api.windowF(h):nightF(h)*0.5;g.emissiveIntensity=Math.min(1,w*1.6);});   // lit with the city's windows
+    const cv=document.createElement('canvas');cv.width=512;cv.height=128;const c=cv.getContext('2d');c.fillStyle='#f4f2ee';c.fillRect(0,0,512,128);
+    c.fillStyle='#d4202a';c.font='bold 108px Helvetica,Arial,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('AVAZ',256,70);
+    const sign=new THREE.MeshLambertMaterial({map:new THREE.CanvasTexture(cv),emissive:0x401010,side:THREE.DoubleSide});
+    setMat('avazGlass',g);setMat('avazSign',sign);}
+
   const P=api.P;
   // a beam between two points
   function beam(M,k,a,b,t){const d=new V3().subVectors(b,a),len=d.length();if(len<0.01)return;Q.setFromUnitVectors(UP,d.normalize());E.setFromQuaternion(Q,'YXZ');
     M.put(k,new THREE.BoxGeometry(t,t,len),(a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2,E.y,E.x,E.z);}
   // a prism on a ring (points relative to the model) from y0 to y1, and its cap
+  // the water's level at a point: the reach that holds it (water areas carry their own level, y), or null
+  const REACHES=(api.OSM.water||[]).filter(w=>typeof w.y==='number').map(w=>{const r=[];for(let i=0;i+1<w.o.length;i+=2)r.push([w.o[i]/10,w.o[i+1]/10]);return {r,y:w.y};});
+  const waterY=(x,z)=>{for(const w of REACHES)if(api.inPoly(x,z,w.r))return w.y;return null;};
   function prism(M,k,ring,y0,y1,cap){const n=ring.length,pos=[];
     for(let i=0;i<n;i++){const a=ring[i],b=ring[(i+1)%n];pos.push(a[0],y1,a[1],b[0],y0,b[1],b[0],y1,b[1], a[0],y1,a[1],a[0],y0,a[1],b[0],y0,b[1]);}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(pos.length/3*2),2));
@@ -169,7 +186,9 @@ export function landmarks(api){
   // by a round "eye" to let the floods through. On its north-east corner, Schiller's delicatessen, where Gavrilo
   // Princip stood on 28 June 1914 (the museum now).
   oldbridge(L,x,z){const c=crossing(L.road||L.name,x,z);if(!c)return null;const M=Model(),n=L.arches||4,len=c.half*2+8,span=len/n,pw=Math.max(1.8,span*0.22),w=Math.max(4.6,Math.min(c.w,7)),ry=Math.atan2(-c.uz,c.ux);
-    const gw=gh(c.x,c.z),base=gw-3,hump=L.hump||2.2,deck=(u)=>gw+(L.deck||3.4)+hump*(1-(u/(len/2))**2);
+    // the river's own level here (its reach's, tools/build-osm-city.py terrain.reaches) and the streets at either end
+    const wy=waterY(c.x,c.z),bank=Math.max(gh(c.x+c.ux*(len/2+4),c.z+c.uz*(len/2+4)),gh(c.x-c.ux*(len/2+4),c.z-c.uz*(len/2+4)));
+    const gw=wy===null?gh(c.x,c.z):Math.max(wy,bank-(L.deck||3.4)),base=(wy===null?gw:wy)-1.2,hump=L.hump||2.2,deck=(u)=>gw+(L.deck||3.4)+hump*(1-(u/(len/2))**2);
     for(let i=0;i<n;i++){const u=-len/2+span*(i+0.5),px=c.x+c.ux*u,pz=c.z+c.uz*u,mid=Math.abs(i-(n-1)/2)<1,top=deck(u)-0.4,H=top-base,wo=span-pw;
       M.put('kamen',archPanel(span*1.02,H,w,wo,Math.max(0.6,H-wo*0.5-0.6)),px,base,pz,ry);
       for(const sd of [-1,1]){const ox=-c.uz*sd*(w/2+0.1),oz=c.ux*sd*(w/2+0.1),sh=Math.max(0.6,H-wo*0.5-0.6);for(let k=0;k<=8;k++){const a=Math.PI*k/8,lx=Math.cos(a)*(wo/2+0.35),ly=sh+Math.sin(a)*(wo/2+0.35);
@@ -198,7 +217,17 @@ export function landmarks(api){
       M.box('dark',px,T*0.68-6.5,fz+tw/2+0.02,1.1,4.2,0.06);M.box('dark',px,T*0.68-6.5,fz,tw+0.04,4.2,1.1);
       for(const [cx,cz] of [[1,1],[-1,1],[1,-1],[-1,-1]])M.put('gothicDark',new THREE.ConeGeometry(0.5,3.2,4).rotateY(Math.PI/4).translate(0,1.6,0),px+cx*tw/2,T*0.68,fz+cz*tw/2);
       M.put('roofSlate',new THREE.ConeGeometry(tw*0.62,T*0.32,8).rotateY(Math.PI/8).translate(0,T*0.16,0),px,T*0.68,fz);
-      M.cyl('gold',px,T,fz,0.06,0.06,2,6);M.box('gold',px,T+1.3,fz,0.9,0.1,0.1);}
+      M.cyl('gold',px,T,fz,0.06,0.06,2,6);M.box('gold',px,T+1.3,fz,0.9,0.1,0.1);
+      // each tower's clock under the belfry, and its pairs of lancets, one pair a storey, up the front and the side
+      M.put('whitewash',new THREE.CylinderGeometry(1.25,1.25,0.12,20).rotateX(Math.PI/2),px,T*0.68-9.4,fz+tw/2+0.08);M.put('gothicDark',new THREE.TorusGeometry(1.3,0.12,5,20),px,T*0.68-9.4,fz+tw/2+0.14);
+      M.put('dark',new THREE.BoxGeometry(0.07,0.9,0.04).translate(0,0.35,0),px,T*0.68-9.4,fz+tw/2+0.16,0,0,0.9);M.put('dark',new THREE.BoxGeometry(0.07,0.6,0.04).translate(0,0.25,0),px,T*0.68-9.4,fz+tw/2+0.16,0,0,-0.4);
+      for(let y=7.5;y<T*0.68-13;y+=6.5)for(const lx of [-0.75,0.75]){M.box('dark',px+lx,y,fz+tw/2+0.03,0.6,2.6,0.06);M.put('dark',new THREE.ConeGeometry(0.42,0.8,3).rotateY(Math.PI/6).translate(0,0.4,0),px+lx,y+2.6,fz+tw/2+0.03);
+        M.box('dark',px+sx*(tw/2+0.03),y,fz+lx,0.06,2.6,0.6);}}
+    // the tracery of the rose, and the lancets' pointed heads along the nave
+    for(let i=0;i<8;i++){const a=i/8*Math.PI;M.put('gothicDark',new THREE.BoxGeometry(5.2,0.14,0.08),0,H-3,fz+tw/2+0.12,0,0,a);}
+    for(let i=0;i<4;i++){const zz=-LEN/2+8+i*(LEN-12)/4.5+3.3;for(const sx of [-1,1])M.put('dark',new THREE.ConeGeometry(0.75,1.3,3).translate(0,0.65,0),sx*(W/2+0.02),3+H*0.55,zz,Math.PI/2,0,0,[0.1,1,1]);}
+    // John Paul II in bronze in the square before the door (2014)
+    if(L.statue!==false){M.box('kamen',0,0,fz+tw/2+(L.statueAt||14),2.2,1.6,2.2);M.statue('bronzeDark',0,1.6,fz+tw/2+(L.statueAt||14),3.4);}
     {const s=new THREE.Shape();s.moveTo(-(tx-tw/2),0);s.lineTo(tx-tw/2,0);s.lineTo(0,9);s.closePath();M.put(k,new THREE.ExtrudeGeometry(s,{depth:1.2,bevelEnabled:false}),0,H,fz+tw/2-1.2);}
     M.put('glass',new THREE.CylinderGeometry(2.6,2.6,0.2,24).rotateX(Math.PI/2),0,H-3,fz+tw/2+0.05);M.put('gothicDark',new THREE.TorusGeometry(2.7,0.25,6,24),0,H-3,fz+tw/2+0.08);
     for(const px of [-tx,0,tx]){const w0=px?1.8:2.6;M.box('dark',px,0,fz+tw/2+0.02,w0,px?4.5:6,0.06);M.put('gothicDark',new THREE.ConeGeometry(w0*0.7,2.2,3).rotateY(Math.PI/6).translate(0,1.1,0),px,px?4.5:6,fz+tw/2+0.4);}
@@ -218,22 +247,58 @@ export function landmarks(api){
       M.put('iron',new THREE.CylinderGeometry(0.22,0.3,2.8,12).rotateX(Math.PI/2).translate(0,0,0.6),lx,top+1.0,lz,ry);}
     return M.finish(L,x,g0,z,0);},
 
+  // ================================================================ the UNIS towers
+  // Momo and Uzeir: twin towers of 1986 at Marijin Dvor, each a square with its corners cut, dark glass between
+  // pale metal spandrels floor over floor, a fin up each cut corner, two floors set back at the top for the plant, and
+  // a mast. Burned out in 1992 (their black shells were a photograph of the siege), reclad and reopened in 2007.
+  unis(L,x,z){const g0=gh(x,z),M=Model(),S=(L.side||19)/2,c=L.chamfer||3.6,F=L.floors||26,FH=L.floorH||3.8;
+    const plan=k=>[[S-c,-S],[S,-S+c],[S,S-c],[S-c,S],[-S+c,S],[-S,S-c],[-S,-S+c],[-S+c,-S]].map(([p,q])=>[p*k,q*k]);
+    prism(M,'concrete',plan(1.18),-1,FH*1.2,'slab');                                   // the podium's plinth
+    for(let f=0;f<F;f++){const y=FH*1.2+f*FH;prism(M,'unisGlass',plan(1),y,y+FH-0.85);prism(M,'unisBand',plan(1.012),y+FH-0.85,y+FH);}
+    const H=FH*1.2+F*FH;
+    for(const [p,q] of [[S-c/2,-S+c/2],[S-c/2,S-c/2],[-S+c/2,S-c/2],[-S+c/2,-S+c/2]])M.box('unisBand',p*1.02,FH*1.2,q*1.02,0.8,H-FH*1.2+1.2,0.8,Math.atan2(p,q));
+    prism(M,'unisBand',plan(0.82),H,H+FH*2);prism(M,'slab',plan(0.86),H+FH*2,H+FH*2+0.6);    // the plant floors, set back
+    M.cyl('steel',0,H+FH*2+0.6,0,0.5,0.15,L.mast||14,6);
+    return M.finish(L,x,g0,z,turn(L.face||0));},
   // ================================================================ the Avaz Twist Tower
-  // Its floor plate a rounded rectangle, turned a little more at every floor; the slab edges as pale bands; the
-  // crown an open frame, the spire on top.
-  twist(L,x,z){const g0=gh(x,z),M=Model(),H=L.height||142,F=L.floors||40,a=L.a||17,b=L.b||12,TW=(L.twist||70)*Math.PI/180,rr=L.round||5,N=36;
-    const plate=(t)=>{const pts=[];for(let i=0;i<N;i++){const q=i/N*Math.PI*2,cx=Math.cos(q),cz=Math.sin(q);
-        // a superellipse, rounded to rr at the corners
-        const px=Math.sign(cx)*Math.pow(Math.abs(cx),0.4)*a,pz=Math.sign(cz)*Math.pow(Math.abs(cz),0.4)*b;pts.push([px*Math.cos(t)-pz*Math.sin(t),px*Math.sin(t)+pz*Math.cos(t)]);}return pts;};
-    const pos=[];const lv=[];for(let f=0;f<=F;f++)lv.push({y:f*H/F,r:plate(TW*f/F)});
-    for(let f=0;f<F;f++){const A=lv[f],B=lv[f+1];for(let i=0;i<N;i++){const j=(i+1)%N,[ax,az]=A.r[i],[bx,bz]=A.r[j],[cx,cz]=B.r[j],[dx,dz]=B.r[i];
-      pos.push(ax,A.y,az,dx,B.y,dz,cx,B.y,cz, ax,A.y,az,cx,B.y,cz,bx,A.y,bz);}}
-    {const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(pos.length/3*2),2));g.computeVertexNormals();M.put('glass',g,0,0,0);}
-    for(let f=1;f<=F;f+=1){const r=lv[f].r.map(([p,q])=>[p*1.012,q*1.012]);prism(M,f%5?'slab':'steel',r,lv[f].y-0.25,lv[f].y+0.12);}
-    prism(M,'concrete',plate(0).map(([p,q])=>[p*1.6,q*1.4]),-1,9,'slab');
-    // the crown: the frame continues the twist two floors up, open; the observation deck; the spire
-    const top=plate(TW*1.05);for(let i=0;i<N;i+=3){const [px,pz]=top[i];beam(M,'steel',new V3(px,H,pz),new V3(px*0.9,H+10,pz*0.9),0.5);}prism(M,'steel',top.map(([p,q])=>[p*0.9,q*0.9]),H+9.6,H+10.2);
-    M.cyl('steel',0,H,0,2.2,1.2,8,8);M.cyl('steel',0,H+8,0,0.6,0.15,(L.spire||172)-H-8,6);
+  // The newspaper Dnevni Avaz's tower (2008): 142 m and 40 floors of blue-green glass, its plate a rounded rectangle
+  // turned a little more at every floor, so the long faces wind round it. Silver bands at the plant floors, the
+  // observation deck and its cafe on the 35th behind a band of clear glass, the paper's name in red under the crown,
+  // the crown's open frame carrying the twist on, and the mast to 172 m. At its foot the paper's own house, a low
+  // glass block on a podium of granite, and the lobby's two-storey glazing under a canopy. The curtain wall is one
+  // textured skin (mullions every 1.5 m, the spandrel at each floor), lit floor by floor at night.
+  twist(L,x,z){const g0=gh(x,z),M=Model(),H=L.height||142,F=L.floors||40,a=L.a||17,b=L.b||12,TW=(L.twist||70)*Math.PI/180,N=40,FH=H/F,DECK=L.deck||35;
+    const plate=(t,k=1)=>{const pts=[];for(let i=0;i<N;i++){const q=i/N*Math.PI*2,cx=Math.cos(q),cz=Math.sin(q);
+        const px=Math.sign(cx)*Math.pow(Math.abs(cx),0.4)*a*k,pz=Math.sign(cz)*Math.pow(Math.abs(cz),0.4)*b*k;pts.push([px*Math.cos(t)-pz*Math.sin(t),px*Math.sin(t)+pz*Math.cos(t)]);}return pts;};
+    // the skin: u along the plate's perimeter, v up the floors, so the texture's cells are the bays
+    const lv=[];for(let f=0;f<=F;f++)lv.push({y:f*FH,r:plate(TW*f/F)});
+    const skin=(f0,f1,key)=>{const pos=[],uv=[];for(let f=f0;f<f1;f++){const A=lv[f],B=lv[f+1];let s=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,[ax,az]=A.r[i],[bx,bz]=A.r[j],[cx,cz]=B.r[j],[dx,dz]=B.r[i],L2=Math.hypot(bx-ax,bz-az),u0=s/12,u1=(s+L2)/12,v0=f/8,v1=(f+1)/8;s+=L2;
+        pos.push(ax,A.y,az,dx,B.y,dz,cx,B.y,cz, ax,A.y,az,cx,B.y,cz,bx,A.y,bz);uv.push(u0,v0,u0,v1,u1,v1, u0,v0,u1,v1,u1,v0);}}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();M.put(key,g,0,0,0);};
+    skin(2,DECK-1,'avazGlass');skin(DECK,F,'avazGlass');skin(DECK-1,DECK,'glassPale');      // the deck's floor in clear glass
+    // the lobby: two floors of clear glass, set in under the first slab, the canopy over the door
+    prism(M,'glassPale',plate(0,0.96),0,FH*2);prism(M,'steel',plate(0,1.0),FH*2-0.3,FH*2+0.2);
+    M.box('steel',0,FH*1.6,b+5,14,0.5,9);for(const sx of [-6,6])M.cyl('steel',sx,0,b+9,0.2,0.2,FH*1.6,8);
+    // the silver bands: every fifth floor, and the plant floors
+    for(let f=5;f<F;f+=5){const r=lv[f].r.map(([p,q])=>[p*1.015,q*1.015]);prism(M,'steel',r,lv[f].y-0.35,lv[f].y+0.25);}
+    // the observation deck: its railing ring, and the cafe's dark interior behind the clear glass
+    {const y=lv[DECK-1].y;prism(M,'dark',lv[DECK-1].r.map(([p,q])=>[p*0.9,q*0.9]),y+0.2,y+FH-0.2);prism(M,'steel',lv[DECK-1].r.map(([p,q])=>[p*1.03,q*1.03]),y-0.2,y+0.25);
+      prism(M,'steel',lv[DECK].r.map(([p,q])=>[p*1.03,q*1.03]),y+FH-0.25,y+FH+0.2);}
+    // the paper's name, red on white, on both long faces under the crown
+    {const t=TW*(F-2.5)/F,yy=lv[F-3].y+0.4;for(const sd of [1,-1]){const ox=-sd*b*1.0*Math.sin(t),oz=sd*b*1.0*Math.cos(t);
+      M.put('avazSign',new THREE.PlaneGeometry(13,3.4).translate(0,1.7,0),ox,yy,oz,-t+(sd>0?0:Math.PI));}}
+    // the top: a parapet, the crown's frame carrying the twist two floors on, its ring, and the mast
+    prism(M,'steel',lv[F].r.map(([p,q])=>[p*1.02,q*1.02]),H-0.2,H+1.4,'slab');
+    {const top=plate(TW*1.07,0.94);for(let i=0;i<N;i+=2){const [px,pz]=lv[F].r[i],[qx,qz]=top[i];beam(M,'steel',new V3(px,H+1.4,pz),new V3(qx,H+11,qz),0.45);}
+      prism(M,'steel',top,H+10.6,H+11.4);prism(M,'steel',top.map(([p,q])=>[p*0.55,q*0.55]),H+5.5,H+6.1);
+      for(let i=0;i<N;i+=5){const [qx,qz]=top[i];beam(M,'steel',new V3(qx,H+11,qz),new V3(qx*0.55,H+6,qz*0.55),0.3);}}
+    M.cyl('concreteDark',0,H+1.4,0,3,2.6,6,10);M.cyl('steel',0,H+7.4,0,1.0,0.5,10,8);M.cyl('steel',0,H+17.4,0,0.5,0.12,(L.spire||172)-H-17.4,6);
+    M.put('cabin',new THREE.SphereGeometry(0.5,8,6),0,(L.spire||172)+0.3,0);                 // the aircraft-warning light
+    // the podium and the paper's house beside the tower
+    prism(M,'concreteDark',plate(0,1.7),-2,0.6,'slab');
+    {const hx=L.houseX==null?-a-22:L.houseX,hw=L.houseW||30,hd=L.houseD||22,hf=L.houseFloors||5;M.box('concreteDark',hx,-2,0,hw+2,2.6,hd+2);
+      for(let f=0;f<hf;f++){M.box('avazGlass',hx,0.6+f*4,0,hw,3.2,hd);M.box('steel',hx,3.8+f*4,0,hw+0.4,0.8,hd+0.4);}M.box('slab',hx,0.6+hf*4,0,hw-4,2.4,hd-4);}
     return M.finish(L,x,g0,z,turn(L.face||0));},
 
   // ================================================================ the Holiday Inn
@@ -331,7 +396,7 @@ export function landmarks(api){
     // the cauldron's tower at the east end (+x in the model)
     const cx=A*0.88;M.box('concrete',cx,0,0,3,26,3);M.cyl('steel',cx,26,0,1.2,2.6,2.2,16);
     const g=M.finish(L,x,g0,z,ry);
-    api.ctx.cauldron={g,x:cx,y:28.4,z:0};
+    api.ctx.cauldron={g,x:cx,y:28.4,z:0,A,B,rows:ROWS};
     return g;},
   };
 }

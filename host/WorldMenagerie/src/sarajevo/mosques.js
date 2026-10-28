@@ -50,7 +50,7 @@ export function mosques(api){
   if(lights.length){const pos=[];for(const [x,y,z,r] of lights)for(let i=0;i<10;i++){const a=i/10*Math.PI*2;pos.push(x+Math.cos(a)*r,y,z+Math.sin(a)*r);}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
     const pm=new THREE.PointsMaterial({color:0xfff0c0,size:2.2,sizeAttenuation:true,transparent:true,opacity:0,depthWrite:false});const pts=new THREE.Points(g,pm);pts.frustumCulled=false;grp.add(pts);
-    animHooks.push(()=>{const nf=nightF?nightF():0;pm.opacity=Math.min(1,nf*1.3);pts.visible=nf>0.05;});}
+    animHooks.push(()=>{const nf=nightF&&api.hour?nightF(api.hour()):0;pm.opacity=Math.min(1,nf*1.3);pts.visible=nf>0.05;});}
   grp.traverse(o=>{o.userData.noFingerprint=true;});scene.add(grp);
   api.ctx.details=Object.assign(api.ctx.details||{},{mosques:{domed:nBig,mesdzid:nSmall}});
 }

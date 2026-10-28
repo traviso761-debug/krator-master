@@ -321,7 +321,8 @@ def water_reaches(t, water, rc):
     is cut across its long axis into reaches `length` metres long, each drawn level at the lowest ground along it
     less `below` metres, never lower than the reach downstream of it (the river runs toward `flows`: "west",
     "east", "north" or "south"); the ground inside each reach is cut to `depth` metres under its water. The steps
-    between reaches read as the weirs a river like the Miljacka has."""
+    between reaches read as the weirs a river like the Miljacka has. `bank` (metres, default half a cell) is how far past
+    the mapped bank the cut reaches; a walled channel takes 0, so the street keeps its level to the edge."""
     import numpy as np
     from matplotlib.path import Path as MPath
     nx, nz, step = t["nx"], t["nz"], t["step"]
@@ -332,6 +333,7 @@ def water_reaches(t, water, rc):
     Hr = H.ravel()
     names = set(rc.get("names") or [])
     L, below, depth = float(rc.get("length", 120)), float(rc.get("below", 0.4)), float(rc.get("depth", 1.0))
+    bank = float(rc.get("bank", step * 0.5))   # how far past the mapped bank the ground is cut: 0 keeps the street to the edge (a walled channel)
     flows = rc.get("flows", "west")
     ax = 0 if flows in ("west", "east") else 1
     up = 1 if flows in ("west", "north") else -1   # +1: upstream is toward +x (east) or +z (south)
@@ -363,7 +365,7 @@ def water_reaches(t, water, rc):
             piece = clip(clip(ring, ax, a - 0.3, True), ax, b + 0.3, False)
             if len(piece) < 3:
                 continue
-            m = MPath(piece).contains_points(pts, radius=step * 0.5)
+            m = MPath(piece).contains_points(pts, radius=bank)
             if not m.any():
                 cx = sum(p[0] for p in piece) / len(piece); cz = sum(p[1] for p in piece) / len(piece)
                 m = (np.abs(pts[:, 0] - cx) < step) & (np.abs(pts[:, 1] - cz) < step)
