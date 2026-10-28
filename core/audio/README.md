@@ -21,7 +21,9 @@ next. The plan is `PLAN.md` (step A1 done 2026-10-28).
 
 **The Audio Lab is published** at https://claude.ai/artifact/5rro9CbXMzna9Y5joPVgB1 (the sound board's address, so its
 saved scenes, cut clips and comments carried over; the lab maps the board's old clip ids). Its database keeps `scenes`,
-`cuts` and `notes` (one usage note per clip id): never rename them. To republish, build, copy `<audio folder>/lab` into a
+`cuts`, `notes` (one usage note per clip id) and `cues` (one per cue id): never rename them. The page embeds `core/rand` and
+`KCUE`, so the lab plays exactly what the module decides. `<audio folder>/lab/published.json` lists the previews already
+online, so a publish sends only the new ones. To republish, build, copy `<audio folder>/lab` into a
 folder the publishing tool can read, and publish its `index.html` and `previews/` to that address; one publish holds
 at most 64 MB and a version 256 MB.
 
