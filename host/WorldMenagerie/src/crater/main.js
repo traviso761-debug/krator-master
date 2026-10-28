@@ -12,6 +12,7 @@ import {backdrop} from '../sarajevo/backdrop.js';
 import {ground} from './ground.js';
 import {lake} from '../atitlan/lake.js';
 import {waves} from '../atitlan/waves.js';
+import {underwater} from '../atitlan/underwater.js';
 import {oldman} from './oldman.js';
 import {events} from './events.js';
 import {navmap} from '../core/navmap.js';
@@ -30,7 +31,7 @@ configureLoading({
     'The Klamath people saw the mountain fall, and tell of it as a battle between Llao of the world below and Skell of the world above.',
   ],
   prefix:'filling the caldera… ',labels:{'map-data':'reading the rim',ground:'raising the walls',buildings:'building Rim Village',details:'laying the Rim Drive',landmarks:'raising the lodge',el:'',traffic:'launching the boats',ui:'lighting the lodge'}});
-const ctx=window._iz={defaultCity:'crater',models:[landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'ground',fn:ground},{name:'lake',fn:lake},{name:'waves',fn:waves},{name:'oldman',fn:oldman},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
+const ctx=window._iz={defaultCity:'crater',models:[landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'ground',fn:ground},{name:'lake',fn:lake},{name:'waves',fn:waves},{name:'underwater',fn:underwater},{name:'oldman',fn:oldman},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
 // with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
 if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 // each extra timed: its build time in the details (extraMs), so a slow load says which stage it is

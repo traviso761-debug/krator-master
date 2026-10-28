@@ -4,13 +4,16 @@
 // and Jahorina to the south-east, the hills of Ozren and Bukovik to the north. This draws them: the real ground 80 km
 // across at 400 m (data/cities/sarajevo-far.json, made from the AWS terrarium tiles), one indexed mesh, its colour from
 // the height (the valley's fields, beech and pine, the dwarf pine and bare karst over the tree line), fogged with the
-// rest. Inside the map it sinks under the city's own ground; at its outer edge it falls away to the plate.
+// rest. Inside the map it sinks under the city's own ground (and its deepest lake bed); at its outer edge it falls
+// away to the plate.
 import {hash3} from '../core/rng.js';
 
 export function backdrop(api){
   const {THREE,C,scene,OSM}=api;const K=C.backdrop;if(!K)return;
   const T=OSM.terrain,FAR=(typeof C.farLevel==='number')?C.farLevel:-1.5;
   // the map's own ground, in metres: the backdrop stays under it, a cell in from its edge
+  // and under its lowest point: a lake's bed may go deeper than the 250 m it used to sink (Crater Lake's is 594 m)
+  let low=0;if(T)for(const v of T.h)if(v<low)low=v;const SINK=Math.min(-250,low/10-50);
   const mx0=T?T.x0/10+T.step*2:-1e9,mz0=T?T.z0/10+T.step*2:-1e9,mx1=T?T.x0/10+(T.nx-3)*T.step:1e9,mz1=T?T.z0/10+(T.nz-3)*T.step:1e9;
   fetch(K.file).then(r=>r.json()).then(D=>{const N=D.n,S=D.step,half=-D.x0,taper=K.taper||6000,datum=K.datum||536.9;
     const pos=new Float32Array(N*N*3),col=new Float32Array(N*N*3),c=new THREE.Color();
@@ -18,7 +21,7 @@ export function backdrop(api){
     const bandAt=asl=>{let i=0;while(i+1<BANDS.length&&asl>=BANDS[i+1][0])i++;if(i+1>=BANDS.length)return BANDS[i][1];const [h0,c0]=BANDS[i],[h1,c1]=BANDS[i+1],f=Math.max(0,Math.min(1,(asl-h0)/(h1-h0)));return c.copy(c0).lerp(c1,f*f*(3-2*f));};
     for(let j=0;j<N;j++)for(let i=0;i<N;i++){const k=j*N+i,x=D.x0+i*S,z=D.z0+j*S;let y=D.h[k];
       const asl=y+datum,edge=half-Math.max(Math.abs(x),Math.abs(z));
-      if(x>mx0&&x<mx1&&z>mz0&&z<mz1)y=-250;                     // under the city's own ground
+      if(x>mx0&&x<mx1&&z>mz0&&z<mz1)y=SINK;                      // under the city's own ground
       else if(edge<taper)y=FAR+(y-FAR)*Math.max(0,edge/taper);   // down to the plate at the rim
       pos.set([x,y,z],k*3);
       // the slope darkens the colour a little, the hash breaks up the bands

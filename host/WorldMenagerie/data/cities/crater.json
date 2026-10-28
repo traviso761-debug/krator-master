@@ -56,15 +56,7 @@
   "zoom": 13,
   "step": 30,
   "datum": 1883.0,
-  "lakeBed": {
-   "names": [
-    "Crater Lake"
-   ],
-   "shore": 2,
-   "slope": 0.6,
-   "depth": 120,
-   "_": "the tiles carry the lake as its surface: the bed is cut steeply, as the caldera's walls go on down under the water (594 m at the deepest; the cut stops at 120 m, which no view sees past)"
-  },
+  "lakeBed": {"names": ["Crater Lake"], "shore": 2, "slope": 0.6, "depth": 600, "_": "the tiles carry the lake as its surface; the bed is the USGS's 2000 multibeam survey (data/bathy/crater-bed.json, 20 m), 594 m at the deepest: Wizard Island's flanks, Merriam Cone, the central platform, the chaos of the slides off the walls; the shore's first metres, which the survey does not reach, are cut steeply", "grid": "data/bathy/crater-bed.json"},
   "_": "the lake at 1883 m (the datum), the rim from 2100 to 2480 m at Hillman Peak and 2721 m at Mount Scott: elevation from tools/fetch-terrain.py"
  },
  "extraKinds": [
@@ -254,6 +246,7 @@
   "elMin": -0.3,
   "elMax": 1.5
  },
+ "underwater": {"colour": "#2a66c0", "visibility": 180, "fade": 120, "floor": 0.35, "basin": {"major": 100, "minor": 20, "deep": 594, "view": [[42.885, -122.165, 2600], [42.942, -122.104, -350]], "hide": ["oldman"], "_": "the Drain the lake button: the survey's bed by depth, a contour every 20 m and a white one every 100 m; the camera goes south-west of the rim, looking across the basin"}, "_": "src/atitlan/underwater.js: under the water the fog is the lake's: among the clearest water in the world (a Secchi disc is seen to 30-40 m), a deep blue; the visibility and the light's floor are generous, so the survey's cones and slides can be made out at depth"},
  "flight": true,
  "noBuildingsInWater": true,
  "surfaces": {
@@ -1130,6 +1123,30 @@
     42.942,
     -122.106,
     0.1
+   ]
+  ],
+  "Under the lake: Merriam Cone": [
+   [
+    42.9603,
+    -122.0973,
+    -112.0
+   ],
+   [
+    42.9608,
+    -122.0979,
+    -150.0
+   ]
+  ],
+  "Under the lake: Wizard Island": [
+   [
+    42.9392,
+    -122.1288,
+    -12.0
+   ],
+   [
+    42.9405,
+    -122.1305,
+    -30.0
    ]
   ]
  },

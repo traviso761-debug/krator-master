@@ -6,7 +6,8 @@
 // above the shore; bare ash on Atitlán's cone. C.cover:
 //   the colour  the ground's vertex colours outside the towns (C.cover.towns, [lat, lon, radius]) are repainted by
 //               that rule, from the height over the lake, the slope and a hash of a field grid turned to the slope,
-//               mixed by a value noise so the edge of the forest wanders; the mapped areas draw over it as before
+//               mixed by a value noise so the edge of the forest wanders; the mapped areas draw over it as before;
+//               under the lake, sand in the shallows, silt below and dark rock on the steep
 //   the trees   on the forest cells, pines and broadleaves, a tile at a time (`tile` m) within `near` m of the camera
 // None of it is in the layout fingerprint.
 import {hash3} from '../core/rng.js';
@@ -30,7 +31,11 @@ export function cover(api){
   const tmp=new THREE.Color();
   // inside a town the open ground is yards, gardens and beaten earth, not a lawn
   const TOWN=[col('#6a7444'),col('#7a7256'),col('#5e6a3e'),col('#86785a')];
-  const paint=(x,z,y,slope,c)=>{if(y<0.5)return false;const t=townK(x,z),k=kind(x,z,y,slope);
+  // under the lake: sand and gravel in the shallows, grey-brown silt down the slopes and on the floor, dark rock where it is steep
+  const SAND=col('#8a8268'),SILT=[col('#5a5446'),col('#4e4a40'),col('#625a4a')],ROCKW=col('#3e3c38');
+  const bed=(x,z,y,slope)=>{tmp.copy(slope>1.1?ROCKW:y>-6?SAND:SILT[Math.floor(hash3(Math.floor(x/60),Math.floor(z/60),89)*3)]);
+    if(y>-12&&y<=-6&&slope<=1.1)tmp.lerp(SAND,(y+12)/6);return tmp.multiplyScalar(0.85+vn(x,z,45)*0.3);};
+  const paint=(x,z,y,slope,c)=>{if(y<-0.4&&inWater(x,z)){c.lerp(bed(x,z,y,slope),0.95);return true;}if(y<0.5)return false;const t=townK(x,z),k=kind(x,z,y,slope);
     tmp.copy(k===0?FOREST[Math.floor(hash3(Math.floor(x/40),Math.floor(z/40),93)*3)]:k===1?COFFEE:k===2?fieldCol(x,z):k===3?CLIFF:k===4?ASH:SCRUB);
     if(t>0)tmp.lerp(TOWN[Math.floor(hash3(Math.floor(x/25),Math.floor(z/25),90)*TOWN.length)],t);
     tmp.multiplyScalar(0.92+vn(x,z,60)*0.16);c.lerp(tmp,K.strength===undefined?0.9:K.strength);return true;};

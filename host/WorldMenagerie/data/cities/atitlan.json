@@ -61,9 +61,40 @@
     "Lago de Atitlán"
    ],
    "shore": 0.8,
-   "slope": 0.12,
-   "depth": 40,
-   "_": "the elevation carries the lake as a flat sheet at its surface: the ground under it is cut, a metre at the shore and deeper outward (tools/build-osm-city.py lake_bed)"
+   "scale": 900,
+   "depth": 330,
+   "_": "the elevation carries the lake as a flat sheet at its surface: the ground under it is cut (tools/build-osm-city.py lake_bed), a metre at the shore and easing toward 330 m out in the basin (the 2014 echo-sounder survey: 327.6 m at the deepest, 203 m on average), a stand-in until that survey's grid is in data/bathy/",
+   "knolls": [
+    {
+     "at": [
+      14.6778,
+      -91.1925
+     ],
+     "r": [
+      170,
+      200
+     ],
+     "top": 16,
+     "tilt": [
+      0.02,
+      0.01
+     ],
+     "flank": 0.6
+    },
+    {
+     "at": [
+      14.6805,
+      -91.1925
+     ],
+     "r": [
+      70,
+      60
+     ],
+     "top": 20,
+     "flank": 1.0
+    }
+   ],
+   "_knolls": "Samabaj's drowned island (Benítez and Samayoa 2000, Medrano and Samayoa 2010): 477 m north to south and 340 east to west, 175 m above the floor; the ceremonial groups on its north-east height 13.5 m down, the houses on the lower west at 17.5 to 21 m, a channel 39 m deep across its north cutting off a small island at 21 m; the slopes fall to 80 m toward the south shore and past 100 m to the north. Placed off the Cerro de Oro's north shore from those descriptions: the published coordinates (N 14 43 11, W 91 11 33) fall in the middle of the lake"
   },
   "datum": 1556.0
  },
@@ -335,6 +366,31 @@
  "camera": {
   "elMin": -0.3,
   "elMax": 1.5
+ },
+ "underwater": {
+  "colour": "#2a6a5a",
+  "visibility": 30,
+  "fade": 60,
+  "_": "src/atitlan/underwater.js: under the water the fog is the lake's: green and murkier than it was (a Secchi disc is seen to some 7 m since the algal blooms began in 2009), dark by a hundred metres",
+  "basin": {
+   "major": 50,
+   "minor": 10,
+   "deep": 330,
+   "view": [
+    [
+     14.6,
+     -91.16,
+     5200
+    ],
+    [
+     14.69,
+     -91.2,
+     -200
+    ]
+   ],
+   "_": "the Drain the lake button: the bed by depth, a contour every 10 m and a white one every 50 m; the camera goes to the south-east, over San Lucas, looking across the basin"
+  },
+  "floor": 0.3
  },
  "flight": true,
  "noBuildingsInWater": true,
@@ -2094,6 +2150,25 @@
     0
    ],
    "info": "The hostel on the waterfront by Santa Cruz La Laguna's dock, an oasis on the shore for over twenty years: three dorms and rooms up the slope over the lake, the bar and the family-style dinner at seven, and ATI Divers, for two decades the only dive shop on Lake Atitlán, working from its jetty. Santa Cruz has no road to the shore: everyone comes by lancha."
+  },
+  {
+   "name": "Samabaj",
+   "aka": [
+    "the drowned island",
+    "the Maya Atlantis"
+   ],
+   "model": "samabaj",
+   "at": [
+    14.6778,
+    -91.1925
+   ],
+   "oldLevel": 28,
+   "jetties": [
+    170,
+    205,
+    128
+   ],
+   "info": "A Maya island town of the Late Preclassic, about 300 BC to AD 300, now 13 to 21 m under the lake off the Cerro de Oro. The diver Roberto Samayoa found it in 1996 (the name is his and abaj, stone). The island was 477 m by 340, with the ceremonial groups on its north-east height (a long platform of two levels, a terrace with a basalt column and its altar, smooth stelae and a round altar, an arc of tall stones round a rock) and the houses on the lower west: 11 groups and about 28 structures mapped, and three jetties at its old shore. The lake then stood some 28 m lower; it rose and drowned the island quickly, perhaps when an eruption or a landslide blocked its outflow, so quickly that the walls were not worn away. Its place here is from the divers' descriptions: the coordinates they published fall in the middle of the lake."
   }
  ],
  "navmap": {
@@ -2244,6 +2319,30 @@
     14.74045,
     -91.2058,
     8.0
+   ]
+  ],
+  "Under the drowned shore": [
+   [
+    14.7376,
+    -91.1611,
+    -2.5
+   ],
+   [
+    14.7379,
+    -91.1606,
+    -1.8
+   ]
+  ],
+  "Samabaj, under the lake": [
+   [
+    14.678,
+    -91.19168,
+    -11.0
+   ],
+   [
+    14.67812,
+    -91.19157,
+    -15.0
    ]
   ]
  },

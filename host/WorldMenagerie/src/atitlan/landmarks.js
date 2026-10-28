@@ -12,16 +12,21 @@
 //            cabin under a steep thatch A-frame, the newer rooms in a rendered block with a tile roof, a stone
 //            sauna, the dive shop's hut with its tanks, a fire pit, and the garden's bananas. It turns itself to the
 //            water (or `face`) and takes each terrace's level from the real slope
+//   samabaj  the drowned island town off the Cerro de Oro, its platforms, stelae, houses and jetties on the lake's bed
+//            (samabaj.js)
 // Map data (c) OpenStreetMap contributors, ODbL.
 import {landkit} from '../core/landkit.js';
+import {samabaj} from './samabaj.js';
 
 export function landmarks(api){
   const {THREE,gh,inWater}=api;
   const {Model,turn}=landkit(api,{deck:0x8a6a4a,deckDark:0x5a4230,pile:0x4a3a2c,concrete:0xb4aea2,lamina:0x8a8e94,booth:0x2a7ab8,white:0xeeeae0,cream:0xe8dcb8,
     stoneGrey:0xa8a49a,blueTrim:0x2a5aa8,dark:0x2a2620,gold:0xcaa13c,dome:0xc8c4bc,
     thatch:0xa8844a,thatchDark:0x7a5e34,lakeStone:0x6e6a62,timber:0x5e4028,plank:0x8a6a48,render:0xeee6d6,roofTile:0xa4563a,diveBlue:0x2a64b0,
-    hamRed:0xc83a3a,hamBlue:0x2a5ab8,hamYellow:0xe0b830,leaf:0x4a8a36,trunk:0x6a7a3a,ember:0xd86a2a,kayakR:0xe0402a,kayakY:0xf0c020});
+    hamRed:0xc83a3a,hamBlue:0x2a5ab8,hamYellow:0xe0b830,leaf:0x4a8a36,trunk:0x6a7a3a,ember:0xd86a2a,kayakR:0xe0402a,kayakY:0xf0c020,
+    basalt:0x4a4a44,mossStone:0x4e5a40,siltStone:0x6a6252,siltTop:0x5a5446});
   return {
+  samabaj:samabaj(api,{Model}),
   torre(L,x,z){const g0=gh(x,z),M=Model(),S=L.side||4.4,H=L.height||24;
     M.box('stoneGrey',0,0,0,S+1.4,1.2,S+1.4);M.box('cream',0,1.2,0,S,H*0.38,S);M.box('blueTrim',0,1.2+H*0.38,0,S+0.4,0.4,S+0.4);
     M.box('cream',0,1.6+H*0.38,0,S*0.86,H*0.28,S*0.86);M.box('blueTrim',0,1.6+H*0.66,0,S*0.9,0.35,S*0.9);

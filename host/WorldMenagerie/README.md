@@ -495,7 +495,21 @@ a bed and a shore.
   `backdrop.js`.
 - **The lake** (`lake.js`): lanchas in five liveries on eleven routes found through the water between the docks, with
   wakes and a dwell at each dock; cayucos; tul reeds in the shallows; the drowned trees and roofs of the shore the
-  lake has risen over since 2009; the Xocomil's whitecaps.
+  lake has risen over since 2009 (the trees stand on the bed, however deep it is there); the Xocomil's whitecaps.
+- **Under the water** (`underwater.js`, `underwater` in the config): below the surface the fog is the lake's own, green
+  and about 30 m to where it is whole (the lake has been murkier since the 2009 blooms), dimmer with depth, the surface
+  seen from below; the view "Under the drowned shore" is among Panajachel's dead trees. **Drain the lake** (a button;
+  `#drain` in the address) takes the water and what floats on it away and draws the bed by depth, with a contour every
+  10 m and a white one every 50. The bed is a stand-in until the 2014 survey's grid is in (`data/bathy/`):
+  `terrain.lakeBed` with `scale`, a cut easing from the shore to 330 m (mean 193 m; the survey's is 203, its deepest
+  327.6). Under the water `cover.js` paints sand, silt and rock, not fields.
+- **Samabaj** (`samabaj.js`, a landmark with a card; the view "Samabaj, under the lake"): the Late Preclassic island
+  town found by Roberto Samayoa in 1996. The island is two `knolls` in the bed (477 by 340 m, its top 13.5 to 21 m down,
+  a 39 m channel cutting off a small island to the north, 80 m of water toward the shore); on it, from the dive
+  surveys, Grupo 3's long platform of two levels, Grupo Estela's terrace with the basalt column, its altar and the
+  stelae, the arc of Estela Sisa, Grupo Roca built round its rock, Grupo 2's eight houses and the smaller groups, and
+  three jetties at the old shore 28 m down. The published coordinates fall in mid-lake, so it is placed from the
+  descriptions, off the Cerro de Oro's north shore (one place in `atitlan.json`).
 - **The water** (`waves.js`): the engine's water given travelling waves in world space, steeper in the Xocomil and
   each fading as it nears a pixel's footprint (no lattice far out): nine of them, each 0.66 the length of the last, on
   bearings a golden angle apart, so no two line up. The volcanoes and towns stand in it (`waves.reflect`, a true
@@ -511,7 +525,8 @@ a bed and a shore.
 
 **Crater Lake** (`crater.html`, `src/crater/`, `data/cities/crater.json`). Crater Lake National Park, Oregon, from
 OpenStreetMap on its real ground at 30 m: the caldera Mount Mazama left about 7,700 years ago, the lake at 1883 m (the
-datum), its bed cut steeply by `terrain.lakeBed`, Wizard Island and the Phantom Ship (the lake's inner rings), the rim
+datum), its bed the USGS's 2000 multibeam survey (`data/bathy/crater-bed.json`: `tools/grid-xyz.py` averages the 2 m
+survey to 20 m, and `terrain.lakeBed`'s `grid` lays it under the water, 594 m at the deepest), Wizard Island and the Phantom Ship (the lake's inner rings), the rim
 from the Watchman to Mount Scott, and Rim Village, Munson Valley and Mazama Village. The mapped forest, the park's boundary
 and the mapped rock are left undrawn (`dropAreas`, a new engine option: a list of area kinds) because `ground.js` paints the
 ground itself.
@@ -532,6 +547,13 @@ ground itself.
   Sinnott Memorial set into the wall, the Watchman's and Mount Scott's fire lookouts, the Phantom Ship's spires; cards
   for Wizard Island, Llao Rock, Cleetwood Cove, Pumice Castle, Hillman Peak, Devils Backbone, Discovery Point, Sun Notch
   and Mazama. Past the map, `crater-far.json` (150 km at 600 m) through Sarajevo's `backdrop.js`.
+- **Under the water** (Atitlán's `underwater.js`, `underwater` in the config): take the camera below the surface (Q lowers
+  it to the bed) and the fog becomes the water's, deep blue and clear to 180 m, darker with depth; the surface is seen
+  from below and the sky goes. Views: Merriam Cone (152 m down) and Wizard Island's flank. **Drain the lake** (a
+  button; `#drain` in the address) takes the water, the boats and the Old Man away and draws the survey's bed by depth,
+  a contour every 20 m and a white one every 100, from a view across the basin: Wizard Island's platform, Merriam
+  Cone, the central platform, the slides off the walls. Sarajevo's `backdrop.js` now sinks under the map's deepest
+  ground, not a fixed 250 m, or it covered the floor.
 - **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
   collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
 

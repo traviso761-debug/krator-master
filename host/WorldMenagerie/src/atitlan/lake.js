@@ -145,7 +145,8 @@ export function lake(api){
     for(const z of (DR.zones||[])){for(let t=0;t<(z[3]||30)*5&&trees.length<(DR.trees||260);t++){const p=shorePoint(z,3,DR.reach||40);if(p)trees.push(p);}
       for(let t=0;t<(z[4]||0)*8;t++){const p=shorePoint(z,6,30);if(p)roofs.push(p);}}
     if(trees.length){const tg=merge([[new THREE.CylinderGeometry(0.12,0.25,7,6).translate(0,2.5,0),'#8a847a'],[br(0.1,2.4,0.1,0,-0.6,0.6,5,0),'#8a847a'],[br(0.08,2,0.08,0,0.5,-0.5,5.4,0.2),'#7a756c'],[br(0.07,1.6,0.07,0.5,0,0,6,-0.4),'#7a756c']]);
-      const im=new THREE.InstancedMesh(tg,vmat,trees.length);trees.forEach(([x,z],i)=>{o.position.set(x,WY-1,z);o.rotation.set((hash3(x,z,1)-0.5)*0.2,hash3(x,z,2)*6.28,(hash3(x,z,3)-0.5)*0.2);o.scale.setScalar(0.6+hash3(x,z,4)*0.8);o.updateMatrix();im.setMatrixAt(i,o.matrix);});
+      const im=new THREE.InstancedMesh(tg,vmat,trees.length);trees.forEach(([x,z],i)=>{const s=0.6+hash3(x,z,4)*0.8,g=groundH(x,z),top=WY-1+6*s,sy=Number.isFinite(g)&&g<WY-1-s?(top-g)/7:s;   // the trunk stands on the bed, however deep the survey puts it, its top where it was
+        o.position.set(x,top-6*sy,z);o.rotation.set((hash3(x,z,1)-0.5)*0.2,hash3(x,z,2)*6.28,(hash3(x,z,3)-0.5)*0.2);o.scale.set(s,sy,s);o.updateMatrix();im.setMatrixAt(i,o.matrix);});
       im.castShadow=true;grp.add(im);detail.drownedTrees=trees.length;}
     if(roofs.length){const rg=merge([[bx(6,0.15,5,0,0,0),'#8a5a3a'],[bx(0.25,1.4,0.25,2.8,-0.5,2.3),'#b8b0a0'],[bx(0.25,1.4,0.25,-2.8,-0.5,2.3),'#b8b0a0']]);
       const im=new THREE.InstancedMesh(rg,vmat,roofs.length);roofs.forEach(([x,z],i)=>{o.position.set(x,WY+0.25,z);o.rotation.set(0.12,hash3(x,z,5)*6.28,0);o.scale.setScalar(1);o.updateMatrix();im.setMatrixAt(i,o.matrix);});grp.add(im);detail.drownedRoofs=roofs.length;}}

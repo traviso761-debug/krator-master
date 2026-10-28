@@ -319,7 +319,16 @@ def water_cut(t, water, waterways, wc):
 def lake_bed(t, water, lc):
     """terrain.lakeBed: the elevation tiles carry a lake as a flat sheet at its surface, so the ground meets the water
     plane all over it and shows through. Inside the named water areas (their islands left alone) the ground is cut to
-    `shore` metres under the surface at the edge, deepening by `slope` a metre out, to `depth` (Atitlán)."""
+    `shore` metres under the surface at the edge, deepening by `slope` a metre out, to `depth` (Atitlán).
+    With `grid` (a file from tools/grid-xyz.py, or one made another way in its shape: Crater Lake's USGS multibeam
+    survey, Atitlán's 2014 echo-sounder map) each cell takes the measured bed instead, its elevation above sea level
+    less terrain.datum; where the survey has no soundings (the first metres off the shore) the cut above stays.
+    With `scale` (metres) the cut eases instead of running straight: `shore` at the edge, toward `depth` as
+    1 - exp(-distance / scale), so a caldera lake has steep walls and a broad floor (Atitlán, until its survey is in).
+    `knolls` raise the bed where something stands up from it that the cut or a coarse survey does not have (Samabaj's
+    drowned island): each {"at": [lat, lon], "r": [east, north] half-widths of its top in metres, "top": its depth in
+    metres at the centre, "tilt": [east, north] metres shallower per metre that way across the top, "flank": metres
+    deeper per metre out from the top's edge}; the bed is the shallower of the two."""
     import numpy as np
     from matplotlib.path import Path as MPath
     from scipy import ndimage
@@ -341,8 +350,38 @@ def lake_bed(t, water, lc):
     M = m.reshape(nz, nx)
     dist = ndimage.distance_transform_edt(M) * step
     shore, slope, depth = float(lc.get("shore", 1.0)), float(lc.get("slope", 0.15)), float(lc.get("depth", 30))
-    cut = np.minimum(depth, shore + slope * np.maximum(0, dist - step * 0.5))
-    H = np.where(M, np.minimum(H, (-cut * 10).astype(np.int32)), H)
+    out = np.maximum(0, dist - step * 0.5)
+    if lc.get("scale"):
+        cut = shore + (depth - shore) * (1 - np.exp(-out / float(lc["scale"])))
+    else:
+        cut = np.minimum(depth, shore + slope * out)
+    bed = -cut
+    if lc.get("grid"):
+        G = json.load(open(os.path.join(ROOT, lc["grid"]), encoding="utf-8"))
+        gv = np.array([np.nan if v is None else v / 10 for v in G["h"]], dtype=np.float64).reshape(G["ny"], G["nx"])
+        ok = np.isfinite(gv)
+        fj = (LAT0 - Z / M_LAT - G["lat0"]) / G["dlat"]
+        fi = (LON0 + X / M_LON - G["lon0"]) / G["dlon"]
+        val = ndimage.map_coordinates(np.where(ok, gv, 0.0), [fj, fi], order=1, mode="constant", cval=0.0)
+        wt = ndimage.map_coordinates(ok.astype(np.float64), [fj, fi], order=1, mode="constant", cval=0.0)
+        datum = float((CITY.get("terrain") or {}).get("datum") or 0)
+        meas = np.where(wt > 0.5, val / np.maximum(wt, 1e-9) - datum, np.nan)   # the mean of the soundings round it
+        use = M & np.isfinite(meas)
+        bed = np.where(use, np.minimum(meas, -0.5), bed)
+        print(f"terrain.lakeBed: {int(use.sum())} of {int(M.sum())} cells from {lc['grid']}, deepest {-float(np.nanmin(np.where(use, meas, np.nan))):.1f} m")
+    for k in lc.get("knolls") or []:
+        kx, kz = (k["at"][1] - LON0) * M_LON, -(k["at"][0] - LAT0) * M_LAT
+        ex, nz_ = X - kx, -(Z - kz)   # east and north of the knoll's centre
+        rx, rn = (float(v) for v in k["r"])
+        e = np.sqrt((ex / rx) ** 2 + (nz_ / rn) ** 2)
+        te, tn = (float(v) for v in (k.get("tilt") or [0, 0]))
+        # the top: `top` deep at the centre, tilted, rounded 3 m at its edge; outside it the flank falls away
+        cx, cn = np.where(e > 1, ex / np.maximum(e, 1e-9), ex), np.where(e > 1, nz_ / np.maximum(e, 1e-9), nz_)
+        kd = float(k["top"]) - te * cx - tn * cn + 3 * np.minimum(e, 1) ** 2 + float(k.get("flank", 0.6)) * np.maximum(0, e - 1) * min(rx, rn)
+        bed = np.where(M, np.maximum(bed, -kd), bed)
+        print(f"terrain.lakeBed: a knoll at {k['at']}, {float(k['top']):.1f} m down at the top")
+    H = np.where(M, np.minimum(H, np.round(bed * 10).astype(np.int32)), H)
+    cut = -bed
     t["h"] = [int(v) for v in H.ravel()]
     print(f"terrain.lakeBed: {int(M.sum())} cells under {', '.join(sorted(names))}, to {float(cut[M].max()) if M.any() else 0:.0f} m")
 

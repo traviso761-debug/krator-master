@@ -21,6 +21,7 @@ import {obragris} from './obragris.js';
 import {painted} from './painted.js';
 import {walls} from './walls.js';
 import {waves} from './waves.js';
+import {underwater} from './underwater.js';
 import {events} from './events.js';
 import {dress} from '../core/dress.js';
 import {navmap} from '../core/navmap.js';
@@ -41,7 +42,7 @@ configureLoading({
     'Aldous Huxley called it Lake Como with several immense volcanoes: too much of a good thing.',
   ],
   prefix:'filling the caldera… ',labels:{'map-data':'reading the shore',ground:'raising the volcanoes',buildings:'building the towns',details:'laying the docks',landmarks:'raising the churches',el:'',traffic:'starting the lanchas',ui:'lighting the lamps'}});
-const ctx=window._iz={defaultCity:'atitlan',models:[iglesias,landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'cover',fn:cover},{name:'lake',fn:lake},{name:'waves',fn:waves},{name:'infill',fn:infill},{name:'casas',fn:casas},{name:'fincas',fn:fincas},{name:'obragris',fn:obragris},{name:'painted',fn:painted},{name:'walls',fn:walls},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'dress',fn:dress},{name:'streetlife',fn:streetlife},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
+const ctx=window._iz={defaultCity:'atitlan',models:[iglesias,landmarks],extras:[{name:'backdrop',fn:backdrop},{name:'cover',fn:cover},{name:'lake',fn:lake},{name:'waves',fn:waves},{name:'underwater',fn:underwater},{name:'infill',fn:infill},{name:'casas',fn:casas},{name:'fincas',fn:fincas},{name:'obragris',fn:obragris},{name:'painted',fn:painted},{name:'walls',fn:walls},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'dress',fn:dress},{name:'streetlife',fn:streetlife},{name:'traffic',fn:traffic},{name:'crowds',fn:crowds},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
 // with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
 if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 // each extra timed: its build time in the details (extraMs), so a slow load says which stage it is
