@@ -316,6 +316,73 @@ def water_cut(t, water, waterways, wc):
     print(f"terrain.cutWater: {int(m.sum())} cells under the mapped water cut to {lim / 10} m")
 
 
+def water_reaches(t, water, rc):
+    """terrain.reaches: a mountain river through a city is not one level. Each mapped water area named in `names`
+    is cut across its long axis into reaches `length` metres long, each drawn level at the lowest ground along it
+    less `below` metres, never lower than the reach downstream of it (the river runs toward `flows`: "west",
+    "east", "north" or "south"); the ground inside each reach is cut to `depth` metres under its water. The steps
+    between reaches read as the weirs a river like the Miljacka has."""
+    import numpy as np
+    from matplotlib.path import Path as MPath
+    nx, nz, step = t["nx"], t["nz"], t["step"]
+    x0, z0 = t["x0"] / 10, t["z0"] / 10
+    H = np.array(t["h"], dtype=np.int32).reshape(nz, nx)
+    X, Z = np.meshgrid(x0 + np.arange(nx) * step, z0 + np.arange(nz) * step)
+    pts = np.stack([X.ravel(), Z.ravel()], axis=1)
+    Hr = H.ravel()
+    names = set(rc.get("names") or [])
+    L, below, depth = float(rc.get("length", 120)), float(rc.get("below", 0.4)), float(rc.get("depth", 1.0))
+    flows = rc.get("flows", "west")
+    ax = 0 if flows in ("west", "east") else 1
+    up = 1 if flows in ("west", "north") else -1   # +1: upstream is toward +x (east) or +z (south)
+    def clip(poly, k, v, keep_ge):
+        out = []
+        for i in range(len(poly)):
+            a, b = poly[i], poly[(i + 1) % len(poly)]
+            ina, inb = (a[k] >= v) == keep_ge, (b[k] >= v) == keep_ge
+            if ina:
+                out.append(a)
+            if ina != inb:
+                f = (v - a[k]) / (b[k] - a[k])
+                out.append((a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f))
+        return out
+    new, nr = [], 0
+    for w in water:
+        if w.get("n") not in names or w.get("i"):
+            new.append(w)
+            continue
+        o = w["o"]
+        ring = [(o[i] / 10, o[i + 1] / 10) for i in range(0, len(o), 2)]
+        lo, hi = min(p[ax] for p in ring), max(p[ax] for p in ring)
+        n = max(1, int(np.ceil((hi - lo) / L)))
+        bands = [(lo + (hi - lo) * i / n, lo + (hi - lo) * (i + 1) / n) for i in range(n)]
+        if up < 0:
+            bands.reverse()    # walk the bands from downstream up
+        prev = None
+        for a, b in bands:
+            piece = clip(clip(ring, ax, a - 0.3, True), ax, b + 0.3, False)
+            if len(piece) < 3:
+                continue
+            m = MPath(piece).contains_points(pts, radius=step * 0.5)
+            if not m.any():
+                cx = sum(p[0] for p in piece) / len(piece); cz = sum(p[1] for p in piece) / len(piece)
+                m = (np.abs(pts[:, 0] - cx) < step) & (np.abs(pts[:, 1] - cz) < step)
+            if not m.any():
+                continue    # off the terrain grid
+            y = float(np.percentile(Hr[m], 10)) / 10 - below
+            if prev is not None:
+                y = max(y, prev)
+            prev = y
+            lim = int(round((y - depth) * 10))
+            cut = m & (Hr > lim)
+            Hr[cut] = lim
+            new.append({"o": [v for p in piece for v in (round(p[0] * 10), round(p[1] * 10))], "i": [], "n": w["n"], "y": round(y, 2)})
+            nr += 1
+    water[:] = new
+    t["h"] = [int(v) for v in Hr]
+    print(f"terrain.reaches: {nr} reaches, the water from {min(w['y'] for w in new if 'y' in w):.1f} to {max(w['y'] for w in new if 'y' in w):.1f} m")
+
+
 def terrain_grid():
     """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
     cfg = CITY.get("terrain")
@@ -706,6 +773,8 @@ def main():
     t = terrain_grid()
     if t and (CITY.get("terrain") or {}).get("cutWater"):
         water_cut(t, polys["water"], out.get("waterways") or [], CITY["terrain"]["cutWater"])
+    if t and (CITY.get("terrain") or {}).get("reaches"):
+        water_reaches(t, polys["water"], CITY["terrain"]["reaches"])
     if t:
         out["terrain"] = t
         lo, hi = min(t["h"]) / 10, max(t["h"]) / 10

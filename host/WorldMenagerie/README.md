@@ -419,6 +419,43 @@ Forth: 35,000 buildings on their real ground.
 - A landmark's `height` raises the mapped building under it (Chicago's towers use this), so a model's own heights
   are called `towerH`.
 
+**Sarajevo** (`sarajevo.html`, `src/sarajevo/`, `data/cities/sarajevo.json`). Today's city in the valley of the
+Miljacka between Trebević and the hills of the mahalas: Baščaršija and its mosques at the east end, the
+Austro-Hungarian centre, Marijin Dvor's towers to the west; 19,000 buildings on their real ground. Its history is
+played as events.
+- **The data** came from Geofabrik's Bosnia and Herzegovina extract (`tools/pbf-to-overpass.py`): Overpass was at
+  capacity.
+- **The river** falls about twenty metres through the city over weirs, so it is not one sheet: `terrain.reaches` (a
+  setting of `tools/build-osm-city.py`) cuts the named water areas into reaches along the river, each level just under
+  the lowest ground along it and never below the one downstream, and cuts the ground under each.
+- **Landmarks** (`src/sarajevo/landmarks.js`): the Sebilj; Gazi Husrev-beg's, the Emperor's and Ferhadija mosques
+  (portico of small domes, lead dome on its drum, pencil minaret, şadırvan); the Sahat-kula; the City Hall in Wittek's
+  striped pseudo-Moorish, from its mapped outline; the Latin Bridge's four arches with the eyes in its piers; the
+  Cathedral of the Sacred Heart; the Yellow Bastion and its cannon; the Avaz Twist Tower; the Holiday Inn in mustard
+  and brown; the Eternal Flame; the Trebević cable car with its gondolas running; the 1984 bobsleigh track with its
+  banking and graffiti (kept clear of the woodland by `treeKeepOut`); the Koševo stadium and its cauldron. More
+  places are cards only (Schiller's corner, Markale, the Inat House, Morića Han, the churches and the synagogue).
+- **Minarets** (`src/sarajevo/mosques.js`): every other mapped mosque gets its minaret: a stone one and a lead dome
+  when it is big enough, the whitewashed wooden minaret with its dark cone when it is a mahala's mesdžid. Their
+  balconies light at night.
+- **The mountains** (`src/sarajevo/backdrop.js`): past the map's edge, Igman, Bjelašnica, Trebević's summit, Jahorina
+  and the northern hills, from the real ground 80 km across at 400 m (`data/cities/sarajevo-far.json`, sampled from the
+  terrarium tiles at zoom 10): one mesh, coloured by height, sunk under the city inside the map.
+- **The graveyards** (`src/sarajevo/mezarje.js`): the 53 mapped cemeteries filled with their stones, nišani with
+  turbans and pointed tops in the mezarje, crosses and slabs where the name says so (Bare, the Jewish cemetery, the
+  churches'), leaning every way, in rows across the qibla. Each is built the first time the camera comes within
+  650 m, and shown only while it is that close.
+- **On the pavement** (`src/sarajevo/streets.js`): Sarajevo roses, the red resin in the shell scars, on the centre's
+  streets; the Meeting of Cultures line across Ferhadija.
+- **Trees and facades**: Trebević's beech, spruce and black pine, lindens and planes on the streets, plum trees in the
+  yards (`treeSpecies`); glass on the towers, balconies on the socialist blocks of Marijin Dvor and Koševo, ribbon
+  windows on the offices (`facadeStyles`).
+- **Events** (`src/sarajevo/events.js`), with captions: 28 June 1914 (the motorcade on the Appel Quay, the bomb at the
+  Ćumurija bridge, the wrong turn at the Latin Bridge and Princip outside Schiller's), the 1984 Olympics opening at
+  Koševo, a bob down the track, the night of 25 August 1992 when the National Library burned (the city blacked out,
+  ash falling, every window, lamp and the Eternal Flame out; told without anyone shown hurt), a Ramadan iftar cannon at sunset, the pigeons of Baščaršija, and a
+  ride up Trebević.
+
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
 the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts

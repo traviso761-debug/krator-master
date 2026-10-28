@@ -296,6 +296,14 @@ scene = true
 blurb = "The Old Town down its ridge from the Castle Rock, the New Town across the valley, and the haar off the Forth."
 
 [[route]]
+path = "/sarajevo"        # today's city from OpenStreetMap on its real ground, its history as events (src/sarajevo/)
+aliases = ["/sarajevo.html", "/sarajavo"]
+file = "sarajevo.html"
+title = "Sarajevo: massing model"
+scene = true
+blurb = "Baščaršija's minarets in the valley of the Miljacka, the cable car up Trebević, and the city's history as events."
+
+[[route]]
 path = "/olympic"         # a real place: the whole Olympic Peninsula on the real ground, from OpenStreetMap (src/olympic/, tools/make-olympic.py)
 aliases = ["/olympic.html", "/olympics", "/olympicnationalpark", "/peninsula"]
 file = "olympic.html"
