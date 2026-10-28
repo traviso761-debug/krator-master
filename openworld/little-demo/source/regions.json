@@ -9964,5 +9964,231 @@
   "notes": "",
   "kind": "biome",
   "createdAt": "2026-10-27T23:06:19.161Z"
+ },
+ {
+  "id": "rmvhighrift100",
+  "name": "High Rift",
+  "kind": "biome",
+  "color": "#b87333",
+  "points": [
+   [
+    1029,
+    1309
+   ],
+   [
+    1062,
+    1316
+   ],
+   [
+    1082,
+    1318
+   ],
+   [
+    1108,
+    1308
+   ],
+   [
+    1117,
+    1288
+   ],
+   [
+    1167,
+    1288
+   ],
+   [
+    1216,
+    1289
+   ],
+   [
+    1233,
+    1300
+   ],
+   [
+    1263,
+    1288
+   ],
+   [
+    1329,
+    1280
+   ],
+   [
+    1345,
+    1296
+   ],
+   [
+    1354,
+    1325
+   ],
+   [
+    1302,
+    1344
+   ],
+   [
+    1244,
+    1359
+   ],
+   [
+    1184,
+    1374
+   ],
+   [
+    1134,
+    1374
+   ],
+   [
+    1068,
+    1371
+   ],
+   [
+    1040,
+    1362
+   ],
+   [
+    1033,
+    1350
+   ],
+   [
+    1022,
+    1332
+   ],
+   [
+    1029,
+    1322
+   ]
+  ],
+  "notes": "The East Oidong Propagating Rift Zipper: ascending 3-step rift staircase (+2,250m to +4,250m), median Dorsal Wedge horst, Lake Verdigris and Lake Cinnabar, and western Opaline Cataract into Oidong Valley.",
+  "createdAt": "2026-10-28T13:00:00.000Z"
+ },
+ {
+  "id": "rmvstalkergate",
+  "name": "Stalker Gate",
+  "kind": "biome",
+  "color": "#8a9e8c",
+  "points": [
+   [
+    1083,
+    763
+   ],
+   [
+    1135,
+    781
+   ],
+   [
+    1189,
+    741
+   ],
+   [
+    1172,
+    830
+   ],
+   [
+    1172,
+    846
+   ],
+   [
+    1226,
+    956
+   ],
+   [
+    1252,
+    1057
+   ],
+   [
+    1219,
+    1077
+   ],
+   [
+    1197,
+    1098
+   ],
+   [
+    1190,
+    1121
+   ],
+   [
+    1167,
+    1063
+   ],
+   [
+    1153,
+    1027
+   ],
+   [
+    1132,
+    959
+   ],
+   [
+    1090,
+    911
+   ],
+   [
+    1075,
+    853
+   ],
+   [
+    1061,
+    810
+   ]
+  ],
+  "notes": "The 4-Way Graben-to-Highlands Pass Network (+1,680m to +3,150m) connecting Yuni, Loom-Chasms, Siphon Pits, and the Stalker Range, centered on the Gatehouse Pull-Apart and steaming Lake Vapora.",
+  "createdAt": "2026-10-28T13:00:00.000Z"
+ },
+ {
+  "id": "rmvregion101",
+  "name": "Region 101",
+  "kind": "biome",
+  "color": "#b89e82",
+  "points": [
+   [
+    1226,
+    956
+   ],
+   [
+    1289,
+    1004
+   ],
+   [
+    1390,
+    1021
+   ],
+   [
+    1494,
+    963
+   ],
+   [
+    1510,
+    1010
+   ],
+   [
+    1497,
+    1091
+   ],
+   [
+    1453,
+    1082
+   ],
+   [
+    1425,
+    1101
+   ],
+   [
+    1378,
+    1098
+   ],
+   [
+    1328,
+    1081
+   ],
+   [
+    1299,
+    1078
+   ],
+   [
+    1252,
+    1057
+   ]
+  ],
+  "notes": "Breached Diatremes & Contiguous Basin Threshold: intermediate tectonic threshold seamlessly joining Loom-Chasms and Siphon Pits as one contiguous mega-basin, with 4 breached explosion maars and connecting gorges.",
+  "createdAt": "2026-10-28T13:00:00.000Z"
  }
 ]

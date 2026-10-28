@@ -81,5 +81,8 @@
 {"px": [1412.0, 1222.0], "floor": 2207.6, "scale": 0.28, "radius": 2.8, "kind": "geyser"},
 {"px": [1396.0, 1209.0], "floor": 2269.4, "scale": 0.24, "radius": 2.4, "kind": "geyser"},
 {"px": [1346.0, 1246.0], "floor": 2251.0, "scale": 0.25, "radius": 2.5, "kind": "geyser"},
-{"px": [1440.0, 1152.0], "floor": 2277.5, "scale": 0.24, "radius": 2.4, "kind": "geyser"}
+{"px": [1440.0, 1152.0], "floor": 2277.5, "scale": 0.24, "radius": 2.4, "kind": "geyser"},
+{"px": [1188.0, 1326.0], "floor": 3100.0, "scale": 0.25, "radius": 2.5, "kind": "geyser"},
+{"px": [1152.0, 908.0], "floor": 1895.0, "scale": 0.26, "radius": 2.6, "kind": "geyser"},
+{"px": [1365.0, 1045.0], "floor": 2340.0, "scale": 0.24, "radius": 2.4, "kind": "geyser"}
 ]
