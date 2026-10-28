@@ -62,6 +62,17 @@ building engine is now named `core/engine`, not `core/kit`.
      - finer ground mesh near the camera.
   3. **Judge by eye with the owner**, on the three pages with switches for before and after, then add it to every turn's checklist.
   Budget it like the rest: measured, not assumed.
+- **Its water step, against `core/water/PRACTICE.md`:** most of it is covered (the audit, confluences, the network, the shore from
+  the ground, breakup). Four points the practice lacks, to take:
+  1. **The land side of the water edge:** `WATER.audit` checks water against ground only. Extend it, or a sibling check, so that
+     plants keep clear of the water's surface and the wet-ground band follows the water's real edge, not the mask. Worked example:
+     one shoreline and one junction with water, wet ground and plant edges matching. It pairs with the ground workstream.
+  2. **Water as fields:** the shore distance, depth and flow proximity, exported (for example `WATER.fieldAt`) as entries of the
+     environmental-field contract, so ground wetness and flora read the water's own numbers.
+  3. **Staged shore-grid bakes** where a grid causes a load hitch: measure first.
+  4. **The water ext modules' order** (55 after 22, 57 and its needs), declared to `core-tools`' `check_assembly`, so a build missing
+     one fails at build time.
+  Skip its "preserve advected ripples on rivers": the owner asked for breakup on rivers too (eastabyss, `WATER.breakupFlows`).
 
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
