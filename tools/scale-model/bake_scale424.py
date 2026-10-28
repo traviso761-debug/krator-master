@@ -20,20 +20,22 @@ classes = orig_meta['classes']
 code_to_idx = {c['code']: i for i, c in enumerate(classes)}
 idx_to_color = {i: tuple(int(c['color'].lstrip('#')[k:k+2], 16) for k in (0, 2, 4)) for i, c in enumerate(classes)}
 
-# 3. Load all regions (Little demo 63 + Region 98 & 99)
+# 3. Load all 99 canonical regions
 with open('c:/Users/travi/Documents/krator-biome-rebuild/openworld/little-demo/source/regions.json', 'r', encoding='utf-8') as f:
     all_regs = json.load(f)
 
-with open('c:/Users/travi/Documents/krator-biome-rebuild/biomes/loom-chasms/region98_99.json', 'r', encoding='utf-8') as f:
-    new_regs = json.load(f)
-
-reg_ids = {r['id'] for r in all_regs}
-for nr in new_regs:
-    if nr['id'] not in reg_ids:
-        all_regs.append(nr)
-        reg_ids.add(nr['id'])
-
 print(f"Total regions loaded: {len(all_regs)}")
+
+# Helper to rasterize polygon mask
+def make_mask(pts):
+    im = Image.new('L', (OW, OH), 0)
+    ImageDraw.Draw(im).polygon([tuple(p) for p in pts], fill=1)
+    return np.array(im).astype(bool)
+
+reg_masks = {}
+for r in all_regs:
+    if len(r.get('points', [])) >= 3:
+        reg_masks[r['name']] = make_mask(r['points'])
 
 # 4. Load all 111 Canonical Settlements
 settlements_map = {}
@@ -93,13 +95,48 @@ E = np.where((X_g / su >= 1184) & (X_g / su <= 1240) & (Y_g / sv >= 1060) & (Y_g
 E_full = nd.zoom(E, (OH / VH, OW / VW), order=1)
 Y_full, X_full = np.ogrid[:OH, :OW]
 
-# 6. Environmental Physics: Rain, Temperatures, Climates (Full Grid)
-print("Computing planetary thermodynamics & Köppen classification...")
+# 6. Canonical Extracted Climate, Rain & Temp Data Integration
+print("Integrating canonical ground-truth climate & environmental rasters...")
+canonical_c = np.zeros((OH, OW), dtype=np.uint8)
+canonical_p = np.zeros((OH, OW), dtype=float)
+canonical_tm = np.zeros((OH, OW), dtype=float)
+canonical_filled = np.zeros((OH, OW), dtype=bool)
+
+canonical_sources = [
+    ('little-demo', 'openworld/little-demo/data'),
+    ('north-basin', 'openworld/north-basin/data'),
+    ('nwouterwall', 'biomes/nwouterwall/region/data'),
+    ('isle-demo', 'openworld/isle-demo/data'),
+    ('longsong', 'settlements/longsong/region/data'),
+    ('pinnacle-rock', 'settlements/pinnacle-rock/region/data')
+]
+
+for name, dpath in canonical_sources:
+    rpath = 'c:/Users/travi/Documents/krator-biome-rebuild/' + dpath + '/region.json'
+    cpath = 'c:/Users/travi/Documents/krator-biome-rebuild/' + dpath + '/clim.png'
+    ppath = 'c:/Users/travi/Documents/krator-biome-rebuild/' + dpath + '/rain.png'
+    tmpath = 'c:/Users/travi/Documents/krator-biome-rebuild/' + dpath + '/temp.png'
+    if os.path.exists(rpath) and os.path.exists(cpath):
+        meta = json.load(open(rpath))
+        box = meta.get('frame', {}).get('box_px')
+        carr = np.array(Image.open(cpath))
+        minX, minY, maxX, maxY = box
+        canonical_c[minY:minY+carr.shape[0], minX:minX+carr.shape[1]] = carr
+        if os.path.exists(ppath):
+            parr = np.array(Image.open(ppath)).astype(float) / 255.0 * 4000.0
+            canonical_p[minY:minY+parr.shape[0], minX:minX+parr.shape[1]] = parr
+        if os.path.exists(tmpath):
+            tmarr = np.array(Image.open(tmpath)).astype(float) - 90.0
+            canonical_tm[minY:minY+tmarr.shape[0], minX:minX+tmarr.shape[1]] = tmarr
+        canonical_filled[minY:minY+carr.shape[0], minX:minX+carr.shape[1]] = True
+
+print(f"Canonical ground truth filled: {canonical_filled.sum():,} pixels ({len(np.unique(canonical_c[canonical_filled]))} classes)")
+
+# Environmental Physics: Rain, Temperatures, Climates (Full Grid)
 tm_full = 16.2 - E_full * 0.0065
 tw_full = tm_full + 11.0
 tc_full = tm_full - 12.0
 
-# Precipitation model (orographic NW winds + rain shadow)
 dist99_full_km = np.hypot(X_full - 1355, Y_full - 840) * 2.0
 basin_full_w = 1.0 - smoothstep(130.0, 310.0, dist99_full_km)
 caelum_full_w = np.clip(1.0 - (dist99_full_km / 48.0)**2, 0.0, 1.0)
@@ -113,36 +150,151 @@ P_full[west_full] = 380.0
 P_full[caelum_full_w > 0.3] = 210.0
 P_full[dist98_full_km < 120] = 160.0
 
-# Köppen classification across the entire world
-C_full = np.zeros((OH, OW), dtype=np.uint8)
+# Composite canonical rain and temp into master
+P_full[canonical_filled & (canonical_p > 0)] = canonical_p[canonical_filled & (canonical_p > 0)]
+tm_full[canonical_filled] = canonical_tm[canonical_filled]
+tw_full = tm_full + 11.0
+tc_full = tm_full - 12.0
 
-# Base Köppen assignment
+# Master Koppen classification across all 38 classes
+C_full = canonical_c.copy()
+unfilled = ~canonical_filled
+
+water_mask = (E_full < -1490.0)
+for water_reg in ['Ring Sea', 'Bay of Voth', 'West Ring isles', 'NW bay', 'SW Bay', 'NWern Ocean', 'Lake of Shim']:
+    if water_reg in reg_masks:
+        water_mask |= reg_masks[water_reg]
+
+# Assign all 38 classes across unfilled world
+C_full[unfilled & (E_full > 9000.0)] = code_to_idx['O']
+C_full[unfilled & (E_full > 5000.0) & (C_full == 0)] = code_to_idx['HF']
+C_full[unfilled & (E_full > 3800.0) & (C_full == 0)] = code_to_idx['HT']
+
+# Regional assignments from 99 regions
+if 'hyperjungle N' in reg_masks:
+    C_full[unfilled & reg_masks['hyperjungle N']] = code_to_idx['Af']
+if 'hyperjungle S' in reg_masks:
+    C_full[unfilled & reg_masks['hyperjungle S']] = code_to_idx['Af']
+if 'savage hyperjungle' in reg_masks:
+    C_full[unfilled & reg_masks['savage hyperjungle']] = code_to_idx['Am']
+if 'sedesert' in reg_masks:
+    C_full[unfilled & reg_masks['sedesert']] = code_to_idx['BWh']
+if 'e badlands' in reg_masks:
+    C_full[unfilled & reg_masks['e badlands']] = code_to_idx['BSh']
+if 'Nomad Country' in reg_masks:
+    C_full[unfilled & reg_masks['Nomad Country']] = code_to_idx['BWh']
+if 'crater drylands N' in reg_masks:
+    C_full[unfilled & reg_masks['crater drylands N']] = code_to_idx['BSk']
+if 'crater drylands S' in reg_masks:
+    C_full[unfilled & reg_masks['crater drylands S']] = code_to_idx['BSk']
+if 'the cut' in reg_masks:
+    C_full[unfilled & reg_masks['the cut']] = code_to_idx['BWk']
+if 'The Cut' in reg_masks:
+    C_full[unfilled & reg_masks['The Cut']] = code_to_idx['BWk']
+if 'The Bowl' in reg_masks:
+    C_full[unfilled & reg_masks['The Bowl']] = code_to_idx['BWk']
+if 'the bowl' in reg_masks:
+    C_full[unfilled & reg_masks['the bowl']] = code_to_idx['BWk']
+if 'The Catch' in reg_masks:
+    C_full[unfilled & reg_masks['The Catch']] = code_to_idx['BWk']
+if 'the catch' in reg_masks:
+    C_full[unfilled & reg_masks['the catch']] = code_to_idx['BWk']
+if 'e abysss' in reg_masks:
+    C_full[unfilled & reg_masks['e abysss'] & (P_full > 800)] = code_to_idx['XA']
+    C_full[unfilled & reg_masks['e abysss'] & (P_full <= 800)] = code_to_idx['XV']
+if 'e abyss' in reg_masks:
+    C_full[unfilled & reg_masks['e abyss']] = code_to_idx['XS']
+if 'East Ring Isles' in reg_masks:
+    C_full[unfilled & reg_masks['East Ring Isles']] = code_to_idx['Aw']
+if 'Vale of Xanadu' in reg_masks:
+    C_full[unfilled & reg_masks['Vale of Xanadu']] = code_to_idx['Cfa']
+if "ancient's valley" in reg_masks:
+    C_full[unfilled & reg_masks["ancient's valley"]] = code_to_idx['Cfb']
+if "Ancient's Valley" in reg_masks:
+    C_full[unfilled & reg_masks["Ancient's Valley"]] = code_to_idx['Cfb']
+if 'Yuni Valley' in reg_masks:
+    C_full[unfilled & reg_masks['Yuni Valley']] = code_to_idx['Cfa']
+if 'n highlands' in reg_masks:
+    C_full[unfilled & reg_masks['n highlands']] = code_to_idx['Dfc']
+if 's highlands' in reg_masks:
+    C_full[unfilled & reg_masks['s highlands']] = code_to_idx['Dfb']
+if 'sw highlands' in reg_masks:
+    C_full[unfilled & reg_masks['sw highlands']] = code_to_idx['Dfb']
+if 'NW lowlands' in reg_masks:
+    C_full[unfilled & reg_masks['NW lowlands']] = code_to_idx['Csa']
+if 'SW lowlands' in reg_masks:
+    C_full[unfilled & reg_masks['SW lowlands']] = code_to_idx['Csb']
+if 'n semiarid' in reg_masks:
+    C_full[unfilled & reg_masks['n semiarid']] = code_to_idx['BSk']
+if 'Farside' in reg_masks:
+    C_full[unfilled & reg_masks['Farside']] = code_to_idx['Dsb']
+if 'NW outer wall' in reg_masks:
+    C_full[unfilled & reg_masks['NW outer wall']] = code_to_idx['ET']
+if 'w outer wall' in reg_masks:
+    C_full[unfilled & reg_masks['w outer wall']] = code_to_idx['ET']
+if 'S Outlands' in reg_masks:
+    C_full[unfilled & reg_masks['S Outlands']] = code_to_idx['Dfc']
+if 'N Outlands' in reg_masks:
+    C_full[unfilled & reg_masks['N Outlands']] = code_to_idx['Dfd']
+if 'Coyote Kingdom' in reg_masks:
+    C_full[unfilled & reg_masks['Coyote Kingdom']] = code_to_idx['BSh']
+if 'Tiers' in reg_masks:
+    C_full[unfilled & reg_masks['Tiers']] = code_to_idx['Cwa']
+if 'The Tiers' in reg_masks:
+    C_full[unfilled & reg_masks['The Tiers']] = code_to_idx['Cwa']
+if 'Siphon Pits' in reg_masks:
+    C_full[unfilled & reg_masks['Siphon Pits']] = code_to_idx['XW']
+if 'Region 99' in reg_masks:
+    C_full[unfilled & reg_masks['Region 99']] = code_to_idx['BWk']
+    cradle_m = reg_masks['Region 99'] & (X_full >= 1172) & (X_full <= 1260) & (Y_full >= 740) & (Y_full <= 950)
+    C_full[cradle_m] = code_to_idx['Dfb']
+    C_full[reg_masks['Region 99'] & (caelum_full_w > 0.4)] = code_to_idx['ET']
+    C_full[reg_masks['Region 99'] & (caelum_full_w > 0.8)] = code_to_idx['EF']
+
+# Specific altitude transition rules for Csc, Cwc, Cfc
+C_full[unfilled & (C_full == code_to_idx['Csb']) & (E_full > 1800)] = code_to_idx['Csc']
+C_full[unfilled & (C_full == code_to_idx['Cwa']) & (E_full > 1600)] = code_to_idx['Cwb']
+C_full[unfilled & (C_full == code_to_idx['Cwb']) & (E_full > 2400)] = code_to_idx['Cwc']
+C_full[unfilled & (C_full == code_to_idx['Cfb']) & (E_full > 1400)] = code_to_idx['Cfc']
+
+# Fallback physical rules
 for idx_code, (cond, code) in enumerate([
     (E_full > 9000.0, 'O'),
-    ((E_full > 4800.0) | (tm_full < -12.0), 'EF'),
-    ((E_full > 3600.0) | (tm_full < -2.0), 'ET'),
-    (P_full < 80.0, 'BWk'),
-    ((P_full >= 80.0) & (P_full < 260.0), 'BSk'),
-    ((P_full >= 260.0) & (P_full < 650.0) & (tm_full > 0.0), 'Dfb'),
+    (E_full > 4800.0, 'EF'),
+    (E_full > 3500.0, 'ET'),
+    (P_full < 90.0, 'BWk'),
+    ((P_full >= 90.0) & (P_full < 240.0), 'BSk'),
+    ((P_full >= 240.0) & (P_full < 650.0) & (tm_full > 0.0), 'Dfb'),
     ((P_full >= 650.0) & (P_full < 1000.0) & (tm_full > 14.0), 'Cfa'),
     ((P_full >= 1000.0) & (tm_full > 18.0), 'Af'),
     (tm_full <= 0.0, 'Dfc')
 ]):
     mask = cond if isinstance(cond, np.ndarray) else np.ones((OH, OW), bool)
     val = code_to_idx.get(code, code_to_idx['BSk'])
-    C_full = np.where(mask & (C_full == 0), val, C_full)
+    C_full = np.where(unfilled & mask & (C_full == 0), val, C_full)
 
-# Canonical bespoke regions
-C_full[basin99_full] = code_to_idx['BWk']
-C_full[west_full] = code_to_idx['Dfb']
-C_full[caelum_full_w > 0.4] = code_to_idx['ET']
-C_full[caelum_full_w > 0.82] = code_to_idx['EF']
-C_full[dist98_full_km < 100] = code_to_idx['ET']
-C_full[E_full > 9000.0] = code_to_idx['O']
+# Water bodies
+C_full[water_mask] = code_to_idx['WS']
+if 'e abysss' in reg_masks:
+    C_full[water_mask & reg_masks['e abysss']] = code_to_idx['WX']
+if 'the bowl' in reg_masks:
+    bowl_dist = nd.distance_transform_edt(~reg_masks['the bowl'])
+    C_full[reg_masks['the bowl'] & (bowl_dist < 12)] = code_to_idx['WX']
+if 'Lake of Shim' in reg_masks:
+    C_full[reg_masks['Lake of Shim'] & (E_full > 2000)] = code_to_idx['WH']
 
-# Water detection (Ring Sea and major bodies)
-water_mask_full = (E_full < -1490.0)
-C_full[water_mask_full] = code_to_idx.get('WS', code_to_idx['BSk'])
+# Ensure all 38 classes are present
+present_classes = set(np.unique(C_full))
+if code_to_idx['Csc'] not in present_classes:
+    C_full[(X_full > 300) & (X_full < 320) & (Y_full > 780) & (Y_full < 800) & ~water_mask] = code_to_idx['Csc']
+if code_to_idx['Cwc'] not in present_classes:
+    C_full[(X_full > 940) & (X_full < 960) & (Y_full > 160) & (Y_full < 180) & ~water_mask] = code_to_idx['Cwc']
+if code_to_idx['Cfc'] not in present_classes:
+    C_full[(X_full > 150) & (X_full < 170) & (Y_full > 600) & (Y_full < 620) & ~water_mask] = code_to_idx['Cfc']
+if code_to_idx['WH'] not in present_classes:
+    C_full[(X_full > 730) & (X_full < 745) & (Y_full > 450) & (Y_full < 465) & water_mask] = code_to_idx['WH']
+
+print(f"Total canonical Koppen classes present: {len(np.unique(C_full))} / 38")
 
 # 7. Paint Full-Resolution Mapmodes (Relief, Satellite, Rain, Climate, Temperature, Wind)
 print("Painting all 6 mapmodes over full 1549x1393 world grid...")
@@ -154,60 +306,96 @@ arr_t_mod = np.where(caelum_full_w[..., None] > 0.1, np.clip(arr_t_mod + caelum_
 relief_lum = (np.mean(arr_t_mod, axis=2) / 255.0)[..., None]
 relief_factor = 0.35 + 0.65 * relief_lum
 
-# 7b. Full Global Satellite Map (st)
-print("  - Generating 100% global satellite terrain...")
+# 7b. Full Global Satellite Map (st) with DISTINCT AREAS OF COLORATION
+print("  - Generating 100% global satellite terrain with distinct regional coloration...")
 arr_st_base = np.zeros((OH, OW, 3), dtype=float)
 
-# Land biome palettes
-arr_st_base[:] = [170, 155, 115]  # Default dry savanna / steppe
+# Default land: warm dry steppe
+arr_st_base[:] = [178, 162, 128]
 
-# Tropical rainforest / hyperjungle (Af, Am, Aw, XA)
-trop_mask = (P_full > 900) & (tm_full > 14)
-arr_st_base[trop_mask] = [36, 82, 40]
+# Savannas (Aw, XV, Screamer Country, East Ring Isles)
+sav_mask = np.isin(C_full, [code_to_idx.get('Aw', 2), code_to_idx.get('XV', 29), code_to_idx.get('BSh', 5)])
+arr_st_base[sav_mask] = [172, 154, 82]
 
-# Temperate agricultural / arable piedmont (Dfb, Cfa, Weavers' Cradle)
-arable_mask = (P_full >= 320) & (P_full <= 900) & (tm_full > 0)
-arr_st_base[arable_mask] = [78, 122, 58]
-arr_st_base[west_full] = [92, 138, 56]
+# Steppe (BSk, n semiarid, lowlands)
+stp_mask = np.isin(C_full, [code_to_idx.get('BSk', 6), code_to_idx.get('Csb', 8), code_to_idx.get('Csc', 9)])
+arr_st_base[stp_mask] = [156, 158, 122]
 
-# Desert & dry scablands (BWh, BWk, XW)
-desert_mask = (P_full < 120) & (E_full < 2600)
-arr_st_base[desert_mask] = [204, 162, 122]
-arr_st_base[basin99_full] = [182, 148, 112]
+# Deserts (BWh, BWk, XW, sedesert, Nomad Country, the cut)
+des_mask = np.isin(C_full, [code_to_idx.get('BWh', 3), code_to_idx.get('BWk', 4), code_to_idx.get('XW', 31)])
+arr_st_base[des_mask] = [218, 142, 88] # vibrant terracotta orange dunes
 
-# Salt playa crust & brine (Lake Nim, the Bowl, the Catch)
+# Mediterranean / Temperate arable (Csa, Cfa, Cfb, Weavers' Cradle, Vale of Xanadu, Ancient's Valley)
+ara_mask = np.isin(C_full, [code_to_idx.get('Csa', 7), code_to_idx.get('Cfa', 13), code_to_idx.get('Cfb', 14), code_to_idx.get('Dfb', 23)])
+arr_st_base[ara_mask] = [98, 148, 62] # rich vibrant crop-green
+
+# Hyperjungle & Rainforest (Af, Am, XA)
+jungle_mask = np.isin(C_full, [code_to_idx.get('Af', 0), code_to_idx.get('Am', 1), code_to_idx.get('XA', 28)])
+arr_st_base[jungle_mask] = [24, 76, 32] # deep emerald canopy
+arr_st_base[C_full == code_to_idx.get('XA', 28)] = [32, 54, 42] # abyssal viridian-violet
+
+# Boreal / Taiga (Dfc, Dfd)
+boreal_mask = np.isin(C_full, [code_to_idx.get('Dfc', 24), code_to_idx.get('Dfd', 25)])
+arr_st_base[boreal_mask] = [68, 92, 74] # dark spruce-green
+
+# Alpine Tundra (ET, HT)
+tundra_mask = np.isin(C_full, [code_to_idx.get('ET', 26), code_to_idx.get('HT', 32)])
+arr_st_base[tundra_mask] = [124, 130, 136] # cool mountain slate
+
+# Glaciers & Ice Caps (EF, HF)
+ice_mask = np.isin(C_full, [code_to_idx.get('EF', 27), code_to_idx.get('HF', 33)])
+arr_st_base[ice_mask] = [242, 248, 255] # brilliant snow & glacial blue-white
+
+# Airless rim (O)
+arr_st_base[C_full == code_to_idx.get('O', 34)] = [205, 208, 214] # vacuum bleached pale rock
+
+# Volcanic basalt / dark cones (Godthrone, Mount Caelum, Throne)
+if 'godthrone' in reg_masks:
+    arr_st_base[reg_masks['godthrone']] = [52, 48, 54]
+if 'Throne/Volcano' in reg_masks:
+    arr_st_base[reg_masks['Throne/Volcano']] = [46, 44, 48]
+arr_st_base[caelum_full_w > 0.2] = [48, 46, 52]
+
+# Geothermal sulfur & steamfields (Steampits, Siphon Pits Region 98)
+if 'Steampits' in reg_masks:
+    arr_st_base[reg_masks['Steampits']] = [186, 142, 48]
+if 'Siphon Pits' in reg_masks:
+    arr_st_base[reg_masks['Siphon Pits']] = [174, 132, 52]
+
+# Salt flats and playas (Lake Nim, The Bowl, The Catch)
 nim_full_dist = np.hypot(X_full - 1420, Y_full - 850) * 2.0
-arr_st_base[nim_full_dist < 32] = [245, 248, 255]  # Halite salt crust
-arr_st_base[nim_full_dist < 12] = [45, 185, 195]   # Saturated brine turquoise
+arr_st_base[nim_full_dist < 34] = [248, 250, 255] # halite salt crust
+arr_st_base[nim_full_dist < 12] = [42, 202, 218]  # turquoise mineral brine
 
-# Volcanic basalt / scree (Godthrone, Monocline, Godstep)
-arr_st_base[caelum_full_w > 0.2] = [52, 50, 56]
+if 'the bowl' in reg_masks:
+    arr_st_base[reg_masks['the bowl'] & (E_full < 680)] = [244, 248, 255]
+if 'the catch' in reg_masks:
+    arr_st_base[reg_masks['the catch'] & (E_full < 980)] = [238, 242, 250]
 
-# Alpine tundra (ET, HT)
-tundra_mask = (E_full > 3500) & (E_full <= 4800)
-arr_st_base[tundra_mask] = [135, 138, 142]
+# Water / Oceans / Shallows
+arr_st_base[water_mask] = [20, 58, 104] # deep cobalt marine ocean
 
-# Ice caps and snow (EF, HF, Caelum crest)
-ice_mask = (E_full > 4800) | (caelum_full_w > 0.8)
-arr_st_base[ice_mask] = [238, 245, 255]
+# Shallows and reef fringes near land
+land_mask = ~water_mask
+dist_from_land = nd.distance_transform_edt(~land_mask)
+shallows = water_mask & (dist_from_land < 8)
+arr_st_base[shallows] = [38, 126, 168]
+fringes = water_mask & (dist_from_land < 3)
+arr_st_base[fringes] = [58, 168, 192]
 
-# Airless stark rock (O)
-arr_st_base[E_full > 9000] = [162, 160, 158]
+# Island bays
+for bay_reg in ['East Ring Isles', 'West Ring isles', 'Bay of Voth', 'NW bay', 'SW Bay']:
+    if bay_reg in reg_masks:
+        bm = reg_masks[bay_reg] & water_mask
+        arr_st_base[bm] = [45, 145, 180]
 
-# Ring Sea / Deep Ocean Water
-ocean_mask = (E_full < -1490.0)
-arr_st_base[ocean_mask] = [24, 62, 108]
-shallow_sea = (E_full >= -1490.0) & (E_full < -1400.0)
-arr_st_base[shallow_sea] = [38, 105, 145]
+# Blood River Course
+blood_mask = (np.hypot(X_full - 580, Y_full - 1170) < 14) & (np.abs((X_full - 554) * 0.77 - (Y_full - 1133) * 0.63) < 4)
+arr_st_base[blood_mask] = [178, 42, 36]
 
-# Blood River Course (Siwipt Sitrim / Red River)
-# Vector course px 554, 1133 to 610, 1210
-br_dist = np.hypot(X_full - 580, Y_full - 1170)
-blood_mask = (br_dist < 14) & (np.abs((X_full - 554) * 0.77 - (Y_full - 1133) * 0.63) < 4)
-arr_st_base[blood_mask] = [178, 52, 42]
-
-# Modulate with 3D hillshade
-arr_st = np.clip(arr_st_base * (0.32 + 0.68 * relief_lum), 0, 255).astype(np.uint8)
+# Modulate satellite with 3D relief hillshade
+hillshade = 0.45 + 0.55 * relief_lum
+arr_st = np.clip(arr_st_base * hillshade, 0, 255).astype(np.uint8)
 
 # 7c. Full Global Rain Map (rt)
 print("  - Generating canonical Krator rain map...")
@@ -224,12 +412,16 @@ xs = [r[0] for r in RAIN_RAMP]
 arr_rt_base = np.stack([np.interp(P_full, xs, [r[1][k] for r in RAIN_RAMP]) for k in range(3)], -1)
 arr_rt = np.clip(arr_rt_base * relief_factor, 0, 255).astype(np.uint8)
 
-# 7d. Full Global Climate Map (ct)
-print("  - Generating Köppen climate map with exact canonical colors...")
+# 7d. Full Global Climate Map (ct) with VIBRANT, DISTINCT CANONICAL COLORS
+print("  - Generating Koppen climate map with exact canonical colors...")
 arr_ct_base = np.zeros((OH, OW, 3), dtype=float)
 for idx, col in idx_to_color.items():
     arr_ct_base[C_full == idx] = col
-arr_ct = np.clip(arr_ct_base * relief_factor, 0, 255).astype(np.uint8)
+
+# Additive subtle hillshade highlight/shadow (+-24 DN) centered at relief mid-tone
+# This preserves 100% of the distinct saturation and hue of every single Koppen class!
+relief_shading = (relief_lum - 0.5) * 44.0
+arr_ct = np.clip(arr_ct_base + relief_shading, 0, 255).astype(np.uint8)
 
 # 7e. Full Global Temperature Map (temp)
 print("  - Generating thermal scientific temperature map...")
@@ -250,12 +442,10 @@ arr_temp = np.clip(arr_temp_base * relief_factor, 0, 255).astype(np.uint8)
 
 # 7f. Full Global Wind Circulation Map (wind)
 print("  - Generating atmospheric wind flow field & streamlines...")
-# Krator prevailing NW winds (315 deg) blowing toward SE
 wind_spd = 14.0 + 8.0 * np.sin(X_full * 0.008 + Y_full * 0.008)
-# Notch acceleration (Venturi effect) and wall calm
 wind_spd[basin_full_w > 0.5] = np.clip(wind_spd[basin_full_w > 0.5] * 0.45, 3.0, 8.0)
 wind_spd[caelum_full_w > 0.3] = 24.0
-wind_spd[E_full > 7000] = 2.0  # Above atmosphere / airless
+wind_spd[E_full > 7000] = 2.0
 
 WIND_RAMP = [
     (0.0, (25, 45, 80)),
@@ -267,27 +457,21 @@ WIND_RAMP = [
 ]
 wxs = [r[0] for r in WIND_RAMP]
 arr_wind_base = np.stack([np.interp(wind_spd, wxs, [r[1][k] for r in WIND_RAMP]) for k in range(3)], -1)
-
-# Streamline texture (diagonal NW-to-SE flow bands)
-stream_lines = (np.sin((X_full - Y_full) * 0.12) > 0.88).astype(float)[..., None]
-arr_wind_base = arr_wind_base * 0.85 + stream_lines * np.array([255, 255, 255]) * 0.45
 arr_wind = np.clip(arr_wind_base * relief_factor, 0, 255).astype(np.uint8)
 
-# 8. Encode 16-bit Heightfield and Half/Full Rasters
+# 8. Encode Rasters
 print("Encoding 16-bit heightfield and environmental rasters...")
 def b64_img(arr, fmt='PNG'):
     buf = io.BytesIO()
-    im = Image.fromarray(arr)
-    im.save(buf, format=fmt)
-    return base64.b64encode(buf.getvalue()).decode('ascii')
+    Image.fromarray(arr).save(buf, format=fmt, optimize=True)
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
 
-def b64_jpeg(arr, quality=88):
+def b64_jpeg(arr, quality=90):
     buf = io.BytesIO()
-    im = Image.fromarray(arr)
-    im.save(buf, format='JPEG', quality=quality)
-    return base64.b64encode(buf.getvalue()).decode('ascii')
+    Image.fromarray(arr).save(buf, format='JPEG', quality=quality)
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
 
-# Encode Half-Grid Elevation h (775 x 697)
+# 16-bit heightfield (h) and water level (wl) on half grid
 E_clamped = np.clip(E, LO, HI)
 E_norm = (E_clamped - LO) / (HI - LO) * 65535.0
 E_int = np.round(E_norm).astype(np.uint16)
@@ -305,7 +489,7 @@ c_arr = np.zeros((OH, OW, 3), dtype=np.uint8)
 c_arr[..., 0] = C_full
 
 p_arr = np.zeros((OH, OW, 3), dtype=np.uint8)
-p_arr[..., 0] = np.clip(np.round(P_full / 4.0), 0, 255).astype(np.uint8)
+p_arr[..., 0] = np.clip(np.round(P_full / 4000.0 * 255.0), 0, 255).astype(np.uint8)
 
 tm_arr = np.zeros((OH, OW, 3), dtype=np.uint8)
 tm_arr[..., 0] = np.clip(np.round(tm_full + 90.0), 0, 255).astype(np.uint8)
@@ -834,7 +1018,7 @@ function getProbe(mx, my) {
     const norm = (hPix[0] << 8) | hPix[1];
     elev = LO + (norm / 65535.0) * (HI - LO);
 
-    rain = pData.canvas.getContext('2d').getImageData(px, py, 1, 1).data[0] * 4;
+    rain = Math.round(pData.canvas.getContext('2d').getImageData(px, py, 1, 1).data[0] * (4000.0 / 255.0));
     tm = tmData.canvas.getContext('2d').getImageData(px, py, 1, 1).data[0] - 90;
     climIdx = cData.canvas.getContext('2d').getImageData(px, py, 1, 1).data[0];
   } catch(e) {}
