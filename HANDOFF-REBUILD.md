@@ -30,6 +30,22 @@ allow-list it). The probe-points, probe broad-phase and camera-guard entries in 
 fragment and drops the copy. Check that the Iziz palace's own camera guard (`95q-palace-cutlabels.js`) came out. The plan's shared
 building engine is now named `core/engine`, not `core/kit`.
 
+**ChatGPT's visual integration plan, reviewed 2026-10-28** (`C:/Users/travi/Documents/Codex/2026-10-28/referenced-chatgpt-conversation-this-is-an/outputs/BIOME-REBUILD-VISUAL-PLAN.md`):
+- **Take:**
+  - **an environmental-field contract**, a small core-pass item: one documented set of host fields with units (elevation, slope,
+    wet, salt, flow proximity, shore distance and depth, cold, upland, exposed rock) in `core/biome/README.md`, each derived from
+    terrain, shore, strata and scour data. Kits name these ad hoc today (`wet`, `salt`, `upland`, `flow`, `mist`...). Each turn maps
+    its fields to the contract.
+  - **a material channel audit:** check which packed maps `KGROUND` layers and the biome materials actually consume (normal,
+    roughness) before claiming PBR; then a coverage matrix (surface, maps, consumers, gaps) beside `core/materials/PLAN.md`.
+  - **three lines in every turn's checklist:** ground layers are driven by documented masks; strata and scour outputs feed placement
+    (ledges, talus, bars), not only the height; wet ground and flora read the same shore distance as the water (`WATER.audit`).
+- **Skip:**
+  - its pilot-first sequence: the owner's pair order stands, and nine biomes are already done;
+  - its shoreline and junction step: `core/water/PRACTICE.md`, `WATER.audit`, confluences and `claude/water-core-pass` cover it;
+  - its budgets step: `GRAPHIC-LOAD.md`, `PERF.md`, and `BUDGETS.json` on `claude/core-tools-57240f` cover it;
+  - "ground layering" as new work: `KGROUND` is already in the universal set (`BACKPORT.md` section 1).
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.
