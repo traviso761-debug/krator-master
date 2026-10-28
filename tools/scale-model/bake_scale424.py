@@ -38,18 +38,8 @@ for r in all_regs:
         reg_masks[r['name']] = make_mask(r['points'])
 
 # 4. Load all 111 Canonical Settlements
-settlements_map = {}
-for sett_path in [
-    'c:/Users/travi/Documents/krator-biome-rebuild/openworld/little-demo/source/settlements.json',
-    'c:/Users/travi/Documents/krator-biome-rebuild/openworld/north-basin/source/settlements.json',
-    'c:/Users/travi/Documents/krator-biome-rebuild/openworld/isle-demo/source/settlements.json'
-]:
-    if os.path.exists(sett_path):
-        with open(sett_path, 'r', encoding='utf-8') as f:
-            for s in json.load(f):
-                settlements_map[s['id']] = s
-
-all_settlements = list(settlements_map.values())
+with open('c:/Users/travi/Documents/krator-biome-rebuild/openworld/little-demo/source/settlements.json', 'r', encoding='utf-8') as f:
+    all_settlements = json.load(f)
 print(f"Total canonical settlements loaded: {len(all_settlements)}")
 
 # 5. Construct Elevation on Half Grid (775 x 697) and Full Grid (1549 x 1393)
@@ -697,7 +687,7 @@ html_content = r'''<!DOCTYPE html>
       <button class="tab-btn on" data-tab="political">Pol<b>0</b></button>
       <button class="tab-btn" data-tab="geographic">Geo<b>0</b></button>
       <button class="tab-btn" data-tab="biome">Bio<b>0</b></button>
-      <button class="tab-btn" data-tab="settlements">Sett<b>111</b></button>
+      <button class="tab-btn" data-tab="settlements">Sett<b id="settCountB">112</b></button>
       <button class="tab-btn" data-tab="stations">Sites<b>8</b></button>
     </div>
     <input type="text" id="rSearch" placeholder="Filter regions or settlements...">
@@ -708,6 +698,7 @@ html_content = r'''<!DOCTYPE html>
       <button class="pill-btn" data-type="arcology">Arcologies</button>
       <button class="pill-btn" data-type="ruin">Ruins</button>
       <button class="pill-btn" data-type="outpost">Outposts</button>
+      <button class="pill-btn" data-type="cavern">Caverns</button>
     </div>
   </div>
 
@@ -925,6 +916,10 @@ function drawSettlementsOnOverlay() {
     } else if (type === 'outpost') {
       og.fillStyle = '#f59e0b'; og.strokeStyle = '#000'; og.lineWidth = 1.5;
       og.beginPath(); og.moveTo(-4, -4); og.lineTo(4, -4); og.lineTo(3, 4); og.lineTo(0, 6); og.lineTo(-3, 4); og.closePath();
+      og.fill(); og.stroke();
+    } else if (type === 'cavern') {
+      og.fillStyle = '#a855f7'; og.strokeStyle = '#000'; og.lineWidth = 1.5;
+      og.beginPath(); og.arc(0, 0, 4, Math.PI, 0, false); og.lineTo(4, 4); og.lineTo(-4, 4); og.closePath();
       og.fill(); og.stroke();
     } else {
       og.fillStyle = '#38bdf8'; og.strokeStyle = '#000'; og.lineWidth = 1.5;

@@ -1,902 +1,1010 @@
 [
-{
-"createdAt": "2026-09-30T06:28:53.671Z",
-"name": "Pontus",
-"notes": "",
-"px": 430,
-"py": 509,
-"type": "village",
-"id": "s0w2mwd7xq"
-},
-{
-"createdAt": "2026-09-24T06:35:43.456Z",
-"name": "Mav's Refuge",
-"notes": "",
-"px": 752,
-"py": 477,
-"type": "city",
-"id": "s0z3wezzll"
-},
-{
-"createdAt": "2026-09-24T08:34:11.747Z",
-"name": "Bastion",
-"notes": "",
-"px": 176,
-"py": 508,
-"type": "outpost",
-"id": "s10ioj4r5u"
-},
-{
-"createdAt": "2026-10-02T03:03:33.560Z",
-"name": "Girder",
-"notes": "",
-"px": 767,
-"py": 539,
-"type": "city",
-"id": "s1pfsi9dc9"
-},
-{
-"createdAt": "2026-09-24T08:31:13.437Z",
-"name": "Centrum",
-"notes": "",
-"px": 223,
-"py": 315,
-"type": "city",
-"id": "s1ugpi6uas"
-},
-{
-"createdAt": "2026-10-02T03:03:32.895Z",
-"name": "Voth",
-"notes": "",
-"px": 433,
-"py": 654,
-"type": "city",
-"id": "s1uytg83lf"
-},
-{
-"createdAt": "2026-09-24T08:10:16.710Z",
-"name": "Lunapolis",
-"notes": "",
-"px": 724,
-"py": 540,
-"type": "ruin",
-"id": "s2199308wr"
-},
-{
-"createdAt": "2026-09-24T07:42:09.473Z",
-"name": "Roketstad",
-"notes": "",
-"px": 337,
-"py": 354,
-"type": "city",
-"id": "s28hf1s9ab"
-},
-{
-"createdAt": "2026-09-24T07:57:31.199Z",
-"name": "Furrow",
-"notes": "",
-"px": 1004,
-"py": 309,
-"type": "outpost",
-"id": "s2iq6zqe2x"
-},
-{
-"createdAt": "2026-09-24T06:35:43.702Z",
-"name": "Stair",
-"notes": "",
-"px": 827,
-"py": 1113,
-"type": "ruined arcology",
-"id": "s2o8f4p123"
-},
-{
-"createdAt": "2026-09-24T08:09:56.040Z",
-"name": "Nazar",
-"notes": "",
-"px": 310,
-"py": 749,
-"type": "ruin",
-"id": "s3i61t95z5"
-},
-{
-"createdAt": "2026-09-24T07:19:11.992Z",
-"name": "Chimes",
-"notes": "",
-"px": 196,
-"py": 1062,
-"type": "ruined arcology",
-"id": "s4fnuph33n"
-},
-{
-"createdAt": "2026-09-24T06:35:43.644Z",
-"name": "Blade",
-"notes": "",
-"px": 179,
-"py": 692,
-"type": "ruined arcology",
-"id": "s4tcb5iuwc"
-},
-{
-"createdAt": "2026-09-24T07:53:25.110Z",
-"name": "Mungo",
-"notes": "",
-"px": 1049,
-"py": 495,
-"type": "village",
-"id": "s4xb8r0vmy"
-},
-{
-"createdAt": "2026-09-24T07:15:32.194Z",
-"name": "Theodiga",
-"notes": "",
-"px": 636,
-"py": 1205,
-"type": "arcology",
-"id": "s4zvgepuru"
-},
-{
-"createdAt": "2026-09-28T02:12:45.696Z",
-"name": "Erewhon",
-"notes": "",
-"px": 528,
-"py": 1173,
-"type": "city",
-"id": "s57bkv9741"
-},
-{
-"createdAt": "2026-09-24T07:48:46.424Z",
-"name": "Cthonos",
-"notes": "",
-"px": 254,
-"py": 1173,
-"type": "ruined arcology",
-"id": "s5lwt460n0"
-},
-{
-"createdAt": "2026-10-02T03:03:33.713Z",
-"name": "Theodiga",
-"notes": "",
-"px": 302,
-"py": 514,
-"type": "city",
-"id": "s5uv5t3bnf"
-},
-{
-"createdAt": "2026-09-30T06:31:20.101Z",
-"name": "Zey'danin",
-"notes": "",
-"px": 523,
-"py": 530,
-"type": "village",
-"id": "s5x27pj6hn"
-},
-{
-"createdAt": "2026-09-30T06:30:50.862Z",
-"name": "Nereus",
-"notes": "",
-"px": 490,
-"py": 475,
-"type": "village",
-"id": "s6roqnupzz"
-},
-{
-"createdAt": "2026-09-24T08:11:52.016Z",
-"name": "Babel",
-"notes": "",
-"px": 184,
-"py": 578,
-"type": "ruined arcology",
-"id": "s7g2cj1u2b"
-},
-{
-"createdAt": "2026-09-24T06:58:10.771Z",
-"name": "Temora",
-"notes": "",
-"px": 490,
-"py": 553,
-"type": "village",
-"id": "s7u81vhk60"
-},
-{
-"createdAt": "2026-09-24T08:45:06.204Z",
-"name": "Lipp",
-"notes": "",
-"px": 419,
-"py": 289,
-"type": "village",
-"id": "s8fkrfok8y"
-},
-{
-"createdAt": "2026-09-24T07:06:00.632Z",
-"name": "Noa's Regret",
-"notes": "",
-"px": 624,
-"py": 536,
-"type": "ruined arcology",
-"id": "s8mjs5h5cx"
-},
-{
-"createdAt": "2026-10-02T03:03:33.187Z",
-"name": "Hexahedron",
-"notes": "",
-"px": 555,
-"py": 338,
-"type": "city",
-"id": "s8ts6dep91"
-},
-{
-"createdAt": "2026-10-02T03:03:33.296Z",
-"name": "Torus",
-"notes": "",
-"px": 502,
-"py": 677,
-"type": "city",
-"id": "s9lgumheyh"
-},
-{
-"createdAt": "2026-09-24T07:47:24.837Z",
-"name": "The Tubes",
-"notes": "",
-"px": 336,
-"py": 1217,
-"type": "cavern",
-"id": "sa8xk6pimb"
-},
-{
-"createdAt": "2026-09-24T08:21:26.761Z",
-"name": "Farport",
-"notes": "",
-"px": 27,
-"py": 260,
-"type": "city",
-"id": "sakq13nyhr"
-},
-{
-"createdAt": "2026-10-02T03:03:33.814Z",
-"name": "Lutze",
-"notes": "",
-"px": 608,
-"py": 798,
-"type": "city",
-"id": "sbdor4sbi1"
-},
-{
-"createdAt": "2026-09-30T06:23:19.800Z",
-"name": "Tethis",
-"notes": "",
-"px": 461,
-"py": 445,
-"type": "arcology",
-"id": "sbrpoyrmbq"
-},
-{
-"createdAt": "2026-09-24T08:12:21.102Z",
-"name": "Dorado",
-"notes": "",
-"px": 211,
-"py": 634,
-"type": "ruin",
-"id": "sbxpx1u95q"
-},
-{
-"createdAt": "2026-09-24T08:29:42.074Z",
-"name": "Agropolis",
-"notes": "",
-"px": 445,
-"py": 587,
-"type": "ruin",
-"id": "sc3u7qalqi"
-},
-{
-"createdAt": "2026-09-24T08:59:53.073Z",
-"name": "Veladiga",
-"notes": "",
-"px": 1070,
-"py": 616,
-"type": "ruined arcology",
-"id": "sc9a368p4q"
-},
-{
-"createdAt": "2026-09-24T09:41:09.279Z",
-"name": "Wheel",
-"notes": "",
-"px": 331,
-"py": 126,
-"type": "ruined arcology",
-"id": "scpk6azekh"
-},
-{
-"createdAt": "2026-09-24T09:06:43.149Z",
-"name": "Corpus",
-"notes": "",
-"px": 248,
-"py": 363,
-"type": "village",
-"id": "sdgzodxb0k"
-},
-{
-"createdAt": "2026-10-02T03:03:31.918Z",
-"name": "Verge",
-"notes": "",
-"px": 991,
-"py": 616,
-"type": "city",
-"id": "sduqx62i09"
-},
-{
-"createdAt": "2026-09-24T08:57:53.602Z",
-"name": "Fort Vaklu",
-"notes": "",
-"px": 712,
-"py": 582,
-"type": "outpost",
-"id": "se4hiep1n7"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Almua",
-"notes": "",
-"px": 446,
-"py": 553,
-"type": "city",
-"id": "seed00"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Span",
-"notes": "",
-"px": 282,
-"py": 680,
-"type": "ruined arcology",
-"id": "seed01"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Dalab",
-"notes": "",
-"px": 192,
-"py": 782,
-"type": "city",
-"id": "seed05"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Girder",
-"notes": "",
-"px": 767,
-"py": 539,
-"type": "village",
-"id": "seed07"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Iziz",
-"notes": "",
-"px": 691,
-"py": 655,
-"type": "city",
-"id": "seed10"
-},
-{
-"createdAt": "2026-09-24T00:00:00.000Z",
-"name": "Shim",
-"notes": "",
-"px": 382,
-"py": 788,
-"type": "city",
-"id": "seed14"
-},
-{
-"createdAt": "2026-09-24T19:09:48.611Z",
-"name": "Daranch",
-"notes": "",
-"px": 255,
-"py": 819,
-"type": "village",
-"id": "semn6wzmqx"
-},
-{
-"createdAt": "2026-09-24T08:37:21.763Z",
-"name": "Leng",
-"notes": "",
-"px": 218,
-"py": 224,
-"type": "ruined arcology",
-"id": "sevq8lqqjy"
-},
-{
-"createdAt": "2026-09-24T08:32:34.664Z",
-"name": "Henge",
-"notes": "",
-"px": 185,
-"py": 405,
-"type": "arcology",
-"id": "sf6a9gdawx"
-},
-{
-"createdAt": "2026-09-24T07:16:16.398Z",
-"name": "Strongbow",
-"notes": "",
-"px": 754,
-"py": 1264,
-"type": "arcology",
-"id": "sfgtxw10kr"
-},
-{
-"createdAt": "2026-09-24T08:18:21.409Z",
-"name": "Cascade",
-"notes": "",
-"px": 296,
-"py": 511,
-"type": "arcology",
-"id": "sgjwyb4xj5"
-},
-{
-"createdAt": "2026-09-24T09:10:01.358Z",
-"name": "Glint",
-"notes": "",
-"px": 628,
-"py": 123,
-"type": "village",
-"id": "sgl1i58a0d"
-},
-{
-"createdAt": "2026-09-24T08:14:05.155Z",
-"name": "Necropolis",
-"notes": "",
-"px": 134,
-"py": 614,
-"type": "ruin",
-"id": "si1wh7atlt"
-},
-{
-"createdAt": "2026-09-30T06:22:57.639Z",
-"name": "Ys",
-"notes": "",
-"px": 517,
-"py": 408,
-"type": "city",
-"id": "siauw28o8v"
-},
-{
-"createdAt": "2026-09-24T08:07:45.307Z",
-"name": "Kierson",
-"notes": "",
-"px": 612,
-"py": 407,
-"type": "village",
-"id": "sigv04s59y"
-},
-{
-"createdAt": "2026-09-24T06:35:43.553Z",
-"name": "Drum",
-"notes": "",
-"px": 401,
-"py": 602,
-"type": "arcology",
-"id": "sirb5um6cr"
-},
-{
-"createdAt": "2026-10-02T03:03:33.405Z",
-"name": "Almua",
-"notes": "",
-"px": 446,
-"py": 553,
-"type": "city",
-"id": "sjau3958qz"
-},
-{
-"createdAt": "2026-09-24T06:49:16.343Z",
-"name": "Wing",
-"notes": "",
-"px": 427,
-"py": 712,
-"type": "ruined arcology",
-"id": "sjgv4qfmg4"
-},
-{
-"createdAt": "2026-09-24T08:19:15.186Z",
-"name": "Glaive",
-"notes": "",
-"px": 327,
-"py": 404,
-"type": "village",
-"id": "skamx0ylbr"
-},
-{
-"createdAt": "2026-09-24T07:35:46.046Z",
-"name": "Qiblai",
-"notes": "",
-"px": 691,
-"py": 1236,
-"type": "city",
-"id": "skm4jjo2vl"
-},
-{
-"createdAt": "2026-09-24T06:35:43.372Z",
-"name": "Verge",
-"notes": "",
-"px": 991,
-"py": 616,
-"type": "city",
-"id": "sktiwnbzfi"
-},
-{
-"createdAt": "2026-10-02T03:03:33.612Z",
-"name": "Mav's Refuge",
-"notes": "",
-"px": 752,
-"py": 477,
-"type": "city",
-"id": "skukf2qmmq"
-},
-{
-"createdAt": "2026-09-24T08:02:12.676Z",
-"name": "Port  Tobin",
-"notes": "",
-"px": 660,
-"py": 643,
-"type": "village",
-"id": "skwl1d2hdu"
-},
-{
-"createdAt": "2026-09-24T07:08:13.644Z",
-"name": "Arcbeam",
-"notes": "",
-"px": 744,
-"py": 728,
-"type": "arcology",
-"id": "skz25tuq0w"
-},
-{
-"createdAt": "2026-09-24T07:55:03.078Z",
-"name": "Shade",
-"notes": "",
-"px": 957,
-"py": 555,
-"type": "outpost",
-"id": "slfozs6c7z"
-},
-{
-"createdAt": "2026-09-24T07:21:37.390Z",
-"name": "Cube",
-"notes": "",
-"px": 448,
-"py": 1237,
-"type": "ruined arcology",
-"id": "slonhq0jgv"
-},
-{
-"createdAt": "2026-09-24T07:28:07.129Z",
-"name": "Sauropolis",
-"notes": "",
-"px": 493,
-"py": 1266,
-"type": "city",
-"id": "slrodrkrls"
-},
-{
-"createdAt": "2026-09-24T07:11:20.037Z",
-"name": "Mantis",
-"notes": "",
-"px": 831,
-"py": 816,
-"type": "village",
-"id": "slw9dufqfs"
-},
-{
-"createdAt": "2026-10-02T03:03:32.910Z",
-"name": "Hook",
-"notes": "",
-"px": 537,
-"py": 596,
-"type": "city",
-"id": "sm3ft5vrof"
-},
-{
-"createdAt": "2026-09-30T06:30:11.944Z",
-"name": "Trigon",
-"notes": "",
-"px": 450,
-"py": 410,
-"type": "arcology",
-"id": "smc9wif24a"
-},
-{
-"createdAt": "2026-09-24T08:09:37.426Z",
-"name": "Tallhouse",
-"notes": "",
-"px": 411,
-"py": 854,
-"type": "outpost",
-"id": "smqy5z5eek"
-},
-{
-"createdAt": "2026-09-24T08:40:01.386Z",
-"name": "Ardent",
-"notes": "",
-"px": 579,
-"py": 242,
-"type": "city",
-"id": "sn6y4sx8tr"
-},
-{
-"createdAt": "2026-09-24T07:52:18.533Z",
-"name": "Reed",
-"notes": "",
-"px": 1005,
-"py": 346,
-"type": "village",
-"id": "sndrdffkyg"
-},
-{
-"createdAt": "2026-09-24T07:14:18.212Z",
-"name": "Hub 01",
-"notes": "",
-"px": 1072,
-"py": 1079,
-"type": "ruined arcology",
-"id": "sodpa02bfv"
-},
-{
-"createdAt": "2026-09-24T07:01:13.588Z",
-"name": "Dilihan",
-"notes": "",
-"px": 472,
-"py": 333,
-"type": "city",
-"id": "solqo7hz7s"
-},
-{
-"createdAt": "2026-09-24T08:54:30.089Z",
-"name": "Talia",
-"notes": "",
-"px": 801,
-"py": 609,
-"type": "city",
-"id": "sor1zqih8x"
-},
-{
-"createdAt": "2026-10-02T03:03:33.761Z",
-"name": "Fridon",
-"notes": "",
-"px": 755,
-"py": 601,
-"type": "city",
-"id": "sp58alfxmc"
-},
-{
-"createdAt": "2026-10-02T03:03:33.001Z",
-"name": "Shim",
-"notes": "",
-"px": 371,
-"py": 700,
-"type": "city",
-"id": "spa1cfulch"
-},
-{
-"createdAt": "2026-09-24T06:35:43.414Z",
-"name": "Hexahedron",
-"notes": "",
-"px": 555,
-"py": 338,
-"type": "arcology",
-"id": "spmfhg8a3e"
-},
-{
-"createdAt": "2026-09-24T07:29:33.755Z",
-"name": "Komodo",
-"notes": "",
-"px": 593,
-"py": 1287,
-"type": "village",
-"id": "spnqhezhiw"
-},
-{
-"createdAt": "2026-09-24T06:35:43.394Z",
-"name": "Voth",
-"notes": "",
-"px": 433,
-"py": 654,
-"type": "city",
-"id": "spsiqnb1oo"
-},
-{
-"createdAt": "2026-09-24T06:35:43.735Z",
-"name": "Longsong",
-"notes": "",
-"px": 954,
-"py": 1296,
-"type": "village",
-"id": "sq80bzd7ep"
-},
-{
-"createdAt": "2026-09-24T08:44:26.763Z",
-"name": "Glade",
-"notes": "",
-"px": 497,
-"py": 135,
-"type": "village",
-"id": "sqhfpfioua"
-},
-{
-"createdAt": "2026-10-02T03:03:33.662Z",
-"name": "Beast Rider 3",
-"notes": "",
-"px": 721,
-"py": 361,
-"type": "city",
-"id": "srvtlt2j6l"
-},
-{
-"createdAt": "2026-10-02T03:03:33.077Z",
-"name": "Dalabd",
-"notes": "",
-"px": 192,
-"py": 725,
-"type": "city",
-"id": "sryxqimlk8"
-},
-{
-"createdAt": "2026-09-24T07:02:44.541Z",
-"name": "Yuni",
-"notes": "",
-"px": 991,
-"py": 759,
-"type": "city",
-"id": "ss0il0ejb7"
-},
-{
-"createdAt": "2026-09-24T09:47:31.438Z",
-"name": "Pluton",
-"notes": "",
-"px": 471,
-"py": 998,
-"type": "ruined arcology",
-"id": "ssdy2b2rxc"
-},
-{
-"createdAt": "2026-09-24T09:02:20.268Z",
-"name": "Septagon",
-"notes": "",
-"px": 480,
-"py": 203,
-"type": "arcology",
-"id": "ssj8mvie4p"
-},
-{
-"createdAt": "2026-09-24T08:06:51.663Z",
-"name": "Pinnacle Rock",
-"notes": "",
-"px": 737,
-"py": 354,
-"type": "village",
-"id": "staiytii0y"
-},
-{
-"createdAt": "2026-09-24T08:36:12.297Z",
-"name": "Yith",
-"notes": "",
-"px": 74,
-"py": 88,
-"type": "village",
-"id": "svd298453u"
-},
-{
-"createdAt": "2026-09-24T08:34:34.209Z",
-"name": "Carcosa",
-"notes": "",
-"px": 123,
-"py": 482,
-"type": "ruin",
-"id": "svfznb8426"
-},
-{
-"createdAt": "2026-09-24T06:35:43.401Z",
-"name": "Hook",
-"notes": "",
-"px": 537,
-"py": 596,
-"type": "city",
-"id": "sw5e8sq9s4"
-},
-{
-"createdAt": "2026-09-24T08:15:05.677Z",
-"name": "Footfall",
-"notes": "",
-"px": 288,
-"py": 437,
-"type": "ruin",
-"id": "sx0yra3bdm"
-},
-{
-"createdAt": "2026-09-24T07:03:02.057Z",
-"name": "Locus",
-"notes": "",
-"px": 995,
-"py": 713,
-"type": "village",
-"id": "sx4srhrf5g"
-},
-{
-"createdAt": "2026-09-24T07:30:51.335Z",
-"name": "Strongwall",
-"notes": "",
-"px": 642,
-"py": 1304,
-"type": "outpost",
-"id": "sxan7r1sln"
-},
-{
-"createdAt": "2026-09-24T08:58:29.006Z",
-"name": "Pylon",
-"notes": "",
-"px": 597,
-"py": 672,
-"type": "arcology",
-"id": "sxoqgjn7y0"
-},
-{
-"createdAt": "2026-10-02T03:03:32.953Z",
-"name": "Iziz",
-"notes": "",
-"px": 691,
-"py": 655,
-"type": "city",
-"id": "sxxrgmrk8c"
-},
-{
-"createdAt": "2026-09-24T07:18:10.163Z",
-"name": "Ledge",
-"notes": "",
-"px": 160,
-"py": 1007,
-"type": "arcology",
-"id": "sxyznayzgc"
-},
-{
-"createdAt": "2026-09-24T06:35:43.420Z",
-"name": "Torus",
-"notes": "",
-"px": 502,
-"py": 677,
-"type": "arcology",
-"id": "sy42jwlyk4"
-},
-{
-"createdAt": "2026-09-24T08:49:01.801Z",
-"name": "Serai",
-"notes": "",
-"px": 654,
-"py": 224,
-"type": "city",
-"id": "sy92b28k8i"
-},
-{
-"createdAt": "2026-09-24T08:35:17.150Z",
-"name": "Fulcrum",
-"notes": "",
-"px": 339,
-"py": 266,
-"type": "city",
-"id": "szao16nrmx"
-},
-{
-"createdAt": "2026-09-24T07:32:48.269Z",
-"name": "Gila",
-"notes": "",
-"px": 381,
-"py": 1155,
-"type": "village",
-"id": "sze26pgivd"
-},
-{
-"createdAt": "2026-09-24T07:37:47.486Z",
-"name": "Tuatara",
-"notes": "",
-"px": 546,
-"py": 1224,
-"type": "village",
-"id": "szv27b2reu"
-}
+ {
+  "id": "sc3u7qalqi",
+  "name": "Agropolis",
+  "type": "ruin",
+  "px": 445,
+  "py": 587,
+  "notes": "",
+  "createdAt": "2026-09-24T08:29:42.074Z"
+ },
+ {
+  "id": "sjau3958qz",
+  "name": "Almua",
+  "type": "city",
+  "px": 446,
+  "py": 553,
+  "notes": "",
+  "createdAt": "2026-10-02T03:03:33.405Z"
+ },
+ {
+  "id": "skz25tuq0w",
+  "name": "Arcbeam",
+  "type": "arcology",
+  "px": 744,
+  "py": 728,
+  "notes": "",
+  "createdAt": "2026-09-24T07:08:13.644Z"
+ },
+ {
+  "id": "sn6y4sx8tr",
+  "name": "Ardent",
+  "type": "city",
+  "px": 579,
+  "py": 242,
+  "notes": "",
+  "createdAt": "2026-09-24T08:40:01.386Z"
+ },
+ {
+  "id": "s7g2cj1u2b",
+  "name": "Babel",
+  "type": "ruined arcology",
+  "px": 184,
+  "py": 578,
+  "notes": "",
+  "createdAt": "2026-09-24T08:11:52.016Z"
+ },
+ {
+  "id": "sjqk469u0k",
+  "name": "Bastion",
+  "type": "outpost",
+  "px": 264,
+  "py": 297,
+  "notes": "",
+  "createdAt": "2026-10-20T05:19:11.356Z"
+ },
+ {
+  "id": "s4t3y092qc",
+  "name": "Bipo",
+  "type": "village",
+  "px": 728,
+  "py": 486,
+  "notes": "",
+  "createdAt": "2026-10-24T01:21:21.120Z"
+ },
+ {
+  "id": "s4tcb5iuwc",
+  "name": "Blade",
+  "type": "ruined arcology",
+  "px": 179,
+  "py": 692,
+  "notes": "",
+  "createdAt": "2026-09-24T06:35:43.644Z"
+ },
+ {
+  "id": "srg92iy8js",
+  "name": "Boatmurder",
+  "type": "outpost",
+  "px": 494,
+  "py": 74,
+  "notes": "",
+  "createdAt": "2026-10-15T11:37:47.206Z"
+ },
+ {
+  "id": "svfznb8426",
+  "name": "Carcosa",
+  "type": "ruin",
+  "px": 123,
+  "py": 482,
+  "notes": "",
+  "createdAt": "2026-09-24T08:34:34.209Z"
+ },
+ {
+  "id": "sgjwyb4xj5",
+  "name": "Cascade",
+  "type": "arcology",
+  "px": 296,
+  "py": 511,
+  "notes": "",
+  "createdAt": "2026-09-24T08:18:21.409Z"
+ },
+ {
+  "id": "s4fnuph33n",
+  "name": "Chimes",
+  "type": "ruined arcology",
+  "px": 196,
+  "py": 1062,
+  "notes": "",
+  "createdAt": "2026-09-24T07:19:11.992Z"
+ },
+ {
+  "id": "sdgzodxb0k",
+  "name": "Corpus",
+  "type": "ruin",
+  "px": 248,
+  "py": 363,
+  "notes": "",
+  "createdAt": "2026-09-24T09:06:43.149Z"
+ },
+ {
+  "id": "soksvzt1h9",
+  "name": "Coyote Canyon",
+  "type": "village",
+  "px": 993,
+  "py": 170,
+  "notes": "",
+  "createdAt": "2026-10-27T00:31:54.621Z"
+ },
+ {
+  "id": "sd1o6zmnnn",
+  "name": "Crescent",
+  "type": "ruined arcology",
+  "px": 722,
+  "py": 364,
+  "notes": "",
+  "createdAt": "2026-10-24T01:15:34.232Z"
+ },
+ {
+  "id": "s5lwt460n0",
+  "name": "Cthonos",
+  "type": "ruined arcology",
+  "px": 254,
+  "py": 1173,
+  "notes": "",
+  "createdAt": "2026-09-24T07:48:46.424Z"
+ },
+ {
+  "id": "slonhq0jgv",
+  "name": "Cube",
+  "type": "ruined arcology",
+  "px": 448,
+  "py": 1237,
+  "notes": "",
+  "createdAt": "2026-09-24T07:21:37.390Z"
+ },
+ {
+  "id": "seed05",
+  "name": "Dalab",
+  "type": "city",
+  "px": 192,
+  "py": 782,
+  "notes": "",
+  "createdAt": "2026-09-24T00:00:00.000Z"
+ },
+ {
+  "id": "semn6wzmqx",
+  "name": "Daranch",
+  "type": "village",
+  "px": 255,
+  "py": 819,
+  "notes": "",
+  "createdAt": "2026-09-24T19:09:48.611Z"
+ },
+ {
+  "id": "sx1xr1r6pd",
+  "name": "Dhelv",
+  "type": "cavern",
+  "px": 568,
+  "py": 446,
+  "notes": "",
+  "createdAt": "2026-10-18T02:20:07.788Z"
+ },
+ {
+  "id": "solqo7hz7s",
+  "name": "Dilihan",
+  "type": "city",
+  "px": 472,
+  "py": 333,
+  "notes": "",
+  "createdAt": "2026-09-24T07:01:13.588Z"
+ },
+ {
+  "id": "sbxpx1u95q",
+  "name": "Dorado",
+  "type": "ruin",
+  "px": 211,
+  "py": 634,
+  "notes": "",
+  "createdAt": "2026-09-24T08:12:21.102Z"
+ },
+ {
+  "id": "sirb5um6cr",
+  "name": "Drum",
+  "type": "arcology",
+  "px": 401,
+  "py": 602,
+  "notes": "",
+  "createdAt": "2026-09-24T06:35:43.553Z"
+ },
+ {
+  "id": "s57bkv9741",
+  "name": "Erehwon",
+  "type": "city",
+  "px": 528,
+  "py": 1173,
+  "notes": "",
+  "createdAt": "2026-09-28T02:12:45.696Z"
+ },
+ {
+  "id": "sakq13nyhr",
+  "name": "Farport",
+  "type": "city",
+  "px": 27,
+  "py": 260,
+  "notes": "",
+  "createdAt": "2026-09-24T08:21:26.761Z"
+ },
+ {
+  "id": "su9oc1m9io",
+  "name": "Flooded Tower",
+  "type": "ruined arcology",
+  "px": 760,
+  "py": 512,
+  "notes": "",
+  "createdAt": "2026-10-24T01:34:35.390Z"
+ },
+ {
+  "id": "sx0yra3bdm",
+  "name": "Footfall",
+  "type": "ruin",
+  "px": 288,
+  "py": 437,
+  "notes": "",
+  "createdAt": "2026-09-24T08:15:05.677Z"
+ },
+ {
+  "id": "s226vxz5x8",
+  "name": "Fort Ebon",
+  "type": "ruin",
+  "px": 423,
+  "py": 452,
+  "notes": "",
+  "createdAt": "2026-10-26T20:42:58.184Z"
+ },
+ {
+  "id": "sj2usd3tg4",
+  "name": "Fort Kalor",
+  "type": "ruin",
+  "px": 591,
+  "py": 363,
+  "notes": "",
+  "createdAt": "2026-10-24T01:41:35.928Z"
+ },
+ {
+  "id": "s1kaqxmg10",
+  "name": "Fort Kreia",
+  "type": "ruin",
+  "px": 777,
+  "py": 406,
+  "notes": "",
+  "createdAt": "2026-10-24T01:09:24.562Z"
+ },
+ {
+  "id": "s5c6ysqazg",
+  "name": "Fort Ordo",
+  "type": "ruin",
+  "px": 788,
+  "py": 501,
+  "notes": "",
+  "createdAt": "2026-10-24T01:10:40.273Z"
+ },
+ {
+  "id": "se4hiep1n7",
+  "name": "Fort Vaklu",
+  "type": "outpost",
+  "px": 712,
+  "py": 582,
+  "notes": "",
+  "createdAt": "2026-09-24T08:57:53.602Z"
+ },
+ {
+  "id": "sp58alfxmc",
+  "name": "Fridon",
+  "type": "city",
+  "px": 755,
+  "py": 601,
+  "notes": "",
+  "createdAt": "2026-10-02T03:03:33.761Z"
+ },
+ {
+  "id": "swbjnpbdar",
+  "name": "Fulcrum",
+  "type": "arcology",
+  "px": 137,
+  "py": 291,
+  "notes": "",
+  "createdAt": "2026-10-20T05:14:38.242Z"
+ },
+ {
+  "id": "s2iq6zqe2x",
+  "name": "Furrow",
+  "type": "outpost",
+  "px": 1004,
+  "py": 309,
+  "notes": "",
+  "createdAt": "2026-09-24T07:57:31.199Z"
+ },
+ {
+  "id": "sze26pgivd",
+  "name": "Gila",
+  "type": "village",
+  "px": 381,
+  "py": 1155,
+  "notes": "",
+  "createdAt": "2026-09-24T07:32:48.269Z"
+ },
+ {
+  "id": "seed07",
+  "name": "Girder",
+  "type": "village",
+  "px": 767,
+  "py": 539,
+  "notes": "",
+  "createdAt": "2026-09-24T00:00:00.000Z"
+ },
+ {
+  "id": "skamx0ylbr",
+  "name": "Glaive",
+  "type": "village",
+  "px": 327,
+  "py": 404,
+  "notes": "",
+  "createdAt": "2026-09-24T08:19:15.186Z"
+ },
+ {
+  "id": "sf6a9gdawx",
+  "name": "Henge",
+  "type": "ruined arcology",
+  "px": 185,
+  "py": 405,
+  "notes": "",
+  "createdAt": "2026-09-24T08:32:34.664Z"
+ },
+ {
+  "id": "spmfhg8a3e",
+  "name": "Hexahedron",
+  "type": "arcology",
+  "px": 555,
+  "py": 338,
+  "notes": "",
+  "createdAt": "2026-09-24T06:35:43.414Z"
+ },
+ {
+  "id": "sm3ft5vrof",
+  "name": "Hook",
+  "type": "city",
+  "px": 537,
+  "py": 593,
+  "notes": "moved to the 1:1 shoreline 2026-10-19 (was py 596: 592 m up, 6.7 km inland of the shore the open world's rule gives)",
+  "createdAt": "2026-10-02T03:03:32.910Z"
+ },
+ {
+  "id": "sodpa02bfv",
+  "name": "Hub 01",
+  "type": "ruined arcology",
+  "px": 1072,
+  "py": 1079,
+  "notes": "",
+  "createdAt": "2026-09-24T07:14:18.212Z"
+ },
+ {
+  "id": "sxxrgmrk8c",
+  "name": "Iziz",
+  "type": "city",
+  "px": 691,
+  "py": 655,
+  "notes": "",
+  "createdAt": "2026-10-02T03:03:32.953Z"
+ },
+ {
+  "id": "st5e01l76v",
+  "name": "Jimjam",
+  "type": "city",
+  "px": 474,
+  "py": 220,
+  "notes": "",
+  "createdAt": "2026-10-15T11:20:38.418Z"
+ },
+ {
+  "id": "sq9t00vg7w",
+  "name": "Kautoa",
+  "type": "city",
+  "px": 692,
+  "py": 395,
+  "notes": "",
+  "createdAt": "2026-10-15T02:53:17.028Z"
+ },
+ {
+  "id": "sigv04s59y",
+  "name": "Kierson",
+  "type": "village",
+  "px": 612,
+  "py": 407,
+  "notes": "",
+  "createdAt": "2026-09-24T08:07:45.307Z"
+ },
+ {
+  "id": "spnqhezhiw",
+  "name": "Komodo",
+  "type": "village",
+  "px": 593,
+  "py": 1287,
+  "notes": "",
+  "createdAt": "2026-09-24T07:29:33.755Z"
+ },
+ {
+  "id": "sxyznayzgc",
+  "name": "Ledge",
+  "type": "arcology",
+  "px": 165,
+  "py": 1000,
+  "notes": "Moved 2026-10-23 with scale model 4.22 from 160,1007 (a water cell of the old 4.21 lake) to the north cliff over the great lake (1,638 m, ~1,340 m over the water at 298 m), where Dalab's road comes down; the arcology runs down the cliff to the shore (biomes/riftrim/PLAN.md section 12).",
+  "createdAt": "2026-09-24T07:18:10.163Z"
+ },
+ {
+  "id": "sevq8lqqjy",
+  "name": "Leng",
+  "type": "ruined arcology",
+  "px": 218,
+  "py": 224,
+  "notes": "",
+  "createdAt": "2026-09-24T08:37:21.763Z"
+ },
+ {
+  "id": "s8fkrfok8y",
+  "name": "Lipp",
+  "type": "village",
+  "px": 419,
+  "py": 289,
+  "notes": "",
+  "createdAt": "2026-09-24T08:45:06.204Z"
+ },
+ {
+  "id": "sx4srhrf5g",
+  "name": "Locus",
+  "type": "village",
+  "px": 995,
+  "py": 713,
+  "notes": "",
+  "createdAt": "2026-09-24T07:03:02.057Z"
+ },
+ {
+  "id": "spbzmhdqqd",
+  "name": "Loj Twenny",
+  "type": "cavern",
+  "px": 185,
+  "py": 939,
+  "notes": "",
+  "createdAt": "2026-10-24T01:52:26.344Z"
+ },
+ {
+  "id": "sq80bzd7ep",
+  "name": "Longsong",
+  "type": "village",
+  "px": 954,
+  "py": 1296,
+  "notes": "",
+  "createdAt": "2026-09-24T06:35:43.735Z"
+ },
+ {
+  "id": "s1ugpi6uas",
+  "name": "Lux",
+  "type": "city",
+  "px": 223,
+  "py": 315,
+  "notes": "",
+  "createdAt": "2026-09-24T08:31:13.437Z"
+ },
+ {
+  "id": "slw9dufqfs",
+  "name": "Mantis",
+  "type": "village",
+  "px": 841,
+  "py": 834,
+  "notes": "An oasis town on the Bowl's salt lake (moved 2026-10-23: from 831,816, under the 4.21 lake, to the heart of the wettest pocket on its south-west shore: Am, ~1,550 mm, -976 m, 2 km from the water; the pocket is ~330 km2 of monsoon forest and savanna in the hot desert). An Iziz holding: grew under Yuni's influence, later taken over by Izani merchant houses. Named after the Bowl mantis, a large predator of the region. See biomes/sedesert/PLAN-BOWL.md.",
+  "createdAt": "2026-09-24T07:11:20.037Z"
+ },
+ {
+  "id": "skukf2qmmq",
+  "name": "Mav's Refuge",
+  "type": "city",
+  "px": 752,
+  "py": 477,
+  "notes": "",
+  "createdAt": "2026-10-02T03:03:33.612Z"
+ },
+ {
+  "id": "spwjwosq9c",
+  "name": "Mirabilis",
+  "type": "village",
+  "px": 78,
+  "py": 396,
+  "notes": "",
+  "createdAt": "2026-10-20T05:17:23.920Z"
+ },
+ {
+  "id": "s4xb8r0vmy",
+  "name": "Mungo",
+  "type": "village",
+  "px": 1049,
+  "py": 495,
+  "notes": "",
+  "createdAt": "2026-09-24T07:53:25.110Z"
+ },
+ {
+  "id": "s3i61t95z5",
+  "name": "Nazar",
+  "type": "ruin",
+  "px": 310,
+  "py": 749,
+  "notes": "",
+  "createdAt": "2026-09-24T08:09:56.040Z"
+ },
+ {
+  "id": "si1wh7atlt",
+  "name": "Necropolis",
+  "type": "ruin",
+  "px": 134,
+  "py": 614,
+  "notes": "",
+  "createdAt": "2026-09-24T08:14:05.155Z"
+ },
+ {
+  "id": "s6roqnupzz",
+  "name": "Nereus",
+  "type": "village",
+  "px": 490,
+  "py": 475,
+  "notes": "",
+  "createdAt": "2026-09-30T06:30:50.862Z"
+ },
+ {
+  "id": "s8mjs5h5cx",
+  "name": "Noa's Regret",
+  "type": "ruined arcology",
+  "px": 624,
+  "py": 536,
+  "notes": "",
+  "createdAt": "2026-09-24T07:06:00.632Z"
+ },
+ {
+  "id": "ssk1wsnjjd",
+  "name": "Nulab",
+  "type": "city",
+  "px": 171,
+  "py": 1029,
+  "notes": "",
+  "createdAt": "2026-10-24T01:50:09.425Z"
+ },
+ {
+  "id": "s2199308wr",
+  "name": "Nusidi",
+  "type": "ruin",
+  "px": 724,
+  "py": 540,
+  "notes": "",
+  "createdAt": "2026-09-24T08:10:16.710Z"
+ },
+ {
+  "id": "staiytii0y",
+  "name": "Pinnacle Rock",
+  "type": "city",
+  "px": 755,
+  "py": 351,
+  "notes": "Beast Rider roost town on a red sandstone mesa (settlements/pinnacle-rock/PLAN.md). Moved 2026-10-18 from px 737,354 (approximate) to the knoll that clears the forest: 500-600 m over the jungle floor, the K'etsaal Baatar 11 km off.",
+  "createdAt": "2026-09-24T08:06:51.663Z"
+ },
+ {
+  "id": "ssdy2b2rxc",
+  "name": "Pluton",
+  "type": "ruined arcology",
+  "px": 471,
+  "py": 998,
+  "notes": "",
+  "createdAt": "2026-09-24T09:47:31.438Z"
+ },
+ {
+  "id": "s0w2mwd7xq",
+  "name": "Pontus",
+  "type": "village",
+  "px": 430,
+  "py": 509,
+  "notes": "",
+  "createdAt": "2026-09-30T06:28:53.671Z"
+ },
+ {
+  "id": "skwl1d2hdu",
+  "name": "Port  Tobin",
+  "type": "village",
+  "px": 660,
+  "py": 643,
+  "notes": "",
+  "createdAt": "2026-09-24T08:02:12.676Z"
+ },
+ {
+  "id": "ski7uk8fjc",
+  "name": "Port Goto",
+  "type": "village",
+  "px": 646,
+  "py": 368,
+  "notes": "",
+  "createdAt": "2026-10-24T01:17:32.519Z"
+ },
+ {
+  "id": "szn5aae96p",
+  "name": "Port Visas",
+  "type": "village",
+  "px": 528,
+  "py": 382,
+  "notes": "",
+  "createdAt": "2026-10-24T01:37:45.334Z"
+ },
+ {
+  "id": "sxoqgjn7y0",
+  "name": "Pylon",
+  "type": "arcology",
+  "px": 597,
+  "py": 672,
+  "notes": "",
+  "createdAt": "2026-09-24T08:58:29.006Z"
+ },
+ {
+  "id": "skm4jjo2vl",
+  "name": "Qiblai",
+  "type": "city",
+  "px": 691,
+  "py": 1236,
+  "notes": "",
+  "createdAt": "2026-09-24T07:35:46.046Z"
+ },
+ {
+  "id": "sndrdffkyg",
+  "name": "Reed",
+  "type": "village",
+  "px": 1005,
+  "py": 346,
+  "notes": "",
+  "createdAt": "2026-09-24T07:52:18.533Z"
+ },
+ {
+  "id": "s28hf1s9ab",
+  "name": "Roketstad",
+  "type": "city",
+  "px": 337,
+  "py": 354,
+  "notes": "",
+  "createdAt": "2026-09-24T07:42:09.473Z"
+ },
+ {
+  "id": "slrodrkrls",
+  "name": "Sauropolis",
+  "type": "city",
+  "px": 493,
+  "py": 1266,
+  "notes": "",
+  "createdAt": "2026-09-24T07:28:07.129Z"
+ },
+ {
+  "id": "seu6y74bg8",
+  "name": "Serai",
+  "type": "village",
+  "px": 554,
+  "py": 148,
+  "notes": "",
+  "createdAt": "2026-10-15T11:21:11.327Z"
+ },
+ {
+  "id": "slfozs6c7z",
+  "name": "Shade",
+  "type": "outpost",
+  "px": 957,
+  "py": 555,
+  "notes": "",
+  "createdAt": "2026-09-24T07:55:03.078Z"
+ },
+ {
+  "id": "sw96wqyc7j",
+  "name": "Shelf",
+  "type": "arcology",
+  "px": 189,
+  "py": 831,
+  "notes": "",
+  "createdAt": "2026-10-24T01:50:44.976Z"
+ },
+ {
+  "id": "s8kenhm9vi",
+  "name": "Shell",
+  "type": "arcology",
+  "px": 630,
+  "py": 329,
+  "notes": "",
+  "createdAt": "2026-10-24T01:29:05.754Z"
+ },
+ {
+  "id": "sshimrest01",
+  "name": "Shim",
+  "type": "city",
+  "px": 382,
+  "py": 788,
+  "notes": "restored 2026-10-18 at the seed14 position; the old Chichani capital on a lake of the Shim river (settlements/shim/PLAN.md)",
+  "createdAt": "2026-10-18T02:10:00.000Z"
+ },
+ {
+  "id": "sxzzkiwjs1",
+  "name": "Sleeping City",
+  "type": "ruin",
+  "px": 772,
+  "py": 446,
+  "notes": "",
+  "createdAt": "2026-10-24T01:34:01.584Z"
+ },
+ {
+  "id": "seed01",
+  "name": "Span",
+  "type": "ruined arcology",
+  "px": 282,
+  "py": 680,
+  "notes": "",
+  "createdAt": "2026-09-24T00:00:00.000Z"
+ },
+ {
+  "id": "sbdor4sbi1",
+  "name": "Spirladunon",
+  "type": "city",
+  "px": 528,
+  "py": 687,
+  "notes": "The Talovolci's ceremonial settlement (the Cloud Giants). Moved 2026-10-23 from 608,798 (dry steppe in godstep valley, ~80 mm) into the cloud forest of the southern highlands: ~1.5 km, ~4,000 mm, Af, mean +18 C. LORE.md 6.21.",
+  "createdAt": "2026-10-02T03:03:33.814Z"
+ },
+ {
+  "id": "s2o8f4p123",
+  "name": "Stair",
+  "type": "ruined arcology",
+  "px": 834,
+  "py": 1112,
+  "notes": "The Hill arcology (kits/ancients/targets/hill), on the east flank of the springs' hollow through the Catch's interior hills, at the biggest of its five oases. A glorified campground of a couple of hundred people (merchants, caravans, arcology divers); the Ancients' tunnel from here is sealed halfway (biomes/catch/PLAN.md). Moved 2026-10-23 from 827,1113.",
+  "createdAt": "2026-09-24T06:35:43.702Z"
+ },
+ {
+  "id": "sfgtxw10kr",
+  "name": "Strongbow",
+  "type": "arcology",
+  "px": 754,
+  "py": 1264,
+  "notes": "",
+  "createdAt": "2026-09-24T07:16:16.398Z"
+ },
+ {
+  "id": "sxan7r1sln",
+  "name": "Strongwall",
+  "type": "outpost",
+  "px": 642,
+  "py": 1304,
+  "notes": "",
+  "createdAt": "2026-09-24T07:30:51.335Z"
+ },
+ {
+  "id": "so73a6ml2o",
+  "name": "Stump",
+  "type": "ruined arcology",
+  "px": 772,
+  "py": 622,
+  "notes": "",
+  "createdAt": "2026-10-24T01:43:25.165Z"
+ },
+ {
+  "id": "sor1zqih8x",
+  "name": "Talia",
+  "type": "city",
+  "px": 801,
+  "py": 609,
+  "notes": "",
+  "createdAt": "2026-09-24T08:54:30.089Z"
+ },
+ {
+  "id": "smqy5z5eek",
+  "name": "Tallhouse",
+  "type": "outpost",
+  "px": 411,
+  "py": 854,
+  "notes": "",
+  "createdAt": "2026-09-24T08:09:37.426Z"
+ },
+ {
+  "id": "sghb3jlsk5",
+  "name": "Talon",
+  "type": "village",
+  "px": 754,
+  "py": 430,
+  "notes": "",
+  "createdAt": "2026-10-24T01:26:06.332Z"
+ },
+ {
+  "id": "s7u81vhk60",
+  "name": "Temora",
+  "type": "village",
+  "px": 490,
+  "py": 553,
+  "notes": "",
+  "createdAt": "2026-09-24T06:58:10.771Z"
+ },
+ {
+  "id": "sbrpoyrmbq",
+  "name": "Tethis",
+  "type": "arcology",
+  "px": 461,
+  "py": 445,
+  "notes": "",
+  "createdAt": "2026-09-30T06:23:19.800Z"
+ },
+ {
+  "id": "sthegate",
+  "name": "The Gate",
+  "type": "outpost",
+  "px": 1136,
+  "py": 84,
+  "notes": "The one way into the Outlands: the lowest crest over the rim in Korona's corner (7.7 km, 0.60 atm). The Tierhounds' toll fort and the trickster's shrine; the god's road (Sleeping City to Trickster's House) runs through it. biomes/outlands/PLAN.md, SURVEY.md; the owner, 2026-10-26.",
+  "createdAt": "2026-10-26T14:00:00.000Z"
+ },
+ {
+  "id": "sa8xk6pimb",
+  "name": "The Tubes",
+  "type": "cavern",
+  "px": 336,
+  "py": 1217,
+  "notes": "",
+  "createdAt": "2026-09-24T07:47:24.837Z"
+ },
+ {
+  "id": "s4zvgepuru",
+  "name": "Theodiga",
+  "type": "arcology",
+  "px": 636,
+  "py": 1205,
+  "notes": "",
+  "createdAt": "2026-09-24T07:15:32.194Z"
+ },
+ {
+  "id": "sd3ye9k8eu",
+  "name": "Tilted Tower",
+  "type": "ruined arcology",
+  "px": 342,
+  "py": 160,
+  "notes": "",
+  "createdAt": "2026-10-24T02:07:24.713Z"
+ },
+ {
+  "id": "sy42jwlyk4",
+  "name": "Torus",
+  "type": "arcology",
+  "px": 502,
+  "py": 677,
+  "notes": "",
+  "createdAt": "2026-09-24T06:35:43.420Z"
+ },
+ {
+  "id": "strickstershouse",
+  "name": "Trickster's House",
+  "type": "ruined arcology",
+  "px": 1240,
+  "py": 330,
+  "notes": "Arcoindian II (kits/ancients/targets/arcoindian2), ruined, built into the west wall of the N Outlands' main basin over the 2,132 m lake. The Coyote Men shun it as cursed: they say the trickster lives there, and the god's road ends here. biomes/outlands/PLAN.md, SURVEY.md; the owner, 2026-10-26.",
+  "createdAt": "2026-10-26T12:00:00.000Z"
+ },
+ {
+  "id": "smc9wif24a",
+  "name": "Trigon",
+  "type": "arcology",
+  "px": 450,
+  "py": 410,
+  "notes": "",
+  "createdAt": "2026-09-30T06:30:11.944Z"
+ },
+ {
+  "id": "szv27b2reu",
+  "name": "Tuatara",
+  "type": "village",
+  "px": 546,
+  "py": 1224,
+  "notes": "",
+  "createdAt": "2026-09-24T07:37:47.486Z"
+ },
+ {
+  "id": "soctr12hfz",
+  "name": "Tzunfort",
+  "type": "outpost",
+  "px": 398,
+  "py": 556,
+  "notes": "",
+  "createdAt": "2026-10-26T20:43:45.928Z"
+ },
+ {
+  "id": "sg3doyt783",
+  "name": "Valapo",
+  "type": "village",
+  "px": 670,
+  "py": 452,
+  "notes": "",
+  "createdAt": "2026-10-15T02:54:46.834Z"
+ },
+ {
+  "id": "s10ioj4r5u",
+  "name": "Veil",
+  "type": "outpost",
+  "px": 176,
+  "py": 508,
+  "notes": "",
+  "createdAt": "2026-09-24T08:34:11.747Z"
+ },
+ {
+  "id": "sfw06d268c",
+  "name": "Veladiga",
+  "type": "ruined arcology",
+  "px": 413,
+  "py": 149,
+  "notes": "",
+  "createdAt": "2026-10-21T07:05:08.107Z"
+ },
+ {
+  "id": "sduqx62i09",
+  "name": "Verge",
+  "type": "city",
+  "px": 991,
+  "py": 616,
+  "notes": "",
+  "createdAt": "2026-10-02T03:03:31.918Z"
+ },
+ {
+  "id": "s3n66733vo",
+  "name": "Voth",
+  "type": "city",
+  "px": 470,
+  "py": 688,
+  "notes": "",
+  "createdAt": "2026-10-18T02:17:28.917Z"
+ },
+ {
+  "id": "syz1ps04fa",
+  "name": "Wildcat",
+  "type": "village",
+  "px": 155,
+  "py": 1123,
+  "notes": "",
+  "createdAt": "2026-10-24T01:44:53.731Z"
+ },
+ {
+  "id": "sjgv4qfmg4",
+  "name": "Wing",
+  "type": "ruined arcology",
+  "px": 427,
+  "py": 712,
+  "notes": "",
+  "createdAt": "2026-09-24T06:49:16.343Z"
+ },
+ {
+  "id": "svd298453u",
+  "name": "Yith",
+  "type": "village",
+  "px": 74,
+  "py": 88,
+  "notes": "",
+  "createdAt": "2026-09-24T08:36:12.297Z"
+ },
+ {
+  "id": "siauw28o8v",
+  "name": "Ys",
+  "type": "city",
+  "px": 517,
+  "py": 408,
+  "notes": "",
+  "createdAt": "2026-09-30T06:22:57.639Z"
+ },
+ {
+  "id": "ss0il0ejb7",
+  "name": "Yuni",
+  "type": "city",
+  "px": 991,
+  "py": 759,
+  "notes": "",
+  "createdAt": "2026-09-24T07:02:44.541Z"
+ },
+ {
+  "id": "s5x27pj6hn",
+  "name": "Zey'danin",
+  "type": "city",
+  "px": 523,
+  "py": 530,
+  "notes": "Gateway to the Throne, a layered city (Zeijani, Western Islander, Izani, Hykkousoi, Voth since ~30 years ago): settlements/zeydanin/PLAN.md. Typed city 2026-10-18 (was village).",
+  "createdAt": "2026-09-30T06:31:20.101Z"
+ }
 ]
