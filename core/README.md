@@ -8,7 +8,8 @@ blockers), `sched/` (motion and events as functions of time) and `minimap/` (a p
 (the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
 thing is: ids, class, tags), `space/` (the one spatial index placement passes share) and `export/` (the one
 `krator-world` container every module gives its part to, for Godot). `charactermodels/` (the people: MakeHuman bodies,
-clothes, peoples and clips, with two labs) is a build of its own as well as a module.
+clothes, peoples and clips, with two labs) is a build of its own as well as a module. `audio/` (sound: the clip
+catalogue and its license policy so far; cues, soundscapes, the music director and the Audio Lab to come; `audio/PLAN.md`).
 
 ## `materials/`
 

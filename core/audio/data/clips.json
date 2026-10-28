@@ -1,0 +1,3058 @@
+{
+ "_doc": "The clip catalogue (core/audio/PLAN.md section 3). Built by tools/catalog.js; new clips come in through intake.",
+ "clips": [
+  {
+   "id": "citizendj-variety-stage-mimicry",
+   "legacy": "citizendj-variety-stage-mimicry",
+   "title": "Vaudeville Animal & Bird Mimicry",
+   "creator": "unnamed performers",
+   "source": "https://citizen-dj.labs.loc.gov/loc-variety-stage/explore/",
+   "license": "pd-age",
+   "licenseText": "Public Domain (US recording before 1923, Library of Congress)",
+   "category": "raw",
+   "tags": [
+    "loc-mimicry",
+    "strange"
+   ],
+   "notes": "Citizen DJ / Library of Congress · Public Domain · early 20th century wildlife vocal impressions",
+   "duration": 158.28,
+   "file": "sound-board/audio/citizendj-variety-stage-mimicry.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Vaudeville Animal & Bird Mimicry\" by unnamed performers, https://citizen-dj.labs.loc.gov/loc-variety-stage/explore/, Public domain (US sound recording published before 1923) (https://www.copyright.gov/music-modernization/pre1972-soundrecordings/)"
+  },
+  {
+   "id": "fs-123044",
+   "legacy": "123044",
+   "title": "howler_monkey_jungle_4.wav",
+   "creator": "itsmrjack",
+   "source": "https://freesound.org/people/itsmrjack/sounds/123044/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "",
+   "duration": 68.006,
+   "file": "sound-board/audio/123044.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"howler_monkey_jungle_4.wav\" by itsmrjack, https://freesound.org/people/itsmrjack/sounds/123044/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-171945",
+   "legacy": "171945",
+   "title": "LowWhalesong.wav",
+   "creator": "RebekahDay",
+   "source": "https://freesound.org/people/RebekahDay/sounds/171945/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "try 2x for a far-off canopy beast",
+   "duration": 16.0195,
+   "file": "sound-board/audio/171945.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"LowWhalesong.wav\" by RebekahDay, https://freesound.org/people/RebekahDay/sounds/171945/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-201502",
+   "legacy": "201502",
+   "title": "bees or wasps hum buzz in tree by the sea.wav",
+   "creator": "martian",
+   "source": "https://freesound.org/people/martian/sounds/201502/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "pitch down for the big flyers",
+   "duration": 61.3547,
+   "file": "sound-board/audio/201502.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"bees or wasps hum buzz in tree by the sea.wav\" by martian, https://freesound.org/people/martian/sounds/201502/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-202876",
+   "legacy": "202876",
+   "title": "African savanna 2.wav",
+   "creator": "AugustSandberg",
+   "source": "https://freesound.org/people/AugustSandberg/sounds/202876/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "savannah"
+   ],
+   "notes": "the savannah base",
+   "duration": 113.837,
+   "file": "sound-board/audio/202876.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"African savanna 2.wav\" by AugustSandberg, https://freesound.org/people/AugustSandberg/sounds/202876/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-240549",
+   "legacy": "240549",
+   "title": "Dragonfly caught in net, wing movement",
+   "creator": "jaegrover",
+   "source": "https://freesound.org/people/jaegrover/sounds/240549/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "dragonfly-wings",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "dry papery wing beats of a netted dragonfly; at 0.25x a stiff, clattering giant wing",
+   "duration": 44.976,
+   "file": "sound-board/audio/240549.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Dragonfly caught in net, wing movement\" by jaegrover, https://freesound.org/people/jaegrover/sounds/240549/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-256873",
+   "legacy": "256873",
+   "title": "Jungle Night Geko or Monkey Call Creepy",
+   "creator": "JamboME",
+   "source": "https://freesound.org/people/JamboME/sounds/256873/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "",
+   "duration": 35.5668,
+   "file": "sound-board/audio/256873.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Jungle Night Geko or Monkey Call Creepy\" by JamboME, https://freesound.org/people/JamboME/sounds/256873/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-270411",
+   "legacy": "270411",
+   "title": "Fire-bellied toads in a windy spring day",
+   "creator": "darthbaul",
+   "source": "https://freesound.org/people/darthbaul/sounds/270411/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "fire-bellied-toads"
+   ],
+   "notes": "fire-bellied toads' mournful 'oop' calls in wind; first 120 s; eerie at 0.5x",
+   "duration": 120.007,
+   "file": "sound-board/audio/270411.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Fire-bellied toads in a windy spring day\" by darthbaul, https://freesound.org/people/darthbaul/sounds/270411/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-271673",
+   "legacy": "271673",
+   "title": "garden pond hydrophone",
+   "creator": "odilonmarcenaro",
+   "source": "https://freesound.org/people/odilonmarcenaro/sounds/271673/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "lake"
+   ],
+   "notes": "garden pond hydrophone: bubbles and ticks under the surface",
+   "duration": 118.647,
+   "file": "sound-board/audio/271673.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"garden pond hydrophone\" by odilonmarcenaro, https://freesound.org/people/odilonmarcenaro/sounds/271673/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-333225",
+   "legacy": "333225",
+   "title": "Bako National Park, Borneo Island, Rain Forest Ambience daytime 01.10.2013 Roland R-26 OMNI Mics.wav",
+   "creator": "gladkiy",
+   "source": "https://freesound.org/people/gladkiy/sounds/333225/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "day",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "the base of the day bed",
+   "duration": 63.8417,
+   "file": "sound-board/audio/333225.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bako National Park, Borneo Island, Rain Forest Ambience daytime 01.10.2013 Roland R-26 OMNI Mics.wav\" by gladkiy, https://freesound.org/people/gladkiy/sounds/333225/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-394966",
+   "legacy": "394966",
+   "title": "Spring Peepers - field recording",
+   "creator": "briankenny",
+   "source": "https://freesound.org/people/briankenny/sounds/394966/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "spring-peepers"
+   ],
+   "notes": "spring peeper chorus; at 0.25x the peeps become slow sonar pings",
+   "duration": 58.932,
+   "file": "sound-board/audio/394966.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Spring Peepers - field recording\" by briankenny, https://freesound.org/people/briankenny/sounds/394966/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-408650",
+   "legacy": "408650",
+   "title": "Tinamu Tao singing in the Amazonian Rainforest",
+   "creator": "felix.blume",
+   "source": "https://freesound.org/people/felix.blume/sounds/408650/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "try 0.5x for something large in the canopy",
+   "duration": 600.642,
+   "file": "sound-board/audio/408650.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Tinamu Tao singing in the Amazonian Rainforest\" by felix.blume, https://freesound.org/people/felix.blume/sounds/408650/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-414248",
+   "legacy": "414248",
+   "title": "Howler Monkeys",
+   "creator": "FlyingMarmot",
+   "source": "https://freesound.org/people/FlyingMarmot/sounds/414248/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "",
+   "duration": 82.9054,
+   "file": "sound-board/audio/414248.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Howler Monkeys\" by FlyingMarmot, https://freesound.org/people/FlyingMarmot/sounds/414248/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-423711",
+   "legacy": "423711",
+   "title": "Jungle, Tropical birds and insects",
+   "creator": "myrinvp",
+   "source": "https://freesound.org/people/myrinvp/sounds/423711/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "day",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "",
+   "duration": 39.9866,
+   "file": "sound-board/audio/423711.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Jungle, Tropical birds and insects\" by myrinvp, https://freesound.org/people/myrinvp/sounds/423711/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-424763",
+   "legacy": "424763",
+   "title": "Jungle_Choco 01.wav",
+   "creator": "jaime_enrique",
+   "source": "https://freesound.org/people/jaime_enrique/sounds/424763/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "night"
+   ],
+   "notes": "the most downloaded CC0 jungle night",
+   "duration": 60.4467,
+   "file": "sound-board/audio/424763.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Jungle_Choco 01.wav\" by jaime_enrique, https://freesound.org/people/jaime_enrique/sounds/424763/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-429590",
+   "legacy": "429590",
+   "title": "Pacific Treefrogs in Mating Season",
+   "creator": "superfreq",
+   "source": "https://freesound.org/people/superfreq/sounds/429590/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "treefrog-bed"
+   ],
+   "notes": "CC0 · rapid interlocking 'rib-bit' chorus",
+   "duration": 88.3274,
+   "file": "sound-board/audio/429590.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Pacific Treefrogs in Mating Season\" by superfreq, https://freesound.org/people/superfreq/sounds/429590/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-437955",
+   "legacy": "437955",
+   "title": "G12-23-Gibbons Hooting.wav",
+   "creator": "craigsmith",
+   "source": "https://freesound.org/people/craigsmith/sounds/437955/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "a call that answers across the valley",
+   "duration": 50.2616,
+   "file": "sound-board/audio/437955.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"G12-23-Gibbons Hooting.wav\" by craigsmith, https://freesound.org/people/craigsmith/sounds/437955/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-454356",
+   "legacy": "454356",
+   "title": "wind drone howl tunnel stairwell5 eerie.flac",
+   "creator": "kyles",
+   "source": "https://freesound.org/people/kyles/sounds/454356/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 63.75,
+   "file": "sound-board/audio/454356.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"wind drone howl tunnel stairwell5 eerie.flac\" by kyles, https://freesound.org/people/kyles/sounds/454356/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-462863",
+   "legacy": "462863",
+   "title": "Common toad (Bufo bufo)",
+   "creator": "Breviceps",
+   "source": "https://freesound.org/people/Breviceps/sounds/462863/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "common-toad"
+   ],
+   "notes": "European common toad's soft quacking croaks",
+   "duration": 11.4,
+   "file": "sound-board/audio/462863.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Common toad (Bufo bufo)\" by Breviceps, https://freesound.org/people/Breviceps/sounds/462863/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-466955",
+   "legacy": "466955",
+   "title": "Night close to a river, crickets and frogs, bird sometimes.",
+   "creator": "felix.blume",
+   "source": "https://freesound.org/people/felix.blume/sounds/466955/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-n",
+    "quiet"
+   ],
+   "notes": "thin it out: N has few animals left",
+   "duration": 171.606,
+   "file": "sound-board/audio/466955.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Night close to a river, crickets and frogs, bird sometimes.\" by felix.blume, https://freesound.org/people/felix.blume/sounds/466955/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-474421",
+   "legacy": "474421",
+   "title": "Grasshopper on microphone! (grasshopper close up)",
+   "creator": "Zsombor99",
+   "source": "https://freesound.org/people/Zsombor99/sounds/474421/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "grasshopper-close",
+    "insect"
+   ],
+   "notes": "grasshopper stridulating right on the microphone; 0.25x gives a wooden ratchet a metre long",
+   "duration": 34.92,
+   "file": "sound-board/audio/474421.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Grasshopper on microphone! (grasshopper close up)\" by Zsombor99, https://freesound.org/people/Zsombor99/sounds/474421/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-477400",
+   "legacy": "477400",
+   "title": "Borneo Rain Forest Cicada.mp3",
+   "creator": "Astounded",
+   "source": "https://freesound.org/people/Astounded/sounds/477400/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "the dusk swell; layer it into a wall",
+   "duration": 1502.85,
+   "file": "sound-board/audio/477400.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Borneo Rain Forest Cicada.mp3\" by Astounded, https://freesound.org/people/Astounded/sounds/477400/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-486390",
+   "legacy": "486390",
+   "title": "Barred Owl Calling",
+   "creator": "danielmcadams",
+   "source": "https://freesound.org/people/danielmcadams/sounds/486390/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "barred-owl",
+    "bird",
+    "temperate"
+   ],
+   "notes": "the \"who cooks for you\" call; slowed, a laughing beast",
+   "duration": 44.0744,
+   "file": "sound-board/audio/486390.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Barred Owl Calling\" by danielmcadams, https://freesound.org/people/danielmcadams/sounds/486390/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-486437",
+   "legacy": "486437",
+   "title": "Nature, Cicadas, Night, Forest, Rainforest, Jungle, Malaysia, Penang (Zoom F8n, DPA 4060)",
+   "creator": "Marcel Gnauk",
+   "source": "https://freesound.org/people/FreeToUseSounds/sounds/486437/",
+   "license": "cc-by-3.0",
+   "licenseText": "creativecommons.org/licenses/by/3.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Marcel Gnauk (Freesound): piercing Penang night cicadas (DPA 4060)",
+   "duration": 129.55,
+   "file": "sound-board/audio/486437.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Nature, Cicadas, Night, Forest, Rainforest, Jungle, Malaysia, Penang (Zoom F8n, DPA 4060)\" by Marcel Gnauk, https://freesound.org/people/FreeToUseSounds/sounds/486437/, Creative Commons Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/)"
+  },
+  {
+   "id": "fs-493058",
+   "legacy": "493058",
+   "title": "Periodical Cicada Chorus at Keystone State Park Pennsylvania",
+   "creator": "heyheymaimai",
+   "source": "https://freesound.org/people/heyheymaimai/sounds/493058/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "17-year-cicada",
+    "insect"
+   ],
+   "notes": "a periodical cicada wall; try 0.25x for a swarm of giants",
+   "duration": 24.6874,
+   "file": "sound-board/audio/493058.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Periodical Cicada Chorus at Keystone State Park Pennsylvania\" by heyheymaimai, https://freesound.org/people/heyheymaimai/sounds/493058/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-498407",
+   "legacy": "498407",
+   "title": "Soprano pipistrelle bat, time-expanded",
+   "creator": "iainmccurdy",
+   "source": "https://freesound.org/people/iainmccurdy/sounds/498407/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "pipistrelle"
+   ],
+   "notes": "soprano pipistrelle echolocation, time-expanded; clicks and sweeps",
+   "duration": 32.832,
+   "file": "sound-board/audio/498407.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Soprano pipistrelle bat, time-expanded\" by iainmccurdy, https://freesound.org/people/iainmccurdy/sounds/498407/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-513290",
+   "legacy": "513290",
+   "title": "jungle-creature call",
+   "creator": "charlesart",
+   "source": "https://freesound.org/people/charlesart/sounds/513290/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "",
+   "duration": 3.77905,
+   "file": "sound-board/audio/513290.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"jungle-creature call\" by charlesart, https://freesound.org/people/charlesart/sounds/513290/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-519662",
+   "legacy": "519662",
+   "title": "17-year periodical cicadas, Virginia 2020",
+   "creator": "mpuffenbarger",
+   "source": "https://freesound.org/people/mpuffenbarger/sounds/519662/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "17-year-cicadas",
+    "insect"
+   ],
+   "notes": "Magicicada chorus, Virginia 2020; an eerie pulsing wall of sound",
+   "duration": 44.184,
+   "file": "sound-board/audio/519662.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"17-year periodical cicadas, Virginia 2020\" by mpuffenbarger, https://freesound.org/people/mpuffenbarger/sounds/519662/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-520882",
+   "legacy": "520882",
+   "title": "Wasp from different positions",
+   "creator": "pimstoltz",
+   "source": "https://freesound.org/people/pimstoltz/sounds/520882/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "insect",
+    "wasp-pass"
+   ],
+   "notes": "a wasp circling the mic from all sides; slowed 4x it is a giant flyby with doppler",
+   "duration": 120,
+   "file": "sound-board/audio/520882.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Wasp from different positions\" by pimstoltz, https://freesound.org/people/pimstoltz/sounds/520882/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-523906",
+   "legacy": "523906",
+   "title": "Frogs Croaking / Night Atmosphere / Rain",
+   "creator": "Beetlemuse",
+   "source": "https://freesound.org/people/Beetlemuse/sounds/523906/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "night-rain"
+   ],
+   "notes": "frogs croaking in the rain",
+   "duration": 66.241,
+   "file": "sound-board/audio/523906.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Frogs Croaking / Night Atmosphere / Rain\" by Beetlemuse, https://freesound.org/people/Beetlemuse/sounds/523906/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-524918",
+   "legacy": "524918",
+   "title": "Rainforest Insects 1",
+   "creator": "Evil_Ear_Recordings",
+   "source": "https://freesound.org/people/Evil_Ear_Recordings/sounds/524918/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-savage"
+   ],
+   "notes": "try 0.5x: the chorus gets heavier and closer",
+   "duration": 76.9727,
+   "file": "sound-board/audio/524918.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Rainforest Insects 1\" by Evil_Ear_Recordings, https://freesound.org/people/Evil_Ear_Recordings/sounds/524918/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-527844",
+   "legacy": "527844",
+   "title": "Alligator Growls 02.wav",
+   "creator": "D.jones",
+   "source": "https://freesound.org/people/D.jones/sounds/527844/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "predator-growl",
+    "strange"
+   ],
+   "notes": "CC0 · sub-bass wet reptilian throat growl; try 0.5x for giant beasts",
+   "duration": 9.88472,
+   "file": "sound-board/audio/527844.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Alligator Growls 02.wav\" by D.jones, https://freesound.org/people/D.jones/sounds/527844/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-547898",
+   "legacy": "547898",
+   "title": "Madagascar hissing cockroach (Gromphadorhina portentosa) hissing",
+   "creator": "nicotep",
+   "source": "https://freesound.org/people/nicotep/sounds/547898/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "hissing-roach",
+    "insect"
+   ],
+   "notes": "long breathy hisses from a Madagascar roach; at 0.3x it becomes a giant's exhalation, layer under mandible clicks",
+   "duration": 120.007,
+   "file": "sound-board/audio/547898.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Madagascar hissing cockroach (Gromphadorhina portentosa) hissing\" by nicotep, https://freesound.org/people/nicotep/sounds/547898/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-548490",
+   "legacy": "548490",
+   "title": "European nightjar churring (Caprimulgus europaeus)",
+   "creator": "joakgust",
+   "source": "https://freesound.org/people/joakgust/sounds/548490/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "nightjar-churr",
+    "temperate"
+   ],
+   "notes": "European nightjar's long mechanical churr; first 120 s; a perfect alien engine hum at 0.5x",
+   "duration": 120,
+   "file": "sound-board/audio/548490.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"European nightjar churring (Caprimulgus europaeus)\" by joakgust, https://freesound.org/people/joakgust/sounds/548490/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-570203",
+   "legacy": "570203",
+   "title": "Dragonfly flying by",
+   "creator": "RatBird",
+   "source": "https://freesound.org/people/RatBird/sounds/570203/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "dragonfly-flyby",
+    "insect"
+   ],
+   "notes": "a 2 s dragonfly pass; usable as a quick whoosh at 0.5x",
+   "duration": 1.992,
+   "file": "sound-board/audio/570203.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Dragonfly flying by\" by RatBird, https://freesound.org/people/RatBird/sounds/570203/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-572768",
+   "legacy": "572768",
+   "title": "whip-poor-wills at night",
+   "creator": "mycompasstv",
+   "source": "https://freesound.org/people/mycompasstv/sounds/572768/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "temperate",
+    "whip-poor-will"
+   ],
+   "notes": "whip-poor-wills at night; relentless repetition for an unsettling night",
+   "duration": 39.471,
+   "file": "sound-board/audio/572768.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"whip-poor-wills at night\" by mycompasstv, https://freesound.org/people/mycompasstv/sounds/572768/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-574139",
+   "legacy": "574139",
+   "title": "Rainforest_frogs.wav",
+   "creator": "Jim-Bretherick",
+   "source": "https://freesound.org/people/Jim-Bretherick/sounds/574139/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "already processed: granular frogs",
+   "duration": 60.2012,
+   "file": "sound-board/audio/574139.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Rainforest_frogs.wav\" by Jim-Bretherick, https://freesound.org/people/Jim-Bretherick/sounds/574139/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-574328",
+   "legacy": "574328",
+   "title": "Rainforest_frogs2 copy.wav",
+   "creator": "Jim-Bretherick",
+   "source": "https://freesound.org/people/Jim-Bretherick/sounds/574328/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "its second version",
+   "duration": 118.335,
+   "file": "sound-board/audio/574328.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Rainforest_frogs2 copy.wav\" by Jim-Bretherick, https://freesound.org/people/Jim-Bretherick/sounds/574328/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-574555",
+   "legacy": "574555",
+   "title": "Wind howl moan gusts window Stratford 190427.flac",
+   "creator": "TRP",
+   "source": "https://freesound.org/people/TRP/sounds/574555/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 292.765,
+   "file": "sound-board/audio/574555.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Wind howl moan gusts window Stratford 190427.flac\" by TRP, https://freesound.org/people/TRP/sounds/574555/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-575899",
+   "legacy": "575899",
+   "title": "Single bumblebee",
+   "creator": "VMan533",
+   "source": "https://freesound.org/people/VMan533/sounds/575899/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "bumblebee",
+    "insect"
+   ],
+   "notes": "one bumblebee close up; 0.5x for a fat, lazy drone",
+   "duration": 43.056,
+   "file": "sound-board/audio/575899.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Single bumblebee\" by VMan533, https://freesound.org/people/VMan533/sounds/575899/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-576082",
+   "legacy": "576082",
+   "title": "Brood X periodical cicadas, medium and far distance",
+   "creator": "editfour",
+   "source": "https://freesound.org/people/editfour/sounds/576082/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "brood-x",
+    "insect"
+   ],
+   "notes": "Brood X cicadas at middle and far distance; good bed, pitch down for an alien summer",
+   "duration": 35.056,
+   "file": "sound-board/audio/576082.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Brood X periodical cicadas, medium and far distance\" by editfour, https://freesound.org/people/editfour/sounds/576082/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-577366",
+   "legacy": "577366",
+   "title": "Electronic Cicadas .wav",
+   "creator": "Jim-Bretherick",
+   "source": "https://freesound.org/people/Jim-Bretherick/sounds/577366/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "electronic",
+    "strange"
+   ],
+   "notes": "cicadas already processed into something mechanical",
+   "duration": 90.4732,
+   "file": "sound-board/audio/577366.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Electronic Cicadas .wav\" by Jim-Bretherick, https://freesound.org/people/Jim-Bretherick/sounds/577366/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-581638",
+   "legacy": "581638",
+   "title": "Tree Frogs Symphony with Crickets 44.1 16.1 LUFS.wav",
+   "creator": "RedHatCreator",
+   "source": "https://freesound.org/people/RedHatCreator/sounds/581638/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "",
+   "duration": 20,
+   "file": "sound-board/audio/581638.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Tree Frogs Symphony with Crickets 44.1 16.1 LUFS.wav\" by RedHatCreator, https://freesound.org/people/RedHatCreator/sounds/581638/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-615748",
+   "legacy": "615748",
+   "title": "Amb - Bamboos creaking and rustling with the wind",
+   "creator": "nyoz",
+   "source": "https://freesound.org/people/nyoz/sounds/615748/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 252.876,
+   "file": "sound-board/audio/615748.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Amb - Bamboos creaking and rustling with the wind\" by nyoz, https://freesound.org/people/nyoz/sounds/615748/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-621135",
+   "legacy": "621135",
+   "title": "Ant communication",
+   "creator": "Hcartaxo",
+   "source": "https://freesound.org/people/Hcartaxo/sounds/621135/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "ant-stridulation",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "ant communication sounds (squeaks, scrapes); 0.25x for a hive-mind chatter",
+   "duration": 120,
+   "file": "sound-board/audio/621135.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Ant communication\" by Hcartaxo, https://freesound.org/people/Hcartaxo/sounds/621135/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-635951",
+   "legacy": "635951",
+   "title": "Jungle Night over Soufriere, St Lucia, Carribian (Extended)",
+   "creator": "el_boss",
+   "source": "https://freesound.org/people/el_boss/sounds/635951/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "night"
+   ],
+   "notes": "cut out the distant music",
+   "duration": 1193.58,
+   "file": "sound-board/audio/635951.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Jungle Night over Soufriere, St Lucia, Carribian (Extended)\" by el_boss, https://freesound.org/people/el_boss/sounds/635951/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-637064",
+   "legacy": "637064",
+   "title": "American woodcock and whip-poor-wills",
+   "creator": "lukewarm_sound",
+   "source": "https://freesound.org/people/lukewarm_sound/sounds/637064/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "temperate",
+    "woodcock"
+   ],
+   "notes": "woodcock peents with whip-poor-wills; the peent pitched down is a strange croak",
+   "duration": 20.256,
+   "file": "sound-board/audio/637064.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"American woodcock and whip-poor-wills\" by lukewarm_sound, https://freesound.org/people/lukewarm_sound/sounds/637064/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-637065",
+   "legacy": "637065",
+   "title": "Katydid_rattle_insect_chorus.wav",
+   "creator": "lukewarm_sound",
+   "source": "https://freesound.org/people/lukewarm_sound/sounds/637065/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "try 0.25x: a creature ratcheting",
+   "duration": 7.33925,
+   "file": "sound-board/audio/637065.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Katydid_rattle_insect_chorus.wav\" by lukewarm_sound, https://freesound.org/people/lukewarm_sound/sounds/637065/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-669717",
+   "legacy": "669717",
+   "title": "bat-like monster sonar click.wav",
+   "creator": "vestibule-door",
+   "source": "https://freesound.org/people/vestibule-door/sounds/669717/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "monster-sonar"
+   ],
+   "notes": "a designed bat-like sonar click",
+   "duration": 7.00247,
+   "file": "sound-board/audio/669717.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"bat-like monster sonar click.wav\" by vestibule-door, https://freesound.org/people/vestibule-door/sounds/669717/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-670270",
+   "legacy": "670270",
+   "title": "Bamboo creaking in wind",
+   "creator": "CalebLopez",
+   "source": "https://freesound.org/people/CalebLopez/sounds/670270/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 314,
+   "file": "sound-board/audio/670270.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bamboo creaking in wind\" by CalebLopez, https://freesound.org/people/CalebLopez/sounds/670270/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-675432",
+   "legacy": "675432",
+   "title": "S27-24 Gibbon squeals.wav",
+   "creator": "craigsmith",
+   "source": "https://freesound.org/people/craigsmith/sounds/675432/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "",
+   "duration": 28.1067,
+   "file": "sound-board/audio/675432.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"S27-24 Gibbon squeals.wav\" by craigsmith, https://freesound.org/people/craigsmith/sounds/675432/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-701135",
+   "legacy": "701135",
+   "title": "Eurasian eagle owl",
+   "creator": "bruno.auzet",
+   "source": "https://freesound.org/people/bruno.auzet/sounds/701135/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "eagle-owl",
+    "temperate"
+   ],
+   "notes": "Eurasian eagle owl's deep hoots; pitch down for something huge in the dark",
+   "duration": 84.384,
+   "file": "sound-board/audio/701135.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Eurasian eagle owl\" by bruno.auzet, https://freesound.org/people/bruno.auzet/sounds/701135/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-724207",
+   "legacy": "724207",
+   "title": "Termites eating bamboo in night",
+   "creator": "Vivekk21",
+   "source": "https://freesound.org/people/Vivekk21/sounds/724207/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "insect",
+    "termites"
+   ],
+   "notes": "termites crunching bamboo; 0.5x with reverb for a colony eating a house",
+   "duration": 20.256,
+   "file": "sound-board/audio/724207.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Termites eating bamboo in night\" by Vivekk21, https://freesound.org/people/Vivekk21/sounds/724207/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-724581",
+   "legacy": "724581",
+   "title": "Bat echolocation call captured with a batbox",
+   "creator": "Sacha.Julien",
+   "source": "https://freesound.org/people/Sacha.Julien/sounds/724581/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "batbox"
+   ],
+   "notes": "echolocation through a bat detector: dry clicks and chirps",
+   "duration": 225.196,
+   "file": "sound-board/audio/724581.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bat echolocation call captured with a batbox\" by Sacha.Julien, https://freesound.org/people/Sacha.Julien/sounds/724581/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-725450",
+   "legacy": "725450",
+   "title": "Bat calls, Meysset Cave, Batbox",
+   "creator": "Sacha.Julien",
+   "source": "https://freesound.org/people/Sacha.Julien/sounds/725450/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "",
+   "duration": 446.581,
+   "file": "sound-board/audio/725450.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bat calls, Meysset Cave, Batbox\" by Sacha.Julien, https://freesound.org/people/Sacha.Julien/sounds/725450/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-725451",
+   "legacy": "725451",
+   "title": "Little Bittern and Great reed warber songs in the Salagou lake",
+   "creator": "Sacha.Julien",
+   "source": "https://freesound.org/people/Sacha.Julien/sounds/725451/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "little-bittern",
+    "temperate"
+   ],
+   "notes": "little bittern barking with great reed warblers; first 120 s; low woof suits a marsh creature",
+   "duration": 120.007,
+   "file": "sound-board/audio/725451.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Little Bittern and Great reed warber songs in the Salagou lake\" by Sacha.Julien, https://freesound.org/people/Sacha.Julien/sounds/725451/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-734531",
+   "legacy": "734531",
+   "title": "Ants very close XY mic",
+   "creator": "Sacha.Julien",
+   "source": "https://freesound.org/people/Sacha.Julien/sounds/734531/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "ant-footsteps",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "ants walking very close to an XY pair; slow 8x for chitin feet on stone",
+   "duration": 120,
+   "file": "sound-board/audio/734531.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Ants very close XY mic\" by Sacha.Julien, https://freesound.org/people/Sacha.Julien/sounds/734531/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-742498",
+   "legacy": "742498",
+   "title": "Insects - Katydids",
+   "creator": "TheKingOfGeeks360",
+   "source": "https://freesound.org/people/TheKingOfGeeks360/sounds/742498/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect",
+    "katydids"
+   ],
+   "notes": "North American katydid chorus; layer as a night bed in temperate woods",
+   "duration": 38.113,
+   "file": "sound-board/audio/742498.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Insects - Katydids\" by TheKingOfGeeks360, https://freesound.org/people/TheKingOfGeeks360/sounds/742498/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-746557",
+   "legacy": "746557",
+   "title": "Pine Beetle with a great rhythm as it destroys a south Mississippi pine.",
+   "creator": "capt48",
+   "source": "https://freesound.org/people/capt48/sounds/746557/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "bark-beetle-chew",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "rhythmic pine-beetle chewing inside wood; try 0.25x for a larva gnawing through a ship's hull",
+   "duration": 18.442,
+   "file": "sound-board/audio/746557.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Pine Beetle with a great rhythm as it destroys a south Mississippi pine.\" by capt48, https://freesound.org/people/capt48/sounds/746557/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-748256",
+   "legacy": "748256",
+   "title": "Alien Loon Bird Calling Sound",
+   "creator": "Mastersoundboy2005",
+   "source": "https://freesound.org/people/Mastersoundboy2005/sounds/748256/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "eerie-wail",
+    "strange"
+   ],
+   "notes": "CC0 · haunting alien loon wails across nocturnal mist",
+   "duration": 79.388,
+   "file": "sound-board/audio/748256.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Alien Loon Bird Calling Sound\" by Mastersoundboy2005, https://freesound.org/people/Mastersoundboy2005/sounds/748256/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-751848",
+   "legacy": "751848",
+   "title": "Late Summer Loons",
+   "creator": "itinerantmonk108",
+   "source": "https://freesound.org/people/itinerantmonk108/sounds/751848/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "loons",
+    "temperate"
+   ],
+   "notes": "common loons wailing across a lake; slowed slightly it sounds like a wounded beast",
+   "duration": 84.14,
+   "file": "sound-board/audio/751848.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Late Summer Loons\" by itinerantmonk108, https://freesound.org/people/itinerantmonk108/sounds/751848/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-755272",
+   "legacy": "755272",
+   "title": "bat echolocation at 0.07 times speed",
+   "creator": "Garuda1982",
+   "source": "https://freesound.org/people/Garuda1982/sounds/755272/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "",
+   "duration": 13.4684,
+   "file": "sound-board/audio/755272.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"bat echolocation at 0.07 times speed\" by Garuda1982, https://freesound.org/people/Garuda1982/sounds/755272/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-755275",
+   "legacy": "755275",
+   "title": "bat echolocation at 0.05 times speed",
+   "creator": "Garuda1982",
+   "source": "https://freesound.org/people/Garuda1982/sounds/755275/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "ultrasound slowed until you can hear it",
+   "duration": 50.6047,
+   "file": "sound-board/audio/755275.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"bat echolocation at 0.05 times speed\" by Garuda1982, https://freesound.org/people/Garuda1982/sounds/755275/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-76454",
+   "legacy": "76454",
+   "title": "AE0027 Wind howling through cracks in a window 07-27-2009.flac",
+   "creator": "audible-edge",
+   "source": "https://freesound.org/people/audible-edge/sounds/76454/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 480,
+   "file": "sound-board/audio/76454.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"AE0027 Wind howling through cracks in a window 07-27-2009.flac\" by audible-edge, https://freesound.org/people/audible-edge/sounds/76454/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-779565",
+   "legacy": "779565",
+   "title": "strange alien creature growl",
+   "creator": "musselmox",
+   "source": "https://freesound.org/people/musselmox/sounds/779565/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "already designed",
+   "duration": 2.44544,
+   "file": "sound-board/audio/779565.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"strange alien creature growl\" by musselmox, https://freesound.org/people/musselmox/sounds/779565/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-804503",
+   "legacy": "804503",
+   "title": "Wetland - Evening Pond at Hawk's Point Golf Course; Includes American Green Tree Frog, American Bullfrog, and Various Birds",
+   "creator": "TheKingOfGeeks360",
+   "source": "https://freesound.org/people/TheKingOfGeeks360/sounds/804503/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "flooded-forest"
+   ],
+   "notes": "CC0 · deep bullfrog foghorn bass notes with evening cricket bed",
+   "duration": 65.4398,
+   "file": "sound-board/audio/804503.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Wetland - Evening Pond at Hawk's Point Golf Course; Includes American Green Tree Frog, American Bullfrog, and Various Birds\" by TheKingOfGeeks360, https://freesound.org/people/TheKingOfGeeks360/sounds/804503/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-804838",
+   "legacy": "804838",
+   "title": "Forest Ambience, Monk’s Trail, Chiang Mai, Thailand (March 7, 2019)",
+   "creator": "marc.om",
+   "source": "https://freesound.org/people/marc.om/sounds/804838/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "day",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "",
+   "duration": 95.9608,
+   "file": "sound-board/audio/804838.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Forest Ambience, Monk’s Trail, Chiang Mai, Thailand (March 7, 2019)\" by marc.om, https://freesound.org/people/marc.om/sounds/804838/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-806571",
+   "legacy": "806571",
+   "title": "Cicadas in Erawan Forest, Thailand (Feb 25, 2019)",
+   "creator": "marc.om",
+   "source": "https://freesound.org/people/marc.om/sounds/806571/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "",
+   "duration": 60.2013,
+   "file": "sound-board/audio/806571.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Cicadas in Erawan Forest, Thailand (Feb 25, 2019)\" by marc.om, https://freesound.org/people/marc.om/sounds/806571/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-806572",
+   "legacy": "806572",
+   "title": "Cicadas on Monk's Trail, Chiang Mai, Thailand (March 7, 2019)",
+   "creator": "marc.om",
+   "source": "https://freesound.org/people/marc.om/sounds/806572/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "",
+   "duration": 120.506,
+   "file": "sound-board/audio/806572.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Cicadas on Monk's Trail, Chiang Mai, Thailand (March 7, 2019)\" by marc.om, https://freesound.org/people/marc.om/sounds/806572/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-808163",
+   "legacy": "808163",
+   "title": "Bamboo in the wind",
+   "creator": "DreamSweetInSeaMajor",
+   "source": "https://freesound.org/people/DreamSweetInSeaMajor/sounds/808163/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "",
+   "duration": 54.9,
+   "file": "sound-board/audio/808163.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bamboo in the wind\" by DreamSweetInSeaMajor, https://freesound.org/people/DreamSweetInSeaMajor/sounds/808163/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-811205",
+   "legacy": "811205",
+   "title": "Insects - Madagascar Hissing Cockroach, Several Hisses",
+   "creator": "TheKingOfGeeks360",
+   "source": "https://freesound.org/people/TheKingOfGeeks360/sounds/811205/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "insect",
+    "roach-hiss"
+   ],
+   "notes": "several short, sharp hisses; pitch down 1 octave for a threat display from a horse-sized beetle",
+   "duration": 10.416,
+   "file": "sound-board/audio/811205.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Insects - Madagascar Hissing Cockroach, Several Hisses\" by TheKingOfGeeks360, https://freesound.org/people/TheKingOfGeeks360/sounds/811205/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-812933",
+   "legacy": "812933",
+   "title": "Howler monkey howling in the evening jungle",
+   "creator": "zachrau",
+   "source": "https://freesound.org/people/zachrau/sounds/812933/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "layer under the bamboo: what the Screamers answer",
+   "duration": 29.4078,
+   "file": "sound-board/audio/812933.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Howler monkey howling in the evening jungle\" by zachrau, https://freesound.org/people/zachrau/sounds/812933/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-814851",
+   "legacy": "814851",
+   "title": "howler monkeys and birds ambience in Corcovado National Park",
+   "creator": "cabinadevuelo",
+   "source": "https://freesound.org/people/cabinadevuelo/sounds/814851/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "",
+   "duration": 63.192,
+   "file": "sound-board/audio/814851.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"howler monkeys and birds ambience in Corcovado National Park\" by cabinadevuelo, https://freesound.org/people/cabinadevuelo/sounds/814851/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-814852",
+   "legacy": "814852",
+   "title": "Woodworm eating wood",
+   "creator": "Mixigodo",
+   "source": "https://freesound.org/people/Mixigodo/sounds/814852/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "insect",
+    "woodworm"
+   ],
+   "notes": "woodworm larva rasping in timber; slow 4x and add low-pass for something boring through a wall",
+   "duration": 15.36,
+   "file": "sound-board/audio/814852.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Woodworm eating wood\" by Mixigodo, https://freesound.org/people/Mixigodo/sounds/814852/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-817623",
+   "legacy": "817623",
+   "title": "Fourroniere - gomphocerus sibiricus2_AB",
+   "creator": "nicotep",
+   "source": "https://freesound.org/people/nicotep/sounds/817623/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "a dry rasp; the lattice mantis?",
+   "duration": 229.975,
+   "file": "sound-board/audio/817623.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Fourroniere - gomphocerus sibiricus2_AB\" by nicotep, https://freesound.org/people/nicotep/sounds/817623/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-817925",
+   "legacy": "817925",
+   "title": "Inside the bee box, swarm of bees",
+   "creator": "Nordliecht",
+   "source": "https://freesound.org/people/Nordliecht/sounds/817925/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "bee-swarm",
+    "insect"
+   ],
+   "notes": "swarming bees inside the box; slow 2x for a nest of something large",
+   "duration": 26.064,
+   "file": "sound-board/audio/817925.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Inside the bee box, swarm of bees\" by Nordliecht, https://freesound.org/people/Nordliecht/sounds/817925/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-827925",
+   "legacy": "827925",
+   "title": "Hornet stuck in lamp",
+   "creator": "nicotep",
+   "source": "https://freesound.org/people/nicotep/sounds/827925/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "giant-insect",
+    "hornet-buzz",
+    "insect"
+   ],
+   "notes": "a hornet bumping inside a lamp; 0.3x gives a heavy droning wingbeat with knocks",
+   "duration": 120,
+   "file": "sound-board/audio/827925.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Hornet stuck in lamp\" by nicotep, https://freesound.org/people/nicotep/sounds/827925/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-831713",
+   "legacy": "831713",
+   "title": "Click beetle",
+   "creator": "BugginOut.wav",
+   "source": "https://freesound.org/people/BugginOut.wav/sounds/831713/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "click-beetle",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "dry snapping clicks; pitch down 2 octaves for a carapace joint or a jaw snap",
+   "duration": 12.192,
+   "file": "sound-board/audio/831713.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Click beetle\" by BugginOut.wav, https://freesound.org/people/BugginOut.wav/sounds/831713/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-850650",
+   "legacy": "850650",
+   "title": "Toads in Wisconsin",
+   "creator": "coleyoung_sounds",
+   "source": "https://freesound.org/people/coleyoung_sounds/sounds/850650/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "american-toads",
+    "call"
+   ],
+   "notes": "American toads trilling in Wisconsin; long trills pitch down to a growl",
+   "duration": 19.248,
+   "file": "sound-board/audio/850650.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Toads in Wisconsin\" by coleyoung_sounds, https://freesound.org/people/coleyoung_sounds/sounds/850650/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-864090",
+   "legacy": "864090",
+   "title": "260724_21h47 Albi Echapee verte pond lower bassin - Hydrophone",
+   "creator": "Sadiquecat",
+   "source": "https://freesound.org/people/Sadiquecat/sounds/864090/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "lake"
+   ],
+   "notes": "under the lake's surface",
+   "duration": 18.9591,
+   "file": "sound-board/audio/864090.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"260724_21h47 Albi Echapee verte pond lower bassin - Hydrophone\" by Sadiquecat, https://freesound.org/people/Sadiquecat/sounds/864090/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-867031",
+   "legacy": "867031",
+   "title": "Crayfish clicking sound - out of water",
+   "creator": "felix.blume",
+   "source": "https://freesound.org/people/felix.blume/sounds/867031/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "clicks for the millipede ranches",
+   "duration": 77.0417,
+   "file": "sound-board/audio/867031.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Crayfish clicking sound - out of water\" by felix.blume, https://freesound.org/people/felix.blume/sounds/867031/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-867584",
+   "legacy": "867584",
+   "title": "Imaginary Creature Calls and Growls — by GLORB",
+   "creator": "bassimat",
+   "source": "https://freesound.org/people/bassimat/sounds/867584/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "",
+   "duration": 120,
+   "file": "sound-board/audio/867584.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Imaginary Creature Calls and Growls — by GLORB\" by bassimat, https://freesound.org/people/bassimat/sounds/867584/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-868995",
+   "legacy": "868995",
+   "title": "Light Rain, Frogs and Toads at Night - Rémire-Montjoly, French Guiana",
+   "creator": "felix.blume",
+   "source": "https://freesound.org/people/felix.blume/sounds/868995/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "rain"
+   ],
+   "notes": "the rain state",
+   "duration": 516.833,
+   "file": "sound-board/audio/868995.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Light Rain, Frogs and Toads at Night - Rémire-Montjoly, French Guiana\" by felix.blume, https://freesound.org/people/felix.blume/sounds/868995/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-870582",
+   "legacy": "870582",
+   "title": "Small Frogs, Many, Constant, Stereo",
+   "creator": "CHallSmith",
+   "source": "https://freesound.org/people/CHallSmith/sounds/870582/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "a bed of frogs for the flooded forest",
+   "duration": 801.372,
+   "file": "sound-board/audio/870582.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Small Frogs, Many, Constant, Stereo\" by CHallSmith, https://freesound.org/people/CHallSmith/sounds/870582/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-871624",
+   "legacy": "871624",
+   "title": "Night at Nouragues science campsite (Amazon rainforest)",
+   "creator": "Clément_Baudet",
+   "source": "https://freesound.org/people/Cl%C3%A9ment_Baudet/sounds/871624/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "night"
+   ],
+   "notes": "a long loop; cut out any camp noise",
+   "duration": 513.426,
+   "file": "sound-board/audio/871624.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Night at Nouragues science campsite (Amazon rainforest)\" by Clément_Baudet, https://freesound.org/people/Cl%C3%A9ment_Baudet/sounds/871624/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "fs-871650",
+   "legacy": "871650",
+   "title": "Howler monkeys and frogs - A Night in amazon rainforest - French Guiana",
+   "creator": "Clément_Baudet",
+   "source": "https://freesound.org/people/Cl%C3%A9ment_Baudet/sounds/871650/",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "night"
+   ],
+   "notes": "the base of the night bed",
+   "duration": 222.812,
+   "file": "sound-board/audio/871650.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Howler monkeys and frogs - A Night in amazon rainforest - French Guiana\" by Clément_Baudet, https://freesound.org/people/Cl%C3%A9ment_Baudet/sounds/871650/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "ftus-apes-library",
+   "legacy": "ftus-apes-library",
+   "title": "Apes & Gibbon Vocalizations Compilation",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/apes-sound-effects-library",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "Marcel Gnauk: escalating primate & gibbon hoots and screams",
+   "duration": 74.42,
+   "file": "sound-board/audio/ftus-apes-library.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Apes & Gibbon Vocalizations Compilation\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/apes-sound-effects-library, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-bamboo-thailand",
+   "legacy": "ftus-bamboo-thailand",
+   "title": "Bamboo Forest Ambience, Thailand",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/bamboo-forest-ambience-thailand",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Marcel Gnauk: giant Thai bamboo swaying in wind",
+   "duration": 60.05,
+   "file": "sound-board/audio/ftus-bamboo-thailand.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Bamboo Forest Ambience, Thailand\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/bamboo-forest-ambience-thailand, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-bat-cave-thailand",
+   "legacy": "ftus-bat-cave-thailand",
+   "title": "Bat Cave & Swift Colony, Thailand",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/bat-cave-sound-effects-thailand",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Marcel Gnauk: chittering subterranean bat & swift swarm",
+   "duration": 194.88,
+   "file": "sound-board/audio/ftus-bat-cave-thailand.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Bat Cave & Swift Colony, Thailand\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/bat-cave-sound-effects-thailand, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-cicada-insects",
+   "legacy": "ftus-cicada-insects",
+   "title": "Free Cicada Insects Sound Effects",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/cicada-insects-sound-effects",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Marcel Gnauk: metallic tropical cicada buzz",
+   "duration": 65.42,
+   "file": "sound-board/audio/ftus-cicada-insects.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Cicada Insects Sound Effects\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/cicada-insects-sound-effects, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-costa-rica-howlers",
+   "legacy": "ftus-costa-rica-howlers",
+   "title": "Costa Rican Howler Monkey Ambience",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/costa-rican-howler-monkey-ambience",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "Marcel Gnauk: deep guttural Costa Rican canopy roars",
+   "duration": 70.92,
+   "file": "sound-board/audio/ftus-costa-rica-howlers.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Costa Rican Howler Monkey Ambience\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/costa-rican-howler-monkey-ambience, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-croaking-frog-chorus",
+   "legacy": "ftus-croaking-frog-chorus",
+   "title": "Croaking Frog Chorus",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/croaking-frog-chorus-sound-library",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "Marcel Gnauk: dense interlocking frog voices",
+   "duration": 60.36,
+   "file": "sound-board/audio/ftus-croaking-frog-chorus.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Croaking Frog Chorus\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/croaking-frog-chorus-sound-library, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-dark-drone",
+   "legacy": "ftus-dark-drone",
+   "title": "Free Dark Drone Sound Effects",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/free-dark-drone-sound-effects",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds (Free Pack)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Marcel Gnauk: ominous tonal undercurrent",
+   "duration": 49.22,
+   "file": "sound-board/audio/ftus-dark-drone.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Dark Drone Sound Effects\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/free-dark-drone-sound-effects, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-flying-foxes",
+   "legacy": "ftus-flying-foxes",
+   "title": "Flying Foxes and Fruit Bat Sounds",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/flying-foxes-and-fruit-bat-sounds",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Marcel Gnauk: fruit bat screeches and leathery wing-flaps",
+   "duration": 60.07,
+   "file": "sound-board/audio/ftus-flying-foxes.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Flying Foxes and Fruit Bat Sounds\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/flying-foxes-and-fruit-bat-sounds, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-frogs-thailand",
+   "legacy": "ftus-frogs-thailand",
+   "title": "Frog Sound Effects, Thailand",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/frog-sound-effects-thailand",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "Marcel Gnauk: resonant Thai bullfrogs and tree frogs",
+   "duration": 34.1,
+   "file": "sound-board/audio/ftus-frogs-thailand.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Frog Sound Effects, Thailand\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/frog-sound-effects-thailand, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-hollow-bamboo",
+   "legacy": "ftus-hollow-bamboo",
+   "title": "Free Dark and Hollow Bamboo Trees Ambience",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/free-bamboo-tree-sound-effects",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds (Free Pack)",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Marcel Gnauk: dark, hollow bamboo trees knocking and creaking",
+   "duration": 55.75,
+   "file": "sound-board/audio/ftus-hollow-bamboo.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Dark and Hollow Bamboo Trees Ambience\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/free-bamboo-tree-sound-effects, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-house-gecko",
+   "legacy": "ftus-house-gecko",
+   "title": "Free Asian House Gecko Sounds, Sri Lanka",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/free-asian-house-gecko-sounds",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds (Free Pack)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "Marcel Gnauk: sharp Sri Lankan reptile chirps and clicks",
+   "duration": 15.34,
+   "file": "sound-board/audio/ftus-house-gecko.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Asian House Gecko Sounds, Sri Lanka\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/free-asian-house-gecko-sounds, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-insect-wings",
+   "legacy": "ftus-insect-wings",
+   "title": "Insect Wings Sound Effects Compilation",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/insect-wings-sound-effects",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Marcel Gnauk: close wing-beats; try 0.25x for giant flyers",
+   "duration": 70.51,
+   "file": "sound-board/audio/ftus-insect-wings.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Insect Wings Sound Effects Compilation\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/insect-wings-sound-effects, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-night-rainforest-thailand",
+   "legacy": "ftus-night-rainforest-thailand",
+   "title": "Night Rainforest Sound Library, Thailand",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/night-rainforest-sound-library-thailand",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds License",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "night"
+   ],
+   "notes": "Marcel Gnauk: deep Thai rainforest night chorus",
+   "duration": 105.74,
+   "file": "sound-board/audio/ftus-night-rainforest-thailand.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Night Rainforest Sound Library, Thailand\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/night-rainforest-sound-library-thailand, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-phong-nha-vietnam",
+   "legacy": "ftus-phong-nha-vietnam",
+   "title": "Rainforest Ambience, Phong Nha National Park, Vietnam",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/rainforest-ambience-phong-nha-vietnam",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds License",
+   "category": "amb.bed",
+   "tags": [
+    "day",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "Marcel Gnauk: karst jungle canopy in Phong Nha, Vietnam",
+   "duration": 200.07,
+   "file": "sound-board/audio/ftus-phong-nha-vietnam.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Rainforest Ambience, Phong Nha National Park, Vietnam\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/rainforest-ambience-phong-nha-vietnam, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-spooky-wind-costa-rica",
+   "legacy": "ftus-spooky-wind-costa-rica",
+   "title": "Spooky Wind Sounds, Costa Rica",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/spooky-wind-sounds-costa-rica",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Marcel Gnauk: eerie tropical mountain wind howl",
+   "duration": 61.27,
+   "file": "sound-board/audio/ftus-spooky-wind-costa-rica.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Spooky Wind Sounds, Costa Rica\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/spooky-wind-sounds-costa-rica, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-underwater",
+   "legacy": "ftus-underwater",
+   "title": "Free Underwater Hydrophone Sound Effects",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/free-underwater-sound-effects",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds (Free Pack)",
+   "category": "amb.bed",
+   "tags": [
+    "lake"
+   ],
+   "notes": "Marcel Gnauk: sub-surface hydrophone layer",
+   "duration": 70.99,
+   "file": "sound-board/audio/ftus-underwater.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Underwater Hydrophone Sound Effects\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/free-underwater-sound-effects, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ftus-wetland-malaysia",
+   "legacy": "ftus-wetland-malaysia",
+   "title": "Free Wetland Sound Effects, Malaysia",
+   "creator": "Marcel Gnauk",
+   "source": "https://www.freetousesounds.com/sfx/free-wetland-sound-effects-malaysia",
+   "license": "rf-ftus",
+   "licenseText": "Free To Use Sounds (Free Pack)",
+   "category": "amb.bed",
+   "tags": [
+    "flooded-forest"
+   ],
+   "notes": "Marcel Gnauk: Malaysian tropical wetland bed",
+   "duration": 65.74,
+   "file": "sound-board/audio/ftus-wetland-malaysia.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Free Wetland Sound Effects, Malaysia\" by Marcel Gnauk, https://www.freetousesounds.com/sfx/free-wetland-sound-effects-malaysia, Free To Use Sounds license (royalty-free, no re-sharing) (https://www.freetousesounds.com/faq/)"
+  },
+  {
+   "id": "ia-bullfrog-swamp-twang",
+   "legacy": "ia-bullfrog-swamp-twang",
+   "title": "Bullfrog Swamp Twangs",
+   "creator": "Nicholas Judy",
+   "source": "https://archive.org/details/Designers-Choice-Collection-Animals",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bullfrog-twang",
+    "call"
+   ],
+   "notes": "Internet Archive / TDC UCS · CC0 1.0 · deep twanging bass croaks in quiet swamp",
+   "duration": 16.31,
+   "file": "sound-board/audio/ia-bullfrog-swamp-twang.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bullfrog Swamp Twangs\" by Nicholas Judy, https://archive.org/details/Designers-Choice-Collection-Animals, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "ia-cicada-loud-song",
+   "legacy": "ia-cicada-loud-song",
+   "title": "Cicada Sustained Loud Stridulation",
+   "creator": "Nicholas Judy",
+   "source": "https://archive.org/details/Designers-Choice-Collection-Animals",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "amb.element",
+   "tags": [
+    "insect",
+    "loud-cicada"
+   ],
+   "notes": "Internet Archive / TDC UCS · CC0 1.0 · sustained piercing high-frequency canopy cicada song",
+   "duration": 21.05,
+   "file": "sound-board/audio/ia-cicada-loud-song.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Cicada Sustained Loud Stridulation\" by Nicholas Judy, https://archive.org/details/Designers-Choice-Collection-Animals, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "ia-gibbon-squeals",
+   "legacy": "ia-gibbon-squeals",
+   "title": "Wild Gibbon Squeals & Howls",
+   "creator": "SSE Library",
+   "source": "https://archive.org/details/SSE_Library_ANIMALS",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "gibbon-howl",
+    "howl",
+    "primate"
+   ],
+   "notes": "Internet Archive / SSE Library · CC0 1.0 · high wild canopy gibbon squeals and whoops",
+   "duration": 28.18,
+   "file": "sound-board/audio/ia-gibbon-squeals.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Wild Gibbon Squeals & Howls\" by SSE Library, https://archive.org/details/SSE_Library_ANIMALS, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "ia-porcupine-grunts-quills",
+   "legacy": "ia-porcupine-grunts-quills",
+   "title": "Porcupine Puffing Grunts & Quills Rattle",
+   "creator": "SSE Library",
+   "source": "https://archive.org/details/SSE_Library_ANIMALS",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "raw",
+   "tags": [
+    "quill-rattle",
+    "strange"
+   ],
+   "notes": "Internet Archive / SSE Library · CC0 1.0 · defensive quill rattling and throat puffs",
+   "duration": 25.92,
+   "file": "sound-board/audio/ia-porcupine-grunts-quills.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Porcupine Puffing Grunts & Quills Rattle\" by SSE Library, https://archive.org/details/SSE_Library_ANIMALS, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "inat-katydid",
+   "legacy": "inat-katydid",
+   "title": "Broad-tipped Conehead Katydid (Neoconocephalus triops)",
+   "creator": "iNaturalist user #405389174",
+   "source": "https://www.inaturalist.org/observations/405389174",
+   "license": "cc-by-4.0",
+   "licenseText": "Creative Commons Attribution 4.0",
+   "category": "amb.element",
+   "tags": [
+    "electric-buzz",
+    "insect"
+   ],
+   "notes": "iNaturalist #405389174 · relentless high-voltage mechanical drone; try 0.25x",
+   "duration": 11.4,
+   "file": "sound-board/audio/inat-katydid.wav",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Broad-tipped Conehead Katydid (Neoconocephalus triops)\" by iNaturalist user #405389174, https://www.inaturalist.org/observations/405389174, Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+  },
+  {
+   "id": "inat-poison-frog",
+   "legacy": "inat-poison-frog",
+   "title": "Amazonian Poison Frog (Ameerega)",
+   "creator": "iNaturalist user #385228732",
+   "source": "https://www.inaturalist.org/observations/385228732",
+   "license": "cc-by-4.0",
+   "licenseText": "Creative Commons Attribution 4.0",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "dart-frog"
+   ],
+   "notes": "iNaturalist #385228732 (Putumayo, Colombia) · high-speed rhythmic piping whistles",
+   "duration": 18.22,
+   "file": "sound-board/audio/inat-poison-frog.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Amazonian Poison Frog (Ameerega)\" by iNaturalist user #385228732, https://www.inaturalist.org/observations/385228732, Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+  },
+  {
+   "id": "nps-alligator",
+   "legacy": "nps-alligator",
+   "title": "American Alligator Bellow (Everglades)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-alligator.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "NPS Public Domain: sub-bass Everglades reptile bellow; try 0.5x",
+   "duration": 25.63,
+   "file": "sound-board/audio/nps-alligator.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"American Alligator Bellow (Everglades)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-alligator.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-anhinga",
+   "legacy": "nps-anhinga",
+   "title": "Anhinga Rattling Calls (Everglades)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-anhinga.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "NPS Public Domain: prehistoric rattling Everglades waterbird",
+   "duration": 10.24,
+   "file": "sound-board/audio/nps-anhinga.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Anhinga Rattling Calls (Everglades)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-anhinga.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-bees",
+   "legacy": "nps-bees",
+   "title": "Swarming Bees Buzz (Yosemite)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-bee.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "NPS Public Domain: dense swarm hum; pitch down for heavy flyers",
+   "duration": 2.85,
+   "file": "sound-board/audio/nps-bees.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Swarming Bees Buzz (Yosemite)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-bee.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-boreal-chorus-frogs",
+   "legacy": "nps-boreal-chorus-frogs",
+   "title": "Boreal Chorus Frogs (Yellowstone)",
+   "creator": "NPS/Neal Herbert",
+   "source": "https://www.nps.gov/yell/learn/photosmultimedia/sounds-chorusfrogs.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "chorus-frogs"
+   ],
+   "notes": "boreal chorus frogs (comb-strum creaks); slow 2x for a ratcheting insect-frog",
+   "duration": 41.352,
+   "file": "sound-board/audio/nps-boreal-chorus-frogs.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Boreal Chorus Frogs (Yellowstone)\" by NPS/Neal Herbert, https://www.nps.gov/yell/learn/photosmultimedia/sounds-chorusfrogs.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-common-poorwill",
+   "legacy": "nps-common-poorwill",
+   "title": "Common Poorwill",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-common-poorwill.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "poorwill",
+    "temperate"
+   ],
+   "notes": "a high whistled call; try 0.5x",
+   "duration": 6.56,
+   "file": "sound-board/audio/nps-common-poorwill.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Common Poorwill\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-common-poorwill.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-common-raven",
+   "legacy": "nps-common-raven",
+   "title": "Common Raven calls (Grand Teton)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-common-raven.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "raven",
+    "temperate"
+   ],
+   "notes": "common raven croaks and knocks; varied calls for a scavenger",
+   "duration": 5.747,
+   "file": "sound-board/audio/nps-common-raven.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Common Raven calls (Grand Teton)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-common-raven.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-crickets",
+   "legacy": "nps-crickets",
+   "title": "Night Crickets Chorus",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-crickets.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "NPS Public Domain: clean rhythmic cricket layer",
+   "duration": 29.18,
+   "file": "sound-board/audio/nps-crickets.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Night Crickets Chorus\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-crickets.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-dawn-chorus",
+   "legacy": "nps-dawn-chorus",
+   "title": "Dawn Chorus in Amphitheater",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-dawnchorus_bryce.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-n",
+    "quiet"
+   ],
+   "notes": "NPS Public Domain: echoing canyon/forest dawn",
+   "duration": 10.06,
+   "file": "sound-board/audio/nps-dawn-chorus.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Dawn Chorus in Amphitheater\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-dawnchorus_bryce.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-elk",
+   "legacy": "nps-elk",
+   "title": "Elk Bugling Unearthly Whistle",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-elk.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "alien-bugle",
+    "howl",
+    "primate"
+   ],
+   "notes": "NPS Public Domain · bizarre, screaming glissando whistle ending in guttural grunts",
+   "duration": 20.58,
+   "file": "sound-board/audio/nps-elk.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Elk Bugling Unearthly Whistle\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-elk.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-grasshopper",
+   "legacy": "nps-grasshopper",
+   "title": "Grasshopper Stridulation (Yosemite)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-grasshopper.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "NPS Public Domain: dry mechanical stridulation; try 0.5x",
+   "duration": 2.93,
+   "file": "sound-board/audio/nps-grasshopper.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Grasshopper Stridulation (Yosemite)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-grasshopper.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-green-treefrog",
+   "legacy": "nps-green-treefrog",
+   "title": "American Green Tree Frog (Everglades)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-green-treefrog.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "NPS Public Domain: nasal, reed-like Everglades tree frog",
+   "duration": 9.98,
+   "file": "sound-board/audio/nps-green-treefrog.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"American Green Tree Frog (Everglades)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-green-treefrog.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-humpback",
+   "legacy": "nps-humpback",
+   "title": "Humpback Whale Hydrophone Vocalizations (Glacier Bay)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-humpback-whale.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "NPS Public Domain: hydrophone whale song; try 2x for a canopy leviathan",
+   "duration": 7.55,
+   "file": "sound-board/audio/nps-humpback.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Humpback Whale Hydrophone Vocalizations (Glacier Bay)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-humpback-whale.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-pigfrog",
+   "legacy": "nps-pigfrog",
+   "title": "Pig Frog Grunts (Everglades)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-pigfrog.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "NPS Public Domain: deep guttural Everglades grunts; try 0.5x",
+   "duration": 2.09,
+   "file": "sound-board/audio/nps-pigfrog.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Pig Frog Grunts (Everglades)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-pigfrog.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-ptarmigan",
+   "legacy": "nps-ptarmigan",
+   "title": "Ptarmigan calls (Denali)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-ptarmigan.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "ptarmigan",
+    "temperate"
+   ],
+   "notes": "ptarmigan's rattling, belching call; pitch down for a strange croaking beast",
+   "duration": 7.053,
+   "file": "sound-board/audio/nps-ptarmigan.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Ptarmigan calls (Denali)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-ptarmigan.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-rain",
+   "legacy": "nps-rain",
+   "title": "Forest Rain (Devils Postpile)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-rain.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "rain"
+   ],
+   "notes": "NPS Public Domain: clean forest rain layer",
+   "duration": 4.96,
+   "file": "sound-board/audio/nps-rain.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Forest Rain (Devils Postpile)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-rain.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-sandhill-crane",
+   "legacy": "nps-sandhill-crane",
+   "title": "Sandhill Crane",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-sandhill-crane.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "crane",
+    "temperate"
+   ],
+   "notes": "rolling, rattling bugle; sounds prehistoric",
+   "duration": 6.3,
+   "file": "sound-board/audio/nps-sandhill-crane.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Sandhill Crane\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-sandhill-crane.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-sandhill-cranes",
+   "legacy": "nps-sandhill-cranes",
+   "title": "Sandhill Cranes calling (Denali)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-sandhill-crane.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "sandhill-cranes",
+    "temperate"
+   ],
+   "notes": "rolling bugle calls of sandhill cranes; prehistoric and alien",
+   "duration": 6.296,
+   "file": "sound-board/audio/nps-sandhill-cranes.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Sandhill Cranes calling (Denali)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-sandhill-crane.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-spadefoot-toad",
+   "legacy": "nps-spadefoot-toad",
+   "title": "Couch's Spadefoot Toad Chorus (Saguaro)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/cspadefoottoad.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "NPS Public Domain: eerie, raspy amphibian wail",
+   "duration": 36.49,
+   "file": "sound-board/audio/nps-spadefoot-toad.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Couch's Spadefoot Toad Chorus (Saguaro)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/cspadefoottoad.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-spotted-bat",
+   "legacy": "nps-spotted-bat",
+   "title": "Spotted Bat Echolocation Clicks (Yosemite)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-spotted-bat.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "NPS Public Domain: high-pitched biological sonar clicks",
+   "duration": 6.92,
+   "file": "sound-board/audio/nps-spotted-bat.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Spotted Bat Echolocation Clicks (Yosemite)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-spotted-bat.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-spotted-owl",
+   "legacy": "nps-spotted-owl",
+   "title": "Spotted Owl",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-spotted-owl.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "spotted-owl",
+    "temperate"
+   ],
+   "notes": "deep hoots; pitch down for something large",
+   "duration": 5.3,
+   "file": "sound-board/audio/nps-spotted-owl.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Spotted Owl\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-spotted-owl.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-uau-petrel",
+   "legacy": "nps-uau-petrel",
+   "title": "'Ua'u / Hawaiian Petrel Nocturnal Calls (Haleakala)",
+   "creator": "U.S. National Park Service",
+   "source": "https://www.nps.gov/subjects/sound/sounds-uau.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "call"
+   ],
+   "notes": "NPS Public Domain: uncanny nocturnal Hawaiian petrel calls",
+   "duration": 26.04,
+   "file": "sound-board/audio/nps-uau-petrel.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"'Ua'u / Hawaiian Petrel Nocturnal Calls (Haleakala)\" by U.S. National Park Service, https://www.nps.gov/subjects/sound/sounds-uau.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "nps-wilsons-snipe",
+   "legacy": "nps-wilsons-snipe",
+   "title": "Wilson's Snipe winnowing (Yellowstone)",
+   "creator": "NPS/Jennifer Jerrett",
+   "source": "https://www.nps.gov/yell/learn/photosmultimedia/sounds-wilsonssnip.htm",
+   "license": "pd-usgov",
+   "licenseText": "Public Domain (U.S. Federal Government)",
+   "category": "sfx.creature",
+   "tags": [
+    "bird",
+    "snipe-winnowing",
+    "temperate"
+   ],
+   "notes": "Wilson's snipe winnowing (tail feathers) at night; first 120 s; a ghostly hollow whistle",
+   "duration": 120.007,
+   "file": "sound-board/audio/nps-wilsons-snipe.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Wilson's Snipe winnowing (Yellowstone)\" by NPS/Jennifer Jerrett, https://www.nps.gov/yell/learn/photosmultimedia/sounds-wilsonssnip.htm, Public domain (work of the US federal government) (https://www.usa.gov/government-copyright)"
+  },
+  {
+   "id": "sonniss-biohazard-creature",
+   "legacy": "sonniss-biohazard-creature",
+   "title": "Biohazard Creature Organic Texture 041",
+   "creator": "BluezoneCorp",
+   "source": "https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Sonniss GDC: wet chitinous creature movement",
+   "duration": 3.05,
+   "file": "sound-board/audio/sonniss-biohazard-creature.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Biohazard Creature Organic Texture 041\" by BluezoneCorp, https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-biohazard-insects",
+   "legacy": "sonniss-biohazard-insects",
+   "title": "Biohazard Organic Insect Ambience 001",
+   "creator": "BluezoneCorp",
+   "source": "https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Sonniss GDC: close, visceral chitin swarm texture",
+   "duration": 30.05,
+   "file": "sound-board/audio/sonniss-biohazard-insects.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Biohazard Organic Insect Ambience 001\" by BluezoneCorp, https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-camel-gargle",
+   "legacy": "sonniss-camel-gargle",
+   "title": "Camel Guttural Growl, Roar & Gargle 07",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2020-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Sonniss GDC: raw vocal-tract gargle and roar; pitch down for beasts",
+   "duration": 1.3,
+   "file": "sound-board/audio/sonniss-camel-gargle.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Camel Guttural Growl, Roar & Gargle 07\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2020-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-forest-creak",
+   "legacy": "sonniss-forest-creak",
+   "title": "Forest Tree Wood Creaking Texture 016",
+   "creator": "BluezoneCorp",
+   "source": "https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Sonniss GDC: close woody stress groan; try 0.5x",
+   "duration": 2.74,
+   "file": "sound-board/audio/sonniss-forest-creak.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Forest Tree Wood Creaking Texture 016\" by BluezoneCorp, https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-india-jungle-insects",
+   "legacy": "sonniss-india-jungle-insects",
+   "title": "Jungle insects and birds passing wide the evening (South India)",
+   "creator": "Charlie Atanasyan / Faunethic",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Sonniss GDC: wide evening jungle insect sweep",
+   "duration": 154.01,
+   "file": "sound-board/audio/sonniss-india-jungle-insects.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Jungle insects and birds passing wide the evening (South India)\" by Charlie Atanasyan / Faunethic, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-india-rice-frogs",
+   "legacy": "sonniss-india-rice-frogs",
+   "title": "Rice field frogs and insects close, wide at night (South India)",
+   "creator": "Charlie Atanasyan / Faunethic",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "flooded-forest"
+   ],
+   "notes": "Sonniss GDC: close wide-stereo amphibious night chorus",
+   "duration": 124.42,
+   "file": "sound-board/audio/sonniss-india-rice-frogs.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Rice field frogs and insects close, wide at night (South India)\" by Charlie Atanasyan / Faunethic, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-mangrove-dusk",
+   "legacy": "sonniss-mangrove-dusk",
+   "title": "TROPICAL Mangrove at dusk mysterious grainy atmosphere",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.bed",
+   "tags": [
+    "dusk",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "Sonniss GDC: dense, grainy mangrove dusk atmosphere",
+   "duration": 199.42,
+   "file": "sound-board/audio/sonniss-mangrove-dusk.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"TROPICAL Mangrove at dusk mysterious grainy atmosphere\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-night-creature",
+   "legacy": "sonniss-night-creature",
+   "title": "Alien Planet Night Creature Ambience (BC0247_036)",
+   "creator": "BlueZone",
+   "source": "https://archive.org/details/sonniss-gdc-2019-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "raw",
+   "tags": [
+    "strange"
+   ],
+   "notes": "Sonniss GDC: alien nocturnal creature calls",
+   "duration": 55.82,
+   "file": "sound-board/audio/sonniss-night-creature.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Alien Planet Night Creature Ambience (BC0247_036)\" by BlueZone, https://archive.org/details/sonniss-gdc-2019-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-rainforest-morning",
+   "legacy": "sonniss-rainforest-morning",
+   "title": "TROPICAL Rainforest morning sheltered fresh woods under the canopy",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.bed",
+   "tags": [
+    "day",
+    "hyperjungle",
+    "hyperjungle-s"
+   ],
+   "notes": "Sonniss GDC: sheltered fresh woods under the canopy",
+   "duration": 107.28,
+   "file": "sound-board/audio/sonniss-rainforest-morning.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"TROPICAL Rainforest morning sheltered fresh woods under the canopy\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-rainforest-night",
+   "legacy": "sonniss-rainforest-night",
+   "title": "TROPICAL Rainforest night sleep with soft sparse bird calls",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-n",
+    "quiet"
+   ],
+   "notes": "Sonniss GDC: quiet nocturnal forest with sparse calls",
+   "duration": 74.76,
+   "file": "sound-board/audio/sonniss-rainforest-night.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"TROPICAL Rainforest night sleep with soft sparse bird calls\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-ringing-tree",
+   "legacy": "sonniss-ringing-tree",
+   "title": "Wind Sculpture: Raw Ringing Tree 01",
+   "creator": "344 Audio",
+   "source": "https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Sonniss GDC: resonant Aeolian pipe-tree drone; pair with culms",
+   "duration": 180.05,
+   "file": "sound-board/audio/sonniss-ringing-tree.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Wind Sculpture: Raw Ringing Tree 01\" by 344 Audio, https://archive.org/details/sonniss-gdc-2023-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-rio-monkeys",
+   "legacy": "sonniss-rio-monkeys",
+   "title": "Rio de Janeiro Subtropical Birds & Monkeys Ambience",
+   "creator": "Monte Sound",
+   "source": "https://archive.org/details/sonniss-gdc-2016-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "sfx.creature",
+   "tags": [
+    "howl",
+    "primate"
+   ],
+   "notes": "Sonniss GDC: distant canopy primate calls",
+   "duration": 178.42,
+   "file": "sound-board/audio/sonniss-rio-monkeys.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Rio de Janeiro Subtropical Birds & Monkeys Ambience\" by Monte Sound, https://archive.org/details/sonniss-gdc-2016-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-rwanda-crickets",
+   "legacy": "sonniss-rwanda-crickets",
+   "title": "Rwanda Night Crickets Ambience",
+   "creator": "Monte Sound",
+   "source": "https://archive.org/details/sonniss-gdc-2016-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-savage",
+    "insect"
+   ],
+   "notes": "Sonniss GDC: dense Rwandan night cricket pulse",
+   "duration": 190.2,
+   "file": "sound-board/audio/sonniss-rwanda-crickets.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Rwanda Night Crickets Ambience\" by Monte Sound, https://archive.org/details/sonniss-gdc-2016-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-thailand-cicadas",
+   "legacy": "sonniss-thailand-cicadas",
+   "title": "Forest cicadas, insects and birds at night (Thailand)",
+   "creator": "Charlie Atanasyan / Faunethic",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "insect"
+   ],
+   "notes": "Sonniss GDC: wide nocturnal Thai cicada & insect wall",
+   "duration": 174.53,
+   "file": "sound-board/audio/sonniss-thailand-cicadas.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Forest cicadas, insects and birds at night (Thailand)\" by Charlie Atanasyan / Faunethic, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-thailand-rain",
+   "legacy": "sonniss-thailand-rain",
+   "title": "Rain in forest the day (Thailand)",
+   "creator": "Charlie Atanasyan / Faunethic",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.bed",
+   "tags": [
+    "hyperjungle",
+    "hyperjungle-s",
+    "rain"
+   ],
+   "notes": "Sonniss GDC: steady tropical canopy rainfall",
+   "duration": 65.93,
+   "file": "sound-board/audio/sonniss-thailand-rain.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Rain in forest the day (Thailand)\" by Charlie Atanasyan / Faunethic, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-wetland-frogs",
+   "legacy": "sonniss-wetland-frogs",
+   "title": "TROPICAL Wetland swamp evening foaming frog dusk chorus",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "sfx.creature",
+   "tags": [
+    "call",
+    "flooded-forest"
+   ],
+   "notes": "Sonniss GDC: bubbling, foaming swamp frog dusk chorus",
+   "duration": 140.5,
+   "file": "sound-board/audio/sonniss-wetland-frogs.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"TROPICAL Wetland swamp evening foaming frog dusk chorus\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2017-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "sonniss-whistling-wind",
+   "legacy": "sonniss-whistling-wind",
+   "title": "Strange Whistling Wind Moan (Argentina)",
+   "creator": "Articulated Sounds",
+   "source": "https://archive.org/details/sonniss-gdc-2020-game-audio-bundle-normalized",
+   "license": "rf-sonniss",
+   "licenseText": "Sonniss GDC Royalty-Free (Commercial OK, No Attribution)",
+   "category": "amb.element",
+   "tags": [
+    "howl-bamboo",
+    "wind"
+   ],
+   "notes": "Sonniss GDC: pitched whistling air moan",
+   "duration": 74.93,
+   "file": "sound-board/audio/sonniss-whistling-wind.mp3",
+   "share": false,
+   "status": "candidate",
+   "attribution": "\"Strange Whistling Wind Moan (Argentina)\" by Articulated Sounds, https://archive.org/details/sonniss-gdc-2020-game-audio-bundle-normalized, Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing) (https://sonniss.com/gdc-bundle-license/)"
+  },
+  {
+   "id": "wmc-bat-feeding-buzz",
+   "legacy": "wmc-bat-feeding-buzz",
+   "title": "Bat feeding buzz, slowed to 1/10 speed (Pennsylvania)",
+   "creator": "Kaldari",
+   "source": "https://commons.wikimedia.org/wiki/File:Bat_feeding_buzz.wav",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "feeding-buzz"
+   ],
+   "notes": "a bat's feeding buzz at 1/10 speed; a rising rattle that could be a predator closing",
+   "duration": 7.053,
+   "file": "sound-board/audio/wmc-bat-feeding-buzz.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bat feeding buzz, slowed to 1/10 speed (Pennsylvania)\" by Kaldari, https://commons.wikimedia.org/wiki/File:Bat_feeding_buzz.wav, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "wmc-cicada-orni",
+   "legacy": "wmc-cicada-orni",
+   "title": "Cicada orni singing (Herault, France)",
+   "creator": "DavidDelon",
+   "source": "https://commons.wikimedia.org/wiki/File:Cicada_orni.ogg",
+   "license": "pd-author",
+   "licenseText": "Public Domain (author's release, Wikimedia Commons)",
+   "category": "amb.element",
+   "tags": [
+    "cicada-orni",
+    "insect"
+   ],
+   "notes": "Mediterranean cicada's rapid ticking song; 0.5x gives a mechanical clatter",
+   "duration": 63.504,
+   "file": "sound-board/audio/wmc-cicada-orni.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Cicada orni singing (Herault, France)\" by DavidDelon, https://commons.wikimedia.org/wiki/File:Cicada_orni.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
+  },
+  {
+   "id": "wmc-finnish-bush-crickets",
+   "legacy": "wmc-finnish-bush-crickets",
+   "title": "Bush-crickets stridulating (Southern Finland)",
+   "creator": "Mysid",
+   "source": "https://commons.wikimedia.org/wiki/File:Grasshoppers.ogg",
+   "license": "pd-author",
+   "licenseText": "Public Domain (author's release, Wikimedia Commons)",
+   "category": "amb.element",
+   "tags": [
+    "bush-crickets",
+    "insect"
+   ],
+   "notes": "Finnish bush-crickets stridulating with jackdaws behind; cut the bell",
+   "duration": 17.08,
+   "file": "sound-board/audio/wmc-finnish-bush-crickets.ogg",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Bush-crickets stridulating (Southern Finland)\" by Mysid, https://commons.wikimedia.org/wiki/File:Grasshoppers.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
+  },
+  {
+   "id": "wmc-hoary-bat-chirps",
+   "legacy": "wmc-hoary-bat-chirps",
+   "title": "Hoary bat echolocation chirps, slowed to 1/10 speed (Pennsylvania)",
+   "creator": "Kaldari",
+   "source": "https://commons.wikimedia.org/wiki/File:Hoary_bat_chirp_recording.wav",
+   "license": "cc0",
+   "licenseText": "creativecommons.org/publicdomain/zero/1.0/",
+   "category": "sfx.creature",
+   "tags": [
+    "bat",
+    "hoary-bat"
+   ],
+   "notes": "hoary bat chirps at 1/10 speed; bird-like sweeps, pitch down for sonar of something big",
+   "duration": 25.078,
+   "file": "sound-board/audio/wmc-hoary-bat-chirps.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Hoary bat echolocation chirps, slowed to 1/10 speed (Pennsylvania)\" by Kaldari, https://commons.wikimedia.org/wiki/File:Hoary_bat_chirp_recording.wav, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "wmc-nz-cicada-in-hand",
+   "legacy": "wmc-nz-cicada-in-hand",
+   "title": "Chorus cicada distress buzz held in hand (New Zealand)",
+   "creator": "Richard001",
+   "source": "https://commons.wikimedia.org/wiki/File:New_Zealand_Cicada_held_in_hand-audio.ogg",
+   "license": "pd-author",
+   "licenseText": "Public Domain (author's release, Wikimedia Commons)",
+   "category": "raw",
+   "tags": [
+    "cicada-distress",
+    "giant-insect",
+    "insect"
+   ],
+   "notes": "a cicada's distress buzz held in the hand; pitch down 2 octaves for a cornered giant",
+   "duration": 11.233,
+   "file": "sound-board/audio/wmc-nz-cicada-in-hand.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Chorus cicada distress buzz held in hand (New Zealand)\" by Richard001, https://commons.wikimedia.org/wiki/File:New_Zealand_Cicada_held_in_hand-audio.ogg, Public domain (released by its author) (https://commons.wikimedia.org/wiki/Template:PD-self)"
+  }
+ ]
+}

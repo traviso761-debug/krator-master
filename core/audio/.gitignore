@@ -1,0 +1,7 @@
+# No audio in the repo until it is wired into the game (owner, 2026-10-28). The recordings live in the audio
+# folder beside the repo ($KRATOR_AUDIO, default ../krator-audio); README.md, "Where the audio is".
+*.mp3
+*.ogg
+*.wav
+*.flac
+*.zip
