@@ -44,7 +44,24 @@ building engine is now named `core/engine`, not `core/kit`.
   - its pilot-first sequence: the owner's pair order stands, and nine biomes are already done;
   - its shoreline and junction step: `core/water/PRACTICE.md`, `WATER.audit`, confluences and `claude/water-core-pass` cover it;
   - its budgets step: `GRAPHIC-LOAD.md`, `PERF.md`, and `BUDGETS.json` on `claude/core-tools-57240f` cover it;
-  - "ground layering" as new work: `KGROUND` is already in the universal set (`BACKPORT.md` section 1).
+- **Ground is the weak point** (the owner, 2026-10-28: "the ground nevertheless does remain a weakness, it tends to be 'okay' at
+  best"). Having `KGROUND` in the universal set has not made the ground good. Make it a core-pass workstream of its own, with
+  ChatGPT's step 2 (ground layered by ecology and landform) as its spine:
+  1. **Diagnose first, on three ground types** (a forest floor: nhighlands; a rocky or eroded surface: sedesert or necanyons; a wet
+     or salt margin: eastabyss or the Bowl). Take near, mid and far screenshots, and say what makes each read "okay": macro paint
+     dominating; layers too few or too uniform; normal or roughness maps unread; tiling; no micro-relief; mesh too coarse for the
+     shading; no debris; flat light on flat ground.
+  2. **Then the core fixes the diagnosis names.** Likely candidates:
+     - `KGROUND` reads each layer's normal and roughness;
+     - the planned detail normal field (`PLAN.md` "From spiderbench", the `detail.*` sets);
+     - triplanar sampling on steep ground;
+     - anti-tiling macro variation;
+     - layer weights from the environmental-field contract (wet darkening, salt bloom, scree under slopes, organic litter under
+       canopy) and from strata colour on exposed rock;
+     - a near-camera scatter of small debris and cover (pebbles, litter, twigs, low cover cards) on core instancing;
+     - finer ground mesh near the camera.
+  3. **Judge by eye with the owner**, on the three pages with switches for before and after, then add it to every turn's checklist.
+  Budget it like the rest: measured, not assumed.
 
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
