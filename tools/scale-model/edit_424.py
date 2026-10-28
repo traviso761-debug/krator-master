@@ -47,6 +47,7 @@ sys.path.insert(0, HERE)
 import smodel.page as P, smodel.geom as G, smodel.terrain as T, smodel.climate as C, smodel.paint as PA   # noqa: E402
 
 SEED = 424
+BASE_COMMIT = 'cede0a0f9'
 R99_ID = 'rmvraoas90co7'
 SIPHON_ID = 'rmvra9zogfm9t'
 
@@ -567,7 +568,8 @@ def compute_clean_hillshade(EnF, zf=5.0, az_deg=315.0, alt_deg=45.0):
 
 def main():
     global D_LO_HI
-    subprocess.check_call(['git', 'checkout', 'HEAD', '--', 'tools/scale-model/model/data/'], cwd=REPO_ROOT)
+    # restore the pre-4.24 data (cede0a0f9) so the script is idempotent now that its own output is committed
+    subprocess.check_call(['git', 'checkout', BASE_COMMIT, '--', 'tools/scale-model/model/data/'], cwd=REPO_ROOT)
 
     D = P.load()
     D_LO_HI = (D['lo'], D['hi'])
@@ -659,35 +661,71 @@ def main():
     zon0 = P.raster(D, 'z', 'L')
     YF, XF = np.indices((OH, OW))
 
+    # 4.24b WATER BUDGET: both basins sit in the rim's rain shadow, so the rain itself stays low (~80-260 mm on the
+    # floors). Their water comes from elsewhere and is concentrated, not spread:
+    #   - rim springs: rain on the wet outer rim soaks into the fractured basalt and comes out where faults and chasm
+    #     walls cut the aquifer (Snake River 'Thousand Springs' style): spring lines at the chasm-wall toes;
+    #   - spillover snow: the band 10-20 km inside the crest gets snow blown over it, feeding short melt rivers;
+    #   - rock glaciers / permafrost on the Siphon plateau and Mount Caelum release water late into summer;
+    #   - hot springs (recycled groundwater) and steam condensing in the deep maars (moss and felt, not fields).
+    # The oasis masks below carry those waters: green appears only there.
+    river_corr_img = Image.new('L', (OW, OH), 0)
+    dr_rc = ImageDraw.Draw(river_corr_img)
+    for r in D['rivers']:
+        pts_r = r.get('px') or []
+        if r.get('kind', 'river') != 'river' or len(pts_r) < 2:
+            continue
+        dr_rc.line([tuple(p) for p in pts_r], fill=1, width=7)
+    river_corr_f = np.array(river_corr_img, dtype=bool)
+
+    # Region 99 oases: the melt-river fans of Weavers' Cradle and the spring lines at the west chasm-wall toes
+    oasis99_river = river_corr_f & mask99_f & (EnF < 3000.0) & (dist99OrgF >= 8.0)
+    oasis99_spring = mask99_f & (chasmF >= 0.50) & (chasmF <= 0.90) & (xTectF < 1400.0) & (EnF < 1300.0)
+    oasis99_f = nd.binary_closing(oasis99_river | oasis99_spring, iterations=1) & mask99_f
+    spill99 = mask99_f & (dist99OrgF >= 6.0) & (dist99OrgF < 30.0)       # spillover-snow band inside the crest
+
+    # Siphon Pits oases: Lake Ostrukh's shore (fresh: fed by the Ostrukh River and scarp-foot springs, drained by
+    # seepage through the basalt toward Region 101), the terrace rivers, and the floors of the four lake maars
+    lake_pits = ((1412.0, 1222.0), (1346.0, 1246.0), (1354.0, 1168.0), (1440.0, 1152.0))
+    near_lake_pit = np.zeros((OH, OW), dtype=bool)
+    for lx, ly in lake_pits:
+        near_lake_pit |= np.hypot(XF - lx, YF - ly) < 11.0
+    oasis_sp_shore = mask_sp_f & (rOstF < 26.0) & (scarpUF < 2.0)
+    oasis_sp_river = river_corr_f & mask_sp_f & (scarpUF < 4.0) & (EnF < 2800.0)
+    oasis_sp_pit = mask_sp_f & near_lake_pit & (pitDepthF >= 0.70)
+    oasis_sp_f = (oasis_sp_shore | oasis_sp_river | oasis_sp_pit) & mask_sp_f
+    oasis_all_f = oasis99_f | oasis_sp_f
+
     # Region 99 target rain
     w_west_rain = 1.0 - G.sstep(1275.0, 1332.0, xTectF)
     w_cael_rain = (1.0 - G.sstep(10.0, 44.0, rCaelF)) * G.sstep(1500.0, 3400.0, EnF)
     w_rim_rain = G.sstep(3100.0, 5600.0, EnF)
     target_rain_99 = (
         62.0 + 28.0 * np.sin(XF * 0.025 + YF * 0.022)
-        + 55.0 * chasmF * (1.0 - G.sstep(22.0, 48.0, rNimF))
-        + 460.0 * w_west_rain * (1.0 - G.sstep(3400.0, 5600.0, EnF))
-        + 260.0 * w_cael_rain
-        + 280.0 * w_rim_rain * (1.0 - G.sstep(6800.0, 8800.0, EnF))
+        + 40.0 * chasmF * (1.0 - G.sstep(22.0, 48.0, rNimF))
+        + 150.0 * w_west_rain * (1.0 - G.sstep(3400.0, 5600.0, EnF))
+        + 120.0 * spill99 * (EnF < 3600.0)
+        + 200.0 * w_cael_rain
+        + 240.0 * w_rim_rain * (1.0 - G.sstep(6800.0, 8800.0, EnF))
     )
     target_rain_99 = np.where(EnF >= 8800.0, 0.0, np.clip(target_rain_99, 24.0, 1200.0))
     w_rain_99 = G.sstep(4.0, 14.0, dist99OrgF) * mask99_f.astype(float)
 
-    # Siphon Pits target rain:
-    # - NW Ostrukh Terraces (scarpUF < -4): 420-560 mm/yr arable piedmont rain
-    # - Central Scarp & High SE Basalt Plateau (scarpUF > 10, outside pits): 145-215 mm/yr dry subpolar plateau
-    # - Sunken Siphon Pit Maar Floors (pitDepthF > 0.4): 540-690 mm/yr phreatic steam-condensation rainfall!
+    # Siphon Pits target rain: dry terraces (~210-280 mm), dry subpolar plateau (~140-200 mm), pits a little wetter
+    # from their own steam (~230-300 mm)
     w_ost_rain = 1.0 - G.sstep(-10.0, 16.0, scarpUF)
     w_pit_rain = G.sstep(0.30, 0.80, pitDepthF)
     target_rain_sp = (
-        165.0 + 25.0 * np.cos(XF * 0.03 - YF * 0.025)
-        + 335.0 * w_ost_rain * (1.0 - G.sstep(2900.0, 4200.0, EnF))
-        + 455.0 * w_pit_rain
+        150.0 + 25.0 * np.cos(XF * 0.03 - YF * 0.025)
+        + 95.0 * w_ost_rain * (1.0 - G.sstep(2900.0, 4200.0, EnF))
+        + 110.0 * w_pit_rain
     )
     target_rain_sp = np.where(EnF >= 8800.0, 0.0, np.clip(target_rain_sp, 40.0, 1200.0))
     w_rain_sp = G.sstep(0.5, 4.0, distSpF) * mask_sp_f.astype(float)
 
     target_rain = np.where(mask_sp_f, target_rain_sp, target_rain_99)
+    # the oases' effective water (springs, melt, irrigation from the lake) as rain-equivalent, so the class follows
+    target_rain = np.where(oasis_all_f, np.maximum(target_rain, 430.0), target_rain)
     w_rain_blend = np.maximum(w_rain_99, w_rain_sp)
 
     forced = np.zeros((OH, OW), dtype=bool)
@@ -703,26 +741,45 @@ def main():
     idx_Cfb = codes.index('Cfb')
     idx_Dfb = codes.index('Dfb')
     idx_Dsc = codes.index('Dsc')
+    idx_Dsb = codes.index('Dsb')
+    idx_Cwb = codes.index('Cwb')
+    idx_Cwc = codes.index('Cwc')
+    idx_Csa = codes.index('Csa')
+    idx_Csb = codes.index('Csb')
+    idx_Dwc = codes.index('Dwc')
+    idx_BWh = codes.index('BWh')
+    tmF = P.raster(D, 'tm', 'L').astype(float) - 90.0
     idx_ET = codes.index('ET')
     idx_EF = codes.index('EF')
     idx_HF = codes.index('HF')
     idx_O = codes.index('O')
     idx_WS = codes.index('WS')
 
-    # --- Region 99 Climate & Zone Assignment ---
+    # --- Region 99 Climate & Zone Assignment (4.24b: dry rain-shadow basin, green only at its waters) ---
     inner99_f = mask99_f & (dist99OrgF >= 10.0) & ~wet2F
-    deep_warm_f = inner99_f & (EnF < 460.0) & (chasmF > 0.55) & (xTectF > 1345.0)
-    cls2[deep_warm_f] = idx_BSh
-    arid99_f = inner99_f & (EnF < 1850.0) & ~deep_warm_f
+    # chasm floors: hot or cold desert by their own warmth
+    deep_f = inner99_f & (EnF < 460.0) & (chasmF > 0.55) & (xTectF > 1345.0)
+    cls2[deep_f & (tmF >= 18.0)] = idx_BWh
+    cls2[deep_f & (tmF < 18.0)] = idx_BWk
+    arid99_f = inner99_f & (EnF < 1850.0) & ~deep_f
     cls2[arid99_f & ((EnF < 1520.0) | (xTectF > 1365.0))] = idx_BWk
     cls2[arid99_f & (EnF >= 1520.0) & (xTectF <= 1365.0)] = idx_BSk
     cls2[inner99_f & (xTectF >= 1288.0) & (xTectF <= 1338.0) & (EnF >= 1450.0) & (EnF < 2150.0)] = idx_BSk
-    cls2[inner99_f & (xTectF < 1302.0) & (EnF >= 1950.0) & (EnF < 3150.0)] = idx_Dfb
+    # Weavers' Cradle: cold loess steppe, dry-summer continental in the spillover-snow band under the rim
+    cradle_f = inner99_f & (xTectF < 1302.0) & (EnF >= 1850.0) & (EnF < 3150.0)
+    cls2[cradle_f] = idx_BSk
+    cls2[cradle_f & spill99 & (EnF >= 2300.0)] = idx_Dsb
     cls2[inner99_f & (EnF >= 3150.0) & (EnF < 3950.0)] = idx_Dsc
     cls2[inner99_f & (EnF >= 3950.0) & (EnF < 5400.0)] = idx_ET
     cls2[inner99_f & (EnF >= 5400.0) & (EnF < 6800.0)] = idx_EF
     cls2[inner99_f & (EnF >= 6800.0) & (EnF < 8800.0)] = idx_HF
     cls2[inner99_f & (EnF >= 8800.0)] = idx_O
+    # the oases: melt-river fans (subtropical-highland Cwb, Cwc higher up) and warm chasm spring lines (Csa / Csb)
+    o99 = oasis99_f & inner99_f & (EnF < 3150.0)
+    cls2[o99 & (EnF >= 1500.0) & (EnF < 2700.0)] = idx_Cwb
+    cls2[o99 & (EnF >= 2700.0)] = idx_Cwc
+    cls2[o99 & (EnF < 1500.0) & (tmF >= 16.0)] = idx_Csa
+    cls2[o99 & (EnF < 1500.0) & (tmF < 16.0)] = idx_Csb
 
     w_nim_f = mask99_f & (EoF < 3500.0) & wet2F
     cls2[w_nim_f] = idx_WS
@@ -735,31 +792,49 @@ def main():
     zon2[playa99_f] = 5
     zon2[w_nim_f] = 4
 
-    # --- Siphon Pits Climate & Zone Assignment ---
+    # --- Siphon Pits Climate & Zone Assignment (4.24b) ---
     inner_sp_f = mask_sp_f & (distSpF >= 1.2) & ~wet2F
-    # 1. NW Ostrukh Terraces (scarpUF < -2, EnF < 2800 m) -> Dfb (arable warm-summer continental)
-    cls2[inner_sp_f & (scarpUF < -2.0) & (EnF < 2800.0)] = idx_Dfb
-    # 2. Central Dividing Fault Escarpment & Scarp Pass (scarpUF -6..+16, EnF 2450..3850 m) -> BSk at toe/pass, Dsc on cliff
+    # 1. NW Ostrukh Terraces: cold steppe below, dry-summer continental on the upper benches
+    terr_f = inner_sp_f & (scarpUF < -2.0) & (EnF < 2800.0)
+    cls2[terr_f] = idx_BSk
+    cls2[terr_f & (EnF >= 2200.0)] = idx_Dsb
+    # 2. Central Dividing Fault Escarpment & Scarp Pass -> BSk at toe/pass, Dsc on the cliff, dry-winter Dwc on the brow
     cls2[inner_sp_f & (scarpUF >= -6.0) & (scarpUF <= 12.0) & (EnF >= 2450.0) & (EnF < 3080.0)] = idx_BSk
     cls2[inner_sp_f & (EnF >= 2750.0) & (EnF < 3850.0) & (pitDepthF < 0.32)] = idx_Dsc
-    # 3. High SE Basalt Plateau & Arete Bridges (EnF >= 3850 m, pitDepthF < 0.32) -> ET (alpine tundra) & EF (> 5250 m)
+    cls2[inner_sp_f & (scarpUF >= 4.0) & (scarpUF <= 16.0) & (EnF >= 3300.0) & (EnF < 3850.0) & (pitDepthF < 0.32)] = idx_Dwc
+    # 3. High SE Basalt Plateau & Arete Bridges -> ET (alpine tundra) & EF (> 5250 m)
     cls2[inner_sp_f & (EnF >= 3850.0) & (EnF < 5250.0) & (pitDepthF < 0.32)] = idx_ET
     cls2[inner_sp_f & (EnF >= 5250.0) & (EnF < 6800.0)] = idx_EF
     cls2[inner_sp_f & (EnF >= 6800.0)] = idx_HF
-    # 4. Sunken Geothermal Siphon Pit Floors (pitDepthF >= 0.32):
-    #    - Stepped ring-fault slump bench / cliff collar (pitDepthF 0.32..0.64) -> Dfb (cool thermal collar)
-    #    - Deep geothermal maar floor (pitDepthF >= 0.64) -> Cfb / Cfa (warm humid geothermal grove microclimate!)
-    cls2[inner_sp_f & (pitDepthF >= 0.32) & (pitDepthF < 0.64)] = idx_Dfb
-    cls2[inner_sp_f & (pitDepthF >= 0.64) & (EnF >= 2350.0)] = idx_Cfb
-    cls2[inner_sp_f & (pitDepthF >= 0.64) & (EnF < 2350.0)] = idx_Cfa
-    # 5. Lake Ostrukh & Maar Crater Lakes -> WS
+    # 4. The pits: collars and dry floors are steppe / dry-summer continental (steam moss and felt, no fields);
+    #    only the floors of the four lake maars, with their hot springs, are green
+    cls2[inner_sp_f & (pitDepthF >= 0.32) & (pitDepthF < 0.64)] = idx_Dsc
+    cls2[inner_sp_f & (pitDepthF >= 0.64)] = idx_Dsb
+    cls2[inner_sp_f & (pitDepthF >= 0.64) & (EnF < 2300.0) & (tmF >= 10.0)] = idx_BSk
+    pit_oasis_f = inner_sp_f & oasis_sp_pit
+    cls2[pit_oasis_f & (EnF >= 2350.0)] = idx_Cfb
+    cls2[pit_oasis_f & (EnF < 2350.0)] = idx_Cfa
+    # 5. Ostrukh's farmland: the lakeshore and terrace rivers, watered by the fresh lake and scarp-foot springs
+    farm_f = inner_sp_f & (oasis_sp_shore | oasis_sp_river) & (EnF < 2800.0)
+    cls2[farm_f] = idx_Cwb
+    # 6. Lake Ostrukh & Maar Crater Lakes -> WS
     w_sp_lakes_f = mask_sp_f & (distSpF >= 3.0) & wet2F
-    cls2[w_sp_lakes_f] = idx_WS
+    cls2[w_sp_lakes_f] = codes.index('WH')   # highland lakes (Ostrukh fresh at 1,850 m; the maar lakes)
 
     zon2[inner_sp_f & (EnF < 4300.0)] = 1                  # highland terraces & pit floors
     zon2[inner_sp_f & (EnF >= 4300.0) & (EnF < 8200.0)] = 3 # arctic / subpolar basalt plateau
     zon2[inner_sp_f & (EnF >= 8200.0)] = 2
     zon2[w_sp_lakes_f] = 4
+
+    # --- Yuni farming settlements (support towns for expeditions): the densest patch of each basin's oasis land ---
+    def best_site(m):
+        dens = nd.uniform_filter(m.astype(float), 9)
+        dens = np.where(m, dens, -1.0)
+        iy, ix = np.unravel_index(int(np.argmax(dens)), dens.shape)
+        return [int(ix), int(iy)], round(float(EnF[iy, ix]), 0), codes[int(cls2[iy, ix])], round(float(dens[iy, ix]), 2)
+    site_loom = best_site(o99 & (cls2 == idx_Cwb))
+    site_ost = best_site(farm_f & (cls2 == idx_Cwb))
+    print('  Yuni site, Loom-Chasms:', site_loom, '| Ostrukh:', site_ost)
 
     total_px = float(cls2.size)
     for entry in D['climate']['present']:
@@ -918,8 +993,11 @@ def main():
     w_chasm_floor = w_clim_99 * G.sstep(0.42, 0.85, chasmF) * (1.0 - G.sstep(16.0, 42.0, rNimF))
     st_f = st_f * (1.0 - 0.68 * w_chasm_floor[..., None]) + (np.array([102.0, 92.0, 66.0]) * clean_shade) * (0.68 * w_chasm_floor[..., None])
 
+    # Weavers' Cradle: dry loess steppe (straw and ochre); green only on the melt-river fans and chasm spring lines
     w_cradle_st = w_clim_99 * (1.0 - G.sstep(1275.0, 1312.0, xTectF)) * G.sstep(1850.0, 2150.0, EnF) * (1.0 - G.sstep(3000.0, 3600.0, EnF))
-    st_f = st_f * (1.0 - 0.62 * w_cradle_st[..., None]) + (np.array([84.0, 116.0, 64.0]) * clean_shade) * (0.62 * w_cradle_st[..., None])
+    st_f = st_f * (1.0 - 0.62 * w_cradle_st[..., None]) + (np.array([156.0, 136.0, 94.0]) * clean_shade) * (0.62 * w_cradle_st[..., None])
+    w_oasis99_st = w_clim_99 * np.clip(nd.gaussian_filter(oasis99_f.astype(float), 1.2) * 1.6, 0.0, 1.0) * (~wet2F)
+    st_f = st_f * (1.0 - 0.70 * w_oasis99_st[..., None]) + (np.array([70.0, 108.0, 56.0]) * clean_shade) * (0.70 * w_oasis99_st[..., None])
 
     w_subalp_st = G.sstep(2.0, 8.5, dist99F) * G.sstep(4.5, 14.0, dist99OrgF) * G.sstep(2700.0, 3300.0, EnF) * (1.0 - G.sstep(4100.0, 4700.0, EnF))
     st_f = st_f * (1.0 - 0.65 * w_subalp_st[..., None]) + (np.array([138.0, 92.0, 74.0]) * clean_shade) * (0.65 * w_subalp_st[..., None])
@@ -934,12 +1012,18 @@ def main():
     st_f = st_f * (1.0 - 0.88 * w_cael_snow[..., None]) + (np.array([240.0, 242.0, 246.0]) * np.clip(clean_shade, 0.74, 1.16)) * (0.88 * w_cael_snow[..., None])
 
     # --- Siphon Pits Satellite Art Direction ---
-    # 1. NW Ostrukh Terraces (Station 1): fertile highland olive-green & golden-loess stepped agricultural benches
+    # 1. NW Ostrukh Terraces (Station 1): golden-loess steppe benches; irrigated green fields only round the fresh
+    #    lake and along the terrace rivers
     w_ost_st = w_paint_sp * (1.0 - G.sstep(-8.0, 10.0, scarpUF)) * (1.0 - G.sstep(2650.0, 3300.0, EnF)) * (~wet2F).astype(float)
     terrace_band = 0.5 + 0.5 * np.sin(EnF / 135.0 * 2.0 * math.pi)
-    ost_rgb = (np.array([78.0, 118.0, 62.0]) * (1.0 - 0.35 * terrace_band[..., None]) +
-               np.array([128.0, 134.0, 76.0]) * (0.35 * terrace_band[..., None])) * clean_shade
+    ost_rgb = (np.array([150.0, 132.0, 88.0]) * (1.0 - 0.35 * terrace_band[..., None]) +
+               np.array([176.0, 156.0, 104.0]) * (0.35 * terrace_band[..., None])) * clean_shade
     st_f = st_f * (1.0 - 0.72 * w_ost_st[..., None]) + ost_rgb * (0.72 * w_ost_st[..., None])
+    farm_st = np.clip(nd.gaussian_filter((oasis_sp_shore | oasis_sp_river).astype(float), 1.2) * 1.6, 0.0, 1.0)
+    w_farm_st = w_ost_st * farm_st
+    farm_rgb = (np.array([82.0, 120.0, 60.0]) * (1.0 - 0.30 * terrace_band[..., None]) +
+                np.array([124.0, 132.0, 70.0]) * (0.30 * terrace_band[..., None])) * clean_shade
+    st_f = st_f * (1.0 - 0.80 * w_farm_st[..., None]) + farm_rgb * (0.80 * w_farm_st[..., None])
 
     # 2. Central Dividing Fault Escarpment (Station 2): dark jointed columnar-basalt cliff & russet subalpine talus
     w_scarp_st = w_paint_sp * G.sstep(-12.0, -2.0, scarpUF) * (1.0 - G.sstep(12.0, 24.0, scarpUF)) * (1.0 - pitDepthF)
@@ -963,11 +1047,13 @@ def main():
     pit_wall_rgb = np.array([58.0, 42.0, 40.0]) * clean_shade
     st_f = st_f * (1.0 - 0.82 * w_pit_wall[..., None]) + pit_wall_rgb * (0.82 * w_pit_wall[..., None])
 
-    # 6. Sunken Geothermal Siphon Maar Floors (Station 3): lush Siphon-Felt emerald turf + warm amber machine-wax / sulfur center glow!
+    # 6. Siphon Maar Floors (Station 3): olive-grey steam moss and sulfur crusts on most floors; lush Siphon-Felt
+    #    emerald turf only on the floors of the four lake maars, round their hot springs
     w_pit_floor = w_paint_sp * G.sstep(0.45, 0.88, pitDepthF) * (~wet2F).astype(float)
     w_pit_core = G.sstep(0.75, 0.98, pitDepthF)[..., None]
+    lush = np.clip(nd.gaussian_filter(oasis_sp_pit.astype(float), 1.5) * 1.5, 0.0, 1.0)[..., None]
     siphon_floor_rgb = (
-        np.array([76.0, 128.0, 74.0]) * (1.0 - 0.42 * w_pit_core)
+        (np.array([76.0, 128.0, 74.0]) * lush + np.array([118.0, 112.0, 86.0]) * (1.0 - lush)) * (1.0 - 0.42 * w_pit_core)
         + np.array([176.0, 138.0, 68.0]) * (0.42 * w_pit_core)
     ) * clean_shade
     st_f = st_f * (1.0 - 0.84 * w_pit_floor[..., None]) + siphon_floor_rgb * (0.84 * w_pit_floor[..., None])

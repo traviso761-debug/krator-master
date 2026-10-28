@@ -248,63 +248,63 @@
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 7.81,
+   "pct": 7.8,
    "km2": 704876
   },
   {
    "code": "HF",
    "name": "hyperalpine ice",
    "color": "#eef0f7",
-   "pct": 6.52,
+   "pct": 6.53,
    "km2": 563524
   },
   {
    "code": "Cfa",
    "name": "humid subtropical",
    "color": "#c8ff50",
-   "pct": 4.78,
+   "pct": 4.77,
    "km2": 493088
   },
   {
    "code": "Csa",
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
-   "pct": 5.23,
+   "pct": 5.44,
    "km2": 452512
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
-   "pct": 4.81,
+   "pct": 4.59,
    "km2": 400352
   },
   {
    "code": "WS",
    "name": "sea / lake",
    "color": "#3b6fb0",
-   "pct": 4.36,
+   "pct": 4.35,
    "km2": 396204
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
-   "pct": 4.24,
+   "pct": 4.29,
    "km2": 365576
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
-   "pct": 3.22,
+   "pct": 3.67,
    "km2": 274048
   },
   {
    "code": "BWh",
    "name": "hot desert",
    "color": "#ff0000",
-   "pct": 2.68,
+   "pct": 2.86,
    "km2": 263148
   },
   {
@@ -318,14 +318,14 @@
    "code": "BSk",
    "name": "cold steppe",
    "color": "#ffdc64",
-   "pct": 3.08,
+   "pct": 3.69,
    "km2": 223132
   },
   {
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
-   "pct": 2.57,
+   "pct": 1.66,
    "km2": 200704
   },
   {
@@ -353,7 +353,7 @@
    "code": "BWk",
    "name": "cold desert",
    "color": "#ff9696",
-   "pct": 2.75,
+   "pct": 2.44,
    "km2": 102052
   },
   {
@@ -374,7 +374,7 @@
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
-   "pct": 0.73,
+   "pct": 0.77,
    "km2": 62932
   },
   {
@@ -388,7 +388,7 @@
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 0.61,
+   "pct": 0.5,
    "km2": 42016
   },
   {
@@ -409,7 +409,7 @@
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
-   "pct": 0.15,
+   "pct": 0.16,
    "km2": 24400
   },
   {
@@ -437,7 +437,7 @@
    "code": "Cwb",
    "name": "subtropical highland",
    "color": "#64c864",
-   "pct": 0.02,
+   "pct": 0.06,
    "km2": 2100
   },
   {
@@ -458,7 +458,7 @@
    "code": "Dwc",
    "name": "dry-winter subarctic",
    "color": "#4b50b4",
-   "pct": 0.01,
+   "pct": 0.03,
    "km2": 1184
   },
   {

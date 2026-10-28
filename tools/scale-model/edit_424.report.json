@@ -16,15 +16,17 @@
     "lake_nim_cells": 33,
     "lake_nim_area_km2": 528,
     "climate_px": {
-      "BWk": 25296,
-      "BSh": 4762,
-      "BSk": 11276,
-      "Dsb": 42,
-      "Dsc": 3116,
-      "Dfb": 12351,
+      "BWh": 3859,
+      "BWk": 18462,
+      "BSk": 21747,
+      "Csa": 4396,
+      "Csb": 764,
+      "Cwb": 312,
+      "Dsb": 4186,
+      "Dsc": 3117,
       "ET": 5219,
-      "EF": 8286,
-      "HF": 17758,
+      "EF": 8090,
+      "HF": 17954,
       "O": 8696,
       "WS": 132
     }
@@ -45,17 +47,18 @@
     "ostrukh_lake_cells": 14,
     "maar_lake_cells": 40,
     "climate_px": {
-      "BSk": 202,
-      "Csa": 5,
-      "Cfa": 573,
-      "Cfb": 3030,
-      "Dsc": 1809,
-      "Dfb": 7373,
+      "BSk": 3021,
+      "Cwb": 513,
+      "Cfa": 240,
+      "Cfb": 486,
+      "Dsb": 5406,
+      "Dsc": 2871,
+      "Dwc": 455,
       "Dfc": 68,
       "ET": 25604,
       "EF": 4749,
       "HF": 316,
-      "WS": 216
+      "WH": 216
     }
   },
   "rivers_updated_total": 63
