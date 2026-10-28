@@ -312,6 +312,14 @@ scene = true
 blurb = "The drowned caldera under its three volcanoes: the lake towns, the lanchas between the docks, the Xocomil, and Santiago's procession."
 
 [[route]]
+path = "/crater"          # a real place: Crater Lake National Park from OpenStreetMap on its real ground, the lake's story as events (src/crater/)
+aliases = ["/crater.html", "/craterlake", "/crater-lake"]
+file = "crater.html"
+title = "Crater Lake: massing model"
+scene = true
+blurb = "The deepest lake in America in the caldera Mount Mazama left: Wizard Island, the Phantom Ship, the lodge on the rim, and the mountain's fall as an event."
+
+[[route]]
 path = "/olympic"         # a real place: the whole Olympic Peninsula on the real ground, from OpenStreetMap (src/olympic/, tools/make-olympic.py)
 aliases = ["/olympic.html", "/olympics", "/olympicnationalpark", "/peninsula"]
 file = "olympic.html"

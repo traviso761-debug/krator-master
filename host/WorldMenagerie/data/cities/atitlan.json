@@ -173,8 +173,8 @@
   }
  },
  "waterColour": "#2e5a6a",
- "lakeColour": "#2a5868",
- "lakeSheen": "#7aa0b0",
+ "lakeColour": "#1f4c66",
+ "lakeSheen": "#4a6474",
  "_lakeColour": "deep blue-green, darker in the afternoon wind; clear from a lancha to several metres",
  "defaultHeights": {
   "_": "the lake's houses are of block, one or two storeys and often a third begun; the hotels and the churches stand over them",
@@ -1438,8 +1438,8 @@
     -91.218
    ],
    "Santa Cruz La Laguna": [
-    14.7398,
-    -91.2062
+    14.7401,
+    -91.2065
    ],
    "Santa Catarina Palopó": [
     14.7222,
@@ -1604,7 +1604,41 @@
    "water": 1.2,
    "land": 6
   },
-  "_": "src/atitlan/lake.js: the lanchas on their routes between the docks (found through the water), cayucos, the tul in the shallows, the drowned shore, the Xocomil's whitecaps"
+  "_": "src/atitlan/lake.js: the lanchas on their routes between the docks (found through the water), cayucos, the tul in the shallows, the drowned shore, the Xocomil's whitecaps; the launches, the lanchas tied up at the docks, the kayaks",
+  "launches": 10,
+  "moored": 4,
+  "kayaks": {
+   "count": 45,
+   "reach": 220,
+   "keep": 12,
+   "zones": [
+    [
+     14.7225,
+     -91.259,
+     700
+    ],
+    [
+     14.7385,
+     -91.161,
+     900
+    ],
+    [
+     14.74,
+     -91.206,
+     600
+    ],
+    [
+     14.7365,
+     -91.218,
+     400
+    ],
+    [
+     14.695,
+     -91.276,
+     600
+    ]
+   ]
+  }
  },
  "atitlanEvents": {
   "procession": [
@@ -2043,6 +2077,23 @@
     -91.1378
    ],
    "info": "Since 2016 the town has painted its houses in the patterns of its own huipil, blue and turquoise and purple, so the whole town reads from the water as a piece of weaving."
+  },
+  {
+   "name": "La Iguana Perdida",
+   "aka": [
+    "the Iguana",
+    "the lost iguana"
+   ],
+   "model": "iguana",
+   "at": [
+    14.74045,
+    -91.20575
+   ],
+   "clear": [
+    34,
+    0
+   ],
+   "info": "The hostel on the waterfront by Santa Cruz La Laguna's dock, an oasis on the shore for over twenty years: three dorms and rooms up the slope over the lake, the bar and the family-style dinner at seven, and ATI Divers, for two decades the only dive shop on Lake Atitlán, working from its jetty. Santa Cruz has no road to the shore: everyone comes by lancha."
   }
  ],
  "navmap": {
@@ -2058,7 +2109,8 @@
    "Rostro Maya",
    "Santa Catarina Palopó",
    "The Cerro de Oro",
-   "Calle Santander"
+   "Calle Santander",
+   "La Iguana Perdida"
   ]
  },
  "views": {
@@ -2181,6 +2233,18 @@
     -91.2,
     0.1
    ]
+  ],
+  "La Iguana Perdida": [
+   [
+    14.7399,
+    -91.2064,
+    5.0
+   ],
+   [
+    14.74045,
+    -91.2058,
+    8.0
+   ]
   ]
  },
  "cover": {
@@ -2272,5 +2336,136 @@
   "near": 1300,
   "spacing": 11,
   "_": "src/atitlan/cover.js: the land the map leaves bare painted as forest, milpa, coffee, cliff and ash, and the forest's trees planted near the camera"
+ },
+ "waves": {
+  "steep": 1.0,
+  "far": 2200,
+  "sky": 0.45,
+  "surf": 5,
+  "surfOpacity": 0.55,
+  "_": "src/atitlan/waves.js: the water's surface (waves that follow the Xocomil and the weather's wind), the volcanoes and towns in it (a true mirror), the green where the bed is shallow, and the surf along the shore",
+  "reflect": {
+   "res": 0.35,
+   "every": 2,
+   "strength": 0.9,
+   "minR": 30
+  },
+  "shallow": {
+   "colour": "#4a8a7a",
+   "depth": 4,
+   "strength": 0.7,
+   "res": 512
+  },
+  "glint": {
+   "shine": 260,
+   "strength": 0.55
+  }
+ },
+ "walls": {
+  "zones": [
+   [
+    14.7425,
+    -91.1575,
+    1100
+   ],
+   [
+    14.7715,
+    -91.1825,
+    900
+   ],
+   [
+    14.6375,
+    -91.2285,
+    950
+   ],
+   [
+    14.6925,
+    -91.2725,
+    750
+   ],
+   [
+    14.695,
+    -91.286,
+    500
+   ],
+   [
+    14.7204,
+    -91.2725,
+    500
+   ],
+   [
+    14.724,
+    -91.259,
+    420
+   ],
+   [
+    14.733,
+    -91.2451,
+    320
+   ],
+   [
+    14.7385,
+    -91.2185,
+    200
+   ],
+   [
+    14.7435,
+    -91.2065,
+    320
+   ],
+   [
+    14.7236,
+    -91.1378,
+    380
+   ],
+   [
+    14.6931,
+    -91.1149,
+    450
+   ],
+   [
+    14.6363,
+    -91.1442,
+    850
+   ],
+   [
+    14.746,
+    -91.135,
+    500
+   ],
+   [
+    14.7619,
+    -91.1702,
+    350
+   ],
+   [
+    14.714,
+    -91.304,
+    550
+   ]
+  ],
+  "skip": [
+   [
+    14.7236,
+    -91.1378,
+    420
+   ]
+  ],
+  "maxH": 12,
+  "zocalo": 0.6,
+  "grey": 0.3,
+  "floor": 3,
+  "band": 0.9,
+  "_": "src/atitlan/walls.js: the zócalo along the foot of the walls, and the upper floors left in bare grey block"
+ },
+ "weather": {
+  "climate": "highland",
+  "cloudH": 1500,
+  "labels": {
+   "storm": "An afternoon storm",
+   "mist": "Morning mist on the lake",
+   "haze": "Smoke haze (burning season)"
+  },
+  "_": "src/core/weather.js: the climate's weather, changing on its own or set from the Weather button (weather=<state> in the address holds one)"
  }
 }

@@ -58,7 +58,8 @@ const inRec=(rec,x,z)=>x>=rec.bb.x0&&x<=rec.bb.x1&&z>=rec.bb.z0&&z<=rec.bb.z1&&i
 const LAKE=dec(OSM.lake),ISLANDS=OSM.islands.map(dec);
 const WATER=OSM.water.map(polyRec),MARINAS=OSM.marina.map(polyRec),BEACHES=OSM.beach.map(polyRec);
 const PIERS=OSM.pier.map(p=>p.line?{line:dec(p.line),w:p.w,name:p.n||''}:polyRec(p));
-const AREAS=OSM.areas.map(polyRec);
+// a city can leave whole kinds of mapped area undrawn (C.dropAreas: ['wood', ...]) where its own ground is painted instead (Crater Lake)
+const AREAS=OSM.areas.filter(a=>!(C.dropAreas||[]).includes(a.k)).map(polyRec);
 const ROADS=OSM.roads.map(r=>{const pts=dec(r.p);let len=0;for(let i=0;i+1<pts.length;i++)len+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);return {c:r.c,w:r.w,name:r.n||'',bridge:r.b||0,layer:r.l||0,pts,len};});
 const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}));
 const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));

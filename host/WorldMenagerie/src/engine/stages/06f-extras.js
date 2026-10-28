@@ -6,3 +6,6 @@
 // page's extra failing takes down the extra and not the city. An extra that wants a control of its own asks for
 // it with API.onUI, because the panels do not exist until the next stage.
 if(ctx.extras&&ctx.extras.length)for(const ex of ctx.extras)section(ex.name||'extra',()=>ex.fn(API));
+// the weather, for a city whose file has a `weather` block (src/core/weather.js): after the extras, so the lake's
+// waves and boats it blows on, and the ground it snows on, are there
+if(C.weather)section('weather',()=>weather(API));

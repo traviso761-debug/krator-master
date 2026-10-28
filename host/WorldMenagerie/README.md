@@ -496,8 +496,44 @@ a bed and a shore.
 - **The lake** (`lake.js`): lanchas in five liveries on eleven routes found through the water between the docks, with
   wakes and a dwell at each dock; cayucos; tul reeds in the shallows; the drowned trees and roofs of the shore the
   lake has risen over since 2009; the Xocomil's whitecaps.
+- **The water** (`waves.js`): the engine's water given travelling waves in world space, steeper in the Xocomil and
+  each fading as it nears a pixel's footprint (no lattice far out): nine of them, each 0.66 the length of the last, on
+  bearings a golden angle apart, so no two line up. The volcanoes and towns stand in it (`waves.reflect`, a true
+  mirror), green over the shallows (`waves.shallow`), the sun a tight glitter (`waves.glint`), the lake a deep
+  blue-teal; and surf running in along the shore. Boats' wakes open behind them at the Kelvin angle. On it (`lake.js`) the launches, lanchas tied up at every dock, and kayaks.
+- **The walls** (`walls.js`): the darker zócalo band along the foot of the walls, and upper floors left in bare grey
+  block. The map's heights now come from the config (`defaultHeights`): a house is 5.5 m, not the builder's 9.
+- **La Iguana Perdida** (`landmarks.js`, `iguana`): the hostel by Santa Cruz's dock, not in the map: stone terraces
+  to a jetty and dive platform, the thatched dining palapa, the old house with hammocks, the A-frame dorm, the newer
+  rooms, the sauna, ATI Divers' hut and its board. It turns itself to the water and takes the slope's levels.
 - **Events** (`events.js`): mist at dawn, a ride on a lancha from Panajachel to Santiago, the Xocomil coming up, a
   procession over alfombras in Santiago, cohetes over the patron saints' churches, and sunset behind San Pedro.
+
+**Crater Lake** (`crater.html`, `src/crater/`, `data/cities/crater.json`). Crater Lake National Park, Oregon, from
+OpenStreetMap on its real ground at 30 m: the caldera Mount Mazama left about 7,700 years ago, the lake at 1883 m (the
+datum), its bed cut steeply by `terrain.lakeBed`, Wizard Island and the Phantom Ship (the lake's inner rings), the rim
+from the Watchman to Mount Scott, and Rim Village, Munson Valley and Mazama Village. The mapped forest, the park's boundary
+and the mapped rock are left undrawn (`dropAreas`, a new engine option: a list of area kinds) because `ground.js` paints the
+ground itself.
+- **The ground** (`ground.js`): the caldera's inner walls as cliff in grey, tan and rust bands and talus, with hemlock
+  where they ease; the outer slopes as hemlock and red-fir forest with meadows and pumice flats; whitebark pine on the
+  rim; the summer's snow on the high north faces; tints for Wizard Island's cinders, Pumice Castle and Llao Rock;
+  clearings at the villages, and no trees on roads or buildings. `api.ctx.ground.winter(k)` turns the ground and the far
+  backdrop to snow.
+- **The lake**: Atitlán's `lake.js` (with config liveries) runs the tour boats from Cleetwood Cove to Wizard Island
+  and by the Phantom Ship, and the research launch; `oldman.js` the Old Man of the Lake (a bleached, splintered stump
+  with its wet band, leaning, drifting with a ring of calm water round it).
+- **The water**: Atitlán's `waves.js` with two new options. `waves.reflect` is a true mirror: a camera reflected in
+  the lake's plane renders the large meshes (ground, backdrop, buildings, sky; not the instanced trees) at 0.4 of the
+  screen every second frame, and the water takes it by the Fresnel term, rippled by the waves, so the caldera's walls
+  and Wizard Island stand in the lake. `waves.shallow` tints the water toward turquoise where a depth map of the bed
+  says it is a few metres deep. The lake itself is the deep cobalt (`lakeColour` `#0b2a78`). About 58-61 fps.
+- **Landmarks** (`landmarks.js`): Crater Lake Lodge (stone, bark shingle, a roof of dormers, the lake terrace), the
+  Sinnott Memorial set into the wall, the Watchman's and Mount Scott's fire lookouts, the Phantom Ship's spires; cards
+  for Wizard Island, Llao Rock, Cleetwood Cove, Pumice Castle, Hillman Peak, Devils Backbone, Discovery Point, Sun Notch
+  and Mazama. Past the map, `crater-far.json` (150 km at 600 m) through Sarajevo's `backdrop.js`.
+- **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
+  collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
 
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
@@ -532,6 +568,19 @@ the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their m
   back to what it was when the effect ends; the sky dome greys with it, the sun dims, and the colour follows the hour.
   The storms of Fort Worth (rain, about 4 km visibility), Olympic and Yachats, Yachats' marine layer and Edinburgh's haar
   (750 m) are on it. Before, each multiplied the fog's density every frame and never restored it: a whiteout that stayed.
+- **Dynamic weather** (2026-10-28, `src/core/weather.js`, every real place: Antigua, Atitlán, Chicago, Crater Lake,
+  Edinburgh, Fort Worth, Kowloon, New York, Olympic, Portland, Rome, Sarajevo, Tokyo, Venice, Yachats, Yellowstone).
+  A city with a `weather` block gets it; the engine runs it after the page's extras (`06f-extras.js`). Ten states
+  (clear, fair, haze, overcast, drizzle, rain, thunderstorm, fog, mist, snow) are sets of numbers eased between; the
+  `climate` (maritime, continental, subtropical, monsoon, mediterranean, lagoon, basin, highland, alpine; `weights`
+  overrides) says which come and how often, `cloudH` sets the cloud base on the map's heights, `labels` gives local
+  names (Edinburgh's haar, Venice's nebbia, Sarajevo's inversion). The air goes through `api.fogEffect()`; the cloud is
+  one instanced deck of billboards wrapped round the camera (in the water's mirror too); rain and snow fall in a box
+  round the camera, none above the cloud; a thunderstorm puts bolts down a few km off and flickers the light; the wind
+  (`api.ctx.weather.wind`) drives `waves.js` and `lake.js`, and the rain rings the near water. A page opens clear and
+  first changes after 90 s, then every 4 to 10 minutes; the **Weather** button sets a state and holds it, or lets it
+  change on its own; `weather=<state>` in the address holds one. Nothing is in the fingerprint. Snow lies where the
+  ground knows how (Crater Lake's `ground.winter`). Chicago and Portland run at about 20 fps with or without it.
 - **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
   the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
   Will Rogers Center, the Near Southside, TCU, and the whole city.
