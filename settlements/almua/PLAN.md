@@ -28,7 +28,7 @@ parallel to the coast, primarily port and industrial in nature.
 The scale model has Almua at px 446,553: 14 km from the Ring Sea polygon's edge, the West Ring isles 18 km offshore,
 the Vothic Kingdom's border 51 km north and the League of Amphitriton's (the Hykkousoi) 48 km north: Almua watches the
 Hykkousoi. Temora, the spice port, is 88 km east; Pontus 94 km north-west; Drum 133 km south-west; Voth 275 km south.
-The city's river is Dip Rivrh (`tools/scale-model/river-names-4.21.md`, r863): drawn in 4.21 (`edit_rivers.py`
+The city's river is Dip Rivrh (`tools/scale-model/history/river-names-4.21.md`, r863): drawn in 4.21 (`edit_rivers.py`
 `NAMED_COURSES`), the outflow of the lake Drïm Rivrh runs through, 89 km from the south-west to the coast at px
 446.6,548.8, about 38 m3/s at the mouth.
 
@@ -93,7 +93,7 @@ the Hykkousoi.
 ## 5. Open questions for the owner
 
 1. **Settled (2026-10-18).** The river is **Dip Rivrh**, the Deep river, for the navigable channel that makes the
-   harbour (a note in `tools/scale-model/river_names.py`); drawn on the model in 4.21 under that name (section 1).
+   harbour (a note in `tools/scale-model/history/river_names.py`); drawn on the model in 4.21 under that name (section 1).
    **The city's name is older than the Chichani** (settled 2026-10-18): *Almua* was the Islander fishing village at the
    river's mouth, kept by the planners; the tongues page's own rule is not to force an etymology where no English
    source fits, and none does. An Islander shrine of the white moon survives at the spit's root, by the lighthouse.

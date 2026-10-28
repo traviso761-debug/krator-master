@@ -1,9 +1,41 @@
 # Scale model tools
 
-Scripts that edit the **Krator Scale Model** artifact
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.22. The artifact's rasters live inside the page
-(a `DATA` object on one long line); the generator that made them is not in this repo, so these
-scripts edit the decoded rasters directly and write a new page.
+The **Krator Scale Model** artifact (https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), version 4.23, and the tools
+that edit it. Since 2026-10-28 the page is a build like every other Krator build: its source is in this repo, and the
+page is written from it.
+
+## Layout
+
+| Path | What |
+|---|---|
+| `model/src/` | the page's markup, style and script, in 25 fragments (`model/INDEX.md`) |
+| `model/data/` | the `DATA` object: each raster a PNG or JPEG (in LFS), each list or object a JSON file (one record a line), the key order and scalars in `model.json` |
+| `model/build.py` | writes `model/dist/scale-model.html` (not committed; the artifact is the published copy). `--check <saved page>` asserts it is byte-identical to a saved copy of the live artifact |
+| `model/import_page.py` | a saved page split back into `src/` and `data/`; run once (from version 90) and only again if the page is changed outside the build |
+| `smodel/` | the library every edit takes: `page` (load, save, grids, height and water encodings), `geom` (masks, smoothsteps, river strokes), `terrain` (mountains, humps, cuts, levels, perched lakes, weathering), `climate` (reclimate, lapse, lake rain), `paint` (relight, retint, repaint, desert and climate repaints, river paint), `rivers` (water books, routing set-up, tracing, channels, route and carve), `hydro` (runoff, fill-spill routing) |
+| `tests/test_smodel.py` | smodel against the scripts it was lifted from, on the live data (71 checks, about two minutes) |
+| `extract_region.py`, `ancient_roads.py`, `god_road.py` | the live tools: they read a saved page or `model/data`, through smodel |
+| `history/` | every past edit's script and report (4.11 to 4.23), frozen as the record (`history/README.md`) |
+
+The data's rasters and how each map mode on the page draws from them are in `BRIEF-GEMINI.md` ("The grids and the
+rasters", "How each map mode gets its picture").
+
+## Making an edit (from 4.24)
+
+1. A new script `edit_4xx.py` in this folder: `D = smodel.page.load()`, change `D` with smodel, `smodel.page.save(D)`.
+   It edits `model/data/` in place, so the git diff shows what moved; the script and its report are the record (move
+   them to `history/` when the next edit lands).
+2. `python3 tools/scale-model/model/build.py`, look at the page, publish `model/dist/scale-model.html` to the artifact's
+   URL, and commit `model/data/`, `model/src/` (if the page's code changed), the script and a section here.
+3. A change to the page's code is an edit to `model/src/`: rebuild, and the data is untouched.
+
+Heights decode with the data's own `lo`/`hi` (`smodel.page.heights`). The history scripts hard-code `LO, HI` = -2,600,
+17,100: wrong since 4.23 raised `hi` to 27,000 m, which is why they are not run on the current data.
+
+## History
+
+How the page got here, edit by edit. The scripts named below are in `history/`; the working-folder steps describe how
+they were run at the time.
 
 Working folder: decode every base64 raster from the 4.9 page (`orig.html`) into `<key>.png/.jpg`,
 export the regions collection from the artifact's database as JSON, then:

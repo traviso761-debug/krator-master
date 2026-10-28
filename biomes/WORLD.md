@@ -70,7 +70,7 @@ because their conditions are rare, and Krator has the conditions.
   flood lake needs a wetter past: a breach in the Ancients' time is a story. The east lobe also closes (at 369 m)
   and spills into Korona's trenches.
 
-  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/edit_dams.py`):** the lakes were the Ancients'
+  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/history/edit_dams.py`):** the lakes were the Ancients'
   own, held behind two dam arcologies, and they broke in a cascade in the war that ended them. The east lobe (region
   'dam 2') held a lake at 1,050 m (~63,000 km^2) behind the east dam in the pass between the lobes (507,110); the west
   lobe (region 'dam') a lake at 900 m (~48,000 km^2) behind the west dam in its southern saddle (409,144). The east
@@ -105,7 +105,7 @@ geysers on the western crater floor; 4.15 made the eastern abyss's rim an escarp
 raised the ranges of the valley of Yuni (4.16 filled its south-eastern head), lowered five lakes that stood above their shores, and (4.17) kept the east rim gentle, raised a saddle across the abyss's floor and cut a
 salt basin east of Verge; 4.18 levelled 'passage' and recomputed rain and climate where the heights changed; 4.19
 set each recomputed cell's class from its own climate, ran the Yuni river from the valley's head into the lake at
-Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/edit_heights.py`). Textures are re-shaded
+Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/history/edit_heights.py`). Textures are re-shaded
 and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):

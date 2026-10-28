@@ -1,0 +1,111 @@
+<title>Krator Scale Model</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#0d1210; --panel:#151c18; --line:#2a3630; --text:#e6e1d3; --mute:#9aa79e;
+  --copper:#c9803c; --sea:#4f7fb8; --basin:#c7d64c; --high:#3f7d42; --snow:#e8ecef;
+  --font-d:"Fraunces",Georgia,serif; --font-b:"IBM Plex Sans",system-ui,sans-serif; --font-m:"IBM Plex Mono",ui-monospace,monospace;
+}
+html,body{height:100%;margin:0}
+body{background:var(--ink);color:var(--text);font-family:var(--font-b);font-size:14px;overflow:hidden}
+#stage{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%}
+#panel{position:fixed;left:16px;top:calc(16px + env(safe-area-inset-top,0px));width:280px;max-width:calc(100vw - 32px);
+  background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);
+  padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px}
+h1{font:500 26px/1.05 var(--font-d);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 small{display:block;font:400 12px/1.4 var(--font-b);color:var(--mute);margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
+.read{font:500 13px/1.5 var(--font-m);display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.read span:nth-child(odd){color:var(--mute)}
+.read b{font-weight:500;color:var(--copper)}
+.legend{display:grid;grid-template-columns:14px 1fr;gap:5px 10px;font-size:12px;color:var(--mute);align-items:center}
+.legend i{display:block;height:12px;border:1px solid rgba(0,0,0,.4)}
+label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--mute);gap:10px}
+input[type=range]{width:140px;accent-color:var(--copper)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{font:500 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 10px;cursor:pointer}
+button[aria-pressed=true]{background:var(--copper);border-color:var(--copper);color:#1a1008}
+button:focus-visible,input:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+#hint{position:fixed;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));font:400 11px var(--font-m);color:var(--mute);text-align:right}
+#panel{max-height:calc(100vh - 48px);overflow-y:auto}
+.sec{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.sec h2{font:500 11px var(--font-b);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0}
+#regions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow-y:auto}
+#rTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line)}
+#rTabs button{border:0;border-right:1px solid var(--line);padding:6px 4px;font-size:11px;letter-spacing:.02em}
+#rTabs button:last-child{border-right:0}
+#rTabs button[aria-selected=true]{background:rgba(255,255,255,.08);color:var(--text);box-shadow:inset 0 -2px 0 var(--copper)}
+#rTabs button[aria-selected=false]{color:var(--mute)}
+#rTabs b{font:400 10px var(--font-m);color:var(--mute);margin-left:4px}
+.kindrow{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mute)}
+.kindrow .seg{display:flex;flex:1}
+.kindrow .seg button{flex:1;padding:4px 6px;font-size:11px;margin-left:-1px}
+.layers{display:flex;gap:0}
+.layers button{margin-left:-1px}
+#regions li{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;padding:4px 6px;cursor:pointer;border:1px solid transparent}
+#regions li:hover,#regions li[aria-selected=true]{border-color:var(--line);background:rgba(255,255,255,.03)}
+#regions li i{width:12px;height:12px;display:block;border:1px solid rgba(0,0,0,.5)}
+#regions li .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#regions li .ar{font:400 11px var(--font-m);color:var(--mute)}
+#regions:empty::after{content:"none yet — draw one";font-size:12px;color:var(--mute);padding:2px 6px}
+#edit{display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center}
+#edit input[type=text]{grid-column:1/-1;font:400 13px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 8px}
+#edit textarea{grid-column:1/-1;font:400 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:6px 8px;resize:vertical;min-height:38px}
+.sw{display:flex;gap:4px;grid-column:1/-1;flex-wrap:wrap}
+.sw button{width:20px;height:20px;padding:0;border:1px solid rgba(0,0,0,.5)}
+.sw button[aria-pressed=true]{outline:2px solid var(--text);outline-offset:1px}
+.status{font:400 11px var(--font-m);color:var(--mute);min-height:14px}
+#drawbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top,0px));background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--copper);padding:8px 12px;display:flex;gap:8px;align-items:center;font-size:12px}
+#drawbar[hidden]{display:none}
+#measbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top,0px));background:color-mix(in srgb,var(--panel) 94%,transparent);border:1px solid var(--copper);padding:10px 12px;display:flex;flex-direction:column;gap:6px;width:300px;max-width:calc(100vw - 32px)}
+#measbar[hidden]{display:none}
+#measbar .mtop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#mTotal{font:500 22px/1 var(--font-m);color:var(--copper);font-variant-numeric:tabular-nums}
+#mDetail{font:400 11px/1.45 var(--font-m);color:var(--mute);font-variant-numeric:tabular-nums}
+#mProf{width:100%;height:58px;display:block;border-top:1px solid var(--line)}
+body.measuring #stage{cursor:crosshair}
+body.drawing #stage{cursor:crosshair}
+#climLegend{display:flex;flex-direction:column;gap:6px}
+.clist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:1px;font-size:11px;color:var(--mute)}
+.clist li{display:grid;grid-template-columns:10px auto 1fr;gap:6px;align-items:center;white-space:nowrap;overflow:hidden}
+.clist li i{width:10px;height:10px;display:block;border:1px solid rgba(0,0,0,.5)}
+.clist li b{font:500 11px var(--font-m);color:var(--text)}
+.clist li span{overflow:hidden;text-overflow:ellipsis}
+#tempLegend{display:flex;flex-direction:column;gap:5px}
+#tempLegend .bar{height:10px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#2b1a5e 0%,#2a4a9e 17%,#3a8fd0 35%,#7fd4e0 48%,#b9e8b0 57%,#e8e07a 65%,#f0a94a 74%,#e2612e 83%,#b81f1f 91%,#6e0c1c 100%)}
+#tempLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
+#tempLegend select{font:500 12px var(--font-b);color:var(--text);background:var(--panel);border:1px solid var(--line);padding:4px 6px}
+#rainLegend{display:flex;flex-direction:column;gap:4px}
+#windLegend{display:flex;flex-direction:column;gap:4px}
+#windLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
+/* an author display: rule beats the UA stylesheet's [hidden]{display:none}, so the rain
+   and temp legends were showing on every layer. Restore the attribute's meaning. */
+#rainLegend[hidden],#tempLegend[hidden],#climLegend[hidden],#windLegend[hidden]{display:none}
+#settPanel[hidden]{display:none}
+#settPanel ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:210px;overflow:auto}
+#settPanel li{display:grid;grid-template-columns:22px 1fr 112px 20px;gap:6px;align-items:center}
+#settPanel li[aria-selected="true"] .snm{border-color:var(--text)}
+#settPanel .sic{width:20px;height:20px;background-size:contain;background-repeat:no-repeat;background-position:center}
+#settPanel .snm{font:500 12px var(--font-b);color:var(--text);background:transparent;border:1px solid var(--line);padding:3px 5px;min-width:0}
+#settPanel .sty{font:400 11px var(--font-m);color:var(--text);background:var(--panel);border:1px solid var(--line);padding:3px 4px}
+#settPanel .sdel{border:0;background:transparent;color:var(--mute);cursor:pointer;font-size:15px;line-height:1;padding:0}
+#settPanel .sdel:hover{color:#d05b33}
+#settKey{display:grid;grid-template-columns:repeat(2,auto);gap:3px 10px;margin-top:8px;font:400 10px var(--font-m);color:var(--mute)}
+#settKey span{display:flex;align-items:center;gap:5px}
+#settKey i{width:15px;height:15px;background-size:contain;background-repeat:no-repeat;display:inline-block}
+#windLegend .bar{height:10px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(90deg,#f7f0df 0%,#f2dba6 12%,#e9bc6b 25%,#d9942f 44%,#b96c16 62%,#8d4a10 81%,#5a2a0b 100%)}
+#rainLegend .bar{height:10px;background:linear-gradient(90deg,#d6b278 0%,#decd96 6%,#bed296 15%,#78beaa 25%,#3c96aa 40%,#1e5fa0 60%,#14286e 100%);border:1px solid rgba(0,0,0,.4)}
+#rainLegend .ticks{display:flex;justify-content:space-between;font:400 10px var(--font-m);color:var(--mute)}
+#toggle{display:none}
+@media (max-width:560px){
+  #panel{width:auto;right:16px;padding:12px 14px}
+  #panel.collapsed > :not(h1):not(#toggle){display:none}
+  #toggle{display:inline-block;align-self:flex-start}
+  h1{font-size:20px}
+  #hint{display:none}
+  #drawbar{left:16px;right:16px;transform:none;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
+  #measbar{left:16px;right:16px;width:auto;transform:none;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+

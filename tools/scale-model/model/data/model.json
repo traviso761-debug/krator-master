@@ -1,0 +1,140 @@
+{
+ "keys": [
+  {
+   "key": "w",
+   "value": 774
+  },
+  {
+   "key": "hh",
+   "value": 696
+  },
+  {
+   "key": "lo",
+   "value": -2600.0
+  },
+  {
+   "key": "hi",
+   "value": 27000.0
+  },
+  {
+   "key": "fullW",
+   "value": 1549
+  },
+  {
+   "key": "fullH",
+   "value": 1393
+  },
+  {
+   "key": "h",
+   "file": "h.png"
+  },
+  {
+   "key": "wl",
+   "file": "wl.png"
+  },
+  {
+   "key": "t",
+   "file": "t.jpg"
+  },
+  {
+   "key": "rt",
+   "file": "rt.jpg"
+  },
+  {
+   "key": "p",
+   "file": "p.png"
+  },
+  {
+   "key": "z",
+   "file": "z.png"
+  },
+  {
+   "key": "wd",
+   "file": "wd.png"
+  },
+  {
+   "key": "wdmax",
+   "value": 3000.0
+  },
+  {
+   "key": "wdgam",
+   "value": 2.2
+  },
+  {
+   "key": "wdvmax",
+   "value": 25.0
+  },
+  {
+   "key": "ct",
+   "file": "ct.jpg"
+  },
+  {
+   "key": "st",
+   "file": "st.jpg"
+  },
+  {
+   "key": "tm",
+   "file": "tm.png"
+  },
+  {
+   "key": "tw",
+   "file": "tw.png"
+  },
+  {
+   "key": "tc",
+   "file": "tc.png"
+  },
+  {
+   "key": "th",
+   "file": "th.png"
+  },
+  {
+   "key": "tl",
+   "file": "tl.png"
+  },
+  {
+   "key": "c",
+   "file": "c.png"
+  },
+  {
+   "key": "climate",
+   "file": "climate.json"
+  },
+  {
+   "key": "volc",
+   "file": "volc.json"
+  },
+  {
+   "key": "outlets",
+   "file": "outlets.json"
+  },
+  {
+   "key": "vents",
+   "file": "vents.json"
+  },
+  {
+   "key": "rivers",
+   "file": "rivers.json"
+  },
+  {
+   "key": "palaeolakes",
+   "file": "palaeolakes.json"
+  },
+  {
+   "key": "dams",
+   "file": "dams.json"
+  },
+  {
+   "key": "floods",
+   "file": "floods.json"
+  },
+  {
+   "key": "basins",
+   "file": "basins.json"
+  },
+  {
+   "key": "hydro",
+   "file": "hydro.json"
+  }
+ ]
+}

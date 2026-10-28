@@ -3,7 +3,8 @@
 
     python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>]
 
-<page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
+<page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
+                   or model/dist/scale-model.html), whose DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection: a folder of one JSON file per document (ArtifactData list with
                    out_dir), or one JSON list of them (openworld/<name>/source/regions.json)
 <settlements dir>  the artifact's `settlements` collection, the same way
@@ -50,6 +51,9 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import smodel.page   # noqa: E402
+
 MARGIN = 10          # map pixels of context round the polygon's box
 RIVER_W, RIVER_D = 60.0, 6.0   # a named river's width and water depth at 1:1 (m)
 CHANNEL_MIN = 3.0e4  # accumulated rain-weighted cells (mm/yr x cells) that make a channel
@@ -75,31 +79,14 @@ DAM_R = 5            # height cells: a dam's body, for the lake held behind it (
 
 
 def load_page(path):
-    import re
-    html = open(path, encoding='utf8').read()
-    ver = re.search(r'scale model (4\.\d+) ', html)
-    for line in html.split('\n'):
-        if line.startswith('const DATA = {'):
-            D = json.loads(line[line.index('{'):line.rindex('}') + 1])
-            D['_version'] = ver.group(1) if ver else '?'
-            return D
-    sys.exit('no DATA object in ' + path)
+    """DATA from a saved page or the build's data folder (smodel.page), with the model's version"""
+    D = smodel.page.load(path)
+    D['_version'] = smodel.page.version(path)
+    return D
 
 
-def raster(D, key):
-    return np.array(Image.open(io.BytesIO(base64.b64decode(D[key]))).convert('RGB'))
-
-
-def docs(folder):
-    """a collection as a folder of one JSON file per document, or one JSON list of documents (each with its 'id')"""
-    if os.path.isfile(folder):
-        return json.load(open(folder, encoding='utf8'))
-    out = []
-    for f in sorted(glob.glob(os.path.join(folder, '*.json'))):
-        d = json.load(open(f, encoding='utf8'))
-        d['id'] = os.path.splitext(os.path.basename(f))[0]
-        out.append(d)
-    return out
+raster = smodel.page.raster     # (D, key) -> RGB array
+docs = smodel.page.docs
 
 
 def poly_mask(pts, x0, y0, W, H):

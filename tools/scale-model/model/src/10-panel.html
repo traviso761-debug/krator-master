@@ -1,0 +1,103 @@
+<div id="stage"></div>
+<aside id="panel" class="collapsed">
+  <h1>Krator <small>scale model 4.23 · 2 km/px · 3,098 × 2,786 km</small></h1>
+  <button id="toggle" aria-expanded="false">Legend &amp; controls</button>
+  <div class="read" aria-live="polite">
+    <span>elev</span><span><b id="rElev">—</b></span>
+    <span>zone</span><span id="rZone">—</span>
+    <span>air</span><span id="rAir">—</span>
+    <span>rain</span><span id="rRain">—</span>
+    <span>clim</span><span id="rClim">—</span>
+    <span>temp</span><span id="rTemp">—</span>
+    <span>wind</span><span id="rWind">—</span>
+    <span>river</span><span id="rRiver">—</span>
+  </div>
+  <div class="legend">
+    <i style="background:#7a4a24"></i><span>salt basins &nbsp;−2.5 to −1.2 km</span>
+    <i style="background:#4f7fb8"></i><span>ring sea −1.5 km (1.9 atm) · outer lakes 0</span>
+    <i style="background:#5c9ea8"></i><span>highland lakes &nbsp;~1.75 km</span>
+    <i style="background:#c7d64c"></i><span>basin floor &nbsp;0.1–1.4 km</span>
+    <i style="background:#3f7d42"></i><span>highland shelf &nbsp;3–4.6 km</span>
+    <i style="background:#b9bfc4"></i><span>arctic &nbsp;5.6–7.6 km</span>
+    <i style="background:#f2f2f2"></i><span>outer rim &nbsp;8–27 km (airless)</span>
+    <i style="background:#c9803c"></i><span>the Volcano &nbsp;10.9 km rim · lava floor 10.25 km</span>
+    <i style="background:#2f8f6f"></i><span>southern rift &nbsp;ranges 8–17 km · rift floor to −3.5 km · three terminal seas · Cleft Lake 1.75 atm · 48–57°S</span>
+    <i style="background:#8c8683"></i><span>the Godsgate &nbsp;6.0 km pass · 0.75 atm</span>
+  </div>
+  <div id="rainLegend" hidden>
+    <div class="bar"></div>
+    <div class="ticks"><span>0</span><span>1000</span><span>2000</span><span>3000</span><span>4000 mm/yr</span></div>
+    <div class="status">NW wind · moisture from lakes, sea and air over the rim · wrung out on rising ground</div>
+  </div>
+  <div id="tempLegend" hidden>
+    <label>reading <select id="tempMode">
+      <option value="mean">annual average</option>
+      <option value="hi">annual high (hottest afternoon)</option>
+      <option value="lo">annual low (coldest night)</option>
+    </select></label>
+    <div class="bar"></div>
+    <div class="ticks"><span>−60</span><span>−25</span><span>0</span><span>+25</span><span>+55 °C</span></div>
+    <div class="status" id="tempNote">airless rim has no air temperature — shown as bare relief</div>
+  </div>
+  <div id="windLegend" hidden>
+    <div class="bar"></div>
+    <div class="ticks"><span>0</span><span>400</span><span>700</span><span>1200</span><span>1600+ W/m²</span></div>
+    <div class="status">annual mean wind power density · NW westerlies accelerated by foehn descent, gaps and exposure · dense lowland air is worth more than fast thin air (P = ½ρv³) · airless rim shown as bare relief</div>
+  </div>
+  <div id="climLegend" hidden>
+    <ul class="clist" id="climList"></ul>
+    <div class="status">Köppen + Krator classes · X = abyssal (&gt;1.9 atm) · H = hyperalpine (&lt;0.6 atm) · ~40°S, NW westerlies, Earth-like seasons</div>
+  </div>
+  <label>vertical exaggeration <input id="vex" type="range" min="1" max="12" step="0.5" value="5"></label>
+  <div class="row">
+    <button id="bSat" aria-pressed="true">satellite</button>
+    <button id="bTex" aria-pressed="false">relief</button>
+    <button id="bZone" aria-pressed="false">zones</button>
+    <button id="bRain" aria-pressed="false">rain</button>
+    <button id="bClim" aria-pressed="false">climate</button>
+    <button id="bTemp" aria-pressed="false">temp</button>
+    <button id="bWind" aria-pressed="false">wind</button>
+    <button id="bWater" aria-pressed="true">water</button>
+    <button id="bTop" aria-pressed="false">top-down</button>
+    <button id="bSett" aria-pressed="false">settlements</button>
+    <span class="layers" role="group" aria-label="Region layers"><button id="bRegPol" aria-pressed="true" title="Political regions">political</button><button id="bRegGeo" aria-pressed="false" title="Geographic regions">geographic</button><button id="bRegBio" aria-pressed="false" title="Biome regions">biomes</button></span>
+    <button id="bMeasure" aria-pressed="false" title="Measure distance (M)">measure</button>
+  </div>
+  <div class="sec" id="settPanel" hidden>
+    <h2>Settlements</h2>
+    <div class="row"><button id="bSettAdd" aria-pressed="false">Add settlement</button><button id="bSettImport">Import (city) regions</button><button id="bSettCopy">Copy JSON</button></div>
+    <ul id="settList"></ul>
+    <div class="status" id="settStatus">—</div>
+    <div id="settKey"></div>
+  </div>
+  <div class="sec">
+    <h2>Regions</h2>
+    <div id="rTabs" role="tablist" aria-label="Region list"></div>
+    <div class="row"><button id="bDraw">Draw region</button><button id="bCopy">Copy JSON</button></div>
+    <ul id="regions"></ul>
+    <div id="edit" hidden>
+      <input id="eName" type="text" placeholder="Region name" maxlength="60">
+      <div class="sw" id="eSw"></div>
+      <div class="kindrow"><span>Layer</span><div class="seg" id="eKind" role="group" aria-label="Move to layer"></div></div>
+      <textarea id="eNotes" placeholder="Notes — polity, biome, who lives here…"></textarea>
+      <span class="status" id="eArea"></span>
+      <div class="row"><button id="eVerts" aria-pressed="false">Move points</button><button id="eDel">Delete</button></div>
+    </div>
+    <span class="status" id="dbStatus">connecting to shared store…</span>
+  </div>
+</aside>
+<div id="drawbar" hidden>
+  <span id="drawMsg">Click the terrain to add points</span>
+  <button id="dUndo">Undo point</button>
+  <button id="dFinish" aria-pressed="true">Finish</button>
+  <button id="dCancel">Cancel</button>
+</div>
+<div id="measbar" hidden>
+  <div class="mtop"><b id="mTotal">0 km</b><span id="mDetail">Click the terrain to set a start point</span></div>
+  <canvas id="mProf" width="552" height="116" aria-label="Elevation profile of the measured route"></canvas>
+  <div class="row"><button id="mUndo">Undo point</button><button id="mClear">Clear</button><button id="mDone">Done</button></div>
+</div>
+<div id="hint">drag · orbit &nbsp;|&nbsp; wheel · zoom &nbsp;|&nbsp; right-drag · pan &nbsp;|&nbsp; WASD · fly (Q/E height, arrows orbit, Shift fast) &nbsp;|&nbsp; hover · read &nbsp;|&nbsp; M · measure</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
