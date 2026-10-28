@@ -1,117 +1,97 @@
 # Brief for Gemini: terrain edits and map modes on the Krator Scale Model
 
-Written 2026-10-28. The page is at version 4.23 (artifact version 90). Read this first, then `README.md` in this
-folder, which records every past edit and the reasons for it.
+Written 2026-10-28 for the model at version 4.23 (artifact version 90). Read this first, then `README.md` in this folder:
+its "Layout" and "Making an edit" sections are the workflow, and its "History" sections record every past edit and why.
 
-## What the page is
+## What the model is
 
-The **Krator Scale Model** is one self-contained HTML page (about 8.9 MB) that the owner views at
-https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q. Its terrain and climate live in one JavaScript line,
-`const DATA = {...};`, as JSON. In that JSON every raster is a base64 PNG or JPEG. The generator that first made those
-rasters is **not** in this repo. Every edit since 4.11 decodes the rasters, changes them with numpy, and writes them
-back into a new page. You do the same. Do not try to regenerate the world.
+The **Krator Scale Model** is a single HTML page, about 8.9 MB, that the owner views at
+https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q. It is built from this repo:
 
-The page is not in the repo. You work on a local copy and hand the edited page back. You cannot publish to the artifact,
-so the owner (or Claude) publishes it.
+- `model/data/`: the terrain and climate, as PNG/JPEG rasters and JSON files (`model/INDEX.md` lists each one);
+- `model/src/`: the page's markup, style and script, in fragments;
+- `model/build.py`: writes `model/dist/scale-model.html` from the two.
+
+The generator that first made the rasters is not in the repo. An edit therefore loads the data, changes it with numpy
+through the `smodel` library, and saves it back. Do not try to regenerate the world. You cannot publish the artifact:
+you hand back the changed `model/data/`, your script and its report, and the owner (or Claude) builds and publishes.
 
 ## What you need before you start
 
-1. **The current page.** Ask the owner for it. Claude can save it from the artifact with a `read`.
-   When publishing, everything before `<title>` and the closing `</body></html>` is the wrapper the service adds.
-   Strip it from the file you hand back (`README.md`, end of "4.15 to 4.19").
-2. **The regions**: on the page, **Regions → Copy JSON**. You get a list of
+1. **A checkout with LFS** (`git lfs pull --include="tools/scale-model/model/data/*"`). A raster that is a few hundred
+   bytes is an LFS pointer, not the image.
+2. **The regions**: on the live page, **Regions → Copy JSON**. You get a list of
    `{id, name, kind: political|geographic|biome, points: [[px, py], ...], color, notes}`.
-3. **The settlements**: on the page, **settlements → Copy JSON**, a list of `{id, name, type, px, py, notes, createdAt}`.
-4. Save each one as a `.json` file. `extract_region.docs()` reads either a single JSON list or a folder of one file per
-   document.
+3. **The settlements**: on the live page, **settlements → Copy JSON**, a list of `{id, name, type, px, py, notes, createdAt}`.
+4. Save each one as a `.json` file and read it with `smodel.page.docs(path)`.
 
 Python 3 with `numpy`, `scipy` and `Pillow`. Every open of a text file names `encoding='utf-8'`, and every write also
-names `newline='\n'`. The page is one huge line, so never print or `cat` it. Read `DATA` with `edit_heights.load()`.
+names `newline='\n'`. First run `python3 tools/scale-model/model/build.py` and `python3 tools/scale-model/tests/test_smodel.py`,
+to check your checkout builds and the library passes.
 
 ## The grids and the rasters
 
-Two grids, both covering the same 3,098 × 2,786 km:
+Two grids cover the same 3,098 × 2,786 km:
 
-- **Height grid**: `DATA.w` × `DATA.hh` = 774 × 696, about 4 km a cell.
-- **Full grid**: `DATA.fullW` × `DATA.fullH` = 1549 × 1393, 2 km a pixel. **Region points, settlement `px/py`, river
-  courses and vents are all in full-grid px.** To get a height cell, multiply by `su = (w-1)/(fullW-1)`,
-  `sv = (hh-1)/(fullH-1)`.
+- **Height grid**: `D['w']` × `D['hh']` = 774 × 696, about 4 km a cell.
+- **Full grid**: `D['fullW']` × `D['fullH']` = 1549 × 1393, 2 km a pixel. **Region points, settlement `px/py`, river
+  courses and vents are all in full-grid px.** `su, sv = smodel.page.grid(D)` turns a map px into a height cell.
 
-| Key | Grid | Format | What it holds |
-|---|---|---|---|
-| `h` | height | PNG RGB | height = `lo + ((R<<8)|G)/65535*(hi-lo)`; B > 127 = water cell. `lo` -2,600 m, `hi` 27,000 m (step 0.45 m) |
-| `wl` | height | PNG RGB | water level, same 16-bit encoding; B > 127 = the cell holds water |
-| `z` | full | PNG L | zone index into the page's `ZONES`: basin, highland, outer rim, arctic, lake / sea, salt basin |
-| `c` | full | PNG L | climate class index into `DATA.climate.classes` (Köppen plus Krator's X abyssal, H hyperalpine, O) |
-| `p` | full | PNG L | annual rain: `byte/255*4000` mm |
-| `tm` `th` `tl` `tw` `tc` | full | PNG L | °C = `byte - 90`: annual mean, hottest afternoon, coldest night, warmest month, coldest month. A byte of 0 (-90) means airless, with no air temperature |
-| `wd` | height | PNG RGB | wind: R = power `wdmax*(R/255)^wdgam` W/m², G = speed `wdvmax*G/255` m/s, B > 127 = airless |
-| `st` | full | JPEG | the **satellite** paint |
-| `t` | full | JPEG | the **relief** paint. Also the shading the temp and wind modes multiply by |
-| `rt` | full | JPEG | the **rain** map, painted |
-| `ct` | full | JPEG | the **climate** map, painted |
+`D` is the `DATA` object the page holds, with each raster as a base64 string. `smodel.page.raster(D, key, mode)`
+decodes one; `model/INDEX.md` lists what each key holds. In short:
 
-Vector data on the same line: `rivers` (871 courses: id, name, kind river|wadi, `px`, per-vertex `q_m3s`, width, depth,
-`to`), `basins` (lakes), `outlets`, `vents`, `palaeolakes`, `dams`, `floods`, `hydro` (the water books), `climate`.
-Write a list or object with `edit_dams.set_data(line, key, value)`. Write an image by swapping its base64 string in place,
-as `edit_423.py` does at the end of its `main()`.
+- `h` and `wl`: heights and water levels on the height grid (16 bits over `lo`..`hi`; read them with `smodel.page.heights` and `water_levels`, write them with `encode_heights` and `encode_levels`).
+- `p` rain, `c` climate class, `z` zone, and `tm` `th` `tl` `tw` `tc` temperatures: data rasters on the full grid.
+- `wd`: wind, on the height grid.
+- `st` satellite, `t` relief, `rt` rain and `ct` climate: **painted** JPEGs on the full grid.
+
+Vector data: `D['rivers']` (871 courses), `basins`, `outlets`, `vents`, `palaeolakes`, `dams`, `floods`, `hydro`, `climate`.
+Assign to `D[key]` and `smodel.page.save(D)` writes each to its own file.
 
 ## How each map mode gets its picture
 
 This is what "updating the map modes" means. Some modes are computed in the browser from a data raster. Others are
-pictures baked into the page. **A height edit changes neither kind by itself.**
+pictures baked into the data. **A height edit changes neither kind by itself.**
 
 | Button | Source | After a terrain edit |
 |---|---|---|
-| satellite | `st` (painted) | relight; retint if ground moved over ~150 m; repaint for a new climate (see below) |
-| relief | `t` (painted) | relight; retint. Temp and wind take their shading from `t`, so they follow it |
-| zones | built in the browser from `z` | write the new `z` (from `reclimate`) |
-| rain | `rt` (painted) | write the new `p`, **and** repaint `rt` with `repaint()` and the rain ramp `edit_heights.RAIN_RAMP` |
-| climate | `ct` (painted) | write the new `c`, **and** repaint `ct` with `repaint()` and the class colours from `DATA.climate.classes` |
-| temp | built in the browser from `tm`/`th`/`tl` | lapse every temperature raster with the surface: −6.5 °C per km of rise (water: its level, not its bed). Do not carry the lapse past ~17 km: hold the mean near −75 °C there (`README.md`, 4.23) |
-| wind | built in the browser from `wd` | **no script has ever recomputed `wd`.** Over 9 km the page reads airless, so edits up there need nothing. Elsewhere, say what you did or did not do |
-| water | the `h` B bit and `wl` | keep both in step: a water cell needs a level, and no edit raises a lake's bed |
-
-The helpers already exist. Import them and do not rewrite them:
-
-- `edit_heights.load(page)` → `(lines, line_index, DATA)`; `raster(D, key, mode)`; `b64(img, fmt, **kw)`.
-- `edit_heights.relight(D, Eo, En, keys=('st','t','rt','ct'))` re-shades the paint where the heights moved.
-- `edit_422.retint(...)` recolours the satellite and relief where the ground moved more than 150 m, so a lowered peak
-  loses its snow.
-- `edit_heights.reclimate(D, E, En, whas, forced)` returns new full-grid rain (mm), class, zone, the changed mask and a
-  report. A changed cell takes these values from its nearest unchanged twins (place, height, windward slope under the
-  NW wind, temperature). `forced` keeps cells you set yourself, such as a cut's salt basin.
-- `edit_heights.repaint(D, key, old_col, new_col, mask)` repaints `rt` or `ct` and keeps the baked shading.
-- `edit_422.desert(...)` and `by_climate(...)` repaint the satellite to match a new climate. The Catch was "too green"
-  until this pass ran: "the Taklamakan is not this green".
-- Encoding back: copy the pattern in `edit_423.py`, `enc` and the re-pack of `h`/`wl` into R, G. Then decode what you
-  wrote and assert the error is under one step.
+| satellite | `st` (painted) | `paint.relight`; `paint.retint` where ground moved over ~150 m; `paint.desert` / `paint.by_climate` for a new climate |
+| relief | `t` (painted) | `paint.relight`; `paint.retint`. Temp and wind take their shading from `t`, so they follow it |
+| zones | built in the browser from `z` | write the new `z` from `climate.reclimate` |
+| rain | `rt` (painted) | write the new `p`, **and** repaint `rt`: `paint.repaint(D, 'rt', paint.ramp(old_mm), paint.ramp(new_mm), changed)` |
+| climate | `ct` (painted) | write the new `c`, **and** repaint `ct` with `paint.repaint` and the class colours in `D['climate']['classes']` |
+| temp | built in the browser from `tm`/`th`/`tl` | `climate.lapse`: −6.5 °C per km the surface rose. Do not carry it past ~17 km: hold the mean near −75 °C there (`README.md`, 4.23) |
+| wind | built in the browser from `wd` | **nothing recomputes `wd`.** Over 9 km the page reads airless, so edits up there need nothing. Elsewhere, say what you did or did not do |
+| water | the `h` B flag and `wl` | keep both in step: a water cell needs a level, and no edit raises a lake's bed |
 
 ## How to make an edit
 
-1. **Start a new script, `edit_424.py`**, from `edit_423.py`. It is the most recent edit and the shortest. Each
-   `edit_4xx.py` is the record of one edit: it takes the previous page and is never run on a later one. Do not
-   re-run `edit_rivers.py` (that is 4.21's edit). For a river reroute, use `edit_422.py`'s routing.
-2. Find the owner's polygon by name and kind in the regions JSON (`docs(path)`, `r['name']`, `r['kind']`), and make a
-   mask with `edit_422.region_mask` or `edit_heights.poly`.
-3. Change the heights `E` → `En` on the height grid only inside that mask. Feather every edge with a smoothstep
-   (`sstep`) over a few cells, so nothing steps at the outline. Clamp to `[lo, hi]`, because a carve below `lo` wraps.
-4. Water: a lowered lake bed stays under its level. A carved lake gets a level at its lowest shore cell, so that it
-   holds. Never lift a bed. Take the uplift off lakes and ease it back over 2 cells (4.19).
-5. Update the map modes as in the table: temperatures, `reclimate` → `p`/`c`/`z` → repaint `rt`/`ct`, then relight and
-   retint `st`/`t`.
-6. Rivers: if heights moved across a course, check that it still falls from source to mouth. If it doesn't, reroute it
-   (`edit_422.py`) and keep its `id`/`name`. Paint changed courses on `st` and `t` (`edit_422.strokes`).
-7. Version label: `scale model 4.23 ·` → `4.24`, by regex, asserting one match. Change the legend only if a range moved.
-8. Write `<out>.html` and `<out>.report.json`: cells changed, max rise and cut, rain and class changes, river checks.
-   **Deterministic**: fixed seeds (`np.random.RandomState(424)`), no time or dict-order dependence. Running it twice
-   must give a byte-identical page.
-9. Check that everything outside the `DATA` line and the version label is byte-identical to the input page.
-10. Add a `## 4.24` section to `README.md` in the same style: what the owner asked, what the script did, the numbers.
+1. **Start a new script, `tools/scale-model/edit_424.py`.** Begin it with
+   `D = smodel.page.load(); E, water = smodel.page.heights(D); whas, wlev = smodel.page.water_levels(D)`.
+   `history/edit_423.py` is the shortest worked example and `history/edit_422.py` the fullest (a river reroute). Read
+   them, but do not run them on today's data: they hard-code the old height range.
+2. Find the owner's polygon by name and kind in the regions JSON, and make a mask with `smodel.geom.region_mask` or `poly`.
+3. Change the heights `E` → `En` on the height grid only inside that mask. Feather every edge with `smodel.geom.sstep`
+   over a few cells. `smodel.terrain` has mountains, humps, cuts, levels, lowering a perched lake, and weathering.
+   `encode_heights` clamps to `[lo, hi]`.
+4. Water: a lowered lake bed stays under its level. A carved lake gets a level at its lowest shore cell. Never lift a
+   bed: take the uplift off lakes and ease it back over 2 cells.
+5. Update the map modes as in the table: `climate.lapse`, then `climate.reclimate` → `p`/`c`/`z`, repaint `rt`/`ct`,
+   then `paint.relight` and `paint.retint` on `st`/`t`.
+6. Rivers: if heights moved across a course, check it still falls from source to mouth. If not, reroute it the way
+   `history/edit_422.py` does (`smodel.rivers`: `grid_fields`, `setup`, `trace`, `cut_channel`) and keep its `id` and
+   `name`. Paint changed courses with `smodel.geom.strokes`.
+7. Version label: change `scale model 4.23 ·` to `4.24` in `model/src/10-panel.html`, asserting one match. Change the
+   legend there only if a range moved.
+8. `smodel.page.save(D)`, then `python3 tools/scale-model/model/build.py`. Write `edit_424.report.json` beside the
+   script: cells changed, max rise and cut, rain and class changes, river checks. **Deterministic**: fixed seeds
+   (`np.random.RandomState(424)`), so running it twice gives the same data.
+9. `git diff --stat tools/scale-model/model` should show only the files you meant to change.
+10. Add a `## 4.24` section to `README.md`, under "History", in the same style: what the owner asked, what the script did, the numbers.
 
 ## Checks before you hand it back
 
-- Decode error under one 0.45 m step. No height outside `[lo, hi]`.
+- No height outside `[lo, hi]`; `encode_heights` asserts the round trip.
 - No river course climbs. No lake bed rose. Every water cell has a level.
 - Rain and class agree, so no humid rain sits under a desert class. 4.19 found 885 such cells after 4.18.
 - Look at the result. Render `st`, `rt`, `ct` and a relief crop of the edited area to PNG. Compare them with the old
@@ -122,8 +102,7 @@ The helpers already exist. Import them and do not rewrite them:
 
 ## Things not to do
 
-- Do not edit the page's UI or JavaScript unless asked. If you must, patch it with exact-string replacements that
-  assert one match (see `patch_ui.py`).
+- Do not edit `model/src/` (the page's code) unless asked, beyond the version label.
 - Do not change regions or settlements in the page's database. The owner edits them in the page.
 - Do not paint a procedural texture over a surface without saying so.
-- Do not commit the page. It is 9 MB, and the artifact is its home. Commit the script, the report and the README section.
+- Do not edit `history/`, and do not commit `model/dist/`.

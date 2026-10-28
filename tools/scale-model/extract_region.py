@@ -3,7 +3,8 @@
 
     python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>]
 
-<page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
+<page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
+                   or model/dist/scale-model.html), whose DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection: a folder of one JSON file per document (ArtifactData list with
                    out_dir), or one JSON list of them (openworld/<name>/source/regions.json)
 <settlements dir>  the artifact's `settlements` collection, the same way
@@ -12,13 +13,6 @@
 --add <file>       (optional) more polygons that are part of the cut: a JSON list of {name, map_px:[[x, y], ...]} (map
                    pixels, as the open world's polygon tool copies them). The box covers them all and the mask is the
                    union; region.json records each as 'added'. Without it the cut is the named region's alone.
---keep <dir>       (optional) grow an existing cut without moving it: <dir> is the build's data/ as it is. The frame's
-                   origin and the heights' 16-bit range are kept from its region.json (otherwise the origin is the new
-                   box's centre and every world coordinate in the build would move), and where its height cells overlap
-                   the new grid and agree with the model within KEEP_TOL metres, its elev, wlev, scarpl and scarpu
-                   values are kept exactly (a newer model quantizes its heights to a different range, so a re-cut of
-                   unchanged ground would still shift it by a few decimetres). A cell that disagrees by more is the
-                   model's: it is counted and reported, and the new value is written.
 
 Map pixels are the scale model's full grid (fullW x fullH, 2 km a pixel); its heights are a half-resolution grid
 (DATA.w x DATA.hh, about 4 km a pixel) that the page samples at u = px*(w-1)/(fullW-1). World coordinates: metres,
@@ -36,11 +30,6 @@ What it writes (every raster cropped to the region's box plus a margin):
               A pixel no overlay covers takes the nearest overlay's index (pixel distance); a pixel of the bounding
               polygon itself is 'inside' in region.json's mask (mask.png: 255 inside, 0 outside). The regions in
               OVERLAYS and the owner's tool polygons ('Region 65') are not biomes and stay out of it
-  dist.png    each biome's distance field (a species' reach, biomes/hyperjungle/PLAN-LANDS.md H1): the squared distance in
-              map pixels from each pixel's centre to the nearest pixel of that biome's drawn polygon, 24 bits in R,G,B
-              (R high), exact (the Euclidean distance transform; core/mask's KMASK.distance gives the same integers). The
-              biomes are bands stacked down the image, band k = region.json "biomes"[k] (its 'dist_band'), each the box's
-              size. The polygon is drawn DIST_PAD pixels past the box, so a distance up to DIST_PAD is exact
   overlay.png the OVERLAYS (biomes/nsemiarid/PLAN.md, section 3: layers that own no ground and lie over any biome),
               full resolution: bit k set where region.json "overlays"[k]'s polygon is drawn. Only when one is in the box
   palaeo.png  the old water bodies (DATA.palaeolakes, and the flood lake the dams' breach filled), on the height grid:
@@ -61,6 +50,9 @@ import base64, glob, heapq, io, json, math, os, sys
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import smodel.page   # noqa: E402
 
 MARGIN = 10          # map pixels of context round the polygon's box
 RIVER_W, RIVER_D = 60.0, 6.0   # a named river's width and water depth at 1:1 (m)
@@ -84,35 +76,17 @@ TOOL_REGION = ('region ',)   # the owner's tool polygons ('Region 65': edit_rive
 RING_M = 30.0        # m: the bathtub ring under a dam lake's full level, its yearly drawdown (the owner, 2026-10-20)
 PALAEO_PAD = 2       # height cells round an old lake's bed in palaeo.png
 DAM_R = 5            # height cells: a dam's body, for the lake held behind it (as edit_dams.py stands it)
-DIST_PAD = 128       # map pixels (256 km) past the box that dist.png's polygons are drawn in: every reach is shorter
 
 
 def load_page(path):
-    import re
-    html = open(path, encoding='utf8').read()
-    ver = re.search(r'scale model (4\.\d+) ', html)
-    for line in html.split('\n'):
-        if line.startswith('const DATA = {'):
-            D = json.loads(line[line.index('{'):line.rindex('}') + 1])
-            D['_version'] = ver.group(1) if ver else '?'
-            return D
-    sys.exit('no DATA object in ' + path)
+    """DATA from a saved page or the build's data folder (smodel.page), with the model's version"""
+    D = smodel.page.load(path)
+    D['_version'] = smodel.page.version(path)
+    return D
 
 
-def raster(D, key):
-    return np.array(Image.open(io.BytesIO(base64.b64decode(D[key]))).convert('RGB'))
-
-
-def docs(folder):
-    """a collection as a folder of one JSON file per document, or one JSON list of documents (each with its 'id')"""
-    if os.path.isfile(folder):
-        return json.load(open(folder, encoding='utf8'))
-    out = []
-    for f in sorted(glob.glob(os.path.join(folder, '*.json'))):
-        d = json.load(open(f, encoding='utf8'))
-        d['id'] = os.path.splitext(os.path.basename(f))[0]
-        out.append(d)
-    return out
+raster = smodel.page.raster     # (D, key) -> RGB array
+docs = smodel.page.docs
 
 
 def poly_mask(pts, x0, y0, W, H):
@@ -127,44 +101,6 @@ def poly_area(pts):
         a, b = pts[i], pts[(i + 1) % len(pts)]
         s += a[0] * b[1] - b[0] * a[1]
     return abs(s) / 2
-
-
-def dist2(mask):
-    """the squared distance in pixels from each pixel's centre to the nearest True pixel's (0 on one), int64; -1 when none.
-    Exact: the transform's nearest pixel gives the integer di^2 + dj^2, as KMASK.distance's d2 (core/mask)"""
-    if not mask.any():
-        return np.full(mask.shape, -1, np.int64)
-    _, (iy, ix) = ndimage.distance_transform_edt(~mask, return_indices=True)
-    Y, X = np.indices(mask.shape)
-    return (iy - Y).astype(np.int64) ** 2 + (ix - X).astype(np.int64) ** 2
-
-
-def save24(path, v):
-    q = np.clip(v, 0, (1 << 24) - 1).astype(np.uint32)
-    rgb = np.stack([(q >> 16) & 255, (q >> 8) & 255, q & 255], -1).astype(np.uint8)
-    Image.fromarray(rgb, 'RGB').save(path, optimize=True)
-KEEP_TOL = 0.5   # metres: --keep keeps an old height cell when the model agrees with it to this
-
-
-def keep_cells(old, new, oi0, oj0, i0, j0, tol=KEEP_TOL):
-    """--keep: write the old grid's values into the new grid where the cells overlap and agree within tol. Returns
-    (kept, changed): the counts of cells kept and of overlapping cells the model has moved."""
-    di, dj = oi0 - i0, oj0 - j0
-    ny, nx = old.shape
-    a0, b0 = max(0, -dj), max(0, -di)
-    a1, b1 = min(ny, new.shape[0] - dj), min(nx, new.shape[1] - di)
-    if a1 <= a0 or b1 <= b0:
-        return 0, 0
-    o = old[a0:a1, b0:b1]
-    n = new[a0 + dj:a1 + dj, b0 + di:b1 + di]
-    ok = np.abs(o - n) <= tol
-    n[ok] = o[ok]
-    return int(ok.sum()), int((~ok).sum())
-
-
-def load16(path, lo, hi):
-    a = np.asarray(Image.open(path).convert('RGB')).astype(np.int32)
-    return lo + ((a[..., 0] << 8) | a[..., 1]) / 65535 * (hi - lo)
 
 
 def save16(path, v, lo, hi, flag):
@@ -356,12 +292,6 @@ def main():
         k = argv.index('--add')
         added = json.load(open(argv[k + 1], encoding='utf-8'))
         argv = argv[:k] + argv[k + 2:]
-    keep = None
-    if '--keep' in argv:
-        k = argv.index('--keep')
-        kd = argv[k + 1]
-        keep = {'dir': kd, 'meta': json.load(open(os.path.join(kd, 'region.json'), encoding='utf-8'))}
-        argv = argv[:k] + argv[k + 2:]
     if len(argv) != 5:
         sys.exit(__doc__)
     page, rdir, sdir, name, out = argv
@@ -383,10 +313,6 @@ def main():
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(OW - 1, x1), min(OH - 1, y1)
     W, H = x1 - x0 + 1, y1 - y0 + 1
     cx, cy = int((min(xs) + max(xs)) // 2), int((min(ys) + max(ys)) // 2)
-    olo, ohi = lo, hi   # the 16-bit range the rasters are written in
-    if keep:
-        cx, cy = keep['meta']['frame']['origin_px']
-        olo, ohi = keep['meta']['heights']['lo'], keep['meta']['heights']['hi']
     os.makedirs(out, exist_ok=True)
 
     # ---- heights and water, on their own grid
@@ -399,14 +325,6 @@ def main():
     w = raster(D, 'wl')[j0:j1 + 1, i0:i1 + 1]
     whas = w[..., 2] > 127
     wlev = np.where(whas, lo + ((w[..., 0].astype(np.int32) << 8) | w[..., 1]) / 65535 * (hi - lo), lo)
-    kept = {}
-    if keep:
-        KH = keep['meta']['heights']
-        oi0, oj0 = KH['origin_cell']
-        if abs(KH['su'] - (VW - 1) / (OW - 1)) > 1e-9 or abs(KH['sv'] - (VH - 1) / (OH - 1)) > 1e-9:
-            sys.exit("--keep: the model's height grid has changed size; the old cut cannot be kept")
-        for nm, arr in (('elev', elev), ('wlev', wlev)):
-            kept[nm] = keep_cells(load16(os.path.join(keep['dir'], nm + '.png'), olo, ohi), arr, oi0, oj0, i0, j0)
     # A lake cannot stand above the lowest point of its own shore: it would spill. A few bodies in the model carry a
     # level kilometres over the ground round them (the abyss's floor holds pools at 0 m and -900 m over a floor near
     # -2,300 m). Each connected body standing more than SPILL_SLACK over it is clamped to its spill height: the lower quartile of the dry cells touching it, not
@@ -428,8 +346,8 @@ def main():
         if over.any():
             spilled += int(over.sum())
             wlev[over] = spill
-    save16(os.path.join(out, 'elev.png'), elev, olo, ohi, wflag)
-    save16(os.path.join(out, 'wlev.png'), wlev, olo, ohi, whas)
+    save16(os.path.join(out, 'elev.png'), elev, lo, hi, wflag)
+    save16(os.path.join(out, 'wlev.png'), wlev, lo, hi, whas)
 
     # ---- full-resolution rasters
     crop = lambda a: a[y0:y1 + 1, x0:x1 + 1]
@@ -452,21 +370,7 @@ def main():
     over.sort(key=lambda r: -poly_area(r['points']))        # largest first, so a smaller one paints over it
     bmap = np.full((H, W), 255, np.uint8)
     biomes = []
-    # --keep: a biome the old cut had keeps its index (the build's biome.png and its kit table stay valid); a new one
-    # takes the next free index. The painting order (largest first) is not changed by the numbering.
-    ids = list(range(len(over)))
-    if keep:
-        old = {b['name'].strip().lower(): b['id'] for b in keep['meta'].get('biomes', [])}
-        nxt = max(list(old.values()) + [-1]) + 1
-        for k, r in enumerate(over):
-            nm = r['name'].strip().lower()
-            if nm in old:
-                ids[k] = old[nm]
-            else:
-                ids[k] = nxt
-                nxt += 1
-    for k0, r in enumerate(over):
-        k = ids[k0]
+    for k, r in enumerate(over):
         m = poly_mask(r['points'], x0, y0, W, H)
         bmap[m] = k
         nm = r['name'].strip()
@@ -474,7 +378,6 @@ def main():
         biomes.append({'id': k, 'name': nm, 'doc': r['id'], 'kind': r.get('kind'), 'colour': r.get('color'),
                        'kit': kit, 'water': nm.lower() in WATER_OVERLAYS,
                        'drawn_px': int(m.sum()), 'notes': r.get('notes', '')})
-    biomes.sort(key=lambda b: b['id'])   # the page reads the table by index
     empty = bmap == 255
     filled = int(empty.sum())
     if empty.any():
@@ -484,16 +387,6 @@ def main():
         b['px'] = int((bmap == b['id']).sum())
         b['px_in_region'] = int(((bmap == b['id']) & inside).sum())
     save8(os.path.join(out, 'biome.png'), bmap)
-
-    # ---- each biome's distance field (dist.png): its drawn polygon in a box DIST_PAD past this one, so a polygon that
-    # runs out of the box still measures from where it is
-    P = DIST_PAD
-    dist = np.zeros((H * len(over), W), np.int64)
-    for k, r in enumerate(over):
-        dist[k * H:(k + 1) * H] = dist2(poly_mask(r['points'], x0 - P, y0 - P, W + 2 * P, H + 2 * P))[P:P + H, P:P + W]
-        biomes[k]['dist_band'] = k
-    if over:
-        save24(os.path.join(out, 'dist.png'), dist)
 
     # ---- the overlays: drawn polygons, one bit each (no nearest-fill: an overlay is only where it is drawn)
     overlays = []
@@ -548,13 +441,8 @@ def main():
             dr = ndimage.distance_transform_edt(~np.array(im).astype(bool))
             sw = sw * np.clip((dr - 3) / 3, 0, 1)
         sw = ndimage.gaussian_filter(sw, 1.2)
-    if keep:
-        for nm, arr in (('scarpl', Lr), ('scarpu', Ur)):
-            kept[nm] = keep_cells(load16(os.path.join(keep['dir'], nm + '.png'), olo, ohi), arr, oi0, oj0, i0, j0)
-        for nm in kept:
-            print('  --keep %-6s %6d cells kept, %d moved by the model (more than %.1f m)' % (nm, kept[nm][0], kept[nm][1], KEEP_TOL))
-    save16(os.path.join(out, 'scarpl.png'), Lr, olo, ohi, np.zeros(elev.shape, bool))
-    save16(os.path.join(out, 'scarpu.png'), Ur, olo, ohi, np.zeros(elev.shape, bool))
+    save16(os.path.join(out, 'scarpl.png'), Lr, lo, hi, np.zeros(elev.shape, bool))
+    save16(os.path.join(out, 'scarpu.png'), Ur, lo, hi, np.zeros(elev.shape, bool))
     save8(os.path.join(out, 'scarpw.png'), np.clip(sw * 255, 0, 255))
 
     # ---- drainage on the height grid: lakes and the sea are sinks, rain from the full grid
@@ -691,14 +579,11 @@ def main():
                    'added': [{'name': a.get('name', ''), 'points_px': a['map_px'], 'area_km2': round(poly_area(a['map_px']) * 4)} for a in added]},
         'frame': {'units': 'm', 'x': 'east', 'z': 'south', 'm_per_px': 2000.0, 'origin_px': [cx, cy],
                   'box_px': [x0, y0, x1, y1], 'size_px': [W, H]},
-        'heights': {'grid': [nx, ny], 'origin_cell': [i0, j0], 'su': su, 'sv': sv, 'lo': olo, 'hi': ohi,
+        'heights': {'grid': [nx, ny], 'origin_cell': [i0, j0], 'su': su, 'sv': sv, 'lo': lo, 'hi': hi,
                     'note': 'cell (i,j) sits at full px ((i+i0)/su, (j+j0)/sv); elev.png and wlev.png are this grid'},
         'rain': {'scale_mm': 4000 / 255}, 'temp': {'offset': -90},
         'pressure': {'atm0': 1.6, 'scale_m': 8000},
         'classes': classes, 'biomes': biomes, 'biome_fill_px': filled,
-        'dist': {'file': 'dist.png', 'bands': len(over), 'band_px': [W, H], 'encoding': 'R<<16 | G<<8 | B',
-                 'value': 'squared distance in map pixels to the biome\'s drawn polygon (pixel centres; 0 inside)',
-                 'pad_px': DIST_PAD, 'note': 'exact up to pad_px; metres = sqrt(value) * m_per_px (core/mask KMASK.distance)'},
         'drainage': {'min_accum': CHANNEL_MIN, 'lines': lines},
         'rivers': rivers, 'valleys': valleys,
         'water': {'spilled_cells': spilled, 'note': 'lake levels above their lowest shore cell were lowered to it'},

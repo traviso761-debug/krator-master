@@ -59,8 +59,8 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
 
 /* ---- Right Tabbed Sidebar (#panel) ---- */
 #panel{
-  position:fixed;top:52px;right:12px;width:324px;max-width:calc(100vw - 24px);
-  max-height:calc(100vh - 94px);z-index:40;
+  position:fixed;top:52px;right:12px;width:356px;max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 168px);z-index:40;
   background:rgba(22,27,38,.95);backdrop-filter:blur(10px);
   border:1px solid var(--border);border-radius:6px;
   box-shadow:0 8px 24px rgba(0,0,0,.6);
@@ -144,19 +144,25 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
 #settKey span{display:flex;align-items:center;gap:5px}
 #settKey i{width:14px;height:14px;background-size:contain;background-repeat:no-repeat;display:inline-block}
 
-/* ---- Floating Legend & Climate Key Drawer (#climateKeyDrawer) ---- */
+/* ---- Lower-Right Map Modes & Legend Box (#climateKeyDrawer) ---- */
 #climateKeyDrawer{
-  position:fixed;bottom:40px;left:12px;width:340px;max-width:calc(100vw - 24px);max-height:calc(100vh - 100px);
+  position:fixed;bottom:38px;right:12px;width:372px;max-width:calc(100vw - 24px);max-height:calc(100vh - 96px);
   z-index:45;background:rgba(22,27,38,.96);backdrop-filter:blur(10px);
-  border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.6);
+  border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.65);
   display:flex;flex-direction:column;overflow:hidden;
 }
-#climateKeyDrawer[hidden]{display:none!important}
-#keyHeader{
-  padding:8px 12px;border-bottom:1px solid var(--border);background:rgba(14,17,23,.75);
-  display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:700;color:#ecdcb4;text-transform:uppercase;letter-spacing:.05em;
+#modeBarRow{
+  padding:6px 8px;background:rgba(11,13,18,.9);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap;
 }
-#keyBody{padding:10px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+#modeBarRow .btn-cluster{flex:1;justify-content:space-between;border:0;background:transparent;padding:0}
+#keyHeader{
+  padding:6px 10px;border-bottom:1px solid var(--border);background:rgba(14,17,23,.75);
+  display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:#ecdcb4;text-transform:uppercase;letter-spacing:.05em;
+}
+#climateKeyDrawer.key-collapsed #keyHeader{border-bottom:0}
+#climateKeyDrawer.key-collapsed #keyBody{display:none!important}
+#keyBody{padding:8px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;max-height:250px}
 .legend{display:grid;grid-template-columns:14px 1fr;gap:4px 8px;font-size:11px;color:var(--mute);align-items:center}
 .legend i{display:block;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.5)}
 #climLegend,#tempLegend,#rainLegend,#windLegend{display:flex;flex-direction:column;gap:5px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -189,7 +195,7 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
 #mDetail{font:400 11px/1.4 var(--font-m);color:var(--mute);font-variant-numeric:tabular-nums}
 #mProf{width:100%;height:58px;display:block;border-top:1px solid var(--border)}
 #hint{
-  position:fixed;right:14px;bottom:38px;z-index:35;
+  position:fixed;left:12px;bottom:38px;z-index:35;
   background:rgba(14,17,23,.78);backdrop-filter:blur(4px);border:1px solid var(--border);border-radius:4px;
   padding:3px 8px;font:400 10.5px var(--font-m);color:var(--mute);pointer-events:none;
 }
@@ -210,16 +216,6 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
     <button class="copy-btn" id="btnCopyCoords" title="Copy coordinate string">Copy</button>
   </div>
 
-  <div class="btn-cluster" role="group" aria-label="Map Modes">
-    <button id="bSat" aria-pressed="true" title="Planetary Satellite Imagery">Satellite</button>
-    <button id="bTex" aria-pressed="false" title="Shaded Relief">Relief</button>
-    <button id="bZone" aria-pressed="false" title="Hypsometric & Elevation Zones">Zones</button>
-    <button id="bRain" aria-pressed="false" title="Annual Precipitation">Rain</button>
-    <button id="bClim" aria-pressed="false" title="38-Class Köppen + Krator Climate">Climate</button>
-    <button id="bTemp" aria-pressed="false" title="Surface Air Temperature">Temp</button>
-    <button id="bWind" aria-pressed="false" title="Wind Power Density">Wind</button>
-  </div>
-
   <div class="btn-cluster" role="group" aria-label="Overlays & Tools">
     <span class="layers" role="group" aria-label="Region layers">
       <button id="bRegPol" aria-pressed="true" title="Toggle Political Regions">Political</button>
@@ -231,16 +227,26 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
     <button id="bWater" aria-pressed="true" title="Toggle 3D Water Surface">Water</button>
     <button id="bTop" aria-pressed="false" title="Toggle Top-Down Orthographic-Style View">Top-Down</button>
     <button id="bMeasure" aria-pressed="false" title="Measure Route & Elevation Profile (M)">Measure</button>
-    <button id="bKeyDrawerBtn" aria-pressed="false" title="Toggle Map Legends & Climate Key">Key</button>
     <label class="vex-wrap" title="Vertical Exaggeration"><span>V.Ex</span><input id="vex" type="range" min="1" max="12" step="0.5" value="5"></label>
   </div>
 </header>
 
-<!-- Floating Legend & Climate Key Drawer -->
-<aside id="climateKeyDrawer" hidden>
+<!-- Lower-Right Map Modes & Legend Box (Mode buttons row stays visible when key is collapsed) -->
+<aside id="climateKeyDrawer" class="key-collapsed">
+  <div id="modeBarRow">
+    <div class="btn-cluster" role="group" aria-label="Map Modes">
+      <button id="bSat" aria-pressed="true" title="Planetary Satellite Imagery">Satellite</button>
+      <button id="bTex" aria-pressed="false" title="Shaded Relief">Relief</button>
+      <button id="bZone" aria-pressed="false" title="Hypsometric & Elevation Zones">Zones</button>
+      <button id="bRain" aria-pressed="false" title="Annual Precipitation">Rain</button>
+      <button id="bClim" aria-pressed="false" title="38-Class Köppen + Krator Climate">Climate</button>
+      <button id="bTemp" aria-pressed="false" title="Surface Air Temperature">Temp</button>
+      <button id="bWind" aria-pressed="false" title="Wind Power Density">Wind</button>
+    </div>
+  </div>
   <div id="keyHeader">
-    <span>Map Legend &amp; Climate Key</span>
-    <button id="bKeyClose" class="copy-btn" title="Close Legend">✕</button>
+    <span>Map Legend &amp; Key</span>
+    <button id="bKeyClose" class="copy-btn" aria-expanded="false" title="Expand or Collapse Legend Key">Expand Key</button>
   </div>
   <div id="keyBody">
     <div id="rainLegend" hidden>
@@ -268,7 +274,6 @@ body.measuring #stage,body.drawing #stage{cursor:crosshair}
     <div id="climLegend" hidden>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
         <span style="font-weight:600;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:var(--text)">38 Köppen + Krator Classes</span>
-        <button id="bClimToggle" class="copy-btn" aria-expanded="true">Collapse Key</button>
       </div>
       <ul class="clist" id="climList"></ul>
       <div class="status">X = abyssal (&gt;1.9 atm) · H = hyperalpine (&lt;0.6 atm) · ~40°S, NW westerlies</div>
@@ -1260,16 +1265,23 @@ function pixels(img){const c=document.createElement('canvas');c.width=img.width;
   const bTex=document.getElementById('bTex'), bZone=document.getElementById('bZone'), bRain=document.getElementById('bRain'), rainLegend=document.getElementById('rainLegend'), bClim=document.getElementById('bClim'), climLegend=document.getElementById('climLegend'), bSat=document.getElementById('bSat'), bWater=document.getElementById('bWater'), bTop=document.getElementById('bTop');
   const bWind=document.getElementById('bWind'), windLegend=document.getElementById('windLegend'), rWind=document.getElementById('rWind');
   const bTemp=document.getElementById('bTemp'), tempLegend=document.getElementById('tempLegend'), tempMode=document.getElementById('tempMode');
-  const keyDrawer=document.getElementById('climateKeyDrawer'), bKeyDrawerBtn=document.getElementById('bKeyDrawerBtn'), bKeyClose=document.getElementById('bKeyClose');
-  let keyPinned=false;
+  const keyDrawer=document.getElementById('climateKeyDrawer'), bKeyClose=document.getElementById('bKeyClose');
+  function setKeyExpanded(open){
+    if(!keyDrawer) return;
+    keyDrawer.classList.toggle('key-collapsed', !open);
+    if(bKeyClose){
+      bKeyClose.textContent=open?'Collapse Key':'Expand Key';
+      bKeyClose.setAttribute('aria-expanded', open);
+    }
+  }
   function updateDrawerVis(t){
     const hasModeLegend=(t===rtex||t===ctex||t===ttex||t===wdtex||t===ztex);
-    const open=keyPinned||hasModeLegend;
-    if(keyDrawer) keyDrawer.hidden=!open;
-    if(bKeyDrawerBtn) bKeyDrawerBtn.setAttribute('aria-pressed',open);
+    if(hasModeLegend) setKeyExpanded(true);
   }
-  if(bKeyDrawerBtn) bKeyDrawerBtn.onclick=()=>{ keyPinned=!keyDrawer.hidden?false:true; keyDrawer.hidden=!keyPinned; bKeyDrawerBtn.setAttribute('aria-pressed',!keyDrawer.hidden); };
-  if(bKeyClose) bKeyClose.onclick=()=>{ keyPinned=false; keyDrawer.hidden=true; if(bKeyDrawerBtn) bKeyDrawerBtn.setAttribute('aria-pressed',false); };
+  if(bKeyClose) bKeyClose.onclick=()=>{
+    const isCollapsed=keyDrawer.classList.contains('key-collapsed');
+    setKeyExpanded(isCollapsed);
+  };
   function setMap(t){ mat.map=t; mat.needsUpdate=true; bTex.setAttribute('aria-pressed',t===tex); bZone.setAttribute('aria-pressed',t===ztex); bRain.setAttribute('aria-pressed',t===rtex); rainLegend.hidden=t!==rtex; bClim.setAttribute('aria-pressed',t===ctex); climLegend.hidden=t!==ctex; bTemp.setAttribute('aria-pressed',t===ttex); tempLegend.hidden=t!==ttex; bWind.setAttribute('aria-pressed',t===wdtex); windLegend.hidden=t!==wdtex; bSat.setAttribute('aria-pressed',t===stex); wmat.opacity=t===stex?0.22:0.6; updateDrawerVis(t); }
   bTemp.onclick=()=>setMap(mat.map===ttex?tex:ttex);
   bWind.onclick=()=>setMap(mat.map===wdtex?tex:wdtex);
