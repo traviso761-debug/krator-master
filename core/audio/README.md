@@ -8,6 +8,8 @@ next. The plan is `PLAN.md` (step A1 done 2026-10-28).
 | `PLAN.md` | the module and the lab: the four kinds of sound, the license policy, intake, the director, order of work |
 | `20-core-audio-catalog.js` | `KAUDIO`: license rules applied to records, intake checks, filters and sorting, credits. `[G data]`: no Web Audio, no DOM |
 | `test-audio.js` | its node test, including the catalogue itself against the policy (run by `tools/test_all.py`) |
+| `22-core-audio-cues.js` | `KCUE`: SFX cues, a named sound with variants: weighted picks that never repeat the last few, random pitch and volume drawn from `KRAND`, cooldown, voice cap, distance falloff. `[G data]`; needs `core/rand` |
+| `test-cues.js` | its node test (fired 20 times, never the same variant twice in a row; seeds replay; weights; cooldown; voices) |
 | `data/licenses.json` | **the license policy**: which licenses may ship in the game, which may be published, which need credit |
 | `data/categories.json` | the categories (`sfx.*`, `amb.element`, `amb.bed`, `music.*`, `raw`) and review statuses |
 | `data/clips.json` | the catalogue: one record per clip (title, creator, source page, license, attribution, category, tags, notes, file) |

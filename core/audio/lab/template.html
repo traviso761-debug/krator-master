@@ -22,6 +22,7 @@
   --c0: #e8a33d; --c1: #7fd39b; --c2: #8fb6e8; --c3: #d39ad8; --c4: #e3cf6a; --c5: #ef8a90; color-scheme: dark }
 
 body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--body); }
+[hidden] { display: none !important; }
 .wrap { max-width: 1040px; margin: 0 auto; padding-block: 28px 64px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 header { display: grid; gap: 10px; margin-bottom: 14px; }
@@ -71,6 +72,15 @@ section > p { color: var(--muted); margin: 2px 0 12px; }
 .noteed input { width: 260px; max-width: 100%; }
 .noteed textarea { width: 340px; max-width: 100%; resize: vertical; }
 .btn.more { margin: 8px 0 0; }
+.cuecols { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.cuelist { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.cuelist .row { justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.cuelist li { justify-content: space-between; }
+.cueed { display: grid; gap: 12px; min-width: 0; }
+.cuelog { margin: 0; padding-left: 22px; font: 400 12px var(--mono); color: var(--muted); max-height: 220px; overflow: auto; }
+.cuelog li:first-child { color: var(--fg); }
+code { font: 400 0.92em var(--mono); }
+@media (max-width: 760px) { .cuecols { grid-template-columns: 1fr; } }
 .grp > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 10px; padding: 4px 0; border-radius: 6px; }
 .grp > summary::-webkit-details-marker { display: none; }
 .grp > summary::before { content: ""; width: 0.5em; height: 0.5em; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
@@ -182,6 +192,7 @@ legend { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 
     <div class="tabs" role="tablist">
       <button type="button" role="tab" id="tb-library" aria-selected="true">Library</button>
       <button type="button" role="tab" id="tb-cut" aria-selected="false">Cut</button>
+      <button type="button" role="tab" id="tb-cues" aria-selected="false">Cues</button>
       <button type="button" role="tab" id="tb-scene" aria-selected="false">Scene</button>
     </div>
     <span class="status" id="status"></span>
@@ -264,11 +275,60 @@ legend { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 
       <button class="btn" id="cut-scene" type="button">Add to scene</button>
       <select class="fmt" id="cut-fmt" aria-label="File format for the saved cut"></select>
       <button class="btn" id="cut-wav" type="button">Save cut</button>
+      <button class="btn" id="cut-cue" type="button">Add to cue</button>
       <button class="btn cmt" id="ed-comment" type="button" hidden>Comment</button>
     </div>
     <div class="list">
       <h3>Cut clips</h3>
       <ul id="cut-list"></ul>
+    </div>
+  </section>
+
+  <section id="tab-cues" class="panel" role="tabpanel" hidden data-comment-target>
+    <div class="head">
+      <h2>Cues</h2>
+      <p>A cue is a sound the game asks for by name, like <code>sfx.combat.hit.metal</code>. It holds several variants and plays a different one each time, with a little random pitch and volume, never repeating the last few. Add variants with "+ Cue" in the Library or "Add to cue" in Cut, then fire it to hear the variety.</p>
+    </div>
+    <div class="cuecols">
+      <div class="list cuelist">
+        <div class="row"><h3>Cues</h3><button class="btn mini primary" id="cue-new" type="button">New cue</button></div>
+        <ul id="cue-list"></ul>
+      </div>
+      <div class="cueed" id="cue-ed">
+        <div class="settings row">
+          <label class="field">Name (id)<input type="text" id="cue-id" maxlength="80" placeholder="sfx.combat.hit.metal"></label>
+          <label class="field">Category<select id="cue-cat"></select></label>
+          <label class="field">Bus<select id="cue-bus"></select></label>
+          <label class="field">Pitch from (st)<input type="number" id="cue-p0" min="-12" max="12" step="0.5"></label>
+          <label class="field">to (st)<input type="number" id="cue-p1" min="-12" max="12" step="0.5"></label>
+          <label class="field">Volume from (dB)<input type="number" id="cue-g0" min="-24" max="6" step="0.5"></label>
+          <label class="field">to (dB)<input type="number" id="cue-g1" min="-24" max="6" step="0.5"></label>
+          <label class="field">Never repeat last<input type="number" id="cue-norep" min="0" max="8" step="1"></label>
+          <label class="field">Cooldown (s)<input type="number" id="cue-cool" min="0" max="10" step="0.05"></label>
+          <label class="field">Max voices<input type="number" id="cue-voices" min="1" max="32" step="1"></label>
+          <label class="field">Full volume within (m)<input type="number" id="cue-dmin" min="0.1" max="100" step="0.5"></label>
+          <label class="field">Silent beyond (m)<input type="number" id="cue-dmax" min="1" max="500" step="1"></label>
+          <label class="field grow">Notes<input type="text" id="cue-notes" maxlength="300" placeholder="what triggers it, where it is used"></label>
+        </div>
+        <div class="row">
+          <label class="field grow">Add a variant<input type="search" id="cue-add" list="cue-clips" placeholder="type a clip's title, then Add"></label>
+          <datalist id="cue-clips"></datalist>
+          <button class="btn" id="cue-add-btn" type="button">Add</button>
+        </div>
+        <div class="layers" id="cue-vars"></div>
+        <div class="transport">
+          <button class="btn primary" id="cue-fire" type="button">Fire</button>
+          <button class="btn" id="cue-fire10" type="button">Fire &times;10</button>
+          <label class="sl sl-inline"><span class="sl-top"><span>Listener distance</span><output id="cue-dist-v">0 m</output></span><input type="range" id="cue-dist" min="0" max="60" step="0.5" value="0"></label>
+          <label class="check"><input type="checkbox" id="cue-scatter"> Scatter around the listener</label>
+          <label class="field">Seed<input type="number" id="cue-seed" min="0" max="999999" step="1"></label>
+          <button class="btn" id="cue-save" type="button">Save cue</button>
+          <button class="btn" id="cue-del" type="button">Delete</button>
+          <button class="btn cmt" id="cue-comment" type="button" hidden>Comment</button>
+          <span class="msg" id="cue-msg" role="status"></span>
+        </div>
+        <ol class="cuelog" id="cue-log"></ol>
+      </div>
     </div>
   </section>
 
@@ -315,6 +375,9 @@ legend { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 
   </section>
 </div>
 
+<script>
+/*MODULES*/
+</script>
 <script>
 const DATA = /*DATA*/;
 const $ = id => document.getElementById(id);
@@ -579,7 +642,9 @@ function clipRow(c) {
   const cut = el('button', 'btn mini', 'Cut'); cut.type = 'button';
   const add = el('button', 'btn mini', '+ Scene'); add.type = 'button';
   const cmt = el('button', 'btn mini cmt', 'Comment'); cmt.type = 'button'; cmt.hidden = !commentsOn; cmt.onclick = () => openComments(s);
-  ctl.append(pill, el('span', 'time dur', fmt(c.duration)), more, note, cut, add, cmt);
+  const toCue = el('button', 'btn mini', '+ Cue'); toCue.type = 'button';
+  toCue.onclick = () => { cueAddVariant({ clip: c.id, start: 0, end: 0, name: c.title }); toCue.textContent = 'Added'; setTimeout(() => { toCue.textContent = '+ Cue'; }, 1200); };
+  ctl.append(pill, el('span', 'time dur', fmt(c.duration)), more, note, cut, add, toCue, cmt);
   const track = el('div', 'track');
   const prog = el('div', 'prog', '<i></i>'), time = el('span', 'time', '0:00 / ' + fmt(c.duration));
   track.append(prog, time);
@@ -647,7 +712,7 @@ async function saveNote(id, n) {
 function buildLibrary() { fillFilters(); renderLibrary(); }
 
 /* ---------- tabs ---------- */
-const TABS = ['library', 'cut', 'scene'];
+const TABS = ['library', 'cut', 'cues', 'scene'];
 function showTab(name) {
   TABS.forEach(n => { $('tab-' + n).hidden = n !== name; $('tb-' + n).setAttribute('aria-selected', n === name); });
   if (name === 'cut') drawWave();
@@ -689,7 +754,7 @@ function syncSel() {
   $('ed-len').textContent = s ? 'Selection ' + secs(s[1] - s[0]) : (ed.buf ? 'Cursor ' + secs(ed.cursor) + ' of ' + fmt(ed.buf.duration) : 'No clip');
   const none = !ed.buf;
   ['ed-play', 'ed-zoomout', 'ed-all'].forEach(k => { $(k).disabled = none; });
-  ['ed-loop', 'ed-zoomsel', 'ed-find', 'cut-save', 'cut-scene'].forEach(k => { $(k).disabled = none || !s; });
+  ['ed-loop', 'ed-zoomsel', 'ed-find', 'cut-save', 'cut-scene', 'cut-cue'].forEach(k => { $(k).disabled = none || !s; });
   $('cut-update').disabled = none || !s;
 }
 function waveSize() {
@@ -1462,23 +1527,167 @@ window.addEventListener('resize', () => { drawWave(); drawTimeline(); });
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { drawWave(); drawTimeline(); });
 
 /* this device: the scene in progress and cuts that are not shared */
+/* ---------- Cues: named SFX with variants (KCUE, core/audio/22-core-audio-cues.js) ---------- */
+let sharedCues = [], localCues = [], cue = null, cueDoc = null, cueSeed = Math.floor(Math.random() * 999999);
+const cueStates = new Map();
+function cueMsg(t) { $('cue-msg').textContent = t || ''; }
+const clipsById = () => CLIPS;
+function newCue() { return KCUE.clean({ id: '', category: 'sfx.combat', variants: [] }); }
+function fillCueForm() {
+  const cs = $('cue-cat'); cs.textContent = '';
+  DATA.categories.filter(c => c.kind === 'sfx' || c.kind === 'amb').forEach(c => { const o = el('option', '', esc(c.name)); o.value = c.id; cs.appendChild(o); });
+  KCUE.BUSES.forEach(b => { const o = el('option', '', b); o.value = b; $('cue-bus').appendChild(o); });
+  const dl = $('cue-clips');
+  DATA.clips.slice().sort((a, b) => a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1).forEach(c => { const o = el('option'); o.value = c.title + ' [' + c.id + ']'; dl.appendChild(o); });
+  $('cue-seed').value = cueSeed;
+  $('cue-seed').onchange = () => { cueSeed = Math.max(0, Math.round(+$('cue-seed').value || 0)); cueStates.clear(); };
+  $('cue-dist').oninput = () => { $('cue-dist-v').textContent = $('cue-dist').value + ' m'; };
+  const F = [['cue-id', v => { cue.id = String(v).toLowerCase().trim(); }], ['cue-cat', v => { cue.category = v; }], ['cue-bus', v => { cue.bus = v; }],
+    ['cue-p0', v => { cue.pitch[0] = +v; }], ['cue-p1', v => { cue.pitch[1] = +v; }], ['cue-g0', v => { cue.gainDb[0] = +v; }], ['cue-g1', v => { cue.gainDb[1] = +v; }],
+    ['cue-norep', v => { cue.noRepeat = +v; }], ['cue-cool', v => { cue.cooldown = +v; }], ['cue-voices', v => { cue.maxVoices = +v; }],
+    ['cue-dmin', v => { cue.distance.min = +v; }], ['cue-dmax', v => { cue.distance.max = +v; }], ['cue-notes', v => { cue.notes = v; }]];
+  F.forEach(([id, set]) => { $(id).onchange = () => { set($(id).value); cue = KCUE.clean(cue); syncCueForm(); cueStates.delete(cue.id); changed(); }; });
+  $('cue-new').onclick = () => { cue = newCue(); cueDoc = null; syncCueForm(); renderCueVars(); cueMsg('A new cue: give it a dotted name, then add variants.'); $('cue-id').focus(); };
+  $('cue-add-btn').onclick = () => {
+    const v = $('cue-add').value, m = v.match(/\[([^\]]+)\]$/), id = m ? m[1] : (DATA.clips.find(c => c.title === v) || {}).id;
+    if (!id || !CLIPS[id]) { cueMsg('Pick a clip from the list as you type.'); return; }
+    cueAddVariant({ clip: id, start: 0, end: 0, name: CLIPS[id].title }); $('cue-add').value = '';
+  };
+  $('cue-fire').onclick = () => fireCue();
+  $('cue-fire10').onclick = () => { for (let i = 0; i < 10; i++) setTimeout(fireCue, i * 450); };
+  $('cue-save').onclick = saveCue;
+  $('cue-del').onclick = deleteCue;
+  $('cue-comment').onclick = () => openComments($('tab-cues'));
+}
+function syncCueForm() {
+  const c = cue;
+  $('cue-id').value = c.id; $('cue-cat').value = c.category; $('cue-bus').value = c.bus;
+  $('cue-p0').value = c.pitch[0]; $('cue-p1').value = c.pitch[1]; $('cue-g0').value = c.gainDb[0]; $('cue-g1').value = c.gainDb[1];
+  $('cue-norep').value = c.noRepeat; $('cue-cool').value = c.cooldown; $('cue-voices').value = c.maxVoices;
+  $('cue-dmin').value = c.distance.min; $('cue-dmax').value = c.distance.max; $('cue-notes').value = c.notes;
+  $('cue-dist').max = Math.max(10, Math.ceil(c.distance.max * 1.2));
+}
+function cueAddVariant(v) {
+  if (!cue) cue = newCue();
+  cue.variants.push({ clip: v.clip, start: v.start || 0, end: v.end || 0, weight: 1, fx: v.fx || {}, name: v.name || '' });
+  cue = KCUE.clean(cue); syncCueForm(); renderCueVars(); changed();
+  cueMsg('Added "' + (v.name || CLIPS[v.clip].title) + '" as variant ' + cue.variants.length + (cue.id ? ' of ' + cue.id : '') + '.');
+}
+function renderCueVars() {
+  const box = $('cue-vars'); box.textContent = '';
+  if (!cue.variants.length) { box.appendChild(el('p', 'empty', 'No variants yet. Use "+ Cue" on clips in the Library, "Add to cue" in Cut, or the box above.')); return; }
+  cue.variants.forEach((v, i) => {
+    const c = CLIPS[v.clip], row = el('div', 'layer');
+    const fxs = Object.keys(v.fx).filter(k => k !== 'reverse').map(k => k + ' ' + (+v.fx[k]).toFixed(2)).join(', ') + (v.fx.reverse ? ', reversed' : '');
+    row.appendChild(el('div', 'lname', (i + 1) + '. ' + esc(v.name || (c ? c.title : v.clip)) + '<small>' + (!c ? 'not on this page &middot; ' : v.name && v.name !== c.title ? esc(c.title) + ' &middot; ' : '') +
+      (v.end ? secs(v.start) + ' to ' + secs(v.end) : 'whole clip') + (fxs ? ' &middot; ' + esc(fxs) : '') + '</small>'));
+    const ctl = el('div', 'lctl');
+    const w = el('input'); w.type = 'range'; w.min = 0.1; w.max = 10; w.step = 0.1; w.value = v.weight; w.id = 'cv' + i + '-w';
+    const wl = el('label', 'field', 'Weight ' + v.weight.toFixed(1)); wl.appendChild(w);
+    w.oninput = () => { v.weight = +w.value; wl.firstChild.textContent = 'Weight ' + v.weight.toFixed(1); changed(); };
+    const play = el('button', 'btn mini', 'Play'); play.type = 'button'; play.onclick = () => playVariant(i);
+    const rm = el('button', 'btn mini', 'Remove'); rm.type = 'button'; rm.onclick = () => { cue.variants.splice(i, 1); cueStates.delete(cue.id); renderCueVars(); changed(); };
+    ctl.append(wl, play, rm); row.appendChild(ctl); box.appendChild(row);
+  });
+}
+/* One play: the variant's own sound settings, then the cue's random pitch (as a speed change, like a real recording
+   played faster or slower) and volume, the distance falloff, and a pan when scattering. */
+async function playPick(f, label) {
+  const c = audioCtx(), base = CLIPS[f.clip];
+  if (!base) { cueMsg('Clip ' + f.clip + ' is not on this page.'); return false; }
+  let buf;
+  try { buf = await trackBuffer({ clip: f.clip, start: f.start, end: f.end }, { rev: !!f.fx.reverse }); } catch (e) { cueMsg(e.message); return false; }
+  const t = Object.assign(newTrack({}, 'events'), { __ed: true }, f.fx, { vol: 1, pitch: 0 });
+  const dist = +$('cue-dist').value, scatter = $('cue-scatter').checked;
+  if (scatter) t.pan = clamp((t.pan || 0) + (Math.random() * 2 - 1) * 0.9, -1, 1);
+  const out = c.createGain(); out.connect(c.destination);
+  const verb = c.createConvolver(); verb.buffer = impulse(c, 1.5, 3); verb.connect(out);
+  const ch = makeChain(c, out, verb, false, t); setChain(ch, t, c, false);
+  const s = c.createBufferSource(), g = c.createGain();
+  s.buffer = buf; s.playbackRate.value = (t.speed || 1) * st2r(f.pitch);
+  const fall = KCUE.falloff(cue, dist);
+  g.gain.value = f.gain * fall;
+  if (dist > cue.distance.min) { const muffle = c.createBiquadFilter(); muffle.type = 'lowpass'; muffle.frequency.value = Math.max(800, 20000 * fall); s.connect(muffle).connect(g); } else s.connect(g);
+  g.connect(ch.input);
+  s.start();
+  s.onended = () => { setTimeout(() => out.disconnect(), 2000); if (label) label(); };
+  return true;
+}
+async function fireCue() {
+  if (!cue || !cue.variants.length) { cueMsg('Add variants first.'); return; }
+  const key = cue.id || '_draft';
+  if (!cueStates.has(key)) cueStates.set(key, KCUE.state());
+  const st = cueStates.get(key), f = KCUE.fire(cue, st, audioCtx().currentTime, cueSeed);
+  if (!f) { logCue('refused: ' + (st.voices >= cue.maxVoices ? 'voice cap (' + cue.maxVoices + ')' : 'cooldown')); return; }
+  const v = cue.variants[f.variant], n = st.n;
+  logCue('#' + n + ' variant ' + (f.variant + 1) + ' (' + (v.name || (CLIPS[v.clip] || {}).title || v.clip) + '), pitch ' + (f.pitch >= 0 ? '+' : '') + f.pitch.toFixed(2) +
+    ' st, ' + (20 * Math.log10(f.gain)).toFixed(1) + ' dB' + (+$('cue-dist').value ? ', ' + $('cue-dist').value + ' m away' : ''));
+  const ok = await playPick(f, () => KCUE.done(st));
+  if (!ok) KCUE.done(st);
+}
+async function playVariant(i) {
+  const v = cue.variants[i];
+  await playPick({ variant: i, clip: v.clip, start: v.start, end: v.end, fx: v.fx, pitch: v.fx.pitch || 0, gain: v.fx.vol != null ? v.fx.vol : 1 });
+}
+function logCue(t) { const ol = $('cue-log'), li = el('li', '', esc(t)); ol.prepend(li); while (ol.children.length > 30) ol.lastChild.remove(); }
+function renderCueList() {
+  const ul = $('cue-list'); ul.textContent = '';
+  const all = [...localCues.map(c => ({ c, local: true, id: c.id })), ...sharedCues.map(x => ({ c: x.c, id: x.id, by: x.by }))];
+  if (!all.length) { ul.appendChild(el('li', '', '<span>No cues yet. Press New cue.</span>')); return; }
+  all.sort((a, b) => a.c.id < b.c.id ? -1 : 1).forEach(x => {
+    const li = el('li'), b = el('button', 'btn mini', 'Open'); b.type = 'button';
+    li.appendChild(el('strong', '', esc(x.c.id || '(unnamed)')));
+    li.appendChild(el('span', '', x.c.variants.length + ' variants' + (x.local ? ' &middot; this device' : '')));
+    b.onclick = () => { cue = KCUE.clean(JSON.parse(JSON.stringify(x.c))); cueDoc = x.local ? null : x.id; syncCueForm(); renderCueVars(); showTab('cues'); cueMsg('Opened ' + cue.id + '.'); };
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+async function saveCue() {
+  cue = KCUE.clean(cue);
+  const p = KCUE.validate(cue, clipsById());
+  if (p.length) { cueMsg('Not saved: ' + p.join('; ') + '.'); return; }
+  if (dbApi) {
+    try { await dbApi.collection('cues').doc(cue.id).set({ ...JSON.parse(JSON.stringify(cue)), by: me, at: Date.now() }); cueDoc = cue.id;
+      localCues = localCues.filter(c => c.id !== cue.id); persistLocal(); cueMsg('Saved ' + cue.id + ' for everyone on this page.'); return; }
+    catch (e) { /* keep it here */ }
+  }
+  localCues = localCues.filter(c => c.id !== cue.id); localCues.push(JSON.parse(JSON.stringify(cue))); persistLocal(); renderCueList();
+  cueMsg('Saved ' + cue.id + ' in this browser' + (dbApi ? ' (only editors of the page can share cues).' : '.'));
+}
+async function deleteCue() {
+  const b = $('cue-del');
+  if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'Delete ' + (cue.id || 'this cue') + '?'; setTimeout(() => { b.dataset.armed = ''; b.textContent = 'Delete'; }, 3000); return; }
+  b.dataset.armed = ''; b.textContent = 'Delete';
+  localCues = localCues.filter(c => c.id !== cue.id); persistLocal();
+  if (cueDoc && dbApi) { try { await dbApi.collection('cues').doc(cueDoc).delete(); } catch (e) { cueMsg('Could not delete the shared cue (' + ((e && e.code) || 'error') + ').'); } }
+  cue = newCue(); cueDoc = null; syncCueForm(); renderCueVars(); renderCueList();
+}
+$('cut-cue').onclick = () => {
+  if (!ed.buf || !ed.sel) return;
+  const k = cutFromEditor();
+  cueAddVariant({ clip: k.clip, start: k.start, end: k.end, fx: k.fx, name: k.name });
+  edMsg('Added to cue ' + (cue.id || '(unnamed)') + ' as variant ' + cue.variants.length + '. Open the Cues tab to fire it.');
+};
+
 /* Never rename this key or the db collections (scenes, cuts): saved work would vanish from the page. README, "Saved work survives updates". */
 const LS = 'hyperjungle-sound-board-v2';
 let saveTimer = null;
-function persistLocal() { try { localStorage.setItem(LS, JSON.stringify({ scene, cuts: localCuts, edfx: edT ? fxOf(edT) : null })); } catch (e) {} }
+function persistLocal() { try { localStorage.setItem(LS, JSON.stringify({ scene, cuts: localCuts, edfx: edT ? fxOf(edT) : null, cues: localCues, cueDraft: cue })); } catch (e) {} }
 function changed(quiet) { updateStatus(); clearTimeout(saveTimer); saveTimer = setTimeout(persistLocal, 600); }
 function restoreLocal() {
   try {
     const v = JSON.parse(localStorage.getItem(LS) || 'null'); if (!v) return;
     if (v.scene) scene = cleanScene(v.scene);
     if (v.edfx) resetEdT(v.edfx);
+    if (Array.isArray(v.cues)) localCues = v.cues.slice(0, 200).map(KCUE.clean);
+    if (v.cueDraft) cue = KCUE.clean(v.cueDraft);
     if (Array.isArray(v.cuts)) localCuts = v.cuts.slice(0, 200).map(c => ({ id: String(c.id || 'local-' + uid()), name: String(c.name || 'Cut').slice(0, 60), clip: clipId(c.clip),
       start: clamp(+c.start || 0, 0, 7200), end: clamp(+c.end || 0, 0, 7200), xf: clamp(+c.xf || 0, 0, 5), fx: c.fx ? cleanFx(c.fx) : null, at: +c.at || 0 }));
   } catch (e) {}
 }
 
 /* ---------- start ---------- */
-buildLibrary(); fillClipSelect(); resetEdT(null); restoreLocal(); syncSceneFields(); renderTracks(); renderCuts(); syncSel(); updateStatus();
+buildLibrary(); fillClipSelect(); resetEdT(null); cue = newCue(); restoreLocal(); fillCueForm(); syncCueForm(); renderCueVars(); renderCueList(); syncSceneFields(); renderTracks(); renderCuts(); syncSel(); updateStatus();
 { const h = (location.hash || '').slice(1); if (TABS.includes(h)) showTab(h); }
 
 /* ---------- capabilities: saving files, comments, shared cuts and scenes ---------- */
@@ -1519,6 +1728,11 @@ buildLibrary(); fillClipSelect(); resetEdT(null); restoreLocal(); syncSceneField
   dbApi = db;
   /* Usage notes, one document per clip id. Never rename this collection (README, "Saved work survives updates"). */
   let noteTimer = null;
+  /* Cues, one document per cue id. Never rename this collection. */
+  db.collection('cues').onSnapshot(snap => {
+    sharedCues = snap.docs.map(d => { const x = d.data() || {}; return { id: d.id, c: KCUE.clean(x), by: x.by || null }; }).filter(x => x.c.id);
+    renderCueList();
+  }, () => {});
   db.collection('notes').onSnapshot(snap => {
     const next = {};
     snap.docs.forEach(d => { const n = d.data() || {}; next[d.id] = { status: DATA.statuses.includes(n.status) ? n.status : 'candidate',

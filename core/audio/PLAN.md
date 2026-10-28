@@ -12,8 +12,8 @@ comments that document which file is used for what. The module has to carry four
 
 **Status: approved 2026-10-28.** The questions in section 8 were answered as recommended: ffmpeg installed, the lab at
 `core/audio/lab/`, placeholder music stems, two combat levels, royalty-free in the game only, Gemini through intake.
-A1 and A2 are done (A2: the Audio Lab published at the sound board's address, 124 clips as 80 kbps previews, 111 MB;
-filters, sorting, usage notes; tested against 3,000 clips). Wherever this file still says *proposed*, the detail can
+A1, A2 and A3 are done (A2: the Audio Lab published at the sound board's address, 80 kbps previews; filters, sorting,
+usage notes; tested against 3,000 clips. A3: `KCUE` and the lab's Cues tab). Wherever this file still says *proposed*, the detail can
 change as the lab is built.
 
 ## 0. Core adoption (written first, as the working rules ask)

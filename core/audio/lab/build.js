@@ -64,7 +64,9 @@ async function previews(clips) {
       category: c.category, tags: c.tags || [], note: c.notes || '', duration: c.duration, file: 'previews/' + c.id + '.mp3' }))
   };
   const legacy = {}; data.clips.forEach(c => { if (c.legacy) legacy[c.legacy] = c.id; }); data.legacy = legacy;
-  const page = fs.readFileSync(path.join(HERE, 'template.html'), 'utf8').replace('/*DATA*/', () => JSON.stringify(data));
+  /* The page runs the module's own code: core/rand and the cue picker are embedded, not copied. */
+  const modules = [path.join(ROOT, 'core', 'rand', '08-core-rand.js'), path.join(AUDIO, '22-core-audio-cues.js')].map(p => fs.readFileSync(p, 'utf8')).join('\n');
+  const page = fs.readFileSync(path.join(HERE, 'template.html'), 'utf8').replace('/*MODULES*/', () => modules).replace('/*DATA*/', () => JSON.stringify(data));
   fs.writeFileSync(path.join(OUT, 'index.html'), page, 'utf8');
   const mb = have.reduce((a, c) => a + fs.statSync(path.join(OUT, 'previews', c.id + '.mp3')).size, 0) / 1e6;
   console.log('lab: ' + have.length + ' clips' + (ALL ? ' (LOCAL build: includes clips that must never be published)' : '') +
