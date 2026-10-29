@@ -63,12 +63,12 @@
    "shore": 0.8,
    "scale": 900,
    "depth": 330,
-   "_": "the elevation carries the lake as a flat sheet at its surface: the ground under it is cut (tools/build-osm-city.py lake_bed), a metre at the shore and easing toward 330 m out in the basin (the 2014 echo-sounder survey: 327.6 m at the deepest, 203 m on average), a stand-in until that survey's grid is in data/bathy/",
+   "_": "the elevation carries the lake as a flat sheet at its surface; the bed is the 2014 echo-sounder survey (data/bathy/atitlan-bed.json, from the Dryad grid by tools/grid-aig.py, 60 m), 320 m at the deepest; the first metres off the shore, which it does not reach, are cut as before (a metre at the shore, easing toward 330 m)",
    "knolls": [
     {
      "at": [
-      14.6778,
-      -91.1925
+      14.67962,
+      -91.19163
      ],
      "r": [
       170,
@@ -83,8 +83,8 @@
     },
     {
      "at": [
-      14.6805,
-      -91.1925
+      14.68232,
+      -91.19163
      ],
      "r": [
       70,
@@ -94,7 +94,8 @@
      "flank": 1.0
     }
    ],
-   "_knolls": "Samabaj's drowned island (Benítez and Samayoa 2000, Medrano and Samayoa 2010): 477 m north to south and 340 east to west, 175 m above the floor; the ceremonial groups on its north-east height 13.5 m down, the houses on the lower west at 17.5 to 21 m, a channel 39 m deep across its north cutting off a small island at 21 m; the slopes fall to 80 m toward the south shore and past 100 m to the north. Placed off the Cerro de Oro's north shore from those descriptions: the published coordinates (N 14 43 11, W 91 11 33) fall in the middle of the lake"
+   "_knolls": "Samabaj's drowned island (Benítez and Samayoa 2000, Medrano and Samayoa 2010): 477 m north to south and 340 east to west, 175 m above the floor; the ceremonial groups on its north-east height 13.5 m down, the houses on the lower west at 17.5 to 21 m, a channel 39 m deep across its north cutting off a small island at 21 m; the slopes fall to 80 m toward the south shore and past 100 m to the north. Placed on the island the 2014 survey shows off the Cerro de Oro's north shore (its top about 20 m down at 60 m cells), which these knolls sharpen: the published coordinates (N 14 43 11, W 91 11 33) fall in the middle of the lake",
+   "grid": "data/bathy/atitlan-bed.json"
   },
   "datum": 1556.0
  },
@@ -2159,8 +2160,8 @@
    ],
    "model": "samabaj",
    "at": [
-    14.6778,
-    -91.1925
+    14.67962,
+    -91.19163
    ],
    "oldLevel": 28,
    "jetties": [
@@ -2335,13 +2336,13 @@
   ],
   "Samabaj, under the lake": [
    [
-    14.678,
-    -91.19168,
+    14.67982,
+    -91.19081,
     -11.0
    ],
    [
-    14.67812,
-    -91.19157,
+    14.67994,
+    -91.1907,
     -15.0
    ]
   ]

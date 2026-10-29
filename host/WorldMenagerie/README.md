@@ -500,16 +500,18 @@ a bed and a shore.
   and about 30 m to where it is whole (the lake has been murkier since the 2009 blooms), dimmer with depth, the surface
   seen from below; the view "Under the drowned shore" is among Panajachel's dead trees. **Drain the lake** (a button;
   `#drain` in the address) takes the water and what floats on it away and draws the bed by depth, with a contour every
-  10 m and a white one every 50. The bed is a stand-in until the 2014 survey's grid is in (`data/bathy/`):
-  `terrain.lakeBed` with `scale`, a cut easing from the shore to 330 m (mean 193 m; the survey's is 203, its deepest
-  327.6). Under the water `cover.js` paints sand, silt and rock, not fields.
+  10 m and a white one every 50. The bed is the 2014 echo-sounder survey (Dryad, doi:10.5061/dryad.f7m0cfz0x; an
+  ArcInfo grid of 60.8 m cells in GTM, read without GDAL by `tools/grid-aig.py` into `data/bathy/atitlan-bed.json`,
+  60 m), 320 m at the deepest; the first metres off the shore, which it does not reach, keep the old cut (`scale`,
+  easing from a metre at the shore). Under the water `cover.js` paints sand, silt and rock, not fields.
 - **Samabaj** (`samabaj.js`, a landmark with a card; the view "Samabaj, under the lake"): the Late Preclassic island
   town found by Roberto Samayoa in 1996. The island is two `knolls` in the bed (477 by 340 m, its top 13.5 to 21 m down,
   a 39 m channel cutting off a small island to the north, 80 m of water toward the shore); on it, from the dive
   surveys, Grupo 3's long platform of two levels, Grupo Estela's terrace with the basalt column, its altar and the
   stelae, the arc of Estela Sisa, Grupo Roca built round its rock, Grupo 2's eight houses and the smaller groups, and
-  three jetties at the old shore 28 m down. The published coordinates fall in mid-lake, so it is placed from the
-  descriptions, off the Cerro de Oro's north shore (one place in `atitlan.json`).
+  three jetties at the old shore 28 m down. The published coordinates fall in mid-lake; it stands on the island the
+  survey shows off the Cerro de Oro's north shore (its top about 20 m down in the 60 m cells), which the knolls
+  sharpen (one place in `atitlan.json`).
 - **The water** (`waves.js`): the engine's water given travelling waves in world space, steeper in the Xocomil and
   each fading as it nears a pixel's footprint (no lattice far out): nine of them, each 0.66 the length of the last, on
   bearings a golden angle apart, so no two line up. The volcanoes and towns stand in it (`waves.reflect`, a true
