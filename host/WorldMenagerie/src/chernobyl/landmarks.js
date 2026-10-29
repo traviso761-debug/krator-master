@@ -13,6 +13,14 @@
 //   emblem   the Soviet coat of arms in steel on the roof of a sixteen-storey block: the globe, the hammer and sickle
 //            and the wreath on a frame (L.h the roof's height, or the mapped block's)
 //   angel    the Wormwood Star: the bronze angel blowing a trumpet, made for the twenty-fifth year (2011)
+//   plant    the main building of units 1 to 3, east of the arch, which the map draws as a few flat boxes. Laid out
+//            from its mapped footprints in RBMK proportions, all in lat/lon on the landmark (L.hall, L.units, ...):
+//            the turbine hall along the south, some 770 m from under the arch to the east end, 31 m high, its long
+//            walls glazed in two bands between pilasters, a roof lantern down its length; the deaerator bays, a
+//            47 m slab along its north side for each pair of units; the reactor blocks north of them, 44 m, each
+//            with its reactor hall on top to 71 m, ribbed in vertical panels, and stair towers at the corners; block
+//            B between units 1 and 2; unit 3's roof where the ventilation stack stood; and the units' transformers
+//            in walled bays along the south wall; and the chimney north of block B, round, at its mapped height
 // Map data (c) OpenStreetMap contributors, ODbL.
 import {landkit} from '../core/landkit.js';
 
@@ -20,7 +28,7 @@ export function landmarks(api){
   const {THREE,gh}=api;
   const {Model,turn}=landkit(api,{steel:0xd2d6da,steelDark:0x9aa2a8,steelWall:0x8a9096,concrete:0xa8a49c,concreteDark:0x8a867e,scaffold:0x6a5a4a,
     rust:0x6e5444,rustDark:0x4e3c30,wheelYellow:0xe8c02a,wheelFrame:0xd8d0b8,wheelRed:0xb84a3a,
-    sovietRed:0xa83a2e,sovietGold:0xc8a03a,bronze:0x5a4a38,plinth:0x8a8478,dark:0x2a2620});
+    sovietRed:0xa83a2e,sovietGold:0xc8a03a,bronze:0x5a4a38,plinth:0x8a8478,panel:0xd2d0c8,panelDark:0xaeaca4,rib:0xbab8b0,glazing:0x46505a,roofGrey:0x8a8884,trans:0x5e665a,dark:0x2a2620});
   // a half-ellipse ring as a shape (across x, up y), `a` and `b` its outer half-width and height, `t` the depth of its frame
   const archShape=(a,b,t,n=48)=>{const s=new THREE.Shape();for(let i=0;i<=n;i++){const u=Math.PI*i/n;s.lineTo(Math.cos(u)*a,Math.sin(u)*b);}
     for(let i=n;i>=0;i--){const u=Math.PI*i/n;s.lineTo(Math.cos(u)*(a-t),Math.sin(u)*(b-t));}return s;};
@@ -87,6 +95,50 @@ export function landmarks(api){
     M.put('sovietRed',new THREE.BoxGeometry(0.35,S*0.5,0.35),0.4,cy,0.5,0,0,-0.7);M.put('sovietRed',new THREE.BoxGeometry(1.6,0.6,0.4),1.3,cy+1.5,0.5,0,0,-0.7);   // the hammer
     M.put('sovietRed',new THREE.ConeGeometry(0.8,1.4,5),0,cy+S*0.58,0);                                    // the star
     return M.finish(L,x,g0,z,turn(L.face||0));},
+
+  plant(L,x,z){const g0=gh(x,z),M=Model();
+    // a rectangle [south, west, north, east] in lat/lon to local [x0, z0, x1, z1] (z grows south)
+    const R=([s,w,n,e])=>{const [x0,z1]=api.P([s,w]),[x1,z0]=api.P([n,e]);return [x0-x,z0-z,x1-x,z1-z];};
+    const block=(k,r,y0,y1)=>M.box(k,(r[0]+r[2])/2,y0,(r[1]+r[3])/2,r[2]-r[0],y1-y0,r[3]-r[1]);
+    // things along one face of a rectangle: f is 'N', 'S', 'E' or 'W'; fn(u, along, out) per step from one end to the other
+    const along=(r,f,step,fn,inset=2)=>{const ew=f==='N'||f==='S',a0=ew?r[0]:r[1],a1=ew?r[2]:r[3],o=f==='N'?r[1]:f==='S'?r[3]:f==='E'?r[2]:r[0],sg=f==='N'||f==='W'?-1:1;
+      for(let u=a0+inset;u<=a1-inset+0.01;u+=step)fn(u,ew,o,sg);};
+    const rib=(k,r,f,step,y0,y1,w=0.9,d=0.6)=>along(r,f,step,(u,ew,o,sg)=>M.box(k,ew?u:o+sg*d/2,y0,ew?o+sg*d/2:u,ew?w:d,y1-y0,ew?d:w));
+    const band=(k,r,f,y0,h,end=3)=>{const ew=f==='N'||f==='S',o=f==='N'?r[1]:f==='S'?r[3]:f==='E'?r[2]:r[0],sg=f==='N'||f==='W'?-1:1,len=(ew?r[2]-r[0]:r[3]-r[1])-end*2;
+      M.box(k,ew?(r[0]+r[2])/2:o+sg*0.15,y0,ew?o+sg*0.15:(r[1]+r[3])/2,ew?len:0.3,h,ew?0.3:len);};
+    const parapet=(r,y,k='panelDark')=>{for(const f of ['N','S']){const o=f==='N'?r[1]:r[3];M.box(k,(r[0]+r[2])/2,y,o,r[2]-r[0],1.2,0.5);}for(const f of ['E','W']){const o=f==='E'?r[2]:r[0];M.box(k,o,y,(r[1]+r[3])/2,0.5,1.2,r[3]-r[1]);}};
+    // ---- the turbine hall ----
+    const TH=R(L.hall||[51.38868,30.1001,51.38914,30.1088]),HT=L.hallH||31;
+    block('panel',TH,0,HT);parapet(TH,HT);
+    for(const f of ['S','N']){rib('panelDark',TH,f,12,0,HT,1.4,0.9);band('glazing',TH,f,7,6);band('glazing',TH,f,17,9);band('panelDark',TH,f,HT-3,0.8);}
+    rib('panelDark',TH,'E',12,0,HT,1.4,0.9);band('glazing',TH,'E',17,9,6);M.box('dark',TH[2]+0.3,0,(TH[1]+TH[3])/2,0.4,9,10);   // the rail doors at the east end
+    {const cz=(TH[1]+TH[3])/2;M.box('roofGrey',(TH[0]+TH[2])/2,HT,cz,TH[2]-TH[0]-8,2.8,7);M.box('glazing',(TH[0]+TH[2])/2,HT+0.6,cz,TH[2]-TH[0]-9,1.6,7.3);   // the lantern
+      for(let u=TH[0]+20;u<TH[2]-10;u+=24)for(const dz of [-14,14])M.cyl('roofGrey',u,HT,cz+dz,1.3,1.1,3.2,8);}   // roof vents
+    // ---- the deaerator bays, one for each pair of units ----
+    for(const d of (L.deaerators||[[51.38914,30.1001,51.38926,30.1019],[51.38914,30.1038,51.38926,30.1076]])){const r=R(d),H=L.deaeratorH||47;
+      block('panel',r,0,H);parapet(r,H);for(const f of ['S','N']){rib('panelDark',r,f,6,HT,H,0.8,0.5);for(let y=HT+3;y<H-3;y+=5)band('glazing',r,f,y,1.6);}
+      for(const f of ['E','W']){rib('panelDark',r,f,4,0,H,0.8,0.5);}
+      for(let u=r[0]+15;u<r[2]-10;u+=30)M.box('roofGrey',u,H,(r[1]+r[3])/2,8,2.5,6);}
+    // ---- the reactor blocks and their halls ----
+    for(const U of (L.units||[])){const r=R(U.base),hall=R(U.hall),BH=U.h||44,TOP=U.top||71;
+      block('panel',r,0,BH);parapet(r,BH);for(const f of ['N','S','E','W'])rib('rib',r,f,6,0,BH,0.7,0.4);
+      for(const f of ['N','E','W'])for(let y=6;y<BH-4;y+=9)band('panelDark',r,f,y,0.6);
+      // the reactor hall: windowless, the joints of its tall panels standing out, a deeper band at the eaves
+      block('panel',hall,BH,TOP);parapet(hall,TOP);for(const f of ['N','S','E','W']){rib('rib',hall,f,3,BH,TOP-2,0.5,0.35,);band('panelDark',hall,f,TOP-3,1.6,0);}
+      M.box('roofGrey',(hall[0]+hall[2])/2,TOP,(hall[1]+hall[3])/2,hall[2]-hall[0]-6,1.6,hall[3]-hall[1]-10);   // the crane hall's roof deck
+      // stair and lift towers at the block's north corners, a little over its roof
+      for(const sx of [r[0]+5,r[2]-5]){M.box('panelDark',sx,0,r[1]+5,8,BH+7,8);M.box('glazing',sx,6,r[1]+0.9,1.4,BH-4,0.3);}
+      if(U.stack){const [sx,sz]=api.P(U.stack);M.box('roofGrey',sx-x,BH,sz-z,16,1.4,16);M.cyl('panelDark',sx-x,BH+1.4,sz-z,5.6,5.6,0.8,16);}   // where a stack stood: its plinth
+      for(let u=r[0]+10;u<r[2]-6;u+=14)M.box('roofGrey',u,BH,(r[1]+r[3])/2+12,5,3,5);}
+    for(const b of (L.blocks||[])){const r=R(b.at),H=b.h||30;block('panel',r,0,H);parapet(r,H);for(const f of ['N','S'])rib('rib',r,f,6,0,H,0.7,0.4);for(let y=5;y<H-3;y+=7)for(const f of ['N','E','W'])band('glazing',r,f,y,1.2);}
+    // chimneys at their mapped heights: a tapering concrete shaft, ringed, with its access ladder's cage
+    for(const c of (L.chimneys||[])){const [cx,cz]=api.P(c.at),H=c.h||50,r=c.r||4.5;M.cyl('panelDark',cx-x,0,cz-z,r,r*0.62,H,16);
+      for(let y=10;y<H;y+=10)M.cyl('roofGrey',cx-x,y,cz-z,r*(1-0.38*y/H)+0.35,r*(1-0.38*y/H)+0.35,0.6,16);M.box('rustDark',cx-x+r*0.75,0,cz-z,0.8,H,0.8);}
+    // ---- the transformers in walled bays along the south wall ----
+    for(const [la,lo] of (L.transformers||[])){const [tx,tz]=api.P([la,lo]),cx=tx-x,cz=tz-z;
+      for(let k=0;k<3;k++){const u=cx+(k-1)*14;M.box('trans',u,0,cz,6,5,4.5);M.box('dark',u,5,cz,1.2,2.2,1.2);for(const s of [-1,1])M.box('trans',u+s*2.6,1,cz+2.5,0.4,4,0.6);
+        M.box('concrete',u+7,0,cz,0.6,7,8);}M.box('concrete',cx-21,0,cz,0.6,7,8);M.box('concreteDark',cx,0,cz,44,0.3,10);}
+    return M.finish(L,x,g0,z,0);},
 
   angel(L,x,z){const g0=gh(x,z),M=Model();
     M.box('plinth',0,0,0,3.4,2.2,3.4);M.cyl('plinth',0,2.2,0,0.5,0.4,1.4,8);

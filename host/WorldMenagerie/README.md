@@ -575,7 +575,12 @@ no trains (`commuterLines: 0`, which the engine now reads as none rather than th
   `dogs.js` (the Zone's strays round the plant and in Pripyat).
 - **Landmarks** (`landmarks.js`): the New Safe Confinement (257 m across, 108 m high, 162 m long, its banded cladding,
   end walls and rails; `clearArea` takes away the mapped arch and the ventilation stack, still mapped at 125 m though
-  it was taken down in 2013), the two unfinished cooling towers of units 5 and 6 (hyperboloid shells stopped part-way,
+  it was taken down in 2013); the main building of units 1 to 3, which the map has as a few flat boxes, laid out from
+  its mapped footprints in RBMK proportions (`plant`): the turbine hall, some 770 m long and 31 m high, glazed in two
+  bands between pilasters, with a roof lantern; the 47 m deaerator bays behind it; the reactor blocks at 44 m with their
+  windowless, panel-ribbed reactor halls to 71 m and stair towers; block B between units 1 and 2; the plinth on unit 3
+  where the stack stood; the transformers in walled bays along the south wall; and the chimney north of block B, at its
+  mapped 50 m. Then the two unfinished cooling towers of units 5 and 6 (hyperboloid shells stopped part-way,
   on their raking legs, with scaffold), the Ferris wheel with its yellow gondolas, Duga's two arrays (masts, dipole wall
   and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
   angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
