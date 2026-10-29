@@ -785,7 +785,9 @@ def main():
             h, mh = height_of(t, c)
             rec = {"o": o, "h": h, "mh": mh, "t": t, "a": a, "c": c, "i": holes}
             (parts if "building:part" in t and "building" not in t else outlines).append(rec)
-    # an outline with parts inside is drawn by its parts (Willis Tower's tubes, Hancock's taper)
+    # an outline with parts inside is drawn by its parts (Willis Tower's tubes, Hancock's taper), unless they cover
+    # less than half of it: then the parts are something on it (Pripyat's nine-storey blocks map only the lift
+    # tower rising over the roof) and the outline stays too
     grid = {}
     for p in parts:
         grid.setdefault((int(p["c"][0] // 100), int(p["c"][1] // 100)), []).append(p)
@@ -799,7 +801,9 @@ def main():
             # parts that all start well above the ground (a spire mapped as parts, the shaft only as the outline): keep
             # the outline, up to where the lowest part begins, or the tower floats
             low = min(p["mh"] or 0 for p in inner)
-            if low > 3:
+            if sum(p["a"] for p in inner) < 0.5 * b["a"]:
+                pass
+            elif low > 3:
                 b["h"] = min(b["h"], low)
             else:
                 dropped_by_parts += 1

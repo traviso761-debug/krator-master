@@ -320,6 +320,14 @@ scene = true
 blurb = "The deepest lake in America in the caldera Mount Mazama left: Wizard Island, the Phantom Ship, the lodge on the rim, and the mountain's fall as an event."
 
 [[route]]
+path = "/chernobyl"       # a real place: the Chernobyl Exclusion Zone from OpenStreetMap on its real ground, the accident and the Zone since as events (src/chernobyl/)
+aliases = ["/chernobyl.html", "/chornobyl", "/pripyat", "/prypiat"]
+file = "chernobyl.html"
+title = "Chernobyl: massing model"
+scene = true
+blurb = "The Exclusion Zone forty years on: Pripyat grown over by the forest, the arch over Reactor 4, the unfinished cooling towers, the Duga radar, and the night of 26 April 1986 as an event."
+
+[[route]]
 path = "/olympic"         # a real place: the whole Olympic Peninsula on the real ground, from OpenStreetMap (src/olympic/, tools/make-olympic.py)
 aliases = ["/olympic.html", "/olympics", "/olympicnationalpark", "/peninsula"]
 file = "olympic.html"

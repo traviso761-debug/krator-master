@@ -557,6 +557,35 @@ ground itself.
 - **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
   collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
 
+**Chernobyl** (`chernobyl.html`, `src/chernobyl/`, `data/cities/chernobyl.json`). The Chernobyl Exclusion Zone in
+northern Ukraine from OpenStreetMap on its real ground at 20 m, 18 by 19 km: the power plant, Pripyat, the cooling pond,
+the Red Forest, Duga and Chernobyl-2, and the town of Chernobyl. The datum is the Pripyat river (103 m). Polesia is flat,
+so `terrain.filter.open` is 320 m: the elevation tiles carry the plant's halls, the arch and Duga's arrays as hills, and
+the wide opening takes them out. No traffic, no people, no parked cars (`focus` `parked: false`), no street furniture,
+no trains (`commuterLines: 0`, which the engine now reads as none rather than the default 8).
+- **The map builder** (`tools/build-osm-city.py`): an outline whose `building:part`s cover less than half of it keeps
+  its outline as well as its parts. Pripyat's nine-storey blocks map only the lift tower over the roof as a part, and
+  the blocks had been reduced to their towers. Other cities' data is unchanged until it is rebuilt.
+- **The Zone** (`zone.js`): the ground repainted as Scots pine forest, old kolkhoz fields gone to grass and birch, sedge
+  marsh by the water and the odd sand; gravel on the plant's yards (`bare`); tints for the Red Forest and the drained
+  cooling pond's bed. Near the camera it plants pine on the forest ground the map has not drawn as wood, birch and
+  aspen on the old fields, and in the towns (`towns`: Pripyat, Chernobyl-2, Chernobyl, Kopachi) birch, poplar, maple and
+  young pine in every yard and through the small streets, but not on the main roads or in the buildings.
+- **Blocks and dogs**: Sarajevo's `blocks.js` (loggias, stair cores and roof boxes on Pripyat's panel blocks) and
+  `dogs.js` (the Zone's strays round the plant and in Pripyat).
+- **Landmarks** (`landmarks.js`): the New Safe Confinement (257 m across, 108 m high, 162 m long, its banded cladding,
+  end walls and rails; `clearArea` takes away the mapped arch and the ventilation stack, still mapped at 125 m though
+  it was taken down in 2013), the two unfinished cooling towers of units 5 and 6 (hyperboloid shells stopped part-way,
+  on their raking legs, with scaffold), the Ferris wheel with its yellow gondolas, Duga's two arrays (masts, dipole wall
+  and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
+  angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
+  Hospital 126, the Bridge of Death, the Red Forest, Kopachi's kindergarten, the cooling pond and Chernobyl town.
+- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (the arch hidden, the open
+  core's glow, the fire and the column of smoke drifting north-west), the evacuation on 27 April (a column of buses
+  down Lenin Avenue, `route`), the arch sliding 327 m over the reactor in November 2016, the Zone without people
+  (Przewalski's horses grazing an old field, wolves crossing it), and Duga, the Russian Woodpecker. `#event=<name>`
+  fires one; each running event's clock is in the details (`events.t`).
+
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
 the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts
