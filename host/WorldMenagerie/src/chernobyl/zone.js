@@ -79,4 +79,12 @@ export function zone(api){
     for(const T of tiles.values())if(T.g){const d=Math.hypot(T.x0+TILE/2-p.x,T.z0+TILE/2-p.z);T.g.visible=d<NEAR+TILE&&hh<NEAR*1.6;}
     api.ctx.details.zone={painted,cells:cells.size,tiles:tiles.size,trees:nTrees};});
   api.ctx.details=Object.assign(api.ctx.details||{},{zone:{painted,cells:cells.size,tiles:0,trees:0}});
+  // the Red Forest as it was in the summer of 1986: the pines dead and rust-red (K.redForest: [lat, lon, r]), for an
+  // event to turn on and off: api.ctx.zone.red(k), k from 0 (as painted) to 1
+  const RF=(K.redForest||[]).map(([la,lo,r])=>{const [x,z]=P([la,lo]);return [x,z,r];}),rust=new THREE.Color(0x9a4a22),rc=new THREE.Color();let redKept=null;
+  api.ctx.zone={red(k){if(!RF.length)return;if(!redKept){redKept=[];scene.traverse(m=>{if(!m.isMesh||!(m.name==='terrain'||/^terrain/.test(m.name))||!m.geometry.attributes.color)return;
+      const p=m.geometry.attributes.position,cl=m.geometry.attributes.color,idx=[];for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);let w=0;
+        for(const [rx,rz,r] of RF){const d=Math.hypot(x-rx,z-rz);if(d<r)w=Math.max(w,Math.min(1,(1-d/r)*2.5)*(0.75+0.25*vn(x,z,60,120)));}
+        if(w>0)idx.push(i,w,cl.getX(i),cl.getY(i),cl.getZ(i));}redKept.push([cl,idx]);});}
+    for(const [cl,idx] of redKept){for(let j=0;j<idx.length;j+=5){rc.setRGB(idx[j+2],idx[j+3],idx[j+4]).lerp(rust,idx[j+1]*k);cl.setXYZ(idx[j],rc.r,rc.g,rc.b);}cl.needsUpdate=true;}}};
 }

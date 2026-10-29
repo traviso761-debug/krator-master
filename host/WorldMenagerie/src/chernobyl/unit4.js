@@ -9,17 +9,23 @@
 //   explosion  the morning after: the reactor hall's roof gone and its walls broken, worst on the north side where
 //              the block fell outward in a slope of rubble; the upper shield standing almost on edge in the shaft;
 //              graphite blocks across the turbine hall's roof and the ground; the core's glow and fires on the roofs
+//   shelter    1986 to 2016: the Shelter (Ukryttya) the liquidators built round the ruin by November 1986: the
+//              stepped cascade wall on the north, the buttressed west wall, the two great beams over the reactor hall
+//              and the roof of 27 steel pipes on them, the panels sloping down the south side; the stack beside it
+//              still (until 2013). Built in parts (api.ctx.unit4.shelterParts) so an event can raise them in turn
 //   cutaway    the building as a ghost and the RBMK-1000 inside it, cut in half on the north-south line: the
 //              graphite stack and its 1,661 channels, the control rods with the graphite displacers under them,
 //              the lower and upper shields ("Elena"), the steam-water pipes, the four drum separators, the eight
 //              main circulation pumps, the floor over the reactor, and the refuelling machine on its crane; labelled
+// The reactor's moving parts (the rods with their displacers, the water and steam in the channels, the upper shield)
+// are their own meshes, set by api.ctx.unit4.reactor({rods, power, boil, lid, tilt}) for the RBMK event.
 // Nothing here is in the layout fingerprint: it is drawn after the map, on the camera's layer only when shown.
 import {landkit} from '../core/landkit.js';
 
 export function unit4(api){
   const {THREE,C,P,groundH,scene,animHooks,camera}=api;const K=C.unit4;if(!K)return;
   const {Model}=landkit(api,{panel:0xd2d0c8,panelDark:0xaeaca4,rib:0xbab8b0,glazing:0x46505a,roofGrey:0x8a8884,stackRed:0xb83a2e,stackWhite:0xe8e4dc,
-    stackTube:0xa8a8a2,graphite:0x34343a,fuel:0x9a9a88,steel:0x8a9096,steelLight:0xb4bac0,pipe:0x9aa4aa,pump:0x4a6a8a,drum:0x6e7e6e,rodRed:0xb03030,
+    stackTube:0xa8a8a2,graphite:0x34343a,sheet:0xa6a49c,rust:0x7a5034,shelterGrey:0x8e8a82,fuel:0x9a9a88,steel:0x8a9096,steelLight:0xb4bac0,pipe:0x9aa4aa,pump:0x4a6a8a,drum:0x6e7e6e,rodRed:0xb03030,
     displacer:0x18181c,debris:0x55504a,scorch:0x2a2622,shaft:0x8e8a82,floor:0xa89a7a,crane:0xd8b030,dark:0x2a2620,concrete:0xa8a49c,concreteDark:0x8a867e});
   const [AX,AZ]=P(K.at),G=groundH(AX,AZ),V=THREE.Vector2;
   // a rectangle [south, west, north, east] in lat/lon to local [x0, z0, x1, z1] about the unit's origin
@@ -68,7 +74,7 @@ export function unit4(api){
     M.box('roofGrey',cx,TOP,cz,HL[2]-HL[0]-6,1.6,HL[3]-HL[1]-10);
     for(const sx of [BA[0]+5,BA[2]-5])M.box('panelDark',sx,0,BA[1]+5,8,BH+7,8);}
   // ---- the morning after ----
-  function ruin(M,k){
+  function ruin(M,k,clean){
     // the block: whole along the south, falling away to the north
     const mid=(BA[1]+BA[3])/2;k.block('panel',[BA[0],mid,BA[2],BA[3]],0,BH);for(const f of ['S','W'])k.rib('rib',BA,f,6,0,BH,0.7,0.4);
     k.broken('panel',[BA[0],BA[1],BA[2],mid],'W',0,u=>BH-Math.max(0,(mid-u))/(mid-BA[1])*26-hash(u,1)*6);
@@ -78,14 +84,31 @@ export function unit4(api){
     // the reactor hall: no roof, its walls broken off, the north one almost gone
     k.broken('panel',HL,'S',BH,u=>BH+8+hash(u,4)*14);k.broken('panel',HL,'E',BH,u=>BH+4+hash(u,5)*16*((u-HL[1])/(HL[3]-HL[1])));
     k.broken('panel',HL,'W',BH,u=>BH+2+hash(u,6)*12*((u-HL[1])/(HL[3]-HL[1])));k.broken('panel',HL,'N',BH,u=>BH+hash(u,7)*4);
-    k.block('scorch',[HL[0]+3,HL[1]+3,HL[2]-3,HL[3]-3],BH-0.5,BH);
+    if(!clean)k.block('scorch',[HL[0]+3,HL[1]+3,HL[2]-3,HL[3]-3],BH-0.5,BH);
     // the rubble the block fell into on its north side, and the debris thrown over the roofs and the ground
     M.put('debris',new THREE.CylinderGeometry(0,1,1,4,1).rotateY(Math.PI/4),(BA[0]+BA[2])/2,0,BA[1]-12,0,0,0,[(BA[2]-BA[0])*0.7,18,26]);
-    for(let i=0;i<420;i++){const a=hash(i,8)*Math.PI*2,d=8+Math.pow(hash(i,9),0.6)*170,x=cx+Math.cos(a)*d,z=cz+Math.sin(a)*d*0.8;
+    if(!clean)for(let i=0;i<420;i++){const a=hash(i,8)*Math.PI*2,d=8+Math.pow(hash(i,9),0.6)*170,x=cx+Math.cos(a)*d,z=cz+Math.sin(a)*d*0.8;
       const onTH=x>TH[0]&&x<TH[2]&&z>TH[1]&&z<TH[3],y=onTH?HT+0.3:x>DB[0]&&x<DB[2]&&z>DB[1]&&z<DB[3]?HD:x>BV[0]&&x<BV[2]&&z>BV[1]&&z<BV[3]?VH:(x>BA[0]&&x<BA[2]&&z>BA[1]&&z<BA[3])?-1:0;
       if(y<0)continue;const g=i%3?'graphite':'debris';M.box(g,x,y,z,0.25+hash(i,10)*0.6,0.25+hash(i,11)*0.5,0.6+hash(i,12)*1.4,hash(i,13)*3);}
     // the upper shield thrown up and dropped back almost on edge in the shaft
     M.put('steel',new THREE.CylinderGeometry(8.5,8.5,3,32),cx,30,cz,0.3,0,1.3);}
+  // ---- the Shelter, in the parts it went up in ----
+  const SHP={
+    // the cascade wall: four steps of concrete poured behind steel forms, down the north side over the rubble
+    cascade(M,k){for(let i=0;i<4;i++){const z1=BA[1]-i*7,z0=z1-7,h=50-i*11.5;k.block('shelterGrey',[BA[0]-4,z0,BA[2]+4,z1],0,h);
+        k.rib('rust',[BA[0]-4,z0,BA[2]+4,z1],'N',6,0,h,0.5,0.3);M.box('sheet',(BA[0]+BA[2])/2,h,(z0+z1)/2,BA[2]-BA[0]+8,0.6,7);}},
+    // the west wall: concrete below, steel above, held by buttresses stepping out at its foot
+    buttress(M,k){const r=[BA[0]-6,BA[1]-28,BA[0],BA[3]];k.block('shelterGrey',r,0,26);k.block('sheet',r,26,58);k.rib('rust',r,'W',4,26,58,0.4,0.3);
+      for(let z=r[1]+4;z<r[3]-2;z+=8)for(const [d,h] of [[14,14],[10,30],[6,46]])M.box('shelterGrey',BA[0]-6-d/2,0,z,d,h,1.6);},
+    // the two great beams over the reactor hall, from the west wall to block V
+    beams(M,k){for(const z of [HL[1]-2,HL[3]+2])M.box('rust',(BA[0]+BV[0])/2,56,z,BV[0]-BA[0]+6,6,3);
+      for(let x=BA[0]+8;x<BV[0];x+=12)M.box('rust',x,56,(HL[1]+HL[3])/2,1.4,4,HL[3]-HL[1]+4);},
+    // the roof: 27 pipes 1.2 m across laid north to south on the beams, and the panels sloping south
+    roof(M,k){const x0=cx-17.5;for(let i=0;i<27;i++)M.put('rust',new THREE.CylinderGeometry(0.6,0.6,HL[3]-HL[1]+10,8).rotateX(Math.PI/2),x0+i*1.35,62.6,cz);
+      k.block('sheet',[BA[0],BA[1]-1,x0-1,HL[3]+3],61,62);k.block('sheet',[x0+36,BA[1]-1,BV[0],HL[3]+3],61,62);
+      const zs=HL[3]+3,ze=BA[3]+2,len=Math.hypot(ze-zs,62-46),ang=Math.atan2(62-46,ze-zs);
+      M.put('sheet',new THREE.BoxGeometry(BV[0]-BA[0],0.8,len).translate(0,0,len/2),(BA[0]+BV[0])/2,62,zs,0,ang);
+      for(let x=BA[0]+4;x<BV[0];x+=8)M.put('rust',new THREE.BoxGeometry(0.8,1.6,len).translate(0,0,len/2),x,62.6,zs,0,ang);}};
   // ---- the RBMK-1000, cut in half: the south half taken away ----
   const LABELS=[];
   function rbmk(M){
@@ -96,11 +119,9 @@ export function unit4(api){
     half('shaft',[new V(11,Y0-2),new V(14,Y0-2),new V(14,BH-6),new V(11,BH-6),new V(11,Y0-2)]);
     disc('steel',7.4,Y0,2);                                         // the lower shield, "OR"
     disc('graphite',5.9,Y0+2,7);                                    // the graphite stack
-    for(let u=-5.6;u<=5.6;u+=0.25)M.box(Math.round(u*4)%4?'fuel':'steelLight',cx+u,Y0+2,cz+0.04,0.07,7,0.02);   // the channels on the cut face
     // control rods in the cut plane, withdrawn as they were that night: the boron-carbide absorber over the core,
     // the graphite displacer in it, a column of water under that
-    for(const u of [-4.5,-2.25,0,2.25,4.5]){M.box('rodRed',cx+u,Y0+2+7-0.2,cz+0.08,0.16,5,0.05);M.box('displacer',cx+u,Y0+2+1.25,cz+0.08,0.16,4.5,0.05);}
-    disc('steel',8.5,Y0+9,3);                                       // the upper shield, "Elena"
+    // (the channels' water and steam, the rods and the upper shield move: their own meshes, below)
     for(let i=0;i<120;i++){const a=Math.PI/2+hash(i,20)*Math.PI,r=Math.sqrt(hash(i,21))*7.5;M.cyl('pipe',cx+Math.sin(a)*r,Y0+12,cz+Math.cos(a)*r,0.09,0.09,3.2,5);}   // the steam-water lines leaving the channels
     disc('floor',8.5,Y0+15.5,0.6);                                  // the floor over the reactor, its blocks
     // the drum separators, two each side, along the reactor; downcomers to the pumps, and the pumps below
@@ -126,33 +147,76 @@ export function unit4(api){
   const gBefore=mk('Unit 4, April 1986',I.before||'',(M,k)=>{common(M,k,false);before(M,k);}),
     gRuin=mk('Unit 4 after the explosion',I.explosion||'',(M,k)=>{common(M,k,true);ruin(M,k);}),
     gShell=mk('Unit 4, cut away',I.cutaway||'',(M,k)=>{common(M,k,false);before(M,k);}),
-    gCore=mk('The RBMK-1000',I.cutaway||'',(M)=>rbmk(M));
+    gCore=mk('The RBMK-1000',I.cutaway||'',(M)=>rbmk(M)),
+    gShBase=mk('The Shelter, 1986 to 2016',I.shelter||'',(M,k)=>{common(M,k,false);ruin(M,k,true);}),
+    gSh=Object.fromEntries(Object.keys(SHP).map(p=>[p,mk('The Shelter, 1986 to 2016',I.shelter||'',(M,k)=>SHP[p](M,k))]));
   for(const [t,x,y,z] of LABELS)gCore.add(label(t,x,y,z));
+  // ---- the reactor's moving parts, in the cut plane ----
+  const RY0=17,COLS=45,ROWS=7,cell=new THREE.Color(),WATER=new THREE.Color(0x2e5a9a),STEAM=new THREE.Color(0xe8eef4),HOT=new THREE.Color(0xff7a20),WHITE=new THREE.Color(0xfff4d8);
+  const chan=new THREE.InstancedMesh(new THREE.BoxGeometry(0.11,0.96,0.02),new THREE.MeshBasicMaterial({color:0xffffff}),COLS*ROWS);chan.userData.noFingerprint=true;
+  {const d=new THREE.Object3D();for(let i=0;i<COLS;i++)for(let j=0;j<ROWS;j++){d.position.set(cx-5.5+i*0.25,RY0+2.5+j,cz+0.05);d.updateMatrix();chan.setMatrixAt(i*ROWS+j,d.matrix);chan.setColorAt(i*ROWS+j,WATER);}}
+  gCore.add(chan);
+  const rodM=new THREE.MeshLambertMaterial({color:0xb03030}),dispM=new THREE.MeshLambertMaterial({color:0x18181c}),tubeM=new THREE.MeshLambertMaterial({color:0x9aa4aa});
+  const atY=(m,y)=>{m.position.y=y;return m;};
+  const rods=[-4.5,-2.25,0,2.25,4.5].map(u=>{const r=new THREE.Group();
+    // the absorber (5 m of boron carbide) withdrawn over the core, a 1.25 m link, the graphite displacer (4.5 m) in the core,
+    // and under it a column of water at the core's foot
+    r.add(atY(new THREE.Mesh(new THREE.BoxGeometry(0.18,5,0.06).translate(0,2.5,0),rodM),RY0+9.0));
+    r.add(atY(new THREE.Mesh(new THREE.BoxGeometry(0.05,1.25,0.06).translate(0,0.625,0),tubeM),RY0+7.75));
+    r.add(atY(new THREE.Mesh(new THREE.BoxGeometry(0.18,4.5,0.06).translate(0,2.25,0),dispM),RY0+3.25));
+    r.position.set(cx+u,0,cz+0.09);r.traverse(o=>{o.userData.noFingerprint=true;});gCore.add(r);return r;});
+  const elena=new THREE.Group(),elM=new THREE.MeshLambertMaterial({color:0x8a9096});
+  elena.add(new THREE.Mesh(new THREE.LatheGeometry([new V(0,-1.5),new V(8.5,-1.5),new V(8.5,1.5),new V(0,1.5)],40,Math.PI/2,Math.PI),elM),new THREE.Mesh(new THREE.BoxGeometry(17,3,0.02),elM));
+  elena.position.set(cx,RY0+10.5,cz);elena.traverse(o=>{o.userData.noFingerprint=true;});gCore.add(elena);
+  // rods: metres moved down from the withdrawn position; power: 1 at full (3,200 MW); boil: 0 water to the top, 1 steam
+  // all through; lid: metres the upper shield is lifted, tilt its turn in radians
+  function reactor({rods:d=0,power=0.06,boil=0.15,lid=0,tilt=0}={}){for(const r of rods)r.position.y=-d;
+    const hot=Math.min(1,Math.max(0,Math.log10(Math.max(power,1e-3))/2)),flick=power>3?0.8+0.2*Math.random():1;
+    for(let i=0;i<COLS;i++)for(let j=0;j<ROWS;j++){const v=Math.max(0,Math.min(1,(j+1)/ROWS-(1-boil)+0.12*Math.sin(i*1.7)));
+      cell.copy(WATER).lerp(STEAM,v);if(hot>0)cell.lerp(i%4?HOT:WHITE,hot*flick*(0.6+0.4*v));chan.setColorAt(i*ROWS+j,cell);}
+    chan.instanceColor.needsUpdate=true;elena.position.y=RY0+10.5+lid;elena.rotation.x=tilt;}
+  reactor();
   // the cutaway's building as a ghost: its own transparent copies of the materials
   const ghost=new Map();gShell.traverse(o=>{if(!o.isMesh)return;const m=o.material;if(!ghost.has(m)){const q=m.clone();q.transparent=true;q.opacity=0.14;q.depthWrite=false;ghost.set(m,q);}o.material=ghost.get(m);o.castShadow=false;});
   // the core's glow and the fires on the roofs, for the explosion
   const soft=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
     gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.4,'rgba(255,255,255,0.45)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+  let fireK=1,coreK=1;
   const fx=[];const flame=(col,s,x,y,z)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:soft,color:col,transparent:true,opacity:0.8,depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));
     sp.scale.setScalar(s);sp.position.set(x,y,z);sp.userData.noFingerprint=true;gRuin.add(sp);fx.push({sp,s,ph:hash(x,z)*6});};
   flame(0xb8d0ff,40,cx,BH+6,cz);flame(0xff8a3a,26,cx,BH+2,cz);
+  const roofFx0=fx.length;
   for(let i=0;i<9;i++)flame(0xff7a2a,6+hash(i,30)*6,TH[0]+15+hash(i,31)*(TH[2]-TH[0]-30),HT+2,TH[1]+6+hash(i,32)*(TH[3]-TH[1]-12));
   flame(0xff7a2a,8,(BV[0]+BV[2])/2,VH+2,(BV[1]+BV[3])/2);
   // ---- the states ----
   const arch=()=>(api.LANDMARKS||[]).find(g=>g.userData.info&&g.userData.info.model==='arch');
   const show=(g,on)=>g.traverse(o=>{if(on)o.layers.set(0);else o.layers.set(7);});
-  const STATES=['today','before','explosion','cutaway'],NAMES={today:'Unit 4: today',before:'Unit 4: April 1986',explosion:'Unit 4: the explosion',cutaway:'Unit 4: the reactor'};
+  const STATES=['today','before','explosion','shelter','cutaway'],NAMES={today:'Unit 4: today',before:'Unit 4: April 1986',explosion:'Unit 4: the explosion',shelter:'Unit 4: the Shelter',cutaway:'Unit 4: the reactor'};
   let state='today',btn=null;
-  function set(s){if(!STATES.includes(s))s='today';state=s;const A=arch();if(A)show(A,s==='today');
+  function set(s){if(!STATES.includes(s)&&s!=='building')s='today';state=s;fireK=1;coreK=1;const A=arch();if(A)show(A,s==='today');
     show(gBefore,s==='before');show(gRuin,s==='explosion');show(gShell,s==='cutaway');show(gCore,s==='cutaway');
-    if(btn){btn.textContent=NAMES[s];btn.setAttribute('aria-pressed',String(s!=='today'));}
+    show(gShBase,s==='shelter'||s==='building');for(const p in gSh){show(gSh[p],s==='shelter');gSh[p].scale.y=1;gSh[p].position.y=G;}
+    if(s!=='cutaway')reactor();
+    if(btn){btn.textContent=NAMES[s]||NAMES.shelter;btn.setAttribute('aria-pressed',String(s!=='today'));}
     api.ctx.details=Object.assign(api.ctx.details||{},{unit4:s});}
-  set('today');
-  animHooks.push(now=>{if(state!=='explosion')return;for(const f of fx){f.sp.material.opacity=0.55+0.3*Math.sin(now*0.009+f.ph);f.sp.scale.setScalar(f.s*(0.9+0.15*Math.sin(now*0.013+f.ph*2)));}});
+  set(K.start||'today');
+  // the roof fires burn at fireK (1 burning, 0 out: the firefighters put them out), the core's glow at coreK
+  animHooks.push(now=>{if(state!=='explosion')return;fx.forEach((f,i)=>{const k=i<roofFx0?coreK:Math.max(0,Math.min(1,fireK*1.6-(i-roofFx0)*0.06));
+    f.sp.material.opacity=(0.55+0.3*Math.sin(now*0.009+f.ph))*k;f.sp.scale.setScalar(f.s*(0.9+0.15*Math.sin(now*0.013+f.ph*2))*(0.4+0.6*k));});});
+  const W=(x,y,z)=>[AX+x,G+y,AZ+z];
+  // the roofs, for what falls on them: [x0, z0, x1, z1, height] in the world
+  const roofs=[[...TH,HT],[...DB,HD],[...BV,VH],[...HL,BH],[...BA,30]].map(([x0,z0,x1,z1,h])=>[AX+x0,AZ+z0,AX+x1,AZ+z1,G+h]);
   // where to look from for each state, if the camera should go there
-  const VIEW={before:[-260,95,240,0,45,0],explosion:[-150,110,-260,0,40,0],cutaway:[-70,48,95,0,26,-2]};
+  const VIEW={before:[-260,95,240,0,45,0],shelter:[-230,90,-230,0,40,0],explosion:[-150,110,-260,0,40,0],cutaway:[-34,36,54,0,24,-1]};
   const view=s=>{const v=VIEW[s]||VIEW.before;return [AX+cx+v[0],G+v[1],AZ+cz+v[2],AX+cx+v[3],G+v[4],AZ+cz+v[5]];},look=s=>{if(VIEW[s]&&api.setView)api.setView(...view(s));};
-  api.onUI&&api.onUI(({ui,mkBtn})=>{btn=mkBtn(NAMES.today,ui,()=>{const s=STATES[(STATES.indexOf(state)+1)%STATES.length];set(s);look(s);});btn.title='Unit 4 today, as it stood in April 1986, after the explosion, and cut away to show the reactor';
+  api.onUI&&api.onUI(({ui,mkBtn})=>{btn=mkBtn(NAMES.today,ui,()=>{const s=STATES[(STATES.indexOf(state)+1)%STATES.length];set(s);look(s);});btn.title='Unit 4 today, as it stood in April 1986, after the explosion, under the Shelter (1986 to 2016), and cut away to show the reactor';
     const m=/(^|[#&])unit4=([a-z]+)/.exec(location.hash);if(m){const fly=!/(^|[#&])(v|view)=/.test(location.hash);setTimeout(()=>{set(m[2]);if(fly)look(m[2]);},60);}else set(state);});
-  api.ctx.unit4={set,look,view,centre:()=>[AX+cx,G+30,AZ+cz],state:()=>state};
+  api.ctx.unit4={set,look,view,reactor,roofs,
+    fires:(k,c)=>{fireK=k;if(c!=null)coreK=c;},firePts:()=>fx.slice(roofFx0).map(f=>W(f.sp.position.x,f.sp.position.y-2,f.sp.position.z)),
+    // where the fire engines stand: along the turbine hall's south wall and at its west end; its roof's south edge;
+    // block V's roof and the foot of its outside stairs
+    spots:{hallSouth:[0.15,0.35,0.55,0.75].map(u=>W(TH[0]+(TH[2]-TH[0])*u,0,TH[3]+9)),hallWest:W(TH[0]-12,0,(TH[1]+TH[3])/2),hallEdge:u=>W(TH[0]+(TH[2]-TH[0])*u,HT,TH[3]-1),
+      hallRoof:W((TH[0]+TH[2])/2,HT,(TH[1]+TH[3])/2),vFoot:W(BV[2]+10,0,(BV[1]+BV[3])/2),vRoof:W((BV[0]+BV[2])/2,VH,(BV[1]+BV[3])/2),vEdge:W(BV[2]-1,VH,(BV[1]+BV[3])/2),
+      ruinW:W(BA[0]+8,BH-6,(BA[1]+BA[3])/2)},
+    shelterAt:{crane:W(BA[0]-90,0,(BA[1]+BA[3])/2),tip:W(cx,112,cz)},shelterParts:gSh,show,centre:()=>[AX+cx,G+30,AZ+cz],state:()=>state};
 }

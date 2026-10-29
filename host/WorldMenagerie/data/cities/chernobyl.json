@@ -678,7 +678,24 @@
   "overgrowth": 0.75,
   "fields": 0.34,
   "marshH": 1.6,
-  "_": "src/chernobyl/zone.js: the ground and the forest come back. towns: Pripyat, Chernobyl-2, Chernobyl town, Kopachi, the Machine and Tractor Station; tints: the Red Forest, the drained cooling pond's bed"
+  "_": "src/chernobyl/zone.js: the ground and the forest come back. towns: Pripyat, Chernobyl-2, Chernobyl town, Kopachi, the Machine and Tractor Station; tints: the Red Forest, the drained cooling pond's bed",
+  "redForest": [
+   [
+    51.3835,
+    30.035,
+    800
+   ],
+   [
+    51.3835,
+    30.055,
+    900
+   ],
+   [
+    51.384,
+    30.077,
+    700
+   ]
+  ]
  },
  "dogs": {
   "count": 90,
@@ -715,7 +732,15 @@
    51.30559,
    30.06618
   ],
-  "_": "src/chernobyl/events.js"
+  "_": "src/chernobyl/events.js",
+  "fireStation": [
+   51.39355,
+   30.10661
+  ],
+  "pripyatFire": [
+   51.40051,
+   30.05157
+  ]
  },
  "landmarks": [
   {
@@ -1352,6 +1377,137 @@
    "before": "Unit 4 as it stood on the night of 25 April 1986: an RBMK-1000, started up in December 1983, the newest of the four. Its reactor hall rises to 71 m over the reactor; the turbine hall runs along the south, shared with the other units. On block V between units 3 and 4 stands their ventilation stack, VT-2, 150 m high, its steel lattice banded red and white. The stack survived the explosion, stood over the ruin and the Shelter for 27 years, and was taken down in 2013.",
    "explosion": "Unit 4 on the morning of 26 April 1986. The explosions threw off the upper biological shield, which fell back almost on edge across the reactor shaft, and destroyed the reactor hall and the north side of the block. Burning graphite and fuel were thrown across the turbine hall's roof and the ground round the unit, and the fires on the roofs were out by about 5 in the morning; the graphite in the core burned for some ten days.",
    "cutaway": "The RBMK-1000: a water-cooled, graphite-moderated channel reactor. 1,661 fuel channels and 211 control rods run through a cylinder of graphite blocks 11.8 m across and 7 m high. Water boils as it rises through the channels; the steam is separated in four drums and goes to two turbines of 500 MW each, and eight main circulation pumps send the water back. Its positive void coefficient, and the graphite displacers below its control rods, were at the heart of the accident."
+  }
+ },
+ "radiation": {
+  "_": "src/chernobyl/radiation.js: dose rate today in microsieverts an hour, an approximation from published maps (not a survey); sources [lat, lon, peak, sigma along, sigma across (m), bearing of the long axis, name]",
+  "background": 0.12,
+  "centre": [
+   51.38955,
+   30.09909
+  ],
+  "ringLabelAt": 200,
+  "sources": [
+   [
+    51.3895,
+    30.0991,
+    6,
+    220,
+    220,
+    0,
+    "the plant site round unit 4"
+   ],
+   [
+    51.3835,
+    30.045,
+    18,
+    1800,
+    700,
+    90,
+    "the Red Forest"
+   ],
+   [
+    51.383,
+    30.034,
+    40,
+    500,
+    280,
+    90,
+    "the Red Forest's hottest ground"
+   ],
+   [
+    51.388,
+    30.03,
+    2.5,
+    5000,
+    1200,
+    280,
+    "the western trace"
+   ],
+   [
+    51.43,
+    30.07,
+    1.2,
+    4000,
+    1500,
+    345,
+    "the northern trace"
+   ],
+   [
+    51.4065,
+    30.0555,
+    0.6,
+    1300,
+    1300,
+    0,
+    "Pripyat"
+   ],
+   [
+    51.40669,
+    30.06597,
+    30,
+    25,
+    25,
+    0,
+    "hospital MSCh-126, its basement"
+   ],
+   [
+    51.3554,
+    30.1256,
+    2.5,
+    300,
+    300,
+    0,
+    "Kopachi"
+   ],
+   [
+    51.37,
+    30.13,
+    0.8,
+    2500,
+    1500,
+    30,
+    "the drained cooling pond"
+   ]
+  ],
+  "checkpoints": [
+   [
+    51.29792,
+    30.18778,
+    "Leliv checkpoint (10 km zone)"
+   ],
+   [
+    51.40011,
+    30.06371,
+    "Pripyat checkpoint"
+   ]
+  ]
+ },
+ "details": {
+  "_": "src/chernobyl/details.js: the 1986 button; the catfish of the inlet channel; Kopachi's buried houses",
+  "catfish": {
+   "at": [
+    51.38624,
+    30.10565
+   ],
+   "r": 12,
+   "n": 7
+  },
+  "kopachi": {
+   "at": [
+    51.3554,
+    30.1256
+   ],
+   "r": 420,
+   "max": 60
+  },
+  "channels": {
+   "names": [
+    "Подводящий канал 1, 2 и 3 очереди",
+    "Подводящий канал 3 очереди",
+    "Отводящий канал 1 и 2 очереди"
+   ],
+   "over": 0.6
   }
  }
 }

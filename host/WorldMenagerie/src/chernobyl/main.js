@@ -11,6 +11,9 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {zone} from './zone.js';
 import {unit4} from './unit4.js';
+import {radiation} from './radiation.js';
+import {sound} from './sound.js';
+import {details} from './details.js';
 import {blocks} from '../sarajevo/blocks.js';
 import {dogs} from '../sarajevo/dogs.js';
 import {events} from './events.js';
@@ -29,7 +32,12 @@ configureLoading({
     'The Duga radar, 150 m high and half a kilometre long, listened for missiles over the pole; radio hams called it the Russian Woodpecker.',
   ],
   prefix:'entering the Zone… ',labels:{'map-data':'reading the Zone',ground:'growing the forest',buildings:'building Pripyat',details:'laying the roads',landmarks:'raising the arch',el:'',traffic:'',ui:'checking the dosimeter'}});
-const ctx=window._iz={defaultCity:'chernobyl',models:[landmarks],extras:[{name:'zone',fn:zone},{name:'unit4',fn:unit4},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
+// #year=1986: Pripyat on the morning of 26 April 1986, before it was evacuated: its people and traffic, its cars parked,
+// no forest in its streets and yards, the Red Forest still green and the cooling pond full, and unit 4 whole
+const Y1986=/(^|[#&])year=1986/.test(location.hash);
+const configure=C=>{if(!Y1986)return;C.people=C.people1986==null?0.6:C.people1986;C.traffic=C.traffic1986==null?0.6:C.traffic1986;C.parkedCars=1;
+  for(const f of C.focus||[])f.parked=true;if(C.zone){C.zone.overgrowth=0;C.zone.tints=[];C.dropAreasIn=(C.zone.towns||[]).slice(0,1).map(([la,lo,r])=>({kinds:['wood','scrub','forest'],at:[la,lo],r}));}if(C.unit4)C.unit4.start='before';};
+const ctx=window._iz={defaultCity:'chernobyl',configure,models:[landmarks],extras:[{name:'zone',fn:zone},{name:'unit4',fn:unit4},{name:'radiation',fn:radiation},{name:'sound',fn:sound},{name:'details',fn:details},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
 // with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
 if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 // each extra timed: its build time in the details (extraMs), so a slow load says which stage it is

@@ -10,6 +10,8 @@ ctx.cityId=CITY_ID;
 const nameRe=s=>s?new RegExp(s,'i'):/(?!)/;
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
 const C=await getJSON('data/cities/'+CITY_ID+'.json');
+// a page may adjust its config before anything is built from it (Chernobyl's #year=1986: people, traffic, no overgrowth)
+if(ctx.configure)ctx.configure(C);
 await stage('map-data');
 const OSM=await getJSON(C.osm);
 const SEED_DEFAULT=C.defaultSeed||1871;
@@ -59,7 +61,10 @@ const LAKE=dec(OSM.lake),ISLANDS=OSM.islands.map(dec);
 const WATER=OSM.water.map(polyRec),MARINAS=OSM.marina.map(polyRec),BEACHES=OSM.beach.map(polyRec);
 const PIERS=OSM.pier.map(p=>p.line?{line:dec(p.line),w:p.w,name:p.n||''}:polyRec(p));
 // a city can leave whole kinds of mapped area undrawn (C.dropAreas: ['wood', ...]) where its own ground is painted instead (Crater Lake)
-const AREAS=OSM.areas.filter(a=>!(C.dropAreas||[]).includes(a.k)).map(polyRec);
+// or only inside circles (C.dropAreasIn: [{kinds, at: [lat, lon], r}]; Chernobyl's #year=1986 drops the woods grown over Pripyat)
+const DROP_IN=(C.dropAreasIn||[]).map(d=>{const [x,z]=P(d.at);return {kinds:d.kinds,x,z,r:d.r};});
+const dropIn=a=>DROP_IN.some(d=>d.kinds.includes(a.k)&&a.o&&Math.hypot(a.o[0]/10-d.x,a.o[1]/10-d.z)<d.r);
+const AREAS=OSM.areas.filter(a=>!(C.dropAreas||[]).includes(a.k)&&!dropIn(a)).map(polyRec);
 const ROADS=OSM.roads.map(r=>{const pts=dec(r.p);let len=0;for(let i=0;i+1<pts.length;i++)len+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);return {c:r.c,w:r.w,name:r.n||'',bridge:r.b||0,layer:r.l||0,pts,len};});
 const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}));
 const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));

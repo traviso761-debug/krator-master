@@ -587,23 +587,56 @@ no trains (`commuterLines: 0`, which the engine now reads as none rather than th
   and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
   angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
   Hospital 126, the Bridge of Death, the Red Forest, Kopachi's kindergarten, the cooling pond and Chernobyl town.
-- **Unit 4 as it was** (`unit4.js`; the **Unit 4** button cycles it, `#unit4=before|explosion|cutaway`): unit 4 whole
-  on the night before, beside unit 3, with block V and the ventilation stack VT-2 (150 m, its lattice banded red and
-  white; taken down in 2013); the morning after (the reactor hall roofless and broken, the north side fallen into a
-  slope of rubble, the upper shield on edge in the shaft, graphite over the roofs and the ground, the core's glow and
-  the roof fires); and cut away to show the RBMK-1000 inside a ghost of the building, labelled: the graphite stack and
-  its channels, the control rods with their graphite displacers, the lower shield and "Elena", the steam-water lines,
-  the four drum separators, the eight main circulation pumps, the reactor hall floor and the refuelling machine. The
-  arch's `clearArea` now takes the map's buildings under it (from 10 m), which showed through the 1986 unit.
+- **Unit 4 as it was** (`unit4.js`; the **Unit 4** button cycles it, `#unit4=before|explosion|shelter|cutaway`):
+  unit 4 whole on the night before, beside unit 3, with block V and the ventilation stack VT-2 (150 m, its lattice
+  banded red and white; taken down in 2013); the morning after (the reactor hall roofless and broken, the north side
+  fallen into a slope of rubble, the upper shield on edge in the shaft, graphite over the roofs and the ground, the
+  core's glow and the roof fires); the Shelter, 1986 to 2016 (the stepped cascade wall on the north, the buttressed
+  west wall, the two great beams and the roof of 27 pipes on them, the panels sloping south, built as parts an event
+  raises in turn); and cut away to show the RBMK-1000 inside a ghost of the building, labelled: the graphite stack,
+  the control rods with their graphite displacers, the lower shield and "Elena", the steam-water lines, the four drum
+  separators, the eight main circulation pumps, the reactor hall floor and the refuelling machine. The water and
+  steam in the channels, the rods and Elena move (`api.ctx.unit4.reactor`). The arch's `clearArea` takes the map's
+  buildings under it (from 10 m), which showed through the 1986 unit.
 - **The cooling towers** are hyperbolic shells, thinning as they rise, on a ring beam and a zigzag of diagonal
   columns over their basins, the lifts in bands of grey, stained under the rim, rusted rebar out of the unfinished
   edge; on unit 5's tower the climbing formwork, its decks, the panels of the next lift and a jib crane.
-- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (unit 4 whole; the surge shaking the ground, then two blasts, each a flash over the screen and the plant, a shock ring and dust along the ground, a fireball rising into smoke, burning graphite and roof slabs thrown out to smoulder where they land, the reactor's lid thrown up and turning before it drops back; then the ruin, the fires and the blue glow; `evt=<seconds>` in the address fast-forwards it for tests; the open
-  core's glow, the fire and the column of smoke drifting north-west), the evacuation on 27 April (a column of buses
-  down Lenin Avenue, `route`), the arch sliding 327 m over the reactor in November 2016, the Zone without people
-  (Przewalski's horses grazing an old field, wolves crossing it), Duga, the Russian Woodpecker, and inside the RBMK
-  (the cutaway, with how the reactor works and how it failed). `#event=<name>`
-  fires one; each running event's clock is in the details (`events.t`).
+- **1986** (a button; `#year=1986`): the page reloads as Pripyat was on the morning of 26 April, through the
+  engine's new `ctx.configure` hook (a page adjusts its config before anything is built): its people, traffic and
+  parked cars back, no overgrowth, the map's woods inside the town dropped (the engine's new `dropAreasIn`: kinds of
+  mapped area left out inside circles), the Red Forest green and the cooling pond full, unit 4 whole.
+- **Radiation** (`radiation.js`, a button; `#radiation`): the ground painted by dose rate today (green under 0.3
+  µSv/h to purple over 30, a dark line at each step), the 10 km zone's ring, the Leliv and Pripyat checkpoints,
+  and a dosimeter reading the ground at the middle of the screen. The dose is a background and Gaussian sources
+  (`radiation.sources`: the plant site, the Red Forest, the plume's western and northern traces, Pripyat, the basement
+  of hospital MSCh-126, Kopachi, the drained cooling pond): an approximation from published maps, not a survey.
+- **Sound** (`sound.js`, a button; `#sound` turns it on at the first click), all synthesised: the wind, louder
+  higher up; a Geiger counter clicking at random at a rate set by the dose where you are looking; the blasts (heard
+  late by their distance), the rumble before them and the helicopters' rotors.
+- **Smaller things** (`details.js`): the plant's inlet and outlet channels stand some 8 m over the river, as the
+  cooling pond does, and the engine had drawn their water under their ground, so each gets its own surface; the giant
+  catfish turning under it by the plant; Kopachi's houses as the grassed mounds they were buried under in 1986, each
+  with its trefoil sign, round the kindergarten that was left standing.
+- **Events** (`events.js`, `crews.js`), told without anyone shown hurt:
+  - the night of 26 April 1986: unit 4 whole; the surge shaking the ground, then two blasts, each a flash over the
+    screen and the plant, a shock ring and dust along the ground, a fireball rising into smoke, burning graphite and
+    roof slabs thrown out to land on the roofs and the ground and smoulder there, the reactor's lid thrown up and
+    turning before it drops back; then the firefighters: Pravik's crew from the plant's station and Kibenok's from
+    Pripyat's (`fireStation`, `pripyatFire`), driving by the mapped roads (`crews.js` routes them), a ladder raised to
+    the turbine hall's roof and the outside stairs up block V, the men with their hoses on the roofs and the water on
+    the fires until they go out; the core's blue glow and the smoke drifting north-west;
+  - the evacuation on 27 April (a column of buses down Lenin Avenue, `route`);
+  - the liquidators: Mi-8s circling over the core and dropping their loads into it, the men in lead aprons throwing
+    graphite off block V's roof, the Red Forest rust-red (`zone.redForest`, `api.ctx.zone.red`);
+  - the Shelter going up, June to November 1986: the walls rising, the beams and the roof lowered by a crane;
+  - the arch sliding 327 m over the reactor in November 2016; the Zone without people (Przewalski's horses, wolves);
+    Duga, the Russian Woodpecker;
+  - inside the RBMK: the cutaway, how the reactor works and how it failed, then the accident played in it (the
+    coast-down, AZ-5, the rods going in, the steam spreading, the power running away, Elena lifted) with a chart of
+    its power.
+
+  `#event=<name>` fires one; each running event's clock is in the details (`events.t`); `evt=<seconds>` fast-forwards
+  the night, the liquidators, the Shelter and the RBMK for tools/probe.py, whose frames are slow.
 
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
