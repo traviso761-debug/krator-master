@@ -9,6 +9,7 @@
 //               reactor (the arch landmark itself, moved back and brought on)
 //   nature      the Zone without people: Przewalski's horses grazing an old field (`horses`, where), wolves
 //   duga        the Duga radar and the Russian Woodpecker
+//   rbmk        inside the RBMK: unit 4 cut away (unit4.js), the reactor and how it failed
 import { createHappenings } from '../core/happenings.js';
 
 export function events(api){
@@ -32,7 +33,8 @@ export function events(api){
   // ---- the night of 26 April 1986 ----
   function night(){const [rx,ry,rz]=ll(K.reactor||[51.38955,30.09909]),g=tag(new THREE.Group());scene.add(g);setH(1.3);let t=0;
     // the arch is not there yet: hidden for the night, and back after
-    const A=arch();if(A)A.visible=false;
+    // unit 4 whole until the explosion, the ruin after it (unit4.js); without it, the arch is just hidden
+    const U=api.ctx.unit4,A=U?null:arch();if(U)U.set('before');if(A)A.visible=false;let blown=false;
     const glow=puff(0xa8c8ff,260,0,true);glow.position.set(rx,ry+70,rz);g.add(glow);
     const fire=puff(0xff7a30,110,0,true);fire.position.set(rx,ry+40,rz);g.add(fire);
     const plume=[];for(let i=0;i<160;i++){const s=puff(i%4?0x3a3a3e:0x6a6a70,40,0,false);g.add(s);plume.push({s,u:R(),sp:0.6+R()*0.8,dx:R()-0.5,dz:R()-0.5});}
@@ -41,10 +43,10 @@ export function events(api){
       [28,44,'Witnesses described a glow of pale blue over the open core: the air itself, ionised. The graphite inside burned for ten days, carrying radioactive smoke up and across Europe.'],
       [44,60,'The plant\'s and Pripyat\'s firemen put out the fires on the roofs by morning. Helicopters later dropped some 5,000 tonnes of sand, boron, clay and lead on the core.']]);
     notice('26 April 1986, 1:23','the night of the accident at Reactor 4.',()=>[rx-900,ry+320,rz+1100,rx,ry+60,rz],()=>[rx,ry,rz]);
-    run((now,dt)=>{t+=dt;CAP(t);const on=t>12?Math.min(1,(t-12)/2)*(t>56?Math.max(0,1-(t-56)/4):1):0;
+    run((now,dt)=>{t+=dt;CAP(t);if(U&&!blown&&t>12){U.set('explosion');blown=true;}const on=t>12?Math.min(1,(t-12)/2)*(t>56?Math.max(0,1-(t-56)/4):1):0;
       glow.material.opacity=on*0.8*(0.8+0.2*Math.sin(now*0.003));fire.material.opacity=on*0.9*(0.75+0.25*Math.sin(now*0.011));
       for(const p of plume){const k=(t*0.05*p.sp+p.u)%1,h=k*1200,spread=20+k*500;p.s.position.set(rx+p.dx*spread-k*700,ry+40+h,rz+p.dz*spread-k*700);p.s.scale.setScalar(40+k*420);p.s.material.opacity=on*0.6*Math.pow(1-k,1.3);}
-      if(t>60){scene.remove(g);if(A)A.visible=true;hideCap();setH(11);return false;}return true;});}
+      if(t>60){scene.remove(g);if(U)U.set('today');if(A)A.visible=true;hideCap();setH(11);return false;}return true;});}
 
   // ---- the evacuation, 27 April ----
   function evacuation(){const name=K.route||'Центральний проспект',ways=(ROADS||[]).filter(r=>r.name===name).map(r=>r.pts.slice());if(!ways.length)return;
@@ -114,7 +116,20 @@ export function events(api){
     notice('Duga, the Russian Woodpecker','the over-the-horizon radar in the forest.',()=>[dx-260,dy+40,dz+300,dx,dy+90,dz],()=>[dx,dy,dz]);
     run((now,dt)=>{t+=dt;CAP(t);if(t>62){hideCap();return false;}return true;});}
 
-  H=createHappenings(api,{events:{night:['26 April 1986',night],evacuation:['The evacuation',evacuation],arch:['The arch slides into place',slide],nature:['The Zone without people',nature],duga:['Duga',duga]},
-    order:['nature','evacuation','arch','duga','night'],first:K.first||40000,every:K.every||[80000,140000],
+  // ---- inside the RBMK ----
+  function rbmk(){const U=api.ctx.unit4;if(!U)return;U.set('cutaway');setH(11);let t=0;
+    const CAP=captions([[0,14,'Unit 4 was an RBMK-1000: a water-cooled, graphite-moderated channel reactor, 3,200 MW of heat for 1,000 MW of electricity. Its core is a cylinder of graphite blocks 11.8 m across and 7 m high.'],
+      [14,28,'Through the graphite run 1,661 pressure tubes, each holding a fuel assembly of uranium dioxide enriched to about 2%. The water boils as it rises through them.'],
+      [28,42,'The steam and water go up to four drum separators, 30 m long. The steam drives two turbines, and eight main circulation pumps, six working and two in reserve, send the water back down.'],
+      [42,56,'Over the core lies the upper biological shield, a steel lid 17 m across that the builders called Elena. On it is the floor of the reactor hall, where the refuelling machine could change fuel with the reactor running.'],
+      [56,70,'211 control rods of boron carbide. Under each rod was a graphite displacer, so that a rod fully withdrawn, starting back in, first pushed water out of the bottom of its channel, and there it added reactivity.'],
+      [70,84,'And the RBMK had a positive void coefficient: as water turned to steam, which absorbs fewer neutrons, power rose. At low power, with almost all its rods withdrawn, unit 4 was unstable that night.'],
+      [84,98,'At 1:23:40 the AZ-5 button sent all the rods in at once. Their displacers and the boiling water sent power up many times over in seconds; the steam explosion that followed lifted the upper shield and tore the reactor open.'],
+      [98,112,'The other RBMKs were changed after 1986: more enriched fuel, more rods kept in, faster shutdown rods, longer displacers. Some still run in Russia.']]);
+    notice('Inside the RBMK','unit 4 cut away: the reactor and how it failed.',()=>U.view('cutaway'),()=>U.centre());
+    run((now,dt)=>{t+=dt;CAP(t);if(t>114){U.set('today');hideCap();return false;}return true;});}
+
+  H=createHappenings(api,{events:{night:['26 April 1986',night],evacuation:['The evacuation',evacuation],arch:['The arch slides into place',slide],nature:['The Zone without people',nature],duga:['Duga',duga],rbmk:['Inside the RBMK',rbmk]},
+    order:['nature','evacuation','arch','duga','rbmk','night'],first:K.first||40000,every:K.every||[80000,140000],
     colours:{bg:'rgba(18,18,14,.86)',fg:'#eeeadc',edge:'#d8b030',btn:'rgba(40,38,26,.9)',btnEdge:'#d8b030'}});
 }

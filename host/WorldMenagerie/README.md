@@ -585,10 +585,22 @@ no trains (`commuterLines: 0`, which the engine now reads as none rather than th
   and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
   angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
   Hospital 126, the Bridge of Death, the Red Forest, Kopachi's kindergarten, the cooling pond and Chernobyl town.
-- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (the arch hidden, the open
+- **Unit 4 as it was** (`unit4.js`; the **Unit 4** button cycles it, `#unit4=before|explosion|cutaway`): unit 4 whole
+  on the night before, beside unit 3, with block V and the ventilation stack VT-2 (150 m, its lattice banded red and
+  white; taken down in 2013); the morning after (the reactor hall roofless and broken, the north side fallen into a
+  slope of rubble, the upper shield on edge in the shaft, graphite over the roofs and the ground, the core's glow and
+  the roof fires); and cut away to show the RBMK-1000 inside a ghost of the building, labelled: the graphite stack and
+  its channels, the control rods with their graphite displacers, the lower shield and "Elena", the steam-water lines,
+  the four drum separators, the eight main circulation pumps, the reactor hall floor and the refuelling machine. The
+  arch's `clearArea` now takes the map's buildings under it (from 10 m), which showed through the 1986 unit.
+- **The cooling towers** are hyperbolic shells, thinning as they rise, on a ring beam and a zigzag of diagonal
+  columns over their basins, the lifts in bands of grey, stained under the rim, rusted rebar out of the unfinished
+  edge; on unit 5's tower the climbing formwork, its decks, the panels of the next lift and a jib crane.
+- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (unit 4 whole, then its ruin after the explosion; the open
   core's glow, the fire and the column of smoke drifting north-west), the evacuation on 27 April (a column of buses
   down Lenin Avenue, `route`), the arch sliding 327 m over the reactor in November 2016, the Zone without people
-  (Przewalski's horses grazing an old field, wolves crossing it), and Duga, the Russian Woodpecker. `#event=<name>`
+  (Przewalski's horses grazing an old field, wolves crossing it), Duga, the Russian Woodpecker, and inside the RBMK
+  (the cutaway, with how the reactor works and how it failed). `#event=<name>`
   fires one; each running event's clock is in the details (`events.t`).
 
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and

@@ -761,7 +761,7 @@
       30.0962
      ]
     ],
-    "minHeight": 60
+    "minHeight": 10
    }
   },
   {
@@ -926,13 +926,18 @@
     30.13281
    ],
    "model": "tower",
-   "r": 59,
+   "r": 54,
    "h": 150,
    "built": 0.6,
    "replace": [
     "Недобудована градирня"
    ],
-   "info": "Units 5 and 6 were being built when Reactor 4 exploded, and were never finished. Their two cooling towers stand in the forest south-east of the plant, open to the sky, with the climbing formwork still on one of them."
+   "info": "Units 5 and 6 were being built when Reactor 4 exploded, and were never finished. Their two cooling towers stand in the forest south-east of the plant, open to the sky, with the climbing formwork still on one of them.",
+   "legs": 9,
+   "formwork": [
+    200,
+    110
+   ]
   },
   {
    "name": "Reactor 6's cooling tower",
@@ -941,10 +946,11 @@
     30.13174
    ],
    "model": "tower",
-   "r": 59,
+   "r": 54,
    "h": 150,
    "built": 0.25,
-   "info": "The second of the unfinished cooling towers: a ring of concrete only a few lifts high, left when work on units 5 and 6 was stopped."
+   "info": "The second of the unfinished cooling towers: a ring of concrete only a few lifts high, left when work on units 5 and 6 was stopped.",
+   "legs": 9
   },
   {
    "name": "The Ferris wheel",
@@ -1335,5 +1341,17 @@
   "wood": 24,
   "reserve": 0
  },
- "streetFurniture": false
+ "streetFurniture": false,
+ "unit4": {
+  "at": [
+   51.38957,
+   30.09909
+  ],
+  "_": "src/chernobyl/unit4.js: unit 4 before the accident, after the explosion, and cut away to show the RBMK; the Unit 4 button, #unit4=before|explosion|cutaway",
+  "info": {
+   "before": "Unit 4 as it stood on the night of 25 April 1986: an RBMK-1000, started up in December 1983, the newest of the four. Its reactor hall rises to 71 m over the reactor; the turbine hall runs along the south, shared with the other units. On block V between units 3 and 4 stands their ventilation stack, VT-2, 150 m high, its steel lattice banded red and white. The stack survived the explosion, stood over the ruin and the Shelter for 27 years, and was taken down in 2013.",
+   "explosion": "Unit 4 on the morning of 26 April 1986. The explosions threw off the upper biological shield, which fell back almost on edge across the reactor shaft, and destroyed the reactor hall and the north side of the block. Burning graphite and fuel were thrown across the turbine hall's roof and the ground round the unit, and the fires on the roofs were out by about 5 in the morning; the graphite in the core burned for some ten days.",
+   "cutaway": "The RBMK-1000: a water-cooled, graphite-moderated channel reactor. 1,661 fuel channels and 211 control rods run through a cylinder of graphite blocks 11.8 m across and 7 m high. Water boils as it rises through the channels; the steam is separated in four drums and goes to two turbines of 500 MW each, and eight main circulation pumps send the water back. Its positive void coefficient, and the graphite displacers below its control rods, were at the heart of the accident."
+  }
+ }
 }

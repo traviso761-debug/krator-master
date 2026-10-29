@@ -10,6 +10,7 @@ import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {zone} from './zone.js';
+import {unit4} from './unit4.js';
 import {blocks} from '../sarajevo/blocks.js';
 import {dogs} from '../sarajevo/dogs.js';
 import {events} from './events.js';
@@ -28,7 +29,7 @@ configureLoading({
     'The Duga radar, 150 m high and half a kilometre long, listened for missiles over the pole; radio hams called it the Russian Woodpecker.',
   ],
   prefix:'entering the Zone… ',labels:{'map-data':'reading the Zone',ground:'growing the forest',buildings:'building Pripyat',details:'laying the roads',landmarks:'raising the arch',el:'',traffic:'',ui:'checking the dosimeter'}});
-const ctx=window._iz={defaultCity:'chernobyl',models:[landmarks],extras:[{name:'zone',fn:zone},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
+const ctx=window._iz={defaultCity:'chernobyl',models:[landmarks],extras:[{name:'zone',fn:zone},{name:'unit4',fn:unit4},{name:'blocks',fn:blocks},{name:'dogs',fn:dogs},{name:'navmap',fn:navmap},{name:'events',fn:events},{name:'drawstats',fn:drawstats}]};
 // with 'drawstats' in the address, every object is stamped with the stage that added it (src/core/drawstats.js)
 if(/drawstats/.test(location.hash)&&window.THREE){const add=THREE.Object3D.prototype.add;THREE.Object3D.prototype.add=function(...o){for(const c of o)if(c&&c.userData&&!c.userData.stage)c.traverse(d=>{d.userData.stage=d.userData.stage||globalThis.__stage;});return add.apply(this,o);};}
 // each extra timed: its build time in the details (extraMs), so a slow load says which stage it is

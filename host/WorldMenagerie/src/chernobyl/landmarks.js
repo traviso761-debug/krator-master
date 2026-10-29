@@ -3,8 +3,11 @@
 //   arch     the New Safe Confinement over Reactor 4: a steel arch 257 m across, 108 m high and 162 m long, clad in
 //            stainless steel in bands, closed at its ends by walls fitted round the old buildings. It was built to the
 //            west of the reactor and slid 327 m along its rails over it in November 2016, so its length runs east-west
-//   tower    a cooling tower left unfinished when units 5 and 6 were abandoned: a hyperboloid shell of concrete, its
-//            top ragged where the pours stopped and its scaffold still standing (L.h its height, L.r its base radius)
+//   tower    a cooling tower left unfinished when units 5 and 6 were abandoned: a hyperboloid shell of concrete,
+//            thinning as it rises, on a ring beam carried by a zigzag of diagonal columns over the basin; its lifts
+//            in bands of different grey and stained below the rim; rusted rebar out of the unfinished edge, and on
+//            part of it (L.formwork) the climbing formwork with its decks, the panels for the next lift and a jib
+//            crane (L.h its full height, L.built how much of it stands, L.r the shell's radius at its foot)
 //   wheel    the Ferris wheel of Pripyat's amusement park, 26 m across, its yellow gondolas: the park was to open on
 //            1 May 1986 and never did
 //   duga     an array of the Duga over-the-horizon radar: masts of lattice steel in a line (L.len m, L.h m high)
@@ -27,7 +30,7 @@ import {landkit} from '../core/landkit.js';
 export function landmarks(api){
   const {THREE,gh}=api;
   const {Model,turn}=landkit(api,{steel:0xd2d6da,steelDark:0x9aa2a8,steelWall:0x8a9096,concrete:0xa8a49c,concreteDark:0x8a867e,scaffold:0x6a5a4a,
-    rust:0x6e5444,rustDark:0x4e3c30,wheelYellow:0xe8c02a,wheelFrame:0xd8d0b8,wheelRed:0xb84a3a,
+    rust:0x6e5444,concreteStain:0x8e8a82,concreteFresh:0xb6b2a8,puddle:0x3a4446,rustDark:0x4e3c30,wheelYellow:0xe8c02a,wheelFrame:0xd8d0b8,wheelRed:0xb84a3a,
     sovietRed:0xa83a2e,sovietGold:0xc8a03a,bronze:0x5a4a38,plinth:0x8a8478,panel:0xd2d0c8,panelDark:0xaeaca4,rib:0xbab8b0,glazing:0x46505a,roofGrey:0x8a8884,trans:0x5e665a,dark:0x2a2620});
   // a half-ellipse ring as a shape (across x, up y), `a` and `b` its outer half-width and height, `t` the depth of its frame
   const archShape=(a,b,t,n=48)=>{const s=new THREE.Shape();for(let i=0;i<=n;i++){const u=Math.PI*i/n;s.lineTo(Math.cos(u)*a,Math.sin(u)*b);}
@@ -48,16 +51,43 @@ export function landmarks(api){
     for(const s of [-1,1]){M.box('concreteDark',s*(A-T/2),0,-LEN/2-60,6,1.2,LEN+120);M.box('concrete',s*(A+9),0,0,14,9,LEN*0.8);}
     return M.finish(L,x,g0,z,turn(L.face==null?90:L.face));},
 
-  tower(L,x,z){const g0=gh(x,z),M=Model(),H=L.h||150,R0=L.r||58,top=L.built==null?0.72:L.built,pts=[];
-    // a hyperboloid: the throat two-thirds up, the shell a few metres thick
-    const yt=H*0.72,a=R0*0.62,c=yt/Math.sqrt((R0/a)**2-1),rAt=y=>a*Math.sqrt(1+((y-yt)/c)**2);   // the throat `a` at yt, R0 at the foot
-    const hb=H*top;for(let i=0;i<=24;i++){const y=hb*i/24;pts.push(new THREE.Vector2(rAt(y),y));}for(let i=24;i>=0;i--){const y=hb*i/24;pts.push(new THREE.Vector2(rAt(y)-0.8,y));}
-    M.put('concrete',new THREE.LatheGeometry(pts,64),0,0,0);
-    // the ragged top: the last pours stopped at different heights round the ring
-    for(let k=0;k<90;k++){const a=k/90*Math.PI*2,h=Math.max(0,Math.sin(a*3+1)*2.2+Math.sin(a*7)*1.4),r=rAt(hb)-0.4;if(h>0.3)M.box('concrete',Math.cos(a)*r,hb,Math.sin(a)*r,rAt(hb)*0.075,h,0.8,-a+Math.PI/2);}
-    // the diagonal legs it stands on, and the scaffold left on the climbing formwork
-    for(let k=0;k<44;k++){const a=k/44*Math.PI*2;M.put('concreteDark',new THREE.BoxGeometry(1.2,9,1.2).translate(0,4.5,0),Math.cos(a)*R0,0,Math.sin(a)*R0,-a,0,0.35);}
-    for(let k=0;k<6;k++){const a=k/6*Math.PI*2+0.3,r=rAt(hb)+2;M.box('scaffold',Math.cos(a)*r,hb-12,Math.sin(a)*r,2.4,16,2.4,-a);}
+  tower(L,x,z){const g0=gh(x,z),M=Model(),H=L.h||150,R0=L.r||58,LEG=L.legs||9,top=L.built==null?0.72:L.built,V=THREE.Vector2;
+    // the hyperboloid, its throat `a` at yt: R0 where the shell leaves the columns' ring beam, at LEG
+    const yt=H*0.78,a=R0*0.6,c=(yt-LEG)/Math.sqrt((R0/a)**2-1),rAt=y=>a*Math.sqrt(1+((y-yt)/c)**2),thick=y=>0.9-0.6*Math.min(1,(y-LEG)/(H-LEG));
+    const hb=LEG+(H-LEG)*top,NS=48,lathe=(k,pts,seg=96,p0=0,pl=Math.PI*2)=>M.put(k,new THREE.LatheGeometry(pts,seg,p0,pl),0,0,0);
+    // the shell, outside up, over the lip and down the inside (thinning as it rises)
+    {const p=[];for(let i=0;i<=NS;i++){const y=LEG+(hb-LEG)*i/NS;p.push(new V(rAt(y),y));}for(let i=NS;i>=0;i--){const y=LEG+(hb-LEG)*i/NS;p.push(new V(rAt(y)-thick(y),y));}lathe('concrete',p);}
+    // the seasons' pours show as bands of a different grey, a few centimetres proud
+    const band=(k,y0,y1,d=0.05,p0=0,pl=Math.PI*2,seg=96)=>{const p=[];for(let i=0;i<=4;i++){const y=y0+(y1-y0)*i/4;p.push(new V(rAt(y)+d,y));}lathe(k,p,seg,p0,pl);};
+    let y=LEG+2;for(let k=0;y<hb-1;k++){const h=6+((k*53)%7)*2.2,y1=Math.min(hb-0.5,y+h);if(k%2)band(k%4===1?'concreteStain':'concreteFresh',y,y1);y=y1;}
+    // the stains run down from the rim, where the rain comes off the unfinished edge
+    for(let k=0;k<40;k++){const p=((k*0.618)%1)*Math.PI*2,w=0.002+((k*37)%5)*0.0012,len=4+((k*71)%9)*(2+((k*13)%4)*2);band('concreteStain',Math.max(LEG,hb-len),hb-0.2,0.08,p,w,2);}
+    // the ring beam the shell starts on, and the diagonal columns under it in a zigzag
+    {const p=[new V(R0-1.2,LEG-1.6),new V(R0+0.8,LEG-1.6),new V(R0+0.8,LEG+0.6),new V(R0-1.2,LEG+0.6),new V(R0-1.2,LEG-1.6)];lathe('concreteDark',p);}
+    const strut=(k,ax,ay,az,bx,by,bz,r)=>{const A=new THREE.Vector3(ax,ay,az),B=new THREE.Vector3(bx,by,bz),L2=A.distanceTo(B),g=new THREE.CylinderGeometry(r,r,L2,6);
+      g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize())));g.translate((ax+bx)/2,(ay+by)/2,(az+bz)/2);M.put(k,g,0,0,0);};
+    const NL=L.columns||40,rb=rAt(0)+1.5;
+    for(let j=0;j<NL;j++){const ta=j/NL*Math.PI*2,ga=(j+0.5)/NL*Math.PI*2,tb=(j+1)/NL*Math.PI*2;
+      for(const t of [ta,tb])strut('concreteDark',Math.cos(ga)*rb,0,Math.sin(ga)*rb,Math.cos(t)*R0,LEG-1.6,Math.sin(t)*R0,0.55);
+      M.box('concreteDark',Math.cos(ga)*rb,0,Math.sin(ga)*rb,2.4,0.8,2.4,-ga);}   // the footings
+    // the basin's wall round the foot, its floor, and the rain standing on it
+    {const r=rb+4;lathe('concrete',[new V(r,0),new V(r+0.5,0),new V(r+0.5,1.8),new V(r,1.8),new V(r,0)],64);
+      M.put('concreteDark',new THREE.CircleGeometry(r,48).rotateX(-Math.PI/2),0,0.06,0);
+      for(let k=0;k<7;k++){const p=k*2.3,d=((k*0.37)%1)*r*0.7;M.put('puddle',new THREE.CircleGeometry(3+((k*13)%5)*1.6,16).rotateX(-Math.PI/2),Math.cos(p)*d,0.1,Math.sin(p)*d,0,0,0,[1,1,0.6]);}}
+    // the rim: the climbing formwork left over part of it (L.formwork: [start, length] in degrees), rusted rebar standing out of the rest
+    const rr=rAt(hb),tt=thick(hb),FW=L.formwork||null,f0=FW?FW[0]*Math.PI/180:0,f1=FW?f0+FW[1]*Math.PI/180:0,inFW=p=>FW&&((p-f0+Math.PI*4)%(Math.PI*2))<f1-f0;
+    for(let k=0,n=Math.round(rr*Math.PI*2/1.6);k<n;k++){const p=k/n*Math.PI*2;if(inFW(p))continue;const h=1+((k*29)%7)*0.18;
+      for(const d of [0.12,tt-0.12])M.box('rustDark',Math.cos(p)*(rr-d),hb,Math.sin(p)*(rr-d),0.1,h,0.1);}
+    if(FW){const n=Math.round(rr*(f1-f0)/2.5);
+      for(let k=0;k<=n;k++){const p=f0+(f1-f0)*k/n,cp=Math.cos(p),sp=Math.sin(p),ry=-p+Math.PI/2;
+        for(const [d,w] of [[-1.6,2.6],[tt+1.6,2.6]]){const r=rr-d;
+          M.box('rust',cp*r,hb-1.2,sp*r,2.6,0.25,w,ry);M.box('rust',cp*r,hb-4.2,sp*r,2.6,0.25,w,ry);   // the two decks
+          M.box('rustDark',cp*(r+(d<0?1.2:-1.2)),hb-4.2,sp*(r+(d<0?1.2:-1.2)),0.12,5.4,0.12,ry);}   // their hangers and rails
+        for(const d of [-0.1,tt+0.1])M.box('scaffold',cp*(rr-d),hb,sp*(rr-d),2.4,2.6,0.2,ry);}   // the panels for the next lift, never poured
+      // the jib crane on the formwork, its arm out over the inside
+      const pm=(f0+f1)/2,cx=Math.cos(pm)*(rr+1.6),cz=Math.sin(pm)*(rr+1.6),ix=-Math.cos(pm),iz=-Math.sin(pm);
+      M.box('rust',cx,hb-1,cz,1.6,14,1.6,-pm);M.box('rust',cx+ix*9,hb+12,cz+iz*9,18,1.1,1.1,-pm);M.box('rustDark',cx-ix*3,hb+11.5,cz-iz*3,3,2,2,-pm);
+      M.box('rustDark',cx+ix*16,hb+3,cz+iz*16,0.08,9,0.08);}
     return M.finish(L,x,g0,z,0);},
 
   wheel(L,x,z){const g0=gh(x,z),M=Model(),R=L.r||13,AX=R+1.6,N=16;
