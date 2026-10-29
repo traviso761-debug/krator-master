@@ -31,22 +31,101 @@ export function events(api){
   const arch=()=>api.LANDMARKS&&api.LANDMARKS.find(g=>g.userData.info&&g.userData.info.model==='arch')||(()=>{let f=null;scene.traverse(o=>{if(!f&&o.isGroup&&o.userData.info&&o.userData.info.model==='arch')f=o;});return f;})();
 
   // ---- the night of 26 April 1986 ----
+  // the camera's shake, by amplitude (decays by itself): an offset on the orbit's target, taken off again next frame
+  const shake={amp:0,off:new THREE.Vector3()};
+  if(api.ctx.pushCam)api.ctx.pushCam((now,ctl)=>{ctl.target.sub(shake.off);if(shake.amp>0.01){shake.off.set(R()-0.5,(R()-0.5)*0.7,R()-0.5).multiplyScalar(shake.amp*ctl.dist*0.012);ctl.target.add(shake.off);shake.amp*=0.93;}else shake.off.set(0,0,0);});
+  // a white flash over the whole screen
+  const flashEl=document.createElement('div');flashEl.style.cssText='position:fixed;inset:0;background:#fff6e0;opacity:0;pointer-events:none;z-index:10';document.body.appendChild(flashEl);
   function night(){const [rx,ry,rz]=ll(K.reactor||[51.38955,30.09909]),g=tag(new THREE.Group());scene.add(g);setH(1.3);let t=0;
     // the arch is not there yet: hidden for the night, and back after
     // unit 4 whole until the explosion, the ruin after it (unit4.js); without it, the arch is just hidden
     const U=api.ctx.unit4,A=U?null:arch();if(U)U.set('before');if(A)A.visible=false;let blown=false;
+    const top=ry+60;   // the reactor hall's roof, about
     const glow=puff(0xa8c8ff,260,0,true);glow.position.set(rx,ry+70,rz);g.add(glow);
     const fire=puff(0xff7a30,110,0,true);fire.position.set(rx,ry+40,rz);g.add(fire);
+    // the blue column of ionised air over the open core
+    const beamM=new THREE.MeshBasicMaterial({color:0x7aa8ff,vertexColors:true,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:THREE.DoubleSide});
+    const bg=new THREE.CylinderGeometry(30,14,420,24,8,true).translate(0,210,0),bp=bg.attributes.position,bc=new Float32Array(bp.count*3);
+    for(let i=0;i<bp.count;i++){const k=Math.pow(1-bp.getY(i)/420,1.8);bc[i*3]=bc[i*3+1]=bc[i*3+2]=k;}bg.setAttribute('color',new THREE.BufferAttribute(bc,3));
+    const beam=tag(new THREE.Mesh(bg,beamM));beam.position.set(rx,ry+30,rz);g.add(beam);
     const plume=[];for(let i=0;i<160;i++){const s=puff(i%4?0x3a3a3e:0x6a6a70,40,0,false);g.add(s);plume.push({s,u:R(),sp:0.6+R()*0.8,dx:R()-0.5,dz:R()-0.5});}
+    // the light the explosions and the fires throw on the plant and the town
+    const light=new THREE.PointLight(0xffa060,0,2600,1);light.position.set(rx,top+20,rz);g.add(light);
+    const flash=puff(0xfff0d0,10,0,true);flash.position.set(rx,top,rz);g.add(flash);
+    // each blast: a fireball of puffs, a shock ring along the ground, a ring of dust, debris
+    const balls=[],rings=[],dust=[],bits=[];
+    const ringM=()=>new THREE.MeshBasicMaterial({color:0xffd8a0,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:THREE.DoubleSide});
+    // embers: burning graphite and fuel, points under gravity that stay glowing where they land
+    const NE=520,ePos=new Float32Array(NE*3),eCol=new Float32Array(NE*3),eGeo=new THREE.BufferGeometry();
+    eGeo.setAttribute('position',new THREE.BufferAttribute(ePos,3));eGeo.setAttribute('color',new THREE.BufferAttribute(eCol,3));
+    const embers=tag(new THREE.Points(eGeo,new THREE.PointsMaterial({size:3.2,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,fog:false})));embers.frustumCulled=false;g.add(embers);
+    const E=[];for(let i=0;i<NE;i++){E.push({live:false,p:new THREE.Vector3(rx,-1e4,rz),v:new THREE.Vector3(),heat:0,landed:false});ePos[i*3+1]=-1e4;}
+    // chunks: the roof's slabs and graphite blocks, tumbling
+    const NC=160,chunkM=new THREE.MeshLambertMaterial({color:0x4a4640,emissive:0x501800}),chunks=tag(new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),chunkM,NC));chunks.frustumCulled=false;g.add(chunks);
+    const CH=[],dummy=new THREE.Object3D();for(let i=0;i<NC;i++){CH.push({live:false,p:new THREE.Vector3(),v:new THREE.Vector3(),r:new THREE.Euler(),w:new THREE.Vector3(),s:new THREE.Vector3(1,1,1)});dummy.position.set(0,-1e4,0);dummy.updateMatrix();chunks.setMatrixAt(i,dummy.matrix);}
+    // the upper shield, "Elena": 17 m across and 2,000 tonnes, thrown up on its edge and dropped back into the shaft
+    const lid=tag(new THREE.Mesh(new THREE.CylinderGeometry(8.5,8.5,3,28),new THREE.MeshLambertMaterial({color:0x8a9096,emissive:0x301008})));lid.visible=false;g.add(lid);
+    const L={p:new THREE.Vector3(),v:new THREE.Vector3(),on:false};
+    function blast(power,col){
+      shake.amp=Math.max(shake.amp,1.2*power);flashEl.style.transition='none';flashEl.style.opacity=String(Math.min(0.9,0.55*power));requestAnimationFrame(()=>{flashEl.style.transition='opacity 0.9s ease-out';flashEl.style.opacity='0';});
+      flash.userData.k=1;flash.userData.s=600*power;
+      for(let i=0;i<14;i++){const b=puff(i%3?col:0xfff2c0,10,0.95,true);b.position.set(rx+(R()-0.5)*20,top-10+R()*20,rz+(R()-0.5)*20);g.add(b);
+        balls.push({b,age:0,life:2.5+R()*2.5,s:(50+R()*70)*power,v:new THREE.Vector3((R()-0.5)*14,10+R()*30*power,(R()-0.5)*14)});}
+      // the smoke that follows the fireball up
+      for(let i=0;i<18;i++){const b=puff(0x2e2a28,20,0,false);b.position.set(rx+(R()-0.5)*30,top,rz+(R()-0.5)*30);g.add(b);
+        balls.push({b,age:-0.6-R()*0.8,life:9+R()*6,s:(90+R()*90)*power,smoke:true,v:new THREE.Vector3((R()-0.5)*8-4,14+R()*16*power,(R()-0.5)*8-4)});}
+      const ring=tag(new THREE.Mesh(new THREE.RingGeometry(0.96,1,96).rotateX(-Math.PI/2),ringM()));ring.position.set(rx,ry+2,rz);g.add(ring);rings.push({ring,age:0,max:520*power});
+      for(let i=0;i<36;i++){const a=i/36*Math.PI*2+R()*0.1,b=puff(0x6a625a,30,0,false);g.add(b);dust.push({b,a,age:0,max:(260+R()*120)*power});}
+      // debris thrown out: the north side harder, where the block failed
+      let n=Math.round(260*power);for(const e of E){if(n<=0)break;if(e.live)continue;n--;const a=R()*Math.PI*2,up=15+R()*38*power,out=6+R()*34*power;
+        e.live=true;e.landed=false;e.heat=1;e.p.set(rx+(R()-0.5)*14,top,rz+(R()-0.5)*14);e.v.set(Math.cos(a)*out,up,Math.sin(a)*out-(R()<0.4?18:0));}
+      n=Math.round(80*power);for(const c of CH){if(n<=0)break;if(c.live)continue;n--;const a=R()*Math.PI*2,out=6+R()*30*power;
+        c.live=true;c.p.set(rx+(R()-0.5)*20,top,rz+(R()-0.5)*20);c.v.set(Math.cos(a)*out,20+R()*50*power,Math.sin(a)*out);c.w.set(R()*6-3,R()*6-3,R()*6-3);c.s.set(0.6+R()*3,0.4+R()*1.2,0.6+R()*4);}}
     const CAP=captions([[0,8,'Night, 25 to 26 April 1986. Reactor 4 is being run at low power for a test: could the turbine, coasting down, keep the cooling pumps going until the diesels started?'],
-      [8,28,'At 1:23:40 the operators pressed the button to shut the reactor down. The control rods going in first raised its power; within seconds it surged, and two explosions blew the reactor open.'],
+      [8,12,'At 1:23:40 the operators pressed AZ-5, the button to shut the reactor down. The control rods going in first raised its power.'],
+      [12,16,'1:23:44. Power surges to a hundred times its rating in seconds; the fuel shatters, the channels burst, and the steam lifts the reactor\'s 2,000-tonne lid.'],
+      [16,28,'Two or three seconds later a second explosion tears the reactor hall apart, throwing burning graphite and fuel across the roofs and the ground.'],
       [28,44,'Witnesses described a glow of pale blue over the open core: the air itself, ionised. The graphite inside burned for ten days, carrying radioactive smoke up and across Europe.'],
       [44,60,'The plant\'s and Pripyat\'s firemen put out the fires on the roofs by morning. Helicopters later dropped some 5,000 tonnes of sand, boron, clay and lead on the core.']]);
-    notice('26 April 1986, 1:23','the night of the accident at Reactor 4.',()=>[rx-900,ry+320,rz+1100,rx,ry+60,rz],()=>[rx,ry,rz]);
-    run((now,dt)=>{t+=dt;CAP(t);if(U&&!blown&&t>12){U.set('explosion');blown=true;}const on=t>12?Math.min(1,(t-12)/2)*(t>56?Math.max(0,1-(t-56)/4):1):0;
+    notice('26 April 1986, 1:23','the night of the accident at Reactor 4.',()=>[rx-520,ry+190,rz+640,rx,ry+70,rz],()=>[rx,ry,rz]);
+    let b1=false,b2=false;
+    const step=(now,dt)=>{t+=dt;CAP(t);
+      // the surge: the ground starts to shake, a light flickers through the hall's windows
+      if(t>9.5&&t<12){shake.amp=Math.max(shake.amp,(t-9.5)*0.25);light.color.setHex(0xffc890);light.intensity=(t-9.5)*0.4*(0.5+R());}
+      if(!b1&&t>12){b1=true;if(U&&!blown){U.set('explosion');blown=true;}blast(1,0xffffff);
+        lid.visible=true;L.on=true;L.p.set(rx,top-25,rz);L.v.set(-3,42,5);lid.position.copy(L.p);lid.rotation.set(0,0,0);}
+      if(!b2&&t>14.6){b2=true;blast(1.6,0xff8a30);}
+      const on=t>12?Math.min(1,(t-12)/3)*(t>56?Math.max(0,1-(t-56)/4):1):0;
       glow.material.opacity=on*0.8*(0.8+0.2*Math.sin(now*0.003));fire.material.opacity=on*0.9*(0.75+0.25*Math.sin(now*0.011));
+      beamM.opacity=t>15?on*0.16*(0.85+0.15*Math.sin(now*0.002)):0;
       for(const p of plume){const k=(t*0.05*p.sp+p.u)%1,h=k*1200,spread=20+k*500;p.s.position.set(rx+p.dx*spread-k*700,ry+40+h,rz+p.dz*spread-k*700);p.s.scale.setScalar(40+k*420);p.s.material.opacity=on*0.6*Math.pow(1-k,1.3);}
-      if(t>60){scene.remove(g);if(U)U.set('today');if(A)A.visible=true;hideCap();setH(11);return false;}return true;});}
+      // the flash and the light: a burst at each blast, then the fires' flicker
+      const fk=flash.userData.k||0;if(fk>0){flash.userData.k=Math.max(0,fk-dt*2.2);flash.material.opacity=fk;flash.scale.setScalar(flash.userData.s*(1.4-0.4*fk));}else flash.material.opacity=0;
+      if(t>=12){light.color.setHex(0xff9050);light.intensity=fk*9+on*1.4*(0.75+0.25*Math.sin(now*0.013)+0.1*R());}
+      for(let i=balls.length-1;i>=0;i--){const q=balls[i];q.age+=dt;if(q.age<0)continue;const k=q.age/q.life;
+        if(k>=1){g.remove(q.b);q.b.material.dispose();balls.splice(i,1);continue;}
+        q.b.position.addScaledVector(q.v,dt);q.v.multiplyScalar(Math.exp(-dt*0.6));q.b.scale.setScalar(q.s*(0.25+0.75*Math.sqrt(Math.min(1,k*4))+k*0.6));
+        q.b.material.opacity=q.smoke?0.75*Math.min(1,k*5)*(1-k):Math.pow(1-k,1.6);if(!q.smoke)q.b.material.color.lerp(new THREE.Color(0xff4010),dt*0.8);}
+      for(let i=rings.length-1;i>=0;i--){const q=rings[i];q.age+=dt;const k=q.age/1.2;if(k>=1){g.remove(q.ring);rings.splice(i,1);continue;}
+        const r=q.max*(1-Math.pow(1-k,2.2));q.ring.scale.set(r,1,r);q.ring.material.opacity=0.45*Math.pow(1-k,2);}
+      for(let i=dust.length-1;i>=0;i--){const q=dust[i];q.age+=dt;const k=q.age/6;if(k>=1){g.remove(q.b);dust.splice(i,1);continue;}
+        const r=q.max*(1-Math.pow(1-Math.min(1,k*2.5),2));q.b.position.set(rx+Math.cos(q.a)*r,ry+8+k*30,rz+Math.sin(q.a)*r);q.b.scale.setScalar(30+k*110);q.b.material.opacity=0.55*Math.min(1,k*8)*(1-k);}
+      // embers: gravity and a little drag; landed ones smoulder and fade over half a minute
+      for(let i=0;i<NE;i++){const e=E[i];if(!e.live)continue;
+        if(!e.landed){e.v.y-=9.8*dt;e.v.multiplyScalar(Math.exp(-dt*0.08));e.p.addScaledVector(e.v,dt);if(e.p.y<=ry+0.5){e.p.y=ry+0.5;e.landed=true;}}
+        e.heat=Math.max(0,e.heat-dt*(e.landed?0.03:0.06));
+        const fl=e.heat*(0.7+0.3*Math.sin(now*0.02+i));ePos[i*3]=e.p.x;ePos[i*3+1]=e.p.y;ePos[i*3+2]=e.p.z;eCol[i*3]=fl;eCol[i*3+1]=fl*(e.landed?0.35:0.6);eCol[i*3+2]=fl*0.15;}
+      eGeo.attributes.position.needsUpdate=true;eGeo.attributes.color.needsUpdate=true;
+      let cm=false;for(let i=0;i<NC;i++){const c=CH[i];if(!c.live)continue;cm=true;
+        if(c.p.y>ry+0.4){c.v.y-=9.8*dt;c.p.addScaledVector(c.v,dt);c.r.x+=c.w.x*dt;c.r.y+=c.w.y*dt;c.r.z+=c.w.z*dt;}else c.p.y=ry+0.3;
+        dummy.position.copy(c.p);dummy.rotation.copy(c.r);dummy.scale.copy(c.s);dummy.updateMatrix();chunks.setMatrixAt(i,dummy.matrix);}
+      if(cm)chunks.instanceMatrix.needsUpdate=true;chunkM.emissive.setRGB(0.3*on,0.09*on,0);
+      // the lid: up on its edge, turning, and back down into the shaft, where the ruin's own lid takes over
+      if(L.on){L.v.y-=9.8*dt;L.p.addScaledVector(L.v,dt);lid.position.copy(L.p);lid.rotation.z+=dt*0.55;lid.rotation.x+=dt*0.12;if(L.v.y<0&&L.p.y<top-30){L.on=false;lid.visible=false;shake.amp=Math.max(shake.amp,0.5);}}
+      if(t>60){scene.remove(g);if(U)U.set('today');if(A)A.visible=true;hideCap();setH(11);shake.amp=0;flashEl.style.opacity='0';return false;}return true;};
+    // evt=<seconds> in the address (for tools/probe.py, whose frames are slow): run the event's first seconds at once
+    const ff=/(^|[#&])evt=([0-9.]+)/.exec(location.hash);if(ff){const end=+ff[2],t0=performance.now();while(t<end)step(t0+t*1000,0.05);}
+    run(step);}
 
   // ---- the evacuation, 27 April ----
   function evacuation(){const name=K.route||'Центральний проспект',ways=(ROADS||[]).filter(r=>r.name===name).map(r=>r.pts.slice());if(!ways.length)return;

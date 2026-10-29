@@ -598,7 +598,7 @@ no trains (`commuterLines: 0`, which the engine now reads as none rather than th
 - **The cooling towers** are hyperbolic shells, thinning as they rise, on a ring beam and a zigzag of diagonal
   columns over their basins, the lifts in bands of grey, stained under the rim, rusted rebar out of the unfinished
   edge; on unit 5's tower the climbing formwork, its decks, the panels of the next lift and a jib crane.
-- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (unit 4 whole, then its ruin after the explosion; the open
+- **Events** (`events.js`), told without anyone shown hurt: the night of 26 April 1986 (unit 4 whole; the surge shaking the ground, then two blasts, each a flash over the screen and the plant, a shock ring and dust along the ground, a fireball rising into smoke, burning graphite and roof slabs thrown out to smoulder where they land, the reactor's lid thrown up and turning before it drops back; then the ruin, the fires and the blue glow; `evt=<seconds>` in the address fast-forwards it for tests; the open
   core's glow, the fire and the column of smoke drifting north-west), the evacuation on 27 April (a column of buses
   down Lenin Avenue, `route`), the arch sliding 327 m over the reactor in November 2016, the Zone without people
   (Przewalski's horses grazing an old field, wolves crossing it), Duga, the Russian Woodpecker, and inside the RBMK
