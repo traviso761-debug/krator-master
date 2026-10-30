@@ -296,6 +296,38 @@ scene = true
 blurb = "The Old Town down its ridge from the Castle Rock, the New Town across the valley, and the haar off the Forth."
 
 [[route]]
+path = "/sarajevo"        # today's city from OpenStreetMap on its real ground, its history as events (src/sarajevo/)
+aliases = ["/sarajevo.html", "/sarajavo"]
+file = "sarajevo.html"
+title = "Sarajevo: massing model"
+scene = true
+blurb = "Baščaršija's minarets in the valley of the Miljacka, the cable car up Trebević, and the city's history as events."
+
+[[route]]
+path = "/atitlan"         # a real place: the whole of Lake Atitlán from OpenStreetMap on its real ground, the lake's life as events (src/atitlan/)
+aliases = ["/atitlan.html", "/lakeatitlan", "/atitlán"]
+file = "atitlan.html"
+title = "Lake Atitlán: massing model"
+scene = true
+blurb = "The drowned caldera under its three volcanoes: the lake towns, the lanchas between the docks, the Xocomil, and Santiago's procession."
+
+[[route]]
+path = "/crater"          # a real place: Crater Lake National Park from OpenStreetMap on its real ground, the lake's story as events (src/crater/)
+aliases = ["/crater.html", "/craterlake", "/crater-lake"]
+file = "crater.html"
+title = "Crater Lake: massing model"
+scene = true
+blurb = "The deepest lake in America in the caldera Mount Mazama left: Wizard Island, the Phantom Ship, the lodge on the rim, and the mountain's fall as an event."
+
+[[route]]
+path = "/chernobyl"       # a real place: the Chernobyl Exclusion Zone from OpenStreetMap on its real ground, the accident and the Zone since as events (src/chernobyl/)
+aliases = ["/chernobyl.html", "/chornobyl", "/pripyat", "/prypiat"]
+file = "chernobyl.html"
+title = "Chernobyl: massing model"
+scene = true
+blurb = "The Exclusion Zone forty years on: Pripyat grown over by the forest, the arch over Reactor 4, the unfinished cooling towers, the Duga radar, and the night of 26 April 1986 as an event."
+
+[[route]]
 path = "/olympic"         # a real place: the whole Olympic Peninsula on the real ground, from OpenStreetMap (src/olympic/, tools/make-olympic.py)
 aliases = ["/olympic.html", "/olympics", "/olympicnationalpark", "/peninsula"]
 file = "olympic.html"

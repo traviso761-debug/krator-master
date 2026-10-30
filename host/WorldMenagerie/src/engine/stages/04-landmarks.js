@@ -14,14 +14,15 @@ function group(L,parts){const g=new THREE.Group();g.userData.wireCat='landmark';
 const poi=name=>POIS.find(p=>p.name.toLowerCase()===name.toLowerCase())||POIS.find(p=>p.name.toLowerCase().includes(name.toLowerCase()));
 const areaNamed=(re,x,z)=>AREAS.filter(a=>re.test(a.name)).sort((p,q)=>Math.hypot((p.bb.x0+p.bb.x1)/2-x,(p.bb.z0+p.bb.z1)/2-z)-Math.hypot((q.bb.x0+q.bb.x1)/2-x,(q.bb.z0+q.bb.z1)/2-z))[0];   // the nearest area with that name
 // merge a pile of static meshes into one buffer per material: the Citadel is ~250 boxes and three materials
-function mergeParts(meshes,mat){const pos=[],nor=[],nm=new THREE.Matrix3(),v=new THREE.Vector3(),vn=new THREE.Vector3();
+// A material with a map (a textured skin) keeps the parts' texture coordinates; the rest are dropped.
+function mergeParts(meshes,mat){const pos=[],nor=[],uvs=[],nm=new THREE.Matrix3(),v=new THREE.Vector3(),vn=new THREE.Vector3(),UV=!!(mat&&mat.map);
   for(const m of meshes){m.updateMatrix();const g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
-    const p=g.attributes.position,n=g.attributes.normal;nm.getNormalMatrix(m.matrix);
+    const p=g.attributes.position,n=g.attributes.normal,t=g.attributes.uv;nm.getNormalMatrix(m.matrix);
     for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m.matrix);pos.push(v.x,v.y,v.z);
-      vn.fromBufferAttribute(n,i).applyNormalMatrix(nm).normalize();nor.push(vn.x,vn.y,vn.z);}
+      vn.fromBufferAttribute(n,i).applyNormalMatrix(nm).normalize();nor.push(vn.x,vn.y,vn.z);if(UV){if(t)uvs.push(t.getX(i),t.getY(i));else uvs.push(0,0);}}
     if(g!==m.geometry)g.dispose();}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));g.computeBoundingSphere();return new THREE.Mesh(g,mat);}
+  g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(UV)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.computeBoundingSphere();return new THREE.Mesh(g,mat);}
 const DECOR={
   mast(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz);return [box(x+dx,top,z+dz,1.6,len,1.6,steelM),box(x+dx,top+len*0.6,z+dz,0.9,len*0.4,0.9,whiteM)];},
   spire(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz);const s=new THREE.Mesh(new THREE.CylinderGeometry(0.3,1.8,len,8).translate(0,len/2,0),chromeM);s.position.set(x+dx,top,z+dz);return [s];},
