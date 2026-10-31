@@ -60,14 +60,18 @@ export function flight(W){
     if(e.repeat)return;
     if(k==='x'){allStop();}
     if(k>='1'&&k<='9'){if(W.course&&W.course.dest)W.course.setWarp(+k);else W.engage(+k);}if(k==='0'){W.course&&W.course.clear();W.dropOut();}
-    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire('torpedo');
-    if(k==='o')toggleOrbit();if(k==='c'&&W.openNav)W.openNav();
+    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire('torpedo');if(k==='g')W.tractor&&W.tractor();
+    if(k==='o')toggleOrbit();if(k==='v')cycleCam();if(k==='m')W.mute&&W.mute();if(k==='c'&&W.openNav)W.openNav();
     if(k.startsWith('Arrow'))e.preventDefault();});
   addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys.delete(k);});
   addEventListener('blur',()=>keys.clear());
   const setThrottle=f=>{S.thr=Math.max(0,Math.min(1,f));};
   function allStop(){setThrottle(0);S.orbit=null;if(W.course)W.course.clear();if(S.warp)W.dropOut();}
   W.setThrottle=setThrottle;W.allStop=allStop;
+  // the camera: behind the ship (chase), a point it sweeps past (flyby), or on the bridge dome (bridge)
+  const CAMS=['chase','flyby','bridge'];S.cam='chase';
+  function cycleCam(){S.cam=CAMS[(CAMS.indexOf(S.cam)+1)%3];S.fb=null;W.onCam&&W.onCam(S.cam);}
+  W.cycleCam=cycleCam;
 
   // the chase camera's own drag and wheel: while flying the page's turntable is told to keep its hands off
   {const el=renderer.domElement;let d=null;
@@ -118,6 +122,26 @@ export function flight(W){
     for(const L of lights)L.target.updateMatrixWorld();
   });
 
+  // ---- the engines' sound ----
+  // A rumble that rises with the throttle and swells while the engines push, and at warp a deep hum with a slow
+  // beat in it. Made the first time the helm is taken (a click, so the browser lets it play).
+  let eng=null;
+  function engineSound(dt){
+    if(!eng){const A=W.audio&&W.audio();if(!A||A.a.state!=='running')return;const a=A.a;
+      const len=a.sampleRate*2,b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);let l=0;
+      for(let i=0;i<len;i++){l=(l+0.02*(Math.random()*2-1))/1.02;d[i]=l*3.5;}
+      const n=a.createBufferSource();n.buffer=b;n.loop=true;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=200;
+      const g=a.createGain();g.gain.value=0;n.connect(f);f.connect(g);g.connect(A.master);n.start();
+      const h1=a.createOscillator(),h2=a.createOscillator(),hg=a.createGain();h1.frequency.value=55;h2.frequency.value=55.7;h1.type=h2.type='sine';hg.gain.value=0;
+      h1.connect(hg);h2.connect(hg);hg.connect(A.master);h1.start();h2.start();
+      eng={a,f,g,hg};}
+    const t=eng.a.currentTime,on=S.on?1:0,push=Math.max(0,Math.min(1,S.acc/THRUST));
+    eng.g.gain.setTargetAtTime(on*(S.warp?0.12:0.08+0.22*S.thr+0.35*push),t,0.3);
+    eng.f.frequency.setTargetAtTime(140+420*S.thr+500*push+(S.warp?300:0),t,0.3);
+    eng.hg.gain.setTargetAtTime(on*(S.warp?0.22:0.03),t,0.6);
+  }
+  animHooks.push(()=>{if(S.on||eng)engineSound();});
+
   function helm(dt){
     const has=k=>keys.has(k)||pad.has(k);
     let yaw=(has('a')||has('ArrowLeft')?1:0)-(has('d')||has('ArrowRight')?1:0);
@@ -158,7 +182,7 @@ export function flight(W){
       W.collide&&W.collide(S,dt);
     }else{S.acc*=0.9;S.v=FULL;S.vel.copy(fwd).multiplyScalar(FULL);if(W.warpTick)W.warpTick(dt,fwd);}
     // the floating origin
-    if(ROOT.position.lengthSq()>4e8){const off=ROOT.position.clone();for(const o of [ROOT,SYS,FX])o.position.sub(off);
+    if(ROOT.position.lengthSq()>4e8){const off=ROOT.position.clone();for(const o of [ROOT,SYS,FX])o.position.sub(off);if(S.fb)S.fb.sub(off);
       for(let i=0;i<DN;i++){dpos[i*3]-=off.x;dpos[i*3+1]-=off.y;dpos[i*3+2]-=off.z;}}
     // the glow of the impulse engines answers the push; the thrusters answer the turn
     const push=Math.max(0,Math.min(1,S.acc/THRUST)),idle=S.warp?0.2:0.35+0.4*S.thr;
@@ -194,16 +218,31 @@ export function flight(W){
     const dt=lastCam==null?0.016:Math.min(0.1,(now-lastCam)/1000);lastCam=now;
     const q=ROOT.quaternion,c=ROOT.position,k=1-Math.exp(-dt*7);
     fwd.set(1,0,0).applyQuaternion(q);
-    tmp.set(-Math.cos(S.cp)*Math.cos(S.cy),Math.sin(S.cp),Math.cos(S.cp)*Math.sin(S.cy)).multiplyScalar(S.cd).applyQuaternion(q);
-    // pressed back as the engines push, and thrown back as warp catches
-    S.punch*=Math.exp(-dt*1.6);tmp.addScaledVector(fwd,-(S.acc*0.7+S.punch)*Math.min(1,S.cd/900));
-    S.camRel.lerp(tmp,k);
+    S.punch*=Math.exp(-dt*1.6);
     const upW=r1.set(0,1,0).applyQuaternion(q);S.up.lerp(upW,k).normalize();
-    camera.position.copy(c).add(S.camRel);
+    let fv;
+    if(S.cam==='flyby'&&!S.warp){
+      // a fixed point ahead of the ship and off to one side; when the ship has gone by, a new one
+      const along=S.fb?tmp.copy(c).sub(S.fb).dot(fwd):1e9;
+      if(!S.fb||along>Math.max(700,S.v*2.5)||S.fb.distanceTo(c)>9000){
+        const side=r2.set(0,0,S.fbSide=-(S.fbSide||1)).applyQuaternion(q);
+        S.fb=c.clone().addScaledVector(fwd,Math.max(1100,S.v*5)).addScaledVector(side,260+Math.random()*200).addScaledVector(upW,(Math.random()-0.35)*160);}
+      camera.position.copy(S.fb);camera.up.copy(S.up);camera.lookAt(c);S.camRel.copy(camera.position).sub(c);fv=FOV0-6;
+    }else if(S.cam==='bridge'){
+      // on top of the bridge dome, looking ahead over the saucer
+      const bq=BANK.getWorldQuaternion(qd);camera.position.copy(SAU.localToWorld(r2.set(-8,W.bridgeTop+3.2,0)));
+      camera.up.set(0,1,0).applyQuaternion(bq);camera.lookAt(r2.copy(camera.position).addScaledVector(tmp.set(1,0,0).applyQuaternion(bq),1000).addScaledVector(camera.up,-70));
+      S.camRel.copy(camera.position).sub(c);fv=FOV0+14+(S.warp?12:0);
+    }else{
+      tmp.set(-Math.cos(S.cp)*Math.cos(S.cy),Math.sin(S.cp),Math.cos(S.cp)*Math.sin(S.cy)).multiplyScalar(S.cd).applyQuaternion(q);
+      // pressed back as the engines push, and thrown back as warp catches
+      tmp.addScaledVector(fwd,-(S.acc*0.7+S.punch)*Math.min(1,S.cd/900));
+      S.camRel.lerp(tmp,k);
+      camera.position.copy(c).add(S.camRel);camera.up.copy(S.up);
+      camera.lookAt(r2.copy(c).addScaledVector(fwd,S.cd*0.12));
+      fv=S.warp?FOV0+16:FOV0+7*Math.min(1,S.v/FULL)+4*Math.min(1,S.punch/600);
+    }
     if(S.shake>0){S.shake*=Math.exp(-dt*5);camera.position.x+=(Math.random()-0.5)*S.shake;camera.position.y+=(Math.random()-0.5)*S.shake;}
-    camera.up.copy(S.up);
-    camera.lookAt(r2.copy(c).addScaledVector(fwd,S.cd*0.12));
-    const fv=S.warp?FOV0+16:FOV0+7*Math.min(1,S.v/FULL)+4*Math.min(1,S.punch/600);
     S.fov+=(fv-S.fov)*(1-Math.exp(-dt*2));if(Math.abs(camera.fov-S.fov)>0.02){camera.fov=S.fov;camera.updateProjectionMatrix();}
     lamp.position.copy(camera.position);
     SKY.position.copy(camera.position);
@@ -267,12 +306,12 @@ export function flight(W){
 @media (max-width:600px){#ent-help{display:none!important}}
 body.bare #ent-help,body.bare #ent-pad,body.bare #navpanel{display:none!important}`;document.head.appendChild(st);}
   const help=document.createElement('div');help.id='ent-help';help.style.display='none';
-  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo<br>Drag to look round, scroll to stand off';
+  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo · G tractor beam<br>V the camera: chase, flyby, bridge · M sound<br>Drag to look round, scroll to stand off';
   const padEl=document.createElement('div');padEl.id='ent-pad';padEl.style.display='none';
-  const names={q:'Roll left',ArrowUp:'Nose up',e:'Roll right',a:'Turn left',ArrowDown:'Nose down',d:'Turn right',s1:'Slower',x1:'All stop',w1:'Faster'};
-  for(const [lab,k] of [['⟲','q'],['▲','ArrowUp'],['⟳','e'],['◀','a'],['▼','ArrowDown'],['▶','d'],['−','s1'],['■','x1'],['+','w1']]){
+  const names={q:'Roll left',ArrowUp:'Nose up',e:'Roll right',a:'Turn left',ArrowDown:'Nose down',d:'Turn right',s1:'Slower',x1:'All stop',w1:'Faster',v1:'Camera'};
+  for(const [lab,k] of [['⟲','q'],['▲','ArrowUp'],['⟳','e'],['◀','a'],['▼','ArrowDown'],['▶','d'],['−','s1'],['■','x1'],['+','w1'],['🎥','v1']]){
     const b=document.createElement('button');b.type='button';b.textContent=lab;b.setAttribute('aria-label',names[k]);
-    if(k.endsWith('1'))b.onclick=()=>{if(k==='w1')setThrottle(S.thr+0.25);if(k==='s1')setThrottle(S.thr-0.25);if(k==='x1')allStop();};
+    if(k.endsWith('1'))b.onclick=()=>{if(k==='w1')setThrottle(S.thr+0.25);if(k==='s1')setThrottle(S.thr-0.25);if(k==='x1')allStop();if(k==='v1')cycleCam();};
     else{const on=e=>{pad.add(k);e.preventDefault();},off=()=>pad.delete(k);
       b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);}
     padEl.appendChild(b);}
@@ -288,7 +327,7 @@ body.bare #ent-help,body.bare #ent-pad,body.bare #navpanel{display:none!importan
     if(S.warp)sp='warp '+S.warp+' ('+Math.round(warpC(S.warp)).toLocaleString('en')+' c, time ×'+TIMEX.toLocaleString('en')+')';
     else{const pc=Math.round(S.thr*100);sp=(pc===0?(S.v>5?'coasting':'all stop'):pc===100?'full impulse':'impulse '+pc+'%')+' · '+(S.v>=1000?(S.v/1000).toFixed(1)+' km/s':Math.round(S.v)+' m/s');}
     const o=W.orbitInfo();
-    return sp+' · heading '+String(hd).padStart(3,'0')+' mark '+mk+(o?' · standard orbit, '+o.name+', '+o.h+' km up':'');
+    return sp+(S.cam!=='chase'?' · '+S.cam+' camera':'')+' · heading '+String(hd).padStart(3,'0')+' mark '+mk+(o?' · standard orbit, '+o.name+', '+o.h+' km up':'');
   };
   return {start,stop,camFrame,hud};
 }

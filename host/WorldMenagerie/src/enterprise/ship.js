@@ -278,13 +278,14 @@ export function model(api){
   const W={THREE,scene,camera:api.camera,renderer,animHooks,C,api,ROOT,G,SAU,env,glowTex,grilleMat:grilleMat(),bussMat,bussGlows,impGlows,bayGlow,
     hullMats:[...hullMats]};
   // the rim of the saucer at an angle round from the bow (the thrusters' puffs sit on it)
+  W.bridgeTop=SAUCER.bridge.top;
   W.rimAt=a=>{const r=rho(a);return {x:r*Math.cos(a),y:0,z:r*Math.sin(a)};};
   const FL=flight(W);window.__ent=W;   // for tests
   const EV=events(W);
   const NV=nav(W);
   let flyBtn=null;
   const btn=t=>[...document.querySelectorAll('#ui button')].find(b=>b.textContent===t);
-  const fly=()=>{if(W.flight.on)FL.stop();else FL.start();if(!flyBtn)flyBtn=btn('Fly');
+  const fly=()=>{if(W.flight.on)FL.stop();else{W.audio&&W.audio();FL.start();}if(!flyBtn)flyBtn=btn('Fly');
     if(flyBtn)flyBtn.setAttribute('aria-pressed',String(W.flight.on));};
   W.startFlight=()=>{if(!W.flight.on)fly();};
   W.onNavToggle=o=>{const b=btn('Course');if(b)b.setAttribute('aria-expanded',String(o));};
@@ -297,12 +298,15 @@ export function model(api){
    if(h.has('evfreeze'))W.freezeAfter(+h.get('evfreeze'));
    // #dbg: the events' state in the probe's report
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
    // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
    if(h.has('warpf'))NV.course.w=+h.get('warpf');
    if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}
    // #at=<place id>: be there from the start
    if(h.has('at')){const P=PLACES.find(p=>p.id===h.get('at'));if(P){W.flight.map.set(P.ly[0],P.ly[1]);W.arrive();}}
+   // #foecam=az,el,d: the turntable looks at the raider, when there is one (for tests)
+   if(h.has('foecam')){const [az,el,d]=h.get('foecam').split(',').map(Number);setInterval(()=>{const f=W.enemy;if(!f||f.gone)return;
+     const p=f.m.g.getWorldPosition(new THREE.Vector3());api.view({az,el,d,tx:p.x,ty:p.y,tz:p.z});},100);}
    // #keys=a,w: hold keys down from evt on (for tests of the helm)
    if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
    const act={...EV.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}

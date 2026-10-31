@@ -16,16 +16,16 @@ const dirOf=(az,el)=>[Math.cos(az)*Math.cos(el),Math.sin(el),Math.sin(az)*Math.c
 
 export const PLACES=[
   {id:'home',name:'Home: a class-M world',ly:[0,0],note:'A blue world with its moon, and the star off the port bow.'},
-  {id:'giant',name:'A ringed gas giant',ly:[3.1,2.4],note:'A gas giant twelve bands deep, its rings tilted at the sun, two moons.',
+  {id:'giant',sunDisc:true,name:'A ringed gas giant',ly:[3.1,2.4],note:'A gas giant twelve bands deep, its rings tilted at the sun, two moons.',
     light:{colour:'#fff0d8',intensity:2.1,az:0.9,el:0.32,ambient:0.3,fill:{colour:'#c8a070',intensity:0.5,az:-0.5,el:0.1}},
-    sky:{bodies:[{kind:'gas',az:-0.42,el:0.12,dist:0.78,deg:13,seg:160,bands:13,colours:['#c9a878','#e2cfa4','#9a7350','#efe4cc'],rate:3e-5,
+    sky:{bodies:[{kind:'gas',az:-0.42,el:0.12,dist:0.78,deg:13,seg:160,bands:13,colours:['#c9a878','#e2cfa4','#9a7350','#efe4cc'],rate:3e-5,atmos:'#e8d4a8',atmosK:0.45,
         ring:{inner:1.35,outer:2.45,tilt:0.32,bands:18,colour:'#cdbf9e',opacity:0.7}},
       {kind:'rock',az:0.32,el:-0.05,dist:0.42,deg:2.4,seg:40,colours:['#6b5e52','#8a7a68','#a8987e','#d8d0c0'],ice:0.7},
       {kind:'rock',az:-0.9,el:0.22,dist:0.74,deg:1.2,seg:28,colours:['#c8c0b0','#a8a090','#e0dace','#f4f0e8'],ice:0.4}]}},
-  {id:'ice',name:'An ice world under a red dwarf',ly:[-4.5,1.8],note:'Frozen oceans under a dim red sun that never sets on its near side.',
+  {id:'ice',sunDisc:true,name:'An ice world under a red dwarf',ly:[-4.5,1.8],note:'Frozen oceans under a dim red sun that never sets on its near side.',
     light:{colour:'#ffb490',intensity:1.7,az:1.1,el:0.2,ambient:0.26,fill:{colour:'#7090b0',intensity:0.55,az:-1.2,el:-0.3}},
-    sky:{bodies:[{kind:'rock',az:-0.5,el:-0.22,dist:0.5,deg:19,seg:160,colours:['#4f6d84','#c6d5df','#94a8b6','#f4f8fb'],ice:0.32,clouds:true,cloudPuffs:900,cloudSystems:40,rate:1.5e-5}]}},
-  {id:'comet',name:'A comet near its sun',ly:[0.4,-0.9],note:'A nucleus a few kilometres across, its coma, and two tails blown straight back from the sun.',
+    sky:{bodies:[{kind:'rock',az:-0.5,el:-0.22,dist:0.5,deg:19,seg:160,colours:['#4f6d84','#c6d5df','#94a8b6','#f4f8fb'],ice:0.32,atmos:'#9fc4ff',atmosK:0.6,clouds:true,cloudPuffs:900,cloudSystems:40,rate:1.5e-5}]}},
+  {id:'comet',sunDisc:true,name:'A comet near its sun',ly:[0.4,-0.9],note:'A nucleus a few kilometres across, its coma, and two tails blown straight back from the sun.',
     light:{colour:'#eaf2ff',intensity:2.6,az:2.6,el:0.18,ambient:0.24,fill:{colour:'#4a6a9a',intensity:0.3,az:-0.6,el:-0.2}},build:comet},
   {id:'binary',name:'A binary star',ly:[8.2,-3.5],note:'An orange giant and a hot blue companion, close enough to be stripping it.',
     light:{colour:'#ffc890',intensity:2.2,az:0.42,el:0.14,ambient:0.3,fill:{colour:'#a8c8ff',intensity:1.5,az:0.78,el:0.06}},build:binary},
@@ -41,6 +41,27 @@ export const PLACES=[
 export const DEEP={id:'deep',name:'Interstellar space',note:'Nothing for light-years: the stars, and the dark between them.',
   light:{colour:'#dfe6f2',intensity:0.5,az:0.5,el:0.6,ambient:0.3,fill:{colour:'#405070',intensity:0.25,az:-2,el:-0.4}}};
 
+// An atmosphere: two shells. The inner one hazes the limb over the planet's own disc; the outer one is the glow
+// standing off the limb against space. Both are lit only on the day side, and redden at the terminator, where the
+// light has come the long way through the air. uSun is the sun's direction in the world, set every frame.
+export const ATMOS=[];
+export function atmosphere(THREE,R,colour,strength){
+  const g=new THREE.Group(),col=new THREE.Color(colour),k=strength==null?1:strength;
+  const uni={uSun:{value:new THREE.Vector3(1,0,0)},uC:{value:col},uK:{value:k}};
+  const vs=`varying vec3 vN,vW;void main(){vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+  const inner=new THREE.ShaderMaterial({uniforms:uni,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexShader:vs,
+    fragmentShader:`uniform vec3 uSun,uC;uniform float uK;varying vec3 vN,vW;void main(){vec3 n=normalize(vN),v=normalize(cameraPosition-vW);
+      float f=pow(1.-max(0.,dot(n,v)),3.2),l=dot(n,uSun),day=smoothstep(-0.18,0.35,l);vec3 c=mix(vec3(1.,.5,.25),uC,smoothstep(0.,0.35,l));
+      float a=(f*0.95+0.06)*day*uK;gl_FragColor=vec4(c*a,a);}`});
+  const outer=new THREE.ShaderMaterial({uniforms:uni,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.BackSide,vertexShader:vs,
+    fragmentShader:`uniform vec3 uSun,uC;uniform float uK;varying vec3 vN,vW;void main(){vec3 n=normalize(vN),v=normalize(cameraPosition-vW);
+      float e=-dot(n,v);float i=pow(clamp(e/0.33,0.,1.),2.2);vec3 nl=normalize(n-dot(n,v)*v);float l=dot(nl,uSun),day=smoothstep(-0.3,0.25,l);
+      vec3 c=mix(vec3(1.,.45,.2),uC,smoothstep(-0.05,0.3,l));float a=i*day*uK*0.9;gl_FragColor=vec4(c*a,a);}`});
+  const si=new THREE.Mesh(new THREE.SphereGeometry(R*1.012,96,64),inner),so=new THREE.Mesh(new THREE.SphereGeometry(R*1.06,96,64),outer);
+  for(const m of [si,so]){m.userData.noWire=true;m.frustumCulled=false;m.raycast=()=>{};g.add(m);}
+  ATMOS.push(uni);return g;
+}
+
 // what a place is made of: its group, the solid things in it (to keep the ship out of, and to orbit), a per-frame
 // update, and its light as directions
 export function makePlace(THREE,P,kit){
@@ -51,7 +72,7 @@ export function makePlace(THREE,P,kit){
     const out=buildSky(THREE,tmp,{far:D,stars:1,starSize:1,nebulae:P.sky.nebulae||[],bodies:P.sky.bodies||[]},rnd);
     const st=tmp.children.find(o=>o.isPoints);if(st){tmp.remove(st);st.geometry.dispose();st.material.dispose();}
     for(const o of tmp.children.slice())g.add(o);
-    for(const q of out.bodies){const b=q.b,d=(b.dist||0.6)*D;solids.push({name:bodyName(P,b),c:q.g.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});
+    for(const q of out.bodies){const b=q.b,d=(b.dist||0.6)*D;if(b.atmos)q.g.add(atmosphere(THREE,Math.tan((b.deg||6)*Math.PI/180)*d,b.atmos,b.atmosK));solids.push({name:bodyName(P,b),c:q.g.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});
       if(b.rate)ups.push(()=>{q.g.rotation.y+=b.rate;});}
   }
   if(P.build){const r=P.build(THREE,g,kit);if(r.solids)solids.push(...r.solids);if(r.update)ups.push(r.update);}

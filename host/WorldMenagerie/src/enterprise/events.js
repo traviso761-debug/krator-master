@@ -16,6 +16,7 @@
 import {saucerTop,saucerBot} from './hull.js';
 import {SAUCER,TORPEDO,BAYS} from './dims.js';
 import {neckLead} from './hull.js';
+import {hostile} from './hostile.js';
 
 export function events(W){
   const {THREE,scene,camera,ROOT,G,SAU,animHooks,glowTex}=W;
@@ -34,10 +35,14 @@ export function events(W){
 
   // ---------- sound ----------
   let AC=null,master=null;
-  const ac=()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=0.22;master.connect(AC.destination);}catch(e){AC=null;}}
+  const ac=()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:0.22;master.connect(AC.destination);}catch(e){AC=null;}}
     if(AC&&AC.state==='suspended')AC.resume();return AC;};
   const noise=(a,dur)=>{const b=a.createBuffer(1,Math.ceil(a.sampleRate*dur),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=a.createBufferSource();s.buffer=b;return s;};
   const env=(a,g,t0,att,hold,rel,peak)=>{g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(peak,t0+att);g.gain.setValueAtTime(peak,t0+att+hold);g.gain.exponentialRampToValueAtTime(0.0001,t0+att+hold+rel);};
+  // shared with the engines (flight.js); M at the helm mutes and unmutes the lot
+  let muted=false;
+  W.audio=()=>{const a=ac();return a?{a,master}:null;};
+  W.mute=()=>{muted=!muted;if(master)master.gain.value=muted?0:0.22;};
   function sound(kind){
     const a=ac();if(!a)return;const t=a.currentTime;
     if(kind==='phaser'){const o=a.createOscillator(),o2=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain();
@@ -98,6 +103,7 @@ export function events(W){
   animHooks.push(()=>{rock.rotation.x+=0.0007;rock.rotation.y+=0.0011;rockHeat*=0.96;rock.material.emissiveIntensity=rockHeat;});
   const targetPos=()=>{
     const c=shipCentre();
+    if(W.enemy&&!W.enemy.gone){const p=W.enemy.m.g.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,enemy:W.enemy};}
     if(rock.visible){const p=rock.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,rock:true};}
     return {p:c.addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion),3500),rock:false};
   };
@@ -170,7 +176,8 @@ export function events(W){
   let shUp=false,shT=-99;
   animHooks.push(()=>{shMat.uniforms.uT.value=T;const u=T-shT;shMat.uniforms.uOn.value=shUp?Math.max(0.0,1.2*Math.exp(-u*1.1)):0;
     shield.visible=shUp||T-shMat.uniforms.uHit.value.w<4;});
-  function shields(){shUp=!shUp;shT=T;if(shUp)sound('shield');}
+  function shields(){if(!shUp&&shStr<10){note('Shields are too weak to raise.');return;}shUp=!shUp;shT=T;if(shUp)sound('shield');}
+  animHooks.push(()=>{if(shUp&&shStr<100)shStr=Math.min(100,shStr+0.02);else if(!shUp&&shStr<100)shStr=Math.min(100,shStr+0.01);});
   function shieldHit(worldP){const l=shield.worldToLocal(worldP.clone()).normalize();const p=l.multiply(SR);shMat.uniforms.uHit.value.set(p.x,p.y,p.z,T);}
 
   // ---------- phasers ----------
@@ -190,15 +197,17 @@ export function events(W){
     const outer=new THREE.Mesh(beamGeo,beamMat(0xff5a1a)),core=new THREE.Mesh(beamGeo,beamMat(0xfff0c8));
     const hitS=sprite(0xffb060,90);for(const o of [outer,core,hitS]){o.visible=false;o.userData.noWire=true;FX.add(o);}
     const t0=T;
-    run(t=>{const u=t-t0;
+    run((t,dt)=>{const u=t-t0;
+      if(tg.enemy){if(tg.enemy.gone)tg.enemy=null;else tg.p=tg.enemy.m.g.getWorldPosition(V3());}
       if(u<0.42){const k=ease(u/0.42);em[0].position.copy(stripAt(best-0.5*(1-k),top));em[1].position.copy(stripAt(best+0.5*(1-k),top));return;}
       if(u<2.0){
-        const a=world(SAU,stripAt(best,top)),b=tg.rock?rock.getWorldPosition(V3()).add(a.clone().sub(rock.getWorldPosition(V3())).normalize().multiplyScalar(48)):tg.p;
+        const a=world(SAU,stripAt(best,top)),b=tg.enemy?tg.p.clone().add(a.clone().sub(tg.p).normalize().multiplyScalar(tg.enemy.sh>0?150:40)):tg.rock?rock.getWorldPosition(V3()).add(a.clone().sub(rock.getWorldPosition(V3())).normalize().multiplyScalar(48)):tg.p;
         const A0=toFX(a),B0=toFX(b),d=B0.clone().sub(A0),L=d.length(),fl=0.75+0.25*Math.sin(u*90);
         for(const [m,r] of [[outer,4.2*fl],[core,1.5]]){m.visible=true;m.position.copy(A0);m.quaternion.setFromUnitVectors(Y,d.clone().normalize());m.scale.set(r,L,r);}
         em[0].position.copy(stripAt(best,top));em[1].visible=false;em[0].scale.setScalar(40*fl);
         hitS.visible=true;hitS.position.copy(B0);hitS.scale.setScalar(80+40*Math.random());
         if(tg.rock)rockHeat=Math.min(1.4,rockHeat+0.06);
+        if(tg.enemy)HO.hit(dt*20,b);
         return;}
       for(const o of [outer,core,hitS])FX.remove(o);for(const s of em)SAU.remove(s);return false;});
   }
@@ -211,45 +220,55 @@ export function events(W){
     const g=new THREE.Group(),core=sprite(0xffd0a0,16),halo=sprite(0xff3a10,60),spk=[sprite(0xff7040,34),sprite(0xff7040,34)];
     g.add(halo,core,...spk);g.position.copy(toFX(p));FX.add(g);
     const v=dir.multiplyScalar(2600).add(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion).multiplyScalar(W.flight.v||0));const t0=T;
-    run((t,dt)=>{const u=t-t0;g.position.addScaledVector(dirFX(v),dt);
+    run((t,dt)=>{const u=t-t0;
+      if(tg.enemy&&!tg.enemy.gone){const to=tg.enemy.m.g.getWorldPosition(V3()).sub(g.getWorldPosition(V3())).normalize().multiplyScalar(v.length());v.lerp(to,Math.min(1,dt*2.5));}
+      g.position.addScaledVector(dirFX(v),dt);
       halo.scale.setScalar(55+12*Math.sin(u*40));spk[0].scale.set(90,8,1);spk[1].scale.set(8,90,1);spk[0].material.rotation=u*6;spk[1].material.rotation=u*6;
       const wp=g.getWorldPosition(V3());
       const hit=tg.rock&&rock.visible&&wp.distanceTo(rock.getWorldPosition(V3()))<70;
+      const hitE=tg.enemy&&!tg.enemy.gone&&wp.distanceTo(tg.enemy.m.g.getWorldPosition(V3()))<160;
+      if(hitE){FX.remove(g);explode(wp,false);HO.hit(34,wp);return false;}
       if(hit||u>3.2){FX.remove(g);explode(wp,hit);return false;}});
   }
   function explode(p,onRock){
     sound('boom');flash(p,0xffe0b0,onRock?900:500,1.4);flash(p,0xff5a20,onRock?1500:800,2.2);
     if(!onRock)return;
     rock.visible=false;rockDead=true;
-    // the pieces: shards of the rock flung out, tumbling, cooling as they go
-    const mat=new THREE.MeshStandardMaterial({color:0x7a6f62,roughness:0.95,emissive:0xff5010,emissiveIntensity:1.2});
+    debris(p,0x7a6f62,46,220,placeTarget);
+  }
+  // the pieces: shards flung out, tumbling, cooling as they go
+  function debris(p,colour,n,speed,done){
+    const mat=new THREE.MeshStandardMaterial({color:colour,roughness:0.9,metalness:0.2,emissive:0xff5010,emissiveIntensity:1.2});
     const geo=new THREE.DodecahedronGeometry(1,0),bits=[];
-    for(let i=0;i<46;i++){const m=new THREE.Mesh(geo,mat);m.scale.set(4+Math.random()*14,3+Math.random()*10,4+Math.random()*12);m.position.copy(toFX(p));m.userData.noWire=true;
-      const v=new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize().multiplyScalar(60+Math.random()*220);
+    for(let i=0;i<n;i++){const m=new THREE.Mesh(geo,mat);m.scale.set(4+Math.random()*14,3+Math.random()*10,4+Math.random()*12);m.position.copy(toFX(p));m.userData.noWire=true;
+      const v=new THREE.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize().multiplyScalar(60+Math.random()*speed);
       m.userData.v=v;m.userData.w=new THREE.Vector3(Math.random(),Math.random(),Math.random()).multiplyScalar(2);FX.add(m);bits.push(m);}
     const t0=T;
     run((t,dt)=>{const u=t-t0;mat.emissiveIntensity=1.2*Math.exp(-u*0.8);
       for(const m of bits){m.position.addScaledVector(m.userData.v,dt);m.rotation.x+=m.userData.w.x*dt;m.rotation.y+=m.userData.w.y*dt;}
-      if(u>14){for(const m of bits)FX.remove(m);mat.dispose();placeTarget();return false;}});
+      if(u>14){for(const m of bits)FX.remove(m);mat.dispose();geo.dispose();if(done)done();return false;}});
   }
 
   // ---------- incoming fire ----------
-  function incoming(){
+  // the ship's own state: shield strength (worn by hits, coming back while raised) and hull
+  let shStr=100,hullP=100;
+  function incoming(fromW){
     const c=shipCentre(),q=ROOT.quaternion;
     const from=new THREE.Vector3(1,(Math.random()-0.3)*0.6,(Math.random()<0.5?-1:1)*(0.4+Math.random()*0.6)).normalize().applyQuaternion(q);
-    const start=c.clone().addScaledVector(from,5000);
+    const start=fromW&&fromW.isVector3?fromW.clone():c.clone().addScaledVector(from,5000),fl=Math.max(0.35,start.distanceTo(c)/6000);
     // where it lands: on the shield's skin if the shields are up, on the hull (somewhere on the saucer) if not
     const aimL=new THREE.Vector3((Math.random()-0.2)*260,0,(Math.random()-0.5)*300);aimL.y=saucerTop(aimL.x,aimL.z)*(Math.random()<0.6?1:0)+(Math.random()<0.6?0:saucerBot(aimL.x,aimL.z));
     const bolt=new THREE.Group(),h=sprite(0x60ff70,70),k2=sprite(0xd8ffd0,22);bolt.add(h,k2);bolt.position.copy(toFX(start));FX.add(bolt);
     const t0=T;
-    run((t,dt)=>{const u=(t-t0)/0.9;
+    run((t,dt)=>{const u=(t-t0)/fl;
       const aimW=shUp?(()=>{const l=SAU.localToWorld(aimL.clone()),cc=shield.getWorldPosition(V3());
         const s=l.sub(cc),loc=s.clone().applyQuaternion(G.getWorldQuaternion(new THREE.Quaternion()).invert());loc.divide(SR);const n=loc.length();
         return cc.add(s.multiplyScalar(1/n));})():SAU.localToWorld(aimL.clone());
       if(u<1){bolt.position.copy(toFX(start.clone().lerp(aimW,u)));return;}
       FX.remove(bolt);
-      if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);}
-      else{sound('hit');flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
+      if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shStr=Math.max(0,shStr-(7+Math.random()*5));
+        if(shStr<=0){shUp=false;note('Shields have failed.');sync();}}
+      else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5));flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
         // a scorch that glows and fades where it struck
         const s=sprite(0xff6020,60);s.position.copy(SAU.worldToLocal(aimW.clone()));SAU.add(s);const t1=T;
         run(tt=>{const v=1-(tt-t1)/6;if(v<=0){SAU.remove(s);return false;}s.material.opacity=v*(0.7+0.3*Math.sin(tt*30));});}
@@ -302,17 +321,53 @@ export function events(W){
       if(u>60){FX.remove(s);return false;}});
   }
 
+  // ---------- the tractor beam ----------
+  // From the emitter under the saucer's after edge: a pale blue cone to the rock that pulls it in to a few hundred
+  // metres under the ship and holds it there, wherever the ship goes, until you let go. The rock has to be within
+  // ten kilometres.
+  let tractor=null;
+  function tractorBeam(){
+    if(tractor){tractor.off=true;return;}
+    if(!rock.visible||rock.getWorldPosition(V3()).distanceTo(shipCentre())>10000){sound('hit');return;}
+    const em=new THREE.Vector3(-125,saucerBot(-125,0)-1.2,0);
+    const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,toneMapped:false,
+      uniforms:{uT:{value:0},uA:{value:0}},
+      vertexShader:`varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader:`uniform float uT,uA;varying vec2 vU;void main(){float e=pow(sin(vU.x*3.14159),1.5);
+        float bands=0.75+0.25*sin(vU.y*60.-uT*10.);float a=uA*e*bands*(0.35+0.65*vU.y);gl_FragColor=vec4(vec3(0.62,0.82,1.)*a,a);}`});
+    const geo=new THREE.CylinderGeometry(1,0.12,1,24,1,true);geo.translate(0,0.5,0);
+    const beam=new THREE.Mesh(geo,mat);beam.userData.noWire=true;FX.add(beam);
+    const glowE=sprite(0xa8d0ff,40,0.9);SAU.add(glowE);glowE.position.copy(em);
+    const hold=new THREE.Vector3(-160,-420,0);
+    sound('shield');
+    tractor={off:false};const tr=tractor,t0=T;let a=0;
+    run((t,dt)=>{
+      a+=((tr.off?0:1)-a)*Math.min(1,dt*3);mat.uniforms.uA.value=a;mat.uniforms.uT.value=t;glowE.material.opacity=0.9*a;
+      if(tr.off&&a<0.02||!rock.visible){FX.remove(beam);SAU.remove(glowE);geo.dispose();mat.dispose();if(tractor===tr)tractor=null;return false;}
+      const A0=world(SAU,em),R0=rock.getWorldPosition(V3());
+      if(!tr.off){const H=world(G,hold),d=H.clone().sub(R0),L=d.length(),sp=Math.min(L,Math.max(60,L*0.6)*dt);
+        R0.addScaledVector(d.normalize(),sp);rock.position.copy(SYS.worldToLocal(R0.clone()));}
+      const A=toFX(A0),B=toFX(R0),dd=B.clone().sub(A),L=dd.length();
+      beam.position.copy(A);beam.quaternion.setFromUnitVectors(Y,dd.normalize());const r=Math.min(80,8+L*0.03);
+      // a cone: narrow at the emitter, as wide as the rock at the far end
+      beam.scale.set(r,L,r);
+      return;});
+  }
+  const note=m=>{if(W.toast)W.toast('Tactical',m);};
+  const HO=hostile(W,{sprite,flash,run,sound,toFX,dirFX,shipCentre,world,T:()=>T,red:()=>red,redAlert:()=>redAlert(),sync:()=>sync(),incoming,note,debris});
+  W.contact=()=>{HO.contact();};
   W.fire=k=>{if(k==='phasers')phasers();else torpedo();};
+  W.tractor=()=>{tractorBeam();sync();};
   // the events panel
   const panel=document.createElement('div');panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Events');
   const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',torpedo],
-    ['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
+    ['Hostile contact',()=>HO.contact()],['Tractor beam',tractorBeam],['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
   {const h=document.createElement('div');h.className='sub';h.textContent='Events';panel.appendChild(h);}
   for(const [lab,fn] of list){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{ac();fn();sync();};panel.appendChild(b);}
   document.body.appendChild(panel);
   const sync=()=>{for(const b of panel.querySelectorAll('button')){const t=b.textContent;
-    b.setAttribute('aria-pressed',String(t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep:false));}};
-  const hud=()=>[red?'RED ALERT':'',shUp?'shields up':'',sep?'saucer separated':''].filter(Boolean).join(' · ');
-  const act={warp:list[0][1],red:redAlert,shields,phasers,torpedo,incoming,separate,shuttle};
+    b.setAttribute('aria-pressed',String(t==='Tractor beam'?!!tractor&&!tractor.off:t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep:false));}};
+  const hud=()=>[red?'RED ALERT':'',HO.hud(),shUp||shStr<100?'shields '+(shUp?'up ':'down ')+Math.round(shStr)+'%':'',hullP<100?'hull '+Math.round(hullP)+'%':'',tractor&&!tractor.off?'tractor beam':'',sep?'saucer separated':''].filter(Boolean).join(' · ');
+  const act={warp:list[0][1],hostile:()=>HO.contact(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
   return {panel,hud,act,sync,state:()=>({red,shUp,sep,rockDead})};
 }

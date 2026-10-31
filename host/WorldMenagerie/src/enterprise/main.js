@@ -23,6 +23,8 @@ starshipPage({
     'The shields are an ellipsoid round the whole ship, and you only see them where something hits them.',
     'Warp 6 is 392 times the speed of light; even so the nearest star on the chart is days away, so time at warp runs fast.',
     'A ship this size does not turn like a fighter: the turn takes a moment to build, and a moment to stop.',
+    'The air of a planet shows best at its edge, and reddens where the sun is setting through it.',
+    'Shields wear down under fire and come back slowly; with them down, it is the hull that takes it.',
     'The black hole\'s disc is brighter on the side coming towards you, and its far side is bent up over the top.',
     'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
   ],

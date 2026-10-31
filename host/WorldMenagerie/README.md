@@ -2026,6 +2026,20 @@ wireframe and menagerie menu every other page has.
     drawn ahead of you. Dropping out anywhere else puts you where you are: at a place within a third of a
     light-year, or in interstellar space. For tests: `#at=giant` starts there, `#course=hole&warpf=9` sets a
     course, `#keys=a,w` holds keys down.
+  - **Fourth pass: more to it.** V at the helm changes the camera: chase, a **flyby** (a fixed point ahead of the
+    ship and off to one side, which it sweeps past; then a new one) and the **bridge** (on top of the bridge dome,
+    looking ahead over the saucer, banking with the ship). The home world, the gas giant and the ice world have
+    **atmospheres** (`atmosphere` in `places.js`): a haze over the limb and a glow standing off it, lit on the day
+    side only and reddening at the terminator. Where no star is drawn, the **sun** is: a disc, its glare and a
+    thin horizontal streak, drawn at the sky's distance with depth so the ship and the planets pass in front of it.
+    The **engines** have a sound (a rumble rising with the throttle and swelling while they push, a deep beating
+    hum at warp; M mutes everything). G at the helm, or the **Tractor beam** event, pulls the target rock in from
+    up to ten kilometres and holds it under the ship. **Hostile contact** (`hostile.js`): a raider of this
+    project's own design (an arrowhead with flat swept wings, its engine pods riding on the tips, a fin under it)
+    drops out of warp, the ship goes to red alert, and it circles at two or three kilometres firing every few
+    seconds. Hits wear the shields down (they come back slowly, and fail at nothing) or, with them down, the hull.
+    Phasers track it and torpedoes home on it, taking its shields first and then its hull; badly hurt it may break
+    off and go to warp, or it is destroyed. For tests, `#foecam=az,el,d` points the turntable at it.
   - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
     and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
     klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it

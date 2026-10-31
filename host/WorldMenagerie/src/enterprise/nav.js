@@ -10,7 +10,7 @@
 // empty space between.
 //
 // On arrival the place is drawn in a frame turned to the heading you came in on, so it is ahead of you.
-import {PLACES,DEEP,makePlace} from './places.js';
+import {PLACES,DEEP,makePlace,atmosphere,ATMOS} from './places.js';
 import {lyps,warpC,TIMEX,FULL} from './flight.js';
 
 export function nav(W){
@@ -27,7 +27,10 @@ export function nav(W){
      fill:{colour:'#'+fill.color.getHexString(),intensity:fill.intensity}}});
    for(const o of W.homeBodies)home.group.add(o);
    (sp.bodies||[]).forEach((b,i)=>{const o=W.homeBodies[i];if(!o)return;const d=(b.dist||0.6)*D;
-     home.solids.push({name:i===0?'the planet':'the moon',c:o.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});});}
+     home.solids.push({name:i===0?'the planet':'the moon',c:o.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});
+     // the home world's air (the moon has none)
+     if(i===0&&b.clouds)o.add(atmosphere(THREE,Math.tan((b.deg||6)*Math.PI/180)*d,'#5f9cff',1));});}
+  home.P.sunDisc=true;
   const cache=new Map([['home',home]]);
   const get=P=>{if(!cache.has(P.id))cache.set(P.id,makePlace(THREE,P,kit));return cache.get(P.id);};
   let here=home,inWarp=false;
@@ -67,6 +70,22 @@ export function nav(W){
       if(d<lyps(S.warp)*dt*1.5||d<0.003){course.arrived=true;W.dropOut();}}
   };
   W.placeFrame=(now,dt)=>{if(here.group.visible)here.update(now*0.001,dt,camera);};
+  // ---- the sun, seen ----
+  // A disc and its glare out at the sky's distance, in the sun's direction, drawn with depth so that the ship and
+  // the planets pass in front of it; and a thin horizontal streak, as a camera's lens draws a bright star. Places
+  // with a star of their own drawn (the binary, the belt, the nebula's cluster, the black hole) do without it.
+  const sunG=new THREE.Group();sunG.userData.noWire=true;
+  const sdisc=kit.sprite(0xffffff,16000,1),sglare=kit.sprite(0xffffff,150000,0.5),sstreak=kit.sprite(0xffffff,1,0.35);sstreak.scale.set(420000,5000,1);
+  for(const o of [sdisc,sglare,sstreak]){o.material.depthTest=true;o.renderOrder=-1;o.userData.noWire=true;sunG.add(o);}
+  SKY.add(sunG);
+  const sl=new THREE.Vector3(),qs=new THREE.Quaternion();
+  animHooks.push(()=>{
+    for(const u of ATMOS)u.uSun.value.copy(W.sun);
+    const show=here.group.visible&&!!here.P.sunDisc&&!S.warp;sunG.visible=show;if(!show)return;
+    sl.copy(W.sun).applyQuaternion(qs.copy(SKY.quaternion).invert()).multiplyScalar(800000);sunG.position.copy(sl);
+    const c=key.color;for(const o of [sdisc,sglare,sstreak])o.material.color.copy(c);sdisc.material.color.lerp(new THREE.Color(1,1,1),0.6);
+    // the streak lies level on the screen
+    sstreak.material.rotation=0;});
   animHooks.push(now=>{if(!S.on&&here!==home&&here.group.visible)here.update(now*0.001,0.016,camera);});
 
   // ---- solid things: the ship holds off them ----
@@ -119,6 +138,7 @@ export function nav(W){
   document.body.appendChild(panel);
   const toastEl=document.createElement('div');toastEl.id='ent-toast';toastEl.setAttribute('role','status');document.body.appendChild(toastEl);
   let toastT=null;
+  W.toast=(n,m)=>toast(n,m);
   function toast(name,note){toastEl.innerHTML='';const b=document.createElement('b');b.textContent=name;toastEl.append(b,document.createTextNode(note||''));
     toastEl.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>{toastEl.style.opacity=0;},7000);}
   const eta=(d,w)=>{const s=d/lyps(w),days=d/warpC(w)*365.25;
