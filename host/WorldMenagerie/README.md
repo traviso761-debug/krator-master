@@ -1983,6 +1983,11 @@ wireframe and menagerie menu every other page has.
     dish meets the outer shelf; the neck now flares into the engineering hull as it does into the saucer,
     instead of meeting it at a hard line; and the pylons thicken at both ends and run out forward along the
     nacelle's underside as a fairing.
+  - **Markings, from photographs of a painted model** (Diamond Select's Starship Legends Enterprise-D, in a
+    review on figurefanzero.com): the phaser strips are dark grey and scored across, not copper; the escape
+    pods are tan hatches in twos to fours in rings across the dish; the registry is dark grey edged in red in a
+    wide face, with the name over it in red; a red pinstripe edged in white runs down the neck's back and the
+    engineering hull's spine, and along each nacelle's top behind a gold delta.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a

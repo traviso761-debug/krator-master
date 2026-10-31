@@ -15,16 +15,20 @@
 //   - The windows are where the decks meet the skin. On the saucer the decks are flat floors and the dish slopes
 //     through them, so each deck shows as one ring of windows, and the rings crowd together where the dish is
 //     steepest and stop where it is flat, as on the ship. On the stardrive they are courses along the sides.
-//   - The phaser strips are copper bands let into the dish, broken where the impulse deck is.
+//   - The phaser strips are dark grey bands let into the dish, scored across, broken where the impulse deck is.
+//   - The escape pods are tan hatches in twos, threes and fours, in rings across the dish.
+//   - The registry is dark grey edged in red, in a wide face; the name over it is red. A red pinstripe runs down
+//     the neck's back and the spine of the engineering hull, and along the top of each nacelle behind its delta.
 import {ell,halfBeam,saucerTop,saucerBot,rho,clamp,smooth,normalAt,rimSurf,mono} from './hull.js';
 import {SAUCER} from './dims.js';
+import {NACZ} from './hull.js';
 
 const HASH=(a,b,c)=>{let h=Math.imul(a|0,0x27d4eb2d)^Math.imul(b|0,0x165667b1)^Math.imul(c|0,0x2c1b3c6d);
   h=Math.imul(h^(h>>>15),0x85ebca6b);h=Math.imul(h^(h>>>13),0xc2b2ae35);return ((h^(h>>>16))>>>0)/4294967296;};
 const fr=x=>x-Math.floor(x);
 
 // the hull's greys, linear; the plates are set a few per cent either side, warmer and cooler
-const BASE=[0.585,0.615,0.64],GLASS=[0.05,0.055,0.065],STRIP=[0.40,0.25,0.15],HATCH=[0.40,0.42,0.44];
+const BASE=[0.585,0.615,0.64],GLASS=[0.05,0.055,0.065],STRIP=[0.25,0.265,0.285],HATCH=[0.62,0.55,0.38],RED=[0.55,0.07,0.05],GOLD=[0.72,0.55,0.22];
 const TONES=[[0.955,0.965,0.99],[0.99,0.993,1.0],[1.02,1.017,1.0],[1.045,1.04,1.03]];
 
 // The aztec field at (a, b) in metres, cells cw by ch, every course offset: the tone of the plate it is on and how
@@ -111,11 +115,17 @@ function saucerTex(THREE,renderer,top,N){
           if(fr(s/2.7)<0.48&&HASH(Math.floor(s/19+HASH(dk,seed,5)*7),dk,seed+9)>0.3)lit=HASH(col,dk,seed+4)<0.86?1:2;
         }
       }
-      // the lifeboats: a ring of hatches just inside the rim
-      const dr=(1-e)*R;
-      if(!lit&&dr>4.5&&dr<7.5&&fr(th*r/6.5)<0.32&&x>-150){T.set(idx,HATCH,ONE,0.7,0.45,false);continue;}
-      // the phaser strip, broken over the impulse deck
-      if(Math.abs(e-rimE)*R<1.15&&!(x<-95&&Math.abs(z)<150)){T.set(idx,STRIP,ONE,0.75,0.32,false);continue;}
+      // the escape pods: tan hatches 2.4 m square, in groups of two to four, on rings across the dish
+      if(!lit&&x>-150){
+        for(const pe of PODS){const dr=(e-pe)*R;if(Math.abs(dr)>1.3)continue;
+          const s=th*r,g=Math.floor(s/24),k=2+Math.floor(HASH(g,pe*1000,seed+12)*3),o=(s/24-g)*24-3;
+          if(HASH(g,pe*1000,seed+13)<0.55&&o>0&&o<k*3.1&&fr(o/3.1)<0.78){T.set(idx,HATCH,ONE,0.8,0.5,false);lit=-1;}
+          break;}
+        if(lit===-1)continue;
+      }
+      // the phaser strip, broken over the impulse deck: a dark band scored across every metre
+      {const ds=Math.abs(e-rimE)*R;
+       if(ds<1.4&&!(x<-95&&Math.abs(z)<150)){const sc=fr(th*r/1.1)<0.18||ds>1.1;T.set(idx,STRIP,sc?[0.7,0.7,0.72]:ONE,ds>1.1?0.45:0.8,0.35,false);continue;}}
       if(lit===2){T.set(idx,GLASS,ONE,0.8,0.15,false);continue;}
       plate(T,idx,AZ,1,lit);
     }
@@ -123,18 +133,21 @@ function saucerTex(THREE,renderer,top,N){
   T.after=ctx=>lettering(ctx,N,top);
   return finish(THREE,renderer,T);
 }
+const PODS=[0.57,0.82,0.935];
 const TOPP=mono(SAUCER.top),BOTP=mono(SAUCER.bot);
 const saucerTopBare=e=>TOPP(e),saucerBotBare=e=>BOTP(e);
 // The registry, set in the plan's own metres. The canvas is the plan seen from below (z across, x down it), so
 // on the top it is set mirrored to read right from above; on the underside it is turned to read from below.
 function lettering(ctx,N,top){
   const px=z=>(z-PLAN.z0)/(PLAN.z1-PLAN.z0)*N,py=x=>(x-PLAN.x0)/(PLAN.x1-PLAN.x0)*N,mpp=N/(PLAN.z1-PLAN.z0);
-  const set=(text,x,z,h,flipX,turn,wide)=>{
+  const set=(text,x,z,h,flipX,turn,wide,red)=>{
     ctx.save();ctx.translate(px(z),py(x));if(turn)ctx.rotate(Math.PI);ctx.scale((flipX?-1:1)*mpp*(wide||1),mpp);
     ctx.font='700 '+h+'px "Arial Narrow","Helvetica Neue",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='rgb(38,42,50)';ctx.fillText(text,0,0);ctx.restore();};
-  if(top){set('NCC-1701-D',84,0,13,true,false,1.15);set('U.S.S. ENTERPRISE',66,0,4.2,true,false,1.1);}
-  else{set('NCC-1701-D',70,0,15,false,true,1.15);}
+    if(red){ctx.fillStyle='rgb(150,34,30)';ctx.fillText(text,0,0);}
+    else{ctx.lineJoin='round';ctx.lineWidth=h*0.055;ctx.strokeStyle='rgb(160,36,30)';ctx.strokeText(text,0,0);ctx.fillStyle='rgb(36,40,48)';ctx.fillText(text,0,0);}
+    ctx.restore();};
+  if(top){set('NCC-1701-D',84,0,12,true,false,1.55);set('U.S.S. ENTERPRISE',71,0,3.6,true,false,1.5,true);}
+  else{set('NCC-1701-D',70,0,15,false,true,1.55);}
 }
 
 // ---------- the rim ----------
@@ -183,8 +196,17 @@ function sampler(f,flip,gu,gv){
 }
 // The stardrive's skin: plates in courses along the hull (on the sides they run with the decks, on the top and
 // underside with the keel), and the decks of windows along the sides.
-export function hullPainter({windows=true,seed=51,cw=16,ch=9,skip}={}){
+export function hullPainter({windows=true,seed=51,cw=16,ch=9,skip,spine=false,nacelle=false}={}){
   return (T,idx,p,n)=>{
+    // the pinstripe: red edged in white, down the middle of the neck's back and the engineering hull's spine
+    if(spine&&n.y>0.35&&p.x<-150&&Math.abs(p.z)<0.85){T.set(idx,Math.abs(p.z)<0.5?RED:[0.8,0.8,0.8],ONE,0.9,0.4,false);return;}
+    if(nacelle&&n.y>0.5){
+      const a=-(p.x+250),b=Math.abs(p.z)-NACZ;
+      // the delta, and the red line running aft from it
+      if(a>0&&a<14&&Math.abs(b)<(14-a)*0.42&&!(a>10&&Math.abs(b)<1.1)){T.set(idx,GOLD,ONE,0.9,0.35,false);return;}
+      if(a>16&&a<170&&Math.abs(b)<0.45){T.set(idx,RED,ONE,0.9,0.4,false);return;}
+      if(a>16&&a<150&&Math.abs(Math.abs(b)-2.4)<0.22){T.set(idx,RED,ONE,0.9,0.4,false);return;}
+    }
     const side=Math.abs(n.y)<0.72;
     if(side)aztec(p.x,p.y,cw,ch,seed,AZ);else aztec(p.x,Math.abs(p.z),cw,ch*1.4,seed+1,AZ);
     let lit=0;

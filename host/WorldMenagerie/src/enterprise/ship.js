@@ -91,14 +91,15 @@ export function model(api){
       const u=0.84,v=side>0?0.12:0.38;
       ctx.save();ctx.translate(u*W,v*H);if(side>0)ctx.rotate(Math.PI);ctx.scale(W/300*0.95,H/360*1.0);
       ctx.font='700 6px "Arial Narrow","Helvetica Neue",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillStyle='rgb(38,42,50)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
+      ctx.lineJoin='round';ctx.lineWidth=0.7;ctx.strokeStyle='rgb(160,36,30)';ctx.strokeText('NCC-1701-D',0,0);
+      ctx.fillStyle='rgb(36,40,48)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
   };
-  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl}),engLetters);
+  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true}),engLetters);
   add(surface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
-  const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51}));
+  const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51,spine:true}));
   add(surface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
   // the nacelles and pylons: one texture each, both sides
-  const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5}));
+  const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5,nacelle:true}));
   const pyT=loftTex(THREE,renderer,pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}));
   const nacMat=hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=hullMaterial(THREE,pyT,env);
   for(const side of [1,-1]){
@@ -135,7 +136,7 @@ export function model(api){
     // the gold rings behind it
     for(const d of [429,433.5,438]){
       const ring=patch(f,side>0,(u,v,m)=>{m[0]=dToU(d-1.4+u*2.8);m[1]=v;},0.2);
-      add(surface(THREE,ring,2,96,side>0),new THREE.MeshStandardMaterial({color:0xc89a48,metalness:0.85,roughness:0.32,envMap:env,envMapIntensity:1.4}),INFO.nacelle,{cast:false});
+      add(surface(THREE,ring,2,96,side>0),new THREE.MeshStandardMaterial({color:0xd8aa48,metalness:0.5,roughness:0.38,envMap:env,envMapIntensity:1.4}),INFO.nacelle,{cast:false});
     }
     // The warp field grilles along both flat sides: blue, in slats, widening at their forward ends.
     for(const inboard of [false,true]){
