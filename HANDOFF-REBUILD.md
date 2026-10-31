@@ -74,6 +74,32 @@ building engine is now named `core/engine`, not `core/kit`.
      one fails at build time.
   Skip its "preserve advected ripples on rivers": the owner asked for breakup on rivers too (eastabyss, `WATER.breakupFlows`).
 
+**Reflections: lessons from the Menagerie's Lake Atitlán** (the owner, 2026-10-31; `host/WorldMenagerie/src/atitlan/waves.js` on
+origin/main; settings in `data/cities/atitlan.json`, `waves`). Core water reflects only the sky (`A.skyEnv`), so hills and shore trees
+never appear in a lake.
+- **How Atitlán does it:** a second camera mirrored in the water plane renders into a target at 35% of the screen's width and height,
+  every 2nd frame, with shadow updates off and a clip plane at the waterline. Only non-instanced meshes over 30 m radius are drawn
+  (on layer 1, rescanned every 2 s). The water mixes it in by Fresnel, capped at .92, with the UVs nudged by the wave slope, and rain
+  dulls it.
+- **Why it may not transfer as it stands:**
+  - resolution only cuts fill, and `biomes/nhighlands/PERF.md` found our pages vertex-bound, so the cost is the ground's vertices;
+  - Atitlán's rule drops instanced meshes, which on a biome page means every tree, so forest shores would reflect bare ground;
+  - it serves one water level, so rivers, terraces and second lakes stay on the sky reflection;
+  - our sky is a separate background pass and must be drawn into the target too;
+  - Godot has no built-in planar reflection: the twin needs a SubViewport mirror.
+- **Tiers, cheapest first; stop at the first the owner accepts:**
+  1. **Ridge reflection:** draw the sky model's ridge profiles, or a one-shot capture from the lake's centre, into the reflection
+     lookup. No per-frame geometry, and it refreshes only when the hour changes much.
+  2. **A static mirror:** the planar render above, done once and again on a slow timer, for still water with a nearly still camera.
+  3. **A live mirror:** Atitlán's method for the one largest still in view, drawing `KFAR`'s far field and the sky plus far impostors
+     for trees, never hero meshes. Off underwater, off when the still fills little of the screen, off beyond a set distance.
+- **The gate:** opt-in per surface with a `?mirror=0` switch. Measure on the Intel Arc 140T by `tools/perf_views.py`, on a lake view
+  and on a view with no lake (it must cost nothing there), on a heavy page. Set the limit with the owner before tier 3 lands.
+- **Cheap lessons, no mirror needed:** fade each wave by its pixel footprint (`wFoot`) so far water doesn't alias; sum waves of
+  incommensurate lengths on golden-angle bearings over warped coordinates (compare with `WATER.breakup`); drop the glint's shininess
+  in wind; let rain dull the reflection; tint shallows by exp(-depth/d) from a baked depth map; add a pale wet edge and surf strip at
+  the waterline (it suits the ground workstream).
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.
