@@ -26,6 +26,8 @@ import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf
 import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
 import {flight} from './flight.js';
 import {events} from './events.js';
+import {nav} from './nav.js';
+import {PLACES} from './places.js';
 
 export function model(api){
   const {THREE,scene,renderer,animHooks,C}=api;
@@ -275,11 +277,17 @@ export function model(api){
   // ---------- flying it, and the events ----------
   const W={THREE,scene,camera:api.camera,renderer,animHooks,C,api,ROOT,G,SAU,env,glowTex,grilleMat:grilleMat(),bussMat,bussGlows,impGlows,bayGlow,
     hullMats:[...hullMats]};
-  const FL=flight(W);W.FULL_IMPULSE=FL.FULL;window.__ent=W;   // for tests
+  // the rim of the saucer at an angle round from the bow (the thrusters' puffs sit on it)
+  W.rimAt=a=>{const r=rho(a);return {x:r*Math.cos(a),y:0,z:r*Math.sin(a)};};
+  const FL=flight(W);window.__ent=W;   // for tests
   const EV=events(W);
+  const NV=nav(W);
   let flyBtn=null;
-  const fly=()=>{if(W.flight.on)FL.stop();else FL.start();if(!flyBtn)flyBtn=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Fly');
+  const btn=t=>[...document.querySelectorAll('#ui button')].find(b=>b.textContent===t);
+  const fly=()=>{if(W.flight.on)FL.stop();else FL.start();if(!flyBtn)flyBtn=btn('Fly');
     if(flyBtn)flyBtn.setAttribute('aria-pressed',String(W.flight.on));};
+  W.startFlight=()=>{if(!W.flight.on)fly();};
+  W.onNavToggle=o=>{const b=btn('Course');if(b)b.setAttribute('aria-expanded',String(o));};
   const evBtn=()=>{const o=!EV.panel.classList.contains('open');EV.panel.classList.toggle('open',o);
     const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Events');if(b)b.setAttribute('aria-expanded',String(o));};
   // #fly opens at the helm; #ev=name[,name...] runs events once the page is up (Warp, red, shields, phasers,
@@ -289,12 +297,19 @@ export function model(api){
    if(h.has('evfreeze'))W.freezeAfter(+h.get('evfreeze'));
    // #dbg: the events' state in the probe's report
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
-   const act={...EV.act,fly,drop:()=>W.dropOut()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+   // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
+   if(h.has('warpf'))NV.course.w=+h.get('warpf');
+   if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}
+   // #at=<place id>: be there from the start
+   if(h.has('at')){const P=PLACES.find(p=>p.id===h.get('at'));if(P){W.flight.map.set(P.ly[0],P.ly[1]);W.arrive();}}
+   // #keys=a,w: hold keys down from evt on (for tests of the helm)
+   if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
+   const act={...EV.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
   return {radius:LEN*0.5,group:ROOT,pick,minD:60,
-    buttons:{'Fly':fly,'Events':evBtn},
+    buttons:{'Fly':fly,'Course':()=>W.openNav(),'Events':evBtn},
     camFrame:FL.camFrame,ownsInput:()=>W.flight.on,
     // a viewpoint chosen while flying hands the helm back first, so the view is of the ship where it is
     onView:()=>{if(W.flight.on)fly();},
-    hud:()=>[FL.hud(),EV.hud()].filter(Boolean).join(' · ')};
+    hud:()=>[FL.hud(),NV.hud(),EV.hud()].filter(Boolean).join(' · ')};
 }

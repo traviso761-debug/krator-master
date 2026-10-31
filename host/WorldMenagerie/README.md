@@ -1994,17 +1994,38 @@ wireframe and menagerie menu every other page has.
     the main bay; the ventral phaser strip runs across the engineering hull's belly; the captain's yacht is a
     seamed oval with its own windows under the saucer; and the neck has a top, seen when the saucer is away.
   - **Flying it** (`flight.js`, the **Fly** button, or `#fly`). The page is a turntable round one object, so
-    the ship (`ROOT`) flies through a world split three ways: the sky (stars and nebulae, at infinity, so they
-    ride with the camera and only turn), the system (the planet, its moon and a target rock, which stay put:
-    the planet is about three minutes off at full impulse), and the effects. W / S step the impulse in
-    quarters (full is 2.5 km/s, far short of the quarter of light speed it is meant to be, so the ship can be seen to move), A / D turn, ↑ / ↓ pitch, Q / E roll, the turn rates easing in as a ship
-    this size would; 1–9 go to warp and 0 drops out. A chase camera follows (drag to look round, scroll to
-    stand off); a thin field of dust round the camera shows the speed at impulse, and streaks at warp. Past
-    20 km out everything is moved back by the ship's position, so a long flight never meets a float's
-    precision. At warp the system goes with you, and dropping out puts you in a new one: the sky, the planet
-    and its sun turned to a new heading. Leaving the helm puts the ship back at the origin, level, by moving
-    and turning the world round it the other way, so every turntable view works again from where you are.
-    On a touch screen a pad of helm buttons stands in for the keys.
+    the ship (`ROOT`) flies through a world split three ways: the sky (stars and far nebulae, at infinity, so
+    they ride with the camera and only turn; one sky for the whole chart), the place you are at with the target
+    rock, which stay put, and the effects. Past 20 km out everything is moved back by the ship's position, so a
+    long flight never meets a float's precision. Leaving the helm puts the ship back at the origin, level, by
+    moving and turning the world round it the other way, so every turntable view works again from where you are.
+    **How it handles**, for a ship of four million tonnes: turn rates build up and die away at a limited angular
+    acceleration (and turn harder with way on), with the reaction thrusters round the saucer's rim puffing while
+    they do; speed is a throttle you hold W or S on, the impulse engines pushing at about 26 g and their glow
+    answering the push, not the speed; the velocity does not swing round with the nose, and what is left sideways
+    after a turn is bled off by the dampers over a second or two, so a hard turn at speed slides; the ship
+    (a `BANK` group between `ROOT` and `G`) leans into a turn by itself and, left alone, rolls back level with the
+    galactic plane; the chase camera is pressed back under acceleration, thrown back as warp catches, and widens
+    its view with speed. Planets, stars and rocks are solid (the ship holds off them), and O near one puts the
+    ship in a standard orbit round it at the height it is at. Warp is the Cochrane scale (light speed times the
+    factor to the ten-thirds: warp 6 is 392 c) with time at warp run 20,000 times fast, said in the readout; a
+    thin field of dust shows the speed at impulse, and streaks at warp. On a touch screen a pad stands in for the
+    keys.
+  - **Places and courses** (`places.js`, `nav.js`, the **Course** button or C). Eight places on a star chart
+    in light-years: home, a ringed gas giant with two moons, an ice world under a red dwarf, a comet near its sun
+    (its ion and dust tails streaming away from the sun in a shader), a binary star (an orange giant with a
+    boiling, limb-darkened surface being stripped by a hot blue companion, the gas curling into a disc round it),
+    an asteroid belt (instanced rock, metres to kilometres across), the inside of an emission nebula round a
+    young cluster, and a black hole (the shadow, a disc hotter inwards and brighter on the side coming towards
+    you, the far side of the disc bent up over the top and down under the bottom, and the photon ring: a picture
+    of what a ray tracer shows, not a ray tracer). Planets and nebulae come from the page's own sky builder
+    (`buildSky`, exported from `src/starship/page.js` for this); each place has its own light. The ship has a
+    position on the chart and moves across it along its heading at warp, so the bearings are real: setting a
+    course turns the ship onto the place's bearing at the helm's own rate, goes to warp at the chosen factor
+    when lined up, steers back to the bearing whenever you let go, and drops out on arrival, with the place
+    drawn ahead of you. Dropping out anywhere else puts you where you are: at a place within a third of a
+    light-year, or in interstellar space. For tests: `#at=giant` starts there, `#course=hole&warpf=9` sets a
+    course, `#keys=a,w` holds keys down.
   - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
     and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
     klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it

@@ -21,6 +21,9 @@ starshipPage({
     'Every drawing of this ship makes it 141 metres tall, whatever the published figure says.',
     'Full impulse is meant to be a quarter of the speed of light; here it is two and a half kilometres a second, so you can see the ship move.',
     'The shields are an ellipsoid round the whole ship, and you only see them where something hits them.',
+    'Warp 6 is 392 times the speed of light; even so the nearest star on the chart is days away, so time at warp runs fast.',
+    'A ship this size does not turn like a fighter: the turn takes a moment to build, and a moment to stop.',
+    'The black hole\'s disc is brighter on the side coming towards you, and its far side is bent up over the top.',
     'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
   ],
 });

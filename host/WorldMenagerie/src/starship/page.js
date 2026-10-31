@@ -24,7 +24,7 @@ const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status
 // ever occluded by anything, so they go on their own layer of distance rather than into the depth buffer's
 // argument: the ship is metres across and the planet is thousands of kilometres away, and a single depth
 // range cannot hold both without the near clip eating the hull.
-function buildSky(THREE,scene,K,rnd){
+export function buildSky(THREE,scene,K,rnd){
   const D=K.far||900000;
   const out={bodies:[]};
   // ---- stars ----

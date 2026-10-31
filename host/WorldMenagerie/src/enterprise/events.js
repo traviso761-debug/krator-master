@@ -86,6 +86,7 @@ export function events(W){
     m.scale.setScalar(55);m.castShadow=m.receiveShadow=true;m.userData.noWire=true;
     m.userData.info={name:'A rock',info:'A few hundred thousand tonnes of nickel-iron, here to be shot at.'};
     SYS.add(m);return m;})();
+  W.rock=rock;
   rock.position.set(2600,180,-1300);
   let rockDead=false,rockHeat=0;
   function placeTarget(){
@@ -132,8 +133,8 @@ export function events(W){
       if(u>1.9){ROOT.scale.x=1;W.spooling=false;return false;}});
   }
   function dropOut(quiet){
-    const S=W.flight;W.spooling=false;if(!S.warp)return;S.warp=0;S.v=Math.min(S.v,W.FULL_IMPULSE);powerTo=0;
-    W.relocate();if(!quiet){sound('warp');flash(shipCentre().add(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion).multiplyScalar(500)),0xcfe4ff,2400,1.1);}
+    const S=W.flight;W.spooling=false;if(!S.warp)return;S.warp=0;powerTo=0;
+    W.arrive();if(!quiet){sound('warp');flash(shipCentre().add(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion).multiplyScalar(500)),0xcfe4ff,2400,1.1);}
   }
   W.engage=engage;W.dropOut=dropOut;
 
@@ -304,7 +305,7 @@ export function events(W){
   W.fire=k=>{if(k==='phasers')phasers();else torpedo();};
   // the events panel
   const panel=document.createElement('div');panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Events');
-  const list=[['Warp',()=>W.flight.on?(W.flight.warp?dropOut():engage(5)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',torpedo],
+  const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',torpedo],
     ['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
   {const h=document.createElement('div');h.className='sub';h.textContent='Events';panel.appendChild(h);}
   for(const [lab,fn] of list){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{ac();fn();sync();};panel.appendChild(b);}
