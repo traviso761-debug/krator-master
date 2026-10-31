@@ -1944,20 +1944,36 @@ wireframe and menagerie menu every other page has.
 - **The sections are generated, not typed.** `SECT.lens` and `SECT.slabS` take a resolution and produce the
   profile, because a hand-listed one is only as smooth as the patience of whoever typed it — the original
   had three points across the whole top of a saucer, which is where the plateau came from.
-- **Galaxy class.** Cut to the published figures: 642.5 m long, 463.7 m across the saucer, 195.3 m from the
-  top of the bridge to the bottom of the engineering hull over 42 decks, and nacelles 248 m long, 57 m wide
-  and 32 m tall at their widest against 38 by 19 at the collector end (Rick Sternbach's blueprints). Three
-  of those corrected the model. The nacelles were 40 m too short, and because their caps have to land on
-  the stern, getting the length right pushes their collector ends *under* the saucer's aft quarter — which
-  is why the class looks so compact from above. A nacelle is wider than it is tall, 57 by 32, not the
-  upright tube it had been. And the engineering hull was 10 m too deep, so the ship stood taller than 195.
-  The saucer is a figure of revolution 464 m across, cut off square at x = -197 where the impulse engines
-  are: a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
-  recessed sensor groove between them — the upper is deck 9, which is Ten Forward and unusually tall, and
-  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim. The
-  engineering hull carries a blunt nose around the deflector, a dorsal spine running aft from the foot of
-  the neck with the upper shuttlebay let into it, three rows of windows and two strakes down each flank —
-  without those it is a featureless white egg, which is what it was.
+- **Galaxy class (rebuilt to measurements, 2026-10-30).** The first Galaxy was cut to the published figures
+  alone; this one is cut to numbers read off published orthographic drawings (a plan, a front view, the Fact
+  Files' five views, cross-checked against photographs of the six-foot studio model) by measuring their
+  silhouettes pixel by pixel. The drawings are not shipped: `src/enterprise/dims.js` holds only the numbers.
+  Three things the published figures alone get wrong: the saucer is an **ellipse**, 384 m long and 464
+  across, that pulls in to a tail over the impulse deck, not a circle cut off square; the engineering hull
+  starts under the middle of the saucer's after half and its nose **leans back about thirty degrees**, with
+  the deflector set into it looking forward and down; and the ship is **141 m** tall, not 195 — every drawing
+  and the studio model agree on it, so the drawings win.
+  - **Every part is a surface function** of (u, v) (`hull.js`): the saucer's top and underside in polar form
+    over its plan, its rim, and lofts of smoothed station tables for the engineering hull, the neck (levels
+    of a stadium whose leading edge leans forward as it rises), the nacelles (a superellipse, wider than
+    tall) and the pylons (a NACA section swept along the U of the front view). The tables are joined with a
+    monotone cubic, never straight lines: a loft through straight segments shows every station as a crease.
+  - **The textures are painted from the same functions** (`skin.js`), texel by texel, so the patterns are in
+    metres on the hull: the aztec plates (two or three close greys, each plate split into an L), panel lines
+    as a bump map, roughness, and the windows — on the saucer where each flat deck meets the sloping dish,
+    which gives rings that crowd where the dish is steep and stop where it is flat, as on the ship. Each part
+    has a colour canvas (so the registry is set with `fillText`) and a data texture: red height, green
+    roughness, blue lit windows, the emissive map patched to read blue only.
+    The canvas is the plan seen from below, so the top's registry is set mirrored to read right from above.
+  - **Light.** Physically based materials, the star casting shadows (a 4096 map over the ship), an
+    environment map of the planet's glow, and ACES tone mapping on the hull only: the backdrop is taken out
+    of it so it keeps the colours it has on Voyager's and DS9's pages. The bussards, grilles, deflector and
+    impulse engines are their own surfaces lifted a fraction off the hull, with sprite glows.
+  - **What looked wrong on the way:** a ray from the saucer's centre straight ahead never left the plan
+    (a zero half-width counted as inside), which put a 70 m needle on the bow; the dorsal plate's steep
+    sides read as a sunken rectangle until they were eased over 15 m; and with the panel lines at the
+    strength the drawings show them, the hull looked like brickwork — from a kilometre the aztec should be
+    a mottle, and close in a faint pattern.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a

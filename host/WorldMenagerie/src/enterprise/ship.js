@@ -1,391 +1,199 @@
 // ---------- Galaxy class ----------
-// Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used, and every shape
-// here is this project's own geometry, built from the published dimensions and the silhouette.
+// Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used, and every shape and
+// texture here is this project's own, built from published dimensions and from measurements of the silhouettes
+// of published orthographic drawings (dims.js says which, and how).
 //
-// The numbers this model is cut to, and where they come from:
+//   dims.js   the numbers: the saucer's plan and profiles, the stations of the engineering hull and the
+//             nacelles, the neck, the pylons, the deflector
+//   hull.js   every part as a surface function of (u, v), and the meshes made from them
+//   skin.js   the textures, painted texel by texel from those same functions: plates, panel lines, windows,
+//             phaser strips, lettering
+//   this      the ship put together: materials, the glows, the running lights, how it is lit
 //
-//   overall length   642.5 m      bow of the saucer to the aft end of the nacelles
-//   beam             463.7 m      across the saucer, which is the widest part of the ship
-//   height           195.3 m      top of the bridge to the bottom of the engineering hull, 42 decks
-//   nacelle          248 m long, 57 m wide and 32 m tall at its widest, 38 by 19 at the collector end
-//                                 (Rick Sternbach's blueprint figures)
+// Three things the drawings say that a ship built from the published figures alone gets wrong:
 //
-// So the bow is at x = +234, the nacelle caps are at x = -408.5, the bridge is at y = +50 and the bottom of
-// the engineering hull at y = -145. The saucer's mid-plane is y = 0 and the bow is towards +x.
+//   - The saucer is an ellipse, 384 m long and 464 across, not a circle, and aft it pulls in to a tail.
+//   - The engineering hull starts under the middle of the saucer's after half, and the nose it starts with leans
+//     back at thirty degrees, with the deflector set into it looking forward and down.
+//   - The ship is 141 m tall, not the published 195: every drawing agrees on it, and so does the studio model.
 //
-// Three things about this shape are counter-intuitive and all three were wrong the first time:
-//
-//   - The saucer is a lens with a rim and a FLAT TRAILING EDGE, cut off square where the impulse engines
-//     are. A disc reads as a flying saucer; this reads as a hull.
-//   - The nacelles are long. At 248 m they are nearly two-fifths of the whole ship, and because the caps
-//     have to land on the stern that puts their collector ends UNDER the saucer's aft quarter, which is
-//     why the class looks so compact from above.
-//   - A nacelle is wider than it is tall - 57 by 32 - not the other way round. It is a flattened slab with
-//     the grilles on its vertical faces, not an upright tube.
-//
-// Every hull here is a table of cross-sections and a section profile, and the tables are the model.
-import {lathe,tube,sweep,discHull,ribbon,deflector,windowRing,windowRow,bussard,SECT,flipV}
-  from '../starship/parts.js';
+// The light: physically based materials, a star with shadows (the nacelles shade the pylons, the saucer the
+// neck), an environment map of the planet's glow and the dark, and ACES tone mapping for the hull only, so the
+// backdrop keeps the colours it has on the other ship pages.
+import {SAUCER,NACELLE,DEFLECTOR,BAYS} from './dims.js';
+import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
+        deflPlane,smooth,ND0,ND1,NACZ,NACY} from './hull.js';
+import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
 
 export function model(api){
-  const {THREE,scene,animHooks,fold,palette}=api;
-  const m=palette({});
+  const {THREE,scene,renderer,animHooks,C}=api;
   const G=new THREE.Group();
-  const parts=[];
-
+  // the ship's own frame has the saucer's centre at the origin; the page turns round the middle of the ship
+  G.position.set(129.25,34.5,0);
   const LEN=642.5;
 
-  // ---------- the saucer ----------
-  // A figure of revolution, 464 m across, with its aft end cut off square at x = -197. `TOP` and `BOT` are
-  // the profile measured against the true radius, so the hull is the same thickness 200 m forward as it is
-  // 200 m abeam - which the station-and-section version was not: it stood 14 m tall one way and 25 m the
-  // other, and had a 140 m flat plateau across the middle where the dome should be.
-  const SR=232, CUT=-197;
-  const TOP=[[0,30.0],[38,29.6],[78,28.6],[114,27.0],[145,24.8],[172,22.0],[194,18.6],[210,15.2],
-             [221,12.2],[228,10.0],[232,8.5]];
-  const BOT=[[0,-26.0],[50,-25.9],[95,-25.4],[135,-24.2],[168,-22.0],[193,-18.8],[211,-14.8],
-             [223,-11.4],[229,-9.5],[232,-8.5]];
-  const sampleAt=(tbl,r)=>{
-    if(r<=tbl[0][0])return tbl[0][1];
-    for(let i=0;i<tbl.length-1;i++)if(r<=tbl[i+1][0]){
-      const t=(r-tbl[i][0])/(tbl[i+1][0]-tbl[i][0]);
-      return tbl[i][1]+(tbl[i+1][1]-tbl[i][1])*t;
-    }
-    return tbl[tbl.length-1][1];
+  // ---------- the light ----------
+  // The backdrop was made for the page's plain output: it is left out of the tone mapping.
+  scene.traverse(o=>{if(o.material)for(const m of [].concat(o.material))m.toneMapped=false;});
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.95;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  const dir=(a,e)=>new THREE.Vector3(Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e));
+  const SL=C.space&&C.space.starLight||{},B0=(C.space&&C.space.bodies||[])[0];
+  let key=null;scene.traverse(o=>{if(!key&&o.isDirectionalLight)key=o;});
+  if(key){
+    key.castShadow=true;key.shadow.mapSize.set(4096,4096);
+    const sc=key.shadow.camera;sc.left=sc.bottom=-400;sc.right=sc.top=400;sc.near=9000;sc.far=11000;sc.updateProjectionMatrix();
+    key.shadow.bias=-0.0004;key.shadow.normalBias=0.6;key.target.position.set(0,0,0);scene.add(key.target);
+  }
+  // The environment: what a polished hull would show of its surroundings. Nearly all of it is black; the world
+  // below fills a quarter of the sky with blue, and the star is a point.
+  const env=(()=>{
+    const s=new THREE.Scene(),sun=dir(SL.az===undefined?-0.8:SL.az,SL.el===undefined?0.45:SL.el),pl=B0?dir(B0.az,B0.el):new THREE.Vector3(0,-1,0);
+    const m=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:{uS:{value:sun},uP:{value:pl},uR:{value:B0?Math.sin((B0.deg||20)*Math.PI/360)*1.8:0.3}},
+      vertexShader:'varying vec3 vD;void main(){vD=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:`varying vec3 vD;uniform vec3 uS,uP;uniform float uR;
+        void main(){vec3 d=normalize(vD);float p=dot(d,normalize(uP)),pc=cos(uR);
+          vec3 c=vec3(0.004,0.005,0.009)+vec3(0.006,0.007,0.012)*max(0.,d.y);
+          c+=vec3(0.10,0.17,0.28)*smoothstep(pc-0.25,pc+0.02,p)+vec3(0.03,0.05,0.08)*smoothstep(-0.2,pc,p);
+          c+=vec3(6.,5.6,5.)*smoothstep(0.9990,0.9998,dot(d,normalize(uS)))+vec3(0.08,0.07,0.06)*pow(max(0.,dot(d,normalize(uS))),24.);
+          gl_FragColor=vec4(c,1.);}`});
+    s.add(new THREE.Mesh(new THREE.SphereGeometry(100,48,24),m));
+    const pm=new THREE.PMREMGenerator(renderer),t=pm.fromScene(s,0).texture;pm.dispose();m.dispose();
+    return t;
+  })();
+
+  // ---------- the hull ----------
+  const parts=[];
+  const add=(geo,mat,info,o={})=>{const m=new THREE.Mesh(geo,mat);m.castShadow=o.cast!==false;m.receiveShadow=o.receive!==false;
+    if(info)m.userData.info=info;G.add(m);parts.push(m);return m;};
+  const T=saucerTextures(THREE,renderer);
+  const INFO={
+    saucer:{name:'The saucer',info:'The primary hull: an ellipse 384 m long and 464 across, sixteen decks at the middle and two at the rim. It can be separated from the rest of the ship, and land.'},
+    bridge:{name:'The main bridge',info:'Deck 1, on top of the saucer, a little aft of its centre.'},
+    eng:{name:'The engineering hull',info:'The stardrive section: the warp core, the deflector, the main shuttlebay at its stern. About 300 m long.'},
+    neck:{name:'The neck',info:'The interconnecting dorsal, leaning forward as it rises to the saucer. Aft, its back slopes down from the impulse deck to the spine of the engineering hull.'},
+    nacelle:{name:'A warp nacelle',info:'246 m long, wider than it is tall. The red Bussard collector is at its nose and the warp field grilles run along both its flat sides.'},
+    pylon:{name:'A nacelle pylon',info:'Out level from the engineering hull and up round a bend into the nacelle: the U you see head on.'},
+    defl:{name:'The main deflector',info:'Sweeps the ship\'s path clear of dust and gas. It is set into the engineering hull\'s sloping nose, looking forward and down.'},
+    bussard:{name:'A Bussard collector',info:'A magnetic scoop for interstellar hydrogen, glowing red.'},
+    impulse:{name:'The main impulse engine',info:'Across the trailing edge of the saucer, under the dorsal stem.'},
   };
-  const SAUCER=discHull(THREE,m.hull,{R:SR,cut:CUT,top:TOP,bot:BOT,seg:132,rings:26});
-  parts.push(SAUCER.mesh);
-  const OUT=SAUCER.outline;
-
-  // The rim. Two rows of windows with a recessed sensor groove between them - the upper row is deck 9,
-  // which is Ten Forward and an unusually tall deck, and the lower is deck 10. None of it runs across the
-  // transom, because the transom is the impulse deck and is half as tall again as the rim.
-  for(let a=0;a<OUT.length;a++){
-    const p=OUT[a],q=OUT[(a+1)%OUT.length];
-    if(p.cut||q.cut)continue;
-    const ang=-Math.atan2(q.z-p.z,q.x-p.x);
-    const len=Math.hypot(q.x-p.x,q.z-p.z);
-    const mid=(p.yT+p.yB)/2;
-    if(a%2===0){
-      const gr=new THREE.Mesh(new THREE.BoxGeometry(len*2.1,3.0,1.5),m.dark);
-      gr.position.set((p.x+q.x)/2,mid,(p.z+q.z)/2*0.997);gr.rotation.y=ang;parts.push(gr);
-    }
-    if(a%3===0&&((a*7)%13)!==0){
-      for(const [y,h] of [[mid+4.6,2.4],[mid-4.4,1.8]]){
-        const w=new THREE.Mesh(new THREE.BoxGeometry(3.0,h,1.3),m.lit);
-        w.position.set(p.x,y,p.z*1.004);w.rotation.y=ang;parts.push(w);
-      }
-    }
-    // the lifeboat hatches, in a line just above and below the rim band
-    if(a%4===0){
-      for(const y of [p.yT-1.6,p.yB+1.6]){
-        const h=new THREE.Mesh(new THREE.BoxGeometry(11,1.0,3.0),m.panelB);
-        h.position.set(p.x*0.995,y,p.z*0.995);h.rotation.y=ang;parts.push(h);
-      }
-    }
-  }
-
-  // A continuous arc from one side of the transom, round the bow, to the other: the order the outline has
-  // to be walked in so that a strip does not try to cross the impulse deck.
-  const ARC=[];
-  for(let k=0;k<OUT.length;k++){
-    const a=(Math.floor(OUT.length/2)+k)%OUT.length;
-    if(!OUT[a].cut)ARC.push(a);
-  }
-  const ALL=OUT.map((_,i)=>i);
-  // Bands that lie on the hull. `arcRows` follows the outline in and out by a fraction of its radius and
-  // `ringRows` walks a true circle; both take their height from the same profile the hull was cut to, so
-  // what comes back sits on the surface instead of near it.
-  const arcRows=(list,f0,f1,tbl,lift)=>list.map(a=>{
-    const p=OUT[a];
-    return [[p.x*f0,sampleAt(tbl,p.r*f0)+lift,p.z*f0],[p.x*f1,sampleAt(tbl,p.r*f1)+lift,p.z*f1]];
-  });
-  const ringRows=(r0,r1,tbl,lift,n)=>{
-    const rows=[];
-    for(let i=0;i<(n||120);i++){
-      const th=i/(n||120)*Math.PI*2, c=Math.cos(th), sn=Math.sin(th);
-      rows.push([[c*r0,sampleAt(tbl,r0)+lift,sn*r0],[c*r1,sampleAt(tbl,r1)+lift,sn*r1]]);
-    }
-    return rows;
+  const saucerMat=t=>hullMaterial(THREE,t,env);
+  {const g=surface(THREE,saucerSurf(true),384,128,false);planUV(g);add(g,saucerMat(T.top),INFO.saucer);}
+  {const g=surface(THREE,saucerSurf(false),384,112,true);planUV(g);add(g,saucerMat(T.bot),INFO.saucer);}
+  add(surface(THREE,rimSurf,1024,8,false),hullMaterial(THREE,T.rim,env,{bump:0.25}),INFO.saucer);
+  // the stardrive: the engineering hull and the neck share one painter, so the decks run on across the join
+  const DF=DEFLECTOR;
+  const nearDefl=p=>Math.pow((p.y-DF.y)/DF.ry,2)+Math.pow(p.z/DF.rz,2)<2.2&&p.x>DF.x-12;
+  const engLetters=(ctx,W,H)=>{
+    // the registry on both sides of the raised after body, over the pylons
+    for(const side of [1,-1]){
+      const u=0.84,v=side>0?0.12:0.38;
+      ctx.save();ctx.translate(u*W,v*H);if(side>0)ctx.rotate(Math.PI);ctx.scale(W/300*0.95,H/360*1.0);
+      ctx.font='700 6px "Arial Narrow","Helvetica Neue",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='rgb(38,42,50)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
   };
-
-  // the phaser strips: two long shallow arcs let into the upper saucer and two more underneath
-  parts.push(ribbon(THREE,m.strip,arcRows(ARC,0.874,0.898,TOP,0.35),{closed:false,up:true}));
-  parts.push(ribbon(THREE,m.strip,arcRows(ARC,0.874,0.898,BOT,-0.35),{closed:false,up:false}));
-
-  // ---------- the ventral ----------
-  // The underside of a Galaxy is not a blank dish, and this one was: two rings of dashes and nothing
-  // else. What is down there is the main sensor dome standing on a raised platform, the concentric panel
-  // joins, four docking ports, and the captain's yacht clamped flat aft of the dome.
-  for(const [f0,f1] of [[0.487,0.513],[0.727,0.753]])
-    parts.push(ribbon(THREE,m.panelA,arcRows(ALL,f0,f1,BOT,-0.3),{closed:true,up:false}));
-  parts.push(ribbon(THREE,m.panelB,ringRows(31,53,BOT,-0.5,96),{closed:true,up:false}));
-  parts.push(ribbon(THREE,m.trim,ringRows(53,57,BOT,-0.9,96),{closed:true,up:false}));
-  for(let k=0;k<36;k++){
-    if(k%3===0)continue;
-    const th=k/36*Math.PI*2;
-    const w=new THREE.Mesh(new THREE.BoxGeometry(3.4,1.4,3.4),m.lit);
-    w.position.set(Math.cos(th)*45,sampleAt(BOT,45)-1.2,Math.sin(th)*45);parts.push(w);
+  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl}),engLetters);
+  add(surface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
+  const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51}));
+  add(surface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
+  // the nacelles and pylons: one texture each, both sides
+  const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5}));
+  const pyT=loftTex(THREE,renderer,pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}));
+  const nacMat=hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=hullMaterial(THREE,pyT,env);
+  for(const side of [1,-1]){
+    add(surface(THREE,nacSurf(side),320,96,side>0),nacMat,INFO.nacelle);
+    add(surface(THREE,pylonSurf(side),96,48,side<0),pyMat,INFO.pylon);
   }
-  for(const [f,n,sz] of [[0.62,96,2.8],[0.40,64,2.8]]){
-    for(let k=0;k<n;k++){
-      const a=Math.round(k/n*OUT.length)%OUT.length, p=OUT[a];
-      if(((k*53)%11)===0)continue;
-      const w=new THREE.Mesh(new THREE.BoxGeometry(sz,1.4,sz),m.lit);
-      w.position.set(p.x*f,sampleAt(BOT,p.r*f)+0.5,p.z*f);parts.push(w);
+
+  // ---------- the lights it makes ----------
+  const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);
+    g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.18,'rgba(255,255,255,0.55)');g.addColorStop(0.5,'rgba(255,255,255,0.12)');g.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
+  const glows=[];
+  const glow=(x,y,z,col,size,k)=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:col,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,toneMapped:false,opacity:k===undefined?1:k}));
+    s.position.set(x,y,z);s.scale.setScalar(size);s.userData.noWire=true;G.add(s);glows.push(s);return s;};
+  const basic=(o)=>new THREE.MeshBasicMaterial(Object.assign({toneMapped:false},o));
+  const stripes=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;};
+  const lit=(geo,mat,info)=>{const m=new THREE.Mesh(geo,mat);if(info)m.userData.info=info;G.add(m);return m;};
+
+  // The Bussard collectors: the nose of each nacelle and an oval back along both its sides, glowing, with a slow
+  // swirl turning in them.
+  const bussTex=stripes(256,64,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'#ff4a24');g.addColorStop(0.5,'#e02c14');g.addColorStop(1,'#a8180a');
+    x.fillStyle=g;x.fillRect(0,0,w,h);x.globalCompositeOperation='lighter';
+    for(let i=0;i<6;i++){x.strokeStyle='rgba(255,120,60,0.09)';x.lineWidth=5;x.beginPath();x.moveTo(0,i/6*h);x.bezierCurveTo(w*0.3,i/6*h+h*0.25,w*0.6,i/6*h-h*0.15,w,i/6*h+h*0.12);x.stroke();}});
+  const bussMat=basic({map:bussTex});
+  for(const side of [1,-1]){
+    const f=nacSurf(side),d0=ND0,d1=425,span=ND1-ND0;
+    // u along the nose from its tip to the oval's after end, which is further aft at the middle of the side
+    const map=(u,v,m)=>{const a=v*Math.PI*2,yf=Math.sin(a),k=Math.sqrt(Math.max(0,1-Math.pow(yf/0.62,2)));
+      const d=d0+u*(4+(d1-d0-4)*k);m[0]=dToU(d);m[1]=v;};
+    const dToU=d=>{let lo=0,hi=1;for(let i=0;i<30;i++){const u=(lo+hi)/2,t=0.5-0.5*Math.cos(Math.PI*u),dd=ND0+span*(0.4*u+0.6*t);if(dd<d)lo=u;else hi=u;}return lo;};
+    lit(surface(THREE,patch(f,side>0,map,0.25),48,96,side>0),bussMat,INFO.bussard);
+    {const tip=new THREE.Mesh(new THREE.SphereGeometry(1.4,12,8),bussMat);tip.position.set(192-ND0-0.3,NACY,side*NACZ);tip.userData.noWire=true;G.add(tip);}
+    glow(-206,NACY,side*NACZ,0xff5a2a,95,0.9);
+    // the gold rings behind it
+    for(const d of [429,433.5,438]){
+      const ring=patch(f,side>0,(u,v,m)=>{m[0]=dToU(d-1.4+u*2.8);m[1]=v;},0.2);
+      add(surface(THREE,ring,2,96,side>0),new THREE.MeshStandardMaterial({color:0xc89a48,metalness:0.85,roughness:0.32,envMap:env,envMapIntensity:1.4}),INFO.nacelle,{cast:false});
+    }
+    // The warp field grilles along both flat sides: blue, in slats, widening at their forward ends.
+    for(const inboard of [false,true]){
+      const GR=NACELLE.grille,fy0=GR.y0-NACY,fy1=GR.y1-NACY,dA=192-GR.x1,dB=192-GR.x0;
+      const mapG=(u,v,m)=>{const d=dA+(dB-dA)*u,hh=nacHalf(d)[1],flare=1+0.7*(1-smooth(0,0.16,u)),mid=(fy0+fy1)/2,half=(fy1-fy0)/2*flare;
+        m[0]=dToU(d);let ph=nacPhi((mid+(v*2-1)*half)/hh,inboard)/(Math.PI*2);if(ph<0)ph+=1;m[1]=ph;};
+      lit(surface(THREE,patch(f,side>0,mapG,0.22),96,8,(side>0)!==inboard),grilleMat(),INFO.nacelle);
     }
   }
-  // four docking ports, out where the hull is still deep enough to hold one
-  for(const th of [0.72,-0.72,2.42,-2.42]){
-    const r=152, c=Math.cos(th), sn=Math.sin(th);
-    const port=new THREE.Mesh(new THREE.BoxGeometry(26,2.4,20),m.dark);
-    port.position.set(c*r,sampleAt(BOT,r)-0.6,sn*r);port.rotation.y=-th;parts.push(port);
-    const lip=new THREE.Mesh(new THREE.BoxGeometry(34,1.0,28),m.panelA);
-    lip.position.set(c*r,sampleAt(BOT,r)+0.4,sn*r);lip.rotation.y=-th;parts.push(lip);
-    const lt=new THREE.Mesh(new THREE.BoxGeometry(5,1.6,5),m.lit);
-    lt.position.set(c*(r+17),sampleAt(BOT,r+17)-1.0,sn*(r+17));parts.push(lt);
-  }
-  // two rows of ventral sensor pallets either side of the yacht
-  for(const sd of [-1,1])for(let i=0;i<4;i++){
-    const x=-40-i*30, z=sd*(52+i*4), r=Math.hypot(x,z);
-    const pl=new THREE.Mesh(new THREE.BoxGeometry(26,1.4,15),m.panelA);
-    pl.position.set(x,sampleAt(BOT,r)-0.5,z);parts.push(pl);
+  function grilleMat(){
+    if(grilleMat.m)return grilleMat.m;
+    const t=stripes(16,64,(x,w,h)=>{x.fillStyle='#2a5cc8';x.fillRect(0,0,w,h);for(let i=0;i<8;i++){x.fillStyle='#8cc8ff';x.fillRect(0,i*8+2,w,4);}});
+    t.repeat.set(1,1);return grilleMat.m=basic({map:t,side:THREE.DoubleSide});
   }
 
-  // the two long pennant panels on the saucer roof, which are structure rather than paint
-  for(const sd of [-1,1]){
-    for(let i=0;i<16;i++){
-      const x=110-i*13, z=sd*(102+i*0.9);
-      const r=Math.hypot(x,z);
-      if(r>222)continue;
-      const pn=new THREE.Mesh(new THREE.BoxGeometry(15,0.9,20),m.pennant);
-      pn.position.set(x,sampleAt(TOP,r)+0.25,z);pn.rotation.y=sd*0.055;
-      pn.rotation.z=-(sampleAt(TOP,r+7)-sampleAt(TOP,r-7))/14*Math.sign(x);parts.push(pn);
-    }
-  }
-
-  // ---------- the bridge ----------
+  // The deflector: a shallow elliptical dish in the nose's flat, copper rings round a glowing core.
   {
-    const b=lathe(THREE,[[0.001,48.6],[10,47.6],[17,45.4],[21,41.2],[22,35.6],[22,30.6],[0.001,30.0]],48,m.hull);
-    parts.push(b);
-    const d=lathe(THREE,[[0.001,34.6],[28,33.8],[35,32.0],[37,30.2],[0.001,29.8]],48,m.panelB);
-    parts.push(d);
-    windowRing(THREE,parts,m.lit,41.2,21.2,21.2,26,[1.3,2.0,1.3]);
-    // the main sensor dome, on the other end of the same axis
-    const sd=lathe(THREE,[[0.001,-47.6],[15,-45.8],[24,-41.0],[27,-34.6],[0.001,-26.2]],48,m.trim);
-    parts.push(sd);
-    const lens=new THREE.Mesh(new THREE.SphereGeometry(14,20,12),m.deflector);
-    lens.position.set(0,-45.1,0);lens.scale.set(1,0.4,1);parts.push(lens);
-    const y1=lathe(THREE,[[0.001,0],[12,-2.0],[24,-4.2],[31,-7.2],[28,-10.6],[14,-12.8],[0.001,-13.4]],26,m.trim);
-    y1.rotation.y=Math.PI/2;y1.scale.set(2.0,1,1);y1.position.set(-96,-25.2,0);parts.push(y1);
-    for(let k=0;k<7;k++){
-      const w=new THREE.Mesh(new THREE.BoxGeometry(5,1.2,1.6),m.lit);
-      w.position.set(-150+k*18,-29.6,0);parts.push(w);
-    }
+    const tl=DF.tilt,up=new THREE.Vector3(Math.sin(tl),Math.cos(tl),0),nrm=new THREE.Vector3(Math.cos(tl),-Math.sin(tl),0);
+    const c0=new THREE.Vector3(deflPlane(DF.y),DF.y,0);
+    const f=(u,v,p)=>{const a=v*Math.PI*2,r=u;const dd=-DF.depth*(1-r*r)+0.35;
+      p.x=c0.x+up.x*DF.ry*r*Math.sin(a)+nrm.x*dd;p.y=c0.y+up.y*DF.ry*r*Math.sin(a)+nrm.y*dd;p.z=DF.rz*r*Math.cos(a);};
+    const t=stripes(256,8,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,0);
+      g.addColorStop(0,'#fff1c8');g.addColorStop(0.12,'#ffc060');g.addColorStop(0.3,'#d0782a');g.addColorStop(0.55,'#8a4a1c');g.addColorStop(0.8,'#b06428');g.addColorStop(1,'#5a3418');
+      x.fillStyle=g;x.fillRect(0,0,w,h);for(let i=1;i<9;i++){x.fillStyle='rgba(30,14,6,0.55)';x.fillRect(i/9*w,0,2,h);}});
+    t.wrapS=THREE.ClampToEdgeWrapping;
+    lit(surface(THREE,f,24,96,true),basic({map:t,side:THREE.DoubleSide}),INFO.defl);
+    const gp=c0.clone().addScaledVector(nrm,4);glow(gp.x,gp.y,gp.z,0xffa040,70,0.75);
   }
 
-  // ---------- the impulse engines ----------
-  for(const sd of [-1,1]){
-    const r=Math.hypot(CUT,62), y=(sampleAt(TOP,r)+sampleAt(BOT,r))/2;
-    const box=new THREE.Mesh(new THREE.BoxGeometry(20,15,56),m.panelA);
-    box.position.set(CUT+6,y,sd*62);parts.push(box);
-    const glow=new THREE.Mesh(new THREE.BoxGeometry(3.4,11,48),m.impulse);
-    glow.position.set(CUT-3.5,y,sd*62);parts.push(glow);
-  }
-
-  // ---------- the neck ----------
-  // A blade between the saucer's underside and the top of the engineering hull: thin across, deep
-  // fore-and-aft, leaning about thirty-five degrees off vertical. The section is an aerofoil turned round,
-  // so the blunt edge faces forward and the sharp one aft.
+  // The main impulse engine: two red-lit grilles across the saucer's trailing edge, either side of the stem.
   {
-    const path=[];
-    for(let i=0;i<=8;i++){
-      const t=i/8;
-      path.push({p:[-116-t*58,-22-t*44,0],dir:[-0.55,-0.835,0],ry:42-t*6,rz:9.5+t*3.5});
+    const mat=basic({map:stripes(8,32,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#ff8a50');g.addColorStop(0.5,'#ff2a0a');g.addColorStop(1,'#801006');x.fillStyle=g;x.fillRect(0,0,w,h);})});
+    for(const [a0,a1] of [[Math.PI-0.30,Math.PI-0.06],[Math.PI+0.06,Math.PI+0.30]]){
+      const f=patch(rimSurf,false,(u,v,m)=>{m[0]=(a0+(a1-a0)*u)/(Math.PI*2);m[1]=0.08+0.42*v;},0.3);
+      lit(surface(THREE,f,24,4,false),mat,INFO.impulse);
+      const a=(a0+a1)/2,r=rho(a);glow(r*Math.cos(a)-4,2,r*Math.sin(a),0xff3a14,40,0.7);
     }
-    parts.push(sweep(THREE,path,0,m.hull,flipV(SECT.aerofoil)));
-    for(let i=0;i<7;i++){
-      const t=i/6;
-      const w=new THREE.Mesh(new THREE.BoxGeometry(2.4,2.0,2.6),m.lit);
-      w.position.set(-116-t*58+22,-24-t*42,0);parts.push(w);
-    }
-    const tl=new THREE.Mesh(new THREE.BoxGeometry(26,9,30),m.dark);
-    tl.position.set(-104,-28,0);tl.rotation.z=0.16;parts.push(tl);
-    const tg=new THREE.Mesh(new THREE.BoxGeometry(3,5.0,21),m.deflector);
-    tg.position.set(-92,-26,0);tg.rotation.z=0.16;parts.push(tg);
   }
-
-  // ---------- the engineering hull ----------
-  // An egg, widest about a third of the way back. Its lowest point is y = -145, which with the bridge at
-  // +50 is the 195 m the class is quoted at; the first pass had it 10 m too deep and the whole ship came
-  // out taller than it should be.
-  const ENG=[
-    {x: 107, ry: 6, rz: 7, cy: -98, ryb: 6},    // stops just behind the deflector's apex at x = 109
-    {x:  99, ry:17, rz:20, cy: -98, ryb:16},
-    {x:  88, ry:25, rz:30, cy: -99, ryb:24},
-    {x:  70, ry:31, rz:38, cy:-100, ryb:30},
-    {x:  46, ry:35, rz:45, cy:-101, ryb:35},
-    {x:   8, ry:41, rz:56, cy:-102, ryb:42},
-    {x: -56, ry:43, rz:60, cy:-101, ryb:44},
-    {x:-126, ry:42, rz:59, cy: -99, ryb:43},
-    {x:-196, ry:39, rz:55, cy: -98, ryb:40},
-    {x:-260, ry:35, rz:48, cy: -96, ryb:36},
-    {x:-316, ry:28, rz:39, cy: -95, ryb:29},
-    {x:-356, ry:21, rz:29, cy: -94, ryb:21},
-    {x:-378, ry:14, rz:20, cy: -94, ryb:14},
-  ];
+  // The main shuttlebay: the door in the engineering hull's transom, lit round its edges.
   {
-    parts.push(tube(THREE,ENG,0,m.hull,true,true,SECT.slabS(11)));
-    const engAt=x=>{
-      let a=ENG[0],b=ENG[ENG.length-1];
-      for(let i=0;i<ENG.length-1;i++)if(x<=ENG[i].x&&x>ENG[i+1].x){a=ENG[i];b=ENG[i+1];break;}
-      const t=(a.x-x)/((a.x-b.x)||1);
-      return {ry:a.ry+(b.ry-a.ry)*t, rz:a.rz+(b.rz-a.rz)*t, cy:a.cy+(b.cy-a.cy)*t,
-              ryb:a.ryb+(b.ryb-a.ryb)*t};
-    };
-    for(const sd of [-1,1])for(const [f,n] of [[0.55,24],[0.10,22],[-0.42,18]])
-      for(let i=0;i<n;i++){
-        const x=30-i*(330/n), g=engAt(x);
-        if(((i*37)%7)===0)continue;
-        const w=new THREE.Mesh(new THREE.BoxGeometry(3.4,1.5,1.5),m.lit);
-        w.position.set(x,g.cy+f*g.ry,sd*(g.rz+1.2)*Math.sqrt(Math.max(0,1-f*f*0.55)));parts.push(w);
-      }
-    // The dorsal: a raised spine running aft from the foot of the neck, with the upper shuttlebay let into
-    // it. Without this the engineering hull is a featureless egg, which is what it has been all along.
-    for(let i=0;i<14;i++){
-      const x=-136-i*17, g=engAt(x);
-      const sp=new THREE.Mesh(new THREE.BoxGeometry(18,9,30-i*0.9),m.panelB);
-      sp.position.set(x,g.cy+g.ry-2.5,0);parts.push(sp);
-    }
-    const ub=new THREE.Mesh(new THREE.BoxGeometry(30,5,26),m.dark);
-    ub.position.set(-318,engAt(-318).cy+engAt(-318).ry+1.6,0);parts.push(ub);
-    const ubl=new THREE.Mesh(new THREE.BoxGeometry(22,2,18),m.lit);
-    ubl.position.set(-318,engAt(-318).cy+engAt(-318).ry+3.4,0);parts.push(ubl);
-    // the main shuttlebay in the stern, and the light out of it
-    const bay=new THREE.Mesh(new THREE.BoxGeometry(8,30,48),m.dark);
-    bay.position.set(-380,-92,0);parts.push(bay);
-    const baylight=new THREE.Mesh(new THREE.BoxGeometry(2,22,38),m.lit);
-    baylight.position.set(-384,-92,0);parts.push(baylight);
-    for(const sd of [-1,1]){
-      const g2=new THREE.Mesh(new THREE.BoxGeometry(4,9,22),m.impulse);
-      g2.position.set(-382,-66,sd*24);parts.push(g2);
-    }
-    const at=new THREE.Mesh(new THREE.BoxGeometry(18,10,30),m.dark);
-    at.position.set(-370,-118,0);parts.push(at);
-    // two strakes down each flank and a phaser strip along the belly
-    for(const sd of [-1,1])for(const f of [-0.72,-0.16]){
-      for(let i=0;i<13;i++){
-        const x=60-i*33, g=engAt(x);
-        const st=new THREE.Mesh(new THREE.BoxGeometry(30,2.4,2.0),m.panelA);
-        st.position.set(x,g.cy+f*g.ryb,sd*(g.rz+0.8)*Math.sqrt(Math.max(0,1-f*f*0.7)));parts.push(st);
-      }
-    }
-    {
-      const rows=[];
-      for(let i=0;i<=26;i++){
-        const x=70-i*(420/26), g=engAt(x);
-        rows.push([[x,g.cy-g.ryb-0.3,-2.6],[x,g.cy-g.ryb-0.3,2.6]]);
-      }
-      parts.push(ribbon(THREE,m.strip,rows,{closed:false,up:false}));
-    }
-  }
-
-  // ---------- the deflector ----------
-  // It was a cone with its apex pointing forward, and since a lathe's faces point away from its axis you
-  // were looking at the back of that cone through the mouth of its housing: a blank grey disc. A deflector
-  // is a bowl, concave, rim forward, with the emitter at the bottom of it.
-  {
-    deflector(THREE,parts,m,126,-98,0,36,17,{seg:64});
-    const glow=new THREE.PointLight(0xd8b060,0.95,760);
-    glow.position.set(186,-98,0);scene.add(glow);
-    animHooks.push(now=>{glow.intensity=0.72+0.26*Math.sin(now*0.0013);});
-  }
-
-  // ---------- the pylons and the nacelles ----------
-  // 248 m of nacelle, with the cap on the ship's stern at x = -408.5, which puts the collector end at
-  // -160.5 - forward of the saucer's trailing edge and tucked under it. That overlap is not a mistake: it
-  // is why a Galaxy looks short for its length from above.
-  const NX0=-286.5, NY0=-46, NZ0=158;
-  const NST=[
-    {x: 124, rz:  5,  ry: 4.0, ryb: 3.5},
-    {x: 117, rz: 13,  ry: 7.5, ryb: 6.5},
-    {x: 104, rz: 18,  ry: 9.5, ryb: 8.5},
-    {x:  76, rz: 20,  ry:10.5, ryb: 9.5},
-    {x:  26, rz: 23,  ry:12.5, ryb:11.5},
-    {x: -30, rz: 26,  ry:14.5, ryb:13.5},
-    {x: -80, rz: 28.5,ry:16.0, ryb:15.0},
-    {x:-110, rz: 26,  ry:14.0, ryb:13.0},
-    {x:-122, rz: 17,  ry: 8.5, ryb: 7.5},
-    {x:-124, rz:  8,  ry: 4.0, ryb: 3.5},
-  ];
-  // the nacelle's half-width and half-height at any station along it, so the grille and the trim sit ON
-  // the hull instead of hovering a few metres off it wherever the taper has moved on
-  const nacAt=x=>{
-    let a=NST[0],b=NST[NST.length-1];
-    for(let i=0;i<NST.length-1;i++)if(x<=NST[i].x&&x>NST[i+1].x){a=NST[i];b=NST[i+1];break;}
-    const t=(a.x-x)/((a.x-b.x)||1);
-    return {rz:a.rz+(b.rz-a.rz)*t, ry:a.ry+(b.ry-a.ry)*t};
-  };
-
-  for(const sd of [-1,1]){
-    const path=[];
-    for(let i=0;i<=12;i++){
-      const t=i/12;
-      const x=-190-t*102, y=-74+t*28, z=sd*(44+t*114);
-      path.push({p:[x,y,z],dir:[-0.660,0.181,sd*0.729],ry:34-t*18,rz:9-t*4.5});
-    }
-    parts.push(sweep(THREE,path,0,m.hull,SECT.aerofoil));
-    // No trim along the leading edge. Two attempts at it now: boxes laid out in world axes came out as a
-    // staircase up the side, and boxes laid out in the sweep's frame sat proud of the surface and read in
-    // plan as a second pylon drawn a few metres above the first. A Galaxy pylon is a plain swept blade and
-    // it is better plain than fringed.
-
-    const n=tube(THREE,NST,0,m.hull,true,true,SECT.slabS(10));
-    n.position.set(NX0,NY0,sd*NZ0);parts.push(n);
-    bussard(THREE,parts,m,NX0+122,NY0+1,sd*NZ0,13,1);
-
-    // The warp grille: a recessed slot down each vertical face, following the taper. It runs along the
-    // middle half of the nacelle and no further - run the full length, as the first two passes did, and
-    // the nacelle stops being a hull with a slot in it and becomes a blue tube.
-    for(const face of [-1,1]){
-      for(let i=0;i<16;i++){
-        const x=40-i*7.6, g=nacAt(x);
-        const sl=new THREE.Mesh(new THREE.BoxGeometry(3.4,g.ry*0.66,2.4),m.warp);
-        sl.position.set(NX0+x,NY0+2,sd*NZ0+face*(g.rz+0.9));parts.push(sl);
-      }
-      for(let i=0;i<16;i++){
-        const x=42-i*8.0, g=nacAt(x);
-        for(const lip of [1,-1]){
-          const l=new THREE.Mesh(new THREE.BoxGeometry(8,1.8,2.4),m.trim);
-          l.position.set(NX0+x,NY0+2+lip*g.ry*0.50,sd*NZ0+face*(g.rz+0.4));parts.push(l);
-        }
-      }
-      // the flat panel aft of the grille, which is what stops the nacelle reading as a striped tube
-      for(let i=0;i<7;i++){
-        const x=-66-i*9, g=nacAt(x);
-        const pn=new THREE.Mesh(new THREE.BoxGeometry(7,g.ry*1.1,1.4),m.panelA);
-        pn.position.set(NX0+x,NY0+1,sd*NZ0+face*(g.rz+0.5));parts.push(pn);
-      }
-    }
-    const cap=new THREE.Mesh(new THREE.BoxGeometry(9,15,24),m.dark);
-    cap.position.set(NX0-126,NY0,sd*NZ0);parts.push(cap);
-    // the fairing where the pylon meets the nacelle's underside
-    const fair=new THREE.Mesh(new THREE.BoxGeometry(104,16,40),m.hull);
-    fair.position.set(NX0-14,NY0-15,sd*(NZ0-11));fair.rotation.x=sd*0.2;parts.push(fair);
+    const b=BAYS.main,door=new THREE.Mesh(new THREE.PlaneGeometry(b.w*0.62,b.h*0.55),basic({color:0x2a3038}));
+    door.position.set(b.x-1.2,b.y,0);door.rotation.y=-Math.PI/2;door.userData.noWire=true;G.add(door);
+    glow(b.x-3,b.y,0,0xfff0d0,26,0.35);
   }
 
   // ---------- the running lights ----------
-  // Small. A navigation light at this scale is a lamp, not a beacon.
-  const blinkers=[];
-  for(const [x,y,z,mat] of [[231,0,0,m.lit],[-201,0,0,m.lit],[0,49.2,0,m.nav],[0,-47.8,0,m.nav],
-                            [NX0-129,NY0+10,NZ0,m.navG],[NX0-129,NY0+10,-NZ0,m.nav],
-                            [-381,-66,0,m.lit]]){
-    const b=new THREE.Mesh(new THREE.SphereGeometry(1.5,8,6),mat);
-    b.position.set(x,y,z);b.userData.noWire=true;scene.add(b);blinkers.push(b);
-  }
-  animHooks.push(now=>{const on=(now%1900)<950;for(const b of blinkers)b.visible=on;});
+  // Red to port, green to starboard at the saucer's widest; white strobes at the nacelles' after ends and on the
+  // saucer above and below. A navigation light at this scale is a lamp, not a beacon.
+  const steady=[],strobes=[];
+  const lamp=(x,y,z,col,size,arr)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(0.8,8,6),basic({color:col}));m.position.set(x,y,z);m.userData.noWire=true;G.add(m);
+    const g=glow(x,y,z,col,size,0.9);arr.push(m,g);};
+  lamp(0,0.4,-(SAUCER.b+1.6),0xff2a1a,22,steady);lamp(0,0.4,SAUCER.b+1.6,0x2aff5a,22,steady);
+  for(const side of [1,-1])lamp(192-ND1+3,NACY+12,side*NACZ,0xffffff,30,strobes);
+  lamp(-40,saucerTop(-40,0)+0.8,0,0xffffff,24,strobes);lamp(10,saucerBot(10,0)-3,0,0xffffff,24,strobes);
+  animHooks.push(now=>{const on=(now%1600)<110;for(const s of strobes)s.visible=on;
+    bussTex.offset.y=(now*0.00006)%1;});
 
-  fold(G,parts);
   scene.add(G);
-  return {radius:LEN*0.5, group:G};
+  const pick=parts.slice();
+  return {radius:LEN*0.5,group:G,pick,minD:60};
 }
