@@ -100,6 +100,28 @@ never appear in a lake.
   in wind; let rain dull the reflection; tint shallows by exp(-depth/d) from a baked depth map; add a pale wet edge and surf strip at
   the waterline (it suits the ground workstream).
 
+**The mirror prototype, measured 2026-10-31** (`core/water/ext/58-core-water-mirror.js`, opt-in; on eastabyss by `?mirror=off|probe|live`,
+with no query nothing installs). Intel Arc 140T, 1280x720, GPU timer queries, minimum of 9 frames:
+
+| View | World pass | Live mirror pass (35%) | At 25% | Mirror draws |
+|---|---|---|---|---|
+| The salt lake | ~15 ms | 2.2-2.6 ms | 2.0-2.1 ms | 32 calls, 0.86 M tris (world 199, 3.83 M) |
+| Marsh pools | ~18 ms | 3.0-3.1 ms | 2.7-2.8 ms | 37 calls, 1.12 M tris (world 245, 5.21 M) |
+| The east delta | ~16.5 ms | 2.9 ms | 2.7 ms | not read: the counter was fixed after this run |
+| Salt flats (no lake in view) | ~3.4 ms | 1.15 ms | 1.1 ms | must be gated off |
+
+- **Live mirror:** every 2nd frame that is about 1-1.5 ms a frame on the lake views, roughly 7-8% of the world pass. Dropping the
+  resolution barely helps (as predicted: the cost is vertices). It compiles no new programs (oblique clip, the page's output encoding).
+- **Probe:** a capture of about 20-27 ms GPU, 0.5-0.9 s wall on the main thread (a hitch: split it over six frames). After that a frame
+  costs nothing the timers can separate from noise. The water's extra shader cost is also within noise (timings swing ±25%).
+- **Limits of this run:** the far-tree filter (`/^biome:far/`) matched nothing, so **no trees are in either tier yet**, and with them the
+  live number will rise: find eastabyss' real far meshes and re-measure. The page **crashed** ("Target crashed") in all three bench
+  runs after several views, cause unknown (it was not seen without the bench's mode switching): find out before adoption. The world's
+  view timings on Marsh pools swung 17.7-27 ms while the bench ran. The look hasn't had the owner's pass: the bench pages are only
+  on `?mirror=`. The probe shows a pale band at the near shore on Marsh pools (parallax radius or capture height).
+- **Not done:** auto-off when no still is on screen, or the camera is far; one water level only; `KHOOK` adoption (`core-shader`); no
+  Godot twin; no PORT row or node test.
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.

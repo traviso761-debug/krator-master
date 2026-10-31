@@ -22,6 +22,9 @@ function viewOfFauna(){const L=EASTABYSS.FAUNA_LAYOUT||{},Fs=L.flocks||[],Zs=L.l
 // a skein's leader where it flies now, from below and behind its wing
 function viewOfSkein(){const m=scene.getObjectByName('biome:flamingoflying');if(!m)return[1180,42,-260,-300,0,120];const M=new THREE.Matrix4();m.getMatrixAt(4,M);const e=M.elements;
  const fx=e[8],fz=e[10],l=Math.hypot(fx,fz)||1;return[e[12]-fx/l*14+fz/l*14,e[13]-6,e[14]-fz/l*14-fx/l*14,e[12]+fx/l*6,e[13],e[14]+fz/l*6];}
+/* the mirror's prototype (core/water/ext/58, 2026-10-31): ?mirror=probe|live; without the query nothing is installed */
+const MIRROR=(()=>{const m=/[?&]mirror=(\w+)/.exec(location.search);if(!m)return null;const M=WATER.mirror({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material],
+ level:0,center:[900,-100],radius:6000,tree:q=>/^biome:far/.test(q.name)});window.MIRROR=M;window.addEventListener('load',()=>setTimeout(()=>M.set(m[1]),4000));return M;})();
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],
@@ -103,7 +106,7 @@ KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (
 KHOST.take({build:'eastabyss',title:'Krator biome — the eastern abyss',
  hint:'The eastern abyss: salt flats, salt marsh, abyssal jungle (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
