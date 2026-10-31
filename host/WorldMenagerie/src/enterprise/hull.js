@@ -107,7 +107,7 @@ export function rimSurf(u,v,p){
 
 // ---------- the engineering hull ----------
 // [d, top D, bottom D, widest-line D, half-width], closed off at both ends
-const ENGT=[[310.5,89,93,91,0.4],...ENG,[611.5,105,113,110,0.4]];
+const ENGT=[[310.5,89,93,91,0.4],...ENG,[611.8,103,115.5,110,0.4]];
 const eTop=columns(ENGT,1),eBot=columns(ENGT,2),eWid=columns(ENGT,3),eHw=columns(ENGT,4);
 export const D0=ENGT[0][0],D1=ENGT[ENGT.length-1][0];
 const toX=d=>192-d,toY=D=>36-D;
@@ -141,6 +141,8 @@ export function engSurf(u,v,p){
 const NY0=-66,NY1=-2;
 const nW=mono(NECK.width),nAft=mono(NECK.top.map(([x,y])=>[y,x]));
 const [[lx0,ly0],[lx1,ly1]]=NECK.lead,LS=(lx1-lx0)/(ly1-ly0);
+export const neckLead=y=>lx0+(y-ly0)*LS;
+export const NECKY=[NY0,NY1];
 export function neckSurf(u,v,p){
   const y=NY0+(NY1-NY0)*u,xl=lx0+(y-ly0)*LS,xa=Math.min(nAft(y),xl-30),L=xl-xa,W=nW(y);
   const a=v*Math.PI*2,t=(1-Math.cos(a))/2,side=Math.sin(a)>=0?1:-1;

@@ -1988,6 +1988,33 @@ wireframe and menagerie menu every other page has.
     pods are tan hatches in twos to fours in rings across the dish; the registry is dark grey edged in red in a
     wide face, with the name over it in red; a red pinstripe edged in white runs down the neck's back and the
     engineering hull's spine, and along each nacelle's top behind a gold delta.
+  - **Third pass: more details.** The engineering hull ends in a flat transom with the main shuttlebay's door in
+    it, ribbed and lit round its frame; shuttlebays 2 and 3 are a pair of doors in the neck's back under the
+    impulse deck; the forward torpedo launcher is at the foot of the neck over the deflector and the aft one over
+    the main bay; the ventral phaser strip runs across the engineering hull's belly; the captain's yacht is a
+    seamed oval with its own windows under the saucer; and the neck has a top, seen when the saucer is away.
+  - **Flying it** (`flight.js`, the **Fly** button, or `#fly`). The page is a turntable round one object, so
+    the ship (`ROOT`) flies through a world split three ways: the sky (stars and nebulae, at infinity, so they
+    ride with the camera and only turn), the system (the planet, its moon and a target rock, which stay put:
+    the planet is about three minutes off at full impulse), and the effects. W / S step the impulse in
+    quarters (full is 2.5 km/s, far short of the quarter of light speed it is meant to be, so the ship can be seen to move), A / D turn, ↑ / ↓ pitch, Q / E roll, the turn rates easing in as a ship
+    this size would; 1–9 go to warp and 0 drops out. A chase camera follows (drag to look round, scroll to
+    stand off); a thin field of dust round the camera shows the speed at impulse, and streaks at warp. Past
+    20 km out everything is moved back by the ship's position, so a long flight never meets a float's
+    precision. At warp the system goes with you, and dropping out puts you in a new one: the sky, the planet
+    and its sun turned to a new heading. Leaving the helm puts the ship back at the origin, level, by moving
+    and turning the world round it the other way, so every turntable view works again from where you are.
+    On a touch screen a pad of helm buttons stands in for the keys.
+  - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
+    and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
+    klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it
+    is struck, with a ripple out from the hit), phasers (the emitters run along the saucer's strip, above or
+    below, to the point nearest the target and meet, then the beam), a photon torpedo from the forward
+    launcher that blows the rock apart (it comes back), incoming fire (on the shields if they are up, on the
+    hull with a scorch and a shake if not), saucer separation and docking, and a shuttle out of the main bay.
+    Every sound is synthesised by the page (WebAudio). For tests, `#ev=phasers,torpedo&evt=2&evfreeze=1.2`
+    runs events a second apart from two seconds in and freezes their clock 1.2 s after the first, and
+    `#dbg` puts the ship's and the effects' state in the probe's report.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a

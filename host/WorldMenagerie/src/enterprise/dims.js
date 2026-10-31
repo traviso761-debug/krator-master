@@ -40,7 +40,9 @@ export const SAUCER={
 export const ENG=[
   [314, 86, 96, 92,18],[318, 85,104, 96,32],[324, 86,112,100,42],[336, 87,121,106,54],[348, 87,127,110,60],
   [365, 88,131,112,64],[390, 89,134.5,113,66],[420, 90,136.5,114,66],[460, 91,136.8,114,65],[500, 92,132,113,61],
-  [530, 94,123,111,58],[560, 96,120,110,56],[590, 98,119.5,110,53],[600, 99,119,110,50],[606,100,118,110,42],[609,102,116,110,30]];
+  [530, 94,123,111,58],[560, 96,120,110,56],[590, 98,119.5,110,53],[600, 99,119,110,50],[605,100,118.5,110,46],[609,101,117.5,110,42],[611,102,116.5,110,38]];
+// (the stern is a flat transom 76 m across and 14 deep, the main shuttlebay's door in it: the last station closes
+// the hull in under a metre)
 // The neck: an hourglass in the front view (half-width against y, at its narrowest 20 m, 44 m under the rim) leaning
 // forward as it rises (its leading edge from (x -126, y -52) up to (-98, -17) under the saucer), and aft of the
 // saucer its top runs down from the impulse deck to the spine along the engineering hull.
@@ -66,4 +68,6 @@ export const NACELLE={z:125, y:-35.9, n:2.8,
 // The deflector: the nose of the engineering hull is not upright but leans back at about 30 degrees (the side view's
 // envelope runs from 65 m under the rim at d = 324 to 83 at d = 336), and the dish lies in it, looking forward and down.
 export const DEFLECTOR={x:-137.5, y:-77, rz:34, ry:9, depth:5, tilt:0.55};
-export const BAYS={main:{x:-416, y:-71, w:42, h:16}, upper:[{x:-198, z:20},{x:-198,z:-20}]};
+export const BAYS={main:{x:-419.8, y:-73, w:34, h:9}, upper:{y:-9, z:15, w:13, h:6.5}};
+// the photon torpedo launchers: forward at the foot of the neck over the deflector, aft over the shuttlebay
+export const TORPEDO={fore:{y:-47}, aft:{y:-67.5}};

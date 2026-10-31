@@ -19,5 +19,8 @@ starshipPage({
     'The Bussard collectors in the nose of each nacelle are for scooping up hydrogen, which is the one thing space has.',
     'The nose of the engineering hull leans back thirty degrees, and the deflector looks forward and down out of it.',
     'Every drawing of this ship makes it 141 metres tall, whatever the published figure says.',
+    'Full impulse is meant to be a quarter of the speed of light; here it is two and a half kilometres a second, so you can see the ship move.',
+    'The shields are an ellipsoid round the whole ship, and you only see them where something hits them.',
+    'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
   ],
 });

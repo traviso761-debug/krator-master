@@ -20,16 +20,20 @@
 // The light: physically based materials, a star with shadows (the nacelles shade the pylons, the saucer the
 // neck), an environment map of the planet's glow and the dark, and ACES tone mapping for the hull only, so the
 // backdrop keeps the colours it has on the other ship pages.
-import {SAUCER,NACELLE,DEFLECTOR,BAYS} from './dims.js';
+import {SAUCER,NACELLE,DEFLECTOR,BAYS,TORPEDO} from './dims.js';
 import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf,MODTOP,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
-        deflPlane,smooth,ND0,ND1,NACZ,NACY} from './hull.js';
+        deflPlane,smooth,ND0,ND1,NACZ,NACY,neckLead,NECKY,normalAt} from './hull.js';
 import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
+import {flight} from './flight.js';
+import {events} from './events.js';
 
 export function model(api){
   const {THREE,scene,renderer,animHooks,C}=api;
-  const G=new THREE.Group();
-  // the ship's own frame has the saucer's centre at the origin; the page turns round the middle of the ship
-  G.position.set(129.25,34.5,0);
+  // ROOT is the ship in the world (it is what flies); G is the ship's own frame, with the saucer's centre at the
+  // origin, set so that ROOT turns round the middle of the ship; SAU is the saucer, which can leave
+  const ROOT=new THREE.Group(),G=new THREE.Group(),SAU=new THREE.Group();
+  G.position.set(129.25,34.5,0);ROOT.add(G);G.add(SAU);
+  let into=SAU;
   const LEN=642.5;
 
   // ---------- the light ----------
@@ -65,7 +69,8 @@ export function model(api){
   // ---------- the hull ----------
   const parts=[];
   const add=(geo,mat,info,o={})=>{const m=new THREE.Mesh(geo,mat);m.castShadow=o.cast!==false;m.receiveShadow=o.receive!==false;
-    if(info)m.userData.info=info;G.add(m);parts.push(m);return m;};
+    if(info)m.userData.info=info;into.add(m);parts.push(m);if(mat.isMeshStandardMaterial&&mat.customProgramCacheKey)hullMats.add(mat);return m;};
+  const hullMats=new Set();
   const T=saucerTextures(THREE,renderer);
   const INFO={
     saucer:{name:'The saucer',info:'The primary hull: an ellipse 384 m long and 464 across, sixteen decks at the middle and two at the rim. It can be separated from the rest of the ship, and land.'},
@@ -82,6 +87,7 @@ export function model(api){
   {const g=surface(THREE,saucerSurf(true),384,128,false);planUV(g);add(g,saucerMat(T.top),INFO.saucer);}
   {const g=surface(THREE,saucerSurf(false),384,112,true);planUV(g);add(g,saucerMat(T.bot),INFO.saucer);}
   add(surface(THREE,rimSurf,1024,8,false),hullMaterial(THREE,T.rim,env,{bump:0.25}),INFO.saucer);
+  into=G;
   // the stardrive: the engineering hull and the neck share one painter, so the decks run on across the join
   const DF=DEFLECTOR;
   const nearDefl=p=>Math.pow((p.y-DF.y)/DF.ry,2)+Math.pow(p.z/DF.rz,2)<2.2&&p.x>DF.x-12;
@@ -94,7 +100,7 @@ export function model(api){
       ctx.lineJoin='round';ctx.lineWidth=0.7;ctx.strokeStyle='rgb(160,36,30)';ctx.strokeText('NCC-1701-D',0,0);
       ctx.fillStyle='rgb(36,40,48)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
   };
-  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true}),engLetters);
+  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true,ventral:true}),engLetters);
   add(surface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
   const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51,spine:true}));
   add(surface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
@@ -113,17 +119,17 @@ export function model(api){
     x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
   const glows=[];
   const glow=(x,y,z,col,size,k)=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:col,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,toneMapped:false,opacity:k===undefined?1:k}));
-    s.position.set(x,y,z);s.scale.setScalar(size);s.userData.noWire=true;G.add(s);glows.push(s);return s;};
+    s.position.set(x,y,z);s.scale.setScalar(size);s.userData.noWire=true;into.add(s);glows.push(s);return s;};
   const basic=(o)=>new THREE.MeshBasicMaterial(Object.assign({toneMapped:false},o));
   const stripes=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;};
-  const lit=(geo,mat,info)=>{const m=new THREE.Mesh(geo,mat);if(info)m.userData.info=info;G.add(m);return m;};
+  const lit=(geo,mat,info)=>{const m=new THREE.Mesh(geo,mat);if(info)m.userData.info=info;into.add(m);return m;};
 
   // The Bussard collectors: the nose of each nacelle and an oval back along both its sides, glowing, with a slow
   // swirl turning in them.
   const bussTex=stripes(256,64,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'#ff4a24');g.addColorStop(0.5,'#e02c14');g.addColorStop(1,'#a8180a');
     x.fillStyle=g;x.fillRect(0,0,w,h);x.globalCompositeOperation='lighter';
     for(let i=0;i<6;i++){x.strokeStyle='rgba(255,120,60,0.09)';x.lineWidth=5;x.beginPath();x.moveTo(0,i/6*h);x.bezierCurveTo(w*0.3,i/6*h+h*0.25,w*0.6,i/6*h-h*0.15,w,i/6*h+h*0.12);x.stroke();}});
-  const bussMat=basic({map:bussTex});
+  const bussMat=basic({map:bussTex}),bussGlows=[];
   for(const side of [1,-1]){
     const f=nacSurf(side),d0=ND0,d1=425,span=ND1-ND0;
     // u along the nose from its tip to the oval's after end, which is further aft at the middle of the side
@@ -132,7 +138,7 @@ export function model(api){
     const dToU=d=>{let lo=0,hi=1;for(let i=0;i<30;i++){const u=(lo+hi)/2,t=0.5-0.5*Math.cos(Math.PI*u),dd=ND0+span*(0.4*u+0.6*t);if(dd<d)lo=u;else hi=u;}return lo;};
     lit(surface(THREE,patch(f,side>0,map,0.25),64,192,side>0),bussMat,INFO.bussard);
     {const tip=new THREE.Mesh(new THREE.SphereGeometry(1.4,12,8),bussMat);tip.position.set(192-ND0-0.3,NACY,side*NACZ);tip.userData.noWire=true;G.add(tip);}
-    glow(-206,NACY,side*NACZ,0xff5a2a,95,0.9);
+    bussGlows.push(glow(-206,NACY,side*NACZ,0xff5a2a,95,0.9));
     // the gold rings behind it
     for(const d of [429,433.5,438]){
       const ring=patch(f,side>0,(u,v,m)=>{m[0]=dToU(d-1.4+u*2.8);m[1]=v;},0.2);
@@ -152,6 +158,7 @@ export function model(api){
     t.repeat.set(1,1);return grilleMat.m=basic({map:t,side:THREE.DoubleSide});
   }
 
+  into=SAU;
   // The bridge module: its wall carries the bridge's windows all round, taller across the after end, which is
   // the observation lounge looking aft over the stem; the dome over it is plated in rings round a darker skylight.
   {
@@ -175,7 +182,7 @@ export function model(api){
     // the two escape-pod ports and the thrusters either side of it, small domes on the plate
     for(const z of [-26,26]){const m=new THREE.Mesh(new THREE.SphereGeometry(2.4,20,10,0,Math.PI*2,0,Math.PI/2),
       new THREE.MeshStandardMaterial({color:0x9aa2aa,roughness:0.4,metalness:0.3,envMap:env}));
-      m.position.set(-9,saucerTop(-9,z)-0.4,z);m.scale.y=0.6;m.castShadow=m.receiveShadow=true;G.add(m);}
+      m.position.set(-9,saucerTop(-9,z)-0.4,z);m.scale.y=0.6;m.castShadow=m.receiveShadow=true;SAU.add(m);}
   }
   // The reaction control thrusters: four blocks let into the saucer's rim, fore and aft quarters each side.
   {
@@ -183,11 +190,12 @@ export function model(api){
       nz=new THREE.MeshBasicMaterial({color:0x1a1c20,toneMapped:false});
     for(const a of [0.62,-0.62,2.28,-2.28]){
       const r=rho(a)+0.6,px=r*Math.cos(a),pz=r*Math.sin(a),yy=(saucerTop(px*0.995,pz*0.995)+saucerBot(px*0.995,pz*0.995))/2;
-      const b=new THREE.Mesh(new THREE.BoxGeometry(2.4,4.2,9),mat);b.position.set(px,yy,pz);b.rotation.y=-a;b.castShadow=b.receiveShadow=true;G.add(b);
+      const b=new THREE.Mesh(new THREE.BoxGeometry(2.4,4.2,9),mat);b.position.set(px,yy,pz);b.rotation.y=-a;b.castShadow=b.receiveShadow=true;SAU.add(b);
       for(const dz of [-2.6,0,2.6]){const q=new THREE.Mesh(new THREE.PlaneGeometry(1.6,1.6),nz);q.position.set(1.25,0,dz);q.rotation.y=Math.PI/2;q.userData.noWire=true;b.add(q);}
     }
   }
 
+  into=G;
   // The deflector: a shallow elliptical dish in the nose's flat, copper rings round a glowing core.
   {
     const tl=DF.tilt,up=new THREE.Vector3(Math.sin(tl),Math.cos(tl),0),nrm=new THREE.Vector3(Math.cos(tl),-Math.sin(tl),0);
@@ -203,34 +211,90 @@ export function model(api){
   }
 
   // The main impulse engine: two red-lit grilles across the saucer's trailing edge, either side of the stem.
+  into=SAU;const impGlows=[];
   {
     const mat=basic({map:stripes(8,32,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#ff8a50');g.addColorStop(0.5,'#ff2a0a');g.addColorStop(1,'#801006');x.fillStyle=g;x.fillRect(0,0,w,h);})});
     for(const [a0,a1] of [[Math.PI-0.30,Math.PI-0.06],[Math.PI+0.06,Math.PI+0.30]]){
       const f=patch(rimSurf,false,(u,v,m)=>{m[0]=(a0+(a1-a0)*u)/(Math.PI*2);m[1]=0.08+0.42*v;},0.3);
       lit(surface(THREE,f,24,4,false),mat,INFO.impulse);
-      const a=(a0+a1)/2,r=rho(a);glow(r*Math.cos(a)-4,2,r*Math.sin(a),0xff3a14,40,0.7);
+      const a=(a0+a1)/2,r=rho(a);impGlows.push(glow(r*Math.cos(a)-4,2,r*Math.sin(a),0xff3a14,40,0.7));
     }
   }
-  // The main shuttlebay: the door in the engineering hull's transom, lit round its edges.
+  into=G;
+  // The shuttlebays. The main one is a door in the flat transom at the stern, ribbed across, with a lit frame;
+  // bays 2 and 3 are a pair of doors in the neck's sloping back just under the impulse deck.
+  const doorTex=(()=>{const c=document.createElement('canvas');c.width=256;c.height=96;const x=c.getContext('2d');
+    x.fillStyle='rgb(58,64,72)';x.fillRect(0,0,256,96);for(let i=1;i<12;i++){x.fillStyle='rgb(40,44,50)';x.fillRect(0,i*8,256,2);}
+    x.strokeStyle='rgb(255,214,150)';x.lineWidth=5;x.strokeRect(3,3,250,90);
+    const t=new THREE.CanvasTexture(c);t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;})();
+  const doorMat=new THREE.MeshStandardMaterial({map:doorTex,emissiveMap:doorTex,emissive:0x302820,roughness:0.6,metalness:0.2,envMap:env});
+  let bayGlow;
   {
-    const b=BAYS.main,door=new THREE.Mesh(new THREE.PlaneGeometry(b.w*0.62,b.h*0.55),basic({color:0x2a3038}));
-    door.position.set(b.x-1.2,b.y,0);door.rotation.y=-Math.PI/2;door.userData.noWire=true;G.add(door);
-    glow(b.x-3,b.y,0,0xfff0d0,26,0.35);
+    const b=BAYS.main,door=new THREE.Mesh(new THREE.PlaneGeometry(b.w,b.h),doorMat);
+    door.position.set(b.x-0.25,b.y,0);door.rotation.y=-Math.PI/2;door.receiveShadow=true;door.userData.info={name:'The main shuttlebay',info:'Shuttlebay 1, in the transom at the stern of the engineering hull.'};G.add(door);
+    bayGlow=glow(b.x-4,b.y,0,0xfff0d0,40,0.25);
+    // bays 2 and 3: on the neck's back, facing aft and up
+    const U=BAYS.upper,u=(U.y-NECKY[0])/(NECKY[1]-NECKY[0]),p={x:0,y:0,z:0},n={x:0,y:0,z:0};
+    neckSurf(u,0.5,p);normalAt(neckSurf,u,0.5,n,false);
+    for(const z of [-U.z,U.z]){const d=new THREE.Mesh(new THREE.PlaneGeometry(U.w,U.h),doorMat);
+      d.position.set(p.x+n.x*0.3,p.y+n.y*0.3,z);d.lookAt(d.position.x+n.x,d.position.y+n.y,z);d.userData.info={name:'Shuttlebays 2 and 3',info:'A pair of bays in the neck\'s back, under the impulse deck.'};G.add(d);}
+  }
+  // The photon torpedo launchers: forward at the foot of the neck over the deflector, aft over the main bay.
+  {
+    const tm=new THREE.MeshStandardMaterial({color:0x30343a,roughness:0.5,metalness:0.4,emissive:0xff4a20,emissiveIntensity:0.0,envMap:env});
+    const lip=basic({color:0xff5a2a});
+    const fy=TORPEDO.fore.y,fx=neckLead(fy);
+    const f=new THREE.Mesh(new THREE.BoxGeometry(3,3.2,9),tm);f.position.set(fx+0.6,fy,0);f.userData.info={name:'The forward torpedo launcher',info:'At the foot of the neck, over the deflector.'};G.add(f);
+    const fl=new THREE.Mesh(new THREE.PlaneGeometry(7,0.5),lip);fl.position.set(fx+2.15,fy-1.3,0);fl.rotation.y=Math.PI/2;fl.userData.noWire=true;G.add(fl);
+    const a=new THREE.Mesh(new THREE.BoxGeometry(3,2.6,8),tm);a.position.set(BAYS.main.x-0.8,TORPEDO.aft.y,0);G.add(a);
+  }
+  // The top of the neck, where the saucer sits: only seen when the saucer is away.
+  {
+    const top=(u,v,p)=>{neckSurf(1,v,p);const c=-150;p.x=c+(p.x-c)*u;p.z*=u;};
+    const cap=new THREE.Mesh(surface(THREE,top,6,128,true),new THREE.MeshStandardMaterial({color:0x8c9298,roughness:0.6,metalness:0.2,envMap:env}));
+    cap.castShadow=cap.receiveShadow=true;G.add(cap);
   }
 
   // ---------- the running lights ----------
   // Red to port, green to starboard at the saucer's widest; white strobes at the nacelles' after ends and on the
   // saucer above and below. A navigation light at this scale is a lamp, not a beacon.
   const steady=[],strobes=[];
-  const lamp=(x,y,z,col,size,arr)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(0.8,8,6),basic({color:col}));m.position.set(x,y,z);m.userData.noWire=true;G.add(m);
+  const lamp=(x,y,z,col,size,arr)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(0.8,8,6),basic({color:col}));m.position.set(x,y,z);m.userData.noWire=true;into.add(m);
     const g=glow(x,y,z,col,size,0.9);arr.push(m,g);};
+  into=SAU;
   lamp(0,0.4,-(SAUCER.b+1.6),0xff2a1a,22,steady);lamp(0,0.4,SAUCER.b+1.6,0x2aff5a,22,steady);
-  for(const side of [1,-1])lamp(192-ND1+3,NACY+12,side*NACZ,0xffffff,30,strobes);
   lamp(-40,saucerTop(-40,0)+0.8,0,0xffffff,24,strobes);lamp(10,saucerBot(10,0)-3,0,0xffffff,24,strobes);
+  into=G;
+  for(const side of [1,-1])lamp(192-ND1+3,NACY+12,side*NACZ,0xffffff,30,strobes);
   animHooks.push(now=>{const on=(now%1600)<110;for(const s of strobes)s.visible=on;
     bussTex.offset.y=(now*0.00006)%1;});
 
-  scene.add(G);
+  scene.add(ROOT);
   const pick=parts.slice();
-  return {radius:LEN*0.5,group:G,pick,minD:60};
+
+  // ---------- flying it, and the events ----------
+  const W={THREE,scene,camera:api.camera,renderer,animHooks,C,api,ROOT,G,SAU,env,glowTex,grilleMat:grilleMat(),bussMat,bussGlows,impGlows,bayGlow,
+    hullMats:[...hullMats]};
+  const FL=flight(W);W.FULL_IMPULSE=FL.FULL;window.__ent=W;   // for tests
+  const EV=events(W);
+  let flyBtn=null;
+  const fly=()=>{if(W.flight.on)FL.stop();else FL.start();if(!flyBtn)flyBtn=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Fly');
+    if(flyBtn)flyBtn.setAttribute('aria-pressed',String(W.flight.on));};
+  const evBtn=()=>{const o=!EV.panel.classList.contains('open');EV.panel.classList.toggle('open',o);
+    const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Events');if(b)b.setAttribute('aria-expanded',String(o));};
+  // #fly opens at the helm; #ev=name[,name...] runs events once the page is up (Warp, red, shields, phasers,
+  // torpedo, incoming, separate, shuttle), a second apart
+  {const h=new URLSearchParams(location.hash.slice(1));
+   if(h.has('fly'))setTimeout(fly,300);
+   if(h.has('evfreeze'))W.freezeAfter(+h.get('evfreeze'));
+   // #dbg: the events' state in the probe's report
+   if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+   const act={...EV.act,fly,drop:()=>W.dropOut()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
+  return {radius:LEN*0.5,group:ROOT,pick,minD:60,
+    buttons:{'Fly':fly,'Events':evBtn},
+    camFrame:FL.camFrame,ownsInput:()=>W.flight.on,
+    // a viewpoint chosen while flying hands the helm back first, so the view is of the ship where it is
+    onView:()=>{if(W.flight.on)fly();},
+    hud:()=>[FL.hud(),EV.hud()].filter(Boolean).join(' · ')};
 }

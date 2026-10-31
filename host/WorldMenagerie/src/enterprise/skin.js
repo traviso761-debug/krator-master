@@ -126,6 +126,11 @@ function saucerTex(THREE,renderer,top,N){
       // the phaser strip, broken over the impulse deck: a dark band scored across every metre
       {const ds=Math.abs(e-rimE)*R;
        if(ds<1.4&&!(x<-95&&Math.abs(z)<150)){const sc=fr(th*r/1.1)<0.18||ds>1.1;T.set(idx,STRIP,sc?[0.7,0.7,0.72]:ONE,ds>1.1?0.45:0.8,0.35,false);continue;}}
+      // the captain's yacht, clamped under the saucer: its seam, and a row of its windows
+      if(!top){const Y=SAUCER.yacht,xc=(Y.x0+Y.x1)/2,hl=(Y.x0-Y.x1)/2,q=Math.sqrt(Math.pow((x-xc)/hl,2)+Math.pow(z/Y.w,2));
+        if(Math.abs(q-1)*Y.w<0.35){T.set(idx,BASE,[0.45,0.47,0.5],0.3,0.6,false);continue;}
+        if(Math.abs(q-0.62)*Y.w<0.45&&fr(x/2.2)<0.5){T.set(idx,GLASS,ONE,0.8,0.15,true);continue;}
+        if(q<1){AZ.edge=Math.abs(q-0.85)*Y.w+0.02;AZ.sub=9;AZ.tone=2;}}
       if(lit===2){T.set(idx,GLASS,ONE,0.8,0.15,false);continue;}
       plate(T,idx,AZ,1,lit);
     }
@@ -196,8 +201,11 @@ function sampler(f,flip,gu,gv){
 }
 // The stardrive's skin: plates in courses along the hull (on the sides they run with the decks, on the top and
 // underside with the keel), and the decks of windows along the sides.
-export function hullPainter({windows=true,seed=51,cw=16,ch=9,skip,spine=false,nacelle=false}={}){
+export function hullPainter({windows=true,seed=51,cw=16,ch=9,skip,spine=false,nacelle=false,ventral=false}={}){
   return (T,idx,p,n)=>{
+    // the ventral phaser array: an arc across the engineering hull's belly, behind the deflector
+    if(ventral&&n.y<-0.55&&Math.abs(p.z)<58){const ds=Math.abs(p.x+178-0.007*p.z*p.z);
+      if(ds<1.4){const sc=fr(p.z/1.1)<0.18||ds>1.1;T.set(idx,STRIP,sc?[0.7,0.7,0.72]:ONE,ds>1.1?0.45:0.8,0.35,false);return;}}
     // the pinstripe: red edged in white, down the middle of the neck's back and the engineering hull's spine
     if(spine&&n.y>0.35&&p.x<-150&&Math.abs(p.z)<0.85){T.set(idx,Math.abs(p.z)<0.5?RED:[0.8,0.8,0.8],ONE,0.9,0.4,false);return;}
     if(nacelle&&n.y>0.5){
