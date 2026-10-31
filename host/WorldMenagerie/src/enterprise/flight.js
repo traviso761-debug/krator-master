@@ -281,6 +281,8 @@ export function flight(W){
   }
   function stop(){
     if(!S.on)return;
+    // leaving the helm hands back anything flying the ship for you (docking, the tour)
+    if(W.cancelAuto)W.cancelAuto(true);
     if(W.course)W.course.clear();
     if(S.warp)W.dropOut(true);
     S.on=false;S.v=0;S.thr=0;S.acc=0;S.punch=0;S.orbit=null;S.vel.set(0,0,0);S.rate.set(0,0,0);S.bank=0;BANK.rotation.x=0;dust.visible=streaks.visible=false;

@@ -93,12 +93,14 @@ export function extras(W){
     W.setThrottle(0);F.note('Approach control: cleared to dock, berth one. We have the helm.');
   }
   W.dock=doDock;
-  W.cancelAuto=()=>{if(dock.phase&&dock.phase!=='docked'){dock.phase=null;F.note('Docking cancelled.');}else if(dock.phase==='docked'){dock.phase=null;F.note('Cast off.');}if(tour.on)stopTour();};
+  W.cancelAuto=quiet=>{if(dock.phase&&!quiet)F.note(dock.phase==='docked'?'Cast off.':'Docking cancelled.');dock.phase=null;if(tour.on)stopTour();};
   W.autoDir=()=>null;
   const qLook=dir=>{const m=new THREE.Matrix4(),up=V().set(0,1,0).applyQuaternion(SB.getWorldQuaternion(new THREE.Quaternion())),x=dir.clone().normalize(),z=x.clone().cross(up).normalize(),y=z.clone().cross(x);
     m.makeBasis(x,y,z);return new THREE.Quaternion().setFromRotationMatrix(m);};
   const T2=40;
   animHooks.push(()=>{if(!dock.phase)return;
+    // gone to warp, or the helm left, or somewhere else: approach control lets go
+    if(!S.on||S.warp||W.spooling||W.herePlace()!==W.homePlace){dock.phase=null;return;}
     S.vel.set(0,0,0);S.rate.set(0,0,0);W.setThrottle(0);
     const u=F.T()-dock.t0;let p,dir,spd;
     if(dock.phase==='approach'){const s=ease(u/dock.T1),s2=ease((u+0.05)/dock.T1),P=dock.path;

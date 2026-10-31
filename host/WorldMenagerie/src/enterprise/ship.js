@@ -314,7 +314,9 @@ export function model(api){
      const p=f.m.g.getWorldPosition(new THREE.Vector3());api.view({az,el,d,tx:p.x,ty:p.y,tz:p.z});},100);}
    // #keys=a,w: hold keys down from evt on (for tests of the helm)
    if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
-   const act={...EV.act,...EX.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
+   const act={...EV.act,...EX.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav(),engage:()=>W.engage(6),stop:()=>{if(W.flight.on)fly();}};
+   // name@secs runs that one at that many seconds after evt, instead of a second after the one before
+   const ev=(h.get('ev')||'').split(',').map(k=>k.split('@')).filter(([k])=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach(([k,at],i)=>setTimeout(()=>{act[k]();EV.sync();},t0+(at!=null?+at*1000:i*1000)));}
   return {radius:LEN*0.5,group:ROOT,pick,minD:60,
     buttons:{'Fly':fly,'Course':()=>W.openNav(),'Events':evBtn},
     camFrame:FL.camFrame,ownsInput:()=>W.flight.on,

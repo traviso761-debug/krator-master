@@ -91,7 +91,9 @@ export function hostile(W,E){
       const g=m.g,c=E.toFX(E.shipCentre()),q=shipQ().premultiply(W.FX.quaternion.clone().invert()),u=t-foe.born;
       const shipV=E.dirFX(W.flight.vel||V());
       // warp-in: it decelerates out of a streak
-      if(u<0.4){g.scale.set(1+6*(1-u/0.4),1,1);}else g.scale.set(1,1,1);
+      if(u<0.4&&!K.cloak){g.scale.set(1+6*(1-u/0.4),1,1);}else g.scale.set(1,1,1);
+      // left behind when the ship goes to warp
+      if(W.flight.warp){W.FX.remove(g);foe.gone=true;foe.left=true;E.sync();done();return false;}
       if(foe.warpT!=null){const k=(t-foe.warpT)/0.4;g.scale.set(1+6*k*k,1,1);g.position.addScaledVector(tmp.set(1,0,0).applyQuaternion(g.quaternion),60000*k*dt);
         if(k>=1){E.flash(E.world(g,V()),K.glow,900,0.9);W.FX.remove(g);foe.gone=true;foe.left=true;E.sync();E.note('A '+K.name+' has gone to warp.');done();return false;}return;}
       // where it wants to be: on its circle round the ship, or away if running
@@ -156,6 +158,7 @@ export function hostile(W,E){
     E.note('Wave '+battle.wave+' of 3: '+(battle.wave===3?'a Lattice ship.':L.length+' contacts.'));
     L.forEach((kd,i)=>setTimeout(()=>contact(i,kd),i*900));}
   function done(){if(live().length)return;
+    if(battle.on&&W.flight.warp){battle.on=false;E.note('We have left them behind.');return;}
     if(battle.on){if(battle.wave<3)setTimeout(nextWave,5000);else{battle.on=false;E.note('The last of them is gone. '+battle.kills+' destroyed.');}}}
 
   const hud=()=>{const L=live();if(!L.length)return battle.on?'wave '+battle.wave+' cleared':'';const f=W.enemy;
@@ -208,7 +211,7 @@ export function hostile(W,E){
       const m=FA.hauler(i),at=c.clone().addScaledVector(fwd,3200+i*500).addScaledVector(side,-2600-i*300).add(V().set(0,(i-1)*250,0));
       warpIn(m,at,0xd8e8ff);m.g.quaternion.copy(q).multiply(new THREE.Quaternion().setFromAxisAngle(V().set(0,1,0),-Math.PI/2));
       const vel=side.clone().multiplyScalar(160),t0=E.T();
-      E.run((t,dt)=>{m.g.position.addScaledVector(E.dirFX(vel),dt);for(const e of m.engines)e.scale.setScalar(e.userData.s0*(0.85+0.3*Math.sin(t*20)));
+      E.run((t,dt)=>{if(W.flight.warp){W.FX.remove(m.g);return false;}m.g.position.addScaledVector(E.dirFX(vel),dt);for(const e of m.engines)e.scale.setScalar(e.userData.s0*(0.85+0.3*Math.sin(t*20)));
         if(t-t0>45){warpOut(m,0xd8e8ff);return false;}});},i*1500);
   }
   // a derelict: ahead and to one side, tumbling end over end very slowly; it stays until you call another
@@ -218,7 +221,7 @@ export function hostile(W,E){
     const q=shipQ(),c=E.shipCentre(),m=FA.derelict();wreck=m;
     m.g.position.copy(E.toFX(c.clone().add(V().set(7000,-600,-2500).applyQuaternion(q))));m.g.rotation.set(0.3,0.8,0.2);W.FX.add(m.g);
     E.note('Sensors: a derelict, 2.5 km long, broken in two. No life signs. Some power, somewhere.');
-    E.run((t,dt)=>{if(wreck!==m)return false;m.g.rotation.z+=dt*0.006;m.g.rotation.x+=dt*0.003;
+    E.run((t,dt)=>{if(wreck===m&&W.flight.warp){W.FX.remove(m.g);wreck=null;}if(wreck!==m)return false;m.g.rotation.z+=dt*0.006;m.g.rotation.x+=dt*0.003;
       m.g.traverse(o=>{if(o.userData.flick!=null)o.material.opacity=Math.sin(t*3+o.userData.flick)>0.6||Math.sin(t*17+o.userData.flick*3)>0.95?0.9:0.1;});});
   }
   return {contact:(kind)=>contact(null,kind),hit,hud:()=>[hud(),ally.on?'a Sere ship alongside':'',wreck?'a derelict':''].filter(Boolean).join(' · '),battle:startBattle,count:()=>live().length,sere,convoy,derelict};
