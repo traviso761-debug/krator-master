@@ -75,6 +75,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
 | `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
+| `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova` | `deepsky.html` | Deep Sky: M87*, the Crab Pulsar and a supernova |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
@@ -2091,6 +2092,21 @@ What the novel leaves open and this model chooses: the hull's thickness (2 km, f
 plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
 and the outside faces beyond the hub.
 
+### `/deepsky`: Deep Sky, three ways a star ends
+
+Original work (`src/deepsky/`), on the starship page (`src/starship/page.js`); `data/cities/deepsky.json` holds the numbers
+and the cards. Three objects, one at a time: the Black hole, Pulsar and Supernova buttons switch them (`#object=`).
+
+- **M87\***: a shader follows each pixel's light back through Schwarzschild space, so the disk's far side shows over and
+  under the shadow, with the photon ring, Doppler beaming (the side coming towards you is brighter), gravitational
+  redshift, the jet and the lensed stars behind. The disk is drawn thin and bright, as a textbook draws it.
+- **The Crab Pulsar**: 20 km across, its dipole field tilted 45 degrees to its spin, its two beams sweeping, the light
+  cylinder; slowed to a quarter turn a second, or 29.6 with the real-speed button. Pull back and the Crab Nebula
+  fades in round it, drawn thousands of millions of times smaller than it is.
+- **A supernova**: a red supergiant cut away to its shells, the iron core's collapse, the bounce and shock, the
+  breakout flash and the ejecta in Rayleigh-Taylor fingers, on a 64-second loop with captions (`#snt=<seconds>` starts
+  it part-way). The shells are drawn far thicker than they are, and the captions give the real timescales.
+
 ### `/homeworld`: Homeworld, the Kharak system
 
 Fan work. Homeworld belongs to its makers (Relic Entertainment, and now Gearbox); nothing from the game, its
@@ -2612,6 +2628,7 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   rama/     main.js shape.js rama.js interior.js events.js sound.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the hall of holograms, the bowls and the horns, the walker; the twelve scenes and the flyby; the sound
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
+  deepsky/ main.js model.js blackhole.js pulsar.js supernova.js   Deep Sky: the switch and its kit; M87* (ray-traced shader); the Crab Pulsar and Nebula; the supernova
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls

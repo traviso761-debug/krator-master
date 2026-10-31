@@ -1,0 +1,128 @@
+{
+ "name": "Deep Sky",
+ "note": "Original work: three ways a star ends. M87*, the black hole imaged by the Event Horizon Telescope in 2019, its light traced through curved space; the Crab Pulsar, with its field, its beams and the nebula it powers; a core-collapse supernova from the star's shells to its remnant. Built by src/deepsky/ on the starship page (src/starship/page.js); the objects' numbers are in 'blackhole', 'pulsar' and 'supernova'.",
+ "attribution": "Deep Sky: original work, src/deepsky/. Schematic in places: the captions and cards say where.",
+ "start": "blackhole",
+ "radius": 1000,
+ "minD": 8,
+ "view0": {
+  "az": 0.6,
+  "el": 0.09,
+  "d": 680
+ },
+ "views": {
+  "Black hole: edge on": {
+   "object": "blackhole",
+   "az": 0.6,
+   "el": 0.05,
+   "d": 640
+  },
+  "Black hole: from above": {
+   "object": "blackhole",
+   "az": 0.6,
+   "el": 0.75,
+   "d": 700
+  },
+  "Black hole: close": {
+   "object": "blackhole",
+   "az": 1.2,
+   "el": 0.14,
+   "d": 300
+  },
+  "Black hole: the jet": {
+   "object": "blackhole",
+   "az": 0.6,
+   "el": 0.5,
+   "d": 1500
+  },
+  "Pulsar: the star": {
+   "object": "pulsar",
+   "az": 0.9,
+   "el": 0.22,
+   "d": 2600
+  },
+  "Pulsar: the beams": {
+   "object": "pulsar",
+   "az": 0.2,
+   "el": 0.05,
+   "d": 9000
+  },
+  "Pulsar: the Crab Nebula": {
+   "object": "pulsar",
+   "az": 0.9,
+   "el": 0.25,
+   "d": 70000
+  },
+  "Supernova": {
+   "object": "supernova",
+   "az": 0.55,
+   "el": 0.18,
+   "d": 2300
+  },
+  "Supernova: the remnant": {
+   "object": "supernova",
+   "az": 1.4,
+   "el": 0.4,
+   "d": 6000
+  }
+ },
+ "blackhole": {
+  "scale": 20,
+  "disk": [
+   3,
+   14
+  ],
+  "jet": 0.06,
+  "exposure": 1.2,
+  "peakK": 3900,
+  "info": "The black hole at the middle of the galaxy M87, 55 million light years off: six and a half billion times the Sun's mass, its horizon 38 billion km across, bigger than the Solar System out to Neptune. In April 2017 the Event Horizon Telescope, radio dishes from Hawaii to the South Pole working as one Earth-sized telescope, took its picture, published in 2019: the first of a black hole. What you see here is computed, not painted: each pixel's light is followed back along its bent path. The black disc is the shadow, two and a half times the horizon; the thin bright ring round it is light that has gone round the hole before reaching you; the disk's far side shows over the top and under the bottom because its light is bent up and down to you; the side turning towards you is brighter, beamed by the gas's speed. The disk is drawn thin and bright, as a textbook draws it: M87*'s is fainter and thicker. Its jet, along the spin axis, reaches 5,000 light years out of the galaxy."
+ },
+ "pulsar": {
+  "radius": 10,
+  "tilt": 45,
+  "lightCylinder": 1610,
+  "beam": 5000,
+  "slow": 0.25,
+  "nebula": 36000,
+  "seed": 1054,
+  "info": "What was left at the middle of the star whose explosion Chinese astronomers saw in July 1054, bright enough to see by day for three weeks: a neutron star, 1.4 times the Sun's mass in a ball 20 km across, as dense as an atom's nucleus. It turns 29.6 times a second and is slowing, a millionth of a second every 2.5 years, its spin's energy going into the nebula round it. Its magnetic field, a million million times the Earth's, is tilted to its spin, and two beams come out along it; each time one sweeps over the Earth we see a pulse, in radio, light, X-rays and gamma rays. Found in 1968, it was the proof that pulsars are neutron stars. Here the field lines turn with the star; the light cylinder is where they would have to go at the speed of light.",
+  "nebulaInfo": "The Crab Nebula, M1: the remnant of the supernova of 1054, 6,500 light years off and 11 across, still growing at 1,500 km a second. Its blue-white glow is the synchrotron light of electrons the pulsar's wind sends spiralling through its field; the red and orange filaments are the star's outer layers, hydrogen and oxygen, lit by it. Chandra's X-ray picture shows the ring where the wind meets the nebula and a jet up the spin axis. It is drawn here thousands of millions of times smaller than it is, so that the pulsar and it can share a screen."
+ },
+ "supernova": {
+  "radius": 600,
+  "length": 64,
+  "seed": 1987,
+  "ejecta": 9000,
+  "info": "A red supergiant, like Betelgeuse: twenty times the Sun's mass, swollen to a thousand times its width. Each shell is the ash of the one outside it: hydrogen burned to helium, helium to carbon and oxygen, those to neon, magnesium and silicon, and silicon, in its last day, to iron. Burning iron takes energy instead of giving it, so the core grows until nothing holds it up. The shells are drawn far thicker than they are: the iron core is the size of the Earth at the middle of a star that would reach past Jupiter."
+ },
+ "space": {
+  "seed": 4,
+  "stars": 4200,
+  "starSize": 1600,
+  "far": 1500000,
+  "starLight": {
+   "colour": "#ffffff",
+   "az": 0.6,
+   "el": 0.4,
+   "intensity": 1.0,
+   "ambient": 0.4,
+   "lamp": 0.3
+  },
+  "fill": {
+   "colour": "#6080b0",
+   "az": -2.2,
+   "el": -0.4,
+   "intensity": 0.3
+  },
+  "bodies": [],
+  "nebulae": [
+   {
+    "colour": "#3a2a5e",
+    "size": 500000,
+    "az": -1.9,
+    "el": 0.25,
+    "dist": 0.86
+   }
+  ]
+ }
+}
