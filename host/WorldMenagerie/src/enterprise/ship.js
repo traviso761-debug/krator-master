@@ -21,7 +21,7 @@
 // neck), an environment map of the planet's glow and the dark, and ACES tone mapping for the hull only, so the
 // backdrop keeps the colours it has on the other ship pages.
 import {SAUCER,NACELLE,DEFLECTOR,BAYS} from './dims.js';
-import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
+import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf,MODTOP,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
         deflPlane,smooth,ND0,ND1,NACZ,NACY} from './hull.js';
 import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
 
@@ -126,10 +126,10 @@ export function model(api){
   for(const side of [1,-1]){
     const f=nacSurf(side),d0=ND0,d1=425,span=ND1-ND0;
     // u along the nose from its tip to the oval's after end, which is further aft at the middle of the side
-    const map=(u,v,m)=>{const a=v*Math.PI*2,yf=Math.sin(a),k=Math.sqrt(Math.max(0,1-Math.pow(yf/0.62,2)));
+    const map=(u,v,m)=>{const a=v*Math.PI*2,yf=Math.sin(a),k=Math.pow(Math.max(0,1-Math.pow(yf/0.66,2)),0.75);
       const d=d0+u*(4+(d1-d0-4)*k);m[0]=dToU(d);m[1]=v;};
     const dToU=d=>{let lo=0,hi=1;for(let i=0;i<30;i++){const u=(lo+hi)/2,t=0.5-0.5*Math.cos(Math.PI*u),dd=ND0+span*(0.4*u+0.6*t);if(dd<d)lo=u;else hi=u;}return lo;};
-    lit(surface(THREE,patch(f,side>0,map,0.25),48,96,side>0),bussMat,INFO.bussard);
+    lit(surface(THREE,patch(f,side>0,map,0.25),64,192,side>0),bussMat,INFO.bussard);
     {const tip=new THREE.Mesh(new THREE.SphereGeometry(1.4,12,8),bussMat);tip.position.set(192-ND0-0.3,NACY,side*NACZ);tip.userData.noWire=true;G.add(tip);}
     glow(-206,NACY,side*NACZ,0xff5a2a,95,0.9);
     // the gold rings behind it
@@ -149,6 +149,42 @@ export function model(api){
     if(grilleMat.m)return grilleMat.m;
     const t=stripes(16,64,(x,w,h)=>{x.fillStyle='#2a5cc8';x.fillRect(0,0,w,h);for(let i=0;i<8;i++){x.fillStyle='#8cc8ff';x.fillRect(0,i*8+2,w,4);}});
     t.repeat.set(1,1);return grilleMat.m=basic({map:t,side:THREE.DoubleSide});
+  }
+
+  // The bridge module: its wall carries the bridge's windows all round, taller across the after end, which is
+  // the observation lounge looking aft over the stem; the dome over it is plated in rings round a darker skylight.
+  {
+    const W=1024,H=256,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+    const ev=document.createElement('canvas');ev.width=W;ev.height=H;const y=ev.getContext('2d');
+    x.fillStyle='rgb(150,157,163)';x.fillRect(0,0,W,H);y.fillStyle='#000';y.fillRect(0,0,W,H);
+    const wall=0.4*H;
+    // the wall: a dark band of glass with mullions, lit
+    for(let i=0;i<W;i++){const u=i/W,aft=Math.abs(u-0.5)<0.16,top=aft?0.12:0.3,bot=aft?0.82:0.62;
+      if(Math.floor(i/(W/96))%2===0||aft&&i%6<4){x.fillStyle='rgb(18,22,28)';x.fillRect(i,wall*top,1,wall*(bot-top));
+        y.fillStyle=aft?'rgb(255,226,170)':'rgb(255,214,150)';y.fillRect(i,wall*top,1,wall*(bot-top));}}
+    x.fillStyle='rgb(110,116,124)';x.fillRect(0,wall*0.86,W,wall*0.08);
+    // the dome: rings of plates, the skylight at the top
+    for(let k=0;k<5;k++){x.fillStyle='rgb(120,126,132)';x.fillRect(0,wall+(H-wall)*(k+1)/6,W,2);}
+    x.fillStyle='rgb(70,84,98)';x.fillRect(0,wall+(H-wall)*0.83,W,H);
+    for(let i=0;i<24;i++){x.fillStyle='rgb(128,134,140)';x.fillRect(i*W/24,wall,2,(H-wall)*0.83);}
+    const map=new THREE.CanvasTexture(cv),emap=new THREE.CanvasTexture(ev);map.flipY=emap.flipY=false;
+    map.anisotropy=emap.anisotropy=renderer.capabilities.getMaxAnisotropy();
+    const mat=new THREE.MeshStandardMaterial({map,emissiveMap:emap,emissive:0xffffff,emissiveIntensity:2.2,roughness:0.45,metalness:0.2,envMap:env,envMapIntensity:1.3});
+    add(surface(THREE,bridgeSurf,192,40,true),mat,INFO.bridge);
+    // the two escape-pod ports and the thrusters either side of it, small domes on the plate
+    for(const z of [-26,26]){const m=new THREE.Mesh(new THREE.SphereGeometry(2.4,20,10,0,Math.PI*2,0,Math.PI/2),
+      new THREE.MeshStandardMaterial({color:0x9aa2aa,roughness:0.4,metalness:0.3,envMap:env}));
+      m.position.set(-9,saucerTop(-9,z)-0.4,z);m.scale.y=0.6;m.castShadow=m.receiveShadow=true;G.add(m);}
+  }
+  // The reaction control thrusters: four blocks let into the saucer's rim, fore and aft quarters each side.
+  {
+    const mat=new THREE.MeshStandardMaterial({color:0x7e868e,roughness:0.5,metalness:0.3,envMap:env}),
+      nz=new THREE.MeshBasicMaterial({color:0x1a1c20,toneMapped:false});
+    for(const a of [0.62,-0.62,2.28,-2.28]){
+      const r=rho(a)+0.6,px=r*Math.cos(a),pz=r*Math.sin(a),yy=(saucerTop(px*0.995,pz*0.995)+saucerBot(px*0.995,pz*0.995))/2;
+      const b=new THREE.Mesh(new THREE.BoxGeometry(2.4,4.2,9),mat);b.position.set(px,yy,pz);b.rotation.y=-a;b.castShadow=b.receiveShadow=true;G.add(b);
+      for(const dz of [-2.6,0,2.6]){const q=new THREE.Mesh(new THREE.PlaneGeometry(1.6,1.6),nz);q.position.set(1.25,0,dz);q.rotation.y=Math.PI/2;q.userData.noWire=true;b.add(q);}
+    }
   }
 
   // The deflector: a shallow elliptical dish in the nose's flat, copper rings round a glowing core.

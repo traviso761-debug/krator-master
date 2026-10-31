@@ -1974,6 +1974,15 @@ wireframe and menagerie menu every other page has.
     sides read as a sunken rectangle until they were eased over 15 m; and with the panel lines at the
     strength the drawings show them, the hull looked like brickwork — from a kilometre the aztec should be
     a mottle, and close in a faint pattern.
+  - **Second pass on the details.** The bridge was a bump in the dish's height field, which shaded as a
+    smudge; it is now a module of its own (`bridgeSurf`): an egg in plan, longer aft where the observation
+    lounge is, a wall of windows round it and a low dome over, standing on the plate, with the two small
+    domes either side. The measured trailing edge had steps in it (the drawing's thrusters and hatches
+    standing proud) that the rim lofted through as corners: it is now a smooth curve through those points,
+    and the thrusters are blocks of their own on the rim. The underside's profile had a knee where the
+    dish meets the outer shelf; the neck now flares into the engineering hull as it does into the saucer,
+    instead of meeting it at a hard line; and the pylons thicken at both ends and run out forward along the
+    nacelle's underside as a fairing.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a

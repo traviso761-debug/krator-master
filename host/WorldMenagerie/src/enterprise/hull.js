@@ -72,8 +72,6 @@ function dorsal(x,z){
     const t=clamp((BR.stemFrom-x)/(BR.stemFrom-BR.stemTo),0,1),hw=BR.stemW0+(BR.stemW1-BR.stemW0)*t;
     lift=Math.max(lift,BR.lift*smooth(BR.stemTo-12,BR.stemTo+10,x)*(1-smooth(hw*0.35,hw+8,Math.abs(z))));
   }
-  const base=topF(ell(BR.x,0))+BR.lift;
-  if(db<17)lift+=(BR.top-base)*0.5*(1+Math.cos(Math.PI*db/17));
   return lift;
 }
 const impulseDeck=(x,z)=>3.4*smooth(-148,-192,x)*(1-smooth(52,78,Math.abs(z)));
@@ -183,12 +181,28 @@ export function pylonSurf(side){
   const o=[0,0,0,0];
   return (u,v,p)=>{
     const s=u*PLEN;pylonPath(s,o);
-    const f=s/PLEN,xl=PL.root[0]+(PL.tip[0]-PL.root[0])*f,xt=PL.root[1]+(PL.tip[1]-PL.root[1])*f;
+    const f=s/PLEN,fa=smooth(0.72,1,f);
+    const xl=PL.root[0]+(PL.tip[0]-PL.root[0])*f+(PL.fair[0]-PL.tip[0])*fa,xt=PL.root[1]+(PL.tip[1]-PL.root[1])*f+(PL.fair[1]-PL.tip[1])*fa;
     const a=v*Math.PI*2,c=(1+Math.cos(a))/2,sd=Math.sin(a)>=0?1:-1;
-    const th=PL.t/2*(1+0.6*(1-smooth(0,0.22,f)))*aero(c)*sd;
+    // thicker at both ends, where it is faired into the hull and into the nacelle
+    const th=PL.t/2*(1+0.9*(1-smooth(0,0.2,f))+1.6*fa)*aero(c)*sd;
     // the section's thickness is across the path, in the front view's plane
     p.x=xl+(xt-xl)*c;p.z=side*(o[0]-o[3]*th);p.y=o[1]+o[2]*th;
   };
+}
+
+// ---------- the bridge module ----------
+// u round it from the bow, v from its foot (0) up the wall (to 0.4) and over the dome to the top (1). Its foot
+// follows the plate under it; the wall's top and the dome are level.
+const MD=SAUCER.module;
+export const MODTOP=topF(ell(MD.x,0))+BR.lift+MD.wall;
+export function bridgeSurf(u,v,p){
+  const a=u*Math.PI*2,c=Math.cos(a),s=Math.sin(a),e=2/MD.n;
+  const fx=(c>=0?MD.fore:MD.aft)*spow(c,e),fz=MD.half*spow(s,e);
+  if(v<0.4){const t=v/0.4,k=1-0.07*t,yb=saucerTop(MD.x+fx,fz)-0.5;
+    p.x=MD.x+fx*k;p.z=fz*k;p.y=yb+(MODTOP-yb)*t;return;}
+  const t=(v-0.4)/0.6,k=0.93*Math.cos(t*Math.PI/2);
+  p.x=MD.x+fx*k;p.z=fz*k;p.y=MODTOP+(BR.top-MODTOP)*Math.sin(t*Math.PI/2);
 }
 
 // ---------- the grid ----------

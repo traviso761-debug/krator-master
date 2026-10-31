@@ -17,16 +17,21 @@
 export const SAUCER={
   a:192, b:232,
   // plan outline aft of the ellipse: [x, half-width] (plan view, scaled by 0.97)
-  tail:[[-120,177],[-131.6,165.8],[-140.7,151.6],[-150.7,135.9],[-161.4,104.3],[-172.1,90.6],[-182.8,70.4],[-193.5,70.6],
-        [-199.5,62],[-202.8,40],[-204,0]],
+  // (measured: [-131.6,165.8],[-140.7,151.6],[-150.7,135.9],[-161.4,104.3],[-172.1,90.6],[-182.8,70.4],[-193.5,70.6],
+  // [-199.5,62],[-202.8,40]; the steps in it are the drawing's thrusters and hatches standing proud of the edge, and
+  // lofted through as they are they put corners in the trailing edge. This is a smooth curve through them.)
+  tail:[[-120,181.2],[-135,165],[-150,144],[-163,119],[-175,95],[-186,78],[-195,66],[-200.5,52],[-203.2,32],[-204,0]],
   // profiles against the normalised radius (0 at the centre, 1 at the rim), from the side view, y in metres
   top:[[0,29.5],[0.0625,29.4],[0.125,29.2],[0.1875,28.9],[0.25,28.2],[0.3125,27.4],[0.375,26.5],[0.4375,25.2],[0.5,23.8],
        [0.5625,22.3],[0.625,20.4],[0.6875,18.3],[0.75,15.8],[0.8125,12.6],[0.875,9.6],[0.9375,6.3],[0.975,4.3],[1,3.0]],
   bot:[[0,-22.0],[0.0625,-21.6],[0.125,-21.0],[0.1875,-20.4],[0.25,-19.6],[0.3125,-18.6],[0.375,-17.3],[0.4375,-15.6],
-       [0.5,-13.6],[0.5625,-11.4],[0.625,-8.8],[0.6875,-6.0],[0.75,-4.5],[0.8125,-4.0],[0.875,-3.8],[0.9375,-3.4],[0.975,-3.1],[1,-3.0]],
+       [0.5,-13.6],[0.5625,-11.4],[0.625,-9.0],[0.6875,-6.9],[0.75,-5.3],[0.8125,-4.3],[0.875,-3.7],[0.9375,-3.3],[0.975,-3.1],[1,-3.0]],
   rim:3.0,                       // the rim is a band 6 m deep: the two rows of windows round Ten Forward's deck
   // the dorsal superstructure: a raised plate round the bridge with a stem aft to the main impulse engine
   bridge:{x:-13.6, r:33, stemFrom:-30, stemTo:-108, stemW0:30, stemW1:38, lift:2.6, top:35.3},
+  // the bridge module on the plate: an egg in plan, longer aft (the observation lounge is its after end), a wall
+  // with the bridge's windows round it and a low dome over; [fore, aft, half-width] in metres from its centre
+  module:{x:-11, fore:12, aft:20, half:11.5, n:2.6, wall:2.0},
   sensor:{x:0, r:22, depth:2.4},  // the main sensor dome under the saucer
   yacht:{x0:-62, x1:-128, w:15, depth:2.0},
 };
@@ -41,13 +46,14 @@ export const ENG=[
 // saucer its top runs down from the impulse deck to the spine along the engineering hull.
 export const NECK={
   lead:[[-126,-52],[-98,-17]],
-  width:[[-60,20],[-44,20],[-38,23],[-30,34],[-24,50],[-20,66],[-16,70],[10,70]],
+  width:[[-68,46],[-63,31],[-57,22],[-50,20],[-44,20],[-38,23],[-30,34],[-24,50],[-20,66],[-16,70],[10,70]],
   top:[[-120,10],[-190,6],[-204,-1],[-216,-12],[-228,-22],[-248,-34],[-278,-44],[-328,-54],[-370,-60],[-400,-64],[-415,-67]],
   aft:-415,
 };
 // The pylons: a U in the front view, out level from the engineering hull 82 m under the rim and up into the nacelle,
 // 6 m thick; [x leading, x trailing] at the root and at the nacelle
-export const PYLON={y:-82, z0:44, zBend:95, rBend:25, zTop:120, yTop:-46, t:6.4, root:[-343,-420], tip:[-352,-425]};
+// (the last fifth of the way up, the chord runs out forward along the nacelle's underside: the fairing)
+export const PYLON={y:-82, z0:44, zBend:95, rBend:25, zTop:120, yTop:-46, t:6.4, root:[-343,-420], tip:[-352,-425], fair:[-318,-432]};
 // The nacelles: 246.5 m long (the published 248), from x = -204 to -450.5, their centres 125 m off the centreline and
 // 36 m under the rim; [d, half-width, half-height]
 export const NACELLE={z:125, y:-35.9, n:2.8,
