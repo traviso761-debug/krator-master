@@ -2011,7 +2011,7 @@ wireframe and menagerie menu every other page has.
     factor to the ten-thirds: warp 6 is 392 c) with time at warp run 20,000 times fast, said in the readout; a
     thin field of dust shows the speed at impulse, and streaks at warp. On a touch screen a pad stands in for the
     keys.
-  - **Places and courses** (`places.js`, `nav.js`, the **Course** button or C). Eight places on a star chart
+  - **Places and courses** (`places.js`, `nav.js`, the **Course** button or C). Eight places (fourteen since the fifth pass) on a star chart
     in light-years: home, a ringed gas giant with two moons, an ice world under a red dwarf, a comet near its sun
     (its ion and dust tails streaming away from the sun in a shader), a binary star (an orange giant with a
     boiling, limb-darkened surface being stripped by a hot blue companion, the gas curling into a disc round it),
@@ -2040,6 +2040,32 @@ wireframe and menagerie menu every other page has.
     seconds. Hits wear the shields down (they come back slowly, and fail at nothing) or, with them down, the hull.
     Phasers track it and torpedoes home on it, taking its shields first and then its hull; badly hurt it may break
     off and go to warp, or it is destroyed. For tests, `#foecam=az,el,d` points the turntable at it.
+  - **Fifth pass: everything else.** **Planets** are drawn in a shader now (`planets.js`): the surface is worked
+    out per pixel from 3D simplex noise on the sphere (Gustavson and McEwan's, MIT), so it holds up from a thousand
+    kilometres to a few. Terran worlds have seas graded by depth with the sun's glint on them, land from shore to
+    forest to desert to rock, snow on peaks and caps, city lights on the night side and a cloud deck warped into
+    weather; ice worlds are cracked into floes; gas giants have sheared bands and a great storm; moons have maria
+    and rayed craters; lava worlds glow through their cracks. Rings have ringlets, gaps and the planet's shadow.
+    **Six more places** (`exotic.js`, fourteen in all): a pulsar (its beams sweep round, and it flares when one
+    crosses you), a lava world beside a huge sun, a ringed water world, a young star in its dust disc (gaps where
+    planets are forming, one glowing, and jets), a planetary nebula round a white dwarf, and a rogue planet with no
+    sun, lit only by its aurora. **Full impulse is 20 km/s** (the throttle is squared on the way, so a third of it is
+    the old 2.5 km/s; the push grows with the gap to the speed asked for; the handling is reckoned from 2.5 km/s, so
+    turning is unchanged). **Other ships** (`factions.js`, all this project's own designs and peoples, not any
+    from a film or series): a Varr cruiser (a warrior people's: a stepped bronze wedge with drooping blade wings) that
+    decloaks close in, circles tight and fires in pairs and never runs; a Lattice ship (a hive's: a dark crusted
+    core inside two cages of violet struts, 1.1 km across) that is slow and heavy-hitting, drags at the ship with a
+    tractor and adapts to whichever weapon it takes most of, so the way to beat it is to change weapons; a Sere
+    survey ship (a quiet, exact people's) that keeps station alongside and fires on whatever is attacking you; a
+    trader convoy that crosses the bow; and a derelict, tumbling. **Battle** is now three waves: two raiders, then
+    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (`extras.js`, this project's own
+    design: a spindle, a habitat ring on four spokes, a lit docking arm, small craft looping round it): K, or
+    **Dock at the starbase**, hands the helm to approach control, which flies a curve out beyond the arm's end and
+    in along it to the clamps (any touch on the helm cancels; K again casts off). With the shields down, hull hits
+    can **breach** it: air vents from the hole as a plume of crystals over a flickering fire. **Abandon ship** (the
+    escape pods out of their hatches on the saucer), **Self-destruct** (ten seconds, cancelled by pressing again;
+    then a flash, a shock ring across the ship's plane, wreckage, and the ship again), a **torpedo spread**
+    (Shift+T), and a **Grand tour** (every place in turn, the flyby camera at each).
   - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
     and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
     klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it

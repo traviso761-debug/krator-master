@@ -11,6 +11,7 @@
 //
 // On arrival the place is drawn in a frame turned to the heading you came in on, so it is ahead of you.
 import {PLACES,DEEP,makePlace,atmosphere,ATMOS} from './places.js';
+import {planetMesh,PLANET_UNIFORMS} from './planets.js';
 import {lyps,warpC,TIMEX,FULL} from './flight.js';
 
 export function nav(W){
@@ -21,17 +22,20 @@ export function nav(W){
     sprite:(col,size,op=1)=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:W.glowTex,color:col,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false}));s.scale.setScalar(size);return s;}};
 
   // home is the sky the page was given: its planet and moon are moved in, and its light is the page's own
-  const home={P:PLACES[0],group:new THREE.Group(),solids:[],update:()=>{},sun:W.sun.clone(),fill:W.fillDir.clone()};
+  const home={P:PLACES[0],group:new THREE.Group(),solids:[],spin:[],update:()=>{for(const f of home.spin)f();},sun:W.sun.clone(),fill:W.fillDir.clone()};
   {const sp=W.C.space||{},D=sp.far||900000;
    home.P=Object.assign({},PLACES[0],{light:{colour:'#'+key.color.getHexString(),intensity:key.intensity,ambient:amb?amb.intensity:0.4,
      fill:{colour:'#'+fill.color.getHexString(),intensity:fill.intensity}}});
    for(const o of W.homeBodies)home.group.add(o);
    (sp.bodies||[]).forEach((b,i)=>{const o=W.homeBodies[i];if(!o)return;const d=(b.dist||0.6)*D;
      home.solids.push({name:i===0?'the planet':'the moon',c:o.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});
-     // the home world's air (the moon has none)
-     if(i===0&&b.clouds)o.add(atmosphere(THREE,Math.tan((b.deg||6)*Math.PI/180)*d,'#5f9cff',1));});}
+     // drawn again in planets.js's shader, in place of the page's own: the world with its clouds and air, the moon
+     const R=Math.tan((b.deg||6)*Math.PI/180)*d;o.visible=false;
+     const pg=planetMesh(THREE,{R,type:i===0?'terran':'moon',colours:i===0?['#1d4f86','#3d6b3a','#9a8358','#eef3f6']:['#77736c','#8d877e','#a9a397','#c8c3b9'],seed:i===0?3.1:7.7,clouds:i===0,seg:i===0?192:64});
+     pg.position.copy(o.position);if(i===0)pg.add(atmosphere(THREE,R,'#5f9cff',1));home.group.add(pg);
+     const rate=b.rate||1e-5;home.spin.push(()=>{pg.userData.spinner.rotation.y+=rate;});});}
   home.P.sunDisc=true;
-  const cache=new Map([['home',home]]);
+  const cache=new Map([['home',home]]);W.homePlace=home;W.herePlace=()=>here;
   const get=P=>{if(!cache.has(P.id))cache.set(P.id,makePlace(THREE,P,kit));return cache.get(P.id);};
   let here=home,inWarp=false;
   SYS.add(home.group);
@@ -58,6 +62,7 @@ export function nav(W){
     W.setThrottle(Math.max(0.25,S.thr));
     course.clear();
     toast(pl.P.name,pl.P.note);
+    if(W.onArrive)W.onArrive(pl);
   }
   W.arrive=arrive;
 
@@ -81,12 +86,13 @@ export function nav(W){
   const sl=new THREE.Vector3(),qs=new THREE.Quaternion();
   animHooks.push(()=>{
     for(const u of ATMOS)u.uSun.value.copy(W.sun);
+    const tt=performance.now()*0.001;for(const u of PLANET_UNIFORMS){u.uSun.value.copy(W.sun);u.uT.value=tt;}
     const show=here.group.visible&&!!here.P.sunDisc&&!S.warp;sunG.visible=show;if(!show)return;
-    sl.copy(W.sun).applyQuaternion(qs.copy(SKY.quaternion).invert()).multiplyScalar(800000);sunG.position.copy(sl);
+    sl.copy(W.sun).applyQuaternion(qs.copy(SKY.quaternion).invert()).multiplyScalar(800000);sunG.position.copy(sl);sunG.scale.setScalar(here.P.sunScale||1);
     const c=key.color;for(const o of [sdisc,sglare,sstreak])o.material.color.copy(c);sdisc.material.color.lerp(new THREE.Color(1,1,1),0.6);
     // the streak lies level on the screen
     sstreak.material.rotation=0;});
-  animHooks.push(now=>{if(!S.on&&here!==home&&here.group.visible)here.update(now*0.001,0.016,camera);});
+  animHooks.push(now=>{if(!S.on&&here.group.visible)here.update(now*0.001,0.016,camera);});
 
   // ---- solid things: the ship holds off them ----
   const wp=new THREE.Vector3(),n=new THREE.Vector3();
@@ -163,7 +169,7 @@ export function nav(W){
     if(course.dest){g.strokeStyle='#e8c98a';g.setLineDash([10,8]);g.lineWidth=2;g.beginPath();g.moveTo(X(S.map.x),Yp(S.map.y));g.lineTo(X(course.dest.ly[0]),Yp(course.dest.ly[1]));g.stroke();g.setLineDash([]);}
     for(const P of PLACES){const px=X(P.ly[0]),py=Yp(P.ly[1]);g.fillStyle=course.dest===P?'#e8c98a':'#9fc8f0';g.beginPath();g.arc(px,py,7,0,7);g.fill();
       g.fillStyle='#dfe8f0';g.font='20px Helvetica,Arial,sans-serif';const t=P.name.replace(/^Home: .*/,'Home');const w=g.measureText(t).width;
-      const below=P.id==='comet'||P.id==='ice';g.fillText(t,Math.max(6,Math.min(Wd-w-6,below?px-w/2:px+12)),below?py+28:py-10);}
+      const below=P.id==='comet'||P.id==='rogue',over=P.id==='ice';g.fillText(t,Math.max(6,Math.min(Wd-w-6,below||over?px-w/2:px+12)),below?py+28:over?py-14:py-10);}
     const h=W.heading?W.heading():null,a=h?Math.atan2(-h.f.z,h.f.x):0,px=X(S.map.x),py=Yp(S.map.y);
     g.save();g.translate(px,py);g.rotate(-a);g.fillStyle='#ffffff';g.beginPath();g.moveTo(16,0);g.lineTo(-9,-9);g.lineTo(-4,0);g.lineTo(-9,9);g.closePath();g.fill();g.restore();
   }

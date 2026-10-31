@@ -10,6 +10,8 @@
 // `light` is the star the place is lit by: its colour and strength, the direction it is in (az, el in the place's
 // frame), the ambient, and a fill from the other side (a planet's glow, a second star, a nebula).
 import {buildSky} from '../starship/page.js';
+import {planetMesh} from './planets.js';
+import {pulsar,disc,eye,rogue} from './exotic.js';
 
 const D=900000;
 const dirOf=(az,el)=>[Math.cos(az)*Math.cos(el),Math.sin(el),Math.sin(az)*Math.cos(el)];
@@ -20,11 +22,11 @@ export const PLACES=[
     light:{colour:'#fff0d8',intensity:2.1,az:0.9,el:0.32,ambient:0.3,fill:{colour:'#c8a070',intensity:0.5,az:-0.5,el:0.1}},
     sky:{bodies:[{kind:'gas',az:-0.42,el:0.12,dist:0.78,deg:13,seg:160,bands:13,colours:['#c9a878','#e2cfa4','#9a7350','#efe4cc'],rate:3e-5,atmos:'#e8d4a8',atmosK:0.45,
         ring:{inner:1.35,outer:2.45,tilt:0.32,bands:18,colour:'#cdbf9e',opacity:0.7}},
-      {kind:'rock',az:0.32,el:-0.05,dist:0.42,deg:2.4,seg:40,colours:['#6b5e52','#8a7a68','#a8987e','#d8d0c0'],ice:0.7},
-      {kind:'rock',az:-0.9,el:0.22,dist:0.74,deg:1.2,seg:28,colours:['#c8c0b0','#a8a090','#e0dace','#f4f0e8'],ice:0.4}]}},
+      {kind:'rock',type:'moon',seed:4.4,az:0.32,el:-0.05,dist:0.42,deg:2.4,seg:40,colours:['#6b5e52','#8a7a68','#a8987e','#d8d0c0'],ice:0.7},
+      {kind:'rock',type:'moon',seed:9.1,az:-0.9,el:0.22,dist:0.74,deg:1.2,seg:28,colours:['#c8c0b0','#a8a090','#e0dace','#f4f0e8'],ice:0.4}]}},
   {id:'ice',sunDisc:true,name:'An ice world under a red dwarf',ly:[-4.5,1.8],note:'Frozen oceans under a dim red sun that never sets on its near side.',
     light:{colour:'#ffb490',intensity:1.7,az:1.1,el:0.2,ambient:0.26,fill:{colour:'#7090b0',intensity:0.55,az:-1.2,el:-0.3}},
-    sky:{bodies:[{kind:'rock',az:-0.5,el:-0.22,dist:0.5,deg:19,seg:160,colours:['#4f6d84','#c6d5df','#94a8b6','#f4f8fb'],ice:0.32,atmos:'#9fc4ff',atmosK:0.6,clouds:true,cloudPuffs:900,cloudSystems:40,rate:1.5e-5}]}},
+    sky:{bodies:[{kind:'rock',type:'ice',seed:2.2,az:-0.5,el:-0.22,dist:0.5,deg:19,seg:160,colours:['#2c4a63','#c6d5df','#94a8b6','#f4f8fb'],ice:0.32,atmos:'#9fc4ff',atmosK:0.6,clouds:true,cloudPuffs:900,cloudSystems:40,rate:1.5e-5}]}},
   {id:'comet',sunDisc:true,name:'A comet near its sun',ly:[0.4,-0.9],note:'A nucleus a few kilometres across, its coma, and two tails blown straight back from the sun.',
     light:{colour:'#eaf2ff',intensity:2.6,az:2.6,el:0.18,ambient:0.24,fill:{colour:'#4a6a9a',intensity:0.3,az:-0.6,el:-0.2}},build:comet},
   {id:'binary',name:'A binary star',ly:[8.2,-3.5],note:'An orange giant and a hot blue companion, close enough to be stripping it.',
@@ -37,6 +39,23 @@ export const PLACES=[
       {colour:'#b0503a',az:-1.6,el:0.2,dist:0.3,size:260000,puffs:360,opacity:0.01},{colour:'#6a2a7a',az:3,el:-0.25,dist:0.34,size:280000,puffs:360,opacity:0.01}]},build:cluster},
   {id:'hole',name:'A black hole',ly:[26,-12],note:'Ten times the Sun\'s mass, feeding: its disc of gas is hotter than any star, and bends its own light over the top.',
     light:{colour:'#ffcf9a',intensity:1.5,az:0.42,el:0.04,ambient:0.22,fill:{colour:'#6a8ac8',intensity:0.25,az:-2,el:0.3}},build:hole},
+  // the stranger places (exotic.js), and two more worlds
+  {id:'pulsar',name:'A pulsar',ly:[20,1.5],note:'A dead star twenty kilometres across, spinning; its beams sweep past you and it flares.',
+    light:{colour:'#cfe0ff',intensity:0.9,az:0.3,el:0.08,ambient:0.3,fill:{colour:'#6a5aff',intensity:0.5,az:-1.5,el:0.2}},build:pulsar},
+  {id:'lava',sunDisc:true,sunScale:3.2,name:'A lava world',ly:[3,-10],note:'So close to its sun that its rock runs: a black crust over glowing seas of melt.',
+    light:{colour:'#ffd2a0',intensity:3.2,az:1.0,el:0.1,ambient:0.18,fill:{colour:'#ff5020',intensity:0.6,az:-0.6,el:-0.3}},
+    sky:{bodies:[{name:'the lava world',type:'lava',az:-0.35,el:-0.12,dist:0.45,deg:20,seed:5.5,colours:['#16110e','#3a2a20','#000000','#000000'],atmos:'#ff6a30',atmosK:0.55,rate:2e-5}]}},
+  {id:'ocean',sunDisc:true,name:'A ringed water world',ly:[-6.5,7],note:'Ocean from pole to pole but for a few island chains, its weather wrapped round it, rings of ice.',
+    light:{colour:'#fff4e0',intensity:2.2,az:0.8,el:0.25,ambient:0.28,fill:{colour:'#5a8ac0',intensity:0.5,az:-1.4,el:-0.1}},
+    sky:{bodies:[{name:'the water world',type:'terran',az:-0.45,el:-0.08,dist:0.62,deg:16,seed:8.3,sea:0.42,colours:['#0d3f78','#3f7a44','#c2ad7a','#f2f7fb'],clouds:true,cloudK:1,atmos:'#6fb2ff',atmosK:1,rate:3e-5,
+        ring:{inner:1.5,outer:2.3,tilt:0.22,colour:'#dfe8f0'}},
+      {type:'moon',name:'a moon',az:0.4,el:0.1,dist:0.5,deg:1.6,seed:2.9,colours:['#6a6560','#857f77','#a49d92','#c4beb4']}]}},
+  {id:'disc',name:'A young star in its dust disc',ly:[13,-13],note:'A star a million years old, still in the disc it formed from: planets are gathering in its gaps.',
+    light:{colour:'#ffe2b8',intensity:1.8,az:-0.3,el:0.03,ambient:0.26,fill:{colour:'#a05a30',intensity:0.4,az:1.5,el:-0.2}},build:disc},
+  {id:'eye',name:'A planetary nebula',ly:[22,-5],note:'A dying star\'s shed shells, lit from inside by the white dwarf it left: teal at the heart, red at the edges.',
+    light:{colour:'#d8f0ff',intensity:1.2,az:0.15,el:0.12,ambient:0.34,fill:{colour:'#c04050',intensity:0.6,az:-2,el:-0.2}},build:eye},
+  {id:'rogue',name:'A rogue planet',ly:[-7,-12],note:'A world flung out of its system long ago, adrift with no sun. Its only light is its aurora.',
+    light:{colour:'#9ab0d0',intensity:0.25,az:0.6,el:0.7,ambient:0.18,fill:{colour:'#30ff90',intensity:0.5,az:-0.55,el:0.3}},build:rogue},
 ];
 export const DEEP={id:'deep',name:'Interstellar space',note:'Nothing for light-years: the stars, and the dark between them.',
   light:{colour:'#dfe6f2',intensity:0.5,az:0.5,el:0.6,ambient:0.3,fill:{colour:'#405070',intensity:0.25,az:-2,el:-0.4}}};
@@ -69,11 +88,15 @@ export function makePlace(THREE,P,kit){
   if(P.sky){
     let s=P.seed||(P.id.length*7919+1701);const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
     const tmp=new THREE.Group();
-    const out=buildSky(THREE,tmp,{far:D,stars:1,starSize:1,nebulae:P.sky.nebulae||[],bodies:P.sky.bodies||[]},rnd);
+    buildSky(THREE,tmp,{far:D,stars:1,starSize:1,nebulae:P.sky.nebulae||[],bodies:[]},rnd);
     const st=tmp.children.find(o=>o.isPoints);if(st){tmp.remove(st);st.geometry.dispose();st.material.dispose();}
     for(const o of tmp.children.slice())g.add(o);
-    for(const q of out.bodies){const b=q.b,d=(b.dist||0.6)*D;if(b.atmos)q.g.add(atmosphere(THREE,Math.tan((b.deg||6)*Math.PI/180)*d,b.atmos,b.atmosK));solids.push({name:bodyName(P,b),c:q.g.position.clone(),r:Math.tan((b.deg||6)*Math.PI/180)*d,orbit:true});
-      if(b.rate)ups.push(()=>{q.g.rotation.y+=b.rate;});}
+    // the planets: drawn in planets.js's shader
+    for(const b of (P.sky.bodies||[])){const d=(b.dist||0.6)*D,R=Math.tan((b.deg||6)*Math.PI/180)*d;
+      const pg=planetMesh(THREE,{R,type:b.type||(b.kind==='gas'?'gas':'terran'),colours:b.colours,seed:b.seed,sea:b.sea,clouds:b.clouds,cloudK:b.cloudK,ring:b.ring,seg:R>50000?160:64});
+      pg.position.set(...at(b.az||0,b.el||0,d));if(b.atmos)pg.add(atmosphere(THREE,R,b.atmos,b.atmosK));g.add(pg);
+      solids.push({name:b.name||bodyName(P,b),c:pg.position.clone(),r:R,orbit:true});
+      const rate=b.rate||2e-5;ups.push(()=>{pg.userData.spinner.rotation.y+=rate;});}
   }
   if(P.build){const r=P.build(THREE,g,kit);if(r.solids)solids.push(...r.solids);if(r.update)ups.push(r.update);}
   g.traverse(o=>{o.userData.noWire=true;o.frustumCulled=false;if(o.material)for(const m of [].concat(o.material))m.toneMapped=false;});

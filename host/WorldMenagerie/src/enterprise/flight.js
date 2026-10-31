@@ -19,7 +19,7 @@
 // How it handles. A ship of four million tonnes does not turn like a fighter:
 //   - the turn rates build up and die away at a limited angular acceleration, so a turn takes a moment to start
 //     and a moment to stop, and the thrusters round the saucer's rim puff while they do it;
-//   - speed is a throttle (hold W or S): the impulse engines push at about 26 g and the glow behind them answers
+//   - speed is a throttle (hold W or S): the impulse engines push at about 26 g (more on the way up to 20 km/s, full impulse) and the glow behind them answers
 //     the push, not the speed;
 //   - the velocity does not swing round with the nose at once: what is left sideways after a turn is bled off by
 //     the inertial dampers over a second or two, so a hard turn at speed slides a little;
@@ -29,7 +29,10 @@
 // Warp speeds are the Cochrane scale, the speed of light times the warp factor to the power ten-thirds: warp 6 is
 // 392 times light. Time at warp runs twenty thousand times fast (said in the readout), or the nearest place on the
 // chart would be days away.
-export const FULL=2500,THRUST=260,TIMEX=20000;
+// FULL is full impulse; the throttle is squared on the way to it, so that the bottom of its range (where a ship
+// this size manoeuvres) is fine, and the top is fast: a third of the throttle is 2.5 km/s, all of it 20 km/s.
+// HANDY is the speed the handling is reckoned from (a turn is as hard at 2.5 km/s as at 20).
+export const FULL=20000,THRUST=260,TIMEX=20000,HANDY=2500;
 export const warpC=w=>Math.pow(w,10/3);
 // light-years per second of page time at a warp factor
 export const lyps=w=>warpC(w)*TIMEX/31557600;
@@ -60,7 +63,7 @@ export function flight(W){
     if(e.repeat)return;
     if(k==='x'){allStop();}
     if(k>='1'&&k<='9'){if(W.course&&W.course.dest)W.course.setWarp(+k);else W.engage(+k);}if(k==='0'){W.course&&W.course.clear();W.dropOut();}
-    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire('torpedo');if(k==='g')W.tractor&&W.tractor();
+    if(k===' '){W.fire&&W.fire('phasers');e.preventDefault();}if(k==='t')W.fire&&W.fire(e.shiftKey?'spread':'torpedo');if(k==='k')W.dock&&W.dock();if(k==='g')W.tractor&&W.tractor();
     if(k==='o')toggleOrbit();if(k==='v')cycleCam();if(k==='m')W.mute&&W.mute();if(k==='c'&&W.openNav)W.openNav();
     if(k.startsWith('Arrow'))e.preventDefault();});
   addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys.delete(k);});
@@ -149,11 +152,11 @@ export function flight(W){
     let roll=(has('e')?1:0)-(has('q')?1:0);
     const manual=yaw||pitch||roll;
     if(has('w'))setThrottle(S.thr+dt*0.35);if(has('s'))setThrottle(S.thr-dt*0.35);
-    if(manual)S.orbit=null;
+    if(manual||has('w')){if(manual)S.orbit=null;if(W.cancelAuto)W.cancelAuto();}
     const q=ROOT.quaternion,qi=q.clone().invert();
     // what the helm wants, as turn rates: the keys, or the autopilot (a course, or an orbit) steering for a direction
     want.set(roll*MAXR.x,yaw*MAXR.y,pitch*MAXR.z);
-    const steer=S.orbit?orbitDir(dt):(!manual&&W.course?W.course.dir():null);
+    const steer=S.orbit?orbitDir(dt):(W.autoDir&&W.autoDir())||(!manual&&W.course?W.course.dir():null);
     if(steer){const l=steer.clone().applyQuaternion(qi),ye=Math.atan2(-l.z,l.x),pe=Math.atan2(l.y,Math.hypot(l.x,l.z));
       want.y=Math.max(-MAXR.y,Math.min(MAXR.y,ye*0.5));want.z=Math.max(-MAXR.z,Math.min(MAXR.z,pe*0.5));S.steerErr=Math.hypot(ye,pe);}
     else S.steerErr=null;
@@ -162,18 +165,21 @@ export function flight(W){
       const err=right.dot(planeUp)*(1-Math.min(1,Math.abs(f.dot(planeUp))*1.4));want.x=Math.max(-MAXR.x*0.4,Math.min(MAXR.x*0.4,err*0.6));
       if(S.orbit)want.x=0;}
     // a ship this size turns harder when it is moving (the field round it helps), and never quickly
-    const auth=0.55+0.45*Math.min(1,S.v/FULL);want.y*=auth;want.z*=auth;
+    const auth=0.55+0.45*Math.min(1,S.v/HANDY);want.y*=auth;want.z*=auth;
     prevRate.copy(S.rate);
     for(let i=0;i<3;i++){const r=S.rate.getComponent(i),d=want.getComponent(i)-r,m=ACC.getComponent(i)*dt;S.rate.setComponent(i,r+Math.max(-m,Math.min(m,d)));}
     angAcc.copy(S.rate).sub(prevRate).divideScalar(dt);
     for(let i=0;i<3;i++){const r=S.rate.getComponent(i);if(r){qd.setFromAxisAngle(ax[i],r*dt);q.multiply(qd);}}
     q.normalize();
     // the lean into a turn, as an airliner's: a bank angle that follows the yaw rate
-    const bankTo=-S.rate.y/MAXR.y*0.38*Math.min(1,0.3+S.v/FULL);S.bank+=(bankTo-S.bank)*(1-Math.exp(-dt*1.2));BANK.rotation.x=S.bank;
+    const bankTo=-S.rate.y/MAXR.y*0.38*Math.min(1,0.3+S.v/HANDY);S.bank+=(bankTo-S.bank)*(1-Math.exp(-dt*1.2));BANK.rotation.x=S.bank;
     // speed: thrust along the nose up to what the throttle asks; the dampers bleed what is left going sideways
     fwd.set(1,0,0).applyQuaternion(q);
     if(!S.warp){
-      const along=S.vel.dot(fwd),target=S.thr*FULL,dv=Math.max(-THRUST*1.2*dt,Math.min(THRUST*dt,target-along));
+      // the push: 26 g at low speed, more as the gap to the speed asked for grows (the engines run up to full
+      // impulse in about half a minute, but nudge a ship this size gently)
+      const along=S.vel.dot(fwd),target=S.thr*S.thr*FULL,gap=Math.abs(target-along),th=Math.max(THRUST,gap*0.12);
+      const dv=Math.max(-th*1.2*dt,Math.min(th*dt,target-along));
       S.acc+=((dv/dt)-S.acc)*(1-Math.exp(-dt*4));
       tmp.copy(fwd).multiplyScalar(along);r1.copy(S.vel).sub(tmp).multiplyScalar(Math.exp(-dt*0.9));
       S.vel.copy(fwd).multiplyScalar(along+dv).add(r1);
@@ -240,7 +246,7 @@ export function flight(W){
       S.camRel.lerp(tmp,k);
       camera.position.copy(c).add(S.camRel);camera.up.copy(S.up);
       camera.lookAt(r2.copy(c).addScaledVector(fwd,S.cd*0.12));
-      fv=S.warp?FOV0+16:FOV0+7*Math.min(1,S.v/FULL)+4*Math.min(1,S.punch/600);
+      fv=S.warp?FOV0+16:FOV0+4*Math.min(1,S.v/HANDY)+5*Math.min(1,S.v/FULL)+4*Math.min(1,S.punch/600);
     }
     if(S.shake>0){S.shake*=Math.exp(-dt*5);camera.position.x+=(Math.random()-0.5)*S.shake;camera.position.y+=(Math.random()-0.5)*S.shake;}
     S.fov+=(fv-S.fov)*(1-Math.exp(-dt*2));if(Math.abs(camera.fov-S.fov)>0.02){camera.fov=S.fov;camera.updateProjectionMatrix();}
@@ -306,7 +312,7 @@ export function flight(W){
 @media (max-width:600px){#ent-help{display:none!important}}
 body.bare #ent-help,body.bare #ent-pad,body.bare #navpanel{display:none!important}`;document.head.appendChild(st);}
   const help=document.createElement('div');help.id='ent-help';help.style.display='none';
-  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo · G tractor beam<br>V the camera: chase, flyby, bridge · M sound<br>Drag to look round, scroll to stand off';
+  help.innerHTML='<b>At the helm</b><br>Hold W / S for more or less impulse · X all stop<br>A / D turn · ↑ / ↓ (or R / F) pitch · Q / E roll<br>C the star chart, to set a course · O standard orbit<br>1–9 warp · 0 drop out<br>Space phasers · T torpedo (shift: a spread) · G tractor beam<br>K dock at the starbase (at home)<br>V the camera: chase, flyby, bridge · M sound<br>Drag to look round, scroll to stand off';
   const padEl=document.createElement('div');padEl.id='ent-pad';padEl.style.display='none';
   const names={q:'Roll left',ArrowUp:'Nose up',e:'Roll right',a:'Turn left',ArrowDown:'Nose down',d:'Turn right',s1:'Slower',x1:'All stop',w1:'Faster',v1:'Camera'};
   for(const [lab,k] of [['⟲','q'],['▲','ArrowUp'],['⟳','e'],['◀','a'],['▼','ArrowDown'],['▶','d'],['−','s1'],['■','x1'],['+','w1'],['🎥','v1']]){

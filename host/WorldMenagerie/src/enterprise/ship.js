@@ -27,6 +27,7 @@ import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js'
 import {flight} from './flight.js';
 import {events} from './events.js';
 import {nav} from './nav.js';
+import {extras} from './extras.js';
 import {PLACES} from './places.js';
 
 export function model(api){
@@ -283,6 +284,9 @@ export function model(api){
   const FL=flight(W);window.__ent=W;   // for tests
   const EV=events(W);
   const NV=nav(W);
+  const EX=extras(W);
+  // the extras' buttons go in the events panel
+  for(const [lab,fn] of EX.buttons){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{W.audio&&W.audio();fn();};EV.panel.appendChild(b);}
   let flyBtn=null;
   const btn=t=>[...document.querySelectorAll('#ui button')].find(b=>b.textContent===t);
   const fly=()=>{if(W.flight.on)FL.stop();else{W.audio&&W.audio();FL.start();}if(!flyBtn)flyBtn=btn('Fly');
@@ -297,8 +301,9 @@ export function model(api){
    if(h.has('fly'))setTimeout(fly,300);
    if(h.has('evfreeze'))W.freezeAfter(+h.get('evfreeze'));
    // #dbg: the events' state in the probe's report
+   const hist=[];if(h.has('dbg'))setInterval(()=>{hist.push([W.heading().hd,Math.round(ROOT.position.x),Math.round(ROOT.position.z),+W.flight.rate.y.toFixed(3)].join('/'));if(hist.length>12)hist.shift();},1000);
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:EX.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
    // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
    if(h.has('warpf'))NV.course.w=+h.get('warpf');
    if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}
@@ -309,11 +314,11 @@ export function model(api){
      const p=f.m.g.getWorldPosition(new THREE.Vector3());api.view({az,el,d,tx:p.x,ty:p.y,tz:p.z});},100);}
    // #keys=a,w: hold keys down from evt on (for tests of the helm)
    if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
-   const act={...EV.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
+   const act={...EV.act,...EX.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav()};const ev=(h.get('ev')||'').split(',').filter(k=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach((k,i)=>setTimeout(()=>{act[k]();EV.sync();},t0+i*1000));}
   return {radius:LEN*0.5,group:ROOT,pick,minD:60,
     buttons:{'Fly':fly,'Course':()=>W.openNav(),'Events':evBtn},
     camFrame:FL.camFrame,ownsInput:()=>W.flight.on,
     // a viewpoint chosen while flying hands the helm back first, so the view is of the ship where it is
     onView:()=>{if(W.flight.on)fly();},
-    hud:()=>[FL.hud(),NV.hud(),EV.hud()].filter(Boolean).join(' · ')};
+    hud:()=>[FL.hud(),NV.hud(),EV.hud(),EX.hud()].filter(Boolean).join(' · ')};
 }

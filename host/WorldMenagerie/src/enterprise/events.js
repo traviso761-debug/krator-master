@@ -103,7 +103,7 @@ export function events(W){
   animHooks.push(()=>{rock.rotation.x+=0.0007;rock.rotation.y+=0.0011;rockHeat*=0.96;rock.material.emissiveIntensity=rockHeat;});
   const targetPos=()=>{
     const c=shipCentre();
-    if(W.enemy&&!W.enemy.gone){const p=W.enemy.m.g.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,enemy:W.enemy};}
+    const en=W.enemy;if(en&&!en.gone){const p=en.m.g.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,enemy:en};}
     if(rock.visible){const p=rock.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,rock:true};}
     return {p:c.addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion),3500),rock:false};
   };
@@ -207,15 +207,16 @@ export function events(W){
         em[0].position.copy(stripAt(best,top));em[1].visible=false;em[0].scale.setScalar(40*fl);
         hitS.visible=true;hitS.position.copy(B0);hitS.scale.setScalar(80+40*Math.random());
         if(tg.rock)rockHeat=Math.min(1.4,rockHeat+0.06);
-        if(tg.enemy)HO.hit(dt*20,b);
+        if(tg.enemy)HO.hit(tg.enemy,dt*20,b);
         return;}
       for(const o of [outer,core,hitS])FX.remove(o);for(const s of em)SAU.remove(s);return false;});
   }
 
   // ---------- torpedoes ----------
   const launcher=()=>{const y=TORPEDO.fore.y;return world(G,new THREE.Vector3(neckLead(y)+1.5,y,0));};
-  function torpedo(){
+  function torpedo(off){
     const tg=targetPos(),p=launcher(),dir=tg.p.clone().sub(p).normalize();
+    if(off)dir.applyAxisAngle(new THREE.Vector3(0,1,0).applyQuaternion(ROOT.quaternion),off);
     sound('torpedo');flash(p,0xff6030,60,0.5);
     const g=new THREE.Group(),core=sprite(0xffd0a0,16),halo=sprite(0xff3a10,60),spk=[sprite(0xff7040,34),sprite(0xff7040,34)];
     g.add(halo,core,...spk);g.position.copy(toFX(p));FX.add(g);
@@ -227,7 +228,7 @@ export function events(W){
       const wp=g.getWorldPosition(V3());
       const hit=tg.rock&&rock.visible&&wp.distanceTo(rock.getWorldPosition(V3()))<70;
       const hitE=tg.enemy&&!tg.enemy.gone&&wp.distanceTo(tg.enemy.m.g.getWorldPosition(V3()))<160;
-      if(hitE){FX.remove(g);explode(wp,false);HO.hit(34,wp);return false;}
+      if(hitE){FX.remove(g);explode(wp,false);HO.hit(tg.enemy,34,wp);return false;}
       if(hit||u>3.2){FX.remove(g);explode(wp,hit);return false;}});
   }
   function explode(p,onRock){
@@ -251,14 +252,18 @@ export function events(W){
 
   // ---------- incoming fire ----------
   // the ship's own state: shield strength (worn by hits, coming back while raised) and hull
-  let shStr=100,hullP=100;
-  function incoming(fromW){
+  let shStr=100,hullP=100,lastHit=-99;
+  // damage control: ten seconds after the last hit, the hull is patched up, slowly
+  animHooks.push(()=>{if(hullP<100&&T-lastHit>10){hullP=Math.min(100,hullP+0.006);if(hullP>=100)note('Damage control: the hull is sound.');}});
+  W.hull=()=>hullP;
+  // o (optional): {colour, size, dmg}: a bolt of another kind, or harder
+  function incoming(fromW,o){o=o||{};const dm=o.dmg||1;
     const c=shipCentre(),q=ROOT.quaternion;
     const from=new THREE.Vector3(1,(Math.random()-0.3)*0.6,(Math.random()<0.5?-1:1)*(0.4+Math.random()*0.6)).normalize().applyQuaternion(q);
     const start=fromW&&fromW.isVector3?fromW.clone():c.clone().addScaledVector(from,5000),fl=Math.max(0.35,start.distanceTo(c)/6000);
     // where it lands: on the shield's skin if the shields are up, on the hull (somewhere on the saucer) if not
     const aimL=new THREE.Vector3((Math.random()-0.2)*260,0,(Math.random()-0.5)*300);aimL.y=saucerTop(aimL.x,aimL.z)*(Math.random()<0.6?1:0)+(Math.random()<0.6?0:saucerBot(aimL.x,aimL.z));
-    const bolt=new THREE.Group(),h=sprite(0x60ff70,70),k2=sprite(0xd8ffd0,22);bolt.add(h,k2);bolt.position.copy(toFX(start));FX.add(bolt);
+    const bolt=new THREE.Group(),h=sprite(o.colour||0x60ff70,70*(o.size||1)),k2=sprite(0xfff0e0,22*(o.size||1));bolt.add(h,k2);bolt.position.copy(toFX(start));FX.add(bolt);
     const t0=T;
     run((t,dt)=>{const u=(t-t0)/fl;
       const aimW=shUp?(()=>{const l=SAU.localToWorld(aimL.clone()),cc=shield.getWorldPosition(V3());
@@ -266,9 +271,9 @@ export function events(W){
         return cc.add(s.multiplyScalar(1/n));})():SAU.localToWorld(aimL.clone());
       if(u<1){bolt.position.copy(toFX(start.clone().lerp(aimW,u)));return;}
       FX.remove(bolt);
-      if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shStr=Math.max(0,shStr-(7+Math.random()*5));
+      if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shStr=Math.max(0,shStr-(7+Math.random()*5)*dm);
         if(shStr<=0){shUp=false;note('Shields have failed.');sync();}}
-      else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5));flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
+      else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5)*dm);lastHit=T;if(W.breach&&(hullP<80||Math.random()<0.3))W.breach(aimW);flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
         // a scorch that glows and fades where it struck
         const s=sprite(0xff6020,60);s.position.copy(SAU.worldToLocal(aimW.clone()));SAU.add(s);const t1=T;
         run(tt=>{const v=1-(tt-t1)/6;if(v<=0){SAU.remove(s);return false;}s.material.opacity=v*(0.7+0.3*Math.sin(tt*30));});}
@@ -356,18 +361,22 @@ export function events(W){
   const note=m=>{if(W.toast)W.toast('Tactical',m);};
   const HO=hostile(W,{sprite,flash,run,sound,toFX,dirFX,shipCentre,world,T:()=>T,red:()=>red,redAlert:()=>redAlert(),sync:()=>sync(),incoming,note,debris});
   W.contact=()=>{HO.contact();};
-  W.fire=k=>{if(k==='phasers')phasers();else torpedo();};
+  // for extras.js: the effects kit
+  W.fx={sound,flash,run,debris,sprite,world,toFX,dirFX,shipCentre,note,T:()=>T,ease,sync:()=>sync()};
+  const spread=()=>{torpedo(-0.09);setTimeout(()=>torpedo(0),140);setTimeout(()=>torpedo(0.09),280);};
+  W.fire=k=>{if(k==='phasers')phasers();else if(k==='spread')spread();else torpedo();};
   W.tractor=()=>{tractorBeam();sync();};
   // the events panel
   const panel=document.createElement('div');panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Events');
-  const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',torpedo],
-    ['Hostile contact',()=>HO.contact()],['Tractor beam',tractorBeam],['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
+  const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',()=>torpedo()],['Torpedo spread',spread],
+    ['Hostile contact',()=>HO.contact()],['A Varr cruiser',()=>HO.contact('varr')],['A Lattice ship',()=>HO.contact('lattice')],['Battle',()=>HO.battle()],
+    ['A Sere ship (a friend)',()=>HO.sere()],['A trader convoy',()=>HO.convoy()],['A derelict',()=>HO.derelict()],['Tractor beam',tractorBeam],['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
   {const h=document.createElement('div');h.className='sub';h.textContent='Events';panel.appendChild(h);}
   for(const [lab,fn] of list){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{ac();fn();sync();};panel.appendChild(b);}
   document.body.appendChild(panel);
   const sync=()=>{for(const b of panel.querySelectorAll('button')){const t=b.textContent;
     b.setAttribute('aria-pressed',String(t==='Tractor beam'?!!tractor&&!tractor.off:t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep:false));}};
   const hud=()=>[red?'RED ALERT':'',HO.hud(),shUp||shStr<100?'shields '+(shUp?'up ':'down ')+Math.round(shStr)+'%':'',hullP<100?'hull '+Math.round(hullP)+'%':'',tractor&&!tractor.off?'tractor beam':'',sep?'saucer separated':''].filter(Boolean).join(' · ');
-  const act={warp:list[0][1],hostile:()=>HO.contact(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
+  const act={spread,warp:list[0][1],hostile:()=>HO.contact(),varr:()=>HO.contact('varr'),lattice:()=>HO.contact('lattice'),sere:()=>HO.sere(),convoy:()=>HO.convoy(),derelict:()=>HO.derelict(),battle:()=>HO.battle(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
   return {panel,hud,act,sync,state:()=>({red,shUp,sep,rockDead})};
 }
