@@ -3,14 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Deep Sky — a black hole, a pulsar, a supernova</title>
+<title>Deep Sky — how stars end</title>
 <link rel="stylesheet" href="css/iziz.css">
 <link rel="stylesheet" href="css/chicago.css">
+<style>
+#objects{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 4px);transform:translateX(-50%);box-sizing:border-box;width:min(560px,calc(100% - 20px));max-height:calc(100% - 180px);overflow:auto;display:none;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:5px;padding:8px;background:rgba(8,20,34,.92);border:1px solid #3f5a74;z-index:6;color:#dfe8f0}
+#objects.open{display:grid}
+#objects .sub{color:#9fb4c8;font:13px Helvetica,Arial,sans-serif}
+#objects button{background:rgba(10,24,40,.8);color:#dfe8f0;border:1px solid #3f5a74;padding:9px 11px;font:14px Georgia,serif;text-align:left;border-radius:2px;cursor:pointer}
+#objects button[aria-current="true"]{background:#7fa6c8;color:#08131f}
+</style>
 </head>
 <body>
 <div id="loading">looking up…</div>
 <div id="title">DEEP SKY<span id="seedtag"></span></div>
-<div id="hint"><span class="for-mouse">Drag to orbit. Right-drag or shift-drag to pan, scroll to zoom. The Black hole, Pulsar and Supernova buttons switch between the three; click a part to read about it. Pull back from the pulsar to see the Crab Nebula round it.</span><span class="for-touch">Drag to orbit. Pinch to zoom. Tap a part to read about it.</span></div>
+<div id="hint"><span class="for-mouse">Drag to orbit. Right-drag or shift-drag to pan, scroll to zoom. Objects switches between them: two black holes, a pulsar, a supernova, a white dwarf, two neutron stars merging. Click a part to read about it. Pull back from the pulsar or the white dwarf to see their nebulae.</span><span class="for-touch">Drag to orbit. Pinch to zoom. Tap a part to read about it.</span></div>
 <div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="display" role="dialog" aria-label="Display"></div><div id="legend" aria-label="District colours"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><button id="showui" type="button">Show interface</button><div id="lost" role="alert"><p>The graphics card was reset. Restoring the sky…</p><button type="button" id="lostreload" hidden>Reload</button></div><div id="modebar" role="region" aria-label="Mode"></div><div id="side"></div><div id="errs"></div>
 <script src="vendor/three/three.min.js"></script>
 <script type="module" src="src/deepsky/main.js"></script>

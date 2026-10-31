@@ -75,7 +75,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
 | `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
-| `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova` | `deepsky.html` | Deep Sky: M87*, the Crab Pulsar and a supernova |
+| `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova`, `/sgra`, `/whitedwarf`, `/kilonova` | `deepsky.html` | Deep Sky: how stars end (two black holes, a pulsar, a supernova, a white dwarf, a merger) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
@@ -2092,20 +2092,34 @@ What the novel leaves open and this model chooses: the hull's thickness (2 km, f
 plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
 and the outside faces beyond the hub.
 
-### `/deepsky`: Deep Sky, three ways a star ends
+### `/deepsky`: Deep Sky, how stars end
 
-Original work (`src/deepsky/`), on the starship page (`src/starship/page.js`); `data/cities/deepsky.json` holds the numbers
-and the cards. Three objects, one at a time: the Black hole, Pulsar and Supernova buttons switch them (`#object=`).
+Original work (`src/deepsky/`), on the starship page (`src/starship/page.js`); `data/cities/deepsky.json` holds the numbers,
+the cards and each object's distance. Six objects, one at a time: the Objects panel (nearest first) flies out over a scale
+of distances from the Earth and in to the next (`#object=<name>` opens at one; `#flyto=<name>` flies there after a second).
+An object's own buttons show only while it is on screen.
 
-- **M87\***: a shader follows each pixel's light back through Schwarzschild space, so the disk's far side shows over and
-  under the shadow, with the photon ring, Doppler beaming (the side coming towards you is brighter), gravitational
-  redshift, the jet and the lensed stars behind. The disk is drawn thin and bright, as a textbook draws it.
-- **The Crab Pulsar**: 20 km across, its dipole field tilted 45 degrees to its spin, its two beams sweeping, the light
-  cylinder; slowed to a quarter turn a second, or 29.6 with the real-speed button. Pull back and the Crab Nebula
-  fades in round it, drawn thousands of millions of times smaller than it is.
-- **A supernova**: a red supergiant cut away to its shells, the iron core's collapse, the bounce and shock, the
-  breakout flash and the ejecta in Rayleigh-Taylor fingers, on a 64-second loop with captions (`#snt=<seconds>` starts
-  it part-way). The shells are drawn far thicker than they are, and the captions give the real timescales.
+- **M87\*** (`blackhole`): a shader follows each pixel's light back through Schwarzschild space: the disk's far side over and
+  under the shadow, the photon ring, Doppler beaming, gravitational redshift, the jet, the lensed stars. **Spin** adds frame
+  dragging in its weak-field form (not a Kerr trace: the card says so) and moves the disk in. **EHT view** is the trace from
+  M87\*'s real angle at about the telescope's resolution, blurred, in its orange scale. The trace is drawn into a target that
+  shrinks to a third of the screen when frames are slow (`#bhq=<0.3-1>` fixes it; `#eht`, `#spin` open in those modes).
+- **Sagittarius A\*** (`sgra`, `sgra.js`): the same tracer, dim disk, no jet, and the S-stars (S2, S38, S55, S1, S12, S14) on
+  Kepler orbits from the published fits, at true scale in its own radii, with a year clock.
+- **The Crab Pulsar** (`pulsar`): the tilted dipole, the beams, the light cylinder, the nebula fading in as you pull back. The
+  chart is the light reaching the camera: pulses only when a beam sweeps over it. **Listen** clicks each pulse (a buzz at the
+  real 29.6 a second; `#pulsar=real` starts there).
+- **A supernova** (`supernova`): the cut-away supergiant (labels follow the camera), collapse, shock, breakout, the ejecta in
+  Rayleigh-Taylor fingers, and a type II-P light curve in days (plateau, then the cobalt-56 tail) that the debris glows by.
+  `#snt=<seconds>` starts the 64-second loop part-way.
+- **A white dwarf** (`whitedwarf`, `whitedwarf.js`): drawn to scale beside the Earth, in the Ring Nebula (as the JWST saw it in
+  2023: the blue-green inside, the ring, the knots, the halo's arcs), the nebula drawn far smaller than it is.
+- **GW170817** (`merger`, `merger.js`): the inspiral in closed form, space as a sheet rippling with the quadrupole wave at the
+  retarded time, the merger, the gamma-ray burst 1.7 s later, the kilonova going blue to red, a black hole; the chart is the
+  strain a detector would record, and **Listen** plays the chirp. `#mgt=<seconds>` starts the 48-second loop part-way.
+
+Sound (`audio.js`) is synthesised, and starts only from a button. The golden's rows are each object's numbers (the page
+adds a model's `fingerprintRows()`), since most of what is drawn is glow and kept out of the mesh fingerprint.
 
 ### `/homeworld`: Homeworld, the Kharak system
 
@@ -2628,7 +2642,7 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   rama/     main.js shape.js rama.js interior.js events.js sound.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the hall of holograms, the bowls and the horns, the walker; the twelve scenes and the flyby; the sound
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
-  deepsky/ main.js model.js blackhole.js pulsar.js supernova.js   Deep Sky: the switch and its kit; M87* (ray-traced shader); the Crab Pulsar and Nebula; the supernova
+  deepsky/ main.js model.js audio.js blackhole.js sgra.js pulsar.js supernova.js whitedwarf.js merger.js   Deep Sky: the switch, the kit and the flight; sound; the traced black holes and the S-stars; the Crab; the supernova; the Ring Nebula; GW170817
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls

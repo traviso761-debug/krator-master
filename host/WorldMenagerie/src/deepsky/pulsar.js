@@ -74,19 +74,42 @@ export function pulsar(api,kit,K){
   for(let i=0;i<30;i++){const y=i/30*NEB*0.16,s=kit.glow(0xc8d8ff,NEB*0.02*(1-i/40),0.3);s.position.set(Math.sin(i*0.5)*NEB*0.005,y,Math.cos(i*0.4)*NEB*0.004);neb.add(s);glowM.push(s.material);}
   const nebHit=new THREE.Mesh(new THREE.SphereGeometry(NEB*0.5,24,16),new THREE.MeshBasicMaterial({visible:false}));nebHit.scale.set(1.25,0.85,1);nebHit.userData.info={name:'The Crab Nebula',info:K.nebulaInfo||''};neb.add(nebHit);
   const nebGlow0=glowM.map(m=>m.opacity),filOp=filM.opacity;
+  // ---- the pulses ----
+  // You are the observer: what the chart shows is the light from the beams that reaches the camera. The magnetic axis
+  // points along (-sin T cos p, cos T, sin T sin p) at spin phase p; a beam's light falls off as exp(-(angle/0.12)^2)
+  // off its axis. The phase covered by each frame is sampled finely (at real speed a frame is half a turn), into a
+  // trace of the last three turns, and every peak is a click, at its own moment within the frame.
+  const NS=600,trace=new Float32Array(NS),STEP=3*Math.PI*2/NS,O3=new THREE.Vector3();let sAcc=0,prevI=0,rising=false,peak=0,listen=false;
+  const beamI=(p,o)=>{const bx=-Math.sin(TILT)*Math.cos(p),by=Math.cos(TILT),bz=Math.sin(TILT)*Math.sin(p),c=Math.abs(bx*o.x+by*o.y+bz*o.z),a=Math.acos(Math.min(1,c));return Math.exp(-(a/0.12)*(a/0.12));};
+  function pulses(p0,p1,dtSec){O3.copy(camera.position).normalize();const n=Math.max(1,Math.ceil((p1-p0)/STEP));const T0=listen&&kit.audio.ctx?kit.audio.now()+0.06:0;
+    for(let k=1;k<=n;k++){const p=p0+(p1-p0)*k/n,I=beamI(p,O3);
+      if(I>prevI)rising=true;else if(rising&&prevI>0.04){rising=false;if(listen)kit.audio.click(T0+dtSec*k/n,Math.min(0.5,0.12+prevI*0.4),real?2400:1500);peak++;}
+      if(I<prevI)rising=false;prevI=I;
+      sAcc+=(p1-p0)/n;while(sAcc>=STEP){sAcc-=STEP;trace.copyWithin(0,1);trace[NS-1]=I;}}}
+  function drawChart(){const c=kit.chart,b=c.frame('the last three turns','brightness'),g=c.g;g.strokeStyle='#9ab8ff';g.lineWidth=2.5;g.beginPath();
+    for(let k=0;k<NS;k++){const x=b.x0+(b.x1-b.x0)*k/(NS-1),y=b.y0-(b.y0-b.y1)*trace[k];k?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();
+    let mx=0;for(let k=0;k<NS;k++)mx=Math.max(mx,trace[k]);
+    c.note(mx>0.04?'A pulse each time a beam sweeps over you'+(real?': 29.6 a second, as the radio telescopes hear it.':'.'):'No pulses: neither beam crosses your line of sight. Orbit until a beam sweeps over the camera.');}
   // ---- running ----
-  let on=false,real=false,phase=0,btn=null,last=null;const SLOW=K.slow||0.25,FAST=29.6;
-  animHooks.push((now)=>{if(!on)return;const dt=Math.min(0.05,(now-(last==null?now:last))/1000);last=now;
-    phase+=dt*(real?FAST:SLOW)*Math.PI*2;spin.rotation.y=phase%(Math.PI*2);
+  // ---- running ----
+  // #pulsar=real starts it at its real speed
+  let on=false,real=/(^|[#&])pulsar=real/.test(location.hash),phase=0,btn=null,last=null;const SLOW=K.slow||0.25,FAST=29.6;
+  animHooks.push((now)=>{if(!on)return;const dt=Math.min(0.25,(now-(last==null?now:last))/1000);last=now;
+    if(real&&!btn){btn=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Pulsar: real speed');if(btn)btn.textContent='Pulsar: slowed';}
+    const p0=phase;phase+=dt*(real?FAST:SLOW)*Math.PI*2;spin.rotation.y=phase%(Math.PI*2);pulses(p0,phase,dt);
     for(let i=0;i<NP;i++){const p=P[i];p.u=(p.u+dt*(real?0.6:0.12))%1;const d=R+p.u*BEAM*0.9,rad=d*Math.tan(0.16)*p.w;pPos[i*3]=Math.cos(p.a)*rad;pPos[i*3+1]=p.sg*d;pPos[i*3+2]=Math.sin(p.a)*rad;}
     pg.attributes.position.needsUpdate=true;
     // near, the star and its field; far, the nebula
     const d=camera.position.length(),kn=Math.min(1,Math.max(0,(d-4000)/14000)),kf=1-Math.min(1,Math.max(0,(d-6000)/20000));
     glowM.forEach((m,i)=>{m.opacity=nebGlow0[i]*kn;});filM.opacity=filOp*kn;neb.visible=kn>0.01;labels.visible=magLabel.visible=kf>0.5&&d<5000;
-    lineM.opacity=0.32*kf;openM.opacity=0.28*kf;lcM.opacity=0.25*kf;});
+    lineM.opacity=0.32*kf;openM.opacity=0.28*kf;lcM.opacity=0.25*kf;
+    if(d<8000)drawChart();
+    const el=Math.asin(camera.position.y/Math.max(1,d));api.ctx.details=Object.assign(api.ctx.details||{},{pulses:peak,camEl:Math.round(el*100)/100});});
   return {group,ownSky:false,view:K.view||{az:0.9,el:0.22,d:2600},
     get pick(){return camera.position.length()<8000?[star]:[nebHit];},
-    active(v){on=v;last=null;},
-    buttons:{'Pulsar: real speed':function(){real=!real;btn=btn||[...document.querySelectorAll('#ui button')].find(b=>/^Pulsar: /.test(b.textContent));if(btn)btn.textContent=real?'Pulsar: slowed':'Pulsar: real speed';}},
-    hud:()=>'the Crab Pulsar · '+(real?'29.6 turns a second':(SLOW+' turns a second, slowed '+Math.round(FAST/SLOW)+' times'))+' · 6,500 light years'};
+    active(v){on=v;last=null;if(v)kit.chart.show('The pulses, as seen from the camera','');},
+    buttons:{'Pulsar: real speed':function(){real=!real;btn=btn||[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Pulsar: real speed');if(btn)btn.textContent=real?'Pulsar: slowed':'Pulsar: real speed';},
+      'Pulsar: listen':function(){listen=!listen;if(listen)kit.audio.start();const b=[...document.querySelectorAll('#ui button')].find(e=>e.textContent==='Pulsar: listen');if(b)b.setAttribute('aria-pressed',String(listen));}},
+    rows:()=>[{x:R,z:LC,w:TILT,dpt:NF,h:NEB},{x:BEAM,z:SLOW,w:NP,dpt:(K.shells||[]).length}],
+    hud:()=>'the Crab Pulsar · '+(real?'29.6 turns a second':(SLOW+' turns a second, slowed '+Math.round(FAST/SLOW)+' times'))};
 }

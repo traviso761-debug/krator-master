@@ -1,9 +1,9 @@
 {
  "name": "Deep Sky",
- "note": "Original work: three ways a star ends. M87*, the black hole imaged by the Event Horizon Telescope in 2019, its light traced through curved space; the Crab Pulsar, with its field, its beams and the nebula it powers; a core-collapse supernova from the star's shells to its remnant. Built by src/deepsky/ on the starship page (src/starship/page.js); the objects' numbers are in 'blackhole', 'pulsar' and 'supernova'.",
+ "note": "Original work: the ways a star ends. M87* and Sagittarius A*, their light traced through curved space; the Crab Pulsar, with its field, its beams, its pulses and the nebula it powers; a core-collapse supernova from the star's shells to its light curve; a white dwarf in the Ring Nebula; and GW170817, two neutron stars merging. Built by src/deepsky/ on the starship page (src/starship/page.js); 'objects' names them and gives their distances, and each has its own block of numbers and card text.",
  "attribution": "Deep Sky: original work, src/deepsky/. Schematic in places: the captions and cards say where.",
  "start": "blackhole",
- "radius": 1000,
+ "radius": 2000,
  "minD": 8,
  "view0": {
   "az": 0.6,
@@ -35,10 +35,28 @@
    "el": 0.5,
    "d": 1500
   },
+  "Sgr A*: the shadow": {
+   "object": "sgra",
+   "az": 0.6,
+   "el": 0.25,
+   "d": 70
+  },
+  "Sgr A*: S2's orbit": {
+   "object": "sgra",
+   "az": 0.4,
+   "el": 1.2,
+   "d": 90000
+  },
+  "Sgr A*: the S-stars": {
+   "object": "sgra",
+   "az": 0.4,
+   "el": 1.0,
+   "d": 300000
+  },
   "Pulsar: the star": {
    "object": "pulsar",
    "az": 0.9,
-   "el": 0.22,
+   "el": 0.72,
    "d": 2600
   },
   "Pulsar: the beams": {
@@ -64,6 +82,30 @@
    "az": 1.4,
    "el": 0.4,
    "d": 6000
+  },
+  "White dwarf and the Earth": {
+   "object": "whitedwarf",
+   "az": 1.2,
+   "el": 0.25,
+   "d": 8400
+  },
+  "The Ring Nebula": {
+   "object": "whitedwarf",
+   "az": 0.3,
+   "el": 1.3,
+   "d": 110000
+  },
+  "Merger": {
+   "object": "merger",
+   "az": 0.8,
+   "el": 0.45,
+   "d": 1500
+  },
+  "Merger: the waves": {
+   "object": "merger",
+   "az": 0.8,
+   "el": 1.1,
+   "d": 5200
   }
  },
  "blackhole": {
@@ -75,7 +117,16 @@
   "jet": 0.06,
   "exposure": 1.2,
   "peakK": 3900,
-  "info": "The black hole at the middle of the galaxy M87, 55 million light years off: six and a half billion times the Sun's mass, its horizon 38 billion km across, bigger than the Solar System out to Neptune. In April 2017 the Event Horizon Telescope, radio dishes from Hawaii to the South Pole working as one Earth-sized telescope, took its picture, published in 2019: the first of a black hole. What you see here is computed, not painted: each pixel's light is followed back along its bent path. The black disc is the shadow, two and a half times the horizon; the thin bright ring round it is light that has gone round the hole before reaching you; the disk's far side shows over the top and under the bottom because its light is bent up and down to you; the side turning towards you is brighter, beamed by the gas's speed. The disk is drawn thin and bright, as a textbook draws it: M87*'s is fainter and thicker. Its jet, along the spin axis, reaches 5,000 light years out of the galaxy."
+  "info": "The black hole at the middle of the galaxy M87, 55 million light years off: six and a half billion times the Sun's mass, its horizon 38 billion km across, bigger than the Solar System out to Neptune. In April 2017 the Event Horizon Telescope, radio dishes from Hawaii to the South Pole working as one Earth-sized telescope, took its picture, published in 2019: the first of a black hole. What you see here is computed, not painted: each pixel's light is followed back along its bent path. The black disc is the shadow, two and a half times the horizon; the thin bright ring round it is light that has gone round the hole before reaching you; the disk's far side shows over the top and under the bottom because its light is bent up and down to you; the side turning towards you is brighter, beamed by the gas's speed. The disk is drawn thin and bright, as a textbook draws it: M87*'s is fainter and thicker. Its jet, along the spin axis, reaches 5,000 light years out of the galaxy.",
+  "label": "M87*",
+  "hud": "M87* · 6.5 billion suns",
+  "eht": {
+   "az": 0.6,
+   "el": 1.27,
+   "d": 800,
+   "roll": 1.5708
+  },
+  "ehtCaption": "As the Event Horizon Telescope saw it in 2017: a ring two of its beams across, from M87*'s real angle (its jet 17 degrees off our line of sight), in the orange scale the picture was published in. The real ring is brightest at the bottom, where the gas comes towards us; here it is the textbook disk, thinner and brighter than M87*'s."
  },
  "pulsar": {
   "radius": 10,
@@ -86,7 +137,12 @@
   "nebula": 36000,
   "seed": 1054,
   "info": "What was left at the middle of the star whose explosion Chinese astronomers saw in July 1054, bright enough to see by day for three weeks: a neutron star, 1.4 times the Sun's mass in a ball 20 km across, as dense as an atom's nucleus. It turns 29.6 times a second and is slowing, a millionth of a second every 2.5 years, its spin's energy going into the nebula round it. Its magnetic field, a million million times the Earth's, is tilted to its spin, and two beams come out along it; each time one sweeps over the Earth we see a pulse, in radio, light, X-rays and gamma rays. Found in 1968, it was the proof that pulsars are neutron stars. Here the field lines turn with the star; the light cylinder is where they would have to go at the speed of light.",
-  "nebulaInfo": "The Crab Nebula, M1: the remnant of the supernova of 1054, 6,500 light years off and 11 across, still growing at 1,500 km a second. Its blue-white glow is the synchrotron light of electrons the pulsar's wind sends spiralling through its field; the red and orange filaments are the star's outer layers, hydrogen and oxygen, lit by it. Chandra's X-ray picture shows the ring where the wind meets the nebula and a jet up the spin axis. It is drawn here thousands of millions of times smaller than it is, so that the pulsar and it can share a screen."
+  "nebulaInfo": "The Crab Nebula, M1: the remnant of the supernova of 1054, 6,500 light years off and 11 across, still growing at 1,500 km a second. Its blue-white glow is the synchrotron light of electrons the pulsar's wind sends spiralling through its field; the red and orange filaments are the star's outer layers, hydrogen and oxygen, lit by it. Chandra's X-ray picture shows the ring where the wind meets the nebula and a jet up the spin axis. It is drawn here thousands of millions of times smaller than it is, so that the pulsar and it can share a screen.",
+  "view": {
+   "az": 0.9,
+   "el": 0.72,
+   "d": 2600
+  }
  },
  "supernova": {
   "radius": 600,
@@ -124,5 +180,187 @@
     "dist": 0.86
    }
   ]
+ },
+ "objects": {
+  "blackhole": {
+   "name": "M87*",
+   "short": "M87*",
+   "distance": "55 million light years, in the Virgo cluster",
+   "ly": 55000000.0
+  },
+  "sgra": {
+   "name": "Sagittarius A*",
+   "short": "Sgr A*",
+   "distance": "27,000 light years, at the middle of the Milky Way",
+   "ly": 27000
+  },
+  "pulsar": {
+   "name": "The Crab Pulsar",
+   "short": "Crab",
+   "distance": "6,500 light years, in Taurus",
+   "ly": 6500
+  },
+  "supernova": {
+   "name": "A core-collapse supernova",
+   "short": "Betelgeuse",
+   "distance": "as Betelgeuse's will be: about 550 light years",
+   "ly": 550
+  },
+  "whitedwarf": {
+   "name": "A white dwarf: the Ring Nebula",
+   "short": "Ring Nebula",
+   "distance": "2,600 light years, in Lyra",
+   "ly": 2600
+  },
+  "merger": {
+   "name": "Two neutron stars merge: GW170817",
+   "short": "GW170817",
+   "distance": "130 million light years, in NGC 4993",
+   "ly": 130000000.0
+  }
+ },
+ "sgra": {
+  "scale": 2,
+  "disk": [
+   3,
+   10
+  ],
+  "diskOpacity": 0.45,
+  "jet": 0,
+  "exposure": 1.3,
+  "peakK": 4200,
+  "haze": [
+   0.07,
+   0.04,
+   0.025
+  ],
+  "hud": "Sgr A* · 4.3 million suns",
+  "view": {
+   "az": 0.6,
+   "el": 0.25,
+   "d": 70
+  },
+  "eht": {
+   "az": 0.6,
+   "el": 1.1,
+   "d": 80
+  },
+  "ehtCaption": "As the Event Horizon Telescope saw Sgr A* (published 2022): a ring about the size of Mercury's orbit, blurred to the telescope's resolution. It flickers in minutes, as gas goes round it, so its picture is an average of many.",
+  "year": 2000,
+  "yearsPerSec": 0.5,
+  "auPerArcsec": 8277,
+  "rsAU": 0.0849,
+  "stars": [
+   [
+    "S2",
+    0.1255,
+    0.8839,
+    134.18,
+    226.94,
+    65.51,
+    2002.33,
+    16.0,
+    "#ffffff"
+   ],
+   [
+    "S38",
+    0.1416,
+    0.8201,
+    171.1,
+    101.06,
+    17.99,
+    2003.19,
+    19.2,
+    "#ffd27a"
+   ],
+   [
+    "S55",
+    0.1078,
+    0.7209,
+    150.1,
+    325.5,
+    331.5,
+    2009.31,
+    12.8,
+    "#9ab8ff"
+   ],
+   [
+    "S1",
+    0.595,
+    0.556,
+    119.14,
+    342.04,
+    122.3,
+    2001.8,
+    166.0,
+    "#ffb0a0"
+   ],
+   [
+    "S12",
+    0.2987,
+    0.8883,
+    33.56,
+    230.1,
+    317.9,
+    1995.59,
+    58.9,
+    "#b0ffc8"
+   ],
+   [
+    "S14",
+    0.2863,
+    0.9761,
+    100.59,
+    226.38,
+    334.59,
+    2000.12,
+    55.3,
+    "#e0b0ff"
+   ]
+  ],
+  "_": "stars: name, a (arcsec), e, i, node, argument of periapsis (degrees), periapsis year, period (years), colour: the published fits (Gillessen et al. 2017), rounded; each gives 4.3-4.4 million suns by Kepler's third law",
+  "info": "The black hole at the middle of our own galaxy, 27,000 light years off: 4.3 million times the Sun's mass, its horizon 25 million km across, smaller than Mercury's orbit. Dust hides it from ordinary light; it was found in radio in 1974 and weighed by the stars that orbit it, followed in the infrared since the 1990s by Reinhard Genzel's and Andrea Ghez's teams (the 2020 Nobel Prize). It eats very little, so its disk is dim and it has no jet to speak of; the Event Horizon Telescope's picture of it was published in 2022. Pull back to see the S-stars.",
+  "starInfo": {
+   "S2": "A star of some ten suns that goes round Sgr A* every 16 years. At its closest, in May 2018, it passed 120 times the Earth's distance from the Sun from it, at 7,650 km a second, 2.5% of the speed of light. The GRAVITY instrument saw its light reddened by the black hole's gravity, as Einstein said it would be (2018), and its orbit's slow turn, the same precession as Mercury's (2020).",
+   "S1": "The widest of these orbits: 166 years round.",
+   "S14": "The most elongated orbit here: at its closest it dives in to about 100 times the Earth's distance from the Sun.",
+   "S12": "Some sixty years round.",
+   "S38": "Nineteen years round, on an orbit nearly in the plane of the sky.",
+   "S55": "Also called S0-102: just under 13 years round, the shortest of these orbits."
+  }
+ },
+ "whitedwarf": {
+  "radius": 700,
+  "earthRadius": 637,
+  "nebula": 40000,
+  "tilt": 30,
+  "seed": 57,
+  "view": {
+   "az": 1.2,
+   "el": 0.25,
+   "d": 8400
+  },
+  "info": "What the Sun will be in about seven billion years: the bare core of a star, carbon and oxygen pressed to a million times the density of water, held up not by heat but by its electrons refusing to be squeezed closer (degeneracy pressure). Its surface is about 125,000 degrees; it makes no new energy and will spend billions of years cooling. A white dwarf can weigh no more than 1.4 Suns (the Chandrasekhar limit): pile on more, from a companion, and it blows up as a type Ia supernova.",
+  "nebulaInfo": "The Ring Nebula, M57, in Lyra, 2,600 light years off and a light year and a third across: the layers its star threw off over the last few thousand years, lit by the white dwarf. It is a barrel seen nearly end on, so it looks like a ring. The JWST's pictures of 2023 show blue-green hot oxygen and helium inside, a ring of hydrogen and nitrogen, some 20,000 dense knots round its rim, and faint arcs in a halo further out. It is drawn here a hundred million times smaller than it is, and will fade within some tens of thousands of years."
+ },
+ "merger": {
+  "length": 48,
+  "merge": 30,
+  "a0": 220,
+  "amin": 26,
+  "omega0": 0.5,
+  "waveSpeed": 350,
+  "radius": 12,
+  "sheet": 2600,
+  "sheetSegments": 90,
+  "kilonova": 5000,
+  "seed": 170817,
+  "view": {
+   "az": 0.8,
+   "el": 0.45,
+   "d": 1500
+  },
+  "info": "A neutron star: a star's collapsed core, about 1.4 times the Sun's mass in a ball some 24 km across. These two were born in two supernovae and had been in orbit round each other for perhaps billions of years, drawing slowly together, before the last minutes shown here.",
+  "waveInfo": "Space itself, stretched and squeezed by the passing waves: the sheet's height is the strain, made a great deal larger than it is. The waves go out as a two-armed spiral at the speed of light (slowed here), twice each orbit, and grow as the stars close in. They were predicted by Einstein in 1916 and first detected in 2015, from two black holes merging; GW170817, on 17 August 2017, was the first from two neutron stars, and the first also seen in light."
  }
 }

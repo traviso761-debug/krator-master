@@ -327,6 +327,8 @@ export async function starshipPage(opts){
         rows.push({x:c.x,z:c.z,w:b.radius,dpt:g.attributes.position.count,h:c.y,ry:0,
                    kind:o.material&&o.material.color?o.material.color.getHexString():'?',fixed:false});
       });
+      // a model whose parts are mostly glow and points (Deep Sky) may add rows of its own: its numbers, as lots
+      if(SHIP.fingerprintRows)for(const r of SHIP.fingerprintRows())rows.push(Object.assign({x:0,z:0,w:0,dpt:0,h:0,ry:0,kind:'?',fixed:false},r));
       rows.sort((p,q)=>p.x-q.x||p.h-q.h||p.z-q.z||p.dpt-q.dpt);
       ctx.lotList=rows;
     });

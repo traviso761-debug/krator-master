@@ -1,5 +1,5 @@
-// Deep Sky: entry point for deepsky.html. Three ways a star ends - a black hole (M87*), a pulsar (the Crab's) and a
-// core-collapse supernova - each on the starship page's turntable (src/starship/page.js); model.js switches them.
+// Deep Sky: entry point for deepsky.html. The ways a star ends - two black holes, a pulsar, a supernova, a white dwarf,
+// two neutron stars merging - each on the starship page's turntable (src/starship/page.js); model.js switches them.
 import {starshipPage} from '../starship/page.js';
 import {model} from './model.js';
 starshipPage({
@@ -12,5 +12,6 @@ starshipPage({
     'The light round a black hole is followed along its bent paths, a pixel at a time.',
     'The Crab Pulsar turns thirty times a second. Here it is slowed down, unless you ask.',
     'A supernova in a minute: the real one takes a day to break the surface.',
+    'GW170817: the gamma rays came 1.7 seconds after the gravitational waves, after 130 million years.',
   ],
 });
