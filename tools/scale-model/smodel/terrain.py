@@ -126,9 +126,8 @@ def weather(E, mask):
     cell = 4.0
     offs = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     dist = [cell * math.hypot(a, b) for a, b in offs]
-    ys, xs = np.where(mask)
-    box = np.zeros(h.shape, bool)
-    box[max(ys.min() - 3, 1):min(ys.max() + 4, ny - 1), max(xs.min() - 3, 1):min(xs.max() + 4, nx - 1)] = True
+    box = nd.binary_dilation(mask, iterations=3)
+    box[0, :] = box[-1, :] = box[:, 0] = box[:, -1] = False
     by, bx = np.where(box)
     iy, ix = np.indices(h.shape)
     for it in range(W['iters']):

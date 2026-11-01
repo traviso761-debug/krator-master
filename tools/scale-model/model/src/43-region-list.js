@@ -68,6 +68,42 @@
         og.restore();
       }
     }
+    // ---- Toggleable Lava Tubes & Subterranean Cavern Networks ----
+    if(layerOn.tubes && DATA.tubes){
+      DATA.tubes.forEach(t=>{
+        if(!t.px||t.px.length<2) return;
+        const isLava=t.kind==='active_lava_tube'||t.kind==='pyroduct';
+        og.save();
+        og.beginPath();
+        t.px.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1]));
+        og.lineCap='round'; og.lineJoin='round';
+        og.strokeStyle=isLava?'rgba(251,146,60,0.45)':'rgba(168,85,247,0.42)';
+        og.lineWidth=isLava?6.0:5.0;
+        og.stroke();
+        og.setLineDash(isLava?[8,5]:[5,5]);
+        og.strokeStyle=isLava?'#fb923c':'#c084fc';
+        og.lineWidth=isLava?2.6:2.2;
+        og.stroke();
+        og.setLineDash([]);
+        // Draw skylights / collapse windows
+        (t.skylights||[]).forEach(sk=>{
+          og.beginPath(); og.arc(sk[0],sk[1],3.8,0,Math.PI*2);
+          og.fillStyle=isLava?'#fde047':'#e9d5ff'; og.fill();
+          og.lineWidth=1.5; og.strokeStyle='#18181b'; og.stroke();
+        });
+        // Label tube
+        if(t.name && t.px.length>=2){
+          const mid=t.px[Math.floor(t.px.length/2)];
+          og.font='italic 600 10px "IBM Plex Sans",sans-serif';
+          og.textAlign='center'; og.textBaseline='bottom';
+          og.lineWidth=3.0; og.strokeStyle='rgba(12,10,18,0.92)';
+          og.strokeText(t.name, mid[0], mid[1]-5);
+          og.fillStyle=isLava?'#fed7aa':'#e9d5ff';
+          og.fillText(t.name, mid[0], mid[1]-5);
+        }
+        og.restore();
+      });
+    }
     for(const r of shown) drawLabel(r);
     if(drawing && draft.length){
       og.beginPath(); draft.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1])); if(cursorPt) og.lineTo(cursorPt[0],cursorPt[1]);

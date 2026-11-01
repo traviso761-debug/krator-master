@@ -18,6 +18,10 @@ def poly(pts, su, sv, shape):
     return np.array(m).astype(bool)
 
 
+def poly_mask(pts, VW, VH, su=1.0, sv=1.0):
+    return poly(pts, su, sv, (VH, VW))
+
+
 def chaikin(pts, n=2):
     for _ in range(n):
         q = [pts[0]]

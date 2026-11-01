@@ -111,7 +111,13 @@ def water_levels(D):
 
 def encode_heights(D, E, water=None):
     """`h` for heights E (clamped to [lo, hi]: a carve below lo would wrap); the water flag kept unless given"""
-    h = raster(D, 'h').copy()
+    E = np.asarray(E, float)
+    VH, VW = E.shape
+    h_raw = raster(D, 'h')
+    if h_raw.shape[:2] == (VH, VW):
+        h = h_raw.copy()
+    else:
+        h = np.zeros((VH, VW, 3), dtype=np.uint8)
     h[..., 0], h[..., 1] = _enc(D, E)
     if water is not None:
         h[..., 2] = np.where(water, 255, 0)
@@ -125,7 +131,13 @@ def encode_levels(D, whas, wlev):
     """`wl` for water levels wlev where whas. A dry cell keeps whatever level `wl` held there (2,056 dry cells of 4.23
     still carry an old lake's; the page reads the level only where B says water), so writing back unchanged levels gives
     the same raster"""
-    wl = raster(D, 'wl').astype(np.int64)
+    whas = np.asarray(whas, bool)
+    VH, VW = whas.shape
+    wl_raw = raster(D, 'wl')
+    if wl_raw.shape[:2] == (VH, VW):
+        wl = wl_raw.astype(np.int64)
+    else:
+        wl = np.zeros((VH, VW, 3), dtype=np.int64)
     r, g = _enc(D, np.where(whas, wlev, D['lo']))
     wl[..., 0], wl[..., 1] = np.where(whas, r, wl[..., 0]), np.where(whas, g, wl[..., 1])
     wl[..., 2] = np.where(whas, 255, 0)

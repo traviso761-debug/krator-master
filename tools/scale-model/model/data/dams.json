@@ -1,4 +1,4 @@
 [
-{"name": "east dam", "basin": "dam 2", "site_px": [506.7, 110.2], "lake_level_m": 1050.0, "crest_m": 1100.0, "foot_m": 850.0, "height_m": 250.0, "pass_before_m": 1335, "cut_m": 485},
-{"name": "west dam", "basin": "dam", "site_px": [408.5, 144.2], "lake_level_m": 900.0, "crest_m": 950.0, "foot_m": 700.0, "height_m": 250.0, "pass_before_m": 1160, "cut_m": 460}
+{"name": "east dam", "basin": "dam 2", "site_px": [778.7, 440.2], "lake_level_m": 1050.0, "crest_m": 1100.0, "foot_m": 850.0, "height_m": 250.0, "pass_before_m": 1335, "cut_m": 485},
+{"name": "west dam", "basin": "dam", "site_px": [680.5, 474.2], "lake_level_m": 900.0, "crest_m": 950.0, "foot_m": 700.0, "height_m": 250.0, "pass_before_m": 1160, "cut_m": 460}
 ]

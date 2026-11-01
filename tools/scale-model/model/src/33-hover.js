@@ -10,9 +10,17 @@
     handles.children.forEach(m=>{ const v=m.position.clone().project(camera); if(v.z>1) return; const d=Math.hypot((v.x*.5+.5)*r.width-mx,(-v.y*.5+.5)*r.height-my); if(d<bd){bd=d;best=m;} });
     return best; }
   // the designated rivers (DATA.rivers, 4.21): the nearest course within 3 map px (6 km) of the pointer
-  const rRiver=document.getElementById('rRiver'), RIVG=new Map();
+  const rRiver=document.getElementById('rRiver'), RIVG=new Map(), TUBEG=new Map();
   (DATA.rivers||[]).forEach((r,k)=>r.px.forEach((p,n)=>{const key=Math.floor(p[0]/8)+','+Math.floor(p[1]/8);let a=RIVG.get(key);if(!a)RIVG.set(key,a=[]);a.push(k,n);}));
-  function riverAt(x,y){ let best=null,bd=9;
+  (DATA.tubes||[]).forEach((t,k)=>(t.px||[]).forEach((p,n)=>{const key=Math.floor(p[0]/8)+','+Math.floor(p[1]/8);let a=TUBEG.get(key);if(!a)TUBEG.set(key,a=[]);a.push(k,n);}));
+  function tubeAt(x,y){ if(!layerOn.tubes||!DATA.tubes) return null; let best=null,bd=16;
+    for(let gx=Math.floor(x/8)-1;gx<=Math.floor(x/8)+1;gx++)for(let gy=Math.floor(y/8)-1;gy<=Math.floor(y/8)+1;gy++){const a=TUBEG.get(gx+','+gy);if(!a)continue;
+      for(let i=0;i<a.length;i+=2){const t=DATA.tubes[a[i]],p=t.px[a[i+1]],d=(p[0]-x)*(p[0]-x)+(p[1]-y)*(p[1]-y);if(d<bd){bd=d;best=t;}}}
+    if(!best) return null;
+    return best.name+' ('+(best.kind||'lava tube').replace(/_/g,' ')+(best.depth_m?' · -'+best.depth_m+' m':'')+(best.width_m?' · ~'+best.width_m+' m wide':'')+')'; }
+  function riverAt(x,y){
+    const tb=tubeAt(x,y); if(tb) return tb;
+    let best=null,bd=9;
     for(let gx=Math.floor(x/8)-1;gx<=Math.floor(x/8)+1;gx++)for(let gy=Math.floor(y/8)-1;gy<=Math.floor(y/8)+1;gy++){const a=RIVG.get(gx+','+gy);if(!a)continue;
       for(let i=0;i<a.length;i+=2){const r=DATA.rivers[a[i]],p=r.px[a[i+1]],d=(p[0]-x)*(p[0]-x)+(p[1]-y)*(p[1]-y);if(d<bd){bd=d;best=[r,a[i+1]];}}}
     if(!best) return '—'; const [r,n]=best, q=r.q_m3s?r.q_m3s[Math.min(n,r.q_m3s.length-1)]:null;

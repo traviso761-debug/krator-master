@@ -43,7 +43,10 @@
   function applyVex(){
     for(let i=0;i<pos.count;i++) pos.setY(i, base[i]*vex);
     pos.needsUpdate=true; geo.computeVertexNormals();
-    for(let i=0;i<wpos.count;i++) wpos.setY(i, whas[i] ? wlev[i]/1000*vex+0.02*vex : base[i]*vex-0.4*vex);
+    for(let j=0;j<MH;j++) for(let i=0;i<MW;i++){
+      const sx=Math.min(VW-1,i*MSTRIDE), sy=Math.min(VH-1,j*MSTRIDE), sidx=sy*VW+sx, vidx=j*MW+i;
+      wpos.setY(vidx, whas[sidx] ? wlev[sidx]/1000*vex+0.02*vex : base[vidx]*vex-0.4*vex);
+    }
     wpos.needsUpdate=true; wgeo.computeVertexNormals();
     placeVolcano();
     if(handles.children.length) placeHandles();

@@ -4,11 +4,11 @@
   // regions saved before layers existed carry no kind: place them by name until someone moves them
   const GEO_RE=/\b(valley|vale|isles?|islands?|ocean|sea|bay|gulf|lake|rift|crater|cut|bowl|tiers|catch|pits|steampits|farside|ruins|plateau|mesa|range|mountains?|wall|desert|basin|coast|region \d+)\b/i;
   function kindOf(r){ return KIND_BY[r.kind]?r.kind:(GEO_RE.test(r.name||'')?'geographic':'political'); }
-  const layerOn={political:true,geographic:false,biome:false,rivers:true};
+  const layerOn={political:true,geographic:false,biome:false,rivers:true,tubes:false};
   let tab='political';
   try{ const j=JSON.parse(localStorage.getItem('krator.regionLayers')||'null'); if(j){ Object.keys(layerOn).forEach(k=>{ if(typeof j.on?.[k]==='boolean') layerOn[k]=j.on[k]; }); if(KIND_BY[j.tab]) tab=j.tab; } }catch(e){}
   function layersSave(){ try{ localStorage.setItem('krator.regionLayers',JSON.stringify({on:layerOn,tab})); }catch(e){} }
-  const anyLayer=()=>layerOn.political||layerOn.geographic||layerOn.biome||layerOn.rivers;
+  const anyLayer=()=>layerOn.political||layerOn.geographic||layerOn.biome||layerOn.rivers||layerOn.tubes;
   function setLayer(k,on){ layerOn[k]=on; const b=document.getElementById(KIND_BY[k].btn); if(b) b.setAttribute('aria-pressed',on);
     overlay.visible=anyLayer()||measuring||drawing; layersSave(); paintOverlay(); }
   const bRivers=document.getElementById('bRivers');
@@ -17,6 +17,17 @@
     bRivers.onclick=()=>{
       layerOn.rivers=!layerOn.rivers;
       bRivers.setAttribute('aria-pressed',layerOn.rivers);
+      overlay.visible=anyLayer()||measuring||drawing;
+      layersSave();
+      paintOverlay();
+    };
+  }
+  const bTubes=document.getElementById('bTubes');
+  if(bTubes){
+    bTubes.setAttribute('aria-pressed',layerOn.tubes);
+    bTubes.onclick=()=>{
+      layerOn.tubes=!layerOn.tubes;
+      bTubes.setAttribute('aria-pressed',layerOn.tubes);
       overlay.visible=anyLayer()||measuring||drawing;
       layersSave();
       paintOverlay();

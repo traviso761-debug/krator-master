@@ -263,6 +263,8 @@ def extend_latitude_temps_and_wind(D_old, E_old, En_exp, whas0, wlev0, whas2, wl
 
     # Also extend `wd.png` (wind on the height grid: R=power, G=speed, B=airless)
     wd0 = raster(D_old, 'wd', 'RGB')
+    if wd0.shape[0] != VH - dy_h or wd0.shape[1] != VW - dx_h:
+        wd0 = np.array(Image.fromarray(wd0, 'RGB').resize((VW - dx_h, VH - dy_h), Image.Resampling.BILINEAR))
     wd_pad = np.pad(wd0, ((dy_h, 0), (dx_h, 0), (0, 0)), mode='edge')
     gy_h, gx_h = np.gradient(nd.gaussian_filter(En_exp, 1.5), 4000.0)
     slope_nw = (gx_h + gy_h) / np.sqrt(2.0)
