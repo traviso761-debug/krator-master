@@ -28,6 +28,32 @@
   "settlements_total": 117,
   "regions_total": 111,
   "rivers_total": 882,
+  "river_tongue_counts": {
+    "dalab": 41,
+    "republic": 17,
+    "yuni": 104,
+    "izani": 81,
+    "vothic": 32,
+    "xanadui": 31,
+    "riders": 8,
+    "dasri": 93,
+    "scyvoi": 7,
+    "eternian": 72,
+    "hum": 90,
+    "khaay": 19,
+    "tungang": 81,
+    "vrivolci": 30,
+    "yusar": 56,
+    "jimjam": 16,
+    "screamer": 6,
+    "talovolci": 3,
+    "argot": 36,
+    "hykkousik": 2,
+    "tabist": 10,
+    "farside": 37,
+    "zeijani": 4,
+    "heiland": 6
+  },
   "tubes_total": 10,
   "settlement_audit": [
     {
@@ -306,7 +332,7 @@
       "elev_m": -68.0,
       "old_elev_m": -178.9,
       "wet": false,
-      "climate": "Af",
+      "climate": "WS",
       "old_climate": "Af",
       "slope_m_km": 0.5
     },
@@ -1496,7 +1522,7 @@
       "elev_m": -50.8,
       "old_elev_m": -50.8,
       "wet": false,
-      "climate": "BSh",
+      "climate": "Csa",
       "old_climate": "BSh",
       "slope_m_km": 87.1
     },
@@ -1664,7 +1690,7 @@
       "elev_m": 226.4,
       "old_elev_m": 2931.0,
       "wet": false,
-      "climate": "BSk",
+      "climate": "Csa",
       "old_climate": "Cfb",
       "slope_m_km": 71.3
     }

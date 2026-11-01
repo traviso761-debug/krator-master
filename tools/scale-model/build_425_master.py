@@ -50,10 +50,14 @@ import smodel.geom as G          # noqa: E402
 import smodel.terrain as T       # noqa: E402
 import smodel.climate as C       # noqa: E402
 import smodel.paint as PA        # noqa: E402
-import smodel.volcanoes as VOLC  # noqa: E402
-import smodel.east_abyss as EA   # noqa: E402
-import smodel.tier1_biomes as T1 # noqa: E402
-import smodel.nw_expansion as NW # noqa: E402
+import smodel.volcanoes as VOLC          # noqa: E402
+import smodel.east_abyss as EA           # noqa: E402
+import smodel.tier1_biomes as T1         # noqa: E402
+import smodel.tranche2_biomes as T2      # noqa: E402
+import smodel.tranche3_biomes as T3      # noqa: E402
+import smodel.biome_transitions as BT    # noqa: E402
+import smodel.river_names as RN          # noqa: E402
+import smodel.nw_expansion as NW         # noqa: E402
 
 DX = 272
 DY = 330
@@ -105,7 +109,7 @@ def main():
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8')
     t_start = time.time()
-    print('=== Scale Model 5.0 Master Build (1821x1723 Unified 2 km/cell Grid) ===')
+    print('=== Scale Model 5.1 Master Build (1821x1723 Unified 2 km/cell Grid + Tranches 1-3 + Boundary Transitions + 27-Tongue Rivers) ===')
 
     # Ensure expansion_ref.jpg is present
     ref_src = 'C:/Users/travi/.gemini/antigravity/brain/e30de27d-3a14-4ec5-8c8a-76d1d73e27fc/.user_uploaded/media_1793494252884_beac5e73.jpg'
@@ -113,12 +117,12 @@ def main():
     if os.path.exists(ref_src) and not os.path.exists(ref_path):
         shutil.copy2(ref_src, ref_path)
 
-    # Load D_old from model/data/ (if already expanded to 1821x1723 by a prior run, restore 1549x1393 baseline from HEAD)
+    # Load D_old from model/data/ (if already expanded to 1821x1723 by a prior run, restore 1549x1393 baseline from commit eabeb2039)
     D_old = P.load()
     if (D_old['fullH'], D_old['fullW']) != (OLD_OH, OLD_OW):
-        print('  Restoring 1549x1393 baseline data from HEAD before running 5.0 master pipeline...')
+        print('  Restoring 1549x1393 baseline data from commit eabeb2039 before running 5.1 master pipeline...')
         subprocess.check_call([
-            'git', 'checkout', 'HEAD', '--',
+            'git', 'checkout', 'eabeb2039', '--',
             'tools/scale-model/model/data',
             'openworld/little-demo/source/regions.json',
             'openworld/little-demo/source/settlements.json',
@@ -183,7 +187,7 @@ def main():
     wlev0_1393 = np.where(whas0_1393, wlev_up, np.nan)
 
     # =========================================================================
-    # STEP 2: Run the 3 Interior Enhancement Passes on (1393, 1549)
+    # STEP 2: Run the 6 Interior Enhancement Passes on (1393, 1549)
     # =========================================================================
     print('--- Step 2A: Volcano & Lava Tube Remodeling (Throne, Lesser Throne, Godthrone, Catch/Xanadu Twin Cones) ---')
     En1, whas1, wlev1, vents_1393, volc_1393, ch_volc = VOLC.remodel_volcanoes(
@@ -201,12 +205,33 @@ def main():
     print(f'  East Abyss & Bowl remodeled: {int(ch_ea.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2C: Tier-1 Biomes Remodeling (k-Guilin, SW Highlands, W Outer Wall, The Cut, Korona / NE) ---')
-    En3, whas3_1393, wlev3_1393_num, ch_t1 = T1.remodel_tier1_biomes(
+    En3a, whas3a_1393, wlev3a_1393_num, ch_t1 = T1.remodel_tier1_biomes(
         En2, whas2_1393, np.nan_to_num(wlev2_1393, nan=0.0),
         regs_1393, setts_1393, D_old['rivers']
     )
-    wlev3_1393 = np.where(whas3_1393, wlev3_1393_num, np.nan)
     print(f'  Tier-1 Biomes remodeled: {int(ch_t1.sum()):,} cells changed on 1393x1549')
+
+    print('--- Step 2D: Tranche-2 Biomes Remodeling (Tiers, Outlands, Stalker Range, Scablands, Dams, NW/SW Lowlands, Ancient Valley, Yeti/Farside, SE Desert/Badlands/Yuni/Painted) ---')
+    En3b, whas3b_1393, wlev3b_1393_num, ch_t2 = T2.remodel_tranche2_biomes(
+        En3a, whas3a_1393, wlev3a_1393_num,
+        regs_1393, setts_1393, D_old['rivers'], D_old.get('floods', [])
+    )
+    print(f'  Tranche-2 Biomes remodeled: {int(ch_t2.sum()):,} cells changed on 1393x1549')
+
+    print('--- Step 2E: Tranche-3 Biomes Remodeling (N/S/E Highlands, Rift & Rim, Xanadu/Oidong/Catch, Hyperjungles, Drylands/Savannah, Ring Isles/Steampits, SW/NW Bays) ---')
+    En3c, whas3c_1393, wlev3c_1393_num, ch_t3 = T3.remodel_tranche3_biomes(
+        En3b, whas3b_1393, wlev3b_1393_num,
+        regs_1393, setts_1393, D_old['rivers'], vents_1393
+    )
+    print(f'  Tranche-3 Biomes remodeled: {int(ch_t3.sum()):,} cells changed on 1393x1549')
+
+    print('--- Step 2F: Biome Boundary Topological & Geological Transition Pass (Piedmont Megafans, Water Gaps, Ecotone Outliers, & FBM Seam Feathering) ---')
+    En3, whas3_1393, wlev3_1393_num, ch_bt = BT.apply_biome_boundary_transitions(
+        Eo_1393, En3c, whas3c_1393, wlev3c_1393_num,
+        regs_1393, setts_1393, D_old['rivers']
+    )
+    wlev3_1393 = np.where(whas3_1393, wlev3_1393_num, np.nan)
+    print(f'  Biome boundary transitions sculpted: {int(ch_bt.sum()):,} cells changed on 1393x1549')
 
     # Protect the completed 5-region SE complex (`Region 99`, `Siphon Pits`, `Mid Basin`, `Stalker Gate`, `High Rift`)
     # so its terrain, water levels, and climate stay 100% intact
@@ -245,7 +270,7 @@ def main():
     )
 
     # Also ensure new high-altitude volcanic peaks (>6250 m) and Sarez/slump lakes on 1393x1549 have proper classes
-    ch_interior = ch_volc | ch_ea | ch_t1
+    ch_interior = ch_volc | ch_ea | ch_t1 | ch_t2 | ch_t3 | ch_bt
     new_int_lakes = ch_interior & whas3_1393 & ~whas0_1393
     cls_int[new_int_lakes & (wlev3_1393 > 200.0)] = idx['WH']
     cls_int[new_int_lakes & (wlev3_1393 <= -900.0)] = idx['WX']
@@ -874,6 +899,16 @@ def main():
     for wp in worse_problems:
         print(f'    [PROBLEM >50km] {wp["name"]}: {wp}')
 
+    # 7H. Culturally & Linguistically Authentic River Naming Pass Across All 27 Tongues & Dialects
+    print('--- Step 7H: Renaming All Rivers & Wadis Across All 27 Cultural Tongues & Dialects ---')
+    river_md_path = os.path.join(HERE, 'river-names-5.1.md')
+    rivers_exp, tongue_counts = RN.rename_all_rivers_culturally(
+        rivers_exp, regs_exp, setts_exp, En_exp=En_exp, markdown_out_path=river_md_path
+    )
+    D_new['rivers'] = rivers_exp
+    top_tongues_str = ', '.join(f'{k}:{v}' for k, v in sorted(tongue_counts.items(), key=lambda kv: -kv[1])[:10])
+    print(f'  Named {len(rivers_exp)} rivers across {len(tongue_counts)} tongues (top: {top_tongues_str})')
+
     # =========================================================================
     # STEP 8: Encode All Rasters into `D_new`, Update `climate.present`, and Save
     # =========================================================================
@@ -987,12 +1022,14 @@ def main():
         f.write(sett_store_updated)
 
     # Build HTML viewer via model/build.py
-    print('--- Step 9: Running model/build.py & Exporting Scale Model 5.0 + Verification Crops ---')
+    print('--- Step 9: Running model/build.py & Exporting Scale Model 5.1 + Verification Crops ---')
     subprocess.check_call([sys.executable, os.path.join(HERE, 'model', 'build.py')])
 
     dist_html = os.path.join(HERE, 'model', 'dist', 'scale-model.html')
+    out_51 = os.path.join(HERE, 'scale-model-5.1.html')
     out_50 = os.path.join(HERE, 'scale-model-5.0.html')
     out_424 = os.path.join(HERE, 'scale-model-4.24.html')
+    shutil.copy2(dist_html, out_51)
     shutil.copy2(dist_html, out_50)
     shutil.copy2(dist_html, out_424)
 
@@ -1000,6 +1037,8 @@ def main():
     artifact_html = os.path.join(artifact_dir, 'scale-model-artifact.html')
     if os.path.exists(artifact_dir):
         shutil.copy2(dist_html, artifact_html)
+        if os.path.exists(river_md_path):
+            shutil.copy2(river_md_path, os.path.join(artifact_dir, 'river-names-5.1.md'))
 
     # Save audit report JSON
     report_path = os.path.join(HERE, 'build_425_report.json')
@@ -1011,6 +1050,7 @@ def main():
             'settlements_total': len(setts_exp),
             'regions_total': len(regs_exp),
             'rivers_total': len(rivers_exp),
+            'river_tongue_counts': tongue_counts,
             'tubes_total': len(tubes_list),
             'settlement_audit': audit_report,
         }, f, indent=2)
@@ -1032,15 +1072,19 @@ def main():
     Image.fromarray(st_final_exp[0:1450, 0:620]).save(os.path.join(artifact_dir, 'master425_arch_crook_st.png'))
     Image.fromarray(t_final_exp[0:1450, 0:620]).save(os.path.join(artifact_dir, 'master425_arch_crook_t.png'))
 
-    # 4. Crop: Volcanoes (Throne, Lesser Throne, Godthrone, Catch/Xanadu Twin Cones) (X=650..1220, Y=700..1620)
-    Image.fromarray(st_final_exp[700:1620, 650:1220]).save(os.path.join(artifact_dir, 'master425_volcanoes_st.png'))
-    Image.fromarray(t_final_exp[700:1620, 650:1220]).save(os.path.join(artifact_dir, 'master425_volcanoes_t.png'))
+    # 4. Crop: Tranche 2 — Scablands, Dams, NW Lowlands, Painted Highlands, & N Highlands (X=460..1240, Y=360..920)
+    Image.fromarray(st_final_exp[360:920, 460:1240]).save(os.path.join(artifact_dir, 'master51_tranche2_north_st.png'))
+    Image.fromarray(t_final_exp[360:920, 460:1240]).save(os.path.join(artifact_dir, 'master51_tranche2_north_t.png'))
 
-    # 5. Crop: East Abyss & The Bowl Shiveria Rift (X=920..1420, Y=600..1240)
-    Image.fromarray(st_final_exp[600:1240, 920:1420]).save(os.path.join(artifact_dir, 'master425_east_abyss_st.png'))
-    Image.fromarray(ct_final_exp[600:1240, 920:1420]).save(os.path.join(artifact_dir, 'master425_east_abyss_ct.png'))
+    # 5. Crop: Tranche 2 — Tiers, N/S Outlands, Yuni Valley, E Badlands, & SE Desert (X=1150..1821, Y=330..1120)
+    Image.fromarray(st_final_exp[330:1120, 1150:1821]).save(os.path.join(artifact_dir, 'master51_tranche2_east_st.png'))
+    Image.fromarray(t_final_exp[330:1120, 1150:1821]).save(os.path.join(artifact_dir, 'master51_tranche2_east_t.png'))
 
-    print(f'=== Scale Model 4.25 Master Build Completed in {time.time() - t_start:.1f}s ===')
+    # 6. Crop: Tranche 3 — S Highlands, Rift, Rift Rim, Xanadu, Oidong, & The Catch (X=420..1340, Y=920..1680)
+    Image.fromarray(st_final_exp[920:1680, 420:1340]).save(os.path.join(artifact_dir, 'master51_tranche3_south_st.png'))
+    Image.fromarray(t_final_exp[920:1680, 420:1340]).save(os.path.join(artifact_dir, 'master51_tranche3_south_t.png'))
+
+    print(f'=== Scale Model 5.1 Master Build Completed in {time.time() - t_start:.1f}s ===')
 
 
 if __name__ == '__main__':
