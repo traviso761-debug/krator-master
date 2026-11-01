@@ -234,218 +234,239 @@
    "code": "O",
    "name": "airless rim",
    "color": "#f6f3ec",
-   "pct": 25.09,
-   "km2": 2172872
+   "pct": 23.76,
+   "km2": 2050832
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
-   "pct": 10.69,
-   "km2": 886716
+   "pct": 11.22,
+   "km2": 968800
   },
   {
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 7.8,
-   "km2": 704876
-  },
-  {
-   "code": "HF",
-   "name": "hyperalpine ice",
-   "color": "#eef0f7",
-   "pct": 6.53,
-   "km2": 563524
-  },
-  {
-   "code": "Cfa",
-   "name": "humid subtropical",
-   "color": "#c8ff50",
-   "pct": 4.77,
-   "km2": 493088
+   "pct": 6.49,
+   "km2": 560524
   },
   {
    "code": "Csa",
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.44,
-   "km2": 452512
+   "km2": 469612
+  },
+  {
+   "code": "HF",
+   "name": "hyperalpine ice",
+   "color": "#eef0f7",
+   "pct": 5.38,
+   "km2": 464396
+  },
+  {
+   "code": "Dsc",
+   "name": "dry-summer subarctic",
+   "color": "#963296",
+   "pct": 4.91,
+   "km2": 423476
+  },
+  {
+   "code": "Cfa",
+   "name": "humid subtropical",
+   "color": "#c8ff50",
+   "pct": 4.76,
+   "km2": 410892
+  },
+  {
+   "code": "BSk",
+   "name": "cold steppe",
+   "color": "#ffdc64",
+   "pct": 4.66,
+   "km2": 402188
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
    "pct": 4.59,
-   "km2": 400352
+   "km2": 395968
   },
   {
    "code": "WS",
    "name": "sea / lake",
    "color": "#3b6fb0",
    "pct": 4.35,
-   "km2": 396204
-  },
-  {
-   "code": "Dsc",
-   "name": "dry-summer subarctic",
-   "color": "#963296",
-   "pct": 4.29,
-   "km2": 365576
+   "km2": 375308
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
-   "pct": 3.67,
-   "km2": 274048
+   "pct": 4.21,
+   "km2": 363432
   },
   {
    "code": "BWh",
    "name": "hot desert",
    "color": "#ff0000",
-   "pct": 2.86,
-   "km2": 263148
+   "pct": 2.72,
+   "km2": 234632
   },
   {
-   "code": "Dfc",
-   "name": "subarctic (boreal)",
-   "color": "#007d7d",
-   "pct": 1.45,
-   "km2": 237500
-  },
-  {
-   "code": "BSk",
-   "name": "cold steppe",
-   "color": "#ffdc64",
-   "pct": 3.69,
-   "km2": 223132
-  },
-  {
-   "code": "Dfb",
-   "name": "warm-summer continental",
-   "color": "#37c8ff",
-   "pct": 1.66,
-   "km2": 200704
+   "code": "BWk",
+   "name": "cold desert",
+   "color": "#ff9696",
+   "pct": 2.69,
+   "km2": 231788
   },
   {
    "code": "XA",
    "name": "hypertropic jungle (abyssal, >1.85 atm)",
    "color": "#3d0070",
    "pct": 2.32,
-   "km2": 185448
+   "km2": 199972
   },
   {
    "code": "Aw",
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 2.1,
-   "km2": 170048
+   "km2": 180876
+  },
+  {
+   "code": "Dfb",
+   "name": "warm-summer continental",
+   "color": "#37c8ff",
+   "pct": 1.73,
+   "km2": 148900
+  },
+  {
+   "code": "Dfc",
+   "name": "subarctic (boreal)",
+   "color": "#007d7d",
+   "pct": 1.46,
+   "km2": 126400
   },
   {
    "code": "Af",
    "name": "tropical rainforest",
    "color": "#0000ff",
    "pct": 1.4,
-   "km2": 114428
-  },
-  {
-   "code": "BWk",
-   "name": "cold desert",
-   "color": "#ff9696",
-   "pct": 2.44,
-   "km2": 102052
+   "km2": 121036
   },
   {
    "code": "XV",
    "name": "abyssal savanna",
    "color": "#8a3ca8",
    "pct": 1.02,
-   "km2": 83080
+   "km2": 88248
+  },
+  {
+   "code": "Csb",
+   "name": "warm-summer Mediterranean",
+   "color": "#c8c800",
+   "pct": 0.84,
+   "km2": 72276
   },
   {
    "code": "Am",
    "name": "tropical monsoon",
    "color": "#0078ff",
    "pct": 0.76,
-   "km2": 63280
+   "km2": 65176
   },
   {
-   "code": "Csb",
-   "name": "warm-summer Mediterranean",
-   "color": "#c8c800",
-   "pct": 0.77,
-   "km2": 62932
+   "code": "Cfb",
+   "name": "oceanic",
+   "color": "#64ff50",
+   "pct": 0.54,
+   "km2": 47036
   },
   {
    "code": "WX",
    "name": "abyssal salt lake",
    "color": "#8c6a3a",
    "pct": 0.52,
-   "km2": 44292
-  },
-  {
-   "code": "Cfb",
-   "name": "oceanic",
-   "color": "#64ff50",
-   "pct": 0.5,
-   "km2": 42016
-  },
-  {
-   "code": "XW",
-   "name": "abyssal desert",
-   "color": "#5c0000",
-   "pct": 0.23,
-   "km2": 35892
+   "km2": 44964
   },
   {
    "code": "XS",
    "name": "abyssal salt steppe",
    "color": "#b8542a",
-   "pct": 0.48,
-   "km2": 29924
+   "pct": 0.52,
+   "km2": 44576
+  },
+  {
+   "code": "XW",
+   "name": "abyssal desert",
+   "color": "#5c0000",
+   "pct": 0.39,
+   "km2": 33512
+  },
+  {
+   "code": "HT",
+   "name": "hyperalpine tundra (<0.6 atm)",
+   "color": "#d8dbe8",
+   "pct": 0.25,
+   "km2": 21196
+  },
+  {
+   "code": "Dsa",
+   "name": "dry-summer hot continental",
+   "color": "#ff00ff",
+   "pct": 0.19,
+   "km2": 15968
   },
   {
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
-   "pct": 0.16,
-   "km2": 24400
+   "pct": 0.17,
+   "km2": 14892
+  },
+  {
+   "code": "Cwb",
+   "name": "subtropical highland",
+   "color": "#64c864",
+   "pct": 0.14,
+   "km2": 11812
   },
   {
    "code": "Dfa",
    "name": "hot-summer continental",
    "color": "#00ffff",
    "pct": 0.14,
-   "km2": 15100
+   "km2": 11724
   },
   {
    "code": "Cwa",
    "name": "monsoon subtropical",
    "color": "#96ff96",
    "pct": 0.13,
-   "km2": 11120
+   "km2": 11144
   },
   {
-   "code": "Dsa",
-   "name": "dry-summer hot continental",
-   "color": "#ff00ff",
-   "pct": 0.07,
-   "km2": 6060
-  },
-  {
-   "code": "Cwb",
-   "name": "subtropical highland",
-   "color": "#64c864",
-   "pct": 0.06,
-   "km2": 2100
+   "code": "Dwc",
+   "name": "dry-winter subarctic",
+   "color": "#4b50b4",
+   "pct": 0.11,
+   "km2": 9372
   },
   {
    "code": "Dwb",
    "name": "dry-winter warm continental",
    "color": "#5a78dc",
-   "pct": 0.02,
-   "km2": 1616
+   "pct": 0.05,
+   "km2": 4312
+  },
+  {
+   "code": "Csc",
+   "name": "cold-summer Mediterranean",
+   "color": "#969600",
+   "pct": 0.04,
+   "km2": 3448
   },
   {
    "code": "Cfc",
@@ -455,18 +476,11 @@
    "km2": 1556
   },
   {
-   "code": "Dwc",
-   "name": "dry-winter subarctic",
-   "color": "#4b50b4",
-   "pct": 0.03,
-   "km2": 1184
-  },
-  {
-   "code": "Csc",
-   "name": "cold-summer Mediterranean",
-   "color": "#969600",
-   "pct": 0.0,
-   "km2": 228
+   "code": "Cwc",
+   "name": "cold subtropical highland",
+   "color": "#329632",
+   "pct": 0.01,
+   "km2": 764
   },
   {
    "code": "Dwa",
