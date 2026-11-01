@@ -828,16 +828,21 @@ def main():
         if any(0 <= int(py_) < OH and 0 <= int(px_) < OW and mask99_f[int(py_), int(px_)] for px_, py_ in pts_r):
             continue
         dr_rc.line([tuple(p) for p in pts_r], fill=1, width=5)
-    # In Region 99 (Weavers' Cradle), place an organic, lobate alluvial spring-fan oasis around Spindle Fan [1289, 810]
-    r_spindle_fan = np.hypot((XF - 1288.0) * 1.15, (YF - 812.0) * 0.85) + 3.5 * np.sin(YF * 0.18)
-    spindle_fan_oasis = mask99_f & (r_spindle_fan <= 16.5) & (EnF >= 1880.0) & (EnF <= 2550.0)
+    # In Region 99 (Weavers' Cradle), place a braided alluvial snowmelt fan around Spindle Fan [1289, 810]
+    dx_sf = XF - 1272.0
+    dy_sf = YF - 810.0
+    ang_sf = np.arctan2(dy_sf, np.maximum(dx_sf, 1.0))
+    r_sf = np.hypot(dx_sf * 0.95, dy_sf * 1.15) * (1.0 + 0.28 * np.cos(5.0 * ang_sf + 0.4) + 0.18 * np.sin(8.0 * ang_sf))
+    spindle_fan_oasis = mask99_f & (dx_sf >= -6.0) & (r_sf <= 22.0) & (EnF >= 1820.0) & (EnF <= 2480.0)
     oas_noise = nd.gaussian_filter(np.random.RandomState(SEED + 33).normal(0.0, 1.0, (OH, OW)), 2.5)
     river_corr_f = ((np.array(river_corr_img, dtype=float) + 0.35 * oas_noise) > 0.45) | spindle_fan_oasis
 
-    # Oases in Region 99
-    oasis99_river = river_corr_f & mask99_f & (EnF < 3000.0) & (distUnionOrgF >= 6.0)
-    oasis99_spring = mask99_f & (chasmF >= 0.50) & (chasmF <= 0.90) & (xTectF < 1400.0) & (EnF < 1300.0)
-    oasis99_f = nd.binary_closing(oasis99_river | oasis99_spring, iterations=1) & mask99_f
+    # Oases in Region 99: restricted to Spindle Fan snowmelt bajada, Mount Caelum's radial glacial meltwater apron,
+    # and the westernmost piedmont spring-line alcoves (leaving the central/eastern Warp Chasms as dry rock gorges!)
+    oasis99_river = spindle_fan_oasis & (distUnionOrgF >= 6.0)
+    oasis99_caelum = mask99_f & (rCaelF >= 14.0) & (rCaelF <= 34.0) & (chasmF >= 0.48) & (EnF < 1650.0)
+    oasis99_spring = mask99_f & (chasmF >= 0.55) & (xTectF < 1334.0) & (YF >= 785.0) & (YF <= 885.0) & (EnF < 1250.0)
+    oasis99_f = nd.binary_closing(oasis99_river | oasis99_caelum | oasis99_spring, iterations=1) & mask99_f
     spill99 = mask99_f & (distUnionOrgF >= 5.0) & (distUnionOrgF < 28.0)
 
     # Oases in Siphon Pits
@@ -892,11 +897,25 @@ def main():
         + 120.0 * np.maximum(hrNorthGF, hrSouthGF)
     )
 
-    target_rain = np.where(
-        mask_sp_f, rain_sp,
-        np.where(mask_mb_f, rain_mb,
-        np.where(mask_sg_f | hub_mask_f, rain_sg,
-        np.where(mask_hr_f, rain_hr, rain_99)))
+    # Smooth full-resolution partition-of-unity weights so internal polygon transitions have zero straight color seams!
+    w99_f_raw = nd.gaussian_filter(mask99_f.astype(float), sigma=12.0)
+    wsp_f_raw = nd.gaussian_filter(mask_sp_f.astype(float), sigma=12.0)
+    wmb_f_raw = nd.gaussian_filter(mask_mb_f.astype(float), sigma=12.0)
+    wsg_f_raw = nd.gaussian_filter((mask_sg_f | hub_mask_f).astype(float), sigma=10.0)
+    whr_f_raw = nd.gaussian_filter(mask_hr_f.astype(float), sigma=10.0)
+    w_tot_f = np.maximum(w99_f_raw + wsp_f_raw + wmb_f_raw + wsg_f_raw + whr_f_raw, 1e-6)
+    p99_f = w99_f_raw / w_tot_f
+    psp_f = wsp_f_raw / w_tot_f
+    pmb_f = wmb_f_raw / w_tot_f
+    psg_f = wsg_f_raw / w_tot_f
+    phr_f = whr_f_raw / w_tot_f
+
+    target_rain = (
+        p99_f * rain_99
+        + psp_f * rain_sp
+        + pmb_f * rain_mb
+        + psg_f * rain_sg
+        + phr_f * rain_hr
     )
     target_rain = np.where(oasis_all_f, np.maximum(target_rain, 440.0), target_rain)
     target_rain = np.where(EnF >= 8800.0, 0.0, np.clip(target_rain, 24.0, 1200.0))
@@ -1177,11 +1196,11 @@ def main():
     st_clim = PA.desert(st_clim, EnF, rain2, tm_new, wet2F, mask99_f, w_arid_paint, mm=150.0, step=250.0)
 
     st_f = st_clim.astype(float)
-    w_c99 = w_clim_u * mask99_f.astype(float)
-    w_csp = w_clim_u * mask_sp_f.astype(float)
-    w_cmb = w_clim_u * mask_mb_f.astype(float)
-    w_csg = w_clim_u * (mask_sg_f | hub_mask_f).astype(float)
-    w_chr = w_clim_u * mask_hr_f.astype(float)
+    w_c99 = w_clim_u * p99_f
+    w_csp = w_clim_u * psp_f
+    w_cmb = w_clim_u * pmb_f
+    w_csg = w_clim_u * psg_f
+    w_chr = w_clim_u * phr_f
 
     # --- Region 99 Satellite Art Direction ---
     w_mesa_st = w_c99 * (1.0 - chasmF) * G.sstep(1265.0, 1340.0, xTectF) * (1.0 - G.sstep(1850.0, 2500.0, EnF))
