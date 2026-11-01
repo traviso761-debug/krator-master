@@ -34,10 +34,10 @@ def load(path=DATA_DIR):
 
 
 def version(path=DATA_DIR):
-    """the model's version ('4.23'), from the page's title block: the saved page's, or the build's src/ for a data folder"""
+    """the model's version ('5.1'), from the page's title block: the saved page's, or the build's src/ for a data folder"""
     import re
     src = os.path.join(build.SRC, '10-panel.html') if os.path.isdir(path) else path
-    m = re.search(r'scale model (4\.\d+) ', open(src, encoding='utf-8').read())
+    m = re.search(r'scale model (\d+\.\d+) ', open(src, encoding='utf-8').read())
     return m.group(1) if m else '?'
 
 
