@@ -10305,27 +10305,27 @@
   "name": "double delta",
   "color": "#2c9c91",
   "kind": "biome",
-  "notes": "The Great Double Delta of the Ria River: a massive twin-lobed marshy tide-and-wave delta (analogous to the Nile and Amazon deltas) at 0.0 m basin/sea level with dozens of flat-topped alluvial islands. Features a reduced oceanic biological invasion limited to colonial terrestrial sponges and giant calcified sea-pen fields (no seaweed-derived trees).",
+  "notes": "The Great Double Delta: a massive twin-lobed marshy tide-and-wave delta at 0.0 m basin/sea level receiving both the main Ria River from the east and the second Arch & Northern Massif river system from the northwest and north. Features colonial terrestrial sponges and calcified sea-pen fields.",
   "points": [
    [
     515,
-    88
+    98
    ],
    [
-    642,
-    92
+    622,
+    102
    ],
    [
-    648,
-    228
+    625,
+    208
    ],
    [
     516,
-    232
+    208
    ],
    [
-    498,
-    162
+    502,
+    156
    ]
   ]
  },
@@ -10375,7 +10375,7 @@
   "name": "the arch",
   "color": "#3b82a6",
   "kind": "biome",
-  "notes": "The Arch: a partly drowned tectonic rift-and-hogback archipelago over the Steaming Sea (inspired by Capsica's Arch), linking the northern Ria coast to the Crook. Sheltered inner sounds contrast with tsunami-scoured outer basalt sea cliffs.",
+  "notes": "The Arch: an exposed undersea mid-ocean spreading ridge over the Steaming Sea (inspired by Capsica's Arch), featuring a double line of parallel rift-shoulder horst ridges (+750 to +2,150 m) with a lowered axial rift valley and drowned median sound in between, linking the northern Ria coast to the Crook.",
   "points": [
    [
     42,
@@ -10453,10 +10453,10 @@
   "name": "the crook",
   "color": "#5c8c46",
   "kind": "biome",
-  "notes": "The Crook: a deep tectonic trough squeezed between the western crater wall and the western upland cordillera. Opens at its northern neck into the Arch via a sea-level tidal fjord (0.0 m) and slopes continuously upward toward the south into a strongly alien fumarolic and malachite-stained montane ecosystem.",
+  "notes": "The Crook: a deep tectonic trough squeezed between the western crater wall and the towering Western Boundary Cordillera. Opens at its northern neck into the Arch via a sea-level tidal fjord (0.0 m) and slopes continuously upward toward the south into a fumarolic and malachite-stained montane ecosystem.",
   "points": [
    [
-    42,
+    52,
     535
    ],
    [
@@ -10472,11 +10472,11 @@
     1085
    ],
    [
-    52,
+    62,
     1085
    ],
    [
-    38,
+    48,
     820
    ]
   ]
@@ -10514,11 +10514,11 @@
    ],
    [
     195,
-    1385
+    1345
    ],
    [
     48,
-    1385
+    1345
    ]
   ]
  },
@@ -10527,7 +10527,7 @@
   "name": "tharn uplands",
   "color": "#b89f7d",
   "kind": "biome",
-  "notes": "NE Tharn Uplands: a high, cold-dry windswept plateau (+4,600 to +6,300 m) inspired by Chris Wayan's Tharn, where high-elevation freeze-thaw aridity is partially mitigated by low-latitude equatorial insolation (~24\u201329\u00b0S), producing giant diurnal temperature swings and cushion-xenophyte steppes.",
+  "notes": "NE Tharn Uplands & Outer Rim: high, cold-dry windswept alpine and hypobaric outer-rim plateau (+5,800 to +9,800 m) inspired by Chris Wayan's Tharn, where high-elevation freeze-thaw aridity meets the airless outer crater rim.",
   "points": [
    [
     1435,
@@ -10556,11 +10556,11 @@
   "name": "outland gate",
   "color": "#528a58",
   "kind": "geographic",
-  "notes": "Outland Gate (NE Trans-Boundary Pass): a dramatic highland valley and alpine saddle corridor (+2,150 to +3,220 m floor framed by +4,400..+5,650 m snow peaks) breaching the northeastern rim to connect the eastern Ria River Valley and Eastern Highland Lake directly into the northern basin of Outland.",
+  "notes": "Outland Gate (NE Trans-Boundary Water-Gap Pass): a dramatic highland valley and water-gap corridor (+1,460 to +1,734 m floor framed by +4,400..+7,600 m snow peaks) breaching the northeastern rim to carry the Outland Gate River from the northern Outland lake directly into the Eastern Highland Lake.",
   "points": [
    [
-    1355,
-    240
+    1345,
+    215
    ],
    [
     1445,
@@ -10572,11 +10572,11 @@
    ],
    [
     1565,
-    468
+    475
    ],
    [
     1475,
-    468
+    475
    ],
    [
     1405,

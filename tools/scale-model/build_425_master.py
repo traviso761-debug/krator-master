@@ -237,12 +237,107 @@ def main():
     # so its terrain, water levels, and climate stay 100% intact
     se5_ids = {'rmvraoas90co7', 'rmvra9zogfm9t', 'rmvmidbasin101', 'rmvstalkergate', 'rmvhighrift100'}
     mask_se5_1393 = np.zeros((OLD_OH, OLD_OW), dtype=bool)
+    mask_stalker_1393 = np.zeros((OLD_OH, OLD_OW), dtype=bool)
     for r in regs_1393:
         if r.get('id') in se5_ids:
             mask_se5_1393 |= G.poly(r['points'], 1.0, 1.0, (OLD_OH, OLD_OW))
+        if r.get('id') == 'rmvstalkergate':
+            mask_stalker_1393 |= G.poly(r['points'], 1.0, 1.0, (OLD_OH, OLD_OW))
     En3 = np.where(mask_se5_1393, Eo_1393, En3)
     whas3_1393 = np.where(mask_se5_1393, whas0_1393, whas3_1393)
     wlev3_1393 = np.where(mask_se5_1393, wlev0_1393, wlev3_1393)
+
+    # -------------------------------------------------------------------------
+    # Step 2G: Targeted User Map Comment Passes on (1393, 1549):
+    #   1. S Outlands <-> Region 99 (Loom-Chasms) Connecting Pass (`ox=1390..1495, oy=540..730`)
+    #   2. Stalker Gate NW Pass 1A Clear Opening (`ox=1035..1105, oy=755..800`)
+    #   3. Stalker Gate Progressive NW Outer-Wall Slopes (`ox=1040..1215, oy=790..1085`)
+    #   4. Flooded Tower (`su9oc1m9io`) Shallow (<20 m) Ring Sea Shelf (`ox=756, oy=510`)
+    # -------------------------------------------------------------------------
+    Y_1393, X_1393 = np.indices((OLD_OH, OLD_OW), dtype=float)
+    En3_pre_2g = En3.copy()
+    rs_2g = np.random.RandomState(42591)
+
+    # 1. S Outlands <-> Region 99 Connecting Mountain Pass (`Batch 1 Image 0`: x=1663..1769, y=876..1060 on 1723x1821)
+    # Connects Southern Outlands valley (ox=1414, oy=545, ~2480 m) across the saddle into Region 99 (ox=1410, oy=725, ~2080 m)
+    sout_pass_ctrl = [
+        (1414.0, 538.0, 2440.0, 22.0),
+        (1432.0, 588.0, 2720.0, 20.0),
+        (1438.0, 638.0, 2880.0, 20.0),
+        (1426.0, 684.0, 2480.0, 21.0),
+        (1408.0, 732.0, 2040.0, 23.0),
+    ]
+    d_sout_p, z_sout_p, hw_sout_p = NW.corridor_distance_and_target(
+        X_1393, Y_1393, sout_pass_ctrl,
+        warp_x=11.0 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 18.0),
+        warp_y=11.0 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 18.0),
+    )
+    w_sout_core = 1.0 - G.sstep(0.0, hw_sout_p, d_sout_p)
+    w_sout_wall = 1.0 - G.sstep(hw_sout_p * 0.65, hw_sout_p * 3.1, d_sout_p)
+    sout_target = z_sout_p + (1.0 - w_sout_core) * 2650.0 + 110.0 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 8.0)
+    En3 = np.where(w_sout_wall > 0.01, En3 * (1.0 - w_sout_wall) + np.minimum(En3, sout_target) * w_sout_wall, En3)
+    # Smooth across the Region 99 northern border inside the pass envelope so there is zero kink at oy=640:
+    En3_sout_sm = nd.gaussian_filter(En3, sigma=4.5)
+    w_sout_sm = w_sout_wall * G.sstep(590.0, 620.0, Y_1393) * (1.0 - G.sstep(670.0, 705.0, Y_1393))
+    En3 = En3 * (1.0 - 0.75 * w_sout_sm) + En3_sout_sm * (0.75 * w_sout_sm)
+    # Adjust any high mountain tarn intersected by the new S Outlands pass so water level matches the pass floor
+    sout_tarn_hit = whas3_1393 & (w_sout_wall > 0.15) & (Y_1393 >= 530.0) & (Y_1393 <= 735.0) & (X_1393 >= 1370.0)
+    whas3_1393[sout_tarn_hit] = False
+    wlev3_1393[sout_tarn_hit] = np.nan
+
+    # 2. Stalker Gate NW Pass 1A Clear Opening (`Batch 2 Image 4`: (1344, 1102) on 1723x1821 = (1072, 772) on 1393x1549)
+    sg_nw_open_ctrl = [
+        (1034.0, 758.0, 1760.0, 16.0),
+        (1056.0, 766.0, 1820.0, 15.0),
+        (1076.0, 776.0, 1885.0, 15.0),
+        (1098.0, 792.0, 1950.0, 15.5),
+        (1122.0, 810.0, 1980.0, 16.0),
+    ]
+    d_sg_open, z_sg_open, hw_sg_open = NW.corridor_distance_and_target(
+        X_1393, Y_1393, sg_nw_open_ctrl,
+        warp_x=6.5 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 14.0),
+        warp_y=6.5 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 14.0),
+    )
+    w_sg_open_core = 1.0 - G.sstep(0.0, hw_sg_open, d_sg_open)
+    w_sg_open_wall = 1.0 - G.sstep(hw_sg_open, hw_sg_open * 2.6, d_sg_open)
+    sg_open_target = z_sg_open + (1.0 - w_sg_open_core) * 1650.0 + 65.0 * T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 7.0)
+
+    # 3. Stalker Gate Progressive NW Outer-Wall Slopes (`Batch 2 Image 5`: x=1287..1553, y=1036..1443 on 1723x1821)
+    # Dissolve the vertical polygon cliff at ox=1072 (X=1344) and grade the Stalker Gate passes so they climb
+    # progressively toward the WNW/NW into the Stalker Range outer crater wall (`ox=1025..1215, oy=750..1105`).
+    r_vapora = np.hypot(X_1393 - 1152.0, Y_1393 - 908.0)
+    r_gtarn = np.hypot(X_1393 - 1172.0, Y_1393 - 816.0)
+    w_lake_keep = np.maximum(
+        1.0 - G.sstep(18.0, 36.0, r_vapora),
+        np.maximum(1.0 - G.sstep(10.0, 24.0, r_gtarn), whas3_1393.astype(float))
+    )
+    rn_sg = T.ridged((OLD_OH, OLD_OW), 42598, scales=(2.5, 5.5, 11.0))
+    fbm_sg = T1._norm_gauss(rs_2g, (OLD_OH, OLD_OW), 12.0)
+    # Broadly smooth across the vertical cliff at ox=1072 (`ox=1025..1195, oy=750..1100`) and add progressive WNW slope
+    En3_sg_broad = nd.gaussian_filter(En3, sigma=16.0) + 520.0 * (rn_sg - 0.38) + 210.0 * fbm_sg
+    w_sg_cliff_dissolve = (
+        G.sstep(1018.0, 1045.0, X_1393 + 8.0 * fbm_sg)
+        * (1.0 - G.sstep(1155.0, 1205.0, X_1393 + 8.0 * fbm_sg))
+        * G.sstep(742.0, 775.0, Y_1393)
+        * (1.0 - G.sstep(1065.0, 1105.0, Y_1393))
+        * (1.0 - w_lake_keep)
+    )
+    En3 = En3 * (1.0 - 0.88 * w_sg_cliff_dissolve) + En3_sg_broad * (0.88 * w_sg_cliff_dissolve)
+    # Apply the NW Pass 1A opening last so the pass mouth at (1072, 772) -> (1344, 1102) is 100% unobstructed!
+    En3 = np.where(
+        w_sg_open_wall > 0.01,
+        En3 * (1.0 - w_sg_open_wall) + np.minimum(En3, sg_open_target) * w_sg_open_wall,
+        En3,
+    )
+
+    # 4. Flooded Tower (`su9oc1m9io`) Shallow (<20 m) Submerged Ring Sea Shelf at (ox=756, oy=510) -> (px=1028, py=840)
+    r_ftower = np.hypot(X_1393 - 756.0, Y_1393 - 510.0)
+    in_ftower_shelf = r_ftower <= 3.5
+    whas3_1393[in_ftower_shelf] = True
+    wlev3_1393[in_ftower_shelf] = -1500.2
+    En3[in_ftower_shelf] = -1512.5  # 12.3 m water depth (< 20 m shallow water!)
+
+    ch_2g = np.abs(En3 - En3_pre_2g) > 12.0
 
     # =========================================================================
     # STEP 3: Recompute Interior Climate & Paint on (1393, 1549)
@@ -251,8 +346,8 @@ def main():
     codes = [c['code'] for c in D_old['climate']['classes']]
     idx = {c: i for i, c in enumerate(codes)}
 
-    # Force-lock the 5-region SE complex and The Cut's existing forced classes during reclimate
-    forced_1393 = mask_se5_1393.copy()
+    # Force-lock the 5-region SE complex (except where Step 2G carved the S Outlands pass or sloped Stalker Gate)
+    forced_1393 = mask_se5_1393 & (~ch_2g)
     rain_int, cls_int, zon_int, q_int, rep_int = C.reclimate(
         D_old, Eo_1393, En3, whas3_1393, forced_1393
     )
@@ -270,13 +365,15 @@ def main():
     )
 
     # Also ensure new high-altitude volcanic peaks (>6250 m) and Sarez/slump lakes on 1393x1549 have proper classes
-    ch_interior = ch_volc | ch_ea | ch_t1 | ch_t2 | ch_t3 | ch_bt
-    new_int_lakes = ch_interior & whas3_1393 & ~whas0_1393
+    ch_interior = ch_volc | ch_ea | ch_t1 | ch_t2 | ch_t3 | ch_bt | ch_2g
+    new_int_lakes = (ch_interior | in_ftower_shelf) & whas3_1393 & ~whas0_1393
     cls_int[new_int_lakes & (wlev3_1393 > 200.0)] = idx['WH']
     cls_int[new_int_lakes & (wlev3_1393 <= -900.0)] = idx['WX']
     zon_int[new_int_lakes] = 4
 
-    volc_high = ch_volc & ~whas3_1393
+    volc_high = (ch_volc | ch_2g) & ~whas3_1393
+    cls_int[volc_high & (En3 >= 4250.0) & (En3 < 5350.0)] = idx['ET']
+    cls_int[volc_high & (En3 >= 5350.0) & (En3 < 6250.0)] = idx['EF']
     cls_int[volc_high & (En3 >= 6250.0) & (En3 < 7150.0)] = idx['HT']
     cls_int[volc_high & (En3 >= 7150.0) & (En3 < 8800.0)] = idx['HF']
     cls_int[volc_high & (En3 >= 8800.0)] = idx['O']
@@ -304,8 +401,8 @@ def main():
     rt_int = np.array(Image.open(io.BytesIO(base64.b64decode(relit_int['rt']))).convert('RGB'))
     ct_int = np.array(Image.open(io.BytesIO(base64.b64decode(relit_int['ct']))).convert('RGB'))
 
-    # Retint st_int and t_int where elevation moved significantly (e.g. Godthrone collar removal, Lesser Throne cone, East Abyss benches)
-    ok_retint = ch_interior & ~whas3_1393 & ~mask_se5_1393
+    # Retint st_int and t_int where elevation moved significantly (e.g. Godthrone collar removal, Lesser Throne cone, East Abyss benches, Step 2G passes)
+    ok_retint = (ch_interior & ~whas3_1393 & ~mask_se5_1393) | (ch_2g & ~whas3_1393)
     donor_retint = ~ch_interior & ~whas0_1393 & ~whas3_1393
     st_int = PA.retint(st_int, Eo_1393, En3, ok_retint, donor_retint, step=160.0)
     t_int = PA.retint(t_int, Eo_1393, En3, ok_retint, donor_retint, step=160.0)
@@ -487,15 +584,37 @@ def main():
     # STEP 6: Synthesize & Blend `st`, `t`, `rt`, `ct` on (1723, 1821)
     # =========================================================================
     print('--- Step 6: Synthesizing Seamless Satellite (st), Relief (t), Rain (rt), and Climate (ct) Maps on 1821x1723 ---')
+    # Smooth out the two legacy rectangular/linear patch seams on En_exp before hillshading:
+    #   - Batch 2 Image 3: High Rift western seam (`X=1280..1350, Y=1605..1712`)
+    #   - Batch 2 Image 8: NW Outer Wall / NW Lowlands seam (`X=390..535, Y=405..585`)
+    w_fix_seam_hr = (
+        G.sstep(1278.0, 1294.0, X_exp) * (1.0 - G.sstep(1336.0, 1352.0, X_exp))
+        * G.sstep(1604.0, 1620.0, Y_exp) * (1.0 - G.sstep(1696.0, 1712.0, Y_exp))
+        * (~whas_exp).astype(float)
+    )
+    w_fix_seam_nwl = (
+        G.sstep(388.0, 408.0, X_exp) * (1.0 - G.sstep(518.0, 538.0, X_exp))
+        * G.sstep(402.0, 422.0, Y_exp) * (1.0 - G.sstep(568.0, 588.0, Y_exp))
+        * (~whas_exp).astype(float)
+    )
+    w_fix_both = np.maximum(w_fix_seam_hr, w_fix_seam_nwl)
+    rn_seam_fix = T.ridged((NEW_OH, NEW_OW), 42599, scales=(2.5, 5.5, 11.0))
+    En_exp_s = nd.gaussian_filter(En_exp, sigma=8.5) + 55.0 * (rn_seam_fix - 0.38)
+    En_exp = En_exp * (1.0 - 0.90 * w_fix_both) + En_exp_s * (0.90 * w_fix_both)
+
     rs_paint = np.random.RandomState(SEED + 19)
     fine_grain_exp = 1.0 + nd.gaussian_filter(rs_paint.normal(0.0, 0.032, (NEW_OH, NEW_OW)), 0.9)[..., None]
     shade_exp = compute_clean_hillshade(En_exp, zf=5.0, az_deg=315.0, alt_deg=45.0) * fine_grain_exp
+    # Enhanced relief shading inside The Arch (`in_arch_box`) to accentuate the exposed mid-ocean spreading ridge!
+    shade_arch = compute_clean_hillshade(En_exp, zf=8.5, az_deg=315.0, alt_deg=40.0) * fine_grain_exp
+    w_arch_shade = (in_arch_box & (~whas_exp)).astype(float)[..., None]
+    shade_exp = shade_exp * (1.0 - 0.75 * w_arch_shade) + shade_arch * (0.75 * w_arch_shade)
 
-    # Strip the 10-pixel top/left canvas frame bevel of `st_int`, `t_int`, `rt_int`, `ct_int` before padding
+    # Strip the 16-pixel top/left canvas frame bevel of `st_int`, `t_int`, `rt_int`, `ct_int` before padding
     # so the old `1549x1393` edge shadow never creates a line at X=272 or Y=330!
     for arr_i in (st_int, t_int, rt_int, ct_int):
-        arr_i[:10, :, :] = arr_i[10:11, :, :]
-        arr_i[:, :10, :] = arr_i[:, 10:11, :]
+        arr_i[:16, :, :] = arr_i[16:17, :, :]
+        arr_i[:, :16, :] = arr_i[:, 16:17, :]
 
     # Embed interior `(1393, 1549)` painted maps into `[DY:, DX:]`
     st_pad = np.pad(st_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
@@ -504,8 +623,12 @@ def main():
     ct_pad = np.pad(ct_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
 
     # Organic domain-warped blending weight for the new N/W area + trans-boundary NE Outland Pass,
-    # SW Crook–Rift Pass, Arachnoid Canyon/Breach, and Unified NW Ocean:
-    w_seam = np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), G.sstep(-24.0, 26.0, sd_new))
+    # SW Crook–Rift Pass, Arachnoid Canyon/Breach, Crater Wall Unification, Step 2G passes, and Legacy Seam Fixes:
+    w_seam = np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), G.sstep(-44.0, 44.0, sd_new))
+    w_wall_unify = meta_nw.get('w_wall_unify', np.zeros((NEW_OH, NEW_OW), dtype=float))
+    ch_2g_exp = np.pad(nd.gaussian_filter(ch_2g.astype(float), sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
+    w_sout_pass_exp = np.pad(nd.gaussian_filter(w_sout_wall, sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
+    w_sg_repaint = np.pad(nd.gaussian_filter(np.maximum(w_sg_cliff_dissolve, w_sg_open_wall), sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
     w_arach_paint = np.clip(
         w_canyon + 0.85 * arach_trough_w + 0.65 * np.clip(meta_nw['arach_rib_h'] / 210.0, 0.0, 1.0) + 0.78 * w_n_korona_breach,
         0.0, 1.0
@@ -515,9 +638,13 @@ def main():
         * (1.0 - G.sstep(475.0, 540.0, X_exp))
         * (1.0 - G.sstep(525.0, 595.0, Y_exp))
     )
+    w_legacy_seams = np.maximum(
+        np.maximum(w_fix_seam_hr, w_fix_seam_nwl),
+        np.maximum(np.clip(ch_2g_exp * 1.15, 0.0, 1.0), np.maximum(w_sout_pass_exp, w_sg_repaint)),
+    )
     w_exp_paint = np.maximum(
-        np.maximum(w_seam, w_nw_sea_unify),
-        np.maximum(w_arach_paint, np.maximum(w_ne_connector, w_sw_connector)),
+        np.maximum(np.maximum(w_seam, w_wall_unify), w_nw_sea_unify),
+        np.maximum(np.maximum(w_arach_paint, w_legacy_seams), np.maximum(w_ne_connector, w_sw_connector)),
     )[..., None]
 
     # 6A. Relief Map (`t`) on (1723, 1821) — Continuous hypsometric tinting following the contour slopes!
@@ -574,6 +701,19 @@ def main():
     ) * shade_exp
     st_clim_exp = st_clim_exp * (1.0 - 0.54 * w_humid_slope[..., None]) + veg_cont_rgb * (0.54 * w_humid_slope[..., None])
 
+    # 1A. Exposed Undersea Mid-Ocean Spreading Ridge in The Arch (`Batch 2 Image 9`):
+    # Clear double line of elevated rift-shoulder horst ridges (+500..+2,050 m) with a lowered axial rift trough (<250 m) in between!
+    w_arch_land = (in_arch_box & (~whas_exp)).astype(float)
+    u_arch_horst = G.sstep(280.0, 1350.0, En_exp)[..., None]
+    u_arch_crest = G.sstep(1150.0, 1850.0, En_exp)[..., None]
+    arch_trough_col = np.array([48.0, 98.0, 50.0]) * shade_exp
+    arch_horst_col = (
+        np.array([142.0, 128.0, 78.0]) * (1.0 - u_arch_crest)
+        + np.array([182.0, 158.0, 118.0]) * u_arch_crest
+    ) * shade_exp
+    arch_ridge_rgb = arch_trough_col * (1.0 - u_arch_horst) + arch_horst_col * u_arch_horst
+    st_clim_exp = st_clim_exp * (1.0 - 0.72 * w_arch_land[..., None]) + arch_ridge_rgb * (0.72 * w_arch_land[..., None])
+
     # 1B. Nile-Style Sinuous Alluvial Floodplain & Gallery Forest Ribbon along the Ria River (`w_ria_floodplain`):
     w_nile_ribbon = w_ria_floodplain * (~whas_exp).astype(float)
     nile_ribbon_rgb = np.array([54.0, 104.0, 48.0]) * shade_exp
@@ -620,14 +760,25 @@ def main():
     w_tharn_st = w_tharn * (~whas_exp).astype(float) * (1.0 - G.sstep(5600.0, 6300.0, En_exp))
     st_clim_exp = st_clim_exp * (1.0 - 0.65 * w_tharn_st[..., None]) + (np.array([166.0, 138.0, 110.0]) * shade_exp) * (0.65 * w_tharn_st[..., None])
 
+    # 5B. S Outlands <-> Region 99 Connecting Pass (`w_sout_pass_exp`):
+    # Warm Outlands / Loom-Chasms canyon ochre-tan-russet palette matching both S Outlands and Region 99 without white snow stripes!
+    u_sout_elev = np.clip((En_exp - 2050.0) / 3400.0, 0.0, 1.0)[..., None]
+    sout_pass_rgb = (
+        np.array([138.0, 108.0, 78.0]) * ((1.0 - u_sout_elev) ** 1.3)
+        + np.array([164.0, 114.0, 86.0]) * (2.0 * u_sout_elev * (1.0 - u_sout_elev))
+        + np.array([128.0, 58.0, 40.0]) * (u_sout_elev ** 1.3)
+    ) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.85 * w_sout_pass_exp[..., None]) + sout_pass_rgb * (0.85 * w_sout_pass_exp[..., None])
+
     # 6. High Alpine Snow & Glaciers (`4,150 m <= En_exp < 8,200 m`) & Airless Dark Rust-Red Outer Plateau (`En_exp >= 7,600 m`):
     # Matches the exact elevation-driven snow rim + dark rust-red airless outer flank of the existing map!
-    snow_thresh = np.where(w_tharn > 0.3, 5650.0, 4150.0)
+    snow_thresh = np.where((w_tharn > 0.3) | (w_sout_pass_exp > 0.15), 5850.0, 4150.0)
     w_snow_exp = (
         G.sstep(snow_thresh, snow_thresh + 750.0, En_exp)
         * (1.0 - G.sstep(7400.0, 8600.0, En_exp))
         * (~whas_exp).astype(float)
         * (1.0 - 0.72 * w_cop_glac)
+        * (1.0 - 0.88 * w_sout_pass_exp)
     )
     st_clim_exp = st_clim_exp * (1.0 - 0.88 * w_snow_exp[..., None]) + (np.array([238.0, 240.0, 244.0]) * np.clip(shade_exp, 0.74, 1.16)) * (0.88 * w_snow_exp[..., None])
 
@@ -805,6 +956,9 @@ def main():
 
     for s in setts_exp:
         nm = s['name']
+        if nm == 'Flooded Tower' or s.get('id') == 'su9oc1m9io':
+            # Explicitly position Flooded Tower on its shallow (<20 m) Ring Sea bay shelf at (1028, 840)
+            s['px'], s['py'] = 1028, 840
         sx, sy = int(s['px']), int(s['py'])
         # Original unshifted coordinates for reference in Eo_1393
         ox, oy = sx - DX, sy - DY
@@ -821,12 +975,13 @@ def main():
         new_slope = float(slope_m_per_km[sy, sx])
 
         # Check if settlement has an issue at (sx, sy):
-        # 1. Submerged in water when it shouldn't be (or >8 m deep for Mungo/Reed)
+        # 1. Submerged in water when it shouldn't be (or >19.8 m deep for Flooded Tower, >12 m for Mungo/Reed)
         submerged_bad = False
         if new_wet:
             if nm in SHALLOW_WATER_ALLOWED:
                 depth = (new_wlev or 0.0) - new_elev
-                if depth > 12.0:
+                max_allow_depth = 19.8 if nm == 'Flooded Tower' else 12.0
+                if depth > max_allow_depth:
                     submerged_bad = True
             elif not old_wet:
                 submerged_bad = True
@@ -1013,8 +1168,8 @@ def main():
     '5.0':{json.dumps(sett_added_50, ensure_ascii=False)}
   }};"""
     sett_store_updated = re.sub(
-        r'  try\{.*?  Object\.keys\(SETT_ADDED\)',
-        lambda m: sett_block_new + '\n  Object.keys(SETT_ADDED)',
+        r'(  bSettAdd\.onclick=[^\n]*\n[^\n]*\n[^\n]*\n)  try\{.*?  Object\.keys\(SETT_ADDED\)',
+        lambda m: m.group(1) + sett_block_new + '\n  Object.keys(SETT_ADDED)',
         sett_store_txt,
         flags=re.S
     )

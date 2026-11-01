@@ -1,6 +1,6 @@
 # Rivers & Wadis of Krator — Scale Model 5.1 (All 27 Cultural Tongues & Dialects)
 
-Total named courses: **882** (`0` unnamed placeholders remaining).
+Total named courses: **883** (`0` unnamed placeholders remaining).
 
 ## Summary by Tongue
 
@@ -8,10 +8,10 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | :--- | ---: | :--- |
 | `yuni` | 104 | `Ostrukh Riba` (400 km), `Vapora Riba` (335 km), `the Bigga` (242 km), `Gould Riba` (227 km) |
 | `dasri` | 93 | `Wādī al-Raml` (313 km), `Wādī al-Ṣakhr` (228 km), `Wādī al-Layl` (221 km), `Rīfar al-Jabal` (211 km) |
-| `hum` | 87 | `Hām-Tsēk (Web-Cleaver River)` (890 km), `Hau-Gèl (Outland Gate River)` (360 km), `Tsēk-Gèl` (308 km), `Sīng-Hām` (151 km) |
+| `hum` | 87 | `Hām-Tsēk (Web-Cleaver River)` (890 km), `Hau-Gèl (Outland Gate River)` (680 km), `Tsēk-Gèl` (308 km), `Sīng-Hām` (151 km) |
 | `tungang` | 82 | `Kopa-Tarn Warra (Crook River)` (980 km), `Verdigris Beck` (576 km), `Brant-Fell Gill` (320 km), `Howe Warra` (219 km) |
 | `izani` | 80 | `Rrivar rrija` (192 km), `Rrivar Loña` (165 km), `Guli geit` (158 km), `Rrivar Blaca` (138 km) |
-| `eternian` | 71 | `Ria River (Mā-Rīa)` (2140 km), `Pāk-Mā (North Ria Fork)` (560 km), `Līng-Mā` (393 km), `Sī-Mā (South Ria Distributary)` (250 km) |
+| `eternian` | 72 | `Ria River (Mā-Rīa)` (2140 km), `Tōng-Mā (North Ria Distributary)` (780 km), `Pāk-Mā (North Ria Fork)` (740 km), `Līng-Mā` (393 km) |
 | `yusar` | 56 | `Waywater Fallhigh` (177 km), `Waywater Ashgrey` (176 km), `Waywater Windlow` (154 km), `Waywater Stonered` (148 km) |
 | `dalab` | 41 | `Pan Riba` (180 km), `Vali Riba` (175 km), `Ridj Riba` (132 km), `Chimes Riba` (110 km) |
 | `farside` | 37 | `cFols qRiba` (82 km), `cKould qRiba` (80 km), `ɓSuna qRiba` (75 km), `cSolt qRiba` (69 km) |
@@ -38,38 +38,39 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 
 | ID | Name | Tongue | Kind | Length (km) | Source -> Mouth (m) | Drains To | Gloss |
 | ---: | :--- | :--- | :--- | ---: | :--- | :--- | :--- |
-| `9101` | **Ria River (Mā-Rīa)** | `eternian` | river | 2140 | `1353 -> -10` | sea | Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta |
-| `9105` | **Kopa-Tarn Warra (Crook River)** | `tungang` | river | 980 | `2374 -> -44` | sea | Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook |
-| `9102` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1363 -> 2` | Ria River (Mā-Rīa) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River |
+| `9101` | **Ria River (Mā-Rīa)** | `eternian` | river | 2140 | `1352 -> -2` | sea | Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta |
+| `9105` | **Kopa-Tarn Warra (Crook River)** | `tungang` | river | 980 | `2374 -> -42` | sea | Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook |
+| `9102` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1329 -> 458` | Ria River (Mā-Rīa) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River |
+| `9103` | **Tōng-Mā (North Ria Distributary)** | `eternian` | river | 780 | `147 -> -7` | sea | Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta |
+| `9107` | **Pāk-Mā (North Ria Fork)** | `eternian` | river | 740 | `851 -> -44` | sea | Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River |
+| `9106` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 680 | `1456 -> 1456` | lake | Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland |
 | `r_hr_verdigris` | **Verdigris Beck** | `tungang` | river | 576 | `3628 -> 2137` | sea | Verdigris Beck ('Copper-Ice Beck') — High Rift turquoise glacial meltwater stream |
-| `9107` | **Pāk-Mā (North Ria Fork)** | `eternian` | river | 560 | `1112 -> 204` | Ria River (Mā-Rīa) | Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River |
 | `r_mb_siphon_breach` | **Ostrukh Riba** | `yuni` | river | 400 | `2174 -> 334` | sea | Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh |
-| `r002` | **Līng-Mā** | `eternian` | river | 393 | `54 -> -2` | sea | Līng (lotus-bell) + Mā (river) |
-| `9106` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 360 | `3712 -> 2174` | basin | Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland |
-| `r_sg_vapora_bigga` | **Vapora Riba** | `yuni` | river | 335 | `1903 -> 1903` | sea | Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate |
+| `r002` | **Līng-Mā** | `eternian` | river | 393 | `54 -> 35` | sea | Līng (lotus-bell) + Mā (river) |
+| `9108` | **Hāk-Mā** | `eternian` | river | 340 | `3764 -> 215` | Pāk-Mā (North Ria Fork) | Hāk (black-ink) + Mā (river) |
+| `r_sg_vapora_bigga` | **Vapora Riba** | `yuni` | river | 335 | `1903 -> 1863` | sea | Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate |
 | `r_hr_jokulhlaup` | **Brant-Fell Gill** | `tungang` | river | 320 | `10244 -> 2574` | sea | Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim |
 | `r417` | **Wādī al-Raml** | `dasri` | wadi | 313 | `1618 -> -1767` | sea | al-Raml (red-sand) + Wādī (wadi) |
+| `9104` | **Sī-Mā (South Ria Distributary)** | `eternian` | river | 310 | `-88 -> -88` | Tōng-Mā (North Ria Distributary) | Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta |
 | `r432` | **Tsēk-Gèl** | `hum` | wadi | 308 | `1194 -> -472` | sea | Tsēk (cleaver-stone) + Gèl (wadi) |
-| `r195` | **Waayt Quli** | `khaay` | wadi | 293 | `5696 -> 1551` | sea | Waayt (white-rime) + Quli (wadi) |
-| `9104` | **Sī-Mā (South Ria Distributary)** | `eternian` | river | 250 | `-8 -> -120` | sea | Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta |
+| `r195` | **Waayt Quli** | `khaay` | wadi | 293 | `5743 -> 1551` | sea | Waayt (white-rime) + Quli (wadi) |
 | `r004` | **Kaskejt Rivr** | `republic` | river | 244 | `2382 -> 39` | sea | Cascade River ('Kaskejt Rivr') — the stepped cataract river of Cascade |
-| `r019` | **the Bigga** | `yuni` | river | 242 | `3024 -> -2599` | sea | the Bigga ('the Bigger') — mother river of Yuni Valley |
-| `9103` | **Tōng-Mā (North Ria Distributary)** | `eternian` | river | 235 | `-8 -> -13` | sea | Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta |
+| `r019` | **the Bigga** | `yuni` | river | 242 | `3575 -> -2599` | sea | the Bigga ('the Bigger') — mother river of Yuni Valley |
 | `r451` | **Wādī al-Ṣakhr** | `dasri` | wadi | 228 | `725 -> -2033` | sea | al-Ṣakhr (sandstone-mesa) + Wādī (wadi) |
 | `r264` | **Gould Riba** | `yuni` | river | 227 | `790 -> -2108` | sea | Gould (Gold) + Riba (river) |
 | `r708` | **Wādī al-Layl** | `dasri` | wadi | 221 | `5679 -> 344` | sea | al-Layl (star-night) + Wādī (wadi) |
 | `r295` | **Howe Warra** | `tungang` | river | 219 | `5928 -> 2899` | Blek Warra | Howe (howe-mound) + Warra (river) |
 | `r011` | **Uarosriba** | `vrivolci` | river | 211 | `5159 -> 6` | sea | Uaros (high-crag) + Riba (river) |
 | `r053` | **Rīfar al-Jabal** | `dasri` | river | 211 | `3852 -> -1978` | sea | al-Jabal (escarpment) + Rīfar (river) |
-| `r009` | **Blek Warra** | `tungang` | river | 210 | `2758 -> 2382` | sea | Blek (black-shale) + Warra (river) |
+| `r009` | **Blek Warra** | `tungang` | river | 210 | `2756 -> 2358` | sea | Blek (black-shale) + Warra (river) |
 | `r058` | **Drïm Rivrh** | `vothic` | river | 207 | `5627 -> -1440` | sea | Drum river |
 | `r000` | **klir Rivrh** | `vothic` | river | 205 | `15 -> -782` | sea | klir (clear) + Rivrh (river) |
 | `r067` | **Solt Riba** | `yuni` | river | 203 | `3825 -> -2323` | sea | Solt (Salt) + Riba (river) |
 | `r255` | **Rrivar rrija** | `izani` | river | 192 | `246 -> -2118` | sea | rrija (ridge) + Rrivar (river) |
-| `r012` | **Hāk-Mā** | `eternian` | river | 187 | `2895 -> 73` | sea | Hāk (black-ink) + Mā (river) |
-| `r422` | **Wādī al-Dhahab** | `dasri` | wadi | 184 | `1417 -> -1939` | sea | al-Dhahab (gold-dust) + Wādī (wadi) |
+| `r012` | **Hōng-Mā** | `eternian` | river | 187 | `2895 -> 73` | sea | Hōng (vermilion) + Mā (river) |
+| `r422` | **Wādī al-Dhahab** | `dasri` | wadi | 184 | `1417 -> -1940` | sea | al-Dhahab (gold-dust) + Wādī (wadi) |
 | `r026` | **Pan Riba** | `dalab` | river | 180 | `3567 -> 8` | sea | Span River ('Pan Riba') — the mountain gorge river bridged by Span |
-| `r423` | **Wādī al-Milḥ** | `dasri` | wadi | 178 | `3049 -> -2298` | sea | al-Milḥ (salt-crust) + Wādī (wadi) |
+| `r423` | **Wādī al-Milḥ** | `dasri` | wadi | 178 | `3049 -> -2303` | sea | al-Milḥ (salt-crust) + Wādī (wadi) |
 | `r424` | **Waita Guli** | `yuni` | wadi | 178 | `2057 -> 454` | sea | Waita (White) + Guli (wadi) |
 | `r015` | **Waywater Fallhigh** | `yusar` | river | 177 | `3686 -> 52` | sea | Fallhigh (high-fall) + Waywater (river) |
 | `r008` | **Waywater Ashgrey** | `yusar` | river | 176 | `3699 -> 35` | sea | Ashgrey (grey-ash) + Waywater (river) |
@@ -81,7 +82,7 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | `r056` | **Rrivar Loña** | `izani` | river | 165 | `2087 -> -1492` | sea | long river |
 | `r429` | **Spindl Guli** | `yuni` | wadi | 164 | `1704 -> 305` | sea | Spindl (Spindle) + Guli (wadi) |
 | `r327` | **Grina Riba** | `yuni` | river | 162 | `3293 -> -2591` | the Bigga | Grina (Green) + Riba (river) |
-| `r014` | **Hōng-Mā** | `eternian` | river | 161 | `2296 -> 64` | sea | Hōng (vermilion) + Mā (river) |
+| `r014` | **Tsēng-Mā** | `eternian` | river | 161 | `2296 -> 64` | sea | Tsēng (celadon-green) + Mā (river) |
 | `r102` | **Rīfar al-Qaṣr** | `dasri` | river | 161 | `757 -> -2136` | sea | al-Qaṣr (butte-fortress) + Rīfar (river) |
 | `r867` | **Rīfar al-Layl** | `dasri` | river | 159 | `3240 -> 348` | sea | al-Layl (star-night) + Rīfar (river) |
 | `r359` | **Silba Riba** | `yuni` | river | 158 | `4392 -> -1968` | Braita Riba | Silba (Silver) + Riba (river) |
@@ -96,8 +97,8 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | `r098` | **Sīng-Hām** | `hum` | river | 151 | `3842 -> 677` | sea | Sīng (night-star) + Hām (river) |
 | `r179` | **Serin Riviri** | `scyvoi` | river | 150 | `284 -> -1413` | sea | Serin (cool-spring) + Riviri (river) |
 | `r452` | **Stara Guli** | `yuni` | wadi | 149 | `562 -> 218` | sea | Stara (Star) + Guli (wadi) |
-| `r132` | **Mō-Mā** | `eternian` | river | 148 | `3556 -> 614` | sea | Mō (ink-stone) + Mā (river) |
-| `r274` | **Waywater Stonered** | `yusar` | river | 148 | `4218 -> 68` | Dariba | Stonered (red-stone) + Waywater (river) |
+| `r132` | **Mō-Mā** | `eternian` | river | 148 | `4090 -> 614` | sea | Mō (ink-stone) + Mā (river) |
+| `r274` | **Waywater Stonered** | `yusar` | river | 148 | `4220 -> 68` | Dariba | Stonered (red-stone) + Waywater (river) |
 | `r461` | **Tōng-Gèl** | `hum` | wadi | 148 | `4979 -> 692` | sea | Tōng (east-gate) + Gèl (wadi) |
 | `r094` | **Spindl Riba** | `yuni` | river | 147 | `3995 -> -2317` | sea | Spindl (Spindle) + Riba (river) |
 | `r426` | **Swifta Guli** | `yuni` | wadi | 147 | `2313 -> 1488` | sea | Swifta (Swift) + Guli (wadi) |
@@ -117,15 +118,15 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | `r462` | **Mirage Wash** | `screamer` | wadi | 131 | `-586 -> -1873` | sea | Mirage (mirage) + Wash (wadi) |
 | `r023` | **Magos Rivros** | `talovolci` | river | 130 | `5028 -> -678` | sea | Magos (paramo-plain) + Rivros (river) |
 | `r039` | **Virosriba** | `vrivolci` | river | 130 | `4097 -> 52` | sea | Viros (true-giant) + Riba (river) |
-| `r427` | **katarak Guli** | `argot` | wadi | 130 | `3471 -> 11` | sea | katarak (cataract) + Guli (wadi) |
+| `r427` | **katarak Guli** | `argot` | wadi | 130 | `3416 -> 11` | sea | katarak (cataract) + Guli (wadi) |
 | `r325` | **Łání Baatar** | `riders` | river | 128 | `-113 -> -1490` | sea | Łání (many-falls) + Baatar (river) |
 | `r152` | **Waywater Coldkeep** | `yusar` | river | 127 | `3541 -> 38` | sea | Coldkeep (keep-cold) + Waywater (river) |
-| `r592` | **Ïstoon Quli** | `khaay` | wadi | 127 | `5317 -> 3484` | sea | Ïstoon (permafrost-stone) + Quli (wadi) |
+| `r592` | **Ïstoon Quli** | `khaay` | wadi | 127 | `5718 -> 3484` | sea | Ïstoon (permafrost-stone) + Quli (wadi) |
 | `r025` | **Rrivar Mista** | `izani` | river | 126 | `2277 -> -1479` | sea | Mista (mist) + Rrivar (river) |
-| `r227` | **Yūt-Mā** | `eternian` | river | 126 | `3958 -> 113` | sea | Yūt (moon-bridge) + Mā (river) |
+| `r227` | **Yūt-Mā** | `eternian` | river | 126 | `4006 -> 113` | sea | Yūt (moon-bridge) + Mā (river) |
 | `r036` | **Rrivar Grin** | `izani` | river | 125 | `579 -> -1485` | sea | green river |
 | `r228` | **Rīfar al-Kawkab** | `dasri` | river | 125 | `3224 -> -1630` | sea | al-Kawkab (falling-star) + Rīfar (river) |
-| `r468` | **Timba Guli** | `argot` | wadi | 125 | `4394 -> -37` | sea | Timba (drift-timber) + Guli (wadi) |
+| `r468` | **Timba Guli** | `argot` | wadi | 125 | `4445 -> -37` | sea | Timba (drift-timber) + Guli (wadi) |
 | `r042` | **Braita Riba** | `yuni` | river | 124 | `1473 -> -2383` | sea | Braita (Bright) + Riba (river) |
 | `r117` | **Waywater Sideout** | `yusar` | river | 124 | `3383 -> 280` | sea | Sideout (outside) + Waywater (river) |
 | `r261` | **Karuppu-āṟu** | `jimjam` | river | 124 | `657 -> 442` | sea | Karuppu (black-silt) + āṟu (river) |
@@ -135,7 +136,7 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | `r502` | **Wādī al-Sarāb** | `dasri` | wadi | 122 | `453 -> -12` | sea | al-Sarāb (mirage) + Wādī (wadi) |
 | `r352` | **K'etsaal Baatar** | `riders` | river | 113 | `-456 -> -1490` | Rrivar coper | Quetzal Water (K'etsaal Baatar) — the Beast Riders' river 11 km from Pinnacle Rock |
 | `r005` | **Chimes Riba** | `dalab` | river | 110 | `299 -> -1796` | sea | Chimes River ('Chimes Riba') — the Great Lake outlet gorge plunging past Chimes into the Rift |
-| `r260` | **Rīfar al-Bālm** | `dasri` | river | 106 | `-463 -> -810` | sea | palm stream |
+| `r260` | **Rīfar al-Bālm** | `dasri` | river | 106 | `-463 -> -813` | sea | palm stream |
 | `r185` | **Ràv Rìv** | `painted` | river | 105 | `1465 -> -852` | sea | Ràv (raven) + Rìv (river) — northern Danxia hogback river of the Painted Men |
 | `r028` | **Rrivar Falz** | `izani` | river | 100 | `1003 -> -1490` | sea | falls river |
 | `r863` | **Dip Rivrh** | `vothic` | river | 89 | `-1470 -> -2068` | sea | Deep River ('Dip Rivrh') — Almua's navigable harbour river |
@@ -146,7 +147,7 @@ Total named courses: **882** (`0` unnamed placeholders remaining).
 | `r070` | **Ālph** | `xanadui` | river | 59 | `-232 -> -1646` | sea | Ālph — the sacred river of Xanadu plunging into the sunless cavern sea |
 | `r072` | **Tors Rivrh** | `vothic` | river | 55 | `1921 -> -908` | sea | Torus river |
 | `r208` | **Òk Rìv** | `painted` | river | 48 | `-1013 -> -1589` | sea | Òk (ochre) + Rìv (river) — eastern Painted Canyon river draining toward Korona |
-| `r679` | **Blùd Gèl** | `painted` | wadi | 39 | `-1053 -> -1457` | sea | Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men |
+| `r679` | **Blùd Gèl** | `painted` | wadi | 39 | `-1051 -> -1459` | sea | Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men |
 | `r001` | **Dariba** | `dalab` | river | 38 | `34 -> -5` | sea | da riba ('the river') — mother river of the Dalab basin |
 | `r595` | **Bitir Gulusu** | `scyvoi` | wadi | 38 | `93 -> -15` | sea | bitter dry valley |
 | `r022` | **Vai Pou** | `islanderw` | river | 30 | `-1449 -> -1449` | sea | Pou (stone-pillar) + Vai (river) — western Ring Isle & Arch stream |

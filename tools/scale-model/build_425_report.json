@@ -9,39 +9,42 @@
   },
   "auto_moved_settlements": [
     {
-      "name": "Flooded Tower",
+      "name": "Hub 01",
       "from_px": [
-        1032,
-        842
+        1344,
+        1409
       ],
       "to_px": [
-        1031,
-        840
+        1344,
+        1409
       ],
-      "move_km": 4.5,
-      "reason": "submerged",
-      "elev_m": -1501.7,
-      "climate": "XA"
+      "move_km": 0.0,
+      "reason": "elev_delta=1054m",
+      "elev_m": 4350.6,
+      "climate": "ET"
     }
   ],
   "worse_problems": [],
   "settlements_total": 117,
   "regions_total": 111,
-  "rivers_total": 882,
+  "rivers_total": 883,
   "river_tongue_counts": {
+    "islander": 3,
     "dalab": 41,
     "republic": 17,
     "yuni": 104,
-    "izani": 81,
+    "islanderw": 1,
+    "izani": 80,
     "vothic": 32,
     "xanadui": 31,
-    "riders": 8,
+    "riders": 5,
+    "painted": 4,
     "dasri": 93,
     "scyvoi": 7,
+    "tungang": 82,
     "eternian": 72,
-    "hum": 90,
+    "hum": 87,
     "khaay": 19,
-    "tungang": 81,
     "vrivolci": 30,
     "yusar": 56,
     "jimjam": 16,
@@ -51,7 +54,7 @@
     "hykkousik": 2,
     "tabist": 10,
     "farside": 37,
-    "zeijani": 4,
+    "zeijani": 3,
     "heiland": 6
   },
   "tubes_total": 10,
@@ -175,12 +178,12 @@
         766,
         404
       ],
-      "elev_m": 768.5,
+      "elev_m": 770.9,
       "old_elev_m": 768.5,
       "wet": false,
       "climate": "BSh",
       "old_climate": "BSh",
-      "slope_m_km": 24.1
+      "slope_m_km": 24.3
     },
     {
       "name": "Carcosa",
@@ -217,7 +220,7 @@
         468,
         1392
       ],
-      "elev_m": 265.2,
+      "elev_m": 265.3,
       "old_elev_m": 265.3,
       "wet": false,
       "climate": "Csa",
@@ -264,7 +267,7 @@
       "wet": false,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 22.4
+      "slope_m_km": 23.3
     },
     {
       "name": "Cthonos",
@@ -399,26 +402,26 @@
         299,
         590
       ],
-      "elev_m": 359.2,
+      "elev_m": 732.1,
       "old_elev_m": 359.2,
       "wet": false,
       "climate": "Af",
       "old_climate": "Af",
-      "slope_m_km": 29.7
+      "slope_m_km": 34.6
     },
     {
       "name": "Flooded Tower",
       "type": "ruined arcology",
       "px": [
-        1031,
+        1028,
         840
       ],
-      "elev_m": -1501.7,
-      "old_elev_m": -1715.3,
+      "elev_m": -1512.5,
+      "old_elev_m": -1489.4,
       "wet": true,
       "climate": "XA",
-      "old_climate": "WS",
-      "slope_m_km": 51.2
+      "old_climate": "XA",
+      "slope_m_km": 0.0
     },
     {
       "name": "Footfall",
@@ -539,12 +542,12 @@
         1276,
         639
       ],
-      "elev_m": -593.3,
+      "elev_m": -592.5,
       "old_elev_m": -623.2,
       "wet": false,
       "climate": "Aw",
       "old_climate": "Aw",
-      "slope_m_km": 141.9
+      "slope_m_km": 141.5
     },
     {
       "name": "Gila",
@@ -637,12 +640,12 @@
         1344,
         1409
       ],
-      "elev_m": 3297.0,
+      "elev_m": 4350.6,
       "old_elev_m": 3297.0,
       "wet": false,
-      "climate": "Dwc",
+      "climate": "ET",
       "old_climate": "Dwc",
-      "slope_m_km": 61.6
+      "slope_m_km": 22.8
     },
     {
       "name": "Iziz",
@@ -735,12 +738,12 @@
         490,
         554
       ],
-      "elev_m": 4503.0,
+      "elev_m": 4487.8,
       "old_elev_m": 4503.0,
       "wet": false,
       "climate": "Dsc",
       "old_climate": "Dsc",
-      "slope_m_km": 5.5
+      "slope_m_km": 7.9
     },
     {
       "name": "Lipp",
@@ -847,12 +850,12 @@
         350,
         726
       ],
-      "elev_m": 3074.9,
+      "elev_m": 3088.3,
       "old_elev_m": 3074.9,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 124.7
+      "slope_m_km": 119.0
     },
     {
       "name": "Mungo",
@@ -1015,12 +1018,12 @@
         918,
         698
       ],
-      "elev_m": -1452.2,
+      "elev_m": -1453.3,
       "old_elev_m": -1397.8,
       "wet": false,
       "climate": "Aw",
       "old_climate": "XV",
-      "slope_m_km": 22.0
+      "slope_m_km": 22.3
     },
     {
       "name": "Port Visas",
@@ -1076,7 +1079,7 @@
       "wet": true,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 4.2
+      "slope_m_km": 4.3
     },
     {
       "name": "Roketstad",
@@ -1155,12 +1158,12 @@
         902,
         659
       ],
-      "elev_m": -1239.7,
+      "elev_m": -1239.8,
       "old_elev_m": -1236.4,
       "wet": false,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 53.0
+      "slope_m_km": 52.9
     },
     {
       "name": "Shim",
@@ -1351,12 +1354,12 @@
         1408,
         414
       ],
-      "elev_m": 7730.6,
+      "elev_m": 7795.0,
       "old_elev_m": 7730.6,
       "wet": false,
       "climate": "HF",
       "old_climate": "HF",
-      "slope_m_km": 30.0
+      "slope_m_km": 36.1
     },
     {
       "name": "The Tubes",
