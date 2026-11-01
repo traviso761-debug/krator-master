@@ -119,20 +119,20 @@ def _sculpt_outlands_and_tiers(Eo, whas, wlev, regs_list, px, py, rivers_list, s
         min_floor = np.where(py > 345.0, 740.0, 2265.0)
         h_gfloor = np.maximum(Eo_smooth_out - 410.0 + 25.0 * _norm_gauss(rs, (VH, VW), 1.8), min_floor)
 
-        # Basalt-capped mesa steps along graben shoulders (+180 m flat-topped caprock ledges)
-        mesa_pat = np.sin(px * 0.55 + py * 0.42) * np.cos(px * 0.38 - py * 0.61)
-        dh_gwall = w_gwall * (165.0 * G.sstep(0.15, 0.55, mesa_pat))
+        # Basalt-capped mesa steps along graben shoulders (+165 m flat-topped caprock ledges)
+        mesa_pat = 0.65 * _norm_gauss(rs, (VH, VW), 5.0) + 0.35 * _norm_gauss(rs, (VH, VW), 2.5)
+        dh_gwall = w_gwall * (150.0 * G.sstep(0.10, 0.55, mesa_pat))
 
         # Inselberg granite domes & tors on the N Outlands steppe plains (`px 1250..1390, py 120..260`)
         w_nplains = mask_nout & (Eo > 2400.0) & (Eo < 4300.0)
-        tor_field = np.clip(_norm_gauss(rs, (VH, VW), 1.4) - 1.15, 0.0, 2.0)
-        dh_tors = np.where(w_nplains, 145.0 * (tor_field ** 1.25), 0.0)
+        tor_field = np.clip(_norm_gauss(rs, (VH, VW), 2.8) - 1.15, 0.0, 2.0)
+        dh_tors = np.where(w_nplains, 125.0 * (tor_field ** 1.25), 0.0)
 
         # Gem Hills (`S4`, around `px 1352, py 391`): copper-stained mesas, fins, and stepped open-cast benches
         r_gem_km = np.hypot((px - 1352.0) * 2.0, (py - 391.0) * 2.0)
         w_gem = (1.0 - G.sstep(16.0, 32.0, r_gem_km)) * mask_sout
-        fin_wave = np.abs(np.sin((px - 1352.0) * 0.85 - (py - 391.0) * 0.55))
-        dh_gem = w_gem * (190.0 * G.sstep(0.45, 0.78, fin_wave) - 65.0 * (1.0 - G.sstep(0.20, 0.45, fin_wave)))
+        fin_wave = 1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.6))
+        dh_gem = w_gem * (155.0 * G.sstep(0.48, 0.78, fin_wave) - 55.0 * (1.0 - G.sstep(0.22, 0.48, fin_wave)))
 
         # Wadis across Outlands: incise shallow braided channels (-55 m) along dry valleys
         out_wadis = [
@@ -238,11 +238,8 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
 
         # Streamlined teardrop Palouse loess islands (*Steamboat Rock* mesas, +75 m) on interfluves (`d_coulee` 3.8..7.5 px)
         w_interfluve = G.sstep(3.5, 4.8, d_coulee) * (1.0 - G.sstep(7.2, 9.8, d_coulee))
-        # Elongated NE-SW streamlined wave
-        u_flow = (px * 0.62 + py * 0.78)
-        v_cross = (px * 0.78 - py * 0.62)
-        loess_isl = np.clip(np.sin(u_flow * 0.32) * np.cos(v_cross * 0.75), 0.0, 1.0)
-        dh_loess = w_interfluve * (82.0 * (loess_isl ** 0.85))
+        loess_isl = np.clip(0.5 + 0.42 * _norm_gauss(rs, (VH, VW), 4.5), 0.0, 1.0)
+        dh_loess = w_interfluve * (72.0 * (loess_isl ** 0.85))
 
         dh_scab = -w_coulee_box * (coulee_depth + cat_plunge) + dh_loess
         En = En + w_scab * dh_scab
@@ -272,7 +269,7 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
             (mask_dam1 & (En > 585.0) & (En < 755.0))
             | (mask_dam2 & (En > 765.0) & (En < 890.0))
         ) * w_dams
-        yardang_r = 14.0 * np.sin((px * 0.82 - py * 0.57) * 1.1)
+        yardang_r = 10.0 * _norm_gauss(rs, (VH, VW), 3.5)
         En = np.where(w_floor_d > 0.01, En * (1.0 - 0.65 * w_floor_d) + (Eo_dam_s + yardang_r) * (0.65 * w_floor_d), En)
 
     # --- 2C. NW Lowlands (`NW lowlands`): +834 m Lake Lewis Rhythmite Bench & +435..+465 m Pantanal Plain ---
@@ -289,7 +286,7 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
         # Pantanal seasonal wetland plain (+435..+465 m around Lake Jimjam +433 m) with +8 m *cordilheira* sand strings
         w_pantanal = G.sstep(434.0, 440.0, En) * (1.0 - G.sstep(475.0, 520.0, En)) * w_nw
         Eo_pan_s = np.clip(nd.gaussian_filter(En, sigma=5.0), 436.0, 468.0)
-        cordilheira = 8.5 * np.clip(np.sin(px * 0.65 + py * 0.48) * np.cos(px * 0.35 - py * 0.72), -0.4, 1.0)
+        cordilheira = 6.5 * np.clip(_norm_gauss(rs, (VH, VW), 4.2), -0.4, 1.0)
         En = En * (1.0 - 0.72 * w_pantanal) + (Eo_pan_s + cordilheira) * (0.72 * w_pantanal)
 
     # --- 2D. SW Lowlands & Ancient's Valley: Bayou Shelf, 7 Cataclysm Blast Craters, & Causeway Earthworks ---
@@ -301,7 +298,7 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
 
         # Bayou coastal shelf within +18..+65 m of the +17 m western lake in `SW lowlands`
         w_bayou = mask_swlow * G.sstep(18.0, 24.0, En) * (1.0 - G.sstep(55.0, 95.0, En)) * w_sw
-        oxbow_tex = 4.5 * np.sin(px * 0.75 + py * 0.55 + 1.5 * _norm_gauss(rs, (VH, VW), 2.0))
+        oxbow_tex = 3.5 * _norm_gauss(rs, (VH, VW), 3.8)
         bayou_target = 24.0 + 0.25 * (En - 24.0) + oxbow_tex
         En = En * (1.0 - 0.70 * w_bayou) + np.maximum(bayou_target, 19.5) * (0.70 * w_bayou)
 
@@ -351,10 +348,10 @@ def _sculpt_nw_sw_basins_and_walls(Eo, whas, wlev, regs_list, px, py, rivers_lis
             w_b = np.exp(-((de / b_width) ** 2)) * w_yw
             En = En - w_b * (0.55 * de)
 
-        # 18 shallow circular thermokarst *alas* depressions (`D = 4..8 km`, `-35..-65 m`) on the +4,600..+5,500 m bench
+        # Shallow thermokarst *alas* depressions (`-35..-55 m`) on the +4,600..+5,500 m bench
         w_alas_belt = G.sstep(4450.0, 4750.0, En) * (1.0 - G.sstep(5450.0, 5800.0, En)) * w_yw
-        alas_grid = np.sin(px * 0.72 + py * 0.35) * np.cos(px * 0.38 - py * 0.74)
-        alas_pits = -58.0 * (np.clip(alas_grid - 0.42, 0.0, 0.58) / 0.58) ** 1.35
+        alas_field = 0.65 * _norm_gauss(rs, (VH, VW), 4.5) + 0.35 * _norm_gauss(rs, (VH, VW), 2.4)
+        alas_pits = -48.0 * (np.clip(alas_field - 0.65, 0.0, 1.0) ** 1.35)
         En = En + w_alas_belt * alas_pits
 
     if mask_far.any():
@@ -404,17 +401,14 @@ def _sculpt_eastern_deserts_and_painted(Eo, whas, wlev, regs_list, px, py, river
         d_seriv = _polyline_dist_px(px, py, se_rivs, bbox_pad=14.0)
         w_se_wadi = 1.0 - G.sstep(0.9, 2.8, d_seriv)
 
-        # Monument-Valley flat-topped sandstone mesas & spire-buttes (+130 to +240 m caprock tables)
+        # Monument-Valley flat-topped sandstone mesas & spire-buttes (+130 to +210 m caprock tables)
         # across the +150 to +1,650 m desert plateau, suppressed inside wadi canyons
-        wx = 1.8 * _norm_gauss(rs, (VH, VW), 2.4)
-        wy = 1.8 * _norm_gauss(rs, (VH, VW), 2.4)
-        m_cell = np.sin((px + wx) * 0.48 + (py + wy) * 0.36) * np.cos((px + wx) * 0.34 - (py + wy) * 0.52)
-        m_sub = np.sin((px - wx) * 0.85 - (py + wy) * 0.65)
-        mesa_raw = 0.68 * np.abs(m_cell) + 0.32 * np.abs(m_sub)
-        # Steep talus riser between 0.52 and 0.68, flat caprock table above 0.68
-        w_mesa_cap = G.sstep(0.52, 0.68, mesa_raw) * (1.0 - w_se_wadi)
-        w_pediment = (1.0 - G.sstep(0.35, 0.52, mesa_raw)) * (1.0 - w_se_wadi)
-        dh_mesas = 195.0 * w_mesa_cap - 38.0 * w_pediment
+        mesa_fbm = 0.65 * _norm_gauss(rs, (VH, VW), 5.2) + 0.35 * _norm_gauss(rs, (VH, VW), 2.6)
+        mesa_raw = np.clip(0.5 + 0.45 * mesa_fbm, 0.0, 1.0)
+        # Steep talus riser between 0.55 and 0.72, flat caprock table above 0.72
+        w_mesa_cap = G.sstep(0.55, 0.72, mesa_raw) * (1.0 - w_se_wadi)
+        w_pediment = (1.0 - G.sstep(0.35, 0.55, mesa_raw)) * (1.0 - w_se_wadi)
+        dh_mesas = 165.0 * w_mesa_cap - 32.0 * w_pediment
 
         # Sharpen the eastern cataract cliff scarp along the East Abyss rim (`px 918..958, py 360..690`)
         w_rim_edge = (
@@ -443,19 +437,17 @@ def _sculpt_eastern_deserts_and_painted(Eo, whas, wlev, regs_list, px, py, river
             f_target = f_elev + 0.25 * de
             h_eb_stair = h_eb_stair * (1.0 - 0.62 * w_f) + f_target * (0.62 * w_f)
 
-        # High-frequency dendritic badland gully & hoodoo dissection in the dry BSh/BSk belt (< 2,850 m)
+        # Dendritic badland gully dissection in the dry BSh/BSk belt (< 2,850 m) using non-periodic ridged noise
         w_badland_belt = (1.0 - G.sstep(2500.0, 3100.0, En)) * mask_ebad
-        gully1 = np.abs(np.sin(px * 1.25 + py * 0.95 + 1.4 * _norm_gauss(rs, (VH, VW), 1.5)))
-        gully2 = np.abs(np.cos(px * 0.88 - py * 1.32 + 1.4 * _norm_gauss(rs, (VH, VW), 1.5)))
-        badland_cut = -95.0 * (1.0 - G.sstep(0.12, 0.45, 0.55 * gully1 + 0.45 * gully2))
+        gully_r = 0.6 * np.abs(_norm_gauss(rs, (VH, VW), 2.2)) + 0.4 * np.abs(_norm_gauss(rs, (VH, VW), 4.0))
+        badland_cut = -72.0 * (1.0 - G.sstep(0.15, 0.55, gully_r))
 
         # Yuni Valley (`px 953..1022, py 729..794`): graded alluvial floor + terraced agricultural canyon-wall benches
         yuni_axis = [(1016.0, 778.0), (995.0, 766.0), (977.0, 756.0), (958.0, 742.0)]
         d_yuni_ax = _polyline_dist_px(px, py, [yuni_axis], bbox_pad=16.0)
         w_yuni_floor = (1.0 - G.sstep(1.2, 3.2, d_yuni_ax)) * mask_yuni
         w_yuni_terr = G.sstep(2.5, 4.2, d_yuni_ax) * (1.0 - G.sstep(7.5, 11.0, d_yuni_ax)) * mask_yuni
-        # Terraced canyon-wall agricultural steps every 80 m
-        terr_step = 42.0 * np.sin(En * (2.0 * math.pi / 120.0))
+        terr_step = 28.0 * _norm_gauss(rs, (VH, VW), 3.2)
 
         En_eb_new = (
             h_eb_stair

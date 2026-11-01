@@ -111,28 +111,22 @@ def _sculpt_k_guilin(Eo, whas, wlev, mask_kg, px, py, rivers_list, sett_guard, r
     d_water = nd.distance_transform_edt(~(whas & mask_kg))
     w_land = G.sstep(1.2, 3.8, d_water) * (~whas)
 
-    # Multi-scale domain-warped cellular/ridged karst field at 6-14 km (`sigma = 1.3, 2.4, 4.2 px`)
-    wx = 2.4 * _norm_gauss(rs, (VH, VW), 2.8) + 1.2 * _norm_gauss(rs, (VH, VW), 1.4)
-    wy = 2.4 * _norm_gauss(rs, (VH, VW), 2.8) + 1.2 * _norm_gauss(rs, (VH, VW), 1.4)
-    xw = px + wx
-    yw = py + wy
+    # Multi-scale domain-warped cellular/ridged karst field at 6-14 km (`sigma = 2.0, 4.0, 7.5 px`)
+    r_k1 = 1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.2))
+    r_k2 = 1.0 - np.abs(_norm_gauss(rs, (VH, VW), 4.2))
+    r_k3 = np.clip(0.5 + 0.35 * _norm_gauss(rs, (VH, VW), 6.5), 0.0, 1.0)
+    karst_raw = np.clip(0.45 * r_k1 + 0.35 * r_k2 + 0.20 * r_k3, 0.0, 1.0)
 
-    # Cellular cone-karst basis: sharp positive peaks (*fengcong* cones) separated by flat *polje* troughs
-    c1 = np.sin(xw * 0.62 + yw * 0.48) * np.cos(xw * 0.44 - yw * 0.66)
-    c2 = np.sin(xw * 0.95 - yw * 0.72 + 1.1) * np.cos(xw * 0.78 + yw * 0.88 - 0.7)
-    c3 = 1.0 - np.abs(_norm_gauss(rs, (VH, VW), 1.35))
-    karst_raw = 0.46 * np.abs(c1) + 0.34 * np.abs(c2) + 0.20 * np.clip(c3, 0.0, 1.0)
-
-    # Steep-walled *fengcong* cluster plinths (+240..+420 m where karst_raw > 0.42)
-    plinth_mask = G.sstep(0.35, 0.66, karst_raw)
-    cone_peaks = (np.clip((karst_raw - 0.33) / 0.67, 0.0, 1.0) ** 1.32) * 425.0
-    flat_top_trim = 45.0 * G.sstep(0.78, 0.96, karst_raw)
-    h_fengcong = plinth_mask * (125.0 + cone_peaks - flat_top_trim)
+    # Steep-walled *fengcong* cluster plinths (+180..+320 m where karst_raw > 0.48)
+    plinth_mask = G.sstep(0.42, 0.72, karst_raw)
+    cone_peaks = (np.clip((karst_raw - 0.40) / 0.60, 0.0, 1.0) ** 1.35) * 310.0
+    flat_top_trim = 35.0 * G.sstep(0.80, 0.96, karst_raw)
+    h_fengcong = plinth_mask * (95.0 + cone_peaks - flat_top_trim)
 
     # Flat-floored *polje* dissolution valleys between the *fengcong* clusters
-    polje_mask = (1.0 - G.sstep(0.22, 0.44, karst_raw))
+    polje_mask = (1.0 - G.sstep(0.24, 0.46, karst_raw))
     Eo_smooth = nd.gaussian_filter(Eo, sigma=4.5)
-    polje_floor = np.maximum(Eo_smooth - 115.0, -1465.0)
+    polje_floor = np.maximum(Eo_smooth - 95.0, -1465.0)
     dh_polje = polje_mask * (polje_floor - Eo)
 
     # Incised Damao-Kultobe / Scyvoi wadi courses (Sivift, Bilak, Filem, Borun Gulusu + SE axial trunk)
@@ -148,15 +142,12 @@ def _sculpt_k_guilin(Eo, whas, wlev, mask_kg, px, py, rivers_list, sett_guard, r
 
     d_riv = _polyline_dist_px(px, py, kg_rivers, bbox_pad=16.0)
     w_riv_trough = 1.0 - G.sstep(1.2, 4.2, d_riv)
-    riv_target = np.maximum(Eo_smooth - 135.0, -1482.0)
+    riv_target = np.maximum(Eo_smooth - 125.0, -1482.0)
     dh_riv = w_riv_trough * (riv_target - Eo)
 
     # Western / NW Shilin Stone-Forest structural bench (`px < 438`) stepping up toward Crater Drylands
     w_shilin = (1.0 - G.sstep(422.0, 442.0, px)) * G.sstep(382.0, 438.0, py)
-    shilin_steps = (
-        95.0 * G.sstep(0.25, 0.55, np.sin((px - 415.0) * 0.35 + (py - 390.0) * 0.22))
-        + 110.0 * np.abs(np.sin(xw * 1.15 - yw * 0.95))
-    )
+    shilin_steps = 85.0 * G.sstep(-0.2, 0.5, _norm_gauss(rs, (VH, VW), 3.5)) + 65.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.0)))
     dh_shilin = w_shilin * shilin_steps
 
     # Combine: suppress fengcong cones inside river troughs and poljes, protect Trigon (450, 410) & station (444.5, 414.5)
@@ -250,27 +241,25 @@ def _sculpt_sw_highlands(Eo, whas, wlev, mask_sw, px, py, rivers_list, sett_guar
         G.sstep(245.0, 256.0, px) * (1.0 - G.sstep(282.0, 296.0, px))
         * G.sstep(590.0, 605.0, py) * (1.0 - G.sstep(668.0, 682.0, py))
     )
-    chute_tex = 135.0 * np.sin(d_west_km * 0.45 + s_along_km * 0.85) * _norm_gauss(rs, (VH, VW), 1.1)
+    chute_tex = 55.0 * _norm_gauss(rs, (VH, VW), 2.5) * _norm_gauss(rs, (VH, VW), 1.4)
 
     # 3. Span's +2,650 m Sandstone Tableland (`(282, 680)`), Pillar Rim, & Pan Riba's 480 m Kaieteur Gorge
-    dx_span_km = (px - 284.0) * 2.0
-    dy_span_km = (py - 682.0) * 2.0
-    r_span_km = np.hypot(dx_span_km * 0.92, dy_span_km * 1.08) + 2.6 * np.sin(np.arctan2(dy_span_km, dx_span_km) * 3.0)
-    w_table = 1.0 - G.sstep(18.0, 31.0, r_span_km)
+    dx_span_km = (px - 284.0) * 2.0 + 3.5 * _norm_gauss(rs, (VH, VW), 3.0)
+    dy_span_km = (py - 682.0) * 2.0 + 3.5 * _norm_gauss(rs, (VH, VW), 3.0)
+    r_span_km = np.hypot(dx_span_km * 0.92, dy_span_km * 1.08)
+    w_table = 1.0 - G.sstep(12.0, 32.0, r_span_km)
 
-    # Flat-bedded quartz sandstone tableland at ~+2,650 m stepped with pagoda domes (+90 m) and joint slots (-160 m)
-    joint_u = np.sin((px - 282.0) * 0.88 + (py - 680.0) * 0.24)
-    joint_v = np.cos((px - 282.0) * 0.24 - (py - 680.0) * 0.88)
-    slot_grid = np.exp(-((joint_u / 0.18) ** 2)) + np.exp(-((joint_v / 0.18) ** 2))
-    pagoda_domes = 95.0 * np.clip(joint_u * joint_v, 0.0, 1.0)
-    h_span_table = 2650.0 + 0.18 * (Eo - 2550.0) + pagoda_domes - 165.0 * np.clip(slot_grid, 0.0, 1.0)
+    # Flat-bedded quartz sandstone tableland at ~+2,650 m with organic sandstone domes (+65 m) and canyon slots (-90 m)
+    span_fbm = _norm_gauss(rs, (VH, VW), 2.8)
+    span_ridge = np.clip(1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.2)), 0.0, 1.0)
+    h_span_table = 2650.0 + 0.35 * (Eo - 2550.0) + 65.0 * np.clip(span_fbm, 0.0, 1.5) - 75.0 * (1.0 - span_ridge)
 
-    # Dissected Pillar Rim (`r_span_km` 16..28 km on the west & south sides: 250-300 m free-standing sandstone towers)
+    # Dissected Pillar Rim (`r_span_km` 14..28 km on the west & south sides)
     w_pillar_rim = (
-        G.sstep(14.0, 19.0, r_span_km) * (1.0 - G.sstep(25.0, 31.0, r_span_km))
+        G.sstep(13.0, 19.0, r_span_km) * (1.0 - G.sstep(24.0, 32.0, r_span_km))
         * G.sstep(-12.0, 6.0, -dx_span_km + 0.6 * dy_span_km)
     )
-    pillar_spires = 275.0 * (np.abs(joint_u * joint_v) ** 0.65) - 140.0 * (1.0 - np.abs(joint_u * joint_v))
+    pillar_spires = 135.0 * (span_ridge ** 1.3) - 65.0 * (1.0 - span_ridge)
     h_span_table = h_span_table + w_pillar_rim * pillar_spires
 
     # Pan Riba's 480 m deep Kaieteur-style slot canyon & plunge amphitheatre cutting across Span's tableland
@@ -483,10 +472,10 @@ def _sculpt_w_outer_wall(Eo, whas, wlev, mask_wow, px, py, rivers_list, sett_gua
 
     # 3. Lower Loess *Yuan* Tablelands, *Liang* Ridges, & Amphitheatre-Headed Box Canyons (`3,000-4,250 m`, `u_wall < 0.34`)
     w_loess_zone = (1.0 - G.sstep(0.24, 0.38, u_wall)) * G.sstep(2850.0, 3250.0, Eo_low)
-    # Stepped flat-topped loess *yuan* tableland benches (+110 m) separated by sheer-walled gullies (-145 m)
-    yuan_field = np.sin(px * 0.42 + py * 0.28) * np.cos(px * 0.26 - py * 0.46)
-    w_yuan_top = G.sstep(-0.15, 0.25, yuan_field)
-    dh_loess = w_loess_zone * (115.0 * w_yuan_top - 135.0 * (1.0 - w_yuan_top))
+    # Broad, organic loess tableland benches separated by natural dendritic valleys (NO periodic sin*cos dots!)
+    yuan_fbm = 0.65 * _norm_gauss(rs, (VH, VW), 6.0) + 0.35 * _norm_gauss(rs, (VH, VW), 3.0)
+    w_yuan_top = G.sstep(-0.25, 0.35, yuan_fbm)
+    dh_loess = w_loess_zone * (75.0 * w_yuan_top - 85.0 * (1.0 - w_yuan_top))
 
     # Carve amphitheatre-headed box canyons along all ~30 eastward streams & wadis crossing the eastern edge
     wow_rivers = []
@@ -714,12 +703,12 @@ def _sculpt_korona_ne(Eo, whas, wlev, mask_kor, regs_list, px, py, sett_guard, r
     # 4. High Cold NE Hoar Tables (`Eo > 3,000 m`, `biomes/korona/NOTES.md` 'Station 6, the hoar table'):
     # Flat-topped frost-shattered high tepuis (+3,500..+4,800 m) cut by wind-scoured yardang corridors
     w_hoar = G.sstep(2950.0, 3550.0, Eo_regional) * (1.0 - G.sstep(5400.0, 6200.0, Eo_regional))
-    hoar_quilt = np.sin((px + wx_k * 0.5) * 0.22) * np.cos((py + wy_k * 0.5) * 0.22)
-    w_hoar_table = G.sstep(-0.10, 0.28, hoar_quilt)
+    hoar_quilt = 0.65 * _norm_gauss(rs, (VH, VW), 5.5) + 0.35 * _norm_gauss(rs, (VH, VW), 2.8)
+    w_hoar_table = G.sstep(-0.15, 0.30, hoar_quilt)
     hoar_flat = np.round(Eo_regional / 380.0) * 380.0
     dh_hoar = w_hoar * (
         w_hoar_table * (hoar_flat + 140.0 - Eo) * 0.60
-        - (1.0 - w_hoar_table) * 210.0
+        - (1.0 - w_hoar_table) * 180.0
     )
 
     # Protect Korona's key station sites so their exact documented station geometry is preserved/enhanced:

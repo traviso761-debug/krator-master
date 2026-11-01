@@ -9,6 +9,21 @@
   },
   "auto_moved_settlements": [
     {
+      "name": "Farport",
+      "from_px": [
+        299,
+        590
+      ],
+      "to_px": [
+        298,
+        589
+      ],
+      "move_km": 2.8,
+      "reason": "elev_delta=453m",
+      "elev_m": 441.0,
+      "climate": "Af"
+    },
+    {
       "name": "Hub 01",
       "from_px": [
         1344,
@@ -19,8 +34,8 @@
         1409
       ],
       "move_km": 0.0,
-      "reason": "elev_delta=1054m",
-      "elev_m": 4350.6,
+      "reason": "elev_delta=1029m",
+      "elev_m": 4325.8,
       "climate": "ET"
     }
   ],
@@ -183,7 +198,7 @@
       "wet": false,
       "climate": "BSh",
       "old_climate": "BSh",
-      "slope_m_km": 24.3
+      "slope_m_km": 24.5
     },
     {
       "name": "Carcosa",
@@ -211,7 +226,7 @@
       "wet": false,
       "climate": "Cfb",
       "old_climate": "Cfb",
-      "slope_m_km": 14.0
+      "slope_m_km": 15.1
     },
     {
       "name": "Chimes",
@@ -220,12 +235,12 @@
         468,
         1392
       ],
-      "elev_m": 265.3,
+      "elev_m": 264.3,
       "old_elev_m": 265.3,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 224.4
+      "slope_m_km": 148.7
     },
     {
       "name": "Corpus",
@@ -234,12 +249,12 @@
         520,
         693
       ],
-      "elev_m": 620.9,
+      "elev_m": 598.9,
       "old_elev_m": 620.9,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 57.3
+      "slope_m_km": 63.8
     },
     {
       "name": "Coyote Canyon",
@@ -253,7 +268,7 @@
       "wet": false,
       "climate": "BSh",
       "old_climate": "BSh",
-      "slope_m_km": 246.0
+      "slope_m_km": 197.6
     },
     {
       "name": "Crescent",
@@ -374,12 +389,12 @@
         673,
         932
       ],
-      "elev_m": -776.2,
+      "elev_m": -776.9,
       "old_elev_m": -776.2,
       "wet": false,
       "climate": "Af",
       "old_climate": "Af",
-      "slope_m_km": 56.6
+      "slope_m_km": 59.5
     },
     {
       "name": "Erehwon",
@@ -399,15 +414,15 @@
       "name": "Farport",
       "type": "city",
       "px": [
-        299,
-        590
+        298,
+        589
       ],
-      "elev_m": 732.1,
+      "elev_m": 441.0,
       "old_elev_m": 359.2,
       "wet": false,
       "climate": "Af",
       "old_climate": "Af",
-      "slope_m_km": 34.6
+      "slope_m_km": 81.9
     },
     {
       "name": "Flooded Tower",
@@ -430,12 +445,12 @@
         560,
         767
       ],
-      "elev_m": 3103.5,
+      "elev_m": 3055.7,
       "old_elev_m": 3103.5,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 22.1
+      "slope_m_km": 31.8
     },
     {
       "name": "Fort Ebon",
@@ -486,12 +501,12 @@
         1060,
         831
       ],
-      "elev_m": -1151.1,
+      "elev_m": -1152.2,
       "old_elev_m": -1151.1,
       "wet": false,
       "climate": "XV",
       "old_climate": "XV",
-      "slope_m_km": 17.4
+      "slope_m_km": 17.7
     },
     {
       "name": "Fort Vaklu",
@@ -570,12 +585,12 @@
         1039,
         869
       ],
-      "elev_m": -1378.6,
+      "elev_m": -1424.6,
       "old_elev_m": -1378.6,
       "wet": false,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 17.8
+      "slope_m_km": 21.2
     },
     {
       "name": "Glaive",
@@ -584,12 +599,12 @@
         599,
         734
       ],
-      "elev_m": 3146.6,
+      "elev_m": 3095.4,
       "old_elev_m": 3146.6,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 55.6
+      "slope_m_km": 77.3
     },
     {
       "name": "Henge",
@@ -617,7 +632,7 @@
       "wet": false,
       "climate": "XV",
       "old_climate": "XV",
-      "slope_m_km": 3.1
+      "slope_m_km": 3.2
     },
     {
       "name": "Hook",
@@ -640,12 +655,12 @@
         1344,
         1409
       ],
-      "elev_m": 4350.6,
+      "elev_m": 4325.8,
       "old_elev_m": 3297.0,
       "wet": false,
       "climate": "ET",
       "old_climate": "Dwc",
-      "slope_m_km": 22.8
+      "slope_m_km": 13.7
     },
     {
       "name": "Iziz",
@@ -729,7 +744,7 @@
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 334.8
+      "slope_m_km": 309.5
     },
     {
       "name": "Leng",
@@ -738,12 +753,12 @@
         490,
         554
       ],
-      "elev_m": 4487.8,
+      "elev_m": 4488.5,
       "old_elev_m": 4503.0,
       "wet": false,
       "climate": "Dsc",
       "old_climate": "Dsc",
-      "slope_m_km": 7.9
+      "slope_m_km": 8.0
     },
     {
       "name": "Lipp",
@@ -766,7 +781,7 @@
         1267,
         1043
       ],
-      "elev_m": -1549.1,
+      "elev_m": -1705.8,
       "old_elev_m": -1549.1,
       "wet": false,
       "climate": "XA",
@@ -799,7 +814,7 @@
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 13.3
+      "slope_m_km": 10.1
     },
     {
       "name": "Lux",
@@ -850,12 +865,12 @@
         350,
         726
       ],
-      "elev_m": 3088.3,
+      "elev_m": 3088.5,
       "old_elev_m": 3074.9,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 119.0
+      "slope_m_km": 65.9
     },
     {
       "name": "Mungo",
@@ -869,7 +884,7 @@
       "wet": true,
       "climate": "WX",
       "old_climate": "WX",
-      "slope_m_km": 88.9
+      "slope_m_km": 2.8
     },
     {
       "name": "Nazar",
@@ -923,7 +938,7 @@
       "elev_m": -1492.0,
       "old_elev_m": -193.6,
       "wet": false,
-      "climate": "XS",
+      "climate": "XV",
       "old_climate": "BWh",
       "slope_m_km": 26.9
     },
@@ -939,7 +954,7 @@
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 15.9
+      "slope_m_km": 16.0
     },
     {
       "name": "Nusidi",
@@ -1200,12 +1215,12 @@
         554,
         1010
       ],
-      "elev_m": 2545.6,
+      "elev_m": 2523.4,
       "old_elev_m": 2545.6,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 68.6
+      "slope_m_km": 33.3
     },
     {
       "name": "Spirladunon",
@@ -1303,7 +1318,7 @@
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 8.5
+      "slope_m_km": 8.7
     },
     {
       "name": "Talon",
@@ -1317,7 +1332,7 @@
       "wet": false,
       "climate": "Am",
       "old_climate": "Am",
-      "slope_m_km": 35.8
+      "slope_m_km": 36.8
     },
     {
       "name": "Temora",
@@ -1354,12 +1369,12 @@
         1408,
         414
       ],
-      "elev_m": 7795.0,
+      "elev_m": 7941.2,
       "old_elev_m": 7730.6,
       "wet": false,
       "climate": "HF",
       "old_climate": "HF",
-      "slope_m_km": 36.1
+      "slope_m_km": 47.0
     },
     {
       "name": "The Tubes",
@@ -1373,7 +1388,7 @@
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 75.9
+      "slope_m_km": 47.6
     },
     {
       "name": "Theodiga",
@@ -1522,12 +1537,12 @@
         1263,
         946
       ],
-      "elev_m": -50.8,
+      "elev_m": -500.5,
       "old_elev_m": -50.8,
       "wet": false,
       "climate": "Csa",
       "old_climate": "BSh",
-      "slope_m_km": 87.1
+      "slope_m_km": 134.1
     },
     {
       "name": "Voth",
@@ -1583,7 +1598,7 @@
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 47.7
+      "slope_m_km": 48.0
     },
     {
       "name": "Ys",
@@ -1606,12 +1621,12 @@
         1263,
         1089
       ],
-      "elev_m": 636.2,
+      "elev_m": 595.8,
       "old_elev_m": 636.2,
       "wet": false,
-      "climate": "Csa",
+      "climate": "Cfa",
       "old_climate": "BSh",
-      "slope_m_km": 19.9
+      "slope_m_km": 7.4
     },
     {
       "name": "Zey'danin",
@@ -1648,12 +1663,12 @@
         1561,
         1140
       ],
-      "elev_m": 2169.6,
+      "elev_m": 2127.9,
       "old_elev_m": 2169.6,
       "wet": false,
       "climate": "Cwb",
       "old_climate": "Cwb",
-      "slope_m_km": 2.6
+      "slope_m_km": 12.6
     },
     {
       "name": "\u0160urpu-Dhelv",
@@ -1662,12 +1677,12 @@
         806,
         818
       ],
-      "elev_m": -330.8,
+      "elev_m": -364.5,
       "old_elev_m": 2813.7,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfb",
-      "slope_m_km": 55.8
+      "slope_m_km": 57.1
     },
     {
       "name": "Qarnu-T\u016bbu",

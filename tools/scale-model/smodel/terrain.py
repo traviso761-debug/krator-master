@@ -119,13 +119,18 @@ def level(E, su, sv, pts, h, relief, feather):
 
 
 def weather(E, mask):
-    """stream-power incision then a thermal pass; only cells in `mask` move, by at most WEATHER['max_cut'] in all"""
+    """stream-power incision then a thermal & valley-broadening pass; only cells in `mask` move, by at most WEATHER['max_cut'] in all"""
     W = WEATHER
     h = E.copy()
     ny, nx = h.shape
     cell = 4.0
     offs = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     dist = [cell * math.hypot(a, b) for a, b in offs]
+    rng_w = np.random.default_rng(4231)
+    dir_jitter = [
+        1.0 + 0.16 * nd.gaussian_filter(rng_w.standard_normal(h.shape), sigma=2.4)
+        for _ in offs
+    ]
     box = nd.binary_dilation(mask, iterations=3)
     box[0, :] = box[-1, :] = box[:, 0] = box[:, -1] = False
     by, bx = np.where(box)
@@ -134,9 +139,9 @@ def weather(E, mask):
         pad = np.pad(h, 1, constant_values=1e9)
         slope = np.zeros(h.shape)
         ry, rx = iy.copy(), ix.copy()
-        for (a, b), dd in zip(offs, dist):
+        for idx_o, ((a, b), dd) in enumerate(zip(offs, dist)):
             nb = pad[1 + a:1 + a + ny, 1 + b:1 + b + nx]
-            s = (h - nb) / dd
+            s = (h - nb) / (dd * dir_jitter[idx_o])
             better = s > slope
             slope = np.where(better, s, slope)
             ry = np.where(better, np.clip(iy + a, 0, ny - 1), ry)
@@ -156,9 +161,13 @@ def weather(E, mask):
         flow = np.zeros(h.shape)
         for (a, b), dd in zip(offs, dist):
             nb = pad[1 + a:1 + a + ny, 1 + b:1 + b + nx]
-            flow += np.maximum((h - nb) / (dd * 1000.0) - W['thermal'], 0) * dd * 1000.0 * 0.06
+            flow += np.maximum((h - nb) / (dd * 220.0) - W['thermal'], 0) * dd * 220.0 * 0.06
         room = np.maximum(W['max_cut'] - (E - h), 0)
         h = h - np.where(mask, np.minimum(flow, room), 0)
+    cut_raw = np.clip(E - h, 0.0, W['max_cut'])
+    # Broaden 1-pixel D8 slots into smooth multi-pixel valleys so no vertical/horizontal/45-deg grid lines appear
+    cut_smooth = np.clip(0.35 * nd.gaussian_filter(cut_raw, sigma=1.15) + 0.65 * nd.gaussian_filter(cut_raw, sigma=2.35), 0.0, W['max_cut'])
+    h = E - np.where(mask, cut_smooth, 0.0)
     cut = E - h
     print('weathering: cut mean %.0f m, p99 %.0f m, max %.0f m over %d cells' % (cut[mask].mean(), np.percentile(cut[mask], 99), cut.max(), int(mask.sum())))
     return np.where(mask, np.minimum(h, E), E)

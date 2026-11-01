@@ -75,10 +75,10 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         d_nhriv = _polyline_dist_px(px, py, nh_rivs, bbox_pad=16.0)
         w_nh_uval = (1.0 - G.sstep(1.2, 3.8, d_nhriv)) * G.sstep(1800.0, 2800.0, En)
 
-        # Yosemite-style granite batholith exfoliation domes (+220..+360 m) in the Dsb/Csb belt (2,400..3,800 m)
+        # Yosemite-style granite batholith exfoliation domes (+180..+260 m) in the Dsb/Csb belt (2,400..3,800 m)
         w_dome_belt = G.sstep(2300.0, 2700.0, En) * (1.0 - G.sstep(3650.0, 4100.0, En)) * (1.0 - w_nh_uval)
-        dome_raw = np.sin(px * 0.45 + py * 0.38) * np.cos(px * 0.34 - py * 0.49)
-        dh_domes = w_dome_belt * (285.0 * (np.clip(dome_raw - 0.32, 0.0, 0.68) / 0.68) ** 0.85)
+        dome_raw = 0.65 * _norm_gauss(rs, (VH, VW), 5.0) + 0.35 * _norm_gauss(rs, (VH, VW), 2.8)
+        dh_domes = w_dome_belt * (185.0 * (np.clip(dome_raw - 0.35, 0.0, 1.2) / 1.2) ** 0.9)
 
         # 2 concentric crag-step waterfall scarps (+1,400 m and +2,300 m) on the wet NW flank
         dh_crag_steps = np.zeros((VH, VW), dtype=float)
@@ -97,23 +97,23 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         # Protect Daridel (528, 687)
         w_sh = w_sh * G.sstep(2.5, 6.0, np.hypot(px - 528.0, py - 687.0))
 
-        # Northern cloud-deck escarpment around +1,120 m (`py ~ 610..685`): steepen scarp & cut 12 north-draining ravines
+        # Northern cloud-deck escarpment around +1,120 m (`py ~ 610..685`): steepen scarp & cut north-draining ravines
         de_cloud = En - 1120.0
         w_cloud_scarp = np.exp(-((de_cloud / 380.0) ** 2)) * (1.0 - G.sstep(675.0, 710.0, py))
-        ravine_wave = np.sin((px - 420.0) * (2.0 * math.pi / 22.0) + 0.35 * (py - 640.0))
-        dh_ravines = -165.0 * w_cloud_scarp * (np.clip(ravine_wave - 0.45, 0.0, 0.55) / 0.55) ** 1.3
+        ravine_wave = _norm_gauss(rs, (VH, VW), 2.8)
+        dh_ravines = -125.0 * w_cloud_scarp * (np.clip(ravine_wave - 0.45, 0.0, 1.2) / 1.2) ** 1.3
 
-        # Rolling Afroalpine/Andean paramo bog-and-tor tableland (+1,500..+2,750 m) with spiral *Whorl Stone* tors
+        # Rolling Afroalpine/Andean paramo bog-and-tor tableland (+1,500..+2,750 m) with natural granite tors
         w_paramo = G.sstep(1450.0, 1750.0, En) * (1.0 - G.sstep(2650.0, 3050.0, En))
         Eo_sh_s = nd.gaussian_filter(En, sigma=4.5)
-        tor_whorl = np.sin(px * 0.58 - py * 0.44) * np.cos(px * 0.41 + py * 0.62)
-        dh_tors = 195.0 * (np.clip(tor_whorl - 0.42, 0.0, 0.58) / 0.58) ** 1.15
-        dh_bogs = -55.0 * (np.clip(-tor_whorl - 0.35, 0.0, 0.65) / 0.65)
+        tor_whorl = 0.65 * _norm_gauss(rs, (VH, VW), 4.8) + 0.35 * _norm_gauss(rs, (VH, VW), 2.5)
+        dh_tors = 135.0 * (np.clip(tor_whorl - 0.48, 0.0, 1.2) / 1.2) ** 1.15
+        dh_bogs = -42.0 * (np.clip(-tor_whorl - 0.40, 0.0, 1.2) / 1.2)
         dh_paramo = w_paramo * (0.58 * (Eo_sh_s - En) + dh_tors + dh_bogs)
 
         # Glaciated spiral-peak massifs (>3,800 m)
         w_sh_peaks = G.sstep(3650.0, 4300.0, En)
-        dh_sh_peaks = w_sh_peaks * (260.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 1.6)) - 0.40))
+        dh_sh_peaks = w_sh_peaks * (210.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.2)) - 0.40))
 
         En = En + w_sh * (dh_ravines + dh_paramo + dh_sh_peaks)
 
@@ -135,7 +135,7 @@ def _sculpt_inner_wall_highlands(Eo, whas, wlev, regs_list, px, py, rivers_list,
         # High wind-scoured Puna/Altiplano cushion tableland (+3,600..+4,600 m) on the dry east side (`px >= 815`)
         w_altiplano = G.sstep(805.0, 832.0, px) * G.sstep(3200.0, 3650.0, En) * (1.0 - G.sstep(4750.0, 5200.0, En))
         Eo_eh_s = np.clip(nd.gaussian_filter(En, sigma=5.5), 3650.0, 4550.0)
-        cushion_hills = 65.0 * np.sin((px - 835.0) * 0.45 + (py - 510.0) * 0.35)
+        cushion_hills = 48.0 * _norm_gauss(rs, (VH, VW), 4.5)
         dh_alti = w_altiplano * (0.68 * (Eo_eh_s + cushion_hills - En))
 
         # Flat geothermal geyser & cushion-bog basin at `(858, 524)` (+3,850 m)
@@ -284,18 +284,14 @@ def _sculpt_southern_rift_xanadu_catch(Eo, whas, wlev, regs_list, px, py, rivers
         # Deflated star-dune erg bowl east of Catch Lake (`px 785..825, py 1085..1118` at +550..+850 m)
         r_erg_km = np.hypot((px - 805.0) * 2.0, (py - 1102.0) * 2.4)
         w_erg = (1.0 - G.sstep(22.0, 42.0, r_erg_km)) * w_c
-        # Star-dune multi-directional crest interference (+55..+95 m) inside a deflated -110 m basin pocket
-        sd1 = np.sin(px * 0.95 + py * 0.42)
-        sd2 = np.sin(px * 0.38 - py * 0.92)
-        sd3 = np.sin((px - py) * 0.75)
-        star_dunes = 85.0 * (np.abs(sd1 * sd2 * sd3) ** 0.55)
-        dh_erg = w_erg * (-95.0 + star_dunes)
+        # Star-dune ridge relief (+45..+75 m) inside a deflated -85 m basin pocket
+        star_dunes = 65.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.6)))
+        dh_erg = w_erg * (-85.0 + star_dunes)
 
         # NE-SW Lop-Nur yardang ridge-and-trough fleets (`px 755..795, py 1045..1075`)
         r_yard_km = np.hypot((px - 775.0) * 2.0, (py - 1060.0) * 2.2)
         w_yard = (1.0 - G.sstep(20.0, 38.0, r_yard_km)) * w_c
-        u_yard = (px - 775.0) * 0.71 - (py - 1060.0) * 0.71
-        dh_yard = w_yard * (42.0 * np.sin(u_yard * 1.45))
+        dh_yard = w_yard * (32.0 * _norm_gauss(rs, (VH, VW), 3.0))
 
         # 500 m-deep Red Canyon water-gap gorge through the central range at `(825, 1068)`
         red_canyon_pts = [(848.0, 1062.0), (834.0, 1066.0), (825.0, 1068.0), (812.0, 1072.0), (798.0, 1078.0)]
@@ -353,24 +349,23 @@ def _sculpt_inner_crater_savannahs_isles_bays(Eo, whas, wlev, regs_list, px, py,
 
         # 1. `hyperjungle S`: flat várzea scroll-bar floodplain & oxbow depressions within -1,495..-1,410 m
         w_varzea = mask_hjs * (1.0 - G.sstep(-1410.0, -1320.0, En)) * w_hj
-        scroll_bars = 6.5 * np.sin(px * 0.85 + py * 0.52 + 1.2 * _norm_gauss(rs, (VH, VW), 1.8))
+        scroll_bars = 5.5 * _norm_gauss(rs, (VH, VW), 3.8)
         varzea_target = np.maximum(-1482.0 + 0.25 * (En - (-1482.0)) + scroll_bars, -1492.0)
         En = En * (1.0 - 0.72 * w_varzea) + varzea_target * (0.72 * w_varzea)
 
-        # 2. `savage hyperjungle`: 20 steep-sided flat-topped micro-tepui outliers (+180..+300 m) & 35 sinkholes (-65..-95 m)
+        # 2. `savage hyperjungle`: steep-sided flat-topped micro-tepui outliers (+160..+220 m) & sinkholes (-55..-75 m)
         d_in_savj = nd.distance_transform_edt(mask_hjsav)
         w_savj = G.sstep(0.0, 4.5, d_in_savj) * w_hj
-        tepui_f = np.sin(px * 0.46 - py * 0.39) * np.cos(px * 0.37 + py * 0.51)
-        dh_mtepui = 240.0 * G.sstep(0.58, 0.74, tepui_f)
-        sink_f = np.sin(px * 0.82 + py * 0.74) * np.cos(px * 0.68 - py * 0.79)
-        dh_sinks = -82.0 * (np.clip(sink_f - 0.52, 0.0, 0.48) / 0.48) ** 1.3
+        tepui_f = 0.65 * _norm_gauss(rs, (VH, VW), 4.8) + 0.35 * _norm_gauss(rs, (VH, VW), 2.5)
+        dh_mtepui = 195.0 * G.sstep(0.55, 0.85, tepui_f)
+        sink_f = _norm_gauss(rs, (VH, VW), 3.2)
+        dh_sinks = -65.0 * (np.clip(sink_f - 0.75, 0.0, 1.0) ** 1.3)
         En = En + w_savj * (dh_mtepui + dh_sinks)
 
-        # 3. `hyperjungle N`: ENE-aligned laterite *meias-laranjas* whaleback ridges (+72 m) & seasonal flood pans
+        # 3. `hyperjungle N`: ENE-aligned laterite *meias-laranjas* whaleback ridges (+55 m) & seasonal flood pans
         d_in_hjn = nd.distance_transform_edt(mask_hjn)
         w_hjn = G.sstep(0.0, 4.5, d_in_hjn) * w_hj
-        u_ene = px * 0.38 + py * 0.92 + 1.4 * _norm_gauss(rs, (VH, VW), 2.2)
-        whaleback = 68.0 * np.sin(u_ene * 0.72) * np.cos((px * 0.92 - py * 0.38) * 0.35)
+        whaleback = 48.0 * _norm_gauss(rs, (VH, VW), 4.5)
         En = En + w_hjn * whaleback
         En = np.where((w_hj > 0.01) & mask_hj_all & (Eo > -1498.0), np.maximum(En, -1492.0), En)
 
@@ -487,14 +482,14 @@ def _sculpt_inner_crater_savannahs_isles_bays(Eo, whas, wlev, regs_list, px, py,
         # Protect Ys at (386, 421) and Tethys
         w_nwb = w_nwb * G.sstep(2.5, 6.0, np.hypot(px - 386.0, py - 421.0))
 
-        # Krabi / Raja Ampat coastal limestone tower stacks (+160..+280 m) on coastal headlands (`En < -1,150 m`)
+        # Krabi / Raja Ampat coastal limestone tower stacks (+140..+210 m) on coastal headlands (`En < -1,150 m`)
         w_krabi = (1.0 - G.sstep(-1150.0, -900.0, En)) * w_nwb
-        stack_f = np.sin(px * 0.78 - py * 0.64) * np.cos(px * 0.62 + py * 0.81)
-        dh_krabi = w_krabi * (235.0 * (np.clip(stack_f - 0.38, 0.0, 0.62) / 0.62) ** 1.2)
+        stack_f = 0.65 * _norm_gauss(rs, (VH, VW), 4.0) + 0.35 * _norm_gauss(rs, (VH, VW), 2.2)
+        dh_krabi = w_krabi * (175.0 * (np.clip(stack_f - 0.45, 0.0, 1.2) / 1.2) ** 1.2)
 
         # Inland *tsingy* knife-edge limestone plateau bench (-1,050..-800 m) with fluted fissure relief
         w_tsingy = G.sstep(-1150.0, -980.0, En) * (1.0 - G.sstep(-720.0, -520.0, En)) * w_nwb
-        tsingy_fins = 75.0 * np.abs(np.sin(px * 1.35 + py * 0.85))
+        tsingy_fins = 55.0 * (1.0 - np.abs(_norm_gauss(rs, (VH, VW), 2.4)))
         dh_tsingy = w_tsingy * (0.55 * (-940.0 - En) + tsingy_fins)
 
         # 84 m-deep *tiankeng* collapse doline at `(408, 428)` (per `LORE.md` §8)

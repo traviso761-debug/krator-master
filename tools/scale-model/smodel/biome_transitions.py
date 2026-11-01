@@ -118,7 +118,7 @@ def apply_biome_boundary_transitions(Eo, En_in, whas, wlev, regs_list, settlemen
         # Where rivers exit the mountains onto the basin, raise a convex coalescing alluvial fan apron (+55 m)
         # incised along the central channel (-32 m); on interfluves, sculpt tapering foothill hogback spurs (+65 m)
         fan_apron = 58.0 * G.sstep(1.0, 4.2, d_riv_all) * (1.0 - G.sstep(4.2, 8.5, d_riv_all)) - 34.0 * w_riv_thalweg
-        hogback_spurs = 62.0 * (1.0 - w_riv_mouth) * np.sin(px * 0.65 + py * 0.52 + 1.2 * _norm_gauss(rs, (VH, VW), 2.0))
+        hogback_spurs = 38.0 * (1.0 - w_riv_mouth) * _norm_gauss(rs, (VH, VW), 3.8)
         pied_target = 0.65 * En_pied_smooth + 0.35 * En + fan_apron + 0.45 * hogback_spurs
         En = En * (1.0 - 0.68 * w_piedmont) + pied_target * (0.68 * w_piedmont)
 
@@ -152,8 +152,8 @@ def apply_biome_boundary_transitions(Eo, En_in, whas, wlev, regs_list, settlemen
         d_out_src = nd.distance_transform_edt(~m_outlier_sources)
         # Belt from 0.5 to 7.5 px (1 to 15 km) outside the karst/tepui/mesa regions
         w_ecotone = G.sstep(0.2, 1.8, d_out_src) * (1.0 - G.sstep(3.5, 8.0, d_out_src)) * (~m_outlier_sources) * w_dry
-        outlier_f = np.sin(px * 0.74 - py * 0.61) * np.cos(px * 0.58 + py * 0.79)
-        outlier_peaks = 135.0 * (np.clip(outlier_f - 0.48, 0.0, 0.52) / 0.52) ** 1.25
+        outlier_f = 0.65 * _norm_gauss(rs, (VH, VW), 4.2) + 0.35 * _norm_gauss(rs, (VH, VW), 2.4)
+        outlier_peaks = 85.0 * (np.clip(outlier_f - 0.55, 0.0, 1.2) / 1.2) ** 1.25
         En = En + w_ecotone * outlier_peaks * (1.0 - w_riv_mouth)
 
     # ==========================================================================

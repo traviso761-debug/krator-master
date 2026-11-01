@@ -531,7 +531,8 @@ def main():
     rain_exp = rain_exp * (1.0 - w_nw_clim) + rain_nw_syn * w_nw_clim
 
     # Assign Köppen + Exotic climate classes across the new N/W territory and trans-boundary passes/canyons
-    nw_edit_land = ((w_nw_clim > 0.15) | is_new_area) & ~whas_exp
+    # Use `w_nw_clim > 0.15` (already domain-warped across Y=330 & X=272) so no straight line is clipped at `is_new_area`!
+    nw_edit_land = (w_nw_clim > 0.15) & ~whas_exp
     c_nw = cls_exp.copy()
     # Tropical / subtropical lowland & Double Delta / lower Ria Valley
     c_nw[nw_edit_land & (tc_exp >= 18.0) & (rain_exp >= 1500.0)] = idx['Am']
@@ -557,7 +558,9 @@ def main():
     c_nw[tharn_land & (En_exp >= 4850.0) & (En_exp < 5450.0) & (rain_exp >= 260.0)] = idx['Dsc']
     c_nw[tharn_land & (En_exp >= 5450.0) & (En_exp < 6250.0)] = idx['ET']
     # Southern Copper Glacier & Crook–Rift Glacial Pass (`rmvcopperglacier`, `X = 48..365, Y = 1085..1385`)
-    in_copper_glacier = nw_edit_land & (X_exp >= 48.0) & (X_exp <= 365.0) & (Y_exp >= 1085.0) & (Y_exp <= 1385.0) & (w_sw_outer < 0.35)
+    Xw_cg = X_exp + 14.0 * meta_nw['fbm2'] + 7.0 * meta_nw['fbm1']
+    Yw_cg = Y_exp + 14.0 * meta_nw['fbm1'] + 7.0 * meta_nw['fbm2']
+    in_copper_glacier = nw_edit_land & (Xw_cg >= 48.0) & (Xw_cg <= 365.0) & (Yw_cg >= 1085.0) & (Yw_cg <= 1385.0) & (w_sw_outer < 0.35)
     c_nw[in_copper_glacier & (En_exp >= 2350.0) & (En_exp < 3100.0)] = idx['ET']
     c_nw[in_copper_glacier & (En_exp >= 3100.0) & (En_exp < 6250.0)] = idx['EF']
     # High alpine / nival / hypobaric tiers across all new mountains
@@ -581,10 +584,11 @@ def main():
     zon_exp[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0))) & whas_exp] = 4
 
     # =========================================================================
-    # STEP 6: Synthesize & Blend `st`, `t`, `rt`, `ct` on (1723, 1821)
+    # STEP 5B: Shift Rivers, Soften Legacy D8 Staircases into Natural Meanders,
+    #          Carve Fluvial Channels into `En_exp`, and Run Global Anti-Spike Guard
     # =========================================================================
-    print('--- Step 6: Synthesizing Seamless Satellite (st), Relief (t), Rain (rt), and Climate (ct) Maps on 1821x1723 ---')
-    # Smooth out the two legacy rectangular/linear patch seams on En_exp before hillshading:
+    print('--- Step 5B: Meandering D8 Rivers, Carving Fluvial Channels into En_exp, & Despiking ---')
+    # Smooth out the two legacy rectangular/linear patch seams on En_exp first:
     #   - Batch 2 Image 3: High Rift western seam (`X=1280..1350, Y=1605..1712`)
     #   - Batch 2 Image 8: NW Outer Wall / NW Lowlands seam (`X=390..535, Y=405..585`)
     w_fix_seam_hr = (
@@ -602,19 +606,223 @@ def main():
     En_exp_s = nd.gaussian_filter(En_exp, sigma=8.5) + 55.0 * (rn_seam_fix - 0.38)
     En_exp = En_exp * (1.0 - 0.90 * w_fix_both) + En_exp_s * (0.90 * w_fix_both)
 
+    # Shift all legacy rivers by (+272, +330) and append the new N/W expansion rivers
+    rivers_exp = []
+    for r in D_old['rivers']:
+        r2 = copy.deepcopy(r)
+        if 'px' in r2 and r2['px']:
+            r2['px'] = shift_pts(r2['px'])
+        if isinstance(r2.get('to'), dict) and 'at_px' in r2['to']:
+            r2['to']['at_px'] = shift_pt(r2['to']['at_px'])
+        rivers_exp.append(r2)
+    for nr in meta_nw['new_rivers']:
+        rivers_exp.append(copy.deepcopy(nr))
+
+    # Collect all tributary confluence coordinates so trunk rivers keep those exact junction points pinned!
+    confluence_pts = []
+    for r in rivers_exp:
+        pts_r = r.get('px') or []
+        if pts_r:
+            confluence_pts.append(pts_r[0])
+            confluence_pts.append(pts_r[-1])
+        to_info = r.get('to')
+        if isinstance(to_info, dict) and 'at_px' in to_info and to_info['at_px']:
+            confluence_pts.append(to_info['at_px'])
+    conf_arr = np.array(confluence_pts, dtype=float) if confluence_pts else np.zeros((0, 2), dtype=float)
+
+    # Soften straight D8 horizontal/vertical/45-deg runs on legacy rivers (`id < 9100`) into natural meanders
+    # while keeping endpoints, tributary junctions, and near-lake vertices 100% locked!
+    d_to_water_px, (w_iy, w_ix) = nd.distance_transform_edt(~whas_exp, return_indices=True)
+    wlev_nearest = np.where(whas_exp, wlev_exp, wlev_exp[w_iy, w_ix])
+    wlev_nearest = np.nan_to_num(wlev_nearest, nan=0.0)
+
+    for idx_r, r in enumerate(rivers_exp):
+        raw_id = r.get('id', idx_r)
+        is_new_riv = isinstance(raw_id, int) and raw_id >= 9100
+        pts_r = r.get('px') or []
+        if is_new_riv or len(pts_r) < 6:
+            continue
+        arr_p = np.array(pts_r, dtype=float)
+        n_p = len(arr_p)
+        # Identify pinned vertices: endpoints, within 2.5 px of any confluence, or within 2.0 px of water
+        pinned = np.zeros(n_p, dtype=bool)
+        pinned[0] = True
+        pinned[-1] = True
+        if len(conf_arr) > 0:
+            d_conf = np.hypot(arr_p[:, 0:1] - conf_arr[:, 0][None, :], arr_p[:, 1:2] - conf_arr[:, 1][None, :]).min(axis=1)
+            pinned |= (d_conf <= 2.5)
+        iy_p = np.clip(np.round(arr_p[:, 1]).astype(int), 0, NEW_OH - 1)
+        ix_p = np.clip(np.round(arr_p[:, 0]).astype(int), 0, NEW_OW - 1)
+        pinned |= (d_to_water_px[iy_p, ix_p] <= 2.0)
+
+        pin_indices = np.where(pinned)[0]
+        dist_idx = np.min(np.abs(np.arange(n_p)[:, None] - pin_indices[None, :]), axis=1).astype(float)
+        env_m = G.sstep(0.0, 3.5, dist_idx)
+
+        # Smooth D8 staircase jitter + add organic perpendicular fluvial meander wave
+        sx_s = nd.gaussian_filter1d(arr_p[:, 0], sigma=1.5, mode='nearest')
+        sy_s = nd.gaussian_filter1d(arr_p[:, 1], sigma=1.5, mode='nearest')
+        seg_ds = np.hypot(np.diff(sx_s, prepend=sx_s[0]), np.diff(sy_s, prepend=sy_s[0]))
+        arc_s = np.cumsum(seg_ds)
+        tx = np.gradient(sx_s)
+        ty = np.gradient(sy_s)
+        tn = np.hypot(tx, ty) + 1e-9
+        nx, ny = -ty / tn, tx / tn
+        phase = (idx_r * 1.6180339887) % (2.0 * math.pi)
+        wave = (1.45 * np.sin(arc_s / 5.5 * math.pi + phase) + 0.65 * np.cos(arc_s / 2.6 * math.pi - 0.7 * phase)) * env_m
+        new_x = arr_p[:, 0] * (1.0 - env_m) + (sx_s + nx * wave) * env_m
+        new_y = arr_p[:, 1] * (1.0 - env_m) + (sy_s + ny * wave) * env_m
+
+        # Never push a dry river vertex into a lake/sea cell!
+        ny_i = np.clip(np.round(new_y).astype(int), 0, NEW_OH - 1)
+        nx_i = np.clip(np.round(new_x).astype(int), 0, NEW_OW - 1)
+        hit_water = whas_exp[ny_i, nx_i] & ~whas_exp[iy_p, ix_p]
+        new_x = np.where(hit_water | pinned, arr_p[:, 0], new_x)
+        new_y = np.where(hit_water | pinned, arr_p[:, 1], new_y)
+        r['px'] = [[round(float(x_), 2), round(float(y_), 2)] for x_, y_ in zip(new_x, new_y)]
+
+    # Save pre-river-incision hillshade so we can transfer the newly carved river-bank shading onto `t_pad` & `st_pad`!
+    En_pre_riv = En_exp.copy()
+    shade_pre_riv = compute_clean_hillshade(En_pre_riv, zf=5.0, az_deg=315.0, alt_deg=45.0)
+
+    # Carve continuous fluvial channels & valleys into `En_exp` along ALL rivers in `rivers_exp`!
+    En_smooth_ref = nd.gaussian_filter(En_exp, sigma=2.2)
+    riv_seed_mask = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    riv_bed_grid = En_exp.copy()
+    riv_depth_grid = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    riv_hw_grid = np.full((NEW_OH, NEW_OW), 2.5, dtype=float)
+
+    for r in rivers_exp:
+        pts_r = r.get('px') or []
+        if len(pts_r) < 2:
+            continue
+        q_m = float(r.get('q_mouth') or 250.0)
+        hw_r = float(np.clip(2.0 + 0.55 * math.log10(max(20.0, q_m)), 2.2, 4.4))
+        depth_r = float(np.clip(28.0 + 18.0 * math.log10(max(20.0, q_m)), 34.0, 92.0))
+
+        # Dense 0.65-px sub-sampling along each river segment so the carved channel has zero gaps or beads
+        dense_pts = []
+        for i in range(len(pts_r) - 1):
+            x0, y0 = pts_r[i]
+            x1, y1 = pts_r[i + 1]
+            dist_seg = math.hypot(x1 - x0, y1 - y0)
+            n_sub = max(2, int(math.ceil(dist_seg / 0.65)) + 1)
+            for k_s in range(n_sub):
+                t_s = k_s / float(n_sub - 1)
+                dense_pts.append((x0 + (x1 - x0) * t_s, y0 + (y1 - y0) * t_s))
+
+        # Enforce monotonically non-increasing reference elevation along the river from source to mouth
+        ref_els = []
+        for dx_, dy_ in dense_pts:
+            iy = min(NEW_OH - 1, max(0, int(round(dy_))))
+            ix = min(NEW_OW - 1, max(0, int(round(dx_))))
+            ref_els.append(float(En_smooth_ref[iy, ix]))
+        for i in range(1, len(ref_els)):
+            if ref_els[i] > ref_els[i - 1]:
+                ref_els[i] = ref_els[i - 1]
+
+        for (dx_, dy_), e_ref in zip(dense_pts, ref_els):
+            iy = min(NEW_OH - 1, max(0, int(round(dy_))))
+            ix = min(NEW_OW - 1, max(0, int(round(dx_))))
+            if whas_exp[iy, ix]:
+                continue
+            target_bed = e_ref - depth_r
+            if not riv_seed_mask[iy, ix] or target_bed < riv_bed_grid[iy, ix]:
+                riv_bed_grid[iy, ix] = target_bed
+            riv_seed_mask[iy, ix] = True
+            if depth_r > riv_depth_grid[iy, ix]:
+                riv_depth_grid[iy, ix] = depth_r
+            if hw_r > riv_hw_grid[iy, ix]:
+                riv_hw_grid[iy, ix] = hw_r
+
+    d_to_riv_all, (r_iy, r_ix) = nd.distance_transform_edt(~riv_seed_mask, return_indices=True)
+    hw_near = riv_hw_grid[r_iy, r_ix]
+    depth_near = riv_depth_grid[r_iy, r_ix]
+    bed_near = nd.gaussian_filter(riv_bed_grid[r_iy, r_ix], sigma=1.0)
+
+    u_riv = d_to_riv_all / np.maximum(hw_near, 1.5)
+    # Taper river carving smoothly within 2 px of lake/sea shorelines (`d_to_water_px`) so lake rims stay intact
+    w_water_taper = G.sstep(0.0, 2.2, d_to_water_px) * (~whas_exp).astype(float)
+    w_riv_carve = ((1.0 - G.sstep(0.0, 1.0, u_riv)) ** 1.25) * w_water_taper
+
+    # Safe lower bound on dry land so positive-elevation land never drops below 1.8 m or below adjacent lake level
+    min_safe_riv = np.where(
+        En_exp > 1.8,
+        np.where(d_to_water_px <= 10.0, np.maximum(1.8, np.minimum(En_exp - 2.0, wlev_nearest + 1.8)), 1.8),
+        np.where(d_to_water_px <= 8.0, np.minimum(En_exp - 2.0, wlev_nearest + 1.8), En_exp - depth_near),
+    )
+    h_riv_profile = np.maximum(min_safe_riv, bed_near + depth_near * (G.sstep(0.0, 1.0, u_riv) ** 1.35))
+    En_exp = En_exp * (1.0 - 0.88 * w_riv_carve) + np.minimum(En_exp, h_riv_profile) * (0.88 * w_riv_carve)
+
+    # Global Anti-Porcupine Despiking & Coastal Cliff Moderation Pass on `En_exp`:
+    # Protect deep volcanic vent throats (`r < 6 px`) while removing any 1-3 px spike or needle across the entire map!
+    vent_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    for v_item in list(vents_1393) + list(meta_nw['new_vents']):
+        vx_i, vy_i = v_item['px']
+        if v_item in vents_1393:
+            vx_i, vy_i = vx_i + DX, vy_i + DY
+        vent_guard |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 7.0)
+
+    med3_e = nd.median_filter(En_exp, size=3)
+    med5_e = nd.median_filter(En_exp, size=5)
+    En_exp = np.where((np.abs(En_exp - med3_e) > 120.0) & ~vent_guard, med3_e, En_exp)
+    En_exp = np.where((np.abs(En_exp - med5_e) > 210.0) & ~vent_guard, 0.25 * En_exp + 0.75 * med5_e, En_exp)
+    # Also ensure coastal cliffs in the N/W expansion (`d_to_water_px <= 5`) have smooth, spike-free gradients
+    gy_chk, gx_chk = np.gradient(En_exp)
+    grad_px = np.hypot(gx_chk, gy_chk)
+    En_coast_blur = nd.gaussian_filter(En_exp, sigma=2.0)
+    coastal_spike = (d_to_water_px <= 5.0) & (grad_px > 340.0) & ~vent_guard & ~whas_exp
+    En_exp = np.where(coastal_spike, np.minimum(En_exp, En_coast_blur), En_exp)
+    # Re-assert dry land >= 1.5 m in `is_new_area` after coastal smoothing
+    dry_new_final = is_new_area & ~whas_exp
+    En_exp = np.where(dry_new_final, np.maximum(En_exp, 1.8), En_exp)
+
+    # Sample strictly monotonic `bed_m` along all rivers in `rivers_exp` directly from the incised `En_exp`!
+    climbing_fixed = 0
+    for r in rivers_exp:
+        pts_r = r.get('px') or []
+        if not pts_r:
+            continue
+        beds = []
+        for px_, py_ in pts_r:
+            iy = min(NEW_OH - 1, max(0, int(round(py_))))
+            ix = min(NEW_OW - 1, max(0, int(round(px_))))
+            beds.append(round(float(En_exp[iy, ix]), 1))
+        for i in range(1, len(beds)):
+            if beds[i] > beds[i - 1]:
+                beds[i] = beds[i - 1]
+                climbing_fixed += 1
+        r['bed_m'] = beds
+        r['source_m'] = beds[0]
+        r['mouth_m'] = beds[-1]
+    print(f'  Total rivers incised & verified on expanded map: {len(rivers_exp)} (clamped {climbing_fixed} vertices)')
+
+    # =========================================================================
+    # STEP 6: Synthesize & Blend `st`, `t`, `rt`, `ct` on (1723, 1821)
+    # =========================================================================
+    print('--- Step 6: Synthesizing Seamless Satellite (st), Relief (t), Rain (rt), and Climate (ct) Maps on 1821x1723 ---')
     rs_paint = np.random.RandomState(SEED + 19)
     fine_grain_exp = 1.0 + nd.gaussian_filter(rs_paint.normal(0.0, 0.032, (NEW_OH, NEW_OW)), 0.9)[..., None]
-    shade_exp = compute_clean_hillshade(En_exp, zf=5.0, az_deg=315.0, alt_deg=45.0) * fine_grain_exp
-    # Enhanced relief shading inside The Arch (`in_arch_box`) to accentuate the exposed mid-ocean spreading ridge!
-    shade_arch = compute_clean_hillshade(En_exp, zf=8.5, az_deg=315.0, alt_deg=40.0) * fine_grain_exp
-    w_arch_shade = (in_arch_box & (~whas_exp)).astype(float)[..., None]
-    shade_exp = shade_exp * (1.0 - 0.75 * w_arch_shade) + shade_arch * (0.75 * w_arch_shade)
+    shade_post_riv = compute_clean_hillshade(En_exp, zf=5.0, az_deg=315.0, alt_deg=45.0)
+    shade_exp = shade_post_riv * fine_grain_exp
+    # Enhanced relief shading inside The Arch (`w_arch_region`) using a smooth domain-warped envelope (ZERO box edge!)
+    w_arch_region = meta_nw['w_arch_region']
+    shade_arch = compute_clean_hillshade(En_exp, zf=8.0, az_deg=315.0, alt_deg=40.0) * fine_grain_exp
+    w_arch_shade = (w_arch_region * (~whas_exp).astype(float))[..., None]
+    shade_exp = shade_exp * (1.0 - 0.72 * w_arch_shade) + shade_arch * (0.72 * w_arch_shade)
 
-    # Strip the 16-pixel top/left canvas frame bevel of `st_int`, `t_int`, `rt_int`, `ct_int` before padding
-    # so the old `1549x1393` edge shadow never creates a line at X=272 or Y=330!
+    # Strip the 16-pixel top/left canvas frame bevel of `st_int`, `t_int`, `rt_int`, `ct_int` before padding,
+    # shifting along the 45-degree diagonal NW Crater Wall shoreline (`x_old = 140..280`, `dx = (16 - r_i) * 1.75`)
+    # so `st_pad` and `t_pad` match `Eo_clean_edge` / `whas0_clean_edge` 100%!
     for arr_i in (st_int, t_int, rt_int, ct_int):
-        arr_i[:16, :, :] = arr_i[16:17, :, :]
-        arr_i[:, :16, :] = arr_i[:, 16:17, :]
+        for r_i in range(16):
+            arr_i[r_i, :, :] = arr_i[16, :, :]
+            dx_s = int(round((16 - r_i) * 1.75))
+            arr_i[r_i, 140:280, :] = arr_i[16, 140 - dx_s:280 - dx_s, :]
+        for c_i in range(16):
+            arr_i[:, c_i, :] = arr_i[:, 16, :]
+            dy_s = int(round((16 - c_i) * 0.85))
+            arr_i[200:280, c_i, :] = arr_i[200 + dy_s:280 + dy_s, 16, :]
 
     # Embed interior `(1393, 1549)` painted maps into `[DY:, DX:]`
     st_pad = np.pad(st_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
@@ -622,9 +830,26 @@ def main():
     rt_pad = np.pad(rt_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
     ct_pad = np.pad(ct_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
 
+    # Apply the newly carved river-channel bank hillshade ratio (`shade_post_riv / shade_pre_riv`) to `t_pad` and `st_pad`
+    # so interior rivers also display crisp 3D-shaded valley banks on the 2D relief & satellite maps!
+    riv_shade_ratio = np.clip((shade_post_riv + 1e-5) / (shade_pre_riv + 1e-5), 0.74, 1.26)
+    w_riv_bank_shade = ((1.0 - G.sstep(0.0, 1.15, u_riv)) * (~whas_exp).astype(float))[..., None]
+    riv_bank_mult = 1.0 + (riv_shade_ratio - 1.0) * w_riv_bank_shade
+    t_pad = np.clip(t_pad.astype(float) * riv_bank_mult, 0.0, 255.0).round().astype(np.uint8)
+    st_pad = np.clip(st_pad.astype(float) * riv_bank_mult, 0.0, 255.0).round().astype(np.uint8)
+
     # Organic domain-warped blending weight for the new N/W area + trans-boundary NE Outland Pass,
-    # SW Crook–Rift Pass, Arachnoid Canyon/Breach, Crater Wall Unification, Step 2G passes, and Legacy Seam Fixes:
-    w_seam = np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), G.sstep(-44.0, 44.0, sd_new))
+    # SW Crook–Rift Pass, Arachnoid Canyon/Breach, Crater Wall Unification, Step 2G passes, and Legacy Seam Fixes.
+    # CRITICAL: `w_seam` is strictly `1.0` everywhere on `is_new_area` (`Y < 330` or `X < 272`) so 1D edge-repeated
+    # padding streaks from `st_pad` / `t_pad` NEVER bleed into `is_new_area`, and feathers smoothly from `1.0 -> 0.0`
+    # inside `[DY:, DX:]` (`d_into_old = 0..52 px`)!
+    d_into_old = meta_nw['d_into_old']
+    d_old_warped = d_into_old + G.sstep(0.0, 14.0, d_into_old) * (16.0 * meta_nw['fbm2'] + 8.0 * meta_nw['fbm1'])
+    w_seam = np.where(
+        is_new_area,
+        1.0,
+        np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), 1.0 - G.sstep(0.0, 52.0, d_old_warped)),
+    )
     w_wall_unify = meta_nw.get('w_wall_unify', np.zeros((NEW_OH, NEW_OW), dtype=float))
     ch_2g_exp = np.pad(nd.gaussian_filter(ch_2g.astype(float), sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
     w_sout_pass_exp = np.pad(nd.gaussian_filter(w_sout_wall, sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
@@ -633,10 +858,11 @@ def main():
         w_canyon + 0.85 * arach_trough_w + 0.65 * np.clip(meta_nw['arach_rib_h'] / 210.0, 0.0, 1.0) + 0.78 * w_n_korona_breach,
         0.0, 1.0
     )
+    # Unify the entire NW Ocean (`X < 560, Y < 610` where `whas_exp == True`) so zero seam ever appears in the ocean!
     w_nw_sea_unify = (
         whas_exp.astype(float)
-        * (1.0 - G.sstep(475.0, 540.0, X_exp))
-        * (1.0 - G.sstep(525.0, 595.0, Y_exp))
+        * (1.0 - G.sstep(510.0, 555.0, X_exp))
+        * (1.0 - G.sstep(545.0, 605.0, Y_exp))
     )
     w_legacy_seams = np.maximum(
         np.maximum(w_fix_seam_hr, w_fix_seam_nwl),
@@ -703,7 +929,7 @@ def main():
 
     # 1A. Exposed Undersea Mid-Ocean Spreading Ridge in The Arch (`Batch 2 Image 9`):
     # Clear double line of elevated rift-shoulder horst ridges (+500..+2,050 m) with a lowered axial rift trough (<250 m) in between!
-    w_arch_land = (in_arch_box & (~whas_exp)).astype(float)
+    w_arch_land = w_arch_region * (~whas_exp).astype(float)
     u_arch_horst = G.sstep(280.0, 1350.0, En_exp)[..., None]
     u_arch_crest = G.sstep(1150.0, 1850.0, En_exp)[..., None]
     arch_trough_col = np.array([48.0, 98.0, 50.0]) * shade_exp
@@ -830,37 +1056,8 @@ def main():
     D_new['tubes'] = tubes_list
     print(f'  Lava tube & cavern networks generated: {len(tubes_list)} systems')
 
-    # 7D. Shift `rivers`, append `meta_nw['new_rivers']`, and enforce monotonic `bed_m` on `En_exp`
-    rivers_exp = []
-    for r in D_old['rivers']:
-        r2 = copy.deepcopy(r)
-        if 'px' in r2 and r2['px']:
-            r2['px'] = shift_pts(r2['px'])
-        if isinstance(r2.get('to'), dict) and 'at_px' in r2['to']:
-            r2['to']['at_px'] = shift_pt(r2['to']['at_px'])
-        rivers_exp.append(r2)
-    for nr in meta_nw['new_rivers']:
-        rivers_exp.append(copy.deepcopy(nr))
-
-    climbing_fixed = 0
-    for r in rivers_exp:
-        pts_r = r.get('px') or []
-        if not pts_r:
-            continue
-        beds = []
-        for px_, py_ in pts_r:
-            iy = min(NEW_OH - 1, max(0, int(round(py_))))
-            ix = min(NEW_OW - 1, max(0, int(round(px_))))
-            beds.append(round(float(En_exp[iy, ix]), 1))
-        for i in range(1, len(beds)):
-            if beds[i] > beds[i - 1]:
-                beds[i] = beds[i - 1]
-                climbing_fixed += 1
-        r['bed_m'] = beds
-        r['source_m'] = beds[0]
-        r['mouth_m'] = beds[-1]
+    # 7D. Assign `rivers_exp` (already shifted, meandered, and incised into `En_exp` in Step 5B)
     D_new['rivers'] = rivers_exp
-    print(f'  Total rivers on expanded map: {len(rivers_exp)} (enforced 0 climbing segments; clamped {climbing_fixed} vertices)')
 
     # Paint the new N/W rivers onto `st_final_exp` and `t_final_exp`
     D_paint_tmp = {
