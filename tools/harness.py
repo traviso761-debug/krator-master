@@ -247,6 +247,18 @@ class GpuLockTimeout(RuntimeError):
     pass
 
 
+def page_crashed(pg):
+    """A crashed renderer: an evaluate already waiting on it never returns, so a verify sat on the GPU lock until something
+    killed it (swlowlands, 2026-11-02). Say so, give the lock back if this process took it, and leave with exit code 75."""
+    print("harness: THE PAGE CRASHED (the renderer died): %s" % pg.url, flush=True)
+    if _lock_owner().startswith("harness pid=%d " % os.getpid()):
+        with contextlib.suppress(OSError):
+            os.remove(os.path.join(GPU_LOCK, "owner"))
+        with contextlib.suppress(OSError):
+            os.rmdir(GPU_LOCK)
+    os._exit(75)
+
+
 def _lock_owner():
     try:
         with open(os.path.join(GPU_LOCK, "owner"), encoding="utf-8", errors="replace") as fh:
@@ -442,6 +454,7 @@ def watch_console(pg):
         return pg.krator_console
     pg.krator_console = []
     pg.on("console", lambda m: pg.krator_console.append((m.type, m.text)) if m.type in ("error", "warning") else None)
+    pg.on("crash", page_crashed)
     return pg.krator_console
 
 

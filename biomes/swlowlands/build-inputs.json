@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/swlowlands/KNOWN_ISSUES.md": "c85dee8f9f874452a371407c1a3fc4afa49ab4765b8533688c478209e42e12a6",
+    "biomes/swlowlands/KNOWN_ISSUES.md": "7202a93caf2fd1ee48cc2ca77e3757e4af9da0f5dbbe0d76ff35c9c70846200e",
     "biomes/swlowlands/PORT.md": "c772c4a2b6b1559631aa21274d08a06241fee094336705b5826ae5d9a55b9df8",
     "biomes/swlowlands/build.py": "311e57b52b40b5ab607b6b09c9793660e3922f84dae54b00c9d8a9e3c02e0225",
     "biomes/swlowlands/src/00-head.html": "8d3c4abaef5c2708d4ea05241b0d59298ee461e25a99e2306f1448ae3d557744",
@@ -14,12 +14,12 @@
     "biomes/swlowlands/src/60-biome-swlowlands-floor.js": "f061439216c5a359f048c100bd5b053cd51b88dfc1db49842a1c270953a2e08a",
     "biomes/swlowlands/src/65-biome-swlowlands-dress.js": "0f36d3f85f92ca6cfa0e91f50a4b7414b37af42aa340d40bbbf11439b07c3551",
     "biomes/swlowlands/src/70-biome-swlowlands.js": "d1112678938143ad8c3b6af2e8ce3eebc2f463d121c66fb63b8c9b5cabe1b2f5",
-    "biomes/swlowlands/src/85-host-tower.js": "e9bff62a84e393e6baa5b7fc87bd6c800a200585745079a401fdbb692505476d",
+    "biomes/swlowlands/src/85-host-tower.js": "26e8d26d027fa9cbf560fdb1ea9bde9cb702e12429112bdbbbf30a6229a95918",
     "biomes/swlowlands/src/88-host-build.js": "c1954553f9de5315c11f6d94f5f71e88571e82931e83a1f31c8c470c6ca116eb",
     "biomes/swlowlands/src/89-host-sky.js": "7358b659f8c6be0f0236cb2ab51d68055f72573c3de76d2a797a5436208b5ef5",
     "biomes/swlowlands/src/89a-host-atmos.js": "e389bd3ca5902c5ae402323e1d41685864460c3aa84bb87a0401e47836f1b2f1",
     "biomes/swlowlands/src/89w-host-water.js": "bc26094dfc8444a32cf3c22691074795e7ed1ffb200352bd86c3e8e3cbbdbce3",
-    "biomes/swlowlands/src/99-host-take.js": "daa25ca8e3244706e88339447ad9aba7f3a5abfc2002b7a8da8a77a7e5eedbde",
+    "biomes/swlowlands/src/99-host-take.js": "7a240638fd3ea643dbc118201b57c9e12971ff7c3c794d52805294ab5e8a7158",
     "biomes/swlowlands/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/swlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/swlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
@@ -87,11 +87,11 @@
     "core/atmos/sky/89-atmos-e-skymodel.js": "249941190262f136bef16030f9a1b64211cf79ae9a84e2516567b149ba8e83d1",
     "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/biome/10-core-head.js": "5f39ed8250e34e3194390a1c3166bce6bf89b3fa6f59c71507c23154400a040e",
-    "core/biome/20-core-kit.js": "00021dfc1a40dad3e82779ad020382ac61a12beab1a0cdad127e7a6b7afc597c",
+    "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
+    "core/biome/20-core-kit.js": "37cce4ff1f8545cff49a1549930bf74cc1c30b88fa37d2048ffdc5dae420f3b2",
     "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
-    "core/biome/40-core-place.js": "09667cd51b7725a08acaf7df1d65ca91455f34a304080f9fc493f80ff5ab9979",
+    "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
@@ -126,10 +126,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/swlowlands/dist/swlowlands.html": "f3a4faa827ed27d531a6f9143a6035f45d707f96d42983a62937c75b1e22b92a"
+    "biomes/swlowlands/dist/swlowlands.html": "592511c293d618cb039383163794d4a8d3049a9afe0914905134a6647a7cfa74"
    },
    "outputs_raw": {
-    "biomes/swlowlands/dist/swlowlands.html": "f9212082ae6544dd4b871c2a4fa17a0624c825a46de345a3ffb63532799d4da3"
+    "biomes/swlowlands/dist/swlowlands.html": "b35451836a813a45a0aa19b182f6f4c0e7b037a54a3936d0dac3830a1e6f6b44"
    }
   }
  }
