@@ -235,49 +235,49 @@
    "name": "airless rim",
    "color": "#f6f3ec",
    "pct": 22.74,
-   "km2": 2853496
+   "km2": 2853492
   },
   {
    "code": "WS",
    "name": "sea / lake",
    "color": "#3b6fb0",
    "pct": 9.81,
-   "km2": 1231036
+   "km2": 1231368
   },
   {
    "code": "Cfa",
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.19,
-   "km2": 1153264
+   "km2": 1153836
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
-   "pct": 8.72,
-   "km2": 1094028
+   "pct": 8.71,
+   "km2": 1093696
   },
   {
    "code": "HF",
    "name": "hyperalpine ice",
    "color": "#eef0f7",
-   "pct": 5.95,
-   "km2": 746508
+   "pct": 5.94,
+   "km2": 746012
   },
   {
    "code": "Csa",
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
-   "pct": 5.71,
-   "km2": 716016
+   "pct": 5.7,
+   "km2": 715484
   },
   {
    "code": "EF",
    "name": "ice cap",
    "color": "#666666",
-   "pct": 5.38,
-   "km2": 675328
+   "pct": 5.39,
+   "km2": 676176
   },
   {
    "code": "BSk",
@@ -291,7 +291,7 @@
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.11,
-   "km2": 390372
+   "km2": 390500
   },
   {
    "code": "BSh",
@@ -305,7 +305,7 @@
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 2.96,
-   "km2": 371656
+   "km2": 371672
   },
   {
    "code": "Dsb",
@@ -318,15 +318,15 @@
    "code": "Am",
    "name": "tropical monsoon",
    "color": "#0078ff",
-   "pct": 2.26,
-   "km2": 283104
+   "pct": 2.25,
+   "km2": 283008
   },
   {
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
    "pct": 2.13,
-   "km2": 267844
+   "km2": 267576
   },
   {
    "code": "BWk",
@@ -340,14 +340,14 @@
    "name": "hyperalpine tundra (<0.6 atm)",
    "color": "#d8dbe8",
    "pct": 1.71,
-   "km2": 215008
+   "km2": 214932
   },
   {
    "code": "Aw",
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.65,
-   "km2": 207636
+   "km2": 207556
   },
   {
    "code": "XA",
@@ -382,14 +382,14 @@
    "name": "oceanic",
    "color": "#64ff50",
    "pct": 0.66,
-   "km2": 83088
+   "km2": 83068
   },
   {
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
    "pct": 0.57,
-   "km2": 72040
+   "km2": 72048
   },
   {
    "code": "WX",

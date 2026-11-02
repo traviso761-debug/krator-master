@@ -615,12 +615,12 @@ def solve_contour_surface(
         d_to_riv, (riy, rix) = nd.distance_transform_edt(~all_riv_seeds, return_indices=True)
         d_to_riv_mod = d_to_riv * (0.76 + 0.36 * rn_broad + 0.18 * rn_fine)
         h_at_riv = nd.gaussian_filter(h_cont, sigma=18.0)[riy, rix]
-        # Keep Crook valley deep while keeping northern painted river swales subtle (main valley carving happens in Step 4A/4B)
+        # Keep Crook valley broad and gently sloped so it never forms a harsh narrow V-slot trench
         w_is_crook = G.sstep(600.0, 660.0, Y) * (1.0 - G.sstep(220.0, 265.0, X))
-        val_incision = np.where(w_is_crook > 0.2, np.clip(45.0 + 0.14 * h_at_riv, 40.0, 280.0), np.clip(14.0 + 0.045 * h_at_riv, 12.0, 68.0))
+        val_incision = np.where(w_is_crook > 0.2, np.clip(18.0 + 0.055 * h_at_riv, 16.0, 78.0), np.clip(14.0 + 0.045 * h_at_riv, 12.0, 68.0))
         h_thalweg = np.maximum(2.5, h_at_riv - val_incision)
-        w_riv_valley = (1.0 - G.sstep(0.0, 36.0, d_to_riv_mod)) ** 1.35
-        h_cont = h_cont * (1.0 - 0.65 * w_riv_valley) + np.minimum(h_cont, h_thalweg + val_incision * G.sstep(0.0, 36.0, d_to_riv_mod)) * (0.65 * w_riv_valley)
+        w_riv_valley = (1.0 - G.sstep(0.0, 42.0, d_to_riv_mod)) ** 1.35
+        h_cont = h_cont * (1.0 - 0.55 * w_riv_valley) + np.minimum(h_cont, h_thalweg + val_incision * G.sstep(0.0, 42.0, d_to_riv_mod)) * (0.55 * w_riv_valley)
 
     # Add natural multi-scale topographic texture proportional to elevation (subtle in valleys, rugged on high peaks)
     relief_amp = 18.0 + 0.14 * np.clip(h_cont, 0.0, 6800.0)
@@ -1191,23 +1191,27 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     is_arch_axial_lake[:265, 250:570] = sub_al
 
     # Ensure the short inter-lake valley necks between Lakes 1..6 (`(312, 210)`, `(360, 180)`, `(403, 170)`,
-    # `(434, 154)`, `(498, 115)`, `(564, 122)`) are dry alluvial rift floor (`+6..+22 m`), while the 6 lakes are water!
+    # `(434, 154)`, `(498, 115)`, `(564, 122)`) are dry alluvial rift floor above sea level, WITHOUT clamping
+    # the surrounding high rift-shoulder horst ridges into circular depressions!
     inter_lake_necks = [
-        (258.0, 246.0, 12.0),
-        (312.0, 210.0,  9.5),
-        (360.0, 180.0,  8.5),
-        (403.0, 170.0,  7.5),
-        (434.0, 154.0,  8.5),
-        (498.0, 115.0, 14.0),
-        (564.0, 122.0, 12.0),
+        (258.0, 246.0, 10.5),
+        (312.0, 210.0,  8.5),
+        (360.0, 180.0,  7.5),
+        (403.0, 170.0,  7.0),
+        (434.0, 154.0,  7.5),
+        (498.0, 115.0, 12.0),
+        (564.0, 122.0, 10.5),
     ]
     is_arch_neck_land = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    px_nw = px + 2.2 * fbm1
+    py_nw = py + 2.2 * fbm2
     for nxc, nyc, nr_px in inter_lake_necks:
-        is_arch_neck_land |= (np.hypot(px - nxc, py - nyc) <= nr_px) & ~is_arch_axial_lake
+        is_arch_neck_land |= (np.hypot(px_nw - nxc, py_nw - nyc) <= nr_px) & (w_arch_trough >= 0.25) & ~is_arch_axial_lake
 
     is_ocean = (is_ocean | is_arch_axial_lake) & ~is_arch_neck_land
     is_sea = (is_sea | is_arch_axial_lake) & ~is_arch_neck_land
-    h_land_syn = np.where(is_arch_neck_land, np.clip(h_land_syn, 8.0, 28.0), h_land_syn)
+    # Never upper-clamp `h_land_syn` inside `is_arch_neck_land`—only ensure the trough floor stays above sea level!
+    h_land_syn = np.where(is_arch_neck_land, np.maximum(h_land_syn, 8.0 + 4.0 * rn_fine), h_land_syn)
 
     # 3C. Eastern Highland Lake (`is_high_lake` around `[1295, 206]`, surface `+1,460.0 m`):
     HIGH_LAKE_LEV = 1460.0
@@ -1247,21 +1251,23 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     )
 
     # 4A. Carve River System 1 — The Main Southern Ria River (`id: 9101`):
-    # Flows along the main southern Ria valley and enters the central hub of the Combined Double Delta at `(590.0, 158.0)`
-    # before continuing down the main delta distributary channel to the sea at `(490.0, 186.0)`!
+    # Flows with sweeping alluvial S-bend meanders along the main southern Ria valley (`Comment 3`) and enters
+    # the central hub of the Combined Double Delta at `(590.0, 158.0)` before continuing to the sea at `(490.0, 186.0)`!
     ria_trunk_ctrl = [
         (1312.0,  96.0, 1340.0, 14.0),  # Upper eastern light-blue headwater in Paint!
-        (1258.0, 118.0, 1170.0, 16.5),  # Upper S-bend south of NE uplands
-        (1196.0,  94.0,  980.0, 19.0),  # Bows north around eastern arachnoid foothills
-        (1128.0, 134.0,  810.0, 22.0),  # Sweeps SSW into upper-middle valley bend
-        (1056.0, 122.0,  660.0, 25.0),  # Curves WNW past northern terrace spur
-        ( 978.0, 166.0,  510.0, 28.0),  # Central Qena-style southward bend
-        ( 898.0, 174.0,  382.0, 31.0),  # Exact confluence with Arachnoid Gorge River (Web-Cleaver)!
-        ( 824.0, 176.0,  265.0, 34.0),  # Lower-middle valley course along main painted light-blue channel
-        ( 752.0, 172.0,  155.0, 37.0),  # Passes south of the interfluve divide separating the 2nd river system
-        ( 682.0, 188.0,   64.0, 40.0),  # Southern Ria alluvial valley bend
-        ( 626.0, 180.0,   14.0, 42.0),  # Enters eastern apex of the Combined Double Delta
-        ( 606.0, 172.0,    6.0, 44.0),  # Branches into southern bayou distributary
+        (1258.0, 120.0, 1170.0, 16.5),  # Upper S-bend south of NE uplands
+        (1196.0,  92.0,  980.0, 19.0),  # Bows north around eastern arachnoid foothills
+        (1124.0, 134.0,  810.0, 22.0),  # Exact confluence with Neo-Ozark Porphyry Fork (`id: 9109`)!
+        (1062.0, 112.0,  660.0, 25.0),  # Curves NNW into broad alluvial meander loop
+        ( 996.0, 174.0,  535.0, 27.5),  # Sweeping southward meander bend
+        ( 944.0, 140.0,  450.0, 29.5),  # Northward alluvial loop
+        ( 898.0, 174.0,  382.0, 31.0),  # Exact confluence with Arachnoid Gorge River (Web-Cleaver, `id: 9102`)!
+        ( 842.0, 144.0,  295.0, 33.5),  # Sweeping northward meander loop below Web-Cleaver junction
+        ( 784.0, 186.0,  210.0, 35.5),  # Deep southward meander loop across the middle Ria floodplain
+        ( 726.0, 150.0,  130.0, 38.0),  # Northward alluvial bend
+        ( 672.0, 190.0,   60.0, 40.5),  # Broad lower-valley southward loop
+        ( 626.0, 178.0,   14.0, 42.5),  # Enters eastern apex of the Combined Double Delta
+        ( 606.0, 168.0,    6.0, 44.0),  # Approaches central delta hub
         ( 590.0, 158.0,    2.5, 45.0),  # Central Combined Double Delta confluence with Arch River (9103) & Pak-Ma (9107)!
         ( 566.0, 162.0,    1.5, 45.0),  # Braids WSW through the Combined Double Delta islands
         ( 540.0, 168.0,    0.8, 45.0),
@@ -1271,15 +1277,16 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     ria_samples = _catmull_rom_2d(ria_trunk_ctrl, n_per_seg=18)
     n_ria = len(ria_samples)
     s_ria = np.linspace(0.0, 1.0, n_ria)
-    # Pin confluence at (898, 174) (index 6/16 = 0.375) and delta section (s >= 0.62)
+    # Pin confluences at (1124, 134) (index 3/18) and (898, 174) (index 7/18) and delta section (s >= 0.72)
     pin_w = (
-        np.sin(math.pi * s_ria) ** 0.85
-        * (1.0 - 0.98 * np.exp(-((s_ria - (6.0 / 16.0)) / 0.045) ** 2))
-        * (1.0 - G.sstep(0.58, 0.66, s_ria))
+        np.sin(math.pi * s_ria) ** 0.75
+        * (1.0 - 0.98 * np.exp(-((s_ria - (3.0 / 18.0)) / 0.022) ** 2))
+        * (1.0 - 0.98 * np.exp(-((s_ria - (7.0 / 18.0)) / 0.022) ** 2))
+        * (1.0 - G.sstep(0.68, 0.76, s_ria))
     )
     ria_meander_off = (
-        7.5 * np.sin(s_ria * 11.0 * math.pi + 0.35)
-        + 3.6 * np.sin(s_ria * 23.0 * math.pi - 0.80)
+        9.5 * np.sin(s_ria * 15.0 * math.pi + 0.35)
+        + 4.8 * np.sin(s_ria * 29.0 * math.pi - 0.80)
     ) * pin_w
     t_ria = np.gradient(ria_samples[:, :2], axis=0)
     tn_ria = np.hypot(t_ria[:, 0], t_ria[:, 1]) + 1e-9
@@ -1314,16 +1321,24 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     if arch_riv_pts[-1] != [590.0, 158.0]:
         arch_riv_pts.append([590.0, 158.0])
 
-    # Branch 2B (`id: 9104`, `Si-Ma`, `Comment 0`): Starts and runs 100% ON LAND along the central upland spine
-    # of the Northern Arch Peninsula (`(526, 28) -> (542, 50) -> (552, 72) -> (557, 94) -> (558, 113)`), never touching water!
+    # Branch 2B (`id: 9104`, `Si-Ma`, `Comment 1`): Originates high in the Northern Mountain Massif (`(596, 24)`, `~3,450 m`)
+    # and descends SW down the mountain slope onto the central upland spine of the Northern Arch Peninsula
+    # (`(596, 24) -> (574, 38) -> (554, 56) -> (553, 78) -> (556, 96) -> (558, 113)`), running 100% on land!
     arch_north_neck_ctrl = [
-        (526.0,  28.0, 460.0,  7.0),  # Headwater on solid green upland spine of Northern Arch Peninsula
-        (542.0,  50.0, 310.0,  9.5),
-        (552.0,  72.0, 175.0, 12.0),
-        (557.0,  94.0,  65.0, 14.0),  # Runs on solid land east of Axial Lake 6
-        (558.0, 113.0,   7.5, 15.5),  # Joins Arch Axial River (`id: 9103`) on dry land at `[558.0, 113.0]`!
+        (596.0,  24.0, 3450.0,  5.5),  # Headwaters high in the Northern Mountain Massif
+        (574.0,  38.0, 1850.0,  8.0),  # Descends western mountain flank
+        (554.0,  56.0,  620.0, 10.5),  # Enters Northern Arch upland spine
+        (553.0,  78.0,  210.0, 12.5),
+        (556.0,  96.0,   65.0, 14.0),  # Runs on solid land east of Axial Lake 6
+        (558.0, 113.0,    7.5, 15.5),  # Joins Arch Axial River (`id: 9103`) on dry land at `[558.0, 113.0]`!
     ]
     arch_neck_samples = _catmull_rom_2d(arch_north_neck_ctrl, n_per_seg=12)
+    s_an = np.linspace(0.0, 1.0, len(arch_neck_samples))
+    an_off = (2.2 * np.sin(s_an * 5.0 * math.pi + 0.3)) * (np.sin(math.pi * s_an) ** 1.2)
+    t_an = np.gradient(arch_neck_samples[:, :2], axis=0)
+    tn_an = np.hypot(t_an[:, 0], t_an[:, 1]) + 1e-9
+    arch_neck_samples[:, 0] += (-t_an[:, 1] / tn_an) * an_off
+    arch_neck_samples[:, 1] += ( t_an[:, 0] / tn_an) * an_off
     arch_neck_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in arch_neck_samples[::2]]
     if arch_neck_pts[-1] != [558.0, 113.0]:
         arch_neck_pts.append([558.0, 113.0])

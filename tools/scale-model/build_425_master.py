@@ -770,20 +770,20 @@ def main():
     En_pre_riv = En_exp.copy()
     shade_pre_riv = compute_clean_hillshade(En_pre_riv, zf=5.0, az_deg=315.0, alt_deg=45.0)
 
-    # Carve continuous fluvial channels & valleys into `En_exp` along ALL rivers in `rivers_exp`!
-    En_smooth_ref = nd.gaussian_filter(En_exp, sigma=2.2)
+    # Carve continuous, gently sloped fluvial channels & valleys into `En_exp` along ALL rivers in `rivers_exp`!
+    En_smooth_ref = nd.gaussian_filter(En_exp, sigma=2.8)
     riv_seed_mask = np.zeros((NEW_OH, NEW_OW), dtype=bool)
     riv_bed_grid = En_exp.copy()
     riv_depth_grid = np.zeros((NEW_OH, NEW_OW), dtype=float)
-    riv_hw_grid = np.full((NEW_OH, NEW_OW), 2.5, dtype=float)
+    riv_hw_grid = np.full((NEW_OH, NEW_OW), 4.5, dtype=float)
 
     for r in rivers_exp:
         pts_r = r.get('px') or []
         if len(pts_r) < 2:
             continue
         q_m = float(r.get('q_mouth') or 250.0)
-        hw_r = float(np.clip(2.0 + 0.55 * math.log10(max(20.0, q_m)), 2.2, 4.4))
-        depth_r = float(np.clip(28.0 + 18.0 * math.log10(max(20.0, q_m)), 34.0, 92.0))
+        hw_r = float(np.clip(3.8 + 1.15 * math.log10(max(20.0, q_m)), 4.2, 8.8))
+        depth_r = float(np.clip(8.0 + 5.5 * math.log10(max(20.0, q_m)), 10.0, 26.0))
 
         # Dense 0.65-px sub-sampling along each river segment so the carved channel has zero gaps or beads
         dense_pts = []
@@ -907,8 +907,8 @@ def main():
     ct_pad = np.pad(ct_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
 
     # Apply the newly carved river-channel bank hillshade ratio (`shade_post_riv / shade_pre_riv`) to `t_pad` and `st_pad`
-    # so interior rivers also display crisp 3D-shaded valley banks on the 2D relief & satellite maps!
-    riv_shade_ratio = np.clip((shade_post_riv + 1e-5) / (shade_pre_riv + 1e-5), 0.74, 1.26)
+    # with gentle, natural valley-bank shading (never a harsh trench shadow)!
+    riv_shade_ratio = np.clip((shade_post_riv + 1e-5) / (shade_pre_riv + 1e-5), 0.90, 1.10)
     w_riv_bank_shade = ((1.0 - G.sstep(0.0, 1.15, u_riv)) * (~whas_exp).astype(float))[..., None]
     riv_bank_mult = 1.0 + (riv_shade_ratio - 1.0) * w_riv_bank_shade
     t_pad = np.clip(t_pad.astype(float) * riv_bank_mult, 0.0, 255.0).round().astype(np.uint8)
