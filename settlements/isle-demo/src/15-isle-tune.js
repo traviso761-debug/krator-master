@@ -318,17 +318,20 @@ ISLE.TUNE.sim = {
     },
     goods: ['ore', 'timber', 'charcoal', 'hides', 'iron'],
     /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
-       sets the yield (kits/resources RES_ORE.grades); nothing runs out (the owner, 2026-10-18: core's `amount` stays unset).
+       sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it holds and regrows a night (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come back, a pan and a pasture and a stand do).
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
+    sites: { iron: { amount: { low: 20000, medium: 60000, high: 150000 } }, salt: { amount: 40000, regen: 300 }, pasture: { amount: 40000, regen: 2000 }, stand: { amount: 120000, regen: 330 } },
     stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 } },
     minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10 },
     carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
     town: {
-      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100 } },
-      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { out: ['iron'], rate: 0.5, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
+      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100, iron: 40 },
+        /* every `every`th smithy works the iron into tools, a batch (PLAN-ECONOMY.md Phase 2): Valapo smelts, Kautoa works the iron */
+        batches: { smithy: { every: 4, batch: { 'in': { iron: 1, charcoal: 1 }, out: { tools: 2 }, hours: 8 }, cap: 200 } } },
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 } }
     },
-    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 } }
+    lakatoi: { kautoa: ['charcoal'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } }
   }
 };

@@ -213,10 +213,16 @@ leaving the map has no counterparty yet: the isles' check holds abroad equal to 
 
 **Resource sites and stockpiles (Phase 1).** `SIM.site({id, kind, goods, grade, yield, amount, regen, capacity, settlement})` keys a resource to its
 world record's stable id, and a recipe's `site` draws on it: `yield` multiplies the rate, `taken` counts what it gave, and the ledger holds that
-to what its settlement made. `amount` unset is endless (the owner's rule for nodes, pasture, salt and regrowing timber: core/hamlet/PLAN.md); a number
+to what its settlement made. `amount` unset is endless; a number (the owner's rule since 2026-11-02: core/hamlet/PLAN.md)
 depletes, blocks as `depleted: id`, and takes `regen` back a night. `SIM.stockpile(settlement, {good: {min, target, max, reserve}})` is a settlement's
 policy: `min` floors the governor's target, `target` replaces it, at `max` the good's makers stop (its supply line, with the governor's `pool`), and no
 trade route takes `reserve`.
+
+**Batch recipes (Phase 2).** `SIM.recipe(place, {batch:{in, out, by, hours}, cap, site})`: `hours` worker-hours make one batch. A place holds one batch in hand
+(`P.order`). Its `in` are claimed once when it starts, all or none, its own store first and then the warehouses, booked `used`; its `out` and byproducts `by` land
+when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` is batches a worker-hour, so the governor sets it as any, and `in` become the good's
+derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
+A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
 
 **Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
 does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields

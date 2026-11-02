@@ -46,8 +46,10 @@ ISLE.simHamletTowns = function () {
     Object.keys(TW.inputs || {}).forEach(function (g) { E.inputs[g] = TW.inputs[g]; });
     Object.keys(TW.recipes || {}).forEach(function (kind) { var R0 = TW.recipes[kind];
       X.places.places.forEach(function (P) { if (P.kind !== kind || E.recipes[P.id] || !P.activities.WORK) return;
-        SIM.recipe(P.id, { out: R0.out.slice(), rate: R0.rate, cap: R0.cap });
-        R0.out.forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });
+        SIM.recipe(P.id, R0);
+        Object.keys(R0.batch.out).forEach(function (g) { X.econ.goods[g] = (X.econ.goods[g] || 0) + 1; }); }); });
+    Object.keys(TW.batches || {}).forEach(function (kind) { var R1 = TW.batches[kind], n = 0;
+      X.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (n++ % R1.every)) return; SIM.recipe(P.id, { batch: R1.batch, cap: R1.cap }); }); });
     var W = E.warehouses[0]; if (W) Object.keys(TW.startLots || {}).forEach(function (g) { W.stock[g] = (W.stock[g] || 0) + TW.startLots[g]; });
   });
   /* the lakatoi carries the charcoal to Valapo's smithies and their iron back; Valapo expects its charcoal before any has come */
@@ -101,7 +103,8 @@ ISLE.simHamlet = function (sp, v, res) {
   /* the resource it works, by the map record's own id: its grade the yield (nothing runs out: the owner's rule) */
   var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) Pr.out.forEach(function (g) { outs[g] = 1; }); });
   var siteId = res && res.id ? res.id : null;
-  if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade,
+  var SK = (HT.sites || {})[res && res.kind] || {}, amt = SK.amount != null && typeof SK.amount === 'object' ? SK.amount[res.grade || 'medium'] : SK.amount;
+  if (siteId) SIM.site({ id: siteId, settlement: id, kind: res.kind, goods: Object.keys(outs), grade: res.grade == null ? null : res.grade, amount: amt, regen: SK.regen,
     yield: res.grade != null && HT.gradeYield[res.grade] != null ? HT.gradeYield[res.grade] : 1, capacity: res.cap == null ? null : res.cap });
   places.forEach(function (P) {
     if (P.kind === 'warehouse') { SIM.store(P.id, { kind: 'warehouse' }); return; }
@@ -153,7 +156,7 @@ ISLE.simHamletBooks = function () {
       shipped: (R1.shipped[X.id + '>' + X.parent]) || {}, landed: (R1.landed[X.id + '>' + X.parent]) || {}, fed: (R2.landed[X.parent + '>' + X.id]) || {},
       atSea: R1.carriers.concat(R2.carriers).reduce(function (n, C) { C.cargo.forEach(function (c) { n[c.good] = (n[c.good] || 0) + c.n; }); return n; }, {}), level: SIM.levelOf(X.id) };
   });
-  S.order.forEach(function (s) { var E = SIM.econ(s); out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used) }; });
+  S.order.forEach(function (s) { var E = SIM.econ(s); (out.blocked || (out.blocked = {}))[s] = SIM.blockedReport(s); out.towns[s] = { imported: Object.assign({}, E.imported), made: Object.assign({}, E.made), used: Object.assign({}, E.used) }; });
   return out;
 };
 /* the checks over two snapshots (a at the start, b at the end of a run) */

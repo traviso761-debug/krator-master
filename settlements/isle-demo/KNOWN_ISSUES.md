@@ -252,12 +252,14 @@
       open world draws the buildings (88h) but no villagers.
 - [ ] **The felling and the timber still run apart** (the rest closed 2026-11-02, PLAN-ECONOMY.md Phase 1): each village's
       works now draw on its map record by that record's id, the grade setting the yield, and the sim reports what each gave
-      (`SIM.sitesReport`, the ledger reconciles it). Nothing runs out, by the owner's rule of 2026-10-18 (core's `amount` and
-      `regen` are built and tested, and unset here). But the stumps the stand shows (88h) are a pure function of the world
+      (`SIM.sitesReport`, the ledger reconciles it). They deplete (the owner, 2026-11-02, over the rule of 2026-10-18;
+      `ISLE.TUNE.sim.hamlets.sites`: an ore node does not come back, the rest regrow). But the stumps the stand shows (88h) are a pure function of the world
       clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
       forbids for now. Lot ages for perishables are not built: nothing needs them yet.
-- [ ] **Iron goes abroad:** Valapo smelts the mine's ore (two ore and one charcoal an iron) and the Hykkousoi buy it; Kautoa
-      does not yet work it into tools (the stone tools stay; iron tools are owed, PLAN.md 9b).
+- [ ] **Iron tools share the stone tools' good:** the chain runs to its end (2026-11-02, PLAN-ECONOMY.md Phase 2): Valapo smelts
+      the mine's ore in batches, the lakatoi carries the iron, and every fourth Kautoan smithy works it with charcoal into
+      `tools`, in place of the armour it made. The good is still sold as `stone tool` (PLAN.md 9b owes iron tools their own
+      line). A mine that empties ends Valapo's iron: nothing yet opens a new node or moves the village.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).

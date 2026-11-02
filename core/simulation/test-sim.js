@@ -889,6 +889,25 @@ function world(seed){
    for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}return EV.imported.rice||0;};
  const r=go({rice:{reserve:300}}),n=go(null);ok('a policy\'s reserve stays out of a route ('+r+' sent, '+n+' without)',r===100&&n===400,r>100);}
 
+// batch recipes (PLAN-ECONOMY.md Phase 2): inputs claimed once at the start, outputs and byproducts at the end, and what
+// stops a batch said by place: no input, a partial input, no workers, a full store, an empty site
+{const mk=(o)=>{o=o||{};const {S,clock}=world(197);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'forge',kind:'smithy',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'smith',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{ore:{},coal:{},iron:{},slag:{}},every:60,window:1});S.store('shed',{kind:'warehouse'});if(o.site)S.site(Object.assign({id:'n1',goods:['iron']},o.site));
+   S.recipe('forge',Object.assign({batch:{'in':{ore:2,coal:1},out:{iron:1},by:{slag:1},hours:2},cap:o.cap==null?1000:o.cap},o.site?{site:'n1'}:{}));S.R.place.shed.stock=o.stock||{ore:20,coal:10};
+   if(o.smiths!==0)[0,1].forEach(i=>S.actor({id:'s'+i,role:'smith',home:'homeA',work:'forge'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const A=mk();const a0=A.S.ledgerSnap();A.run(30);const L=A.S.ledger(a0,A.S.ledgerSnap());
+ ok('a batch makes its outputs and byproduct from its inputs (10 batches from 20 ore and 10 coal)',A.E.made.iron===10&&A.E.made.slag===10&&A.E.used.ore===20&&A.E.used.coal===10,A.E.made.iron!==10);
+ ok('the ledger balances over batches',L.ok,!L.ok);
+ ok('out of input it says what is missing',A.S.blockedReport().forge.reason==='missing'&&A.S.blockedReport().forge.goods.indexOf('ore')>=0,!A.S.blockedReport().forge);
+ const P=mk({stock:{ore:1,coal:9}});P.run(10);ok('a partial input claims nothing',!(P.E.used.coal>0)&&P.S.R.place.shed.stock.coal===9&&P.S.blockedReport().forge.goods.join()==='ore',P.E.used.coal>0);
+ const N=mk({smiths:0});N.run(3);ok('nobody at work is said',N.S.blockedReport().forge.reason==='no workers',!N.S.blockedReport().forge);
+ const F=mk({cap:3});F.run(10);ok('a full store stops it and says so',F.S.blockedReport().forge.reason==='full'&&F.E.made.iron<=2,F.E.made.iron>3);
+ const D=mk({site:{amount:3}});D.run(20);ok('an empty site stops it, its batch whole',D.S.blockedReport().forge.reason==='depleted'&&D.E.made.iron===3&&D.S.sitesReport()[0].amount===0,D.E.made.iron!==3);
+ const R=mk();R.run(30);R.S.R.place.shed.stock.ore=4;R.S.R.place.shed.stock.coal=2;R.run(10);ok('fed again it runs',R.E.made.iron===12,R.E.made.iron!==12);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 
