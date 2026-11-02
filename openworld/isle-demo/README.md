@@ -15,6 +15,23 @@ world's machinery.
 - **Build:** `python3 build.py`.
 - **Verify:** `python3 verify.py dist/isle-demo.html --assert --views 0,1,14`. Use `--list` to print the views.
 
+## The east jungle and the Raptor camp (core/camp, 2026-10-26)
+
+- **The east jungle:** a fourth area of the region (`source/added-areas.json`), the mainland hyperjungle east of the
+  north-east isles in the Beast Riders' country (about 3,000 km2; the union is now 34,792 km2, the box px 616-748 by
+  352-498). It was cut from scale model 4.23 with `tools/scale-model/extract_region.py --keep data`, which keeps the
+  frame's origin (px 674,424), the heights' 16-bit range and every old height cell (all 5,056 agreed with 4.23), so
+  nothing in the old region moved. To cut again: the same command with `--add source/added-areas.json --keep data`.
+- **The camp:** a band of the Beast Riders' Raptor tribe (`core/camp/PLAN.md` section 10, "The first build"):
+  - `src/48k-world-camps.js` (`[G data]`) sites it, pitches it with `KCAMP.pitch` and counts its people with
+    `KCAMP.census` (`ISLE_CAMPS`). `ISLE_CAMPS.simDeclare` puts it on core/simulation: a settlement, a walking layer,
+    its places and its people.
+  - `src/88k-world-camps.js` (`[web]`) registers it in core/tags, clears the jungle inside its hedge, and draws the
+    kit's tents, pens, hedge and rails. CAT carries the kit's tent set on this page (`cat_bundle(tents=True)`). It
+    presents the camp on the sim within 2.5 km and draws its people near the camera.
+- **Go to:** "Raptor band camp (east jungle)".
+- **`window._camps`:** the camp, its census, its sim declaration, the people drawn, and `checks(neg)` for `verify.py`.
+
 ## The hamlets (core/hamlet, 2026-10-19)
 
 Four resource villages stand in the world, sited and laid out at load from `src/48-world-hamlets.js` (`[G data]`: the
@@ -28,6 +45,13 @@ north (`core/hamlet/PLAN.md` section 4).
 - **The world clock:** `core/clock`, the 72-minute day, as every settlement runs (`HOST.clock`; `?hour=`, `?day=`,
   `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
 - **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
+- **In the sim (2026-10-26, core/hamlet H5):** `48t-world-towns.js` makes the villages once (`ISLE_HAMLETS.made`, which 88h
+  draws) and declares them with the towns (settlements/isle-demo `47h-isle-hamlets.js`): each its town's settlement at the
+  abstract level, its works producers, its goods carted to its town and its town's food carted back.
+  `ISLE_TOWNS_W.stats.hamlets` is the report; `verify.py` runs them two days on this map (staffed, making, loads landed,
+  fed; with negatives).
+- **The lanes and greens are wound to face up** (2026-10-26): facing down they were culled, so no village showed its
+  lanes or its green (Longsong's square, the same fault). Their colours are converted to linear, as the page's others.
 
 ## The towns (M7, 2026-10-20)
 

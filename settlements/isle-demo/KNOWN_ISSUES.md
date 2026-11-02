@@ -118,8 +118,11 @@
       instancing or impostors, LOD, a download budget), so its bodies replace these later. A place's workers stand round
       its door's spot (the posts have no spots of their own: no interiors), so a market's traders cluster.
 - [ ] **The canoe line's want is a town's use, not its shelves** (P7c): each town draws hourly on its warehouses what it
-      uses of the other's goods (`ISLE.TUNE.sim.trade.uses`: Valapo's salt, rice, cloves and cacao, Kautoa's sugar), as an
-      abstract use; the imported foods are not yet sold in its shops or eaten in its meals, and the weavers of Kautoa still
+      uses of the other's non-food goods (`ISLE.TUNE.sim.trade.uses`: Valapo's salt, cloves and cacao, Kautoa's sugar), as
+      an abstract use. The imported foods are on the shelves since 2026-10-26: Valapo sells and eats Kautoa's rice at its
+      ration (`trade.diet`, 0.05 a person a day, core's SIM.itemsDiet: about 140 eaten and 150 landed a day over 21
+      days; a week-test check with its negative). The lakatoi lands it in lumps (it fills six days of a one-day use that
+      swings with the restocking round), so Valapo holds about ten days of rice; and the weavers of Kautoa still
       lack cotton (a recipe whose input never was made is not declared). Valapo makes no coffee yet (its upland farms are
       a world record), so the oruwa comes back from Valapo empty.
 - [x] **Kautoa's kin mostly stayed home in their free hours** (2026-10-19): 425 places to be in company for 3,700. The
@@ -140,10 +143,11 @@
 - [ ] **Still piling up** (2026-10-19, after the pots, the stone tools and the salt): Valapo's cotton (+122 a day) and
       cloth (+34), and a little stone (+7). The governor's floor (0.3 of the full rate) keeps a producer working with
       little use for what it makes; the potters' and the quarry's rates were cut to their custom. Stone wants building.
-- [ ] **The governor and spoilage are the page's hooks** (`49`, on `SIM.stepHooks`): an order-up-to rule that sets
-      `E.recipes[id].rate` hourly and the perishables' midnight loss. Both belong in `core/simulation`'s economy as
-      opt-in features (`SIM.economy({govern, spoil})`) once proved here; until then a second settlement would copy them.
-- [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
+- [x] **The governor and spoilage were the page's hooks** (`49`, on `SIM.stepHooks`): since 2026-10-26 they are
+      core/simulation's (`77-sim-6-govern.js`: `SIM.economy({govern, spoil, keep, season})`), with the ships' buys as the
+      governor's `buys`; `49` only maps the tuning. The week test's books are byte-identical on core's rules.
+- [ ] **Demand follows supply in the households** (except the imported foods, bought at their diet share since
+      2026-10-26): a household buys each food in proportion to the warehouses' stock,
       so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
 - [x] **The material meter pinned at 100 by day 14** (needs on, 2026-10-19): only replacements were bought. The treats
@@ -166,26 +170,56 @@
 - [ ] **Core's treat is one item a wealth:** the last of `treat.items` whose least wealth a person has, so a class buys
       one treat; the isles spread each class's wealth a little a person (`items.wealthSpread`) so the middle splits
       between mats and lamps and the rich between lamps and jewellery. The poor drink kava and nothing else.
-- [ ] **Core counts a good nobody could buy as never running out:** a producer of several goods picks the one with fewest
-      days left, and a good whose buyers all failed has no use booked, so its days are infinite and it is never made
-      (Kautoa's potters made no lamps once the opening lamps were gone; Valapo's weavers no mats). The isles give such
-      goods places of their own (`alternate`); a core fix would count the unmet draws as use.
+- [x] **Core counted a good nobody could buy as never running out** (a producer of several goods picks the one with
+      fewest days left, and a good whose buyers all failed had no use, so it was never made: Kautoa's potters made no
+      lamps once the opening lamps were gone). The isles gave such goods places of their own (`alternate`). Since
+      2026-10-26 core counts the unmet draws as use (`SIM.economy({useShort})`), so the weavers and potters make all their
+      goods again; dropping `alternate` showed two governor faults on a recipe of several goods, fixed in core too: a good
+      never made asked for the most rate whether wanted or not (the kilns ran flat out and the pots piled), and a maker
+      chose by warehouse days, blind to what sat at its own store (Valapo's cloth piled at the weavers): a governed maker
+      now chooses the good furthest below its target over the whole supply line. And over 21 days the piles had hidden two
+      more: Kautoa's weavers had no recipe at all (a maker needed every good of its list makeable, and Kautoa grows no
+      cotton: it now makes those it can, mats and hats), and a town at the abstract level buys no treats, so nothing was
+      made of them and, watched again, its shelves were bare: the governor keeps a shelf stock with no demand (`least`).
+      21 days: one shortfall (21 lamps on one day) where there were 10 (8,131 jewellery).
+- [x] **Kautoa's mats and hats opened high** (about 2,000): its weavers ran at the full rate on the first day, as every
+      producer did before the governor had a history. Once the abstract town bought mats, the carts chose those piles
+      (36 days of mats against 522 of meat) and left Kautoa's meat unhauled on the first day. Since 2026-10-26 a recipe
+      whose every good already holds its shelf stock (`least`) runs at its floor on the first day; mats and hats hold
+      near 300-500.
+- [x] **The abstract level bought no treats or wear** (2026-10-26): core's abstract day (77-sim-6-items.js
+      SIM.itemsAbstractDay) wears each person's clothes and tool, takes a hurt, raises the material meter, and buys what
+      that wants at the nearest seller in the town (no trip), each person at an hour hashed from it. With both towns
+      unwatched or both watched for 12 days, the wear bought agrees within a few a day (a day earlier unwatched: the
+      abstract day books yesterday); the treats run about 25% higher unwatched (every errand succeeds; watched, some go
+      stale on the way). It showed three more things, fixed: the material meters opened between 5 and 30 and rose
+      together, so every treat was first bought in one wave around day 9 (the meter now opens spread to the treat's
+      `at`, 0-55); the potters' lamps sat at 44 kilns in lots under a cart's minLoad while the shelves were empty (core's
+      `cart.urgent`: a good its buyers went short of, under a day on the shelves, is fetched in any amount; any good
+      under a day kept the carts on small lots and left Kautoa's meat unhauled on the first day); the weavers short of cotton filled their
+      hours with mats and hats (12,000 of each by day 21: a governed maker makes nothing over target while one of its goods
+      is under). Valapo opens with 1,000 cloth (the target is about 1,600); both towns keep a shelf of 400 lamps (`least`, and the opening lot).
+- [x] **The food supply-line check failed over 21 days** (before 2026-10-26): it passes since the abstract day.
+- [ ] **Three small shortfalls over 21 days** (2026-10-26; the 7-day week test passes): Kautoa 9 lamps on day 14, and
+      Valapo, unwatched, 31 and 49 kava on days 29-30. The treats are bought about 25% more unwatched than watched.
 - [ ] **Contemplation settles near 60:** few choose worship in their free hours (the temples, shrines and squares are
       few and far for most).
 - [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),
       and a cook without a cooking pot works at half pace like any tool. Once needs run, a pot-less kitchen should cook
       worse meals.
-- [ ] **Core asks for a tool only when it breaks:** an errand that fails (the town out of tools) is never tried again,
-      and the worker stays at half pace. The page asks again each hour of work (`ISLE.simToolRetry`, 43); a core rule
-      later.
-- [ ] **The seasoning is a getter** on the food kinds' `quality` (43), read in the town's turn while its warehouses hold
-      salt (`ISLE.SIM.seasoned`, 49); core could take a per-settlement seasoning rule instead.
+- [x] **Core asked for a tool only when it broke** (the page asked again each hour, `ISLE.simToolRetry`): core's
+      `SIM.items({retry: 60})` since 2026-10-26.
+- [x] **The seasoning was a getter** on the food kinds' `quality` (43): core's `season` rule since 2026-10-26 (a meal's
+      foods count `mult` times their quality while the town's warehouses hold salt).
 - [x] **Kautoa's farm ring went hungry** (2026-10-19): the farmhands work in the fields till 17:00, far from home; the
       first free hour's walk reached a shop after it closed, the errand went stale, and from day 13 about 370 meals a day
       were eaten from empty stores (the no-shortfall check missed it: the warehouses had the food). The staples shops and
       the market now stay open till 21:00; none since.
-- [ ] **The households restock on a three-day round,** in step, so the warehouses swing about 15% around their target
-      and the governor reads its demand over three whole days. Staggered restocking would smooth both.
+- [x] **The households restocked on a three-day round, in step** (the warehouses swung about 16% a day, the food
+      bought a day by 0.7 of its mean). Since 2026-10-26 each house buys 1.5 to 4.5 days of food (core's `items.stagger`,
+      0.5, a hash of the home) and the stores open with 1 to 3.5 days (the same mean as before, 2.25): the food bought a day varies by about 0.18 in
+      each town over ten days, the warehouses about 7% a day; a week-test check holds the watched town's buying within 0.25. The
+      governor still reads its demand over three whole days (`govern.window`), which could now be shortened.
 - [ ] **The ships are timers, not vessels:** they buy on their days at the landing; the moored foreign vessels are drawn
       as before, and no ship comes or goes. Their goods leave the map (exported) for nothing in return yet: no money.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
@@ -210,6 +244,22 @@
       (a hinterland village, core/hamlet H5) brings ore; Kautoa's weavers make nothing (the cotton is Valapo's, and the
       garments come by canoe).
 - [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
-- [ ] **The second morning's buying wave.** Every house opens with 1.5 to 3 days of food, so on day 2 most of them buy at
+- [x] **The second morning's buying wave** (gone since 2026-10-26: the stores open with 1 to 3.5 days). Every house opened with 1.5 to 3 days of food, so on day 2 most of them bought at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.
+
+## The hamlets in the sim (core/hamlet H5, 2026-10-26)
+
+- [ ] **The villages are declared only where a page hands them in** (47h): the open world's page from the map, the node
+      test (`tests/test-isle-hamlets.js`) on stand-in ground at the survey points (every place dry; the layout differs
+      from the map's, the economy is the same). The city page and its week test run without them, so their towns'
+      economies are as before.
+- [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
+      open world draws the buildings (88h) but no villagers.
+- [ ] **The production and the map run apart:** the lumber village's felling (88h, on the world clock) is not its sim's
+      timber, and the mine's node and the salt field are not drawn down. PLAN.md section 5's resource records are next.
+- [ ] **Iron goes abroad:** Valapo smelts the mine's ore (two ore and one charcoal an iron) and the Hykkousoi buy it; Kautoa
+      does not yet work it into tools (the stone tools stay; iron tools are owed, PLAN.md 9b).
+- [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
+- [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
+      so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).

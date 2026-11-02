@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """The port audit (GODOT-PLAN.md, section 3): tag every fragment of every build.
 
-    python3 tools/audit_port.py            # refresh every PORT.md and PORT-INDEX.md
-    python3 tools/audit_port.py --reset    # throw away hand-edited tags, retag everything
-    python3 tools/audit_port.py settlements/voth   # one build only (the index is still rewritten)
+    python3 tools/audit_port.py settlements/voth   # one build: writes that build's PORT.md and nothing else
+    python3 tools/audit_port.py settlements/voth --index   # the same, and PORT-INDEX.md
+    python3 tools/audit_port.py --all      # refresh every PORT.md and PORT-INDEX.md
+    python3 tools/audit_port.py --all --reset    # throw away hand-edited tags, retag everything
+
+Scoped to what it is asked (CORE-IMPROVEMENTS.md 5c): a build named writes that build's PORT.md only; every file in
+the repo takes --all, and with no argument at all it prints this and writes nothing (three sessions rewrote about 80
+PORT.md files by accident when it did everything by default).
 
 For each build (a folder with a build.py under settlements/, kits/ or biomes/) and for core/,
 it scans the fragments in src/ and targets/ for API families (three.js, canvas 2D, the DOM,
@@ -232,7 +237,7 @@ def build_meta(build):
     return meta
 
 
-def write_port(build, rows, notes_text):
+def write_port(build, rows, notes_text, write=True):
     path = os.path.join(ROOT, build, 'PORT.md')
     kb = {t: 0.0 for t in TAGS}
     for r in rows:
@@ -258,11 +263,12 @@ def write_port(build, rows, notes_text):
             r['name'], r['kb'], r['tag'], ' | '.join(str(r['counts'][c]) for c in COLS), r['note']))
     lines.append('')
     lines.append(notes_text if notes_text else '## Notes\n\n(none yet: the split lists and the overrides go here)\n')
-    open(path, 'w', encoding='utf-8').write('\n'.join(lines))
+    if write:
+        open(path, 'w', encoding='utf-8').write('\n'.join(lines))
     return kb
 
 
-def audit(build, reset):
+def audit(build, reset, write=True):
     tags, notes_text = read_port(os.path.join(ROOT, build, 'PORT.md'))
     rows = []
     for name, p in fragments(build):
@@ -274,7 +280,7 @@ def audit(build, reset):
             tag, note = tags[name]
         rows.append({'name': name, 'kb': s['kb'], 'counts': s['counts'], 'tag': tag, 'note': note,
                      'sha': s['sha'], 'family': family(name)})
-    kb = write_port(build, rows, notes_text)
+    kb = write_port(build, rows, notes_text, write)
     return rows, kb
 
 
@@ -322,7 +328,11 @@ def write_index(results):
 
 def main(argv):
     reset = '--reset' in argv
-    only = [a.rstrip('/') for a in argv if not a.startswith('--')]
+    only = [a.rstrip('/').replace(os.sep, '/') for a in argv if not a.startswith('--')]
+    if not only and '--all' not in argv:
+        print(__doc__)
+        return
+    index = not only or '--index' in argv
     todo = ['core'] + builds()
     results = []
     for build in todo:
@@ -331,12 +341,17 @@ def main(argv):
             tags, _ = read_port(os.path.join(ROOT, build, 'PORT.md'))
             if not tags:
                 continue
-        rows, kb = audit(build, reset and (not only or build in only))
+        mine = not only or build in only
+        rows, kb = audit(build, reset and mine, mine)
         results.append((build, rows, kb, build_meta(build)))
+        if not mine:
+            continue
         print('%-28s %3d fragments  ' % (build, len(rows)) +
               '  '.join('%s %.0f' % (t, kb[t]) for t in TAGS))
-    write_index(results)
-    print('wrote PORT-INDEX.md and %d PORT.md files' % len(results))
+    if index:
+        write_index(results)
+    n = len(results) if not only else len([b for b in only if b in todo])
+    print('wrote %d PORT.md file(s)%s' % (n, ' and PORT-INDEX.md' if index else ''))
 
 
 if __name__ == '__main__':

@@ -309,6 +309,8 @@ export function model(api){
   const ship={radius:K.radius||4400,group:G,pick,minD:K.minD||260,
     get adaptiveNear(){return !IN.active();},
     ownsInput:()=>IN.active(),
+    // a viewpoint is outside: picking one leaves the interior, which otherwise keeps the camera
+    onView:()=>{if(IN.active())IN.exit();},
     camFrame:now=>IN.camFrame(now),
     hashExtra:()=>(IN.active()?'&inside='+IN.where():'')+(cutOn&&!IN.active()?'&cutaway':''),
     hudOnly:now=>IN.active()?IN.hud(now):null,

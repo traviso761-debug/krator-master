@@ -44,8 +44,18 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){const dx=(x-cx)/ex,dy=
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 // a crown of clumps on a hemisphere round (cx,cy,cz)
-function crown(item,T,st,lv,cx,cy,cz,R,Ry,n,colFn,size){for(let k=0;k<n;k++){const a=k*GOLD+rr(-.3,.3),u=rr(.15,1),rad=R*Math.sqrt(u)*rr(.7,1.05),y=cy+Ry*(1-u)*rr(.6,1.05)-Ry*.15;
-  clumpAt(item,cx+Math.cos(a)*rad,y,cz+Math.sin(a)*rad,size*rr(.8,1.2),.7,colFn(k,y),cx,cy,cz,R,Ry);st.clumps++;}}
+// With o.limbs (the tree's limb lines, each [{x,y,z,r}...]) every clump sits on a TWIG grown to it from the nearest point of a limb
+// (the foliage guards, 2026-10-27: "foliage held by its structure"; the crowns were clumps in the crown's volume, their stems in the
+// air): a thin two-segment tube in o.bark, the clump at its tip. o.tips collects the twig tips (flowers go there)
+function crown(item,T,st,lv,cx,cy,cz,R,Ry,n,colFn,size,o){o=o||{};const L=o.limbs||null,pts=[];
+ if(L)L.forEach(l=>{for(let i=0;i<l.length-1;i++)for(let k=0;k<=3;k++){const a=l[i],b=l[i+1],t=k/3;pts.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t,r:a.r+(b.r-a.r)*t});}});
+ for(let k=0;k<n;k++){const a=k*GOLD+rr(-.3,.3),u=rr(.15,1),rad=R*Math.sqrt(u)*rr(.7,1.05),y=cy+Ry*(1-u)*rr(.6,1.05)-Ry*.15;
+  const x=cx+Math.cos(a)*rad,z=cz+Math.sin(a)*rad;
+  if(pts.length){let b=pts[0],bd=1e9;for(const q of pts){const d=Math.hypot(q.x-x,q.y-y,q.z-z);if(d<bd){bd=d;b=q;}}
+   if(bd>.4){const m={x:(b.x+x)/2+rr(-.2,.2),y:(b.y+y)/2+bd*.12,z:(b.z+z)/2+rr(-.2,.2)},r0=Math.min(b.r*.6,T.rb*.16);
+    st.limb+=BIO.tube(o.bark||'bark.wood',[{x:b.x,y:b.y,z:b.z,r:r0},Object.assign(m,{r:r0*.6}),{x,y,z,r:r0*.35}],o.bc,{seg:lv===2?3:3});}}
+  if(o.tips)o.tips.push({x,y,z});
+  clumpAt(item,x,y,z,size*rr(.8,1.2),.7,colFn(k,y),cx,cy,cz,R,Ry);st.clumps++;}}
 const fruitH=(T,i,k)=>KRAND.unit(KRAND.hash(T.seed,i,k,0xF2));
 
 // ---------------------------------------------------------------- the builders: (T, st, lv) with lv 2 near, 1 mid
@@ -73,9 +83,10 @@ B[1]=function(T,st,lv){const S=SP[1],Z=T.Z,b=Z.b,a=Math.atan2(T.z-b.cz,T.x-b.cx)
  // the bole: short, thick, twisted, three or four limbs
  const top={x:T.x+out[0]*.8,y:T.y0+H*.35,z:T.z+out[1]*.8};
  st.trunk+=BIO.tube('bark.fig',[{x:T.x,y:T.y0-.4,z:T.z,r:T.rb*1.3},{x:(T.x+top.x)/2,y:(T.y0+top.y)/2,z:(T.z+top.z)/2,r:T.rb},top].map((p,i)=>Object.assign(p,{r:p.r==null?T.rb*.8:p.r})),rc,{seg:lv===2?7:4});
- for(let l=0,nl=lv===2?ri(3,5):2;l<nl;l++){const la=a+rr(-1.6,1.6),p=grow(top,dirOf(la,rr(.3,.75)),H*rr(.35,.55),T.rb*.6,T.rb*.25,3,-.04,.12);st.limb+=BIO.tube('bark.fig',p,rc,{seg:lv===2?5:3});
+ const limbs=[];
+ for(let l=0,nl=lv===2?ri(3,5):2;l<nl;l++){const la=a+rr(-1.6,1.6),p=grow(top,dirOf(la,rr(.3,.75)),H*rr(.35,.55),T.rb*.6,T.rb*.25,3,-.04,.12);st.limb+=BIO.tube('bark.fig',p,rc,{seg:lv===2?5:3});limbs.push(p);
   if(fruitH(T,l,1)<.7){const e=p[2];for(let f=0,nf=lv===2?ri(6,14):3;f<nf;f++){BIO.put('fig',[e.x+rr(-.6,.6),e.y+rr(-.5,.3),e.z+rr(-.6,.6)],null,rr(.045,.06),bright(pick(PAL.figFruit),1));st.fruit++;}}}
- crown('figleaf',T,st,lv,cx,cy,cz,T.crownR,H*.45,lv===2?ri(26,40):12,()=>NECANYONS.libCol('figleaf',leafCol(S.leaf,1.15)),T.crownR*.42);
+ crown('figleaf',T,st,lv,cx,cy,cz,T.crownR,H*.45,lv===2?ri(26,40):12,()=>NECANYONS.libCol('figleaf',leafCol(S.leaf,1.15)),T.crownR*.42,{limbs,bc:rc,bark:'bark.fig'});
  // the roots: over the lip and down the wall (core/terrain KSTACKS: the wall's own radius at each height)
  const lipR=KSTACKS.footR(b,a)*(1-b.ch),lip={x:b.cx+Math.cos(a)*lipR,z:b.cz+Math.sin(a)*lipR};let longest=0;
  for(let r=0,nr=lv===2?ri(5,9):3;r<nr;r++){const ra=a+rr(-.5,.5)*(T.crownR/Math.max(30,lipR))*3,rl=KSTACKS.footR(b,ra)*(1-b.ch);
@@ -89,18 +100,20 @@ B[1]=function(T,st,lv){const S=SP[1],Z=T.Z,b=Z.b,a=Math.atan2(T.z-b.cz,T.x-b.cx)
 B[2]=function(T,st,lv){const S=SP[2],bc=bright(pick(PAL.flameBark),1),flush=rr(.25,.6),fa=rr(0,TAU);
  const hf=T.H*rr(.3,.45),top={x:T.x+rr(-.3,.3),y:T.y0+hf,z:T.z+rr(-.3,.3)};
  st.trunk+=BIO.tube('bark.wood',[{x:T.x,y:T.y0-.2,z:T.z,r:T.rb},top].map(p=>Object.assign(p,{r:p.r==null?T.rb*.8:p.r})),bc,{seg:lv===2?6:4});
- for(let b=0,nb=ri(2,3);b<nb;b++){const p=grow(top,dirOf(rr(0,TAU),rr(.7,1.1)),(T.H-hf)*rr(.5,.75),T.rb*.6,T.rb*.25,2,-.05,.1);st.limb+=BIO.tube('bark.wood',p,bc,{seg:lv===2?4:3});}
+ const limbs=[[{x:T.x,y:T.y0+hf*.5,z:T.z,r:T.rb*.9},Object.assign({},top,{r:T.rb*.8})]],tips=[];
+ for(let b=0,nb=ri(2,3);b<nb;b++){const p=grow(top,dirOf(rr(0,TAU),rr(.7,1.1)),(T.H-hf)*rr(.5,.75),T.rb*.6,T.rb*.25,2,-.05,.1);st.limb+=BIO.tube('bark.wood',p,bc,{seg:lv===2?4:3});limbs.push(p);}
  const cy=T.y0+T.H*.7;
  // the flush by a per-tree angle (nwbay's lesson: an angle gives a lit side, a coin gives confetti)
  crown('flametip',T,st,lv,T.x,cy,T.z,T.crownR,T.H*.32,lv===2?ri(18,28):8,(k,y)=>{const a=k*GOLD,red=(y>cy+T.H*.05?1:.35)*smooth(-.2,.6,Math.cos(a-fa))>1-flush;
-  return NECANYONS.libCol('flametip',red?leafCol(PAL.flameFlush,1.1):leafCol(S.leaf,1.15));},T.crownR*.5);
- if(lv===2&&rng()<.3)for(let f=0;f<ri(4,10);f++){const a=rr(0,TAU),r=T.crownR*rr(.5,.9);BIO.put('bloom',[T.x+Math.cos(a)*r,cy+rr(0,T.H*.25),T.z+Math.sin(a)*r],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.12,.2),C(0xf4d8d0));}
+  return NECANYONS.libCol('flametip',red?leafCol(PAL.flameFlush,1.1):leafCol(S.leaf,1.15));},T.crownR*.5,{limbs,tips,bc});
+ /* its pale flowers on the twigs' tips (they floated in the crown's volume) */
+ if(lv===2&&rng()<.3)for(let f=0,nf=Math.min(tips.length,ri(4,10));f<nf;f++){const e=tips[(f*7)%tips.length];BIO.put('bloom',[e.x+rr(-.1,.1),e.y+rr(0,.15),e.z+rr(-.1,.1)],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.12,.2),C(0xf4d8d0));}
  regTree(T,S,T.crownR,T.H);};
 // 3 the EMBER PLUM: a pale trunk, two to four leaning limbs, big pale leaves, green-gold plums
 B[3]=function(T,st,lv){const S=SP[3],bc=bright(pick(PAL.plumBark),1),hf=T.H*rr(.25,.4),top={x:T.x,y:T.y0+hf,z:T.z};
  st.trunk+=BIO.tube('bark.wood',[{x:T.x,y:T.y0-.2,z:T.z,r:T.rb},{x:T.x,y:top.y,z:T.z,r:T.rb*.8}],bc,{seg:lv===2?6:4});
- const tips=[];for(let b=0,nb=ri(2,4);b<nb;b++){const p=grow(top,dirOf(rr(0,TAU),rr(.5,.95)),(T.H-hf)*rr(.6,.85),T.rb*.55,T.rb*.2,2,-.06,.12);st.limb+=BIO.tube('bark.wood',p,bc,{seg:lv===2?4:3});tips.push(p[2]);}
- const cy=T.y0+T.H*.72;crown('plumleaf',T,st,lv,T.x,cy,T.z,T.crownR,T.H*.3,lv===2?ri(14,22):7,()=>NECANYONS.libCol('plumleaf',leafCol(S.leaf,1.2)),T.crownR*.5);
+ const tips=[],limbs=[];for(let b=0,nb=ri(2,4);b<nb;b++){const p=grow(top,dirOf(rr(0,TAU),rr(.5,.95)),(T.H-hf)*rr(.6,.85),T.rb*.55,T.rb*.2,2,-.06,.12);st.limb+=BIO.tube('bark.wood',p,bc,{seg:lv===2?4:3});tips.push(p[2]);limbs.push(p);}
+ const cy=T.y0+T.H*.72;crown('plumleaf',T,st,lv,T.x,cy,T.z,T.crownR,T.H*.3,lv===2?ri(14,22):7,()=>NECANYONS.libCol('plumleaf',leafCol(S.leaf,1.2)),T.crownR*.5,{limbs,bc});
  if(fruitH(T,0,3)<.85)for(let f=0,nf=lv===2?ri(14,30):5;f<nf;f++){const a=rr(0,TAU),r=T.crownR*rr(.3,.9);BIO.put('plum',[T.x+Math.cos(a)*r,cy-rr(.2,T.H*.25),T.z+Math.sin(a)*r],null,rr(.022,.03)*1.6,bright(pick(PAL.plumFruit),1.05));st.fruit++;}
  regTree(T,S,T.crownR,T.H);};
 // 4 the STILT LILY: forked black trunks (two or three forkings), a fountain of grey-green leaves at each tip, lilac flowers
@@ -110,7 +123,9 @@ B[4]=function(T,st,lv){const S=SP[4],bc=bright(pick(PAL.lilyBark),1),tips=[];
  fork({x:T.x,y:T.y0-.2,z:T.z},[0,1,0],T.H*rr(.35,.5),T.rb,ri(1,2));
  const flower=rng()<.45;
  tips.forEach(p=>{const s=T.crownR*rr(.9,1.2);BIO.put('lilytuft',[p.x,p.y-.05,p.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s,s*1.1,s],NECANYONS.libCol('lilytuft',leafCol(S.leaf,1.2)));st.leaves++;
-  if(flower&&lv===2)for(let f=0;f<ri(2,4);f++)BIO.put('lilyflower',[p.x+rr(-.3,.3),p.y+s*rr(.6,.9),p.z+rr(-.3,.3)],qEuler(rr(-.4,.4),rr(0,TAU),0),rr(.16,.24),NECANYONS.libCol('lilybloom',pick(PAL.lilyFlower)));});
+  /* each flower on its stalk (a rod up from the tuft's tip: it floated over the tuft) */
+  if(flower&&lv===2)for(let f=0;f<ri(2,4);f++){const fx=p.x+rr(-.2,.2),fz=p.z+rr(-.2,.2),hh=s*rr(.6,.9);BIO.put('rod',[fx,p.y+hh/2,fz],null,[.012,hh,.012],C(0x5a6a48));
+   BIO.put('lilyflower',[fx,p.y+hh,fz],qEuler(rr(-.4,.4),rr(0,TAU),0),rr(.16,.24),NECANYONS.libCol('lilybloom',pick(PAL.lilyFlower)));}});
  let reach=T.crownR;tips.forEach(p=>{reach=Math.max(reach,Math.hypot(p.x-T.x,p.z-T.z)+T.crownR*.7);});
  regTree(T,S,reach,T.H+T.crownR*1.4);};
 // 5 the ROCK BOTTLE: a swollen grey bottle, a few thick branches, a few leaves at their tips, pink trumpets in the dry
@@ -120,7 +135,7 @@ B[5]=function(T,st,lv){const S=SP[5],bc=bright(pick(PAL.bottle),1),h=T.H*.55;let
  for(let b=0,nb=ri(2,4);b<nb;b++){const p=grow({x:T.x,y:T.y0+h,z:T.z},dirOf(rr(0,TAU),rr(.6,1.2)),(T.H-h)*rr(.8,1.2),T.rb*.3,T.rb*.15,2,-.05,.1);
   st.limb+=BIO.tube('bark.caudex',p,bc,{seg:lv===2?5:3});const e=p[2];
   clumpAt('plumleaf',e.x,e.y+.1,e.z,rr(.5,.8),.6,NECANYONS.libCol('plumleaf',leafCol(PAL.bottleLeaf,1.2)),e.x,e.y,e.z,1,1);st.clumps++;
-  if(flower&&lv===2)for(let f=0;f<ri(2,5);f++)BIO.put('bloom',[e.x+rr(-.4,.4),e.y+rr(.1,.4),e.z+rr(-.4,.4)],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.12,.18),NECANYONS.libCol('bloom',pick(PAL.bottleFlower)));
+  if(flower&&lv===2)for(let f=0;f<ri(2,5);f++)BIO.put('bloom',[e.x+rr(-.15,.15),e.y+rr(0,.2),e.z+rr(-.15,.15)],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.12,.18),NECANYONS.libCol('bloom',pick(PAL.bottleFlower)));
   reach=Math.max(reach,Math.hypot(e.x-T.x,e.z-T.z)+.9);}
  regTree(T,S,reach,T.H+1);};
 NECANYONS.B=B;

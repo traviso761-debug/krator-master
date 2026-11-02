@@ -1,0 +1,10 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "pages": {
+  "krator-fauna.js": {
+   "bytes": 18350080,
+   "why": "the fauna bundle other builds load (17.0 MB) was over 16 MB before the cap landed; a split by animal group is owed",
+   "raised": "2026-10-27"
+  }
+ }
+}
