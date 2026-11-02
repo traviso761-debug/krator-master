@@ -36,7 +36,10 @@ export function nav(W){
      const rate=b.rate||1e-5;home.spin.push(()=>{pg.userData.spinner.rotation.y+=rate;});});}
   home.P.sunDisc=true;
   const cache=new Map([['home',home]]);W.homePlace=home;W.herePlace=()=>here;
-  const get=P=>{if(!cache.has(P.id))cache.set(P.id,makePlace(THREE,P,kit));return cache.get(P.id);};
+  // a place is made the first time it is wanted; the modules that put things in places (the starbases, the traffic)
+  // hear of it then, in W.placeHooks
+  W.placeHooks=[];
+  const get=P=>{if(!cache.has(P.id)){const pl=makePlace(THREE,P,kit);cache.set(P.id,pl);for(const f of W.placeHooks)f(pl);}return cache.get(P.id);};
   let here=home,inWarp=false;
   SYS.add(home.group);
 
@@ -63,8 +66,9 @@ export function nav(W){
     course.clear();
     toast(pl.P.name,pl.P.note);
     if(W.onArrive)W.onArrive(pl);
+    for(const f of W.arriveHooks)f(pl);
   }
-  W.arrive=arrive;
+  W.arrive=arrive;W.arriveHooks=[];W.placeOf=get;
 
   // at warp: the place you left is gone at once, and the light is starlight; the ship crosses the chart
   W.warpTick=(dt,fwd)=>{

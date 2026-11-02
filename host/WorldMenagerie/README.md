@@ -2058,7 +2058,7 @@ wireframe and menagerie menu every other page has.
     tractor and adapts to whichever weapon it takes most of, so the way to beat it is to change weapons; a Sere
     survey ship (a quiet, exact people's) that keeps station alongside and fires on whatever is attacking you; a
     trader convoy that crosses the bow; and a derelict, tumbling. **Battle** is now three waves: two raiders, then
-    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (`extras.js`, this project's own
+    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (now `starbases.js`, this project's own
     design: a spindle, a habitat ring on four spokes, a lit docking arm, small craft looping round it): K, or
     **Dock at the starbase**, hands the helm to approach control, which flies a curve out beyond the arm's end and
     in along it to the clamps (any touch on the helm cancels; K again casts off). With the shields down, hull hits
@@ -2066,6 +2066,37 @@ wireframe and menagerie menu every other page has.
     escape pods out of their hatches on the saucer), **Self-destruct** (ten seconds, cancelled by pressing again;
     then a flash, a shock ring across the ship's plane, wreckage, and the ship again), a **torpedo spread**
     (Shift+T), and a **Grand tour** (every place in turn, the flyby camera at each).
+  - **Sixth pass: finding your way, and company.** **Numbered starbases** (`starbases.js`): Starbase 1 is the yard
+    the page opens beside; Starbase 2 is in a high orbit over the home world, 12 over the gas giant inside its rings,
+    23 over the ice world, 47 over the water world, 74 off the lava world and 9 in the asteroid belt (`STATIONS`:
+    each over a planet, on the side you arrive from, so the planet is behind it as you come in). The same design
+    each time, some with a second ring. **Docking works at all of them**: K, from the turntable or the helm, docks
+    at the nearest one in the place you are at, and from far off the ship flies there first. The **impulse
+    autopilot** (`W.goto` in `cartography.js`) runs up to full impulse and brakes on a steady deceleration it can
+    actually hold (asked to slow in proportion to the distance instead, it came in at 8 km/s with half a kilometre
+    to go), then hands over to approach control, or puts the ship in orbit over a planet. **Markers** round each
+    starbase on screen, with its name and range, and an arrow at the screen's edge when it is off it; L cycles
+    them (the starbases, everything, none), and a marker is a button that takes you there. **Stellar cartography**
+    (P, or the **Cartography** button): a sector chart in light-years (the starbases at each place, rings of range
+    round the ship with the time to them at the warp factor set, labels placed clear of one another) and a system
+    chart of the place you are at from above, to scale (planets, moons, starbases, ships, you, the autopilot's
+    line; scroll to zoom in round the ship). Click anything on either to read about it and go there: a course to a
+    place, docking at a starbase, orbit over a planet, alongside a ship. **Federation traffic** (`traffic.js`, four
+    classes of this project's own design, folded to a few meshes each and cloned: the Kestrel frigate, the
+    Meridian cruiser, the Tamar science vessel, the Halyard transport, all with made-up names and registries):
+    ships patrol round the starbases, lie docked at them, orbit the planets, survey the stranger places, and pass
+    through at impulse and go to warp, coming back later somewhere else. Click one for its card. **F** takes the
+    helm from the turntable. For tests: `#ev=dock`, `#ev=carto`, `#ev=system`, `#ev=marks`, and `#dbg` reports the
+    autopilot, the markers and the traffic.
+  - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
+    on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
+    2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they
+    did, and the saucer's top, rim and underside share their rows round the edge so it has no gaps. The ship went
+    from 490,000 triangles to 210,000 with no difference you can see from any distance. The **shadow map** is drawn
+    again only when it would come out different (something that casts a shadow in the light's box has moved, or the
+    light has; the light follows the ship, so flying straight changes nothing): it was a fifth of every frame, and
+    orbiting the camera never changes it. On the Adreno X1 at 2049 x 1023 a frame went from 11.6 ms to 6.9 ms
+    (9.4 ms while turning, when the shadow has to follow).
   - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
     and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
     klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it

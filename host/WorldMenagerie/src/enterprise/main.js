@@ -30,5 +30,7 @@ starshipPage({
     'Shields wear down under fire and come back slowly; with them down, it is the hull that takes it.',
     'The black hole\'s disc is brighter on the side coming towards you, and its far side is bent up over the top.',
     'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
+    'Every planet with a world worth a port has a starbase over it; P shows them all, and K flies you in to dock.',
+    'The other ships are going about their own business: patrols, stores, surveys, and somewhere else to be.',
   ],
 });
