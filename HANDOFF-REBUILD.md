@@ -140,7 +140,7 @@ changes in probe mode, no crash, geometry, texture and program counts flat; so t
 switching (not traced; trace it before any lake takes `live`). eastabyss' `--assert --all-views` fails only the foliage attach audit
 (5.84% of cards, limit 1%), which predates the mirror (the guards landed after its turn); the error panel and console are clean.
 Left: the near-shore pale band; adopting it per kit (a still's `center`, `radius` and `level`); one cube per lake; the Godot twin; a node
-test and PORT row. Each biome's turn takes it where it has a large still.
+test and PORT row. A biome takes it only when the owner asks.
 
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
