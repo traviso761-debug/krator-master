@@ -1,0 +1,23 @@
+{
+  "canvas": "5.1 (1821x1723)",
+  "name": "The Ar\u00eate Way (station 4): the 6m knife-edge basalt ridge between two 420m drop abysses, gale-force blizzard winds, flenser-hound ambush lairs along the fog rim, iron cable caravan stanchions, rim windlass gantries",
+  "out": "siphon-arete.html",
+  "site": {
+    "name": "arete",
+    "title": "The Ar\u00eate Way",
+    "px": 1678,
+    "py": 1542,
+    "base": 4269.0,
+    "atm": 0.99,
+    "mean": -5.0,
+    "rain": 173,
+    "cls": "ET",
+    "lat": -30.2
+  },
+  "water": [],
+  "wind": {
+    "speed": 35.0,
+    "gust": 48.0,
+    "dir": 290
+  }
+}

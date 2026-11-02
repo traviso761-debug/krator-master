@@ -1,0 +1,18 @@
+{
+  "canvas": "5.1 (1821x1723)",
+  "name": "The Fluted Monoclines (station 2): the gradual transition ramp, stepped basalt benches, scree aprons, fortified waystation on the caravan road, windbreak palisades",
+  "out": "loom-monocline.html",
+  "site": {
+    "name": "monocline",
+    "title": "The Fluted Monoclines",
+    "px": 1575,
+    "py": 1163,
+    "base": 1479.0,
+    "atm": 1.44,
+    "mean": 15.0,
+    "rain": 125,
+    "cls": "BSk",
+    "lat": -27.3
+  },
+  "water": []
+}
