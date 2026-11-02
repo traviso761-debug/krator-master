@@ -134,7 +134,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # core/water/ext: the deltas' forks as one water (WATER.confluence: the side channels leave the main river without their ribbons' foam
 # and side fade overlapping inside each other's water; 2026-10-27)
-for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','59-core-water-network.js','59b-core-water-network-draw.js']:
+for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','58-core-water-mirror.js','59-core-water-network.js','59b-core-water-network-draw.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome

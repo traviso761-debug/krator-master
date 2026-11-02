@@ -2,6 +2,16 @@
 
 ## Open
 
+- [ ] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**
+      The page's only failures are these two; the first predates the core pass's cap, the counts behind the second too.
+      - The attach audit: 516 of 10,697 cards float (4.82%, limit 1%): `needle` 234 of 5,129, `beard` 81 of 133, `spray` 57 of
+        1,323, `broad` 37 of 920. Put them on the twigs with `BIO.tree` and `BIO.clumpOn` or `BIO.snapSeg` (core/biome/README.md).
+      - `instance-cap`: `needle` 632,299 and `frond` 595,481 against 250,000 (no `capWhy`). Count those passes, or coarsen their
+        cells; declare `{cap, capWhy}` only if the number is meant.
+      - Not in verify: about 130 floor plants (lady, frond, pleat, mossmat, lace, heath...), 6 needle clusters and 6 trees
+        (normanspruce, larch, cragpine, windspruce) rooted on full rock faces. The cell form of `BIO.grid` gates them; add
+        `BIO.cliffCheck` to the host checks when the kit moves onto it.
+
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. Kept from the dome: the Outer Wall far over the lowlands (NW),

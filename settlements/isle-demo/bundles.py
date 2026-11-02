@@ -212,6 +212,10 @@ def izv_bundle():
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
 CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
+# the kit's tent set (src/70-75: the bands' tents, pens and boundaries), for a page that pitches camps (core/camp): the
+# open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
+CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js',
+                                                  '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
 # the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
 # its buildings with the catalog's detail maps (krator-furniture-detail.js: each material's texture family, projected
 # triplanar from the mesh's own position, its mean brightness divided out), over KF_TEX (kits/beast-riders/build.py
@@ -253,7 +257,7 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 '''
 
 
-def cat_bundle(side=None):
+def cat_bundle(side=None, tents=False):
     """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
     maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
     origin into a new group (no furniture: the catalog's pieces are not on this page; a port keeps the furniture its
@@ -263,6 +267,7 @@ def cat_bundle(side=None):
     import towns
     tjs, tfiles = towns.bundle(side)
     kf = _kf_tex()
+    files = CAT_FILES + (CAT_TENTS if tents else [])
     if side is None:
         kfjs = 'var KF_TEX = ' + kf + ';' + NL
     else:
@@ -271,7 +276,7 @@ def cat_bundle(side=None):
                 "(the page\\'s .tex.kftex.js did not load)'), null);" + NL)
     return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
                 'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
-                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(CAT_FILES) +
+                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(files) +
                 '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
                 '/* ---- the detail maps (KF_TEX: kits/beast-riders/build.py kf_tex) and the catalog\'s detail code over a stand-in batch ---- */' + NL +
                 kfjs + 'var KF_API = { batch: function () { return { flush: function (p) { return p; } }; } };' + NL + body([CAT_DETAIL]) + CAT_TAIL +
@@ -279,7 +284,7 @@ def cat_bundle(side=None):
                 '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null };' + NL +
                 '  if (!A.port) catDetail(g);   /* the kit\'s own buildings take its detail maps, as its sheet draws them (a port keeps its town\'s maps) */' + NL +
                 '  return g; }' + NL +
-                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
+                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in files] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
 
 
 # ---------------------------------------------------------------- the Ring Sea vessels

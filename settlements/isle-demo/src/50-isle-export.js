@@ -37,13 +37,13 @@ ISLE.simExport = function (opt) {
         made: n(E.made[g]), used: n(E.used[g]), imported: n(E.imported[g]), exported: n(E.exported[g]), short: n(E.short[g]),
         bought: n((IB.bought || {})[g]), eaten: n((IB.eaten || {})[g]) };   /* the households' purchases and meals: consumed = used - bought + eaten */
     });
-    var G = S.govern || {}, B = (I && I.statsBy && I.statsBy[s]) || {};
+    var G = E.govern || {}, B = (I && I.statsBy && I.statsBy[s]) || {};
     return { id: s, name: X.name || s, level: SIM.levelOf ? SIM.levelOf(s) : 'presented', people: X.pop.actors, workers: X.pop.workers,
       frame: X.frame ? { x: X.frame.x, z: X.frame.z, sea: X.frame.sea } : null,   /* world metres = the town's frame + (x, z); y = the frame's y + sea */
       warehouses: E.warehouses.map(function (P) { return P.id; }), sites: E.sites.map(function (P) { return P.id; }), carts: E.carts.map(function (a) { return a.id; }),
       goods: goods,
       producers: Object.keys(E.recipes).map(function (id) { var R = E.recipes[id]; return { place: id, out: R.out.slice(), rate: R.rate, full: G.rates && G.rates[id] != null ? G.rates[id] : R.rate }; }),
-      meals: Object.assign({}, B.meals || {}), spoiled: Object.assign({}, (S.spoiled || {})[s] || {}), salted: Object.assign({}, (S.salted || {})[s] || {}) };
+      meals: Object.assign({}, B.meals || {}), spoiled: Object.assign({}, ISLE.simSpoiled(s)), salted: Object.assign({}, ISLE.simSalted(s)) };
   });
   var rep = SIM.tradeReport ? SIM.tradeReport() : {};
   doc.routes = Object.keys(rep || {}).map(function (id) { var R = rep[id], sea = {};

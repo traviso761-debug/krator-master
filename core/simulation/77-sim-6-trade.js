@@ -15,7 +15,8 @@
 //               place; a passage then takes the vehicle's own time), goods?: {settlement: [goods it may send]} (else
 //               every good both economies know), keep? (days of its own want a sender keeps: its economy's
 //               exports.minDays), want? (days of want a load fills the receiver to: twice its imports.days),
-//               most? (units of one good in a load: cap) })
+//               most? (units of one good in a load: cap), expect?: {settlement: {good: a day}} (a floor on the receiver's
+//               want: its planned use of a good, an imported food's ration, before its people have bought any) })
 //   SIM.trades(a, b) -> true when settlement a sells to b: one faction, or each faction's relation to the other does
 //               not shut trade (`trade` false, 'none' or 'closed'; with no `trade`, a stance of wary or better)
 //   SIM.tradeStep(minute, t)                     SIM.step's, after the economies' step
@@ -42,7 +43,7 @@
     if(T.routes[o.id]) throw new Error('SIM.trade '+o.id+': made already');
     var R={ id:o.id, stops:o.stops.map(function(s){ return { settlement:s.settlement, place:s.place }; }), cap:o.cap, carriers:[],
             minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, line:o.line==null ? null : o.line,
-            goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
+            goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
     for(var k=0;k<(o.carriers==null ? 1 : o.carriers);k++) R.carriers.push({ k:k, phase:null, at:null, to:null, cargo:[], departs:null, eta:null, dock:undefined });
     T.routes[R.id]=R; T.order.push(R.id); return R;
   };
@@ -74,7 +75,7 @@
     var EA=SIM.ECONS[a], EB=SIM.ECONS[b], keep=R.keep!=null ? R.keep : EA.exports.minDays, want=R.want!=null ? R.want : 2*EB.imports.days;
     var list=(R.goods && R.goods[a]) || Object.keys(EA.goods), rows=[];
     list.forEach(function(g){ if(!EA.goods[g] || !EB.goods[g] || EA.goods[g].export===false) return;
-      var wb=rate(EB, g); if(!(wb>0)) return;
+      var wb=Math.max(rate(EB, g), (R.expect && R.expect[b] && R.expect[b][g]) || 0); if(!(wb>0)) return;   /* `expect`: the receiver's planned use a day, a floor */
       var have=stockIn(EB, g)+sitesIn(EB, g)+atSea(g, b, 'to'), need=Math.ceil(want*wb-have); if(need<=0) return;
       if(fellShort(EA, g)) return;
       var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)); if(spare<=0) return;

@@ -52,11 +52,6 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   vendored in `settlements/shade` (`src/50-biome-sedesert-species.js`: re-vendor). Port them in the final rebuild; it moves those
   pages' hashes and their per-type triangle counts (the hero column doubles).
 
-- **Done in the sources 2026-10-25, waiting for stage 2's rebuild** (branch `claude/biome-rebuild`): core/host's probe reads
-  `userData.probePoints` and indexes the volumes on KSPACE (`regOccupancy`: Rift 96 s to 0.6 s, the same counts;
-  `core/host/test-probe.js`), the Ancient Port kit's probe reads `probePoints`, the camera's pointer capture is guarded and
-  the Iziz palace's own guard is gone, and `check_profile` takes a 64 px sky. The biome pages are rebuilt; the settlement
-  and kit pages that take core/host or the port probe (port, Hook, Ys, Iziz's palace ...) pick it up in stage 2.
 - **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
   pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
   Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two

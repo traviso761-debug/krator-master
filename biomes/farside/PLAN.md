@@ -144,7 +144,8 @@ those rigs do worst.
 
 ## 6. Stations
 
-1. **Farport and the kelp coast** (`dist/farside.html`): the city on its harbour, the spray coral terraces round it
+1. **Farport and the kelp coast** (`dist/farside.html`; on map 5.1 the old city moves onto the plateau above the tsunami's reach, the harbour
+   below it: `biomes/STATIONS-MAP-5.1.md`): the city on its harbour, the spray coral terraces round it
    whitewashed with their own lime, the land-kelp forest standing on the slopes behind, the traders' quarter by the water.
 2. **The front** (`-front`): where the kelp forest meets the land's: dead kauri and meranti hung with wine weed and wrack,
    kelp seedlings coming up between them, the native forest standing beyond.

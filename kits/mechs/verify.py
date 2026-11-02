@@ -39,6 +39,8 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page, local_three
 TOL_M, UNDER_FRAC, GROUND_TOL = 0.06, 0.30, 0.04
 REACH_MAX, SLIDE_TOL = 0.995, 0.03
 ZFIGHT_MAX = 40          # triangles in coplanar overlap between differently coloured parts (KratorMechs.audit)
@@ -188,162 +190,136 @@ ALONE_JS = r"""async ()=>{
 
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    path = os.path.abspath(a.html)
-    rel = os.path.relpath(path, HERE).replace(os.sep, '/')
     if a.out:
         os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=HERE, **k)
-    socketserver.TCPServer.allow_reuse_address = True
-    httpd = socketserver.TCPServer(('127.0.0.1', 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    three = os.path.join(HERE, 'three.min.js')
+    three = local_three(os.path.dirname(os.path.abspath(a.html)), HERE)   # the pinned r128, for the bundle-alone page
     only = [k for k in (a.only or '').split(',') if k]
-    try:
-        async with async_playwright() as p:
-            b = await p.chromium.launch(**_exe(), args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
-            W, H = [int(t) for t in a.size.split('x')]
-            pg = await b.new_page(viewport={'width': W, 'height': H})
-            pg.set_default_timeout(900000)
-            errs = []
-            pg.on('pageerror', lambda e: errs.append(str(e)))
-            await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
+    # serve this folder
+    async with verify_page(a.html, here=HERE, size=a.size, query=a.query, root=HERE, settle_ms=1500) as V:
+        pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
+        pg.set_default_timeout(900000)
+        if not V.ready:
+            print('timed out waiting for the sheet to build'); fails.append('build timeout')
+        await pg.evaluate("()=>window._sheet&&window._sheet.pause(true)")
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        print('ERROR PANEL:', repr(panel[:2500]) if panel else 'clean')
+        if panel:
+            fails.append('error panel not clean')
+        if errs:
+            print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
+        info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
+                                 "instances:(window._sheet||{instances:[]}).instances.length})")
+        print('ready:', info['ready'], ' instances:', info['instances'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
+        if a.assert_ and info['ready']:
+            res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
+                                                'maxDraws': MAX_DRAWS, 'maxTris': MAX_TRIS, 'maxBones': MAX_BONES,
+                                                'reachMax': REACH_MAX, 'slide': SLIDE_TOL, 'only': only, 'zmax': ZFIGHT_MAX})
+            per = res['per']
+            print('\n--- %d mechs, %d builds (every variant, seeds 1..%d) ---' % (len(res['list']), len(per), a.seeds))
+            for r in per:
+                if r['seed'] == 1:
+                    print('  %-14s #%d: %s draws, %s tris, %s bones, size %s (x %s..%s, y %s..%s, z %s..%s), %s m/s, reach %s, slide %s, %s' % (
+                        r['key'], r['variant'] + 1, r.get('draws'), r.get('tris'), r.get('bones'), ' x '.join(r.get('size', [])),
+                        *(r.get('box') or ['?'] * 6), r.get('speed'), r.get('reach'), r.get('slide'), r.get('events')) + ', z-fight %s' % r.get('zfight'))
+            checks = [('builds', lambda f: f.startswith('build')),
+                      ('no-nan', lambda f: 'NaN' in f),
+                      ('feet-on-ground', lambda f: f.startswith('ground:')),
+                      ('declared-size', lambda f: f.startswith('outside declared')),
+                      ('gait', lambda f: f.startswith('gait:')),
+                      ('attack', lambda f: f.startswith('attack:')),
+                      ('budget', lambda f: f.startswith('budget:')),
+                      ('z-fighting', lambda f: f.startswith('zfight:')),
+                      ('tags', lambda f: f.startswith('tags:')),
+                      ('deterministic', lambda f: f.startswith('deterministic:'))]
+            print('\n--- invariants ---')
+            for name, sel in checks:
+                bad = [(r, [f for f in r['fail'] if sel(f)]) for r in per]
+                bad = [(r, fs) for r, fs in bad if fs]
+                print(('  PASS  ' if not bad else '  FAIL  ') + name + ' : ' + ('%d builds' % len(per) if not bad else '%d failing' % len(bad)))
+                for r, fs in bad[:30]:
+                    print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(fs)))
+                if bad:
+                    fails.append('assert ' + name)
+            pg2 = await b.new_page()
+            await pg2.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=three, content_type='application/javascript')))
-            await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, a.query), timeout=900000)
+            errs2 = []
+            pg2.on('pageerror', lambda e: errs2.append(str(e)))
+            await pg2.route('**/blank.html', lambda route: asyncio.ensure_future(
+                route.fulfill(body='<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>', content_type='text/html')))
+            await pg2.goto('http://127.0.0.1:%d/blank.html' % port)
+            al = await pg2.evaluate(ALONE_JS)
+            ok = al['added'] == ['KratorMechs'] and al['after'] == ['KratorMechs'] and not al['errs'] and not errs2 \
+                and al['built'] and all(not s.endswith(':null') and not s.endswith(':0') for s in al['built'])
+            print(('  PASS  ' if ok else '  FAIL  ') + 'bundle-alone : globals added %s; built %d%s' % (
+                al['added'], len(al['built']), ('; errors ' + '; '.join(al['errs'] + errs2)) if (al['errs'] or errs2) else ''))
+            if not ok:
+                fails.append('assert bundle-alone')
+            await pg2.close()
+            print('\n--- warnings (reported, not failed) ---')
+            under = [r for r in per if r['warn']]
+            print('  WARN  under-size (>%d%% smaller than declared on an axis): %d builds' % (UNDER_FRAC * 100, len(under)))
+            for r in under[:20]:
+                print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(r['warn'])))
+        for ev in (a.eval or []):
             try:
-                await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0", timeout=580000)
-            except Exception:
-                print('timed out waiting for the sheet to build'); fails.append('build timeout')
-            await pg.wait_for_timeout(1500)
-            await pg.evaluate("()=>window._sheet&&window._sheet.pause(true)")
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            print('ERROR PANEL:', repr(panel[:2500]) if panel else 'clean')
-            if panel:
-                fails.append('error panel not clean')
-            if errs:
-                print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
-            info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
-                                     "instances:(window._sheet||{instances:[]}).instances.length})")
-            print('ready:', info['ready'], ' instances:', info['instances'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
-            if a.assert_ and info['ready']:
-                res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
-                                                    'maxDraws': MAX_DRAWS, 'maxTris': MAX_TRIS, 'maxBones': MAX_BONES,
-                                                    'reachMax': REACH_MAX, 'slide': SLIDE_TOL, 'only': only, 'zmax': ZFIGHT_MAX})
-                per = res['per']
-                print('\n--- %d mechs, %d builds (every variant, seeds 1..%d) ---' % (len(res['list']), len(per), a.seeds))
-                for r in per:
-                    if r['seed'] == 1:
-                        print('  %-14s #%d: %s draws, %s tris, %s bones, size %s (x %s..%s, y %s..%s, z %s..%s), %s m/s, reach %s, slide %s, %s' % (
-                            r['key'], r['variant'] + 1, r.get('draws'), r.get('tris'), r.get('bones'), ' x '.join(r.get('size', [])),
-                            *(r.get('box') or ['?'] * 6), r.get('speed'), r.get('reach'), r.get('slide'), r.get('events')) + ', z-fight %s' % r.get('zfight'))
-                checks = [('builds', lambda f: f.startswith('build')),
-                          ('no-nan', lambda f: 'NaN' in f),
-                          ('feet-on-ground', lambda f: f.startswith('ground:')),
-                          ('declared-size', lambda f: f.startswith('outside declared')),
-                          ('gait', lambda f: f.startswith('gait:')),
-                          ('attack', lambda f: f.startswith('attack:')),
-                          ('budget', lambda f: f.startswith('budget:')),
-                          ('z-fighting', lambda f: f.startswith('zfight:')),
-                          ('tags', lambda f: f.startswith('tags:')),
-                          ('deterministic', lambda f: f.startswith('deterministic:'))]
-                print('\n--- invariants ---')
-                for name, sel in checks:
-                    bad = [(r, [f for f in r['fail'] if sel(f)]) for r in per]
-                    bad = [(r, fs) for r, fs in bad if fs]
-                    print(('  PASS  ' if not bad else '  FAIL  ') + name + ' : ' + ('%d builds' % len(per) if not bad else '%d failing' % len(bad)))
-                    for r, fs in bad[:30]:
-                        print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(fs)))
-                    if bad:
-                        fails.append('assert ' + name)
-                pg2 = await b.new_page()
-                await pg2.route('**/three.min.js', lambda route: asyncio.ensure_future(
-                    route.fulfill(path=three, content_type='application/javascript')))
-                errs2 = []
-                pg2.on('pageerror', lambda e: errs2.append(str(e)))
-                await pg2.route('**/blank.html', lambda route: asyncio.ensure_future(
-                    route.fulfill(body='<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>', content_type='text/html')))
-                await pg2.goto('http://127.0.0.1:%d/blank.html' % port)
-                al = await pg2.evaluate(ALONE_JS)
-                ok = al['added'] == ['KratorMechs'] and al['after'] == ['KratorMechs'] and not al['errs'] and not errs2 \
-                    and al['built'] and all(not s.endswith(':null') and not s.endswith(':0') for s in al['built'])
-                print(('  PASS  ' if ok else '  FAIL  ') + 'bundle-alone : globals added %s; built %d%s' % (
-                    al['added'], len(al['built']), ('; errors ' + '; '.join(al['errs'] + errs2)) if (al['errs'] or errs2) else ''))
-                if not ok:
-                    fails.append('assert bundle-alone')
-                await pg2.close()
-                print('\n--- warnings (reported, not failed) ---')
-                under = [r for r in per if r['warn']]
-                print('  WARN  under-size (>%d%% smaller than declared on an axis): %d builds' % (UNDER_FRAC * 100, len(under)))
-                for r in under[:20]:
-                    print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(r['warn'])))
-            for ev in (a.eval or []):
-                try:
-                    print('eval:', json.dumps(await pg.evaluate(ev))[:60000])
-                except Exception as e:
-                    print('eval failed:', str(e)[:400])
-            for k, ev in enumerate(a.close or []):
-                await pg.evaluate(ev)
-                await pg.wait_for_timeout(400)
-                fn = os.path.join(a.out or '.', 'close_%d.png' % k); await pg.screenshot(path=fn); print('shot:', fn)
-            if a.out:
-                await pg.evaluate("()=>{window._sheet.overview();window._sheet.step(1/30,30);}")
-                await pg.wait_for_timeout(400)
-                fn = os.path.join(a.out, 'sheet.png'); await pg.screenshot(path=fn); print('shot:', fn)
-                lanes = await pg.evaluate("()=>window._sheet.lanes.map(L=>L.key+(L.g.userData.variant?'_v'+L.g.userData.variant:''))")
-                views = [v.strip() for v in a.views.split(',') if v.strip()]
-                for i, key in enumerate(lanes):
-                    if only and key.split('_v')[0] not in only:
-                        continue
-                    for vw in views:
-                        await pg.evaluate("([i,v])=>window._sheet.view(i,v)", [i, vw])
+                print('eval:', json.dumps(await pg.evaluate(ev))[:60000])
+            except Exception as e:
+                print('eval failed:', str(e)[:400])
+        for k, ev in enumerate(a.close or []):
+            await pg.evaluate(ev)
+            await pg.wait_for_timeout(400)
+            fn = os.path.join(a.out or '.', 'close_%d.png' % k); await V.shot(fn); print('shot:', fn)
+        if a.out:
+            await pg.evaluate("()=>{window._sheet.overview();window._sheet.step(1/30,30);}")
+            await pg.wait_for_timeout(400)
+            fn = os.path.join(a.out, 'sheet.png'); await V.shot(fn); print('shot:', fn)
+            lanes = await pg.evaluate("()=>window._sheet.lanes.map(L=>L.key+(L.g.userData.variant?'_v'+L.g.userData.variant:''))")
+            views = [v.strip() for v in a.views.split(',') if v.strip()]
+            for i, key in enumerate(lanes):
+                if only and key.split('_v')[0] not in only:
+                    continue
+                for vw in views:
+                    await pg.evaluate("([i,v])=>window._sheet.view(i,v)", [i, vw])
+                    await pg.wait_for_timeout(300)
+                    fn = os.path.join(a.out, '%s_%s.png' % (key, vw)); await V.shot(fn); print('shot:', fn)
+                if a.anim:
+                    # walking: on the spot, a third of the way into a stride
+                    await pg.evaluate("([i])=>{const S=window._sheet,L=S.lanes[i];KratorMechs.reset(L.g);KratorMechs.setState(L.g,'walk');"
+                                      "S.step(1/30,Math.round(KratorMechs.get(L.key).gait.period*1.35*30));S.view(i,'side');}", [i])
+                    await pg.wait_for_timeout(300)
+                    fn = os.path.join(a.out, '%s_walk.png' % key); await V.shot(fn); print('shot:', fn)
+                    # the attack: windup, the blow, after
+                    await pg.evaluate("([i])=>{const L=window._sheet.lanes[i];KratorMechs.setState(L.g,'idle');KratorMechs.reset(L.g);window._sheet.step(1/30,20);}", [i])
+                    keys = await pg.evaluate("([i])=>KratorMechs.clip(window._sheet.lanes[i].key,window._sheet.lanes[i].g.userData.variant).keys.map(k=>k[0])", [i])
+                    await pg.evaluate("([i])=>KratorMechs.attack(window._sheet.lanes[i].g)", [i])
+                    tprev = 0
+                    for j, tk in enumerate(keys[1:3] + [keys[2] + 0.12]):
+                        await pg.evaluate("([i,n])=>{window._sheet.step(1/30,n);window._sheet.view(i,'front34');}", [i, max(1, round((tk - tprev) * 30))])
+                        tprev = tk
                         await pg.wait_for_timeout(300)
-                        fn = os.path.join(a.out, '%s_%s.png' % (key, vw)); await pg.screenshot(path=fn); print('shot:', fn)
-                    if a.anim:
-                        # walking: on the spot, a third of the way into a stride
-                        await pg.evaluate("([i])=>{const S=window._sheet,L=S.lanes[i];KratorMechs.reset(L.g);KratorMechs.setState(L.g,'walk');"
-                                          "S.step(1/30,Math.round(KratorMechs.get(L.key).gait.period*1.35*30));S.view(i,'side');}", [i])
-                        await pg.wait_for_timeout(300)
-                        fn = os.path.join(a.out, '%s_walk.png' % key); await pg.screenshot(path=fn); print('shot:', fn)
-                        # the attack: windup, the blow, after
-                        await pg.evaluate("([i])=>{const L=window._sheet.lanes[i];KratorMechs.setState(L.g,'idle');KratorMechs.reset(L.g);window._sheet.step(1/30,20);}", [i])
-                        keys = await pg.evaluate("([i])=>KratorMechs.clip(window._sheet.lanes[i].key,window._sheet.lanes[i].g.userData.variant).keys.map(k=>k[0])", [i])
-                        await pg.evaluate("([i])=>KratorMechs.attack(window._sheet.lanes[i].g)", [i])
-                        tprev = 0
-                        for j, tk in enumerate(keys[1:3] + [keys[2] + 0.12]):
-                            await pg.evaluate("([i,n])=>{window._sheet.step(1/30,n);window._sheet.view(i,'front34');}", [i, max(1, round((tk - tprev) * 30))])
-                            tprev = tk
-                            await pg.wait_for_timeout(300)
-                            fn = os.path.join(a.out, '%s_attack%d.png' % (key, j)); await pg.screenshot(path=fn); print('shot:', fn)
-                        await pg.evaluate("([i])=>{window._sheet.step(1/30,90);KratorMechs.reset(window._sheet.lanes[i].g);}", [i])
-                if a.march:
-                    # every lane marches for 25 s (two U-turns for the quick ones), then the overview and one mech mid-turn
-                    rows = await pg.evaluate("()=>{const S=window._sheet;S.showAll();S.setMode('march');let mx=0;"
-                                             "for(let i=0;i<750;i++){S.step(1/30,1);for(const L of S.lanes)mx=Math.max(mx,KratorMechs.state(L.g).reach);}"
-                                             "S.overview();return S.lanes.map(L=>L.key+' z '+(L.g.position.z-L.z0).toFixed(1)+' dx '+(L.g.position.x-L.x0).toFixed(1)+"
-                                             "' heading '+(L.heading/Math.PI).toFixed(2)+'pi '+L.mode+' reach '+KratorMechs.state(L.g).reach.toFixed(2)).concat(['max reach '+mx.toFixed(3)]);}")
-                    print('march:\n  ' + '\n  '.join(rows))
-                    await pg.wait_for_timeout(400)
-                    fn = os.path.join(a.out, 'march_overview.png'); await pg.screenshot(path=fn); print('shot:', fn)
-                    await pg.evaluate("()=>{const S=window._sheet;for(let k=0;k<400;k++){S.step(1/30,1);if(S.lanes.some(L=>L.mode==='turn'&&L.turned>1.2))break;}"
-                                      "const L=S.lanes.find(L=>L.mode==='turn')||S.lanes[0];ctl.target.set(L.g.position.x,2.5,L.g.position.z);"
-                                      "ctl.dist=17;ctl.az=0.9;ctl.el=0.28;updateCamera();sun.target.position.set(ctl.target.x,0,ctl.target.z);"
-                                      "sun.position.copy(sun.target.position).addScaledVector(sun.position.clone().sub(sun.target.position).normalize(),300);}")
-                    await pg.wait_for_timeout(400)
-                    fn = os.path.join(a.out, 'march_turn.png'); await pg.screenshot(path=fn); print('shot:', fn)
-                if a.night:
-                    await pg.evaluate("()=>{window._sheet.setNight(true);window._sheet.setLights(true);window._sheet.view(0,'front34');}")
-                    await pg.wait_for_timeout(700)
-                    fn = os.path.join(a.out, 'night_lights.png'); await pg.screenshot(path=fn); print('shot:', fn)
-            await b.close()
-    finally:
-        httpd.shutdown()
-    if fails:
-        print('\nFAILED: ' + '; '.join(fails))
-        return 1
-    print('\nOK')
-    return 0
+                        fn = os.path.join(a.out, '%s_attack%d.png' % (key, j)); await V.shot(fn); print('shot:', fn)
+                    await pg.evaluate("([i])=>{window._sheet.step(1/30,90);KratorMechs.reset(window._sheet.lanes[i].g);}", [i])
+            if a.march:
+                # every lane marches for 25 s (two U-turns for the quick ones), then the overview and one mech mid-turn
+                rows = await pg.evaluate("()=>{const S=window._sheet;S.showAll();S.setMode('march');let mx=0;"
+                                         "for(let i=0;i<750;i++){S.step(1/30,1);for(const L of S.lanes)mx=Math.max(mx,KratorMechs.state(L.g).reach);}"
+                                         "S.overview();return S.lanes.map(L=>L.key+' z '+(L.g.position.z-L.z0).toFixed(1)+' dx '+(L.g.position.x-L.x0).toFixed(1)+"
+                                         "' heading '+(L.heading/Math.PI).toFixed(2)+'pi '+L.mode+' reach '+KratorMechs.state(L.g).reach.toFixed(2)).concat(['max reach '+mx.toFixed(3)]);}")
+                print('march:\n  ' + '\n  '.join(rows))
+                await pg.wait_for_timeout(400)
+                fn = os.path.join(a.out, 'march_overview.png'); await V.shot(fn); print('shot:', fn)
+                await pg.evaluate("()=>{const S=window._sheet;for(let k=0;k<400;k++){S.step(1/30,1);if(S.lanes.some(L=>L.mode==='turn'&&L.turned>1.2))break;}"
+                                  "const L=S.lanes.find(L=>L.mode==='turn')||S.lanes[0];ctl.target.set(L.g.position.x,2.5,L.g.position.z);"
+                                  "ctl.dist=17;ctl.az=0.9;ctl.el=0.28;updateCamera();sun.target.position.set(ctl.target.x,0,ctl.target.z);"
+                                  "sun.position.copy(sun.target.position).addScaledVector(sun.position.clone().sub(sun.target.position).normalize(),300);}")
+                await pg.wait_for_timeout(400)
+                fn = os.path.join(a.out, 'march_turn.png'); await V.shot(fn); print('shot:', fn)
+            if a.night:
+                await pg.evaluate("()=>{window._sheet.setNight(true);window._sheet.setLights(true);window._sheet.view(0,'front34');}")
+                await pg.wait_for_timeout(700)
+                fn = os.path.join(a.out, 'night_lights.png'); await V.shot(fn); print('shot:', fn)
+    return V.exit()
 
 
 if __name__ == '__main__':

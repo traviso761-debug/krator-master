@@ -4,7 +4,7 @@
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
 //               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth} })
+//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -34,7 +34,8 @@
 // it eats at home. A store with less than `low` days for its people sends one of them to buy `days` days of the foods
 // the nearest seller sells. STOCK (with 77-sim-6-economy.js on): a purchase draws its kind's `good` (`per` units) from
 // the settlement's warehouses, all or nothing (none: the errand fails and cools); food buys what the warehouses hold;
-// food buys what the warehouses hold, the foods in proportion to their stock (one short: more of the others); a meal
+// food buys what the warehouses hold, the foods in proportion to their stock, or to the town's diet (SIM.itemsDiet)
+// (one short: more of the others); a meal
 // out or at a mess draws a meal's food (SIM.economyMeal: none, a `none` meal). Deterministic: no draws
 // (hashes), and only a question about the present changes an actor.
 (function(root){
@@ -48,7 +49,7 @@
   SIM.items = function(o){
     var I = { kinds:{}, sellers:{}, sells:{}, free:{}, spm:o.secPerMinute==null?60:o.secPerMinute, mins:o.mins==null?15:o.mins, cool:o.cool==null?120:o.cool,
               stale:o.stale==null?1440:o.stale, meal:Object.assign({ mult:3, single:1, none:0.2, mess:3 }, o.meal||{}), lack:o.lack||0, hurt:o.hurt||0, heal:o.heal==null?3:o.heal,
-              treat:o.treat||null, eatOut:o.eatOut||null, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
+              treat:o.treat||null, eatOut:o.eatOut||null, retry:o.retry==null?0:o.retry, stagger:o.stagger==null?0:o.stagger, low:o.low==null?1:o.low, days:o.days==null?3:o.days, perMeal:o.perMeal==null?2:o.perMeal, meals:o.meals==null?2:o.meals,
               stats:{ bought:{}, byShop:{}, issued:{}, errands:{}, done:{}, failed:{}, noShop:{}, trip:{}, broken:0, brokenBy:{}, brokenAtWork:0, replacedAtWork:0, hurt:0, healed:0, poultice:0, worn:{}, eaten:{}, meals:{ meal:0, single:0, none:0, bought:0, mess:0, out:0 }, outOf:{} } };
     Object.keys(o.kinds||{}).forEach(function(k){ var K=Object.assign({ id:k }, o.kinds[k]); if(K.slot && POS.indexOf(K.slot)<0 && K.slot!=='torso' && K.slot!=='legs') throw new Error('SIM.items: '+k+': unknown slot '+K.slot); I.kinds[k]=K; });
     (o.free||[]).forEach(function(a){ I.free[a]=1; });
@@ -106,6 +107,29 @@
     a.errand={ act:'BUY', item:item, when:when, since:minute }; stat(I.stats.errands, item); return true;
   }
   SIM.errand = function(a, item, when){ return errand(a, item, when||'free', SIM.minute()); };
+  /* THE DIET (opt-in: SIM.itemsDiet(town, {food: share})): a household buys each named food at its share of its days of
+     food (an imported food eaten at its planned share, not at whatever share of the shelves the canoes fill: a share by
+     stock would feed on itself, the more landed the more eaten and wanted), the rest by the warehouses' stock as ever;
+     split by largest remainders, so a small share is bought too; a food out, the others make up the lack. Without one
+     (or for a town without one), by the warehouses' stock, the remainder to the first, as before */
+  /* THE STAGGER (opt-in: `stagger`, 0..1): a household buys `days` times 1 +- stagger days of food (a hash of the home),
+     so the town's restocking rounds drift apart instead of every house buying on the same morning */
+  function strHash(s){ var h=0; s=String(s); for(var i=0;i<s.length;i++) h=Math.imul(h, 31)+s.charCodeAt(i)|0; return h; }
+  function daysOf(H){ var I=SIM.ITEMS; if(!I.stagger || !H) return I.days; if(H.stagF==null) H.stagF=1+I.stagger*(2*hash(strHash(H.id), 0, 17)-1); return I.days*H.stagF; }
+  SIM.itemsDiet = function(town, shares){ var I=SIM.ITEMS; if(!I) return; (I.diet||(I.diet={}))[town==null ? '_' : town]=shares; };
+  function split(foods, town, need){ var I=SIM.ITEMS, D=I.diet && I.diet[town==null ? '_' : town], cut=0;
+    var st=foods.map(function(f){ return SIM.ECON ? SIM.stockOf(f)+1 : 1; });
+    if(!D){ var ws=st.reduce(function(x, y){ return x+y; }, 0), sh=foods.map(function(f, i){ var n=Math.floor(need*st[i]/ws); cut+=n; return n; }); sh[0]+=need-cut; return sh; }
+    var named=0, rest=0; foods.forEach(function(f, i){ if(D[f]!=null) named+=D[f]; else rest+=st[i]; });
+    var x=foods.map(function(f, i){ return need*(D[f]!=null ? D[f] : rest>0 ? Math.max(0, 1-named)*st[i]/rest : 0); });
+    var out=x.map(function(v){ var n=Math.floor(v); cut+=n; return n; }), ord=x.map(function(v, i){ return i; }).sort(function(p, q){ return (x[q]-Math.floor(x[q]))-(x[p]-Math.floor(x[p])) || p-q; });
+    for(var k=0; k<need-cut && k<ord.length; k++) out[ord[k]]++;
+    return out; }
+  /* RETRY (opt-in: `retry` minutes): a worker whose tool wore through and whose errand for another failed (the town out of
+     tools) asks again every `retry` minutes of work, once the errand has cooled; without it the worker stays at half
+     pace. SIM.step's last act (after the world's minute and the economies' rules) */
+  SIM.itemsRetry = function(minute){ var I=SIM.ITEMS; if(!I || !I.retry || minute % I.retry) return;
+    SIM.all('actor').forEach(function(a){ if(a.toolNeed && !a.errand && a.present && a.activity==='WORK') errand(a, a.toolNeed, 'work', minute); }); };
   /* a purchase draws on the shop's settlement's store (P7a: keyed economies); an unkeyed page calls complete0 as before */
   function complete(a, E, minute){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(E.place), function(){ return complete0(a, E, minute); }) : complete0(a, E, minute); }
   function complete0(a, E, minute){
@@ -113,10 +137,9 @@
     stat(I.stats.done, E.item); var tr=I.stats.trip[E.item]||(I.stats.trip[E.item]={ n:0, mins:0, max:0 }); tr.n++; tr.mins+=E.trip; tr.max=Math.max(tr.max, E.trip);
     var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
     if(E.item==='food'){
-      var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*I.days);
+      var H=SIM.R.place[a.home], foods=I.foods.filter(function(f){ return sold.indexOf(f)>=0; }), need=Math.ceil((H && H.people || 1)*I.meals*I.perMeal*daysOf(H));
       if(H && foods.length){ H.store=H.store||{}; var lack=0, buy=function(f, n){ H.store[f]=(H.store[f]||0)+n; cum(a, 'bought', f, n); stat(bs, f, n); };
-        var wt=foods.map(function(f){ return SIM.ECON ? SIM.stockOf(f)+1 : 1; }), ws=wt.reduce(function(x, y){ return x+y; }, 0), cut=0;   /* by what is on the shelf (the warehouses' stock) */
-        var share=foods.map(function(f, i){ var n=Math.floor(need*wt[i]/ws); cut+=n; return n; }); share[0]+=need-cut;
+        var share=split(foods, SIM.ECON && SIM.ECON.settlement, need);   /* by what is on the shelf (the warehouses' stock), or the town's diet */
         foods.forEach(function(f, i){ var n=share[i];
           if(SIM.ECON){ var got=SIM.supply(f, n); if(got<n){ cum(a, 'outOf', f, n-got); lack+=n-got; } n=got; }   /* the settlement's store (77-sim-6-economy.js): it can be out */
           buy(f, n); });
@@ -212,7 +235,7 @@
     if(P.mess){ mealStat(a, 'mess'); return M.mess; }
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
-    var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
+    var sz=SIM.economySeasoning ? SIM.economySeasoning() : 1, Q=function(f){ var K=I.kinds[f]; return (K && K.quality!=null ? K.quality : 1)*sz; };   /* a better food (cheese) makes a better meal; a seasoned one too (77-sim-6-govern.js) */
     if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
     if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
     mealStat(a, 'none'); return M.none;
@@ -222,7 +245,8 @@
      presented town books them. Its `people` (else its residents) eat `meals` a day, each meal one serving of the two
      foods its store holds most of (one: a single, none: none); a mess draws its meals on the warehouses. A store under
      `low` days buys `days` days of the foods the town's sellers sell, in proportion to the warehouses' stock (one out:
-     more of the others). No meals out, no errands, no wear: those wait for the town to be watched again */
+     more of the others). No meals out; the wear, the tools, the hurt and the errands they make are the person's
+     abstract day (SIM.itemsAbstractDay) */
   SIM.itemsAbstractHome = function(P, hrs, town, res){
     var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
     var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
@@ -237,12 +261,35 @@
     var tot=0; for(var f in st) tot+=st[f]; if(tot >= ppl*I.meals*I.perMeal*I.low) return;
     var sold=I.townFoods && I.townFoods[town]; if(!sold){ var u={}; Object.keys(I.sells).forEach(function(id){ if(SIM.settlementOf(id)!==town) return; I.sells[id].forEach(function(k){ if(I.kinds[k] && I.kinds[k].food) u[k]=1; }); });
       sold=(I.townFoods||(I.townFoods={}))[town]=I.foods.filter(function(f){ return u[f]; }); }
-    var foods=sold.length ? sold : I.foods, need=Math.ceil(ppl*I.meals*I.perMeal*I.days), lack=0;
-    var wt=foods.map(function(f){ return SIM.stockOf(f)+1; }), ws=wt.reduce(function(x, y){ return x+y; }, 0), cut=0;
-    var share=foods.map(function(f, i){ var k=Math.floor(need*wt[i]/ws); cut+=k; return k; }); share[0]+=need-cut;
+    var foods=sold.length ? sold : I.foods, need=Math.ceil(ppl*I.meals*I.perMeal*daysOf(P)), lack=0;
+    var share=split(foods, town, need);
     var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
     foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
     for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
+  };
+  /* THE ABSTRACT DAY (77-sim-7-lod.js, at the first hour of each day a town is abstract): a person's yesterday as the
+     watched town would have lived it, without a step: its tool worn by the hours its schedule gave to WORK (worn out, it
+     wants another), the worked day marked (a hurt's chance), the material meter risen at its rate; then the day's wear
+     (day(): the clothes worn, a hurt healed or taken, an errand for a short set, a poultice or a treat); and the errand
+     done at once at the seller nearest its home in its own town (no trip; out of stock, it fails and cools as watched).
+     Food and meals out stay the household's (SIM.itemsAbstractHome) */
+  SIM.itemsAbstractDay = function(a, d, town){
+    var I=SIM.ITEMS; if(!I || !a.present || a.driven || a.plan) return; if(a.itDay==null) a.itDay=d-1; if(a.itDay>=d) return;   /* lowered before it ever decided: from yesterday */
+    var s=SIM.schedOf(a, (d-1)*1440), hw=0; if(s) for(var h=0;h<24;h++) if(s[h]==='WORK') hw++;
+    var job=a.work!=null ? a.work : (a.mem && a.mem.WORK);
+    if(hw && job!=null){ a.workedDay=d-1;
+      if(a.tool){ var K=I.kinds[a.tool.k]; if(K.workLife) a.tool.w += hw/K.workLife;
+        if(a.tool.w>=1){ var k=a.tool.k; a.tool=null; a.toolNeed=k; I.stats.broken++; cum(a, 'brokenBy', k); if(a.errand && a.errand.when!=='work') a.errand=null; errand(a, k, 'work', d*1440); } }
+      else if(a.toolNeed && !a.errand) errand(a, a.toolNeed, 'work', d*1440); }
+    if(SIM.NEED && SIM.NEED.idx.material!=null) SIM.needsDrift(a, ['material'], 1440*(d-a.itDay));
+    if(a.errCool!=null && a.errCool<d*1440) a.errCool=null;
+    day(a, d);
+    var E=a.errand; if(!E) return;
+    if(E.item==='food' || E.item==='meal'){ a.errand=null; return; }
+    var H=anchor(a), best=null, bd=Infinity;
+    sellersOf(E.item).forEach(function(id){ var P=SIM.R.place[id]; if(!P || SIM.settlementOf(id)!==town) return; var dd=Math.hypot(P.x-H[0], P.z-H[1]); if(dd<bd){ bd=dd; best=id; } });
+    if(best==null){ stat(I.stats.failed, E.item); a.errand=null; a.errCool=d*1440+I.cool; return; }
+    E.place=best; E.trip=0; complete(a, E, d*1440);
   };
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };

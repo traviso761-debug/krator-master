@@ -916,5 +916,6 @@
  "bridgeHeights": {
   "_": "the trails' footbridges sit on their ground; the highway's decks over the water are level with the banks (bridgeDeck)",
   "Trail|Stone Bridge": 1
- }
+ },
+ "weather": {"climate": "maritime", "cloudH": 600, "labels": {"fog": "Sea fog"}, "_": "src/core/weather.js: the climate's weather, changing on its own or set from the Weather button (weather=<state> in the address holds one)"}
 }

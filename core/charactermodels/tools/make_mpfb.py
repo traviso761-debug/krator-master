@@ -1377,6 +1377,12 @@ def main():
     # and the non-human ones (a spike: a tail, a lizard's head; mods.nonhuman), whose deltas come from their recipes
     nh = {}
     mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name, nh)
+    if not merge and not big:
+        # the therian heads (tools/heads.py): a body mod made from the base, its morphs and Godot shapes packed here by _VIDX
+        import heads
+        he, hr = heads.make(os.path.join(pieces, 'base.glb'), pieces, name, int(len(BT)))
+        mod_items.append(he)
+        mod_roles.update(hr)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
@@ -1410,6 +1416,8 @@ def main():
             print('%-8s %s: %d vertices pinned to the hips' % (name, it['id'], mods.pin_hips(os.path.join(pieces, it['id'] + '.glb'), cl['spec']['hips'])))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
+        if cl and cl['spec'].get('fur'):
+            entry['fur'] = cl['spec']['fur']          # its fur rows (make_garments.py fur_of): the figure's fur shells
         if culture_of(it['id']):
             entry['culture'] = culture_of(it['id'])   # a stranger of another people never draws it (KCHAR.stranger)
         if big and it['slot'] not in ('hair', 'beard'):
@@ -1528,6 +1536,9 @@ def main():
     kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
            'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,
            'tint': {'roles': roles, 'gain': {k: round(1 / srgb_lin(v), 4) for k, v in TINT_MEAN.items()}}}
+    if not big:
+        import heads
+        kit['tint']['gain']['coat'] = round(kit['tint']['gain']['hair'] / heads.SHADE, 4)
     if big:
         kit.update(giant.kit_extra())
     json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
