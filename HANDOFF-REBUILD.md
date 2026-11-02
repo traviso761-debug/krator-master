@@ -122,6 +122,15 @@ with no query nothing installs). Intel Arc 140T, 1280x720, GPU timer queries, mi
 - **Not done:** auto-off when no still is on screen, or the camera is far; one water level only; `KHOOK` adoption (`core-shader`); no
   Godot twin; no PORT row or node test.
 
+**The probe is the default reflection tier** (the owner, 2026-11-01); the live mirror stays for special lakes. eastabyss has it on by
+default (`?mirror=0` installs nothing, `?mirror=live` the live mirror). The capture now draws one face a frame into a second cube and
+swaps it in, re-captures when the hour moves by 1, and includes the far trees (`biome:impTrees`, 16,974 instances). The soak: 93 view
+changes in probe mode, no crash, geometry, texture and program counts flat; so the bench's crash is in the live tier or its
+switching (not traced; trace it before any lake takes `live`). eastabyss' `--assert --all-views` fails only the foliage attach audit
+(5.84% of cards, limit 1%), which predates the mirror (the guards landed after its turn); the error panel and console are clean.
+Left: the near-shore pale band; adopting it per kit (a still's `center`, `radius` and `level`); one cube per lake; the Godot twin; a node
+test and PORT row. Each biome's turn takes it where it has a large still.
+
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions
 only from the owner's own message: the app refuses starts from session reports.

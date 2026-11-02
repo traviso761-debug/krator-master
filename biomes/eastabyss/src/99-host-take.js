@@ -22,9 +22,9 @@ function viewOfFauna(){const L=EASTABYSS.FAUNA_LAYOUT||{},Fs=L.flocks||[],Zs=L.l
 // a skein's leader where it flies now, from below and behind its wing
 function viewOfSkein(){const m=scene.getObjectByName('biome:flamingoflying');if(!m)return[1180,42,-260,-300,0,120];const M=new THREE.Matrix4();m.getMatrixAt(4,M);const e=M.elements;
  const fx=e[8],fz=e[10],l=Math.hypot(fx,fz)||1;return[e[12]-fx/l*14+fz/l*14,e[13]-6,e[14]-fz/l*14-fx/l*14,e[12]+fx/l*6,e[13],e[14]+fz/l*6];}
-/* the mirror's prototype (core/water/ext/58, 2026-10-31): ?mirror=probe|live; without the query nothing is installed */
-const MIRROR=(()=>{const m=/[?&]mirror=(\w+)/.exec(location.search);if(!m)return null;const M=WATER.mirror({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material],
- level:0,center:[900,-100],radius:6000,tree:q=>/^biome:far/.test(q.name)});window.MIRROR=M;window.addEventListener('load',()=>setTimeout(()=>M.set(m[1]),4000));return M;})();
+/* the land in the lake (core/water/ext/58; the owner, 2026-11-01: the probe by default): ?mirror=0 installs nothing, ?mirror=live the live mirror */
+const MIRROR=(()=>{const m=/[?&]mirror=(\w+)/.exec(location.search),q=m?m[1]:'probe';if(q==='0')return null;const M=WATER.mirror({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material],
+ level:0,center:[900,-100],radius:6000,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=M;setTimeout(()=>M.set(q),4000);return M;})();
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],

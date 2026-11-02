@@ -9,8 +9,9 @@
 // Opt-in: nothing happens to a material until WATER.mirror is called for it.
 // o: {THREE, renderer, scene, camera, sky (S from ATMOS.skyBiome: its .scene), materials:[...], level, center:[x,z], radius (m), height (capture, m),
 //     probe (cube size), res (fraction of the screen), every, minR (m: the large meshes the live mirror draws), tree (mesh => bool: instanced meshes
-//     it draws as well), strength, ripple (0..1), uv (the live lookup's nudge by slope)}
-// Returns M: M.set('off'|'probe'|'live'), M.update() (once a frame, before the world's pass), M.capture(), M.renderLive() (one mirror pass), M.U.
+//     it draws as well), strength, ripple (0..1), uv (the live lookup's nudge by slope), hour (()=>hour: re-capture when it moves hourStep, 1)}
+// 'probe' is the default tier (the owner, 2026-11-01); 'live' costs about 8% of the world pass and is kept for special lakes.
+// Returns M: M.set('off'|'probe'|'live'), M.update() (once a frame, before the world's pass), M.capture(now), M.renderLive() (one mirror pass), M.U.
 (function(){if(typeof WATER==='undefined')return;
  WATER.mirror=function(o){const T=o.THREE||window.THREE,R=o.renderer,scene=o.scene,cam=o.camera,S=o.sky,level=o.level||0,every=o.every||2,minR=o.minR==null?30:o.minR;
   const U={uMirM:{value:0},uMirK:{value:o.strength==null?1:o.strength},uMirRip:{value:o.ripple==null?.35:o.ripple},uMirUV:{value:o.uv==null?.05:o.uv},
@@ -49,13 +50,13 @@
    q.x=(Math.sign(cp.x)+P[8])/P[0];q.y=(Math.sign(cp.y)+P[9])/P[5];q.z=-1;q.w=(1+P[10])/P[14];cp.multiplyScalar(2/cp.dot(q));P[2]=cp.x;P[6]=cp.y;P[10]=cp.z+1;P[14]=cp.w;
    const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(rt);R.autoClear=true;R.render(S.scene,scam);R.autoClear=false;R.clearDepth();R.render(scene,rcam);
    R.setRenderTarget(old);R.autoClear=ac;R.shadowMap.autoUpdate=su;return true;};
-  M.capture=function(){if(!scanned)scan();const n=o.probe||512,C=U.uMirC.value;
-   const crt=new T.WebGLCubeRenderTarget(n,{encoding:R.outputEncoding,generateMipmaps:false,minFilter:T.LinearFilter,magFilter:T.LinearFilter}),a=new T.CubeCamera(1,3e5,crt),b=new T.CubeCamera(1,1e6,crt);
-   a.position.copy(C);a.updateMatrixWorld();b.updateMatrixWorld();a.children.forEach(c=>c.layers.set(2));
-   const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;
-   for(let i=0;i<6;i++){R.setRenderTarget(crt,i);R.autoClear=true;R.render(S.scene,b.children[i]);R.autoClear=false;R.clearDepth();R.render(scene,a.children[i]);}
-   R.setRenderTarget(old);R.autoClear=ac;R.shadowMap.autoUpdate=su;if(U.uMirP.value&&M._crt)M._crt.dispose();M._crt=crt;U.uMirP.value=crt.texture;};
-  M.set=function(m){mode=m;if(m==='probe'&&!U.uMirP.value)M.capture();if(m==='live'&&!U.uMirT.value)M.renderLive();U.uMirM.value=m==='live'?2:m==='probe'?1:0;};
-  M.update=function(){if(mode==='live'&&(frame++%every)===0)M.renderLive();};
+  // the capture: one face a frame, into a second cube, swapped in when all six are drawn, so it never stalls a frame. M.capture(true): all at once
+  let job=null,hourAt=null;
+  const face=j=>{const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(j.crt,j.i);R.autoClear=true;R.render(S.scene,j.b.children[j.i]);R.autoClear=false;R.clearDepth();R.render(scene,j.a.children[j.i]);
+   R.setRenderTarget(old);R.autoClear=ac;R.shadowMap.autoUpdate=su;j.i++;if(j.i<6)return;if(M._crt)M._crt.dispose();M._crt=j.crt;U.uMirP.value=j.crt.texture;job=null;if(mode==='probe')U.uMirM.value=1;};
+  M.capture=function(now){if(!scanned)scan();if(job)return;const n=o.probe||512,C=U.uMirC.value,crt=new T.WebGLCubeRenderTarget(n,{encoding:R.outputEncoding,generateMipmaps:false,minFilter:T.LinearFilter,magFilter:T.LinearFilter}),a=new T.CubeCamera(1,3e5,crt),b=new T.CubeCamera(1,1e6,crt);
+   a.position.copy(C);a.updateMatrixWorld();b.updateMatrixWorld();a.children.forEach(c=>c.layers.set(2));job={crt,a,b,i:0};if(o.hour)hourAt=o.hour();if(now)while(job)face(job);};
+  M.set=function(m){mode=m;if(m==='probe'&&!U.uMirP.value&&!job)M.capture();if(m==='live'&&!U.uMirT.value)M.renderLive();U.uMirM.value=m==='live'?2:m==='probe'&&U.uMirP.value?1:0;};
+  M.update=function(){if(job){face(job);return;}if(mode==='probe'&&o.hour&&hourAt!=null&&Math.abs(o.hour()-hourAt)>(o.hourStep||1))M.capture();if(mode==='live'&&(frame++%every)===0)M.renderLive();};
   return M;};
 })();
