@@ -635,4 +635,5 @@ spiral and the palette, Roraima's cliff from its talus.
 9. **`KRELIEF.scarp`**: a core form for the Inner Wall's face that five kits would share. Build it with this kit, or let
    the kit draw its own face first, as shighlands did?
 10. **The Gills and the lungs together**: two proposals of the native lineage with a pulse, one on the sky's tide and one on
-    the sun's day, 600 km apart on the Inner Wall. Both, one, or neither?
+    the sun's day (the Gills' site is being moved south to the Godthrone's flank and the twin volcanoes, so they would
+    stand on different walls). Both, one, or neither?
