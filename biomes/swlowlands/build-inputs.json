@@ -8,9 +8,9 @@
     "biomes/swlowlands/build.py": "311e57b52b40b5ab607b6b09c9793660e3922f84dae54b00c9d8a9e3c02e0225",
     "biomes/swlowlands/src/00-head.html": "8d3c4abaef5c2708d4ea05241b0d59298ee461e25a99e2306f1448ae3d557744",
     "biomes/swlowlands/src/45-host-stage.js": "01dc8e941b1f416160bf40f0727e839b79bc4427f4f79eb15a3c4adaf42219cf",
-    "biomes/swlowlands/src/50-biome-swlowlands-species.js": "0ad1e3ca79df98d722f091677eaf094872bf200c254580ef2e4e7db636d6e02e",
+    "biomes/swlowlands/src/50-biome-swlowlands-species.js": "3539da7dd1519e82dc662ab3f84eca0880d7c35e1c49835f6bb337ce67494b64",
     "biomes/swlowlands/src/52-biome-swlowlands-library.js": "e59d37bd8ae5902227982186b674bc0f785cf248d60835ef5bf629306e9f6278",
-    "biomes/swlowlands/src/55-biome-swlowlands-trees.js": "ab32965890647e151aadf43237631c167e83ab0911fc5ad1b54f724faf4b7d37",
+    "biomes/swlowlands/src/55-biome-swlowlands-trees.js": "b6a4689839cf2b0fbf9a93c5a3efc857f4f41a55bee5a9e5ab6c708ce7862247",
     "biomes/swlowlands/src/60-biome-swlowlands-floor.js": "f061439216c5a359f048c100bd5b053cd51b88dfc1db49842a1c270953a2e08a",
     "biomes/swlowlands/src/65-biome-swlowlands-dress.js": "0f36d3f85f92ca6cfa0e91f50a4b7414b37af42aa340d40bbbf11439b07c3551",
     "biomes/swlowlands/src/70-biome-swlowlands.js": "d1112678938143ad8c3b6af2e8ce3eebc2f463d121c66fb63b8c9b5cabe1b2f5",
@@ -88,7 +88,7 @@
     "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
-    "core/biome/20-core-kit.js": "fa4b0d7c7d24a954ca46557386f081ae32727ae51ed87a5ac2f877b88e1120f4",
+    "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -128,10 +128,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/swlowlands/dist/swlowlands.html": "790cbebe1244277cd1d0fb40f9d173f09999a3d6109dcc26241ec2cba38cde0a"
+    "biomes/swlowlands/dist/swlowlands.html": "0d2fdd7ca3c14dc24ea697a4df2a439dfe226219075d1474c1fbf6693d5aaf9d"
    },
    "outputs_raw": {
-    "biomes/swlowlands/dist/swlowlands.html": "6da5b53a5fb4c9dd502c0fc3cc5840372e87e831356df30e0e8a3879ad7b125d"
+    "biomes/swlowlands/dist/swlowlands.html": "cccadd60dd4f380b003feb11bdca0edc7fdb517fbe5c6e2347999d1e75c355cf"
    }
   }
  }

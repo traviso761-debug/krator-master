@@ -181,3 +181,5 @@ The plants stand on the ground mesh's triangles (`drawnH`), and `hostChecks` mea
 The check leaves out 1,261 pieces held by something else (a palm's crown, a limb, a log's back, duckweed, the tower's ledges): those
 over .6 m above the ground on `HELD_ITEMS`, or inside an obstacle's footprint. A float over .6 m on those items is not seen here.
 The tower is not a seat surface: with it marked, verify never finished twice, though the stall was not traced to it.
+
+- 2026-11-02, the foliage attach audit: 7.24% to .73%. Flowers in foliage `onLeaf`, the willow's veils held to their limb, pads `free`.
