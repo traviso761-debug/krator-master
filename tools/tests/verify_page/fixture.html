@@ -41,6 +41,11 @@ if (CASE === 'instance-cap') {
   const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.1, 0.1), new THREE.MeshBasicMaterial(), 260000);
   im.name = 'runaway lilies'; scene.add(im);
 }
+if (CASE === 'inside-out') {
+  const g = new THREE.SphereGeometry(3, 12, 8), ix = g.index.array;
+  for (let i = 0; i < ix.length; i += 3) { const t = ix[i]; ix[i] = ix[i + 1]; ix[i + 1] = t; }
+  const m = new THREE.Mesh(g, box.material); m.name = 'inverted rock'; m.position.set(-9, 3, 0); scene.add(m);
+}
 if (CASE === 'error-panel') document.getElementById('errs').textContent = 'Error: a fragment threw';
 /* the probe the biome builds carry, enough for the NaN and registry asserts */
 window._api = {

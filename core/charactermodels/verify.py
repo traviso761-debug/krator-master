@@ -37,6 +37,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from harness import verify_page, Abort
+# what the labs load from a CDN, served from the repo; their fonts are not needed
+ROUTES = (('**/three.min.js', lambda r: r.fulfill(path=THREE, content_type='text/javascript')),
+          ('**/GLTFLoader.js', lambda r: r.fulfill(path=LOADER, content_type='text/javascript')),
+          ('**/fonts.g*/**', lambda r: r.abort()))
 
 CHECKS = r'''async () => {
   const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {}, nonhuman: [] };
@@ -329,26 +335,9 @@ LAB_CHECKS = r'''async () => {
 
 
 async def run(page_path, do_assert, out_dir):
-    from playwright.async_api import async_playwright
-    chrome = os.environ.get('KRATOR_CHROME') or ('/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None)
-    errs, fails = [], []
-    async with async_playwright() as p:
-        b = await p.chromium.launch(executable_path=chrome, args=['--use-gl=swiftshader', '--enable-unsafe-swiftshader'])
-        pg = await b.new_page(viewport={'width': 1400, 'height': 860})
-        pg.on('pageerror', lambda e: errs.append(str(e)))
-        await pg.route('**/three.min.js', lambda r: r.fulfill(path=THREE, content_type='text/javascript'))
-        await pg.route('**/GLTFLoader.js', lambda r: r.fulfill(path=LOADER, content_type='text/javascript'))
-        await pg.route('**/fonts.g*/**', lambda r: r.abort())
-        # the page fetches its pieces, so it is served (a thread on a free port) rather than opened as a file
-        import functools, http.server, socketserver, threading
-        root = os.path.dirname(os.path.abspath(page_path))
-        class Quiet(http.server.SimpleHTTPRequestHandler):
-            def log_message(self, *a):
-                pass
-        h = functools.partial(Quiet, directory=root)
-        srv = socketserver.TCPServer(('127.0.0.1', 0), h)
-        threading.Thread(target=srv.serve_forever, daemon=True).start()
-        await pg.goto('http://127.0.0.1:%d/%s' % (srv.server_address[1], os.path.basename(page_path)))
+    # the page fetches its pieces, so verify_page serves it
+    async with verify_page(page_path, here=HERE, size='1400x860', routes=ROUTES, settle_ms=0, ready_js='window._kchar||window._lab') as V:
+        pg, errs, fails = V.page, V.errs, V.fails
         if 'animation-lab' in os.path.basename(page_path):
             await pg.wait_for_function('window._lab', timeout=120000)
             r = await pg.evaluate(LAB_CHECKS) if do_assert else []
@@ -357,13 +346,7 @@ async def run(page_path, do_assert, out_dir):
                 os.makedirs(out_dir, exist_ok=True)
                 await pg.wait_for_timeout(1500)
                 await pg.screenshot(path=os.path.join(out_dir, 'animation-lab.png'))
-            await b.close()
-            for e in errs:
-                print('page error:', e)
-            for f in fails:
-                print('FAIL', f)
-            print('verify: %s' % ('ok' if not errs and not fails else 'FAILED'))
-            return 0 if not errs and not fails else 1
+            raise Abort(0)
         await pg.evaluate('window._kchar && window._kchar.ready')
         await pg.wait_for_function('window._kchar', timeout=120000)
         if out_dir:
@@ -406,13 +389,9 @@ async def run(page_path, do_assert, out_dir):
                     await pg.click('#cam-face')
                     await pg.wait_for_timeout(900)
                     await pg.screenshot(path=os.path.join(out_dir, 'face-%s-%s.png' % (body.replace('mpfb_', ''), p)))
-        await b.close()
-    for e in errs:
-        print('page error:', e)
     for f in fails:
         print('FAIL', f)
-    print('verify: %s' % ('ok' if not errs and not fails else 'FAILED'))
-    return 0 if not errs and not fails else 1
+    return V.exit()
 
 
 if __name__ == '__main__':

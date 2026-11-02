@@ -27,7 +27,7 @@ and as the exporter's driver (ROADMAP.md stage 2d): core/export's krator-world c
 
     python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
 
-VERIFY_PAGE (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 16). Every verify.py opens its page through `verify_page`,
+VERIFY_PAGE (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 15, 16). Every verify.py opens its page through `verify_page`,
 which owns the GPU lock, the browser, the server and the load, and runs the universal asserts on the way out, so no
 verify can pass a broken page:
 
@@ -41,7 +41,8 @@ The universal asserts: the page is not an LFS pointer; it got ready; the error p
 shader compile or WebGL errors in the console (r128 sends them to console.error only); every texture decoded; the real
 GPU when KRATOR_GL=gpu; no NaN geometry and no empty registered volume (when the page has the probe, `_api`); no
 instanced item past the instance cap (3c); the eye of every view is not inside geometry (10a); the budget in the
-build's BUDGETS.json. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
+build's BUDGETS.json; BIO.capReport and _api.seatSweeps when the page has them; a winding report (item 15, never a
+failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
 listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
 (--write records them; a page is taken out of the ratchet at its own rebuild turn).
 
@@ -444,11 +445,12 @@ def watch_console(pg):
     return pg.krator_console
 
 
-async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None, init=(), ready_js=None):
+async def open_page(browser, html, port, size="1280x800", here=None, query="", root=None, init=(), ready_js=None, routes=()):
     """A new page on `html`, served on `port` from `root` (default: the page's folder; give the repo root for a page
     that loads siblings by relative path, as kits/ancients-interiors loads ../../catalog/), three.js routed, waiting
     until the world is built (`window._ready`) or the error panel fills. `init`: scripts (paths) run before the page's
-    own (godot/tools/stage_hook.js, for KSTAGE). Returns (page, page_errors, ready)."""
+    own (godot/tools/stage_hook.js, for KSTAGE); `routes`: (url pattern, handler) pairs set before it loads.
+    Returns (page, page_errors, ready)."""
     folder = os.path.dirname(os.path.abspath(html))
     name = os.path.relpath(os.path.abspath(html), os.path.abspath(root or folder)).replace(os.sep, '/')
     W, H = [int(t) for t in size.split("x")]
@@ -462,6 +464,8 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
         with open(f, encoding='utf-8') as fh:
             await pg.add_init_script(fh.read())
     await route_three(pg, folder, here)
+    for pat, fn in routes:
+        await pg.route(pat, fn)
     await pg.goto(f"http://127.0.0.1:{port}/{name}{query}", timeout=LOAD_MS)
     ready = True
     try:
@@ -546,10 +550,12 @@ UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
  R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
    return {n:o.length, empty:e.length, names:e.slice(0,6).map(x=>x.name)}; }catch(e){ return {error:String(e)}; } })():null;
  const over=[]; let src=null; const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null);
- if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) if(r.count>r.cap&&!r.optOut) over.push((r.item||'?')+' '+r.count+' > '+r.cap); }catch(e){ over.push('capReport threw: '+e); } }
+ if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) over.push((r.kit?r.kit+'/':'')+(r.item||'?')+' '+r.count+' > '+r.cap+(r.why?' ('+r.why+')':' (no capWhy)')); }catch(e){ over.push('capReport threw: '+e); } }
  else if(sc){ src='scene scan, cap '+cap; sc.traverse(o=>{ if(o.isInstancedMesh&&o.count>cap&&!(o.userData&&o.userData.capOk))
    over.push((o.name||(o.userData&&(o.userData.item||o.userData.tag))||o.geometry.type)+' '+o.count); }); }
  R.cap={src, over:over.slice(0,8), overN:over.length};
+ R.seat=(A&&typeof A.seatSweeps==='function')?(()=>{ try{ const S=A.seatSweeps(), o={}; for(const k of ['contact','clear','doors','stairs']){ const x=S[k]||{};
+   o[k]={n:x.n, nFails:x.nFails||0, first:JSON.stringify((x.fails||[]).slice(0,2)).slice(0,160)}; } o.neg=!S.contact||S.contact.neg===true; return o; }catch(e){ return {error:String(e)}; } })():null;
  try{ R.sceneTris=(A&&A.totals&&A.totals.tris!=null)?A.totals.tris:null; }catch(e){ R.sceneTris=null; }
  return R; }"""
 # Item 10a: from the eye, rays up, down and four ways level, against the solid meshes drawn (instances prefiltered by
@@ -598,6 +604,47 @@ EYE_JS = "(opt)=>{" + FIND_JS + """
   if(ahead) R.near=ahead.name+' at '+ahead.d.toFixed(2)+' m';
  } finally { for(const [m,s] of sides) m.side=s; }
  return R; }"""
+
+
+# Item 15, nwbay's sweep: of each solid one-sided geometry drawn, the share of its faces pointing out from its centre, and the
+# share pointing up. Few of either: inside-out, the faces you see are culled (a ground or a bowl faces up and is not listed).
+# A report, not a failure: a hollow a camera stands in reads the same. Run from here, so it reaches every page with no page
+# bytes moved.
+WINDING_JS = "(opt)=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc||typeof THREE==='undefined') return null; sc.updateMatrixWorld();
+ const seen=new Set(), out=[]; let n=0; const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),e=new THREE.Vector3(),f=new THREE.Vector3(),m=new THREE.Vector3(),ctr=new THREE.Vector3();
+ sc.traverse(o=>{ if(!o.isMesh||o.isSkinnedMesh||!o.geometry||!o.geometry.attributes||!o.geometry.attributes.position||o.visible===false) return;
+  const M=o.material; if(Array.isArray(M)||!M||M.side!==THREE.FrontSide||M.transparent||M.alphaTest>0||M.depthWrite===false||M.colorWrite===false) return;
+  const g=o.geometry, key=g.uuid+(o.matrixWorld.determinant()<0?'-':''); if(seen.has(key)) return; seen.add(key);
+  const P=g.attributes.position, I=g.index, tris=(I?I.count:P.count)/3|0; if(tris<(opt.minTris||12)) return; n++;
+  if(!g.boundingBox) g.computeBoundingBox(); g.boundingBox.getCenter(ctr);
+  const st=Math.max(1,Math.floor(tris/(opt.sample||6000))); let t=0,up=0,outw=0; const flip=o.matrixWorld.determinant()<0?-1:1;
+  for(let i=0;i<tris;i+=st){ const j=i*3, i0=I?I.getX(j):j, i1=I?I.getX(j+1):j+1, i2=I?I.getX(j+2):j+2;
+   a.fromBufferAttribute(P,i0); b.fromBufferAttribute(P,i1); c.fromBufferAttribute(P,i2); e.subVectors(b,a); f.subVectors(c,a); e.cross(f); if(e.lengthSq()<1e-12) continue; e.normalize().multiplyScalar(flip);
+   m.copy(a).add(b).add(c).multiplyScalar(1/3).sub(ctr); t++; if(e.dot(m)>0) outw++; if(e.y>.2) up++; }
+  if(t&&outw/t<(opt.out||.25)&&up/t<(opt.up||.5)) out.push({name:o.name||(o.userData&&(o.userData.item||o.userData.tag))||(o.parent&&o.parent.name)||g.type,tris,out:+(outw/t).toFixed(2),up:+(up/t).toFixed(2)}); });
+ return {n, suspects:out.sort((x,y)=>y.tris-x.tris).slice(0,12), suspectN:out.length}; }"""
+# The item sheet (the card audit, 2026-10-27; swhighlands' ?sheet= lifted out of one build): every BIO item alone on a grid at
+# full detail, on a plain floor, in plain daylight, so a check looks at the plant and not at numbers. A far version that is an
+# item of its own (BIO.impostorItem) gets its own cell. Takes the page over: run it last.
+SHEET_JS = "(opt)=>{" + FIND_JS + """
+ const {sc,cam}=__kfind(); const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null); if(!sc||!cam||!B||!B.kits) return null;
+ const items=[]; for(const k of Object.keys(B.kits)){ const R=B.kits[k]; for(const n of (R.order||Object.keys(R.defs))){ const d=R.defs[n]; if(d&&d.geo&&d.mat) items.push({kit:k,name:n,d}); } }
+ const page=items.slice(opt.from,opt.from+opt.per); const H=window.__ksheet=window.__ksheet||{hidden:sc.children.slice()};
+ if(H.group) sc.remove(H.group);
+ for(const c of H.hidden) c.visible=false; sc.background=new THREE.Color(0x8fa3b5); sc.fog=null;
+ const G=H.group=new THREE.Group(); sc.add(G); G.add(new THREE.HemisphereLight(0xffffff,0x6a6a60,1.1)); const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(.6,1,.5); G.add(sun);
+ const cols=Math.ceil(Math.sqrt(opt.per*1.6)), rows=Math.ceil(opt.per/cols), S=10, labels=[], one=new THREE.Matrix4();
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(cols*S+20,rows*S+20).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:0x8a8478})); fl.position.y=-.02; fl.frustumCulled=false; G.add(fl);
+ page.forEach((p,i)=>{ const g=p.d.geo; if(!g.boundingBox) g.computeBoundingBox(); const bb=g.boundingBox, sz=new THREE.Vector3(); bb.getSize(sz); const big=Math.max(sz.x,sz.y,sz.z)||1, k=7/big;
+  const im=new THREE.InstancedMesh(g,p.d.mat,1); one.makeScale(k,k,k); one.setPosition(0,-bb.min.y*k,0); im.setMatrixAt(0,one); im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
+  const col=i%cols, row=Math.floor(i/cols); im.position.set((col-(cols-1)/2)*S,0,(row-(rows-1)/2)*S); G.add(im);
+  labels.push({x:im.position.x,z:im.position.z,t:(p.kit?p.kit+'/':'')+p.name+'  '+big.toFixed(1)+' m'}); });
+ const w=cols*S, h=rows*S; cam.position.set(0,Math.max(w/cam.aspect,h)*.62/Math.tan(cam.fov*Math.PI/360)*.72,h*.72); cam.lookAt(0,1.5,0); cam.far=Math.max(cam.far,4000); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+ let el=document.getElementById('__ksheetLabels'); if(!el){ el=document.createElement('div'); el.id='__ksheetLabels'; el.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99999;font:10px sans-serif;color:#fff;text-shadow:0 0 2px #000'; document.body.appendChild(el); }
+ for(const c of [...document.body.children]) if(c!==el&&c.tagName!=='CANVAS'&&c.tagName!=='SCRIPT') c.style.display='none';
+ el.innerHTML=''; const v=new THREE.Vector3(); for(const L of labels){ v.set(L.x,0,L.z+S*.42).project(cam); const d=document.createElement('div'); d.textContent=L.t; d.style.cssText='position:absolute;transform:translateX(-50%);white-space:nowrap;left:'+((v.x+1)*50)+'%;top:'+((1-v.y)*50)+'%'; el.appendChild(d); }
+ return {total:items.length, shown:page.length}; }"""
 
 
 def _repo_root(path):
@@ -665,6 +712,7 @@ class VerifyPage:
         self.page = self.browser = self.port = self.code = None
         self.errs, self.fails, self.ready = [], [], False
         self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
+        self.winding = None
 
     async def sample(self, view):
         s = await self.page.evaluate(SAMPLE_JS)
@@ -687,6 +735,23 @@ class VerifyPage:
         name = view or os.path.splitext(os.path.basename(path))[0]
         await self.sample(name)
         await self.eye(name)
+
+    async def sheet(self, out, per=24, settle_ms=1500):
+        """The item sheet: <out>/items-NN.png, every BIO item alone on a grid, `per` to a picture. It takes the page over,
+        so call it after the build's checks and views. Returns the pictures written ([] on a page with no BIO)."""
+        os.makedirs(out, exist_ok=True)
+        shots, i = [], 0
+        while True:
+            r = await self.page.evaluate(SHEET_JS, {"from": i, "per": per})
+            if not r or not r["shown"]:
+                return shots
+            await self.page.wait_for_timeout(settle_ms)
+            fn = os.path.join(out, "items-%02d.png" % (i // per))
+            await self.page.screenshot(path=fn)
+            shots.append(fn)
+            i += per
+            if i >= r["total"]:
+                return shots
 
     async def run_universal(self):
         U, pg = self.universal, self.page
@@ -724,10 +789,26 @@ class VerifyPage:
                 U.append(("registered-volumes-non-empty", not o.get("error") and not o.get("empty"),
                           o.get("error") or ("%d empty of %d: %s" % (o["empty"], o["n"], " | ".join(o["names"])) if o["empty"]
                                              else "%d volumes, none empty" % o["n"])))
+            if R["seat"] is not None:   # core-seat's sweeps (core/host/95b-host-seat.js, core/terrain/SEAT.md), when the page takes them
+                st = R["seat"]
+                bad = [k for k in ("contact", "clear", "doors", "stairs") if not st.get("error") and st[k]["nFails"]]
+                U.append(("seat-sweeps", not st.get("error") and not bad and st.get("neg", False),
+                          st.get("error") or ("; ".join("%s %s of %s: %s" % (k, st[k]["nFails"], st[k]["n"], st[k]["first"]) for k in bad)
+                                              or ("the contact control did not read as floating" if not st["neg"]
+                                                  else ", ".join("%s %s" % (k, st[k]["n"]) for k in ("contact", "clear", "doors", "stairs"))))))
             c = R["cap"]
             if c["src"]:
                 U.append(("instance-cap", not c["overN"], ("%d items past the cap (%s): %s" % (c["overN"], c["src"], ", ".join(c["over"])))
                           if c["overN"] else "none past the cap (%s)" % c["src"]))
+        try:
+            w = await pg.evaluate(WINDING_JS, {})
+        except Exception as e:
+            w = {"error": str(e).splitlines()[0][:200]}
+        self.winding = w
+        if w is not None:
+            U.append(("winding", True, w.get("error") or ("%d of %d geometries look inside-out (a report): %s" % (w["suspectN"], w["n"], ", ".join(
+                "%s out %.2f up %.2f, %d tris" % (x["name"], x["out"], x["up"], x["tris"]) for x in w["suspects"][:6]))
+                if w["suspectN"] else "%d geometries, none inside-out" % w["n"])))
         if is_gpu():
             try:
                 rn = await pg.evaluate(RENDERER_JS)
@@ -784,10 +865,11 @@ class VerifyPage:
 
 @contextlib.asynccontextmanager
 async def verify_page(html, here=None, size="1280x800", query="", root=None, init=(), settle_ms=2500, lock=True, args=None,
-                      ready_js=None):
+                      ready_js=None, routes=()):
     """Open `html` for a verify and run the universal asserts after the build's own (see the module docstring).
     here: the build's folder (its BUDGETS.json, its three.min.js); root: the folder to serve (default the page's);
-    ready_js: the page's own ready test when it is not one READY_JS knows (the error panel filling still counts)."""
+    ready_js: the page's own ready test when it is not one READY_JS knows (the error panel filling still counts);
+    routes: what the page loads from elsewhere (open_page)."""
     html = os.path.abspath(html)
     folder = os.path.dirname(html)
     if here is None:
@@ -809,7 +891,7 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
             try:
                 with serve(root or folder) as port:
                     V.port = port
-                    V.page, V.errs, V.ready = await open_page(V.browser, html, port, size=size, here=here, query=query, root=root, init=init,
+                    V.page, V.errs, V.ready = await open_page(V.browser, html, port, size=size, here=here, query=query, root=root, init=init, routes=routes,
                                                               ready_js=ready_js and "(%s) || (%s)" % (ready_js, READY_JS))
                     if not V.ready:
                         print("timed out waiting for the page to build")
@@ -834,6 +916,18 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
 RATCHET_DOC = ("The universal verify asserts (tools/harness.py verify_page) each page failed when they were introduced. "
                "A listed assert only warns for that page; anything else fails. Take a page's entries out at its own "
                "rebuild turn, once fixed: python3 tools/harness.py ratchet --write <page>.")
+
+
+async def sheet_main(argv):
+    """python3 tools/harness.py sheet <page.html> [--out shots/sheet] [--per 24]: the item sheet on its own (VerifyPage.sheet)."""
+    out = argv[argv.index("--out") + 1] if "--out" in argv else "shots/sheet"
+    per = int(argv[argv.index("--per") + 1]) if "--per" in argv else 24
+    page = next(a for i, a in enumerate(argv) if not a.startswith("--") and not (i and argv[i - 1] in ("--out", "--per")))
+    async with verify_page(page, root=_repo_root(page)) as V:
+        await V.eye("as loaded")   # the sheet takes the camera
+        shots = await V.sheet(out, per)
+        print("\n".join(shots) or "no BIO items on this page")
+    return V.exit()
 
 
 async def ratchet_main(argv):
@@ -1217,6 +1311,8 @@ if __name__ == "__main__":
         sys.exit(asyncio.run(smoke(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "walk":
         sys.exit(asyncio.run(walk_main(sys.argv[2:])))
+    if len(sys.argv) > 2 and sys.argv[1] == "sheet":
+        sys.exit(asyncio.run(sheet_main(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "ratchet":
         sys.exit(asyncio.run(ratchet_main(sys.argv[2:])))
     if len(sys.argv) > 2 and sys.argv[1] == "lock":

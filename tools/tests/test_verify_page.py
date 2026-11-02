@@ -35,6 +35,14 @@ async def main():
         if not ok:
             for n, o, d in V.universal:
                 print('        %s %s: %s' % ('PASS' if o else 'FAIL', n, d[:200]))
+    # the winding sweep reports, it does not fail: the clean page lists nothing, an inverted mesh is named
+    _, V = await one('inside-out')
+    w = V.winding or {}
+    ok = [x['name'] for x in w.get('suspects', [])] == ['inverted rock']
+    _, V = await one('clean')
+    ok = ok and not (V.winding or {'suspectN': 1})['suspectN']
+    bad += not ok
+    print('%s  winding        %s' % ('ok  ' if ok else 'FAIL', w))
     # an LFS pointer instead of a page: refused before any browser starts
     with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8') as fh:
         fh.write('version https://git-lfs.github.com/spec/v1\noid sha256:00\nsize 8000000\n')
@@ -46,7 +54,7 @@ async def main():
         print('%s  lfs-pointer    exit %s' % ('ok  ' if e.code == 1 else 'FAIL', e.code)); bad += e.code != 1
     finally:
         os.remove(fh.name)
-    print('%d cases, %d wrong' % (len(CASES) + 1, bad))
+    print('%d cases, %d wrong' % (len(CASES) + 2, bad))
     return 1 if bad else 0
 
 
