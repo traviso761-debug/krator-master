@@ -36,7 +36,10 @@ hermitage** in the White pipe field stands, and "doubles as a caravan stop; besi
 involve passing news and rumors from travelers to Longsong"; (12) **the tide's size**, tens of metres in the rock used
 as a valve, is plausible and stands as written.
 
-Status: **a proposal for the owner** on what is not settled above: the lineage rule (section 2) and the Xanadui words.
+**Third round, 2026-11-02:** (13) **the lineage rule is canon**: "the native body is a host that takes a partner; the
+partner decides whether it lives on light or on redox" (section 2; a sentence for `LORE.md` section 8 is proposed there).
+
+Status: **a proposal for the owner** on what is not settled above: the Xanadui words and the other south-eastern vents.
 Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is
 marked *proposed* with its wording. Working names throughout until the Xanadui words come.
 
@@ -130,7 +133,7 @@ of the mountain off the pipes that have fallen.
 | Where Earth life fails, native life is the whole flora; where Earth life is strong, native life is a flavour (`throne/NOTES.md:88-89, 213, 273-275`); the Godthrone has "almost none, and that is the point" (`godthrone/PLAN.md:194`) | both countries sit in ET and EF ground where Earth plants are already nearly gone, so the gills and their breath strips are the only life for tens of kilometres; the biome is native through and through, and the Godthrone kit's bare ground stays bare between the cracks |
 | Native forms answer one physical problem each, and a kit's family reads as one because they share the problem (`biomes/riftrim/PLAN.md:109-113`; `biomes/rift/PLAN-STATIONS.md:165`) | every species here answers the breath: how to hold oxidant through the out-breath, how to feed on the in-breath, how to ride the gust |
 | Life carries state on the world clock, and the giant is the sky's fixed cue: everything in the east leans to it (`biomes/ehighlands/NOTES.md:117-122`); the sun-dial turns with the sun (`biomes/sedesert/PLAN-STEPPE.md:61`); the night rosette closes at night (`rift/PLAN-STATIONS.md:203`) | the giant is the clock rather than the compass: the Gills are the first biome whose life cycles on the giant's tide, which no kit has used (the digest of 2026-11-01: "no biome ties a native organism's cycle to the giant's tide") |
-| The native lineage is fungoid: fleshy, partnered, no leaves (`outlands/PLAN.md:51-53`) | the same body plan with a different partner, which is the point: the lineage is a **host for partners**, photosynthetic in the light, chemolithotrophic in the dark. *Proposed* as the lineage's first stated rule of biochemistry (section 17) |
+| The native lineage is fungoid: fleshy, partnered, no leaves (`outlands/PLAN.md:51-53`) | the same body plan with a different partner, which is the point: the lineage is a **host for partners**, photosynthetic in the light, chemolithotrophic in the dark. **Canon (the owner, 2026-11-02)**: the lineage's first stated rule of biochemistry |
 | Lineages cross kits as cousins, never copies (`BIO.kin`; `hyperjungle/PLAN-LANDS.md:49-56`); the Rift's sky islands diverge by band (`rift/PLAN-STATIONS.md:141-165`) | the red and white countries are sister forms of one lineage, diverged by chemistry as the Rift's islands diverged by pressure; the rust collar is kin of the Godthrone's iron-eaters; the breath fringe is the trumpet line's dark branch |
 | Native life is the natives' armoury, medicine and trade (`throne/NOTES.md:109-134`; `riftrim/PLAN.md:287-288`) | one medicine, one ore, one fuel (section 9), on the Catch-to-Xanadu caravan road |
 | Dispersal by what the air does (nsemiarid: "everything travels", `biomes/nsemiarid/PLAN.md:154`; spores on plume thermals, implied and unbuilt: `throne/NOTES.md:195`) | the spores ride the out-breath and are sown by the in-breath of the next gill downwind: the breath is the pollinator, so nothing here glows to call one |
@@ -147,12 +150,15 @@ of the mountain off the pipes that have fallen.
   told by one alien idea applied to everything, not by the family colours.
 - **Chemistry stated.** The notes say where native life began and what it looks like, never how it works (the digest's
   first open hook). Trend 7 of the second digest keeps Earth life's chemistry Earth's where it is Earth's
-  (`biomes/geyser/NOTES.md:155-156`); nothing has been said of the native lineage's. This plan proposes one rule: the
-  native body is a host that takes a partner, and the partner decides whether it lives on light or on redox. It is
+  (`biomes/geyser/NOTES.md:155-156`); nothing had been said of the native lineage's. **Canon (the owner, 2026-11-02)**:
+  the native body is a host that takes a partner, and the partner decides whether it lives on light or on redox. It is
   deliberately the smallest rule that explains the Gills, the Throne's vent life (sulphur partners), the Godthrone's
   iron-eaters and the ordinary caps and pads (light partners), and it leaves the Ranj enigma open (the "something of
   Krator's own biosphere" the Ranj fungus needs, `throne/NOTES.md:126-127`, could be a partner that only vent ground
-  supplies).
+  supplies). *Proposed* wording for `LORE.md` section 8, at its head: "Krator's own life is one lineage of fungoid
+  hosts: fleshy bodies with no leaves, flowers or wood, each carrying a partner organism in its skin. The partner decides
+  how the body lives: a photosynthetic partner in the light (the caps, pads and crowns, green, teal and violet on top), a
+  chemolithotrophic one in the dark (the vents' sulphur life, the Godthrone's iron-eaters, the Gills' breath pipes)."
 - **Life on the Godthrone.** The godthrone plan's rule is "no plants, no animals, no settlement above Pluton" (9.5 km)
   and its point is a kit "where the ground is the whole show" (`godthrone/PLAN.md:192-201`). The Red Gills keep the
   rule (their living lips stop at about 9 km, section 3) and put life only in the cracks of its south flank, where the
@@ -744,15 +750,13 @@ orbit (the swarm's plan), Iceland's fissure swarms (the gills from the ground).
 
 ## 17. Open questions for the owner
 
-Settled 2026-11-02 (the head of this file): the mechanism, the two sites and their kits, the twins' age, the White
-Gills' extent, the calendar, Alph's pulse, the throat lamp, the fuel and the Geomancers, the Monks' stop, the nursery
-dropped, the tide's size. Still open:
+Settled 2026-11-02 (the head of this file): the mechanism, the lineage rule, the two sites and their kits, the twins'
+age, the White Gills' extent, the calendar, Alph's pulse, the throat lamp, the fuel and the Geomancers, the Monks' stop,
+the nursery dropped, the tide's size. Still open:
 
-1. **The lineage rule** (*proposed*): "the native body is a host that takes a partner; the partner decides whether it
-   lives on light or on redox." The first biochemical statement about Krator's own life. Yes, no, or reworded?
-2. **The Xanadui words** for the gills, the breath, the pipes, the two countries and the lung salt (the owner: the names
+1. **The Xanadui words** for the gills, the breath, the pipes, the two countries and the lung salt (the owner: the names
    are Xanadui); the shared kit keeps `gills` as its folder name unless the owner says otherwise.
-3. **Other gills in the south-east**: the owner's note that the Geomancers work "the various tectonic / volcanic
+2. **Other gills in the south-east**: the owner's note that the Geomancers work "the various tectonic / volcanic
    resources of the southeast map quadrant" suggests the Gills may breathe at other vents of that quadrant (the Catch's
    twin stratovolcanoes are two; the vents at the Catch's south-west notch and Yuni's own geothermal Vault are others).
    Does the lineage reach them, or only the Godthrone and the twins?
