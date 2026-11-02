@@ -61,7 +61,7 @@ item 9's state is in the README's Godot notes. The list as first written:
 8. **Ribbon resolution follows its effects.** A ribbon's rows are `step` apart (eastabyss: 30 m), so any per-vertex
    effect (`keep`, chutes, the end of a channel) needs `densify`. `drawFlow` could add rows where `keep` or the slope
    changes fast.
-9. **Godot parity.** The importer does not draw confluences, `keep`, breakup, `footK`/`plungeR`, pans or ice; their
+9. **Godot parity.** *Written and run 2026-11-02 on Godot 4.7.2: `godot/tests/water/core_pass_test.gd` headless, `core_pass_shaders.gd` compiles every water shader on the RTX 5060.* The importer did not draw confluences, `keep`, breakup, `footK`/`plungeR`, pans or ice; their
    records are exported (`water_import.gd` notes). A `.gdshaderinc` of the breakup and the confluence's grid mesh are
    the two that change how ported water looks.
 

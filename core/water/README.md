@@ -775,6 +775,16 @@ All opt-in; `test-gaps.js` loads every new fragment and its default snapshot sti
 - A page that wants the breakup everywhere now: `WATER.BREAKUP_AUTO = true;` before its first water drawing (in place of `breakupAll()` and
   `breakupFlows()` after them).
 
+## The water as fields, and the land side of its edge (2026-11-02: ext/60; `node core/water/test-edge.js`)
+
+`WATER.audit` checks the water against the ground. These read the other way, from the land: the ground's wet band and the plants take the water's own numbers.
+
+- `WATER.fields({box, cell, ground, surfaces})` bakes a raster of the water the eye sees (a surface holds the point and its level is over the ground); `WATER.fieldAt(F, x, z)` -> `{shore, depth, flow}`, `WATER.fieldFns(F)` -> one function each, for a host's field table.
+  `shore` is signed metres to the edge (over 0 on land), `depth` metres of water, `flow` metres to the nearest running water. These are the shore distance, depth and flow proximity entries of the environmental-field contract the core pass plans for `core/biome/README.md`.
+- `WATER.edgeAudit({field, plants, wet, band, wide, clear, allow})` -> findings in `WATER.audit`'s shape: `plant-in-water` (a plant nearer the water than its radius plus `clear`, unless `aquatic`), `wet-short` (land within `band` of the edge with no wet ground), `wet-wide` (with `wide`: wet ground past it, a band that follows a mask or an old line).
+  Give `wet` the water's share of the wetness, or `allow` where a seep or rain owns the ground. `test-edge.js` is the worked example: one shoreline and one junction, the wet band from the fields clean, one from the mask caught.
+- **Not done:** no biome reads them yet (each turn maps its fields), staged shore-grid bakes (measure a hitch first).
+
 ## The reflections switch
 
 `WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page

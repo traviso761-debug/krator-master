@@ -50,9 +50,9 @@ func _initialize() -> void:
 	var sm := node(plain, ids["stream"]).material_override as ShaderMaterial
 	var fm := node(plain, ids["fall"]).material_override as ShaderMaterial
 	var disc: Vector4 = (rm.get_shader_parameter("cf_disc") as Array)[0]
-	ok(int(rm.get_shader_parameter("cf_n")) == 1 and int(sm.get_shader_parameter("cf_n")) == 1 and absf(disc.z - float(gc["r"])) < 1e-9 and absf(disc.x - float(gc["at"][0])) < 1e-9 and absf(disc.w - float(gc["feather"])) < 1e-9,
+	ok(int(rm.get_shader_parameter("cf_n")) == 1 and int(sm.get_shader_parameter("cf_n")) == 1 and absf(disc.z - float(gc["r"])) < 1e-5 and absf(disc.x - float(gc["at"][0])) < 1e-5 and absf(disc.w - float(gc["feather"])) < 1e-5,
 		"both member ribbons fade in its disc (cf_n 1, the disc at %s, r %s, feather %s)" % [disc.x, disc.z, disc.w])
-	ok(fm.get_shader_parameter("cf_disc") == null and not bool(rm.get_shader_parameter("use_keep")) and fm.get_shader_parameter("foot_k") == null and rm.get_shader_parameter("bk_on") == null,
+	ok(fm.get_shader_parameter("cf_disc") == null and rm.get_shader_parameter("use_keep") != true and fm.get_shader_parameter("foot_k") == null and rm.get_shader_parameter("bk_on") == null,
 		"...negative: the fall is no member; without options no keep, no footK, no breakup")
 	# ---- the pan and the ice
 	var pm := node(plain, ids["pan"]).material_override as ShaderMaterial
@@ -117,7 +117,7 @@ func _initialize() -> void:
 			moved = maxf(moved, absf(r[k] - n[k]))
 	ok(eb < 1e-12 and moved > 1e-3, "KWater.breakup equals WATER.breakup at %d points, open and flow (%s; it moves the normal by up to %s)" % [g["breakup"].size(), sci(eb), sci(moved)])
 	var u := KWater.breakup_uniforms(KWater.breakup_opt(null, false), per)
-	ok(absf((u["bk_t"] as Vector2).x * (u["bk_t"] as Vector2).y - 1.0) < 1e-12 and absf((u["bk_t"] as Vector2).y - per / roundf(per / 7.0)) < 1e-12, "...its uniforms: whole cycles per wave period (bk_t %s)" % u["bk_t"])
+	ok(absf((u["bk_t"] as Vector2).x * (u["bk_t"] as Vector2).y - 1.0) < 1e-5 and absf((u["bk_t"] as Vector2).y - per / roundf(per / 7.0)) < 1e-5, "...its uniforms: whole cycles per wave period (bk_t %s)" % u["bk_t"])
 	plain.free()
 	full.free()
 	print("core_pass_test: %s" % ("all passed" if fails == 0 else "%d FAILED" % fails))

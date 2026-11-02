@@ -94,6 +94,7 @@ HCHK.night=(N,look)=>{const site=ATMOS.siteAt(SKY.preset.site.px,SKY.preset.site
  return{ok:nf===1&&df===0&&n.sunI<d.sunI*.3&&lum(n.zen)<.1&&lum(n.fogC)<.2&&lum(d.zen)>.3,detail:'midnight: key '+n.sunI.toFixed(2)+', zenith '+lum(n.zen).toFixed(2)+', fog '+lum(n.fogC).toFixed(2)+'; noon: key '+d.sunI.toFixed(2)+', zenith '+lum(d.zen).toFixed(2)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts();
  add('the creek and the rain pools on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
+ if(WATER_RECS&&WATER_RECS.creek&&WATER.audit){const F=WATER.audit({ground:groundH,surfaces:[WATER_RECS.creek]}).filter(f=>f.rule!=='overlap'),S=WATER.auditSummary(F);add('the creek on its ground (WATER.audit)',{ok:!F.length,detail:F.length+' findings'+(S.length?': '+S.slice(0,4).map(q=>q.rule+' x'+q.n+', worst '+q.by+' at '+q.x+','+q.z).join('; '):'')});}
  add('the night darkens the light, the dome and the fog',HCHK.night(NIGHT));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
  add('a fruit, a staple and a medicinal plant',HCHK.three(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
