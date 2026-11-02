@@ -69,8 +69,10 @@ def grain(fid):
             lum = px @ np.array([0.299, 0.587, 0.114], np.float32)
             g = (lum / max(float(lum.mean()), 1e-3)).clip(0.4, 1.6)
             bpy.data.images.remove(im)
+        elif os.path.exists(path):      # built on a pointer, a garment loses its weave with no other sign
+            raise RuntimeError('make_garments: %s is a Git LFS pointer: git lfs pull --include="core/materials/library/%s/*"' % (path, fid))
         else:
-            print('make_garments: no library set %s (git lfs pull it): flat weave' % fid)
+            print('make_garments: no library set %s: flat weave' % fid)
         GRAIN[fid] = g
     return GRAIN[fid]
 
@@ -329,10 +331,14 @@ def hull_rows(P, axes, rows):
     return P
 
 
+SLIT_SEAM = 0.015      # half a slit's closed width round the tube, in radians: about 4 mm at the hip
+
+
 def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=None, rows=None, group_below=None,
                scale=(1.0, 1.0), ease_bottom=None, iters=3, hang_side=None, points=None, hull_from=None, over_arms=False,
-               stiff=0.12, layer=None):
-    """rings round the body's vertical axis from z0 (top) down to z1; dense near the shoulders. arc=(a0, a1): only
+               stiff=0.12, layer=None, slit=None):
+    """rings round the body's vertical axis from z0 (top) down to z1; dense near the shoulders. slit: the height a slit
+    at each side opens below (a tube holds no cloth for a stride: the front and the back then part round the thigh). arc=(a0, a1): only
     that part of the circle (radians, 0 at the back, +pi/2 at the body's left). hang_from: the height cloth falls
     from at the front and back; hang_side: at the sides (lower, under the arms). points=(depth, power): the lower edge
     reaches 'depth' further down at the front and the back (a quechquemitl's points). hull_from: rings below this
@@ -349,6 +355,15 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
     if rows: zs = list(np.linspace(z0, z1, rows))
     if arc: angles = np.linspace(arc[0], arc[1], n)
     else: angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
+    gaps = []
+    if slit is not None and not arc:
+        # two columns a seam's width apart at each side, the faces between them left out below the slit's top: the grid
+        # stays a grid, which the chains, weights and morphs index
+        sides = (math.pi / 2, 3 * math.pi / 2)
+        keep = [a for a in angles if min(abs(a - s) for s in sides) > 0.05]
+        angles = np.array(sorted(keep + [s + d for s in sides for d in (-SLIT_SEAM, SLIT_SEAM)]))
+        row0 = next(i for i, z in enumerate(zs) if z <= slit)
+        gaps = [(int(np.argmin(np.abs(angles - (s - SLIT_SEAM)))), row0) for s in sides]
     # 0 at the back (+Y), turning toward the body's left (+X)
     x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
     Es = np.linspace(ease, ease_bottom if ease_bottom is not None else ease, len(zs))
@@ -384,6 +399,9 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
                     P[i, j] = np.array([axes[i][0], axes[i][1], zn]) + d * (1 + (f - 1) * 0.5 * (top - zs[i]) / max(0.05, top - zs[-1]))
     grp = ['helper-skirt' if (group_below is not None and P[k, :, 2].mean() < group_below) else 'body' for k in range(len(zs))]
     part = Part(name, P, arc is None, grp, paint)
+    if gaps:
+        part.gaps, part.us = gaps, [a / (2 * math.pi) for a in angles] + [1.0]    # u by angle: the seam is a sliver of the weave
+        part.slit = slit - KNEE
     if start is not None and stiff is not None:
         part.cloth = {'start': start, 'stiff': stiff}
         if layer is not None: part.cloth['layer'] = layer
@@ -693,7 +711,11 @@ def cloth_spec(p, offset, slot):
     circ, _ = p.lengths()
     if p.closed:
         n = int(max(8, min(20, round(circ / 0.075))))
-        cols = sorted({int(round(k * Cn / n)) % Cn for k in range(n)})
+        cols = {int(round(k * Cn / n)) % Cn for k in range(n)}
+        # a chain down each lip of a slit, and none crowding them (each lip swings with its own panel)
+        for g, _ in getattr(p, 'gaps', []):
+            cols = {c for c in cols if min((c - g) % Cn, (g - c) % Cn, (c - g - 1) % Cn, (g + 1 - c) % Cn) > 1} | {g, g + 1}
+        cols = sorted(cols)
     else:
         n = int(max(2, round(circ / 0.1) + 1))
         cols = sorted({int(round(x)) for x in np.linspace(0, Cn - 1, n)})
@@ -712,8 +734,10 @@ def cloth_spec(p, offset, slot):
         if slot == 'head': parent = 'Head'
         chains.append({'col': col, 'rows': rows, 'parent': parent})
     if not chains: return None
-    return {'name': p.name, 'offset': offset, 'rows': R, 'cols': Cn, 'closed': bool(p.closed), 'stiff': p.cloth['stiff'],
+    spec = {'name': p.name, 'offset': offset, 'rows': R, 'cols': Cn, 'closed': bool(p.closed), 'stiff': p.cloth['stiff'],
             'layer': p.cloth.get('layer', 1 if slot == 'torso' else 2 if slot == 'head' else 0), 'chains': chains}
+    if getattr(p, 'gaps', None): spec['gaps'], spec['slit'] = [list(g) for g in p.gaps], round(float(p.slit), 3)
+    return spec
 
 
 GAP = 0.006            # a garment stands at least this far outside what is worn under it (settle)
@@ -841,9 +865,12 @@ def build(gid, label, parts, slot='torso'):
             for j in range(Cn): groups.append(p.group[i])
         jcount = Cn if p.closed else Cn - 1
         holes = getattr(p, 'holes', [])
+        gaps, us = getattr(p, 'gaps', []), getattr(p, 'us', None)
         for i in range(R - 1):
             for j in range(jcount):
                 j2 = (j + 1) % Cn
+                if any(j == g and i >= r for g, r in gaps):
+                    continue                # a slit: the faces between its two lips
                 # a four-armed top leaves out the faces where a lower arm comes out of the ribs (four_armed)
                 if holes:
                     cq = (p.P[i, j] + p.P[i + 1, j] + p.P[i + 1, j2] + p.P[i, j2]) / 4
@@ -852,7 +879,7 @@ def build(gid, label, parts, slot='torso'):
                 f = bm.faces.new((vs[i][j], vs[i + 1][j], vs[i + 1][j2], vs[i][j2]))
                 pfaces[-1].append(f)
                 for loop, (ii, jj) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
-                    u = jj / (Cn if p.closed else Cn - 1)
+                    u = us[jj] if us else jj / (Cn if p.closed else Cn - 1)
                     v = v_top - pad - (v_top - v_bot - 2 * pad) * ii / (R - 1)
                     loop[uvl].uv = (u, v)
         y0 += h
@@ -1334,7 +1361,7 @@ def _():
     apron = P('purple', 0.03, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.1),
                                B('top', 0.0, 0.015, 'solid', 'gold')])
     c = spine_at(WAIST - 0.05); h = first_hit(c, np.array([0, -1.0, 0]))
-    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=WAIST - 0.03, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
+    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=WAIST - 0.03, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST, slit=KNEE + 0.24),
             flap('voth_m_noble_skirt_apron', c + np.array([0, -1.0, 0]) * ((h or 0.12) + 0.03), 0.24, WAIST - 0.05 - (KNEE - 0.2), np.array([0, -1.0, 0]),
                  apron, cols=7, rows=14, ease=0.035, group_below=CROTCH + 0.04, sway=0.07)]
 
@@ -1357,9 +1384,9 @@ def _():
                                 B('top', 0.0, 0.05, 'solid', 'black'), B('top', 0.012, 0.038, 'diamonds', 'gold', 'black', 0.045)])
     over = P('purple', 0.04, [B('bottom', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.012, 0.07, 'fret', 'ash', 'purple', 0.06),
                               B('bottom', 0.07, 0.08, 'solid', 'gold')])
-    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST),
+    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST, slit=KNEE + 0.24),
             torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.16, 0.02, over, hang_from=CROTCH + 0.04, flare=0.32, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST,
-                       layer=1)]   # outside the under-skirt (layered() in 50-figure.js); to mid-shin, so a stride's knee
+                       layer=1, slit=KNEE + 0.24)]   # outside the under-skirt (layered() in 50-figure.js); to mid-shin, so a stride's knee
                                    # moves inside it rather than catching its hem
 
 
@@ -2707,7 +2734,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         # cut as the monk's robe below the waist (the owner, 2026-10-20: the monk's holds in a run): it falls from the
         # waist, not the crotch, with its flare and ease; from the crotch a run's thigh came out of its side
         return [torso_tube('order_%s_novice_skirt' % sex, WAIST + 0.01, ANKLE + 0.08, 0.012, p, hang_from=WAIST - 0.03, flare=0.16,
-                           group_below=CROTCH + 0.04, rows=20, hull_from=WAIST)]
+                           group_below=CROTCH + 0.04, rows=20, hull_from=WAIST, slit=KNEE + 0.24)]
     GARMENTS['order_%s_novice_skirt' % sex] = ('legs', b, 'Novice\'s wrap skirt (shemdap)', _onskirt)
 
     def _osand(sex=sex):

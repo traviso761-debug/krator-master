@@ -26,6 +26,9 @@ uniform float kcP = 0.0;
 // 3.5 cm more over trousers (PAD_OVER), as much of it as the stride asks: kcM, from none standing to all in a walk
 uniform float kcPO = 0.0;
 uniform float kcM = 0.0;
+// a slit's top above the knee (kit part slit; -1 none), and the knee at rest: below it the legs do not push (pushOut in 50-figure.js)
+uniform float kcSl = -1.0;
+uniform float kcK = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;
 const float BACK_DEPTH = 0.01;
@@ -34,7 +37,7 @@ uniform float kcSH = 1000.0;   // the top's hem, of the hip-to-ankle length: the
 // how far a fully bent knee's corner stands out of its two capsules
 const float KNEE = 0.04;
 
-void kc_push(inout vec3 kv, vec3 kn) {
+void kc_push(inout vec3 kv, vec3 kn, float ry) {
 	if (kcL > 0.5) {
 		// behind the hips: the seat's capsules (14, 15) lie behind them
 		vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
@@ -47,6 +50,10 @@ void kc_push(inout vec3 kv, vec3 kn) {
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
 			float sh = kcB[i].w > 0.5 ? 0.0 : 0.015;
+			float sl = kcSl > -0.5 && i < 6 ? smoothstep(kcK + kcSl - 0.08, kcK + kcSl + 0.02, ry) : 1.0;
+			if (sl <= 0.0) {
+				continue;
+			}
 			float t = dot(kv - a, ab) / max(dot(ab, ab), 1e-8);
 			if (i < 2 && t < 0.3 && (dot(kv - a, bk) > 0.0 || kcA[14].w <= 0.0)) {
 				continue;                // a thigh's top third, behind: its capsule took in the buttock
@@ -89,7 +96,7 @@ void kc_push(inout vec3 kv, vec3 kn) {
 					w *= w;
 					d = normalize(d) * (1.0 - w) + o * w;
 				}
-				kv = q + normalize(d) * (r - sh + l * 2.0 * sh / R);   // a thin band: [0, r + sh] into [r - sh, r + sh]
+				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl);   // a thin band: [0, r + sh] into [r - sh, r + sh]
 			}
 		}
 	}

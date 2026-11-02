@@ -557,7 +557,8 @@ skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the gar
 cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
 the buttocks. Over trousers a top's push takes 3.5 cm more (`PAD_OVER`), but only as much of it as the stride asks (`kcM`,
 none standing still, all of it by a walk's swing), and only cloth inside the bare limb of a hanging leg counts as deep
-(HANDOFF-GARMENT-DEFECTS.md). Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
+(HANDOFF-GARMENT-DEFECTS.md). A slit garment's cloth below the slit's top is not pushed off the legs (`kcSl`, kit part `slit`, metres above the knee; `make_garments.py torso_tube(slit=)`): the leg comes out through it,
+and its chains keep off the leg as a flap's do. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
 at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
 of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
 sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard

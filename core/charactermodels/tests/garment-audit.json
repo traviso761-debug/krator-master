@@ -5,10 +5,10 @@
 },
 "f-beast_riders-trade": {},
 "f-chichani-noble": {
-"skin idle": 338,
-"skin motion": 7319,
-"under idle": 57,
-"under motion": 2760
+"skin idle": 337,
+"skin motion": 2912,
+"under idle": 38,
+"under motion": 2928
 },
 "f-chichani-peasant": {
 "skin motion": 4630,
@@ -40,8 +40,9 @@
 "skin motion": 2936
 },
 "f-historians-novice": {
-"skin idle": 2254,
-"skin motion": 9596
+"skin idle": 8,
+"skin motion": 1114,
+"under motion": 11
 },
 "f-hykkousoi-noble": {
 "skin idle": 3037,
@@ -150,11 +151,10 @@
 "under rest": 55
 },
 "m-chichani-noble": {
-"skin idle": 2754,
-"skin motion": 5234,
-"under idle": 80,
-"under motion": 7175,
-"under rest": 909
+"skin rest": 48,
+"under idle": 406,
+"under motion": 6720,
+"under rest": 1038
 },
 "m-chichani-peasant": {
 "skin idle": 10,
@@ -183,9 +183,9 @@
 },
 "m-historians-monk": {},
 "m-historians-novice": {
-"skin idle": 1382,
-"skin motion": 12112,
-"under motion": 73
+"skin idle": 553,
+"skin motion": 45,
+"under motion": 56
 },
 "m-hykkousoi-noble": {
 "skin motion": 546

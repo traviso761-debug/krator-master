@@ -161,6 +161,13 @@ area you are about to change.
   per limb doubled trousers through tops in a run (the leg a runner stands on took none); and the bare-limb test bared the
   Yuni boubou at rest, which the old bug had been hiding. `tools/garment_audit.py` counts them in ten minutes: run it
   before believing a fix, and shoot the regressions it names, some of which are only the same patch a little larger.
+- **A slit that gapes, tears and flies out like wings, with fine numbers** → pixel counts fell 84% while the shots got worse: shoot it. Switch stages off first: the lips' ties made no
+  difference, and with the push off the slit was clean. The leg is meant to leave through a slit, so do not push the cloth below its top off the legs (as a garment of flaps), and start it high
+  enough that the thigh does not tear through just above it (24 cm above the knee here; 10 cm tore).
+- **A rest-relative push reads well and fails** → a vertex keeping its rest clearance from each capsule leaves the fit alone, but over the wardrobe skin in a walk and trousers in a crouch doubled: rest clearance is too little
+  over trousers in motion.
+- **A rebuild in a fresh worktree loses the weave with no error** → the library's albedos are LFS pointers, and the textures came out a quarter smaller. Compare an untouched garment's GLB with its piece first (geometry
+  and weights exact, image size close); `make_garments.py` now stops on a pointer. On Windows `make_mpfb.py` writes kit.json with CRLF.
 - **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
   of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
   the hands, the head and the feet.

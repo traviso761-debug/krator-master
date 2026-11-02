@@ -549,6 +549,11 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
                            'rows': ch['rows'], 'joints': jidx})
             ids.append(g)
         parts_out.append({'closed': part['closed'], 'chains': ids, 'stiff': part['stiff'], 'layer': part.get('layer', 0)})
+        # a slit: [a, k], chain a of the part and the next stop being held together from their point k down (the ring)
+        gaps = [[a, next((k for k, r in enumerate(chains[g]['rows']) if r >= row), len(chains[g]['rows']))]
+                for col, row in part.get('gaps', []) for a, g in enumerate(ids) if chains[g]['col'] == col]
+        if gaps:
+            parts_out[-1]['gaps'], parts_out[-1]['slit'] = gaps, part['slit']     # slit: its top, in metres above the knee
     if not chains:
         return None
     skin['joints'] += new_nodes

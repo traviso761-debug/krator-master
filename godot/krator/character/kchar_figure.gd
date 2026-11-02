@@ -1723,7 +1723,11 @@ func _place_chains(c: Dictionary, posed: bool) -> void:
 		for a in (n if pt["closed"] else n - 1):
 			var A: Dictionary = c["chains"][int(g[a])]
 			var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
-			for k in range(1, mini(A["rest"].size(), Bc["rest"].size())):
+			var kk := mini(A["rest"].size(), Bc["rest"].size())
+			for gp in pt.get("gaps", []):       # a slit's two lips part from its top down (make_mpfb.py gaps)
+				if int(gp[0]) == a:
+					kk = mini(kk, int(gp[1]))
+			for k in range(1, kk):
 				c["ring"].append([A, Bc, k, (A["rest"][k] - Bc["rest"][k]).length()])
 	c["reset"] = true
 
@@ -2043,6 +2047,10 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 		pad = 0.02           # a skirt, as a robe (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcPO", pad_over)
+	var slit := -1.0                        # a slit's top above the knee (kit part slit)
+	for cp in _item_of(part).get("cloth", {}).get("parts", []):
+		slit = maxf(slit, float(cp.get("slit", -1.0)))
+	pm.set_shader_parameter("kcSl", slit)
 	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches
 	# below the knees, else down to its hem (kit item hem)
@@ -2095,7 +2103,7 @@ func _fur(m: Material, it: Dictionary, band: Vector2, uv2 := false, colored := f
 			var fm := ShaderMaterial.new()
 			fm.shader = FUR_SHADER
 			if pushed:
-				for p in ["tex", "albedo", "kcL", "kcP", "kcPO", "kcT", "kcS", "kcSH"]:
+				for p in ["tex", "albedo", "kcL", "kcP", "kcPO", "kcSl", "kcT", "kcS", "kcSH"]:
 					fm.set_shader_parameter(p, m.get_shader_parameter(p))
 				_push_mats.append(fm)
 			elif m is BaseMaterial3D:
@@ -2487,6 +2495,7 @@ func _leg_caps() -> void:
 		pm.set_shader_parameter("kcH", hip)
 		pm.set_shader_parameter("kcU", up)
 		pm.set_shader_parameter("kcM", smoothstep(0.02, 0.1, stride))
+		pm.set_shader_parameter("kcK", skeleton.get_bone_global_rest(skeleton.find_bone("LeftLeg")).origin.y)
 
 
 # twin of bodyFix in 50-figure.js: each limb a segment with its capsule's radius (the body's tapered ra to rb, an arm
