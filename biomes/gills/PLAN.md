@@ -20,12 +20,25 @@ the pass) and of `biomes/xanadu` (the Xanadu side, Alph's head); `biomes/gills` 
 place, the way `biomes/geyser` is shared by the Steampits, the ring isles and Korona. (2) **The twins are younger than
 the Godthrone but older than the Ancients' colonization of Krator**, so the White Gills are fully developed. (3) The
 first draft (commit c1de31bcd) sat on the Lesser Throne; the owner ruled it out, rightly: that volcano erupted less than
-a thousand years ago and there has not been time for the ecosystem. It survives here only as an optional nursery
-(section 11).
+a thousand years ago and there has not been time for the ecosystem, and (4) **native gills stay out of the inner
+crater** (the owner, 2026-11-02: "or else we kind of have to add them to volcanoes all over the map"), so the Lesser
+Throne nursery is dropped.
 
-Status: **a proposal for the owner** on what is not settled above. Nothing is built, nothing on the model is changed and
-`LORE.md` is untouched. Every lore and map change this plan wants is marked *proposed*. Working names throughout; the
-owner's, the Nomads' or the Xanadui's names are better.
+**Settled with the owner, 2026-11-02, second round** (the answers to section 17 as it stood): (5) **the daily tidal
+breath of the ground is canon** (a sentence for `LORE.md` section 2 is proposed in section 3); (6) **the calendar is
+canon**: the pipes record the Godthrone's summit eruptions as glass-bead bands, and the Monks read the thin years as the
+Cataclysm, "but they may not be correct"; (7) **Alph's pulse is canon**: the breath is what forces the Sacred River's
+fountain; (8) **the names are Xanadui** (still to be supplied); (9) **the throat lamp stays, glowing on the in-breath**;
+(10) **the fuel**: Yuni, the caravaneers and Xanadu know of the hydrogen, but only Yuni has the chemistry to exploit it,
+specifically the Geomancers, who "in addition to oil, are pioneers in exploiting the various tectonic / volcanic
+resources of the southeast map quadrant" (a lore note for `LORE.md` 6.9, proposed in section 9); (11) **the Monks'
+hermitage** in the White pipe field stands, and "doubles as a caravan stop; besides counting rings their other duties
+involve passing news and rumors from travelers to Longsong"; (12) **the tide's size**, tens of metres in the rock used
+as a valve, is plausible and stands as written.
+
+Status: **a proposal for the owner** on what is not settled above: the lineage rule (section 2) and the Xanadui words.
+Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is
+marked *proposed* with its wording. Working names throughout until the Xanadui words come.
 
 ## 0. What the kit is
 
@@ -153,8 +166,12 @@ of the mountain off the pipes that have fallen.
   times the shell's Love number. That is Io's class of tide, and more than the owner's heat flow of 2-5x Earth's
   implies, so the plan treats the tide as the **valve, not the pump**: the fissures need only gape by centimetres to
   halve their resistance. Enceladus's plume output rising at apoapsis as its stripes open is the observed precedent.
-  The Godthrone, which "sits on its plume", is the ground that flexes most. If the owner prefers a smaller tide,
-  nothing in the biome changes but a sentence.
+  The Godthrone, which "sits on its plume", is the ground that flexes most. The owner (2026-11-02): plausible; the
+  breath is canon. *Proposed* wording for `LORE.md` section 2, after "tides crack the shell into rifts without moving
+  it": "The same tide works the cracks once a day: Krator's slightly eccentric orbit flexes the shell by tens of metres,
+  the fissures over the heat-pipe vents gape and close with it, and where they do the ground breathes, exhaling the
+  vents' warm gas for a few hours and drawing the air back in between. The giant's daily nod is the same motion seen in
+  the sky, so the hour of the breath can be read off the giant, and it walks round the clock once a year."
 - **The pump.** The conduit system under a swarm (lava tubes, the fissures' own depth, the breccia's voids: `DATA.tubes`
   holds four master tubes on the Godthrone and two on the twins) is of the order of 10^8-10^9 m3 of warm air. A daily
   temperature swing of 10 degC in the upper system moves 3-4% of it, ~10^7 m3 a day, through a few thousand throats:
@@ -282,8 +299,9 @@ saddle, no kit's ground: the catch kit's station reaches it as its oasis Lasso a
 - **Water and heat:** the two geothermal tubes above; the Erebus ice caves at 7.26 km with 88 degC geysers (the geyser
   kit's station 5, `biomes/geyser/PLAN-STATIONS.md`); the Sacred River Alph's subglacial reservoir at ~6.3 km on the
   Xanadu side, whose "geothermal pressure drives the bursting chasm fountain" (`DATA.tubes`, `cav_alph_headwater`;
-  `biomes/xanadu/NOTES.md`). *Proposed*: the breath is what makes Alph's fountain burst: it is "momently forced" once a
-  day, at the hour of the giant's nod.
+  `biomes/xanadu/NOTES.md`). **Canon (the owner, 2026-11-02)**: the breath is what makes Alph's fountain burst: it is
+  "momently forced" once a day, at the hour of the giant's nod. The xanadu kit's fountain particles take their rate from
+  `GILLS.breath` when its gills station is built (`biomes/xanadu/NOTES.md` has the fountain as a particle system).
 - **Rock:** dacite and basalt (`DATA.tubes`), with the ultramafic root the serpentinization needs *proposed* in the
   cones' deep plumbing; `KSTRATA` recipes `canyon` on the Catch side's lake beds below and the volcano's own flows above.
 - **Age** (the owner, 2026-11-02): **younger than the Godthrone, older than the Ancients' colonization of Krator**, so
@@ -369,7 +387,7 @@ Working names, the same species in both countries unless marked.
 | `collar` | **Rust collar** (Red) / **Lime collar** (White) | the lips of young gills before a pipe has grown; the walls | the lining itself, a flat fleshy sheet 1-3 m across under a botryoidal oxide crust, which goes from matte (charged) to wet and bright (discharged) through the day: the biome's clock face. Kin (`BIO.kin`) of the Godthrone's iron-eaters (`godthrone/PLAN.md:195-200`) |
 | `bellows` | **Bellows pad** | across narrow throats and cracks | a taut translucent membrane 1-4 m across stretched over a crack, which bulges up on the out-breath and sinks on the in-breath: a diaphragm that meters the flow and traps spores and dust on its underside. The biome's one moving plant, on `BIO.animHook` driven by `GILLS.breath(t)` |
 | `fringe` | **Breath fringe** | the mouths of pipes and throats | filaments a metre long streaming out of a mouth on the out-breath and sucked flat into it on the in-breath; the dark branch of the trumpet-tree line (a funnel turned inside out: the trumpet catches water, the fringe catches the breath) |
-| `lamp` | **Throat lamp** (optional) | deep in the throats, out of the daylight | a pale soft disc that, uniquely here, does glow, faint and blue, and only on the in-breath: the one concession to "glow pays when it is dim" (`throne/NOTES.md:80`), there to show a walker the throat is drawing. The owner can strike it |
+| `lamp` | **Throat lamp** | deep in the throats, out of the daylight | a pale soft disc that, uniquely here, does glow, faint and blue, and only on the in-breath: the one concession to "glow pays when it is dim" (`throne/NOTES.md:80`), there to show a walker the throat is drawing. Kept by the owner (2026-11-02): it glows on the in-breath and at no other hour |
 
 ### The breath meadows (what the mist feeds)
 
@@ -416,9 +434,13 @@ the breath and the thing in it.
   fields, `rare-earth` alone at the White ones (their manganese bands), grade from the field's age (`RES_GEO` owner nodes
   and deltas apply by id last, `kits/resources/GEOLOGY.md`); the Geomancers of Yuni and the Republic's Mint would want
   it, the caravans would carry it. No new family.
-- **Fuel**: the out-breath is hydrogen and methane. A throat capped with a hide bell gives a clean flame for three hours
-  a day; a candle gives it all day. *Proposed* as the caravans' and the Catch's divers' fuel on the pass and a thing
-  Yuni, Xanadu and the Eternal State would study (the owner's call; it touches the energy lore).
+- **Fuel** (the owner, 2026-11-02): the out-breath is hydrogen and methane. A throat capped with a hide bell gives a
+  clean flame for three hours a day; a candle gives it all day. **Yuni, the caravaneers and Xanadu know of the
+  hydrogen, but only Yuni has the chemical knowledge to exploit it well: the Geomancers**, who, "in addition to oil, are
+  pioneers in exploiting the various tectonic / volcanic resources of the southeast map quadrant." The caravans burn it
+  at the throats as they pass; the Xanadui know it as the breath's smell and the candles' flame; the Geomancers come to
+  the White Gills to work it (*proposed*: a Geomancers' gas-house at the pipe field, beside the Monks' stop, and a lore
+  note for `LORE.md` 6.9 in the owner's words above).
 - **Medicine** (`kits/crops`, zone `gills`, `how: node`): **lung salt**, scraped from a charged collar at the end of the
   in-breath: an oxygen-carrying salt the caravans chew on the 7.3 km pass toward Strongbow and sell to the crater for
   the thin-air sickness, the abyss cough's opposite. Dalab's genepriests want it (pressure adaptation is their trade,
@@ -439,31 +461,36 @@ the breath and the thing in it.
   the Stalkers' peaks far to the east), the pass itself through the ice pipes, and the descent on the Xanadu side past
   Alph's head to the Vale and Strongbow. Yuni, Izani, Dasri and Xanadui traders pass through them, water at the salt
   cups and Bitta's spring, cut lung salt and ore, and time the pass by the breath; the Catch's divers know the candles;
-  the Xanadui hold Alph's head holy (the Sacred River's source). *Proposed*: the **History Monks** keep a hermitage of
-  two or three in the White pipe field (section 10), from Longsong in the Oidong Valley east of Xanadu (`LORE.md`
-  6.15). **The Red Gills** are the Talovolci's sacred mountain's one living flank, in sight of the Vale; the Xanadui
-  climb to them for the red salt; Erewhon is 198 km. Hazard to both: the mountains are live.
+  the Xanadui hold Alph's head holy (the Sacred River's source). **The History Monks** (the owner, 2026-11-02) keep a
+  hermitage of two or three in the White pipe field (section 10), from Longsong in the Oidong Valley east of Xanadu
+  (`LORE.md` 6.15); **it doubles as a caravan stop**, and besides counting rings the Monks' other duty is **passing the
+  news and rumours of travellers to Longsong**: the Order's ear on the Catch crossing. **The Red Gills** are the
+  Talovolci's sacred mountain's one living flank, in sight of the Vale; the Xanadui climb to them for the red salt;
+  Erewhon is 198 km. Hazard to both: the mountains are live.
 
-## 10. The pipes as a calendar (*proposed* lore)
+## 10. The pipes as a calendar (canon, the owner, 2026-11-02)
 
 A breath pipe lays one couplet a day, 0.2-0.4 mm; a wet season leaves a thicker pale ring once a year; so a pipe's
 rings are days and years that anyone can count, and the tallest standing Red pipes (80-90 m, 0.75 g) are some 1,200 to
 1,500 years old at the base, with fallen generations under them going back far further. On the twins, old since before
 the Ancients came, the same holds. Two bands run through every pipe old enough to hold them:
 
-1. **The glass band**, in the Red pipes: a lamina of orange bead glass from a summit eruption of the Godthrone, the
-   fountain's halo carried down the flank by the wind (the godthrone plan's halo "tens of km across"); a dated event
-   in a mountain whose history nobody else records.
+1. **The glass bands**, in the Red pipes: laminae of the Godthrone's orange bead glass, one for each summit eruption,
+   the fountain's halo carried down the flank by the wind (the godthrone plan's halo "tens of km across"): dated events
+   in a mountain whose history nobody else records. Canon: "it does record it as glass beads."
 2. **The thin years**, in both countries: a run of years whose laminae are thin, dark and uneven in every pipe that
-   reaches them, below which the rings are thick and regular. The Monks read it as the Cataclysm: a dimmed sky and a
-   shaken ground for a decade. What it actually records is the owner's to say.
+   reaches them, below which the rings are thick and regular. **The Monks read it as the Cataclysm, but they may not
+   be correct** (the owner). What it records is left open on purpose: the game shows the band and the Monks' reading,
+   never the truth.
 
 `LORE.md` section 12 lists "When the Ancients fell" among the contradictions ("a thousand years" at Yuni and Iziz,
-"millennia" elsewhere). The Gills are the one place on Krator where the answer is written in something no one could
-have forged, and only the Order knows how to read it, which is why two or three Monks live in the White pipe field
-counting (Longsong is across the Vale), and why the Red pipes, which they cannot reach without the Xanadui's leave, are
-the archive they most want. The owner may want the thin years to mean something else, or to keep the count ambiguous
-(pipes break; the oldest are fallen and the fallen weather); the plan only puts the record in the ground.
+"millennia" elsewhere). The Gills are the one place on Krator where something that old is written in a thing no one
+could have forged, and only the Order knows how to count it, which is why two or three Monks live in the White pipe
+field counting (Longsong is across the Vale), and why the Red pipes, which they cannot reach without the Xanadui's
+leave, are the archive they most want. Pipes break, the oldest are fallen and the fallen weather, so the count has its
+own doubt built in, before the question of what the thin years were. *Proposed* for `LORE.md` 6.15: one sentence that
+the Order keeps a hermitage and caravan stop at the White Gills' pipe field, counting the pipes' day-rings for the date
+of the Cataclysm and carrying travellers' news to Longsong.
 
 ## 11. Stations
 
@@ -500,7 +527,9 @@ colour, the bellows pads, the fringes, the beads, the hazards and the breath-rid
    swarm, its hundreds of white pipes standing silent, fallen ones across the floor, rubble fans of broken rings; beside
    it the dry gills whose gas burns: blue flames a metre tall at the throats, invisible at noon, plain at dusk, the black
    heat crust round each; the Monks' two cells built into a pipe's base (a placement site only: the building is a
-   settlement's), their count cut into the bore; the caravans' smelting hearths and slag; the road climbing toward Lasso.
+   settlement's), their count cut into the bore, the caravan stop beside it (the Monks' other duty: the news of the
+   road to Longsong); the Geomancers' gas-house (*proposed*, section 9) with its capped throat; the caravans' smelting
+   hearths and slag; the road climbing toward Lasso.
 5. **The pass** (catch `--station gills-pass`, `dist/catch-gills-pass.html`; px 1040,1566 to the saddle: 6.6 to 7.3 km,
    0.70 to 0.64 atm, -16 to -21 degC, EF to HF): the White ladder, which is also the crossing: Lasso's last water in a
    gill's salt cups, the road climbing between ice pipes with the caravans' chains and cairns, the ring cracks of both
@@ -512,10 +541,9 @@ colour, the bellows pads, the fringes, the beads, the hazards and the breath-rid
    edge, and the chasm below where the river bursts out once a day on the breath (*proposed*, section 5), the Vale
    beyond and Erewhon's gardens in the haze; the xanadu kit's wildwood read in place at the foot. Set at the breath's
    hour so the fountain is seen to be forced.
-7. **The nursery** (optional, a station of `biomes/ehighlands` if wanted; the Lesser Throne's plateau, px 1138,822:
-   3,174 m, 1.08 atm, 188 mm, BSk): the first draft's site kept as the lineage's youngest country: cracks less than a
-   thousand years old with collars and fringes and no pipes yet, the first stumps a hand high, the young cone smoking
-   above. The same life in its infancy, if the owner wants the comparison.
+7. ~~**The nursery**~~ (the Lesser Throne; dropped by the owner, 2026-11-02): native gills stay out of the inner
+   crater, or every volcano on the map would owe them. The Gills are a south-eastern thing: the Godthrone, the twins,
+   and (section 17) perhaps other vents of the south-east quadrant the Geomancers work.
 
 ## 12. How it reads, and what it costs
 
@@ -716,22 +744,15 @@ orbit (the swarm's plan), Iceland's fissure swarms (the gills from the ground).
 
 ## 17. Open questions for the owner
 
-1. **The mechanism**: is a daily tidal breath of the ground, phased to the giant's nod, acceptable canon? It touches
-   `LORE.md` section 2 (a sentence on the shell's daily tide) and the sky plan (nothing changes there; the kit reads
-   what is drawn).
-2. **The lineage rule** (*proposed*): "the native body is a host that takes a partner; the partner decides whether it
+Settled 2026-11-02 (the head of this file): the mechanism, the two sites and their kits, the twins' age, the White
+Gills' extent, the calendar, Alph's pulse, the throat lamp, the fuel and the Geomancers, the Monks' stop, the nursery
+dropped, the tide's size. Still open:
+
+1. **The lineage rule** (*proposed*): "the native body is a host that takes a partner; the partner decides whether it
    lives on light or on redox." The first biochemical statement about Krator's own life. Yes, no, or reworded?
-3. **The calendar** (section 10): may the pipes record a Godthrone summit eruption as a glass band and a band the Monks
-   read as the Cataclysm? What do the thin years mean, if anything?
-4. **Alph's pulse** (*proposed*): may the breath be what makes the Sacred River's fountain burst once a day?
-5. **The names**: the Xanadui's or Dasri's words for the gills, the breath, the pipes, the two countries and the lung
-   salt; whether the shared kit is `gills` or something of the owner's.
-6. **The throat lamp**: the one glow, inside the throats on the in-breath. Keep or strike.
-7. **Fuel**: may the breath's hydrogen be a thing people burn, and who knows it (the caravans only, or Yuni, Xanadu and
-   the State too)?
-8. **The Monks**: a hermitage in the White pipe field counting rings, with Longsong across the Vale. Yes, and in whose
-   name?
-9. **The nursery**: keep the Lesser Throne as the lineage's youngest country (an ehighlands station), or drop it
-   altogether?
-10. **The tide's size**: the plan quotes tens of metres in the rock as a plausibility bound and uses the tide only as a
-    valve. If the owner wants a number in `LORE.md`, which?
+2. **The Xanadui words** for the gills, the breath, the pipes, the two countries and the lung salt (the owner: the names
+   are Xanadui); the shared kit keeps `gills` as its folder name unless the owner says otherwise.
+3. **Other gills in the south-east**: the owner's note that the Geomancers work "the various tectonic / volcanic
+   resources of the southeast map quadrant" suggests the Gills may breathe at other vents of that quadrant (the Catch's
+   twin stratovolcanoes are two; the vents at the Catch's south-west notch and Yuni's own geothermal Vault are others).
+   Does the lineage reach them, or only the Godthrone and the twins?
