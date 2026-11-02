@@ -935,6 +935,24 @@ function world(seed){
  const D=mk({site:{amount:3}});D.run(20);ok('an empty site stops it, its batch whole',D.S.blockedReport().forge.reason==='depleted'&&D.E.made.iron===3&&D.S.sitesReport()[0].amount===0,D.E.made.iron!==3);
  const R=mk();R.run(30);R.S.R.place.shed.stock.ore=4;R.S.R.place.shed.stock.coal=2;R.run(10);ok('fed again it runs',R.E.made.iron===12,R.E.made.iron!==12);}
 
+// a work camp's controls (core/camp 40): a recipe held while its crew marches (its hours lost, the reason said, released at
+// `until`), pointed at the stand it moved to, and a stand grown back while nobody worked it booked `regrown`, which the
+// ledger allows (an amount raised without it is caught)
+{const mk=()=>{const {S,clock}=world(203);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'camp',kind:'fellcamp',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'feller',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{logs:{},brush:{}},every:60,window:1});S.store('shed',{kind:'warehouse'});
+   S.site({id:'s1',goods:['logs'],amount:40});S.site({id:'s2',goods:['logs'],amount:400});
+   S.recipe('camp',{batch:{'in':{},out:{logs:1},by:{brush:1},hours:1},cap:1000,site:'s1'});[0,1].forEach(i=>S.actor({id:'feller'+i,role:'feller',home:'homeA',work:'camp'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const A=mk();A.run(4);const m0=A.E.made.logs||0;A.S.recipeHold('camp','moving camp',A.E._m+5*60);A.run(4);const held=(A.E.made.logs||0)-m0,why=A.S.blockedReport().camp;A.run(4);
+ ok('a held recipe makes nothing and says why ('+(why&&why.reason)+'), then runs at its minute',held===0&&why&&why.reason==='moving camp'&&(A.E.made.logs||0)>m0&&!A.S.blockedReport().camp,held>0);
+ const B=mk();B.run(3);const t1=B.S.R&&B.E.resSites.s1.taken;B.S.recipeSite('camp','s2');B.run(3);
+ ok('a recipe pointed at another site draws on it ('+B.E.resSites.s2.taken+' from s2, s1 stays at '+B.E.resSites.s1.taken+')',B.E.resSites.s2.taken>0&&B.E.resSites.s1.taken===t1,(()=>{try{B.S.recipeSite('camp','nowhere');return true;}catch(e){return false;}})());
+ const C=mk();C.run(30);const a0=C.S.ledgerSnap();const left=C.E.resSites.s1.amount;C.S.siteRestore('s1',30);C.run(2);const L=C.S.ledger(a0,C.S.ledgerSnap());
+ const D=mk();D.run(30);const d0=D.S.ledgerSnap();D.E.resSites.s1.amount=30;D.run(2);const LD=D.S.ledger(d0,D.S.ledgerSnap());
+ ok('a stand grown back is booked regrown and the ledger allows it ('+left+' to 30, regrown '+C.E.resSites.s1.regrown+')',left<30&&C.E.resSites.s1.regrown===30-left&&L.ok,LD.ok);}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 

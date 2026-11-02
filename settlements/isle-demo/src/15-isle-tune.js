@@ -320,14 +320,32 @@ ISLE.TUNE.sim = {
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
       byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
     },
-    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools'],
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools', 'logs', 'fuelwood'],
     /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
-       sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it holds and regrows a night (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come back, a pan and a pasture and a stand do).
+       sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it regrows a night (`regen`) and the `years` it
+       lasts worked flat out (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come
+       back, a pan and a pasture and a stand do. And, the same day: a resource a major settlement's village works lasts a
+       long time, at least five years). A site holds `years` x 365 x (its full day's draw - its regrowth), the full day being
+       every post of its works at work for the `sched.work` hours at its rate and the grade's yield (47h `ISLE.siteLife`),
+       and never under `minDays` of that draw; `years` by grade for an ore node. The governor and the ceilings keep the
+       real draw well under the full one, so it lasts longer still.
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
-    sites: { iron: { amount: { low: 20000, medium: 60000, high: 150000 } }, salt: { amount: 40000, regen: 300 }, pasture: { amount: 40000, regen: 2000 }, stand: { amount: 120000, regen: 330 } },
-    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 } },
-    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10, irontools: 5 },
+    life: { years: 5, minDays: 30 },
+    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
+    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
+    /* THE FELLING CREW, a work camp that migrates (core/camp 40-camp-work.js; owner, 2026-11-02): the lumber village is the
+       yard (its sawpits saw logs into timber, its kilns burn fuelwood into charcoal) and `share` of its sawpits' posts go out
+       as a crew that camps at one stand of the forest at a time, fells it down to its seed trees, strikes and marches to the
+       next; the stands it left grow back. The range: the 400 m cells (`cfg.cell`) within `range` of the sawpit, each holding
+       its forest share (the host's `res.forest(x, z)`, 0..1, sampled `samples` x `samples`) x its hectares x `treesPerHa`
+       timber trees x `lotsPerTree`. A batch: `hours` worker-hours fell the logs, the tops and branches `by` as fuelwood.
+       A move: the crew's recipe held from the strike to the pitch (core's SIM.recipeHold), its place moved, its recipe
+       pointed at the new stand's site (a stand worked before is restored by its regrowth: SIM.siteRestore) */
+    crew: { focus: 'lumber', share: 0.5, range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40,
+      batch: { 'in': {}, out: { logs: 1 }, by: { fuelwood: 2 }, hours: 2 }, cap: 1500,
+      inputs: { timber: { logs: 1 }, charcoal: { fuelwood: 1 } }, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
+    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10, irontools: 5, logs: 20, fuelwood: 20 },
     carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
     town: {

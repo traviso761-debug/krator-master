@@ -204,6 +204,14 @@ declares both once they are planned, in one order whichever town it draws, and h
   weavers). Three weeks: 2,240 tooled, 446 on racks; 145 wooden tools, 103 stone, 40 cooking pots and 4 nets worn out
   and replaced in work time; 404 hurt, 369 healed (265 by poultice), none past three days; 948 sarongs and 732 sun hats
   bought; 105 clubs. The weavers' places take cloth three in eight, garments two, mats, hats and nets one each.
+- **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
+  years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
+  village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand
+  of the forest within 3 km, fells it to its seed trees (a tenth left), strikes and marches to the next (the best stand by
+  its timber, its haul to the yard and the march), while the stands behind it grow back in a year. The crew fells logs and
+  fuelwood; the sawpits saw the logs into timber, the kilns burn the fuelwood. On the open world the camp is drawn where its
+  log puts it, and the stumps are its stands' trees in the share the sim took. A crew at full fells 193 lots a day; its
+  range gives back about 5,000 a day, so it never runs out.
 - **Iron tools** (2026-11-02; PLAN.md 9b). Where the villages are declared (the open world; `tests/test-isle-hamlets.js`),
   the iron mine's ore is smelted in Valapo, the lakatoi carries the iron to Kautoa, and every fourth Kautoan smithy forges
   it with charcoal into `irontools`, sold as an `iron tool` (3,000 worked hours, three stone tools' life) at the markets,

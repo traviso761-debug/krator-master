@@ -110,7 +110,7 @@ ORDER = (
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
     # the camps (core/camp, PLAN.md section 10, "the first build"): the census and the pitch, the Beast Riders' camp table
     # (BR_CAMP, read in place: [G data]), and this world's bands; CAT carries the kit's tent set (cat_bundle(tents=True))
-    + [('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
+    + [('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '40-camp-work.js'),
        ('kits/beast-riders/src', '79-br-camp.js'), ('src', '48k-world-camps.js')]
     # M7 (settlements/isle-demo/PLAN.md section 7): the two towns planned live here, as the city page plans them: the city
     # page's data (the kits' boxes, the census trades, the site file), the Iziz Vernacular and its pack, core/city (KCITY),

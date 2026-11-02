@@ -224,6 +224,12 @@ when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` 
 derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
 A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
 
+**A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
+report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a
+site grown back while nobody worked it and books it `regrown` (as the nightly `regen` now is), which the ledger allows. A site feeding a batch
+recipe has its take booked when the batch starts and its out made when it ends: the ledger holds the take less the batches in hand (`wip`) to
+what was made.
+
 **Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
 seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better
 good, so its want shows where nobody could buy it. A kind's `base` is the kind sought when it wears out (the isles' iron tool: the stone tool), so a

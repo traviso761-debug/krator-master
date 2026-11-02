@@ -250,12 +250,17 @@
       economies are as before.
 - [ ] **Always at the abstract level:** nobody in a village is posed or walks; its people's day is the abstract day. The
       open world draws the buildings (88h) but no villagers.
-- [ ] **The felling and the timber still run apart** (the rest closed 2026-11-02, PLAN-ECONOMY.md Phase 1): each village's
-      works now draw on its map record by that record's id, the grade setting the yield, and the sim reports what each gave
-      (`SIM.sitesReport`, the ledger reconciles it). They deplete (the owner, 2026-11-02, over the rule of 2026-10-18;
-      `ISLE.TUNE.sim.hamlets.sites`: an ore node does not come back, the rest regrow). But the stumps the stand shows (88h) are a pure function of the world
-      clock, not of the timber the sim made: tying them means a stored felling position, which the rule "nothing stored"
-      forbids for now. Lot ages for perishables are not built: nothing needs them yet.
+- [x] **The felling and the timber run together** (2026-11-02; core/camp PLAN.md 6.5): the lumber village is the yard, and
+      half its sawyers go out as a felling crew, a work camp that pitches at one 400 m stand of the forest at a time, fells
+      it to its seed trees, strikes and marches on (`ISLE.TUNE.sim.hamlets.crew`; core/camp 40). Its logs come from its
+      stand's site, the sawpits saw them, the kilns burn the tops; the open world's stumps (88h) are the stand's first trees
+      in the share the sim took (KCAMP.workTree), so map and books agree. The camp's history is its op log; nothing else is stored.
+- [x] **Every village's resource lasts at least five years** (owner, 2026-11-02): sized from its works flat out against its
+      regrowth (`hamlets.life`, `sites`; 47h `ISLE.siteLife`), ore by grade (5, 10, 20 years); a check holds it, flat out and at
+      the run's draw. The salt pan as first sized (40,000 lots, 300 back a night) would have run dry in three and a half months.
+- [ ] **The felling crew sleeps in the village** (the villages are always abstract: nobody walks there); its camp is drawn as
+      stand-in shelters and a log pile (no kit has a felling camp's lean-tos: an Islanders kit task); the march is not a
+      `SIM.group`. core/camp's C2 and C4 bring those. Lot ages for perishables are not built: nothing needs them yet.
 - [x] **Iron tools have their own line** (2026-11-02; they shared the stone tools' good the same morning): every fourth
       Kautoan smithy works Valapo's iron into `irontools`, sold as `iron tool` (3,000 worked hours) at the markets, shops
       and smithies of both towns once the villages are declared, and carried to Valapo by the lakatoi. A stone tool's errand
@@ -266,8 +271,8 @@
 - [ ] **Only the stone trades take iron.** The field hands' digging sticks and the other wooden tools (`wood tool`) have no
       iron line (PLAN.md 9b: "later an iron hoe"); giving `wood tool` a `prefer` would hand the weavers and potters iron too,
       so it wants the field hands' tool split from the rest first.
-- [ ] **A mine that empties ends Valapo's iron:** nothing yet opens a new node or moves the village; the iron tools then fall
-      back to stone as they wear out.
+- [ ] **A mine that empties ends Valapo's iron** (at its five years' least, flat out): nothing yet opens a new node or moves the
+      village; the iron tools then fall back to stone as they wear out.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).

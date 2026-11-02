@@ -163,6 +163,13 @@ year**, so the owner can watch how it behaves and adjust.
   to set it, a tunable by resource kind (`ISLE.TUNE.sim.hamlets.sites`, on core's `SIM.site` `amount` and `regen`): an ore
   node holds an amount by grade and does not come back; a salt pan, a pasture and a timber stand drain and regrow a night.
   A field's `gather` weight still sets how many can work it. Fish are not yet a site.
+- **A resource lasts at least five years** (owner, 2026-11-02): a resource a major settlement's village works is sized to last
+  that long flat out (every post at work, its regrowth counted), ore by its grade (5, 10, 20 years). `ISLE.siteLife` (the isle
+  demo's 47h) computes it from the works; the governor and the ceilings keep the real draw well under it.
+- **Timber is a work camp that migrates** (owner, 2026-11-02; core/camp PLAN.md 6.5): the lumber village is the yard (sawpits,
+  kilns), and half its sawyers go out as a felling crew that camps at one stand of the forest at a time and moves on; the
+  stands it left grow back. The stumps follow the timber the sim took, so the felling clock of `40-hamlet-felling.js` is now
+  only the fallback of a page with no crew.
 
 ## 3. Cultures and the works
 

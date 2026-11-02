@@ -42,6 +42,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `camp/10-camp-cultures.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the culture rows (KCAMP.CULTURES): plain data |
 | `camp/20-camp-census.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a band's census (KCAMP.census): no three.js, no geometry, no DOM; test-camp.js |
 | `camp/30-camp-pitch.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the pitch (KCAMP.pitch, check): plain records, no three.js (its 'box' is a footprint's corners); test-camp.js |
+| `camp/40-camp-work.js` | 10.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | work camps that migrate: the range's stands, the op log (pitch, strike, march), the move rule, the trees' state; no three.js, no geometry, no DOM |
 | `city/10-city-core.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/12-city-index.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/15-city-ground.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
