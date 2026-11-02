@@ -129,6 +129,8 @@
      '#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor*=1.0-0.55*atmWetHere*step(0.01,uPorosity);');}
    /* the wet here: W.wet, none under cover when the page takes the rain occlusion map (the world position reaches the fragment) */
    const wetHere=occ?'float atmWetHere=uWet*(1.0-atmRainCover('+(lambert?'atmWPosF':'atmWPos')+'));':'float atmWetHere=uWet;';
+   /* a hook that samples its own map (core/biome's gloss bark replaces <map_fragment> and <color_fragment>) gets it before <alphamap_fragment>, the next chunk that holds */
+   const wet=wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;';
    sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+(occ?(lambert?'varying vec3 atmWPosF;\n':'')+occ+'\n':'')
-    +K.rep(sh.fragmentShader,'#include <map_fragment>','#include <map_fragment>\n'+wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;');});};
+    +K.inject(sh.fragmentShader,{at:'map_fragment',after:wet,fallback:{at:'alphamap_fragment',before:wet}});});};
 })();
