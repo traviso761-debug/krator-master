@@ -9,9 +9,14 @@ in a body: it confines it, drives it with its own dark skin, drinks what condens
 the only organism on Krator that lives at 1.5 atm and 1.0 atm at once. It is a pipe for water that grows toward the
 drought, a road up a wall, a barometer you can read from the jungle, and the Talovolci's stair.
 
-Status: **a proposal for the owner.** Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every
-lore and map change this plan wants is marked *proposed*. Working names throughout: the kit's name (`clifflung`), the
-species' and the people's words are placeholders for the owner's or the Talovolci's. The sister proposal is the Gills
+Status: **a proposal the owner has answered (2026-11-02; section 17 has the words).** Nothing is built, nothing on the
+model is changed and `LORE.md` is untouched; the lore sentences the owner's answers call for are *proposed* inside the plan
+(section 10) for the owner's hand. What the owner settled: the mechanism is canon; the rings are a coral-like colony; the
+site stands as a band kit; the Talovolci's stairs, wells and omen stand; the lungs are widely known as the convenient way up
+the Wall; the yield stands; **nothing glows** (the mote lamp is struck); the spiral rule reaches native life, so the
+right-handed helix and the mirror lung stand; the scarp goes into the next scale model update; **Spirladunon** is the current
+name of the place the lore called Daridel; the **Talovolci are the Crag Men** of the old polygon. Working names throughout:
+the kit's name (`clifflung`), the species' and the people's words are placeholders for the owner's or the Talovolci's. The sister proposal is the Gills
 (`biomes/gills/PLAN.md`, branch `claude/alien-biome-proposal-fb0a42`): this plan takes its form and its trend table, and
 deliberately not its mechanism (the Gills are a tide of gas through rock; the lungs are a convection of wet air through
 a body). Where this plan says "the Gills' digest", it means the two subagent digests of every biome's notes that fed that
@@ -27,7 +32,7 @@ plan's section 2 (2026-11-01), summarised there.
 | Object | `LUNG` (`build`, `dress`, `SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `breath`, `flues`) on the `BIOME-API.md` contract (the Throne's and sedesert's shape); `LUNG.breath(t, W)` is the one pure function of the clock and the weather that every shader, hazard, animal and the cloud deck's edge read (section 3) |
 | Core | `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky, the weather, **the cloud deck**), `water` (springs, wet ground, falls), `terrain` (`KFIELD` with an inset on the face, `KCAVERN` for the bores, `KSTRATA` `megabreccia`/`crest`, `KRELIEF`, `KGROUND`, `KFAR`, `KHORIZON`, `KFROST`), `clock`; section 13 |
 | Read in place | `biomes/shighlands` (the spiral cloud forest on the face and the paramo on the crest: the lungs stand in its country and keep its rule), `biomes/hyperjungle` (the canopy the intake bells stand in), `kits/fauna` (the fang glider, the argali, the chamois, the mountain condor, the sky ray), `kits/crops` (the crest's irrigated zone) |
-| Out of scope | the Talovolci's hamlets and Daridel as buildings (a settlement or `core/hamlet` plan: this kit publishes the sites); the animals' models (`kits/fauna`); the whole of the Inner Wall's scarp as a landform (a `core/terrain` gap, section 14, which this kit is the first taker of) |
+| Out of scope | the Talovolci's hamlets and Spirladunon as buildings (a settlement or `core/hamlet` plan: this kit publishes the sites); the animals' models (`kits/fauna`); the whole of the Inner Wall's scarp as a landform (a `core/terrain` gap, section 14, which this kit is the first taker of) |
 
 A new biome: it goes in the gallery when it first reaches `main`.
 
@@ -246,7 +251,7 @@ on the jungle floor; the scarp proper rises from about 1.5 atm.
 |---|---|---|---|---|---|---|
 | the jungle floor, 20-60 km north | -1,500 to -800 m | 1.8-1.95 atm | +28-32 (33-37 / 23-28) | 1,500-4,000 mm | XA, WS, Af | the hyperjungle, the Ring Sea's southern arm, Voth (742,1018), Torus (774,1007), Pylon (869,1002), Iziz (963,985) |
 | the foot of the scarp | 0-500 m | 1.5-1.6 | +20-23 (27-30 / 14-17) | 1,000-2,600 | Af, Am, Aw | where the cloud sea stands at dawn; the **bells** |
-| the cloud belt, the face | 1.2-2.4 km | 1.2-1.38 | +12-17 (22-25 / 2-10) | **3,000-3,600 at x=790** | Af, Cfa | the spiral cloud forest; **Daridel** (`LORE.md:860`, legacy px 528,687 = 800,1017 on 5.1: 1,371 m, 1.35 atm, +18, 4,000 mm) |
+| the cloud belt, the face | 1.2-2.4 km | 1.2-1.38 | +12-17 (22-25 / 2-10) | **3,000-3,600 at x=790** | Af, Cfa | the spiral cloud forest; **Spirladunon** (formerly Daridel; `LORE.md:860`, legacy px 528,687 = 800,1017 on 5.1: 1,371 m, 1.35 atm, +18, 4,000 mm) |
 | the crest, the paramo's lip | 3.0-3.8 km | 1.0-1.1 | +5-9 (18-20 / -3 to -8; +26/-16) | 470-900 | Dfc, Dsb, Dsc | the **mouths**, the breath meadows, the Talovolci's crest hamlets (*proposed*) |
 | the fellfield | 4.0-4.8 km | 0.88-0.97 | -3 to +3 | 400-500 | Dsc, Dfc | shighlands' planned station 3 |
 
@@ -260,13 +265,17 @@ on the jungle floor; the scarp proper rises from about 1.5 atm.
   and the `savage hyperjungle` at the foot (`biomes/hyperjungle`); `swhighlands` 120 km west along the Wall; `godstep`
   behind the paramo to the south (the Talovolci's canyons, `biomes/godstep/PLAN.md`); the Bowl's walls to the south-east.
 - **Who holds it:** the **Talovolci** (`LORE.md` section 6.21; their political polygon, legacy px 402-751 by 592-833, is
-  674-1023 by 922-1163 on the 5.1 canvas: the whole stretch). Daridel, their ceremonial settlement, is in the cloud belt
-  20 km west of station 1 (the model's `Spirladunon` marker, 800,1017). The Vothic Kingdom and the Empire of Iziz hold
+  674-1023 by 922-1163 on the 5.1 canvas: the whole stretch; the owner, 2026-11-02: the Talovolci **are** the Crag Men, so
+  the old polygon name is theirs). **Spirladunon** (formerly Daridel; the owner, 2026-11-02), their ceremonial settlement,
+  is in the cloud belt 20 km west of station 1 (the model's marker at 800,1017, which is right). The Vothic Kingdom and the Empire of Iziz hold
   the floor below (Voth 40-60 km north of the bells; Iziz 90 km north-east). The stretch is inside `little demo`'s box.
 
-*Proposed* map changes (none made): none to heights, rain or polygons. Two notes for the model's docs: the Talovolci's
-polygon still carries the old name `Crag Men`'s coordinates (`LORE.md:852-853`), and the settlement marker at 800,1017 is
-labelled `Spirladunon` where `LORE.md:860` calls the place Daridel. The lungs are kit-scale and are made by the kit.
+*Proposed* map changes (none made): none to heights, rain or polygons in this version. **For the next scale model update
+(the owner, 2026-11-02: "do build a scarp into next scale model update")**: the Inner Wall's scarp on this stretch sculpted
+into the model's heights as a real step (the face from ~300 m to ~3,300 m over a few cells, benches and ravines at the
+model's scale, the talus foot), so the model and the kit's `KRELIEF.scarp` (section 14) agree; the lungs themselves stay
+kit-scale. Two notes for the lore and the model's docs: `LORE.md:852-853` can drop "the old name" from the Crag Men (the
+Talovolci are that people, and the polygon is rightly theirs), and `LORE.md:860` should read Spirladunon, formerly Daridel.
 
 ## 6. The ground and the landforms (`core/terrain`)
 
@@ -306,7 +315,9 @@ Fields and seeds are deterministic from the terrain (`KRAND` by cell), as every 
 fungoid (fleshy, partnered, no leaves); every one that has a long axis spirals, right-handed, by the Wall's rule. Palette:
 the lung's pressure bands (teal and violet at the wet foot through sage to rust and bone at the dry crest), the bore's pale
 pleated inside, the wet black of the comb, the breath meadow's one vivid thing (the fall-out lawn's jungle green against
-the paramo's straw). Working names; the Talovolci's are better (section 17).
+the paramo's straw). **Nothing glows** (the owner, 2026-11-02): the hyperjungle's motes drawn up a flue go out in the cold
+before they reach the mouth, and a mouth at night is found by its warmth and its sound. Working names; the Talovolci's are
+better (section 17).
 
 ### The lung itself
 
@@ -326,7 +337,6 @@ the paramo's straw). Working names; the Talovolci's are better (section 17).
 | `fallout` | **Fall-out lawn** | the strip downwind of every mouth | the small-and-weird: the hyperjungle's spores, pollen and seeds carried up the flue sprout in the warm wet exhale and die in the cold a few weeks on: a lawn of jungle seedlings on the paramo, hypertree cotyledons the size of hands, a different crop every month, green against the straw, dead brown at its edge where the breath's warmth ends. The meadow's edge draws the breath's reach on the ground |
 | `dewcoil` | **Dew coil** | the meadows, the collars' fans | a fleshy coil 30-80 cm (a crozier that never unrolls) that beads condensate along its spiral and holds it in the cup of its curl through the day: the paramo's drink, for animals and for the Talovolci; right-handed |
 | `rimecap` | **Rime cap** | the meadows' outer edge, where the warmth fails | a low grey cap crusted white every night and wet every noon, the frost-and-thaw plant: the breath meadow's border |
-| `motelamp` | **Mote lamp** (optional) | the mouths at night | the hyperjungle's glowing motes (`LORE.md:917`) settle on the collar's wet flesh and keep glowing for a night: the one glow here, borrowed, faint and green, there to show a traveller the mouth in the dark. The owner can strike it |
 
 ### Earth's, read in place
 
@@ -377,16 +387,30 @@ waits where the road comes out.
   (a ring that closes with a walker inside holds in the dark: `pit`, hold, trigger `weight`, reset by the breath), the
   face (`fall`), the mouth-maw (`hunter`). The tell is the hour and the mist: steam at dawn, a cap cloud at noon,
   silence at dusk, cold fog at the bells before a winter dawn.
-- **People**: the **Talovolci** (`LORE.md` 6.21), the Cloud Giants, whose country this is, whose Daridel stands in the cloud
-  belt 20 km from station 1, who revere the spiral and will not fell a mirror-handed tree. *Proposed* (section 10): the
-  lungs are their stairs and their wells, their learned order keeps the mirror-handed lungs, and their legionaries came
-  home from Iziz up them. Below the Wall, **Voth** (40-60 km), the Vothic ports and **Torus**; the **Empire of Iziz** east
-  (Pylon, Iziz). *Proposed*: Dalab's skinchangers came up the lungs when they raided for the Talovolci's blood
-  (`LORE.md:877-879`), which is why the Talovolci watch the mouths.
+- **People**: the **Talovolci** (`LORE.md` 6.21; the Crag Men of the old polygon), the Cloud Giants, whose country this is,
+  whose Spirladunon stands in the cloud belt 20 km from station 1, who revere the spiral and will not fell a mirror-handed
+  tree. Settled (the owner, 2026-11-02; section 10): the lungs are their stairs and their wells, their learned order keeps
+  the mirror-handed lungs, and their legionaries came home from Iziz up them. **The lungs are widely known as the convenient
+  way up the Wall** (the owner, 2026-11-02): Voth below (40-60 km), the Vothic ports and **Torus**, the **Empire of Iziz**
+  east (Pylon, Iziz), the caravans and the legion's recruiters all know the dark ribs for what they are, and the Talovolci's
+  stairs are the toll road of the southern Wall. *Proposed*: Dalab's skinchangers came up the lungs when they raided for the
+  Talovolci's blood (`LORE.md:877-879`), which is why the Talovolci watch the mouths.
 
-## 10. The Talovolci's stairs (*proposed* lore)
+## 10. The Talovolci's stairs (lore: settled in substance, *proposed* in wording)
 
-Nothing here is canon; each line is the plan's and waits on the owner.
+The owner approved the stairs, the wells and the omen as proposed (2026-11-02: "talovolci proposals fine"), and that the
+lungs are widely known as the way up. The names are still the owner's to supply from the Talovolci tongue sheet; the
+sentences below are *proposed* wording for `LORE.md`, not written there.
+
+*Proposed* for `LORE.md` section 2 (the mechanism as canon, the owner's yes of 2026-11-02): "On the southern Inner Wall's
+scarp native colonies, the **cliff lungs**, stand as living flues from the hyperjungle's cloud sea to the paramo, three
+kilometres long, breathing the jungle's saturated air up through themselves on the heat it gives back as it condenses and on
+the sun on their skins; each is a coral-like colony of rings, every ring fixed to the air pressure it was born at, so the
+Wall is banded by height; they are the Wall's wells and the only convenient way up it." *Proposed* for section 6.21: "**The
+Talovolci's stairs** run up the cliff lungs; a crest hamlet stands at a lung's mouth and takes its name from it; a
+mirror-handed lung is an omen, never climbed and never drunk from." *Proposed* for section 8: a southern highlands bullet
+naming the cliff lungs beside the spiral biome. And the two corrections of section 5: Spirladunon, formerly Daridel; the
+Talovolci are the Crag Men.
 
 - **The stairs.** The Talovolci's villages are in the cloud forest and the godstep canyons (`LORE.md` 6.21,
   `biomes/godstep/PLAN.md`); their crest hamlets and summer pastures are on the paramo; the lungs are the way between. A
@@ -423,7 +447,7 @@ the flue-riders together; the weather's wet and the season set its amplitude.
    drops out of the nearest mouth and sails away over the deck. The **noon** preset is the same place six hours on: the
    cloud sea burned back to the foot, the face bare and green, a cap cloud standing over every mouth, the sound of the
    draw, condors and gliders stacked over the lip. The **winter night** preset: stars, giantshine on the rime, the mouths
-   silent and faintly steaming the wrong way, the mote lamps if the owner keeps them.
+   silent and faintly steaming the wrong way, found by the warm air over them; nothing glows.
 2. **The Bells** (`-bells`, px 790,1024: 529 m, 1.50 atm, +19 (26/13), 2,039 mm, Af; the foot). The foot of the face in the
    hyperjungle's canopy (read in place): six bells standing up among the crowns, gaping north, their fringes streaming
    inward, the lungs climbing out of sight into the cloud deck above, the talus and the first rings in the Wall's shade;
@@ -455,7 +479,7 @@ the flue-riders together; the weather's wet and the season set its amplitude.
   ladder's rung) is a height-windowed roughness term in the ring material on the same uniform: a wet band that climbs
   the lung through the morning. The flue-riders are `kits/fauna` orbit animals whose count follows the breath.
 - **Light.** The shared sky; the face is lit from the north by the real sun path. The pressure bands are the biome's
-  colour; at night the mote lamps (optional) and giantshine on the rime are the picture.
+  colour; at night giantshine on the rime and the pale husks is the whole picture: nothing in the biome glows (the owner).
 - **Godot.** Everything above is data on the clock: the lungs are `KCAVERN` records (meshes exported), the breath a pure
   function with a GDScript twin, the hazards `Area3D`s on `cycle` with `stateFn`, the cloud deck already has its Godot
   field (`core/atmos/GODOT.md`), the wells `WATER` records. Nothing needs a builder to port.
@@ -495,6 +519,9 @@ the dew coil only; the terraces are the hamlet plan's.
    buttresses between, a talus foot, a rim; `at` names the part (face, bench, ravine, talus, rim). Today every kit that
    stands on the Inner Wall (shighlands, the ehighlands' wet face, swhighlands' fan coast, the sedesert's shelf) draws
    its own; the lungs are the fifth, so the form is core. The lungs' centrelines follow its ravines and buttresses.
+   **The owner (2026-11-02): build the scarp into the next scale model update.** So this is two things done together: the
+   core form the kits draw, and the model-side scarp on the southern Inner Wall (section 5, the map to-do) sculpted into
+   the next version's heights with the same profile, so the kit's face and the model's agree where the open world streams it.
 2. **`KCAVERN` masses on a sloped centreline.** A `mass` today is a polygon between two heights; the lung needs a hollow
    body following a 3D centreline against a face (`pipe({pts, r, wall, lean})`: a tube void inside a tube mass, meeting
    the ground along one side, with `door`s at the ends and `ledge`s). Small: the tube SDF exists; the mass form does not.
@@ -593,8 +620,9 @@ spiral and the palette, Roraima's cliff from its talus.
 
 ## 16. Order of work
 
-- **L0.** The owner's yes or no on the mechanism, the site, the lung-as-colony, the Talovolci's stairs, the names, the
-  mote lamp (section 17); the texture prompts moved to `PROMPTS-NEEDED.md`; the two model notes (section 5).
+- **L0.** Done in substance (the owner's answers of 2026-11-02, section 17). Left: the Talovolci names from the tongue sheet;
+  the texture prompts moved to `PROMPTS-NEEDED.md`; the proposed `LORE.md` sentences (section 10) written by the owner's
+  hand; the scarp filed as a to-do for the next scale model update (section 5).
 - **L1.** `LUNG.breath(t, W)` and `LUNG.bandAt(atm)` as `[G data]` with their node test (the four states against the clock
   and the weather; determinism; the band function monotone in pressure); the hazard records on it; the condensate yield
   function per mouth from section 3's arithmetic, tested against its numbers.
@@ -604,7 +632,7 @@ spiral and the palette, Roraima's cliff from its talus.
   bells, mouths, husks; placement from the ravines by `KRAND`; the bore walkable; the `breath` anim mode.
 - **L4.** The breath itself: the mouths' steam and cap clouds, the cold breath, the sheen band, the collars' drip, the
   wells on `WATER.karstSpring`; station 1 with its three presets.
-- **L5.** The flora: fringe, comb, dew coil, rime cap, fall-out lawn, the mote lamp if kept; the two kits read in place;
+- **L5.** The flora: fringe, comb, dew coil, rime cap, fall-out lawn; the two kits read in place;
   stations 2 and 3; station 4 if wanted; the Talovolci's sites and stair anchors published as data.
 - **L6.** `verify.py --assert` with the probe's invariants: every ring's band equals `LUNG.bandAt` of its birth pressure;
   every lung's rings are monotone in height and pressure; every hazard's state equals `LUNG.breath`'s; the noon preset shows
@@ -612,28 +640,34 @@ spiral and the palette, Roraima's cliff from its talus.
   roots on the `cliff` weight but a lung; the mirror lungs under one in thirty; each with a negative. `PORT.md`, the index
   tools, `tools/check_core_use.py`, `python3 tools/port_baseline.py`, the gallery.
 - **L7.** `kits/fauna`: the flue-rider, the ring-crawler, the mouth-maw. `kits/crops`: the `breath` zone, the dew coil.
-  `core/terrain`: `KRELIEF.scarp` with shighlands moved onto it.
+  `core/terrain`: `KRELIEF.scarp` with shighlands moved onto it, in step with the model's scarp in the next update.
 
-## 17. Open questions for the owner
+## 17. The owner's answers (2026-11-02), and what is still open
 
-1. **The mechanism**: a native colony that is a confined moist-convection flue, driven by condensation and the sun, with no
-   vent under it. Acceptable canon for the native lineage? It touches no lore but the Talovolci's (section 10).
-2. **The colony**: rings as individuals, each fixed to its birth pressure, the lung banded by height. Yes, or one organism?
-3. **The site**: the southern Inner Wall between Voth and Pylon, in the Talovolci's country, as a band kit on the
-   `s highlands` polygon with no polygon of its own. The alternatives with the same mechanism are the east Inner Wall's
-   wet face (a wetter foot, but a crest as wet as the foot, so the breath irrigates nothing) and the north Wall's dry crest
-   (the breath would matter most there, but there is no cloud sea at its desert foot). Here, or a polygon of its own?
-4. **The Talovolci's stairs and wells** (section 10): may the lungs be their roads, their hamlets' water and their omen? The
-   names (*-anatlon*, *nemeton*) are the plan's Gaulish guesses: the owner's tongue sheet (`lore/tongues-of-krator.html`,
-   the Talovolci tab) should give the real ones.
-5. **Who else**: do Voth and Iziz know the lungs as the way up (the legion's recruiting foot; Dalab's raiders' road)?
-6. **The yield**: 4-20 m3 a day a lung, a hamlet's water, not a river. Enough, or should the lungs be bigger (a 10 m bore
-   gives 50)?
-7. **The mote lamp**: the one glow, borrowed from the hyperjungle's motes on the collars at night. Keep or strike.
-8. **The spiral**: the lungs turn right-handed by the Wall's rule, one in about forty mirror-handed. Does the rule reach
-   native life on the Wall, or is it the cloud forest's alone?
-9. **`KRELIEF.scarp`**: a core form for the Inner Wall's face that five kits would share. Build it with this kit, or let
-   the kit draw its own face first, as shighlands did?
-10. **The Gills and the lungs together**: two proposals of the native lineage with a pulse, one on the sky's tide and one on
-    the sun's day (the Gills' site is being moved south to the Godthrone's flank and the twin volcanoes, so they would
-    stand on different walls). Both, one, or neither?
+The owner's words, verbatim: "mechanism can be canon; rings are a coral-like colony organism; the site is fine; talovolci
+proposals fine; the lungs are indeed widely known as a convenient way up; yield is fine, but they should not glow; the spiral
+rule does reach native life, and do build a scarp into next scale model update. spirladunon is the new name for daridel;
+talovolci are the same as the 'crag men'". Taken question by question:
+
+1. **The mechanism**: **canon.** A native colony that is a confined moist-convection flue, driven by condensation and the
+   sun, with no vent under it. The `LORE.md` sentence is proposed in section 10; `LORE.md` itself is untouched here.
+2. **The colony**: **a coral-like colony** of rings, each fixed to its birth pressure, the lung banded by height (sections
+   1, 7).
+3. **The site**: **stands.** The southern Inner Wall between Voth and Pylon as a band kit on the `s highlands` polygon, no
+   polygon of its own.
+4. **The Talovolci's stairs, wells and omen**: **approved as proposed** (section 10). The names (*-anatlon*, *nemeton*) are
+   still the plan's Gaulish guesses: **open**, for the owner's tongue sheet (`lore/tongues-of-krator.html`, the Talovolci
+   tab).
+5. **Who else knows**: **everyone.** The lungs are widely known as the convenient way up the Wall (section 9).
+6. **The yield**: **stands** (4-20 m3 a day a lung).
+7. **The mote lamp**: **struck.** Nothing in the biome glows (sections 7, 11, 12).
+8. **The spiral**: **the rule reaches native life.** The right-handed helix and the mirror lung stand (sections 2, 3, 10).
+9. **The scarp**: **build it, into the next scale model update.** `KRELIEF.scarp` and the model-side scarp together
+   (sections 5, 14, 16).
+10. **The Gills and the lungs**: **both kept.**
+
+Lore facts applied: **Spirladunon** is the current name of the place the lore called Daridel (the model's marker at 800,1017
+is right); the **Talovolci are the Crag Men** (the old polygon name is theirs).
+
+Still open: the Talovolci's words for the lung, the ring, the stair, the well and the mirror lung (4); the kit's own name;
+whether the next model update's scarp takes the whole southern stretch (px 745-930) or the stations' middle first.
