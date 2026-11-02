@@ -80,8 +80,9 @@ river also stands 29 m above the sea at its mouth, so ships could not reach it.
 and 11 km from the present pin, slope about 3.6%, all above the ceiling. **The old city and important buildings go there.** **The harbour
 stays at the water, in the wave's reach**: quays, dockyard and the traders' factory quarter (`kits/eternian`).
 
-**To do:** Gemini moves Farport's pin to the plateau and grades Līng-Mā's mouth to the sea (the handoff has it); the Farside page and the
-later settlement build follow. The elevations here are from the map at cc6dd36e0.
+**Done on the map (203d69d58):** Farport stands on the plateau at 5.1 px 294,588, 212 m and 4 km from the sea, Līng-Mā grades to 0 m at its mouth, and `DATA.tsunami_farside` gives a 50 m crest and a 100 m run-up ceiling. The Farside page and the later settlement build follow.
+
+**Rechecked on 203d69d58:** Farside's strand moved again (1,718 m; 2,408 m on 4.23), still inside `tsunami coast`. Only nwouterwall's yeti station also moved over 150 m (+422 m, back to ET).
 
 ## New kits and priorities (the owner, 2026-11-01)
 
@@ -94,7 +95,7 @@ later settlement build follow. The elevations here are from the map at cc6dd36e0
 | Loom-Chasms | `rmvraoas90co7` (Region 99) | 307,000 km² | 0.3-8.2 km, median 1.8 km | `PLAN.md` and 4 station records exist; the page is a showcase, not a kit |
 | Mid Basin | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: no plan yet |
 | High Rift | `rmvhighrift100` | 86,000 km² | 2.9-11.4 km, median 4.0 km | Five zones: no plan yet |
-| NE outer wall | coming | | | Gemini's polygon arrives with its current session; the plan is being written |
+| NE outer wall | `ne outer wall` | | | On the map, with `biomes/neouterwall/PLAN.md`. Overlaps `arachnoid canyons` |
 
 Elevations are the 5th to 95th percentile. These kits start from the nearest finished kit, on core, each with a `Core adoption`
 section in its `PLAN.md`. Loom-Chasms' and Siphon Pits' plans use old-canvas px; Spider Lake's uses the new one.

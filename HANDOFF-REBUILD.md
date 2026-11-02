@@ -515,6 +515,7 @@ entry, so the share can only fall. The practices behind this are in the painting
 
 ### Practical rules (learned this session)
 
+- **The lock's heartbeat** (the owner, 2026-11-02; `CLAUDE.md`): check a GPU job every 30 minutes; no progress in 30 minutes means hung: stop it by PID and release the lock.
 - **One GPU lock**: `C:/Users/travi/AppData/Local/Temp/claude/krator-verify-gpu.lock`, `KRATOR_GL=gpu`. Take it, run, release
   in ONE bash call; give the wait a timeout and report instead of hanging; never remove a lock you did not take unless no
   process holds it (a dead holder stalled four agents for three hours on 2026-10-26). The SwiftShader lock is retired.

@@ -25,6 +25,8 @@ hard. **Build with `python3 tools/build.py <build>`**: the same build, plus the 
 the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
 bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
 
+**The GPU lock has a heartbeat** (owner, 2026-11-02). A session holding `krator-verify-gpu.lock` checks its GPU job every 30 minutes: the process is alive and its output or page has moved since the last check. A job with no progress in 30 minutes is hung: stop it by PID and release the lock, then rerun or report it; this needs no one's permission. A session waiting on the lock may do the same to another holder's job after confirming the same way, and tells that session. Stop by PID or script name only, never by a match on the session id, and never stop a job that is merely slow but still moving.
+
 **Who works where.** No separate economy session runs any more (owner, 2026-10-18): `core/simulation/` is edited
 on `main` like any other core module, and **the isle demo (`settlements/isle-demo`) is the test case the economy is
 tuned on as it is built** (two towns of one polity trading by sea; `settlements/isle-demo/PLAN.md` sections 5 and 7).
