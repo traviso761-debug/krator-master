@@ -118,7 +118,7 @@ through a door. At most one or two in view. Godot uses a `SubViewport`. Only nee
 A view-space vertex warp centred on the camera: `y += k·d²` turned upward, so the land rises round you like the inside of a bowl and the horizon climbs the sky. The ground
 under your feet stays true, so **collision, placement and the walker don't change**.
 
-- It goes through `KHOOK` (`core/shader`, slot reserved 2026-11-02 if the shader session could fit it): one uniform, off with no anomaly in reach.
+- It goes through `KHOOK.warp`; `KWARP.install` puts it on every material in the scene (`core/shader/README.md`, "The warp"): one uniform, off with no anomaly in reach.
 - Needs: mesh culling widened near a bend (chunks vanish early otherwise), the same warp in the impostors' own shader, the sky's horizon, and water's. Shadows can stay
   unwarped at modest strength: check by eye.
 - **Cracking:** a screen-space crack pattern at high strength, where the warped ground splits along bright seams. Cheap, but judge it early: it may look like a bug.

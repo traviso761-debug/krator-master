@@ -2,7 +2,10 @@
  "what": "What a shared fragment needs on its page: tools/check_assembly.py, rule NEEDS. `needs`: on the page and before it. `after`: before it, if the page has it at all. Each module's own header says these in prose; this file is what is checked.",
  "fragments": {
   "core/shader/06b-core-kcolor.js": {"after": ["core/shader/06-core-khook.js"]},
+  "core/shader/07-core-kwarp.js": {"needs": ["core/shader/06-core-khook.js"]},
   "core/atmos/89-atmos-0-core.js": {"needs": ["core/shader/06-core-khook.js", "core/shader/06b-core-kcolor.js"]},
+  "core/terrain/47-core-therm.js": {"needs": ["core/rand/08-core-rand.js"]},
+  "core/biome/41-core-env.js": {"needs": ["core/biome/10-core-head.js"]},
   "core/terrain/43-core-ground.js": {"needs": ["core/shader/06-core-khook.js"]},
   "core/terrain/host/44-core-farfield-draw.js": {"needs": ["core/shader/06-core-khook.js"]},
   "core/terrain/host/45-core-horizon-shade.js": {"needs": ["core/shader/06-core-khook.js"]},

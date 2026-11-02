@@ -10,13 +10,35 @@
 //                 butterflies, motes), heading and pitch from the velocity
 //   mode 'walk'   no path (the host or a tick moves the matrix); aP1.x is the
 //                 gait phase, advanced by whoever moves it, aP1.y the flap phase
+//   mode 'breath' no path: the item stands, and a part of it moves on ONE scalar, the kit's breath state (below)
 //   billboard     the item is a camera-facing card (motes)
 //   flap          vertices beyond |z| > root hinge up and down (wings); rate 0 is a still wing
 //                 (each number defaults only when left out: `x == null`, 2026-10-26)
 //   legs          vertices below y < legTop swing fore and aft, diagonal pairs
 // Also charged to BIO.cur, baked with everything else.
+// THE BREATH (2026-11-02; the Gills, the Cliff Lungs and the Hearths, each PLAN.md section 14). One uniform, no per-frame work on
+// the items: BIO.breathState(key) is a {value} shared by every material of that key, and the kit sets .value (0..1) once a frame from
+// its own clock (GILLS.breath(t) off ATMOS.libration). o.breath {key ('breath'), shape, amp (1 m, or radians for 'fold'), top, albedo,
+// rough, band}; per instance aP0 = [vx, vy, vz, the item's share of amp] and aP1 = [lag 0..1 (the item starts when the state passes
+// it, and still reaches 1 with it), unused x3]. Each of top, albedo, rough and band is off unless given.
+//   shape 'bulge'   out along the vertex normal: a pad swelling, a sphincter narrowing (amp < 0)
+//         'stream'  along the item's own vector aP0.xyz: a fringe streaming, a bead's roll
+//         'fold'    a turn of amp radians about the local z axis through the origin: a fan folding on its hinge (normals stay put)
+//   top     the displacement grows from 0 at y = 0 to all of it at y = top (a fringe's root stays)
+//   albedo  a number: the colour multiplied by it at a full breath (the spindle's silver)
+//   rough   added to the roughness at a full breath; needs BIO.animMat's o.pbr (Lambert has no roughness: the hook throws)
+//   band    [y0, y1] holds albedo and rough to that height window, in the item's own y (the Lungs' sheen band)
+BIO.breathState=function(key){const T=BIO._breath||(BIO._breath={}),k=key==null?'breath':key;return T[k]||(T[k]={value:0});};
 BIO.animHook=function(o){o=o||{};
- const mode=o.mode||'orbit',flap=o.flap||null,legs=o.legs||null;
+ const mode=o.mode||'orbit',flap=o.flap||null,legs=o.legs||null,br=mode==='breath'?(o.breath||{}):null;
+ const bf=v=>(+v).toFixed(3),brTint=br&&(br.albedo!=null||br.rough!=null);
+ if(br&&br.shape&&br.shape!=='bulge'&&br.shape!=='stream'&&br.shape!=='fold')throw new Error('BIO.animHook: breath.shape must be bulge, stream or fold');
+ const brA=br?bf(br.amp==null?1:br.amp):'',brW=br?(br.top==null?'1.0':'clamp(position.y/'+bf(br.top)+',0.0,1.0)'):'';
+ const brHead=br?['uniform float uBreath;','float _br(){return clamp((uBreath-aP1.x)/max(1.0-aP1.x,0.001),0.0,1.0);}'].concat(brTint?['varying float vBrK;']:[]).join('\n'):'';
+ const brMove=br?[' { float _s = _br()*aP0.w*'+brW+';',
+   br.shape==='stream'?'   transformed += aP0.xyz*_s*'+brA+';'
+   :br.shape==='fold'?'   float _c = cos(_s*'+brA+'), _n = sin(_s*'+brA+'); transformed.xy = vec2(_c*transformed.x-_n*transformed.y, _n*transformed.x+_c*transformed.y);'
+   :'   transformed += normal*_s*'+brA+';',' }'].concat(brTint?[' vBrK = _br()'+(br.band?'*smoothstep('+bf(br.band[0])+','+bf(br.band[0]+.15*(br.band[1]-br.band[0]))+',position.y)*(1.0-smoothstep('+bf(br.band[1]-.15*(br.band[1]-br.band[0]))+','+bf(br.band[1])+',position.y))':'')+';']:[]).join('\n'):'';
  const state=[
   'mat3 _hdg(float a){float c=cos(a),s=sin(a);return mat3(c,0.,s, 0.,1.,0., -s,0.,c);}',
   'mat3 _rz(float a){float c=cos(a),s=sin(a);return mat3(c,s,0., -s,c,0., 0.,0.,1.);}',
@@ -40,9 +62,10 @@ BIO.animHook=function(o){o=o||{};
    ' float pit = atan(v.y, max(0.001,length(v.xz)))*0.6;',
    ' M = _hdg(yaw) * _rz(clamp(pit,-0.6,0.6));'].join('\n')
   :' P = vec3(0.0); M = mat3(1.0);',
-  '}'].join('\n');
+  '}'].join('\n')+(br?'\n'+brHead:'');
  return function(sh){
   sh.uniforms.uWindT=BIO.WIND.t;
+  if(br)sh.uniforms.uBreath=BIO.breathState(br.key);
   sh.vertexShader=sh.vertexShader
    .replace('#include <common>','#include <common>\nuniform float uWindT;\nattribute vec4 aP0;\nattribute vec4 aP1;\n'+state)
    .replace('#include <begin_vertex>',[
@@ -56,7 +79,7 @@ BIO.animHook=function(o){o=o||{};
           '     float _ph = aP1.x + (position.x > 0.0 ? 0.0 : 3.14159) + (position.z > 0.0 ? 0.0 : 3.14159);',
           '     transformed.x += _k * sin(_ph) * '+(legs.amp==null?.18:legs.amp).toFixed(3)+';',
           '     transformed.y += _k * max(0.0, cos(_ph)) * '+((legs.amp==null?.18:legs.amp)*.35).toFixed(3)+'; }',
-          '   else transformed.y += 0.02*sin(aP1.x*2.0); }'].join('\n'):''].join('\n'))
+          '   else transformed.y += 0.02*sin(aP1.x*2.0); }'].join('\n'):''].join('\n')+(br?'\n'+brMove:''))
    .replace('#include <project_vertex>',[
     'mat3 _M; vec3 _P; _anim(_M,_P);',
     'vec4 mvPosition = vec4( transformed, 1.0 );',
@@ -69,6 +92,10 @@ BIO.animHook=function(o){o=o||{};
     '  mvPosition = modelViewMatrix * mvPosition;',
     '#endif',
     'gl_Position = projectionMatrix * mvPosition;'].join('\n'));
+  if(brTint){const need=c=>{if(sh.fragmentShader.indexOf(c)<0)throw new Error('BIO.animHook: breath.rough needs a Standard material (BIO.animMat o.pbr)');};if(br.rough!=null)need('#include <roughnessmap_fragment>');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vBrK;');
+   if(br.albedo!=null)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb *= mix(1.0,'+bf(br.albedo)+',vBrK);');
+   if(br.rough!=null)sh.fragmentShader=sh.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor = clamp(roughnessFactor+'+bf(br.rough)+'*vBrK,0.04,1.0);');}
   if(!o.billboard)sh.vertexShader=sh.vertexShader.replace('#include <defaultnormal_vertex>',[
     'vec3 transformedNormal = objectNormal;',
     '#ifdef USE_INSTANCING',
@@ -86,9 +113,11 @@ BIO.animHook=function(o){o=o||{};
    .replace('reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;','reflectedLight.directDiffuse = vLightFront + 0.35*vLightBack;');
  };};
 // an ANIMATED material: Lambert (lit bodies, wings) or Basic (glowing motes,
-// additive). key must be unique per hook configuration.
+// additive), or Standard with o.pbr {roughness (.8), metalness (0)} (a breath's rough term).
+// key must be unique per hook configuration.
 BIO.animMat=function(key,o){const T=BIO.host.THREE;o=o||{};let m;
  if(o.basic)m=new T.MeshBasicMaterial({color:0xffffff,map:o.tex||null,vertexColors:!!o.vertexColors,transparent:!!o.additive,blending:o.additive?T.AdditiveBlending:T.NormalBlending,depthWrite:!o.additive,side:T.DoubleSide,fog:true});
+ else if(o.pbr)m=new T.MeshStandardMaterial({color:0xffffff,map:o.tex||null,alphaTest:o.alphaTest||0,side:T.DoubleSide,vertexColors:!!o.vertexColors,roughness:o.pbr.roughness==null?.8:o.pbr.roughness,metalness:o.pbr.metalness==null?0:o.pbr.metalness});
  else m=new T.MeshLambertMaterial({color:0xffffff,map:o.tex||null,alphaTest:o.alphaTest||0,side:T.DoubleSide,vertexColors:!!o.vertexColors});
  m.onBeforeCompile=BIO.animHook(o);const ck='bioanim|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'anim',key:BIO.kitKey(key),opts:o};
  BIO._tickWind();return m;};
