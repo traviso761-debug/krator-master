@@ -224,6 +224,16 @@ when it ends, booked `made`. A site gives the `out`, not the byproducts. `rate` 
 derived demand. `SIM.blockedReport(settlement)` says why each stopped: `{reason: 'missing', goods}`, `'full'`, `'depleted'`, or `'no workers'`; a running batch has no entry.
 A recipe of `{out, rate}` runs as before. Skills, wages and queues of work orders are later phases.
 
+**Crime and punishment (`77-sim-6-crime.js`, 2026-11-02; opt-in by `SIM.crime(config)`).** The Voth brief's rules (settlements/voth/SIM-ROADMAP.md 1.7),
+proved on the isle demo. Criminals are a share of the eligible, by a hash of the person. Each hour (SIM.step's last act): a criminal in a free hour at
+a market picks a pocket (the victim's material meter up, the thief's down), at night burgles another household of its town (a share of its food store
+to its own: the town's books unchanged); anyone unhappy among company may start a fight (the victim hurt: the items' `hurt`). The odds it is seen rise
+with the witnesses (a guard much more), fall at night; seen, it fails, the nearest guard on duty within reach comes (a `SIM.command` for some minutes)
+and arrests by its distance (a town at the abstract level: its guards on duty a head); the arrested are held at the nearest jail place by a
+`SIM.command` (`by: 'jail'`, act `JAIL`) for a week (a month resisting), and lie low after. A commanded actor is not counted at work at the abstract
+level (`77-sim-6-economy.js`), nor its tool worn (`itemsAbstractDay`). Every roll is a hash: no draw from `SIM.rng`. `SIM.crimeReport(s)`,
+`SIM.crimeEvents(since)` (kept apart from the trimmed `SIM.LOG`), `SIM.jailed(a)`.
+
 **A work camp's controls (core/camp 40, 2026-11-02).** `SIM.recipeHold(place, reason, until)` stops a recipe (its workers' hours lost, the blocked
 report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` points it at another site; `SIM.siteRestore(id, amount)` raises a
 site grown back while nobody worked it and books it `regrown` (as the nightly `regen` now is), which the ledger allows. A site feeding a batch
@@ -232,8 +242,8 @@ what was made.
 
 **Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
 seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better
-good, so its want shows where nobody could buy it. A kind's `base` is the kind sought when it wears out (the isles' iron tool: the stone tool), so a
-town out of the better good falls back. The ledger sees only goods: an iron tool bought is one `irontools` used.
+good, so its want shows where nobody could buy it. A better tool bought in place of another remembers it (`a.tool.base`) and, worn out, is sought as that one again (a
+field hand's hoe, a smith's stone tool); a kind's `base` is the fallback for one given at the start. So a town out of the better good falls back. The ledger sees only goods: an iron tool bought is one `irontools` used.
 
 **Migration.** The ledger reads records and changes none, so a world's JSON, its ids and the `krator-sim` export are unchanged, and a page that
 does not call it is unaffected. A snapshot carries `version` (`SIM.LEDGER_VERSION`), and two of different versions do not compare. New fields

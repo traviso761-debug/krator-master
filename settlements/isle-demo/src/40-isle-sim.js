@@ -129,6 +129,7 @@ ISLE.simDeclare = function (plans, clock) {
     X.ms.people = Date.now() - t1;
   });
   S.trade = ISLE.simTrade();
+  S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

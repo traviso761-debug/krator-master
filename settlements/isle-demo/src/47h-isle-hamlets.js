@@ -164,7 +164,7 @@ ISLE.simHamlet = function (sp, v, res) {
    KCAMP.workYield). ISLE.simCrews (a step hook, hourly) moves the camp when its stand is down to its seed trees */
 ISLE.simCrewPlace = function (id, sp, places, res, CR, h) {
   var saw = places.filter(function (P) { return P.kind === 'sawpit' && P.activities.WORK; }), yard = saw.length ? [saw[0].x, saw[0].z] : [res.x, res.z];
-  var C = Object.assign({}, KCAMP.WORK, CR.cfg || {}), n = CR.samples || 4, ha = C.cell * C.cell / 1e4;
+  var C = Object.assign({}, KCAMP.WORK, CR.cfg || {}), n = CR.samples == null ? 4 : CR.samples, ha = C.cell * C.cell / 1e4;
   var cap = function (x, z, cell) { var f = 0; for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) f += res.forest(x + ((i + 0.5) / n - 0.5) * cell, z + ((j + 0.5) / n - 0.5) * cell) || 0;
     return f / (n * n) * ha * CR.treesPerHa * CR.lotsPerTree; };
   var stands = KCAMP.stands({ id: id + ':crew', range: CR.range, yard: yard, capacity: cap, cell: C.cell, minCap: C.cell * C.cell / 1e4 * CR.treesPerHa * CR.lotsPerTree * 0.25 });

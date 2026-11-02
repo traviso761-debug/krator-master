@@ -34,7 +34,7 @@ ISLE.TUNE.sim = {
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
     Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
   },
-  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK'],
+  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK', 'PATROL'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
   home: { per: 5, acts: ['SLEEP', 'EAT', 'REST', 'IDLE', 'HOUSEWORK'] },
   kinds: {
@@ -88,7 +88,10 @@ ISLE.TUNE.sim = {
     farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
     craftsman: { kinds: ['weaver', 'potter', 'smithy', 'workshop', 'tannery', 'dockyard'] }, labourer: { kinds: ['quarry', 'saltworks'] },
-    groom: { kinds: ['stable', 'rookery'] }, soldier: { kinds: ['barracks', 'watchtower', 'canoeshed'], homes: ['barracks', 'home'], sched: 'watch' },
+    groom: { kinds: ['stable', 'rookery'] }, soldier: { kinds: ['barracks', 'watchtower', 'canoeshed'], homes: ['barracks', 'home'], sched: 'watch',
+      /* the watch (2026-11-02, for crime and punishment: 47c): `share` of the soldiers are watchmen, posted at the barracks as
+         the rest but walking the markets, greens and plazas by day (`at`, `cap` a place), moving on every `every` minutes */
+      patrol: { share: 1 / 3, role: 'watchman', sched: 'patrol', at: ['market', 'green', 'plaza'], cap: 2, every: 30 } },
     official: { kinds: ['hall', 'school', 'healer', 'temple', 'residence', 'square', 'shrine'] }
   },
   /* the homes the kin fill, in order: whatever beds the roles leave, the residences and barracks too */
@@ -107,6 +110,7 @@ ISLE.TUNE.sim = {
   sched: {
     work: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [17, 'SOCIALIZE'], [19, 'EAT'], [20, 'REST'], [22, 'SLEEP']],
     watch: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [21, 'SLEEP']],
+    patrol: [[0, 'SLEEP'], [6, 'EAT'], [7, 'PATROL'], [18, 'EAT'], [19, 'SOCIALIZE'], [21, 'SLEEP']],
     kin: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [10, 'SOCIALIZE'], [13, 'REST'], [15, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     pupil: [[0, 'SLEEP'], [6, 'EAT'], [7, 'STUDY'], [13, 'SOCIALIZE'], [15, 'HOUSEWORK'], [17, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     child: [[0, 'SLEEP'], [6, 'EAT'], [7, 'HOUSEWORK'], [11, 'SOCIALIZE'], [13, 'HOUSEWORK'], [16, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
@@ -131,10 +135,10 @@ ISLE.TUNE.sim = {
     fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 6 }, HAUL: { drink: 6 }, REST: { sleep: 6, relax: 10, drink: 8 },
       EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, SOCIALIZE: { socialize: 24, relax: 4, drink: 6 }, IDLE: { relax: 7, drink: 8 },
       WORSHIP: { contemplate: 45, socialize: 5 }, STUDY: { contemplate: 10, socialize: 4, drink: 4 }, HOUSEWORK: { drink: 6, socialize: 2, relax: 2 },
-      BUY: { socialize: 4, relax: 2 } },
+      BUY: { socialize: 4, relax: 2 }, PATROL: { drink: 6, socialize: 1 } },
     work: { drink: 4, eat: 1.5, relax: 1 },
-    labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
-    byTrade: { soldier: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
+    labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, watchman: 0.7, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
+    byTrade: { soldier: { material: 0.5 }, watchman: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
     weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
     traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
       ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
@@ -165,10 +169,10 @@ ISLE.TUNE.sim = {
        workplace's rack (the dockers' hooks, the soldiers' spears and shields), owning none; injuries: a worked day's
        `hurt` chance, healed by a healer's poultice bought on time off, or in `heal` days (Voth's 0.6%, 3 days) */
     setsBy: { poor: 2, middle: 3, rich: 4 }, sarong: { share: 0.5 }, hat: { share: 0.4, jobs: ['farmhand', 'fisher', 'labourer', 'docker', 'groom'] },
-    club: { share: 0.25 }, racks: ['docker', 'soldier'], hurt: 0.006, heal: 3,
+    club: { share: 0.25 }, racks: ['docker', 'soldier', 'watchman'], hurt: 0.006, heal: 3,
     medicine: { poultice: { cat: 'medicine', good: 'poultices' } },
     lack: 4,   /* the material meter a day for each set of clothes short (77-sim-6-items.js) */
-    sets: 2, armed: ['soldier'],
+    sets: 2, armed: ['soldier', 'watchman'],
     /* the household's cooking pot (owner, 2026-10-19): one a home with a store, kept by its houseworker (an elder or a
        child at home) else its first resident, cracked in `life` days and bought again from the town's pots */
     household: { pot: { cat: 'household', slot: 'lhand', life: 60, good: 'pots', material: 20 } },
@@ -184,10 +188,11 @@ ISLE.TUNE.sim = {
        Voth's iron ones last three to five thousand). THE IRON TOOLS (PLAN.md 9b, 2026-11-02): where the villages are declared
        (47h: the mine's ore smelted in Valapo, worked in Kautoa's smithies into `irontools`), a stone tool's errand buys an
        iron one when its seller has it and the town holds the good (core's `prefer`), and a worn iron tool is replaced as
-       a stone one (`base`), so a town out of iron falls back; a page without the villages has no iron good and buys stone */
+       what it stood in for (core remembers it: a field hand's hoe, a smith's stone tool), so a town out of iron falls back; a page without the villages has no iron good and buys stone */
     tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', kinds: ['orchard', 'smithy', 'workshop', 'dockyard', 'tannery'], roles: ['labourer'], prefer: ['iron tool'] },
       'iron tool': { cat: 'tool', workLife: 3000, good: 'irontools', base: 'stone tool' },
-      'wood tool': { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['field', 'pens', 'byre', 'weaver', 'potter'], roles: ['groom', 'official'] },
+      'wood tool': { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['pens', 'byre', 'weaver', 'potter'], roles: ['groom', 'official'] },
+      hoe: { cat: 'tool', workLife: 1500, good: 'woodtools', kinds: ['field'], prefer: ['iron tool'] },   /* the field hands' digging stick: an iron hoe where there is iron (2026-11-02) */
       net: { cat: 'tool', workLife: 1500, good: 'nets', kinds: ['fishdock'] },
       cookpot: { cat: 'tool', workLife: 1500, good: 'pots', roles: ['baker', 'keeper'] } },
     /* the treats (owner, 2026-10-19; Voth's `treat`): when a person's material meter reaches `treat.at`, it buys on its
@@ -201,10 +206,10 @@ ISLE.TUNE.sim = {
     /* a kitchen without its pot: what it cooks is worth this (core's meal.pot) */
     noPot: 0.7,
     wealthSpread: { poor: [0, 0.2], middle: [0.35, 0.65], rich: [0.8, 1] },
-    wares: { market: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
-      shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'mat', 'lamp', 'necklace'],
+    wares: { market: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'hoe', 'mat', 'lamp', 'necklace'],
+      shop: ['shirt', 'wrap', 'sarong', 'sun hat', 'sandal', 'pot', 'stone tool', 'wood tool', 'hoe', 'mat', 'lamp', 'necklace'],
       weaver: ['shirt', 'wrap', 'mat', 'sarong', 'sun hat', 'net'], workshop: ['sandal', 'stone tool', 'necklace'], smithy: ['cuirass'], potter: ['pot', 'cookpot', 'lamp'], tavern: ['kava bowl'],
-      dockyard: ['wood tool', 'club'], fishdock: ['net'], healer: ['poultice'] },
+      dockyard: ['wood tool', 'hoe', 'club'], fishdock: ['net'], healer: ['poultice'] },
     meals: 2, perMeal: 2, low: 1, days: 3, stagger: 0.5, mins: 15, cool: 120, storeDays: [1, 3.5], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
@@ -293,6 +298,20 @@ ISLE.TUNE.sim = {
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]
   },
+  /* CRIME AND PUNISHMENT (47c; core/simulation 77-sim-6-crime.js; owner, 2026-11-02: start it on the isles, the Voth brief's
+     rules, 1.7): `share` of the adults (not the soldiers) are criminals, picked by a hash of the person: pickpockets in
+     their free hours at the markets, shops and greens by day, burglars of another household's food store at night; any
+     adult whose happiness is under `assault.below` may start a fight among company. A crime is seen by its witnesses (a
+     soldier among them counts much more), far less at night; seen, it fails and the nearest soldier on watch within
+     `arrest.reach` comes and arrests with `arrest.base` x (1 - d / reach) (a town nobody watches: by its soldiers on watch
+     a head against one in 150); the arrested sit a week in the nearest barracks (a month if they resist), out of work,
+     and lie low two days after. A share of 1 in 1,000 is the brief's */
+  crime: { share: 0.001, guards: ['soldier', 'watchman'], not: ['soldier', 'watchman', 'child', 'pupil', 'elder'], jails: ['barracks'], guardActs: ['WORK', 'PATROL'],
+    crimes: { pickpocket: { acts: ['BUY', 'SOCIALIZE', 'IDLE'], at: ['market', 'shop', 'butcher', 'green', 'plaza', 'tavern'], hours: [7, 20], chance: 0.25, loss: 15, gain: 15 },
+      burglary: { hours: [1, 4], chance: 0.1, share: 0.3 }, assault: { below: 30, acts: ['SOCIALIZE'], chance: 0.002 } },
+    seen: { base: 0.1, perWitness: 0.04, guard: 0.5, sleeper: 0.05, night: 0.4, max: 0.95, nightHours: [21, 5] },
+    arrest: { reach: 400, base: 0.7, ratio: 1 / 150, respond: 30 }, jail: { act: 'JAIL', days: 7, resist: 0.15, resistDays: 30, lieLow: 2 },
+    abstract: { atShare: 0.3, witnesses: 8 } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps

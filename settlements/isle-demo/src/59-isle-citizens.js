@@ -14,7 +14,7 @@
                                     drawn figure 50 m (the negative) */
 ISLE.citizens = { cap: 120, radius: 260, every: 500, at: -1e9, t: null, sel: [], mesh: null, head: null, stats: { chosen: 0, near: 0, hidden: 0 },
   colours: { farmhand: 0x7a9a3a, fisher: 0x3a7a9a, docker: 0x8a6a4a, trader: 0xc89a3a, baker: 0xd8c8a0, keeper: 0xa04a3a, craftsman: 0x6a5a8a,
-    labourer: 0x8a8a7a, groom: 0x5a7a5a, soldier: 0x9a2a2a, official: 0xe8e0c8, poor: 0xb8a890, middle: 0xc8b898, rich: 0xd8c8f0, cart: 0x6a4a2a } };
+    labourer: 0x8a8a7a, groom: 0x5a7a5a, soldier: 0x9a2a2a, watchman: 0xb83a2a, official: 0xe8e0c8, poor: 0xb8a890, middle: 0xc8b898, rich: 0xd8c8f0, cart: 0x6a4a2a } };
 ISLE.citizens.build = function () {
   var C = ISLE.citizens; if (C.mesh) return;
   var body = new THREE.CylinderGeometry(0.2, 0.26, 1.35, 7); body.translate(0, 0.675, 0);

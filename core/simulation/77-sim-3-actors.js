@@ -316,6 +316,7 @@
     for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     if(SIM.economyRules && SIM.ECON) SIM.economyRules(minute);                       /* the economies' governor, spoilage, seasoning (77-sim-6-govern.js) */
     if(SIM.itemsRetry) SIM.itemsRetry(minute);                                      /* a failed tool errand asked again (77-sim-6-items.js) */
+    if(SIM.CRIME) SIM.crimeStep(minute);                                            /* crime and punishment, hourly (77-sim-6-crime.js), opt-in */
     return made;
   };
   /* THE WAKE (SIM.WAKE, opt-in): an actor is asked again only at the soonest minute anything it wants could change: the

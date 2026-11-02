@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -900,10 +900,10 @@ function world(seed){
    const goods={rice:{},tools:{}};if(o.declared!==false)goods.irontools={};
    const EV=S.economy({goods:goods,every:60,window:1},{settlement:'valapo'});S.store('vShed',{kind:'warehouse'});
    S.R.place.vShed.stock={rice:500,tools:100,irontools:2};
-   S.items({kinds:{rice:{cat:'food',food:true},stone:Object.assign({cat:'tool',workLife:20,good:'tools'},o.prefer===false?{}:{prefer:['iron']}),iron:{cat:'tool',workLife:30,good:'irontools',base:'stone'}},free:['IDLE'],secPerMinute:40});
-   S.shop('vShop',o.sells===false?['stone','rice']:['stone','iron','rice']);
+   S.items({kinds:{rice:{cat:'food',food:true},stone:Object.assign({cat:'tool',workLife:20,good:'tools'},o.prefer===false?{}:{prefer:['iron']}),iron:{cat:'tool',workLife:30,good:'irontools',base:'stone'},hoe:{cat:'tool',workLife:20,good:'tools',prefer:['iron']}},free:['IDLE'],secPerMinute:40});
+   S.shop('vShop',o.sells===false?['stone','rice']:['stone','iron','hoe','rice']);
    S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
-   const ps=[0,1,2,3].map(i=>{const a=S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'});a.tool={k:'stone',w:0.1*i};return a;});
+   const ps=[0,1,2,3].map(i=>{const a=S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'});a.tool={k:o.given?'iron':o.hoe?'hoe':'stone',w:0.1*i};return a;});
    S.R.place.vHome.store={rice:200};S.R.place.vHome.people=4;
    clock.d=0;clock.h=0;S.level('valapo','abstract');
    for(let m=0;m<6*1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}
@@ -914,7 +914,12 @@ function world(seed){
  ok('an iron tool worn out is sought as stone and replaced from it ('+(brA.iron||0)+' worn out)',brA.iron>=1&&A.ps.every(a=>a.tool&&!a.toolNeed),!(brA.iron>=1));
  const N=mk({prefer:false}),bN=N.B.bought||{};ok('without prefer, stone is replaced by stone',!(bN.iron>0)&&bN.stone>=4&&!(N.EV.short.irontools>0),bN.iron>0);
  const U=mk({declared:false}),bU=U.B.bought||{};ok('a better good the economy does not hold is never bought free',!(bU.iron>0)&&bU.stone>=4,bU.iron>0);
- const W=mk({sells:false}),bW=W.B.bought||{};ok('a seller without the better tool sells its own',!(bW.iron>0)&&bW.stone>=4,bW.iron>0);}
+ const W=mk({sells:false}),bW=W.B.bought||{};ok('a seller without the better tool sells its own',!(bW.iron>0)&&bW.stone>=4,bW.iron>0);
+ // a better tool remembers what it stood in for: a field hand's iron tool, worn out, is sought as its hoe again (not the
+ // iron kind's `base`, the stone tool); an iron tool given at the start, with nothing remembered, falls back to the base
+ const H=mk({hoe:true}),bH=H.B.bought||{};
+ ok('a field hand\'s iron tool worn out is sought as its hoe again ('+(bH.iron||0)+' iron, '+(bH.hoe||0)+' hoes, '+(bH.stone||0)+' stone)',bH.iron===2&&bH.hoe>=2&&!(bH.stone>0)&&H.ps.every(a=>a.tool),bH.stone>0);
+ const G=mk({given:true}),bG=G.B.bought||{};ok('an iron tool given at the start falls back to its kind\'s base ('+(bG.stone||0)+' stone)',bG.stone>0,!(bG.stone>0));}
 
 // batch recipes (PLAN-ECONOMY.md Phase 2): inputs claimed once at the start, outputs and byproducts at the end, and what
 // stops a batch said by place: no input, a partial input, no workers, a full store, an empty site
@@ -952,6 +957,49 @@ function world(seed){
  const C=mk();C.run(30);const a0=C.S.ledgerSnap();const left=C.E.resSites.s1.amount;C.S.siteRestore('s1',30);C.run(2);const L=C.S.ledger(a0,C.S.ledgerSnap());
  const D=mk();D.run(30);const d0=D.S.ledgerSnap();D.E.resSites.s1.amount=30;D.run(2);const LD=D.S.ledger(d0,D.S.ledgerSnap());
  ok('a stand grown back is booked regrown and the ledger allows it ('+left+' to 30, regrown '+C.E.resSites.s1.regrown+')',left<30&&C.E.resSites.s1.regrown===30-left&&L.ok,LD.ok);}
+
+// crime and punishment (77-sim-6-crime.js; the Voth brief 1.7): a pickpocket at the market unseen takes from a
+// victim's purse (its material meter); seen with a guard on duty near, it is arrested and held at the jail for its days,
+// then let go; seen with no guard near, it escapes; a burglar carries food from another household to its own, none lost;
+// a jailed worker does not work at the abstract level either. Each with its negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(229);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'post',kind:'post',x:100,z:50,activities:{WORK:2}});S.place({id:'cell',kind:'barracks',x:0,z:0,activities:{SLEEP:4}});S.place({id:'homeC',kind:'home',x:100,z:0,activities:{SLEEP:2,REST:2}});
+   S.role({id:'loafer',org:'folk',sched:[[0,'SLEEP'],[6,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},SOCIALIZE:{kinds:['market']}}});
+   S.role({id:'guard',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   S.actor({id:'thief',role:'loafer',home:'homeC'});S.actor({id:'v1',role:'loafer',home:'homeA'});S.actor({id:'v2',role:'loafer',home:'homeB'});
+   if(o.guard!==false) S.actor({id:'g1',role:'guard',home:'homeA',work:'post'});
+   S.needs({list:['material'],rate:{material:0},init:10});
+   S.R.place.homeA.store={rice:100,fish:60};S.R.place.homeB.store={rice:80};S.R.place.homeC.store={};
+   S.crime({seed:5,share:1,who:a=>a.id==='thief',guard:a=>a.role==='guard',jails:['barracks'],guardActs:['WORK'],
+     crimes:o.crimes||{pickpocket:{acts:['SOCIALIZE'],at:['market'],hours:[6,20],chance:1,loss:20,gain:20}},
+     seen:{base:o.seen==null?0:o.seen,perWitness:0,guard:0,night:1},arrest:{reach:300,base:1},jail:{days:o.days||7,resist:0}});
+   const run=(h)=>{for(let m=S._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const A=mk();A.run(14);const RA=A.S.crimeReport(),mat=a=>{A.S.needsOf(a,A.S.minute());return a.nd[A.S.NEED.idx.material];};
+ ok('a pickpocket unseen at the market takes from its victims ('+(RA.stats[''].done.pickpocket||0)+' done; the victims\' material '+Math.round(mat(A.S.R.actor.v1))+' and '+Math.round(mat(A.S.R.actor.v2))+')',
+   RA.criminals===1&&RA.stats[''].done.pickpocket>0&&!RA.jailed.length&&(mat(A.S.R.actor.v1)>10||mat(A.S.R.actor.v2)>10),!(RA.stats[''].done.pickpocket>0));
+ const B=mk({seen:1});B.run(12);const RB=B.S.crimeReport(),th=B.S.R.actor.thief;B.run(1);
+ ok('seen, with a guard on duty near, it is arrested and held at the jail for its seven days ('+(RB.jailed[0]&&RB.jailed[0].place)+')',
+   RB.stats[''].arrested.pickpocket===1&&RB.jailed.length===1&&RB.jailed[0].place==='cell'&&B.S.jailed(th)&&th.place==='cell'&&th.cmd.until===RB.jailed[0].until&&B.S.CRIME.held.thief.until-B.S.CRIME.held.thief.since===7*1440,
+   !(RB.stats[''].arrested.pickpocket>0));
+ B.run(3*24);const held3=B.S.jailed(th)&&th.place==='cell';const until=th.cmd.until;B.run(Math.ceil((until-B.S.minute())/60)+1);const RB2=B.S.crimeReport();
+ ok('it stays in its cell through its term and is let go at its end (served '+RB2.stats[''].served+', out at day '+Math.floor(B.S.minute()/1440)+')',held3&&!B.S.jailed(th)&&RB2.stats[''].served===1&&!RB2.jailed.length,!held3);
+ B.run(36);ok('let go, it lies low two days before it tries again ('+(B.S.crimeReport().stats[''].attempts.pickpocket)+' attempts in all)',B.S.crimeReport().stats[''].attempts.pickpocket===1,B.S.crimeReport().stats[''].attempts.pickpocket>1);
+ const C=mk({seen:1,guard:false});C.run(14);const RC=C.S.crimeReport();
+ ok('seen with no guard near, it escapes ('+(RC.stats[''].escaped.pickpocket||0)+' escaped)',RC.stats[''].escaped.pickpocket>0&&!RC.jailed.length,RC.jailed.length>0);
+ const food=W=>['homeA','homeB','homeC'].reduce((n,id)=>n+Object.values(W.S.R.place[id].store||{}).reduce((a,b)=>a+b,0),0);
+ const D=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0.5}}}),f0=food(D);D.run(30);const RD=D.S.crimeReport();
+ const Z=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0}}});Z.run(30);
+ ok('a burglar carries food from another household to its own, none lost ('+RD.stats[''].stolen+' servings to its home)',RD.stats[''].stolen>0&&food(D)===f0&&Object.values(D.S.R.place.homeC.store).reduce((a,b)=>a+b,0)===RD.stats[''].stolen,
+   Z.S.crimeReport().stats[''].stolen>0);
+ // the abstract level: a jailed worker is not counted at work
+ const W=(jail)=>{const {S,clock}=world(233);S.activity({id:'WORK'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'vH',kind:'house',x:150,z:0,activities:{SLEEP:4},settlement:'valapo'});S.place({id:'vF',kind:'field',x:100,z:60,activities:{WORK:4},open:[0,24],settlement:'valapo'});
+   S.place({id:'vS',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});
+   const E=S.economy({goods:{rice:{}},every:60,window:1},{settlement:'valapo'});S.store('vS',{kind:'warehouse'});S.recipe('vF',{out:['rice'],rate:1,cap:3000});
+   S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});const a=S.actor({id:'vg',role:'grower',home:'vH',work:'vF'});
+   S.level('valapo','abstract');if(jail)S.command(a,{act:'SLEEP',place:'vH',until:2*1440,by:'jail'});
+   for(let m=0;m<1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}return E.made.rice||0;};
+ const wj=W(true),wf=W(false);ok('a jailed worker does not work at the abstract level ('+wj+' made, '+wf+' free)',wj===0&&wf>0,wf===0);}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}

@@ -191,7 +191,8 @@
   function absTown(E){ return !!(SIM.ABSTRACT && E.settlement!=null && SIM.ABSTRACT[E.settlement]); }
   function absWork(E, a, minute, W, H){ var eff=a.absEff==null ? 1 : a.absEff;
     if(a.herd!=null){ if((a.grownAt!=null && a.grownAt>minute) || !a.present) return; if(E.recipes[a.herd] && E.recipes[a.herd].herd) H[a.herd]=(H[a.herd]||0)+eff; return; }
-    if(!a.present || a.driven) return; var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
+    if(!a.present || a.driven) return; if(a.cmd && minute<a.cmd.until) return;   /* commanded elsewhere (jailed: 77-sim-6-crime.js) */
+    var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
     var w=a.work!=null ? a.work : (a.mem && a.mem.WORK); if(w==null || !E.recipes[w]) return; W[w]=(W[w]||0)+eff; }
   function cartAt(a, t){ if(!absTown(SIM.ECON)) return SIM.pose(a, t, { cheap:true }); var P=SIM.R.place[a.place] || SIM.R.place[a.home]; return P ? { x:P.x, y:P.y||0, z:P.z } : { x:0, y:0, z:0 }; }
   function tick(minute, t){

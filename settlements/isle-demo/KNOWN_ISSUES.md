@@ -242,6 +242,22 @@
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
       Over five days Kautoa makes about a third more food than it eats (151,717 servings to 114,956), Valapo likewise.
 
+## Crime and punishment (2026-11-02)
+
+- [x] **The watch walks the markets** (2026-11-02): a third of each town's soldiers are watchmen, posted at the barracks with the
+      rest but patrolling the markets, greens and plazas by day (`PATROL`, moving on every 30 minutes; `jobs.soldier.patrol`).
+      At noon Kautoa's 30 are all out, one within 50 to 170 m of each market. Arrests in the watched town are still few:
+      most crimes go unseen (the brief's odds), and the core test holds the near-guard arrest.
+- [ ] **No watch at night** (the brief's "fewer night watchmen with lanterns"): the watchmen sleep; night burglaries are
+      seen only by the household.
+- [ ] **The criminal does not walk to the house it burgles**: the burglary is resolved at the hour, where the criminal
+      sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
+- [ ] **No money:** a pocket picked is the victim's material meter and the thief's; nothing changes hands. Coin waits for
+      wages (PLAN-ECONOMY's later phases).
+- [ ] **No fights yet in two weeks:** nobody's happiness falls under 30. The rule is tested in core (test-sim.js) only.
+- [ ] **No murder, no sentence of death** (the brief's); no courts, fines or the stocks; the held eat nothing from the
+      barracks' kitchen (their household's store feeds them as if at home).
+
 ## The hamlets in the sim (core/hamlet H5, 2026-10-26)
 
 - [ ] **The villages are declared only where a page hands them in** (47h): the open world's page from the map, the node
@@ -268,9 +284,9 @@
       town out of iron falls back to stone; a miss is booked short of `irontools`, which is the want the governor and the
       lakatoi read. Ceilings on the chain (`hamlets.town[s].stockpile`: Kautoa's iron tools 80, Valapo's iron 120) stop the
       smithies at a pile, so the mine is not drawn down for it.
-- [ ] **Only the stone trades take iron.** The field hands' digging sticks and the other wooden tools (`wood tool`) have no
-      iron line (PLAN.md 9b: "later an iron hoe"); giving `wood tool` a `prefer` would hand the weavers and potters iron too,
-      so it wants the field hands' tool split from the rest first.
+- [x] **The field hands take iron too** (2026-11-02): their digging stick is its own `hoe` (wood, the dockyard's), which an
+      iron tool replaces where the town has one; a better tool remembers what it stood in for (core), so a worn iron tool is
+      sought as the hoe or the stone tool it replaced. The other wooden tools (goads, shuttles, paddles, styluses) stay wood.
 - [ ] **A mine that empties ends Valapo's iron** (at its five years' least, flat out): nothing yet opens a new node or moves the
       village; the iron tools then fall back to stone as they wear out.
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.

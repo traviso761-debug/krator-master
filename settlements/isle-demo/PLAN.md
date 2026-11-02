@@ -749,8 +749,8 @@ week-test check holds the clothes (95% clad or buying) and the hurt (none past i
 workshop for Valapo (its wooden and stone tools come by lakatoi), water vessels and the fishers' canoes. **Iron tools
 built (2026-11-02):** where the villages are declared, Kautoa's smithies work Valapo's iron into iron tools (3,000 worked
 hours), bought in place of a stone tool when the seller has one (core's tool `prefer`), worn out and replaced as stone
-(`base`); the town's stockpile ceilings hold the chain to what is bought. The field hands' iron hoe is still owed (their
-digging stick shares `wood tool` with the weavers and potters).
+(`base`); the town's stockpile ceilings hold the chain to what is bought. The field hands' iron hoe followed the same day:
+their digging stick is its own `hoe`, replaced by an iron tool where there is one, and back to a hoe when that wears out.
 
 **The rules taken from Voth (and where the isles differ).**
 - **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,
