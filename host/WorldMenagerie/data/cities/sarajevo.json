@@ -1,0 +1,3198 @@
+{
+ "name": "Sarajevo",
+ "note": "Sarajevo from OpenStreetMap, on its real ground: the Miljacka's valley from the railway station and the towers of Marijin Dvor east to Baščaršija and the old Ottoman town, the mahalas climbing the hills on both sides to the fortresses, Koševo and the Olympic stadium to the north, and up the slopes of Trebević to the 1984 bobsleigh track. Its history plays as events: 28 June 1914 at the Latin Bridge, the Olympics of 1984, the siege of 1992 to 1996.",
+ "origin": [
+  43.857,
+  18.424
+ ],
+ "defaultSeed": 1984,
+ "defaultHour": 16.5,
+ "bounds": [
+  43.833,
+  18.392,
+  43.877,
+  18.452
+ ],
+ "osm": "data/cities/sarajevo-osm.json",
+ "attribution": "Sarajevo: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles (SRTM). Built by tools/build-osm-city.py.",
+ "flight": true,
+ "fetch": {
+  "bbox": [
+   43.831,
+   18.389,
+   43.879,
+   18.455
+  ],
+  "tiles": {
+   "buildings": [
+    4,
+    4
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    43.833,
+    18.392,
+    43.877,
+    18.452
+   ]
+  ],
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});way[\"highway\"=\"steps\"]({b});way[\"highway\"=\"track\"][\"name\"]({b});",
+  "_": "the whole box is a detail zone; the mahalas' lanes are named service ways and steps"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 12,
+  "_": "the Miljacka's valley floor at about 520 m, the hills to Trebević's slopes at 1100 m: elevation from tools/fetch-terrain.py",
+  "filter": {
+   "open": 80,
+   "close": 30,
+   "blur": 36,
+   "_": "the elevation carries roofs and woods; the hills are broad, so a middling filter"
+  },
+  "reaches": {
+   "names": [
+    "Miljacka"
+   ],
+   "length": 110,
+   "below": 2.0,
+   "depth": 7.0,
+   "flows": "west",
+   "_": "the Miljacka falls about twenty metres through the city over weirs, in a stone channel three or four metres deep the elevation tiles cannot see: tools/build-osm-city.py water_reaches; src/sarajevo/river.js draws the walls",
+   "bank": 0
+  }
+ },
+ "defaultView": "Baščaršija from the air",
+ "waterLevel": -1.0,
+ "defaultHeights": {
+  "_": "Sarajevo's untagged buildings are mostly houses on the hills, two or three floors, and the Austro-Hungarian blocks of four or five in the centre (the districts set those)",
+  "yes": 9,
+  "house": 7,
+  "detached": 7,
+  "apartments": 18,
+  "residential": 12,
+  "terrace": 10,
+  "commercial": 12,
+  "retail": 6,
+  "office": 18,
+  "hotel": 16,
+  "school": 12,
+  "university": 16,
+  "hospital": 15,
+  "public": 14,
+  "civic": 14,
+  "government": 18,
+  "mosque": 8,
+  "church": 14,
+  "cathedral": 18,
+  "garage": 3,
+  "garages": 3,
+  "ruins": 3,
+  "industrial": 9,
+  "kiosk": 3,
+  "shed": 3,
+  "roof": 4
+ },
+ "heightSpread": 0.25,
+ "facade": {
+  "bay": 3.6,
+  "floor": 3.3,
+  "shutters": false,
+  "_": "Austro-Hungarian blocks and the houses of the mahalas: close-set windows, three to five storeys"
+ },
+ "sky": {
+  "day": {
+   "top": "#6a92c4",
+   "hor": "#dfe3e2"
+  },
+  "dusk": {
+   "top": "#3a4268",
+   "hor": "#e09060"
+  },
+  "night": {
+   "top": "#070b16",
+   "hor": "#1e2434"
+  }
+ },
+ "fog": 2.6e-05,
+ "terrainColours": {
+  "low": "#9a9480",
+  "high": "#5e7a3c",
+  "steep": "#6e6a52",
+  "far": "#6a7466"
+ },
+ "waterColour": "#5a7a6a",
+ "lakeColour": "#4e6e5e",
+ "lakeSheen": "#7a988a",
+ "_lakeColour": "the Miljacka runs shallow and green-brown over stones in its walled bed",
+ "litWindows": 0.6,
+ "streetTrees": 0.4,
+ "parkedCars": 0.5,
+ "traffic": 0,
+ "people": 0.6,
+ "lowRiseFar": 4000,
+ "bridgeDeck": 3,
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "rooftops": false,
+ "groundMottle": 0.1,
+ "instanceCulling": true,
+ "noBuildingsInWater": true,
+ "palette": {
+  "_": "white and cream stucco, pale ochre and pink on the Austro-Hungarian blocks; whitewash on the mahalas' houses",
+  "brick": [
+   "#e8e2d4",
+   "#ddd2bc",
+   "#e6d6b4",
+   "#d8c4a0",
+   "#e8d8c8",
+   "#cfc4b0",
+   "#e2cfb8",
+   "#d6c8b0"
+  ],
+  "stone": [
+   "#ddd6c6",
+   "#d2cab6",
+   "#e4ddcc",
+   "#c9c1ad"
+  ]
+ },
+ "paving": {
+  "classes": [
+   "pedestrian",
+   "living_street",
+   "alley"
+  ],
+  "plazas": true,
+  "metres": 2.2,
+  "map": "cobbles.webp",
+  "_": "Baščaršija's lanes and the centre's squares are paved with river stones (paving.map: data/textures/cobbles.webp)"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk"
+  ],
+  "colour": "#e6e2d8"
+ },
+ "tramTracks": true,
+ "roadColours": {
+  "residential": "#77767a",
+  "unclassified": "#77767a",
+  "living_street": "#e8dece",
+  "pedestrian": "#f2e8d8",
+  "alley": "#e2d8c8",
+  "primary": "#3e3f42",
+  "secondary": "#404144",
+  "tertiary": "#444548",
+  "trail": "#9c8e70"
+ },
+ "areaColours": {
+  "park": "#4e7038",
+  "grass": "#5a7a3e",
+  "garden": "#4c6e36",
+  "recreation_ground": "#5a7a3e",
+  "residential": "#77825a",
+  "commercial": "#8a857a",
+  "plaza": "#a8a092",
+  "cemetery": "#6a7a50",
+  "scrub": "#62692f"
+ },
+ "_areaColours": "the mezarje, the Muslim graveyards with their white nišan stones, are everywhere on the hills; the land use calls them cemetery; the mahalas' residential land is mostly yards and gardens, so it is drawn green-brown, not paved",
+ "namedService": "pedestrian",
+ "namedServiceMatch": "^(Ulica|Čikma|Sokak|Mala) ",
+ "pitchAll": {
+  "types": [
+   "yes",
+   "apartments",
+   "residential",
+   "terrace",
+   "house",
+   "detached",
+   "commercial",
+   "retail",
+   "hotel",
+   "office",
+   "public",
+   "mosque"
+  ],
+  "share": 0.9,
+  "_": "tiled hip roofs everywhere, red on the hills; Baščaršija's shops under low roofs of tile and lead"
+ },
+ "roofMaxArea": 1400,
+ "roofMaxHeight": 26,
+ "roofPitch": 0.5,
+ "roofRise": 4.0,
+ "roofColours": [
+  "#b8603f",
+  "#c26a48",
+  "#a8543a",
+  "#c4744e",
+  "#b2623f",
+  "#9e5238"
+ ],
+ "flatRoofColours": [
+  "#7a7c80",
+  "#6a6c70",
+  "#86888c"
+ ],
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "bascarsija": [
+   "Baščaršija",
+   "#c8b090",
+   5,
+   10,
+   [
+    43.8578,
+    18.4285,
+    43.8612,
+    18.4335
+   ]
+  ],
+  "centre": [
+   "the Austro-Hungarian centre",
+   "#d0c0a0",
+   15,
+   26,
+   [
+    43.855,
+    18.41,
+    43.8605,
+    18.4285
+   ]
+  ],
+  "marijindvor": [
+   "Marijin Dvor",
+   "#a8a8a0",
+   16,
+   40,
+   [
+    43.853,
+    18.392,
+    43.862,
+    18.41
+   ]
+  ],
+  "kosevo": [
+   "Koševo",
+   "#b8b0a0",
+   15,
+   30,
+   [
+    43.862,
+    18.4,
+    43.877,
+    18.42
+   ]
+  ],
+  "mahalas": [
+   "the mahalas",
+   "#d8cfbf",
+   7,
+   11,
+   [
+    43.833,
+    18.392,
+    43.877,
+    18.452
+   ]
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "Sebilj",
+   "aka": [
+    "the Sebilj of Baščaršija"
+   ],
+   "at": [
+    43.85972,
+    18.43122
+   ],
+   "model": "sebilj",
+   "clear": [
+    5,
+    0
+   ],
+   "info": "The wooden kiosk fountain in Baščaršija's square, built by Alexander Vitkovac in 1891 after the Ottoman one of 1753. Drink from it, the saying goes, and you will come back to Sarajevo. Its square is called Pigeon Square, for good reason."
+  },
+  {
+   "name": "Gazi Husrev-beg Mosque",
+   "aka": [
+    "Gazi Husrev-begova džamija",
+    "Begova džamija"
+   ],
+   "at": [
+    43.859142,
+    18.429001
+   ],
+   "model": "mosque",
+   "face": 273,
+   "side": 17,
+   "wall": 12,
+   "dome": 13,
+   "minaret": 45,
+   "porch": 5,
+   "clear": [
+    22,
+    0
+   ],
+   "info": "Built in 1530 by Ajem Esir Ali, the Persian who later built for Suleiman in Istanbul, for Gazi Husrev-beg, the governor who made Sarajevo a city. Its dome is 26 m high; its minaret 45 m. The first mosque in the world to have electric light, in 1898."
+  },
+  {
+   "name": "The Sahat-kula",
+   "aka": [
+    "Sarajevska sahat-kula",
+    "the clock tower"
+   ],
+   "at": [
+    43.859209,
+    18.428559
+   ],
+   "model": "clocktower",
+   "height": 30,
+   "side": 3.8,
+   "face": 273,
+   "clear": [
+    4,
+    0
+   ],
+   "info": "The clock tower by Gazi Husrev-beg's mosque, 30 m: the only public clock in the world kept to lunar time, a la turca, so that it strikes twelve at sunset; the muvekit, the timekeeper, sets it by hand."
+  },
+  {
+   "name": "The Emperor's Mosque",
+   "aka": [
+    "Careva džamija"
+   ],
+   "at": [
+    43.857484,
+    18.430636
+   ],
+   "model": "mosque",
+   "face": 344,
+   "side": 16,
+   "wall": 11,
+   "dome": 12,
+   "minaret": 40,
+   "porch": 5,
+   "court": false,
+   "clear": [
+    22,
+    0
+   ],
+   "info": "The first mosque built in Sarajevo, in 1457, dedicated to Sultan Mehmed the Conqueror, rebuilt in 1566 after it burned. Across the river from Baščaršija, by the Emperor's Bridge."
+  },
+  {
+   "name": "Ferhadija Mosque",
+   "aka": [
+    "Ferhad-begova džamija"
+   ],
+   "at": [
+    43.858895,
+    18.427071
+   ],
+   "model": "mosque",
+   "face": 295,
+   "side": 12,
+   "wall": 9,
+   "dome": 9,
+   "minaret": 30,
+   "porch": 3,
+   "court": false,
+   "clear": [
+    12,
+    0
+   ],
+   "info": "Ferhad-beg's mosque of 1561, on the street now named after it."
+  },
+  {
+   "name": "The City Hall",
+   "aka": [
+    "Vijećnica",
+    "the National Library"
+   ],
+   "at": [
+    43.859118,
+    18.433314
+   ],
+   "model": "vijecnica",
+   "outline": [
+    [
+     43.8589384,
+     18.4332519
+    ],
+    [
+     43.8589006,
+     18.4330689
+    ],
+    [
+     43.8588804,
+     18.4330458
+    ],
+    [
+     43.8589211,
+     18.4329773
+    ],
+    [
+     43.8589442,
+     18.4330059
+    ],
+    [
+     43.8591026,
+     18.4330473
+    ],
+    [
+     43.8591315,
+     18.4330554
+    ],
+    [
+     43.8591354,
+     18.433026
+    ],
+    [
+     43.859221,
+     18.4330477
+    ],
+    [
+     43.8592168,
+     18.4330791
+    ],
+    [
+     43.859255,
+     18.4330903
+    ],
+    [
+     43.8593919,
+     18.4331278
+    ],
+    [
+     43.8594246,
+     18.4331111
+    ],
+    [
+     43.8594509,
+     18.4332099
+    ],
+    [
+     43.8594154,
+     18.4332281
+    ],
+    [
+     43.8593404,
+     18.4333616
+    ],
+    [
+     43.8593612,
+     18.4333839
+    ],
+    [
+     43.8592229,
+     18.4336332
+    ],
+    [
+     43.8591976,
+     18.4336061
+    ],
+    [
+     43.8591148,
+     18.4337487
+    ],
+    [
+     43.8591082,
+     18.4337923
+    ],
+    [
+     43.8590415,
+     18.4337737
+    ],
+    [
+     43.8590484,
+     18.4337272
+    ],
+    [
+     43.8590107,
+     18.4335617
+    ],
+    [
+     43.8589786,
+     18.4335741
+    ],
+    [
+     43.858955,
+     18.4335853
+    ],
+    [
+     43.8589229,
+     18.4334549
+    ],
+    [
+     43.8588805,
+     18.4332754
+    ],
+    [
+     43.8588987,
+     18.433268
+    ]
+   ],
+   "height": 20,
+   "hall": 9,
+   "entrance": [
+    43.859173,
+    18.433068
+   ],
+   "face": 281,
+   "clear": [
+    38,
+    0
+   ],
+   "info": "Alexander Wittek's City Hall of 1896, in the pseudo-Moorish style the Austrians thought fitting for Bosnia. From here Franz Ferdinand drove to his death in 1914. It was the National and University Library when it was shelled with incendiaries on the night of 25 August 1992: two million books burned, and the ash fell on the city for days. Rebuilt, it reopened in 2014."
+  },
+  {
+   "name": "The Latin Bridge",
+   "aka": [
+    "Latinska ćuprija",
+    "Principov most"
+   ],
+   "at": [
+    43.85777,
+    18.42864
+   ],
+   "model": "oldbridge",
+   "road": "Latinska ćuprija",
+   "arches": 4,
+   "info": "An Ottoman stone bridge of four arches, rebuilt in 1798, its piers pierced by round eyes for the floods. At its north end, on 28 June 1914, Gavrilo Princip shot the Archduke Franz Ferdinand and his wife Sophie, and Europe went to war."
+  },
+  {
+   "name": "The Museum Sarajevo 1878-1918",
+   "aka": [
+    "Schiller's delicatessen"
+   ],
+   "at": [
+    43.85798,
+    18.42899
+   ],
+   "info": "The corner building where Moritz Schiller had his delicatessen in 1914. Princip was standing outside it when the Archduke's car turned into Franz Joseph Street by mistake and stopped in front of him. A museum of the Austro-Hungarian years now."
+  },
+  {
+   "name": "The Cathedral of the Sacred Heart",
+   "aka": [
+    "Katedrala Srca Isusova"
+   ],
+   "at": [
+    43.859427,
+    18.425363
+   ],
+   "model": "cathedral",
+   "face": 168,
+   "length": 40,
+   "width": 22,
+   "height": 17,
+   "towerH": 43,
+   "clear": [
+    26,
+    0
+   ],
+   "info": "Josip Vancaš's neo-Gothic cathedral of 1889, modelled on Notre-Dame de Dijon, its two towers 43 m. Its outline is the emblem of the city's Catholics, and was cast in the coat of arms of Sarajevo's canton."
+  },
+  {
+   "name": "The Eternal Flame",
+   "aka": [
+    "Vječna vatra"
+   ],
+   "at": [
+    43.85881,
+    18.4218
+   ],
+   "model": "flame",
+   "face": 180,
+   "info": "The memorial of 1946 to the military and civilian victims of the Second World War, at the head of Ferhadija; the flame has burned since, except in the winter of the siege, when there was no gas."
+  },
+  {
+   "name": "The Yellow Bastion",
+   "aka": [
+    "Žuta tabija"
+   ],
+   "at": [
+    43.861425,
+    18.437663
+   ],
+   "model": "bastion",
+   "outline": [
+    [
+     43.8616077,
+     18.4376395
+    ],
+    [
+     43.8615799,
+     18.4375637
+    ],
+    [
+     43.8615374,
+     18.437514
+    ],
+    [
+     43.8614622,
+     18.4374692
+    ],
+    [
+     43.8613641,
+     18.4375041
+    ],
+    [
+     43.8613036,
+     18.4376188
+    ],
+    [
+     43.8613014,
+     18.4376884
+    ],
+    [
+     43.8613051,
+     18.437767
+    ],
+    [
+     43.8613612,
+     18.4378789
+    ],
+    [
+     43.8614271,
+     18.4379821
+    ]
+   ],
+   "height": 7,
+   "gun": [
+    43.86132,
+    18.43745
+   ],
+   "gunFace": 220,
+   "info": "An eighteenth-century bastion of the walls of Vratnik, over the old town: the city's balcony at sunset. In Ramadan a cannon on it fires at sunset to end the day's fast, and the city hears it."
+  },
+  {
+   "name": "The Avaz Twist Tower",
+   "aka": [
+    "Avaz Twist"
+   ],
+   "at": [
+    43.860897,
+    18.401995
+   ],
+   "model": "twist",
+   "height": 142,
+   "spire": 172,
+   "floors": 40,
+   "twist": 75,
+   "face": 31,
+   "clear": [
+    45,
+    30
+   ],
+   "info": "The newspaper Dnevni Avaz's tower of 2008: 142 m of blue glass turning on itself, 172 m to the top of its spire, the tallest building in the Balkans when it was built; the view from its 35th floor."
+  },
+  {
+   "name": "The Holiday Inn",
+   "aka": [
+    "Hotel Holiday"
+   ],
+   "at": [
+    43.856483,
+    18.403822
+   ],
+   "model": "holiday",
+   "width": 64,
+   "depth": 46,
+   "floors": 10,
+   "face": 0,
+   "clear": [
+    52,
+    0
+   ],
+   "info": "Built for the 1984 Olympics, in mustard yellow and brown. Through the siege it was the hotel of the world's press, on the front line of what they called Sniper Alley: rooms on the south side, toward the hills, were not let."
+  },
+  {
+   "name": "The UNIS towers",
+   "aka": [
+    "Momo and Uzeir",
+    "UNITIC"
+   ],
+   "at": [
+    43.85735,
+    18.405556
+   ],
+   "info": "The twin towers of Marijin Dvor, 1986, built for the Yugoslav company UNIS; Sarajevans named them Momo and Uzeir after a comic pair of the city's stories, a Serb and a Bosniak who are best friends. Shelled and burned out in 1992, their black shells stood through the siege; they were reclad and reopened in 2007.",
+   "model": "unis",
+   "side": 19,
+   "floors": 26,
+   "face": 0,
+   "clear": [
+    18,
+    30
+   ]
+  },
+  {
+   "name": "Uzeir",
+   "aka": [
+    "the second UNIS tower"
+   ],
+   "at": [
+    43.856886,
+    18.405771
+   ],
+   "model": "unis",
+   "side": 19,
+   "floors": 26,
+   "face": 0,
+   "clear": [
+    18,
+    30
+   ],
+   "info": "The second of the twin UNIS towers: Uzeir to its neighbour's Momo."
+  },
+  {
+   "name": "The Parliament",
+   "aka": [
+    "the Greek friendship building"
+   ],
+   "at": [
+    43.85513,
+    18.40518
+   ],
+   "info": "The parliament's tower, 80 m: set on fire by shelling in 1992, its blackened frame one of the photographs of the siege; rebuilt with Greek money and reopened in 2007."
+  },
+  {
+   "name": "The Trebević cable car",
+   "aka": [
+    "Trebevićka žičara"
+   ],
+   "at": [
+    43.84768,
+    18.44255
+   ],
+   "model": "cablecar",
+   "line": [
+    [
+     43.8554294,
+     18.4351668
+    ],
+    [
+     43.8552751,
+     18.4353138
+    ],
+    [
+     43.8550207,
+     18.4355562
+    ],
+    [
+     43.8539482,
+     18.4365777
+    ],
+    [
+     43.8524781,
+     18.437978
+    ],
+    [
+     43.8492485,
+     18.4410542
+    ],
+    [
+     43.8471892,
+     18.4430155
+    ],
+    [
+     43.8440524,
+     18.446003
+    ],
+    [
+     43.8419813,
+     18.4479755
+    ],
+    [
+     43.8402315,
+     18.4496419
+    ],
+    [
+     43.839927,
+     18.4499372
+    ]
+   ],
+   "pylons": [
+    0.14,
+    0.28,
+    0.42,
+    0.56,
+    0.7,
+    0.84
+   ],
+   "stationH": 8,
+   "pylonH": 20,
+   "speed": 5,
+   "every": 90,
+   "info": "Built in 1959; it carried Sarajevans up Trebević to the mountain until the siege put the front line across it, and its cabins were burned. Rebuilt and reopened in 2018: 2.1 km and 33 gondolas, from Bistrik up to Vidikovac in seven minutes."
+  },
+  {
+   "name": "The Olympic bobsleigh track",
+   "aka": [
+    "Bob staza Trebević"
+   ],
+   "at": [
+    43.84096,
+    18.44356
+   ],
+   "model": "bobsleigh",
+   "lines": [
+    [
+     [
+      43.8404574,
+      18.4479902
+     ],
+     [
+      43.8403661,
+      18.4471844
+     ],
+     [
+      43.8403431,
+      18.4469807
+     ],
+     [
+      43.8403236,
+      18.4467425
+     ],
+     [
+      43.8402952,
+      18.4464677
+     ],
+     [
+      43.8402999,
+      18.4464163
+     ],
+     [
+      43.840313,
+      18.4463719
+     ],
+     [
+      43.8403283,
+      18.4463317
+     ],
+     [
+      43.8404083,
+      18.4461678
+     ],
+     [
+      43.8404641,
+      18.4460245
+     ],
+     [
+      43.8404838,
+      18.4459434
+     ],
+     [
+      43.8404954,
+      18.4458637
+     ],
+     [
+      43.8404888,
+      18.4457703
+     ],
+     [
+      43.840472,
+      18.4456962
+     ],
+     [
+      43.8403502,
+      18.4454253
+     ],
+     [
+      43.840173,
+      18.4449861
+     ],
+     [
+      43.8400996,
+      18.4448041
+     ],
+     [
+      43.8400542,
+      18.444717
+     ],
+     [
+      43.8399771,
+      18.4445904
+     ],
+     [
+      43.8399615,
+      18.4445576
+     ],
+     [
+      43.8399536,
+      18.4445282
+     ],
+     [
+      43.8399478,
+      18.4444941
+     ],
+     [
+      43.8399289,
+      18.4443848
+     ],
+     [
+      43.8399007,
+      18.4442042
+     ],
+     [
+      43.8398762,
+      18.4440778
+     ],
+     [
+      43.8398414,
+      18.4439383
+     ],
+     [
+      43.8397767,
+      18.4437508
+     ],
+     [
+      43.8397454,
+      18.4436904
+     ],
+     [
+      43.8396364,
+      18.443496
+     ],
+     [
+      43.8395809,
+      18.4433852
+     ],
+     [
+      43.8395613,
+      18.4433384
+     ],
+     [
+      43.8395411,
+      18.4432793
+     ],
+     [
+      43.8395319,
+      18.4432366
+     ],
+     [
+      43.8395313,
+      18.4432046
+     ],
+     [
+      43.8395383,
+      18.4431568
+     ],
+     [
+      43.8395533,
+      18.4431143
+     ],
+     [
+      43.8395743,
+      18.443069
+     ],
+     [
+      43.8396122,
+      18.4430227
+     ],
+     [
+      43.8396469,
+      18.443001
+     ],
+     [
+      43.8396919,
+      18.4429894
+     ],
+     [
+      43.8397296,
+      18.4429836
+     ],
+     [
+      43.8397515,
+      18.4429857
+     ],
+     [
+      43.8397793,
+      18.4429951
+     ],
+     [
+      43.839906,
+      18.4430412
+     ],
+     [
+      43.8400096,
+      18.4430911
+     ],
+     [
+      43.8403151,
+      18.4432501
+     ],
+     [
+      43.8403802,
+      18.4432822
+     ],
+     [
+      43.8404419,
+      18.4432914
+     ],
+     [
+      43.8404865,
+      18.4432769
+     ],
+     [
+      43.8405282,
+      18.443232
+     ],
+     [
+      43.8405605,
+      18.4431854
+     ],
+     [
+      43.8405906,
+      18.4431316
+     ],
+     [
+      43.8406136,
+      18.4430543
+     ],
+     [
+      43.8406276,
+      18.4429722
+     ],
+     [
+      43.8406334,
+      18.4428716
+     ],
+     [
+      43.8406345,
+      18.442802
+     ],
+     [
+      43.8406347,
+      18.4427556
+     ],
+     [
+      43.8406238,
+      18.442686
+     ],
+     [
+      43.8405959,
+      18.4425338
+     ],
+     [
+      43.8405881,
+      18.4422763
+     ],
+     [
+      43.8406058,
+      18.4422065
+     ],
+     [
+      43.8406353,
+      18.4421489
+     ],
+     [
+      43.8406821,
+      18.4421123
+     ],
+     [
+      43.8407333,
+      18.4421021
+     ],
+     [
+      43.8410231,
+      18.4422239
+     ],
+     [
+      43.8419764,
+      18.4426248
+     ],
+     [
+      43.842001,
+      18.4426283
+     ],
+     [
+      43.8420257,
+      18.4426225
+     ],
+     [
+      43.8420471,
+      18.4426129
+     ],
+     [
+      43.8420686,
+      18.442598
+     ],
+     [
+      43.8420853,
+      18.4425844
+     ],
+     [
+      43.8421084,
+      18.4425641
+     ],
+     [
+      43.8421364,
+      18.4425342
+     ],
+     [
+      43.8421577,
+      18.4425064
+     ],
+     [
+      43.8421699,
+      18.4424887
+     ],
+     [
+      43.8421817,
+      18.4424676
+     ],
+     [
+      43.8421994,
+      18.442416
+     ],
+     [
+      43.8422089,
+      18.4423619
+     ],
+     [
+      43.8422121,
+      18.4423309
+     ],
+     [
+      43.8422118,
+      18.4422836
+     ],
+     [
+      43.8422072,
+      18.4422446
+     ],
+     [
+      43.8421997,
+      18.4422037
+     ],
+     [
+      43.8421918,
+      18.4421622
+     ],
+     [
+      43.8421698,
+      18.4421129
+     ],
+     [
+      43.8421449,
+      18.4420744
+     ],
+     [
+      43.8421114,
+      18.4420252
+     ],
+     [
+      43.8420702,
+      18.4419868
+     ],
+     [
+      43.842024,
+      18.4419605
+     ],
+     [
+      43.8419474,
+      18.441945
+     ],
+     [
+      43.8416453,
+      18.4419406
+     ],
+     [
+      43.8415088,
+      18.4419018
+     ],
+     [
+      43.8414324,
+      18.4418183
+     ],
+     [
+      43.8413973,
+      18.4417056
+     ],
+     [
+      43.8413956,
+      18.4415646
+     ],
+     [
+      43.8414495,
+      18.441336
+     ],
+     [
+      43.8414872,
+      18.4411945
+     ],
+     [
+      43.8415548,
+      18.4410144
+     ],
+     [
+      43.8415712,
+      18.4409371
+     ],
+     [
+      43.8415787,
+      18.4409013
+     ],
+     [
+      43.8415922,
+      18.4407817
+     ],
+     [
+      43.8415895,
+      18.440658
+     ],
+     [
+      43.8415862,
+      18.4406147
+     ],
+     [
+      43.8415868,
+      18.440574
+     ],
+     [
+      43.8416015,
+      18.4405034
+     ],
+     [
+      43.8416139,
+      18.4404352
+     ],
+     [
+      43.8416444,
+      18.4403232
+     ],
+     [
+      43.8416993,
+      18.4401989
+     ],
+     [
+      43.8417533,
+      18.4401156
+     ],
+     [
+      43.8417814,
+      18.4400806
+     ],
+     [
+      43.8418134,
+      18.440051
+     ],
+     [
+      43.8418403,
+      18.4400035
+     ],
+     [
+      43.841871,
+      18.4399235
+     ],
+     [
+      43.8419256,
+      18.4397103
+     ],
+     [
+      43.8419367,
+      18.4396728
+     ],
+     [
+      43.8419594,
+      18.4395895
+     ],
+     [
+      43.8419764,
+      18.4395255
+     ],
+     [
+      43.8420361,
+      18.4393289
+     ],
+     [
+      43.8420562,
+      18.4392802
+     ],
+     [
+      43.842089,
+      18.4392301
+     ],
+     [
+      43.8421229,
+      18.4391893
+     ],
+     [
+      43.842158,
+      18.4391647
+     ],
+     [
+      43.8421925,
+      18.4391477
+     ],
+     [
+      43.8422146,
+      18.43914
+     ],
+     [
+      43.8422473,
+      18.4391314
+     ],
+     [
+      43.8422761,
+      18.439133
+     ],
+     [
+      43.8423049,
+      18.4391423
+     ],
+     [
+      43.8423423,
+      18.4391611
+     ],
+     [
+      43.8423803,
+      18.4391914
+     ],
+     [
+      43.8424089,
+      18.4392208
+     ],
+     [
+      43.8424487,
+      18.4392719
+     ],
+     [
+      43.8424749,
+      18.4393317
+     ],
+     [
+      43.84249,
+      18.4393929
+     ],
+     [
+      43.8424951,
+      18.4394534
+     ],
+     [
+      43.8424942,
+      18.4394899
+     ],
+     [
+      43.8424929,
+      18.4395715
+     ],
+     [
+      43.84249,
+      18.4396358
+     ],
+     [
+      43.8424828,
+      18.4398297
+     ],
+     [
+      43.8424778,
+      18.4399643
+     ],
+     [
+      43.842477,
+      18.4399859
+     ],
+     [
+      43.8424219,
+      18.4414698
+     ],
+     [
+      43.8423537,
+      18.4432726
+     ]
+    ]
+   ],
+   "info": "Built for the 1984 Winter Olympics: 1,300 m of concrete trough down Trebević, thirteen curves, the Omega and the Double S among them. In the siege it was an artillery position. Abandoned since, it is the city's longest wall of graffiti."
+  },
+  {
+   "name": "The Koševo stadium",
+   "aka": [
+    "Asim Ferhatović Hase stadium",
+    "Olympic stadium"
+   ],
+   "at": [
+    43.873779,
+    18.408334
+   ],
+   "model": "stadium",
+   "a": 120,
+   "b": 103,
+   "rows": 14,
+   "axis": 20,
+   "clear": [
+    110,
+    14
+   ],
+   "info": "Where the XIV Winter Olympics were opened on 8 February 1984, the figure skater Sanda Dubravčić lighting the cauldron. In the siege its training pitches became a cemetery."
+  },
+  {
+   "name": "Zetra",
+   "aka": [
+    "Olimpijska dvorana Juan Antonio Samaranch"
+   ],
+   "at": [
+    43.87182,
+    18.40953
+   ],
+   "info": "The Olympic ice hall of 1984, where Torvill and Dean skated Bolero. Burned in 1992, its timber used as coffins; rebuilt in 1999."
+  },
+  {
+   "name": "The White Bastion",
+   "aka": [
+    "Bijela tabija"
+   ],
+   "at": [
+    43.85937,
+    18.44455
+   ],
+   "info": "The ruined fortress over the eastern end of the old town, on the road to Istanbul, guarding the Miljacka's gorge."
+  },
+  {
+   "name": "The Inat House",
+   "aka": [
+    "Inat kuća",
+    "the House of Spite"
+   ],
+   "at": [
+    43.85856,
+    18.43425
+   ],
+   "info": "In the 1890s the city wanted its site for the City Hall. The owner agreed to go only if his house went with him, stone by stone, across the river: here it stands, and the name is spite."
+  },
+  {
+   "name": "Morića Han",
+   "at": [
+    43.85967,
+    18.43011
+   ],
+   "info": "The last of Baščaršija's caravanserais, from the sixteenth century: the courtyard, the stables, and the rooms for travellers upstairs."
+  },
+  {
+   "name": "The Old Orthodox Church",
+   "aka": [
+    "Stara pravoslavna crkva"
+   ],
+   "at": [
+    43.86026,
+    18.43
+   ],
+   "info": "The church of the Holy Archangels Michael and Gabriel, sixteenth century: low and walled, as the Ottoman law asked of churches."
+  },
+  {
+   "name": "The Orthodox Cathedral",
+   "aka": [
+    "Saborna crkva"
+   ],
+   "at": [
+    43.85822,
+    18.42519
+   ],
+   "info": "The Cathedral of the Nativity of the Theotokos, 1872, the largest Orthodox church in the city."
+  },
+  {
+   "name": "Markale",
+   "aka": [
+    "Gradska tržnica Markale"
+   ],
+   "at": [
+    43.85902,
+    18.42335
+   ],
+   "info": "The city's market. Two shells struck it during the siege, in February 1994 and August 1995, killing 111 people; the second brought NATO's air strikes, and the end of the siege."
+  },
+  {
+   "name": "The Ashkenazi synagogue",
+   "aka": [
+    "Aškenaska sinagoga"
+   ],
+   "at": [
+    43.856322,
+    18.425043
+   ],
+   "info": "1902, in the same Moorish style as the City Hall, on the river's south bank: the city's working synagogue. The Sarajevo Haggadah, carried here by Jews expelled from Spain, is in the National Museum."
+  },
+  {
+   "name": "The Meeting of Cultures",
+   "aka": [
+    "Sarajevo - Meeting of Cultures"
+   ],
+   "at": [
+    43.85935,
+    18.42816
+   ],
+   "info": "A line across the paving where Ferhadija becomes Sarači. Look west and the street is Vienna's: four-storey blocks, shop windows, the cathedral. Look east and it is Istanbul's: low wooden shops, the bezistan, Gazi Husrev-beg's minaret. The city grew one way for four hundred years and the other for forty."
+  },
+  {
+   "name": "A Sarajevo rose",
+   "aka": [
+    "Sarajevska ruža"
+   ],
+   "at": [
+    43.85898,
+    18.42345
+   ],
+   "info": "Where a mortar shell struck the pavement and killed someone in the siege, its scar was filled with red resin, a splash like a flower. There were a couple of hundred; the ones left are repainted every year. This one, by the market at Markale, is one of the best known."
+  },
+  {
+   "name": "The Kovači martyrs' cemetery",
+   "aka": [
+    "Šehidsko mezarje Kovači"
+   ],
+   "at": [
+    43.861364,
+    18.435492
+   ],
+   "info": "The cemetery of the city's defenders on the hill under the Yellow Bastion: rows of white nišani, the dates on them nearly all 1992 to 1995. Alija Izetbegović, the wartime president, is buried here."
+  },
+  {
+   "name": "Bare cemetery",
+   "aka": [
+    "Gradsko groblje Bare"
+   ],
+   "at": [
+    43.878673,
+    18.397858
+   ],
+   "info": "The city cemetery since 1966, of every faith: nišani, crosses and stars side by side up the hill. The siege filled it."
+  },
+  {
+   "name": "The Old Jewish Cemetery",
+   "aka": [
+    "Jevrejsko groblje"
+   ],
+   "at": [
+    43.850953,
+    18.407004
+   ],
+   "info": "Founded in the 1630s on the slope of Trebević: over 3,800 flat stones, some carved with Hebrew and Ladino, the second largest Jewish cemetery in Europe. In the siege it was on the front line."
+  }
+ ],
+ "views": {
+  "Baščaršija from the air": [
+   [
+    43.8578,
+    18.4262,
+    123.6
+   ],
+   [
+    43.85972,
+    18.43122,
+    20.2
+   ]
+  ],
+  "The Sebilj and Pigeon Square": [
+   [
+    43.85938,
+    18.43105,
+    24.4
+   ],
+   [
+    43.85972,
+    18.43122,
+    20.4
+   ]
+  ],
+  "Gazi Husrev-beg's courtyard": [
+   [
+    43.858464,
+    18.429001,
+    30.3
+   ],
+   [
+    43.859142,
+    18.429001,
+    25.3
+   ]
+  ],
+  "The Latin Bridge": [
+   [
+    43.85735,
+    18.42785,
+    18.7
+   ],
+   [
+    43.85777,
+    18.42864,
+    13.1
+   ]
+  ],
+  "The corner of 28 June 1914": [
+   [
+    43.85765,
+    18.42935,
+    14.2
+   ],
+   [
+    43.85798,
+    18.42899,
+    14.4
+   ]
+  ],
+  "The City Hall from the river": [
+   [
+    43.8583,
+    18.4317,
+    22.2
+   ],
+   [
+    43.859118,
+    18.433314,
+    25.7
+   ]
+  ],
+  "From the Yellow Bastion": [
+   [
+    43.86158,
+    18.43805,
+    94.2
+   ],
+   [
+    43.8572,
+    18.4185,
+    30.1
+   ]
+  ],
+  "Marijin Dvor and the towers": [
+   [
+    43.8538,
+    18.3975,
+    48.5
+   ],
+   [
+    43.856483,
+    18.403822,
+    38.1
+   ]
+  ],
+  "The Avaz Twist Tower": [
+   [
+    43.8592,
+    18.4,
+    22.8
+   ],
+   [
+    43.860897,
+    18.401995,
+    77.9
+   ]
+  ],
+  "Up the cable car": [
+   [
+    43.8548,
+    18.4345,
+    63.2
+   ],
+   [
+    43.8405,
+    18.4495,
+    600.6
+   ]
+  ],
+  "The bobsleigh track": [
+   [
+    43.840888,
+    18.442268,
+    562.2
+   ],
+   [
+    43.8420853,
+    18.4425844,
+    468.9
+   ]
+  ],
+  "From Trebević over the city": [
+   [
+    43.842,
+    18.447,
+    584.3
+   ],
+   [
+    43.859,
+    18.425,
+    39.0
+   ]
+  ],
+  "The Koševo stadium": [
+   [
+    43.869,
+    18.413,
+    104.5
+   ],
+   [
+    43.873779,
+    18.408334,
+    46.7
+   ]
+  ],
+  "The whole valley": [
+   [
+    43.835,
+    18.396,
+    327.7
+   ],
+   [
+    43.86,
+    18.43,
+    47.3
+   ]
+  ],
+  "The Meeting of Cultures": [
+   [
+    43.8593137,
+    18.42789,
+    17.9
+   ],
+   [
+    43.859348,
+    18.42816,
+    13.7
+   ]
+  ],
+  "The Kovači cemetery": [
+   [
+    43.8607,
+    18.4347,
+    68.9
+   ],
+   [
+    43.861364,
+    18.435492,
+    49.4
+   ]
+  ],
+  "Baščaršija's lanes": [
+   [
+    43.85955,
+    18.43065,
+    32.8
+   ],
+   [
+    43.85985,
+    18.4316,
+    19.7
+   ]
+  ],
+  "The Austro-Hungarian centre": [
+   [
+    43.8577,
+    18.4215,
+    41.7
+   ],
+   [
+    43.8588,
+    18.425,
+    26.8
+   ]
+  ],
+  "A mahala": [
+   [
+    43.863,
+    18.433,
+    65.8
+   ],
+   [
+    43.8645,
+    18.4315,
+    53.4
+   ]
+  ],
+  "Grbavica's blocks": [
+   [
+    43.852631,
+    18.400474,
+    -1.8
+   ],
+   [
+    43.852948,
+    18.401229,
+    15.0
+   ]
+  ],
+  "The UNIS towers": [
+   [
+    43.859,
+    18.402,
+    44.2
+   ],
+   [
+    43.85712,
+    18.40566,
+    53.9
+   ]
+  ],
+  "The Cathedral": [
+   [
+    43.85902,
+    18.425482,
+    22.8
+   ],
+   [
+    43.859427,
+    18.425363,
+    33.5
+   ]
+  ],
+  "The City Hall": [
+   [
+    43.858013,
+    18.433868,
+    25.1
+   ],
+   [
+    43.859118,
+    18.433314,
+    25.7
+   ]
+  ]
+ },
+ "navmap": {
+  "labels": [
+   "Sebilj",
+   "Gazi Husrev-beg Mosque",
+   "The City Hall",
+   "The Latin Bridge",
+   "The Cathedral of the Sacred Heart",
+   "The Yellow Bastion",
+   "The Avaz Twist Tower",
+   "The Holiday Inn",
+   "The Trebević cable car",
+   "The Olympic bobsleigh track",
+   "The Koševo stadium",
+   "The Eternal Flame",
+   "Markale",
+   "The Emperor's Mosque",
+   "The Meeting of Cultures",
+   "The Kovači martyrs' cemetery"
+  ]
+ },
+ "focus": [
+  {
+   "name": "Baščaršija",
+   "at": [
+    43.8596,
+    18.4305
+   ],
+   "radius": 260
+  },
+  {
+   "name": "Ferhadija",
+   "at": [
+    43.859,
+    18.425
+   ],
+   "radius": 220
+  }
+ ],
+ "vehicles": {
+  "seed": 1984,
+  "side": "right",
+  "cars": 18,
+  "mopeds": 2,
+  "buses": 1.6,
+  "trams": 3.0,
+  "trains": 0.2,
+  "far": 1100,
+  "carFar": 800,
+  "mopedFar": 400,
+  "railFar": 2200,
+  "maxCars": 2200,
+  "maxMopeds": 150,
+  "maxBuses": 100,
+  "maxTrams": 40,
+  "maxTrains": 8,
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#2a3a5a",
+   "#7a2a2a",
+   "#3c4a3a",
+   "#d8d8d4"
+  ],
+  "busColours": [
+   "#f2f0ea",
+   "#2a5a9a"
+  ],
+  "tramColours": [
+   "#e8e6e0",
+   "#c8302a",
+   "#e8c040"
+  ],
+  "_": "src/core/traffic.js: on the right; the trams on the loop to Baščaršija, the oldest electric line in this part of Europe (1895)"
+ },
+ "crowds": {
+  "seed": 1984,
+  "centre": [
+   43.8592,
+   18.428,
+   1600,
+   9
+  ],
+  "pedestrianMul": 2.0,
+  "maxPedestrians": 11000,
+  "keepOut": [
+   [
+    43.85972,
+    18.43122,
+    5
+   ]
+  ],
+  "pedestrians": 14,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    43.85965,
+    18.431,
+    40,
+    160
+   ],
+   [
+    43.8591,
+    18.4262,
+    45,
+    180
+   ],
+   [
+    43.85905,
+    18.4285,
+    30,
+    90
+   ],
+   [
+    43.8579,
+    18.4286,
+    20,
+    40
+   ],
+   [
+    43.8589,
+    18.4334,
+    30,
+    50
+   ],
+   [
+    43.8614,
+    18.4377,
+    25,
+    50
+   ],
+   [
+    43.8553,
+    18.4348,
+    20,
+    30
+   ],
+   [
+    43.859,
+    18.4225,
+    30,
+    60
+   ]
+  ],
+  "_sites": "[lat, lon, radius, how many]: Pigeon Square, Ferhadija, Gazi Husrev-beg's courtyard, the Latin Bridge, the City Hall, the Yellow Bastion, the cable car at Bistrik, the Eternal Flame"
+ },
+ "streetlife": {
+  "seed": 1984,
+  "centre": [
+   43.8592,
+   18.4285,
+   1800
+  ],
+  "far": 550,
+  "shops": 0.62,
+  "flowerBoxes": 0.08,
+  "smoke": 0.08,
+  "_": "src/core/streetlife.js: the coppersmiths' and the ćevabdžinicas' shopfronts, the cafés"
+ },
+ "dress": {
+  "cornice": {
+   "share": 0.45,
+   "minH": 10,
+   "maxH": 30,
+   "depth": 0.6
+  },
+  "string": {
+   "share": 0.5,
+   "minH": 9,
+   "maxH": 30,
+   "at": 4.2,
+   "where": [
+    [
+     43.853,
+     18.4,
+     43.8612,
+     18.4285
+    ]
+   ]
+  },
+  "dormers": {
+   "share": 0.35,
+   "minH": 12,
+   "maxH": 28,
+   "where": [
+    [
+     43.855,
+     18.41,
+     43.8605,
+     18.4285
+    ]
+   ],
+   "roof": "#a8503a",
+   "every": 6
+  },
+  "awnings": {
+   "share": 0.35,
+   "maxH": 12,
+   "colours": [
+    "#8a2a22",
+    "#2f5a3a",
+    "#c8a040",
+    "#3a4a7a",
+    "#e8e0d0"
+   ],
+   "where": [
+    [
+     43.8578,
+     18.425,
+     43.8612,
+     18.4335
+    ]
+   ]
+  },
+  "laundry": {
+   "share": 0.08,
+   "maxH": 14,
+   "where": [
+    [
+     43.858,
+     18.428,
+     43.87,
+     18.452
+    ],
+    [
+     43.833,
+     18.42,
+     43.856,
+     18.45
+    ]
+   ]
+  },
+  "far": 650,
+  "_": "src/core/dress.js: cornices and string courses on the Austro-Hungarian blocks, dormers in their roofs, awnings in Baščaršija, washing hung across the mahalas' lanes"
+ },
+ "mosques": {
+  "seed": 1461,
+  "skip": 30,
+  "_": "src/sarajevo/mosques.js: every mapped mosque the landmarks do not model gets its minaret, and its dome if it is big enough to have one"
+ },
+ "sarajevoEvents": {
+  "quay": [
+   [
+    43.856324,
+    18.413334
+   ],
+   [
+    43.856426,
+    18.414161
+   ],
+   [
+    43.856457,
+    18.415319
+   ],
+   [
+    43.856489,
+    18.416353
+   ],
+   [
+    43.856543,
+    18.418523
+   ],
+   [
+    43.856596,
+    18.42038
+   ],
+   [
+    43.85662,
+    18.421308
+   ],
+   [
+    43.856741,
+    18.424488
+   ],
+   [
+    43.856834,
+    18.425311
+   ],
+   [
+    43.857104,
+    18.426256
+   ],
+   [
+    43.857417,
+    18.427254
+   ],
+   [
+    43.857692,
+    18.428177
+   ],
+   [
+    43.85781,
+    18.428778
+   ],
+   [
+    43.85802,
+    18.429886
+   ],
+   [
+    43.858174,
+    18.430565
+   ],
+   [
+    43.85837,
+    18.431435
+   ],
+   [
+    43.858535,
+    18.432125
+   ],
+   [
+    43.85889,
+    18.433609
+   ]
+  ],
+  "turn": [
+   [
+    43.85781,
+    18.428778
+   ],
+   [
+    43.857823,
+    18.428855
+   ],
+   [
+    43.857965,
+    18.428805
+   ],
+   [
+    43.858101,
+    18.428758
+   ]
+  ],
+  "bombAt": [
+   43.856961,
+   18.426751
+  ],
+  "princip": [
+   43.85795,
+   18.42897
+  ],
+  "iftarView": [
+   43.86172,
+   18.43805
+  ],
+  "_": "src/sarajevo/events.js: the quay is the Appel Quay of 1914 (Obala Kulina bana now), west to east; the turn is into Franz Joseph Street (Zelenih beretki), by Schiller's corner",
+  "iftarLift": 24
+ },
+ "treeKeepOut": [
+  [
+   43.840457,
+   18.44799,
+   17
+  ],
+  [
+   43.840366,
+   18.447184,
+   17
+  ],
+  [
+   43.840343,
+   18.446981,
+   17
+  ],
+  [
+   43.840324,
+   18.446742,
+   17
+  ],
+  [
+   43.840295,
+   18.446468,
+   17
+  ],
+  [
+   43.840408,
+   18.446168,
+   17
+  ],
+  [
+   43.840484,
+   18.445943,
+   17
+  ],
+  [
+   43.840472,
+   18.445696,
+   17
+  ],
+  [
+   43.84035,
+   18.445425,
+   17
+  ],
+  [
+   43.840173,
+   18.444986,
+   17
+  ],
+  [
+   43.8401,
+   18.444804,
+   17
+  ],
+  [
+   43.839977,
+   18.44459,
+   17
+  ],
+  [
+   43.839929,
+   18.444385,
+   17
+  ],
+  [
+   43.839901,
+   18.444204,
+   17
+  ],
+  [
+   43.839841,
+   18.443938,
+   17
+  ],
+  [
+   43.839777,
+   18.443751,
+   17
+  ],
+  [
+   43.839636,
+   18.443496,
+   17
+  ],
+  [
+   43.839561,
+   18.443338,
+   17
+  ],
+  [
+   43.839538,
+   18.443157,
+   17
+  ],
+  [
+   43.839647,
+   18.443001,
+   17
+  ],
+  [
+   43.839779,
+   18.442995,
+   17
+  ],
+  [
+   43.839906,
+   18.443041,
+   17
+  ],
+  [
+   43.840315,
+   18.44325,
+   17
+  ],
+  [
+   43.840442,
+   18.443291,
+   17
+  ],
+  [
+   43.840561,
+   18.443185,
+   17
+  ],
+  [
+   43.840628,
+   18.442972,
+   17
+  ],
+  [
+   43.840635,
+   18.442756,
+   17
+  ],
+  [
+   43.840596,
+   18.442534,
+   17
+  ],
+  [
+   43.840588,
+   18.442276,
+   17
+  ],
+  [
+   43.840682,
+   18.442112,
+   17
+  ],
+  [
+   43.841023,
+   18.442224,
+   17
+  ],
+  [
+   43.841976,
+   18.442625,
+   17
+  ],
+  [
+   43.842108,
+   18.442564,
+   17
+  ],
+  [
+   43.842199,
+   18.442416,
+   17
+  ],
+  [
+   43.8422,
+   18.442204,
+   17
+  ],
+  [
+   43.842111,
+   18.442025,
+   17
+  ],
+  [
+   43.841947,
+   18.441945,
+   17
+  ],
+  [
+   43.841645,
+   18.441941,
+   17
+  ],
+  [
+   43.841509,
+   18.441902,
+   17
+  ],
+  [
+   43.841397,
+   18.441706,
+   17
+  ],
+  [
+   43.84145,
+   18.441336,
+   17
+  ],
+  [
+   43.841555,
+   18.441014,
+   17
+  ],
+  [
+   43.841592,
+   18.440782,
+   17
+  ],
+  [
+   43.841587,
+   18.440574,
+   17
+  ],
+  [
+   43.841644,
+   18.440323,
+   17
+  ],
+  [
+   43.841753,
+   18.440116,
+   17
+  ],
+  [
+   43.841871,
+   18.439923,
+   17
+  ],
+  [
+   43.841926,
+   18.43971,
+   17
+  ],
+  [
+   43.841976,
+   18.439525,
+   17
+  ],
+  [
+   43.842036,
+   18.439329,
+   17
+  ],
+  [
+   43.842123,
+   18.439189,
+   17
+  ],
+  [
+   43.842247,
+   18.439131,
+   17
+  ],
+  [
+   43.84238,
+   18.439191,
+   17
+  ],
+  [
+   43.842475,
+   18.439332,
+   17
+  ],
+  [
+   43.842493,
+   18.439571,
+   17
+  ],
+  [
+   43.842483,
+   18.43983,
+   17
+  ],
+  [
+   43.842422,
+   18.44147,
+   17
+  ],
+  [
+   43.842354,
+   18.443273,
+   17
+  ],
+  [
+   43.855429,
+   18.435167,
+   14
+  ],
+  [
+   43.839927,
+   18.449937,
+   22
+  ]
+ ],
+ "_treeKeepOut": "the bobsleigh track and the cable car stations, kept clear of the woodland",
+ "mezarje": {
+  "near": 650,
+  "spacing": [
+   2.6,
+   3.4
+  ],
+  "keep": 0.72,
+  "max": 9000,
+  "qibla": 2.39,
+  "_": "src/sarajevo/mezarje.js: the nišani of the mezarje, crosses and slabs where the cemetery's name says so; each cemetery filled when the camera first comes near"
+ },
+ "streets": {
+  "roses": {
+   "count": 46,
+   "seed": 1992,
+   "box": [
+    43.8545,
+    18.405,
+    43.8612,
+    18.4345
+   ]
+  },
+  "line": {
+   "from": [
+    43.8593079,
+    18.4281697
+   ],
+   "to": [
+    43.8593881,
+    18.4281503
+   ]
+  },
+  "_": "src/sarajevo/streets.js: the Sarajevo roses, and the Meeting of Cultures line across Ferhadija"
+ },
+ "treeSpecies": [
+  {
+   "name": "European beech",
+   "shape": "round",
+   "bark": "#8a8478",
+   "height": [
+    16,
+    28
+   ],
+   "colours": [
+    "#4e7a34",
+    "#56823a",
+    "#46702e",
+    "#5e8a40"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 10,
+    "wood": 46,
+    "yard": 0
+   }
+  },
+  {
+   "name": "Norway spruce",
+   "shape": "fir",
+   "bark": "#4a3a2c",
+   "height": [
+    18,
+    30
+   ],
+   "colours": [
+    "#24402a",
+    "#2a4a30",
+    "#203a26"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 4,
+    "wood": 24,
+    "yard": 0
+   }
+  },
+  {
+   "name": "black pine",
+   "shape": "cedar",
+   "bark": "#5a4434",
+   "height": [
+    14,
+    24
+   ],
+   "colours": [
+    "#2c4630",
+    "#34503a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 14,
+    "yard": 0
+   }
+  },
+  {
+   "name": "hornbeam",
+   "shape": "oval",
+   "bark": "#7a7468",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#5a8a3e",
+    "#62903e"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 10,
+    "wood": 12,
+    "yard": 0
+   }
+  },
+  {
+   "name": "linden",
+   "shape": "round",
+   "bark": "#5a4e42",
+   "height": [
+    12,
+    22
+   ],
+   "colours": [
+    "#5e8a3a",
+    "#66923e",
+    "#587e36"
+   ],
+   "weight": {
+    "street": 30,
+    "park": 22,
+    "wood": 0,
+    "yard": 8
+   }
+  },
+  {
+   "name": "plane",
+   "shape": "round",
+   "bark": "#a8a088",
+   "height": [
+    16,
+    26
+   ],
+   "colours": [
+    "#5a7e3c",
+    "#62863e"
+   ],
+   "weight": {
+    "street": 16,
+    "park": 10,
+    "wood": 0,
+    "yard": 0
+   }
+  },
+  {
+   "name": "plum",
+   "shape": "small",
+   "bark": "#4a3a30",
+   "height": [
+    4,
+    7
+   ],
+   "colours": [
+    "#5a7e3a",
+    "#668a42"
+   ],
+   "weight": {
+    "street": 6,
+    "park": 14,
+    "wood": 0,
+    "yard": 40
+   }
+  },
+  {
+   "name": "birch",
+   "shape": "slender",
+   "bark": "#e0dcd2",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#7a9a48",
+    "#86a24e"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 8,
+    "wood": 4,
+    "yard": 6
+   }
+  },
+  {
+   "name": "cypress",
+   "shape": "column",
+   "bark": "#4a3a2c",
+   "height": [
+    8,
+    14
+   ],
+   "colours": [
+    "#26402a",
+    "#2c4a2e"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 0,
+    "yard": 4
+   }
+  },
+  {
+   "name": "walnut",
+   "shape": "oak",
+   "bark": "#5a4a3c",
+   "height": [
+    9,
+    15
+   ],
+   "colours": [
+    "#4e7034",
+    "#56783a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 0,
+    "yard": 20
+   }
+  }
+ ],
+ "_treeSpecies": "Trebević's beech woods with spruce and black pine above; lindens and planes on the streets; plum trees in the mahalas' yards",
+ "treeFar": 1900,
+ "facadeStyles": [
+  {
+   "tex": "curtain",
+   "when": {
+    "minH": 60
+   },
+   "bay": 3.2,
+   "floor": 3.6
+  },
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "apartments",
+     "residential",
+     "yes"
+    ],
+    "minH": 20,
+    "share": 0.75,
+    "where": [
+     [
+      43.853,
+      18.392,
+      43.862,
+      18.41
+     ],
+     [
+      43.862,
+      18.4,
+      43.877,
+      18.42
+     ],
+     [
+      43.848,
+      18.392,
+      43.8545,
+      18.413
+     ]
+    ]
+   },
+   "bay": 3.4,
+   "floor": 2.9,
+   "colours": [
+    "#bab6ae",
+    "#a8a49c",
+    "#c4beb2",
+    "#9a968e",
+    "#b0a898"
+   ]
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial",
+     "government",
+     "public"
+    ],
+    "minH": 14,
+    "share": 0.6
+   },
+   "bay": 3.6,
+   "floor": 3.6
+  },
+  {
+   "tex": "tile",
+   "when": {
+    "types": [
+     "apartments",
+     "yes",
+     "residential"
+    ],
+    "minH": 14,
+    "maxH": 30,
+    "share": 0.25,
+    "where": [
+     [
+      43.853,
+      18.392,
+      43.877,
+      18.42
+     ]
+    ]
+   },
+   "bay": 3.4,
+   "floor": 3.0
+  },
+  {
+   "tex": "arched",
+   "when": {
+    "types": [
+     "yes",
+     "apartments",
+     "residential",
+     "commercial",
+     "retail",
+     "office",
+     "hotel",
+     "public",
+     "civic",
+     "government"
+    ],
+    "minH": 10,
+    "maxH": 30,
+    "share": 0.8,
+    "where": [
+     [
+      43.855,
+      18.41,
+      43.8605,
+      18.4285
+     ]
+    ]
+   },
+   "bay": 3.6,
+   "floor": 3.8,
+   "colours": [
+    "#e8dcc4",
+    "#e2d2b0",
+    "#ecdcc0",
+    "#d8c8a8",
+    "#e6d0b8",
+    "#dcd4c4",
+    "#e4c8a8"
+   ]
+  },
+  {
+   "tex": "timber",
+   "when": {
+    "maxH": 11,
+    "share": 0.75,
+    "where": [
+     [
+      43.8578,
+      18.4285,
+      43.8612,
+      18.4335
+     ]
+    ]
+   },
+   "bay": 3.0,
+   "floor": 3.0,
+   "low": true,
+   "colours": [
+    "#f0ebe0",
+    "#ece6da",
+    "#e8e0d0"
+   ]
+  }
+ ],
+ "_facadeStyles": "the glass towers; the socialist blocks of Marijin Dvor and Koševo; offices with ribbon windows; the Austro-Hungarian centre's round-headed windows in their surrounds, string courses at every floor; Baščaršija's timber-framed shops and houses, whitewashed between dark beams",
+ "roofFill": 0.7,
+ "backdrop": {
+  "file": "data/cities/sarajevo-far.json",
+  "taper": 6000,
+  "datum": 536.9,
+  "_": "src/sarajevo/backdrop.js: Igman, Bjelašnica, Trebević, Jahorina and the northern hills past the map's edge"
+ },
+ "farLevel": -1.5,
+ "surfaces": {
+  "_": "the engine's real surfaces (00-start: surface()): Krator's material library (data/textures/README.md), the colours staying the map's",
+  "dir": "data/textures/",
+  "sets": {
+   "brick": {
+    "map": "brick.webp",
+    "mean": [
+     0.6084,
+     0.6084,
+     0.6083
+    ],
+    "metres": 1.1,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "concrete": {
+    "map": "concrete.webp",
+    "mean": [
+     0.4171,
+     0.3877,
+     0.3446
+    ],
+    "metres": 4.0,
+    "keep": 0.2,
+    "strength": 0.7
+   },
+   "sidewalk": {
+    "map": "sidewalk.webp",
+    "mean": [
+     0.6411,
+     0.6411,
+     0.6362
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.8
+   },
+   "asphalt": {
+    "map": "asphalt.webp",
+    "mean": [
+     0.3694,
+     0.3503,
+     0.3276
+    ],
+    "metres": 5.0,
+    "keep": 0.2,
+    "strength": 0.45
+   },
+   "grass": {
+    "map": "grass.webp",
+    "mean": [
+     0.5926,
+     0.5151,
+     0.349
+    ],
+    "metres": 3.0,
+    "keep": 0.6,
+    "strength": 1.0
+   },
+   "dirt": {
+    "map": "dirt.webp",
+    "mean": [
+     0.3879,
+     0.3216,
+     0.243
+    ],
+    "metres": 4.0,
+    "keep": 0.4,
+    "strength": 0.9
+   },
+   "gravel": {
+    "map": "gravel.webp",
+    "mean": [
+     0.507,
+     0.4788,
+     0.4252
+    ],
+    "metres": 1.6,
+    "keep": 0.3,
+    "strength": 0.8
+   },
+   "stucco": {
+    "map": "stucco.webp",
+    "mean": [
+     0.6824,
+     0.6784,
+     0.6667
+    ],
+    "metres": 2.6,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "plaster": {
+    "map": "plaster.webp",
+    "mean": [
+     0.6627,
+     0.6627,
+     0.6627
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.9
+   },
+   "rooftile": {
+    "map": "rooftile.webp",
+    "mean": [
+     0.5333,
+     0.5333,
+     0.5333
+    ],
+    "metres": 1.6,
+    "keep": 0,
+    "strength": 0.95
+   }
+  },
+  "fade": [
+   150,
+   800
+  ],
+  "ground": {
+   "green": "grass",
+   "tan": "dirt",
+   "grey": "concrete"
+  },
+  "streets": "asphalt",
+  "sidewalks": "sidewalk",
+  "walls": {
+   "red": "brick",
+   "other": "plaster"
+  },
+  "towers": "concrete",
+  "styles": {
+   "1": "concrete",
+   "2": "concrete",
+   "4": "stucco",
+   "5": "plaster"
+  },
+  "roofs": {
+   "flat": "gravel",
+   "pitched": "rooftile"
+  }
+ },
+ "yardTrees": {
+  "types": [
+   "house",
+   "detached",
+   "yes",
+   "residential"
+  ],
+  "share": 0.45,
+  "per": [
+   1,
+   2
+  ],
+  "reach": [
+   3,
+   8
+  ],
+  "maxArea": 260,
+  "where": [
+   [
+    43.833,
+    18.392,
+    43.877,
+    18.452
+   ]
+  ],
+  "_": "a plum or a walnut in the yard of the mahalas' houses"
+ },
+ "blocks": {
+  "types": [
+   "apartments",
+   "residential",
+   "yes",
+   "office",
+   "commercial",
+   "public"
+  ],
+  "minH": 16,
+  "share": 0.85,
+  "floor": 2.9,
+  "near": 700,
+  "where": [
+   [
+    43.853,
+    18.392,
+    43.862,
+    18.41
+   ],
+   [
+    43.848,
+    18.392,
+    43.8545,
+    18.413
+   ],
+   [
+    43.862,
+    18.4,
+    43.877,
+    18.42
+   ],
+   [
+    43.8545,
+    18.41,
+    43.857,
+    18.418
+   ]
+  ],
+  "parapets": [
+   "#b8b2a6",
+   "#c8a070",
+   "#a8603a",
+   "#d8c890",
+   "#8a8a86",
+   "#b07850",
+   "#9aa4a8",
+   "#a8a29a"
+  ],
+  "slab": "#bdb7aa",
+  "core": "#8e8a82",
+  "grilles": {
+   "types": [
+    "house",
+    "detached",
+    "yes",
+    "residential",
+    "apartments",
+    "terrace"
+   ],
+   "share": 0.42,
+   "street": 0.25,
+   "maxH": 40,
+   "where": [
+    [
+     43.833,
+     18.392,
+     43.877,
+     18.452
+    ]
+   ],
+   "skip": [
+    [
+     43.855,
+     18.41,
+     43.8612,
+     18.4335
+    ]
+   ]
+  },
+  "_": "src/sarajevo/blocks.js: Grbavica, Marijin Dvor and Koševo's blocks with their loggias, stair cores and roof boxes; iron grilles on the ground-floor windows, away from the centre's shop streets"
+ },
+ "river": {
+  "name": "Miljacka",
+  "back": [
+   4,
+   8,
+   12
+  ],
+  "minWall": 0.6,
+  "maxWall": 9,
+  "quay": 3,
+  "wall": "#c4bba8",
+  "coping": "#ddd6c6",
+  "quayColour": "#b8b2a6",
+  "rail": "#2e3a3a",
+  "_": "src/sarajevo/river.js: the channel's stone walls, coping, quay and railings, and the weirs between the reaches"
+ },
+ "dogs": {
+  "count": 170,
+  "seed": 2003,
+  "box": [
+   43.845,
+   18.395,
+   43.87,
+   18.445
+  ],
+  "asleep": 0.45,
+  "packs": 0.35,
+  "parks": 0.3,
+  "near": 450,
+  "_": "src/sarajevo/dogs.js: the street dogs, asleep on the pavements and in the parks, trotting the lanes in twos and threes"
+ },
+ "bridgeFromBanks": true,
+ "weather": {"climate": "basin", "cloudH": 1100, "labels": {"fog": "The inversion", "haze": "Winter smog"}, "_": "src/core/weather.js: the climate's weather, changing on its own or set from the Weather button (weather=<state> in the address holds one)"}
+}

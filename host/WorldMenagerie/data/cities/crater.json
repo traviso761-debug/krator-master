@@ -1,0 +1,1160 @@
+{
+ "name": "Crater Lake",
+ "note": "Crater Lake, Oregon: the caldera of Mount Mazama and the lake in it, from OpenStreetMap on its real ground",
+ "origin": [
+  42.942,
+  -122.106
+ ],
+ "defaultSeed": 7700,
+ "defaultHour": 10,
+ "bounds": [
+  42.855,
+  -122.215,
+  43.01,
+  -121.995
+ ],
+ "osm": "data/cities/crater-osm.json",
+ "attribution": "Crater Lake: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles. Built by tools/build-osm-city.py.",
+ "fetch": {
+  "bbox": [
+   42.853,
+   -122.218,
+   43.012,
+   -121.992
+  ],
+  "tiles": {
+   "buildings": [
+    1,
+    1
+   ],
+   "roads": [
+    1,
+    1
+   ],
+   "land": [
+    1,
+    1
+   ],
+   "landuse": [
+    1,
+    1
+   ]
+  },
+  "detailZones": [
+   [
+    42.855,
+    -122.215,
+    43.01,
+    -121.995
+   ]
+  ],
+  "extraLand": "nwr[\"landuse\"~\"^(forest|meadow)$\"]({b});nwr[\"natural\"~\"^(bare_rock|scree|heath|volcano|peak|cliff|tree_row|rock|stone|arete|ridge)$\"]({b});",
+  "extraRoads": "way[\"highway\"~\"^(track|path)$\"]({b});",
+  "_": "the whole park round the caldera is a detail zone: Rim Village, Mazama Village and the park headquarters are small. extraLand: the forest, the meadows, the rim's cliffs and screes and peaks; extraRoads: the trails, Cleetwood Cove's, the Watchman's, Garfield Peak's, Mount Scott's, Wizard Island's"
+ },
+ "terrain": {
+  "zoom": 13,
+  "step": 30,
+  "datum": 1883.0,
+  "lakeBed": {"names": ["Crater Lake"], "shore": 2, "slope": 0.6, "depth": 600, "_": "the tiles carry the lake as its surface; the bed is the USGS's 2000 multibeam survey (data/bathy/crater-bed.json, 20 m), 594 m at the deepest: Wizard Island's flanks, Merriam Cone, the central platform, the chaos of the slides off the walls; the shore's first metres, which the survey does not reach, are cut steeply", "grid": "data/bathy/crater-bed.json"},
+  "_": "the lake at 1883 m (the datum), the rim from 2100 to 2480 m at Hillman Peak and 2721 m at Mount Scott: elevation from tools/fetch-terrain.py"
+ },
+ "extraKinds": [
+  [
+   "landuse",
+   "meadow",
+   "grass"
+  ],
+  [
+   "natural",
+   "bare_rock",
+   "rock"
+  ],
+  [
+   "natural",
+   "scree",
+   "rock"
+  ],
+  [
+   "natural",
+   "cliff",
+   "rock"
+  ],
+  [
+   "natural",
+   "heath",
+   "scrub"
+  ],
+  [
+   "natural",
+   "wetland",
+   "scrub"
+  ]
+ ],
+ "defaultView": "The lake from Rim Village",
+ "seaLevelWater": false,
+ "cameraFar": 60000,
+ "fog": 9e-06,
+ "terrainLOD": [
+  7000,
+  15000
+ ],
+ "terrainColours": {
+  "low": "#2c4830",
+  "high": "#26402a",
+  "steep": "#6e6a64",
+  "far": "#3a5240"
+ },
+ "treeLine": 900,
+ "bareGround": [],
+ "sky": {
+  "day": {
+   "top": "#2a62c0",
+   "hor": "#c8daea"
+  },
+  "dusk": {
+   "top": "#2e3a68",
+   "hor": "#f0a868"
+  },
+  "night": {
+   "top": "#03050c",
+   "hor": "#0e1424"
+  }
+ },
+ "waterColour": "#163c86",
+ "lakeColour": "#0b2a78",
+ "lakeSheen": "#7a9ad0",
+ "_lakeColour": "the blue of very deep, very clean water: the lake absorbs every other colour of the sunlight and scatters the blue back",
+ "defaultHeights": {
+  "_": "the park's buildings are low and steep-roofed against the snow; the lodge is modelled (src/crater/landmarks.js)",
+  "yes": 6,
+  "house": 6,
+  "residential": 7,
+  "commercial": 6,
+  "retail": 5,
+  "hotel": 12,
+  "service": 6,
+  "shed": 3.5,
+  "garage": 4,
+  "roof": 4
+ },
+ "heightSpread": 0.15,
+ "facade": {
+  "bay": 3.6,
+  "floor": 3.2,
+  "shutters": false
+ },
+ "palette": {
+  "_": "National Park Service rustic: stone, and brown-stained timber and shingle",
+  "brick": [
+   "#6a4a30",
+   "#5e4430",
+   "#7a5a3e",
+   "#4e3a2a",
+   "#8a847a"
+  ],
+  "stone": [
+   "#7e7a72",
+   "#8a857c",
+   "#6e6a62"
+  ]
+ },
+ "pitchAll": {
+  "types": [
+   "yes",
+   "house",
+   "residential",
+   "commercial",
+   "retail",
+   "hotel",
+   "service",
+   "shed",
+   "garage"
+  ],
+  "share": 1.0,
+  "_": "every roof pitched, steep, for the snow"
+ },
+ "roofMaxArea": 3000,
+ "roofMaxHeight": 16,
+ "roofPitch": 0.55,
+ "roofRise": 4,
+ "roofColours": [
+  "#4a564a",
+  "#5a4a3a",
+  "#3e4a44",
+  "#6a5a48"
+ ],
+ "flatRoofColours": [
+  "#7a766e"
+ ],
+ "rooftops": false,
+ "groundMottle": 0.12,
+ "instanceCulling": true,
+ "roadColours": {
+  "residential": "#4a4a4c",
+  "unclassified": "#4a4a4c",
+  "tertiary": "#46464a",
+  "secondary": "#424246",
+  "primary": "#3e3e42",
+  "service": "#55554f",
+  "track": "#8a8272",
+  "path": "#9a907a",
+  "footway": "#9a907a"
+ },
+ "areaColours": {
+  "park": "#4e7a34",
+  "grass": "#5e8a3e",
+  "garden": "#4c7434",
+  "recreation_ground": "#6a8a44",
+  "residential": "#8e8270",
+  "commercial": "#8e8270",
+  "plaza": "#9a8e7a",
+  "scrub": "#5a6a30",
+  "wood": "#2e5428",
+  "farmland": "#7a8a46",
+  "orchard": "#3e6a32",
+  "finca": "#3a5a2c",
+  "farm": "#8a8a4a",
+  "rock": "#5a524a"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "unclassified"
+  ],
+  "colour": "#e8d860"
+ },
+ "litWindows": 0.25,
+ "streetTrees": 0,
+ "parkedCars": 0.6,
+ "traffic": 0,
+ "people": 0.5,
+ "lowRiseFar": 4500,
+ "treeFar": 2400,
+ "scrub": "low",
+ "treeCells": {
+  "garden": 26,
+  "park": 30
+ },
+ "treeMinArea": {
+  "garden": 2500,
+  "park": 1000
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "underwater": {"colour": "#2a66c0", "visibility": 180, "fade": 120, "floor": 0.35, "basin": {"major": 100, "minor": 20, "deep": 594, "view": [[42.885, -122.165, 2600], [42.942, -122.104, -350]], "hide": ["oldman"], "_": "the Drain the lake button: the survey's bed by depth, a contour every 20 m and a white one every 100 m; the camera goes south-west of the rim, looking across the basin"}, "_": "src/atitlan/underwater.js: under the water the fog is the lake's: among the clearest water in the world (a Secchi disc is seen to 30-40 m), a deep blue; the visibility and the light's floor are generous, so the survey's cones and slides can be made out at depth"},
+ "flight": true,
+ "noBuildingsInWater": true,
+ "surfaces": {
+  "_": "the engine's real surfaces: Krator's material library (data/textures/README.md): shingle on the steep roofs, stone (granite) on the stone-coloured walls, stained board on the rest",
+  "dir": "data/textures/",
+  "sets": {
+   "brick": {
+    "map": "brick.webp",
+    "mean": [
+     0.6084,
+     0.6084,
+     0.6083
+    ],
+    "metres": 1.1,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "concrete": {
+    "map": "concrete.webp",
+    "mean": [
+     0.4171,
+     0.3877,
+     0.3446
+    ],
+    "metres": 4.0,
+    "keep": 0.2,
+    "strength": 0.7
+   },
+   "sidewalk": {
+    "map": "sidewalk.webp",
+    "mean": [
+     0.6411,
+     0.6411,
+     0.6362
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.8
+   },
+   "asphalt": {
+    "map": "asphalt.webp",
+    "mean": [
+     0.3694,
+     0.3503,
+     0.3276
+    ],
+    "metres": 5.0,
+    "keep": 0.2,
+    "strength": 0.45
+   },
+   "grass": {
+    "map": "grass.webp",
+    "mean": [
+     0.5926,
+     0.5151,
+     0.349
+    ],
+    "metres": 3.0,
+    "keep": 0.6,
+    "strength": 1.0
+   },
+   "dirt": {
+    "map": "dirt.webp",
+    "mean": [
+     0.3879,
+     0.3216,
+     0.243
+    ],
+    "metres": 4.0,
+    "keep": 0.4,
+    "strength": 0.9
+   },
+   "gravel": {
+    "map": "gravel.webp",
+    "mean": [
+     0.507,
+     0.4788,
+     0.4252
+    ],
+    "metres": 1.6,
+    "keep": 0.3,
+    "strength": 0.8
+   },
+   "stucco": {
+    "map": "stucco.webp",
+    "mean": [
+     0.6824,
+     0.6784,
+     0.6667
+    ],
+    "metres": 2.6,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "plaster": {
+    "map": "plaster.webp",
+    "mean": [
+     0.6627,
+     0.6627,
+     0.6627
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.9
+   },
+   "shingle": {
+    "map": "shingle.webp",
+    "mean": [
+     0.6529,
+     0.649,
+     0.6409
+    ],
+    "metres": 1.4,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "granite": {
+    "map": "granite.webp",
+    "mean": [
+     0.6319,
+     0.6319,
+     0.63
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.75
+   }
+  },
+  "fade": [
+   150,
+   800
+  ],
+  "ground": {
+   "green": "grass",
+   "tan": "dirt",
+   "grey": "concrete"
+  },
+  "streets": "asphalt",
+  "sidewalks": "sidewalk",
+  "walls": {
+   "red": "granite",
+   "other": "plaster"
+  },
+  "towers": "concrete",
+  "styles": {
+   "0": "stucco"
+  },
+  "roofs": {
+   "flat": "concrete",
+   "pitched": "shingle"
+  }
+ },
+ "treeSpecies": [
+  {
+   "name": "Mountain hemlock",
+   "shape": "fir",
+   "bark": "#4a3a30",
+   "height": [
+    15,
+    30
+   ],
+   "colours": [
+    "#24402c",
+    "#2a4830"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 10,
+    "wood": 40,
+    "yard": 2
+   }
+  },
+  {
+   "name": "Shasta red fir",
+   "shape": "fir",
+   "bark": "#6a3e30",
+   "height": [
+    20,
+    40
+   ],
+   "colours": [
+    "#2a4636",
+    "#2e4c3a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 8,
+    "wood": 30,
+    "yard": 2
+   }
+  },
+  {
+   "name": "Lodgepole pine",
+   "shape": "column",
+   "bark": "#7a6a52",
+   "height": [
+    12,
+    24
+   ],
+   "colours": [
+    "#3e5a34",
+    "#46603a"
+   ],
+   "weight": {
+    "street": 2,
+    "park": 6,
+    "wood": 20,
+    "yard": 2
+   }
+  },
+  {
+   "name": "Whitebark pine",
+   "shape": "round",
+   "bark": "#9a948a",
+   "height": [
+    5,
+    12
+   ],
+   "colours": [
+    "#3e5634",
+    "#46603a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 4,
+    "wood": 4,
+    "yard": 0
+   }
+  }
+ ],
+ "life": {
+  "tile": 600,
+  "seed": 7700,
+  "near": 600,
+  "density": 0.0004,
+  "perArea": 500,
+  "max": 6000
+ },
+ "vehicles": {
+  "seed": 7700,
+  "side": "right",
+  "cars": 3,
+  "mopeds": 0,
+  "buses": 0.2,
+  "trams": 0,
+  "trains": 0,
+  "far": 1000,
+  "carFar": 700,
+  "mopedFar": 450,
+  "maxCars": 1500,
+  "maxMopeds": 600,
+  "maxBuses": 140,
+  "busColours": [
+   "#2a5a3a",
+   "#c8a85a"
+  ],
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#9a2a2a",
+   "#2a4a7a",
+   "#d8d0c0",
+   "#4a5a3a"
+  ],
+  "_": "src/core/traffic.js: cars and RVs on the Rim Drive and the roads up from Annie Spring, a trolley tour"
+ },
+ "crowds": {
+  "seed": 7700,
+  "centre": [
+   42.91,
+   -122.1425,
+   700,
+   9
+  ],
+  "pedestrianMul": 1.0,
+  "maxPedestrians": 2000,
+  "keepOut": [],
+  "pedestrians": 6,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    42.9098,
+    -122.142,
+    40,
+    160
+   ],
+   [
+    42.9113,
+    -122.1432,
+    20,
+    60
+   ],
+   [
+    42.9349,
+    -122.1631,
+    20,
+    40
+   ],
+   [
+    42.9767,
+    -122.0832,
+    25,
+    60
+   ],
+   [
+    42.9087,
+    -122.087,
+    20,
+    40
+   ],
+   [
+    42.867,
+    -122.1675,
+    30,
+    80
+   ]
+  ],
+  "_": "[lat, lon, radius, people]: the lodge terrace and the Rim Village walk, Sinnott, Discovery Point, the Cleetwood trailhead, Sun Notch, Mazama Village"
+ },
+ "focus": [
+  {
+   "name": "Rim Village",
+   "at": [
+    42.9105,
+    -122.142
+   ],
+   "radius": 400
+  }
+ ],
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box]",
+  "outer": [
+   "Crater Lake National Park",
+   "#3a5a3a",
+   5,
+   10,
+   [
+    42.855,
+    -122.215,
+    43.01,
+    -121.995
+   ]
+  ],
+  "rim": [
+   "Rim Village",
+   "#6a4a30",
+   5,
+   14,
+   [
+    42.905,
+    -122.15,
+    42.915,
+    -122.135
+   ]
+  ],
+  "hq": [
+   "Munson Valley (park headquarters)",
+   "#6a4a30",
+   5,
+   10,
+   [
+    42.888,
+    -122.142,
+    42.902,
+    -122.13
+   ]
+  ],
+  "mazama": [
+   "Mazama Village",
+   "#6a4a30",
+   4,
+   9,
+   [
+    42.862,
+    -122.172,
+    42.872,
+    -122.16
+   ]
+  ]
+ },
+ "ground": {
+  "centre": [
+   42.942,
+   -122.106
+  ],
+  "inner": 5400,
+  "rimH": 520,
+  "snowH": 560,
+  "tile": 400,
+  "near": 1100,
+  "spacing": 11,
+  "strength": 0.92,
+  "tints": [
+   [
+    42.9395,
+    -122.1462,
+    380,
+    "#46302c",
+    0.9
+   ],
+   [
+    42.9554,
+    -122.0611,
+    250,
+    "#b4703e",
+    0.7
+   ],
+   [
+    42.9711,
+    -122.1333,
+    500,
+    "#8a7060",
+    0.3
+   ]
+  ],
+  "_": "src/crater/ground.js: the caldera's walls, talus, pumice, meadow, forest, the rim's whitebark pine, the summer's snow and the winter; tints: Wizard Island's cinders, Pumice Castle, Llao Rock; clearings [lat, lon, radius]: Rim Village, the headquarters, Mazama Village, the Cleetwood trailhead, the Watchman's summit",
+  "clearings": [
+   [
+    42.91,
+    -122.142,
+    170
+   ],
+   [
+    42.896,
+    -122.136,
+    200
+   ],
+   [
+    42.867,
+    -122.167,
+    180
+   ],
+   [
+    42.9765,
+    -122.083,
+    40
+   ],
+   [
+    42.94295,
+    -122.17246,
+    30
+   ]
+  ]
+ },
+ "lake": {
+  "name": "Crater Lake",
+  "seed": 7700,
+  "docks": {
+   "Cleetwood Cove": [
+    42.97658,
+    -122.08828
+   ],
+   "Wizard Island": [
+    42.9341,
+    -122.1494
+   ],
+   "Phantom Ship": [
+    42.9142,
+    -122.09
+   ]
+  },
+  "routes": [
+   [
+    "Cleetwood Cove",
+    "Wizard Island",
+    2
+   ],
+   [
+    "Cleetwood Cove",
+    "Phantom Ship",
+    1
+   ]
+  ],
+  "speed": 7,
+  "dwell": 60,
+  "launches": 1,
+  "moored": 2,
+  "liveries": [
+   [
+    "#1e3a6a",
+    "#e8e4da"
+   ],
+   [
+    "#2a4a3a",
+    "#d8d4c8"
+   ]
+  ],
+  "cayucos": {
+   "count": 0
+  },
+  "shore": {
+   "water": 1.2,
+   "land": 5
+  },
+  "_": "src/atitlan/lake.js: the park's tour boats from Cleetwood Cove to Wizard Island and round by the Phantom Ship (found through the water), the research launch; no private boats are allowed on the lake"
+ },
+ "waves": {
+  "glint": {"shine": 260, "strength": 0.6},
+  "steep": 0.6,
+  "far": 2400,
+  "sky": 0.35,
+  "surf": 3,
+  "surfOpacity": 0.35,
+  "_": "src/atitlan/waves.js: the water's surface, the walls and the sky in it (a true mirror), the turquoise where the bed is shallow, and the small surf against the shore",
+  "reflect": {
+   "res": 0.4,
+   "every": 2,
+   "strength": 1.0,
+   "minR": 30
+  },
+  "shallow": {
+   "colour": "#2a9ab8",
+   "depth": 5,
+   "strength": 0.85,
+   "res": 512
+  }
+ },
+ "oldMan": {
+  "at": [
+   42.939,
+   -122.115
+  ],
+  "reach": 1500,
+  "speed": 3e-05,
+  "_": "src/crater/oldman.js"
+ },
+ "backdrop": {
+  "file": "data/cities/crater-far.json",
+  "taper": 6000,
+  "datum": 1883.0,
+  "colours": [
+   [
+    1200,
+    "#5a6a44"
+   ],
+   [
+    1500,
+    "#3a5636"
+   ],
+   [
+    1800,
+    "#2e4a30"
+   ],
+   [
+    2200,
+    "#3a5236"
+   ],
+   [
+    2500,
+    "#6a685e"
+   ],
+   [
+    2700,
+    "#8a8880"
+   ],
+   [
+    2800,
+    "#e8ecf0"
+   ]
+  ],
+  "_": "src/sarajevo/backdrop.js: the Cascades round the park, Mount Thielsen's spire 25 km north, Mount McLoughlin 70 km south-south-west, the Klamath basin; the bands are metres above sea level"
+ },
+ "farLevel": -1.5,
+ "landmarks": [
+  {
+   "name": "Crater Lake Lodge",
+   "model": "lodge",
+   "at": [
+    42.90968,
+    -122.14096
+   ],
+   "face": 50,
+   "len": 70,
+   "depth": 15,
+   "clear": [
+    42,
+    0
+   ],
+   "info": "Opened in 1915 on the rim, 300 m over the water: stone below, bark shingle above, a roof full of dormers. By the 1980s it was near collapse under the winters' snow; it was taken apart and rebuilt, keeping its look, and reopened in 1995. Its lake terrace is where people come to sit in the evening."
+  },
+  {
+   "name": "Sinnott Memorial Overlook",
+   "model": "sinnott",
+   "at": [
+    42.9114,
+    -122.14298
+   ],
+   "face": 350,
+   "clear": [
+    12,
+    0
+   ],
+   "info": "A stone overlook built into the caldera wall under Rim Village in 1931, with the best of the views 270 m over the water; inside, the story of how the lake was made."
+  },
+  {
+   "name": "The Watchman Lookout",
+   "model": "lookout",
+   "at": [
+    42.94295,
+    -122.17246
+   ],
+   "clear": [
+    8,
+    0
+   ],
+   "info": "A fire lookout of 1932 on the Watchman, 2,442 m, on the west rim over Wizard Island: a stone ground floor and the glazed cab on it. A trail of 1.3 km climbs to it from the Rim Drive."
+  },
+  {
+   "name": "Mount Scott Lookout",
+   "model": "lookout",
+   "tower": true,
+   "height": 7,
+   "at": [
+    42.92281,
+    -122.01628
+   ],
+   "clear": [
+    6,
+    0
+   ],
+   "info": "Mount Scott, 2,721 m, the highest point in the park: a parasitic cone on Mazama's east flank, older than the collapse. The lookout on its summit is still staffed in the fire season."
+  },
+  {
+   "name": "The Phantom Ship",
+   "model": "phantom",
+   "at": [
+    42.91092,
+    -122.09174
+   ],
+   "face": 0,
+   "len": 150,
+   "h": 50,
+   "clear": [
+    0,
+    0
+   ],
+   "info": "A spine of andesite some 400,000 years old, the oldest rock exposed in the caldera, standing out of the water off the south shore: 50 m high and 150 m long, its spires like a ship's masts, and from the rim at dusk or in mist it seems to come and go."
+  },
+  {
+   "name": "Wizard Island",
+   "at": [
+    42.9395,
+    -122.1462
+   ],
+   "info": "A cinder cone 230 m high that grew out of the caldera's floor after the collapse, with a crater 30 m deep at its top. The tour boats land here; a trail climbs to the summit."
+  },
+  {
+   "name": "Llao Rock",
+   "at": [
+    42.9711,
+    -122.1333
+   ],
+   "info": "A cliff 600 m over the water on the north rim: the cross-section of a lava flow that filled a valley on Mazama's flank shortly before the climactic eruption. It is named for Llao, the spirit of the world below in the Klamath account of the mountain's fall."
+  },
+  {
+   "name": "Cleetwood Cove",
+   "at": [
+    42.97658,
+    -122.08828
+   ],
+   "info": "The only place the public can reach the water: a trail of 1.8 km down 210 m of switchbacks to the dock. The boat tours leave from here; people swim, and jump from the rock beside the dock into water that is 13 °C in summer."
+  },
+  {
+   "name": "Mount Mazama",
+   "at": [
+    42.942,
+    -122.106
+   ],
+   "info": "The volcano that stood here, some 3,700 m high, until about 7,700 years ago: its eruption emptied the chamber beneath it and its summit fell in. The lake fills the hole."
+  },
+  {
+   "name": "Pumice Castle",
+   "at": [
+    42.9554,
+    -122.0611
+   ],
+   "info": "An outcrop of orange pumice in the east wall, eroded into towers and battlements."
+  },
+  {
+   "name": "Hillman Peak",
+   "at": [
+    42.9539,
+    -122.1708
+   ],
+   "info": "The highest point on the rim, 2,488 m, cut in half by the collapse: a cone's cross-section in the wall."
+  },
+  {
+   "name": "Devils Backbone",
+   "at": [
+    42.9638,
+    -122.1658
+   ],
+   "info": "A dike, a wall of lava that welled up through a crack in the old mountain and set, now standing out of the caldera wall from rim to water."
+  },
+  {
+   "name": "Discovery Point",
+   "at": [
+    42.9349,
+    -122.1631
+   ],
+   "info": "Where John Wesley Hillman, prospecting for gold, is said to have first seen the lake, in 1853."
+  },
+  {
+   "name": "Rim Village",
+   "at": [
+    42.9105,
+    -122.144
+   ],
+   "info": "The lodge, the café and the visitor centre on the south rim, where most people first see the lake."
+  },
+  {
+   "name": "Sun Notch",
+   "at": [
+    42.9087,
+    -122.087
+   ],
+   "info": "A U-shaped notch in the south rim, cut by a glacier on the old mountain, over the Phantom Ship."
+  }
+ ],
+ "navmap": {
+  "labels": [
+   "Crater Lake Lodge",
+   "Wizard Island",
+   "The Phantom Ship",
+   "The Watchman Lookout",
+   "Mount Scott Lookout",
+   "Llao Rock",
+   "Cleetwood Cove",
+   "Pumice Castle",
+   "Hillman Peak",
+   "Rim Village",
+   "Sun Notch"
+  ]
+ },
+ "craterEvents": {
+  "ride": [
+   "Cleetwood Cove",
+   "Wizard Island"
+  ],
+  "mazama": {
+   "at": [
+    42.942,
+    -122.106
+   ],
+   "top": 1800,
+   "base": 6500
+  },
+  "winterView": [
+   42.91,
+   -122.1405
+  ],
+  "sunsetView": [
+   42.94295,
+   -122.17246
+  ],
+  "sunsetAt": [
+   42.9395,
+   -122.1462
+  ],
+  "starsView": [
+   42.9108,
+   -122.1428
+  ],
+  "_": "src/crater/events.js"
+ },
+ "views": {
+  "The lake from Rim Village": [
+   [
+    42.9113,
+    -122.144,
+    300.0
+   ],
+   [
+    42.9395,
+    -122.1462,
+    226.0
+   ]
+  ],
+  "Over the caldera": [
+   [
+    42.895,
+    -122.15,
+    1508.8
+   ],
+   [
+    42.944,
+    -122.104,
+    0.1
+   ]
+  ],
+  "Wizard Island": [
+   [
+    42.93,
+    -122.133,
+    30.1
+   ],
+   [
+    42.9395,
+    -122.1462,
+    245.7
+   ]
+  ],
+  "The Phantom Ship": [
+   [
+    42.91,
+    -122.0875,
+    250.0
+   ],
+   [
+    42.91092,
+    -122.09174,
+    15.0
+   ]
+  ],
+  "From the Watchman": [
+   [
+    42.9437,
+    -122.172,
+    552.0
+   ],
+   [
+    42.942,
+    -122.11,
+    0.1
+   ]
+  ],
+  "Cleetwood Cove": [
+   [
+    42.9725,
+    -122.09,
+    12.1
+   ],
+   [
+    42.97658,
+    -122.08828,
+    5.0
+   ]
+  ],
+  "Crater Lake Lodge": [
+   [
+    42.9106,
+    -122.1398,
+    300.0
+   ],
+   [
+    42.90968,
+    -122.14096,
+    296.0
+   ]
+  ],
+  "Llao Rock": [
+   [
+    42.956,
+    -122.13,
+    20.1
+   ],
+   [
+    42.9711,
+    -122.1333,
+    549.9
+   ]
+  ],
+  "From Mount Scott": [
+   [
+    42.9228,
+    -122.017,
+    806.1
+   ],
+   [
+    42.942,
+    -122.106,
+    0.1
+   ]
+  ],
+  "Under the lake: Merriam Cone": [
+   [
+    42.9603,
+    -122.0973,
+    -112.0
+   ],
+   [
+    42.9608,
+    -122.0979,
+    -150.0
+   ]
+  ],
+  "Under the lake: Wizard Island": [
+   [
+    42.9392,
+    -122.1288,
+    -12.0
+   ],
+   [
+    42.9405,
+    -122.1305,
+    -30.0
+   ]
+  ]
+ },
+ "dropAreas": [
+  "wood",
+  "reserve",
+  "rock"
+ ],
+ "_dropAreas": "the forest and the park's boundary are mapped as great polygons; src/crater/ground.js paints the ground and plants the trees itself",
+ "weather": {"climate": "alpine", "cloudH": 1000, "_": "src/core/weather.js: the climate's weather, changing on its own or set from the Weather button (weather=<state> in the address holds one)"}
+}

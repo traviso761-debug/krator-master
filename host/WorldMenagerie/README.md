@@ -419,6 +419,225 @@ Forth: 35,000 buildings on their real ground.
 - A landmark's `height` raises the mapped building under it (Chicago's towers use this), so a model's own heights
   are called `towerH`.
 
+**Sarajevo** (`sarajevo.html`, `src/sarajevo/`, `data/cities/sarajevo.json`). Today's city in the valley of the
+Miljacka between Trebević and the hills of the mahalas: Baščaršija and its mosques at the east end, the
+Austro-Hungarian centre, Marijin Dvor's towers to the west; 19,000 buildings on their real ground. Its history is
+played as events.
+- **The data** came from Geofabrik's Bosnia and Herzegovina extract (`tools/pbf-to-overpass.py`): Overpass was at
+  capacity.
+- **The river** falls about twenty metres through the city over weirs, so it is not one sheet: `terrain.reaches` (a
+  setting of `tools/build-osm-city.py`) cuts the named water areas into reaches along the river, each level just under
+  the lowest ground along it and never below the one downstream, and cuts the ground under each; `bank: 0` keeps the
+  cut inside the mapped water, so the streets keep their level to the edge. `src/sarajevo/river.js` draws the
+  Austrian channel on the same polygons: dressed stone walls from the water up to the street, a pale coping, a strip of
+  quay and the iron railing, and a sheet of white water at every weir. `bridgeFromBanks` (an engine setting) keeps a
+  deck over the water at the level of the streets at its ends, not of the riverbed under it.
+- **Landmarks** (`src/sarajevo/landmarks.js`): the Sebilj; Gazi Husrev-beg's, the Emperor's and Ferhadija mosques
+  (portico of small domes, lead dome on its drum, pencil minaret, şadırvan); the Sahat-kula; the City Hall in Wittek's
+  striped pseudo-Moorish, from its mapped outline; the Latin Bridge's four arches with the eyes in its piers; the
+  Cathedral of the Sacred Heart (its tower clocks, lancets, the rose's tracery and John Paul II in the square); the
+  Yellow Bastion and its cannon; the UNIS towers, Momo and Uzeir (dark glass and metal bands, the fins on the cut
+  corners, the plant floors); the Avaz Twist Tower (a textured curtain wall turning 75 degrees, lit floor by floor at
+  night, the silver bands, the 35th floor's glass deck, the paper's name under the open crown, the mast, and the
+  paper's own glass house at its foot; a map on a landmark material is kept through the merge, `landkit` `setMat`);
+  the Holiday Inn in mustard
+  and brown; the Eternal Flame; the Trebević cable car with its gondolas running; the 1984 bobsleigh track with its
+  banking and graffiti (kept clear of the woodland by `treeKeepOut`); the Koševo stadium and its cauldron. More
+  places are cards only (Schiller's corner, Markale, the Inat House, Morića Han, the churches and the synagogue).
+- **Minarets** (`src/sarajevo/mosques.js`): every other mapped mosque gets its minaret: a stone one and a lead dome
+  when it is big enough, the whitewashed wooden minaret with its dark cone when it is a mahala's mesdžid. Their
+  balconies light at night.
+- **The mountains** (`src/sarajevo/backdrop.js`): past the map's edge, Igman, Bjelašnica, Trebević's summit, Jahorina
+  and the northern hills, from the real ground 80 km across at 400 m (`data/cities/sarajevo-far.json`, sampled from the
+  terrarium tiles at zoom 10): one mesh, coloured by height, sunk under the city inside the map.
+- **The graveyards** (`src/sarajevo/mezarje.js`): the 53 mapped cemeteries filled with their stones, nišani with
+  turbans and pointed tops in the mezarje, crosses and slabs where the name says so (Bare, the Jewish cemetery, the
+  churches'), leaning every way, in rows across the qibla. Each is built the first time the camera comes within
+  650 m, and shown only while it is that close.
+- **On the pavement** (`src/sarajevo/streets.js`): Sarajevo roses, the red resin in the shell scars, on the centre's
+  streets; the Meeting of Cultures line across Ferhadija.
+- **Trees and facades**: Trebević's beech, spruce and black pine, lindens and planes on the streets, plum trees in the
+  yards (`treeSpecies`); glass on the towers, balconies on the socialist blocks of Marijin Dvor and Koševo, ribbon
+  windows on the offices (`facadeStyles`). Walls take the library's stucco and plaster, roofs its clay tile, and the
+  pedestrian lanes cobbles (`surfaces`, `paving.map`).
+- **The concrete and the bars** (`src/sarajevo/blocks.js`, `C.blocks`): the socialist blocks of Grbavica, Marijin
+  Dvor, Koševo and Skenderija (Yugoslav modernism, not Soviet: the grammar is shared, the architects were not) get a
+  loggia slab and a painted parapet at every floor on their long faces, the stair core proud of one end, the machine
+  room and aerials on the roof; and iron grilles on the ground-floor windows of houses and blocks outside the centre's
+  shop streets, more to the yard than to the street. Built in 400 m tiles as the camera nears.
+- **Street dogs** (`src/sarajevo/dogs.js`, `C.dogs`): 170, tan, black, brown and white, asleep on the pavements and in
+  the parks or trotting their stretch of lane in twos and threes; only the ones near the camera move.
+- **Events** (`src/sarajevo/events.js`), with captions: 28 June 1914 (the motorcade on the Appel Quay, the bomb at the
+  Ćumurija bridge, the wrong turn at the Latin Bridge and Princip outside Schiller's), the 1984 Olympics opening at
+  Koševo (twelve thousand in the stands doing the wave, the teams' parade behind their boards and flags, the
+  Olympic flag raised, the torch run round the track and up the stair to the cauldron, doves and fireworks), a bob
+  down the track, the night of 25 August 1992 when the National Library burned (the city blacked out,
+  ash falling, every window, lamp and the Eternal Flame out; told without anyone shown hurt), a Ramadan iftar cannon at sunset, the pigeons of Baščaršija, and a
+  ride up Trebević.
+
+**Lake Atitlán** (`atitlan.html`, `src/atitlan/`, `data/cities/atitlan.json`). The whole lake in the Guatemalan
+highlands, about 18 by 12 km of water, from OpenStreetMap (the Geofabrik extract; 26,278 buildings) on its real ground
+at 30 m. The datum is the lake (1556 m: `terrain.datum`, since the land falls away south to the Pacific), and the
+builder's new `terrain.lakeBed` cuts the ground inside the named water down from the shore at a slope, so the lake has
+a bed and a shore.
+- **Towns**: Panajachel, Sololá, Santiago Atitlán, San Pedro, San Juan, San Pablo, San Marcos, Tzununá, Jaibalito, Santa
+  Cruz, the Palopós, San Lucas, San Andrés, San Jorge and Santa Clara, each a district, an infill zone and a casas zone
+  (Antigua's `infill.js`, `casas.js` and `fincas.js`, imported). Painted block in turquoise, pink, lime and yellow, half
+  under lámina (`lamina.webp`), half flat and waiting for a floor: `obragris.js` puts rebar, tinacos and washing lines
+  on the flat roofs. Window bars from Sarajevo's `blocks.js` (grilles only); the street dogs from its `dogs.js`.
+- **Santa Catarina Palopó** (`painted.js`): its houses painted in four huipil patterns drawn on canvases.
+- **Landmarks**: ten colonial churches on Antigua's `iglesia`, each turned to its mapped face (San Andrés's a ruin),
+  Sololá's Torre Centroamericana (`landmarks.js`), and cards for the volcanoes, the Cerro de Oro, the Rostro Maya,
+  Maximón and Calle Santander. The docks are the map's own piers.
+- **The land** (`cover.js`): the map leaves the caldera walls bare, so the ground is repainted from height, slope and
+  noise as pine-oak forest, milpa plots, coffee, cliff, scrub and Atitlán's bare cone, and pines and broadleaves are
+  planted a tile at a time near the camera. Past the map, `atitlan-far.json` (100 km at 500 m) through Sarajevo's
+  `backdrop.js`.
+- **The lake** (`lake.js`): lanchas in five liveries on eleven routes found through the water between the docks, with
+  wakes and a dwell at each dock; cayucos; tul reeds in the shallows; the drowned trees and roofs of the shore the
+  lake has risen over since 2009 (the trees stand on the bed, however deep it is there); the Xocomil's whitecaps.
+- **Under the water** (`underwater.js`, `underwater` in the config): below the surface the fog is the lake's own, green
+  and about 30 m to where it is whole (the lake has been murkier since the 2009 blooms), dimmer with depth, the surface
+  seen from below; the view "Under the drowned shore" is among Panajachel's dead trees. **Drain the lake** (a button;
+  `#drain` in the address) takes the water and what floats on it away and draws the bed by depth, with a contour every
+  10 m and a white one every 50. The bed is the 2014 echo-sounder survey (Dryad, doi:10.5061/dryad.f7m0cfz0x; an
+  ArcInfo grid of 60.8 m cells in GTM, read without GDAL by `tools/grid-aig.py` into `data/bathy/atitlan-bed.json`,
+  60 m), 320 m at the deepest; the first metres off the shore, which it does not reach, keep the old cut (`scale`,
+  easing from a metre at the shore). Under the water `cover.js` paints sand, silt and rock, not fields.
+- **Samabaj** (`samabaj.js`, a landmark with a card; the view "Samabaj, under the lake"): the Late Preclassic island
+  town found by Roberto Samayoa in 1996. The island is two `knolls` in the bed (477 by 340 m, its top 13.5 to 21 m down,
+  a 39 m channel cutting off a small island to the north, 80 m of water toward the shore); on it, from the dive
+  surveys, Grupo 3's long platform of two levels, Grupo Estela's terrace with the basalt column, its altar and the
+  stelae, the arc of Estela Sisa, Grupo Roca built round its rock, Grupo 2's eight houses and the smaller groups, and
+  three jetties at the old shore 28 m down. The published coordinates fall in mid-lake; it stands on the island the
+  survey shows off the Cerro de Oro's north shore (its top about 20 m down in the 60 m cells), which the knolls
+  sharpen (one place in `atitlan.json`).
+- **The water** (`waves.js`): the engine's water given travelling waves in world space, steeper in the Xocomil and
+  each fading as it nears a pixel's footprint (no lattice far out): nine of them, each 0.66 the length of the last, on
+  bearings a golden angle apart, so no two line up. The volcanoes and towns stand in it (`waves.reflect`, a true
+  mirror), green over the shallows (`waves.shallow`), the sun a tight glitter (`waves.glint`), the lake a deep
+  blue-teal; and surf running in along the shore. Boats' wakes open behind them at the Kelvin angle. On it (`lake.js`) the launches, lanchas tied up at every dock, and kayaks.
+- **The walls** (`walls.js`): the darker zócalo band along the foot of the walls, and upper floors left in bare grey
+  block. The map's heights now come from the config (`defaultHeights`): a house is 5.5 m, not the builder's 9.
+- **La Iguana Perdida** (`landmarks.js`, `iguana`): the hostel by Santa Cruz's dock, not in the map: stone terraces
+  to a jetty and dive platform, the thatched dining palapa, the old house with hammocks, the A-frame dorm, the newer
+  rooms, the sauna, ATI Divers' hut and its board. It turns itself to the water and takes the slope's levels.
+- **Events** (`events.js`): mist at dawn, a ride on a lancha from Panajachel to Santiago, the Xocomil coming up, a
+  procession over alfombras in Santiago, cohetes over the patron saints' churches, and sunset behind San Pedro.
+
+**Crater Lake** (`crater.html`, `src/crater/`, `data/cities/crater.json`). Crater Lake National Park, Oregon, from
+OpenStreetMap on its real ground at 30 m: the caldera Mount Mazama left about 7,700 years ago, the lake at 1883 m (the
+datum), its bed the USGS's 2000 multibeam survey (`data/bathy/crater-bed.json`: `tools/grid-xyz.py` averages the 2 m
+survey to 20 m, and `terrain.lakeBed`'s `grid` lays it under the water, 594 m at the deepest), Wizard Island and the Phantom Ship (the lake's inner rings), the rim
+from the Watchman to Mount Scott, and Rim Village, Munson Valley and Mazama Village. The mapped forest, the park's boundary
+and the mapped rock are left undrawn (`dropAreas`, a new engine option: a list of area kinds) because `ground.js` paints the
+ground itself.
+- **The ground** (`ground.js`): the caldera's inner walls as cliff in grey, tan and rust bands and talus, with hemlock
+  where they ease; the outer slopes as hemlock and red-fir forest with meadows and pumice flats; whitebark pine on the
+  rim; the summer's snow on the high north faces; tints for Wizard Island's cinders, Pumice Castle and Llao Rock;
+  clearings at the villages, and no trees on roads or buildings. `api.ctx.ground.winter(k)` turns the ground and the far
+  backdrop to snow.
+- **The lake**: Atitlán's `lake.js` (with config liveries) runs the tour boats from Cleetwood Cove to Wizard Island
+  and by the Phantom Ship, and the research launch; `oldman.js` the Old Man of the Lake (a bleached, splintered stump
+  with its wet band, leaning, drifting with a ring of calm water round it).
+- **The water**: Atitlán's `waves.js` with two new options. `waves.reflect` is a true mirror: a camera reflected in
+  the lake's plane renders the large meshes (ground, backdrop, buildings, sky; not the instanced trees) at 0.4 of the
+  screen every second frame, and the water takes it by the Fresnel term, rippled by the waves, so the caldera's walls
+  and Wizard Island stand in the lake. `waves.shallow` tints the water toward turquoise where a depth map of the bed
+  says it is a few metres deep. The lake itself is the deep cobalt (`lakeColour` `#0b2a78`). About 58-61 fps.
+- **Landmarks** (`landmarks.js`): Crater Lake Lodge (stone, bark shingle, a roof of dormers, the lake terrace), the
+  Sinnott Memorial set into the wall, the Watchman's and Mount Scott's fire lookouts, the Phantom Ship's spires; cards
+  for Wizard Island, Llao Rock, Cleetwood Cove, Pumice Castle, Hillman Peak, Devils Backbone, Discovery Point, Sun Notch
+  and Mazama. Past the map, `crater-far.json` (150 km at 600 m) through Sarajevo's `backdrop.js`.
+- **Under the water** (Atitlán's `underwater.js`, `underwater` in the config): take the camera below the surface (Q lowers
+  it to the bed) and the fog becomes the water's, deep blue and clear to 180 m, darker with depth; the surface is seen
+  from below and the sky goes. Views: Merriam Cone (152 m down) and Wizard Island's flank. **Drain the lake** (a
+  button; `#drain` in the address) takes the water, the boats and the Old Man away and draws the survey's bed by depth,
+  a contour every 20 m and a white one every 100, from a view across the basin: Wizard Island's platform, Merriam
+  Cone, the central platform, the slides off the walls. Sarajevo's `backdrop.js` now sinks under the map's deepest
+  ground, not a fixed 250 m, or it covered the floor.
+- **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
+  collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
+
+**Chernobyl** (`chernobyl.html`, `src/chernobyl/`, `data/cities/chernobyl.json`). The Chernobyl Exclusion Zone in
+northern Ukraine from OpenStreetMap on its real ground at 20 m, 18 by 19 km: the power plant, Pripyat, the cooling pond,
+the Red Forest, Duga and Chernobyl-2, and the town of Chernobyl. The datum is the Pripyat river (103 m). Polesia is flat,
+so `terrain.filter.open` is 320 m: the elevation tiles carry the plant's halls, the arch and Duga's arrays as hills, and
+the wide opening takes them out. No traffic, no people, no parked cars (`focus` `parked: false`), no street furniture,
+no trains (`commuterLines: 0`, which the engine now reads as none rather than the default 8).
+- **The map builder** (`tools/build-osm-city.py`): an outline whose `building:part`s cover less than half of it keeps
+  its outline as well as its parts. Pripyat's nine-storey blocks map only the lift tower over the roof as a part, and
+  the blocks had been reduced to their towers. Other cities' data is unchanged until it is rebuilt.
+- **The Zone** (`zone.js`): the ground repainted as Scots pine forest, old kolkhoz fields gone to grass and birch, sedge
+  marsh by the water and the odd sand; gravel on the plant's yards (`bare`); tints for the Red Forest and the drained
+  cooling pond's bed. Near the camera it plants pine on the forest ground the map has not drawn as wood, birch and
+  aspen on the old fields, and in the towns (`towns`: Pripyat, Chernobyl-2, Chernobyl, Kopachi) birch, poplar, maple and
+  young pine in every yard and through the small streets, but not on the main roads or in the buildings.
+- **Blocks and dogs**: Sarajevo's `blocks.js` (loggias, stair cores and roof boxes on Pripyat's panel blocks) and
+  `dogs.js` (the Zone's strays round the plant and in Pripyat).
+- **Landmarks** (`landmarks.js`): the New Safe Confinement (257 m across, 108 m high, 162 m long, its banded cladding,
+  end walls and rails; `clearArea` takes away the mapped arch and the ventilation stack, still mapped at 125 m though
+  it was taken down in 2013); the main building of units 1 to 3, which the map has as a few flat boxes, laid out from
+  its mapped footprints in RBMK proportions (`plant`): the turbine hall, some 770 m long and 31 m high, glazed in two
+  bands between pilasters, with a roof lantern; the 47 m deaerator bays behind it; the reactor blocks at 44 m with their
+  windowless, panel-ribbed reactor halls to 71 m and stair towers; block B between units 1 and 2; the plinth on unit 3
+  where the stack stood; the transformers in walled bays along the south wall; and the chimney north of block B, at its
+  mapped 50 m. Then the two unfinished cooling towers of units 5 and 6 (hyperboloid shells stopped part-way,
+  on their raking legs, with scaffold), the Ferris wheel with its yellow gondolas, Duga's two arrays (masts, dipole wall
+  and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
+  angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
+  Hospital 126, the Bridge of Death, the Red Forest, Kopachi's kindergarten, the cooling pond and Chernobyl town.
+- **Unit 4 as it was** (`unit4.js`; the **Unit 4** button cycles it, `#unit4=before|explosion|shelter|cutaway`):
+  unit 4 whole on the night before, beside unit 3, with block V and the ventilation stack VT-2 (150 m, its lattice
+  banded red and white; taken down in 2013); the morning after (the reactor hall roofless and broken, the north side
+  fallen into a slope of rubble, the upper shield on edge in the shaft, graphite over the roofs and the ground, the
+  core's glow and the roof fires); the Shelter, 1986 to 2016 (the stepped cascade wall on the north, the buttressed
+  west wall, the two great beams and the roof of 27 pipes on them, the panels sloping south, built as parts an event
+  raises in turn); and cut away to show the RBMK-1000 inside a ghost of the building, labelled: the graphite stack,
+  the control rods with their graphite displacers, the lower shield and "Elena", the steam-water lines, the four drum
+  separators, the eight main circulation pumps, the reactor hall floor and the refuelling machine. The water and
+  steam in the channels, the rods and Elena move (`api.ctx.unit4.reactor`). The arch's `clearArea` takes the map's
+  buildings under it (from 10 m), which showed through the 1986 unit.
+- **The cooling towers** are hyperbolic shells, thinning as they rise, on a ring beam and a zigzag of diagonal
+  columns over their basins, the lifts in bands of grey, stained under the rim, rusted rebar out of the unfinished
+  edge; on unit 5's tower the climbing formwork, its decks, the panels of the next lift and a jib crane.
+- **1986** (a button; `#year=1986`): the page reloads as Pripyat was on the morning of 26 April, through the
+  engine's new `ctx.configure` hook (a page adjusts its config before anything is built): its people, traffic and
+  parked cars back, no overgrowth, the map's woods inside the town dropped (the engine's new `dropAreasIn`: kinds of
+  mapped area left out inside circles), the Red Forest green and the cooling pond full, unit 4 whole.
+- **Radiation** (`radiation.js`, a button; `#radiation`): the ground painted by dose rate today (green under 0.3
+  µSv/h to purple over 30, a dark line at each step), the 10 km zone's ring, the Leliv and Pripyat checkpoints,
+  and a dosimeter reading the ground at the middle of the screen. The dose is a background and Gaussian sources
+  (`radiation.sources`: the plant site, the Red Forest, the plume's western and northern traces, Pripyat, the basement
+  of hospital MSCh-126, Kopachi, the drained cooling pond): an approximation from published maps, not a survey.
+- **Sound** (`sound.js`, a button; `#sound` turns it on at the first click), all synthesised: the wind, louder
+  higher up; a Geiger counter clicking at random at a rate set by the dose where you are looking; the blasts (heard
+  late by their distance), the rumble before them and the helicopters' rotors.
+- **Smaller things** (`details.js`): the plant's inlet and outlet channels stand some 8 m over the river, as the
+  cooling pond does, and the engine had drawn their water under their ground, so each gets its own surface; the giant
+  catfish turning under it by the plant; Kopachi's houses as the grassed mounds they were buried under in 1986, each
+  with its trefoil sign, round the kindergarten that was left standing.
+- **Events** (`events.js`, `crews.js`), told without anyone shown hurt:
+  - the night of 26 April 1986: unit 4 whole; the surge shaking the ground, then two blasts, each a flash over the
+    screen and the plant, a shock ring and dust along the ground, a fireball rising into smoke, burning graphite and
+    roof slabs thrown out to land on the roofs and the ground and smoulder there, the reactor's lid thrown up and
+    turning before it drops back; then the firefighters: Pravik's crew from the plant's station and Kibenok's from
+    Pripyat's (`fireStation`, `pripyatFire`), driving by the mapped roads (`crews.js` routes them), a ladder raised to
+    the turbine hall's roof and the outside stairs up block V, the men with their hoses on the roofs and the water on
+    the fires until they go out; the core's blue glow and the smoke drifting north-west;
+  - the evacuation on 27 April (a column of buses down Lenin Avenue, `route`);
+  - the liquidators: Mi-8s circling over the core and dropping their loads into it, the men in lead aprons throwing
+    graphite off block V's roof, the Red Forest rust-red (`zone.redForest`, `api.ctx.zone.red`);
+  - the Shelter going up, June to November 1986: the walls rising, the beams and the roof lowered by a crane;
+  - the arch sliding 327 m over the reactor in November 2016; the Zone without people (Przewalski's horses, wolves);
+    Duga, the Russian Woodpecker;
+  - inside the RBMK: the cutaway, how the reactor works and how it failed, then the accident played in it (the
+    coast-down, AZ-5, the rods going in, the steam spreading, the power running away, Elena lifted) with a chart of
+    its power.
+
+  `#event=<name>` fires one; each running event's clock is in the details (`events.t`); `evt=<seconds>` fast-forwards
+  the night, the liquidators, the Shelter and the RBMK for tools/probe.py, whose frames are slow.
+
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
 the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts
@@ -452,6 +671,19 @@ the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their m
   back to what it was when the effect ends; the sky dome greys with it, the sun dims, and the colour follows the hour.
   The storms of Fort Worth (rain, about 4 km visibility), Olympic and Yachats, Yachats' marine layer and Edinburgh's haar
   (750 m) are on it. Before, each multiplied the fog's density every frame and never restored it: a whiteout that stayed.
+- **Dynamic weather** (2026-10-28, `src/core/weather.js`, every real place: Antigua, Atitlán, Chicago, Crater Lake,
+  Edinburgh, Fort Worth, Kowloon, New York, Olympic, Portland, Rome, Sarajevo, Tokyo, Venice, Yachats, Yellowstone).
+  A city with a `weather` block gets it; the engine runs it after the page's extras (`06f-extras.js`). Ten states
+  (clear, fair, haze, overcast, drizzle, rain, thunderstorm, fog, mist, snow) are sets of numbers eased between; the
+  `climate` (maritime, continental, subtropical, monsoon, mediterranean, lagoon, basin, highland, alpine; `weights`
+  overrides) says which come and how often, `cloudH` sets the cloud base on the map's heights, `labels` gives local
+  names (Edinburgh's haar, Venice's nebbia, Sarajevo's inversion). The air goes through `api.fogEffect()`; the cloud is
+  one instanced deck of billboards wrapped round the camera (in the water's mirror too); rain and snow fall in a box
+  round the camera, none above the cloud; a thunderstorm puts bolts down a few km off and flickers the light; the wind
+  (`api.ctx.weather.wind`) drives `waves.js` and `lake.js`, and the rain rings the near water. A page opens clear and
+  first changes after 90 s, then every 4 to 10 minutes; the **Weather** button sets a state and holds it, or lets it
+  change on its own; `weather=<state>` in the address holds one. Nothing is in the fingerprint. Snow lies where the
+  ground knows how (Crater Lake's `ground.winter`). Chicago and Portland run at about 20 fps with or without it.
 - **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
   the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
   Will Rogers Center, the Near Southside, TCU, and the whole city.
