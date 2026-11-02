@@ -41,4 +41,28 @@ ok('the crest pass lifts the ridgeline ('+lifted+' points) and lowers nothing',l
 ok('the colour reads the height before the options (c.h)',(()=>{let got=null;F.grid({cell:500,n:4,h:flat,dense:true,curve:{},color:(x,z,yy,c)=>{if(x===2000&&z===0)got=[yy,c.h];return [0,0,0];}});return got&&got[1]===100&&got[0]<100;})(),false);
 ok('the lattice\'s height reader is bilinear and off the lattice NaN',Number.isNaN(base.at(1e6,0))&&Math.abs(base.at(123,456)-100)<1e-9,false);
 
+// ---- far sprites (2026-11-02)
+{const throws=f=>{try{f();return false;}catch(e){return true;}};
+ const src=[{x:9000,z:0,y:100,r:400,n:40,size:[300,500],rise:[50,200],alpha:.5},{x:-9000,z:500,y:0,n:10,lag:.4,tint:[1,.8,.6]}],mk=o=>F.sprites(Object.assign({world:5,sources:src},o)),S=mk();
+ ok('one sprite to a slot of each source',S.count===50&&S.pos.length===150&&S.size.length===50,false);
+ ok('a source\'s sprites stand in its scatter, on its rise',(()=>{for(let i=0;i<40;i++){if(Math.hypot(S.pos[3*i]-9000,S.pos[3*i+2])>400.01||S.pos[3*i+1]<150||S.pos[3*i+1]>300||S.size[i]<300||S.size[i]>500)return false;}return true;})(),false);
+ ok('deterministic by world, and the same items whatever comes later in the list',(()=>{const b=F.sprites({world:5,sources:[src[0]]});for(let i=0;i<120;i++)if(b.pos[i]!==S.pos[i])return false;return true;})(),mk({world:6}).pos[0]===S.pos[0]);
+ ok('a cloud set is not the steam set',mk({kind:'cloud'}).kind==='cloud'&&mk({kind:'cloud'}).pos[0]!==S.pos[0],false);
+ ok('o.shape stands a sprite on the relief as drawn',mk({shape:(x,z,y)=>y-1000}).pos[1]===Math.fround(S.pos[1]-1000),false);
+ const a=F.spriteAt(S,0,1),b=F.spriteAt(S,0,.5),z=F.spriteAt(S,0,0);
+ ok('the kit\'s value scales them: all at 1, less at .5',a.size===S.size[0]&&b.size<a.size&&b.alpha<a.alpha,false);
+ ok('at 0 only a lag of 0 sprite is at nothing... and every sprite is gone',z.size===0&&z.alpha===0,false);
+ ok('a lagging source stays shut until its lag',F.spriteAt(S,45,.3).size===0&&F.spriteAt(S,45,1).size>0,F.spriteAt(S,45,.3).size>0);
+ const R=mk({range:[3000,20000]});
+ ok('a range fades a sprite in past near and out before far',F.spriteAt(R,0,1,2000).alpha===0&&F.spriteAt(R,0,1,10000).alpha===R.alpha[0]&&F.spriteAt(R,0,1,21000).alpha===0,F.spriteAt(S,0,1,21000).alpha===0);
+ const J=JSON.parse(JSON.stringify(F.itemsExport([S]))),Bk=F.itemsLoad(J)[0];
+ ok('a set round the export is the same set',J.format==='krator-far-items'&&Bk.count===50&&Bk.pos[7]===S.pos[7]&&Bk.pos instanceof Float32Array,false);
+ ok('a set of another kind goes through as it is (the metropolis\'s masses later)',F.itemsLoad(F.itemsExport([{kind:'mass',count:0,lod:[1,2]}]))[0].lod[1]===2,false);
+ ok('no sources, a source with no place and another format are refused',throws(()=>F.sprites({sources:[]}))&&throws(()=>F.sprites({sources:[{x:0,z:0}]}))&&throws(()=>F.itemsLoad({format:'x'})),false);
+ ok('a grid has no sprites and the grid\'s own answers are as they were',F.grid({lines:F.lines({cell:10,inner:40}),h:()=>1}).count.verts>0,false);
+ const THREE=require(path.join(__dirname,'..','..','kits','ancients','three.min.js'));global.THREE=THREE;global.KHOOK=null;
+ eval(fs.readFileSync(path.join(__dirname,'host','44-core-farfield-draw.js'),'utf8'));
+ const u={value:.5},M=F.spriteMesh(S,{k:u,name:'far steam'});
+ ok('spriteMesh: one instanced draw on the kit\'s uniform, not culled, no snow',M.geometry.instanceCount===50&&M.material.uniforms.uK===u&&M.frustumCulled===false&&M.userData.farField&&M.userData.noSnow,M.material.uniforms.uK.value!==.5);
+ ok('a number for k works too; its fog comes from the scene',F.spriteMesh(S,{k:.2}).material.uniforms.uK.value===.2&&M.material.fog===true&&M.material.uniforms.fogColor!=null,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

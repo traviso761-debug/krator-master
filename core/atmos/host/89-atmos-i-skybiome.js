@@ -29,7 +29,8 @@
   // the lights the sky drives, found before ATMOS.sky adds its own giantshine light
   let hemi=o.hemi||null;const fills=o.fills||[];if(!hemi||!o.fills)scene.traverse(l=>{if(l.isHemisphereLight&&!hemi)hemi=l;else if(!o.fills&&l.isDirectionalLight&&l!==o.sun)fills.push(l);});
   const base=fills.map(l=>l.intensity);
-  const site=o.site||{px:446,py:690},P=A.skyPreset('standard',Object.assign({site},o.preset||{}));
+  const site=o.site||{px:446,py:690};A.skySite=site.latitude!=null?site:A.siteAt(site.px,site.py);
+  const P=A.skyPreset('standard',Object.assign({site},o.preset||{}));
   // o.cave: the page lights itself (a lava tube: the sun stays off underground); the sky only draws, seen through its openings
   // o.weatherLook: the weather (ATMOS.W) greys and clouds the sky itself; o.weatherOver: the page's own weather law (its
   // ATMOS.weather apply) runs again after the sky each frame, darkening the hour's light instead of a fixed table, once
