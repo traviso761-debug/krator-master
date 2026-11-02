@@ -115,7 +115,13 @@ const FIELD={
 function W_R(x,z){return riverW(x,z);}
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
-BIO.init({tags:'swlowlands',THREE:THREE,scene:scene,terrainH:terrainH,
+/* THE GROUND AS DRAWN (2026-10-27, core/terrain KSEAT; CORE-IMPROVEMENTS.md item 1): the biome core seats every plant and
+   walker on drawnH, the ground mesh's own triangles (below), not on terrainH, which rides up to metres over or under the
+   ~16.5 m cells between their vertices. placeH keeps every placement DECISION on terrainH (the mask, the fields, the
+   depth), so no plant moves in x or z: they only take the drawn height. Before the ground is built drawnH is terrainH */
+let GROUND_SEAT=null;
+function drawnH(x,z){const h=GROUND_SEAT?KSEAT.down(GROUND_SEAT,x,z):null;return h?h.y:terrainH(x,z);}
+BIO.init({tags:'swlowlands',THREE:THREE,scene:scene,terrainH:drawnH,placeH:terrainH,
  mask:(x,z)=>{if(roadD(x,z)<11.5)return 0;const h=terrainH(x,z);return h<.12?0:h<.6?(h-.12)/.48:1;},   // nothing on the road or its mown verges   // nothing rooted under water (the mangrove pass asks past the mask itself)
  obstacles:OBSTACLES,ticks:tick,seed:11,
  // the LOD spine: a row of origins down the NW -> SE axis, sea to hills
@@ -168,7 +174,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGA,uGB;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);'+(GLAY?'vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGA,vGWP.xz,'+GLAY.aK.toFixed(4)+')*1.2,clamp(vGL.x*0.65,0.0,0.65));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGB,vGWP.xz,'+GLAY.bK.toFixed(4)+')*1.2,clamp(vGL.y*0.7,0.0,0.7));':'')+'}');};
-/* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal, so meshH below still holds), but
+/* THE GROUND MESH (2026-10-26): the 400 cells of ~16.5 m (PlaneGeometry's layout and diagonal), but
    every cell that straddles the waterline (its corners both under .3 m and over -.3 m: ~3.7k cells, the bayou, the oxbows and
    the shore) is split 4 x 4 (~4.1 m) on terrainH. The coarse facets stood above the water as straight-edged brown islets
    ('The plain from above', KNOWN_ISSUES); the finer cells follow the real waterline. terrainH is unchanged: only the drawn
@@ -189,7 +195,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(idx);
  const p=g.attributes.position;
  {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);const tr=FC.at(FC.a.tr,x,z),dry=FC.at(FC.a.dry,x,z),sk=FC.at(FC.a.sk,x,z),si=FC.at(FC.a.si,x,z),beach=smooth(150,40,si),open=(1-tr)*(1-dry)*(1-sk)*(1-beach);gl[i*2]=sk;gl[i*2+1]=open;}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The lowland floor';scene.add(m);})();
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.seat='ground';m.userData.inspectLabel='The lowland floor';scene.add(m);
+ GROUND_SEAT=KSEAT.tris(pos,idx,{id:'ground',cls:'ground'});})();   /* the drawn ground: what drawnH and the probe's contact sweep read */
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the water is core/water's. The inland sea, the bayou and the river's lowland reach were one plane at y=0 in the page's own
@@ -205,11 +212,8 @@ const RIVER=WATER.flow({name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>1.
 // ---------------------------------------------------------------- the road
 // A ribbon a few cm over the ground in its own dirt texture: two wheel ruts, a grassy
 // crown, leaf litter, pale sand. (The ground canvas is ~4 m a pixel; a road needs its own.)
-// the height of the RENDERED ground (400 cells of ~16 m, split on the same diagonal as PlaneGeometry; the cells at the waterline are finer, and the road crosses none):
-// between its vertices it rides above or below terrainH, and a road laid on terrainH sinks into it
-function meshH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,X=k=>-S/2+k*c;
- const h00=terrainH(X(i),X(j)),h10=terrainH(X(i+1),X(j)),h01=terrainH(X(i),X(j+1)),h11=terrainH(X(i+1),X(j+1));
- return fu+fv<=1?h00+(h10-h00)*fu+(h01-h00)*fv:h11+(h01-h11)*(1-fu)+(h10-h11)*(1-fv);}
+// the road rides the RENDERED ground (drawnH: the ground mesh's own triangles, its split waterline cells included; it
+// replaces the old meshH, which repeated the coarse cells and no longer matched where the cells are split)
 (function(){const TEX=BIO.canvasTex(256,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,u=x/w,q=(u-.5)/.4+.5,rut=Math.max(smooth(.12,0,Math.abs(q-.28)),smooth(.12,0,Math.abs(q-.72))),crown=smooth(.1,0,Math.abs(q-.5)),verge=smooth(.19,.22,Math.abs(u-.5));
    const n=(fbm(x/14,y/14,2.1,3)-.5)*40+(BIO.fn.h3(x,y,5)-.5)*22;let r=206+n-rut*26,g2=190+n-rut*24,b=152+n-rut*20;   // the road in the middle 40%, mown grass verges either side
@@ -221,7 +225,7 @@ function meshH(x,z){const N=400,S=TERR.R*2.2,c=S/N,u=(x+S/2)/c,v=(z+S/2)/c,i=Mat
  const pos=[],uv=[],W=11;let v=0;
  for(let s=ROAD_S[0];s<ROAD_S[1];s+=4){const a=xzOf(s,ROAD_T(s)),b=xzOf(s+4,ROAD_T(s+4)),dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),nx=-dz/L*W,nz=dx/L*W;
   const P=[[a[0]-nx,a[1]-nz,0,v],[a[0]+nx,a[1]+nz,1,v],[b[0]+nx,b[1]+nz,1,v+L/44],[b[0]-nx,b[1]-nz,0,v+L/44]];   // one tile per 44 m along, ~22 m across: texels square
-  [0,2,1,0,3,2].forEach(k=>{const p=P[k];pos.push(p[0],Math.max(terrainH(p[0],p[1]),meshH(p[0],p[1]))+.08,p[1]);uv.push(p[2],p[3]);});v+=L/44;}
+  [0,2,1,0,3,2].forEach(k=>{const p=P[k];pos.push(p[0],Math.max(terrainH(p[0],p[1]),drawnH(p[0],p[1]))+.08,p[1]);uv.push(p[2],p[3]);});v+=L/44;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
  const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({map:TEX,color:0xaaa498,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
  m.userData.probeSkip=true;m.userData.inspectLabel='The oak avenue';scene.add(m);})();

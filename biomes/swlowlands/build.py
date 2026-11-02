@@ -52,7 +52,7 @@ OUT=sys.argv[1] if len(sys.argv)>1 else "swlowlands.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]
+CORE_TERRAIN=['38a-core-seat.js']   # KSEAT: the ground as drawn, for the plants' feet and the probe's seat sweeps (core/terrain/SEAT.md)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
@@ -82,7 +82,7 @@ for f in CORE_SPACE:
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.SHELL
+CORE_HOST=khost.SHELL+['95b-host-seat.js']   # the probe's seat sweeps (contact, clear, doors, stairs)
 khost.resolve(PATH,CORE_HOST)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
