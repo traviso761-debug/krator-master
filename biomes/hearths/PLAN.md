@@ -12,18 +12,27 @@ and the two change places at the edge of the warmth. The forest works at night, 
 day under silver; it opens at noon only when the sun goes behind the giant. In winter it stands black and steaming in
 the snow.
 
-Status: **a proposal for the owner.** Nothing is built, nothing on the model is changed and `LORE.md` is untouched. Every
-lore and map change this plan wants is marked *proposed*. It follows the owner's 2026-11-02 pattern for the Gills: **a
-shared kit of life read in place by host kits, shown as a station of each host**, not a biome polygon of its own. Working
-names throughout; the Tungangs' and the Monks' words are better.
+**Settled with the owner, 2026-11-02** (the answers to section 17 as first written): the **mechanism and the partner
+rule are canon** (a third partner kind, heat, and a body may carry two partners in two places); the **sites and host
+kits stand**, and **a third field goes to the Godstep flank vent** as a station of `biomes/godstep`; **Oidong's rim
+warmth** is the reason the valley's pools never freeze; the **Tungangs' surface** is as proposed (the night forest over
+their holds, the wax their staple, the walk in their sagas); **Dalab**: the hearth tree is one of the things its
+genepriests come over the rim for, not the one thing; the **kettle cup origin** stands (section 10); the **names** are
+the Tungangs' and the Monks' (still to be supplied); **the walk is under a metre a year**.
+
+Status: **a proposal for the owner** only in its wording of the lore sentences and the names. Nothing is built, nothing
+on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is marked *proposed* with its
+wording. It follows the owner's 2026-11-02 pattern for the Gills: **a shared kit of life read in place by host kits,
+shown as a station of each host**, not a biome polygon of its own. Working names throughout until the Tungangs' and the
+Monks' words come.
 
 ## 0. What the kit is
 
 | | |
 |---|---|
 | Folder | `biomes/hearths/` (`src/`, `materials.json`, `tex/`, `refs/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `tests/test-hearths.js`): the shared life, no page of its own, read in place by the host kits' `build.py` (the pooled-folder rule: each names the fragments it takes), as `biomes/geyser` and (proposed) `biomes/gills` are |
-| Pages | stations of the host kits: `biomes/riftrim/build.py --station hearths` -> `dist/riftrim-hearths.html` (the Hearth field on the north rim) and `--station hearths-hold` (the loj under it); `biomes/oidong/build.py --station hearths` -> `dist/oidong-hearths.html` (the Cold Hearths on the valley's north rim); section 11. Each station's `99-host-take.js` and `station.json` live in its host kit |
-| Regions on the model | none new: each station is inside its host's polygon (`rift rim N` / `w rift highland`, `Oidong Valley`) on its host's ground, at vents the model already holds (`DATA.vents`); section 5 |
+| Pages | stations of the host kits: `biomes/riftrim/build.py --station hearths` -> `dist/riftrim-hearths.html` (the Hearth field on the north rim) and `--station hearths-hold` (the loj under it); `biomes/oidong/build.py --station hearths` -> `dist/oidong-hearths.html` (the Cold Hearths on the valley's north rim); `biomes/godstep/build.py --station hearths` -> `dist/godstep-hearths.html` (the small field at the flank vent, the owner's third, 2026-11-02; it folds into the godstep plan's optional vent station); section 11. Each station's `99-host-take.js` and `station.json` live in its host kit |
+| Regions on the model | none new: each station is inside its host's polygon (`rift rim N` / `w rift highland`, `Oidong Valley`, `godstep valley`) on its host's ground, at vents the model already holds (`DATA.vents`); section 5 |
 | Object | `HEARTH` (`SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `heat`, `work`, `dress`, `layout`) on the `BIOME-API.md` contract, loaded into the host's `BIO.kit('hearths')`; `HEARTH.heat(x, z)` is the ground's temperature from the vent records (section 14), `HEARTH.work(t, W, atm)` the engine's state in `0..1` (open fans 1, closed spindles 0) from the clock, the weather and the eclipse, which every shader, hazard and animal reads (section 3) |
 | Core | through the hosts: `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky with its eclipse seasons, the weather, snow cover), `water` (springs, pools), `terrain` (`KFIELD`, `KCAVERN`, `KRELIEF`, `KSTRATA`, `KFROST`, `KGROUND`, `KFAR`, `KHORIZON`), `clock`; section 13 |
 | Read in place | `biomes/riftrim` (the glass rim's light-piping forest, the lakes, the caverns and the Tungangs' holds: the host), `biomes/oidong` (the high passes' cushions and snow lotus: the host), `biomes/geyser` (the hot pools' temperature ramp, the fumaroles), `biomes/ehighlands` (the glass tower by its one-plant API, on the Oidong rim), `kits/fauna` (the cinder crawler, the frost trunker, the cavern leaper), `kits/resources` (the node field) |
@@ -67,8 +76,10 @@ inside the warmth the heat-eaters are the forest; outside it, where the ground i
 the host kit's light-eaters (the glass rim's light-piping forest, the Oidong rim's cushions) take over. So every hearth
 reads from the air as a **disc**: black fans and steam at its centre, a ring where black fans and glass crowns interleave,
 the cold country beyond; and the disc is not where it was: the hot ground shifts over decades as the vent's plumbing
-does, and the hearth trees walk after it, so round every live disc lies a ring of **the dead**, white hollow stalks
-standing where the heat used to be, and the field's history is drawn on the ground in rings, as a slime mould's trail is.
+does, and the hearth trees walk after it, under a metre a year (the owner, 2026-11-02), so round every live disc lies a
+ring of **the dead**, white hollow stalks standing where the heat used to be, and the field's history is drawn on the
+ground in rings, as a slime mould's trail is: a metre a year is a kilometre a millennium, and the oldest rings predate the
+Ancients.
 
 So four things are one here: the vent (the ground's sun), the sky (the engine's cold end), the organism (the heat pipe
 between them) and the clock (night, day and the eclipse decide when it works). A traveller reads the ground's heat off
@@ -155,10 +166,11 @@ All numbers from scale model 5.1 at the two sites (section 5) and the model's ai
   country**: the fans at +10 degC melt what falls on them, the warm ground melts what falls on it, and the disc's edge is
   the snow line. From the rim's lakes the Hearths are black discs on the snow with steam over them.
 - **The walk.** A vent field's hot spots shift over decades (Yellowstone's thermal ground migrates tens of metres in a
-  human lifetime as the plumbing seals and reopens). The foot creeps toward the warmer side at **a few metres a year**
-  (a fleshy mass growing on one side and dying on the other, as a lichen's thallus advances); a stalk that finds its
-  ground cooling dies standing, white and hollow, and a new one is budded on the warm side. The rings of dead round a
-  live disc are decades to centuries of movement, legible as the Gills' laminae are.
+  human lifetime as the plumbing seals and reopens). The foot creeps toward the warmer side at **under a metre a year**
+  (the owner, 2026-11-02; a fleshy mass growing on one side and dying on the other, as a lichen's thallus advances); a
+  stalk that finds its ground cooling dies standing, white and hollow, and a new one is budded on the warm side. The
+  rings of dead round a live disc are centuries of movement, legible as the Gills' laminae are; a field that has moved
+  a kilometre has been moving since before the Ancients came.
 - **Where life stops.** On the fumarole mouths and the boiling pools nothing stands (the Throne's rule): the ember mat
   takes the ground over 60 degC, the hearth trees 25-60, the mixed ring 10-25 with the host's light forest, and under 10
   the heat-eaters fail. The hot pools carry the geyser kit's temperature-banded mats, which are Earth's chemistry and
@@ -245,16 +257,20 @@ Three vents on the rim and the western highland, 100-190 km apart, each on its o
   valley's rule is serenity, "nothing that stings or burns" (`biomes/oidong/NOTES.md`); the Hearths are on the rim above
   it, warm, silent and harmless but for the vents themselves (section 9), and the valley kit's station 2 is the same
   cold desert: the Hearths are a disc in it, not a change to it.
-- **The two vents are 5.1's** (`smodel/volcanoes.py`); no earlier plan names them. *Proposed*: they are the Oidong
-  Valley's own warmth, the reason a chilly enclosed valley at 1.6-2.2 km has mirror-still pools that never freeze.
+- **The two vents are 5.1's** (`smodel/volcanoes.py`); no earlier plan names them. **Canon (the owner, 2026-11-02)**:
+  they are the Oidong Valley's own warmth, the reason a chilly enclosed valley at 1.6-2.2 km has mirror-still pools that
+  never freeze (*proposed* sentence for `biomes/oidong/NOTES.md` and `LORE.md` 6.15: "the valley's pools are kept open
+  by the vents on its north rim").
 
 ### Both
 
 - **Air**: 0.93-1.04 atm: anyone breathes here. A field is walked in a day.
-- **Why these and not others**: the Godstep flank vent (px 893,1145, 2,700 m, Dsc, 110 mm, +12 degC) would carry a
-  small hearth field too, and the godstep plan's optional station 3 ("the red cinder crater with its spring and moss
-  lawn") is the place; it is offered in section 17, not planned, because the valley is the Talovolci's and the Godthrone's
-  foot and the owner may want the Hearths kept to the rift rim and Oidong.
+- **The third field: the Godstep flank vent** (the owner, 2026-11-02; px 893,1145, 2,700 m, 1.14 atm, 110 mm, Dsc,
+  +12 degC (25/-1), night low -12, the Talovolci's and Iziz's polygons): a small hearth field in the godstep plan's vent
+  station ("the red cinder crater with its spring and moss lawn", `biomes/godstep/PLAN.md` station 3): the warmest and
+  lowest of the three, so its discs are the smallest and its engine the weakest (a 12 degC mean against the rim's +2 and
+  Oidong's -3), its fans broad and few like the rim's, its season the winter nights only; the Talovolci's processions up
+  the god's stair pass it, and the plan leaves them a word for it (section 17).
 - **The scale model**: no height, rain, river, vent or polygon change is proposed. The hearths' warm ground is
   kit-scale (hundreds of metres) and comes from the vent records.
 
@@ -298,7 +314,7 @@ ground, the host's teal and glass beside them. Nothing glows; nothing is iridesc
 | `stalkdead` | **Dead stalk** | the rings round each disc | a hearth tree whose ground went cold: foot gone, stalk standing hollow and white, fans fallen; a `KSTACKS` `stalk` or `BIO.fung` tube with collision; the field's history. Snaps in the wind; a fallen one is a pipe the Tungangs cut |
 | `ember` | **Ember mat** | 60-95 degC: the fumaroles' aprons | a flat black fleshy mat on the hottest ground a hearth cannot stand, its surface a radiator without a stalk, warm to the hand; kin of the Throne's thermal mats; the first native thing on new hot ground |
 | `kettle` | **Kettle cup** | the hot pools' rims, 40-80 degC water | a cup 30-80 cm across rooted in a pool's rim with its bowl in the water: the pool's convection cycles the partner's cells for it (Muller's own setting, section 4): a hearth tree with the pool for a stalk; its lip above the water is a small black fan |
-| `stoker` | **Stoker** | the discs' edges, 10-25 degC | a creeping heat-seeker: a fleshy runner a few centimetres thick that advances a metre a year toward warmer ground, a line of small black fins along its back; the first heat-eater onto ground that is warming and the last off ground that is cooling, so the stokers point the way the heat is moving |
+| `stoker` | **Stoker** | the discs' edges, 10-25 degC | a creeping heat-seeker: a fleshy runner a few centimetres thick that advances a hand's breadth a year toward warmer ground, a line of small black fins along its back; the first heat-eater onto ground that is warming and the last off ground that is cooling, so the stokers point the way the heat is moving |
 | `shade` | **Shade cap** | the mixed ring, among the host's forest | a native light-eater of the gradient's edge: a pale cap on a short stalk whose cap tilts to shade a hearth tree's foot at noon and folds away at dusk; the two grow together (the hearth's warm ground is the cap's only frost-free bed) |
 | `coal` | **Coal moss** | 20-40 degC, the discs' floor | a black fleshy turf between the stalks, warm, snow-free, the hearth animals' bed; stores the day's heat and gives it up at night |
 | `tallow` | **Tallow bead** | on the hearth trees' stalks | the small-and-weird: beads of pale wax the stalk exudes where the brine's heat is surplus, melting and dripping on warm days, setting hard on cold nights: the **hearth wax** (section 9), gathered by the Tungangs and eaten by the fin-mice |
@@ -353,10 +369,11 @@ where the warmth is.
 - **Ore** (`kits/resources`): the vents' cracks carry sulphur (the field's `sulfur` family is already highest within 40 km
   of a vent, `kits/resources/GEOLOGY.md`) and sulphide: *proposed* owner nodes of family `copper` at the fumarole lines
   (the volcanic province's porphyry copper, here as vent sulphide), grade medium; no new family.
-- **Dalab's prize** (*proposed*, the lore's own logic): Dalab holds Ledge "to study the rim's flora and fauna ... for
-  useful genes" (`LORE.md` 6.1, 6.21), and the hearth tree is the gene a genepriest would cross the Outer Wall for: a body
-  that lives on warmth. What Dalab means to do with it is the owner's (a mod for the cold? a Giant that needs no food in
-  winter?); the plan only puts the plant in reach of the people who collect peoples.
+- **Dalab** (the owner, 2026-11-02): Dalab holds Ledge "to study the rim's flora and fauna ... for useful genes"
+  (`LORE.md` 6.1, 6.21), and the hearth tree is **one of the things its genepriests come over the rim for**, not the one
+  thing: a body that lives on warmth, beside the glass rim's light-piping tissue, the Tungangs' own cold and dark genes and
+  whatever else the rim grows. What Dalab means to do with it is the owner's; the plan only puts the plant in reach of
+  the people who collect peoples.
 - **Hazards** (`core/hazard`, every one a `core/tags` record with `tags.hazard` registered before it is drawn, steady or
   on `HEARTH.work`): the **fumaroles** and their aprons (`heat`, burn, steady, danger 1 at the mouth), the **hot pools**
   (`heat` + `drown`), the **gas** at the fissure's low points (`gas`, suffocate: CO2 and H2S pooling on still nights, the
@@ -366,22 +383,24 @@ where the warmth is.
 - **People**: no one lives on the discs. **The Tungangs** (`LORE.md` 6.1, `riftrim/PLAN.md` section 6: "born to the dark",
   "dazzled by daylight", "they come up at night") live under them in the hypogene holds the vents warm, and the Hearths
   are their surface: a forest that opens at night for a people who come up at night, where they gather wax by the fans'
-  faint warmth and cut dead stalks for pipes. *Proposed*: a loj names itself for its hearth, and the walk of the disc over
-  the centuries is in its sagas (the stewards moved the hold when the heat moved). **Dalab** at Ledge, 110-120 km west,
+  faint warmth and cut dead stalks for pipes. **Canon (the owner, 2026-11-02)**: a loj names itself for its hearth, and
+  the walk of the disc over the centuries is in its sagas (the stewards moved the hold when the heat moved). **Dalab** at Ledge, 110-120 km west,
   sends its genepriests to the western vents by its road. **The Monks** on Oidong's rim: the pilgrims' road to the passes
   runs by the Cold Hearths, whose warm coal moss is the one place to sleep out on the pass (*proposed*: a cairn and a
   prayer-stone pile at the disc's edge, and the valley's never-freezing pools explained by the vents). **Hazard to all**:
   the gas at night, which the Tungangs read by their lamps' flames.
 
-## 10. Where the lineage began (*proposed* lore)
+## 10. Where the lineage began (canon, the owner, 2026-11-02)
 
 Canon says Krator's own life began "round volcanic vents" on a tidally heated moon (`throne/NOTES.md:87-89`). Muller's
 thermosynthesis is a theory of the origin of life: the first energy was the thermal cycling of a hot pool's convection.
-*Proposed*: the kettle cup is the native lineage's oldest living habit, the host body still sitting in a convecting pool
-with its partner cycled by the water, and the hearth tree is what the lineage made when it took the convection cell
-inside itself as a stalk and carried it out of the water onto the ground. The light partners and the redox partners came
-later, as the lineage spread to where the heat was not. It is one sentence for `LORE.md` section 8 if the owner wants a
-beginning for the native life, and it costs nothing if not.
+**The kettle cup is the native lineage's oldest living habit**, the host body still sitting in a convecting pool with
+its partner cycled by the water, and the hearth tree is what the lineage made when it took the convection cell inside
+itself as a stalk and carried it out of the water onto the ground. The light partners and the redox partners came later,
+as the lineage spread to where the heat was not. *Proposed* wording for `LORE.md` section 8, after the lineage rule the
+Gills plan proposes: "The lineage began in the vents' hot pools, where the first partner lived on the water's convection
+carrying it hot and cold; the kettle cup still does, and the hearth tree carries the same cycle in its stalk. The light
+and redox partners came later, where the heat was not."
 
 ## 11. Stations
 
@@ -414,9 +433,15 @@ spindles' silver, the steam, the snow line's edge, the hazards and the animals t
    the disc's steam a thin column in still air. The noon preset: a field of silver spindles on gravel, snow in the lee of
    each; the summer-night preset: the engine still working in -3 degC air.
 4. **The walk** (optional, a riftrim station `hearths-walk`, the western vent 430,1388): a hearth field that has moved
-   a kilometre in five centuries, its rings of dead stalks lying in a long arc across the shelf like the growth rings of a
-   tree laid flat, the live disc at one end, the oldest rings fallen and overgrown by the glass forest at the other,
-   Dalab's road passing it, a genepriests' camp (a site, not a building).
+   a kilometre since before the Ancients came, its rings of dead stalks lying in a long arc across the shelf like the
+   growth rings of a tree laid flat, the live disc at one end, the oldest rings fallen and overgrown by the glass forest
+   at the other, Dalab's road passing it, a genepriests' camp (a site, not a building).
+5. **The stair's hearth** (godstep `--station hearths`, `dist/godstep-hearths.html`; px 893,1145: 2,700 m, 1.14 atm,
+   110 mm, Dsc, +12 degC (25/-1), night low -12; the valley's head): the small third field in the red cinder crater of
+   the godstep plan's vent station: one disc of broad-fanned hearth trees round the crater's spring, the moss lawn and
+   the lake in the older crater beside it with the Talovolci's walled fields, the Godthrone's mass up the valley. Set on
+   a winter night, the one season its engine earns; the noon preset shows the field shut and silver in a warm valley,
+   the only hearth that is often idle.
 
 ## 12. How it reads, and what it costs
 
@@ -596,21 +621,13 @@ eclipse preset).
 
 ## 17. Open questions for the owner
 
-1. **The mechanism**: a native heat engine, a living heat pipe between hot ground and cold sky run by thermal cycling,
-   with a daily fold against the sun and an opening in eclipse. Acceptable canon for the native lineage?
-2. **The partner kinds** (*proposed* amendment to the 2026-11-02 rule): three partner kinds, light, redox and **heat**,
-   and a body may carry two partners in two places (the hearth tree's light skin and heat stalk). Yes, no, or heat only
-   as a third kind with one partner a body?
-3. **The two sites and their hosts**: stations of `biomes/riftrim` (the north rim's three vents, the hold beneath) and
-   `biomes/oidong` (the valley's north rim vent). The Godstep flank vent (px 893,1145) could carry a third, small field
-   at the godstep kit's optional vent station; offered, not planned.
-4. **The Tungangs' surface**: the Hearths as the night forest over their holds, the wax as their staple and lamp, the
-   discs' walk in their sagas. Yes? And **Dalab's prize**: is the hearth tree the gene Dalab came to the rim for, and
-   what does it want it for?
-5. **Oidong's warmth** (*proposed*): the two rim vents as the reason the valley's pools never freeze; a cairn at the
-   Cold Hearths on the pilgrims' road. Does this sit with the valley's serenity?
-6. **The origin** (section 10): the kettle cup as the lineage's oldest habit and thermosynthesis as how Krator's life
-   began. A sentence for `LORE.md` section 8, or left alone?
-7. **The names**: the Tungangs' (worn Northern English: `LORE.md` 6.1) for the hearth, the fans, the wax and the stoke;
-   the Monks' for the Cold Hearths; whether the shared kit is `hearths`.
-8. **The walk**: metres a year, rings of dead over centuries. Faster, slower, or none (a field fixed to its vent)?
+Settled 2026-11-02 (the head of this file): the mechanism, the partner kinds, the three sites and their hosts, the
+Tungangs' surface, Dalab's reasons, Oidong's warmth, the origin, the names' tongues, the walk. Still open:
+
+1. **The words**: the Tungangs' (worn Northern English: `LORE.md` 6.1) for the hearth, the fans, the wax and the stoke;
+   the Monks' for the Cold Hearths; the Talovolci's for the stair's hearth; the shared kit stays `hearths` unless the
+   owner says otherwise.
+2. **What Dalab does with the gene**, if anything the game shows.
+3. **A hot-country cousin** (the owner's question, 2026-11-02: "some kind of semi-related biome in the region
+   Steampits"): the same lineage with its hot end in boiling water and its cold end in the air, a station of the geyser
+   kit; sketched in this session's report, to be written into this plan as section 7b if the owner wants it.
