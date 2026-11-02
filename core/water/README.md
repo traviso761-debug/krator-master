@@ -752,3 +752,19 @@ or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not check
   as the first runs on eastabyss and the Rift jungle did (2026-10-27; their findings are in the session notes, not fixed here).
 - Costs: about `length / step` x 2 x (1 + scan) ground samples a flow, an open surface's box at half its mask cell, 9 x 16 x 16 for a still.
   Seconds for a biome page; run it in a check, not each frame.
+
+## The reflections switch
+
+`WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page
+loads with reflections off, and `WATER.mirror` isn't called, so no material is patched and no tri is drawn. A button in the host panel
+cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the tier to use. The live mirror costs about 8% of the
+world pass, and its crash on eastabyss's bench is untraced.
+
+**Adopting it** (the exact lines; each biome's own turn does it, where it has a large still; `biomes/eastabyss/src/99-host-take.js` is the example):
+
+1. `build.py`: add `58-core-water-mirror.js` to the kit's `core/water/ext` list.
+2. In the take fragment, before `KHOST.take`, with the still's own materials, level, centre and radius:
+   `const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[...],level,center:[x,z],radius,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});`
+3. In `KHOST.take`: `draw:()=>{MIRROR.update();SKY.draw();}`.
+
+Never call `Sw.set` at load, and don't set a tier in a page's defaults. `node core/water/test-mirror-switch.js` holds the rule. Godot has no twin yet.
