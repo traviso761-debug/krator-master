@@ -21,6 +21,8 @@ WHERE = {
     '92-host-panel.js': 'host',
     '94-host-polytool.js': 'host',   # opt-in: the authoring tools (inspect, polygon, path)
     '95-host-probe.js': 'host',
+    '95b-host-seat.js': 'host',       # opt-in: the probe's seat sweeps (contact, clear, doors, stairs; core/terrain/SEAT.md)
+    '38a-core-seat.js': 'terrain',     # KSEAT, which the seat sweeps measure with (a build on CORE_TERRAIN may list it there instead)
     '93-host-inspect.js': 'host',     # the record-driven inspector
     '93-host-stocks.js': 'host',      # what things hold and the settlement's stocks (o.holds; Voth's 56e, the standard)
     '94-host-marks.js': 'host',       # marks: areas, lines, points, measured (supersede the polytool)
@@ -40,6 +42,8 @@ SHELL = ['20-core-clock.js', '90-host-camera.js', '91-host-loop.js', '92-host-pa
 # and the core modules they read (core/edits, core/space, core/minimap)
 FULL = SHELL + ['93-host-inspect.js', '93-host-stocks.js', '94-host-marks.js', '96-host-pictures.js', '97-host-minimap.js', '98-host-edit.js',
                 '99-host-cutaway.js', '40-core-edits.js', '20-core-space.js', '88-core-minimap.js', '88a-core-minimap-host.js']
+# the seat sweeps, opt-in (CORE-IMPROVEMENTS.md item 1): khost.resolve(PATH, khost.SEAT) beside the shell
+SEAT = ['38a-core-seat.js', '95b-host-seat.js']
 # core/shader goes on every page (resolve adds it whatever the list): core/atmos, core/terrain, core/water and core/biome call it
 SHADER = ['06-core-khook.js', '06b-core-kcolor.js']
 EDITS_JS = '39-host-edits.js'      # the generated fragment edits_js() writes (sorts before core/edits and every builder)

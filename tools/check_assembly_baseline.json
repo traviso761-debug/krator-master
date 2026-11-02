@@ -23,6 +23,8 @@
  "biomes/sedesert/dist/sedesert-mantis.html: CLASH _t": 1,
  "biomes/sedesert/dist/sedesert-steppe.html: CLASH SEDESERT_WATER": 1,
  "biomes/sedesert/dist/sedesert-steppe.html: CLASH _t": 1,
+ "biomes/swlowlands/dist/swlowlands.html: MISSING BIO.leafOn": 1,
+ "biomes/swlowlands/dist/swlowlands.html: MISSING BIO.leafQ": 1,
  "kits/beast-riders/dist/beast-riders.html: CLASH _branches": 1,
  "kits/beast-riders/dist/beast-riders.html: CLASH _layout": 1,
  "kits/beast-riders/dist/beast-riders.html: CLASH _materials": 1,

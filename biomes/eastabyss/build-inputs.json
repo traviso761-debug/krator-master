@@ -278,7 +278,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "43abedd30d9e2daa77945cd74af1c38b15bfeb52ed99dfa61b5db2ce6bec37bd",
+    "core/host/host.py": "fda401ea35d86d38d06d643eff7f330d61f66f694aaf0d81b0741947b6af61cf",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -308,9 +308,10 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/eastabyss": "6f4ae2eef56be881e6ad8a066d16d1a15c8a4c999177d0bc8c3746a8010a7c5e",
     "biomes/eastabyss/src": "db6b3ddbe028c45e42e4ddac8ec6b29f155cc6aed2f2604cb2f7532416a18339",
     "biomes/eastabyss/stations/lakes": "d1f38bf8bcf749ce034d3607f6a1a5cde26740337ad41592adec623aaeb506bb",
-    "core/host": "42de374c3dfaebcf970ae52ef00ba29012869532c4228e8371715cff95ea6b0b",
+    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {

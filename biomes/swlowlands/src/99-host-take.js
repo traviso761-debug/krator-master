@@ -80,13 +80,45 @@ const HCHK={
   return{ok:!miss.length&&!untagged.length&&!lost.length&&figs>=500&&pods>=500,
    detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+(lost.length?'catalog keys missing: '+lost.join(', ')+'; ':'')
     +figs+' figs and '+pods+' pods drawn; '+SP.length+' species and '+Object.keys(PL).length+' plant tagged; catalog keys: '+keys.length};}};
+// THE PLANTS' FEET ON THE DRAWN GROUND (2026-10-27, core/terrain KSEAT; CORE-IMPROVEMENTS.md item 1). A rooted item is one whose
+// instances stand at one offset from the drawn ground (the median of y - drawnH over up to 400 of them within [-1, .3] m,
+// its quartiles within .25 m: a trunk, a shrub, a tuft; not a crown or a hanging clump). Each sampled instance is a
+// record whose foot is that offset under it; the probe's contact sweep (core/host/95b-host-seat.js) measures it against the
+// ground mesh. opt.old puts each foot where terrainH (the closure, what the plants stood on before) put it, the
+// negative: the sweep must see those float and sink. Memoised: the instances do not move after the build.
+// HELD_ITEMS share a mesh between pieces on the ground and pieces something else holds (a palm's crown, a limb, a trunk's spines,
+// a log's back, duckweed on the water): an instance of one more than HELD_UP over the drawn ground is not a foot. That hides a
+// float above HELD_UP on these items only, so the check's line counts what it left out. The same goes for anything over HELD_UP
+// inside an obstacle's footprint: the tower's ledge plants (65-biome-swlowlands-dress.js). The tower is not a seat surface: its
+// stacked floors cost every foot in its box dozens of rays, and verify did not finish. NOT_FEET: a boulder's origin is its middle
+const HELD_ITEMS={'biome:fan':1,'biome:frond':1,'biome:cone':1,'biome:mossmat':1},NOT_FEET={'biome:boulder':1},HELD_UP=.6;
+// FEET_OWED: the feet still off the drawn ground, recorded on 2026-11-02 (KNOWN_ISSUES.md); ratchet it down, never up
+const FEET_OWED=47;
+let _feet=null;
+function rootedFeet(old){if(!_feet){const out=[],m=new THREE.Matrix4(),items=[];let held=0;
+  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!M.count||NOT_FEET[M.name])return;M.updateMatrixWorld();
+   const P=[],st=Math.max(1,Math.floor(M.count/400));
+   for(let i=0;i<M.count;i+=st){M.getMatrixAt(i,m);m.premultiply(M.matrixWorld);const e=m.elements;P.push([e[12],e[13],e[14],e[13]-drawnH(e[12],e[14]),i]);}
+   const d=P.map(p=>p[3]).sort((a,b)=>a-b),q=f=>d[Math.min(d.length-1,Math.floor(d.length*f))],med=q(.5);
+   if(med<-1||med>.3||q(.75)-q(.25)>.25)return;items.push(M.name);
+   /* an item's own planting scatter round its median is not a gap: the foot's tolerance is at least that */
+   const tol=Math.max(.3,Math.min(.6,(q(.95)-q(.05))/2));
+   P.forEach(p=>{if(p[3]-med>HELD_UP&&(HELD_ITEMS[M.name]||OBSTACLES.some(o=>Math.hypot(p[0]-o.x,p[2]-o.z)<o.r))){held++;return;}
+    out.push({id:M.name+'#'+p[4],'class':'flora',at:[p[0],p[1]-med,p[2]],off:terrainH(p[0],p[2])-drawnH(p[0],p[2]),foot:{tol}});});});
+  _feet={items,recs:out,held};}
+ return old?_feet.recs.map(r=>Object.assign({},r,{at:[r.at[0],r.at[1]+r.off,r.at[2]]})):_feet.recs;}
+function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatScene(),F),off=F.map(r=>Math.abs(r.off)).sort((a,b)=>a-b),q=f=>off.length?off[Math.min(off.length-1,Math.floor(off.length*f))]:0;
+ return{ok:c.n>1000&&c.fails.length<=(old?0:FEET_OWED)&&c.neg===true,detail:c.ok+' of '+c.n+' feet of '+_feet.items.length+' rooted items on the drawn ground, '+_feet.held+' held pieces left out ('+c.by.float+' floating, '+c.by.buried+' buried, '+c.by.inside+' inside; worst '+
+  c.worst.gap.toFixed(2)+' m up, '+c.worst.depth.toFixed(2)+' m down; the control '+(c.neg?'floats':'DID NOT float')+'); terrainH off the drawn ground at these feet: median '+q(.5).toFixed(2)+', p99 '+q(.99).toFixed(2)+', max '+q(1).toFixed(2)+' m'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
+ add('the plants feet on the drawn ground (KSEAT contact sweep)',feetCheck(false));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_instNames();
  add('a fruiting species with no catalog fruit',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='rattlepod'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SWLOW.PLANTS,N));
  add('a species with no harvest tag',HCHK.fruit(SWLOW.SPECIES.map(S=>S.key==='madrone'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),SWLOW.PLANTS,N));
  add('the figs never drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N.filter(n=>n[0]!=='biome:fig')));
+ add('the plants feet back on terrainH (as before KSEAT): they float and sink',feetCheck(true));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)
@@ -94,12 +126,13 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'swlowlands',title:'Krator Southwestern Lowlands',
  hint:'The southwestern lowlands: mangrove shore, bayou, rainforest strip, humid subtropical plain, Mediterranean hills (ideal type)',
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ scene,camera,renderer,ground:drawnH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
+ seat:{records:()=>rootedFeet(false)},
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
