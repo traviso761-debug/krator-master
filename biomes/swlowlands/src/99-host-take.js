@@ -117,7 +117,7 @@ function feetCheck(old){const F=rootedFeet(old),c=KSEAT.contactSweep(KHOST.seatS
 function edgeCheck(){const P=[];for(const T of SWLOW.TREES){if(T.cut||T.lv===0||T.sp===0||T.sp===1)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb,.6),name:SWLOW.SPECIES[T.sp].key});if(P.length>4000)break;}
  const bad=BIO.envCheck(ENV,[[0,0],[-1400,-200],[800,300],[-2400,0]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)};}
-const EDGE_OWED={plant:40,wet:400};   // the first run's counts, recorded in KNOWN_ISSUES.md; ratchet down
+const EDGE_OWED={plant:0,wet:0};   // ratchet: none owed at this turn
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_instNames();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWLOW.SPECIES,SWLOW.PLANTS,N));
  add('the plants feet on the drawn ground (KSEAT contact sweep)',feetCheck(false));

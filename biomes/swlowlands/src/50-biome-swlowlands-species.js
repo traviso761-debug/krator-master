@@ -580,7 +580,9 @@ BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub lobes'});
 /* the bloom sheet cut by the geometry (materials.json "sheet": "geometry"; sedesert's rects: its rows touch, so check_cells' cell is wrong: two of the six flowers a bloom) */
-BIO.def('bloom',typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('swlowlands','bloom')?BIO.geo.cells(BIO.geo.bloom(),{rects:[[.02,.02,.49,.33],[.51,.34,.98,.66],[.02,.67,.49,.98],[.51,.02,.98,.33],[.02,.34,.49,.66],[.51,.67,.98,.98]],pick:[0,1],scale:1}):BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});
+const BLOOM_G=()=>typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('swlowlands','bloom')?BIO.geo.cells(BIO.geo.bloom(),{rects:[[.02,.02,.49,.33],[.51,.34,.98,.66],[.02,.67,.49,.98],[.51,.02,.98,.33],[.02,.34,.49,.66],[.51,.67,.98,.98]],pick:[0,1],scale:1}):BIO.geo.bloom();
+BIO.def('bloom',BLOOM_G(),M.bloom,{label:'Blooms',onLeaf:true});
+BIO.def('padbloom',BLOOM_G(),M.bloom,{label:'Water and marsh flowers',free:true});   /* a lily's flower and the sea lavender: held by the water or a low tuft, not by bark (the attach audit) */
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Agaves'});
 BIO.def('brom',G.rosette([[12,1.0,.55,.26],[9,.72,.85,.22],[6,.45,1.15,.2]]),M.rosette,{label:'Bromeliads'});
 BIO.def('pad',G.pad(),M.pad,{label:'Lily pads and hyacinths',free:true});

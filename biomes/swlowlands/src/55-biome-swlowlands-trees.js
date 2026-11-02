@@ -379,7 +379,7 @@ B[9]=B[11]=B[24]=B[25]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb
  const cy=T.y0+H*.72,ex=T.crownR,ey=H*.3,sz0=mad?rr(5.5,7):rr(6.5,8.5),item=(mad||T.sp===24)?'glossy':'broad';
  crownOn(item,spots,sz0,.62,()=>crownCol(S,mad?.06:0),T,cy,ex,ey,lv===2?1.6:1,st);
  // the madrone's cream panicles and red berries, at the branch tips
- if(mad&&lv===2)spots.forEach(p=>{if(rng()>.22)return;const fl=rng()<.55,col=C(pick(fl?PAL.cream:PAL.berry));for(let j=0;j<ri(4,8);j++)BIO.put('bloom',[p.x+rr(-1,1)*sz0*.35,p.y+sz0*rr(.25,.5),p.z+rr(-1,1)*sz0*.35],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),fl?rr(.3,.5):rr(.15,.25),col);st.blooms++;});
+ if(mad&&lv===2)spots.forEach(p=>{if(rng()>.22)return;const fl=rng()<.55,col=C(pick(fl?PAL.cream:PAL.berry));for(let j=0;j<ri(4,8);j++)BIO.put('bloom',[p.x+rr(-1,1)*sz0*.2,p.y+sz0*rr(.04,.2),p.z+rr(-1,1)*sz0*.2],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),fl?rr(.3,.5):rr(.15,.25),col);st.blooms++;});
  T.spread=spread(T,all);reg(T,S);};
 // 10 the EMBER MANZANITA: a knot of crooked stems, smooth blood-red and charred
 // black, small grey-green leaves, urn flowers and red berries

@@ -42,6 +42,7 @@ function kinBridges(){const out=[],C=[],D=[[1,0],[0,1],[RT2,RT2],[RT2,-RT2]];
 function swlowKinVeto(){const prev=SWLOW.veto;if(!ST&&KIN_ON)KIN_BRIDGES.push(...kinBridges());
  SWLOW.veto=(kind,key,x,z)=>{if(prev&&prev(kind,key,x,z))return true;if(kind!=='tree')return false;
   for(const S of SPRINGS)if(Math.hypot(x-S.x,z-S.z)<S.r+24)return true;
+  if(key!=='mangrove'&&key!=='cypress'&&WATER_FN.shore(x,z)<.8)return true;   /* no bole in the water the eye sees (the ribbons, the springs' runs): WATER.edgeAudit's plant-in-water */
   for(const b of KIN_BRIDGES){const mx=(b[0]+b[2])/2,mz=(b[1]+b[3])/2;if(Math.hypot(x-mx,z-mz)<Math.hypot(b[2]-b[0],b[3]-b[1])/2+20)return true;}
   if(BIO.lodD(x,z)>1100)return false;const Z=SWLOW.zones(x,z);
   for(const R of KIN_RULES){if(!R.own&&!KIN_ON)continue;if(R.from===key&&R.zone(Z,x,z)&&kinU(x,z,R.salt)<R.share){KIN_SPOTS.push({to:R.to,own:R.own,x,z,salt:R.salt});return true;}}

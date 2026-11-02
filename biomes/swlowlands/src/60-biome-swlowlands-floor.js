@@ -88,7 +88,7 @@ function boulder(x,y,z,lv,set,st){const n=lv===2?ri(1,3):1,Rb=rr(.8,2.6);
   BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set));st.boulders++;}}
 function lily(x,z,lv,st,dense){const w=BIO.waterH(x,z),t=rng(),R=rr(.35,1.1);
  BIO.put('pad',[x,w+.04,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;
- if(lv===2&&rng()<.18)BIO.put('bloom',[x+rr(-.3,.3)*R,w+.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
+ if(lv===2&&rng()<.18)BIO.put('padbloom',[x+rr(-.3,.3)*R,w+.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
  for(let k=0,m=dense?ri(2,5):(rng()<.3?1:0);k<m;k++){const R2=R*rr(.5,1),a=rr(0,TAU),d=R*rr(1.3,2.6);BIO.put('pad',[x+Math.cos(a)*d,w+.035,z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;}}
 function hyacinth(x,z,lv,st){const w=BIO.waterH(x,z);for(let k=0,m=ri(2,5);k<m;k++){const px=x+rr(-.8,.8),pz=z+rr(-.8,.8),R=rr(.25,.45);BIO.put('pad',[px,w+.08,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R,1,R],bright(vary(pick(PAL.aroid),.03,.1,.06),1.15));}
  if(lv>=1)blooms(x,w+.1,z,.6,ri(3,7),PAL.hyacinth,[.14,.24],.45);st.lilies++;}
@@ -120,7 +120,7 @@ function marshPlant(S,x,y,z,Z,lv,st){const n=lv===2?S.int(6,9):S.int(3,4),wort=Z
   else{const h=S.range(.8,1.4)*mix(1.3,1,smooth(-.1,.3,Z.h));BIO.put('marsh',[px,y-.05,pz],q,[h*1.2,h,h*1.2],marshCol(S,MARSH.grass,1.3));}
   st.marsh++;}
  if(wort&&lv>=1&&S.next()<.3){const c=marshCol(S,MARSH.lav,1.15);for(let k=0,m=lv===2?S.int(4,8):2;k<m;k++){const a=S.range(0,TAU),d=S.range(0,1.2);
-  BIO.put('bloom',[x+Math.cos(a)*d,y+S.range(.22,.45),z+Math.sin(a)*d],qEuler(S.range(-.4,.4),S.range(0,TAU),S.range(-.4,.4)),S.range(.07,.12),c);}st.blooms++;}}
+  BIO.put('padbloom',[x+Math.cos(a)*d,y+S.range(.22,.45),z+Math.sin(a)*d],qEuler(S.range(-.4,.4),S.range(0,TAU),S.range(-.4,.4)),S.range(.07,.12),c);}st.blooms++;}}
 function buildMarsh(R,q,st){const o=BIO.center(),CO=40,NC=Math.ceil(R*2/CO),hot=[];
  for(let j=0;j<NC;j++)for(let i=0;i<NC;i++){const x=o[0]-R+(i+.5)*CO,z=o[1]-R+(j+.5)*CO;if(Math.hypot(x-o[0],z-o[1])>R+CO)continue;
   if(BIO.field('salt',x,z)>.02&&BIO.field('flow',x,z)>.05)hot.push([x-CO*.75,z-CO*.75,x+CO*.75,z+CO*.75]);}   /* padded: the fields bend inside a coarse cell */
