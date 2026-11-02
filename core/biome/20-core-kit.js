@@ -139,7 +139,7 @@ BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(opt.cap!=null&&!opt.capWhy)BIO.err('BIO.def: '+name+' sets cap '+opt.cap+' with no capWhy');
  const cb=geo.userData&&geo.userData.card,g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,ix=opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed;
  if(cb)g0.userData.card=cb;if(geo.userData&&geo.userData.cells)g0.userData.cells=true;const F=cardFit(g0,mat,ix);cardCheck(name,g0,mat);
- BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,free:!!opt.free,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,
+ BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,free:!!opt.free,onLeaf:!!opt.onLeaf,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,
   cap:opt.cap==null?null:opt.cap,capWhy:opt.capWhy||null,cliff:!!opt.cliff,nPut:0};   /* cliff: the item grows on faces (BIO.cliffCheck, 40-core-place.js) */
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
@@ -190,6 +190,8 @@ BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratc
 //         only those at most that thick at the tip.
 //   BIO.snapSeg(segs, p, o) -> {p, t, seg, d}   the nearest point of any span to p ([x,y,z]; o.t0, 0: not nearer the span's root
 //         than that). A pass that keeps its own loop, colours and sizes moves each card onto its twig with this. null if no spans.
+//   BIO.holdTo(c, p, reach) -> [x,y,z]   p brought toward c until at most reach from it, on its own line (in reach: p as it is). A card
+//         whose boughs a far tier drops is held to what is drawn: no new triangles, and a pass's own draws stay as they are.
 //   BIO.clumpOn(item, segs, o) -> count   a crown on twig ends: o.n cards (or o.per a span), going round the twigEnds (o.all: every
 //         span) so every twig has its share, each with its origin on the span at t in o.t0 (.6) to o.t1 (1). Draws from KRAND (o.seed,
 //         default from BIO.owner, and o.salt) and never from the page's stream. o: size (a number or [min, max]), flat (y scale,
@@ -210,6 +212,7 @@ BIO.snapSeg=function(segs,p,o){o=o||{};const t0=o.t0==null?0:+o.t0;let best=null
   const x=a[0]+dx*t,y=a[1]+dy*t,z=a[2]+dz*t,d=(x-p[0])*(x-p[0])+(y-p[1])*(y-p[1])+(z-p[2])*(z-p[2]);
   if(d<bd){bd=d;best={p:[x,y,z],t,seg:s,d:0};}}
  if(best)best.d=Math.sqrt(bd);return best;};
+BIO.holdTo=function(c,p,reach){const dx=p[0]-c[0],dy=p[1]-c[1],dz=p[2]-c[2],L=Math.hypot(dx,dy,dz),k=L>reach?reach/L:1;return[c[0]+dx*k,c[1]+dy*k,c[2]+dz*k];};
 BIO.clumpOn=function(item,segs,o){o=o||{};const L=o.all?(o.rMax==null?segs:segs.filter(s=>s.r1<=o.rMax)):BIO.twigEnds(segs,o);if(!L.length)return 0;
  const own=BIO.owner,seed=o.seed!=null?o.seed:own?KRAND.hash(Math.round(own[0]*10),Math.round(own[1]*10)):1,salt=o.salt|0,H=(i,k)=>KRAND.unit(KRAND.hash(seed>>>0,i,salt+k));
  const n=o.n!=null?o.n|0:(o.per==null?1:o.per)*L.length,t0=o.t0==null?.6:+o.t0,t1=o.t1==null?1:+o.t1,sz=o.size==null?1:o.size,fl=o.flat==null?1:+o.flat,tilt=o.tilt==null?.3:+o.tilt;
@@ -583,9 +586,9 @@ function _lodShareBox(){if(BIO.LOD.ownBox)return;const T=BIO.host.THREE,G=new Ma
 BIO._lodShareBox=_lodShareBox;
 // THE ATTACHMENT AUDIT (2026-10-27, the owner: floating foliage, branches not drawn), read from the baked scene, as drawn.
 // BIO.attachAudit({ground}) samples the leaf and hanging cards (materials of the 'leaf' and 'hang' kinds; an item defined
-// with {free:true} is skipped: rafts on water, seed fluff) that stand at least o.minUp (2 m) above o.ground(x, z), and finds
+// with {free:true} is skipped: rafts on water, seed fluff; one with {onLeaf:true} may also sit in a leaf card's body) that stand at least o.minUp (2 m) above o.ground(x, z), and finds
 // each one's nearest structure: the instanced non-card items (each instance's long axis, as points o.cell/4 apart, with its
-// radius) and the buckets' and host meshes' vertices, near the samples only, on KSPACE. A card whose origin (its stem, its
+// radius) and the buckets' and host meshes' triangles, near the samples only, on KSPACE. A card whose origin (its stem, its
 // hung end: o.kStem (.25) of its size; a centred tripod's centre, whose leaves reach out half its size: o.k (.6)) plus o.pad
 // (.5 m) from any structure FLOATS. A card
 // that holds is then checked against what holds it, as the runtime LOD draws them: in one chunk (one box containing the
@@ -593,6 +596,16 @@ BIO._lodShareBox=_lodShareBox;
 // structure that switches off outlives it). Returns {samples, audited, floating, share, split, outrange, lodShare, worst,
 // byItem, paired (held cards whose card or structure the runtime LOD switches), note}. o.max (20000) caps the samples (evenly strided); o.offset [dx,dy,dz] and o.rangeK (1) are the negative
 // controls' levers. Needs KSPACE (core/space) and a ground function; without them it says so and audits nothing.
+// the distance from (x,y,z) to a triangle's nearest point (a, b, c: {x,y,z})
+BIO.triDist=function(x,y,z,a,b,c){const abx=b.x-a.x,aby=b.y-a.y,abz=b.z-a.z,acx=c.x-a.x,acy=c.y-a.y,acz=c.z-a.z,apx=x-a.x,apy=y-a.y,apz=z-a.z;
+ const to=(qx,qy,qz)=>Math.hypot(x-qx,y-qy,z-qz);
+ const d1=abx*apx+aby*apy+abz*apz,d2=acx*apx+acy*apy+acz*apz;if(d1<=0&&d2<=0)return to(a.x,a.y,a.z);
+ const bpx=x-b.x,bpy=y-b.y,bpz=z-b.z,d3=abx*bpx+aby*bpy+abz*bpz,d4=acx*bpx+acy*bpy+acz*bpz;if(d3>=0&&d4<=d3)return to(b.x,b.y,b.z);
+ const vc=d1*d4-d3*d2;if(vc<=0&&d1>=0&&d3<=0){const v=d1/((d1-d3)||1e-12);return to(a.x+abx*v,a.y+aby*v,a.z+abz*v);}
+ const cpx=x-c.x,cpy=y-c.y,cpz=z-c.z,d5=abx*cpx+aby*cpy+abz*cpz,d6=acx*cpx+acy*cpy+acz*cpz;if(d6>=0&&d5<=d6)return to(c.x,c.y,c.z);
+ const vb=d5*d2-d1*d6;if(vb<=0&&d2>=0&&d6<=0){const w=d2/((d2-d6)||1e-12);return to(a.x+acx*w,a.y+acy*w,a.z+acz*w);}
+ const va=d3*d6-d5*d4;if(va<=0&&d4-d3>=0&&d5-d6>=0){const w=(d4-d3)/(((d4-d3)+(d5-d6))||1e-12);return to(b.x+(c.x-b.x)*w,b.y+(c.y-b.y)*w,b.z+(c.z-b.z)*w);}
+ const dn=1/((va+vb+vc)||1e-12),v=vb*dn,w=vc*dn;return to(a.x+abx*v+acx*w,a.y+aby*v+acy*w,a.z+abz*v+acz*w);};
 BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,KS=typeof KSPACE!=='undefined'?KSPACE:null;
  const out={samples:0,audited:0,floating:0,share:0,split:0,outrange:0,paired:0,lodShare:0,worst:[],byItem:{},note:null};
  if(!scene||!KS||!o.ground){out.note=!scene?'no scene':!KS?'no KSPACE (core/space) in the page':'no ground function';return out;}
@@ -615,28 +628,40 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
   for(let i=0;i<m.count;i++,g++){if(g%st)continue;m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);M4.decompose(P,Q,S3);
   const x=P.x+off[0],y=P.y+off[1],z=P.z+off[2],s=Math.max(Math.abs(S3.x),Math.abs(S3.y),Math.abs(S3.z)),up=y-ground(x,z);out.samples++;
   if(!(up>=minUp)||up<=.75*s+PAD)continue;   /* low, or a card that reaches the ground: it stands on the ground */
-  smp.push({x,y,z,tol:(stem?KS0:K)*s+PAD,m,i});}}
+  smp.push({x,y,z,tol:(stem?KS0:K)*s+PAD,m,i,onLeaf:!!(df&&df.onLeaf)});}}
  const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set();
  for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)want.add(key(cx+a,cz+b));}
- /* the samples are the index and each structure point updates the samples near it as it is made: a list of the points was 3.5 GB
-    live on swlowlands, and an audit past V8's 4 GB limit killed the renderer at random (HANDOFF-REBUILD.md, core-crashes). The test
-    is the same one (|dx|, |dz| <= tol) in the same order, so no result moves */
- const SP=KS.create({cell:CELL}),near=[],add=(x,y,z,r,lod)=>{if(!want.has(key(cf(x),cf(z))))return;SP.query(x,z,0,near);
-  for(const p of near){const d=Math.hypot(x-p.x,y-p.y,z-p.z)-r;if(d<p.best){p.best=d;p.bl=lod;}}};
- for(const p of smp){p.best=1e9;p.bl=null;SP.insert(p,p.x,p.z,p.tol);}
+ /* the samples are the index and each piece of structure updates the samples near it as it is met: a list of the points was 3.5 GB
+    live on swlowlands, and an audit past V8's 4 GB limit killed the renderer at random (HANDOFF-REBUILD.md, core-crashes). The distance
+    is to the surface as drawn (2026-11-02): each triangle's nearest point, and an instanced item's axis less its radius, which also
+    reaches a sample outside the point's own square. Points along the edges missed a card lying on a 3 by 9 m bark quad */
+ /* a tree drawn twice at one spot, near and far (minRange): a card is judged by the structure of its own tier when that holds it, not by
+    whichever tier's bark happens to lie closer */
+ const meet=(p,d,lod)=>{if(d<p.best){p.best=d;p.bl=lod;}if(lod&&lod.mr===p.mr&&d<p.own){p.own=d;p.ol=lod;}};
+ const SP=KS.create({cell:CELL}),near=[],add=(x,y,z,r,lod)=>{if(!r&&!want.has(key(cf(x),cf(z))))return;SP.query(x,z,r,near);
+  for(const p of near)meet(p,Math.hypot(x-p.x,y-p.y,z-p.z)-r,lod);};
+ for(const p of smp){p.best=p.own=1e9;p.bl=p.ol=null;const f=lodOf(p.m,p.i,false);p.mr=f?f.mr:0;SP.insert(p,p.x,p.z,p.tol);}
  for(const m of str){const geo=m.geometry,pa=geo&&geo.attributes&&geo.attributes.position;if(!pa)continue;m.updateMatrixWorld();
   if(m.isInstancedMesh){if(!geo.boundingBox)geo.computeBoundingBox();const bb=geo.boundingBox,cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,r0=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2;
    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);A.set(cx,bb.min.y,cz).applyMatrix4(M4);B.set(cx,bb.max.y,cz).applyMatrix4(M4);
-    if(!want.has(key(cf(A.x),cf(A.z)))&&!want.has(key(cf(B.x),cf(B.z)))&&A.distanceTo(B)<CELL)continue;
-    M4.decompose(P,Q,S3);const r=r0*Math.max(Math.abs(S3.x),Math.abs(S3.z)),n=Math.max(1,Math.ceil(A.distanceTo(B)/(CELL/4))),lod=lodOf(m,i,false);
+    M4.decompose(P,Q,S3);const r=r0*Math.max(Math.abs(S3.x),Math.abs(S3.z));
+    if(r<CELL/4&&!want.has(key(cf(A.x),cf(A.z)))&&!want.has(key(cf(B.x),cf(B.z)))&&A.distanceTo(B)<CELL)continue;
+    const n=Math.max(1,Math.ceil(A.distanceTo(B)/(CELL/4))),lod=lodOf(m,i,false);
     for(let k=0;k<=n;k++){V.lerpVectors(A,B,k/n);add(V.x,V.y,V.z,r,lod);}}}
-  else{   /* a bucket or a host mesh: points along every triangle's edges, o.cell/4 apart (a tube's rings stand metres apart) */
-   const W=m.matrixWorld,id=W.equals(new T.Matrix4()),ix=geo.index,nt=Math.floor((ix?ix.count:pa.count)/3),Vt=[A,B,new T.Vector3()],vi=[0,0,0],stp=CELL/4;
-   for(let t=0;t<nt;t++){let near=false;for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);if(want.has(key(cf(Vt[k].x),cf(Vt[k].z))))near=true;}
-    if(!near)continue;const lod=lodOf(m,vi[0],true);
-    for(let k=0;k<3;k++){const a=Vt[k],b=Vt[(k+1)%3],n=Math.max(1,Math.ceil(a.distanceTo(b)/stp));for(let q=0;q<n;q++){V.lerpVectors(a,b,q/n);add(V.x,V.y,V.z,0,lod);}}}}}
+  else{   /* a bucket or a host mesh: every triangle whose box touches a wanted cell */
+   const W=m.matrixWorld,id=W.equals(new T.Matrix4()),ix=geo.index,nt=Math.floor((ix?ix.count:pa.count)/3),Vt=[A,B,new T.Vector3()],vi=[0,0,0];
+   for(let t=0;t<nt;t++){for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);}
+    const x0=Math.min(A.x,B.x,Vt[2].x),x1=Math.max(A.x,B.x,Vt[2].x),z0=Math.min(A.z,B.z,Vt[2].z),z1=Math.max(A.z,B.z,Vt[2].z);
+    let hit=false;for(let a=cf(x0),a1=cf(x1);a<=a1&&!hit;a++)for(let b=cf(z0),b1=cf(z1);b<=b1;b++)if(want.has(key(a,b))){hit=true;break;}
+    if(!hit)continue;SP.query((x0+x1)/2,(z0+z1)/2,Math.max(x1-x0,z1-z0)/2,near);if(!near.length)continue;const lod=lodOf(m,vi[0],true);
+    for(const p of near)meet(p,BIO.triDist(p.x,p.y,p.z,A,B,Vt[2]),lod);}}}
+ /* an item defined {onLeaf:true} (a flower in a bush) is also held inside the body of a leaf card that is not onLeaf itself; that card
+    answers for its own hold. Only the card's body: half its width round it, and a stem card's height up from its stem */
+ if(smp.some(p=>p.onLeaf&&p.best>p.tol))for(const m of fol){const df=defOf(m);if(df&&df.onLeaf)continue;const yLo=df&&df.fit?-.1:-.5,yHi=df&&df.fit?1:.5;
+  for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);M4.decompose(P,Q,S3);const h=.5*Math.max(Math.abs(S3.x),Math.abs(S3.z)),sy=Math.abs(S3.y);SP.query(P.x,P.z,h,near);
+   for(const p of near)if(p.onLeaf&&p.best>p.tol&&Math.hypot(p.x-P.x,p.z-P.z)<=h&&p.y-P.y>=yLo*sy&&p.y-P.y<=yHi*sy){p.best=p.tol;p.bl=lodOf(m,i,false);p.own=1e9;}}}
  const worst=[];
- for(const p of smp){const best=p.best,bl=p.bl;
+ for(const p of smp){const best=p.best,bl=p.own<=p.tol?p.ol:p.bl;
   out.audited++;const nm=p.m.name||'?',bi=out.byItem[nm]||(out.byItem[nm]={n:0,floating:0,split:0,outrange:0});bi.n++;
   if(best>p.tol){out.floating++;bi.floating++;worst.push({item:nm,at:[+p.x.toFixed(1),+p.y.toFixed(1),+p.z.toFixed(1)],d:best>1e8?null:+best.toFixed(2),tol:+p.tol.toFixed(2)});continue;}
   const fl=lodOf(p.m,p.i,false);

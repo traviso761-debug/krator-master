@@ -82,7 +82,7 @@ const ROCK=(function(){const K=KSTACKS,L=[];
    let B=null;for(let k=0;k<3&&!B;k++){try{B=K.make({kind:'arch',id:'floorarch',x:p[0],z:p[1],span:34+k*3,rise:24+k*3,H:40+k*4,t:8,leg:14,ry:.8,seed:KRAND.hash(3401,k),ground:(x,z)=>floorH(x,z)-1,inward:.12});}catch(e){}}
    if(B){add(B,'A natural bridge on the savanna');break;}}}
  return L;})();
-const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the savanna floor toward Korona',maxShare:.013,
+const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the savanna floor toward Korona',
  hint:'Station 3 of the north-eastern canyons: savanna between sandstone stacks, a dry wadi, desert pavement, salt pans; Korona\'s ring ridge to the north. N for night',
  absent:['potholewort'],
  views:{'The savanna floor':[1500,300,1400,-100,60,-200],'Toward Korona (north)':[300,140,1300,300,200,-6000],

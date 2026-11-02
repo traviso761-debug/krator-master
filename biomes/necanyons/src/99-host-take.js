@@ -132,9 +132,6 @@ KHOST.take({build:'necanyons',title:ST_TAKE&&ST_TAKE.title||'Krator biome — th
   'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.pools)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),layout:()=>NECANYONS.records()},
  minimap:{title:'The north-eastern canyons'},
- /* the foliage guards' ceiling (HANDOFF-REBUILD "the foliage guards"; KNOWN_ISSUES.md): necanyons' own cards pass under 1% (?nojungle);
-    what floats is the hyperjungle's, read in place (its blooms, understorey cards, lianas, clumps), until its own fix. Only falls */
- guards:{maxShare:ST_TAKE&&ST_TAKE.maxShare!=null?ST_TAKE.maxShare:.08},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

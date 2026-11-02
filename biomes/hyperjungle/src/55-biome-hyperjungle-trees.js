@@ -162,7 +162,8 @@ function buildHero(T,ti,q,st){
  // perches: two points per bough, exported for epiphytes and roosts
  T.perch=[];mine.forEach(Lm=>{[2,4].forEach(i=>{const p=Lm.pts[i];T.perch.push({x:p.x,y:p.y,z:p.z,r:p.r});});});
  // ---- skin the limbs; grow secondaries and twigs; collect foliage spots ----
- const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[];
+ const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[],twigL=[];   /* twigL: the kapok's drawn spans, its flowers go on them */
+ const logTwig=P=>{if(sp===5)for(let j=1;j<P.length;j++)twigL.push({a:[P[j-1].x,P[j-1].y,P[j-1].z],b:[P[j].x,P[j].y,P[j].z],r0:P[j-1].r,r1:P[j].r,end:j===P.length-1});};
  const terGap=Hb.terGap*(farHalf?1.35:1);
  mine.forEach(Lm=>{const pts=Lm.pts,r0=pts[0].r,n=pts.length;
   const lc=boleCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
@@ -177,7 +178,7 @@ function buildHero(T,ti,q,st){
    const sec=treeGrow(at,d1,len1,rS,.14,4,Hb.secCurve+rr(-.05,.05),.07);let ok=true;
    for(let j=1;j<sec.length;j++)if(!clear3(sec[j].x,sec[j].y,sec[j].z,sec[j].r+2.5,sec[j].r+2.5)){ok=false;break;}
    if(!ok)continue;
-   st.bough+=BIO.tube(lfam,sec,lc,{seg:rS>.9?5:4});st.boughs++;
+   st.bough+=BIO.tube(lfam,sec,lc,{seg:rS>.9?5:4});st.boughs++;logTwig(sec);
    const sprd=clamp(len1*.26,5,12);
    spots.push({p:sec[2],s:sprd,inner:true},{p:sec[3],s:sprd},{p:sec[4],s:sprd*.9,tip:true});
    if(sp===3&&rng()<.8)hangs.push({x:sec[1].x,y:sec[1].y-sec[1].r*.7,z:sec[1].z});
@@ -192,7 +193,7 @@ function buildHero(T,ti,q,st){
     const d2=treeDir(a2.tx,a2.ty,a2.tz,sd2,rr(.5,.9),rr(.6,1),Hb.secUp*.8+rr(-.15,.25));
     const tw=treeGrow(a2,d2,len2,Math.max(.15,a2.r*.6),.08,2,Hb.secCurve,.05);
     if(!clear3(tw[2].x,tw[2].y,tw[2].z,2.5,2.5)||!clear3(tw[1].x,tw[1].y,tw[1].z,2.5,2.5))continue;
-    st.twig+=BIO.tube(lfam,tw,lc,{seg:3});st.twigs++;
+    st.twig+=BIO.tube(lfam,tw,lc,{seg:3});st.twigs++;logTwig(tw);
     spots.push({p:tw[1],s:clamp(len2*.4,3.6,8)},{p:tw[2],s:clamp(len2*.45,3.6,8.5),tip:true});
     if(sp===1&&rng()<.55)hangs.push({x:tw[2].x,y:tw[2].y-.5,z:tw[2].z});
     if(sp===1&&rng()<.30)hangs.push({x:tw[1].x,y:tw[1].y-.5,z:tw[1].z});
@@ -232,8 +233,9 @@ function buildHero(T,ti,q,st){
    for(let k=0,n=ri(1,3);k<n;k++)BIO.put('capsule',[h.x+rr(-1.5,1.5),h.y+rr(-.5,.5),h.z+rr(-1.5,1.5)],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[Lp*.7,Lp,Lp*.7],bright(S.capsule,rr(.8,1.1)));st.capsules++;}
   else if(sp===5){if(!clear3(h.x,h.y,h.z,3,3))return;   // a cluster of scarlet cup flowers on the bare twig ends, the odd burst silk pod
    const fc=bright(pick(S.flower),rr(.9,1.15));
-   for(let k=0,n=ri(3,6);k<n;k++){const sz=rr(1.4,2.6);BIO.put('bloom',[h.x+rr(-2.5,2.5),h.y+rr(-1.5,2),h.z+rr(-2.5,2.5)],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),sz,fc);}
-   if(rng()<.25)BIO.put('bloom',[h.x+rr(-2,2),h.y-rr(1,3),h.z+rr(-2,2)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(2,3.2),bright(S.silk,1.1));st.flowers++;}});
+   /* the cluster's jitter lands on the nearest span drawn: +-2.5 m off a twig's end floated (2026-11-02) */
+   for(let k=0,n=ri(3,6);k<n;k++){const sz=rr(1.4,2.6);BIO.put('bloom',BIO.snapSeg(twigL,[h.x+rr(-2.5,2.5),h.y+rr(-1.5,2),h.z+rr(-2.5,2.5)]).p,qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),sz,fc);}
+   if(rng()<.25)BIO.put('bloom',BIO.snapSeg(twigL,[h.x+rr(-2,2),h.y-rr(1,3),h.z+rr(-2,2)]).p,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(2,3.2),bright(S.silk,1.1));st.flowers++;}});
  if(typeof REGISTER==='function')REGISTER({name:S.name+' hypertree',kind:'tree',label:'Hypertree',x:T.x,z:T.z,y:T.y0,r:T.crownR,h:T.H});
 }
 
@@ -246,7 +248,8 @@ function buildSapling(Sd,si,q,st){
  const d0=BIO.lodD(Sd.x,Sd.z),lodK=clamp(BIO.lod(Sd.x,Sd.z),.5,1)*(Sd.ring?.6:1),beams=Sd.ring?0:(d0<420?2:(d0<760?1:0));
  for(let k=0;k<=7;k++){const u=k/7,r=sp===3?rb*(u<.55?mix(1,1.1,u/.55):mix(1.1,.18,smooth(.55,1,u))):rb*mix(1,.12,Math.pow(u,.85))*(1+.6*Math.exp(-u*H/4));
   pts.push({x:Sd.x+Math.cos(lean)*lk*u*u+Math.sin(u*5+si)*.4,y:Sd.y0+H*u*(sp===3?.9:1),z:Sd.z+Math.sin(lean)*lk*u*u,r:Math.max(.15,r)});}
- const tc=boleCol(sp,si%3),rc=rodCol(sp,si%3);
+ const tc=boleCol(sp,si%3),rc=rodCol(sp,si%3),Ht=H*(sp===3?.9:1),lkH=lk/H*.8;
+ const trunkAt=y=>{const h=clamp(y-Sd.y0,0,Ht);return[Sd.x+Math.cos(lean)*lkH*h,Sd.y0+h,Sd.z+Math.sin(lean)*lkH*h];};   /* the trunk as the item draws it */
  BIO.put('saptrunk'+sp,[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
  st.sapTris+=BIO.defs['saptrunk'+sp].tris;
  const nB=Sd.ring?ri(3,5):ri(5,8),spots=[],band=SAP_BAND[sp];let a=rr(0,TAU);
@@ -255,7 +258,7 @@ function buildSapling(Sd,si,q,st){
   const len=Sd.cr*(sp===0?mix(1,.35,tk):rr(.7,1)),el=rr(SAP_EL[sp][0],SAP_EL[sp][1]);
   const br=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,Math.max(.12,mix(bp.r,bq.r,f)*.5),.06,3,Hb.secCurve,.08);
   if(beams===2){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[1].x,br[1].y,br[1].z],br[0].r,br[1].r,rc);BIO.beam('rod',[br[1].x,br[1].y,br[1].z],[br[3].x,br[3].y,br[3].z],br[1].r,br[3].r,rc);st.sapTris+=2*BIO.defs.rod.tris;}
-  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[2].x,br[2].y,br[2].z],br[0].r,br[2].r,rc);st.sapTris+=BIO.defs.rod.tris;}
+  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[3].x,br[3].y,br[3].z],br[0].r,br[3].r,rc);st.sapTris+=BIO.defs.rod.tris;}   /* to the bough's tip: spots stand on br[3] */
   spots.push(br[1],br[2],br[3],br[3]);if(sp!==3&&sp!==1)spots.push(br[2]);}
  const tp=pts[7];spots.push(tp,tp,{x:tp.x,y:tp.y-H*.07,z:tp.z});if(sp===3)spots.push(tp,tp);
  const cy=Sd.y0+H*mix(band[0],1,.5),size0=clamp(H*.15,3.2,8.5)/Math.sqrt(lodK),sapLeaf=[0x3a6a34,0x2e5a2c];
@@ -265,7 +268,9 @@ function buildSapling(Sd,si,q,st){
   const dx=(x-Sd.x)/Sd.cr,dy=(y-cy)/(H*.35),dz=(z-Sd.z)/Sd.cr,qq=Math.hypot(dx,dy,dz);
   const ao=mix(.55,1,smooth(.25,.9,qq))*rr(.88,1.12),nx=dx+rr(-.3,.3),ny=dy*.6+.8,nz=dz+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
   const c1=C(LC[sp===2?ri(0,1):ri(0,LC.length-1)]).lerp(C(sapLeaf[si%2]),sp===1?.2:.4);
-  BIO.put('clump'+sp,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*Hb.flat,size],bright(c1,1.3*ao),
+  /* the far band draws no boughs (its diet: GRAPHIC-LOAD.md): a clump is held to the trunk, within the reach of its own leaves, at no cost in triangles */
+  const P=beams?[x,y,z]:BIO.holdTo(trunkAt(y),[x,y,z],size*.55);
+  BIO.put('clump'+sp,P,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*Hb.flat,size],bright(c1,1.3*ao),
    {n:[nx/nn,ny/nn,nz/nn],c2:sp===2?bright(LC[2+ri(0,1)],1.3*ao):null});
   st.sapClumps++;});
 }

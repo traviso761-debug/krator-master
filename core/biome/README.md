@@ -86,6 +86,24 @@ const segs = BIO.tree(T.x, T.z, L => { drawBoughs(T); BIO.clumpOn('clump', L, {p
 the hyperjungle's own items are what `guards.maxShare` caps on necanyons' pages. An item that uses `BIO.geo.clump` and has its
 stems comes out at its origin on the twig; a centred tripod sits centred on it.
 
+## What held means, and the residual floaters (`20-core-kit.js`, 2026-11-02; `test-attach.js`)
+
+`BIO.attachAudit` measures to the surface as drawn: each triangle's nearest point (`BIO.triDist`), and an instanced item's axis less
+its radius. Until 2026-11-02 it measured to points along triangle edges, 2 m apart, so a card lying on a 3 by 9 m bark quad could read
+as floating; that was a false positive on every lathed bole. The tolerances did not change. What was real came in four classes:
+
+- **A far tier drops the parent, keeps the child.** A pass that stops drawing boughs past a distance keeps its clumps where the boughs
+  were. Bring them in with **`BIO.holdTo(c, p, reach)`**: `c` a point on what is drawn, the pass's draws as they were, no new triangles.
+  Reach: `size*.55` for a centred tripod, `size*.2+.3` for a stem card (the audit's limits are `.6*size+.5` and `.25*size+.5`).
+- **A crown jittered round a spot.** The same `holdTo`, with the spot's point on the limb as `c`, or `BIO.snapSeg` for what must lie on
+  the span (a flower on a twig).
+- **A crown with no structure at all.** Draw it: a rod to each clump, where the tree is meant to read as branched.
+- **On water.** A raft or a pad is `{free:true}`, as the audit's comment has always said. Use it only for what lies on the water.
+
+**`{onLeaf:true}`** on an item (a flower in a bush, a bract in a ginger) lets it be held inside the body of a leaf card that is not
+`onLeaf` itself: half the card's width round it, and its height (a stem card: up from the stem; a centred card: half each way). That
+card answers for its own hold. It is for small things drawn in foliage, not a way to pass a crown: `test-attach.js` holds the negatives.
+
 ## The runtime LOD's draw-call options (B1, B2; `20-core-kit.js`)
 
 A pass that sets `BIO.range` keys what it puts by chunk and range, and `BIO.lodTick(camera)` shows a chunk mesh while the

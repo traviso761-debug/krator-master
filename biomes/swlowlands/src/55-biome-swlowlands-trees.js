@@ -315,7 +315,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
   const nv=lv===2?ri(16,24):7;
   for(let v=0;v<nv;v++){const i=ri(2,pts.length-1),p=pts[i],px=p.x+rr(-1.8,1.8),pz=p.z+rr(-1.8,1.8),gy=Y(px,pz),L=Math.max(1.5,(p.y-gy)*rr(.55,.95));
    const col=rng()<.08?shade(vary(C(pick(S.twig)),.02,.08,.05),-.1):leafCol(S.leaf,1.25);
-   BIO.put('veil',[px,p.y+rr(0,1),pz],qEuler(0,rr(0,TAU),0),[rr(.45,.85),L*rr(.7,1),1],col);st.veils++;}
+   BIO.put('veil',BIO.holdTo([p.x,p.y,p.z],[px,p.y+rr(0,1),pz],p.r+.5),qEuler(0,rr(0,TAU),0),[rr(.45,.85),L*rr(.7,1),1],col);st.veils++;}
   clumpAt('lance',pts[3].x,pts[3].y+1,pts[3].z,rr(4,6),.7,C(pick(S.leaf)),T.x,T.y0+H*.8,T.z,T.crownR,H*.3);st.clumps++;}
  T.spread=spread(T,all);reg(T,S);};
 // 8 / 20 the VASE: several stems from the foot, leaning out and forking (copper

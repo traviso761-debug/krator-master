@@ -104,13 +104,14 @@ function cauliflory(x,z,y0,H,rAt,n,size,st,uLo,uHi){uLo=uLo==null?.15:uLo;uHi=uH
 // Spanish-moss-like beards hung from a bough point; how many depends on how
 // wet the ground is (none on the flats, thick in the marsh and the deltas).
 function beardsAt(p,wet,k,st,long){const n=Math.round(rr(0,2.2)*k*smooth(.55,.95,wet));
- for(let i=0;i<n;i++){const L=long?rr(4,12):rr(2.5,8);BIO.put('beard',[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.6),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;}}
+ for(let i=0;i<n;i++){const L=long?rr(4,12):rr(2.5,8);BIO.put('beard',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],(p.r||.3)+.3),qEuler(0,rr(0,TAU),0),[rr(1.2,2.6),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;}}
 // ---------------------------------------------------------------- foliage helpers
-function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
+// hold (a point on what is drawn, [x,y,z]): the card stems from there, within its own leaves' reach, so a jittered crown stays on its limbs (the attach audit)
+function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,hold){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+ BIO.put(item,hold?BIO.holdTo(hold,[x,y,z],size*.2+.3):[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col);}
 function frondCrown(item,x,y,z,Rf,n,p0,p1,col,wid){const a0=rr(0,TAU);for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2);frondAt(item,x,y,z,a,Rf*rr(.85,1.1),rr(p0,p1),bright(col,rr(.88,1.1)),wid);}}
 function fanAt(x,y,z,a,L,tilt,col,item){BIO.put(item||'fan',[x,y,z],qEuler(tilt,Math.atan2(Math.cos(a),Math.sin(a)),rr(-.08,.08)),[L*rr(.9,1.1),L,1],col);}
@@ -152,7 +153,7 @@ B[0]=B[1]=function(T,st,lv){const S=SP[T.sp],fam=T.sp===0?'bark0i':'bark'+S.bark
  // the tufts: strap clumps at every fork tip, lit from the crown's centre
  const cy=T.y0+H*.92,ex=T.crownR,ey=H*.2,item='strap',sz0=T.sp===0?rr(9,13):rr(7,10),nC=lv===2?4:2;let mine=0;
  spots.forEach(s=>{for(let c=0;c<nC;c++){const a=rr(0,TAU),d=s.s*.7*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.3,.7)*s.s*.6;
-  if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.75,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}
+  if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.75,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[s.p.x,s.p.y,s.p.z]);st.clumps++;mine++;}
   if(rng()<.09){BIO.put('pod',[s.p.x,s.p.y-.3,s.p.z],qEuler(0,rr(0,TAU),0),rr(3,5)*(T.sp===0?1.3:1),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}});
  if(!mine){clumpAt(item,T.x,T.y0+H*.76,T.z,sz0,.75,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}   // hemmed in: never a bare pole
  let spread=T.crownR;spots.forEach(s=>{spread=Math.max(spread,Math.hypot(s.p.x-T.x,s.p.z-T.z)+s.s);});T.spread=spread;
@@ -185,7 +186,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3;
  const cy=T.y0+H*.85,ex=T.crownR,ey=H*.25,sz0=rr(6.5,9),nC=lv===2?1.7:1.1;let mine=0;
  spots.forEach(s=>{const cnt=Math.floor(nC)+(rng()<nC-Math.floor(nC)?1:0);
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.3,.5)*s.s;
-   if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('broad',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}});
+   if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('broad',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[s.p.x,s.p.y,s.p.z]);st.clumps++;mine++;}});
  if(!mine){clumpAt('broad',T.x,T.y0+H*.9,T.z,sz0,.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv===2){cauliflory(T.x,T.z,T.y0,H,rAt,ri(8,13),rr(.6,.9),st,.1,.6);
   boughs.forEach(pts=>{for(let i=1;i<4;i++)if(rng()<.6){const p=pts[i],col=compCol();for(let k=0,m=ri(3,6);k<m;k++){const a=rr(0,TAU),s=rr(.45,.8);
@@ -238,7 +239,7 @@ B[6]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  spots.push({p:{x:T.x,y:T.y0+H*.9,z:T.z,r:.3},s:3},{p:{x:T.x,y:T.y0+H*.86,z:T.z,r:.3},s:4});
  const cy=T.y0+H*.82,ex=T.crownR,ey=H*.2,sz0=rr(5,7);
  spots.forEach(s=>{if(lv<2&&rng()<.4)return;for(let c=0,m=lv===2?(rng()<.5?2:1):1;c<m;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.2,.5)*s.s;
-  if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt('feather',x,y,z,sz0*rr(.85,1.2),.45,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}});
+  if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt('feather',x,y,z,sz0*rr(.85,1.2),.45,C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[s.p.x,s.p.y,s.p.z]);st.clumps++;}});
  if(lv>=1){beards.forEach(p=>{if(lv===1&&rng()<.5)return;const L=rr(4,12);BIO.put('beard',[p.x+rr(-.5,.5),p.y-p.r*.5,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.4),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;});}
  if(lv===2){for(let k=0,m=ri(4,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.6,4.5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y-BIO.waterH(x,z)<-.9||!BIO.clearOf(x,z,.5))continue;
    const h=rr(.5,1.6);BIO.put('cone',[x,y-.25,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.7,h+.25,h*.7],rodCol(S,k));st.knees++;}}
@@ -251,10 +252,12 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,gy=T.y0,base=gy+rr(1.2,2.4
   const mid=[T.x+Math.cos(a)*R*.55,base-(base-gyy)*.35,T.z+Math.sin(a)*R*.55];
   BIO.beam('rod',[T.x+Math.cos(a)*rb*.7,base+.4,T.z+Math.sin(a)*rb*.7],mid,rb*.32,rb*.24,rc);BIO.beam('rod',mid,[gx,Math.min(gyy,base-1)-.4,gz],rb*.24,rb*.15,rc);}
  const cy=T.y0+H*.8,ex=T.crownR,ey=H*.25,n=lv===2?ri(7,10):4,hc=C(pick(S.leaf));
+ const stubs=[];   /* the crown stood on no boughs: a rod to each clump (the attach audit), as many as it has clumps, mid tier too */
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=T.crownR*rr(.15,.8),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=T.y0+H*rr(.62,.98);
+  BIO.beam('rod',[T.x,T.y0+H*.58,T.z],[x,y,z],rb*.3,rb*.08,rc);st.sapTris+=BIO.defs.rod.tris;stubs.push({x,y,z,r:rb*.08});
   clumpAt('round',x,y,z,T.crownR*rr(.5,.8),.7,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv===2&&rng()<.5){const a=rr(0,TAU);BIO.beam('rod',[T.x+Math.cos(a)*rb*.5,T.y0+H*.6,T.z+Math.sin(a)*rb*.5],[T.x+Math.cos(a)*T.crownR*.9,T.y0+H*.7,T.z+Math.sin(a)*T.crownR*.9],rb*.3,rb*.1,rc);}
- if(lv>=1)beardsAt({x:T.x+rr(-1,1)*T.crownR*.5,y:T.y0+H*.7,z:T.z+rr(-1,1)*T.crownR*.5,r:.4},T.wet,1,st,false);};
+ if(lv>=1){rr(-1,1);rr(-1,1);beardsAt(stubs[0],T.wet,1,st,false);}};   /* the two draws of the point it used to pick in the air */
 // 8 the fan palmetto: a fibrous trunk and a head of fans
 B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.16);
  BIO.put('trunk',[T.x,T.y0-.5,T.z],qUp([Math.cos(la)*lk,1,Math.sin(la)*lk]),[rb/.4*1.15,H+.5,rb/.4*1.15],tint(pick(S.bark),means().bark[1],rr(.8,1)));st.sapTris+=BIO.defs.trunk.tris;
@@ -273,7 +276,7 @@ B[9]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),la=rr(
   BIO.beam('rod',[tx,ty-.2,tz],mid,rb*.5,rb*.3,rc);BIO.beam('rod',mid,end,rb*.3,rb*.12,rc);spots.push(mid,end,end);}
  const cy=T.y0+H*.95,ex=T.crownR,ey=H*.18,sz0=T.crownR*rr(.42,.6),hc=C(pick(S.leaf));
  spots.forEach(p=>{for(let c=0,m=lv===2?2:1;c<m;c++){const a=rr(0,TAU),d=sz0*.5*rng(),x=p[0]+Math.cos(a)*d,z=p[2]+Math.sin(a)*d,y=T.y0+H*rr(.88,1.02);
-  clumpAt('leaflet',x,y,z,sz0*rr(.85,1.2),.32,hc,T.x,cy,T.z,ex,ey);st.clumps++;}});
+  clumpAt('leaflet',x,y,z,sz0*rr(.85,1.2),.32,hc,T.x,cy,T.z,ex,ey,[p[0],p[1],p[2]]);st.clumps++;}});
  if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR,h:T.H});};
 // 10 the jade shrub: a thick little trunk, a few fat branches, paddle leaves, the odd head of pale flowers
 B[10]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed);
@@ -315,7 +318,7 @@ B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.08)
  if(lv===2){for(let k=0,m=ri(6,10);k<m;k++){const a=rr(0,TAU),el=rr(.1,1.2);BIO.beam('rod',[tx,cy-R*.7,tz],[tx+Math.cos(a)*Math.cos(el)*R*.9,cy-R*.7+Math.sin(el)*R*1.1,tz+Math.sin(a)*Math.cos(el)*R*.9],rb*.35,rb*.12,rc);}}
  const n=lv===2?ri(7,10):lv===1?5:3;
  for(let k=0;k<n;k++){const a=rr(0,TAU),el=rr(-.4,1.2),d=R*rr(.2,.7);const x=tx+Math.cos(a)*Math.cos(el)*d,y=cy+Math.sin(el)*d*.8,z=tz+Math.sin(a)*Math.cos(el)*d;
-  clumpAt('sanford',x,y,z,R*rr(1.0,1.4),.9,rng()<.8?hc:C(pick(S.leaf)),tx,cy,tz,R,R*.9);st.clumps++;}
+  clumpAt('sanford',x,y,z,R*rr(1.0,1.4),.9,rng()<.8?hc:C(pick(S.leaf)),tx,cy,tz,R,R*.9,[tx,cy-R*.7,tz]);st.clumps++;}
  if(lv>=1)beardsAt({x:tx,y:cy-R*.6,z:tz,r:.3},T.wet,.6,st,false);};
 // ---------------------------------------------------------------- the coal-swamp set
 // 14 the seal-tree (Sigillaria): a fluted unbranched pole, leaf scars in rows, a pompom of grass-leaves, cones hung under it, one fork at most
@@ -338,7 +341,7 @@ B[14]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3;
  const CK=S.crown||{},nz=(v,d)=>v==null?d:v,EL=CK.el||[-.3,1.3];
  tops.forEach(tp=>{const R=T.crownR*.55*tp.s,cy=tp.y+R*nz(CK.lift,.6),nC=Math.round((lv===2?ri(9,12):lv===1?6:3)*nz(CK.n,1)),sz0=rr(5.5,7.5)*tp.s*nz(CK.size,1);
   for(let c=0;c<nC;c++){const a=rr(0,TAU),el=rr(EL[0],EL[1]),d=R*rr(.15,.75),x=tp.x+Math.cos(a)*Math.cos(el)*d,y=cy+Math.sin(el)*d*.8,z=tp.z+Math.sin(a)*Math.cos(el)*d;
-   if(CK.clear!==false&&!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.9,rng()<.85?hc:C(pick(S.leaf)),tp.x,cy,tp.z,R,R);st.clumps++;}
+   if(CK.clear!==false&&!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(item,x,y,z,sz0*rr(.85,1.2),.9,rng()<.85?hc:C(pick(S.leaf)),tp.x,cy,tp.z,R,R,[tp.x,tp.y,tp.z]);st.clumps++;}
   if(lv>=1){const n=Math.round((lv===2?ri(7,10):5)*nz(CK.skirt,1)),a0=rr(0,TAU);for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2);frondAt('strapfrond',tp.x,tp.y+.3,tp.z,a,R*rr(1.0,1.4),rr(-1.0,-.45),bright(vary(hc,.02,.08,.05),1.4),1.1);}   // the grass skirt hangs
    for(let k=0,m=lv===2?ri(2,4):1;k<m;k++){const a=rr(0,TAU),r=rAt(.88)+.3;BIO.put('pod',[tp.x+Math.cos(a)*r,tp.y-rr(0,2),tp.z+Math.sin(a)*r],qEuler(0,rr(0,TAU),0),rr(2.6,4.2),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}   // the cones
   spread=Math.max(spread,Math.hypot(tp.x-T.x,tp.z-T.z)+R*1.4);});
@@ -369,9 +372,9 @@ B[15]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,l
  spots.push({p:{x:tx,y:ty+2,z:tz},s:3,tip:true});
  const cy=T.y0+H*.88,ex=T.crownR,ey=H*.25,sz0=rr(5,7),hc=C(pick(S.leaf));let mine=0;
  spots.forEach(sp=>{for(let c=0,m=lv===2?(sp.tip?2:1):1;c<m;c++){const a=rr(0,TAU),d=sp.s*.6*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(-.2,.6)*sp.s;
-   if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt('blade',x,y,z,sz0*rr(.85,1.2)*(sp.tip?1.1:1),.8,rng()<.8?hc:C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}
+   if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt('blade',x,y,z,sz0*rr(.85,1.2)*(sp.tip?1.1:1),.8,rng()<.8?hc:C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[sp.p.x,sp.p.y,sp.p.z]);st.clumps++;mine++;}
   if(lv>=1&&sp.tip){const n=lv===2?5:3,a0b=rr(0,TAU);for(let k=0;k<n;k++){const a=a0b+k/n*TAU+rr(-.3,.3);frondAt('strapfrond',sp.p.x,sp.p.y+.2,sp.p.z,a,sp.s*rr(.9,1.3),rr(-.55,.15),bright(vary(hc,.02,.08,.05),1.4),1.0);}   // the straps themselves
-   if(lv===2&&rng()<.4){for(let k=0,m=ri(1,2);k<m;k++)BIO.put('pod',[sp.p.x+rr(-1,1),sp.p.y-.3,sp.p.z+rr(-1,1)],qEuler(0,rr(0,TAU),0),rr(1.8,3.0),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}});   // catkins
+   if(lv===2&&rng()<.4){for(let k=0,m=ri(1,2);k<m;k++)BIO.put('pod',BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[sp.p.x+rr(-1,1),sp.p.y-.3,sp.p.z+rr(-1,1)],(sp.p.r||.1)+.3),qEuler(0,rr(0,TAU),0),rr(1.8,3.0),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}});   // catkins
  if(!mine){clumpAt('blade',tx,ty+2,tz,sz0,.8,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv>=1)spots.forEach(sp=>{if(!sp.tip)beardsAt(sp.p,T.wet,1.0,st,true);});
  if(lv===2)cauliflory(T.x,T.z,T.y0,H*.66,rAt,ri(2,5),rr(.5,.8),st,.2,.85);
@@ -424,7 +427,7 @@ B[18]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3,l
  spots.push({p:{x:tx,y:T.y0+hb+2,z:tz,r:.3},s:3});
  const cy=T.y0+H*.7,ex=T.crownR,ey=H*.4,sz0=rr(4.2,5.8),hc=C(pick(S.leaf));let mine=0;
  spots.forEach(sp=>{for(let c=0,m=lv===2?2:1;c<m;c++){const a=rr(0,TAU),d=sp.s*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(0,.8)*sp.s;
-  if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt('oak',x,y,z,sz0*rr(.85,1.2),.65,rng()<.8?hc:C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}});
+  if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt('oak',x,y,z,sz0*rr(.85,1.2),.65,rng()<.8?hc:C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[sp.p.x,sp.p.y,sp.p.z]);st.clumps++;mine++;}});
  if(!mine){clumpAt('oak',tx,T.y0+hb+3,tz,sz0,.65,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv>=1){beards.forEach(p=>{if(lv===1&&rng()<.5)return;const L=rr(3,9);BIO.put('beard',[p.x+rr(-.6,.6),p.y-p.r*.4,p.z+rr(-.6,.6)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.6),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;});}
  if(lv===2){spots.forEach(sp=>{if(!sp.up||rng()<.5)return;const p=sp.p;   // resurrection ferns and moss along the tops of the boughs
