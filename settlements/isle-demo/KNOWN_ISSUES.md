@@ -253,10 +253,13 @@
 - [ ] **The criminal does not walk to the house it burgles**: the burglary is resolved at the hour, where the criminal
       sleeps. Nor does a pickpocket choose a market: it works where its free hour takes it.
 - [ ] **No money:** a pocket picked is the victim's material meter and the thief's; nothing changes hands. Coin waits for
-      wages (PLAN-ECONOMY's later phases).
+      wages: the research and a proposal are in `core/simulation/PLAN-MONEY.md` (questions for the owner at its end).
 - [ ] **The guild's stash goes nowhere:** what is fenced sits in the guild's store and on its shelf. With money it would be
       sold on (to the player above all); for now nobody buys it, and its food is still counted in the town's storage.
-- [ ] **The guild is not marked on the map:** it is one of the taverns (`P.guild` in the sim); the inspector does not name it.
+- [x] **The guild is marked on the map** (2026-11-02): a landmark "Thieves' guild" under its tavern in each town's registry (the
+      inspector names it), a plum sign with a dagger by the tavern's door and a pin over its roof (60 `DRAW.guild`), a button to
+      fly there on the city page, and on the open world a diamond on the region map with a legend line and a Go to entry.
+      The pin always shows (a map marker, not something a citizen would see): `DRAW.guildPins(false)` hides it.
 - [ ] **The player's hooks are untried in a page** (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`): tested in core on
       ordinary actors; the isle pages have no player.
 - [ ] **No fights yet in two weeks:** nobody's happiness falls under 30. The rule is tested in core (test-sim.js) only.

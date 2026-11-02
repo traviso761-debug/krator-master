@@ -87,6 +87,8 @@ const order=WORLD_CONFIG.goOrder;
 const P=PLACES.list.slice().sort((a,b)=>{const ia=order.indexOf(a.name),ib=order.indexOf(b.name);return (ia<0?99:ia)-(ib<0?99:ib)||((b.cand?1:0)-(a.cand?1:0))||a.name.localeCompare(b.name);});
 for(const p of P)addGo((p.cand?'↳ ':'')+p.name+' · '+p.type+(p.biome?' · '+p.biome:''),()=>{setView(p.x+900,p.z+1400,320,0,-.18);lookAt(p.x,WORLD.H(p.x,p.z)+40,p.z);});
 // one spot well inside each kit's overlay: the inside dry pixel of that kit nearest the kit's own centroid (dry: an archipelago's centroid is sea)
+/* the page's own marks (window.MAP_MARKS: {x, z, label, color, legend?, view: [x, z, agl, yaw, pitch]}, the isle's thieves' guilds, 88t): a Go to entry each */
+for(const m of (window.MAP_MARKS||[]))if(m.view)addGo(m.label,()=>{setView(...m.view);lookAt(m.x,WORLD.H(m.x,m.z)+8,m.z);});
 WORLD.KITS.forEach((k,ki)=>{const B=M.frame.box_px;let sx=0,sz=0,n=0;const pts=[];
  for(let py=B[1]+4;py<B[3]-4;py+=6)for(let px=B[0]+4;px<B[2]-4;px+=6){const [x,z]=WORLD.fromPx(px,py);if(!WORLD.inside(x,z))continue;if(WORLD.kitW(ki,x,z)>.99&&!(WORLD.lakeWater(x,z)>WORLD.H(x,z))){pts.push([x,z]);sx+=x;sz+=z;n++;}}
  if(!n)return;sx/=n;sz/=n;let best=pts[0],bd=1e18;for(const q of pts){const d=(q[0]-sx)**2+(q[1]-sz)**2;if(d<bd){bd=d;best=q;}}
@@ -112,9 +114,13 @@ function paintBase(R){RAS=R||RAS;R=RAS;const g=base.getContext('2d'),id=g.create
  for(const p of PLACES.list){const X=p.px-M.frame.box_px[0],Y=p.py-M.frame.box_px[1];g.fillStyle=p.cand?'#7fd0ff':p.build?'#ffc070':'#e8e0d0';g.beginPath();g.arc(X,Y,p.build||p.cand?4:2.5,0,Math.PI*2);g.fill();}
  if(MODE===1){const n={};for(let k=0;k<R.clim.length;k++)if(R.mask[k]>127)n[R.clim[k]]=(n[R.clim[k]]||0)+1;
   $('maplegend').innerHTML='<b>Köppen classes in the region</b><br>'+Object.keys(n).sort((a,b)=>n[b]-n[a]).map(c=>{const C=M.classes[c];return '<span style="color:'+C.color+'">■</span> '+C.code+' '+C.name+' ('+Math.round(n[c]*4/1000)+'k km²)';}).join('<br>');}
- else $('maplegend').innerHTML=(MODE===2?'<b>Biome regions</b><br>':'')+M.biomes.filter(b=>b.px_in_region>0).map(b=>'<span style="color:'+b.colour+'">■</span> '+b.name+(b.kit?'':' (bare)')).join(MODE===2?'<br>':' · ');}
+ else $('maplegend').innerHTML=(MODE===2?'<b>Biome regions</b><br>':'')+M.biomes.filter(b=>b.px_in_region>0).map(b=>'<span style="color:'+b.colour+'">■</span> '+b.name+(b.kit?'':' (bare)')).join(MODE===2?'<br>':' · ');
+ {const ML=[...new Set((window.MAP_MARKS||[]).map(m=>m.legend).filter(Boolean))];if(ML.length)$('maplegend').innerHTML+='<br>'+ML.map(l=>'<span style="color:#c050a0">◆</span> '+l).join(' · ');}   /* the page's marks (window.MAP_MARKS) */
+}
 $('ov').onchange=()=>{MODE=+$('ov').value;TERRAIN.OVERLAY.value=MODE;paintBase();$('ov').blur();};
 function drawMap(){mg.drawImage(base,0,0);const C=camera.position,X=WORLD.px(C.x)-M.frame.box_px[0],Y=WORLD.py(C.z)-M.frame.box_px[1];
+ for(const m of (window.MAP_MARKS||[])){const mx=WORLD.px(m.x)-M.frame.box_px[0],my=WORLD.py(m.z)-M.frame.box_px[1];   /* a page's marks: a diamond, outlined */
+  mg.fillStyle=m.color||'#c050a0';mg.strokeStyle='#000';mg.lineWidth=1;mg.beginPath();mg.moveTo(mx,my-5);mg.lineTo(mx+4,my);mg.lineTo(mx,my+5);mg.lineTo(mx-4,my);mg.closePath();mg.fill();mg.stroke();}
  mg.save();mg.translate(X,Y);mg.rotate(-st.yaw);mg.fillStyle='#ff4030';mg.strokeStyle='#000';mg.beginPath();mg.moveTo(0,-11);mg.lineTo(6,6);mg.lineTo(0,2);mg.lineTo(-6,6);mg.closePath();mg.fill();mg.stroke();mg.restore();}
 mm.addEventListener('click',e=>{const r=mm.getBoundingClientRect(),px=M.frame.box_px[0]+(e.clientX-r.left)/r.width*W,py=M.frame.box_px[1]+(e.clientY-r.top)/r.height*Hh;
  const [x,z]=WORLD.fromPx(px,py),agl=Math.max(300,camera.position.y-ground(camera.position.x,camera.position.z));setView(x,z,Math.min(agl,8000),st.yaw,st.pitch);});

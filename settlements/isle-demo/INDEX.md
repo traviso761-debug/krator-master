@@ -29,7 +29,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-isle-sim-checks.js` | 11 | 7f. THE SIM'S CHECKS, PER TOWN (P7b) (1) |
 | `46-isle-stocks.js` | 2 | 7g. THE STOCKS ID MAP (P7b) (1) |
 | `47-isle-trade.js` | 13 | 7h. THE CANOE LINE BETWEEN THE TOWNS (P7c) (1) |
-| `47c-isle-crime.js` | 9 | 7h1. CRIME AND PUNISHMENT (2026-11-02) (1) |
+| `47c-isle-crime.js` | 11 | 7h1. CRIME AND PUNISHMENT (2026-11-02) (1) |
 | `47h-isle-hamlets.js` | 33 **big** | 7h2. THE HAMLETS IN THE SIM (core/hamlet H5, 202 (1) |
 | `48-isle-week.js` | 23 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 2 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
@@ -38,8 +38,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
 | `58-isle-protos.js` | 9 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
-| `60-isle-draw.js` | 19 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
+| `60-isle-draw.js` | 22 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `61-isle-canoes.js` | 3 | 5d. THE CANOE LINE'S VESSELS AT THE STOP (P7c) (1) |
 | `62-isle-export-scene.js` | 10 | 5e. THE DRAWN TOWN IN THE EXPORT (P8, 2026-10-20 (1) |
-| `98-isle-city-start.js` | 9 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
+| `98-isle-city-start.js` | 10 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

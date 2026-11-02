@@ -73,3 +73,22 @@ ISLE.crimeChecks = function (a, b) {
     towns.map(function (s) { var st = b.towns[s].report.stats; return s + ': ' + (st.fenced || 0) + ' of ' + (st.stolen || 0) + ' servings and ' + (st.fencedItems || 0) + ' of ' + (st.taken || 0) + ' things fenced, ' + (b.towns[s].report.carrying || []).length + ' still carrying, ' + (st.recovered || 0) + ' recovered'; }).join('; '));
   return res;
 };
+/* THE GUILD ON THE MAP (owner, 2026-11-02): each town's guild as a record a page can mark. ISLE.guildMarks() -> [{settlement,
+   town, place, tag, name, x, z}] (world metres; `tag` the tavern's core/tags record, core/city's); ISLE.tagGuilds(tagsOf)
+   registers a `landmark` "Thieves' guild" under that tavern in its town's registry (tagsOf(town) -> KTAGS), so the inspector
+   names it and a page draws its sign there -> the marks with their record and frame position (at, size, ry). Once a page */
+ISLE.guildMarks = function () {
+  var S = ISLE.SIM, out = []; if (!S || !SIM.CRIME || !SIM.guildOf) return out;
+  S.order.forEach(function (s) { var G = SIM.guildOf(s); if (!G) return;
+    out.push({ settlement: s, town: S.towns[s].town, place: G.id, tag: G.tags && G.tags.tag != null ? G.tags.tag : null, name: G.name, x: G.x, z: G.z }); });
+  return out;
+};
+ISLE.tagGuilds = function (tagsOf) {
+  return ISLE.guildMarks().map(function (m) {
+    var T = tagsOf(m.town), P = T && m.tag != null ? T.get(m.tag) : null; if (!P) return Object.assign({ record: null }, m);
+    var R = T.child(P.id, { 'class': 'landmark', kind: "thieves' guild", key: 'thieves-guild', name: "Thieves' guild", at: P.at.slice(), ry: P.ry || 0,
+      r: P.size ? Math.max(6, Math.hypot(P.size[0], P.size[1]) / 2) : 6, h: P.size ? P.size[2] : 6, tags: { culture: 'islander', types: ['tavern'], role: 'guild' },
+      note: 'the thieves\' guild of ' + m.town + ': a criminal hides here from the watch and fences what it stole (47c)', src: 'isle-demo' });
+    return Object.assign({ record: R.id, at: P.at.slice(), size: P.size ? P.size.slice() : null, ry: P.ry || 0 }, m);
+  });
+};

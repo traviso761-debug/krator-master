@@ -221,6 +221,8 @@ declares both once they are planned, in one order whichever town it draws, and h
   the thief's material meter down. Arrested first, the loot goes back to the household. Two weeks: 4 hid (none taken),
   every stolen thing and most of the food fenced (the rest eaten at the thief's home first). The player's hooks are in
   core (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`), waiting for a player.
+  On the map: the guild is a landmark under its tavern (the inspector names it), with a plum sign by the door, a pin over
+  the roof and a button to fly there; on the open world, a diamond on the region map and a Go to entry.
 - **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
   years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
   village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand
