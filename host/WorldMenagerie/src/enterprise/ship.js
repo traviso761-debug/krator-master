@@ -63,7 +63,9 @@ export function model(api){
           vec3 c=vec3(0.004,0.005,0.009)+vec3(0.006,0.007,0.012)*max(0.,d.y);
           c+=vec3(0.10,0.17,0.28)*smoothstep(pc-0.25,pc+0.02,p)+vec3(0.03,0.05,0.08)*smoothstep(-0.2,pc,p);
           c+=vec3(6.,5.6,5.)*smoothstep(0.9990,0.9998,dot(d,normalize(uS)))+vec3(0.08,0.07,0.06)*pow(max(0.,dot(d,normalize(uS))),24.);
-          gl_FragColor=vec4(c,1.);}`});
+          gl_FragColor=vec4(c,1.);
+          #include <encodings_fragment>
+        }`});
     s.add(new THREE.Mesh(new THREE.SphereGeometry(100,48,24),m));
     const pm=new THREE.PMREMGenerator(renderer),t=pm.fromScene(s,0).texture;pm.dispose();m.dispose();
     return t;
