@@ -96,6 +96,21 @@ function cardFit(raw,mat,indexed){const cb=raw.userData&&raw.userData.card,lc=ma
   for(let i=0;i<A.length;i+=2){let u=A[i],v=A[i+1];for(let r=0;r<k;r++){const t=u;u=1-v;v=t;}A[i]=u;A[i+1]=v;}   /* a quarter turn: left -> top -> right -> bottom */
   U.needsUpdate=true;}
  return {geo:indexed?weldGeo(g):g,fit:g!==raw};}
+// THE INSTANCE CAP (CORE-IMPROVEMENTS 3c, 2026-10-27): an item put more than BIO.CAP times (250k, counted across bakes) is a
+// pass planned by density and never counted (Korona's 918,541 cobra lilies from an undefined bias). The first put over it
+// says so once, naming the item, the pass (BIO.cur) and the way out, and the item still draws, so a page's look never
+// changes: a console warning by default (nhighlands' needles, 632k, and fronds, 595k, are over it, and a page waits for its
+// own turn), BIO.err with BIO.CAP_ERR (verify's console check then fails), a throw with BIO.CAP_THROW (or BIO.init({capThrow:
+// true}); a session writing a new pass sets it). An item
+// that means to be that many says so: BIO.def(name, geo, mat, {cap: N or Infinity, capWhy: 'why'}); a cap with no capWhy is
+// reported too. BIO.capReport() -> [{kit, item, count, cap, pass, why}], every item over its cap (verify reads it).
+BIO.CAP=250000;BIO.CAP_THROW=false;BIO.CAP_ERR=false;BIO._capOver=[];
+BIO.capReport=function(){return BIO._capOver.map(e=>Object.assign({},e,{count:e.def.nPut,def:undefined}));};
+function capHit(name,def){const cap=def.cap!=null?def.cap:BIO.CAP;def.capHit=true;
+ const e={kit:BIO.kitName||'',item:name,count:def.nPut,cap,pass:BIO.cur||null,why:def.capWhy||null,def};BIO._capOver.push(e);
+ const msg='BIO.put: '+name+(e.kit?' (kit '+e.kit+')':'')+' passed its instance cap of '+cap+' in pass '+(e.pass||'?')+
+  ': count the pass, coarsen its cell, or BIO.def(..., {cap, capWhy}) if it is meant';
+ if(BIO.CAP_THROW)throw new Error(msg);if(BIO.CAP_ERR)BIO.err(msg);else console.warn(msg);}
 // THE CARD GUARD (2026-10-27, the owner: "this seems to keep happening"): BIO.def refuses, through BIO.err (the error panel,
 // so every verify fails), a library card drawn in a way that cannot be right: a sheet of plants with no cell, no stems and no
 // cut by BIO.geo.cells or "sheet": "geometry" (every card shows the whole grid); a library plant on a frond, ribbon or hang
@@ -121,9 +136,11 @@ function cardCheck(name,raw,mat){const lc=mat&&mat.userData&&mat.userData.libCar
  BIO.err('card '+lc.slot+' ('+lc.lib+') on item '+name+' '+why+' (python3 tools/textures/check_cells.py <build>)');}
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
+ if(opt.cap!=null&&!opt.capWhy)BIO.err('BIO.def: '+name+' sets cap '+opt.cap+' with no capWhy');
  const cb=geo.userData&&geo.userData.card,g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,ix=opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed;
  if(cb)g0.userData.card=cb;if(geo.userData&&geo.userData.cells)g0.userData.cells=true;const F=cardFit(g0,mat,ix);cardCheck(name,g0,mat);
- BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,free:!!opt.free,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
+ BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,free:!!opt.free,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,
+  cap:opt.cap==null?null:opt.cap,capWhy:opt.capWhy||null,cliff:!!opt.cliff,nPut:0};   /* cliff: the item grows on faces (BIO.cliffCheck, 40-core-place.js) */
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
@@ -154,12 +171,53 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
   if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?1:0);it.count++;BIO.tally(def.tris,1,0);
+ if(++def.nPut>(def.cap!=null?def.cap:BIO.CAP)&&!def.capHit)capHit(name,def);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
 BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
  S.v.set(dx/L,dy/L,dz/L);const q=new T.Quaternion().setFromUnitVectors(S.up,S.v);
- BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);};
+ BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);
+ if(BIO.segs)BIO.segs.push({a:[a[0],a[1],a[2]],b:[b[0],b[1],b[2]],r0,r1:r1==null?r0:r1,end:true});};
+// A TREE'S STRUCTURE, AND A CROWN HELD BY IT (2026-11-01; CORE-IMPROVEMENTS item 1, the attachment audit's floating cards: a
+// crown drawn at points in its volume starts in the air, whatever its stems say). All of it is opt-in: with no BIO.tree scope
+// nothing is recorded and BIO.beam and BIO.tube draw as they did.
+//   BIO.tree(x, z, fn, o) -> segs   one tree's scope. Sets BIO.owner to its foot (one LOD key for all its parts: BIO.guardChecks)
+//         and, for what fn draws, records in segs every BIO.beam and every span of a BIO.tube as {a, b, r0, r1, end} ([x,y,z]
+//         points; end: the last span of its tube, or a beam). Puts back owner, the log, and o's range, minRange and chunk (set
+//         for the scope when given), also on a throw. fn(segs) gets the log as it grows.
+//   BIO.twigEnds(segs, o) -> segs   the spans that end in the air: end set, and nothing else starting where they stop. o.rMax:
+//         only those at most that thick at the tip.
+//   BIO.snapSeg(segs, p, o) -> {p, t, seg, d}   the nearest point of any span to p ([x,y,z]; o.t0, 0: not nearer the span's root
+//         than that). A pass that keeps its own loop, colours and sizes moves each card onto its twig with this. null if no spans.
+//   BIO.clumpOn(item, segs, o) -> count   a crown on twig ends: o.n cards (or o.per a span), going round the twigEnds (o.all: every
+//         span) so every twig has its share, each with its origin on the span at t in o.t0 (.6) to o.t1 (1). Draws from KRAND (o.seed,
+//         default from BIO.owner, and o.salt) and never from the page's stream. o: size (a number or [min, max]), flat (y scale,
+//         1), rMax, tilt (.3 rad, the upright card's jitter), leaf (BIO.leafOn's options: the card held by its stem along the
+//         twig, with 31b-core-leafset.js on the page), col (hex, or (r, i) -> hex), extra ((r, i) -> BIO.put's extra), accept ((p, r)
+//         -> false to skip). r: {p, seg, t, size}.
+BIO.segs=null;
+BIO.tree=function(x,z,fn,o){o=o||{};const S={owner:BIO.owner,segs:BIO.segs,range:BIO.range,minRange:BIO.minRange,chunk:BIO.chunk},L=[];
+ BIO.owner=[x,z];BIO.segs=L;if(o.range!==undefined)BIO.range=o.range;if(o.minRange!==undefined)BIO.minRange=o.minRange;if(o.chunk!==undefined)BIO.chunk=o.chunk;
+ try{fn(L);}finally{BIO.owner=S.owner;BIO.segs=S.segs;BIO.range=S.range;BIO.minRange=S.minRange;BIO.chunk=S.chunk;}
+ return L;};
+BIO.twigEnds=function(segs,o){o=o||{};const key=p=>Math.round(p[0]*100)+','+Math.round(p[1]*100)+','+Math.round(p[2]*100),st=new Set();
+ for(const s of segs)st.add(key(s.a));
+ return segs.filter(s=>s.end&&!st.has(key(s.b))&&(o.rMax==null||s.r1<=o.rMax));};
+BIO.snapSeg=function(segs,p,o){o=o||{};const t0=o.t0==null?0:+o.t0;let best=null,bd=1e18;
+ for(const s of segs){const a=s.a,b=s.b,dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L2=dx*dx+dy*dy+dz*dz;
+  let t=L2>0?((p[0]-a[0])*dx+(p[1]-a[1])*dy+(p[2]-a[2])*dz)/L2:0;t=t<t0?t0:t>1?1:t;
+  const x=a[0]+dx*t,y=a[1]+dy*t,z=a[2]+dz*t,d=(x-p[0])*(x-p[0])+(y-p[1])*(y-p[1])+(z-p[2])*(z-p[2]);
+  if(d<bd){bd=d;best={p:[x,y,z],t,seg:s,d:0};}}
+ if(best)best.d=Math.sqrt(bd);return best;};
+BIO.clumpOn=function(item,segs,o){o=o||{};const L=o.all?(o.rMax==null?segs:segs.filter(s=>s.r1<=o.rMax)):BIO.twigEnds(segs,o);if(!L.length)return 0;
+ const own=BIO.owner,seed=o.seed!=null?o.seed:own?KRAND.hash(Math.round(own[0]*10),Math.round(own[1]*10)):1,salt=o.salt|0,H=(i,k)=>KRAND.unit(KRAND.hash(seed>>>0,i,salt+k));
+ const n=o.n!=null?o.n|0:(o.per==null?1:o.per)*L.length,t0=o.t0==null?.6:+o.t0,t1=o.t1==null?1:+o.t1,sz=o.size==null?1:o.size,fl=o.flat==null?1:+o.flat,tilt=o.tilt==null?.3:+o.tilt;
+ let c=0;for(let i=0;i<n;i++){const seg=L[i%L.length],t=t0+(t1-t0)*H(i,1),a=seg.a,b=seg.b,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+  const size=Array.isArray(sz)?sz[0]+(sz[1]-sz[0])*H(i,2):sz,r={p,seg,t,size};if(o.accept&&o.accept(p,r)===false)continue;
+  const q=o.leaf?BIO.leafQ(BIO.leafOn(seg,t,Object.assign({seed,salt,i},o.leaf))):qEuler((H(i,3)*2-1)*tilt,H(i,4)*TAU,(H(i,5)*2-1)*tilt);
+  BIO.put(item,p,q,[size,size*fl,size],typeof o.col==='function'?o.col(r,i):o.col,o.extra?o.extra(r,i):undefined);c++;}
+ return c;};
 
 // ---------------------------------------------------------------- merged buckets
 BIO.C2_BUCKETS=true;   /* B3: a bucket made with opt.c2 stores BIO.c2 (a builder's current second colour; none: 0,0,0) per vertex, baked as aC2 */
@@ -215,6 +273,7 @@ BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col)
 // changes). opt: seg, cap, rfn(i,ang,pt)->radius multiplier, vscale
 BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buckets[fam];if(!K){BIO.err('BIO.tube: no bucket '+fam);return 0;}
  const seg=opt.seg||8,sc=K.uvScale,n=pts.length;if(n<2)return 0;
+ if(BIO.segs)for(let i=0;i<n-1;i++){const p=pts[i],q=pts[i+1];BIO.segs.push({a:[p.x,p.y,p.z],b:[q.x,q.y,q.z],r0:p.r,r1:q.r,end:i===n-2});}
  const Tn=[],N=[],Bn=[];
  for(let i=0;i<n;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)];Tn.push(new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z).normalize());}
  const ref=Math.abs(Tn[0].y)>.9?new T.Vector3(1,0,0):new T.Vector3(0,1,0);
@@ -450,6 +509,20 @@ function concatGeo(T,gs){let nv=0,ni=0;for(const g of gs){nv+=g.attributes.posit
  const g=new T.BufferGeometry();for(const k in A)g.setAttribute(k,new T.BufferAttribute(A[k],k==='uv'?2:3));g.setIndex(new T.BufferAttribute(I,1));return g;}
 
 // ---------------------------------------------------------------- bake
+// PROBE POINTS (CORE-IMPROVEMENTS item 6, 2026-10-27): the probe samples a merged mesh at its box centre, so a tree, a log or a
+// boulder registered as a volume and drawn into a bucket read empty, and kits added invisible discs and hand-made points.
+// Every baked bucket mesh now carries userData.probePoints, a flat Float32Array [x, y, z ...] (world space: the mesh is
+// unmoved), one point for each BIO.PROBE_CELL-metre cell its triangles' centroids fall in, and userData.probeDrawer
+// ('BIO.bucket:kit|family') for the failure message; core/host's probe adds them (95-host-probe.js). Instanced items need
+// none: the probe reads every instance. BIO.PROBE_CELL 0 turns it off. Nothing drawn changes.
+BIO.PROBE_CELL=2;
+function _probePts(P,n,c){const S=new Set(),out=[],O=65536;let last=-1;
+ for(let t=0;t<n;t++){const o=t*9,x=(P[o]+P[o+3]+P[o+6])/3,y=(P[o+1]+P[o+4]+P[o+7])/3,z=(P[o+2]+P[o+5]+P[o+8])/3;
+  const ix=Math.floor(x/c)+O,iy=Math.floor(y/c)+O,iz=Math.floor(z/c)+O;
+  if(ix<0||iy<0||iz<0||ix>=2*O||iy>=2*O||iz>=2*O){out.push(x,y,z);continue;}   /* off the key's range (over 130 km out at 2 m): kept */
+  const k=(ix*131072+iy)*131072+iz;if(k===last||S.has(k))continue;last=k;S.add(k);out.push(x,y,z);}
+ return new Float32Array(out);}
+BIO._probePts=_probePts;
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
@@ -490,6 +563,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    else{g=indexedGeo(T,P,N,U,Cc,C2);if(S){S.tris=[n];S.ends=[n*3];S.vEnds=[g.attributes.position.count];}}
    g.computeBoundingSphere();
    const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
+   if(BIO.PROBE_CELL>0){m.userData.probePoints=_probePts(P,n,BIO.PROBE_CELL);m.userData.probeDrawer='BIO.bucket:'+(kn?kn+'|':'')+fam;}
    if(key)_lodEntry(m,key,y0,y1,S);
    scene.add(m);BIO.baked.push(m);calls++;}
   K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}
