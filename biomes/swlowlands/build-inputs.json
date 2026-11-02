@@ -73,7 +73,7 @@
     "biomes/swlowlands/tex/under2.albedo.webp": "b181558213a846a71c9fc7c9b621cca138a54d87de193c99bb5bd22d9bed2bfd",
     "biomes/swlowlands/tex/veil.albedo.webp": "2b34a384233488fe77471f0f8fafdb0b102397cd87a630613783ebcf103b8c01",
     "biomes/swlowlands/tex/wood.albedo.webp": "47876a18c2e45b40586c34ddd80ff9a142fa03246e1ba7f86e7200cc9a2482f3",
-    "core/atmos/89-atmos-0-core.js": "de82c4bdbd3859ce733aa5496fdc6aec549f318b68aa53be59e5d28de0d31686",
+    "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-4-weather.js": "423eaaf569340a7d6c86a4d66654ac4cbb47a4301f63cd4351b07438b2695e9c",
     "core/atmos/89-atmos-8-export.js": "72c8b8f487c7942f7fc3d212c79e59205a8bc43b414b40239c74d5923c3929d0",
@@ -82,13 +82,13 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "1a6442627be1ea7e770e0bd39fac2a4303a0a27eb664f50e75cdc5d5f717e144",
+    "core/atmos/host/89-atmos-h-skyhost.js": "716cb16bbf6c4bcd13bcdc484be33c1486ce173f8bc569f04e4bbb6d13958b2a",
     "core/atmos/host/89-atmos-i-skybiome.js": "a5ec7cc868a116fa4d6e6efa5eee1333dca80681eb7d1b68b8200390684dd0ad",
     "core/atmos/sky/89-atmos-e-skymodel.js": "249941190262f136bef16030f9a1b64211cf79ae9a84e2516567b149ba8e83d1",
     "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
-    "core/biome/20-core-kit.js": "37cce4ff1f8545cff49a1549930bf74cc1c30b88fa37d2048ffdc5dae420f3b2",
+    "core/biome/20-core-kit.js": "a9ed9c8ff8d716ad59e28a44cc6ce7365561cafa9ad795b95b40024ef5d5e89b",
     "core/biome/30-core-foliage.js": "c21d133c7db1027878a5298d437736eaa676fccffcb54c77fd04e5f1af49fd9f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -103,20 +103,22 @@
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
     "core/host/95b-host-seat.js": "f619838f0132a588d55f975bc34d37f79da4748a970503c1029330f04374618e",
-    "core/host/host.py": "fda401ea35d86d38d06d643eff7f330d61f66f694aaf0d81b0741947b6af61cf",
+    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "ad882d6dc96ad881fb8ddf10f3264e11314b0a69225c3203c78978795354cbd4",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/38a-core-seat.js": "33662f44a5dadb4e49733671bdb4623953a6c6aed93b182d90683cf317a2da66",
-    "core/water/20-core-water.js": "924892ce6c254e651fc07fd3a149efc9c5e12a1de9bce1b26fa2d57fc780bb16",
+    "core/water/20-core-water.js": "24043b6c78f932ff22235b4609c885dbb7ba1e879488080081ef5b6444e68e76",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "5f94b9c8daa6a9bb678677487d205fadf0e85d0135f2cc0a1a2f7a8c949eed72",
-    "core/water/51-core-water-kinds.js": "cf863818c121c5e97871e7577face83aab0f7b42eaaecbc0c08ecb3bcdd6a575",
+    "core/water/50-core-water-draw.js": "b6c142cfa0a7bd504b66669501998babb46c88119b15bb48319f1f7732034a91",
+    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
     "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -126,10 +128,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/swlowlands/dist/swlowlands.html": "18f963c04e310698e475d9fb56db659c8317e599550eadf8782078f43d0fd766"
+    "biomes/swlowlands/dist/swlowlands.html": "249615f09b6b4e5551ad992d6d63fbf91d62ddfe155af14e416f3320f6c079c9"
    },
    "outputs_raw": {
-    "biomes/swlowlands/dist/swlowlands.html": "0e770ced02c6d96582a1e4500b07ca307fb2383b63abecd80c64a94b6979db2e"
+    "biomes/swlowlands/dist/swlowlands.html": "3cd309794c9670a80f127dcfa2a04392af24f6141e1fc039641ac5544d1d84c3"
    }
   }
  }

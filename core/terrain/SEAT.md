@@ -55,6 +55,10 @@ A build adopts it at its own turn. Nothing moves until it lists the fragments.
 5. **Delete the local check** that the sweep replaces (Yuni's box tests, `ANCHOR_AUDIT`, `sails-clear-cabins`, a
    `ROCKRAY`, a scratchpad float probe), and the hand-made pick discs and probe points a drawer now supplies (below).
 
+Worked example: swlowlands (`biomes/swlowlands/src/99-host-take.js`). A mesh that shares its item between the ground and things
+that hold it (a palm's crown, a limb) needs those pieces left out of the feet and counted, and a tall merged shell with many floors
+may cost too many rays to be a seat surface: the sweep counts every face `under` walks through.
+
 ## The drawers' probe points (item 6)
 
 With the fragment loaded, `KSTACKS.mesh(B, opt)` returns `m.probe` (a flat `[x, y, z]` half way up the body's middle bed;
