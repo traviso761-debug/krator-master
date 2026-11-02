@@ -74,7 +74,7 @@ ISLE.simBooks = function (s) {
   return out;
 };
 ISLE.simFoodChecks = function (R, books) {
-  var out = [], ok = function (name, pass, detail) { out.push({ name: R.town + ': ' + name, ok: !!pass, detail: detail }); }, F = books.foods, k = Object.keys(F);
+  var out = [], ok = function (name, pass, detail) { out.push({ name: R.town + ': ' + name, ok: !!pass, detail: detail }); }, F = books.foods, DI = ((ISLE.SIM.towns[books.town] || {}).econ || {}).diet || {}, k = Object.keys(F).filter(function (f) { return DI[f] == null; });   /* the town's own foods: the imported are landed, not made */
   var sum = function (key) { return k.reduce(function (n, f) { return n + F[f][key]; }, 0); };
   var unmade = k.filter(function (f) { return !(F[f].made > 0) || !(F[f].hauled > 0); });
   ok('every food made and hauled', unmade.length === 0, k.map(function (f) { return f + ' ' + F[f].made + '/' + F[f].hauled; }).join(', ') + ' (made/hauled)' + (unmade.length ? '; NOT: ' + unmade.join(', ') : ''));

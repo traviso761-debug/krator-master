@@ -17,7 +17,7 @@
 //   ISLE_TOWNS_W.ground(x, z)     the towns' ground at a world point and its weight: {h, w} (w 0 outside every square)
 //   ISLE_TOWNS_W.select(town)     the town the export reads (ISLE.cur, KTAGS.page): the city page's drawn town
 //   ISLE_TOWNS_W.seaPath(a, b)    the sea route between two world points (the canoe line's, below); along(P, f, back)
-//   ISLE_TOWNS_W.stats            {ms, errors, sim, simError}
+//   ISLE_TOWNS_W.stats            {ms, errors, sim, simError, hamlets (47h's report), hamletError}
 var ISLE_TOWNS_W=(function(){
 const BAND=150,S={ms:{},errors:[],sim:null,simError:null},plans=[];
 const smooth=t=>t<=0?0:t>=1?1:t*t*(3-2*t);
@@ -39,6 +39,12 @@ function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.ini
  const prev=WORLD.landHook;
  WORLD.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);const g=ground(x,z);return g.w>0?h+(g.h-h)*g.w:h;};
  try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})));}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
+ /* the hamlets on the map (48: ISLE_HAMLETS.make, here once; 88h draws the same villages) join the sim as their towns'
+    settlements (settlements/isle-demo 47h: core/hamlet H5) */
+ if(S.sim&&typeof ISLE_HAMLETS!=='undefined'){try{const IDIMS=ISK.dims(),CATK=(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY)||{};
+   const dims=k=>{const d=IDIMS[k];if(d)return{w:d.w,d:d.d,h:d.h};const a=CATK[k];return a?{w:a.w,d:a.d,h:a.h}:null;};
+   ISLE_HAMLETS.made=ISLE_HAMLETS.make(dims);S.hamlets=ISLE.simHamlets(ISLE_HAMLETS.made.villages);}
+  catch(e){S.hamletError=String(e&&e.stack?e.stack:e);}}
  if(plans.length)select(plans[0].town);
  return plans;}
 /* ---------------------------------------------------------------- the sea route between two points (the canoe line's) */

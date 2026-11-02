@@ -63,7 +63,7 @@ BUILD_FIRST = ['kits/interiors']
 # A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
 # writes it); with --no-build it runs with the other node tests, on the committed output.
 NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js',
-                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js']   # dist/isle-city.plan.js
+                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js']   # dist/isle-city.plan.js
 
 
 def builds():
@@ -101,6 +101,7 @@ def node_tests():
 def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
+         ('dependencies run one way (MODULARITY-PLAN.md)', [PY, 'tools/dep_graph.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
          ('builds take the core modules (README.md, "Core modules are not optional")', [PY, 'tools/check_core_use.py']),
          ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),

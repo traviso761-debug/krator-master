@@ -21,6 +21,7 @@ bodies, activities to clips, the quality pass) is in its README and GODOT-PLAN.m
 | `core/charactermodels/data/` | sliders, peoples, clips, props, posture, per-body kits and skeletons |
 | `core/charactermodels/src/` | the pages' fragments: `10-rig.js` (records, no three.js), `50-figure.js` (the figure and its per-frame passes), `90-editor.js` (Cosmetic Lab), `92-animlab.js` (Animation Lab) |
 | `godot/krator/character/` | the Godot twin (`kchar.gd`, `kchar_figure.gd`); its data under `godot/data/characters/` |
+| `core/charactermodels/data/fur.json`, `tools/fur.py` | the fur shells' look; the garments' fur rows derived from built pieces (`make_garments.py fur_of` writes them for new ones) |
 | `core/charactermodels/prompt-clothes.md` | texture gaps and generation prompts for clothing fabrics |
 | `core/materials/library/` | the shared texture sets the garments take (`FABRIC`, `FABRIC_OF`) |
 

@@ -53,6 +53,13 @@ K.probeTake=function(H){const o=H.o,THREE=o.THREE||root.THREE,scene=H.scene,REG=
   setView:(cx,cy,cz,tx,ty,tz)=>K.setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(H.views),go:k=>K.go(k),
   clock:()=>H.clock.state()};
  if(o.api)Object.defineProperties(api,Object.getOwnPropertyDescriptors(o.api));   // getters stay getters
+ // the biome core's guards (core/biome/20-core-kit.js, 2026-10-27: the card guard, the attachment audit, one LOD key per
+ // tree) join the build's own checks and negatives, so every verify that runs hostChecks runs them. o.guards false: not
+ // added; an object: their options (maxShare, minUp, k, pad, max). The audit reads the build's ground (o.ground).
+ if(root.BIO&&typeof root.BIO.guardChecks==='function'&&o.guards!==false){const G=Object.assign({ground:o.ground},typeof o.guards==='object'?o.guards:{});
+  const hc=api.hostChecks,hn=api.hostNegatives;
+  api.hostChecks=function(){return (hc?hc.apply(this,arguments):[]).concat(root.BIO.guardChecks(G));};
+  api.hostNegatives=function(){return (hn?hn.apply(this,arguments):[]).concat(root.BIO.guardNegatives(G));};}
  K.probe={probePoints,regOccupancy,nanSweep,typeStats};
  root._api=api;if(REG.length||root._registered==null&&o.registry)root._registered=REG.length;};   // a build's own count is kept when it hands no registry
 })(typeof window!=='undefined'?window:globalThis);

@@ -134,7 +134,11 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
   /* a station's floor (LAND.ground): its base layer (the savanna's red soil for the litter) and a DESERT PAVEMENT, small clasts packed
      where its field (KRELIEF.pavement, by vertex: aP) says the wind has taken the fines */
   const GO=LANDO.ground||{},PAVE=typeof GO.pave==='function';
-  const LY=[KGROUND.layer('necanyons',GO.base||'ground.litter',{w:'1.0',tint:GO.baseTint||'vec3(0.42)',name:'base'}),
+  /* THE MOTTLE (the owner, 2026-10-27: "too yellow, needs green mottling"; the savanna "too brown/orange, more yellow mottling"): two
+     octaves of value noise on the world position (patches of ~45 m and ~11 m) tint the floor after its layers, toward the moss and the
+     jungle's green (or a station's own: LAND.ground.mottle {tint, amt}); the base litter itself a little less yellow. ?mottle=0 */
+  const MOT=RQ.get('mottle')==='0'?null:Object.assign({tint:'vec3(0.42,0.88,0.36)',amt:.85},GO.mottle||{});
+  const LY=[KGROUND.layer('necanyons',GO.base||'ground.litter',{w:'1.0',tint:GO.baseTint||(MOT?'vec3(0.36,0.41,0.42)':'vec3(0.42)'),name:'base'}),
    KGROUND.layer('necanyons','ground.talus',{w:'vW.x',tint:'vec3(0.8)',name:'talus'}),
    KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'smoothstep(0.45,0.85,vW.x)',amt:.7,proj:'xz',size:.7,jitter:.9,matrix:.1,sub:.22,fleck:0,
     matrixColor:0x6b3a26,tint:'vec3(0.85)',seed:KRAND.hash(4747,0,1,7)%997,name:'scree'}),
@@ -142,9 +146,12 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
    PAVE?KGROUND.layer('necanyons','rock.red',{kind:'clast',w:'vP',amt:.85,proj:'xz',size:.14,jitter:.9,matrix:.14,sub:0,fleck:0,matrixColor:GO.paveMatrix||0x9a6a4a,
     tint:'vec3(0.7)',seed:KRAND.hash(4747,0,2,7)%997,name:'pavement'}):null];
   if(LY[0]&&LY[1]&&LY[3]){MAT_GROUND.onBeforeCompile=sh=>{
-    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;'+(PAVE?'attribute float aP;varying float vP;':'')).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;'+(PAVE?'vP=aP;':''));
-    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;'+(PAVE?'varying float vP;':'')).replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;');};
-   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg',layers:LY,at:'/*KGROUND*/'});}}}
+    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vMW;'+(PAVE?'attribute float aP;varying float vP;':'')).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vMW=(modelMatrix*vec4(transformed,1.0)).xyz;'+(PAVE?'vP=aP;':''));
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW;varying vec3 vMW;'+(PAVE?'varying float vP;':'')+
+     'float ncH(vec2 p){p=fract(p*vec2(0.1031,0.1030));p+=dot(p,p.yx+33.33);return fract((p.x+p.y)*p.x);}'+
+     'float ncN(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);return mix(mix(ncH(i),ncH(i+vec2(1,0)),u.x),mix(ncH(i+vec2(0,1)),ncH(i+vec2(1,1)),u.x),u.y);}').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;'+
+     (MOT?'{float m=0.65*ncN(vMW.xz/45.0)+0.35*ncN(vMW.xz/11.0+17.3);m=smoothstep(0.42,0.72,m)*(1.0-vW.x)*(1.0-vW.y);diffuseColor.rgb*=mix(vec3(1.0),'+MOT.tint+','+MOT.amt.toFixed(3)+'*m);}':''));};
+   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg'+(MOT?'-m':''),layers:LY,at:'/*KGROUND*/'});}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
@@ -233,7 +240,9 @@ function wearRock(B,m){
  const mk=(A,L,label)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.uv,2));
   const cl=new THREE.Float32BufferAttribute(A.col,3);for(let i=0;i<cl.count;i++){c.setRGB(cl.getX(i),cl.getY(i),cl.getZ(i)).convertSRGBToLinear();cl.setXYZ(i,c.r,c.g,c.b);}
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
-  let mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+  /* both sides on the rebuilt rock (the owner, 2026-10-27: "transparency on rock formations viewed from below"): a bed's lip, worn and
+     notched, leaves back faces toward an eye under it, which culled to the sky */
+  let mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true,side:NEWROCK?THREE.DoubleSide:THREE.FrontSide});
   if(A!==acc.top&&A!==acc.topC)mat=rockStrata(mat,'necanyons-rock-'+label.length);   /* the walls take the beds; the tops are slickrock */
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
  // one anchor per body at its middle (an invisible instance): the rock is three merged meshes, so the probe's samples
