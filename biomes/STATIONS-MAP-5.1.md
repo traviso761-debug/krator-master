@@ -82,7 +82,7 @@ stays at the water, in the wave's reach**: quays, dockyard and the traders' fact
 
 **Done on the map (203d69d58):** Farport stands on the plateau at 5.1 px 294,588, 212 m and 4 km from the sea, Līng-Mā grades to 0 m at its mouth, and `DATA.tsunami_farside` gives a 50 m crest and a 100 m run-up ceiling. The Farside page and the later settlement build follow.
 
-**Rechecked on 203d69d58:** Farside's strand moved again (1,718 m; 2,408 m on 4.23), still inside `tsunami coast`. Only nwouterwall's yeti station also moved over 150 m (+422 m, back to ET).
+**Rechecked on 3e35e605f (Round 2, merged):** Gemini restored the accidental moves: nwouterwall's yeti station is back at 5,647 m and Farside's front at 2,179 m. Farside's kelp coast is 725 m (548 m at review). Farport's river is now named Hōng-Mā (`r002`); this document's earlier name is Līng-Mā, because the names moved again in Round 2.
 
 ## New kits and priorities (the owner, 2026-11-01)
 
