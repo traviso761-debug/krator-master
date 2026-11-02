@@ -1361,7 +1361,7 @@ def _():
     apron = P('purple', 0.03, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.1),
                                B('top', 0.0, 0.015, 'solid', 'gold')])
     c = spine_at(WAIST - 0.05); h = first_hit(c, np.array([0, -1.0, 0]))
-    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=WAIST - 0.03, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST, slit=KNEE + 0.24),
+    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=WAIST - 0.03, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
             flap('voth_m_noble_skirt_apron', c + np.array([0, -1.0, 0]) * ((h or 0.12) + 0.03), 0.24, WAIST - 0.05 - (KNEE - 0.2), np.array([0, -1.0, 0]),
                  apron, cols=7, rows=14, ease=0.035, group_below=CROTCH + 0.04, sway=0.07)]
 
@@ -1384,9 +1384,9 @@ def _():
                                 B('top', 0.0, 0.05, 'solid', 'black'), B('top', 0.012, 0.038, 'diamonds', 'gold', 'black', 0.045)])
     over = P('purple', 0.04, [B('bottom', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.012, 0.07, 'fret', 'ash', 'purple', 0.06),
                               B('bottom', 0.07, 0.08, 'solid', 'gold')])
-    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST, slit=KNEE + 0.24),
+    return [torso_tube('voth_f_noble_skirt', WAIST + 0.015, 0.03, 0.006, under, hang_from=CROTCH + 0.06, flare=0.27, group_below=CROTCH + 0.04, rows=26, hull_from=WAIST),
             torso_tube('voth_f_noble_skirt_over', WAIST - 0.02, KNEE - 0.16, 0.02, over, hang_from=CROTCH + 0.04, flare=0.32, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST,
-                       layer=1, slit=KNEE + 0.24)]   # outside the under-skirt (layered() in 50-figure.js); to mid-shin, so a stride's knee
+                       layer=1)]   # outside the under-skirt (layered() in 50-figure.js); to mid-shin, so a stride's knee
                                    # moves inside it rather than catching its hem
 
 
@@ -2734,7 +2734,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         # cut as the monk's robe below the waist (the owner, 2026-10-20: the monk's holds in a run): it falls from the
         # waist, not the crotch, with its flare and ease; from the crotch a run's thigh came out of its side
         return [torso_tube('order_%s_novice_skirt' % sex, WAIST + 0.01, ANKLE + 0.08, 0.012, p, hang_from=WAIST - 0.03, flare=0.16,
-                           group_below=CROTCH + 0.04, rows=20, hull_from=WAIST, slit=KNEE + 0.24)]
+                           group_below=CROTCH + 0.04, rows=20, hull_from=WAIST)]
     GARMENTS['order_%s_novice_skirt' % sex] = ('legs', b, 'Novice\'s wrap skirt (shemdap)', _onskirt)
 
     def _osand(sex=sex):

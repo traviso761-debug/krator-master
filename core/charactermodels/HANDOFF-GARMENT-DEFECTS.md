@@ -3,7 +3,28 @@
 ChatGPT's review of 2026-10-28, added to the repo by the owner's word on 2026-11-01. It was written from an inspection of
 the rebuild's checkout and maps likely areas, not diagnosed bugs: reproduce each defect first. Read it beside `HANDOFF-CLIPPING.md`.
 
-## Where it stands (2026-11-02)
+## Round 3: the bone bug, and the slits taken out (2026-11-02)
+
+**Read this first; it overturns much of what follows.** Gemini's review found the cause of the staircase. In `clothStep` a chain bone's offset came from the postured rest while its rotation was built on the A-pose's, so while a clip
+played bones stood away from the particles they follow: mean 10.4 cm and worst 30.6 cm on the man's skirt at an idle, 1.8 and 7.4 on the woman's. The simulated cloth and the drawn cloth were different shapes. Each joint now sits on its point.
+All the tuning below was measured with that bug in it. Over all 66 outfits the fix alone took skin through cloth from 161743 to 90492, trousers through tops from 315684 to 132879, folds from 1.55M to 781k, skin at idle from 23826 to 3782.
+
+**The slits are out.** With the bones right the four skirts look far better uncut: the novice walk is solid cloth. `torso_tube(slit=)`, kit `gaps` and `slit` and `kcSl` stay, tested and unused, for a real vent. The counts rose when they went (a leg leaving by a slit is not counted): shots decided.
+
+**This build, all 66, neutral, against the start:** skin 161743 to 111980, walk 43728 to 14078, idle 23826 to 3498, crouch 49094 to 30569, **run 45062 to 63802 (+42%)**; trousers 315684 to 129193, walk 119410 to 22442, rest 44441 to 14519; folds 1.55M to 757k.
+Height 1: skin 153249 to 143721, **walk 41081 to 70984 (+73%)**; trousers 246200 to 252543, **run 39344 to 59401 (+51%)**. Height -1: skin 113003 to 64902, trousers 161115 to 107575. `verify.py --assert` passes on both pages; Godot gives its one known failure and no shader errors.
+
+**Kept beyond the bone fix:** a stretched segment gives a third of its stretch to the joint (Gemini's cap; the count is flat, it is there for the smear in a cape's border, and that is not yet judged by eye).
+
+**Tried in this round and dropped:** closing the slit's ring with the push on (skin +12%); tapered radii in `collide`, whole leg and thigh-only (run better, crouch and walk worse); the arc lift in `layered` (it held length and folded chain tops: the fold check went to 16, limit 8, and it was
+worth nothing in a tall walk). Claims in the first review that did not match the code: the order of `keepLen` and `collide`, a height cutoff in `layered`, several constants; the second review corrected them.
+
+**The open choice: the thigh's dead zone.** `cup` in `pushOut` leaves the back of the top of the thigh unpushed down to `ct` 0.3-0.4. Starting it at 0.18-0.28 once the thigh swings (`smoothstep(0.09, 0.18, lift)`) takes neutral skin in a run from 63802 to 46272 and trousers to 119809, and takes trousers in a tall walk from 61007 to
+138661. With a gate at 0.03-0.12 it was the same trade with better numbers while the slits were in. No gate separates them: a tall body's walk trips it. Why a longer thigh suffers so much is not known. It is left out. Ask the owner.
+
+**Left:** a run's kicked-up shin at the hem; skirts swinging wide in a run; the tall body's walk; the plain cast clothes, still never swept; Godot's picture never compared with the page. The live labs still lack all of this round.
+
+## Where it stood before round 3 (2026-11-02)
 
 **The owner's verdict, ahead of every number below: not solved.** On the textured shots of the slit skirts, every one showed leg clipping through the clothes or seam separation to some degree. The fault counts
 miss what the owner sees (a leg leaving through a slit is not a "closed-in patch"). The question sent to ChatGPT and Gemini is whether chains plus a capsule push have reached their limit, against baking real cloth or cutting real panels.

@@ -55,10 +55,6 @@ void kc_push(inout vec3 kv, vec3 kn, float ry) {
 				continue;
 			}
 			float t = dot(kv - a, ab) / max(dot(ab, ab), 1e-8);
-			if (i < 2 && t < 0.3 && (dot(kv - a, bk) > 0.0 || kcA[14].w <= 0.0)) {
-				continue;                // a thigh's top third, behind: its capsule took in the buttock
-			}
-			t = clamp(t, 0.0, 1.0);
 			// how far the limb has left hanging (a shin takes its thigh's too): deep is measured from the bare limb on a
 			// hanging leg, or the mirror below folds ordinary cloth round it (pushOut in 50-figure.js)
 			int tl = i < 2 ? i : i - 2;
@@ -67,6 +63,16 @@ void kc_push(inout vec3 kv, vec3 kn, float ry) {
 			if (i >= 2 && i < 4) {
 				lift = max(lift, smoothstep(0.3, 0.6, 1.0 - abs(ab.y) / max(length(ab), 1e-5)));
 			}
+			// a thigh's top, behind: its capsule took in the buttock (faded, as pushOut in 50-figure.js)
+			float cu = 1.0;
+			if (i < 2) {
+				cu = kcA[14].w <= 0.0 ? 0.0 : 1.0 - smoothstep(-0.05, 0.0, dot(kv - a, bk));
+				cu = max(cu, smoothstep(0.3, 0.4, t));
+				if (cu <= 0.0) {
+					continue;
+				}
+			}
+			t = clamp(t, 0.0, 1.0);
 			float pd = sh > 0.0 ? kcP + kcPO * kcM : 0.0;
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + pd;
 			if (i < 4 && sh > 0.0) {
@@ -96,7 +102,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry) {
 					w *= w;
 					d = normalize(d) * (1.0 - w) + o * w;
 				}
-				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl);   // a thin band: [0, r + sh] into [r - sh, r + sh]
+				kv = mix(kv, q + normalize(d) * (r - sh + l * 2.0 * sh / R), sl * cu);   // a thin band: [0, r + sh] into [r - sh, r + sh]
 			}
 		}
 	}

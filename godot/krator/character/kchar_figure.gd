@@ -1816,6 +1816,8 @@ func _cloth_step(dt: float) -> void:
 			for ch in c["chains"]:
 				for k in ch["bones"].size():
 					skeleton.set_bone_pose_rotation(ch["bones"][k], ch["q0"] if k == 0 else Quaternion())
+					if k > 0 and ch.has("rest"):     # (the step below sets each joint on its point)
+						skeleton.set_bone_pose_position(ch["bones"][k], (ch["rest"][k] as Vector3) - (ch["rest"][k - 1] as Vector3))
 			c["reset"] = true
 		return
 	var W := []
@@ -1901,6 +1903,16 @@ func _cloth_step(dt: float) -> void:
 				var r1: Vector3 = (ch["x"][k + 1] - ch["x"][k]).normalized()
 				var wq := (Quaternion(r0, r1) if r0.dot(r1) < 0.99999 else Quaternion()) * rq
 				skeleton.set_bone_pose_rotation(bones[k], (prev.inverse() * wq).normalized())
+				# the joint where its point is (clothStep in 50-figure.js): its rest offset turned by this frame left it up to
+				# 30 cm off on the man at an idle, each joint a step: the skirts' staircase
+				# (a stretched segment gives a third of the stretch to the joint: all of it fell in the blend under the joint)
+				if k > 0:
+					var dv: Vector3 = (ch["x"][k] as Vector3) - (ch["x"][k - 1] as Vector3)
+					var dk := dv.length()
+					var lk: float = ch["len"][k - 1]
+					if dk > lk:
+						dv *= (lk + 0.35 * (dk - lk)) / dk
+					skeleton.set_bone_pose_position(bones[k], prev.inverse() * dv)
 				prev = wq
 
 

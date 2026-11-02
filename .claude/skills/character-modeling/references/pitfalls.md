@@ -161,6 +161,8 @@ area you are about to change.
   per limb doubled trousers through tops in a run (the leg a runner stands on took none); and the bare-limb test bared the
   Yuni boubou at rest, which the old bug had been hiding. `tools/garment_audit.py` counts them in ten minutes: run it
   before believing a fix, and shoot the regressions it names, some of which are only the same patch a little larger.
+- **Cloth that ignores every change to its chains: a staircase down a skirt, worst on the body with the most posture** → measure each chain bone's world position against its particle before tuning anything. Here bones stood up to 30 cm off at an idle: the offset
+  came from the postured rest, the rotation from a frame built on the A-pose's. Set each joint on its particle. Every rule tuned before that was tuned against the wrong surface: the slits, the padding and more were re-judged after it, and the slits came out.
 - **A slit that gapes, tears and flies out like wings, with fine numbers** → pixel counts fell 84% while the shots got worse: shoot it. Switch stages off first: the lips' ties made no
   difference, and with the push off the slit was clean. The leg is meant to leave through a slit, so do not push the cloth below its top off the legs (as a garment of flaps), and start it high
   enough that the thigh does not tear through just above it (24 cm above the knee here; 10 cm tore).

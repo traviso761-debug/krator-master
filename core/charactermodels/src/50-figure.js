@@ -1342,6 +1342,16 @@ function KCharFigure(body, sliders, load){
           cV2.subVectors(ch.x[k + 1], ch.x[k]).normalize();
           var Wq = new THREE.Quaternion().setFromUnitVectors(cV, cV2).multiply(cQ);
           b.quaternion.copy(prev).invert().multiply(Wq);
+          // the joint where its point is: its offset from the rest (placeChains, the postured rest) turned by this frame, built
+          // on the A-pose's, left it up to 30 cm off on the man at an idle, each joint a step: the skirts' staircase
+          // (a segment the last collide stretched gives a third of the stretch to the joint: all of it, it fell in the two rows
+          // of the weights' blend under the joint and smeared a cape's border; the rest of each segment keeps its length)
+          if(k > 0){
+            cV.subVectors(ch.x[k], ch.x[k - 1]);
+            var dk = cV.length(), Lk = ch.len[k - 1];
+            if(dk > Lk) cV.multiplyScalar((Lk + 0.35 * (dk - Lk)) / dk);
+            b.position.copy(cV).applyQuaternion(cQ3.copy(prev).invert()).divideScalar(sc);
+          }
           prev = Wq;
         });
       });
@@ -1480,6 +1490,9 @@ function KCharFigure(body, sliders, load){
         // wings; above the slit the hip still needs it)
         '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), cup = 1.0;\n' +
         '\t\tfloat csl = kcSl > -0.5 && ci < 6 ? smoothstep(kcK + kcSl - 0.08, kcK + kcSl + 0.02, position.y) : 1.0;\n\t\tif(csl <= 0.0) continue;\n' +
+        '\t\tint cth = ci < 2 ? ci : ci - 2; vec3 ctd = ci < 4 ? kcB[cth].xyz - kcA[cth].xyz : cab;\n' +
+        '\t\tfloat clf = smoothstep(0.12, 0.4, 1.0 - abs(ctd.y) / max(length(ctd), 1e-5));\n' +
+        '\t\tif(ci >= 2 && ci < 4) clf = max(clf, smoothstep(0.3, 0.6, 1.0 - abs(cab.y) / max(length(cab), 1e-5)));\n' +
         '\t\tif(ci < 2){ cup = kcA[14].w <= 0.0 ? 0.0 : 1.0 - smoothstep(-0.05, 0.0, dot(transformed - ca, cbk));\n' +
         '\t\t\tcup = max(cup, smoothstep(0.3, 0.4, ct)); if(cup <= 0.0) continue; }\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
         // how far the limb has left hanging (a shin takes its thigh's too: in a crouch it stands upright, the knee well forward).
@@ -1487,9 +1500,6 @@ function KCharFigure(body, sliders, load){
         // PAD_OVER (kcPO) comes in with the stride (kcM, legCaps), on both legs: at full strength at rest it held an open robe's
         // panels 5.5 cm off the thigh and they parted at the seam (the boubou, the agent's coat); per limb, the leg a
         // runner stands on took none, and the other leg's swing threw the cloth through it
-        '\t\tint cth = ci < 2 ? ci : ci - 2; vec3 ctd = ci < 4 ? kcB[cth].xyz - kcA[cth].xyz : cab;\n' +
-        '\t\tfloat clf = smoothstep(0.12, 0.4, 1.0 - abs(ctd.y) / max(length(ctd), 1e-5));\n' +
-        '\t\tif(ci >= 2 && ci < 4) clf = max(clf, smoothstep(0.3, 0.6, 1.0 - abs(cab.y) / max(length(cab), 1e-5)));\n' +
         '\t\tfloat cpd = csh > 0.0 ? kcP + kcPO * kcM : 0.0;\n' +
         '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + cpd;\n' +
         // a bent knee's corner, which the thigh's and the shin's capsules leave uncovered: the radius grows toward the knee
