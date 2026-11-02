@@ -18,13 +18,15 @@ const LIMITS = {
   slide: 3,            // C7: a planted foot's slide, % of a stride
   below: 0.005,        // C7: lowest point of a leg under the ground, as a share of the height
   mb: 1.5,             // C9: file size
-  parts: 25,           // C9: parts, each a draw call
+  parts: 30,           // C9: parts, each a draw call (eight legs of three, a thorax, abdomen, jaws and eyes: 28)
   density: 150,        // C9: colour map, pixels a metre (a floor: the one limit a higher number clears)
+  lift: 0.008,         // C7: the least any foot rises in its swing, as a share of the height (a floor)
+  through: 0.06,       // C7: share of the shins and feet inside a trunk part, worst frame of the walk
   lossyNormal: 0,      // C9: 1 when the normal map is a JPEG
   sourceLost: 0,       // C1: 1 when the model carries no source record
 };
-const CHECKS = Object.keys(LIMITS), over = (c, v) => (c === 'density' ? v < LIMITS[c] : v > LIMITS[c]);
-const worse = (c, v, w) => (c === 'density' ? v < w / 1.02 : v > w * 1.02);   /* a waived number may only get better, past rounding */
+const CHECKS = Object.keys(LIMITS), FLOOR = { density: 1, lift: 1 }, over = (c, v) => (FLOOR[c] ? v < LIMITS[c] : v > LIMITS[c]);
+const worse = (c, v, w) => (FLOOR[c] ? v < w / 1.02 : v > w * 1.02);   /* a waived number may only get better, past rounding */
 const FRAMES = 7, RES = 240, DIRS = L.dirs();
 
 /* ---- C4: render every clip from every side and look for the inside of a body */
@@ -50,17 +52,30 @@ const isLimb = n => /^(leg|foot|arm)/.test(n), walksOn = n => /^(leg|foot)/.test
 function worldVert(m, W, P, i, v) { L.apply(W[P.node], P.pos, i * 3, v); return v; }
 /* ---- C7: slide and depth of the limb ends over the walk */
 function walk(m) {
-  const c = m.clips.walk, ex = c && c.extras; if (!ex || !ex.speed) return { slide: 0, below: 0 };
+  const c = m.clips.walk, ex = c && c.extras; if (!ex || !ex.speed) return { slide: 0, below: 0, lift: 1 };
   const G = ex.ground == null ? m.M.rest.ground : ex.ground, nodes = m.M.nodes, T = []; for (let k = 0; k < 24; k++) T.push(c.dur * k / 24);
   const hasKid = n => Object.keys(m.parts).some(q => walksOn(q) && nodes[m.parts[q].node].parent === m.parts[n].node);
-  const ends = Object.keys(m.parts).filter(n => walksOn(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9;
+  const ends = Object.keys(m.parts).filter(n => walksOn(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9, lift = 1e9;
   for (const n of ends) { const P = m.parts[n], np = P.pos.length / 3, ys = T.map((_, k) => { let y = 1e9; for (let i = 0; i < np; i++) y = Math.min(y, worldVert(m, Ws[k], P, i, v)[1]); return y; });
-    const ymin = Math.min(...ys), kst = ys.indexOf(ymin); lo = Math.min(lo, ymin); let tip = 0, ty = 1e9; for (let i = 0; i < np; i++) { const y = worldVert(m, Ws[kst], P, i, v)[1]; if (y < ty) { ty = y; tip = i; } }
+    const ymin = Math.min(...ys), kst = ys.indexOf(ymin); lo = Math.min(lo, ymin); lift = Math.min(lift, Math.max(...ys) - ymin); let tip = 0, ty = 1e9; for (let i = 0; i < np; i++) { const y = worldVert(m, Ws[kst], P, i, v)[1]; if (y < ty) { ty = y; tip = i; } }
     const zs = []; for (let k = 0; k < T.length; k++) { if (ys[k] > ymin + 0.004) continue; const q = worldVert(m, Ws[k], P, tip, v); zs.push(q[2] + ex.speed * T[k]); }
     for (let i = 1; i < zs.length; i++) { while (zs[i] - zs[i - 1] > per / 2) zs[i] -= per; while (zs[i] - zs[i - 1] < -per / 2) zs[i] += per; }
     if (zs.length > 1) worst = Math.max(worst, Math.max(...zs) - Math.min(...zs)); }
-  return { slide: ex.stride ? 100 * worst / ex.stride : 0, below: Math.max(0, (G - lo) * m.M.scale / Math.max(m.M.rest.h, 1e-6)) };
+  return { slide: ex.stride ? 100 * worst / ex.stride : 0, below: Math.max(0, (G - lo) * m.M.scale / Math.max(m.M.rest.h, 1e-6)), lift: (ends.length ? lift : 1) * m.M.scale / Math.max(m.M.rest.h, 1e-6) };
 }
+/* ---- C7: does a limb pass through the body? Each trunk part as a solid: voxels the outside cannot reach past its skin, in the part's own frame. A part that is not a closed shell has no inside and reads 0 */
+function solidOf(P) { const n = 56, lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9]; for (let i = 0; i < P.pos.length; i += 3) for (let c = 0; c < 3; c++) { lo[c] = Math.min(lo[c], P.pos[i + c]); hi[c] = Math.max(hi[c], P.pos[i + c]); }
+  const st = Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]) / (n - 4), o = lo.map(x => x - 2 * st), id = (a, b, c) => a + n * (b + n * c), skin = new Uint8Array(n * n * n), I = P.idx;
+  for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3, e = Math.ceil(Math.max(Math.hypot(P.pos[a] - P.pos[b], P.pos[a + 1] - P.pos[b + 1], P.pos[a + 2] - P.pos[b + 2]), Math.hypot(P.pos[a] - P.pos[c], P.pos[a + 1] - P.pos[c + 1], P.pos[a + 2] - P.pos[c + 2])) / st) + 1;
+    for (let u = 0; u <= e; u++) for (let w = 0; w <= e - u; w++) { const k = 1 - (u + w) / e, f = u / e, g = w / e; skin[id(Math.floor((P.pos[a] * k + P.pos[b] * f + P.pos[c] * g - o[0]) / st), Math.floor((P.pos[a + 1] * k + P.pos[b + 1] * f + P.pos[c + 1] * g - o[1]) / st), Math.floor((P.pos[a + 2] * k + P.pos[b + 2] * f + P.pos[c + 2] * g - o[2]) / st))] = 1; } }
+  const out = new Uint8Array(n * n * n), q = [0]; out[0] = 1;
+  while (q.length) { const i = q.pop(), a = i % n, b = ((i / n) | 0) % n, c = (i / (n * n)) | 0; for (const [x, y, z] of [[a + 1, b, c], [a - 1, b, c], [a, b + 1, c], [a, b - 1, c], [a, b, c + 1], [a, b, c - 1]]) { if (x < 0 || y < 0 || z < 0 || x >= n || y >= n || z >= n) continue; const j = id(x, y, z); if (!out[j] && !skin[j]) { out[j] = 1; q.push(j); } } }
+  return p => { const a = Math.floor((p[0] - o[0]) / st), b = Math.floor((p[1] - o[1]) / st), c = Math.floor((p[2] - o[2]) / st); return a >= 0 && b >= 0 && c >= 0 && a < n && b < n && c < n && !out[id(a, b, c)] && !skin[id(a, b, c)]; }; }
+function through(m) { const c = m.clips.walk; if (!c) return 0; const T = Object.keys(m.parts).filter(n => L.TRUNK.test(n)), inside = {}; for (const n of T) inside[n] = solidOf(m.parts[n]);
+  const low = Object.keys(m.parts).filter(n => /^(leg|arm|foot)/.test(n) && /[tf]$/.test(n)); if (!low.length) return 0; let worst = 0; const v = [0, 0, 0], w = [0, 0, 0];
+  for (let f = 0; f < 8; f++) { const W = L.pose(m, c, c.dur * f / 8); let hit = 0, tot = 0; for (const n of low) { const P = m.parts[n]; for (let i = 0; i < P.pos.length; i += 3 * 3) { L.apply(W[P.node], P.pos, i, v); tot++;
+    for (const t of T) { const M = W[m.parts[t].node], dx = v[0] - M[12], dy = v[1] - M[13], dz = v[2] - M[14]; w[0] = dx * M[0] + dy * M[1] + dz * M[2]; w[1] = dx * M[4] + dy * M[5] + dz * M[6]; w[2] = dx * M[8] + dy * M[9] + dz * M[10]; if (inside[t](w)) { hit++; break; } } } } worst = Math.max(worst, hit / Math.max(tot, 1)); }
+  return worst; }
 /* ---- C6: a child's pivot must sit on or in its parent (rest; pivots are fixed in the parent's frame) */
 function pivots(m) {
   const nodes = m.M.nodes, S = m.M.scale, side = Math.max(m.M.rest.w, m.M.rest.d, m.M.rest.h); let worst = 0, who = '';
@@ -69,9 +84,11 @@ function pivots(m) {
     const v = Math.sqrt(d) * S / side; if (v > worst) { worst = v; who = n; } }
   return { pivot: worst, who };
 }
+/* a JPEG data URL's width, from its frame header */
+function mapWidth(url) { const b = Buffer.from(url.split(',')[1], 'base64'); let i = 2; while (i < b.length - 9) { if (b[i] !== 0xff) { i++; continue; } const k = b[i + 1]; if (k >= 0xc0 && k <= 0xc2) return b.readUInt16BE(i + 7); i += 2 + b.readUInt16BE(i + 2); } return 1024; }
 /* ---- C9: the colour map's pixels a metre, and the UV area of each part (a card sampling the whole atlas has one near 1) */
 function density(m) {
-  let a3 = 0, a2 = 0; const S = m.M.scale, px = 1024;
+  let a3 = 0, a2 = 0; const S = m.M.scale, px = mapWidth(m.M.tex.map);
   for (const n in m.parts) { if (uvOwn(m, n)) continue; const P = m.parts[n], I = P.idx;
     for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3, ux = P.pos[b] - P.pos[a], uy = P.pos[b + 1] - P.pos[a + 1], uz = P.pos[b + 2] - P.pos[a + 2], vx = P.pos[c] - P.pos[a], vy = P.pos[c + 1] - P.pos[a + 1], vz = P.pos[c + 2] - P.pos[a + 2];
       a3 += 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) * S * S; a2 += 0.5 * uvArea(P, t); } }
@@ -86,13 +103,14 @@ const fillsAtlas = m => { const area = {}; let tot = 0; for (const n of Object.k
 function measure(m, file, full) {
   const c = full === false ? { v: 0 } : closure(m), lim = Object.keys(m.parts).filter(isLimb), w = walk(m), piv = pivots(m); let side = 1;
   for (const n of lim) { const q = mirror(n); if (!q || !m.parts[q]) continue; side = Math.max(side, m.parts[n].idx.length / m.parts[q].idx.length); }
-  return { closure: c.v, closureAt: c, pieces: lim.filter(n => pieces(m.parts[n]).big > 1).length, sides: side, pivot: piv.pivot, slide: w.slide, below: w.below,
-    mb: fs.statSync(file).size / 1e6, parts: Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
+  return { closure: c.v, closureAt: c, pieces: lim.filter(n => pieces(m.parts[n]).big > 1).length, sides: side, pivot: piv.pivot, slide: w.slide, below: w.below, lift: w.lift, through: full === false ? 0 : through(m),
+    mb: fs.statSync(file).size / 1e6 / (m.M.share || 1), parts: Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
 }
 
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.json')).sort(), MODELS = {}, MEASURED = {};
 const waivers = fs.existsSync(WFILE) ? JSON.parse(fs.readFileSync(WFILE, 'utf8')).models : {};
-for (const f of files) { const m = L.load(path.join(DIR, f)); MODELS[m.key] = m; MEASURED[m.key] = measure(m, path.join(DIR, f)); }
+for (const f of files) { const q = path.join(DIR, f), F = JSON.parse(fs.readFileSync(q, 'utf8'));      /* a family is gated species by species, its file shared among them */
+  for (const p of F.family ? Object.keys(F.picks) : [null]) { const m = L.load(q, p); MODELS[m.key] = m; MEASURED[m.key] = measure(m, q); } }
 const pad = (x, n) => String(x).padEnd(n), num = x => (typeof x === 'number' ? (Number.isInteger(x) ? x : +x.toFixed(4)) : x);
 if (arg('--report')) { console.log(pad('model', 21) + CHECKS.map(k => pad(k, 11)).join('')); for (const k in MEASURED) console.log(pad(k, 21) + CHECKS.map(q => pad(num(MEASURED[k][q]), 11)).join('') + (MEASURED[k].closureAt.clip || '')); }
 if (arg('--png')) for (const k in MEASURED) { const a = MEASURED[k].closureAt; if (a.R) L.png(a.R, path.join(argv('--png'), k + '-' + a.clip + '.png')); }
@@ -110,7 +128,7 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
 { const { KF } = L.registry(ROOT), rows = L.modelled(KF), base0 = 'giant-dragonfly';
   ok(rows.length === new Set(rows.map(r => r.model)).size || rows.length >= files.length, 'catalog: ' + rows.length + ' model variants');
   const named = new Set(rows.map(r => r.model));
-  ok(files.every(f => named.has(f.slice(0, -5))) && rows.every(r => MODELS[r.model]), 'every model file has an entry, and every entry its file');
+  ok(files.every(f => [...named].some(n => n.split('#')[0] === f.slice(0, -5))) && rows.every(r => MODELS[r.model]), 'every model file has an entry, and every entry its file');
   const contract = (m, r) => { const bad = [], E = r.E, D = Object.assign({}, E.data || {}, (E.modelData || {})[r.variant] || {});
     let legs = 0; for (const nd of m.M.nodes) if (/^leg(\d+|\d?[LR])$/.test(nd.name)) legs++;
     if (D.legs != null && legs !== D.legs) bad.push('legs ' + legs + ' against ' + D.legs);
@@ -139,7 +157,7 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
     if (wantClear.sort().join() !== [...clear].sort().join()) bad.push('see-through parts: packed [' + wantClear + '], built [' + [...clear] + ']');
     for (const [mode, clip] of [['idle', 'perch'], ['walk', 'walk']]) { KFm.animate(g, 1, mode); if (u._mx.cur !== clip) bad.push(mode + ' played ' + u._mx.cur); }
     if (u.parts.legs.filter(Boolean).length !== Object.keys(M.meshes).filter(n => /^leg(\d+|\d?[LR])$/.test(n)).length) bad.push('legs on the built animal'); return bad; };
-  { const KFm = L.registry(ROOT, packed).KF; for (const r of rows) { const b = realBuild(KFm, r, packed[r.model]); ok(!b.length, 'built ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'the model, its anchors on parts, its materials, its clips')); }
+  { const KFm = L.registry(ROOT, packed).KF; for (const r of rows) { const b = realBuild(KFm, r, MODELS[r.model].M); ok(!b.length, 'built ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'the model, its anchors on parts, its materials, its clips')); }
     const q = JSON.parse(JSON.stringify(packed[base0])); delete q.anchors; const KF2 = L.registry(ROOT, Object.assign({}, packed, { [base0]: q })).KF; ok(realBuild(KF2, rows.find(r => r.model === base0), packed[base0]).some(s => /^anchors/.test(s)), 'negative: a build that lost its anchors fails, whatever the file says'); }
 
   // ---------------------------------------------------------------- a candidate, not in the kit yet: --candidate <packed.json> <entry key>, every limit and no waiver
@@ -163,6 +181,8 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
   { const m = fresh(), nd = m.M.nodes[m.parts.wingL.node]; nd.t = [nd.t[0] + 1.5, nd.t[1], nd.t[2]]; ok(pivots(m).pivot > LIMITS.pivot, 'negative C6: a wing moved off the thorax'); }
   { const m = fresh(); m.clips.walk.extras = Object.assign({}, m.clips.walk.extras, { speed: m.clips.walk.extras.speed * 3 }); ok(walk(m).slide > LIMITS.slide, 'negative C7: the wrong root speed slides the feet'); }
   { const m = fresh(); m.M.rest = Object.assign({}, m.M.rest, { h: m.M.rest.h }); const c = m.clips.walk; c.extras = Object.assign({}, c.extras, { ground: c.extras.ground + 0.3 }); ok(walk(m).below > LIMITS.below, 'negative C7: a ground above the feet reads as through the floor'); }
+  { const m = L.load(path.join(DIR, 'harvester-ant.json')); for (const n in m.clips.walk.tracks) if (/^leg/.test(n)) delete m.clips.walk.tracks[n]; ok(walk(m).lift < LIMITS.lift, 'negative C7: legs that never lift read as dragging'); }
+  { const m = L.load(path.join(DIR, 'harvester-ant.json')), nd = m.M.nodes[m.parts.leg0Lt.node], T = m.M.nodes[m.parts.thorax.node], th = m.M.nodes[m.parts.leg0L.node], own = m.M.nodes[nd.parent]; own.t = [0, 0, 0]; nd.t = [0, 0, 0]; th.t = [0, 0, 0]; const big = m.clips.walk.tracks; delete big.leg0L; delete big.leg0Lt; delete big.leg0Lf; const P = m.parts.leg0Lt, Q = P.pos, c = [0, 0, 0]; for (let i = 0; i < Q.length; i += 3) for (let k = 0; k < 3; k++) c[k] += Q[i + k] * 3 / Q.length; for (let i = 0; i < Q.length; i += 3) for (let k = 0; k < 3; k++) Q[i + k] = (Q[i + k] - c[k]) * 0.05; const f = m.parts.leg0Lf.pos; for (let i = 0; i < f.length; i++) f[i] *= 0.05; m.M.nodes[m.parts.leg0Lf.node].t = [0, 0, 0]; const ok2 = through(m); const n = Object.keys(m.parts).filter(q => /^(leg|arm|foot)/.test(q) && /[tf]$/.test(q)).length; ok(ok2 >= 1 / n * 0.5, 'negative C7: a shin moved inside the thorax is found (' + num(ok2) + ')'); }
   { const m = fresh(); delete m.M.mats; ok(contract(m, row).some(s => /filling the atlas/.test(s)), 'negative C8: the dragonfly without its wing material fails (the bug that shipped)'); }
   { const m = fresh(); delete m.M.anchors; ok(contract(m, row).some(s => /anchor saddle missing/.test(s)), 'negative C8: a rideable model without its saddle fails'); }
   { const m = fresh(), a = m.M.anchors.saddle; a.p = [a.p[0], a.p[1] + 4, a.p[2]]; ok(contract(m, row).some(s => /off the body/.test(s)), 'negative C8: a saddle floating over the body fails'); }

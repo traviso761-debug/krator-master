@@ -37,6 +37,9 @@ def main():
             M = json.load(fh)
         if anchors.get(key):
             M['anchors'] = anchors[key]
+        for p, q in (M.get('picks') or {}).items():      # a family's species
+            if anchors.get(key + '#' + p):
+                q['anchors'] = anchors[key + '#' + p]
         if key == 'giant-dragonfly':
             M['mats'] = {'wing': wing_mat()}
         with open(path, 'w', encoding='utf-8', newline='\n') as fh:

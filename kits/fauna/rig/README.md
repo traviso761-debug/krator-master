@@ -18,6 +18,8 @@ checks: no foot slides more than 3% of a stride and no leg goes through the grou
 This is working code from one session, not a tool: paths are the session's, and the thresholds in `fcfg.py` were tuned by eye
 per model.
 
+**Families** (`family.py <family>`, `families/<family>.json`): rigged models merged into one file of swappable parts, a species a named pick; `PLAN-MESHY.md` section 11. Specs for these take `pedicel` and `jaw` (a spider) or `swap` (a beetle), and `defur` for hair modelled as spikes. `showcase.py` makes a viewer page.
+
 **Arthropods** (`arthro.py <key> <candidate>`; a raw GLB and `spec.json` in `rig/sources/<key>/`): one script, no per-animal table. A solid voxel model opened by a
 ball wider than a leg finds the trunk and the limbs, the trunk parts at its necks, and each leg is cut at its bends along the surface. Each part is decimated on its own
 budget and every cut capped, so a part is a closed shell in any pose. It writes `rig-<candidate>.glb` with a tripod walk. It needs `trimesh` and `fast-simplification`. A spec holds `legs`, `contacts` (feet on the ground), `segments`, and when a body needs them `raptorial` (limbs held up, a mantis's), `strip`, `open` and `budget`.

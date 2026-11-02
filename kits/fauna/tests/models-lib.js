@@ -6,8 +6,8 @@ const fs = require('fs'), path = require('path'), zlib = require('zlib');
 const b64 = (s, T) => { const b = Buffer.from(s, 'base64'), a = new Uint8Array(b.length); a.set(b); return new T(a.buffer); };
 
 /* a model: {M, nodes, parts: {name: {pos, nrm, uv, idx, node}}}; positions in the node's own frame, model units */
-function load(file) {
-  const M = JSON.parse(fs.readFileSync(file, 'utf8')), parts = {}, byName = {};
+function load(file, pick) {
+  const F = JSON.parse(fs.readFileSync(file, 'utf8')), M = pick ? registry(path.join(__dirname, '..', '..', '..')).KF.pickModel(F, pick) : F, parts = {}, byName = {};
   M.nodes.forEach((n, i) => { byName[n.name] = i; });
   for (const n in M.meshes) {
     const m = M.meshes[n], q = b64(m.pos, Uint16Array), pos = new Float64Array(q.length), n8 = b64(m.nrm, Int8Array), nrm = new Float64Array(n8.length), uq = b64(m.uv, Uint16Array), uv = new Float64Array(uq.length);

@@ -286,3 +286,68 @@ Not yet checked: the owner's sign-off (C11); C7's foot-lift and limb-through-bod
 
 **Lessons for the next run.** Python's `urllib` cannot verify fal's file host here: `rig/fal_gen.py` downloads with `curl`, and a run whose file did not arrive is fetched again by request id,
 unpaid. The harness's `--use-gl=swiftshader` lost its WebGL context in `rig/sheet.py`; `--use-angle=d3d11` works on this machine.
+
+## 11. Families: one file of parts, many species (2026-11-02)
+
+The owner's proposal: a recolourable model with swappable parts. It works, and it is the cheapest way to more species. `rig/family.py <family>` merges rigged models into
+`models/<family>.json` from `rig/families/<family>.json`; a species is a named pick of a body (thorax, legs, clips), the swapped parts, eyes, three tints and a scale. A catalog
+variant names it `spider#gilded`, and `KF.pickModel` turns a pick into an ordinary model, so the gate tests every pick by itself (`share` divides the file's size among them).
+
+| Family | Sources | Species | File | Each |
+|---|---|---|---|---|
+| spider | queen (long legs), tarantula (stout legs), orb and marked (abdomen and jaws only) | 9 | 2.9 MB | 0.32 MB |
+| beetle | horned scarab, ground beetle | 10 | 1.55 MB | 0.16 MB |
+
+A lone model costs about 1.2 MB. New entries: `silk-weaver` (three castes), `trapdoor-spider`, `funnel-web-spider`, `salt-beetle`, `char-beetle`, `boring-beetle`; model variants on
+`gilded-orb-spider`, `giant-spider`, `giant-beetle` and `horned-scarab`. Each has a procedural fallback for a bundle without the models. Spider Lake's are tagged `spiderlake`, a biome that
+exists only on `gemini-loom-chasms`.
+
+**What swapping asked of the rig.** All of it was found by eye or by the gate, and none of it is optional:
+
+- **Joints at the middle of the cut, on the midline.** The closest pair of points can lie to one side, and the owner saw another spider's jaws sit off centre.
+- **Every leg hangs from the chest,** never the abdomen, or changing the abdomen moves the leg.
+- **A spider's waist is the section-area valley between abdomen and chest,** on the line from the hips to the abdomen's tip. A slice along the body fails: the abdomen sits up over the back.
+- **Which end is the head:** a spider's is the end its legs come from, not the end nearest what rises highest.
+- **A rear leg that starts under the belly gets the femur of the leg in front,** fitted from chest to true knee, and the scraps of its own go. The first tries (stretching the femur, and taking
+  the loose stub back) showed as a seam at that joint and as shards.
+- **Tints are sRGB:** `convertSRGBToLinear`, or every colour reads pale.
+- **Fur modelled as spikes** turns to shards when decimated: spec `defur` smooths it out before cutting. The tarantula body still breaks up seen close, so it serves only the small species, and
+  the riding spider is on the long body (Mav's Refuge's is thin-legged anyway).
+
+**The reference step is where a leg count is lost.** The orb and stout spiders came back with six legs because their views already showed six: "exactly eight" in a prompt is not obeyed. The
+queen's view from above held eight. Image-to-image from the queen's own three views kept all eight in the tarantula, for 57 credits. Check a reference's leg count before paying for 3D. The
+roach's references came back as a pinned specimen's top, belly and side views, so that model does not stand and is parked: 39 credits, nothing to show. Say "standing on the ground, seen from
+the side" and look at the views first.
+
+`rig/showcase.py` builds a page of chosen models through the real `KratorFauna.build()`, with a spider mixer.
+
+## 12. The skinned trial: a bat (2026-11-02)
+
+The question was whether a body rigid parts cannot do works on another road. A new Meshy 7.1 bat, generated for it with its wings spread (39 credits), went through `rig/skin_bat.py` in Blender 4.5:
+29 bones placed from the reference's proportions, weights from distance to the bones. The kit has no skinned path yet, so this is a page test (`rig/showcase.py --skin`), not a catalog animal, and
+`tests/test-models.js` does not see it.
+
+**The answer is yes for the wing.** Glide, a full flap and a fold all hold together: the membrane stretches and folds as one sheet, with none of the cut-joint failure of the old bat. 13,366
+triangles, 1.8 MB. The alternate routes: Tripo's creature rigging needs a Tripo key, and has not been tried; fal's rigging is humanoid only; Meshy's is humanoid only.
+
+**The trouble was decimation, not skinning.** Meshy's membrane is a watertight shell a hair thick, and reducing it tears it. Tried, in order:
+
+| Membrane | Result |
+|---|---|
+| Decimate whole, 14,000 tris | torn even at rest, worse in a flap |
+| Decimate whole, 60,000 tris | a few slits, which open in a flap; too heavy |
+| Inflate along normals, decimate, deflate | no better, and the fur turned to pimples |
+| Delete the back faces where thin | lace |
+| **Take the flat wing off; build one even sheet; colour it from a straight-on projection; cut its edge with alpha** | **no tears in any clip, 2,366 tris** |
+
+The sheet's rule for the next membrane flyer: never decimate a membrane. The same reasoning as insect wings as cards, with bones in the card.
+
+**Not solved.**
+
+- **The body shows dark cracks** where the reduced mesh crosses the fragmented atlas. Matte fur, one colour for bridging triangles and bleeding the gutters did not clear it. It needs the raw model baked onto
+  the reduced body.
+- **The wing is rubber.** 1% of edges stretch over 2.2 times in a flap and 3.8 in the fold. The longest edges stretch far more, along the seam where the sheet meets the arm. Weights are distance only.
+- **The fold is a first pass:** it folds, but not the way a bat stows a wing.
+- **Only the front of the wing is projected,** so the back shows the same picture.
+- **Nothing is wired:** a skinned path in `models_pack.py` and the runtime, the Godot import, and a gate (closure does not apply; stretch would be the measure).
+

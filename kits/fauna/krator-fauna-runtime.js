@@ -86,9 +86,35 @@ const KratorFaunaAPI = (function () {
     TEXST.pending++; img.onload = function () { t.image = img; t.needsUpdate = true; TEXST.pending--; }; img.onerror = function () { TEXST.pending--; };
     img.src = url; return t;
   }
+  /* a family (models/<family>.json, rig/family.py): one file of parts, and a species is a pick of them. This takes a pick to the shape of an ordinary packed model */
+  function pickModel(F, name) {
+    const p = F.picks[name], B = F.bodies[p.body], meshes = {}, nodes = [];
+    const scaled = (m, s) => (s === 1 ? m : Object.assign({}, m, { min: m.min.map(x => x * s), size: m.size.map(x => x * s) }));
+    const add = (n, parent, t, mesh) => { nodes.push({ name: n, parent: parent, t: t }); if (mesh) meshes[n] = mesh; };
+    B.nodes.forEach(nd => { add(nd.name, nd._parent, nd.t, F.meshes[nd.name + '~' + p.body]); });
+    F.swap.forEach(n => add(n, B.par[n], B.at[n], scaled(F.meshes[n + '~' + p[n]], p[n + 'Scale'] == null ? 1 : p[n + 'Scale'])));
+    if (p.eyes) { const E = F.meshes['eyes~' + p.eyes + '~' + p.body]; add('eyes', 'thorax', E.at, E); }
+    const ix = {}; nodes.forEach((n, i) => { ix[n.name] = i; }); nodes.forEach(n => { n.parent = n.parent == null ? -1 : ix[n.parent]; });
+    const anims = {}; for (const c in B.anims) anims[c] = B.anims[c];
+    let tris = 0; for (const n in meshes) tris += (meshes[n].wide ? atob(meshes[n].idx).length / 4 : atob(meshes[n].idx).length / 2) / 3;
+    const rest = Object.assign({}, B.rest, { w: B.rest.w * p.scale, d: B.rest.d * p.scale, h: B.rest.h * p.scale, extent: { w: B.rest.extent.w * p.scale, d: B.rest.extent.d * p.scale, h: B.rest.extent.h * p.scale } });
+    return { format: 1, key: F.key + '#' + name, group: F.group, scale: p.scale, tris: Math.round(tris), rest: rest, nodes: nodes, meshes: meshes, anims: anims, tex: F.tex[p.body], texs: F.tex, tint: p.tint, anchors: p.anchors, source: F.source, family: F.key, share: Object.keys(F.picks).length };
+  }
+  const famKey = k => String(k).split('#')[0];
+  const faMaps = {};      /* a family's maps, decoded once however many species draw them */
+  function srcMaps(fam, src, T) { const k = fam + '/' + src; if (!faMaps[k]) { const mr = modelTex(T.mr, false); faMaps[k] = { map: modelTex(T.map, true), nrm: modelTex(T.nrm, false), mr: mr }; } return faMaps[k]; }
+  function familyMats(M, geo) {
+    const mats = {}, one = {}, group = n => (/^abd/.test(n) ? 'abd' : /^leg/.test(n) ? 'legs' : 'body');
+    for (const n in M.meshes) { const src = M.meshes[n].src, g = group(n), key = src + '|' + g;
+      if (src === 'eye') { mats[n] = one.eye || (one.eye = new THREE.MeshStandardMaterial({ color: 0x0a0806, roughness: 0.12, metalness: 0 })); continue; }
+      if (!one[key]) { const T = srcMaps(M.family, src, M.texs[src]); one[key] = new THREE.MeshStandardMaterial({ map: T.map, normalMap: T.nrm, metalnessMap: T.mr, roughnessMap: T.mr, metalness: 1, roughness: 1, side: THREE.DoubleSide, color: new THREE.Color(parseInt(M.tint[g], 16)).convertSRGBToLinear() }); }
+      mats[n] = one[key]; }
+    return mats;
+  }
   function modelOf(mkey) {
     if (MODELC[mkey]) return MODELC[mkey];
-    const M = typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[mkey]; if (!M) throw new Error('KratorFauna: model ' + mkey + ' is not in this bundle');
+    const F = typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[famKey(mkey)]; if (!F) throw new Error('KratorFauna: model ' + mkey + ' is not in this bundle');
+    const M = F.family ? pickModel(F, String(mkey).split('#')[1]) : F;
     const geo = {};
     for (const n in M.meshes) {
       const m = M.meshes[n], p16 = new Uint16Array(buf64(m.pos)), pos = new Float32Array(p16.length), n8 = new Int8Array(buf64(m.nrm)), nrm = new Float32Array(n8.length), u16 = new Uint16Array(buf64(m.uv)), uv = new Float32Array(u16.length);
@@ -99,8 +125,8 @@ const KratorFaunaAPI = (function () {
       g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
       g.setIndex(new THREE.BufferAttribute(m.wide ? new Uint32Array(buf64(m.idx)) : new Uint16Array(buf64(m.idx)), 1)); g.computeBoundingSphere(); geo[n] = g;
     }
-    const mr = modelTex(M.tex.mr, false);
-    const mat = new THREE.MeshStandardMaterial({ map: modelTex(M.tex.map, true), normalMap: modelTex(M.tex.nrm, false), metalnessMap: mr, roughnessMap: mr, metalness: 1, roughness: 1, side: THREE.DoubleSide });
+    const mr = M.family ? null : modelTex(M.tex.mr, false);
+    const mat = M.family ? null : new THREE.MeshStandardMaterial({ map: modelTex(M.tex.map, true), normalMap: modelTex(M.tex.nrm, false), metalnessMap: mr, roughnessMap: mr, metalness: 1, roughness: 1, side: THREE.DoubleSide });
     const clips = {};
     for (const cn in M.anims) {
       const A = M.anims[cn], tr = [];
@@ -108,7 +134,7 @@ const KratorFaunaAPI = (function () {
         tr.push(k.path === 'quaternion' ? new THREE.QuaternionKeyframeTrack(k.node + '.quaternion', t, v) : new THREE.VectorKeyframeTrack(k.node + (k.path === 'scale' ? '.scale' : '.position'), t, v)); }
       clips[cn] = new THREE.AnimationClip(cn, A.dur, tr);
     }
-    const partMat = {};      /* a part with a material of its own (M.mats: a wing card, see-through); the rest share the baked maps */
+    const partMat = M.family ? familyMats(M, geo) : {};      /* a part with a material of its own (M.mats: a wing card, see-through); the rest share the baked maps */
     for (const mn in (M.mats || {})) { const q = M.mats[mn], m2 = new THREE.MeshStandardMaterial({ map: modelTex(q.map, true), transparent: true, alphaTest: 0.02, depthWrite: false, metalness: 0, roughness: q.roughness == null ? 0.5 : q.roughness, side: THREE.DoubleSide }); for (const p of q.parts) partMat[p] = m2; }
     return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips });
   }
@@ -126,6 +152,7 @@ const KratorFaunaAPI = (function () {
       else if ((m = /^seg(\d+)$/.exec(n))) (P.segs || (P.segs = []))[+m[1]] = g;
       else if (n === 'head' || n === 'tail' || /^wing2?[LR]$/.test(n)) P[n] = g;
       else if (n === 'abd') P.tail = g;
+      else if (n === 'jaw') P.head = g;                                                 /* a spider's head is its chest: the jaws are what turns */
       else if (!P.body && /^(torso|thorax|rig)$/.test(n)) P.body = g; });
     if (!P.body) P.body = top;
     const dm = (E.variantDims && E.variantDims[v]) || { w: E.w, d: E.d, h: E.h };
@@ -141,7 +168,7 @@ const KratorFaunaAPI = (function () {
   }
   function animateModel(g, t, mode, o) {
     o = o || {}; const mx = g.userData._mx, has = n => !!mx.acts[n];
-    const cn = mode === 'walk' && has('walk') ? 'walk' : mode === 'graze' && has('graze') ? 'graze' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
+    const cn = mode === 'strike' && has('strike') ? 'strike' : mode === 'walk' && has('walk') ? 'walk' : mode === 'graze' && has('graze') ? 'graze' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
     if (mx.cur !== cn) { if (mx.cur) mx.acts[mx.cur].stop(); mx.acts[cn].reset().play(); mx.cur = cn; }
     const a = mx.acts[cn], dur = mx.clips[cn].duration, tm = t * (o.rate || 1) + (o.phase || 0) / TAU * dur;
     a.time = ((tm % dur) + dur) % dur; mx.mixer.update(0);
@@ -149,7 +176,7 @@ const KratorFaunaAPI = (function () {
   function build(key, opt) {
     const E = ANIMAL_BY_KEY[key]; if (!E) throw new Error('KratorFauna.build: no animal ' + key);
     opt = opt || {};
-    if (E.models && E.models[opt.variant | 0] && typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[E.models[opt.variant | 0]]) return buildModel(E, key, opt);   /* a bundle without the models draws the procedural build */
+    if (E.models && E.models[opt.variant | 0] && typeof FA_MODELS !== 'undefined' && FA_MODELS && FA_MODELS[famKey(E.models[opt.variant | 0])]) return buildModel(E, key, opt);   /* a bundle without the models draws the procedural build */
     const A = faunaFrame(E, opt);
     E.build(A);
     const root = new THREE.Group(); root.name = 'fauna:' + key;
@@ -303,7 +330,7 @@ const KratorFaunaAPI = (function () {
       w: e.w, d: e.d, h: e.h, breeds: e.breeds ? Object.keys(e.breeds) : null, variantDims: e.variantDims || null, poses: e.poses || null })); },
     entry: function (key) { return ANIMAL_BY_KEY[key] || null; },
     has: function (key) { return !!ANIMAL_BY_KEY[key]; },
-    build: build, animate: animate, profile: profile, lifeOf: lifeOf,
+    build: build, animate: animate, profile: profile, lifeOf: lifeOf, pickModel: pickModel,
     setTextures: function (on) { TEXST.on = !!on && typeof FA_TEX !== 'undefined' && !!FA_TEX; },
     textures: function () { return { pending: TEXST.pending, families: TEXST.families.slice(), on: TEXST.on }; },
     /* start every packed detail map decoding now (a host that will build later, or builds only a few animals) */
