@@ -757,14 +757,14 @@ or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not check
 
 `WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page
 loads with reflections off, and `WATER.mirror` isn't called, so no material is patched and no tri is drawn. A button in the host panel
-cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the tier to use. The live mirror costs about 8% of the
-world pass, and its crash on eastabyss's bench is untraced.
+cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the cheap tier, patchy near a shore (one capture point). The live mirror is the good picture, at about 2.4-3.4 ms every 2nd frame
+on the Arc 140T. Don't wrap `renderLive` in a loop of GPU timer queries: that crashed the tab on the Arc, and the page's own loop never did.
 
 **Adopting it** (the exact lines; each biome's own turn does it, where it has a large still; `biomes/eastabyss/src/99-host-take.js` is the example):
 
 1. `build.py`: add `58-core-water-mirror.js` to the kit's `core/water/ext` list.
-2. In the take fragment, before `KHOST.take`, with the still's own materials, level, centre and radius:
-   `const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[...],level,center:[x,z],radius,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});`
+2. In the take fragment, before `KHOST.take`, with every surface at the still's level (rivers and forks too), its centre, its shoreline's distance as `radius`, and `far`:
+   `const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[...],level,center:[x,z],radius,far,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});`
 3. In `KHOST.take`: `draw:()=>{MIRROR.update();SKY.draw();}`.
 
 Never call `Sw.set` at load, and don't set a tier in a page's defaults. `node core/water/test-mirror-switch.js` holds the rule. Godot has no twin yet.

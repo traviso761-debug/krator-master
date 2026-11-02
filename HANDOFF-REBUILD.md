@@ -141,7 +141,15 @@ changes in probe mode, no crash, geometry, texture and program counts flat; so t
 switching (not traced; trace it before any lake takes `live`). eastabyss' `--assert --all-views` fails only the foliage attach audit
 (5.84% of cards, limit 1%), which predates the mirror (the guards landed after its turn); the error panel and console are clean.
 Left: the near-shore pale band; adopting it per kit (a still's `center`, `radius` and `level`); one cube per lake; the Godot twin; a node
-PORT row. Trace the live tier's crash before any lake opens on `live`.
+PORT row.
+
+**The mirror's open issues, closed 2026-11-02** (`core/water/ext/58`; Arc 140T, eastabyss):
+- **The crash is the bench, not the page.** It needs a loop of `EXT_disjoint_timer_query_webgl2` queries round `M.renderLive()`: "Target crashed" after 31 views, and again after 11. Without timers: 14 minutes live on the page's own loop (56 views, memory flat) and 48 views of resolution switching, no crash. Not run: timers with the mirror off, so whether the mirror matters to it is unknown; time a mirror pass with few queries.
+- **Reflectionless trees:** a pass inherited the main camera's runtime LOD, so stand-ins near it were hidden and heroes aren't drawn. A pass now shows every stand-in and opens BIO's fade range. Trees under 7 m have no stand-in. Live pass 2.4-3.4 ms (2.0-2.9 at 25%), every 2nd frame: no measurable rise.
+- **Water that reflected nothing:** the rivers' and forks' ribbons were not in `materials`. A page lists every surface near the mirror's level.
+- **The pale probe:** the sphere must be the shoreline's distance (eastabyss 6000 -> 1500 m). It is better, not gone: one capture point can't hold a near shore. The live tier is the good picture; the probe is the cheap one.
+- **`far`:** the live pass is skipped past that distance from `center` (eastabyss 4000 m).
+- **Left:** one cube per lake, the Godot twin, a test of the stand-in pass (GPU shots only so far).
 
 **Then:** resume the pairs from pair 4 (the table under "How step 3 runs"), then the gallery republish, then the queue under
 "After the pairs and the gallery". The texture wiring follow-ups are listed under "Textures delivered 2026-10-27". Start sessions

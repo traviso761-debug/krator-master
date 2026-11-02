@@ -9,7 +9,8 @@
 // Opt-in: nothing happens to a material until WATER.mirror is called for it.
 // o: {THREE, renderer, scene, camera, sky (S from ATMOS.skyBiome: its .scene), materials:[...], level, center:[x,z], radius (m), height (capture, m),
 //     probe (cube size), res (fraction of the screen), every, minR (m: the large meshes the live mirror draws), tree (mesh => bool: instanced meshes
-//     it draws as well), strength, ripple (0..1), uv (the live lookup's nudge by slope), hour (()=>hour: re-capture when it moves hourStep, 1)}
+//     it draws as well), strength, ripple (0..1), uv (the live lookup's nudge by slope), hour (()=>hour: re-capture when it moves hourStep, 1),
+//     far (m from center: past it the live pass is skipped; the mirror keeps its last picture)}. radius is the shoreline's, not the water's far reach: too large a sphere squeezes the shore into the horizon
 // 'probe' is the default tier (the owner, 2026-11-01); 'live' costs about 8% of the world pass and is kept for special lakes.
 // Returns M: M.set('off'|'probe'|'live'), M.update() (once a frame, before the world's pass), M.capture(now), M.renderLive() (one mirror pass), M.U.
 (function(){if(typeof WATER==='undefined')return;
@@ -28,9 +29,13 @@
      sh.fragmentShader.replace('#include <encodings_fragment>','#include <encodings_fragment>\nif(uMirM>0.5){vec3 mirV=normalize(cameraPosition-vMirW),mirN=normalize(mix(vec3(0.0,1.0,0.0),normalize(transpose(mat3(viewMatrix))*normal),uMirRip));'+FRAG+'}');};
    m.customProgramCacheKey=function(){return (key?key.call(this):'')+'|mirror';};m.needsUpdate=true;}
   // what each tier draws, by layer: 1 the live mirror's large meshes, 3 what o.tree picks for it; 2 the probe (both of those: never the hero plants, which took a page down in six faces)
-  let scanned=0;
+  // the trees: the page's runtime LOD shows the stand-ins by the main camera (none near it) and the heroes are never drawn here, so a tree by the
+  // camera's own shore would have no reflection. A mirror pass shows every stand-in, and BIO's fade uniforms open their range for the pass.
+  let scanned=0;const stand=new Set(),LU=typeof BIO!=='undefined'?BIO._lodU:null;
+  const pass=fn=>{const vis=[];stand.forEach(m=>{vis.push(m.visible);m.visible=true;});const ls=LU?LU.s.value:1,lf=LU?LU.f.value:0;if(LU){LU.s.value=1e-4;LU.f.value=0;}
+   try{fn();}finally{if(LU){LU.s.value=ls;LU.f.value=lf;}let i=0;stand.forEach(m=>{m.visible=vis[i++];});}};
   const scan=()=>{scene.traverse(q=>{if(q.isLight){q.layers.enable(1);q.layers.enable(2);q.layers.enable(3);return;}if(!q.isMesh||mats.has(q.material))return;
-    if(q.isInstancedMesh){if(o.tree&&o.tree(q)){q.layers.enable(3);q.layers.enable(2);}return;}
+    if(q.isInstancedMesh){if(o.tree&&o.tree(q)){q.layers.enable(3);q.layers.enable(2);stand.add(q);}return;}
     if(!q.geometry.boundingSphere)q.geometry.computeBoundingSphere();const s=q.geometry.boundingSphere;if(s&&s.radius*Math.max(q.scale.x,q.scale.y,q.scale.z)>minR){q.layers.enable(1);q.layers.enable(2);}});scanned=1;};
   const sz=new T.Vector2(),rcam=new T.PerspectiveCamera(),scam=new T.PerspectiveCamera(),fwd=new T.Vector3(),up=new T.Vector3(),tgt=new T.Vector3(),pl=new T.Plane(),q=new T.Vector4(),cp=new T.Vector4(),
    TM=new T.Matrix4().set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1);
@@ -48,16 +53,16 @@
    // the oblique near plane (Lengyel): the waterline clips the mirror's depth range, in the projection alone
    pl.normal.set(0,1,0);pl.constant=-level;pl.applyMatrix4(rcam.matrixWorldInverse);cp.set(pl.normal.x,pl.normal.y,pl.normal.z,pl.constant);const P=rcam.projectionMatrix.elements;
    q.x=(Math.sign(cp.x)+P[8])/P[0];q.y=(Math.sign(cp.y)+P[9])/P[5];q.z=-1;q.w=(1+P[10])/P[14];cp.multiplyScalar(2/cp.dot(q));P[2]=cp.x;P[6]=cp.y;P[10]=cp.z+1;P[14]=cp.w;
-   const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(rt);R.autoClear=true;R.render(S.scene,scam);R.autoClear=false;R.clearDepth();R.render(scene,rcam);
+   const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(rt);R.autoClear=true;R.render(S.scene,scam);R.autoClear=false;R.clearDepth();pass(()=>R.render(scene,rcam));
    R.setRenderTarget(old);R.autoClear=ac;R.shadowMap.autoUpdate=su;return true;};
   // the capture: one face a frame, into a second cube, swapped in when all six are drawn, so it never stalls a frame. M.capture(true): all at once
   let job=null,hourAt=null;
-  const face=j=>{const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(j.crt,j.i);R.autoClear=true;R.render(S.scene,j.b.children[j.i]);R.autoClear=false;R.clearDepth();R.render(scene,j.a.children[j.i]);
+  const face=j=>{const old=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.autoUpdate;R.shadowMap.autoUpdate=false;R.setRenderTarget(j.crt,j.i);R.autoClear=true;R.render(S.scene,j.b.children[j.i]);R.autoClear=false;R.clearDepth();pass(()=>R.render(scene,j.a.children[j.i]));
    R.setRenderTarget(old);R.autoClear=ac;R.shadowMap.autoUpdate=su;j.i++;if(j.i<6)return;if(M._crt)M._crt.dispose();M._crt=j.crt;U.uMirP.value=j.crt.texture;job=null;if(mode==='probe')U.uMirM.value=1;};
-  M.capture=function(now){if(!scanned)scan();if(job)return;const n=o.probe||512,C=U.uMirC.value,crt=new T.WebGLCubeRenderTarget(n,{encoding:R.outputEncoding,generateMipmaps:false,minFilter:T.LinearFilter,magFilter:T.LinearFilter}),a=new T.CubeCamera(1,3e5,crt),b=new T.CubeCamera(1,1e6,crt);
+  M.capture=function(now){scan();if(job)return;const n=o.probe||512,C=U.uMirC.value,crt=new T.WebGLCubeRenderTarget(n,{encoding:R.outputEncoding,generateMipmaps:false,minFilter:T.LinearFilter,magFilter:T.LinearFilter}),a=new T.CubeCamera(1,3e5,crt),b=new T.CubeCamera(1,1e6,crt);
    a.position.copy(C);a.updateMatrixWorld();b.updateMatrixWorld();a.children.forEach(c=>c.layers.set(2));job={crt,a,b,i:0};if(o.hour)hourAt=o.hour();if(now)while(job)face(job);};
   M.set=function(m){mode=m;if(m==='probe'&&!U.uMirP.value&&!job)M.capture();if(m==='live'&&!U.uMirT.value)M.renderLive();U.uMirM.value=m==='live'?2:m==='probe'&&U.uMirP.value?1:0;};
-  M.update=function(){if(job){face(job);return;}if(mode==='probe'&&o.hour&&hourAt!=null&&Math.abs(o.hour()-hourAt)>(o.hourStep||1))M.capture();if(mode==='live'&&(frame++%every)===0)M.renderLive();};
+  M.update=function(){if(job){face(job);return;}if(mode==='probe'&&o.hour&&hourAt!=null&&Math.abs(o.hour()-hourAt)>(o.hourStep||1))M.capture();if(mode==='live'&&(frame++%every)===0&&(o.far==null||Math.hypot(cam.position.x-o.center[0],cam.position.z-o.center[1])<o.far))M.renderLive();};
   return M;};
  // the scaffolding (the owner, 2026-11-01: every biome can turn it on, off at page load so the tri counts don't rise). Takes WATER.mirror's o plus ui
  // (the panel to add a button to; default KHOST.ui). Nothing is built, patched or captured until the first turn-on: the button cycles off, probe, live; ?mirror=probe or live asks at load.

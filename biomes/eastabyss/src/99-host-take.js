@@ -23,8 +23,8 @@ function viewOfFauna(){const L=EASTABYSS.FAUNA_LAYOUT||{},Fs=L.flocks||[],Zs=L.l
 function viewOfSkein(){const m=scene.getObjectByName('biome:flamingoflying');if(!m)return[1180,42,-260,-300,0,120];const M=new THREE.Matrix4();m.getMatrixAt(4,M);const e=M.elements;
  const fx=e[8],fz=e[10],l=Math.hypot(fx,fz)||1;return[e[12]-fx/l*14+fz/l*14,e[13]-6,e[14]-fz/l*14-fx/l*14,e[12]+fx/l*6,e[13],e[14]+fz/l*6];}
 /* the land in the lake (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
-const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material],
- level:0,center:[900,-100],radius:6000,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;
+const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material].concat(RIVER_DRAW.concat(FORK_DRAW).map(D=>D.mesh.material)),
+ level:0,center:[900,-100],radius:1500,far:4000,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],
