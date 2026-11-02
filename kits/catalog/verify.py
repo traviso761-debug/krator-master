@@ -56,6 +56,8 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page
 TOL_M, TOL_FRAC, UNDER_FRAC, ROOT_FRAC = 0.05, 0.04, 0.30, 0.10
 # key -> reason; only for pieces recorded as deferred in KNOWN_ISSUES.md
 ALLOW = {}
@@ -317,133 +319,109 @@ async def page_coverage(pg):
 
 
 async def run_one(a, page, first):
-    """one load of the sheet (one furniture page); returns the failures"""
-    from playwright.async_api import async_playwright
-    path = os.path.abspath(a.html)
-    rel = os.path.relpath(path, HERE).replace(os.sep, '/')
+    """one load of the sheet (one furniture page); returns (exit code, the failures)"""
     if a.out:
         os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=HERE, **k)
-    socketserver.TCPServer.allow_reuse_address = True
-    httpd = socketserver.TCPServer(('127.0.0.1', 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    try:
-        async with async_playwright() as p:
-            b = await p.chromium.launch(**_exe(), args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
-            W, H = [int(t) for t in a.size.split('x')]
-            pg = await b.new_page(viewport={'width': W, 'height': H})
-            pg.set_default_timeout(600000)
-            errs = []
-            pg.on('pageerror', lambda e: errs.append(str(e)))
-            three = os.path.join(HERE, 'three.min.js')
-            await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
-                route.fulfill(path=three, content_type='application/javascript')))
-            q = ('' if a.sheet in ('all', 'furniture') else 'sheet=' + a.sheet) + (('&' if a.sheet not in ('all', 'furniture') else '') + a.query if a.query else '')
-            if page:
-                q = (q + '&' if q else '') + 'page=' + page
-            q = '?' + q if q else ''
-            if page:
-                print('\n========== page: %s ==========' % page)
-            await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, q), timeout=900000)   # the sheet builds during load
+    q = ('' if a.sheet in ('all', 'furniture') else 'sheet=' + a.sheet) + (('&' if a.sheet not in ('all', 'furniture') else '') + a.query if a.query else '')
+    if page:
+        q = (q + '&' if q else '') + 'page=' + page
+    q = '?' + q if q else ''
+    if page:
+        print('\n========== page: %s ==========' % page)
+    # serve this folder (the sheet builds during load)
+    async with verify_page(a.html, here=HERE, size=a.size, query=q, root=HERE, settle_ms=1500) as V:
+        pg, errs, fails = V.page, V.errs, V.fails
+        if not V.ready:
+            print('timed out waiting for the sheet to build'); fails.append('build timeout')
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        print('ERROR PANEL:', repr(panel[:1500]) if panel else 'clean')
+        if panel:
+            fails.append('error panel not clean')
+        if errs:
+            print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
+        info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
+                                 "rows:(window._catalog||{rows:[]}).rows.length})")
+        print('ready:', info['ready'], ' rows:', info['rows'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
+
+        if a.assert_:
+            sres, palkeys = static_checks()
+            if not first:
+                sres = []                                   # the static checks read the source files: once per run
+            res = await pg.evaluate(ASSERT_JS, {'tolM': TOL_M, 'tolF': TOL_FRAC, 'under': UNDER_FRAC, 'rootFrac': ROOT_FRAC,
+                                                'seeds': a.seeds, 'palKeys': palkeys, 'anchor': ANCHOR_AUDIT})
+            c = res['counts']
+            print('\n--- catalog: %d furniture, %d plants, %d buildings -> %d instances (every variant) ---'
+                  % (c['furniture'], c['plants'], c['buildings'], c['instances']))
+            per = res['per']
+            other = ('build threw', 'no meshes', 'outside declared', 'anchor:', 'palette:')
+            checks = [('builds', lambda f: f.startswith('build threw') or f == 'no meshes'),
+                      ('no-nan-geometry', lambda f: 'NaN' in f),
+                      ('declared-size', lambda f: f.startswith('outside declared')),
+                      ('anchor-geometry', lambda f: f.startswith('anchor:')),
+                      ('palette', lambda f: f.startswith('palette:')),
+                      ('tags', lambda f: not (f.startswith(other) or 'NaN' in f))]
+            print('\n--- invariants ---')
+            for name, sel in checks:
+                bad, allowed = [], []
+                for r in per:
+                    fs = [f for f in r['fail'] if sel(f)]
+                    if fs:
+                        (allowed if r['key'] in ALLOW else bad).append((r, fs))
+                ok = not bad
+                kinds = {}
+                for r in per:
+                    kinds[r['kind']] = kinds.get(r['kind'], 0) + 1
+                detail = ('%d instances (%s)' % (len(per), ', '.join('%s %d' % kv for kv in sorted(kinds.items()))))
+                if allowed:
+                    detail += '; %d deferred (KNOWN_ISSUES.md): %s' % (len(allowed), ', '.join(sorted({r['key'] for r, _ in allowed})))
+                print(('  PASS  ' if ok else '  FAIL  ') + name + ' : ' + (detail if ok else '%d failing' % len(bad)))
+                for r, fs in bad[:60]:
+                    print('          %s #%d [%s]: %s' % (r['key'], r['variant'] + 1, r['kind'], '; '.join(fs)))
+                if not ok:
+                    fails.append('assert ' + name)
+            if first and a.sheet in ('all', 'furniture'):
+                sres = [await page_coverage(pg)] + sres
+            for r in sres:
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']:
+                    fails.append('assert ' + r['name'])
+            print('\n--- warnings (reported, not failed) ---')
+            under = [r for r in per if r['warn']]
+            print('  WARN  under-size (>%d%% smaller than declared on an axis): %d instances' % (UNDER_FRAC * 100, len(under)))
+            for r in under[:40]:
+                print('          %s #%d: %s' % (r['key'], r['variant'] + 1, '; '.join(r['warn'])))
+            if a.dump:
+                json.dump(res, open(a.dump, 'w'), indent=1)
+                print('dumped', a.dump)
+                a.dump = ''                                 # the first page's (use --page for another)
+
+        for ev in (a.eval or []):
             try:
-                await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0",
-                                           timeout=580000)
-            except Exception:
-                print('timed out waiting for the sheet to build'); fails.append('build timeout')
-            await pg.wait_for_timeout(1500)
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            print('ERROR PANEL:', repr(panel[:1500]) if panel else 'clean')
-            if panel:
-                fails.append('error panel not clean')
-            if errs:
-                print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
-            info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
-                                     "rows:(window._catalog||{rows:[]}).rows.length})")
-            print('ready:', info['ready'], ' rows:', info['rows'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
+                print('eval:', json.dumps(await pg.evaluate(ev))[:3000])
+            except Exception as e:
+                print('eval failed:', str(e)[:400])
 
-            if a.assert_:
-                sres, palkeys = static_checks()
-                if not first:
-                    sres = []                                   # the static checks read the source files: once per run
-                res = await pg.evaluate(ASSERT_JS, {'tolM': TOL_M, 'tolF': TOL_FRAC, 'under': UNDER_FRAC, 'rootFrac': ROOT_FRAC,
-                                                    'seeds': a.seeds, 'palKeys': palkeys, 'anchor': ANCHOR_AUDIT})
-                c = res['counts']
-                print('\n--- catalog: %d furniture, %d plants, %d buildings -> %d instances (every variant) ---'
-                      % (c['furniture'], c['plants'], c['buildings'], c['instances']))
-                per = res['per']
-                other = ('build threw', 'no meshes', 'outside declared', 'anchor:', 'palette:')
-                checks = [('builds', lambda f: f.startswith('build threw') or f == 'no meshes'),
-                          ('no-nan-geometry', lambda f: 'NaN' in f),
-                          ('declared-size', lambda f: f.startswith('outside declared')),
-                          ('anchor-geometry', lambda f: f.startswith('anchor:')),
-                          ('palette', lambda f: f.startswith('palette:')),
-                          ('tags', lambda f: not (f.startswith(other) or 'NaN' in f))]
-                print('\n--- invariants ---')
-                for name, sel in checks:
-                    bad, allowed = [], []
-                    for r in per:
-                        fs = [f for f in r['fail'] if sel(f)]
-                        if fs:
-                            (allowed if r['key'] in ALLOW else bad).append((r, fs))
-                    ok = not bad
-                    kinds = {}
-                    for r in per:
-                        kinds[r['kind']] = kinds.get(r['kind'], 0) + 1
-                    detail = ('%d instances (%s)' % (len(per), ', '.join('%s %d' % kv for kv in sorted(kinds.items()))))
-                    if allowed:
-                        detail += '; %d deferred (KNOWN_ISSUES.md): %s' % (len(allowed), ', '.join(sorted({r['key'] for r, _ in allowed})))
-                    print(('  PASS  ' if ok else '  FAIL  ') + name + ' : ' + (detail if ok else '%d failing' % len(bad)))
-                    for r, fs in bad[:60]:
-                        print('          %s #%d [%s]: %s' % (r['key'], r['variant'] + 1, r['kind'], '; '.join(fs)))
-                    if not ok:
-                        fails.append('assert ' + name)
-                if first and a.sheet in ('all', 'furniture'):
-                    sres = [await page_coverage(pg)] + sres
-                for r in sres:
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']:
-                        fails.append('assert ' + r['name'])
-                print('\n--- warnings (reported, not failed) ---')
-                under = [r for r in per if r['warn']]
-                print('  WARN  under-size (>%d%% smaller than declared on an axis): %d instances' % (UNDER_FRAC * 100, len(under)))
-                for r in under[:40]:
-                    print('          %s #%d: %s' % (r['key'], r['variant'] + 1, '; '.join(r['warn'])))
-                if a.dump:
-                    json.dump(res, open(a.dump, 'w'), indent=1)
-                    print('dumped', a.dump)
-                    a.dump = ''                                 # the first page's (use --page for another)
-
-            for ev in (a.eval or []):
-                try:
-                    print('eval:', json.dumps(await pg.evaluate(ev))[:3000])
-                except Exception as e:
-                    print('eval failed:', str(e)[:400])
-
-            if a.out:
-                pre = page + '_' if page else ''
-                fn = os.path.join(a.out, pre + 'initial.png'); await pg.screenshot(path=fn); print('shot:', fn)
-                secs = await pg.evaluate("()=>window._catalog.sections.map(s=>({kind:s.kind,z0:s.z0,z1:s.z1,w:Math.max(...s.rows.map(r=>r.width))}))")
-                for s in secs:
-                    await pg.evaluate("(s)=>{ctl.walk=false;ctl.target.set(s.w/2,0,(s.z0+s.z1)/2);"
-                                      "ctl.dist=Math.max(s.w,s.z0-s.z1)*0.75;ctl.az=0.35;ctl.el=0.9;updateCamera();}", s)
+        if a.out:
+            pre = page + '_' if page else ''
+            fn = os.path.join(a.out, pre + 'initial.png'); await V.shot(fn, view=pre + 'initial'); print('shot:', fn)
+            secs = await pg.evaluate("()=>window._catalog.sections.map(s=>({kind:s.kind,z0:s.z0,z1:s.z1,w:Math.max(...s.rows.map(r=>r.width))}))")
+            for s in secs:
+                await pg.evaluate("(s)=>{ctl.walk=false;ctl.target.set(s.w/2,0,(s.z0+s.z1)/2);"
+                                  "ctl.dist=Math.max(s.w,s.z0-s.z1)*0.75;ctl.az=0.35;ctl.el=0.9;updateCamera();}", s)
+                await pg.wait_for_timeout(600)
+                fn = os.path.join(a.out, pre + 'section_%s.png' % s['kind']); await V.shot(fn, view=pre + 'section_' + s['kind']); print('shot:', fn)
+            if a.rows:
+                titles = await pg.evaluate('()=>window._catalog.rows.map(r=>r.title)')
+                want = [w.strip().lower() for w in a.rows.split(',') if w.strip()] if a.rows != 'all' else []
+                for i, title in enumerate(titles):
+                    if want and not any(w in title.lower() for w in want):
+                        continue
+                    t = await pg.evaluate("(i)=>{window._catalog.gotoRow(i);return window._catalog.rows[i].title;}", i)
                     await pg.wait_for_timeout(600)
-                    fn = os.path.join(a.out, pre + 'section_%s.png' % s['kind']); await pg.screenshot(path=fn); print('shot:', fn)
-                if a.rows:
-                    titles = await pg.evaluate('()=>window._catalog.rows.map(r=>r.title)')
-                    want = [w.strip().lower() for w in a.rows.split(',') if w.strip()] if a.rows != 'all' else []
-                    for i, title in enumerate(titles):
-                        if want and not any(w in title.lower() for w in want):
-                            continue
-                        t = await pg.evaluate("(i)=>{window._catalog.gotoRow(i);return window._catalog.rows[i].title;}", i)
-                        await pg.wait_for_timeout(600)
-                        fn = os.path.join(a.out, pre + 'row_%02d_%s.png' % (i, re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')))
-                        await pg.screenshot(path=fn); print('shot:', fn)
-            await b.close()
-    finally:
-        httpd.shutdown()
-    return [(page + ': ' if page else '') + f for f in fails]
+                    fn = os.path.join(a.out, pre + 'row_%02d_%s.png' % (i, re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')))
+                    await V.shot(fn); print('shot:', fn)
+    code = V.exit()
+    return code, [(page + ': ' if page else '') + f for f in V.fails]
 
 
 FURN_PAGES = ['indoor', 'outdoor', 'both', 'rugs', 'jobs']
@@ -459,12 +437,14 @@ async def run(a):
         pages = FURN_PAGES
     else:
         pages = ['all'] if a.sheet in ('all', 'furniture') else ['']
-    fails = []
+    fails, worst = [], 0
     for i, page in enumerate(pages or ['']):
-        fails += await run_one(a, page, i == 0)
-    if fails:
+        code, f = await run_one(a, page, i == 0)
+        fails += f
+        worst = max(worst, code)
+    if fails or worst:
         print('\nFAILED: ' + '; '.join(fails))
-        return 1
+        return worst or 1
     print('\nOK')
     return 0
 
