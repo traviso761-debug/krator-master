@@ -132,8 +132,9 @@ with no query nothing installs). Intel Arc 140T, 1280x720, GPU timer queries, mi
 - **Not done:** auto-off when no still is on screen, or the camera is far; one water level only; `KHOOK` adoption (`core-shader`); no
   Godot twin; no PORT row or node test.
 
-**The probe is the default reflection tier** (the owner, 2026-11-01); the live mirror stays for special lakes. eastabyss has it on by
-default (`?mirror=0` installs nothing, `?mirror=live` the live mirror). The capture now draws one face a frame into a second cube and
+**The mirror is off by default, for the graphic load** (the owner, 2026-11-01, reversing the same day's "probe by default"): no page
+installs it unless asked, and turns don't adopt it. The probe stays the first tier and the live mirror the second for special lakes; on
+eastabyss `?mirror=probe` and `?mirror=live` turn them on. The capture now draws one face a frame into a second cube and
 swaps it in, re-captures when the hour moves by 1, and includes the far trees (`biome:impTrees`, 16,974 instances). The soak: 93 view
 changes in probe mode, no crash, geometry, texture and program counts flat; so the bench's crash is in the live tier or its
 switching (not traced; trace it before any lake takes `live`). eastabyss' `--assert --all-views` fails only the foliage attach audit
