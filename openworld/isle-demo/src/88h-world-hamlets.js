@@ -18,7 +18,7 @@ const t0=performance.now();
 const IDIMS=ISK.dims(),CATK=(CAT&&CAT.ASSET_BY_KEY)||{};
 const kitOf=k=>IDIMS[k]?'isk':CATK[k]?'cat':null;
 const dims=k=>{const d=IDIMS[k];if(d)return{w:d.w,d:d.d,h:d.h};const a=CATK[k];return a?{w:a.w,d:a.d,h:a.h}:null;};
-let M;try{M=ISLE_HAMLETS.make(dims);}catch(e){reportErr('hamlets: '+(e.stack||e));M={villages:[],resources:[],errors:[String(e&&e.message||e)]};}
+let M;try{M=ISLE_HAMLETS.made||ISLE_HAMLETS.make(dims);}   /* 48t made them once (and the sim declared them) */catch(e){reportErr('hamlets: '+(e.stack||e));M={villages:[],resources:[],errors:[String(e&&e.message||e)]};}
 S.errors=M.errors.slice();
 const H=(x,z)=>WORLD.H(x,z);
 /* ---------------------------------------------------------------- the records: heights, tags, keep-clear */
@@ -41,11 +41,11 @@ for(const R of M.resources){const y=R.x!=null?H(R.x,R.z):0;S.resources++;
 WORLD.clearHook=(x,z)=>clear.some(x,z,0,it=>Math.hypot(x-it.x,z-it.z)<it.r);
 S.villages=V.length;
 /* ---------------------------------------------------------------- lanes and greens: ribbons on the ground */
-const laneMat=new THREE.MeshLambertMaterial({color:0x9a7e5a,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}),greenMat=new THREE.MeshLambertMaterial({color:0x7f9a4e,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
+const laneMat=new THREE.MeshLambertMaterial({color:new THREE.Color(0x9a7e5a).convertSRGBToLinear(),polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}),greenMat=new THREE.MeshLambertMaterial({color:new THREE.Color(0x7f9a4e).convertSRGBToLinear(),polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
 function ribbon(a,b,w,mat,lift){const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(L/6)),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L,px=-uz*w/2,pz=ux*w/2,c=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  const pos=new Float32Array((n+1)*6),idx=[];for(let i=0;i<=n;i++){const x=a[0]+ux*L*i/n,z=a[1]+uz*L*i/n;
   for(const s of [-1,1]){const xx=x+px*s,zz=z+pz*s,o=(i*2+(s>0?1:0))*3;pos[o]=xx-c[0];pos[o+1]=H(xx,zz)+lift;pos[o+2]=zz-c[1];}
-  if(i<n){const q=i*2;idx.push(q,q+2,q+1,q+1,q+2,q+3);}}
+  if(i<n){const q=i*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}}   /* wound to face up: facing down they were culled, every lane and green unseen (2026-10-26, as Longsong's square) */
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,mat);m.position.set(c[0],0,c[1]);m.userData.inspectLabel='lane';scene.add(m);return m;}
 for(const X of V){for(const l of X.v.lanes||[])ribbon(l.pts[0],l.pts[1],l.w,laneMat,.35);

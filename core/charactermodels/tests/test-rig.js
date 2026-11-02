@@ -218,7 +218,26 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   var after = KCHAR.parts(r, k).map(function(p){ return p.slot; }), hp = KCHAR.hiddenParts(r, k);
   ok(KCHAR.replacesHead(r, k) && after.indexOf('hair') < 0 && after.indexOf('beard') < 0 && after.indexOf('head') < 0 &&
      after.filter(function(s){ return s === 'mods'; }).length === 2 && hp['Human.lips'] && hp['Human.low-poly'] && !hp['Human.nipple'] &&
-     (before.indexOf('head') >= 0 || !r.armour.head), b +': the lizard head leaves out hair, beard, headgear and the face parts');
+     (before.indexOf('head') >= 0 || !r.armour.head), b +': the lizard head leaves out hair, beard, headgear, and the face parts');
+  ok(hd.skin_detail && hd.skin_detail.material === 'Mod.head_lizard' && hd.skin_detail.repeat > 5 && hd.skin_detail.repeat < 15,
+     b + ': the lizard head draws the body\'s skin in its scales, about the head\'s size');
+  var fg = k.items.filter(function(it){ return it.id === 'mod_head_frog'; })[0];
+  if(fg){
+    var rf = KCHAR.blank(k); rf.hair = 'short02'; rf.mods = ['mod_head_frog'];
+    var pf = KCHAR.parts(rf, k).map(function(p){ return p.slot; }), hf = KCHAR.hiddenParts(rf, k);
+    ok(KCHAR.replacesHead(rf, k) && pf.indexOf('hair') < 0 && hf['Human.lips'] && fg.jaw && fg.jaw.pivot &&
+       fg.skin_detail && fg.skin_detail.material === 'Mod.head_frog' && fg.skin_detail.repeat > 4 && fg.skin_detail.repeat < 12,
+       b + ': the frog head replaces the human one, opens its jaw and draws the body\'s skin in its own');
+    var pt = fg.pattern || {}, roles = (k.tint && k.tint.roles) || {};
+    ok(/^#[0-9a-f]{6}$/i.test(pt.skin2) && /^#[0-9a-f]{6}$/i.test(pt.skin3) && /^#[0-9a-f]{6}$/i.test(pt.eye_color) &&
+       ['none', 'spots', 'net', 'marble'].indexOf(pt.kind) >= 0 && pt.amount >= 0 && pt.amount <= 1 && fg.skin_detail.mask === 'Mod.head_frog_mask' &&
+       roles['Mod.head_frog'] === 'pattern' && roles['Mod.head_frog_webs'] === 'pattern' && roles['Mod.head_frog_eye'] === 'iris' && roles['Mod.head_lizard_eye'] === 'iris',
+       b + ': the frog\'s skin takes the record\'s colours by a pattern over head and body, and its eyes (and the lizard\'s) the eye colour');
+    var pal = pt.palette || {};
+    ok(pal.skin && pal.skin2 && pal.skin3 && pal.skin.indexOf('#5f8a36') >= 0 && pal.skin2.indexOf(pt.skin2) >= 0 && pal.skin3.indexOf(pt.skin3) >= 0 &&
+       pal.skin2.indexOf('#121410') >= 0 && pal.skin.indexOf('#121410') < 0,
+       b + ': the frog\'s skin keeps to its palette (greens, browns, red-browns, creams; the marks black too)');
+  }
   var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
   ok(n >= hd.hides, b + ': the lizard head hides the head skin');
   ok(peoples.every(function(P){ for(var s = 1; s <= 20; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_tail' || m === 'mod_head_lizard'; })) return false; } return true; }),

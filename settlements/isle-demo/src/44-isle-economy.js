@@ -15,19 +15,25 @@
      - THE CARTS (`towns[town].carts`): driven actors on the walking layer, one at each warehouse in turn, their home
        that warehouse (so they are the town's: SIM.settlementOf).
      - No imports by route yet: the town lives on what it makes, and what it lacks comes by the canoe line (P7c,
-       SIM.trade). Returns the setup: producers by kind and good, warehouses, carts. */
+       SIM.trade); the other town's foods it eats (`trade.diet`: Valapo's rice) are among its foods, sold and eaten.
+     - THE DIET (2026-10-26): its households buy the imported foods at their servings a person a day (core's
+       SIM.itemsDiet), so the line brings what is eaten and the rice eaten does not grow with the rice landed; the rest
+       by the warehouses' stock, as ever. Returns the setup: producers by kind and good, warehouses, carts. */
 ISLE.simEconomy = function (TS, places) {
   var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
   T.goods.forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; });
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
-  var turn = {}, alt = {};   /* a producer kind with `alternate`: its places take its lists in turn, in place order */
-  places.forEach(function (P) { var Pr = T.producers[P.kind]; if (Pr && Pr.alternate && P.activities.WORK) { var k = turn[P.kind] || 0; alt[P.id] = Pr.alternate[k % Pr.alternate.length]; turn[P.kind] = k + 1; } });
-  var inputs = Object.assign({}, T.inputs, TS.inputs || {}), outOf = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
-    return alt[P.id] ? alt[P.id] : Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
-  var made = {}; places.forEach(function (P) { (outOf(P) || []).forEach(function (g) { made[g] = 1; }); });
-  var can = function (g) { var q = inputs[g]; return made[g] && (!q || Object.keys(q).every(function (x) { return made[x]; })); };
-  var foods = I.foods.filter(can);
-  var E = SIM.economy({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() } }, { settlement: s });
+  var inputs = Object.assign({}, T.inputs, TS.inputs || {}), listed = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
+    return Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
+  /* what the town can make: a listed good whose inputs it can make, to a fixed point (Kautoa grows no cotton, so its
+     weavers make no cloth, so no garments or nets: their mats and hats only); a maker makes only those of its list */
+  var made = {}; places.forEach(function (P) { (listed(P) || []).forEach(function (g) { made[g] = 1; }); });
+  for (var drop = true; drop;) { drop = false; Object.keys(made).forEach(function (g) { var q = inputs[g];
+    if (q && !Object.keys(q).every(function (x) { return made[x]; })) { delete made[g]; drop = true; } }); }
+  var can = function (g) { return !!made[g]; }, outOf = function (P) { var L = listed(P); L = L && L.filter(can); return L && L.length ? L : null; };
+  var DI = (ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.diet || {})[s] || {};   /* the other town's foods it eats */
+  var foods = I.foods.filter(function (f) { return can(f) || DI[f] > 0; });
+  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, ISLE.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
   var out = { producers: {}, goods: {}, warehouses: 0, carts: 0, foods: foods };
   places.forEach(function (P) {
     if (T.warehouses.indexOf(P.kind) >= 0) { SIM.store(P.id, { kind: 'warehouse' }); out.warehouses++; return; }
@@ -44,11 +50,15 @@ ISLE.simEconomy = function (TS, places) {
      not short before the first landing) */
   var share = {}, tot = 0;
   places.forEach(function (P) { var g = outOf(P); if (!g || !E.recipes[P.id]) return; g.forEach(function (x) { if (foods.indexOf(x) < 0) return; var w = P.activities.WORK * E.recipes[P.id].rate / g.length; share[x] = (share[x] || 0) + w; tot += w; }); });
+  /* the town's diet (core's SIM.itemsDiet): its imported foods at their servings a person a day over a day's servings;
+     the rest bought by the warehouses' stock as ever, and opened by the share of the town's making */
+  var per = I.meals * I.perMeal, imp = 0, diet = {}; Object.keys(DI).forEach(function (f) { if (foods.indexOf(f) >= 0) { diet[f] = DI[f] / per; imp += diet[f]; } });
+  var open = function (f) { return diet[f] != null ? diet[f] : tot > 0 ? (1 - imp) * (share[f] || 0) / tot : (1 - imp) / foods.length; };
   var need = pop * I.meals * I.perMeal * T.startDays;
   var brought = {}, TR = ISLE.TUNE.sim.trade;
   if (TR) TR.lines.forEach(function (L) { Object.keys(L.goods).forEach(function (o) { if (o !== s) L.goods[o].forEach(function (x) { brought[x] = 1; }); }); });
   if (W.length) T.goods.forEach(function (g) {
-    var n = Math.round(foods.indexOf(g) >= 0 ? (tot > 0 ? need * (share[g] || 0) / tot : need / foods.length) : made[g] || brought[g] ? (T.startLots[g] || 0) : 0);
+    var n = Math.round(foods.indexOf(g) >= 0 ? need * open(g) : made[g] || brought[g] ? (T.startLots[g] || 0) : 0);
     W.forEach(function (P, j) { P.stock[g] = Math.floor(n / W.length) + (j < n % W.length ? 1 : 0); });
   });
   /* the carts */
@@ -57,6 +67,7 @@ ISLE.simEconomy = function (TS, places) {
     var H = W[c % W.length], a = SIM.actor({ id: s + '.cart' + c, role: 'cart', org: s + '.folk', home: H.id, cls: 'cart', job: 'carters' });
     a.pos = { x: H.door.x, y: H.door.y || 0, z: H.door.z }; SIM.cart(a); out.carts++;
   }
+  if (imp > 0) SIM.itemsDiet(s, diet); out.diet = diet;   /* its imported foods at their planned shares */
   out.people = pop;
   return out;
 };

@@ -5,9 +5,13 @@ A build's INDEX.md lists each src/ fragment with its size and section
 headings, so an agent can find the part it needs without opening large
 files. The root INDEX.md lists every build.
 
-Usage:  python3 tools/make_index.py      (from anywhere; rewrites every INDEX.md)
+Usage:  python3 tools/make_index.py biomes/rift          one build's INDEX.md, nothing else
+        python3 tools/make_index.py biomes/rift --root   the same, and the root INDEX.md
+        python3 tools/make_index.py --all                every INDEX.md (and the root one)
+With no argument it prints this and writes nothing (CORE-IMPROVEMENTS.md 5c: it used to rewrite about 80 files, and
+sessions committed other builds' tables by accident).
 """
-import ast, os, re
+import ast, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # core modules that are builds of their own (a build.py and src/): indexed and audited like a kit
@@ -166,7 +170,7 @@ def outputs(build):
     return out
 
 
-def build_index(build):
+def build_index(build, write=True):
     d = os.path.join(ROOT, build)
     src = os.path.join(d, 'src')
     lines = ['# %s: index' % build, '',
@@ -213,14 +217,19 @@ def build_index(build):
                 fs = [f for f in os.listdir(td) if f[0].isdigit()]
                 lines.append('| `%s` | %s | %s |' % (t, ', '.join('`%s`' % f for f in sorted(fs)),
                                                     kb(sum(fsize(os.path.join(td, f)) for f in fs))))
-    with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
-        fh.write('\n'.join(lines) + '\n')
+    if write:
+        with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
+            fh.write('\n'.join(lines) + '\n')
     sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
     sizes += [fsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes) if sizes else 0, outs   # a build whose fragments all live elsewhere (Hook on the Port kit)
 
 
-def main():
+def main(argv=()):
+    only = [a.rstrip('/').replace(os.sep, '/') for a in argv if not a.startswith('--')]
+    if not only and '--all' not in argv:
+        print(__doc__)
+        return
     builds = []
     for top in ('settlements', 'kits', 'biomes', 'openworld'):
         for name in sorted(os.listdir(os.path.join(ROOT, top))):
@@ -228,9 +237,18 @@ def main():
             if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and os.path.isdir(os.path.join(ROOT, b, 'src')):
                 builds.append(b)
     builds += CORE_BUILDS
+    if only:
+        bad = [b for b in only if b not in builds]
+        if bad:
+            sys.exit('make_index: not a build with src/: ' + ', '.join(bad))
+        for b in only:
+            build_index(b)
+        if '--root' not in argv:
+            print('wrote %d build index(es)' % len(only))
+            return
     rows = []
     for b in builds:
-        n, total, biggest, outs = build_index(b)
+        n, total, biggest, outs = build_index(b) if not only or b in only else build_index(b, write=False)
         about = ABOUT.get(b, 'Biome kit: see `biomes/README.md`.' if b.startswith('biomes/') else '')
         rows.append('| [`%s`](%s/INDEX.md) | %d | %s | %s | %s |' % (b, b, n, kb(total), kb(biggest), about))
     lines = ['# Krator: index', '',
@@ -254,4 +272,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

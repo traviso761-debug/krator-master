@@ -60,9 +60,9 @@ def main():
         sys.exit('build.py: tests/test-rig.js failed')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
     data = {'sliders': J('sliders.json'), 'peoples': J('peoples.json')['peoples'], 'clips': J('clips.json'),
-            'props': J('props.json')['props'], 'posture': J('posture.json'), 'bodies': {}}
+            'props': J('props.json')['props'], 'posture': J('posture.json'), 'fur': J('fur.json'), 'bodies': {}}
     inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb')
-              for f in ('sliders.json', 'peoples.json', 'clips.json', 'props.json', 'posture.json')}
+              for f in ('sliders.json', 'peoples.json', 'clips.json', 'props.json', 'posture.json', 'fur.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}

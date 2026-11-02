@@ -15,7 +15,7 @@ function page(LOD) {
     vm.runInContext(read(f) + (f.endsWith('10-core-head.js') ? '\nthis.BIO=BIO;' : ''), ctx, { filename: f });
   const BIO = ctx.BIO, errs = [];
   BIO.init({ THREE, scene: new THREE.Scene(), seed: 3, err: m => errs.push(m) });
-  Object.assign(BIO.LOD, LOD || {});
+  Object.assign(BIO.LOD, { ownBox: true }, LOD || {});   /* the reach on each mesh's own box; one box a chunk is test-guards.js's, and the last check here */
   return { BIO, errs };
 }
 // a 480 m crown (a box from 0 to 480 m over its foot) put at its foot on 200 m hero sub-chunks, and a bark bucket beside it
@@ -85,5 +85,10 @@ ok(of(LZ, 'crown').sphere.radius === cA.sphere.radius, 'reach 0 is the old spher
   ok(I.cellFor(r480, 2500, { ratio: 8 }) < c480, 'the negative: a looser ratio takes a smaller cell');
   ok((c480 & (c480 - 1)) === 0 && c480 >= 16, 'cellFor returns a power of two'); }
 
+// ---------------------------------------------------------------- one box a chunk (the default since 2026-10-27)
+{ const S = page({ ownBox: false, reach: 480 }), LS = build(S), ys = new Set(LS.map(e => e.y0 + ',' + e.y1));
+  ok(ys.size <= 4 && of(LS, 'tuft').y1 === of(LS, 'crown').y1 && of(LS, 'bark').y1 === of(LS, 'crown').y1,
+    'one box a chunk: the tuft and the bark take the crown\'s height range in their chunk, so a tree\'s parts switch together');
+  ok(vis(S.BIO, 'bark') === vis(S.BIO, 'crown'), '...and the bark is drawn whenever its crown is (camera above the feet)'); }
 console.log(fails ? fails + ' FAILED' : 'all passed');
 process.exit(fails ? 1 : 0);

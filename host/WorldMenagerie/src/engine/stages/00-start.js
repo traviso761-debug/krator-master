@@ -10,6 +10,8 @@ ctx.cityId=CITY_ID;
 const nameRe=s=>s?new RegExp(s,'i'):/(?!)/;
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
 const C=await getJSON('data/cities/'+CITY_ID+'.json');
+// a page may adjust its config before anything is built from it (Chernobyl's #year=1986: people, traffic, no overgrowth)
+if(ctx.configure)ctx.configure(C);
 await stage('map-data');
 const OSM=await getJSON(C.osm);
 const SEED_DEFAULT=C.defaultSeed||1871;
@@ -58,7 +60,11 @@ const inRec=(rec,x,z)=>x>=rec.bb.x0&&x<=rec.bb.x1&&z>=rec.bb.z0&&z<=rec.bb.z1&&i
 const LAKE=dec(OSM.lake),ISLANDS=OSM.islands.map(dec);
 const WATER=OSM.water.map(polyRec),MARINAS=OSM.marina.map(polyRec),BEACHES=OSM.beach.map(polyRec);
 const PIERS=OSM.pier.map(p=>p.line?{line:dec(p.line),w:p.w,name:p.n||''}:polyRec(p));
-const AREAS=OSM.areas.map(polyRec);
+// a city can leave whole kinds of mapped area undrawn (C.dropAreas: ['wood', ...]) where its own ground is painted instead (Crater Lake)
+// or only inside circles (C.dropAreasIn: [{kinds, at: [lat, lon], r}]; Chernobyl's #year=1986 drops the woods grown over Pripyat)
+const DROP_IN=(C.dropAreasIn||[]).map(d=>{const [x,z]=P(d.at);return {kinds:d.kinds,x,z,r:d.r};});
+const dropIn=a=>DROP_IN.some(d=>d.kinds.includes(a.k)&&a.o&&Math.hypot(a.o[0]/10-d.x,a.o[1]/10-d.z)<d.r);
+const AREAS=OSM.areas.filter(a=>!(C.dropAreas||[]).includes(a.k)&&!dropIn(a)).map(polyRec);
 const ROADS=OSM.roads.map(r=>{const pts=dec(r.p);let len=0;for(let i=0;i+1<pts.length;i++)len+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);return {c:r.c,w:r.w,name:r.n||'',bridge:r.b||0,layer:r.l||0,pts,len};});
 const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}));
 const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));
@@ -182,7 +188,7 @@ function surface(mat,mode,names){if(!SURF)return mat;const use=(names||[]).map(n
     :mode==='ground'?'float g=smoothstep(0.005,0.05,vColor.g-max(vColor.r,vColor.b)),t=(1.0-g)*smoothstep(0.05,0.14,vColor.r-vColor.b);vec3 d='+P(0)+'*g+'+P(1)+'*t+'+P(2)+'*(1.0-g-t);'
     :mode==='wall'?'float red=smoothstep(0.06,0.16,vColor.r-vColor.b);vec3 d=mix('+(use.length>1?P(1):P(0))+','+P(0)+',red);'+
       (mat.map?'d=mix(vec3(1.0),d,smoothstep(0.55,0.78,max(texelColor.r,max(texelColor.g,texelColor.b))));':'')   // between the windows only
-    :'float pit=1.0-smoothstep(0.93,0.985,abs(n.y));vec3 d=mix('+P(0)+','+P(1)+',pit);';
+    :'float pit=1.0-smoothstep(0.93,0.985,abs(n.y));vec3 d=mix('+P(0)+','+P(1)+',pit);d=mix(vec3(1.0),d,smoothstep(0.12,0.3,abs(n.y)));';   // not on a gable's upright face: projected from above it only smears
   mat.onBeforeCompile=(sh,r)=>{if(prev)prev(sh,r);Object.assign(sh.uniforms,U);
     // the distance to the eye from the view-space position: three sets cameraPosition only for Phong, standard and
     // shader materials, so on a Lambert one it is the origin and a fade by it fades everything but the map's middle

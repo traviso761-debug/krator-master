@@ -188,7 +188,7 @@ BIO.geo.cells=function(geo,o){o=o||{};const R=o.rects||null,n=o.n==null?3:o.n,pi
    P[i]=mx+(P[i]-mx)*sc;P[i+1]=my+(P[i+1]-my)*sc;P[i+2]=mz+(P[i+2]-mz)*sc;
    const w=o.flipY?1-U[j+1]:U[j+1],a=x0+iu+u*(cw-2*iu),b=y0+iv+w*(ch-2*iv);U[j]=a;U[j+1]=o.flipY?1-b:b;}}
  g.attributes.position.needsUpdate=true;g.attributes.uv.needsUpdate=true;
- g.userData.card=g.userData.card&&g.userData.card.kind==='clump'?{kind:'clump'}:null;return g;};   /* its uv are cells of a sheet now: never turned (a clump's slot may still hold its sprigs by their stems) */
+ g.userData.card=g.userData.card&&g.userData.card.kind==='clump'?{kind:'clump'}:null;g.userData.cells=true;return g;};   /* its uv are cells of a sheet now: never turned (a clump's slot may still hold its sprigs by their stems) */
 // hanging raceme / strand: two crossed quads, local y 0 (hung) .. -1
 BIO.geo.hang=function(){const pos=[],uv=[],nor=[];
  for(let k=0;k<2;k++){const ca=Math.cos(k*Math.PI/2+.4),sa=Math.sin(k*Math.PI/2+.4);

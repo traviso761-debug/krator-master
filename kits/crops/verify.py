@@ -31,23 +31,18 @@ CHECK_JS = """()=>{const A=window._api,C=A.CROPS,R=[];
 
 
 async def run(page_path, do_assert):
-    from playwright.async_api import async_playwright
-    errors = []
-    async with async_playwright() as p:
-        b = await _h.launch_chromium(p)
-        pg = await b.new_page()
-        pg.on('pageerror', lambda e: errors.append(str(e)))
-        await pg.goto('file:///' + os.path.abspath(page_path).replace(os.sep, '/'), wait_until='load', timeout=120000)
-        await pg.wait_for_function('window._ready===true', timeout=60000)
+    async with _h.verify_page(page_path, here=HERE) as V:
+        pg, errors, fails = V.page, V.errs, V.fails
+        if not V.ready:
+            print('timed out waiting for the sheet to build'); fails.append('build timeout')
         res = await pg.evaluate(CHECK_JS)
-        await b.close()
-    fails = 0
-    for r in res:
-        print(('PASS  ' if r['ok'] else 'FAIL  ') + r['name'] + ('  (' + r['detail'] + ')' if r['detail'] else ''))
-        fails += 0 if r['ok'] else 1
-    if errors:
-        print('PAGE ERRORS:', *errors, sep='\n  '); fails += 1
-    return fails
+        for r in res:
+            print(('PASS  ' if r['ok'] else 'FAIL  ') + r['name'] + ('  (' + r['detail'] + ')' if r['detail'] else ''))
+            if not r['ok']:
+                fails.append(r['name'])
+        if errors:
+            print('PAGE ERRORS:', *errors, sep='\n  '); fails.append('page errors')
+    return V.exit()
 
 
 def main():
@@ -55,7 +50,7 @@ def main():
     a = ap.parse_args()
     node = subprocess.run(['node', os.path.join(HERE, 'tests', 'test-crops.js')])
     fails = 1 if node.returncode else 0
-    fails += asyncio.run(run(a.page, a.do_assert))
+    fails += 1 if asyncio.run(run(a.page, a.do_assert)) else 0
     print('\n%s' % ('FAILED' if fails else 'all passed'))
     sys.exit(1 if fails else 0)
 

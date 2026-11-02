@@ -39,6 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 TOWN_PAGES = {'girder': 'settlements/girder/girder.html', 'mavs-refuge': 'settlements/mavs-refuge/mavs-refuge.html'}
 TOL = 0.05
+READY_JS = 'window._kit && _kit.ready && KF_API.textureInfo().pending===0 && !(window._texPending>0)'
 IS_TRADES_JS = os.path.join(ROOT, 'kits', 'islanders', 'src', '68-is-trades.js')
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 try:
@@ -193,84 +194,78 @@ async def town_check(b, ports):
 
 async def run(a):
     import harness
-    from playwright.async_api import async_playwright
-    folder = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))
-    page = os.path.relpath(os.path.abspath(a.html), folder).replace(os.sep, '/')
-    fails = []
-    with harness.serve(folder) as port:
-        async with async_playwright() as p:
-            b = await harness.launch_chromium(p)
-            pg = await b.new_page(viewport={'width': 1280, 'height': 800})
-            errs = []
-            pg.on('pageerror', lambda e: errs.append(str(e)))
-            await pg.goto('http://127.0.0.1:%d/%s' % (port, page), timeout=0)
-            await pg.wait_for_function('window._kit && _kit.ready && KF_API.textureInfo().pending===0 && !(window._texPending>0)', timeout=300000, polling=500)
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            ok = not errs and not panel
-            print(('  PASS  ' if ok else '  FAIL  ') + 'loads clean : ' + ('no error' if ok else '; '.join(errs[:3]) + panel[:300]))
-            if not ok:
-                fails.append('load')
-            if a.assert_:
-                for r in await pg.evaluate(CHECKS, None):
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']:
-                        fails.append(r['name'])
-                r = [x for x in await pg.evaluate(CHECKS, 'box') if x['name'].startswith('each fits')][0]
-                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a box shrunk by 3 m) : ' + r['detail'])
-                if r['ok']:
-                    fails.append('negative box')
-                tr = scyvoi_trades()
-                for name, js, arg, neg in (("every Scyvoi trade has a Beast Rider tent (%s)" % ', '.join(tr), TENT_TRADES_JS, {'trades': tr, 'drop': ''}, {'trades': tr, 'drop': 'br_tent_smithy'}),
-                                           ("every tribe's camp (BR_CAMP) names existing keys and keeps the plan's grounds", CAMP_JS, False, True),
-                                           ("BR_RUN lays a closed boundary into pieces and gates", RUN_JS, None, None)):
-                    r = await pg.evaluate(js, arg) if arg is not None else await pg.evaluate(js)
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + name + ' : ' + r['detail'])
-                    if not r['ok']:
-                        fails.append(name)
-                    if neg is not None:
-                        r = await pg.evaluate(js, neg)
-                        print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + ('the smithy taken away' if isinstance(neg, dict) else 'a key that does not exist') + ') : ' + r['detail'])
-                        if r['ok']:
-                            fails.append('negative: ' + name)
-                r = [x for x in await pg.evaluate(CHECKS, 'back') if x['name'].startswith('each rock-cut')][0]
-                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a rock-cut back 0.3 m deeper than its embed) : ' + r['detail'][:200])
-                if r['ok']:
-                    fails.append('negative back')
-                for r in await pg.evaluate(BRT_JS):
-                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                    if not r['ok']:
-                        fails.append(r['name'])
-                with open(IS_TRADES_JS, encoding='utf-8') as fh:
-                    census = re.findall(r"\{trade:'([^']+)'", fh.read())
-                name = 'every census trade (IS_TRADES) is carried by a Beast Rider building, or na with a reason (BR_TRADES)'
-                r = await pg.evaluate(TRADES_JS, [census, None])
-                print(('  PASS  ' if r['ok'] and len(census) >= 40 else '  FAIL  ') + name + ' : ' + r['detail'])
-                if not (r['ok'] and len(census) >= 40):
+    # serve the kit's folder (the page's parent)
+    async with harness.verify_page(a.html, here=HERE, size='1280x800', root=HERE, settle_ms=0, ready_js=READY_JS) as V:
+        pg, errs, fails, b = V.page, V.errs, V.fails, V.browser
+        # the page's own ready (the harness also counts window._ready and the error panel): the probe and every texture
+        try:
+            await pg.wait_for_function(READY_JS, timeout=300000, polling=500)
+        except Exception:
+            print('timed out waiting for the kit and its textures'); fails.append('build timeout')
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        ok = not errs and not panel
+        print(('  PASS  ' if ok else '  FAIL  ') + 'loads clean : ' + ('no error' if ok else '; '.join(errs[:3]) + panel[:300]))
+        if not ok:
+            fails.append('load')
+        if a.assert_:
+            for r in await pg.evaluate(CHECKS, None):
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']:
+                    fails.append(r['name'])
+            r = [x for x in await pg.evaluate(CHECKS, 'box') if x['name'].startswith('each fits')][0]
+            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a box shrunk by 3 m) : ' + r['detail'])
+            if r['ok']:
+                fails.append('negative box')
+            tr = scyvoi_trades()
+            for name, js, arg, neg in (("every Scyvoi trade has a Beast Rider tent (%s)" % ', '.join(tr), TENT_TRADES_JS, {'trades': tr, 'drop': ''}, {'trades': tr, 'drop': 'br_tent_smithy'}),
+                                       ("every tribe's camp (BR_CAMP) names existing keys and keeps the plan's grounds", CAMP_JS, False, True),
+                                       ("BR_RUN lays a closed boundary into pieces and gates", RUN_JS, None, None)):
+                r = await pg.evaluate(js, arg) if arg is not None else await pg.evaluate(js)
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + name + ' : ' + r['detail'])
+                if not r['ok']:
                     fails.append(name)
-                for neg in ('strip', 'drop'):
-                    r = await pg.evaluate(TRADES_JS, [census, neg])
-                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a census row %s) : ' % ('stripped of its buildings' if neg == 'strip' else 'dropped') + r['detail'])
+                if neg is not None:
+                    r = await pg.evaluate(js, neg)
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + ('the smithy taken away' if isinstance(neg, dict) else 'a key that does not exist') + ') : ' + r['detail'])
                     if r['ok']:
-                        fails.append('negative census ' + neg)
-                ports = await pg.evaluate(PORTS_JS)
-            if a.shots:
-                os.makedirs(a.shots, exist_ok=True)
-                titles = await pg.evaluate('_kit.rows.map(R=>R.title)')
-                for i, name in enumerate(re.sub(r'[^a-z]+', '-', t.lower().split('(')[0]).strip('-')[:40] for t in titles):
-                    await pg.evaluate("(i)=>{const R=_kit.rows[i];ctl.target.set((R.x0+R.x1)/2,4,R.z+10);ctl.dist=Math.max(70,(R.x1-R.x0)*0.55);ctl.az=0.5;ctl.el=0.45;updateCamera();if(typeof render==='function')render();}", i)
-                    await pg.wait_for_timeout(1200)
-                    await pg.screenshot(path=os.path.join(a.shots, 'beast-riders-%s.png' % name), timeout=120000)
-            if a.assert_ and not a.no_towns:
-                tf, tl = await town_check(b, ports)
-                for ln in tl:
-                    print('        ' + ln)
-                name = "each port is its town's building (box within %.2f m in the town's page, the same furniture)" % TOL
-                print(('  PASS  ' if not tf else '  FAIL  ') + name + ' : ' + ('%d port variants' % len(tl) if not tf else '; '.join(tf[:4])))
-                if tf:
-                    fails.append(name)
-            await b.close()
-    print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
-    return 1 if fails else 0
+                        fails.append('negative: ' + name)
+            r = [x for x in await pg.evaluate(CHECKS, 'back') if x['name'].startswith('each rock-cut')][0]
+            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a rock-cut back 0.3 m deeper than its embed) : ' + r['detail'][:200])
+            if r['ok']:
+                fails.append('negative back')
+            for r in await pg.evaluate(BRT_JS):
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                if not r['ok']:
+                    fails.append(r['name'])
+            with open(IS_TRADES_JS, encoding='utf-8') as fh:
+                census = re.findall(r"\{trade:'([^']+)'", fh.read())
+            name = 'every census trade (IS_TRADES) is carried by a Beast Rider building, or na with a reason (BR_TRADES)'
+            r = await pg.evaluate(TRADES_JS, [census, None])
+            print(('  PASS  ' if r['ok'] and len(census) >= 40 else '  FAIL  ') + name + ' : ' + r['detail'])
+            if not (r['ok'] and len(census) >= 40):
+                fails.append(name)
+            for neg in ('strip', 'drop'):
+                r = await pg.evaluate(TRADES_JS, [census, neg])
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a census row %s) : ' % ('stripped of its buildings' if neg == 'strip' else 'dropped') + r['detail'])
+                if r['ok']:
+                    fails.append('negative census ' + neg)
+            ports = await pg.evaluate(PORTS_JS)
+        if a.shots:
+            os.makedirs(a.shots, exist_ok=True)
+            titles = await pg.evaluate('_kit.rows.map(R=>R.title)')
+            for i, name in enumerate(re.sub(r'[^a-z]+', '-', t.lower().split('(')[0]).strip('-')[:40] for t in titles):
+                await pg.evaluate("(i)=>{const R=_kit.rows[i];ctl.target.set((R.x0+R.x1)/2,4,R.z+10);ctl.dist=Math.max(70,(R.x1-R.x0)*0.55);ctl.az=0.5;ctl.el=0.45;updateCamera();if(typeof render==='function')render();}", i)
+                await pg.wait_for_timeout(1200)
+                await V.shot(os.path.join(a.shots, 'beast-riders-%s.png' % name), view=name, timeout=120000)
+        if a.assert_ and not a.no_towns:
+            tf, tl = await town_check(b, ports)
+            for ln in tl:
+                print('        ' + ln)
+            name = "each port is its town's building (box within %.2f m in the town's page, the same furniture)" % TOL
+            print(('  PASS  ' if not tf else '  FAIL  ') + name + ' : ' + ('%d port variants' % len(tl) if not tf else '; '.join(tf[:4])))
+            if tf:
+                fails.append(name)
+    return V.exit()
 
 
 if __name__ == '__main__':

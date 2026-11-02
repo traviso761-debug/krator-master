@@ -26,7 +26,11 @@ budget is exceeded — so it can gate a subagent's hand-off.
 
 Requires: pip install playwright && python3 -m playwright install chromium
 """
-import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, json, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page, Abort
 
 # --------------------------------------------------------------------------
 SWEEP_JS = """()=>{const bb=new THREE.Box3();const p=new THREE.Vector3();const out=[];const boxes=[];const m=new THREE.Matrix4();
@@ -82,129 +86,93 @@ return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.tr
 
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=folder, **k)
-    httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    try:
-        async with async_playwright() as p:
-            b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
-            W, H = [int(t) for t in a.size.split("x")]
-            pg = await b.new_page(viewport={"width": W, "height": H})
-            pg.set_default_timeout(300000)
-            errs = []
-            pg.on("pageerror", lambda e: errs.append(str(e)))
-            three = os.path.join(folder, "three.min.js")
-            if os.path.exists(three):
-                await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
-                    route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=180000)
-            try:
-                await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=170000)
-            except Exception as e:
-                print("timed out waiting for the world to build")
-            await pg.wait_for_timeout(2500)
-            if a.hour is not None:
-                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); if(window._sky && _sky.setRate) _sky.setRate(0); }", a.hour)
-                await pg.wait_for_timeout(1200)
-            try:
-                st = await pg.evaluate(STATS_JS)
-            except Exception as e:
-                print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
-                print("error panel:", await pg.evaluate(
-                    "document.getElementById('errs')?document.getElementById('errs').textContent:'(none)'"))
-                await b.close()
-                return 2
-            print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
-            if st["errs"]:
-                fails.append("error panel not clean")
-            if errs:
-                print("PAGE ERRORS:", errs[:5]); fails.append("page errors")
-            print("draw calls:", st["calls"], "triangles:", st["tris"])
-            counters = {k: v for k, v in st["counters"].items() if k not in ('_errBox',)}
-            print("counters:", json.dumps(counters, sort_keys=True))
-
-            if a.assert_:
-                print("\n--- invariants ---")
-                for r in await pg.evaluate(ASSERT_JS):
-                    print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
-                    if not r["ok"]:
-                        fails.append("assert " + r["name"])
-                bg = await pg.evaluate(BUDGET_JS)
-                if bg:
-                    print("\n--- budget ---")
-                    for k, cur in (("drawCalls", bg["calls"]), ("triangles", bg["tris"]),
-                                   ("instances", bg["instances"])):
-                        lim = bg["budget"][k]
-                        ok = cur <= lim
-                        print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
-                        if not ok:
-                            fails.append("budget " + k)
-
-            if a.baseline and os.path.exists(a.baseline):
-                base = json.load(open(a.baseline))
-                print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
-                flat = _flat(counters); fb = _flat(base.get("counters", {}))
-                keys = sorted(set(flat) | set(fb))
-                shown = 0
-                for k in keys:
-                    x, y = fb.get(k), flat.get(k)
-                    if x != y:
-                        print("  %-34s %s -> %s" % (k, x, y)); shown += 1
-                d = st["tris"] - base.get("tris", st["tris"])
-                print("  %-34s %s -> %s (%+d)" % ("triangles", base.get("tris"), st["tris"], d))
-                print("  %-34s %s -> %s" % ("drawCalls", base.get("calls"), st["calls"]))
-                if not shown:
-                    print("  counters identical")
-
-            views = [v.strip() for v in a.views.split(",") if v.strip()]
-            if a.all_views:
-                views = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
-            await pg.screenshot(path=os.path.join(a.out, "initial.png"))
-            for v in views:
-                try:
-                    ok = await pg.evaluate(
-                        "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
-                        "if(!b)return false;b.click();return true;}", v)
+    async with verify_page(a.html, here=HERE, size=a.size) as V:
+        pg, errs, fails = V.page, V.errs, V.fails
+        pg.set_default_timeout(300000)
+        if a.hour is not None:
+            await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); if(window._sky && _sky.setRate) _sky.setRate(0); }", a.hour)
+            await pg.wait_for_timeout(1200)
+        try:
+            st = await pg.evaluate(STATS_JS)
+        except Exception as e:
+            print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
+            print("error panel:", await pg.evaluate(
+                "document.getElementById('errs')?document.getElementById('errs').textContent:'(none)'"))
+            raise Abort(2)
+        print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
+        if st["errs"]:
+            fails.append("error panel not clean")
+        if errs:
+            print("PAGE ERRORS:", errs[:5]); fails.append("page errors")
+        print("draw calls:", st["calls"], "triangles:", st["tris"])
+        counters = {k: v for k, v in st["counters"].items() if k not in ('_errBox',)}
+        print("counters:", json.dumps(counters, sort_keys=True))
+        if a.assert_:
+            print("\n--- invariants ---")
+            for r in await pg.evaluate(ASSERT_JS):
+                print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
+                if not r["ok"]:
+                    fails.append("assert " + r["name"])
+            bg = await pg.evaluate(BUDGET_JS)
+            if bg:
+                print("\n--- budget ---")
+                for k, cur in (("drawCalls", bg["calls"]), ("triangles", bg["tris"]),
+                               ("instances", bg["instances"])):
+                    lim = bg["budget"][k]
+                    ok = cur <= lim
+                    print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
                     if not ok:
-                        raise RuntimeError("no such preset button")
-                    await pg.wait_for_timeout(900)
-                    fn = os.path.join(a.out, "view_" + v.replace(" ", "_") + ".png")
-                    await pg.screenshot(path=fn)
-                    print("shot:", fn)
-                except Exception as e:
-                    print("view failed:", v, e)
-
-            for i, c in enumerate(a.cam or []):
-                v = [float(t) for t in c.split(",")]
-                await pg.evaluate("(v)=>_dbg.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
+                        fails.append("budget " + k)
+        if a.baseline and os.path.exists(a.baseline):
+            base = json.load(open(a.baseline))
+            print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
+            flat = _flat(counters); fb = _flat(base.get("counters", {}))
+            keys = sorted(set(flat) | set(fb))
+            shown = 0
+            for k in keys:
+                x, y = fb.get(k), flat.get(k)
+                if x != y:
+                    print("  %-34s %s -> %s" % (k, x, y)); shown += 1
+            d = st["tris"] - base.get("tris", st["tris"])
+            print("  %-34s %s -> %s (%+d)" % ("triangles", base.get("tris"), st["tris"], d))
+            print("  %-34s %s -> %s" % ("drawCalls", base.get("calls"), st["calls"]))
+            if not shown:
+                print("  counters identical")
+        views = [v.strip() for v in a.views.split(",") if v.strip()]
+        if a.all_views:
+            views = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+        await V.shot(os.path.join(a.out, "initial.png"), view="initial")
+        for v in views:
+            try:
+                ok = await pg.evaluate(
+                    "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
+                    "if(!b)return false;b.click();return true;}", v)
+                if not ok:
+                    raise RuntimeError("no such preset button")
                 await pg.wait_for_timeout(900)
-                fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i)); await pg.screenshot(path=fn); print("shot:", fn)
-            for ev in (a.eval or []):
-                try:
-                    print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
-                except Exception as e:
-                    print("eval failed:", str(e)[:400])
-            if a.sweep:
-                print("route sweep:", await pg.evaluate(SWEEP_JS))
-
-            if a.save_baseline:
-                json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
-                          open(a.save_baseline, "w"), indent=1, sort_keys=True)
-                print("baseline written:", a.save_baseline)
-            await b.close()
-    finally:
-        httpd.shutdown()
-
-    if fails:
-        print("\nFAILED: " + "; ".join(fails))
-        return 1
-    print("\nOK")
-    return 0
+                fn = os.path.join(a.out, "view_" + v.replace(" ", "_") + ".png")
+                await V.shot(fn)
+                print("shot:", fn)
+            except Exception as e:
+                print("view failed:", v, e)
+        for i, c in enumerate(a.cam or []):
+            v = [float(t) for t in c.split(",")]
+            await pg.evaluate("(v)=>_dbg.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
+            await pg.wait_for_timeout(900)
+            fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i)); await V.shot(fn); print("shot:", fn)
+        for ev in (a.eval or []):
+            try:
+                print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
+            except Exception as e:
+                print("eval failed:", str(e)[:400])
+        if a.sweep:
+            print("route sweep:", await pg.evaluate(SWEEP_JS))
+        if a.save_baseline:
+            json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
+                      open(a.save_baseline, "w"), indent=1, sort_keys=True)
+            print("baseline written:", a.save_baseline)
+    return V.exit()
 
 
 def _flat(d, prefix=""):

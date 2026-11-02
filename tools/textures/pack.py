@@ -52,6 +52,9 @@ import numpy as np
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib  # noqa: E402
+
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
 MATS = os.path.join(ROOT, 'core', 'materials')
 
@@ -66,6 +69,8 @@ def sha1(path):
 
 
 def load(path, size, mode):
+    if buildlib.is_pointer(path):    # a pack written from a pointer would be black in every page that takes it
+        buildlib.refuse_pointer(path, 'tools/textures/pack.py')
     im = Image.open(path).convert(mode)
     wh = tuple(size) if isinstance(size, (list, tuple)) else (size, size)
     if im.size != wh:
@@ -184,6 +189,17 @@ def process(fam, cfg, size):
     for k in ('stems', 'rise'):   # a crown's sprigs held by their stems (core/biome BIO.geo.stemClump)
         if cfg.get(k) is not None:
             entry[k] = cfg[k]
+    if card:   # what the image is (core/biome's card guard reads it): how many plants, where cards.py anchored a lone one
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import check_cells
+        ps = check_cells.plants(cfg['lib'])
+        if ps is not None:
+            entry['plants'] = len(ps)
+        anchor = check_cells.meta_anchor(cfg['lib'])
+        if anchor:
+            entry['anchor'] = anchor
+        if cfg.get('sheet'):
+            entry['sheet'] = cfg['sheet']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name

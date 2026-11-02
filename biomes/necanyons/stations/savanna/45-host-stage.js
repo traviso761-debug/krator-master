@@ -56,7 +56,8 @@ function floorH(x,z){const b=floorBase(x,z),d=creekD(x,z),cut=smooth(CREEK.w+18,
 const PAVE=KRELIEF.pavement({h:floorH,ground:floorBase0,wadis:[WADI],patch:.4,scale:1/110,seed:3302});
 const LAND={rebuild:true,capY:190,works:{fall:'highcap',springs:'bench'},spine:[[0,0],[860,-200],[150,-560],[CREEK.x(300),300]],   /* the LOD spine: the middle, the creek's mesa, the tall butte, the creek */
 
- ground:{base:'ground.savanna',baseTint:'vec3(0.62)',pave:(x,z)=>NECANYONS.rockAt(x,z)?0:PAVE(x,z)*smooth(30,60,NECANYONS.footD(x,z)),paveMatrix:0xa8724e},
+ ground:{base:'ground.savanna',baseTint:'vec3(0.48,0.60,0.50)',mottle:{tint:'vec3(1.25,1.3,0.66)',amt:.8},   /* less orange, mottled yellow (the owner, 2026-10-27) */
+ pave:(x,z)=>NECANYONS.rockAt(x,z)?0:PAVE(x,z)*smooth(30,60,NECANYONS.footD(x,z)),paveMatrix:0xa8724e},
  clear:(x,z)=>smooth(220,60,creekD(x,z))};
 const STATION_FAR={canopy:false,mesas:22,mesaK:.7,ring:{c:[600,-15500],r:7200,w:1400,h:900},label:'The far savanna, and Korona\'s ring ridge to the north'};
 const STATION_BUILD={region:{name:'The savanna floor toward Korona (necanyons station 3)',x:0,z:0,r:1600,h:420},jbuild:{quality:.5,heroR:600},
@@ -81,7 +82,7 @@ const ROCK=(function(){const K=KSTACKS,L=[];
    let B=null;for(let k=0;k<3&&!B;k++){try{B=K.make({kind:'arch',id:'floorarch',x:p[0],z:p[1],span:34+k*3,rise:24+k*3,H:40+k*4,t:8,leg:14,ry:.8,seed:KRAND.hash(3401,k),ground:(x,z)=>floorH(x,z)-1,inward:.12});}catch(e){}}
    if(B){add(B,'A natural bridge on the savanna');break;}}}
  return L;})();
-const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the savanna floor toward Korona',
+const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the savanna floor toward Korona',maxShare:.013,
  hint:'Station 3 of the north-eastern canyons: savanna between sandstone stacks, a dry wadi, desert pavement, salt pans; Korona\'s ring ridge to the north. N for night',
  absent:['potholewort'],
  views:{'The savanna floor':[1500,300,1400,-100,60,-200],'Toward Korona (north)':[300,140,1300,300,200,-6000],
