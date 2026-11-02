@@ -21,6 +21,7 @@ Nhighlands is the worked example (`biomes/nhighlands`: `45-host-stage.js`, `55` 
 | **Shared parts** | `BIO.fung` for every fungoid part (TODO.md's list), `BIO.bamboo` for every bamboo | the kit's own copy goes |
 | **Sky and air** | the shared sky (the giant lit along its rings, load at `viewHour`), height fog, rain cover (3 m margin), lightning, `bindWeather` | already in most kits; check each |
 | **Water** | `margin`, `spray:'drop'`, `lipK`, `chute`, wet ground and puddles (`WATER.hollows`), W4 gradients | where the kit has water |
+| **Reflections** | `WATER.mirrorSwitch` on the kit's largest still, **off at page load** | where the kit has a large still; `core/water/README.md`, "The reflections switch" |
 | **Ground** | `KGROUND` (the core ground shader), `KHORIZON` shadows, `KFAR` far field | where the kit still paints its own ground |
 | **Export** | the split by `lod.ranges`, per-instance labels, the hazards section | automatic once the page takes the merge |
 

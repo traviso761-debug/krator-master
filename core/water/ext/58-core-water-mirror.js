@@ -59,4 +59,14 @@
   M.set=function(m){mode=m;if(m==='probe'&&!U.uMirP.value&&!job)M.capture();if(m==='live'&&!U.uMirT.value)M.renderLive();U.uMirM.value=m==='live'?2:m==='probe'&&U.uMirP.value?1:0;};
   M.update=function(){if(job){face(job);return;}if(mode==='probe'&&o.hour&&hourAt!=null&&Math.abs(o.hour()-hourAt)>(o.hourStep||1))M.capture();if(mode==='live'&&(frame++%every)===0)M.renderLive();};
   return M;};
+ // the scaffolding (the owner, 2026-11-01: every biome can turn it on, off at page load so the tri counts don't rise). Takes WATER.mirror's o plus ui
+ // (the panel to add a button to; default KHOST.ui). Nothing is built, patched or captured until the first turn-on: the button cycles off, probe, live; ?mirror=probe or live asks at load.
+ // Returns Sw: Sw.set('off'|'probe'|'live'), Sw.update() (once a frame, from the page's draw), Sw.mode(), Sw.M() (the mirror, null until first used).
+ WATER.mirrorSwitch=function(o){let M=null,mode='off';const ORDER=['off','probe','live'],ui=o.ui||(typeof KHOST!=='undefined'?KHOST.ui:null);let btn=null;
+  const label=()=>{if(btn)btn.textContent='reflections: '+mode;};
+  const Sw={mode:()=>mode,M:()=>M,update(){if(M)M.update();},
+   set(m){if(ORDER.indexOf(m)<0)return;if(m!=='off'&&!M)M=WATER.mirror(o);mode=m;if(M)M.set(m);label();}};
+  if(ui&&typeof document!=='undefined'){btn=document.createElement('button');btn.id='water-mirror-btn';btn.title='reflections of the land in the largest still: costs tris and draw calls when on';btn.onclick=()=>Sw.set(ORDER[(ORDER.indexOf(mode)+1)%3]);label();ui.appendChild(btn);}
+  const q=typeof location!=='undefined'?/[?&]mirror=(probe|live)/.exec(location.search):null;if(q)setTimeout(()=>Sw.set(q[1]),o.delay==null?4000:o.delay);
+  return Sw;};
 })();
