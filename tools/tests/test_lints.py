@@ -62,7 +62,7 @@ check('NEEDS a missing need', any('21-core-water-shore' in k for k, _ in check_a
 pg = page([W + '20-core-water.js', W + '21-core-water-shore.js', W + '22-core-water-flow.js',
            W + 'ext/57-core-water-audit.js', W + 'ext/55-core-water-confluence.js'])
 check('NEEDS 57 before 55', any('57-core-water-audit' in k for k, _ in check_assembly.check_needs(pg)))
-pg = page([W + '20-core-water.js', W + '22-core-water-flow.js', W + 'ext/57-core-water-audit.js'])
+pg = page(['core/shader/06-core-khook.js', 'core/shader/06b-core-kcolor.js', W + '20-core-water.js', W + '22-core-water-flow.js', W + 'ext/57-core-water-audit.js'])
 check('NEEDS 57 without 55 is fine', not check_assembly.check_needs(pg))
 
 # ---- the LFS refusal, the baseline's NOT BUILT and its --write guard

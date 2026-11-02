@@ -15,7 +15,7 @@ pure. Each fragment's header is its API.
 `khost.resolve(PATH, ...)` adds both fragments to every build that calls it, whatever list it passes. A build that lists its core
 files by hand names them itself: `'shader'` in `CORE_DIRS` or `CORE_MODULES` (the kits on the Scyvoi engine, Dhelv, Mungo),
 `CORE_SHADER` (the Port line: Port, Ring Sea, Hook, the Dam Basins), or the two paths (the open worlds, Voth's `CORE_PLACE`, Verge's
-`CORE`, the sky demo). `tools/fragment_needs.json` declares this for core/atmos, core/terrain, core/water and core/biome, and
+`CORE`, the Ancients, the sky demo). A build with a reseed rule lists them in `DETERMINISTIC`. `tools/fragment_needs.json` declares this for core/atmos, core/terrain, core/water and core/biome, and
 `tools/build.py` fails a page without it. Without the fragments a page fails at the first hook with
 "core/shader is not on this page".
 
