@@ -36,7 +36,7 @@ Monks' words come.
 | Object | `HEARTH` (`SPECIES`, `PLANTS`, `HARVEST`, `byKey`, `heat`, `work`, `dress`, `layout`) on the `BIOME-API.md` contract, loaded into the host's `BIO.kit('hearths')`; `HEARTH.heat(x, z)` is the ground's temperature from the vent records (section 14), `HEARTH.work(t, W, atm)` the engine's state in `0..1` (open fans 1, closed spindles 0) from the clock, the weather and the eclipse, which every shader, hazard and animal reads (section 3) |
 | Core | through the hosts: `biome`, `rand`, `tags`, `space`, `hazard`, `host`, `atmos` (the shared sky with its eclipse seasons, the weather, snow cover), `water` (springs, pools), `terrain` (`KFIELD`, `KCAVERN`, `KRELIEF`, `KSTRATA`, `KFROST`, `KGROUND`, `KFAR`, `KHORIZON`), `clock`; section 13 |
 | Read in place | `biomes/riftrim` (the glass rim's light-piping forest, the lakes, the caverns and the Tungangs' holds: the host), `biomes/oidong` (the high passes' cushions and snow lotus: the host), `biomes/godstep` (the red crater: the host), `biomes/geyser` (the hot pools' temperature ramp, the fumaroles, the geysers' cycles; **the host of the Stills**), `biomes/ehighlands` (the glass tower by its one-plant API, on the Oidong rim), `kits/fauna` (the cinder crawler, the frost trunker, the cavern leaper), `kits/resources` (the node field) |
-| Overlap to reconcile | `biomes/geyser/PLAN-STATIONS.md` (2026-10-26) already plans its station 2 ("the high desert") at the Oidong rim's two vents, the Godstep flank vent and the Lesser Throne, and its station 3 ("the mountain forest") at the rift rim's three vents: the same ground as the Hearths' three stations. One build per vent field: the hearths stations **are** those geyser stations with the hearth life on them, built on the host kit named above with the geyser kit read in place, or the geyser kit's stations gain the hearth life; the owner's call (section 17) |
+| Overlap, settled | `biomes/geyser/PLAN-STATIONS.md` (2026-10-26) plans its station 2 (`--station puna`, "the high desert field") at the Oidong rim's two vents, the Godstep flank vent and the Lesser Throne, and its station 3 (`--station basin`, "the mountain forest field") at the rift rim's three vents: the same ground as the Hearths' stations. **The owner (2026-11-02): they go to the host kits.** One build per vent field: the hearths stations are built by `riftrim`, `oidong` and `godstep`, with the geyser kit read in place for the field itself (its `puna` and `basin` recipes: the frozen-air steam columns, the ice round the pools, the bobby-sock trees, the snow kept off the hot ground) and the hearth life on it; the geyser kit's `puna` and `basin` stations keep only the sites the Hearths do not take (the e inner wall's vent, the one at the east, the Lesser Throne) |
 | Out of scope | the Tungangs' loj as architecture (their kit, when it exists; this kit publishes the chamber and the sites), Ledge and Dalab's road (the riftrim plan), the animals' models (`kits/fauna`), the ore nodes' data (`kits/resources`) |
 
 Not a new biome in the gallery: the stations are published with their hosts' pages. `biomes/README.md`'s table gets one
@@ -682,11 +682,9 @@ Tungangs' surface, Dalab's reasons, Oidong's warmth, the origin, the names' tong
    the Monks' for the Cold Hearths; the Talovolci's for the stair's hearth; the shared kit stays `hearths` unless the
    owner says otherwise.
 2. **What Dalab does with the gene**, if anything the game shows.
-3. **One build per vent field**: the geyser kit's planned stations 2 and 3 stand on the same vents as the Hearths'
-   three stations (section 0, "Overlap to reconcile"). Are the hearths stations built on riftrim, oidong and godstep
-   with the geyser kit read in place (this plan's shape), or does the geyser kit's station plan absorb the hearth life?
-4. **The Stills' words** (section 7b): the Islanders', the Hykkousoi's or the Izani's for the still tree and its wax
+3. **The Stills' words** (section 7b): the Islanders', the Hykkousoi's or the Izani's for the still tree and its wax
    and glass; and whether the isles' lamp oil and the glass horn stand.
 
 Settled 2026-11-02, later: **the Stills grow at all three geyser sites** (the Steampits, the West Ring's geyser isles,
-the Throne's geyser isle), as section 7b says.
+the Throne's geyser isle), as section 7b says; and **the Hearths' vent fields are built by their host kits** (riftrim,
+oidong, godstep) with the geyser kit read in place, not by the geyser kit's own stations (section 0, "Overlap, settled").
