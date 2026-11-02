@@ -135,4 +135,24 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
 
 {const PT=A.skyPreset('standard',{air:{thin:{y0:0}}}),prov={};const none=A.provideAir(PT);global.KHAZ={provide:(k,fn)=>{prov[k]=fn;}};const got=A.provideAir(PT);delete global.KHAZ;
  ok('provideAir hands core/hazard the pressure by height (0.07 atm at the rim), and does nothing without KHAZ',none===false&&got===true&&near(prov.pressure(0,25000,0),A.airPressureAt(PT,25000),1e-12)&&prov.pressure(0,25000,0)<.08,!prov.pressure);}
+// ---- ATMOS.libration and ATMOS.sunHidden: the numbers and the picture have one source (2026-11-02)
+{const site=A.siteAt(1130,854);
+ let same=true;for(let d=0;d<30;d+=1.37)for(const h of[0,5.5,11,17.25]){const t=d+h/24,s=A.skyState(site,h,d),L=A.libration(t);if(s.ringOpen!==L.ringOpen)same=false;}
+ ok('skyState\'s ring opening is ATMOS.libration\'s, bit for bit',same,A.libration(3.2).ringOpen===A.libration(3.7).ringOpen);
+ const L=A.libration(1.1);
+ ok('the nod is incDeg at most, the swing 2 ecc radians, the phase 0..1',(()=>{for(let t=0;t<3;t+=.01){const q=A.libration(t);if(Math.abs(q.nodDeg)>S.giant.libration.incDeg+1e-9||Math.abs(q.swingDeg)>2*S.giant.libration.ecc/Math.PI*180+1e-9||q.phase<0||q.phase>=1)return false;}return true;})(),false);
+ ok('it comes round once a sidereal orbit',near(A.libration(1.1+1/1.0027379).nod,L.nod,1e-9),near(A.libration(1.1+.5).nod,L.nod,1e-3));
+ ok('before game start the phase is still 0..1',A.libration(-2.3).phase>=0&&A.libration(-2.3).phase<1,false);
+ // the giant drawn moves as the numbers say: its nod is its angle from its mean place, along the pole
+ const g=t=>{const d=Math.floor(t),s=A.skyState(site,(t-d)*24,d);return s.giantDir;},dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+ const tn=[...Array(2000).keys()].map(i=>i/2000).reduce((b,t)=>A.libration(t).nod>A.libration(b).nod?t:b,0),tx=[...Array(2000).keys()].map(i=>i/2000).reduce((b,t)=>A.libration(t).nod<A.libration(b).nod?t:b,0);
+ const ang=Math.acos(Math.min(1,dot(g(tn),g(tx))))*180/Math.PI;
+ ok('the picture\'s giant swings between nod extremes by about 2 incDeg ('+ang.toFixed(2)+' degrees)',Math.abs(ang-2*S.giant.libration.incDeg)<.6,false);
+ let seen=0,dis=0;for(let t=0;t<120;t+=.0417){const day=Math.floor(t),h=(t-day)*24,e=A.skyState(site,h,day).eclipse,v=A.sunHidden(t,site);if(e>0)seen++;if(e!==v)dis++;}
+ ok('sunHidden is skyState\'s eclipse at every hour of 120 days ('+seen+' hidden hours, '+dis+' disagree)',dis===0&&seen>10,false);
+ const oth=A.siteAt(200,300);let diff=0;for(let t=0;t<120;t+=.0417)if(A.sunHidden(t,site)!==A.sunHidden(t,oth))diff++;
+ ok('the site matters: the eclipse\'s hour moves with longitude',diff>0,false);
+ ok('no site is the bound sky\'s, else Voth',(()=>{const a=A.sunHidden(90.5);A.skySite=site;const b=A.sunHidden(90.5);delete A.skySite;return a===A.sunHidden(90.5,voth)&&b===A.sunHidden(90.5,site);})(),false);
+ ok('sunHidden is 0 out of eclipse season',A.sunHidden(150.5,site)===0,false);
+ ok('these are data: plain numbers',typeof L.phase==='number'&&typeof A.sunHidden(1,site)==='number'&&JSON.stringify(L).length>10,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

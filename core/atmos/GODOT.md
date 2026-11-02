@@ -193,6 +193,7 @@ The `snowcover` record carries `base`, `line` and `frozen`; `PRESETS.snowcover` 
 the normal's band, the noise and the colours. Godot: the depth is a global shader parameter `atm_snow_depth` stepped by the
 autoload exactly as `ATMOS.snowStep` (from the weather's `snow`, `dt` and the hour); `atmSnow(world position, world normal)`
 is a `.gdshaderinc` every ground, rock and foliage shader includes, mixing the snow's albedo (and roughness) after its own.
+`ATMOS.snowBare(M)` (2026-11-02, opt-in) multiplies the snow by a byte mask, recorded as `snowbare`: in Godot the same bytes in an R8 texture (`KTherm.snow_mask`, `core/terrain/ktherm.gd`), a texel on each raster node, 1 off the box.
 
 The `lee` (2026-10-26, WEATHER item 10) is a global `atm_snow_lee` and `atm_snow_wind_dir` (the wind's direction, from
 `atm_wind`); under the rain occlusion map (below) only the base cover lies.
