@@ -14,6 +14,11 @@
 // Each place's ships are made the first time you arrive there (W.placeHooks) from a seed of its own, so the same
 // ships are at the same place every time; they move only while you are there. Click one for its card; the chart
 // (cartography.js) shows them, and the autopilot can bring the ship alongside.
+//
+// Two more things a ship can be doing, for comms.js and orders.js: an **escort** keeps a slot in formation off the
+// Enterprise's quarter, goes to warp when she does and comes out of it beside her wherever she arrives (through the
+// wormhole too), holds still while she docks, and fires on whatever she is fighting; a **wreck** drifts, tumbling
+// slowly, its lights failing, venting, until someone takes its crew off.
 import {discHull,tube,SECT,fold} from '../starship/parts.js';
 
 const CLASSES={
@@ -79,8 +84,8 @@ export function traffic(W){
   // ---- who is where ----
   const all=[];let nameAt=0;
   const nextName=pick=>{for(let k=0;k<NAMES.length;k++){const n=NAMES[(nameAt+k)%NAMES.length];if(!pick||n[2]===pick){nameAt=(nameAt+k+1)%NAMES.length;return n;}}return NAMES[nameAt++%NAMES.length];};
-  function ship(pl,cls,task){
-    const [name,reg,c]=nextName(cls),g=make(c),info={name:name+' ('+reg+')',info:''};
+  function ship(pl,cls,task,named){
+    const [name,reg,c]=named||nextName(cls),g=make(c),info={name:name+' ('+reg+')',info:''};
     g.userData.info=info;pl.group.add(g);W.pickable(g);
     const t={name,reg,cls:c,g,info,task,pl,heading:V().set(1,0,0),stretch:1,hidden:false};
     setInfo(t);all.push(t);return t;
@@ -121,6 +126,38 @@ export function traffic(W){
     T.left-=dt;t.g.position.addScaledVector(T.v,dt);
     if(T.left<=0&&!t.fx){warpFx(t,true);}
   }
+  // ---- escorts and wrecks ----
+  // slots off the Enterprise's quarters and above, in her own frame (+x ahead, +y up, +z to starboard)
+  const SLOTS=[[-700,140,-900],[-700,140,900],[-1300,320,0]];
+  const escorts=()=>all.filter(t=>t.task.kind==='escort');
+  const slotWorld=(t,o)=>W.ROOT.localToWorld(o.set(...SLOTS[t.task.slot]));
+  function setTask(t,task){t.task=task;setInfo(t);if(task.kind!=='transit')t.g.visible=true;}
+  function escort(t){
+    const used=escorts().map(e=>e.task.slot),slot=[0,1,2].find(i=>!used.includes(i));if(slot==null)return false;
+    setTask(t,{kind:'escort',slot,say:'In formation with the Enterprise.',fireT:0,rnd:t.task.rnd||Math.random});return true;}
+  // let go: it circles where it is (a loop with the normal straight up starts at +z of its centre)
+  function release(t,say){const r=1800+Math.random()*1500,c=t.g.position.clone().add(V().set(0,0,-r));
+    setTask(t,{kind:'loop',c:()=>c,r,w:220/r,a:0,n:V().set(0,1,0),say:say||'Holding station here.'});}
+  // where an escort is when its formation is (re)joined: the slot itself, out of warp
+  function toSlot(t,pl){if(t.pl!==pl){t.pl.group.remove(t.g);pl.group.add(t.g);t.pl=pl;}
+    t.g.position.copy(pl.group.worldToLocal(slotWorld(t,V())));face(t,V().set(1,0,0).applyQuaternion(W.ROOT.quaternion).applyQuaternion(pl.group.getWorldQuaternion(new THREE.Quaternion()).invert()),up.set(0,1,0));}
+  W.arriveHooks.push(pl=>{for(const t of escorts()){toSlot(t,pl);t.g.visible=true;warpFx(t,false);}});
+  // a beam from an escort to what it is firing at, for half a second
+  const beamM=new THREE.MeshBasicMaterial({color:0xff9a50,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const beamG=new THREE.CylinderGeometry(1.6,1.6,1,6,1,true);
+  function fire(t,foe){const a=t.g.getWorldPosition(V()),b=foe.m.g.getWorldPosition(V()),m=new THREE.Mesh(beamG,beamM);m.userData.noWire=true;m.frustumCulled=false;W.FX.add(m);
+    const t0=F.T();F.sound('phaser');
+    F.run(tt=>{const u=(tt-t0)/0.6;if(u>=1||foe.gone){W.FX.remove(m);return false;}
+      const A=F.toFX(t.g.getWorldPosition(V())),B=F.toFX(foe.m.g.getWorldPosition(V())),d=B.clone().sub(A);
+      m.position.copy(A).addScaledVector(d,0.5);m.quaternion.setFromUnitVectors(V().set(0,1,0),d.clone().normalize());m.scale.set(1,d.length(),1);m.material.opacity=0.9*(1-u);});
+    setTimeout(()=>{if(!foe.gone&&W.HO)W.HO.hit(foe,7);},250);}
+  // a wreck: venting, its lights going
+  function wreck(pl,cls,at,name){
+    const t=ship(pl,cls,{kind:'wreck',say:'Disabled: no power to the engines, life support failing, a hull breach amidships.'},name);
+    t.g.position.copy(at);t.g.rotation.set(0.2,Math.random()*6,0.3);
+    const vent=F.sprite(0xdfeaff,90,0.6);vent.position.set(-10,0,12);t.g.add(vent);t.vent=vent;
+    // its own lights (the clone shares its class's materials)
+    t.g.traverse(o=>{if(o.isSprite&&o!==vent){o.material=o.material.clone();o.userData.flick=Math.random()*9;}});return t;}
   let last=null;
   animHooks.push(now=>{const dt=last==null?0:Math.min(0.1,(now-last)/1000);last=now;
     const pl=W.herePlace();if(!pl||!pl.group.visible)return;
@@ -130,12 +167,24 @@ export function traffic(W){
         face(t,tmp.copy(e1).multiplyScalar(-Math.sin(T.a)*Math.sign(T.w)).addScaledVector(e2,Math.cos(T.a)*Math.sign(T.w)).clone(),T.n);}
       else if(T.kind==='park'){const st=T.st;t.g.position.copy(T.off).applyQuaternion(st.g.quaternion).add(st.g.position);
         face(t,V().set(-1,0,0).applyQuaternion(st.g.quaternion),up.set(0,1,0).applyQuaternion(st.g.quaternion));}
+      else if(T.kind==='escort'){
+        // still while she docks; otherwise in its slot, swaying a little, facing the way she faces
+        if(!(W.dockTarget&&W.dockTarget())){const w=slotWorld(t,V());w.y+=Math.sin(now*0.0004+T.slot)*25;t.g.position.copy(pl.group.worldToLocal(w));
+          face(t,V().set(1,0,0).applyQuaternion(W.ROOT.quaternion).applyQuaternion(pl.group.getWorldQuaternion(new THREE.Quaternion()).invert()),up.set(0,1,0));}
+        const foe=W.enemy;if(foe&&now*0.001>T.fireT&&foe.m.g.getWorldPosition(V()).distanceTo(t.g.getWorldPosition(V()))<9000){T.fireT=now*0.001+2.6+Math.random()*1.4;fire(t,foe);}}
+      else if(T.kind==='wreck'){t.g.rotation.x+=dt*0.01;t.g.rotation.z+=dt*0.006;
+        t.g.traverse(o=>{if(o.userData.flick!=null)o.material.opacity=Math.sin(now*0.003+o.userData.flick)>0.7||Math.sin(now*0.017+o.userData.flick*3)>0.96?0.9:0.05;});
+        if(t.vent)t.vent.material.opacity=0.35+0.25*Math.sin(now*0.011);}
       else transit(t,dt);
       // going to warp: stretched along its heading to a streak and gone; coming out of it, the other way
       if(t.fx){t.fx.t0+=dt;const u=Math.min(1,t.fx.t0/0.45);t.g.scale.set(t.fx.out?1+40*u*u:1+40*(1-u)*(1-u),1,1);
         if(t.fx.out)t.g.position.addScaledVector(t.heading,dt*u*90000);
-        if(u>=1){if(t.fx.out){t.g.visible=false;T.p=undefined;T.wait=20+T.rnd()*40;}t.g.scale.set(1,1,1);t.fx=null;}}}});
+        if(u>=1){if(t.fx.out){t.g.visible=false;if(T.kind==='transit'){T.p=undefined;T.wait=20+T.rnd()*40;}}t.g.scale.set(1,1,1);t.fx=null;}}}});
 
-  W.traffic={here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all};
+  // escorts go to warp when she does
+  let wasWarp=false;
+  animHooks.push(()=>{const w=!!W.flight.warp;if(w&&!wasWarp)for(const t of escorts())if(t.g.visible){warpFx(t,true);t.task.inWarp=true;}wasWarp=w;});
+  W.traffic={here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all,escort,release,escorts,wreck,setTask,
+    spawn:(pl,cls,task,name)=>ship(pl,cls,task,name),remove:t=>{t.pl.group.remove(t.g);all.splice(all.indexOf(t),1);const i=W.pick.indexOf(t.g);if(i>=0)W.pick.splice(i,1);}};
   return {state:()=>({ships:all.length,here:W.traffic.here().map(t=>t.name+':'+t.task.kind)})};
 }

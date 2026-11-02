@@ -152,8 +152,8 @@ export function starbases(W){
       if(dir.lengthSq()<1e-6)dir=armDir(st).negate();
       if(u>=dock.T1){dock.phase='final';dock.t0=F.T();F.note('On the approach. Thrusters only.');}}
     else if(dock.phase==='final'){const s=ease(u/T2);p=toW(st,AFT.clone().lerp(BERTH,s));dir=armDir(st).negate();spd=(AFT.x-BERTH.x)*(ease((u+0.05)/T2)-s)/0.05;
-      if(u>=T2){dock.phase='docked';F.note('Docking clamps engaged. Welcome to '+st.name+'.');F.sound('shield');}}
-    else{p=toW(st,BERTH);dir=armDir(st).negate();spd=0;}
+      if(u>=T2){dock.phase='docked';F.note('Docking clamps engaged. Welcome to '+st.name+'.'+(W.damage&&W.damage().hull<100?' Repair crews are coming aboard.':''));F.sound('shield');W.emit&&W.emit('docked',st);}}
+    else{p=toW(st,BERTH);dir=armDir(st).negate();spd=0;if(W.repair)W.repair(0.08);}
     ROOT.position.copy(p);ROOT.quaternion.slerp(qLook(st,dir),dock.phase==='docked'?0.05:0.08);dock.v=spd;dock.d=p.distanceTo(toW(st,BERTH));});
 
   // K docks from the turntable too (the helm's own K is in flight.js)

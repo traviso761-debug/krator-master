@@ -12,6 +12,7 @@
 import {buildSky} from '../starship/page.js';
 import {planetMesh} from './planets.js';
 import {pulsar,disc,eye,rogue} from './exotic.js';
+import {mouth} from './wormhole.js';
 
 const D=900000;
 const dirOf=(az,el)=>[Math.cos(az)*Math.cos(el),Math.sin(el),Math.sin(az)*Math.cos(el)];
@@ -56,6 +57,15 @@ export const PLACES=[
     light:{colour:'#d8f0ff',intensity:1.2,az:0.15,el:0.12,ambient:0.34,fill:{colour:'#c04050',intensity:0.6,az:-2,el:-0.2}},build:eye},
   {id:'rogue',name:'A rogue planet',ly:[-7,-12],note:'A world flung out of its system long ago, adrift with no sun. Its only light is its aurora.',
     light:{colour:'#9ab0d0',intensity:0.25,az:0.6,el:0.7,ambient:0.18,fill:{colour:'#30ff90',intensity:0.5,az:-0.55,el:0.3}},build:rogue},
+  // the wormhole's two mouths (wormhole.js): `link` is the place the other mouth is at
+  {id:'gate',name:'The wormhole',ly:[-1.6,3.6],link:'farside',note:'One mouth of a stable wormhole, five kilometres across. Through it: a place thirty light-years off. Fly into it.',
+    light:{colour:'#dfe8ff',intensity:1.1,az:0.5,el:0.35,ambient:0.3,fill:{colour:'#ffc870',intensity:0.9,az:0.15,el:0.03}},
+    build:(T,g,k)=>mouth(T,g,k,{az:0.15,el:0.03,near:0x9fc8ff,far:0xffc870})},
+  {id:'farside',name:'The far mouth',ly:[28.5,8],link:'gate',note:'The wormhole\'s other end, far past the nebula: an uncharted world, and a long way from any starbase. Fly into the mouth to go home.',
+    light:{colour:'#ffe0b0',intensity:1.6,az:-0.9,el:0.2,ambient:0.26,fill:{colour:'#9fc8ff',intensity:0.9,az:0.15,el:0.03}},
+    sky:{nebulae:[{colour:'#7a3a8a',az:2.4,el:0.3,dist:0.32,size:240000,puffs:240,opacity:0.012},{colour:'#c0703a',az:-2.2,el:-0.2,dist:0.3,size:200000,puffs:200,opacity:0.01}],
+      bodies:[{name:'the uncharted world',type:'terran',az:-0.7,el:-0.1,dist:0.55,deg:12,seed:4.4,sea:0.5,colours:['#2a1a50','#5a3a62','#b08a6a','#f0e8f6'],clouds:true,cloudK:0.8,atmos:'#c08aff',atmosK:0.9,rate:2e-5}]},
+    build:(T,g,k)=>mouth(T,g,k,{az:0.15,el:0.03,near:0xffc870,far:0x9fc8ff})},
 ];
 export const DEEP={id:'deep',name:'Interstellar space',note:'Nothing for light-years: the stars, and the dark between them.',
   light:{colour:'#dfe6f2',intensity:0.5,az:0.5,el:0.6,ambient:0.3,fill:{colour:'#405070',intensity:0.25,az:-2,el:-0.4}}};

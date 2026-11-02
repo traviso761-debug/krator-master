@@ -61,7 +61,7 @@ export function hostile(W,E){
   const shipQ=()=>ROOT.getWorldQuaternion(new THREE.Quaternion());
   // every raider in the fight; W.enemy is the nearest one still in it (what the phasers and torpedoes go for)
   const foes=[];
-  const live=()=>foes.filter(f=>!f.gone);
+  const live=()=>foes.filter(f=>!f.gone);W.foes=live;
   Object.defineProperty(W,'enemy',{configurable:true,get(){const c=E.shipCentre();let b=null,bd=1e18;
     for(const f of live()){const d=f.m.g.getWorldPosition(V()).distanceToSquared(c);if(d<bd){bd=d;b=f;}}return b;}});
   const rr=a=>a[0]+Math.random()*a[1];

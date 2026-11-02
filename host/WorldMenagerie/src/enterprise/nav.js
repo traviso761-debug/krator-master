@@ -108,7 +108,7 @@ export function nav(W){
       if(d<s.r*6&&(!b||d/s.r<b.d/b.r))b={name:s.name,c:wp.clone(),r:s.r,d};}return b;};
   let holding=0;
   W.collide=(S,dt)=>{holding=Math.max(0,holding-dt);
-    for(const s of worldSolids()){SYS.localToWorld(wp.copy(s.c));const m=s.r+(s.orbit?2000:500),d2=wp.distanceToSquared(ROOT.position);
+    for(const s of worldSolids()){if(s.gate)continue;SYS.localToWorld(wp.copy(s.c));const m=s.r+(s.orbit?2000:500),d2=wp.distanceToSquared(ROOT.position);
       if(d2<m*m){const d=Math.sqrt(d2);n.copy(ROOT.position).sub(wp).divideScalar(d||1);ROOT.position.copy(wp).addScaledVector(n,m);
         const into=S.vel.dot(n);if(into<0)S.vel.addScaledVector(n,-into);holding=1.5;}}};
 

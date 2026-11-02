@@ -361,6 +361,9 @@ export function events(W){
   const note=m=>{if(W.toast)W.toast('Tactical',m);};
   const HO=hostile(W,{sprite,flash,run,sound,toFX,dirFX,shipCentre,world,T:()=>T,red:()=>red,redAlert:()=>redAlert(),sync:()=>sync(),incoming,note,debris});
   W.contact=()=>{HO.contact();};
+  // for orders.js and comms.js: the fights, and a starbase's repair crews
+  W.HO=HO;W.damage=()=>({hull:hullP,shields:shStr});
+  W.repair=k=>{hullP=Math.min(100,hullP+k);shStr=Math.min(100,shStr+k);};
   // for extras.js: the effects kit
   W.fx={sound,flash,run,debris,sprite,world,toFX,dirFX,shipCentre,note,T:()=>T,ease,sync:()=>sync()};
   const spread=()=>{torpedo(-0.09);setTimeout(()=>torpedo(0),140);setTimeout(()=>torpedo(0.09),280);};

@@ -3,6 +3,8 @@
 // is this project's own geometry. The page does not run on the shared engine: there is no ground here.
 import {starshipPage} from '../starship/page.js';
 import {model} from './ship.js';
+import {lcars} from './lcars.js';
+lcars();
 starshipPage({
   city:'enterprise',
   model,

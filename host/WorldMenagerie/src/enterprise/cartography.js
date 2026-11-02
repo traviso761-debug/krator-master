@@ -50,20 +50,23 @@ export function cartography(W){
   const contacts=()=>{
     const pl=W.herePlace();if(!pl||!pl.group.visible||S.warp)return [];
     const out=[];
-    for(const s of pl.solids){if(s.station||/^a rock$/.test(s.name))continue;out.push({kind:s.orbit?'body':'object',name:s.name,local:s.c,r:s.r});}
+    for(const s of pl.solids){if(s.station||/^a rock$/.test(s.name))continue;out.push({kind:s.gate?'gate':s.orbit?'body':'object',name:s.name,local:s.c,r:s.r,gate:s.gate});}
     for(const st of W.stations)if(st.place===pl)out.push({kind:'station',name:st.name,local:st.g.position,r:560,st,note:st.note});
     if(W.traffic)for(const t of W.traffic.here())out.push({kind:'ship',name:t.name,local:t.g.position,r:150,ship:t,note:t.info.info});
+    if(W.foes)for(const f of W.foes())out.push({kind:'foe',name:f.K.name,local:pl.group.worldToLocal(f.m.g.getWorldPosition(V())),r:120,foe:f});
     for(const c of out){c.world=SYS.localToWorld(c.local.clone());c.d=Math.max(0,c.world.distanceTo(ROOT.position)-(c.kind==='body'?c.r:0));}
     return out;
   };
   // going to one: a starbase docks, a planet is orbited, anything else is approached and the ship stops short of it
   function goTo(c){
     if(c.kind==='station'){W.dock(c.st);return;}
+    if(c.kind==='gate'){const local=c.local.clone();W.goto({name:c.name,pos:()=>SYS.localToWorld(local.clone()),stop:-c.r});return;}
+    if(c.kind==='foe'){const g=c.foe.m.g;W.goto({name:c.name,pos:()=>g.getWorldPosition(V()),stop:3000,done:()=>F.note('In weapons range of the '+c.name+'.')});return;}
     if(c.kind==='ship'){const g=c.ship.g;W.goto({name:c.name,pos:()=>g.getWorldPosition(V()),stop:2500,done:()=>F.note('Alongside '+c.name+'.')});return;}
     const local=c.local.clone();
     W.goto({name:c.name,pos:()=>SYS.localToWorld(local.clone()),stop:c.kind==='body'?c.r*1.35:c.r+1500,done:c.kind==='body'?orbitOnArrival:null});
   }
-  W.goContact=goTo;
+  W.goContact=goTo;W.contacts=contacts;
 
   // ================= markers =================
   const st=document.createElement('style');st.textContent=`
@@ -74,7 +77,7 @@ export function cartography(W){
 #ent-marks .mk span{position:absolute;left:14px;top:-8px;text-shadow:0 0 3px #000,0 0 2px #000}
 #ent-marks .mk.off i{display:block;border:0;width:0;height:0;left:-7px;top:-7px;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid currentColor;clip-path:none}
 #ent-marks .mk.left span{left:auto;right:14px}
-#ent-marks .mk.body{color:#9fc8f0}#ent-marks .mk.ship{color:#9fe8b0}#ent-marks .mk.object{color:#c8c8d8}#ent-marks .mk.tgt{color:#fff2c0}
+#ent-marks .mk.foe{color:#ff6a5a}#ent-marks .mk.gate{color:#b8a0ff}#ent-marks .mk.body{color:#9fc8f0}#ent-marks .mk.ship{color:#9fe8b0}#ent-marks .mk.object{color:#c8c8d8}#ent-marks .mk.tgt{color:#fff2c0}
 #ent-marks .mk.tgt i{border-width:2px}
 body.bare #ent-marks{display:none}`;
   document.head.appendChild(st);
@@ -89,8 +92,9 @@ body.bare #ent-marks{display:none}`;
     if(MODES[mode]!=='none'){
       const tgt=go.t,dk=W.dockTarget&&W.dockTarget();
       for(const c of contacts()){
-        const isT=tgt&&tgt.name===c.name||dk&&dk===c.st;
-        if(MODES[mode]==='starbases'&&c.kind!=='station'&&!isT)continue;
+        // the autopilot's or docking's target, what the orders want and any hostile are always marked
+        const isT=tgt&&tgt.name===c.name||dk&&dk===c.st||W.orderTarget&&W.orderTarget()===c.name;
+        if(MODES[mode]==='starbases'&&c.kind!=='station'&&c.kind!=='foe'&&c.kind!=='gate'&&!isT)continue;
         pc.copy(c.world).applyMatrix4(camera.matrixWorldInverse);const behind=pc.z>0;
         nd.copy(c.world).project(camera);let x=nd.x,y=nd.y;if(behind){x=-x;y=-y;}
         const on=!behind&&Math.abs(x)<0.96&&Math.abs(y)<0.92;
@@ -175,6 +179,9 @@ body.bare #cartopanel{display:none!important}`;
     for(const r of [5,10,20]){g.strokeStyle='rgba(159,200,240,0.22)';g.beginPath();g.arc(sx,sy,r*s,0,7);g.stroke();
       g.fillStyle='rgba(159,200,240,0.55)';g.fillText(r+' ly · '+eta(r,W.course.w),sx+r*s*0.71+4*k,sy-r*s*0.71-4*k);}
     g.setLineDash([]);
+    for(const P of PLACES){const Q=P.link&&PLACES.find(q=>q.id===P.link);if(!Q||P.id>Q.id)continue;
+      g.strokeStyle='rgba(184,160,255,0.55)';g.setLineDash([2*k,5*k]);g.lineWidth=1.5*k;g.beginPath();g.moveTo(X(P.ly[0]),Y(P.ly[1]));
+      g.quadraticCurveTo((X(P.ly[0])+X(Q.ly[0]))/2,Math.min(Y(P.ly[1]),Y(Q.ly[1]))-60*k,X(Q.ly[0]),Y(Q.ly[1]));g.stroke();g.setLineDash([]);g.lineWidth=1;}
     const dest=W.course.dest;
     if(dest){g.strokeStyle='#e8c98a';g.setLineDash([10*k,8*k]);g.lineWidth=2*k;g.beginPath();g.moveTo(sx,sy);g.lineTo(X(dest.ly[0]),Y(dest.ly[1]));g.stroke();g.setLineDash([]);g.lineWidth=1;}
     // the dots first, then each label in the first of eight places round its dot that is clear of the dots and of the
@@ -209,7 +216,7 @@ body.bare #cartopanel{display:none!important}`;
     const s=Math.min(Wd/sw,H/sh)*C.zoom,ctr=C.zoom>1?me:{x:(x0+x1)/2,z:(z0+z1)/2};
     return {s,me,X:x=>Wd/2+(x-ctr.x)*s,Y:z=>H/2+(z-ctr.z)*s};
   }
-  const COL={body:'#5f8cc0',object:'#a8a8b8',station:'#ffc860',ship:'#9fe8b0'};
+  const COL={body:'#5f8cc0',object:'#a8a8b8',station:'#ffc860',ship:'#9fe8b0',gate:'#b8a0ff',foe:'#ff6a5a'};
   function drawSystem(g){
     const Wd=cv.width,H=cv.height,k=Wd/1000;
     const pl=W.herePlace();
@@ -220,7 +227,9 @@ body.bare #cartopanel{display:none!important}`;
     g.font=Math.round(12*k)+'px Helvetica,Arial,sans-serif';
     for(const c of cs){const x=X(c.local.x),y=Y(c.local.z),sel=C.sel&&C.sel.name===c.name,hov=C.hover&&C.hover.name===c.name;
       g.fillStyle=COL[c.kind];g.strokeStyle=COL[c.kind];
-      if(c.kind==='body'||c.kind==='object'){const r=Math.max(3*k,c.r*s);g.globalAlpha=0.35;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.globalAlpha=1;g.beginPath();g.arc(x,y,r,0,7);g.stroke();}
+      if(c.kind==='foe'){const r=6*k;g.lineWidth=2*k;g.beginPath();g.moveTo(x-r,y-r);g.lineTo(x+r,y+r);g.moveTo(x+r,y-r);g.lineTo(x-r,y+r);g.stroke();g.lineWidth=1;}
+      else if(c.kind==='gate'){const r=Math.max(5*k,c.r*s);g.lineWidth=2*k;g.beginPath();g.arc(x,y,r,0,7);g.stroke();g.beginPath();g.arc(x,y,r*0.5,0,7);g.stroke();g.lineWidth=1;}
+      else if(c.kind==='body'||c.kind==='object'){const r=Math.max(3*k,c.r*s);g.globalAlpha=0.35;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.globalAlpha=1;g.beginPath();g.arc(x,y,r,0,7);g.stroke();}
       else if(c.kind==='station'){const r=6*k;g.beginPath();g.moveTo(x,y-r);g.lineTo(x+r,y);g.lineTo(x,y+r);g.lineTo(x-r,y);g.closePath();g.fill();}
       else{const h=c.ship.heading,a=Math.atan2(h.z,h.x),r=6*k;g.save();g.translate(x,y);g.rotate(a);g.beginPath();g.moveTo(r,0);g.lineTo(-r*0.7,-r*0.6);g.lineTo(-r*0.7,r*0.6);g.closePath();g.fill();g.restore();}
       if(sel||hov){g.strokeStyle='#ffffff';g.lineWidth=2*k;g.beginPath();g.arc(x,y,Math.max(10*k,(c.kind==='body'?c.r*s:0)+5*k),0,7);g.stroke();g.lineWidth=1;}
@@ -251,9 +260,11 @@ body.bare #cartopanel{display:none!important}`;
         for(let w=1;w<=9;w++){const b=act(String(w),()=>{W.course.setWarp(w);});b.setAttribute('aria-label','Warp '+w);b.setAttribute('aria-pressed',String(W.course.w===w));a.append(b);}}
       info.append(a);return;}
     if(!x){info.append(el('span',null,'Click anything to read about it and go there. Scroll to zoom in round the ship.'));return;}
-    info.append(el('b',null,x.name),el('div',null,(x.note||{body:'A world: the autopilot takes the ship to a standard orbit over it.',object:'The autopilot stops a little short of it.',ship:'',station:''}[x.kind])+' '+km(x.d)+' off.'));
+    info.append(el('b',null,x.name),el('div',null,(x.note||{body:'A world: the autopilot takes the ship to a standard orbit over it.',object:'The autopilot stops a little short of it.',ship:'',station:'',
+      gate:'A stable wormhole: the autopilot flies the ship into it, and out of its other mouth.',foe:'Hostile. The autopilot brings the ship to three kilometres of it.'}[x.kind])+' '+km(x.d)+' off.'));
     const a=el('div','acts');
-    a.append(act({station:'Dock',body:'Go into orbit',object:'Approach',ship:'Come alongside'}[x.kind],()=>goTo(x)));
+    a.append(act({station:'Dock',body:'Go into orbit',object:'Approach',ship:'Come alongside',gate:'Fly through',foe:'Intercept'}[x.kind],()=>goTo(x)));
+    if(W.scan)a.append(act('Scan',()=>W.scan(x)));
     if(go.t)a.append(act('Autopilot off',()=>W.cancelAuto()));
     info.append(a);
   }
@@ -267,7 +278,7 @@ body.bare #cartopanel{display:none!important}`;
       hint.textContent='P opens and closes this, L the markers. 1–9 at the helm set the warp factor; C is the course panel.';return;}
     const cs=sysView?sysView.cs:contacts();
     for(const c of [...cs].sort((a,b)=>a.d-b.d)){const b=el('button',null,c.name);b.type='button';b.setAttribute('aria-pressed',String(C.sel&&C.sel.name===c.name));
-      b.append(el('small',null,{body:'world',object:'',station:'starbase',ship:'starship'}[c.kind]+(c.kind==='object'?'':' · ')+km(c.d)));
+      b.append(el('small',null,{body:'world',object:'',station:'starbase',ship:'starship',gate:'wormhole',foe:'hostile'}[c.kind]+(c.kind==='object'?'':' · ')+km(c.d)));
       b.onclick=()=>{C.sel=c;C.dirty=true;};list.append(b);}
     hint.textContent='K docks at the nearest starbase from anywhere in a place. Any touch on the helm takes the ship back from the autopilot.';
   }

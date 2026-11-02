@@ -2088,6 +2088,30 @@ wireframe and menagerie menu every other page has.
     through at impulse and go to warp, coming back later somewhere else. Click one for its card. **F** takes the
     helm from the turntable. For tests: `#ev=dock`, `#ev=carto`, `#ev=system`, `#ev=marks`, and `#dbg` reports the
     autopilot, the markers and the traffic.
+  - **Seventh pass: a ship to captain.** **Orders** (`orders.js`, J or the **Orders** button): Starfleet sends missions
+    in turn (a rescue, a survey, an escort, raiders to drive off, a delivery, the far side of the wormhole), each a few
+    steps with a button for the obvious next move, the step's target always marked on screen, and each step ticked off
+    by what the other modules report happening (a small event bus, `W.on`/`W.emit` in `ship.js`). A rescue finds the
+    stricken ship drifting dark and venting, and raiders may follow her distress call; the survivors go to a starbase,
+    whose crews repair the ship while she is docked. A finished mission is a commendation, kept in the browser. The
+    **captain's log** keeps itself by stardate (arrivals, docking, fights, rescues, scans, the wormhole). **Sensors**
+    (`sensors.js`, N, or Scan on a chart's card): a pulse goes out from the ship and the readout comes up: a world's
+    class, gravity, air and life signs, a starbase's stores, a ship's crew, a hostile's real shields and hull (made-up
+    readings, but the same every time, from a hash of the name). **Comms** (`comms.js`, H): Starfleet Command, the
+    starbases here and every ship in range, each answering in its own voice; ask a Federation ship to form up and it
+    becomes an **escort** (up to three: in formation off the quarters, through warp and the wormhole, firing on whatever
+    you fight); a hostile with its hull failing may give up if you demand it. The **transporter** (`transporter.js`, B):
+    a crew off a wreck, an away team down from standard orbit and back (they report what they found), or a courtesy
+    party across; each end is a column of sparkling light with its shimmer of sound. **The wormhole** (`wormhole.js`):
+    a stable one with a mouth 3.9 light-years from home and the other out past the nebula; the mouth is a sphere
+    showing the far side's light wound round the throat, a bright ring at its rim and dust spiralling in, and flying
+    into it brings you out of the other at once, at speed; the far side has an uncharted world. The **director**
+    camera (V, the fourth): it cuts by itself between pacing alongside, low and looking up, a long lens from astern, a
+    slow swing round, and over her shoulder at a hostile or a starbase. And the interface is **dressed as the ship's
+    displays** (`lcars.js`): bands of colour on black with rounded ends, panels framed by an elbow of colour, condensed
+    capitals, going to reds under red alert; this page's own CSS and palette, no font fetched, scoped to
+    `enterprise.html` alone. For tests: `#mission=rescue` (or survey, escort, defend, deliver, wormhole) accepts those
+    orders at once, `#ev=orders,comms,scan,sweep,beam,formup,wormhole,hailhq,accept,next`, and `#dbg` reports them.
   - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
     on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
     2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they
