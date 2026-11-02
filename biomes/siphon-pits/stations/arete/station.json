@@ -5,12 +5,12 @@
   "site": {
     "name": "arete",
     "title": "The Ar\u00eate Way",
-    "px": 1667,
-    "py": 1540,
-    "base": 4220.0,
-    "atm": 0.94,
-    "mean": -17.5,
-    "rain": 90,
+    "px": 1678,
+    "py": 1542,
+    "base": 4269.0,
+    "atm": 0.99,
+    "mean": -5.0,
+    "rain": 173,
     "cls": "ET",
     "lat": -30.2
   },

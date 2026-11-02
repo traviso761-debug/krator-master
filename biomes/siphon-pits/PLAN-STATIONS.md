@@ -44,12 +44,12 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 ### Adjustment B: The Ostrukh Wall / Fault Escarpment (Central Divide)
 * **Coordinates:** A linear fault scarp trending SSW-to-NNE from $[1532, 1505]$ to $[1582, 1387]$.
 * **Elevation Edit:** A steep $1,500\text{--}1,800\text{ m}$ stepped basalt fault cliff separating the NW lowlands ($+2,100\text{ m}$) from the SE plateau ($+4,200\text{ m}$).
-* **Caravan Notch:** A natural scree-ramp pass at $[1557, 1455]$ (elev $+3,350\text{ m}$) allowing road transit between the arable basin and the high plain.
+* **Caravan Notch:** A natural scree-ramp pass at $[1559, 1457]$ (elev $+3,289\text{ m}$) allowing road transit between the arable basin and the high plain.
 
 ### Adjustment C: The SE High Plain & Siphon Maar Swarm
 * **Coordinates:** $X \in [1582, 1769]$, $Y \in [1470, 1628]$ ($\sim 115,000\text{ km}^2$).
-* **Elevation Edit:** Maintain the exposed plateau high at **$+4,200\text{ to }+4,500\text{ m}$** (mean $-16^\circ\text{C}$, katabatic gales, subpolar desert).
-* **Crater Negative Stamps:** Carve a linear swarm of $35\text{--}50$ circular/elliptical negative stamps ($D = 2.5\text{--}5\text{ km}$, $h = 380\text{--}450\text{ m}$) along the volcanic fissure axis ($X \approx 1622\text{ to }1732, Y \approx 1510\text{ to }1600$).
+* **Elevation Edit:** Maintain the exposed plateau high at **$+4,200\text{ to }+4,500\text{ m}$** (mean $-5.0^\circ\text{C}$, katabatic gales, subpolar desert).
+* **Crater Negative Stamps:** Carve a linear swarm of $35\text{--}50$ circular/elliptical negative stamps ($D = 2.5\text{--}5\text{ km}$, sunken maar floor at $+2,277\text{ m}$ with $420\text{ m}$ inner crater benches) along the volcanic fissure axis ($X \approx 1622\text{ to }1732, Y \approx 1510\text{ to }1600$).
 * **Arête Preservation:** Maintain razor-thin basalt bridges ($5\text{--}10\text{ m}$ wide) between coalescing stamp intersections.
 
 ---
@@ -58,10 +58,10 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 
 | Station | Name & Role | Model Px | Elev | P (atm) | Mean T (warm/cold) | Climate | Key Feature |
 |---|---|---|---|---|---|---|---|
-| **1** | **Ostrukh Terraces** (NW Arable) | `1497, 1418` | $+2,150\text{ m}$ | $1.31$ | $+4.2^\circ\text{C}$ ($+16.5 / -7.5$) | Dfb/Cfb | Meltwater streams, loess terraces, crops, farmsteads |
-| **2** | **Scarp Pass** (Central Divide) | `1557, 1455` | $+3,350\text{ m}$ | $1.12$ | $-4.8^\circ\text{C}$ ($+6.0 / -16.0$) | Dsc/ET | Stepped columnar wall, switchback road, tollhouse |
-| **3** | **Siphon Maar Floor** (SE Sink) | `1687, 1555` | $+3,800\text{ m}$ | $1.46^*$ | $+18.5^\circ\text{C}$ ($+22.0 / +15.0$) | *Inversion* | Sheer $420\text{ m}$ drop, woolly siphon grove, steam vents |
-| **4** | **The Arête Way** (SE Rim) | `1667, 1540` | $+4,220\text{ m}$ | $0.94$ | $-17.5^\circ\text{C}$ ($-2.0 / -28.0$) | EF/ET | $6\text{ m}$ knife-edge bridge, blizzard gales, flenser ambush |
+| **1** | **Ostrukh Terraces** (NW Arable) | `1519, 1453` | $+2,156\text{ m}$ | $1.31$ | $+15.0^\circ\text{C}$ ($+20.0 / +9.0$) | Cwb | Meltwater streams, loess terraces, crops, farmsteads |
+| **2** | **Scarp Pass** (Central Divide) | `1559, 1457` | $+3,289\text{ m}$ | $1.13$ | $+4.0^\circ\text{C}$ ($+11.0 / -3.0$) | Dsc | Stepped columnar wall, switchback road, tollhouse |
+| **3** | **Siphon Maar Floor** (SE Sink) | `1687, 1555` | $+2,277\text{ m}$ | $1.29^*$ | $+18.0^\circ\text{C}$ ($+25.0 / +11.0$) | Cfa-thermal | Deep maar sink, woolly siphon grove, steam vents |
+| **4** | **The Arête Way** (SE Rim) | `1678, 1542` | $+4,269\text{ m}$ | $0.99$ | $-5.0^\circ\text{C}$ ($+2.0 / -12.0$) | ET | $6\text{ m}$ knife-edge bridge, blizzard gales, flenser ambush |
 
 *\* Station 3 pressure is boosted by dense geothermal $\text{CO}_2$/vapor pooling below the $-320\text{ m}$ inversion deck.*
 

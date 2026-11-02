@@ -55,36 +55,36 @@ To physically deliver the owner's brief, three targeted terrain edits are propos
    * **Hydrology:** Author braided meltwater stream channels carrying glacial discharge and mineral-rich volcanic silt from the eastern canyons of the Stalker Peaks across the terraces.
 2. **The Central Fault Escarpment ($[1532, 1505]\text{ to }[1582, 1387]$):**
    * A $1,500\text{--}1,800\text{ m}$ stepped columnar basalt cliff separating the warm NW lowlands from the high SE plateau.
-   * A scree-ramp caravan notch at $[1557, 1455]$ ($+3,350\text{ m}$) hosting the Scarp Pass (Station 2).
+   * A scree-ramp caravan notch at $[1559, 1457]$ ($+3,289\text{ m}$) hosting the Scarp Pass (Station 2).
 3. **The SE High Plateau & Maar Swarm ($X \in [1582, 1769], Y \in [1470, 1628]$):**
-   * Plateau surface remains elevated at **$+4,200\text{ to }+4,500\text{ m}$** (freezing subpolar plateau, $-17.5^\circ\text{C}$ mean, katabatic blizzards).
-   * Carve $35\text{--}50$ circular/elliptical negative crater stamps ($D = 2.5\text{--}5\text{ km}$, vertical drop $380\text{--}450\text{ m}$) along the volcanic fissure corridor.
-   * Preserve $5\text{--}10\text{ m}$ wide knife-edge basalt bridges (The Arête Way, Station 4) between overlapping stamps, while their floors host the warm geothermal groves (Station 3).
+   * Plateau surface remains elevated at **$+4,200\text{ to }+4,500\text{ m}$** (freezing subpolar plateau, $-5.0^\circ\text{C}$ mean, katabatic blizzards).
+   * Carve $35\text{--}50$ circular/elliptical negative crater stamps ($D = 2.5\text{--}5\text{ km}$, deep maar pit floors down to $+2,277\text{ m}$ with $420\text{ m}$ inner crater benches) along the volcanic fissure corridor.
+   * Preserve $5\text{--}10\text{ m}$ wide knife-edge basalt bridges (The Arête Way, Station 4 at $[1678, 1542]$, $+4,269\text{ m}$) between overlapping stamps, while their floors host the warm geothermal groves (Station 3 at $[1687, 1555]$, $+2,277\text{ m}$).
 
 ---
 
 ## 3. The 4 Stations
 
 ### Station 1: Ostrukh Terraces (The Cold Arable Basin — NW)
-* **Metadata:** `stations/terraces/station.json` (`px: 1497, 1418`, elev $+2,150\text{ m}$, $1.31\text{ atm}$, mean $+4.2^\circ\text{C}$, rain $340\text{ mm}$, Dfb).
+* **Metadata:** `stations/terraces/station.json` (`px: 1519, 1453`, elev $+2,156\text{ m}$, $1.31\text{ atm}$, mean $+15.0^\circ\text{C}$, rain $439\text{ mm}$, Cwb).
 * **Landscape:** Fertile loess terraces stepping down to braided meltwater streams fed by Stalker glaciers; dry-stone retaining walls, sod-roofed basalt farmhouses, communal grain elevators.
 * **Agriculture & Ecology:** Highland frost-barley, frost-wheat, cold-hardy black tubers (`kits/crops` `terrace` zone); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
 * **Role:** The agricultural breadbasket of the south-east, feeding the mining and wax-harvesting camps of the higher zones.
 
 ### Station 2: The Scarp Pass (The Central Dividing Fault)
-* **Metadata:** `stations/scarp/station.json` (`px: 1557, 1455`, elev $+3,350\text{ m}$, $1.12\text{ atm}$, mean $-4.8^\circ\text{C}$, rain $180\text{ mm}$, Dsc).
+* **Metadata:** `stations/scarp/station.json` (`px: 1559, 1457`, elev $+3,289\text{ m}$, $1.13\text{ atm}$, mean $+4.0^\circ\text{C}$, rain $173\text{ mm}$, Dsc).
 * **Landscape:** Sheer hexagonal basalt columns rising $1,600\text{ m}$; switchback road cut into jointed rock; permafrost stone nets and frost circles (`42-core-frost.js`).
 * **Settlement & Transit:** Fortified stone tollhouse and caravansary sheltered under a basalt overhang; iron beacon baskets and windbreaks; freight exchange for pack beasts.
 
 ### Station 3: Siphon Maar Floor (The Sunken Geothermal Sink — SE)
-* **Metadata:** `stations/pitfloor/station.json` (`px: 1687, 1555`, floor elev $+3,800\text{ m}$, depth $420\text{ m}$, $1.46\text{ atm}$, mean $+18.5^\circ\text{C}$, rain $620\text{ mm}$, Cfa-thermal).
-* **Landscape:** Circular flat basin floor completely enclosed by vertical $400\text{ m}$ columnar basalt cliffs; boiling diatreme vents, mud pots, and subterranean lava tube portals.
-* **Inversion Trap:** Amber inversion fog deck sealed at $+4,100\text{ m}$ ($100\text{ m}$ above the floor, $-320\text{ m}$ below the plain); dead-calm $+18.5^\circ\text{C}$ microclimate.
+* **Metadata:** `stations/pitfloor/station.json` (`px: 1687, 1555`, floor elev $+2,277\text{ m}$, rim $+4,269\text{ m}$, total relief $1,992\text{ m}$, $1.29\text{ atm}$, mean $+18.0^\circ\text{C}$, rain $439\text{ mm}$, Cfa-thermal).
+* **Landscape:** Circular flat basin floor completely enclosed by vertical columnar basalt cliffs; boiling diatreme vents, mud pots, and subterranean lava tube portals.
+* **Inversion Trap:** Amber inversion fog deck sealed at $+2,580\text{ m}$ ($303\text{ m}$ above the floor); dead-calm $+18.0^\circ\text{C}$ microclimate.
 * **Ecology:** Communal groves of **Woolly Siphon trees** (`woolly_siphon`, $20\text{--}30\text{ m}$ tall), venting steam through flared lips and wrapped in $15\text{ cm}$ lanolin-wax pelts; springy **Siphon-Felt turf** (`siphon_felt` / `kground`); bulbous **Suture-Galls**; burrowing **Basalt Pipe-Borers**.
 * **Human Presence:** Roper base camp (*Pit-Head 04*): canvas huts, copper rendering kettles melting raw machine-wax into ingots.
 
 ### Station 4: The Arête Way (The Knife-Edge Bridges — SE Rim)
-* **Metadata:** `stations/arete/station.json` (`px: 1667, 1540`, elev $+4,220\text{ m}$, $0.94\text{ atm}$, mean $-17.5^\circ\text{C}$, wind $35\text{ m/s}$, ET).
+* **Metadata:** `stations/arete/station.json` (`px: 1678, 1542`, elev $+4,269\text{ m}$, $0.99\text{ atm}$, mean $-5.0^\circ\text{C}$, rain $173\text{ mm}$, wind $35\text{ m/s}$, ET).
 * **Landscape:** A terrifying $5\text{ to }8\text{ m}$ wide basalt knife-edge ridge between two coalescing $420\text{ m}$ deep pits; shattered phreatic explosion breccia; black rime ice.
 * **Hazard & Ecology:** Ambush lairs of the **Flenser-Hound** (`flenser_hound`), crouching along the fog rim in blizzards to strike crossing caravans.
 * **Human Infrastructure:** The Arête Way caravan trail with iron guide stanchions and safety chains; heavy rim windlass gantries lowering ropers into the abyss.

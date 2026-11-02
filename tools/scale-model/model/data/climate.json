@@ -241,29 +241,29 @@
    "code": "WS",
    "name": "sea / lake",
    "color": "#3b6fb0",
-   "pct": 9.79,
-   "km2": 1228244
+   "pct": 9.82,
+   "km2": 1231836
   },
   {
    "code": "Cfa",
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.43,
-   "km2": 1183468
+   "km2": 1183080
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 8.7,
-   "km2": 1092420
+   "km2": 1091712
   },
   {
    "code": "HF",
    "name": "hyperalpine ice",
    "color": "#eef0f7",
    "pct": 5.96,
-   "km2": 747644
+   "km2": 747648
   },
   {
    "code": "Csa",
@@ -277,7 +277,7 @@
    "name": "ice cap",
    "color": "#666666",
    "pct": 5.39,
-   "km2": 676824
+   "km2": 677032
   },
   {
    "code": "BSk",
@@ -298,14 +298,14 @@
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.07,
-   "km2": 385612
+   "km2": 385648
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.03,
-   "km2": 380384
+   "km2": 380388
   },
   {
    "code": "Dsb",
@@ -318,15 +318,15 @@
    "code": "Am",
    "name": "tropical monsoon",
    "color": "#0078ff",
-   "pct": 2.32,
-   "km2": 290620
+   "pct": 2.25,
+   "km2": 282896
   },
   {
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
    "pct": 1.88,
-   "km2": 236144
+   "km2": 236140
   },
   {
    "code": "BWk",
@@ -340,14 +340,14 @@
    "name": "hyperalpine tundra (<0.6 atm)",
    "color": "#d8dbe8",
    "pct": 1.73,
-   "km2": 216992
+   "km2": 216988
   },
   {
    "code": "Aw",
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.65,
-   "km2": 206688
+   "km2": 206680
   },
   {
    "code": "XA",
@@ -367,8 +367,8 @@
    "code": "Af",
    "name": "tropical rainforest",
    "color": "#0000ff",
-   "pct": 0.84,
-   "km2": 104832
+   "pct": 0.88,
+   "km2": 109920
   },
   {
    "code": "XV",
@@ -382,7 +382,7 @@
    "name": "oceanic",
    "color": "#64ff50",
    "pct": 0.7,
-   "km2": 88208
+   "km2": 88016
   },
   {
    "code": "Csb",
@@ -452,7 +452,7 @@
    "name": "monsoon subtropical",
    "color": "#96ff96",
    "pct": 0.03,
-   "km2": 4292
+   "km2": 4388
   },
   {
    "code": "Cfc",

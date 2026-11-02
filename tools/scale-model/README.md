@@ -521,13 +521,22 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
      **Lesser Throne** (`px 1130, 854`, WNW rim `6,880 m`, crater floor `6,070 m`), **Godthrone** (`px 968, 1012`, peak
      `25,000 m`, floor `21,194 m`), **Godstep Head Vent** (`px 892.8, 1145.2`, peak `2,850 m`, floor `2,700 m`), and the
      **Catch–Xanadu Twin Stratovolcanoes & Parasitic Cones** (`px 988, 1458` at `12,480 m`, `px 1042, 1498` at `11,920 m`,
-     `px 1007, 1472` at `9,493.1 m`, and `px 1024, 1485` at `7,535.4 m`). Adds **`DATA.tubes`** (10 subterranean lava tube
+     `px 1007, 1472` at `9,493.1 m`, and `px 1024, 1485` at `7,535.4 m`). Adds **`DATA.tubes`** (15 subterranean lava tube
      systems) and 3 Zeijani cavern settlements.
    - **Impact-Crater Wall Consistency**: Aligns `n highlands`, `s highlands`, `e inner wall`, `w outer wall`, `NW outer wall`,
      and `ne outer wall` with concentric listric megaslump terraces, pseudotachylite fault mirrors, and radial impact-tear
      dykes/chutes.
    - **Cultural River Naming (`smodel/river_names.py`, `river-names-5.1.md`)**: Names all 885 rivers and wadis across 27
      cultural tongues and records both the `4.21/4.23 Old Name` (`r['old_name']`) and `5.1 New Name` (`r['name']`).
+4. **Old-Area (`X >= 272, Y >= 330`) Boundary Seam & Station Notes (5.1 Round 2)**:
+   - **Farside's north (`around px 353, 451`, up to `1,247 m` in `203d69d58`) & Farside's `strand` station (`px 302, 570`, `1,718 m` in `203d69d58`)**:
+     In `203d69d58`, clearing `old_lake_guard` across the entire `px < 545, py < 625` box and widening `w_coast_new` to `24 px` caused coastal seam smoothing to bleed `20–80 px` inland into old Farside, accidentally lowering northern Farside slopes and dropping Farside's `strand` station (`px 302, 570`) from `2,162.4 m` to `1,717.9 m`. That move was **not intended** and has been **restored** by restricting `old_lake_guard` relaxation strictly to `0.0 m` coastal ocean cells within `12–16 px` of the `X = 272` and `Y = 330` expansion seams (`strand` at `px 302, 570` is back at `2,162.4 m`, within `145.6 m` of its `2,308 m` station datum).
+   - **Farside's coast (`around px 278, 608`, up to `1,644 m` at `px 273, 602`)**:
+     Intended along the immediate `X = 272` western expansion seam (`px 272..288, py 580..608`) and at the *Līng-Mā* (`r002`) sea-level estuary (`px 278..290, py 586..589` at `0.0 m`) and Farport bluff (`px 294, 588` at `212.0 m`), where retired coastal ocean cells and the `3,346 m` seam step at `(273, 602)` were graded so the Farside–Crook shoreline crosses `X = 272` without a `1-px` vertical cliff.
+   - **NW outer wall (`around px 495, 350`, up to `1,797 m` at `px 503, 330`)**:
+     Intended right along the `Y = 330` northern expansion seam (`py 330..342`, including `503, 330`), where relaxing `old_lake_guard` on retired `0.0 m` ocean cells and applying `w_n_seam_smooth` removed the `1-px` vertical cliff across `Y = 330`. Further south inside the old area (`py >= 344`, including `495, 350` and `nwouterwall`'s `yeti` station at `px 414, 506`), the move in `203d69d58` was accidental spillover from `w_nwow_north` and `old_lake_guard` and has been **restored** (`yeti` station at `414, 506` restored to `5,647.0 m` on Cold Lake).
+   - **NE outer wall (`rmvymakpc0pft`)**:
+     Expected moves from sculpting *The Glass-Skarn Bastion* (concentric listric slump benches, Arachnoid boxwork dike-walls, and 3 hydrothermal dike-cauldrons at `+2,670–2,950 m`).
 
 ## Cutting a region out for the open world
 

@@ -27,13 +27,12 @@ import math
 import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
-from . import geom as G, terrain as T
+from . import geom as G, page as P, terrain as T
 
 
-DX_F = 272
-DY_F = 330
-OLD_OH, OLD_OW = 1393, 1549
-NEW_OH, NEW_OW = 1723, 1821
+DX_F, DY_F = P.LEGACY_SHIFT
+OLD_OW, OLD_OH = P.LEGACY_FULL_SIZE
+NEW_OH, NEW_OW = OLD_OH + DY_F, OLD_OW + DX_F
 
 
 def _trace_thalweg_dijkstra(E_surf, waypoints, bbox, corridor_hw=26.0, sigma_smooth=1.8):
@@ -1460,19 +1459,27 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     d_into_old = nd.distance_transform_edt(~is_new_area)
     sd_new = (d_into_new - d_into_old) + 22.0 * fbm2 + 11.0 * fbm1
     old_lake_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
-    # CRITICAL (`Comment 2`): `old_lake_guard` must ONLY guard actual high-altitude inland lakes (`wlev0 >= 50 m`)
-    # and NEVER trigger on retired coastal ocean pixels in the NW sea box (`px < 545, py < 625`), which previously
-    # caused a 1-px vertical elevation cliff and shadow line at `Y = 330, X = 480..530` and `X = 272, Y = 570..595`!
+    # CRITICAL (`Comment 2`): `old_lake_guard` must guard all high-altitude inland lakes (`wlev0 >= 50 m`, including
+    # Cold Lake at `px 414, 506`) and all interior Farside/NW shorelines away from the `X = 272` and `Y = 330` seams,
+    # relaxing only on `0.0 m` coastal ocean pixels right at the `Y = 330` (`X < 525, Y < 342`) and `X = 272`
+    # (`X < 288, Y < 612`) seam crossings!
+    old_seam_sea_relax = (
+        (np.nan_to_num(wlev0_clean_edge, nan=0.0) < 50.0)
+        & (
+            ((px[DY_F:, DX_F:] < 525.0) & (py[DY_F:, DX_F:] < DY_F + 12.0))
+            | ((px[DY_F:, DX_F:] < DX_F + 16.0) & (py[DY_F:, DX_F:] < 612.0))
+        )
+    )
     old_lake_guard[DY_F:, DX_F:] = (
         whas0_clean_edge
         & ~is_sea[DY_F:, DX_F:]
-        & ~((px[DY_F:, DX_F:] < 545.0) & (py[DY_F:, DX_F:] < 625.0))
+        & ~old_seam_sea_relax
     )
     old_lake_guard = nd.binary_dilation(old_lake_guard, iterations=8)
 
     w_new_blend = np.where(old_lake_guard, G.sstep(0.0, 18.0, d_into_new), G.sstep(-48.0, 48.0, sd_new))
     w_nw_sea_floor = G.sstep(0.0, 12.0, d_in_sea) * (1.0 - G.sstep(465.0, 525.0, px)) * (1.0 - G.sstep(515.0, 585.0, py))
-    w_coast_new = (1.0 - G.sstep(0.0, 36.0, d_in_land)) * G.sstep(-24.0, 24.0, d_into_new - d_into_old)
+    w_coast_new = (1.0 - G.sstep(0.0, 28.0, d_in_land)) * G.sstep(-6.0, 6.0, d_into_new - d_into_old)
     w_new_blend = np.maximum(w_new_blend, np.maximum(w_nw_sea_floor, w_coast_new))
     En_new = En_new * (1.0 - w_new_blend) + h_syn * w_new_blend
 
@@ -2259,7 +2266,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     is_nwow_comb = _poly_mask(nw_ow_comb_verts) & ~whas_new & ~old_lake_guard
     w_nwow_north = (
         nd.gaussian_filter(is_nwow_comb.astype(float), sigma=5.0)
-        * (1.0 - G.sstep(365.0, 435.0, py))
+        * (1.0 - G.sstep(322.0, 342.0, py))
         * (1.0 - 0.85 * w_sasquatch_vales)
         * (~whas_new).astype(float)
     )

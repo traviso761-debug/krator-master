@@ -43,11 +43,11 @@ The owner's polygon `Region 99` (`rmvraoas90co7`; kind: `biome`; color `#e0e0e0`
    * **Extent:** $X \in [1582, 1772]$, $Y \in [1010, 1340]$ ($\sim 180,000\text{ km}^2$).
    * **Elevation Profile:** A deeply excavated tectonic graben sitting at **$+550\text{ m}$ to $+750\text{ m}$**. Horsts sit at $+750\text{ m}$; procedural extensional rifts drop $150\text{--}220\text{ m}$ to $+550\text{ m}$ chasm beds lined with namakier salt glaciers.
 4. **The Resurgent Dome (*Mount Caelum*):**
-   * **Extent:** Centered at `px [1627, 1170]`, radius $50\text{ km}$.
-   * **Elevation Profile:** Low-angle resurgent shield volcano climbing from the $+700\text{ m}$ basin floor up to **$+4,650\text{ m}$**. Geothermal vents and sulfur-fumaroles at its summit feed the parent spore colonies.
+   * **Extent:** Centered at `px [1622, 1166]`, radius $50\text{ km}$.
+   * **Elevation Profile:** Low-angle resurgent shield volcano climbing from the $+700\text{ m}$ basin floor up to **$+4,431\text{ m}$**. Geothermal vents and sulfur-fumaroles at its summit feed the parent spore colonies.
 5. **The Terminal Salt Sink (*The White Loom / Lake Nim*):**
    * **Extent:** Centered at `px [1692, 1180]`, the absolute lowest point of the basin.
-   * **Elevation Profile:** Sits at **$+480\text{ m}$**. Holds a shallow, hypersaline brine pool ($\sim 45\text{ km}^2$, $1.5\text{--}3\text{ m}$ depth) surrounded by a $3,200\text{ km}^2$ glistening white playa salt flat.
+   * **Elevation Profile:** Sits at **$+344\text{ m}$**. Holds a shallow, hypersaline brine pool ($\sim 45\text{ km}^2$, $1.5\text{--}3\text{ m}$ depth) surrounded by a $3,200\text{ km}^2$ glistening white playa salt flat.
 6. **Perimeter Sill & Boundary Continuity:**
    * Outer perimeter ($X \to 1794$, $Y \to 986$, $Y \to 1351$) smoothly climbs outward to meet the cratonic plateau and S Outlands at **$+3,800\text{ m}$ to $+4,200\text{ m}$**.
    * Bounded by a $40\text{ km}$ smoothstep transition band: **zero vertical step discontinuities or seams**.
@@ -127,10 +127,10 @@ Krator’s hydrological engine (`hydro.py` and `edit_rivers.py`) solves water bu
 
 | Station | Name & Role | Map Px | Elev | Pressure | Mean Temp (Summer/Winter) | Rain | Climate | Key Features |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | **Weavers' Cradle**<br/>(Western Arable) | `1487, 1175` | $+2,180\text{ m}$ | $1.23\text{ atm}$ | $+5.5^\circ\text{C}$<br/>($+17.5 / -6.5$) | $380\text{ mm}$ | **Dfb** | Glacial braided rivers, fertile loess terraces, stone field walls, draft hexapod farms |
-| **2** | **The Fluted Monocline**<br/>(Step Pass) | `1557, 1160` | $+1,350\text{ m}$ | $1.35\text{ atm}$ | $+10.4^\circ\text{C}$<br/>($+21.0 / -1.5$) | $140\text{ mm}$ | **BSk** | Broad basalt structural benches, road caravansary, descending talus skirts |
-| **3** | **The Looming Chasms**<br/>(Suspension Canopy) | `1662, 1165` | $+620\text{ m}$ | $1.48\text{ atm}$ | $+15.2^\circ\text{C}$<br/>($+26.0 / +3.5$) | $42\text{ mm}$ | **BWk** | $180\text{ m}$ basalt rifts, namakier salt glaciers, dense living cable bridges, aerial shuttle lines |
-| **4** | **Mount Caelum & Lake Nim**<br/>(Dome & Playa) | `1627, 1170` | $+4,650\text{ m}$<br/>(Playa: $+480$) | $0.89\text{ atm}$<br/>(Playa: $1.49$) | $-13.5^\circ\text{C}$<br/>(Playa: $+16.1$) | $210\text{ mm}$<br/>(Playa: $28$) | **ET**<br/>(Playa: **BWk**) | Resurgent volcanic dome overlooking the white salt playa; fumarole plumes, mineral brine pool |
+| **1** | **Weavers' Cradle**<br/>(Western Arable) | `1555, 1142` | $+2,180\text{ m}$ | $1.31\text{ atm}$ | $+11.0^\circ\text{C}$<br/>($+17.0 / +4.0$) | $439\text{ mm}$ | **Cwb** | Glacial braided rivers, fertile loess terraces, stone field walls, draft hexapod farms |
+| **2** | **The Fluted Monocline**<br/>(Step Pass) | `1575, 1163` | $+1,479\text{ m}$ | $1.44\text{ atm}$ | $+15.0^\circ\text{C}$<br/>($+21.0 / +8.0$) | $125\text{ mm}$ | **BSk** | Broad basalt structural benches, road caravansary, descending talus skirts |
+| **3** | **The Looming Chasms**<br/>(Suspension Canopy) | `1662, 1162` | $+748\text{ m}$<br/>(Floor: $+568$) | $1.59\text{ atm}$ | $+19.0^\circ\text{C}$<br/>($+26.0 / +12.0$) | $78\text{ mm}$ | **BWk** | $180\text{ m}$ basalt rifts, namakier salt glaciers, dense living cable bridges, aerial shuttle lines |
+| **4** | **Mount Caelum & Lake Nim**<br/>(Dome & Playa) | `1622, 1166` | $+4,431\text{ m}$<br/>(Playa: $+344$) | $0.95\text{ atm}$<br/>(Playa: $1.68$) | $-2.0^\circ\text{C}$<br/>(Playa: $+16.0$) | $439\text{ mm}$<br/>(Playa: $47$) | **ET**<br/>(Playa: **BWk**) | Resurgent volcanic dome overlooking the white salt playa; fumarole plumes, mineral brine pool |
 
 ---
 

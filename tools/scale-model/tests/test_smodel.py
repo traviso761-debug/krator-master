@@ -151,4 +151,49 @@ for v in [D.get('volc', {})] + list(D.get('vents', [])):
     yy, xx = np.mgrid[j0:j1, i0:i1]
     in_disc = np.hypot(xx - vx, yy - vy) <= r_cells
     check('vent peak near %s' % v['px'], float(E[j0:j1, i0:i1][in_disc].max()) >= float(v['peak']) - 400.0)
+
+# ---- 5. biome stations (every station's stated `base` must be within 150 m of the ground at its `px`)
+import glob as _glob, json as _json   # noqa: E402
+REPO_ROOT = os.path.abspath(os.path.join(TOOL, '..', '..'))
+for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'station*.json'), recursive=True)):
+    st_doc = _json.load(open(st_path, encoding='utf-8'))
+    site = st_doc.get('site', {})
+    if 'px' not in site or 'py' not in site or 'base' not in site:
+        continue
+    raw_px, raw_py = float(site['px']), float(site['py'])
+    if '4.2' in st_doc.get('source', '') and '5.' not in st_doc.get('canvas', ''):
+        raw_px, raw_py = P.legacy_px(raw_px, raw_py, D)
+    spx = min(E.shape[1] - 1, max(0, int(round(raw_px * su))))
+    spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
+    ground_m = float(E[spy, spx])
+    base_m = float(site['base'])
+    rel_st = os.path.relpath(st_path, REPO_ROOT).replace('\\', '/')
+    check('station base within 150 m: %s (stated %.0f m vs ground %.0f m)' % (rel_st, base_m, ground_m),
+          abs(ground_m - base_m) <= 150.0)
+
+# ---- 6. river descent (no river climbs > 50 m along its course on the map grid, and `bed_m` is monotonically non-increasing)
+max_riv_climb = 0.0
+worst_riv = None
+bad_bed_rivs = []
+for r in D.get('rivers', []):
+    b_m = r.get('bed_m') or []
+    if any(b2 > b1 + 1e-6 for b1, b2 in zip(b_m, b_m[1:])):
+        bad_bed_rivs.append(r.get('id'))
+    pts_r = r.get('px') or []
+    if len(pts_r) < 2:
+        continue
+    es_r = [
+        float(E[min(E.shape[0] - 1, max(0, int(round(py_r * sv)))), min(E.shape[1] - 1, max(0, int(round(px_r * su))))])
+        for px_r, py_r in pts_r
+    ]
+    m_e = es_r[0]
+    for e_v in es_r:
+        if e_v < m_e:
+            m_e = e_v
+        if e_v - m_e > max_riv_climb:
+            max_riv_climb = e_v - m_e
+            worst_riv = r.get('id')
+check('all river bed_m profiles descend monotonically', len(bad_bed_rivs) == 0)
+check('all rivers descend along course (max climb %.1f m <= 50 m, worst=%s)' % (max_riv_climb, worst_riv),
+      max_riv_climb <= 50.0)
 print('%d checks passed' % ok)

@@ -5,12 +5,12 @@
   "site": {
     "name": "scarp",
     "title": "The Scarp Pass",
-    "px": 1557,
-    "py": 1455,
-    "base": 3350.0,
-    "atm": 1.12,
-    "mean": -4.8,
-    "rain": 180,
+    "px": 1559,
+    "py": 1457,
+    "base": 3289.0,
+    "atm": 1.13,
+    "mean": 4.0,
+    "rain": 173,
     "cls": "Dsc",
     "lat": -28.9
   },

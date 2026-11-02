@@ -5,13 +5,13 @@
   "site": {
     "name": "caelum",
     "title": "Mount Caelum Caldera & Lake Nim Overlook",
-    "px": 1627,
-    "py": 1170,
-    "base": 4650.0,
-    "playa_level": 480.0,
-    "atm": 0.89,
-    "mean": -13.5,
-    "rain": 210,
+    "px": 1622,
+    "py": 1166,
+    "base": 4431.0,
+    "playa_level": 344.0,
+    "atm": 0.95,
+    "mean": -2.0,
+    "rain": 439,
     "cls": "ET",
     "lat": -27.4
   },
@@ -19,8 +19,8 @@
     {
       "kind": "vent",
       "name": "Caelum Fumaroles",
-      "px": 1627,
-      "py": 1170,
+      "px": 1622,
+      "py": 1166,
       "temp_c": 115.0
     },
     {
@@ -28,7 +28,7 @@
       "name": "Lake Nim",
       "px": 1692,
       "py": 1180,
-      "level_m": 480.0,
+      "level_m": 344.0,
       "area_km2": 45.0,
       "hypersaline": true
     }

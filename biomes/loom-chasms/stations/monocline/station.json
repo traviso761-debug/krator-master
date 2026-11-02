@@ -5,12 +5,12 @@
   "site": {
     "name": "monocline",
     "title": "The Fluted Monoclines",
-    "px": 1557,
-    "py": 1160,
-    "base": 1350.0,
-    "atm": 1.35,
-    "mean": 10.4,
-    "rain": 140,
+    "px": 1575,
+    "py": 1163,
+    "base": 1479.0,
+    "atm": 1.44,
+    "mean": 15.0,
+    "rain": 125,
     "cls": "BSk",
     "lat": -27.3
   },

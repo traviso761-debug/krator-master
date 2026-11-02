@@ -11,7 +11,7 @@
      - Keep Completed 5-Region SE Complex (`Region 99`, `Siphon Pits`, `Mid Basin`, `Stalker Gate`, `High Rift`)
      - Volcano & Lava Tube Pass (`smodel/volcanoes.py`): `Throne/Volcano`, `Lesser Throne`, `Godthrone` + `Godstep Valley`,
        plus the Twin Catch/Xanadu Stratovolcanoes (`vents[2]` at `716, 1128` and `vents[3]` at `770, 1168`),
-       10 Subterranean Lava Tube & Cavern Systems (`tubes.json` / `bTubes`), and 3 Zeijani Cavern Settlements.
+       15 Subterranean Lava Tube & Cavern Systems (`tubes.json` / `bTubes`), and 3 Zeijani Cavern Settlements.
      - East Abyss & The Bowl Shiveria Pass (`smodel/east_abyss.py`): Failed Continental Rift (Aulacogen),
        5 en-echelon master faults, stepped East Rim savanna benches (`XV`, `BSh`, `Aw`), 23 recessed Shiveria
        cataract gorges + canyon-mouth megafans (`XA`), Messinian evaporite bull's-eye salt pans (`XW`, `XS`, `WX`),
@@ -772,12 +772,13 @@ def main():
         new_x = arr_p[:, 0] * (1.0 - env_m) + (sx_s + nx * wave) * env_m
         new_y = arr_p[:, 1] * (1.0 - env_m) + (sy_s + ny * wave) * env_m
 
-        # Never push a dry river vertex into a lake/sea cell!
+        # Never push a dry river vertex into a lake/sea cell or uphill onto a steeper canyon bank!
         ny_i = np.clip(np.round(new_y).astype(int), 0, NEW_OH - 1)
         nx_i = np.clip(np.round(new_x).astype(int), 0, NEW_OW - 1)
         hit_water = whas_exp[ny_i, nx_i] & ~whas_exp[iy_p, ix_p]
-        new_x = np.where(hit_water | pinned, arr_p[:, 0], new_x)
-        new_y = np.where(hit_water | pinned, arr_p[:, 1], new_y)
+        hit_uphill = En_exp[ny_i, nx_i] > (En_exp[iy_p, ix_p] + 4.0)
+        new_x = np.where(hit_water | hit_uphill | pinned, arr_p[:, 0], new_x)
+        new_y = np.where(hit_water | hit_uphill | pinned, arr_p[:, 1], new_y)
         r['px'] = [[round(float(x_), 2), round(float(y_), 2)] for x_, y_ in zip(new_x, new_y)]
 
     # Route the mouth of Līng-Mā (`r['id'] == 2`, Farside) into the 0.0 m sea-level estuary under Farport's bluff plateau:
@@ -794,10 +795,62 @@ def main():
                 if isinstance(r.get('to'), dict):
                     r['to']['at_px'] = [280.0, 587.0]
 
+    # Reroute `r_hr_verdigris` (`Verdigris Beck`, High Rift) around the `(1336, 1657)` ridge via the southern Opaline Sinter
+    # valley floor and keep its upstream Lake Cinnabar vertex `[19]` off the north wall at `(1495.5, 1635.5)`:
+    for r in rivers_exp:
+        if r.get('id') == 'r_hr_verdigris':
+            pts_v = r.get('px') or []
+            for k_v, (vx_, vy_) in enumerate(pts_v):
+                if 1492.0 <= vx_ <= 1500.0 and vy_ <= 1634.5:
+                    pts_v[k_v] = [round(float(vx_), 2), 1635.5]
+            cut_idx = next((i for i, p in enumerate(pts_v) if p[0] <= 1356.0), max(0, len(pts_v) - 9))
+            southern_sinter_route = [
+                [1354.5, 1662.5],
+                [1350.0, 1668.5],
+                [1342.0, 1670.5],
+                [1334.0, 1669.5],
+                [1326.0, 1666.5],
+                [1318.0, 1661.0],
+                [1310.0, 1654.5],
+                [1304.0, 1652.0],
+                [1299.6, 1651.2],
+            ]
+            new_pts_v = pts_v[:cut_idx] + southern_sinter_route
+            r['px'] = new_pts_v
+            if 'q_m3s' in r and len(r['q_m3s']) != len(new_pts_v):
+                q0, q1 = float(r['q_m3s'][0]), float(r['q_m3s'][-1])
+                r['q_m3s'] = [round(q0 + (q1 - q0) * (i / max(1, len(new_pts_v) - 1)), 1) for i in range(len(new_pts_v))]
+            # Grade a smooth sinter valley swale along the southern route (`2,572 m -> 2,135 m`) before channel incision:
+            y0_v, y1_v, x0_v, x1_v = 1644, 1682, 1292, 1364
+            yy_vs, xx_vs = np.mgrid[y0_v:y1_v, x0_v:x1_v]
+            d2_vs = np.full(yy_vs.shape, 1e12, dtype=float)
+            el_vs = np.full(yy_vs.shape, 2572.0, dtype=float)
+            s_targets = np.linspace(2572.0, 2135.0, len(southern_sinter_route))
+            for i_s in range(len(southern_sinter_route) - 1):
+                sx0, sy0 = southern_sinter_route[i_s]
+                sx1, sy1 = southern_sinter_route[i_s + 1]
+                e0_s, e1_s = s_targets[i_s], s_targets[i_s + 1]
+                for t_s in np.linspace(0.0, 1.0, 9):
+                    qx = sx0 + (sx1 - sx0) * t_s
+                    qy = sy0 + (sy1 - sy0) * t_s
+                    qe = e0_s + (e1_s - e0_s) * t_s
+                    d2_q = (xx_vs - qx) ** 2 + (yy_vs - qy) ** 2
+                    better_q = d2_q < d2_vs
+                    d2_vs = np.where(better_q, d2_q, d2_vs)
+                    el_vs = np.where(better_q, qe, el_vs)
+            u_vs = np.sqrt(d2_vs) / 6.5
+            w_vs = ((1.0 - G.sstep(0.0, 1.0, u_vs)) ** 1.35) * (~whas_exp[y0_v:y1_v, x0_v:x1_v]).astype(float)
+            h_vs_prof = el_vs + 380.0 * (G.sstep(0.0, 1.0, u_vs) ** 1.4)
+            En_sub_v = En_exp[y0_v:y1_v, x0_v:x1_v]
+            En_exp[y0_v:y1_v, x0_v:x1_v] = En_sub_v * (1.0 - 0.92 * w_vs) + np.minimum(En_sub_v, h_vs_prof) * (0.92 * w_vs)
+
     # Global Anti-Porcupine Despiking & Coastal Cliff Moderation Pass on `En_exp`
     # (Run BEFORE river channel incision so median filtering never fills in narrow canyon river floors!):
+    # Guard ONLY volcanic cone summits (`'peak' in v_item`), NEVER valley-floor hydrothermal geysers/fumaroles!
     vent_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
     for v_item in list(vents_1393) + list(meta_nw['new_vents']):
+        if 'peak' not in v_item:
+            continue
         vx_i, vy_i = v_item['px']
         if v_item in vents_1393:
             vx_i, vy_i = vx_i + DX, vy_i + DY
@@ -878,11 +931,13 @@ def main():
     w_water_taper = G.sstep(0.0, 2.2, d_to_water_px) * (~whas_exp).astype(float) * (~vent_guard).astype(float)
     w_riv_carve = ((1.0 - G.sstep(0.0, 1.0, u_riv)) ** 1.25) * w_water_taper
 
-    # Safe lower bound on dry land so positive-elevation land never drops below 1.8 m or below adjacent lake level
+    # Safe lower bound on dry land: in `is_new_area`, positive-elevation land stays >= 1.8 m;
+    # in the old interior (`~is_new_area`), endorheic sub-zero basins go down to -3,200 m so never clamp to +1.8 m!
+    floor_safe = np.where(is_new_area, 1.8, En_exp - depth_near - 15.0)
     min_safe_riv = np.where(
-        En_exp > 1.8,
-        np.where(d_to_water_px <= 10.0, np.maximum(1.8, np.minimum(En_exp - 2.0, wlev_nearest + 1.8)), 1.8),
-        np.where(d_to_water_px <= 8.0, np.minimum(En_exp - 2.0, wlev_nearest + 1.8), En_exp - depth_near),
+        d_to_water_px <= 8.0,
+        np.maximum(floor_safe, np.minimum(En_exp - 2.0, wlev_nearest + 1.8)),
+        floor_safe,
     )
     h_riv_profile = np.maximum(min_safe_riv, bed_near + depth_near * (G.sstep(0.0, 1.0, u_riv) ** 1.35))
     En_exp = En_exp * (1.0 - 0.90 * w_riv_carve) + np.minimum(En_exp, h_riv_profile) * (0.90 * w_riv_carve)
@@ -903,42 +958,85 @@ def main():
     wlev_exp[587:590, 293:296] = np.nan
     En_exp[588, 294] = 212.0
 
-    # Enforce strict monotonic downhill terrain on `En_exp` along every river centerline and record `bed_m`!
-    climbing_fixed = 0
+    # Ensure Outland Gate River (`id == 9106`) stays on dry valley floor until its final mouth vertex at Spider Lake,
+    # and ensure estuarine mouths (`9101`, `9103`, `r002`) have smooth shallow channel beds (`-2.5 m -> -12.0 m`) without deep holes:
     for r in rivers_exp:
-        pts_r = r.get('px') or []
-        if not pts_r:
+        pts_og = r.get('px') or []
+        if r.get('id') == 9106 and len(pts_og) >= 2:
+            for px_o, py_o in pts_og[:-1]:
+                iy_o = min(NEW_OH - 1, max(0, int(round(py_o))))
+                ix_o = min(NEW_OW - 1, max(0, int(round(px_o))))
+                if whas_exp[iy_o, ix_o]:
+                    whas_exp[iy_o, ix_o] = False
+                    wlev_exp[iy_o, ix_o] = np.nan
+                    En_exp[iy_o, ix_o] = max(float(En_exp[iy_o, ix_o]), 1462.0)
+        if r.get('id') in (9101, 9103) and len(pts_og) >= 2:
+            entered_sea = False
+            for k_e, (px_e, py_e) in enumerate(pts_og):
+                iy_e = min(NEW_OH - 1, max(0, int(round(py_e))))
+                ix_e = min(NEW_OW - 1, max(0, int(round(px_e))))
+                if whas_exp[iy_e, ix_e] and abs(float(np.nan_to_num(wlev_exp[iy_e, ix_e], nan=0.0))) <= 1.0:
+                    entered_sea = True
+                if entered_sea:
+                    whas_exp[iy_e, ix_e] = True
+                    wlev_exp[iy_e, ix_e] = 0.0
+                    frac_e = k_e / max(1.0, float(len(pts_og) - 1))
+                    En_exp[iy_e, ix_e] = -2.5 - 9.5 * frac_e
+
+    # Enforce strict monotonic downhill terrain on `En_exp` along every river centerline (2 passes for shared confluences) and record `bed_m`!
+    vent_summit_core = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    for v_item in list(vents_1393) + list(meta_nw['new_vents']):
+        if 'peak' not in v_item:
             continue
-        is_ling_ma = (r.get('id') == 2) or (len(pts_r) >= 2 and 278.0 <= pts_r[-1][0] <= 292.0 and 585.0 <= pts_r[-1][1] <= 590.0)
-        beds = []
-        for px_, py_ in pts_r:
-            iy = min(NEW_OH - 1, max(0, int(round(py_))))
-            ix = min(NEW_OW - 1, max(0, int(round(px_))))
-            # Use water surface elevation if vertex is in a lake/sea, else terrain elevation
-            if whas_exp[iy, ix] and not np.isnan(wlev_exp[iy, ix]):
-                beds.append(round(float(max(En_exp[iy, ix], wlev_exp[iy, ix])), 1))
-            else:
-                beds.append(round(float(En_exp[iy, ix]), 1))
-        if is_ling_ma and len(beds) >= 6:
-            # Smoothly grade the last 6 vertices of Līng-Mā down to 0.0 m sea level in the drowned estuary
-            top_g = min(float(beds[-6]), 48.0)
-            for k_g, frac_g in enumerate([0.75, 0.50, 0.25, 0.08, 0.0, 0.0], start=len(beds) - 6):
-                beds[k_g] = round(top_g * frac_g, 1)
-                iy_g = min(NEW_OH - 1, max(0, int(round(pts_r[k_g][1]))))
-                ix_g = min(NEW_OW - 1, max(0, int(round(pts_r[k_g][0]))))
-                if not whas_exp[iy_g, ix_g] and (ix_g, iy_g) != (294, 588):
-                    En_exp[iy_g, ix_g] = max(1.8, float(beds[k_g]))
-        for i in range(1, len(beds)):
-            if beds[i] > beds[i - 1]:
-                beds[i] = beds[i - 1]
-                climbing_fixed += 1
+        vx_i, vy_i = v_item['px']
+        if v_item in vents_1393:
+            vx_i, vy_i = vx_i + DX, vy_i + DY
+        vent_summit_core |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 2.5)
+
+    climbing_fixed = 0
+    for _pass_riv in range(2):
+        for r in rivers_exp:
+            pts_r = r.get('px') or []
+            if not pts_r:
+                continue
+            is_ling_ma = (r.get('id') == 2) or (len(pts_r) >= 2 and 278.0 <= pts_r[-1][0] <= 292.0 and 585.0 <= pts_r[-1][1] <= 590.0)
+            beds = []
+            raw_es = []
+            for px_, py_ in pts_r:
+                iy = min(NEW_OH - 1, max(0, int(round(py_))))
+                ix = min(NEW_OW - 1, max(0, int(round(px_))))
+                raw_es.append(float(En_exp[iy, ix]))
+                if whas_exp[iy, ix] and not np.isnan(wlev_exp[iy, ix]):
+                    beds.append(round(float(max(En_exp[iy, ix], wlev_exp[iy, ix])), 1))
+                else:
+                    beds.append(round(float(En_exp[iy, ix]), 1))
+            if is_ling_ma and len(beds) >= 6:
+                top_g = min(float(beds[-6]), 48.0)
+                for k_g, frac_g in enumerate([0.75, 0.50, 0.25, 0.08, 0.0, 0.0], start=len(beds) - 6):
+                    beds[k_g] = round(top_g * frac_g, 1)
+                    iy_g = min(NEW_OH - 1, max(0, int(round(pts_r[k_g][1]))))
+                    ix_g = min(NEW_OW - 1, max(0, int(round(pts_r[k_g][0]))))
+                    if not whas_exp[iy_g, ix_g] and (ix_g, iy_g) != (294, 588):
+                        En_exp[iy_g, ix_g] = max(1.8, float(beds[k_g]))
+                    raw_es[k_g] = float(En_exp[iy_g, ix_g])
+            for i in range(1, len(beds)):
                 iy = min(NEW_OH - 1, max(0, int(round(pts_r[i][1]))))
                 ix = min(NEW_OW - 1, max(0, int(round(pts_r[i][0]))))
-                if not whas_exp[iy, ix] and not vent_guard[iy, ix] and (ix, iy) != (294, 588):
-                    En_exp[iy, ix] = min(float(En_exp[iy, ix]), max(1.8, float(beds[i])))
-        r['bed_m'] = beds
-        r['source_m'] = beds[0]
-        r['mouth_m'] = beds[-1]
+                if beds[i] > beds[i - 1]:
+                    beds[i] = beds[i - 1]
+                    if _pass_riv == 0:
+                        climbing_fixed += 1
+                    if not whas_exp[iy, ix] and not vent_summit_core[iy, ix] and (ix, iy) != (294, 588):
+                        floor_px = 1.8 if is_new_area[iy, ix] else -10000.0
+                        En_exp[iy, ix] = min(float(En_exp[iy, ix]), max(floor_px, float(beds[i])))
+                        raw_es[i] = float(En_exp[iy, ix])
+                if raw_es[i] > raw_es[i - 1] and not vent_summit_core[iy, ix] and (ix, iy) != (294, 588):
+                    floor_px = (1.8 if (is_new_area[iy, ix] and not whas_exp[iy, ix]) else -10000.0)
+                    raw_es[i] = max(floor_px, raw_es[i - 1])
+                    En_exp[iy, ix] = min(float(En_exp[iy, ix]), raw_es[i])
+            r['bed_m'] = beds
+            r['source_m'] = beds[0]
+            r['mouth_m'] = beds[-1]
     print(f'  Total rivers incised & verified on expanded map: {len(rivers_exp)} (clamped {climbing_fixed} vertices)')
 
     # =========================================================================
@@ -1519,11 +1617,27 @@ def main():
         )
     # 2. Lake-level guard (no NaN water levels on wet cells)
     assert not np.isnan(wlev_exp[whas_exp]).any(), 'Lake-level guard failed: NaN water level on wet cell'
-    # 3. River-descent guard (monotonic non-increasing bed_m from source to mouth)
+    # 3. River-descent guard (monotonic non-increasing bed_m AND actual map ground E[round(py), round(px)] climb <= 50 m along course)
     for r_chk in rivers_exp:
         b_chk = r_chk.get('bed_m') or []
         for b1_c, b2_c in zip(b_chk, b_chk[1:]):
-            assert b2_c <= b1_c + 1e-6, f"River descent guard failed on {r_chk.get('id')}: {b1_c} -> {b2_c}"
+            assert b2_c <= b1_c + 1e-6, f"River bed_m descent guard failed on {r_chk.get('id')}: {b1_c} -> {b2_c}"
+        pts_chk = r_chk.get('px') or []
+        if len(pts_chk) >= 2:
+            es_chk = [
+                float(En_exp[min(NEW_OH - 1, max(0, int(round(py_c)))), min(NEW_OW - 1, max(0, int(round(px_c))))])
+                for px_c, py_c in pts_chk
+            ]
+            min_e_so_far = es_chk[0]
+            max_climb_r = 0.0
+            for e_c in es_chk:
+                if e_c < min_e_so_far:
+                    min_e_so_far = e_c
+                if e_c - min_e_so_far > max_climb_r:
+                    max_climb_r = e_c - min_e_so_far
+            assert max_climb_r <= 50.0, (
+                f"River map-elevation descent guard failed on {r_chk.get('id')} ({r_chk.get('name')}): max climb = {max_climb_r:.1f} m > 50.0 m"
+            )
     # 4. Settlement-pad & Farport tsunami guard
     assert len(worse_problems) == 0, f'Settlement guard failed: {worse_problems}'
     farport_s = next(s for s in setts_exp if s['name'] == 'Farport' or s.get('id') == 's998483c9b')
