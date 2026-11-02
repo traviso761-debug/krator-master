@@ -104,7 +104,7 @@ function cauliflory(x,z,y0,H,rAt,n,size,st,uLo,uHi){uLo=uLo==null?.15:uLo;uHi=uH
 // Spanish-moss-like beards hung from a bough point; how many depends on how
 // wet the ground is (none on the flats, thick in the marsh and the deltas).
 function beardsAt(p,wet,k,st,long){const n=Math.round(rr(0,2.2)*k*smooth(.55,.95,wet));
- for(let i=0;i<n;i++){const L=long?rr(4,12):rr(2.5,8);BIO.put('beard',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],(p.r||.3)+.3),qEuler(0,rr(0,TAU),0),[rr(1.2,2.6),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;}}
+ for(let i=0;i<n;i++){const L=long?rr(4,12):rr(2.5,8);BIO.put('beard',BIO.holdTo([p.x,p.y,p.z],[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],(p.r==null?.3:p.r)+.3),qEuler(0,rr(0,TAU),0),[rr(1.2,2.6),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;}}
 // ---------------------------------------------------------------- foliage helpers
 // hold (a point on what is drawn, [x,y,z]): the card stems from there, within its own leaves' reach, so a jittered crown stays on its limbs (the attach audit)
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,hold){
@@ -374,7 +374,7 @@ B[15]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,l
  spots.forEach(sp=>{for(let c=0,m=lv===2?(sp.tip?2:1):1;c<m;c++){const a=rr(0,TAU),d=sp.s*.6*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(-.2,.6)*sp.s;
    if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt('blade',x,y,z,sz0*rr(.85,1.2)*(sp.tip?1.1:1),.8,rng()<.8?hc:C(pick(S.leaf)),T.x,cy,T.z,ex,ey,[sp.p.x,sp.p.y,sp.p.z]);st.clumps++;mine++;}
   if(lv>=1&&sp.tip){const n=lv===2?5:3,a0b=rr(0,TAU);for(let k=0;k<n;k++){const a=a0b+k/n*TAU+rr(-.3,.3);frondAt('strapfrond',sp.p.x,sp.p.y+.2,sp.p.z,a,sp.s*rr(.9,1.3),rr(-.55,.15),bright(vary(hc,.02,.08,.05),1.4),1.0);}   // the straps themselves
-   if(lv===2&&rng()<.4){for(let k=0,m=ri(1,2);k<m;k++)BIO.put('pod',BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[sp.p.x+rr(-1,1),sp.p.y-.3,sp.p.z+rr(-1,1)],(sp.p.r||.1)+.3),qEuler(0,rr(0,TAU),0),rr(1.8,3.0),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}});   // catkins
+   if(lv===2&&rng()<.4){for(let k=0,m=ri(1,2);k<m;k++)BIO.put('pod',BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[sp.p.x+rr(-1,1),sp.p.y-.3,sp.p.z+rr(-1,1)],(sp.p.r==null?.1:sp.p.r)+.3),qEuler(0,rr(0,TAU),0),rr(1.8,3.0),bright(pick(PAL.accentDull),rr(.8,1.1)));st.pods++;}}});   // catkins
  if(!mine){clumpAt('blade',tx,ty+2,tz,sz0,.8,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv>=1)spots.forEach(sp=>{if(!sp.tip)beardsAt(sp.p,T.wet,1.0,st,true);});
  if(lv===2)cauliflory(T.x,T.z,T.y0,H*.66,rAt,ri(2,5),rr(.5,.8),st,.2,.85);

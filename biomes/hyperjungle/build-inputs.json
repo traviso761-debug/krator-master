@@ -143,7 +143,7 @@
     "biomes/geyser/tex/pack.json": "d51fca8136df1e802d9163e8327c0530b9fa6d2287ef714f67cd06d31573673e",
     "biomes/geyser/tex/rosette.albedo.webp": "e7b5d68f18fe713f33839e0922b354d1a6e7f8393a9f9913202d267a64d5537b",
     "biomes/geyser/tex/strap.albedo.webp": "430aa3766da7c02406d5fa3eded5a572eab69a31a84c85eb52266876c52bc7aa",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "9c89c200419e4f835877d8556f797b7c6ca7df2f832d7a1c486fe55e05b351fd",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "49e3d16c1fcd4f2229b81431b538dbe86fa463cc44dafcfbe4f8748b9466dd8b",
     "biomes/hyperjungle/PORT.md": "62ec155cbb5af6ad0c3fe11b678f30950a05fa5160c56df6240e13e29a09b2b7",
     "biomes/hyperjungle/build.py": "8838557f5180b21fafaeac0231b7a5504a744b36118921702d8cadd79c93a6ca",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
@@ -282,7 +282,7 @@
   "build.py --station savanna": {
    "inputs": {
     "biomes/eastabyss/src/50-biome-eastabyss-species.js": "32c7d8aafbeef97abca77d097970edc2e0de66a2c2aa66b8860e24f6699e716c",
-    "biomes/eastabyss/src/55-biome-eastabyss-trees.js": "524941535c245142cd58eb377bd6bc168b2b22150c706a11c724275aa9548445",
+    "biomes/eastabyss/src/55-biome-eastabyss-trees.js": "b3070b97d83daa0cad5a9d7277f1a3bd4e3672edb5415202f543f69c005f131b",
     "biomes/eastabyss/tex/bark0.albedo.webp": "907538cdb864bdc53b25dfc1879b0d8b4780156d11dd514f6075f9fe0c8912e9",
     "biomes/eastabyss/tex/bark1.albedo.webp": "3bff180c68170b673cd8042058e98c6cfee2dea907307cf7c267b2f0183aeff2",
     "biomes/eastabyss/tex/bark2.albedo.webp": "17c51765680ec26b9a0d1a49a3914ebc765ab2c6712a5acfac25b81ba97b3f6c",
@@ -307,7 +307,7 @@
     "biomes/eastabyss/tex/strap.albedo.webp": "239c1711955791d357f52e8df4d5a510283e28b35aa07cfc26cecb3cdd49ff49",
     "biomes/eastabyss/tex/strapfrond.albedo.webp": "297af55b1d22641fcef36a74ea88b899a65bacec248c78782f259adfc12fb0d8",
     "biomes/eastabyss/tex/wood.albedo.webp": "795145ca323cf91bb2d05c131c700a66903a1c5df927836aaa8b99553049ea11",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "9c89c200419e4f835877d8556f797b7c6ca7df2f832d7a1c486fe55e05b351fd",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "49e3d16c1fcd4f2229b81431b538dbe86fa463cc44dafcfbe4f8748b9466dd8b",
     "biomes/hyperjungle/PORT.md": "62ec155cbb5af6ad0c3fe11b678f30950a05fa5160c56df6240e13e29a09b2b7",
     "biomes/hyperjungle/build.py": "8838557f5180b21fafaeac0231b7a5504a744b36118921702d8cadd79c93a6ca",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
@@ -436,10 +436,10 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "780709a3c0b364e137a03bbb68d73e31ac682df854b94919e649d4417f4ff204"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "96e9b6211858974f739e44564fa5da8e2025fa984693e79fb00c61881ea0ff2b"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "0e285b4f3f621e67c0be51879bf68a7cab5d4eba6011602a3fe62c3e215d905a"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "3e6d8aaa5f9ca8403e7d64094b1be9f529f4b3ffab6c9cd6f4807676871a97a7"
    }
   }
  }
