@@ -16,7 +16,11 @@ section 10) and the city-layout module (`core/city/PLAN.md`) are next. Every ses
 
 **Check before you push.** `python3 tools/test_all.py` runs the port lint, the insulation check, the encoding lint,
 every node test under `core/`, a rebuild of every build and the hash baseline (`--no-build` skips the rebuilds;
-`--nightly` adds `verify.py --assert` on the critical builds and the Godot tests). CI runs it on every push
+`--nightly` adds `verify.py --assert` on the critical builds and the Godot tests), plus the ratcheted lints (`tools/ratchet.py`: each fails only on
+what is new): `check_assembly` (clashes, order and missing fragments on the built pages; `tools/fragment_needs.json` declares a shared fragment's
+needs), `check_source` (trailing `//`, `|| <number>`, shader text), `check_vendor`, `check_views`, `check_cells --ratchet`, `check_stale`, with `check_budgets`
+hard. **Build with `python3 tools/build.py <build>`**: the same build, plus the LFS refusal, the page cap, the fragment needs and its
+`build-inputs.json`; `python3 tools/reach.py <file>` says which pages a shared file reaches before you change it. CI runs it on every push
 (`.github/workflows/`); the nightly job runs on `main`. A `verify.py` takes the shared harness (`tools/harness.py`:
 the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
 bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
