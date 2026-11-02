@@ -177,7 +177,47 @@ BIO.put=function(name,pos,q,sc,col,extra){
 BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
  S.v.set(dx/L,dy/L,dz/L);const q=new T.Quaternion().setFromUnitVectors(S.up,S.v);
- BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);};
+ BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);
+ if(BIO.segs)BIO.segs.push({a:[a[0],a[1],a[2]],b:[b[0],b[1],b[2]],r0,r1:r1==null?r0:r1,end:true});};
+// A TREE'S STRUCTURE, AND A CROWN HELD BY IT (2026-11-01; CORE-IMPROVEMENTS item 1, the attachment audit's floating cards: a
+// crown drawn at points in its volume starts in the air, whatever its stems say). All of it is opt-in: with no BIO.tree scope
+// nothing is recorded and BIO.beam and BIO.tube draw as they did.
+//   BIO.tree(x, z, fn, o) -> segs   one tree's scope. Sets BIO.owner to its foot (one LOD key for all its parts: BIO.guardChecks)
+//         and, for what fn draws, records in segs every BIO.beam and every span of a BIO.tube as {a, b, r0, r1, end} ([x,y,z]
+//         points; end: the last span of its tube, or a beam). Puts back owner, the log, and o's range, minRange and chunk (set
+//         for the scope when given), also on a throw. fn(segs) gets the log as it grows.
+//   BIO.twigEnds(segs, o) -> segs   the spans that end in the air: end set, and nothing else starting where they stop. o.rMax:
+//         only those at most that thick at the tip.
+//   BIO.snapSeg(segs, p, o) -> {p, t, seg, d}   the nearest point of any span to p ([x,y,z]; o.t0, 0: not nearer the span's root
+//         than that). A pass that keeps its own loop, colours and sizes moves each card onto its twig with this. null if no spans.
+//   BIO.clumpOn(item, segs, o) -> count   a crown on twig ends: o.n cards (or o.per a span), going round the twigEnds (o.all: every
+//         span) so every twig has its share, each with its origin on the span at t in o.t0 (.6) to o.t1 (1). Draws from KRAND (o.seed,
+//         default from BIO.owner, and o.salt) and never from the page's stream. o: size (a number or [min, max]), flat (y scale,
+//         1), rMax, tilt (.3 rad, the upright card's jitter), leaf (BIO.leafOn's options: the card held by its stem along the
+//         twig, with 31b-core-leafset.js on the page), col (hex, or (r, i) -> hex), extra ((r, i) -> BIO.put's extra), accept ((p, r)
+//         -> false to skip). r: {p, seg, t, size}.
+BIO.segs=null;
+BIO.tree=function(x,z,fn,o){o=o||{};const S={owner:BIO.owner,segs:BIO.segs,range:BIO.range,minRange:BIO.minRange,chunk:BIO.chunk},L=[];
+ BIO.owner=[x,z];BIO.segs=L;if(o.range!==undefined)BIO.range=o.range;if(o.minRange!==undefined)BIO.minRange=o.minRange;if(o.chunk!==undefined)BIO.chunk=o.chunk;
+ try{fn(L);}finally{BIO.owner=S.owner;BIO.segs=S.segs;BIO.range=S.range;BIO.minRange=S.minRange;BIO.chunk=S.chunk;}
+ return L;};
+BIO.twigEnds=function(segs,o){o=o||{};const key=p=>Math.round(p[0]*100)+','+Math.round(p[1]*100)+','+Math.round(p[2]*100),st=new Set();
+ for(const s of segs)st.add(key(s.a));
+ return segs.filter(s=>s.end&&!st.has(key(s.b))&&(o.rMax==null||s.r1<=o.rMax));};
+BIO.snapSeg=function(segs,p,o){o=o||{};const t0=o.t0==null?0:+o.t0;let best=null,bd=1e18;
+ for(const s of segs){const a=s.a,b=s.b,dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L2=dx*dx+dy*dy+dz*dz;
+  let t=L2>0?((p[0]-a[0])*dx+(p[1]-a[1])*dy+(p[2]-a[2])*dz)/L2:0;t=t<t0?t0:t>1?1:t;
+  const x=a[0]+dx*t,y=a[1]+dy*t,z=a[2]+dz*t,d=(x-p[0])*(x-p[0])+(y-p[1])*(y-p[1])+(z-p[2])*(z-p[2]);
+  if(d<bd){bd=d;best={p:[x,y,z],t,seg:s,d:0};}}
+ if(best)best.d=Math.sqrt(bd);return best;};
+BIO.clumpOn=function(item,segs,o){o=o||{};const L=o.all?(o.rMax==null?segs:segs.filter(s=>s.r1<=o.rMax)):BIO.twigEnds(segs,o);if(!L.length)return 0;
+ const own=BIO.owner,seed=o.seed!=null?o.seed:own?KRAND.hash(Math.round(own[0]*10),Math.round(own[1]*10)):1,salt=o.salt|0,H=(i,k)=>KRAND.unit(KRAND.hash(seed>>>0,i,salt+k));
+ const n=o.n!=null?o.n|0:(o.per==null?1:o.per)*L.length,t0=o.t0==null?.6:+o.t0,t1=o.t1==null?1:+o.t1,sz=o.size==null?1:o.size,fl=o.flat==null?1:+o.flat,tilt=o.tilt==null?.3:+o.tilt;
+ let c=0;for(let i=0;i<n;i++){const seg=L[i%L.length],t=t0+(t1-t0)*H(i,1),a=seg.a,b=seg.b,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+  const size=Array.isArray(sz)?sz[0]+(sz[1]-sz[0])*H(i,2):sz,r={p,seg,t,size};if(o.accept&&o.accept(p,r)===false)continue;
+  const q=o.leaf?BIO.leafQ(BIO.leafOn(seg,t,Object.assign({seed,salt,i},o.leaf))):qEuler((H(i,3)*2-1)*tilt,H(i,4)*TAU,(H(i,5)*2-1)*tilt);
+  BIO.put(item,p,q,[size,size*fl,size],typeof o.col==='function'?o.col(r,i):o.col,o.extra?o.extra(r,i):undefined);c++;}
+ return c;};
 
 // ---------------------------------------------------------------- merged buckets
 BIO.C2_BUCKETS=true;   /* B3: a bucket made with opt.c2 stores BIO.c2 (a builder's current second colour; none: 0,0,0) per vertex, baked as aC2 */
@@ -233,6 +273,7 @@ BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col)
 // changes). opt: seg, cap, rfn(i,ang,pt)->radius multiplier, vscale
 BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buckets[fam];if(!K){BIO.err('BIO.tube: no bucket '+fam);return 0;}
  const seg=opt.seg||8,sc=K.uvScale,n=pts.length;if(n<2)return 0;
+ if(BIO.segs)for(let i=0;i<n-1;i++){const p=pts[i],q=pts[i+1];BIO.segs.push({a:[p.x,p.y,p.z],b:[q.x,q.y,q.z],r0:p.r,r1:q.r,end:i===n-2});}
  const Tn=[],N=[],Bn=[];
  for(let i=0;i<n;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)];Tn.push(new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z).normalize());}
  const ref=Math.abs(Tn[0].y)>.9?new T.Vector3(1,0,0):new T.Vector3(0,1,0);

@@ -72,7 +72,7 @@ function gridCells(salt,cell,accept,fn,opt){opt=opt||{};
  if(!B0&&!(rOut>0))throw new Error('BIO.grid(\''+salt+'\', ...): give opt.box or opt.rOut');
  const B=B0||[o[0]-rOut,o[1]-rOut,o[0]+rOut,o[1]+rOut],disc=rOut>0,D=opt.depth,per=opt.n==null?1:opt.n;
  const W=BIO.host?BIO.host.seed>>>0:1,root=KRAND.child(KRAND.child(W,'bio:'+(BIO.kitName||'')),String(salt)),pseed=KRAND.child(W,'bio.patch');
- const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale||.016,gate=opt.cliff!==true;
+ const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale==null?.016:opt.patchScale,gate=opt.cliff!==true;
  const ix0=Math.floor(B[0]/cell),ix1=Math.floor(B[2]/cell),iz0=Math.floor(B[1]/cell),iz1=Math.floor(B[3]/cell);
  const saved=rngState();let n=0;
  try{for(let iz=iz0;iz<=iz1;iz++)for(let ix=ix0;ix<=ix1;ix++)for(let k=0;k<per;k++){

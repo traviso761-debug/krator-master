@@ -49,7 +49,7 @@ warning by default: nhighlands' `needle` (632k) and `frond` (595k) are over the 
 turn. `BIO.CAP_ERR` (`BIO.init({capErr: true})`) makes it a `BIO.err` instead, which fails verify. `BIO.CAP_THROW`
 (`BIO.init({capThrow: true})`) throws; a session writing a new pass should set it. An item meant to be
 that many says so: `BIO.def(name, geo, mat, {cap: N, capWhy: '...'})` (a cap with no `capWhy` is itself reported).
-`BIO.capReport()` returns `[{kit, item, count, cap, pass, why}]` for verify (the `core-verify` session's side).
+`BIO.capReport()` returns `[{kit, item, count, cap, pass, why}]`; `harness.verify_page` reads it as the universal `instance-cap` assert.
 
 **6. Probe points from the drawers.** The probe samples a merged mesh at its box centre, so a tree drawn into a bark
 bucket and registered as a volume read empty, and kits added invisible discs. Every baked bucket mesh now carries
@@ -58,6 +58,33 @@ it off) its triangle centroids fall in, and `userData.probeDrawer` (`'BIO.bucket
 (`95-host-probe.js`) already adds them; instanced items need none, since the probe reads every instance. **Adopting it:**
 delete the build's hand-made pick discs and probe points once its page passes without them. Not done here: deriving the
 registered volume from its core/tags record at draw time, so a dropped record drops its volume (the second half of item 6).
+
+## A tree's structure, and a crown held by it (`20-core-kit.js`, 2026-11-01; `test-twigs.js`)
+
+The attachment audit's floating cards come from crowns drawn at points in a volume (`crown()`, a spot and a random offset):
+giving a card a stem does not help when the stem starts in the air. Opt-in: a kit that opens no scope records nothing, and
+its page draws what it drew.
+
+- **`BIO.tree(x, z, fn, o) -> segs`** is one tree's scope. It sets `BIO.owner` to the tree's foot, so every part shares one LOD
+  key, and logs every `BIO.beam` and every span of a `BIO.tube` drawn in `fn` as `{a, b, r0, r1, end}`. `o.range`, `o.minRange`
+  and `o.chunk` apply for the scope. Everything is put back afterwards, also on a throw, so a kit stops pairing `BIO.owner=`
+  with `BIO.owner=null` by hand.
+- **`BIO.twigEnds(segs, {rMax})`** gives the spans that end in the air.
+- **`BIO.clumpOn(item, segs, o)`** puts a crown on them: `o.n` cards (or `o.per` a span) going round the ends, each with its
+  origin on the span at t in `o.t0` (.6) to `o.t1` (1). Its draws are its own (`KRAND`, `o.seed`, `o.salt`), never the page's
+  stream. `size` (a number or `[min, max]`), `flat`, `tilt`, `col`, `extra`, `accept`, `all` (every span, not just the ends),
+  and `leaf` (`BIO.leafOn`'s options: a card held by its stem along the twig; needs `31b-core-leafset.js`).
+- **`BIO.snapSeg(segs, p, {t0})`** is for a pass that keeps its own loop, colours and sizes: it moves one card to the nearest
+  point of the structure and returns `{p, t, seg, d}`. It scans every span, so give it the tree's thin spans
+  (`BIO.twigEnds`, or `segs.filter(s => s.r1 < .5)`), not the whole log, for a crown of thousands.
+
+```js
+const segs = BIO.tree(T.x, T.z, L => { drawBoughs(T); BIO.clumpOn('clump', L, {per: 3, size: [3, 6], flat: .7, col: leafHex}); }, {range: 900});
+```
+
+**Not yet adopted by any page.** The hyperjungle's crown (`buildHero`, its `spots`) and necanyons' `crown()` are the first users:
+the hyperjungle's own items are what `guards.maxShare` caps on necanyons' pages. An item that uses `BIO.geo.clump` and has its
+stems comes out at its origin on the twig; a centred tripod sits centred on it.
 
 ## The runtime LOD's draw-call options (B1, B2; `20-core-kit.js`)
 
