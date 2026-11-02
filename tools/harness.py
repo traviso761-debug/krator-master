@@ -624,25 +624,29 @@ WINDING_JS = "(opt)=>{" + FIND_JS + """
    m.copy(a).add(b).add(c).multiplyScalar(1/3).sub(ctr); t++; if(e.dot(m)>0) outw++; if(e.y>.2) up++; }
   if(t&&outw/t<(opt.out||.25)&&up/t<(opt.up||.5)) out.push({name:o.name||(o.userData&&(o.userData.item||o.userData.tag))||(o.parent&&o.parent.name)||g.type,tris,out:+(outw/t).toFixed(2),up:+(up/t).toFixed(2)}); });
  return {n, suspects:out.sort((x,y)=>y.tris-x.tris).slice(0,12), suspectN:out.length}; }"""
-# The item sheet (the card audit, 2026-10-27; swhighlands' ?sheet= lifted out of one build): every BIO item alone on a grid at
-# full detail, on a plain floor, in plain daylight, so a check looks at the plant and not at numbers. A far version that is an
-# item of its own (BIO.impostorItem) gets its own cell. Takes the page over: run it last.
+# The item sheet (the card audit, 2026-10-27; swhighlands' ?sheet= lifted out of one build): every baked BIO item alone on a grid
+# at full detail, from its own mesh (its attributes, its first instance's colour), scaled to fit the cell, on a plain floor in
+# plain daylight, so a check looks at the plant and not at numbers. A far version that is an item of its own
+# (BIO.impostorItem) gets its own cell. Its own scene and camera: the page's loop keeps running and draws them instead (it
+# resets the world's camera and LOD every frame). Run it last.
 SHEET_JS = "(opt)=>{" + FIND_JS + """
- const {sc,cam}=__kfind(); const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null); if(!sc||!cam||!B||!B.kits) return null;
- const items=[]; for(const k of Object.keys(B.kits)){ const R=B.kits[k]; for(const n of (R.order||Object.keys(R.defs))){ const d=R.defs[n]; if(d&&d.geo&&d.mat) items.push({kit:k,name:n,d}); } }
- const page=items.slice(opt.from,opt.from+opt.per); const H=window.__ksheet=window.__ksheet||{hidden:sc.children.slice()};
- if(H.group) sc.remove(H.group);
- for(const c of H.hidden) c.visible=false; sc.background=new THREE.Color(0x8fa3b5); sc.fog=null;
- const G=H.group=new THREE.Group(); sc.add(G); G.add(new THREE.HemisphereLight(0xffffff,0x6a6a60,1.1)); const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(.6,1,.5); G.add(sun);
+ const {sc}=__kfind(); if(!sc||typeof renderer==='undefined') return null;
+ const seen={}; sc.traverse(o=>{ if(!o.isInstancedMesh||!/^biome:/.test(o.name||'')) return; const id=(o.userData.kit||'')+'/'+o.name.slice(6); if(!seen[id]||o.count>seen[id].count) seen[id]=o; });
+ const items=Object.keys(seen).sort().map(id=>({id,src:seen[id]})), page=items.slice(opt.from,opt.from+opt.per);
  const cols=Math.ceil(Math.sqrt(opt.per*1.6)), rows=Math.ceil(opt.per/cols), S=10, labels=[], one=new THREE.Matrix4();
- const fl=new THREE.Mesh(new THREE.PlaneGeometry(cols*S+20,rows*S+20).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:0x8a8478})); fl.position.y=-.02; fl.frustumCulled=false; G.add(fl);
- page.forEach((p,i)=>{ const g=p.d.geo; if(!g.boundingBox) g.computeBoundingBox(); const bb=g.boundingBox, sz=new THREE.Vector3(); bb.getSize(sz); const big=Math.max(sz.x,sz.y,sz.z)||1, k=7/big;
-  const im=new THREE.InstancedMesh(g,p.d.mat,1); one.makeScale(k,k,k); one.setPosition(0,-bb.min.y*k,0); im.setMatrixAt(0,one); im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
-  const col=i%cols, row=Math.floor(i/cols); im.position.set((col-(cols-1)/2)*S,0,(row-(rows-1)/2)*S); G.add(im);
-  labels.push({x:im.position.x,z:im.position.z,t:(p.kit?p.kit+'/':'')+p.name+'  '+big.toFixed(1)+' m'}); });
- const w=cols*S, h=rows*S; cam.position.set(0,Math.max(w/cam.aspect,h)*.62/Math.tan(cam.fov*Math.PI/360)*.72,h*.72); cam.lookAt(0,1.5,0); cam.far=Math.max(cam.far,4000); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
- let el=document.getElementById('__ksheetLabels'); if(!el){ el=document.createElement('div'); el.id='__ksheetLabels'; el.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99999;font:10px sans-serif;color:#fff;text-shadow:0 0 2px #000'; document.body.appendChild(el); }
- for(const c of [...document.body.children]) if(c!==el&&c.tagName!=='CANVAS'&&c.tagName!=='SCRIPT') c.style.display='none';
+ const W=new THREE.Scene(); W.background=new THREE.Color(0x8fa3b5);
+ if(sc.fog){ W.fog=sc.fog.clone(); W.fog.density=1e-7; W.fog.near=1e6; W.fog.far=1e7; }   /* thinned, not removed: core/atmos' fog chunk reads its uniforms */
+ W.add(new THREE.HemisphereLight(0xffffff,0x6a6a60,1.1)); const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(.6,1,.5); W.add(sun);
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(cols*S+20,rows*S+20).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:0x8a8478})); fl.position.y=-.02; W.add(fl);
+ const c0=new THREE.Color(); page.forEach((p,i)=>{ const g=p.src.geometry; if(!g.boundingBox) g.computeBoundingBox(); const bb=g.boundingBox, sz=new THREE.Vector3(); bb.getSize(sz); const big=Math.max(sz.x,sz.y,sz.z)||1, k=7/big;
+  const im=new THREE.InstancedMesh(g,p.src.material,1); one.makeScale(k,k,k); one.setPosition(0,-bb.min.y*k,0); im.setMatrixAt(0,one); im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
+  if(p.src.instanceColor){ p.src.getColorAt(0,c0); im.setColorAt(0,c0); }
+  const col=i%cols, row=Math.floor(i/cols); im.position.set((col-(cols-1)/2)*S,0,(row-(rows-1)/2)*S); W.add(im);
+  labels.push({x:im.position.x,z:im.position.z,t:p.id+'  '+big.toFixed(1)+' m  x'+p.src.count}); });
+ const a=innerWidth/innerHeight, cam=new THREE.PerspectiveCamera(35,a,.5,2000), w=cols*S, h=rows*S; cam.position.set(0,Math.max(w/a,h)*1.75,h*.8); cam.lookAt(0,1.5,0); cam.updateMatrixWorld();
+ window.__ksheetRender=window.__ksheetRender||renderer.render.bind(renderer); const r0=window.__ksheetRender; renderer.render=()=>r0(W,cam); r0(W,cam);
+ let el=document.getElementById('__ksheetLabels'); if(!el){ el=document.createElement('div'); el.id='__ksheetLabels'; el.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99999;font:10px sans-serif;color:#fff;text-shadow:0 0 2px #000'; document.body.appendChild(el);
+  for(const c of [...document.body.children]) if(c!==el&&c.tagName!=='CANVAS'&&c.tagName!=='SCRIPT') c.style.display='none'; }
  el.innerHTML=''; const v=new THREE.Vector3(); for(const L of labels){ v.set(L.x,0,L.z+S*.42).project(cam); const d=document.createElement('div'); d.textContent=L.t; d.style.cssText='position:absolute;transform:translateX(-50%);white-space:nowrap;left:'+((v.x+1)*50)+'%;top:'+((1-v.y)*50)+'%'; el.appendChild(d); }
  return {total:items.length, shown:page.length}; }"""
 
@@ -924,7 +928,7 @@ async def sheet_main(argv):
     per = int(argv[argv.index("--per") + 1]) if "--per" in argv else 24
     page = next(a for i, a in enumerate(argv) if not a.startswith("--") and not (i and argv[i - 1] in ("--out", "--per")))
     async with verify_page(page, root=_repo_root(page)) as V:
-        await V.eye("as loaded")   # the sheet takes the camera
+        await V.eye("as loaded")   # the sheet takes the renderer
         shots = await V.sheet(out, per)
         print("\n".join(shots) or "no BIO items on this page")
     return V.exit()

@@ -1,0 +1,12 @@
+{
+ "_doc": "The universal verify asserts (tools/harness.py verify_page) each page failed when they were introduced. A listed assert only warns for that page; anything else fails. Take a page's entries out at its own rebuild turn, once fixed: python3 tools/harness.py ratchet --write <page>.",
+ "pages": {
+  "biomes/ehighlands/dist/ehighlands.html": {
+   "eye:*": "2026-11-01: 1 views: Ragbark eye [-758.1, 216.6, 1027.3]: under BufferGeometry (0.0 m above)",
+   "instance-cap": "2026-11-01: 1 items past the cap (scene scan, cap 250000): biome:ichu 396010"
+  },
+  "biomes/geyser/dist/geyser.html": {
+   "page-errors": "2026-11-01: Unexpected identifier 'https'; Unexpected identifier 'https'"
+  }
+ }
+}
