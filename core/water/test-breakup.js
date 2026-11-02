@@ -65,4 +65,11 @@ const corr=(fn)=>{const a=[],b=[];for(let x=-200;x<200;x+=.5){a.push(fn(x));b.pu
  const R=W.flow({name:'stream',pts:[[0,0,1],[60,0,.9]],width:12,speed:.8}),D=W.drawFlow(R,{});const nf=W.breakupFlows();const cf=compiled(D.material);
  ok('breakupFlows patches the ribbons ('+nf+'): their chop drifts with their own current (wtrBreakupF at vWtrW.xz with vWtrF), after the clock and before main',
   nf>=1&&cf.fs.includes('wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)')&&cf.fs.indexOf('vec3 wtrBreakupV(')<cf.fs.indexOf('void main('),cf.fs.includes('wtrBreakup(wtrBn,vWtrW.xz)'));}
+// ---- AUTO (the core pass): the default behind a switch
+{const fresh=()=>W.open({name:'auto lake',level:0,swell:SWELL,field:0,bounds:[-50,-50,50,50]}),R=()=>W.flow({name:'auto stream',pts:[[0,0,1],[40,0,.9]],width:8,speed:.6});
+ const off=compiled(W.draw(fresh(),{}).material).fs;W.BREAKUP_AUTO=true;
+ const on=compiled(W.draw(fresh(),{}).material).fs,fl=compiled(W.drawFlow(R(),{}).material).fs,opt=compiled(W.draw(fresh(),{breakup:false}).material).fs,sm=compiled(W.stillMaterial({})).fs;W.BREAKUP_AUTO=false;
+ const after=compiled(W.draw(fresh(),{}).material).fs;
+ ok('BREAKUP_AUTO: off (the default) a drawing is the old one; on, open water, ribbons (with the current) and stillMaterial take it as they are made; breakup: false keeps one out',
+  !off.includes('wtrBreakup(')&&on.includes('wtrBreakup(wtrBn,vWtrP)')&&fl.includes('wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)')&&sm.includes('wtrBreakup(wtrBn,vWtrW.xz)')&&!opt.includes('wtrBreakup(')&&!after.includes('wtrBreakup('),false);}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);

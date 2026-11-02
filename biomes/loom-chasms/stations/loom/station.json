@@ -1,0 +1,30 @@
+{
+  "canvas": "5.1 (1821x1723)",
+  "name": "The Looming Chasms (station 3): the 180m sheer graben rifts, halite namakier salt glaciers and razor penitentes on the floor, suspended multi-tiered living tension cable canopy, cable-stryder ambush lairs",
+  "out": "loom-chasms.html",
+  "site": {
+    "name": "loom",
+    "title": "The Looming Chasms",
+    "px": 1662,
+    "py": 1162,
+    "base": 748.0,
+    "floor": 568.0,
+    "chasm_depth": 180.0,
+    "atm": 1.59,
+    "mean": 19.0,
+    "rain": 78,
+    "cls": "BWk",
+    "lat": -27.5
+  },
+  "water": [],
+  "chasm": {
+    "width": 120.0,
+    "depth": 180.0,
+    "salt_floor": true
+  },
+  "cable_canopy": {
+    "span_m": 160.0,
+    "tiers": 3,
+    "species": "chordephytum_ferreum"
+  }
+}

@@ -1374,3 +1374,153 @@ static func confluence_at(C: Dictionary, x: float, z: float, key: String) -> flo
 static func confluence_ribbon_fade(C: Dictionary, x: float, z: float) -> float:
 	var at: Array = C["at"]
 	return _ss(float(C["r"]) - float(C["feather"]), float(C["r"]), sqrt((x - float(at[0])) * (x - float(at[0])) + (z - float(at[1])) * (z - float(at[1]))))
+
+
+# ================================================================ 2026-10-27: the breakup (core/water/ext/56, test-breakup.js)
+# WATER.BREAKUP and WATER.BREAKUP_FLOW (BREAKUP_FLOW's own numbers laid over BREAKUP's, as WATER.breakupFlows lays them)
+const BREAKUP := {"amp": 0.05, "size": 4.0, "env": [0.35, 1.3], "envSize": 38.0, "drift": [0.35, 0.22], "cycle": 7.0}
+const BREAKUP_FLOW := {"amp": 0.07, "size": 2.6, "env": [0.15, 0.8], "envSize": 22.0, "cycle": 7.0}
+
+
+static func breakup_opt(B = null, flow := false) -> Dictionary:
+	var o := BREAKUP.duplicate(true)
+	if flow:
+		o.merge(BREAKUP_FLOW, true)
+	if B is Dictionary:
+		o.merge(B, true)
+	return o
+
+
+static func _bk_vn(x: float, z: float) -> float:
+	var i := floorf(x)
+	var j := floorf(z)
+	var u := x - i
+	var v := z - j
+	var a := u * u * (3.0 - 2.0 * u)
+	var b := v * v * (3.0 - 2.0 * v)
+	return (hash2(i, j) * (1.0 - a) + hash2(i + 1.0, j) * a) * (1.0 - b) + (hash2(i, j + 1.0) * (1.0 - a) + hash2(i + 1.0, j + 1.0) * a) * b
+
+
+static func _bk_grad(x: float, z: float, s: float) -> PackedFloat64Array:
+	var e := 0.35
+	var q := 1.0 / s
+	return PackedFloat64Array([(_bk_vn((x + e * s) * q, z * q) - _bk_vn((x - e * s) * q, z * q)) / (2.0 * e), (_bk_vn(x * q, (z + e * s) * q) - _bk_vn(x * q, (z - e * s) * q)) / (2.0 * e)])
+
+
+static func _bk_chop(x: float, z: float, size: float) -> PackedFloat64Array:
+	var a := _bk_grad(x, z, size)
+	var b := _bk_grad(x + 17.3, z - 9.1, size / 2.0)
+	return PackedFloat64Array([a[0] + 0.5 * b[0], a[1] + 0.5 * b[1]])
+
+
+# a normal [x, y, z] broken up at (x, z) and t (the module clock wrapped) over `per` s; v: the current (a ribbon), else the drift (WATER.breakup)
+static func breakup(n: PackedFloat64Array, x: float, z: float, t: float, B: Dictionary, per: float, v = null) -> PackedFloat64Array:
+	var c := maxf(1.0, roundf(per / float(B["cycle"])))
+	var T := per / c
+	var p0 := _fr(t * c / per)
+	var p1 := _fr(p0 + 0.5)
+	var w0 := 1.0 - absf(2.0 * p0 - 1.0)
+	var dr: Array = v if v != null else B["drift"]
+	var sx := -n[0] / n[1]
+	var sz := -n[2] / n[1]
+	var e := float(B["env"][0]) + (float(B["env"][1]) - float(B["env"][0])) * _bk_vn(x / float(B["envSize"]) + 3.7, z / float(B["envSize"]) - 1.3)
+	sx *= e
+	sz *= e
+	var g0 := _bk_chop(x - float(dr[0]) * p0 * T, z - float(dr[1]) * p0 * T, float(B["size"]))
+	var g1 := _bk_chop(x - float(dr[0]) * p1 * T + 5.3, z - float(dr[1]) * p1 * T + 2.9, float(B["size"]))
+	sx += float(B["amp"]) * (g0[0] * w0 + g1[0] * (1.0 - w0))
+	sz += float(B["amp"]) * (g0[1] * w0 + g1[1] * (1.0 - w0))
+	var l := sqrt(sx * sx + 1.0 + sz * sz)
+	return PackedFloat64Array([-sx / l, 1.0 / l, -sz / l])
+
+
+# the include's uniforms (shaders/lib/water_breakup.gdshaderinc) for B over `per` s
+static func breakup_uniforms(B: Dictionary, per: float) -> Dictionary:
+	var c := maxf(1.0, roundf(per / float(B["cycle"])))
+	return {"bk_on": true, "bk_amp": float(B["amp"]), "bk_size": float(B["size"]), "bk_env": Vector2(float(B["env"][0]), float(B["env"][1])),
+		"bk_env_size": float(B["envSize"]), "bk_drift": Vector2(float(B["drift"][0]), float(B["drift"][1])), "bk_t": Vector2(c / per, per / c)}
+
+
+# a confluence's grid as its mesh (WATER.confluence's C.mesh(), from the export's group record): the quads with some water (a bank over -margin)
+# and some weight (a fade over 0), split (i, j)-(i, j+1)-(i+1, j) and (i+1, j)-(i, j+1)-(i+1, j+1) (three's winding)
+static func confluence_mesh(C: Dictionary) -> Dictionary:
+	var n: int = int(C["n"])
+	var cell := float(C["cell"])
+	var x0 := float(C["x0"])
+	var z0 := float(C["z0"])
+	var mg := float(C.get("margin", 1.5))
+	var Y: Array = C["y"]
+	var BK: Array = C["bank"]
+	var FD: Array = C["fade"]
+	var pos := PackedFloat64Array()
+	for j in n:
+		for i in n:
+			pos.append_array([x0 + i * cell, float(Y[j * n + i]), z0 + j * cell])
+	var idx := PackedInt32Array()
+	for j in n - 1:
+		for i in n - 1:
+			var a := j * n + i
+			var b := a + n
+			var c := a + 1
+			var d := b + 1
+			if maxf(maxf(float(BK[a]), float(BK[b])), maxf(float(BK[c]), float(BK[d]))) < -mg or maxf(maxf(float(FD[a]), float(FD[b])), maxf(float(FD[c]), float(FD[d]))) <= 0.0:
+				continue
+			idx.append_array([a, b, c, c, b, d])
+	return {"pos": pos, "idx": idx, "count": n * n}
+
+
+# the drifts on an ice record as one mesh (WATER.driftMesh): a (res+1)^2 grid over each drift's footprint, the shape's height over the ice
+static func drift_mesh(I: Dictionary, res := 8, lift := 0.01) -> Dictionary:
+	var pos := PackedFloat64Array()
+	var nrm := PackedFloat64Array()
+	var idx := PackedInt32Array()
+	var lv := float(I["level"])
+	for d in I["drifts"]:
+		var c := cos(float(d["yaw"]))
+		var s := sin(float(d["yaw"]))
+		var b := pos.size() / 3
+		var L := float(d["len"])
+		var ua := -L * (1.0 - float(d["lee"]))
+		var ub := L * float(d["lee"])
+		var wd := float(d["wid"])
+		var e := 0.05
+		for j in res + 1:
+			for i in res + 1:
+				var u := ua + (ub - ua) * i / res
+				var v := -wd / 2.0 + wd * j / res
+				var x := float(d["x"]) + u * c - v * s
+				var z := float(d["z"]) + u * s + v * c
+				pos.append_array([x, lv + drift_shape(d, x, z) + lift, z])
+				var gx := (drift_shape(d, x + e, z) - drift_shape(d, x - e, z)) / (2.0 * e)
+				var gz := (drift_shape(d, x, z + e) - drift_shape(d, x, z - e)) / (2.0 * e)
+				var l := sqrt(gx * gx + 1.0 + gz * gz)
+				nrm.append_array([-gx / l, 1.0 / l, -gz / l])
+		for j in res:
+			for i in res:
+				var a := b + j * (res + 1) + i
+				var q := a + res + 1
+				idx.append_array([a, q, a + 1, a + 1, q, q + 1])
+	return {"pos": pos, "nrm": nrm, "idx": idx, "count": pos.size() / 3}
+
+
+# an ice record's rim and drift (normalised by the deepest) as bytes over its box (I.bake): R rim, G drift, B 0, A 255
+static func ice_bake(I: Dictionary, cell := 2.0) -> Dictionary:
+	var P: Array = I["poly"]
+	var bx := [INF, INF, -INF, -INF]
+	for p in P:
+		bx[0] = minf(bx[0], float(p[0])); bx[1] = minf(bx[1], float(p[1])); bx[2] = maxf(bx[2], float(p[0])); bx[3] = maxf(bx[3], float(p[1]))
+	var nx := maxi(2, int(ceil((bx[2] - bx[0]) / cell)))
+	var nz := maxi(2, int(ceil((bx[3] - bx[1]) / cell)))
+	var md := float(I["maxDrift"])
+	var data := PackedByteArray()
+	data.resize(nx * nz * 4)
+	for j in nz:
+		for i in nx:
+			var x: float = bx[0] + (i + 0.5) * cell
+			var z: float = bx[1] + (j + 0.5) * cell
+			var k := (j * nx + i) * 4
+			data[k] = _jsround(255.0 * ice_rim_at(I, x, z))
+			data[k + 1] = _jsround(255.0 * (ice_drift_at(I, x, z) / md if md > 0.0 else 0.0))
+			data[k + 2] = 0
+			data[k + 3] = 255
+	return {"x0": bx[0], "z0": bx[1], "cell": cell, "nx": nx, "nz": nz, "data": data}

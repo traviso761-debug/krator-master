@@ -36,6 +36,12 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
+- **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
+  from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
+  (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
+  list `ext/56` in every build that takes core/water (the pooled `settlements/`/`kits/` lists and each biome's `CORE_WATER`), set
+  `W.BREAKUP_AUTO=true` as the default in ext/56, rebuild them all, rewrite the baseline once, and look at a lake, a pool and a river
+  in a few of them (the eastabyss look). `node core/water/test-breakup.js` and `test-gaps.js` say what moves.
 - **The planetary nebula, smaller and with its white dwarf** (the owner, 2026-10-27; done in the sources on
   `claude/core-atmos-planned-16a374`): `SKY.cluster.pn` radius 3 to 2 degrees (`core/atmos/sky/89-atmos-e-skymodel.js`) and a
   blue-white central star a pixel or two wide with a faint glow (`89-atmos-g-sky.js`); the Godot include, `golden.json` and
