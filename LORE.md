@@ -599,8 +599,10 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   them ashore: mudfish, a **lung octopus** that breathes air and walks the kelp forest's floor, and other molluscoid
   creatures (*proposed*: whelks, sea hares, bloom slugs, chitons). Farside lives off it: kelp and red weed as food, kelp
   ash for soda and potash, wrack on the fields, coral lime, and the goats.
-- **Farport** (px 27,260) is the kingdom's ocean port on the north-western sea [the owner, Oct 2026; §6.17 said "NE": the
-  only ocean is north-west]. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
+- **Farport** (px 27,260; the old city moves to the plateau at px ~22,258, `biomes/STATIONS-MAP-5.1.md`) is the kingdom's ocean port on
+  the north-western sea [the owner, Oct 2026; §6.17 said "NE": the only ocean is north-west]. **A megatsunami from the Krakatoan
+  Seamount reached Farside** [the owner, 2026-11-01; its date is open]: the old city and the important buildings stand on the near-shore
+  plateau above the wave's reach, the working harbour below it. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
   [the owner, Oct 2026]. *Proposed*: the State confines the visitors to one factory quarter of one port, as Canton and
   Dejima did, and its bureaucracy exists in large part to manage that contact; the records of the visitors are kept and
   never described.

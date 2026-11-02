@@ -78,6 +78,8 @@ builds the page with whatever pieces this checkout has (`pieces/` is gitignored)
 
 ## A core module: where it goes next
 
+**Garment gaps and intersections:** `HANDOFF-GARMENT-DEFECTS.md` (not started).
+
 This was `kits/characters` until 2026-10-16. It moved to `core/` because it is meant to be shared: the bodies, the
 records, the peoples and the clips are what every settlement's citizens will be drawn from. It is still a build of its
 own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and `tools/audit_port.py` list through

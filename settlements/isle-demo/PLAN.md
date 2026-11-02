@@ -804,6 +804,8 @@ sun hats and sarongs (Voth's hats and dress shares); (6) `SIM.needs`, the materi
 verify check and its negative: every worker of a tooled trade holds its tool or is on an errand for it, no tool no shop
 sells, the worn-out replaced within the work day, the two weeks' books balancing with the new goods.
 
+**The economy's extension plan** (accounting, resource nodes, work orders, logistics, prices, factions, inspectors): `PLAN-ECONOMY.md`.
+
 ## 10. Core-module compliance (audit, 2026-10-19)
 
 The three pages (`dist/isle-site.html`, `dist/isle-city.html`, `openworld/isle-demo/dist/isle-demo.html`) checked against
