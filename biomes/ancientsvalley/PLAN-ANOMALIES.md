@@ -1,0 +1,211 @@
+# The Ancient's Valley: where physics fails (plan, 2026-11-02)
+
+The owner's brief: make the valley particularly weird and hazardous, with regions where the laws of physics seem to break down. Time runs
+faster or slower, gravity reverses or grows several times stronger, spaces behave like *House of Leaves*, and, if the engine allows it,
+the landscape bends into a cracked Escher version of itself.
+
+**Status: plan, nothing built.** Lore here is *proposed* until the owner settles it. It sits beside `biomes/ancientsvalley/PLAN.md` (the
+overlay's ground, ruins and sound). The valley is expansion-neutral old-map ground, but it isn't in the current queue.
+
+Every px here is on the **5.1 canvas** (1821x1723), sampled at Gemini's 203d69d58. The map may still move.
+
+## 1. The idea
+
+Seven Cataclysm blast basins lie in the valley (`tools/scale-model/smodel/tranche2_biomes.py`, 10-15 km across, with vitrified rims). *Proposed:*
+the weapons used here were of the eigenweapon's family (`biomes/cut/PLAN.md`), and each basin is a wound in physics that never closed.
+The Cut is the same damage at its mildest: combed growth, clean bites, fixed sizes, nothing that hurts anyone. The valley shows it at its worst.
+
+This keeps the lore's restraint. `biomes/cut/PLAN.md` doesn't say what the eigenweapon was, who fired it or at what, and neither does this
+plan: the anomalies show what it did, never why. It also explains why the Ancients' capital is empty, and why only the desperate go in.
+
+## 2. Rules
+
+1. **Bounded.** Each anomaly is a zone with an edge, normally under 2 km across and never over the basin. Outside it, nothing changes. Nothing
+   here alters the world's one height per point (`terrainH(x, z)`) outside a station's own slabs.
+2. **Graded.** Every anomaly has a strength from 0 at its rim to 1 at its core. Gentle at the rim, broken at the centre: the approach is the
+   difficulty curve.
+3. **Legible.** A player sees the warning before it hurts: dust hanging, birds refusing to fly over, a stopped waterfall, flora that grew wrong. Each
+   anomaly has a tell at the rim, in the Cut's vocabulary where it can be.
+4. **Fair.** Lethal only by a choice the player can see coming. The way out is always findable, except where the core of a House is the point, and
+   there the rule is that the house lets you leave, late.
+5. **Free when absent.** A page without an anomaly in reach pays nothing: no uniform, no shader variant, no tick.
+6. **Records first.** Every anomaly is a record, in `core/tags`, before anything is drawn. A builder draws a record; it doesn't decide where things go.
+
+## 3. The basins
+
+Each takes one kind, so a player learns one rule per place. The owner may reassign them.
+
+| Basin (5.1 px) | Radius | Centre | Climate | Anomaly | Near |
+|---|---|---|---|---|---|
+| **476,915** | 6 km | 572 m, dry | Cfa, 1,650 mm | **The Press:** gravity up to 3 g | Dorado, about 100 km |
+| **398,966** | 5.5 km | 602 m, dry | Csa, 1,050 mm | **The Stilled Ground:** time slows to a stop | Necropolis, about 45 km |
+| **450,896** | 5 km | 128 m, dry | Af, 2,290 mm | **The House:** spaces larger inside than out | **Babel, about 25 km** |
+| **428,948** | 7.5 km | -431 m, drowned | water | **The Lake That Falls:** reversed gravity on water | Necropolis, about 45 km |
+| **460,962** | 7 km | -521 m, drowned | water | **The Fast Water:** time runs fast | Dorado, about 45 km |
+| **420,984** | 6.5 km | -25 m, half drowned | water | **The Bend:** landscape curving up, seen | |
+| **406,908** | 6.5 km | 212 m, dry | Aw, 880 mm | **The Broken Country:** the Escher set-piece, the worst basin | Carcosa, about 190 km |
+
+**A map problem to fix first.** Later passes have overwritten these basins. On 203d69d58, 406,908 stands *above* its rim (212 m against 111 m), 398,966
+is about level with its own, and 450,896 reads only 50 m down. Two lie under water at -431 m and -521 m, though `biomes/ancientsvalley/PLAN.md` describes a
+17 m lake. This needs a Gemini ticket: re-cut the basins last so they read, with vitrified rims, and settle the lake's level.
+
+## 4. `core/anomaly` (`KANOM`)
+
+One small module, plain data and pure functions (`[G data]`: no THREE, no DOM), so Godot takes the same records.
+
+```
+KANOM.add({id, kind, shape:{type:'circle'|'poly', at, r, pts}, rim, core, strength, tell, seed})
+KANOM.at(x, y, z)  -> {g: [x,y,z] gravity, time: rate, bend: amount, ids: [...]}   one call, every reader
+KANOM.strength(rec, x, z)  -> 0..1 at this point, smoothstep rim to core
+KANOM.near(x, z, r) -> records in reach, for the host's tick and the shader's uniforms
+KANOM.zones() -> navigation zones for core/walk's export
+```
+
+- **Kinds:** `gravity`, `time`, `bend`, `space`. They're a new vocabulary in `core/tags`, beside `hazardKinds`.
+- **Damage goes through `KHAZ`.** An anomaly that hurts also registers a hazard record, so the inspector, overlay, zones and export work as they do
+  now. New `hazardKinds` rows: `crushing` (the Press), `aging` (fast time), `lift` (reversed gravity). `KHAZ.here` then reports them like heat or gas.
+- **Determinism:** `KRAND.hash(world, cell, index, salt)`. A rewired House depends on seed and visit count, not on draw order.
+- **Node test:** `core/anomaly/test-anomaly.js`, with negatives: strength is 0 outside the shape, overlaps combine in a fixed order, and no reader changes
+  anything when no record is in reach.
+
+## 5. The effects
+
+### Gravity
+
+**What the code does today.** The host walker (`core/host/90-host-camera.js`, `C.stand`) has no vertical motion. It snaps the feet to the ground or the
+highest `KWALK` floor, and `core/walk` has no gravity value at all. So gravity can't just be a multiplier, and there's no jump or fall to scale. *This corrects
+the first feasibility note.*
+
+- **Heavy (the Press), easy.** Walk speed and step height fall with strength, the eye drops, the camera bob shortens. Scatter does most of the work: trees
+  stunted and spreading, boulders sunk in their own craters, ruins pancaked floor on floor, flat dust that won't rise, waterfalls hitting hard and short.
+  All records and kit placement, using `KANOM.strength` at placement. The Godot character takes real gravity.
+- **Reversed, seen, easy.** Debris, water and dust rising in columns from the basin, on instancing and `core/atmos` particles. The Lake That Falls: a lake surface
+  peeling upward at the core, in `core/water`'s flow ribbons and curtains run upward, into a hanging cloud of its own water.
+- **Reversed, felt, medium.** The walker gains one small vertical state: `vy` and an up sign, off unless `KANOM.at` says otherwise. Over a lift zone the
+  walker rises and stops at a ceiling. It needs `KCAVERN` roofs or `KWALK` floors marked `ceiling`, plus a camera flip through `camera.up`. Limited to places with a
+  ceiling: the open sky is a death drop, and the rim's tell says so.
+
+### Time
+
+- **Stilled, easy.** Objects carry a `time` factor at placement or per tick. At the core: a waterfall stopped in the air, a bird hanging, a raindrop field, steam that
+  doesn't move, an Ancient machine mid-explosion. Frozen things are instanced meshes and static water with no tick at all, so **the most striking effect here is the
+  cheapest**. A player entering slows too, and leaves to find the sky has moved on.
+- **Fast, medium.** Fauna and sim ticks scale directly. Plants age by placement: a ring of forest growing, dying and regrowing in bands, shown by age class. Shader motion
+  needs care: wind and water read one global clock, so a local rate means multiplying phase by a smooth field, which shears at the edge. Keep the scaled motion
+  bounded (an oscillation's phase, not a growing time), or fade it at the rim.
+- **The player's own time.** `core/clock` jumps the world on exit by the time owed. The simulation already abstracts unwatched towns (`77-sim-7-lod.js`), so a jump of hours is
+  the same path. Cap it: *proposed* at a day, until the sim has been tested on more.
+
+### Space (the House)
+
+**The best value in the plan, and first after the basics.** Interiors already sit in their own coordinates (`kits/interiors`, `ROOM()`), and `KWALK` floors and blocks take
+any rooms.
+
+1. **Larger inside than out.** A shed-sized ruin door opens on an interior hall. A fade or a matching threshold hides the move.
+2. **Loops.** A corridor whose far door is its near door, by an invisible teleport between identical rooms. No render cost, and no portal needed.
+3. **Rewiring.** `W.setBlock` already switches doors; a room plan changes when no door of it is in view, seeded by visit count. Measurements disagree: a hall a few cm longer
+   each visit (the Navidson house), which the inspector reports without comment.
+4. **Depth.** The House goes down further than the ground allows. The lower levels are outside the world's coordinates, so no terrain is involved. Cold, dark, and a growl
+   the audio mix (`core/audio`) can keep at one distance however far you walk.
+
+### See-through portals (optional)
+
+`core/water/ext/58` already renders a second camera with an oblique near plane, and its live pass costs about 2.4-3.4 ms on the Arc 140T on eastabyss. A portal is the same pass
+through a door. At most one or two in view. Godot uses a `SubViewport`. Only needed where a player must see *through* a seam; teleports cover the rest.
+
+### The Bend
+
+A view-space vertex warp centred on the camera: `y += k·d²` turned upward, so the land rises round you like the inside of a bowl and the horizon climbs the sky. The ground
+under your feet stays true, so **collision, placement and the walker don't change**.
+
+- It goes through `KHOOK` (`core/shader`, slot reserved 2026-11-02 if the shader session could fit it): one uniform, off with no anomaly in reach.
+- Needs: mesh culling widened near a bend (chunks vanish early otherwise), the same warp in the impostors' own shader, the sky's horizon, and water's. Shadows can stay
+  unwarped at modest strength: check by eye.
+- **Cracking:** a screen-space crack pattern at high strength, where the warped ground splits along bright seams. Cheap, but judge it early: it may look like a bug.
+
+### The Broken Country (the Escher set-piece)
+
+Slabs of landscape at wrong angles: one station, a handful of slabs, not a system.
+
+- **`KSHARD`, a slab:** a piece of ground (a copy of a `KFIELD` patch, tiled or cut) with its own matrix. Seen from outside: cheap, a mesh.
+- **Walking it:** each slab keeps its own up. The walker converts to the slab's frame, stands on that slab's `terrainH`, and converts back. At a seam, `camera.up` eases across
+  over half a second. Hard but contained: 6-10 slabs. Floors belong to a slab's record, and the walker's `at()` goes through the current slab.
+- **Impossible stairs:** teleports at seams and forced perspective. A Penrose stair is a loop in the House's sense, seen from one good angle.
+- **Godot makes this easier:** `CharacterBody3D.up_direction` is built in, and each slab gets its own navigation region. Kept out of the browser walker's general path: a mode
+  a station asks for.
+- **Not attempted:** continuous, free-form walkable curved terrain. It would break the height-per-point assumption everywhere.
+
+## 6. Stations
+
+Each is a station page on `biomes/ancientsvalley`, not streamed terrain. Open-world streaming comes later and only for the rim tells.
+
+| Order | Station | Shows | New work | Effort |
+|---|---|---|---|---|
+| 1 | **The Stilled Ground** | Stopped falls, hanging birds, the slowing walk | `KANOM`, time factors | Small |
+| 2 | **The Press** | Stunted trees, pancaked ruins, heavy walk | Gravity on the walker's speed and eye | Small |
+| 3 | **The House** (at Babel) | Loops, rewiring, depth | Interior records, teleports | Medium |
+| 4 | **The Lake That Falls** | Water rising in sheets, a debris column | Upward flows | Medium |
+| 5 | **The Fast Water** | Forest in age bands, seasons racing | Local shader time | Medium |
+| 6 | **The Bend** | The land curling up, cracks | `KHOOK` warp | Medium |
+| 7 | **The Broken Country** | Slabs, seams, the stair | `KSHARD`, the walker's frames | Large |
+
+Each also takes the valley's own content from `biomes/ancientsvalley/PLAN.md`: `ruin`, `machine` and `toxic` fields, mutants, killer robots.
+
+## 7. Life and people
+
+- **Native life adapts.** Flora in the Press grows flat and thick. Stilled Ground's rim holds plants with one half older than the other. *To be written with the fauna kit*, following the
+  Cut's warp vocabulary and the native trends in `biomes/*/PLAN*.md`.
+- **Robots:** the valley's machines may be the only things that work here, because they don't care about time. *Proposed.*
+- **Who comes:** the rare bandit, salvagers after Stilled Ground's unspoiled Ancient goods. *Proposed:* things kept in a stopped zone don't age, so the richest finds are
+  furthest in.
+
+## 8. Core adoption
+
+Written first, as `CLAUDE.md` asks.
+
+| Module | Takes | For |
+|---|---|---|
+| `core/anomaly` (**new**) | `KANOM` | every zone |
+| `core/tags` | `50`, `52`, `53` | records; new kinds and `hazardKinds` rows |
+| `core/hazard` | `KHAZ` | crushing, aging, lift, on the usual path |
+| `core/walk` | `KWALK` | floors, blocks, doors, ceilings; `zones` for navigation |
+| `core/host` | `FULL` | the page shell; the walker change, opt-in |
+| `core/shader` | `KHOOK` | the bend slot |
+| `core/clock` | `KCLOCK` | time owed on leaving |
+| `core/biome`, `core/terrain`, `core/water`, `core/atmos`, `core/materials`, `core/export` | as any new kit | ground, flora, the stopped and rising water, dust, records |
+| `kits/interiors` | `ROOM()` | the House |
+| `core/rand` | `KRAND` | all of it |
+
+Not taken: `core/city`, `core/furnish`, `core/hamlet`, `core/camp`. `tools/check_core_use.py` runs before the first station is called done.
+
+**Changes to shared code, each opt-in and byte-identical without it:** a `vy`/up state and an `at()` hook in `C.stand`; a time factor for ticks; `KHOOK`'s warp slot; upward flow in `core/water`;
+`hazardKinds` rows, which do move the tags digest on purpose. Everything else is new files.
+
+## 9. Godot
+
+Records, `KANOM.at`, slabs and zones port as data. Three pieces need their own twins: portals (`SubViewport`), the bend (a shader global), and the walker's frames (`up_direction`, simpler
+there). `tools/check_port.py` holds `core/anomaly` to `[G data]`.
+
+## 10. Budget and checks
+
+- **Budget:** stations cost about what a ruined biome station costs. A portal is one extra pass. The bend is one vertex operation, plus more chunks kept drawn. Measure on the Arc 140T, naming the GPU.
+- **Verifies:** each station's `verify.py` on `verify_page`, with asserts that the anomaly's strength is 0 outside its shape, a walker can always leave, and the frozen objects never move.
+- **By eye:** the owner judges each anomaly. A bend or a crack that looks like a rendering bug has failed, even if it works.
+
+## 11. Order of work
+
+1. Gemini re-cuts the basins and settles the lake (section 3).
+2. `core/anomaly` and its node test.
+3. Stations 1 and 2 together: the first look at whether this reads as wrongness or as bugs. **Stop for the owner's eye here.**
+4. Station 3, the House.
+5. Stations 4-6.
+6. Station 7, after the rest have shown what the valley's language is.
+
+## 12. Open questions for the owner
+
+1. **Lore:** the eigenweapon's family, as proposed, or another cause?
+2. **The basin assignments:** The House at Babel feels right; are the others?
+3. **Fatal or merely punishing?** Does the Press kill, or just stop you?
+4. **Time jumps:** the cap on time owed when leaving, proposed at a day.
+5. **Does the valley stay a set of stations,** or do you want its rim tells on the open world?
+6. **Where in the queue?** It's unscheduled, behind the rebuild pairs and new kits.
