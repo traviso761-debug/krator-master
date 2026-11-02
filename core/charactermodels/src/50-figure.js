@@ -593,7 +593,7 @@ function KCharFigure(body, sliders, load){
           pushU.kcSF.value = top && top.loose && top.long ? SQUEEZE_FEET : 0;
           // (a loose top over a loose skirt by the skirt's own pad more, so its hem stays outside it)
           Object.keys(want).forEach(function(k){ var u = want[k].userData.pad, pt = want[k].userData.part;
-            if(u && u.base) u.value = u.base + (pt.slot !== 'torso' ? 0 : legs && !legs.loose ? PAD_OVER : legs && legs.loose ? PAD_SKIRT : 0); });
+            if(u && u.base){ u.value = u.base + (pt.slot === 'torso' && legs && legs.loose ? PAD_SKIRT : 0); u.over.value = pt.slot === 'torso' && legs && !legs.loose ? PAD_OVER : 0; } });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
@@ -1425,8 +1425,8 @@ function KCharFigure(body, sliders, load){
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
      The capsules (legCaps: thighs, shins, feet, and hard ones for the arms, so a raised arm lifts a mantle's hem) are
      the body's, in the figure's inner space, padded by the cloth's
-     thickness, and a torso garment by 2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and 3.5 cm more again over
-     trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a thin band,
+     thickness, and a torso garment by 2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and up to 3.5 cm more again over
+     trousers (PAD_OVER, as the limb swings), which stand out of the capsules more than a skirt's chains do. The push is a thin band,
      not a projection: a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d * 3 cm / (r + 1.5 cm), so
      two tiers of one skirt keep their order instead of meeting on one surface, and cloth that already lies right
      barely moves */
@@ -1435,7 +1435,7 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 }, kcU:{ value:new THREE.Vector3(0, 1, 0) } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 }, kcM:{ value:0 }, kcU:{ value:new THREE.Vector3(0, 1, 0) } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
       SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
@@ -1450,10 +1450,10 @@ function KCharFigure(body, sliders, load){
   var BACK_DEPTH = 0.01;
   var KNEE = 0.04;      // how far a fully bent knee's corner stands out of its two capsules (kchar_push.gdshader)
   function pushOut(mat, pad, loose, legs, feet){
-    var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
+    var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0, over:{ value:0 } }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
-      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcU = pushU.kcU; sh.uniforms.kcP = padU;
+      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcU = pushU.kcU; sh.uniforms.kcP = padU; sh.uniforms.kcPO = padU.over; sh.uniforms.kcM = pushU.kcM;
       sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : feet ? pushU.kcSF : noTuck; sh.uniforms.kcSH = feet ? { value:1e3 } : pushU.kcSH;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
@@ -1465,7 +1465,7 @@ function KCharFigure(body, sliders, load){
       // is a thin band (1.5 cm either side of the capsule's surface: d in [0, r + 1.5 cm] lands in [r - 1.5, r + 1.5]),
       // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
       // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
-      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcPO;\nuniform float kcM;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
         '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0;\n' +
         '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
@@ -1474,7 +1474,16 @@ function KCharFigure(body, sliders, load){
         '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), cup = 1.0;\n' +
         '\t\tif(ci < 2){ cup = kcA[14].w <= 0.0 ? 0.0 : 1.0 - smoothstep(-0.05, 0.0, dot(transformed - ca, cbk));\n' +
         '\t\t\tcup = max(cup, smoothstep(0.3, 0.4, ct)); if(cup <= 0.0) continue; }\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
-        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0);\n' +
+        // how far the limb has left hanging (a shin takes its thigh's too: in a crouch it stands upright, the knee well forward).
+        // Cloth round a hanging limb has not been passed through. And standing still the fit already clears the trousers, so
+        // PAD_OVER (kcPO) comes in with the stride (kcM, legCaps), on both legs: at full strength at rest it held an open robe's
+        // panels 5.5 cm off the thigh and they parted at the seam (the boubou, the agent's coat); per limb, the leg a
+        // runner stands on took none, and the other leg's swing threw the cloth through it
+        '\t\tint cth = ci < 2 ? ci : ci - 2; vec3 ctd = ci < 4 ? kcB[cth].xyz - kcA[cth].xyz : cab;\n' +
+        '\t\tfloat clf = smoothstep(0.12, 0.4, 1.0 - abs(ctd.y) / max(length(ctd), 1e-5));\n' +
+        '\t\tif(ci >= 2 && ci < 4) clf = max(clf, smoothstep(0.3, 0.6, 1.0 - abs(cab.y) / max(length(cab), 1e-5)));\n' +
+        '\t\tfloat cpd = csh > 0.0 ? kcP + kcPO * kcM : 0.0;\n' +
+        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + cpd;\n' +
         // a bent knee's corner, which the thigh's and the shin's capsules leave uncovered: the radius grows toward the knee
         // by up to KNEE as the leg bends (an Order robe's front showed the whole knee in a run)
         '\t\tif(ci < 4 && csh > 0.0){ int th = ci < 2 ? ci : ci - 2;\n' +
@@ -1488,8 +1497,12 @@ function KCharFigure(body, sliders, load){
         // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it. The side
         // is the one the cloth faces (objectNormal, skinned): a leg swung back has the body's axis in front of it, and
         // a skirt's front, sent out the back, left the leg bare down its side
-        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; if(dot(objectNormal, co) < 0.0) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
-        '\t\t\t\tfloat cw = 1.0 - cl / cr; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
+        // (deep is measured from the bare limb on a hanging leg: from the padded radius ordinary cloth round the leg counted as
+        // deep, and the mirror folded the tube's inner half onto its outer, baring a calf through a court skirt and a
+        // thigh through a coat in a walk)
+        '\t\t\tfloat cr0 = cr - cpd * (1.0 - clf);\n' +
+        '\t\t\tif(cl < cr0 && csh > 0.0 && col > 1e-4){ co /= col; if(dot(objectNormal, co) < 0.0) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
+        '\t\t\t\tfloat cw = 1.0 - cl / cr0; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
         '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup);\n\t\t}\n\t}\n' +
         '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +
         '\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
@@ -1530,6 +1543,7 @@ function KCharFigure(body, sliders, load){
     if(!caps.length) return;
     self.inner.updateMatrixWorld(true);
     legInv.copy(self.inner.matrixWorld).invert();
+    var stride = 0;       // the most any leg joint has left hanging (kcM: how much of PAD_OVER is on)
     LEGS.forEach(function(lg, i){
       // a foot has no collider of its own: it takes its shin's radius
       var foot = i === 4 || i === 5, a = byName[lg[0]], b = byName[lg[1]], sh = foot ? byName[LEGS[i - 2][0]] : a;
@@ -1541,7 +1555,9 @@ function KCharFigure(body, sliders, load){
       var ra = i >= 6 ? cp.r : foot ? cp.rb : cp.ra, rb = i >= 6 ? cp.r : cp.rb;
       pushU.kcA.value[i].set(cV.x, cV.y, cV.z, ra + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, i >= 6 ? 1 : 0);
       pushU.kcR.value[i] = rb + 0.01;
+      if(i < 4) stride = Math.max(stride, 1 - Math.abs(cV2.y - cV.y) / Math.max(cV.distanceTo(cV2), 1e-5));
     });
+    pushU.kcM.value = THREE.MathUtils.smoothstep(stride, 0.02, 0.1);
     // the seat: the buttocks, which neither the thighs' nor the trunk's capsule covers (a robe's back went through)
     var seat = caps.filter(function(c){ return c.pa; });
     for(var q = 0; q < 2; q++){

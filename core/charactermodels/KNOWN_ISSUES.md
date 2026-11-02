@@ -120,6 +120,10 @@
   seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
   raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
   fitted shape is a tube; the chains and the push move it, they do not make more of it).
+- **The push still makes gaps at the height ends, and a run shows more skin than it did.** The 2026-11-02 pass (HANDOFF-GARMENT-DEFECTS.md, with the
+  counts) halved skin and trousers through tops in a walk on neutral bodies, but at `height` 1 and -1 skin in a walk rose by about a tenth, and at rest the push
+  still parts cloth over the legs there. On neutral bodies skin in a run rose 30% and trousers through a top in a crouch 17%. A stride's cloth is the cut's
+  to find, and needs Blender; `tools/garment_audit.py --check` holds the counts where they are.
 - **Tall bodies tear long robes in a run.** The monk's robe (and the skirts now cut as it) holds in a run up to about
   +0.7 height (the owner, 2026-10-20); taller, the thigh is up to 29% longer (44 to 57 cm) and its raised knee goes out
   through the robe's side, and at +1 the walk and idle open small tears at the back of the thigh too. The push's capsules

@@ -149,6 +149,21 @@ area you are about to change.
   (0.60, 0.12, 0.005), its maroon (0.18, 0.025, 0.03). Deepening by eye in the palette's numbers barely moves it.
 - **A people's strangers in another people's hair** → `styles` are only preferred (three in four); `style_share: 1` in
   peoples.json keeps them to their styles (the Order: cropped men, women to a bob).
+- **Trousers in lozenges through a coat, a calf through a court skirt, even at the A-pose** → switch the push off first: here
+  every fault went to zero, so the fit was clean and the push made the gap. A push outward cannot bare what lies under a
+  closed surface, so look for a fold or a parted seam. Two causes, each found by switching one rule off at a time over
+  all 66 outfits: "deep" was measured from the padded radius, so after `PAD_OVER` (5.5 cm out) ordinary cloth round a leg
+  counted as deep and the mirror folded the tube's inner half onto its outer; and a full pad standing still held an open
+  robe's panels off the thigh, so they parted at the seam. Deep is now measured from the bare limb on a hanging leg, and
+  the pad comes in with the stride. Wider padding would have made both worse.
+- **Tune a rule across the whole wardrobe, not on the outfit in the shot** → each of six tries here looked right on the
+  case it was made for. Mirroring by the cloth's own normal cleaned the A-pose and nearly tripled skin in a walk; a pad
+  per limb doubled trousers through tops in a run (the leg a runner stands on took none); and the bare-limb test bared the
+  Yuni boubou at rest, which the old bug had been hiding. `tools/garment_audit.py` counts them in ten minutes: run it
+  before believing a fix, and shoot the regressions it names, some of which are only the same patch a little larger.
+- **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
+  of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
+  the hands, the head and the feet.
 
 ## 4. Materials, alpha and textures
 

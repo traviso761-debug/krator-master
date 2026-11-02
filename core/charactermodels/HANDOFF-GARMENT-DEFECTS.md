@@ -1,7 +1,54 @@
 # Handoff: garment defects (gaps first, intersections second)
 
-ChatGPT's review of 2026-10-28, added to the repo by the owner's word on 2026-11-01. **Not started.** It was written from an inspection of
+ChatGPT's review of 2026-10-28, added to the repo by the owner's word on 2026-11-01. It was written from an inspection of
 the rebuild's checkout and maps likely areas, not diagnosed bugs: reproduce each defect first. Read it beside `HANDOFF-CLIPPING.md`.
+
+## Where it stands (2026-11-02)
+
+**Done: the runtime half, on `claude/garment-defects`.** The review's rule, "do not start by widening the padding", was right: both
+causes found were the push itself, and narrowing it where nothing needs it is the fix. Not done: anything that needs a garment re-cut, because
+this machine has no Blender (the Blender MCP is enabled but has no Blender behind it, and `make_garments.py` needs Blender 4.5 + MPFB2).
+
+**How it was measured.** `tools/garment_audit.py` draws the 66 outfits of `data/peoples.json` (man, woman, giant; A-pose, idle, walk,
+run, crouch; four views: 1848 shots) in flat colours and counts faulting pixels (a pixel is about 2.5 mm). `tests/garment-audit.json` is the
+state after the fix; `--check` fails a sweep worse than it, and the sweep of the code before the fix fails it. Colours, and what each count does
+not see, are in the tool's header. `hole` and `inside` are noisy (arm gaps, sleeve openings): compare them, do not read them as counts of faults.
+
+**The causes** (neutral bodies; controls: the push off, then one capsule group or rule off at a time):
+
+| Evidence | Finding |
+|---|---|
+| Faults at the A-pose too, gone with the push off | the fit was clean; the push made them |
+| Gone with the mirror off (`cs < 0`) | "deep" was measured from the padded radius (5.5 cm out over trousers), so ordinary cloth round a leg was mirrored and the tube folded on itself. Now the bare limb's radius on a hanging leg, growing back to the padded one as the limb lifts (a shin takes its thigh's lift) |
+| Boubou and open coats parting at rest, gone with `PAD_OVER` off | a full pad standing still held open panels off the thigh. `PAD_OVER` now comes in with the stride (`kcM`, one number for the figure) |
+
+**The result** (pixels, all 66 outfits, before to after):
+
+| | rest | idle | walk | run | crouch |
+|---|---|---|---|---|---|
+| legs through a top | 44441 to 14519 | 36962 to 29735 | 119410 to 49498 | 74952 to 61588 | 39919 to 46615 |
+| skin through cloth | 33 to 33 | 23826 to 20871 | 43728 to 20997 | 45062 to 58703 | 49094 to 50670 |
+
+`inside`, cloth folded through itself, fell by a third (1548917 to 1052995). **Worse:** skin in a run by 30% and legs through a top in a crouch by
+17%. The worst of the run's increases, shot before and after, are the same patches a little larger (the tube skirts below), not new ones.
+
+**At the height ends (`height` 1 and -1, man and woman, no giant) the gain mostly does not reach.** Tall: legs through a top in a walk fell 20%; short:
+rose 2%. Skin in a walk rose 12% and 10%; `inside` fell 26% and 25%. Rest stayed high (about 36000 pixels on both), and the push still makes most of
+that (about 5000 tall, 2500 short with it off) with `PAD_OVER` off: it is `PAD_TOP` or the capsules against the morphed legs. Taking
+the rest of the push away at rest was not tried: the controls show skirts under robes need it at idle.
+
+**Left, and what owns it:**
+- **A narrow skirt or robe has no cloth for a stride** (the Chichani court skirt's calf, still shown at walk 0.3 from the back; Order novices; the
+  Xanadu tunic's front in a stride). The cut's, not the push's: `HANDOFF-CLIPPING.md` open item 2. A side slit or more flare, the owner's choice; needs Blender.
+- **The height ends**, above; `HANDOFF-CLIPPING.md` open item 1.
+- **Not swept:** the plain cast clothes (cargo trousers and tee are no people's outfit), so the owner's later notes (a pant seam at Sword cut B, pants through
+  the shirt's back in Push (heavy), the left nipple in Idles 3 and 4, the ladder's gap) are neither reproduced nor changed; they are not `loose`, so this push never touched them.
+  Sweep them with `--outfits`, and with the roll, swim and ladder clips in `--clips`.
+- **`under` overcounts the Hykkousoi trade outfits**: the pteruges sit in the legs slot but hang over the tunic on purpose (kit item `over`), and the tool does not read that.
+- **The sweep's pieces:** 24 pieces here were older than the manifest and 10 absent (the mods' heads, tails, some boots and hats, `order_*_novice_skirt`), so
+  the novices' numbers are for the older skirt. Rerun them with the published pieces.
+- **The Godot twin** has the same change. `kchar_test.gd` gives the one known failure (the giant's ladder, KNOWN_ISSUES), and the shader compiles on Forward+,
+  but its picture was not compared with the page's. Its pieces came from an older local set.
 
 ### Assignment
 

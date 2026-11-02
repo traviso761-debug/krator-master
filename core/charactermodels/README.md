@@ -555,7 +555,9 @@ what lies outside the outer part (a belt across an open coat's gap) keep their o
 and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
 skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the garment's own look: albedo, alpha
 cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
-the buttocks. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
+the buttocks. Over trousers a top's push takes 3.5 cm more (`PAD_OVER`), but only as much of it as the stride asks (`kcM`,
+none standing still, all of it by a walk's swing), and only cloth inside the bare limb of a hanging leg counts as deep
+(HANDOFF-GARMENT-DEFECTS.md). Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
 at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
 of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
 sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard
@@ -708,6 +710,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
 | `tools/ease.py` | under-items standing outside the item over them, per outfit (`--objs`: from the generator's output) | |
 | `tools/shots.py` | close-ups of the Cosmetic Lab, the same every run (`tools/shots-clipping.json`: the open clipping issues) | |
+| `tools/garment_audit.py` | every people's outfit drawn in flat colours and counted: skin through cloth, a lower layer through a higher, cloth folded through itself. `--report` ranks a sweep, `--check` compares it with `tests/garment-audit.json` (`AUDIT_GL=d3d11`: the GPU, about ten minutes for all 66) | |
 | `tools/lab_shots.py` | shots of the Animation Lab: a clip at a time on each body framed close and put side by side, the same every run (`--gpu`: the machine's GPU, not SwiftShader) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |

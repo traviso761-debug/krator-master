@@ -21,8 +21,11 @@ uniform float kcR[16];
 uniform vec3 kcH;
 // the trunk's up (the hips to Spine1, turned from its rest way, applied to +y): +y standing as at rest
 uniform vec3 kcU = vec3(0.0, 1.0, 0.0);
-// 2 cm more for a loose top (a robe's hem lies over the skirt it covers), 5.5 cm over trousers
+// 2 cm more for a loose top (a robe's hem lies over the skirt it covers), 4 cm over a skirt
 uniform float kcP = 0.0;
+// 3.5 cm more over trousers (PAD_OVER), as much of it as the stride asks: kcM, from none standing to all in a walk
+uniform float kcPO = 0.0;
+uniform float kcM = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;
 const float BACK_DEPTH = 0.01;
@@ -49,7 +52,16 @@ void kc_push(inout vec3 kv, vec3 kn) {
 				continue;                // a thigh's top third, behind: its capsule took in the buttock
 			}
 			t = clamp(t, 0.0, 1.0);
-			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + (sh > 0.0 ? kcP : 0.0);
+			// how far the limb has left hanging (a shin takes its thigh's too): deep is measured from the bare limb on a
+			// hanging leg, or the mirror below folds ordinary cloth round it (pushOut in 50-figure.js)
+			int tl = i < 2 ? i : i - 2;
+			vec3 td = i < 4 ? kcB[tl].xyz - kcA[tl].xyz : ab;
+			float lift = smoothstep(0.12, 0.4, 1.0 - abs(td.y) / max(length(td), 1e-5));
+			if (i >= 2 && i < 4) {
+				lift = max(lift, smoothstep(0.3, 0.6, 1.0 - abs(ab.y) / max(length(ab), 1e-5)));
+			}
+			float pd = sh > 0.0 ? kcP + kcPO * kcM : 0.0;
+			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + pd;
 			if (i < 4 && sh > 0.0) {
 				// a bent knee's corner, which the thigh's and the shin's capsules leave uncovered (pushOut in 50-figure.js)
 				int th = i < 2 ? i : i - 2;
@@ -63,7 +75,8 @@ void kc_push(inout vec3 kv, vec3 kn) {
 			if (l < R && l > 1e-5) {
 				vec3 o = vec3(q.x - kcH.x, 0.0, q.z - kcH.z);
 				float ol = length(o);
-				if (l < r && sh > 0.0 && ol > 1e-4) {
+				float r0 = r - pd * (1.0 - lift);
+				if (l < r0 && sh > 0.0 && ol > 1e-4) {
 					o /= ol;
 					if (dot(kn, o) < 0.0) {
 						o = -o;          // the side the cloth faces (pushOut in 50-figure.js)
@@ -72,7 +85,7 @@ void kc_push(inout vec3 kv, vec3 kn) {
 					if (s < 0.0) {
 						d -= 2.0 * s * o;
 					}
-					float w = 1.0 - l / r;   // deep in the limb, straight out that side (pushOut in 50-figure.js)
+					float w = 1.0 - l / r0;  // deep in the limb, straight out that side (pushOut in 50-figure.js)
 					w *= w;
 					d = normalize(d) * (1.0 - w) + o * w;
 				}

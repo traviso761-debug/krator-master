@@ -2027,17 +2027,22 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 			top = x
 		if x["id"] == rec.get("armour", {}).get("legs"):
 			legs = x
-	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 3.5 cm more over trousers
-	# (PAD_TOP, PAD_OVER in 50-figure.js)
+	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and up to 3.5 cm more over trousers
+	# with the stride (PAD_TOP, PAD_OVER in 50-figure.js; kcM in _leg_caps)
 	var pad := 0.0
+	var pad_over := 0.0
 	var slot0: String = _item_of(part).get("over", part["slot"])     # pteruges push as the top they hang over does
 	if loose and slot0 == "torso":
 		pad = 0.02
 		if part["slot"] == "torso" and legs != null:          # not the pteruges themselves
-			pad += 0.035 if not legs.get("loose", false) else 0.02
+			if legs.get("loose", false):
+				pad += 0.02
+			else:
+				pad_over = 0.035
 	elif loose:
 		pad = 0.02           # a skirt, as a robe (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
 	pm.set_shader_parameter("kcP", pad)
+	pm.set_shader_parameter("kcPO", pad_over)
 	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches
 	# below the knees, else down to its hem (kit item hem)
@@ -2090,7 +2095,7 @@ func _fur(m: Material, it: Dictionary, band: Vector2, uv2 := false, colored := f
 			var fm := ShaderMaterial.new()
 			fm.shader = FUR_SHADER
 			if pushed:
-				for p in ["tex", "albedo", "kcL", "kcP", "kcT", "kcS", "kcSH"]:
+				for p in ["tex", "albedo", "kcL", "kcP", "kcPO", "kcT", "kcS", "kcSH"]:
 					fm.set_shader_parameter(p, m.get_shader_parameter(p))
 				_push_mats.append(fm)
 			elif m is BaseMaterial3D:
@@ -2420,6 +2425,7 @@ func _leg_caps() -> void:
 	var A := []
 	var Bv := []
 	var R := PackedFloat32Array()
+	var stride := 0.0        # the most any leg joint has left hanging (kcM: how much of PAD_OVER is on)
 	var legs := [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"],
 		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"], ["LeftArm", "LeftForeArm"], ["RightArm", "RightForeArm"],
 		["LeftForeArm", "LeftHand"], ["RightForeArm", "RightHand"],
@@ -2449,6 +2455,8 @@ func _leg_caps() -> void:
 		A.append(Vector4(pa.x, pa.y, pa.z, r))
 		Bv.append(Vector4(pb.x, pb.y, pb.z, 1.0 if i >= 6 else 0.0))
 		R.append(re)
+		if i < 4 and r > 0.0:
+			stride = maxf(stride, 1.0 - absf(pb.y - pa.y) / maxf(pa.distance_to(pb), 1e-5))
 	# the seat (14, 15): soft, like the legs'
 	var seat := []
 	for cp in _caps:
@@ -2478,6 +2486,7 @@ func _leg_caps() -> void:
 		pm.set_shader_parameter("kcR", R)
 		pm.set_shader_parameter("kcH", hip)
 		pm.set_shader_parameter("kcU", up)
+		pm.set_shader_parameter("kcM", smoothstep(0.02, 0.1, stride))
 
 
 # twin of bodyFix in 50-figure.js: each limb a segment with its capsule's radius (the body's tapered ra to rb, an arm
