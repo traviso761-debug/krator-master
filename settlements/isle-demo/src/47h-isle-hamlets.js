@@ -42,7 +42,7 @@ ISLE.simHamletTowns = function () {
   var S = ISLE.SIM, HT = ISLE.TUNE.sim.hamlets;
   S.order.forEach(function (s) {
     var E = SIM.econ(s), TW = HT.town[s] || {}, X = S.towns[s];
-    HT.goods.forEach(function (g) { if (!E.goods[g]) E.goods[g] = { id: g, minLoad: HT.minLoad[g] }; });
+    HT.goods.forEach(function (g) { if (!E.goods[g]) E.goods[g] = { id: g, minLoad: HT.minLoad[g], unit: 'lot' }; });
     Object.keys(TW.inputs || {}).forEach(function (g) { E.inputs[g] = TW.inputs[g]; });
     Object.keys(TW.recipes || {}).forEach(function (kind) { var R0 = TW.recipes[kind];
       X.places.places.forEach(function (P) { if (P.kind !== kind || E.recipes[P.id] || !P.activities.WORK) return;
@@ -93,7 +93,7 @@ ISLE.simHamlet = function (sp, v) {
   var mine = SIM.all('actor').filter(function (a) { return SIM.settlementOf(a) === id && !a.driven; });
   mine.forEach(function (a) { a.cls = 'poor'; a.wealth = 0; });
   /* its economy: the parent's goods, its works' recipes, the governor (49) */
-  var EP = SIM.econ(ps), goods = {}; Object.keys(EP.goods).forEach(function (g) { goods[g] = EP.goods[g].minLoad != null ? { minLoad: EP.goods[g].minLoad } : {}; });
+  var EP = SIM.econ(ps), goods = {}; Object.keys(EP.goods).forEach(function (g) { goods[g] = EP.goods[g].minLoad != null ? { minLoad: EP.goods[g].minLoad } : {}; goods[g].unit = EP.goods[g].unit; });
   var foods = Xp.econ.foods.slice(), makes = {};
   var rules = ISLE.simRules(id); if (rules.govern) rules.govern = Object.assign({}, rules.govern, { exported: false, pool: [ps] });   /* it works to its town's need, its town's stock its own */
   var E = SIM.economy(Object.assign({ goods: goods, inputs: {}, every: T.economy.every, window: T.economy.window, imports: T.economy.imports, cart: T.economy.cart,
@@ -135,7 +135,7 @@ ISLE.simHamlet = function (sp, v) {
 };
 /* a snapshot of the villages' books */
 ISLE.simHamletBooks = function () {
-  var S = ISLE.SIM, H = S && S.hamlets, out = { minute: SIM.minute(), villages: {}, towns: {} }; if (!H) return out;
+  var S = ISLE.SIM, H = S && S.hamlets, out = { minute: SIM.minute(), villages: {}, towns: {}, ledger: SIM.ledgerSnap() }; if (!H) return out;
   var I = SIM.ITEMS;
   H.villages.forEach(function (X) {
     var E = SIM.econ(X.id), B = (I.statsBy || {})[X.id] || {}, M = Object.assign({ meal: 0, single: 0, none: 0, mess: 0, out: 0 }, B.meals || {});
@@ -168,5 +168,7 @@ ISLE.hamletChecks = function (a, b) {
     return { id: id, meals: M.meal - M0.meal + M.single - M0.single, none: M.none - M0.none, short: short, fed: Object.keys(X.fed).reduce(function (n, g) { return n + X.fed[g]; }, 0) }; });
   ok('every village fed by its town (no meal without food, none of its food short)', fed.every(function (f) { return f.meals > 0 && f.none === 0 && f.short === 0 && f.fed > 0; }),
     fed.map(function (f) { return f.id + ' ' + f.meals + ' meals, ' + f.none + ' without food, ' + f.short + ' short, ' + f.fed + ' servings landed'; }).join('; '));
+  var LG = SIM.ledger(a.ledger, b.ledger);
+  ok('the books balance in every town and village, every road and sea leg reconciled (the ledger)', LG.ok, LG.ok ? Object.keys(LG.towns).length + ' settlements, ' + Object.keys(LG.routes).length + ' routes' : LG.problems.slice(0, 3).join('; '));
   return res;
 };

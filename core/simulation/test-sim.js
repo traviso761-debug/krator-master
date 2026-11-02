@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -830,6 +830,36 @@ function world(seed){
  const A=run(0.5),B=run(0);
  ok('stagger: twenty homes buy between 1.5 and 4.5 days of food, no two rounds alike ('+Math.min(...A)+'-'+Math.max(...A)+' servings)',Math.min(...A)>=30&&Math.max(...A)<=90&&new Set(A).size>=10,new Set(A).size===1);
  ok('without it every home buys three days (60 servings)',B.every(x=>x===60),!B.every(x=>x===60));}
+
+// the ledger (77-sim-7-ledger.js, SCHEMA.md "The books"): deterministic small scenarios, each with a negative: a town's goods
+// balance with spoilage on its own line, a load is in one town, at sea or in the other, what leaves the map is abroad
+{const two=()=>{const {S,clock}=world(179);
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{unit:'serving'},salt:{unit:'lot'}},window:1,spoil:{rice:0.1}});const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:1000,salt:100};S.R.place.vShed.stock={rice:10,salt:5};
+   const R=S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:300,minutes:300,mins:30,keep:0,want:3,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   const run=(m0,m1)=>{for(let m=m0;m<m1;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0)S.supply('rice',2,false,'valapo');S.step();}};
+   return {S,run,R,EK,EV};};
+ let W=two(),a=W.S.ledgerSnap();W.run(0,200);
+ let mid=W.S.ledgerSnap(),L=W.S.ledger(a,mid);
+ ok('the ledger: both towns balance with a load at sea, the load in neither',L.ok&&mid.sea.line['kautoa>valapo'].rice>0&&L.towns.valapo.rice.inbound===mid.sea.line['kautoa>valapo'].rice,!L.ok);
+ ok('a statement says whose, in what unit, and the opening',L.towns.kautoa.rice.unit==='serving'&&L.towns.kautoa.rice.owner==='kautoa'&&L.towns.kautoa.rice.opening===1000,L.towns.kautoa.rice.owner!=='kautoa');
+ W.run(200,1500);const c=W.S.ledgerSnap(),L2=W.S.ledger(a,c);
+ ok('over a day: spoilage on its own line, not in consumed',L2.ok&&L2.towns.kautoa.rice.spoiled>0&&L2.towns.kautoa.rice.consumed===0,L2.towns.kautoa.rice.consumed>0);
+ ok('a route\'s leg: shipped = landed + the change at sea',L2.routes.line['kautoa>valapo'].rice.shipped>0&&L2.towns.kautoa.rice.abroadOut===0&&L2.towns.valapo.rice.abroadIn===0,L2.towns.kautoa.rice.abroadOut!==0);
+ W.S.R.place.kShed.stock.rice+=7;const P1=W.S.ledger(a,W.S.ledgerSnap());W.S.R.place.kShed.stock.rice-=7;
+ ok('negative: 7 rice from nowhere is caught, and named',!P1.ok&&/kautoa rice/.test(P1.problems[0]),P1.ok);
+ const lost=JSON.parse(JSON.stringify(c));lost.routes.line.landed['kautoa>valapo'].rice-=10;const P2=W.S.ledger(a,lost);
+ ok('negative: 10 lost on the road is caught',!P2.ok&&P2.problems.some(p=>/line kautoa>valapo rice/.test(p)),P2.ok);
+ const unb=JSON.parse(JSON.stringify(c));unb.towns.valapo.rice.imported-=20;unb.towns.valapo.rice.total-=20;const P3=W.S.ledger(a,unb);
+ ok('negative: a load landed but never booked imported is caught',!P3.ok&&P3.problems.some(p=>/never booked imported/.test(p)),P3.ok);
+ W.S.withEcon('kautoa',()=>{const n=W.S.economyTake('salt',30);W.S.economyBook('exported','salt',n);});const c2=W.S.ledgerSnap(),L3=W.S.ledger(c,c2);
+ ok('what leaves the map is abroad, on no route',L3.ok&&L3.towns.kautoa.salt.abroadOut===30,L3.towns.kautoa.salt.abroadOut!==30);}
+{const {S}=world(181);S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.economy({goods:{corn:{}},window:1});S.store('shed',{kind:'warehouse'});S.R.place.shed.stock={corn:50};
+ const a=S.ledgerSnap();S.supply('corn',5);const L=S.ledger(a,S.ledgerSnap());
+ ok('an unkeyed page has one ledger, under _',L.ok&&L.towns._.corn.consumed===5&&L.towns._.corn.closing===45,!L.ok);
+ ok('no economy, an empty ledger',Object.keys(world(183).S.ledgerSnap().towns).length===0,false);}
 
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}

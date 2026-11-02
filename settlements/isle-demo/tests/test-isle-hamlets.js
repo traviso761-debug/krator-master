@@ -39,6 +39,7 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const B = cp(b); B.villages['hamlet-salt'].goods.salt.made = a.villages['hamlet-salt'].goods.salt.made; caught('a salt village that made no salt', ISLE.hamletChecks(a, B), /makes its goods/); }
 { const B = cp(b); B.villages['hamlet-mine'].landed.ore = (B.villages['hamlet-mine'].landed.ore || 0) - 20; caught('20 ore lost on the road', ISLE.hamletChecks(a, B), /landed in its town/); }
 { const B = cp(b); B.villages['hamlet-ranch'].meals.none += 5; caught('five meals without food at the ranch', ISLE.hamletChecks(a, B), /fed by its town/); }
+{ const B = cp(b); B.ledger.towns['hamlet-mine'].ore.total += 30; caught('30 ore from nowhere in the mine\'s books', ISLE.hamletChecks(a, B), /the ledger/); }
 { const B = cp(b); B.villages['hamlet-lumber'].workers = 3; caught('a lumber village with three workers', ISLE.hamletChecks(a, B), /staffed/); }
 /* the towns' goods from the villages put to use */
 const KA = SIM.econ('kautoa'), VA = SIM.econ('valapo');

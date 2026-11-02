@@ -415,6 +415,10 @@
   "core/simulation",
   "ca003233a000"
  ],
+ "77-sim-7-ledger.js": [
+  "core/simulation",
+  "639a76ed8723"
+ ],
  "77-sim-7-lod.js": [
   "core/simulation",
   "5a9beafbe043"
