@@ -209,3 +209,56 @@ there). `tools/check_port.py` holds `core/anomaly` to `[G data]`.
 4. **Time jumps:** the cap on time owed when leaving, proposed at a day.
 5. **Does the valley stay a set of stations,** or do you want its rim tells on the open world?
 6. **Where in the queue?** It's unscheduled, behind the rebuild pairs and new kits.
+7. **The metropolis's ruin:** how much of the city still stands (section 13 proposes 10-15%).
+
+## 13. The metropolis (the owner, 2026-11-02)
+
+The ruin fields are true metropoli: hundreds of skyscrapers, each in its own state of ruin. Skyscrapers are triangle hogs, and the owner asked for an answer other than an optimization pass or
+new, slimmer designs. **The answer: keep the kit's towers as source art, bake them into cheap stand-ins, and draw only about ten real ones at a time.**
+
+**The problem:** the Pile alone is about 152k triangles (`kits/ancients/targets/arcpile`). 500 towers at that size is about 75 M; eastabyss's opening view is 3.83 M. Instancing saves draw calls, not
+triangles, and these pages are vertex-bound (`biomes/nhighlands/PERF.md`).
+
+**The tiers.** Triangles are rough estimates until the spike measures them.
+
+| Range | Drawn | Triangles |
+|---|---|---|
+| Under 300 m | About 10 real towers, from `kits/ancients` as they are | About 1.5 M |
+| 300 m - 1 km | About 60 baked shells | Under 5k |
+| 1 - 3 km | About 400 impostors | About 1k |
+| Beyond 3 km | One mesh per square km of district | About 50-100k |
+| Everywhere | Stumps, skeletons, rubble | About 300k |
+
+Near-range cost depends on how many towers a player can stand close to, so street width and tower spacing are budget decisions.
+
+**The pieces:**
+
+1. **Ruin does the first cut.** *Proposed:* only 10-15% of towers stand to full height. The rest are stumps, bare steel skeletons (instanced beams), and rubble or fallen towers as `KSTACKS` mounds and ground. Every tower is
+   a record with a ruin state in `core/tags`, placed by a plain layout pass on `core/city` where it fits.
+2. **`KSHELL`, the baked shell (new in core).** A real tower is rendered once from each face into albedo, normal, depth and coverage atlases. It's then drawn as a box of 12-60 triangles, with parallax for the facade depth,
+   interior mapping for the windows, and coverage cut-outs for the broken floors. On the same shape as impostors: a `[G data]` record plus a host-side bake.
+3. **Impostors.** `BIO.impostor` as it is, with one set for 8-12 tower families in several ruin states. Tall, thin towers need a larger atlas cell than trees: measure it.
+4. **District bakes.** Each square km past 3 km becomes one simplified skyline mesh with one texture, an extension of `KFAR` (which carries colour and height today, not masses).
+5. **Visibility bake.** At build time, work out which blocks can be seen from each ground cell, and draw only those. The runtime cost is close to nothing, but core has no such pass, and it lengthens builds. It helps only at
+   street level; a flying camera sees the worst case. **Add only if the tiers aren't enough.**
+6. **The valley's air.** Height fog (`ATMOS.heightFog`) and the steam take the far work: everything past 2-3 km fades, which suits the place.
+7. **Godot.** The baked assets carry over. Occlusion culling and visibility ranges are built in, so the game has more headroom than the pages.
+
+**The risks:**
+
+- **The switch from shell to real tower** is the hard part. `BIO.LOD.fade`'s dithered cross-fade is the tool: judge it by eye.
+- **Bake count** should track tower families, not the city: 10 families in 4 ruin states is 40 bakes, shared by 500 towers.
+- **Interiors:** a shell has no inside. Only nearby real towers can be entered, which suits the House: its interiors live elsewhere anyway.
+- **The page cap:** atlases count against the page's size limit (`BUDGETS.json`).
+
+**Order:**
+
+1. **Spike:** bake one existing tower to a shell, and compare it side by side with the real tower at 300 m on the Arc 140T. **Stop for the owner's eye.** Everything else depends on this.
+2. `KSHELL` as a core module, with a node test for its records and a verify.
+3. The impostor set and the ruin states.
+4. District bakes, then the fog pass and a measured view from the worst street.
+5. The anomalies' House and Babel can then stand in the same city.
+
+**Core adoption:** adds `KSHELL` (new) and `core/terrain`'s `KFAR` to section 8's table, plus `kits/ancients` read in place, `core/city` for the street layout (read `core/city/README.md`, "Porting a settlement", first), and `core/lod` if `BIO.LOD` doesn't fit
+buildings. It's independent of `core/anomaly`, so either can go first.
+
