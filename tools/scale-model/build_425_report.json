@@ -9,21 +9,6 @@
   },
   "auto_moved_settlements": [
     {
-      "name": "Farport",
-      "from_px": [
-        299,
-        590
-      ],
-      "to_px": [
-        298,
-        589
-      ],
-      "move_km": 2.8,
-      "reason": "elev_delta=453m",
-      "elev_m": 441.0,
-      "climate": "Af"
-    },
-    {
       "name": "Hub 01",
       "from_px": [
         1344,
@@ -34,15 +19,15 @@
         1409
       ],
       "move_km": 0.0,
-      "reason": "elev_delta=1029m",
-      "elev_m": 4325.8,
+      "reason": "elev_delta=1028m",
+      "elev_m": 4325.2,
       "climate": "ET"
     }
   ],
   "worse_problems": [],
   "settlements_total": 117,
-  "regions_total": 111,
-  "rivers_total": 883,
+  "regions_total": 116,
+  "rivers_total": 885,
   "river_tongue_counts": {
     "islander": 3,
     "dalab": 41,
@@ -56,8 +41,8 @@
     "painted": 4,
     "dasri": 93,
     "scyvoi": 7,
-    "tungang": 82,
-    "eternian": 72,
+    "tungang": 83,
+    "eternian": 73,
     "hum": 87,
     "khaay": 19,
     "vrivolci": 30,
@@ -72,7 +57,7 @@
     "zeijani": 3,
     "heiland": 6
   },
-  "tubes_total": 10,
+  "tubes_total": 15,
   "settlement_audit": [
     {
       "name": "Agropolis",
@@ -193,12 +178,12 @@
         766,
         404
       ],
-      "elev_m": 770.9,
+      "elev_m": 791.6,
       "old_elev_m": 768.5,
       "wet": false,
       "climate": "BSh",
       "old_climate": "BSh",
-      "slope_m_km": 24.5
+      "slope_m_km": 25.8
     },
     {
       "name": "Carcosa",
@@ -235,12 +220,12 @@
         468,
         1392
       ],
-      "elev_m": 264.3,
+      "elev_m": 254.3,
       "old_elev_m": 265.3,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 148.7
+      "slope_m_km": 187.8
     },
     {
       "name": "Corpus",
@@ -249,12 +234,12 @@
         520,
         693
       ],
-      "elev_m": 598.9,
+      "elev_m": 598.4,
       "old_elev_m": 620.9,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 63.8
+      "slope_m_km": 64.0
     },
     {
       "name": "Coyote Canyon",
@@ -268,7 +253,7 @@
       "wet": false,
       "climate": "BSh",
       "old_climate": "BSh",
-      "slope_m_km": 197.6
+      "slope_m_km": 246.0
     },
     {
       "name": "Crescent",
@@ -394,7 +379,7 @@
       "wet": false,
       "climate": "Af",
       "old_climate": "Af",
-      "slope_m_km": 59.5
+      "slope_m_km": 59.6
     },
     {
       "name": "Erehwon",
@@ -414,15 +399,15 @@
       "name": "Farport",
       "type": "city",
       "px": [
-        298,
-        589
+        299,
+        590
       ],
-      "elev_m": 441.0,
+      "elev_m": 792.1,
       "old_elev_m": 359.2,
       "wet": false,
       "climate": "Af",
       "old_climate": "Af",
-      "slope_m_km": 81.9
+      "slope_m_km": 97.8
     },
     {
       "name": "Flooded Tower",
@@ -445,12 +430,12 @@
         560,
         767
       ],
-      "elev_m": 3055.7,
+      "elev_m": 3054.6,
       "old_elev_m": 3103.5,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 31.8
+      "slope_m_km": 32.0
     },
     {
       "name": "Fort Ebon",
@@ -501,7 +486,7 @@
         1060,
         831
       ],
-      "elev_m": -1152.2,
+      "elev_m": -1152.3,
       "old_elev_m": -1151.1,
       "wet": false,
       "climate": "XV",
@@ -585,12 +570,12 @@
         1039,
         869
       ],
-      "elev_m": -1424.6,
+      "elev_m": -1425.7,
       "old_elev_m": -1378.6,
       "wet": false,
       "climate": "XA",
       "old_climate": "XA",
-      "slope_m_km": 21.2
+      "slope_m_km": 21.3
     },
     {
       "name": "Glaive",
@@ -599,12 +584,12 @@
         599,
         734
       ],
-      "elev_m": 3095.4,
+      "elev_m": 3094.2,
       "old_elev_m": 3146.6,
       "wet": false,
       "climate": "Csb",
       "old_climate": "Csb",
-      "slope_m_km": 77.3
+      "slope_m_km": 77.9
     },
     {
       "name": "Henge",
@@ -655,12 +640,12 @@
         1344,
         1409
       ],
-      "elev_m": 4325.8,
+      "elev_m": 4325.2,
       "old_elev_m": 3297.0,
       "wet": false,
       "climate": "ET",
       "old_climate": "Dwc",
-      "slope_m_km": 13.7
+      "slope_m_km": 13.8
     },
     {
       "name": "Iziz",
@@ -744,7 +729,7 @@
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 309.5
+      "slope_m_km": 305.4
     },
     {
       "name": "Leng",
@@ -781,7 +766,7 @@
         1267,
         1043
       ],
-      "elev_m": -1705.8,
+      "elev_m": -1722.2,
       "old_elev_m": -1549.1,
       "wet": false,
       "climate": "XA",
@@ -814,7 +799,7 @@
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 10.1
+      "slope_m_km": 10.0
     },
     {
       "name": "Lux",
@@ -865,12 +850,12 @@
         350,
         726
       ],
-      "elev_m": 3088.5,
+      "elev_m": 3125.3,
       "old_elev_m": 3074.9,
       "wet": false,
       "climate": "Csa",
       "old_climate": "Csa",
-      "slope_m_km": 65.9
+      "slope_m_km": 82.9
     },
     {
       "name": "Mungo",
@@ -884,7 +869,7 @@
       "wet": true,
       "climate": "WX",
       "old_climate": "WX",
-      "slope_m_km": 2.8
+      "slope_m_km": 88.9
     },
     {
       "name": "Nazar",
@@ -1215,12 +1200,12 @@
         554,
         1010
       ],
-      "elev_m": 2523.4,
+      "elev_m": 2522.8,
       "old_elev_m": 2545.6,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "Cfa",
-      "slope_m_km": 33.3
+      "slope_m_km": 32.6
     },
     {
       "name": "Spirladunon",
@@ -1369,12 +1354,12 @@
         1408,
         414
       ],
-      "elev_m": 7941.2,
+      "elev_m": 8007.5,
       "old_elev_m": 7730.6,
       "wet": false,
       "climate": "HF",
       "old_climate": "HF",
-      "slope_m_km": 47.0
+      "slope_m_km": 37.6
     },
     {
       "name": "The Tubes",
@@ -1523,7 +1508,7 @@
         685,
         479
       ],
-      "elev_m": 693.8,
+      "elev_m": 693.9,
       "old_elev_m": 693.8,
       "wet": false,
       "climate": "BSh",
@@ -1537,12 +1522,12 @@
         1263,
         946
       ],
-      "elev_m": -500.5,
+      "elev_m": -501.0,
       "old_elev_m": -50.8,
       "wet": false,
       "climate": "Csa",
       "old_climate": "BSh",
-      "slope_m_km": 134.1
+      "slope_m_km": 137.3
     },
     {
       "name": "Voth",
@@ -1621,12 +1606,12 @@
         1263,
         1089
       ],
-      "elev_m": 595.8,
+      "elev_m": 594.8,
       "old_elev_m": 636.2,
       "wet": false,
       "climate": "Cfa",
       "old_climate": "BSh",
-      "slope_m_km": 7.4
+      "slope_m_km": 7.1
     },
     {
       "name": "Zey'danin",
@@ -1663,12 +1648,12 @@
         1561,
         1140
       ],
-      "elev_m": 2127.9,
+      "elev_m": 2126.9,
       "old_elev_m": 2169.6,
       "wet": false,
       "climate": "Cwb",
       "old_climate": "Cwb",
-      "slope_m_km": 12.6
+      "slope_m_km": 12.8
     },
     {
       "name": "\u0160urpu-Dhelv",
@@ -1677,7 +1662,7 @@
         806,
         818
       ],
-      "elev_m": -364.5,
+      "elev_m": -365.3,
       "old_elev_m": 2813.7,
       "wet": false,
       "climate": "Cfa",

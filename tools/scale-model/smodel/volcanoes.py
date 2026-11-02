@@ -1282,6 +1282,222 @@ def build_tubes_and_zeijani_data(dx=0.0, dy=0.0):
                 },
             ],
         },
+
+        # 11. GODTHRONE WNW VACUUM SHIELD & SPAN-WALL TITANIUM PYRODUCT (`rmvkkebdukgx7`)
+        {
+            "id": "tube_god_nw_11",
+            "name": "Godthrone WNW Shield & Span-Wall Titanium Pyroduct",
+            "region": "rmvkkebdukgx7",
+            "culture": "ancients",
+            "state": "collapsed_rille",
+            "rock": "tibasalt",
+            "width_m": 54.0,
+            "height_m": 34.0,
+            "depth_m": 65.0,
+            "km": 310,
+            "px": [
+                [556.0, 916.0], [534.0, 898.0], [510.0, 882.0],
+                [486.0, 868.0], [462.0, 855.0],
+            ],
+            "branches": [
+                {
+                    "name": "Upper Vacuum Skylight Gallery",
+                    "state": "collapsed_rille",
+                    "width_m": 30.0,
+                    "px": [[534.0, 898.0], [520.0, 912.0], [504.0, 924.0]],
+                },
+            ],
+            "caverns": [
+                {
+                    "id": "cav_god_nw_skylight",
+                    "name": "The Vacuum Glass Cathedral",
+                    "kind": "magma_chamber",
+                    "px": [510.0, 882.0],
+                    "span_m": [380, 210],
+                    "height_m": 68,
+                    "skylight_m": 45,
+                    "notes": "Giant collapsed titanium-basalt skylight gallery at ~13.8 km on the Godthrone's WNW vacuum shield, lined with metallic ilmenite-magnetite dripstone stalactites.",
+                },
+            ],
+        },
+
+        # 12. GODTHRONE NORTH SHIELD & TALIA-SADDLE ILMENITE TUBE (`rmvkkebdukgx7`)
+        {
+            "id": "tube_god_n_12",
+            "name": "Godthrone North Shield & Talia-Saddle Ilmenite Tube",
+            "region": "rmvkkebdukgx7",
+            "culture": "ancients",
+            "state": "habitable",
+            "rock": "tibasalt",
+            "width_m": 44.0,
+            "height_m": 28.0,
+            "depth_m": 58.0,
+            "km": 285,
+            "px": [
+                [578.0, 910.0], [582.0, 882.0], [586.0, 852.0],
+                [591.0, 822.0], [596.0, 792.0],
+            ],
+            "branches": [
+                {
+                    "name": "West Godstep Rim Cross-Conduit",
+                    "state": "habitable",
+                    "width_m": 26.0,
+                    "px": [[586.0, 852.0], [604.0, 838.0], [620.8, 815.2]],
+                },
+            ],
+            "caverns": [
+                {
+                    "id": "cav_god_n_ilmenite",
+                    "name": "Ilmenite Pillar Vault",
+                    "kind": "bottle_hall",
+                    "px": [586.0, 852.0],
+                    "span_m": [290, 175],
+                    "height_m": 54,
+                    "skylight_m": 0,
+                    "notes": "Sealed sub-shield titanium-basalt lava tube chamber on the northern Godthrone slope where slow cooling precipitated 30-meter hexagonal columns of black ilmenite.",
+                },
+            ],
+        },
+
+        # 13. GODTHRONE SE SHIELD & CATCH-RIM RADIAL PYRODUCT (`rmvkkebdukgx7`)
+        {
+            "id": "tube_god_se_13",
+            "name": "Godthrone SE Shield & Catch-Rim Radial Pyroduct",
+            "region": "rmvkkebdukgx7",
+            "culture": "uninhabited",
+            "state": "geothermal",
+            "rock": "tibasalt",
+            "width_m": 46.0,
+            "height_m": 30.0,
+            "depth_m": 62.0,
+            "km": 340,
+            "px": [
+                [594.0, 946.0], [618.0, 968.0], [642.0, 992.0],
+                [666.0, 1018.0], [690.0, 1044.0],
+            ],
+            "branches": [
+                {
+                    "name": "East Caldera Ring-Fault Feeder",
+                    "state": "geothermal",
+                    "width_m": 28.0,
+                    "px": [[618.0, 968.0], [636.0, 954.0], [654.0, 942.0]],
+                },
+            ],
+            "caverns": [
+                {
+                    "id": "cav_god_se_fumarole",
+                    "name": "Sub-Glacial Sulfide Dome",
+                    "kind": "magma_chamber",
+                    "px": [642.0, 992.0],
+                    "span_m": [310, 195],
+                    "height_m": 58,
+                    "skylight_m": 18,
+                    "notes": "Geothermally heated titanium-basalt master tube on the SE Godthrone flank where residual volcanic heat melts subglacial domes into warm acidic sulfur lakes.",
+                },
+            ],
+        },
+
+        # 14. GODTHRONE SSW SHIELD & BRINE-LAKE SIPHON PYRODUCT (`rmvkkebdukgx7`)
+        {
+            "id": "tube_god_ssw_14",
+            "name": "Godthrone SSW Shield & Brine-Lake Siphon Pyroduct",
+            "region": "rmvkkebdukgx7",
+            "culture": "uninhabited",
+            "state": "geothermal",
+            "rock": "tibasalt",
+            "width_m": 50.0,
+            "height_m": 32.0,
+            "depth_m": 60.0,
+            "km": 295,
+            "px": [
+                [568.0, 952.0], [562.0, 982.0], [558.0, 1012.0],
+                [564.0, 1042.0], [571.0, 1068.0],
+            ],
+            "branches": [
+                {
+                    "name": "Olympus Basal Scarp Discharge Conduit",
+                    "state": "collapsed_rille",
+                    "width_m": 28.0,
+                    "px": [[558.0, 1012.0], [532.0, 1028.0], [506.0, 1044.0]],
+                },
+            ],
+            "caverns": [
+                {
+                    "id": "cav_god_brine_throat",
+                    "name": "Red Riwa Subglacial Brine-Lake Conduit",
+                    "kind": "stepwell_cistern",
+                    "px": [571.0, 1068.0],
+                    "span_m": [350, 220],
+                    "height_m": 62,
+                    "skylight_m": 0,
+                    "notes": "Subglacial titanium-basalt feeder cavern at 6,415 m beneath the southern EF ice sheet that warms and mineralizes the brine reservoir feeding Red Riwa.",
+                },
+            ],
+        },
+
+        # 15. NEO-OZARKS DOLOMITE KARST & PORPHYRY-VEIN CAVERN NETWORK (`rmvyiyw8ucd1y`)
+        {
+            "id": "tube_ozarks_15",
+            "name": "Neo-Ozarks Dolomite Karst & Porphyry-Vein Cavern System",
+            "region": "rmvyiyw8ucd1y",
+            "culture": "miners_and_spelunkers",
+            "state": "habitable",
+            "rock": "dolomite_and_porphyry",
+            "width_m": 32.0,
+            "height_m": 24.0,
+            "depth_m": 48.0,
+            "km": 310,
+            "px": [
+                [860.0, -40.0], [820.0, -18.0], [784.0, 0.0],
+                [748.0, 10.0], [716.0, -6.0],
+            ],
+            "branches": [
+                {
+                    "name": "Red Porphyry Dike Contact Gallery",
+                    "state": "habitable",
+                    "width_m": 22.0,
+                    "px": [[820.0, -18.0], [796.0, -34.0], [768.0, -42.0]],
+                },
+                {
+                    "name": "Spider Lake Sub-Escarpment Phreatic Conduit",
+                    "state": "geothermal",
+                    "width_m": 20.0,
+                    "px": [[784.0, 0.0], [802.0, 20.0], [824.0, 34.0]],
+                },
+            ],
+            "caverns": [
+                {
+                    "id": "cav_ozarks_porphyry",
+                    "name": "Cathedral of the Red Porphyry Vein",
+                    "kind": "bottle_hall",
+                    "px": [784.0, 0.0],
+                    "span_m": [280, 165],
+                    "height_m": 52,
+                    "skylight_m": 16,
+                    "notes": "Vast phreatic dissolution hall in the Neo-Ozarks where groundwater dissolved cherty Gasconade-type dolomite along an impermeable dike wall of polished purple-red rhyolite porphyry.",
+                },
+                {
+                    "id": "cav_ozarks_onyx",
+                    "name": "Onyx Pillar & Chert-Bridge Labyrinth",
+                    "kind": "kipuka_portal",
+                    "px": [748.0, 10.0],
+                    "span_m": [210, 140],
+                    "height_m": 38,
+                    "skylight_m": 12,
+                    "notes": "Multi-level dolomite and limestone cavern famous for 20-meter banded cave-onyx columns, suspended chert-breccia bridges, and copper-iron porphyry mineral veins.",
+                },
+                {
+                    "id": "cav_ozarks_resurgence",
+                    "name": "The Shut-In Big Spring Resurgence",
+                    "kind": "stepwell_cistern",
+                    "px": [716.0, -6.0],
+                    "span_m": [175, 115],
+                    "height_m": 28,
+                    "skylight_m": 22,
+                    "notes": "First-magnitude karst spring cavern discharging emerald calcium-magnesium water through a breached porphyry shut-in gorge into the Neo-Ozark Porphyry Fork.",
+                },
+            ],
+        },
     ]
 
     tubes_list = []

@@ -27,6 +27,7 @@
 """
 import base64
 import copy
+import gc
 import io
 import json
 import math
@@ -36,6 +37,11 @@ import shutil
 import subprocess
 import sys
 import time
+
+os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
+os.environ.setdefault('MKL_NUM_THREADS', '1')
+os.environ.setdefault('OMP_NUM_THREADS', '1')
+os.environ.setdefault('NUMEXPR_NUM_THREADS', '1')
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -118,8 +124,9 @@ def main():
         shutil.copy2(ref_src, ref_path)
 
     # Load D_old from model/data/ (if already expanded to 1821x1723 by a prior run, restore 1549x1393 baseline from commit eabeb2039)
-    D_old = P.load()
-    if (D_old['fullH'], D_old['fullW']) != (OLD_OH, OLD_OW):
+    model_json_path = os.path.join(HERE, 'model', 'data', 'model.json')
+    m_meta = {o['key']: o.get('value') for o in json.load(open(model_json_path, encoding='utf-8'))['keys'] if 'value' in o}
+    if (m_meta.get('fullH'), m_meta.get('fullW')) != (OLD_OH, OLD_OW):
         print('  Restoring 1549x1393 baseline data from commit eabeb2039 before running 5.1 master pipeline...')
         subprocess.check_call([
             'git', 'checkout', 'eabeb2039', '--',
@@ -129,7 +136,7 @@ def main():
             'tools/scale-model/model/src/51-region-store.js',
             'tools/scale-model/model/src/60-settlements.js',
         ], cwd=REPO_ROOT)
-        D_old = P.load()
+    D_old = P.load()
     OH0, OW0 = D_old['fullH'], D_old['fullW']
     assert (OH0, OW0) == (OLD_OH, OLD_OW), f'Expected D_old fullH/fullW = (1393, 1549), got {(OH0, OW0)}'
 
@@ -185,6 +192,8 @@ def main():
     wlev_fill = np.where(whas0_half, np.nan_to_num(wlev0_half, nan=Eo_half), Eo_half)
     wlev_up = nd.zoom(wlev_fill, zoom_to_1393, order=1)[:OLD_OH, :OLD_OW]
     wlev0_1393 = np.where(whas0_1393, wlev_up, np.nan)
+    del Eo_half, whas0_half, wlev0_half, wlev_fill, wlev_up
+    gc.collect()
 
     # =========================================================================
     # STEP 2: Run the 6 Interior Enhancement Passes on (1393, 1549)
@@ -195,6 +204,8 @@ def main():
         regs_1393, copy.deepcopy(D_old['vents']), copy.deepcopy(D_old['volc'])
     )
     wlev1_nan = np.where(whas1, wlev1, np.nan)
+    del wlev1
+    gc.collect()
     print(f'  Volcanoes remodeled: {int(ch_volc.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2B: East Abyss & The Bowl Shiveria Failed-Rift Remodeling ---')
@@ -202,6 +213,8 @@ def main():
         En1, whas1, wlev1_nan, regs_1393, D_old['rivers']
     )
     wlev2_1393 = np.where(whas2_1393, wlev2_1393_num, np.nan)
+    del En1, whas1, wlev1_nan, wlev2_1393_num
+    gc.collect()
     print(f'  East Abyss & Bowl remodeled: {int(ch_ea.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2C: Tier-1 Biomes Remodeling (k-Guilin, SW Highlands, W Outer Wall, The Cut, Korona / NE) ---')
@@ -209,6 +222,8 @@ def main():
         En2, whas2_1393, np.nan_to_num(wlev2_1393, nan=0.0),
         regs_1393, setts_1393, D_old['rivers']
     )
+    del En2, whas2_1393, wlev2_1393
+    gc.collect()
     print(f'  Tier-1 Biomes remodeled: {int(ch_t1.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2D: Tranche-2 Biomes Remodeling (Tiers, Outlands, Stalker Range, Scablands, Dams, NW/SW Lowlands, Ancient Valley, Yeti/Farside, SE Desert/Badlands/Yuni/Painted) ---')
@@ -216,6 +231,8 @@ def main():
         En3a, whas3a_1393, wlev3a_1393_num,
         regs_1393, setts_1393, D_old['rivers'], D_old.get('floods', [])
     )
+    del En3a, whas3a_1393, wlev3a_1393_num
+    gc.collect()
     print(f'  Tranche-2 Biomes remodeled: {int(ch_t2.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2E: Tranche-3 Biomes Remodeling (N/S/E Highlands, Rift & Rim, Xanadu/Oidong/Catch, Hyperjungles, Drylands/Savannah, Ring Isles/Steampits, SW/NW Bays) ---')
@@ -223,6 +240,8 @@ def main():
         En3b, whas3b_1393, wlev3b_1393_num,
         regs_1393, setts_1393, D_old['rivers'], vents_1393
     )
+    del En3b, whas3b_1393, wlev3b_1393_num
+    gc.collect()
     print(f'  Tranche-3 Biomes remodeled: {int(ch_t3.sum()):,} cells changed on 1393x1549')
 
     print('--- Step 2F: Biome Boundary Topological & Geological Transition Pass (Piedmont Megafans, Water Gaps, Ecotone Outliers, & FBM Seam Feathering) ---')
@@ -231,6 +250,8 @@ def main():
         regs_1393, setts_1393, D_old['rivers']
     )
     wlev3_1393 = np.where(whas3_1393, wlev3_1393_num, np.nan)
+    del En3c, whas3c_1393, wlev3c_1393_num
+    gc.collect()
     print(f'  Biome boundary transitions sculpted: {int(ch_bt.sum()):,} cells changed on 1393x1549')
 
     # Protect the completed 5-region SE complex (`Region 99`, `Siphon Pits`, `Mid Basin`, `Stalker Gate`, `High Rift`)
@@ -451,6 +472,9 @@ def main():
     ], dtype=float)
     ct_syn_1393 = np.clip(class_rgb[cls_int] * (0.38 + 0.62 * shade_1393), 0.0, 255.0)
     ct_int = np.clip(ct_int.astype(float) * (1.0 - w_int_rc) + ct_syn_1393 * w_int_rc, 0.0, 255.0).round().astype(np.uint8)
+    hypso_centers, hypso_meds = build_hypsometric_table(Eo_1393, whas0_1393, t0_1393.astype(float))
+    del st0_1393, t0_1393, rt0_1393, ct0_1393, D_int_clean, relit_int, st_int_f, t_int_f, rt_syn_1393, ct_syn_1393, En3_pre_2g, meta_ea
+    gc.collect()
 
     # =========================================================================
     # STEP 4: Synthesize N/W Canvas Expansion (`1549x1393` -> `1821x1723`, `DX=272, DY=330`)
@@ -498,6 +522,24 @@ def main():
     in_arch_box = meta_nw['in_arch_box']
     sd_new = meta_nw['sd_new']
     old_lake_guard = meta_nw['old_lake_guard']
+    w_sasquatch_vales = meta_nw['w_sasquatch_vales']
+    w_ozark_dolomite = meta_nw['w_ozark_dolomite']
+    w_porphyry_vein = meta_nw['w_porphyry_vein']
+    w_silent_vales = meta_nw['w_silent_vales']
+    w_tsunami_scour = meta_nw['w_tsunami_scour']
+    w_tsunami_chevron = meta_nw['w_tsunami_chevron']
+
+    # Ensure the sheltered cool-temperate `Silent Vales` (`w_silent_vales > 0.25`) have mild maritime-montane
+    # temperatures (`tw = 16.5..20.5 C`, `tc = 3.2..6.5 C`) on their +1,135..+2,150 m valley floors
+    w_sv_temp = np.clip(w_silent_vales * (1.0 - G.sstep(1950.0, 2650.0, En_exp)), 0.0, 1.0)
+    tw_sv_target = 20.2 - 0.0032 * np.maximum(0.0, En_exp - 1100.0)
+    tc_sv_target = 6.2 - 0.0028 * np.maximum(0.0, En_exp - 1100.0)
+    tw_exp = tw_exp * (1.0 - w_sv_temp) + tw_sv_target * w_sv_temp
+    tc_exp = tc_exp * (1.0 - w_sv_temp) + tc_sv_target * w_sv_temp
+    tm_exp = tm_exp * (1.0 - w_sv_temp) + (0.5 * (tw_sv_target + tc_sv_target)) * w_sv_temp
+    out_temps_exp['tw'] = tw_exp
+    out_temps_exp['tc'] = tc_exp
+    out_temps_exp['tm'] = tm_exp
 
     # Compute physically realistic rainfall across the N/W expansion + trans-boundary passes & Arachnoid Canyon:
     gy_e, gx_e = np.gradient(nd.gaussian_filter(En_exp, 2.0), 2000.0)
@@ -515,6 +557,8 @@ def main():
         + 320.0 * w_canyon
         + 240.0 * w_ne_connector
         + 220.0 * w_sw_connector
+        + 420.0 * w_silent_vales
+        + 240.0 * w_ozark_dolomite
         - 520.0 * w_tharn
         - 580.0 * w_sw_outer
         - 220.0 * G.sstep(850.0, 1350.0, X_exp) * G.sstep(210.0, 480.0, Y_exp) * (1.0 - w_canyon)
@@ -523,8 +567,12 @@ def main():
     rain_nw_syn = np.where(En_exp >= 8800.0, 0.0, np.clip(rain_nw_syn, 75.0, 3400.0))
 
     d_into_new = nd.distance_transform_edt(is_new_area)
+    w_batch5_clim = np.maximum(
+        np.maximum(w_silent_vales, w_sasquatch_vales),
+        np.maximum(w_ozark_dolomite, w_tsunami_scour),
+    )
     w_trans_clim = np.maximum(
-        np.maximum(w_ne_connector, w_sw_connector),
+        np.maximum(np.maximum(w_ne_connector, w_sw_connector), w_batch5_clim),
         np.maximum(w_n_korona_breach, np.maximum(w_canyon, arach_trough_w * 0.85)),
     )
     w_nw_clim = np.maximum(G.sstep(-8.0, 16.0, sd_new) * (~old_lake_guard).astype(float), w_trans_clim)
@@ -570,9 +618,26 @@ def main():
     c_nw[nw_edit_land & (En_exp >= 7150.0) & (En_exp < 8800.0)] = idx['HF']
     c_nw[nw_edit_land & (En_exp >= 8800.0)] = idx['O']
 
+    # Batch 5 Regional Climate Locks:
+    # 1. `Silent Vales` (`w_silent_vales > 0.25`): connected cool-temperate valleys (`Cfb` / `Csb` on <2,350 m floors)
+    in_silent_vales = (w_silent_vales > 0.25) & ~whas_exp
+    c_nw[in_silent_vales & (En_exp < 2350.0) & (rain_exp >= 720.0)] = idx['Cfb']
+    c_nw[in_silent_vales & (En_exp < 2350.0) & (rain_exp < 720.0)] = idx['Csb']
+    c_nw[in_silent_vales & (En_exp >= 2350.0) & (En_exp < 3300.0)] = idx['Dfb']
+    c_nw[in_silent_vales & (En_exp >= 3300.0) & (En_exp < 4250.0)] = idx['Dfc']
+
+    # 2. `sasquatch tribes` (`w_sasquatch_vales > 0.30`): smaller, harsher periglacial valleys (`ET` & cold-edge `Dsc`)
+    in_sasq_vales = (w_sasquatch_vales > 0.30) & ~whas_exp
+    c_nw[in_sasq_vales & (En_exp < 5960.0)] = idx['Dsc']
+    c_nw[in_sasq_vales & (En_exp >= 5960.0) & (En_exp < 6420.0)] = idx['ET']
+
     # Water classes in the new territory:
-    c_nw[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0))) & whas_exp] = idx['WS']
-    c_nw[is_high_lake | is_copper_tarn] = idx['WH']
+    c_nw[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0)) | (w_tsunami_scour > 0.05)) & whas_exp] = idx['WS']
+    c_nw[
+        (is_high_lake & whas_exp)
+        | is_copper_tarn
+        | (whas_exp & (wlev_exp >= 1000.0) & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05)))
+    ] = idx['WH']
     cls_exp = c_nw
 
     # Hypsometric zones (`z.png`: 0=basin, 1=highland, 2=outer rim, 3=arctic, 4=lake/sea, 5=salt basin)
@@ -581,7 +646,7 @@ def main():
     zon_exp[nw_edit_land & (En_exp >= 4500.0) & (En_exp < 8200.0)] = 3
     zon_exp[nw_edit_land & (En_exp >= 8200.0)] = 2
     zon_exp[in_copper_glacier & (En_exp >= 2350.0)] = 3
-    zon_exp[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0))) & whas_exp] = 4
+    zon_exp[(is_new_area | ((X_exp < 535.0) & (Y_exp < 595.0)) | (w_silent_vales > 0.1) | (w_sasquatch_vales > 0.1)) & whas_exp] = 4
 
     # =========================================================================
     # STEP 5B: Shift Rivers, Soften Legacy D8 Staircases into Natural Meanders,
@@ -681,6 +746,26 @@ def main():
         new_y = np.where(hit_water | pinned, arr_p[:, 1], new_y)
         r['px'] = [[round(float(x_), 2), round(float(y_), 2)] for x_, y_ in zip(new_x, new_y)]
 
+    # Global Anti-Porcupine Despiking & Coastal Cliff Moderation Pass on `En_exp`
+    # (Run BEFORE river channel incision so median filtering never fills in narrow canyon river floors!):
+    vent_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    for v_item in list(vents_1393) + list(meta_nw['new_vents']):
+        vx_i, vy_i = v_item['px']
+        if v_item in vents_1393:
+            vx_i, vy_i = vx_i + DX, vy_i + DY
+        vent_guard |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 7.0)
+
+    med3_e = nd.median_filter(En_exp, size=3)
+    med5_e = nd.median_filter(En_exp, size=5)
+    En_exp = np.where(((En_exp - med3_e) > 110.0) & ~vent_guard, med3_e, En_exp)
+    En_exp = np.where(((En_exp - med5_e) > 190.0) & ~vent_guard, 0.25 * En_exp + 0.75 * med5_e, En_exp)
+    # Also ensure coastal cliffs in the N/W expansion (`d_to_water_px <= 5`) have smooth, spike-free gradients
+    gy_chk, gx_chk = np.gradient(En_exp)
+    grad_px = np.hypot(gx_chk, gy_chk)
+    En_coast_blur = nd.gaussian_filter(En_exp, sigma=2.0)
+    coastal_spike = (d_to_water_px <= 5.0) & (grad_px > 340.0) & ~vent_guard & ~whas_exp
+    En_exp = np.where(coastal_spike, np.minimum(En_exp, En_coast_blur), En_exp)
+
     # Save pre-river-incision hillshade so we can transfer the newly carved river-bank shading onto `t_pad` & `st_pad`!
     En_pre_riv = En_exp.copy()
     shade_pre_riv = compute_clean_hillshade(En_pre_riv, zf=5.0, az_deg=315.0, alt_deg=45.0)
@@ -752,32 +837,13 @@ def main():
         np.where(d_to_water_px <= 8.0, np.minimum(En_exp - 2.0, wlev_nearest + 1.8), En_exp - depth_near),
     )
     h_riv_profile = np.maximum(min_safe_riv, bed_near + depth_near * (G.sstep(0.0, 1.0, u_riv) ** 1.35))
-    En_exp = En_exp * (1.0 - 0.88 * w_riv_carve) + np.minimum(En_exp, h_riv_profile) * (0.88 * w_riv_carve)
+    En_exp = En_exp * (1.0 - 0.90 * w_riv_carve) + np.minimum(En_exp, h_riv_profile) * (0.90 * w_riv_carve)
 
-    # Global Anti-Porcupine Despiking & Coastal Cliff Moderation Pass on `En_exp`:
-    # Protect deep volcanic vent throats (`r < 6 px`) while removing any 1-3 px spike or needle across the entire map!
-    vent_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
-    for v_item in list(vents_1393) + list(meta_nw['new_vents']):
-        vx_i, vy_i = v_item['px']
-        if v_item in vents_1393:
-            vx_i, vy_i = vx_i + DX, vy_i + DY
-        vent_guard |= (np.hypot(X_exp - vx_i, Y_exp - vy_i) <= 7.0)
-
-    med3_e = nd.median_filter(En_exp, size=3)
-    med5_e = nd.median_filter(En_exp, size=5)
-    En_exp = np.where((np.abs(En_exp - med3_e) > 120.0) & ~vent_guard, med3_e, En_exp)
-    En_exp = np.where((np.abs(En_exp - med5_e) > 210.0) & ~vent_guard, 0.25 * En_exp + 0.75 * med5_e, En_exp)
-    # Also ensure coastal cliffs in the N/W expansion (`d_to_water_px <= 5`) have smooth, spike-free gradients
-    gy_chk, gx_chk = np.gradient(En_exp)
-    grad_px = np.hypot(gx_chk, gy_chk)
-    En_coast_blur = nd.gaussian_filter(En_exp, sigma=2.0)
-    coastal_spike = (d_to_water_px <= 5.0) & (grad_px > 340.0) & ~vent_guard & ~whas_exp
-    En_exp = np.where(coastal_spike, np.minimum(En_exp, En_coast_blur), En_exp)
-    # Re-assert dry land >= 1.5 m in `is_new_area` after coastal smoothing
+    # Re-assert dry land >= 1.8 m in `is_new_area` after river channel carving
     dry_new_final = is_new_area & ~whas_exp
     En_exp = np.where(dry_new_final, np.maximum(En_exp, 1.8), En_exp)
 
-    # Sample strictly monotonic `bed_m` along all rivers in `rivers_exp` directly from the incised `En_exp`!
+    # Enforce strict monotonic downhill terrain on `En_exp` along every river centerline and record `bed_m`!
     climbing_fixed = 0
     for r in rivers_exp:
         pts_r = r.get('px') or []
@@ -787,11 +853,19 @@ def main():
         for px_, py_ in pts_r:
             iy = min(NEW_OH - 1, max(0, int(round(py_))))
             ix = min(NEW_OW - 1, max(0, int(round(px_))))
-            beds.append(round(float(En_exp[iy, ix]), 1))
+            # Use water surface elevation if vertex is in a high lake/tarn, else terrain elevation
+            if whas_exp[iy, ix] and not np.isnan(wlev_exp[iy, ix]):
+                beds.append(round(float(max(En_exp[iy, ix], wlev_exp[iy, ix])), 1))
+            else:
+                beds.append(round(float(En_exp[iy, ix]), 1))
         for i in range(1, len(beds)):
             if beds[i] > beds[i - 1]:
                 beds[i] = beds[i - 1]
                 climbing_fixed += 1
+                iy = min(NEW_OH - 1, max(0, int(round(pts_r[i][1]))))
+                ix = min(NEW_OW - 1, max(0, int(round(pts_r[i][0]))))
+                if not whas_exp[iy, ix]:
+                    En_exp[iy, ix] = min(float(En_exp[iy, ix]), max(1.8, float(beds[i])))
         r['bed_m'] = beds
         r['source_m'] = beds[0]
         r['mouth_m'] = beds[-1]
@@ -811,18 +885,20 @@ def main():
     w_arch_shade = (w_arch_region * (~whas_exp).astype(float))[..., None]
     shade_exp = shade_exp * (1.0 - 0.72 * w_arch_shade) + shade_arch * (0.72 * w_arch_shade)
 
-    # Strip the 16-pixel top/left canvas frame bevel of `st_int`, `t_int`, `rt_int`, `ct_int` before padding,
-    # shifting along the 45-degree diagonal NW Crater Wall shoreline (`x_old = 140..280`, `dx = (16 - r_i) * 1.75`)
-    # so `st_pad` and `t_pad` match `Eo_clean_edge` / `whas0_clean_edge` 100%!
+    # Strip only the 5-pixel top/left canvas frame shadow (`r_i in range(5)`, `c_i in range(5)`) of `st_int`, `t_int`, `rt_int`, `ct_int`,
+    # and apply the 8-pixel diagonal shoreline alignment ONLY inside the NW Crater Wall shoreline box (`x_old = 140..255`)
+    # so `st_pad` and `t_pad` match `Eo_clean_edge` / `whas0_clean_edge` 100% without creating a line at `Y = 346` (`Comment 5`)!
     for arr_i in (st_int, t_int, rt_int, ct_int):
-        for r_i in range(16):
-            arr_i[r_i, :, :] = arr_i[16, :, :]
-            dx_s = int(round((16 - r_i) * 1.75))
-            arr_i[r_i, 140:280, :] = arr_i[16, 140 - dx_s:280 - dx_s, :]
-        for c_i in range(16):
-            arr_i[:, c_i, :] = arr_i[:, 16, :]
-            dy_s = int(round((16 - c_i) * 0.85))
-            arr_i[200:280, c_i, :] = arr_i[200 + dy_s:280 + dy_s, 16, :]
+        for r_i in range(5):
+            arr_i[r_i, :, :] = arr_i[5, :, :]
+        for r_i in range(8):
+            dx_s = int(round((8 - r_i) * 1.75))
+            arr_i[r_i, 140:255, :] = arr_i[8, 140 - dx_s:255 - dx_s, :]
+        for c_i in range(5):
+            arr_i[:, c_i, :] = arr_i[:, 5, :]
+        for c_i in range(8):
+            dy_s = int(round((8 - c_i) * 0.85))
+            arr_i[200:280, c_i, :] = arr_i[200 + dy_s:280 + dy_s, 8, :]
 
     # Embed interior `(1393, 1549)` painted maps into `[DY:, DX:]`
     st_pad = np.pad(st_int, ((DY, 0), (DX, 0), (0, 0)), mode='edge')
@@ -842,13 +918,13 @@ def main():
     # SW Crook–Rift Pass, Arachnoid Canyon/Breach, Crater Wall Unification, Step 2G passes, and Legacy Seam Fixes.
     # CRITICAL: `w_seam` is strictly `1.0` everywhere on `is_new_area` (`Y < 330` or `X < 272`) so 1D edge-repeated
     # padding streaks from `st_pad` / `t_pad` NEVER bleed into `is_new_area`, and feathers smoothly from `1.0 -> 0.0`
-    # inside `[DY:, DX:]` (`d_into_old = 0..52 px`)!
+    # inside `[DY:, DX:]` (`d_into_old = 0..64 px`)!
     d_into_old = meta_nw['d_into_old']
     d_old_warped = d_into_old + G.sstep(0.0, 14.0, d_into_old) * (16.0 * meta_nw['fbm2'] + 8.0 * meta_nw['fbm1'])
     w_seam = np.where(
         is_new_area,
         1.0,
-        np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), 1.0 - G.sstep(0.0, 52.0, d_old_warped)),
+        np.where(old_lake_guard, G.sstep(0.0, 16.0, d_into_new), 1.0 - G.sstep(0.0, 64.0, d_old_warped)),
     )
     w_wall_unify = meta_nw.get('w_wall_unify', np.zeros((NEW_OH, NEW_OW), dtype=float))
     ch_2g_exp = np.pad(nd.gaussian_filter(ch_2g.astype(float), sigma=2.5), ((DY, 0), (DX, 0)), mode='constant')
@@ -868,13 +944,16 @@ def main():
         np.maximum(w_fix_seam_hr, w_fix_seam_nwl),
         np.maximum(np.clip(ch_2g_exp * 1.15, 0.0, 1.0), np.maximum(w_sout_pass_exp, w_sg_repaint)),
     )
+    w_batch5_paint = np.maximum(
+        np.maximum(w_silent_vales, w_sasquatch_vales),
+        np.maximum(np.maximum(w_ozark_dolomite, w_porphyry_vein), w_tsunami_scour),
+    )
     w_exp_paint = np.maximum(
-        np.maximum(np.maximum(w_seam, w_wall_unify), w_nw_sea_unify),
+        np.maximum(np.maximum(w_seam, w_wall_unify), np.maximum(w_nw_sea_unify, w_batch5_paint)),
         np.maximum(np.maximum(w_arach_paint, w_legacy_seams), np.maximum(w_ne_connector, w_sw_connector)),
     )[..., None]
 
     # 6A. Relief Map (`t`) on (1723, 1821) — Continuous hypsometric tinting following the contour slopes!
-    hypso_centers, hypso_meds = build_hypsometric_table(Eo_1393, whas0_1393, t0_1393.astype(float))
     t_hypso_exp = eval_hypso(En_exp, hypso_centers, hypso_meds)
     t_syn_exp = np.clip(t_hypso_exp * shade_exp, 0.0, 255.0)
 
@@ -996,15 +1075,56 @@ def main():
     ) * shade_exp
     st_clim_exp = st_clim_exp * (1.0 - 0.85 * w_sout_pass_exp[..., None]) + sout_pass_rgb * (0.85 * w_sout_pass_exp[..., None])
 
+    # 5C. `neo-ozarks` (`rmvyiyw8ucd1y`): Dissected Cherty Dolomite/Limestone Bluffs & Exposed Purple-Red Porphyry Veins!
+    w_oz_bluff = w_ozark_dolomite * G.sstep(45.0, 165.0, np.hypot(gx_e, gy_e) * 1000.0) * (~whas_exp).astype(float)
+    oz_dolomite_rgb = np.array([204.0, 192.0, 166.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.62 * w_oz_bluff[..., None]) + oz_dolomite_rgb * (0.62 * w_oz_bluff[..., None])
+
+    w_porph_st = np.clip(w_porphyry_vein * 1.15, 0.0, 1.0) * (~whas_exp).astype(float)
+    porphyry_rgb = np.array([156.0, 78.0, 74.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.78 * w_porph_st[..., None]) + porphyry_rgb * (0.78 * w_porph_st[..., None])
+
+    # 5D. `Silent Vales` (`rmvyk0ubpkdoy`): Connected Cool-Temperate Cedar-Hemlock-Fern Valley Forests!
+    w_sv_st = w_silent_vales * (1.0 - G.sstep(2450.0, 3650.0, En_exp)) * (~whas_exp).astype(float)
+    u_sv_el = np.clip((En_exp - 1100.0) / 1900.0, 0.0, 1.0)[..., None]
+    sv_forest_rgb = (
+        np.array([50.0, 102.0, 52.0]) * (1.0 - u_sv_el)
+        + np.array([86.0, 118.0, 64.0]) * u_sv_el
+    ) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.78 * w_sv_st[..., None]) + sv_forest_rgb * (0.78 * w_sv_st[..., None])
+
+    # 5E. `sasquatch tribes` (`rmvyj1kvhx4m4`): Smaller, Harsher Periglacial Tundra & Fellfield Valleys (+5,850..+6,240 m)!
+    w_sq_st = G.sstep(0.05, 0.55, w_sasquatch_vales) * (1.0 - G.sstep(6220.0, 6650.0, En_exp)) * (~whas_exp).astype(float)
+    sq_fellfield_rgb = (
+        np.array([104.0, 112.0, 76.0]) * (1.0 - G.sstep(5920.0, 6180.0, En_exp)[..., None])
+        + np.array([138.0, 128.0, 104.0]) * G.sstep(5920.0, 6180.0, En_exp)[..., None]
+    ) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.84 * w_sq_st[..., None]) + sq_fellfield_rgb * (0.84 * w_sq_st[..., None])
+
+    # 5F. `tsunami coast` (`rmvyk62bgdvs3`): Wave-Planed Salt-Bleached Scour Bench & V-Shaped Megatsunami Boulder Chevrons!
+    w_tsu_bench = w_tsunami_scour * (~whas_exp).astype(float)
+    tsu_bench_rgb = np.array([148.0, 142.0, 122.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.56 * w_tsu_bench[..., None]) + tsu_bench_rgb * (0.56 * w_tsu_bench[..., None])
+
+    w_tsu_chev = np.clip(w_tsunami_chevron * 1.25, 0.0, 1.0) * (~whas_exp).astype(float)
+    tsu_chev_rgb = np.array([186.0, 176.0, 152.0]) * shade_exp
+    st_clim_exp = st_clim_exp * (1.0 - 0.72 * w_tsu_chev[..., None]) + tsu_chev_rgb * (0.72 * w_tsu_chev[..., None])
+
     # 6. High Alpine Snow & Glaciers (`4,150 m <= En_exp < 8,200 m`) & Airless Dark Rust-Red Outer Plateau (`En_exp >= 7,600 m`):
-    # Matches the exact elevation-driven snow rim + dark rust-red airless outer flank of the existing map!
-    snow_thresh = np.where((w_tharn > 0.3) | (w_sout_pass_exp > 0.15), 5850.0, 4150.0)
+    # Smoothly continuous `snow_thresh` so there is zero boolean jump ring around `sasquatch tribes` or `Silent Vales`!
+    snow_thresh = (
+        4150.0
+        + 1700.0 * np.maximum(G.sstep(0.10, 0.45, w_tharn), G.sstep(0.05, 0.35, w_sout_pass_exp))
+        + 2180.0 * G.sstep(0.05, 0.55, w_sasquatch_vales)
+    )
     w_snow_exp = (
         G.sstep(snow_thresh, snow_thresh + 750.0, En_exp)
         * (1.0 - G.sstep(7400.0, 8600.0, En_exp))
         * (~whas_exp).astype(float)
         * (1.0 - 0.72 * w_cop_glac)
         * (1.0 - 0.88 * w_sout_pass_exp)
+        * (1.0 - 0.92 * w_sv_st)
+        * (1.0 - 0.90 * w_sq_st)
     )
     st_clim_exp = st_clim_exp * (1.0 - 0.88 * w_snow_exp[..., None]) + (np.array([238.0, 240.0, 244.0]) * np.clip(shade_exp, 0.74, 1.16)) * (0.88 * w_snow_exp[..., None])
 
@@ -1021,7 +1141,8 @@ def main():
     w_sm_plume = (meta_nw['is_seamount'] & whas_exp)[..., None] * G.sstep(-320.0, -10.0, En_exp)[..., None]
     st_sea_col = st_sea_col * (1.0 - 0.68 * w_sm_plume) + np.array([78.0, 172.0, 168.0]) * (0.68 * w_sm_plume)
     st_sea_col = np.where(is_copper_tarn[..., None], np.array([52.0, 184.0, 162.0]), st_sea_col)
-    st_sea_col = np.where(is_high_lake[..., None], np.array([42.0, 108.0, 128.0]), st_sea_col)
+    is_batch5_hlake = is_high_lake | (whas_exp & ((w_silent_vales > 0.05) | (w_sasquatch_vales > 0.05)))
+    st_sea_col = np.where(is_batch5_hlake[..., None], np.array([42.0, 108.0, 128.0]), st_sea_col)
 
     st_syn_exp = np.where(whas_exp[..., None], st_sea_col * np.clip(shade_exp, 0.86, 1.12), st_clim_exp)
     st_final_exp = np.clip(st_pad.astype(float) * (1.0 - w_exp_paint) + st_syn_exp * w_exp_paint, 0.0, 255.0).round().astype(np.uint8)
@@ -1110,16 +1231,36 @@ def main():
                 sl['at_px'] = [int(round(sl['at_px'][0] + DX)), int(round(sl['at_px'][1] + DY))]
     D_new['hydro'] = hydro_exp
 
-    # 7F. Shift `regions` by (+272, +330) and append `meta_nw['new_regions']`
+    # 7F. Shift `regions` by (+272, +330), combine `NW outer wall` (`rmuqm8dxeuvhi`) & `nw outer wall 2` (`rmvyj7vb4uawm`),
+    #     and append `meta_nw['new_regions']`
+    merged_nw_outer_wall_pts = [
+        [328, 588], [322, 568], [335, 499], [364, 453], [437, 408], [450, 378], [509, 340],
+        [530, 327], [556, 302], [631, 286], [692, 285], [743, 256], [826, 276], [913, 285],
+        [938, 322], [938, 351], [901, 383], [894, 396], [849, 385], [805, 399], [790, 412],
+        [769, 380], [717, 382], [697, 375], [674, 385], [649, 385], [626, 392], [600, 397],
+        [564, 426], [543, 442], [542, 484], [551, 506], [560, 531], [563, 541], [565, 554],
+        [543, 578], [536, 565], [514, 573], [528, 602], [528, 613], [513, 615], [498, 600],
+        [472, 607], [461, 614], [448, 625], [441, 604], [408, 586], [384, 586], [349, 594],
+    ]
     regs_exp = []
     for r in regs_1393:
+        if r.get('id') == 'rmvyj7vb4uawm':
+            continue  # Merged into `NW outer wall` (`rmuqm8dxeuvhi`)
         r2 = copy.deepcopy(r)
-        r2['points'] = [[int(round(p[0] + DX)), int(round(p[1] + DY))] for p in r['points']]
+        if r2.get('id') == 'rmuqm8dxeuvhi':
+            r2['points'] = copy.deepcopy(merged_nw_outer_wall_pts)
+        else:
+            r2['points'] = [[int(round(p[0] + DX)), int(round(p[1] + DY))] for p in r['points']]
         regs_exp.append(r2)
     existing_reg_ids = {r['id'] for r in regs_exp}
     for nr in meta_nw['new_regions']:
         if nr['id'] not in existing_reg_ids:
             regs_exp.append(copy.deepcopy(nr))
+        else:
+            for idx_reg, rr_exp in enumerate(regs_exp):
+                if rr_exp['id'] == nr['id']:
+                    regs_exp[idx_reg] = copy.deepcopy(nr)
+                    break
     print(f'  Total regions on expanded map: {len(regs_exp)} (added {len(meta_nw["new_regions"])} new N/W regions)')
 
     # 7G. Shift `settlements` by (+272, +330), append Zeijani cavern settlements, and run Automated Audit & Snap (<= 50 km / <= 25 px)
@@ -1311,6 +1452,10 @@ def main():
         'rmvraoas90co7', 'rmvhighrift100', 'rmvstalkergate', 'rmvmidbasin101',
         'rmvriavalley', 'rmvdoubledelta', 'rmvarachnoids', 'rmvthearch',
         'rmvseamounts', 'rmvthecrook', 'rmvcopperglacier', 'rmvtharnuplands', 'rmvoutlandpass',
+        'rmvyiyw8ucd1y', 'rmvyj1kvhx4m4', 'rmvyj4v2ozgb1', 'rmvyk0ubpkdoy', 'rmvyk62bgdvs3',
+    ]
+    sync_reg_ids_52 = [
+        'rmuqm8dxeuvhi', 'rmvyiyw8ucd1y', 'rmvyj1kvhx4m4', 'rmvyj4v2ozgb1', 'rmvyk0ubpkdoy', 'rmvyk62bgdvs3',
     ]
     reg_js_new = f"""  function localSave(){{ try{{ localStorage.setItem('krator.regions',JSON.stringify([...regions.values()])); }}catch(e){{}} }}
   function localLoad(){{
@@ -1321,17 +1466,26 @@ def main():
         localStorage.setItem('krator.canvas50','1');
       }}
     }}catch(e){{}}
+    const defMap = new Map();
     {{
       const defRegs = {json.dumps(regs_exp)};
-      defRegs.forEach(r=>regions.set(r.id,r));
+      defRegs.forEach(r=>{{ regions.set(r.id,r); defMap.set(r.id,r); }});
     }}
     try{{ const j=JSON.parse(localStorage.getItem('krator.regions')||'[]'); j.forEach(r=>{{ if(r&&r.id&&Array.isArray(r.points)) regions.set(r.id,r); }}); }}catch(e){{}}
     try{{
       if(localStorage.getItem('krator.regAdded.5.0')!=='1'){{
         {json.dumps(new_reg_ids_50)}.forEach(id=>{{
-          const d=regions.get(id); if(d) regions.set(id,d);
+          const d=defMap.get(id); if(d) regions.set(id,d);
         }});
         localStorage.setItem('krator.regAdded.5.0','1');
+        localSave();
+      }}
+      if(localStorage.getItem('krator.regMerged.5.2')!=='1'){{
+        regions.delete('rmvyj7vb4uawm');
+        {json.dumps(sync_reg_ids_52)}.forEach(id=>{{
+          const d=defMap.get(id); if(d) regions.set(id,d);
+        }});
+        localStorage.setItem('krator.regMerged.5.2','1');
         localSave();
       }}
     }}catch(e){{}}

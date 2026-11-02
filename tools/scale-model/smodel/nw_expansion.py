@@ -22,6 +22,7 @@ the light-blue river markings (`is_river_paint`) as **local valley thalweg minim
      to Eastern Highland Lake `+1,460 m`), SW Crook–Rift Connector (`rmvcopperglacier`), Western Boundary Cordillera
      (`X = 0..68, Y = 470..1120`), and S Outlands–Loom-Chasms Pass (`X = 1665..1755, Y = 875..1060`).
 """
+import heapq
 import math
 import numpy as np
 from PIL import Image
@@ -33,6 +34,113 @@ DX_F = 272
 DY_F = 330
 OLD_OH, OLD_OW = 1393, 1549
 NEW_OH, NEW_OW = 1723, 1821
+
+
+def _trace_thalweg_dijkstra(E_surf, waypoints, bbox, corridor_hw=26.0, sigma_smooth=1.8):
+    """Trace the true minimum-elevation topographic thalweg on `E_surf` through `waypoints`
+    within `bbox = (y0, y1, x0, x1)`, penalizing height above the local valley floor and any
+    uphill step so the river follows the lowest point of the land and never climbs a hillside."""
+    y0, y1, x0, x1 = bbox
+    sub_E = E_surf[y0:y1, x0:x1]
+    sh, sw = sub_E.shape
+    Y_s, X_s = np.indices((sh, sw), dtype=float)
+    X_g = X_s + x0
+    Y_g = Y_s + y0
+
+    # Build corridor mask around piecewise-linear segments between waypoints
+    min_d = np.full((sh, sw), 1e9, dtype=float)
+    for i in range(len(waypoints) - 1):
+        wx0, wy0 = waypoints[i]
+        wx1, wy1 = waypoints[i + 1]
+        vx, vy = wx1 - wx0, wy1 - wy0
+        l2 = max(vx * vx + vy * vy, 1e-9)
+        t = np.clip(((X_g - wx0) * vx + (Y_g - wy0) * vy) / l2, 0.0, 1.0)
+        d = np.hypot(X_g - (wx0 + t * vx), Y_g - (wy0 + t * vy))
+        min_d = np.minimum(min_d, d)
+
+    in_corr = min_d <= corridor_hw
+    # Local valley floor baseline inside the corridor
+    E_min_loc = nd.gaussian_filter(nd.minimum_filter(sub_E, size=15), sigma=3.5)
+    h_above_floor = np.maximum(0.0, sub_E - E_min_loc)
+
+    nbrs = [
+        (-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+        (-1, -1, 1.41421356), (-1, 1, 1.41421356), (1, -1, 1.41421356), (1, 1, 1.41421356),
+    ]
+
+    full_path = []
+    for seg_i in range(len(waypoints) - 1):
+        sx = int(np.clip(round(waypoints[seg_i][0]) - x0, 0, sw - 1))
+        sy = int(np.clip(round(waypoints[seg_i][1]) - y0, 0, sh - 1))
+        tx = int(np.clip(round(waypoints[seg_i + 1][0]) - x0, 0, sw - 1))
+        ty = int(np.clip(round(waypoints[seg_i + 1][1]) - y0, 0, sh - 1))
+
+        dist_g = np.full((sh, sw), 1e18, dtype=float)
+        parent_y = np.full((sh, sw), -1, dtype=np.int32)
+        parent_x = np.full((sh, sw), -1, dtype=np.int32)
+        dist_g[sy, sx] = 0.0
+        pq = [(0.0, sy, sx)]
+
+        while pq:
+            c_cur, cy, cx = heapq.heappop(pq)
+            if cy == ty and cx == tx:
+                break
+            if c_cur > dist_g[cy, cx]:
+                continue
+            e_cur = float(sub_E[cy, cx])
+            for dy_n, dx_n, ds_n in nbrs:
+                ny, nx = cy + dy_n, cx + dx_n
+                if ny < 0 or ny >= sh or nx < 0 or nx >= sw:
+                    continue
+                if not in_corr[ny, nx]:
+                    continue
+                e_nxt = float(sub_E[ny, nx])
+                h_rel = float(h_above_floor[ny, nx])
+                uphill = max(0.0, e_nxt - e_cur)
+                step_cost = ds_n * (1.0 + 0.14 * ((h_rel / 18.0) ** 2) + 0.45 * ((uphill / 10.0) ** 2))
+                nc = c_cur + step_cost
+                if nc < dist_g[ny, nx]:
+                    dist_g[ny, nx] = nc
+                    parent_y[ny, nx] = cy
+                    parent_x[ny, nx] = cx
+                    heapq.heappush(pq, (nc, ny, nx))
+
+        seg_pts = []
+        cy, cx = ty, tx
+        if parent_y[cy, cx] == -1 and (cy != sy or cx != sx):
+            # Fallback linear interpolation if disconnected
+            n_lin = max(2, int(round(math.hypot(tx - sx, ty - sy))))
+            for k in range(n_lin + 1):
+                u = k / float(n_lin)
+                seg_pts.append(( sx + u * (tx - sx) + x0, sy + u * (ty - sy) + y0 ))
+        else:
+            while cy != -1 and cx != -1:
+                seg_pts.append((float(cx + x0), float(cy + y0)))
+                if cy == sy and cx == sx:
+                    break
+                py_n, px_n = int(parent_y[cy, cx]), int(parent_x[cy, cx])
+                cy, cx = py_n, px_n
+            seg_pts.reverse()
+
+        if seg_i > 0 and seg_pts:
+            seg_pts = seg_pts[1:]
+        full_path.extend(seg_pts)
+
+    arr_p = np.array(full_path, dtype=float)
+    if len(arr_p) >= 5 and sigma_smooth > 0.0:
+        xs_sm = nd.gaussian_filter1d(arr_p[:, 0], sigma=sigma_smooth, mode='nearest')
+        ys_sm = nd.gaussian_filter1d(arr_p[:, 1], sigma=sigma_smooth, mode='nearest')
+        # Keep all waypoint indices pinned
+        for wx, wy in waypoints:
+            d_wp = np.hypot(arr_p[:, 0] - wx, arr_p[:, 1] - wy)
+            idx_wp = int(np.argmin(d_wp))
+            w_pin = np.exp(-((np.arange(len(arr_p)) - idx_wp) / 2.2) ** 2)
+            xs_sm = xs_sm * (1.0 - w_pin) + wx * w_pin
+            ys_sm = ys_sm * (1.0 - w_pin) + wy * w_pin
+        arr_p[:, 0] = xs_sm
+        arr_p[:, 1] = ys_sm
+
+    return arr_p
 
 
 def _catmull_rom_2d(pts, n_per_seg=28):
@@ -495,8 +603,9 @@ def solve_contour_surface(
     w_coast_anchor = G.sstep(0.0, 6.0, d_from_sea)
     h_cont = (h_cont * (1.0 - w_coast_anchor) + h_smooth * w_coast_anchor) * land_mask
 
-    # Incorporate ALL user-painted Light-Blue Rivers (`is_river_paint`) + the Crook Axial River
-    # as true valley thalweg local minima!
+    # Incorporate the Crook Axial River + gentle, broad valley swales along `is_river_paint`
+    # (Tapered smoothly with a broad 38-px Gaussian envelope and noisy spur modulation so painted river lines
+    # NEVER punch a blunt circular dead-end cap or narrow sausage furrow into a mountain contour band!)
     is_crook_riv_line = (
         (Y >= 645.0) & (Y <= 1148.0)
         & (np.abs(X - (112.0 + 18.0 * G.sstep(720.0, 1050.0, Y) + 22.0 * G.sstep(1050.0, 1150.0, Y) + 8.0 * np.sin((Y - 650.0) * 0.015))) <= 2.0)
@@ -504,11 +613,14 @@ def solve_contour_surface(
     all_riv_seeds = (is_river_paint | is_crook_riv_line) & ~is_sea & ~is_high_lake
     if all_riv_seeds.any():
         d_to_riv, (riy, rix) = nd.distance_transform_edt(~all_riv_seeds, return_indices=True)
-        h_at_riv = nd.gaussian_filter(h_cont, sigma=14.0)[riy, rix]
-        val_incision = np.clip(40.0 + 0.14 * h_at_riv, 35.0, 320.0)
+        d_to_riv_mod = d_to_riv * (0.76 + 0.36 * rn_broad + 0.18 * rn_fine)
+        h_at_riv = nd.gaussian_filter(h_cont, sigma=18.0)[riy, rix]
+        # Keep Crook valley deep while keeping northern painted river swales subtle (main valley carving happens in Step 4A/4B)
+        w_is_crook = G.sstep(600.0, 660.0, Y) * (1.0 - G.sstep(220.0, 265.0, X))
+        val_incision = np.where(w_is_crook > 0.2, np.clip(45.0 + 0.14 * h_at_riv, 40.0, 280.0), np.clip(14.0 + 0.045 * h_at_riv, 12.0, 68.0))
         h_thalweg = np.maximum(2.5, h_at_riv - val_incision)
-        w_riv_valley = (1.0 - G.sstep(0.0, 24.0, d_to_riv)) ** 1.45
-        h_cont = h_cont * (1.0 - 0.72 * w_riv_valley) + np.minimum(h_cont, h_thalweg + val_incision * G.sstep(0.0, 24.0, d_to_riv)) * (0.72 * w_riv_valley)
+        w_riv_valley = (1.0 - G.sstep(0.0, 36.0, d_to_riv_mod)) ** 1.35
+        h_cont = h_cont * (1.0 - 0.65 * w_riv_valley) + np.minimum(h_cont, h_thalweg + val_incision * G.sstep(0.0, 36.0, d_to_riv_mod)) * (0.65 * w_riv_valley)
 
     # Add natural multi-scale topographic texture proportional to elevation (subtle in valleys, rugged on high peaks)
     relief_amp = 18.0 + 0.14 * np.clip(h_cont, 0.0, 6800.0)
@@ -520,7 +632,7 @@ def solve_contour_surface(
 def build_arch_midocean_ridge(px, py, is_sea, tier_id, rn_fine, rn_broad, fbm1, fbm2):
     """Sculpt **The Arch** (`X = 30..535, Y = 10..645`) as a dramatic **exposed undersea mid-ocean spreading ridge**
     with a clear **double line of high parallel rift-shoulder horst ridges** (`+750..+2,250 m`) separated by a
-    **lowered median axial rift valley / sound** (`-65 m..+160 m`), plus a rich tectonic archipelago of elongated
+    **lowered median axial rift valley / lake chain** (`-65 m..+90 m`), plus a rich tectonic archipelago of elongated
     fault-block islands in the western Arch and Crook entrance (`X = 32..230, Y = 260..645`)."""
     OH, OW = px.shape
 
@@ -532,41 +644,44 @@ def build_arch_midocean_ridge(px, py, is_sea, tier_id, rn_fine, rn_broad, fbm1, 
         (146.0, 332.0,  980.0,  9.0),
         (178.0, 272.0, 1180.0, 10.0),
         (222.0, 236.0, 1360.0, 10.5),
-        (268.0, 202.0, 1520.0, 11.0),
-        (318.0, 170.0, 1640.0, 11.0),
-        (368.0, 142.0, 1720.0, 11.0),
-        (418.0, 114.0, 1780.0, 11.5),
-        (468.0,  92.0, 1880.0, 12.0),
-        (508.0,  78.0, 2050.0, 13.0),
+        (268.0, 200.0, 1520.0, 10.5),
+        (318.0, 166.0, 1640.0, 10.5),
+        (368.0, 140.0, 1720.0, 10.5),
+        (418.0, 114.0, 1780.0, 11.0),
+        (468.0,  90.0, 1880.0, 11.5),
+        (508.0,  76.0, 2050.0, 12.5),
     ]
     # 2. Inner (South-Eastern) Rift-Shoulder Horst Ridge Spine [(x, y, crest_m, half_width_px)]:
+    # Positioned cleanly SE of the axial rift lake chain so the axial lakes sit squarely inside the median graben!
     inner_ridge_ctrl = [
         (104.0, 558.0,  580.0,  7.5),
         (134.0, 492.0,  710.0,  8.0),
         (164.0, 422.0,  840.0,  8.5),
         (194.0, 352.0,  960.0,  9.0),
-        (224.0, 294.0, 1140.0, 10.0),
-        (266.0, 258.0, 1320.0, 10.5),
-        (312.0, 222.0, 1460.0, 11.0),
-        (362.0, 188.0, 1580.0, 11.0),
-        (412.0, 156.0, 1660.0, 11.0),
-        (458.0, 132.0, 1620.0, 11.0),
-        (498.0, 116.0, 1480.0, 11.0),
+        (232.0, 296.0, 1140.0,  9.5),
+        (276.0, 262.0, 1320.0, 10.0),
+        (326.0, 228.0, 1460.0, 10.0),
+        (376.0, 202.0, 1580.0, 10.0),
+        (428.0, 192.0, 1640.0, 10.0),
+        (478.0, 166.0, 1580.0, 10.0),
+        (518.0, 140.0, 1420.0, 10.0),
     ]
-    # 3. Median Axial Rift Valley / Trough Centerline in between the two parallel ridges:
+    # 3. Median Axial Rift Valley / Trough Centerline passing directly from lake to lake down the axial graben:
     axial_trough_ctrl = [
         ( 83.0, 551.0,  -45.0,  8.5),
         (111.0, 485.0,  -35.0,  8.5),
         (141.0, 413.0,  -25.0,  9.0),
         (170.0, 342.0,  -15.0,  9.5),
-        (201.0, 283.0,   35.0,  9.5),
-        (244.0, 247.0,   85.0, 10.0),
-        (290.0, 212.0,  125.0, 10.0),
-        (340.0, 179.0,  155.0, 10.5),
-        (390.0, 149.0,  165.0, 10.5),
-        (438.0, 123.0,  140.0, 10.5),
-        (483.0, 104.0,   95.0, 11.0),
-        (528.0, 114.0,   42.0, 11.5),
+        (215.0, 272.0,   18.0,  9.5),
+        (258.0, 246.0,   38.0, 10.0),
+        (290.5, 228.5,    8.0, 10.5),  # Axial Rift Lake 1
+        (335.5, 194.0,    6.0, 11.5),  # Axial Rift Lake 2
+        (381.0, 172.0,    6.0, 11.0),  # Axial Rift Lake 3
+        (418.0, 168.0,    6.0, 10.5),  # Axial Rift Lake 4
+        (457.0, 135.0,    5.0, 12.5),  # Axial Rift Lake 5
+        (498.0, 115.0,   14.0, 10.5),  # Valley neck between Lake 5 & Lake 6
+        (535.0, 108.0,    4.0, 11.5),  # Axial Rift Lake 6
+        (564.0, 122.0,    8.0, 11.5),  # Land confluence with Si-Ma (9104)
     ]
 
     outer_s = _catmull_rom_2d(outer_ridge_ctrl, n_per_seg=20)
@@ -736,39 +851,38 @@ def build_arachnoid_and_canyon_field(X, Y, is_arach, is_high_lake, rs):
     # Starts directly inside the SW bay of Eastern Highland Lake (`1268.0, 202.0`, `+1,455 m`)
     # and joins the main Ria River trunk at `(898.0, 174.0)` (`+385 m`)!
     canyon_ctrl = [
-        (1268.0, 202.0, 1455.0,  6.0),  # Inside SW bay of Eastern Highland Lake (+1,460 m)
-        (1250.0, 212.0, 1410.0,  6.2),  # Exits western shoreline outlet of Eastern Highland Lake
-        (1224.0, 238.0, 1315.0,  6.5),  # Upper basalt cataract throat
-        (1182.0, 280.0, 1140.0,  8.0),  # Enters East Arachnoid ring-graben
-        (1136.0, 314.0,  980.0,  6.5),  # Threads hard basalt ring-dike water gap
-        (1088.0, 334.0,  870.0,  9.5),  # Northern Korona rim pass cauldron!
-        (1046.0, 330.0,  780.0, 10.5),  # Heart of Main North-Korona Arachnoid cauldron
-        (1008.0, 298.0,  690.0,  6.5),  # Cleaves NW radial dike gateway
-        ( 972.0, 254.0,  585.0,  8.0),  # Lower Travertine Cataract Staircase
-        ( 934.0, 212.0,  475.0,  8.5),  # Canyon mouth emerging onto Ria Valley piedmont
-        ( 898.0, 174.0,  385.0,  9.0),  # Exact confluence with main Ria River trunk!
+        (1268.0, 202.0, 1452.0, 12.0),  # Inside SW bay of Eastern Highland Lake (+1,460 m)
+        (1248.0, 214.0, 1395.0, 13.0),  # Exits western shoreline outlet of Eastern Highland Lake
+        (1220.0, 238.0, 1295.0, 14.0),  # Upper basalt cataract throat
+        (1180.0, 276.0, 1145.0, 15.5),  # Enters East Arachnoid ring-graben
+        (1136.0, 310.0,  995.0, 15.0),  # Threads hard basalt ring-dike water gap
+        (1088.0, 328.0,  875.0, 17.5),  # Northern Korona rim pass cauldron!
+        (1046.0, 322.0,  775.0, 18.0),  # Heart of Main North-Korona Arachnoid cauldron
+        (1008.0, 292.0,  675.0, 15.5),  # Cleaves NW radial dike gateway
+        ( 972.0, 252.0,  575.0, 16.0),  # Lower Travertine Cataract Staircase
+        ( 934.0, 212.0,  475.0, 16.5),  # Canyon mouth emerging onto Ria Valley piedmont
+        ( 898.0, 174.0,  382.0, 17.0),  # Exact confluence with main Ria River trunk!
     ]
     canyon_samples = _catmull_rom_2d(canyon_ctrl, n_per_seg=25)
     n_cs = len(canyon_samples)
     s_param = np.linspace(0.0, 1.0, n_cs)
-    # Attenuate meanders strongly at both the lake outlet (`s < 0.14`) and Ria confluence (`s > 0.85`)
+    # Subtle natural valley sinuosity, strongly attenuated at endpoints
     meander_envelope = (np.sin(math.pi * s_param) ** 1.25) * G.sstep(0.06, 0.18, s_param) * (1.0 - G.sstep(0.82, 0.95, s_param))
-    meander_off = (10.5 * np.sin(s_param * 7.5 * math.pi + 0.4) + 4.8 * np.cos(s_param * 17.0 * math.pi - 0.8)) * meander_envelope
+    meander_off = (5.5 * np.sin(s_param * 6.5 * math.pi + 0.4) + 2.5 * np.cos(s_param * 13.0 * math.pi - 0.8)) * meander_envelope
     tangents = np.gradient(canyon_samples[:, :2], axis=0)
     tnorm = np.hypot(tangents[:, 0], tangents[:, 1]) + 1e-9
     normals = np.stack([-tangents[:, 1] / tnorm, tangents[:, 0] / tnorm], axis=-1)
     canyon_samples[:, 0] += normals[:, 0] * meander_off
     canyon_samples[:, 1] += normals[:, 1] * meander_off
-    canyon_samples[:, 3] *= (0.82 + 0.28 * np.sin(s_param * 13.0 * math.pi))
 
     # Evaluate canyon distance using unwarped coordinates near the two endpoints so the lake outlet and Ria junction are 100% clean
     end_taper = G.sstep(180.0, 215.0, Y) * G.sstep(4.0, 14.0, nd.distance_transform_edt(~is_high_lake))
-    Xc_eff = X + wx * end_taper
-    Yc_eff = Y + wy * end_taper
+    Xc_eff = X + 0.45 * wx * end_taper
+    Yc_eff = Y + 0.45 * wy * end_taper
 
     d2_can = np.full((OH, OW), 1e12, dtype=float)
     el_can = np.zeros((OH, OW), dtype=float)
-    hw_can = np.full((OH, OW), 8.0, dtype=float)
+    hw_can = np.full((OH, OW), 15.0, dtype=float)
 
     y0_c, y1_c, x0_c, x1_c = 155, 425, 855, 1310
     sub_x = Xc_eff[y0_c:y1_c, x0_c:x1_c]
@@ -785,19 +899,21 @@ def build_arachnoid_and_canyon_field(X, Y, is_arach, is_high_lake, rs):
         sub_hw = np.where(better, shw, sub_hw)
 
     d2_can[y0_c:y1_c, x0_c:x1_c] = sub_d2
-    el_can[y0_c:y1_c, x0_c:x1_c] = sub_el
+    el_can[y0_c:y1_c, x0_c:x1_c] = nd.gaussian_filter(sub_el, sigma=2.5)
     hw_can[y0_c:y1_c, x0_c:x1_c] = sub_hw
 
     dist_can = np.sqrt(d2_can)
     d_norm_can = dist_can / np.maximum(hw_can, 1.0)
-    w_can_inner = 1.0 - G.sstep(0.0, 0.38, d_norm_can)
-    w_can_outer = 1.0 - G.sstep(0.40, 1.38, d_norm_can)
-    # Taper the rocky canyon walls out smoothly by `Y = 180..210` as the river enters the green Ria floodplain
+    w_can_inner = 1.0 - G.sstep(0.0, 0.65, d_norm_can)
+    w_can_outer = 1.0 - G.sstep(0.45, 1.65, d_norm_can)
+    # Suppress arachnoid basalt dike ribs inside the canyon corridor so they never dam the canyon floor!
+    arach_rib_tot = arach_rib_tot * (1.0 - 0.95 * w_can_outer)
+    # Taper the rocky canyon walls out smoothly by `Y = 175..205` as the river enters the green Ria floodplain
     # and taper at the Highland Lake shoreline so there is no dark scar at either end!
     d_out_hlake = nd.distance_transform_edt(~is_high_lake)
-    w_can_ends = G.sstep(172.0, 208.0, Y) * G.sstep(0.0, 5.0, d_out_hlake)
-    w_canyon = (0.52 * w_can_outer + 0.48 * w_can_inner) * w_can_ends
-    h_canyon_profile = el_can + 210.0 * (np.clip(d_norm_can, 0.0, 1.5) ** 1.65)
+    w_can_ends = G.sstep(172.0, 204.0, Y) * G.sstep(0.0, 4.0, d_out_hlake)
+    w_canyon = (0.32 * w_can_outer + 0.68 * w_can_inner) * w_can_ends
+    h_canyon_profile = el_can + 480.0 * (np.clip(d_norm_can, 0.0, 1.6) ** 1.45)
 
     canyon_river_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in canyon_samples[::3]]
     if canyon_river_pts[0] != [1268.0, 202.0]:
@@ -810,35 +926,38 @@ def build_arachnoid_and_canyon_field(X, Y, is_arach, is_high_lake, rs):
 def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     """Expand `(1393, 1549)` height/water grids to `(1723, 1821)` (`2 km/cell`) using continuous
     isohypse contour interpolation, exposed mid-ocean ridge morphology in The Arch, two river systems
-    draining into the medium-blue Double Delta, and seamless crater-wall transitions."""
+    draining into the Combined Double Delta & Bayou, and seamless crater-wall transitions."""
     rs = np.random.RandomState(500)
     Y, X = np.indices((NEW_OH, NEW_OW))
     px = X.astype(float)
     py = Y.astype(float)
 
-    # 0. Strip the 16-pixel top/left outer border bevel of `Eo_old`, `whas0_old`, and `wlev0_old`,
-    # shifting along the 45-degree diagonal NW Crater Wall shoreline (`x_old = 140..280`, `dx = (16 - r_i) * 1.75`)
-    # and southern NW sea shoreline (`y_old = 200..280`, `dy = (16 - c_i) * 0.85`) so the shoreline and mountain
-    # contours continue diagonally across `Y = 330..346` and `X = 272..288` with ZERO vertical wall or horizontal notch!
+    # 0. Strip only the 5-pixel top/left outer border frame shadow (`r_i in range(5)`, `c_i in range(5)`),
+    # and apply an 8-pixel diagonal shoreline alignment ONLY inside the NW Crater Wall shoreline box (`x_old = 140..255`)
+    # and southern NW sea shoreline box (`y_old = 200..280`).
+    # CRITICAL (`Comment 5`): Do NOT flatten 16 rows on the steep south-facing mountain slope (`x_old >= 260`),
+    # because copying row 16 into rows 0..15 creates a 16-px flat shelf that breaks into a steep slope at `Y = 346`!
     Eo_clean_edge = Eo_old.copy()
     whas0_clean_edge = whas0_old.copy()
     wlev0_clean_edge = wlev0_old.copy()
-    for r_i in range(16):
-        Eo_clean_edge[r_i, :] = Eo_old[16, :]
-        whas0_clean_edge[r_i, :] = whas0_old[16, :]
-        wlev0_clean_edge[r_i, :] = wlev0_old[16, :]
-        dx_s = int(round((16 - r_i) * 1.75))
-        Eo_clean_edge[r_i, 140:280] = Eo_old[16, 140 - dx_s:280 - dx_s]
-        whas0_clean_edge[r_i, 140:280] = whas0_old[16, 140 - dx_s:280 - dx_s]
-        wlev0_clean_edge[r_i, 140:280] = wlev0_old[16, 140 - dx_s:280 - dx_s]
-    for c_i in range(16):
-        Eo_clean_edge[:, c_i] = Eo_clean_edge[:, 16]
-        whas0_clean_edge[:, c_i] = whas0_clean_edge[:, 16]
-        wlev0_clean_edge[:, c_i] = wlev0_clean_edge[:, 16]
-        dy_s = int(round((16 - c_i) * 0.85))
-        Eo_clean_edge[200:280, c_i] = Eo_clean_edge[200 + dy_s:280 + dy_s, 16]
-        whas0_clean_edge[200:280, c_i] = whas0_clean_edge[200 + dy_s:280 + dy_s, 16]
-        wlev0_clean_edge[200:280, c_i] = wlev0_clean_edge[200 + dy_s:280 + dy_s, 16]
+    for r_i in range(5):
+        Eo_clean_edge[r_i, :] = Eo_old[5, :]
+        whas0_clean_edge[r_i, :] = whas0_old[5, :]
+        wlev0_clean_edge[r_i, :] = wlev0_old[5, :]
+    for r_i in range(8):
+        dx_s = int(round((8 - r_i) * 1.75))
+        Eo_clean_edge[r_i, 140:255] = Eo_old[8, 140 - dx_s:255 - dx_s]
+        whas0_clean_edge[r_i, 140:255] = whas0_old[8, 140 - dx_s:255 - dx_s]
+        wlev0_clean_edge[r_i, 140:255] = wlev0_old[8, 140 - dx_s:255 - dx_s]
+    for c_i in range(5):
+        Eo_clean_edge[:, c_i] = Eo_clean_edge[:, 5]
+        whas0_clean_edge[:, c_i] = whas0_clean_edge[:, 5]
+        wlev0_clean_edge[:, c_i] = wlev0_clean_edge[:, 5]
+    for c_i in range(8):
+        dy_s = int(round((8 - c_i) * 0.85))
+        Eo_clean_edge[200:280, c_i] = Eo_clean_edge[200 + dy_s:280 + dy_s, 8]
+        whas0_clean_edge[200:280, c_i] = whas0_clean_edge[200 + dy_s:280 + dy_s, 8]
+        wlev0_clean_edge[200:280, c_i] = wlev0_clean_edge[200 + dy_s:280 + dy_s, 8]
 
     masks = classify_paint_reference(ref_path, whas0_clean_edge, Eo_old=Eo_clean_edge, wlev0_old=wlev0_clean_edge)
     tier_id = masks['tier_id']
@@ -945,26 +1064,152 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     w_arch_coast_band = w_arch_region * (1.0 - G.sstep(0.0, 5.0, d_in_land)) * (~is_sea).astype(float)
     h_land_syn = h_land_syn * (1.0 - 0.80 * w_arch_coast_band) + np.minimum(h_land_syn, h_arch_coast_smooth) * (0.80 * w_arch_coast_band)
 
-    # 3A. The Great Double Delta (`px = 516..618, py = 102..204`):
-    # Built directly from the user's medium-blue delta paint (`is_delta_ch`) in `expansion_ref.jpg`!
-    r_delta = np.hypot((px - 568.0) * 0.95, (py - 156.0) * 1.05)
-    w_delta_zone = (1.0 - G.sstep(36.0, 62.0, r_delta)) * (~is_sea).astype(float)
+    # 3A. The Combined Double Delta & Bayou Complex (`px = 485..632, py = 104..212` — `Comment 4`):
+    # Where the Ria River mouth (`id: 9101`), the Arch Axial River mouth (`id: 9103`), and the North Ria Fork (`id: 9107`)
+    # all converge into ONE unified, expansive anastomosing delta & bayou archipelago!
+    # First, reclaim marshy delta/bayou land across the medium-blue delta fan (`px = 492..626, py = 112..206`)
+    # and sculpt 32 lens/teardrop-shaped alluvial bayou & barrier islands so it is rich bayou terrain rather than an open bay!
+    r_delta = np.hypot((px - 564.0) * 0.88, (py - 160.0) * 1.02) + 4.5 * fbm2 + 2.2 * fbm1
+    w_delta_zone = (1.0 - G.sstep(44.0, 68.0, r_delta)) * (px >= 484.0) * (px <= 632.0) * (py >= 104.0) * (py <= 214.0)
 
-    # Clean, organic braided delta channels following the user's medium-blue delta mask (`is_delta_ch`)
-    is_braid_ch = (
-        is_delta_ch
-        & (px >= 516.0) & (px <= 614.0) & (py >= 104.0) & (py <= 202.0)
-        & (tier_id <= 2)
-    )
+    # Emergent alluvial bayou islands & chenier ridges across the combined delta fan (including outer delta front X=486..560):
+    delta_bayou_isles = [
+        # (xc, yc, rx, ry, angle_deg, peak_m)
+        (586.0, 154.0, 14.0, 5.5, -18.0,  8.5),
+        (572.0, 168.0, 15.0, 5.8, -14.0,  9.2),
+        (596.0, 172.0, 13.5, 5.2, -12.0,  9.8),
+        (556.0, 152.0, 14.5, 5.4, -20.0,  7.8),
+        (548.0, 178.0, 15.5, 5.6, -15.0,  8.4),
+        (574.0, 188.0, 14.0, 5.2, -10.0,  9.0),
+        (598.0, 190.0, 12.5, 4.8,  -8.0, 10.2),
+        (534.0, 162.0, 13.5, 4.8, -22.0,  6.8),
+        (526.0, 184.0, 13.0, 4.6, -16.0,  6.5),
+        (554.0, 196.0, 12.5, 4.5, -12.0,  7.2),
+        (516.0, 170.0, 11.5, 4.2, -20.0,  5.6),
+        (506.0, 188.0, 10.5, 3.8, -18.0,  4.8),
+        (522.0, 146.0, 11.5, 4.2, -25.0,  6.2),
+        (542.0, 136.0, 12.5, 4.6, -28.0,  7.4),
+        (566.0, 136.0, 13.0, 4.8, -24.0,  8.2),
+        (584.0, 134.0, 12.0, 4.5, -18.0,  9.4),
+        (504.0, 156.0,  9.5, 3.5, -22.0,  4.5),
+        (494.0, 174.0,  9.0, 3.2, -18.0,  4.2),
+        (512.0, 198.0,  9.5, 3.4, -14.0,  4.6),
+        (536.0, 202.0, 10.5, 3.8, -12.0,  5.4),
+        (508.0, 140.0,  8.5, 3.0, -26.0,  4.4),
+        (528.0, 126.0,  9.5, 3.4, -30.0,  5.8),
+        (548.0, 122.0, 10.5, 3.8, -28.0,  6.8),
+        (562.0, 162.0, 11.0, 4.2, -16.0,  7.5),
+        (540.0, 150.0, 10.5, 3.8, -20.0,  6.4),
+        (582.0, 164.0, 11.5, 4.4, -14.0,  8.6),
+    ]
+    h_bayou_patch = np.full((NEW_OH, NEW_OW), -12.0, dtype=float)
+    sub_y0, sub_y1, sub_x0, sub_x1 = 100, 220, 475, 640
+    px_d = px[sub_y0:sub_y1, sub_x0:sub_x1] + 1.8 * fbm1[sub_y0:sub_y1, sub_x0:sub_x1]
+    py_d = py[sub_y0:sub_y1, sub_x0:sub_x1] + 1.8 * fbm2[sub_y0:sub_y1, sub_x0:sub_x1]
+    sub_bayou = h_bayou_patch[sub_y0:sub_y1, sub_x0:sub_x1]
+    for dxc, dyc, drx, dry, dang, dpk in delta_bayou_isles:
+        th_d = math.radians(dang)
+        du = (px_d - dxc) * math.cos(th_d) + (py_d - dyc) * math.sin(th_d)
+        dv = -(px_d - dxc) * math.sin(th_d) + (py_d - dyc) * math.cos(th_d)
+        rr = np.hypot(du / drx, dv / dry)
+        prof_d = dpk * np.maximum(0.0, 1.0 - (rr ** 1.75)) * (0.75 + 0.35 * rn_fine[sub_y0:sub_y1, sub_x0:sub_x1]) - 6.0 * np.maximum(0.0, rr - 0.92)
+        sub_bayou = np.maximum(sub_bayou, prof_d)
+    h_bayou_patch[sub_y0:sub_y1, sub_x0:sub_x1] = sub_bayou
+
+    # Anastomosing braided distributary channels & bayou sloughs weaving through the Combined Double Delta:
+    braid_channel_Visual_Polylines = [
+        # Main combined Ria–Arch central distributary trunk
+        [(626.0, 180.0), (606.0, 172.0), (590.0, 158.0), (566.0, 162.0), (540.0, 168.0), (514.0, 178.0), (490.0, 186.0)],
+        # Northern Arch & Pak-Ma converging distributary trunk
+        [(564.0, 122.0), (576.0, 140.0), (590.0, 158.0)],
+        # Pak-Ma eastern entry into combined delta hub
+        [(622.0, 142.0), (604.0, 150.0), (590.0, 158.0)],
+        # NW Bayou Distributary Fork (branches off at 576, 140 across northern delta)
+        [(576.0, 140.0), (552.0, 144.0), (528.0, 152.0), (502.0, 162.0)],
+        # North-Central Bayou Cross-Slough (links Pak-Ma to NW Bayou Fork)
+        [(604.0, 150.0), (582.0, 146.0), (558.0, 156.0), (534.0, 158.0), (510.0, 146.0)],
+        # South-Central Bayou Distributary (branches off Ria at 606, 172 through southern marsh islands)
+        [(606.0, 172.0), (584.0, 180.0), (558.0, 184.0), (532.0, 190.0), (504.0, 196.0)],
+        # Cross-Bayou Tie Channel 1 (breaches the former solid yellow land bridge between Y=145 and Y=180!)
+        [(598.0, 152.0), (594.0, 166.0), (584.0, 180.0)],
+        # Cross-Bayou Tie Channel 2 (central anastomosing loop)
+        [(576.0, 150.0), (566.0, 162.0), (558.0, 184.0)],
+        # Southern Marginal Bayou Slough
+        [(584.0, 180.0), (568.0, 194.0), (542.0, 198.0), (518.0, 204.0)],
+        # Northern Marginal Bayou Slough
+        [(568.0, 128.0), (544.0, 130.0), (518.0, 136.0)],
+    ]
+    d_braid_min = np.full((NEW_OH, NEW_OW), 1e9, dtype=float)
+    for b_line in braid_channel_Visual_Polylines:
+        b_ctrl = [(pt[0], pt[1], 0.0, 1.8) for pt in b_line]
+        b_s = _catmull_rom_2d(b_ctrl, n_per_seg=14)
+        for bsx, bsy, _, _ in b_s:
+            d2_b = (px_d - bsx) ** 2 + (py_d - bsy) ** 2
+            d_braid_min[sub_y0:sub_y1, sub_x0:sub_x1] = np.minimum(d_braid_min[sub_y0:sub_y1, sub_x0:sub_x1], np.sqrt(d2_b))
+
+    # Add fine FBM warp to channel width (`1.45..2.35 px`) so distributary channels wind organically between islands
+    ch_hw_d = 1.75 + 0.55 * fbm1 + 0.35 * (rn_fine - 0.4)
+    is_braid_ch = (d_braid_min <= ch_hw_d) & (w_delta_zone > 0.08)
+
+    # Reclaim emergent delta & bayou islands (`h_bayou_patch > 1.2 m`) from `is_ocean` / `is_sea` inside the delta fan,
+    # while carving `is_braid_ch` channels through the former solid yellow land divide (`Y = 140..185, X = 545..620`)!
+    is_reclaimed_delta_isle = (h_bayou_patch > 1.2) & ~is_braid_ch & (w_delta_zone > 0.12)
+    is_ocean = (is_ocean & ~is_reclaimed_delta_isle) | is_braid_ch
+    is_sea = (is_sea & ~is_reclaimed_delta_isle) | is_braid_ch
+    tier_id = np.where(is_reclaimed_delta_isle & (tier_id == 0), 1, tier_id)
+
     d_from_braid = nd.distance_transform_edt(~is_braid_ch)
     h_delta_islands = np.where(
         is_braid_ch,
-        -5.5 - 3.5 * G.sstep(0.0, 2.5, nd.distance_transform_edt(is_braid_ch)),
-        2.5 + 8.5 * G.sstep(0.0, 5.0, d_from_braid) + 1.5 * fbm1,
+        -5.0 - 3.5 * G.sstep(0.0, 2.2, nd.distance_transform_edt(is_braid_ch)),
+        np.maximum(2.2, np.minimum(11.5, 2.2 + 5.8 * G.sstep(0.0, 4.5, d_from_braid) + 0.45 * np.maximum(0.0, h_bayou_patch) + 1.4 * fbm1)),
     )
-    h_land_syn = h_land_syn * (1.0 - w_delta_zone) + h_delta_islands * w_delta_zone
+    w_delta_land = w_delta_zone * (~is_sea).astype(float)
+    h_land_syn = h_land_syn * (1.0 - w_delta_land) + h_delta_islands * w_delta_land
 
-    # 3B. Eastern Highland Lake (`is_high_lake` around `[1295, 206]`, surface `+1,460.0 m`):
+    # 3B. Preserve the 6 Axial Rift Valley Lakes in The Arch (`Comment 0`) & Guarantee `Si-Ma` (`id: 9104`) Runs on Solid Land!
+    # The 6 Axial Rift Valley Lakes in The Arch (`(290.5, 228.5)`, `(335.5, 194.0)`, `(381.0, 172.0)`, `(418.0, 168.0)`,
+    # `(457.0, 135.0)`, `(535.0, 108.0)`) are separated by low alluvial valley necks so `id: 9103` flows from lake to lake!
+    arch_axial_lakes = [
+        # (xc, yc, rx, ry, angle_deg)
+        (290.5, 228.5,  8.5, 4.5, -35.0),  # Axial Lake 1
+        (335.5, 194.0, 16.5, 6.2, -34.0),  # Axial Lake 2
+        (381.0, 172.0, 13.5, 4.8, -24.0),  # Axial Lake 3
+        (418.0, 168.0,  8.5, 4.2, -20.0),  # Axial Lake 4
+        (457.0, 135.0, 19.5, 7.2, -32.0),  # Axial Lake 5
+        (535.0, 108.0, 16.5, 4.6,  -8.0),  # Axial Lake 6
+    ]
+    is_arch_axial_lake = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    px_al = px[:265, 250:570] + 1.2 * fbm1[:265, 250:570]
+    py_al = py[:265, 250:570] + 1.2 * fbm2[:265, 250:570]
+    sub_al = is_arch_axial_lake[:265, 250:570]
+    for lxc, lyc, lrx, lry, lang in arch_axial_lakes:
+        th_l = math.radians(lang)
+        lu = (px_al - lxc) * math.cos(th_l) + (py_al - lyc) * math.sin(th_l)
+        lv = -(px_al - lxc) * math.sin(th_l) + (py_al - lyc) * math.cos(th_l)
+        sub_al |= (np.hypot(lu / lrx, lv / lry) <= 1.0)
+    is_arch_axial_lake[:265, 250:570] = sub_al
+
+    # Ensure the short inter-lake valley necks between Lakes 1..6 (`(312, 210)`, `(360, 180)`, `(403, 170)`,
+    # `(434, 154)`, `(498, 115)`, `(564, 122)`) are dry alluvial rift floor (`+6..+22 m`), while the 6 lakes are water!
+    inter_lake_necks = [
+        (258.0, 246.0, 12.0),
+        (312.0, 210.0,  9.5),
+        (360.0, 180.0,  8.5),
+        (403.0, 170.0,  7.5),
+        (434.0, 154.0,  8.5),
+        (498.0, 115.0, 14.0),
+        (564.0, 122.0, 12.0),
+    ]
+    is_arch_neck_land = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    for nxc, nyc, nr_px in inter_lake_necks:
+        is_arch_neck_land |= (np.hypot(px - nxc, py - nyc) <= nr_px) & ~is_arch_axial_lake
+
+    is_ocean = (is_ocean | is_arch_axial_lake) & ~is_arch_neck_land
+    is_sea = (is_sea | is_arch_axial_lake) & ~is_arch_neck_land
+    h_land_syn = np.where(is_arch_neck_land, np.clip(h_land_syn, 8.0, 28.0), h_land_syn)
+
+    # 3C. Eastern Highland Lake (`is_high_lake` around `[1295, 206]`, surface `+1,460.0 m`):
     HIGH_LAKE_LEV = 1460.0
     d_in_hlake = nd.distance_transform_edt(is_high_lake)
     d_out_hlake = nd.distance_transform_edt(~is_high_lake)
@@ -976,7 +1221,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     )
     h_land_syn = h_land_syn * (1.0 - w_hlake_basin) + h_hlake_profile * w_hlake_basin
 
-    # 3C. Copper Tarn (`[148, 1148]`, water level `+2,380.0 m`) in the southern Crook:
+    # 3D. Copper Tarn (`[148, 1148]`, water level `+2,380.0 m`) in the southern Crook:
     COPPER_TARN_LEV = 2380.0
     r_cop_tarn = np.hypot((px - 148.0) * 1.15, (py - 1148.0) * 0.85) + 1.8 * fbm1
     is_copper_tarn = (r_cop_tarn <= 11.5) & is_new_area
@@ -988,7 +1233,12 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     )
     h_land_syn = h_land_syn * (1.0 - w_cop_pocket) + h_cop_bed * w_cop_pocket
 
-    # Tight shoreline transition (`-1.2..+1.8 px`) so narrow archipelago islands stay crisp above sea level (`> +12 m`)!
+    # Recompute `d_in_sea` and `d_in_land` after Combined Double Delta & Arch Axial Lake updates
+    d_in_sea = nd.distance_transform_edt(np.pad(is_sea, ((75, 0), (75, 0)), mode='edge'))[75:, 75:]
+    d_in_land = nd.distance_transform_edt(~is_sea)
+    h_seamount_edifice = np.where(is_braid_ch | is_arch_axial_lake, -6.5, h_seamount_edifice)
+
+    # Tight shoreline transition (`-1.2..+1.8 px`) so narrow archipelago & delta islands stay crisp above sea level!
     w_land_coast = G.sstep(-1.2, 1.8, d_in_land - d_in_sea)
     h_syn = np.where(
         is_seamount & (h_seamount_edifice > -35.0),
@@ -997,33 +1247,39 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     )
 
     # 4A. Carve River System 1 — The Main Southern Ria River (`id: 9101`):
-    # Flows along the main southern Ria valley (`Y ~ 168..198` in `X = 606..900`) and drains cleanly into
-    # the southern/eastern apex of the medium-blue Double Delta at `(606.0, 184.0)`!
+    # Flows along the main southern Ria valley and enters the central hub of the Combined Double Delta at `(590.0, 158.0)`
+    # before continuing down the main delta distributary channel to the sea at `(490.0, 186.0)`!
     ria_trunk_ctrl = [
-        (1312.0,  96.0, 1340.0, 11.0),  # Upper eastern light-blue headwater in Paint!
-        (1258.0, 118.0, 1170.0, 12.0),  # Upper S-bend south of NE uplands
-        (1196.0,  94.0,  980.0, 13.0),  # Bows north around eastern arachnoid foothills
-        (1128.0, 134.0,  810.0, 14.5),  # Sweeps SSW into upper-middle valley bend
-        (1056.0, 122.0,  660.0, 15.5),  # Curves WNW past northern terrace spur
-        ( 978.0, 166.0,  510.0, 16.5),  # Central Qena-style southward bend
-        ( 898.0, 174.0,  385.0, 17.5),  # Exact confluence with Arachnoid Gorge River (Web-Cleaver)!
-        ( 824.0, 176.0,  265.0, 18.5),  # Lower-middle valley course along main painted light-blue channel
-        ( 752.0, 172.0,  155.0, 19.5),  # Passes south of the interfluve divide separating the 2nd river system
-        ( 682.0, 192.0,   64.0, 20.5),  # Southern Ria alluvial valley bend
-        ( 636.0, 190.0,   18.0, 21.5),  # Approaches southern apex of Double Delta
-        ( 606.0, 184.0,    2.0, 22.0),  # Enters southern lobe of the medium-blue Double Delta!
+        (1312.0,  96.0, 1340.0, 14.0),  # Upper eastern light-blue headwater in Paint!
+        (1258.0, 118.0, 1170.0, 16.5),  # Upper S-bend south of NE uplands
+        (1196.0,  94.0,  980.0, 19.0),  # Bows north around eastern arachnoid foothills
+        (1128.0, 134.0,  810.0, 22.0),  # Sweeps SSW into upper-middle valley bend
+        (1056.0, 122.0,  660.0, 25.0),  # Curves WNW past northern terrace spur
+        ( 978.0, 166.0,  510.0, 28.0),  # Central Qena-style southward bend
+        ( 898.0, 174.0,  382.0, 31.0),  # Exact confluence with Arachnoid Gorge River (Web-Cleaver)!
+        ( 824.0, 176.0,  265.0, 34.0),  # Lower-middle valley course along main painted light-blue channel
+        ( 752.0, 172.0,  155.0, 37.0),  # Passes south of the interfluve divide separating the 2nd river system
+        ( 682.0, 188.0,   64.0, 40.0),  # Southern Ria alluvial valley bend
+        ( 626.0, 180.0,   14.0, 42.0),  # Enters eastern apex of the Combined Double Delta
+        ( 606.0, 172.0,    6.0, 44.0),  # Branches into southern bayou distributary
+        ( 590.0, 158.0,    2.5, 45.0),  # Central Combined Double Delta confluence with Arch River (9103) & Pak-Ma (9107)!
+        ( 566.0, 162.0,    1.5, 45.0),  # Braids WSW through the Combined Double Delta islands
+        ( 540.0, 168.0,    0.8, 45.0),
+        ( 514.0, 178.0,    0.4, 45.0),
+        ( 490.0, 186.0,    0.0, 45.0),  # Main Ria–Arch combined mouth at the NW Sea!
     ]
-    ria_samples = _catmull_rom_2d(ria_trunk_ctrl, n_per_seg=22)
+    ria_samples = _catmull_rom_2d(ria_trunk_ctrl, n_per_seg=18)
     n_ria = len(ria_samples)
     s_ria = np.linspace(0.0, 1.0, n_ria)
+    # Pin confluence at (898, 174) (index 6/16 = 0.375) and delta section (s >= 0.62)
     pin_w = (
         np.sin(math.pi * s_ria) ** 0.85
-        * (1.0 - 0.96 * np.exp(-((s_ria - (6.0 / 11.0)) / 0.05) ** 2))
-        * (1.0 - G.sstep(0.84, 0.95, s_ria))
+        * (1.0 - 0.98 * np.exp(-((s_ria - (6.0 / 16.0)) / 0.045) ** 2))
+        * (1.0 - G.sstep(0.58, 0.66, s_ria))
     )
     ria_meander_off = (
-        8.5 * np.sin(s_ria * 11.0 * math.pi + 0.35)
-        + 4.2 * np.sin(s_ria * 23.0 * math.pi - 0.80)
+        7.5 * np.sin(s_ria * 11.0 * math.pi + 0.35)
+        + 3.6 * np.sin(s_ria * 23.0 * math.pi - 0.80)
     ) * pin_w
     t_ria = np.gradient(ria_samples[:, :2], axis=0)
     tn_ria = np.hypot(t_ria[:, 0], t_ria[:, 1]) + 1e-9
@@ -1031,68 +1287,92 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     ria_samples[:, 0] += nrm_ria[:, 0] * ria_meander_off
     ria_samples[:, 1] += nrm_ria[:, 1] * ria_meander_off
 
-    # 4B. Carve River System 2 — The 2nd Independent River System Draining from The Arch & Northern Valley
-    # into the Northern Lobe of the Double Delta (`(586.0, 140.0)`):
-    # Branch 2A (`id: 9103`): Arch Axial & Northern Neck River draining from The Arch into the Double Delta!
+    # 4B. Carve River System 2 — The Arch Lake-to-Lake River (`id: 9103`), `Si-Ma` on Solid Land (`id: 9104`),
+    # and the Flaring Dendritic Northern Tributary Valleys (`id: 9107` & `id: 9108`):
+    #Branch 2A (`id: 9103`, `Comment 0`): Flows directly FROM LAKE TO LAKE down the axial rift valley of The Arch
+    # (`Lake 1 -> Lake 2 -> Lake 3 -> Lake 4 -> Lake 5 -> Lake 6 -> Lake 7`) and into the Combined Double Delta hub `(590.0, 158.0)`!
     arch_river_ctrl = [
-        (265.0, 235.0, 110.0,  7.5),  # Headwaters in the axial rift graben of The Arch
-        (315.0, 199.0,  96.0,  8.0),
-        (365.0, 167.0,  82.0,  8.5),
-        (415.0, 138.0,  68.0,  9.0),
-        (464.0, 117.0,  52.0,  9.5),
-        (502.0, 104.0,  34.0, 10.5),
-        (536.0, 112.0,  18.0, 11.5),
-        (562.0, 126.0,   8.0, 12.5),
-        (586.0, 140.0,   2.0, 13.5),  # Enters northern lobe of the medium-blue Double Delta!
+        (258.0, 246.0,  62.0,  8.5),  # Headwaters in the axial rift graben SW of Lake 1
+        (290.5, 228.5,  14.0,  9.5),  # Center of Axial Rift Lake 1 (comp 20)
+        (312.0, 210.0,  22.0,  9.5),  # Alluvial rift neck between Lake 1 & Lake 2
+        (335.5, 194.0,  10.0, 10.5),  # Center of Axial Rift Lake 2 (comp 14)
+        (360.0, 180.0,  18.0, 10.0),  # Alluvial rift neck between Lake 2 & Lake 3
+        (381.0, 172.0,   8.0, 10.5),  # Center of Axial Rift Lake 3 (comp 12)
+        (403.0, 170.0,  15.0, 10.0),  # Alluvial rift neck between Lake 3 & Lake 4
+        (418.0, 168.0,   7.0, 10.5),  # Center of Axial Rift Lake 4 (comp 11)
+        (434.0, 154.0,  14.0, 10.5),  # Alluvial rift neck between Lake 4 & Lake 5
+        (457.0, 135.0,   6.0, 11.5),  # Center of Axial Rift Lake 5 (comp 4)
+        (498.0, 115.0,  12.0, 11.0),  # Alluvial rift neck between Lake 5 & Lake 6
+        (535.0, 108.0,   4.0, 11.5),  # Center of Axial Rift Lake 6 (comp 2)
+        (558.0, 113.0,   7.5, 12.0),  # Dry land neck between Lake 6 & Lake 7 where Si-Ma (`id: 9104`) joins!
+        (571.8, 118.0,   3.5, 12.5),  # Center of Axial Rift Lake 7 (comp 3)
+        (580.0, 138.0,   3.0, 14.0),  # Enters Combined Double Delta northern distributary fork
+        (590.0, 158.0,   2.5, 15.0),  # Joins Ria River (`id: 9101`) & Pak-Ma (`id: 9107`) in Combined Double Delta!
     ]
-    arch_riv_samples = _catmull_rom_2d(arch_river_ctrl, n_per_seg=16)
+    arch_riv_samples = _catmull_rom_2d(arch_river_ctrl, n_per_seg=10)
     arch_riv_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in arch_riv_samples[::2]]
+    if arch_riv_pts[-1] != [590.0, 158.0]:
+        arch_riv_pts.append([590.0, 158.0])
 
-    # Branch 2B (`id: 9104`): North Arch Peninsula Tributary (`(488, 42) -> (518, 64) -> (544, 92) -> (562, 126)`)
+    # Branch 2B (`id: 9104`, `Si-Ma`, `Comment 0`): Starts and runs 100% ON LAND along the central upland spine
+    # of the Northern Arch Peninsula (`(526, 28) -> (542, 50) -> (552, 72) -> (557, 94) -> (558, 113)`), never touching water!
     arch_north_neck_ctrl = [
-        (488.0,  42.0, 420.0, 6.5),
-        (516.0,  64.0, 260.0, 7.5),
-        (542.0,  94.0, 110.0, 8.5),
-        (562.0, 126.0,   8.0, 9.5),  # Joins Arch Axial River (`id: 9103`) at `[562.0, 126.0]`!
+        (526.0,  28.0, 460.0,  7.0),  # Headwater on solid green upland spine of Northern Arch Peninsula
+        (542.0,  50.0, 310.0,  9.5),
+        (552.0,  72.0, 175.0, 12.0),
+        (557.0,  94.0,  65.0, 14.0),  # Runs on solid land east of Axial Lake 6
+        (558.0, 113.0,   7.5, 15.5),  # Joins Arch Axial River (`id: 9103`) on dry land at `[558.0, 113.0]`!
     ]
-    arch_neck_samples = _catmull_rom_2d(arch_north_neck_ctrl, n_per_seg=14)
+    arch_neck_samples = _catmull_rom_2d(arch_north_neck_ctrl, n_per_seg=12)
     arch_neck_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in arch_neck_samples[::2]]
-    if arch_neck_pts[-1] != [562.0, 126.0]:
-        arch_neck_pts.append([562.0, 126.0])
+    if arch_neck_pts[-1] != [558.0, 113.0]:
+        arch_neck_pts.append([558.0, 113.0])
 
-    # Branch 2C (`id: 9107`): Northern Massif Valley River (`(885, 109) -> ... -> (586, 140)`)
-    # Follows the user's northern light-blue river line in `expansion_ref.jpg` all the way to the northern Double Delta!
+    # Explicitly guarantee a 5.5-px dry land corridor along every vertex of `Si-Ma` (`id: 9104`) so it never touches water!
+    sima_land_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
+    for sx_n, sy_n, _, _ in arch_neck_samples:
+        sima_land_guard |= (np.hypot(px - sx_n, py - sy_n) <= 5.5)
+    is_ocean = is_ocean & ~sima_land_guard
+    is_sea = is_sea & ~sima_land_guard
+    is_arch_axial_lake = is_arch_axial_lake & ~sima_land_guard
+    h_syn = np.where(sima_land_guard, np.maximum(h_syn, 14.0), h_syn)
+
+    # Branch 2C (`id: 9107`, `Pak-Ma`): Northern Massif Valley River (`(885, 109) -> ... -> (645, 138) -> (590, 158)`)
+    # Flares progressively from a narrow headwater swale (`hw = 7 px`) to a broad open alluvial valley (`hw = 38 px`)
+    # and joins the Combined Double Delta confluence hub at `(590.0, 158.0)`!
     ria_north_trib_ctrl = [
-        (885.0, 109.0, 680.0,  9.0),
-        (838.0, 118.0, 545.0,  9.5),
-        (788.0, 116.0, 420.0, 10.0),
-        (738.0, 136.0, 310.0, 10.5),
-        (692.0, 128.0, 210.0, 11.5),
-        (645.0, 138.0, 115.0, 12.0),
-        (612.0, 140.0,  45.0, 12.5),
-        (586.0, 140.0,   2.0, 13.5),  # Drains into the northern lobe of the Double Delta!
+        (885.0, 109.0, 680.0,  7.0),
+        (838.0, 118.0, 545.0, 12.0),
+        (788.0, 116.0, 420.0, 17.5),
+        (738.0, 136.0, 310.0, 23.0),
+        (692.0, 128.0, 210.0, 28.0),
+        (645.0, 138.0, 115.0, 33.0),  # Confluence with Massif Cleft River (`id: 9108`)
+        (616.0, 144.0,  32.0, 36.0),
+        (590.0, 158.0,   2.5, 38.0),  # Converges into Combined Double Delta hub with Ria (9101) & Arch (9103)!
     ]
     ntrib_samples = _catmull_rom_2d(ria_north_trib_ctrl, n_per_seg=16)
     s_nt = np.linspace(0.0, 1.0, len(ntrib_samples))
-    nt_off = (3.8 * np.sin(s_nt * 7.0 * math.pi + 0.5)) * (np.sin(math.pi * s_nt) ** 1.2)
+    nt_off = (3.5 * np.sin(s_nt * 7.0 * math.pi + 0.5)) * (np.sin(math.pi * s_nt) ** 1.2) * (1.0 - G.sstep(0.72, 0.90, s_nt))
     t_nt = np.gradient(ntrib_samples[:, :2], axis=0)
     tn_nt = np.hypot(t_nt[:, 0], t_nt[:, 1]) + 1e-9
     ntrib_samples[:, 0] += (-t_nt[:, 1] / tn_nt) * nt_off
     ntrib_samples[:, 1] += ( t_nt[:, 0] / tn_nt) * nt_off
     ntrib_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in ntrib_samples[::2]]
-    if ntrib_pts[-1] != [586.0, 140.0]:
-        ntrib_pts.append([586.0, 140.0])
+    if ntrib_pts[-1] != [590.0, 158.0]:
+        ntrib_pts.append([590.0, 158.0])
 
-    # Branch 2D (`id: 9108`): Sub-Massif Gorge Tributary (`(772, 68) -> (712, 82) -> (672, 106) -> (645, 138)`)
+    # Branch 2D (`id: 9108`, `Comment 1`): Sub-Massif Tributary (`(772, 68) -> (716, 82) -> (674, 106) -> (645, 138)`)
+    # Flares from `hw = 5.5 px` at the headwater divide (`s = 0`, where incision = 0 m so there is ZERO circular dead-end cap!)
+    # to `hw = 30.0 px` at its confluence `(645, 138)` with `id: 9107`!
     massif_trib_ctrl = [
-        (772.0,  68.0, 820.0, 7.5),
-        (716.0,  82.0, 510.0, 8.5),
-        (674.0, 106.0, 260.0, 9.0),
-        (645.0, 138.0, 115.0, 9.5),  # Joins Northern Massif Valley River (`id: 9107`)!
+        (772.0,  68.0, 820.0,  5.5),
+        (716.0,  82.0, 510.0, 13.5),
+        (674.0, 106.0, 260.0, 22.0),
+        (645.0, 138.0, 115.0, 30.0),  # Joins Northern Massif Valley River (`id: 9107`)!
     ]
     mtrib_samples = _catmull_rom_2d(massif_trib_ctrl, n_per_seg=16)
     s_mt = np.linspace(0.0, 1.0, len(mtrib_samples))
-    mt_off = (3.4 * np.sin(s_mt * 5.0 * math.pi + 0.4)) * (np.sin(math.pi * s_mt) ** 1.2)
+    mt_off = (3.2 * np.sin(s_mt * 5.0 * math.pi + 0.4)) * (np.sin(math.pi * s_mt) ** 1.2)
     t_mt = np.gradient(mtrib_samples[:, :2], axis=0)
     tn_mt = np.hypot(t_mt[:, 0], t_mt[:, 1]) + 1e-9
     mtrib_samples[:, 0] += (-t_mt[:, 1] / tn_mt) * mt_off
@@ -1101,29 +1381,48 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     if mtrib_pts[-1] != [645.0, 138.0]:
         mtrib_pts.append([645.0, 138.0])
 
-    # Carve floodplain corridors for both the main Ria River and the 2nd Northern/Arch River System (including `mtrib_samples`!):
-    all_valley_samples = np.vstack([ria_samples, ntrib_samples, mtrib_samples, arch_riv_samples, arch_neck_samples])
+    # Carve natural, flaring, headwater-tapered dendritic valleys (`Comment 1`) for the Ria & Northern River systems:
+    # Each sample stores `(sx, sy, s_headwater_taper, shw)` where `s_headwater_taper` starts at `0.0` at the headwater divide
+    # (eliminating any rounded dead-end furrow cap!) and increases smoothly downstream as the valley widens and deepens!
+    def _tag_taper(samples, s0_val=0.0):
+        n_s = len(samples)
+        s_arr = np.linspace(s0_val, 1.0, n_s) ** 0.85
+        out_s = samples.copy()
+        out_s[:, 2] = s_arr
+        return out_s
+
+    all_valley_samples = np.vstack([
+        _tag_taper(ria_samples, s0_val=0.18),
+        _tag_taper(ntrib_samples, s0_val=0.0),
+        _tag_taper(mtrib_samples, s0_val=0.0),
+        _tag_taper(arch_neck_samples, s0_val=0.0),
+    ])
     d2_ria = np.full((NEW_OH, NEW_OW), 1e12, dtype=float)
-    el_ria = h_syn.copy()
-    hw_ria = np.full((NEW_OH, NEW_OW), 16.0, dtype=float)
-    for sx, sy, sel, shw in all_valley_samples:
+    s_taper_ria = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    hw_ria = np.full((NEW_OH, NEW_OW), 20.0, dtype=float)
+    for sx, sy, s_tap, shw in all_valley_samples:
         d2 = (px[:320, 240:1420] - sx) ** 2 + (py[:320, 240:1420] - sy) ** 2
         better = d2 < d2_ria[:320, 240:1420]
         d2_ria[:320, 240:1420] = np.where(better, d2, d2_ria[:320, 240:1420])
-        el_ria[:320, 240:1420] = np.where(better, sel, el_ria[:320, 240:1420])
+        s_taper_ria[:320, 240:1420] = np.where(better, s_tap, s_taper_ria[:320, 240:1420])
         hw_ria[:320, 240:1420] = np.where(better, shw, hw_ria[:320, 240:1420])
-    dist_ria = nd.gaussian_filter(np.sqrt(d2_ria), sigma=2.2)
-    el_ria = nd.gaussian_filter(el_ria, sigma=3.0)
+
+    # Modulate lateral valley distance with multi-scale ridged & FBM spur noise so contour lines form natural
+    # V-shaped dendritic side-valleys and interlocking mountain spurs rather than a uniform cylindrical furrow!
+    spur_mod = 0.72 + 0.44 * rn_broad + 0.24 * rn_fine + 0.14 * fbm1
+    dist_ria = nd.gaussian_filter(np.sqrt(d2_ria), sigma=1.8) * np.clip(spur_mod, 0.48, 1.55)
+    s_taper_ria = nd.gaussian_filter(s_taper_ria, sigma=3.5)
+    hw_ria = nd.gaussian_filter(hw_ria, sigma=3.0)
     d_norm_ria = dist_ria / np.maximum(hw_ria, 1.0)
-    w_ria_val = (1.0 - G.sstep(0.15, 1.45, d_norm_ria)) * (1.0 - w_delta_zone) * (~is_sea).astype(float)
-    w_ria_floodplain = (1.0 - G.sstep(0.0, 0.95, d_norm_ria)) * (1.0 - w_delta_zone) * (~is_sea).astype(float)
-    h_ria_thalweg = el_ria + 92.0 * (np.clip(d_norm_ria, 0.0, 1.6) ** 1.55)
-    h_syn = h_syn * (1.0 - 0.72 * w_ria_val) + np.minimum(h_syn, h_ria_thalweg) * (0.72 * w_ria_val)
+
+    h_bg_slope = nd.gaussian_filter(h_syn, sigma=18.0)
+    max_val_cut = np.clip(35.0 + 0.28 * h_bg_slope, 28.0, 460.0) * s_taper_ria
+    w_ria_val = ((1.0 - G.sstep(0.0, 1.55, d_norm_ria)) ** 1.35) * s_taper_ria * (1.0 - w_delta_zone) * (~is_sea).astype(float)
+    w_ria_floodplain = (1.0 - G.sstep(0.0, 0.75, d_norm_ria)) * s_taper_ria * (1.0 - w_delta_zone) * (~is_sea).astype(float)
+    h_ria_thalweg = np.maximum(3.5, h_bg_slope - max_val_cut * (1.0 - (G.sstep(0.0, 1.55, d_norm_ria) ** 1.15)))
+    h_syn = h_syn * (1.0 - 0.82 * w_ria_val) + np.minimum(h_syn, h_ria_thalweg) * (0.82 * w_ria_val)
 
     # 5. Embed Old Map `[DY_F:, DX_F:]` with Wide, Domain-Warped Crater-Wall Continuity & Smoothing:
-    # Initialize `En_new` to `h_harm.copy()` (which already equals `Eo_clean_edge` on `[DY_F:, DX_F:]` and extends it
-    # harmonically into `Y < DY_F` and `X < DX_F`), so `En_new * (1 - w_new_blend) + h_syn * w_new_blend` has
-    # ZERO discontinuity across `Y = 330` or `X = 272`!
     En_new = h_harm.copy()
     whas_new = np.zeros((NEW_OH, NEW_OW), dtype=bool)
     wlev_new = np.full((NEW_OH, NEW_OW), np.nan, dtype=float)
@@ -1134,41 +1433,37 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
 
     d_into_new = nd.distance_transform_edt(is_new_area)
     d_into_old = nd.distance_transform_edt(~is_new_area)
-    # Wide domain-warped signed distance (`±44 px`) so the northern (`Y = 330`) and western (`X = 272`) boundary transitions
-    # are completely invisible!
     sd_new = (d_into_new - d_into_old) + 22.0 * fbm2 + 11.0 * fbm1
     old_lake_guard = np.zeros((NEW_OH, NEW_OW), dtype=bool)
     old_lake_guard[DY_F:, DX_F:] = whas0_clean_edge & ~is_sea[DY_F:, DX_F:]
     old_lake_guard = nd.binary_dilation(old_lake_guard, iterations=8)
 
-    w_new_blend = np.where(old_lake_guard, G.sstep(0.0, 18.0, d_into_new), G.sstep(-44.0, 44.0, sd_new))
+    w_new_blend = np.where(old_lake_guard, G.sstep(0.0, 18.0, d_into_new), G.sstep(-48.0, 48.0, sd_new))
     w_nw_sea_floor = G.sstep(0.0, 12.0, d_in_sea) * (1.0 - G.sstep(465.0, 525.0, px)) * (1.0 - G.sstep(515.0, 585.0, py))
-    # Ensure `w_new_blend` approaches `1.0` smoothly near any sea coastline (`d_in_land < 28 px`) in the new area
-    # so `h_harm` (`+3,400 m` from the old map's mountain rim) never creates a cliff on the shoreline!
     w_coast_new = (1.0 - G.sstep(0.0, 28.0, d_in_land)) * G.sstep(-6.0, 6.0, d_into_new - d_into_old)
     w_new_blend = np.maximum(w_new_blend, np.maximum(w_nw_sea_floor, w_coast_new))
     En_new = En_new * (1.0 - w_new_blend) + h_syn * w_new_blend
 
-    # 6A. Sculpt the Trans-Boundary NE Outland Gate (`is_ne_connector`, `X = 1318..1605, Y = 205..525`):
-    # Carve a continuous sinuous through-valley connecting the main North Outland Lake (`(1588, 517)` and upper tarn `(1545, 477)`, `+1,734 m`)
-    # northwestward through the Outland Gate water-gap (`+1,732 m -> +1,456 m`) directly into the eastern bay of
-    # Eastern Highland Lake (`(1320, 209)`, `+1,460 m`), so `Outland Gate River` (`id: 9106`) connects
-    # directly into the water of BOTH lakes along a natural, sinuous mountain river course!
+    # 6A. Sculpt the Trans-Boundary NE Outland Gate (`is_ne_connector`, `X = 1318..1605, Y = 205..525` — `Comment 3`):
+    # Align the valley centerline directly along the painted `is_ne_conn_green` valley floor so there is ONE unified,
+    # natural yellow-green valley floor from North Outland Lake `(1588, 517)` -> upper tarn `(1545, 477)` ->
+    # Eastern Highland Lake `(1320, 209)`, without swinging into the steep eastern mountain wall!
     ne_pass_ctrl = [
-        (1320.0, 209.0, 1456.0, 15.0),  # Inside eastern bay of Eastern Highland Lake (+1,460 m)!
-        (1364.0, 236.0, 1500.0, 17.5),
-        (1408.0, 286.0, 1555.0, 19.0),
-        (1438.0, 336.0, 1605.0, 20.0),  # Crosses Y = 330 inside the water-gap pass
-        (1486.0, 382.0, 1650.0, 20.5),
-        (1514.0, 434.0, 1692.0, 19.5),
-        (1545.0, 477.0, 1720.0, 18.0),  # Threads through upper North Outland tarn
-        (1565.0, 496.0, 1726.0, 17.0),
-        (1588.0, 517.0, 1732.0, 16.0),  # Connects directly into the main North Outland Lake (+1,734 m)!
+        (1320.0, 209.0, 1456.0, 18.0),  # Inside eastern bay of Eastern Highland Lake (+1,460 m)!
+        (1366.0, 240.0, 1495.0, 20.0),
+        (1408.0, 286.0, 1545.0, 22.0),
+        (1442.0, 338.0, 1595.0, 23.0),  # Crosses Y = 330 inside the water-gap pass
+        (1472.0, 386.0, 1640.0, 23.5),  # Center of the yellow-green valley floor!
+        (1502.0, 430.0, 1682.0, 22.5),
+        (1526.0, 456.0, 1706.0, 20.5),
+        (1545.0, 477.0, 1720.0, 19.0),  # Threads through upper North Outland tarn
+        (1565.0, 496.0, 1726.0, 17.5),
+        (1588.0, 517.0, 1732.0, 16.5),  # Connects directly into the main North Outland Lake (+1,734 m)!
     ]
-    ne_pass_samples = _catmull_rom_2d(ne_pass_ctrl, n_per_seg=24)
+    ne_pass_samples = _catmull_rom_2d(ne_pass_ctrl, n_per_seg=22)
     s_ne = np.linspace(0.0, 1.0, len(ne_pass_samples))
-    ne_meander_env = (np.sin(math.pi * s_ne) ** 1.15) * G.sstep(0.04, 0.14, s_ne) * (1.0 - G.sstep(0.84, 0.96, s_ne))
-    ne_meander_off = (14.5 * np.sin(s_ne * 5.5 * math.pi + 0.35) + 6.5 * np.cos(s_ne * 13.0 * math.pi - 0.70)) * ne_meander_env
+    ne_meander_env = (np.sin(math.pi * s_ne) ** 1.2) * G.sstep(0.05, 0.16, s_ne) * (1.0 - G.sstep(0.80, 0.94, s_ne))
+    ne_meander_off = (4.2 * np.sin(s_ne * 5.0 * math.pi + 0.25)) * ne_meander_env
     t_ne = np.gradient(ne_pass_samples[:, :2], axis=0)
     tn_ne = np.hypot(t_ne[:, 0], t_ne[:, 1]) + 1e-9
     ne_pass_samples[:, 0] += (-t_ne[:, 1] / tn_ne) * ne_meander_off
@@ -1176,30 +1471,23 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
 
     d2_ne = np.full((NEW_OH, NEW_OW), 1e12, dtype=float)
     el_ne = h_land_syn.copy()
-    hw_ne = np.full((NEW_OH, NEW_OW), 20.0, dtype=float)
+    hw_ne = np.full((NEW_OH, NEW_OW), 22.0, dtype=float)
     for sx, sy, sel, shw in ne_pass_samples:
         d2 = (px[140:555, 1250:1650] - sx) ** 2 + (py[140:555, 1250:1650] - sy) ** 2
         better = d2 < d2_ne[140:555, 1250:1650]
         d2_ne[140:555, 1250:1650] = np.where(better, d2, d2_ne[140:555, 1250:1650])
         el_ne[140:555, 1250:1650] = np.where(better, sel, el_ne[140:555, 1250:1650])
         hw_ne[140:555, 1250:1650] = np.where(better, shw, hw_ne[140:555, 1250:1650])
-    dist_ne = nd.gaussian_filter(np.sqrt(d2_ne), sigma=4.0)
-    el_ne = nd.gaussian_filter(el_ne, sigma=5.0)
+    dist_ne = nd.gaussian_filter(np.sqrt(d2_ne), sigma=3.5)
+    el_ne = nd.gaussian_filter(el_ne, sigma=4.5)
     d_norm_ne = dist_ne / np.maximum(hw_ne, 1.0)
 
-    h_ne_valley = el_ne + 1650.0 * (G.sstep(0.0, 1.85, d_norm_ne) ** 1.40) + 85.0 * (rn_broad - 0.35) + 45.0 * fbm1
-    w_ne_trough = 1.0 - G.sstep(0.0, 1.45, d_norm_ne)
-    h_ne_cont = h_ne_valley * (0.55 + 0.40 * w_ne_trough) + h_land_syn * (0.45 - 0.40 * w_ne_trough)
-    w_ne_connector = nd.gaussian_filter(1.0 - G.sstep(0.55, 1.95, d_norm_ne), sigma=4.5) * (1.0 - G.sstep(485.0, 520.0, py)) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
-    En_new = En_new * (1.0 - w_ne_connector) + h_ne_cont * w_ne_connector
-
-    # Extract exact river points for `Outland Gate River` (`id: 9106`), flowing from North Outland Lake `(1588, 517)`
-    # through `(1545, 477)` into Eastern Highland Lake `(1320, 209)`:
-    outland_gate_riv_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in ne_pass_samples[::-3]]
-    if outland_gate_riv_pts[0] != [1588.0, 517.0]:
-        outland_gate_riv_pts.insert(0, [1588.0, 517.0])
-    if outland_gate_riv_pts[-1] != [1320.0, 209.0]:
-        outland_gate_riv_pts.append([1320.0, 209.0])
+    h_ne_valley = el_ne + 1750.0 * (G.sstep(0.0, 1.85, d_norm_ne) ** 1.35) + 75.0 * (rn_broad - 0.35) + 38.0 * fbm1
+    w_ne_trough = 1.0 - G.sstep(0.0, 1.65, d_norm_ne)
+    # Use `np.minimum(En_new, h_ne_valley)` inside the valley trough so the +4,500 m mountain wall never mixes into
+    # the valley bottom or shifts the thalweg away from the valley center!
+    w_ne_connector = nd.gaussian_filter(1.0 - G.sstep(0.50, 1.95, d_norm_ne), sigma=4.0) * (1.0 - G.sstep(488.0, 522.0, py)) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
+    En_new = En_new * (1.0 - w_ne_connector) + np.minimum(En_new, h_ne_valley) * w_ne_connector
 
     # 6B. Sculpt the Trans-Boundary SW Crook–Rift Connector (`is_sw_connector`, `X = 25..375, Y = 1080..1330`):
     sw_pass_ctrl = [
@@ -1237,8 +1525,6 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     w_sw_apply = np.maximum(w_sw_bridge, w_new_blend * G.sstep(1040.0, 1110.0, py + 12.0 * fbm2))
     En_new = En_new * (1.0 - w_sw_apply) + h_sw_target * w_sw_apply
 
-    # Smoothly grade the SW outer rim (`Y >= 1240, X < 310` outside `w_sw_pass_trough`) using an organic
-    # domain-warped transition so there is ZERO rectangular step at `Y = 1335` or `X = 15` (`Batch 2 Image 2`)!
     w_sw_ext = (
         G.sstep(1235.0, 1345.0, py + 18.0 * fbm2 + 9.0 * fbm1)
         * w_new_blend
@@ -1249,7 +1535,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
 
     # 6C. Apply the Trans-Boundary Arachnoid Network & Northern Korona Scenic Canyon (*The Web-Cleaver Gorge*):
     (w_arach_zone, arach_trough_w, arach_rib_h,
-     w_canyon, h_canyon_prof, canyon_river_pts) = build_arachnoid_and_canyon_field(px, py, is_arach, is_high_lake, rs)
+     w_canyon, h_canyon_prof, _) = build_arachnoid_and_canyon_field(px, py, is_arach, is_high_lake, rs)
 
     w_arach_env = (
         G.sstep(835.0, 875.0, px) * (1.0 - G.sstep(1315.0, 1355.0, px))
@@ -1267,9 +1553,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     En_new = En_new + (arach_rib_h * (1.0 - arach_trough_w) - 580.0 * arach_trough_w) * w_arach_env * np.clip(w_arach_zone + 0.25, 0.0, 1.0)
     En_new = En_new * (1.0 - w_canyon) + np.minimum(En_new, h_canyon_prof) * w_canyon
 
-    # 7. Apply Fluvial & Glacial Stream-Power Weathering (`T.weather`) across the new mountains & scarps
-    # using a smooth domain-warped blending envelope (`w_weather_blend`) so `T.weather` NEVER creates a hard line
-    # along `d_into_new = 22` or at the Arch boundary!
+    # 7. Apply Fluvial & Glacial Stream-Power Weathering (`T.weather`) across the new mountains & scarps:
     weather_mask_new = (
         (is_new_area | (w_ne_connector > 0.15) | (w_sw_bridge > 0.15))
         & ~is_sea & ~is_high_lake & ~is_braid_ch & ~is_copper_tarn & ~old_lake_guard
@@ -1284,40 +1568,101 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     En_new = En_new * (1.0 - w_weather_blend) + En_weathered * w_weather_blend
 
     # 7B. Cross-boundary crater-wall smoothing & ridge continuity pass along `Y = 330` (`X = 470..1821`) and `X = 272` (`Y = 470..1723`)
-    # run AFTER `T.weather` and all connectors so the northern and western crater walls have 100% consistent slopes on both sides!
-    # Taper smoothly to 0 near any sea shoreline (`G.sstep(4.0, 26.0, d_in_land)`) so smoothing never stops abruptly at `~is_sea`.
+    # Widen the Gaussian smoothing band (`44 px` half-width centered at `DY_F + 6` and `DX_F + 6`) so `Comment 5` (`Y = 346..350`)
+    # has 100% smooth slope continuity across the northern and western crater walls!
     w_coast_taper = G.sstep(4.0, 26.0, d_in_land)
     w_n_seam_smooth = (
         G.sstep(470.0, 520.0, px)
-        * np.exp(-(((py - (DY_F + 10.0 * fbm2)) / 36.0) ** 2))
+        * np.exp(-(((py - (DY_F + 6.0 + 10.0 * fbm2)) / 44.0) ** 2))
         * (~old_lake_guard).astype(float)
         * w_coast_taper
         * (~is_high_lake).astype(float)
     )
     w_w_seam_smooth = (
         G.sstep(470.0, 520.0, py)
-        * np.exp(-(((px - (DX_F + 10.0 * fbm2)) / 36.0) ** 2))
+        * np.exp(-(((px - (DX_F + 6.0 + 10.0 * fbm2)) / 44.0) ** 2))
         * (~old_lake_guard).astype(float)
         * w_coast_taper
         * (~is_copper_tarn).astype(float)
     )
     w_wall_unify = np.clip(np.maximum(w_n_seam_smooth, w_w_seam_smooth), 0.0, 1.0)
     En_wall_smooth = (
-        nd.gaussian_filter(En_new, sigma=9.5)
-        + 210.0 * (rn_fine - 0.38) * G.sstep(2500.0, 5500.0, En_new)
-        + 140.0 * fbm1 * G.sstep(1800.0, 4800.0, En_new)
+        nd.gaussian_filter(En_new, sigma=10.5)
+        + 195.0 * (rn_fine - 0.38) * G.sstep(2500.0, 5500.0, En_new)
+        + 130.0 * fbm1 * G.sstep(1800.0, 4800.0, En_new)
     )
-    En_new = En_new * (1.0 - 0.85 * w_wall_unify) + En_wall_smooth * (0.85 * w_wall_unify)
-    # Re-incise the Web-Cleaver Gorge & Outland Gate thalweg across `Y = 330` so smoothing doesn't dam those two rivers:
+    En_new = En_new * (1.0 - 0.88 * w_wall_unify) + En_wall_smooth * (0.88 * w_wall_unify)
+    # Re-incise the Web-Cleaver Gorge & Outland Gate valley across `Y = 330` before tracing their exact Dijkstra thalwegs:
     En_new = En_new * (1.0 - w_canyon) + np.minimum(En_new, h_canyon_prof) * w_canyon
-    En_new = En_new * (1.0 - 0.65 * w_ne_trough * w_ne_connector) + np.minimum(En_new, h_ne_valley) * (0.65 * w_ne_trough * w_ne_connector)
+    En_new = En_new * (1.0 - 0.85 * w_ne_trough * w_ne_connector) + np.minimum(En_new, h_ne_valley) * (0.85 * w_ne_trough * w_ne_connector)
+
+    # 7C. Trace Exact Minimum-Elevation Dijkstra Thalwegs on the Final Weathered Surface for:
+    #   - `Web-Cleaver / Arachnoid Gorge River` (`id: 9102`, `Comment 2`): `(1268, 202)` -> `(898, 174)`
+    #   - `Outland Gate River` (`id: 9106`, `Comment 3`): `(1588, 517)` -> `(1545, 477)` -> `(1320, 209)`
+    # and carve a strictly monotonically decreasing valley floor along both paths so neither river EVER runs uphill
+    # or contours across a steep green hillside!
+    can_waypoints = [
+        (1268.0, 202.0), (1248.0, 214.0), (1220.0, 238.0), (1180.0, 276.0),
+        (1136.0, 310.0), (1088.0, 328.0), (1046.0, 322.0), (1008.0, 292.0),
+        ( 972.0, 252.0), ( 934.0, 212.0), ( 898.0, 174.0),
+    ]
+    can_thalweg_dense = _trace_thalweg_dijkstra(En_new, can_waypoints, bbox=(155, 410, 865, 1305), corridor_hw=22.0, sigma_smooth=1.8)
+    canyon_river_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in can_thalweg_dense[::3]]
+    if canyon_river_pts[0] != [1268.0, 202.0]:
+        canyon_river_pts.insert(0, [1268.0, 202.0])
+    if canyon_river_pts[-1] != [898.0, 174.0]:
+        canyon_river_pts.append([898.0, 174.0])
+
+    # Carve a strictly monotonic downhill canyon floor along `can_thalweg_dense` (`1452 m -> 382 m`)
+    n_ctd = len(can_thalweg_dense)
+    can_target_beds = np.linspace(1452.0, 382.0, n_ctd)
+    d2_ctd = np.full((NEW_OH, NEW_OW), 1e12, dtype=float)
+    el_ctd = En_new.copy()
+    sub_y0c, sub_y1c, sub_x0c, sub_x1c = 155, 410, 865, 1305
+    for (cx_i, cy_i), c_bed in zip(can_thalweg_dense, can_target_beds):
+        d2 = (px[sub_y0c:sub_y1c, sub_x0c:sub_x1c] - cx_i) ** 2 + (py[sub_y0c:sub_y1c, sub_x0c:sub_x1c] - cy_i) ** 2
+        better = d2 < d2_ctd[sub_y0c:sub_y1c, sub_x0c:sub_x1c]
+        d2_ctd[sub_y0c:sub_y1c, sub_x0c:sub_x1c] = np.where(better, d2, d2_ctd[sub_y0c:sub_y1c, sub_x0c:sub_x1c])
+        el_ctd[sub_y0c:sub_y1c, sub_x0c:sub_x1c] = np.where(better, c_bed, el_ctd[sub_y0c:sub_y1c, sub_x0c:sub_x1c])
+    dist_ctd = np.sqrt(d2_ctd)
+    w_ctd_carve = (1.0 - G.sstep(0.0, 14.0, dist_ctd)) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
+    h_ctd_prof = el_ctd + 360.0 * (G.sstep(0.0, 14.0, dist_ctd) ** 1.35)
+    En_new = En_new * (1.0 - 0.92 * w_ctd_carve) + np.minimum(En_new, h_ctd_prof) * (0.92 * w_ctd_carve)
+
+    ne_waypoints = [
+        (1588.0, 517.0), (1565.0, 496.0), (1545.0, 477.0), (1522.0, 452.0),
+        (1498.0, 424.0), (1470.0, 382.0), (1442.0, 336.0), (1408.0, 286.0),
+        (1366.0, 240.0), (1320.0, 209.0),
+    ]
+    ne_thalweg_dense = _trace_thalweg_dijkstra(En_new, ne_waypoints, bbox=(185, 535, 1295, 1620), corridor_hw=24.0, sigma_smooth=1.8)
+    outland_gate_riv_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in ne_thalweg_dense[::3]]
+    if outland_gate_riv_pts[0] != [1588.0, 517.0]:
+        outland_gate_riv_pts.insert(0, [1588.0, 517.0])
+    if outland_gate_riv_pts[-1] != [1320.0, 209.0]:
+        outland_gate_riv_pts.append([1320.0, 209.0])
+
+    # Carve a strictly monotonic downhill valley floor along `ne_thalweg_dense` (`1730 m -> 1456 m`)
+    n_ntd = len(ne_thalweg_dense)
+    ne_target_beds = np.linspace(1730.0, 1456.0, n_ntd)
+    d2_ntd = np.full((NEW_OH, NEW_OW), 1e12, dtype=float)
+    el_ntd = En_new.copy()
+    sub_y0n, sub_y1n, sub_x0n, sub_x1n = 185, 535, 1295, 1620
+    for (nx_i, ny_i), n_bed in zip(ne_thalweg_dense, ne_target_beds):
+        d2 = (px[sub_y0n:sub_y1n, sub_x0n:sub_x1n] - nx_i) ** 2 + (py[sub_y0n:sub_y1n, sub_x0n:sub_x1n] - ny_i) ** 2
+        better = d2 < d2_ntd[sub_y0n:sub_y1n, sub_x0n:sub_x1n]
+        d2_ntd[sub_y0n:sub_y1n, sub_x0n:sub_x1n] = np.where(better, d2, d2_ntd[sub_y0n:sub_y1n, sub_x0n:sub_x1n])
+        el_ntd[sub_y0n:sub_y1n, sub_x0n:sub_x1n] = np.where(better, n_bed, el_ntd[sub_y0n:sub_y1n, sub_x0n:sub_x1n])
+    dist_ntd = np.sqrt(d2_ntd)
+    w_ntd_carve = (1.0 - G.sstep(0.0, 16.0, dist_ntd)) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
+    h_ntd_prof = el_ntd + 420.0 * (G.sstep(0.0, 16.0, dist_ntd) ** 1.35)
+    En_new = En_new * (1.0 - 0.90 * w_ntd_carve) + np.minimum(En_new, h_ntd_prof) * (0.90 * w_ntd_carve)
 
     # 8. Set Water Masks (`whas_new`, `wlev_new`) in the Expanded Territory:
     in_nw_sea_box = is_new_area | ((px < 535.0) & (py < 635.0))
     sea_and_delta_water = (
-        (is_new_area & ((is_sea & (En_new < -0.5)) | is_braid_ch))
+        (is_new_area & ((is_sea & (En_new < -0.5)) | is_braid_ch | is_arch_axial_lake))
         | (is_sea & ~old_lake_guard & in_nw_sea_box)
-    )
+    ) & ~sima_land_guard & ~is_arch_neck_land
     # Clear any old sea water in the smoothed shoreline transition boxes where `~is_sea` is now land
     retired_old_sea = in_nw_sea_box & ~is_new_area & ~is_sea & ~old_lake_guard
     whas_new[retired_old_sea] = False
@@ -1338,6 +1683,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     )
     dry_new_land = is_new_area & ~sea_and_delta_water & ~is_high_lake & ~is_copper_tarn
     En_new = np.where(dry_new_land | retired_old_sea, np.maximum(En_new, 2.0), En_new)
+    En_new = np.where(sima_land_guard, np.maximum(En_new, 10.0), En_new)
 
     hlake_mask = is_new_area & is_high_lake
     whas_new[hlake_mask] = True
@@ -1347,6 +1693,373 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     whas_new[is_copper_tarn] = True
     wlev_new[is_copper_tarn] = COPPER_TARN_LEV
     En_new = np.where(is_copper_tarn, np.minimum(En_new, COPPER_TARN_LEV - 6.0), En_new)
+
+    # ==============================================================================================
+    # 8B. Batch 5 Regional Sculpting (`sasquatch tribes`, `neo-ozarks`, `spider lake`,
+    #     `Silent Vales`, and `tsunami coast`):
+    # ==============================================================================================
+    from matplotlib.path import Path as _MplPath
+    pts_grid_all = np.column_stack([px.ravel(), py.ravel()])
+
+    def _poly_mask(verts):
+        return _MplPath(np.asarray(verts, dtype=float)).contains_points(pts_grid_all).reshape(NEW_OH, NEW_OW)
+
+    # --- (1) `sasquatch tribes` (`rmvyj1kvhx4m4`, X = 522..925, Y = 267..409):
+    # Carve 4 smaller, steeper-walled, higher-floor, less-hospitable periglacial/glaciated troughs
+    # (+5,850..+6,240 m floors, 0.71..0.76 atm, ET alpine tundra & cold marginal Dsc) separated by
+    # +7,400..+8,700 m EF/HF ridges, with 3 small half-frozen glacial tarns (WH).
+    sasquatch_verts = [
+        [522, 350], [542, 375], [570, 409], [642, 383], [708, 370], [750, 373], [781, 382],
+        [828, 370], [869, 366], [913, 347], [925, 317], [914, 295], [889, 295], [843, 289],
+        [788, 275], [755, 267], [685, 289], [587, 307], [536, 334],
+    ]
+    is_sasquatch = _poly_mask(sasquatch_verts)
+    w_sasquatch_env = nd.gaussian_filter(is_sasquatch.astype(float), sigma=9.5)
+
+    sasq_valleys = [
+        # (x0, y0, x1, y1, floor_m, hw_px, tarn_xc, tarn_yc, tarn_rx, tarn_ry, tarn_lev)
+        (574.0, 356.0, 618.0, 336.0, 5860.0, 10.5, 596.0, 346.0, 3.8, 2.1, 5850.0),  # Frost-Jaw Vale & Tarn
+        (660.0, 338.0, 712.0, 318.0, 6040.0, 11.0, 686.0, 328.0, 4.0, 2.2, 6030.0),  # Bone-Larch Hollow & Tarn
+        (746.0, 314.0, 796.0, 334.0, 5930.0, 10.5, 771.0, 324.0, 3.6, 2.0, 5920.0),  # Hoar-Wind Glen & Tarn
+        (834.0, 320.0, 888.0, 328.0, 6240.0, 10.0,  -1.0,  -1.0, 0.0, 0.0,    0.0),  # Scree-Tooth Dry Fellfield Basin
+    ]
+    w_sasquatch_vales = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    y0_sq, y1_sq, x0_sq, x1_sq = 245, 430, 505, 945
+    px_sq = px[y0_sq:y1_sq, x0_sq:x1_sq] + 3.2 * fbm1[y0_sq:y1_sq, x0_sq:x1_sq]
+    py_sq = py[y0_sq:y1_sq, x0_sq:x1_sq] + 3.2 * fbm2[y0_sq:y1_sq, x0_sq:x1_sq]
+    spur_sq = 0.72 + 0.42 * rn_broad[y0_sq:y1_sq, x0_sq:x1_sq] + 0.24 * rn_fine[y0_sq:y1_sq, x0_sq:x1_sq]
+
+    for vx0, vy0, vx1, vy1, vfl, vhw, txc, tyc, trx, try_, tlev in sasq_valleys:
+        dx_v, dy_v = vx1 - vx0, vy1 - vy0
+        L2_v = dx_v * dx_v + dy_v * dy_v + 1e-9
+        t_proj = np.clip(((px_sq - vx0) * dx_v + (py_sq - vy0) * dy_v) / L2_v, 0.0, 1.0)
+        cx_v = vx0 + t_proj * dx_v
+        cy_v = vy0 + t_proj * dy_v
+        d_perp = np.hypot(px_sq - cx_v, py_sq - cy_v) * np.clip(spur_sq, 0.52, 1.48)
+        hw_eff = vhw * (0.58 + 0.42 * G.sstep(0.0, 0.25, np.minimum(t_proj, 1.0 - t_proj)))
+        u_val = d_perp / np.maximum(hw_eff, 1.5)
+        w_v = ((1.0 - G.sstep(0.0, 2.15, u_val)) ** 1.35) * w_sasquatch_env[y0_sq:y1_sq, x0_sq:x1_sq]
+        # Smoothly flaring glacial trough walls rising into the surrounding +7,400..+8,600 m snow peaks
+        h_v_prof = (
+            vfl
+            + 2150.0 * (G.sstep(0.0, 2.05, u_val) ** 1.45)
+            + 95.0 * (rn_fine[y0_sq:y1_sq, x0_sq:x1_sq] - 0.35)
+        )
+        En_sub = En_new[y0_sq:y1_sq, x0_sq:x1_sq]
+        En_new[y0_sq:y1_sq, x0_sq:x1_sq] = En_sub * (1.0 - 0.88 * w_v) + np.minimum(En_sub, h_v_prof) * (0.88 * w_v)
+        w_sasquatch_vales[y0_sq:y1_sq, x0_sq:x1_sq] = np.maximum(
+            w_sasquatch_vales[y0_sq:y1_sq, x0_sq:x1_sq],
+            (1.0 - G.sstep(0.0, 1.35, u_val)) * w_sasquatch_env[y0_sq:y1_sq, x0_sq:x1_sq],
+        )
+
+        if txc > 0.0:
+            r_tarn = np.hypot((px_sq - txc) / trx, (py_sq - tyc) / try_)
+            is_tarn_sq = (r_tarn <= 1.0) & is_sasquatch[y0_sq:y1_sq, x0_sq:x1_sq]
+            whas_new[y0_sq:y1_sq, x0_sq:x1_sq][is_tarn_sq] = True
+            wlev_new[y0_sq:y1_sq, x0_sq:x1_sq][is_tarn_sq] = tlev
+            En_new[y0_sq:y1_sq, x0_sq:x1_sq] = np.where(
+                is_tarn_sq,
+                np.minimum(En_new[y0_sq:y1_sq, x0_sq:x1_sq], tlev - 12.0),
+                En_new[y0_sq:y1_sq, x0_sq:x1_sq],
+            )
+
+    # Gently accentuate the glacial arête divides between the 4 sasquatch troughs using the smooth `w_sasquatch_env`
+    w_sasq_ridge = w_sasquatch_env * (1.0 - G.sstep(0.05, 0.55, w_sasquatch_vales))
+    En_new = En_new + (190.0 * (rn_fine - 0.35) + 95.0 * np.maximum(0.0, fbm1)) * w_sasq_ridge
+
+    # --- (2) `neo-ozarks` (`rmvyiyw8ucd1y`, X = 1109..1318, Y = 107..231):
+    # Epeirogenic flat-topped limestone/dolomite plateau table (+1,180..+1,680 m) deeply dissected by a
+    # dendritic network of steep-walled spring-fed hollows (-220..-360 m, floors +860..+1,220 m), crossed
+    # by 5 strike-aligned exposed veins/knobs of purple-red rhyolite porphyry (+180..+310 m resistant dikes
+    # with narrow canyon shut-ins), drained by the Neo-Ozark Porphyry Fork (`id: 9109`).
+    ozark_verts = [
+        [1126, 150], [1109, 189], [1129, 226], [1174, 231], [1220, 207],
+        [1252, 171], [1317, 135], [1318, 120], [1303, 107], [1284, 122],
+        [1258, 125], [1219, 120], [1198, 113], [1172, 126], [1148, 136],
+    ]
+    is_ozarks = _poly_mask(ozark_verts) & ~is_high_lake & ~whas_new
+    d_in_oz = nd.distance_transform_edt(is_ozarks)
+    d_out_oz = nd.distance_transform_edt(~is_ozarks)
+    sd_oz = (d_in_oz - d_out_oz) + 5.5 * fbm1 + 3.0 * fbm2
+    w_ozarks_env = G.sstep(-10.0, 12.0, sd_oz) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
+
+    # Smoothly domed structural carbonate tableland surface anchored to local background elevation
+    h_ozark_bg = nd.gaussian_filter(En_new, sigma=16.0)
+    h_ozark_table = h_ozark_bg + 310.0 * w_ozarks_env + 35.0 * fbm2
+
+    # High-frequency dendritic karst hollow network (flat-topped cherty dolomite ridges + V-shaped spring hollows)
+    xw_oz = px + 4.2 * fbm1 + 2.2 * rn_fine
+    yw_oz = py + 4.2 * fbm2 + 2.2 * rn_broad
+    dendritic_wave = (
+        0.45 * np.abs(np.sin(xw_oz * 0.26 + yw_oz * 0.18))
+        + 0.35 * np.abs(np.sin(xw_oz * 0.16 - yw_oz * 0.29 + 1.1))
+        + 0.20 * np.abs(np.cos(xw_oz * 0.39 + yw_oz * 0.34 - 0.7))
+    )
+    hollow_cut = 285.0 * ((1.0 - G.sstep(0.18, 0.62, dendritic_wave)) ** 1.35) * w_ozarks_env
+    doline_field = 70.0 * np.maximum(0.0, np.sin(xw_oz * 0.52) * np.cos(yw_oz * 0.52) - 0.55) * w_ozarks_env
+
+    # 5 Exposed Strike-Aligned Veins & Knobs of Purple-Red Rhyolite Porphyry:
+    porphyry_vein_segs = [
+        # (x0, y0, x1, y1, crest_boost_m, hw_px)
+        (1152.0, 202.0, 1278.0, 132.0, 260.0, 2.8),  # Great Red Porphyry Dike (ENE-WSW master vein)
+        (1130.0, 164.0, 1252.0, 120.0, 220.0, 2.5),  # North Dolomite-Escarpment Porphyry Vein
+        (1208.0, 208.0, 1288.0, 148.0, 235.0, 2.6),  # Spider-Rim Porphyry Sill
+        (1170.0, 126.0, 1214.0, 204.0, 195.0, 2.3),  # Cross-Cutting Shut-In Porphyry Dike
+        (1234.0, 122.0, 1262.0, 166.0, 185.0, 2.2),  # East Knob Porphyry Vein
+    ]
+    w_porphyry_vein = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    h_porphyry_boost = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    y0_oz, y1_oz, x0_oz, x1_oz = 95, 245, 1095, 1332
+    px_oz = px[y0_oz:y1_oz, x0_oz:x1_oz] + 2.2 * fbm1[y0_oz:y1_oz, x0_oz:x1_oz] + 1.2 * rn_fine[y0_oz:y1_oz, x0_oz:x1_oz]
+    py_oz = py[y0_oz:y1_oz, x0_oz:x1_oz] + 2.2 * fbm2[y0_oz:y1_oz, x0_oz:x1_oz] + 1.2 * rn_broad[y0_oz:y1_oz, x0_oz:x1_oz]
+
+    for vx0, vy0, vx1, vy1, vboost, vhw in porphyry_vein_segs:
+        dx_v, dy_v = vx1 - vx0, vy1 - vy0
+        L2_v = dx_v * dx_v + dy_v * dy_v + 1e-9
+        t_p = np.clip(((px_oz - vx0) * dx_v + (py_oz - vy0) * dy_v) / L2_v, 0.0, 1.0)
+        d_p = np.hypot(px_oz - (vx0 + t_p * dx_v), py_oz - (vy0 + t_p * dy_v))
+        end_t = G.sstep(0.0, 0.16, np.minimum(t_p, 1.0 - t_p))
+        knob_mod = np.clip(0.55 + 0.65 * rn_fine[y0_oz:y1_oz, x0_oz:x1_oz] + 0.25 * np.sin(t_p * 6.0 * math.pi), 0.35, 1.35)
+        w_pv = np.exp(-((d_p / vhw) ** 1.85)) * end_t * knob_mod * w_ozarks_env[y0_oz:y1_oz, x0_oz:x1_oz]
+        w_porphyry_vein[y0_oz:y1_oz, x0_oz:x1_oz] = np.maximum(w_porphyry_vein[y0_oz:y1_oz, x0_oz:x1_oz], w_pv)
+        h_porphyry_boost[y0_oz:y1_oz, x0_oz:x1_oz] = np.maximum(
+            h_porphyry_boost[y0_oz:y1_oz, x0_oz:x1_oz],
+            vboost * w_pv,
+        )
+
+    h_ozark_target = h_ozark_table - hollow_cut - doline_field + h_porphyry_boost
+    En_new = En_new * (1.0 - 0.85 * w_ozarks_env) + h_ozark_target * (0.85 * w_ozarks_env)
+
+    # Carve the main dendritic trunk hollow (`Neo-Ozark Porphyry Fork`, `id: 9109`) & its narrow porphyry "Shut-Ins"
+    # flowing from `(1246, 172)` -> `(1212, 174)` -> `(1176, 184)` -> `(1144, 168)` -> `(1132, 146)` -> `(1124, 134)` (into Ria River 9101!)
+    ozark_riv_ctrl = [
+        (1246.0, 172.0, 1265.0,  5.5),
+        (1212.0, 174.0, 1145.0,  8.5),  # Passes Cathedral of the Red Porphyry Vein
+        (1196.0, 179.0, 1085.0,  5.5),  # Narrow Porphyry Shut-In Gorge!
+        (1176.0, 184.0, 1020.0,  9.5),  # Passes Onyx Pillar Labyrinth
+        (1144.0, 168.0,  945.0, 10.5),  # Passes The Shut-In Big Spring Resurgence
+        (1132.0, 148.0,  885.0, 11.5),
+        (1124.0, 134.0,  825.0, 12.5),  # Joins main Ria River (`id: 9101`) at `(1124, 134)`!
+    ]
+    ozark_riv_samples = _catmull_rom_2d(ozark_riv_ctrl, n_per_seg=14)
+    d2_ozr = np.full((y1_oz - y0_oz, x1_oz - x0_oz), 1e12, dtype=float)
+    el_ozr = np.zeros((y1_oz - y0_oz, x1_oz - x0_oz), dtype=float)
+    hw_ozr = np.full((y1_oz - y0_oz, x1_oz - x0_oz), 9.0, dtype=float)
+    for sx, sy, sel, shw in ozark_riv_samples:
+        d2 = (px[y0_oz:y1_oz, x0_oz:x1_oz] - sx) ** 2 + (py[y0_oz:y1_oz, x0_oz:x1_oz] - sy) ** 2
+        better = d2 < d2_ozr
+        d2_ozr = np.where(better, d2, d2_ozr)
+        el_ozr = np.where(better, sel, el_ozr)
+        hw_ozr = np.where(better, shw, hw_ozr)
+    dist_ozr = np.sqrt(d2_ozr)
+    u_ozr = dist_ozr / np.maximum(hw_ozr, 1.0)
+    w_ozr_carve = (1.0 - G.sstep(0.0, 1.45, u_ozr)) * (~is_high_lake[y0_oz:y1_oz, x0_oz:x1_oz]).astype(float)
+    h_ozr_prof = el_ozr + 290.0 * (np.clip(u_ozr, 0.0, 1.45) ** 1.45)
+    En_oz_sub = En_new[y0_oz:y1_oz, x0_oz:x1_oz]
+    En_new[y0_oz:y1_oz, x0_oz:x1_oz] = En_oz_sub * (1.0 - 0.88 * w_ozr_carve) + np.minimum(En_oz_sub, h_ozr_prof) * (0.88 * w_ozr_carve)
+    w_porphyry_vein[y0_oz:y1_oz, x0_oz:x1_oz] *= G.sstep(0.15, 0.45, u_ozr)
+    w_ozark_dolomite = w_ozarks_env * (1.0 - 0.75 * w_porphyry_vein)
+
+    ozark_riv_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in ozark_riv_samples[::2]]
+    if ozark_riv_pts[-1] != [1124.0, 134.0]:
+        ozark_riv_pts.append([1124.0, 134.0])
+
+    # --- (3) `spider lake` (`rmvyj4v2ozgb1`, X = 1225..1417, Y = 154..291):
+    # Add 5 small emergent rocky dolomite/porphyry silk-weir island stacks (+1,466..+1,486 m) inside the
+    # +1,460.0 m Eastern Highland Lake (away from river outlets) to anchor the Littoral Bridge-Curtains!
+    spider_stacks = [
+        # (xc, yc, rx, ry, crest_m)
+        (1278.0, 191.0, 1.9, 1.4, 1482.0),
+        (1291.0, 183.0, 2.1, 1.5, 1486.0),
+        (1303.0, 195.0, 1.8, 1.4, 1478.0),
+        (1284.0, 204.0, 1.7, 1.3, 1474.0),
+        (1312.0, 188.0, 1.8, 1.4, 1480.0),
+    ]
+    for sxc, syc, srx, sry, screst in spider_stacks:
+        r_st = np.hypot((px - sxc) / srx, (py - syc) / sry)
+        is_stack = (r_st <= 1.0) & hlake_mask
+        whas_new[is_stack] = False
+        wlev_new[is_stack] = np.nan
+        En_new = np.where(
+            is_stack,
+            HIGH_LAKE_LEV + 4.0 + (screst - HIGH_LAKE_LEV - 4.0) * np.maximum(0.0, 1.0 - (r_st ** 1.6)),
+            En_new,
+        )
+
+    # --- (4) `Silent Vales` (`rmvyk0ubpkdoy`, X = 158..228, Y = 831..1131):
+    # Carve a connected network of sheltered, cool-temperate (`Cfb`/`Csb`) longitudinal and tributary valleys
+    # (+1,080..+1,920 m valley floors) with two ribbon lakes (+1,410 m & +1,240 m, `WH`) and a western
+    # water-gap gorge outlet (`id: 9110`, *Silent Vales River*) into the Crook River (`id: 9105`) at `(126, 968)`.
+    # Use wide, spur-modulated valley walls (ZERO polygon cookie-cutter cliff!) so the vales grade organically
+    # up into the surrounding cordillera snow peaks!
+    silent_verts = [
+        [158, 843], [165, 881], [169, 917], [184, 940], [191, 964], [187, 966],
+        [172, 991], [165, 1018], [176, 1047], [189, 1068], [191, 1092], [207, 1114],
+        [222, 1131], [228, 1099], [223, 1049], [203, 1030], [206, 997], [192, 980],
+        [199, 949], [217, 931], [217, 896], [208, 861], [182, 831],
+    ]
+    is_silent_reg = _poly_mask(silent_verts)
+
+    silent_n_ctrl = [
+        (183.0,  842.0, 1860.0, 13.5),
+        (190.0,  882.0, 1620.0, 16.5),
+        (196.0,  928.0, 1405.0, 18.0),  # Upper Silent Ribbon Lake (+1,410 m)
+        (194.0,  958.0, 1265.0, 17.5),
+        (188.0,  984.0, 1135.0, 19.0),  # Central Silent Vales Confluence Basin!
+    ]
+    silent_s_ctrl = [
+        (214.0, 1118.0, 1890.0, 13.0),
+        (202.0, 1086.0, 1640.0, 16.0),
+        (194.0, 1052.0, 1420.0, 17.5),
+        (186.0, 1020.0, 1235.0, 18.0),  # Lower Silent Ribbon Lake (+1,240 m)
+        (188.0,  984.0, 1135.0, 19.0),  # Joins Central Confluence Basin!
+    ]
+    silent_out_ctrl = [
+        (188.0,  984.0, 1135.0, 18.0),
+        (170.0,  981.0,  995.0, 15.5),  # Western Water-Gap Gorge through the coastal cordillera!
+        (148.0,  975.0,  855.0, 16.5),
+        (126.0,  968.0,  715.0, 18.5),  # Joins Crook River (`id: 9105`) at `(126, 968)`!
+    ]
+    silent_side_1 = [(215.0,  868.0, 1820.0, 12.0), (202.0,  878.0, 1680.0, 14.0), (190.0,  882.0, 1620.0, 16.0)]
+    silent_side_2 = [(216.0,  916.0, 1760.0, 12.0), (205.0,  924.0, 1560.0, 14.0), (196.0,  928.0, 1405.0, 16.5)]
+    silent_side_3 = [(168.0, 1012.0, 1580.0, 12.0), (178.0, 1016.0, 1380.0, 14.0), (186.0, 1020.0, 1235.0, 16.5)]
+    silent_side_4 = [(220.0, 1058.0, 1790.0, 12.0), (206.0, 1055.0, 1580.0, 14.0), (194.0, 1052.0, 1420.0, 16.5)]
+
+    s_n_samp = _catmull_rom_2d(silent_n_ctrl, n_per_seg=16)
+    s_s_samp = _catmull_rom_2d(silent_s_ctrl, n_per_seg=16)
+    s_out_samp = _catmull_rom_2d(silent_out_ctrl, n_per_seg=16)
+    all_silent_samples = np.vstack([
+        s_n_samp,
+        s_s_samp,
+        s_out_samp,
+        _catmull_rom_2d(silent_side_1, n_per_seg=10),
+        _catmull_rom_2d(silent_side_2, n_per_seg=10),
+        _catmull_rom_2d(silent_side_3, n_per_seg=10),
+        _catmull_rom_2d(silent_side_4, n_per_seg=10),
+    ])
+
+    y0_sv, y1_sv, x0_sv, x1_sv = 805, 1165, 105, 265
+    px_sv = px[y0_sv:y1_sv, x0_sv:x1_sv] + 2.8 * fbm1[y0_sv:y1_sv, x0_sv:x1_sv]
+    py_sv = py[y0_sv:y1_sv, x0_sv:x1_sv] + 2.8 * fbm2[y0_sv:y1_sv, x0_sv:x1_sv]
+    d2_sv = np.full((y1_sv - y0_sv, x1_sv - x0_sv), 1e12, dtype=float)
+    el_sv = np.zeros((y1_sv - y0_sv, x1_sv - x0_sv), dtype=float)
+    hw_sv = np.full((y1_sv - y0_sv, x1_sv - x0_sv), 16.0, dtype=float)
+
+    for sx, sy, sel, shw in all_silent_samples:
+        d2 = (px_sv - sx) ** 2 + (py_sv - sy) ** 2
+        better = d2 < d2_sv
+        d2_sv = np.where(better, d2, d2_sv)
+        el_sv = np.where(better, sel, el_sv)
+        hw_sv = np.where(better, shw, hw_sv)
+
+    el_sv = nd.gaussian_filter(el_sv, sigma=3.0)
+    hw_sv = nd.gaussian_filter(hw_sv, sigma=2.5)
+    spur_sv = 0.68 + 0.44 * rn_broad[y0_sv:y1_sv, x0_sv:x1_sv] + 0.26 * rn_fine[y0_sv:y1_sv, x0_sv:x1_sv] + 0.14 * fbm1[y0_sv:y1_sv, x0_sv:x1_sv]
+    dist_sv = nd.gaussian_filter(np.sqrt(d2_sv), sigma=1.5) * np.clip(spur_sv, 0.48, 1.55)
+    u_sv = dist_sv / np.maximum(hw_sv, 1.0)
+
+    w_sv_carve = (1.0 - G.sstep(0.0, 2.35, u_sv)) ** 1.35
+    h_sv_prof = (
+        el_sv
+        + 680.0 * (np.clip(u_sv, 0.0, 1.35) ** 1.45)
+        + 2650.0 * (np.maximum(0.0, u_sv - 0.85) ** 1.65)
+        + 75.0 * (rn_fine[y0_sv:y1_sv, x0_sv:x1_sv] - 0.35)
+    )
+    En_sv_sub = En_new[y0_sv:y1_sv, x0_sv:x1_sv]
+    En_new[y0_sv:y1_sv, x0_sv:x1_sv] = En_sv_sub * (1.0 - 0.92 * w_sv_carve) + np.minimum(En_sv_sub, h_sv_prof) * (0.92 * w_sv_carve)
+
+    w_silent_vales = np.zeros((NEW_OH, NEW_OW), dtype=float)
+    w_silent_vales[y0_sv:y1_sv, x0_sv:x1_sv] = np.clip(1.0 - G.sstep(0.0, 1.95, u_sv), 0.0, 1.0)
+
+    # Two cool-temperate ribbon lakes inside `Silent Vales`:
+    silent_lakes = [
+        (196.0,  928.0, 2.4, 5.2, 1410.0),  # Mirror-Fern Lake (North Silent Vale)
+        (186.0, 1020.0, 2.4, 5.0, 1240.0),  # Whispering-Cedar Lake (South Silent Vale)
+    ]
+    for lxc, lyc, lrx, lry, llev in silent_lakes:
+        r_lk = np.hypot((px - lxc) / lrx, (py - lyc) / lry)
+        is_slk = (r_lk <= 1.0) & is_silent_reg
+        whas_new[is_slk] = True
+        wlev_new[is_slk] = llev
+        En_new = np.where(is_slk, np.minimum(En_new, llev - 10.0), En_new)
+
+    silent_riv_full = np.vstack([s_n_samp, s_out_samp[1:]])
+    silent_riv_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in silent_riv_full[::2]]
+    if silent_riv_pts[-1] != [126.0, 968.0]:
+        silent_riv_pts.append([126.0, 968.0])
+
+    # --- (5) `tsunami coast` (`rmvyk62bgdvs3`, X = 97..636, Y = 115..673):
+    # Sculpt the 7 diagnostic megatsunami coastal landforms across the coastal zone of `tsunami coast`:
+    # - Wave-planed Tsunami Scour Bench (+6..+65 m in the unshielded/funnel SW sector X = 100..350,
+    #   tapering to +4..+24 m in the Arch-shielded NE shadow zone X = 350..620)
+    # - NW->SE V-shaped Megatsunami Chevron Ridges (+14..+38 m) aligned with wave rays from the
+    #   Krakatoan Seamount caldera `(176, 322)`
+    # - Backwash Scour Chutes (-8..-20 m return-flow gullies perpendicular to shore)
+    # - 4 Perched Saline Tsunami Plunge-Pool Lagoons (+8..+14 m water level)
+    tsunami_verts = [
+        [97, 634], [108, 600], [110, 561], [111, 524], [159, 462], [187, 418], [189, 383],
+        [186, 349], [206, 310], [223, 284], [279, 246], [322, 212], [366, 184], [432, 172],
+        [483, 140], [522, 115], [597, 139], [622, 158], [636, 178], [632, 204], [606, 230],
+        [547, 245], [517, 282], [500, 325], [483, 370], [456, 389], [416, 408], [364, 419],
+        [338, 443], [321, 509], [317, 566], [292, 589], [233, 645], [200, 663], [162, 673],
+        [130, 673], [101, 656],
+    ]
+    is_tsunami_reg = _poly_mask(tsunami_verts) & ~whas_new & ~is_high_lake
+    d_coast_tsu = nd.distance_transform_edt(~sea_and_delta_water)
+
+    # Azimuthal exposure factor: highest (1.0) in SW/Central sector (`X < 340`, open inter-island gaps & Crook funnel)
+    # and attenuated (0.38) in NE Arch-shielded shadow sector (`X > 360`)
+    exposure_tsu = 1.0 - 0.62 * G.sstep(310.0, 420.0, px)
+    scour_width_px = 6.0 + 10.0 * exposure_tsu  # 12 km wide in NE shadow, up to 32 km wide in SW funnel
+
+    w_tsunami_scour = (
+        is_tsunami_reg.astype(float)
+        * (1.0 - G.sstep(2.0, scour_width_px, d_coast_tsu))
+        * (1.0 - G.sstep(180.0, 420.0, En_new))
+    )
+
+    # Wave-ray angle from Main Krakatoan Seamount Caldera `(176.0, 322.0)`
+    dx_sm = px - 176.0
+    dy_sm = py - 322.0
+    r_sm = np.hypot(dx_sm, dy_sm) + 1e-9
+    th_sm = np.arctan2(dy_sm, dx_sm)
+
+    # V-shaped Megatsunami Chevron Ridges (+14..+36 m) and Backwash Scour Chutes (-10..-22 m)
+    chevron_phase = np.sin(th_sm * 28.0 + 0.22 * r_sm + 1.8 * fbm1)
+    chevron_ridge = np.clip(chevron_phase, 0.0, 1.0) ** 1.8
+    backwash_chute = np.clip(-chevron_phase, 0.0, 1.0) ** 2.2
+
+    w_tsunami_chevron = w_tsunami_scour * G.sstep(1.5, 4.5, d_coast_tsu) * chevron_ridge
+
+    h_scour_bench = (
+        4.0
+        + (18.0 + 38.0 * exposure_tsu) * np.clip(d_coast_tsu / np.maximum(scour_width_px, 1.0), 0.0, 1.2)
+        + (14.0 + 22.0 * exposure_tsu) * chevron_ridge * G.sstep(1.5, 4.0, d_coast_tsu)
+        - (8.0 + 14.0 * exposure_tsu) * backwash_chute * G.sstep(0.5, 3.0, d_coast_tsu)
+    )
+    En_new = np.where(
+        is_tsunami_reg,
+        En_new * (1.0 - 0.78 * w_tsunami_scour) + np.maximum(2.5, np.minimum(En_new, h_scour_bench)) * (0.78 * w_tsunami_scour),
+        En_new,
+    )
+
+    # 4 Perched Saline Tsunami Plunge-Pool Lagoons along the Tsunami Coast scour bench:
+    tsunami_lagoons = [
+        # (xc, yc, rx, ry, angle_deg, lev_m)
+        (246.0, 412.0, 3.6, 1.8, -42.0, 12.0),  # South Scour-Pit Lagoon
+        (292.0, 368.0, 3.8, 1.9, -40.0, 11.0),  # Central Chevron Plunge Lagoon
+        (344.0, 318.0, 3.4, 1.7, -38.0,  9.0),  # Arch-Gap Overwash Lagoon
+        (412.0, 266.0, 3.2, 1.6, -35.0,  7.0),  # North Shadow Salina Lagoon
+    ]
+    for lxc, lyc, lrx, lry, lang, llev in tsunami_lagoons:
+        th_l = math.radians(lang)
+        u_l = (px - lxc) * math.cos(th_l) + (py - lyc) * math.sin(th_l)
+        v_l = -(px - lxc) * math.sin(th_l) + (py - lyc) * math.cos(th_l)
+        r_l = np.hypot(u_l / lrx, v_l / lry)
+        is_tlag = (r_l <= 1.0) & is_tsunami_reg & (d_coast_tsu >= 2.5)
+        whas_new[is_tlag] = True
+        wlev_new[is_tlag] = llev
+        En_new = np.where(is_tlag, np.minimum(En_new, llev - 6.0), En_new)
 
     # Helper masks for climate & satellite synthesis
     is_tharn_ne = is_ltgrey & (px >= 1300.0) & (py < 360.0)
@@ -1362,8 +2075,8 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
 
     # 9. Build Sinuous River Courses & New Biome Polygons for the Expanded Canvas:
     ria_main_pts = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in ria_samples[::2]]
-    if ria_main_pts[-1] != [606.0, 184.0]:
-        ria_main_pts.append([606.0, 184.0])
+    if ria_main_pts[-1] != [490.0, 186.0]:
+        ria_main_pts.append([490.0, 186.0])
 
     crook_riv_ctrl = [
         (148.0, 1136.0, 0.0, 1.0),
@@ -1409,7 +2122,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
             'q_mouth': 1420.0,
             'q_m3s': [round(140.0 + 1280.0 * (i / max(1, len(arch_riv_pts) - 1)), 1) for i in range(len(arch_riv_pts))],
             'px': arch_riv_pts,
-            'to': {'kind': 'sea', 'at_px': arch_riv_pts[-1]},
+            'to': {'kind': 'river', 'id': 9101, 'at_px': arch_riv_pts[-1]},
         },
         {
             'id': 9104,
@@ -1449,7 +2162,7 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
             'q_mouth': 1380.0,
             'q_m3s': [round(125.0 + 1255.0 * (i / max(1, len(ntrib_pts) - 1)), 1) for i in range(len(ntrib_pts))],
             'px': ntrib_pts,
-            'to': {'kind': 'sea', 'at_px': ntrib_pts[-1]},
+            'to': {'kind': 'river', 'id': 9101, 'at_px': ntrib_pts[-1]},
         },
         {
             'id': 9108,
@@ -1461,9 +2174,102 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
             'px': mtrib_pts,
             'to': {'kind': 'river', 'id': 9107, 'at_px': mtrib_pts[-1]},
         },
+        {
+            'id': 9109,
+            'name': 'Neo-Ozark Porphyry Fork',
+            'tier': 'trib',
+            'len_km': 320.0,
+            'q_mouth': 440.0,
+            'q_m3s': [round(95.0 + 345.0 * (i / max(1, len(ozark_riv_pts) - 1)), 1) for i in range(len(ozark_riv_pts))],
+            'px': ozark_riv_pts,
+            'to': {'kind': 'river', 'id': 9101, 'at_px': ozark_riv_pts[-1]},
+        },
+        {
+            'id': 9110,
+            'name': 'Silent Vales River',
+            'tier': 'trib',
+            'len_km': 410.0,
+            'q_mouth': 540.0,
+            'q_m3s': [round(80.0 + 460.0 * (i / max(1, len(silent_riv_pts) - 1)), 1) for i in range(len(silent_riv_pts))],
+            'px': silent_riv_pts,
+            'to': {'kind': 'river', 'id': 9105, 'at_px': silent_riv_pts[-1]},
+        },
     ]
 
     new_expansion_regions = [
+        {
+            'id': 'rmvyiyw8ucd1y',
+            'name': 'neo-ozarks',
+            'color': '#3f6e4a',
+            'kind': 'biome',
+            'createdAt': '2026-11-01T23:54:20.692Z',
+            'notes': (
+                'Neo-Ozarks Dissected Carbonate & Porphyry Plateau (56,684 km²): an ancient epeirogenic tableland of '
+                'flat-lying cherty dolomite and limestone (+1,260 to +1,680 m) deeply dissected by spring-fed hollows '
+                'and first-magnitude karst caverns. Famous for its 5 strike-aligned exposed veins and knobs of purple-red '
+                'rhyolite porphyry (+180 to +320 m ridges) where rivers carve boulder-choked canyon shut-ins.'
+            ),
+            'points': ozark_verts,
+        },
+        {
+            'id': 'rmvyj1kvhx4m4',
+            'name': 'sasquatch tribes',
+            'color': '#2aa493',
+            'kind': 'political',
+            'createdAt': '2026-11-01T23:57:49.092Z',
+            'notes': (
+                'Sasquatch Tribes High Periglacial Valleys (132,232 km²): a rugged northern rim territory east of the '
+                'NW Outer Wall, cleaved by 4 steep-walled glaciated and periglacial U-troughs (Frost-Jaw Vale, '
+                'Bone-Larch Hollow, Hoar-Wind Glen, and Scree-Tooth Basin at +5,850 to +6,240 m, 0.71–0.76 atm, ET/Dsc) '
+                'smaller and harsher than the Yeti Kingdom\'s Cold Lake valley.'
+            ),
+            'points': sasquatch_verts,
+        },
+        {
+            'id': 'rmvyj4v2ozgb1',
+            'name': 'spider lake',
+            'color': '#85aa3b',
+            'kind': 'biome',
+            'createdAt': '2026-11-02T00:02:02.078Z',
+            'notes': (
+                'Spider Lake Highland Silk-Forest Basin (72,928 km²): centered on the +1,460.0 m hydrothermal highland '
+                'lake (1.20 atm, 0.26 atm O₂, Cfa/Cfb). Sublacustrine warm seeps fuel year-round "lake-smoke" midge '
+                'clouds that sustain permanent 200,000-strong colonies of eusocial spiders (Arachneapolita sericifera) '
+                'and live rotational silk-weir arachniculture (see biomes/spiderlake/PLAN.md).'
+            ),
+            'points': [
+                [1225, 203], [1227, 222], [1236, 242], [1283, 276], [1315, 291], [1345, 285],
+                [1364, 284], [1381, 286], [1417, 247], [1409, 221], [1382, 190], [1333, 164],
+                [1284, 154], [1255, 169],
+            ],
+        },
+        {
+            'id': 'rmvyk0ubpkdoy',
+            'name': 'Silent Vales',
+            'color': '#d7bd60',
+            'kind': 'geographic',
+            'createdAt': '2026-11-02T00:48:39.256Z',
+            'notes': (
+                'The Silent Vales (40,444 km²): an interconnected network of sheltered, fog-draped cool-temperate '
+                'montane valleys (+1,135 to +1,890 m floors, Cfb/Csb) and two quiet ribbon lakes nestled behind the '
+                'western coastal hogback ridge, draining west via a mossy water-gap gorge into the Crook River.'
+            ),
+            'points': silent_verts,
+        },
+        {
+            'id': 'rmvyk62bgdvs3',
+            'name': 'tsunami coast',
+            'color': '#cf573a',
+            'kind': 'geographic',
+            'createdAt': '2026-11-02T00:55:27.515Z',
+            'notes': (
+                'The Tsunami Coast (483,208 km²): northwestern mainland littoral zone repeatedly battered by tsunami '
+                'trains generated by the explosive Steaming Seamounts. Features a wave-planed bedrock scour apron '
+                '(+6 to +65 m in the SW funnel sector, +4 to +24 m in the NE Arch-shielded shadow), NW-to-SE V-shaped '
+                'megatsunami boulder chevrons, backwash canyons, and perched saline plunge-pool lagoons.'
+            ),
+            'points': tsunami_verts,
+        },
         {
             'id': 'rmvriavalley',
             'name': 'ria valley',
@@ -1642,6 +2448,12 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
         arach_rib_h=arach_rib_h,
         w_canyon=w_canyon,
         w_wall_unify=w_wall_unify,
+        w_sasquatch_vales=w_sasquatch_vales,
+        w_ozark_dolomite=w_ozark_dolomite,
+        w_porphyry_vein=w_porphyry_vein,
+        w_silent_vales=w_silent_vales,
+        w_tsunami_scour=w_tsunami_scour,
+        w_tsunami_chevron=w_tsunami_chevron,
         in_arch_box=in_arch_box,
         w_arch_region=w_arch_region,
         fbm1=fbm1,
