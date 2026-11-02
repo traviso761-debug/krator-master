@@ -3,6 +3,8 @@
  "fragments": {
   "core/shader/06b-core-kcolor.js": {"after": ["core/shader/06-core-khook.js"]},
   "core/atmos/89-atmos-0-core.js": {"needs": ["core/shader/06-core-khook.js", "core/shader/06b-core-kcolor.js"]},
+  "core/terrain/47-core-therm.js": {"needs": ["core/rand/08-core-rand.js"]},
+  "core/biome/41-core-env.js": {"needs": ["core/biome/10-core-head.js"]},
   "core/terrain/43-core-ground.js": {"needs": ["core/shader/06-core-khook.js"]},
   "core/terrain/host/44-core-farfield-draw.js": {"needs": ["core/shader/06-core-khook.js"]},
   "core/terrain/host/45-core-horizon-shade.js": {"needs": ["core/shader/06-core-khook.js"]},

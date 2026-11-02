@@ -37,7 +37,7 @@
     'float s=6.2831853*aSeed,c=cos(s),n=sin(s);vec2 q=mat2(c,n,-n,c)*position.xy;mvPosition.xy+=q*aSize*g;vUv=uv;vA=aAlpha*g*f;vTint=aTint;',
     'gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n');
   var SPF=['uniform vec3 uColor;varying vec2 vUv;varying float vA;varying vec3 vTint;','#include <fog_pars_fragment>','#ifdef SP_MAP','uniform sampler2D uMap;','#endif',
-    'void main(){','#ifdef SP_MAP','float a=texture2D(uMap,vUv).a;','#else','vec2 d=vUv*2.0-1.0;float a=1.0-smoothstep(0.1,1.0,dot(d,d));','#endif',
+    'void main(){','#ifdef SP_MAP','float a=texture(uMap,vUv).a;','#else','vec2 d=vUv*2.0-1.0;float a=1.0-smoothstep(0.1,1.0,dot(d,d));','#endif',
     'gl_FragColor=vec4(uColor*vTint,a*vA);if(gl_FragColor.a<0.004)discard;','#include <encodings_fragment>','#include <fog_fragment>','}'].join('\n');
   function spriteMesh(S,o){o=o||{};var T=root.THREE,g=new T.InstancedBufferGeometry(),P=new T.PlaneGeometry(1,1),A=function(n,a,sz){g.setAttribute(n,new T.InstancedBufferAttribute(a,sz));};
     g.setAttribute('position',P.attributes.position);g.setAttribute('uv',P.attributes.uv);g.setIndex(P.index);g.instanceCount=S.count;
