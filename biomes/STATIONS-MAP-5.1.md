@@ -96,6 +96,7 @@ stays at the water, in the wave's reach**: quays, dockyard and the traders' fact
 | Mid Basin | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: no plan yet |
 | High Rift | `rmvhighrift100` | 86,000 km² | 2.9-11.4 km, median 4.0 km | Five zones: no plan yet |
 | NE outer wall | `ne outer wall` | | | On the map, with `biomes/neouterwall/PLAN.md`. Overlaps `arachnoid canyons` |
+| Outland Gate | `outland gate` | | | Added by the owner, 2026-11-02; `biomes/outlandgate/PLAN.md` on Gemini's branch |
 
 Elevations are the 5th to 95th percentile. These kits start from the nearest finished kit, on core, each with a `Core adoption`
 section in its `PLAN.md`. Loom-Chasms' and Siphon Pits' plans use old-canvas px; Spider Lake's uses the new one.

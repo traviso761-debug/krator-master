@@ -5,8 +5,8 @@
 - **Order:** finish the core pass (below), then the three-ground diagnosis, then pair 4. Pair 4 is free of the map; pair 5 on wait for map 5.1.
 - **Map 5.1** (`gemini-loom-chasms`, Gemini's scale model) merges here after `tools/scale-model/HANDOFF-GEMINI-5.1.md` on that branch is done.
   `biomes/STATIONS-MAP-5.1.md` lists what it asks of each station. Godstep's plan needs a rewrite before its station 1.
-- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall.
-- **The new north and west, except Copper Glacier:** Gemini may do map work there, but no biome kits and no open world there for some time.
+- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
+- **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
 
