@@ -1,0 +1,21 @@
+{
+ "prompt": "Giant harvester ant worker, natural history reference, standing on flat ground, full body. Exactly six long legs, three on each side, all spread wide apart and clearly separated from the body and each other, feet on the ground. Large head with strong curved mandibles and two elbowed antennae, narrow waist with a clear petiole node, rounded abdomen. Glossy dark red-brown chitin, no wings. Bilaterally symmetrical, neutral pose. Flat even studio lighting, no cast shadows, no ambient occlusion, plain light grey background, nothing else in frame.",
+ "task_ids": [
+  "01a19aaf-a323-7449-9647-22ef3e17c628",
+  "01a19ab4-c805-7f93-b308-0937cc573152"
+ ],
+ "ai_model": "fal-ai/hyper3d/rodin",
+ "credits": 9,
+ "usd": 0.4,
+ "raw": "raw-rodin.glb",
+ "route": "multi-image on fal, front left back",
+ "settings": {
+  "condition_mode": "concat",
+  "geometry_file_format": "glb",
+  "material": "PBR",
+  "quality": "medium",
+  "seed": 7,
+  "tier": "Regular"
+ },
+ "rights": "generated on the owner's Meshy account"
+}

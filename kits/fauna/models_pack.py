@@ -63,10 +63,10 @@ def webp_rgba(blob, size):
     return 'data:image/webp;base64,' + base64.b64encode(out.getvalue()).decode('ascii')
 
 
-def source_record(key):
+def source_record(key, name='source.json'):
     """What the model was made from (PLAN-MESHY.md, C1): rig/sources/<key>/source.json, naming the raw GLB beside it. A pack without it
     is refused, because the first 19 models kept nothing and none can be regenerated."""
-    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rig', 'sources', key); p = os.path.join(d, 'source.json')
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rig', 'sources', key); p = os.path.join(d, name)
     if not os.path.isfile(p):
         sys.exit('models_pack: no %s (prompt, reference, Meshy task ids, model, credits, raw: the raw GLB\'s file name)' % os.path.relpath(p))
     rec = json.load(open(p, encoding='utf-8'))
@@ -86,7 +86,9 @@ def main():
     ap.add_argument('--key', required=True); ap.add_argument('--group', required=True)
     ap.add_argument('--scale', type=float, required=True, help='metres per model unit')
     ap.add_argument('--truthful-sides', action='store_true', help='the rig already names L (+x of the animal\'s own centreline) and R: do not rename by absolute x')
+    ap.add_argument('--source', default='source.json', help='the source record in rig/sources/<key>/, when an animal has several candidates')
     ap.add_argument('--tex', type=int, default=1024, help='base colour and normal map size (px)')
+    ap.add_argument('--nrmtex', type=int, default=0, help='normal map size (px), when lossless is too large at --tex')
     ap.add_argument('--mrtex', type=int, default=512, help='metallic-roughness map size (px)')
     a = ap.parse_args()
     J, BIN = load_glb(a.glb)
@@ -115,6 +117,8 @@ def main():
         out_nodes.append({'name': names[i], 'parent': parent.get(i, -1), 't': [round(float(x), 6) for x in nd.get('translation', [0, 0, 0])]})
         if 'mesh' not in nd:
             continue
+        if len(J['meshes'][nd['mesh']]['primitives']) != 1:      # only one is read: the rest would vanish without a word, as the dragonfly's wing material did
+            sys.exit('models_pack: mesh of node %s has %d primitives; a part is one primitive, one material' % (nd.get('name'), len(J['meshes'][nd['mesh']]['primitives'])))
         prim = J['meshes'][nd['mesh']]['primitives'][0]; at = prim['attributes']
         P = accessor(J, BIN, at['POSITION']).astype(np.float64); Nn = accessor(J, BIN, at['NORMAL']).astype(np.float64)
         UV = accessor(J, BIN, at['TEXCOORD_0']).astype(np.float64); idx = accessor(J, BIN, prim['indices']).reshape(-1)
@@ -194,7 +198,7 @@ def main():
         return J['images'][J['textures'][texinfo['index']]['source']]
     def data(im):
         v = J['bufferViews'][im['bufferView']]; return BIN[v['byteOffset']:v['byteOffset'] + v['byteLength']]
-    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': webp_lossless(data(img(mat['normalTexture'])), a.tex),
+    tex = {'map': jpeg(data(img(pbr['baseColorTexture'])), a.tex, 84), 'nrm': webp_lossless(data(img(mat['normalTexture'])), a.nrmtex or a.tex),
            'mr': jpeg(data(img(pbr['metallicRoughnessTexture'])), a.mrtex, 84)}
     # every other material a primitive uses (a see-through wing card) goes with the parts that use it: the first version kept
     # materials[0] alone, and the dragonfly's wings drew the body's atlas, opaque
@@ -210,7 +214,7 @@ def main():
         e['parts'].sort(); e['map'] = webp_rgba(e.pop('_img'), a.mrtex)
 
     doc = {'format': 1, 'key': a.key, 'group': a.group, 'scale': S, 'tris': tris, 'rest': info, 'nodes': out_nodes, 'meshes': meshes, 'anims': anims, 'tex': tex,
-           'renamed': rename, 'source': source_record(a.key)}
+           'renamed': rename, 'source': source_record(a.key, a.source)}
     if mats:
         doc['mats'] = mats
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)

@@ -1,0 +1,445 @@
+#!/usr/bin/env python3
+"""Cut a generated arthropod into rigid parts and rig it: python3 rig/arthro.py <key> <candidate> [--tris N] [--debug]
+
+Reads rig/sources/<key>/raw-<candidate>.glb and spec.json, writes rig-<candidate>.glb there, ready for models_pack.py. The first Meshy rigs cut
+by coordinates tuned per animal, decimated in one pass and let the join hide the cut. Here the shape decides, so a new animal needs no table:
+
+  body and limbs   a solid voxel model, opened by a ball wider than a leg: what survives is the trunk, and it falls into its segments at the
+                   necks by itself. Whatever the opening removed is limbs, and a limb that reaches the ground is a leg
+  thin limbs       each part is decimated on its own budget, so a leg keeps its triangles however large the body is (F5)
+  no holes         every cut is capped, so a part stays a closed shell in any pose (F2)
+  joints           a leg is femur, tibia and tarsus, cut at its bends along the surface; neighbours overlap across each cut
+  walk             a tripod gait by two-bone IK, each tarsus kept level while planted
+
+Frame: +z the snout, y up, +x the animal's left. Needs numpy, scipy, trimesh, fast-simplification.
+"""
+import argparse, json, os, struct, sys
+import numpy as np, trimesh, fast_simplification
+from scipy import ndimage
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components, dijkstra
+from scipy.spatial import cKDTree
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+BUDGET = dict(head=2150, thorax=1500, abd=1300, femur=240, tibia=230, tarsus=130, arm=1300)      # a spec's "budget" overrides these
+
+
+def load(path):
+    b = open(path, 'rb').read(); jl = struct.unpack('<I', b[12:16])[0]
+    J = json.loads(b[20:20 + jl]); BIN = b[20 + jl + 8:]
+
+    def acc(i):
+        a = J['accessors'][i]; v = J['bufferViews'][a['bufferView']]; n = {'VEC3': 3, 'VEC2': 2, 'SCALAR': 1}[a['type']]
+        dt = {5126: '<f4', 5125: '<u4', 5123: '<u2'}[a['componentType']]
+        st = v.get('byteStride') or np.dtype(dt).itemsize * n
+        if st != np.dtype(dt).itemsize * n:
+            raw = np.frombuffer(BIN, np.uint8, a['count'] * st, v.get('byteOffset', 0) + a.get('byteOffset', 0)).reshape(-1, st)
+            return np.frombuffer(raw[:, :np.dtype(dt).itemsize * n].tobytes(), dt).reshape(-1, n).copy()
+        return np.frombuffer(BIN, dt, a['count'] * n, v.get('byteOffset', 0) + a.get('byteOffset', 0)).reshape(-1, n).copy()
+
+    def mat(n):
+        if 'matrix' in n:
+            return np.array(n['matrix'], float).reshape(4, 4).T
+        M = np.eye(4); x, y, z, w = n.get('rotation', [0, 0, 0, 1]); s = n.get('scale', [1, 1, 1])
+        M[:3, :3] = np.array([[1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)], [2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)], [2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)]]) @ np.diag(s)
+        M[:3, 3] = n.get('translation', [0, 0, 0]); return M
+    Ps, Ns, Us, Fs, base = [], [], [], [], 0
+
+    def walk(i, W):
+        nonlocal base
+        n = J['nodes'][i]; M = W @ mat(n)
+        if 'mesh' in n:
+            for pr in J['meshes'][n['mesh']]['primitives']:
+                at = pr['attributes']; p = acc(at['POSITION']).astype(float); nn = acc(at['NORMAL']).astype(float) if 'NORMAL' in at else None
+                Ps.append(p @ M[:3, :3].T + M[:3, 3]); Us.append(acc(at['TEXCOORD_0']).astype(float)); Ns.append(None if nn is None else nn @ np.linalg.inv(M[:3, :3]))
+                Fs.append(acc(pr['indices']).reshape(-1, 3).astype(np.int64) + base); base += len(p)
+        for c in n.get('children', []):
+            walk(c, M)
+    for r in J['scenes'][J.get('scene', 0)]['nodes']:
+        walk(r, np.eye(4))
+    P = np.vstack(Ps); F = np.vstack(Fs); UV = np.vstack(Us)
+    N = np.vstack(Ns) if all(n is not None for n in Ns) else trimesh.Trimesh(P, F, process=False).vertex_normals.copy()
+    N /= np.linalg.norm(N, axis=1, keepdims=True) + 1e-12
+    return J, BIN, P, N, UV, F
+
+
+def weld(P):
+    return np.unique(np.round(P / (np.ptp(P, axis=0).max() * 2e-5)), axis=0, return_inverse=True)[1].reshape(-1)
+
+
+def surface_points(P, F, h):
+    """points on the surface no further than a voxel apart"""
+    t = P[F]; a = np.linalg.norm(np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0]), axis=1) / 2
+    n = np.minimum((a / (h * h) * 3).astype(int) + 1, 200); idx = np.repeat(np.arange(len(F)), n)
+    rng = np.random.default_rng(1); u = rng.random((len(idx), 2)); fl = u.sum(1) > 1; u[fl] = 1 - u[fl]
+    return t[idx, 0] + (t[idx, 1] - t[idx, 0]) * u[:, :1] + (t[idx, 2] - t[idx, 0]) * u[:, 1:]
+
+
+def segment(P, F, spec):
+    """(a label per face: 1.. the trunk's blobs, 0 limb; the blobs; voxel helpers)"""
+    lo = P.min(0); L = np.ptp(P, axis=0).max(); h = L / 240
+    q = np.floor((surface_points(P, F, h) - lo) / h).astype(int) + 8
+    G = np.zeros(q.max(0) + 9, bool); G[q[:, 0], q[:, 1], q[:, 2]] = True
+    # the outside is what a flood from the corner reaches past a thickened skin (a mesh may have pinholes); the solid is the rest, thinned back
+    skin = ndimage.binary_dilation(G, ndimage.generate_binary_structure(3, 2), iterations=3)
+    out_, _n = ndimage.label(~skin); solid = ndimage.binary_erosion(out_ != out_[0, 0, 0], ndimage.generate_binary_structure(3, 2), iterations=2)
+    D = ndimage.distance_transform_edt(solid)
+    r = spec['open']      # voxels, of 240 along the longest side
+    core = D > r
+    op = ndimage.distance_transform_edt(~core) <= r + 2.5
+    lab, n = ndimage.label(op)
+    sizes = ndimage.sum(op, lab, range(1, n + 1)); keep = [i + 1 for i, s in enumerate(sizes) if s > 0.015 * sizes.max()]
+    print('voxels %s, opening %.1f, blobs %s' % (solid.shape, r, sorted((int(sizes[k - 1]) for k in keep), reverse=True)))
+    remap = np.zeros(n + 1, np.int32); remap[keep] = np.arange(1, len(keep) + 1); lab = remap[lab]
+    c = P[F].mean(1); v = np.floor((c - lo) / h).astype(int) + 8; v = np.clip(v, 0, np.array(lab.shape) - 1)
+    return lab[v[:, 0], v[:, 1], v[:, 2]], len(keep), L
+
+
+def comps(F, sel, W):
+    Fs = W[F[sel]]; n = W.max() + 1
+    g = coo_matrix((np.ones(len(Fs) * 3), (np.r_[Fs[:, 0], Fs[:, 1], Fs[:, 2]], np.r_[Fs[:, 1], Fs[:, 2], Fs[:, 0]])), shape=(n, n))
+    return connected_components(g, directed=False)[1][Fs[:, 0]]
+
+
+def frame(P, N, F, face, nblob):
+    """turn the model so its trunk runs along z with the head on +z (the end nearest what rises highest off the trunk: the antennae), feet at y = 0"""
+    C = P[F].mean(1); t = C[face > 0]; c = t.mean(0); xx, xz, zz = np.cov(t[:, 0], t[:, 2]).ravel()[[0, 1, 3]]
+    th = 0.5 * np.arctan2(2 * xz, xx - zz); ax = np.array([np.cos(th), 0, np.sin(th)]); up = np.array([0, 1.0, 0]); side = np.cross(up, ax)
+    R = np.array([side, up, ax]).T
+    p = (P - c) @ R; n = N @ R
+    Cz = p[F].mean(1)
+    hi = Cz[(face == 0)]; top = hi[hi[:, 1] > np.quantile(hi[:, 1], 0.97)]
+    trunk = Cz[face > 0][:, 2]; mid = (trunk.min() + trunk.max()) / 2
+    if top[:, 2].mean() < mid:
+        p = p * np.array([-1, 1, -1]); n = n * np.array([-1, 1, -1])
+    p[:, 1] -= p[:, 1].min()
+    return p, n
+
+
+def boundary_caps(V, Fq):
+    """close every open loop of a part: a fan from the loop's middle, wound against the edges it meets. Returns the new vertices and faces"""
+    E = np.vstack([Fq[:, [0, 1]], Fq[:, [1, 2]], Fq[:, [2, 0]]]); key = np.sort(E, axis=1)
+    u, inv, cnt = np.unique(key, axis=0, return_inverse=True, return_counts=True); open_ = E[cnt[inv.reshape(-1)] == 1]
+    nxt = {}
+    for a, b in open_:
+        nxt.setdefault(int(b), []).append(int(a))      # walk against each edge's direction
+    addV, addF, base = [], [], len(V); seen = set()
+    for s in list(nxt):
+        if not nxt.get(s):
+            continue
+        loop, a = [s], s
+        while nxt.get(a):
+            b = nxt[a].pop(); seen.add(b)
+            if b == s:
+                break
+            loop.append(b); a = b
+        if len(loop) < 3:
+            continue
+        m = V[loop].mean(0); i = base + len(addV); addV.append(m)
+        addF += [[loop[k], loop[(k + 1) % len(loop)], i] for k in range(len(loop))]
+    return (np.array(addV) if addV else np.zeros((0, 3))), (np.array(addF, np.int64) if addF else np.zeros((0, 3), np.int64))
+
+
+def uv_transfer(P, F, N, UV, V2):
+    """UV and normal of each corner of the decimated part, from the original, inside one chart so a face never straddles a seam"""
+    OM = trimesh.Trimesh(P, F, process=False)
+    _, isl = connected_components(coo_matrix((np.ones(len(F) * 3), (np.r_[F[:, 0], F[:, 1], F[:, 2]], np.r_[F[:, 1], F[:, 2], F[:, 0]])), shape=(len(P),) * 2), directed=False)
+    fisl = isl[F[:, 0]]; return OM, fisl
+
+
+def bake_part(P, N, UV, F, target):
+    """(positions, normals, uvs, faces) of the part, unindexed by corner so a chart seam can stay sharp, capped"""
+    W = weld(P); ids, first = np.unique(W, return_index=True); m = np.zeros(W.max() + 1, np.int64); m[ids] = np.arange(len(ids))
+    Fw = m[W[F]]; Fw = Fw[(Fw[:, 0] != Fw[:, 1]) & (Fw[:, 1] != Fw[:, 2]) & (Fw[:, 0] != Fw[:, 2])]
+    Vw = P[first]
+    if len(Fw) > target:
+        V2, F2 = fast_simplification.simplify(Vw.astype(np.float64), Fw.astype(np.int64), target_count=target, agg=4)[:2]
+    else:
+        V2, F2 = Vw, Fw
+    used = np.unique(F2); rm = -np.ones(len(V2), np.int64); rm[used] = np.arange(len(used)); V2 = V2[used]; F2 = rm[F2]
+    OM, fisl = uv_transfer(P, F, N, UV, V2)
+    cen = V2[F2].mean(1); _, _, tid = trimesh.proximity.closest_point(OM, cen); face_isl = fisl[tid]
+    corner = V2[F2].reshape(-1, 3); cuv = np.zeros((len(corner), 2)); cn = np.zeros((len(corner), 3)); cisl = np.repeat(face_isl, 3)
+    for k in np.unique(cisl):
+        sel = np.where(cisl == k)[0]; fid = np.where(fisl == k)[0]; sub = trimesh.Trimesh(P, F[fid], process=False)
+        cp, _, t = trimesh.proximity.closest_point(sub, corner[sel]); tri = F[fid[t]]; bc = trimesh.triangles.points_to_barycentric(P[tri], cp)
+        cuv[sel] = (UV[tri] * bc[:, :, None]).sum(1); cn[sel] = (N[tri] * bc[:, :, None]).sum(1)
+    # a reduced triangle can bridge a gap inside one chart, and its corners then span the map: a few such faces smear most of the texture. Each takes one colour, the map's at its middle
+    ct = corner.reshape(-1, 3, 3); uvt = cuv.reshape(-1, 3, 2); e = uvt[:, 1] - uvt[:, 0]; f = uvt[:, 2] - uvt[:, 0]; ua = np.abs(e[:, 0] * f[:, 1] - e[:, 1] * f[:, 0]) / 2
+    sa = np.linalg.norm(np.cross(ct[:, 1] - ct[:, 0], ct[:, 2] - ct[:, 0]), axis=1) / 2; ratio = ua / (sa + 1e-12); bad = ratio > 6 * max(np.median(ratio[ratio > 0]), 1e-12) if (ratio > 0).any() else np.zeros(len(ratio), bool)
+    if bad.any():
+        cp, _, t = trimesh.proximity.closest_point(OM, ct[bad].mean(1)); tri = F[t]; bc = trimesh.triangles.points_to_barycentric(P[tri], cp); uvt[bad] = (UV[tri] * bc[:, :, None]).sum(1)[:, None, :]; cuv = uvt.reshape(-1, 2)
+    # shade the reduced mesh by its own smooth normals: the original's, sampled at a few corners, are noise at this density (a faceted head)
+    tm = trimesh.Trimesh(V2, F2, process=False); cn = tm.vertex_normals[F2].reshape(-1, 3).copy(); fn = np.repeat(tm.face_normals, 3, axis=0)
+    weak = np.linalg.norm(cn, axis=1) < 0.5; cn[weak] = fn[weak]
+    aV, aF = boundary_caps(V2, F2)
+    if len(aF):      # a cap takes the colour of the rim it closes
+        V3 = np.vstack([V2, aV]); T = cKDTree(V2); capc = V3[aF].reshape(-1, 3); _, nv = T.query(capc)
+        rim = cKDTree(corner); _, nc = rim.query(V2[nv])
+        n0 = np.cross(capc[1::3] - capc[0::3], capc[2::3] - capc[0::3]); n0 /= np.linalg.norm(n0, axis=1, keepdims=True) + 1e-12
+        inner = cuv.reshape(-1, 3, 2).mean(1)[nc[0::3] // 3]      # the middle of a rim face, inside its chart: a corner can sit on the black between charts
+        n0[np.linalg.norm(n0, axis=1) < 0.5] = [0, 1, 0]
+        corner = np.vstack([corner, capc]); cuv = np.vstack([cuv, np.repeat(inner, 3, axis=0)]); cn = np.vstack([cn, np.repeat(n0, 3, axis=0)])      # one colour a triangle: a fan's rim can span the map
+    return corner, cn, cuv, len(corner) // 3
+
+
+def leg_chain(P, F, sel, trunkP):
+    """cut a leg along its surface at its two sharpest bends: (femur, tibia, tarsus face masks within sel, hip, knee, ankle, toe)"""
+    Fs = F[sel]; W = weld(P); ids = np.unique(W[Fs]); m = -np.ones(W.max() + 1, np.int64); m[ids] = np.arange(len(ids)); Fw = m[W[Fs]]
+    Vw = np.zeros((len(ids), 3)); Vw[m[W]] = P * 1; Vw = Vw * 1
+    Vs = np.zeros((len(ids), 3)); Vs[Fw.reshape(-1)] = P[Fs.reshape(-1)]
+    e = np.vstack([Fw[:, [0, 1]], Fw[:, [1, 2]], Fw[:, [2, 0]]]); d = np.linalg.norm(Vs[e[:, 0]] - Vs[e[:, 1]], axis=1) + 1e-9
+    g = coo_matrix((np.r_[d, d], (np.r_[e[:, 0], e[:, 1]], np.r_[e[:, 1], e[:, 0]])), shape=(len(ids),) * 2).tocsr()
+    td, _ = cKDTree(trunkP).query(Vs); rootv = np.argsort(td)[:max(6, len(Vs) // 80)]
+    dist = dijkstra(g, indices=rootv, min_only=True); dist[~np.isfinite(dist)] = np.nanmax(dist[np.isfinite(dist)])
+    span = dist.max(); s = dist / span
+    nb = 30; b = np.minimum((s * nb).astype(int), nb - 1); line = np.array([Vs[b == i].mean(0) if (b == i).any() else [np.nan] * 3 for i in range(nb)])
+    ok = ~np.isnan(line[:, 0]); idx = np.where(ok)[0]; line = line[ok]
+    a = line[2:] - line[:-2]; c = line[4:] - line[2:-2] if len(line) > 6 else a
+    k = min(len(a), len(c)); u = a[:k] / (np.linalg.norm(a[:k], axis=1, keepdims=True) + 1e-12); w = c[:k] / (np.linalg.norm(c[:k], axis=1, keepdims=True) + 1e-12)
+    bend = np.arccos(np.clip((u * w).sum(1), -1, 1)); sb = (idx[2:2 + k] + 0.5) / nb
+    pick = lambda lo_, hi_, d_: float(sb[(sb > lo_) & (sb < hi_)][np.argmax(bend[(sb > lo_) & (sb < hi_)])]) if ((sb > lo_) & (sb < hi_)).any() else d_
+    sk = pick(0.22, 0.6, 0.42); sa = pick(max(sk + 0.2, 0.68), 0.92, 0.82)
+    band = 0.02
+    fs = s[Fw].mean(1)
+    fem, tib, tar = fs < sk + band, (fs > sk - band) & (fs < sa + band), fs > sa - band
+    around = lambda t: Vs[np.abs(s - t) < 0.03].mean(0)
+    hip = Vs[s < 0.05].mean(0); knee = around(sk); ankle = around(sa); toe = Vs[np.argmin(Vs[:, 1] + 1e-3 * np.abs(s - 1))] if False else Vs[s > 0.985][np.argmin(Vs[s > 0.985][:, 1])]
+    return fem, tib, tar, hip, knee, ankle, toe, sk, sa
+
+
+def main():
+    ap = argparse.ArgumentParser(); ap.add_argument('key'); ap.add_argument('candidate'); ap.add_argument('--tris', type=int, default=0); ap.add_argument('--open', type=float, default=None); a = ap.parse_args()
+    d = os.path.join(HERE, 'sources', a.key); spec = json.load(open(os.path.join(d, 'spec.json'), encoding='utf-8'))
+    if a.open is not None:
+        spec['open'] = a.open
+    BUDGET.update(spec.get('budget', {}))
+    J, BIN, P, N, UV, F = load(os.path.join(d, 'raw-%s.glb' % a.candidate))
+    print('raw', len(F), 'tris,', 'uv range', UV.min(0).round(3), UV.max(0).round(3))
+    vol = trimesh.Trimesh(P, F, process=False).volume
+    if vol < 0:
+        F = F[:, ::-1]; print('flipped winding')
+    P0, N0 = P, N
+    # the opening that sets the legs free depends on the animal: try from wide to narrow until the count is the spec's
+    for op in ([spec['open']] if 'open' in spec else [16, 14, 12, 10, 8.8, 7.5, 6.5, 5.5, 4.5]):
+        spec2 = dict(spec, open=op); face, nb, L = segment(P0, F, spec2); face = face.astype(np.int32)
+        if not (face > 0).any():
+            continue
+        P, N = frame(P0, N0, F, face, nb)
+        C = P[F].mean(1); W = weld(P); limb = np.where(face == 0)[0]; lab = comps(F, face == 0, W); ground = P[:, 1].min(); H = np.ptp(P[:, 1])
+        # the limbs: a piece that reaches the ground is a leg; the rest go to the nearest blob of the trunk
+        legs, other = [], []
+        for l in np.unique(lab):
+            f = limb[lab == l]
+            if len(f) < 6:
+                other.append(f); continue
+            (legs if C[f, 1].min() < ground + 0.06 * H and np.ptp(C[f, 1]) > 0.2 * H else other).append(f)
+        print('open %.1f: limb pieces %d, legs %d' % (op, len(np.unique(lab)), len(legs)), [(len(f), round(float(C[f, 0].mean()), 3), round(float(C[f, 2].mean()), 3)) for f in legs])
+        if len(legs) == spec['contacts']:
+            break
+    assert len(legs) == spec['contacts'], 'found %d legs, the spec says %d: look at the mesh or set "open" in the spec' % (len(legs), spec['contacts'])
+    arms = []
+    if spec.get('raptorial'):
+        # limbs held off the ground, a mantis's forelegs. A mantis's neck is as thin as a leg, so the opening takes them all as one piece: widen a strip down
+        # the midline until what stands either side of it is a pair; the strip goes back to the trunk
+        other.sort(key=len, reverse=True); big = other.pop(0); xm = np.median(C[big, 0]); wd = np.ptp(C[big, 0])
+        grid, tops = np.linspace(0.02, 0.5, 49) * wd, []
+        for w in grid:      # the two pieces either side of a strip this wide; the size falls off a cliff once the strip clears the neck, and what is left is the arms
+            sel = np.zeros(len(F), bool); sel[big[np.abs(C[big, 0] - xm) > w]] = True; sidef = np.where(sel)[0]
+            if not len(sidef):
+                tops.append((0, None)); continue
+            l2 = comps(F, sel, W); ids, cnt = np.unique(l2, return_counts=True); o = np.argsort(-cnt)[:2]
+            pair = [sidef[l2 == ids[i]] for i in o]
+            good = len(pair) == 2 and (C[pair[0], 0].mean() - xm) * (C[pair[1], 0].mean() - xm) < 0 and min(len(q) for q in pair) > 0.05 * len(big)
+            tops.append((sum(len(q) for q in pair) if good else 0, pair if good else None))
+        sizes = np.array([t[0] for t in tops], float); fall = sizes[:-1] - sizes[1:]; fall[sizes[1:] == 0] = 0
+        i = int(np.argmin(np.abs(grid - spec['strip'] * wd))) if 'strip' in spec else int(np.argmax(fall)) + 2
+        print('strip widths', np.round(grid[:14], 3), 'sizes', [int(x) for x in sizes[:14]], 'cliff at', i)
+        arms = tops[min(i, len(tops) - 1)][1] or []
+        if arms:
+            rest = np.setdiff1d(big, np.r_[arms[0], arms[1]]); face[rest] = 1
+        print('arms', [(len(f), round(float(C[f, 0].mean()), 3), round(float(C[f, 2].mean()), 3)) for f in arms])
+        assert len(arms) == 2, 'the raised forelegs are not a pair'
+    if nb < spec.get('segments', 3):      # the trunk held together: part it at its necks, the narrowest points along it
+        t = np.where(face > 0)[0]; yz = C[t][:, 1:] - C[t][:, 1:].mean(0); e = np.linalg.eigh(np.cov(yz.T))[1][:, -1]; e = e if e[1] > 0 else -e      # the trunk's long axis: a beetle stands nose up, a mantis curves
+        ax = np.array([0, e[0], e[1]]); z = C[t] @ ax; zs = np.linspace(z.min(), z.max(), 81); bins = np.clip(np.digitize(z, zs) - 1, 0, 79); w = np.zeros(80)
+        for i in range(80):      # the width at each station, about that station's own middle
+            q = C[t[bins == i]]
+            if len(q) > 3:
+                w[i] = np.quantile(np.linalg.norm(q - np.median(q, axis=0), axis=1), 0.9)
+        w = ndimage.gaussian_filter1d(w, 1.2); cand = [i for i in range(4, 76) if w[i] <= w[i - 1] and w[i] <= w[i + 1]]
+        prom = [min(w[:i].max(), w[i:].max()) - w[i] for i in cand]; pick = []      # both ends of a waist are necks of one join: keep the deepest, then the next far enough off
+        for q in sorted(range(len(cand)), key=lambda q: -prom[q]):
+            if len(pick) < spec.get('segments', 3) - 1 and all(abs(cand[q] - cand[r]) > 16 for r in pick):
+                pick.append(q)
+        cuts = sorted((zs[cand[q]] + zs[cand[q] + 1]) / 2 for q in pick); print('necks at z', np.round(cuts, 3), 'prominence', [round(float(prom[q]), 3) for q in pick])
+        nb = len(cuts) + 1; face[t] = nb - np.searchsorted(cuts, z)
+    blobs = sorted(range(1, nb + 1), key=lambda b: -C[face == b, 2].mean()); names = (['head', 'thorax', 'abd', 'abd2'] if nb >= 3 else ['head', 'thorax'])[:nb]
+    bn = dict(zip(blobs, names)); print('segments', {bn[b]: [int((face == b).sum()), round(float(C[face == b, 2].min()), 3), round(float(C[face == b, 2].max()), 3)] for b in blobs})
+    trees = {b: cKDTree(C[face == b][::max(1, (face == b).sum() // 4000)]) for b in blobs}
+    part = np.full(len(F), '', dtype=object)
+    for b in blobs:
+        part[face == b] = bn[b]
+    for f in other:
+        c = C[f]; part[f] = bn[min(blobs, key=lambda b: trees[b].query(c.mean(0))[0])]
+    trunkC = C[face > 0]; trunkT = trunkC[::max(1, len(trunkC) // 6000)]
+    order = sorted(legs, key=lambda f: -C[f].mean(0)[2])      # pairs front to back; sort each pair by its side
+    groups = [order[i:i + 2] for i in range(0, len(order), 2)]
+    tri_parts, LEG = {}, {}
+    for i, grp in enumerate([arms] + groups if arms else groups):
+        for f in grp:
+            held = bool(arms) and i == 0; sd = 'L' if C[f, 0].mean() > 0 else 'R'; nm = 'arm' + sd if held else 'leg%d%s' % (i - (1 if arms else 0), sd); fem, tib, tar, hip, knee, ankle, toe, sk, sa = leg_chain(P, F, f, trunkT)
+            LEG[nm] = dict(hip=hip, knee=knee, ankle=ankle, toe=toe, i=i, sd=sd, held=held)
+            if held:      # one part with its spines and its branched tip: nothing bends it yet, and the spines are the animal
+                tri_parts[nm] = (f, BUDGET['arm'])
+            else:
+                for name, mask, bud in ((nm, fem, BUDGET['femur']), (nm + 't', tib, BUDGET['tibia']), (nm + 'f', tar, BUDGET['tarsus'])):
+                    tri_parts[name] = (f[mask], bud)
+            print(nm, 'held' if held else '', 'faces', len(f), 'knee at %.2f, ankle at %.2f, femur %.3f tibia %.3f tarsus %.3f' % (sk, sa, np.linalg.norm(knee - hip), np.linalg.norm(ankle - knee), np.linalg.norm(toe - ankle)))
+    for nm in set(part[part != '']):
+        tri_parts[nm] = (np.where(part == nm)[0], BUDGET.get(nm, BUDGET['abd']))
+    assert sorted(n for n in LEG if n.startswith('leg')) == sorted('leg%d%s' % (i, s) for i in range(len(groups)) for s in 'LR'), 'legs do not pair up: %s' % sorted(LEG)
+    # ---- bake each part on its own budget, pivots in the model frame
+    MESH = {}
+    k = (a.tris / sum(b for _, b in tri_parts.values())) if a.tris else 1.0
+    for nm, (f, bud) in sorted(tri_parts.items()):
+        fu = F[f]; u, inv = np.unique(fu, return_inverse=True); sub = inv.reshape(-1, 3)
+        MESH[nm] = bake_part(P[u], N[u], UV[u], sub, max(30, int(bud * k)))
+    tot = sum(m[3] for m in MESH.values()); print('baked', tot, 'tris in', len(MESH), 'parts')
+    cen = lambda n: MESH[n][0].mean(0)
+    PIV = {'thorax': cen('thorax')}; PAR = {}
+    near = lambda p, q: (lambda d, i: (MESH[p][0][d.argmin()] + MESH[q][0][i[d.argmin()]]) / 2)(*cKDTree(MESH[q][0]).query(MESH[p][0]))
+    PIV['head'] = near('head', 'thorax'); PAR['head'] = 'thorax'
+    if 'abd' in MESH:
+        PIV['abd'] = near('abd', 'thorax'); PAR['abd'] = 'thorax'
+    if 'abd2' in MESH:
+        PIV['abd2'] = near('abd2', 'abd'); PAR['abd2'] = 'abd'
+    trunk = [n for n in ('thorax', 'head', 'abd', 'abd2') if n in MESH]; TR = {n: cKDTree(MESH[n][0]) for n in trunk}
+    for nm, g in LEG.items():
+        PIV[nm] = g['hip']; PAR[nm] = min(trunk, key=lambda n: TR[n].query(g['hip'])[0]); print(nm, 'hangs from', PAR[nm])
+        if g['held']:
+            continue
+        PIV[nm + 't'] = g['knee']; PAR[nm + 't'] = nm; PIV[nm + 'f'] = g['ankle']; PAR[nm + 'f'] = nm + 't'
+    ORDER = ['thorax', 'head'] + [n for n in ('abd', 'abd2') if n in MESH] + sorted(n for n in MESH if n.startswith(('leg', 'arm')))
+    write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, float(P[:, 1].min()), H, np.ptp(P[:, 2]))
+
+
+# ---------------------------------------------------------------- rotation helpers and the clips
+def mat2q(R):
+    t = np.trace(R)
+    if t > 0:
+        s = np.sqrt(t + 1) * 2; q = [(R[2, 1] - R[1, 2]) / s, (R[0, 2] - R[2, 0]) / s, (R[1, 0] - R[0, 1]) / s, s / 4]
+    else:
+        i = int(np.argmax(np.diag(R))); j, k = (i + 1) % 3, (i + 2) % 3; s = np.sqrt(R[i, i] - R[j, j] - R[k, k] + 1) * 2
+        q = [0, 0, 0, 0]; q[i] = s / 4; q[j] = (R[j, i] + R[i, j]) / s; q[k] = (R[k, i] + R[i, k]) / s; q[3] = (R[k, j] - R[j, k]) / s
+    q = np.array(q); return q / np.linalg.norm(q)
+
+
+def fr(x, pole):
+    x = x / np.linalg.norm(x); z = np.cross(x, pole); z /= np.linalg.norm(z) + 1e-12; return np.array([x, np.cross(z, x), z]).T
+
+
+def ik(g, target):
+    """(femur world rotation, tibia world rotation) that put the ankle at target; the knee bends as it does at rest"""
+    H, K0, A0 = g['hip'], g['knee'], g['ankle']; a, b = np.linalg.norm(K0 - H), np.linalg.norm(A0 - K0); to = target - H; dst = min(np.linalg.norm(to), (a + b) * 0.998)
+    dirn = to / (np.linalg.norm(to) + 1e-12); x = (a * a - b * b + dst * dst) / (2 * dst); h = np.sqrt(max(a * a - x * x, 0))
+    pole0 = (K0 - H) - dirn * ((K0 - H) @ dirn)
+    if np.linalg.norm(pole0) < 1e-6:
+        pole0 = np.array([0, 1.0, 0.0]) - dirn * dirn[1]
+    pole = pole0 / np.linalg.norm(pole0); K = H + dirn * x + pole * h
+    side0 = np.cross(K0 - H, A0 - K0); F0 = fr(K0 - H, A0 - K0); T0 = fr(A0 - K0, K0 - H)
+    F1 = fr(K - H, target - K); T1 = fr(target - K, K - H)
+    return F1 @ F0.T, T1 @ T0.T
+
+
+def write_glb(a, d, J, BIN, MESH, PIV, PAR, ORDER, LEG, ground, H, L):
+    blob = bytearray(); BV = []; AC = []
+
+    def add_bv(data, target=None):
+        while len(blob) % 4:
+            blob.append(0)
+        bv = {'buffer': 0, 'byteOffset': len(blob), 'byteLength': len(data)}
+        if target:
+            bv['target'] = target
+        blob.extend(data); BV.append(bv); return len(BV) - 1
+
+    def add_acc(arr, typ, ct, target=None, mm=False):
+        ac = {'bufferView': add_bv(arr.tobytes(), target), 'componentType': ct, 'count': len(arr), 'type': typ}
+        if mm:
+            ac['min'] = np.atleast_1d(arr.min(0)).tolist(); ac['max'] = np.atleast_1d(arr.max(0)).tolist()
+        AC.append(ac); return len(AC) - 1
+    imgs = []
+    for im in J['images']:
+        v = J['bufferViews'][im['bufferView']]; imgs.append({'mimeType': im['mimeType'], 'bufferView': add_bv(BIN[v.get('byteOffset', 0):v.get('byteOffset', 0) + v['byteLength']])})
+    meshes, nodes, idx = [], [{'name': 'creature', 'children': [1]}], {}
+    for n in ORDER:
+        pos, nrm, uv, _ = MESH[n]; pos = pos - PIV[n]
+        key = np.round(np.c_[pos, uv, nrm], 5); _, fi, iv = np.unique(key, axis=0, return_index=True, return_inverse=True); iv = iv.reshape(-1)
+        pa = add_acc(pos[fi].astype('<f4'), 'VEC3', 5126, 34962, True); na = add_acc(nrm[fi].astype('<f4'), 'VEC3', 5126, 34962); ua = add_acc(uv[fi].astype('<f4'), 'VEC2', 5126, 34962); ia = add_acc(iv.astype('<u4'), 'SCALAR', 5125, 34963)
+        meshes.append({'name': n, 'primitives': [{'attributes': {'POSITION': pa, 'NORMAL': na, 'TEXCOORD_0': ua}, 'indices': ia, 'mode': 4, 'material': 0}]})
+        idx[n] = len(nodes); nodes.append({'name': n, 'mesh': len(meshes) - 1, 'translation': [float(x) for x in (PIV[n] - (PIV[PAR[n]] if n in PAR else 0))]})
+    for n in ORDER:
+        if n in PAR:
+            nodes[idx[PAR[n]]].setdefault('children', []).append(idx[n])
+    T_WALK, DUTY = 1.0, 0.6; STRIDE = 0.2 * L; LIFT = 0.06 * H; I3 = np.eye(3)
+
+    def qa(axis, an):
+        q = np.zeros(4); q[:3] = np.asarray(axis, float) * np.sin(an / 2); q[3] = np.cos(an / 2); return q
+
+    def leg_q(nm, u):
+        g = LEG[nm]; half = STRIDE / 2; T0 = g['toe']; A0 = g['ankle']
+        if u < DUTY:
+            z = half * (1 - 2 * u / DUTY); y = 0.0
+        else:
+            s = (u - DUTY) / (1 - DUTY); z = -half + STRIDE * (0.5 - 0.5 * np.cos(np.pi * s)); y = LIFT * np.sin(np.pi * s)
+        target = A0 + np.array([0, y, z])
+        R1, R2 = ik(g, target); return R1, R2
+
+    def pose(nm, ph, walkit):
+        base = nm[:5] if nm.startswith('leg') else nm[:4]
+        if base in LEG:
+            g = LEG[base]; tri = (g['i'] + (0 if g['sd'] == 'L' else 1)) % 2
+            u = (ph + 0.5 * tri) % 1.0
+            if not walkit or g['held']:
+                return np.array([0, 0, 0, 1.0])
+            R1, R2 = leg_q(base, u)
+            if len(nm) == 5:
+                return mat2q(R1)
+            if nm.endswith('t'):
+                return mat2q(R1.T @ R2)
+            return mat2q(R2.T)      # the tarsus keeps its rest attitude in the world
+        if nm == 'head':
+            return qa([0, 1, 0], (0.05 if walkit else 0.1) * np.sin(2 * np.pi * ph))
+        if nm == 'abd' and not walkit:      # still in the walk: legs may hang from it, and its sway would drag their feet
+            return qa([0, 1, 0], 0.03 * np.sin(2 * np.pi * (ph + 0.25)))
+        return np.array([0, 0, 0, 1.0])
+
+    def clip(name, T, walkit, n, extras=None):
+        t = (np.arange(n + 1) / n * T).astype('<f4'); sam, ch = [], []
+        for nm in ORDER:
+            q = np.array([pose(nm, k / n, walkit) for k in range(n + 1)], '<f4')
+            if np.allclose(q, [0, 0, 0, 1], atol=1e-6):
+                continue
+            sam.append({'input': add_acc(t, 'SCALAR', 5126, None, True), 'output': add_acc(q, 'VEC4', 5126), 'interpolation': 'LINEAR'}); ch.append({'sampler': len(sam) - 1, 'target': {'node': idx[nm], 'path': 'rotation'}})
+        c = {'name': name, 'samplers': sam, 'channels': ch}
+        if extras:
+            c['extras'] = extras
+        return c
+    SPEED = STRIDE / (DUTY * T_WALK)
+    anims = [clip('perch', 4.0, False, 24), clip('walk', T_WALK, True, 36, {'speed': float(SPEED), 'stride': float(STRIDE), 'duty': DUTY, 'ground': ground, 'note': 'a tripod gait, in place: drive the root forward at speed'})]
+    out = {'asset': {'version': '2.0', 'generator': 'rig/arthro.py'}, 'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': nodes, 'meshes': meshes, 'materials': J['materials'][:1], 'textures': J['textures'], 'images': imgs, 'bufferViews': BV, 'accessors': AC, 'animations': anims, 'buffers': [{'byteLength': len(blob)}]}
+    if J.get('samplers'):
+        out['samplers'] = J['samplers']
+    js = json.dumps(out, separators=(',', ':')).encode()
+    while len(js) % 4:
+        js += b' '
+    while len(blob) % 4:
+        blob.append(0)
+    path = os.path.join(d, 'rig-%s.glb' % a.candidate)
+    with open(path, 'wb') as fh:
+        fh.write(struct.pack('<III', 0x46546C67, 2, 12 + 8 + len(js) + 8 + len(blob)) + struct.pack('<II', len(js), 0x4E4F534A) + js + struct.pack('<II', len(blob), 0x004E4942) + bytes(blob))
+    print('wrote', path, 'speed %.3f stride %.3f' % (SPEED, STRIDE))
+
+
+if __name__ == '__main__':
+    main()

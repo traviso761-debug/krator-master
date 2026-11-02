@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant stag beetle standing on flat ground, seen at eye level like a large animal, not a pinned specimen. Body raised on exactly six sturdy legs, three each side, spread wide, feet on the ground. Long branching rust-red antler mandibles held forward, deep moss-green wing cases with a faint gold sheen, closed, two short antennae. Bilaterally symmetrical. Flat even studio lighting, no cast shadows, plain light grey background, nothing else in frame.",
+ "task_ids": [
+  "01a19ab1-335f-7294-adac-1f97870b23a4",
+  "01a19ab3-2401-70f4-bee6-14ea961e2eda"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, front left back",
+ "rights": "generated on the owner's Meshy account"
+}

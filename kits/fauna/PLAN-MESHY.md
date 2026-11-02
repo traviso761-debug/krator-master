@@ -93,7 +93,7 @@ no longer needed fails until it is removed, so the list can only shrink. `--writ
 | Check | State | What it asserts | Limit |
 |---|---|---|---|
 | C1 Source record | **built**, in `models_pack.py` and the test | `rig/sources/<key>/source.json` names the prompt, Meshy task ids, model, credits and raw GLB. The pack refuses without it and stores the GLB's hash | required |
-| C2 Anatomy intake | **not built** | leg tips, wing pairs and segments of the raw GLB equal the animal's spec; left and right mirror; limbs clear of each other. Needs a raw GLB to test on, so it comes with the pilot, before any refine is paid for | exact counts |
+| C2 Anatomy intake | **built** (`rig/intake.js`, by hand, not in CI) | feet on the ground against the spec, how far the body mirrors itself, loose pieces, on any generator's GLB. `rig/sheet.py` draws the views a person judges: the numbers miss what the eye catches (see section 10) | feet exact; mirror under 1% |
 | C3 Cut sanity | **built** | every limb part is one piece; L and R partners match | 0 split parts; 1.5 times |
 | C4 Stays shut | **built** | the closure render of section 2: every clip, 7 frames, 14 views, at 240 px | 1.5% |
 | C5 Fix discipline | **built in** | a change to a cut flag re-runs C4 on every clip; it cannot judge one pose | |
@@ -133,9 +133,9 @@ Only two have Meshy models. In the fit column, "wings" means a body model plus c
 |---|---|---|---|---|---|---|
 | `silt-strider` | Silt strider (Voth's **elephant bug**) | 25 | 7,552 | swbay | ridden, draught | high: a hero, seen close |
 | `giant-beetle` | Giant beetle | 3.6 | 6,012 | swbay | draught | high: best first case |
-| `staghorn-beetle` | Staghorn beetle | 2.6 | 7,004 | swbay, crater-drylands, hyperjungle | ridden, draught | high: best first case |
+| `staghorn-beetle` | Staghorn beetle | 2.6 | 7,004 | swbay, crater-drylands, hyperjungle | ridden, draught | **has a model** (#4) |
 | `lattice-mantis` | Lattice mantis | 1.6 | 4,324 | hyperjungle | | high; thin limbs |
-| `harvester-ant` | Harvester ant | 1.5 | 2,856 | hyperjungle | | high; instanced once it herds |
+| `harvester-ant` | Harvester ant | 1.5 | 2,856 | hyperjungle | | **has a model** (#3); instanced once it herds |
 | `stilt-walkingstick` | Stilt walkingstick | 2.0 | 2,224 | hyperjungle | | medium: all thin limbs (F5) |
 | `horned-scarab` | Horned scarab | 1.2 | 3,332 | hyperjungle | | high |
 | `leaf-katydid` | Leaf katydid | 1.7 | 2,576 | hyperjungle | | medium: wings as leaves |
@@ -165,7 +165,7 @@ none of these have a stated size unless given.
 
 | Animal | Biome and source | State | Fit |
 |---|---|---|---|
-| **Bowl mantis** | sedesert, `PLAN-BOWL.md` section 6, `KNOWN_ISSUES.md`; `LORE.md` 6.2: the region's large predator, an ambush hunter coloured like salt scrub | named, the town is named for it | **model; top of the list** |
+| ~~Bowl mantis~~ | sedesert, `PLAN-BOWL.md` section 6, `KNOWN_ISSUES.md`; `LORE.md` 6.2: the region's large predator, an ambush hunter coloured like salt scrub | **built 2026-11-02**, `bowl-mantis`, procedural and Meshy; the sedesert page does not bundle it yet | done |
 | Salt beetles | sedesert, `PLAN-BOWL.md` section 6 | named, on the crust | instanced |
 | Brine flies | sedesert `PLAN-BOWL.md`, catch `KNOWN_ISSUES.md` | named, clouds at the shore | swarm |
 | Char beetles | crater-drylands `KNOWN_ISSUES.md`: "breed in fresh char" | named | instanced |
@@ -216,11 +216,73 @@ moths in harvest notes.
 
 1. ~~Build the gate and the negatives; calibrate C4.~~ Done: the cow's reading was real.
 2. ~~Fix the wing material (F14) and the anchors (F9).~~ Done, with the bison's fallback (F16).
-3. Pilot three, each testing something different: **staghorn beetle** (hard shell, ridden), **harvester ant** (thin legs and
-   the waist), **Bowl mantis** (a new animal, thin limbs), through smart topology and Meshy 7.1 for comparison. About 150
-   credits. Build C2 on their raw GLBs, write `rig/sources/` for each, and add the raw GLBs to LFS in `.gitattributes`. The owner
-   judges them at C11.
+3. ~~Pilot the staghorn beetle, harvester ant and Bowl mantis.~~ Done: Meshy 7.1, in the kit (section 10). The owner judges them at C11.
 4. If they pass, the rest of the large list in section 6, then the new species.
 5. Instanced bake for ants, roaches and the Silk-Weaver workers, as a separate step.
 6. The quadrupeds' necks and leg roots (C4) are now measured. Their joints can be deepened by a rig pass only with the source GLBs,
    which are gone (F8), so fixing them means regenerating: a separate decision, not part of this pass.
+
+## 10. The generator test (2026-11-01)
+
+Three animals (`harvester-ant`, `staghorn-beetle`, `bowl-mantis`), one set of front, left and back views from Meshy's multi-view image step, cleaned by
+`rig/prep_refs.py`. Sources, raw GLBs and a sheet per animal are in `rig/sources/<key>/`. Geometry and texture only: nothing here has been cut, rigged or
+put through `tests/test-models.js`. Meshy 7.1 and Hunyuan, Rodin and TRELLIS took all three views; Meshy T2 takes one (`left.png`). T2.5 was not tried:
+the connector does not offer it. Tripo was not tried: it needs its own key.
+
+| Generator | Each model | Triangles | Ant | Beetle | Mantis | Verdict |
+|---|---|---|---|---|---|---|
+| **Meshy 7.1** | 30 credits | 547k to 713k | right | right, branched antlers | right, wing veins | best surface and shape on all three; must come down to 12k, the step that broke thin limbs before (F5) |
+| **Rodin** (fal) | $0.40 | 35k to 37k | right, a pale smear on the head | right, the glossiest shell | right, clean, true colour | close second, with far less to reduce; 5 of 6 beetle feet at the ground line |
+| **Hunyuan** (fal) | $0.48 | 40k | right, washed out | blunt, flat colour | colour wrong (grey), white flecks at the tail | shape fair, texture weakest of the three good ones; no normal or roughness map |
+| **Meshy T2** | 15 credits | 13k | **cleanest**: 22 separate parts | antlers lost their branches, body too long | **failed**: legs missing, forelegs a wire frame | one view is not enough; the ant shows what part separation could do |
+| **TRELLIS** (fal) | $0.02 | 6k to 14k | **failed**: a flat plate through the body | blobby legs, stubby antlers | **failed**: four antennae, broken forelegs | not good enough, even at this price |
+
+Spent: 171 Meshy credits (36 on four reference sets, one redone; 135 on six models) and about $2.70 on fal, by its list prices.
+
+**What the numbers missed.** `rig/intake.js` gave T2's ant 22 pieces and 81% "debris": that is its best feature here, separate parts for a rigid rig. It gave TRELLIS's mantis
+4 of 4 feet and a good mirror score, with four antennae. Feet and mirror catch a lost leg (T2's mantis, 2 of 4) and little else, so the sheet stays part of the gate.
+
+**Reference views decide the result.** Meshy's multi-view step gave the beetle two identical top-down views on the first try, and the left view of an animal shows only one side of it. A
+reference set is checked by eye before anything is spent on 3D.
+
+**Through the gate: the ant, 2026-11-01.** Both candidates went through `rig/arthro.py`, `models_pack.py` and `rig/fit_anchors.js` to `node tests/test-models.js --candidate`, and **both pass every limit with no
+waiver**, the first models to do so (`rig/sources/harvester-ant/sheet-rigged.png`). They are candidates: `pack-*.json` sit in `rig/sources/`, not in `models/`, and no entry names them.
+
+| | Meshy 7.1 | Rodin |
+|---|---|---|
+| Triangles, parts, size | 8,840, 21, 1.05 MB | 8,964, 21, 0.69 MB |
+| Closure (limit 1.5%) | 0.05% | 0% |
+| Foot slide (limit 3%) | 0.09% | 0.07% |
+| Texture density (floor 150 px/m) | 561 px/m | 399 px/m |
+| Metal map, share over 0.5 | 0% | 2% |
+| By eye | natural chitin, eye and mandibles hold up at the reduced count | clean shape, silvery patches on head and abdomen |
+
+Why it worked where the old rigs did not: the cut comes from the shape (F3), legs keep their own triangle budget (F5), and capped cuts leave no hole for a pose to open (F2). The 577k Meshy mesh lost nothing a leg needed. Two
+faults the gate caught on the way: reduced normals sampled from the original looked faceted, and cap fans stretched across the whole atlas (the corrected "parts filling the atlas" check found it).
+
+**The harder two, 2026-11-02.** Meshy 7.1 only, on the same script. All three now pass every limit with no waiver (`rig/sources/<key>/sheet-rigged.png`).
+
+| | Ant | Beetle | Mantis |
+|---|---|---|---|
+| Triangles, parts, size | 8,812, 21, 1.05 MB | 8,892, 21, 1.19 MB | 8,612, 17, 1.46 MB |
+| Closure (limit 1.5%) | 0.04% | 0% | 0.08% |
+| Foot slide (limit 3%) | 0.09% | 1.2% | 0.8% |
+| Texture density (floor 150 px/m) | 566 px/m | 185 px/m | 258 px/m |
+| Length used | 1.5 m body | 4.0 m with antlers | 2.4 m, **chosen here** |
+
+What the hard cases cost the script, and what they say about it:
+
+- **It is not free of per-animal settings.** The ant and beetle needed none beyond the spec's counts. The mantis needed two by hand in its spec: `strip`, how wide the midline must be to clear its chest, and a `budget` that moves triangles to the forelegs. The cliff in `arthro.py` picked a width that left chest in the arms. Expect a hand setting per unusual body plan, not per animal.
+- **Thin limbs still fail on a small budget.** At about 240 triangles a segment the mantis's spines became black shards. At 1,350 a foreleg they read. The rule is budget by what makes the animal, and a spec should say so.
+- **A mantis's forelegs are one rigid part each,** so it cannot strike yet: there is no clip and no joint. Its walk is on four legs with the forelegs still. A strike needs those joints back, and the spines kept across the cut.
+- **Necks are measured along the trunk's own axis,** about each station's middle, because a beetle stands nose up and a mantis curves. A straight fit cut the wing cases in two.
+- **Legs may hang from the abdomen,** so it holds still in the walk: its sway slid the beetle's feet 14%.
+
+Still rough, by eye: thin white flecks at the mantis's neck and chest where a cap shows through; the foreleg spines and tarsus chains are coarser than the raw model's; the beetle's texture is the softest of the three, 185 px/m at its 4 m length, close to the floor.
+
+**In the kit, 2026-11-02.** All three are model variants: `harvester-ant` #3, `staghorn-beetle` #4 and the new `bowl-mantis` #1, whose procedural form is the lattice mantis's builder at 1.4 times its size. Beside their procedural versions on the kit's own page (`rig/sources/sheet-kit.png`) the gain is plain. The audit's two gaps are closed: `tests/test-models.js` builds every model through `KratorFauna.build()`, and `models_pack.py` refuses a mesh of two primitives (`tools/tests/test_models_pack.py`). The mantis was scaled from 3.4 m tall to 2.4 m.
+
+Not yet checked: the owner's sign-off (C11); C7's foot-lift and limb-through-body checks are not built; the Rodin ant predates the last script changes; no saddle has been tried on the staghorn; the pages that bundle the kit are not rebuilt (`TODO.md`).
+
+**Lessons for the next run.** Python's `urllib` cannot verify fal's file host here: `rig/fal_gen.py` downloads with `curl`, and a run whose file did not arrive is fetched again by request id,
+unpaid. The harness's `--use-gl=swiftshader` lost its WebGL context in `rig/sheet.py`; `--use-angle=d3d11` works on this machine.

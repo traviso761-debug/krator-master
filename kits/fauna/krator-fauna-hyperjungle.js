@@ -494,7 +494,8 @@ ANIMAL({
    LORE: the crater's and the lowland's air is about 2 atm: more oxygen reaches an insect's tracheae, so insects and
    flyers grow larger there (the giant dragonfly is the flyers' file). These four are the hyperjungle's ground and
    trunk insects, drawn (2026-10-12) in the kit's procedural style: jointed chitin legs that turn about their roots
-   (the hexapod tripod walk), plated bodies with banding. They are procedural only: a Meshy version waits on credits. */
+   (the hexapod tripod walk), plated bodies with banding. The harvester ant and the Bowl mantis carry a Meshy model variant too
+   (models/*.json, rig/arthro.py). */
 function faHiMix(a, b, t) { const C = q => Array.isArray(q) ? new THREE.Color(q[0], q[1], q[2]) : new THREE.Color(q); const c = C(a).lerp(C(b), Math.max(0, Math.min(1, t))); return [c.r, c.g, c.b]; }   /* a and b: hex or [r, g, b] */
 /* the drawing helpers at one scale K, and a jointed insect leg: pts root, joints..., foot, rad per point */
 function faHiKit(A, K) {
@@ -522,6 +523,9 @@ const FA_HI_SRC = { build: 'kits/fauna', file: 'krator-fauna-hyperjungle.js', li
 
 /* ---- the lattice mantis: an ambush hunter that waits among the leaves with its raptorial arms folded */
 const FA_HI_MANTIS = [{ base: 0x5a8a34, dark: 0x2e5a22, pale: 0xb8d070 }, { base: 0x8a6a40, dark: 0x4a3420, pale: 0xc8a870 }, { base: 0xd8b0c0, dark: 0x9a5a78, pale: 0xf4e8e8 }];
+const FA_HI_BOWLMANTIS = [{ base: 0xc8c8b4, dark: 0x8a9078, pale: 0xece8d8 }];
+/* one mantis, at a size and in a palette: the lattice mantis's and the Bowl mantis's */
+function faHiMantis(pal, K) { return function (A) { FA_HI_MANTIS_BODY(A, pal, K); }; }
 ANIMAL({
   key: 'lattice-mantis', name: 'Lattice mantis', group: 'hyperjungle',
   tags: Object.assign({}, FA_HI_BASE, { diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
@@ -537,8 +541,32 @@ ANIMAL({
     herd: 'alone: it holds a leaf and eats what comes within reach', fleeDistance: 3, aggression: 0.8,
     idle: { headYaw: 0.7, headPitch: 0.1, tailYaw: 0.04 },
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
-  build: function (A) {
-    const C = FA_HI_MANTIS[A.variant] || FA_HI_MANTIS[0], k = faHiKit(A, A.S), mix = faHiMix;
+  build: faHiMantis(FA_HI_MANTIS, 1)
+});
+
+/* ---- the Bowl mantis: the great mantis of the eastern desert's salt lake, which the town of Mantis is named for (LORE.md 6.2, biomes/sedesert/PLAN-BOWL.md section 6): an
+   ambush hunter of the halo and the deltas, coloured like the salt scrub. Its two forelegs are held up; the model's are one rigid part each, so it does not strike yet */
+ANIMAL({
+  key: 'bowl-mantis', name: 'Bowl mantis', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { koppen: ['BWh', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['tropic'], biomes: ['sedesert'], riparian: 'both', diet: 'carnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'aggressive',
+    habitat: ['ground', 'marsh'], locomotion: ['walks', 'climbs', 'leaps'] }),
+  size: { length: 2.3, height: 1.4 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-11-02), on the lattice mantis\'s builder at 1.4 times its size; the size is this kit\'s choice: the plan says only "large"' }),
+    { build: 'kits/fauna', file: 'models/bowl-mantis.json', lines: '-', note: 'the Meshy 7.1 model variant, cut and rigged by rig/arthro.py; 2.4 m tall' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 6, note: 'the spined forearms, the salt-pale plates of the Bowl\'s hunters' } },
+  life: { maturity: 0.8, lifespan: 2, litter: 120, gestation: 40, note: 'invented, after the lattice mantis: an egg case in the tamarisk' },
+  variants: 2, variantNames: ['salt scrub', 'salt scrub (Meshy model)'],
+  w: 1.0, d: 2.27, h: 1.4,
+  variantDims: [{ w: 1.0, d: 2.27, h: 1.4 }, { w: 1.61, d: 1.86, h: 2.4 }], models: { 1: 'bowl-mantis' }, modelData: { 1: { budget: 9000 } },   /* the Meshy model variant (models/bowl-mantis.json, rig/arthro.py) */
+  data: { mass: 16, legs: 4, sizeRange: [0.8, 1.2], speed: { walk: 0.5, run: 3.5 }, gait: { type: 'quadruped', freq: 1.4, stride: 0.28 }, grazePitch: 0.3,
+    herd: 'alone: it holds a patch of the salt scrub and takes what comes within reach', fleeDistance: 4, aggression: 0.85,
+    idle: { headYaw: 0.7, headPitch: 0.1, tailYaw: 0.04 },
+    schedule: ['REST', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST'] },
+  build: faHiMantis(FA_HI_BOWLMANTIS, 1.4)
+});
+const FA_HI_MANTIS_BODY = (A, pal, K) => {
+    const C = pal[A.variant] || pal[0], k = faHiKit(A, A.S * K), mix = faHiMix;
     const shade = (t, a) => mix(C.base, C.pale, Math.cos(a) < -0.3 ? 0.7 : 0.15 * faNoise(t * 20, a, 1));
     /* the abdomen, long and tapering, with the folded wings laid along its back */
     k.rows([[0, .46, -.05, .07, .06], [0, .46, -.3, .09, .08], [0, .47, -.55, .075, .065], [0, .48, -.78, .03, .03]], 14, 12, null, { round: [0.1, 0.12], colf: (t, a) => shade(t, a) });
@@ -562,8 +590,7 @@ ANIMAL({
       A.part('leg' + i, k.Q(X([.05, .46, 0])), () => k.leg([X([.05, .46, 0]), X([.2, .56, .02]), X([.32, .2, .08 * (z > 0 ? 1 : -1)]), X([.34, .0, .12 * (z > 0 ? 1 : -1)])], [.03, .022, .016, .01], C.base));
     }
     A.anchor('lead', k.Q([0, .6, .45])); A.anchor('headRoot', k.Q([0, .69, .5])); A.anchor('tailRoot', k.Q([0, .46, -.05]));
-  }
-});
+};
 
 /* ---- the stilt walkingstick: a twig the length of a man, on six long legs */
 const FA_HI_STICK = [{ base: 0x6a7a3a, dark: 0x3a4a22, pale: 0xa8b060 }, { base: 0x6a5238, dark: 0x3a2c1e, pale: 0x9a8a68 }, { base: 0x7a7e6e, dark: 0x4a4e44, pale: 0xb0b49a }];
@@ -657,8 +684,9 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { chitin: { amount: 2, note: 'a soldier\'s jaws and head plate: a scraper and a shield rim' } },
   life: { maturity: 0.3, lifespan: 2, litter: 400, gestation: 30, note: 'litter: the queen\'s clutch (the colony has one queen); gestation: egg to worker, a month' },
-  variants: 3, variantNames: ['worker, black', 'soldier, rust red', 'worker, slate'],
+  variants: 4, variantNames: ['worker, black', 'soldier, rust red', 'worker, slate', 'worker, rust red (Meshy model)'],
   w: 0.79, d: 1.5, h: 0.81,
+  variantDims: [{ w: 0.79, d: 1.5, h: 0.81 }, { w: 0.79, d: 1.5, h: 0.81 }, { w: 0.79, d: 1.5, h: 0.81 }, { w: 1.42, d: 1.6, h: 0.84 }], models: { 3: 'harvester-ant' }, modelData: { 3: { budget: 9000 } },   /* the Meshy model variant (models/harvester-ant.json, rig/arthro.py) */
   data: { mass: 4, legs: 6, sizeRange: [0.7, 1.3], speed: { walk: 0.9, run: 5 }, gait: { type: 'hexapod', freq: 2.2, stride: 0.3 }, grazePitch: 0.4,
     herd: 'a column of fifty on a trail, hauling leaf, with a soldier to every ten', fleeDistance: 3, aggression: 0.7,
     idle: { headYaw: 0.3, headPitch: 0.1, tailYaw: 0.05 },

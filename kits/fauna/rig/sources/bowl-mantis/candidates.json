@@ -1,0 +1,35 @@
+{
+ "reference": {
+  "prompt": "Giant praying mantis, natural history reference, standing on flat ground, full body. Exactly six legs: two raised spined grasping forelegs folded before the chest, four long walking legs spread wide apart, clearly separated from the body and each other. Triangular head with large eyes, long prothorax, wings folded flat along the abdomen. Pale salt-white and dusty sage colouring. Bilaterally symmetrical. Flat even studio lighting, no cast shadows, plain light grey background, nothing else in frame.",
+  "task_id": "01a19aaf-b98d-7620-afce-c67e3356ec92",
+  "ai_model": "nano-banana-pro",
+  "credits": 9,
+  "views": "Meshy multi-view, cleaned by rig/prep_refs.py",
+  "rights": "generated on the owner's Meshy account"
+ },
+ "candidates": {
+  "meshy71": {
+   "task_id": "01a19ab3-2e57-7127-b164-7dee8901e5e8",
+   "ai_model": "meshy-7.1",
+   "route": "multi-image, front left back",
+   "credits": 30,
+   "settings": {
+    "enable_pbr": true,
+    "remove_lighting": true,
+    "image_enhancement": false
+   },
+   "raw": "raw-meshy71.glb"
+  },
+  "meshyt2": {
+   "task_id": "01a19ab3-36e1-76eb-888b-e519c5fda00e",
+   "ai_model": "meshy-t2",
+   "route": "smart topology, single image: left.png",
+   "credits": 15,
+   "settings": {
+    "enable_pbr": true,
+    "target_polycount": 12000
+   },
+   "raw": "raw-meshyt2.glb"
+  }
+ }
+}

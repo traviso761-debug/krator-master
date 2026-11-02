@@ -115,12 +115,13 @@ const dirs = () => { const out = [], k = Math.SQRT1_2, c = 1 / Math.sqrt(3); for
 const TRUNK = /^(torso|thorax|midsheet|abd2?|seg\d+)$/;
 
 /* the kit's real catalog in a vm, without the baked models, so build() draws the procedural animal (tests/test-lands.js's way) */
-function registry(root) {
+function registry(root, models) {
   const vm = require('vm'), KIT = path.join(root, 'kits', 'fauna'), THREE = require(path.join(root, 'kits', 'ancients', 'three.min.js'));
-  const ctx = { console, Math, THREE }; ctx.globalThis = ctx; vm.createContext(ctx);
+  class Img { set src(v) { this._s = v; } }      /* no browser: a model's maps are never decoded, only its data is read */
+  const ctx = { console, Math, THREE, Image: Img, atob: s => Buffer.from(s, 'base64').toString('latin1'), MODELS: models || null }; ctx.globalThis = ctx; vm.createContext(ctx);
   const sp = fs.readdirSync(KIT).filter(f => /^krator-fauna-.*\.js$/.test(f) && f !== 'krator-fauna-runtime.js').sort();
   const body = ['fauna-core.js'].concat(sp, ['krator-fauna-runtime.js']).map(f => fs.readFileSync(path.join(KIT, f), 'utf8')).join('\n');
-  vm.runInContext('var KratorFauna = (function () { const FA_TEX = null; const FA_MODELS = null;\n' + body + '\nreturn KratorFaunaAPI; })();', ctx, { filename: 'fauna-bundle' });
+  vm.runInContext('var KratorFauna = (function () { const FA_TEX = null; const FA_MODELS = MODELS;\n' + body + '\nreturn KratorFaunaAPI; })();', ctx, { filename: 'fauna-bundle' });
   return { KF: ctx.KratorFauna, THREE };
 }
 /* the entries that name a model: [{key, variant, model, E}] */

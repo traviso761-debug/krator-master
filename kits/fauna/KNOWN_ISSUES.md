@@ -29,7 +29,7 @@
       `swbay` (the volcano) and `crater-drylands` (burnt steppe); the millipede adds `crater-drylands` for its ash herd. Retag
       them when the biome exists. The Zeijani of Dhelv ride the staghorn beetle too, but are not a catalog culture yet, so
       only `ashnomad` is in its `herdedBy` (a note in its `source` names them).
-- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3, cattle #4 and #5, pig #3, sheep #3, hen #4, goat #4, horse #4, water buffalo #2, yak #3, bison #3, duck #3, Dalab lizard #4, dog and cat;
+- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3, harvester ant #3, staghorn beetle #4, Bowl mantis #1, cattle #4 and #5, pig #3, sheep #3, hen #4, goat #4, horse #4, water buffalo #2, yak #3, bison #3, duck #3, Dalab lizard #4, dog and cat;
       `models/*.json`, `models_pack.py`) are heavy next to the procedural ones: 8.5 to 13 thousand triangles each (the kit's
       budget is 9 000; `data`/`modelData.budget` is 14 000 for them) and about 1 MB of packed geometry and baked maps apiece, so a
       bundle that takes the flyers and crawlers grows by about 6 MB, and one that takes the farm too by about 5 MB more; models are opt-in, `bundle(groups, mdl=True)`. Fine for a few animals a scene; do not herd them. The
@@ -39,6 +39,8 @@
       flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
 - [ ] Every Meshy model but the millipede, dragonfly and hen opens at a join in some clip: the necks when grazing, the shoulders of the flyers, the bellies and leg roots of the horse and ox (`tests/test-models.js`, C4; `PLAN-MESHY.md` section 2). Their numbers are held in `tests/models-waivers.json`. Fixing them means regenerating, since the source GLBs are gone. Rigid parts suit an exoskeleton; a membrane flyer wants skinning.
 - [ ] A model variant ignores breeds and `pose: 'fly'`, and one model is one colour.
+- [ ] The Bowl mantis's forelegs are one rigid part each (its spines would not survive the cuts), so it has no joints there and no strike; it is in the `hyperjungle` file for the builder, so a page that bundles only `desert`, as biomes/sedesert does, does not have it. Its size is this kit's choice, 2.4 m tall.
+- [ ] The Meshy staghorn stands nose up, as its reference did, so it is 2.7 m tall to the procedural beetle's 1.75 and its saddle sits on a sloping back; no saddle has been tried on it. Its texture is 185 px/m, near the 150 floor.
 - [ ] The five new mounts (`riders`, 2026-10-19) are the kit's choices where the lore is silent: the riding tiger (only the tribe's
       name), the raptor's size (the lore says velociraptor), the jungle mammoth (thin-haired, for the heat), every yield, life figure
       and temperament. Their legs turn rigidly at the hip like every animal's here, so a walking mammoth or threehorn lifts its feet

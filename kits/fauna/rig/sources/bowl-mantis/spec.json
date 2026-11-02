@@ -1,0 +1,15 @@
+{
+ "legs": 6,
+ "contacts": 4,
+ "wings": 0,
+ "note": "two raised raptorial forelegs, four on the ground; wings folded flat; a new animal, sedesert PLAN-BOWL.md section 6",
+ "segments": 3,
+ "raptorial": 2,
+ "budget": {
+  "head": 1500,
+  "thorax": 800,
+  "abd": 1000,
+  "arm": 1350
+ },
+ "strip": 0.2
+}

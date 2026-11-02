@@ -577,9 +577,10 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
   yields: { chitin: { amount: 45, note: 'the cast skins of the grub\'s moults and the shell of a beetle that dies: elytra for shields and bowls, the mandibles for blades and tent poles; the Ash Nomads do not eat it' } },
   life: { maturity: 3, lifespan: 16, litter: 30, gestation: 30, note: 'eggs in rotten wood or dung; three years a grub, then a beetle broken to the saddle in its first season; gestation: incubation' },
-  variants: 4, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black', 'jungle staghorn: moss-green, gold sheen, rust-red mandibles (the Beast Riders\' Staghorn tribe)'],
+  variants: 5, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black', 'jungle staghorn: moss-green, gold sheen, rust-red mandibles (the Beast Riders\' Staghorn tribe)', 'jungle staghorn (Meshy model)'],
   breeds: { riding: { scale: 1, mass: 750, role: 'riding mount; light draught (a sledge, a travois)' }, war: { scale: 1.2, mass: 1300, role: 'war mount: bigger mandibles' } },
   w: 2.95, d: 4.0, h: 1.75,
+  variantDims: [{ w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.95, d: 4.0, h: 1.75 }, { w: 2.94, d: 4.13, h: 2.7 }], models: { 4: 'staghorn-beetle' }, modelData: { 4: { budget: 9000 } },   /* the Meshy model variant (models/staghorn-beetle.json, rig/arthro.py): it stands nose up, so taller than the procedural beetle */
   data: { mass: 750, legs: 6, speed: { walk: 1.4, run: 6 }, gait: { type: 'hexapod', freq: 1.3, stride: 0.5 }, grazePitch: 0.25,
     herd: 'one to a rider, picketed by the tent at night; a band\'s string of ten to forty grazes the scrub under a herder', fleeDistance: 0, aggression: 0.3,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },

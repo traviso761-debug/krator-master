@@ -46,14 +46,14 @@ function pieces(P) {
   const sizes = Object.values(n).sort((a, b) => b - a), tot = P.idx.length / 3;
   return { all: sizes.length, big: sizes.filter(s => s >= 0.15 * tot).length };
 }
-const isLimb = n => /^(leg|foot)/.test(n), mirror = n => { const q = /^(.*?)([LR])([tf]?)$/.exec(n); return q ? q[1] + (q[2] === 'L' ? 'R' : 'L') + q[3] : null; };
+const isLimb = n => /^(leg|foot|arm)/.test(n), walksOn = n => /^(leg|foot)/.test(n), mirror = n => { const q = /^(.*?)([LR])([tf]?)$/.exec(n); return q ? q[1] + (q[2] === 'L' ? 'R' : 'L') + q[3] : null; };
 function worldVert(m, W, P, i, v) { L.apply(W[P.node], P.pos, i * 3, v); return v; }
 /* ---- C7: slide and depth of the limb ends over the walk */
 function walk(m) {
   const c = m.clips.walk, ex = c && c.extras; if (!ex || !ex.speed) return { slide: 0, below: 0 };
   const G = ex.ground == null ? m.M.rest.ground : ex.ground, nodes = m.M.nodes, T = []; for (let k = 0; k < 24; k++) T.push(c.dur * k / 24);
-  const hasKid = n => Object.keys(m.parts).some(q => isLimb(q) && nodes[m.parts[q].node].parent === m.parts[n].node);
-  const ends = Object.keys(m.parts).filter(n => isLimb(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9;
+  const hasKid = n => Object.keys(m.parts).some(q => walksOn(q) && nodes[m.parts[q].node].parent === m.parts[n].node);
+  const ends = Object.keys(m.parts).filter(n => walksOn(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9;
   for (const n of ends) { const P = m.parts[n], np = P.pos.length / 3, ys = T.map((_, k) => { let y = 1e9; for (let i = 0; i < np; i++) y = Math.min(y, worldVert(m, Ws[k], P, i, v)[1]); return y; });
     const ymin = Math.min(...ys), kst = ys.indexOf(ymin); lo = Math.min(lo, ymin); let tip = 0, ty = 1e9; for (let i = 0; i < np; i++) { const y = worldVert(m, Ws[kst], P, i, v)[1]; if (y < ty) { ty = y; tip = i; } }
     const zs = []; for (let k = 0; k < T.length; k++) { if (ys[k] > ymin + 0.004) continue; const q = worldVert(m, Ws[k], P, tip, v); zs.push(q[2] + ex.speed * T[k]); }
@@ -79,7 +79,8 @@ function density(m) {
 }
 const uvOwn = (m, n) => Object.values(m.M.mats || {}).some(q => q.parts.indexOf(n) >= 0);
 function uvArea(P, t) { const a = P.idx[t] * 2, b = P.idx[t + 1] * 2, c = P.idx[t + 2] * 2, e = P.uv[b] - P.uv[a], f = P.uv[b + 1] - P.uv[a + 1], g = P.uv[c] - P.uv[a], h = P.uv[c + 1] - P.uv[a + 1]; return Math.abs(e * h - f * g); }
-const fillsAtlas = m => Object.keys(m.parts).filter(n => { if (uvOwn(m, n)) return false; const P = m.parts[n]; let a = 0; for (let t = 0; t < P.idx.length; t += 3) a += 0.5 * uvArea(P, t); return a > 0.7; });
+/* parts drawing a shared map whose charts add up to more than the map holds: a card that lost its own material. A big part may fill much of the atlas by itself */
+const fillsAtlas = m => { const area = {}; let tot = 0; for (const n of Object.keys(m.parts)) { if (uvOwn(m, n)) continue; const P = m.parts[n]; let a = 0; for (let t = 0; t < P.idx.length; t += 3) a += 0.5 * uvArea(P, t); area[n] = a; tot += a; } return tot <= 1.2 ? [] : Object.keys(area).filter(n => area[n] > 0.7); };
 
 /* the numbers a model is held to */
 function measure(m, file, full) {
@@ -106,7 +107,7 @@ for (const k in MEASURED) { const v = MEASURED[k], w = waivers[k] || {}, bad = [
 for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model');
 
 // ---------------------------------------------------------------- C8: the contract with the catalog
-{ const { KF } = L.registry(ROOT), rows = L.modelled(KF);
+{ const { KF } = L.registry(ROOT), rows = L.modelled(KF), base0 = 'giant-dragonfly';
   ok(rows.length === new Set(rows.map(r => r.model)).size || rows.length >= files.length, 'catalog: ' + rows.length + ' model variants');
   const named = new Set(rows.map(r => r.model));
   ok(files.every(f => named.has(f.slice(0, -5))) && rows.every(r => MODELS[r.model]), 'every model file has an entry, and every entry its file');
@@ -127,6 +128,27 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
     { const W0 = L.pose(m, null, 0); for (const nd of m.M.nodes) { if (!/^(leg\d|foot|wing2?|wingO2?)L/.test(nd.name)) continue; const o = mirror(nd.name); if (m.byName[o] != null && W0[m.byName[nd.name]][12] <= W0[m.byName[o]][12]) bad.push(nd.name + ' on the wrong side'); } }   /* +x is the animal's left */
     return bad; };
   for (const r of rows) { const b = contract(MODELS[r.model], r); ok(!b.length, 'contract ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'legs, clips, budget, anchors, materials and sides')); }
+
+  // ---------------------------------------------------------------- what a host really gets: KratorFauna.build() down the model's branch
+  const packed = {}; for (const f of files) packed[f.slice(0, -5)] = JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8'));
+  const realBuild = (KFm, r, M) => { const bad = []; let g; try { g = KFm.build(r.key, { variant: r.variant, seed: 3 }); } catch (e) { return ['build threw: ' + e.message]; } const u = g.userData;
+    if (u.model !== r.model) bad.push('built ' + u.model + ', not the model'); const want = Object.keys(M.anchors || {}).sort().join(), have = Object.keys(u.anchors).sort().join(), on = Object.keys(u.anchorOn || {}).sort().join();
+    if (want !== have || want !== on) bad.push('anchors: packed [' + want + '], built [' + have + '], on parts [' + on + ']');
+    for (const a in (u.anchorOn || {})) if (!u.anchorOn[a].part || !u.anchorOn[a].part.isObject3D) bad.push('anchorOn ' + a + ' has no part');
+    const clear = new Set(); g.traverse(o => { if (o.isMesh && o.material.transparent) clear.add(o.parent.name); }); const wantClear = Object.values(M.mats || {}).reduce((a, q) => a.concat(q.parts), []);
+    if (wantClear.sort().join() !== [...clear].sort().join()) bad.push('see-through parts: packed [' + wantClear + '], built [' + [...clear] + ']');
+    for (const [mode, clip] of [['idle', 'perch'], ['walk', 'walk']]) { KFm.animate(g, 1, mode); if (u._mx.cur !== clip) bad.push(mode + ' played ' + u._mx.cur); }
+    if (u.parts.legs.filter(Boolean).length !== Object.keys(M.meshes).filter(n => /^leg(\d+|\d?[LR])$/.test(n)).length) bad.push('legs on the built animal'); return bad; };
+  { const KFm = L.registry(ROOT, packed).KF; for (const r of rows) { const b = realBuild(KFm, r, packed[r.model]); ok(!b.length, 'built ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'the model, its anchors on parts, its materials, its clips')); }
+    const q = JSON.parse(JSON.stringify(packed[base0])); delete q.anchors; const KF2 = L.registry(ROOT, Object.assign({}, packed, { [base0]: q })).KF; ok(realBuild(KF2, rows.find(r => r.model === base0), packed[base0]).some(s => /^anchors/.test(s)), 'negative: a build that lost its anchors fails, whatever the file says'); }
+
+  // ---------------------------------------------------------------- a candidate, not in the kit yet: --candidate <packed.json> <entry key>, every limit and no waiver
+  if (arg('--candidate')) { const file = argv('--candidate'), key = process.argv[process.argv.indexOf('--candidate') + 2], m = L.load(file), E = KF.entry(key), v = measure(m, file), bad = [];
+    for (const c of CHECKS) { const o = over(c, v[c]); console.log((o ? 'FAIL ' : 'ok   ') + pad(c, 12) + pad(num(v[c]), 10) + 'limit ' + LIMITS[c] + (c === 'closure' && v.closureAt.clip ? '   worst: ' + v.closureAt.clip : '') + (c === 'pivot' ? '   worst: ' + pivots(m).who : '') + (c === 'pieces' && v[c] ? '   ' + Object.keys(m.parts).filter(n => isLimb(n) && pieces(m.parts[n]).big > 1).join(' ') : '')); if (o) bad.push(c); }
+    const b = contract(m, { key, variant: 0, model: m.key, E }); console.log((b.length ? 'FAIL ' : 'ok   ') + 'contract    ' + (b.join('; ') || 'legs, clips, budget, anchors, materials and sides'));
+    console.log('tris ' + m.M.tris + ', ' + Object.keys(m.parts).length + ' parts, ' + (fs.statSync(file).size / 1e6).toFixed(2) + ' MB');
+    if (arg('--png')) { const a = v.closureAt; if (a.R) L.png(a.R, path.join(argv('--png'), path.basename(file, '.json') + '-' + a.clip + '.png')); }
+    process.exit(bad.length || b.length ? 1 : 0); }
 
   // ---------------------------------------------------------------- the negatives: every check bites
   const base = 'giant-dragonfly', fresh = () => L.load(path.join(DIR, base + '.json')), file = path.join(DIR, base + '.json'), row = rows.find(r => r.model === base);

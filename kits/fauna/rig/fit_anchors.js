@@ -9,10 +9,11 @@ const ROOT = path.join(__dirname, '..', '..', '..'), { KF, THREE } = L.registry(
 const STRAPPED = /^(saddle|pack|howdah|yoke|harness|trace)$/, HEADISH = /^(head|neck)$/;
 const r4 = x => Math.round(x * 1e4) / 1e4;
 
-for (const row of L.modelled(KF)) {
+const cand = process.argv.indexOf('--candidate'), rows = cand > 0 ? [{ key: process.argv[cand + 2], variant: 0, file: process.argv[cand + 1] }] : L.modelled(KF);      /* --candidate <packed.json> <entry key>: fit a model not in the kit yet, in place */
+for (const row of rows) {
   let g; try { g = KF.build(row.key, { variant: row.variant, seed: 3 }); } catch (e) { continue; }   /* a model-only animal (dog, cat) has no procedural build */
   const A = g.userData.anchors || {}, names = Object.keys(A).filter(n => !/^spread\d/.test(n)); if (!names.length) continue;
-  const m = L.load(path.join(ROOT, 'kits', 'fauna', 'models', row.model + '.json')), M = m.M, S = M.scale, W = L.pose(m, m.clips.perch, 0), v = [0, 0, 0];
+  const m = L.load(row.file || path.join(ROOT, 'kits', 'fauna', 'models', row.model + '.json')), M = m.M, S = M.scale, W = L.pose(m, m.clips.perch, 0), v = [0, 0, 0];
   const off = [-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S], box = new THREE.Box3().setFromObject(g), cz = (box.min.z + box.max.z) / 2, kz = M.rest.d / Math.max(box.max.z - box.min.z, 1e-6);
   const pts = [];
   for (const n in m.parts) { const P = m.parts[n]; if (!L.TRUNK.test(n) && !HEADISH.test(n)) continue;
@@ -23,6 +24,7 @@ for (const row of L.modelled(KF)) {
     if (!best) continue;
     const w = [best.x, best.y, best.z], lx = (w[0] - off[0]) / S, ly = (w[1] - off[1]) / S, lz = (w[2] - off[2]) / S, Mx = W[best.node], dx = lx - Mx[12], dy = ly - Mx[13], dz = lz - Mx[14];
     res[a] = { p: w.map(r4), node: M.nodes[best.node].name, at: [dx * Mx[0] + dy * Mx[1] + dz * Mx[2], dx * Mx[4] + dy * Mx[5] + dz * Mx[6], dx * Mx[8] + dy * Mx[9] + dz * Mx[10]].map(x => Math.round(x * 1e6) / 1e6) }; }
+  if (row.file) { M.anchors = res; fs.writeFileSync(row.file, JSON.stringify(M)); console.log(row.key, Object.keys(res).map(a => a + ' on ' + res[a].node).join(', ')); process.exit(0); }
   out[row.model] = res; console.log(row.model, Object.keys(res).map(a => a + ' on ' + res[a].node).join(', '));
 }
 fs.writeFileSync(path.join(__dirname, 'anchors.json'), JSON.stringify(out, null, 1) + '\n');

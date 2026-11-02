@@ -18,6 +18,11 @@ checks: no foot slides more than 3% of a stride and no leg goes through the grou
 This is working code from one session, not a tool: paths are the session's, and the thresholds in `fcfg.py` were tuned by eye
 per model.
 
+**Arthropods** (`arthro.py <key> <candidate>`; a raw GLB and `spec.json` in `rig/sources/<key>/`): one script, no per-animal table. A solid voxel model opened by a
+ball wider than a leg finds the trunk and the limbs, the trunk parts at its necks, and each leg is cut at its bends along the surface. Each part is decimated on its own
+budget and every cut capped, so a part is a closed shell in any pose. It writes `rig-<candidate>.glb` with a tripod walk. It needs `trimesh` and `fast-simplification`. A spec holds `legs`, `contacts` (feet on the ground), `segments`, and when a body needs them `raptorial` (limbs held up, a mantis's), `strip`, `open` and `budget`.
+`prep_refs.py` readies the reference views, `fal_gen.py` runs fal's generators, `intake.js` scores a raw GLB and `sheet.py` draws the comparison.
+
 **The steps for a new model** (`../PLAN-MESHY.md`): keep the source in `rig/sources/<key>/` (`source.json`: prompt, task_ids, ai_model,
 credits, raw; and the raw GLB), rig it, `models_pack.py`, `node rig/fit_anchors.js`, `python3 rig/patch_models.py`, then
 `node tests/test-models.js`, which a new model must clear with no waiver. `--png <dir>` draws where a body opens. The `verify_*.py`
